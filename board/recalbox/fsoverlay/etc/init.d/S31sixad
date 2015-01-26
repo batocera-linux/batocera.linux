@@ -1,0 +1,21 @@
+#!/bin/sh
+#
+# Watch for network adapter
+#
+
+case "$1" in
+  start)
+	/recalbox/scripts/startsixad.sh &
+	;;
+  stop)
+	killall sixad-bin
+	;;
+  restart|reload)
+	;;
+  *)
+	echo "Usage: $0 {start|stop|restart}"
+	exit 1
+esac
+
+exit $?
+

@@ -1,0 +1,43 @@
+--- a/Makefile
++++ b/Makefile
+@@ -35,8 +35,8 @@
+ endif
+ 
+ TARGET_NAME := catsfc
+-DEFS        :=
+-CFLAGS      :=
++#DEFS        :=
++#CFLAGS      :=
+ 
+ ifeq ($(platform), unix)
+    TARGET := $(TARGET_NAME)_libretro.so
+@@ -127,6 +127,20 @@
+ 	DEFS   +=  -DPSP -D_PSP_FW_VERSION=371
+    INCLUDE     += -I$(shell psp-config --pspsdk-path)/include
+    STATIC_LINKING := 1
++
++else ifneq (,$(findstring armv,$(platform)))
++	TARGET := $(TARGET_NAME)_libretro.so
++   	fpic := -fPIC
++	SHARED := -shared -Wl,--no-undefined -Wl,--version-script=link.T
++   	CC = gcc
++   	CXX = g++
++	PLATFORM_DEFINES += -marm
++	ifneq (,$(findstring softfloat,$(platform)))
++   		PLATFORM_DEFINES += -mfloat-abi=softfp
++	else ifneq (,$(findstring hardfloat,$(platform)))
++   		PLATFORM_DEFINES += -mfloat-abi=hard
++	endif
++   	PLATFORM_DEFINES += -DARM
+ else
+    TARGET := $(TARGET_NAME)_libretro.dll
+    CC = gcc
+@@ -139,7 +153,7 @@
+           -DVAR_CYCLES -DCPU_SHUTDOWN -DSPC700_SHUTDOWN \
+           -DNO_INLINE_SET_GET -DNOASM -DHAVE_MKSTEMP '-DACCEPT_SIZE_T=size_t' -DWANT_CHEATS
+ 
+-DEFS  += -D__LIBRETRO__
++DEFS  += -D__LIBRETRO__ $(PLATFORM_DEFINES)
+ 
+ CORE_DIR     := ./source
+ LIBRETRO_DIR := .

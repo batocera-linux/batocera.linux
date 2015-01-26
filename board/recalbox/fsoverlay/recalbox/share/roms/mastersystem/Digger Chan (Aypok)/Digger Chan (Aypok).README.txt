@@ -1,0 +1,378 @@
+   ##                                                                    ##            
+ #                                                                          #
+#                        Digger Chan - (c) Aypok 2006                        #
+###                                                                        ###
+##############################################################################
+
+
+
+
+What is it?
+===========
+
+"Digger Chan" is a game for the Sega Master System, very much like the game
+"Mr Driller" - which was released on the Gameboy Advance (amongst other
+platforms).
+
+This game was written by Aypok for "SMS Power!"'s 2006 coding competition.
+As well as the game binary and this documentation, you will find the full
+source code and data-files for assembling this game. The code is released under
+the GNU/GPL v2 (see the file titled "licence.txt"). There is also the tool I
+wrote and used to create the levels. It is a simple Python script to generate
+random levels based on some parameters given to it at run time. See the
+section below (called "Other boring info") for more details.
+
+I started work on the game in late February 2006, shortly after the
+announcement of the competition was made. It took a few weeks of work to get it
+done, but it was worth it. :)
+
+There is no sound and no music in this game. None at all. Unless I made a
+coding error which results in sound... Why? Two main reasons: I have no idea at
+all how to make sound on the SMS (but it is something I wish to learn in the
+future) and Mekanix won't run properly if sound is enabled (which seems to be a
+common error).
+
+I have not tested this game on real hardware - that is to say, this game was
+developed using emulators to test the code. This is not out of laziness, but
+because I lack the hardware to do so. While this game does run fine on the
+emulators, I have doubts as to how well it will run on a real SMS. If anyone
+gets to test it on real hardware, I'd be interested to hear how it goes.
+
+Feel free to contact me about bugs in this game, ideas, improvements, general
+feedback, etc - you know the stuff.
+
+Please take note of the difficultly level; It starts off VERY easy. Too easy,
+in fact. But it does get hard - play at least until level three to see what
+I mean. Level five is amazingly hard... It took me two days to complete it
+(without cheating) - and I know the level layout. :)
+
+It is probably worth noting that this is the first game I have written for the
+SMS. I've written a bunch of smaller things -  nothing this large. I had to
+learn a bunch of new things to get it done and it was great fun. :)
+
+This is for a competition, so I'm hoping I win - although I'm up against some
+very skilled people, so I'm not sure how that'll turn out. I've had a great
+time creating this game - losing won't bother me much. It would be nice to have
+written a "prize winning" game, though. :P May the best entry win!
+
+I hope you have fun playing this game!
+
+
+Aypok...
+
+
+
+Story
+=====
+
+You are "Digger Chan", an employee of "M.O.O. Milk Co." - the world's largest
+supplier of milk. Not only do they bottle it and sell it in shops, they also
+have a huge pipe network which pipes milk from their storage facilities to
+various places around the world: schools, factories, offices and even homes.
+The customers love having milk on tap and get displeased when there are
+problems with the pipelines which cut off their supply of milk.
+
+This is where you come in - you are M.O.O. Milk Co.'s "digger". It is your job
+to dig down from the surface to the milk pipelines deep under-ground. The
+pipelines are so deep, normal excavators are useless - which is why they need
+specialists like you.
+
+M.O.O. Milk Co. have been very pleased with your work in the past, which is
+why they will give you three tries to do your job and get to the pipes, If you
+fail three times, you will be fired!
+
+
+
+Basic info
+==========
+
+The object of this game is to dig down through the layers upon layers of blocks
+and reach the bottom of each level. It's not as easy as it sounds... You only
+have a limited supply of milk to keep you sustained during your exhausting
+digging. You must find bottles of milk burried in the ground to quench your
+thirst. As you progress through the levels, they get longer and longer - and
+the amount of milk available for you to consume diminishes.
+
+As well as the levels getting longer; the further you go, the more types of
+blocks you will encounter. They are just as easy to dig through, but due to the
+mixed up state of the ground, it will take you longer to make your way to the
+end zone. Watch out for large chunks of steel and other pipes on your way down,
+your spade isn't strong enough to dig through them - you must go around them.
+
+Watch where you dig - you may fall into a deep pit! You can only climb up one
+block at a time - some of the pits are two or more blocks deep. Digging without
+looking where you are going is dangerous...
+
+There are three different types of terrain for you to work in, since the pipes
+span the world. As well as having to dig through normal ground in the city, you
+have to dig through frozen ground in the arctic and sandy ground in the desert.
+
+The arctic ice is very slippy - so be very careful when moving! The desert is
+very hot, so your need more milk to keep you going, The ground in the desert is
+very soft - meaning that you move a lot slower than on normal ground.
+
+When you dig through a block, all of the connected blocks (blocks connected
+diagonally do not count) of the same colour will also be removed. This makes
+the progress through the early levels, which have just the two types of block
+(red and green) easy going and rather speedy. There are four different colours
+of blocks in total for city ground: red, green, blue and yellow. In the arctic
+you get: white, purple and blue. The desert has: red, orange and yellow blocks.
+
+Each block is one metre high, so the "depth" read-out refers to how many metres
+underground you are.
+
+If there are no blocks underneath a bottle of milk, it will fall down until it
+hits a solid block. A lot of milk bottles are hidden under other pipes and bits
+of steel, so you'll need to dig under the steel to get to the milk.
+
+There are a total of seven levels in this game (the last three were cut):
+    level 01 - 50m   - City     (Very easy).
+    level 02 - 100m  - City     (Easy).
+    level 03 - 150m  - Arctic   (Medium).
+    level 04 - 250m  - Arctic   (Hard).
+    level 05 - 400m  - City.    (Medium).
+    level 06 - 400m  - Desert   (VERY hard!).
+    level 07 - 550m  - Desert   (Hard).
+
+Even though it may seem like it, none of the levels are impossible, Tricky,
+but not impossible. If you get stuck on a certain point of a level, look to the
+left and/or right sides of the path you were taking - look for large clumps of
+blocks of the same colour. Destroying strings of blocks allows you to fall
+further and faster than destroying one block at a time - which is why the early
+levels are easy. Beware: sometimes the path which looks the easiest is trapped!
+
+If you keep getting stuck in a trap when trying to collect a bottle of milk,
+pause the game and see what other paths into it you could have taken. Unlike
+the levels, some of the milk bottles ARE impossible to get. :)
+
+
+
+How to play
+===========
+
+Left:
+    Move Digger Chan left.
+
+Right:
+    Move Digger Chan right.
+
+Left Left: (Double tap)
+    Climb up. If you are right up against a block to your left, you can double
+tap the left button and climb up ontop of it. This only works if the stack of
+blocks to your left is one block high - you cannot climb up stacks of two or
+more blocks.
+
+Right Right: (Double tap)
+    Climb up. Works the same as a double tap left, but for the right-hand side.
+
+Button 1:
+    Dig down.
+
+Button 1 & Left:
+    Dig left.
+
+Button 1 & Right:
+    Dig right.
+
+Button 1 & Up:
+    Dig up.
+
+As you can see from the controls listed above, not only can you destroy the
+blocks lying directly underneath you, you can dig through the blocks to either
+side of you - even the blocks directly above you.
+    
+Keep an eye on your milk-o-meter! If it starts getting low, make sure you grab
+a bottle of milk to keep your energy up and your bones strong. If you run out
+of milk, you will not have enough strength to continue and it will be the end
+of the game... The milk is harder to find on the later levels.
+
+
+
+Scoring
+=======
+
+For each block (of any colour) you destroy, you get one point. If you destroy
+four or more blocks in one dig, you get one extra point. If you destroy eight
+or more blocks, you get two extra points. Destroyings sixteen or more will earn
+you an extra four points!
+
+Collecting a bottle of milk will get you a whole ten points.
+
+When the level is complete, you get one point for every ten metres you dug
+through and five points for every bit of milk you have left. You also get a
+1000 point bonus for completing the level.
+
+You get an extra try every 2000 points. The maximum number of tries you can
+have is nine.
+
+
+
+Tools used
+==========
+
+Slackware Linux:    OS of choice. :)
+jEdit:              For writing the code.
+WLA-DX:             Assembler.
+Python:             Writing the level generator and stuff.
+BMP2Tile:           For converting the two intro screens and the title screen.
+The GIMP:           Creating the two intro screens and the title screen.
+KolourPaint:        Editing the screens and prototyping some tiles.
+Mekanix:            Emulator used to test and debug this game.
+
+
+
+Other boring info
+=================
+
+To assemble the game, simply type "make" from a terminal in the directory
+containing the makefile. That will build a file called "digger_chan.sms".
+
+The file called "useful_functions.inc" is the very same one used in Maxim's
+tutorials on coding for the SMS - I have used it, unchanged, in this game.
+There are also various bits of his code used in this game, most notably: The
+code used to draw the blocks and the code to scroll the background. There are
+probably other snippets in there, too. however, most of the code is my own.
+
+Some of the graphics, with the exception of the intro screens, the player,
+and the font, were written by hand - not drawn in a paint program and
+converted... Several of the tiles were prototyped (designed) in KolourPaint
+and were then converted by hand to code. The tiles/tile-map for the intro/title
+screens were created with Maxim's "BMP2Tile" application, as was the player's
+sprite.
+
+Testing of the game was done with "Mekanix", the *nix version of "Meka" - an
+SMS (and other 8bit Sega systems) emulator.
+
+The code is released under the GNU/GPL v2, which means you can edit, change,
+etc, the code for this game and redistribute it - but you MUST in turn make
+your code open and free for everyone to use. For more details on the GPL,
+please see the file "licence.txt". If you do use the code in some way, I'd
+love to hear about it. :)
+
+The code is, for the most part, heavily commented - so it should be easy to
+follow and understand. Having said that, my coding style is sometimes viewed
+as "odd" - sometimes it is down-right badly done. I don't claim that this
+code is perfect, or even great - but it does work. Usually. :)
+
+I created a bunch of Python scripts to help me convert and create data for
+this game. Most are useless, but one is very useful: "map_builder_tiny.py".
+It is a very simple script which builds level files (tile-maps) for use with
+this game. The levels it creates are based on parameters passed to it at run
+time. It is not as heavily commented as the game code, but it should be
+very easy to follow - providing you're familiar with the Python language.
+
+The level builder accepts parameters in the following way:
+    "python map_builder_tiny.py <file> <rows> [R] [G] [B] [Y]"
+"<file>" is a required parameter and specifies the output file.
+"<rows>" is how deep you want the level to be (in rows of blocks).
+The last four parameters ("R", "G", "B" and "Y") are optional - but sort of
+required. They specify which colours of blocks to use in the level. "R" is
+for red blocks, "G" for green, "B" for blue, and "Y" for yellow. they can
+appear in any order. For example:
+    "python map_builder_tiny.py test.inc 100 R G"
+Will create a 100 row level (tile-map) called "test.inc", using only red and
+green blocks.
+
+It will randomly add in empty spaces and milk bottles - they cannot be
+controlled via the command line parameters. The space at the top of the level
+and the end zone are also added to the level file by this script. It is ready
+to plug into the Digger Chan game (it will need to be reassembled for it to use
+the new levels, though). The sides of the level are added in-game, to cut down
+on the amount of data needed to be stored.
+
+You will probably want to manually edit the level files after creation by this
+script to correct the placing of the milk bottles. Their placing is random and
+usually either clumps them together or places them too far apart.
+
+The arctic and desert terrains only have three blocks. In the arctic: red
+becomes white and green becomes purple - yellow is unused. In the desert: green
+becomes orange - blue is unused.
+
+All of the maps in the game were initially created with that Python script,
+then I edited the position of the milk by hand and added in all of the steel
+blocks and traps (also by hand). A very tedious and time consuming task (and
+it makes your eyes hurt - try it!) - but it's the only way to get good levels.
+
+
+
+Cheats
+======
+
+While there are no cheats built into this game, you can still cheat if you have
+something to alter the contents of RAM whilst the game is running - Meka allows
+you to do this. I will list a few useful RAM locations here with what they do,
+so you can cheat your way through the game - or just get to see it all without
+having to play through it. :)
+
+A full list of RAM locations and what they do can be found at the top of the
+main code file.
+
+    $c00e - Number of lives left.
+    $c010 - The larger of the two milk counters.
+    $c026 - The current level.
+    $c027 - Level complete flag. Set to 1 to skip the current level.
+
+This bit isn't really a cheat, but... You can actually climb up into empty
+spaces even if there is a block directly above you. For instance; if there is a
+block above you, but a space to the right of it (your upper-right), you can
+double-tap right and climb into it. This isn't a bug, it's more of a lesser
+known feature. :) I could easily fix it, but it is useful for getting into
+tricky spaces - so I'm leaving it in.
+
+
+
+Todo
+====
+
+Although this has been released, it is not 100% complete - I had to leave
+certain things out in order to get it done on time. These things were never in
+my original specifications of the game (they weren't "chopped" from it), they
+are merely additions I'd like to have made if I had more time.
+
+After the competition has ended, I will still be working on it - adding in the
+improvements I'd like to have put in originally. I will then release a new
+version of the game when it is complete (which will be available on my site
+and probably announced on the SMS Power! forums).
+
+Here's some things which are hopefully still to come:
+
+    - Sound effects (and possibly music - but I'm not sure about that yet).
+    - Two player co-op mode (two players work together).
+    - Timed "fun" mode, where you have to score as much as you can (by
+      destroying blocks) within a certain amount of time.
+    - Semi-breakable blocks. Blocks which take several hits to smash.
+    - Power ups and extra items:
+      + "Condensed milk" - drains more slowly than normal milk - but only lasts
+        for about ten seconds.
+      + "TNT" - destroys all blocks on screen (except steel and milk) - doesn't
+        harm the player.
+    - Full compatability with real SMS hardware! That means sorting out all of
+      the VRAM timings and such.
+    - Clean up the code... Lots of things can be done better and more
+      efficiently.
+
+Depending on how much is changed and how long it takes, it may end up as
+"Digger Chan 2". :)
+
+
+
+Thanks
+======
+
+- The developers of all the great tools used in the creation of this game.
+- Bock for fixing a lot of the VRAM timings and giving good coding advice.
+- Maxim for his great tutorials on coding for the SMS.
+- Everyone at SMS Power! and the forums for their help and documentation.
+- Sega for creating the SMS.
+- Developers of "Mr Driller" for the idea behind this game.
+
+
+
+Contacting the author
+=====================
+
+Aypok can be contacted at aypok )AT( aypok )D0t( co }doT{ uk, via his website
+at http://www.aypok.co.uk/ or via IRC on the OdinNET network (irc.odinnet.ca).
+
+
+

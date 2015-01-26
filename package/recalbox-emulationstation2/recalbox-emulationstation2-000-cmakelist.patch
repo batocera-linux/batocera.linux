@@ -1,0 +1,12 @@
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -257,6 +257,8 @@
+     LIST(APPEND ES_LIBRARIES
+         bcm_host
+         EGL
++	vchostif
++	GLESv2
+         ${OPENGLES_LIBRARIES}
+     )
+ else()
+

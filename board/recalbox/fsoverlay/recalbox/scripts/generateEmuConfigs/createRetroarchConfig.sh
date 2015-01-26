@@ -1,0 +1,179 @@
+function createRetroarchConfig {
+    if [[ "$1" != "DEFAULT" ]];then
+        uuid="$1"
+	player="$2"
+
+        # Read xml of emulationstation
+        inputs=`xml sel -T -t -m "//*[@deviceGUID='$uuid']/*" -v "concat(@name,'|',  @type,'|', @id,'|', @value)" -n "$es_input"`
+
+        deviceName="$3"
+	#`xml sel -t -v "//*[@deviceGUID='$uuid']/@deviceName" -n < "$es_input"`
+        IFS=$'\n'
+
+
+	# Retroarch
+	# Files
+	configfile="${retroinputdir}/${deviceName}.cfg"
+
+
+	declare -A retroarchbtn
+	retroarchbtn['a']='a'
+	retroarchbtn['b']='b'
+	retroarchbtn['x']='x'
+	retroarchbtn['y']='y'
+	retroarchbtn['pageup']='l'
+	retroarchbtn['pagedown']='r'
+	retroarchbtn['start']='start'
+	retroarchbtn['select']='select'
+	#retroarchbtn['hotkey']='enable_hotkey'
+
+	declare -A retroarchdir
+	retroarchdir['up']='up'
+	retroarchdir['down']='down'
+	retroarchdir['left']='left'
+	retroarchdir['right']='right'
+
+	declare -A retroarchaxis
+	retroarchaxis['up']='y_minus'
+	retroarchaxis['down']='y_plus'
+	retroarchaxis['left']='x_minus'
+	retroarchaxis['right']='x_plus'
+
+        declare -A retroarchhat
+        retroarchhat['1']='up'
+        retroarchhat['2']='right'
+        retroarchhat['4']='down'
+        retroarchhat['8']='left'
+
+	declare -A retroarchspecials
+	retroarchspecials['x']='load_state'
+	retroarchspecials['y']='save_state'
+	retroarchspecials['pageup']='screenshot'
+	retroarchspecials['start']='menu_toggle'
+	retroarchspecials['select']='exit_emulator'
+
+	retroarchspecials['up']='state_slot_increase'
+	retroarchspecials['down']='state_slot_decrease'
+	retroarchspecials['left']='rewind'
+	retroarchspecials['right']='hold_fast_forward'
+
+	declare -A typetoname
+	typetoname['button']='btn'
+	typetoname['hat']='btn'
+	typetoname['axis']='axis'
+	typetoname['key']='key'
+
+
+
+	echo "input_device = \"$deviceName\"" > "$configfile"
+	#echo "input_player${player}_device = \"$deviceName\"" >> $retroarch_config
+
+	echo "input_driver = \"udev\"" >> "$configfile"
+	
+	axisjoypad="0"
+        for rawinput in $inputs; do
+                input=`echo $rawinput | cut -d '|' -f1`
+                type=`echo $rawinput | cut -d '|' -f2`
+                id=`echo $rawinput | cut -d '|' -f3`
+                value=`echo $rawinput | cut -d '|' -f4`
+		if [ "$type" == "axis" ]; then
+			if [[ "$value" == "-1" ]]; then
+				id="-$id"
+			else 
+				id="+$id"
+			fi
+		fi
+
+		if [[ ${retroarchbtn[$input]} ]]; then
+			echo "input_${retroarchbtn[$input]}_btn = $id" >> "$configfile"
+		fi
+
+		if [[ "$type" == "button" ]]; then
+			if [[ ${retroarchdir[$input]} ]]; then
+				echo "input_${retroarchdir[$input]}_${typetoname[$type]} = $id" >>  "$configfile"
+			fi
+		fi
+		if [[ "$type" == "axis" ]]; then
+			if [[ ${retroarchaxis[$input]} ]]; then
+				axisjoypad="1"
+				echo "input_l_${retroarchaxis[$input]}_axis = $id" >>  "$configfile"
+			fi
+		fi
+		if [[ "$type" == "hat" ]]; then
+			#checking if dir
+                        if [[ ${retroarchdir[$input]} ]]; then
+                                echo "input_${retroarchhat[$value]}_btn = h${id}${retroarchhat[$value]}" >>  "$configfile"
+                        fi
+                fi
+
+		if [[ ${retroarchspecials[$input]} ]];  then
+			echo "input_${retroarchspecials[$input]}_${typetoname[$type]} = $id" >>  "$configfile"
+		fi
+		if [[ $input == "hotkey" ]] && [ "$player" == "1" ]; then
+			sed -i "s/input_enable_hotkey.*/input_enable_hotkey_${typetoname[$type]} = $id/g" "$retroarch_config"
+		fi
+	done
+#	if [ "$axisjoypad" == "1" ]; then
+		#sed -i "s/input_player${player}_analog_dpad_mode.*//g" "$retroarch_config"
+#	fi
+	echo "Retroarch configuration ok "
+
+   fi
+}
+
+
+declare -A usedJoysticks
+
+function clearRetroarchJoypadIndexes {
+	sed -i "/input_player._joypad_index/d" "$retroarch_config"
+}
+
+function setRetroarchJoypadIndexes {
+	# 1 trouver les id a partir des noms
+	udev[1]="$1"
+	udev[2]="$3"
+	udev[3]="$5"
+	udev[4]="$7"
+	echo "setJoypadIndex Retroarch ----------------------------" >> ~/generateconfig.log
+	echo "	I have for player 1 : index=${udev[1]} for joystick $2" >> ~/generateconfig.log
+	echo "	I have for player 2 : index=${udev[2]} for joystick $4" >> ~/generateconfig.log
+	echo "	I have for player 3 : index=${udev[3]} for joystick $6" >> ~/generateconfig.log
+	echo "	I have for player 4 : index=${udev[4]} for joystick $8" >> ~/generateconfig.log
+        for joueur in {1..4}; do
+		if (( "${udev[$joueur]}" >= "0" ));then
+				echo "writing given config for player $joueur" >> ~/generateconfig.log
+			        echo "input_player${joueur}_joypad_index = ${udev[$joueur]}" >> "$retroarch_config" 
+				conf["${udev[$joueur]}"]=1
+		fi
+	done
+
+	echo "Finishing config" >> ~/generateconfig.log
+	for joueur in {1..4}; do
+		if [ "${udev[$joueur]}" == "-1" ]; then
+			echo "So it will be default configuration for player $joueur " >> ~/generateconfig.log
+			for pad in {0..10}; do
+				if [[ -z "${conf[$pad]}" ]];then
+					echo "pad $pad is free , writing in config" >> ~/generateconfig.log
+	                        	echo "input_player${joueur}_joypad_index = $pad" >> "$retroarch_config"
+					conf[$pad]=1
+					break
+				fi
+			done
+		fi
+	done
+
+}
+
+function setRetroarchSmooth {
+	settingsSmooth=`cat "$es_settings" | sed -n 's/.*name="Smooth" value="\(.*\)".*/\1/p'`
+       	if [ "$settingsSmooth" == "" ];then
+               	settingsSmooth="true"
+        fi
+        if [ "$settingsSmooth" == "false" ];then
+                sed -i "s/#\?video_smooth =.*/video_smooth = false/g" "$retroarch_config"
+        fi
+        if [ "$settingsSmooth" == "true" ];then
+                sed -i "s/#\?video_smooth =.*/video_smooth = true/g" "$retroarch_config"
+        fi
+
+}

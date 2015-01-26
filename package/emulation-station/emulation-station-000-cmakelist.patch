@@ -1,0 +1,21 @@
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -257,6 +257,8 @@
+     LIST(APPEND ES_LIBRARIES
+         bcm_host
+         EGL
++	vchostif
++	GLESv2
+         ${OPENGLES_LIBRARIES}
+     )
+ else()
+@@ -288,6 +290,9 @@
+ add_executable(emulationstation ${ES_SOURCES} ${ES_HEADERS})
+ target_link_libraries(emulationstation ${ES_LIBRARIES})
+ 
++#add install target
++install(TARGETS emulationstation DESTINATION bin)
++
+ #special properties for windows builds
+ if(MSVC)
+     #show console in debug builds, but not in proper release builds

@@ -1,0 +1,13 @@
+config BR2_PACKAGE_LIBRETRO_PICODRIVE
+        bool "libretro-picodrive"
+	depends on BR2_PACKAGE_RETROARCH
+	depends on BR2_INSTALL_LIBSTDCPP
+	depends on BR2_PACKAGE_LIBPNG
+	depends on BR2_PACKAGE_SDL
+        help
+          A libretro Megadrive SMS emulator core for ARM.
+
+	  http://www.libretro.com
+
+comment "Picodrive needs a toolchain w/ C++"
+	depends on !BR2_INSTALL_LIBSTDCPP && !BR2_PACKAGE_LIBPNG

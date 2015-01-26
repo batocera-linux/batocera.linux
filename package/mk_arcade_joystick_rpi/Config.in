@@ -1,0 +1,8 @@
+config BR2_PACKAGE_MK_ARCADE_JOYSTICK_RPI
+	bool "mk_arcade_joystick_rpi GPIO Kernel Module"
+	depends on BR2_LINUX_KERNEL
+	help
+	  Kernel module to support joystick on rpi gpios
+
+comment "mk_arcade_joystick_rpi needs a kernel and headers"
+	depends on !BR2_LINUX_KERNEL

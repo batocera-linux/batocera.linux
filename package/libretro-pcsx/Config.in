@@ -1,0 +1,11 @@
+config BR2_PACKAGE_LIBRETRO_PCSX
+        bool "libretro-pcsx"
+	depends on BR2_PACKAGE_RETROARCH
+	depends on BR2_INSTALL_LIBSTDCPP
+        help
+          A libretro psx emulator core for ARM.
+
+	  http://www.libretro.com
+
+comment "LIBRETRO_PCSX needs a toolchain w/ C++"
+	depends on !BR2_INSTALL_LIBSTDCPP

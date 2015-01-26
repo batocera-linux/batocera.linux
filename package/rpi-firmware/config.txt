@@ -1,14 +1,32 @@
-# Please note that this is only a sample, we recommend you to change it to fit
-# your needs.
-# You should override this file using a post-build script.
-# See http://buildroot.org/downloads/manual/manual.html#rootfs-custom
-# and http://elinux.org/RPiconfig for a description of config.txt syntax
+# uncomment if you get no picture on HDMI for a default "safe" mode
+#hdmi_safe=1
 
-arm_freq=700
-core_freq=250
-kernel=zImage
 disable_overscan=1
-gpu_mem_256=100
-gpu_mem_512=100
-sdram_freq=400
-over_voltage=0
+
+# uncomment to force a specific HDMI mode (this will force VGA)
+#hdmi_group=1
+#hdmi_mode=1
+
+# comment to get jack audio
+hdmi_drive=2
+
+
+config_hdmi_boost=0
+hdmi_force_hotplug=0
+
+# uncomment for composite PAL
+#sdtv_mode=2
+
+# Overclock
+arm_freq=1100
+core_freq=550
+sdram_freq=600
+force_turbo=1
+over_voltage=8
+over_voltage_sdram=6
+
+gpu_mem=256
+avoid_safe_mode=1
+
+
+kernel=zImage
