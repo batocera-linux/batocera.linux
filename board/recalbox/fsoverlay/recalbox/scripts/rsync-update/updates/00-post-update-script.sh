@@ -19,6 +19,6 @@ function startUpdate {
 	fi
 }
 
-#startUpdate "08" "/retrobox/scripts/rsync-update/updates/08-remove-udev-retroarch-rule.sh"
+startUpdate "01" "/recalbox/scripts/rsync-update/updates/01-replace-es-settings.sh"
 
 exit 0

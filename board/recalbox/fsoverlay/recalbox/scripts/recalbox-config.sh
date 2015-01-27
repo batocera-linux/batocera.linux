@@ -6,9 +6,9 @@ fi
 configFile="/boot/config.txt"
 command="$1"
 mode="$2"
-log=/root/recallbox.log
+log=/root/recalbox.log
 
-echo "---- recallbox-config.sh ----" >> $log
+echo "---- recalbox-config.sh ----" >> $log
 
 if [ "$command" == "overscan" ]; then
 if [ -f "$configFile" ];then

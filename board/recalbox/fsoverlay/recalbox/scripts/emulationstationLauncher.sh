@@ -3,7 +3,7 @@
 es_settings="/root/.emulationstation/es_settings.cfg"
 config_script=/recalbox/scripts/recalbox-config.sh
 log=/root/recalbox.log
-
+echo "starting new log" > $log
 settingsLang=`cat "$es_settings" | sed -n 's/.*name="Lang" value="\(.*\)".*/\1/p'`
 if [ "$settingsLang" == "" ];then
 	settingsLang="en_US"
