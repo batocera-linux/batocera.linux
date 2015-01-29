@@ -14,27 +14,7 @@ ratiomap[pacman.zip]="7:9"
 ratiomap[starw.zip]="7:9"
 ratiomap[zaxxon.zip]="8:7"
 
-declare -A buttonsMap
-buttonsMap[sf2.zip]="6"
-buttonsMap[dstlk.zip]="6"
-buttonsMap[hsf2j.zip]="6"
-buttonsMap[msh.zip]="6"
-buttonsMap[mshvsf.zip]="6"
-buttonsMap[mvscu.zip]="6"
-buttonsMap[nwarr.zip]="6"
-buttonsMap[sf2cej.zip]="6"
-buttonsMap[sfz2j.zip]="6"
-buttonsMap[sfz3j.zip]="6"
-buttonsMap[sfzj.zip]="6"
-buttonsMap[ssf2tb.zip]="6"
-buttonsMap[ssf2t.zip]="6"
-buttonsMap[ssf2xj.zip]="6"
-buttonsMap[ssf2.zip]="6"
-buttonsMap[vsav2.zip]="6"
-buttonsMap[vsav.zip]="6"
-buttonsMap[vhunt2.zip]="6"
-buttonsMap[xmvsf.zip]="6"
-buttonsMap[xmcota.zip]="6"
+sixBTNgames=(sfa sfz sf2 dstlk hsf2 msh mshvsf mvsc nwarr ssf2 vsav vhunt xmvsf xmcota)
 
 emulator="$2"
 
@@ -136,10 +116,20 @@ if [[ "$emulator" == "imame" ]]; then
 	fi
 fi
 
+
 if [[ "$emulator" == "fba" ]]; then
-        if [[ -n ${buttonsMap[$filename]} ]]; then
+        runsix=0
+        for game in ${sixBTNgames[*]}; do
+                echo "checking if $filename is like $game "
+                if [[ "$filename" =~ ^$game.* ]]; then
+                        runsix=1
+                        break
+                fi
+        done
+        if [[ "$runsix" == "1" ]]; then
                 /recalbox/scripts/runcommand.sh 4 "fba2x --configfile /recalbox/configs/fba/fba2x6btn.cfg \"$1\""
         else
                 /recalbox/scripts/runcommand.sh 4 "fba2x --configfile /recalbox/configs/fba/fba2x.cfg \"$1\""
-	fi
+        fi
+
 fi
