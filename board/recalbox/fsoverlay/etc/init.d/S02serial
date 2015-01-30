@@ -1,0 +1,16 @@
+#!/bin/bash
+case "$1" in
+  start)
+	if [[ ! -f /root/serial.txt ]]; then
+		cat /proc/cpuinfo | grep "Serial" > /root/serial.txt
+	fi
+	;;
+  stop)
+	;;
+  restart|reload)
+	;;
+  *)
+esac
+
+exit $?
+
