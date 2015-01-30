@@ -1,6 +1,7 @@
 echo -e "\nUPDATE LOG - `date`\n" >> /root/updates.log
 
 source /recalbox/scripts/rsync-update/rsync-password.sh
+echo "begin update" > /root/updates.log
 
 if (($? != 0)); then
 	echo "error : UNABLE TO GET PASSWORD FROM /recalbox/scripts/rsync-update/rsync-password.sh" >> /root/updates.log
