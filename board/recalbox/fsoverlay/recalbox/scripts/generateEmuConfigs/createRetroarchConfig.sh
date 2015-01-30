@@ -49,8 +49,8 @@ function createRetroarchConfig {
 	retroarchspecials['x']='load_state'
 	retroarchspecials['y']='save_state'
 	retroarchspecials['pageup']='screenshot'
-	retroarchspecials['start']='menu_toggle'
-	retroarchspecials['select']='exit_emulator'
+	retroarchspecials['b']='menu_toggle'
+	retroarchspecials['start']='exit_emulator'
 
 	retroarchspecials['up']='state_slot_increase'
 	retroarchspecials['down']='state_slot_decrease'
