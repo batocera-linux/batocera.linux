@@ -3,7 +3,9 @@
     <include>./../simple.xml</include>
 
 	<view name="system">
-		
+                <sound name="bgsound">
+                        <path>./sounds/system.ogg</path>
+                </sound>		
 		<image name="background" extra="true">
 			<path>./art/msx_art_blur.jpg</path>
 		</image>
