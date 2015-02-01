@@ -1,3 +1,5 @@
+#!/bin/bash
+
 echo -e "\nUPDATE LOG - `date`\n" >> /root/updates.log
 
 source /recalbox/scripts/rsync-update/rsync-password.sh
