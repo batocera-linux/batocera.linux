@@ -19,6 +19,6 @@ function startUpdate {
 	fi
 }
 
-startUpdate "01" "/recalbox/scripts/rsync-update/updates/01-replace-es-settings.sh"
+#startUpdate "01" "/recalbox/scripts/rsync-update/updates/01-replace-es-settings.sh"
 
 exit 0
