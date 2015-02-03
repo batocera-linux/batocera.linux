@@ -5,7 +5,7 @@
 
 case "$1" in
   start)
-	/bin/echo /root/checketh.sh > /proc/sys/kernel/hotplug
+	/bin/echo /usr/bin/checketh.sh > /proc/sys/kernel/hotplug
 	;;
   stop)
 	;;
