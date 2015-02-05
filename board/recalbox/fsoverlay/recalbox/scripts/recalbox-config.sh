@@ -1,6 +1,7 @@
 #!/bin/bash
 
-if [ ! "$1" ] || [ ! "$2" ];then
+if [ ! "$1" ];then
+	echo -e "usage : recalbox-config.sh [command] [args]\nWith command in\n\toverscan [enable|disable]\n\toverclock [none|high|turbo|extrem]\n\taudio [hdmi|jack|auto]\n\tcanupdate\n\tupdate"
 	exit 1
 fi
 configFile="/boot/config.txt"
@@ -130,14 +131,34 @@ if [ "$command" == "audio" ];then
 		cmdVal="1"
 	fi
         echo "setting audio output mode : $mode" >> $log
-	amixer cset numid=3 $cmdVal
+	amixer cset numid=3 $cmdVal || exit 1
+	exit 0
 fi
 
 if [ "$command" == "gpiocontrollers" ];then
 	# remove in all cases
-	rmmod /lib/modules/`uname -r`/extra/mk_arcade_joystick_rpi.ko
+	rmmod /lib/modules/`uname -r`/extra/mk_arcade_joystick_rpi.ko 
         if [ "$mode" == "enable" ];then
 	        echo "setting gpio controller to  : $mode" >> $log
-		insmod /lib/modules/`uname -r`/extra/mk_arcade_joystick_rpi.ko map=1,2
+		insmod /lib/modules/`uname -r`/extra/mk_arcade_joystick_rpi.ko map=1,2 || exit 1
         fi
+	exit 0
 fi
+
+if [ "$command" == "canupdate" ];then
+	available=`wget -qO- http://archive2.recalbox.com/system/root/recalbox/recalbox.version`
+	installed=`cat /recalbox/recalbox.version`
+	if [[ "$available" != "$installed" ]]; then
+		echo "update available"
+		exit 0
+	fi
+	echo "no update available"
+	exit 12
+fi
+
+if [ "$command" == "update" ];then
+	/recalbox/scripts/rsync-update/rsync-update.sh
+	exit $?
+fi
+
+exit 10

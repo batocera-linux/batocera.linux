@@ -1,8 +1,8 @@
 #!/bin/bash
 echo -e "info : Launching post update scripts\n"
-touch "/root/updates.done"
+touch "/root/update-scripts.done"
 
-updatesDones=`cat "/root/updates.done"`
+updatesDones=`cat "/root/update-scripts.done"`
 function startUpdate {
 	num="$1"
 	script="$2"
@@ -14,7 +14,7 @@ function startUpdate {
           	      echo "error : error occured with $script"
                 	exit "$num"
         	else
-                	echo "$num" >> "/root/updates.done"
+                	echo "$num" >> "/root/update-scripts.done"
         	fi
 	fi
 }
