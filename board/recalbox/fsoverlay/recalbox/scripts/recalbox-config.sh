@@ -135,6 +135,15 @@ if [ "$command" == "audio" ];then
 	exit 0
 fi
 
+if [ "$command" == "volume" ];then
+	if [ "$mode" != "" ];then
+        	echo "setting audio volume : $mode" >> $log
+		amixer cset numid=3 "${mode}%" || exit 1
+		exit 0
+	fi
+	exit 12
+fi
+
 if [ "$command" == "gpiocontrollers" ];then
 	# remove in all cases
 	rmmod /lib/modules/`uname -r`/extra/mk_arcade_joystick_rpi.ko 
@@ -147,6 +156,9 @@ fi
 
 if [ "$command" == "canupdate" ];then
 	available=`wget -qO- http://archive2.recalbox.com/system/root/recalbox/recalbox.version`
+	if [[ "$?" != "0" ]];then
+		exit 2
+	fi
 	installed=`cat /recalbox/recalbox.version`
 	if [[ "$available" != "$installed" ]]; then
 		echo "update available"
