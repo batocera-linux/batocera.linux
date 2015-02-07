@@ -155,7 +155,7 @@ if [ "$command" == "gpiocontrollers" ];then
 fi
 
 if [ "$command" == "canupdate" ];then
-	available=`wget -qO- http://archive2.recalbox.com/system/root/recalbox/recalbox.version`
+	available=`wget -qO- http://archive2.recalbox.com/recalbox/root/recalbox/recalbox.version`
 	if [[ "$?" != "0" ]];then
 		exit 2
 	fi
