@@ -89,6 +89,10 @@ if [[ "$emulator" == "segacd" ]]; then
 	/recalbox/scripts/runcommand.sh 4 "$retroarchbin -L $retroarchcores/picodrive_libretro.so --config /recalbox/configs/retroarch/retroarchcustom.cfg \"$1\""
 fi
 
+if [[ "$emulator" == "sega32x" ]]; then
+	/recalbox/scripts/runcommand.sh 4 "$retroarchbin -L $retroarchcores/picodrive_libretro.so --config /recalbox/configs/retroarch/retroarchcustom.cfg \"$1\""
+fi
+
 if [[ "$emulator" == "atari2600" ]]; then
 	/recalbox/scripts/runcommand.sh 4 "$retroarchbin -L $retroarchcores/stella_libretro.so --config /recalbox/configs/retroarch/retroarchcustom.cfg \"$1\""
 fi

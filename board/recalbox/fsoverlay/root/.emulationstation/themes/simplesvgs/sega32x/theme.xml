@@ -3,7 +3,9 @@
     <include>./../simple.xml</include>
 
 	<view name="system">
-
+ 		<sound name="bgsound">
+                        <path>./sounds/system.ogg</path>
+                </sound>
 		<image name="background" extra="true">
 			<path>./art/32x_art_blur.jpg</path>
 		</image>
@@ -19,7 +21,9 @@
 	</view>
 
 	<view name="basic, detailed">
-	
+		<image name="background">
+                        <path>./art/snes_art_blur.jpg</path>
+                </image>
 		<text name="system_name_1" extra="true">
 			<text>SEGA</text>
 			<forceUppercase>1</forceUppercase>
