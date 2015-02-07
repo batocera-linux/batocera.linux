@@ -13,8 +13,6 @@ MATCHBOX_PANEL_LICENSE_FILES = COPYING
 MATCHBOX_PANEL_DEPENDENCIES = matchbox-lib
 MATCHBOX_PANEL_CONF_OPTS = --enable-expat
 
-################################################################################
-
 ifeq ($(BR2_PACKAGE_STARTUP_NOTIFICATION),y)
 MATCHBOX_PANEL_CONF_OPTS += --enable-startup-notification
 MATCHBOX_PANEL_DEPENDENCIES += startup-notification matchbox-startup-monitor
@@ -22,6 +20,8 @@ else
 MATCHBOX_PANEL_CONF_OPTS += --disable-startup-notification
 endif
 
-################################################################################
+ifeq ($(BR2_PACKAGE_WIRELESS_TOOLS),y)
+MATCHBOX_PANEL_DEPENDENCIES += wireless_tools
+endif
 
 $(eval $(autotools-package))

@@ -4,8 +4,8 @@
 #
 ################################################################################
 
-SQUID_VERSION_MAJOR = 3.4
-SQUID_VERSION = $(SQUID_VERSION_MAJOR).11
+SQUID_VERSION_MAJOR = 3.5
+SQUID_VERSION = $(SQUID_VERSION_MAJOR).1
 SQUID_SOURCE = squid-$(SQUID_VERSION).tar.xz
 SQUID_SITE = http://www.squid-cache.org/Versions/v3/$(SQUID_VERSION_MAJOR)
 SQUID_LICENSE = GPLv2+
@@ -21,8 +21,8 @@ SQUID_CONF_ENV = \
 	ac_cv_func___va_copy=yes \
 	ac_cv_func_strnstr=no \
 	ac_cv_have_squid=yes \
-	ACLOCAL="$(ACLOCAL)" \
-	AUTOMAKE="$(AUTOMAKE)"
+	BUILXCXX="$(HOSTCXX)" \
+	BUILDCXXFLAGS="$(HOST_CXXFLAGS)"
 SQUID_CONF_OPTS = \
 	--enable-async-io=8 \
 	--enable-linux-netfilter \
