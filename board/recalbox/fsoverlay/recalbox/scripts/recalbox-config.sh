@@ -138,7 +138,7 @@ fi
 if [ "$command" == "volume" ];then
 	if [ "$mode" != "" ];then
         	echo "setting audio volume : $mode" >> $log
-		amixer cset numid=3 "${mode}%" || exit 1
+		amixer set PCM -- ${mode}% || exit 1
 		exit 0
 	fi
 	exit 12
