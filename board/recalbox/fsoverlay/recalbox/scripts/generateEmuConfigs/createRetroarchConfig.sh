@@ -1,21 +1,3 @@
-function createRetroarchConfig {
-    if [[ "$1" != "DEFAULT" ]];then
-        uuid="$1"
-	player="$2"
-
-        # Read xml of emulationstation
-        inputs=`xml sel -T -t -m "//*[@deviceGUID='$uuid']/*" -v "concat(@name,'|',  @type,'|', @id,'|', @value)" -n "$es_input"`
-
-        deviceName="$3"
-	#`xml sel -t -v "//*[@deviceGUID='$uuid']/@deviceName" -n < "$es_input"`
-        IFS=$'\n'
-
-
-	# Retroarch
-	# Files
-	configfile="${retroinputdir}/${deviceName}.cfg"
-
-
 	declare -A retroarchbtn
 	retroarchbtn['a']='a'
 	retroarchbtn['b']='b'
@@ -63,7 +45,22 @@ function createRetroarchConfig {
 	typetoname['axis']='axis'
 	typetoname['key']='key'
 
+function createRetroarchConfig {
+    if [[ "$1" != "DEFAULT" ]];then
+        uuid="$1"
+	player="$2"
 
+        # Read xml of emulationstation
+        inputs=`xml sel -T -t -m "//*[@deviceGUID='$uuid']/*" -v "concat(@name,'|',  @type,'|', @id,'|', @value)" -n "$es_input"`
+
+        deviceName="$3"
+	#`xml sel -t -v "//*[@deviceGUID='$uuid']/@deviceName" -n < "$es_input"`
+        IFS=$'\n'
+
+
+	# Retroarch
+	# Files
+	configfile="${retroinputdir}/${deviceName}.cfg"
 
 	echo "input_device = \"$deviceName\"" > "$configfile"
 	#echo "input_player${player}_device = \"$deviceName\"" >> $retroarch_config
@@ -176,4 +173,17 @@ function setRetroarchSmooth {
                 sed -i "s/#\?video_smooth =.*/video_smooth = true/g" "$retroarch_config"
         fi
 
+}
+
+function switchHotkeyiMame {
+
+        uuid="$1"
+        hotkey=`xml sel -T -t -m "//*[@deviceGUID='$uuid']/*[@name='hotkey']" -v "@id" -n "$es_input"` || exit 1
+        select=`xml sel -T -t -m "//*[@deviceGUID='$uuid']/*[@name='select']" -v "@id" -n "$es_input"` || exit 1
+
+        if [[ "$hotkey" == "$select" ]]; then
+                r1=`xml sel -T -t -m "//*[@deviceGUID='$uuid']/*[@name='pagedown']" -v "@id" -n "$es_input"`
+                r1type=`xml sel -T -t -m "//*[@deviceGUID='$uuid']/*[@name='pagedown']" -v "@type" -n "$es_input"`
+                sed -i "s/input_enable_hotkey.*/input_enable_hotkey_${typetoname[$r1type]} = $r1/g" "$retroarch_config"
+        fi
 }
