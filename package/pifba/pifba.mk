@@ -31,7 +31,7 @@ PIFBA_INCLUDES=-I$(STAGING_DIR)/usr/include -I$(STAGING_DIR)/usr/include/interfa
 		-I$(@D)/cpu/z80 -I$(@D)/cpu/cz80 -I$(@D)/cpu/nec -I$(@D)/cpu/sh2 -I$(@D)/burn/misc 
 
 define PIFBA_BUILD_CMDS
-        CFLAGS="$(TARGET_CFLAGS)" CXXFLAGS="$(TARGET_CXXFLAGS)" $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" \
+        $(MAKE) CFLAGS="$(PIFBA_CFLAGS)" CXXFLAGS="$(PIFBA_CXXFLAGS)" CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" \
 	INCPATH="$(PIFBA_INCLUDES)" LINK="$(TARGET_CXX)" LIBS="$(PIFBA_LIBS)" \
 	-C $(@D)
 endef

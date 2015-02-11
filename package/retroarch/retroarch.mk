@@ -3,18 +3,23 @@
 # retroarch
 #
 ################################################################################
-RETROARCH_VERSION = 2755abc14fe25b9f32e145dcf6ec5c9569640eb8
+#RETROARCH_VERSION = 2755abc14fe25b9f32e145dcf6ec5c9569640eb8
+RETROARCH_VERSION = master
 RETROARCH_SITE = https://github.com/libretro/RetroArch.git
 RETROARCH_SITE_METHOD = git
 RETROARCH_LICENSE = GPLv3+
-RETROARCH_CONF_OPTS += --disable-netplay --disable-oss --disable-bsv_movie
+RETROARCH_CONF_OPTS += --disable-oss --enable-gles --enable-floathard --enable-networking --enable-netplay
 RETROARCH_DEPENDENCIES = host-pkgconf
 
-ifeq ($(BR2_PACKAGE_SDL),y)
-RETROARCH_CONF_OPTS += --enable-sdl
-RETROARCH_DEPENDENCIES += sdl
+ifeq ($(BR2_ARM_FPU_NEON_VFPV4),y)
+        RETROARCH_CONF_OPTS += --enable-neon
+endif
+
+ifeq ($(BR2_PACKAGE_SDL2),y)
+RETROARCH_CONF_OPTS += --enable-sdl2
+RETROARCH_DEPENDENCIES += sdl2
 else
-RETROARCH_CONF_OPTS += --disable-sdl
+RETROARCH_CONF_OPTS += --disable-sdl2
 endif
 
 ifeq ($(BR2_PACKAGE_PYTHON3),y)
@@ -94,7 +99,7 @@ define RETROARCH_CONFIGURE_CMDS
 		$(TARGET_CONFIGURE_OPTS) \
 		CFLAGS="$(TARGET_CFLAGS)" \
 		LDFLAGS="$(TARGET_LDFLAGS) -lc" \
-		CROSS_COMPILE="jarrrrr" \
+		CROSS_COMPILE="$(HOST_DIR)/usr/bin/" \
 		./configure \
 		--prefix=/usr \
 		$(RETROARCH_CONF_OPTS) \
