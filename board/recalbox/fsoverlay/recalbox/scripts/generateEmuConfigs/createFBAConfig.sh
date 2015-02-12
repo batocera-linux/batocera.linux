@@ -138,5 +138,6 @@ function setFBASmooth {
 	fi
 	if [ "$settingsSmooth" == "false" ];then
 		sed -i "s/DisplaySmoothStretch=.*/DisplaySmoothStretch=0/g" "$fba_config"
+		sed -i "s/DisplaySmoothStretch=.*/DisplaySmoothStretch=0/g" "$fba_config_6btn"
 	fi
 }
