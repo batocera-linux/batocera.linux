@@ -1,0 +1,15 @@
+--- a/Makefile	2015-02-01 22:22:18.000000000 +0100
++++ b/Makefile	2015-02-08 20:03:46.213197146 +0100
+@@ -232,9 +232,8 @@
+ 		ASFLAGS += -mfloat-abi=hard
+ 	endif
+ 	# Disable dynarec for now, issue 11
+-	#HAVE_DYNAREC := 1
+-	#CFLAGS += -DARM -DARM_ARCH -DARM_MEMORY_DYNAREC
+-	CFLAGS += -DARM -DARM_ARCH
++	HAVE_DYNAREC := 1
++	CFLAGS += -DARM -DARM_ARCH -DARM_MEMORY_DYNAREC
+ 	LDFLAGS := -Wl,--no-undefined	
+ 
+ # emscripten
+
