@@ -4,22 +4,37 @@
 #
 ################################################################################
 #RETROARCH_VERSION = 2755abc14fe25b9f32e145dcf6ec5c9569640eb8
-RETROARCH_VERSION = master
+
+ifeq ($(BR2_PACKAGE_RETROARCH_RPI1),y)
+	RETROARCH_VERSION = 2755abc14fe25b9f32e145dcf6ec5c9569640eb8
+else
+	RETROARCH_VERSION = master
+endif
+
 RETROARCH_SITE = https://github.com/libretro/RetroArch.git
 RETROARCH_SITE_METHOD = git
 RETROARCH_LICENSE = GPLv3+
-RETROARCH_CONF_OPTS += --disable-oss --enable-gles --enable-floathard --enable-networking --enable-netplay
+RETROARCH_CONF_OPTS += --disable-oss --enable-floathard 
 RETROARCH_DEPENDENCIES = host-pkgconf
 
 ifeq ($(BR2_ARM_FPU_NEON_VFPV4),y)
-        RETROARCH_CONF_OPTS += --enable-neon
+        RETROARCH_CONF_OPTS += --enable-neon --enable-networking --enable-netplay
 endif
 
-ifeq ($(BR2_PACKAGE_SDL2),y)
-RETROARCH_CONF_OPTS += --enable-sdl2
-RETROARCH_DEPENDENCIES += sdl2
-else
-RETROARCH_CONF_OPTS += --disable-sdl2
+ifeq ($(BR2_PACKAGE_RETROARCH_RPI1),y)
+	ifeq ($(BR2_PACKAGE_SDL),y)
+		RETROARCH_CONF_OPTS += --enable-sdl
+		RETROARCH_DEPENDENCIES += sdl
+	else
+		RETROARCH_CONF_OPTS += --disable-sdl
+	endif
+else 
+	ifeq ($(BR2_PACKAGE_SDL2),y)
+		RETROARCH_CONF_OPTS += --enable-sdl2
+		RETROARCH_DEPENDENCIES += sdl2
+	else
+		RETROARCH_CONF_OPTS += --disable-sdl2
+	endif
 endif
 
 ifeq ($(BR2_PACKAGE_PYTHON3),y)
