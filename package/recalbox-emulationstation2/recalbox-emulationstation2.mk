@@ -3,7 +3,14 @@
 # Emulation Station 2 - recalbox version https://github.com/digitalLumberjack/recalbox-emulationstation
 #
 ################################################################################
-RECALBOX_EMULATIONSTATION2_VERSION = recalbox-buildroot
+ifeq ($(BR2_PACKAGE_RECALBOX_EMULATIONSTATION2_RPI2),y)
+	RECALBOX_EMULATIONSTATION2_VERSION = recalbox-buildroot-rpi2
+else ifeq ($(BR2_PACKAGE_RECALBOX_EMULATIONSTATION2_ARCADE),y)
+        RECALBOX_EMULATIONSTATION2_VERSION = recalbox-buildroot-arcade
+else 
+        RECALBOX_EMULATIONSTATION2_VERSION = recalbox-buildroot
+endif
+
 RECALBOX_EMULATIONSTATION2_SITE = $(call github,digitallumberjack,recalbox-emulationstation,$(RECALBOX_EMULATIONSTATION2_VERSION))
 
 RECALBOX_EMULATIONSTATION2_LICENSE = MIT
