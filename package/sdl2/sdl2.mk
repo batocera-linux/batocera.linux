@@ -87,7 +87,7 @@ define SDL2_FIXUP_SDL2_CONFIG
 endef
 
 define SDL2_REMOVE_SDL2_CONFIG
-	rm $(TARGET_DIR)/usr/bin/sdl2-config
+	mv $(TARGET_DIR)/usr/bin/sdl2-config $(HOST_DIR)/usr/bin
 endef
 
 SDL2_POST_INSTALL_TARGET_HOOKS += SDL2_REMOVE_SDL2_CONFIG
