@@ -1,16 +1,17 @@
 ################################################################################
 #
-# mupen64plus video rice
+# mupen64plus rsp-hle
 #
 ################################################################################
 
-MUPEN64PLUS_RICE_VERSION = master
-MUPEN64PLUS_RICE_SITE = $(call github,gizmo98,mupen64plus-video-rice,$(MUPEN64PLUS_RICE_VERSION))
-MUPEN64PLUS_RICE_LICENSE = MIT
-MUPEN64PLUS_RICE_DEPENDENCIES = sdl2 alsa-lib rpi-userland mupen64plus-core
-MUPEN64PLUS_RICE_INSTALL_STAGING = YES
+MUPEN64PLUS_RSPHLE_VERSION = master
+MUPEN64PLUS_RSPHLE_SITE = $(call github,mupen64plus,mupen64plus-rsp-hle,$(MUPEN64PLUS_RSPHLE_VERSION))
+MUPEN64PLUS_RSPHLE_LICENSE = MIT
+MUPEN64PLUS_RSPHLE_DEPENDENCIES = sdl2 alsa-lib rpi-userland mupen64plus-core
+MUPEN64PLUS_RSPHLE_INSTALL_STAGING = YES
 
-define MUPEN64PLUS_RICE_BUILD_CMDS
+
+define MUPEN64PLUS_RSPHLE_BUILD_CMDS
         CFLAGS="$(TARGET_CFLAGS)" CXXFLAGS="$(TARGET_CXXFLAGS)" \
         $(MAKE)  CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" LD="$(TARGET_LD)" RANLIB="$(TARGET_RANLIB)" AR="$(TARGET_AR)" CROSS_COMPILE="$(STAGING_DIR)/usr/bin/" \
 	PREFIX="$(STAGING_DIR)/usr" \
@@ -22,7 +23,7 @@ define MUPEN64PLUS_RICE_BUILD_CMDS
 	-C $(@D)/projects/unix all $(MUPEN64PLUS_PARAMS) OPTFLAGS="$(TARGET_CXXFLAGS)" 
 endef
 
-define MUPEN64PLUS_RICE_INSTALL_TARGET_CMDS
+define MUPEN64PLUS_RSPHLE_INSTALL_TARGET_CMDS
         CFLAGS="$(TARGET_CFLAGS)" CXXFLAGS="$(TARGET_CXXFLAGS)" \
         $(MAKE)  CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" LD="$(TARGET_LD)" RANLIB="$(TARGET_RANLIB)" AR="$(TARGET_AR)" CROSS_COMPILE="$(STAGING_DIR)/usr/bin/" \
 	PREFIX="$(TARGET_DIR)/usr/" \
@@ -36,11 +37,11 @@ define MUPEN64PLUS_RICE_INSTALL_TARGET_CMDS
 	-C $(@D)/projects/unix all $(MUPEN64PLUS_PARAMS) OPTFLAGS="$(TARGET_CXXFLAGS)" install
 endef
 
-define MUPEN64PLUS_RICE_CROSS_FIXUP
+define MUPEN64PLUS_RSPHLE_CROSS_FIXUP
         $(SED) 's|/opt/vc/include|$(STAGING_DIR)/usr/include|g' $(@D)/projects/unix/Makefile
         $(SED) 's|/opt/vc/lib|$(STAGING_DIR)/usr/lib|g' $(@D)/projects/unix/Makefile
 endef
 
-MUPEN64PLUS_RICE_PRE_CONFIGURE_HOOKS += MUPEN64PLUS_RICE_CROSS_FIXUP
+MUPEN64PLUS_RSPHLE_PRE_CONFIGURE_HOOKS += MUPEN64PLUS_RSPHLE_CROSS_FIXUP
 
 $(eval $(generic-package))
