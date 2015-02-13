@@ -130,3 +130,20 @@ define RETROARCH_INSTALL_TARGET_CMDS
 endef
 
 $(eval $(generic-package))
+
+LIBRETRO_PLATFORM =
+ifeq ($(BR2_ARM_CPU_ARMV6),y)
+        LIBRETRO_PLATFORM += armv6
+endif
+
+ifeq ($(BR2_cortex_a7),y)
+        LIBRETRO_PLATFORM += armv7
+endif
+
+ifeq ($(BR2_GCC_TARGET_FLOAT_ABI),"hard")
+        LIBRETRO_PLATFORM += hardfloat
+endif
+
+ifeq ($(BR2_ARM_CPU_HAS_NEON),y)
+        LIBRETRO_PLATFORM += neon
+endif

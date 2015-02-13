@@ -7,23 +7,6 @@ LIBRETRO_PICODRIVE_VERSION = master
 LIBRETRO_PICODRIVE_SITE = $(call github,libretro,picodrive,$(LIBRETRO_PICODRIVE_VERSION))
 LIBRETRO_PICODRIVE_DEPENDENCIES = libpng sdl
 
-PLATFORM =
-ifeq ($(BR2_ARM_CPU_ARMV6),y)
-        PLATFORM = armv6
-endif
-
-ifeq ($(BR2_cortex_a7),y)
-        PLATFORM = armv7
-endif
-
-ifeq ($(BR2_GCC_TARGET_FLOAT_ABI),hard)
-        PLATFORM += hardfloat
-endif
-
-ifeq ($(BR2_ARM_CPU_HAS_NEON),y)
-        PLATFORM += neon
-endif
-
 define LIBRETRO_PICODRIVE_CONFIGURE_CMDS
 	rm -rf $(@D)/picodrive
 	git -C $(@D) clone https://github.com/libretro/picodrive
@@ -37,7 +20,7 @@ endef
 
 define LIBRETRO_PICODRIVE_BUILD_CMDS
 	$(MAKE) -C $(@D)/picodrive/cpu/cyclone CONFIG_FILE=$(@D)/picodrive/cpu/cyclone_config.h	
-	CFLAGS="$(TARGET_CFLAGS)" CXXFLAGS="$(TARGET_CXXFLAGS)" $(MAKE) CC="$(TARGET_CC)" CXX="$(TARGET_CXX)" -C  $(@D)/picodrive -f Makefile.libretro platform="$(PLATFORM) armasm"
+	CFLAGS="$(TARGET_CFLAGS)" CXXFLAGS="$(TARGET_CXXFLAGS)" $(MAKE) CC="$(TARGET_CC)" CXX="$(TARGET_CXX)" -C  $(@D)/picodrive -f Makefile.libretro platform="$(LIBRETRO_PLATFORM) armasm"
 endef
 
 define LIBRETRO_PICODRIVE_INSTALL_TARGET_CMDS
