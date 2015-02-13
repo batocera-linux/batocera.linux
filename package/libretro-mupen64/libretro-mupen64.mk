@@ -7,16 +7,20 @@ LIBRETRO_MUPEN64_VERSION = master
 LIBRETRO_MUPEN64_SITE = $(call github,libretro,mupen64plus-libretro,master)
 LIBRETRO_MUPEN64_DEPENDENCIES = rpi-userland
 
+PLATFORM =
 ifeq ($(BR2_ARM_CPU_ARMV6),y)
         PLATFORM = armv6
 endif
-ifeq ($(BR2_cortex_a7),"y")
+
+ifeq ($(BR2_cortex_a7),y)
         PLATFORM = armv7
 endif
-ifeq ($(BR2_GCC_TARGET_FLOAT_ABI),"hard")
+
+ifeq ($(BR2_GCC_TARGET_FLOAT_ABI),hard)
         PLATFORM += hardfloat
 endif
-ifeq ($(BR2_ARM_FPU_NEON_VFPV4),"y")
+
+ifeq ($(BR2_ARM_CPU_HAS_NEON),y)
         PLATFORM += neon
 endif
 
