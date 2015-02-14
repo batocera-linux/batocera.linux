@@ -36,7 +36,7 @@ retroarch_config_dir="/recalbox/configs/retroarch/"
 retroarch_original="$retroarch_config_dir/retroarchcustom.cfg.origin"
 retroarch_config="$retroarch_config_dir/retroarchcustom.cfg"
 
-
+mupen64_config="/recalbox/configs/mupen64/mupen64plus.cfg"
 
 
 # restoring config
@@ -51,6 +51,7 @@ my_dir="$(dirname "$0")"
 source "$my_dir/findIdByName.sh"
 source "$my_dir/createFBAConfig.sh"
 source "$my_dir/createRetroarchConfig.sh"
+source "$my_dir/createMupen64Config.sh"
 
 #clean logs
 rm ~/generateconfig.log
@@ -62,6 +63,8 @@ if [ "$a_system" == "fba" ];then
     createFBAConfig "$a_guid4" "4" "$a_name4"
     setFBAJoypadIndexes "$a_name1" "$a_name2" "$a_name3" "$a_name4"
     setFBASmooth
+elif [ "$a_system" == "n64" ];then
+    createMupen64Config "$a_guid1" "1" "$a_udev1"
 else
     createRetroarchConfig "$a_guid1" "1" "$a_name1"
     createRetroarchConfig "$a_guid2" "2" "$a_name2"
