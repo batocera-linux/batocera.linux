@@ -8,7 +8,7 @@ mkdir -p /run/network
 
 case "$1" in
   start)
-	sleep 2
+	sleep 5
  	echo "Starting network..."
 	/sbin/ifup -a
 	;;

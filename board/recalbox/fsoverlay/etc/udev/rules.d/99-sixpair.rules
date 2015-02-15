@@ -1,4 +1,2 @@
-ACTION=="add", KERNEL=="event*", SUBSYSTEM=="input", ATTRS{name}=="ShanWan     PLAYSTATION(R)3 Controller", RUN+="/recalbox/scripts/udev-sixpair.sh"
-ACTION=="add", KERNEL=="event*", SUBSYSTEM=="input", ATTRS{name}=="Gasia Co.,Ltd PS(R) Gamepad", RUN+="/recalbox/scripts/udev-sixpair.sh"
-ACTION=="add", KERNEL=="event*", SUBSYSTEM=="input", ATTRS{name}=="Sony PLAYSTATION(R)3 Controller", RUN+="/recalbox/scripts/udev-sixpair.sh"
+DRIVER=="usb", SUBSYSTEM=="usb", ATTR{idVendor}=="054c", ATTR{idProduct}=="0268", RUN+="/recalbox/scripts/udev-sixpair.sh"
 
