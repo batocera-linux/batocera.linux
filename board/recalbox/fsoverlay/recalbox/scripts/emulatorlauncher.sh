@@ -19,12 +19,18 @@ sixBTNgames=(sfa sfz sf2 dstlk hsf2 msh mshvsf mvsc nwarr ssf2 vsav vhunt xmvsf 
 emulator="$2"
 
 fullfilename=$(basename "$1")
+
+dirName=$(dirname "$1")
+
 filename=$(printf '%q' "$fullfilename")
 
+filenameNoExt="${filename%.*}"
+
 extension="${filename##*.}"
+
 echo $fullfilename
 echo $filename
-
+echo $dirName
 echo $1
 
 if [[ ! "$emulator" ]]; then
@@ -140,4 +146,8 @@ if [[ "$emulator" == "fba" ]]; then
                 /recalbox/scripts/runcommand.sh 4 "fba2x --configfile /recalbox/configs/fba/fba2x.cfg \"$1\""
         fi
 
+fi
+
+if [[ "$emulator" == "scummvm" ]]; then
+	 /recalbox/scripts/runcommand.sh 4 "scummvm --path=$baseName $filenameNoExt"
 fi
