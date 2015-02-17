@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-KODI_VERSION = 14.1-Helix
+KODI_VERSION = 14.2b1-Helix
 KODI_SITE = $(call github,xbmc,xbmc,$(KODI_VERSION))
 KODI_LICENSE = GPLv2
 KODI_LICENSE_FILES = LICENSE.GPL
@@ -36,7 +36,6 @@ KODI_CONF_OPTS +=  \
 	--disable-crystalhd \
 	--disable-dvdcss \
 	--disable-hal \
-	--disable-joystick \
 	--disable-mysql \
 	--disable-openmax \
 	--disable-projectm \
