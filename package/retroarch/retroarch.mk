@@ -14,7 +14,7 @@ endif
 RETROARCH_SITE = https://github.com/libretro/RetroArch.git
 RETROARCH_SITE_METHOD = git
 RETROARCH_LICENSE = GPLv3+
-RETROARCH_CONF_OPTS += --disable-oss --enable-floathard 
+RETROARCH_CONF_OPTS += --disable-oss --enable-floathard --enable-zlib
 RETROARCH_DEPENDENCIES = host-pkgconf
 
 ifeq ($(BR2_ARM_FPU_NEON_VFPV4),y)

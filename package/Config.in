@@ -199,6 +199,7 @@ menu "Emulators"
         source "package/gpsp/Config.in"
         source "package/pifba/Config.in"
         source "package/retroarch/Config.in"
+        source "package/scummvm/Config.in"
 if BR2_PACKAGE_RETROARCH
 menu "Libretro Cores"
        source "package/libretro-armsnes/Config.in"
@@ -638,6 +639,7 @@ endmenu
 menu "Libraries"
 
 menu "Audio/Sound"
+	source "package/fluidsynth/Config.in"
 	source "package/alsa-lib/Config.in"
 	source "package/audiofile/Config.in"
 	source "package/celt051/Config.in"
