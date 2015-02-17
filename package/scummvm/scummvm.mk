@@ -19,15 +19,16 @@ define SCUMMVM_RPI_FIXUP
         $(SED) 's|/opt/vc/include|$(STAGING_DIR)/usr/include|g' $(@D)/configure
         $(SED) 's|-lGLESv1_CM|-lGLESv2|g' $(@D)/configure
 endef
+
 ifeq ($(BR2_cortex_a7),y)
-	SCUMMVM_RPI_FIXUP += $(SED) 's|-march=armv6zk|-march=armv7-a|g' $(@D)/configure
+        SCUMMVM_PRE_CONFIGURE_HOOKS += $(SED) 's|-march=armv6zk|-march=armv7-a|g' $(@D)/configure
 endif
+
 ifeq ($(BR2_ARM_FPU_NEON_VFPV4),y)
-        SCUMMVM_RPI_FIXUP += $(SED) 's|-march=vfpu|-mfpu=neon|g' $(@D)/configure
+        SCUMMVM_PRE_CONFIGURE_HOOKS += $(SED) 's|-march=vfpu|-mfpu=neon|g' $(@D)/configure
 endif
 
 SCUMMVM_PRE_CONFIGURE_HOOKS += SCUMMVM_RPI_FIXUP
-
 
 
 
