@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# Start the network....
+# ReStart the network....
 #
 
 # Debian ifupdown needs the /run/network lock directory
@@ -8,8 +8,9 @@ mkdir -p /run/network
 
 case "$1" in
   start)
-	sleep 5
- 	echo "Starting network..."
+	sleep 3
+ 	echo "ReStarting network..."
+	/sbin/ifdown -a
 	/sbin/ifup -a
 	;;
   stop)
