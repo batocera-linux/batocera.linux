@@ -8,24 +8,26 @@ mkdir -p /run/network
 
 case "$1" in
   start)
-	sleep 3
- 	echo "ReStarting network..."
-	/sbin/ifdown -a
-	/sbin/ifup -a
-	;;
+        sleep 2
+        /sbin/ifdown -a
+        echo "ReStarting network..."
+        wpa_supplicant -iwlan0 -c/etc/wpa_supplicant/wpa_supplicant.conf &
+        sleep 5
+        /sbin/ifup -a
+        ;;
   stop)
-	echo -n "Stopping network..."
-	/sbin/ifdown -a
-	;;
+        echo -n "Stopping network..."
+        /sbin/ifdown -a
+        killall wpa_supplicant
+        ;;
   restart|reload)
-	"$0" stop
-	"$0" start
-	;;
+        "$0" stop
+        "$0" start
+        ;;
   *)
-	echo "Usage: $0 {start|stop|restart}"
-	exit 1
+        echo "Usage: $0 {start|stop|restart}"
+        exit 1
 esac
 
 exit $?
-
 

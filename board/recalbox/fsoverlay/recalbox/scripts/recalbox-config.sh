@@ -175,7 +175,7 @@ if [ "$command" == "update" ];then
 fi
 
 if [[ "$command" == "wifi" ]]; then
-        if [[ ! -f "$wpafile" ]];then 
+        if [[ ! -f "$wpafile" ]];then
                 echo "$wpafile do not exists" >> $log
                 exit 1
         fi
@@ -191,13 +191,14 @@ if [[ "$command" == "wifi" ]]; then
                 fi
                 sed -i "s/ssid=\".*\"/ssid=\"$ssid\"/g" $wpafile
                 sed -i "s/psk=\".*\"/psk=\"$psk\"/g" $wpafile
-		/etc/init.d/S42restartnetwork restart
+                /etc/init.d/S42networkrestart restart
                 exit 0
         fi
         if [[ "$mode" == "disable" ]]; then
-		ifdown wlan0
-		exit $?
-	fi
+                sed -i "s/ssid=\".*\"/ssid=\"\"/g" $wpafile
+                sed -i "s/psk=\".*\"/psk=\"\"/g" $wpafile
+                ifdown wlan0
+                exit $?
+        fi
 fi
-
 exit 10

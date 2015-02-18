@@ -107,7 +107,7 @@ function createRetroarchConfig {
 			echo "input_${retroarchspecials[$input]}_${typetoname[$type]} = $id" >>  "$configfile"
 		fi
 		if [[ $input == "hotkey" ]] && [ "$player" == "1" ]; then
-			sed -i "s/input_enable_hotkey.*/input_enable_hotkey_${typetoname[$type]} = $id/g" "$retroarch_config"
+			sed -i "s/input_enable_hotkey_.*/input_enable_hotkey_${typetoname[$type]} = $id/g" "$retroarch_config"
 		fi
 	done
 #	if [ "$axisjoypad" == "1" ]; then
