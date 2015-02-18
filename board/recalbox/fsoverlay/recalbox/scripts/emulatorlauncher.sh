@@ -149,5 +149,5 @@ if [[ "$emulator" == "fba" ]]; then
 fi
 
 if [[ "$emulator" == "scummvm" ]]; then
-	 /recalbox/scripts/runcommand.sh 4 "scummvm --path=$baseName $filenameNoExt"
+         /recalbox/scripts/runcommand.sh 4 "scummvm --path=\"$dirName\" \"$filenameNoExt\""
 fi
