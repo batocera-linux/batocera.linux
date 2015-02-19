@@ -192,7 +192,8 @@ if [[ "$command" == "wifi" ]]; then
                 sed -i "s/ssid=\".*\"/ssid=\"$ssid\"/g" $wpafile
                 sed -i "s/psk=\".*\"/psk=\"$psk\"/g" $wpafile
                 /etc/init.d/S42networkrestart restart
-                exit 0
+                ifconfig wlan0 | grep addr
+                exit $?
         fi
         if [[ "$mode" == "disable" ]]; then
                 sed -i "s/ssid=\".*\"/ssid=\"\"/g" $wpafile
@@ -201,4 +202,5 @@ if [[ "$command" == "wifi" ]]; then
                 exit $?
         fi
 fi
+
 exit 10
