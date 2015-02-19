@@ -1,0 +1,20 @@
+#!/bin/bash
+case "$1" in
+  start)
+        cat /etc/udev/rules.d/70-persistent-net.rules | grep "eth1"
+        if [[ "$?" == "0" ]];then
+                sed -i "/eth1/d" /etc/udev/rules.d/70-persistent-net.rules
+                /etc/init.d/S10udev stop
+                /etc/init.d/S10udev start
+        fi
+        ;;
+  stop)
+        ;;
+  restart|reload)
+        ;;
+  *)
+esac
+
+exit $?
+
+
