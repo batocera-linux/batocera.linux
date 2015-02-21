@@ -96,7 +96,7 @@ if [[ "$emulator" == "megadrive" ]]; then
 fi
 
 if [[ "$emulator" == "gamegear" ]]; then
-	/recalbox/scripts/runcommand.sh 4 "$retroarchbin -L $retroarchcores/picodrive_libretro.so --config /recalbox/configs/retroarch/retroarchcustom.cfg \"$1\""
+	/recalbox/scripts/runcommand.sh 4 "$retroarchbin -L $retroarchcores/genesisplusgx_libretro.so --config /recalbox/configs/retroarch/retroarchcustom.cfg \"$1\""
 fi
 
 if [[ "$emulator" == "segacd" ]]; then
