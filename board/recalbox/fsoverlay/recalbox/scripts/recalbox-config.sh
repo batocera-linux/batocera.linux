@@ -9,6 +9,7 @@ command="$1"
 mode="$2"
 log=/root/recalbox.log
 wpafile=/etc/wpa_supplicant/wpa_supplicant.conf
+es_settings="/root/.emulationstation/es_settings.cfg"
 
 echo "---- recalbox-config.sh ----" >> $log
 
@@ -174,6 +175,8 @@ if [ "$command" == "update" ];then
 	exit $?
 fi
 
+
+
 if [[ "$command" == "wifi" ]]; then
         if [[ ! -f "$wpafile" ]];then
                 echo "$wpafile do not exists" >> $log
@@ -191,9 +194,7 @@ if [[ "$command" == "wifi" ]]; then
                 fi
                 sed -i "s/ssid=\".*\"/ssid=\"$ssid\"/g" $wpafile
                 sed -i "s/psk=\".*\"/psk=\"$psk\"/g" $wpafile
-                /etc/init.d/S42networkrestart restart
-                ifconfig wlan0 | grep "inet addr"
-                exit $?
+                mode="forcestart"
         fi
         if [[ "$mode" == "disable" ]]; then
                 sed -i "s/ssid=\".*\"/ssid=\"\"/g" $wpafile
@@ -201,6 +202,31 @@ if [[ "$command" == "wifi" ]]; then
                 ifdown wlan0
                 exit $?
         fi
+        if [[ "$mode" =~ "start" ]]; then
+                if [[ "$mode" != "forcestart" ]]; then
+                        settingsWlan=`cat "$es_settings" | sed -n 's/.*name="EnableWifi" value="\(.*\)".*/\1/p'`
+                        if [ "$settingsWlan" != "true" ];then
+                                exit 1
+                        fi
+                fi
+                echo "starting wifi" >> $log
+                killall wpa_supplicant
+                wlan="wlan0"
+                ifconfig -a | grep wlan1
+                if [[ "$?" == "0" ]];then
+                        wlan="wlan1"
+                fi
+		/sbin/ifdown -a
+                wpa_supplicant -i$wlan -c/etc/wpa_supplicant/wpa_supplicant.conf &
+                sleep 4
+                /sbin/ifup -a
+                ifconfig $wlan | grep "inet addr"
+                exit $?
+        fi
 fi
+
+
+
+
 
 exit 10

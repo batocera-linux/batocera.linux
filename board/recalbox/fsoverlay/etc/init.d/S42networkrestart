@@ -1,19 +1,11 @@
 #!/bin/sh
 #
-# ReStart the network....
+# Start the wifi network if it has been configured
 #
-
-# Debian ifupdown needs the /run/network lock directory
-mkdir -p /run/network
 
 case "$1" in
   start)
-        sleep 2
-        /sbin/ifdown -a
-        echo "ReStarting network..."
-        wpa_supplicant -iwlan0 -c/etc/wpa_supplicant/wpa_supplicant.conf &
-        sleep 5
-        /sbin/ifup -a
+        /recalbox/scripts/recalbox-config.sh wifi start
         ;;
   stop)
         echo -n "Stopping network..."
