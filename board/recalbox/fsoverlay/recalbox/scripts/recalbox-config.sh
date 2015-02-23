@@ -177,6 +177,27 @@ fi
 
 
 
+if [[ "$command" == "ethernet" ]]; then
+        eth="eth`ifconfig -a | sed -n \"s/eth\(.\).*/\1/p\"`"
+        if [[ "$?" != "0" || "$eth" == "eth" ]];then
+                echo "no eth interface found" >> $log
+                exit 1
+        else
+                echo "$eth will be used as wired interface"
+        fi
+        sed -i "s/eth[0-9]\+/$eth/g" /etc/network/interfaces
+        if [[ "$mode" == "start" ]]; then
+                /sbin/ifdown $eth >> $log
+                /sbin/ifup $eth >> $log
+                exit $?
+        elif [[ "$mode" == "stop" ]]; then
+                /sbin/ifdown $eth >> $log
+                exit $?
+        fi
+
+fi
+
+
 if [[ "$command" == "wifi" ]]; then
         if [[ ! -f "$wpafile" ]];then
                 echo "$wpafile do not exists" >> $log
@@ -185,9 +206,18 @@ if [[ "$command" == "wifi" ]]; then
         ssid=$3
         psk=$4
 
+        wlan="wlan`ifconfig -a | sed -n \"s/wlan\(.\).*/\1/p\"`"
+        if [[ "$?" != "0" || "$wlan" == "wlan" ]] ;then
+                echo "no wlan interface found" >> $log
+                exit 1
+        else
+                echo "$wlan be used as wifi interface" >> $log
+        fi
+        sed -i "s/wlan[0-9]\+/$wlan/g" /etc/network/interfaces
+
         if [[ "$mode" == "enable" ]]; then
                 echo "enabling wifi" >> $log
-                cat $wpafile | grep network
+                cat $wpafile | grep network >> $log
                 if [ "$?" != "0" ]; then
                         echo "creating network entry in $wpafile" >> $log
                         echo -e "network={\n\tssid=\"\"\n\tpsk=\"\"\n}" >> $wpafile
@@ -199,10 +229,10 @@ if [[ "$command" == "wifi" ]]; then
         if [[ "$mode" == "disable" ]]; then
                 sed -i "s/ssid=\".*\"/ssid=\"\"/g" $wpafile
                 sed -i "s/psk=\".*\"/psk=\"\"/g" $wpafile
-                ifdown wlan0
+                ifdown $wlan
                 exit $?
         fi
-        if [[ "$mode" =~ "start" ]]; then
+  	if [[ "$mode" =~ "start" ]]; then
                 if [[ "$mode" != "forcestart" ]]; then
                         settingsWlan=`cat "$es_settings" | sed -n 's/.*name="EnableWifi" value="\(.*\)".*/\1/p'`
                         if [ "$settingsWlan" != "true" ];then
@@ -210,23 +240,15 @@ if [[ "$command" == "wifi" ]]; then
                         fi
                 fi
                 echo "starting wifi" >> $log
-                killall wpa_supplicant
-                wlan="wlan0"
-                ifconfig -a | grep wlan1
-                if [[ "$?" == "0" ]];then
-                        wlan="wlan1"
-                fi
-		/sbin/ifdown -a
+                killall wpa_supplicant >> $log
+                /sbin/ifdown $wlan >> $log
                 wpa_supplicant -i$wlan -c/etc/wpa_supplicant/wpa_supplicant.conf &
                 sleep 4
-                /sbin/ifup -a
-                ifconfig $wlan | grep "inet addr"
+                /sbin/ifup $wlan >> $log
+                ifconfig $wlan | grep "inet addr" >> $log
                 exit $?
         fi
 fi
-
-
-
 
 
 exit 10
