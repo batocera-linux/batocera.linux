@@ -21,6 +21,10 @@
 	retroarchaxis['left']='x_minus'
 	retroarchaxis['right']='x_plus'
 
+        declare -A retroarchjoysticks
+        retroarchjoysticks['joystickup']='l_y'
+        retroarchjoysticks['joystickleft']='l_x'
+
         declare -A retroarchhat
         retroarchhat['1']='up'
         retroarchhat['2']='right'
@@ -109,6 +113,16 @@ function createRetroarchConfig {
 		if [[ $input == "hotkey" ]] && [ "$player" == "1" ]; then
 			sed -i "s/input_enable_hotkey_.*/input_enable_hotkey_${typetoname[$type]} = $id/g" "$retroarch_config"
 		fi
+		# Gestion des joystick supplementaires
+                if [[ ${retroarchjoysticks[$input]} && "$type" == "axis" ]];then
+                        echo "input_${retroarchjoysticks[$input]}_minus_${typetoname[$type]} = $id" >>  "$configfile"
+                        if [[ "$value" == "-1" ]]; then
+                                newaxis="+$originid"
+                        else
+                                newaxis="-$originid"
+                        fi
+                        echo "input_${retroarchjoysticks[$input]}_plus_${typetoname[$type]} = $newaxis" >>  "$configfile"
+                fi
 	done
 #	if [ "$axisjoypad" == "1" ]; then
 		#sed -i "s/input_player${player}_analog_dpad_mode.*//g" "$retroarch_config"
@@ -161,10 +175,10 @@ function setRetroarchJoypadIndexes {
 
 }
 
-function setRetroarchSmooth {
-	settingsSmooth=`cat "$es_settings" | sed -n 's/.*name="Smooth" value="\(.*\)".*/\1/p'`
-       	if [ "$settingsSmooth" == "" ];then
-               	settingsSmooth="true"
+function setRetroarchExtraConfigs {
+        settingsSmooth=`cat "$es_settings" | sed -n 's/.*name="Smooth" value="\(.*\)".*/\1/p'`
+        if [ "$settingsSmooth" == "" ];then
+                settingsSmooth="true"
         fi
         if [ "$settingsSmooth" == "false" ];then
                 sed -i "s/#\?video_smooth =.*/video_smooth = false/g" "$retroarch_config"
@@ -172,6 +186,16 @@ function setRetroarchSmooth {
         if [ "$settingsSmooth" == "true" ];then
                 sed -i "s/#\?video_smooth =.*/video_smooth = true/g" "$retroarch_config"
         fi
+        settingsGameRatio=`cat "$es_settings" | sed -n 's/.*name="GameRatio" value="\(.*\)".*/\1/p'`
+        if [ "$settingsGameRatio" == "" || "$settingsGameRatio" == "auto"];then
+                settingsGameRatio="4/3"
+        fi
+        if [ "$settingsGameRatio" == "4/3" ];then
+                sed -i "s/#\?aspect_ratio_index =.*/aspect_ratio_index = 0/g" "$retroarch_config"
+        elif [ "$settingsGameRatio" == "16/9" ];then
+                sed -i "s/#\?aspect_ratio_index =.*/aspect_ratio_index = 1/g" "$retroarch_config"
+        fi
+
 
 }
 

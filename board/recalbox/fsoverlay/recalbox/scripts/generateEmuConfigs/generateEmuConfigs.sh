@@ -72,7 +72,7 @@ else
     createRetroarchConfig "$a_guid4" "4" "$a_name4"
     clearRetroarchJoypadIndexes
     setRetroarchJoypadIndexes "$a_udev1" "$a_name1" "$a_udev2" "$a_name2" "$a_udev3" "$a_name3" "$a_udev4" "$a_name4"
-    setRetroarchSmooth
+    setRetroarchExtraConfigs
 fi
 
 if [ "$a_system" == "mame" ];then
