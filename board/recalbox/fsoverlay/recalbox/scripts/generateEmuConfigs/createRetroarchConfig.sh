@@ -76,6 +76,7 @@ function createRetroarchConfig {
                 input=`echo $rawinput | cut -d '|' -f1`
                 type=`echo $rawinput | cut -d '|' -f2`
                 id=`echo $rawinput | cut -d '|' -f3`
+                originid=$id
                 value=`echo $rawinput | cut -d '|' -f4`
 		if [ "$type" == "axis" ]; then
 			if [[ "$value" == "-1" ]]; then
@@ -114,7 +115,7 @@ function createRetroarchConfig {
 			sed -i "s/input_enable_hotkey_.*/input_enable_hotkey_${typetoname[$type]} = $id/g" "$retroarch_config"
 		fi
 		# Gestion des joystick supplementaires
-                if [[ ${retroarchjoysticks[$input]} && "$type" == "axis" ]];then
+                if [[ ${retroarchjoysticks[$input]} ]] && [[ "$type" == "axis" ]];then
                         echo "input_${retroarchjoysticks[$input]}_minus_${typetoname[$type]} = $id" >>  "$configfile"
                         if [[ "$value" == "-1" ]]; then
                                 newaxis="+$originid"
@@ -187,7 +188,7 @@ function setRetroarchExtraConfigs {
                 sed -i "s/#\?video_smooth =.*/video_smooth = true/g" "$retroarch_config"
         fi
         settingsGameRatio=`cat "$es_settings" | sed -n 's/.*name="GameRatio" value="\(.*\)".*/\1/p'`
-        if [ "$settingsGameRatio" == "" || "$settingsGameRatio" == "auto"];then
+        if [ "$settingsGameRatio" == "" ] || [ "$settingsGameRatio" == "auto" ];then
                 settingsGameRatio="4/3"
         fi
         if [ "$settingsGameRatio" == "4/3" ];then

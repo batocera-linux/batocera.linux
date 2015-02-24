@@ -130,7 +130,7 @@ function setFBAJoypadIndexes {
 	done
 }
 
-function setFBASmooth {
+function setFBAExtraConfig {
 	#smoothing enable by default
 	settingsSmooth=`cat "$es_settings" | sed -n 's/.*name="Smooth" value="\(.*\)".*/\1/p'`
 	if [ "$settingsSmooth" == "" ];then
@@ -140,4 +140,17 @@ function setFBASmooth {
 		sed -i "s/DisplaySmoothStretch=.*/DisplaySmoothStretch=0/g" "$fba_config"
 		sed -i "s/DisplaySmoothStretch=.*/DisplaySmoothStretch=0/g" "$fba_config_6btn"
 	fi
+
+	settingsGameRatio=`cat "$es_settings" | sed -n 's/.*name="GameRatio" value="\(.*\)".*/\1/p'`
+        if [ "$settingsGameRatio" == "" ] || [ "$settingsGameRatio" == "auto" ];then
+                settingsGameRatio="4/3"
+        fi
+        echo $settingsGameRatio
+        if [ "$settingsGameRatio" == "4/3" ];then
+                sed -i "s/MaintainAspectRatio=.*/MaintainAspectRatio=1/g" "$fba_config"
+                sed -i "s/MaintainAspectRatio=.*/MaintainAspectRatio=1/g" "$fba_config_6btn"
+        elif [ "$settingsGameRatio" == "16/9" ];then
+                sed -i "s/MaintainAspectRatio=.*/MaintainAspectRatio=0/g" "$fba_config"
+                sed -i "s/MaintainAspectRatio=.*/MaintainAspectRatio=0/g" "$fba_config_6btn"
+        fi
 }
