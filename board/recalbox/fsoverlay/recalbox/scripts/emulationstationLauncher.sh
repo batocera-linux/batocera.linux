@@ -9,6 +9,9 @@ if [ "$settingsLang" == "" ];then
 	settingsLang="en_US"
 fi
 
+keyboardmap=`echo "$settingsLang" | cut -c1-2`
+loadkeys $keyboardmap
+
 settingsAudio=`cat "$es_settings" | sed -n 's/.*name="AudioOutputDevice" value="\(.*\)".*/\1/p'`
 if [ "$settingsAudio" == "" ];then
 	settingsAudio="auto"
