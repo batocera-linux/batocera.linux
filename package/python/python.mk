@@ -237,6 +237,7 @@ define PYTHON_ADD_STAGING_INC_DIR
 #	$(SED) "s/inc_dirs = \[\]/inc_dirs = \"$(STAGING_DIR)\/usr\/include\"/g" $(@D)/setup.py
 	$(SED) "s|inc_dirs = \[\]|inc_dirs = ['$(STAGING_DIR)/usr/include']|g" $(@D)/setup.py
 	cp "$(STAGING_DIR)/usr/include/sqlite3.h" $(@D)/Include
+	cp "$(STAGING_DIR)/usr/include/zlib.h" $(@D)/Include
 endef
 
 PYTHON_PRE_CONFIGURE_HOOKS += PYTHON_ADD_STAGING_INC_DIR
