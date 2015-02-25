@@ -130,7 +130,8 @@ PYTHON_CONF_ENV += \
 	ac_cv_have_long_long_format=yes \
 	ac_cv_file__dev_ptmx=yes \
 	ac_cv_file__dev_ptc=yes \
-	ac_cv_working_tzset=yes
+	ac_cv_working_tzset=yes \
+	CFLAGS="$(TARGET_CFLAGS) -I$(STAGING_DIR)/usr/include"
 
 PYTHON_CONF_OPTS += \
 	--without-cxx-main 	\
@@ -229,4 +230,13 @@ define PYTHON_FINALIZE_TARGET
 endef
 endif
 
+
 TARGET_FINALIZE_HOOKS += PYTHON_FINALIZE_TARGET
+
+define PYTHON_ADD_STAGING_INC_DIR
+#	$(SED) "s/inc_dirs = \[\]/inc_dirs = \"$(STAGING_DIR)\/usr\/include\"/g" $(@D)/setup.py
+	$(SED) "s|inc_dirs = \[\]|inc_dirs = ['$(STAGING_DIR)/usr/include']|g" $(@D)/setup.py
+	cp "$(STAGING_DIR)/usr/include/sqlite3.h" $(@D)/Include
+endef
+
+PYTHON_PRE_CONFIGURE_HOOKS += PYTHON_ADD_STAGING_INC_DIR
