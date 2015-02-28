@@ -185,6 +185,7 @@ menu "Games"
 	source "package/mk_arcade_joystick_rpi/Config.in"
 	source "package/db9_gpio_rpi/Config.in"
 	source "package/gamecon_gpio_rpi/Config.in"
+	source "package/xboxdrv/Config.in"
         source "package/recalbox-emulationstation2/Config.in"
         source "package/emulation-station/Config.in"
 menu "Emulators"
@@ -226,6 +227,7 @@ menu "Libretro Cores"
        source "package/libretro-bluemsx/Config.in"
        source "package/libretro-gpsp/Config.in"
        source "package/libretro-4do/Config.in"
+       source "package/libretro-fba/Config.in"
 endmenu
 endif
 endmenu

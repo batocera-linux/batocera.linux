@@ -1,0 +1,10 @@
+config BR2_PACKAGE_XBOXDRV
+        bool "xbox and ps3 support"
+	depends on BR2_PACKAGE_RETROARCH
+	depends on BR2_INSTALL_LIBSTDCPP
+        help
+	  Xbox and ps3 controller support
+	  http://www.libretro.com
+
+comment "XBOXDRV needs a toolchain w/ C++"
+	depends on !BR2_INSTALL_LIBSTDCPP
