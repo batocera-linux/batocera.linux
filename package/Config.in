@@ -202,6 +202,7 @@ menu "Emulators"
         source "package/pifba/Config.in"
         source "package/retroarch/Config.in"
         source "package/scummvm/Config.in"
+        source "package/scummvm-vanfanel/Config.in"
 if BR2_PACKAGE_RETROARCH
 menu "Libretro Cores"
        source "package/libretro-armsnes/Config.in"
