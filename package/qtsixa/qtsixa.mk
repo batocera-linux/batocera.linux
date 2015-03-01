@@ -11,9 +11,11 @@ PKGCONFIG_CONFIG=$(STAGING_DIR)/usr/lib/pkgconfig
 QTSIXA_INCLUDES =-I$(STAGING_DIR)/usr/include -I$(STAGING_DIR)/usr/include/interface/vcos/pthreads -I$(STAGING_DIR)/usr/include/interface/vmcs_host/linux
 QTSIXA_CFLAGS = -D__ARM_PCS_VFP -DARM_ARCH -DRPI_BUILD -Wall $(QTSIXA_INCLUDES) 
 
-ifeq ($(BR2_PACKAGE_QTSIXA_GASIA_GAMEPAD_HACKS),y)
+ifeq ($(BR2_PACKAGE_QTSIXA_GASIA),y)
 	QTSIXA_CFLAGS += -DGASIA_GAMEPAD_HACKS
-else 
+endif
+
+ifeq ($(BR2_PACKAGE_QTSIXA_SHANWAN),y)
 	QTSIXA_CFLAGS += -DSHANWAN_FAKE_DS3
 endif
 	
