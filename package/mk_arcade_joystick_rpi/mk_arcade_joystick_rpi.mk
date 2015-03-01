@@ -17,12 +17,17 @@ ifeq ($(BR2_cortex_a7),y)
         MK_ARCADE_JOYSTICK_RPI_PRE_CONFIGURE_HOOKS += MK_ARCADE_JOYSTICK_RPI_RPI2_HOOK
 endif
 
+define MK_ARCADE_JOYSTICK_RPI_MAKE_HOOK
+	cp $(@D)/Makefile.cross $(@D)/Makefile
+endef
+MK_ARCADE_JOYSTICK_RPI_PRE_BUILD_HOOKS += MK_ARCADE_JOYSTICK_RPI_MAKE_HOOK
+
 define MK_ARCADE_JOYSTICK_RPI_BUILD_CMDS
-        $(MAKE) -C $(@D) -f Makefile.cross $(LINUX_MAKE_FLAGS) KERNELDIR=$(LINUX_DIR)
+        $(MAKE) -C $(@D) $(LINUX_MAKE_FLAGS) KERNELDIR=$(LINUX_DIR)
 endef
 
 define MK_ARCADE_JOYSTICK_RPI_INSTALL_TARGET_CMDS
-        $(MAKE) -C $(@D) -f Makefile.cross $(LINUX_MAKE_FLAGS) KERNELDIR=$(LINUX_DIR) modules_install
+        $(MAKE) -C $(@D) $(LINUX_MAKE_FLAGS) KERNELDIR=$(LINUX_DIR) modules_install
 endef
 
 $(eval $(generic-package))
