@@ -5,12 +5,18 @@
 
 case "$1" in
   start)
-	/recalbox/scripts/startsixad.sh &
+	bluetoothd -u
+	sleep 2
+	killall bluetoothd
+	sixad-bin 0 0 0
 	;;
   stop)
 	killall sixad-bin
+	killall sixad-sixaxis
 	;;
   restart|reload)
+        "$0" stop
+        "$0" start
 	;;
   *)
 	echo "Usage: $0 {start|stop|restart}"
@@ -18,4 +24,5 @@ case "$1" in
 esac
 
 exit $?
+
 

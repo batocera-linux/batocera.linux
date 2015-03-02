@@ -2,14 +2,27 @@
 #
 #
 
+log=/root/recalbox.log
+
 case "$1" in
   start)
-	/recalbox/scripts/emulationstationLauncher.sh &
+	echo "starting emulationstation" >> $log
+	settingsLang=`$essetting Lang`
+	if [ "$settingsLang" == "" ];then
+        	settingsLang="en_US"
+	fi
+	echo "setting langage to $settingsLang" >> $log
+	command="HOME=/root LANG=\"${settingsLang}.UTF-8\" SDL_VIDEO_GL_DRIVER=/usr/lib/libGLESv2.so SDL_NOMOUSE=1 /usr/bin/emulationstation"
+	echo "Starting emulationstation with command : " >> $log
+	echo "$command" >> $log
+	eval $command &
 	;;
   stop)
 	killall emulationstation
 	;;
   restart|reload)
+        "$0" stop
+        "$0" start
 	;;
   *)
 	echo "Usage: $0 {start|stop|restart}"
@@ -17,4 +30,5 @@ case "$1" in
 esac
 
 exit $?
+
 

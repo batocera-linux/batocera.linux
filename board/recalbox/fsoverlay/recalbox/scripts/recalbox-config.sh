@@ -7,6 +7,9 @@ fi
 configFile="/boot/config.txt"
 command="$1"
 mode="$2"
+extra1="$3"
+extra2="$4"
+
 log=/root/recalbox.log
 wpafile=/etc/wpa_supplicant/wpa_supplicant.conf
 es_settings="/root/.emulationstation/es_settings.cfg"
@@ -147,17 +150,29 @@ if [ "$command" == "volume" ];then
 fi
 
 if [ "$command" == "gpiocontrollers" ];then
+	command="module"
+	mode="load"
+	extra1="mk_arcade_joystick_rpi"
+	extra2="map=1,2"
+fi
+
+if [ "$command" == "module" ];then
+	modulename="$extra1"
+	map="$extra2"
 	# remove in all cases
-	rmmod /lib/modules/`uname -r`/extra/mk_arcade_joystick_rpi.ko 
-        if [ "$mode" == "enable" ];then
-	        echo "setting gpio controller to  : $mode" >> $log
-		insmod /lib/modules/`uname -r`/extra/mk_arcade_joystick_rpi.ko map=1,2 || exit 1
+	rmmod /lib/modules/`uname -r`/extra/${modulename}.ko >> $log
+
+        if [ "$mode" == "load" ];then
+	        echo "loading module $modulename args = $map" >> $log
+		insmod /lib/modules/`uname -r`/extra/${modulename}.ko $map >> $log
+		[ "$?" ] || exit 1
         fi
 	exit 0
 fi
 
+
 if [ "$command" == "canupdate" ];then
-	available=`wget -qO- http://archive2.recalbox.com/recalbox/root/recalbox/recalbox.version`
+	available=`wget -qO- http://archive2.recalbox.com/recalbox-rpi2/root/recalbox/recalbox.version`
 	if [[ "$?" != "0" ]];then
 		exit 2
 	fi
@@ -252,3 +267,4 @@ fi
 
 
 exit 10
+

@@ -1,0 +1,119 @@
+#!/bin/bash
+
+essetting=/recalbox/scripts/essetting.sh
+systemsetting=/recalbox/scripts/systemsetting.sh
+config_script=/recalbox/scripts/recalbox-config.sh
+wpafile=/etc/wpa_supplicant/wpa_supplicant.conf
+
+log=/root/recalbox.log
+
+
+case "$1" in
+  start)
+	echo "starting new log at `date`" > $log
+
+	# Let's begin with variable only in es_settings
+	# Lang, just search in esSettings
+	settingsLang="`$essetting get Lang`"
+	echo $settingsLang
+	if [ "$settingsLang" == "" ];then
+        	settingsLang="en_US"
+	fi
+	echo "setting langage to $settingsLang" >> $log
+	keyboardmap=`echo "$settingsLang" | cut -c1-2`
+	loadkeys $keyboardmap
+
+	# Volume 
+	settingsVolume="`$essetting get SystemVolume`"
+	if [ "$settingsVolume" != "" ];then
+		echo "setting audio volume to $settingsVolume" >> $log
+        	eval $config_script "volume" "$settingsVolume" >> $log
+	fi
+
+	# Wifi
+	settings_ssid="`$systemsetting get wifi_ssid`"
+	settings_key="`$systemsetting get wifi_key`"
+
+	if [[ "$settings_ssid" != "" ]] && [[ "$settings_key" != "" ]] ;then
+		eval $essetting set EnableWifi "true"
+		eval $essetting set WifiSSID "$settings_ssid"	
+		eval $essetting set WifiKey "$settings_key"
+		cat $wpafile | grep network >> $log
+                if [ "$?" != "0" ]; then
+                        echo "creating network entry in $wpafile" >> $log
+                        echo -e "network={\n\tssid=\"\"\n\tpsk=\"\"\n}" >> $wpafile
+                fi
+                sed -i "s/ssid=\".*\"/ssid=\"$settings_ssid\"/g" $wpafile
+                sed -i "s/psk=\".*\"/psk=\"$settings_key\"/g" $wpafile	
+		echo "updated wifi settings : ssid=$settings_ssid key=$settings_key" >> $log
+	fi		
+	
+
+	# Audio output
+	settingsAudio="`$systemsetting get audio_output`"
+	if [[ "$settingsAudio" != "" ]];then
+		eval $essetting set AudioOutputDevice "$settingsAudio"	
+	else
+		settingsAudio="`$essetting get AudioOutputDevice`"
+		if [ "$settingsAudio" == "" ];then
+        		settingsAudio="auto"
+		fi
+	fi		
+	echo "setting audio to $settingsAudio" >> $log
+	eval $config_script "audio" "$settingsAudio" >> $log
+
+	# GPIO mk
+	settings_gpio_mk="`$systemsetting get enable_mk_gpio`"
+	if [ "$settings_gpio_mk" == "1" ];then
+	        settings_gpio_map="`$systemsetting get mk_gpio_args`"
+		[ "$settings_gpio_map" == "" ] && settings_gpio_map="map=1,2"
+		echo "enabling mk_arcade_joystick_rpi" >> $log
+        	eval $config_script "module" "load" mk_arcade_joystick_rpi "$settings_gpio_map" >> $log
+	else
+		# mk disabled let's check for db9
+		settings_db9="`$systemsetting get enable_db9`"
+	        if [ "$settings_db9" == "1" ];then
+        	        settings_db9_map="`$systemsetting get db9_args`"
+                	echo "enabling db9" >> $log
+                	eval $config_script "module" "load" db9_gpio_rpi "$settings_db9_map" >> $log
+		else 
+			# db9 and mk disabled let's check for gamecon
+                	settings_gamecon="`$systemsetting get enable_gamecon`"
+                	if [ "$settings_gamecon" == "1" ];then
+                        	settings_gamecon_map="`$systemsetting get gamecon_args`"
+                        	echo "enabling gamecon" >> $log
+                        	eval $config_script "module" "load" gamecon_gpio_rpi "$settings_gamecon_map" >> $log
+			fi
+		fi
+	fi
+	# kodi
+	settings_kodi="`$systemsetting get enable_kodi`"
+	settings_kodi_start="`$systemsetting get kodi_at_start`"
+	if [[ "$settings_kodi" == "1" ]];then
+		echo "enabling kodi" >> $log
+		eval $essetting set EnableKodi true
+	fi
+	if [[ "$settings_kodi" == "0" ]];then
+		echo "disabling kodi" >> $log
+		eval $essetting set EnableKodi false
+	fi
+	if [[ "$settings_kodi_start" == "1" ]];then
+		echo "enabling kodi at startup" >> $log
+		eval $essetting set KodiStartup true
+	fi
+	if [[ "$settings_kodi_start" == "0" ]];then
+		echo "disabling kodi at startup" >> $log
+		eval $essetting set KodiStartup false
+	fi
+
+	;;
+  stop)
+	;;
+  restart|reload)
+	;;
+  *)
+esac
+
+exit $?
+
+

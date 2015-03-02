@@ -6,5 +6,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 - Added db9 driver package
 - Added gamecon driver package
+- Added new setting configuration file
+- Added new startup system
 
 ## [0.0.8] - 2015-02-17
