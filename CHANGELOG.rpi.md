@@ -8,5 +8,4 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Added gamecon driver package
 - Added new setting configuration file
 - Added new startup system
-
-## [0.0.8] - 2015-02-17
+- Fixed : ssid with space from emulationstation
