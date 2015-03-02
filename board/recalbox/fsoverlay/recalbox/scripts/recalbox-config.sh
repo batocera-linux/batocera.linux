@@ -218,8 +218,8 @@ if [[ "$command" == "wifi" ]]; then
                 echo "$wpafile do not exists" >> $log
                 exit 1
         fi
-        ssid=$3
-        psk=$4
+        ssid="$3"
+        psk="$4"
 
         wlan="wlan`ifconfig -a | sed -n \"s/wlan\(.\).*/\1/p\"`"
         if [[ "$?" != "0" || "$wlan" == "wlan" ]] ;then
