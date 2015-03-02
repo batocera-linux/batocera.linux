@@ -9,3 +9,4 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Added new setting configuration file
 - Added new startup system
 - Fixed : ssid with space from emulationstation
+- Fixed ntfs automount
