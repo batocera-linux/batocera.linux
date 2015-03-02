@@ -5,7 +5,7 @@
 ################################################################################
 XBOXDRV_VERSION = fb787abe320741d8c341a9ad62c9a0ec513fc2cb
 XBOXDRV_SITE =  $(call github,Grumbel,xboxdrv,$(XBOXDRV_VERSION))
-XBOXDRV_DEPENDENCIES = libusb
+XBOXDRV_DEPENDENCIES = libusb dbus-python
 #opts.Add('CPPPATH', 'Additional preprocessor paths')
 #opts.Add('CPPFLAGS', 'Additional preprocessor flags')
 #opts.Add('CPPDEFINES', 'defined constants')
