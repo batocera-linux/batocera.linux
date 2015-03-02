@@ -8,7 +8,7 @@ case "$1" in
 	bluetoothd -u
 	sleep 2
 	killall bluetoothd
-	sixad-bin 0 0 0
+	sixad-bin 0 0 0 &
 	;;
   stop)
 	killall sixad-bin
