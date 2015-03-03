@@ -106,7 +106,8 @@ case "$1" in
                 loadkeys $settings_kb >> $log
         else
                 # try to load from lang
-                keyboardmap=`echo "$settings_lang" | cut -c1-2`
+		es_lang="`eval $essetting get Lang`"
+                keyboardmap=`echo "$es_lang" | cut -c1-2`
 		if [[ "$keyboardmap" != "" ]]; then
                 	echo "setting keyboard layout to ${keyboardmap}" >> $log
                 	loadkeys "$keyboardmap" >> $log
