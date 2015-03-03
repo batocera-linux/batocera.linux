@@ -98,16 +98,8 @@ case "$1" in
         settings_lang="`$systemsetting get language`"
         settings_kb="`$systemsetting get kb_layout`"
         if [[ "$settings_lang" != "" ]];then
-                export LANG="${settings_lang}.UTF-8"
                 echo "setting language to ${settings_lang}.UTF-8" >> $log
                 eval $essetting set Lang ${settings_lang}
-        else
-                settings_lang="`$essetting get Lang`"
-                echo $settings_lang
-                if [ "$settings_lang" == "" ];then
-                        settingsLang="en_US"
-                fi
-                export LANG="${settings_lang}.UTF-8"
         fi
         if [[ "$settings_kb" != "" ]];then
                 echo "setting keyboard layout to ${settings_kb}" >> $log
