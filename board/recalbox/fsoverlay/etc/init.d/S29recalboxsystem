@@ -107,8 +107,10 @@ case "$1" in
         else
                 # try to load from lang
                 keyboardmap=`echo "$settings_lang" | cut -c1-2`
-                echo "setting keyboard layout to ${keyboardmap}" >> $log
-                loadkeys $keyboardmap >> $log
+		if [[ "$keyboardmap" != "" ]]; then
+                	echo "setting keyboard layout to ${keyboardmap}" >> $log
+                	loadkeys "$keyboardmap" >> $log
+		fi
         fi
 	;;
   stop)
