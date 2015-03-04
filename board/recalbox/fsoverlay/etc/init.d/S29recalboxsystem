@@ -78,6 +78,15 @@ case "$1" in
 	# kodi
 	settings_kodi="`$systemsetting get enable_kodi`"
 	settings_kodi_start="`$systemsetting get kodi_at_start`"
+	settings_kodi_x="`$systemsetting get kodi_by_xbutton`"
+        if [[ "$settings_kodi_x" == "1" ]];then
+                echo "enabling kodi x" >> $log
+                eval $essetting set XKodi true
+        fi
+        if [[ "$settings_kodi_x" == "0" ]];then
+                echo "disabling kodi x" >> $log
+                eval $essetting set XKodi false
+        fi
 	if [[ "$settings_kodi" == "1" ]];then
 		echo "enabling kodi" >> $log
 		eval $essetting set EnableKodi true
@@ -112,6 +121,18 @@ case "$1" in
                 	echo "setting keyboard layout to ${keyboardmap}" >> $log
                 	loadkeys "$keyboardmap" >> $log
 		fi
+        fi
+
+	# Xbox controllers
+        settings_xbox="`$systemsetting get enable_xbox_drv`"
+        settings_xbox_nb="`$systemsetting get xboxdrv_nb_controls`"
+        if [[ "$settings_xbox" == "1" ]];then
+                echo "setting xboxdrv" >> $log
+                if [[ "$settings_xbox_nb" == "1" ]];then
+                        /usr/bin/xboxdrv --detach --daemon --id 0 --led 2 --deadzone 4000 --silent --trigger-as-button --dbus disabled --detach-kernel-driver >> $log &
+                else
+                        /usr/bin/xboxdrv --detach --daemon --id 0 --led 2 --deadzone 4000 --silent --trigger-as-button --next-controller --id 1 --led 3 --deadzone 4000 --silent --trigger-as-button --dbus disabled --detach-kernel-driver >> $log &
+                fi
         fi
 	;;
   stop)
