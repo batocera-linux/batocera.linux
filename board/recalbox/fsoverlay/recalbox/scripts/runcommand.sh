@@ -9,13 +9,19 @@
 # starttype==7: set video mode to sdtv PAL and run command
 # starttype==8: set video mode to sdtv NTSC and run command
 
+systemsetting=/recalbox/scripts/systemsetting.sh
 
 starttype=$1
 shift
+settings_mode="`$systemsetting get game_hdmi_mode`"
 
-# set cpu governor profile performance
-
-if [[ $starttype -eq 1 && ! -z `tvservice -m CEA | egrep -w "mode 1"` ]] || [[ $starttype -eq 3 ]]; then
+if [[ "$starttype" == "4" ]] &&  [[ "$settings_mode" != "" ]];then
+    tvservice -e "CEA $settings_mode"
+    fbset -depth 8 && fbset -depth 16
+    eval $@
+    tvservice -p
+    fbset -depth 8 && fbset -depth 16
+elif [[ $starttype -eq 1 && ! -z `tvservice -m CEA | egrep -w "mode 1"` ]] || [[ $starttype -eq 3 ]]; then
     tvservice -e "CEA 1"
     fbset -depth 8 && fbset -depth 16
 #   fbset -rgba 5,6,5
