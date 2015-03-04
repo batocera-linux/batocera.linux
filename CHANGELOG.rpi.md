@@ -7,6 +7,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Added z64 extenson for n64
 - Added xbox360 wireless defaut configuration
 - Fixed : power management of ew-7811un
+- Added kodi mysql support
+
 
 ## [3.2.5] - 2015-03-03
 ### Changed
