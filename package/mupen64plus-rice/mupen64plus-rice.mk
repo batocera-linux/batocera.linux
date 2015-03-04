@@ -5,7 +5,7 @@
 ################################################################################
 
 MUPEN64PLUS_RICE_VERSION = master
-MUPEN64PLUS_RICE_SITE = $(call github,gizmo98,mupen64plus-video-rice,$(MUPEN64PLUS_RICE_VERSION))
+MUPEN64PLUS_RICE_SITE = $(call github,Narann,mupen64plus-video-rice,$(MUPEN64PLUS_RICE_VERSION))
 MUPEN64PLUS_RICE_LICENSE = MIT
 MUPEN64PLUS_RICE_DEPENDENCIES = sdl2 alsa-lib rpi-userland mupen64plus-core
 MUPEN64PLUS_RICE_INSTALL_STAGING = YES
