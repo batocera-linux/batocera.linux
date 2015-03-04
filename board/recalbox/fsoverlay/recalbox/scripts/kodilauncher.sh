@@ -5,7 +5,7 @@
 # when you try to quit after seeing a movie
 # and letting the process hang
 
-/usr/lib/kodi/kodi.bin --standalone -fs -n &
+LD_LIBRARY_PATH="/usr/lib/mysql" /usr/lib/kodi/kodi.bin --standalone -fs -n &
 pid=$!
 
 sleep 5
