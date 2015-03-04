@@ -29,14 +29,15 @@ KODI_CONF_ENV = \
 	PYTHON_NOVERSIONCHECK="no-check" \
 	use_texturepacker_native=yes \
 	USE_TEXTUREPACKER_NATIVE_ROOT="$(HOST_DIR)/usr" \
-	TEXTUREPACKER_NATIVE_ROOT="$(HOST_DIR)/usr"
+	TEXTUREPACKER_NATIVE_ROOT="$(HOST_DIR)/usr" \
+	MYSQL_CONFIG="$(STAGING_DIR)/usr/bin/mysql_config"
 
 KODI_CONF_OPTS +=  \
 	--with-ffmpeg=shared \
 	--disable-crystalhd \
 	--disable-dvdcss \
 	--disable-hal \
-	--disable-mysql \
+	--enable-mysql \
 	--disable-openmax \
 	--disable-projectm \
 	--disable-pulse \
@@ -58,6 +59,14 @@ KODI_CONF_OPTS += --enable-libcap
 KODI_DEPENDENCIES += libcap
 else
 KODI_CONF_OPTS += --disable-libcap
+endif
+
+
+ifeq ($(BR2_PACKAGE_KODI_MYSQL),y)
+KODI_DEPENDENCIES += mysql
+KODI_CONF_OPTS += --enable-mysql
+else
+KODI_CONF_OPTS += --disable-mysql
 endif
 
 ifeq ($(BR2_PACKAGE_KODI_DBUS),y)
