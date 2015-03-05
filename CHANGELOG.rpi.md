@@ -3,6 +3,14 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased][unreleased]
+- Added switches in recalbox.conf
+    - kodi x button switch
+    - game resolution switch
+    - update check switch
+    - xboxdrv switch
+- Fixed : mupen rice plugin package
+- Fixed : xboxdrv pacakge
+- Added localtime support
 
 ## [3.2.6] - 2015-03-03
 ### Changed
