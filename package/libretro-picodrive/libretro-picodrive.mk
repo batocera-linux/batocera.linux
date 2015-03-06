@@ -3,13 +3,14 @@
 # libretro-picodrive
 #
 ################################################################################
-LIBRETRO_PICODRIVE_VERSION = master
+LIBRETRO_PICODRIVE_VERSION = 4cdacae8ddd5aae15a7b670efffd5688ec97371f
 LIBRETRO_PICODRIVE_SITE = $(call github,libretro,picodrive,$(LIBRETRO_PICODRIVE_VERSION))
 LIBRETRO_PICODRIVE_DEPENDENCIES = libpng sdl
 
 define LIBRETRO_PICODRIVE_CONFIGURE_CMDS
 	rm -rf $(@D)/picodrive
 	git -C $(@D) clone https://github.com/libretro/picodrive
+	git -C $(@D) checkout $(LIBRETRO_PICODRIVE_VERSION)
 	#cp -r $(@D)/../picodrivegithub/.git $(@D)/
 	git -C $(@D)/picodrive submodule update --init
 	##( cd $(@D)/picodrive && \

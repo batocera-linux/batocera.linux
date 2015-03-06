@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-SCUMMVM_VANFANEL_VERSION = gles_custom
+SCUMMVM_VANFANEL_VERSION = acf0e0f0de9ab09198e31592ea472185462e370d
 SCUMMVM_VANFANEL_REPO = vanfanel
 
 SCUMMVM_VANFANEL_SITE = $(call github,$(SCUMMVM_VANFANEL_REPO),scummvm,$(SCUMMVM_VANFANEL_VERSION))

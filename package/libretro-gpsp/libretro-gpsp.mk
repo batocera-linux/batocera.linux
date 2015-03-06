@@ -3,8 +3,8 @@
 # GPSP
 #
 ################################################################################
-LIBRETRO_GPSP_VERSION = master
-LIBRETRO_GPSP_SITE = $(call github,libretro,gpsp,master)
+LIBRETRO_GPSP_VERSION = d57f89f3f1cb7730fdaabda0237833ef3235c22c
+LIBRETRO_GPSP_SITE = $(call github,libretro,gpsp,$(LIBRETRO_GPSP_VERSION))
 
 define LIBRETRO_GPSP_BUILD_CMDS
 	CFLAGS="$(TARGET_CFLAGS)" CXXFLAGS="$(TARGET_CXXFLAGS)" $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" -C $(@D) platform="$(LIBRETRO_PLATFORM)"

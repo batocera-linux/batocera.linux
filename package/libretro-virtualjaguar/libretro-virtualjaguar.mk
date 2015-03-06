@@ -3,8 +3,8 @@
 # VIRTUALJAGUAR
 #
 ################################################################################
-LIBRETRO_VIRTUALJAGUAR_VERSION = master
-LIBRETRO_VIRTUALJAGUAR_SITE = $(call github,libretro,virtualjaguar-libretro,master)
+LIBRETRO_VIRTUALJAGUAR_VERSION = f0c1dd37649c366f4233a799442fa6854137b566
+LIBRETRO_VIRTUALJAGUAR_SITE = $(call github,libretro,virtualjaguar-libretro,$(LIBRETRO_VIRTUALJAGUAR_VERSION))
 
 define LIBRETRO_VIRTUALJAGUAR_BUILD_CMDS
 	CFLAGS="$(TARGET_CFLAGS)" CXXFLAGS="$(TARGET_CXXFLAGS)" \

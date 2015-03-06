@@ -3,7 +3,7 @@
 # qtsixa
 #
 ################################################################################
-QTSIXA_VERSION = master
+QTSIXA_VERSION = ceef35906f4c894ee0b5b0b3994b956d1f1f643c
 QTSIXA_SITE = $(call github,yarick123,qtsixa,$(QTSIXA_VERSION))
 QTSIXA_DEPENDENCIES = sdl linux-headers
 PKGCONFIG_CONFIG=$(STAGING_DIR)/usr/lib/pkgconfig

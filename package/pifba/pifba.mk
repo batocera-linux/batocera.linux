@@ -3,9 +3,10 @@
 # piFBA
 #
 ################################################################################
+
 PIFBA_VERSION = master
-PIFBA_SOURCE = $(PIFBA_VERSION).tar.gz
-PIFBA_SITE = https://github.com/digitalLumberjack/pifba/archive
+PIFBA_SITE = $(call github,libretro,libretro-fba,master)
+
 PIFBA_LICENSE = MIT
 PIFBA_DEPENDENCIES = sdl alsa-lib rpi-userland
 

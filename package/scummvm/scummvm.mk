@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-SCUMMVM_VERSION = master
+SCUMMVM_VERSION = 763a962e1456fd8402be4992ab9069e9e507ebc8
 SCUMMVM_REPO = scummvm
 
 SCUMMVM_SITE = $(call github,$(SCUMMVM_REPO),scummvm,$(SCUMMVM_VERSION))

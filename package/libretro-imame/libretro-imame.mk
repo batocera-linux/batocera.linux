@@ -3,8 +3,8 @@
 # IMAME
 #
 ################################################################################
-LIBRETRO_IMAME_VERSION = master
-LIBRETRO_IMAME_SITE = $(call github,libretro,imame4all-libretro,master)
+LIBRETRO_IMAME_VERSION = 474ff5d84fa76f54c10bd00e89f78af222df369d
+LIBRETRO_IMAME_SITE = $(call github,libretro,imame4all-libretro,$(LIBRETRO_IMAME_VERSION))
 
 define LIBRETRO_IMAME_BUILD_CMDS
 	CFLAGS="$(TARGET_CFLAGS)" CXXFLAGS="$(TARGET_CXXFLAGS)" $(MAKE) CC="$(TARGET_CC)" -C $(@D) -f makefile.libretro ARM=1

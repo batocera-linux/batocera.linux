@@ -3,8 +3,8 @@
 # FBA
 #
 ################################################################################
-LIBRETRO_FBA_VERSION = master
-LIBRETRO_FBA_SITE = $(call github,libretro,libretro-fba,master)
+LIBRETRO_FBA_VERSION = c6b13e90127ec9c6c21cfd19d95da3b6cf296cd6
+LIBRETRO_FBA_SITE = $(call github,libretro,libretro-fba,$(LIBRETRO_FBA_VERSION))
 
 ifeq ($(BR2_cortex_a7),y)
 	LIBRETRO_FBA_PLATFORM=rpi2

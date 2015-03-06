@@ -3,8 +3,8 @@
 # FMSX
 #
 ################################################################################
-LIBRETRO_FMSX_VERSION = master
-LIBRETRO_FMSX_SITE = $(call github,libretro,fmsx-libretro,master)
+LIBRETRO_FMSX_VERSION = 4de0b3499a994bbd0c1cf8999bef606cb948972b
+LIBRETRO_FMSX_SITE = $(call github,libretro,fmsx-libretro,$(LIBRETRO_FMSX_VERSION))
 
 define LIBRETRO_FMSX_BUILD_CMDS
 	CFLAGS="$(TARGET_CFLAGS)" CXXFLAGS="$(TARGET_CXXFLAGS)" \

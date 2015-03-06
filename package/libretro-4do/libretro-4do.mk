@@ -3,8 +3,8 @@
 # 4DO
 #
 ################################################################################
-LIBRETRO_4DO_VERSION = master
-LIBRETRO_4DO_SITE = $(call github,libretro,4do-libretro,master)
+LIBRETRO_4DO_VERSION = c141664f13ecbcc4c4b91dd4d00d49b691d7d546
+LIBRETRO_4DO_SITE = $(call github,libretro,4do-libretro,$(LIBRETRO_4DO_VERSION))
 
 define LIBRETRO_4DO_BUILD_CMDS
 	CFLAGS="$(TARGET_CFLAGS)" CXXFLAGS="$(TARGET_CXXFLAGS)" $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" -C $(@D) platform="$(LIBRETRO_PLATFORM)"

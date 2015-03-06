@@ -4,8 +4,8 @@
 #
 ################################################################################
 
-MUPEN64PLUS_OMX_VERSION = master
-MUPEN64PLUS_OMX_SITE = $(call github,gizmo98,mupen64plus-audio-omx,$(MUPEN64PLUS_OMX_VERSION))
+MUPEN64PLUS_OMX_VERSION = 63939f7cc2acac457bdecf536075109a9d261f03
+MUPEN64PLUS_OMX_SITE = $(call github,ricrpi,mupen64plus-audio-omx,$(MUPEN64PLUS_OMX_VERSION))
 MUPEN64PLUS_OMX_LICENSE = MIT
 MUPEN64PLUS_OMX_DEPENDENCIES = sdl2 alsa-lib rpi-userland mupen64plus-core
 MUPEN64PLUS_OMX_INSTALL_STAGING = YES

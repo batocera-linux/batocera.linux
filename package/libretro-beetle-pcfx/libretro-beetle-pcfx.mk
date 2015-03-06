@@ -3,8 +3,8 @@
 # BEETLE_PCFX
 #
 ################################################################################
-LIBRETRO_BEETLE_PCFX_VERSION = master
-LIBRETRO_BEETLE_PCFX_SITE = $(call github,libretro,beetle-pcfx-libretro,master)
+LIBRETRO_BEETLE_PCFX_VERSION = 0017f6b4e422c19f4b143855b1638da22af4a4b0
+LIBRETRO_BEETLE_PCFX_SITE = $(call github,libretro,beetle-pcfx-libretro,$(LIBRETRO_BEETLE_PCFX_VERSION))
 
 define LIBRETRO_BEETLE_PCFX_BUILD_CMDS
 	CFLAGS="$(TARGET_CFLAGS)" CXXFLAGS="$(TARGET_CXXFLAGS)" \

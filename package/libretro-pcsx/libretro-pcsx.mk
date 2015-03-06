@@ -3,8 +3,8 @@
 # PCSXREARMED
 #
 ################################################################################
-LIBRETRO_PCSX_VERSION = master
-LIBRETRO_PCSX_SITE = $(call github,libretro,pcsx_rearmed,master)
+LIBRETRO_PCSX_VERSION = 871bf1c4bfb98db8e58e3d2b37bb777ae2f41f43
+LIBRETRO_PCSX_SITE = $(call github,libretro,pcsx_rearmed,$(LIBRETRO_PCSX_VERSION))
 PCSX_INCLUDES=-I$(STAGING_DIR)/usr/include -I$(STAGING_DIR)/usr/include/interface/vcos/pthreads -I$(STAGING_DIR)/usr/include/interface/vmcs_host/linux
 
 define LIBRETRO_PCSX_CONFIGURE_CMDS

@@ -4,8 +4,8 @@
 #
 ################################################################################
 
-MUPEN64PLUS_GLES2RICE_VERSION = master
-MUPEN64PLUS_GLES2RICE_SITE = $(call github,gizmo98,mupen64plus-video-gles2rice,$(MUPEN64PLUS_GLES2RICE_VERSION))
+MUPEN64PLUS_GLES2RICE_VERSION = 63b4c305dd45cf70c734a313b275c564ca49f026
+MUPEN64PLUS_GLES2RICE_SITE = $(call github,ricrpi,mupen64plus-video-gles2rice,$(MUPEN64PLUS_GLES2RICE_VERSION))
 MUPEN64PLUS_GLES2RICE_LICENSE = MIT
 MUPEN64PLUS_GLES2RICE_DEPENDENCIES = sdl2 alsa-lib rpi-userland mupen64plus-core
 MUPEN64PLUS_GLES2RICE_INSTALL_STAGING = YES

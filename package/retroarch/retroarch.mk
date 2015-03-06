@@ -8,7 +8,7 @@
 ifeq ($(BR2_PACKAGE_RETROARCH_RPI1),y)
 	RETROARCH_VERSION = 2755abc14fe25b9f32e145dcf6ec5c9569640eb8
 else
-	RETROARCH_VERSION = master
+	RETROARCH_VERSION = cfa531ab839400f0caee8d7058b56e4320a192aa
 endif
 
 RETROARCH_SITE = https://github.com/libretro/RetroArch.git

@@ -3,8 +3,8 @@
 # SCUMMVM
 #
 ################################################################################
-LIBRETRO_SCUMMVM_VERSION = master
-LIBRETRO_SCUMMVM_SITE = $(call github,libretro,scummvm,master)
+LIBRETRO_SCUMMVM_VERSION = 6a8f4b0d84b8cf72f76c54d745fcaaba3a7ac63a
+LIBRETRO_SCUMMVM_SITE = $(call github,libretro,scummvm,$(LIBRETRO_SCUMMVM_VERSION))
 #CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" \
 #	LD="$(TARGET_LD)" RANLIB="$(TARGET_RANLIB)" AR="$(TARGET_AR) cru"  \
 
