@@ -134,6 +134,17 @@ case "$1" in
                         /usr/bin/xboxdrv --detach --daemon --id 0 --led 2 --deadzone 4000 --silent --trigger-as-button --next-controller --id 1 --led 3 --deadzone 4000 --silent --trigger-as-button --dbus disabled --detach-kernel-driver >> $log &
                 fi
         fi
+	# Updates 
+	settings_updates="`$systemsetting get enable_updates_check`"
+        if [[ "$settings_updates" == "1" ]];then
+                echo "enabling updates check" >> $log
+                eval $essetting set CheckUpdates true
+        fi
+        if [[ "$settings_updates" == "0" ]];then
+                echo "disabling updates check" >> $log
+                eval $essetting set CheckUpdates false
+        fi
+
 	;;
   stop)
 	;;
