@@ -10,9 +10,7 @@
 
 GCC_VERSION = $(call qstrip,$(BR2_GCC_VERSION))
 
-ifeq ($(findstring avr32,$(GCC_VERSION)),avr32)
-GCC_SITE = ftp://www.at91.com/pub/buildroot
-else ifeq ($(BR2_arc),y)
+ifeq ($(BR2_arc),y)
 GCC_SITE = $(call github,foss-for-synopsys-dwc-arc-processors,gcc,$(GCC_VERSION))
 GCC_SOURCE = gcc-$(GCC_VERSION).tar.gz
 else
@@ -93,7 +91,9 @@ HOST_GCC_COMMON_CONF_OPTS = \
 	--disable-libssp \
 	--disable-multilib \
 	--with-gmp=$(HOST_DIR)/usr \
-	--with-mpfr=$(HOST_DIR)/usr
+	--with-mpfr=$(HOST_DIR)/usr \
+	--with-pkgversion="Buildroot $(BR2_VERSION_FULL)" \
+	--with-bugurl="http://bugs.buildroot.net/"
 
 # Don't build documentation. It takes up extra space / build time,
 # and sometimes needs specific makeinfo versions to work
@@ -206,13 +206,6 @@ endif
 GCC_TARGET_MODE = $(call qstrip,$(BR2_GCC_TARGET_MODE))
 ifneq ($(GCC_TARGET_MODE),)
 HOST_GCC_COMMON_CONF_OPTS += --with-mode=$(GCC_TARGET_MODE)
-endif
-
-# Branding works on >= 4.3
-ifneq ($(findstring x4.2.,x$(GCC_VERSION)),x4.2.)
-HOST_GCC_COMMON_CONF_OPTS += \
-	--with-pkgversion="Buildroot $(BR2_VERSION_FULL)" \
-	--with-bugurl="http://bugs.buildroot.net/"
 endif
 
 # Enable proper double/long double for SPE ABI

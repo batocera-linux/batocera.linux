@@ -12,6 +12,10 @@ DIRECTFB_EXAMPLES_LICENSE_FILES = COPYING
 DIRECTFB_EXAMPLES_INSTALL_STAGING = YES
 DIRECTFB_EXAMPLES_DEPENDENCIES = directfb
 
+ifeq ($(BR2_STATIC_LIBS),y)
+        DIRECTFB_EXAMPLES_CONF_OPTS += LIBS=-lstdc++
+endif
+
 DIRECTFB_EXAMPLES_TARGETS_ =
 DIRECTFB_EXAMPLES_TARGETS_y =
 
@@ -94,7 +98,6 @@ define DIRECTFB_EXAMPLES_INSTALL_TARGET_CMDS
 	$(Q)mkdir -p $(TARGET_DIR)/usr/share/directfb-examples/fonts/
 	$(Q)for file in $(DIRECTFB_EXAMPLES_TARGETS_y); do \
 	        cp -dpf $(STAGING_DIR)/$$file $(TARGET_DIR)/$$file; \
-		$(STRIPCMD) $(STRIP_STRIP_UNNEEDED) $(TARGET_DIR)/$$file; \
 	done
 	$(Q)cp -rdpf $(STAGING_DIR)/usr/share/directfb-examples/fonts/decker.ttf $(TARGET_DIR)/usr/share/directfb-examples/fonts/
 	$(Q)for file in $(DIRECTFB_EXAMPLES_FONT_y); do \

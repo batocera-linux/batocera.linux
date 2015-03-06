@@ -43,7 +43,7 @@ REBAR_TARGET_DEPS_ENV = \
 
 # Install an Erlang application from $(@D).
 #
-# i.e., define a recipe that installs the "ebin priv $(2)" directories
+# i.e., define a recipe that installs the "bin ebin priv $(2)" directories
 # from $(@D) to $(1)$($(PKG)_ERLANG_LIBDIR).
 #
 #  argument 1 should typically be $(HOST_DIR), $(TARGET_DIR),
@@ -57,7 +57,7 @@ REBAR_TARGET_DEPS_ENV = \
 #
 define install-erlang-directories
 	$(INSTALL) -d $(1)/$($(PKG)_ERLANG_LIBDIR)
-	for dir in ebin priv $(2); do                                   \
+	for dir in bin ebin priv $(2); do                               \
 		if test -d $(@D)/$$dir; then                            \
 			cp -r $(@D)/$$dir $(1)$($(PKG)_ERLANG_LIBDIR);  \
 		fi;                                                     \
@@ -74,7 +74,7 @@ endef
 # For target packages for example, one uses this to setup symbolic
 # links from $(STAGING_DIR)/usr/share/rebar/deps/<erlang-app> to
 # $(STAGING_DIR)/usr/lib/erlang/lib/<erlang-app>-<version>. This
-# infrastructure points rebar at the former in order to tell rebar do
+# infrastructure points rebar at the former in order to tell rebar to
 # NOT download dependencies during the build stage, and instead use
 # the already available dependencies.
 #
@@ -195,7 +195,7 @@ $(2)_DEPENDENCIES ?= $$(filter-out host-automake host-autoconf host-libtool \
 				host-gettext host-toolchain host-erlang-rebar $(1),\
     $$(patsubst host-host-%,host-%,$$(addprefix host-,$$($(3)_DEPENDENCIES))))
 else
-# Same deal, if _USE_BUNLDED_REBAR is NO.
+# Same deal, if _USE_BUNDLED_REBAR is NO.
 $(2)_DEPENDENCIES ?= $$(filter-out  host-toolchain host-erlang-rebar $(1),\
 	$$(patsubst host-host-%,host-%,$$(addprefix host-,$$($(3)_DEPENDENCIES))))
 endif
@@ -209,7 +209,7 @@ $(2)_CONF_ENV += $$(REBAR_HOST_DEPS_ENV)
 ifndef $(2)_BUILD_CMDS
 define $(2)_BUILD_CMDS
 	(cd $$(@D); \
-		CC="$$(HOST_CC)" \
+		CC="$$(HOSTCC)" \
 		CFLAGS="$$(HOST_CFLAGS)" \
 		LDFLAGS="$$(HOST_LDFLAGS)" \
 		$$(REBAR_HOST_DEPS_ENV) \

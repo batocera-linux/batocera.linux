@@ -167,8 +167,6 @@ config BR2_PRIMARY_SITE
 	  default if the file is not found.
 	  Valid URIs are URIs recognized by $(WGET) and scp URIs of the form
 	  scp://[user@]host:path.
-	  NOTE: This works for all packages using the central package
-	  infrastructure (generic, autotools, cmake, ...)
 
 config BR2_PRIMARY_SITE_ONLY
 	bool "Only allow downloads from primary download site"
@@ -298,10 +296,6 @@ config BR2_DEPRECATED
 
 if BR2_DEPRECATED
 
-config BR2_DEPRECATED_SINCE_2014_02
-	bool
-	default y
-
 config BR2_DEPRECATED_SINCE_2014_05
 	bool
 	default y
@@ -311,6 +305,10 @@ config BR2_DEPRECATED_SINCE_2014_08
 	default y
 
 config BR2_DEPRECATED_SINCE_2015_02
+	bool
+	default y
+
+config BR2_DEPRECATED_SINCE_2015_05
 	bool
 	default y
 

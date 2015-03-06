@@ -65,6 +65,8 @@ endif
 ifeq ($(BR2_PACKAGE_LIBEVAS_X11),y)
 LIBEVAS_CONF_OPTS += --enable-software-xlib
 LIBEVAS_DEPENDENCIES += xlib_libX11 xlib_libXext
+else
+LIBEVAS_CONF_OPTS += --disable-software-xlib
 endif
 
 ifeq ($(BR2_PACKAGE_LIBEVAS_X11_GLX),y)
@@ -72,6 +74,8 @@ LIBEVAS_CONF_OPTS += --enable-gl-xlib
 LIBEVAS_DEPENDENCIES += \
 	xproto_glproto xlib_libX11 xlib_libXrender \
 	xlib_libXext libeet
+else
+LIBEVAS_CONF_OPTS += --disable-gl-xlib
 endif
 
 ifeq ($(BR2_PACKAGE_LIBEVAS_XCB),y)
@@ -107,16 +111,25 @@ LIBEVAS_CONF_ENV += \
 	GL_EET_LIBS='-leet'
 endif
 
+# libevas OpenGL flavor
 ifeq ($(BR2_PACKAGE_LIBEVAS_GL),y)
 LIBEVAS_DEPENDENCIES += mesa3d libeet
 endif
 
 ifeq ($(BR2_PACKAGE_LIBEVAS_GLES_SGX),y)
 LIBEVAS_CONF_OPTS += --enable-gl-flavor-gles --enable-gles-variety-sgx
+else
+LIBEVAS_CONF_OPTS += --disable-gles-variety-sgx
 endif
 
 ifeq ($(BR2_PACKAGE_LIBEVAS_GLES_S3C6410),y)
 LIBEVAS_CONF_OPTS += --enable-gl-flavor-gles --enable-gles-variety-s3c6410
+else
+LIBEVAS_CONF_OPTS += --disable-gles-variety-s3c6410
+endif
+
+ifeq ($(BR2_PACKAGE_LIBEVAS_GLES_SGX)$(BR2_PACKAGE_LIBEVAS_GLES_S3C6410),)
+LIBEVAS_CONF_OPTS += --disable-gl-flavor-gles
 endif
 
 # code options
@@ -203,6 +216,20 @@ LIBEVAS_CONF_OPTS += --enable-font-loader-eet
 LIBEVAS_DEPENDENCIES += libeet
 else
 LIBEVAS_CONF_OPTS += --disable-font-loader-eet
+endif
+
+ifeq ($(BR2_PACKAGE_FONTCONFIG),y)
+LIBEVAS_CONF_OPTS += --enable-fontconfig
+LIBEVAS_DEPENDENCIES += fontconfig
+else
+LIBEVAS_CONF_OPTS += --disable-fontconfig
+endif
+
+ifeq ($(BR2_PACKAGE_LIBFRIBIDI),y)
+LIBEVAS_CONF_OPTS += --enable-fribidi
+LIBEVAS_DEPENDENCIES += libfribidi
+else
+LIBEVAS_CONF_OPTS += --disable-fribidi
 endif
 
 # libevas installs the source code of examples on the target, which

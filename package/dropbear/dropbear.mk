@@ -7,13 +7,20 @@
 DROPBEAR_VERSION = 2015.67
 DROPBEAR_SITE = http://matt.ucc.asn.au/dropbear/releases
 DROPBEAR_SOURCE = dropbear-$(DROPBEAR_VERSION).tar.bz2
-DROPBEAR_TARGET_BINS = dbclient dropbearkey dropbearconvert scp ssh
-DROPBEAR_MAKE = \
-	$(MAKE) MULTI=1 SCPPROGRESS=1 \
-	PROGRAMS="dropbear dbclient dropbearkey dropbearconvert scp"
-
 DROPBEAR_LICENSE = MIT, BSD-2c-like, BSD-2c
 DROPBEAR_LICENSE_FILES = LICENSE
+DROPBEAR_TARGET_BINS = dropbearkey dropbearconvert scp
+DROPBEAR_PROGRAMS = dropbear $(DROPBEAR_TARGET_BINS)
+
+ifeq ($(BR2_PACKAGE_DROPBEAR_CLIENT),y)
+# Build dbclient, and create a convenience symlink named ssh
+DROPBEAR_PROGRAMS += dbclient
+DROPBEAR_TARGET_BINS += dbclient ssh
+endif
+
+DROPBEAR_MAKE = \
+	$(MAKE) MULTI=1 SCPPROGRESS=1 \
+	PROGRAMS="$(DROPBEAR_PROGRAMS)"
 
 ifeq ($(BR2_STATIC_LIBS),y)
 DROPBEAR_MAKE += STATIC=1
@@ -46,9 +53,9 @@ endef
 
 define DROPBEAR_INSTALL_INIT_SYSTEMD
 	$(INSTALL) -D -m 644 package/dropbear/dropbear.service \
-		$(TARGET_DIR)/etc/systemd/system/dropbear.service
+		$(TARGET_DIR)/lib/systemd/system/dropbear.service
 	mkdir -p $(TARGET_DIR)/etc/systemd/system/multi-user.target.wants
-	ln -fs ../dropbear.service \
+	ln -fs /lib/systemd/system/dropbear.service \
 		$(TARGET_DIR)/etc/systemd/system/multi-user.target.wants/dropbear.service
 endef
 

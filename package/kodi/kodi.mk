@@ -46,12 +46,25 @@ KODI_CONF_OPTS +=  \
 	--disable-vtbdecoder \
 	--enable-optimizations
 
+ifeq ($(BR2_PACKAGE_MYSQL),y)
+KODI_CONF_OPTS += --enable-mysql
+KODI_CONF_ENV += ac_cv_path_MYSQL_CONFIG="$(STAGING_DIR)/usr/bin/mysql_config"
+KODI_DEPENDENCIES += mysql
+else
+KODI_CONF_OPTS += --disable-mysql
+endif
+
 ifeq ($(BR2_PACKAGE_RPI_USERLAND),y)
 KODI_DEPENDENCIES += rpi-userland
 KODI_CONF_OPTS += --with-platform=raspberry-pi --enable-player=omxplayer
 KODI_CONF_ENV += INCLUDES="-I$(STAGING_DIR)/usr/include/interface/vcos/pthreads \
 	-I$(STAGING_DIR)/usr/include/interface/vmcs_host/linux" \
 	LIBS="-lvcos -lvchostif"
+endif
+
+ifeq ($(BR2_PACKAGE_LIBFSLVPUWRAP),y)
+KODI_DEPENDENCIES += libfslvpuwrap
+KODI_CONF_OPTS += --enable-codec=imxvpu
 endif
 
 ifeq ($(BR2_PACKAGE_LIBCAP),y)

@@ -93,7 +93,6 @@ config BR2_PACKAGE_UTIL_LINUX_EJECT
 
 config BR2_PACKAGE_UTIL_LINUX_FALLOCATE
 	bool "fallocate"
-	depends on !BR2_avr32 # fallocate not implemented
 	help
 	  Preallocate space to a file
 
@@ -160,6 +159,7 @@ comment "nsenter needs a toolchain w/ headers >= 3.0"
 
 config BR2_PACKAGE_UTIL_LINUX_MORE
 	bool "more"
+	select BR2_PACKAGE_NCURSES
 	help
 	  File perusal filter for crt viewing
 
@@ -221,6 +221,7 @@ config BR2_PACKAGE_UTIL_LINUX_SETPRIV
 
 config BR2_PACKAGE_UTIL_LINUX_SETTERM
 	bool "setterm"
+	select BR2_PACKAGE_NCURSES
 	help
 	  Set terminal attributes
 
@@ -231,6 +232,7 @@ config BR2_PACKAGE_UTIL_LINUX_SWITCH_ROOT
 
 config BR2_PACKAGE_UTIL_LINUX_UL
 	bool "ul"
+	select BR2_PACKAGE_NCURSES
 	help
 	  Do underlining
 
@@ -268,6 +270,11 @@ config BR2_PACKAGE_UTIL_LINUX_WRITE
 	bool "write"
 	help
 	  Send a message to another user
+
+config BR2_PACKAGE_UTIL_LINUX_ZRAMCTL
+	bool "zramctl"
+	help
+	  Set up and control zram devices
 
 endif
 
