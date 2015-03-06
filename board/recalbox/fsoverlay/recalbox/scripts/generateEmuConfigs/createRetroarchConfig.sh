@@ -15,12 +15,6 @@
 	retroarchdir['left']='left'
 	retroarchdir['right']='right'
 
-	declare -A retroarchaxis
-	retroarchaxis['up']='y_minus'
-	retroarchaxis['down']='y_plus'
-	retroarchaxis['left']='x_minus'
-	retroarchaxis['right']='x_plus'
-
         declare -A retroarchjoysticks
         retroarchjoysticks['joystickup']='l_y'
         retroarchjoysticks['joystickleft']='l_x'
@@ -71,7 +65,7 @@ function createRetroarchConfig {
 
 	echo "input_driver = \"udev\"" >> "$configfile"
 	
-	axisjoypad="0"
+	onlyjoystick="1"
         for rawinput in $inputs; do
                 input=`echo $rawinput | cut -d '|' -f1`
                 type=`echo $rawinput | cut -d '|' -f2`
@@ -90,15 +84,12 @@ function createRetroarchConfig {
 			echo "input_${retroarchbtn[$input]}_btn = $id" >> "$configfile"
 		fi
 
-		if [[ "$type" == "button" ]]; then
+		if [[ "$type" == "button" ]] || [[ "$type" == "axis" ]]; then
 			if [[ ${retroarchdir[$input]} ]]; then
 				echo "input_${retroarchdir[$input]}_${typetoname[$type]} = $id" >>  "$configfile"
-			fi
-		fi
-		if [[ "$type" == "axis" ]]; then
-			if [[ ${retroarchaxis[$input]} ]]; then
-				axisjoypad="1"
-				echo "input_l_${retroarchaxis[$input]}_axis = $id" >>  "$configfile"
+				if [[ "$type" == "button" ]];then
+					onlyjoystick="0"
+				fi
 			fi
 		fi
 		if [[ "$type" == "hat" ]]; then
@@ -125,12 +116,13 @@ function createRetroarchConfig {
                         echo "input_${retroarchjoysticks[$input]}_plus_${typetoname[$type]} = $newaxis" >>  "$configfile"
                 fi
 	done
-#	if [ "$axisjoypad" == "1" ]; then
-		#sed -i "s/input_player${player}_analog_dpad_mode.*//g" "$retroarch_config"
-#	fi
-	echo "Retroarch configuration ok "
-
-   fi
+	if [[ "$onlyjoystick" == "1" ]]; then
+                sed -i "s/input_player${player}_analog_dpad_mode.*/input_player${player}_analog_dpad_mode = \"0\"/g" "$retroarch_config"
+        else
+                sed -i "s/input_player${player}_analog_dpad_mode.*/input_player${player}_analog_dpad_mode = \"1\"/g" "$retroarch_config"
+        fi
+       	echo "Retroarch configuration ok "
+	fi
 }
 
 
