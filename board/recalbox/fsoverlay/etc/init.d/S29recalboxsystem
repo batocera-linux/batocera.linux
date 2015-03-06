@@ -144,7 +144,13 @@ case "$1" in
                 echo "disabling updates check" >> $log
                 eval $essetting set CheckUpdates false
         fi
-
+        # Timezone
+        settings_timezone="`$systemsetting get time_zone`"
+        if [[ "$settings_timezone" != "" && -f "/usr/share/zoneinfo/$settings_timezone" ]];then
+                echo "setting timezone to $settings_timezone" >> $log
+                echo "$settings_timezone" > /etc/timezone
+                ln -sf "/usr/share/zoneinfo/$settings_timezone" /etc/localtime
+        fi
 	;;
   stop)
 	;;
