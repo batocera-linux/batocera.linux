@@ -5,7 +5,7 @@
 ################################################################################
 
 PIFBA_VERSION = master
-PIFBA_SITE = $(call github,libretro,libretro-fba,master)
+PIFBA_SITE = $(call github,digitallumberjack,pifba,master)
 
 PIFBA_LICENSE = MIT
 PIFBA_DEPENDENCIES = sdl alsa-lib rpi-userland
