@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-MUPEN64PLUS_UICONSOLE_VERSION = master
+MUPEN64PLUS_UICONSOLE_VERSION = 398b96c3b2a07e12c1e92480d9d40793d691da3a
 MUPEN64PLUS_UICONSOLE_SITE = $(call github,mupen64plus,mupen64plus-ui-console,$(MUPEN64PLUS_UICONSOLE_VERSION))
 MUPEN64PLUS_UICONSOLE_LICENSE = MIT
 MUPEN64PLUS_UICONSOLE_DEPENDENCIES = sdl2 alsa-lib rpi-userland mupen64plus-core
