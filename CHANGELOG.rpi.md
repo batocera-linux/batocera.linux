@@ -8,9 +8,18 @@ This project adheres to [Semantic Versioning](http://semver.org/).
     - game resolution switch
     - update check switch
     - xboxdrv switch
+    - localtime switch
 - Fixed : mupen rice plugin package
 - Fixed : xboxdrv pacakge
 - Added localtime support
+- Added mgd extension for snes
+- Fixed : L2 + R2 mapping in retroarch
+- Fixed : only axis based joystick configuration
+- Changed all package to specific versions
+- Bumped to 3.19 for rpi2
+- Bumped to last userland and firmware
+- Kodi PVR support
+- Added cifs support
 
 ## [3.2.6] - 2015-03-03
 ### Changed
