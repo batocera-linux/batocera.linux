@@ -5,6 +5,8 @@
 	retroarchbtn['y']='y'
 	retroarchbtn['pageup']='l'
 	retroarchbtn['pagedown']='r'
+	retroarchbtn['l2']='l2'
+	retroarchbtn['r2']='r2'
 	retroarchbtn['start']='start'
 	retroarchbtn['select']='select'
 	#retroarchbtn['hotkey']='enable_hotkey'
