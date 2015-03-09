@@ -257,7 +257,7 @@ if [[ "$command" == "wifi" ]]; then
                 echo "starting wifi" >> $log
                 killall wpa_supplicant >> $log
                 /sbin/ifdown $wlan >> $log
-                wpa_supplicant -i$wlan -c/etc/wpa_supplicant/wpa_supplicant.conf &
+                /usr/sbin/wpa_supplicant -i$wlan -c/etc/wpa_supplicant/wpa_supplicant.conf &
                 sleep 4
                 /sbin/ifup $wlan >> $log
                 ifconfig $wlan | grep "inet addr" >> $log
