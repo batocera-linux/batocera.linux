@@ -20,6 +20,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Bumped to last userland and firmware
 - Kodi PVR support
 - Added cifs support
+- Added ipv6 support
+- Fixed : hats for specials key on retroarch
+
+## [3.2.7] - 2015-03-03
+- Fixed boot process
 
 ## [3.2.6] - 2015-03-03
 ### Changed
