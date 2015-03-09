@@ -28,6 +28,9 @@ filenameNoExt="${filename%.*}"
 
 extension="${filename##*.}"
 
+systemsetting=/recalbox/scripts/systemsetting.sh
+
+
 echo $fullfilename
 echo $filename
 echo $dirName
@@ -134,21 +137,27 @@ if [[ "$emulator" == "imame" ]]; then
 	fi
 fi
 
-
 if [[ "$emulator" == "fba" ]]; then
-        runsix=0
-        for game in ${sixBTNgames[*]}; do
-                echo "checking if $filename is like $game "
-                if [[ "$filename" =~ ^$game.* ]]; then
-                        runsix=1
-                        break
-                fi
-        done
-        if [[ "$runsix" == "1" ]]; then
-                /recalbox/scripts/runcommand.sh 4 "fba2x --configfile /recalbox/configs/fba/fba2x6btn.cfg \"$1\""
+
+        settings_fba="`$systemsetting get fba_emulator`"
+        if [[ "$settings_fba" == "libretro" ]];then
+                /recalbox/scripts/runcommand.sh 4 "$retroarchbin -L $retroarchcores/fba_libretro.so --config /recalbox/configs/retroarch/retroarchcustom.cfg \"$1\""
         else
-                /recalbox/scripts/runcommand.sh 4 "fba2x --configfile /recalbox/configs/fba/fba2x.cfg \"$1\""
+                runsix=0
+                for game in ${sixBTNgames[*]}; do
+                        echo "checking if $filename is like $game "
+                        if [[ "$filename" =~ ^$game.* ]]; then
+                                runsix=1
+                                break
+                        fi
+                done
+                if [[ "$runsix" == "1" ]]; then
+                        /recalbox/scripts/runcommand.sh 4 "fba2x --configfile /recalbox/configs/fba/fba2x6btn.cfg \"$1\""
+                else
+                        /recalbox/scripts/runcommand.sh 4 "fba2x --configfile /recalbox/configs/fba/fba2x.cfg \"$1\""
+                fi
         fi
+
 
 fi
 

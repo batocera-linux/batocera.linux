@@ -38,6 +38,8 @@ retroarch_config="$retroarch_config_dir/retroarchcustom.cfg"
 
 mupen64_config="/recalbox/configs/mupen64/mupen64plus.cfg"
 
+systemsetting=/recalbox/scripts/systemsetting.sh
+
 
 # restoring config
 cp "$fba_original" "$fba_config"
@@ -56,7 +58,8 @@ source "$my_dir/createMupen64Config.sh"
 #clean logs
 rm ~/generateconfig.log
 
-if [ "$a_system" == "fba" ];then
+settings_fba="`$systemsetting get fba_emulator`"
+if [ "$a_system" == "fba" ] && [[ "$settings_fba" != "libretro" ]];then
     createFBAConfig "$a_guid1" "1" "$a_name1"
     createFBAConfig "$a_guid2" "2" "$a_name2"
     createFBAConfig "$a_guid3" "3" "$a_name3"
