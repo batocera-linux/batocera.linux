@@ -101,9 +101,15 @@ function createRetroarchConfig {
                         fi
                 fi
 
-		if [[ ${retroarchspecials[$input]} ]];  then
-			echo "input_${retroarchspecials[$input]}_${typetoname[$type]} = $id" >>  "$configfile"
+
+		if [[ ${retroarchspecials[$input]} ]]; then
+			if [[ "$type" == "hat" ]];then
+				echo "input_${retroarchspecials[$input]}_${typetoname[$type]} = h${id}${retroarchhat[$value]}" >> "$configfile"
+			else
+				echo "input_${retroarchspecials[$input]}_${typetoname[$type]} = $id" >>  "$configfile"
+			fi
 		fi
+
 		if [[ $input == "hotkey" ]] && [ "$player" == "1" ]; then
 			sed -i "s/input_enable_hotkey_.*/input_enable_hotkey_${typetoname[$type]} = $id/g" "$retroarch_config"
 		fi
