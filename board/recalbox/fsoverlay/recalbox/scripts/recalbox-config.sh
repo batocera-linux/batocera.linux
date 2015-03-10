@@ -32,11 +32,11 @@ if [ -f "$configFile" ];then
 	fi
 
 	if [ "$mode" == "enable" ];then
-		echo "enabling overscan" >> $log
+		echo "`date` : enabling overscan" >> $log
 		sed -i "s/#\?disable_overscan=.*/disable_overscan=0/g" "$configFile"
 		sed -i "s/#\?overscan_scale=.*/overscan_scale=1/g" "$configFile"
 	elif [ "$mode" == "disable" ];then
-                echo "disabling overscan" >> $log
+                echo "`date` : disabling overscan" >> $log
                 sed -i "s/#\?disable_overscan=.*/disable_overscan=1/g" "$configFile"
                 sed -i "s/#\?overscan_scale=.*/overscan_scale=0/g" "$configFile"
 	else
@@ -119,7 +119,7 @@ if [ -f "$configFile" ];then
 	sed -i "s/#\?force_turbo=.*/force_turbo=${force_turbo[$mode]}/g" "$configFile"
 	sed -i "s/#\?over_voltage=.*/over_voltage=${over_voltage[$mode]}/g" "$configFile"
 	sed -i "s/#\?over_voltage_sdram=.*/over_voltage_sdram=${over_voltage_sdram[$mode]}/g" "$configFile"
-        echo "enabled overclock mode : $mode" >> $log
+        echo "`date` : enabled overclock mode : $mode" >> $log
 
 	exit 0
 else
@@ -135,14 +135,14 @@ if [ "$command" == "audio" ];then
 	elif [ "$mode" == "jack" ];then
 		cmdVal="1"
 	fi
-        echo "setting audio output mode : $mode" >> $log
+        echo "`date` : setting audio output mode : $mode" >> $log
 	amixer cset numid=3 $cmdVal || exit 1
 	exit 0
 fi
 
 if [ "$command" == "volume" ];then
 	if [ "$mode" != "" ];then
-        	echo "setting audio volume : $mode" >> $log
+        	echo "`date` : setting audio volume : $mode" >> $log
 		amixer set PCM -- ${mode}% || exit 1
 		exit 0
 	fi
@@ -163,7 +163,7 @@ if [ "$command" == "module" ];then
 	rmmod /lib/modules/`uname -r`/extra/${modulename}.ko >> $log
 
         if [ "$mode" == "load" ];then
-	        echo "loading module $modulename args = $map" >> $log
+	        echo "`date` : loading module $modulename args = $map" >> $log
 		insmod /lib/modules/`uname -r`/extra/${modulename}.ko $map >> $log
 		[ "$?" ] || exit 1
         fi
@@ -195,10 +195,10 @@ fi
 if [[ "$command" == "ethernet" ]]; then
         eth="eth`ifconfig -a | sed -n \"s/eth\(.\).*/\1/p\"`"
         if [[ "$?" != "0" || "$eth" == "eth" ]];then
-                echo "no eth interface found" >> $log
+                echo "`date` : no eth interface found" >> $log
                 exit 1
         else
-                echo "$eth will be used as wired interface"
+                echo "`date` : $eth will be used as wired interface"
         fi
         sed -i "s/eth[0-9]\+/$eth/g" /etc/network/interfaces
         if [[ "$mode" == "start" ]]; then
@@ -215,7 +215,7 @@ fi
 
 if [[ "$command" == "wifi" ]]; then
         if [[ ! -f "$wpafile" ]];then
-                echo "$wpafile do not exists" >> $log
+                echo "`date` : $wpafile do not exists" >> $log
                 exit 1
         fi
         ssid="$3"
@@ -223,18 +223,18 @@ if [[ "$command" == "wifi" ]]; then
 
         wlan="wlan`ifconfig -a | sed -n \"s/wlan\(.\).*/\1/p\"`"
         if [[ "$?" != "0" || "$wlan" == "wlan" ]] ;then
-                echo "no wlan interface found" >> $log
+                echo "`date` : no wlan interface found" >> $log
                 exit 1
         else
-                echo "$wlan be used as wifi interface" >> $log
+                echo "`date` : $wlan be used as wifi interface" >> $log
         fi
         sed -i "s/wlan[0-9]\+/$wlan/g" /etc/network/interfaces
 
         if [[ "$mode" == "enable" ]]; then
-                echo "enabling wifi" >> $log
+                echo "`date` : enabling wifi" >> $log
                 cat $wpafile | grep network >> $log
                 if [ "$?" != "0" ]; then
-                        echo "creating network entry in $wpafile" >> $log
+                        echo "`date` : creating network entry in $wpafile" >> $log
                         echo -e "network={\n\tssid=\"\"\n\tpsk=\"\"\n}" >> $wpafile
                 fi
                 sed -i "s/ssid=\".*\"/ssid=\"$ssid\"/g" $wpafile
@@ -254,7 +254,7 @@ if [[ "$command" == "wifi" ]]; then
                                 exit 1
                         fi
                 fi
-                echo "starting wifi" >> $log
+                echo "`date` : starting wifi" >> $log
                 killall wpa_supplicant >> $log
                 /sbin/ifdown $wlan >> $log
                 /usr/sbin/wpa_supplicant -i$wlan -c/etc/wpa_supplicant/wpa_supplicant.conf &
