@@ -82,26 +82,30 @@ function createRetroarchConfig {
 			fi
 		fi
 
+		# Buttons
 		if [[ ${retroarchbtn[$input]} ]]; then
-			echo "input_${retroarchbtn[$input]}_btn = $id" >> "$configfile"
+			if [[ "$type" == "hat" ]];then
+                                echo "input_${retroarchbtn[$input]}_${typetoname[$type]} = h${id}${retroarchhat[$value]}" >> "$configfile"
+                        else
+				echo "input_${retroarchbtn[$input]}_${typetoname[$type]} = $id" >> "$configfile"
+			fi
 		fi
 
-		if [[ "$type" == "button" ]] || [[ "$type" == "axis" ]]; then
-			if [[ ${retroarchdir[$input]} ]]; then
+		# Directions
+		if [[ ${retroarchdir[$input]} ]]; then
+			if [[ "$type" == "hat" ]]; then
+                                echo "input_${retroarchdir[$input]}_${typetoname[$type]} = h${id}${retroarchhat[$value]}" >>  "$configfile"
+				onlyjoystick="0"
+			else 
 				echo "input_${retroarchdir[$input]}_${typetoname[$type]} = $id" >>  "$configfile"
 				if [[ "$type" == "button" ]];then
 					onlyjoystick="0"
 				fi
 			fi
 		fi
-		if [[ "$type" == "hat" ]]; then
-			#checking if dir
-                        if [[ ${retroarchdir[$input]} ]]; then
-                                echo "input_${retroarchhat[$value]}_btn = h${id}${retroarchhat[$value]}" >>  "$configfile"
-                        fi
-                fi
 
 
+		# Specials
 		if [[ ${retroarchspecials[$input]} ]]; then
 			if [[ "$type" == "hat" ]];then
 				echo "input_${retroarchspecials[$input]}_${typetoname[$type]} = h${id}${retroarchhat[$value]}" >> "$configfile"
@@ -111,7 +115,11 @@ function createRetroarchConfig {
 		fi
 
 		if [[ $input == "hotkey" ]] && [ "$player" == "1" ]; then
-			sed -i "s/input_enable_hotkey_.*/input_enable_hotkey_${typetoname[$type]} = $id/g" "$retroarch_config"
+			if [[ "$type" == "hat" ]];then
+				sed -i "s/input_enable_hotkey_.*/input_enable_hotkey_${typetoname[$type]} = h${id}${retroarchhat[$value]}/g" "$retroarch_config"
+			else
+				sed -i "s/input_enable_hotkey_.*/input_enable_hotkey_${typetoname[$type]} = $id/g" "$retroarch_config"
+			fi
 		fi
 		# Gestion des joystick supplementaires
                 if [[ ${retroarchjoysticks[$input]} ]] && [[ "$type" == "axis" ]];then
