@@ -8,7 +8,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Added snes9x, catsfc, pocketsnes switch 
 - Added virtualboy platform
 - Fixed : buttons on axis in retroarch config
-
+- Added timestamps in logs
+- Fixed xboxdrv pacakge
 
 
 ## [3.2.8] - 2015-03-09

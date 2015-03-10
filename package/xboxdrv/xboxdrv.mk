@@ -5,17 +5,11 @@
 ################################################################################
 XBOXDRV_VERSION = fb787abe320741d8c341a9ad62c9a0ec513fc2cb
 XBOXDRV_SITE =  $(call github,Grumbel,xboxdrv,$(XBOXDRV_VERSION))
-XBOXDRV_DEPENDENCIES = libusb dbus-python
-#opts.Add('CPPPATH', 'Additional preprocessor paths')
-#opts.Add('CPPFLAGS', 'Additional preprocessor flags')
-#opts.Add('CPPDEFINES', 'defined constants')
-#opts.Add('LIBPATH', 'Additional library paths')
-#opts.Add('LIBS', 'Additional libraries')
-#opts.Add('LINKFLAGS', 'Linker Compiler flags')
-#opts.Add('BUILD', 'Build type: release, custom, development')
+XBOXDRV_DEPENDENCIES = libusb dbus-python host-scons
 
 define XBOXDRV_BUILD_CMDS
-        CFLAGS="$(TARGET_CFLAGS) -I$(STAGING_DIR)/usr/include" CXXFLAGS="$(TARGET_CXXFLAGS) -I$(STAGING_DIR)/usr/include" LD_FLAGS="$(TARGET_LDFLAGS)" $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" -C $(@D) PREFIX="/usr"
+        CFLAGS="$(TARGET_CFLAGS) -I$(STAGING_DIR)/usr/include" CXXFLAGS="$(TARGET_CXXFLAGS) -I$(STAGING_DIR)/usr/include" LD_FLAGS="$(TARGET_LDFLAGS)" \
+	$(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" -C $(@D) PREFIX="/usr"
 endef
 
 define XBOXDRV_INSTALL_TARGET_CMDS
