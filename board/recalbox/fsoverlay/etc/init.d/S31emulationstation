@@ -8,9 +8,9 @@ essetting=/recalbox/scripts/essetting.sh
 case "$1" in
   start)
 	settings_lang="`$essetting get Lang`"
-        echo "`date` : starting emulationstation with lang = $settings_lang" >> $log
+        echo "`logtime` : starting emulationstation with lang = $settings_lang" >> $log
         command="HOME=/root LANG=\"${settings_lang}.UTF-8\" SDL_VIDEO_GL_DRIVER=/usr/lib/libGLESv2.so SDL_NOMOUSE=1 /usr/bin/emulationstation"
-        echo "`date` : Starting emulationstation with command : " >> $log
+        echo "`logtime` : Starting emulationstation with command : " >> $log
         echo "$command" >> $log
         eval $command >> $log &
 	;;

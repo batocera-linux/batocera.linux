@@ -10,12 +10,12 @@ log=/root/recalbox.log
 
 case "$1" in
   start)
-	echo "`date` : starting new log " > $log
+	echo "`logtime` : starting new log " > $log
 
 	# Volume 
 	settingsVolume="`$essetting get SystemVolume`"
 	if [ "$settingsVolume" != "" ];then
-		echo "`date` : setting audio volume to $settingsVolume" >> $log
+		echo "`logtime` : setting audio volume to $settingsVolume" >> $log
         	eval $config_script "volume" "$settingsVolume" >> $log
 	fi
 
@@ -29,12 +29,12 @@ case "$1" in
 		eval $essetting set WifiKey "$settings_key"
 		cat $wpafile | grep network >> $log
                 if [ "$?" != "0" ]; then
-                        echo "`date` : creating network entry in $wpafile" >> $log
+                        echo "`logtime` : creating network entry in $wpafile" >> $log
                         echo -e "network={\n\tssid=\"\"\n\tpsk=\"\"\n}" >> $wpafile
                 fi
                 sed -i "s/ssid=\".*\"/ssid=\"$settings_ssid\"/g" $wpafile
                 sed -i "s/psk=\".*\"/psk=\"$settings_key\"/g" $wpafile	
-		echo "`date` : updated wifi settings : ssid=$settings_ssid key=$settings_key" >> $log
+		echo "`logtime` : updated wifi settings : ssid=$settings_ssid key=$settings_key" >> $log
 	fi		
 	
 
@@ -48,7 +48,7 @@ case "$1" in
         		settingsAudio="auto"
 		fi
 	fi		
-	echo "`date` : setting audio to $settingsAudio" >> $log
+	echo "`logtime` : setting audio to $settingsAudio" >> $log
 	eval $config_script "audio" "$settingsAudio" >> $log
 
 	# GPIO mk
@@ -56,21 +56,21 @@ case "$1" in
 	if [ "$settings_gpio_mk" == "1" ];then
 	        settings_gpio_map="`$systemsetting get mk_gpio_args`"
 		[ "$settings_gpio_map" == "" ] && settings_gpio_map="map=1,2"
-		echo "`date` : enabling mk_arcade_joystick_rpi" >> $log
+		echo "`logtime` : enabling mk_arcade_joystick_rpi" >> $log
         	eval $config_script "module" "load" mk_arcade_joystick_rpi "$settings_gpio_map" >> $log
 	else
 		# mk disabled let's check for db9
 		settings_db9="`$systemsetting get enable_db9`"
 	        if [ "$settings_db9" == "1" ];then
         	        settings_db9_map="`$systemsetting get db9_args`"
-                	echo "`date` : enabling db9" >> $log
+                	echo "`logtime` : enabling db9" >> $log
                 	eval $config_script "module" "load" db9_gpio_rpi "$settings_db9_map" >> $log
 		else 
 			# db9 and mk disabled let's check for gamecon
                 	settings_gamecon="`$systemsetting get enable_gamecon`"
                 	if [ "$settings_gamecon" == "1" ];then
                         	settings_gamecon_map="`$systemsetting get gamecon_args`"
-                        	echo "`date` : enabling gamecon" >> $log
+                        	echo "`logtime` : enabling gamecon" >> $log
                         	eval $config_script "module" "load" gamecon_gpio_rpi "$settings_gamecon_map" >> $log
 			fi
 		fi
@@ -80,45 +80,45 @@ case "$1" in
 	settings_kodi_start="`$systemsetting get kodi_at_start`"
 	settings_kodi_x="`$systemsetting get kodi_by_xbutton`"
         if [[ "$settings_kodi_x" == "1" ]];then
-                echo "`date` : enabling kodi x" >> $log
+                echo "`logtime` : enabling kodi x" >> $log
                 eval $essetting set XKodi true
         fi
         if [[ "$settings_kodi_x" == "0" ]];then
-                echo "`date` : disabling kodi x" >> $log
+                echo "`logtime` : disabling kodi x" >> $log
                 eval $essetting set XKodi false
         fi
 	if [[ "$settings_kodi" == "1" ]];then
-		echo "`date` : enabling kodi" >> $log
+		echo "`logtime` : enabling kodi" >> $log
 		eval $essetting set EnableKodi true
 	fi
 	if [[ "$settings_kodi" == "0" ]];then
-		echo "`date` : disabling kodi" >> $log
+		echo "`logtime` : disabling kodi" >> $log
 		eval $essetting set EnableKodi false
 	fi
 	if [[ "$settings_kodi_start" == "1" ]];then
-		echo "`date` : enabling kodi at startup" >> $log
+		echo "`logtime` : enabling kodi at startup" >> $log
 		eval $essetting set KodiStartup true
 	fi
 	if [[ "$settings_kodi_start" == "0" ]];then
-		echo "`date` : disabling kodi at startup" >> $log
+		echo "`logtime` : disabling kodi at startup" >> $log
 		eval $essetting set KodiStartup false
 	fi
 	# Keyboard and lang
         settings_lang="`$systemsetting get language`"
         settings_kb="`$systemsetting get kb_layout`"
         if [[ "$settings_lang" != "" ]];then
-                echo "`date` : setting language to ${settings_lang}.UTF-8" >> $log
+                echo "`logtime` : setting language to ${settings_lang}.UTF-8" >> $log
                 eval $essetting set Lang ${settings_lang}
         fi
         if [[ "$settings_kb" != "" ]];then
-                echo "`date` : setting keyboard layout to ${settings_kb}" >> $log
+                echo "`logtime` : setting keyboard layout to ${settings_kb}" >> $log
                 loadkeys $settings_kb >> $log
         else
                 # try to load from lang
 		es_lang="`eval $essetting get Lang`"
                 keyboardmap=`echo "$es_lang" | cut -c1-2`
 		if [[ "$keyboardmap" != "" ]]; then
-                	echo "`date` : setting keyboard layout to ${keyboardmap}" >> $log
+                	echo "`logtime` : setting keyboard layout to ${keyboardmap}" >> $log
                 	loadkeys "$keyboardmap" >> $log
 		fi
         fi
@@ -127,7 +127,7 @@ case "$1" in
         settings_xbox="`$systemsetting get enable_xbox_drv`"
         settings_xbox_nb="`$systemsetting get xboxdrv_nb_controls`"
         if [[ "$settings_xbox" == "1" ]];then
-                echo "`date` : setting xboxdrv" >> $log
+                echo "`logtime` : setting xboxdrv" >> $log
                 if [[ "$settings_xbox_nb" == "1" ]];then
                         /usr/bin/xboxdrv --detach --daemon --id 0 --led 2 --deadzone 4000 --silent --trigger-as-button --dbus disabled --detach-kernel-driver >> $log &
                 else
@@ -137,17 +137,17 @@ case "$1" in
 	# Updates 
 	settings_updates="`$systemsetting get enable_updates_check`"
         if [[ "$settings_updates" == "1" ]];then
-                echo "`date` : enabling updates check" >> $log
+                echo "`logtime` : enabling updates check" >> $log
                 eval $essetting set CheckUpdates true
         fi
         if [[ "$settings_updates" == "0" ]];then
-                echo "`date` : disabling updates check" >> $log
+                echo "`logtime` : disabling updates check" >> $log
                 eval $essetting set CheckUpdates false
         fi
         # Timezone
         settings_timezone="`$systemsetting get time_zone`"
         if [[ "$settings_timezone" != "" && -f "/usr/share/zoneinfo/$settings_timezone" ]];then
-                echo "`date` : setting timezone to $settings_timezone" >> $log
+                echo "`logtime` : setting timezone to $settings_timezone" >> $log
                 echo "$settings_timezone" > /etc/timezone
                 ln -sf "/usr/share/zoneinfo/$settings_timezone" /etc/localtime
         fi
