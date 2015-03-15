@@ -70,7 +70,7 @@ function createFBAConfig {
                 if [[ ${fbadir[$input]} ]]; then
                         if [[ "$type" == "axis" ]]; then
                                 echo "JA_${fbaaxis[$input]}_${player}=${id}" >> "$fba_config_6btn"                            
-			else
+			elif [[ "$type" == "button" ]];then
                                 echo "${fbadir[$input]}_${player}=${id}" >> "$fba_config_6btn"
                         fi
                 fi
@@ -90,7 +90,7 @@ function createFBAConfig {
 		if [[ ${fbadir[$input]} ]]; then
 			if [[ "$type" == "axis" ]]; then
 			        echo "JA_${fbaaxis[$input]}_${player}=${id}"  >> "$fba_config"
-			else
+			elif [[ "$type" == "button" ]];then
 			        echo "${fbadir[$input]}_${player}=${id}" >> "$fba_config"
 			fi
 		fi
