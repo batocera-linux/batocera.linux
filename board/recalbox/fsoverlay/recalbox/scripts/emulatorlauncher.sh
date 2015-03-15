@@ -150,11 +150,6 @@ if [[ "$emulator" == "imame" ]]; then
 fi
 
 if [[ "$emulator" == "fba" ]]; then
-
-        settings_fba="`$systemsetting get fba_emulator`"
-        if [[ "$settings_fba" == "libretro" ]];then
-                /recalbox/scripts/runcommand.sh 4 "$retroarchbin -L $retroarchcores/fba_libretro.so --config /recalbox/configs/retroarch/retroarchcustom.cfg \"$1\""
-        else
                 runsix=0
                 for game in ${sixBTNgames[*]}; do
                         echo "checking if $filename is like $game "
@@ -168,9 +163,9 @@ if [[ "$emulator" == "fba" ]]; then
                 else
                         /recalbox/scripts/runcommand.sh 4 "fba2x --configfile /recalbox/configs/fba/fba2x.cfg \"$1\""
                 fi
-        fi
-
-
+fi
+if [[ "$emulator" == "fbalibretro" ]]; then
+	/recalbox/scripts/runcommand.sh 4 "$retroarchbin -L $retroarchcores/fba_libretro.so --config /recalbox/configs/retroarch/retroarchcustom.cfg \"$1\""
 fi
 
 if [[ "$emulator" == "scummvm" ]]; then

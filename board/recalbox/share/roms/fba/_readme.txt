@@ -4,9 +4,6 @@ Put your fba roms in this directory.
 
 Rom files must have a ".fba" or ".zip"  extension.
 
-Here is the list of compatible roms :
-https://code.google.com/p/pifba/source/browse/FBAcapex_src/gamelist.txt
+The file clrmamepro/piFBA_gamelist.txt list compatible games.
 
-You can download fba roms on planetemu :
-http://www.planetemu.net/roms/fb-alpha
-
+You can use clrmamepro available at http://mamedev.emulab.it/clrmamepro/ and use the .dat file in clrmamepro directory to check your roms.
