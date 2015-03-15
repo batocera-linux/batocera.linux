@@ -13,6 +13,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Bumbep to Kodi-14.2-rc1
 - Added clrmame info and dat files for mame and fba
 - Added fbalibretro system
+- Added italian translation
 
 ## [3.2.8] - 2015-03-09
 ### Changed
