@@ -3,6 +3,10 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased][unreleased]
+- Corrected itialian translation
+- recompiled modules for 3.19
+
+## [3.2.8] - 2015-03-15
 ### Changed
 - Added fba emulator switch
 - Added snes9x, catsfc, pocketsnes switch 
