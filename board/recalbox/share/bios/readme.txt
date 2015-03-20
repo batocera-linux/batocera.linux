@@ -1,6 +1,5 @@
-Utilisez la commande md5 pour verifier le checksum de vos fichiers
-Voici la liste des bios compatibles, avec le nom correspondant, triés par systemes.
-
+Use the md5 command to get the checksum of your files.
+Here a the compatible md5 and filenames, per system.
 
 - Sega 32X : 
 
