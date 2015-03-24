@@ -3,10 +3,16 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased][unreleased]
+
+## [3.2.11] - 2015-03-24
+- Corrected issues with controllers with idientical names
+- Added zoid theme
+
+## [3.2.10] - 2015-03-17
 - Corrected itialian translation
 - recompiled modules for 3.19
 
-## [3.2.8] - 2015-03-15
+## [3.2.9] - 2015-03-15
 ### Changed
 - Added fba emulator switch
 - Added snes9x, catsfc, pocketsnes switch 
