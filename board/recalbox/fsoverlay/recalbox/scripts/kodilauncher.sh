@@ -15,7 +15,7 @@ while [[ "$running" == "1" ]]; do
         sleep 3
         nbThread=`cat /proc/$pid/status | grep Threads: | cut -d":" -f2 | tr -d '[[:space:]]'`
         if [[ "$nbThread" -lt "8" ]];then
-                kill $pid
+                kill -9 $pid
                 running=0
         fi
 done
