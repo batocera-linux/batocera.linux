@@ -1,0 +1,11 @@
+config BR2_PACKAGE_LIBRETRO_VECX
+        bool "libretro-vecx"
+	depends on BR2_PACKAGE_RETROARCH
+	depends on BR2_INSTALL_LIBSTDCPP
+        help
+          A libretro Vectrex emulator core for ARM.
+
+	  http://www.libretro.com
+
+comment "LIBRETRO_VECX needs a toolchain w/ C++"
+	depends on !BR2_INSTALL_LIBSTDCPP

@@ -134,6 +134,14 @@ if [[ "$emulator" == "ngp" ]]; then
 	/recalbox/scripts/runcommand.sh 4 "$retroarchbin -L $retroarchcores/mednafen_ngp_libretro.so --config /recalbox/configs/retroarch/retroarchcustom.cfg \"$1\""
 fi
 
+if [[ "$emulator" == "vectrex" ]]; then
+	/recalbox/scripts/runcommand.sh 4 "$retroarchbin -L $retroarchcores/vecx_libretro.so --config /recalbox/configs/retroarch/retroarchcustom.cfg \"$1\""
+fi
+
+if [[ "$emulator" == "lynx" ]]; then
+	/recalbox/scripts/runcommand.sh 4 "$retroarchbin -L $retroarchcores/mednafen_lynx_libretro.so --config /recalbox/configs/retroarch/retroarchcustom.cfg \"$1\""
+fi
+
 if [[ "$emulator" == "atari2600" ]]; then
 	/recalbox/scripts/runcommand.sh 4 "$retroarchbin -L $retroarchcores/stella_libretro.so --config /recalbox/configs/retroarch/retroarchcustom.cfg \"$1\""
 fi
