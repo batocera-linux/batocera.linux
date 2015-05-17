@@ -11,6 +11,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - modif zoid theme
 - patched kernel to support retrobit controllers
 - patched kernel to support 4NES4SNES controllers
+- patched kernel to fix the blinking xbox led. Only on rpi2
+- added gpu_mem for 256mo rpi1
 
 ## [3.2.11] - 2015-03-24
 - Corrected issues with controllers with idientical names
