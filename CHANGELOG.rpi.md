@@ -10,6 +10,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Added PRBoom libretro 
 - modif zoid theme
 - patched kernel to support retrobit controllers
+- patched kernel to support 4NES4SNES controllers
 
 ## [3.2.11] - 2015-03-24
 - Corrected issues with controllers with idientical names
