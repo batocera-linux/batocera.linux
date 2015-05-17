@@ -3,6 +3,13 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased][unreleased]
+- Added NeoGeo Pocket Color libretro emulator
+- Added Vectrex libretro emulator
+- Added Game And Watch libretro emulator
+- Added Lynx libretro emulator
+- Added PRBoom libretro 
+- modif zoid theme
+- patched kernel to support retrobit controllers
 
 ## [3.2.11] - 2015-03-24
 - Corrected issues with controllers with idientical names
