@@ -1,0 +1,5 @@
+config BR2_PACKAGE_PYTHON_ES_SCRAPER
+	bool "python-es-scraper"
+	depends on BR2_PACKAGE_PYTHON
+	help
+		Scrapper for emulationstation in commandline
