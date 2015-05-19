@@ -66,6 +66,13 @@ if [ "$a_system" == "fba" ] && [[ "$settings_fba" != "libretro" ]];then
     createFBAConfig "$a_guid4" "4" "$a_name4"
     setFBAJoypadIndexes "$a_name1" "$a_name2" "$a_name3" "$a_name4"
     setFBAExtraConfig
+elif [ "$a_system" == "neogeo" ];then
+    createFBAConfig "$a_guid1" "1" "$a_name1"
+    createFBAConfig "$a_guid2" "2" "$a_name2"
+    createFBAConfig "$a_guid3" "3" "$a_name3"
+    createFBAConfig "$a_guid4" "4" "$a_name4"
+    setFBAJoypadIndexes "$a_name1" "$a_name2" "$a_name3" "$a_name4"
+    setFBAExtraConfig
 elif [ "$a_system" == "n64" ];then
     createMupen64Config "$a_guid1" "1" "$a_udev1"
 else

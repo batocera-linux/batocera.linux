@@ -3,6 +3,7 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased][unreleased]
+- Added NeoGeo as a separated system
 - Added NeoGeo Pocket Color libretro emulator
 - Added Vectrex libretro emulator
 - Added Game And Watch libretro emulator
