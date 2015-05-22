@@ -1,0 +1,36 @@
+--- a/Makefile	2015-05-19 12:47:40.877553797 +0200
++++ b/Makefile	2015-05-19 11:10:05.000000000 +0200
+@@ -79,6 +79,33 @@
+    CFLAGS += -I$(shell psp-config --pspsdk-path)/include
+    LUA_MYCFLAGS := $(DEFINES) $(CFLAGS)
+    STATIC_LINKING = 1
++else ifneq (,$(findstring armv,$(platform)))
++   TARGET := $(TARGET_NAME)_libretro.so
++   SHARED := -shared -Wl,--no-undefined
++   fpic := -fPIC
++   CFLAGS += -D_GNU_SOURCE=1
++   CC = gcc
++ifneq (,$(findstring cortexa8,$(platform)))
++   CFLAGS += -marm -mcpu=cortex-a8
++   ASFLAGS += -mcpu=cortex-a8
++else ifneq (,$(findstring cortexa9,$(platform)))
++   CFLAGS += -marm -mcpu=cortex-a9
++   ASFLAGS += -mcpu=cortex-a9
++endif
++   CFLAGS += -marm
++ifneq (,$(findstring neon,$(platform)))
++   CFLAGS += -mfpu=neon
++   ASFLAGS += -mfpu=neon
++   HAVE_NEON = 1
++endif
++ifneq (,$(findstring softfloat,$(platform)))
++   CFLAGS += -mfloat-abi=softfp
++   ASFLAGS += -mfloat-abi=softfp
++else ifneq (,$(findstring hardfloat,$(platform)))
++   CFLAGS += -mfloat-abi=hard
++   ASFLAGS += -mfloat-abi=hard
++endif
++   CFLAGS += -DARM
+ else
+    CC = gcc
+    TARGET := $(TARGET_NAME)_retro.dll

@@ -3,6 +3,8 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased][unreleased]
+- Added Wonderswan Color libretro emulator
+- Added Lutro libretro core (LUA framework)
 - Added NeoGeo as a separated system
 - Added NeoGeo Pocket Color libretro emulator
 - Added Vectrex libretro emulator
