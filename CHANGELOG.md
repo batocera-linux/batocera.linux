@@ -17,6 +17,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - patched kernel to fix the blinking xbox led. Only on rpi2
 - added gpu_mem for 256mo rpi1
 - unified the branches rpi and rpi2
+- added libretro cheats
+
 
 ## [3.2.11] - 2015-03-24
 - Corrected issues with controllers with idientical names
