@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-QEMU_VERSION = 2.1.2
+QEMU_VERSION = 2.3.0
 QEMU_SOURCE = qemu-$(QEMU_VERSION).tar.bz2
 QEMU_SITE = http://wiki.qemu.org/download
 QEMU_LICENSE = GPLv2 LGPLv2.1 MIT BSD-3c BSD-2c Others/BSD-1c
@@ -32,14 +32,14 @@ HOST_QEMU_DEPENDENCIES = host-pkgconf host-python host-zlib host-libglib2 host-p
 #       microblaze      microblaze
 #       mips            mips
 #       mipsel          mipsel
-#       mips64          ?
-#       mips64el        ?
+#       mips64          mips64
+#       mips64el        mips64el
 #       powerpc         ppc
 #       sh2a            not supported
 #       sh4             sh4
 #       sh4eb           sh4eb
-#       sh4a            ?
-#       sh4aeb          ?
+#       sh4a            sh4
+#       sh4aeb          sh4eb
 #       sh64            not supported
 #       sparc           sparc
 
@@ -55,6 +55,12 @@ HOST_QEMU_ARCH = i386
 endif
 ifeq ($(HOST_QEMU_ARCH),powerpc)
 HOST_QEMU_ARCH = ppc
+endif
+ifeq ($(HOST_QEMU_ARCH),sh4a)
+HOST_QEMU_ARCH = sh4
+endif
+ifeq ($(HOST_QEMU_ARCH),sh4aeb)
+HOST_QEMU_ARCH = sh4eb
 endif
 HOST_QEMU_TARGETS = $(HOST_QEMU_ARCH)-linux-user
 
@@ -79,8 +85,10 @@ HOST_QEMU_COMPARE_VERSION = $(shell test $(HOST_QEMU_HOST_SYSTEM_VERSION) -ge $(
 # built with kernel headers that are older or the same as the kernel
 # version running on the host machine.
 #
+ifeq ($(BR_BUILDING),y)
 ifneq ($(HOST_QEMU_COMPARE_VERSION),OK)
 $(error "Refusing to build qemu-user: target Linux version newer than host's.")
+endif
 endif
 endif
 

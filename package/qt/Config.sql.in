@@ -23,7 +23,7 @@ config BR2_PACKAGE_QT_IBASE
 
 config BR2_PACKAGE_QT_ODBC
 	bool "ODBC Driver"
-	depends on BROKEN # libodbc not in BR
+	select BR2_PACKAGE_UNIXODBC
 	help
 	  Build ODBC driver
 	  If unsure, say n.
@@ -31,13 +31,13 @@ config BR2_PACKAGE_QT_ODBC
 config BR2_PACKAGE_QT_PSQL
 	bool "PostgreSQL Driver"
 	select BR2_PACKAGE_POSTGRESQL
-	depends on BR2_TOOLCHAIN_USES_GLIBC
+	depends on !BR2_STATIC_LIBS
 	help
 	  Build PostgreSQL driver
 	  If unsure, say n.
 
-comment "PostgreSQL needs an (e)glibc toolchain"
-	depends on !BR2_TOOLCHAIN_USES_GLIBC
+comment "PostgreSQL driver needs a toolchain w/ dynamic library"
+	depends on BR2_STATIC_LIBS
 
 choice
 	prompt "SQLite 3 support"

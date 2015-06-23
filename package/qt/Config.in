@@ -412,11 +412,15 @@ config BR2_PACKAGE_QT_ARCH_SUPPORTS_WEBKIT
 	default y if BR2_arm || BR2_armeb || BR2_i386 || BR2_microblazeel || \
 		BR2_microblazebe || BR2_mips || BR2_mipsel || \
 		(BR2_mips64 || BR2_mips64el) && !BR2_MIPS_NABI32 || BR2_powerpc || \
-		BR2_powerpc64 || BR2_powerpc64el || BR2_sh4 || BR2_sh4eb || \
-		BR2_sh4a || BR2_sh4aeb || BR2_sparc || BR2_x86_64
+		BR2_powerpc64 || BR2_powerpc64le || BR2_sparc || BR2_x86_64
+	# The CodeSourcery SuperH toolchain fails to build Webkit,
+	# with an assertion failure in binutils.
+	default y if (BR2_sh4 || BR2_sh4eb || BR2_sh4a || BR2_sh4aeb) && \
+		!BR2_TOOLCHAIN_EXTERNAL_CODESOURCERY_SH201209
 
 config BR2_PACKAGE_QT_WEBKIT
 	bool "WebKit Module"
+	depends on BR2_PACKAGE_QT_SCRIPT
 	depends on BR2_PACKAGE_QT_SHARED
 	depends on BR2_PACKAGE_QT_GUI_MODULE
 	depends on BR2_PACKAGE_QT_NETWORK
@@ -426,8 +430,9 @@ config BR2_PACKAGE_QT_WEBKIT
 	  Build the WebKit module.
 	  If unsure, say n.
 
-comment "WebKit needs shared library/NPTL toolchain/gui/network support"
-	depends on !(BR2_PACKAGE_QT_SHARED && BR2_PACKAGE_QT_GUI_MODULE && BR2_PACKAGE_QT_NETWORK)
+comment "WebKit needs shared library/NPTL toolchain/script/gui/network support"
+	depends on !(BR2_PACKAGE_QT_SCRIPT && BR2_PACKAGE_QT_SHARED && \
+		BR2_PACKAGE_QT_GUI_MODULE && BR2_PACKAGE_QT_NETWORK)
 	depends on !BR2_TOOLCHAIN_HAS_THREADS_NPTL
 	depends on BR2_PACKAGE_QT_ARCH_SUPPORTS_WEBKIT
 
@@ -453,7 +458,7 @@ config BR2_PACKAGE_QT_ARCH_SUPPORTS_SCRIPT
 	default y if BR2_arm || BR2_armeb || aarch64 || BR2_i386 || \
 		BR2_microblazeel || BR2_microblazebe || BR2_mips || BR2_mipsel || \
 		BR2_mips64 || BR2_mips64el || BR2_nios2 || BR2_powerpc || \
-		BR2_powerpc64 || BR2_powerpc64el || BR2_sh4 || BR2_sh4eb || \
+		BR2_powerpc64 || BR2_powerpc64le || BR2_sh4 || BR2_sh4eb || \
 		BR2_sh4a || BR2_sh4aeb || BR2_sparc || BR2_x86_64
 
 config BR2_PACKAGE_QT_SCRIPT

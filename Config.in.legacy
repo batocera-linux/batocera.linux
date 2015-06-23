@@ -52,6 +52,12 @@
 #
 # [End of example]
 
+config BR2_SKIP_LEGACY
+	bool
+	option env="SKIP_LEGACY"
+
+if !BR2_SKIP_LEGACY
+
 config BR2_LEGACY
 	bool
 	help
@@ -99,7 +105,106 @@ comment "----------------------------------------------------"
 endif
 
 ###############################################################################
+comment "Legacy options removed in 2015.08"
 
+config BR2_TARGET_UBOOT_NETWORK
+	bool "U-Boot custom network settings removed"
+	select BR2_LEGACY
+	help
+	  U-Boot's custom network settings options have been removed.
+
+###############################################################################
+comment "Legacy options removed in 2015.05"
+
+config BR2_TARGET_ROOTFS_JFFS2_NANDFLASH_512_16K
+	bool "jffs2 16kB erasesize NAND flash option renamed"
+	select BR2_LEGACY
+	select BR2_TARGET_ROOTFS_JFFS2_NANDFLASH_16K
+	help
+	  The JFFS2 NAND flash options now longer include the page
+	  size.
+
+config BR2_TARGET_ROOTFS_JFFS2_NANDFLASH_2K_128K
+	bool "jffs2 128kB erasesize NAND flash option renamed"
+	select BR2_LEGACY
+	select BR2_TARGET_ROOTFS_JFFS2_NANDFLASH_128K
+	help
+	  The JFFS2 NAND flash options now longer include the page
+	  size.
+
+config BR2_PACKAGE_MONO_20
+	bool "2.0/3.5 .Net Runtime"
+	select BR2_LEGACY
+	help
+	  This option no longer exists, all versions of the .Net
+	  runtime are now installed.
+
+config BR2_PACKAGE_MONO_40
+	bool "4.0 .Net Runtime"
+	select BR2_LEGACY
+	help
+	  This option no longer exists, all versions of the .Net
+	  runtime are now installed.
+
+config BR2_PACKAGE_MONO_45
+	bool "4.5 .Net Runtime"
+	select BR2_LEGACY
+	help
+	  This option no longer exists, all versions of the .Net
+	  runtime are now installed.
+
+config BR2_CIVETWEB_WITH_LUA
+	bool "civetweb lua option renamed"
+	select BR2_LEGACY
+	select BR2_PACKAGE_CIVETWEB_WITH_LUA
+	help
+	  civetweb's lua option has been renamed to
+	  BR2_PACKAGE_CIVETWEB_WITH_LUA to be aligned with how other
+	  packages name options.
+
+config BR2_PACKAGE_TIFF_TIFF2PDF
+	bool "tiff utility-specific option removed"
+	select BR2_LEGACY
+	select BR2_PACKAGE_TIFF_UTILITIES
+	help
+	  utility-specific options have been removed in favour of
+	  the new option BR2_PACKAGE_TIFF_UTILITIES.
+
+config BR2_PACKAGE_TIFF_TIFFCP
+	bool "tiff utility-specific option removed"
+	select BR2_LEGACY
+	select BR2_PACKAGE_TIFF_UTILITIES
+	help
+	  utility-specific options have been removed in favour of
+	  the new option BR2_PACKAGE_TIFF_UTILITIES.
+
+config BR2_LINUX_KERNEL_EXT_RTAI_PATCH
+	bool "RTAI patch file path has been removed"
+	help
+	  This option has never worked, so it has been removed.
+
+config BR2_TARGET_GENERIC_PASSWD_DES
+	bool "Encoding passwords with DES has been removed"
+	select BR2_LEGACY
+	help
+	  Paswords can now only be encoded with either of md5, sha256 or sha512.
+	  The default is md5, which is stronger that DES (but still pretty weak).
+
+config BR2_PACKAGE_GTK2_THEME_HICOLOR
+	bool "hicolor (default theme) is a duplicate"
+	select BR2_LEGACY
+	select BR2_PACKAGE_HICOLOR_ICON_THEME
+	help
+	  The option was just a duplicate of hicolor icon theme.
+
+config BR2_PACKAGE_VALGRIND_PTRCHECK
+	bool "valgrind's PTRCheck was renamed to SGCheck"
+	select BR2_LEGACY
+	select BR2_PACKAGE_VALGRIND_SGCHECK
+	help
+	  PTRCheck was renamed to SGCheck in valgrind
+
+###############################################################################
 comment "Legacy options removed in 2015.02"
 
 config BR2_PACKAGE_LIBGC
@@ -1265,3 +1370,5 @@ config BR2_BFIN_FLAT
 	select BR2_LEGACY
 
 endmenu
+
+endif # !SKIP_LEGACY

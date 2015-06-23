@@ -4,14 +4,15 @@
 #
 ################################################################################
 
-SANE_BACKENDS_VERSION = 1.0.22
-SANE_BACKENDS_SITE = http://sources.buildroot.net
+SANE_BACKENDS_VERSION = 1.0.24
+SANE_BACKENDS_SITE = https://alioth.debian.org/frs/download.php/file/3958
 SANE_BACKENDS_CONFIG_SCRIPTS = sane-config
 SANE_BACKENDS_LICENSE = GPLv2+
 SANE_BACKENDS_LICENSE_FILES = COPYING
 SANE_BACKENDS_INSTALL_STAGING = YES
-# 0003-remove-unsafe-headers-path.patch patch configure.in
-SANE_BACKENDS_AUTORECONF = YES
+
+SANE_BACKENDS_CONF_OPTS = \
+	$(if $(BR2_TOOLCHAIN_HAS_THREADS),--enable-pthread,--disable-pthread)
 
 ifeq ($(BR2_PACKAGE_LIBUSB),y)
 SANE_BACKENDS_DEPENDENCIES += libusb

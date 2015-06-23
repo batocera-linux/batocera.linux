@@ -4,11 +4,14 @@
 #
 ################################################################################
 
-STUNNEL_VERSION = 5.09
-STUNNEL_SITE = http://www.usenix.org.uk/mirrors/stunnel/archive/5.x
+STUNNEL_VERSION_MAJOR = 5
+STUNNEL_VERSION = $(STUNNEL_VERSION_MAJOR).18
+STUNNEL_SITE = http://www.usenix.org.uk/mirrors/stunnel/archive/$(STUNNEL_VERSION_MAJOR).x
 STUNNEL_DEPENDENCIES = openssl
 STUNNEL_CONF_OPTS = --with-ssl=$(STAGING_DIR)/usr --with-threads=fork \
 	--disable-libwrap
+STUNNEL_CONF_ENV = \
+	ax_cv_check_cflags___fstack_protector=$(if $(BR2_ENABLE_SSP),yes,no)
 STUNNEL_LICENSE = GPLv2+
 STUNNEL_LICENSE_FILES = COPYING COPYRIGHT.GPL
 

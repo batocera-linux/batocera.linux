@@ -63,7 +63,10 @@ LIBEVAS_CONF_OPTS += --enable-buffer
 endif
 
 ifeq ($(BR2_PACKAGE_LIBEVAS_X11),y)
-LIBEVAS_CONF_OPTS += --enable-software-xlib
+LIBEVAS_CONF_OPTS += --enable-software-xlib \
+	--with-x=$(STAGING_DIR) \
+	--x-includes=$(STAGING_DIR)/usr/include \
+	--x-libraries=$(STAGING_DIR)/usr/lib
 LIBEVAS_DEPENDENCIES += xlib_libX11 xlib_libXext
 else
 LIBEVAS_CONF_OPTS += --disable-software-xlib
@@ -180,7 +183,7 @@ endif
 
 ifeq ($(BR2_PACKAGE_LIBEVAS_GIF),y)
 LIBEVAS_CONF_OPTS += --enable-image-loader-gif
-LIBEVAS_DEPENDENCIES += libungif
+LIBEVAS_DEPENDENCIES += giflib
 else
 LIBEVAS_CONF_OPTS += --disable-image-loader-gif
 endif

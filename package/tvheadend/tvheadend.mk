@@ -4,11 +4,15 @@
 #
 ################################################################################
 
-TVHEADEND_VERSION = 7006b9fd88ce0cf54d59399df40fe4ee003c4180
+TVHEADEND_VERSION = 8d561f11d6e3678f801803d7c69cf32d5b915ec2
 TVHEADEND_SITE = $(call github,tvheadend,tvheadend,$(TVHEADEND_VERSION))
 TVHEADEND_LICENSE = GPLv3+
 TVHEADEND_LICENSE_FILES = LICENSE.md
-TVHEADEND_DEPENDENCIES = host-pkgconf $(if $(BR2_PACKAGE_PYTHON3),host-python3,host-python) openssl
+TVHEADEND_DEPENDENCIES = \
+	host-gettext \
+	host-pkgconf \
+	$(if $(BR2_PACKAGE_PYTHON3),host-python3,host-python) \
+	openssl
 
 ifeq ($(BR2_PACKAGE_AVAHI),y)
 TVHEADEND_DEPENDENCIES += avahi
@@ -40,6 +44,16 @@ endif
 
 TVHEADEND_DEPENDENCIES += dtv-scan-tables
 
+# The tvheadend build system expects the transponder data to be present inside
+# its source tree. To prevent a download initiated by the build system just
+# copy the data files in the right place and add the corresponding stamp file.
+define TVHEADEND_INSTALL_DTV_SCAN_TABLES
+	$(INSTALL) -d $(@D)/data/dvb-scan
+	cp -r $(TARGET_DIR)/usr/share/dvb/* $(@D)/data/dvb-scan/
+	touch $(@D)/data/dvb-scan/.stamp
+endef
+TVHEADEND_PRE_CONFIGURE_HOOKS += TVHEADEND_INSTALL_DTV_SCAN_TABLES
+
 define TVHEADEND_CONFIGURE_CMDS
 	(cd $(@D);						\
 		$(TARGET_CONFIGURE_OPTS)			\
@@ -57,13 +71,7 @@ define TVHEADEND_CONFIGURE_CMDS
 	)
 endef
 
-# The tvheadend build system expects the transponder data to be present inside
-# its source tree. To prevent a downloaded initiated by the build system just
-# copy the data files in the right place and add the corresponding stamp file.
 define TVHEADEND_BUILD_CMDS
-	$(INSTALL) -d $(@D)/data/dvb-scan
-	cp -r $(TARGET_DIR)/usr/share/dvb/* $(@D)/data/dvb-scan/
-	touch $(@D)/data/dvb-scan/.stamp
 	$(MAKE) -C $(@D)
 endef
 

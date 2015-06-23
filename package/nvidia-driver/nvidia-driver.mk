@@ -13,6 +13,8 @@ NVIDIA_DRIVER_LICENSE_FILES = LICENSE
 NVIDIA_DRIVER_REDISTRIBUTE = NO
 NVIDIA_DRIVER_INSTALL_STAGING = YES
 
+ifeq ($(BR2_PACKAGE_NVIDIA_DRIVER_XORG),y)
+
 # Since nvidia-driver are binary blobs, the below dependencies are not
 # strictly speaking build dependencies of nvidia-driver. However, they
 # are build dependencies of packages that depend on nvidia-driver, so
@@ -38,14 +40,14 @@ NVIDIA_DRIVER_LIBS = \
 	libvdpau libvdpau_nvidia \
 	libnvidia-ml
 
-ifeq ($(BR2_PACKAGE_NVIDIA_DRIVER_CUDA),y)
-NVIDIA_DRIVER_LIBS += libcuda libnvidia-compiler libnvcuvid libnvidia-encode
-endif
-
-ifeq ($(BR2_PACKAGE_NVIDIA_DRIVER_OPENCL),y)
-NVIDIA_DRIVER_LIBS_NO_VERSION += libOpenCL.so.1.0.0
-NVIDIA_DRIVER_LIBS += libnvidia-opencl
-endif
+# Install the gl.pc file
+define NVIDIA_DRIVER_INSTALL_GL_DEV
+	$(INSTALL) -D -m 0644 $(@D)/libGL.la $(STAGING_DIR)/usr/lib/libGL.la
+	$(SED) 's:__GENERATED_BY__:Buildroot:' $(STAGING_DIR)/usr/lib/libGL.la
+	$(SED) 's:__LIBGL_PATH__:/usr/lib:' $(STAGING_DIR)/usr/lib/libGL.la
+	$(SED) 's:-L[^[:space:]]\+::' $(STAGING_DIR)/usr/lib/libGL.la
+	$(INSTALL) -D -m 0644 package/nvidia-driver/gl.pc $(STAGING_DIR)/usr/lib/pkgconfig/gl.pc
+endef
 
 # Those libraries are 'private' libraries requiring an agreement with
 # NVidia to develop code for those libs. There seems to be no restriction
@@ -59,6 +61,20 @@ endif
 NVIDIA_DRIVER_X_MODS = drivers/nvidia_drv.so \
 	extensions/libglx.so.$(NVIDIA_DRIVER_VERSION) \
 	libnvidia-wfb.so.$(NVIDIA_DRIVER_VERSION)
+
+endif # X drivers
+
+ifeq ($(BR2_PACKAGE_NVIDIA_DRIVER_CUDA),y)
+NVIDIA_DRIVER_LIBS += libcuda libnvidia-compiler libnvcuvid libnvidia-encode
+ifeq ($(BR2_PACKAGE_NVIDIA_DRIVER_CUDA_PROGS),y)
+NVIDIA_DRIVER_PROGS = nvidia-cuda-mps-control nvidia-cuda-mps-server
+endif
+endif
+
+ifeq ($(BR2_PACKAGE_NVIDIA_DRIVER_OPENCL),y)
+NVIDIA_DRIVER_LIBS_NO_VERSION += libOpenCL.so.1.0.0
+NVIDIA_DRIVER_LIBS += libnvidia-opencl
+endif
 
 # The downloaded archive is in fact an auto-extract script. So, it can run
 # virtually everywhere, and it is fine enough to provide useful options.
@@ -147,11 +163,7 @@ endef
 # For staging, install libraries and development files
 define NVIDIA_DRIVER_INSTALL_STAGING_CMDS
 	$(call NVIDIA_DRIVER_INSTALL_LIBS,$(STAGING_DIR))
-	$(INSTALL) -D -m 0644 $(@D)/libGL.la $(STAGING_DIR)/usr/lib/libGL.la
-	$(SED) 's:__GENERATED_BY__:Buildroot:' $(STAGING_DIR)/usr/lib/libGL.la
-	$(SED) 's:__LIBGL_PATH__:/usr/lib:' $(STAGING_DIR)/usr/lib/libGL.la
-	$(SED) 's:-L[^[:space:]]\+::' $(STAGING_DIR)/usr/lib/libGL.la
-	$(INSTALL) -D -m 0644 package/nvidia-driver/gl.pc $(STAGING_DIR)/usr/lib/pkgconfig/gl.pc
+	$(NVIDIA_DRIVER_INSTALL_GL_DEV)
 endef
 
 # For target, install libraries and X.org modules
@@ -160,6 +172,10 @@ define NVIDIA_DRIVER_INSTALL_TARGET_CMDS
 	for m in $(NVIDIA_DRIVER_X_MODS); do \
 		$(INSTALL) -D -m 0644 $(@D)/$${m##*/} \
 			$(TARGET_DIR)/usr/lib/xorg/modules/$${m}; \
+	done
+	for p in $(NVIDIA_DRIVER_PROGS); do \
+		$(INSTALL) -D -m 0755 $(@D)/$${p} \
+			$(TARGET_DIR)/usr/bin/$${p}; \
 	done
 	$(NVIDIA_DRIVER_INSTALL_KERNEL_MODULE)
 endef

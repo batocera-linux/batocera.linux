@@ -25,7 +25,8 @@ there is no need to pass +BR2_EXTERNAL+ at every +make+ invocation. It
 can however be changed at any time by passing a new value, and can be
 removed by passing an empty value.
 
-*Note:* the +BR2_EXTERNAL+ path can be either an absolute or a relative path,
+.Note
+The +BR2_EXTERNAL+ path can be either an absolute or a relative path,
 but if it's passed as a relative path, it is important to note that it
 is interpreted relative to the main Buildroot source directory, *not*
 to the Buildroot output directory.
@@ -33,27 +34,27 @@ to the Buildroot output directory.
 Some examples:
 
 -----
- buildroot/ $ make BR2_EXTERNAL=/path/to/foobar menuconfig
+buildroot/ $ make BR2_EXTERNAL=/path/to/foobar menuconfig
 -----
 
 From now on, external definitions from the +/path/to/foobar+
 directory will be used:
 
 -----
- buildroot/ $ make
- buildroot/ $ make legal-info
+buildroot/ $ make
+buildroot/ $ make legal-info
 -----
 
 We can switch to another external definitions directory at any time:
 
 -----
- buildroot/ $ make BR2_EXTERNAL=/where/we/have/barfoo xconfig
+buildroot/ $ make BR2_EXTERNAL=/where/we/have/barfoo xconfig
 -----
 
 Or disable the usage of external definitions:
 
 -----
- buildroot/ $ make BR2_EXTERNAL= xconfig
+buildroot/ $ make BR2_EXTERNAL= xconfig
 -----
 
 +BR2_EXTERNAL+ allows three different things:
@@ -75,7 +76,10 @@ Or disable the usage of external definitions:
    logic. Buildroot automatically includes +$(BR2_EXTERNAL)/Config.in+ to
    make it appear in the top-level configuration menu, and includes
    +$(BR2_EXTERNAL)/external.mk+ with the rest of the makefile logic.
-   Providing those two files is mandatory, but they can be empty.
++
+.Note
+Providing +Config.in+ and +external.mk+ is mandatory, but they can be
+   empty.
 +
 The main usage of this is to store package recipes. The recommended
    way to do this is to write a +$(BR2_EXTERNAL)/Config.in+ file that
@@ -100,6 +104,6 @@ And then in +$(BR2_EXTERNAL)/package/package1+ and
 
  * One can store Buildroot defconfigs in the +configs+ subdirectory of
    +$(BR2_EXTERNAL)+. Buildroot will automatically show them in the
-   output of +make help+ and allow them to be loaded with the normal
-   +make <name>_defconfig+ command. They will be visible under the
-   +User-provided configs+' label in the 'make help' output.
+   output of +make list-defconfigs+ and allow them to be loaded with the
+   normal +make <name>_defconfig+ command. They will be visible under the
+   +User-provided configs+' label in the 'make list-defconfigs' output.

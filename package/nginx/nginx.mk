@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-NGINX_VERSION = 1.6.2
+NGINX_VERSION = 1.6.3
 NGINX_SITE = http://nginx.org/download
 NGINX_LICENSE = BSD-2c
 NGINX_LICENSE_FILES = LICENSE
@@ -14,7 +14,8 @@ NGINX_CONF_OPTS = \
 	--with-cc="$(TARGET_CC)" \
 	--with-cpp="$(TARGET_CC)" \
 	--with-cc-opt="$(TARGET_CFLAGS)" \
-	--with-ld-opt="$(TARGET_LDFLAGS)"
+	--with-ld-opt="$(TARGET_LDFLAGS)" \
+	--with-ipv6
 
 # www-data user and group are used for nginx. Because these user and group
 # are already set by buildroot, it is not necessary to redefine them.
@@ -37,7 +38,7 @@ NGINX_CONF_ENV += \
 	ngx_force_have_libatomic=no \
 	ngx_force_have_epoll=yes \
 	ngx_force_have_sendfile=yes \
-	ngx_force_have_sendfile64=$(if $(BR2_LARGEFILE),yes,no) \
+	ngx_force_have_sendfile64=yes \
 	ngx_force_have_pr_set_dumpable=yes \
 	ngx_force_have_timer_event=yes \
 	ngx_force_have_map_anon=yes \
@@ -63,8 +64,7 @@ NGINX_CONF_OPTS += \
 	--http-uwsgi-temp-path=/var/tmp/nginx/uwsgi
 
 NGINX_CONF_OPTS += \
-	$(if $(BR2_PACKAGE_NGINX_FILE_AIO),--with-file-aio) \
-	$(if $(BR2_INET_IPV6),--with-ipv6)
+	$(if $(BR2_PACKAGE_NGINX_FILE_AIO),--with-file-aio)
 
 ifeq ($(BR2_PACKAGE_PCRE),y)
 NGINX_DEPENDENCIES += pcre

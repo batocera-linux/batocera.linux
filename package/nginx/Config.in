@@ -1,10 +1,5 @@
-comment "nginx needs a toolchain w/ largefile"
-	depends on !BR2_LARGEFILE
-	depends on BR2_USE_MMU # fork()
-
 menuconfig BR2_PACKAGE_NGINX
 	bool "nginx"
-	depends on BR2_LARGEFILE
 	depends on BR2_USE_MMU # fork()
 	help
 	  nginx is an HTTP and reverse proxy server, as well as a mail proxy
@@ -18,7 +13,7 @@ config BR2_PACKAGE_NGINX_FILE_AIO
 	bool "file AIO support"
 	# Does not build, because nginx hardcodes using SYS_eventfd,
 	# but it's available on neither AArch64 nor ARC where only
-	# eventfd() is available.  See
+	# eventfd() is available. See
 	# https://bugs.launchpad.net/linaro-aarch64/+bug/1160013
 	depends on !BR2_aarch64
 	depends on !BR2_arc

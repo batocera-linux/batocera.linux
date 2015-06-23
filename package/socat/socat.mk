@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-SOCAT_VERSION = 2.0.0-b7
+SOCAT_VERSION = 2.0.0-b8
 SOCAT_SOURCE = socat-$(SOCAT_VERSION).tar.bz2
 SOCAT_SITE = http://www.dest-unreach.org/socat/download
 SOCAT_LICENSE = GPLv2
@@ -23,15 +23,15 @@ SOCAT_CONF_ENV = \
 SOCAT_DEPENDENCIES = host-autoconf
 
 ifeq ($(BR2_PACKAGE_OPENSSL),y)
-	SOCAT_DEPENDENCIES += openssl
+SOCAT_DEPENDENCIES += openssl
 else
-	SOCAT_CONF_OPTS += --disable-openssl
+SOCAT_CONF_OPTS += --disable-openssl
 endif
 
 ifeq ($(BR2_PACKAGE_READLINE),y)
-	SOCAT_DEPENDENCIES += readline
+SOCAT_DEPENDENCIES += readline
 else
-	SOCAT_CONF_OPTS += --disable-readline
+SOCAT_CONF_OPTS += --disable-readline
 endif
 
 define SOCAT_RUN_AUTOCONF

@@ -16,12 +16,10 @@ ELFUTILS_PATCH = elfutils-portability-0.161.patch
 ELFUTILS_AUTORECONF = YES
 ELFUTILS_CONF_OPTS += --disable-werror
 
-ifeq ($(BR2_LARGEFILE),y)
 # elfutils gets confused when lfs mode is forced, so don't
 ELFUTILS_CONF_ENV += \
 	CFLAGS="$(filter-out -D_FILE_OFFSET_BITS=64,$(TARGET_CFLAGS))" \
 	CPPFLAGS="$(filter-out -D_FILE_OFFSET_BITS=64,$(TARGET_CPPFLAGS))"
-endif
 
 ELFUTILS_LDFLAGS = $(TARGET_LDFLAGS)
 
@@ -36,6 +34,7 @@ ELFUTILS_CONF_ENV += \
 
 ifeq ($(BR2_TOOLCHAIN_USES_UCLIBC),y)
 ELFUTILS_DEPENDENCIES += argp-standalone
+ELFUTILS_CONF_OPTS += --disable-symbol-versioning
 endif
 
 ifeq ($(BR2_PACKAGE_ZLIB),y)

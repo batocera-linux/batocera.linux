@@ -1,7 +1,5 @@
 config BR2_PACKAGE_NODEJS
 	bool "nodejs"
-	depends on BR2_INET_IPV6
-	depends on BR2_LARGEFILE
 	depends on BR2_TOOLCHAIN_HAS_THREADS
 	depends on BR2_INSTALL_LIBSTDCPP
 	depends on BR2_arm || BR2_i386 || BR2_x86_64 || BR2_mipsel
@@ -16,12 +14,11 @@ config BR2_PACKAGE_NODEJS
 
 	  http://nodejs.org/
 
-comment "nodejs needs a toolchain w/ C++, IPv6, largefile, threads"
+comment "nodejs needs a toolchain w/ C++, threads"
 	depends on BR2_USE_MMU
 	depends on BR2_arm || BR2_i386 || BR2_x86_64 || BR2_mipsel
 	depends on !BR2_ARM_CPU_ARMV4
-	depends on !BR2_INSTALL_LIBSTDCPP || !BR2_LARGEFILE || \
-		!BR2_TOOLCHAIN_HAS_THREADS || !BR2_INET_IPV6
+	depends on !BR2_INSTALL_LIBSTDCPP || !BR2_TOOLCHAIN_HAS_THREADS
 
 if BR2_PACKAGE_NODEJS
 
@@ -61,7 +58,7 @@ config BR2_PACKAGE_NODEJS_MODULES_ADDITIONAL
 	help
 	  List of space-separated nodejs modules to install via npm.
 	  See https://npmjs.org/ to find modules and 'npm help install'
-	  for available installation methods.  For repeatable builds,
+	  for available installation methods. For repeatable builds,
 	  download and save tgz files or clone git repos for the
 	  components you care about.
 
@@ -75,7 +72,7 @@ config BR2_PACKAGE_NODEJS_MODULES_ADDITIONAL_DEPS
 	string "Additional module dependencies"
 	help
 	  List of space-separated buildroot recipes which must be built before
-	  your npms can be installed.  For example, if in 'Additional modules'
+	  your npms can be installed. For example, if in 'Additional modules'
 	  you specified 'node-curl' (see:
 	  https://github.com/jiangmiao/node-curl), you could then specify
 	  'libcurl' here, to ensure that buildroot builds the libcurl package,

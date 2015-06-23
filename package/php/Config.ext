@@ -10,8 +10,17 @@ config BR2_PACKAGE_PHP_EXT_FILEINFO
 	help
 	  File Information support
 
+config BR2_PACKAGE_PHP_EXT_OPCACHE
+	bool "OPcache"
+	help
+	  Enable the Zend OPcache accelerator.
+
+comment "Readline needs a toolchain w/ dynamic library"
+	depends on BR2_STATIC_LIBS
+
 config BR2_PACKAGE_PHP_EXT_READLINE
 	bool "Readline"
+	depends on !BR2_STATIC_LIBS
 	select BR2_PACKAGE_NCURSES
 	select BR2_PACKAGE_READLINE
 	help
@@ -120,6 +129,12 @@ config BR2_PACKAGE_PHP_EXT_MYSQLI
 	help
 	  MySQL Improved extension support
 
+config BR2_PACKAGE_PHP_EXT_SQLITE
+	bool "SQLite3"
+	select BR2_PACKAGE_SQLITE
+	help
+	  SQLite3 support
+
 config BR2_PACKAGE_PHP_EXT_PDO
 	bool "PDO"
 	help
@@ -142,19 +157,27 @@ comment "MySQL drivers need a toolchain w/ C++, threads"
 
 config BR2_PACKAGE_PHP_EXT_PDO_POSTGRESQL
 	bool "PostgreSQL"
-	depends on BR2_TOOLCHAIN_USES_GLIBC
 	select BR2_PACKAGE_POSTGRESQL
+	depends on BR2_USE_MMU # postgresql
+	depends on !BR2_STATIC_LIBS
 	help
 	  PDO driver for PostgreSQL
 
-comment "PostgreSQL driver needs an (e)glibc toolchain"
-	depends on !BR2_TOOLCHAIN_USES_GLIBC
+comment "PostgreSQL drivers need a toolchain w/ dynamic library"
+	depends on BR2_USE_MMU
+	depends on BR2_STATIC_LIBS
 
 config BR2_PACKAGE_PHP_EXT_PDO_SQLITE
 	bool "SQLite3"
 	select BR2_PACKAGE_SQLITE
 	help
 	  SQLite3 driver for PDO
+
+config BR2_PACKAGE_PHP_EXT_PDO_UNIXODBC
+	bool "unixODBC"
+	select BR2_PACKAGE_UNIXODBC
+	help
+	  unixODBC driver for PDO
 
 endif
 
@@ -260,12 +283,8 @@ config BR2_PACKAGE_PHP_EXT_SNMP
 
 config BR2_PACKAGE_PHP_EXT_SOCKETS
 	bool "sockets"
-	depends on BR2_INET_IPV6
 	help
 	  Sockets support
-
-comment "sockets support needs a toolchain w/ IPv6"
-	depends on !BR2_INET_IPV6
 
 comment "Process Control"
 

@@ -24,6 +24,7 @@
 import sys
 import subprocess
 import argparse
+from fnmatch import fnmatch
 
 # Modes of operation:
 MODE_FULL = 1   # draw full dependency graph for all selected packages
@@ -36,11 +37,17 @@ max_depth = 0
 # Whether to draw the transitive dependencies
 transitive = True
 
-parser = argparse.ArgumentParser(description="Graph pacakges dependencies")
+parser = argparse.ArgumentParser(description="Graph packages dependencies")
 parser.add_argument("--package", '-p', metavar="PACKAGE",
                     help="Graph the dependencies of PACKAGE")
 parser.add_argument("--depth", '-d', metavar="DEPTH", dest="depth", type=int, default=0,
                     help="Limit the dependency graph to DEPTH levels; 0 means no limit.")
+parser.add_argument("--stop-on", "-s", metavar="PACKAGE", dest="stop_list", action="append",
+                    help="Do not graph past this package (can be given multiple times)." \
+                       + " Can be a package name or a glob, or" \
+                       + " 'virtual' to stop on virtual packages.")
+parser.add_argument("--exclude", "-x", metavar="PACKAGE", dest="exclude_list", action="append",
+                    help="Like --stop-on, but do not add PACKAGE to the graph.")
 parser.add_argument("--colours", "-c", metavar="COLOR_LIST", dest="colours",
                     default="lightblue,grey,gainsboro",
                     help="Comma-separated list of the three colours to use" \
@@ -61,6 +68,16 @@ else:
 
 max_depth = args.depth
 
+if args.stop_list is None:
+    stop_list = []
+else:
+    stop_list = args.stop_list
+
+if args.exclude_list is None:
+    exclude_list = []
+else:
+    exclude_list = args.exclude_list
+
 transitive = args.transitive
 
 # Get the colours: we need exactly three colours,
@@ -76,8 +93,30 @@ host_colour = colours[2]
 
 allpkgs = []
 
+# Execute the "make <pkg>-show-version" command to get the version of a given
+# list of packages, and return the version formatted as a Python dictionary.
+def get_version(pkgs):
+    sys.stderr.write("Getting version for %s\n" % pkgs)
+    cmd = ["make", "-s", "--no-print-directory" ]
+    for pkg in pkgs:
+        cmd.append("%s-show-version" % pkg)
+    p = subprocess.Popen(cmd, stdout=subprocess.PIPE, universal_newlines=True)
+    output = p.communicate()[0]
+    if p.returncode != 0:
+        sys.stderr.write("Error getting version %s\n" % pkgs)
+        sys.exit(1)
+    output = output.split("\n")
+    if len(output) != len(pkgs) + 1:
+        sys.stderr.write("Error getting version\n")
+        sys.exit(1)
+    version = {}
+    for i in range(0, len(pkgs)):
+        pkg = pkgs[i]
+        version[pkg] = output[i]
+    return version
+
 # Execute the "make show-targets" command to get the list of the main
-# Buildroot TARGETS and return it formatted as a Python list. This
+# Buildroot PACKAGES and return it formatted as a Python list. This
 # list is used as the starting point for full dependency graphs
 def get_targets():
     sys.stderr.write("Getting targets\n")
@@ -164,17 +203,8 @@ def pkg_node_name(pkg):
     return pkg.replace("-","")
 
 TARGET_EXCEPTIONS = [
-    "target-generic-securetty",
-    "target-generic-issue",
-    "target-generic-getty-busybox",
-    "target-generic-do-remount-rw",
-    "target-generic-dont-remount-rw",
     "target-finalize",
-    "erase-fakeroots",
-    "target-generic-hostname",
-    "target-root-passwd",
     "target-post-image",
-    "target-purgelocales",
 ]
 
 # In full mode, start with the result of get_targets() to get the main
@@ -257,6 +287,8 @@ def remove_extra_deps(deps):
     return deps
 
 dict_deps = remove_extra_deps(dict_deps)
+dict_version = get_version([pkg for pkg in allpkgs
+                                if pkg != "all" and not pkg.startswith("root")])
 
 # Print the attributes of a node: label and fill-color
 def print_attrs(pkg):
@@ -274,7 +306,11 @@ def print_attrs(pkg):
             color = host_colour
         else:
             color = target_colour
-    print("%s [label = \"%s\"]" % (name, label))
+    version = dict_version.get(pkg)
+    if version == "virtual":
+        print("%s [label = <<I>%s</I>>]" % (name, label))
+    else:
+        print("%s [label = \"%s\"]" % (name, label))
     print("%s [color=%s,style=filled]" % (name, color))
 
 # Print the dependency graph of a package
@@ -285,10 +321,25 @@ def print_pkg_deps(depth, pkg):
     print_attrs(pkg)
     if pkg not in dict_deps:
         return
+    for p in stop_list:
+        if fnmatch(pkg, p):
+            return
+    if dict_version.get(pkg) == "virtual" and "virtual" in stop_list:
+        return
     if max_depth == 0 or depth < max_depth:
         for d in dict_deps[pkg]:
-            print("%s -> %s" % (pkg_node_name(pkg), pkg_node_name(d)))
-            print_pkg_deps(depth+1, d)
+            add = True
+            for p in exclude_list:
+                if fnmatch(d,p):
+                    add = False
+                    break
+                if dict_version.get(d) == "virtual" \
+                and "virtual" in exclude_list:
+                    add = False
+                    break
+            if add:
+                print("%s -> %s" % (pkg_node_name(pkg), pkg_node_name(d)))
+                print_pkg_deps(depth+1, d)
 
 # Start printing the graph data
 print("digraph G {")

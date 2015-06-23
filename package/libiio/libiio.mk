@@ -10,7 +10,7 @@ LIBIIO_INSTALL_STAGING = YES
 LIBIIO_LICENSE = LGPLv2.1+
 LIBIIO_LICENSE_FILES = COPYING
 
-LIBIIO_CONF_OPTS = -DENABLE_IPV6=$(if $(BR2_INET_IPV6),ON,OFF) \
+LIBIIO_CONF_OPTS = -DENABLE_IPV6=ON \
 	-DWITH_LOCAL_BACKEND=$(if $(BR2_PACKAGE_LIBIIO_LOCAL_BACKEND),ON,OFF) \
 	-DWITH_TESTS=$(if $(BR2_PACKAGE_LIBIIO_TESTS),ON,OFF)
 
@@ -41,8 +41,8 @@ endef
 define LIBIIO_INSTALL_INIT_SYSTEMD
 	$(INSTALL) -d $(TARGET_DIR)/etc/systemd/system/multi-user.target.wants
 	$(INSTALL) -D -m 0644 $(@D)/debian/iiod.service \
-		$(TARGET_DIR)/lib/systemd/system/iiod.service
-	ln -fs /lib/systemd/system/iiod.service \
+		$(TARGET_DIR)/usr/lib/systemd/system/iiod.service
+	ln -fs ../../../../usr/lib/systemd/system/iiod.service \
 		$(TARGET_DIR)/etc/systemd/system/multi-user.target.wants/iiod.service
 endef
 endif

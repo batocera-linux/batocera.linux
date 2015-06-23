@@ -4,8 +4,8 @@
 #
 ################################################################################
 
-XERCES_VERSION = 3.1.1
-XERCES_SOURCE = xerces-c-$(XERCES_VERSION).tar.gz
+XERCES_VERSION = 3.1.2
+XERCES_SOURCE = xerces-c-$(XERCES_VERSION).tar.xz
 XERCES_SITE = http://archive.apache.org/dist/xerces/c/3/sources
 XERCES_LICENSE = Apache-2.0
 XERCES_LICENSE_FILES = LICENSE
@@ -14,6 +14,12 @@ XERCES_INSTALL_STAGING = YES
 XERCES_CONF_OPTS = \
 	--disable-threads \
 	--with-gnu-ld
+
+define XERCES_DISABLE_SAMPLES
+	$(SED) 's/ samples//' $(@D)/Makefile.in
+endef
+
+XERCES_POST_PATCH_HOOKS += XERCES_DISABLE_SAMPLES
 
 ifeq ($(BR2_PACKAGE_LIBICONV),y)
 XERCES_CONF_ENV += LIBS=-liconv

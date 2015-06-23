@@ -4,10 +4,10 @@
 #
 ################################################################################
 
-NBD_VERSION = 3.8
+NBD_VERSION = 3.11
 NBD_SOURCE = nbd-$(NBD_VERSION).tar.xz
 NBD_SITE = http://downloads.sourceforge.net/project/nbd/nbd/$(NBD_VERSION)
-NBD_CONF_OPTS = $(if $(BR2_LARGEFILE),--enable-lfs,--disable-lfs)
+NBD_CONF_OPTS = --enable-lfs
 NBD_DEPENDENCIES = libglib2
 NBD_LICENSE = GPLv2
 NBD_LICENSE_FILES = COPYING
@@ -19,10 +19,10 @@ NBD_CONF_ENV = ac_cv_header_linux_falloc_h=no
 endif
 
 ifneq ($(BR2_NBD_CLIENT),y)
-	NBD_TOREMOVE += nbd-client
+NBD_TOREMOVE += nbd-client
 endif
 ifneq ($(BR2_NBD_SERVER),y)
-	NBD_TOREMOVE += nbd-server
+NBD_TOREMOVE += nbd-server
 endif
 
 define NBD_CLEANUP_AFTER_INSTALL

@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-LUAJIT_VERSION = 2.0.3
+LUAJIT_VERSION = 2.0.4
 LUAJIT_SOURCE = LuaJIT-$(LUAJIT_VERSION).tar.gz
 LUAJIT_SITE = http://luajit.org/download
 LUAJIT_LICENSE = MIT
@@ -13,10 +13,6 @@ LUAJIT_LICENSE_FILES = COPYRIGHT
 LUAJIT_INSTALL_STAGING = YES
 
 LUAJIT_PROVIDES = luainterpreter
-
-ifneq ($(BR2_LARGEFILE),y)
-LUAJIT_NO_LARGEFILE = TARGET_LFSFLAGS=
-endif
 
 ifeq ($(BR2_STATIC_LIBS),y)
 LUAJIT_BUILDMODE = static
@@ -51,7 +47,6 @@ define LUAJIT_BUILD_CMDS
 		HOST_CC="$(LUAJIT_HOST_CC)" \
 		HOST_CFLAGS="$(HOST_CFLAGS)" \
 		HOST_LDFLAGS="$(HOST_LDFLAGS)" \
-		$(LUAJIT_NO_LARGEFILE) \
 		BUILDMODE=$(LUAJIT_BUILDMODE) \
 		-C $(@D) amalg
 endef

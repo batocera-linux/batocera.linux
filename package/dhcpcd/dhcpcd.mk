@@ -4,22 +4,18 @@
 #
 ################################################################################
 
-DHCPCD_VERSION = 6.6.7
+DHCPCD_VERSION = 6.8.1
 DHCPCD_SOURCE = dhcpcd-$(DHCPCD_VERSION).tar.bz2
 DHCPCD_SITE = http://roy.marples.name/downloads/dhcpcd
 DHCPCD_DEPENDENCIES = host-pkgconf
 DHCPCD_LICENSE = BSD-2c
 
-ifeq ($(BR2_INET_IPV6),)
-	DHCPCD_CONFIG_OPTS += --disable-ipv6
-endif
-
 ifeq ($(BR2_STATIC_LIBS),y)
-	DHCPCD_CONFIG_OPTS += --enable-static
+DHCPCD_CONFIG_OPTS += --enable-static
 endif
 
 ifeq ($(BR2_USE_MMU),)
-	DHCPCD_CONFIG_OPTS += --disable-fork
+DHCPCD_CONFIG_OPTS += --disable-fork
 endif
 
 define DHCPCD_CONFIGURE_CMDS

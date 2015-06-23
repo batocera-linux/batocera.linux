@@ -1,13 +1,13 @@
 menuconfig BR2_PACKAGE_MPD
 	bool "mpd"
 	depends on BR2_INSTALL_LIBSTDCPP
-	depends on BR2_LARGEFILE # boost
 	depends on BR2_USE_WCHAR # libglib2, flac
 	depends on BR2_TOOLCHAIN_HAS_THREADS # libglib2
 	depends on BR2_USE_MMU # libglib2
 	# sparc & CS powerpc gcc are too old
 	depends on !BR2_sparc
 	depends on !(BR2_TOOLCHAIN_EXTERNAL_CODESOURCERY_POWERPC201103 || BR2_TOOLCHAIN_EXTERNAL_CODESOURCERY_POWERPC201009)
+	depends on BR2_PACKAGE_BOOST_ARCH_SUPPORTS
 	select BR2_PACKAGE_BOOST
 	select BR2_PACKAGE_LIBGLIB2
 	select BR2_PACKAGE_LIBICONV if !BR2_ENABLE_LOCALE
@@ -79,15 +79,10 @@ config BR2_PACKAGE_MPD_FAAD2
 config BR2_PACKAGE_MPD_FFMPEG
 	bool "ffmpeg"
 	select BR2_PACKAGE_FFMPEG
-	depends on BR2_LARGEFILE
-	depends on BR2_INET_IPV6
 	help
 	  Enable ffmpeg input support.
 	  Select this if you want to play back files supported by
 	  ffmpeg.
-
-comment "ffmpeg support needs a toolchain w/ largefile, IPv6"
-	depends on !(BR2_LARGEFILE && BR2_INET_IPV6)
 
 config BR2_PACKAGE_MPD_FLAC
 	bool "flac"
@@ -99,13 +94,9 @@ config BR2_PACKAGE_MPD_FLAC
 config BR2_PACKAGE_MPD_LIBSNDFILE
 	bool "libsndfile"
 	select BR2_PACKAGE_LIBSNDFILE
-	depends on BR2_LARGEFILE
 	help
 	  Enable libsndfile input/streaming support.
 	  Select this if you want to play back WAV files.
-
-comment "libsndfile support needs a toolchain w/ largefile"
-	depends on !BR2_LARGEFILE
 
 config BR2_PACKAGE_MPD_MAD
 	bool "mad"
@@ -176,13 +167,9 @@ config BR2_PACKAGE_MPD_LAME
 
 config BR2_PACKAGE_MPD_TWOLAME
 	bool "twolame"
-	depends on BR2_LARGEFILE # twolame -> libsndfile
 	select BR2_PACKAGE_TWOLAME
 	help
 	  Enable TwoLAME mp2 encoding.
-
-comment "twolame support needs a toolchain w/ largefile"
-	depends on !BR2_LARGEFILE
 
 comment "Input plugins"
 
@@ -202,11 +189,14 @@ config BR2_PACKAGE_MPD_LIBNFS
 comment "nfs support needs a toolchain w/ RPC"
 	depends on !BR2_TOOLCHAIN_HAS_NATIVE_RPC
 
+comment "samba support needs an (e)glibc toolchain"
+	depends on !BR2_TOOLCHAIN_USES_GLIBC
+
 config BR2_PACKAGE_MPD_LIBSMBCLIENT
 	bool "samba"
 	depends on !BR2_nios2 # samba
-	select BR2_PACKAGE_SAMBA
-	select BR2_PACKAGE_SAMBA_LIBSMBCLIENT
+	depends on BR2_TOOLCHAIN_USES_GLIBC
+	select BR2_PACKAGE_SAMBA4
 	help
 	  Enable Samba support.
 
@@ -235,15 +225,14 @@ config BR2_PACKAGE_MPD_AO
 
 config BR2_PACKAGE_MPD_JACK2
 	bool "jack2"
-	depends on BR2_LARGEFILE # jack2 -> libsndfile
 	depends on BR2_ARCH_HAS_ATOMICS
+	depends on !BR2_STATIC_LIBS # jack2
 	select BR2_PACKAGE_JACK2
 	help
 	  Enable jack output support.
 
-comment "jack support needs a toolchain w/ largefile"
-	depends on BR2_ARCH_HAS_ATOMICS
-	depends on !BR2_LARGEFILE
+comment "jack support needs a toolchain w/ dynamic library"
+	depends on BR2_STATIC_LIBS
 
 config BR2_PACKAGE_MPD_OSS
 	bool "oss"
@@ -252,15 +241,14 @@ config BR2_PACKAGE_MPD_OSS
 
 config BR2_PACKAGE_MPD_PULSEAUDIO
 	bool "pulseaudio"
-	depends on BR2_LARGEFILE # pulseaudio -> libsndfile
 	depends on BR2_ARCH_HAS_ATOMICS # pulseaudio
+	depends on !BR2_STATIC_LIBS # pulseaudio
 	select BR2_PACKAGE_PULSEAUDIO
 	help
 	  Enable pulseaudio output support.
 
-comment "pulseaudio support needs a toolchain w/ largefile"
-	depends on BR2_ARCH_HAS_ATOMICS
-	depends on !BR2_LARGEFILE
+comment "pulseaudio support needs a toolchain w/ dynamic library"
+	depends on BR2_STATIC_LIBS
 
 comment "Miscellaneous plugins"
 
@@ -287,7 +275,7 @@ config BR2_PACKAGE_MPD_NEIGHBOR_DISCOVERY_SUPPORT
 	  This option can be used in conjunction with the smbclient
 	  plugin to provide a list of SMB/CIFS servers or with the
 	  UPnP plugin to provide a list of UPnP servers on the local
-	  network.  The neighbor plugin needs configuration in
+	  network. The neighbor plugin needs configuration in
 	  mpd.conf. For further information take a look at the MPD
 	  documentation.
 
@@ -311,6 +299,7 @@ endif
 
 comment "mpd needs a toolchain w/ C++, threads, wchar"
 	depends on BR2_USE_MMU
+	depends on BR2_PACKAGE_BOOST_ARCH_SUPPORTS
 	depends on !BR2_sparc
 	depends on !BR2_INSTALL_LIBSTDCPP || !BR2_USE_WCHAR || \
-		!BR2_TOOLCHAIN_HAS_THREADS || !BR2_LARGEFILE
+		!BR2_TOOLCHAIN_HAS_THREADS

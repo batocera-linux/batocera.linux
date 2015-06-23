@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-GPTFDISK_VERSION = 0.8.6
+GPTFDISK_VERSION = 0.8.10
 GPTFDISK_SITE = http://downloads.sourceforge.net/sourceforge/gptfdisk
 GPTFDISK_LICENSE = GPLv2+
 GPTFDISK_LICENSE_FILES = COPYING
@@ -21,18 +21,23 @@ ifeq ($(BR2_PACKAGE_GPTFDISK_CGDISK),y)
 GPTFDISK_DEPENDENCIES += ncurses
 endif
 
-ifeq ($(BR2_PACKAGE_ICU),y)
-GPTFDISK_DEPENDENCIES += icu
-GPTFDISK_MAKE_OPTS += USE_UTF16=y
+ifeq ($(BR2_STATIC_LIBS),y)
+# gptfdisk dependencies may link against libintl/libiconv, so we need
+# to do so as well when linking statically
+ifeq ($(BR2_PACKAGE_GETTEXT),y)
+GPTFDISK_DEPENDENCIES += gettext
+GPTFDISK_LDLIBS += -lintl
 endif
 
-ifeq ($(BR2_NEEDS_GETTEXT_IF_LOCALE)$(BR2_STATIC_LIBS),yy)
-GPTFDISK_MAKE_OPTS += LDLIBS=-lintl
+ifeq ($(BR2_PACKAGE_LIBICONV),y)
+GPTFDISK_DEPENDENCIES += libiconv
+GPTFDISK_LDLIBS += -liconv
+endif
 endif
 
 define GPTFDISK_BUILD_CMDS
 	$(TARGET_MAKE_ENV) $(MAKE) $(TARGET_CONFIGURE_OPTS) -C $(@D) \
-		$(GPTFDISK_MAKE_OPTS) $(GPTFDISK_TARGETS_y)
+		LDLIBS='$(GPTFDISK_LDLIBS)' $(GPTFDISK_TARGETS_y)
 endef
 
 define GPTFDISK_INSTALL_TARGET_CMDS

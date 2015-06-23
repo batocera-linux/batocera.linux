@@ -4,15 +4,13 @@
 #
 ################################################################################
 
-QUAGGA_VERSION = 0.99.24
+QUAGGA_VERSION = 0.99.24.1
 QUAGGA_SOURCE = quagga-$(QUAGGA_VERSION).tar.xz
 QUAGGA_SITE = http://download.savannah.gnu.org/releases/quagga
 QUAGGA_DEPENDENCIES = host-gawk
 QUAGGA_LICENSE = GPLv2+
 QUAGGA_LICENSE_FILES = COPYING
 QUAGGA_CONF_OPTS = --program-transform-name=''
-# Upstream missed some bits when packaging it
-QUAGGA_AUTORECONF = YES
 
 QUAGGA_CONF_OPTS += $(if $(BR2_PACKAGE_QUAGGA_ZEBRA),--enable-zebra,--disable-zebra)
 QUAGGA_CONF_OPTS += $(if $(BR2_PACKAGE_QUAGGA_BABELD),--enable-babeld,--disable-babeld)
@@ -32,6 +30,13 @@ ifeq ($(BR2_PACKAGE_QUAGGA_SNMP),y)
 QUAGGA_CONF_ENV += ac_cv_path_NETSNMP_CONFIG=$(STAGING_DIR)/usr/bin/net-snmp-config
 QUAGGA_CONF_OPTS += --enable-snmp=agentx
 QUAGGA_DEPENDENCIES += netsnmp
+endif
+
+ifeq ($(BR2_PACKAGE_QUAGGA_VTYSH),y)
+QUAGGA_CONF_OPTS += --enable-vtysh
+QUAGGA_DEPENDENCIES += readline
+else
+QUAGGA_CONF_OPTS += --disable-vtysh
 endif
 
 $(eval $(autotools-package))

@@ -18,7 +18,7 @@ choice
 	  Select the specific U-Boot version you want to use
 
 config BR2_TARGET_UBOOT_LATEST_VERSION
-	bool "2015.01"
+	bool "2015.04"
 
 config BR2_TARGET_UBOOT_CUSTOM_VERSION
 	bool "Custom version"
@@ -63,7 +63,7 @@ endif
 
 config BR2_TARGET_UBOOT_VERSION
 	string
-	default "2015.01"	if BR2_TARGET_UBOOT_LATEST_VERSION
+	default "2015.04"	if BR2_TARGET_UBOOT_LATEST_VERSION
 	default BR2_TARGET_UBOOT_CUSTOM_VERSION_VALUE \
 		if BR2_TARGET_UBOOT_CUSTOM_VERSION
 	default "custom"	if BR2_TARGET_UBOOT_CUSTOM_TARBALL
@@ -72,10 +72,23 @@ config BR2_TARGET_UBOOT_VERSION
 
 config BR2_TARGET_UBOOT_CUSTOM_PATCH_DIR
 	string "custom patch dir"
+	depends on BR2_DEPRECATED_SINCE_2015_05
 	help
 	  If your board requires custom patches, add the path to the
 	  directory containing the patches here. The patches must be
 	  named uboot-<something>.patch.
+
+	  Most users may leave this empty
+
+	  NOTE: Use BR2_TARGET_UBOOT_PATCH instead.
+
+config BR2_TARGET_UBOOT_PATCH
+	string "Custom U-Boot patches"
+	help
+	  A space-separated list of patches to apply to U-Boot.
+	  Each patch can be described as an URL, a local file path,
+	  or a directory. In the case of a directory, all files
+	  matching *.patch in the directory will be applied.
 
 	  Most users may leave this empty
 
@@ -116,6 +129,18 @@ config BR2_TARGET_UBOOT_FORMAT_ELF
 config BR2_TARGET_UBOOT_FORMAT_SB
 	depends on BR2_arm
 	bool "u-boot.sb"
+
+config BR2_TARGET_UBOOT_FORMAT_SD
+	depends on BR2_arm
+	bool "u-boot.sd"
+	help
+	  This is Freescale i.MX28 SB format, with a header for booting
+	  from an SD card.
+
+	  U-boot includes an mxsboot tool to generate this format,
+	  starting from 2011.12.
+
+	  See doc/README.mxs (or doc/README.mx28_common before 2013.07)
 
 config BR2_TARGET_UBOOT_FORMAT_CUSTOM
 	bool "Custom (specify below)"
@@ -166,52 +191,6 @@ config BR2_TARGET_UBOOT_OMAP_IFT_CONFIG
 	  https://github.com/nmenon/omap-u-boot-utils/tree/master/configs
 
 endif
-
-menuconfig BR2_TARGET_UBOOT_NETWORK
-	bool "Custom Network Settings"
-	depends on BR2_DEPRECATED_SINCE_2014_05
-	help
-	  Custom network settings for U-boot
-
-if BR2_TARGET_UBOOT_NETWORK
-
-config BR2_TARGET_UBOOT_SERVERIP
-	string "server ip"
-	default "10.175.196.221"
-	help
-	  TFTP server ip address
-
-config BR2_TARGET_UBOOT_IPADDR
-	string "ip address"
-	default "10.175.196.18"
-	help
-	  Target ip address
-
-config BR2_TARGET_UBOOT_GATEWAY
-	string "gateway ip"
-	default "10.175.196.1"
-	help
-	  Gateway ip address
-
-config BR2_TARGET_UBOOT_NETMASK
-	string "netmask"
-	default "255.255.255.0"
-	help
-	  Network Mask
-
-config BR2_TARGET_UBOOT_ETHADDR
-	string "ethernet address"
-	default "04:25:fe:ed:00:18"
-	help
-	  Target MAC address for the ethernet interface.
-	  This should be changed for production units
-
-config BR2_TARGET_UBOOT_ETH1ADDR
-	string "ethernet 2 address"
-	help
-	  Target MAC address for the second ethernet interface.
-
-endif # BR2_TARGET_UBOOT_NETWORK
 
 config BR2_TARGET_UBOOT_SPL
 	bool "Install U-Boot SPL binary image"

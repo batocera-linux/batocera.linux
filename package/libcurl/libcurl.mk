@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-LIBCURL_VERSION = 7.41.0
+LIBCURL_VERSION = 7.43.0
 LIBCURL_SOURCE = curl-$(LIBCURL_VERSION).tar.bz2
 LIBCURL_SITE = http://curl.haxx.se/download
 LIBCURL_DEPENDENCIES = host-pkgconf \
@@ -20,7 +20,7 @@ LIBCURL_INSTALL_STAGING = YES
 # probably almost never used. See
 # http://curl.haxx.se/docs/manpage.html#--ntlm.
 LIBCURL_CONF_OPTS = --disable-verbose --disable-manual --disable-ntlm-wb \
-	--enable-hidden-symbols --with-random=/dev/urandom
+	--enable-hidden-symbols --with-random=/dev/urandom --disable-curldebug
 LIBCURL_CONFIG_SCRIPTS = curl-config
 
 ifeq ($(BR2_PACKAGE_OPENSSL),y)
@@ -44,6 +44,13 @@ else
 # polarssl support needs 1.3.x
 LIBCURL_CONF_OPTS += --without-ssl --without-gnutls \
 	--without-polarssl --without-nss
+endif
+
+ifeq ($(BR2_PACKAGE_C_ARES),y)
+LIBCURL_DEPENDENCIES += c-ares
+LIBCURL_CONF_OPTS += --enable-ares
+else
+LIBCURL_CONF_OPTS += --disable-ares
 endif
 
 # Configure curl to support libssh2

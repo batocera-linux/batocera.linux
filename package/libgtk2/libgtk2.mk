@@ -5,14 +5,13 @@
 ################################################################################
 
 LIBGTK2_VERSION_MAJOR = 2.24
-LIBGTK2_VERSION = $(LIBGTK2_VERSION_MAJOR).18
-
+LIBGTK2_VERSION = $(LIBGTK2_VERSION_MAJOR).28
 LIBGTK2_SOURCE = gtk+-$(LIBGTK2_VERSION).tar.xz
 LIBGTK2_SITE = http://ftp.gnome.org/pub/gnome/sources/gtk+/$(LIBGTK2_VERSION_MAJOR)
 LIBGTK2_INSTALL_STAGING = YES
 LIBGTK2_LICENSE = LGPLv2+
 LIBGTK2_LICENSE_FILES = COPYING
-
+# For 0001-reduce-dependencies.patch
 LIBGTK2_AUTORECONF = YES
 
 LIBGTK2_CONF_ENV = \
@@ -83,41 +82,40 @@ LIBGTK2_CONF_OPTS += \
 	--x-libraries=$(STAGING_DIR)/usr/lib \
 	--with-gdktarget=x11
 LIBGTK2_DEPENDENCIES += \
-	xlib_libXcomposite fontconfig xlib_libX11 \
-	xlib_libXext xlib_libXrender
+	fontconfig xlib_libX11 xlib_libXext xlib_libXrender
 
 ifeq ($(BR2_PACKAGE_XLIB_LIBXINERAMA),y)
-	LIBGTK2_CONF_OPTS += --enable-xinerama
-	LIBGTK2_DEPENDENCIES += xlib_libXinerama
+LIBGTK2_CONF_OPTS += --enable-xinerama
+LIBGTK2_DEPENDENCIES += xlib_libXinerama
 else
-	LIBGTK2_CONF_OPTS += --disable-xinerama
+LIBGTK2_CONF_OPTS += --disable-xinerama
 endif
 
 ifeq ($(BR2_PACKAGE_XLIB_LIBXI),y)
-	LIBGTK2_CONF_OPTS += --with-xinput=yes
-	LIBGTK2_DEPENDENCIES += xlib_libXi
+LIBGTK2_CONF_OPTS += --with-xinput=yes
+LIBGTK2_DEPENDENCIES += xlib_libXi
 else
-	LIBGTK2_CONF_OPTS += --with-xinput=no
+LIBGTK2_CONF_OPTS += --with-xinput=no
 endif
 
 ifeq ($(BR2_PACKAGE_XLIB_LIBXRANDR),y)
-	LIBGTK2_DEPENDENCIES += xlib_libXrandr
+LIBGTK2_DEPENDENCIES += xlib_libXrandr
 endif
 
 ifeq ($(BR2_PACKAGE_XLIB_LIBXCURSOR),y)
-	LIBGTK2_DEPENDENCIES += xlib_libXcursor
+LIBGTK2_DEPENDENCIES += xlib_libXcursor
 endif
 
 ifeq ($(BR2_PACKAGE_XLIB_LIBXFIXES),y)
-	LIBGTK2_DEPENDENCIES += xlib_libXfixes
+LIBGTK2_DEPENDENCIES += xlib_libXfixes
 endif
 
 ifeq ($(BR2_PACKAGE_XLIB_LIBXCOMPOSITE),y)
-	LIBGTK2_DEPENDENCIES += xlib_libXcomposite
+LIBGTK2_DEPENDENCIES += xlib_libXcomposite
 endif
 
 ifeq ($(BR2_PACKAGE_XLIB_LIBXDAMAGE),y)
-	LIBGTK2_DEPENDENCIES += xlib_libXdamage
+LIBGTK2_DEPENDENCIES += xlib_libXdamage
 endif
 
 ifeq ($(BR2_PACKAGE_LIBPNG),y)

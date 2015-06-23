@@ -4,11 +4,12 @@
 #
 ################################################################################
 
-LFTP_VERSION = 4.6.1
+LFTP_VERSION = 4.6.3a
 LFTP_SOURCE = lftp-$(LFTP_VERSION).tar.xz
 LFTP_SITE = http://lftp.yar.ru/ftp
 LFTP_LICENSE = GPLv3+
 LFTP_LICENSE_FILES = COPYING
+# Needed so that our libtool patch applies properly
 LFTP_AUTORECONF = YES
 LFTP_DEPENDENCIES = readline zlib host-pkgconf
 

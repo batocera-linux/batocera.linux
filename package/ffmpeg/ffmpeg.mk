@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-FFMPEG_VERSION = 2.5.4
+FFMPEG_VERSION = 2.6.2
 FFMPEG_SOURCE = ffmpeg-$(FFMPEG_VERSION).tar.bz2
 FFMPEG_SITE = http://ffmpeg.org/releases
 FFMPEG_INSTALL_STAGING = YES
@@ -299,6 +299,18 @@ ifeq ($(BR2_X86_CPU_HAS_SSE42),y)
 FFMPEG_CONF_OPTS += --enable-sse42
 else
 FFMPEG_CONF_OPTS += --disable-sse42
+endif
+
+ifeq ($(BR2_X86_CPU_HAS_AVX),y)
+FFMPEG_CONF_OPTS += --enable-avx
+else
+FFMPEG_CONF_OPTS += --disable-avx
+endif
+
+ifeq ($(BR2_X86_CPU_HAS_AVX2),y)
+FFMPEG_CONF_OPTS += --enable-avx2
+else
+FFMPEG_CONF_OPTS += --disable-avx2
 endif
 
 # Explicitly disable everything that doesn't match for ARM

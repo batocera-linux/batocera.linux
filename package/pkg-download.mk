@@ -20,11 +20,6 @@ export LOCALFILES := $(call qstrip,$(BR2_LOCALFILES))
 
 DL_WRAPPER = support/download/dl-wrapper
 
-# Default spider mode is 'DOWNLOAD'. Other possible values are 'SOURCE_CHECK'
-# used by the _source-check target and 'SHOW_EXTERNAL_DEPS', used by the
-# external-deps target.
-DL_MODE = DOWNLOAD
-
 # DL_DIR may have been set already from the environment
 ifeq ($(origin DL_DIR),undefined)
 DL_DIR ?= $(call qstrip,$(BR2_DL_DIR))
@@ -60,6 +55,11 @@ domainseparator = $(if $(1),$(1),/)
 # github(user,package,version): returns site of GitHub repository
 github = https://github.com/$(1)/$(2)/archive/$(3)
 
+# Expressly do not check hashes for those files
+# Exported variables default to immediately expanded in some versions of
+# make, but we need it to be recursively-epxanded, so explicitly assign it.
+export BR_NO_CHECK_HASH_FOR =
+
 ################################################################################
 # The DOWNLOAD_* helpers are in charge of getting a working copy
 # of the source repository for their corresponding SCM,
@@ -71,23 +71,11 @@ github = https://github.com/$(1)/$(2)/archive/$(3)
 # The SOURCE_CHECK_* helpers are in charge of simply checking that the source
 # is available for download. This can be used to make sure one will be able
 # to get all the sources needed for one's build configuration.
-#
-# The SHOW_EXTERNAL_DEPS_* helpers simply output to the console the names
-# of the files that will be downloaded, or path and revision of the
-# source repositories, producing a list of all the "external dependencies"
-# of a given build configuration.
 ################################################################################
 
-# Try a shallow clone - but that only works if the version is a ref (tag or
-# branch). Before trying to do a shallow clone we check if $($(PKG)_DL_VERSION)
-# is in the list provided by git ls-remote. If not we fall back on a full clone.
-#
-# Messages for the type of clone used are provided to ease debugging in case of
-# problems
 define DOWNLOAD_GIT
 	$(EXTRA_ENV) $(DL_WRAPPER) -b git \
 		-o $(DL_DIR)/$($(PKG)_SOURCE) \
-		-H $(PKGDIR)/$($(PKG)_RAWNAME).hash \
 		$(QUIET) \
 		-- \
 		$($(PKG)_SITE) \
@@ -98,18 +86,12 @@ endef
 # TODO: improve to check that the given PKG_DL_VERSION exists on the remote
 # repository
 define SOURCE_CHECK_GIT
-  $(GIT) ls-remote --heads $($(PKG)_SITE) > /dev/null
+	$(GIT) ls-remote --heads $($(PKG)_SITE) > /dev/null
 endef
-
-define SHOW_EXTERNAL_DEPS_GIT
-	echo $($(PKG)_SOURCE)
-endef
-
 
 define DOWNLOAD_BZR
 	$(EXTRA_ENV) $(DL_WRAPPER) -b bzr \
 		-o $(DL_DIR)/$($(PKG)_SOURCE) \
-		-H $(PKGDIR)/$($(PKG)_RAWNAME).hash \
 		$(QUIET) \
 		-- \
 		$($(PKG)_SITE) \
@@ -121,14 +103,9 @@ define SOURCE_CHECK_BZR
 	$(BZR) ls --quiet $($(PKG)_SITE) > /dev/null
 endef
 
-define SHOW_EXTERNAL_DEPS_BZR
-	echo $($(PKG)_SOURCE)
-endef
-
 define DOWNLOAD_CVS
 	$(EXTRA_ENV) $(DL_WRAPPER) -b cvs \
 		-o $(DL_DIR)/$($(PKG)_SOURCE) \
-		-H $(PKGDIR)/$($(PKG)_RAWNAME).hash \
 		$(QUIET) \
 		-- \
 		$(call stripurischeme,$(call qstrip,$($(PKG)_SITE))) \
@@ -142,14 +119,9 @@ define SOURCE_CHECK_CVS
 	$(CVS) -d:pserver:anonymous:@$(call stripurischeme,$(call qstrip,$($(PKG)_SITE))) login
 endef
 
-define SHOW_EXTERNAL_DEPS_CVS
-	echo $($(PKG)_SOURCE)
-endef
-
 define DOWNLOAD_SVN
 	$(EXTRA_ENV) $(DL_WRAPPER) -b svn \
 		-o $(DL_DIR)/$($(PKG)_SOURCE) \
-		-H $(PKGDIR)/$($(PKG)_RAWNAME).hash \
 		$(QUIET) \
 		-- \
 		$($(PKG)_SITE) \
@@ -158,11 +130,7 @@ define DOWNLOAD_SVN
 endef
 
 define SOURCE_CHECK_SVN
-  $(SVN) ls $($(PKG)_SITE)@$($(PKG)_DL_VERSION) > /dev/null
-endef
-
-define SHOW_EXTERNAL_DEPS_SVN
-  echo $($(PKG)_SOURCE)
+	$(SVN) ls $($(PKG)_SITE)@$($(PKG)_DL_VERSION) > /dev/null
 endef
 
 # SCP URIs should be of the form scp://[user@]host:filepath
@@ -181,15 +149,9 @@ define SOURCE_CHECK_SCP
 	$(SSH) $(call domain,$(1),:) ls '$(call notdomain,$(1),:)' > /dev/null
 endef
 
-define SHOW_EXTERNAL_DEPS_SCP
-	echo $(2)
-endef
-
-
 define DOWNLOAD_HG
 	$(EXTRA_ENV) $(DL_WRAPPER) -b hg \
 		-o $(DL_DIR)/$($(PKG)_SOURCE) \
-		-H $(PKGDIR)/$($(PKG)_RAWNAME).hash \
 		$(QUIET) \
 		-- \
 		$($(PKG)_SITE) \
@@ -200,13 +162,8 @@ endef
 # TODO: improve to check that the given PKG_DL_VERSION exists on the remote
 # repository
 define SOURCE_CHECK_HG
-  $(HG) incoming --force -l1 $($(PKG)_SITE) > /dev/null
+	$(HG) incoming --force -l1 $($(PKG)_SITE) > /dev/null
 endef
-
-define SHOW_EXTERNAL_DEPS_HG
-  echo $($(PKG)_SOURCE)
-endef
-
 
 define DOWNLOAD_WGET
 	$(EXTRA_ENV) $(DL_WRAPPER) -b wget \
@@ -218,11 +175,7 @@ define DOWNLOAD_WGET
 endef
 
 define SOURCE_CHECK_WGET
-  $(WGET) --spider '$(call qstrip,$(1))'
-endef
-
-define SHOW_EXTERNAL_DEPS_WGET
-  echo $(2)
+	$(WGET) --spider '$(call qstrip,$(1))'
 endef
 
 define DOWNLOAD_LOCALFILES
@@ -235,11 +188,7 @@ define DOWNLOAD_LOCALFILES
 endef
 
 define SOURCE_CHECK_LOCALFILES
-  test -e $(call stripurischeme,$(call qstrip,$(1)))
-endef
-
-define SHOW_EXTERNAL_DEPS_LOCALFILES
-  echo $(2)
+	test -e $(call stripurischeme,$(call qstrip,$(1)))
 endef
 
 ################################################################################
@@ -255,14 +204,18 @@ endef
 ################################################################################
 
 define DOWNLOAD
-	$(call DOWNLOAD_INNER,$(1),$(notdir $(1)))
+	$(call DOWNLOAD_INNER,$(1),$(notdir $(1)),DOWNLOAD)
+endef
+
+define SOURCE_CHECK
+	$(call DOWNLOAD_INNER,$(1),$(notdir $(1)),SOURCE_CHECK)
 endef
 
 define DOWNLOAD_INNER
 	$(Q)if test -n "$(call qstrip,$(BR2_PRIMARY_SITE))" ; then \
 		case "$(call geturischeme,$(BR2_PRIMARY_SITE))" in \
-			scp) $(call $(DL_MODE)_SCP,$(BR2_PRIMARY_SITE)/$(2),$(2)) && exit ;; \
-			*) $(call $(DL_MODE)_WGET,$(BR2_PRIMARY_SITE)/$(2),$(2)) && exit ;; \
+			scp) $(call $(3)_SCP,$(BR2_PRIMARY_SITE)/$(2),$(2)) && exit ;; \
+			*) $(call $(3)_WGET,$(BR2_PRIMARY_SITE)/$(2),$(2)) && exit ;; \
 		esac ; \
 	fi ; \
 	if test "$(BR2_PRIMARY_SITE_ONLY)" = "y" ; then \
@@ -275,18 +228,18 @@ define DOWNLOAD_INNER
 			scheme="$($(PKG)_SITE_METHOD)" ; \
 		fi ; \
 		case "$$scheme" in \
-			git) $($(DL_MODE)_GIT) && exit ;; \
-			svn) $($(DL_MODE)_SVN) && exit ;; \
-			cvs) $($(DL_MODE)_CVS) && exit ;; \
-			bzr) $($(DL_MODE)_BZR) && exit ;; \
-			file) $($(DL_MODE)_LOCALFILES) && exit ;; \
-			scp) $($(DL_MODE)_SCP) && exit ;; \
-			hg) $($(DL_MODE)_HG) && exit ;; \
-			*) $(call $(DL_MODE)_WGET,$(1),$(2)) && exit ;; \
+			git) $($(3)_GIT) && exit ;; \
+			svn) $($(3)_SVN) && exit ;; \
+			cvs) $($(3)_CVS) && exit ;; \
+			bzr) $($(3)_BZR) && exit ;; \
+			file) $($(3)_LOCALFILES) && exit ;; \
+			scp) $($(3)_SCP) && exit ;; \
+			hg) $($(3)_HG) && exit ;; \
+			*) $(call $(3)_WGET,$(1),$(2)) && exit ;; \
 		esac ; \
 	fi ; \
 	if test -n "$(call qstrip,$(BR2_BACKUP_SITE))" ; then \
-		$(call $(DL_MODE)_WGET,$(BR2_BACKUP_SITE)/$(2),$(2)) && exit ; \
+		$(call $(3)_WGET,$(BR2_BACKUP_SITE)/$(2),$(2)) && exit ; \
 	fi ; \
 	exit 1
 endef

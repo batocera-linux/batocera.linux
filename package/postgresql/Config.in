@@ -1,9 +1,10 @@
 config BR2_PACKAGE_POSTGRESQL
 	bool "postgresql"
-	# PostgreSQL does not build against uClibc with locales
-	# enabled, due to an uClibc bug, see
-	# http://lists.uclibc.org/pipermail/uclibc/2014-April/048326.html.
-	depends on BR2_TOOLCHAIN_USES_GLIBC
+	depends on BR2_USE_MMU # fork()
+	# fails to build in a pure static linking scenario, and
+	# postgresql is unlikely to be used in a pure statically
+	# linked environment.
+	depends on !BR2_STATIC_LIBS
 	help
 	  PostgreSQL is a powerful, open source object-relational
 	  database system.
@@ -17,5 +18,5 @@ config BR2_PACKAGE_POSTGRESQL
 
 	  http://www.postgresql.org
 
-comment "postgresql needs a toolchain w/ glibc"
-	depends on !BR2_TOOLCHAIN_USES_GLIBC
+comment "postgresql needs a toolchain w/ dynamic library"
+	depends on BR2_STATIC_LIBS

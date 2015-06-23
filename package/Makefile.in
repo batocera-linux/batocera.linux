@@ -6,7 +6,7 @@ HOSTMAKE = $(MAKE)
 endif
 HOSTMAKE := $(shell which $(HOSTMAKE) || type -p $(HOSTMAKE) || echo make)
 
-# If BR2_LEVEL is 0, scale the maximum concurrency with the number of
+# If BR2_JLEVEL is 0, scale the maximum concurrency with the number of
 # CPUs. An additional job is used in order to keep processors busy
 # while waiting on I/O.
 # If the number of processors is not available, assume one.
@@ -136,10 +136,7 @@ ifeq ($(BR2_DEBUG_3),y)
 TARGET_DEBUGGING = -g3
 endif
 
-ifeq ($(BR2_LARGEFILE),y)
 TARGET_CPPFLAGS += -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64
-endif
-
 TARGET_CFLAGS = $(TARGET_CPPFLAGS) $(TARGET_ABI) $(TARGET_OPTIMIZATION) $(TARGET_DEBUGGING)
 TARGET_CXXFLAGS = $(TARGET_CFLAGS)
 TARGET_LDFLAGS = $(call qstrip,$(BR2_TARGET_LDFLAGS))
@@ -267,7 +264,6 @@ TARGET_CONFIGURE_OPTS = \
 	CC_FOR_BUILD="$(HOSTCC)" \
 	GCC_FOR_BUILD="$(HOSTCC)" \
 	CXX_FOR_BUILD="$(HOSTCXX)" \
-	FC_FOR_BUILD="$(HOSTFC)" \
 	LD_FOR_BUILD="$(HOSTLD)" \
 	CPPFLAGS_FOR_BUILD="$(HOST_CPPFLAGS)" \
 	CFLAGS_FOR_BUILD="$(HOST_CFLAGS)" \
@@ -373,24 +369,8 @@ else
 DISABLE_NLS :=--disable-nls
 endif
 
-ifneq ($(BR2_LARGEFILE),y)
-DISABLE_LARGEFILE = --disable-largefile
-endif
-
-ifeq ($(BR2_INET_IPV6),y)
-DISABLE_IPV6 = --enable-ipv6
-else
-DISABLE_IPV6 = --disable-ipv6
-endif
-
 ifneq ($(BR2_INSTALL_LIBSTDCPP),y)
 TARGET_CONFIGURE_OPTS += CXX=false
-endif
-
-ifeq ($(BR2_ENABLE_DEBUG),y)
-ENABLE_DEBUG := --enable-debug
-else
-ENABLE_DEBUG := --disable-debug
 endif
 
 ifeq ($(BR2_STATIC_LIBS),y)

@@ -4,12 +4,12 @@
 #
 ################################################################################
 
-ZMQPP_VERSION = 36413487f05b165dfc82ad307a5a1c36a795e607
-ZMQPP_SITE = $(call github,benjamg,zmqpp,$(ZMQPP_VERSION))
+ZMQPP_VERSION = 3.2.0
+ZMQPP_SITE = $(call github,zeromq,zmqpp,$(ZMQPP_VERSION))
 ZMQPP_INSTALL_STAGING = YES
 ZMQPP_DEPENDENCIES = zeromq
-ZMQPP_LICENSE = LGPLv3+ with exceptions
-ZMQPP_LICENSE_FILES = COPYING COPYING.LESSER
+ZMQPP_LICENSE = MIT
+ZMQPP_LICENSE_FILES = LICENSE
 
 ZMQPP_MAKE_OPTS = LD="$(TARGET_CXX)" BUILD_PATH=./build PREFIX=/usr
 ZMQPP_LDFLAGS = $(TARGET_LDFLAGS) -lpthread

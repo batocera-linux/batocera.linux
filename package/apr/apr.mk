@@ -12,6 +12,7 @@ APR_INSTALL_STAGING = YES
 # We have a patch touching configure.in and Makefile.in,
 # so we need to autoreconf:
 APR_AUTORECONF = YES
+
 APR_CONF_ENV = \
 	CC_FOR_BUILD="$(HOSTCC)" \
 	CFLAGS_FOR_BUILD="$(HOST_CFLAGS)" \
@@ -32,8 +33,10 @@ APR_CONF_ENV += apr_cv_pthreads_lib="-lpthread"
 endif
 
 # Fix lfs detection when cross compiling
-ifeq ($(BR2_LARGEFILE),y)
 APR_CONF_ENV += apr_cv_use_lfs64=yes
+
+ifeq ($(BR2_PACKAGE_UTIL_LINUX_LIBUUID),y)
+APR_DEPENDENCIES += util-linux
 endif
 
 define APR_CLEANUP_UNNEEDED_FILES

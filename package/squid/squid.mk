@@ -5,12 +5,12 @@
 ################################################################################
 
 SQUID_VERSION_MAJOR = 3.5
-SQUID_VERSION = $(SQUID_VERSION_MAJOR).2
+SQUID_VERSION = $(SQUID_VERSION_MAJOR).5
 SQUID_SOURCE = squid-$(SQUID_VERSION).tar.xz
 SQUID_SITE = http://www.squid-cache.org/Versions/v3/$(SQUID_VERSION_MAJOR)
 SQUID_LICENSE = GPLv2+
 SQUID_LICENSE_FILES = COPYING
-# For squid-01-assume-get-certificate-ok.patch
+# For 0001-assume-get-certificate-ok.patch
 SQUID_AUTORECONF = YES
 SQUID_DEPENDENCIES = libcap host-libcap host-pkgconf \
 	$(if $(BR2_PACKAGE_LIBNETFILTER_CONNTRACK),libnetfilter_conntrack)
@@ -42,14 +42,25 @@ SQUID_CONF_OPTS = \
 	--enable-icap-client \
 	--with-default-user=squid
 
+# Atomics in Squid use __sync_add_and_fetch_8, i.e a 64 bits atomic
+# operation. This atomic intrinsic is only available natively on
+# 64-bit architectures that have atomic operations. On 32-bit
+# architectures, it would be provided by libatomic, but Buildroot
+# typically doesn't provide it.
+ifeq ($(BR2_ARCH_HAS_ATOMICS)$(BR2_ARCH_IS_64),yy)
+SQUID_CONF_ENV += squid_cv_gnu_atomics=yes
+else
+SQUID_CONF_ENV += squid_cv_gnu_atomics=no
+endif
+
 # On uClibc librt needs libpthread
 ifeq ($(BR2_TOOLCHAIN_HAS_THREADS)$(BR2_TOOLCHAIN_USES_UCLIBC),yy)
-	SQUID_CONF_ENV += ac_cv_search_shm_open="-lrt -lpthread"
+SQUID_CONF_ENV += ac_cv_search_shm_open="-lrt -lpthread"
 endif
 
 ifeq ($(BR2_PACKAGE_OPENSSL),y)
-	SQUID_CONF_OPTS += --enable-ssl
-	SQUID_DEPENDENCIES += openssl
+SQUID_CONF_OPTS += --enable-ssl
+SQUID_DEPENDENCIES += openssl
 endif
 
 define SQUID_CLEANUP_TARGET

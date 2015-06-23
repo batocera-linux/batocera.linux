@@ -1,12 +1,10 @@
-comment "zeromq needs a toolchain w/ C++, IPv6, largefile, wchar, threads"
-	depends on !(BR2_INSTALL_LIBSTDCPP && BR2_INET_IPV6 && BR2_LARGEFILE \
-		&& BR2_USE_WCHAR && BR2_TOOLCHAIN_HAS_THREADS)
+comment "zeromq needs a toolchain w/ C++, wchar, threads"
+	depends on !(BR2_INSTALL_LIBSTDCPP && BR2_USE_WCHAR && \
+		BR2_TOOLCHAIN_HAS_THREADS)
 
 config BR2_PACKAGE_ZEROMQ
 	bool "zeromq"
 	depends on BR2_INSTALL_LIBSTDCPP
-	depends on BR2_INET_IPV6
-	depends on BR2_LARGEFILE # util-linux
 	depends on BR2_USE_WCHAR # util-linux
 	depends on BR2_TOOLCHAIN_HAS_THREADS
 	select BR2_PACKAGE_UTIL_LINUX
@@ -17,7 +15,7 @@ config BR2_PACKAGE_ZEROMQ
 	  sockets that carry whole messages across various transports
 	  like in-process, inter- process, TCP, and multicast. You can
 	  connect sockets N-to-N with patterns like fanout, pub-sub,
-	  task distribution, and request-reply.  It's fast enough to
+	  task distribution, and request-reply. It's fast enough to
 	  be the fabric for clustered products. Its asynchronous I/O
 	  model gives you scalable multicore applications, built as
 	  asynchronous message-processing tasks. It has a score of
@@ -31,6 +29,7 @@ if BR2_PACKAGE_ZEROMQ
 
 config BR2_PACKAGE_ZEROMQ_PGM
 	bool "PGM/EPGM support"
+	depends on !BR2_TOOLCHAIN_EXTERNAL_BLACKFIN_UCLINUX_2014R1 # openpgm
 	depends on !BR2_TOOLCHAIN_EXTERNAL_BLACKFIN_UCLINUX_2013R1 # openpgm
 	depends on !BR2_TOOLCHAIN_EXTERNAL_BLACKFIN_UCLINUX_2012R2 # openpgm
 	select BR2_PACKAGE_OPENPGM

@@ -8,8 +8,12 @@
 # If not, we do like other packages
 BINUTILS_VERSION = $(call qstrip,$(BR2_BINUTILS_VERSION))
 ifeq ($(BINUTILS_VERSION),)
+ifeq ($(BR2_arc),y)
+BINUTILS_VERSION = arc-2014.12
+else
 BINUTILS_VERSION = 2.22
 endif
+endif # BINUTILS_VERSION
 
 ifeq ($(BR2_arc),y)
 BINUTILS_SITE = $(call github,foss-for-synopsys-dwc-arc-processors,binutils-gdb,$(BINUTILS_VERSION))
@@ -94,6 +98,10 @@ define BINUTILS_XTENSA_PRE_PATCH
 endef
 BINUTILS_PRE_PATCH_HOOKS += BINUTILS_XTENSA_PRE_PATCH
 HOST_BINUTILS_PRE_PATCH_HOOKS += BINUTILS_XTENSA_PRE_PATCH
+endif
+
+ifeq ($(BR2_BINUTILS_ENABLE_LTO),y)
+HOST_BINUTILS_CONF_OPTS += --enable-plugins --enable-lto
 endif
 
 $(eval $(autotools-package))

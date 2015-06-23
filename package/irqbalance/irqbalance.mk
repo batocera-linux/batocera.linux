@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-IRQBALANCE_VERSION = v1.0.8
+IRQBALANCE_VERSION = v1.0.9
 IRQBALANCE_SITE = $(call github,irqbalance,irqbalance,$(IRQBALANCE_VERSION))
 IRQBALANCE_LICENSE = GPLv2
 IRQBALANCE_LICENSE_FILES = COPYING
@@ -26,9 +26,9 @@ endef
 
 define IRQBALANCE_INSTALL_INIT_SYSTEMD
 	$(INSTALL) -D -m 644 package/irqbalance/irqbalance.service \
-		$(TARGET_DIR)/etc/systemd/system/irqbalance.service
+		$(TARGET_DIR)/usr/lib/systemd/system/irqbalance.service
 	mkdir -p $(TARGET_DIR)/etc/systemd/system/multi-user.target.wants
-	ln -fs ../irqbalance.service \
+	ln -fs ../../../../usr/lib/systemd/system/irqbalance.service \
 		$(TARGET_DIR)/etc/systemd/system/multi-user.target.wants/irqbalance.service
 endef
 

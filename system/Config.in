@@ -27,14 +27,6 @@ choice
 
 	  Note: this is used at build-time, and *not* at runtime.
 
-config BR2_TARGET_GENERIC_PASSWD_DES
-	bool "des"
-	help
-	  Use standard 56-bit DES-based crypt(3) to encode passwords.
-
-	  Old, wildly available, but also the weakest, very susceptible to
-	  brute-force attacks.
-
 config BR2_TARGET_GENERIC_PASSWD_MD5
 	bool "md5"
 	help
@@ -67,7 +59,6 @@ endchoice # Passwd encoding
 
 config BR2_TARGET_GENERIC_PASSWD_METHOD
 	string
-	default "des"       if BR2_TARGET_GENERIC_PASSWD_DES
 	default "md5"       if BR2_TARGET_GENERIC_PASSWD_MD5
 	default "sha-256"   if BR2_TARGET_GENERIC_PASSWD_SHA256
 	default "sha-512"   if BR2_TARGET_GENERIC_PASSWD_SHA512
@@ -89,19 +80,17 @@ config BR2_INIT_SYSTEMD
 	bool "systemd"
 	depends on BR2_PACKAGE_SYSTEMD_ARCH_SUPPORTS
 	depends on BR2_TOOLCHAIN_USES_GLIBC
-	depends on BR2_LARGEFILE
 	depends on BR2_USE_WCHAR
-	depends on BR2_INET_IPV6
 	depends on BR2_TOOLCHAIN_HAS_THREADS
 	depends on BR2_TOOLCHAIN_HAS_SSP
 	depends on BR2_USE_MMU
 	depends on !BR2_STATIC_LIBS
-	depends on BR2_TOOLCHAIN_HEADERS_AT_LEAST_3_7
+	depends on BR2_TOOLCHAIN_HEADERS_AT_LEAST_3_10
 	select BR2_PACKAGE_SYSTEMD
 
-comment 'systemd needs an (e)glibc toolchain, headers >= 3.7'
+comment 'systemd needs an (e)glibc toolchain, headers >= 3.10'
 	depends on !(BR2_TOOLCHAIN_USES_GLIBC \
-		&& BR2_TOOLCHAIN_HEADERS_AT_LEAST_3_7)
+		&& BR2_TOOLCHAIN_HEADERS_AT_LEAST_3_10)
 
 config BR2_INIT_NONE
 	bool "None"
@@ -124,17 +113,14 @@ config BR2_ROOTFS_DEVICE_CREATION_DYNAMIC_MDEV
 
 config BR2_ROOTFS_DEVICE_CREATION_DYNAMIC_EUDEV
 	bool "Dynamic using eudev"
-	depends on BR2_LARGEFILE
 	depends on BR2_USE_WCHAR
 	depends on !BR2_STATIC_LIBS
 	depends on BR2_USE_MMU # eudev
-	depends on BR2_TOOLCHAIN_HEADERS_AT_LEAST_3_9
 	select BR2_PACKAGE_EUDEV
 
-comment "eudev needs a toolchain w/ largefile, wchar, dynamic library, headers >= 3.9"
+comment "eudev needs a toolchain w/ wchar, dynamic library"
 	depends on BR2_USE_MMU
-	depends on !BR2_LARGEFILE || !BR2_USE_WCHAR || BR2_STATIC_LIBS \
-		|| !BR2_TOOLCHAIN_HEADERS_AT_LEAST_3_9
+	depends on !BR2_USE_WCHAR || BR2_STATIC_LIBS
 
 endchoice
 
@@ -250,10 +236,10 @@ endchoice # /bin/sh
 
 config BR2_SYSTEM_BIN_SH
 	string
-	default "/bin/busybox" if BR2_SYSTEM_BIN_SH_BUSYBOX
-	default "/bin/bash"    if BR2_SYSTEM_BIN_SH_BASH
-	default "/bin/dash"    if BR2_SYSTEM_BIN_SH_DASH
-	default "/bin/zsh"     if BR2_SYSTEM_BIN_SH_ZSH
+	default "busybox" if BR2_SYSTEM_BIN_SH_BUSYBOX
+	default "bash"    if BR2_SYSTEM_BIN_SH_BASH
+	default "dash"    if BR2_SYSTEM_BIN_SH_DASH
+	default "zsh"     if BR2_SYSTEM_BIN_SH_ZSH
 
 config BR2_TARGET_GENERIC_GETTY
 	bool "Run a getty (login prompt) after boot"

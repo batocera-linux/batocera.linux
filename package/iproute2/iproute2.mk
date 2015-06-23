@@ -4,10 +4,10 @@
 #
 ################################################################################
 
-IPROUTE2_VERSION = 3.19.0
+IPROUTE2_VERSION = 4.0.0
 IPROUTE2_SOURCE = iproute2-$(IPROUTE2_VERSION).tar.xz
 IPROUTE2_SITE = $(BR2_KERNEL_MIRROR)/linux/utils/net/iproute2
-IPROUTE2_DEPENDENCIES = host-bison host-flex
+IPROUTE2_DEPENDENCIES = host-bison host-flex host-pkgconf
 IPROUTE2_LICENSE = GPLv2
 IPROUTE2_LICENSE_FILES = COPYING
 
@@ -18,17 +18,17 @@ IPROUTE2_DEPENDENCIES += busybox
 endif
 
 # If we've got iptables enable xtables support for tc
-ifeq ($(BR2_PACKAGE_IPTABLES),y)
+ifeq ($(BR2_PACKAGE_IPTABLES)x$(BR2_STATIC_LIBS),yx)
 IPROUTE2_DEPENDENCIES += iptables
 define IPROUTE2_WITH_IPTABLES
 	# Makefile is busted so it never passes IPT_LIB_DIR properly
 	$(SED) "s/-DIPT/-DXT/" $(IPROUTE2_DIR)/tc/Makefile
-	echo "TC_CONFIG_XT:=y" >>$(IPROUTE2_DIR)/Config
 endef
 else
 define IPROUTE2_WITH_IPTABLES
 	# em_ipset needs xtables, but configure misdetects it
 	echo "TC_CONFIG_IPSET:=n" >>$(IPROUTE2_DIR)/Config
+	echo "TC_CONFIG_XT:=n" >>$(IPROUTE2_DIR)/Config
 endef
 endif
 
@@ -51,17 +51,16 @@ endif
 define IPROUTE2_CONFIGURE_CMDS
 	$(SED) 's/gcc/$$CC $$CFLAGS/g' $(@D)/configure
 	cd $(@D) && $(TARGET_CONFIGURE_OPTS) ./configure
-	$(SED) 's/-Werror//' $(IPROUTE2_DIR)/Makefile
-	echo "IPT_LIB_DIR:=/usr/lib/xtables" >>$(IPROUTE2_DIR)/Config
 	$(IPROUTE2_DISABLE_ARPD)
 	$(IPROUTE2_WITH_IPTABLES)
 endef
 
 define IPROUTE2_BUILD_CMDS
 	$(SED) 's/$$(CCOPTS)//' $(@D)/netem/Makefile
-	$(TARGET_MAKE_ENV) $(MAKE) \
+	$(TARGET_MAKE_ENV) LDFLAGS="$(TARGET_LDFLAGS)" $(MAKE) \
 		DBM_INCLUDE="$(STAGING_DIR)/usr/include" \
-		CCOPTS="$(TARGET_CFLAGS) -D_GNU_SOURCE" -C $(@D)
+		CCOPTS="$(TARGET_CFLAGS) -D_GNU_SOURCE" \
+		SHARED_LIBS="$(if $(BR2_STATIC_LIBS),n,y)" -C $(@D)
 endef
 
 define IPROUTE2_INSTALL_TARGET_CMDS

@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-KODI_VERSION = 14.2rc1-Helix
+KODI_VERSION = 14.2-Helix
 KODI_SITE = $(call github,xbmc,xbmc,$(KODI_VERSION))
 KODI_LICENSE = GPLv2
 KODI_LICENSE_FILES = LICENSE.GPL
@@ -18,7 +18,7 @@ KODI_DEPENDENCIES = host-gawk host-gettext host-gperf host-infozip host-lzo \
 	host-nasm host-sdl_image host-swig
 KODI_DEPENDENCIES += boost bzip2 expat ffmpeg fontconfig freetype jasper jpeg \
 	libass libcdio libcurl libfribidi libgcrypt libmad libmodplug libmpeg2 \
-	libogg libplist libpng libsamplerate libungif libvorbis libxml2 libxslt lzo ncurses \
+	libogg libplist libpng libsamplerate libvorbis libxml2 libxslt lzo ncurses \
 	openssl pcre python readline sqlite taglib tiff tinyxml yajl zlib
 
 KODI_CONF_ENV = \
@@ -149,7 +149,7 @@ KODI_CONF_OPTS += --disable-webserver
 endif
 
 ifeq ($(BR2_PACKAGE_KODI_LIBSMBCLIENT),y)
-KODI_DEPENDENCIES += samba
+KODI_DEPENDENCIES += samba4
 KODI_CONF_OPTS += --enable-samba
 else
 KODI_CONF_OPTS += --disable-samba
@@ -265,11 +265,11 @@ endef
 
 define KODI_INSTALL_INIT_SYSTEMD
 	$(INSTALL) -D -m 644 package/kodi/kodi.service \
-		$(TARGET_DIR)/etc/systemd/system/kodi.service
+		$(TARGET_DIR)/usr/lib/systemd/system/kodi.service
 
 	mkdir -p $(TARGET_DIR)/etc/systemd/system/multi-user.target.wants
 
-	ln -fs ../kodi.service \
+	ln -fs ../../../../usr/lib/systemd/system/kodi.service \
 		$(TARGET_DIR)/etc/systemd/system/multi-user.target.wants/kodi.service
 endef
 

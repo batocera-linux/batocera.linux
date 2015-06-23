@@ -4,18 +4,14 @@
 #
 ################################################################################
 
-SQLITE_VERSION = 3080803
+SQLITE_VERSION = 3081002
 SQLITE_SOURCE = sqlite-autoconf-$(SQLITE_VERSION).tar.gz
 SQLITE_SITE = http://www.sqlite.org/2015
 SQLITE_LICENSE = Public domain
 SQLITE_INSTALL_STAGING = YES
 
-ifneq ($(BR2_LARGEFILE),y)
-# the sqlite configure script fails to define SQLITE_DISABLE_LFS when
-# --disable-largefile is passed, breaking the build. Work around it by
-# simply adding it to CFLAGS for configure instead
-SQLITE_CFLAGS += -DSQLITE_DISABLE_LFS
-endif
+# Patching Makefile.am:
+SQLITE_AUTORECONF = YES
 
 ifeq ($(BR2_PACKAGE_SQLITE_STAT3),y)
 SQLITE_CFLAGS += -DSQLITE_ENABLE_STAT3
@@ -57,3 +53,4 @@ SQLITE_CONF_OPTS += --disable-readline
 endif
 
 $(eval $(autotools-package))
+$(eval $(host-autotools-package))

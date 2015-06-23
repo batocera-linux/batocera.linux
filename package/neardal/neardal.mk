@@ -21,12 +21,19 @@ else ifeq ($(BR2_PACKAGE_LIBEDIT),y)
 NEARDAL_DEPENDENCIES += libedit
 endif
 
+# Both readline and libedit link with ncurses but the configure script
+# forgets to take that into account, causing the detection to fail
+# when linking statically
+ifeq ($(BR2_STATIC_LIBS),y)
+NEARDAL_CONF_ENV += LIBS='$(shell $(PKG_CONFIG_HOST_BINARY) --libs ncurses)'
+endif
+
 define NEARDAL_INSTALL_NCL
 	$(INSTALL) -m 0755 -D $(@D)/ncl/ncl $(TARGET_DIR)/usr/bin/ncl
 endef
 
 ifeq ($(BR2_PACKAGE_NEARDAL_NCL),y)
-	NEARDAL_POST_INSTALL_TARGET_HOOKS += NEARDAL_INSTALL_NCL
+NEARDAL_POST_INSTALL_TARGET_HOOKS += NEARDAL_INSTALL_NCL
 endif
 
 $(eval $(autotools-package))

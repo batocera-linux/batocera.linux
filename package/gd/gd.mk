@@ -7,6 +7,7 @@
 GD_VERSION = 2.1.1
 GD_SOURCE = libgd-$(GD_VERSION).tar.xz
 GD_SITE = https://bitbucket.org/libgd/gd-libgd/downloads
+GD_AUTORECONF = YES
 GD_INSTALL_STAGING = YES
 GD_LICENSE = GD license
 GD_LICENSE_FILES = COPYING
@@ -49,6 +50,13 @@ GD_DEPENDENCIES += libpng
 GD_CONF_OPTS += --with-png
 else
 GD_CONF_OPTS += --without-png
+endif
+
+ifeq ($(BR2_PACKAGE_WEBP),y)
+GD_DEPENDENCIES += webp
+GD_CONF_OPTS += --with-webp
+else
+GD_CONF_OPTS += --without-webp
 endif
 
 ifeq ($(BR2_PACKAGE_TIFF),y)

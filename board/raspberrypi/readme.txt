@@ -23,7 +23,7 @@ Configure Buildroot
 -------------------
 
 The raspberrypi_defconfig configuration is a minimal configuration with
-all that is required to bring the Raspberry Pi. You should base your
+all that is required to bring the Raspberry Pi up. You should base your
 work on this defconfig:
 
   $ make raspberrypi_defconfig
@@ -31,6 +31,10 @@ work on this defconfig:
 Alternatively, if you want to test support for the Device Tree:
 
   $ make raspberrypi_dt_defconfig
+
+For Raspberry Pi 2 use a different defconfig:
+
+  $ make raspberrypi2_defconfig
 
 If you want to use a persistent rootfs, skip to "Build the rootfs", below.
 
@@ -62,8 +66,9 @@ After building, you should obtain this tree:
     output/images/
     +-- rootfs.tar                              [0]
     +-- rpi-firmware/
-    |   +-- bcm2708-rpi-b.dtb                   [1]
-    |   +-- bcm2708-rpi-b-plus.dtb              [1]
+    |   +-- bcm2708-rpi-b.dtb
+    |   +-- bcm2708-rpi-b-plus.dtb
+    |   +-- bcm2709-rpi-2-b.dtb
     |   +-- bootcode.bin
     |   +-- config.txt
     |   +-- fixup.dat
@@ -72,10 +77,6 @@ After building, you should obtain this tree:
 
 [0] Note for Volatile: rootfs.tar will only be there if you kept
     "tar the root filesystem" option selected in "Filesystem images".
-
-[1] The DTBs (Device Tree Blobs) will only be present if you setup
-    Buildroot to install the DTBs from the rpi-firmware package, and
-    will only be used if your kernel has support for the Device Tree.
 
 Prepare you SDCard
 ==================
@@ -104,15 +105,18 @@ Install the binaries to the SDCard
 At the root of the boot partition, the Raspberry Pi must find the following
 files:
 
-    * bcm2708-rpi-b.dtb         [2]
+    * bcm2708-rpi-b.dtb         [1]
     * bcm2708-rpi-b-plus.dtb    [2]
+    * bcm2709-rpi-2-b.dtb       [3]
     * bootcode.bin
     * config.txt
     * fixup.dat
     * start.elf
     * zImage
 
-[2] Only needed if your kernel has support for the Device Tree.
+[1] For models A and B
+[2] For models A+ and B+
+[3] For model 2
 
 For example:
 

@@ -1,10 +1,15 @@
-comment "boost needs a toolchain w/ C++, largefile, threads"
-	depends on !BR2_INSTALL_LIBSTDCPP || !BR2_LARGEFILE || !BR2_TOOLCHAIN_HAS_THREADS
+comment "boost needs a toolchain w/ C++, threads"
+	depends on !BR2_INSTALL_LIBSTDCPP || !BR2_TOOLCHAIN_HAS_THREADS
+
+config BR2_PACKAGE_BOOST_ARCH_SUPPORTS
+	bool
+	default y if !BR2_TOOLCHAIN_EXTERNAL_CODESOURCERY_NIOSII201405 && \
+		!BR2_TOOLCHAIN_EXTERNAL_CODESOURCERY_NIOSII201305
 
 config BR2_PACKAGE_BOOST
 	bool "boost"
 	depends on BR2_INSTALL_LIBSTDCPP
-	depends on BR2_LARGEFILE
+	depends on BR2_PACKAGE_BOOST_ARCH_SUPPORTS
 	# Boost could theorically be built with threading=single, but
 	# that unfortunately doesn't work. Until someone fixes that,
 	# let's depend on threads.
@@ -50,8 +55,14 @@ config BR2_PACKAGE_BOOST_LAYOUT
 	default "tagged" if BR2_PACKAGE_BOOST_LAYOUT_TAGGED
 	default "versioned" if BR2_PACKAGE_BOOST_LAYOUT_VERSIONED
 
+config BR2_PACKAGE_BOOST_ATOMIC
+	bool "boost-atomic"
+
 config BR2_PACKAGE_BOOST_CHRONO
 	bool "boost-chrono"
+
+config BR2_PACKAGE_BOOST_CONTAINER
+	bool "boost-container"
 
 config BR2_PACKAGE_BOOST_CONTEXT
 	bool "boost-context"
@@ -84,6 +95,17 @@ config BR2_PACKAGE_BOOST_LOCALE
 
 comment "boost-locale needs a toolchain w/ wchar"
 	depends on !BR2_USE_WCHAR
+
+config BR2_PACKAGE_BOOST_LOG
+	bool "boost-log"
+	depends on BR2_TOOLCHAIN_HAS_THREADS_NPTL
+	# for some reason, uClibc on PowerPC fails to build the boost
+	# log module
+	depends on !(BR2_powerpc && BR2_TOOLCHAIN_USES_UCLIBC)
+
+comment "boost-log needs a toolchain w/ NPTL"
+	depends on !BR2_TOOLCHAIN_HAS_THREADS_NPTL
+	depends on !(BR2_powerpc && BR2_TOOLCHAIN_USES_UCLIBC)
 
 config BR2_PACKAGE_BOOST_MATH
 	bool "boost-math"
