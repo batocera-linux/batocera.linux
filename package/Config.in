@@ -171,24 +171,20 @@ menu "Filesystem and flash utilities"
 	source "package/unionfs/Config.in"
 	source "package/xfsprogs/Config.in"
 endmenu
-
-menu "Games"
-	source "package/doom-wad/Config.in"
-	source "package/gnuchess/Config.in"
-	source "package/lbreakout2/Config.in"
-	source "package/ltris/Config.in"
-	source "package/opentyrian/Config.in"
-	source "package/opentyrian-data/Config.in"
-	source "package/prboom/Config.in"
-	source "package/rubix/Config.in"
+menu "Recalbox"
+menu "Emulationstation"
+        source "package/recalbox-emulationstation2/Config.in"
+        source "package/emulation-station/Config.in"
+        source "package/python-es-scraper/Config.in"
+endmenu
+menu "Controllers"
 	source "package/qtsixa/Config.in"
 	source "package/mk_arcade_joystick_rpi/Config.in"
 	source "package/db9_gpio_rpi/Config.in"
 	source "package/gamecon_gpio_rpi/Config.in"
 	source "package/xboxdrv/Config.in"
-        source "package/recalbox-emulationstation2/Config.in"
-        source "package/python-es-scraper/Config.in"
-        source "package/emulation-station/Config.in"
+endmenu
+
 menu "Emulators"
 	source "package/mupen64plus-core/Config.in"
 	source "package/mupen64plus-uiconsole/Config.in"
@@ -203,6 +199,7 @@ menu "Emulators"
         source "package/retroarch/Config.in"
         source "package/scummvm/Config.in"
         source "package/scummvm-vanfanel/Config.in"
+
 if BR2_PACKAGE_RETROARCH
 menu "Libretro Cores"
        source "package/libretro-armsnes/Config.in"
@@ -236,9 +233,24 @@ menu "Libretro Cores"
        source "package/libretro-beetle-lynx/Config.in"
        source "package/libretro-lutro/Config.in"
        source "package/libretro-beetle-wswan/Config.in"
+       source "package/libretro-uae/Config.in"
+       source "package/libretro-mupen64/Config.in"
 endmenu
 endif
 endmenu
+menu "Doom packages"
+	source "package/prboom/Config.in"
+	source "package/doom-wad/Config.in"
+endmenu
+endmenu
+
+menu "Games"
+	source "package/gnuchess/Config.in"
+	source "package/lbreakout2/Config.in"
+	source "package/ltris/Config.in"
+	source "package/opentyrian/Config.in"
+	source "package/opentyrian-data/Config.in"
+	source "package/rubix/Config.in"
 endmenu
 
 
