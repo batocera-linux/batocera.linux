@@ -11,14 +11,15 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Added Game And Watch libretro emulator
 - Added Lynx libretro emulator
 - Added PRBoom libretro 
-- modif zoid theme
-- patched kernel to support retrobit controllers
-- patched kernel to support 4NES4SNES controllers
-- patched kernel to fix the blinking xbox led. Only on rpi2
-- added gpu_mem for 256mo rpi1
-- unified the branches rpi and rpi2
-- added libretro cheats
-
+- Modif zoid theme
+- Patched kernel to support retrobit controllers
+- Patched kernel to support 4NES4SNES controllers
+- Patched kernel to fix the blinking xbox led. Only on rpi2
+- Added gpu_mem for 256mo rpi1
+- Unified the branches rpi and rpi2
+- Updated buildroot sources
+- Added libretro cheats
+- Added favorites to emulationstation (from kaptainkia es modifications)
 
 ## [3.2.11] - 2015-03-24
 - Corrected issues with controllers with idientical names
@@ -26,7 +27,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [3.2.10] - 2015-03-17
 - Corrected itialian translation
-- recompiled modules for 3.19
+- Recompiled modules for 3.19
 
 ## [3.2.9] - 2015-03-15
 ### Changed
