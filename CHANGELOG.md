@@ -20,7 +20,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Updated buildroot sources
 - Added libretro cheats
 - Added favorites to emulationstation (from kaptainkia es modifications)
-
+- Added mk_arcade_joystick_rpi with one more button
+ 
 ## [3.2.11] - 2015-03-24
 - Corrected issues with controllers with idientical names
 - Added zoid theme
