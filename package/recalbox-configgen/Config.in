@@ -1,0 +1,8 @@
+config BR2_PACKAGE_RECALBOX_CONFIGGEN
+        bool "recalbox configgen"
+	select BR2_PACKAGE_PYTHON
+        help
+          The configuration utility for recalbox
+
+	  https://github.com/digitallumberjack/recalbox-configgen
+

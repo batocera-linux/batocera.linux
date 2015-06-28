@@ -6,18 +6,5 @@ config BR2_PACKAGE_QTSIXA
           Support for ps3 controllers.
 
 
-if BR2_PACKAGE_QTSIXA
-choice
-    prompt "QTSIXA version to compile"
-    config BR2_PACKAGE_QTSIXA_STANDARD
-          bool "standard"
-    config BR2_PACKAGE_QTSIXA_GASIA
-          bool "gasia"
-    config BR2_PACKAGE_QTSIXA_SHANWAN
-          bool "shanwan"
- endchoice
-endif
-
-
 comment "qtsixa depends on bluez-utils bluez-compat bluez-hcidump checkinstall libusb-dev libbluetooth-dev joystick"
 	depends on !BR2_PACKAGE_SDL || !BR2_PACKAGE_BLUEZ_UTILS || !BR2_PACKAGE_LIBUSB

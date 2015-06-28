@@ -1,0 +1,10 @@
+config BR2_PACKAGE_ADAFRUIT_RETROGAME
+        bool "adafruit-retrogame"
+	depends on BR2_INSTALL_LIBSTDCPP
+        help
+          Raspberry Pi GPIO-to-USB utility for classic game emulators.
+
+	  https://github.com/adafruit/Adafruit-Retrogame
+
+comment "ADAFRUIT_RETROGAME needs a toolchain w/ C++"
+	depends on !BR2_INSTALL_LIBSTDCPP

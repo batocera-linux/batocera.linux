@@ -12,7 +12,7 @@ extra2="$4"
 
 log=/root/recalbox.log
 wpafile=/etc/wpa_supplicant/wpa_supplicant.conf
-es_settings="/root/.emulationstation/es_settings.cfg"
+systemsetting="python /usr/lib/python2.7/site-packages/configgen/settings/recalboxSettings.py"
 
 echo "---- recalbox-config.sh ----" >> $log
 
@@ -249,8 +249,8 @@ if [[ "$command" == "wifi" ]]; then
         fi
   	if [[ "$mode" =~ "start" ]]; then
                 if [[ "$mode" != "forcestart" ]]; then
-                        settingsWlan=`cat "$es_settings" | sed -n 's/.*name="EnableWifi" value="\(.*\)".*/\1/p'`
-                        if [ "$settingsWlan" != "true" ];then
+                        settingsWlan="`$systemsetting load wifi.enabled`"
+                        if [ "$settingsWlan" != "1" ];then
                                 exit 1
                         fi
                 fi

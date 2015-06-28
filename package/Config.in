@@ -178,6 +178,7 @@ menu "Filesystem and flash utilities"
 endmenu
 
 menu "Recalbox"
+	source "package/recalbox-configgen/Config.in"
 menu "Emulationstation"
         source "package/recalbox-emulationstation2/Config.in"
         source "package/emulation-station/Config.in"
@@ -189,8 +190,8 @@ menu "Controllers"
 	source "package/db9_gpio_rpi/Config.in"
 	source "package/gamecon_gpio_rpi/Config.in"
 	source "package/xboxdrv/Config.in"
+	source "package/adafruit-retrogame/Config.in"
 endmenu
-
 menu "Emulators"
 	source "package/mupen64plus-core/Config.in"
 	source "package/mupen64plus-uiconsole/Config.in"

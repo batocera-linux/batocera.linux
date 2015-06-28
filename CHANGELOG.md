@@ -21,6 +21,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Added libretro cheats
 - Added favorites to emulationstation (from kaptainkia es modifications)
 - Added mk_arcade_joystick_rpi with one more button
+- Added adafruit-retrogame utility
+- Added recalbox-configgen support
+- Added sixad driver choice
+
  
 ## [3.2.11] - 2015-03-24
 - Corrected issues with controllers with idientical names

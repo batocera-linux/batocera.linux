@@ -2,13 +2,21 @@
 #
 # Watch for network adapter
 #
+systemsetting="python /usr/lib/python2.7/site-packages/configgen/settings/recalboxSettings.py"
 
 case "$1" in
   start)
-	bluetoothd -u
-	sleep 2
-	killall bluetoothd
-	sixad-bin 0 0 0 &
+        enabled="`$systemsetting load controllers.sixad.enabled`"
+	if [ "$enabled" == "1" ];then
+        	settings_version="`$systemsetting load controllers.sixad.driver`"
+		if [ "$settings_version" == "" ];then
+			settings_version="official"
+		fi
+		bluetoothd -u
+		sleep 2
+		killall bluetoothd
+		/usr/sixad/$settings_version/sixad-bin 0 0 0 &
+	fi
 	;;
   stop)
 	killall sixad-bin

@@ -11,13 +11,6 @@ PKGCONFIG_CONFIG=$(STAGING_DIR)/usr/lib/pkgconfig
 QTSIXA_INCLUDES =-I$(STAGING_DIR)/usr/include -I$(STAGING_DIR)/usr/include/interface/vcos/pthreads -I$(STAGING_DIR)/usr/include/interface/vmcs_host/linux
 QTSIXA_CFLAGS = -D__ARM_PCS_VFP -DARM_ARCH -DRPI_BUILD -Wall $(QTSIXA_INCLUDES) 
 
-ifeq ($(BR2_PACKAGE_QTSIXA_GASIA),y)
-	QTSIXA_CFLAGS += -DGASIA_GAMEPAD_HACKS
-endif
-
-ifeq ($(BR2_PACKAGE_QTSIXA_SHANWAN),y)
-	QTSIXA_CFLAGS += -DSHANWAN_FAKE_DS3
-endif
 	
 QTSIXA_LIBS = -ldl -lpthread -lz -L$(STAGING_DIR)/usr/lib -lbcm_host -lvcos -lvchiq_arm -lrt -lvchostif -lusb -lbluetooth
 
@@ -26,22 +19,29 @@ define QTSIXA_BUILD_CMDS
 		CFLAGS="$(TARGET_CFLAGS) $(QTSIXA_CFLAGS)" \
 		LIBS="$(QTSIXA_LIBS)" \
 		-C $(@D)/utils all
+	# Make standard
 	$(MAKE) CXX="$(TARGET_CXX)" \
 		CXXFLAGS="$(TARGET_CFLAGS) $(QTSIXA_CFLAGS)" \
-		LIBS="$(QTSIXA_LIBS)" \
+		LIBS="$(QTSIXA_LIBS)" INSTALLDIR="official" BINDIR="official"\
+		-C $(@D)/sixad all
+	# Make GASIA
+	$(MAKE) CXX="$(TARGET_CXX)" \
+		CXXFLAGS="$(TARGET_CFLAGS) $(QTSIXA_CFLAGS) -DGASIA_GAMEPAD_HACKS" \
+		LIBS="$(QTSIXA_LIBS)" INSTALLDIR="gasia" BINDIR="gasia"\
+		-C $(@D)/sixad all
+	# Make SHANWAN
+	$(MAKE) CXX="$(TARGET_CXX)" \
+		CXXFLAGS="$(TARGET_CFLAGS) $(QTSIXA_CFLAGS) -DSHANWAN_FAKE_DS3" \
+		LIBS="$(QTSIXA_LIBS)" INSTALLDIR="shanwan" BINDIR="shanwan"\
 		-C $(@D)/sixad all
 endef
 
 define QTSIXA_INSTALL_TARGET_CMDS
 	$(INSTALL) -D $(@D)/utils/bins/sixpair \
 		$(TARGET_DIR)/usr/bin/sixpair
-	$(INSTALL) -d $(TARGET_DIR)/etc/init.d/
-	$(INSTALL) -m 755 $(@D)/sixad/sixad $(TARGET_DIR)/usr/bin/
-	$(INSTALL) -m 755 $(@D)/sixad/bins/sixad-bin $(TARGET_DIR)/usr/sbin/
-	$(INSTALL) -m 755 $(@D)/sixad/bins/sixad-sixaxis $(TARGET_DIR)/usr/sbin/
-	$(INSTALL) -m 755 $(@D)/sixad/bins/sixad-remote $(TARGET_DIR)/usr/sbin/
-	$(INSTALL) -m 755 $(@D)/sixad/bins/sixad-3in1 $(TARGET_DIR)/usr/sbin/
-	$(INSTALL) -m 755 $(@D)/sixad/bins/sixad-raw $(TARGET_DIR)/usr/sbin/
+	$(MAKE) INSTALLDIR="official" BINDIR="official" DESTDIR=$(TARGET_DIR) -C $(@D)/sixad install 
+	$(MAKE) INSTALLDIR="gasia" BINDIR="gasia" DESTDIR=$(TARGET_DIR) -C $(@D)/sixad install 
+	$(MAKE) INSTALLDIR="shanwan" BINDIR="shanwan" DESTDIR=$(TARGET_DIR) -C $(@D)/sixad install 
 endef
 
 define QTSIXA_RPI_FIXUP

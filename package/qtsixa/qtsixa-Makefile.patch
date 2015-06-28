@@ -1,0 +1,57 @@
+--- a/sixad/Makefile	2015-06-23 23:02:15.009366034 +0200
++++ b/sixad/Makefile	2015-06-28 18:48:20.791057365 +0200
+@@ -6,6 +6,9 @@
+ 
+ GASIA_GAMEPAD_HACKS = false # Set to 'true' to enable hacks
+ 
++BINDIR ?= bins
++INSTALLDIR ?= 
++
+ ifeq ($(GASIA_GAMEPAD_HACKS),true)
+ CXXFLAGS += -DGASIA_GAMEPAD_HACKS
+ endif
+@@ -17,15 +20,15 @@
+ all: sixad_bins
+ 
+ sixad_bins:
+-	mkdir -p bins
+-	$(CXX) $(CXXFLAGS) $(LDFLAGS) sixad-bin.cpp bluetooth.cpp shared.cpp textfile.cpp -o bins/sixad-bin `pkg-config --cflags --libs bluez` -lpthread -fpermissive
+-	$(CXX) $(CXXFLAGS) $(LDFLAGS) sixad-sixaxis.cpp sixaxis.cpp shared.cpp uinput.cpp textfile.cpp -o bins/sixad-sixaxis -lpthread -lrt
+-	$(CXX) $(CXXFLAGS) $(LDFLAGS) sixad-remote.cpp remote.cpp shared.cpp uinput.cpp textfile.cpp -o bins/sixad-remote -lrt
+-	$(CXX) $(CXXFLAGS) $(LDFLAGS) sixad-raw.cpp sixaxis.cpp shared.cpp uinput.cpp textfile.cpp -o bins/sixad-raw
+-	$(CXX) $(CXXFLAGS) $(LDFLAGS) sixad-3in1.cpp sixaxis.cpp shared.cpp uinput.cpp textfile.cpp -o bins/sixad-3in1
++	mkdir -p $(BINDIR)
++	$(CXX) $(CXXFLAGS) $(LDFLAGS) sixad-bin.cpp bluetooth.cpp shared.cpp textfile.cpp -o $(BINDIR)/sixad-bin `pkg-config --cflags --libs bluez` -lpthread -fpermissive
++	$(CXX) $(CXXFLAGS) $(LDFLAGS) sixad-sixaxis.cpp sixaxis.cpp shared.cpp uinput.cpp textfile.cpp -o $(BINDIR)/sixad-sixaxis -lpthread -lrt
++	$(CXX) $(CXXFLAGS) $(LDFLAGS) sixad-remote.cpp remote.cpp shared.cpp uinput.cpp textfile.cpp -o $(BINDIR)/sixad-remote -lrt
++	$(CXX) $(CXXFLAGS) $(LDFLAGS) sixad-raw.cpp sixaxis.cpp shared.cpp uinput.cpp textfile.cpp -o $(BINDIR)/sixad-raw
++	$(CXX) $(CXXFLAGS) $(LDFLAGS) sixad-3in1.cpp sixaxis.cpp shared.cpp uinput.cpp textfile.cpp -o $(BINDIR)/sixad-3in1
+ 
+ clean:
+-	rm -f *~ bins/*
++	rm -f *~ $(BINDIR)/*
+ 
+ install:
+ 	install -d $(DESTDIR)/etc/default/
+@@ -35,15 +38,12 @@
+ 	install -d $(DESTDIR)/usr/sbin/
+ 	install -d $(DESTDIR)/var/lib/sixad/
+ 	install -d $(DESTDIR)/var/lib/sixad/profiles/
+-	install -m 644 sixad.default $(DESTDIR)/etc/default/sixad
+-	install -m 755 sixad.init $(DESTDIR)/etc/init.d/sixad
+-	install -m 644 sixad.log $(DESTDIR)/etc/logrotate.d/sixad
+-	install -m 755 sixad $(DESTDIR)/usr/bin/
+-	install -m 755 bins/sixad-bin $(DESTDIR)/usr/sbin/
+-	install -m 755 bins/sixad-sixaxis $(DESTDIR)/usr/sbin/
+-	install -m 755 bins/sixad-remote $(DESTDIR)/usr/sbin/
+-	install -m 755 bins/sixad-3in1 $(DESTDIR)/usr/sbin/
+-	install -m 755 bins/sixad-raw $(DESTDIR)/usr/sbin/
++	install -d $(DESTDIR)/usr/sixad/$(INSTALLDIR)/
++	install -m 755 $(BINDIR)/sixad-bin $(DESTDIR)/usr/sixad/$(INSTALLDIR)/
++	install -m 755 $(BINDIR)/sixad-sixaxis $(DESTDIR)/usr/sixad/$(INSTALLDIR)/
++	install -m 755 $(BINDIR)/sixad-remote $(DESTDIR)/usr/sixad/$(INSTALLDIR)/
++	install -m 755 $(BINDIR)/sixad-3in1 $(DESTDIR)/usr/sixad/$(INSTALLDIR)/
++	install -m 755 $(BINDIR)/sixad-raw $(DESTDIR)/usr/sixad/$(INSTALLDIR)/
+ 	@chmod 777 -R $(DESTDIR)/var/lib/sixad/
+ 	@echo "Installation is Complete!"
+ 
