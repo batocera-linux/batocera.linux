@@ -1,0 +1,25 @@
+shaders = "2"
+
+shader0 = "../lcd_cgwg/lcd-grid.glsl"
+filter_linear0 = "false"
+wrap_mode0 = "clamp_to_border"
+scale_type_x0 = "source"
+scale_x0 = "3.000000"
+scale_type_y0 = "source"
+scale_y0 = "3.000000"
+
+shader1 = "shader-files/gb-pass-5.glsl"
+filter_linear1 = "true"
+wrap_mode1 = "clamp_to_border"
+
+parameters = "SCALE;OUT_X;OUT_Y;GRID_STRENGTH"
+GRID_STRENGTH = "0.050000"
+SCALE = "1.0"
+OUT_X = "2400.0"
+OUT_Y = "1200.0"
+
+textures = "BORDER"
+BORDER = "resources/gba-border-square-4x.png"
+BORDER_linear = "true"
+BORDER_wrap_mode = "clamp_to_border"
+BORDER_mipmap = "false"

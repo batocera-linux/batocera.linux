@@ -6,12 +6,8 @@ config_save_on_exit = false
 
 video_threaded = true
 
-#video_aspect_ratio = 1.33
 #aspect_ratio_index = "21"
-#aspect_ratio_index = "0"
-#video_force_aspect = false
 video_aspect_ratio_auto = true
-#video_scale_integer = true
 
 rewind_enable = false
 rewind_buffer_size = 10
@@ -22,6 +18,7 @@ video_gpu_screenshot = true
 video_shader_enable = false
 video_smooth = true
 
+video_shader_dir=/recalbox/share/shaders/
 screenshot_directory = /recalbox/share/screenshots/
 savestate_directory = /recalbox/share/saves/
 savefile_directory = /recalbox/share/saves/

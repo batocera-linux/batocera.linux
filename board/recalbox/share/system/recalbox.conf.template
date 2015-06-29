@@ -33,6 +33,13 @@ audio.bgmusic=1
 
 
 
+# ------------ D - PS3 Controllers ------------ #
+## PS3 controllers are supported. 
+controllers.ps3.enabled=1
+## Choose an driver beetween official, shanwan and gasia if you have dualshock clones
+controllers.ps3.driver=official
+
+
 # ------------ D - XBOX Controllers ------------ #
 ## Xbox controllers are already supported, but xboxdrv can solve some compatibility issues 
 ## Disable this if you use ps3 controllers
@@ -94,7 +101,7 @@ updates.enabled=1
 global.videomode=4 CEA HDMI
 
 ## set gpslp shader for all emulators 
-global.shaders=shaders
+global.shaders=
 
 ## set ratio for all emulators (auto, 4/3, 16/9, custom)
 global.ratio=auto
