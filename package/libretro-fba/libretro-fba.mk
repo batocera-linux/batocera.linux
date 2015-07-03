@@ -3,7 +3,7 @@
 # FBA
 #
 ################################################################################
-LIBRETRO_FBA_VERSION = c6b13e90127ec9c6c21cfd19d95da3b6cf296cd6
+LIBRETRO_FBA_VERSION = 0093227f57ec5045daa309eaeba007366460181a
 LIBRETRO_FBA_SITE = $(call github,libretro,libretro-fba,$(LIBRETRO_FBA_VERSION))
 
 ifeq ($(BR2_cortex_a7),y)
@@ -17,7 +17,7 @@ define LIBRETRO_FBA_BUILD_CMDS
 endef
 
 define LIBRETRO_FBA_INSTALL_TARGET_CMDS
-	$(INSTALL) -D $(@D)/fb_alpha_libretro.so \
+	$(INSTALL) -D $(@D)/fba_libretro.so \
 		$(TARGET_DIR)/usr/lib/libretro/fba_libretro.so
 endef
 

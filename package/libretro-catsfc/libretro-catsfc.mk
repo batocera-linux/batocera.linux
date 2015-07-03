@@ -3,7 +3,7 @@
 # CATSFC
 #
 ################################################################################
-LIBRETRO_CATSFC_VERSION = 733b72eef371b07aa50b5f9e565f26dd48f77f92
+LIBRETRO_CATSFC_VERSION = 361b6927ef6af4e0913f18909cb841fd192e69d1
 LIBRETRO_CATSFC_SITE = $(call github,libretro,CATSFC-libretro,$(LIBRETRO_CATSFC_VERSION))
 
 define LIBRETRO_CATSFC_BUILD_CMDS
