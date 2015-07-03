@@ -158,6 +158,10 @@ if [[ "$emulator" == "pcengine" ]]; then
 	/recalbox/scripts/runcommand.sh 4 "$retroarchbin -L $retroarchcores/mednafen_supergrafx_libretro.so --config /recalbox/configs/retroarch/retroarchcustom.cfg \"$1\""
 fi
 
+if [[ "$emulator" == "atari7800" ]]; then
+	/recalbox/scripts/runcommand.sh 4 "$retroarchbin -L $retroarchcores/prosystem_libretro.so --config /recalbox/configs/retroarch/retroarchcustom.cfg \"$1\""
+fi
+
 
 if [[ "$emulator" == "msx" ]]; then
         if [[ "$extension" == "mx1" ]] ||  [[ "$extension" == "MX1" ]] ; then
