@@ -155,7 +155,11 @@ if [[ "$emulator" == "atari2600" ]]; then
 fi
 
 if [[ "$emulator" == "pcengine" ]]; then
-	/recalbox/scripts/runcommand.sh 4 "$retroarchbin -L $retroarchcores/pce_libretro.so --config /recalbox/configs/retroarch/retroarchcustom.cfg \"$1\""
+	/recalbox/scripts/runcommand.sh 4 "$retroarchbin -L $retroarchcores/mednafen_supergrafx_libretro.so --config /recalbox/configs/retroarch/retroarchcustom.cfg \"$1\""
+fi
+
+if [[ "$emulator" == "atari7800" ]]; then
+	/recalbox/scripts/runcommand.sh 4 "$retroarchbin -L $retroarchcores/prosystem_libretro.so --config /recalbox/configs/retroarch/retroarchcustom.cfg \"$1\""
 fi
 
 

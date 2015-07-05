@@ -2,7 +2,7 @@
 
 #essetting=/recalbox/scripts/essetting.sh
 #systemsetting=/recalbox/scripts/systemsetting.sh
-systemsetting="python /usr/lib/python2.7/site-packages/configgen/settings/recalboxSettings.py"
+systemsetting="python /usr/lib/python2.7/site-packages/configgen/settings/recalboxSettings.pyc"
 config_script=/recalbox/scripts/recalbox-config.sh
 wpafile=/etc/wpa_supplicant/wpa_supplicant.conf
 
@@ -14,15 +14,15 @@ case "$1" in
 	echo "`logtime` : starting new log " > $log
 
 	# Volume 
-	settingsVolume="`$systemsetting load audio.volume`"
+	settingsVolume="`$systemsetting -command load -key audio.volume`"
 	if [ "$settingsVolume" != "" ];then
 		echo "`logtime` : setting audio volume to $settingsVolume" >> $log
         	eval $config_script "volume" "$settingsVolume" >> $log
 	fi
 
 	# Wifi
-	settings_ssid="`$systemsetting load wifi.ssid`"
-	settings_key="`$systemsetting load wifi.key`"
+	settings_ssid="`$systemsetting -command load -key wifi.ssid`"
+	settings_key="`$systemsetting -command load -key wifi.key`"
 
 	if [[ "$settings_ssid" != "" ]] && [[ "$settings_key" != "" ]] ;then
 		cat $wpafile | grep network >> $log
@@ -36,7 +36,7 @@ case "$1" in
 	fi
 
 	# Audio output
-	settingsAudio="`$systemsetting load audio.device`"
+	settingsAudio="`$systemsetting -command load -key audio.device`"
 	if [[ "$settingsAudio" == "" ]];then
         		settingsAudio="auto"
 	fi
@@ -44,35 +44,35 @@ case "$1" in
 	eval $config_script "audio" "$settingsAudio" >> $log
 
 	# GPIO mk
-	settings_gpio_mk="`$systemsetting load controllers.gpio.enabled`"
+	settings_gpio_mk="`$systemsetting -command load -key controllers.gpio.enabled`"
 	if [ "$settings_gpio_mk" == "1" ];then
-	        settings_gpio_map="`$systemsetting load controllers.gpio.args`"
+	        settings_gpio_map="`$systemsetting -command load -key controllers.gpio.args`"
 		[ "$settings_gpio_map" == "" ] && settings_gpio_map="map=1,2"
 		echo "`logtime` : enabling mk_arcade_joystick_rpi" >> $log
         	eval $config_script "module" "load" mk_arcade_joystick_rpi "$settings_gpio_map" >> $log
 	else
 		# mk disabled let's check for db9
-		settings_db9="`$systemsetting load controllers.db9.enabled`"
+		settings_db9="`$systemsetting -command load -key controllers.db9.enabled`"
 	        if [ "$settings_db9" == "1" ];then
-        	        settings_db9_map="`$systemsetting load db9_args`"
+        	        settings_db9_map="`$systemsetting -command load -key db9_args`"
                 	echo "`logtime` : enabling db9" >> $log
                 	eval $config_script "module" "load" db9_gpio_rpi "$settings_db9_map" >> $log
 		else 
 			# db9 and mk disabled let's check for gamecon
-                	settings_gamecon="`$systemsetting load controllers.gamecon.enabled`"
+                	settings_gamecon="`$systemsetting -command load -key controllers.gamecon.enabled`"
                 	if [ "$settings_gamecon" == "1" ];then
-                        	settings_gamecon_map="`$systemsetting load controllers.gamecon.args`"
+                        	settings_gamecon_map="`$systemsetting -command load -key controllers.gamecon.args`"
                         	echo "`logtime` : enabling gamecon" >> $log
                         	eval $config_script "module" "load" gamecon_gpio_rpi "$settings_gamecon_map" >> $log
 			fi
 		fi
 	fi
 	# Keyboard and lang
-        settings_lang="`$systemsetting load system.language`"
-        settings_kb="`$systemsetting load system.kblayout`"
+        settings_lang="`$systemsetting -command load -key system.language`"
+        settings_kb="`$systemsetting -command load -key system.kblayout`"
         if [[ "$settings_kb" != "" ]];then
                 echo "`logtime` : setting keyboard layout to ${settings_kb}" >> $log
-                loadkeys $settings_kb >> $log
+                -command load -keykeys $settings_kb >> $log
         else
                 keyboardmap=`echo "$settings_lang" | cut -c1-2`
 		if [[ "$keyboardmap" != "" ]]; then
@@ -82,8 +82,8 @@ case "$1" in
         fi
 
 	# Xbox controllers
-        settings_xbox="`$systemsetting load controllers.xboxdrv.enabled`"
-        settings_xbox_nb="`$systemsetting load controllers.xboxdrv.nbcontrols`"
+        settings_xbox="`$systemsetting -command load -key controllers.xboxdrv.enabled`"
+        settings_xbox_nb="`$systemsetting -command load -key controllers.xboxdrv.nbcontrols`"
         if [[ "$settings_xbox" == "1" ]];then
                 echo "`logtime` : setting xboxdrv" >> $log
                 if [[ "$settings_xbox_nb" == "1" ]];then
@@ -97,7 +97,7 @@ case "$1" in
                 fi
         fi
         # Timezone
-        settings_timezone="`$systemsetting load system.timezone`"
+        settings_timezone="`$systemsetting -command load -key system.timezone`"
         if [[ "$settings_timezone" != "" && -f "/usr/share/zoneinfo/$settings_timezone" ]];then
                 echo "`logtime` : setting timezone to $settings_timezone" >> $log
                 echo "$settings_timezone" > /etc/timezone

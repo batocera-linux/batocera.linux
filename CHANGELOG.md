@@ -24,6 +24,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Added adafruit-retrogame utility
 - Added recalbox-configgen support
 - Added sixad driver choice
+- Added SuperGrafx libretro emulator
+- Added NXengine libretro core (cavestory)
+- Added Atari 7800 libretro emulator
 
  
 ## [3.2.11] - 2015-03-24

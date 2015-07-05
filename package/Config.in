@@ -191,6 +191,7 @@ menu "Controllers"
 	source "package/gamecon_gpio_rpi/Config.in"
 	source "package/xboxdrv/Config.in"
 	source "package/adafruit-retrogame/Config.in"
+	source "package/recalbox-retrogame/Config.in"
 endmenu
 menu "Emulators"
 	source "package/mupen64plus-core/Config.in"
@@ -243,6 +244,9 @@ menu "Libretro Cores"
        source "package/libretro-beetle-wswan/Config.in"
        source "package/libretro-uae/Config.in"
        source "package/libretro-mupen64/Config.in"
+       source "package/libretro-beetle-supergrafx/Config.in"
+       source "package/libretro-nxengine/Config.in"
+       source "package/libretro-prosystem/Config.in"
 endmenu
 endif
 menu "Doom packages"

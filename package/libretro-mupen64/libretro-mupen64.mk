@@ -3,7 +3,7 @@
 # MUPEN64
 #
 ################################################################################
-LIBRETRO_MUPEN64_VERSION = e0b091c49f967b5b0e7c1c45d5503c8621bc4911
+LIBRETRO_MUPEN64_VERSION = f3f170d3128fac01883cd1a81f03a439cb525cef
 LIBRETRO_MUPEN64_SITE = $(call github,libretro,mupen64plus-libretro,$(LIBRETRO_MUPEN64_VERSION))
 LIBRETRO_MUPEN64_DEPENDENCIES = rpi-userland
 
