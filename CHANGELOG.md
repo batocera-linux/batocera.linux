@@ -27,6 +27,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Added SuperGrafx libretro emulator
 - Added NXengine libretro core (cavestory)
 - Added Atari 7800 libretro emulator
+- Added hostname in recalbox.conf
 
  
 ## [3.2.11] - 2015-03-24
