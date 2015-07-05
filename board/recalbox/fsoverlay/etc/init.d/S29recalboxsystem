@@ -103,6 +103,12 @@ case "$1" in
                 echo "$settings_timezone" > /etc/timezone
                 ln -sf "/usr/share/zoneinfo/$settings_timezone" /etc/localtime
         fi
+        # Hostname
+        settings_hostname="`$systemsetting -command load -key system.hostname`"
+        if [[ "$settings_hostname" != "" ]];then
+                echo "`logtime` : setting hostname to $settings_hostname" >> $log
+                hostname "$settings_hostname"
+        fi
 	;;
   stop)
 	;;

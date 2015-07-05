@@ -16,9 +16,10 @@ kodi.xbutton=1
 
 
 
-# ------------ B - Wifi ------------ #
+# ------------ B - Network ------------ #
 ## Set direclty your wifi key and ssid here
-wifi.enabled=1
+system.hostname=RECALBOX
+wifi.enabled=0
 ;wifi.ssid=new ssid
 ;wifi.key=new key
 
@@ -31,6 +32,13 @@ audio.device=auto
 audio.volume=90
 audio.bgmusic=1
 
+
+
+# ------------ D - PS3 Controllers ------------ #
+## PS3 controllers are supported. 
+controllers.ps3.enabled=1
+## Choose an driver beetween official, shanwan and gasia if you have dualshock clones
+controllers.ps3.driver=official
 
 
 # ------------ D - XBOX Controllers ------------ #
