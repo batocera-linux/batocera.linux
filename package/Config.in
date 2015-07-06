@@ -178,6 +178,7 @@ menu "Filesystem and flash utilities"
 endmenu
 
 menu "Recalbox"
+	source "package/recalbox-system/Config.in"
 	source "package/recalbox-configgen/Config.in"
 menu "Emulationstation"
         source "package/recalbox-emulationstation2/Config.in"
@@ -190,7 +191,6 @@ menu "Controllers"
 	source "package/db9_gpio_rpi/Config.in"
 	source "package/gamecon_gpio_rpi/Config.in"
 	source "package/xboxdrv/Config.in"
-	source "package/adafruit-retrogame/Config.in"
 	source "package/recalbox-retrogame/Config.in"
 endmenu
 menu "Emulators"

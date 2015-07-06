@@ -28,7 +28,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Added NXengine libretro core (cavestory)
 - Added Atari 7800 libretro emulator
 - Added hostname in recalbox.conf
-
+- Added recalbox-system (recalbox.arch file)
+- Changed bash as default shell
+- Corrected update system
  
 ## [3.2.11] - 2015-03-24
 - Corrected issues with controllers with idientical names
