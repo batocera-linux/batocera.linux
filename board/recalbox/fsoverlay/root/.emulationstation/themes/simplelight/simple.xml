@@ -1,0 +1,108 @@
+<!--
+theme name:		simplelight
+version:		1.0
+Description:	Based on Simple 1.4 theme by nils bonenberger (nilsbyte@nilsbyte.de)
+author:			recalbox community
+website:		www.recalbox.com
+license:		creative commons CC-BY-NC-SA
+-->
+
+<theme>
+    <formatVersion>4</formatVersion>
+
+	<view name="system">
+	
+		<image name="background" extra="true">
+			<size>0 1</size>
+			<pos>0.5 0.5</pos>
+			<origin>0.5 0.5</origin>
+		</image>
+	</view>
+
+    <view name="basic, detailed">
+		
+		<text name="md_lbl_rating, md_lbl_releasedate, md_lbl_developer, md_lbl_publisher, md_lbl_genre, md_lbl_players, md_lbl_lastplayed, md_lbl_playcount, md_lbl_favorite">
+			<color>393a3b</color>
+			<forceUppercase>1</forceUppercase>
+			<fontPath>./art/OPENSANS-LIGHT.TTF</fontPath>
+			<fontSize>0.03</fontSize>
+			<size>0.12 0.04</size>
+		</text>
+		
+		<text name="md_rating, md_developer, md_publisher, md_genre, md_players, md_playcount, md_favorite">
+			<color>393a3b</color>
+			<forceUppercase>1</forceUppercase>
+			<fontPath>./art/OPENSANS-LIGHT.TTF</fontPath>
+			<fontSize>0.03</fontSize>
+			<size>0.14 0.04</size>
+		</text>
+
+		<text name="md_description">
+			<color>393a3b</color>
+			<forceUppercase>1</forceUppercase>
+			<fontPath>./art/OPENSANS-LIGHT.TTF</fontPath>
+			<fontSize>0.03</fontSize>
+		</text>
+		
+		<datetime name="md_releasedate, md_lastplayed">
+			<color>393a3b</color>
+			<forceUppercase>1</forceUppercase>
+			<fontPath>./art/OPENSANS-LIGHT.TTF</fontPath>
+			<fontSize>0.03</fontSize>
+			<size>0 0.04</size>
+		</datetime>
+		
+		<image name="header" extra="true">
+			<pos>0 0</pos>
+			<origin>0 0</origin>
+			<size>1 0.16</size>
+			<path>./art/white80.png</path>
+		</image>
+
+		<image name="footer" extra="true">
+			<pos>0 1</pos>
+			<origin>0 1</origin>
+			<size>1 0.065</size>
+			<path>./art/footer.jpg</path>
+		</image>	
+		
+		<image name="background">
+			<pos>0 0</pos>
+			<origin>0 0</origin>
+			<size>1 1</size>
+		</image> 
+
+                <image name="backgroundfilter" extra="true">
+                        <pos>0 0</pos>
+                        <origin>0 0</origin>
+                        <size>1 1</size>
+                        <path>./art/white40.png</path>
+                </image>
+
+		<textlist name="gamelist">
+			<selectorColor>393a3b</selectorColor>
+			<selectedColor>97999b</selectedColor>
+			<primaryColor>393a3b</primaryColor>
+			<secondaryColor>000000</secondaryColor>
+			<fontPath>./art/OPENSANS.TTF</fontPath>
+			<fontSize>0.03</fontSize>
+			<forceUppercase>1</forceUppercase>
+			<scrollSound>./sounds/scroll.wav</scrollSound>
+		</textlist>
+		
+	</view>
+
+	<view name="basic">
+	</view>
+
+	<view name="detailed">
+ 		<!--<image name="bggreye" extra="true">
+                        <path>./white.png</path>
+                        <pos>0 0</pos>
+                        <size>1 1</size>
+                        <maxSize>1 1</maxSize>
+                        <origin>0 0</origin>
+                </image>-->		
+	</view>
+	
+</theme>
