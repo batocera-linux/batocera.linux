@@ -72,7 +72,7 @@ case "$1" in
         settings_kb="`$systemsetting -command load -key system.kblayout`"
         if [[ "$settings_kb" != "" ]];then
                 echo "`logtime` : setting keyboard layout to ${settings_kb}" >> $log
-                -command load -keykeys $settings_kb >> $log
+		loadkeys "$settings_kb" >> $log
         else
                 keyboardmap=`echo "$settings_lang" | cut -c1-2`
 		if [[ "$keyboardmap" != "" ]]; then

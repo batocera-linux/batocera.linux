@@ -7,67 +7,71 @@
 
 
 # ------------ A - Kodi ----------- #
-## Show or hide kodi in emulationstation
+## Show or hide kodi in emulationstation (0,1)
 kodi.enabled=1
-## Start kodi at launch
+## Start kodi at launch (0,1)
 kodi.atstartup=0
-## set x button shortcut (enabled by default)
+## set x button shortcut (0,1)
 kodi.xbutton=1
 
 
 
 # ------------ B - Network ------------ #
-## Set direclty your wifi key and ssid here
+## Set system hostname
 system.hostname=RECALBOX
+## Activate wifi (0,1)
 wifi.enabled=0
+## Wifi SSID (string)
 ;wifi.ssid=new ssid
+## Wifi KEY (string)
 ;wifi.key=new key
 
 
 
 # ------------ C - Audio ------------ #
-## Set the audio output 
-## select between auto, hdmi, jack
+## Set the audio device (auto, hdmi, jack)
 audio.device=auto
+## Set system volume (0..100)
 audio.volume=90
+## Enable or disable system sounds in ES (0,1)
 audio.bgmusic=1
 
 
 
-# ------------ D - PS3 Controllers ------------ #
-## PS3 controllers are supported. 
+# -------------- D - Controllers ----------------- #
+## Please enable only one of these
+
+# -------------- D1 - PS3 Controllers ------------ #
+##Enable PS3 controllers support
 controllers.ps3.enabled=1
-## Choose an driver beetween official, shanwan and gasia if you have dualshock clones
+## Choose an driver beetween official, shanwan and gasia if you have dualshock clones (official,shanwan,gasia)
 controllers.ps3.driver=official
 
 
-# ------------ D - XBOX Controllers ------------ #
+# ------------ D2 - XBOX Controllers ------------ #
 ## Xbox controllers are already supported, but xboxdrv can solve some compatibility issues 
-## Disable this if you use ps3 controllers
+## Enable xboxdrv driver, disable this if you enabled ps3 controllers (0,1)
 controllers.xboxdrv.enabled=0
-## set the amount of controllers to use with xboxdrv
+## Set the amount of controllers to use with xboxdrv (0..4)
 controllers.xboxdrv.nbcontrols=2
 
 
-
-# ------------ E - GPIO Controllers ------------ #
-## If one of the controllers.[controller] is set to 1, set the other to 0
-
+# ------------ D3 - GPIO Controllers ------------ #
 ## GPIO Controllers
-## enable controllers on GPIO (mk_arcard_joystick_rpi)
+## enable controllers on GPIO with mk_arcarde_joystick_rpi (0,1)
 controllers.gpio.enabled=0
-## mk_gpio arguments (map=1 for only one gpio controller)
+## mk_gpio arguments, map=1 for one controller, map=1,2 for 2 (map=1,map=1,2)
 controllers.gpio.args=map=1,2
 
 
 ## DB9 Controllers
-## enable db9 drivers
+## Enable DB9 drivers for atari, megadrive, amiga controllers (0,1)
 controllers.db9.enabled=0
 ## db9 arguments
 controllers.db9.args=map=1
 
-## gamecon controllers
-## enable gamecon controllers, 
+## Gamecon controllers
+## Enable gamecon controllers, for nes, snes psx (0,1) 
 controllers.gamecon.enabled=0
 ## gamecon_args
 controllers.gamecon.args=map=1
@@ -75,45 +79,46 @@ controllers.gamecon.args=map=1
 
 
 # ------------ F - Language and keyboard ------------ #
-## Set the language of the system : fr_FR, en_US, en_GB, de_DE, pt_BR, es_ES
+## Set the language of the system (fr_FR,en_US,en_GB,de_DE,pt_BR,es_ES)
 system.language=en_US
-## set the keyboard layout : fr, en, de, us, es
+## set the keyboard layout (fr,en,de,us,es)
 ;system.kblayout=us
 ## Set you local time
-## select your timezone from : ls /usr/share/zoneinfo/
+## Select your timezone from : ls /usr/share/zoneinfo/ (string)
 ;system.timezone=Europe/Paris
 
 
 
 # ------------ G - UPDATES ------------ #
-## automatically check for updates at start
+## Automatically check for updates at start (0,1)
 updates.enabled=1
 
 
 
 # ------------ H - HERE IT IS - GLOBAL EMULATOR CONFIGURATION ------------ #
-## the global value will be used for all emulators, exept if the value
+## The global value will be used for all emulators, exept if the value
 ## is redifined in the emulator
 
-## set game resolution for emulators
-## select your mode from the command : tvservice -m CEA
-## mode 5: 1920x1080 @ 60Hz 16:9, clock:74MHz interlaced 
-## mode 4: 1280x720 @ 60Hz 16:9, clock:74MHz progressive
+## Set game resolution for emulators
+## select your mode from the command : tvservice -m [MODE]
+## CEA 5 HDMI : 1920x1080 @ 60Hz 16:9, clock:74MHz interlaced 
+## CEA 4 HDMI : 1280x720 @ 60Hz 16:9, clock:74MHz progressive
+## (string)
 global.videomode=CEA 4 HDMI
 
-## set gpslp shader for all emulators. Absolute path
+## Set gpslp shader for all emulators. Absolute path (string)
 global.shaders=
 
-## set ratio for all emulators (auto, 4/3, 16/9, custom)
+## Set ratio for all emulators (auto,4/3,16/9,custom)
 global.ratio=auto
 
-## set smooth for all emulators (0,1)
+## Set smooth for all emulators (0,1)
 global.smooth=1
 
-## set rewind for all emulators (0,1)
+## Set rewind for all emulators (0,1)
 global.rewind=0
 
-## If you do not want recalboxOS to generate the configuration for all emulators : 
+## If you do not want recalboxOS to generate the configuration for all emulators (string)
 ;global.configfile=/path/to/my/configfile.cfg
 
 # ------------ I - EMULATORS CHOICES ----------- #
