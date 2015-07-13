@@ -1,0 +1,19 @@
+--- a/drivers/hid/hid-input.c	2015-07-10 16:09:22.649289824 +0200
++++ b/drivers/hid/hid-input.c	2015-07-10 16:13:12.189287609 +0200
+@@ -600,11 +600,11 @@
+ 		case HID_GD_X: case HID_GD_Y: case HID_GD_Z:
+ 		case HID_GD_RX: case HID_GD_RY: case HID_GD_RZ:
+ 		case HID_GD_SLIDER: case HID_GD_DIAL: case HID_GD_WHEEL:
+-			if (field->flags & HID_MAIN_ITEM_RELATIVE)
+-				map_rel(usage->hid & 0xf);
+-			else
+-				map_abs(usage->hid & 0xf);
+-			break;
++//			if (field->flags & HID_MAIN_ITEM_RELATIVE)
++//				map_rel(usage->hid & 0xf);
++//			else
++//				map_abs(usage->hid & 0xf);
++//			break;
+ 
+ 		case HID_GD_HATSWITCH:
+ 			usage->hat_min = field->logical_minimum;
