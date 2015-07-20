@@ -9,6 +9,7 @@ command="$1"
 mode="$2"
 extra1="$3"
 extra2="$4"
+version=`cat /recalbox/recalbox.arch`
 
 log=/root/recalbox.log
 wpafile=/etc/wpa_supplicant/wpa_supplicant.conf
@@ -172,7 +173,7 @@ fi
 
 
 if [ "$command" == "canupdate" ];then
-	available=`wget -qO- http://archive2.recalbox.com/recalbox-rpi2/root/recalbox/recalbox.version`
+	available=`wget -qO- http://archive2.recalbox.com/recalbox-$version/root/recalbox/recalbox.version`
 	if [[ "$?" != "0" ]];then
 		exit 2
 	fi
