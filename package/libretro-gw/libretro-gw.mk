@@ -3,7 +3,7 @@
 # GW
 #
 ################################################################################
-LIBRETRO_GW_VERSION = 73e19687954bb14466105ac2bba72aa8f66c4500
+LIBRETRO_GW_VERSION = 0ced0063961120f86d248487f8772383d7046769
 LIBRETRO_GW_SITE = $(call github,libretro,gw-libretro,$(LIBRETRO_GW_VERSION))
 
 define LIBRETRO_GW_BUILD_CMDS
@@ -16,5 +16,3 @@ define LIBRETRO_GW_INSTALL_TARGET_CMDS
 endef
 
 $(eval $(generic-package))
-
-#problem with the newest versions. We must stay to this commit. - issue : https://github.com/digitalLumberjack/recalbox-os/issues/214
