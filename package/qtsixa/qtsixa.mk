@@ -20,16 +20,23 @@ define QTSIXA_BUILD_CMDS
 		LIBS="$(QTSIXA_LIBS)" \
 		-C $(@D)/utils all
 	# Make standard
+	$(SED) "s|/usr/.\+\?/sixad-remote|/usr/sixad/official/sixad-remote|g" $(@D)/sixad/bluetooth.cpp
+	$(SED) "s|/usr/.\+\?/sixad-sixaxis|/usr/sixad/official/sixad-sixaxis|g" $(@D)/sixad/bluetooth.cpp
+
 	$(MAKE) CXX="$(TARGET_CXX)" \
 		CXXFLAGS="$(TARGET_CFLAGS) $(QTSIXA_CFLAGS)" \
 		LIBS="$(QTSIXA_LIBS)" INSTALLDIR="official" BINDIR="official"\
 		-C $(@D)/sixad all
 	# Make GASIA
+	$(SED) "s|/usr/.\+\?/sixad-remote|/usr/sixad/gasia/sixad-remote|g" $(@D)/sixad/bluetooth.cpp
+	$(SED) "s|/usr/.\+\?/sixad-sixaxis|/usr/sixad/gasia/sixad-sixaxis|g" $(@D)/sixad/bluetooth.cpp
 	$(MAKE) CXX="$(TARGET_CXX)" \
 		CXXFLAGS="$(TARGET_CFLAGS) $(QTSIXA_CFLAGS) -DGASIA_GAMEPAD_HACKS" \
 		LIBS="$(QTSIXA_LIBS)" INSTALLDIR="gasia" BINDIR="gasia"\
 		-C $(@D)/sixad all
 	# Make SHANWAN
+	$(SED) "s|/usr/.\+\?/sixad-remote|/usr/sixad/shanwan/sixad-remote|g" $(@D)/sixad/bluetooth.cpp
+	$(SED) "s|/usr/.\+\?/sixad-sixaxis|/usr/sixad/shanwan/sixad-sixaxis|g" $(@D)/sixad/bluetooth.cpp
 	$(MAKE) CXX="$(TARGET_CXX)" \
 		CXXFLAGS="$(TARGET_CFLAGS) $(QTSIXA_CFLAGS) -DSHANWAN_FAKE_DS3" \
 		LIBS="$(QTSIXA_LIBS)" INSTALLDIR="shanwan" BINDIR="shanwan"\
