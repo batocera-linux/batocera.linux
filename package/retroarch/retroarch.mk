@@ -3,10 +3,10 @@
 # retroarch
 #
 ################################################################################
-#RETROARCH_VERSION = 2755abc14fe25b9f32e145dcf6ec5c9569640eb8
+#RETROARCH_VERSION = 2755abc14fe25b9f32e145dcf6ec5c9569640eb8 for rpi1
 
 ifeq ($(BR2_cortex_a7),y)
-	RETROARCH_VERSION = 39772de535183ccd9dbe9c84a5ee57bfcb6478a5
+	RETROARCH_VERSION = 79f2a92202f62b51e7ed8f6fb089cb38ce0fede9
 else
 	RETROARCH_VERSION = 2755abc14fe25b9f32e145dcf6ec5c9569640eb8
 endif
