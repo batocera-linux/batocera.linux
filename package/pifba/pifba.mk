@@ -8,9 +8,9 @@ PIFBA_VERSION = master
 PIFBA_SITE = $(call github,digitallumberjack,pifba,master)
 
 PIFBA_LICENSE = MIT
-PIFBA_DEPENDENCIES = sdl alsa-lib rpi-userland
+PIFBA_DEPENDENCIES = sdl2 alsa-lib rpi-userland
 
-SDL_CONFIG=$(STAGING_DIR)/usr/bin/sdl-config
+SDL_CONFIG=$(STAGING_DIR)/usr/bin/sdl2-config
 SDL_FLAGS=`$(SDL_CONFIG) --cflags`
 SDL_LIBS=`$(SDL_CONFIG) --libs`
 
@@ -23,7 +23,7 @@ PIFBA_CXXFLAGS=$(TARGET_CXXFLAGS) -DQWS -fno-exceptions -fno-rtti -Wall -W -Wno-
 	-fexpensive-optimizations -finline -finline-functions -mstructure-size-boundary=32 -frename-registers
 
 
-PIFBA_LIBS=-lz -lpthread -lm -lpthread -lSDL -L$(STAGING_DIR)/usr/lib -lbcm_host -lGLESv2 -lEGL -lglib-2.0 -lasound -lrt -lvchostif
+PIFBA_LIBS=-lz -lpthread -lm -lpthread -lSDL2 -L$(STAGING_DIR)/usr/lib -lbcm_host -lGLESv2 -lEGL -lglib-2.0 -lasound -lrt -lvchostif
 
 PIFBA_INCLUDES=-I$(STAGING_DIR)/usr/include -I$(STAGING_DIR)/usr/include/interface/vcos/pthreads \
 		-I$(STAGING_DIR)/usr/include/interface/vmcs_host/linux $(SDL_FLAGS) \
