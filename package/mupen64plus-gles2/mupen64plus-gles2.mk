@@ -4,7 +4,8 @@
 #
 ################################################################################
 
-MUPEN64PLUS_GLES2_VERSION = 12d0073e44c3116c6e9bcc14667c7495e2d3188a
+#MUPEN64PLUS_GLES2_VERSION = 12d0073e44c3116c6e9bcc14667c7495e2d3188a
+MUPEN64PLUS_GLES2_VERSION = 29071fa9d8c265a9bd52f6d82d8471d4122d1fbf
 MUPEN64PLUS_GLES2_SITE = $(call github,ricrpi,mupen64plus-video-gles2n64,$(MUPEN64PLUS_GLES2_VERSION))
 MUPEN64PLUS_GLES2_LICENSE = MIT
 MUPEN64PLUS_GLES2_DEPENDENCIES = sdl2 alsa-lib rpi-userland mupen64plus-core
