@@ -7,7 +7,7 @@
 +else ifneq (,$(findstring armv,$(platform)))
 +   TARGET := $(TARGET_NAME)_libretro.so
 +   SHARED := -shared -Wl,--no-undefined -Wl,--version-script=link.T
-+   fpic := -fPIC
++   fpic := -fPIC -fsigned-char
 +   CFLAGS += -D_GNU_SOURCE=1
 +   CC = gcc
 +ifneq (,$(findstring cortexa8,$(platform)))
