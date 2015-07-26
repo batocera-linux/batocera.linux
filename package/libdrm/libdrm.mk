@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-LIBDRM_VERSION = 2.4.61
+LIBDRM_VERSION = 2.4.62
 LIBDRM_SOURCE = libdrm-$(LIBDRM_VERSION).tar.bz2
 LIBDRM_SITE = http://dri.freedesktop.org/libdrm
 LIBDRM_LICENSE = MIT
@@ -18,6 +18,8 @@ LIBDRM_DEPENDENCIES = \
 LIBDRM_CONF_OPTS = \
 	--disable-cairo-tests \
 	--disable-manpages
+
+LIBDRM_CONF_ENV = ac_cv_prog_cc_c99='-std=gnu99'
 
 ifeq ($(BR2_PACKAGE_LIBDRM_INTEL),y)
 LIBDRM_CONF_OPTS += --enable-intel
@@ -67,6 +69,13 @@ LIBDRM_CONF_OPTS += --enable-udev
 LIBDRM_DEPENDENCIES += udev
 else
 LIBDRM_CONF_OPTS += --disable-udev
+endif
+
+ifeq ($(BR2_PACKAGE_VALGRIND),y)
+LIBDRM_CONF_OPTS += --enable-valgrind
+LIBDRM_DEPENDENCIES += valgrind
+else
+LIBDRM_CONF_OPTS += --disable-valgrind
 endif
 
 ifeq ($(BR2_PACKAGE_LIBDRM_INSTALL_TESTS),y)

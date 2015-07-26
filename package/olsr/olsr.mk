@@ -4,8 +4,8 @@
 #
 ################################################################################
 
-OLSR_VERSION_MAJOR = 0.6
-OLSR_VERSION = $(OLSR_VERSION_MAJOR).8
+OLSR_VERSION_MAJOR = 0.9
+OLSR_VERSION = $(OLSR_VERSION_MAJOR).0.2
 OLSR_SOURCE = olsrd-$(OLSR_VERSION).tar.bz2
 OLSR_SITE = http://www.olsr.org/releases/$(OLSR_VERSION_MAJOR)
 OLSR_PLUGINS = arprefresh bmf dot_draw dyn_gw dyn_gw_plain httpinfo jsoninfo \
@@ -38,6 +38,14 @@ endef
 define OLSR_INSTALL_INIT_SYSV
 	$(INSTALL) -D -m 0755 package/olsr/S50olsr \
 		$(TARGET_DIR)/etc/init.d/S50olsr
+endef
+
+define OLSR_INSTALL_INIT_SYSTEMD
+	$(INSTALL) -D -m 644 package/olsr/olsr.service \
+		$(TARGET_DIR)/usr/lib/systemd/system/olsr.service
+	mkdir -p $(TARGET_DIR)/etc/systemd/system/multi-user.target.wants
+	ln -sf ../../../../usr/lib/systemd/system/olsr.service \
+		$(TARGET_DIR)/etc/systemd/system/multi-user.target.wants/olsr.service
 endef
 
 $(eval $(generic-package))

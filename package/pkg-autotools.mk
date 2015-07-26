@@ -60,10 +60,10 @@ endef
 define LIBTOOL_PATCH_HOOK
 	@$(call MESSAGE,"Patching libtool")
 	$(Q)for i in `find $($(PKG)_SRCDIR) -name ltmain.sh`; do \
-		ltmain_version=`sed -n '/^[ 	]*VERSION=/{s/^[ 	]*VERSION=//;p;q;}' $$i | \
-		sed -e 's/\([0-9].[0-9]*\).*/\1/' -e 's/\"//'`; \
-		ltmain_patchlevel=`sed -n '/^[     ]*VERSION=/{s/^[        ]*VERSION=//;p;q;}' $$i | \
-		sed -e 's/\([0-9].[0-9].\)\([0-9]*\).*/\2/' -e 's/\"//'`; \
+		ltmain_version=`sed -n '/^[ \t]*VERSION=/{s/^[ \t]*VERSION=//;p;q;}' $$i | \
+		sed -e 's/\([0-9]*\.[0-9]*\).*/\1/' -e 's/\"//'`; \
+		ltmain_patchlevel=`sed -n '/^[ \t]*VERSION=/{s/^[ \t]*VERSION=//;p;q;}' $$i | \
+		sed -e 's/\([0-9]*\.[0-9]*\.*\)\([0-9]*\).*/\2/' -e 's/\"//'`; \
 		if test $${ltmain_version} = '1.5'; then \
 			$(APPLY_PATCHES) $${i%/*} support/libtool buildroot-libtool-v1.5.patch; \
 		elif test $${ltmain_version} = "2.2"; then\
@@ -157,14 +157,14 @@ $(2)_MAKE_ENV			?=
 $(2)_MAKE_OPTS			?=
 $(2)_INSTALL_OPTS                ?= install
 $(2)_INSTALL_STAGING_OPTS	?= DESTDIR=$$(STAGING_DIR) install
-$(2)_INSTALL_TARGET_OPTS		?= DESTDIR=$$(TARGET_DIR)  install
+$(2)_INSTALL_TARGET_OPTS		?= DESTDIR=$$(TARGET_DIR) install
 
 # This must be repeated from inner-generic-package, otherwise we get an empty
 # _DEPENDENCIES if _AUTORECONF is YES.  Also filter the result of _AUTORECONF
 # and _GETTEXTIZE away from the non-host rule
 ifeq ($(4),host)
 $(2)_DEPENDENCIES ?= $$(filter-out host-automake host-autoconf host-libtool \
-				host-gettext host-toolchain $(1),\
+				host-gettext host-skeleton host-toolchain $(1),\
     $$(patsubst host-host-%,host-%,$$(addprefix host-,$$($(3)_DEPENDENCIES))))
 endif
 
@@ -294,36 +294,9 @@ endif
 # Staging installation step. Only define it if not already defined by
 # the package .mk file.
 #
-# Most autotools packages install libtool .la files alongside any
-# installed libraries. These .la files sometimes refer to paths
-# relative to the sysroot, which libtool will interpret as absolute
-# paths to host libraries instead of the target libraries. Since this
-# is not what we want, these paths are fixed by prefixing them with
-# $(STAGING_DIR).  As we configure with --prefix=/usr, this fix
-# needs to be applied to any path that starts with /usr.
-#
-# To protect against the case that the output or staging directories
-# or the pre-installed external toolchain themselves are under /usr,
-# we first substitute away any occurrences of these directories as
-# @BASE_DIR@, @STAGING_DIR@ and @TOOLCHAIN_EXTERNAL_INSTALL_DIR@ respectively.
-# Note that STAGING_DIR can be outside BASE_DIR when the user sets
-# BR2_HOST_DIR to a custom value. Note that TOOLCHAIN_EXTERNAL_INSTALL_DIR
-# can be under @BASE_DIR@ when it's a downloaded toolchain, and can be empty
-# when we use an internal toolchain.
-#
 ifndef $(2)_INSTALL_STAGING_CMDS
 define $(2)_INSTALL_STAGING_CMDS
 	$$(TARGET_MAKE_ENV) $$($$(PKG)_MAKE_ENV) $$($$(PKG)_MAKE) $$($$(PKG)_INSTALL_STAGING_OPTS) -C $$($$(PKG)_SRCDIR)
-	find $$(STAGING_DIR)/usr/lib* -name "*.la" | xargs --no-run-if-empty \
-		$$(SED) "s:$$(BASE_DIR):@BASE_DIR@:g" \
-			-e "s:$$(STAGING_DIR):@STAGING_DIR@:g" \
-			$$(if $$(TOOLCHAIN_EXTERNAL_INSTALL_DIR),\
-				-e "s:$$(TOOLCHAIN_EXTERNAL_INSTALL_DIR):@TOOLCHAIN_EXTERNAL_INSTALL_DIR@:g") \
-			-e "s:\(['= ]\)/usr:\\1@STAGING_DIR@/usr:g" \
-			$$(if $$(TOOLCHAIN_EXTERNAL_INSTALL_DIR),\
-				-e "s:@TOOLCHAIN_EXTERNAL_INSTALL_DIR@:$$(TOOLCHAIN_EXTERNAL_INSTALL_DIR):g") \
-			-e "s:@STAGING_DIR@:$$(STAGING_DIR):g" \
-			-e "s:@BASE_DIR@:$$(BASE_DIR):g"
 endef
 endif
 

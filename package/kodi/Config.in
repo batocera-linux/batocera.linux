@@ -214,12 +214,6 @@ config BR2_PACKAGE_KODI_LIBSMBCLIENT
 	help
 	  Enable Samba support
 
-config BR2_PACKAGE_KODI_MYSQL
-	bool "mysql"
-	select BR2_PACKAGE_MYSQL
-	help
-	  Enable mysql support
-
 config BR2_PACKAGE_KODI_LIBTHEORA
 	bool "theora"
 	select BR2_PACKAGE_LIBTHEORA

@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-LIBFSLPARSER_VERSION = 3.0.11
+LIBFSLPARSER_VERSION = 4.0.2
 LIBFSLPARSER_SITE = $(FREESCALE_IMX_SITE)
 LIBFSLPARSER_SOURCE = libfslparser-$(LIBFSLPARSER_VERSION).bin
 LIBFSLPARSER_INSTALL_STAGING = YES
@@ -19,8 +19,5 @@ endef
 
 # The Makefile installs several versions of the libraries, but we only
 # need one of them, depending on the platform.
-
-# without AUTORECONF, configure fails to find install-sh.
-LIBFSLPARSER_AUTORECONF = YES
 
 $(eval $(autotools-package))

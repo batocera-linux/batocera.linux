@@ -19,7 +19,7 @@ ifeq ($(BR2_STATIC_LIBS),y)
 # manually pass it to make.
 UPMPDCLI_DEPENDENCIES += host-pkgconf
 UPMPDCLI_MAKE_OPTS = \
-	LIBS='$(shell $(PKG_CONFIG_HOST_BINARY) --libs expat libcurl libupnp)'
+	LIBS="`$(PKG_CONFIG_HOST_BINARY) --libs expat libcurl libupnp`"
 endif
 
 # Upmpdcli only runs if user upmpdcli exists
@@ -29,6 +29,14 @@ endef
 
 define UPMPDCLI_INSTALL_INIT_SYSV
 	$(INSTALL) -D -m 0755 package/upmpdcli/S99upmpdcli $(TARGET_DIR)/etc/init.d/S99upmpdcli
+endef
+
+define UPMPDCLI_INSTALL_INIT_SYSTEMD
+	$(INSTALL) -D -m 644 $(@D)/systemd/upmpdcli.service \
+		$(TARGET_DIR)/usr/lib/systemd/system/upmpdcli.service
+	mkdir -p $(TARGET_DIR)/etc/systemd/system/multi-user.target.wants
+	ln -sf ../../../../usr/lib/systemd/system/upmpdcli.service \
+		$(TARGET_DIR)/etc/systemd/system/multi-user.target.wants/upmpdcli.service
 endef
 
 define UPMPDCLI_INSTALL_CONF_FILE

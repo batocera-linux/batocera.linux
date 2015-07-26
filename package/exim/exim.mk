@@ -72,6 +72,14 @@ define EXIM_USE_DEFAULT_CONFIG_FILE_OPENSSL
 endef
 endif
 
+# only (e)glibc provides libnsl, remove -lnsl for all other toolchains
+# http://bugs.exim.org/show_bug.cgi?id=1564
+ifeq ($(BR2_TOOLCHAIN_USES_GLIBC),)
+define EXIM_REMOVE_LIBNSL_FROM_MAKEFILE
+	$(SED) 's/-lnsl//g' $(@D)/OS/Makefile-Linux
+endef
+endif
+
 define EXIM_CONFIGURE_TOOLCHAIN
 	$(call exim-config-add,CC,$(TARGET_CC))
 	$(call exim-config-add,CFLAGS,$(TARGET_CFLAGS))
@@ -123,6 +131,14 @@ endef
 define EXIM_INSTALL_INIT_SYSV
 	$(INSTALL) -D -m 755 package/exim/S86exim \
 		$(TARGET_DIR)/etc/init.d/S86exim
+endef
+
+define EXIM_INSTALL_INIT_SYSTEMD
+	$(INSTALL) -D -m 644 package/exim/exim.service \
+		$(TARGET_DIR)/usr/lib/systemd/system/exim.service
+	mkdir -p $(TARGET_DIR)/etc/systemd/system/multi-user.target.wants
+	ln -sf ../../../../usr/lib/systemd/system/exim.service \
+		$(TARGET_DIR)/etc/systemd/system/multi-user.target.wants/exim.service
 endef
 
 $(eval $(generic-package))

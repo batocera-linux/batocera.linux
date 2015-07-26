@@ -4,12 +4,15 @@
 #
 ################################################################################
 
-LIBV4L_VERSION = 1.6.2
+LIBV4L_VERSION = 1.6.3
 LIBV4L_SOURCE = v4l-utils-$(LIBV4L_VERSION).tar.bz2
 LIBV4L_SITE = http://linuxtv.org/downloads/v4l-utils
 LIBV4L_INSTALL_STAGING = YES
 LIBV4L_DEPENDENCIES = host-pkgconf
 LIBV4L_CONF_OPTS = --disable-doxygen-doc
+
+# fix uclibc-ng configure/compile
+LIBV4L_CONF_ENV = ac_cv_prog_cc_c99='-std=gnu99'
 
 # v4l-utils components have different licences, see v4l-utils.spec for details
 LIBV4L_LICENSE = GPLv2+ (utilities), LGPLv2.1+ (libraries)

@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-MODEM_MANAGER_VERSION = 1.4.8
+MODEM_MANAGER_VERSION = 1.4.10
 MODEM_MANAGER_SOURCE = ModemManager-$(MODEM_MANAGER_VERSION).tar.xz
 MODEM_MANAGER_SITE = http://www.freedesktop.org/software/ModemManager
 MODEM_MANAGER_LICENSE = GPLv2+ (programs, plugins), LGPLv2+ (libmm-glib)
@@ -25,5 +25,10 @@ MODEM_MANAGER_CONF_OPTS += --with-mbim
 else
 MODEM_MANAGER_CONF_OPTS += --without-mbim
 endif
+
+define MODEM_MANAGER_INSTALL_INIT_SYSV
+	$(INSTALL) -m 0755 -D package/modem-manager/S44modem-manager \
+		$(TARGET_DIR)/etc/init.d/S44modem-manager
+endef
 
 $(eval $(autotools-package))

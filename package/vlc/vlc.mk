@@ -12,6 +12,9 @@ VLC_LICENSE_FILES = COPYING COPYING.LIB
 VLC_DEPENDENCIES = host-pkgconf
 VLC_AUTORECONF = YES
 
+# Install vlc libraries in staging.
+VLC_INSTALL_STAGING = YES
+
 # VLC defines two autoconf functions which are also defined by our own pkg.m4
 # from pkgconf. Unfortunately, they are defined in a different way: VLC adds
 # --enable- options, but pkg.m4 adds --with- options. To make sure we use
@@ -41,7 +44,6 @@ VLC_CONF_OPTS += \
 	--disable-projectm \
 	--disable-vsxu \
 	--disable-mtp \
-	--disable-opencv \
 	--disable-mmal-codec \
 	--disable-mmal-vout \
 	--disable-dvdnav \
@@ -62,6 +64,12 @@ ifeq ($(BR2_POWERPC_CPU_HAS_ALTIVEC),y)
 VLC_CONF_OPTS += --enable-altivec
 else
 VLC_CONF_OPTS += --disable-altivec
+endif
+
+ifeq ($(BR2_X86_CPU_HAS_SSE),y)
+VLC_CONF_OPTS += --enable-sse
+else
+VLC_CONF_OPTS += --disable-sse
 endif
 
 ifeq ($(BR2_PACKAGE_ALSA_LIB),y)
@@ -145,6 +153,13 @@ else
 VLC_CONF_OPTS += --disable-gles2
 endif
 
+ifeq ($(BR2_PACKAGE_OPENCV),y)
+VLC_CONF_OPTS += --enable-opencv
+VLC_DEPENDENCIES += opencv
+else
+VLC_CONF_OPTS += --disable-opencv
+endif
+
 ifeq ($(BR2_PACKAGE_OPUS),y)
 VLC_CONF_OPTS += --enable-opus
 VLC_DEPENDENCIES += libvorbis opus
@@ -201,6 +216,13 @@ VLC_CONF_OPTS += --enable-svg --enable-svgdec
 VLC_DEPENDENCIES += librsvg
 else
 VLC_CONF_OPTS += --disable-svg --disable-svgdec
+endif
+
+ifeq ($(BR2_PACKAGE_LIBSIDPLAY2),y)
+VLC_CONF_OPTS += --enable-sid
+VLC_DEPENDENCIES += libsidplay2
+else
+VLC_CONF_OPTS += --disable-sid
 endif
 
 ifeq ($(BR2_PACKAGE_LIBTHEORA),y)

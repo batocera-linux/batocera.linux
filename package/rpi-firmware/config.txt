@@ -1,28 +1,20 @@
-# uncomment if you get no picture on HDMI for a default "safe" mode
-#hdmi_safe=1
-
-disable_overscan=1
-
-# uncomment to force a specific HDMI mode (this will force VGA)
-#hdmi_group=1
-#hdmi_mode=1
-
-# comment to get jack audio
-hdmi_drive=2
-
-
-config_hdmi_boost=0
-hdmi_force_hotplug=0
-
-# uncomment for composite PAL
-#sdtv_mode=2
-
-# Overclock
-gpu_mem_256=128
-gpu_mem_512=256
-gpu_mem_1024=512
-
-avoid_safe_mode=1
-
+# Please note that this is only a sample, we recommend you to change it to fit
+# your needs.
+# You should override this file using a post-build script.
+# See http://buildroot.org/downloads/manual/manual.html#rootfs-custom
+# and http://elinux.org/RPiconfig for a description of config.txt syntax
 
 kernel=zImage
+
+# To use an external initramfs file
+#initramfs rootfs.cpio.gz
+
+# Disable overscan assuming the display supports displaying the full resolution
+# If the text shown on the screen disappears off the edge, comment this out
+disable_overscan=1
+
+# How much memory in MB to assign to the GPU on Pi models having
+# 256, 512 or 1024 MB total memory
+gpu_mem_256=100
+gpu_mem_512=100
+gpu_mem_1024=100

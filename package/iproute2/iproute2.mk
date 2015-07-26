@@ -4,10 +4,11 @@
 #
 ################################################################################
 
-IPROUTE2_VERSION = 4.0.0
+IPROUTE2_VERSION = 4.1.1
 IPROUTE2_SOURCE = iproute2-$(IPROUTE2_VERSION).tar.xz
 IPROUTE2_SITE = $(BR2_KERNEL_MIRROR)/linux/utils/net/iproute2
-IPROUTE2_DEPENDENCIES = host-bison host-flex host-pkgconf
+IPROUTE2_DEPENDENCIES = host-bison host-flex host-pkgconf \
+	$(if $(BR2_PACKAGE_LIBMNL),libmnl)
 IPROUTE2_LICENSE = GPLv2
 IPROUTE2_LICENSE_FILES = COPYING
 
@@ -53,6 +54,7 @@ define IPROUTE2_CONFIGURE_CMDS
 	cd $(@D) && $(TARGET_CONFIGURE_OPTS) ./configure
 	$(IPROUTE2_DISABLE_ARPD)
 	$(IPROUTE2_WITH_IPTABLES)
+	$(IPROUTE2_DISABLE_TIPC)
 endef
 
 define IPROUTE2_BUILD_CMDS

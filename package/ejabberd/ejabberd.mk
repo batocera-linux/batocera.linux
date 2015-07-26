@@ -4,11 +4,11 @@
 #
 ################################################################################
 
-EJABBERD_VERSION = 14.07
+EJABBERD_VERSION = 15.06
 EJABBERD_SITE = $(call github,processone,ejabberd,$(EJABBERD_VERSION))
 EJABBERD_LICENSE = GPLv2+ with OpenSSL exception
 EJABBERD_LICENSE_FILES = COPYING
-EJABBERD_DEPENDENCIES = openssl host-erlang-lager erlang-lager \
+EJABBERD_DEPENDENCIES = getent openssl host-erlang-lager erlang-lager \
 	erlang-p1-cache-tab erlang-p1-iconv erlang-p1-sip \
 	erlang-p1-stringprep erlang-p1-xml erlang-p1-yaml erlang-p1-zlib
 
@@ -26,7 +26,7 @@ EJABBERD_ERLANG_LIBS = sasl crypto public_key ssl mnesia inets compiler
 EJABBERD_CONF_ENV = \
 	ac_cv_erlang_root_dir="$(HOST_DIR)/usr/lib/erlang" \
 	$(foreach lib,$(EJABBERD_ERLANG_LIBS), \
-		ac_cv_erlang_lib_dir_$(lib)="$(shell package/ejabberd/check-erlang-lib $(lib))")
+		ac_cv_erlang_lib_dir_$(lib)="`package/ejabberd/check-erlang-lib $(lib)`")
 
 define EJABBERD_INSTALL_TARGET_CMDS
 	$(TARGET_MAKE_ENV) $(MAKE) DESTDIR=$(TARGET_DIR) install -C $(@D)

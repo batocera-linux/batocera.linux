@@ -29,15 +29,13 @@ KODI_CONF_ENV = \
 	PYTHON_NOVERSIONCHECK="no-check" \
 	use_texturepacker_native=yes \
 	USE_TEXTUREPACKER_NATIVE_ROOT="$(HOST_DIR)/usr" \
-	TEXTUREPACKER_NATIVE_ROOT="$(HOST_DIR)/usr" \
-	MYSQL_CONFIG="$(STAGING_DIR)/usr/bin/mysql_config"
+	TEXTUREPACKER_NATIVE_ROOT="$(HOST_DIR)/usr"
 
 KODI_CONF_OPTS +=  \
 	--with-ffmpeg=shared \
 	--disable-crystalhd \
-	--disable-dvdcss \
 	--disable-hal \
-	--enable-mysql \
+	--disable-joystick \
 	--disable-openmax \
 	--disable-projectm \
 	--disable-pulse \
@@ -72,14 +70,6 @@ KODI_CONF_OPTS += --enable-libcap
 KODI_DEPENDENCIES += libcap
 else
 KODI_CONF_OPTS += --disable-libcap
-endif
-
-
-ifeq ($(BR2_PACKAGE_KODI_MYSQL),y)
-KODI_DEPENDENCIES += mysql
-KODI_CONF_OPTS += --enable-mysql
-else
-KODI_CONF_OPTS += --disable-mysql
 endif
 
 ifeq ($(BR2_PACKAGE_KODI_DBUS),y)
@@ -122,6 +112,7 @@ else
 KODI_CONF_OPTS += --disable-gl --disable-rsxs --disable-sdl --disable-x11 --disable-xrandr
 ifeq ($(BR2_PACKAGE_KODI_EGL_GLES),y)
 KODI_DEPENDENCIES += libegl libgles
+KODI_CONF_ENV += CXXFLAGS="$(TARGET_CXXFLAGS) `$(PKG_CONFIG_HOST_BINARY) --cflags egl`"
 KODI_CONF_OPTS += --enable-gles
 else
 KODI_CONF_OPTS += --disable-gles

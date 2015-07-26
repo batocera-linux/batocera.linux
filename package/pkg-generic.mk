@@ -102,7 +102,7 @@ $(BUILD_DIR)/%/.stamp_rsynced:
 	@$(call MESSAGE,"Syncing from source dir $(SRCDIR)")
 	@test -d $(SRCDIR) || (echo "ERROR: $(SRCDIR) does not exist" ; exit 1)
 	$(foreach hook,$($(PKG)_PRE_RSYNC_HOOKS),$(call $(hook))$(sep))
-	rsync -au $(RSYNC_VCS_EXCLUSIONS) $(SRCDIR)/ $(@D)
+	rsync -au --chmod=u=rwX,go=rX $(RSYNC_VCS_EXCLUSIONS) $(call qstrip,$(SRCDIR))/ $(@D)
 	$(foreach hook,$($(PKG)_POST_RSYNC_HOOKS),$(call $(hook))$(sep))
 	$(Q)touch $@
 
@@ -172,6 +172,25 @@ $(BUILD_DIR)/%/.stamp_host_installed:
 	@$(call step_end,install-host)
 
 # Install to staging dir
+#
+# Some packages install libtool .la files alongside any installed
+# libraries. These .la files sometimes refer to paths relative to the
+# sysroot, which libtool will interpret as absolute paths to host
+# libraries instead of the target libraries. Since this is not what we
+# want, these paths are fixed by prefixing them with $(STAGING_DIR).
+# As we configure with --prefix=/usr, this fix needs to be applied to
+# any path that starts with /usr.
+#
+# To protect against the case that the output or staging directories or
+# the pre-installed external toolchain themselves are under /usr, we first
+# substitute away any occurrences of these directories with @BASE_DIR@,
+# @STAGING_DIR@ and @TOOLCHAIN_EXTERNAL_INSTALL_DIR@ respectively.
+#
+# Note that STAGING_DIR can be outside BASE_DIR when the user sets
+# BR2_HOST_DIR to a custom value. Note that TOOLCHAIN_EXTERNAL_INSTALL_DIR
+# can be under @BASE_DIR@ when it's a downloaded toolchain, and can be
+# empty when we use an internal toolchain.
+#
 $(BUILD_DIR)/%/.stamp_staging_installed:
 	@$(call step_start,install-staging)
 	@$(call MESSAGE,"Installing to staging directory")
@@ -189,6 +208,17 @@ $(BUILD_DIR)/%/.stamp_staging_installed:
 				-e "s,@BASE_DIR@,$(BASE_DIR),g" \
 				$(addprefix $(STAGING_DIR)/usr/bin/,$($(PKG)_CONFIG_SCRIPTS)) ;\
 	fi
+	@$(call MESSAGE,"Fixing libtool files")
+	$(Q)find $(STAGING_DIR)/usr/lib* -name "*.la" | xargs --no-run-if-empty \
+		$(SED) "s:$(BASE_DIR):@BASE_DIR@:g" \
+			-e "s:$(STAGING_DIR):@STAGING_DIR@:g" \
+			$(if $(TOOLCHAIN_EXTERNAL_INSTALL_DIR),\
+				-e "s:$(TOOLCHAIN_EXTERNAL_INSTALL_DIR):@TOOLCHAIN_EXTERNAL_INSTALL_DIR@:g") \
+			-e "s:\(['= ]\)/usr:\\1@STAGING_DIR@/usr:g" \
+			$(if $(TOOLCHAIN_EXTERNAL_INSTALL_DIR),\
+				-e "s:@TOOLCHAIN_EXTERNAL_INSTALL_DIR@:$(TOOLCHAIN_EXTERNAL_INSTALL_DIR):g") \
+			-e "s:@STAGING_DIR@:$(STAGING_DIR):g" \
+			-e "s:@BASE_DIR@:$(BASE_DIR):g"
 	$(Q)touch $@
 	@$(call step_end,install-staging)
 
@@ -298,16 +328,20 @@ $(2)_RAWNAME			=  $$(patsubst host-%,%,$(1))
 # Similar for spaces and colons (:) that may appear in date-based revisions for
 # CVS.
 ifndef $(2)_VERSION
- ifdef $(3)_VERSION
-  $(2)_DL_VERSION := $$(strip $$($(3)_VERSION))
-  $(2)_VERSION := $$(call sanitize,$$($(3)_VERSION))
+ ifdef $(3)_DL_VERSION
+  $(2)_DL_VERSION := $$($(3)_DL_VERSION)
+ else ifdef $(3)_VERSION
+  $(2)_DL_VERSION := $$($(3)_VERSION)
  else
-  $(2)_VERSION = undefined
   $(2)_DL_VERSION = undefined
  endif
 else
-  $(2)_DL_VERSION := $$(strip $$($(2)_VERSION))
-  $(2)_VERSION := $$(call sanitize,$$($(2)_VERSION))
+ $(2)_DL_VERSION := $$(strip $$($(2)_VERSION))
+endif
+$(2)_VERSION := $$(call sanitize,$$($(2)_DL_VERSION))
+
+ifdef $(3)_OVERRIDE_SRCDIR
+  $(2)_OVERRIDE_SRCDIR ?= $$($(3)_OVERRIDE_SRCDIR)
 endif
 
 $(2)_BASE_NAME	=  $(1)-$$($(2)_VERSION)
@@ -319,6 +353,14 @@ ifndef $(2)_SUBDIR
   $(2)_SUBDIR = $$($(3)_SUBDIR)
  else
   $(2)_SUBDIR ?=
+ endif
+endif
+
+ifndef $(2)_STRIP_COMPONENTS
+ ifdef $(3)_STRIP_COMPONENTS
+  $(2)_STRIP_COMPONENTS = $$($(3)_STRIP_COMPONENTS)
+ else
+  $(2)_STRIP_COMPONENTS ?= 1
  endif
 endif
 
@@ -397,10 +439,13 @@ $(2)_REDISTRIBUTE		?= YES
 $(2)_ADD_TOOLCHAIN_DEPENDENCY	?= YES
 
 ifeq ($(4),host)
-$(2)_DEPENDENCIES ?= $$(filter-out  host-toolchain $(1),\
+$(2)_DEPENDENCIES ?= $$(filter-out host-skeleton host-toolchain $(1),\
 	$$(patsubst host-host-%,host-%,$$(addprefix host-,$$($(3)_DEPENDENCIES))))
 endif
 ifeq ($(4),target)
+ifneq ($(1),skeleton)
+$(2)_DEPENDENCIES += skeleton
+endif
 ifeq ($$($(2)_ADD_TOOLCHAIN_DEPENDENCY),YES)
 $(2)_DEPENDENCIES += toolchain
 endif
@@ -431,7 +476,7 @@ $(2)_TARGET_DIRCLEAN =		$$($(2)_DIR)/.stamp_dircleaned
 # default extract command
 $(2)_EXTRACT_CMDS ?= \
 	$$(if $$($(2)_SOURCE),$$(INFLATE$$(suffix $$($(2)_SOURCE))) $$(DL_DIR)/$$($(2)_SOURCE) | \
-	$$(TAR) $$(TAR_STRIP_COMPONENTS)=1 -C $$($(2)_DIR) $$(TAR_OPTIONS) -)
+	$$(TAR) --strip-components=$$($(2)_STRIP_COMPONENTS) -C $$($(2)_DIR) $$(TAR_OPTIONS) -)
 
 # pre/post-steps hooks
 $(2)_PRE_DOWNLOAD_HOOKS         ?=
@@ -634,9 +679,9 @@ $$($(2)_TARGET_DIRCLEAN):		PKG=$(2)
 # kernel case, the bootloaders case, and the normal packages case.
 ifeq ($(1),linux)
 $(2)_KCONFIG_VAR = BR2_LINUX_KERNEL
-else ifneq ($$(filter boot/%,$(pkgdir)),)
+else ifneq ($$(filter boot/% $(BR2_EXTERNAL)/boot/%,$(pkgdir)),)
 $(2)_KCONFIG_VAR = BR2_TARGET_$(2)
-else ifneq ($$(filter toolchain/%,$(pkgdir)),)
+else ifneq ($$(filter toolchain/% $(BR2_EXTERNAL)/toolchain/%,$(pkgdir)),)
 $(2)_KCONFIG_VAR = BR2_$(2)
 else
 $(2)_KCONFIG_VAR = BR2_PACKAGE_$(2)

@@ -14,7 +14,7 @@ PTPD2_LICENSE = BSD-2c
 PTPD2_LICENSE_FILES = COPYRIGHT
 
 ifeq ($(BR2_STATIC_LIBS),y)
-PTPD2_CONF_OPTS += LIBS="$(shell $(STAGING_DIR)/usr/bin/pcap-config --static --additional-libs)"
+PTPD2_CONF_OPTS += LIBS="`$(STAGING_DIR)/usr/bin/pcap-config --static --additional-libs`"
 endif
 
 ifeq ($(BR2_PACKAGE_NETSNMP),y)
@@ -27,6 +27,14 @@ endif
 define PTPD2_INSTALL_INIT_SYSV
 	$(INSTALL) -m 755 -D package/ptpd2/S65ptpd2 \
 		$(TARGET_DIR)/etc/init.d/S65ptpd2
+endef
+
+define PTPD2_INSTALL_INIT_SYSTEMD
+	$(INSTALL) -D -m 644 package/ptpd2/ptpd2.service \
+		$(TARGET_DIR)/usr/lib/systemd/system/ptpd2.service
+	mkdir -p $(TARGET_DIR)/etc/systemd/system/multi-user.target.wants
+	ln -sf ../../../../usr/lib/systemd/system/ptpd2.service \
+		$(TARGET_DIR)/etc/systemd/system/multi-user.target.wants/ptpd2.service
 endef
 
 $(eval $(autotools-package))

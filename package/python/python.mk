@@ -130,9 +130,7 @@ PYTHON_CONF_ENV += \
 	ac_cv_have_long_long_format=yes \
 	ac_cv_file__dev_ptmx=yes \
 	ac_cv_file__dev_ptc=yes \
-	ac_cv_working_tzset=yes \
-	CFLAGS="$(TARGET_CFLAGS) -I$(STAGING_DIR)/usr/include" \
-	LDFLAGS="$(TARGET_LDFLAGS) -L$(STAGING_DIR)/usr/lib"
+	ac_cv_working_tzset=yes
 
 PYTHON_CONF_OPTS += \
 	--without-cxx-main 	\
@@ -231,20 +229,4 @@ define PYTHON_FINALIZE_TARGET
 endef
 endif
 
-
 TARGET_FINALIZE_HOOKS += PYTHON_FINALIZE_TARGET
-
-define PYTHON_ADD_STAGING_INC_DIR
-#	$(SED) "s/inc_dirs = \[\]/inc_dirs = \"$(STAGING_DIR)\/usr\/include\"/g" $(@D)/setup.py
-#	$(SED) "s|inc_dirs = \[\]|inc_dirs = ['$(STAGING_DIR)/usr/include']|g" $(@D)/setup.py
-	$(SED) "s|/usr/include|$(STAGING_DIR)/usr/include|g" $(@D)/setup.py
-	$(SED) "s|/usr/lib|$(STAGING_DIR)/usr/lib|g" $(@D)/setup.py
-	$(SED) "s|/lib|$(STAGING_DIR)/lib|g" $(@D)/setup.py
-#	$(SED) "s|sqlite_setup_debug = False|sqlite_setup_debug = True|g" $(@D)/setup.py
-
-#	cp "$(STAGING_DIR)/usr/include/sqlite3.h" $(@D)/Include
-#	cp "$(STAGING_DIR)/usr/include/zlib.h" $(@D)/Include
-#	cp "$(STAGING_DIR)/usr/include/openssl/ssl.h" $(@D)/Include
-endef
-
-PYTHON_PRE_CONFIGURE_HOOKS += PYTHON_ADD_STAGING_INC_DIR
