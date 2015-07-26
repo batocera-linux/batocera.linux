@@ -30,12 +30,12 @@ MAKEARGS += O=\$(if \$(patsubst /%,,\$(makedir)),\$(CURDIR)/)\$(patsubst %/,%,\$
 
 MAKEFLAGS += --no-print-directory
 
-.PHONY: all \$(MAKECMDGOALS)
+.PHONY: _all \$(MAKECMDGOALS)
 
 all	:= \$(filter-out Makefile,\$(MAKECMDGOALS))
 
 _all:
-	\$(MAKE) \$(MAKEARGS) \$(all)
+	umask 0022 && \$(MAKE) \$(MAKEARGS) \$(all)
 
 Makefile:;
 

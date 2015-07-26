@@ -4,6 +4,25 @@ config BR2_TARGET_UBOOT
 	  Build "Das U-Boot" Boot Monitor
 
 if BR2_TARGET_UBOOT
+choice
+	prompt "Build system"
+	default BR2_TARGET_UBOOT_BUILD_SYSTEM_LEGACY
+
+config BR2_TARGET_UBOOT_BUILD_SYSTEM_LEGACY
+	bool "Legacy"
+	help
+	  Select this option if you use an old U-Boot (older than 2015.04),
+	  so that we use the old build system.
+
+config BR2_TARGET_UBOOT_BUILD_SYSTEM_KCONFIG
+	bool "Kconfig"
+	help
+	  Select this option if you use a recent U-Boot version (2015.04 or
+	  newer), so that we use the Kconfig build system.
+
+endchoice
+
+if BR2_TARGET_UBOOT_BUILD_SYSTEM_LEGACY
 config BR2_TARGET_UBOOT_BOARDNAME
 	string "U-Boot board name"
 	help
@@ -11,6 +30,7 @@ config BR2_TARGET_UBOOT_BOARDNAME
 	  This will be suffixed with _config to meet U-Boot standard naming.
 	  See boards.cfg in U-Boot source code for the list of available
 	  configurations.
+endif
 
 choice
 	prompt "U-Boot Version"
@@ -18,7 +38,7 @@ choice
 	  Select the specific U-Boot version you want to use
 
 config BR2_TARGET_UBOOT_LATEST_VERSION
-	bool "2015.04"
+	bool "2015.07"
 
 config BR2_TARGET_UBOOT_CUSTOM_VERSION
 	bool "Custom version"
@@ -63,7 +83,7 @@ endif
 
 config BR2_TARGET_UBOOT_VERSION
 	string
-	default "2015.04"	if BR2_TARGET_UBOOT_LATEST_VERSION
+	default "2015.07"	if BR2_TARGET_UBOOT_LATEST_VERSION
 	default BR2_TARGET_UBOOT_CUSTOM_VERSION_VALUE \
 		if BR2_TARGET_UBOOT_CUSTOM_VERSION
 	default "custom"	if BR2_TARGET_UBOOT_CUSTOM_TARBALL
@@ -92,6 +112,33 @@ config BR2_TARGET_UBOOT_PATCH
 
 	  Most users may leave this empty
 
+if BR2_TARGET_UBOOT_BUILD_SYSTEM_KCONFIG
+choice
+	prompt "U-Boot configuration"
+	default BR2_TARGET_UBOOT_USE_DEFCONFIG
+
+config BR2_TARGET_UBOOT_USE_DEFCONFIG
+	bool "Using an in-tree board defconfig file"
+
+config BR2_TARGET_UBOOT_USE_CUSTOM_CONFIG
+	bool "Using a custom board (def)config file"
+
+endchoice
+
+config BR2_TARGET_UBOOT_BOARD_DEFCONFIG
+	string "Board defconfig"
+	depends on BR2_TARGET_UBOOT_USE_DEFCONFIG
+	help
+	  Name of the board for which U-Boot should be built, without
+	  the _defconfig suffix.
+
+config BR2_TARGET_UBOOT_CUSTOM_CONFIG_FILE
+	string "Configuration file path"
+	depends on BR2_TARGET_UBOOT_USE_CUSTOM_CONFIG
+	help
+	  Path to the U-Boot configuration file.
+endif
+
 choice
 	prompt "U-Boot binary format"
 	default BR2_TARGET_UBOOT_FORMAT_BIN
@@ -105,6 +152,9 @@ config BR2_TARGET_UBOOT_FORMAT_AIS
 
 config BR2_TARGET_UBOOT_FORMAT_BIN
 	bool "u-boot.bin"
+
+config BR2_TARGET_UBOOT_FORMAT_DTB_IMG
+	bool "u-boot-dtb.img"
 
 config BR2_TARGET_UBOOT_FORMAT_IMG
 	bool "u-boot.img"
@@ -128,11 +178,11 @@ config BR2_TARGET_UBOOT_FORMAT_ELF
 
 config BR2_TARGET_UBOOT_FORMAT_SB
 	depends on BR2_arm
-	bool "u-boot.sb"
+	bool "u-boot.sb (Freescale i.MX28)"
 
 config BR2_TARGET_UBOOT_FORMAT_SD
 	depends on BR2_arm
-	bool "u-boot.sd"
+	bool "u-boot.sd (Freescale i.MX28)"
 	help
 	  This is Freescale i.MX28 SB format, with a header for booting
 	  from an SD card.
@@ -141,6 +191,63 @@ config BR2_TARGET_UBOOT_FORMAT_SD
 	  starting from 2011.12.
 
 	  See doc/README.mxs (or doc/README.mx28_common before 2013.07)
+
+config BR2_TARGET_UBOOT_FORMAT_NAND
+	depends on BR2_arm
+	bool "u-boot.nand (Freescale i.MX28)"
+	help
+	  This is Freescale i.MX28 BootStream format (.sb), with a header
+	  for booting from a NAND flash.
+
+	  U-boot includes an mxsboot tool to generate this format,
+	  starting from 2011.12.
+
+	  There are two possibilities when preparing an image writable to
+	  NAND flash:
+	  1) The NAND was not written at all yet or the BCB (Boot Control
+	  Blocks) is broken. In this case, the NAND image 'u-boot.nand'
+	  needs to written.
+	  2) The NAND flash was already written with a good BCB. This
+	  applies after 'u-boot.nand' was correctly written. There is no
+	  need to write the BCB again. In this case, the bootloader can be
+	  upgraded by writing 'u-boot.sb'.
+
+	  To satisfy both cases, the 'u-boot.nand' image obtained from
+	  mxsboot as well as the U-Boot make target 'u-boot.sb' are copied
+	  to the binaries directory.
+
+	  See doc/README.mxs (or doc/README.mx28_common before 2013.07)
+
+if BR2_TARGET_UBOOT_FORMAT_NAND
+
+config BR2_TARGET_UBOOT_FORMAT_NAND_PAGE_SIZE
+	int "NAND page size"
+	default 2048
+	help
+	  The NAND page size of the targets NAND flash in bytes as a
+	  decimal integer value.
+
+	  The value provided here is passed to the -w option of mxsboot.
+
+config BR2_TARGET_UBOOT_FORMAT_NAND_OOB_SIZE
+	int "NAND OOB size"
+	default 64
+	help
+	  The NAND OOB size of the targets NAND flash in bytes as a
+	  decimal integer value.
+
+	  The value provided here is passed to the -o option of mxsboot.
+
+config BR2_TARGET_UBOOT_FORMAT_NAND_ERASE_SIZE
+	int "NAND erase size"
+	default 131072
+	help
+	  The NAND eraseblock size of the targets NAND flash in bytes as
+	  a decimal integer value.
+
+	  The value provided here is passed to the -e option of mxsboot.
+
+endif
 
 config BR2_TARGET_UBOOT_FORMAT_CUSTOM
 	bool "Custom (specify below)"
@@ -211,6 +318,18 @@ config BR2_TARGET_UBOOT_SPL_NAME
 	  This is the name of the SPL binary, generated during
 	  u-boot build. For most platform it is spl/u-boot-spl.bin
 	  but not always. It is MLO on OMAP for example.
+
+config BR2_TARGET_UBOOT_ZYNQ_IMAGE
+	bool "Generate image for Xilinx Zynq"
+	depends on BR2_arm
+	depends on BR2_TARGET_UBOOT_SPL
+	depends on BR2_TARGET_UBOOT_FORMAT_DTB_IMG
+	help
+	 Generate the BOOT.BIN file from U-Boot's SPL. The image
+	 boots the Xilinx Zynq chip without any FPGA bitstream.
+	 A bitstream can be loaded by the U-Boot. The SPL searchs
+	 for u-boot-dtb.img file so this U-Boot format is required
+	 to be set.
 
 menuconfig BR2_TARGET_UBOOT_ENVIMAGE
 	bool "Environment image"
