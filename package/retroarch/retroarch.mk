@@ -18,21 +18,21 @@ RETROARCH_LICENSE = GPLv3+
 RETROARCH_CONF_OPTS += --disable-oss --enable-floathard --enable-zlib
 RETROARCH_DEPENDENCIES = host-pkgconf
 
-ifeq ($(BR2_cortex_a7),y)
-        RETROARCH_CONF_OPTS += --enable-neon --enable-networking --enable-netplay
-	ifeq ($(BR2_PACKAGE_SDL2),y)
-		RETROARCH_CONF_OPTS += --enable-sdl2
-		RETROARCH_DEPENDENCIES += sdl2
-	else
-		RETROARCH_CONF_OPTS += --disable-sdl2
-	endif
-else 
+ifeq ($(BR2_PACKAGE_SDL2),y)
+	RETROARCH_CONF_OPTS += --enable-sdl2
+	RETROARCH_DEPENDENCIES += sdl2
+else
+	RETROARCH_CONF_OPTS += --disable-sdl2
 	ifeq ($(BR2_PACKAGE_SDL),y)
 		RETROARCH_CONF_OPTS += --enable-sdl
 		RETROARCH_DEPENDENCIES += sdl
 	else
 		RETROARCH_CONF_OPTS += --disable-sdl
 	endif
+endif
+
+ifeq ($(BR2_cortex_a7),y)
+        RETROARCH_CONF_OPTS += --enable-neon --enable-networking --enable-netplay
 endif
 
 ifeq ($(BR2_PACKAGE_PYTHON3),y)
