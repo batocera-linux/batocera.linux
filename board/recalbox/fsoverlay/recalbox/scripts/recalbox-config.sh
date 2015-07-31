@@ -52,41 +52,60 @@ fi
 if [ "$command" == "overclock" ]; then
 
 declare -A arm_freq
+arm_freq["rpi2"]=1050
 arm_freq["extrem"]=1100
 arm_freq["turbo"]=1000
 arm_freq["high"]=950
 arm_freq["none"]=700
+arm_freq["none-rpi2"]=900
 
 declare -A core_freq
+core_freq["rpi2"]=525
 core_freq["extrem"]=550
 core_freq["turbo"]=500
 core_freq["high"]=250
 core_freq["none"]=250
+core_freq["none-rpi2"]=250
 
 declare -A sdram_freq
+sdram_freq["rpi2"]=480
 sdram_freq["extrem"]=600
 sdram_freq["turbo"]=600
 sdram_freq["high"]=450
 sdram_freq["none"]=400
+sdram_freq["none-rpi2"]=450
 
 declare -A force_turbo
+force_turbo["rpi2"]=0
 force_turbo["extrem"]=1
 force_turbo["turbo"]=0
 force_turbo["high"]=0
 force_turbo["none"]=0
+force_turbo["none-rpi2"]=0
 
 declare -A over_voltage
+over_voltage["rpi2"]=4
 over_voltage["extrem"]=8
 over_voltage["turbo"]=6
 over_voltage["high"]=6
 over_voltage["none"]=0
+over_voltage["none-rpi2"]=0
 
 declare -A over_voltage_sdram
+over_voltage_sdram["rpi2"]=2
 over_voltage_sdram["extrem"]=6
 over_voltage_sdram["turbo"]=0
 over_voltage_sdram["high"]=0
 over_voltage_sdram["none"]=0
+over_voltage_sdram["none-rpi2"]=0
 
+declare -A gpu_freq
+gpu_freq["rpi2"]=350
+gpu_freq["extrem"]=250
+gpu_freq["turbo"]=250
+gpu_freq["high"]=250
+gpu_freq["none"]=250
+gpu_freq["none-rpi2"]=250
 
 if [ -f "$configFile" ];then
 	cat "$configFile" | grep "arm_freq"
@@ -113,6 +132,10 @@ if [ -f "$configFile" ];then
 	if [ "$?" != "0" ];then
 		echo "over_voltage_sdram=" >> "$configFile"
 	fi
+	cat "$configFile" | grep "gpu_freq"
+	if [ "$?" != "0" ];then
+		echo "gpu_freq=" >> "$configFile"
+	fi
 
 	sed -i "s/#\?arm_freq=.*/arm_freq=${arm_freq[$mode]}/g" "$configFile"
 	sed -i "s/#\?core_freq=.*/core_freq=${core_freq[$mode]}/g" "$configFile"
@@ -120,6 +143,7 @@ if [ -f "$configFile" ];then
 	sed -i "s/#\?force_turbo=.*/force_turbo=${force_turbo[$mode]}/g" "$configFile"
 	sed -i "s/#\?over_voltage=.*/over_voltage=${over_voltage[$mode]}/g" "$configFile"
 	sed -i "s/#\?over_voltage_sdram=.*/over_voltage_sdram=${over_voltage_sdram[$mode]}/g" "$configFile"
+	sed -i "s/#\?gpu_freq=.*/gpu_freq=${gpu_freq[$mode]}/g" "$configFile"
         echo "`logtime` : enabled overclock mode : $mode" >> $log
 
 	exit 0
