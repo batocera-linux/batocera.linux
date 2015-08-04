@@ -1,0 +1,11 @@
+--- a/menu/menu_entry.c	2015-07-27 14:52:21.000000000 +0200
++++ b/menu/menu_entry.c	2015-07-29 13:20:06.598727527 +0200
+@@ -497,7 +497,7 @@
+          break;
+ 
+       case MENU_ACTION_SEARCH:
+-         menu_input_search_start();
++         //menu_input_search_start();
+          break;
+ 
+       case MENU_ACTION_SCAN:
