@@ -289,7 +289,35 @@ if [[ "$command" == "wifi" ]]; then
                 exit $?
         fi
 fi
+if [[ "$command" == "hcitoolscan" ]]; then
+	hcitool scan | tail -n +2
+	exit 0
+fi
 
+if [[ "$command" == "hiddpair" ]]; then
+	name="$extra1"
+	mac1="$mode"
+	mac=`echo $mac1 | grep -oEi "([0-9A-F]{2}[:-]){5}([0-9A-F]{2})" | tr '[:upper:]' '[:lower:]'`
+	if [ "$?" != "0" ]; then 
+		exit 1
+	fi
+	echo "pairing $name $mac" >>  $log
+	echo $name | grep "8Bitdo\|other" >> $log
+	if [ "$?" == "0" ]; then
+		echo "8Bitdo detected" >> $log
+		cat /etc/udev/rules.d/99-8bitdo.rules | grep "$mac" >> /dev/null
+		if [ "$?" != "0" ]; then
+			echo "adding rule for $mac" >> $log
+			echo "SUBSYSTEM==\"input\", ATTRS{uniq}==\"$mac\", MODE=\"0666\", ENV{ID_INPUT_JOYSTICK}=\"1\"" >> /etc/udev/rules.d/99-8bitdo.rules
+			killall udevd
+			/etc/init.d/S10udev start
+		fi
+	fi
+	
+	hidd --connect $mac 
+        exit $?
+fi
 
 exit 10
+
 
