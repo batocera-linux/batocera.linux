@@ -33,6 +33,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Corrected update system
 - Added Tgbdual libretro core
 - Added Miroof's Virtual Gamepads
+- Added silent install
  
 ## [3.2.11] - 2015-03-24
 - Corrected issues with controllers with idientical names
