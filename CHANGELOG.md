@@ -32,6 +32,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Changed bash as default shell
 - Corrected update system
 - Added Tgbdual libretro core
+- Added Miroof's Virtual Gamepads
  
 ## [3.2.11] - 2015-03-24
 - Corrected issues with controllers with idientical names
