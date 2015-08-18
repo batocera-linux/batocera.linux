@@ -1,0 +1,46 @@
+shaders = 5
+
+shader0 = shaders/GTU-famicom/DAC_LUT.glsl
+scale_type_x0 = source
+scale_x0 = 8.0
+scale_type_y0 = source
+scale_y0 = 1.0
+float_framebuffer0 = true
+filter_linear0 = false
+frame_count_mod0 = 2
+
+textures = nestable
+nestable = shaders/GTU-famicom/NesTable.png
+nestable_linear = false
+nestable_mipmap = false
+nestable_wrap_mode = clamp_to_border
+
+shader1 = shaders/GTU-famicom/lowPass_lite.glsl
+scale_type_1 = source
+scale_1 = 1.0
+float_framebuffer1 = true
+filter_linear1 = false
+frame_count_mod1 = 32
+
+shader2 = shaders/GTU-famicom/combFilter_lite.glsl
+scale_type_2 = source
+scale_2 = 1.0
+float_framebuffer2 = true
+filter_linear2 = false
+frame_count_mod2 = 2
+
+shader3 = shaders/GTU-famicom/scaleX_lite.glsl
+scale_type_x3 = viewport
+scale_x3 = 1.0
+scale_type_y3 = source
+scale_y3 = 1.0
+float_framebuffer3 = true
+filter_linear3 = false
+
+shader4 = shaders/GTU-famicom/scaleY_lite.glsl
+scale_type_x4 = source
+scale_x4 = 1.0
+scale_type_y4 = viewport
+scale_y4 = 1.0
+float_framebuffer4 = true
+filter_linear4 = false

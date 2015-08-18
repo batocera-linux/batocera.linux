@@ -1,0 +1,62 @@
+///////////////////////////////////////////////////////////////////////////
+//                                                                       //
+// DMG Shader v1.2                                                       //
+//                                                                       //
+// Author: Hi-Ban                                                        //
+//                                                                       //
+// This is a modification and mix of other shaders. Although some bits   //
+// of code have been modified to achieve a more realistic look, all the  //
+// original credits and licenses of the various codes have been left     //
+// intact in the shader files.                                           //
+//                                                                       //
+///////////////////////////////////////////////////////////////////////////
+
+shaders = 6
+shader0 = shader-files/gb-pass-0.glsl
+shader1 = shader-files/gb-pass-1.glsl
+shader2 = shader-files/gb-pass-2.glsl
+shader3 = shader-files/gb-pass-3.glsl
+shader4 = shader-files/gb-pass-4.glsl
+shader5 = shader-files/gb-pass-5.glsl
+
+scale_type0 = viewport
+scale0 = 1
+
+scale_type1 = source
+scale1 = 1
+
+scale_type2 = source
+scale2 = 1
+
+scale_type3 = source
+scale3 = 1
+
+scale_type4 = source
+scale4 = 1
+
+scale_type5 = source
+scale5 = 1
+
+filter_linear0 = false
+filter_linear1 = false
+filter_linear2 = false
+filter_linear3 = false
+filter_linear4 = false
+filter_linear5 = false
+
+textures = COLOR_PALETTE;BACKGROUND;BORDER
+COLOR_PALETTE = resources/dmg-palette.png
+COLOR_PALETTE_linear = false
+BACKGROUND = resources/dmg-background.png
+BACKGROUND_linear = true
+BORDER = resources/dmg-border-square-4x.png
+BORDER_linear = true
+
+parameters = "video_scale;SCALE;OUT_X;OUT_Y;adjacent_texel_alpha_blending;pixel_opacity;shadow_opacity"
+video_scale = "3.0"
+SCALE = "1.0"
+OUT_X = "2400.0"
+OUT_Y = "1200.0"
+adjacent_texel_alpha_blending = "0.42"
+pixel_opacity = "0.80"
+shadow_opacity = "0.80"

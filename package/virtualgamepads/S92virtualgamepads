@@ -1,0 +1,27 @@
+#! /bin/sh
+#
+# Start virtual-gamepads
+#
+
+case "$1" in
+  start)
+    echo "Starting virtual-gamepads server"
+    cd /usr/node-virtual-gamepads/ 
+    node main.js &
+    ;;
+  stop)
+    echo -n "Stoping virtual-gamepads server"
+    ps -ef | grep node | grep -v grep | awk '{print $1}' | xargs kill
+    ;;
+  restart|reload)
+    $0 stop
+    $0 start
+    ;;
+  *)
+    echo "Usage: $0 {start|stop|restart|reload}"
+    exit 1
+    ;;
+esac
+
+exit 0
+
