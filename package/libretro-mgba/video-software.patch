@@ -1,0 +1,13 @@
+--- a/src/gba/renderers/video-software.c	2015-08-17 04:27:56.000000000 +0200
++++ b/src/gba/renderers/video-software.c	2015-08-20 10:26:56.000000000 +0200
+@@ -538,7 +538,9 @@
+ 
+ #ifdef COLOR_16_BIT
+ #if defined(__ARM_NEON) && !defined(__APPLE__) && !defined(__aarch64__)
+-	_to16Bit(row, softwareRenderer->row, VIDEO_HORIZONTAL_PIXELS);
++	for (x = 0; x < VIDEO_HORIZONTAL_PIXELS; ++x) {
++		row[x] = softwareRenderer->row[x];
++	}
+ #else
+ 	for (x = 0; x < VIDEO_HORIZONTAL_PIXELS; ++x) {
+ 		row[x] = softwareRenderer->row[x];
