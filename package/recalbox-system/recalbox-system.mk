@@ -23,6 +23,7 @@ ifeq ($(RECALBOX_RELEASE),FINAL)
 endif
 
 define RECALBOX_SYSTEM_INSTALL_TARGET_CMDS
+	mkdir -p $(TARGET_DIR)/recalbox/
 	echo -n "$(RECALBOX_SYSTEM_RPI_VERSION)" > $(TARGET_DIR)/recalbox/recalbox.arch
 endef
 
