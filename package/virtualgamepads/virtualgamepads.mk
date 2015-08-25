@@ -3,7 +3,7 @@
 # VIRTUALGAMEPADS
 #
 ################################################################################
-VIRTUALGAMEPADS_VERSION = 18260e56713eefc52a7b680cef946629d29543ba
+VIRTUALGAMEPADS_VERSION = f2c36d9bc668580173dc690baab329fd91a05183
 VIRTUALGAMEPADS_SITE = $(call github,miroof,node-virtual-gamepads,$(VIRTUALGAMEPADS_VERSION))
 VIRTUALGAMEPADS_DEPENDENCIES = nodejs
 
