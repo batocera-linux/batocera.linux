@@ -1,6 +1,3 @@
-# EXEMPLE FILE
-# YOU WILL HAVE IN THIS FILE ALL AVAILABLE OPTIONS
-
 # System Variable
 # You can configure your recalbox from here
 # To set a variable, remove the first ; on the line
@@ -103,13 +100,14 @@ updates.enabled=1
 ## select your mode from the command : tvservice -m [MODE]
 ## CEA 5 HDMI : 1920x1080 @ 60Hz 16:9, clock:74MHz interlaced 
 ## CEA 4 HDMI : 1280x720 @ 60Hz 16:9, clock:74MHz progressive
+## use 'default' for using the default resolution
 ## (string)
 global.videomode=CEA 4 HDMI
 
 ## Set gpslp shader for all emulators. Absolute path (string)
 global.shaders=
 
-## Set ratio for all emulators (auto,4/3,16/9,custom)
+## Set ratio for all emulators (auto,4/3,16/9,16/10,custom)
 global.ratio=auto
 
 ## Set smooth for all emulators (0,1)
@@ -117,6 +115,10 @@ global.smooth=1
 
 ## Set rewind for all emulators (0,1)
 global.rewind=0
+
+## Set retroarch input driver (auto, udev, sdl2)
+## If you don't have issues with your controllers, let auto
+global.inputdriver=auto
 
 ## If you do not want recalboxOS to generate the configuration for all emulators (string)
 ;global.configfile=/path/to/my/configfile.cfg
