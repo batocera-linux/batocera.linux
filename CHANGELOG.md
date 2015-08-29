@@ -7,6 +7,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Added default videomode that doesn't change the resolution while launching games
 - Added 16/10 support and 16/10 is set as default for wswan
 - Added recalbox version of Virtual Gamepad
+- Added retroarch input driver autoconfig based on guid
 
 ## [3.3.0-beta2] - 2015-08-23
 - Changed update repo and system
