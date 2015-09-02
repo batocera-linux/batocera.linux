@@ -3,6 +3,9 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased][unreleased]
+- Added FC30 support
+
+## [3.3.0-beta3] - 2015-08-29
 - Added xiaomi bluetooth controller config
 - Added default videomode that doesn't change the resolution while launching games
 - Added 16/10 support and 16/10 is set as default for wswan
