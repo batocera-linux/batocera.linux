@@ -1,0 +1,16 @@
+config BR2_PACKAGE_MOONLIGHT_EMBEDDED
+    bool "moonlight-embedded"
+    depends on BR2_PACKAGE_OPUS
+    depends on BR2_PACKAGE_EXPAT
+    depends on BR2_PACKAGE_LIBEVDEV
+    depends on BR2_PACKAGE_AVAHI
+    depends on BR2_PACKAGE_ALSA_LIB
+    depends on BR2_PACKAGE_HAS_UDEV
+    depends on BR2_PACKAGE_LIBCURL
+    depends on BR2_PACKAGE_LIBCEC
+    depends on BR2_PACKAGE_FFMPEG
+    depends on BR2_PACKAGE_SDL2
+    help
+		Gamestream client for embedded systems.
+
+		https://github.com/irtimmer/moonlight-embedded/wiki
