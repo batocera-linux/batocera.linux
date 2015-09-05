@@ -3,7 +3,10 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased][unreleased]
-- Added FC30 support
+- Corrected start kodi with X
+- Added NES30 Pro Support
+- Added SFC30 Support
+- Ignore cheats for updates
 
 ## [3.3.0-beta3] - 2015-08-29
 - Added xiaomi bluetooth controller config
