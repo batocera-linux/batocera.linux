@@ -136,10 +136,11 @@ global.inputdriver=auto
 ## If you do not want recalboxOS to generate the configuration for the emulator : 
 ;snes.configfile=/path/to/my/configfile.cfg
 
-
-## use pifba (recommended for rpi1), fbalibretro or imame
+## NeoGeo emulator 
+## You can use pifba or a libretro core (fba2x,libretro)
 neogeo.emulator=fba2x
-fba.emulator=fba2x
+## If you set libretro as neogeo.emulator, uncomment the line below and set the retroarch core (fba,imame4all)
+;neogeo.core=fba
 
 ## N64 core (n64,rice)
 ## The recommanded plugin is n64, but if your game don't start, try rice (example Zelda Ocarina of Time, Banjo Kazooie, ...)
@@ -149,4 +150,5 @@ n64.videomode=CEA 4 HDMI
 ## If you use rice core, set mode 480p as below
 ;n64.core=rice
 ;n64.videomode=CEA 3 HDMI
+
 
