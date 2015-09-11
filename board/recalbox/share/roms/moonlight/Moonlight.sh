@@ -3,7 +3,7 @@
 cd /recalbox/share/roms/moonlight/
 moonlight_dir=$PWD
 moonlight_mapping="$moonlight_dir/mapping.conf"
-moonlight_conf="/recalbox/share/system/moonlight.conf"
+moonlight_conf="$moonlight_dir/moonlight.conf"
 
 case $1 in
     map)
@@ -13,7 +13,7 @@ case $1 in
         cmd="moonlight pair -config ${moonlight_conf}" ;;
 
     *)
-        cmd="moonlight stream -config ${moonlight_conf} -mapping ${moonlight_mapping}" ;;
+        cmd="moonlight stream -mapping ${moonlight_mapping} -config ${moonlight_conf}" ;;
 
 esac
 
