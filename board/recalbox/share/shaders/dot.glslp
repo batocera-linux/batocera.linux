@@ -1,0 +1,18 @@
+shaders = 2
+shader0 = files/dot.glsl
+shader1 = files/gb-pass-1.glsl
+
+scale_type0 = viewport
+scale0 = 1
+
+scale_type1 = source
+scale1 = 1
+
+filter_linear0 = false
+filter_linear1 = false
+
+textures = COLOR_PALETTE;BACKGROUND
+COLOR_PALETTE = files/palette.png
+COLOR_PALETTE_linear = false
+BACKGROUND = files/background.png
+BACKGROUND_linear = true

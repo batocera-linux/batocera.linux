@@ -3,6 +3,10 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased][unreleased]
+- Added scanlines and retro shadersets
+- Added name based sdl2 driver switch
+
+## [3.3.0-beta4] - 2015-09-05
 - Corrected start kodi with X
 - Added NES30 Pro Support
 - Added SFC30 Support
