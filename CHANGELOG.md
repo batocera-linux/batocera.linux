@@ -7,6 +7,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Added name based sdl2 driver switch (8bitdo support)
 - Added cavestory support
 - Added mad and vorbis support in scummvm
+- Refactored ES recalbox.conf management
 
 ## [3.3.0-beta4] - 2015-09-05
 - Corrected start kodi with X
