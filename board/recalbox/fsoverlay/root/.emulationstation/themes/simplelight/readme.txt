@@ -4,6 +4,8 @@
 
 Changelog
 =========
+- 13-09-2015 (by recalbox community)
+  - Added Cave Story theme
 
 - 07-01-2015 (by recalbox community)
   - Changed backgrounds resolution to 480p for save vram and load all the systemes in Pi1 512ram
