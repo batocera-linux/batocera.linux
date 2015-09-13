@@ -4,7 +4,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased][unreleased]
 - Added scanlines and retro shadersets
-- Added name based sdl2 driver switch
+- Added name based sdl2 driver switch (8bitdo support)
+- Added cavestory support
+- Added mad and vorbis support in scummvm
 
 ## [3.3.0-beta4] - 2015-09-05
 - Corrected start kodi with X
