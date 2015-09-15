@@ -3,6 +3,13 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased][unreleased]
+
+## [3.3.0-beta6] - 2015-09-15
+- More 8bitdo support
+- Corrected retro shaderset for mastersystem
+- Corrected kodi autostart
+
+## [3.3.0-beta5] - 2015-09-13
 - Added scanlines and retro shadersets
 - Added name based sdl2 driver switch (8bitdo support)
 - Added cavestory support
