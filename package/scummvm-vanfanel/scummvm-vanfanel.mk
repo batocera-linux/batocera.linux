@@ -47,7 +47,7 @@ define SCUMMVM_VANFANEL_CONFIGURE_CMDS
 		OPENGL_CFLAGS="$(SCUMMVM_VANFANEL_ADDITIONAL_FLAGS)" \
 		OPENGL_LIBS="$(SCUMMVM_VANFANEL_ADDITIONAL_FLAGS)" \
                 ./configure \
-		--enable-gles-rpi --disable-debug --enable-release --enable-optimizations --disable-mt32emu --enable-flac --disable-mad --disable-vorbis --disable-tremor \
+		--enable-gles-rpi --disable-debug --enable-release --enable-optimizations --disable-mt32emu --enable-flac --enable-mad --enable-vorbis --disable-tremor \
 		--disable-fluidsynth --disable-taskbar --disable-timidity --disable-alsa \
                 --prefix=/usr --host=arm --with-sdl-prefix="$(STAGING_DIR)/usr/bin/" --enable-release --host=arm-linux-gnueabi \
         )	
