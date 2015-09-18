@@ -1,0 +1,18 @@
+config BR2_PACKAGE_MOONLIGHT_EMBEDDED
+    bool "moonlight-embedded"
+    select BR2_PACKAGE_OPUS
+    select BR2_PACKAGE_OPUS_FIXED_POINT
+    select BR2_PACKAGE_EXPAT
+    select BR2_PACKAGE_LIBEVDEV
+    select BR2_PACKAGE_AVAHI
+    select BR2_PACKAGE_AVAHI_DAEMON
+    select BR2_PACKAGE_ALSA_LIB
+    select BR2_PACKAGE_HAS_UDEV
+    select BR2_PACKAGE_LIBCURL
+    select BR2_PACKAGE_LIBCEC
+    select BR2_PACKAGE_FFMPEG
+    select BR2_PACKAGE_SDL2
+    help
+		Gamestream client for embedded systems.
+
+		https://github.com/irtimmer/moonlight-embedded/wiki
