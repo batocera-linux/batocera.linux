@@ -3,11 +3,14 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased][unreleased]
+
+## [3.3.0-beta7] - 2015-09-20
 - Updated themes + added moonlight themes
 - Updated .dat and infos about fba_libretro romset
 - Updated recalbox.conf with list of cores not supporting rewind
 - Added system.es.menu option
 - Added Moonlight
+- Added kodi webserver on port 8081
 
 ## [3.3.0-beta6] - 2015-09-15
 - More 8bitdo support
