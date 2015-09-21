@@ -290,6 +290,8 @@ if [[ "$command" == "wifi" ]]; then
         fi
 fi
 if [[ "$command" == "hcitoolscan" ]]; then
+	killall hidd >> /dev/null
+	killall hcitool >> /dev/null
 	hcitool scan | tail -n +2
 	exit 0
 fi

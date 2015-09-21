@@ -11,6 +11,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Added system.es.menu option
 - Added Moonlight
 - Added kodi webserver on port 8081
+- Added auto-connection for bluetooth controllers
 
 ## [3.3.0-beta6] - 2015-09-15
 - More 8bitdo support

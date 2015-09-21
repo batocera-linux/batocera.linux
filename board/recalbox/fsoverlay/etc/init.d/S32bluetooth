@@ -1,0 +1,29 @@
+#!/bin/sh
+#
+# Auto connect bluetooth controllers
+#
+
+systemsetting="python /usr/lib/python2.7/site-packages/configgen/settings/recalboxSettings.pyc"
+
+case "$1" in
+  start)
+        enabled="`$systemsetting  -command load -key controllers.bluetooth.enabled`"
+        if [ "$enabled" == "1" ];then
+                /recalbox/scripts/bluetoothcontrollers.sh &
+        fi
+        ;;
+  stop)
+	killall bluetoothd
+	;;
+  restart|reload)
+        "$0" stop
+        "$0" start
+	;;
+  *)
+	echo "Usage: $0 {start|stop|restart}"
+	exit 1
+esac
+
+exit $?
+
+
