@@ -1,6 +1,6 @@
 config BR2_PACKAGE_VIRTUALGAMEPADS
         bool "virtual-gamepads"
-	depends on BR2_BR2_PACKAGE_NODEJS_0_12_X
+	depends on BR2_BR2_PACKAGE_NODEJS_4_1_X 
         help
           Miroof's node virtual gamepads project
 
