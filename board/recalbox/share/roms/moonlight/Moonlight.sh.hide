@@ -5,6 +5,7 @@ moonlight_dir=$PWD
 moonlight_mapping="$moonlight_dir/mapping.conf"
 moonlight_conf="$moonlight_dir/moonlight.conf"
 moonlight_keydir="$moonlight_dir/keydir"
+moonlight_log="$moonlight_dir/moonlight.log"
 
 mkdir -p $moonlight_keydir;
 
@@ -16,7 +17,7 @@ case $1 in
         cmd="moonlight pair -keydir ${moonlight_keydir} -config ${moonlight_conf}" ;;
 
     *)
-        cmd="moonlight stream -keydir ${moonlight_keydir} -mapping ${moonlight_mapping} -config ${moonlight_conf}" ;;
+        cmd="moonlight stream -keydir ${moonlight_keydir} -mapping ${moonlight_mapping} -config ${moonlight_conf} > ${moonlight_log}" ;;
 
 esac
 
