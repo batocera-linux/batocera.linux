@@ -12,7 +12,7 @@ NPM = $(TARGET_CONFIGURE_OPTS) \
 	npm_config_arch=arm \
 	npm_config_target_arch=arm \
 	npm_config_build_from_source=true \
-	npm_config_nodedir=$(BUILD_DIR)/nodejs-4.1.1 \
+	npm_config_nodedir=$(BUILD_DIR)/nodejs-0.12.7 \
 	$(HOST_DIR)/usr/bin/npm
 
 
