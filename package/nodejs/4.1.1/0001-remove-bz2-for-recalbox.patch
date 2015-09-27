@@ -1,0 +1,25 @@
+From 1055724ad6cc070766d45f45c646b61fda927768 Mon Sep 17 00:00:00 2001
+From: MikaXII <mikael.joubert@supinfo.com>
+Date: Fri, 25 Sep 2015 11:07:41 +0200
+Subject: [PATCH 1/1] remove bz2 for recalbox
+
+Signed-off-by: MikaXII <mikael.joubert@supinfo.com>
+---
+ deps/v8/tools/js2c.py | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/deps/v8/tools/js2c.py b/deps/v8/tools/js2c.py
+index b5436f9..d9b4503 100755
+--- a/deps/v8/tools/js2c.py
++++ b/deps/v8/tools/js2c.py
+@@ -34,7 +34,6 @@
+ import os, re, sys, string
+ import optparse
+ import jsmin
+-import bz2
+ import textwrap
+ 
+ 
+-- 
+2.5.3
+
