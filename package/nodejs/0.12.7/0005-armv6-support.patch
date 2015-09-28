@@ -1,0 +1,18 @@
+--- a/deps/v8/src/base/cpu.cc	2015-07-10 00:41:19.000000000 +0200
++++ b/deps/v8/src/base/cpu.cc	2015-09-24 19:15:39.606310126 +0200
+@@ -377,6 +377,15 @@
+       }
+       delete[] processor;
+     }
++
++    // elf_platform moved to the model name field in Linux v3.8.
++    if (architecture_ == 7) {
++      char* processor = cpu_info.ExtractField("model name");
++      if (HasListItem(processor, "(v6l)")) {
++        architecture_ = 6;
++      }
++      delete[] processor;
++    }
+   }
+ 
+   // Try to extract the list of CPU features from ELF hwcaps.
