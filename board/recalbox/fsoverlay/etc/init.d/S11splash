@@ -1,0 +1,21 @@
+#!/bin/bash
+systemsetting="python /usr/lib/python2.7/site-packages/configgen/settings/recalboxSettings.pyc"
+
+case "$1" in
+  start)
+	settingsSplash="`$systemsetting -command load -key system.splash.enable`"
+        if [ "$settingsSplash" == "1" ];then
+	        fbv -f -i /root/.splash/logo-loading.png &
+		sleep 1
+		killall fbv	
+	fi
+	;;
+  stop)
+	;;
+  restart|reload)
+	;;
+  *)
+esac
+
+exit $?
+

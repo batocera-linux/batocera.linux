@@ -1,0 +1,14 @@
+#!/bin/bash
+case "$1" in
+  start)
+	;;
+  stop)
+	/recalbox/scripts/splash.sh shutdown &
+	;;
+  restart|reload)
+	;;
+  *)
+esac
+
+exit $?
+
