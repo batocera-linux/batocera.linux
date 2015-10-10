@@ -4,6 +4,15 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased][unreleased]
 
+## [3.3.0-beta9] - 2015-10-XX
+- Fixed Moonlight theme for zoid
+- Added splashscreen
+- Added mplayer and jscal 
+
+## [3.3.0-beta8] - 2015-10-06
+- Removed avahi daemon
+- Fixed Moonlight theme
+
 ## [3.3.0-beta7] - 2015-09-20
 - Updated themes + added moonlight themes
 - Updated .dat and infos about fba_libretro romset
