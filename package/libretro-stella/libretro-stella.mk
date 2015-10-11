@@ -3,7 +3,7 @@
 # STELLA
 #
 ################################################################################
-LIBRETRO_STELLA_VERSION = c62071062a6ff91e0ba0952f5f3663e125630dc0
+LIBRETRO_STELLA_VERSION = 06aab9a8a7ef74ba4166043331ee5671dad5bd08
 LIBRETRO_STELLA_SITE = $(call github,libretro,stella-libretro,$(LIBRETRO_STELLA_VERSION))
 
 define LIBRETRO_STELLA_BUILD_CMDS
