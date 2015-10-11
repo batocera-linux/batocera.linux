@@ -6,8 +6,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [3.3.0-beta9] - 2015-10-XX
 - Fixed Moonlight theme for zoid
-- Added splashscreen
+- Added splashscreen for long reboots
 - Added mplayer and jscal 
+- Updated atari 2600 stella core for 2 players support
+- Updated fba libretro for R3 diag menu
+- Added xbox 360 official wireless dongle support OOTB
+- Added gles2rice plugin for n64
 
 ## [3.3.0-beta8] - 2015-10-06
 - Removed avahi daemon
