@@ -5,7 +5,7 @@ PIDFILE=/var/run/recalbox-manager.pid
 
 . /lib/lsb/init-functions
 
-NAME=root
+NAME="S94manager"
 RUN_AS=`id -u root`
 CMD=/usr/recalbox-manager/start.sh
 OPTS=
@@ -33,7 +33,7 @@ restart)
     do_start
     ;;
 *)
-    log_action_msg "Usage: /etc/init.d/rhodecode {start|stop|restart}"
+    log_action_msg "Usage: /etc/init.d/S94Manager {start|stop|restart}"
     exit 2
     ;;
 esac
