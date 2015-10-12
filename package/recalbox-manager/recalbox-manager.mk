@@ -7,9 +7,9 @@ RECALBOX_MANAGER_VERSION = 1.0.0 #0.8.4 #0.9.0 #6103f9bcee424294cc538c8efa84d90e
 RECALBOX_MANAGER_SITE = $(call github,sveetch,recalbox-manager,$(RECALBOX_MANAGER_VERSION))
 RECALBOX_MANAGER_DEPENDENCIES = python python-psutil python-django python-autobreadcrumbs
 
-define RECALBOX_MANAGER_BUILD_CMDS
-    $(MAKE) CC="$(TARGET_CC)" LD="$(TARGET_LD)" -C $(@D) install
-endef
+#define RECALBOX_MANAGER_BUILD_CMDS
+#    $(MAKE) CC="$(TARGET_CC)" LD="$(TARGET_LD)" -C $(@D) install
+#endef
 
 define RECALBOX_MANAGER_INSTALL_TARGET_CMDS
 	mkdir -p $(TARGET_DIR)/usr/recalbox-manager
