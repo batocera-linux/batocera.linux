@@ -2,16 +2,16 @@
 # Start/stop recalbox-manager
 
 PIDFILE=/var/run/recalbox-manager.pid
-
-. /lib/lsb/init-functions
+SITEPATH=/usr/recalbox-manager
+. $SITEPATH/bin/activate
 
 NAME="S94manager"
 RUN_AS=`id -u root`
-CMD=/usr/recalbox-manager/start.sh
-OPTS=
+CMD=/usr/recalbox-manager/manage.py
+OPTS=runserver 0.0.0.0:80 
 
 do_start() {
-    start-stop-daemon --start --background --user $RUN_AS --pidfile $PIDFILE --chuid $RUN_AS --startas $CMD -- $OPTS
+    start-stop-daemon --start --background --user $RUN_AS --pidfile $PIDFILE --chuid $RUN_AS --startas $CMD $OPTS
 }
 
 do_stop() {
