@@ -8,7 +8,7 @@ SITEPATH=/usr/recalbox-manager
 NAME="S94manager"
 RUN_AS=`id -u root`
 CMD=/usr/recalbox-manager/manage.py
-OPTS=runserver 0.0.0.0:80 
+OPTS="runserver 0.0.0.0:80" 
 
 do_start() {
     start-stop-daemon --start --background --user $RUN_AS --pidfile $PIDFILE --chuid $RUN_AS --startas $CMD $OPTS
@@ -20,20 +20,20 @@ do_stop() {
 
 case "$1" in
 start)
-    log_action_msg "Starting $NAME"
+    echo "Starting $NAME"
     do_start
         ;;
 stop)
-    log_action_msg "Stopping $NAME"
+    echo "Stopping $NAME"
     do_stop
     ;;
 restart)
-    log_action_msg "Restarting $NAME"
+    echo "Restarting $NAME"
     do_stop
     do_start
     ;;
 *)
-    log_action_msg "Usage: /etc/init.d/S94Manager {start|stop|restart}"
+    echo "Usage: /etc/init.d/S94Manager {start|stop|restart}"
     exit 2
     ;;
 esac
