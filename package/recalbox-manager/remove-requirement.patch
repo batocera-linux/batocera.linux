@@ -1,0 +1,14 @@
+--- a/Makefile	2015-10-12 21:37:55.126792108 +0200
++++ b/Makefile	2015-10-12 21:38:51.450127405 +0200
+@@ -20,9 +20,7 @@
+ 	rm -Rf bin include lib local node_modules compass/.sass-cache
+ 
+ install:
+-	virtualenv --no-site-packages .
+-	bin/pip install -r requirements.txt
+-	bin/python manage.py migrate
++	python manage.py migrate
+ 
+ install-dev: install
+ 	bundle install --gemfile=compass/Gemfile
+
