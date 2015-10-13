@@ -1,4 +1,7 @@
 config BR2_RECALBOX_MANAGER
 	bool "recalbox-manager"
+	depends on BR2_PACKAGE_PYTHON_DJANGO
+	depends on BR2_PACKAGE_PYTHON_PSUTIL
+	depends on BR2_PACKAGE_PYTHON_AUTOBREADCRUMBS
 	help
 	 https://github.com/sveetch/recalbox-manager
