@@ -14,6 +14,7 @@ RECALBOX_MANAGER_DEPENDENCIES = python python-psutil python-django python-autobr
 define RECALBOX_MANAGER_INSTALL_TARGET_CMDS
 	mkdir -p $(TARGET_DIR)/usr/recalbox-manager
 	cp -r $(@D)/* $(TARGET_DIR)/usr/recalbox-manager
+	$(TARGET_DIR)/bin/python $(TARGET_DIR)/usr/recalbox-manager/migrate.py
 	#$(INSTALL) -D $(@D)/* $(TARGET_DIR)/usr/recalbox-manager
 endef
 
