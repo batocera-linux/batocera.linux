@@ -4,6 +4,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased][unreleased]
 
+## [3.3.0-beta10] -
+- Added GLideN64 video plugin
+
 ## [3.3.0-beta9] - 2015-10-11
 - Fixed Moonlight theme for zoid
 - Added splashscreen for long reboots
