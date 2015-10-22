@@ -168,8 +168,11 @@ neogeo.emulator=fba2x
 ## If you set libretro as neogeo.emulator, uncomment the line below and set the retroarch core (fba,imame4all)
 ;neogeo.core=fba
 
-## N64 core (n64,rice)
-## The recommanded plugin is n64, but if your game is not compatible, try rice plugin (example Zelda Ocarina of Time, Banjo Kazooie, ...)
-n64.core=n64
+## N64 core (gliden64,n64,rice)
+## The recommanded plugin is gliden64, but if your game is not compatible, you can try n64 or rice plugins.
+n64.core=gliden64
+n64.videomode=DMT 9 HDMI
+## If you are using a CRT screen, please change the setting above with this one : 
+;n64.videomode=default
 
 

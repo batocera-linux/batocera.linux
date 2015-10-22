@@ -1,0 +1,12 @@
+config BR2_PACKAGE_MUPEN64PLUS_GLIDEN64
+        bool "mupen 64 plus GLideN64 plugin"
+	select BR2_INSTALL_LIBSTDCPP
+	select BR2_PACKAGE_SDL2
+	select BR2_PACKAGE_ALSA_LIB
+	select BR2_PACKAGE_RPI_USERLAND
+        help
+          mupen 64 plus GLideN64 plugin
+	  https://github.com/gonetz/GLideN64
+
+comment "MUPEN64PLUS GLIDEN64 needs a toolchain w/ C++, ALSA and SDL2"
+	depends on !BR2_INSTALL_LIBSTDCPP || !BR2_PACKAGE_SDL2 || !BR2_PACKAGE_ALSA_LIB
