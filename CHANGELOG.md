@@ -6,6 +6,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [3.3.0-beta10] -
 - Added GLideN64 video plugin
+- Added mame2003 libretro as default mame emulator
+- Added system.emulators.specialkeys to select the emulators special keys functions
 
 ## [3.3.0-beta9] - 2015-10-11
 - Fixed Moonlight theme for zoid
