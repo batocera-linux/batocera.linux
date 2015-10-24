@@ -1,9 +1,9 @@
 config BR2_PACKAGE_LIBRETRO_MAME2003
-        bool "libretro-MAME2003"
+        bool "libretro-mame2003"
 	depends on BR2_PACKAGE_RETROARCH
 	depends on BR2_INSTALL_LIBSTDCPP
         help
-          A libretro MAME2003 core for ARM.
+          A libretro mame2003 core for ARM.
 
 	  http://www.libretro.com
 
