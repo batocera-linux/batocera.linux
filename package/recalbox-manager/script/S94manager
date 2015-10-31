@@ -8,7 +8,8 @@ SITEPATH=/usr/recalbox-manager
 NAME="S94manager"
 RUN_AS=`id -u root`
 CMD=/usr/recalbox-manager/manage.py
-OPTS="runserver 0.0.0.0:80 --settings=project.settings_production --noreload" 
+#OPTS="runserver 0.0.0.0:80 --settings=project.settings_production --noreload" 
+OPTS="runserver 0.0.0.0:80" 
 
 do_start() {
     start-stop-daemon --start --background --user $RUN_AS --pidfile $PIDFILE --chuid $RUN_AS --startas $CMD $OPTS
