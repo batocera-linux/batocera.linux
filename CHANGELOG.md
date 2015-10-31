@@ -4,7 +4,15 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased][unreleased]
 
-## [3.3.0-beta10] -
+
+## [3.3.0-beta11] - 2015-10-31
+- Added EmulationStation shutdown screen
+- Corrected select to quit shortcut
+
+## [3.3.0-beta11] - 2015-10-31
+- Corrected shadersets bug
+
+## [3.3.0-beta10] - 2015-10-31
 - Added GLideN64 video plugin
 - Added mame2003 libretro as default mame emulator
 - Added system.emulators.specialkeys to select the emulators special keys functions
