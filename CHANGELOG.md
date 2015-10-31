@@ -5,7 +5,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased][unreleased]
 
 
-## [3.3.0-beta11] - 2015-10-31
+## [3.3.0-beta12] - 2015-10-31
 - Added EmulationStation shutdown screen
 - Corrected select to quit shortcut
 
