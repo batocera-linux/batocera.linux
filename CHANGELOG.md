@@ -10,6 +10,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Added system.emulators.specialkeys to select the emulators special keys functions
 - Updated snes9x core (fix the bomberman 5 freeze)
 - Added Saitek controllers support
+- Added select shortcut in menu for quick restart / shutdown
+- Added Basque language
 
 ## [3.3.0-beta9] - 2015-10-11
 - Fixed Moonlight theme for zoid
