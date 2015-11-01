@@ -13,9 +13,4 @@ define RECALBOX_MANAGER_INSTALL_TARGET_CMDS
 	cp package/recalbox-manager/bd/db.sqlite3 $(TARGET_DIR)/usr/recalbox-manager
 endef
 
-define RECALBOX_MANAGER_INSTALL_INIT_SYSV
-	$(INSTALL) -m 0755 -D package/recalbox-manager/script/S94manager $(TARGET_DIR)/etc/init.d/S94manager
-endef
-
-
 $(eval $(generic-package))
