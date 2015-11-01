@@ -4,6 +4,36 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased][unreleased]
 
+
+## [3.3.0-beta12] - 2015-10-31
+- Added EmulationStation shutdown screen
+- Corrected select to quit shortcut
+
+## [3.3.0-beta11] - 2015-10-31
+- Corrected shadersets bug
+
+## [3.3.0-beta10] - 2015-10-31
+- Added GLideN64 video plugin
+- Added mame2003 libretro as default mame emulator
+- Added system.emulators.specialkeys to select the emulators special keys functions
+- Updated snes9x core (fix the bomberman 5 freeze)
+- Added Saitek controllers support
+- Added select shortcut in menu for quick restart / shutdown
+- Added Basque language
+
+## [3.3.0-beta9] - 2015-10-11
+- Fixed Moonlight theme for zoid
+- Added splashscreen for long reboots
+- Added mplayer and jscal 
+- Updated atari 2600 stella core for 2 players support
+- Updated fba libretro for R3 diag menu
+- Added xbox 360 official wireless dongle support OOTB
+- Added fullscreen/ratio/widescreen hack settings for n64
+
+## [3.3.0-beta8] - 2015-10-06
+- Removed avahi daemon
+- Fixed Moonlight theme
+
 ## [3.3.0-beta7] - 2015-09-20
 - Updated themes + added moonlight themes
 - Updated .dat and infos about fba_libretro romset
