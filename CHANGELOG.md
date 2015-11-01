@@ -4,6 +4,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased][unreleased]
 
+## [3.3.0-beta14] - 2015-11-01
+- Corrected recalbox manager
+
 ## [3.3.0-beta13] - 2015-11-01
 - Added recalbox-manager
 - Added custom ratio support
