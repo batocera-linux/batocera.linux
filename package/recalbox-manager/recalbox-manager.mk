@@ -3,7 +3,7 @@
 # recalbox-manager
 #
 ################################################################################
-RECALBOX_MANAGER_VERSION = 1.0.0
+RECALBOX_MANAGER_VERSION = 1.1.0
 RECALBOX_MANAGER_SITE = $(call github,sveetch,recalbox-manager,$(RECALBOX_MANAGER_VERSION))
 RECALBOX_MANAGER_DEPENDENCIES = python python-psutil python-django python-autobreadcrumbs
 
@@ -14,7 +14,8 @@ RECALBOX_MANAGER_DEPENDENCIES = python python-psutil python-django python-autobr
 define RECALBOX_MANAGER_INSTALL_TARGET_CMDS
 	mkdir -p $(TARGET_DIR)/usr/recalbox-manager
 	cp -r $(@D)/* $(TARGET_DIR)/usr/recalbox-manager
-	
+	cp package/recalbox-manager/bd/db.sqlite3 $(TARGET_DIR)/usr/recalbox-manager
+
 	#NOT WORK
 	#$(TARGET_DIR)/usr/bin/python2.7 $(TARGET_DIR)/usr/recalbox-manager/manage.py migrate
 	#$(INSTALL) -D $(@D)/* $(TARGET_DIR)/usr/recalbox-manager

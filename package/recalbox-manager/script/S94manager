@@ -4,11 +4,13 @@
 PIDFILE=/var/run/recalbox-manager.pid
 SITEPATH=/usr/recalbox-manager
 #. $SITEPATH/bin/activate
-
+DJANGO_SETTINGS_MODULE=project.settings_production
+export $DJANGO_SETTINGS_MODULE
 NAME="S94manager"
 RUN_AS=`id -u root`
 CMD=/usr/recalbox-manager/manage.py
-OPTS="runserver 0.0.0.0:80 --noreload" 
+#OPTS="runserver 0.0.0.0:80 --settings=project.settings_production --noreload" 
+OPTS="runserver 0.0.0.0:80" 
 
 do_start() {
     start-stop-daemon --start --background --user $RUN_AS --pidfile $PIDFILE --chuid $RUN_AS --startas $CMD $OPTS
