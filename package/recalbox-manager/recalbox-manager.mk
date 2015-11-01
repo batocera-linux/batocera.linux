@@ -4,7 +4,7 @@
 #
 ################################################################################
 RECALBOX_MANAGER_VERSION = 1.1.0
-RECALBOX_MANAGER_SITE = $(call github,digitallumberjack,recalbox-manager,$(RECALBOX_MANAGER_VERSION))
+RECALBOX_MANAGER_SITE = $(call github,sveetch,recalbox-manager,$(RECALBOX_MANAGER_VERSION))
 RECALBOX_MANAGER_DEPENDENCIES = python python-psutil python-django python-autobreadcrumbs
 
 define RECALBOX_MANAGER_INSTALL_TARGET_CMDS
