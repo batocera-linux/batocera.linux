@@ -1,0 +1,9 @@
+config BR2_PACKAGE_RASPI2PNG
+        bool "raspi2png"
+	depends on BR2_PACKAGE_LIBPNG
+        help
+          A tool for taking screenshots
+	  https://github.com/AndrewFromMelbourne/raspi2png
+
+comment "RASPI2PNG needs libpng"
+	depends on !BR2_PACKAGE_LIBPNG
