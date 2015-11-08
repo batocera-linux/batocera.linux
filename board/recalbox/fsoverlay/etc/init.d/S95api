@@ -7,9 +7,11 @@ USER=root
 export PATH=/usr/bin:$PATH
 export PM2_HOME="/root/.pm2"
 
+log=/root/recalbox.log
+systemsetting="python /usr/lib/python2.7/site-packages/configgen/settings/recalboxSettings.pyc"
 
 start() {
-    echo "Starting $NAME"
+    echo "Starting $NAME" >> $log
     $PM2 resurrect
 }
 
@@ -20,25 +22,30 @@ stop() {
 }
 
 restart() {
-    echo "Restarting $NAME"
+    echo "Restarting $NAME" >> $log
     stop
     start
 }
 
 reload() {
-    echo "Reloading $NAME"
+    echo "Reloading $NAME" >> $log
     $PM2 reload all
 }
 
 status() {
-    echo "Status for $NAME:"
+    echo "Status for $NAME:" >> $log
     $PM2 list
     RETVAL=$?
 }
 
 case "$1" in
     start)
-        start
+   	enabled="`$systemsetting  -command load -key system.api.enabled`"
+    	if [ "$enabled" != "0" ];then
+        	start
+	else
+        	echo "Will not start $NAME : system.api.enabled is set to 0" >> $log
+    	fi
         ;;
     stop)
         stop
