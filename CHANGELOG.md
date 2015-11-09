@@ -3,8 +3,6 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased][unreleased]
-
-## [3.3.0-beta15] - 2015-11-xx
 - Add recalbox api
 
 ## [3.3.0-beta14] - 2015-11-01
