@@ -26,20 +26,13 @@ QT5BASE_CONFIGURE_OPTS += \
 	-no-iconv \
 	-system-zlib \
 	-system-pcre \
-	-no-pch
+	-no-pch \
+	-shared
 
 ifeq ($(BR2_ENABLE_DEBUG),y)
 QT5BASE_CONFIGURE_OPTS += -debug
 else
 QT5BASE_CONFIGURE_OPTS += -release
-endif
-
-ifeq ($(BR2_STATIC_LIBS),y)
-QT5BASE_CONFIGURE_OPTS += -static
-else
-# We apparently can't build both the shared and static variants of the
-# library.
-QT5BASE_CONFIGURE_OPTS += -shared
 endif
 
 QT5BASE_CONFIGURE_OPTS += -largefile
@@ -118,12 +111,13 @@ endif
 QT5BASE_DEFAULT_QPA = $(call qstrip,$(BR2_PACKAGE_QT5BASE_DEFAULT_QPA))
 QT5BASE_CONFIGURE_OPTS += $(if $(QT5BASE_DEFAULT_QPA),-qpa $(QT5BASE_DEFAULT_QPA))
 
-ifeq ($(BR2_PACKAGE_QT5BASE_EGLFS),y)
-QT5BASE_CONFIGURE_OPTS += -eglfs
-QT5BASE_DEPENDENCIES   += libegl
 ifeq ($(BR2_PACKAGE_IMX_GPU_VIV),y)
 QT5BASE_EXTRA_CFLAGS = -DENABLE_MX6_WORKAROUND
 endif
+
+ifeq ($(BR2_PACKAGE_QT5BASE_EGLFS),y)
+QT5BASE_CONFIGURE_OPTS += -eglfs
+QT5BASE_DEPENDENCIES   += libegl
 else
 QT5BASE_CONFIGURE_OPTS += -no-eglfs
 endif
@@ -153,8 +147,17 @@ QT5BASE_DEPENDENCIES   += $(if $(BR2_PACKAGE_QT5BASE_ICU),icu)
 
 QT5BASE_CONFIGURE_OPTS += $(if $(BR2_PACKAGE_QT5BASE_EXAMPLES),-make,-nomake) examples
 
+# gstreamer 0.10 support is broken in qt5multimedia
+ifeq ($(BR2_PACKAGE_GST1_PLUGINS_BASE),y)
+QT5BASE_CONFIGURE_OPTS += -gstreamer 1.0
+QT5BASE_DEPENDENCIES   += gst1-plugins-base
+else
+QT5BASE_CONFIGURE_OPTS += -no-gstreamer
+endif
+
 # Build the list of libraries to be installed on the target
 QT5BASE_INSTALL_LIBS_y                                 += Qt5Core
+QT5BASE_INSTALL_LIBS_$(BR2_PACKAGE_QT5BASE_XCB)        += Qt5XcbQpa
 QT5BASE_INSTALL_LIBS_$(BR2_PACKAGE_QT5BASE_NETWORK)    += Qt5Network
 QT5BASE_INSTALL_LIBS_$(BR2_PACKAGE_QT5BASE_CONCURRENT) += Qt5Concurrent
 QT5BASE_INSTALL_LIBS_$(BR2_PACKAGE_QT5BASE_SQL)        += Qt5Sql
@@ -178,6 +181,7 @@ endif
 define QT5BASE_CONFIGURE_CMDS
 	$(QT5BASE_CONFIGURE_CONFIG_FILE)
 	(cd $(@D); \
+		$(TARGET_MAKE_ENV) \
 		PKG_CONFIG="$(PKG_CONFIG_HOST_BINARY)" \
 		PKG_CONFIG_LIBDIR="$(STAGING_DIR)/usr/lib/pkgconfig" \
 		PKG_CONFIG_SYSROOT_DIR="$(STAGING_DIR)" \
@@ -194,7 +198,6 @@ define QT5BASE_CONFIGURE_CMDS
 		-nomake tests \
 		-device buildroot \
 		-device-option CROSS_COMPILE="$(TARGET_CROSS)" \
-		-device-option BR_CCACHE="$(CCACHE)" \
 		-device-option BR_COMPILER_CFLAGS="$(TARGET_CFLAGS) $(QT5BASE_EXTRA_CFLAGS)" \
 		-device-option BR_COMPILER_CXXFLAGS="$(TARGET_CXXFLAGS) $(QT5BASE_EXTRA_CFLAGS)" \
 		$(QT5BASE_CONFIGURE_OPTS) \
@@ -202,11 +205,11 @@ define QT5BASE_CONFIGURE_CMDS
 endef
 
 define QT5BASE_BUILD_CMDS
-	$(MAKE) -C $(@D)
+	$(TARGET_MAKE_ENV) $(MAKE) -C $(@D)
 endef
 
 define QT5BASE_INSTALL_STAGING_CMDS
-	$(MAKE) -C $(@D) install
+	$(TARGET_MAKE_ENV) $(MAKE) -C $(@D) install
 	$(QT5_LA_PRL_FILES_FIXUP)
 endef
 

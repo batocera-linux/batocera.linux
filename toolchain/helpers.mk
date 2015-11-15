@@ -79,9 +79,7 @@ copy_toolchain_lib_root = \
 			fi ; \
 			LIBPATH="`readlink -f $${LIBPATH}`"; \
 		done; \
-	done; \
-\
-	echo -n
+	done
 
 #
 # Copy the full external toolchain sysroot directory to the staging
@@ -150,7 +148,7 @@ copy_toolchain_sysroot = \
 		fi ; \
 		mkdir -p `dirname $(STAGING_DIR)/$${ARCH_SUBDIR}` ; \
 		relpath="./" ; \
-		nbslashs=`echo -n $${ARCH_SUBDIR} | sed 's%[^/]%%g' | wc -c` ; \
+		nbslashs=`printf $${ARCH_SUBDIR} | sed 's%[^/]%%g' | wc -c` ; \
 		for slash in `seq 1 $${nbslashs}` ; do \
 			relpath=$${relpath}"../" ; \
 		done ; \
@@ -172,6 +170,36 @@ copy_toolchain_sysroot = \
 check_kernel_headers_version = \
 	if ! support/scripts/check-kernel-headers.sh $(1) $(2); then \
 		exit 1; \
+	fi
+
+#
+# Check the specific gcc version actually matches the version in the
+# toolchain
+#
+# $1: path to gcc
+# $2: expected gcc version
+#
+# Some details about the sed expression:
+# - 1!d
+#   - delete if not line 1
+#
+# - s/^[^)]+\) ([^[:space:]]+).*/\1/
+#   - eat all until the first ')' character followed by a space
+#   - match as many non-space chars as possible
+#   - eat all the remaining chars on the line
+#   - replace by the matched expression
+#
+check_gcc_version = \
+	expected_version="$(strip $2)" ; \
+	if [ -z "$${expected_version}" ]; then \
+		printf "Internal error, gcc version unknown (no GCC_AT_LEAST_X_Y selected)\n"; \
+		exit 1 ; \
+	fi; \
+	real_version=`$(1) --version | sed -r -e '1!d; s/^[^)]+\) ([^[:space:]]+).*/\1/;'` ; \
+	if [[ ! "$${real_version}" =~ ^$${expected_version}\. ]] ; then \
+		printf "Incorrect selection of gcc version: expected %s.x, got %s\n" \
+			"$${expected_version}" "$${real_version}" ; \
+		exit 1 ; \
 	fi
 
 #

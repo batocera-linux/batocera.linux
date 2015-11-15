@@ -2,6 +2,7 @@ config BR2_PACKAGE_DIRECTFB
 	bool "directfb"
 	depends on BR2_TOOLCHAIN_HAS_THREADS
 	depends on BR2_INSTALL_LIBSTDCPP
+	depends on BR2_TOOLCHAIN_GCC_AT_LEAST_4_5
 	select BR2_PACKAGE_FREETYPE
 	select BR2_PACKAGE_ZLIB
 	help
@@ -44,13 +45,15 @@ config BR2_PACKAGE_DIRECTFB_TRACE
 	help
 	  Enable call tracing for DirectFB applications
 
-config BR2_PACKAGE_DIRECTFB_XSERVER
-	bool "build with X server backend"
-	depends on BR2_PACKAGE_XORG7
+config BR2_PACKAGE_DIRECTFB_DIVINE
+	bool "divine"
+	help
+	  Enable the DiVine feature (virtual input)
 
-config BR2_PACKAGE_DIRECTFB_UNIQUE
-	bool "enable unique window manager"
-	depends on BR2_UNIMPLEMENTED
+config BR2_PACKAGE_DIRECTFB_SAWMAN
+	bool "sawman"
+	help
+	  Enable the SawMan feature (window manager)
 
 config BR2_PACKAGE_DIRECTFB_ATI128
 	bool "compile ati128 graphics driver"
@@ -122,6 +125,10 @@ config BR2_PACKAGE_DIRECTFB_GIF
 	bool "enable GIF support"
 	default y
 
+config BR2_PACKAGE_DIRECTFB_TIFF
+	bool "enable TIFF support"
+	select BR2_PACKAGE_TIFF
+
 config BR2_PACKAGE_DIRECTFB_IMLIB2
 	bool "enable IMLIB2 support"
 	select BR2_PACKAGE_IMLIB2
@@ -157,5 +164,5 @@ config BR2_PACKAGE_DIRECTFB_TESTS
 
 endif # BR2_PACKAGE_DIRECTFB
 
-comment "directfb needs a toolchain w/ C++, threads"
-	depends on !BR2_TOOLCHAIN_HAS_THREADS || !BR2_INSTALL_LIBSTDCPP
+comment "directfb needs a toolchain w/ C++, threads, gcc >= 4.5"
+	depends on !BR2_TOOLCHAIN_HAS_THREADS || !BR2_INSTALL_LIBSTDCPP || !BR2_TOOLCHAIN_GCC_AT_LEAST_4_5

@@ -4,8 +4,8 @@
 #
 ################################################################################
 
-DIRECTFB_VERSION_MAJOR = 1.6
-DIRECTFB_VERSION = $(DIRECTFB_VERSION_MAJOR).3
+DIRECTFB_VERSION_MAJOR = 1.7
+DIRECTFB_VERSION = $(DIRECTFB_VERSION_MAJOR).7
 DIRECTFB_SITE = http://www.directfb.org/downloads/Core/DirectFB-$(DIRECTFB_VERSION_MAJOR)
 DIRECTFB_SOURCE = DirectFB-$(DIRECTFB_VERSION).tar.gz
 DIRECTFB_LICENSE = LGPLv2.1+
@@ -14,17 +14,16 @@ DIRECTFB_INSTALL_STAGING = YES
 DIRECTFB_AUTORECONF = YES
 
 DIRECTFB_CONF_OPTS = \
-	--disable-explicit-deps \
 	--enable-zlib \
 	--enable-freetype \
 	--enable-fbdev \
-	--disable-sysfs \
 	--disable-sdl \
 	--disable-vnc \
 	--disable-osx \
 	--disable-video4linux \
 	--disable-video4linux2 \
-	--without-tools
+	--without-tools \
+	--disable-x11
 
 ifeq ($(BR2_STATIC_LIBS),y)
 DIRECTFB_CONF_OPTS += --disable-dynload
@@ -35,8 +34,10 @@ DIRECTFB_CONFIG_SCRIPTS = directfb-config
 DIRECTFB_DEPENDENCIES = freetype zlib
 
 ifeq ($(BR2_PACKAGE_DIRECTFB_MULTI),y)
-DIRECTFB_CONF_OPTS += --enable-multi --enable-fusion
+DIRECTFB_CONF_OPTS += --enable-multi --enable-multi-kernel
 DIRECTFB_DEPENDENCIES += linux-fusion
+else
+DIRECTFB_CONF_OPTS += --disable-multi --disable-multi-kernel
 endif
 
 ifeq ($(BR2_PACKAGE_DIRECTFB_DEBUG_SUPPORT),y)
@@ -52,16 +53,16 @@ ifeq ($(BR2_PACKAGE_DIRECTFB_TRACE),y)
 DIRECTFB_CONF_OPTS += --enable-trace
 endif
 
-ifeq ($(BR2_PACKAGE_XSERVER),y)
-DIRECTFB_CONF_OPTS += --enable-x11
+ifeq ($(BR2_PACKAGE_DIRECTFB_DIVINE),y)
+DIRECTFB_CONF_OPTS += --enable-divine
 else
-DIRECTFB_CONF_OPTS += --disable-x11
+DIRECTFB_CONF_OPTS += --disable-divine
 endif
 
-ifeq ($(BR2_PACKAGE_DIRECTFB_UNIQUE),y)
-DIRECTFB_CONF_OPTS += --enable-unique
+ifeq ($(BR2_PACKAGE_DIRECTFB_SAWMAN),y)
+DIRECTFB_CONF_OPTS += --enable-sawman
 else
-DIRECTFB_CONF_OPTS += --disable-unique
+DIRECTFB_CONF_OPTS += --disable-sawman
 endif
 
 DIRECTFB_GFX = \
@@ -103,6 +104,13 @@ ifeq ($(BR2_PACKAGE_DIRECTFB_GIF),y)
 DIRECTFB_CONF_OPTS += --enable-gif
 else
 DIRECTFB_CONF_OPTS += --disable-gif
+endif
+
+ifeq ($(BR2_PACKAGE_DIRECTFB_TIFF),y)
+DIRECTFB_CONF_OPTS += --enable-tiff
+DIRECTFB_DEPENDENCIES += tiff
+else
+DIRECTFB_CONF_OPTS += --disable-tiff
 endif
 
 ifeq ($(BR2_PACKAGE_DIRECTFB_PNG),y)

@@ -20,13 +20,11 @@ HOST_BOOST_FLAGS = --without-icu \
 	iostreams locale log math mpi program_options python random regex \
 	serialization signals system test thread timer wave)
 
-# coroutine breaks on some weak toolchains and it's new for 1.54+
-BOOST_WITHOUT_FLAGS = coroutine
-
 BOOST_WITHOUT_FLAGS += $(if $(BR2_PACKAGE_BOOST_ATOMIC),,atomic)
 BOOST_WITHOUT_FLAGS += $(if $(BR2_PACKAGE_BOOST_CHRONO),,chrono)
 BOOST_WITHOUT_FLAGS += $(if $(BR2_PACKAGE_BOOST_CONTAINER),,container)
 BOOST_WITHOUT_FLAGS += $(if $(BR2_PACKAGE_BOOST_CONTEXT),,context)
+BOOST_WITHOUT_FLAGS += $(if $(BR2_PACKAGE_BOOST_COROUTINE),,coroutine)
 BOOST_WITHOUT_FLAGS += $(if $(BR2_PACKAGE_BOOST_DATE_TIME),,date_time)
 BOOST_WITHOUT_FLAGS += $(if $(BR2_PACKAGE_BOOST_EXCEPTION),,exception)
 BOOST_WITHOUT_FLAGS += $(if $(BR2_PACKAGE_BOOST_FILESYSTEM),,filesystem)
@@ -89,9 +87,19 @@ endif
 BOOST_OPTS += toolset=gcc \
 	     threading=multi \
 	     abi=$(BOOST_ABI) \
-	     variant=$(if $(BR2_ENABLE_DEBUG),debug,release) \
-	     link=$(if $(BR2_STATIC_LIBS),static,shared) \
-	     runtime-link=$(if $(BR2_STATIC_LIBS),static,shared)
+	     variant=$(if $(BR2_ENABLE_DEBUG),debug,release)
+
+ifeq ($(BR2_sparc64),y)
+BOOST_OPTS += architecture=sparc instruction-set=ultrasparc
+endif
+
+# By default, Boost build and installs both the shared and static
+# variants. Override that if we want static only or shared only.
+ifeq ($(BR2_STATIC_LIBS),y)
+BOOST_OPTS += link=static runtime-link=static
+else ifeq ($(BR2_SHARED_LIBS),y)
+BOOST_OPTS += link=shared runtime-link=shared
+endif
 
 ifeq ($(BR2_PACKAGE_BOOST_LOCALE),y)
 ifeq ($(BR2_TOOLCHAIN_USES_UCLIBC),y)
@@ -102,8 +110,8 @@ endif
 BOOST_DEPENDENCIES += $(if $(BR2_ENABLE_LOCALE),,libiconv)
 endif
 
-BOOST_WITHOUT_FLAGS_COMMASEPERATED += $(subst $(space),$(comma),$(strip $(BOOST_WITHOUT_FLAGS)))
-BOOST_FLAGS += $(if $(BOOST_WITHOUT_FLAGS_COMMASEPERATED), --without-libraries=$(BOOST_WITHOUT_FLAGS_COMMASEPERATED))
+BOOST_WITHOUT_FLAGS_COMMASEPARATED += $(subst $(space),$(comma),$(strip $(BOOST_WITHOUT_FLAGS)))
+BOOST_FLAGS += $(if $(BOOST_WITHOUT_FLAGS_COMMASEPARATED), --without-libraries=$(BOOST_WITHOUT_FLAGS_COMMASEPARATED))
 BOOST_LAYOUT = $(call qstrip, $(BR2_PACKAGE_BOOST_LAYOUT))
 
 define BOOST_CONFIGURE_CMDS

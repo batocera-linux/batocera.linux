@@ -41,7 +41,7 @@ else # umask
 all:
 
 # Set and export the version string
-export BR2_VERSION := 2015.08-git
+export BR2_VERSION := 2015.11-rc1
 
 # Save running make version since it's clobbered by the make package
 RUNNING_MAKE_VERSION := $(MAKE_VERSION)
@@ -183,7 +183,9 @@ endif
 ifneq ($(BR2_DL_DIR),)
 DL_DIR := $(BR2_DL_DIR)
 endif
-
+ifneq ($(BR2_CCACHE_DIR),)
+BR_CACHE_DIR := $(BR2_CCACHE_DIR)
+endif
 
 # Need that early, before we scan packages
 # Avoids doing the $(or...) everytime
@@ -226,14 +228,12 @@ ifndef KBUILD_VERBOSE
 endif
 
 ifeq ($(KBUILD_VERBOSE),1)
-  quiet =
   Q =
 ifndef VERBOSE
   VERBOSE = 1
 endif
 export VERBOSE
 else
-  quiet = quiet_
   Q = @
 endif
 
@@ -245,7 +245,7 @@ SHELL := $(shell if [ -x "$$BASH" ]; then echo $$BASH; \
 # kconfig uses CONFIG_SHELL
 CONFIG_SHELL := $(SHELL)
 
-export SHELL CONFIG_SHELL quiet Q KBUILD_VERBOSE
+export SHELL CONFIG_SHELL Q KBUILD_VERBOSE
 
 ifndef HOSTAR
 HOSTAR := ar
@@ -329,10 +329,12 @@ unexport CONFIG_SITE
 unexport QMAKESPEC
 unexport TERMINFO
 unexport MACHINE
+unexport O
 
 GNU_HOST_NAME := $(shell support/gnuconfig/config.guess)
 
 PACKAGES :=
+PACKAGES_ALL :=
 
 # silent mode requested?
 QUIET := $(if $(findstring s,$(filter-out --%,$(MAKEFLAGS))),-q)
@@ -370,10 +372,12 @@ TARGET_DIR_WARNING_FILE = $(TARGET_DIR)/THIS_IS_NOT_YOUR_ROOT_FILESYSTEM
 
 ifeq ($(BR2_CCACHE),y)
 CCACHE := $(HOST_DIR)/usr/bin/ccache
-BR_CACHE_DIR = $(call qstrip,$(BR2_CCACHE_DIR))
+BR_CACHE_DIR ?= $(call qstrip,$(BR2_CCACHE_DIR))
 export BR_CACHE_DIR
 HOSTCC := $(CCACHE) $(HOSTCC)
 HOSTCXX := $(CCACHE) $(HOSTCXX)
+else
+export BR_NO_CCACHE
 endif
 
 # Scripts in support/ or post-build scripts may need to reference
@@ -562,8 +566,8 @@ target-finalize: $(PACKAGES)
 		$(TARGET_DIR)/usr/lib/pkgconfig $(TARGET_DIR)/usr/share/pkgconfig \
 		$(TARGET_DIR)/usr/lib/cmake $(TARGET_DIR)/usr/share/cmake
 	find $(TARGET_DIR)/usr/{lib,share}/ -name '*.cmake' -print0 | xargs -0 rm -f
-	find $(TARGET_DIR)/lib \( -name '*.a' -o -name '*.la' \) -print0 | xargs -0 rm -f
-	find $(TARGET_DIR)/usr/lib \( -name '*.a' -o -name '*.la' \) -print0 | xargs -0 rm -f
+	find $(TARGET_DIR)/lib $(TARGET_DIR)/usr/lib $(TARGET_DIR)/usr/libexec \
+		\( -name '*.a' -o -name '*.la' \) -print0 | xargs -0 rm -f
 ifneq ($(BR2_PACKAGE_GDB),y)
 	rm -rf $(TARGET_DIR)/usr/share/gdb
 endif
@@ -646,7 +650,6 @@ legal-info-prepare: $(LEGAL_INFO_DIR)
 	@$(call legal-manifest,PACKAGE,VERSION,LICENSE,LICENSE FILES,SOURCE ARCHIVE,SOURCE SITE,HOST)
 	@$(call legal-manifest,buildroot,$(BR2_VERSION_FULL),GPLv2+,COPYING,not saved,not saved,HOST)
 	@$(call legal-warning,the Buildroot source code has not been saved)
-	@$(call legal-warning,the toolchain has not been saved)
 	@cp $(BR2_CONFIG) $(LEGAL_INFO_DIR)/buildroot.config
 
 legal-info: dirs legal-info-clean legal-info-prepare $(foreach p,$(PACKAGES),$(p)-all-legal-info) \
@@ -683,6 +686,13 @@ graph-depends: graph-depends-requirements
 	$(TOPDIR)/support/scripts/graph-depends $(BR2_GRAPH_DEPS_OPTS) \
 	|tee $(GRAPHS_DIR)/$(@).dot \
 	|dot $(BR2_GRAPH_DOT_OPTS) -T$(BR_GRAPH_OUT) -o $(GRAPHS_DIR)/$(@).$(BR_GRAPH_OUT)
+
+graph-size:
+	$(Q)mkdir -p $(GRAPHS_DIR)
+	$(Q)$(TOPDIR)/support/scripts/size-stats --builddir $(BASE_DIR) \
+		--graph $(GRAPHS_DIR)/graph-size.$(BR_GRAPH_OUT) \
+		--file-size-csv $(GRAPHS_DIR)/file-size-stats.csv \
+		--package-size-csv $(GRAPHS_DIR)/package-size-stats.csv
 
 else # ifeq ($(BR2_HAVE_DOT_CONFIG),y)
 
@@ -834,7 +844,7 @@ ifeq ($(O),output)
 	rm -rf $(O)
 endif
 	rm -rf $(BR2_CONFIG) $(CONFIG_DIR)/.config.old $(CONFIG_DIR)/..config.tmp \
-		$(CONFIG_DIR)/.auto.deps
+		$(CONFIG_DIR)/.auto.deps $(BR2_EXTERNAL_FILE)
 
 help:
 	@echo 'Cleaning:'
@@ -875,7 +885,6 @@ help:
 	@echo '  <pkg>-dirclean         - Remove <pkg> build directory'
 	@echo '  <pkg>-reconfigure      - Restart the build from the configure step'
 	@echo '  <pkg>-rebuild          - Restart the build from the build step'
-	@echo '  <pkg>-legal-info       - Generate license information for <pkg>'
 ifeq ($(BR2_PACKAGE_BUSYBOX),y)
 	@echo '  busybox-menuconfig     - Run BusyBox menuconfig'
 endif
@@ -902,6 +911,7 @@ endif
 	@echo '  manual-epub            - build manual in ePub'
 	@echo '  graph-build            - generate graphs of the build times'
 	@echo '  graph-depends          - generate graph of the dependency tree'
+	@echo '  graph-size             - generate stats of the filesystem size'
 	@echo '  list-defconfigs        - list all defconfigs (pre-configured minimal systems)'
 	@echo
 	@echo 'Miscellaneous:'

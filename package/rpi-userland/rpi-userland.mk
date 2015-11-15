@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-RPI_USERLAND_VERSION = b834074d0c0d9d7e64c133ab14ed691999cee990
+RPI_USERLAND_VERSION = b864a841e5a459a66a890c22b3a34127cd226238
 RPI_USERLAND_SITE = $(call github,raspberrypi,userland,$(RPI_USERLAND_VERSION))
 RPI_USERLAND_LICENSE = BSD-3c
 RPI_USERLAND_LICENSE_FILES = LICENCE
@@ -27,6 +27,30 @@ define RPI_USERLAND_INSTALL_INIT_SYSTEMD
 		$(TARGET_DIR)/etc/systemd/system/multi-user.target.wants/vcfiled.service
 endef
 endif
+
+ifeq ($(BR2_PACKAGE_RPI_USERLAND_HELLO),y)
+
+RPI_USERLAND_CONF_OPTS += -DALL_APPS=ON
+
+define RPI_USERLAND_EXTRA_LIBS_TARGET
+	$(INSTALL) -m 0644 -D \
+		$(@D)/build/lib/libilclient.so \
+		$(TARGET_DIR)/usr/lib/libilcient.so
+endef
+RPI_USERLAND_POST_INSTALL_TARGET_HOOKS += RPI_USERLAND_EXTRA_LIBS_TARGET
+
+define RPI_USERLAND_EXTRA_LIBS_STAGING
+	$(INSTALL) -m 0644 -D \
+		$(@D)/build/lib/libilclient.so \
+		$(STAGING_DIR)/usr/lib/libilcient.so
+endef
+RPI_USERLAND_POST_INSTALL_STAGING_HOOKS += RPI_USERLAND_EXTRA_LIBS_STAGING
+
+else
+
+RPI_USERLAND_CONF_OPTS += -DALL_APPS=OFF
+
+endif # BR2_PACKAGE_RPI_USERLAND_HELLO
 
 define RPI_USERLAND_POST_TARGET_CLEANUP
 	rm -f $(TARGET_DIR)/etc/init.d/vcfiled

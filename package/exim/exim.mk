@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-EXIM_VERSION = 4.85
+EXIM_VERSION = 4.86
 EXIM_SOURCE = exim-$(EXIM_VERSION).tar.bz2
 EXIM_SITE = ftp://ftp.exim.org/pub/exim/exim4
 EXIM_LICENSE = GPLv2+
@@ -80,6 +80,15 @@ define EXIM_REMOVE_LIBNSL_FROM_MAKEFILE
 endef
 endif
 
+# musl does not provide struct ip_options nor struct ip_opts (but it is
+# available with both glibc and uClibc)
+ifeq ($(BR2_TOOLCHAIN_USES_MUSL),y)
+define EXIM_FIX_IP_OPTIONS_FOR_MUSL
+	$(SED) 's/#define GLIBC_IP_OPTIONS/#define DARWIN_IP_OPTIONS/' \
+		$(@D)/OS/os.h-Linux
+endef
+endif
+
 define EXIM_CONFIGURE_TOOLCHAIN
 	$(call exim-config-add,CC,$(TARGET_CC))
 	$(call exim-config-add,CFLAGS,$(TARGET_CFLAGS))
@@ -88,6 +97,7 @@ define EXIM_CONFIGURE_TOOLCHAIN
 	$(call exim-config-add,HOSTCC,$(HOSTCC))
 	$(call exim-config-add,HOSTCFLAGS,$(HOSTCFLAGS))
 	$(EXIM_REMOVE_LIBNSL_FROM_MAKEFILE)
+	$(EXIM_FIX_IP_OPTIONS_FOR_MUSL)
 endef
 
 ifneq ($(call qstrip,$(BR2_PACKAGE_EXIM_CUSTOM_CONFIG_FILE)),)

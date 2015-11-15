@@ -12,6 +12,10 @@ E2FSPROGS_LICENSE_FILES = COPYING lib/uuid/COPYING lib/ss/mit-sipb-copyright.h l
 E2FSPROGS_INSTALL_STAGING = YES
 E2FSPROGS_INSTALL_STAGING_OPTS = DESTDIR=$(STAGING_DIR) install-libs
 
+# e4defrag doesn't build on older systems like RHEL5.x, and we don't
+# need it on the host anyway.
+HOST_E2FSPROGS_CONF_OPTS += --disable-defrag
+
 E2FSPROGS_CONF_OPTS = \
 	$(if $(BR2_STATIC_LIBS),,--enable-elf-shlibs) \
 	$(if $(BR2_PACKAGE_E2FSPROGS_DEBUGFS),,--disable-debugfs) \
@@ -102,9 +106,16 @@ ifeq ($(BR2_PACKAGE_E2FSPROGS_E2FSCK),y)
 E2FSPROGS_POST_INSTALL_TARGET_HOOKS += E2FSPROGS_TARGET_E2FSCK_SYMLINKS
 endif
 
-# Remove busybox tune2fs and e2label, since we want the e2fsprogs full
-# blown variants to take precedence, but they are not installed in the
-# same location.
+# If BusyBox is included, its configuration may supply its own variant
+# of ext2-related tools. Since Buildroot desires having full blown
+# variants take precedence (in this case, e2fsprogs), we want to remove
+# BusyBox's variant of e2fsprogs provided binaries. e2fsprogs targets
+# /usr/{bin,sbin} where BusyBox targets /{bin,sbin}. We will attempt to
+# remove BusyBox-generated ext2-related tools from /{bin,sbin}. We need
+# to do this in the pre-install stage to ensure we do not accidentally
+# remove e2fsprogs's binaries in usr-merged environments (ie. if they
+# are removed, they would be re-installed in this package's install
+# stage).
 ifeq ($(BR2_PACKAGE_BUSYBOX),y)
 E2FSPROGS_DEPENDENCIES += busybox
 
@@ -115,7 +126,7 @@ define E2FSPROGS_REMOVE_BUSYBOX_APPLETS
 	$(RM) -f $(TARGET_DIR)/sbin/tune2fs
 	$(RM) -f $(TARGET_DIR)/sbin/e2label
 endef
-E2FSPROGS_POST_INSTALL_TARGET_HOOKS += E2FSPROGS_REMOVE_BUSYBOX_APPLETS
+E2FSPROGS_PRE_INSTALL_TARGET_HOOKS += E2FSPROGS_REMOVE_BUSYBOX_APPLETS
 endif
 
 define E2FSPROGS_TARGET_TUNE2FS_SYMLINK

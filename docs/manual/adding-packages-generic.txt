@@ -227,7 +227,9 @@ information is (assuming the package name is +libfoo+) :
 
 * +LIBFOO_SITE+ provides the location of the package, which can be a
   URL or a local filesystem path. HTTP, FTP and SCP are supported URL
-  types for retrieving package tarballs. Git, Subversion, Mercurial,
+  types for retrieving package tarballs. In these cases don't include a
+  trailing slash: it will be added by Buildroot between the directory
+  and the filename as appropriate. Git, Subversion, Mercurial,
   and Bazaar are supported URL types for retrieving packages directly
   from source code management systems. There is a helper function to make
   it easier to download source tarballs from GitHub (refer to
@@ -246,7 +248,7 @@ information is (assuming the package name is +libfoo+) :
     +LIBFOO_SITE=http://www.libfoosoftware.org/libfoo+ +
     +LIBFOO_SITE=http://svn.xiph.org/trunk/Tremor+ +
     +LIBFOO_SITE=/opt/software/libfoo.tar.gz+ +
-    +LIBFOO_SITE=$(TOPDIR)/../src/libfoo/+
+    +LIBFOO_SITE=$(TOPDIR)/../src/libfoo+
 
 * +LIBFOO_EXTRA_DOWNLOADS+ is a space-separated list of additional
   files that Buildroot should download. If an entry contains +://+
@@ -311,6 +313,10 @@ information is (assuming the package name is +libfoo+) :
   For non-standard packages that don't have this component, or
   that have more than one leading component to strip, set this
   variable with the value to be passed to tar. Default: 1.
+
+* +LIBFOO_EXCLUDES+ is a space-separated list of patterns to exclude
+  when extracting the archive. Each item from that list is passed as
+  a tar's +--exclude+ option. By default, empty.
 
 * +LIBFOO_DEPENDENCIES+ lists the dependencies (in terms of package
   name) that are required for the current target package to
@@ -385,6 +391,25 @@ information is (assuming the package name is +libfoo+) :
   This variable is optional. If it is not defined, a warning will be produced
   to let you know, and +not saved+ will appear in the +license files+ field
   of the manifest file for this package.
+
+* +LIBFOO_ACTUAL_SOURCE_TARBALL+ only applies to packages whose
+  +LIBFOO_SITE+ / +LIBTOO_SOURCE+ pair points to an archive that does
+  not actually contain source code, but binary code. This a very
+  uncommon case, only known to apply to external toolchains which come
+  already compiled, although theoretically it might apply to other
+  packages. In such cases a separate tarball is usually available with
+  the actual source code. Set +LIBFOO_ACTUAL_SOURCE_TARBALL+ to the
+  name of the actual source code archive and Buildroot will download
+  it and use it when you run +make legal-info+ to collect
+  legally-relevant material.  Note this file will not be downloaded
+  during regular builds nor by +make source+.
+
+* +LIBFOO_ACTUAL_SOURCE_SITE+ provides the location of the actual
+  source tarball. The default value is +LIBFOO_SITE+, so you don't
+  need to set this variable if the binary and source archives are
+  hosted on the same directory.  If +LIBFOO_ACTUAL_SOURCE_TARBALL+ is
+  not set, it doesn't make sense to define
+  +LIBFOO_ACTUAL_SOURCE_SITE+.
 
 * +LIBFOO_REDISTRIBUTE+ can be set to +YES+ (default) or +NO+ to indicate if
   the package source code is allowed to be redistributed. Set it to +NO+ for
@@ -469,6 +494,11 @@ endef
 ----------------------
 
 In the action definitions, you can use the following variables:
+
+* +$(FOO_PKGDIR)+ contains the path to the directory containing the
+  +foo.mk+ and +Config.in+ files. This variable is useful when it is
+  necessary to install a file bundled in Buildroot, like a runtime
+  configuration file, a splashscreen image...
 
 * +$(@D)+, which contains the directory in which the package source
   code has been uncompressed.

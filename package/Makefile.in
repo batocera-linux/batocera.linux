@@ -91,7 +91,7 @@ endif
 # code size and performance, the linker can usually optimize away the
 # overhead when a call ends up within a certain range.
 #
-# Use text-section-literals for Xtensa globally.
+# Use auto-litpools for Xtensa globally.
 # Collecting literals into separate section can be advantageous if that
 # section is placed into DTCM at link time. This is applicable for code
 # running on bare metal, but makes no sense under linux, where userspace
@@ -100,7 +100,7 @@ endif
 # instruction can only access literals in 256 KBytes range.
 #
 ifeq ($(BR2_xtensa),y)
-TARGET_ABI += -mlongcalls -mtext-section-literals
+TARGET_ABI += -mlongcalls -mauto-litpools
 endif
 
 ifeq ($(BR2_arc)$(BR2_ARC_ATOMIC_EXT),yy)
@@ -110,22 +110,20 @@ endif
 STAGING_SUBDIR = usr/$(GNU_TARGET_NAME)/sysroot
 STAGING_DIR    = $(HOST_DIR)/$(STAGING_SUBDIR)
 
-TARGET_OPTIMIZATION := $(call qstrip,$(BR2_TARGET_OPTIMIZATION))
-
 ifeq ($(BR2_OPTIMIZE_0),y)
-TARGET_OPTIMIZATION += -O0
+TARGET_OPTIMIZATION = -O0
 endif
 ifeq ($(BR2_OPTIMIZE_1),y)
-TARGET_OPTIMIZATION += -O1
+TARGET_OPTIMIZATION = -O1
 endif
 ifeq ($(BR2_OPTIMIZE_2),y)
-TARGET_OPTIMIZATION += -O2
+TARGET_OPTIMIZATION = -O2
 endif
 ifeq ($(BR2_OPTIMIZE_3),y)
-TARGET_OPTIMIZATION += -O3
+TARGET_OPTIMIZATION = -O3
 endif
 ifeq ($(BR2_OPTIMIZE_S),y)
-TARGET_OPTIMIZATION += -Os
+TARGET_OPTIMIZATION = -Os
 endif
 ifeq ($(BR2_DEBUG_1),y)
 TARGET_DEBUGGING = -g1
@@ -185,14 +183,6 @@ TARGET_RANLIB   = $(TARGET_CROSS)ranlib
 TARGET_READELF  = $(TARGET_CROSS)readelf
 TARGET_OBJCOPY  = $(TARGET_CROSS)objcopy
 TARGET_OBJDUMP  = $(TARGET_CROSS)objdump
-
-TARGET_CC_NOCCACHE  := $(TARGET_CC)
-TARGET_CXX_NOCCACHE := $(TARGET_CXX)
-
-ifeq ($(BR2_CCACHE),y)
-TARGET_CC  := $(CCACHE) $(TARGET_CC)
-TARGET_CXX := $(CCACHE) $(TARGET_CXX)
-endif
 
 ifeq ($(BR2_STRIP_strip),y)
 STRIP_STRIP_DEBUG := --strip-debug

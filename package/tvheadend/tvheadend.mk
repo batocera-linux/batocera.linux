@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-TVHEADEND_VERSION = 8d561f11d6e3678f801803d7c69cf32d5b915ec2
+TVHEADEND_VERSION = 1b682a46a11ea821c4ed183a274bc78993ef40a0
 TVHEADEND_SITE = $(call github,tvheadend,tvheadend,$(TVHEADEND_VERSION))
 TVHEADEND_LICENSE = GPLv3+
 TVHEADEND_LICENSE_FILES = LICENSE.md
@@ -16,6 +16,13 @@ TVHEADEND_DEPENDENCIES = \
 
 ifeq ($(BR2_PACKAGE_AVAHI),y)
 TVHEADEND_DEPENDENCIES += avahi
+endif
+
+ifeq ($(BR2_PACKAGE_DBUS),y)
+TVHEADEND_DEPENDENCIES += dbus
+TVHEADEND_CONF_OPTS += --enable-dbus-1
+else
+TVHEADEND_CONF_OPTS += --disable-dbus-1
 endif
 
 ifeq ($(BR2_PACKAGE_FFMPEG),y)

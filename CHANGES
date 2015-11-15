@@ -1,13 +1,503 @@
-2015.08-rc1, not yet released
+2015.11-rc1, Released November, 7th 2015
 
 	Fixes all over the tree and new features.
 
-	Infrastructure: Buildroot takes better care now of generating
-	predictable permissions in the target filesystem. However,
-	existing permissions on a custom skeleton or rootfs overlay
-	will no longer be preserved. Therefore, it is necessary to
-	add a permission table (BR2_ROOTFS_DEVICE_TABLE) to set
-	the required permissions.
+	Architectures:
+
+	- Support for sparc64 added (internal toolchain with glibc
+	  only).
+
+	- Support for mips32r6 and mips64r6 added.
+
+	- Support for Intel Quark X1000 CPU.
+
+	- Switch to EABIhf by default on ARM when a VFP is available.
+
+	Toolchains:
+
+	- glibc 2.22, gdb 7.10, use gdb 7.9 by default, musl 1.1.12,
+	  uclibc-ng 1.0.8, host-gdb enabled on AArch64.
+
+	- The toolchain wrapper which was used only for external
+	  toolchains is now also used for Buildroot internal
+	  toolchains. This allowed to fix the ccache support, prepare
+	  the way for top-level parallel build support and remove gcc
+	  patches used to detect header/library path poisoning.
+
+	- Remove Analog Devices Blackfin toolchain 2012R2.
+
+	- Fix several Xtensa build failures by switching from
+	  text-section-literals to auto-litpools.
+
+	- Enable MIPS64 support in uClibc-ng, use uClibc on ARC
+	  rather than a specific fork.
+
+	- Linaro toolchains for ARM, ARMeb and AArch64 updated to
+	  2015.08. 2014.09 version is kept since 2015.08 only runs on
+	  x86_64 hosts.
+
+	Bootloaders:
+
+	- Fix ARM64 support in U-Boot.
+
+	Defconfigs:
+
+	- Added: ARC HS38 VDK virtual boards, Avnet Microzed, Boundary
+	  Devices Nitrogen SoloX, Freescale i.MX6 SoloX Sabre SD,
+	  OLinuxino A20 Lime2, Qemu Sparc64, Qemu SuperH 4 big endian,
+	  Synopsys AArch64 VDK virtual platform.
+
+	- Updated: calao_qil_a9260, calao_usb_a9g20_lpw, ci20,
+	  cubieboad, freescale_imx6_*, imx53loco, imx6_vab820,
+	  mpc8315erdb, qmx6, p1010rdb, qemu, raspberrypi,
+	  raspberrypi2, riotboard, snps_axs10*, wandboard.
+
+	- Removed: at91rm9200df, at91sam9260dfc, at91sam9263ek,
+	  calao_snowball_defconfig, gnublin, integrator926_defconfig.
+
+	Infrastructure:
+
+	- Support for fetching from Mercurial tags fixed.
+
+	- Introduce LINUX_NEEDS_MODULES, which allows to enforce
+	  module support to be enabled in the kernel when a package
+	  builds out-of-tree kernel modules (through the
+	  pkg-kernel-module infrastructure or on its own).
+
+	- Improve the perl package infrastructure to automatically add
+	  the dependency to the perl interpreter to target perl module
+	  packages.
+
+	- Remove trailing slashes in <pkg>_SITE and addition of a
+	  check to ensure such trailing slashes are no longer added.
+
+	- Extend the legal infrastructure to allow packages to declare
+	  their actual source code. This is useful for packages for
+	  which <pkg>_SOURCE points to pre-built binaries (as is the
+	  case for external toolchains). The new <pkg>_ACTUAL_SOURCE
+	  variable allows to point to the source code in such cases.
+
+	- Improved ccache support, thanks to the usage of a toolchain
+	  wrapper for internal toolchain. Now a single cache directory
+	  can be shared between different Buildroot builds.
+
+	- Addition of a 'graph-size' make targets, which generates a
+	  PDF graph of per-package size of the root filesystem.
+
+	- Addition of <pkg>_EXCLUDES so that packages can request
+	  certain parts of the source code tarball to not be
+	  extracted. This feature is currently used by gcc and
+	  toolchain-external.
+
+	- Packages can now use the <pkg>_PKGDIR variable, provided by
+	  the package infrastructure, to reference their package
+	  directory, instead of explicitly using package/<pkg>/.
+
+	Filesystems:
+
+	- Add high lz4 compression to squashfs.
+
+	- Simplification of shell profile files in the default
+	  skeleton.
+
+	- Remove ftp user and /home/ftp from the skeleton, and let ftp
+	  server packages create these when needed.
+
+	- Add support for /bin, /sbin and /lib to be symlinks to their
+	  corresponding directories in /usr. This is enforced for
+	  systemd configurations, and optional for other
+	  configurations.
+
+	- Support for AXFS filesystem image generation added.
+
+	- New options to add extra space/inodes to ext2/3/4 images.
+
+	Updated/fixed packages:
+
+	adwaita-icon-theme, apache, apitrace, atk, audit, avahi,
+	barebox, bash, batctl, bind, binutils, bluez_utils, boost,
+	bridge-utils, cairo, ccache, chrony, clapack, cloog, cmake,
+	collectd, connman, conntrack-tools, coreutils, cpio,
+	cryptsetup, dbus, dbus-cpp, devmem2, dhcp, dhcpcd, dhcpdump,
+	dhrystone, dillo, directfb, directfb-examples, dmraid,
+	dos2unix, dovecot, dovecot-pigeonhole, drbd-utils, dropbear,
+	dropwatch, dtc, e2fsprogs, ebtables, efl, eigen, ejabberd,
+	elf2flt, elfutils, erlang, ethtool, eudev, evemu, exfat,
+	exfat-utils, expat, faifa, fbterm, fdk-aac, feh, ffmpeg, file,
+	flashrom, fping, freerdp, freescale-imx, freetype, gdk-pixbuf,
+	genimage, gettext, git, glib-networking, glmark2, gnupg2,
+	gnuradio, gnutls, gpsd, grep, grub2, gst1-imx, gst1-libav,
+	gst1-plugins-bad, gst1-plugins-base, gst1-plugins-good,
+	gst1-plugins-ugly, gst1-validate, gst-fsl-plugins,
+	gst-plugins-bad, gstreamer1, guile, gvfs, harfbuzz, haveged,
+	hostapd, icu, imagemagick, impiutil, imx-gpu-viv, imx-vpu,
+	inadyn, intltool, iostat, iperf3, ipmiutil, iproute2,
+	iptables, iw, jpeg-turbo, jq, jsoncpp, kexec-lite, kmod, kodi,
+	kodi-audioencoder-flac, kodi-pvr-argustv, kodi-pvr-filmon,
+	kodi-pvr-hts, kodi-pvr-mythtv, kodi-pvr-pctv,
+	kodi-pvr-stalker, kodi-pvr-vbox,
+	kodi-visualisation-waveforhue, less, lftp, libbluray,
+	libcgroup, libconfuse, libcurl, libdcadec, libdrm, libevdev,
+	libffi, libfribidi, libfslcodec, libfslparser, libfslvpuwrap,
+	libgcrypt, libglew, libglib2, libgtk3, libidn, liblinear,
+	liblockfile, libmicrohttpd, libnetfilter_conntrack, libnfs,
+	libnftnl, libnl, libnspr, libnss, libpcap, libpfm4, libpng,
+	libselinux, libserial, libsoup, libsoxr, libstrophe, libtasn1,
+	libtirpc, libtorrent, libupnpp, liburcu, libusb-compat, libuv,
+	libv4l, libva, libva-intel-driver, libxcb, lighttpd, links,
+	linux, linux-firmware, linux-fusion, linux-headers,
+	lirc-tools, localedef, lpeg, lsof, ltp-testsuite,
+	lttng-libust, lttng-tools, lua-periphery, luaposix, lvm2, lxc,
+	lz4, mdadm, mesa3d, mesa3d-headers, minicom, minidlna, moarvm,
+	modem-manager, mosquitto, mpd, mpdecimal, mpg123, mplayer,
+	mrouted, msmtp, mtd, mutt, nettle, network-manager, nfs-utils,
+	nftables, nginx, nodejs, noip, ntp, ofono, opencv3, openpgm,
+	openssl, openswan, openvpn, pango, parted, perl, perl-cross,
+	perl-crypt-openssl-random, perl-http-message,
+	perl-io-socket-ssl, perl-module-build, perl-mojolicious,
+	perl-netaddr-ip, perl-net-dns, perl-net-http, perl-net-ssleay,
+	perl-uri, perl-xml-libxml, php, picocom, pixman, pkgconf,
+	poco, polarssl, portaudio, portmap, postgresql, proftpd,
+	protobuf, protobuf-c, pulseaudio, python-configshell-fb,
+	python-networkmanager, python-numpy, python-pyparsing,
+	python-pypcap, python-rtslib-fb, python-spidev, python-urwid,
+	python-web2py, qemu, qt5base, redis, rngtools, rng-tools,
+	rpi-firmware, rpi-userland, rtmpdump, rtorrent, ruby, samba,
+	samba4, sane-backends, sconeserver, sdl, sed, setools,
+	shairport-sync, shared-mime-info, sland, smartmontools,
+	softether, spice-protocol, sqlcipher, sqlite, squid,
+	strongswan, stunnel, subversion, sudo, sunxi-tools,
+	supervisor, systemd, tar, targetcli-fb, tcpdump, tiff, tor,
+	tvheadend, tzdata, uboot-tools, udisks, unionfs, upmpdcli,
+	util-linux, vala, valgrind, vim, vlc, vorbis-tools, vsftpd,
+	vtun, wavpack, webkitgtk24, weston, whois, wireless-regdb,
+	wireshark, wpa_supplicant, xdriver_xf86-input-vmmouse,
+	xdriver_xf86-video-imx-viv, xdriver_xf86-video-intel,
+	xdriver_xf86-video-sis, xlib_libXi, xorg-server,
+	xtables-addons, xterm, xz, zic, znc, zsh
+
+	New packages:
+
+	axfsutils, bitstream, check, dvblast, eventlog, fastd, gauche,
+	gmock, graphite2, gssdp, gupnp, gupnp-av, ibrcommon, ibrdtn,
+	ibrdtnd, ibrdtn-tools, imx-kobs, iqvlinux, irssi,
+	kompexsqlite, libbroadvoice, libcddb, libcodec2, libcrossguid,
+	libg7221, libhttpparser, libilbc, libldns, libmng,
+	libopenh264, libpam-radius-auth, libpam-tacplus, libsilk,
+	libsoundtouch, libssh, libuecc, libyuv, liquid-dsp, luv,
+	micropython, micropython-libs, python-pyratemp,
+	python-pyroute2, python-ranger, rapidxml, scrypt, sdl2,
+	sp-oops-extract, squeezelite, stress-ng, swupdate, syslog-ng,
+	x265, xdriver_xf86-video-fbturbo, xxhash, yad, zxing-cpp
+
+	Removed packages:
+
+	blackbox (was deprecated), divine (merged in directfb),
+	kobs-ng (replaced by imx-kobs), mediactl (merged in libv4l),
+	sawman (merged in directfb), schifra (marked broken since a
+	long time), texinfo (host variant only, no longer used), zxing
+	(replaced by zxing-cpp),
+
+	Issues resolved (http://bugs.uclibc.org):
+
+	#4099: cut utility from GNU coreutils works incorrect
+	#7772: libxml-parser-perl build failure: missing dependency
+	       ExtUtils/MakeMaker
+	#7931: Default configuration for Cubieboard v1 is outdated
+	#8116: 2015.05-rc2 raspberrypi2_defconfig network interface
+	       not coming up
+	#8246: X.org DRI2 build issue
+	#8256: pointing to /usr/bin/objcopy old version (x86) instead
+	       of the generated one
+	#8266: mplayer build issue
+	#8281: pyrexc fails to run when path is too long
+	#8316: lttng-tools and lttng-babeltrace executables contain
+	       bad RPATH pointing to host machine
+	#8331: kexec wants shutdown in /sbin, but systemd installs it
+	       in /usr/sbin
+	#8361: Buildroot 2015.08.1 skeleton inittab overwritten by
+	       busybox's version
+	#8366: libevent does not build
+	#8386: build failed with external toolchain
+	#8391: Node.js 0.12.7 fails to build on raspberry_pi defconfig
+	#8396: CCACHE initialization
+	#8401: gpsd 3.15 NMEA support
+	#8416: cups depends on BR2_DEPRECATED_SINCE_2015_05
+	#8421: util-linux installs systemd files in output/target/home/
+
+2015.08, Released August 31st, 2015
+
+	Minor fixes.
+
+	OpenCV 3.x package renamed to opencv3. OpenCV 2.4.x
+	reintroduced as opencv.
+
+	Updated/fixed packages: bootutils, canfestival, cppcms,
+	curlftpfs, dhcpdump, dropbear, erlang-p1-tls, exfat, gnuradio,
+	ipkg, libgudev, libmbim, libwebsock, linux-pam, lm-sensors,
+	ltrace, midori, network-manager, openssh, perl-file-listing,
+	perl-http-cookies, perl-http-daemon, perl-http-negotiate,
+	perl-www-robotrules, python-can, qt5base, qt5multimedia,
+	setools, sysvinit, tinyalsa, tn5250, tvheadend, uboot, vlc,
+	x264, xserver_xorg-server, zyre
+
+2015.08-rc2, Released August, 24th 2015
+
+	Fixes all over the tree.
+
+	Toolchain: fix gcc build on NIOS-II.
+
+	Infrastructure: add <fs>_POST_GEN_HOOKS mechanism to fix
+	hybrid ISO image generation.
+
+	Architectures: add arm1136j-s variant.
+
+	Updated/fixed packages: apitrace, audit, bcusdk, bdwgc,
+	beecrypt, boost, bwm-ng, cdrkit, c-icap, cifs-utils, clapack,
+	c-periphery, cpio, cramfs, czmq, dawgdic, dnsmasq, dosfstools,
+	dropbear, elfutils, empty, eudev, fan-ctrl, filemq, gnutls,
+	guile, haveged, imlib2, libcec, libepoxy, libev, libgpgme,
+	libiio, libnetfilter_queue, libnfnetlink, libpfm4, libpthsem,
+	librtas, libselinux, libsigsegv, libsodium, libv4l, lightning,
+	linux, lirc-tools, lrzsz, mono, mosh, mpd, msmtp, nbd,
+	netatalk, nodejs, ola, opencv, oprofile, php, poco,
+	postgresql, powertop, protobuf, protobuf-c, qt5base,
+	qt5quickcontrols, rapidjson, rng-tools, squid, sysdig,
+	sysstat, tftpd, tinc, tz, util-linux, webkitgtk24, weston,
+	wireshark, wvstreams, xdriver_xf86-input-synaptics, zyre.
+
+	Issues resolved (http://bugs.uclibc.org):
+
+	#8276: package/dropbear: symlink resolution incorrect
+	#8286: Error with buildroot
+	#8301: ldconfig parameter in Makefile
+
+2015.08-rc1, Released August, 5th 2015
+
+	Fixes all over the tree and new features.
+
+	Architectures:
+
+	 - Refactor how the availability of an MMU is described.
+	 - Minimal support for Cortex-M3
+	 - Minimal support for AArch64 big-endian
+
+	Toolchains:
+
+	 - Add CodeSourcery MIPS 2015.05, remove MIPS 2013.11
+	 - Use uClibc-ng as the default uClibc version, instead of the
+	   official uClibc, which hasn't done any release since 3+
+	   years
+	 - eglibc is now marked as deprecated
+	 - GCC: gcc 4.9.x is now the default and was updated to 4.9.3,
+	   support for gcc 5.x added.
+	 - Binutils: use Binutils 2.24 as the default, 2.25.x series
+	   bumped to 2.25.1, remove old Binutils 2.22.
+	 - Update ARC toolchain components to 2015.06
+	 - Add support for Fortran when building gcc
+
+	Bootloaders:
+
+	 - Support for using the kconfig configuration system in
+	   U-Boot
+
+	New Defconfigs:
+
+	 - VIA VAB-820/AMOS-820
+	 - OLimex OLinuxino A20 Lime
+	 - Many new defconfigs for Atmel evaluation boards:
+	   at91sam9rlek, at91sam9x5ek, sama5d3xek, sama5d4ek, sama5d4
+	   Xplained Ultra, sama5d3 Xplained.
+	 - ACME Systems Aria G25
+	 - WarPboard
+	 - Altera Cyclone 5 Development Board
+	 - Xilinx zc706
+	 - ARC AXS101 and AXS103 Software Development Platforms
+	 - Significant updates to Raspberry Pi / Raspberry Pi 2
+
+	Infrastructure:
+
+	 - Buildroot takes better care now of generating predictable
+	   permissions in the target filesystem. However, existing
+	   permissions on a custom skeleton or rootfs overlay will no
+	   longer be preserved. Therefore, it is necessary to add a
+	   permission table (BR2_ROOTFS_DEVICE_TABLE) to set the
+	   required permissions.
+	 - Add support for kconfig fragments.
+	 - No longer pass --{enable,disable}-debug to autotools
+	   packages depending on the value of
+	   BR2_ENABLE_DEBUG. BR2_ENABLE_DEBUG now only controls
+	   whether we build with -g or not.
+	 - Support for extracting archives in .lzma in the generic
+	   package infrastructure.
+	 - Remove random-seed file from the default skeleton, since
+	   seeding the entropy pool with a known seed makes more harm
+	   than good.
+	 - In the CVS download helper, add support to use a date as
+	   the version.
+	 - Add support for a per-package <pkg>_STRIP_COMPONENTS
+	   variable, which packages can use to specify how many path
+	   components should be stripped when extracting the tarball.
+	 - Addition of a 'kernel-module' package infrastructure, which
+	   simplifies the packaging of external kernel modules. Many
+	   existing packages are converted to use it.
+	 - Allow bootloaders to be implemented in $(BR2_EXTERNAL)
+	 - Remove /etc/securetty from the default skeleton.
+	 - Migration of sysV initscripts from the default skeleton to
+	   a package called 'initscripts', installed only when Busbox
+	   init or sysvinit are used.
+	 - Migration of the skeleton logic to a proper 'skeleton'
+	   package.
+	 - Addition of a 'linux-tools' infrastructure in the 'linux'
+	   package, to support building user-space tools bundled
+	   within the Linux kernel sources, such as perf and cpupower.
+	 - Usage of backticks instead of make $(shell ...) to execute
+	   shell commands. This allows to delay the evaluation of such
+	   commands when actually needed, and not when expanding the
+	   variables. It is useful to make 'make printvars' less
+	   noisy, and as a preparation to support top-level parallel
+	   build.
+	 - Libtool .la files are not mungled for all package types,
+	   instead of being handled only for packages using the
+	   autotools-package infrastructure.
+	 - Add mechanism to allow packages to express a dependency on
+	   gcc versions. This is needed for packages that use C++11 or
+	   C11 support for example.
+
+	Important package updates:
+
+	 - Complete rework of the matchbox packaging
+	 - Lots of fixes in packages for compatibility with musl and
+	   gcc 5.
+	 - Hash files added to a large number of packages.
+	 - Update a significant number of packages to use a new
+	   hosting, after the announcement of Google Code and
+	   Gitorious closing.
+	 - Major packages needed for SELinux support have been merged,
+	   but the support is not complete yet.
+	 - Significant update of OpenCV to version 3.0, and addition
+	   of lots of eatures.
+	 - Significant update of all packages supporting the GPU and
+	   VPU of i.MX ARM processors.
+	 - Addition of systemd support in a significant number of
+	   packages.
+	 - Qt5 updated to 5.5.0
+	 - Use modular X.org server by default instead of KDrive
+
+	Filesystems:
+
+	 - Complete overhaul of the iso9660 support. Now allows to use
+	   directly IS9660 as the root filesystem format and not only
+	   an initrd, and supports Grub 2 and isolinux in addition to
+	   Grub.
+
+	Updated packages: a10disp, agentpp, apache, at91bootstrap3,
+	audit, barebox, bc, bind, bmon, boost, btrfs-progs,
+	ca-certificates, can-utils, ccache, cloog, collectd, connman,
+	coreutils, c-periphery, cryptsetup, dado, dbus, dejavu,
+	dhcpcd, dnsmasq, dosfstools, dovecot, dovecot-pigeonhole,
+	e2fsprogs, ejabberd, erlang-p1-cache-tab, erlang-p1-sip,
+	erlang-p1-stringprep, erlang-p1-stun, erlang-p1-tls,
+	erlang-p1-utils, erlang-p1-xml, erlang-p1-yaml, ethtool,
+	eudev, evtest, exim, expect, explorercanvas, feh, ffmpeg,
+	file, flashrom, freescale-imx, freetype, gawk, gcc, gdb,
+	gettext, git, glib-networking, gnupg2, gnutls, gpsd, gptfdisk,
+	gpu-viv-bin-mx6q, gst-fsl-plugins, harfbuzz, hdparm, heimdal,
+	i2c-tools, imagemagick, imx-vpu, iproute2, ipset, isl, iw,
+	kodi, kodi-addon-xvdr, kodi-audioencoder-flac,
+	kodi-audioencoder-lame, kodi-audioencoder-vorbis,
+	kodi-audioencoder-wav, lftp, libass, libassuan, libcec,
+	libconfi, libcurl, libdrm, libevdev, libfreefare, libfslcodec,
+	libfslparser, libfslvpuwrap, libfuse, libglib2, libgpgme,
+	libgtk2, libgtk3, libical, libidn, libiio, libinput, libiscsi,
+	libllcp, libmicrohttpd, libnfc, libnss, libpcap, libpciaccess,
+	libpng, libserialport, libsigrok, libsoc, libtirpc, libubox,
+	libunistring, libupnp, libuv, libv4l, libva,
+	libva-intel-driver, libXrandr, lighttpd, linenoise, linux,
+	linux-firmware, linux-headers, live555, ltrace, lua,
+	lua-csnappy, lua-ev, luajit, lua-messagepack, luaperiphery,
+	lvm2, lxc, lzo, mesa3d, mesa3d-headers, midori, mmc-utils,
+	modem-manager, mono, mosquitto, mpd, mpd-mpc, mpfr, mpg123,
+	mtd, musl, nano, netperf, network-manager, nfs-utils, nginx,
+	nodejs, ntp, ola, opencv, openldap, openssh, openssl,
+	openswan, openvmtools, openvpn, opkg, orbit, orc, pcmanfm,
+	perl-cross, perl-encode-locale, perl-io-socket-ssl,
+	perl-mojolicious, perl-net-ssleay, perl-path-tiny, perl-uri,
+	perl-xml-libxml, php, pinentry, polarssl, postgresql,
+	pulseview, pure-ftpd, python, python-dpkt, python-lxml,
+	python-networkmanager, python-pyinotify, python-pypcap,
+	python-tornado, qextserialport, qt, qt5, rapidjson, redis,
+	rpcbind, rpi-firmware, rpi-userland, samba4, shairport-sync,
+	snmpp, sqlite, squid, strongswan, stunnel, sudo, sunxi-boards,
+	sunxi-mali, sysdig, sysstat, systemd, tcpdump, tiff, tmux,
+	tor, txheadend, tzdata, uboot, uclibc, ulogd, upmpdcli,
+	usb_modeswitch, usb_modeswitch_data, vala, vsftpd, wayland,
+	weston, whois, wireless-regdb, wireshark, x264, xapp_xvinfo,
+	xdriver_xf86-input-libinput, xdriver_xf86-input-vmmouse,
+	xdriver_xf86-video-cirrus, xdriver_xf86-video-geode,
+	xdriver_xf86-video-imx-viv, xdriver_xf86-video-mach64,
+	xdriver_xf86-video-neomagic, xdriver_xf86-video-r128,
+	xdriver_xf86-video-savage, xdriver_xf86-video-siliconmotion,
+	xdriver_xf86-video-vesa, xkeyboard-config, xlib_libfontenc,
+	xlib_libFS, xlib_libXaw, xlib_libxkbfile, xlib_libXrender,
+	xlib_libXt, xproto_kbproto, xproto_xproto, xproto_xrandrproto,
+	xscreensaver, xserver_xorg-server, xtables-addons, yaml-cpp,
+	zic.
+
+	New packages: angularjs, atf, audit, c-icap, c-icap-modules,
+	cpio, dawgdic, faketime, fcgiwrap, gflags, glog, initscripts,
+	jquery-datetimepicker, kodi-audioencoder-modplug,
+	kodi-audioencoder-nosefar, kodi-audioencoder-sidplay,
+	kodi-audioencoder-snesapu, kodi-audioencoder-stsound,
+	kodi-audioencoder-timidity, kodi-audioencoder-vgmstream,
+	kodi-platform, kodi-pvr-argustv, kodi-pvr-dvblink,
+	kodi-pvr-dvbviewer, kodi-pvr-filmon, kodi-pvr-hts,
+	kodi-pvr-iptvsimple, kodi-pvr-mediaportal-tvserver,
+	kodi-pvr-mythtv, kodi-pvr-nextpvr, kodi-pvr-njoy,
+	kodi-pvr-pctv, kodi-pvr-stalker, kodi-pvr-vbox,
+	kodi-pvr-vdr-vnsi, kodi-pvr-vuplus, kodi-pvr-wmc,
+	kodi-screensaver-asteroids, kodi-screensaver-biogenesis,
+	kodi-screensaver-crystalmorph, kodi-screensaver-greynetic,
+	kodi-screensaver-pingpong, kodi-screensaver-pyro,
+	kodi-screensaver-stars, kodi-visualisation-shadertoy,
+	kodi-visualisation-spectrum, kodi-visualisation-waveforhue,
+	kodi-visualisation-waveform, kvmtool, kyua, libfm,
+	libfm-extra, libplatform, librtas, libsodium, libsquish,
+	libucl, libump, linux-backports, lua-iconv, lutok, menu-cache,
+	moarvm, monkey, mono-gtksharp3, mosh, openipmi, python-can,
+	python-pycli, python-pydal, python-pyyaml, python-web2py,
+	qpid-proton, qt5webchannel, quazip, racehound, rtl8188eu,
+	rtl8821au, sepolgen, setools, skeleton, stm32flash,
+	webkitgtk24, xdriver_xf86-video-qxl, zynq-boot-bin.
+
+	Deprecated packages: webkitgtk, libgail, eglibc support in
+	glibc package.
+
+	Issues resolved (http://bugs.uclibc.org):
+
+	#4291: Segmentation fault with all binaries that use threads
+               when compiled with gcc 4.6
+	#6944: building toolchain for sh4 fails
+	#7592: Buildroot GCC: -lto requires plugin support in ranlib
+	#7628: Python SSL does not get built for Raspberry Pi
+	#7682: Missing dependencies for NFS
+	#7742: dhcp lacks important features when BR2_ENABLE_DEBUG
+	#7754: make: *** [/..../buildroot-2014.11/output/build/host-gcc-initial-4.8.3/.stamp_built] Error 2
+	#7946: libglib2-2.42.2 fails to build for sparc-buildroot-linux-gnu
+	#7956: glibc 2.20 and 2.21 fail to build for sh64-buildroot-linux-gnu
+	#7971: python-flask, python-werkzeug. No module named zlib
+	#7981: Target file system skeleton permissions hazard
+	#8006: rpcdebug in nfs-utils built for the host
+	#8036: alsa-lib headers problem that prevents to compile alsa
+               dependent projects
+	#8081: systemd init system: /tmp is not mode 1777
+	#8121: php opcache extension doesn't get installed
+	#8151: x86-64 make fails with ncurses 5.9
+	#8156: pkg-kconfig infra broken for *-update-{config, defconfig}
+	#8161: default /bin/sh symlink to busybox is full path and not relative
+	#8171: glamor missing
+	#8191: Request update support for the cubieboard series
+	#8201: Important security upgrades for node.js
 
 2015.05, Released May 31st, 2015
 

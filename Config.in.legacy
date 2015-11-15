@@ -105,7 +105,406 @@ comment "----------------------------------------------------"
 endif
 
 ###############################################################################
+comment "Legacy options removed in 2015.11"
+
+config BR2_PACKAGE_GST1_PLUGINS_BAD_PLUGIN_REAL
+	bool "gst1-plugins-bad real plugin has been removed"
+	select BR2_LEGACY
+	help
+	  The real plugin from GStreamer 1 bad plugins has been
+	  removed.
+
+config BR2_PACKAGE_MEDIA_CTL
+	bool "media-ctl package has been removed"
+	select BR2_LEGACY
+	select BR2_PACKAGE_LIBV4L
+	select BR2_PACKAGE_LIBV4L_UTILS
+	help
+	  media-ctl source and developement have been moved to
+	  v4l-utils since June 2014. For an up-to-date media-ctl
+	  version select BR2_PACKAGE_LIBV4L and BR2_PACKAGE_LIBV4L_UTILS.
+
+config BR2_PACKAGE_SCHIFRA
+	bool "schifra package has been removed"
+	select BR2_LEGACY
+	help
+	  Schifra package has been maked broken since 2014.11 release and
+	  haven't been fixed since then.
+
+config BR2_PACKAGE_ZXING
+	bool "zxing option has been renamed"
+	select BR2_LEGACY
+	select BR2_PACKAGE_ZXING_CPP
+	help
+	  ZXing no longer provides the cpp bindings, it has been renamed to
+	  BR2_PACKAGE_ZXING_CPP which uses a new upstream.
+
+# Since FreeRDP has new dependencies, protect this legacy to avoid the
+# infamous "unmet direct dependencies" kconfig error.
+config BR2_PACKAGE_FREERDP_CLIENT
+	bool "freerdp client option renamed"
+	depends on BR2_PACKAGE_FREERDP
+	select BR2_LEGACY
+	select BR2_PACKAGE_FREERDP_CLIENT_X11
+
+config BR2_PACKAGE_BLACKBOX
+	bool "blackbox package has been removed"
+	select BR2_LEGACY
+	help
+	  Upstream is dead and the package has been deprecated for
+	  some time. There are other alternative maintained WMs.
+
+config BR2_KERNEL_HEADERS_3_0
+	bool "kernel headers version 3.0.x are no longer supported"
+	select BR2_KERNEL_HEADERS_3_2
+	select BR2_LEGACY
+	help
+	  Version 3.0.x of the Linux kernel headers have been deprecated
+	  for more than four buildroot releases and are now removed.
+	  As an alternative, version 3.2.x of the headers have been
+	  automatically selected in your configuration.
+
+config BR2_KERNEL_HEADERS_3_11
+	bool "kernel headers version 3.11.x are no longer supported"
+	select BR2_KERNEL_HEADERS_3_12
+	select BR2_LEGACY
+	help
+	  Version 3.11.x of the Linux kernel headers have been deprecated
+	  for more than four buildroot releases and are now removed.
+	  As an alternative, version 3.12.x of the headers have been
+	  automatically selected in your configuration.
+
+config BR2_KERNEL_HEADERS_3_13
+	bool "kernel headers version 3.13.x are no longer supported"
+	select BR2_KERNEL_HEADERS_3_14
+	select BR2_LEGACY
+	help
+	  Version 3.13.x of the Linux kernel headers have been deprecated
+	  for more than four buildroot releases and are now removed.
+	  As an alternative, version 3.14.x of the headers have been
+	  automatically selected in your configuration.
+
+config BR2_KERNEL_HEADERS_3_15
+	bool "kernel headers version 3.15.x are no longer supported"
+	select BR2_KERNEL_HEADERS_3_18
+	select BR2_LEGACY
+	help
+	  Version 3.15.x of the Linux kernel headers have been deprecated
+	  for more than four buildroot releases and are now removed.
+	  As an alternative, version 3.18.x of the headers have been
+	  automatically selected in your configuration.
+
+config BR2_PACKAGE_DIRECTFB_EXAMPLES_ANDI
+	bool "DirectFB example df_andi has been removed"
+	select BR2_LEGACY
+	select BR2_PACKAGE_DIRECTFB_EXAMPLES
+	help
+	  The per-DirectFB example options have been removed. The
+	  BR2_PACKAGE_DIRECTFB_EXAMPLES option now installs all
+	  examples.
+
+config BR2_PACKAGE_DIRECTFB_EXAMPLES_BLTLOAD
+	bool "DirectFB example df_bltload has been removed"
+	select BR2_LEGACY
+	select BR2_PACKAGE_DIRECTFB_EXAMPLES
+	help
+	  The per-DirectFB example options have been removed. The
+	  BR2_PACKAGE_DIRECTFB_EXAMPLES option now installs all
+	  examples.
+
+config BR2_PACKAGE_DIRECTFB_EXAMPLES_CPULOAD
+	bool "DirectFB example df_cpuload has been removed"
+	select BR2_LEGACY
+	select BR2_PACKAGE_DIRECTFB_EXAMPLES
+	help
+	  The per-DirectFB example options have been removed. The
+	  BR2_PACKAGE_DIRECTFB_EXAMPLES option now installs all
+	  examples.
+
+config BR2_PACKAGE_DIRECTFB_EXAMPLES_DATABUFFER
+	bool "DirectFB example df_databuffer has been removed"
+	select BR2_LEGACY
+	select BR2_PACKAGE_DIRECTFB_EXAMPLES
+	help
+	  The per-DirectFB example options have been removed. The
+	  BR2_PACKAGE_DIRECTFB_EXAMPLES option now installs all
+	  examples.
+
+config BR2_PACKAGE_DIRECTFB_EXAMPLES_DIOLOAD
+	bool "DirectFB example df_dioload has been removed"
+	select BR2_LEGACY
+	select BR2_PACKAGE_DIRECTFB_EXAMPLES
+	help
+	  The per-DirectFB example options have been removed. The
+	  BR2_PACKAGE_DIRECTFB_EXAMPLES option now installs all
+	  examples.
+
+config BR2_PACKAGE_DIRECTFB_EXAMPLES_DOK
+	bool "DirectFB example df_dok has been removed"
+	select BR2_LEGACY
+	select BR2_PACKAGE_DIRECTFB_EXAMPLES
+	help
+	  The per-DirectFB example options have been removed. The
+	  BR2_PACKAGE_DIRECTFB_EXAMPLES option now installs all
+	  examples.
+
+config BR2_PACKAGE_DIRECTFB_EXAMPLES_DRIVERTEST
+	bool "DirectFB example df_drivertest has been removed"
+	select BR2_LEGACY
+	select BR2_PACKAGE_DIRECTFB_EXAMPLES
+	help
+	  The per-DirectFB example options have been removed. The
+	  BR2_PACKAGE_DIRECTFB_EXAMPLES option now installs all
+	  examples.
+
+config BR2_PACKAGE_DIRECTFB_EXAMPLES_FIRE
+	bool "DirectFB example df_fire has been removed"
+	select BR2_LEGACY
+	select BR2_PACKAGE_DIRECTFB_EXAMPLES
+	help
+	  The per-DirectFB example options have been removed. The
+	  BR2_PACKAGE_DIRECTFB_EXAMPLES option now installs all
+	  examples.
+
+config BR2_PACKAGE_DIRECTFB_EXAMPLES_FLIP
+	bool "DirectFB example df_flip has been removed"
+	select BR2_LEGACY
+	select BR2_PACKAGE_DIRECTFB_EXAMPLES
+	help
+	  The per-DirectFB example options have been removed. The
+	  BR2_PACKAGE_DIRECTFB_EXAMPLES option now installs all
+	  examples.
+
+config BR2_PACKAGE_DIRECTFB_EXAMPLES_FONTS
+	bool "DirectFB example df_fonts has been removed"
+	select BR2_LEGACY
+	select BR2_PACKAGE_DIRECTFB_EXAMPLES
+	help
+	  The per-DirectFB example options have been removed. The
+	  BR2_PACKAGE_DIRECTFB_EXAMPLES option now installs all
+	  examples.
+
+config BR2_PACKAGE_DIRECTFB_EXAMPLES_INPUT
+	bool "DirectFB example df_input has been removed"
+	select BR2_LEGACY
+	select BR2_PACKAGE_DIRECTFB_EXAMPLES
+	help
+	  The per-DirectFB example options have been removed. The
+	  BR2_PACKAGE_DIRECTFB_EXAMPLES option now installs all
+	  examples.
+
+config BR2_PACKAGE_DIRECTFB_EXAMPLES_JOYSTICK
+	bool "DirectFB example df_joystick has been removed"
+	select BR2_LEGACY
+	select BR2_PACKAGE_DIRECTFB_EXAMPLES
+	help
+	  The per-DirectFB example options have been removed. The
+	  BR2_PACKAGE_DIRECTFB_EXAMPLES option now installs all
+	  examples.
+
+config BR2_PACKAGE_DIRECTFB_EXAMPLES_KNUCKLES
+	bool "DirectFB example df_knuckles has been removed"
+	select BR2_LEGACY
+	select BR2_PACKAGE_DIRECTFB_EXAMPLES
+	help
+	  The per-DirectFB example options have been removed. The
+	  BR2_PACKAGE_DIRECTFB_EXAMPLES option now installs all
+	  examples.
+
+config BR2_PACKAGE_DIRECTFB_EXAMPLES_LAYER
+	bool "DirectFB example df_layer has been removed"
+	select BR2_LEGACY
+	select BR2_PACKAGE_DIRECTFB_EXAMPLES
+	help
+	  The per-DirectFB example options have been removed. The
+	  BR2_PACKAGE_DIRECTFB_EXAMPLES option now installs all
+	  examples.
+
+config BR2_PACKAGE_DIRECTFB_EXAMPLES_MATRIX
+	bool "DirectFB example df_matrix has been removed"
+	select BR2_LEGACY
+	select BR2_PACKAGE_DIRECTFB_EXAMPLES
+	help
+	  The per-DirectFB example options have been removed. The
+	  BR2_PACKAGE_DIRECTFB_EXAMPLES option now installs all
+	  examples.
+
+config BR2_PACKAGE_DIRECTFB_EXAMPLES_MATRIX_WATER
+	bool "DirectFB example df_matrix_water has been removed"
+	select BR2_LEGACY
+	select BR2_PACKAGE_DIRECTFB_EXAMPLES
+	help
+	  The per-DirectFB example options have been removed. The
+	  BR2_PACKAGE_DIRECTFB_EXAMPLES option now installs all
+	  examples.
+
+config BR2_PACKAGE_DIRECTFB_EXAMPLES_NEO
+	bool "DirectFB example df_neo has been removed"
+	select BR2_LEGACY
+	select BR2_PACKAGE_DIRECTFB_EXAMPLES
+	help
+	  The per-DirectFB example options have been removed. The
+	  BR2_PACKAGE_DIRECTFB_EXAMPLES option now installs all
+	  examples.
+
+config BR2_PACKAGE_DIRECTFB_EXAMPLES_NETLOAD
+	bool "DirectFB example df_netload has been removed"
+	select BR2_LEGACY
+	select BR2_PACKAGE_DIRECTFB_EXAMPLES
+	help
+	  The per-DirectFB example options have been removed. The
+	  BR2_PACKAGE_DIRECTFB_EXAMPLES option now installs all
+	  examples.
+
+config BR2_PACKAGE_DIRECTFB_EXAMPLES_PALETTE
+	bool "DirectFB example df_palette has been removed"
+	select BR2_PACKAGE_DIRECTFB_EXAMPLES
+	help
+	  The per-DirectFB example options have been removed. The
+	  BR2_PACKAGE_DIRECTFB_EXAMPLES option now installs all
+	  examples.
+
+config BR2_PACKAGE_DIRECTFB_EXAMPLES_PARTICLE
+	bool "DirectFB example df_particle has been removed"
+	select BR2_LEGACY
+	select BR2_PACKAGE_DIRECTFB_EXAMPLES
+	help
+	  The per-DirectFB example options have been removed. The
+	  BR2_PACKAGE_DIRECTFB_EXAMPLES option now installs all
+	  examples.
+
+config BR2_PACKAGE_DIRECTFB_EXAMPLES_PORTER
+	bool "DirectFB example df_porter has been removed"
+	select BR2_LEGACY
+	select BR2_PACKAGE_DIRECTFB_EXAMPLES
+	help
+	  The per-DirectFB example options have been removed. The
+	  BR2_PACKAGE_DIRECTFB_EXAMPLES option now installs all
+	  examples.
+
+config BR2_PACKAGE_DIRECTFB_EXAMPLES_STRESS
+	bool "DirectFB example df_stress has been removed"
+	select BR2_PACKAGE_DIRECTFB_EXAMPLES
+	help
+	  The per-DirectFB example options have been removed. The
+	  BR2_PACKAGE_DIRECTFB_EXAMPLES option now installs all
+	  examples.
+
+config BR2_PACKAGE_DIRECTFB_EXAMPLES_TEXTURE
+	bool "DirectFB example df_texture has been removed"
+	select BR2_LEGACY
+	select BR2_PACKAGE_DIRECTFB_EXAMPLES
+	help
+	  The per-DirectFB example options have been removed. The
+	  BR2_PACKAGE_DIRECTFB_EXAMPLES option now installs all
+	  examples.
+
+config BR2_PACKAGE_DIRECTFB_EXAMPLES_VIDEO
+	bool "DirectFB example df_video has been removed"
+	select BR2_LEGACY
+	select BR2_PACKAGE_DIRECTFB_EXAMPLES
+	help
+	  The per-DirectFB example options have been removed. The
+	  BR2_PACKAGE_DIRECTFB_EXAMPLES option now installs all
+	  examples.
+
+config BR2_PACKAGE_DIRECTFB_EXAMPLES_VIDEO_PARTICLE
+	bool "DirectFB example df_video_particle has been removed"
+	select BR2_LEGACY
+	select BR2_PACKAGE_DIRECTFB_EXAMPLES
+	help
+	  The per-DirectFB example options have been removed. The
+	  BR2_PACKAGE_DIRECTFB_EXAMPLES option now installs all
+	  examples.
+
+config BR2_PACKAGE_DIRECTFB_EXAMPLES_WINDOW
+	bool "DirectFB example df_window has been removed"
+	select BR2_LEGACY
+	select BR2_PACKAGE_DIRECTFB_EXAMPLES
+	help
+	  The per-DirectFB example options have been removed. The
+	  BR2_PACKAGE_DIRECTFB_EXAMPLES option now installs all
+	  examples.
+
+config BR2_PACKAGE_KOBS_NG
+	bool "kobs-ng was replaced by imx-kobs"
+	select BR2_LEGACY
+	select BR2_PACKAGE_IMX_KOBS
+	help
+	  The outdated kobs-ng has been replaced by the Freescale-
+	  maintained imx-kobs package.
+
+config BR2_PACKAGE_SAWMAN
+	bool "sawman package removed"
+	select BR2_LEGACY
+	select BR2_PACKAGE_DIRECTFB_SAWMAN
+	help
+	  This option has been removed because the sawman package no
+	  longer exists: it was merged inside DirectFB itself. This
+	  feature can now be enabled using the
+	  BR2_PACKAGE_DIRECTFB_SAWMAN option.
+
+config BR2_PACKAGE_DIVINE
+	bool "divine package removed"
+	select BR2_LEGACY
+	select BR2_PACKAGE_DIRECTFB_DIVINE
+	help
+	  This option has been removed because the divine package no
+	  longer exists: it was merged inside DirectFB itself. This
+	  feature can now be enabled using the
+	  BR2_PACKAGE_DIRECTFB_DIVINE option.
+
+###############################################################################
 comment "Legacy options removed in 2015.08"
+
+config BR2_PACKAGE_KODI_PVR_ADDONS
+	bool "Kodi PVR addon was split"
+	select BR2_LEGACY
+	select BR2_PACKAGE_KODI_PVR_ARGUSTV
+	select BR2_PACKAGE_KODI_PVR_DVBLINK
+	select BR2_PACKAGE_KODI_PVR_DVBVIEWER
+	select BR2_PACKAGE_KODI_PVR_FILMON
+	select BR2_PACKAGE_KODI_PVR_HTS
+	select BR2_PACKAGE_KODI_PVR_IPTVSIMPLE
+	select BR2_PACKAGE_KODI_PVR_MEDIAPORTAL_TVSERVER
+	select BR2_PACKAGE_KODI_PVR_MYTHTV
+	select BR2_PACKAGE_KODI_PVR_NEXTPVR
+	select BR2_PACKAGE_KODI_PVR_NJOY
+	select BR2_PACKAGE_KODI_PVR_PCTV
+	select BR2_PACKAGE_KODI_PVR_STALKER
+	select BR2_PACKAGE_KODI_PVR_VBOX
+	select BR2_PACKAGE_KODI_PVR_VDR_VNSI
+	select BR2_PACKAGE_KODI_PVR_VUPLUS
+	select BR2_PACKAGE_KODI_PVR_WMC
+	help
+	  Kodi PVR addon was split into seperate modules
+
+config BR2_BINUTILS_VERSION_2_23_2
+	bool "binutils 2.23 option renamed"
+	select BR2_LEGACY
+	select BR2_BINUTILS_VERSION_2_23_X
+	help
+	  The binutils version option has been renamed to match the
+	  same patchlevel logic used by gcc. The new option is now
+	  BR2_BINUTILS_VERSION_2_23_X.
+
+config BR2_BINUTILS_VERSION_2_24
+	bool "binutils 2.24 option renamed"
+	select BR2_LEGACY
+	select BR2_BINUTILS_VERSION_2_24_X
+	help
+	  The binutils version option has been renamed to match the
+	  same patchlevel logic used by gcc. The new option is now
+	  BR2_BINUTILS_VERSION_2_24_X.
+
+config BR2_BINUTILS_VERSION_2_25
+	bool "binutils 2.25 option renamed"
+	select BR2_LEGACY
+	select BR2_BINUTILS_VERSION_2_25_X
+	help
+	  The binutils version option has been renamed to match the
+	  same patchlevel logic used by gcc. The new option is now
+	  BR2_BINUTILS_VERSION_2_25_X.
 
 config BR2_PACKAGE_PERF
 	bool "perf option has been renamed"
@@ -135,6 +534,7 @@ config BR2_PACKAGE_GPU_VIV_BIN_MX6Q
 config BR2_PACKAGE_LIBSEMANAGE_PYTHON_BINDINGS
 	depends on BR2_PACKAGE_PYTHON
 	bool "libsemanage python bindings removed"
+	select BR2_LEGACY
 	help
 	  This option has been removed, since the libsemanage Python
 	  bindings on the target were not useful.
@@ -144,38 +544,6 @@ config BR2_TARGET_UBOOT_NETWORK
 	select BR2_LEGACY
 	help
 	  U-Boot's custom network settings options have been removed.
-
-config BR2_PACKAGE_OPENCV_LIB_CONTRIB
-	bool "opencv contrib module no longer exists"
-	select BR2_LEGACY
-	help
-	  OpenCV >=3.0 does not come with in-tree contrib modules.
-
-	  They have been moved out of the OpenCV base tree, into the opencv_contrib
-	  repository:
-	    https://github.com/Itseez/opencv_contrib
-
-config BR2_PACKAGE_OPENCV_LIB_GPU
-	bool "opencv gpu module no longer exists"
-	select BR2_LEGACY
-	help
-	  opencv_gpu module no longer exists as is in OpenCV >=3.0.
-
-	  It has been split into several modules prefixed with "cuda" that require
-	  Cuda programming toolkit, which is not available in Buildroot. So cuda
-	  modules are forcibly disabled in Buildroot.
-
-config BR2_PACKAGE_OPENCV_LIB_LEGACY
-	bool "opencv legacy module no longer exists"
-	select BR2_LEGACY
-	help
-	  opencv_legacy module no longer exists in OpenCV >=3.0.
-
-config BR2_PACKAGE_OPENCV_LIB_NONFREE
-	bool "opencv nonfree module no longer exists"
-	select BR2_LEGACY
-	help
-	  opencv_nonfree module no longer exists in OpenCV >=3.0.
 
 ###############################################################################
 comment "Legacy options removed in 2015.05"
@@ -244,6 +612,7 @@ config BR2_PACKAGE_TIFF_TIFFCP
 
 config BR2_LINUX_KERNEL_EXT_RTAI_PATCH
 	bool "RTAI patch file path has been removed"
+	select BR2_LEGACY
 	help
 	  This option has never worked, so it has been removed.
 
@@ -286,6 +655,19 @@ config BR2_PACKAGE_WDCTL
 	help
 	  util-linux' wdctl option has been renamed to BR2_PACKAGE_UTIL_LINUX_WDCTL
 	  to be aligned with how the other options are named.
+
+config BR2_PACKAGE_UTIL_LINUX_ARCH
+	bool "util-linux' arch option has been removed"
+	select BR2_LEGACY
+	help
+	  util-linux' arch was dropped in util-linux 2.23, in favor of
+	  the coreutils version.
+
+config BR2_PACKAGE_UTIL_LINUX_DDATE
+	bool "util-linux' ddate option has been removed"
+	select BR2_LEGACY
+	help
+	  util-linux' ddate was dropped in util-linux 2.23.
 
 config BR2_PACKAGE_RPM_BZIP2_PAYLOADS
 	bool "rpm's bzip2 payloads option has been removed"
@@ -565,6 +947,7 @@ config BR2_PACKAGE_XLIB_LIBPCIACCESS
 
 config BR2_PACKAGE_LINUX_FIRMWARE_XC5000
 	bool "Xceive xc5000 option has been renamed"
+	select BR2_LEGACY
 	select BR2_PACKAGE_LINUX_FIRMWARE_XCx000
 	help
 	  The Xceive xc5000 option now also handles older firmwares from
@@ -573,6 +956,7 @@ config BR2_PACKAGE_LINUX_FIRMWARE_XC5000
 
 config BR2_PACKAGE_LINUX_FIRMWARE_CXGB4
 	bool "Chelsio T4 option has been renamed"
+	select BR2_LEGACY
 	select BR2_PACKAGE_LINUX_FIRMWARE_CXGB4_T4
 	help
 	  The Chelsio T4 option BR2_PACKAGE_LINUX_FIRMWARE_CXGB4
@@ -581,6 +965,7 @@ config BR2_PACKAGE_LINUX_FIRMWARE_CXGB4
 
 config BR2_PACKAGE_LINUX_FIRMWARE_IWLWIFI_3160_7260_7
 	bool "BR2_PACKAGE_LINUX_FIRMWARE_IWLWIFI_3160_7260_7 has been renamed"
+	select BR2_LEGACY
 	help
 	  The option BR2_PACKAGE_LINUX_FIRMWARE_IWLWIFI_3160_7260_7 was
 	  renamed to BR2_PACKAGE_LINUX_FIRMWARE_IWLWIFI_REV_7. You must
@@ -591,6 +976,7 @@ config BR2_PACKAGE_LINUX_FIRMWARE_IWLWIFI_3160_7260_7
 
 config BR2_PACKAGE_LINUX_FIRMWARE_IWLWIFI_3160_7260_8
 	bool "BR2_PACKAGE_LINUX_FIRMWARE_IWLWIFI_3160_7260_8 has been renamed"
+	select BR2_LEGACY
 	help
 	  The option BR2_PACKAGE_LINUX_FIRMWARE_IWLWIFI_3160_7260_8 was
 	  renamed to BR2_PACKAGE_LINUX_FIRMWARE_IWLWIFI_REV_8. You must
@@ -613,12 +999,12 @@ config BR2_PACKAGE_LIBELF
 
 config BR2_KERNEL_HEADERS_3_8
 	bool "kernel headers version 3.8.x are no longer supported"
-	select BR2_KERNEL_HEADERS_3_9
+	select BR2_KERNEL_HEADERS_3_10
 	select BR2_LEGACY
 	help
 	  Version 3.8.x of the Linux kernel headers have been deprecated
 	  for more than four buildroot releases and are now removed.
-	  As an alternative, version 3.9.x of the headers have been
+	  As an alternative, version 3.10.x of the headers have been
 	  automatically selected in your configuration.
 
 config BR2_PACKAGE_GETTEXT_TOOLS
@@ -771,22 +1157,22 @@ config BR2_PACKAGE_EVTEST_CAPTURE
 
 config BR2_KERNEL_HEADERS_3_6
 	bool "kernel headers version 3.6.x are no longer supported"
-	select BR2_KERNEL_HEADERS_3_9
+	select BR2_KERNEL_HEADERS_3_10
 	select BR2_LEGACY
 	help
 	  Version 3.6.x of the Linux kernel headers have been deprecated
 	  for more than four buildroot releases and are now removed.
-	  As an alternative, version 3.8.x of the headers have been
+	  As an alternative, version 3.10.x of the headers have been
 	  automatically selected in your configuration.
 
 config BR2_KERNEL_HEADERS_3_7
 	bool "kernel headers version 3.7.x are no longer supported"
-	select BR2_KERNEL_HEADERS_3_9
+	select BR2_KERNEL_HEADERS_3_10
 	select BR2_LEGACY
 	help
 	  Version 3.7.x of the Linux kernel headers have been deprecated
 	  for more than four buildroot releases and are now removed.
-	  As an alternative, version 3.8.x of the headers have been
+	  As an alternative, version 3.10.x of the headers have been
 	  automatically selected in your configuration.
 
 config BR2_PACKAGE_VALA
@@ -928,18 +1314,21 @@ comment "Legacy options removed in 2014.02"
 
 config BR2_sh2
 	bool "sh2 support removed"
+	select BR2_LEGACY
 	help
 	  Due to an inexistent user base and generally poor Linux
 	  support, the support for the SH2 architecture was removed.
 
 config BR2_sh3
 	bool "sh3 support removed"
+	select BR2_LEGACY
 	help
 	  Due to an inexistent user base and generally poor Linux
 	  support, the support for the SH3 architecture was removed.
 
 config BR2_sh3eb
 	bool "sh3eb support removed"
+	select BR2_LEGACY
 	help
 	  Due to an inexistent user base and generally poor Linux
 	  support, the support for the SH3eb architecture was removed.
@@ -966,12 +1355,12 @@ config BR2_KERNEL_HEADERS_3_3
 
 config BR2_KERNEL_HEADERS_3_5
 	bool "kernel headers version 3.5.x are no longer supported"
-	select BR2_KERNEL_HEADERS_3_9
+	select BR2_KERNEL_HEADERS_3_10
 	select BR2_LEGACY
 	help
 	  Version 3.5.x of the Linux kernel headers have been deprecated
 	  for more than four buildroot releases and are now removed.
-	  As an alternative, version 3.8.x of the headers have been
+	  As an alternative, version 3.10.x of the headers have been
 	  automatically selected in your configuration.
 
 config BR2_GDB_VERSION_7_2

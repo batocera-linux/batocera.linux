@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-MUSL_VERSION = 1.1.10
+MUSL_VERSION = 1.1.12
 MUSL_SITE = http://www.musl-libc.org/releases
 MUSL_LICENSE = MIT
 MUSL_LICENSE_FILES = COPYRIGHT
@@ -28,7 +28,9 @@ define MUSL_CONFIGURE_CMDS
 			--host=$(GNU_TARGET_NAME) \
 			--prefix=/usr \
 			--libdir=/lib \
-			--disable-gcc-wrapper)
+			--disable-gcc-wrapper \
+			--enable-static \
+			$(if $(BR2_STATIC_LIBS),--disable-shared,--enable-shared))
 endef
 
 define MUSL_BUILD_CMDS

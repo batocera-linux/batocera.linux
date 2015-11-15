@@ -40,15 +40,22 @@ endif
 
 # Grub2 is kind of special: it considers CC, LD and so on to be the
 # tools to build the native tools (i.e to be executed on the build
-# machine), and uses TARGET_CC, TARGET_CFLAGS, TARGET_CPPFLAGS to
-# build the bootloader itself.
+# machine), and uses TARGET_CC, TARGET_CFLAGS, TARGET_CPPFLAGS,
+# TARGET_LDFLAGS to build the bootloader itself. However, to add to
+# the confusion, it also uses NM, OBJCOPY and STRIP to build the
+# bootloader itself; none of these are used to build the native
+# tools.
 
 GRUB2_CONF_ENV = \
 	$(HOST_CONFIGURE_OPTS) \
 	CPP="$(HOSTCC) -E" \
 	TARGET_CC="$(TARGET_CC)" \
 	TARGET_CFLAGS="$(TARGET_CFLAGS)" \
-	TARGET_CPPFLAGS="$(TARGET_CPPFLAGS)"
+	TARGET_CPPFLAGS="$(TARGET_CPPFLAGS)" \
+	TARGET_LDFLAGS="$(TARGET_LDFLAGS)" \
+	NM="$(TARGET_NM)" \
+	OBJCOPY="$(TARGET_OBJCOPY)" \
+	STRIP="$(TARGET_STRIP)"
 
 GRUB2_CONF_OPTS = \
 	--target=$(GRUB2_TARGET) \
@@ -67,6 +74,13 @@ GRUB2_CONF_OPTS = \
 
 GRUB2_INSTALL_TARGET_OPTS = DESTDIR=$(HOST_DIR) install
 
+ifeq ($(BR2_TARGET_GRUB2_I386_PC),y)
+define GRUB2_IMAGE_INSTALL_ELTORITO
+	cat $(HOST_DIR)/usr/lib/grub/$(GRUB2_TUPLE)/cdboot.img $(GRUB2_IMAGE) > \
+		$(BINARIES_DIR)/grub-eltorito.img
+endef
+endif
+
 define GRUB2_IMAGE_INSTALLATION
 	mkdir -p $(dir $(GRUB2_IMAGE))
 	$(HOST_DIR)/usr/bin/grub-mkimage \
@@ -76,10 +90,9 @@ define GRUB2_IMAGE_INSTALLATION
 		-p "$(GRUB2_PREFIX)" \
 		$(if $(GRUB2_BUILTIN_CONFIG),-c $(GRUB2_BUILTIN_CONFIG)) \
 		$(GRUB2_BUILTIN_MODULES)
-	cat $(HOST_DIR)/usr/lib/grub/$(GRUB2_TUPLE)/cdboot.img $(GRUB2_IMAGE) > \
-		$(BINARIES_DIR)/grub-eltorito.img
 	mkdir -p $(dir $(GRUB2_CFG))
 	$(INSTALL) -D -m 0644 boot/grub2/grub.cfg $(GRUB2_CFG)
+	$(GRUB2_IMAGE_INSTALL_ELTORITO)
 endef
 GRUB2_POST_INSTALL_TARGET_HOOKS += GRUB2_IMAGE_INSTALLATION
 

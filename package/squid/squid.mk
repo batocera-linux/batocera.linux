@@ -5,7 +5,7 @@
 ################################################################################
 
 SQUID_VERSION_MAJOR = 3.5
-SQUID_VERSION = $(SQUID_VERSION_MAJOR).6
+SQUID_VERSION = $(SQUID_VERSION_MAJOR).11
 SQUID_SOURCE = squid-$(SQUID_VERSION).tar.xz
 SQUID_SITE = http://www.squid-cache.org/Versions/v3/$(SQUID_VERSION_MAJOR)
 SQUID_LICENSE = GPLv2+
@@ -90,7 +90,7 @@ define SQUID_INSTALL_INIT_SYSV
 endef
 
 define SQUID_INSTALL_INIT_SYSTEMD
-	$(INSTALL) -D -m 0644 $(@D)/tools/squid.service \
+	$(INSTALL) -D -m 0644 $(@D)/tools/systemd/squid.service \
 		$(TARGET_DIR)/usr/lib/systemd/system/squid.service
 	mkdir -p $(TARGET_DIR)/etc/systemd/system/multi-user.target.wants
 	ln -sf ../../../..//usr/lib/systemd/system/squid.service \

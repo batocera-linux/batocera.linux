@@ -54,6 +54,7 @@ VLC_CONF_OPTS += \
 	--disable-mfx \
 	--disable-vdpau \
 	--disable-addonmanagermodules \
+	--enable-run-as-root \
 
 # Building static and shared doesn't work, so force static off.
 ifeq ($(BR2_STATIC_LIBS),)
@@ -153,9 +154,13 @@ else
 VLC_CONF_OPTS += --disable-gles2
 endif
 
-ifeq ($(BR2_PACKAGE_OPENCV),y)
+ifeq ($(BR2_PACKAGE_OPENCV)$(BR2_PACKAGE_OPENCV3),y)
 VLC_CONF_OPTS += --enable-opencv
+ifeq ($(BR2_PACKAGE_OPENCV),y)
 VLC_DEPENDENCIES += opencv
+else
+VLC_DEPENDENCIES += opencv3
+endif
 else
 VLC_CONF_OPTS += --disable-opencv
 endif
@@ -319,6 +324,13 @@ VLC_CONF_OPTS += --enable-speex
 VLC_DEPENDENCIES += speex
 else
 VLC_CONF_OPTS += --disable-speex
+endif
+
+ifeq ($(BR2_PACKAGE_TAGLIB),y)
+VLC_CONF_OPTS += --enable-taglib
+VLC_DEPENDENCIES += taglib
+else
+VLC_CONF_OPTS += --disable-taglib
 endif
 
 ifeq ($(BR2_PACKAGE_TREMOR),y)

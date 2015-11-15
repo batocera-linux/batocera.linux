@@ -21,7 +21,7 @@ choice
 	prompt "Kernel version"
 
 config BR2_LINUX_KERNEL_LATEST_VERSION
-	bool "4.1.3"
+	bool "4.3"
 
 config BR2_LINUX_KERNEL_SAME_AS_HEADERS
 	bool "Same as toolchain kernel headers"
@@ -109,7 +109,7 @@ config BR2_LINUX_KERNEL_CUSTOM_LOCAL_PATH
 
 config BR2_LINUX_KERNEL_VERSION
 	string
-	default "4.1.3" if BR2_LINUX_KERNEL_LATEST_VERSION
+	default "4.3" if BR2_LINUX_KERNEL_LATEST_VERSION
 	default BR2_DEFAULT_KERNEL_HEADERS if BR2_LINUX_KERNEL_SAME_AS_HEADERS
 	default BR2_LINUX_KERNEL_CUSTOM_VERSION_VALUE \
 		if BR2_LINUX_KERNEL_CUSTOM_VERSION
@@ -205,6 +205,10 @@ config BR2_LINUX_KERNEL_ZIMAGE
 		   BR2_powerpc64 || BR2_powerpc64le || BR2_sparc || \
 		   BR2_sh || BR2_sh64 || BR2_xtensa
 
+config BR2_LINUX_KERNEL_ZIMAGE_EPAPR
+	bool "zImage.epapr"
+	depends on BR2_powerpc64 || BR2_powerpc64le
+
 config BR2_LINUX_KERNEL_APPENDED_ZIMAGE
 	bool "zImage with appended DT"
 	depends on BR2_arm || BR2_armeb
@@ -224,6 +228,10 @@ config BR2_LINUX_KERNEL_SIMPLEIMAGE
 	select BR2_LINUX_KERNEL_UBOOT_IMAGE
 	select BR2_LINUX_KERNEL_DTS_SUPPORT
 	select BR2_LINUX_KERNEL_DTB_IS_SELF_BUILT
+
+config BR2_LINUX_KERNEL_IMAGE
+	bool "Image"
+	depends on BR2_aarch64
 
 config BR2_LINUX_KERNEL_LINUX_BIN
 	bool "linux.bin"

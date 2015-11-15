@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-WPA_SUPPLICANT_VERSION = 2.4
+WPA_SUPPLICANT_VERSION = 2.5
 WPA_SUPPLICANT_SITE = http://hostap.epitest.fi/releases
 WPA_SUPPLICANT_LICENSE = GPLv2/BSD-3c
 WPA_SUPPLICANT_LICENSE_FILES = README
@@ -32,7 +32,7 @@ WPA_SUPPLICANT_CONFIG_DISABLE = \
 # libnl-3 needs -lm (for rint) and -lpthread if linking statically
 # And library order matters hence stick -lnl-3 first since it's appended
 # in the wpa_supplicant Makefiles as in LIBS+=-lnl-3 ... thus failing
-ifeq ($(BR2_PACKAGE_LIBNL),y)
+ifeq ($(BR2_PACKAGE_WPA_SUPPLICANT_NL80211),y)
 ifeq ($(BR2_STATIC_LIBS),y)
 WPA_SUPPLICANT_LIBS += -lnl-3 -lm -lpthread
 endif
@@ -45,6 +45,10 @@ endif
 # Trailing underscore on purpose to not enable CONFIG_EAPOL_TEST
 ifeq ($(BR2_PACKAGE_WPA_SUPPLICANT_EAP),y)
 WPA_SUPPLICANT_CONFIG_ENABLE += CONFIG_EAP_
+# uses dlopen()
+ifeq ($(BR2_STATIC_LIBS),y)
+WPA_SUPPLICANT_CONFIG_DISABLE += CONFIG_EAP_TNC
+endif
 else
 WPA_SUPPLICANT_CONFIG_DISABLE += CONFIG_EAP
 endif

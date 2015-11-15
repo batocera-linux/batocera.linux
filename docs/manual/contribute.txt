@@ -25,7 +25,7 @@ for more information on obtaining a Buildroot git tree.
 === Reproducing, analyzing and fixing bugs
 
 A first way of contributing is to have a look at the open bug reports in
-the https://bugs.busybox.net/buglist.cgi?product=buildroot[Buildroot bug
+the https://bugs.buildroot.org/buglist.cgi?product=buildroot[Buildroot bug
 tracker]. As we strive to keep the bug count as small as possible, all
 help in reproducing, analyzing and fixing reported bugs is more than
 welcome. Don't hesitate to add a comment to bug reports reporting your
@@ -297,6 +297,28 @@ This can be easily handled with +git format-patch+ by using the option
 $ git format-patch --subject-prefix "PATCH v4" \
     -M -s -o outgoing origin/master
 ---------------------
+
+Since git version 1.8.1, you can also use +-v <n>+ (where <n> is the
+version number):
+
+---------------------
+$ git format-patch -v4 -M -s -o outgoing origin/master
+---------------------
+
+When you provide a new version of a patch, please mark the old one as
+superseded in http://patchwork.buildroot.org[patchwork]. You need to
+create an account on http://patchwork.buildroot.org[patchwork] to be
+able to modify the status of your patches. Note that you can only change
+the status of patches you submitted yourself, which means the email
+address you register in http://patchwork.buildroot.org[patchwork] should
+match the one you use for sending patches to the mailing list.
+
+You can also add the +--in-reply-to <message-id>+ option when
+submitting a patch to the mailing list. The id of the mail to reply to
+can be found under the "Message Id" tag on
+http://patchwork.buildroot.org[patchwork].  The advantage of
+*in-reply-to* is that patchwork will automatically mark the previous
+version of the patch as superseded.
 
 [[reporting-bugs]]
 === Reporting issues/bugs or getting help
