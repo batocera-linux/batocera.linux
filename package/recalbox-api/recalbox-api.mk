@@ -26,9 +26,9 @@ define RECALBOX_API_INSTALL_TARGET_CMDS
 
 endef
 
-
-define RECALBOX_API_INSTALL_INIT_SYSV
+# Must be on fsoverlay and is already here :)
+#define RECALBOX_API_INSTALL_INIT_SYSV
 	#TODO The init script shouldn't start by default
 	#$(INSTALL) -m 0755 -D package/RECALBOX_API/S92RECALBOX_API $(TARGET_DIR)/etc/init.d/S92RECALBOX_API
-endef
+#endef
 $(eval $(generic-package))
