@@ -5,6 +5,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased][unreleased]
 - Corrected sound issues with IREM games on libretro-mame2003 core
 - Updated libretro-fba core from FBA 0.2.97.36 to FBA 0.2.97.37
+- Add recalbox api
 
 ## [3.3.0-beta14] - 2015-11-01
 - Corrected recalbox manager
