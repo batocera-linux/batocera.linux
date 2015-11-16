@@ -5,7 +5,7 @@
 ################################################################################
 DB9_GPIO_RPI_VERSION = 1.0
 DB9_GPIO_RPI_SOURCE = db9-gpio-rpi-dkms_$(DB9_GPIO_RPI_VERSION)_all.deb
-DB9_GPIO_RPI_SITE = http://www.niksula.hut.fi/~mhiienka/Rpi/
+DB9_GPIO_RPI_SITE = http://www.niksula.hut.fi/~mhiienka/Rpi
 
 DB9_GPIO_RPI_DEPENDENCIES = linux
 

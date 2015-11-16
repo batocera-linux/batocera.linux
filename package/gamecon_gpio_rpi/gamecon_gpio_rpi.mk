@@ -5,7 +5,7 @@
 ################################################################################
 GAMECON_GPIO_RPI_VERSION = 1.0
 GAMECON_GPIO_RPI_SOURCE = gamecon-gpio-rpi-dkms_$(GAMECON_GPIO_RPI_VERSION)_all.deb
-GAMECON_GPIO_RPI_SITE = http://www.niksula.hut.fi/~mhiienka/Rpi/
+GAMECON_GPIO_RPI_SITE = http://www.niksula.hut.fi/~mhiienka/Rpi
 
 GAMECON_GPIO_RPI_DEPENDENCIES = linux
 
