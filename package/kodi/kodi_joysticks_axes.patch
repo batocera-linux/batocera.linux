@@ -1,0 +1,53 @@
+diff --git a/xbmc/input/SDLJoystick.cpp b/xbmc/input/SDLJoystick.cpp
+index 1ccffae..211343a 100644
+--- a/xbmc/input/SDLJoystick.cpp
++++ b/xbmc/input/SDLJoystick.cpp
+@@ -201,7 +201,14 @@ void CJoystick::Update()
+   {
+     MapAxis(m_AxisIdx, joy, axisNum);
+     // CLog::Log(LOGDEBUG, "Joystick %d Axis %d Amount %d", JoystickIndex(joy), axisNum + 1, m_Axes[m_AxisIdx].val);
++
++    if(m_pressTicksAxisN != m_AxisIdx) {
++      m_pressTicksAxis = SDL_GetTicks();
++    }
++  } else {
++    m_pressTicksAxis = 0;
+   }
++  m_pressTicksAxisN = m_AxisIdx;
+ 
+   if (hatIdx == -1 && m_HatIdx != -1)
+   {
+@@ -321,6 +328,20 @@ bool CJoystick::GetAxis(std::string &joyName, int& id) const
+   MapAxis(m_AxisIdx, joy, id);
+   joyName = std::string(SDL_JoystickName(joy));
+ 
++  static uint32_t lastPressTicksAxis = 0;
++  // allow it if it is the first press
++  if (lastPressTicksAxis < m_pressTicksAxis)
++  {
++    lastPressTicksAxis = m_pressTicksAxis;
++    return true;
++  }
++  uint32_t nowTicks = SDL_GetTicks();
++  if (nowTicks - m_pressTicksAxis < 500) // 500ms delay before we repeat
++    return false;
++  if (nowTicks - lastPressTicksAxis < 100) // 100ms delay before successive repeats
++    return false;
++  lastPressTicksAxis = nowTicks;
++  
+   return true;
+ }
+ 
+diff --git a/xbmc/input/SDLJoystick.h b/xbmc/input/SDLJoystick.h
+index 0be0641..64f122c 100644
+--- a/xbmc/input/SDLJoystick.h
++++ b/xbmc/input/SDLJoystick.h
+@@ -119,6 +119,8 @@ private:
+   bool m_joystickEnabled;
+   uint32_t m_pressTicksButton;
+   uint32_t m_pressTicksHat;
++  uint32_t m_pressTicksAxis;
++  int m_pressTicksAxisN;
+   std::map<int, SDL_Joystick*> m_Joysticks;
+   std::map<boost::shared_ptr<CRegExp>, AxesConfig> m_AxesConfigs; // <joy, <axis num, isTrigger, restState> >
+ };
