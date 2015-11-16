@@ -13,6 +13,10 @@ case "$1" in
   start)
 	echo "`logtime` : starting new log " > $log
 
+	# Dos carriage return characters
+	echo "`logtime` : converting dos to unix carriage return characters" >> $log
+	sed -i 's/\r//g' /recalbox/share/system/recalbox.conf
+
 	# Volume 
 	settingsVolume="`$systemsetting -command load -key audio.volume`"
 	if [ "$settingsVolume" != "" ];then

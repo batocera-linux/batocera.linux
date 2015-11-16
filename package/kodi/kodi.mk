@@ -30,7 +30,9 @@ KODI_CONF_ENV = \
 
 KODI_CONF_OPTS +=  \
 	--with-ffmpeg=shared \
-	--disable-joystick \
+	--disable-crystalhd \
+	--disable-hal \
+	--enable-joystick \
 	--disable-openmax \
 	--disable-projectm \
 	--disable-pulse \

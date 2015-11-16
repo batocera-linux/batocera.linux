@@ -1,0 +1,73 @@
+diff --git a/configure.in b/configure.in
+index 0c223a8..7d61e24 100644
+--- a/configure.in
++++ b/configure.in
+@@ -676,7 +676,6 @@ case $host in
+   arm*-*-linux-gnu*|arm*-*-linux-uclibc*)
+      ARCH="arm"
+      use_arch="arm"
+-     use_joystick=no
+      use_neon=yes
+      use_gles=yes
+      use_gl=no
+@@ -1237,6 +1236,14 @@ fi
+   fi
+ fi
+ 
++if test "x$use_sdl" != "xyes" -a "x$use_joystick" != "xno" ; then
++    PKG_CHECK_MODULES([SDL2],   [sdl2],
++      [AC_DEFINE([SDL_VERSION],[2],["SDL major version"])
++       INCLUDES="$INCLUDES $SDL2_CFLAGS"; LIBS="$LIBS $SDL2_LIBS";]
++    )
++    # don't set HAVE_SDL here, while in kodi, it means more than just SDL and HAVE_JOYSTICK implies SDL
++fi
++
+ XB_FIND_SONAME([OGG],         [ogg])
+ XB_FIND_SONAME([VORBIS],      [vorbis])
+ XB_FIND_SONAME([VORBISFILE],  [vorbisfile])
+diff --git a/xbmc/input/SDLJoystick.cpp b/xbmc/input/SDLJoystick.cpp
+index 21b26cb..1ccffae 100644
+--- a/xbmc/input/SDLJoystick.cpp
++++ b/xbmc/input/SDLJoystick.cpp
+@@ -79,6 +79,13 @@ void CJoystick::Initialize()
+   SetDeadzone(g_advancedSettings.m_controllerDeadzone);
+ 
+   // joysticks will be loaded once SDL sees them
++#ifdef HAS_SDL_JOYSTICK
++#ifndef HAS_SDL
++  for(int i=0; i<SDL_NumJoysticks(); i++) {
++    AddJoystick(i);
++  }
++#endif
++#endif
+ }
+ 
+ void CJoystick::AddJoystick(int joyIndex)
+diff --git a/xbmc/input/linux/LinuxInputDevices.cpp b/xbmc/input/linux/LinuxInputDevices.cpp
+index 0b0f7ae..28fb5c4 100644
+--- a/xbmc/input/linux/LinuxInputDevices.cpp
++++ b/xbmc/input/linux/LinuxInputDevices.cpp
+@@ -956,6 +956,23 @@ bool CLinuxInputDevices::CheckDevice(const char *device)
+   if (fd < 0)
+     return false;
+ 
++  // let others handle joysticks
++  unsigned long evbit[NBITS(EV_MAX)] = { 0 };
++  unsigned long keybit[NBITS(KEY_MAX)] = { 0 };
++  unsigned long absbit[NBITS(ABS_MAX)] = { 0 };
++
++  if (!((ioctl(fd, EVIOCGBIT(0, sizeof(evbit)), evbit) < 0) ||
++	(ioctl(fd, EVIOCGBIT(EV_KEY, sizeof(keybit)), keybit) < 0) ||
++	(ioctl(fd, EVIOCGBIT(EV_ABS, sizeof(absbit)), absbit) < 0))) {
++    if (test_bit(EV_KEY, evbit) && test_bit(EV_ABS, evbit) &&
++	test_bit(ABS_X, absbit) && test_bit(ABS_Y, absbit)) {
++      CLog::Log(LOGNOTICE, "Avoiding joystick as normal input device - %s\n", device);
++      close(fd);
++      return false;
++    }
++  }
++  //
++
+   if (ioctl(fd, EVIOCGRAB, 1) && errno != EINVAL)
+   {
+     close(fd);

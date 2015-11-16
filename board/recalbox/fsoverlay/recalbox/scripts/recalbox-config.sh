@@ -11,6 +11,20 @@ extra1="$3"
 extra2="$4"
 version=`cat /recalbox/recalbox.arch`
 
+waitWifi() {
+  DEVICE=$1
+  TIMEOUT=$2
+
+  N=0
+  while test $N -lt $TIMEOUT
+  do
+    wpa_cli -i"$DEVICE" status | grep -qE '^wpa_state=COMPLETED$' && return 0
+    sleep 1
+    let N++
+  done
+  return 1
+}
+
 log=/root/recalbox.log
 wpafile=/etc/wpa_supplicant/wpa_supplicant.conf
 systemsetting="python /usr/lib/python2.7/site-packages/configgen/settings/recalboxSettings.pyc"
@@ -283,7 +297,7 @@ if [[ "$command" == "wifi" ]]; then
                 killall wpa_supplicant >> $log
                 /sbin/ifdown $wlan >> $log
                 /usr/sbin/wpa_supplicant -i$wlan -c/etc/wpa_supplicant/wpa_supplicant.conf &
-                sleep 4
+                waitWifi $wlan 20
                 /sbin/ifup $wlan >> $log
                 ifconfig $wlan | grep "inet addr" >> $log
                 exit $?
