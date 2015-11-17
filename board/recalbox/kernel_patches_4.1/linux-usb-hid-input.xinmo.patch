@@ -1,0 +1,19 @@
+--- a/drivers/hid/hid-input.c	2015-04-14 01:05:54.000000000 +0200
++++ b/drivers/hid/hid-input.c	2015-06-29 16:06:50.546064561 +0200
+@@ -602,11 +602,11 @@
+ 		/* These usage IDs map directly to the usage codes. */
+ 		case HID_GD_X: case HID_GD_Y: case HID_GD_Z:
+ 		case HID_GD_RX: case HID_GD_RY: case HID_GD_RZ:
+-			if (field->flags & HID_MAIN_ITEM_RELATIVE)
+-				map_rel(usage->hid & 0xf);
+-			else
+-				map_abs_clear(usage->hid & 0xf);
+-			break;
++//			if (field->flags & HID_MAIN_ITEM_RELATIVE)
++//				map_rel(usage->hid & 0xf);
++//			else
++//				map_abs_clear(usage->hid & 0xf);
++//			break;
+ 
+ 		case HID_GD_SLIDER: case HID_GD_DIAL: case HID_GD_WHEEL:
+ 			if (field->flags & HID_MAIN_ITEM_RELATIVE)
