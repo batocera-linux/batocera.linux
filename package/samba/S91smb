@@ -15,6 +15,12 @@ mkdir -p /var/run/samba
 RETVAL=0
 
 start() {
+        if grep -q -E '^[ ]*system\.samba[ ]*=[ ]*0[ ]*$' /recalbox/share/system/recalbox.conf
+        then
+	  echo "SMB services: disabled"
+	  exit 0
+        fi
+
 	echo -n "Starting SMB services: "
 	smbd -D
 	RETVAL=$?
