@@ -1,5 +1,5 @@
 --- a/data/InputAutoCfg.ini	2015-08-07 09:27:44.790555983 +0200
-+++ b/data/InputAutoCfg.ini	2015-08-19 16:51:22.048045596 +0200
++++ b/data/InputAutoCfg.ini	2015-11-07 16:09:39.710041641 +0100
 @@ -721,15 +721,15 @@
  DPad L = hat(0 Left)
  DPad D = hat(0 Down)
@@ -22,7 +22,7 @@
  L Trig = button(4)
  Mempak switch = 
  Rumblepak switch = 
-@@ -1731,3 +1731,78 @@
+@@ -1731,3 +1731,128 @@
  X Axis = axis(0-,0+)
  Y Axis = axis(1-,1+)
  
@@ -95,6 +95,56 @@
 +C Button L = axis(2-)
 +C Button D = axis(3+)
 +C Button U = axis(3-)
++R Trig = button(7)
++L Trig = button(6)
++Mempak switch =
++Rumblepak switch =
++X Axis = axis(0-,0+)
++Y Axis = axis(1-,1+)
++
++[Microntek USB Joystick ]
++plugged = True
++plugin = 2
++mouse = False
++AnalogDeadzone = 4096,4096
++AnalogPeak = 32768,32768
++DPad R = hat(0 Right)
++DPad L = hat(0 Left)
++DPad D = hat(0 Down)
++DPad U = hat(0 Up)
++Start = button(9)
++Z Trig = button(7)
++B Button = button(2)
++A Button = button(1)
++C Button R = axis(3+)
++C Button L = axis(3-)
++C Button D = axis(2+)
++C Button U = axis(2-)
++R Trig = button(5)
++L Trig = button(4)
++Mempak switch = button(6)
++Rumblepak switch =
++X Axis = axis(0-,0+)
++Y Axis = axis(1-,1+)
++
++[XiaoMi Bluetooth Wireless GameController ]
++plugged = True
++plugin = 2
++mouse = False
++AnalogDeadzone = 4096,4096
++AnalogPeak = 32768,32768
++DPad R = hat(0 Right)
++DPad L = hat(0 Left)
++DPad D = hat(0 Down)
++DPad U = hat(0 Up)
++Start = button(11)
++Z Trig = button(9)
++B Button = button(3)
++A Button = button(0)
++C Button R = axis(2+)
++C Button L = axis(2-)
++C Button D = axis(5+)
++C Button U = axis(5-)
 +R Trig = button(7)
 +L Trig = button(6)
 +Mempak switch =
