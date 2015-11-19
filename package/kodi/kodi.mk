@@ -15,7 +15,7 @@ KODI_INSTALL_STAGING = YES
 # GUI and pack them in a blob.
 # http://wiki.xbmc.org/index.php?title=TexturePacker
 KODI_DEPENDENCIES = host-gawk host-gettext host-gperf host-infozip host-lzo \
-	host-nasm host-sdl_image host-swig
+	host-nasm host-sdl_image host-swig sdl2
 KODI_DEPENDENCIES += boost bzip2 expat ffmpeg fontconfig freetype jasper jpeg \
 	libass libcdio libcurl libfribidi libgcrypt libmad libmodplug libmpeg2 \
 	libogg libplist libpng libsamplerate libvorbis libxml2 libxslt lzo ncurses \
@@ -92,7 +92,7 @@ endif
 # by a modular Xorg server, which Kodi already depends on.
 ifeq ($(BR2_PACKAGE_KODI_GL),y)
 KODI_DEPENDENCIES += libglew libglu libgl sdl_image xlib_libX11 xlib_libXext \
-	xlib_libXmu xlib_libXrandr xlib_libXt libdrm sdl2
+	xlib_libXmu xlib_libXrandr xlib_libXt libdrm
 KODI_CONF_OPTS += --enable-gl --enable-sdl --enable-x11 --enable-xrandr --disable-gles
 ifeq ($(BR2_PACKAGE_KODI_RSXS),y)
 # fix rsxs compile
