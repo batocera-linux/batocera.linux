@@ -73,7 +73,7 @@ scrape () {
     desc=$(xml sel -t -v "Data/Game/Overview" "$xmlfilename")
 
     # A few steps to get the cover art url
-    imgurl=$(xml sel -t -v "Data/baseImgUrl" -v "Data/Game/Images/boxart[@side='front']" "$xmlfilename")
+    imgurl=$(xml sel -t -v "Data/baseImgUrl" -v "Data/Game/Images/boxart[@side='front']/@thumb" "$xmlfilename")
     extension=$(echo $imgurl | awk -F . '{print $NF}')
     img=$IMGPATH/${gamename}.${extension}
     wget $imgurl -O "$img" >/dev/null 2>&1
