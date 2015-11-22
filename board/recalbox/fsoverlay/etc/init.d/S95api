@@ -41,14 +41,17 @@ status() {
 case "$1" in
     start)
    	enabled="`$systemsetting  -command load -key system.api.enabled`"
-    	if [ "$enabled" != "0" ];then
+    	if [ "$enabled" == "1" ];then
         	start
 	else
         	echo "Will not start $NAME : system.api.enabled is set to 0" >> $log
     	fi
         ;;
     stop)
-        stop
+        enabled="`$systemsetting  -command load -key system.api.enabled`"
+        if [ "$enabled" == "1" ];then
+                stop
+        fi
         ;;
     status)
         status
