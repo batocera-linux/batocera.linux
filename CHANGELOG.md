@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased][unreleased]
 
+## [3.3.0-beta16] - 2015-11-24
+- Corrected kodi start
+- Bumped to moonlight-embedded-2.1.2
+
 ## [3.3.0-beta15] - 2015-11-22
 - Corrected sound issues with IREM games on libretro-mame2003 core
 - Updated libretro-fba core from FBA 0.2.97.36 to FBA 0.2.97.37
