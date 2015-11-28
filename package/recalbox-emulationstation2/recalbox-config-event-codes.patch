@@ -66,7 +66,7 @@ index f8a392c..499498b 100644
  
          if(playerInputConfig != NULL){
              command << "-p" << player+1 << "index " <<  playerInputConfig->getDeviceIndex() << " -p" << player+1 << "guid " << playerInputConfig->getDeviceGUIDString() << " -p" << player+1 << "name \"" <<  playerInputConfig->getDeviceName() << "\" ";
-+	    command << "-p" << player+1 << "devicepath " <<  SDL_JoystickDevicePathById(playerInputConfig->getDeviceIndex());
++	    command << "-p" << player+1 << "devicepath " <<  SDL_JoystickDevicePathById(playerInputConfig->getDeviceIndex()) << " ";
          }/*else {
              command << " " << "DEFAULT" << " -1 DEFAULTDONOTFINDMEINCOMMAND";
          }*/
