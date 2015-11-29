@@ -1,7 +1,7 @@
 #!/bin/bash
 
-es_settings="/root/.emulationstation/es_settings.cfg"
-log=/root/recalbox.log
+es_settings="/recalbox/share/system/.emulationstation/es_settings.cfg"
+log=/recalbox/share/system/logs/
 
 
 command="$1"

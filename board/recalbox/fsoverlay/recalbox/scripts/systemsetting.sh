@@ -4,7 +4,7 @@ system_settings=/recalbox/share/system/recalbox.conf
 
 command="$1"
 argsetting="$2"
-log=/root/recalbox.log
+log=/recalbox/share/system/logs/recalbox.log
 
 if [[ "$command" == "get" ]];then
 	echo "`logtime` : systemsetting.sh - searching for $argsetting" >> $log
