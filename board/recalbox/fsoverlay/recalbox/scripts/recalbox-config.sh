@@ -25,7 +25,7 @@ waitWifi() {
   return 1
 }
 
-log=/root/recalbox.log
+log=/recalbox/share/system/logs/recalbox.log
 wpafile=/var/lib/wpa_supplicant.conf
 systemsetting="python /usr/lib/python2.7/site-packages/configgen/settings/recalboxSettings.pyc"
 
@@ -296,7 +296,7 @@ if [[ "$command" == "wifi" ]]; then
                 echo "`logtime` : starting wifi" >> $log
                 killall wpa_supplicant >> $log
                 /sbin/ifdown $wlan >> $log
-                /usr/sbin/wpa_supplicant -i$wlan -c/etc/wpa_supplicant/wpa_supplicant.conf &
+                /usr/sbin/wpa_supplicant -i$wlan -c/var/lib/wpa_supplicant.conf &
                 waitWifi $wlan 20
                 /sbin/ifup $wlan >> $log
                 ifconfig $wlan | grep "inet addr" >> $log
