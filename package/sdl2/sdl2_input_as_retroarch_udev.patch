@@ -1,0 +1,54 @@
+diff --git a/src/joystick/linux/SDL_sysjoystick.c b/src/joystick/linux/SDL_sysjoystick.c
+index c37a22d..ab894b7 100644
+--- a/src/joystick/linux/SDL_sysjoystick.c
++++ b/src/joystick/linux/SDL_sysjoystick.c
+@@ -482,21 +482,12 @@ ConfigJoystick(SDL_Joystick * joystick, int fd)
+         (ioctl(fd, EVIOCGBIT(EV_REL, sizeof(relbit)), relbit) >= 0)) {
+ 
+         /* Get the number of buttons, axes, and other thingamajigs */
+-        for (i = BTN_JOYSTICK; i < KEY_MAX; ++i) {
++        for (i = 0; i < KEY_MAX; ++i) {
+             if (test_bit(i, keybit)) {
+ #ifdef DEBUG_INPUT_EVENTS
+                 printf("Joystick has button: 0x%x\n", i);
+ #endif
+-                joystick->hwdata->key_map[i - BTN_MISC] = joystick->nbuttons;
+-                ++joystick->nbuttons;
+-            }
+-        }
+-        for (i = BTN_MISC; i < BTN_JOYSTICK; ++i) {
+-            if (test_bit(i, keybit)) {
+-#ifdef DEBUG_INPUT_EVENTS
+-                printf("Joystick has button: 0x%x\n", i);
+-#endif
+-                joystick->hwdata->key_map[i - BTN_MISC] = joystick->nbuttons;
++                joystick->hwdata->key_map[i] = joystick->nbuttons;
+                 ++joystick->nbuttons;
+             }
+         }
+@@ -753,12 +744,9 @@ HandleInputEvents(SDL_Joystick * joystick)
+             code = events[i].code;
+             switch (events[i].type) {
+             case EV_KEY:
+-                if (code >= BTN_MISC) {
+-                    code -= BTN_MISC;
+                     SDL_PrivateJoystickButton(joystick,
+                                               joystick->hwdata->key_map[code],
+                                               events[i].value);
+-                }
+                 break;
+             case EV_ABS:
+                 if (code >= ABS_MISC) {
+diff --git a/src/joystick/linux/SDL_sysjoystick_c.h b/src/joystick/linux/SDL_sysjoystick_c.h
+index 16d16e2..9782c70 100644
+--- a/src/joystick/linux/SDL_sysjoystick_c.h
++++ b/src/joystick/linux/SDL_sysjoystick_c.h
+@@ -43,7 +43,7 @@ struct joystick_hwdata
+     } *balls;
+ 
+     /* Support for the Linux 2.4 unified input interface */
+-    Uint8 key_map[KEY_MAX - BTN_MISC];
++    Uint8 key_map[KEY_MAX];
+     Uint8 abs_map[ABS_MAX];
+     struct axis_correct
+     {
