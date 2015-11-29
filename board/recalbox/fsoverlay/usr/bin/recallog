@@ -1,0 +1,4 @@
+#!/bin/sh
+log="/recalbox/share/system/logs/recalbox.log"
+echo "`logtime` : $1" >> $log
+

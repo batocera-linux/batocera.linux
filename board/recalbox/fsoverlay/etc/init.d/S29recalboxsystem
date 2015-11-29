@@ -1,26 +1,22 @@
 #!/bin/bash
 
-#essetting=/recalbox/scripts/essetting.sh
-#systemsetting=/recalbox/scripts/systemsetting.sh
 systemsetting="python /usr/lib/python2.7/site-packages/configgen/settings/recalboxSettings.pyc"
-config_script=/recalbox/scripts/recalbox-config.sh
-wpafile=/etc/wpa_supplicant/wpa_supplicant.conf
-
-log=/root/recalbox.log
-
+config_script=/recalbox/system/scripts/recalbox-config.sh
+wpafile=/var/lib/wpa_supplicant.conf
+log="/recalbox/share/system/logs/recalbox.log"
 
 case "$1" in
   start)
-	echo "`logtime` : starting new log " > $log
+	recallog "starting new log"
 
 	# Dos carriage return characters
-	echo "`logtime` : converting dos to unix carriage return characters" >> $log
+	recallog "converting dos to unix carriage return characters"
 	sed -i 's/\r//g' /recalbox/share/system/recalbox.conf
 
 	# Volume 
 	settingsVolume="`$systemsetting -command load -key audio.volume`"
 	if [ "$settingsVolume" != "" ];then
-		echo "`logtime` : setting audio volume to $settingsVolume" >> $log
+		recallog "setting audio volume to $settingsVolume"
         	eval $config_script "volume" "$settingsVolume" >> $log
 	fi
 
@@ -31,12 +27,12 @@ case "$1" in
 	if [[ "$settings_ssid" != "" ]] && [[ "$settings_key" != "" ]] ;then
 		cat $wpafile | grep network >> $log
                 if [ "$?" != "0" ]; then
-                        echo "`logtime` : creating network entry in $wpafile" >> $log
+                        recallog "creating network entry in $wpafile"
                         echo -e "network={\n\tssid=\"\"\n\tpsk=\"\"\n}" >> $wpafile
                 fi
                 sed -i "s/ssid=\".*\"/ssid=\"$settings_ssid\"/g" $wpafile
                 sed -i "s/psk=\".*\"/psk=\"$settings_key\"/g" $wpafile	
-		echo "`logtime` : updated wifi settings : ssid=$settings_ssid key=$settings_key" >> $log
+		recallog "updated wifi settings : ssid=$settings_ssid key=$settings_key"
 	fi
 
 	# Audio output
@@ -44,7 +40,7 @@ case "$1" in
 	if [[ "$settingsAudio" == "" ]];then
         		settingsAudio="auto"
 	fi
-	echo "`logtime` : setting audio to $settingsAudio" >> $log
+	recallog "setting audio to $settingsAudio"
 	eval $config_script "audio" "$settingsAudio" >> $log
 
 	# GPIO mk
@@ -52,21 +48,21 @@ case "$1" in
 	if [ "$settings_gpio_mk" == "1" ];then
 	        settings_gpio_map="`$systemsetting -command load -key controllers.gpio.args`"
 		[ "$settings_gpio_map" == "" ] && settings_gpio_map="map=1,2"
-		echo "`logtime` : enabling mk_arcade_joystick_rpi" >> $log
+		recallog "enabling mk_arcade_joystick_rpi"
         	eval $config_script "module" "load" mk_arcade_joystick_rpi "$settings_gpio_map" >> $log
 	else
 		# mk disabled let's check for db9
 		settings_db9="`$systemsetting -command load -key controllers.db9.enabled`"
 	        if [ "$settings_db9" == "1" ];then
         	        settings_db9_map="`$systemsetting -command load -key db9_args`"
-                	echo "`logtime` : enabling db9" >> $log
+                	recallog "enabling db9"
                 	eval $config_script "module" "load" db9_gpio_rpi "$settings_db9_map" >> $log
 		else 
 			# db9 and mk disabled let's check for gamecon
                 	settings_gamecon="`$systemsetting -command load -key controllers.gamecon.enabled`"
                 	if [ "$settings_gamecon" == "1" ];then
                         	settings_gamecon_map="`$systemsetting -command load -key controllers.gamecon.args`"
-                        	echo "`logtime` : enabling gamecon" >> $log
+                        	recallog "enabling gamecon"
                         	eval $config_script "module" "load" gamecon_gpio_rpi "$settings_gamecon_map" >> $log
 			fi
 		fi
@@ -75,12 +71,12 @@ case "$1" in
         settings_lang="`$systemsetting -command load -key system.language`"
         settings_kb="`$systemsetting -command load -key system.kblayout`"
         if [[ "$settings_kb" != "" ]];then
-                echo "`logtime` : setting keyboard layout to ${settings_kb}" >> $log
+                recallog "setting keyboard layout to ${settings_kb}"
 		loadkeys "$settings_kb" >> $log
         else
                 keyboardmap=`echo "$settings_lang" | cut -c1-2`
 		if [[ "$keyboardmap" != "" ]]; then
-                	echo "`logtime` : setting keyboard layout to ${keyboardmap}" >> $log
+                	recallog "setting keyboard layout to ${keyboardmap}"
                 	loadkeys "$keyboardmap" >> $log
 		fi
         fi
@@ -89,7 +85,7 @@ case "$1" in
         settings_xbox="`$systemsetting -command load -key controllers.xboxdrv.enabled`"
         settings_xbox_nb="`$systemsetting -command load -key controllers.xboxdrv.nbcontrols`"
         if [[ "$settings_xbox" == "1" ]];then
-                echo "`logtime` : setting xboxdrv" >> $log
+                recallog "setting xboxdrv"
                 if [[ "$settings_xbox_nb" == "1" ]];then
                         /usr/bin/xboxdrv --detach --daemon --id 0 --led 2 --deadzone 4000 --silent --trigger-as-button --dbus disabled --detach-kernel-driver >> $log &
                 elif [[ "$settings_xbox_nb" == "2" ]];then
@@ -103,14 +99,14 @@ case "$1" in
         # Timezone
         settings_timezone="`$systemsetting -command load -key system.timezone`"
         if [[ "$settings_timezone" != "" && -f "/usr/share/zoneinfo/$settings_timezone" ]];then
-                echo "`logtime` : setting timezone to $settings_timezone" >> $log
+                recallog "setting timezone to $settings_timezone"
                 echo "$settings_timezone" > /etc/timezone
                 ln -sf "/usr/share/zoneinfo/$settings_timezone" /etc/localtime
         fi
         # Hostname
         settings_hostname="`$systemsetting -command load -key system.hostname`"
         if [[ "$settings_hostname" != "" ]];then
-                echo "`logtime` : setting hostname to $settings_hostname" >> $log
+                recallog "setting hostname to $settings_hostname"
                 hostname "$settings_hostname"
         fi
 	;;

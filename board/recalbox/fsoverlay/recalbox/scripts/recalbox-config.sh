@@ -26,7 +26,7 @@ waitWifi() {
 }
 
 log=/root/recalbox.log
-wpafile=/etc/wpa_supplicant/wpa_supplicant.conf
+wpafile=/var/lib/wpa_supplicant.conf
 systemsetting="python /usr/lib/python2.7/site-packages/configgen/settings/recalboxSettings.pyc"
 
 echo "---- recalbox-config.sh ----" >> $log

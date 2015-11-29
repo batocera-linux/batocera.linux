@@ -8,7 +8,6 @@ RUN_AS=`id -u root`
 CMD=/usr/recalbox-manager/manage.py
 OPTS="runserver 0.0.0.0:80 --settings=project.settings_production --noreload"
 
-log=/root/recalbox.log
 systemsetting="python /usr/lib/python2.7/site-packages/configgen/settings/recalboxSettings.pyc"
 
 do_start() {
@@ -24,18 +23,18 @@ case "$1" in
 start)
     enabled="`$systemsetting  -command load -key system.manager.enabled`"
     if [ "$enabled" != "0" ];then
-        echo "Starting $NAME" >> $log
+        recallog "Starting $NAME"
         do_start
     else
-        echo "Will not start $NAME : system.manager.enabled is set to 0" >> $log
+        recallog "Will not start $NAME : system.manager.enabled is set to 0"
     fi
     ;;
 stop)
-    echo "Stopping $NAME" >> $log
+    recallog "Stopping $NAME"
     do_stop
     ;;
 restart)
-    echo "Restarting $NAME"
+    recallog "Restarting $NAME"
     do_stop
     do_start
     ;;
