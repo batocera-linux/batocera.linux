@@ -1,6 +1,7 @@
 #!/bin/bash
 
 NAME=pm2
+API=/usr/recalbox-api
 PM2=/usr/recalbox-api/node_modules/pm2/bin/pm2
 USER=root
 
@@ -12,7 +13,7 @@ systemsetting="python /usr/lib/python2.7/site-packages/configgen/settings/recalb
 
 start() {
     echo "Starting $NAME" >> $log
-    $PM2 resurrect
+    $PM2 startOrReload $API/scripts/pm2-process-production.json
 }
 
 stop() {
@@ -41,14 +42,17 @@ status() {
 case "$1" in
     start)
    	enabled="`$systemsetting  -command load -key system.api.enabled`"
-    	if [ "$enabled" != "0" ];then
+    	if [ "$enabled" == "1" ];then
         	start
 	else
         	echo "Will not start $NAME : system.api.enabled is set to 0" >> $log
     	fi
         ;;
     stop)
-        stop
+        enabled="`$systemsetting  -command load -key system.api.enabled`"
+        if [ "$enabled" == "1" ];then
+                stop
+        fi
         ;;
     status)
         status

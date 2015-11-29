@@ -5,10 +5,7 @@
 # when you try to quit after seeing a movie
 # and letting the process hang
 
-# create the input configuration
-python /usr/lib/python2.7/site-packages/configgen/kodiConfig.pyc
-
-LD_LIBRARY_PATH="/usr/lib/mysql" /usr/lib/kodi/kodi.bin --standalone -fs -n &
+LD_LIBRARY_PATH="/usr/lib/mysql" /usr/lib/kodi/kodi.bin --standalone -fs &
 pid=$!
 
 sleep 5

@@ -8,6 +8,9 @@
 ## Recalbox Manager (http manager)
 system.manager.enabled=1
 
+## Recalbox API (REST)
+system.api.enabled=0
+
 ## Pre-boot splash
 system.splash.enable=0
 
@@ -43,7 +46,10 @@ wifi.enabled=0
 ;wifi.key=new key
 ## Samba share
 system.samba.enabled=1
-
+### Virtual Gamepads
+system.virtual-gamepads.enabled=1
+### SSH
+system.ssh.enabled=1
 
 # ------------ C - Audio ------------ #
 ## Set the audio device (auto, hdmi, jack)
