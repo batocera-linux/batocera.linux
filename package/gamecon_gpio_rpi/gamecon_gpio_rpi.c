@@ -35,14 +35,13 @@
 
 #include <linux/ioport.h>
 #include <asm/io.h>
-#include <mach/platform.h>
 
 MODULE_AUTHOR("Markus Hiienkari");
 MODULE_DESCRIPTION("NES, SNES, N64, MultiSystem, PSX gamepad driver");
 MODULE_LICENSE("GPL");
 
 #define GC_MAX_DEVICES		6
-
+#define BCM2708_PERI_BASE 0x20000000
 #define GPIO_BASE                (BCM2708_PERI_BASE + 0x200000) /* GPIO controller */
 
 #define GPIO_SET *(gpio+7)

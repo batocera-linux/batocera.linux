@@ -36,7 +36,6 @@
 #include <linux/mutex.h>
 #include <linux/slab.h>
 #include <asm/io.h>
-#include <mach/platform.h>
 
 MODULE_AUTHOR("Markus Hiienkari <mhiienka@niksula.hut.fi>");
 MODULE_DESCRIPTION("Atari, Amstrad, Commodore, Amiga, Sega, etc. joystick driver");
@@ -46,7 +45,7 @@ MODULE_LICENSE("GPL");
 
 /* GPIO definitions */
 static volatile unsigned *gpio;
-
+#define BCM2708_PERI_BASE 0x20000000
 #define GPIO_BASE                (BCM2708_PERI_BASE + 0x200000) /* GPIO controller */
 
 #define GPIO_SET *(gpio+7)
