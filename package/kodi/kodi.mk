@@ -18,6 +18,7 @@ KODI_DEPENDENCIES += boost bzip2 expat ffmpeg fontconfig freetype jasper jpeg \
 	libxslt lzo ncurses openssl pcre python readline sqlite taglib tiff \
 	tinyxml yajl zlib
 
+KODI_DEPENDENCIES += sdl sdl2
 KODI_CONF_ENV = \
 	PYTHON_VERSION="$(PYTHON_VERSION_MAJOR)" \
 	PYTHON_LDFLAGS="-lpython$(PYTHON_VERSION_MAJOR) -lpthread -ldl -lutil -lm" \
