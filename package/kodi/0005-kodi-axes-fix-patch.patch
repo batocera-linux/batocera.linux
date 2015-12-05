@@ -1,0 +1,67 @@
+From 8f6ad37daa70520fdb1056a37434b9b920241146 Mon Sep 17 00:00:00 2001
+From: Nicolas Adenis-Lamarre <nicolas.adenis-lamarre@gmail.com>
+Date: Thu, 3 Dec 2015 22:22:42 +0100
+Subject: [PATCH 1/2] kodi axes fix patch
+
+Signed-off-by: Nicolas Adenis-Lamarre <nicolas.adenis-lamarre@gmail.com>
+---
+ xbmc/input/SDLJoystick.cpp | 21 +++++++++++++++++++++
+ xbmc/input/SDLJoystick.h   |  2 ++
+ 2 files changed, 23 insertions(+)
+
+diff --git a/xbmc/input/SDLJoystick.cpp b/xbmc/input/SDLJoystick.cpp
+index 73f9072..5d910a3 100644
+--- a/xbmc/input/SDLJoystick.cpp
++++ b/xbmc/input/SDLJoystick.cpp
+@@ -183,7 +183,14 @@ void CJoystick::Update()
+   {
+     MapAxis(m_AxisIdx, joy, axisNum);
+     // CLog::Log(LOGDEBUG, "Joystick %d Axis %d Amount %d", JoystickIndex(joy), axisNum + 1, m_Axes[m_AxisIdx].val);
++
++    if(m_pressTicksAxisN != m_AxisIdx) {
++      m_pressTicksAxis = SDL_GetTicks();
++    }
++  } else {
++    m_pressTicksAxis = 0;
+   }
++  m_pressTicksAxisN = m_AxisIdx;
+ 
+   if (hatIdx == -1 && m_HatIdx != -1)
+   {
+@@ -303,6 +310,20 @@ bool CJoystick::GetAxis(std::string &joyName, int& id) const
+   MapAxis(m_AxisIdx, joy, id);
+   joyName = std::string(SDL_JoystickName(joy));
+ 
++  static uint32_t lastPressTicksAxis = 0;
++  // allow it if it is the first press
++  if (lastPressTicksAxis < m_pressTicksAxis)
++  {
++    lastPressTicksAxis = m_pressTicksAxis;
++    return true;
++  }
++  uint32_t nowTicks = SDL_GetTicks();
++  if (nowTicks - m_pressTicksAxis < 500) // 500ms delay before we repeat
++    return false;
++  if (nowTicks - lastPressTicksAxis < 100) // 100ms delay before successive repeats
++    return false;
++  lastPressTicksAxis = nowTicks;
++  
+   return true;
+ }
+ 
+diff --git a/xbmc/input/SDLJoystick.h b/xbmc/input/SDLJoystick.h
+index 7faa108..38681c2 100644
+--- a/xbmc/input/SDLJoystick.h
++++ b/xbmc/input/SDLJoystick.h
+@@ -118,6 +118,8 @@ private:
+   bool m_joystickEnabled;
+   uint32_t m_pressTicksButton;
+   uint32_t m_pressTicksHat;
++  uint32_t m_pressTicksAxis;
++  int m_pressTicksAxisN;
+   std::map<int, SDL_Joystick*> m_Joysticks;
+ };
+ 
+-- 
+2.1.4
+
