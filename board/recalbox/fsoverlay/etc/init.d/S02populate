@@ -4,6 +4,3 @@ cp /etc/sixad.profile /var/lib/sixad/profiles/default
 cp /etc/wpa_supplicant/wpa_supplicant.conf /var/lib/wpa_supplicant.conf
 mkdir -p /var/lib/bluetooth/
 ln -s /recalbox/share/system/bluetooth/ /var/lib/bluetooth 
-mkdir -p /etc/dropbear
-ln -s /recalbox/share/system/ssh/ /etc/dropbear
-
