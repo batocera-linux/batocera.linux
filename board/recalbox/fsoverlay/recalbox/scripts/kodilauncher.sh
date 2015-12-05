@@ -5,7 +5,7 @@
 # when you try to quit after seeing a movie
 # and letting the process hang
 
-LD_LIBRARY_PATH="/usr/lib/mysql" HOME="/recalbox/share/system/" /usr/lib/kodi/kodi.bin --standalone -fs &
+LD_LIBRARY_PATH="/usr/lib/mysql" /usr/lib/kodi/kodi.bin --standalone -fs &
 pid=$!
 
 sleep 5
