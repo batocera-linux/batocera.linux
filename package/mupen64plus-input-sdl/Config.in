@@ -5,7 +5,7 @@ config BR2_PACKAGE_MUPEN64PLUS_INPUT_SDL
 	depends on BR2_PACKAGE_RPI_USERLAND
 	depends on BR2_PACKAGE_ALSA_LIB
         help
-          mupen 64 plus inputsdl modulee
+          mupen 64 plus inputsdl plugin
 	  https://github.com/mupen64plus/
 
 comment "MUPEN64PLUS INPUT SLD needs a toolchain w/ C++, ALSA and SDL2"

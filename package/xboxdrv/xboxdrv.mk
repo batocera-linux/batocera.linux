@@ -3,7 +3,7 @@
 # XBOXDRV
 #
 ################################################################################
-XBOXDRV_VERSION = fb787abe320741d8c341a9ad62c9a0ec513fc2cb
+XBOXDRV_VERSION = 18c5fabf3bdaa06a541caa6126a06f262e1174b2
 XBOXDRV_SITE =  $(call github,Grumbel,xboxdrv,$(XBOXDRV_VERSION))
 XBOXDRV_DEPENDENCIES = libusb dbus-python host-scons
 
