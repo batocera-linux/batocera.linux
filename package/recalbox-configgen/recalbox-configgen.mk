@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-RECALBOX_CONFIGGEN_VERSION = master
+RECALBOX_CONFIGGEN_VERSION = 47e92fdd03c9254870b38adf6f79cd219242698e 
 
 RECALBOX_CONFIGGEN_SITE = $(call github,digitallumberjack,recalbox-configgen,$(RECALBOX_CONFIGGEN_VERSION))
 

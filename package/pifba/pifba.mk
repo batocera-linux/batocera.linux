@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-PIFBA_VERSION = master
+PIFBA_VERSION = 2e82d9aa44976d8742df13ba972ab6180688f384 
 PIFBA_SITE = $(call github,digitallumberjack,pifba,master)
 
 PIFBA_LICENSE = MIT
