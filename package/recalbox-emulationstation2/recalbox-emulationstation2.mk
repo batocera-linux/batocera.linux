@@ -8,13 +8,13 @@ ifeq ($(BR2_PACKAGE_RECALBOX_EMULATIONSTATION2_ARCADE),y)
         RECALBOX_EMULATIONSTATION2_VERSION = recalbox-buildroot-arcade
 else 
 	ifeq ($(BR2_cortex_a7),y)
-		RECALBOX_EMULATIONSTATION2_VERSION = recalbox-buildroot-rpi2
+		RECALBOX_EMULATIONSTATION2_VERSION = v3.3.0-rpi2 
 	else
-        	RECALBOX_EMULATIONSTATION2_VERSION = recalbox-buildroot
+        	RECALBOX_EMULATIONSTATION2_VERSION = v3.3.0-rpi1
 	endif
 endif
 
-RECALBOX_EMULATIONSTATION2_SITE = $(call github,digitallumberjack,recalbox-emulationstation,$(RECALBOX_EMULATIONSTATION2_VERSION))
+RECALBOX_EMULATIONSTATION2_SITE = $(call github,recalbox,recalbox-emulationstation,$(RECALBOX_EMULATIONSTATION2_VERSION))
 
 RECALBOX_EMULATIONSTATION2_LICENSE = MIT
 RECALBOX_EMULATIONSTATION2_DEPENDENCIES = sdl2 sdl2_mixer boost freeimage freetype eigen alsa-lib \

@@ -1,0 +1,13 @@
+--- a/projects/unix/Makefile	2015-11-22 05:40:20.000000000 +0100
++++ b/projects/unix/Makefile	2015-12-07 14:11:03.692877958 +0100
+@@ -273,8 +273,8 @@
+ install: $(TARGET)
+ 	$(INSTALL) -d "$(DESTDIR)$(PLUGINDIR)"
+ 	$(INSTALL) -m 0644 $(INSTALL_STRIP_FLAG) $(TARGET) "$(DESTDIR)$(PLUGINDIR)"
+-	$(INSTALL) -d "$(DESTDIR)$(SHAREDIR)"
+-	$(INSTALL) -m 0644 "../../data/InputAutoCfg.ini" "$(DESTDIR)$(SHAREDIR)"
++#$(INSTALL) -d "$(DESTDIR)$(SHAREDIR)"
++#$(INSTALL) -m 0644 "../../data/InputAutoCfg.ini" "$(DESTDIR)$(SHAREDIR)"
+ 
+ uninstall:
+ 	$(RM) "$(DESTDIR)$(PLUGINDIR)/$(TARGET)"

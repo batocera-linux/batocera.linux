@@ -1,6 +1,6 @@
---- a/src/evdev_helper.cpp	2015-03-02 19:23:23.792594558 +0100
-+++ b/src/evdev_helper.cpp	2015-03-02 19:25:06.671355380 +0100
-@@ -54,57 +54,8 @@
+--- a/src/evdev_helper.cpp	2015-11-09 11:19:35.000000000 +0100
++++ b/src/evdev_helper.cpp	2015-12-06 21:16:17.934897114 +0100
+@@ -54,57 +54,9 @@
  X11KeysymEnum::X11KeysymEnum() :
    EnumBox<int>("X11Keysym")
  {
@@ -14,9 +14,9 @@
 -    process_keymap(dpy);
 -    XCloseDisplay(dpy);
 -  }
- }
- 
--void 
+-}
+-
+-void
 -X11KeysymEnum::process_keymap(Display* dpy)
 -{
 -  int min_keycode, max_keycode;
@@ -27,7 +27,7 @@
 -  KeySym* keymap = XGetKeyboardMapping(dpy, static_cast<KeyCode>(min_keycode),
 -                                       num_keycodes,
 -                                       &keysyms_per_keycode);
--
+ 
 -  for(int i = 0; i < num_keycodes; ++i)
 -  {
 -    if (keymap[i*keysyms_per_keycode] != NoSymbol)
@@ -54,7 +54,8 @@
 -  }
 -
 -  XFree(keymap);
--}
+ }
++
  
  int xkeysym2keycode(const std::string& name)
  {
