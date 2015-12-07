@@ -5,7 +5,7 @@
 ################################################################################
 
 PIFBA_VERSION = 2e82d9aa44976d8742df13ba972ab6180688f384 
-PIFBA_SITE = $(call github,digitallumberjack,pifba,master)
+PIFBA_SITE = $(call github,recalbox,pifba,$(PIFBA_VERSION))
 
 PIFBA_LICENSE = MIT
 PIFBA_DEPENDENCIES = sdl2 alsa-lib rpi-userland

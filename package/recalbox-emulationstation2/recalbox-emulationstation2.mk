@@ -14,7 +14,7 @@ else
 	endif
 endif
 
-RECALBOX_EMULATIONSTATION2_SITE = $(call github,digitallumberjack,recalbox-emulationstation,$(RECALBOX_EMULATIONSTATION2_VERSION))
+RECALBOX_EMULATIONSTATION2_SITE = $(call github,recalbox,recalbox-emulationstation,$(RECALBOX_EMULATIONSTATION2_VERSION))
 
 RECALBOX_EMULATIONSTATION2_LICENSE = MIT
 RECALBOX_EMULATIONSTATION2_DEPENDENCIES = sdl2 sdl2_mixer boost freeimage freetype eigen alsa-lib \
