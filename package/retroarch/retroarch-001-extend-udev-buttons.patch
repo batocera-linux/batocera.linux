@@ -1,0 +1,28 @@
+diff --git a/input/drivers_joypad/udev_joypad.c b/input/drivers_joypad/udev_joypad.c
+index 2a611fc..aa24863 100644
+--- a/input/drivers_joypad/udev_joypad.c
++++ b/input/drivers_joypad/udev_joypad.c
+@@ -107,7 +107,7 @@ static void udev_poll_pad(struct udev_joypad *pad, unsigned p)
+          switch (events[i].type)
+          {
+             case EV_KEY:
+-               if (code >= BTN_MISC || (code >= KEY_UP && code <= KEY_DOWN))
++               if (code < KEY_MAX)
+                {
+                   if (events[i].value)
+                      BIT64_SET(pad->buttons, pad->button_bind[code]);
+@@ -250,12 +250,10 @@ static int udev_add_pad(struct udev_device *dev, unsigned p, int fd, const char
+    /* Go through all possible keycodes, check if they are used,
+     * and map them to button/axes/hat indices.
+     */
+-   for (i = KEY_UP; i <= KEY_DOWN && buttons < UDEV_NUM_BUTTONS; i++)
+-      if (test_bit(i, keybit))
+-         pad->button_bind[i] = buttons++;
+-   for (i = BTN_MISC; i < KEY_MAX && buttons < UDEV_NUM_BUTTONS; i++)
++   for (i = 0; i < KEY_MAX && buttons < UDEV_NUM_BUTTONS; i++)
+       if (test_bit(i, keybit))
+          pad->button_bind[i] = buttons++;
++
+    for (i = 0; i < ABS_MISC && axes < NUM_AXES; i++)
+    {
+       /* Skip hats for now. */
