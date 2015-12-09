@@ -25,6 +25,22 @@ waitWifi() {
   return 1
 }
 
+rb_wpa_supplicant() {
+    wlan=$1
+
+    # default driver (nl80211)
+    if /usr/sbin/wpa_supplicant -i$wlan -c/var/lib/wpa_supplicant.conf
+    then
+	return
+    fi
+
+    # test an other driver in case the hardware is not migrated to the new driver
+    if /usr/sbin/wpa_supplicant -i$wlan -D wext -c/var/lib/wpa_supplicant.conf
+    then
+	return
+    fi    
+}
+
 log=/recalbox/share/system/logs/recalbox.log
 wpafile=/var/lib/wpa_supplicant.conf
 systemsetting="python /usr/lib/python2.7/site-packages/configgen/settings/recalboxSettings.pyc"
@@ -296,7 +312,7 @@ if [[ "$command" == "wifi" ]]; then
                 echo "`logtime` : starting wifi" >> $log
                 killall wpa_supplicant >> $log
                 /sbin/ifdown $wlan >> $log
-                /usr/sbin/wpa_supplicant -i$wlan -c/var/lib/wpa_supplicant.conf &
+		rb_wpa_supplicant "$wlan" &
                 waitWifi $wlan 20
                 /sbin/ifup $wlan >> $log
                 ifconfig $wlan | grep "inet addr" >> $log
