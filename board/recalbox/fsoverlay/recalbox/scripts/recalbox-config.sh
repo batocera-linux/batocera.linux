@@ -11,6 +11,14 @@ extra1="$3"
 extra2="$4"
 version=`cat /recalbox/recalbox.arch`
 
+preBootConfig() {
+    mount -o remount,rw /boot
+}
+
+postBootConfig() {
+    mount -o remount,ro /boot
+}
+
 waitWifi() {
   DEVICE=$1
   TIMEOUT=$2
@@ -56,7 +64,8 @@ echo "---- recalbox-config.sh ----" >> $log
 
 if [ "$command" == "overscan" ]; then
 if [ -f "$configFile" ];then
-	cat "$configFile" | grep "disable_overscan"
+        preBootConfig
+        cat "$configFile" | grep "disable_overscan"
 	overscanPresent=$?
 
 	if [ "$overscanPresent" != "0" ];then
@@ -78,8 +87,10 @@ if [ -f "$configFile" ];then
                 sed -i "s/#\?disable_overscan=.*/disable_overscan=1/g" "$configFile"
                 sed -i "s/#\?overscan_scale=.*/overscan_scale=0/g" "$configFile"
 	else
+                postBootConfig
 		exit 1
 	fi
+	postBootConfig
 	exit 0
 else
 	exit 2
@@ -145,6 +156,8 @@ gpu_freq["none"]=250
 gpu_freq["none-rpi2"]=250
 
 if [ -f "$configFile" ];then
+        preBootConfig
+    
 	cat "$configFile" | grep "arm_freq"
 	if [ "$?" != "0" ];then
 		echo "arm_freq=" >> "$configFile"
@@ -183,6 +196,8 @@ if [ -f "$configFile" ];then
 	sed -i "s/#\?gpu_freq=.*/gpu_freq=${gpu_freq[$mode]}/g" "$configFile"
         echo "`logtime` : enabled overclock mode : $mode" >> $log
 
+	postBootConfig
+	
 	exit 0
 else
 	exit 2
