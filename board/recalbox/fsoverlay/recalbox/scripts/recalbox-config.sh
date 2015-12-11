@@ -11,6 +11,14 @@ extra1="$3"
 extra2="$4"
 version=`cat /recalbox/recalbox.arch`
 
+preBootConfig() {
+    mount -o remount,rw /boot
+}
+
+postBootConfig() {
+    mount -o remount,ro /boot
+}
+
 waitWifi() {
   DEVICE=$1
   TIMEOUT=$2
@@ -27,6 +35,7 @@ waitWifi() {
 
 rb_wpa_supplicant() {
     wlan=$1
+    TRY1T=$(date +%s)
 
     # default driver (nl80211)
     if /usr/sbin/wpa_supplicant -i$wlan -c/var/lib/wpa_supplicant.conf
@@ -34,11 +43,17 @@ rb_wpa_supplicant() {
 	return
     fi
 
-    # test an other driver in case the hardware is not migrated to the new driver
-    if /usr/sbin/wpa_supplicant -i$wlan -D wext -c/var/lib/wpa_supplicant.conf
-    then
-	return
-    fi    
+    # try an other driver in case it failed in the following seconds
+    TRY2T=$(date +%s)
+    let TRYDELTA=$TRY2T-$TRY1T
+    if test $TRYDELTA -lt 5
+       then
+	   # test an other driver in case the hardware is not migrated to the new driver
+	   if /usr/sbin/wpa_supplicant -i$wlan -D wext -c/var/lib/wpa_supplicant.conf
+	   then
+	       return
+	   fi
+    fi
 }
 
 log=/recalbox/share/system/logs/recalbox.log
@@ -49,7 +64,8 @@ echo "---- recalbox-config.sh ----" >> $log
 
 if [ "$command" == "overscan" ]; then
 if [ -f "$configFile" ];then
-	cat "$configFile" | grep "disable_overscan"
+        preBootConfig
+        cat "$configFile" | grep "disable_overscan"
 	overscanPresent=$?
 
 	if [ "$overscanPresent" != "0" ];then
@@ -71,8 +87,10 @@ if [ -f "$configFile" ];then
                 sed -i "s/#\?disable_overscan=.*/disable_overscan=1/g" "$configFile"
                 sed -i "s/#\?overscan_scale=.*/overscan_scale=0/g" "$configFile"
 	else
+                postBootConfig
 		exit 1
 	fi
+	postBootConfig
 	exit 0
 else
 	exit 2
@@ -138,6 +156,8 @@ gpu_freq["none"]=250
 gpu_freq["none-rpi2"]=250
 
 if [ -f "$configFile" ];then
+        preBootConfig
+    
 	cat "$configFile" | grep "arm_freq"
 	if [ "$?" != "0" ];then
 		echo "arm_freq=" >> "$configFile"
@@ -176,6 +196,8 @@ if [ -f "$configFile" ];then
 	sed -i "s/#\?gpu_freq=.*/gpu_freq=${gpu_freq[$mode]}/g" "$configFile"
         echo "`logtime` : enabled overclock mode : $mode" >> $log
 
+	postBootConfig
+	
 	exit 0
 else
 	exit 2

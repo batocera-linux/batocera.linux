@@ -1,0 +1,39 @@
+diff --git a/evtest.c b/evtest.c
+index 7b6926c..f27ad2d 100644
+--- a/evtest.c
++++ b/evtest.c
+@@ -89,6 +89,7 @@
+ enum evtest_mode {
+ 	MODE_CAPTURE,
+ 	MODE_QUERY,
++	MODE_INFO,
+ 	MODE_VERSION,
+ };
+ 
+@@ -1284,6 +1285,7 @@ static int do_query(const char *device, const char *event_type, const char *keyn
+ static const struct option long_options[] = {
+ 	{ "grab", no_argument, &grab_flag, 1 },
+ 	{ "query", no_argument, NULL, MODE_QUERY },
++	{ "info", no_argument, NULL, MODE_INFO },
+ 	{ "version", no_argument, NULL, MODE_VERSION },
+ 	{ 0, },
+ };
+@@ -1303,6 +1305,9 @@ int main (int argc, char **argv)
+ 		switch (c) {
+ 		case 0:
+ 			break;
++		case MODE_INFO:
++		        stop = 1;
++			break;
+ 		case MODE_QUERY:
+ 			mode = c;
+ 			break;
+@@ -1316,7 +1321,7 @@ int main (int argc, char **argv)
+ 	if (optind < argc)
+ 		device = argv[optind++];
+ 
+-	if (mode == MODE_CAPTURE)
++	if (mode == MODE_CAPTURE || mode == MODE_INFO)
+ 		return do_capture(device, grab_flag);
+ 
+ 	if ((argc - optind) < 2) {

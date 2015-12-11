@@ -1,6 +1,16 @@
 #!/bin/sh
+
+# sixad
 mkdir -p /var/lib/sixad/profiles/
 cp /etc/sixad.profile /var/lib/sixad/profiles/default
+
+# wifi
 cp /etc/wpa_supplicant/wpa_supplicant.conf /var/lib/wpa_supplicant.conf
+
+# bluetooth
 mkdir -p /var/lib/bluetooth/
 ln -s /recalbox/share/system/bluetooth/ /var/lib/bluetooth 
+
+# samba
+mkdir -p /var/lib/samba/private
+chmod 0755 /var/lib/samba
