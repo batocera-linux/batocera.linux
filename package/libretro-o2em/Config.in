@@ -1,0 +1,11 @@
+config BR2_PACKAGE_LIBRETRO_O2EM
+        bool "libretro-o2em"
+	depends on BR2_PACKAGE_RETROARCH
+	depends on BR2_INSTALL_LIBSTDCPP
+        help
+          A libretro Odyssey 2/VideoPac emulator core.
+
+	  http://www.libretro.com
+
+comment "LIBRETRO_O2EM needs a toolchain w/ C++"
+	depends on !BR2_INSTALL_LIBSTDCPP
