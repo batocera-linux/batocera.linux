@@ -1,17 +1,20 @@
 #!/bin/sh
 
-REPORTNAME="recalbox-support-"$(date +%Y%m%d%H%M%S)
+
 GTMP="/tmp"
-TMPDIR="$GTMP""/""$REPORTNAME"
 DHOME="/recalbox/share/system"
 
 # to be callable by any external tool
 if test $# -eq 1
 then
+    REPORTNAME=$(basename "$1" | sed -e s+'\.tar\.gz$'++)
     OUTPUTFILE="$1"
 else
+    REPORTNAME="recalbox-support-"$(date +%Y%m%d%H%M%S)
     OUTPUTFILE="/recalbox/share/saves/""$REPORTNAME"".tar.gz"
 fi
+
+TMPDIR="$GTMP""/""$REPORTNAME"
 
 f_cp() {
     test -e "$1" && cp "$1" "$2"
