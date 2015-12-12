@@ -7,7 +7,7 @@ DHOME="/recalbox/share/system"
 # to be callable by any external tool
 if test $# -eq 1
 then
-    REPORTNAME=$(basename "$1" | sed -e s+'\.tar\.gz$'++)
+    REPORTNAME=$(basename "$1" | sed -e s+'^\([^.]*\)\..*$'+'\1'+)
     OUTPUTFILE="$1"
 else
     REPORTNAME="recalbox-support-"$(date +%Y%m%d%H%M%S)
@@ -47,6 +47,7 @@ lsusb -v > "$DSYSTEM""/lsusb.txt" 2>/dev/null
 f_cp /recalbox/recalbox.version                               "$DSYSTEM"
 f_cp /boot/config.txt                                         "$DSYSTEM"
 f_cp /recalbox/share/system/recalbox.conf                     "$DSYSTEM"
+f_cp /recalbox/share/system/logs/recalbox.log                 "$DSYSTEM"
 f_cp /recalbox/share/system/.emulationstation/es_settings.cfg "$DSYSTEM"
 
 # joysticks
