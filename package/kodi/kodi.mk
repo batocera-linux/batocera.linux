@@ -39,8 +39,7 @@ KODI_CONF_OPTS +=  \
 	--disable-pulse \
 	--disable-vdpau \
 	--disable-vtbdecoder \
-	--enable-optimizations \
-        --enable-debug=no
+	--enable-optimizations
 
 ifeq ($(BR2_PACKAGE_MYSQL),y)
 KODI_CONF_OPTS += --enable-mysql
