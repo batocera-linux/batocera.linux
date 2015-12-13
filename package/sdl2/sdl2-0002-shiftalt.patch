@@ -1,0 +1,40 @@
+diff --git a/src/core/linux/SDL_evdev.c b/src/core/linux/SDL_evdev.c
+index 19333f2..97da3d7 100644
+--- a/src/core/linux/SDL_evdev.c
++++ b/src/core/linux/SDL_evdev.c
+@@ -620,14 +620,28 @@ SDL_EVDEV_Poll(void)
+                                 /* Ref: http://www.linuxjournal.com/article/2783 */
+                                 modstate = SDL_GetModState();
+                                 kbe.kb_table = 0;
+-                                
++
++                                // NOT WORKING CODE (at least in our case)
+                                 /* Ref: http://graphics.stanford.edu/~seander/bithacks.html#ConditionalSetOrClearBitsWithoutBranching */
+-                                kbe.kb_table |= -( (modstate & KMOD_LCTRL) != 0) & (1 << KG_CTRLL | 1 << KG_CTRL);
+-                                kbe.kb_table |= -( (modstate & KMOD_RCTRL) != 0) & (1 << KG_CTRLR | 1 << KG_CTRL);
+-                                kbe.kb_table |= -( (modstate & KMOD_LSHIFT) != 0) & (1 << KG_SHIFTL | 1 << KG_SHIFT);
+-                                kbe.kb_table |= -( (modstate & KMOD_RSHIFT) != 0) & (1 << KG_SHIFTR | 1 << KG_SHIFT);
+-                                kbe.kb_table |= -( (modstate & KMOD_LALT) != 0) & (1 << KG_ALT);
+-                                kbe.kb_table |= -( (modstate & KMOD_RALT) != 0) & (1 << KG_ALTGR);
++                                //kbe.kb_table |= -( (modstate & KMOD_LCTRL) != 0) & (1 << KG_CTRLL | 1 << KG_CTRL);
++                                //kbe.kb_table |= -( (modstate & KMOD_RCTRL) != 0) & (1 << KG_CTRLR | 1 << KG_CTRL);
++                                //kbe.kb_table |= -( (modstate & KMOD_LSHIFT) != 0) & (1 << KG_SHIFTL | 1 << KG_SHIFT);
++                                //kbe.kb_table |= -( (modstate & KMOD_RSHIFT) != 0) & (1 << KG_SHIFTR | 1 << KG_SHIFT);
++                                //kbe.kb_table |= -( (modstate & KMOD_LALT) != 0) & (1 << KG_ALT);
++                                //kbe.kb_table |= -( (modstate & KMOD_RALT) != 0) & (1 << KG_ALTGR);
++
++				// THE SAME, MORE BASIC, BUT WORKING
++				kbe.kb_table = K_NORMTAB;
++				if( (modstate & KMOD_LSHIFT) != 0 || (modstate & KMOD_RSHIFT) != 0 ) {
++				  kbe.kb_table = K_SHIFTTAB;
++				  if( (modstate & KMOD_LALT) != 0 || (modstate & KMOD_RALT) != 0 ) {
++				    kbe.kb_table = K_ALTSHIFTTAB;
++				  }
++				} else {
++				  if( (modstate & KMOD_LALT) != 0 || (modstate & KMOD_RALT) != 0 ) {
++				    kbe.kb_table = K_ALTTAB;
++				  }
++				}
+ 
+                                 if (ioctl(_this->console_fd, KDGKBENT, (unsigned long)&kbe) == 0 && 
+                                     ((KTYP(kbe.kb_value) == KT_LATIN) || (KTYP(kbe.kb_value) == KT_ASCII) || (KTYP(kbe.kb_value) == KT_LETTER))) 
