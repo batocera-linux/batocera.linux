@@ -1,10 +1,20 @@
 #!/bin/sh
 
-REPORTNAME="recalbox-support-"$(date +%Y%m%d%H%M%S)
+
 GTMP="/tmp"
-TMPDIR="$GTMP""/""$REPORTNAME"
-OUTPUTFILE="/recalbox/share/saves/""$REPORTNAME"".tar.gz"
 DHOME="/recalbox/share/system"
+
+# to be callable by any external tool
+if test $# -eq 1
+then
+    REPORTNAME=$(basename "$1" | sed -e s+'^\([^.]*\)\..*$'+'\1'+)
+    OUTPUTFILE="$1"
+else
+    REPORTNAME="recalbox-support-"$(date +%Y%m%d%H%M%S)
+    OUTPUTFILE="/recalbox/share/saves/""$REPORTNAME"".tar.gz"
+fi
+
+TMPDIR="$GTMP""/""$REPORTNAME"
 
 f_cp() {
     test -e "$1" && cp "$1" "$2"
@@ -29,16 +39,20 @@ fi
 
 # SYSTEM
 DSYSTEM="$TMPDIR""/system"
-dmesg > "$DSYSTEM""/dmesg.txt"
-lsmod > "$DSYSTEM""/lsmod.txt"
-ps    > "$DSYSTEM""/ps.txt"
+dmesg 	 > "$DSYSTEM""/dmesg.txt"
+lsmod 	 > "$DSYSTEM""/lsmod.txt"
+ps    	 > "$DSYSTEM""/ps.txt"
+df -h 	 > "$DSYSTEM""/df.txt"
+lsusb -v > "$DSYSTEM""/lsusb.txt" 2>/dev/null
 f_cp /recalbox/recalbox.version                               "$DSYSTEM"
+f_cp /boot/config.txt                                         "$DSYSTEM"
 f_cp /recalbox/share/system/recalbox.conf                     "$DSYSTEM"
+f_cp /recalbox/share/system/logs/recalbox.log                 "$DSYSTEM"
 f_cp /recalbox/share/system/.emulationstation/es_settings.cfg "$DSYSTEM"
 
 # joysticks
 DJOYS="$TMPDIR""/joysticks"
-ls /dev/input > "$DJOYS""/inputs.txt"
+find /dev/input > "$DJOYS""/inputs.txt"
 for J in /dev/input/event*
 do
     N=$(basename $J)
@@ -62,4 +76,5 @@ then
 fi
 
 rm -rf "$TMPDIR"
+echo "$OUTPUTFILE"
 exit 0
