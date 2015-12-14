@@ -1,0 +1,28 @@
+--- a/Makefile	2015-10-15 16:36:32.000000000 +0200
++++ b/Makefile	2015-12-11 15:29:29.115647789 +0100
+@@ -122,6 +122,25 @@
+    STATIC_LINKING = 1
+ 	FLAGS += -DVITA
+ 
++# ARM
++else ifneq (,$(findstring armv,$(platform)))
++       TARGET := $(TARGET_NAME)_libretro.so
++       fpic := -fPIC
++       SHARED := -shared -Wl,--no-undefined -Wl,--version-script=link.T
++       CC = gcc
++       CXX = g++
++       FLAGS += -marm
++       ifneq (,$(findstring softfloat,$(platform)))
++               FLAGS += -mfloat-abi=softfp
++       else ifneq (,$(findstring hardfloat,$(platform)))
++               FLAGS += -mfloat-abi=hard
++       endif
++       ifneq (,$(findstring neon,$(platform)))
++               FLAGS += -mfpu=neon
++               HAVE_NEON = 1
++       endif
++       FLAGS += -DARM
++
+ else
+    TARGET := $(TARGET_NAME)_libretro.dll
+    CC = gcc

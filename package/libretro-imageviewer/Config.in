@@ -1,0 +1,11 @@
+config BR2_PACKAGE_LIBRETRO_IMAGEVIEWER
+        bool "libretro-imageviewer"
+	depends on BR2_PACKAGE_RETROARCH
+	depends on BR2_INSTALL_LIBSTDCPP
+        help
+          A libretro imageviewer core.
+
+	  http://www.libretro.com
+
+comment "LIBRETRO_IMAGEVIEWER needs a toolchain w/ C++"
+	depends on !BR2_INSTALL_LIBSTDCPP
