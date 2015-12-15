@@ -193,6 +193,7 @@ menu "Emulationstation"
 endmenu
 menu "Controllers"
 	source "package/qtsixa/Config.in"
+	source "package/qtsixa-shanwan/Config.in"
 	source "package/mk_arcade_joystick_rpi/Config.in"
 	source "package/db9_gpio_rpi/Config.in"
 	source "package/gamecon_gpio_rpi/Config.in"
