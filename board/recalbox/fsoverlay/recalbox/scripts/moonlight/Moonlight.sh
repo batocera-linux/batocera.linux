@@ -104,7 +104,7 @@ scrape () {
 
 EOF
     rm "$xmlfilename"
-  done < <(cat gamelist.txt | sed "s/\t/;/g")
+  done < <(cat $moonlight_gamesnames | sed "s/\t/;/g")
   echo '</gameList>' >> $GAMELIST
 }
 
