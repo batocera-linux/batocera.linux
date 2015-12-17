@@ -47,10 +47,12 @@ lsusb -v         > "$DSYSTEM""/lsusb.txt" 2>/dev/null
 tvservice -m CEA > "$DSYSTEM""/tvservice-CEA.txt"
 tvservice -m DMT > "$DSYSTEM""/tvservice-DMT.txt"
 f_cp /recalbox/recalbox.version                               "$DSYSTEM"
+f_cp /recalbox/recalbox.arch                                  "$DSYSTEM"
 f_cp /boot/config.txt                                         "$DSYSTEM"
 f_cp /recalbox/share/system/recalbox.conf                     "$DSYSTEM"
 f_cp /recalbox/share/system/logs/recalbox.log                 "$DSYSTEM"
 f_cp /recalbox/share/system/.emulationstation/es_settings.cfg "$DSYSTEM"
+f_cp /recalbox/share/system/.emulationstation/es_log.txt      "$DSYSTEM"
 
 # joysticks
 DJOYS="$TMPDIR""/joysticks"
