@@ -1,0 +1,11 @@
+config BR2_PACKAGE_QTSIXA_SHANWAN
+	depends on BR2_PACKAGE_BLUEZ_UTILS
+	select BR2_PACKAGE_QTSIXA
+	depends on BR2_PACKAGE_LIBUSB
+        bool "qtsixashanwan"
+        help
+          Support for ps3 controllers.
+
+
+comment "qtsixashanwan depends on bluez-utils bluez-compat bluez-hcidump checkinstall libusb-dev libbluetooth-dev joystick"
+	depends on !BR2_PACKAGE_SDL || !BR2_PACKAGE_BLUEZ_UTILS || !BR2_PACKAGE_LIBUSB
