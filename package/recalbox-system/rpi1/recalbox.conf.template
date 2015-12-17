@@ -170,6 +170,12 @@ global.inputdriver=auto
 ## If you do not want recalboxOS to generate the configuration for the emulator : 
 ;snes.configfile=/path/to/my/configfile.cfg
 
+## Default cores for RPi1
+snes.core=pocketsnes
+gba.core=gpsp
+mame.core=imame4all
+nes.core=fceumm
+
 ## The rewind option is deactivated by default on these unsupported cores (don't edit please)
 virtualboy.rewind=0
 sega32x.rewind=0
