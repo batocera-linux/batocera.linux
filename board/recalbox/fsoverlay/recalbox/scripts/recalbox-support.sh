@@ -43,6 +43,7 @@ dmesg 	         > "$DSYSTEM""/dmesg.txt"
 lsmod 	         > "$DSYSTEM""/lsmod.txt"
 ps    	         > "$DSYSTEM""/ps.txt"
 df -h 	         > "$DSYSTEM""/df.txt"
+netstat -tuan    > "$DSYSTEM""/netstat.txt"
 lsusb -v         > "$DSYSTEM""/lsusb.txt" 2>/dev/null
 tvservice -m CEA > "$DSYSTEM""/tvservice-CEA.txt"
 tvservice -m DMT > "$DSYSTEM""/tvservice-DMT.txt"
