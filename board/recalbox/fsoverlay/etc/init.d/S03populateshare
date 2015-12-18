@@ -4,7 +4,7 @@ IN=/recalbox/share_init
 OUT=/recalbox/share
 
 # force the creation of some directories
-for DIR in system system/.emulationstation system/.emulationstation/themes system/bluetooth system/logs system/ssh
+for DIR in cheats system system/.emulationstation system/.emulationstation/themes system/bluetooth system/logs system/ssh
 do
     if test ! -e "$OUT""/""$DIR"
     then
@@ -19,7 +19,7 @@ done
 # there are almost empty, it's just for the structure
 # the user can delete the directory, it will recreate the structure
 # the user can delete files, files will not be recreated
-for DIR in bios extractions kodi saves screenshots system/.kodi
+for DIR in bios extractions kodi saves screenshots system/.kodi system/configs
 do
     if test ! -e "$OUT""/""$DIR"
     then
@@ -35,7 +35,7 @@ done
 # the user can't delete any directory, otherwise, it will recreate it, with link inside
 # the user can delete links and add its own files
 # to reset the directory or update it, the user has to remove the directory (we are unable to differenciate new files from recalbox update from a file removed by the user)
-for DIR in cheats roms system/.config
+for DIR in roms system/.config
 do
     if test ! -e "$OUT""/""$DIR"
     then
@@ -72,7 +72,7 @@ done
 # the user can do nothing in the directory
 # to customize it, the user must rename it and create a new one
 # It is assumed that only a few user do that
-for DIR in shaders system/.emulationstation/themes/{simplelight,zoid} system/configs
+for DIR in shaders system/.emulationstation/themes/{simplelight,zoid} cheats/cht
 do
     if test ! -e "$OUT""/""$DIR"
     then
@@ -83,14 +83,14 @@ done
 # special directories
 
 # NO UPDATE IS POSSIBLE ON THESE FILES WHEN RECALBOX IS UPDATED
-for FILE in system/.emulationstation/{es_input.cfg,es_settings.cfg}
+for FILE in system/.emulationstation/{es_input.cfg,es_settings.cfg} system/recalbox.conf
 do
     test ! -e "$OUT""/""$FILE" && cp "$IN""/""$FILE" "$OUT""/""$FILE"
 done
 
 # all or nothing file
 # to customize it, the user must rename it and create a new one
-for FILE in system/.emulationstation/es_systems.cfg
+for FILE in system/.emulationstation/es_systems.cfg system/recalbox.conf.template
 do
     test ! -e "$OUT""/""$FILE" && ln -s "$IN""/""$FILE" "$OUT""/""$FILE"
 done
