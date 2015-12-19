@@ -4,21 +4,31 @@
 #
 ################################################################################
 
-SCUMMVM_VERSION = 763a962e1456fd8402be4992ab9069e9e507ebc8
+SCUMMVM_VERSION = ef62422e59d691c944838f9da3ac868821d4797c
 SCUMMVM_REPO = scummvm
 
 SCUMMVM_SITE = $(call github,$(SCUMMVM_REPO),scummvm,$(SCUMMVM_VERSION))
 
 SCUMMVM_LICENSE = GPL2
-SCUMMVM_DEPENDENCIES = sdl zlib jpeg-turbo libmpeg2 libogg libvorbis flac libmad libpng libtheora \
+SCUMMVM_DEPENDENCIES = sdl2 zlib jpeg-turbo libmpeg2 libogg libvorbis flac libmad libpng libtheora \
 	faad2 fluidsynth freetype 
 
 SCUMMVM_ADDITIONAL_FLAGS= -I$(STAGING_DIR)/usr/include -I$(STAGING_DIR)/usr/include/interface/vcos/pthreads -I$(STAGING_DIR)/usr/include/interface/vmcs_host/linux -lpthread -lm -L$(STAGING_DIR)/usr/lib -lbcm_host -lGLESv2 -lEGL -lvchostif 
 
 SCUMMVM_CONF_ENV += RANLIB="$(TARGET_RANLIB)" STRIP="$(TARGET_STRIP)" AR="$(TARGET_AR) cru" AS="$(TARGET_AS)"
-SCUMMVM_CONF_OPTS += --with-sdl-prefix="$(STAGING_DIR)/usr/bin"
+SCUMMVM_CONF_OPTS += --enable-opengl --disable-debug --enable-optimizations --disable-mt32emu --enable-flac --enable-mad --enable-vorbis --disable-tremor \
+		--disable-fluidsynth --disable-taskbar --disable-timidity --disable-alsa --enable-vkeybd --enable-keymapper \
+                --prefix=/usr --host=raspberrypi --with-sdl-prefix="$(STAGING_DIR)/usr/bin/" --enable-release \
 
-SCUMMVM_MAKE_OPTS += RANLIB="$(TARGET_RANLIB)" STRIP="$(TARGET_STRIP)" AR="$(TARGET_AR) cru" AS="$(TARGET_AS)" LD="$(TARGET_CXX)" 
+SCUMMVM_MAKE_OPTS += RANLIB="$(TARGET_RANLIB)" STRIP="$(TARGET_STRIP)" AR="$(TARGET_AR) cru" AS="$(TARGET_AS)" LD="$(TARGET_CXX)"
+
+define SCUMMVM_ADD_VIRTUAL_KEYBOARD
+	cp $(@D)/backends/vkeybd/packs/vkeybd_default.zip $(TARGET_DIR)/usr/share/scummvm
+	cp $(@D)/backends/vkeybd/packs/vkeybd_small.zip $(TARGET_DIR)/usr/share/scummvm
+endef
+
+SCUMMVM_POST_INSTALL_TARGET_HOOKS += SCUMMVM_ADD_VIRTUAL_KEYBOARD
+
 #define SCUMMVM_ADD_EXECUTABLE
 #	$(SED) "s|RANLIB := ranlib|RANLIB 
 #STRIP := strip
