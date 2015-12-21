@@ -1,5 +1,5 @@
 #!/bin/bash
-log=/recalbox/share/system/logs/root/controllers.log
+log=/recalbox/share/system/logs/controllers.log
 "ps3 usb controller detected" >> $log
 sixpair >> $log
 if [[ "$?" != "0" ]];then
