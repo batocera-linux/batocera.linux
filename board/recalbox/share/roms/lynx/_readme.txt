@@ -4,5 +4,5 @@ Put your lynx roms in this directory.
 
 Rom files must have a ".lnx" extension.
 
-You can download lynx roms on planetemu :
-http://www.planetemu.net/roms/atari-lynx
+You can download lynx roms on mondemul :
+http://www.mondemul.net/roms.php?genre=liste&type=lynx
