@@ -89,7 +89,7 @@ for image in ${images}; do
     umount "${SDCARD_BOOT_PWD}" > /dev/null || true
     umount "${SDCARD_ROOT_PWD}" > /dev/null || true
     umount "${SDCARD_SHARE_PWD}" > /dev/null || true
-    kpartx -d "${image}" > /dev/null || true
+    kpartx -sd "${image}" > /dev/null || true
     rm -f "${image}" > /dev/null
 done
 dmsetup remove_all
