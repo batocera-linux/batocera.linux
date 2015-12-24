@@ -24,8 +24,7 @@ createRomLinks () {
 
   listGames | while read line
   do
-    filename=$(echo $line | sed "s/\([:]\)/ -/g")
-    #filename="'$line'"
+    filename=$(echo $line | sed 's/[^ A-Za-z0-9._-]/-/g')
     echo -e " $filename$SEPERATOR$line" >> $moonlight_gamesnames
     touch "$moonlight_romsdir/${filename}.moonlight"
   done
@@ -105,7 +104,7 @@ scrape () {
 
 EOF
     rm "$xmlfilename"
-  done < <(cat gamelist.txt | sed "s/\t/;/g")
+  done < <(cat $moonlight_gamesnames | sed "s/\t/;/g")
   echo '</gameList>' >> $GAMELIST
 }
 
