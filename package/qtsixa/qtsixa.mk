@@ -3,8 +3,8 @@
 # qtsixa
 #
 ################################################################################
-QTSIXA_VERSION = ceef35906f4c894ee0b5b0b3994b956d1f1f643c
-QTSIXA_SITE = $(call github,yarick123,qtsixa,$(QTSIXA_VERSION))
+QTSIXA_VERSION = 4318a4c696df786893943c80d37ac6d4cfb1abe8
+QTSIXA_SITE = $(call github,recalbox,qtsixa,$(QTSIXA_VERSION))
 QTSIXA_DEPENDENCIES = sdl linux-headers
 PKGCONFIG_CONFIG=$(STAGING_DIR)/usr/lib/pkgconfig
 
@@ -27,28 +27,12 @@ define QTSIXA_BUILD_CMDS
 		CXXFLAGS="$(TARGET_CFLAGS) $(QTSIXA_CFLAGS)" \
 		LIBS="$(QTSIXA_LIBS)" INSTALLDIR="official" BINDIR="official"\
 		-C $(@D)/sixad all
-	# Make GASIA
-	$(SED) "s|/usr/.\+\?/sixad-remote|/usr/sixad/gasia/sixad-remote|g" $(@D)/sixad/bluetooth.cpp
-	$(SED) "s|/usr/.\+\?/sixad-sixaxis|/usr/sixad/gasia/sixad-sixaxis|g" $(@D)/sixad/bluetooth.cpp
-	$(MAKE) CXX="$(TARGET_CXX)" \
-		CXXFLAGS="$(TARGET_CFLAGS) $(QTSIXA_CFLAGS) -DGASIA_GAMEPAD_HACKS" \
-		LIBS="$(QTSIXA_LIBS)" INSTALLDIR="gasia" BINDIR="gasia"\
-		-C $(@D)/sixad all
-	# Make SHANWAN
-	$(SED) "s|/usr/.\+\?/sixad-remote|/usr/sixad/shanwan/sixad-remote|g" $(@D)/sixad/bluetooth.cpp
-	$(SED) "s|/usr/.\+\?/sixad-sixaxis|/usr/sixad/shanwan/sixad-sixaxis|g" $(@D)/sixad/bluetooth.cpp
-	$(MAKE) CXX="$(TARGET_CXX)" \
-		CXXFLAGS="$(TARGET_CFLAGS) $(QTSIXA_CFLAGS) -DSHANWAN_FAKE_DS3" \
-		LIBS="$(QTSIXA_LIBS)" INSTALLDIR="shanwan" BINDIR="shanwan"\
-		-C $(@D)/sixad all
 endef
 
 define QTSIXA_INSTALL_TARGET_CMDS
 	$(INSTALL) -D $(@D)/utils/bins/sixpair \
 		$(TARGET_DIR)/usr/bin/sixpair
-	$(MAKE) INSTALLDIR="official" BINDIR="official" DESTDIR=$(TARGET_DIR) -C $(@D)/sixad install 
-	$(MAKE) INSTALLDIR="gasia" BINDIR="gasia" DESTDIR=$(TARGET_DIR) -C $(@D)/sixad install 
-	$(MAKE) INSTALLDIR="shanwan" BINDIR="shanwan" DESTDIR=$(TARGET_DIR) -C $(@D)/sixad install 
+	$(MAKE) INSTALLDIR="official" BINDIR="official" DESTDIR=$(TARGET_DIR) -C $(@D)/sixad install
 endef
 
 define QTSIXA_RPI_FIXUP

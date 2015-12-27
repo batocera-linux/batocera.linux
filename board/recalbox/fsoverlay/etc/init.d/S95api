@@ -8,7 +8,7 @@ USER=root
 export PATH=/usr/bin:$PATH
 export PM2_HOME="/root/.pm2"
 
-log=/root/recalbox.log
+log="/recalbox/share/system/logs/recalbox.log"
 systemsetting="python /usr/lib/python2.7/site-packages/configgen/settings/recalboxSettings.pyc"
 
 start() {
