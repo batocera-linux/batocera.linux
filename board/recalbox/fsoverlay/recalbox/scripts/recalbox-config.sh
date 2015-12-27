@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [ ! "$1" ];then
-	echo -e "usage : recalbox-config.sh [command] [args]\nWith command in\n\toverscan [enable|disable]\n\toverclock [none|high|turbo|extrem]\n\taudio [hdmi|jack|auto]\n\tcanupdate\n\tupdate\n\twifi [enable|disable] ssid key"
+	echo -e "usage : recalbox-config.sh [command] [args]\nWith command in\n\toverscan [enable|disable]\n\toverclock [none|high|turbo|extrem]\n\taudio [hdmi|jack|auto]\n\tcanupdate\n\tupdate\n\twifi [enable|disable] ssid key\n\tstorage [current|list|INTERNAL|ANYEXTERNAL|RAM|DEV UUID]"
 	exit 1
 fi
 configFile="/boot/config.txt"
@@ -372,6 +372,29 @@ if [[ "$command" == "hiddpair" ]]; then
         exit $?
 fi
 
+if [[ "$command" == "storage" ]]; then
+    if [[ "$mode" == "current" ]]; then
+	cat /boot/recalbox.conf
+	exit 0
+    fi
+    if [[ "$mode" == "list" ]]; then
+	echo "INTERNAL"
+	echo "ANYEXTERNAL"
+	echo "RAM"
+	blkid | grep -vE '^/dev/mmcblk' | sed -e s+'^[^:]*: LABEL="\([^"]*\)" UUID="\([^"]*\)"$'+'DEV \2 \1'+
+	exit 0
+    fi
+    if [[ "$mode" == "INTERNAL" || "$mode" == "ANYEXTERNAL" || "$mode" == "RAM" || "$mode" == "DEV" ]]; then
+	preBootConfig
+	if [[ "$mode" == "INTERNAL" || "$mode" == "ANYEXTERNAL" || "$mode" == "RAM" ]]; then
+	    echo "$mode" > /boot/recalbox.conf
+	fi
+	if [[ "$mode" == "DEV" ]]; then
+	    echo "$mode"" ""$extra1" > /boot/recalbox.conf
+	fi
+	postBootConfig
+	exit 0
+    fi
+fi
+
 exit 10
-
-

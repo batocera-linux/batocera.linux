@@ -1,0 +1,98 @@
+#!/bin/sh
+
+IN=/recalbox/share_init
+OUT=/recalbox/share
+
+# force the creation of some directories
+for DIR in cheats system system/.emulationstation system/.emulationstation/themes system/bluetooth system/logs system/ssh
+do
+    if test ! -e "$OUT""/""$DIR"
+    then
+	mkdir "$OUT""/""$DIR"
+    fi
+done
+
+# directories to copy when initializing the user data
+#
+# NO UPDATE IS POSSIBLE ON THESE DIRECTORIES WHEN RECALBOX IS UPDATED
+#
+# there are almost empty, it's just for the structure
+# the user can delete the directory, it will recreate the structure
+# the user can delete files, files will not be recreated
+for DIR in bios extractions kodi saves screenshots system/.kodi system/configs
+do
+    if test ! -e "$OUT""/""$DIR"
+    then
+	cp -r "$IN""/""$DIR" "$OUT""/""$DIR"
+    fi
+done
+
+# directories to force directories exists
+# files are linked
+#
+# ONLY NEW DIRECTORIES ARE UPDATED WHEN RECALBOX IS UPDATED
+#
+# the user can't delete any directory, otherwise, it will recreate it, with link inside
+# the user can delete links and add its own files
+# to reset the directory or update it, the user has to remove the directory (we are unable to differenciate new files from recalbox update from a file removed by the user)
+for DIR in roms system/.config
+do
+    if test ! -e "$OUT""/""$DIR"
+    then
+	if mkdir "$OUT""/""$DIR"
+	then
+	    find "$IN""/""$DIR" -type d |
+		while read SUBDIR
+		do
+		    BNAME=$(echo "$SUBDIR" | sed -e s+"$IN""/""$DIR"++)
+		    TDIR="$OUT""/""$DIR""/""$BNAME"
+		    if test ! -e "$TDIR" # ASSUME THAT PARENTS ARE LISTED BEFORE CHILDREN
+		    then
+			# create the directory and links inside
+			if mkdir "$TDIR"
+			then
+			    find "$SUBDIR" -type f -maxdepth 1 |
+				while read SFILE
+				do
+				    BFILE=$(basename "$SFILE")
+				    TLINK="$TDIR""/""$BFILE"
+				    ln -s "$SFILE" "$TLINK"
+				done
+			fi
+		    fi
+		done
+	fi
+    fi
+done
+
+# all or nothing directory
+#
+# DIRECTORIES ARE UPDATED WHEN RECALBOX IS UPDATED
+#
+# the user can do nothing in the directory
+# to customize it, the user must rename it and create a new one
+# It is assumed that only a few user do that
+for DIR in shaders system/.emulationstation/themes/{simplelight,zoid} cheats/cht
+do
+    if test ! -e "$OUT""/""$DIR"
+    then
+	ln -s "$IN""/""$DIR" "$OUT""/""$DIR"
+    fi
+done
+
+# special directories
+
+# NO UPDATE IS POSSIBLE ON THESE FILES WHEN RECALBOX IS UPDATED
+for FILE in system/.emulationstation/{es_input.cfg,es_settings.cfg} system/recalbox.conf
+do
+    test ! -e "$OUT""/""$FILE" && cp "$IN""/""$FILE" "$OUT""/""$FILE"
+done
+
+# all or nothing file
+# to customize it, the user must rename it and create a new one
+for FILE in system/.emulationstation/es_systems.cfg system/recalbox.conf.template
+do
+    test ! -e "$OUT""/""$FILE" && ln -s "$IN""/""$FILE" "$OUT""/""$FILE"
+done
+
+# END

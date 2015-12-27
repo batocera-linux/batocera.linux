@@ -24,7 +24,3 @@ cp -f "${BINARIES_DIR}/"*.dtb "${BINARIES_DIR}/rpi-firmware"
 "${HOST_DIR}/usr/bin/mkknlimg" "${BINARIES_DIR}/zImage" "${BINARIES_DIR}/rpi-firmware/zImage"
 tar -cvJf "${RECALBOX_BINARIES_DIR}/boot.tar.xz" -C "${BINARIES_DIR}/rpi-firmware" "." ||
     { echo "ERROR : unable to create boot.tar.xz" && exit 1 ;}
-
-echo -e "\n----- Creating share archive -----\n"
-tar --owner=root --group=root -cvJf "${RECALBOX_BINARIES_DIR}/share.tar.xz" -C "${PWD}/board/recalbox/share/" "." -C "${RECALBOX_TARGET_DIR}/share" "." ||
-    { echo "ERROR : unable to create share.tar.xz" && exit 1 ;}

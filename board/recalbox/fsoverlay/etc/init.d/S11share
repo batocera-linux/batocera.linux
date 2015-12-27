@@ -1,0 +1,90 @@
+#!/bin/sh
+
+###
+# SHARECONFFILE
+# can contain :
+# INTERNAL     => /dev/mmcblk0p3
+# RAM          => tmpfs
+# ANYEXTERNAL  => any device found not starting by /dev/mmcblk0p (use it when you've several usb keys, but plug only one at a time)
+# DEV [FSUUID] => a device having the FSUID uuid
+###
+
+SHARECONFFILE="/boot/recalbox.conf"
+INTERNALDEVICE="/dev/mmcblk0p3"
+MAXTRY=5
+NTRY=0
+
+mountDeviceOrFallback() {
+    DEVICE=$1
+    RECALBOXFULLFS="/var/recalboxfs"
+    FALLBACK=1
+    
+    if test -n "$DEVICE"
+    then
+	if mkdir -p "$RECALBOXFULLFS"
+	then
+	    if mount "$DEVICE" "$RECALBOXFULLFS" -o noatime
+	    then
+		if mkdir -p "$RECALBOXFULLFS""/recalbox"
+		then
+		    if mount "$RECALBOXFULLFS""/recalbox" "/recalbox/share"
+		    then
+			FALLBACK=0
+		    fi
+		fi
+	    fi
+	fi
+    fi
+
+    if test "$FALLBACK" = 1
+    then
+	if ! mount "$INTERNALDEVICE" /recalbox/share -o noatime
+	then
+	    mount -t tmpfs -o size=128M tmpfs /recalbox/share
+	fi
+    fi
+}
+
+RMODE=$(cat "$SHARECONFFILE") # it can fails, it will go in fallback
+
+if echo "$RMODE" | grep -qE '^DEV '
+then
+    MODE="DEV"
+    UUID=$(echo "$RMODE" | sed -e s+'^DEV '++)
+else
+    MODE=$RMODE
+fi
+
+case "$MODE" in
+    "DEV")
+	DEVICE=$(blkid | grep " UUID=\"""$UUID""\"" | sed -e s+'^\([^:]*\):.*$'+'\1'+)
+	while test -z "$DEVICE" -a "$NTRY" -lt "$MAXTRY" # wait the device that can take some seconds after udev started
+	do
+	    let NTRY++
+	    sleep 1
+	    DEVICE=$(blkid | grep " UUID=\"""$UUID""\"" | sed -e s+'^\([^:]*\):.*$'+'\1'+)
+	done
+	mountDeviceOrFallback "$DEVICE"
+	;;
+    "ANYEXTERNAL")
+	DEVICE=$(blkid | grep -vE '^/dev/mmcblk' | sed -e s+'^\([^:]*\):.*$'+'\1'+)
+	while test -z "$DEVICE" -a "$NTRY" -lt "$MAXTRY" # wait the device that can take some seconds after udev started
+	do
+	    let NTRY++
+	    sleep 1
+	    DEVICE=$(blkid | grep -vE '^/dev/mmcblk' | sed -e s+'^\([^:]*\):.*$'+'\1'+)
+	done
+	mountDeviceOrFallback "$DEVICE"
+	;;
+    "RAM")
+	mount -t tmpfs -o size=128M tmpfs /recalbox/share
+	;;
+    "INTERNAL"|*)
+	if ! mount "$INTERNALDEVICE" /recalbox/share -o noatime
+	then
+	    # fallback
+	    # the internal partition is no more required in fact
+	    mount -t tmpfs -o size=128M tmpfs /recalbox/share
+	fi
+	;;
+esac
