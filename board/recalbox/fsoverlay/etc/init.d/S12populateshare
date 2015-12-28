@@ -35,7 +35,7 @@ done
 # the user can't delete any directory, otherwise, it will recreate it, with link inside
 # the user can delete links and add its own files
 # to reset the directory or update it, the user has to remove the directory (we are unable to differenciate new files from recalbox update from a file removed by the user)
-for DIR in roms system/.config
+for DIR in roms
 do
     if test ! -e "$OUT""/""$DIR"
     then
@@ -56,27 +56,12 @@ do
 				do
 				    BFILE=$(basename "$SFILE")
 				    TLINK="$TDIR""/""$BFILE"
-				    ln -s "$SFILE" "$TLINK"
+				    cp "$SFILE" "$TLINK" # a link would save place and allow update, but ok for theses files (roms)
 				done
 			fi
 		    fi
 		done
 	fi
-    fi
-done
-
-# all or nothing directory
-#
-# DIRECTORIES ARE UPDATED WHEN RECALBOX IS UPDATED
-#
-# the user can do nothing in the directory
-# to customize it, the user must rename it and create a new one
-# It is assumed that only a few user do that
-for DIR in shaders system/.emulationstation/themes/{simplelight,zoid} cheats/cht
-do
-    if test ! -e "$OUT""/""$DIR"
-    then
-	ln -s "$IN""/""$DIR" "$OUT""/""$DIR"
     fi
 done
 
@@ -86,13 +71,6 @@ done
 for FILE in system/.emulationstation/{es_input.cfg,es_settings.cfg} system/recalbox.conf
 do
     test ! -e "$OUT""/""$FILE" && cp "$IN""/""$FILE" "$OUT""/""$FILE"
-done
-
-# all or nothing file
-# to customize it, the user must rename it and create a new one
-for FILE in system/.emulationstation/es_systems.cfg system/recalbox.conf.template
-do
-    test ! -e "$OUT""/""$FILE" && ln -s "$IN""/""$FILE" "$OUT""/""$FILE"
 done
 
 # END
