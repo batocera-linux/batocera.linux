@@ -5,7 +5,7 @@
 moonlight_dir=/recalbox/scripts/moonlight
 moonlight_config_dir=/recalbox/share/config/moonlight
 moonlight_romsdir=/recalbox/share/roms/moonlight
-moonlight_ip=192.168.111.35
+moonlight_ip=
 moonlight_screen="720"
 moonlight_fps="60fps"
 moonlight_mapping="$moonlight_config_dir/mapping.conf"
@@ -60,7 +60,7 @@ scrape () {
   do
     # Get the real game name, not the moonlight link + prepare xml game data
     moonlightfilename=$(echo $line | cut -d ';' -f 1)
-    xmlfilename=${moonlightfilename}.xml
+    xmlfilename=/tmp/${moonlightfilename}.xml
     gamename=$(echo $line | cut -d ';' -f 2)
 
     # download XML game data from TheGamesDB.net
