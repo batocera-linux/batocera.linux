@@ -4,7 +4,7 @@ IN=/recalbox/share_init
 OUT=/recalbox/share
 
 # force the creation of some directories
-for DIR in cheats system system/.emulationstation system/.emulationstation/themes system/bluetooth system/logs system/ssh
+for DIR in cheats system system/.emulationstation system/.emulationstation/themes system/bluetooth system/logs system/ssh system/configs
 do
     if test ! -e "$OUT""/""$DIR"
     then
@@ -19,7 +19,7 @@ done
 # there are almost empty, it's just for the structure
 # the user can delete the directory, it will recreate the structure
 # the user can delete files, files will not be recreated
-for DIR in bios extractions kodi saves screenshots system/.kodi system/configs
+for DIR in bios extractions kodi saves screenshots system/.kodi system/configs/{fba,mupen64,retroarch,shadersets}
 do
     if test ! -e "$OUT""/""$DIR"
     then
@@ -41,24 +41,14 @@ do
     then
 	if mkdir "$OUT""/""$DIR"
 	then
-	    find "$IN""/""$DIR" -type d |
+	    find "$IN""/""$DIR" -type d -mindepth 1 -maxdepth 1 |
 		while read SUBDIR
 		do
-		    BNAME=$(echo "$SUBDIR" | sed -e s+"$IN""/""$DIR"++)
+		    BNAME=$(basename "$SUBDIR")
 		    TDIR="$OUT""/""$DIR""/""$BNAME"
 		    if test ! -e "$TDIR" # ASSUME THAT PARENTS ARE LISTED BEFORE CHILDREN
 		    then
-			# create the directory and links inside
-			if mkdir "$TDIR"
-			then
-			    find "$SUBDIR" -type f -maxdepth 1 |
-				while read SFILE
-				do
-				    BFILE=$(basename "$SFILE")
-				    TLINK="$TDIR""/""$BFILE"
-				    cp "$SFILE" "$TLINK" # a link would save place and allow update, but ok for theses files (roms)
-				done
-			fi
+			cp -r "$SUBDIR" "$TDIR"
 		    fi
 		done
 	fi
