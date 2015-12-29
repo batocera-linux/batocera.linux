@@ -63,4 +63,10 @@ do
     test ! -e "$OUT""/""$FILE" && cp "$IN""/""$FILE" "$OUT""/""$FILE"
 done
 
+# ssh : create the ssh key while the -R option of dropbear try a chown or an operation which is not permitted on fat32
+if ! test -e /recalbox/share/system/ssh/dropbear_ecdsa_host_key
+   then
+       dropbearkey -t ecdsa -f /recalbox/share/system/ssh/dropbear_ecdsa_host_key
+fi
+
 # END
