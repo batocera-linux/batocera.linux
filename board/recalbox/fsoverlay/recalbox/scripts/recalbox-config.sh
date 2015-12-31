@@ -374,7 +374,12 @@ fi
 
 if [[ "$command" == "storage" ]]; then
     if [[ "$mode" == "current" ]]; then
-	cat /boot/recalbox.conf
+	if test -e /boot/recalbox.conf
+	then
+	    cat /boot/recalbox.conf
+	else
+	    echo "INTERNAL"
+	fi
 	exit 0
     fi
     if [[ "$mode" == "list" ]]; then

@@ -12,4 +12,9 @@ RECALBOX_TARGET_DIR="${TARGET_DIR}/recalbox"
 
 sed -i "s|root:x:0:0:root:/root:/bin/sh|root:x:0:0:root:/recalbox/share/system:/bin/sh|g" "${TARGET_DIR}/etc/passwd"
 rm -rf "${TARGET_DIR}/etc/dropbear"
-ln -s "/recalbox/share/system/ssh" "${TARGET_DIR}/etc/dropbear"
+ln -sf "/recalbox/share/system/ssh" "${TARGET_DIR}/etc/dropbear"
+
+mkdir -p ${TARGET_DIR}/etc/emulationstation
+ln -sf "/recalbox/share_init/system/.emulationstation/es_systems.cfg" "${TARGET_DIR}/etc/emulationstation/es_systems.cfg"
+ln -sf "/recalbox/share_init/system/.emulationstation/themes"         "${TARGET_DIR}/etc/emulationstation/themes"
+ln -sf "/recalbox/share/cheats"                                       "${TARGET_DIR}/recalbox/share_init/cheats/custom"
