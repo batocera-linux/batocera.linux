@@ -52,6 +52,7 @@ f_cp /recalbox/recalbox.arch                                  "$DSYSTEM"
 f_cp /boot/config.txt                                         "$DSYSTEM"
 f_cp /recalbox/share/system/recalbox.conf                     "$DSYSTEM"
 f_cp /recalbox/share/system/logs/recalbox.log                 "$DSYSTEM"
+f_cp /var/log/messages                                        "$DSYSTEM"
 f_cp /recalbox/share/system/.emulationstation/es_settings.cfg "$DSYSTEM"
 f_cp /recalbox/share/system/.emulationstation/es_log.txt      "$DSYSTEM"
 
