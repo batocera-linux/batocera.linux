@@ -14,16 +14,67 @@ INTERNALDEVICE="/dev/mmcblk0p3"
 MAXTRY=5
 NTRY=0
 
+# what's a hell to mount an ntfs device...
+mountNTFS() {
+    DEVICE=$1
+    RECALBOXFULLFS=$2
+    TESTFILE="$RECALBOXFULLFS""/recalbox.fsrw.test"
+    
+    if ! mount.ntfs-3g $*
+    then
+	return 1
+    fi
+
+    # check if the fs is rw because in some case, even if asked rw, fs will be mount in ro because of ntfs errors
+    if touch "$TESTFILE"
+    then
+	rm "$TESTFILE"
+	return 0
+    fi
+
+    # try to fix. It doesn't work in 100% of the case : in the worst case, you've to plug on a windows environement and run an fsck
+    if ! umount "$RECALBOXFULLFS"
+    then
+	return 1
+    fi
+    ntfsfix -d "$DEVICE"
+
+    # new try after ntfsfix
+    if ! mount.ntfs-3g $*
+    then
+	return 1
+    fi
+    
+    # check if the fs is rw because in some case, even if asked rw, fs will be mount in ro because of ntfs errors
+    if touch "$TESTFILE"
+    then
+	rm "$TESTFILE"
+	return 0
+    fi
+
+    # ask a fallback !
+    umount "$RECALBOXFULLFS"
+    return 1
+}
+
 mountDeviceOrFallback() {
     DEVICE=$1
+    TDEVICE=$2
     RECALBOXFULLFS="/var/recalboxfs"
     FALLBACK=1
+
+    if test "$TDEVICE" = "ntfs"
+    then
+	FSMOUNTCMD=mountNTFS
+    else
+	FSMOUNTCMD=mount
+    fi
     
     if test -n "$DEVICE"
     then
 	if mkdir -p "$RECALBOXFULLFS"
 	then
-	    if mount "$DEVICE" "$RECALBOXFULLFS" -o noatime
+	    if "$FSMOUNTCMD" "$DEVICE" "$RECALBOXFULLFS" -o noatime
 	    then
 		if mkdir -p "$RECALBOXFULLFS""/recalbox"
 		then
@@ -57,24 +108,28 @@ fi
 
 case "$MODE" in
     "DEV")
-	DEVICE=$(blkid | grep " UUID=\"""$UUID""\"" | sed -e s+'^\([^:]*\):.*$'+'\1'+)
-	while test -z "$DEVICE" -a "$NTRY" -lt "$MAXTRY" # wait the device that can take some seconds after udev started
+	LDEVICE=$(blkid | grep " UUID=\"""$UUID""\"")
+	while test -z "$LDEVICE" -a "$NTRY" -lt "$MAXTRY" # wait the device that can take some seconds after udev started
 	do
 	    let NTRY++
 	    sleep 1
-	    DEVICE=$(blkid | grep " UUID=\"""$UUID""\"" | sed -e s+'^\([^:]*\):.*$'+'\1'+)
+	    LDEVICE=$(blkid | grep " UUID=\"""$UUID""\"")
 	done
-	mountDeviceOrFallback "$DEVICE"
+	DEVICE=$(echo "$LDEVICE" | sed -e s+'^\([^:]*\):.*$'+'\1'+)
+	TDEVICE=$(echo "$LDEVICE" | sed -e s+'^.* TYPE="\([^"]*\)"$'+'\1'+)
+	mountDeviceOrFallback "$DEVICE" "$TDEVICE"
 	;;
     "ANYEXTERNAL")
-	DEVICE=$(blkid | grep -vE '^/dev/mmcblk' | sed -e s+'^\([^:]*\):.*$'+'\1'+)
-	while test -z "$DEVICE" -a "$NTRY" -lt "$MAXTRY" # wait the device that can take some seconds after udev started
+	LDEVICE=$(blkid | grep -vE '^/dev/mmcblk' | head -1)
+	while test -z "$LDEVICE" -a "$NTRY" -lt "$MAXTRY" # wait the device that can take some seconds after udev started
 	do
 	    let NTRY++
 	    sleep 1
-	    DEVICE=$(blkid | grep -vE '^/dev/mmcblk' | sed -e s+'^\([^:]*\):.*$'+'\1'+)
+	    LDEVICE=$(blkid | grep -vE '^/dev/mmcblk' | head -1)
 	done
-	mountDeviceOrFallback "$DEVICE"
+	DEVICE=$(echo "$LDEVICE" | sed -e s+'^\([^:]*\):.*$'+'\1'+)
+	TDEVICE=$(echo "$LDEVICE" | sed -e s+'^.* TYPE="\([^"]*\)"$'+'\1'+)
+	mountDeviceOrFallback "$DEVICE" "$TDEVICE"
 	;;
     "RAM")
 	mount -t tmpfs -o size=128M tmpfs /recalbox/share
@@ -88,3 +143,15 @@ case "$MODE" in
 	fi
 	;;
 esac
+
+# now, let mount delayed usbmount devices
+ls /var/run/usbmount.delay |
+    while read RULE
+    do
+	RTYPE=$(echo "$RULE" | sed -e s+'^[0-9]*\.'++)
+	# source the udev context and apply the usbmount
+	(. "/var/run/usbmount.delay"/"$RULE"
+	 /usr/share/usbmount/usbmount "$RTYPE"
+	 rm "/var/run/usbmount.delay"/"$RULE")
+    done
+touch /var/run/recalbox.share.mounted # reenable standard usbmount
