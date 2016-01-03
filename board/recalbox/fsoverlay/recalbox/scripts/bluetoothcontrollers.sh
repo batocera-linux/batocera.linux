@@ -2,12 +2,6 @@
 
 killall bluetoothd 
 bluetoothd -u
-btdevice=`hcitool dev | head -n 2 | tail -n 1 | cut -f3 -d$'\t'`
-if [[ "$?" != "0" ]]; then
-	echo "unable to get device info"
-	exit 1
-fi
-
 
 repeat=1
 lag=5
