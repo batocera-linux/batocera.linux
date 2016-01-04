@@ -1,0 +1,7 @@
+# Rules for USBmount -*- conf -*-
+
+KERNEL=="sd*", DRIVERS=="sbp2",		ACTION=="add",	RUN+="/recalbox/scripts/recalbox-usbmount.sh add"
+KERNEL=="sd*", SUBSYSTEM=="block",	ACTION=="add",	RUN+="/recalbox/scripts/recalbox-usbmount.sh add"
+KERNEL=="ub*", SUBSYSTEM=="block",	ACTION=="add",	RUN+="/recalbox/scripts/recalbox-usbmount.sh add"
+KERNEL=="sd*",				ACTION=="remove",	RUN+="/recalbox/scripts/recalbox-usbmount.sh remove"
+KERNEL=="ub*",				ACTION=="remove",	RUN+="/recalbox/scripts/recalbox-usbmount.sh remove"
