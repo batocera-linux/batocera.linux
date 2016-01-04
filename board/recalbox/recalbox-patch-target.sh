@@ -18,3 +18,6 @@ mkdir -p ${TARGET_DIR}/etc/emulationstation
 ln -sf "/recalbox/share_init/system/.emulationstation/es_systems.cfg" "${TARGET_DIR}/etc/emulationstation/es_systems.cfg"
 ln -sf "/recalbox/share_init/system/.emulationstation/themes"         "${TARGET_DIR}/etc/emulationstation/themes"
 ln -sf "/recalbox/share/cheats"                                       "${TARGET_DIR}/recalbox/share_init/cheats/custom"
+
+rm -f "${TARGET_DIR}/etc/init.d/S50kodi"
+
