@@ -9,7 +9,7 @@ lag=5
 while true
 do
     let repeat++
-    connected=`hcitool con | tail -n+2 | cut -f3 -d' ' 2>/dev/null`
+    connected=`hcitool con 2>/dev/null | tail -n+2 | cut -f3 -d' '`
     waitForMe=""
     for bt in $(cat /var/lib/bluetooth/*/hidd 2>/dev/null | cut -f 1 -d ' ')
     do
