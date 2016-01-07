@@ -14,6 +14,34 @@ INTERNALDEVICE="/dev/mmcblk0p3"
 MAXTRY=5
 NTRY=0
 
+##### BUT FIRST, create the internal partition if it doesn't exist
+# command that can be used for test to remove the 3rd partition : parted -s -m /dev/mmcblk0 rm 3
+# create the internal partition if it doesn't exist
+#
+# we don't remove data ;  only create a new partition if p3 is missing, and some free space is available only at the end of the disk
+#
+if ! test -e /dev/mmcblk0p3
+then
+    # but the system partition exists
+    if test -e /dev/mmcblk0p2
+    then
+	# create the internal partition
+	PSTART=$(parted -s /dev/mmcblk0 -m unit b print free | tail -1 | grep -E 'free;$' | cut -d: -f 2)
+	if test -n "$PSTART"
+	then
+	    parted -s /dev/mmcblk0 -m unit b mkpart primary "$PSTART" 100%
+	    if test -e /dev/mmcblk0p3
+	    then
+		mkfs.vfat -F 32 -n SHARE /dev/mmcblk0p3
+		#fsck.fat /dev/mmcblk0p3 -a
+		#mkfs.ext4 /dev/mmcblk0p3 -q -F -L SHARE
+		#e2fsck -f -p /dev/mmcblk0p3
+	    fi
+	fi
+    fi
+fi
+#####
+
 # what's a hell to mount an ntfs device...
 mountNTFS() {
     DEVICE=$1
