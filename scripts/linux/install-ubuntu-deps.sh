@@ -17,5 +17,4 @@ apt-get install \
     texinfo \
     zip \
     openjdk-8-jdk \
-    kpartx \
     inotify-tools
