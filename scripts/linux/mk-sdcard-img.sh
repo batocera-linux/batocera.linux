@@ -1,114 +1,158 @@
-#!/bin/bash -e
+#!/bin/bash
 
-if [ "$USER" != "root" ]; then
+ScriptDir=$(dirname ${0})
+
+if [ "${USER}" != "root" ]; then
     echo "This script must be runned as root user."
     exit 1
 fi
 
-ScriptDir="`dirname ${0}`"
-. "${ScriptDir}/br-shared.sh"
+print_usage() {
+    echo "$1"" [--help|-h] [-z] [-o FILE] [-ad DIRECTORY]"
+    echo "--help -h: print this help"
+    echo "-o FILE: output file (.gz is added if -z is set)"
+    echo "-ad DIRECTORY: directory containing the boot and root archives"
+    echo "-z: compress the output image"
+}
+
+# parameters
+IMGCOMPRESS=0
+SDCARD_IMG_FILE_PATH=
+ARIMAGES_PWD=
+while test $# -gt 0
+do
+    case "$1" in
+	"--help"|"-h")
+	    print_usage "$0"
+	    exit 0
+	    ;;
+	"-o")
+	    SDCARD_IMG_FILE_PATH=$2
+	    shift
+	    ;;
+	"-ad")
+	    ARIMAGES_PWD=$2
+	    shift
+	    ;;
+	"-z")
+	    IMGCOMPRESS=1
+	    ;;
+	*)
+	    print_usage "$0"
+	    exit 0
+    esac
+    shift
+done
 
 # Return uncompressed size for the given tar.xz file
 # $1: XZ file path
 getUncompressedFileSize() {
-    local size=`xz --robot --list "${1}" | grep totals | cut -d $'\t' -f5,5`
-    local extra=$((1024*1024*10))
-    local fat32_minimum=33548800
-    local size=$((${size}+${extra}))
-    local size=$((${size}*14/10))
-
-    if [ "`basename \"${1}\"`" == "boot.tar.xz" ]; then
-        if [ "`echo \"${size}/1\" | bc`" -lt "${fat32_minimum}" ]; then
-            local size=${fat32_minimum}
-        fi
-    fi
-
-    # 64 * 1024 * 1024 = 67108864
-    if test ${size} -lt 67108864
+    lsize=$(xz --robot --list "${1}" | grep -E '^totals' | cut -d $'\t' -f5,5)
+    if test -z "${lsize}"
     then
-	size=67108864
+	return 1
     fi
-    echo ${size}
+
+    # add a 1.4 ratio for future updates
+    let lsize=$lsize*14/10
+
+    # minimize the size (it's difficult to tell how /boot will be in the future)
+    #lfat32_minimum=33548800 = 32mb, but i suggest a minimum oof 64mb
+    lminimum=67108864
+
+    if test ${lsize} -lt $lminimum
+    then
+	lsize=$lminimum
+    fi
+
+    echo ${lsize}
+    return 0
 }
 
-# Return uncompressed size for all tar.xz files
-# $1: Buildroot images path
-getUncompressedSize() {
-    local boot=`getUncompressedFileSize "${1}/recalbox/boot.tar.xz"`
-    local root=`getUncompressedFileSize "${1}/recalbox/root.tar.xz"`
-    echo "scale=2;${boot}+${root}" | bc
-}
-
-BR_IMAGES_PWD="${1}"
-
-if [ -z "${BR_IMAGES_PWD}" ]; then
-    BR_IMAGES_PWD="${br_build_pwd}/images"
-fi
-
-if [ ! -d "${BR_IMAGES_PWD}/recalbox" ]; then
-    echo "No RecalBox OS build found in ""${BR_IMAGES_PWD}/recalbox"
+cleanExit() {
+    test -n "${SDCARD_BOOT_PWD}" && umount "${SDCARD_BOOT_PWD}"
+    test -n "${SDCARD_ROOT_PWD}" && umount "${SDCARD_ROOT_PWD}"
+    test -n "$LOOP"              && losetup -d "$LOOP"
     exit 1
-else
-    count=`find "${BR_IMAGES_PWD}/recalbox" -maxdepth 1 -name '*.tar.xz' | wc -l`
+}
+trap cleanExit SIGINT
 
-    if [ ! ${count} -eq 2 ]; then
-        echo "It should be only 2 tar.xz files in the images directory."
-        exit 1
-    fi
+# find the *.tar.xz directory
+if test -z "${ARIMAGES_PWD}"
+then
+    ARIMAGES_PWD="${ScriptDir}""/../../output/images/recalbox"
 fi
 
-SDCARD_IMG_FILE_PATH="${BR_IMAGES_PWD}/../sdimg/recalbox-$(date +'%Y-%m-%d_%Hh%M').img"
-SDCARD_PWD="${BR_IMAGES_PWD}/../sdcard"
+if [ ! -d "${ARIMAGES_PWD}" ]; then
+    echo "No RecalBox OS build found in ""${ARIMAGES_PWD}" >&2
+    exit 1
+fi
+
+# check that root.tar.xz and boot.tar.xz are here
+for FILE in "boot.tar.xz" "root.tar.xz"
+do
+    if ! test -e "${ARIMAGES_PWD}""/""${FILE}"
+    then
+	echo "The file ""${ARIMAGES_PWD}""/""${FILE}"" is missing" >&2
+	exit 1
+    fi
+done
+
+# define the img output file
+if test -z "${SDCARD_IMG_FILE_PATH}"
+then
+    SDCARD_IMG_FILE_PATH="${ScriptDir}""/../../output/sdimg/recalbox-"$(date +"%Y-%m-%d_%Hh%M")".img"
+fi
+
+SDCARD_PWD="${ScriptDir}""/../../output/mksdcard"
 SDCARD_BOOT_PWD="${SDCARD_PWD}/boot"
 SDCARD_ROOT_PWD="${SDCARD_PWD}/root"
-SDCARD_SIZE=`getUncompressedSize "${BR_IMAGES_PWD}"`
-SDCARD_SIZE=`echo "${SDCARD_SIZE}/1" | bc`
+SDCARD_BOOT_SIZE=$(getUncompressedFileSize "${ARIMAGES_PWD}/boot.tar.xz")
+SDCARD_ROOT_SIZE=$(getUncompressedFileSize "${ARIMAGES_PWD}/root.tar.xz")
 
-SDCARD_BOOT_SIZE=$(getUncompressedFileSize "${BR_IMAGES_PWD}/recalbox/boot.tar.xz")
-SDCARD_ROOT_SIZE=$(getUncompressedFileSize "${BR_IMAGES_PWD}/recalbox/root.tar.xz")
+if test -z "${SDCARD_BOOT_SIZE}" -o -z "${SDCARD_ROOT_SIZE}"
+then
+    echo "Unable to determine archive sizes" >&2
+    exit 1
+fi
 
-echo "* Build Root images directory: ${BR_IMAGES_PWD}"
+let SDCARD_SIZE=$SDCARD_BOOT_SIZE+$SDCARD_ROOT_SIZE
+
+echo "* Build Root images directory: ${ARIMAGES_PWD}"
 echo "* SD Card image file path: ${SDCARD_IMG_FILE_PATH}"
-echo "* SD Card PWD: ${SDCARD_PWD}"
-echo "* SD Card Boot PWD: ${SDCARD_BOOT_PWD} - ""$((${SDCARD_BOOT_SIZE}/1024/1024)) MiB"
-echo "* SD Card Root PWD: ${SDCARD_ROOT_PWD} - ""$((${SDCARD_ROOT_SIZE}/1024/1024)) MiB"
-echo "* SD Card guessed size: $((${SDCARD_SIZE}/1024/1024)) MiB"
+echo "* SD Card temporary: ${SDCARD_PWD}"
+echo "* SD Card guessed size: $((${SDCARD_SIZE}/1024/1024)) MiB ("$((${SDCARD_BOOT_SIZE}/1024/1024))" MiB + "$((${SDCARD_ROOT_SIZE}/1024/1024))" MiB)"
+echo
 
 # Create missing directories
-mkdir -p "${BR_IMAGES_PWD}/../sdimg"
+mkdir -p $(dirname "${SDCARD_IMG_FILE_PATH}")
+
+if ! mkdir "${SDCARD_PWD}"
+then
+    echo "The directory must not exist before running the script" >&2
+    exit 1
+fi
+
 mkdir -p "${SDCARD_BOOT_PWD}"
 mkdir -p "${SDCARD_ROOT_PWD}"
 
-# Clean previously unfinished images
-images=$(find ${BR_IMAGES_PWD}/../ -maxdepth 1 -name 'recalbox*.img')
-for image in ${images}; do
-    echo "* Cleaning ${image}..."
-    umount "${SDCARD_BOOT_PWD}" > /dev/null || true
-    umount "${SDCARD_ROOT_PWD}" > /dev/null || true
-    kpartx -sd "${image}" > /dev/null
-    rm -f "${image}" > /dev/null
-done
-dmsetup remove_all
-
 # Create virtual sdcard
-if [ ! -f "${SDCARD_IMG_FILE_PATH}" ]; then
-    echo "Creating sdcard image..."
-    dd if=/dev/zero of="${SDCARD_IMG_FILE_PATH}"  bs=${SDCARD_SIZE}  count=1 > /dev/null
+echo "Creating sdcard image..."
+if ! dd if=/dev/zero of="${SDCARD_IMG_FILE_PATH}"  bs=${SDCARD_SIZE} count=1 >/dev/null 2>/dev/null
+then
+    exit 1
 fi
 
 echo "Creating partitions..."
-bootKSize=`getUncompressedFileSize "${BR_IMAGES_PWD}/recalbox/boot.tar.xz"`
-bootKSize=`echo "(${bootKSize}/1024)/1" | bc`
-rootKSize=`getUncompressedFileSize "${BR_IMAGES_PWD}/recalbox/root.tar.xz"`
-rootKSize=`echo "(${rootKSize}/1024)/1" | bc`
-(
+let SDCARD_BOOT_KSIZE=${SDCARD_BOOT_SIZE}/1024
+if ! (
     echo -e "o" ; # Erase partition table
 
     echo -e "n" ; # New partition
     echo -e "p" ; # Primary partition
     echo -e "1" ; # Partition 1 (Boot)
     echo -e ""  ; # default - Start after preceding partition
-    echo -e "+${bootKSize}K" ; # Boot partition size
+    echo -e "+${SDCARD_BOOT_KSIZE}K" ; # Boot partition size
 
     echo -e "n" ; # New partition
     echo -e "p" ; # Primary partition
@@ -130,55 +174,89 @@ rootKSize=`echo "(${rootKSize}/1024)/1" | bc`
     echo -e "p" ; # Print partition table
     echo -e "w" ; # Write partition table
     echo -e "q" ; # Quit
-) | fdisk "${SDCARD_IMG_FILE_PATH}" > /dev/null
+) | fdisk "${SDCARD_IMG_FILE_PATH}" >/dev/null 2>/dev/null
+then
+    exit 1
+fi
 
-echo "Creating block devices..."
+EXITCODE=1
 oldIFS=${IFS}
 IFS=$'\n'
-loops=($(kpartx -avs "${SDCARD_IMG_FILE_PATH}"))
-for (( i=0; i<${#loops[@]}; i++ ));
-do
-    loop="${loops[${i}]}"
-    loop_lp=`echo "${loop}" | cut -d ' ' -f3,3`
-    loop_l=`echo "${loop}" | cut -d ' ' -f8,8`
+LOOP=$(losetup -f)
+if test -z "$LOOP"
+then
+    exit 1
+fi
 
-    SDCARD_L_FILE_PATH="${loop_l}"
+if ! losetup "${LOOP}" "${SDCARD_IMG_FILE_PATH}"
+then
+    exit 1
+fi
 
-    if [ "${i}" -eq "0" ]; then
-        SDCARD_P1_FILE_PATH="/dev/mapper/${loop_lp}"
-    elif [ "${i}" -eq "1" ]; then
-        SDCARD_P2_FILE_PATH="/dev/mapper/${loop_lp}"
-    fi
-done
-IFS=${oldIFS}
-echo "* Loop block device: ${SDCARD_L_FILE_PATH}"
-echo "* Loop block p1 device: ${SDCARD_P1_FILE_PATH}"
-echo "* Loop block p2 device: ${SDCARD_P2_FILE_PATH}"
+SDCARD_P1_FILE_PATH="${LOOP}""p1"
+SDCARD_P2_FILE_PATH="${LOOP}""p2"
 
 echo "Formatting partitions..."
-mkfs.vfat -n "BOOT" "${SDCARD_P1_FILE_PATH}" > /dev/null
-mkfs.ext4 -L "RECALBOX" "${SDCARD_P2_FILE_PATH}" > /dev/null
-tune2fs -m 0 "${SDCARD_P2_FILE_PATH}"
+if mkfs.vfat -F 32 -n "BOOT" "${SDCARD_P1_FILE_PATH}" > /dev/null
+then
+    if mkfs.ext4 -L "RECALBOX" "${SDCARD_P2_FILE_PATH}" > /dev/null
+    then
+	if mount -o loop "${SDCARD_P1_FILE_PATH}" "${SDCARD_BOOT_PWD}"
+	then
+	    if mount -o loop "${SDCARD_P2_FILE_PATH}" "${SDCARD_ROOT_PWD}"
+	    then
+		echo "Writing partitions..."
+		if tar --no-same-permissions --no-same-owner -xf "${ARIMAGES_PWD}""/boot.tar.xz" -C "${SDCARD_BOOT_PWD}"
+		then
+		    if tar -xf "${ARIMAGES_PWD}""/root.tar.xz" -C "${SDCARD_ROOT_PWD}"
+		    then
+		    	EXITCODE=0
+		    fi
+		fi
+		if ! umount "${SDCARD_ROOT_PWD}"
+		then
+		    EXITCODE=1
+		fi
+	    fi
+	    if ! umount "${SDCARD_BOOT_PWD}"
+	    then
+		EXITCODE=1
+	    fi
+	fi
+    fi
+fi
 
-echo "Mounting partitions..."
-mount -o loop "${SDCARD_P1_FILE_PATH}" "${SDCARD_BOOT_PWD}"
-mount -o loop "${SDCARD_P2_FILE_PATH}" "${SDCARD_ROOT_PWD}"
-
-echo "Writing partitions..."
-tar --no-same-permissions --no-same-owner -xf "${BR_IMAGES_PWD}/recalbox/boot.tar.xz" -C "${SDCARD_BOOT_PWD}"
-tar -xf "${BR_IMAGES_PWD}/recalbox/root.tar.xz" -C "${SDCARD_ROOT_PWD}"
-
-echo "Syncing and unmounting partitions..."
+echo "Syncing..."
 sync
-umount "${SDCARD_BOOT_PWD}"
-umount "${SDCARD_ROOT_PWD}"
 
-echo "Destroying block devices..."
-kpartx -sd "${SDCARD_IMG_FILE_PATH}" > /dev/null
+if ! losetup -d "${LOOP}"
+then
+    EXITCODE=1
+fi
 
-echo "Cleaning..."
-rm -fr "${SDCARD_PWD}"
-echo "${SDCARD_IMG_FILE_PATH}"
+# cleaning
+if ! rm -rf "${SDCARD_PWD}"
+then
+    EXITCODE=1
+fi
 
+if test $EXITCODE = 1
+then
+    echo "Failed." >&2
+    exit 1
+fi
+
+# compression
+if test $IMGCOMPRESS = 1
+then
+    echo "Compressing..."
+    if ! gzip "${SDCARD_IMG_FILE_PATH}"
+    then
+	exit 1
+    fi
+    SDCARD_IMG_FILE_PATH="${SDCARD_IMG_FILE_PATH}"".gz"
+fi
+    
+echo "Output: ""${SDCARD_IMG_FILE_PATH}"
 echo
 echo "Done."
