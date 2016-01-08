@@ -231,5 +231,5 @@ if [[ "$emulator" == "fbalibretro" ]]; then
 fi
 
 if [[ "$emulator" == "scummvm" ]]; then
-         /recalbox/scripts/runcommand.sh 2 "scummvm --joystick=0 --extrapath=/usr/share/scummvm --path=\"$dirName\" \"$filenameNoExt\""
+         /recalbox/scripts/runcommand.sh 2 "scummvm --joystick=0 --screenshotspath=/recalbox/share/screenshots --extrapath=/usr/share/scummvm --path=\"$dirName\" \"$filenameNoExt\""
 fi
