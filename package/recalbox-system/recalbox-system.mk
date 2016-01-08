@@ -29,7 +29,7 @@ define RECALBOX_SYSTEM_INSTALL_TARGET_CMDS
 	echo -n "$(RECALBOX_SYSTEM_RPI_VERSION)" > $(TARGET_DIR)/recalbox/recalbox.arch
 	mkdir -p $(TARGET_DIR)/recalbox/share_init/system
 	cp package/recalbox-system/$(RECALBOX_SYSTEM_RECALBOX_CONF)/recalbox.conf $(TARGET_DIR)/recalbox/share_init/system
-	cp package/recalbox-system/$(RECALBOX_SYSTEM_RECALBOX_CONF)/recalbox.conf.template $(TARGET_DIR)/recalbox/share_init/system
+	cp package/recalbox-system/$(RECALBOX_SYSTEM_RECALBOX_CONF)/recalbox.conf $(TARGET_DIR)/recalbox/share_init/system/recalbox.conf.template
 endef
 
 $(eval $(generic-package))
