@@ -124,6 +124,45 @@ mountDeviceOrFallback() {
     fi
 }
 
+do_upgrade() {
+    BOOTTAR="/recalbox/share/system/upgrade/boot.tar.xz"
+    ROOTTAR="/recalbox/share/system/upgrade/root.tar.xz"
+
+    # upgrading /boot
+    EXIT_CODE=1
+    date
+    echo "Upgrading /boot"
+    if mount -o remount,rw /boot
+    then
+	if (cd /boot && cp config.txt config.txt.upgrade && xz -dc < "${BOOTTAR}" | tar xf - && mv config.txt.upgrade config.txt)
+	then
+	    EXIT_CODE=0
+	fi
+	sync
+    fi
+    test "${EXIT_CODE}" = 1 && return 1 # don't insist if /boot failed to upgrade
+
+    date
+
+    # upgrading /root
+    EXIT_CODE=1
+    date
+    echo "Upgrading /"
+    if mount -o remount,rw /
+    then
+	if (cd / && xz -dc < "${ROOTTAR}" | tar xf -)
+	then
+	    EXIT_CODE=0
+	fi
+	sync
+    fi
+    test "${EXIT_CODE}" = 1 && return 1 # don't insist if /root failed to upgrade
+
+    echo "Upgrade ended successfully."
+    date
+    return 0
+}
+
 RMODE=$(cat "$SHARECONFFILE") # it can fails, it will go in fallback
 
 if echo "$RMODE" | grep -qE '^DEV '
@@ -171,6 +210,21 @@ case "$MODE" in
 	fi
 	;;
 esac
+
+# what about doing an upgrade ?
+if test -e "/recalbox/share/system/upgrade/boot.tar.xz" -a -e "/recalbox/share/system/upgrade/root.tar.xz"
+then
+    # let's go
+    fbv -f -i /recalbox/system/resources/splash/logo-upgrade.png &
+
+    do_upgrade > /recalbox/share/system/upgrade/upgrade.out.log 2> /recalbox/share/system/upgrade/upgrade.err.log
+    
+    # remove to not apply it indefinitly, even if it fails
+    rm "/recalbox/share/system/upgrade/boot.tar.xz" "/recalbox/share/system/upgrade/root.tar.xz"
+    
+    # rebooting now
+    shutdown -r now
+fi
 
 # now, let mount delayed usbmount devices
 ls /var/run/usbmount.delay |

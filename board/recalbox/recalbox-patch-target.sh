@@ -23,3 +23,4 @@ rm -f "${TARGET_DIR}/etc/init.d/S50kodi" || exit 1
 
 # bootsplash
 convert "${TARGET_DIR}/recalbox/system/resources/splash/logo.png" -fill white -pointsize 30 -annotate +50+1020 $(cat "${TARGET_DIR}/recalbox/recalbox.version") "${TARGET_DIR}/recalbox/system/resources/splash/logo-version.png" || exit 1
+convert "${TARGET_DIR}/recalbox/system/resources/splash/logo.png" -fill white -pointsize 60 -gravity center -annotate +0+0 "Upgrading the system\nPlease wait..." "${TARGET_DIR}/recalbox/system/resources/splash/logo-upgrade.png" || exit 1
