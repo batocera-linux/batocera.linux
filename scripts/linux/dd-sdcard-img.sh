@@ -19,7 +19,7 @@ if [ -z "${SDCARD_DEVICE_FILE_PATH}" ]; then
 fi
 
 echo "Writing ${SDCARD_IMG_FILE_PATH} to ${SDCARD_DEVICE_FILE_PATH}..."
-tar -xJOf "${SDCARD_IMG_FILE_PATH}" | dd of="${SDCARD_DEVICE_FILE_PATH}" bs=1M || exit 1
+unzip -p "${SDCARD_IMG_FILE_PATH}" | dd of="${SDCARD_DEVICE_FILE_PATH}" bs=4M || exit 1
 sync
 
 echo

@@ -17,4 +17,5 @@ apt-get install \
     texinfo \
     zip \
     openjdk-8-jdk \
-    inotify-tools
+    inotify-tools \
+    graphicsmagick-imagemagick-compat
