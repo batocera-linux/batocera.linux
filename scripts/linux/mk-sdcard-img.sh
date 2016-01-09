@@ -1,49 +1,5 @@
 #!/bin/bash
 
-ScriptDir=$(dirname ${0})
-
-if [ "${USER}" != "root" ]; then
-    echo "This script must be runned as root user."
-    exit 1
-fi
-
-print_usage() {
-    echo "$1"" [--help|-h] [-z] [-o FILE] [-ad DIRECTORY]"
-    echo "--help -h: print this help"
-    echo "-o FILE: output file (.gz is added if -z is set)"
-    echo "-ad DIRECTORY: directory containing the boot and root archives"
-    echo "-z: compress the output image"
-}
-
-# parameters
-IMGCOMPRESS=0
-SDCARD_IMG_FILE_PATH=
-ARIMAGES_PWD=
-while test $# -gt 0
-do
-    case "$1" in
-	"--help"|"-h")
-	    print_usage "$0"
-	    exit 0
-	    ;;
-	"-o")
-	    SDCARD_IMG_FILE_PATH=$2
-	    shift
-	    ;;
-	"-ad")
-	    ARIMAGES_PWD=$2
-	    shift
-	    ;;
-	"-z")
-	    IMGCOMPRESS=1
-	    ;;
-	*)
-	    print_usage "$0"
-	    exit 0
-    esac
-    shift
-done
-
 # Return uncompressed size for the given tar.xz file
 # $1: XZ file path
 getUncompressedFileSize() {
@@ -75,18 +31,70 @@ cleanExit() {
     test -n "$LOOP"              && losetup -d "$LOOP"
     exit 1
 }
+
+print_usage() {
+    echo "$1"" [--help|-h] [-z] [-o FILE] [-ad DIRECTORY]"
+    echo "--help -h: print this help"
+    echo "-o FILE: output file (.zip is added if -z is set)"
+    echo "-ad DIRECTORY: directory containing the boot and root archives"
+    echo "-z: compress the output image"
+}
+
+### MAIN ###
+# clean when badly killed
 trap cleanExit SIGINT
 
+if [ "${USER}" != "root" ]; then
+    echo "This script must be runned as root user."
+    exit 1
+fi
+
+ScriptDir=$(dirname ${0})
+
+# 1) parameters
+# 1.1) parse arguments
+IMGCOMPRESS=0
+SDCARD_IMG_FILE_PATH=
+ARIMAGES_PWD=
+while test $# -gt 0
+do
+    case "$1" in
+	"--help"|"-h")
+	    print_usage "$0"
+	    exit 0
+	    ;;
+	"-o")
+	    SDCARD_IMG_FILE_PATH=$2
+	    shift
+	    ;;
+	"-ad")
+	    ARIMAGES_PWD=$2
+	    shift
+	    ;;
+	"-z")
+	    IMGCOMPRESS=1
+	    ;;
+	*)
+	    print_usage "$0"
+	    exit 0
+    esac
+    shift
+done
+
+# 1.2) initialize parameters if not done by options
 # find the *.tar.xz directory
 if test -z "${ARIMAGES_PWD}"
 then
     ARIMAGES_PWD="${ScriptDir}""/../../output/images/recalbox"
 fi
 
-if [ ! -d "${ARIMAGES_PWD}" ]; then
-    echo "No RecalBox OS build found in ""${ARIMAGES_PWD}" >&2
-    exit 1
+# define the img output file
+if test -z "${SDCARD_IMG_FILE_PATH}"
+then
+    SDCARD_IMG_FILE_PATH="${ScriptDir}""/../../output/sdimg/recalbox-"$(date +"%Y-%m-%d_%Hh%M")".img"
 fi
+
+# 1.3) check the parameters
 
 # check that root.tar.xz and boot.tar.xz are here
 for FILE in "boot.tar.xz" "root.tar.xz"
@@ -98,12 +106,7 @@ do
     fi
 done
 
-# define the img output file
-if test -z "${SDCARD_IMG_FILE_PATH}"
-then
-    SDCARD_IMG_FILE_PATH="${ScriptDir}""/../../output/sdimg/recalbox-"$(date +"%Y-%m-%d_%Hh%M")".img"
-fi
-
+# 2) Prerequisites : directories and sizes
 SDCARD_PWD="${ScriptDir}""/../../output/mksdcard"
 SDCARD_BOOT_PWD="${SDCARD_PWD}/boot"
 SDCARD_ROOT_PWD="${SDCARD_PWD}/root"
@@ -126,17 +129,11 @@ echo
 
 # Create missing directories
 mkdir -p $(dirname "${SDCARD_IMG_FILE_PATH}")
-
-if ! mkdir "${SDCARD_PWD}"
-then
-    echo "The directory must not exist before running the script" >&2
-    exit 1
-fi
-
+mkdir -p "${SDCARD_PWD}"
 mkdir -p "${SDCARD_BOOT_PWD}"
 mkdir -p "${SDCARD_ROOT_PWD}"
 
-# Create virtual sdcard
+# 3) Create virtual sdcard
 echo "Creating sdcard image..."
 if ! dd if=/dev/zero of="${SDCARD_IMG_FILE_PATH}"  bs=${SDCARD_SIZE} count=1 >/dev/null 2>/dev/null
 then
@@ -180,15 +177,14 @@ then
 fi
 
 EXITCODE=1
-oldIFS=${IFS}
-IFS=$'\n'
 LOOP=$(losetup -f)
 if test -z "$LOOP"
 then
     exit 1
 fi
 
-if ! losetup "${LOOP}" "${SDCARD_IMG_FILE_PATH}"
+# add the -P while sometimes, partitions are not reread
+if ! losetup -P "${LOOP}" "${SDCARD_IMG_FILE_PATH}"
 then
     exit 1
 fi
@@ -234,14 +230,9 @@ then
     EXITCODE=1
 fi
 
-# cleaning
-if ! rm -rf "${SDCARD_PWD}"
-then
-    EXITCODE=1
-fi
-
 if test $EXITCODE = 1
 then
+    rm "${SDCARD_IMG_FILE_PATH}"
     echo "Failed." >&2
     exit 1
 fi
@@ -250,11 +241,13 @@ fi
 if test $IMGCOMPRESS = 1
 then
     echo "Compressing..."
-    if ! gzip "${SDCARD_IMG_FILE_PATH}"
+    if ! zip -q "${SDCARD_IMG_FILE_PATH}"".zip" "${SDCARD_IMG_FILE_PATH}"
     then
+	rm "${SDCARD_IMG_FILE_PATH}"
 	exit 1
     fi
-    SDCARD_IMG_FILE_PATH="${SDCARD_IMG_FILE_PATH}"".gz"
+    rm "${SDCARD_IMG_FILE_PATH}"
+    SDCARD_IMG_FILE_PATH="${SDCARD_IMG_FILE_PATH}"".zip"
 fi
     
 echo "Output: ""${SDCARD_IMG_FILE_PATH}"
