@@ -33,7 +33,7 @@ cleanExit() {
 }
 
 print_usage() {
-    echo "${1} [--help|-h] [-z] [-o FILE] [-ad DIRECTORY]"
+    echo "${1} [--help|-h] [-z] -o FILE -ad DIRECTORY"
     echo "--help -h: print this help"
     echo "-o FILE: output file (.zip is added if -z is set)"
     echo "-ad DIRECTORY: directory containing the boot and root archives"
@@ -48,8 +48,6 @@ if [ "${USER}" != "root" ]; then
     echo "This script must be runned as root user."
     exit 1
 fi
-
-ScriptDir=$(dirname ${0})
 
 # 1) parameters
 # 1.1) parse arguments
@@ -85,13 +83,25 @@ done
 # find the *.tar.xz directory
 if test -z "${ARIMAGES_PWD}"
 then
-    ARIMAGES_PWD="${ScriptDir}/../../output/images/recalbox"
+    echo >&2
+    echo "Error: Please set the archive directory path" >&2
+    ScriptDir=$(dirname ${0})
+    echo "Hint: -ad ${ScriptDir}/../../output/images/recalbox" >&2
+    echo >&2
+    print_usage
+    exit 1
 fi
 
 # define the img output file
 if test -z "${SDCARD_IMG_FILE_PATH}"
 then
-    SDCARD_IMG_FILE_PATH="${ScriptDir}/../../output/sdimg/recalbox-"$(date +"%Y-%m-%d_%Hh%M")".img"
+    echo >&2
+    echo "Error: Please set the output image file" >&2
+    ScriptDir=$(dirname ${0})
+    echo "Hint: -o ${ScriptDir}/../../output/sdimg/recalbox.img" >&2
+    echo >&2
+    print_usage
+    exit 1
 fi
 
 # 1.3) check the parameters
@@ -107,7 +117,7 @@ do
 done
 
 # 2) Prerequisites : directories and sizes
-SDCARD_PWD="${ScriptDir}/../../output/mksdcard"
+SDCARD_PWD="/tmp/recalbox_mksdcard${$}"
 SDCARD_BOOT_PWD="${SDCARD_PWD}/boot"
 SDCARD_ROOT_PWD="${SDCARD_PWD}/root"
 SDCARD_BOOT_SIZE=$(getUncompressedFileSize "${ARIMAGES_PWD}/boot.tar.xz")
