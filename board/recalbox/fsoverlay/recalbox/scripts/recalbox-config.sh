@@ -249,7 +249,7 @@ fi
 
 
 if [ "$command" == "canupdate" ];then
-	available=`wget -qO- http://archive2.recalbox.com/rsync/recalbox-$version/root/recalbox/recalbox.version`
+	available=`wget -qO- http://archive2.recalbox.com/4.0.0/last/recalbox-$version/recalbox.version`
 	if [[ "$?" != "0" ]];then
 		exit 2
 	fi
@@ -263,11 +263,9 @@ if [ "$command" == "canupdate" ];then
 fi
 
 if [ "$command" == "update" ];then
-	/recalbox/scripts/rsync-update/rsync-update.sh
+	/recalbox/scripts/recalbox-upgrade.sh
 	exit $?
 fi
-
-
 
 if [[ "$command" == "ethernet" ]]; then
         eth="eth`ifconfig -a | sed -n \"s/eth\(.\).*/\1/p\"`"

@@ -1,2 +1,2 @@
-v3.2.8-alpha
-- bumped to 3.18.8 kernel
+v4.0.0-dev
+- to be done
