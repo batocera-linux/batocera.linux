@@ -249,7 +249,7 @@ fi
 
 
 if [ "$command" == "canupdate" ];then
-	available=`wget -qO- http://archive2.recalbox.com/4.0.0/last/recalbox-$version/recalbox.version`
+	available=`wget -qO- http://archive2.recalbox.com/4.0.0/last/$version/recalbox.version`
 	if [[ "$?" != "0" ]];then
 		exit 2
 	fi
