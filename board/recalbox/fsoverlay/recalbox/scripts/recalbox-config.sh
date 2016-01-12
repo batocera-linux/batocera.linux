@@ -312,8 +312,8 @@ if [[ "$command" == "wifi" ]]; then
                         echo "`logtime` : creating network entry in $wpafile" >> $log
                         echo -e "network={\n\tssid=\"\"\n\tpsk=\"\"\n}" >> $wpafile
                 fi
-                sed -i "s/ssid=\".*\"/ssid=\"$ssid\"/g" $wpafile
-                sed -i "s/psk=\".*\"/psk=\"$psk\"/g" $wpafile
+                sed -i "s/ssid=\".*\"/ssid=\"`echo $ssid | sed -e 's/[\/&]/\\\\&/g'`\"/g" $wpafile
+                sed -i "s/psk=\".*\"/psk=\"`echo $psk | sed -e 's/[\/&]/\\\\&/g'`\"/g" $wpafile
                 mode="forcestart"
         fi
         if [[ "$mode" == "disable" ]]; then
