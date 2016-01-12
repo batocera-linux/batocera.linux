@@ -1,0 +1,18 @@
+diff --git a/usbmount b/usbmount
+index c09a865..7d89dbf 100755
+--- a/usbmount
++++ b/usbmount
+@@ -123,7 +123,12 @@ if [ "$1" = add ]; then
+ 
+ 		# Mount the filesystem.
+ 		log info "executing command: mount -t$fstype ${options:+-o$options} $DEVNAME $mountpoint"
+-		mount "-t$fstype" "${options:+-o$options}" "$DEVNAME" "$mountpoint"
++		if test "$fstype" = "ntfs"
++		then
++		    mount.ntfs-3g "${options:+-o$options}" "$DEVNAME" "$mountpoint"
++		else
++		    mount "-t$fstype" "${options:+-o$options}" "$DEVNAME" "$mountpoint"
++		fi
+ 
+ 		# Determine vendor and model.
+ 		vendor=
