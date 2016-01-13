@@ -1,6 +1,6 @@
 config BR2_PACKAGE_RECALBOX_API
         bool "recalbox-api"
-	depends on BR2_BR2_PACKAGE_NODEJS_0_12_X
+	depends on BR2_PACKAGE_NODEJS
         help
           Neolao's api project
 
