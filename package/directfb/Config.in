@@ -3,6 +3,8 @@ config BR2_PACKAGE_DIRECTFB
 	depends on BR2_TOOLCHAIN_HAS_THREADS
 	depends on BR2_INSTALL_LIBSTDCPP
 	depends on BR2_TOOLCHAIN_GCC_AT_LEAST_4_5
+	depends on !BR2_TOOLCHAIN_USES_MUSL # sigval_t issue
+	depends on !BR2_sparc # needs atomic operation __sync_fetch_and_add
 	select BR2_PACKAGE_FREETYPE
 	select BR2_PACKAGE_ZLIB
 	help
@@ -59,11 +61,6 @@ config BR2_PACKAGE_DIRECTFB_ATI128
 	bool "compile ati128 graphics driver"
 	depends on BR2_i386 || BR2_x86_64
 
-config BR2_PACKAGE_DIRECTFB_CLE266
-	bool "compile cle266 graphics driver"
-	default y
-	depends on BR2_i386 || BR2_x86_64
-
 config BR2_PACKAGE_DIRECTFB_MATROX
 	bool "compile matrox graphics driver"
 	depends on BR2_i386 || BR2_x86_64
@@ -86,11 +83,6 @@ config BR2_PACKAGE_DIRECTFB_EP9X
 	  processors from Cirrus Logic.
 
 	  http://cirrus.com/en/products/arm9.html
-
-config BR2_PACKAGE_DIRECTFB_UNICHROME
-	bool "compile unichrome graphics driver"
-	default y
-	depends on BR2_i386 || BR2_x86_64
 
 config BR2_PACKAGE_DIRECTFB_I830
 	bool "compile i830 graphics driver"
@@ -164,5 +156,7 @@ config BR2_PACKAGE_DIRECTFB_TESTS
 
 endif # BR2_PACKAGE_DIRECTFB
 
-comment "directfb needs a toolchain w/ C++, threads, gcc >= 4.5"
-	depends on !BR2_TOOLCHAIN_HAS_THREADS || !BR2_INSTALL_LIBSTDCPP || !BR2_TOOLCHAIN_GCC_AT_LEAST_4_5
+comment "directfb needs a (e)glibc or uClibc toolchain w/ C++, threads, gcc >= 4.5"
+	depends on !BR2_sparc # needs atomic operation __sync_fetch_and_add
+	depends on !BR2_TOOLCHAIN_HAS_THREADS || !BR2_INSTALL_LIBSTDCPP || \
+		!BR2_TOOLCHAIN_GCC_AT_LEAST_4_5 || BR2_TOOLCHAIN_USES_MUSL

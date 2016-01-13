@@ -72,9 +72,11 @@ UBOOT_BIN_IFT = $(UBOOT_BIN).ift
 endif
 
 # The kernel calls AArch64 'arm64', but U-Boot calls it just 'arm', so
-# we have to special case it.
+# we have to special case it. Similar for i386/x86_64 -> x86
 ifeq ($(KERNEL_ARCH),arm64)
 UBOOT_ARCH = arm
+else ifneq ($(filter $(KERNEL_ARCH),i386 x86_64),)
+UBOOT_ARCH = x86
 else
 UBOOT_ARCH = $(KERNEL_ARCH)
 endif
@@ -108,6 +110,7 @@ define UBOOT_COPY_OLD_LICENSE_FILE
 endef
 
 UBOOT_POST_EXTRACT_HOOKS += UBOOT_COPY_OLD_LICENSE_FILE
+UBOOT_POST_RSYNC_HOOKS += UBOOT_COPY_OLD_LICENSE_FILE
 
 # Prior to Buildroot 2015.05, only patch directories were supported. New
 # configurations use BR2_TARGET_UBOOT_PATCH instead.
@@ -145,13 +148,11 @@ define UBOOT_CONFIGURE_CMDS
 endef
 else ifeq ($(BR2_TARGET_UBOOT_BUILD_SYSTEM_KCONFIG),y)
 ifeq ($(BR2_TARGET_UBOOT_USE_DEFCONFIG),y)
-UBOOT_SOURCE_CONFIG = $(UBOOT_DIR)/configs/$(call qstrip,\
-	$(BR2_TARGET_UBOOT_BOARD_DEFCONFIG))_defconfig
+UBOOT_KCONFIG_DEFCONFIG = $(call qstrip,$(BR2_TARGET_UBOOT_BOARD_DEFCONFIG))_defconfig
 else ifeq ($(BR2_TARGET_UBOOT_USE_CUSTOM_CONFIG),y)
-UBOOT_SOURCE_CONFIG = $(call qstrip,$(BR2_TARGET_UBOOT_CUSTOM_CONFIG_FILE))
+UBOOT_KCONFIG_FILE = $(call qstrip,$(BR2_TARGET_UBOOT_CUSTOM_CONFIG_FILE))
 endif # BR2_TARGET_UBOOT_USE_DEFCONFIG
 
-UBOOT_KCONFIG_FILE = $(UBOOT_SOURCE_CONFIG)
 UBOOT_KCONFIG_EDITORS = menuconfig xconfig gconfig nconfig
 UBOOT_KCONFIG_OPTS = $(UBOOT_MAKE_OPTS)
 endif # BR2_TARGET_UBOOT_BUILD_SYSTEM_LEGACY

@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-GST1_PLUGINS_BAD_VERSION = 1.6.1
+GST1_PLUGINS_BAD_VERSION = 1.6.2
 GST1_PLUGINS_BAD_SOURCE = gst-plugins-bad-$(GST1_PLUGINS_BAD_VERSION).tar.xz
 GST1_PLUGINS_BAD_SITE = http://gstreamer.freedesktop.org/src/gst-plugins-bad
 GST1_PLUGINS_BAD_LICENSE_FILES = COPYING COPYING.LIB
@@ -57,9 +57,7 @@ GST1_PLUGINS_BAD_CONF_OPTS += \
 	--disable-mplex \
 	--disable-nas \
 	--disable-ofa \
-	--disable-openal \
 	--disable-openexr \
-	--disable-openjpeg \
 	--disable-openni2 \
 	--disable-pvr \
 	--disable-libvisual \
@@ -702,11 +700,32 @@ else
 GST1_PLUGINS_BAD_CONF_OPTS += --disable-neon
 endif
 
+ifeq ($(BR2_PACKAGE_GST1_PLUGINS_BAD_PLUGIN_OPENAL),y)
+GST1_PLUGINS_BAD_CONF_OPTS += --enable-openal
+GST1_PLUGINS_BAD_DEPENDENCIES += openal
+else
+GST1_PLUGINS_BAD_CONF_OPTS += --disable-openal
+endif
+
 ifeq ($(BR2_PACKAGE_GST1_PLUGINS_BAD_PLUGIN_OPENCV),y)
 GST1_PLUGINS_BAD_CONF_OPTS += --enable-opencv
 GST1_PLUGINS_BAD_DEPENDENCIES += opencv
 else
 GST1_PLUGINS_BAD_CONF_OPTS += --disable-opencv
+endif
+
+ifeq ($(BR2_PACKAGE_GST1_PLUGINS_BAD_PLUGIN_OPENH264),y)
+GST1_PLUGINS_BAD_CONF_OPTS += --enable-openh264
+GST1_PLUGINS_BAD_DEPENDENCIES += libopenh264
+else
+GST1_PLUGINS_BAD_CONF_OPTS += --disable-openh264
+endif
+
+ifeq ($(BR2_PACKAGE_GST1_PLUGINS_BAD_PLUGIN_OPENJPEG),y)
+GST1_PLUGINS_BAD_CONF_OPTS += --enable-openjpeg
+GST1_PLUGINS_BAD_DEPENDENCIES += openjpeg
+else
+GST1_PLUGINS_BAD_CONF_OPTS += --disable-openjpeg
 endif
 
 ifeq ($(BR2_PACKAGE_GST1_PLUGINS_BAD_PLUGIN_OPUS),y)
