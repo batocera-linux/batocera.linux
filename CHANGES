@@ -1,3 +1,78 @@
+2015.11, Released November 30th, 2015
+
+	Minor fixes.
+
+	Merged/seperate /usr handling is now also performed for
+	staging so cross-gdb / gdbserver can find the libraries.
+
+	Updated/fixed packages: autossh, conntrack-tools, dcron,
+	espeak, gcc, glmark2, gpsd, gstreamer1, libglib2, libsigsegv,
+	libsoc, libv4l, minidlna, mongrel2, opencv, polarssl,
+	rpi-userland, rubix, skeleton, tovid, uemacs, valgrind, yad,
+	zmqpp
+
+	Issues resolved (http://bugs.uclibc.org):
+
+	#8441: Invalid directory for X11 fonts in target (RPi2)
+	#8491: libglib2 2.46.1 not Building for armv5 on 2015.11-rc3
+
+2015.11-rc3, Released November 26th, 2015
+
+	Fixes all over the tree.
+
+	We have a new modern website!
+
+	Updated/fixed packages: apitrace, audiofile, autossh, bullet,
+	c-ares, collectd, conntrack-tools, cryptodev-linux, dropbear,
+	fastd, gmp, gpsd, gst-plugins-bad, gst-plugins-base,
+	gst-plugins-good, gst-plugins-ugly, gstreamer, gstreamer1,
+	guile, iodine, iproute2, jimtcl, kompexsqlite, libethumb,
+	libfreeimage, libgsasl, libgtk3, libxml2, localedef,
+	lttng-tools, macchanger, mongrel2, mpd, openntpd, openssl,
+	oprofile, pcre, qt5base, quagga, rpi-userland, sconeserver,
+	sdl, spidev_test, sqlite, strongswan, ustr, xapp_sessreg,
+	yajl, zmqpp
+
+	Issues resolved (http://bugs.uclibc.org):
+
+	#6872: gpsd: disabled on microblaze
+	#8321: invalid opcode error with minidlna and ffmpeg
+	#8336: Default systemd configuration fails to boot correctly in 2015-08
+	#8446: rpi-userland failed to build with glibc 2.22
+
+2015.11-rc2, Released November 19th, 2015
+
+	Fixes all over the tree.
+
+	LD_LIBRARY_PATH is no longer used to ensure host binaries find
+	their libraries, fixing issues on recent Fedora.
+
+	Toolchain fixes for powerpc e5500 / e6500. Fix for an issue
+	with ${TARGET}-cc after the move to use a toolchain wrapper
+	for the internal toolchain.
+
+	Appy-patches.sh now correctly applies all files listed in
+	series files.
+
+	Fixes for merged /usr handling when a custom skeleton is used.
+
+	Updated/fixed packages: axfsutils, boost, busybox, dhcp,
+	directfb, dropbear, ebtables, fastd, ffmpeg, gauche, gcc,
+	gettext, gst1-plugins-bad, hostapd, ibrdtnd, libcurl,
+	libecore, libgudev, libnss, libpng, libserial, libssh2,
+	libuecc, libxml2, linux-headers, liquid-dsp, ltris,
+	lua-periphery, minidlna, mongrel2, mpd, mpg123, mplayer,
+	mysql, opencv, opencv3, package, perl-file-util, php-ssh2,
+	polarssl, pulseaudio, python-protobuf, qemu, qt5base, ranger,
+	ruby, skeleton, slang, squeezelite, strongswan, tovid, uclibc,
+	ushare, wine, wpa_supplicant, x265,
+	xdriver_xf86-video-siliconmotion, zxing-cpp
+
+	Issues resolved (http://bugs.uclibc.org):
+
+	#4790: Running udhcpc on a system with NFS root kills NFS
+	#8456: Building host-pkgconf on Fedora 23 fails due to..
+
 2015.11-rc1, Released November, 7th 2015
 
 	Fixes all over the tree and new features.

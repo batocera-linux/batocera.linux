@@ -4,9 +4,9 @@
 #
 ################################################################################
 
-DBUS_VERSION = 1.10.2
+DBUS_VERSION = 1.10.6
 DBUS_SITE = http://dbus.freedesktop.org/releases/dbus
-DBUS_LICENSE = AFLv2.1 GPLv2+
+DBUS_LICENSE = AFLv2.1, GPLv2+
 DBUS_LICENSE_FILES = COPYING
 DBUS_INSTALL_STAGING = YES
 
@@ -50,7 +50,7 @@ else
 DBUS_CONF_OPTS += --disable-selinux
 endif
 
-ifeq ($(BR2_PACKAGE_AUDIT),y)
+ifeq ($(BR2_PACKAGE_AUDIT)$(BR2_PACKAGE_LIBCAP_NG),yy)
 DBUS_CONF_OPTS += --enable-libaudit
 DBUS_DEPENDENCIES += audit libcap-ng
 else

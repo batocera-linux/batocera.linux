@@ -13,6 +13,7 @@ GPSD_INSTALL_STAGING = YES
 GPSD_DEPENDENCIES = host-scons host-pkgconf
 
 GPSD_LDFLAGS = $(TARGET_LDFLAGS)
+GPSD_CFLAGS = $(TARGET_CFLAGS)
 
 GPSD_SCONS_ENV = $(TARGET_CONFIGURE_OPTS)
 
@@ -37,6 +38,13 @@ else
 GPSD_SCONS_OPTS += libgpsmm=no
 endif
 
+# prevents from triggering GCC ICE
+# A bug was reported to the gcc bug tracker:
+# https://gcc.gnu.org/bugzilla/show_bug.cgi?id=68485
+ifeq ($(BR2_microblaze),y)
+GPSD_CFLAGS += -fno-expensive-optimizations -fno-schedule-insns
+endif
+
 # Enable or disable Qt binding
 ifeq ($(BR2_PACKAGE_QT_NETWORK),y)
 GPSD_SCONS_ENV += QMAKE="$(QT_QMAKE)"
@@ -57,6 +65,12 @@ ifeq ($(BR2_PACKAGE_BLUEZ_UTILS),y)
 GPSD_DEPENDENCIES += bluez_utils
 else
 GPSD_SCONS_OPTS += bluez=no
+endif
+
+# If pps-tools is available, build it before so the package can use it
+# (HAVE_SYS_TIMEPPS_H).
+ifeq ($(BR2_PACKAGE_PPS_TOOLS),y)
+GPSD_DEPENDENCIES += pps-tools
 endif
 
 ifeq ($(BR2_PACKAGE_DBUS_GLIB),y)
@@ -185,7 +199,7 @@ ifeq ($(BR2_PACKAGE_GPSD_MAX_DEV),y)
 GPSD_SCONS_OPTS += limited_max_devices=$(BR2_PACKAGE_GPSD_MAX_DEV_VALUE)
 endif
 
-GPSD_SCONS_ENV += LDFLAGS="$(GPSD_LDFLAGS)"
+GPSD_SCONS_ENV += LDFLAGS="$(GPSD_LDFLAGS)" CFLAGS="$(GPSD_CFLAGS)"
 
 define GPSD_BUILD_CMDS
 	(cd $(@D); \

@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-BOOST_VERSION = 1.58.0
+BOOST_VERSION = 1.60.0
 BOOST_SOURCE = boost_$(subst .,_,$(BOOST_VERSION)).tar.bz2
 BOOST_SITE = http://downloads.sourceforge.net/project/boost/boost/$(BOOST_VERSION)
 BOOST_INSTALL_STAGING = YES
@@ -16,15 +16,16 @@ HOST_BOOST_DEPENDENCIES =
 # keep host variant as minimal as possible
 HOST_BOOST_FLAGS = --without-icu \
 	--without-libraries=$(subst $(space),$(comma),atomic chrono context \
-	coroutine date_time exception filesystem graph graph_parallel \
-	iostreams locale log math mpi program_options python random regex \
-	serialization signals system test thread timer wave)
+	coroutine coroutine2 date_time exception filesystem graph \
+	graph_parallel iostreams locale log math mpi program_options python \
+	random regex serialization signals system test thread timer wave)
 
 BOOST_WITHOUT_FLAGS += $(if $(BR2_PACKAGE_BOOST_ATOMIC),,atomic)
 BOOST_WITHOUT_FLAGS += $(if $(BR2_PACKAGE_BOOST_CHRONO),,chrono)
 BOOST_WITHOUT_FLAGS += $(if $(BR2_PACKAGE_BOOST_CONTAINER),,container)
 BOOST_WITHOUT_FLAGS += $(if $(BR2_PACKAGE_BOOST_CONTEXT),,context)
 BOOST_WITHOUT_FLAGS += $(if $(BR2_PACKAGE_BOOST_COROUTINE),,coroutine)
+BOOST_WITHOUT_FLAGS += $(if $(BR2_PACKAGE_BOOST_COROUTINE2),,coroutine2)
 BOOST_WITHOUT_FLAGS += $(if $(BR2_PACKAGE_BOOST_DATE_TIME),,date_time)
 BOOST_WITHOUT_FLAGS += $(if $(BR2_PACKAGE_BOOST_EXCEPTION),,exception)
 BOOST_WITHOUT_FLAGS += $(if $(BR2_PACKAGE_BOOST_FILESYSTEM),,filesystem)
@@ -93,6 +94,10 @@ ifeq ($(BR2_sparc64),y)
 BOOST_OPTS += architecture=sparc instruction-set=ultrasparc
 endif
 
+ifeq ($(BR2_sparc),y)
+BOOST_OPTS += architecture=sparc instruction-set=v8
+endif
+
 # By default, Boost build and installs both the shared and static
 # variants. Override that if we want static only or shared only.
 ifeq ($(BR2_STATIC_LIBS),y)
@@ -114,10 +119,40 @@ BOOST_WITHOUT_FLAGS_COMMASEPARATED += $(subst $(space),$(comma),$(strip $(BOOST_
 BOOST_FLAGS += $(if $(BOOST_WITHOUT_FLAGS_COMMASEPARATED), --without-libraries=$(BOOST_WITHOUT_FLAGS_COMMASEPARATED))
 BOOST_LAYOUT = $(call qstrip, $(BR2_PACKAGE_BOOST_LAYOUT))
 
+# how verbose should the build be?
+BOOST_OPTS += $(if $(QUIET),-d,-d+1)
+HOST_BOOST_OPTS += $(if $(QUIET),-d,-d+1)
+
 define BOOST_CONFIGURE_CMDS
 	(cd $(@D) && ./bootstrap.sh $(BOOST_FLAGS))
 	echo "using gcc : `$(TARGET_CC) -dumpversion` : $(TARGET_CXX) : <cxxflags>\"$(BOOST_TARGET_CXXFLAGS)\" <linkflags>\"$(TARGET_LDFLAGS)\" ;" > $(@D)/user-config.jam
 	echo "" >> $(@D)/user-config.jam
+endef
+
+define BOOST_BUILD_CMDS
+	(cd $(@D) && ./bjam -j$(PARALLEL_JOBS) -q \
+	--user-config=$(@D)/user-config.jam \
+	$(BOOST_OPTS) \
+	--ignore-site-config \
+	--layout=$(BOOST_LAYOUT))
+endef
+
+define BOOST_INSTALL_TARGET_CMDS
+	(cd $(@D) && ./b2 -j$(PARALLEL_JOBS) -q \
+	--user-config=$(@D)/user-config.jam \
+	$(BOOST_OPTS) \
+	--prefix=$(TARGET_DIR)/usr \
+	--ignore-site-config \
+	--layout=$(BOOST_LAYOUT) install )
+endef
+
+define BOOST_INSTALL_STAGING_CMDS
+	(cd $(@D) && ./bjam -j$(PARALLEL_JOBS) -q \
+	--user-config=$(@D)/user-config.jam \
+	$(BOOST_OPTS) \
+	--prefix=$(STAGING_DIR)/usr \
+	--ignore-site-config \
+	--layout=$(BOOST_LAYOUT) install)
 endef
 
 define HOST_BOOST_CONFIGURE_CMDS
@@ -126,17 +161,8 @@ define HOST_BOOST_CONFIGURE_CMDS
 	echo "" >> $(@D)/user-config.jam
 endef
 
-define BOOST_INSTALL_TARGET_CMDS
-	(cd $(@D) && ./b2 -j$(PARALLEL_JOBS) -q -d+1 \
-	--user-config=$(@D)/user-config.jam \
-	$(BOOST_OPTS) \
-	--prefix=$(TARGET_DIR)/usr \
-	--ignore-site-config \
-	--layout=$(BOOST_LAYOUT) install )
-endef
-
 define HOST_BOOST_BUILD_CMDS
-	(cd $(@D) && ./b2 -j$(PARALLEL_JOBS) -q -d+1 \
+	(cd $(@D) && ./b2 -j$(PARALLEL_JOBS) -q \
 	--user-config=$(@D)/user-config.jam \
 	$(HOST_BOOST_OPTS) \
 	--ignore-site-config \
@@ -144,21 +170,12 @@ define HOST_BOOST_BUILD_CMDS
 endef
 
 define HOST_BOOST_INSTALL_CMDS
-	(cd $(@D) && ./b2 -j$(PARALLEL_JOBS) -q -d+1 \
+	(cd $(@D) && ./b2 -j$(PARALLEL_JOBS) -q \
 	--user-config=$(@D)/user-config.jam \
 	$(HOST_BOOST_OPTS) \
 	--prefix=$(HOST_DIR)/usr \
 	--ignore-site-config \
 	--layout=$(BOOST_LAYOUT) install )
-endef
-
-define BOOST_INSTALL_STAGING_CMDS
-	(cd $(@D) && ./bjam -j$(PARALLEL_JOBS) -q -d+1 \
-	--user-config=$(@D)/user-config.jam \
-	$(BOOST_OPTS) \
-	--prefix=$(STAGING_DIR)/usr \
-	--ignore-site-config \
-	--layout=$(BOOST_LAYOUT) install)
 endef
 
 $(eval $(generic-package))

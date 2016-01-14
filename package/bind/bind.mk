@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-BIND_VERSION = 9.9.8
+BIND_VERSION = 9.10.3-P2
 BIND_SITE = ftp://ftp.isc.org/isc/bind9/$(BIND_VERSION)
 BIND_INSTALL_STAGING = YES
 BIND_CONFIG_SCRIPTS = bind9-config isc-config.sh
@@ -22,6 +22,7 @@ BIND_CONF_ENV = \
 	BUILD_CC="$(TARGET_CC)" \
 	BUILD_CFLAGS="$(TARGET_CFLAGS)"
 BIND_CONF_OPTS = \
+	--with-libjson=no \
 	--with-randomdev=/dev/urandom \
 	--enable-epoll \
 	--with-libtool \

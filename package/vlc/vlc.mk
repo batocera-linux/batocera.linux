@@ -179,6 +179,13 @@ else
 VLC_CONF_OPTS += --disable-libass
 endif
 
+ifeq ($(BR2_PACKAGE_LIBDVBPSI),y)
+VLC_CONF_OPTS += --enable-dvbpsi
+VLC_DEPENDENCIES += libdvbpsi
+else
+VLC_CONF_OPTS += --disable-dvbpsi
+endif
+
 ifeq ($(BR2_PACKAGE_LIBGCRYPT),y)
 VLC_CONF_OPTS += --enable-libgcrypt
 VLC_DEPENDENCIES += libgcrypt
@@ -193,6 +200,13 @@ VLC_CONF_OPTS += --enable-mad
 VLC_DEPENDENCIES += libmad
 else
 VLC_CONF_OPTS += --disable-mad
+endif
+
+ifeq ($(BR2_PACKAGE_LIBMATROSKA),y)
+VLC_CONF_OPTS += --enable-mkv
+VLC_DEPENDENCIES += libmatroska
+else
+VLC_CONF_OPTS += --disable-mkv
 endif
 
 ifeq ($(BR2_PACKAGE_LIBMODPLUG),y)

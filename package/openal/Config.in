@@ -1,0 +1,15 @@
+config BR2_PACKAGE_OPENAL
+	bool "openal"
+	depends on BR2_INSTALL_LIBSTDCPP
+	depends on BR2_TOOLCHAIN_HAS_THREADS_NPTL
+	help
+	  OpenAL provides capabilities for playing audio in a virtual
+	  3D environment. Distance attenuation, doppler shift, and
+	  directional sound emitters are among the features handled by
+	  the API.
+
+	  http://kcat.strangesoft.net/openal.html
+
+comment "openal needs a toolchain w/ NPTL, C++"
+	depends on !BR2_TOOLCHAIN_HAS_THREADS_NPTL \
+		|| !BR2_INSTALL_LIBSTDCPP
