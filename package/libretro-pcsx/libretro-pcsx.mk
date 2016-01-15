@@ -3,7 +3,7 @@
 # PCSXREARMED
 #
 ################################################################################
-LIBRETRO_PCSX_VERSION = 81e875a317f08af2728ff6dc9f3a6b43625c5dc1
+LIBRETRO_PCSX_VERSION = 0c840ff34defe22147f497c33e0ebad9386fada6 
 LIBRETRO_PCSX_SITE = $(call github,libretro,pcsx_rearmed,$(LIBRETRO_PCSX_VERSION))
 
 define LIBRETRO_PCSX_BUILD_CMDS
@@ -11,7 +11,7 @@ define LIBRETRO_PCSX_BUILD_CMDS
 endef
 
 define LIBRETRO_PCSX_INSTALL_TARGET_CMDS
-	$(INSTALL) -D $(@D)/libretro.so \
+	$(INSTALL) -D $(@D)/pcsx_rearmed_libretro.so \
 		$(TARGET_DIR)/usr/lib/libretro/pcsx_rearmed_libretro.so
 endef
 
