@@ -4,7 +4,7 @@ IN=/recalbox/share_init
 OUT=/recalbox/share
 
 # force the creation of some directories
-for DIR in cheats system system/.emulationstation system/.emulationstation/themes system/bluetooth system/logs system/ssh system/configs
+for DIR in cheats system system/.cache system/.emulationstation system/.emulationstation/themes system/bluetooth system/logs system/ssh system/configs
 do
     if test ! -e "$OUT""/""$DIR"
     then
