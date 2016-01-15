@@ -1,8 +1,12 @@
 #!/bin/sh
 
 # sixad
-mkdir -p /var/lib/sixad/profiles/
+mkdir -p /var/lib/sixad/profiles
 cp /etc/sixad.profile /var/lib/sixad/profiles/default
+
+# ethX and wifi
+mkdir -p /var/network
+cp /etc/network/interfaces.base /var/network/interfaces
 
 # wifi
 cp /etc/wpa_supplicant/wpa_supplicant.conf /var/lib/wpa_supplicant.conf

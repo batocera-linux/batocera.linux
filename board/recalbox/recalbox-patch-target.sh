@@ -21,6 +21,9 @@ ln -sf "/recalbox/share/cheats"                                       "${TARGET_
 
 rm -f "${TARGET_DIR}/etc/init.d/S50kodi" || exit 1
 
+# network
+ln -sf "/var/network/interfaces" "${TARGET_DIR}/etc/network/interfaces" || exit 1
+
 # tmpfs or sysfs is mounted over theses directories
 # clear these directories is required for the upgrade (otherwise, tar xf fails)
 rm -rf "${TARGET_DIR}/"{var,run,sys,tmp} || exit 1

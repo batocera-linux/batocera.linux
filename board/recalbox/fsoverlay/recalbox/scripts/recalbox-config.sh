@@ -275,7 +275,7 @@ if [[ "$command" == "ethernet" ]]; then
         else
                 echo "`logtime` : $eth will be used as wired interface"
         fi
-        sed -i "s/eth[0-9]\+/$eth/g" /etc/network/interfaces
+        sed -i "s/eth[0-9]\+/$eth/g" /var/network/interfaces # directly modify the file and not the link because sed create a temporary file in the same directory
         if [[ "$mode" == "start" ]]; then
                 /sbin/ifdown $eth >> $log
                 /sbin/ifup $eth >> $log
