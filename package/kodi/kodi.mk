@@ -195,9 +195,7 @@ else
 KODI_CONF_OPTS += --disable-libcec
 endif
 
-ifeq ($(BR2_PACKAGE_KODI_LIRC),y)
-KODI_CONF_OPTS += --enable-lirc
-else
+ifeq ($(BR2_PACKAGE_KODI_LIRC),n)
 KODI_CONF_OPTS += --disable-lirc
 endif
 
