@@ -303,7 +303,7 @@ if [[ "$command" == "wifi" ]]; then
         else
                 echo "`logtime` : $wlan be used as wifi interface" >> $log
         fi
-        sed -i "s/wlan[0-9]\+/$wlan/g" /etc/network/interfaces
+        sed -i "s/wlan[0-9]\+/$wlan/g" /var/network/interfaces # directly modify the file and not the link because sed create a temporary file in the same directory
 
         if [[ "$mode" == "enable" ]]; then
                 echo "`logtime` : enabling wifi" >> $log
