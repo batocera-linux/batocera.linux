@@ -196,7 +196,7 @@ KODI_CONF_OPTS += --disable-libcec
 endif
 
 ifeq ($(BR2_PACKAGE_KODI_LIRC),y)
-KODI_CONF_OPTS += --enable-lirc
+KODI_CONF_OPTS += --with-lirc-device=/var/run/lirc/lircd
 else
 KODI_CONF_OPTS += --disable-lirc
 endif
