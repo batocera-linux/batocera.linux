@@ -9,8 +9,8 @@ getUncompressedFileSize() {
 	return 1
     fi
 
-    # add a 1.4 ratio for future updates
-    let lsize=${lsize}*14/10
+    # add a 1.5 ratio for future updates
+    let lsize=${lsize}*15/10
 
     # minimize the size (it's difficult to tell how /boot will be in the future)
     #lfat32_minimum=33548800 = 32mb, but i suggest a minimum oof 64mb
