@@ -384,7 +384,9 @@ if [[ "$command" == "storage" ]]; then
 	echo "INTERNAL"
 	echo "ANYEXTERNAL"
 	echo "RAM"
-	blkid | grep -vE '^/dev/mmcblk' | sed -e s+'^[^:]*: LABEL="\([^"]*\)" UUID="\([^"]*\)" TYPE="[^"]*"$'+'DEV \2 \1'+
+	(blkid | grep -vE '^/dev/mmcblk' | grep ': LABEL="'
+	 blkid | grep -vE '^/dev/mmcblk' | grep -v ': LABEL="' | sed -e s+':'+': LABEL="NO_NAME"'+
+	) | sed -e s+'^[^:]*: LABEL="\([^"]*\)" UUID="\([^"]*\)" TYPE="[^"]*"$'+'DEV \2 \1'+
 	exit 0
     fi
     if [[ "$mode" == "INTERNAL" || "$mode" == "ANYEXTERNAL" || "$mode" == "RAM" || "$mode" == "DEV" ]]; then
