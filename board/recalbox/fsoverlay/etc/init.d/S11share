@@ -11,6 +11,7 @@
 
 SHARECONFFILE="/boot/recalbox.conf"
 INTERNALDEVICE="/dev/mmcblk0p3"
+INTERNALDEVICE_MOUNTOPT="noatime,iocharset=utf8"
 MAXTRY=5
 NTRY=0
 
@@ -32,9 +33,9 @@ then
     then
 	# create the internal partition
 	PSTART=$(parted -s /dev/mmcblk0 -m unit b print free | tail -1 | grep -E 'free;$' | cut -d: -f 2)
-	if test -n "$PSTART"
+	if test -n "${PSTART}"
 	then
-	    parted -s /dev/mmcblk0 -m unit b mkpart primary "$PSTART" 100%
+	    parted -s /dev/mmcblk0 -m unit b mkpart primary "${PSTART}" 100%
 	    if test -e /dev/mmcblk0p3
 	    then
 		mkfs.vfat -F 32 -n SHARE /dev/mmcblk0p3
@@ -51,7 +52,7 @@ fi
 mountNTFS() {
     DEVICE=$1
     RECALBOXFULLFS=$2
-    TESTFILE="$RECALBOXFULLFS""/recalbox.fsrw.test"
+    TESTFILE="${RECALBOXFULLFS}/recalbox.fsrw.test"
     
     if ! mount.ntfs-3g $*
     then
@@ -59,18 +60,18 @@ mountNTFS() {
     fi
 
     # check if the fs is rw because in some case, even if asked rw, fs will be mount in ro because of ntfs errors
-    if touch "$TESTFILE"
+    if touch "${TESTFILE}"
     then
-	rm "$TESTFILE"
+	rm "${TESTFILE}"
 	return 0
     fi
 
     # try to fix. It doesn't work in 100% of the case : in the worst case, you've to plug on a windows environement and run an fsck
-    if ! umount "$RECALBOXFULLFS"
+    if ! umount "${RECALBOXFULLFS}"
     then
 	return 1
     fi
-    ntfsfix -d "$DEVICE"
+    ntfsfix -d "${DEVICE}"
 
     # new try after ntfsfix
     if ! mount.ntfs-3g $*
@@ -79,14 +80,14 @@ mountNTFS() {
     fi
     
     # check if the fs is rw because in some case, even if asked rw, fs will be mount in ro because of ntfs errors
-    if touch "$TESTFILE"
+    if touch "${TESTFILE}"
     then
-	rm "$TESTFILE"
+	rm "${TESTFILE}"
 	return 0
     fi
 
     # ask a fallback !
-    umount "$RECALBOXFULLFS"
+    umount "${RECALBOXFULLFS}"
     return 1
 }
 
@@ -96,22 +97,28 @@ mountDeviceOrFallback() {
     RECALBOXFULLFS="/var/recalboxfs"
     FALLBACK=1
 
-    if test "$TDEVICE" = "ntfs"
+    if test "${TDEVICE}" = "ntfs"
     then
 	FSMOUNTCMD=mountNTFS
     else
 	FSMOUNTCMD=mount
     fi
-    
-    if test -n "$DEVICE"
+
+    FSMOUNTOPT="noatime"
+    if test "${TDEVICE}" = "vfat"
     then
-	if mkdir -p "$RECALBOXFULLFS"
+	FSMOUNTOPT="${FSMOUNTOPT},iocharset=utf8"
+    fi
+    
+    if test -n "${DEVICE}"
+    then
+	if mkdir -p "${RECALBOXFULLFS}"
 	then
-	    if "$FSMOUNTCMD" "$DEVICE" "$RECALBOXFULLFS" -o noatime
+	    if "${FSMOUNTCMD}" "${DEVICE}" "${RECALBOXFULLFS}" -o "${FSMOUNTOPT}"
 	    then
-		if mkdir -p "$RECALBOXFULLFS""/recalbox"
+		if mkdir -p "${RECALBOXFULLFS}/recalbox"
 		then
-		    if mount "$RECALBOXFULLFS""/recalbox" "/recalbox/share"
+		    if mount "${RECALBOXFULLFS}/recalbox" "/recalbox/share" -o "${FSMOUNTOPT}"
 		    then
 			FALLBACK=0
 		    fi
@@ -120,9 +127,9 @@ mountDeviceOrFallback() {
 	fi
     fi
 
-    if test "$FALLBACK" = 1
+    if test "${FALLBACK}" = 1
     then
-	if ! mount "$INTERNALDEVICE" /recalbox/share -o noatime
+	if ! mount "${INTERNALDEVICE}" /recalbox/share -o "${INTERNALDEVICE_MOUNTOPT}"
 	then
 	    mount -t tmpfs -o size=128M tmpfs /recalbox/share
 	fi
@@ -197,46 +204,46 @@ do_upgrade() {
     return 0
 }
 
-RMODE=$(cat "$SHARECONFFILE") # it can fails, it will go in fallback
+RMODE=$(cat "${SHARECONFFILE}") # it can fails, it will go in fallback
 
-if echo "$RMODE" | grep -qE '^DEV '
+if echo "${RMODE}" | grep -qE '^DEV '
 then
     MODE="DEV"
-    UUID=$(echo "$RMODE" | sed -e s+'^DEV '++)
+    UUID=$(echo "${RMODE}" | sed -e s+'^DEV '++)
 else
-    MODE=$RMODE
+    MODE=${RMODE}
 fi
 
-case "$MODE" in
+case "${MODE}" in
     "DEV")
-	LDEVICE=$(blkid | grep " UUID=\"""$UUID""\"")
-	while test -z "$LDEVICE" -a "$NTRY" -lt "$MAXTRY" # wait the device that can take some seconds after udev started
+	LDEVICE=$(blkid | grep " UUID=\"${UUID}\"")
+	while test -z "${LDEVICE}" -a "${NTRY}" -lt "${MAXTRY}" # wait the device that can take some seconds after udev started
 	do
 	    let NTRY++
 	    sleep 1
-	    LDEVICE=$(blkid | grep " UUID=\"""$UUID""\"")
+	    LDEVICE=$(blkid | grep " UUID=\"${UUID}\"")
 	done
-	DEVICE=$(echo "$LDEVICE" | sed -e s+'^\([^:]*\):.*$'+'\1'+)
-	TDEVICE=$(echo "$LDEVICE" | sed -e s+'^.* TYPE="\([^"]*\)"$'+'\1'+)
-	mountDeviceOrFallback "$DEVICE" "$TDEVICE"
+	DEVICE=$(echo "${LDEVICE}" | sed -e s+'^\([^:]*\):.*$'+'\1'+)
+	TDEVICE=$(echo "${LDEVICE}" | sed -e s+'^.* TYPE="\([^"]*\)"$'+'\1'+)
+	mountDeviceOrFallback "${DEVICE}" "${TDEVICE}"
 	;;
     "ANYEXTERNAL")
 	LDEVICE=$(blkid | grep -vE '^/dev/mmcblk' | head -1)
-	while test -z "$LDEVICE" -a "$NTRY" -lt "$MAXTRY" # wait the device that can take some seconds after udev started
+	while test -z "${LDEVICE}" -a "${NTRY}" -lt "${MAXTRY}" # wait the device that can take some seconds after udev started
 	do
 	    let NTRY++
 	    sleep 1
 	    LDEVICE=$(blkid | grep -vE '^/dev/mmcblk' | head -1)
 	done
-	DEVICE=$(echo "$LDEVICE" | sed -e s+'^\([^:]*\):.*$'+'\1'+)
-	TDEVICE=$(echo "$LDEVICE" | sed -e s+'^.* TYPE="\([^"]*\)"$'+'\1'+)
-	mountDeviceOrFallback "$DEVICE" "$TDEVICE"
+	DEVICE=$(echo "${LDEVICE}" | sed -e s+'^\([^:]*\):.*$'+'\1'+)
+	TDEVICE=$(echo "${LDEVICE}" | sed -e s+'^.* TYPE="\([^"]*\)"$'+'\1'+)
+	mountDeviceOrFallback "${DEVICE}" "${TDEVICE}"
 	;;
     "RAM")
 	mount -t tmpfs -o size=128M tmpfs /recalbox/share
 	;;
     "INTERNAL"|*)
-	if ! mount "$INTERNALDEVICE" /recalbox/share -o noatime
+	if ! mount "${INTERNALDEVICE}" /recalbox/share -o "${INTERNALDEVICE_MOUNTOPT}"
 	then
 	    # fallback
 	    # the internal partition is no more required in fact
@@ -263,10 +270,10 @@ fi
 ls /var/run/usbmount.delay |
     while read RULE
     do
-	RTYPE=$(echo "$RULE" | sed -e s+'^[0-9]*\.'++)
+	RTYPE=$(echo "${RULE}" | sed -e s+'^[0-9]*\.'++)
 	# source the udev context and apply the usbmount
-	(. "/var/run/usbmount.delay"/"$RULE"
-	 /usr/share/usbmount/usbmount "$RTYPE"
-	 rm "/var/run/usbmount.delay"/"$RULE")
+	(. "/var/run/usbmount.delay/${RULE}"
+	 /usr/share/usbmount/usbmount "${RTYPE}"
+	 rm "/var/run/usbmount.delay/${RULE}")
     done
 touch /var/run/recalbox.share.mounted # reenable standard usbmount
