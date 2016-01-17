@@ -4,7 +4,7 @@ IN=/recalbox/share_init
 OUT=/recalbox/share
 
 # force the creation of some directories
-for DIR in cheats system system/.cache system/.emulationstation system/.emulationstation/themes system/bluetooth system/logs system/ssh system/configs
+for DIR in cheats system system/.cache system/.emulationstation system/.emulationstation/themes system/bluetooth system/logs system/configs
 do
     if test ! -e "$OUT""/""$DIR"
     then
@@ -64,9 +64,12 @@ do
 done
 
 # ssh : create the ssh key while the -R option of dropbear try a chown or an operation which is not permitted on fat32
-if ! test -e /recalbox/share/system/ssh/dropbear_ecdsa_host_key
-   then
-       dropbearkey -t ecdsa -f /recalbox/share/system/ssh/dropbear_ecdsa_host_key
+if ! test -e /recalbox/share/system/ssh
+then
+    mkdir -p /recalbox/share/system/ssh
+    dropbearkey -t ecdsa -f /recalbox/share/system/ssh/dropbear_ecdsa_host_key
+    dropbearkey -t rsa   -f /recalbox/share/system/ssh/dropbear_rsa_host_key
+    dropbearkey -t dss   -f /recalbox/share/system/ssh/dropbear_dss_host_key
 fi
 
 # END
