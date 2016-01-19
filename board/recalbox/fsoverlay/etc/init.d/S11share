@@ -11,7 +11,8 @@
 
 SHARECONFFILE="/boot/recalbox.conf"
 INTERNALDEVICE="/dev/mmcblk0p3"
-INTERNALDEVICE_MOUNTOPT="noatime,iocharset=utf8"
+INTERNALDEVICE_MOUNTOPT="noatime,iocharset=utf8,flush" # FAT32
+#INTERNALDEVICE_MOUNTOPT="noatime" # EXT4
 MAXTRY=5
 NTRY=0
 
@@ -38,7 +39,7 @@ then
 	    parted -s /dev/mmcblk0 -m unit b mkpart primary "${PSTART}" 100%
 	    if test -e /dev/mmcblk0p3
 	    then
-		mkfs.vfat -F 32 -n SHARE /dev/mmcblk0p3
+		mkfs.vfat -F 32 -n SHARE /dev/mmcblk0p3 # if you replace this line, please change the INTERNALDEVICE_MOUNTOPT variable too in consequence
 		#fsck.fat /dev/mmcblk0p3 -a
 		#mkfs.ext4 /dev/mmcblk0p3 -q -F -L SHARE
 		#e2fsck -f -p /dev/mmcblk0p3
@@ -107,7 +108,7 @@ mountDeviceOrFallback() {
     FSMOUNTOPT="noatime"
     if test "${TDEVICE}" = "vfat"
     then
-	FSMOUNTOPT="${FSMOUNTOPT},iocharset=utf8"
+	FSMOUNTOPT="${FSMOUNTOPT},iocharset=utf8,flush"
     fi
     
     if test -n "${DEVICE}"
