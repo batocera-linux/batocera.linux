@@ -114,6 +114,14 @@ rb_hostname() {
     fi
 }
 
+rb_xarcade2jstick() {
+    settings_xarcade="`$systemsetting -command load -key controllers.xarcade.enabled`"
+    if [[ "$settings_xarcade" == "1" ]];then
+        recallog "starting xarcade2jstick"
+        start-stop-daemon --background --start --quiet --exec /usr/bin/xarcade2jstick
+    fi
+}
+
 case "$1" in
   start)
 	recallog "starting new log"
@@ -131,6 +139,7 @@ case "$1" in
 	rb_volume_configure& # 0.5
 	rb_timezone&         # 0.4
 	rb_hostname&         # 0.4
+	rb_xarcade2jstick&   # 0.1
 	wait
 	;;
   stop)
