@@ -1,0 +1,7 @@
+config BR2_PACKAGE_XARCADE2JSTICK
+	bool "Petrockblock's XArcade2Jstock"
+	help
+	  Creates joystick devs from XArcade
+	  http://blog.petrockblock.com/2014/06/01/xarcade2jstick/
+
+comment "XARCADE2JSTICK needs a toolchain w/ C++"
