@@ -100,7 +100,9 @@ fi
 if [ "$command" == "overclock" ]; then
 
 declare -A arm_freq
-arm_freq["rpi2"]=1050
+arm_freq["rpi2-extrem"]=1100
+arm_freq["rpi2-turbo"]=1050
+arm_freq["rpi2-high"]=1050
 arm_freq["extrem"]=1100
 arm_freq["turbo"]=1000
 arm_freq["high"]=950
@@ -108,7 +110,9 @@ arm_freq["none"]=700
 arm_freq["none-rpi2"]=900
 
 declare -A core_freq
-core_freq["rpi2"]=525
+core_freq["rpi2-extrem"]=550
+core_freq["rpi2-turbo"]=525
+core_freq["rpi2-high"]=525
 core_freq["extrem"]=550
 core_freq["turbo"]=500
 core_freq["high"]=250
@@ -116,7 +120,9 @@ core_freq["none"]=250
 core_freq["none-rpi2"]=250
 
 declare -A sdram_freq
-sdram_freq["rpi2"]=480
+sdram_freq["rpi2-extrem"]=480
+sdram_freq["rpi2-turbo"]=450
+sdram_freq["rpi2-high"]=450
 sdram_freq["extrem"]=600
 sdram_freq["turbo"]=600
 sdram_freq["high"]=450
@@ -124,7 +130,9 @@ sdram_freq["none"]=400
 sdram_freq["none-rpi2"]=450
 
 declare -A force_turbo
-force_turbo["rpi2"]=0
+force_turbo["rpi2-extrem"]=1
+force_turbo["rpi2-turbo"]=0
+force_turbo["rpi2-high"]=0
 force_turbo["extrem"]=1
 force_turbo["turbo"]=0
 force_turbo["high"]=0
@@ -132,7 +140,9 @@ force_turbo["none"]=0
 force_turbo["none-rpi2"]=0
 
 declare -A over_voltage
-over_voltage["rpi2"]=4
+over_voltage["rpi2-extrem"]=4
+over_voltage["rpi2-turbo"]=4
+over_voltage["rpi2-high"]=4
 over_voltage["extrem"]=8
 over_voltage["turbo"]=6
 over_voltage["high"]=6
@@ -140,7 +150,9 @@ over_voltage["none"]=0
 over_voltage["none-rpi2"]=0
 
 declare -A over_voltage_sdram
-over_voltage_sdram["rpi2"]=2
+over_voltage_sdram["rpi2-extrem"]=4
+over_voltage_sdram["rpi2-turbo"]=2
+over_voltage_sdram["rpi2-high"]=2
 over_voltage_sdram["extrem"]=6
 over_voltage_sdram["turbo"]=0
 over_voltage_sdram["high"]=0
@@ -148,7 +160,9 @@ over_voltage_sdram["none"]=0
 over_voltage_sdram["none-rpi2"]=0
 
 declare -A gpu_freq
-gpu_freq["rpi2"]=350
+gpu_freq["rpi2-extrem"]=366
+gpu_freq["rpi2-turbo"]=350
+gpu_freq["rpi2-high"]=350
 gpu_freq["extrem"]=250
 gpu_freq["turbo"]=250
 gpu_freq["high"]=250
