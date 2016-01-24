@@ -366,8 +366,19 @@ if [[ "$command" == "hiddpair" ]]; then
 		fi
 	fi
 	
-	hidd --connect $mac 
-        exit $?
+        hidd --connect $mac                                                                                                                                 
+        connected=$?                                                                                                                                        
+        deviceFile=/var/lib/bluetooth/known_devices                                                                                                         
+        if [ $connected ]; then                                                                                                                             
+                cat $deviceFile | grep $mac1                                                                                                                 
+                if [[ $? == "0" ]]; then                                                                                                                    
+                        echo "bluetooth : $mac1 already in $deviceFile" >> $log                                                                              
+                else                                                                                                                                        
+                        echo "bluetooth : adding $mac1 in $deviceFile" >> $log                                                                               
+                        echo "$mac1" >> "$deviceFile"                                                                                                        
+                fi                                                                                                                                          
+        fi                                                                                                                                                  
+        exit $connected  
 fi
 
 if [[ "$command" == "storage" ]]; then
