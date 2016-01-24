@@ -121,7 +121,7 @@ core_freq["none-rpi2"]=250
 
 declare -A sdram_freq
 sdram_freq["rpi2-extrem"]=480
-sdram_freq["rpi2-turbo"]=450
+sdram_freq["rpi2-turbo"]=480
 sdram_freq["rpi2-high"]=450
 sdram_freq["extrem"]=600
 sdram_freq["turbo"]=600
