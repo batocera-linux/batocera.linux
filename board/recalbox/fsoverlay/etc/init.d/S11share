@@ -11,8 +11,7 @@
 
 SHARECONFFILE="/boot/recalbox.conf"
 INTERNALDEVICE="/dev/mmcblk0p3"
-#INTERNALDEVICE_MOUNTOPT="noatime,iocharset=utf8,flush" # FAT32
-INTERNALDEVICE_MOUNTOPT="noatime" # EXT4
+INTERNALDEVICETYPE="ext4" # faster than waiting udev to initialize to get the type
 MAXTRY=5
 NTRY=0
 
@@ -39,7 +38,7 @@ then
 	    parted -s /dev/mmcblk0 -m unit b mkpart primary "${PSTART}" 100%
 	    if test -e /dev/mmcblk0p3
 	    then
-		#mkfs.vfat -F 32 -n SHARE /dev/mmcblk0p3 # if you replace this line, please change the INTERNALDEVICE_MOUNTOPT variable too in consequence
+		#mkfs.vfat -F 32 -n SHARE /dev/mmcblk0p3 # if you replace this line, please change the INTERNALDEVICETYPE variable too in consequence
 		#fsck.fat /dev/mmcblk0p3 -a
 		mkfs.ext4 /dev/mmcblk0p3 -q -F -L SHARE
 		e2fsck -f -p /dev/mmcblk0p3
@@ -49,77 +48,21 @@ then
 fi
 #####
 
-# what's a hell to mount an ntfs device...
-mountNTFS() {
-    DEVICE=$1
-    RECALBOXFULLFS=$2
-    TESTFILE="${RECALBOXFULLFS}/recalbox.fsrw.test"
-    
-    if ! mount.ntfs-3g $*
-    then
-	return 1
-    fi
-
-    # check if the fs is rw because in some case, even if asked rw, fs will be mount in ro because of ntfs errors
-    if touch "${TESTFILE}"
-    then
-	rm "${TESTFILE}"
-	return 0
-    fi
-
-    # try to fix. It doesn't work in 100% of the case : in the worst case, you've to plug on a windows environement and run an fsck
-    if ! umount "${RECALBOXFULLFS}"
-    then
-	return 1
-    fi
-    ntfsfix -d "${DEVICE}"
-
-    # new try after ntfsfix
-    if ! mount.ntfs-3g $*
-    then
-	return 1
-    fi
-    
-    # check if the fs is rw because in some case, even if asked rw, fs will be mount in ro because of ntfs errors
-    if touch "${TESTFILE}"
-    then
-	rm "${TESTFILE}"
-	return 0
-    fi
-
-    # ask a fallback !
-    umount "${RECALBOXFULLFS}"
-    return 1
-}
-
 mountDeviceOrFallback() {
     DEVICE=$1
     TDEVICE=$2
     RECALBOXFULLFS="/var/recalboxfs"
     FALLBACK=1
 
-    if test "${TDEVICE}" = "ntfs"
-    then
-	FSMOUNTCMD=mountNTFS
-    else
-	FSMOUNTCMD=mount
-    fi
-
-    FSMOUNTOPT="noatime"
-    if test "${TDEVICE}" = "vfat"
-    then
-	FSMOUNTOPT="${FSMOUNTOPT},iocharset=utf8,flush"
-    fi
-    
     if test -n "${DEVICE}"
     then
 	if mkdir -p "${RECALBOXFULLFS}"
 	then
-	    if "${FSMOUNTCMD}" "${DEVICE}" "${RECALBOXFULLFS}" -o "${FSMOUNTOPT}"
+	    if /recalbox/scripts/recalbox-mount.sh "${TDEVICE}" 1 "${DEVICE}" "${RECALBOXFULLFS}"
 	    then
 		if mkdir -p "${RECALBOXFULLFS}/recalbox"
 		then
-		    if mount "${RECALBOXFULLFS}/recalbox" "/recalbox/share" -o "${FSMOUNTOPT}"
+		    if mount "${RECALBOXFULLFS}/recalbox" "/recalbox/share" -o "noatime"
 		    then
 			FALLBACK=0
 		    fi
@@ -130,7 +73,7 @@ mountDeviceOrFallback() {
 
     if test "${FALLBACK}" = 1
     then
-	if ! mount "${INTERNALDEVICE}" /recalbox/share -o "${INTERNALDEVICE_MOUNTOPT}"
+	if ! /recalbox/scripts/recalbox-mount.sh "${INTERNALDEVICETYPE}" 1 "${INTERNALDEVICE}" /recalbox/share
 	then
 	    mount -t tmpfs -o size=128M tmpfs /recalbox/share
 	fi
@@ -244,7 +187,7 @@ case "${MODE}" in
 	mount -t tmpfs -o size=128M tmpfs /recalbox/share
 	;;
     "INTERNAL"|*)
-	if ! mount "${INTERNALDEVICE}" /recalbox/share -o "${INTERNALDEVICE_MOUNTOPT}"
+	if ! /recalbox/scripts/recalbox-mount.sh "${INTERNALDEVICETYPE}" 1 "${INTERNALDEVICE}" /recalbox/share
 	then
 	    # fallback
 	    # the internal partition is no more required in fact
