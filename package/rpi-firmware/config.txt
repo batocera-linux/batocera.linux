@@ -20,6 +20,12 @@ hdmi_force_hotplug=0
 # uncomment for lirc-rpi
 #dtoverlay=lirc-rpi
 
+# uncomment if you plug your tv at the same time as your rpi and that the rpi switches from the hdmi or give a low resolution because tv had no enough time to initialize it
+#boot_delay=5
+
+# uncomment if you won't the rainbow at startup
+#disable_splash=1
+
 # Overclock
 gpu_mem_256=128
 gpu_mem_512=256
