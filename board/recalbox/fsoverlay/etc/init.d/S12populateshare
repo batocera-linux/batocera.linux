@@ -12,14 +12,14 @@ do
     fi
 done
 
-# directories to copy when initializing the user data
+# directories / files to copy when initializing the user data
 #
 # NO UPDATE IS POSSIBLE ON THESE DIRECTORIES WHEN RECALBOX IS UPDATED
 #
 # there are almost empty, it's just for the structure
 # the user can delete the directory, it will recreate the structure
 # the user can delete files, files will not be recreated
-for DIR in bios extractions kodi saves screenshots system/.kodi system/.config system/configs/{fba,mupen64,retroarch,shadersets}
+for DIR in bios extractions kodi saves screenshots system/.kodi system/.hatari system/.config system/configs/{fba,mupen64,retroarch,shadersets}
 do
     if test ! -e "$OUT""/""$DIR"
     then
