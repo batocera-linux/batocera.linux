@@ -420,7 +420,7 @@ if [[ "$command" == "storage" ]]; then
 	    echo "$mode" > /boot/recalbox.conf
 	fi
 	if [[ "$mode" == "DEV" ]]; then
-	    echo "$mode"" ""$extra1" > /boot/recalbox.conf
+            echo "$mode $extra1"  > /boot/recalbox.conf 
 	fi
 	postBootConfig
 	exit 0
