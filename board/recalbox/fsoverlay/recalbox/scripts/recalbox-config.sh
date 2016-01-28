@@ -379,20 +379,32 @@ if [[ "$command" == "hiddpair" ]]; then
 			/etc/init.d/S10udev start
 		fi
 	fi
-	
-        hidd --connect $mac                                                                                                                                 
-        connected=$?                                                                                                                                        
-        deviceFile=/var/lib/bluetooth/known_devices                                                                                                         
-        if [ $connected ]; then                                                                                                                             
-                cat $deviceFile | grep $mac1                                                                                                                 
-                if [[ $? == "0" ]]; then                                                                                                                    
-                        echo "bluetooth : $mac1 already in $deviceFile" >> $log                                                                              
-                else                                                                                                                                        
-                        echo "bluetooth : adding $mac1 in $deviceFile" >> $log                                                                               
-                        echo "$mac1" >> "$deviceFile"                                                                                                        
-                fi                                                                                                                                          
-        fi                                                                                                                                                  
-        exit $connected  
+
+        hidd --connect $mac
+        connected=$?
+        deviceFile=/var/lib/bluetooth/known_devices
+        if [ $connected ]; then
+                cat $deviceFile | grep $mac1
+                if [[ $? == "0" ]]; then
+                        echo "bluetooth : $mac1 already in $deviceFile" >> $log
+                else
+                        echo "bluetooth : adding $mac1 in $deviceFile" >> $log
+                        echo "$mac1" >> "$deviceFile"
+                fi
+
+		# backup files on the share directory
+		rm -rf /recalbox/share/system/bluetooth
+		if mkdir -p /recalbox/share/system/bluetooth
+		then
+		    ls /var/lib/bluetooth |
+			while read X
+			do
+			    UX=$(echo "${X}" | sed -e s+":"+"_"+g)
+			    cp -r "/var/lib/bluetooth/${X}" "/recalbox/share/system/bluetooth/${UX}"
+			done
+		fi
+        fi
+        exit $connected
 fi
 
 if [[ "$command" == "storage" ]]; then

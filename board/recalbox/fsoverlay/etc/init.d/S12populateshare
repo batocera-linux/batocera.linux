@@ -19,12 +19,9 @@ done
 # there are almost empty, it's just for the structure
 # the user can delete the directory, it will recreate the structure
 # the user can delete files, files will not be recreated
-for DIR in bios extractions kodi saves screenshots system/.kodi system/.hatari system/.config system/configs/{fba,mupen64,retroarch,shadersets}
+for FILE in bios extractions kodi saves screenshots system/.kodi system/.hatari system/.config system/configs/{fba,mupen64,retroarch,shadersets} system/.emulationstation/{es_input.cfg,es_settings.cfg} system/recalbox.conf
 do
-    if test ! -e "$OUT""/""$DIR"
-    then
-	cp -r "$IN""/""$DIR" "$OUT""/""$DIR"
-    fi
+    test ! -e "$OUT""/""$FILE" && cp -r "$IN""/""$FILE" "$OUT""/""$FILE"
 done
 
 # directories to force directories exists
@@ -55,14 +52,6 @@ do
     fi
 done
 
-# special directories
-
-# NO UPDATE IS POSSIBLE ON THESE FILES WHEN RECALBOX IS UPDATED
-for FILE in system/.emulationstation/{es_input.cfg,es_settings.cfg} system/recalbox.conf
-do
-    test ! -e "$OUT""/""$FILE" && cp "$IN""/""$FILE" "$OUT""/""$FILE"
-done
-
 # ssh : create the ssh key while the -R option of dropbear try a chown or an operation which is not permitted on fat32
 if ! test -e /recalbox/share/system/ssh
 then
@@ -71,5 +60,18 @@ then
     dropbearkey -t rsa   -f /recalbox/share/system/ssh/dropbear_rsa_host_key
     dropbearkey -t dss   -f /recalbox/share/system/ssh/dropbear_dss_host_key
 fi
+
+# bluetooth : copy the bluetooth files stored in /:/_/ (because of vfat)
+ls "/recalbox/share/system/bluetooth" |
+    while read X
+    do
+	if test "${X}" = "known_devices"
+	then
+	    UX="${X}"
+	else
+	    UX=$(echo "${X}" | sed -e s+"_"+":"+g)
+	fi
+	cp -r "/recalbox/share/system/bluetooth/${X}" "/var/lib/bluetooth/${UX}"
+    done
 
 # END
