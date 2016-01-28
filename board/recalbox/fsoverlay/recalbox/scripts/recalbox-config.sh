@@ -399,7 +399,7 @@ if [[ "$command" == "hiddpair" ]]; then
 		    ls /var/lib/bluetooth |
 			while read X
 			do
-			    UX=$(echo "${X}" | sed -e s+":"+"_"+g)
+			    UX=$(echo "${X}" | sed -e s+":"+"@"+g)
 			    cp -r "/var/lib/bluetooth/${X}" "/recalbox/share/system/bluetooth/${UX}"
 			done
 		fi

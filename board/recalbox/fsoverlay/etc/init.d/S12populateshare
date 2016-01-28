@@ -65,12 +65,7 @@ fi
 ls "/recalbox/share/system/bluetooth" |
     while read X
     do
-	if test "${X}" = "known_devices"
-	then
-	    UX="${X}"
-	else
-	    UX=$(echo "${X}" | sed -e s+"_"+":"+g)
-	fi
+	UX=$(echo "${X}" | sed -e s+"@"+":"+g)
 	cp -r "/recalbox/share/system/bluetooth/${X}" "/var/lib/bluetooth/${UX}"
     done
 
