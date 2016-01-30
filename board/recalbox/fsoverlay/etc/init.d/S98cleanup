@@ -1,0 +1,18 @@
+#!/bin/bash
+
+# the update system doesn't allow the file removing. So use this script for this task
+
+doClean() {
+    if test -e "$1"
+    then
+	mount -o remount,rw /
+	rm -rf "$1"
+	mount -o remount,ro /
+    fi
+}
+
+# V4.0.0 2016-01-29
+doClean "/etc/init.d/S29recalboxsystem"
+doClean "/etc/init.d/S42networkrestart"
+
+exit 0
