@@ -3,7 +3,7 @@
 # More options available here: https://github.com/irtimmer/moonlight-embedded/tree/master/docs
 #cd /recalbox/share/roms/moonlight/
 moonlight_dir=/recalbox/scripts/moonlight
-moonlight_config_dir=/recalbox/share/config/moonlight
+moonlight_config_dir=/recalbox/share/system/config/moonlight
 moonlight_romsdir=/recalbox/share/roms/moonlight
 moonlight_ip=
 moonlight_screen="720"
