@@ -1,0 +1,38 @@
+From 7793a6edb3de6e528e486173f255af72722b29a4 Mon Sep 17 00:00:00 2001
+From: Nicolas Adenis-Lamarre <nicolas.adenis-lamarre@gmail.com>
+Date: Sat, 30 Jan 2016 20:43:56 +0100
+Subject: [PATCH] keyboard : open tty just in time to allow application to
+ start before tty are opened
+
+Signed-off-by: Nicolas Adenis-Lamarre <nicolas.adenis-lamarre@gmail.com>
+---
+ src/core/linux/SDL_evdev.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/src/core/linux/SDL_evdev.c b/src/core/linux/SDL_evdev.c
+index 97da3d7..9e4b01a 100644
+--- a/src/core/linux/SDL_evdev.c
++++ b/src/core/linux/SDL_evdev.c
+@@ -480,7 +480,7 @@ SDL_EVDEV_Init(void)
+ #endif /* SDL_USE_LIBUDEV */
+         
+         /* We need a physical terminal (not PTS) to be able to translate key code to symbols via the kernel tables */
+-        _this->console_fd = SDL_EVDEV_get_console_fd();
++        _this->console_fd = -1; // lazy loading, load it only when required
+         
+         /* Mute the keyboard so keystrokes only generate evdev events and do not leak through to the console */
+         _this->tty = STDIN_FILENO;
+@@ -614,6 +614,10 @@ SDL_EVDEV_Poll(void)
+                         } else if (events[i].value == 1 || events[i].value == 2 /* Key repeated */ ) {
+                             SDL_SendKeyboardKey(SDL_PRESSED, scan_code);
+ #ifdef SDL_INPUT_LINUXKD
++			    if (_this->console_fd < 0) {
++			      _this->console_fd = SDL_EVDEV_get_console_fd();
++			    }
++
+                             if (_this->console_fd >= 0) {
+                                 kbe.kb_index = events[i].code;
+                                 /* Convert the key to an UTF-8 char */
+-- 
+2.1.4
+
