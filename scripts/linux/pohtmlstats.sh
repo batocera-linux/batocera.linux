@@ -11,16 +11,28 @@ then
 fi
 
 ESDIR="${1}"
+GENDATE=$(date +%D)
 
 echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">'
 echo '<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr" lang="fr">'
 echo '<head>'
 echo '<meta http-equiv="Content-type" content="text/html; charset=utf-8" />'
-echo '<title>Recalbox translation status - '$(date +%D)'</title>'
+echo '<title>Recalbox translation status - '${GENDATE}'</title>'
 echo '</head>'
+echo "<style>
+table {
+  text-align: center;
+  border-collapse: collapse;
+}
+th, td {
+  border: 1px solid #bbb;
+  padding-left: 15px;
+  padding-right: 15px;
+}
+</style>"
 echo '<body>'
 
-echo "<table style=\"text-align: center\">"
+echo "<table>"
 echo "<tr><th>Language</th><th>Status</th><th>Translated</th><th>Fuzzy</th><th>Untranslated</th></tr>"
 for POFILE in "${ESDIR}"/locale/lang/*/LC_MESSAGES/emulationstation2.po
 do
@@ -55,6 +67,7 @@ do
     echo "</td>"
     echo "</tr>"
 done
-
+echo '</table>'
+echo "Generated on ${GENDATE}"
 echo '</body>'
 echo '</html>'
