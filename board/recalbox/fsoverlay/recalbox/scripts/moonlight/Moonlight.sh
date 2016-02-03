@@ -136,6 +136,9 @@ case $1 in
         game=`findRealGameName $*`
         cmd="moonlight stream -remote -keydir ${moonlight_keydir} -${moonlight_screen} -${moonlight_fps} -mapping ${moonlight_mapping} -app \"$game\" ${moonlight_ip}" ;;
 
+    clean)
+        cmd="rm -rf $moonlight_config_dir/keydir && echo 'You can now pair again your recalbox with a PC'" ;;
+
     *)
         cmd="moonlight stream -remote -keydir ${moonlight_keydir} -${moonlight_screen} -${moonlight_fps} -mapping ${moonlight_mapping} ${moonlight_ip}" ;;
 
