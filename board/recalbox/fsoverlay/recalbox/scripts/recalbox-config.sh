@@ -439,7 +439,7 @@ fi
 if [[ "$command" == "forgetBT" ]]; then
    killall -9 hidd
    killall -9 hcitool
-   rm /var/lib/bluetooth/known_devices
+   rm -rf /var/lib/bluetooth/*
    exit 0
 fi
 
