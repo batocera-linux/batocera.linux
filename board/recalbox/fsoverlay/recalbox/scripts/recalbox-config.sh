@@ -369,17 +369,14 @@ if [[ "$command" == "hiddpair" ]]; then
 	fi
 	echo "pairing $name $mac" >>  $log
 	echo $name | grep "8Bitdo\|other" >> $log
-	if [ "$?" == "0" ]; then
-		echo "8Bitdo detected" >> $log
-		cat /etc/udev/rules.d/99-8bitdo.rules | grep "$mac" >> /dev/null
-		if [ "$?" != "0" ]; then
-			echo "adding rule for $mac" >> $log
-			echo "SUBSYSTEM==\"input\", ATTRS{uniq}==\"$mac\", MODE=\"0666\", ENV{ID_INPUT_JOYSTICK}=\"1\"" >> /etc/udev/rules.d/99-8bitdo.rules
-			killall udevd
-			/etc/init.d/S10udev start
-		fi
-	fi
-
+        if [ "$?" == "0" ]; then
+                echo "8Bitdo detected" >> $log
+                cat "/run/udev/rules.d/99-8bitdo.rules" | grep "$mac" >> /dev/null
+                if [ "$?" != "0" ]; then
+                        echo "adding rule for $mac" >> $log
+                        echo "SUBSYSTEM==\"input\", ATTRS{uniq}==\"$mac\", MODE=\"0666\", ENV{ID_INPUT_JOYSTICK}=\"1\"" >> "/run/udev/rules.d/99-8bitdo.rules"
+                fi
+        fi
         hidd --connect $mac
         connected=$?
         deviceFile=/var/lib/bluetooth/known_devices
@@ -437,6 +434,13 @@ if [[ "$command" == "storage" ]]; then
 	postBootConfig
 	exit 0
     fi
+fi
+
+if [[ "$command" == "forgetBT" ]]; then
+   killall -9 hidd
+   killall -9 hcitool
+   rm /var/lib/bluetooth/known_devices
+   exit 0
 fi
 
 exit 10
