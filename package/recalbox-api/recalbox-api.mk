@@ -22,7 +22,7 @@ define RECALBOX_API_INSTALL_TARGET_CMDS
 		$(TARGET_DIR)/usr/recalbox-api
 
 	cd $(TARGET_DIR)/usr/recalbox-api && mkdir -p node_modules && \
-		$(NPM) install \
+		$(NPM) install --production \
 
 endef
 
