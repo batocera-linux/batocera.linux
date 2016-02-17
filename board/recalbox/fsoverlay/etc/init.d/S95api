@@ -13,6 +13,7 @@ systemsetting="python /usr/lib/python2.7/site-packages/configgen/settings/recalb
 
 start() {
     echo "Starting $NAME" >> $log
+    cd $API
     $PM2 startOrReload $API/scripts/pm2-process-production.json
 }
 
