@@ -7,13 +7,13 @@ USER=root
 
 export PATH=/usr/bin:$PATH
 export PM2_HOME="/recalbox/share/system/.pm2"
+export API_HOME="$API"
 
 log="/recalbox/share/system/logs/recalbox.log"
 systemsetting="python /usr/lib/python2.7/site-packages/configgen/settings/recalboxSettings.pyc"
 
 start() {
     echo "Starting $NAME" >> $log
-    cd $API
     $PM2 startOrReload $API/scripts/pm2-process-production.json
 }
 
