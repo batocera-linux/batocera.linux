@@ -119,7 +119,12 @@ do_upgrade() {
     echo "Upgrading /boot"
     if mount -o remount,rw /boot
     then
-	if (cd /boot && cp config.txt config.txt.upgrade && xz -dc < "${BOOTTAR}" | tar xvf - >> /tmp/upgrade.files && mv config.txt.upgrade config.txt)
+	if (cd /boot && \
+	    cp cmdline.txt cmdline.txt.upgrade && \
+	    cp config.txt config.txt.upgrade && \
+	    xz -dc < "${BOOTTAR}" | tar xvf - >> /tmp/upgrade.files && \
+	    mv config.txt.upgrade config.txt && \
+	    mv cmdline.txt.upgrade cmdline.txt )
 	then
 	    EXIT_CODE=0
 	fi
@@ -135,7 +140,10 @@ do_upgrade() {
     echo "Upgrading /"
     if mount -o remount,rw /
     then
-	if (cd / && xz -dc < "${ROOTTAR}" | tar xvf - >> /tmp/upgrade.files)
+	if (cd / && \
+	    cp ./etc/fstab ./etc/fstab.upgrade && \
+	    xz -dc < "${ROOTTAR}" | tar xvf - >> /tmp/upgrade.files && \
+	    mv ./etc/fstab.upgrade ./etc/fstab)
 	then
 	    EXIT_CODE=0
 	fi
