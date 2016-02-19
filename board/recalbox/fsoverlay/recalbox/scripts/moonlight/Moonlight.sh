@@ -36,8 +36,8 @@ findRealGameName () {
 
 scrape () {
   GDBURL="http://thegamesdb.net/api/GetGame.php?platform=pc&exactname="
-  GAMELIST=/recalbox/share/system/.emulationstation/gamelists/moonlight/gamelist.xml
-  IMGPATH=/recalbox/share/system/.emulationstation/downloaded_images/moonlight
+  GAMELIST=/recalbox/share/roms/moonlight/gamelist.xml
+  IMGPATH=/recalbox/share/roms/moonlight/downloaded_images
 
   # Test if $GDBURL is online, and stop if it's offline
   dbdns=$(echo $GDBURL | awk -F/ '{print $3}')
@@ -93,7 +93,7 @@ scrape () {
     <path>$path</path>
     <name>$gamename</name>
     <desc>$desc</desc>
-    <image>$img</image>
+    <image>./downloaded_images/${gamename}.${extension}</image>
     <rating>$rating</rating>
     <releasedate>$releasedate</releasedate>
     <developer>$developer</developer>
@@ -116,12 +116,12 @@ mkdir -p $moonlight_keydir;
 case $1 in
     init)
         echo "Fetching games from $moonlight_ip ..."
-        createRomLinks 
+        createRomLinks
         echo "Scraping games ..."
         scrape
         exit
         ;;
-    
+
     map)
         cmd="moonlight map ${moonlight_mapping} -keydir ${moonlight_keydir}" ;;
 
@@ -145,6 +145,4 @@ case $1 in
 esac
 
 $cmd = "$cmd > ${moonlight_output}"
-#$cmd = "$cmd"
-#echo $cmd
 eval $cmd

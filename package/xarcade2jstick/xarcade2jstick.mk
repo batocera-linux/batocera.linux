@@ -3,8 +3,8 @@
 # xarcade2jstick
 #
 ################################################################################
-XARCADE2JSTICK_VERSION = 77ee53f8d6563a40e9def72f74aaf6b73244682e
-XARCADE2JSTICK_SITE =  $(call github,petrockblog,xarcade2jstick,$(XARCADE2JSTICK_VERSION))
+XARCADE2JSTICK_VERSION = fc05aaebd4e07bab26f2f7007b357eb48e0a48c5
+XARCADE2JSTICK_SITE =  $(call github,substring,xarcade2jstick,$(XARCADE2JSTICK_VERSION))
 XARCADE2JSTICK_LICENSE = gpl3
 XARCADE2JSTICK_DEPENDENCIES = linux
 

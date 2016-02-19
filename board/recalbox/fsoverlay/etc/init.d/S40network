@@ -6,6 +6,7 @@
 case "$1" in
   start)
 	sleep 2
+	/sbin/ifup lo
         /recalbox/scripts/recalbox-config.sh ethernet start
         /recalbox/scripts/recalbox-config.sh wifi start
         ;;

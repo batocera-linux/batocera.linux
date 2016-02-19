@@ -19,7 +19,7 @@ done
 # there are almost empty, it's just for the structure
 # the user can delete the directory, it will recreate the structure
 # the user can delete files, files will not be recreated
-for FILE in bios extractions kodi saves screenshots system/.kodi system/.hatari system/.config system/configs/{fba,mupen64,retroarch,shadersets,moonlight} system/.emulationstation/{es_input.cfg,es_settings.cfg} system/recalbox.conf
+for FILE in music bios extractions kodi saves screenshots system/.kodi system/.hatari system/.config system/configs/{fba,mupen64,retroarch,shadersets,moonlight} system/.emulationstation/{es_input.cfg,es_settings.cfg} system/recalbox.conf
 do
     test ! -e "$OUT""/""$FILE" && cp -r "$IN""/""$FILE" "$OUT""/""$FILE"
 done
@@ -68,5 +68,9 @@ ls "/recalbox/share/system/bluetooth" |
 	UX=$(echo "${X}" | sed -e s+"@"+":"+g)
 	cp -r "/recalbox/share/system/bluetooth/${X}" "/var/lib/bluetooth/${UX}"
     done
+# udev : create a link for rules persistance
+mkdir -p /recalbox/share/system/udev/rules.d
+rm -rf /run/udev/rules.d
+ln -s /recalbox/share/system/udev/rules.d/ /run/udev/
 
 # END

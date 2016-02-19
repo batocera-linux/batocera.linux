@@ -3,7 +3,7 @@
 # RECALBOX_API
 #
 ################################################################################
-RECALBOX_API_VERSION = 333a437c1cdea50c8ae23284e9bc93284a8b47ee #1.0.x
+RECALBOX_API_VERSION = 82a3b92a433b2b8478317a2be208d34ba86fb3de #1.1.x
 RECALBOX_API_SITE = $(call github,neolao,recalbox-api,$(RECALBOX_API_VERSION))
 RECALBOX_API_DEPENDENCIES = nodejs
 
@@ -22,7 +22,7 @@ define RECALBOX_API_INSTALL_TARGET_CMDS
 		$(TARGET_DIR)/usr/recalbox-api
 
 	cd $(TARGET_DIR)/usr/recalbox-api && mkdir -p node_modules && \
-		$(NPM) install \
+		$(NPM) install --production \
 
 endef
 
