@@ -10,7 +10,7 @@
 ###
 
 SHARECONFFILE="/boot/recalbox.conf"
-INTERNALDEVICE="/dev/mmcblk0p3"
+INTERNALDEVICE=`cat /boot/config.txt | grep "internal=" | head -n1 | cut -d'=' -f2`
 INTERNALDEVICETYPE="ext4" # faster than waiting udev to initialize to get the type
 MAXTRY=5
 NTRY=0
@@ -26,7 +26,7 @@ NB_FILES_TARGET=45000
 #
 # we don't remove data ;  only create a new partition if p3 is missing, and some free space is available only at the end of the disk
 #
-if ! test -e /dev/mmcblk0p3
+if ! test -e "${INTERNALDEVICE}"
 then
     # but the system partition exists
     if test -e /dev/mmcblk0p2
@@ -36,12 +36,12 @@ then
 	if test -n "${PSTART}"
 	then
 	    parted -s /dev/mmcblk0 -m unit b mkpart primary "${PSTART}" 100%
-	    if test -e /dev/mmcblk0p3
+	    if test -e "${INTERNALDEVICE}"
 	    then
 		#mkfs.vfat -F 32 -n SHARE /dev/mmcblk0p3 # if you replace this line, please change the INTERNALDEVICETYPE variable too in consequence
 		#fsck.fat /dev/mmcblk0p3 -a
-		mkfs.ext4 /dev/mmcblk0p3 -q -F -L SHARE
-		e2fsck -f -p /dev/mmcblk0p3
+		mkfs.ext4 "${INTERNALDEVICE}" -q -F -L SHARE
+		e2fsck -f -p "${INTERNALDEVICE}"
 	    fi
 	fi
     fi
@@ -119,7 +119,12 @@ do_upgrade() {
     echo "Upgrading /boot"
     if mount -o remount,rw /boot
     then
-	if (cd /boot && cp config.txt config.txt.upgrade && xz -dc < "${BOOTTAR}" | tar xvf - >> /tmp/upgrade.files && mv config.txt.upgrade config.txt)
+	if (cd /boot && \
+	    cp cmdline.txt cmdline.txt.upgrade && \
+	    cp config.txt config.txt.upgrade && \
+	    xz -dc < "${BOOTTAR}" | tar xvf - >> /tmp/upgrade.files && \
+	    mv config.txt.upgrade config.txt && \
+	    mv cmdline.txt.upgrade cmdline.txt )
 	then
 	    EXIT_CODE=0
 	fi
@@ -135,7 +140,10 @@ do_upgrade() {
     echo "Upgrading /"
     if mount -o remount,rw /
     then
-	if (cd / && xz -dc < "${ROOTTAR}" | tar xvf - >> /tmp/upgrade.files)
+	if (cd / && \
+	    cp ./etc/fstab ./etc/fstab.upgrade && \
+	    xz -dc < "${ROOTTAR}" | tar xvf - >> /tmp/upgrade.files && \
+	    mv ./etc/fstab.upgrade ./etc/fstab)
 	then
 	    EXIT_CODE=0
 	fi

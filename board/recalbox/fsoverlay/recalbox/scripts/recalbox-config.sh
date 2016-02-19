@@ -11,6 +11,8 @@ extra1="$3"
 extra2="$4"
 version=`cat /recalbox/recalbox.arch`
 
+recalboxupdateurl="http://archive.recalbox.com/4"
+
 preBootConfig() {
     mount -o remount,rw /boot
 }
@@ -261,9 +263,8 @@ if [ "$command" == "module" ];then
 	exit 0
 fi
 
-
 if [ "$command" == "canupdate" ];then
-	available=`wget -qO- http://archive2.recalbox.com/4.0.0/last/$version/recalbox.version`
+	available=`wget -qO- ${recalboxupdateurl}/$version/last/recalbox.version`
 	if [[ "$?" != "0" ]];then
 		exit 2
 	fi
