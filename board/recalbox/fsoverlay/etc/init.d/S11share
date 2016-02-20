@@ -10,8 +10,11 @@
 ###
 
 SHARECONFFILE="/boot/recalbox.conf"
-INTERNALDEVICE=`cat /boot/config.txt | grep "internal=" | head -n1 | cut -d'=' -f2`
+INTERNALDEVICE=`cat ${SHARECONFFILE} | grep "internal=" | head -n1 | cut -d'=' -f2`
 [[ "$?" -ne "0" || "$INTERNALDEVICE" == "" ]] && INTERNALDEVICE=/dev/mmcblk0p3
+SHAREDEVICE=`cat ${SHARECONFFILE} | grep "sharedevice=" | head -n1 | cut -d'=' -f2`
+[[ "$?" -ne "0" || "$SHAREDEVICE" == "" ]] && SHAREDEVICE=INTERNAL
+
 INTERNALDEVICETYPE="ext4" # faster than waiting udev to initialize to get the type
 MAXTRY=5
 NTRY=0
@@ -157,7 +160,7 @@ do_upgrade() {
     return 0
 }
 
-RMODE=$(cat "${SHARECONFFILE}") # it can fails, it will go in fallback
+RMODE="$SHAREDEVICE" 
 
 if echo "${RMODE}" | grep -qE '^DEV '
 then
