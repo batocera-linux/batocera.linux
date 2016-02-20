@@ -22,6 +22,9 @@ define RECALBOX_SYSTEM_INSTALL_TARGET_CMDS
 	mkdir -p $(TARGET_DIR)/recalbox/share_init/system
 	cp package/recalbox-system/$(RECALBOX_SYSTEM_RECALBOX_CONF)/recalbox.conf $(TARGET_DIR)/recalbox/share_init/system
 	cp package/recalbox-system/$(RECALBOX_SYSTEM_RECALBOX_CONF)/recalbox.conf $(TARGET_DIR)/recalbox/share_init/system/recalbox.conf.template
+	# recalbox-boot.conf
+        $(INSTALL) -D -m 0644 package/recalbox-system/recalbox-boot.conf $(BINARIES_DIR)/rpi-firmware/recalbox-boot.conf
+
 endef
 
 $(eval $(generic-package))

@@ -9,7 +9,7 @@
 # DEV [FSUUID] => a device having the FSUID uuid
 ###
 
-SHARECONFFILE="/boot/recalbox.conf"
+SHARECONFFILE="/boot/recalbox-boot.conf"
 INTERNALDEVICE=`cat ${SHARECONFFILE} | grep "internal=" | head -n1 | cut -d'=' -f2`
 [[ "$?" -ne "0" || "$INTERNALDEVICE" == "" ]] && INTERNALDEVICE=/dev/mmcblk0p3
 SHAREDEVICE=`cat ${SHARECONFFILE} | grep "sharedevice=" | head -n1 | cut -d'=' -f2`

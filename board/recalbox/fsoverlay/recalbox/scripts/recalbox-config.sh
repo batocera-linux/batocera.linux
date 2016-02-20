@@ -405,7 +405,7 @@ if [[ "$command" == "hiddpair" ]]; then
         exit $connected
 fi
 
-storageFile="/boot/recalbox.conf"
+storageFile="/boot/recalbox-boot.conf"
 
 if [[ "$command" == "storage" ]]; then
     if [[ "$mode" == "current" ]]; then
