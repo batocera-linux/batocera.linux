@@ -11,6 +11,7 @@
 
 SHARECONFFILE="/boot/recalbox.conf"
 INTERNALDEVICE=`cat /boot/config.txt | grep "internal=" | head -n1 | cut -d'=' -f2`
+[[ "$?" -ne "0" || "$INTERNALDEVICE" == "" ]] && INTERNALDEVICE=/dev/mmcblk0p3
 INTERNALDEVICETYPE="ext4" # faster than waiting udev to initialize to get the type
 MAXTRY=5
 NTRY=0
