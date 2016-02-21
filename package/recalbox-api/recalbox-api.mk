@@ -3,7 +3,7 @@
 # RECALBOX_API
 #
 ################################################################################
-RECALBOX_API_VERSION = 82a3b92a433b2b8478317a2be208d34ba86fb3de #1.1.x
+RECALBOX_API_VERSION = 1.1.x
 RECALBOX_API_SITE = $(call github,neolao,recalbox-api,$(RECALBOX_API_VERSION))
 RECALBOX_API_DEPENDENCIES = nodejs
 
