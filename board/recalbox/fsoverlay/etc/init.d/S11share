@@ -126,7 +126,9 @@ do_upgrade() {
 	if (cd /boot && \
 	    cp cmdline.txt cmdline.txt.upgrade && \
 	    cp config.txt config.txt.upgrade && \
+	    cp recalbox-boot.conf recalbox-boot.conf.upgrade && \
 	    xz -dc < "${BOOTTAR}" | tar xvf - >> /tmp/upgrade.files && \
+	    mv recalbox-boot.conf.upgrade recalbox-boot.conf && \
 	    mv config.txt.upgrade config.txt && \
 	    mv cmdline.txt.upgrade cmdline.txt )
 	then
