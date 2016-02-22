@@ -29,12 +29,9 @@ ln -sf "/var/network/interfaces" "${TARGET_DIR}/etc/network/interfaces" || exit 
 rm -rf "${TARGET_DIR}/"{var,run,sys,tmp} || exit 1
 mkdir "${TARGET_DIR}/"{var,run,sys,tmp}  || exit 1
 
-# Development version contains the date for nightly builds
+# Add the date while the version can be nightly or unstable
 RVERSION=$(cat "${TARGET_DIR}/recalbox/recalbox.version")
-if echo "${RVERSION}" | grep -qE -- '-dev$'
-then
-    echo "${RVERSION} "$(date "+%Y/%m/%d %H:%M") > "${TARGET_DIR}/recalbox/recalbox.version"
-fi
+echo "${RVERSION} "$(date "+%Y/%m/%d %H:%M") > "${TARGET_DIR}/recalbox/recalbox.version"
 
 # bootsplash
 TGVERSION=$(cat "${TARGET_DIR}/recalbox/recalbox.version")
