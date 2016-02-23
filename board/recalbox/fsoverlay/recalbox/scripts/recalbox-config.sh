@@ -9,7 +9,7 @@ command="$1"
 mode="$2"
 extra1="$3"
 extra2="$4"
-version=`cat /recalbox/recalbox.arch`
+arch=`cat /recalbox/recalbox.arch`
 
 recalboxupdateurl="http://archive.recalbox.com/4"
 
@@ -264,7 +264,13 @@ if [ "$command" == "module" ];then
 fi
 
 if [ "$command" == "canupdate" ];then
-	available=`wget -qO- ${recalboxupdateurl}/$version/last/recalbox.version`
+	updatetype="`$systemsetting  -command load -key updates.type`"
+	if test "${updatetype}" != "stable" -a "${updatetype}" != "unstable" -a "${updatetype}" != "beta"
+	then
+		# force a default value in case the value is removed or miswritten
+		updatetype="stable"
+	fi
+	available=`wget -qO- ${recalboxupdateurl}/${arch}/${updatetype}/last/recalbox.version`
 	if [[ "$?" != "0" ]];then
 		exit 2
 	fi
