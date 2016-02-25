@@ -15,7 +15,7 @@ moonlight_gamesnames="$moonlight_config_dir/gamelist.txt"
 SEPERATOR=";"
 
 listGames() {
-  ${moonlight_dir}/Moonlight.sh list 2>/dev/null | grep -v ".conf" | cut -d '.' -f 2, | sed 's/^ \(.*\)$/\1/'
+  ${moonlight_dir}/Moonlight.sh list 2>/dev/null | grep '^[0-9][0-9.]' | cut -d '.' -f 2, | sed 's/^ \(.*\)$/\1/'
 }
 
 createRomLinks () {
@@ -67,25 +67,24 @@ scrape () {
     wget "$GDBURL$gamename" -O "$xmlfilename" >/dev/null 2>&1
 
     # Time to get values for the gamelist.xml
-    id=$(xml sel -t -v "Data/Game/id" "$xmlfilename")
+    id=$(xml sel -t -v "Data/Game/id" "$xmlfilename" 2>/dev/null)
     source="theGamesDB.net"
     path="./${moonlightfilename}.moonlight"
-    desc=$(xml sel -t -v "Data/Game/Overview" "$xmlfilename")
+    desc=$(xml sel -t -v "Data/Game/Overview" "$xmlfilename" 2>/dev/null)
 
     # A few steps to get the cover art url
-    imgurl=$(xml sel -t -v "Data/baseImgUrl" -v "Data/Game/Images/boxart[@side='front']/@thumb" "$xmlfilename")
+    imgurl=$(xml sel -t -v "Data/baseImgUrl" -v "Data/Game/Images/boxart[@side='front']/@thumb" "$xmlfilename" 2>/dev/null)
     extension=$(echo $imgurl | awk -F . '{print $NF}')
     img=$IMGPATH/${gamename}.${extension}
     wget $imgurl -O "$img" >/dev/null 2>&1
 
-    rating=$(xml sel -t -v "Data/Game/Rating" "$xmlfilename")
-    releasedate=$(xml sel -t -v "Data/Game/ReleaseDate" "$xmlfilename" | sed 's/^\([0-9]\{2\}\)\/\([0-9]\{2\}\)\/\([0-9]\{4\}\)/\3\1\2T0000/')
-    developer=$(xml sel -t -v "Data/Game/Developer" "$xmlfilename")
-    publisher=$(xml sel -t -v "Data/Game/Publisher" "$xmlfilename")
-    genre=$(xml sel -T -t -m "Data/Game/Genres/genre" -v 'text()' -i 'not(position()=last())' -o ' / ' "$xmlfilename")
-    players=$(xml sel -t -v "Data/Game/Players" "$xmlfilename")
+    rating=$(xml sel -t -v "Data/Game/Rating" "$xmlfilename" 2>/dev/null)
+    releasedate=$(xml sel -t -v "Data/Game/ReleaseDate" "$xmlfilename" 2>/dev/null | sed 's/^\([0-9]\{2\}\)\/\([0-9]\{2\}\)\/\([0-9]\{4\}\)/\3\1\2T0000/')
+    developer=$(xml sel -t -v "Data/Game/Developer" "$xmlfilename" 2>/dev/null)
+    publisher=$(xml sel -t -v "Data/Game/Publisher" "$xmlfilename" 2>/dev/null)
+    genre=$(xml sel -T -t -m "Data/Game/Genres/genre" -v 'text()' -i 'not(position()=last())' -o ' / ' "$xmlfilename" 2>/dev/null)
+    players=$(xml sel -t -v "Data/Game/Players" "$xmlfilename" 2>/dev/null)
 
-    #echo "ID : $id - SOURCE : $source - PATH : $path - IMGURL : $imgurl"
 
     # Write the XML data
     cat << EOF >> $GAMELIST
