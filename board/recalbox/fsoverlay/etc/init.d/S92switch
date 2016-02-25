@@ -1,59 +1,48 @@
 #!/bin/bash
-### BEGIN INIT INFO
-# Provides: irswitch.sh
-# Required-Start: $network $local_fs $remote_fs
-# Required-Stop: $network $local_fs $remote_fs
-# Default-Start: 2 3 4 5
-# Default-Stop: 0 1 6
-# Short-Description: switch init script.
-# Description: Starts and stops SwitchDaemon service.
-### END INIT INFO
 
-#VAR
-RUN="/recalbox/scripts/irswitch.sh"
-BTD_PID=$(ps -eo pid,command | grep "/bin/bash $RUN" | grep -v grep | awk '{print $1}')
-
-serviceStatus() {
-   if [ ! -z "$BTD_PID" ]; then
-      echo -e '33[0mservice irswitch.sh ['$BTD_PID'] [33[33;32m OK 33[0m]'
-   else
-      echo -e '33[0mservice irswitch.sh [33[33;31m KO 33[0m]'
-   fi
-}
+NAME="S92switch"
+RUN="/recalbox/scripts/powerswitch.sh"
+BTD_PID=$(ps -eo pid,args | grep "/bin/bash $RUN" | grep -v grep | awk '{print $1}')
 
 # Carry out specific functions when asked to by the system
 case "$1" in
-   start)
-      echo "Starting script $RUN ..."
-      if [ -z "$BTD_PID" ]; then
-         nice -n 19 $RUN&
-
-         if [ $? -eq 0 ]; then
-            echo -e "33[0mscript $RUN [33[33;32m STARTED 33[0m]"
-         fi
-      else
-         echo "script $RUN already started ['$BTD_PID']!"
-      fi
-      #serviceStatus
-   ;;
-   stop)
-      echo "Stopping script $RUN ..."
-      if [ ! -z "$BTD_PID" ]; then
-         kill $BTD_PID
-
-         if [ $? -eq 0 ]; then
-            echo -e "33[0mscript $RUN [33[33;31m STOPPED 33[0m]"
-         fi
-      fi
-      #serviceStatus
-   ;;
-   status)
-      serviceStatus
-   ;;
-   *)
-      echo "Usage: /etc/init.d/S92switch {start | stop | status}"
-      exit 1
-   ;;
+    start)
+        recallog "Starting $NAME"
+        if [ -z "$BTD_PID" ]; then
+            nice -n 19 $RUN start&
+            if [ $? -eq 0 ]; then
+                recallog "script $RUN [ STARTED ]"
+            fi
+        else
+            recallog "script $RUN already started ["$BTD_PID"]!"
+        fi
+    ;;
+    stop)
+        recallog "Stopping $NAME"
+        if [ ! -z "$BTD_PID" ]; then
+            kill $BTD_PID
+            if [ $? -eq 0 ]; then
+                recallog "script $RUN [ STOPPED ]"
+            fi
+            $RUN stop
+        elif test -e "/tmp/poweroff.please"; then
+            recallog "script $RUN initiated the poweroff"
+            $RUN stop
+        else
+            recallog "script $RUN already stopped !"
+        fi
+    ;;
+    status)
+        if [ ! -z "$BTD_PID" ]; then
+            echo "Service powerswitch.sh ["$BTD_PID"] [ OK ]"
+        else
+            echo "Service powerswitch.sh [ KO ]"
+        fi
+    ;;
+    *)
+        echo "Usage: /etc/init.d/S92switch {start | stop | status}"
+        exit 1
+    ;;
 esac
 
 exit 0
