@@ -122,7 +122,7 @@ msldigital_start()
 msldigital_stop()
 {
     if [ -f "/tmp/shutdown.please" -o -f "/tmp/poweroff.please" ]; then
-        if [ -f "/tmp/shutdown.please" -a "$SHARECONFVAR" = "REMOTEPIBOARD_2005" ] ; then
+        if [ -f "/tmp/shutdown.please" -a "$CONFVALUE" = "REMOTEPIBOARD_2005" ]; then
             # Init GPIO
             GPIOpin=15
             echo "$GPIOpin" > /sys/class/gpio/export
@@ -151,18 +151,49 @@ msldigital_stop()
     done
 }
 
+# http://raspberrypi.stackexchange.com/questions/13203/creating-halt-wake-button
+raspberry_start()
+{
+    # Init GPIO : 
+    # $1 is the GPIO pin receiving the shut-down signal
+    echo "$1" > /sys/class/gpio/export
+    echo "in" > /sys/class/gpio/gpio$1/direction
+
+    # Wait for switch off signal 
+    power=1
+    while [ "$power" != "0" ]; do
+        sleep 1
+        power=$(cat /sys/class/gpio/gpio$1/value)
+    done
+
+    # Switch off
+    if [ "$?" = "0" ]; then
+        touch "/tmp/poweroff.please"
+        shutdown -h now
+    fi
+}
+
+raspberry_stop()
+{
+    # Cleanup GPIO init
+    for i in $*; do
+        echo "$i" > /sys/class/gpio/unexport
+    done
+}
+
 # First parameter must be start or stop
 if [[ "$1" != "start" && $1 != "stop" ]]; then
     exit 1
 fi
 
-SHARECONFFILE="/boot/recalbox-boot.conf"
-SHARECONFVAR="powerswitch"
-if [ -e $SHARECONFFILE ]; then
-    SHARECONFVAR=$(sed -rn "s/^$SHARECONFVAR=(\w*)\s*.*$/\1/p" $SHARECONFFILE | tail -n 1)
+CONFFILE="/recalbox/share/system/recalbox.conf"
+CONFPARAM="system.power.switch" 
+CONFVALUE=
+if [ -e $CONFFILE ]; then
+    CONFVALUE=$(sed -rn "s/^$CONFPARAM=(\w*)\s*.*$/\1/p" $CONFFILE | tail -n 1)
 fi
 
-case "$SHARECONFVAR" in
+case "$CONFVALUE" in
     "ATX_RASPI_R2_6")
         atx_raspi_$1 7 8
     ;;
@@ -174,5 +205,13 @@ case "$SHARECONFVAR" in
     ;;
     "REMOTEPIBOARD_2005")
         msldigital_$1 14
+    ;;
+    "RPI_HALTWAKE")
+        # Getting the Halt GPIO pin number (syntax : system.power.switch=RPI_HALTWAKE,$GPIOvalue)
+        # Only GPIO 2 to 27 are supported on the Rasperry Pi, other numbers will be ignored
+        GPIOvalue=$(sed -rn "s/^$CONFPARAM=$CONFVALUE[ \t]*,([2-9]|1[0-9]|2[0-7])\s.*$/\1/p" $CONFFILE | tail -n 1)
+        if [ "" != "$GPIOvalue" ]; then 
+            raspberry_$1 $GPIOvalue; 
+        fi
     ;;
 esac
