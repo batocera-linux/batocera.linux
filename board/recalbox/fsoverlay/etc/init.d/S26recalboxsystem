@@ -118,7 +118,18 @@ rb_xarcade2jstick() {
     settings_xarcade="`$systemsetting -command load -key controllers.xarcade.enabled`"
     if [[ "$settings_xarcade" == "1" ]];then
         recallog "starting xarcade2jstick"
-        start-stop-daemon --background --start --quiet --exec /usr/bin/xarcade2jstick
+        # First try : suppose a real X-Arcade is plugged
+        /usr/bin/xarcade2jstick -d
+        if [ $? -ne "0" ]
+        then
+            # the user must have a keyboard encoder then
+            recallog "xarcade2jstick : no official stick found, looking for keyboard encoder now ..."
+            for dev in /recalbox/share_init/system/configs/xarcade2jstick/*
+            do
+                dev=$(basename "$dev")
+                [ -h "/dev/input/by-id/$dev" ] && recallog "xarcade2jstick : Found $dev ! Starting xarcade2jstick ..." && /usr/bin/xarcade2jstick -d -e "/dev/input/by-id/$dev" && break
+            done
+        fi
     fi
 }
 
