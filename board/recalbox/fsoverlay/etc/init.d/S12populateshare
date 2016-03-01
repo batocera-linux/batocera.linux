@@ -1,14 +1,20 @@
-#!/bin/sh
+#!/bin/bash
 
 IN=/recalbox/share_init
 OUT=/recalbox/share
 
 # force the creation of some directories
-for DIR in cheats system system/.cache system/.emulationstation system/.emulationstation/themes system/bluetooth system/logs system/configs
+for DIR in cheats \
+           system/.cache \
+           system/.config/lirc \
+           system/.emulationstation/themes \
+           system/bluetooth \
+           system/configs \
+           system/logs
 do
     if test ! -e "$OUT""/""$DIR"
     then
-	mkdir "$OUT""/""$DIR"
+        mkdir -p "$OUT""/""$DIR"
     fi
 done
 
@@ -19,7 +25,12 @@ done
 # there are almost empty, it's just for the structure
 # the user can delete the directory, it will recreate the structure
 # the user can delete files, files will not be recreated
-for FILE in music bios extractions kodi saves screenshots system/.kodi system/.hatari system/.config system/configs/{fba,mupen64,retroarch,shadersets,moonlight} system/.emulationstation/{es_input.cfg,es_settings.cfg} system/recalbox.conf
+for FILE in music bios extractions kodi saves screenshots \
+            system/.config/lirc/lircd.conf \
+            system/.emulationstation/{es_input.cfg,es_settings.cfg} \
+            system/{.hatari,.kodi} \
+            system/configs/{fba,mupen64,retroarch,shadersets,moonlight} \
+            system/recalbox.conf
 do
     test ! -e "$OUT""/""$FILE" && cp -r "$IN""/""$FILE" "$OUT""/""$FILE"
 done
