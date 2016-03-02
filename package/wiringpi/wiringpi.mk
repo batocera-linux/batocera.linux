@@ -22,11 +22,11 @@ define WIRINGPI_INSTALL_TARGET_CMDS
 	
 	 # Install wiringPi lib
      	 $(INSTALL) -D -m 0755 $(@D)/wiringPi/libwiringPi.so.2.32 $(TARGET_DIR)/usr/lib
-	 ln -sf $(TARGET_DIR)/usr/lib/libwiringPi.so.2.32 $(TARGET_DIR)/lib/libwiringPi.so
+	 cd $(TARGET_DIR)/usr/lib; ln -sf libwiringPi.so.2.32 libwiringPi.so
 	 
 	 # Install device lib
 	 $(INSTALL) -D -m 0755 $(@D)/devLib/libwiringPiDev.so.2.32 $(TARGET_DIR)/usr/lib
-	 ln -sf $(TARGET_DIR)/usr/lib/libwiringPiDev.so.2.32 $(TARGET_DIR)/lib/libwiringPiDev.so
+	 cd $(TARGET_DIR)/usr/lib; ln -sf libwiringPiDev.so.2.32 libwiringPiDev.so
 	 
 	 # Install gpio bin
 	 $(INSTALL) -D -m 0755 $(@D)/gpio/gpio  $(TARGET_DIR)/bin
