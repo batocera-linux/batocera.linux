@@ -5,20 +5,18 @@
 ################################################################################
 
 WIRINGPI_VERSION = 9a8f8bee5df60061645918231110a7c2e4d3fa6b # VERSION = 2.32
-WIRINGPI_SOURCE = $(call github, WiringPi, WiringPi, $(WIRINGPI_VERSION))
+WIRINGPI_SITE = $(call github,WiringPi,WiringPi,$(WIRINGPI_VERSION))
 WIRINGPI_LICENSE = GPLv3+
 WIRINGPI_LICENSE_FILES = COPYING
 
 
 define WIRINGPI_BUILD_CMDS
-	 cd $(@D)/wiringPi
-     $(MAKE) CC="$(TARGET_CC)" LD="$(TARGET_LD)" -C $(@D) all
+
+     $(MAKE) CC="$(TARGET_CC)" LD="$(TARGET_LD)" -C $(@D)/wiringPi all
 	 
-	 cd $(@D)/devLib
-     $(MAKE) CC="$(TARGET_CC)" LD="$(TARGET_LD)" -C $(@D) all
+     $(MAKE) CC="$(TARGET_CC)" LD="$(TARGET_LD)" -C $(@D)/devLib all
 	 
-	 cd $(@D)/gpio
-     $(MAKE) CC="$(TARGET_CC)" LD="$(TARGET_LD)" -C $(@D) all
+     $(MAKE) CC="$(TARGET_CC)" LD="$(TARGET_LD)"  -C $(@D)/gpio all
 endef
 
 define WIRINGPI_INSTALL_TARGET_CMDS
