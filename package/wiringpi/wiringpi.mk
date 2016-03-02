@@ -1,0 +1,50 @@
+################################################################################
+#
+# wiringpi
+#
+################################################################################
+
+WIRINGPI_VERSION = 9a8f8bee5df60061645918231110a7c2e4d3fa6b # VERSION = 2.32
+WIRINGPI_SOURCE = $(call github, WiringPi, WiringPi, $(WIRINGPI_VERSION))
+WIRINGPI_LICENSE = GPLv3+
+WIRINGPI_LICENSE_FILES = COPYING
+
+
+define WIRINGPI_BUILD_CMDS
+	 cd $(@D)/wiringPi
+     $(MAKE) CC="$(TARGET_CC)" LD="$(TARGET_LD)" -C $(@D) all
+	 
+	 cd $(@D)/devLib
+     $(MAKE) CC="$(TARGET_CC)" LD="$(TARGET_LD)" -C $(@D) all
+	 
+	 cd $(@D)/gpio
+     $(MAKE) CC="$(TARGET_CC)" LD="$(TARGET_LD)" -C $(@D) all
+endef
+
+define WIRINGPI_INSTALL_TARGET_CMDS
+	
+     cd $(@D)
+	 VERSION=$(shell cat ./VERSION)
+	 
+	 # Install wiringPi lib
+	 $(INSTALL) -D -m 0644  $(@D)/wiringPi/*.h $(TARGET_DIR)/usr/include
+     $(INSTALL) -D -m 0755 $(@D)/wiringPi/libwiringPi.so.$(VERSION) $(TARGET_DIR)/usr/lib
+	 ln -sf $(TARGET_DIR)/usr/lib/libwiringPi.so.$(VERSION) $(TARGET_DIR)/lib/libwiringPi.so
+	 
+	 # Install device lib
+	 $(INSTALL) -D -m 0644  $(@D)/devLib/*.h $(TARGET_DIR)/usr/include
+     $(INSTALL) -D -m 0755 $(@D)/devLib/libwiringPiDev.so.$(VERSION) $(TARGET_DIR)/usr/lib
+	 ln -sf $(TARGET_DIR)/usr/lib/libwiringPiDev.so.$(VERSION) $(TARGET_DIR)/lib/libwiringPiDev.so
+	 
+	 
+	 # Install gpio bin
+	 cp $(@D)/gpio/gpio  $(TARGET_DIR)/bin
+	 chown root.root	$(TARGET_DIR)/bin/gpio
+	 chmod 4755		$(TARGET_DIR)/bin/gpio
+	 mkdir -p		$(TARGET_DIR)/man/man1
+	 cp $(@D)/gpio/gpio.1		$(TARGET_DIR)/man/man1
+	 
+endef
+
+
+$(eval $(generic-package))
