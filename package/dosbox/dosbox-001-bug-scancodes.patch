@@ -1,0 +1,17 @@
+src/gui/sdl_mapper.cpp: Correct bug of messed keyboard if scancodes=true
+See https://www.raspberrypi.org/forums/viewtopic.php?f=63&t=5001&start=25
+
+Signed-off-by: Laurent Merckx <laurent-merckx@skynet.be>
+--- dosbox-1.6/src/gui/sdl_mapper.cpp	2015-01-10 23:10:02.000000000 +0100
++++ dosbox-1.6.o/src/gui/sdl_mapper.cpp	2016-01-02 21:22:05.585652926 +0100
+@@ -433,10 +433,6 @@ Bitu GetKeyCode(SDL_keysym keysym) {
+ 			/* try to retrieve key from symbolic key as scancode is zero */
+ 			if (keysym.sym<MAX_SDLKEYS) key=scancode_map[(Bitu)keysym.sym];
+ 		} 
+-#if !defined (WIN32) && !defined (MACOSX) && !defined(OS2)
+-		/* Linux adds 8 to all scancodes */
+-		else key-=8;
+-#endif
+ #if defined (WIN32)
+ 		switch (key) {
+ 			case 0x1c:	// ENTER
