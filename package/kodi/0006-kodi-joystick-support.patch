@@ -31,24 +31,6 @@ index d5e76ee..a387bfd 100644
         INCLUDES="$INCLUDES $SDL2_CFLAGS"; LIBS="$LIBS $SDL2_LIBS"; use_joystick="yes"],
        [if test "$use_joystick" = "yes"; then
          AC_MSG_ERROR($sdl_joystick_not_found)
-diff --git a/xbmc/input/SDLJoystick.cpp b/xbmc/input/SDLJoystick.cpp
-index e1a3e04..f93db12 100644
---- a/xbmc/input/SDLJoystick.cpp
-+++ b/xbmc/input/SDLJoystick.cpp
-@@ -68,6 +68,13 @@ void CJoystick::Initialize()
-   SetDeadzone(g_advancedSettings.m_controllerDeadzone);
- 
-   // joysticks will be loaded once SDL sees them
-+#ifdef HAS_SDL_JOYSTICK
-+#ifndef HAS_SDL
-+  for(int i=0; i<SDL_NumJoysticks(); i++) {
-+    AddJoystick(i);
-+  }
-+#endif
-+#endif
- }
- 
- void CJoystick::AddJoystick(int joyIndex)
 diff --git a/xbmc/input/linux/LinuxInputDevices.cpp b/xbmc/input/linux/LinuxInputDevices.cpp
 index 32a3b46..18734fb 100644
 --- a/xbmc/input/linux/LinuxInputDevices.cpp
