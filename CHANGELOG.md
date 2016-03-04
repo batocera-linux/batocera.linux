@@ -6,6 +6,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - New version of xboxdrv
 - Corrected 8bitdo mapping
 - Added wiringpi
+- switch USBHID to kernel module for gamepad encoders
 
 ## [3.3.0-beta16] - 2015-11-24
 - Corrected kodi start
