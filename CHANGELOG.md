@@ -7,6 +7,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Corrected 8bitdo mapping
 - Added wiringpi
 - switch USBHID to kernel module for gamepad encoders
+- linapple-pie (Apple ][ Emulator) added to rpi2, rpi1 need to be tested
 
 ## [3.3.0-beta16] - 2015-11-24
 - Corrected kodi start
