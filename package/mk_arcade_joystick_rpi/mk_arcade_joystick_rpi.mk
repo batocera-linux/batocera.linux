@@ -20,6 +20,9 @@ endef
 ifeq ($(BR2_cortex_a7),y)
         MK_ARCADE_JOYSTICK_RPI_PRE_CONFIGURE_HOOKS += MK_ARCADE_JOYSTICK_RPI_RPI2_HOOK
 endif
+ifeq ($(BR2_cortex_a8),y)
+        MK_ARCADE_JOYSTICK_RPI_PRE_CONFIGURE_HOOKS += MK_ARCADE_JOYSTICK_RPI_RPI2_HOOK
+endif
 
 define MK_ARCADE_JOYSTICK_RPI_MAKE_HOOK
 	cp $(@D)/Makefile.cross $(@D)/Makefile

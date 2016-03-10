@@ -18,7 +18,7 @@ define FREEIMAGE_EXTRACT_CMDS
 	rm -rf $(BUILD_DIR)/FreeImage
 endef
 
-ifeq ($(BR2_cortex_a7),y)
+ifeq ($(BR2_ARM_CPU_HAS_NEON),y)
 	FREEIMAGE_CFLAGS=$(TARGET_CFLAGS) -DPNG_ARM_NEON_OPT=0
 endif
 
