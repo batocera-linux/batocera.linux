@@ -15,6 +15,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Updated 8bitdo gamepads
 - Bumped to moonlight-embedded-2.1.4
 - Overclock set to none now delete lines in config.txt 
+- Improved keyboard encoders support
+- Fixed an issue concerning ISO loading taking too long
 
 ## [4.0.0-beta1]
 - new update process
