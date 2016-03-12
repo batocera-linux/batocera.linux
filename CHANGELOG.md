@@ -14,7 +14,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Fixed system locales
 - Updated 8bitdo gamepads
 - Bumped to moonlight-embedded-2.1.4
-
+- Overclock set to none now delete lines in config.txt 
 
 ## [4.0.0-beta1]
 - new update process
