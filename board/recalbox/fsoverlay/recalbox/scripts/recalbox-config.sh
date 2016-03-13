@@ -32,6 +32,7 @@ waitWifi() {
     sleep 1
     let N++
   done
+  echo "`logtime` : wifi timeout" >> $log
   return 1
 }
 
