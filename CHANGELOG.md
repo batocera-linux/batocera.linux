@@ -2,7 +2,29 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased][unreleased]
+## [Unrelease][unreleased]
+
+## [4.0.0-beta2][unreleased]
+- Added rpi3 support (without bluetooth)
+- Added support for power management boards
+- Added rpi gpio and wiringpi
+- Added OOB remote controls
+- Fixed keyboard issue in ES
+- Fixed retroachievement support on picodrive and fceumm libretro cores
+- Fixed system locales
+- Updated 8bitdo gamepads
+- Bumped to moonlight-embedded-2.1.4
+- Overclock set to none now delete lines in config.txt 
+- Improved keyboard encoders support
+- Fixed an issue concerning ISO loading taking too long
+
+## [4.0.0-beta1]
+- new update process
+- new languages
+- external storage choice
+- favourite system
+
+## [3.3.0-beta17]
 - New version of xboxdrv
 - Corrected 8bitdo mapping
 - Added wiringpi
