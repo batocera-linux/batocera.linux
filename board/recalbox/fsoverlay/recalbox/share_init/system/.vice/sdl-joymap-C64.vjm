@@ -1,0 +1,61 @@
+# VICE joystick mapping file
+#
+# A joystick map is read in as patch to the current map.
+#
+# File format:
+# - comment lines start with '#'
+# - keyword lines start with '!keyword'
+# - normal line has 'joynum inputtype inputindex action'
+#
+# Keywords and their lines are:
+# '!CLEAR'    clear all mappings
+#
+# inputtype:
+# 0      axis
+# 1      button
+# 2      hat
+# 3      ball
+#
+# Note that each axis has 2 inputindex entries and each hat has 4.
+#
+# action [action_parameters]:
+# 0               none
+# 1 port pin      joystick (pin: 1/2/4/8/16 = u/d/l/r/fire)
+# 2 row col       keyboard
+# 3               map
+# 4               UI activate
+# 5 path&to&item  UI function
+#
+
+!CLEAR
+
+# DragonRise Inc.   Generic   USB  Joystick  
+0 0 0 1 1 8
+0 0 1 1 1 4
+0 0 2 1 1 2
+0 0 3 1 1 1
+0 0 4 1 0 8
+0 0 5 1 0 4
+0 0 6 1 0 2
+0 0 7 1 0 1
+0 0 8 0
+0 0 9 0
+
+0 1 0 1 1 16
+0 1 1 1 1 1
+0 1 2 1 0 16
+0 1 3 1 0 16
+0 1 4 1 1 16
+0 1 5 4
+0 1 6 3
+0 1 7 1 0 16
+0 1 8 1 1 16
+0 1 9 4
+0 1 10 3
+0 1 11 1 0 16
+
+0 2 0 1 0 1
+0 2 1 1 0 2
+0 2 2 1 0 4
+0 2 3 1 0 8
+
