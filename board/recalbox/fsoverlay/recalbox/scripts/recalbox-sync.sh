@@ -34,6 +34,40 @@ rs_internal_uid() {
     blkid | grep -E "^${INTERNAL_DEVICE}:" | sed -e s+"^.* UUID=\"\([^\"]*\)\".*$"+"\1"+
 }
 
+rs_fix_min_dates() {
+  # if somebody has a better idea to replace this function
+
+  # the problem :
+  # files having date 1970 on ext4 cannot correctly synchronized on fat ;-(
+  # rsync based on date on a rpi having no network is a problem, mainly on fat but not only for fat;-()
+  # i suggest to disable the sync feature is no correct date is available (thus no network), but i'm not sure people would undertand
+
+  # one idea is to force the rpi to 1980 instead of 1970 at startup
+  # a file created a startup each time at t+60s for example even if different will however not be saved
+
+  # ext4 min date : 1901
+  # ntfs min date : 1601
+  # fat  min date : 1980
+
+  # if the current date is 1970 (rpi with no network and then no date), we cannot really use rsync based on timestamp to backup ;-(
+  # at least, don't force dates
+  YEAR=$(date +%Y)
+  if test "${YEAR}" -lt 2000
+  then
+    return 1
+  fi
+
+  # => force date being after 1980 otherwise rsync will not be able to set it (on vfat) (rpi has not clock and most of files date is 1970)
+  if ! touch -t 198101010000 /tmp/min_timestamp
+  then
+    return 1
+  fi
+
+  # i won't force a fixed date while having the same date (at 2 seconds, means being the same content)
+  # so, the touch to the current time is a way to randomize dates
+  find /recalbox/share ! -newer /tmp/min_timestamp | while read X; do touch "${X}"; done
+}
+
 rs_sync() {
     FSID=$1
     FSDEV=$(blkid | grep "UUID=\"${FSID}\"" | sed -e s+'^\([^:]*\):.*$'+'\1'+)
@@ -82,6 +116,7 @@ rs_sync() {
     if test "${FSTYPE}" = "vfat"
     then
 	RSYNCOPT="-rptgo --exclude system/bluetooth" # exclude bluetooth while it contains : chars not supported on fat32
+        rs_fix_min_dates "/recalbox/share" # if fails, will take a longer time
     fi
     if rsync $RSYNCOPT -v --modify-window=2 --delete-during "/recalbox/share/" "${MOUNTDIR}" # modify-window because all file system such as fat32 doesn't have the same time precision
     then

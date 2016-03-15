@@ -5,11 +5,6 @@
 ################################################################################
 #RETROARCH_VERSION = 2755abc14fe25b9f32e145dcf6ec5c9569640eb8 for rpi1
 
-#ifeq ($(BR2_cortex_a7),y)
-#	RETROARCH_VERSION = 79f2a92202f62b51e7ed8f6fb089cb38ce0fede9
-#else
-#	RETROARCH_VERSION = 2755abc14fe25b9f32e145dcf6ec5c9569640eb8
-#endif
 
 RETROARCH_VERSION = b8bbdc6f4ccc5a844f25bf52e328a5a0a8a93d4e 
 RETROARCH_SITE = https://github.com/libretro/RetroArch.git
@@ -31,9 +26,14 @@ else
 	endif
 endif
 
+# RPI 2 and 3
 ifeq ($(BR2_cortex_a7),y)
         RETROARCH_CONF_OPTS += --enable-neon --enable-networking --enable-netplay
 endif
+ifeq ($(BR2_cortex_a8),y)
+        RETROARCH_CONF_OPTS += --enable-neon --enable-networking --enable-netplay
+endif
+
 
 ifeq ($(BR2_PACKAGE_PYTHON3),y)
 RETROARCH_CONF_OPTS += --enable-python
@@ -129,6 +129,7 @@ endef
 
 $(eval $(generic-package))
 
+# DEFINITION OF LIBRETRO PLATFORM
 LIBRETRO_PLATFORM =
 ifeq ($(BR2_ARM_CPU_ARMV6),y)
         LIBRETRO_PLATFORM += armv6
@@ -136,6 +137,10 @@ endif
 
 ifeq ($(BR2_cortex_a7),y)
         LIBRETRO_PLATFORM += armv7
+endif
+
+ifeq ($(BR2_cortex_a8),y)
+        LIBRETRO_PLATFORM += armv8 cortexa8
 endif
 
 ifeq ($(BR2_GCC_TARGET_FLOAT_ABI),"hard")

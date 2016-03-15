@@ -1,16 +1,5 @@
-From 7793a6edb3de6e528e486173f255af72722b29a4 Mon Sep 17 00:00:00 2001
-From: Nicolas Adenis-Lamarre <nicolas.adenis-lamarre@gmail.com>
-Date: Sat, 30 Jan 2016 20:43:56 +0100
-Subject: [PATCH] keyboard : open tty just in time to allow application to
- start before tty are opened
-
-Signed-off-by: Nicolas Adenis-Lamarre <nicolas.adenis-lamarre@gmail.com>
----
- src/core/linux/SDL_evdev.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
-
 diff --git a/src/core/linux/SDL_evdev.c b/src/core/linux/SDL_evdev.c
-index 97da3d7..9e4b01a 100644
+index 97da3d7..2484849 100644
 --- a/src/core/linux/SDL_evdev.c
 +++ b/src/core/linux/SDL_evdev.c
 @@ -480,7 +480,7 @@ SDL_EVDEV_Init(void)
@@ -22,7 +11,15 @@ index 97da3d7..9e4b01a 100644
          
          /* Mute the keyboard so keystrokes only generate evdev events and do not leak through to the console */
          _this->tty = STDIN_FILENO;
-@@ -614,6 +614,10 @@ SDL_EVDEV_Poll(void)
+@@ -576,6 +576,7 @@ SDL_EVDEV_Poll(void)
+     SDL_Scancode scan_code;
+     int mouse_button;
+     SDL_Mouse *mouse;
++    int ioctlres;
+ #ifdef SDL_INPUT_LINUXKD
+     Uint16 modstate;
+     struct kbentry kbe;
+@@ -614,6 +615,10 @@ SDL_EVDEV_Poll(void)
                          } else if (events[i].value == 1 || events[i].value == 2 /* Key repeated */ ) {
                              SDL_SendKeyboardKey(SDL_PRESSED, scan_code);
  #ifdef SDL_INPUT_LINUXKD
@@ -33,6 +30,23 @@ index 97da3d7..9e4b01a 100644
                              if (_this->console_fd >= 0) {
                                  kbe.kb_index = events[i].code;
                                  /* Convert the key to an UTF-8 char */
--- 
-2.1.4
-
+@@ -643,7 +648,18 @@ SDL_EVDEV_Poll(void)
+ 				  }
+ 				}
+ 
+-                                if (ioctl(_this->console_fd, KDGKBENT, (unsigned long)&kbe) == 0 && 
++				ioctlres = ioctl(_this->console_fd, KDGKBENT, (unsigned long)&kbe);
++				if(ioctlres != 0) {
++				  // in case of ioctl failure, try to reopen the tty (an other chance)
++				  // tty is sometimes manipulated by an other program
++				  close(_this->console_fd); // can fails, anyway
++				  _this->console_fd = SDL_EVDEV_get_console_fd();
++				  if(_this->console_fd >= 0) {
++				    ioctlres = ioctl(_this->console_fd, KDGKBENT, (unsigned long)&kbe);
++				  }
++				}
++
++                                if (ioctlres == 0 && 
+                                     ((KTYP(kbe.kb_value) == KT_LATIN) || (KTYP(kbe.kb_value) == KT_ASCII) || (KTYP(kbe.kb_value) == KT_LETTER))) 
+                                 {
+                                     kval = KVAL(kbe.kb_value);

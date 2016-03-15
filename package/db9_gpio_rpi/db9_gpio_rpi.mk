@@ -22,6 +22,9 @@ endef
 ifeq ($(BR2_cortex_a7),y)
         DB9_GPIO_RPI_PRE_CONFIGURE_HOOKS += DB9_GPIO_RPI_RPI2_HOOK
 endif
+ifeq ($(BR2_cortex_a8),y)
+        DB9_GPIO_RPI_PRE_CONFIGURE_HOOKS += DB9_GPIO_RPI_RPI2_HOOK
+endif
 
 
 define DB9_GPIO_RPI_BUILD_CMDS

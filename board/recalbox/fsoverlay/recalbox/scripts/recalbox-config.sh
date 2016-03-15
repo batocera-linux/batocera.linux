@@ -32,6 +32,7 @@ waitWifi() {
     sleep 1
     let N++
   done
+  echo "`logtime` : wifi timeout" >> $log
   return 1
 }
 
@@ -173,7 +174,11 @@ gpu_freq["none-rpi2"]=250
 
 if [ -f "$configFile" ];then
         preBootConfig
-    
+        if [[ "$mode" == "none" ]]; then
+          for entry in arm_freq core_freq sdram_freq force_turbo over_voltage over_voltage_sdram gpu_freq; do
+	    sed -i "/^${entry}/d" "$configFile"
+          done
+        else
 	cat "$configFile" | grep "arm_freq"
 	if [ "$?" != "0" ];then
 		echo "arm_freq=" >> "$configFile"
@@ -210,6 +215,7 @@ if [ -f "$configFile" ];then
 	sed -i "s/#\?over_voltage=.*/over_voltage=${over_voltage[$mode]}/g" "$configFile"
 	sed -i "s/#\?over_voltage_sdram=.*/over_voltage_sdram=${over_voltage_sdram[$mode]}/g" "$configFile"
 	sed -i "s/#\?gpu_freq=.*/gpu_freq=${gpu_freq[$mode]}/g" "$configFile"
+        fi
         echo "`logtime` : enabled overclock mode : $mode" >> $log
 
 	postBootConfig

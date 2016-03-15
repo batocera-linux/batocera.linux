@@ -1,5 +1,11 @@
-v4.0.0
-New emulators
-Linux 4.1
-Kodi 15.0
-Some enhancements (favorites, external disks, ...)
+v4.0.0-beta2
+- Added rpi3 support (without bluetooth)
+- Added support for power management boards
+- Added rpi gpio and wiringpi
+- Added OOB remote controls
+- Fixed keyboard issue in ES
+- Fixed retroachievement support on picodrive and fceumm libretro cores
+- Fixed system locales
+- Updated 8bitdo gamepads
+- Bumped to moonlight-embedded-2.1.4
+- Overclock set to none now delete lines in config.txt

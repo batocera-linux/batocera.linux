@@ -25,6 +25,10 @@ ifeq ($(BR2_cortex_a7),y)
         SCUMMVM_VANFANEL_PRE_CONFIGURE_HOOKS += $(SED) 's|-march=armv6zk|-march=armv7-a|g' $(@D)/configure
 endif
 
+ifeq ($(BR2_cortex_a8),y)
+        SCUMMVM_VANFANEL_PRE_CONFIGURE_HOOKS += $(SED) 's|-march=armv6zk|-march=armv8|g' $(@D)/configure
+endif
+
 ifeq ($(BR2_ARM_FPU_NEON_VFPV4),y)
         SCUMMVM_VANFANEL_PRE_CONFIGURE_HOOKS += $(SED) 's|-march=vfpu|-mfpu=neon|g' $(@D)/configure
 endif
