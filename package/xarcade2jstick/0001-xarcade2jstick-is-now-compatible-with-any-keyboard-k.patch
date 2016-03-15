@@ -1,0 +1,114 @@
+From fc05aaebd4e07bab26f2f7007b357eb48e0a48c5 Mon Sep 17 00:00:00 2001
+From: Subs <frog2wah@gmail.com>
+Date: Fri, 5 Feb 2016 17:59:43 +0100
+Subject: [PATCH 1/2] xarcade2jstick is now compatible with any keyboard /
+ keyboard encoder : - Added -e switch : start like "xarcade2jstick -e
+ /dev/input/event4" to catch a specific event - When using -e, don't check for
+ a xarcade device
+
+Corrected a bug in main.c since https://github.com/petrockblog/Xarcade2Jstick/commit/d1647242ed9d40fba8ddfd005e809fdee099302f as the call of `uinput_gpad_open` was not updated in main.c
+---
+ src/input_xarcade.c | 12 ++++++++++--
+ src/input_xarcade.h |  2 +-
+ src/main.c          | 14 +++++++++-----
+ 3 files changed, 20 insertions(+), 8 deletions(-)
+
+diff --git a/src/input_xarcade.c b/src/input_xarcade.c
+index 795edc5..c5a7c2d 100755
+--- a/src/input_xarcade.c
++++ b/src/input_xarcade.c
+@@ -24,11 +24,18 @@
+ int findXarcadeDevice(void);
+ 
+ // relizations ----------------------
+-int16_t input_xarcade_open(INP_XARC_DEV* const xdev, INPUT_XARC_TYPE_E type) {
++int16_t input_xarcade_open(INP_XARC_DEV* const xdev, INPUT_XARC_TYPE_E type, char* evdev) {
+ 	int result;
+ 
+ 	// TODO check input parameter type
+-	xdev->fevdev = findXarcadeDevice();
++
++	// Check if a device was forced to avoid scanning for an X-Arcade
++	if(evdev) {
++		xdev->fevdev = open(evdev, O_RDONLY);
++		printf("Forced %s\n", evdev);
++	} else {
++		xdev->fevdev = findXarcadeDevice();
++	}
+ 	if (xdev->fevdev != -1) {
+ 		result = ioctl(xdev->fevdev, EVIOCGRAB, 1);
+ 		return result;
+@@ -73,6 +80,7 @@ int findXarcadeDevice(void) {
+ 
+ 	for (ctr = 0; ctr < pglob.gl_pathc; ++ctr) {
+ 		filename = pglob.gl_pathv[ctr];
++		printf("Trying %s\n", filename);
+ 		fevdev = open(filename, O_RDONLY);
+ 		if (fevdev == -1) {
+ 			printf("Failed to open event device %s.\n", filename);
+diff --git a/src/input_xarcade.h b/src/input_xarcade.h
+index a1671ef..f698dfe 100755
+--- a/src/input_xarcade.h
++++ b/src/input_xarcade.h
+@@ -35,7 +35,7 @@ typedef struct {
+ 	struct input_event ev[64];
+ } INP_XARC_DEV;
+ 
+-int16_t input_xarcade_open(INP_XARC_DEV* const xdev, INPUT_XARC_TYPE_E type);
++int16_t input_xarcade_open(INP_XARC_DEV* const xdev, INPUT_XARC_TYPE_E type, char* evedv);
+ int16_t input_xarcade_close(INP_XARC_DEV* const xdev);
+ int16_t input_xarcade_read(INP_XARC_DEV* const xdev);
+ 
+diff --git a/src/main.c b/src/main.c
+index b5a359a..b8ac183 100755
+--- a/src/main.c
++++ b/src/main.c
+@@ -55,10 +55,11 @@ int main(int argc, char* argv[]) {
+ 	int result = 0;
+ 	int rd, ctr, combo = 0;
+ 	char keyStates[256];
++  char* evdev = NULL;
+ 
+ 	int detach = 0;
+ 	int opt;
+-	while ((opt = getopt(argc, argv, "+ds")) != -1) {
++	while ((opt = getopt(argc, argv, "dse:")) != -1) {
+ 		switch (opt) {
+ 			case 'd':
+ 				detach = 1;
+@@ -66,8 +67,11 @@ int main(int argc, char* argv[]) {
+ 			case 's':
+ 				use_syslog = 1;
+ 				break;
++      case 'e':
++        evdev = optarg;
++        break;
+ 			default:
+-				fprintf(stderr, "Usage: %s [-d] [-s]\n", argv[0]);
++				fprintf(stderr, "Usage: %s [-d] [-s] [-e eventPath]\n", argv[0]);
+ 				exit(EXIT_FAILURE);
+ 				break;
+ 		}
+@@ -76,7 +80,7 @@ int main(int argc, char* argv[]) {
+ 	SYSLOG(LOG_NOTICE, "Starting.");
+ 
+ 	printf("[Xarcade2Joystick] Getting exclusive access: ");
+-	result = input_xarcade_open(&xarcdev, INPUT_XARC_TYPE_TANKSTICK);
++	result = input_xarcade_open(&xarcdev, INPUT_XARC_TYPE_TANKSTICK, evdev);
+ 	if (result != 0) {
+ 		if (errno == 0) {
+ 			printf("Not found.\n");
+@@ -90,8 +94,8 @@ int main(int argc, char* argv[]) {
+ 
+ 	SYSLOG(LOG_NOTICE, "Got exclusive access to Xarcade.");
+ 
+-	uinput_gpad_open(&uinp_gpads[0], UINPUT_GPAD_TYPE_XARCADE);
+-	uinput_gpad_open(&uinp_gpads[1], UINPUT_GPAD_TYPE_XARCADE);
++	uinput_gpad_open(&uinp_gpads[0], UINPUT_GPAD_TYPE_XARCADE, 1);
++	uinput_gpad_open(&uinp_gpads[1], UINPUT_GPAD_TYPE_XARCADE, 2);
+ 	uinput_kbd_open(&uinp_kbd);
+ 
+ 	if (detach) {
+-- 
+1.9.1
+
