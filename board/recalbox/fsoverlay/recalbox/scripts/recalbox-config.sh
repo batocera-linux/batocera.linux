@@ -440,20 +440,22 @@ if [[ "$command" == "storage" ]]; then
 	) | sed -e s+'^[^:]*: LABEL="\([^"]*\)" UUID="\([^"]*\)" TYPE="[^"]*"$'+'DEV \2 \1'+
 	exit 0
     fi
-    if [[ "$mode" == "INTERNAL" || "$mode" == "ANYEXTERNAL" || "$mode" == "RAM" || "$mode" == "DEV" ]]; then
+    if [[ "${mode}" == "INTERNAL" || "${mode}" == "ANYEXTERNAL" || "${mode}" == "RAM" || "${mode}" == "DEV" ]]; then
 	preBootConfig
-	if [[ "$mode" == "INTERNAL" || "$mode" == "ANYEXTERNAL" || "$mode" == "RAM" ]]; then
-            if [ `grep sharedevice $storageFile` ]; then
-               sed -i "s|sharedevice=.*|sharedevice=$mode|g" $storageFile
+	if [[ "${mode}" == "INTERNAL" || "${mode}" == "ANYEXTERNAL" || "${mode}" == "RAM" ]]; then
+            if grep -qE "^sharedevice=" "${storageFile}"
+	    then
+               sed -i "s|sharedevice=.*|sharedevice=${mode}|g" "${storageFile}"
             else
-               echo "sharedevice=$mode" >> $storageFile
+               echo "sharedevice=${mode}" >> "${storageFile}"
             fi
 	fi
-	if [[ "$mode" == "DEV" ]]; then
-            if [ `grep sharedevice $storageFile` ]; then
-               sed -i "s|sharedevice=.*|sharedevice=$mode $extra1|g" $storageFile
+	if [[ "${mode}" == "DEV" ]]; then
+            if grep -qE "^sharedevice=" "${storageFile}"
+	    then
+               sed -i "s|sharedevice=.*|sharedevice=${mode} $extra1|g" "${storageFile}"
             else
-               echo "sharedevice=$mode $extra1" >> $storageFile
+               echo "sharedevice=${mode} ${extra1}" >> "${storageFile}"
             fi
 	fi
 	postBootConfig
