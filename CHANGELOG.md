@@ -6,6 +6,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [4.0.0-beta3][unreleased]
 - Xarcade2jstick button remapped + better support of IPAC encoders
+- Added IPAC2 keyboard encoder
 
 ## [4.0.0-beta2][unreleased]
 - Added rpi3 support (without bluetooth)
