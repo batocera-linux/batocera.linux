@@ -2,7 +2,7 @@
 
 Put your amstrad cpc roms in this directory.
 
-Rom files must have a ".dsk" extension.
+Rom files must have a ".dsk/.zip" extension.
 
 You can download amstrad cpc roms on planetemu :
 http://www.planetemu.net/roms/amstrad-cpc-games-dsk
