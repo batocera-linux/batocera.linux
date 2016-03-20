@@ -18,6 +18,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Improved keyboard encoders support
 - Fixed an issue concerning ISO loading taking too long
 - Added omxplayer to enable Introduction video
+- Added linapple-pie to recalbox-rpi3_defconfig
 
 ## [4.0.0-beta1]
 - new update process
