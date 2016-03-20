@@ -17,6 +17,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Overclock set to none now delete lines in config.txt 
 - Improved keyboard encoders support
 - Fixed an issue concerning ISO loading taking too long
+- Added omxplayer to enable Introduction video
 
 ## [4.0.0-beta1]
 - new update process

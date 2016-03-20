@@ -1,14 +1,23 @@
 #!/bin/bash
 
+do_start () 
+{
+    if test -e "/recalbox/system/resources/splash/recalbox.mov"; then
+        omxplayer -b --layer 1000 "/recalbox/system/resources/splash/recalbox.mov"
+    else
+        fbv -f -i /recalbox/system/resources/splash/logo-version.png
+    fi
+}
+
 case "$1" in
-  start)
-      fbv -f -i /recalbox/system/resources/splash/logo-version.png &
-      ;;
-  stop)
-	;;
-  restart|reload)
-	;;
-  *)
+    start)
+        do_start &
+        ;;
+    stop)
+	   ;;
+    restart|reload)
+	   ;;
+    *)
 esac
 
 exit $?
