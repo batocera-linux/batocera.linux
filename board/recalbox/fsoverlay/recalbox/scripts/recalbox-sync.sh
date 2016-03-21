@@ -1,6 +1,8 @@
 #!/bin/bash
 
-INTERNAL_DEVICE="/dev/mmcblk0p3"
+storageFile="/boot/recalbox-boot.conf"
+INTERNAL_DEVICE=$(cat "${storageFile}" | grep -E "^internal=" | head -n1 | cut -d'=' -f2)
+test -z "${INTERNAL_DEVICE}" && INTERNAL_DEVICE="/dev/mmcblk0p3"
 
 print_usage() {
     echo "${1} list"
@@ -25,6 +27,7 @@ rs_list() {
     then
 	echo "INTERNAL"
     fi
+    # avoid sd card partitions
     (blkid | grep -vE '^/dev/mmcblk' | grep ': LABEL="'
      blkid | grep -vE '^/dev/mmcblk' | grep -v ': LABEL="' | sed -e s+':'+': LABEL="NO_NAME"'+
     ) | grep -vE "^${RS_CURRENT}:" | sed -e s+'^[^:]*: LABEL="\([^"]*\)" UUID="\([^"]*\)" TYPE="[^"]*"$'+'DEV \2 \1'+

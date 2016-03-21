@@ -1,0 +1,170 @@
+From 5ae8b931383e37b04ed22e1862b86620153197d9 Mon Sep 17 00:00:00 2001
+From: Subs <frog2wah@gmail.com>
+Date: Tue, 15 Mar 2016 15:34:27 +0100
+Subject: [PATCH 2/2] Better MAME default inputs + better IPAC support -
+ Buttons ar mapped like a normal joystick - Buttons trigger an even more
+ compatible to their function - Added IPAC Player 2 SW5 and SW6 for a better
+ out of the box support
+
+---
+ src/main.c           | 49 +++++++++++++++++++++++++++----------------------
+ src/uinput_gamepad.c | 12 ++++++------
+ 2 files changed, 33 insertions(+), 28 deletions(-)
+
+diff --git a/src/main.c b/src/main.c
+index b8ac183..6ee8b68 100755
+--- a/src/main.c
++++ b/src/main.c
+@@ -129,40 +129,41 @@ int main(int argc, char* argv[]) {
+ 				/* ----------------  Player 1 controls ------------------- */
+ 				/* buttons */
+ 				case KEY_LEFTCTRL:
+-					uinput_gpad_write(&uinp_gpads[0], BTN_A,
++					uinput_gpad_write(&uinp_gpads[0], BTN_WEST,
+ 							xarcdev.ev[ctr].value > 0, EV_KEY);
+ 					break;
+ 				case KEY_LEFTALT:
+-					uinput_gpad_write(&uinp_gpads[0], BTN_B,
++					uinput_gpad_write(&uinp_gpads[0], BTN_NORTH,
+ 							xarcdev.ev[ctr].value > 0, EV_KEY);
+ 					break;
+ 				case KEY_SPACE:
+-					uinput_gpad_write(&uinp_gpads[0], BTN_C,
++					uinput_gpad_write(&uinp_gpads[0], BTN_TL,
+ 							xarcdev.ev[ctr].value > 0, EV_KEY);
+ 					break;
+ 				case KEY_LEFTSHIFT:
+-					uinput_gpad_write(&uinp_gpads[0], BTN_X,
++					uinput_gpad_write(&uinp_gpads[0], BTN_SOUTH,
+ 							xarcdev.ev[ctr].value > 0, EV_KEY);
+ 					break;
+ 				case KEY_Z:
+-					uinput_gpad_write(&uinp_gpads[0], BTN_Y,
++					uinput_gpad_write(&uinp_gpads[0], BTN_EAST,
+ 							xarcdev.ev[ctr].value > 0, EV_KEY);
+ 					break;
+ 				case KEY_X:
+-					uinput_gpad_write(&uinp_gpads[0], BTN_Z,
++					uinput_gpad_write(&uinp_gpads[0], BTN_TR,
+ 							xarcdev.ev[ctr].value > 0, EV_KEY);
+ 					break;
+ 				case KEY_C:
+-					uinput_gpad_write(&uinp_gpads[0], BTN_TL,
++					uinput_gpad_write(&uinp_gpads[0], BTN_GAMEPAD,
+ 							xarcdev.ev[ctr].value > 0, EV_KEY);
+ 					break;
+-				case KEY_5:
+-					uinput_gpad_write(&uinp_gpads[0], BTN_TR,
++				case KEY_3:
++				case KEY_V:
++					uinput_gpad_write(&uinp_gpads[0], BTN_MODE,
+ 							xarcdev.ev[ctr].value > 0, EV_KEY);
+ 					break;
+ 				case KEY_1:
+ 					/* handle combination */
+-					if (keyStates[KEY_3] && xarcdev.ev[ctr].value) {
++					if (keyStates[KEY_5] && xarcdev.ev[ctr].value) {
+ 						uinput_kbd_write(&uinp_kbd, KEY_TAB, 1, EV_KEY);
+ 						uinput_kbd_sleep();
+ 						uinput_kbd_write(&uinp_kbd, KEY_TAB, 0, EV_KEY);
+@@ -179,7 +180,7 @@ int main(int argc, char* argv[]) {
+ 					} else
+ 						combo--;
+ 					break;
+-				case KEY_3:
++				case KEY_5:
+ 					/* it's a key down, ignore */
+ 					if (xarcdev.ev[ctr].value)
+ 						continue;
+@@ -217,40 +218,44 @@ int main(int argc, char* argv[]) {
+ 					/* ----------------  Player 2 controls ------------------- */
+ 					/* buttons */
+ 				case KEY_A:
+-					uinput_gpad_write(&uinp_gpads[1], BTN_A,
++					uinput_gpad_write(&uinp_gpads[1], BTN_WEST,
+ 							xarcdev.ev[ctr].value > 0, EV_KEY);
+ 					break;
+ 				case KEY_S:
+-					uinput_gpad_write(&uinp_gpads[1], BTN_B,
++					uinput_gpad_write(&uinp_gpads[1], BTN_NORTH,
+ 							xarcdev.ev[ctr].value > 0, EV_KEY);
+ 					break;
+ 				case KEY_Q:
+-					uinput_gpad_write(&uinp_gpads[1], BTN_C,
++					uinput_gpad_write(&uinp_gpads[1], BTN_TL,
+ 							xarcdev.ev[ctr].value > 0, EV_KEY);
+ 					break;
+ 				case KEY_W:
+-					uinput_gpad_write(&uinp_gpads[1], BTN_X,
++					uinput_gpad_write(&uinp_gpads[1], BTN_SOUTH,
+ 							xarcdev.ev[ctr].value > 0, EV_KEY);
+ 					break;
+ 				case KEY_E:
+-					uinput_gpad_write(&uinp_gpads[1], BTN_Y,
++				case KEY_I:
++					uinput_gpad_write(&uinp_gpads[1], BTN_EAST,
+ 							xarcdev.ev[ctr].value > 0, EV_KEY);
+ 					break;
+ 				case KEY_LEFTBRACE:
+-					uinput_gpad_write(&uinp_gpads[1], BTN_Z,
++				case KEY_K:
++					uinput_gpad_write(&uinp_gpads[1], BTN_TR,
+ 							xarcdev.ev[ctr].value > 0, EV_KEY);
+ 					break;
+ 				case KEY_RIGHTBRACE:
+-					uinput_gpad_write(&uinp_gpads[1], BTN_TL,
++				case KEY_J:
++					uinput_gpad_write(&uinp_gpads[1], BTN_GAMEPAD,
+ 							xarcdev.ev[ctr].value > 0, EV_KEY);
+ 					break;
+-				case KEY_6:
+-					uinput_gpad_write(&uinp_gpads[1], BTN_TR,
++				case KEY_4:
++				case KEY_L:
++					uinput_gpad_write(&uinp_gpads[1], BTN_MODE,
+ 							xarcdev.ev[ctr].value > 0, EV_KEY);
+ 					break;
+ 				case KEY_2:
+ 					/* handle combination */
+-					if (keyStates[KEY_4] && xarcdev.ev[ctr].value) {
++					if (keyStates[KEY_6] && xarcdev.ev[ctr].value) {
+ 						uinput_kbd_write(&uinp_kbd, KEY_ESC, 1, EV_KEY);
+ 						uinput_kbd_sleep();
+ 						uinput_kbd_write(&uinp_kbd, KEY_ESC, 0, EV_KEY);
+@@ -267,7 +272,7 @@ int main(int argc, char* argv[]) {
+ 					} else
+ 						combo--;
+ 					break;
+-				case KEY_4:
++				case KEY_6:
+ 					/* it's a key down, ignore */
+ 					if (xarcdev.ev[ctr].value)
+ 						continue;
+diff --git a/src/uinput_gamepad.c b/src/uinput_gamepad.c
+index 56f6144..77ca486 100755
+--- a/src/uinput_gamepad.c
++++ b/src/uinput_gamepad.c
+@@ -71,14 +71,14 @@ int16_t uinput_gpad_open(UINP_GPAD_DEV* const gpad, UINPUT_GPAD_TYPE_E type,
+ 	ioctl(gpad->fd, UI_SET_EVBIT, EV_REL);
+ 
+ 	// gamepad, buttons
+-	ioctl(gpad->fd, UI_SET_KEYBIT, BTN_A);
+-	ioctl(gpad->fd, UI_SET_KEYBIT, BTN_B);
+-	ioctl(gpad->fd, UI_SET_KEYBIT, BTN_C);
+-	ioctl(gpad->fd, UI_SET_KEYBIT, BTN_X);
+-	ioctl(gpad->fd, UI_SET_KEYBIT, BTN_Y);
+-	ioctl(gpad->fd, UI_SET_KEYBIT, BTN_Z);
++	ioctl(gpad->fd, UI_SET_KEYBIT, BTN_WEST);
++	ioctl(gpad->fd, UI_SET_KEYBIT, BTN_NORTH);
+ 	ioctl(gpad->fd, UI_SET_KEYBIT, BTN_TL);
++	ioctl(gpad->fd, UI_SET_KEYBIT, BTN_SOUTH);
++	ioctl(gpad->fd, UI_SET_KEYBIT, BTN_EAST);
+ 	ioctl(gpad->fd, UI_SET_KEYBIT, BTN_TR);
++	ioctl(gpad->fd, UI_SET_KEYBIT, BTN_GAMEPAD);
++	ioctl(gpad->fd, UI_SET_KEYBIT, BTN_MODE);
+ 	ioctl(gpad->fd, UI_SET_KEYBIT, BTN_SELECT);
+ 	ioctl(gpad->fd, UI_SET_KEYBIT, BTN_START);
+ 
+-- 
+1.9.1
+

@@ -10,6 +10,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Added theme for commodore c64
 - Added two demo ROMs for commodore c64
 
+## [4.0.0-beta3][unreleased]
+- Xarcade2jstick button remapped + better support of IPAC encoders
+- Added IPAC2 keyboard encoder
+- Patched xpad driver to support Xbox One controllers in USB mode
+- Updated gamepads inputs to support moonlight
+
 ## [4.0.0-beta2]
 - Added rpi3 support (without bluetooth)
 - Added support for power management boards

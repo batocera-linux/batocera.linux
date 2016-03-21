@@ -2,7 +2,7 @@
 
 Put your zx 81 roms in this directory.
 
-Rom files must have a ".tzx/.p" extension.
+Rom files must have a ".tzx/.p/.zip" extension.
 
 You can download zx 81 roms on planetemu :
 https://www.loveroms.com/roms/sinclair-zx81
