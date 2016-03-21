@@ -6,6 +6,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Added omxplayer to enable Introduction video
 - Updated recalbox-configgen to version 4.1.X
 - Added linapple-pie to recalbox-rpi3_defconfig
+- Added support for vice 2.4.24. This means support for commodore c64 and other commodore systems
+- Added theme for commodore c64
+- Added two demo ROMs for commodore c64
 
 ## [4.0.0-beta2]
 - Added rpi3 support (without bluetooth)
