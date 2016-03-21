@@ -5,6 +5,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased][unreleased]
 - New version of xboxdrv
 - Corrected 8bitdo mapping
+- Added support for vice 2.4.24. This means support for commodore c64 and other commodore systems
+- Added theme for commodore c64
+- Added two demo ROMs for commodore c64
 
 ## [3.3.0-beta16] - 2015-11-24
 - Corrected kodi start
