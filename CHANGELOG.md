@@ -9,6 +9,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Added support for vice 2.4.24. This means support for commodore c64 and other commodore systems
 - Added theme for commodore c64
 - Added two demo ROMs for commodore c64
+- Added user's configuration files upgrade
 
 ## [4.0.0-beta3][unreleased]
 - Xarcade2jstick button remapped + better support of IPAC encoders
