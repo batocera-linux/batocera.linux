@@ -3,8 +3,11 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unrelease][unreleased]
+- Added omxplayer to enable Introduction video
+- Updated recalbox-configgen to version 4.1.X
+- Added linapple-pie to recalbox-rpi3_defconfig
 
-## [4.0.0-beta2][unreleased]
+## [4.0.0-beta2]
 - Added rpi3 support (without bluetooth)
 - Added support for power management boards
 - Added rpi gpio and wiringpi
@@ -17,8 +20,6 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Overclock set to none now delete lines in config.txt 
 - Improved keyboard encoders support
 - Fixed an issue concerning ISO loading taking too long
-- Added omxplayer to enable Introduction video
-- Updated recalbox-configgen to version 4.1.X
 
 ## [4.0.0-beta1]
 - new update process
