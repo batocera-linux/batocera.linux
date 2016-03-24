@@ -9,6 +9,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Added IPAC2 keyboard encoder
 - Patched xpad driver to support Xbox One controllers in USB mode
 - Updated gamepads inputs to support moonlight
+- Fix some kodi bugs about joysticks
 
 ## [4.0.0-beta2]
 - Added rpi3 support (without bluetooth)
