@@ -15,4 +15,11 @@ doClean() {
 doClean "/etc/init.d/S29recalboxsystem"
 doClean "/etc/init.d/S42networkrestart"
 
+# V4.1.0 2016-03-24
+find "/usr/share/kodi/system/keymaps" -name "joystick.*.xml" |
+    while read X
+    do
+	doClean "${X}"
+    done
+
 exit 0

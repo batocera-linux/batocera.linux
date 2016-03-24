@@ -21,6 +21,11 @@ ln -sf "/recalbox/share/cheats"                                       "${TARGET_
 
 rm -f "${TARGET_DIR}/etc/init.d/S50kodi" || exit 1
 
+# remove kodi default joystick configuration files
+# while as a minimum, the file joystick.Sony.PLAYSTATION(R)3.Controller.xml makes references to PS4 controllers with axes which doesn't exist (making kodi crashing)
+# i prefer to put it here than in packages/kodi while there are already a lot a lot of things
+rm -rf "${TARGET_DIR}/usr/share/kodi/system/keymaps/joystick."*.xml || exit 1
+
 # network
 ln -sf "/var/network/interfaces" "${TARGET_DIR}/etc/network/interfaces" || exit 1
 
