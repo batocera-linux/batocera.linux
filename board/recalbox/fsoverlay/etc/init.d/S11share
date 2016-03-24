@@ -151,6 +151,8 @@ do_upgrade() {
 	    xz -dc < "${ROOTTAR}" | tar xvf - >> /tmp/upgrade.files && \
 	    mv ./etc/fstab.upgrade ./etc/fstab)
 	then
+	    NEW_VERSION=$(sed -rn "s/^\s*([0-9a-zA-Z.]*)\s*.*$/\1/p" /recalbox/recalbox.version)
+	    python -c "import sys; sys.path.append('/usr/lib/python2.7/site-packages/configgen'); from emulatorlauncher import config_upgrade; config_upgrade('$NEW_VERSION')"
 	    EXIT_CODE=0
 	fi
 	sync
