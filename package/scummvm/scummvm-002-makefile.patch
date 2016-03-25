@@ -1,6 +1,6 @@
---- a/configure	2015-12-16 21:42:11.000000000 +0100
-+++ b/configure	2015-12-19 09:40:16.066614064 +0100
-@@ -2578,14 +2578,14 @@
+--- a/configure	2016-02-26 23:11:24.000000000 +0100
++++ b/configure	2016-03-25 10:47:11.499605695 +0100
+@@ -2619,18 +2619,18 @@
  			# but Raspbian does.
  			# Be careful as it's the linker (LDFLAGS) which must know about sysroot.
  			# These are needed to build against Raspbian's libSDL.
@@ -21,4 +21,19 @@
 +			#append_var CXXFLAGS "-I$RPI_ROOT/opt/vc/include"
  			_savegame_timestamp=no
  			_eventrec=no
- 			_build_scalers=no
+-			_build_scalers=no
+-			_build_hq_scalers=no
++			_build_scalers=yes
++			_build_hq_scalers=yes
+ 			# We prefer SDL2 on the Raspberry Pi: acceleration now depends on it
+ 			# since SDL2 manages dispmanx/GLES2 very well internally.
+ 			# SDL1 is bit-rotten on this platform.
+@@ -4161,7 +4161,7 @@
+ 		# 2) GLESv1_CM  This is used by the Windows Mali OpenGL ES 1.1 Emulator
+ 		# 3) glesv1     This is used by the Linux Mali OpenGL ES 1.1 Emulator
+ 		_opengles=no
+-		for lib in "-lGLES_CM" "-lGLESv1_CM" "-lglesv1"; do
++		for lib in "-lGLES_CM" "-lGLESv1_CM" "-lGLESv2"; do
+ 			if cc_check_no_clean $DEFINES $OPENGL_CFLAGS $OPENGL_LIBS $lib
+ 				then
+ 				_opengl=yes
