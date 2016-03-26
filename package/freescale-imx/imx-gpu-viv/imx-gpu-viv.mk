@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-IMX_GPU_VIV_BASE_VERSION = 5.0.11.p4.5
+IMX_GPU_VIV_BASE_VERSION = 5.0.11.p7.4
 ifeq ($(BR2_ARM_EABIHF),y)
 IMX_GPU_VIV_VERSION = $(IMX_GPU_VIV_BASE_VERSION)-hfp
 else
@@ -22,16 +22,17 @@ IMX_GPU_VIV_REDISTRIBUTE = NO
 IMX_GPU_VIV_PROVIDES = libegl libgles libopenvg
 IMX_GPU_VIV_LIB_TARGET = $(call qstrip,$(BR2_PACKAGE_IMX_GPU_VIV_OUTPUT))
 
+ifeq ($(IMX_GPU_VIV_LIB_TARGET),x11)
+# The libGAL.so library provided by imx-gpu-viv uses X functions. Packages
+# may want to link against libGAL.so (QT5 Base with OpenGL and X support
+# does so). For this to work we need build dependencies to libXdamage,
+# libXext and libXfixes so that X functions used in libGAL.so are referenced.
+IMX_GPU_VIV_DEPENDENCIES += xlib_libXdamage xlib_libXext xlib_libXfixes
+endif
+
 define IMX_GPU_VIV_EXTRACT_CMDS
 	$(call FREESCALE_IMX_EXTRACT_HELPER,$(DL_DIR)/$(IMX_GPU_VIV_SOURCE))
 endef
-
-# For some reason libGAL_egl for x11 is called libGAL_egl.dri.so
-ifeq ($(IMX_GPU_VIV_LIB_TARGET),x11)
-define IMX_GPU_VIV_FIXUP_SYMLINKS
-	ln -sf libGAL_egl.dri.so $(@D)/gpu-core/usr/lib/libGAL_egl.so
-endef
-endif
 
 # Instead of building, we fix up the inconsistencies that exist
 # in the upstream archive here.
@@ -49,8 +50,6 @@ define IMX_GPU_VIV_BUILD_CMDS
 	ln -sf libGLESv2-$(IMX_GPU_VIV_LIB_TARGET).so $(@D)/gpu-core/usr/lib/libGLESv2.so.2.0.0
 	ln -sf libVIVANTE-$(IMX_GPU_VIV_LIB_TARGET).so $(@D)/gpu-core/usr/lib/libVIVANTE.so
 	ln -sf libGAL-$(IMX_GPU_VIV_LIB_TARGET).so $(@D)/gpu-core/usr/lib/libGAL.so
-	ln -sf libGAL_egl.$(IMX_GPU_VIV_LIB_TARGET).so $(@D)/gpu-core/usr/lib/libGAL_egl.so
-	$(IMX_GPU_VIV_FIXUP_SYMLINKS)
 endef
 
 ifeq ($(IMX_GPU_VIV_LIB_TARGET),fb)
@@ -81,6 +80,7 @@ define IMX_GPU_VIV_INSTALL_STAGING_CMDS
 endef
 
 ifeq ($(BR2_PACKAGE_IMX_GPU_VIV_APITRACE),y)
+IMX_GPU_VIV_DEPENDENCIES += libpng
 ifeq ($(IMX_GPU_VIV_LIB_TARGET),x11)
 define IMX_GPU_VIV_INSTALL_APITRACE
 	cp -dpfr $(@D)/apitrace/x11/usr/bin/* $(TARGET_DIR)/usr/bin/

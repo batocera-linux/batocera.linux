@@ -2,7 +2,8 @@ config BR2_PACKAGE_EFL
 	bool "efl"
 	depends on BR2_INSTALL_LIBSTDCPP
 	depends on BR2_PACKAGE_HAS_UDEV # libudev
-	depends on BR2_PACKAGE_LUA # lua 5.1 or better
+	# https://phab.enlightenment.org/T2728
+	depends on BR2_PACKAGE_LUA_5_1 # needs lua 5.1, broken with 5.2+
 	depends on BR2_TOOLCHAIN_HAS_THREADS # untested without threads
 	depends on BR2_USE_MMU
 	depends on BR2_USE_WCHAR # use wchar_t
@@ -81,7 +82,7 @@ config BR2_PACKAGE_EFL_LIBSNDFILE
 
 config BR2_PACKAGE_EFL_PULSEAUDIO
 	bool "Enable pulseaudio support (recommended)"
-	depends on BR2_ARCH_HAS_ATOMICS # pulseaudio
+	depends on BR2_TOOLCHAIN_HAS_SYNC_4 # pulseaudio -> json-c
 	select BR2_PACKAGE_PULSEAUDIO
 	default y
 	help
@@ -164,7 +165,7 @@ config BR2_PACKAGE_EFL_GIF
 	select BR2_PACKAGE_GIFLIB
 	help
 	  This enables the loader code that loads gif files using
-	  libungif.
+	  giflib.
 
 config BR2_PACKAGE_EFL_TIFF
 	bool "libevas tiff loader"
@@ -185,6 +186,6 @@ comment "efl needs udev /dev management and a toolchain w/ C++, dynamic library,
 		|| BR2_STATIC_LIBS || !BR2_TOOLCHAIN_HAS_THREADS || !BR2_USE_WCHAR
 	depends on BR2_USE_MMU
 
-comment "efl needs lua"
-	depends on !BR2_PACKAGE_LUA
+comment "efl needs lua 5.1"
+	depends on !BR2_PACKAGE_LUA_5_1
 	depends on BR2_USE_MMU

@@ -27,18 +27,7 @@ choice
 	prompt "Kernel version"
 
 config BR2_LINUX_KERNEL_LATEST_VERSION
-	bool "4.4"
-
-config BR2_LINUX_KERNEL_SAME_AS_HEADERS
-	bool "Same as toolchain kernel headers"
-	depends on BR2_TOOLCHAIN_BUILDROOT
-	help
-	  This option will re-use the same kernel sources as the one
-	  that have been used for the kernel headers of the
-	  cross-compiling toolchain. Having the same version for the
-	  kernel running on the system and for the kernel headers is
-	  not a requirement, but using the same version allows to
-	  download only one tarball of the kernel sources.
+	bool "4.5"
 
 config BR2_LINUX_KERNEL_CUSTOM_VERSION
 	bool "Custom version"
@@ -115,8 +104,7 @@ config BR2_LINUX_KERNEL_CUSTOM_LOCAL_PATH
 
 config BR2_LINUX_KERNEL_VERSION
 	string
-	default "4.4" if BR2_LINUX_KERNEL_LATEST_VERSION
-	default BR2_DEFAULT_KERNEL_HEADERS if BR2_LINUX_KERNEL_SAME_AS_HEADERS
+	default "4.5" if BR2_LINUX_KERNEL_LATEST_VERSION
 	default BR2_LINUX_KERNEL_CUSTOM_VERSION_VALUE \
 		if BR2_LINUX_KERNEL_CUSTOM_VERSION
 	default "custom" if BR2_LINUX_KERNEL_CUSTOM_TARBALL

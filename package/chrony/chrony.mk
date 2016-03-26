@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-CHRONY_VERSION = 2.2
+CHRONY_VERSION = 2.2.1
 CHRONY_SITE = http://download.tuxfamily.org/chrony
 CHRONY_LICENSE = GPLv2
 CHRONY_LICENSE_FILES = COPYING
@@ -15,6 +15,12 @@ CHRONY_CONF_OPTS = \
 	--prefix=/usr \
 	--without-seccomp \
 	--without-tomcrypt
+
+ifeq ($(BR2_PACKAGE_LIBCAP),y)
+CHRONY_DEPENDENCIES += libcap
+else
+CHRONY_CONF_OPTS += --without-libcap
+endif
 
 ifeq ($(BR2_PACKAGE_LIBNSS),y)
 CHRONY_DEPENDENCIES += host-pkgconf libnss

@@ -95,7 +95,6 @@ config BR2_i386
 config BR2_m68k
 	bool "m68k"
 	select BR2_ARCH_HAS_MMU_MANDATORY
-	depends on BROKEN # ice in uclibc / inet_ntoa_r
 	help
 	  Motorola 68000 family microprocessor
 	  http://en.wikipedia.org/wiki/M68k
@@ -283,10 +282,6 @@ config BR2_GCC_TARGET_FLOAT_ABI
 # wrapper (external toolchain)
 config BR2_GCC_TARGET_MODE
 	string
-
-# If the architecture has atomic operations, select this:
-config BR2_ARCH_HAS_ATOMICS
-	bool
 
 # Must be selected by binary formats that support shared libraries.
 config BR2_BINFMT_SUPPORTS_SHARED

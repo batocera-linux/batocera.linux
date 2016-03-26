@@ -43,16 +43,16 @@ system is based on hand-written Makefiles or shell scripts.
 28:	$(INSTALL) -d -m 0755 $(TARGET_DIR)/etc/foo.d
 29: endef
 30:
-31: define LIBFOO_DEVICES
-32:	/dev/foo  c  666  0  0	42  0  -  -  -
+31: define LIBFOO_USERS
+32:	foo -1 libfoo -1 * - - - LibFoo daemon
 33: endef
 34:
-35: define LIBFOO_PERMISSIONS
-36:	/bin/foo  f  4755  0  0	 -  -  -  -  -
+35: define LIBFOO_DEVICES
+36:	/dev/foo  c  666  0  0	42  0  -  -  -
 37: endef
 38:
-39: define LIBFOO_USERS
-40:	foo -1 libfoo -1 * - - - LibFoo daemon
+39: define LIBFOO_PERMISSIONS
+40:	/bin/foo  f  4755  foo  libfoo	 -  -  -  -  -
 41: endef
 42:
 43: $(eval $(generic-package))
@@ -142,14 +142,14 @@ All these steps rely on the +$(@D)+ variable, which
 contains the directory where the source code of the package has been
 extracted.
 
-On line 31..33, we define a device-node file used by this package
+On lines 31..43, we define a user that is used by this package (e.g.
+to run a daemon as non-root) (+LIBFOO_USERS+).
+
+On line 35..37, we define a device-node file used by this package
 (+LIBFOO_DEVICES+).
 
-On line 35..37, we define the permissions to set to specific files
+On line 39..41, we define the permissions to set to specific files
 installed by this package (+LIBFOO_PERMISSIONS+).
-
-On lines 39..41, we define a user that is used by this package (e.g.
-to run a daemon as non-root) (+LIBFOO_USERS+).
 
 Finally, on line 43, we call the +generic-package+ function, which
 generates, according to the variables defined previously, all the
@@ -279,7 +279,12 @@ information is (assuming the package name is +libfoo+) :
   ** +cvs+ for retrieving source code from a CVS repository.
      Used by default when +LIBFOO_SITE+ begins with +cvs://+.
      The downloaded source code is cached as with the +svn+ method.
-     Only anonymous pserver mode is supported.
+     Anonymous pserver mode is assumed otherwise explicitly defined
+     on +LIBFOO_SITE+. Both
+     +LIBFOO_SITE=cvs://libfoo.net:/cvsroot/libfoo+ and
+     +LIBFOO_SITE=cvs://:ext:libfoo.net:/cvsroot/libfoo+
+     are accepted, on the former anonymous pserver access mode is
+     assumed.
      +LIBFOO_SITE+ 'must' contain the source URL as well as the remote
      repository directory. The module is the package name.
      +LIBFOO_VERSION+ is 'mandatory' and 'must' be a tag, a branch, or
@@ -382,7 +387,16 @@ information is (assuming the package name is +libfoo+) :
   Otherwise, describe the license in a precise and concise way, avoiding
   ambiguous names such as +BSD+ which actually name a family of licenses.
   This variable is optional. If it is not defined, +unknown+ will appear in
-  the +license+ field of the manifest file for this package.
+  the +license+ field of the manifest file for this package. +
+  The expected format for this variable must comply with the following rules:
+  ** If different parts of the package are released under different
+  licenses, then +comma+ separate licenses (e.g. +`LIBFOO_LICENSE =
+  GPLv2+, LGPLv2.1+`+). If there is clear distinction between which
+  component is licensed under what license, then annotate the license
+  with that component, between parenthesis (e.g. +`LIBFOO_LICENSE =
+  GPLv2+ (programs), LGPLv2.1+ (libraries)`+).
+  ** If the package is dual licensed, then separate licenses with the
+  +or+ keyword (e.g. +`LIBFOO_LICENSE = AFLv2.1 or GPLv2+`+).
 
 * +LIBFOO_LICENSE_FILES+ is a space-separated list of files in the package
   tarball that contain the license(s) under which the package is released.

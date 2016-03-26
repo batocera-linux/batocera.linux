@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-CAIRO_VERSION = 1.14.4
+CAIRO_VERSION = 1.14.6
 CAIRO_SOURCE = cairo-$(CAIRO_VERSION).tar.xz
 CAIRO_LICENSE = LGPLv2.1+
 CAIRO_LICENSE_FILES = COPYING
@@ -14,6 +14,12 @@ CAIRO_AUTORECONF = YES
 
 ifeq ($(BR2_TOOLCHAIN_HAS_THREADS),)
 CAIRO_CONF_ENV += CPPFLAGS="$(TARGET_CPPFLAGS) -DCAIRO_NO_MUTEX=1"
+endif
+
+# cairo can use C++11 atomics when available, so we need to link with
+# libatomic for the architectures who need libatomic.
+ifeq ($(BR2_TOOLCHAIN_HAS_LIBATOMIC),y)
+CAIRO_CONF_ENV += LIBS="-latomic"
 endif
 
 CAIRO_CONF_OPTS = \
@@ -85,6 +91,10 @@ CAIRO_CONF_OPTS += --enable-vg
 CAIRO_DEPENDENCIES += libopenvg
 else
 CAIRO_CONF_OPTS += --disable-vg
+endif
+
+ifeq ($(BR2_PACKAGE_LZO),y)
+CAIRO_DEPENDENCIES += lzo
 endif
 
 ifeq ($(BR2_PACKAGE_XORG7),y)
