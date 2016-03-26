@@ -1,0 +1,33 @@
+diff --git a/xbmc/input/SDLJoystick.cpp b/xbmc/input/SDLJoystick.cpp
+index d3979d2..55d9aa6 100644
+--- a/xbmc/input/SDLJoystick.cpp
++++ b/xbmc/input/SDLJoystick.cpp
+@@ -469,6 +469,8 @@ void CJoystick::ApplyAxesConfigs()
+ {
+   // load axes configuration from keymap
+   int axesCount = 0;
++  int i, n;
++
+   for (std::map<int, SDL_Joystick*>::const_iterator it = m_Joysticks.begin(); it != m_Joysticks.end(); ++it)
+   {
+     std::string joyName(SDL_JoystickName(it->second));
+@@ -481,6 +483,19 @@ void CJoystick::ApplyAxesConfigs()
+         m_Axes[axis].trigger = it->isTrigger;
+         m_Axes[axis].rest = it->rest;
+       }
++
++      // auto triggering
++      n = SDL_JoystickNumAxes(it->second);
++      for(i=0; i<n; i++) {
++       if(m_Axes[i+axesCount].trigger == false) {
++         int delta = SDL_JoystickGetAxis(it->second, i);
++         if(abs(delta) > m_DeadzoneRange) {
++           m_Axes[i+axesCount].trigger = true;
++           m_Axes[i+axesCount].rest = delta;
++           CLog::Log(LOGNOTICE, "Joystick trigger autoconfiguration Joystick=%s Axis=%i (rest=%i)", joyName.c_str(), i, m_Axes[i+axesCount].rest);
++         }
++       }
++      }
+     }
+     axesCount += SDL_JoystickNumAxes(it->second);
+   }
