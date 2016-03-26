@@ -151,6 +151,21 @@ msldigital_stop()
     done
 }
 
+pin56_start()
+{
+    mode=$1
+    python /recalbox/scripts/rpi-pin56-power.py -m "$mode" &
+    pid=$!
+    echo "$pid" > /tmp/rpi-pin56-power.pid
+    wait "$pid"
+}
+pin56_stop()
+{
+    if [[ -f /tmp/rpi-pin56-power.pid ]]; then
+        kill `cat /tmp/rpi-pin56-power.pid`
+    fi
+}
+
 # First parameter must be start or stop
 if [[ "$1" != "start" && $1 != "stop" ]]; then
     exit 1
@@ -175,5 +190,12 @@ case "$CONFVALUE" in
     ;;
     "REMOTEPIBOARD_2005")
         msldigital_$1 14
+    ;;
+    "PIN56ONOFF")
+        pin56_$1 onoff
+    ;;
+    "PIN56PUSH")
+        echo "will start pin56_$1"
+        pin56_$1 push
     ;;
 esac
