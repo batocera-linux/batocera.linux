@@ -1,13 +1,12 @@
 import RPi.GPIO as GPIO
-from optparse import OptionParser
 import os
+import argparse
 
+parser = argparse.ArgumentParser(description='power manager')
+parser.add_argument("-m", help="mode onoff or push", type=str, required=True)
+args = parser.parse_args()
 
-parser = OptionParser()
-parser.add_option("-m", "--mode", dest="mode", help ="mode : onoff for the on off state switch, push for the push button")
-
-(options, args) = parser.parse_args()
-mode = options.mode
+mode = args.m
 
 GPIO.setmode(GPIO.BCM)
 # GPIO on pin 5 is the GPIO 3 in BCM mode
