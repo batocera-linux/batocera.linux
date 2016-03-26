@@ -12,6 +12,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Add linapple specific parameters to start fixing an issue.
 - Added user's configuration files upgrade
 - Merged buildroot upstream
+- Added retroachievements hardcore mode
 
 ## [4.0.0-beta3][unreleased]
 - Xarcade2jstick button remapped + better support of IPAC encoders
