@@ -13,6 +13,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Added user's configuration files upgrade
 - Merged buildroot upstream
 - Added retroachievements hardcore mode
+- Add omxplayer to rpi2 & rpi3 defconfig
 
 ## [4.0.0-beta3][unreleased]
 - Xarcade2jstick button remapped + better support of IPAC encoders
