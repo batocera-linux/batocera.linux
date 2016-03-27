@@ -15,18 +15,18 @@ diff --git a/configure.ac b/configure.ac
 index d5e76ee..a387bfd 100644
 --- a/configure.ac
 +++ b/configure.ac
-@@ -684,7 +684,6 @@ case $host in
-   arm*-*-linux-gnu*|arm*-*-linux-uclibc*)
+@@ -649,7 +649,6 @@
+      target_platform=target_linux
       ARCH="arm"
       use_arch="arm"
 -     use_joystick=no
       use_neon=yes
       use_gles=yes
       use_gl=no
-@@ -1293,7 +1292,6 @@ fi
+@@ -1264,7 +1263,6 @@
    if test "$use_joystick" != "no"; then
      PKG_CHECK_MODULES([SDL2], [sdl2],
-       [AC_DEFINE([SDL_VERSION],[2],["SDL major version"])
+       [AC_DEFINE([HAVE_SDL_VERSION],[2],["SDL major version"])
 -       AC_DEFINE([HAVE_SDL],[1],["Define to 1 if using sdl"])
         INCLUDES="$INCLUDES $SDL2_CFLAGS"; LIBS="$LIBS $SDL2_LIBS"; use_joystick="yes"],
        [if test "$use_joystick" = "yes"; then
