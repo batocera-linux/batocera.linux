@@ -290,6 +290,14 @@ menu "Doom packages"
 	source "package/doom-wad/Config.in"
 endmenu
 endmenu
+menu "Kodi addons"
+	source "package/kodi-superrepo-repositories/Config.in"
+	source "package/kodi-superrepo-all/Config.in"
+	source "package/kodi-plugin-video-youtube/Config.in"
+	source "package/kodi-plugin-video-filmon/Config.in"
+	source "package/kodi-resource-language-fr_fr/Config.in"
+	source "package/kodi-script.module.t0mm0.common/Config.in"
+endmenu
 menu "Utils"
         source "package/raspi2png/Config.in"
 endmenu

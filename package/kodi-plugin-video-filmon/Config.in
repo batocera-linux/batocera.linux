@@ -1,0 +1,8 @@
+config BR2_PACKAGE_KODI_PLUGIN_VIDEO_FILMON
+    bool "kodi-plugin-video-filmon"
+    default y
+    select BR2_PACKAGE_KODI_SCRIPT_MODULE_T0MM0_COMMON
+    help
+      Kodi FilmOn Plugin
+
+      https://kodi.tv
