@@ -1,0 +1,29 @@
+--- a/backends/graphics/openglsdl/openglsdl-graphics.cpp	2016-03-28 12:48:42.563648306 +0200
++++ b/backends/graphics/openglsdl/openglsdl-graphics.cpp	2016-03-28 13:26:16.345104912 +0200
+@@ -506,19 +506,22 @@
+ 			if (event.kbd.keycode == Common::KEYCODE_s) {
+ 				// Alt-s creates a screenshot
+ 				Common::String filename;
++				char path[2048];
+ 
+ 				for (int n = 0;; n++) {
+ 					SDL_RWops *file;
++					strcpy(path, ConfMan.get("screenshotspath").c_str());
+ 
+-					filename = Common::String::format("scummvm%05d.bmp", n);
+-					file = SDL_RWFromFile(filename.c_str(), "r");
++					filename = Common::String::format("/scummvm%05d.bmp", n);
++					strcat(path, filename.c_str());
++					file = SDL_RWFromFile(path, "r");
+ 					if (!file)
+ 						break;
+ 					SDL_RWclose(file);
+ 				}
+ 
+-				saveScreenshot(filename.c_str());
+-				debug("Saved screenshot '%s'", filename.c_str());
++				saveScreenshot(path);
++				debug("Saved screenshot '%s'", path);
+ 
+ 				return true;
+ 			}
