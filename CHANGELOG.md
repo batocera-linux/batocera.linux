@@ -16,6 +16,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Add omxplayer to rpi2 & rpi3 defconfig
 - Add Kodi default plugins/repositories
 - Improved S02splash script for video splash
+- Added pgrep to busybox for omxplayer extensions
 
 ## [4.0.0-beta3][unreleased]
 - Xarcade2jstick button remapped + better support of IPAC encoders
