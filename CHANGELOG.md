@@ -15,6 +15,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Added retroachievements hardcore mode
 - Add omxplayer to rpi2 & rpi3 defconfig
 - Add Kodi default plugins/repositories
+- Improved S02splash script for video splash
 
 ## [4.0.0-beta3][unreleased]
 - Xarcade2jstick button remapped + better support of IPAC encoders
