@@ -13,6 +13,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Added OpenGL + scalers supports to scummvm
 - Power management switch support for pin 5/6
 - Fix freeze issue with libretro-mgba core
+- Added megatools
 
 ## [4.0.0-beta2]
 - Added rpi3 support (without bluetooth)
