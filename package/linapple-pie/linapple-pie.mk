@@ -4,8 +4,8 @@
 #
 ################################################################################
 
-LINAPPLE_PIE_VERSION = 2b53a2c0a1d98cb907f52cab3b4bc2b23cb3eecb
-LINAPPLE_PIE_SITE = $(call github,dabonetn,linapple-pie,$(LINAPPLE_PIE_VERSION))
+LINAPPLE_PIE_VERSION = recalbox
+LINAPPLE_PIE_SITE = $(call github,LaurentMarchelli,linapple-pie,$(LINAPPLE_PIE_VERSION))
 LINAPPLE_PIE_LICENSE = GPL2
 LINAPPLE_PIE_LICENSE_FILES = COPYING
 
