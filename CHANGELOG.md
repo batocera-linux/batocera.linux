@@ -14,6 +14,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Power management switch support for pin 5/6
 - Fix freeze issue with libretro-mgba core
 - Added megatools
+- Added new recalbox 4.0.0 systems
 
 ## [4.0.0-beta2]
 - Added rpi3 support (without bluetooth)
