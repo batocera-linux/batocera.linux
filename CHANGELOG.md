@@ -17,6 +17,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Add Kodi default plugins/repositories
 - Improved S02splash script for video splash
 - linapple-pie download redirected to LaurentMarchelli
+- passed to gcc5
 
 ## [4.0.0-beta3][unreleased]
 - Xarcade2jstick button remapped + better support of IPAC encoders
