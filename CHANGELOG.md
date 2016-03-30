@@ -18,6 +18,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Improved S02splash script for video splash
 - linapple-pie download redirected to LaurentMarchelli
 - passed to gcc5
+- Added pgrep to busybox for omxplayer extensions
 
 ## [4.0.0-beta3][unreleased]
 - Xarcade2jstick button remapped + better support of IPAC encoders
