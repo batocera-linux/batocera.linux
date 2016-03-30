@@ -65,6 +65,7 @@ if BR2_PACKAGE_BUSYBOX_SHOW_OTHERS
 endif
 	source "package/xz/Config.in"
 	source "package/zip/Config.in"
+	source "package/p7zip/Config.in"
 endmenu
 
 menu "Debugging, profiling and benchmark"
