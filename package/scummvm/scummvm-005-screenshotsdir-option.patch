@@ -1,0 +1,35 @@
+--- a/base/commandLine.cpp	2016-03-28 12:48:42.599648489 +0200
++++ b/base/commandLine.cpp	2016-03-28 13:40:50.686398116 +0200
+@@ -108,6 +108,7 @@
+ 	"                           pce, segacd, wii, windows)\n"
+ 	"  --savepath=PATH          Path to where saved games are stored\n"
+ 	"  --extrapath=PATH         Extra path to additional game data\n"
++	"  --screenshots=PATH       Path to where screenshots are saved\n"
+ 	"  --soundfont=FILE         Select the SoundFont for MIDI playback (only\n"
+ 	"                           supported by some MIDI drivers)\n"
+ 	"  --multi-midi             Enable combination AdLib and native MIDI\n"
+@@ -203,6 +204,8 @@
+ 
+ 	ConfMan.registerDefault("enable_unsupported_game_warning", true);
+ 
++	ConfMan.registerDefault("screenshotspath", ".");
++
+ 	// Game specific
+ 	ConfMan.registerDefault("path", "");
+ 	ConfMan.registerDefault("platform", Common::kPlatformDOS);
+@@ -544,6 +547,15 @@
+ 				}
+ 			END_OPTION
+ 
++			DO_LONG_OPTION("screenshotspath")
++				Common::FSNode path(option);
++				if (!path.exists()) {
++					usage("Non-existent screenshots path '%s'", option);
++				} else if (!path.isWritable()) {
++					usage("Non-writable screenshots path '%s'", option);
++				}
++			END_OPTION
++
+ 			DO_LONG_OPTION_INT("talkspeed")
+ 			END_OPTION
+ 
