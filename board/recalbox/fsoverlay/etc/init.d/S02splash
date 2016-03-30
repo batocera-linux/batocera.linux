@@ -6,20 +6,17 @@ do_video()
     omx_opt="--no-keys --layer=10000 --aspect-mode=fill"
     omx_srt="--no-ghost-box --lines=1 --align=left $omx_fnt --font-size=20 --subtitles=/recalbox/system/resources/splash/recalboxintro.srt"
     omxplayer $omx_opt $omx_srt $1
-    # Will be replaced when the video will support --loop
-    while true; do omxplayer $omx_opt $2; done
 }
 
 do_start ()
 {
-    video1="/recalbox/system/resources/splash/recalboxintro01.mp4"
-    video2="/recalbox/system/resources/splash/recalboxintro02.mp4"
-    if [[ -f $video1 && -f $video2 ]]; then
-        do_video $video1 $video2 &
+    video="/recalbox/system/resources/splash/recalboxintro.mp4"
+    if [[ -f $video ]]; then
+        do_video $video &
         pid=$!
-        # Wait for emulationstation, but not more than 15 seconds
+        # Wait for emulationstation or Kodi, but not more than 15 seconds
         count=0
-        while [[ ! -f "/tmp/emulationstation.ready" && $count -lt 15 ]] ; do
+        while [[ ! -f "/tmp/emulationstation.ready" && ! -e "/var/run/kodi.msg" && $count -lt 15 ]] ; do
             sleep 1
             ((count++))
         done
