@@ -21,7 +21,7 @@ endef
 
 define LIBRETRO_MAME2003_NAMCO_QUICK_FIX
         $(SED) 's|O3|O2|g' $(@D)/Makefile
-        $(SED) 's|type OK to continue|on Keyboard, or Left, Right on Joystick to continue|g' $(@D)/src/ui_text.c 
+        $(SED) 's|to continue|on Keyboard, or Left, Right on Joystick to continue|g' $(@D)/src/ui_text.c 
 endef
 
 LIBRETRO_MAME2003_PRE_BUILD_HOOKS += LIBRETRO_MAME2003_NAMCO_QUICK_FIX
