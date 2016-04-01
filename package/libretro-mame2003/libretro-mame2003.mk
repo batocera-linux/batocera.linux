@@ -19,4 +19,11 @@ define LIBRETRO_MAME2003_INSTALL_TARGET_CMDS
 		$(TARGET_DIR)/usr/lib/libretro/mame078_libretro.so
 endef
 
+define LIBRETRO_MAME2003_NAMCO_QUICK_FIX
+        $(SED) 's|O3|O2|g' $(@D)/Makefile
+        $(SED) 's|to continue|on Keyboard, or Left, Right on Joystick to continue|g' $(@D)/src/ui_text.c 
+endef
+
+LIBRETRO_MAME2003_PRE_BUILD_HOOKS += LIBRETRO_MAME2003_NAMCO_QUICK_FIX
+
 $(eval $(generic-package))
