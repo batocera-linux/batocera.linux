@@ -19,4 +19,10 @@ define LIBRETRO_MAME2003_INSTALL_TARGET_CMDS
 		$(TARGET_DIR)/usr/lib/libretro/mame078_libretro.so
 endef
 
+define LIBRETRO_MAME2003_NAMCO_QUICK_FIX
+        $(SED) 's|O3|O2|g' $(@D)/Makefile
+endef
+
+LIBRETRO_MAME2003_PRE_BUILD_HOOKS += LIBRETRO_MAME2003_NAMCO_QUICK_FIX
+
 $(eval $(generic-package))
