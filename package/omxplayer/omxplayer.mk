@@ -35,16 +35,11 @@ endef
 define OMXPLAYER_INSTALL_TARGET_CMDS
 	$(INSTALL) -m 755 $(@D)/omxplayer.bin $(TARGET_DIR)/usr/bin/omxplayer.bin
 	$(INSTALL) -m 755 $(@D)/omxplayer $(TARGET_DIR)/usr/bin/omxplayer
+	mkdir -p $(TARGET_DIR)/usr/omxplayer/
+	$(INSTALL) -m 755 $(@D)/dbuscontrol.sh $(TARGET_DIR)/usr/omxplayer/dbuscontrol.sh
 	mkdir -p $(TARGET_DIR)/usr/share/fonts/truetype/freefont/
 	$(INSTALL) -m 644 $(@D)/fonts/FreeSans.ttf $(TARGET_DIR)/usr/share/fonts/truetype/freefont/
 	$(INSTALL) -m 644 $(@D)/fonts/FreeSansOblique.ttf $(TARGET_DIR)/usr/share/fonts/truetype/freefont/
-endef
-
-define OMXPLAYER_UNINSTALL_TARGET_CMDS
-	-rm $(TARGET_DIR)/usr/bin/omxplayer.bin
-	-rm $(TARGET_DIR)/usr/bin/omxplayer
-	-rm $(TARGET_DIR)/usr/share/fonts/truetype/freefont/FreeSans.ttf
-	-rm $(TARGET_DIR)/usr/share/fonts/truetype/freefont/FreeSansOblique.ttf
 endef
 
 $(eval $(generic-package))
