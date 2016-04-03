@@ -17,6 +17,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Added new recalbox 4.0.0 systems
 - Added crt-pi shaders
 - Fix Namco/Taito games in mame2003
+- Added kempston joystick by default for zxspectrum
 
 ## [4.0.0-beta2]
 - Added rpi3 support (without bluetooth)
