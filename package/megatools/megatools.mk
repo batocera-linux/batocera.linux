@@ -9,6 +9,6 @@ MEGATOOLS_SITE = https://megatools.megous.com/builds
 MEGATOOLS_LICENCE = GPLv2
 
 MEGATOOLS_CONF_OPTS = \
-	--prefix=/recalbox/share/opt
+    --prefix=/usr
 
 $(eval $(autotools-package))
