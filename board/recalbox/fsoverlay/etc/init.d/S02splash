@@ -36,11 +36,14 @@ do_start ()
                 ((count++))
             done
              # Finish with a one second fade out.
-            count=250
-            while [[ $count -gt 0 ]]; do
-                sleep .04
-                dbus-send --print-reply=literal --session --dest=org.mpris.MediaPlayer2.omxplayer /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.SetAlpha objpath:/not/used int64:$count >/dev/null
-                ((count=count-10))
+            audio_fade=1
+            video_fade=250
+            while [[ $video_fade -gt 0 ]]; do
+                sleep .02
+                dbus-send --print-reply=literal --session --dest=org.mpris.MediaPlayer2.omxplayer /org/mpris/MediaPlayer2 org.freedesktop.DBus.Properties.Volume double:$audio_fade >/dev/null
+                dbus-send --print-reply=literal --session --dest=org.mpris.MediaPlayer2.omxplayer /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.SetAlpha objpath:/not/used int64:$video_fade >/dev/null
+                audio_fade=`echo "$audio_fade .02" | awk '{printf "%.2f", $1-$2}'`
+                ((video_fade=video_fade-5))
             done
             # Ready flag set or timeout occured; stop video process.
             dbus-send --print-reply=literal --session --dest=org.mpris.MediaPlayer2.omxplayer /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.Action int32:15 >/dev/null
