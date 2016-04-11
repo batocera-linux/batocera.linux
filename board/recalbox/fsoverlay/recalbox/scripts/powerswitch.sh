@@ -151,6 +151,64 @@ msldigital_stop()
     done
 }
 
+# http://www.uugear.com/witty-pi-realtime-clock-power-management-for-raspberry-pi/
+# https://github.com/uugear/Witty-Pi/blob/master/wittyPi/daemon.sh
+wittyPi_start()
+{
+    # LED on GPIO-17 (wiringPi pin 0)
+    led_pin=$1
+
+    # halt by GPIO-4 (wiringPi pin 7)
+    halt_pin=$2
+
+    # make sure the halt pin is input with internal pull up
+    gpio mode $halt_pin up
+    gpio mode $halt_pin in
+
+    # delay until GPIO pin state gets stable
+    counter=0
+    while [ $counter -lt 10 ]; do  # increase this value if it needs more time
+        if [ $(gpio read $halt_pin) == '1' ] ; then
+            counter=$(($counter+1))
+        else
+            counter=0
+        fi
+        sleep 1
+    done
+
+    # wait for GPIO-4 (wiringPi pin 7) falling, or alarm B
+    while true; do
+        gpio wfi $halt_pin falling
+        sleep 0.05  # ignore short pull down (increase this value to ignore longer pull down)
+        if [ $(gpio read $halt_pin) == '0' ] ; then
+            break
+        fi
+    done
+
+    # Switch off
+    touch "/tmp/poweroff.please"
+    shutdown -h now
+}
+
+wittyPi_stop()
+{
+    # LED on GPIO-17 (wiringPi pin 0)
+    led_pin=$1
+
+    # halt by GPIO-4 (wiringPi pin 7)
+    halt_pin=$2
+
+    # light the white LED
+    if [ -f "/tmp/shutdown.please" -o -f "/tmp/poweroff.please" ]; then
+        gpio mode $led_pin out
+        gpio write $led_pin 1
+    fi
+
+    # restore GPIO-4
+    gpio mode $halt_pin in
+    gpio mode $halt_pin up
+}
+
 pin56_start()
 {
     mode=$1
@@ -190,6 +248,9 @@ case "$CONFVALUE" in
     ;;
     "REMOTEPIBOARD_2005")
         msldigital_$1 14
+    ;;
+    "WITTYPI")
+        wittyPi_$1 0 7
     ;;
     "PIN56ONOFF")
         pin56_$1 onoff

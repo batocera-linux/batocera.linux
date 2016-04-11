@@ -22,6 +22,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - New video version and splash video now stopped when kodi is started
 - Added custom ratio per game option
 - Dbus implementation to have fade out effect on splash video
+- Added Witty Pi powerswitch support with Wiring Pi.
 - Network connection manager : ethernet configuration on wire connection
 - Network connection manager : multiple wifi configurations
 - Wifi : open/wep/wpa/wpa2
