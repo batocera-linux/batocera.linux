@@ -22,4 +22,20 @@ find "/usr/share/kodi/system/keymaps" -name "joystick.*.xml" |
 	doClean "${X}"
     done
 
+# V4.1.0 2016-04-10
+# the upgrade will fail to replace link by a file
+doClean "/etc/network/interfaces.base"
+if test -L /etc/network/interfaces
+then
+    mount -o remount,rw /
+    rm -f "/etc/network/interfaces"
+    cat > "/etc/network/interfaces" <<EOF
+# Configure Loopback
+auto lo
+iface lo inet loopback
+EOF
+    mount -o remount,ro /
+fi
+doClean "/etc/wpa_supplicant/wpa_supplicant.conf"
+
 exit 0

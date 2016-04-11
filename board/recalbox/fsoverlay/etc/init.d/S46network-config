@@ -1,0 +1,23 @@
+#!/bin/sh
+#
+# Configure the network
+#
+
+case "$1" in
+    start)
+	sleep 1 # wait a bit, otherwise, connman is not really started
+        /recalbox/scripts/recalbox-config.sh wifi start
+        ;;
+    stop)
+        echo
+        ;;
+    restart|reload)
+        "$0" stop
+        "$0" start
+        ;;
+    *)
+        echo "Usage: $0 {start|stop|restart}"
+        exit 1
+esac
+
+exit $?
