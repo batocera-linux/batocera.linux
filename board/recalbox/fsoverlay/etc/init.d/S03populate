@@ -6,7 +6,7 @@ cp /etc/sixad.profile /var/lib/sixad/profiles/default
 
 # custom network config
 mkdir -p "/var/lib/connman"
-ln -sf "/recalbox/share/system/network-connman.config" "/var/lib/connman/recalboox-custom.config"
+ln -sf "/recalbox/share/system/network-connman.config" "/var/lib/connman/recalbox-custom.config"
 
 # bluetooth
 mkdir -p /var/lib/bluetooth
