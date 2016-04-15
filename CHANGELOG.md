@@ -20,6 +20,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Added kempston joystick by default for zxspectrum
 - Updated scummvm to version 1.8
 - Added VIM
+- Added recalbox-themes package
+- Recalbox theme now default
 
 ## [4.0.0-beta2]
 - Added rpi3 support (without bluetooth)
