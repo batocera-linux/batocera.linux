@@ -26,13 +26,6 @@ rm -f "${TARGET_DIR}/etc/init.d/S50kodi" || exit 1
 # i prefer to put it here than in packages/kodi while there are already a lot a lot of things
 rm -rf "${TARGET_DIR}/usr/share/kodi/system/keymaps/joystick."*.xml || exit 1
 
-# network
-# line to be removed in the future (today is 2016/04/10)
-# for the moment, the file is manually created by S98
-# because the migration system doesn't allow the migration from a link to a file (abort the tar xf command)
-# if this file is missing, connman creates everythings correctly, including the loopback, so, not a big issue.
-rm "${TARGET_DIR}/etc/network/interfaces" || exit 1
-
 # tmpfs or sysfs is mounted over theses directories
 # clear these directories is required for the upgrade (otherwise, tar xf fails)
 rm -rf "${TARGET_DIR}/"{var,run,sys,tmp} || exit 1
