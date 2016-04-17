@@ -26,6 +26,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Network connection manager : ethernet configuration on wire connection
 - Network connection manager : multiple wifi configurations
 - Wifi : open/wep/wpa/wpa2
+- New emulator : reicast
 
 ## [4.0.0-beta3][unreleased]
 - Xarcade2jstick button remapped + better support of IPAC encoders

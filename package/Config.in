@@ -235,6 +235,7 @@ menu "Emulators"
         source "package/scummvm-vanfanel/Config.in"
         source "package/dosbox/Config.in"
         source "package/vice/Config.in"
+        source "package/reicast/Config.in"
 
 if BR2_PACKAGE_RETROARCH
 menu "Libretro Cores"
