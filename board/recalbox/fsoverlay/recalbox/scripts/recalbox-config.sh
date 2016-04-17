@@ -1,10 +1,11 @@
 #!/bin/bash
 
 if [ ! "$1" ];then
-	echo -e "usage : recalbox-config.sh [command] [args]\nWith command in\n\toverscan [enable|disable]\n\toverclock [none|high|turbo|extrem]\n\taudio [hdmi|jack|auto]\n\tcanupdate\n\tupdate\n\twifi [enable|disable] ssid key\n\tstorage [current|list|INTERNAL|ANYEXTERNAL|RAM|DEV UUID]"
+	echo -e "usage : recalbox-config.sh [command] [args]\nWith command in\n\toverscan [enable|disable]\n\toverclock [none|high|turbo|extrem]\n\taudio [hdmi|jack|auto]\n\tcanupdate\n\tupdate\n\twifi [enable|disable] ssid key\n\tstorage [current|list|INTERNAL|ANYEXTERNAL|RAM|DEV UUID]\n\tsetRootPassword [password]\n\tgetRootPassword"
 	exit 1
 fi
 configFile="/boot/config.txt"
+storageFile="/boot/recalbox-boot.conf"
 command="$1"
 mode="$2"
 extra1="$3"
@@ -25,6 +26,52 @@ log=/recalbox/share/system/logs/recalbox.log
 systemsetting="python /usr/lib/python2.7/site-packages/configgen/settings/recalboxSettings.pyc"
 
 echo "---- recalbox-config.sh ----" >> $log
+
+if [ "$command" == "getRootPassword" ]; then
+    ENCPASSWD=$(grep -E '^[ \t]*rootshadowpassword[ \t]*=' "${storageFile}" | sed -e s+'^[ \t]*rootshadowpassword[ \t]*='++)
+    if test -z "${ENCPASSWD}"
+    then
+	exit 1
+    fi
+    if ! /recalbox/scripts/recalbox-encode.sh decode "${ENCPASSWD}"
+    then
+	exit 1
+    fi
+    exit 0
+fi
+
+if [ "$command" == "setRootPassword" ]; then
+    PASSWD=${2}
+
+    # if no password if provided, generate one
+    if test -z "${PASSWD}"
+    then
+	PASSWD=$(tr -cd _A-Z-a-z-0-9 < /dev/urandom | fold -w8 | head -n1)
+    fi
+    PASSWDENC=$(/recalbox/scripts/recalbox-encode.sh encode "${PASSWD}")
+    
+    preBootConfig
+    if grep -qE '^[ \t]*rootshadowpassword[ \t]*=' "${storageFile}"
+    then
+	# update it
+	if ! sed -i -e s@'^[ \t]*rootshadowpassword[ \t]*=.*$'@"rootshadowpassword=${PASSWDENC}"@ "${storageFile}"
+	then
+	    postBootConfig
+	    exit 1
+	fi
+	postBootConfig
+	exit 0
+    else
+	# create it
+	if ! echo "rootshadowpassword=${PASSWDENC}" >> "${storageFile}"
+	then
+	    postBootConfig
+	    exit 1
+	fi
+	postBootConfig
+	exit 0
+    fi    
+fi
 
 if [ "$command" == "overscan" ]; then
 if [ -f "$configFile" ];then
@@ -354,8 +401,6 @@ if [[ "$command" == "hiddpair" ]]; then
         fi
         exit $connected
 fi
-
-storageFile="/boot/recalbox-boot.conf"
 
 if [[ "$command" == "storage" ]]; then
     if [[ "$mode" == "current" ]]; then

@@ -1,0 +1,17 @@
+#!/bin/sh
+
+# /etc/shadow is dynamically generated from the password found in /boot/recalbox-boot.conf
+# the password is visible only in the es interface
+# or to people having already a ssh password via the command : /recalbox/scripts/recalbox-config.sh setRootPassword xyz
+MASTERPASSWD=$(/recalbox/scripts/recalbox-config.sh getRootPassword)
+if test -z "${MASTERPASSWD}"
+then
+    # generate a new one
+    # hum, in case of error, what to do ? nothing.
+    /recalbox/scripts/recalbox-config.sh setRootPassword
+    MASTERPASSWD=$(/recalbox/scripts/recalbox-config.sh getRootPassword)
+fi
+
+# write the /etc/shadow file
+SHADOWPASSWD=$(openssl passwd -1 "${MASTERPASSWD}")
+echo "root:${SHADOWPASSWD}:::::::" > /run/recalbox.shadow
