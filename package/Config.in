@@ -217,6 +217,7 @@ menu "Controllers"
 	source "package/virtualgamepads/Config.in"
 endmenu
 menu "Emulators"
+	source "package/ppsspp/Config.in"
 	source "package/linapple-pie/Config.in"
 	source "package/mupen64plus-core/Config.in"
 	source "package/mupen64plus-uiconsole/Config.in"
