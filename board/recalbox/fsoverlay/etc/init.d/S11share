@@ -15,8 +15,20 @@ INTERNALDEVICE=`cat ${SHARECONFFILE} | grep "internal=" | head -n1 | cut -d'=' -
 SHAREDEVICE=`cat ${SHARECONFFILE} | grep "sharedevice=" | head -n1 | cut -d'=' -f2`
 [[ "$?" -ne "0" || "$SHAREDEVICE" == "" ]] && SHAREDEVICE=INTERNAL
 
+getMaxTryConfig() {
+    SHARECONFFILE=${1}
+
+    X=$(grep -E '^[ \t]*sharewait[ \t]*=' "${SHARECONFFILE}" | sed -e s+'^[ \t]*sharewait[ \t]*='+''+)
+    if echo "${X}" | grep -qE '^[0-9][0-9]*$'
+    then
+	echo "${X}"
+	return
+    fi
+    echo 7 # default value
+}
+
 INTERNALDEVICETYPE="ext4" # faster than waiting udev to initialize to get the type
-MAXTRY=5
+MAXTRY=$(getMaxTryConfig "${SHARECONFFILE}")
 NTRY=0
 
 # a recalbox is about 40000 files in *.xz
