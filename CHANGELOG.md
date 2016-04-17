@@ -3,6 +3,7 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unrelease][unreleased]
+- Add Mayflash NES/SNES and SEGA SATURN in usbhid.conf
 - Added omxplayer to enable Introduction video
 - Updated recalbox-configgen to version 4.1.X
 - Added linapple-pie to recalbox-rpi3_defconfig
