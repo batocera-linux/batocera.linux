@@ -302,7 +302,9 @@ add_one_user() {
     fi
 
     # Remove any previous instance of this user
-    for _f in "${PASSWD}" "${SHADOW}"; do
+    # recalbox doesn't use the /etc/shadow
+    # for _f in "${PASSWD}" "${SHADOW}"; do
+    for _f in "${PASSWD}"; do
         sed -r -i -e '/^'"${username}"':.*/d;' "${_f}"
     done
 
@@ -336,9 +338,10 @@ add_one_user() {
            "${username}" "${uid}" "${_gid}"     \
            "${comment}" "${_home}" "${_shell}"  \
            >>"${PASSWD}"
-    printf "%s:%s:::::::\n"      \
-           "${username}" "${_passwd}"   \
-           >>"${SHADOW}"
+    # recalbox doesn't use the /etc/shadow
+    #printf "%s:%s:::::::\n"      \
+    #       "${username}" "${_passwd}"   \
+    #       >>"${SHADOW}"
 
     # Add the user to its additional groups
     if [ "${groups}" != "-" ]; then

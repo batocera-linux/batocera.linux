@@ -33,7 +33,7 @@ mkdir "${TARGET_DIR}/"{var,run,sys,tmp}  || exit 1
 
 # make /etc/shadow a file generated from /boot/recalbox-boot.conf for security
 rm -f "${TARGET_DIR}/etc/shadow"                         || exit 1
-ln -sf "/etc/shadow" "${TARGET_DIR}/run/recalbox.shadow" || exit 1
+ln -sf "/run/recalbox.shadow" "${TARGET_DIR}/etc/shadow" || exit 1
 
 # Add the date while the version can be nightly or unstable
 RVERSION=$(cat "${TARGET_DIR}/recalbox/recalbox.version")
