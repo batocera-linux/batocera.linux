@@ -4,7 +4,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unrelease][unreleased]
 
-## [4.0.0-beta3][unreleased]
+## [4.0.0-beta3] - 2016-04-19
 - Xarcade2jstick button remapped + better support of IPAC encoders
 - Added IPAC2 keyboard encoder
 - Patched xpad driver to support Xbox One controllers in USB mode
@@ -21,7 +21,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Updated scummvm to version 1.8
 - Added VIM
 - Added recalbox-themes package
-- Recalbox theme now default
+- Recalbox theme by default
 
 ## [4.0.0-beta2]
 - Added rpi3 support (without bluetooth)
