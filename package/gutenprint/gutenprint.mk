@@ -11,12 +11,13 @@ GUTENPRINT_SOURCE = gutenprint-$(GUTENPRINT_VERSION).tar.bz2
 GUTENPRINT_LICENSE = GPLv2+
 GUTENPRINT_LICENSE_FILES = COPYING
 
-# Needed, as we touch Makefile.am
+# Needed, as we touch Makefile.am and configure.ac
 GUTENPRINT_AUTORECONF = YES
 
 GUTENPRINT_DEPENDENCIES = \
 	cups host-pkgconf \
-	$(if $(BR2_PACKAGE_LIBICONV),libiconv)
+	$(if $(BR2_PACKAGE_LIBICONV),libiconv) \
+	$(if $(BR2_PACKAGE_LIBUSB),libusb)
 
 # host-gutenprint is needed to generate XML as part of compilation
 # the program that generates the xml also links against libgutenprint

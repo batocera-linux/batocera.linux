@@ -1,10 +1,6 @@
-Flashing the NAND using SAM-BA
-==============================
-
-This document explains how to flash a basic Buildroot system on various
-Atmel boards. Additional details can
-also be found on the Linux4SAM website, in particular here:
-http://www.at91.com/linux4sam/bin/view/Linux4SAM/GettingStarted
+This document explains how to set up a basic Buildroot system on various
+Atmel boards. Additional details can also be found on the Linux4SAM website:
+http://www.at91.com/linux4sam/bin/view/Linux4SAM/
 
 This guide covers the following configurations:
  - at91sam9g45m10ek_defconfig
@@ -14,20 +10,35 @@ This guide covers the following configurations:
  - atmel_sama5d3xek_defconfig (sama5d31, sama5d33, sama5d34, sama5d35,
    sama5d36)
  - atmel_sama5d3_xplained_defconfig
+ - atmel_sama5d3_xplained_mmc_defconfig
  - atmel_sama5d4ek_defconfig
  - atmel_sama5d4_xplained_defconfig
+ - atmel_sama5d4_xplained_mmc_defconfig
+ - atmel_sama5d2_xplained_mmc_defconfig
 
 These configurations will use AT91Bootstrap, u-boot and a linux kernel from
-the git trees maintained by Atmel. They also build u-boot SPL when
-available, it can replace AT91Bootstrap.
-
+the git trees maintained by Atmel.
 
 Configuring and building Buildroot
-----------------------------------
+==================================
+
+For most configurations listed above, the Buildroot configuration
+assumes the system will be flashed on NAND. In this case, after
+building Buildroot, follow the instructions in the "Flashing the NAND
+using SAM-BA" section below.
+
+For the Xplained boards, an alternative Buildroot configuration is
+provided to boot from an SD card. Those configurations are labeled as
+'mmc'. In this case, after building Buildroot, follow the instructions
+in the "Preparting the SD card" sction.
+
+To configure and build Buildroot, run:
 
   make <board>_defconfig
   make
 
+Flashing the NAND using SAM-BA
+==============================
 
 Flashing the board
 ------------------
@@ -105,3 +116,44 @@ board/atmel/flasher.sh /tmp/atmel_sama5d3_xplained/ /dev/ttyACM0 sama5d3_xplaine
 
 Reboot, the system should boot up to the buildroot login invite.
 
+Preparing the SD card
+=====================
+
+An image named sdcard.img is automatically generated. With this image,
+you no longer have to care about the creation of the partition and
+copying files to the SD card.
+
+You need at least a 1GB SD card. All the data on the SD card will be
+lost. To copy the image on the SD card:
+
+/!\ Caution be sure to do it on the right mmcblk device /!\
+
+dd if=output/images/sdcard.img of=/dev/mmcblk0
+
+Insert your SD card in your Xplained board, and enjoy. The default
+U-Boot environment will load properly the kernel and Device Tree blob
+from the first partition of the SD card, so everything works
+automatically.
+
+By default a 16MB FAT partition is created. It contains at91bootstrap,
+u-boot, the kernel image and all dtb variants for your board. The dtb
+used is the basic one:
+
+U-Boot> print
+[...]
+bootcmd=fatload mmc 1:1 0x21000000 at91-sama5d2_xplained.dtb; fatload mmc 1:1 0x22000000 zImage; bootz 0x22000000 - 0x21000000
+[...]
+
+If you want to use a variant such as the _pda7 one, you will have to
+update your u-boot environment:
+
+U-Boot> setenv bootcmd 'fatload mmc 1:1 0x21000000 at91-sama5d2_xplained_pda7.dtb; fatload mmc 1:1 0x22000000 zImage; bootz 0x22000000 - 0x21000000'
+U-Boot> save
+Saving Environment to FAT...
+writing uboot.env
+done
+
+A 512MB ext4 partition is also created to store the rootfs generated.
+
+If you want to customize the size of the partitions and their content,
+take a look at the the genimage.cfg file in the board directory.
