@@ -12,6 +12,11 @@ then
     MASTERPASSWD=$(/recalbox/scripts/recalbox-config.sh getRootPassword)
 fi
 
+# secure ssh
 # write the /etc/shadow file
 SHADOWPASSWD=$(openssl passwd -1 "${MASTERPASSWD}")
 echo "root:${SHADOWPASSWD}:::::::" > /run/recalbox.shadow
+
+# secure samba
+mkdir -p "/var/lib/samba/private"
+(echo "${MASTERPASSWD}"; echo "${MASTERPASSWD}") | smbpasswd -a root
