@@ -28,6 +28,13 @@ systemsetting="python /usr/lib/python2.7/site-packages/configgen/settings/recalb
 echo "---- recalbox-config.sh ----" >> $log
 
 if [ "$command" == "getRootPassword" ]; then
+    # security disabled, force the default one without changing boot configuration
+    securityenabled="`$systemsetting  -command load -key system.security.enabled`"
+    if [ "$securityenabled" != "1" ];then
+	echo "recalboxroot"
+	exit 0
+    fi
+    
     ENCPASSWD=$(grep -E '^[ \t]*rootshadowpassword[ \t]*=' "${storageFile}" | sed -e s+'^[ \t]*rootshadowpassword[ \t]*='++)
     if test -z "${ENCPASSWD}"
     then
@@ -43,6 +50,12 @@ fi
 if [ "$command" == "setRootPassword" ]; then
     PASSWD=${2}
 
+    # security disabled, don't change
+    securityenabled="`$systemsetting  -command load -key system.security.enabled`"
+    if [ "$securityenabled" != "1" ];then
+	exit 0
+    fi
+    
     # if no password if provided, generate one
     if test -z "${PASSWD}"
     then
