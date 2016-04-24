@@ -28,6 +28,11 @@ start)
     else
         recallog "Will not start $NAME : system.manager.enabled is set to 0"
     fi
+
+    enabled="`$systemsetting  -command load -key system.security.enabled`"
+    if [ "$enabled" == "1" ];then
+	recallog "Will not start $NAME : system.security.enabled is set to 1"
+    fi
     ;;
 stop)
     recallog "Stopping $NAME"
