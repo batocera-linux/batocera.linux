@@ -50,7 +50,7 @@ index b8ac183..6ee8b68 100755
  					break;
  				case KEY_C:
 -					uinput_gpad_write(&uinp_gpads[0], BTN_TL,
-+					uinput_gpad_write(&uinp_gpads[0], BTN_GAMEPAD,
++					uinput_gpad_write(&uinp_gpads[0], BTN_EXTRA,
  							xarcdev.ev[ctr].value > 0, EV_KEY);
  					break;
 -				case KEY_5:
@@ -114,7 +114,7 @@ index b8ac183..6ee8b68 100755
  				case KEY_RIGHTBRACE:
 -					uinput_gpad_write(&uinp_gpads[1], BTN_TL,
 +				case KEY_J:
-+					uinput_gpad_write(&uinp_gpads[1], BTN_GAMEPAD,
++					uinput_gpad_write(&uinp_gpads[1], BTN_EXTRA,
  							xarcdev.ev[ctr].value > 0, EV_KEY);
  					break;
 -				case KEY_6:
@@ -160,7 +160,7 @@ index 56f6144..77ca486 100755
 +	ioctl(gpad->fd, UI_SET_KEYBIT, BTN_SOUTH);
 +	ioctl(gpad->fd, UI_SET_KEYBIT, BTN_EAST);
  	ioctl(gpad->fd, UI_SET_KEYBIT, BTN_TR);
-+	ioctl(gpad->fd, UI_SET_KEYBIT, BTN_GAMEPAD);
++	ioctl(gpad->fd, UI_SET_KEYBIT, BTN_EXTRA);
 +	ioctl(gpad->fd, UI_SET_KEYBIT, BTN_MODE);
  	ioctl(gpad->fd, UI_SET_KEYBIT, BTN_SELECT);
  	ioctl(gpad->fd, UI_SET_KEYBIT, BTN_START);
