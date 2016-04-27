@@ -5,14 +5,14 @@
 ################################################################################
 
 DOSBOX_VERSION_TAG = 0.74
-DOSBOX_VERSION = r3970
+DOSBOX_VERSION = r3980
 DOSBOX_SITE =  svn://svn.code.sf.net/p/dosbox/code-0/dosbox/trunk 
 DOSBOX_SITE_METHOD = svn
 DOSBOX_LICENSE = GPL2
 DOSBOX_LICENSE_FILES = COPYING
 DOSBOX_DEPENDENCIES = sdl2 zlib libpng libogg libvorbis sdl_sound sdl_net
 
-DOSBOX_LDFLAGS = -L$(STAGING_DIR)/usr/lib -lGLESv2 -lEGL
+DOSBOX_LDFLAGS = -L$(STAGING_DIR)/usr/lib
 DOSBOX_CFLAGS = -I$(STAGING_DIR)/usr/include -I$(STAGING_DIR)/usr/include/SDL2 -I$(STAGING_DIR)/usr/include/SDL
 
 define DOSBOX_CONFIGURE_CMDS
