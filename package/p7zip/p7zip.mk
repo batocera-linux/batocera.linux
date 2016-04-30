@@ -5,7 +5,6 @@
 ################################################################################
 P7ZIP_VERSION = 15.14.1
 P7ZIP_SOURCE = p7zip_${P7ZIP_VERSION}_src_all.tar.bz2
-# Author wrongly inserted a space in the folder version...
 P7ZIP_SITE = http://downloads.sourceforge.net/project/p7zip/p7zip/15.14.1
 P7ZIP_LICENCE = LGPLv2
 # http://buildroot-busybox.2317881.n4.nabble.com/PATCH-v2-p7zip-light-new-package-td9305.html
