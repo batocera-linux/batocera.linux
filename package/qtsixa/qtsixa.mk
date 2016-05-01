@@ -3,7 +3,7 @@
 # qtsixa
 #
 ################################################################################
-QTSIXA_VERSION = 4318a4c696df786893943c80d37ac6d4cfb1abe8
+QTSIXA_VERSION = gasia 
 QTSIXA_SITE = $(call github,recalbox,qtsixa,$(QTSIXA_VERSION))
 QTSIXA_DEPENDENCIES = sdl linux-headers
 PKGCONFIG_CONFIG=$(STAGING_DIR)/usr/lib/pkgconfig
