@@ -3,7 +3,7 @@
 # FCEUNEXT
 #
 ################################################################################
-LIBRETRO_FCEUNEXT_VERSION = 1b3d4d72e658b2a32a20e31b87007d10e9061d13
+LIBRETRO_FCEUNEXT_VERSION = ebd46a592c23a8091abd72e74cf0d9f4517769e1
 LIBRETRO_FCEUNEXT_SITE = $(call github,libretro,fceu-next,$(LIBRETRO_FCEUNEXT_VERSION))
 
 define LIBRETRO_FCEUNEXT_BUILD_CMDS
