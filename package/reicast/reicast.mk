@@ -22,7 +22,7 @@ define REICAST_BUILD_CMDS
 		CC="$(TARGET_CC) -DPNG_ARM_NEON_OPT=0 -D_GLIBCXX_USE_CXX11_ABI=0" \
 		AS="$(TARGET_CC) -DPNG_ARM_NEON_OPT=0 -D_GLIBCXX_USE_CXX11_ABI=0" \
 		STRIP="$(TARGET_STRIP)" \
-		-C $(@D)/shell/linux -f Makefile platform="rpi2"
+		-C $(@D)/shell/linux -f Makefile platform="rpi3"
 endef
 
 define REICAST_INSTALL_TARGET_CMDS
