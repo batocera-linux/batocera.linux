@@ -8,8 +8,8 @@ index 52e3255..b5ab359 100644
  
 +# Raspberry Pi 3
 +else ifneq (,$(findstring rpi3,$(platform)))
-+    MFLAGS += -marm -march=armv8 -mtune=cortex-a8 -mfpu=neon -mfloat-abi=hard -funroll-loops
-+    ASFLAGS += -march=armv8 -mfpu=neon -mfloat-abi=hard
++    MFLAGS += -marm -march=armv8-a -mtune=cortex-a53 -mfpu=neon -mfloat-abi=hard -funroll-loops
++    ASFLAGS += -march=armv8-a -mfpu=neon -mfloat-abi=hard
 +    CFLAGS += -D TARGET_BEAGLE -D TARGET_LINUX_ARMELv7 -DARM_HARDFP -fsingle-precision-constant
 +    INCS += -I/home/subs/git/recalbox-buildroot/output/host/usr/arm-buildroot-linux-gnueabihf/sysroot/usr/include/ -I/home/subs/git/recalbox-buildroot/output/host/usr/arm-buildroot-linux-gnueabihf/sysroot/usr/include/interface/vmcs_host/linux -I/home/subs/git/recalbox-buildroot/output/host/usr/arm-buildroot-linux-gnueabihf/sysroot/usr/include/interface/vcos/pthreads -I../linux-deps/include
 +    LIBS += -L/home/subs/git/recalbox-buildroot/output/host/usr/arm-buildroot-linux-gnueabihf/sysroot/usr/lib/  -L../linux-deps/lib -lbcm_host
