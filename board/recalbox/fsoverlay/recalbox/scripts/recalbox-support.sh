@@ -47,6 +47,7 @@ netstat -tuan    > "$DSYSTEM""/netstat.txt"
 lsusb -v         > "$DSYSTEM""/lsusb.txt" 2>/dev/null
 tvservice -m CEA > "$DSYSTEM""/tvservice-CEA.txt"
 tvservice -m DMT > "$DSYSTEM""/tvservice-DMT.txt"
+ifconfig -a	 > "$DSYSTEM""/ifconfig.txt"
 f_cp /recalbox/recalbox.version                               "$DSYSTEM"
 f_cp /recalbox/recalbox.arch                                  "$DSYSTEM"
 f_cp /boot/config.txt                                         "$DSYSTEM"
@@ -56,6 +57,7 @@ f_cp /var/log/messages                                        "$DSYSTEM"
 f_cp /recalbox/share/system/.emulationstation/es_settings.cfg "$DSYSTEM"
 f_cp /recalbox/share/system/.emulationstation/es_log.txt      "$DSYSTEM"
 f_cp /recalbox/share/system/.emulationstation/es_input.cfg    "$DSYSTEM"
+f_cp /boot/recalbox-boot.conf                                 "$DSYSTEM"
 
 # joysticks
 DJOYS="$TMPDIR""/joysticks"
