@@ -151,6 +151,20 @@ msldigital_stop()
     done
 }
 
+pin356_start()
+{
+	python /recalbox/scripts/rpi-pin356-power.py &
+    pid=$!
+    echo "$pid" > /tmp/rpi-pin356-power.pid
+    wait "$pid"
+}
+pin356_stop()
+{
+    if [[ -f /tmp/rpi-pin356-power.pid ]]; then
+        kill `cat /tmp/rpi-pin356-power.pid`
+    fi
+}
+
 pin56_start()
 {
     mode=$1
@@ -197,5 +211,9 @@ case "$CONFVALUE" in
     "PIN56PUSH")
         echo "will start pin56_$1"
         pin56_$1 push
+    ;;
+    "PIN356ONOFFRESET")
+        echo "will start pin356_$1"
+        pin356_$1 noparam
     ;;
 esac
