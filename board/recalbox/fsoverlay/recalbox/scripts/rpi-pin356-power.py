@@ -60,6 +60,6 @@ def blink(speed):
 			time.sleep(speed)
 
 GPIO.add_event_detect(RESETPLUS, GPIO.FALLING, callback=button_pressed)
-GPIO.add_event_detect(POWERPLUS, GPIO.FALLING, callback=button_pressed)
+GPIO.add_event_detect(POWERPLUS, GPIO.RISING, callback=button_pressed)
 while True:
 	time.sleep(0.2)
