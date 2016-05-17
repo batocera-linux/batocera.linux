@@ -1,0 +1,13 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 7ce5de1..72b31ad 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -135,7 +135,7 @@ endif()
+ include_directories(ext/native)
+ 
+ if(RPI)
+-	include_directories(/opt/vc/include /opt/vc/include/interface/vcos/pthreads /opt/vc/include/interface/vmcs_host/linux)
++	include_directories(/opt/vc/include /opt/vc/include/interface/vcos/pthreads /opt/vc/include/interface/vmcs_host/linux /opt/vc/lib/libzip/include)
+ 	link_directories(/opt/vc/lib)
+ 	set(OPENGL_LIBRARIES GLESv2 bcm_host)
+ elseif(USING_GLES2 AND NOT IOS)
