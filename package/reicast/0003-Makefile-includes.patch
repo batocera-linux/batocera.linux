@@ -1,0 +1,12 @@
+diff --git a/shell/linux/Makefile b/shell/linux/Makefile
+index 255a560..1b896ca 100644
+--- a/shell/linux/Makefile
++++ b/shell/linux/Makefile
+@@ -160,6 +160,7 @@ else ifneq (,$(findstring odroid,$(platform)))
+     ASFLAGS += -mfpu=neon -mfloat-abi=hard
+     CFLAGS += -D TARGET_BEAGLE -D TARGET_LINUX_ARMELv7 -DARM_HARDFP -fsingle-precision-constant
+     USE_GLES := 1
++    INCS += -I/home/subs/git/recalbox-buildroot/output/host/usr/arm-buildroot-linux-gnueabihf/sysroot/usr/include/ -I/home/subs/git/recalbox-buildroot/output/host/usr/arm-buildroot-linux-gnueabihf/sysroot/usr/include/interface/vmcs_host/linux -I/home/subs/git/recalbox-buildroot/output/host/usr/arm-buildroot-linux-gnueabihf/sysroot/usr/include/interface/vcos/pthreads -I../linux-deps/include
+ 
+     # ODROID-XU3, -XU3 Lite & -XU4
+     ifneq (,$(findstring odroidxu3,$(platform)))
