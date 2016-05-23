@@ -1,0 +1,23 @@
+diff --git a/core/linux-dist/evdev.cpp b/core/linux-dist/evdev.cpp
+index 955e507..fb9a2d6 100644
+--- a/core/linux-dist/evdev.cpp
++++ b/core/linux-dist/evdev.cpp
+@@ -297,7 +297,9 @@
+ 			return -1;
+ 		}
+ 	}
+-
++	
++	void dc_term();
++	
+ 	bool input_evdev_handle(EvdevController* controller, u32 port)
+ 	{
+ 		#define SET_FLAG(field, mask, expr) field =((expr) ? (field & ~mask) : (field | mask))
+@@ -330,6 +332,7 @@
+ 					} else if (ie.code == controller->mapping->Btn_Start) {
+ 						SET_FLAG(kcode[port], DC_BTN_START, ie.value);
+ 					} else if (ie.code == controller->mapping->Btn_Escape) {
++						dc_term();
+ 						die("death by escape key");
+ 					} else if (ie.code == controller->mapping->Btn_DPad_Left) {
+ 						SET_FLAG(kcode[port], DC_DPAD_LEFT, ie.value);
