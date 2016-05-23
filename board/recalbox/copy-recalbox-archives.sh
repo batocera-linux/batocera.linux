@@ -18,41 +18,6 @@
 # http://odroid.com/dokuwiki/doku.php?id=en:xu3_partition_table
 # https://github.com/hardkernel/u-boot/blob/odroidxu3-v2012.07/sd_fuse/hardkernel/sd_fusing.sh
 
-xu4_genimage_cfg() {
-    cat <<EOF
-
-image boot.vfat {
-        vfat {
-                extraargs = "-F 32 -n BOOT"
-                files = {
-                        "boot.ini",
-                        "zImage",
-                        "exynos5422-odroidxu3.dtb",
-                        "recalbox-boot.conf"
-                }
-        }
-        size = 64M
-}
-
-image recalbox.sdcard {
-	hdimage {
-	}
-
-	partition vfat {
-		partition-type = 0xC
-		image = "boot.vfat"
-		offset = 646656
-	}
-
-	partition rootfs {
-		partition-type = 0x83
-		image = "rootfs.ext4"
-		size = 0
-	}
-}
-EOF
-}
-
 xu4_fusing() {
     BINARIES_DIR=$1
     RECALBOXIMG=$2
@@ -120,7 +85,7 @@ case "${RECALBOX_TARGET}" in
 	GENIMAGE_TMP="${BUILD_DIR}/genimage.tmp"
 	RECALBOXIMG="${RECALBOX_BINARIES_DIR}/recalbox.sdcard"
 	rm -rf "${GENIMAGE_TMP}" || exit 1
-	xu4_genimage_cfg > "${BINARIES_DIR}/genimage.cfg" || exit 1
+	cp "board/hardkernel/odroidxu4/genimage.cfg" "${BINARIES_DIR}" || exit 1
 	genimage --rootpath="${TARGET_DIR}" --inputpath="${BINARIES_DIR}" --outputpath="${RECALBOX_BINARIES_DIR}" --config="${BINARIES_DIR}/genimage.cfg" --tmppath="${GENIMAGE_TMP}" || exit 1
 	rm -f "${RECALBOX_BINARIES_DIR}/boot.vfat" || exit 1
 	xu4_fusing "${BINARIES_DIR}" "${RECALBOXIMG}" || exit 1
