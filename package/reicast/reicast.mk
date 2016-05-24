@@ -12,15 +12,15 @@ define REICAST_UPDATE_INCLUDES
 	sed -i "s+/opt/vc+$(STAGING_DIR)/usr+g" $(@D)/shell/linux/Makefile
 	sed -i "s+sdl2-config+$(STAGING_DIR)/usr/bin/sdl2-config+g" $(@D)/shell/linux/Makefile
 endef
-REICAST_PRE_BUILD_HOOKS += REICAST_UPDATE_INCLUDES
+REICAST_PRE_CONFIGURE_HOOKS += REICAST_UPDATE_INCLUDES
 
 # Sadly the NEON optimizations in the PNG library don't work yet, so disable them
 define REICAST_BUILD_CMDS
 	$(TARGET_CONFIGURE_OPTS) $(MAKE) \
-		CPP="$(TARGET_CPP) -DPNG_ARM_NEON_OPT=0 -D_GLIBCXX_USE_CXX11_ABI=0" \
-		CXX="$(TARGET_CXX) -DPNG_ARM_NEON_OPT=0 -D_GLIBCXX_USE_CXX11_ABI=0" \
-		CC="$(TARGET_CC) -DPNG_ARM_NEON_OPT=0 -D_GLIBCXX_USE_CXX11_ABI=0" \
-		AS="$(TARGET_CC) -DPNG_ARM_NEON_OPT=0 -D_GLIBCXX_USE_CXX11_ABI=0" \
+		CPP="$(TARGET_CPP)" \
+		CXX="$(TARGET_CXX) -D_GLIBCXX_USE_CXX11_ABI=0" \
+		CC="$(TARGET_CC) -DPNG_ARM_NEON_OPT=0" \
+		AS="$(TARGET_CC)" \
 		STRIP="$(TARGET_STRIP)" \
 		-C $(@D)/shell/linux -f Makefile platform="rpi3"
 endef
