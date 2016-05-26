@@ -1,0 +1,7 @@
+#!/bin/bash
+
+if test $1 = start
+then
+    (/usr/bin/evwait gpio_keys.7 KEY_POWER 1 && shutdown -h now) &
+fi
+

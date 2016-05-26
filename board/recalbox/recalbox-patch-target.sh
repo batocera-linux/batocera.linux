@@ -22,6 +22,8 @@ then
     # fan configuration
     cp "board/hardkernel/odroidxu4/S02fan" "${TARGET_DIR}/etc/init.d" || exit 1
     chmod a+x "${TARGET_DIR}/etc/init.d/S02fan" || exit 1
+    cp "board/hardkernel/odroidxu4/S02poweroff" "${TARGET_DIR}/etc/init.d" || exit 1
+    chmod a+x "${TARGET_DIR}/etc/init.d/S02poweroff" || exit 1
 fi
 
 sed -i "s|root:x:0:0:root:/root:/bin/sh|root:x:0:0:root:/recalbox/share/system:/bin/sh|g" "${TARGET_DIR}/etc/passwd" || exit 1
