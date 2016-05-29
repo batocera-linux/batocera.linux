@@ -10,22 +10,6 @@
 RECALBOX_BINARIES_DIR="${BINARIES_DIR}/recalbox"
 RECALBOX_TARGET_DIR="${TARGET_DIR}/recalbox"
 
-# XU4, RPI0, RPI1, RPI2 or RPI3
-RECALBOX_TARGET=$(grep -E "^BR2_PACKAGE_RECALBOX_TARGET_[A-Z0-9]*=y$" "${BR2_CONFIG}" | sed -e s+'^BR2_PACKAGE_RECALBOX_TARGET_\([A-Z0-9]*\)=y$'+'\1'+)
-
-if test "${RECALBOX_TARGET}" = "XU4"
-then
-    # alsa configuration for the xu4 not correct by default
-    mkdir -p "${TARGET_DIR}/etc/init.d" || exit 1
-    cp "board/hardkernel/odroidxu4/asound.conf" "${TARGET_DIR}/etc" || exit 1
-
-    # fan configuration
-    cp "board/hardkernel/odroidxu4/S02fan" "${TARGET_DIR}/etc/init.d" || exit 1
-    chmod a+x "${TARGET_DIR}/etc/init.d/S02fan" || exit 1
-    cp "board/hardkernel/odroidxu4/S02poweroff" "${TARGET_DIR}/etc/init.d" || exit 1
-    chmod a+x "${TARGET_DIR}/etc/init.d/S02poweroff" || exit 1
-fi
-
 sed -i "s|root:x:0:0:root:/root:/bin/sh|root:x:0:0:root:/recalbox/share/system:/bin/sh|g" "${TARGET_DIR}/etc/passwd" || exit 1
 rm -rf "${TARGET_DIR}/etc/dropbear" || exit 1
 ln -sf "/recalbox/share/system/ssh" "${TARGET_DIR}/etc/dropbear" || exit 1
