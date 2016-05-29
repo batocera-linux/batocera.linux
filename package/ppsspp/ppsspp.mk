@@ -7,7 +7,7 @@
 PPSSPP_VERSION = 8c9f3b9509e8a6850e086ec36a59ca7fa4082d60
 PPSSPP_SITE = $(call github,hrydgard,ppsspp,$(PPSSPP_VERSION))
 PPSSPP_GIT = https://github.com/hrydgard/ppsspp.git
-PPSSPP_DEPENDENCIES = sdl2 zlib
+PPSSPP_DEPENDENCIES = sdl2 zlib libzip linux zip
 
 # Dirty hack to download submodules
 define PPSSPP_EXTRACT_CMDS
@@ -23,7 +23,7 @@ endef
 PPSSPP_PRE_CONFIGURE_HOOKS += PPSSPP_CONFIGURE_PI
 
 define PPSSPP_INSTALL_TO_TARGET
-	cp $(@D)/PPSSPPSDL $(TARGET_DIR)/usr/bin
+	$(INSTALL) -D -m 0755 $(@D)/PPSSPPSDL $(TARGET_DIR)/usr/bin
 	cp -R $(@D)/assets $(TARGET_DIR)/usr/bin
 endef
 
