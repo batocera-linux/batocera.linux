@@ -9,6 +9,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Slide transition by default in ES
 - Power management switch support (power,reset and LED) for pin 3/5/6
 - Add ifconfig -a and /boot/recalbox-boot.conf in recalbox-support.sh
+- S99Custom now trasmits its init parameter to custom.sh
 
 ## [4.0.0-beta3] - 2016-04-19
 - Xarcade2jstick button remapped + better support of IPAC encoders
