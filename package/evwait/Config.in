@@ -1,0 +1,6 @@
+config BR2_PACKAGE_EVWAIT
+	bool "evtest"
+	help
+	  evwait wait for a specific evdev kernel event
+
+	  https://github.com/nadenislamarre/evwait

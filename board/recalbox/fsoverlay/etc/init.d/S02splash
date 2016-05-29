@@ -3,7 +3,9 @@
 do_start ()
 {
     video="/recalbox/system/resources/splash/recalboxintro.mp4"
-    if [[ -f $video ]]; then
+
+    # odroid xu4 has not omxplayer, make it run this code make it flash
+    if [[ -f $video && -f /usr/bin/omxplayer ]]; then
 
         # Initialize dbus session
         OMXPLAYER_DBUS_ADDR="/tmp/omxplayerdbus.root"

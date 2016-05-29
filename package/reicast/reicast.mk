@@ -14,6 +14,14 @@ define REICAST_UPDATE_INCLUDES
 endef
 REICAST_PRE_BUILD_HOOKS += REICAST_UPDATE_INCLUDES
 
+ifeq ($(BR2_PACKAGE_RECALBOX_TARGET_RPI3),y)
+	RECALBOX_SYSTEM=rpi3
+else ifeq ($(BR2_PACKAGE_RECALBOX_TARGET_RPI2),y)
+	RECALBOX_SYSTEM=rpi2
+else ifeq ($(BR2_PACKAGE_RECALBOX_TARGET_XU4),y)
+	RECALBOX_SYSTEM=odroidxu4
+endif
+
 # Sadly the NEON optimizations in the PNG library don't work yet, so disable them
 define REICAST_BUILD_CMDS
 	$(TARGET_CONFIGURE_OPTS) $(MAKE) \
@@ -22,7 +30,7 @@ define REICAST_BUILD_CMDS
 		CC="$(TARGET_CC) -DPNG_ARM_NEON_OPT=0 -D_GLIBCXX_USE_CXX11_ABI=0" \
 		AS="$(TARGET_CC) -DPNG_ARM_NEON_OPT=0 -D_GLIBCXX_USE_CXX11_ABI=0" \
 		STRIP="$(TARGET_STRIP)" \
-		-C $(@D)/shell/linux -f Makefile platform="rpi3"
+		-C $(@D)/shell/linux -f Makefile platform=$(RECALBOX_SYSTEM)
 endef
 
 define REICAST_INSTALL_TARGET_CMDS
