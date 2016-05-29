@@ -9,7 +9,7 @@ RECALBOX_THEMES_SITE = $(call github,recalbox,recalbox-themes,$(RECALBOX_THEMES_
 
 define RECALBOX_THEMES_INSTALL_TARGET_CMDS
         mkdir -p $(TARGET_DIR)/recalbox/share_init/system/.emulationstation/themes/
-	cp -r $(@D)/themes/* \
+	cp -r $(@D)/themes/recalbox \
 		$(TARGET_DIR)/recalbox/share_init/system/.emulationstation/themes/
 endef
 

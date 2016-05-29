@@ -1,6 +1,6 @@
-## RECALBOX - SYSTEM SEGACD ##
+## RECALBOX - SYSTEM SEGACD/SEGACD_32X ##
 
-Put your segacd roms in this directory.
+Put your segacd and segacd 32X roms in this directory.
 
 Rom files must have a ".cue" extension.
 

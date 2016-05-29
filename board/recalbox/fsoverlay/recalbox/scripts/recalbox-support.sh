@@ -59,6 +59,7 @@ f_cp /var/log/messages                                        "$DSYSTEM"
 f_cp /recalbox/share/system/.emulationstation/es_settings.cfg "$DSYSTEM"
 f_cp /recalbox/share/system/.emulationstation/es_log.txt      "$DSYSTEM"
 f_cp /recalbox/share/system/.emulationstation/es_input.cfg    "$DSYSTEM"
+f_cp /boot/recalbox-boot.conf                                 "$DSYSTEM"
 
 # joysticks
 DJOYS="$TMPDIR""/joysticks"

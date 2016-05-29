@@ -30,7 +30,7 @@ a860e8c0b6d573d191e4ec7db1b1e4f6  gba_bios.bin
 ff1a674273fe3540ccef576376407d1d  syscard3.pce
 
 
-- MSX : 
+- FMSX : 
 d6dedca1112ddfda94cc9b2e426b818b  CARTS.SHA
 85b38e4128bbc300e675f55b278683a8  CYRILLIC.FNT
 80dcd1ad1a4cf65d64b7ba10504e8190  DISK.ROM
@@ -46,6 +46,9 @@ ec3a01c91f24fbddcbcab0ad301bc9ef  MSX2.ROM
 aa95aea2563cd5ec0a0919b44cc17d47  MSX.ROM
 403cdea1cbd2bb24fae506941f8f655e  PAINTER.ROM
 279efd1eae0d358eecd4edc7d9adedf3  RS232.ROM
+
+- BLUEMSX :
+Thanks to read the "readme.txt" file present in the "/roms/msx" folder of your recalbox.
 
 - LYNX :
 fcd403db69f54290b51035d82f835e7b lynxboot.img

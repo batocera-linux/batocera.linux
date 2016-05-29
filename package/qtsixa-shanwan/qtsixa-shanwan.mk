@@ -3,8 +3,8 @@
 # qtsixa-shanwan
 #
 ################################################################################
-QTSIXA_SHANWAN_VERSION = ceef35906f4c894ee0b5b0b3994b956d1f1f643c
-QTSIXA_SHANWAN_SITE = $(call github,yarick123,qtsixa,$(QTSIXA_SHANWAN_VERSION))
+QTSIXA_SHANWAN_VERSION = shanwan
+QTSIXA_SHANWAN_SITE = $(call github,recalbox,qtsixa,$(QTSIXA_SHANWAN_VERSION))
 QTSIXA_SHANWAN_DEPENDENCIES = sdl linux-headers qtsixa
 PKGCONFIG_CONFIG=$(STAGING_DIR)/usr/lib/pkgconfig
 

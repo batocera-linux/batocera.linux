@@ -32,8 +32,17 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Bumped retroarch to v1.3.4
 - Added retroachievements support to fceunext core
 - Reicast : add multiplayer support
+- Update to moonlight-embedded-2.2.1 (but still displays 2.2.0 when running), adds support for GFE 2.11
+- Added enet library for moonlight-embedded-2.2.0
+- Solved a bug on xarcade where B and HOTKEY were sending the same event
+- Slide transition by default in ES
+- Power management switch support (power,reset and LED) for pin 3/5/6
+- Add ifconfig -a and /boot/recalbox-boot.conf in recalbox-support.sh
+- S99Custom now trasmits its init parameter to custom.sh
+- Bumped retroarch to v1.3.4
+- Add ipega 9021 rules
 
-## [4.0.0-beta3][unreleased]
+## [4.0.0-beta3] - 2016-04-19
 - Xarcade2jstick button remapped + better support of IPAC encoders
 - Added IPAC2 keyboard encoder
 - Patched xpad driver to support Xbox One controllers in USB mode
@@ -50,7 +59,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Updated scummvm to version 1.8
 - Added VIM
 - Added recalbox-themes package
-- Recalbox theme now default
+- Recalbox theme by default
 
 ## [4.0.0-beta2]
 - Added rpi3 support (without bluetooth)

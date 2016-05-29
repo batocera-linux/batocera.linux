@@ -259,4 +259,8 @@ case "$CONFVALUE" in
         echo "will start pin56_$1"
         pin56_$1 push
     ;;
+    "PIN356ONOFFRESET")
+        echo "will start pin356_$1"
+        pin356_$1 noparam
+    ;;
 esac
