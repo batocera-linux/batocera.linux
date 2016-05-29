@@ -41,6 +41,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - S99Custom now trasmits its init parameter to custom.sh
 - Bumped retroarch to v1.3.4
 - Add ipega 9021 rules
+- ES now shutdowns the system
 
 ## [4.0.0-beta3] - 2016-04-19
 - Xarcade2jstick button remapped + better support of IPAC encoders
