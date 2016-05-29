@@ -1,9 +1,17 @@
-diff --git a/Makefile b/Makefile
-index 52e3255..b5ab359 100644
+diff --git a/shell/linux/Makefile b/shell/linux/Makefile
+index 25cbc8c..68ed7cb 100644
 --- a/shell/linux/Makefile
 +++ b/shell/linux/Makefile
-@@ -126,6 +126,15 @@ else ifneq (,$(findstring rpi2,$(platform)))
-     LIBS += -L/home/subs/git/recalbox-buildroot/output/host/usr/arm-buildroot-linux-gnueabihf/sysroot/usr/lib/  -L../linux-deps/lib -lbcm_host
+@@ -7,7 +7,6 @@ USE_ALSA := 1
+ USE_OSS := 1
+ #USE_PULSEAUDIO := 1
+ USE_EVDEV := 1
+-USE_JOYSTICK := 1
+ 
+ CXX=${CC_PREFIX}g++
+ CC=${CC_PREFIX}gcc
+@@ -126,6 +125,15 @@ else ifneq (,$(findstring rpi2,$(platform)))
+     LIBS += -L/opt/vc/lib/  -L../linux-deps/lib -lbcm_host
      USE_GLES := 1
  
 +# Raspberry Pi 3
@@ -11,8 +19,8 @@ index 52e3255..b5ab359 100644
 +    MFLAGS += -marm -march=armv8-a -mtune=cortex-a53 -mfpu=neon -mfloat-abi=hard -funroll-loops
 +    ASFLAGS += -march=armv8-a -mfpu=neon -mfloat-abi=hard
 +    CFLAGS += -D TARGET_BEAGLE -D TARGET_LINUX_ARMELv7 -DARM_HARDFP -fsingle-precision-constant
-+    INCS += -I/home/subs/git/recalbox-buildroot/output/host/usr/arm-buildroot-linux-gnueabihf/sysroot/usr/include/ -I/home/subs/git/recalbox-buildroot/output/host/usr/arm-buildroot-linux-gnueabihf/sysroot/usr/include/interface/vmcs_host/linux -I/home/subs/git/recalbox-buildroot/output/host/usr/arm-buildroot-linux-gnueabihf/sysroot/usr/include/interface/vcos/pthreads -I../linux-deps/include
-+    LIBS += -L/home/subs/git/recalbox-buildroot/output/host/usr/arm-buildroot-linux-gnueabihf/sysroot/usr/lib/  -L../linux-deps/lib -lbcm_host
++    INCS += -I/opt/vc/include/ -I/opt/vc/include/interface/vmcs_host/linux -I/opt/vc/include/interface/vcos/pthreads -I../linux-deps/include
++    LIBS += -L/opt/vc/lib/  -L../linux-deps/lib -lbcm_host
 +    USE_GLES := 1
 +
  # BeagleBone Black
