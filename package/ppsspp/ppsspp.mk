@@ -29,4 +29,8 @@ endef
 
 PPSSPP_INSTALL_TARGET_CMDS = $(PPSSPP_INSTALL_TO_TARGET)
 
+ifeq ($(BR2_PACKAGE_MALI_OPENGLES_SDK),y)
+	PPSSPP_CONF_OPTS += -DMALISDK=1
+endif
+
 $(eval $(cmake-package))
