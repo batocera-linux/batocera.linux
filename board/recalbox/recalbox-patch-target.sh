@@ -45,7 +45,7 @@ convert "${TARGET_DIR}/recalbox/system/resources/splash/logo.png" -fill white -p
 convert "${TARGET_DIR}/recalbox/system/resources/splash/logo.png" -fill white -pointsize 60 -gravity center -annotate +0+0 "Upgrading the system\nPlease wait..." "${TARGET_DIR}/recalbox/system/resources/splash/logo-upgrade.png" || exit 1
 
 # Splash video subtitle
-echo -e "1\n00:00:00,000 --> 00:00:01,000\n${RVERSION} "$(date "+%Y/%m/%d %H:%M") > "${TARGET_DIR}/recalbox/system/resources/splash/recalboxintro.srt"
+echo -e "1\n00:00:00,000 --> 00:00:02,000\n${RVERSION} "$(date "+%Y/%m/%d %H:%M") > "${TARGET_DIR}/recalbox/system/resources/splash/recalboxintro.srt"
 omx_fnt="/usr/share/fonts/dejavu/DejaVuSans-BoldOblique.ttf"
 if [[ -f ${TARGET_DIR}$omx_fnt ]] ; then
 	sed -i "s|omx_fnt=\"\"|omx_fnt=\"--font=$omx_fnt\"|g" "${TARGET_DIR}/etc/init.d/S02splash"
