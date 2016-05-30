@@ -1,0 +1,28 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 15388e9..af25a0a 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -61,6 +61,12 @@ if(EXISTS "/opt/vc/include/bcm_host.h")
+ 	set(USING_FBDEV ON)
+ endif()
+ 
++if(MALISDK)
++	message(STATUS "Mali SDK")
++	set(USING_GLES2 ON)
++	set(USING_FBDEV ON)
++endif()
++
+ if(BB)
+ 	set(ARMV7 ON)
+ 	set(USING_FBDEV ON)
+@@ -152,6 +158,10 @@ if(RPI)
+ 	include_directories(/opt/vc/include /opt/vc/include/interface/vcos/pthreads /opt/vc/include/interface/vmcs_host/linux)
+ 	link_directories(/opt/vc/lib)
+ 	set(OPENGL_LIBRARIES GLESv2 bcm_host)
++elseif(MALISDK)
++	include_directories(/opt/vc/include /opt/vc/lib/libzip/include)
++	link_directories(/opt/vc/lib)
++	set(OPENGL_LIBRARIES GLESv2)
+ elseif(USING_GLES2 AND NOT IOS)
+ 	set(OPENGL_LIBRARIES GLESv2)
+ elseif(NOT IOS)
