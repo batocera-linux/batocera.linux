@@ -2,18 +2,20 @@ diff --git a/CMakeLists.txt b/CMakeLists.txt
 index c13f4e6..735453d 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -246,6 +246,7 @@ endforeach()
+@@ -246,7 +246,8 @@ endforeach()
  set_option(VIDEO_COCOA         "Use Cocoa video driver" ${APPLE})
  set_option(DIRECTX             "Use DirectX for Windows audio/video" ${WINDOWS})
  set_option(RENDER_D3D          "Enable the Direct3D render driver" ${WINDOWS})
+ set_option(VIDEO_VIVANTE       "Use Vivante EGL video driver" ${UNIX_SYS})
 +set_option(VIDEO_MALI          "Use Mali EGL video driver" ${UNIX_SYS})
  
  # TODO: We should (should we?) respect cmake's ${BUILD_SHARED_LIBS} flag here
  # The options below are for compatibility to configure's default behaviour.
-@@ -663,6 +664,7 @@ if(UNIX AND NOT APPLE)
+@@ -663,7 +664,8 @@ if(UNIX AND NOT APPLE)
      CheckOpenGLX11()
      CheckOpenGLESX11()
      CheckWayland()
+     CheckVivante()
 +    CheckMali()
    endif()
  
@@ -56,18 +58,20 @@ diff --git a/configure b/configure
 index 42d781f..db65b92 100755
 --- a/configure
 +++ b/configure
-@@ -832,6 +832,7 @@ enable_video_x11_xrandr
+@@ -832,7 +832,8 @@ enable_video_x11_xrandr
  enable_video_x11_scrnsaver
  enable_video_x11_xshape
  enable_video_x11_vm
+ enable_video_vivante
 +enable_video_mali
  enable_video_cocoa
  enable_video_directfb
  enable_directfb_shared
-@@ -1560,6 +1561,7 @@ Optional Features:
+@@ -1560,7 +1561,8 @@ Optional Features:
    --enable-video-x11-xshape
                            enable X11 XShape support [[default=yes]]
    --enable-video-x11-vm   use X11 VM extension for fullscreen [[default=yes]]
+   --enable-video-vivante  use Vivante EGL video driver [[default=yes]]
 +  --enable-video-mali     use Mali EGL video driver [[default=yes]]
    --enable-video-cocoa    use Cocoa video driver [[default=yes]]
    --enable-video-directfb use DirectFB video driver [[default=no]]
@@ -129,10 +133,11 @@ index 42d781f..db65b92 100755
  CheckHaikuVideo()
  {
      if test x$enable_video = xyes; then
-@@ -22587,6 +22639,7 @@ case "$host" in
+@@ -22587,7 +22639,8 @@ case "$host" in
          CheckClockGettime
          CheckLinuxVersion
          CheckRPATH
+         CheckVivanteVideo
 +        CheckMaliVideo
          # Set up files for the audio library
          if test x$enable_audio = xyes; then
@@ -177,10 +182,11 @@ index f0bfd6f..3a356b0 100644
  dnl Set up the Haiku video driver if enabled
  CheckHaikuVideo()
  {
-@@ -2685,6 +2714,7 @@ case "$host" in
+@@ -2685,7 +2714,8 @@ case "$host" in
          CheckClockGettime
          CheckLinuxVersion
          CheckRPATH
+         CheckVivanteVideo
 +        CheckMaliVideo
          # Set up files for the audio library
          if test x$enable_audio = xyes; then
@@ -189,22 +195,24 @@ diff --git a/include/SDL_config.h.cmake b/include/SDL_config.h.cmake
 index 41bc9e1..a080efc 100644
 --- a/include/SDL_config.h.cmake
 +++ b/include/SDL_config.h.cmake
-@@ -259,6 +259,7 @@
- #cmakedefine SDL_VIDEO_DRIVER_DUMMY @SDL_VIDEO_DRIVER_DUMMY@
- #cmakedefine SDL_VIDEO_DRIVER_WINDOWS @SDL_VIDEO_DRIVER_WINDOWS@
- #cmakedefine SDL_VIDEO_DRIVER_WAYLAND @SDL_VIDEO_DRIVER_WAYLAND@
+@@ -281,6 +281,7 @@
+ #cmakedefine SDL_VIDEO_DRIVER_RPI @SDL_VIDEO_DRIVER_RPI@
+ #cmakedefine SDL_VIDEO_DRIVER_VIVANTE @SDL_VIDEO_DRIVER_VIVANTE@
+ #cmakedefine SDL_VIDEO_DRIVER_VIVANTE_VDK @SDL_VIDEO_DRIVER_VIVANTE_VDK@
 +#cmakedefine SDL_VIDEO_DRIVER_MALI @SDL_VIDEO_DRIVER_MALI@
  
- #if 0
- /* !!! FIXME: in configure script version, missing here: */
+ #cmakedefine SDL_VIDEO_DRIVER_WAYLAND_QT_TOUCH @SDL_VIDEO_DRIVER_WAYLAND_QT_TOUCH@
+ #cmakedefine SDL_VIDEO_DRIVER_WAYLAND_DYNAMIC @SDL_VIDEO_DRIVER_WAYLAND_DYNAMIC@
 diff --git a/include/SDL_config.h.in b/include/SDL_config.h.in
 index 9ad2d3d..1755b02 100644
 --- a/include/SDL_config.h.in
 +++ b/include/SDL_config.h.in
-@@ -272,6 +272,7 @@
+@@ -272,8 +272,9 @@
  #undef SDL_VIDEO_DRIVER_MIR_DYNAMIC_XKBCOMMON
  #undef SDL_VIDEO_DRIVER_X11
  #undef SDL_VIDEO_DRIVER_RPI
+ #undef SDL_VIDEO_DRIVER_ANDROID
+ #undef SDL_VIDEO_DRIVER_EMSCRIPTEN
 +#undef SDL_VIDEO_DRIVER_MALI
  #undef SDL_VIDEO_DRIVER_X11_DYNAMIC
  #undef SDL_VIDEO_DRIVER_X11_DYNAMIC_XEXT
@@ -217,9 +225,9 @@ index 93e7fd5..52b46a8 100644
  #define DEFAULT_OGL_ES_PVR "/opt/vc/lib/libGLES_CM.so"
  #define DEFAULT_OGL_ES "/opt/vc/lib/libGLESv1_CM.so"
  
--#elif SDL_VIDEO_DRIVER_ANDROID
+-#elif SDL_VIDEO_DRIVER_ANDROID || SDL_VIDEO_DRIVER_VIVANTE
 -/* Android */
-+#elif SDL_VIDEO_DRIVER_ANDROID || SDL_VIDEO_DRIVER_MALI
++#elif SDL_VIDEO_DRIVER_ANDROID || SDL_VIDEO_DRIVER_VIVANTE || SDL_VIDEO_DRIVER_MALI
 +/* Android and Mali-fbdev */
  #define DEFAULT_EGL "libEGL.so"
  #define DEFAULT_OGL_ES2 "libGLESv2.so"
