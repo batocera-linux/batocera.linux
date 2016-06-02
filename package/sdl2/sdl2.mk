@@ -5,14 +5,14 @@
 ################################################################################
 
 # mali patched version
-ifeq ($(BR2_PACKAGE_MALI_OPENGLES_SDK),y)
-SDL2_VERSION = 3b3a4491d9fe5d97e106390c68ddc4f4dbb541b8
-SDL2_SITE = $(call github,mihailescu2m,libsdl2-2.0.2-dfsg1,$(SDL2_VERSION))
-else
+#ifeq ($(BR2_PACKAGE_MALI_OPENGLES_SDK),y)
+#SDL2_VERSION = 3b3a4491d9fe5d97e106390c68ddc4f4dbb541b8
+#SDL2_SITE = $(call github,mihailescu2m,libsdl2-2.0.2-dfsg1,$(SDL2_VERSION))
+#else
 SDL2_VERSION = 2.0.3
 SDL2_SOURCE = SDL2-$(SDL2_VERSION).tar.gz
 SDL2_SITE = http://www.libsdl.org/release
-endif
+#endif
 
 SDL2_LICENSE = zlib
 SDL2_LICENSE_FILES = COPYING.txt
