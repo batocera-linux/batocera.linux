@@ -1,0 +1,5 @@
+#!/bin/bash
+
+echo "["
+cat /sys/class/graphics/fb0/modes | head -1 | sed -e s+'^[^:]:\([0-9]*\)x\([0-9]*\)[a-z]*.*$'+'{ "code":1, "width":\1, "height":\2 }'+
+echo "]"
