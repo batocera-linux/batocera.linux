@@ -81,9 +81,9 @@ case "${RECALBOX_TARGET}" in
 	# /boot
 	cp "board/hardkernel/odroidxu4/boot.ini" ${BINARIES_DIR}/boot.ini || exit 1
 
-	# recalbox.sdcard
+	# recalbox.img
 	GENIMAGE_TMP="${BUILD_DIR}/genimage.tmp"
-	RECALBOXIMG="${RECALBOX_BINARIES_DIR}/recalbox.sdcard"
+	RECALBOXIMG="${RECALBOX_BINARIES_DIR}/recalbox.img"
 	rm -rf "${GENIMAGE_TMP}" || exit 1
 	cp "board/hardkernel/odroidxu4/genimage.cfg" "${BINARIES_DIR}" || exit 1
 	genimage --rootpath="${TARGET_DIR}" --inputpath="${BINARIES_DIR}" --outputpath="${RECALBOX_BINARIES_DIR}" --config="${BINARIES_DIR}/genimage.cfg" --tmppath="${GENIMAGE_TMP}" || exit 1
