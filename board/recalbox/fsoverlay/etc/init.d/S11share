@@ -238,6 +238,14 @@ then
     shutdown -r now
 fi
 
+# share upgrade, just unzip share.zip from upgrade, no need to reboot
+if test -e "/recalbox/share/system/upgrade/share.zip"
+then
+    (cd /recalbox/share && unzip /recalbox/share/system/upgrade/share.zip) > /recalbox/share/system/upgrade/upgrade.share.out.log 2> /recalbox/share/system/upgrade/upgrade.share.err.log
+    # always remove to not apply indefinitly
+    rm -f /recalbox/share/system/upgrade/share.zip
+fi
+
 # now, let mount delayed usbmount devices
 ls /var/run/usbmount.delay |
     while read RULE
