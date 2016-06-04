@@ -11,7 +11,7 @@ case "$1" in
         if [ "$enabled" != "0" ];then
 		settings_lang="`$systemsetting -command load -key system.language`"
         	recallog "starting emulationstation with lang = $settings_lang"
-        	command="HOME=/recalbox/share/system LC_ALL=\"${settings_lang}.UTF-8\" SDL_VIDEO_GL_DRIVER=/usr/lib/libGLESv2.so SDL_NOMOUSE=1 /usr/bin/emulationstation; [ -f /tmp/shutdown.please ] && (shutdown -h now);[ -f /tmp/reboot.please ] && (shutdown -r now)"
+        	command="HOME=/recalbox/share/system LC_ALL=\"${settings_lang}.UTF-8\" SDL_VIDEO_GL_DRIVER=/usr/lib/libGLESv2.so SDL_NOMOUSE=1 /usr/bin/emulationstation"
         	recallog "Starting emulationstation with command : "
         	recallog "$command"
         	eval $command >> $log &
