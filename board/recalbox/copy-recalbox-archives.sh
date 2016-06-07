@@ -62,7 +62,7 @@ echo -e "\n----- Generating images/recalbox files -----\n"
 case "${RECALBOX_TARGET}" in
     RPI0|RPI1|RPI2|RPI3)
 	# root.tar.xz
-	cp "${BINARIES_DIR}/rootfs.tar.xz" "${RECALBOX_BINARIES_DIR}/root.tar.xz"
+	cp "${BINARIES_DIR}/rootfs.tar.xz" "${RECALBOX_BINARIES_DIR}/root.tar.xz" || return 1
 
 	# boot.tar.xz
 	cp -f "${BINARIES_DIR}/"*.dtb "${BINARIES_DIR}/rpi-firmware"
@@ -80,6 +80,12 @@ case "${RECALBOX_TARGET}" in
 
 	# /boot
 	cp "board/hardkernel/odroidxu4/boot.ini" ${BINARIES_DIR}/boot.ini || exit 1
+
+	# root.tar.xz
+	cp "${BINARIES_DIR}/rootfs.tar.xz" "${RECALBOX_BINARIES_DIR}/root.tar.xz" || exit 1
+
+	# boot.tar.xz
+	(cd "${BINARIES_DIR}" && tar -cJf "${RECALBOX_BINARIES_DIR}/boot.tar.xz" boot.ini zImage exynos5422-odroidxu3.dtb recalbox-boot.conf) || return 1
 
 	# recalbox.img
 	GENIMAGE_TMP="${BUILD_DIR}/genimage.tmp"
