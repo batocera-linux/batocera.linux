@@ -1,0 +1,81 @@
+Allow to support hardware joysticks with 8 axis. Caution: Emulated joystick remains unchanged !
+Only done for mapping purpose (all axis, hats and buttons are now mappable).
+
+Signed-off-by: Laurent Merckx <laurent-merckx@skynet.be>
+
+--- dosbox-r3980/src/gui/sdl_mapper.cpp	2016-05-16 17:53:00.780376994 +0200
++++ dosbox-r3980.n/src/gui/sdl_mapper.cpp	2016-05-18 11:08:25.386643370 +0200
+@@ -72,6 +72,7 @@ enum BC_Types {
+ #define MAXBUTTON 36
+ //#define MAXBUTTON 32
+ #define MAXBUTTON_CAP 16
++#define MAXAXIS 8
+ 
+ class CEvent;
+ class CHandlerEvent;
+@@ -675,8 +676,8 @@ public:
+ 		if (_dummy) return;
+ 
+ 		// initialize binding lists and position data
+-		pos_axis_lists=new CBindList[4];
+-		neg_axis_lists=new CBindList[4];
++		pos_axis_lists=new CBindList[MAXAXIS];
++		neg_axis_lists=new CBindList[MAXAXIS];
+ 		button_lists=new CBindList[MAXBUTTON];
+ 		hat_lists=new CBindList[4];
+ 		Bitu i;
+@@ -685,7 +686,7 @@ public:
+ 			old_button_state[i]=0;
+ 		}
+ 		for(i=0;i<16;i++) old_hat_state[i]=0;
+-		for (i=0; i<4; i++) {
++		for (i=0; i<MAXAXIS; i++) {
+ 			old_pos_axis_state[i]=false;
+ 			old_neg_axis_state[i]=false;
+ 		}
+@@ -703,6 +704,7 @@ public:
+ 		}
+ 
+ 		axes=SDL_JoystickNumAxes(sdl_joystick);
++		if (axes > MAXAXIS) axes = MAXAXIS;
+ 		buttons=SDL_JoystickNumButtons(sdl_joystick);
+ 		hats=SDL_JoystickNumHats(sdl_joystick);
+ 		button_wrap=buttons;
+@@ -752,7 +754,7 @@ public:
+ 		if (event->type==SDL_JOYAXISMOTION) {
+ 			if (event->jaxis.which!=stick) return 0;
+ #if defined (REDUCE_JOYSTICK_POLLING)
+-			if (event->jaxis.axis>=emulated_axes) return 0;
++			if (event->jaxis.axis>=axes) return 0;
+ #endif
+ 			if (abs(event->jaxis.value)<25000) return 0;
+ 			return CreateAxisBind(event->jaxis.axis,event->jaxis.value>0);
+@@ -849,7 +851,7 @@ public:
+ 			}
+ 		}
+ 
+-		for (i=0; i<axes_cap; i++) {
++		for (i=0; i<axes; i++) {
+ 			Sint16 caxis_pos=SDL_JoystickGetAxis(sdl_joystick,i);
+ 			/* activate bindings for joystick position */
+ 			if (caxis_pos>1) {
+@@ -907,7 +909,7 @@ public:
+ 
+ private:
+ 	CBind * CreateAxisBind(Bitu axis,bool positive) {
+-		if (axis<emulated_axes) {
++		if (axis<axes) {
+ 			if (positive) return new CJAxisBind(&pos_axis_lists[axis],this,axis,positive);
+ 			else return new CJAxisBind(&neg_axis_lists[axis],this,axis,positive);
+ 		}
+@@ -950,8 +952,8 @@ protected:
+ 	char configname[10];
+ 	Bitu button_autofire[MAXBUTTON];
+ 	bool old_button_state[MAXBUTTON];
+-	bool old_pos_axis_state[16];
+-	bool old_neg_axis_state[16];
++	bool old_pos_axis_state[MAXAXIS];
++	bool old_neg_axis_state[MAXAXIS];
+ 	Uint8 old_hat_state[16];
+ 	bool is_dummy;
+ };
