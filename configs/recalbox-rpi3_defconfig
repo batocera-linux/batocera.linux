@@ -21,7 +21,7 @@ BR2_TARGET_GENERIC_GETTY_BAUDRATE_115200=y
 # BR2_TARGET_GENERIC_REMOUNT_ROOTFS_RW is not set
 BR2_TARGET_TZ_INFO=y
 BR2_TARGET_LOCALTIME="Europe/Paris"
-BR2_ROOTFS_OVERLAY="board/recalbox/fsoverlay"
+BR2_ROOTFS_OVERLAY="board/recalbox/fsoverlay board/recalbox/fsoverlay_rpi_all"
 BR2_ROOTFS_POST_BUILD_SCRIPT="board/recalbox/recalbox-patch-target.sh"
 BR2_ROOTFS_POST_IMAGE_SCRIPT="board/recalbox/copy-recalbox-archives.sh"
 BR2_LINUX_KERNEL=y
