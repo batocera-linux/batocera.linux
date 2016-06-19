@@ -1,5 +1,10 @@
 #!/bin/sh
 
+if test "$1" != "start"
+then
+  exit 0
+fi
+
 # sixad
 mkdir -p /var/lib/sixad/profiles
 cp /etc/sixad.profile /var/lib/sixad/profiles/default

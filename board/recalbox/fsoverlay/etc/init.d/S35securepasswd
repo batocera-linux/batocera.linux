@@ -1,5 +1,10 @@
 #!/bin/sh
 
+if test "$1" != "start"
+then
+  exit 0
+fi
+
 systemsetting="python /usr/lib/python2.7/site-packages/configgen/settings/recalboxSettings.pyc"
 
 # /etc/shadow is dynamically generated from the password found in /boot/recalbox-boot.conf

@@ -1,5 +1,10 @@
 #!/bin/bash
 
+if test "$1" != "start"
+then
+  exit 0
+fi
+
 IN=/recalbox/share_init
 OUT=/recalbox/share
 

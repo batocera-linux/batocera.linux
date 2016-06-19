@@ -1,4 +1,9 @@
 #!/bin/bash
 
+if test "$1" != "start"
+then
+  exit 0
+fi
+
 date -s '1980-01-01 01:00:00'
 
