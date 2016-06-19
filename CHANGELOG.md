@@ -13,6 +13,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Bumped retroarch to v1.3.4
 - Add ipega 9021 rules
 - Added stat in busybox
+- Added integer scale (Pixel Perfect) option
 
 ## [4.0.0-beta3] - 2016-04-19
 - Xarcade2jstick button remapped + better support of IPAC encoders
