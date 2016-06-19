@@ -3,6 +3,8 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unrelease][unreleased]
+
+## [4.0.0-beta4] - 2016-06-19
 - Update to moonlight-embedded-2.2.1 (but still displays 2.2.0 when running), adds support for GFE 2.11
 - Added enet library for moonlight-embedded-2.2.0
 - Solved a bug on xarcade where B and HOTKEY were sending the same event

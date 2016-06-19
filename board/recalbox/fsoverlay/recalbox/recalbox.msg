@@ -1,11 +1,12 @@
-v4.0.0-beta2
-- Added rpi3 support (without bluetooth)
-- Added support for power management boards
-- Added rpi gpio and wiringpi
-- Added OOB remote controls
-- Fixed keyboard issue in ES
-- Fixed retroachievement support on picodrive and fceumm libretro cores
-- Fixed system locales
-- Updated 8bitdo gamepads
-- Bumped to moonlight-embedded-2.1.4
-- Overclock set to none now delete lines in config.txt
+v4.0.0-beta4
+- Update to moonlight-embedded-2.2.1 (but still displays 2.2.0 when running), adds support for GFE 2.11
+- Added enet library for moonlight-embedded-2.2.0
+- Solved a bug on xarcade where B and HOTKEY were sending the same event
+- Slide transition by default in ES
+- Power management switch support (power,reset and LED) for pin 3/5/6
+- Add ifconfig -a and /boot/recalbox-boot.conf in recalbox-support.sh
+- S99Custom now trasmits its init parameter to custom.sh
+- Bumped retroarch to v1.3.4
+- Add ipega 9021 rules
+- Added stat in busybox
+- Corrected favorite display in gamelist
