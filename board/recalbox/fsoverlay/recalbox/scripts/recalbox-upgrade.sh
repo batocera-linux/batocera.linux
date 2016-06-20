@@ -5,6 +5,13 @@ systemsetting="python /usr/lib/python2.7/site-packages/configgen/settings/recalb
 
 arch=$(cat /recalbox/recalbox.arch)
 updatetype="`$systemsetting  -command load -key updates.type`"
+updateurl="`$systemsetting  -command load -key updates.url`"
+
+# customizable upgrade url website
+if test -n "${updateurl}"
+then
+    recalboxupdateurl="${updateurl}"
+fi
 
 if test "${updatetype}" != "stable" -a "${updatetype}" != "unstable" -a "${updatetype}" != "beta"
 then
