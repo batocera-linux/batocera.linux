@@ -32,4 +32,11 @@ find "/usr/share/kodi/system/keymaps" -name "joystick.*.xml" |
 doClean "/etc/network/interfaces.base"
 doClean "/etc/wpa_supplicant/wpa_supplicant.conf"
 
+# V4.1.0 2016-06-16
+doClean "${TARGET_DIR}/etc/init.d/S10udev"
+doClean "${TARGET_DIR}/etc/init.d/S30dbus"
+doClean "${TARGET_DIR}/etc/init.d/S40network"
+doClean "${TARGET_DIR}/etc/init.d/S45connman"
+
+
 exit 0

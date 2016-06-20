@@ -1,5 +1,14 @@
 #!/bin/sh
 
+if test "$1" = "stop"
+then
+    # umount all network configs
+    # don't just remount the one of the config in case the config changed
+    umount -a -t nfs
+    umount -a -t cifs
+    exit 0
+fi
+
 if test "$1" != "start"
 then
   exit 0
@@ -99,6 +108,101 @@ mountDeviceOrFallback() {
 	    mount -t tmpfs -o size=128M tmpfs /recalbox/share
 	fi
     fi
+}
+
+mountNetwork() {
+    # /boot/recalbox-boot.conf examples :
+    # sharedevice=NETWORK
+    #
+    # Basic commands : sharenetwork_<nfs|smb><[0-9]>=<SHARE|ROMS|SAVES|BIOS>@<host>:<remote directory>:<mount options>
+    #
+    # sharenetwork_nfs1=SHARE@192.168.0.1:/Documents/recalbox
+    # or
+    # sharenetwork_nfs1=ROMS@192.168.0.1:/Documents/recalbox/roms
+    # sharenetwork_nfs2=SAVES@192.168.0.1:/Documents/recalbox/saves
+    # or
+    # sharenetwork_smb1=SHARE@192.168.0.1:Documents/recalbox:guest
+    #
+    # Advanced commands : sharenetwork_cmd<[0-9]>=<command to run>
+    # sharenetwork_cmd1=mount -o port=2049,nolock,proto=tcp 192.168.0.1:/Documents/recalbox /recalbox/share
+    # or
+    # sharenetwork_cmd1=mount -o port=2049,nolock,proto=tcp 192.168.0.1:/Documents/recalbox/roms /recalbox/share/roms
+    # sharenetwork_cmd2=mount -o port=2049,nolock,proto=tcp 192.168.0.1:/Documents/recalbox/saves /recalbox/share/saves
+    # or
+    # sharenetwork_cmd1=mount.cifs //192.168.0.1/recalbox /recalbox/share -o guest
+
+
+    # execute all commands in /boot/recalbox-boot.conf which are like : sharenetwork_cmd1=my command
+    if ! grep -E '^[ ]*sharenetwork_[a-z]*[0-9][ ]*=' "${SHARECONFFILE}" |
+	    sed -e s+'^[ ]*sharenetwork_\([a-z]*\)[0-9][ ]*='+'\1 '+ |
+	    while read CTYPE CMD
+	    do
+		XTRY=5  # X tries and give up
+		XWAIT=4 # N seconds between each try
+
+		while test "${XTRY}" -gt 0
+		do
+		    let XTRY--
+
+		    CMD_EXEC=echo
+		    if test "${CTYPE}" = "cmd"
+		    then
+			CMD_EXEC="${CMD}"
+		    else
+			CMD_TARGET=$(echo "${CMD}" | sed -e s+'^\([^@]*\)@.*$'+'\1'+)
+			CMD_HOST=$(echo "${CMD}" | sed -e s+'^[^@]*@\([^:]*\):.*$'+'\1'+)
+			CMD_RDIR=$(echo "${CMD}" | sed -e s+'^[^@]*@[^:]*:\([^:]*\).*$'+'\1'+)
+			CMD_OPT=$(echo "${CMD}" | sed -e s+'^[^@]*@[^:]*:[^:]*'+''+ -e s+'^:'++)
+
+			# MAP to the recalbox directory
+			CMD_TDIR="/recalbox/share"
+			case "${CMD_TARGET}" in
+			    "SHARE")
+				CMD_TDIR="/recalbox/share"
+			    ;;
+			    "ROMS")
+				CMD_TDIR="/recalbox/share/roms"
+			    ;;
+			    "SAVES")
+				CMD_TDIR="/recalbox/share/saves"
+			    ;;
+			    "BIOS")
+				CMD_TDIR="/recalbox/share/bios"
+			    ;;
+			esac
+
+			case "${CTYPE}" in
+			    "nfs")
+				CMD_ADDOPT=
+				test -n "${CMD_OPT}" && CMD_ADDOPT=",${CMD_OPT}"
+				CMD_EXEC="mount -o port=2049,nolock,proto=tcp${CMD_ADDOPT} ${CMD_HOST}:${CMD_RDIR} ${CMD_TDIR}"
+				;;
+			    "smb")
+				CMD_ADDOPT=
+				test -n "${CMD_OPT}" && CMD_ADDOPT="-o ${CMD_OPT}"
+				CMD_EXEC="mount.cifs //${CMD_HOST}/${CMD_RDIR} ${CMD_TDIR} ${CMD_ADDOPT}"
+				;;
+			esac
+		    fi
+
+		    echo "${CMD_EXEC}" >> /tmp/mountNetwork.log
+		    if ${CMD_EXEC}
+		    then
+			XTRY=0
+		    else
+			# give up
+			if test ${XTRY} = 0
+			then
+			    return 1
+			fi
+			sleep ${XWAIT} # wait n seconds between each try
+		    fi
+		done
+	    done
+    then
+	return 1
+    fi
+    return 0
 }
 
 scr_init_upgrade() {
@@ -218,6 +322,20 @@ case "${MODE}" in
 	;;
     "RAM")
 	mount -t tmpfs -o size=128M tmpfs /recalbox/share
+	;;
+    "NETWORK")
+	# first, INTERNAL mount, then, network mount over the NETWORK mounts
+	# to allow to mount over /recalbox/share, but only over /recalbox/share/roms if wanted
+	# mounting network mounts over usb key have not really sense
+	if ! /recalbox/scripts/recalbox-mount.sh "${INTERNALDEVICETYPE}" 1 "${INTERNALDEVICE}" /recalbox/share
+	then
+	    # fallback
+	    mount -t tmpfs -o size=128M tmpfs /recalbox/share
+	fi
+
+	# Network mounts
+	# no fallback required, mounted on the share
+	mountNetwork > /tmp/mountNetwork.log 2> /tmp/mountNetwork.err # could be usefull to debug
 	;;
     "INTERNAL"|*)
 	if ! /recalbox/scripts/recalbox-mount.sh "${INTERNALDEVICETYPE}" 1 "${INTERNALDEVICE}" /recalbox/share
