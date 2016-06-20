@@ -31,6 +31,7 @@ BR2_LINUX_KERNEL_CUSTOM_REPO_URL="https://github.com/hardkernel/linux.git"
 BR2_LINUX_KERNEL_CUSTOM_REPO_VERSION="odroidxu3-3.10.y"
 BR2_LINUX_KERNEL_PATCH="board/recalbox/kernel_patches_odroidxu4"
 BR2_LINUX_KERNEL_DEFCONFIG="odroidxu3"
+BR2_LINUX_KERNEL_CONFIG_FRAGMENT_FILES="board/recalbox/kernel-odroid-3.10-defconfig-fragment.config"
 BR2_LINUX_KERNEL_DTS_SUPPORT=y
 BR2_LINUX_KERNEL_INTREE_DTS_NAME="exynos5422-odroidxu3"
 BR2_PACKAGE_BUSYBOX_CONFIG_FRAGMENT_FILES="board/recalbox/busybox.custom.config"
