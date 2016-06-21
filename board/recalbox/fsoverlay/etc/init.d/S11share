@@ -245,7 +245,7 @@ do_boot_upgrade() {
     # revert backup files
     for BOOTFILE in ${BOOTFILES}
     do
-	if test -e "/boot/${BOOTFILE}"
+	if test -e "/boot/${BOOTFILE}.upgrade"
 	then
 	    mv "/boot/${BOOTFILE}.upgrade" "/boot/${BOOTFILE}" || return 1
 	fi
