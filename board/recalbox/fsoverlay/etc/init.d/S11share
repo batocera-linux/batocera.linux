@@ -221,6 +221,37 @@ scr_msg_upgrade() {
     printf "\r%20s%10s" "${1}" " " > /dev/tty0 # with spaces at the begining for screen not displaying the left ; and spaces on right to erase old msg
 }
 
+do_boot_upgrade() {
+    BOOTTAR=$1
+
+    # all these files doesn't exist on non rpi platform, so, we have to test them
+    BOOTFILES="cmdline.txt config.txt recalbox-boot.conf"
+
+    # backup files to keep
+    for BOOTFILE in ${BOOTFILES}
+    do
+	if test -e "/boot/${BOOTFILE}"
+	then
+	    cp "/boot/${BOOTFILE}" "/boot/${BOOTFILE}.upgrade" || return 1
+	fi
+    done
+
+    # upgrade the boot
+    if ! (cd /boot && xz -dc < "${BOOTTAR}" | tar xvf - >> /tmp/upgrade.files)
+    then
+	return 1
+    fi
+
+    # revert backup files
+    for BOOTFILE in ${BOOTFILES}
+    do
+	if test -e "/boot/${BOOTFILE}.upgrade"
+	then
+	    mv "/boot/${BOOTFILE}.upgrade" "/boot/${BOOTFILE}" || return 1
+	fi
+    done
+}
+
 do_upgrade() {
     BOOTTAR="/recalbox/share/system/upgrade/boot.tar.xz"
     ROOTTAR="/recalbox/share/system/upgrade/root.tar.xz"
@@ -244,14 +275,7 @@ do_upgrade() {
     echo "Upgrading /boot"
     if mount -o remount,rw /boot
     then
-	if (cd /boot && \
-	    cp cmdline.txt cmdline.txt.upgrade && \
-	    cp config.txt config.txt.upgrade && \
-	    cp recalbox-boot.conf recalbox-boot.conf.upgrade && \
-	    xz -dc < "${BOOTTAR}" | tar xvf - >> /tmp/upgrade.files && \
-	    mv recalbox-boot.conf.upgrade recalbox-boot.conf && \
-	    mv config.txt.upgrade config.txt && \
-	    mv cmdline.txt.upgrade cmdline.txt )
+	if do_boot_upgrade "${BOOTTAR}"
 	then
 	    EXIT_CODE=0
 	fi
