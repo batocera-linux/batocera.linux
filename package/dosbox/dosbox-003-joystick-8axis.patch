@@ -3,8 +3,8 @@ Only done for mapping purpose (all axis, hats and buttons are now mappable).
 
 Signed-off-by: Laurent Merckx <laurent-merckx@skynet.be>
 
---- dosbox-r3980/src/gui/sdl_mapper.cpp	2016-05-16 17:53:00.780376994 +0200
-+++ dosbox-r3980.n/src/gui/sdl_mapper.cpp	2016-05-18 11:08:25.386643370 +0200
+--- dosbox/src/gui/sdl_mapper.cpp	2016-05-16 17:53:00.780376994 +0200
++++ dosbox.n/src/gui/sdl_mapper.cpp	2016-05-18 11:08:25.386643370 +0200
 @@ -72,6 +72,7 @@ enum BC_Types {
  #define MAXBUTTON 36
  //#define MAXBUTTON 32

@@ -2,8 +2,8 @@ Bug resolution: Splash screen and mapper GUI are now fullscreen
 
 Signed-off-by: Laurent Merckx <laurent-merckx@skynet.be>
 
---- dosbox-0.74.R3980/src/gui/sdlmain.cpp	2016-04-24 19:35:28.140560563 +0200
-+++ dosbox-0.74.R3980.n/src/gui/sdlmain.cpp	2016-04-24 19:37:34.280555940 +0200
+--- dosbox/src/gui/sdlmain.cpp	2016-04-24 19:35:28.140560563 +0200
++++ dosbox.n/src/gui/sdlmain.cpp	2016-04-24 19:37:34.280555940 +0200
 @@ -707,24 +707,25 @@ SDL_Window * GFX_SetSDLSurfaceWindow(Bit
  // sub-window with the given dimensions, like the mapper UI.
  SDL_Rect GFX_GetSDLSurfaceSubwindowDims(Bit16u width, Bit16u height) {
