@@ -23,10 +23,22 @@ ln -sf "/recalbox/share/cheats"                                       "${TARGET_
 rm -f "${TARGET_DIR}/etc/init.d/S50kodi" || exit 1
 
 # reorder the boot scripts for the network boot
-mv "${TARGET_DIR}/etc/init.d/S10udev"    "${TARGET_DIR}/etc/init.d/S05udev"    || exit 1 # move to make number spaces
-mv "${TARGET_DIR}/etc/init.d/S30dbus"    "${TARGET_DIR}/etc/init.d/S06dbus"    || exit 1 # move really before for network (connman prerequisite)
-mv "${TARGET_DIR}/etc/init.d/S40network" "${TARGET_DIR}/etc/init.d/S07network" || exit 1 # move to make ifaces up sooner, mainly mountable/unmountable before/after share
-mv "${TARGET_DIR}/etc/init.d/S45connman" "${TARGET_DIR}/etc/init.d/S08connman" || exit 1 # move to make before share
+if test -e "${TARGET_DIR}/etc/init.d/S10udev"
+then
+    mv "${TARGET_DIR}/etc/init.d/S10udev"    "${TARGET_DIR}/etc/init.d/S05udev"    || exit 1 # move to make number spaces
+fi
+if test -e "${TARGET_DIR}/etc/init.d/S30dbus"
+then
+    mv "${TARGET_DIR}/etc/init.d/S30dbus"    "${TARGET_DIR}/etc/init.d/S06dbus"    || exit 1 # move really before for network (connman prerequisite)
+fi
+if test -e "${TARGET_DIR}/etc/init.d/S40network"
+then
+    mv "${TARGET_DIR}/etc/init.d/S40network" "${TARGET_DIR}/etc/init.d/S07network" || exit 1 # move to make ifaces up sooner, mainly mountable/unmountable before/after share
+fi
+if test -e "${TARGET_DIR}/etc/init.d/S45connman"
+then
+    mv "${TARGET_DIR}/etc/init.d/S45connman" "${TARGET_DIR}/etc/init.d/S08connman" || exit 1 # move to make before share
+fi
 
 # remove kodi default joystick configuration files
 # while as a minimum, the file joystick.Sony.PLAYSTATION(R)3.Controller.xml makes references to PS4 controllers with axes which doesn't exist (making kodi crashing)
