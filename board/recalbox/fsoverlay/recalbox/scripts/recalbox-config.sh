@@ -309,6 +309,13 @@ if [ "$command" == "canupdate" ];then
 		# force a default value in case the value is removed or miswritten
 		updatetype="stable"
 	fi
+	updateurl="`$systemsetting  -command load -key updates.url`"
+
+	# customizable upgrade url website
+	if test -n "${updateurl}"
+	then
+	    recalboxupdateurl="${updateurl}"
+	fi
 	available=`wget -qO- ${recalboxupdateurl}/${arch}/${updatetype}/last/recalbox.version`
 	if [[ "$?" != "0" ]];then
 		exit 2
