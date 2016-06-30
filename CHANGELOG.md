@@ -44,6 +44,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - share/roms/saves/bios available via a network point
 - bumped SDL to 2.0.4
 - linux kernel bumped to 4.4.13
+- Add DosBox 0.74 (rev 3980) with specific patches: SDL2, with mapping of mouse and all axis of joysticks
 
 ## [4.0.0-beta3] - 2016-04-19
 - Xarcade2jstick button remapped + better support of IPAC encoders
