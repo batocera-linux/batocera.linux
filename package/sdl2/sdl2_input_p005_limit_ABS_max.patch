@@ -1,0 +1,14 @@
+diff --git a/src/joystick/linux/SDL_sysjoystick.c b/src/joystick/linux/SDL_sysjoystick.c
+index 0a90d71..31285a8 100644
+--- a/src/joystick/linux/SDL_sysjoystick.c
++++ b/src/joystick/linux/SDL_sysjoystick.c
+@@ -765,6 +765,9 @@ HandleInputEvents(SDL_Joystick * joystick)
+                 }
+                 break;
+             case EV_ABS:
++                if (code >= ABS_MISC) {
++                    break;
++                }
+                 switch (code) {
+                 case ABS_HAT0X:
+                 case ABS_HAT0Y:
