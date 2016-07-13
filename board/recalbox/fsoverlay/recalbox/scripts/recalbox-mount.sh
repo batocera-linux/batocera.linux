@@ -20,7 +20,7 @@ FSMOUNTOPT="noatime"
 TESTFILE="${MOUNTPOINT}/recalbox.fsrw.test"
 
 # for non vfat and ntfs systems, it's easy
-if test "${FSTYPE}" != "vfat" -a "${FSTYPE}" != "ntfs"
+if test "${FSTYPE}" != "vfat" -a "${FSTYPE}" != "ntfs" -a "${FSTYPE}" != "exfat"
 then
     if mount "${MOUNTDEVICE}" "${MOUNTPOINT}" -o "${FSMOUNTOPT}"
     then
@@ -36,6 +36,11 @@ case "${FSTYPE}" in
     "vfat")
 	FSMOUNTOPT="${FSMOUNTOPT},iocharset=utf8,flush"
 	;;
+    "exfat")
+	# required for exfat
+	# note that we can't just put in /etc/modules.conf because it is loaded too late after udev and share mounting
+	modprobe fuse
+	;;
 esac
 
 # try to mount
@@ -48,6 +53,12 @@ case "${FSTYPE}" in
 	;;
     "ntfs")
 	if ! mount.ntfs-3g "${MOUNTDEVICE}" "${MOUNTPOINT}" -o "${FSMOUNTOPT}"
+	    then
+	    exit 1
+	fi
+	;;
+    "exfat")
+	if ! mount.exfat "${MOUNTDEVICE}" "${MOUNTPOINT}" -o "${FSMOUNTOPT}"
 	    then
 	    exit 1
 	fi
@@ -82,6 +93,9 @@ case "${FSTYPE}" in
     "ntfs")
 	ntfsfix -d "${MOUNTDEVICE}"
 	;;
+    "exfat")
+	fsck.exfat "${MOUNTDEVICE}" > "/dev/tty0" # write it on the terminal while it can take time
+	;;
 esac
 
 # new try to mount
@@ -94,6 +108,12 @@ case "${FSTYPE}" in
 	;;
     "ntfs")
 	if ! mount.ntfs-3g "${MOUNTDEVICE}" "${MOUNTPOINT}" -o "${FSMOUNTOPT}"
+	    then
+	    exit 1
+	fi
+	;;
+    "exfat")
+	if ! mount.exfat "${MOUNTDEVICE}" "${MOUNTPOINT}" -o "${FSMOUNTOPT}"
 	    then
 	    exit 1
 	fi
