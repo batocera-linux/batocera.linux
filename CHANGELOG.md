@@ -3,6 +3,7 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unrelease][unreleased]
+- Update Mame2003 core to get the mame2003-skip_warnings and avoid splash screen
 - New emulator : PPSSPP
 - Add Mayflash NES/SNES and SEGA SATURN in usbhid.conf
 - Added omxplayer to enable Introduction video
