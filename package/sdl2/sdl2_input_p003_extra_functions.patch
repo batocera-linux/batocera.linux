@@ -132,7 +132,7 @@ index 9cbddda..86c99c1 100644
 +
 +  int i;
 +  for(i=0; i<KEY_MAX; i++) {
-+    if(joystick->hwdata->key_map[i] == button) {
++    if(((int)joystick->hwdata->key_map[i]) == button) {
 +      return i;
 +    }
 +  }
@@ -146,7 +146,7 @@ index 9cbddda..86c99c1 100644
 +
 +  int i;
 +  for(i=0; i<ABS_MAX; i++) {
-+    if(joystick->hwdata->abs_map[i] == axis) {
++    if(((int)joystick->hwdata->abs_map[i]) == axis) {
 +      return i;
 +    }
 +  }
@@ -160,7 +160,7 @@ index 9cbddda..86c99c1 100644
 +
 +  int i;
 +  for(i=0; i<ABS_MAX; i++) {
-+    if(joystick->hwdata->hat_map[i] == hat) {
++    if(((int)joystick->hwdata->hat_map[i]) == hat) {
 +      return i;
 +    }
 +  }
