@@ -10,7 +10,7 @@ SDL_SOUND_SITE = http://icculus.org/SDL_sound/downloads
 SDL_SOUND_LICENSE = LGPLv2.1+
 SDL_SOUND_LICENSE_FILES = COPYING
 SDL_SOUND_INSTALL_STAGING = YES
-SDL_SOUND_DEPENDENCIES = sdl
+SDL_SOUND_DEPENDENCIES = sdl2
 
 ifneq ($(BR2_ENABLE_LOCALE),y)
 SDL_SOUND_DEPENDENCIES += libiconv
@@ -56,6 +56,14 @@ SDL_SOUND_CONF_OPTS += --enable-mmx
 else
 SDL_SOUND_CONF_OPTS += --disable-mmx
 endif
+
+define SDL_SOUND_PATCH_CONFIGURE
+	(cd $(@D); \
+	sed -ie 's/sdl-config/sdl2-config/g' configure \
+	)
+endef
+
+SDL_SOUND_PRE_CONFIGURE_HOOKS += SDL_SOUND_PATCH_CONFIGURE
 
 define SDL_SOUND_REMOVE_PLAYSOUND
 	rm $(addprefix $(TARGET_DIR)/usr/bin/,playsound playsound_simple)
