@@ -6,7 +6,8 @@ Intro
 These instructions apply to all models of the Raspberry Pi:
   - the original models A and B,
   - the "enhanced" models A+ and B+,
-  - the model B2 (aka Raspberry Pi 2).
+  - the model B2 (aka Raspberry Pi 2)
+  - the model B3 (aka Raspberry Pi 3).
 
 How to build it
 ===============
@@ -21,9 +22,13 @@ For models A, B, A+ or B+:
 
   $ make raspberrypi_defconfig
 
-And for model 2 B:
+For model 2 B:
 
   $ make raspberrypi2_defconfig
+
+For model 3 B:
+
+  $ make raspberrypi3_defconfig
 
 Build the rootfs
 ----------------
@@ -46,6 +51,7 @@ After building, you should obtain this tree:
     +-- bcm2708-rpi-b.dtb           [1]
     +-- bcm2708-rpi-b-plus.dtb      [1]
     +-- bcm2709-rpi-2-b.dtb         [1]
+    +-- bcm2710-rpi-3-b.dtb         [1]
     +-- boot.vfat
     +-- kernel-marked/zImage        [2]
     +-- rootfs.ext4
@@ -74,4 +80,6 @@ Copy the bootable "sdcard.img" onto an SD card with "dd":
   $ sudo dd if=output/images/sdcard.img of=/dev/sdX
 
 Insert the SDcard into your Raspberry Pi, and power it up. Your new system
-should come up now.
+should come up now and start two consoles: one on the serial port on
+the P1 header, one on the HDMI output where you can login using a USB
+keyboard.

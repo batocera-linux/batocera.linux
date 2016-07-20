@@ -343,6 +343,8 @@ ifeq ($(BR2_HAVE_DOT_CONFIG),y)
 unexport CROSS_COMPILE
 unexport ARCH
 unexport CC
+unexport LD
+unexport AR
 unexport CXX
 unexport CPP
 unexport RANLIB
@@ -581,7 +583,10 @@ define PURGE_LOCALES
 	do \
 		for langdir in $$dir/*; \
 		do \
-			grep -qx $${langdir##*/} $(LOCALE_WHITELIST) || rm -rf $$langdir; \
+			if [ -e "$${langdir}" ]; \
+			then \
+				grep -qx "$${langdir##*/}" $(LOCALE_WHITELIST) || rm -rf $$langdir; \
+			fi \
 		done; \
 	done
 	if [ -d $(TARGET_DIR)/usr/share/X11/locale ]; \
@@ -893,9 +898,7 @@ endif
 	rm -rf $(BR2_CONFIG) $(CONFIG_DIR)/.config.old $(CONFIG_DIR)/..config.tmp \
 		$(CONFIG_DIR)/.auto.deps $(BR2_EXTERNAL_FILE)
 
-help: help-internal help-custom
-
-help-internal:
+help:
 	@echo 'Cleaning:'
 	@echo '  clean                  - delete all files created by build'
 	@echo '  distclean              - delete all non-source files (including .config)'
@@ -975,12 +978,6 @@ endif
 	@echo 'For further details, see README, generate the Buildroot manual, or consult'
 	@echo 'it on-line at http://buildroot.org/docs.html'
 	@echo
-
-# This rule does nothing, it is expected to be overloaded by
-# a br2-external tree or a local.mk . However, it must exist,
-# as we reference it in the main help, above. Making the rule
-# .PHONY does not work.
-help-custom:
 
 list-defconfigs:
 	@echo 'Built-in configs:'

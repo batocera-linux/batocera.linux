@@ -1,5 +1,10 @@
 #!/bin/bash
 
+if test "$1" != "start"
+then
+  exit 0
+fi
+
 # the update system doesn't allow the file removing. So use this script for this task
 
 doClean() {
@@ -21,5 +26,17 @@ find "/usr/share/kodi/system/keymaps" -name "joystick.*.xml" |
     do
 	doClean "${X}"
     done
+
+# V4.1.0 2016-04-10
+# the upgrade will fail to replace link by a file
+doClean "/etc/network/interfaces.base"
+doClean "/etc/wpa_supplicant/wpa_supplicant.conf"
+
+# V4.1.0 2016-06-16
+doClean "${TARGET_DIR}/etc/init.d/S10udev"
+doClean "${TARGET_DIR}/etc/init.d/S30dbus"
+doClean "${TARGET_DIR}/etc/init.d/S40network"
+doClean "${TARGET_DIR}/etc/init.d/S45connman"
+
 
 exit 0

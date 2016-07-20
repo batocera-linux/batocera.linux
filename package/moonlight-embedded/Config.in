@@ -11,6 +11,7 @@ config BR2_PACKAGE_MOONLIGHT_EMBEDDED
     select BR2_PACKAGE_LIBCEC
     select BR2_PACKAGE_FFMPEG
     select BR2_PACKAGE_SDL2
+    select BR2_PACKAGE_LIBENET
     help
 		Gamestream client for embedded systems.
 

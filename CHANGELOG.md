@@ -3,6 +3,9 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unrelease][unreleased]
+- Update Mame2003 core to get the mame2003-skip_warnings and avoid splash screen
+- New emulator : PPSSPP
+- Add Mayflash NES/SNES and SEGA SATURN in usbhid.conf
 - Added omxplayer to enable Introduction video
 - Updated recalbox-configgen to version 4.1.X
 - Added linapple-pie to recalbox-rpi3_defconfig
@@ -22,8 +25,30 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - New video version and splash video now stopped when kodi is started
 - Added custom ratio per game option
 - Dbus implementation to have fade out effect on splash video
+- Added Witty Pi powerswitch support with Wiring Pi.
+- Network connection manager : ethernet configuration on wire connection
+- Network connection manager : multiple wifi configurations
+- Wifi : open/wep/wpa/wpa2
+- New emulator : reicast
+- Bumped retroarch to v1.3.4
+- Added retroachievements support to fceunext core
+- Reicast : add multiplayer support
+- Update to moonlight-embedded-2.2.1 (but still displays 2.2.0 when running), adds support for GFE 2.11
+- Added enet library for moonlight-embedded-2.2.0
+- Solved a bug on xarcade where B and HOTKEY were sending the same event
+- Slide transition by default in ES
+- Power management switch support (power,reset and LED) for pin 3/5/6
+- Add ifconfig -a and /boot/recalbox-boot.conf in recalbox-support.sh
+- S99Custom now trasmits its init parameter to custom.sh
+- Add ipega 9021 rules
+- ES now shutdowns the system
+- share/roms/saves/bios available via a network point
+- bumped SDL to 2.0.4
+- disable multitouch axis in SDL 2.0.4
+- linux kernel bumped to 4.4.13
+- Add DosBox 0.74 (rev 3989) with specific patches: SDL2, with mapping of mouse and all axis of joysticks
 
-## [4.0.0-beta3][unreleased]
+## [4.0.0-beta3] - 2016-04-19
 - Xarcade2jstick button remapped + better support of IPAC encoders
 - Added IPAC2 keyboard encoder
 - Patched xpad driver to support Xbox One controllers in USB mode
@@ -36,6 +61,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Added new recalbox 4.0.0 systems
 - Added crt-pi shaders
 - Fix Namco/Taito games in mame2003
+- Added kempston joystick by default for zxspectrum
+- Updated scummvm to version 1.8
+- Added VIM
+- Added recalbox-themes package
+- Recalbox theme by default
 
 ## [4.0.0-beta2]
 - Added rpi3 support (without bluetooth)

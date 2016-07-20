@@ -1,5 +1,10 @@
 #!/bin/bash
 
+if test "$1" != "start"
+then
+  exit 0
+fi
+
 IN=/recalbox/share_init
 OUT=/recalbox/share
 
@@ -29,9 +34,10 @@ for FILE in music bios extractions kodi saves screenshots \
             system/.config/lirc/lircd.conf \
             system/.emulationstation/{es_input.cfg,es_settings.cfg} \
             system/{.hatari,.kodi} \
-            system/configs/{fba,mupen64,retroarch,shadersets,moonlight} \
+            system/configs/{fba,moonlight,mupen64,ppsspp,reicast,retroarch,shadersets,xarcade2jstick} \
             system/recalbox.conf
 do
+    # not wanted for kodi
     test -e "$IN""/""$FILE" && test ! -e "$OUT""/""$FILE" && cp -r "$IN""/""$FILE" "$OUT""/""$FILE"
 done
 

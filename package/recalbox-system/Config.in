@@ -2,3 +2,25 @@ config BR2_PACKAGE_RECALBOX_SYSTEM
     bool "Recalbox System"
     help
       Install the recalbox system files
+
+choice
+	prompt "Recalbox target"
+	default BR2_PACKAGE_RECALBOX_TARGET_RPI2
+	help
+	  Select Recalbox target hardware
+
+config BR2_PACKAGE_RECALBOX_TARGET_RPI0
+	bool "rpi0"
+
+config BR2_PACKAGE_RECALBOX_TARGET_RPI1
+	bool "rpi1"
+
+config BR2_PACKAGE_RECALBOX_TARGET_RPI2
+	bool "rpi2"
+
+config BR2_PACKAGE_RECALBOX_TARGET_RPI3
+	bool "rpi3"
+
+config BR2_PACKAGE_RECALBOX_TARGET_XU4
+	bool "xu4"
+endchoice

@@ -1,15 +1,18 @@
 #!/bin/sh
 
+if test "$1" != "start"
+then
+  exit 0
+fi
+
 # sixad
 mkdir -p /var/lib/sixad/profiles
 cp /etc/sixad.profile /var/lib/sixad/profiles/default
 
-# ethX and wifi
-mkdir -p /var/network
-cp /etc/network/interfaces.base /var/network/interfaces
-
-# wifi
-cp /etc/wpa_supplicant/wpa_supplicant.conf /var/lib/wpa_supplicant.conf
+# custom network config
+mkdir -p "/var/lib/connman"
+ln -sf "/recalbox/share/system/network-connman.config" "/var/lib/connman/recalbox-custom.config"
+ln -sf "/boot/network-connman.config"                  "/var/lib/connman/recalbox-boot-custom.config"
 
 # bluetooth
 mkdir -p /var/lib/bluetooth

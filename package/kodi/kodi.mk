@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-KODI_VERSION = 16.0-Jarvis
+KODI_VERSION = 16.1-Jarvis
 KODI_SITE = $(call github,xbmc,xbmc,$(KODI_VERSION))
 KODI_LICENSE = GPLv2
 KODI_LICENSE_FILES = LICENSE.GPL
@@ -50,7 +50,14 @@ endif
 
 ifeq ($(BR2_PACKAGE_RPI_USERLAND),y)
 KODI_DEPENDENCIES += rpi-userland
-KODI_CONF_OPTS += --with-platform=raspberry-pi --enable-player=omxplayer
+# Kodi has specific configuration flags for RPi/RPi2. Configure for a
+# RPi2 when we're sure, fallback to RPi otherwise.
+ifeq ($(BR2_cortex_a7),y)
+KODI_CONF_OPTS += --with-platform=raspberry-pi
+else
+KODI_CONF_OPTS += --with-platform=raspberry-pi
+endif
+KODI_CONF_OPTS += --enable-player=omxplayer
 KODI_CONF_ENV += INCLUDES="-I$(STAGING_DIR)/usr/include/interface/vcos/pthreads \
 	-I$(STAGING_DIR)/usr/include/interface/vmcs_host/linux" \
 	LIBS="-lvcos -lvchostif"

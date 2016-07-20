@@ -3,16 +3,20 @@
 # qtsixa
 #
 ################################################################################
-QTSIXA_VERSION = 4318a4c696df786893943c80d37ac6d4cfb1abe8
+QTSIXA_VERSION = gasia 
 QTSIXA_SITE = $(call github,recalbox,qtsixa,$(QTSIXA_VERSION))
 QTSIXA_DEPENDENCIES = sdl linux-headers
 PKGCONFIG_CONFIG=$(STAGING_DIR)/usr/lib/pkgconfig
 
-QTSIXA_INCLUDES =-I$(STAGING_DIR)/usr/include -I$(STAGING_DIR)/usr/include/interface/vcos/pthreads -I$(STAGING_DIR)/usr/include/interface/vmcs_host/linux
-QTSIXA_CFLAGS = -D__ARM_PCS_VFP -DARM_ARCH -DRPI_BUILD -Wall $(QTSIXA_INCLUDES) 
+QTSIXA_INCLUDES =-I$(STAGING_DIR)/usr/include
+QTSIXA_CFLAGS = -D__ARM_PCS_VFP -DARM_ARCH -Wall $(QTSIXA_INCLUDES) 
+QTSIXA_LIBS = -ldl -lpthread -lz -L$(STAGING_DIR)/usr/lib -lrt -lusb -lbluetooth
 
-	
-QTSIXA_LIBS = -ldl -lpthread -lz -L$(STAGING_DIR)/usr/lib -lbcm_host -lvcos -lvchiq_arm -lrt -lvchostif -lusb -lbluetooth
+ifeq ($(BR2_PACKAGE_RPI_USERLAND),y)
+	QTSIXA_INCLUDES +=-I$(STAGING_DIR)/usr/include/interface/vcos/pthreads -I$(STAGING_DIR)/usr/include/interface/vmcs_host/linux
+	QTSIXA_CFLAGS += -DRPI_BUILD
+	QTSIXA_LIBS += -lbcm_host -lvcos -lvchiq_arm -lvchostif
+endif
 
 define QTSIXA_BUILD_CMDS
 	$(MAKE) CC="$(TARGET_CC)" \

@@ -1,5 +1,19 @@
 #!/bin/sh
 
+if test "$1" = "stop"
+then
+    # umount all network configs
+    # don't just remount the one of the config in case the config changed
+    umount -a -t nfs
+    umount -a -t cifs
+    exit 0
+fi
+
+if test "$1" != "start"
+then
+  exit 0
+fi
+
 ###
 # SHARECONFFILE
 # can contain :
@@ -15,8 +29,20 @@ INTERNALDEVICE=`cat ${SHARECONFFILE} | grep "internal=" | head -n1 | cut -d'=' -
 SHAREDEVICE=`cat ${SHARECONFFILE} | grep "sharedevice=" | head -n1 | cut -d'=' -f2`
 [[ "$?" -ne "0" || "$SHAREDEVICE" == "" ]] && SHAREDEVICE=INTERNAL
 
+getMaxTryConfig() {
+    SHARECONFFILE=${1}
+
+    X=$(grep -E '^[ \t]*sharewait[ \t]*=' "${SHARECONFFILE}" | sed -e s+'^[ \t]*sharewait[ \t]*='+''+)
+    if echo "${X}" | grep -qE '^[0-9][0-9]*$'
+    then
+	echo "${X}"
+	return
+    fi
+    echo 7 # default value
+}
+
 INTERNALDEVICETYPE="ext4" # faster than waiting udev to initialize to get the type
-MAXTRY=5
+MAXTRY=$(getMaxTryConfig "${SHARECONFFILE}")
 NTRY=0
 
 # a recalbox is about 40000 files in *.xz
@@ -84,20 +110,130 @@ mountDeviceOrFallback() {
     fi
 }
 
-scr_init_upgrade() {
-    fbv -f -i "/recalbox/system/resources/splash/logo-upgrade.png" &
-    # go down for people that don't see the up of the screen
-    (
-	echo
-	echo
-	echo
-	echo
-	echo
-    ) > /dev/tty0
+mountNetwork() {
+    # /boot/recalbox-boot.conf examples :
+    # sharedevice=NETWORK
+    #
+    # Basic commands : sharenetwork_<nfs|smb><[0-9]>=<SHARE|ROMS|SAVES|BIOS>@<host>:<remote directory>:<mount options>
+    #
+    # sharenetwork_nfs1=SHARE@192.168.0.1:/Documents/recalbox
+    # or
+    # sharenetwork_nfs1=ROMS@192.168.0.1:/Documents/recalbox/roms
+    # sharenetwork_nfs2=SAVES@192.168.0.1:/Documents/recalbox/saves
+    # or
+    # sharenetwork_smb1=SHARE@192.168.0.1:Documents/recalbox:guest
+    #
+    # Advanced commands : sharenetwork_cmd<[0-9]>=<command to run>
+    # sharenetwork_cmd1=mount -o port=2049,nolock,proto=tcp 192.168.0.1:/Documents/recalbox /recalbox/share
+    # or
+    # sharenetwork_cmd1=mount -o port=2049,nolock,proto=tcp 192.168.0.1:/Documents/recalbox/roms /recalbox/share/roms
+    # sharenetwork_cmd2=mount -o port=2049,nolock,proto=tcp 192.168.0.1:/Documents/recalbox/saves /recalbox/share/saves
+    # or
+    # sharenetwork_cmd1=mount.cifs //192.168.0.1/recalbox /recalbox/share -o guest
+
+
+    # execute all commands in /boot/recalbox-boot.conf which are like : sharenetwork_cmd1=my command
+    if ! grep -E '^[ ]*sharenetwork_[a-z]*[0-9][ ]*=' "${SHARECONFFILE}" |
+	    sed -e s+'^[ ]*sharenetwork_\([a-z]*\)[0-9][ ]*='+'\1 '+ |
+	    while read CTYPE CMD
+	    do
+		XTRY=5  # X tries and give up
+		XWAIT=4 # N seconds between each try
+
+		while test "${XTRY}" -gt 0
+		do
+		    let XTRY--
+
+		    CMD_EXEC=echo
+		    if test "${CTYPE}" = "cmd"
+		    then
+			CMD_EXEC="${CMD}"
+		    else
+			CMD_TARGET=$(echo "${CMD}" | sed -e s+'^\([^@]*\)@.*$'+'\1'+)
+			CMD_HOST=$(echo "${CMD}" | sed -e s+'^[^@]*@\([^:]*\):.*$'+'\1'+)
+			CMD_RDIR=$(echo "${CMD}" | sed -e s+'^[^@]*@[^:]*:\([^:]*\).*$'+'\1'+)
+			CMD_OPT=$(echo "${CMD}" | sed -e s+'^[^@]*@[^:]*:[^:]*'+''+ -e s+'^:'++)
+
+			# MAP to the recalbox directory
+			CMD_TDIR="/recalbox/share"
+			case "${CMD_TARGET}" in
+			    "SHARE")
+				CMD_TDIR="/recalbox/share"
+			    ;;
+			    "ROMS")
+				CMD_TDIR="/recalbox/share/roms"
+			    ;;
+			    "SAVES")
+				CMD_TDIR="/recalbox/share/saves"
+			    ;;
+			    "BIOS")
+				CMD_TDIR="/recalbox/share/bios"
+			    ;;
+			esac
+
+			case "${CTYPE}" in
+			    "nfs")
+				CMD_ADDOPT=
+				test -n "${CMD_OPT}" && CMD_ADDOPT=",${CMD_OPT}"
+				CMD_EXEC="mount -o port=2049,nolock,proto=tcp${CMD_ADDOPT} ${CMD_HOST}:${CMD_RDIR} ${CMD_TDIR}"
+				;;
+			    "smb")
+				CMD_ADDOPT=
+				test -n "${CMD_OPT}" && CMD_ADDOPT="-o ${CMD_OPT}"
+				CMD_EXEC="mount.cifs //${CMD_HOST}/${CMD_RDIR} ${CMD_TDIR} ${CMD_ADDOPT}"
+				;;
+			esac
+		    fi
+
+		    echo "${CMD_EXEC}" >> /tmp/mountNetwork.log
+		    if ${CMD_EXEC}
+		    then
+			XTRY=0
+		    else
+			# give up
+			if test ${XTRY} = 0
+			then
+			    return 1
+			fi
+			sleep ${XWAIT} # wait n seconds between each try
+		    fi
+		done
+	    done
+    then
+	return 1
+    fi
+    return 0
 }
 
-scr_msg_upgrade() {
-    printf "\r%20s%10s" "${1}" " " > /dev/tty0 # with spaces at the begining for screen not displaying the left ; and spaces on right to erase old msg
+do_boot_upgrade() {
+    BOOTTAR=$1
+
+    # all these files doesn't exist on non rpi platform, so, we have to test them
+    BOOTFILES="cmdline.txt config.txt recalbox-boot.conf"
+
+    # backup files to keep
+    for BOOTFILE in ${BOOTFILES}
+    do
+	if test -e "/boot/${BOOTFILE}"
+	then
+	    cp "/boot/${BOOTFILE}" "/boot/${BOOTFILE}.upgrade" || return 1
+	fi
+    done
+
+    # upgrade the boot
+    if ! (cd /boot && xz -dc < "${BOOTTAR}" | tar xvf - >> /tmp/upgrade.files)
+    then
+	return 1
+    fi
+
+    # revert backup files
+    for BOOTFILE in ${BOOTFILES}
+    do
+	if test -e "/boot/${BOOTFILE}.upgrade"
+	then
+	    mv "/boot/${BOOTFILE}.upgrade" "/boot/${BOOTFILE}" || return 1
+	fi
+    done
 }
 
 do_upgrade() {
@@ -107,15 +243,15 @@ do_upgrade() {
     # percentage
     touch /tmp/upgrade.files
     (
-	sleep 1 # wait screen background initialized before
+	echo "title Upgrading the system"
 	while true
 	do
 	    NF=$(cat /tmp/upgrade.files | wc -l)
 	    let NP=${NF}00/${NB_FILES_TARGET}
-	    scr_msg_upgrade "${NP}%"
+	    echo "percent ${NP}"
 	    sleep 10
 	done
-    ) &
+    ) | /recalbox/scripts/shell2fb.py &
     
     # upgrading /boot
     EXIT_CODE=1
@@ -123,14 +259,7 @@ do_upgrade() {
     echo "Upgrading /boot"
     if mount -o remount,rw /boot
     then
-	if (cd /boot && \
-	    cp cmdline.txt cmdline.txt.upgrade && \
-	    cp config.txt config.txt.upgrade && \
-	    cp recalbox-boot.conf recalbox-boot.conf.upgrade && \
-	    xz -dc < "${BOOTTAR}" | tar xvf - >> /tmp/upgrade.files && \
-	    mv recalbox-boot.conf.upgrade recalbox-boot.conf && \
-	    mv config.txt.upgrade config.txt && \
-	    mv cmdline.txt.upgrade cmdline.txt )
+	if do_boot_upgrade "${BOOTTAR}"
 	then
 	    EXIT_CODE=0
 	fi
@@ -202,6 +331,20 @@ case "${MODE}" in
     "RAM")
 	mount -t tmpfs -o size=128M tmpfs /recalbox/share
 	;;
+    "NETWORK")
+	# first, INTERNAL mount, then, network mount over the NETWORK mounts
+	# to allow to mount over /recalbox/share, but only over /recalbox/share/roms if wanted
+	# mounting network mounts over usb key have not really sense
+	if ! /recalbox/scripts/recalbox-mount.sh "${INTERNALDEVICETYPE}" 1 "${INTERNALDEVICE}" /recalbox/share
+	then
+	    # fallback
+	    mount -t tmpfs -o size=128M tmpfs /recalbox/share
+	fi
+
+	# Network mounts
+	# no fallback required, mounted on the share
+	mountNetwork > /tmp/mountNetwork.log 2> /tmp/mountNetwork.err # could be usefull to debug
+	;;
     "INTERNAL"|*)
 	if ! /recalbox/scripts/recalbox-mount.sh "${INTERNALDEVICETYPE}" 1 "${INTERNALDEVICE}" /recalbox/share
 	then
@@ -216,7 +359,6 @@ esac
 if test -e "/recalbox/share/system/upgrade/boot.tar.xz" -a -e "/recalbox/share/system/upgrade/root.tar.xz"
 then
     # let's go
-    scr_init_upgrade
     do_upgrade > /recalbox/share/system/upgrade/upgrade.out.log 2> /recalbox/share/system/upgrade/upgrade.err.log
     
     # remove to not apply it indefinitly, even if it fails
@@ -224,6 +366,14 @@ then
     
     # rebooting now
     shutdown -r now
+fi
+
+# share upgrade, just unzip share.zip from upgrade, no need to reboot
+if test -e "/recalbox/share/system/upgrade/share.zip"
+then
+    (cd /recalbox/share && unzip -o /recalbox/share/system/upgrade/share.zip) > /recalbox/share/system/upgrade/upgrade.share.out.log 2> /recalbox/share/system/upgrade/upgrade.share.err.log
+    # always remove to not apply indefinitly
+    rm -f /recalbox/share/system/upgrade/share.zip
 fi
 
 # now, let mount delayed usbmount devices

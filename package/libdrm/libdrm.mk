@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-LIBDRM_VERSION = 2.4.67
+LIBDRM_VERSION = 2.4.68
 LIBDRM_SOURCE = libdrm-$(LIBDRM_VERSION).tar.bz2
 LIBDRM_SITE = http://dri.freedesktop.org/libdrm
 LIBDRM_LICENSE = MIT
@@ -74,6 +74,12 @@ ifeq ($(BR2_PACKAGE_LIBDRM_TEGRA),y)
 LIBDRM_CONF_OPTS += --enable-tegra-experimental-api
 else
 LIBDRM_CONF_OPTS += --disable-tegra-experimental-api
+endif
+
+ifeq ($(BR2_PACKAGE_LIBDRM_VC4),y)
+LIBDRM_CONF_OPTS += --enable-vc4
+else
+LIBDRM_CONF_OPTS += --disable-vc4
 endif
 
 ifeq ($(BR2_PACKAGE_HAS_UDEV),y)
