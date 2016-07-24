@@ -212,9 +212,10 @@ The +graph-depends+ behaviour can be controlled by setting options in the
   default, +0+, means no limit.
 
 * +--stop-on PKG+, +-s PKG+, to stop the graph on the package +PKG+.
-  +PKG+ can be an actual package name, a glob, or the keyword 'virtual'
-  (to stop on virtual packages). The package is still present on the
-  graph, but its dependencies are not.
+  +PKG+ can be an actual package name, a glob, the keyword 'virtual'
+  (to stop on virtual packages), or the keyword 'host' (to stop on
+  host packages). The package is still present on the graph, but its
+  dependencies are not.
 
 * +--exclude PKG+, +-x PKG+, like +--stop-on+, but also omits +PKG+ from
   the graph.
@@ -282,7 +283,7 @@ When your target system grows, it is sometimes useful to understand
 how much each Buildroot package is contributing to the overall root
 filesystem size. To help with such an analysis, Buildroot collects
 data about files installed by each package and using this data,
-generates a graph and CSVs files detailing the size contribution of
+generates a graph and CSV files detailing the size contribution of
 the different packages.
 
 To generate these data after a build, run:
@@ -303,9 +304,9 @@ This will generate:
   contribution of each installed file to the package it belongs, and
   to the overall filesystem size.
 
-This +size-stats+ target requires the Python Matplotlib library to be
+This +graph-size+ target requires the Python Matplotlib library to be
 installed (+python-matplotlib+ on most distributions), and also the
-+argpase+ module if you're using a Python version older than 2.7
++argparse+ module if you're using a Python version older than 2.7
 (+python-argparse+ on most distributions).
 
 Just like for the duration graph, a +BR2_GRAPH_OUT+ environment is
@@ -315,7 +316,17 @@ for details about this environment variable.
 .Note
 The collected filesystem size data is only meaningful after a complete
 clean rebuild. Be sure to run +make clean all+ before using +make
-size-stats+.
+graph-size+.
+
+To compare the root filesystem size of two different Buildroot compilations,
+for example after adjusting the configuration or when switching to another
+Buildroot release, use the +size-stats-compare+ script. It takes two
++file-size-stats.csv+ files (produced by +make graph-size+) as input.
+Refer to the help text of this script for more details:
+
+----------------
+support/scripts/size-stats-compare -h
+----------------
 
 include::eclipse-integration.txt[]
 

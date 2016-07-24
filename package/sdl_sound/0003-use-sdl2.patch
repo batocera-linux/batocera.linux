@@ -1,0 +1,25 @@
+Patch sources to compile on SDL2, instead of SDL.
+See: http://hg.icculus.org/icculus/SDL_sound/shortlog
+
+--- a/playsound/playsound.c	Wed Aug 15 23:48:59 2012 -0400
++++ b/playsound/playsound.c	Wed Aug 15 23:52:18 2012 -0400
+@@ -84,12 +84,18 @@
+     Sound_Version compiled;
+     Sound_Version linked;
+     SDL_version sdl_compiled;
+-    const SDL_version *sdl_linked;
++    SDL_version sdl_linked_ver;
++    const SDL_version *sdl_linked = &sdl_linked_ver;
+ 
+     SOUND_VERSION(&compiled);
+     Sound_GetLinkedVersion(&linked);
+     SDL_VERSION(&sdl_compiled);
++
++    #if SDL_MAJOR_VERSION >= 2
++    SDL_GetVersion(&sdl_linked_ver);
++    #else
+     sdl_linked = SDL_Linked_Version();
++    #endif
+ 
+     fprintf(stdout,
+            "%s version %d.%d.%d\n"

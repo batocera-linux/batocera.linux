@@ -1,0 +1,36 @@
+diff --git a/sdl2-jstest.c b/sdl2-jstest.c
+index 28eae03..7b2ec9c 100644
+--- a/sdl2-jstest.c
++++ b/sdl2-jstest.c
+@@ -447,23 +447,23 @@ void event_joystick(int joy_idx)
+       switch(event.type)
+       {
+         case SDL_JOYAXISMOTION:
+-          printf("SDL_JOYAXISMOTION: joystick: %d axis: %d value: %d\n",
+-                 event.jaxis.which, event.jaxis.axis, event.jaxis.value);
++          printf("SDL_JOYAXISMOTION: joystick: %d axis: %d value: %d code: %d\n",
++                 event.jaxis.which, event.jaxis.axis, event.jaxis.value, SDL_JoystickAxisEventCodeById(event.jbutton.which, event.jbutton.button));
+           break;
+ 
+         case SDL_JOYBUTTONDOWN:
+-          printf("SDL_JOYBUTTONDOWN: joystick: %d button: %d state: %d\n",
+-                 event.jbutton.which, event.jbutton.button, event.jbutton.state);
++          printf("SDL_JOYBUTTONDOWN: joystick: %d button: %d state: %d code:%d\n",
++                 event.jbutton.which, event.jbutton.button, event.jbutton.state, SDL_JoystickButtonEventCodeById(event.jbutton.which, event.jbutton.button));
+           break;
+ 
+         case SDL_JOYBUTTONUP:
+-          printf("SDL_JOYBUTTONUP: joystick: %d button: %d state: %d\n",
+-                 event.jbutton.which, event.jbutton.button, event.jbutton.state);
++          printf("SDL_JOYBUTTONUP: joystick: %d button: %d state: %d code:%d\n",
++                 event.jbutton.which, event.jbutton.button, event.jbutton.state, SDL_JoystickButtonEventCodeById(event.jbutton.which, event.jbutton.button));
+           break;
+ 
+         case SDL_JOYHATMOTION:
+-          printf("SDL_JOYHATMOTION: joystick: %d hat: %d value: %d\n",
+-                 event.jhat.which, event.jhat.hat, event.jhat.value);
++          printf("SDL_JOYHATMOTION: joystick: %d hat: %d value: %d code: %d\n",
++                 event.jhat.which, event.jhat.hat, event.jhat.value, SDL_JoystickHatEventCodeById(event.jbutton.which, event.jbutton.button));
+           break;
+ 
+         case SDL_JOYBALLMOTION:

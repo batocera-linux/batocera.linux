@@ -143,7 +143,197 @@ comment "----------------------------------------------------"
 endif
 
 ###############################################################################
+comment "Legacy options removed in 2016.05"
+
+config BR2_x86_i386
+	bool "x86 i386 support removed"
+	help
+	  The support for the i386 processors of the x86 architecture
+	  has been removed.
+
+config BR2_PACKAGE_QT5WEBKIT_EXAMPLES
+	bool "qt5webkit-examples package removed"
+	select BR2_LEGACY
+	help
+	  The qt5webkit-examples package has been removed, since it
+	  was removed from upstream starting from Qt 5.6.
+
+config BR2_PACKAGE_QT5QUICK1
+	bool "qt5quick1 package removed"
+	select BR2_LEGACY
+	help
+	  The qt5quick1 package has been removed, since it was removed
+	  from upstream starting from Qt 5.6.
+
+config BR2_TARGET_UBOOT_CUSTOM_PATCH_DIR
+	bool "uboot custom patch dir removed"
+	select BR2_LEGACY
+	help
+	  The uboot custom patch directory option has been removed. Use
+	  the improved BR2_TARGET_UBOOT_PATCH option instead.
+
+config BR2_PACKAGE_XDRIVER_XF86_INPUT_VOID
+	bool "xf86-input-void removed"
+	select BR2_LEGACY
+	help
+	  The xf86-input-void package has been removed, there's no need
+	  for it in any modern (post-2007) xorg server.
+
+config BR2_KERNEL_HEADERS_3_17
+	bool "kernel headers version 3.17.x are no longer supported"
+	select BR2_KERNEL_HEADERS_3_18
+	select BR2_LEGACY
+	help
+	  Version 3.17.x of the Linux kernel headers have been deprecated
+	  for more than four buildroot releases and are now removed.
+	  As an alternative, version 3.18.x of the headers have been
+	  automatically selected in your configuration.
+
+config BR2_GDB_VERSION_7_7
+	bool "gdb 7.7 has been removed"
+	select BR2_LEGACY
+	help
+	  The 7.7 version of gdb has been removed. Use a newer version
+	  instead.
+
+config BR2_PACKAGE_FOOMATIC_FILTERS
+	bool "foomatic-filters"
+	select BR2_LEGACY
+	help
+	  The foomatic-filters package was removed.
+
+config BR2_PACKAGE_SAMBA
+	bool "samba"
+	select BR2_LEGACY
+	help
+	  The samba package was removed in favour of samba4 since the
+	  3.x series isn't supported by upstream any longer.
+
+config BR2_PACKAGE_KODI_WAVPACK
+	bool "wavpack"
+	select BR2_LEGACY
+	help
+	  wavpack support was removed in favour of ffmpeg:
+	  https://github.com/xbmc/xbmc/commit/7916902c9e6f7a523265594f3ad7f921f93f1cd4
+
+config BR2_PACKAGE_KODI_RSXS
+	bool "rsxs support in Kodi was moved to an addon"
+	select BR2_LEGACY
+	select BR2_PACKAGE_KODI_SCREENSAVER_RSXS
+	help
+	  rsxs support in Kodi was moved to an addon
+
+config BR2_PACKAGE_KODI_GOOM
+	bool "Goom support in Kodi was moved to an addon"
+	select BR2_LEGACY
+	select BR2_PACKAGE_KODI_VISUALISATION_GOOM
+	help
+	  Goom support in Kodi was moved to an addon
+
+config BR2_PACKAGE_SYSTEMD_ALL_EXTRAS
+	bool "systemd all extras option has been removed"
+	select BR2_LEGACY
+	select BR2_PACKAGE_XZ
+	select BR2_PACKAGE_LIBGCRYPT
+	help
+	  The systemd option to enable "all extras" has been
+	  removed. To get the same features, the libgcrypt and xz
+	  package should now be enabled.
+
+config BR2_GCC_VERSION_4_5_X
+	bool "gcc 4.5.x has been removed"
+	select BR2_LEGACY
+	help
+	  The 4.5.x version of gcc has been removed. Use a newer
+	  version instead.
+
+config BR2_PACKAGE_SQLITE_READLINE
+	bool "command-line editing support was updated"
+	select BR2_PACKAGE_NCURSES
+	select BR2_PACKAGE_READLINE
+	select BR2_LEGACY
+	help
+	  This option was removed in favour of the sqlite package
+	  deciding itself depending on the enabled packages whether
+	  command-line editing should be enabled, it also also takes
+	  libedit into account.
+
+###############################################################################
 comment "Legacy options removed in 2016.02"
+
+config BR2_PACKAGE_DOVECOT_BZIP2
+	bool "bzip2 support option has been removed"
+	select BR2_LEGACY
+	select BR2_PACKAGE_BZIP2
+	help
+	  Bzip2 support is built if the bzip2 package is selected.
+
+config BR2_PACKAGE_DOVECOT_ZLIB
+	bool "zlib support option has been removed"
+	select BR2_LEGACY
+	select BR2_PACKAGE_ZLIB
+	help
+	  Zlib support is built if the zlib package is selected.
+
+config BR2_PACKAGE_E2FSPROGS_FINDFS
+	bool "e2fsprogs findfs option has been removed"
+	select BR2_LEGACY
+	help
+	  This option attempted to enable findfs capabilities from
+	  e2fsprogs but has not worked since July 2015 (due to
+	  packaging changes). One can use BusyBox's findfs support or
+	  enable the BR2_PACKAGE_UTIL_LINUX_FINDFS option.
+
+config BR2_PACKAGE_OPENPOWERLINK_DEBUG_LEVEL
+	bool "openpowerlink debug option has been removed"
+	select BR2_LEGACY
+	help
+	  This option depends on BR2_ENABLE_DEBUG which should not be used
+	  by packages anymore.
+
+config BR2_PACKAGE_OPENPOWERLINK_KERNEL_MODULE
+	bool "openpowerlink package has been updated"
+	select BR2_LEGACY
+	select BR2_PACKAGE_OPENPOWERLINK_STACK_KERNEL_STACK_LIB
+	help
+	  openpowerlink kernel modules are built if the
+	  kernel stack library is selected.
+
+config BR2_PACKAGE_OPENPOWERLINK_LIBPCAP
+	bool "openpowerlink package has been updated"
+	select BR2_LEGACY
+	select BR2_PACKAGE_OPENPOWERLINK_STACK_USERSPACE_DAEMON_LIB
+	help
+	  The user space support has been split in two part:
+	  - a monolitic user space library
+	  - a user spae deamon driver
+
+config BR2_LINUX_KERNEL_SAME_AS_HEADERS
+	bool "using the linux headers version for the kernel has been removed"
+	select BR2_LEGACY
+	help
+	  The option to use the version of the kernel headers for the
+	  kernel to build has been removed.
+
+	  There is now the converse, better-suited and more versatile
+	  option to use the kernel version for the linux headers.
+
+config BR2_PACKAGE_CUPS_PDFTOPS
+	bool "Pdftops support has been removed from Cups"
+	select BR2_LEGACY
+	help
+	  Pdftops support has been removed from the cups package
+	  It is now part of the cups-filters package.
+
+config BR2_KERNEL_HEADERS_3_16
+	bool "kernel headers version 3.16.x are no longer supported"
+	select BR2_KERNEL_HEADERS_3_18
+	select BR2_LEGACY
+	help
+	Version 3.16.x of the Linux kernel headers have been deprecated
+	for more than four buildroot releases and are now removed.
+	As an alternative, version 3.18.x of the headers have been
+	automatically selected in your configuration.
 
 config BR2_PACKAGE_PYTHON_PYXML
 	bool "python-pyxml package has been removed"
@@ -264,12 +454,14 @@ config BR2_PACKAGE_INFOZIP
 	  in the unzip package.
 
 config BR2_BR2_PACKAGE_NODEJS_0_10_X
-	bool "nodejs 0.10.x option renamed"
+	bool "nodejs 0.10.x option removed"
 	select BR2_LEGACY
 	select BR2_PACKAGE_NODEJS
 	help
-	  nodejs 0.10.x option was named incorrectly and has been renamed
-	  to BR2_PACKAGE_NODEJS_0_10_X.
+	  nodejs 0.10.x option has been removed.  0.10.x is now
+	  automatically chosen for ARMv5 architectures only and the latest
+	  nodejs for all other supported architectures. The correct nodejs
+	  version has been automatically selected in your configuration.
 
 config BR2_BR2_PACKAGE_NODEJS_0_12_X
 	bool "nodejs version 0.12.x has been removed"

@@ -13,6 +13,12 @@ case "$1" in
       exit 0
     fi
 
+    enabled="`$systemsetting  -command load -key system.security.enabled`"
+    if [ "$enabled" == "1" ];then
+      echo "Virtual-gamepads services: disabled (security)"
+      exit 0
+    fi
+    
     echo "Starting virtual-gamepads server"
     cd /usr/node-virtual-gamepads/ 
     node main.js &

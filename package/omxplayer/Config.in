@@ -1,0 +1,20 @@
+config BR2_PACKAGE_OMXPLAYER
+	bool "omxplayer"
+	depends on BR2_PACKAGE_RPI_USERLAND
+	depends on BR2_PACKAGE_BOOST
+	depends on BR2_PACKAGE_PCRE
+	depends on BR2_PACKAGE_FREETYPE
+	depends on BR2_PACKAGE_FFMPEG
+	depends on BR2_PACKAGE_FFMPEG_GPL
+	depends on BR2_PACKAGE_FFMPEG_SWSCALE
+	depends on BR2_PACKAGE_FFMPEG_POSTPROC
+	help
+	  Omxplayer is a video player specifically made for the Raspberry Pi's 
+	  GPU made by Edgar (gimli) Hucek from the XBMC/Kodi project. 
+	  It relies on the OpenMAX hardware acceleration API, which is the 
+	  Broadcom's VideoCore officially supported API for GPU video/audio 
+	  processing.
+
+comment "Omxplayer needs a toolchain C, and following libraries : rpi-userland, boost, pcre, freetype, ffmpeg (gpl, swscale, postproc)"
+	depends on !BR2_PACKAGE_RPI_USERLAND || !BR2_PACKAGE_BOOST || !BR2_PACKAGE_PCRE || !BR2_PACKAGE_FREETYPE || \
+		!BR2_PACKAGE_FFMPEG || !BR2_PACKAGE_FFMPEG_GPL || !BR2_PACKAGE_FFMPEG_SWSCALE || !BR2_PACKAGE_FFMPEG_POSTPROC

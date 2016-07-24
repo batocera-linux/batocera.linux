@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-LIBCEC_VERSION = libcec-3.0.1
+LIBCEC_VERSION = 2c675dac48387c48c7f43c5d2547ef0c4ef5c7dd
 LIBCEC_SITE = $(call github,Pulse-Eight,libcec,$(LIBCEC_VERSION))
 LIBCEC_LICENSE = GPLv2+
 LIBCEC_LICENSE_FILES = COPYING
@@ -24,6 +24,10 @@ endif
 
 ifeq ($(BR2_PACKAGE_PYTHON)$(BR2_PACKAGE_PYTHON3),y)
 LIBCEC_DEPENDENCIES += host-swig $(if $(BR2_PACKAGE_PYTHON3),python3,python)
+endif
+
+ifeq ($(BR2_PACKAGE_RECALBOX_TARGET_XU4),y)
+LIBCEC_CONF_OPTS += -DHAVE_EXYNOS_API=1
 endif
 
 ifeq ($(BR2_PACKAGE_RPI_USERLAND),y)

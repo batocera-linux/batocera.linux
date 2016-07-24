@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-MUTT_VERSION = 1.5.24
+MUTT_VERSION = 1.6.0
 MUTT_SITE = https://bitbucket.org/mutt/mutt/downloads
 MUTT_LICENSE = GPLv2+
 MUTT_LICENSE_FILES = GPL
@@ -15,6 +15,13 @@ MUTT_AUTORECONF = YES
 ifeq ($(BR2_PACKAGE_LIBICONV),y)
 MUTT_DEPENDENCIES += libiconv
 MUTT_CONF_OPTS += --enable-iconv
+endif
+
+ifeq ($(BR2_PACKAGE_LIBIDN),y)
+MUTT_DEPENDENCIES += libidn
+MUTT_CONF_OPTS += --with-idn
+else
+MUTT_CONF_OPTS += --without-idn
 endif
 
 ifeq ($(BR2_PACKAGE_MUTT_IMAP),y)

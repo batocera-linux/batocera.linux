@@ -1,10 +1,11 @@
 #!/bin/bash
 
 if [ ! "$1" ];then
-	echo -e "usage : recalbox-config.sh [command] [args]\nWith command in\n\toverscan [enable|disable]\n\toverclock [none|high|turbo|extrem]\n\taudio [hdmi|jack|auto]\n\tcanupdate\n\tupdate\n\twifi [enable|disable] ssid key\n\tstorage [current|list|INTERNAL|ANYEXTERNAL|RAM|DEV UUID]"
+	echo -e "usage : recalbox-config.sh [command] [args]\nWith command in\n\toverscan [enable|disable]\n\toverclock [none|high|turbo|extrem]\n\taudio [hdmi|jack|auto]\n\tcanupdate\n\tupdate\n\twifi [enable|disable] ssid key\n\tstorage [current|list|INTERNAL|ANYEXTERNAL|RAM|DEV UUID]\n\tsetRootPassword [password]\n\tgetRootPassword"
 	exit 1
 fi
 configFile="/boot/config.txt"
+storageFile="/boot/recalbox-boot.conf"
 command="$1"
 mode="$2"
 extra1="$3"
@@ -21,49 +22,69 @@ postBootConfig() {
     mount -o remount,ro /boot
 }
 
-waitWifi() {
-  DEVICE=$1
-  TIMEOUT=$2
-
-  N=0
-  while test $N -lt $TIMEOUT
-  do
-    wpa_cli -i"$DEVICE" status | grep -qE '^wpa_state=COMPLETED$' && return 0
-    sleep 1
-    let N++
-  done
-  echo "`logtime` : wifi timeout" >> $log
-  return 1
-}
-
-rb_wpa_supplicant() {
-    wlan=$1
-    TRY1T=$(date +%s)
-
-    # default driver (nl80211)
-    if /usr/sbin/wpa_supplicant -i$wlan -c/var/lib/wpa_supplicant.conf
-    then
-	return
-    fi
-
-    # try an other driver in case it failed in the following seconds
-    TRY2T=$(date +%s)
-    let TRYDELTA=$TRY2T-$TRY1T
-    if test $TRYDELTA -lt 5
-       then
-	   # test an other driver in case the hardware is not migrated to the new driver
-	   if /usr/sbin/wpa_supplicant -i$wlan -D wext -c/var/lib/wpa_supplicant.conf
-	   then
-	       return
-	   fi
-    fi
-}
-
 log=/recalbox/share/system/logs/recalbox.log
-wpafile=/var/lib/wpa_supplicant.conf
 systemsetting="python /usr/lib/python2.7/site-packages/configgen/settings/recalboxSettings.pyc"
 
 echo "---- recalbox-config.sh ----" >> $log
+
+if [ "$command" == "getRootPassword" ]; then
+    # security disabled, force the default one without changing boot configuration
+    securityenabled="`$systemsetting  -command load -key system.security.enabled`"
+    if [ "$securityenabled" != "1" ];then
+	echo "recalboxroot"
+	exit 0
+    fi
+    
+    ENCPASSWD=$(grep -E '^[ \t]*rootshadowpassword[ \t]*=' "${storageFile}" | sed -e s+'^[ \t]*rootshadowpassword[ \t]*='++)
+    if test -z "${ENCPASSWD}"
+    then
+	exit 1
+    fi
+    if ! /recalbox/scripts/recalbox-encode.sh decode "${ENCPASSWD}"
+    then
+	exit 1
+    fi
+    exit 0
+fi
+
+if [ "$command" == "setRootPassword" ]; then
+    PASSWD=${2}
+
+    # security disabled, don't change
+    securityenabled="`$systemsetting  -command load -key system.security.enabled`"
+    if [ "$securityenabled" != "1" ];then
+	exit 0
+    fi
+    
+    # if no password if provided, generate one
+    if test -z "${PASSWD}"
+    then
+	PASSWD=$(tr -cd _A-Z-a-z-0-9 < /dev/urandom | fold -w8 | head -n1)
+    fi
+    PASSWDENC=$(/recalbox/scripts/recalbox-encode.sh encode "${PASSWD}")
+    
+    preBootConfig
+    if grep -qE '^[ \t]*rootshadowpassword[ \t]*=' "${storageFile}"
+    then
+	# update it
+	if ! sed -i -e s@'^[ \t]*rootshadowpassword[ \t]*=.*$'@"rootshadowpassword=${PASSWDENC}"@ "${storageFile}"
+	then
+	    postBootConfig
+	    exit 1
+	fi
+	postBootConfig
+	exit 0
+    else
+	# create it
+	if ! echo "rootshadowpassword=${PASSWDENC}" >> "${storageFile}"
+	then
+	    postBootConfig
+	    exit 1
+	fi
+	postBootConfig
+	exit 0
+    fi    
+fi
 
 if [ "$command" == "overscan" ]; then
 if [ -f "$configFile" ];then
@@ -294,77 +315,54 @@ if [ "$command" == "update" ];then
 	exit $?
 fi
 
-if [[ "$command" == "ethernet" ]]; then
-        eth="eth`ifconfig -a | sed -n \"s/eth\(.\).*/\1/p\"`"
-        if [[ "$?" != "0" || "$eth" == "eth" ]];then
-                echo "`logtime` : no eth interface found" >> $log
-                exit 1
-        else
-                echo "`logtime` : $eth will be used as wired interface"
-        fi
-        sed -i "s/eth[0-9]\+/$eth/g" /var/network/interfaces # directly modify the file and not the link because sed create a temporary file in the same directory
-        if [[ "$mode" == "start" ]]; then
-                /sbin/ifdown $eth >> $log
-                /sbin/ifup $eth >> $log
-                exit $?
-        elif [[ "$mode" == "stop" ]]; then
-                /sbin/ifdown $eth >> $log
-                exit $?
-        fi
-
-fi
-
-
 if [[ "$command" == "wifi" ]]; then
-        if [[ ! -f "$wpafile" ]];then
-                echo "`logtime` : $wpafile do not exists" >> $log
-                exit 1
-        fi
         ssid="$3"
         psk="$4"
 
-        wlan="wlan`ifconfig -a | sed -n \"s/wlan\(.\).*/\1/p\"`"
-        if [[ "$?" != "0" || "$wlan" == "wlan" ]] ;then
-                echo "`logtime` : no wlan interface found" >> $log
-                exit 1
-        else
-                echo "`logtime` : $wlan be used as wifi interface" >> $log
-        fi
-        sed -i "s/wlan[0-9]\+/$wlan/g" /var/network/interfaces # directly modify the file and not the link because sed create a temporary file in the same directory
-
         if [[ "$mode" == "enable" ]]; then
-                echo "`logtime` : enabling wifi" >> $log
-                cat $wpafile | grep network >> $log
-                if [ "$?" != "0" ]; then
-                        echo "`logtime` : creating network entry in $wpafile" >> $log
-                        echo -e "network={\n\tssid=\"\"\n\tpsk=\"\"\n}" >> $wpafile
-                fi
-                sed -i "s/ssid=\".*\"/ssid=\"`echo $ssid | sed -e 's/[\/&]/\\\\&/g'`\"/g" $wpafile
-                sed -i "s/psk=\".*\"/psk=\"`echo $psk | sed -e 's/[\/&]/\\\\&/g'`\"/g" $wpafile
-                mode="forcestart"
-        fi
-        if [[ "$mode" == "disable" ]]; then
-                sed -i "s/ssid=\".*\"/ssid=\"\"/g" $wpafile
-                sed -i "s/psk=\".*\"/psk=\"\"/g" $wpafile
-                ifdown $wlan
-                exit $?
+            echo "`logtime` : configure wifi" >> $log
+	    mkdir -p "/var/lib/connman" || exit 1
+	    cat > "/var/lib/connman/recalbox.config" <<EOF
+[global]
+Name=recalbox
+
+[service_recalbox_default]
+Type=wifi
+Name=${ssid}
+EOF
+	    if test "${psk}" != ""
+	    then
+		echo "Passphrase=${psk}" >> "/var/lib/connman/recalbox.config"
+	    fi
+
+	    connmanctl enable wifi || exit 1
+	    connmanctl scan   wifi || exit 1
+            exit 0
         fi
   	if [[ "$mode" =~ "start" ]]; then
-                if [[ "$mode" != "forcestart" ]]; then
-                        settingsWlan="`$systemsetting -command load -key wifi.enabled`"
-                        if [ "$settingsWlan" != "1" ];then
-                                exit 1
-                        fi
+            if [[ "$mode" != "forcestart" ]]; then
+                settingsWlan="`$systemsetting -command load -key wifi.enabled`"
+                if [ "$settingsWlan" != "1" ];then
+                    exit 1
                 fi
-                echo "`logtime` : starting wifi" >> $log
-                killall wpa_supplicant >> $log
-                /sbin/ifdown $wlan >> $log
-		rb_wpa_supplicant "$wlan" &
-                waitWifi $wlan 20
-                /sbin/ifup $wlan >> $log
-                ifconfig $wlan | grep "inet addr" >> $log
-                exit $?
+            fi
+	    connmanctl enable wifi || exit 1
+	    connmanctl scan   wifi || exit 1
+	    exit 0
         fi
+        if [[ "$mode" == "disable" ]]; then
+	    connmanctl disable wifi
+            exit $?
+        fi
+	if [[ "$mode" == "list" ]]; then
+	    WAVAILABLE=$(connmanctl services | cut -b 5- | sed -e s+'^\([^ ]*\).*$'+'\1'+ | grep -vE '^Wired$|^<hidden>$')
+	    if test -n "${ssid}"
+	    then
+		echo "${WAVAILABLE}" | grep -qE '^'"${ssid}"'$' || echo "${ssid}"
+	    fi
+	    echo "${WAVAILABLE}"
+            exit 0
+	fi
 fi
 if [[ "$command" == "hcitoolscan" ]]; then
 	killall hidd >> /dev/null
@@ -416,8 +414,6 @@ if [[ "$command" == "hiddpair" ]]; then
         fi
         exit $connected
 fi
-
-storageFile="/boot/recalbox-boot.conf"
 
 if [[ "$command" == "storage" ]]; then
     if [[ "$mode" == "current" ]]; then

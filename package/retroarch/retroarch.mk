@@ -6,7 +6,7 @@
 #RETROARCH_VERSION = 2755abc14fe25b9f32e145dcf6ec5c9569640eb8 for rpi1
 
 
-RETROARCH_VERSION = b8bbdc6f4ccc5a844f25bf52e328a5a0a8a93d4e 
+RETROARCH_VERSION = 6690711ace3fe146d720d8755528bee8d8d87dd8 
 RETROARCH_SITE = https://github.com/libretro/RetroArch.git
 RETROARCH_SITE_METHOD = git
 RETROARCH_LICENSE = GPLv3+
@@ -34,6 +34,10 @@ ifeq ($(BR2_cortex_a8),y)
         RETROARCH_CONF_OPTS += --enable-neon --enable-networking --enable-netplay
 endif
 
+# odroid xu4
+ifeq ($(BR2_cortex_a15),y)
+        RETROARCH_CONF_OPTS += --enable-neon --enable-networking --enable-netplay
+endif
 
 ifeq ($(BR2_PACKAGE_PYTHON3),y)
 RETROARCH_CONF_OPTS += --enable-python
@@ -106,6 +110,16 @@ else
 RETROARCH_CONF_OPTS += --disable-freetype
 endif
 
+define RETROARCH_MALI_FIXUP
+	# the type changed with the recent sdk
+	$(SED) 's|mali_native_window|fbdev_window|g' $(@D)/gfx/drivers_context/mali_fbdev_ctx.c
+endef
+
+ifeq ($(BR2_PACKAGE_MALI_OPENGLES_SDK),y)
+	RETROARCH_PRE_CONFIGURE_HOOKS += RETROARCH_MALI_FIXUP
+	RETROARCH_CONF_OPTS += --enable-gles --enable-mali_fbdev
+endif
+
 define RETROARCH_CONFIGURE_CMDS
 	(cd $(@D); rm -rf config.cache; \
 		$(TARGET_CONFIGURE_ARGS) \
@@ -141,6 +155,10 @@ endif
 
 ifeq ($(BR2_cortex_a8),y)
         LIBRETRO_PLATFORM += armv8 cortexa8
+endif
+
+ifeq ($(BR2_cortex_a15),y)
+        LIBRETRO_PLATFORM += armv7
 endif
 
 ifeq ($(BR2_GCC_TARGET_FLOAT_ABI),"hard")

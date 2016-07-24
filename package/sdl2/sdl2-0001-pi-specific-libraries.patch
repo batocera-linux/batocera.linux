@@ -1,0 +1,39 @@
+From be47f271e8ca72b127bfac039375e4e3290744c6 Mon Sep 17 00:00:00 2001
+From: Subs <frog2wah@gmail.com>
+Date: Tue, 21 Jun 2016 16:31:55 +0200
+Subject: [PATCH] pi specific libraries
+
+---
+ configure    | 2 +-
+ configure.in | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/configure b/configure
+index a41f025..7d3fba1 100755
+--- a/configure
++++ b/configure
+@@ -22904,7 +22904,7 @@ case "$host" in
+                 CFLAGS="$CFLAGS $RPI_CFLAGS"
+                 SDL_CFLAGS="$SDL_CFLAGS $RPI_CFLAGS"
+                 EXTRA_CFLAGS="$EXTRA_CFLAGS $RPI_CFLAGS"
+-                EXTRA_LDFLAGS="$EXTRA_LDFLAGS -L/opt/vc/lib -lbcm_host -ldl"
++                EXTRA_LDFLAGS="$EXTRA_LDFLAGS -L/opt/vc/lib -lbcm_host -ldl -lvchostif"
+ 
+                 if test x$enable_video = xyes; then
+                     SOURCES="$SOURCES $srcdir/src/video/raspberry/*.c"
+diff --git a/configure.in b/configure.in
+index f585d01..82e8f2a 100644
+--- a/configure.in
++++ b/configure.in
+@@ -2812,7 +2812,7 @@ case "$host" in
+                 CFLAGS="$CFLAGS $RPI_CFLAGS"
+                 SDL_CFLAGS="$SDL_CFLAGS $RPI_CFLAGS"
+                 EXTRA_CFLAGS="$EXTRA_CFLAGS $RPI_CFLAGS"
+-                EXTRA_LDFLAGS="$EXTRA_LDFLAGS -L/opt/vc/lib -lbcm_host -ldl"
++                EXTRA_LDFLAGS="$EXTRA_LDFLAGS -L/opt/vc/lib -lbcm_host -ldl -lvchostif"
+ 
+                 if test x$enable_video = xyes; then
+                     SOURCES="$SOURCES $srcdir/src/video/raspberry/*.c"
+-- 
+2.7.4
+

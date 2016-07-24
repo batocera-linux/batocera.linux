@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-MEDIASTREAMER_VERSION = 2.9.0
+MEDIASTREAMER_VERSION = 2.12.1
 MEDIASTREAMER_SITE = http://download.savannah.nongnu.org/releases/linphone/mediastreamer
 MEDIASTREAMER_INSTALL_STAGING = YES
 MEDIASTREAMER_DEPENDENCIES = host-intltool host-pkgconf ortp host-gettext
@@ -18,6 +18,27 @@ MEDIASTREAMER_CONF_OPTS += --enable-alsa
 MEDIASTREAMER_DEPENDENCIES += alsa-lib
 else
 MEDIASTREAMER_CONF_OPTS += --disable-alsa
+endif
+
+ifeq ($(BR2_PACKAGE_LIBUPNP),y)
+MEDIASTREAMER_CONF_OPTS += --enable-upnp
+MEDIASTREAMER_DEPENDENCIES += libupnp
+else
+MEDIASTREAMER_CONF_OPTS += --disable-upnp
+endif
+
+ifeq ($(BR2_PACKAGE_LIBVPX),y)
+MEDIASTREAMER_CONF_OPTS += --enable-vp8
+MEDIASTREAMER_DEPENDENCIES += libvpx
+else
+MEDIASTREAMER_CONF_OPTS += --disable-vp8
+endif
+
+ifeq ($(BR2_PACKAGE_OPUS),y)
+MEDIASTREAMER_CONF_OPTS += --enable-opus
+MEDIASTREAMER_DEPENDENCIES += opus
+else
+MEDIASTREAMER_CONF_OPTS += --disable-opus
 endif
 
 # portaudio backend needs speex as well

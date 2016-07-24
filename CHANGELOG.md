@@ -3,13 +3,50 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unrelease][unreleased]
-- Update to moonlight-embedded-2.2.0, adds support for GFE 2.11
+- Update Mame2003 core to get the mame2003-skip_warnings and avoid splash screen
+- New emulator : PPSSPP
+- Add Mayflash NES/SNES and SEGA SATURN in usbhid.conf
+- Added omxplayer to enable Introduction video
+- Updated recalbox-configgen to version 4.1.X
+- Added linapple-pie to recalbox-rpi3_defconfig
+- Added support for vice 2.4.24. This means support for commodore c64 and other commodore systems
+- Added theme for commodore c64
+- Added two demo ROMs for commodore c64
+- Add linapple specific parameters to start fixing an issue.
+- Added user's configuration files upgrade
+- Merged buildroot upstream
+- Added retroachievements hardcore mode
+- Add omxplayer to rpi2 & rpi3 defconfig
+- Add Kodi default plugins/repositories
+- Improved S02splash script for video splash
+- linapple-pie download redirected to LaurentMarchelli
+- passed to gcc5
+- Added pgrep to busybox for omxplayer extensions
+- New video version and splash video now stopped when kodi is started
+- Added custom ratio per game option
+- Dbus implementation to have fade out effect on splash video
+- Added Witty Pi powerswitch support with Wiring Pi.
+- Network connection manager : ethernet configuration on wire connection
+- Network connection manager : multiple wifi configurations
+- Wifi : open/wep/wpa/wpa2
+- New emulator : reicast
+- Bumped retroarch to v1.3.4
+- Added retroachievements support to fceunext core
+- Reicast : add multiplayer support
+- Update to moonlight-embedded-2.2.1 (but still displays 2.2.0 when running), adds support for GFE 2.11
 - Added enet library for moonlight-embedded-2.2.0
 - Solved a bug on xarcade where B and HOTKEY were sending the same event
 - Slide transition by default in ES
 - Power management switch support (power,reset and LED) for pin 3/5/6
 - Add ifconfig -a and /boot/recalbox-boot.conf in recalbox-support.sh
+- S99Custom now trasmits its init parameter to custom.sh
 - Add ipega 9021 rules
+- ES now shutdowns the system
+- share/roms/saves/bios available via a network point
+- bumped SDL to 2.0.4
+- disable multitouch axis in SDL 2.0.4
+- linux kernel bumped to 4.4.13
+- Add DosBox 0.74 (rev 3989) with specific patches: SDL2, with mapping of mouse and all axis of joysticks
 
 ## [4.0.0-beta3] - 2016-04-19
 - Xarcade2jstick button remapped + better support of IPAC encoders
@@ -53,6 +90,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ## [3.3.0-beta17]
 - New version of xboxdrv
 - Corrected 8bitdo mapping
+- Added wiringpi
+- switch USBHID to kernel module for gamepad encoders
+- linapple-pie (Apple ][ Emulator) added to rpi2, rpi1 need to be tested
 
 ## [3.3.0-beta16] - 2015-11-24
 - Corrected kodi start

@@ -4,9 +4,10 @@
 #
 ################################################################################
 
-GST1_PLUGINS_BAD_VERSION = 1.6.2
+GST1_PLUGINS_BAD_VERSION = 1.8.1
 GST1_PLUGINS_BAD_SOURCE = gst-plugins-bad-$(GST1_PLUGINS_BAD_VERSION).tar.xz
 GST1_PLUGINS_BAD_SITE = http://gstreamer.freedesktop.org/src/gst-plugins-bad
+GST1_PLUGINS_BAD_INSTALL_STAGING = YES
 GST1_PLUGINS_BAD_LICENSE_FILES = COPYING COPYING.LIB
 # Unknown and GPL licensed plugins will append to GST1_PLUGINS_BAD_LICENSE if
 # enabled.
@@ -430,6 +431,12 @@ else
 GST1_PLUGINS_BAD_CONF_OPTS += --disable-mxf
 endif
 
+ifeq ($(BR2_PACKAGE_GST1_PLUGINS_BAD_NETSIM),y)
+GST1_PLUGINS_BAD_CONF_OPTS += --enable-netsim
+else
+GST1_PLUGINS_BAD_CONF_OPTS += --disable-netsim
+endif
+
 ifeq ($(BR2_PACKAGE_GST1_PLUGINS_BAD_PLUGIN_NUVDEMUX),y)
 GST1_PLUGINS_BAD_CONF_OPTS += --enable-nuvdemux
 else
@@ -536,6 +543,12 @@ ifeq ($(BR2_PACKAGE_GST1_PLUGINS_BAD_PLUGIN_VIDEOFILTERS),y)
 GST1_PLUGINS_BAD_CONF_OPTS += --enable-videofilters
 else
 GST1_PLUGINS_BAD_CONF_OPTS += --disable-videofilters
+endif
+
+ifeq ($(BR2_PACKAGE_GST1_PLUGINS_BAD_PLUGIN_VIDEOFRAME_AUDIOLEVEL),y)
+GST1_PLUGINS_BAD_CONF_OPTS += --enable-videoframe_audiolevel
+else
+GST1_PLUGINS_BAD_CONF_OPTS += --disable-videoframe_audiolevel
 endif
 
 ifeq ($(BR2_PACKAGE_GST1_PLUGINS_BAD_PLUGIN_VIDEOMEASURE),y)

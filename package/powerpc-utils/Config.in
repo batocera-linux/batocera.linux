@@ -1,11 +1,16 @@
+comment "powerpc-utils tools needs a toolchain w/ dynamic library"
+	depends on BR2_powerpc || BR2_powerpc64 || BR2_powerpc64le
+	depends on BR2_STATIC_LIBS
+
 config BR2_PACKAGE_POWERPC_UTILS
 	bool "powerpc-utils"
+	depends on !BR2_STATIC_LIBS # dlfcn.h
 	depends on BR2_powerpc || BR2_powerpc64 || BR2_powerpc64le
 	select BR2_PACKAGE_ZLIB
 	help
 	  System utilities for PowerPC machines.
 
-	  http://sourceforge.net/projects/powerpc-utils/
+	  https://github.com/nfont/powerpc-utils
 
 if BR2_PACKAGE_POWERPC_UTILS
 
@@ -13,7 +18,6 @@ config BR2_PACKAGE_POWERPC_UTILS_RTAS
 	bool "RTAS support"
 	select BR2_PACKAGE_LIBRTAS
 	depends on BR2_TOOLCHAIN_USES_GLIBC
-	default y
 	help
 	  Enable support for functions that require RTAS.
 

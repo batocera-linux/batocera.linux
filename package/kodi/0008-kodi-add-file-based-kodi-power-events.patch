@@ -10,8 +10,8 @@ Signed-off-by: Nicolas Adenis-Lamarre <nicolas.adenis-lamarre@gmail.com>
 
 diff --git a/xbmc/ApplicationMessenger.cpp b/xbmc/ApplicationMessenger.cpp
 index e0152aa..72e68ed 100644
---- a/xbmc/ApplicationMessenger.cpp
-+++ b/xbmc/ApplicationMessenger.cpp
+--- a/xbmc/messaging/ApplicationMessenger.cpp
++++ b/xbmc/messaging/ApplicationMessenger.cpp
 @@ -73,6 +73,27 @@ using namespace std;
  using namespace MUSIC_INFO;
  using namespace PERIPHERALS;
@@ -40,12 +40,12 @@ index e0152aa..72e68ed 100644
  CDelayedMessage::CDelayedMessage(ThreadMessage& msg, unsigned int delay) : CThread("DelayedMessage")
  {
    m_msg.dwMessage  = msg.dwMessage;
-@@ -221,6 +242,8 @@ void CApplicationMessenger::ProcessMessages()
+@@ -214,6 +235,8 @@
  
  void CApplicationMessenger::ProcessMessage(ThreadMessage *pMsg)
  {
 +  RecalboxMsg(pMsg->dwMessage);
 +
-   switch (pMsg->dwMessage)
+   //special case for this that we handle ourselves
+   if (pMsg->dwMessage == TMSG_CALLBACK)
    {
-     case TMSG_SHUTDOWN:

@@ -2,7 +2,6 @@
 
 systemsetting="python /usr/lib/python2.7/site-packages/configgen/settings/recalboxSettings.pyc"
 config_script=/recalbox/scripts/recalbox-config.sh
-wpafile=/var/lib/wpa_supplicant.conf
 log="/recalbox/share/system/logs/recalbox.log"
 
 rb_volume_configure() {
@@ -14,18 +13,45 @@ rb_volume_configure() {
 }
 
 rb_wifi_configure() {
-    settings_ssid="`$systemsetting -command load -key wifi.ssid`"
-    settings_key="`$systemsetting -command load -key wifi.key`"
+    X=$1
 
-    if [[ "$settings_ssid" != "" ]] && [[ "$settings_key" != "" ]] ;then
-	cat $wpafile | grep network >> $log
-        if [ "$?" != "0" ]; then
-            recallog "creating network entry in $wpafile"
-            echo -e "network={\n\tssid=\"\"\n\tpsk=\"\"\n}" >> $wpafile
-        fi
-        sed -i "s/ssid=\".*\"/ssid=\"$settings_ssid\"/g" $wpafile
-        sed -i "s/psk=\".*\"/psk=\"$settings_key\"/g"    $wpafile	
-	recallog "updated wifi settings : ssid=$settings_ssid key=$settings_key"
+    if test "$X" = 1
+    then
+	settings_ssid="`$systemsetting -command load -key wifi.ssid`"
+	settings_key="`$systemsetting -command load -key wifi.key`"
+	settings_file="/var/lib/connman/recalbox_wifi.config"
+	settings_name="default"
+    else
+	settings_ssid="`$systemsetting -command load -key wifi${X}.ssid`"
+	settings_key="`$systemsetting -command load -key wifi${X}.key`"
+	settings_file="/var/lib/connman/recalbox_wifi${X}.config"
+	settings_name="${X}"
+    fi
+
+    if [[ "$settings_ssid" != "" ]] ;then
+	mkdir -p "/var/lib/connman"
+	cat > "${settings_file}" <<EOF
+[global]
+Name=recalbox
+
+[service_recalbox_${settings_name}]
+Type=wifi
+Name=${settings_ssid}
+EOF
+	if test "${settings_key}" != ""
+	then
+	    settings_key_dec=$(/recalbox/scripts/recalbox-encode.sh decode "${settings_key}")
+	    echo "Passphrase=${settings_key_dec}" >> "${settings_file}"
+
+	    # saved the value encoded
+	    if test "${settings_key}" = "${settings_key_dec}"
+	    then
+		# sed the replace by the secure value in recalbox.conf
+		settings_key=$(/recalbox/scripts/recalbox-encode.sh encode "${settings_key}")
+		sed -i -e s@'^[ \t]*wifi.key[ \t]*=.*$'@"wifi.key=${settings_key}"@ "/recalbox/share/system/recalbox.conf"
+	    fi
+	fi
+	recallog "updated wifi settings : ssid=$settings_ssid"
     fi
 }
 
@@ -142,15 +168,17 @@ case "$1" in
 	sed -i 's/\r//g' /recalbox/share/system/recalbox.conf
 	
 	# configure
-	rb_gpio_configure&   # 0.9 start by the gpio while it's the longer
-	rb_keyboad_lang&     # 0.7
-	rb_wifi_configure&   # 0.6
-	rb_xbox&             # 0.6
-	rb_audio_configure&  # 0.5
-	rb_volume_configure& # 0.5
-	rb_timezone&         # 0.4
-	rb_hostname&         # 0.4
-	rb_xarcade2jstick&   # 0.1
+	rb_gpio_configure&    # 0.9 start by the gpio while it's the longer
+	rb_keyboad_lang&      # 0.7
+	rb_wifi_configure 1&  # 0.6
+	rb_wifi_configure 2&  # 0.6
+	rb_wifi_configure 3&  # 0.6
+	rb_xbox&              # 0.6
+	rb_audio_configure&   # 0.5
+	rb_volume_configure&  # 0.5
+	rb_timezone&          # 0.4
+	rb_hostname&          # 0.4
+	rb_xarcade2jstick&    # 0.1
 	wait
 	;;
   stop)

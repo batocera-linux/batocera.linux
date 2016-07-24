@@ -1,0 +1,34 @@
+#!/bin/sh
+
+if test "$1" != "start"
+then
+  exit 0
+fi
+
+systemsetting="python /usr/lib/python2.7/site-packages/configgen/settings/recalboxSettings.pyc"
+
+# /etc/shadow is dynamically generated from the password found in /boot/recalbox-boot.conf
+# the password is visible only in the es interface
+# or to people having already a ssh password via the command : /recalbox/scripts/recalbox-config.sh setRootPassword xyz
+MASTERPASSWD=$(/recalbox/scripts/recalbox-config.sh getRootPassword)
+if test -z "${MASTERPASSWD}"
+then
+    # generate a new one
+    # hum, in case of error, what to do ? nothing.
+    /recalbox/scripts/recalbox-config.sh setRootPassword
+    MASTERPASSWD=$(/recalbox/scripts/recalbox-config.sh getRootPassword)
+fi
+
+# secure ssh
+enabled="`$systemsetting  -command load -key system.security.enabled`"
+if [ "$enabled" != "1" ];then
+    MASTERPASSWD="recalboxroot"
+fi
+  
+# write the /etc/shadow file
+SHADOWPASSWD=$(openssl passwd -1 "${MASTERPASSWD}")
+echo "root:${SHADOWPASSWD}:::::::" > /run/recalbox.shadow
+
+# secure samba
+mkdir -p "/var/lib/samba/private"
+(echo "${MASTERPASSWD}"; echo "${MASTERPASSWD}") | smbpasswd -a root

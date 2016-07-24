@@ -4,21 +4,19 @@
 #
 ################################################################################
 
-COLLECTD_VERSION = 5.5.0
+COLLECTD_VERSION = 5.5.1
 COLLECTD_SITE = http://collectd.org/files
 COLLECTD_SOURCE = collectd-$(COLLECTD_VERSION).tar.bz2
 COLLECTD_CONF_ENV = ac_cv_lib_yajl_yajl_alloc=yes
 COLLECTD_INSTALL_STAGING = YES
 COLLECTD_LICENSE = GPLv2, LGPLv2.1
 COLLECTD_LICENSE_FILES = COPYING
-# For 0001-build-add-libavltree-libcommon-libheap-dependencies.patch
-COLLECTD_AUTORECONF = YES
 
 # These require unmet dependencies, are fringe, pointless or deprecated
 COLLECTD_PLUGINS_DISABLE = \
 	amqp apple_sensors aquaero ascent barometer dbi email \
 	gmond hddtemp ipmi java libvirt lpar lvm madwifi mbmon \
-	mic multimeter netapp  notify_desktop notify_email numa \
+	mic multimeter netapp notify_desktop notify_email numa \
 	nut onewire oracle perl pf pinba powerdns python redis routeros \
 	rrdcached sigrok tape target_v5upgrade teamspeak2 ted \
 	tokyotyrant turbostat uuid varnish virt vserver write_kafka \
@@ -185,6 +183,14 @@ define COLLECTD_INSTALL_TARGET_CMDS
 	$(MAKE) DESTDIR=$(TARGET_DIR) -C $(@D) install
 	rm -f $(TARGET_DIR)/usr/bin/collectd-nagios
 	rm -f $(TARGET_DIR)/usr/share/collectd/postgresql_default.conf
+endef
+
+define COLLECTD_INSTALL_INIT_SYSTEMD
+	$(INSTALL) -D -m 644 package/collectd/collectd.service \
+		$(TARGET_DIR)/usr/lib/systemd/system/collectd.service
+	mkdir -p $(TARGET_DIR)/etc/systemd/system/multi-user.target.wants
+	ln -fs ../../../../usr/lib/systemd/system/collectd.service \
+		$(TARGET_DIR)/etc/systemd/system/multi-user.target.wants/collectd.service
 endef
 
 $(eval $(autotools-package))

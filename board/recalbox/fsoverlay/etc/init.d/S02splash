@@ -1,14 +1,68 @@
 #!/bin/bash
 
+do_start ()
+{
+    video="/recalbox/system/resources/splash/recalboxintro.mp4"
+
+    # odroid xu4 has not omxplayer, make it run this code make it flash
+    if [[ -f $video && -f /usr/bin/omxplayer ]]; then
+
+        # Initialize dbus session
+        OMXPLAYER_DBUS_ADDR="/tmp/omxplayerdbus.root"
+        OMXPLAYER_DBUS_PID="/tmp/omxplayerdbus.root.pid"
+        exec 5> "$OMXPLAYER_DBUS_ADDR"
+        exec 6> "$OMXPLAYER_DBUS_PID"
+        dbus-daemon --fork --print-address 5 --print-pid 6 --session
+        until [ -s "$OMXPLAYER_DBUS_ADDR" ]; do
+            echo "waiting for dbus address to appear" >&2
+            sleep .2
+        done
+        DBUS_SESSION_BUS_ADDRESS=`cat $OMXPLAYER_DBUS_ADDR`
+        DBUS_SESSION_BUS_PID=`cat $OMXPLAYER_DBUS_PID`
+        export DBUS_SESSION_BUS_ADDRESS
+        export DBUS_SESSION_BUS_PID
+
+        # Launch the video
+        omx_fnt=""
+        omx_opt="--no-keys --layer=10000 --aspect-mode=fill"
+        omx_srt="--no-ghost-box --lines=1 --align=left $omx_fnt --font-size=20 --subtitles=/recalbox/system/resources/splash/recalboxintro.srt"
+        /usr/bin/omxplayer.bin $omx_opt $omx_srt $video &
+        PID=$!
+
+        # Stop the video when ready
+        if [[ $? -eq 0 ]]; then
+            # Wait for emulationstation or Kodi, but not more than 20 seconds
+            count=0
+            while [[ ! -f "/tmp/emulationstation.ready" && ! -e "/var/run/kodi.msg" && $count -lt 20 ]]; do
+                sleep 1
+                ((count++))
+            done
+             # Finish with a one second fade out.
+            audio_fade=1
+            video_fade=250
+            while [[ $video_fade -gt 0 ]]; do
+                sleep .02
+                dbus-send --print-reply=literal --session --dest=org.mpris.MediaPlayer2.omxplayer /org/mpris/MediaPlayer2 org.freedesktop.DBus.Properties.Volume double:$audio_fade >/dev/null
+                dbus-send --print-reply=literal --session --dest=org.mpris.MediaPlayer2.omxplayer /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.SetAlpha objpath:/not/used int64:$video_fade >/dev/null
+                audio_fade=`echo "$audio_fade .02" | awk '{printf "%.2f", $1-$2}'`
+                ((video_fade=video_fade-5))
+            done
+            # Ready flag set or timeout occured; stop video process.
+            dbus-send --print-reply=literal --session --dest=org.mpris.MediaPlayer2.omxplayer /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.Action int32:15 >/dev/null
+        fi
+    fi
+    fbv -f -i /recalbox/system/resources/splash/logo-version.png
+}
+
 case "$1" in
-  start)
-      fbv -f -i /recalbox/system/resources/splash/logo-version.png &
-      ;;
-  stop)
-	;;
-  restart|reload)
-	;;
-  *)
+    start)
+        do_start &
+        ;;
+    stop)
+	   ;;
+    restart|reload)
+	   ;;
+    *)
 esac
 
 exit $?

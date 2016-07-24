@@ -7,64 +7,9 @@ config BR2_PACKAGE_UCLIBC
 
 comment "uClibc Options"
 
-config BR2_UCLIBC_VERSION_SUPPORTS_LINUXTHREADS
-	bool
-
-config BR2_UCLIBC_VERSION_SUPPORTS_LINUXTHREADS_OLD
-	bool
-
-config BR2_UCLIBC_VERSION_SUPPORTS_NPTL
-	bool
-
-choice
-	prompt "uClibc C library Version"
-	default BR2_UCLIBC_VERSION_NG
-	help
-	  Select the version of uClibc you wish to use.
-
-	config BR2_UCLIBC_VERSION_0_9_33
-		bool "uClibc 0.9.33.x"
-		select BR2_UCLIBC_VERSION_SUPPORTS_LINUXTHREADS
-		select BR2_UCLIBC_VERSION_SUPPORTS_LINUXTHREADS_OLD
-		select BR2_UCLIBC_VERSION_SUPPORTS_NPTL if !BR2_x86_i386
-		depends on !(BR2_arc || BR2_mips64 || BR2_mips64el || BR2_xtensa)
-
-	config BR2_UCLIBC_VERSION_NG
-		bool "uClibc-ng"
-		select BR2_UCLIBC_VERSION_SUPPORTS_LINUXTHREADS if BR2_m68k
-		select BR2_UCLIBC_VERSION_SUPPORTS_LINUXTHREADS_OLD \
-		       if BR2_m68k || BR2_arm || BR2_armeb
-		select BR2_UCLIBC_VERSION_SUPPORTS_NPTL \
-		       if !BR2_m68k && !BR2_x86_i386
-
-	config BR2_UCLIBC_VERSION_SNAPSHOT
-		bool "daily snapshot"
-		select BR2_UCLIBC_VERSION_SUPPORTS_LINUXTHREADS if !BR2_xtensa
-		select BR2_UCLIBC_VERSION_SUPPORTS_LINUXTHREADS_OLD
-		select BR2_UCLIBC_VERSION_SUPPORTS_NPTL \
-		       if !BR2_x86_i386 && !BR2_xtensa
-		depends on !(BR2_arc || BR2_mips64 || BR2_mips64el)
-
-endchoice
-
-config BR2_USE_UCLIBC_SNAPSHOT
-	string "Date (yyyymmdd) of snapshot or 'snapshot' for latest"
-	default "snapshot"
-	depends on BR2_UCLIBC_VERSION_SNAPSHOT
-	help
-	  Use latest snapshot or one from a specific date?
-
-config BR2_UCLIBC_VERSION_STRING
-	string
-	default "0.9.33.2"	if BR2_UCLIBC_VERSION_0_9_33
-	default "1.0.11"		if BR2_UCLIBC_VERSION_NG
-	default BR2_USE_UCLIBC_SNAPSHOT	if BR2_UCLIBC_VERSION_SNAPSHOT
-
 config BR2_UCLIBC_CONFIG
 	string "uClibc configuration file to use?"
-	default "package/uclibc/uClibc-0.9.33.config" if BR2_UCLIBC_VERSION_0_9_33
-	default "package/uclibc/uClibc-ng.config" if BR2_UCLIBC_VERSION_NG
-	default "package/uclibc/uClibc-snapshot.config" if BR2_UCLIBC_VERSION_SNAPSHOT
+	default "package/uclibc/uClibc-ng.config"
 	help
 	  Some people may wish to use their own modified uClibc configuration
 	  file and will specify their config file location with this option.
@@ -102,9 +47,8 @@ config BR2_TOOLCHAIN_BUILDROOT_LOCALE
 
 choice
 	prompt "Thread library implementation"
-	default BR2_PTHREADS_NATIVE if BR2_UCLIBC_VERSION_SUPPORTS_NPTL
-	default BR2_PTHREADS_OLD if BR2_UCLIBC_VERSION_SUPPORTS_LINUXTHREADS_OLD
-	default BR2_PTHREADS if BR2_UCLIBC_VERSION_SUPPORTS_LINUXTHREADS
+	default BR2_PTHREADS_NATIVE
+	default BR2_PTHREADS_OLD if !BR2_USE_MMU
 	help
 	  Use this option to select the thread library implementation
 	  that should be used in your toolchain.
@@ -115,18 +59,19 @@ choice
 	config BR2_PTHREADS
 		bool "linuxthreads"
 		select BR2_TOOLCHAIN_HAS_THREADS
-		depends on BR2_UCLIBC_VERSION_SUPPORTS_LINUXTHREADS
+		depends on BR2_m68k
 
 	config BR2_PTHREADS_OLD
 		bool "linuxthreads (stable/old)"
 		select BR2_TOOLCHAIN_HAS_THREADS
-		depends on BR2_UCLIBC_VERSION_SUPPORTS_LINUXTHREADS_OLD
+		depends on BR2_m68k || BR2_arm || BR2_armeb || BR2_xtensa
 
 	config BR2_PTHREADS_NATIVE
 		bool "Native POSIX Threading (NPTL)"
 		select BR2_TOOLCHAIN_HAS_THREADS
 		select BR2_TOOLCHAIN_HAS_THREADS_NPTL
-		depends on BR2_UCLIBC_VERSION_SUPPORTS_NPTL
+		depends on BR2_USE_MMU
+		depends on !BR2_m68k
 endchoice
 
 config BR2_PTHREAD_DEBUG
@@ -196,11 +141,6 @@ config BR2_UCLIBC_ARC_TYPE
 	default "ARC_CPU_700"	if BR2_arc770d
 	default "ARC_CPU_HS"	if BR2_archs38
 
-config BR2_UCLIBC_ARM_BX
-	bool
-	depends on BR2_UCLIBC_TARGET_ARCH = "arm"
-	default y if (BR2_ARM_CPU_HAS_THUMB || BR2_ARM_CPU_HAS_THUMB2)
-
 config BR2_UCLIBC_MIPS_ABI
 	string
 	depends on BR2_UCLIBC_TARGET_ARCH = "mips"
@@ -236,7 +176,6 @@ config BR2_UCLIBC_POWERPC_TYPE
 config BR2_UCLIBC_X86_TYPE
 	string
 	depends on BR2_UCLIBC_TARGET_ARCH = "i386"
-	default "386"        if BR2_x86_i386
 	default "486"        if BR2_x86_i486
 	default "586"        if BR2_x86_i586
 	default "586MMX"     if BR2_x86_pentium_mmx

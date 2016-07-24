@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-OPENAL_VERSION = 1.17.1
+OPENAL_VERSION = 1.17.2
 OPENAL_SOURCE = openal-soft-$(OPENAL_VERSION).tar.bz2
 OPENAL_SITE = http://kcat.strangesoft.net/openal-releases
 OPENAL_LICENSE = LGPLv2+
@@ -13,6 +13,10 @@ OPENAL_INSTALL_STAGING = YES
 
 # We don't need the utilities, Distros don't ship them either
 OPENAL_CONF_OPTS += -DALSOFT_UTILS=OFF
+
+ifeq ($(BR2_TOOLCHAIN_GCC_AT_LEAST_4_8),y)
+OPENAL_CONF_OPTS += -DEXTRA_LIBS=atomic
+endif
 
 ifeq ($(BR2_PACKAGE_ALSA_LIB),y)
 OPENAL_DEPENDENCIES += alsa-lib

@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-GNUPG2_VERSION = 2.0.29
+GNUPG2_VERSION = 2.0.30
 GNUPG2_SOURCE = gnupg-$(GNUPG2_VERSION).tar.bz2
 GNUPG2_SITE = ftp://ftp.gnupg.org/gcrypt/gnupg
 GNUPG2_LICENSE = GPLv3+
@@ -36,6 +36,13 @@ GNUPG2_CONF_OPTS += --enable-bzip2 --with-bzip2=$(STAGING_DIR)
 GNUPG2_DEPENDENCIES += bzip2
 else
 GNUPG2_CONF_OPTS += --disable-bzip2
+endif
+
+ifeq ($(BR2_PACKAGE_LIBUSB_COMPAT),y)
+GNUPG2_CONF_OPTS += --enable-ccid-driver
+GNUPG2_DEPENDENCIES += libusb-compat
+else
+GNUPG2_CONF_OPTS += --disable-ccid-driver
 endif
 
 ifeq ($(BR2_PACKAGE_READLINE),y)

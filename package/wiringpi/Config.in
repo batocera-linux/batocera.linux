@@ -1,0 +1,8 @@
+config BR2_PACKAGE_WIRINGPI
+	bool "wiringpi"
+	depends on BR2_TOOLCHAIN_HAS_THREADS
+	depends on BR2_INSTALL_LIBSTDCPP
+	depends on BR2_arm || BR2_i386 || BR2_x86_64 || BR2_mipsel
+	
+	help
+	 https://github.com/WiringPi/WiringPi

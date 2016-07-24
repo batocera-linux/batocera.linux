@@ -10,23 +10,39 @@ SDL_SOUND_SITE = http://icculus.org/SDL_sound/downloads
 SDL_SOUND_LICENSE = LGPLv2.1+
 SDL_SOUND_LICENSE_FILES = COPYING
 SDL_SOUND_INSTALL_STAGING = YES
-SDL_SOUND_DEPENDENCIES = sdl
+SDL_SOUND_DEPENDENCIES = sdl2
 
 ifneq ($(BR2_ENABLE_LOCALE),y)
 SDL_SOUND_DEPENDENCIES += libiconv
 endif
 
 # optional dependencies
-ifeq ($(BR2_PACKAGE_FLAC),y)
-SDL_SOUND_DEPENDENCIES += flac # is only used if ogg is also enabled
+ifeq ($(BR2_PACKAGE_FLAC)$(BR2_PACKAGE_LIBOGG),yy)
+SDL_SOUND_CONF_OPTS += --enable-flac
+SDL_SOUND_DEPENDENCIES += flac libogg
+else
+SDL_SOUND_CONF_OPTS += --disable-flac
+endif
+
+ifeq ($(BR2_PACKAGE_LIBMODPLUG),y)
+SDL_SOUND_CONF_OPTS += --enable-modplug
+SDL_SOUND_DEPENDENCIES += libmodplug
+else
+SDL_SOUND_CONF_OPTS += --disable-modplug
 endif
 
 ifeq ($(BR2_PACKAGE_LIBVORBIS),y)
+SDL_SOUND_CONF_OPTS += --enable-ogg
 SDL_SOUND_DEPENDENCIES += libvorbis
+else
+SDL_SOUND_CONF_OPTS += --disable-ogg
 endif
 
 ifeq ($(BR2_PACKAGE_SPEEX),y)
+SDL_SOUND_CONF_OPTS += --enable-speex
 SDL_SOUND_DEPENDENCIES += speex
+else
+SDL_SOUND_CONF_OPTS += --disable-speex
 endif
 
 SDL_SOUND_CONF_OPTS = \
@@ -40,6 +56,14 @@ SDL_SOUND_CONF_OPTS += --enable-mmx
 else
 SDL_SOUND_CONF_OPTS += --disable-mmx
 endif
+
+define SDL_SOUND_PATCH_CONFIGURE
+	(cd $(@D); \
+	sed -ie 's/sdl-config/sdl2-config/g' configure \
+	)
+endef
+
+SDL_SOUND_PRE_CONFIGURE_HOOKS += SDL_SOUND_PATCH_CONFIGURE
 
 define SDL_SOUND_REMOVE_PLAYSOUND
 	rm $(addprefix $(TARGET_DIR)/usr/bin/,playsound playsound_simple)

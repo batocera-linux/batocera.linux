@@ -12,7 +12,7 @@ choice
 	  Select the specific Barebox version you want to use
 
 config BR2_TARGET_BAREBOX_LATEST_VERSION
-	bool "2015.12.0"
+	bool "2016.04.0"
 
 config BR2_TARGET_BAREBOX_CUSTOM_VERSION
 	bool "Custom version"
@@ -40,7 +40,7 @@ endif
 
 config BR2_TARGET_BAREBOX_VERSION
 	string
-	default "2015.12.0"	if BR2_TARGET_BAREBOX_LATEST_VERSION
+	default "2016.04.0"	if BR2_TARGET_BAREBOX_LATEST_VERSION
 	default BR2_TARGET_BAREBOX_CUSTOM_VERSION_VALUE if BR2_TARGET_BAREBOX_CUSTOM_VERSION
 	default "custom"	if BR2_TARGET_BAREBOX_CUSTOM_TARBALL
 	default BR2_TARGET_BAREBOX_CUSTOM_GIT_VERSION if BR2_TARGET_BAREBOX_CUSTOM_GIT
@@ -96,6 +96,16 @@ config BR2_TARGET_BAREBOX_CONFIG_FRAGMENT_FILES
 	help
 	  A space-separated list of configuration fragment files,
 	  that will be merged to the main Barebox configuration file.
+
+config BR2_TARGET_BAREBOX_IMAGE_FILE
+	string "Image filename"
+	help
+	  Name of the generated barebox image, which will be copied to
+	  the images directory.
+
+	  If left empty, defaults to:
+	  - barebox.bin for barebox versions older than 2012.10.
+	  - barebox-flash-image for later versions.
 
 config BR2_TARGET_BAREBOX_BAREBOXENV
 	bool "bareboxenv tool in target"

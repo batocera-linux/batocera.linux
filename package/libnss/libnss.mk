@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-LIBNSS_VERSION = 3.21
+LIBNSS_VERSION = 3.23
 LIBNSS_SOURCE = nss-$(LIBNSS_VERSION).tar.gz
 LIBNSS_SITE = https://ftp.mozilla.org/pub/mozilla.org/security/nss/releases/NSS_$(subst .,_,$(LIBNSS_VERSION))_RTM/src
 LIBNSS_DISTDIR = dist
@@ -29,6 +29,12 @@ LIBNSS_BUILD_VARS = \
 	OS_ARCH="Linux" \
 	OS_RELEASE="2.6" \
 	OS_TEST="$(ARCH)"
+
+# #pragma usage needs gcc >= 4.8
+# See https://bugzilla.mozilla.org/show_bug.cgi?id=1226179
+ifeq ($(BR2_TOOLCHAIN_GCC_AT_LEAST_4_8),)
+LIBNSS_BUILD_VARS += NSS_ENABLE_WERROR=0
+endif
 
 ifeq ($(BR2_ARCH_IS_64),y)
 # MIPS64 n32 is treated as a 32-bit architecture by libnss.

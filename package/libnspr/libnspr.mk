@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-LIBNSPR_VERSION = 4.11
+LIBNSPR_VERSION = 4.12
 LIBNSPR_SOURCE = nspr-$(LIBNSPR_VERSION).tar.gz
 LIBNSPR_SITE = https://ftp.mozilla.org/pub/mozilla.org/nspr/releases/v$(LIBNSPR_VERSION)/src
 LIBNSPR_SUBDIR = nspr
@@ -47,14 +47,6 @@ ifeq ($(BR2_SHARED_LIBS),y)
 LIBNSPR_MAKE_OPTS = LIBRARY=
 LIBNSPR_INSTALL_TARGET_OPTS = DESTDIR=$(TARGET_DIR) LIBRARY= install
 LIBNSPR_INSTALL_STAGING_OPTS = DESTDIR=$(STAGING_DIR) LIBRARY= install
-endif
-
-ifeq ($(BR2_arm),y)
-ifeq ($(BR2_ARM_CPU_HAS_THUMB2),y)
-LIBNSPR_CONF_OPTS += --enable-thumb2
-else
-LIBNSPR_CONF_OPTS += --disable-thumb2
-endif
 endif
 
 $(eval $(autotools-package))

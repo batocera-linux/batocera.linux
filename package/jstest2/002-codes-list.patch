@@ -1,0 +1,31 @@
+diff --git a/sdl2-jstest.c b/sdl2-jstest.c
+index 7b2ec9c..4bc2dfd 100644
+--- a/sdl2-jstest.c
++++ b/sdl2-jstest.c
+@@ -61,6 +61,7 @@ void print_joystick_info(int joy_idx, SDL_Joystick* joy, SDL_GameController* gam
+ {
+   SDL_JoystickGUID guid = SDL_JoystickGetGUID(joy);
+   char guid_str[1024];
++  int i;
+   SDL_JoystickGetGUIDString(guid, guid_str, sizeof(guid_str));
+ 
+   printf("Joystick Name:     '%s'\n", SDL_JoystickName(joy));
+@@ -80,6 +81,18 @@ void print_joystick_info(int joy_idx, SDL_Joystick* joy, SDL_GameController* gam
+     printf("  Name:    '%s'\n", SDL_GameControllerName(gamepad));
+     printf("  Mapping: '%s'\n", SDL_GameControllerMappingForGUID(guid));
+   }
++
++  /* display the list of axes and buttons */
++  for(i=0; i<SDL_JoystickNumAxes(joy); i++) {
++    printf("Axis code %2d:   %2d\n", i, SDL_JoystickAxisEventCodeById(joy_idx, i));
++  }
++  for(i=0; i<SDL_JoystickNumButtons(joy); i++) {
++    printf("Button code %2d:   %2d\n", i, SDL_JoystickButtonEventCodeById(joy_idx, i));
++  }
++  for(i=0; i<SDL_JoystickNumHats(joy); i++) {
++    printf("Hat code %2d:   %2d\n", i, SDL_JoystickHatEventCodeById(joy_idx, i));
++  }
++
+   printf("\n");
+ }
+ 
