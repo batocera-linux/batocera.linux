@@ -1,0 +1,11 @@
+--- a/deps/lua/src/Makefile.orig	2016-07-26 09:42:38.077480560 +0200
++++ b/deps/lua/src/Makefile	2016-07-26 09:43:07.913481120 +0200
+@@ -8,7 +8,7 @@
+ PLAT= none
+ 
+ CC= gcc
+-CFLAGS= -O2 -Wall $(MYCFLAGS)
++CFLAGS= -O2 -Wall $(MYCFLAGS) -fPIC
+ AR= ar rcu
+ RANLIB= ranlib
+ RM= rm -f

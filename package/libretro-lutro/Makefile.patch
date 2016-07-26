@@ -1,9 +1,11 @@
---- a/Makefile	2015-05-19 12:47:40.877553797 +0200
-+++ b/Makefile	2015-05-19 11:10:05.000000000 +0200
-@@ -79,6 +79,33 @@
-    CFLAGS += -I$(shell psp-config --pspsdk-path)/include
+--- a/Makefile	2016-07-26 08:57:48.949430075 +0200
++++ b/Makefile	2016-07-26 09:16:20.325450940 +0200
+@@ -184,6 +184,35 @@
     LUA_MYCFLAGS := $(DEFINES) $(CFLAGS)
-    STATIC_LINKING = 1
+ 	STATIC_LINKING = 1
+    MMD :=
++
++#RaspberryPi
 +else ifneq (,$(findstring armv,$(platform)))
 +   TARGET := $(TARGET_NAME)_libretro.so
 +   SHARED := -shared -Wl,--no-undefined
@@ -33,4 +35,4 @@
 +   CFLAGS += -DARM
  else
     CC = gcc
-    TARGET := $(TARGET_NAME)_retro.dll
+    TARGET := $(TARGET_NAME)_libretro.dll
