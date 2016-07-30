@@ -1,6 +1,7 @@
 config BR2_PACKAGE_JSTEST2
 	bool "JSTEST2"
-	depends on BR2_PACKAGE_SDL BR2_PACKAGE_SDL2
+	depends on BR2_PACKAGE_SDL
+	depends on BR2_PACKAGE_SDL2
 	help
 	  Command line tool to test the joysticks with sdl2
 
