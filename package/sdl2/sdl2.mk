@@ -37,7 +37,12 @@ SDL2_CONF_OPTS += --enable-video-fbdev
 
 # Note: SDL2 looks for X11 headers in host dirs, so if you want to build SDL2
 #       with X11 support, better make it safe for cross compilation first.
+# hum, ok, but i want it for x86 please
+ifeq ($(BR2_x86_i586),y)
+SDL2_CONF_OPTS += --enable-video-x11
+else
 SDL2_CONF_OPTS += --disable-video-x11
+endif
 
 ifeq ($(BR2_PACKAGE_DIRECTFB),y)
 SDL2_DEPENDENCIES += directfb

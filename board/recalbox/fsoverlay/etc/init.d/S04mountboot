@@ -1,0 +1,23 @@
+#!/bin/sh
+
+# mount the /boot partition in read only
+
+case "$1" in
+  start)
+      BOOTPART=$(/recalbox/scripts/recalbox-part.sh boot)
+      if test $? -ne 0
+      then
+	  exit 1
+      fi
+      mount "${BOOTPART}" /boot -o ro || exit 1
+      ;;
+  stop)
+      umount /boot || exit 1
+      ;;
+  *)
+      echo "Usage: $0 {start|stop}"
+      exit 1
+esac
+
+exit 0
+

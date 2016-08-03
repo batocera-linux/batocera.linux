@@ -20,6 +20,8 @@ else ifeq ($(BR2_PACKAGE_RECALBOX_TARGET_RPI2),y)
 	RECALBOX_SYSTEM=rpi2
 else ifeq ($(BR2_PACKAGE_RECALBOX_TARGET_XU4),y)
 	RECALBOX_SYSTEM=odroidxu4
+else ifeq ($(BR2_PACKAGE_RECALBOX_TARGET_X86),y)
+	RECALBOX_SYSTEM=x86
 endif
 
 # Sadly the NEON optimizations in the PNG library don't work yet, so disable them
