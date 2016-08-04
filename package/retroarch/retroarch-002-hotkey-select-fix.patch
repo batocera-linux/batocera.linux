@@ -1,10 +1,8 @@
-diff --git a/input/input_driver.c b/input/input_driver.c
-index 5f0d9da..6840c78 100644
---- a/input/input_driver.c
-+++ b/input/input_driver.c
-@@ -101,6 +101,9 @@ static const input_driver_t *current_input;
- static void *current_input_data;
- static turbo_buttons_t input_driver_turbo_btns;
+--- a/input/input_driver.c.orig	2016-07-25 14:27:51.000000000 +0200
++++ b/input/input_driver.c	2016-07-25 17:59:21.788418044 +0200
+@@ -107,6 +107,9 @@
+ static bool input_driver_flushing_input           = false;
+ static bool input_driver_data_own                 = false;
  
 +unsigned hotkey_counter = 0;
 +#define HOTKEY_DELAY 10 // number of frames required to trigger the hotkey
@@ -12,7 +10,7 @@ index 5f0d9da..6840c78 100644
  /**
   * input_driver_find_handle:
   * @idx                : index of driver to get handle to.
-@@ -525,7 +528,7 @@ int16_t input_state(unsigned port, unsigned device,
+@@ -528,7 +531,7 @@
   *
   * Checks if 'hotkey enable' key is pressed.
   **/
@@ -21,7 +19,7 @@ index 5f0d9da..6840c78 100644
  {
     bool use_hotkey_enable;
     settings_t *settings          = config_get_ptr();
-@@ -560,7 +563,13 @@ static bool check_input_driver_block_hotkey(bool enable_hotkey)
+@@ -562,7 +565,13 @@
  
     /* If we hold ENABLE_HOTKEY button, block all libretro input to allow
      * hotkeys to be bound to same keys as RetroPad. */
@@ -36,12 +34,12 @@ index 5f0d9da..6840c78 100644
  }
  
  /**
-@@ -591,7 +600,7 @@ retro_input_t input_keys_pressed(void)
+@@ -593,7 +602,7 @@
  
     key = RARCH_ENABLE_HOTKEY;
     
--   if (check_input_driver_block_hotkey(input_driver_ctl(RARCH_INPUT_CTL_KEY_PRESSED, &key)))
-+   if (check_input_driver_block_hotkey(input_driver_ctl(RARCH_INPUT_CTL_KEY_PRESSED, &key)) > HOTKEY_DELAY )
-       input_driver_ctl(RARCH_INPUT_CTL_SET_LIBRETRO_INPUT_BLOCKED, NULL);
+-   if (check_input_driver_block_hotkey(input_driver_key_pressed(&key)))
++   if (check_input_driver_block_hotkey(input_driver_key_pressed(&key)) > HOTKEY_DELAY )
+       input_driver_set_libretro_input_blocked();
     else
-       input_driver_ctl(RARCH_INPUT_CTL_UNSET_LIBRETRO_INPUT_BLOCKED, NULL);
+       input_driver_unset_libretro_input_blocked();

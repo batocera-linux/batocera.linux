@@ -3,6 +3,8 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unrelease][unreleased]
+- Fixing Makelfiles for compilation of libretro-lutro for the bump to release  2377dd37ad3bd37ddef9fc37742bba2531a78407 
+- Bump retroarch to last release due to integration of libretro-imageviewer in its cores, and delation of the libretro-imageviewer repos
 - Update Mame2003 core to get the mame2003-skip_warnings and avoid splash screen
 - New emulator : PPSSPP
 - Add Mayflash NES/SNES and SEGA SATURN in usbhid.conf
@@ -46,7 +48,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - bumped SDL to 2.0.4
 - disable multitouch axis in SDL 2.0.4
 - linux kernel bumped to 4.4.13
+- Add new Traditional Chinese Language
 - Add DosBox 0.74 (rev 3989) with specific patches: SDL2, with mapping of mouse and all axis of joysticks
+- Add lutro extension
 
 ## [4.0.0-beta3] - 2016-04-19
 - Xarcade2jstick button remapped + better support of IPAC encoders
