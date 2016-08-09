@@ -14,6 +14,7 @@ https://github.com/recalbox/recalbox-os/wiki/recalbox.conf-%28EN%29
 You can use clrmamepro available at http://mamedev.emulab.it/clrmamepro/ and use the .dat file in clrmamepro directory to check your roms.
 
 Special files for mame2003 core :
+- Add your samples files in /recalbox/share/bios/mame2003/samples/
 - Update the hiscore.dat file in /recalbox/share/bios/mame2003/ if you want latest highscores (http://highscore.mameworld.info/download.htm)
 - Download cheat.dat in /recalbox/share/bios/mame2003/ to enable cheat codes (http://cheat.retrogames.com/download/cheat081.zip)
 - Download history.dat in /recalbox/share/bios/mame2003/ to enable ingame history menu (http://www.arcade-history.com/index.php?page=download)
