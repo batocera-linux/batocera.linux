@@ -5,6 +5,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unrelease][unreleased]
 - Updated libretro mame 2003 core. Fixes the ratio issue in mame.
 - Improved pads and gpio support for moonlight
+- Change location of PM2_HOME to fix a bug with API daemon
 
 ## [4.0.0-beta4] - 2016-06-19
 - Update to moonlight-embedded-2.2.1 (but still displays 2.2.0 when running), adds support for GFE 2.11
