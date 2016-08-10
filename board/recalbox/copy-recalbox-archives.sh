@@ -116,6 +116,7 @@ case "${RECALBOX_TARGET}" in
 	mkdir -p ${BINARIES_DIR}/boot/grub || exit 1
 	cp "board/recalbox/grub2/grub.cfg" ${BINARIES_DIR}/boot/grub/grub.cfg || exit 1
 	cp "${BINARIES_DIR}/bzImage" "${BINARIES_DIR}/boot" || exit 1
+	cp "${BINARIES_DIR}/initrd.gz" "${BINARIES_DIR}/boot" || exit 1
 
 	# root.tar.xz
 	cp "${BINARIES_DIR}/rootfs.tar.xz" "${RECALBOX_BINARIES_DIR}/root.tar.xz" || exit 1
