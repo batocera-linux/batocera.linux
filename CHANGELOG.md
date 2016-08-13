@@ -52,6 +52,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Add DosBox 0.74 (rev 3989) with specific patches: SDL2, with mapping of mouse and all axis of joysticks
 - Add lutro extension
 - Add a recalbox.conf option to set a video mode only for es
+- Add Catalan translation
 
 ## [4.0.0-beta3] - 2016-04-19
 - Xarcade2jstick button remapped + better support of IPAC encoders
