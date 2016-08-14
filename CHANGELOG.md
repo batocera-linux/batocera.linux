@@ -53,6 +53,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Add lutro extension
 - Add a recalbox.conf option to set a video mode only for es
 - Add Catalan translation
+- Check space left before update
 
 ## [4.0.0-beta3] - 2016-04-19
 - Xarcade2jstick button remapped + better support of IPAC encoders
