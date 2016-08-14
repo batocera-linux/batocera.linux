@@ -7,7 +7,6 @@ fi
 
 IN=/recalbox/share_init
 OUT=/recalbox/share
-
 # force the creation of some directories
 for DIR in cheats \
            system/.cache \
@@ -35,7 +34,8 @@ for FILE in music bios extractions kodi saves screenshots \
             system/.emulationstation/{es_input.cfg,es_settings.cfg} \
             system/{.hatari,.kodi} \
             system/configs/{fba,moonlight,mupen64,ppsspp,reicast,retroarch,shadersets,xarcade2jstick} \
-            system/recalbox.conf
+            system/recalbox.conf \
+            bios/mame2003
 do
     # not wanted for kodi
     test -e "$IN""/""$FILE" && test ! -e "$OUT""/""$FILE" && cp -r "$IN""/""$FILE" "$OUT""/""$FILE"
@@ -49,13 +49,13 @@ done
 # the user can't delete any directory, otherwise, it will recreate it, with link inside
 # the user can delete links and add its own files
 # to reset the directory or update it, the user has to remove the directory (we are unable to differenciate new files from recalbox update from a file removed by the user)
-for DIR in roms
+for DIR in roms roms/mame/mame2003
 do
     if test ! -e "$OUT""/""$DIR"
     then
 	if mkdir "$OUT""/""$DIR"
 	then
-	    find "$IN""/""$DIR" -type d -mindepth 1 -maxdepth 1 |
+	    find "$IN""/""$DIR" -mindepth 1 -maxdepth 1 -type d |
 		while read SUBDIR
 		do
 		    BNAME=$(basename "$SUBDIR")
