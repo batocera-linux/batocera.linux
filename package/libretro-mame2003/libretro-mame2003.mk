@@ -3,7 +3,7 @@
 # MAME2003
 #
 ################################################################################
-LIBRETRO_MAME2003_VERSION = ae84f5d45fa6ff4beded68cfd19a4217f595703c
+LIBRETRO_MAME2003_VERSION = ef38e60fecf12d5edcaea27b048c9ef72271bfa9
 LIBRETRO_MAME2003_SITE = $(call github,libretro,mame2003-libretro,$(LIBRETRO_MAME2003_VERSION))
 
 
