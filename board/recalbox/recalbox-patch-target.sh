@@ -22,6 +22,9 @@ ln -sf "/recalbox/share/cheats"                                       "${TARGET_
 # we don't want the kodi startup script
 rm -f "${TARGET_DIR}/etc/init.d/S50kodi" || exit 1
 
+# we don't want default xorg files
+rm -f "${TARGET_DIR}/etc/X11/xorg.conf" || exit 1
+
 # we want an empty boot directory (grub installation copy some files in the target boot directory)
 rm -rf "${TARGET_DIR}/boot/grub" || exit 1
 
