@@ -3,7 +3,7 @@ recalboxupdateurl="http://archive.recalbox.com"
 systemsetting="python /usr/lib/python2.7/site-packages/configgen/settings/recalboxSettings.pyc"
 
 arch=$(cat /recalbox/recalbox.arch)
-majorversion=4
+majorversion=$(cat /recalbox/recalbox.updateversion)
 updatetype="`$systemsetting  -command load -key updates.type`"
 
 if test "${updatetype}" != "stable" -a "${updatetype}" != "unstable" -a "${updatetype}" != "beta"
