@@ -1,6 +1,6 @@
 ## RECALBOX - SYSTEM COLECOVISION ##
 
-Put your msx roms in this directory.
+Put your colecovision roms in this directory.
 
 Rom files must have a ".col" extension.
 
