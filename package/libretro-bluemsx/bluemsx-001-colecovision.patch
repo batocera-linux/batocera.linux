@@ -1,0 +1,499 @@
+diff --git a/Src/Input/ColecoJoystick.c b/Src/Input/ColecoJoystick.c
+index ab9f613..012c525 100755
+--- a/Src/Input/ColecoJoystick.c
++++ b/Src/Input/ColecoJoystick.c
+@@ -39,20 +39,36 @@ static UInt16 read(ColecoJoystick* joystick) {
+     UInt8 state = 16;
+ 
+     if (joystick->controller == 0) {
+-        state = (inputEventGetState(EC_JOY1_UP)      << 0) |
+-                (inputEventGetState(EC_JOY1_DOWN)    << 1) |
+-                (inputEventGetState(EC_JOY1_LEFT)    << 2) |
+-                (inputEventGetState(EC_JOY1_RIGHT)   << 3) |
+-                (inputEventGetState(EC_JOY1_BUTTON1) << 4) |
+-                (inputEventGetState(EC_JOY1_BUTTON2) << 5);
++        state = (inputEventGetState(EC_COLECO1_1)    << 0) |
++                (inputEventGetState(EC_COLECO1_2)    << 1) |
++                (inputEventGetState(EC_COLECO1_3)    << 2) |
++                (inputEventGetState(EC_COLECO1_4)    << 3) |
++                (inputEventGetState(EC_COLECO1_5)    << 4) |
++                (inputEventGetState(EC_COLECO1_6)    << 5) |
++                (inputEventGetState(EC_COLECO1_7)    << 6) |
++                (inputEventGetState(EC_COLECO1_8)    << 7) |
++                (inputEventGetState(EC_COLECO1_9)    << 8) |
++                (inputEventGetState(EC_COLECO1_0)    << 9) |
++                (inputEventGetState(EC_COLECO1_BUTTON1) << 10) |
++                (inputEventGetState(EC_COLECO1_BUTTON2) << 11) |
++                (inputEventGetState(EC_COLECO1_STAR) << 12) |
++                (inputEventGetState(EC_COLECO1_HASH) << 13);
+     }
+     else {
+-        state = (inputEventGetState(EC_JOY2_UP)      << 0) |
+-                (inputEventGetState(EC_JOY2_DOWN)    << 1) |
+-                (inputEventGetState(EC_JOY2_LEFT)    << 2) |
+-                (inputEventGetState(EC_JOY2_RIGHT)   << 3) |
+-                (inputEventGetState(EC_JOY2_BUTTON1) << 4) |
+-                (inputEventGetState(EC_JOY2_BUTTON2) << 5);
++        state = (inputEventGetState(EC_COLECO2_1)    << 0) |
++                (inputEventGetState(EC_COLECO2_2)    << 1) |
++                (inputEventGetState(EC_COLECO2_3)    << 2) |
++                (inputEventGetState(EC_COLECO2_4)    << 3) |
++                (inputEventGetState(EC_COLECO2_5)    << 4) |
++                (inputEventGetState(EC_COLECO2_6)    << 5) |
++                (inputEventGetState(EC_COLECO2_7)    << 6) |
++                (inputEventGetState(EC_COLECO2_8)    << 7) |
++                (inputEventGetState(EC_COLECO2_9)    << 8) |
++                (inputEventGetState(EC_COLECO2_0)    << 9) |
++                (inputEventGetState(EC_COLECO2_BUTTON1) << 10) |
++                (inputEventGetState(EC_COLECO2_BUTTON2) << 11) |
++                (inputEventGetState(EC_COLECO2_STAR) << 12) |
++                (inputEventGetState(EC_COLECO2_HASH) << 13);
+     }
+ 
+     return ~state;
+@@ -65,4 +81,4 @@ ColecoJoystickDevice* colecoJoystickCreate(int controller)
+     joystick->controller       = controller;
+     
+     return (ColecoJoystickDevice*)joystick;
+-}
+\ No newline at end of file
++}
+diff --git a/Src/Input/InputEvent.c b/Src/Input/InputEvent.c
+index 4f6f37a..a65d209 100755
+--- a/Src/Input/InputEvent.c
++++ b/Src/Input/InputEvent.c
+@@ -166,6 +166,8 @@ static void initKeyNameTable()
+     eventNames[EC_COLECO1_7]    = "coleco1-7";
+     eventNames[EC_COLECO1_8]    = "coleco1-8";
+     eventNames[EC_COLECO1_9]    = "coleco1-9";
++    eventNames[EC_COLECO1_BUTTON1] = "coleco1-button1";
++    eventNames[EC_COLECO1_BUTTON2] = "coleco1-button2";
+     eventNames[EC_COLECO1_STAR] = "coleco1-star";
+     eventNames[EC_COLECO1_HASH] = "coleco1-hashmark";
+ 
+@@ -179,6 +181,8 @@ static void initKeyNameTable()
+     eventNames[EC_COLECO2_7]    = "coleco2-7";
+     eventNames[EC_COLECO2_8]    = "coleco2-8";
+     eventNames[EC_COLECO2_9]    = "coleco2-9";
++    eventNames[EC_COLECO2_BUTTON1] = "coleco2-button1";
++    eventNames[EC_COLECO2_BUTTON2] = "coleco2-button2";
+     eventNames[EC_COLECO2_STAR] = "coleco2-star";
+     eventNames[EC_COLECO2_HASH] = "coleco2-hashmark";
+ 
+diff --git a/Src/Input/InputEvent.h b/Src/Input/InputEvent.h
+index 5f3e474..8229df0 100755
+--- a/Src/Input/InputEvent.h
++++ b/Src/Input/InputEvent.h
+@@ -154,92 +154,100 @@ const char* inputEventCodeToString(int eventCode);
+ #define EC_JOY1_RIGHT   103
+ #define EC_JOY1_BUTTON1 104
+ #define EC_JOY1_BUTTON2 105
+-#define EC_JOY1_BUTTON3 106
+-#define EC_JOY1_BUTTON4 107
+-#define EC_JOY1_BUTTON5 108
+-#define EC_JOY1_BUTTON6 109
+-#define EC_JOY1_WHEELA  136
+-#define EC_JOY1_WHEELB  137
++#define EC_F1           106
++#define EC_F2           107
++#define EC_F5           108
++#define EC_JOY1_WHEELA  109
++#define EC_JOY1_WHEELB  110
+ 
+-#define EC_JOY2_UP      110
+-#define EC_JOY2_DOWN    111
+-#define EC_JOY2_LEFT    112
+-#define EC_JOY2_RIGHT   113
+-#define EC_JOY2_BUTTON1 114
+-#define EC_JOY2_BUTTON2 115
+-#define EC_JOY2_BUTTON3 116
+-#define EC_JOY2_BUTTON4 117
+-#define EC_JOY2_BUTTON5 118
+-#define EC_JOY2_BUTTON6 119
+-#define EC_JOY2_WHEELA  138
+-#define EC_JOY2_WHEELB  139
++#define EC_JOY2_UP      111
++#define EC_JOY2_DOWN    112
++#define EC_JOY2_LEFT    113
++#define EC_JOY2_RIGHT   114
++#define EC_JOY2_BUTTON1 115
++#define EC_JOY2_BUTTON2 116
++#define EC_JOY2_WHEELA  117
++#define EC_JOY2_WHEELB  118
+ 
+-#define EC_COLECO1_0    120
+-#define EC_COLECO1_1    121
+-#define EC_COLECO1_2    122
+-#define EC_COLECO1_3    123
+-#define EC_COLECO1_4    124
+-#define EC_COLECO1_5    125
+-#define EC_COLECO1_6    126
+-#define EC_COLECO1_7    127
+-#define EC_COLECO1_8    128
+-#define EC_COLECO1_9    129
+-#define EC_COLECO1_STAR 130
+-#define EC_COLECO1_HASH 131
++#define EC_COLECO1_1    119
++#define EC_COLECO1_2    120
++#define EC_COLECO1_3    121
++#define EC_COLECO1_4    122
++#define EC_COLECO1_5    123
++#define EC_COLECO1_6    124
++#define EC_COLECO1_7    125
++#define EC_COLECO1_8    126
++#define EC_COLECO1_9    127
++#define EC_COLECO1_0    128
++#define EC_COLECO1_BUTTON1 129
++#define EC_COLECO1_BUTTON2 130
++#define EC_COLECO1_STAR 131
++#define EC_COLECO1_HASH 132
+ 
+-#define EC_COLECO2_0    140
+-#define EC_COLECO2_1    141
+-#define EC_COLECO2_2    142
+-#define EC_COLECO2_3    143
+-#define EC_COLECO2_4    144
+-#define EC_COLECO2_5    145
+-#define EC_COLECO2_6    146
+-#define EC_COLECO2_7    147
+-#define EC_COLECO2_8    148
+-#define EC_COLECO2_9    149
+-#define EC_COLECO2_STAR 150
+-#define EC_COLECO2_HASH 151
++#define EC_COLECO2_1    133
++#define EC_COLECO2_2    134
++#define EC_COLECO2_3    135
++#define EC_COLECO2_4    136
++#define EC_COLECO2_5    137
++#define EC_COLECO2_6    138
++#define EC_COLECO2_7    139
++#define EC_COLECO2_8    140
++#define EC_COLECO2_9    141
++#define EC_COLECO2_0    142
++#define EC_COLECO2_BUTTON1 143
++#define EC_COLECO2_BUTTON2 144
++#define EC_COLECO2_STAR 145
++#define EC_COLECO2_HASH 146
+ 
+-#define EC_HOT_QUIT                     160
+-#define EC_HOT_TOGGLE_FDC_TIMING        161
+-#define EC_HOT_TOGGLE_SPRITE_ENABLE     162
+-#define EC_HOT_TOGGLE_MSX_AUDIO_SWITCH  163
+-#define EC_HOT_TOGGLE_FRONT_SWITCH      164
+-#define EC_HOT_TOGGLE_PAUSE_SWITCH      165
+-#define EC_HOT_TOGGLE_WAVE_CAPTURE      166
+-#define EC_HOT_SCREEN_CAPTURE           167
+-#define EC_HOT_QUICK_LOAD_STATE         168
+-#define EC_HOT_QUICK_SAVE_STATE         169
+-#define EC_HOT_CARD_REMOVE_1            170
+-#define EC_HOT_CARD_REMOVE_2            171
+-#define EC_HOT_TOGGLE_CARD_AUTO_RESET   172
+-#define EC_HOT_DISK_QUICK_CHANGE        173
+-#define EC_HOT_DISK_REMOVE_A            174
+-#define EC_HOT_DISK_REMOVE_B            175
+-#define EC_HOT_TOGGLE_DISK_AUTO_RESET   176
+-#define EC_HOT_CAS_REWIND               177
+-#define EC_HOT_CAS_REMOVE               178
+-#define EC_HOT_CAS_TOGGLE_READ_ONLY     179
+-#define EC_HOT_TOGGLE_CAS_AUTO_REWIND   180
+-#define EC_HOT_CAS_SAVE                 181
+-#define EC_HOT_EMU_TOGGLE_PAUSE         182
+-#define EC_HOT_EMU_STOP                 183
+-#define EC_HOT_EMU_SPEED_NORMAL         184
+-#define EC_HOT_EMU_SPEED_INCREASE       185
+-#define EC_HOT_EMU_SPEED_DECREASE       186
+-#define EC_HOT_MAX_SPEED_TOGGLE         187
+-#define EC_HOT_EMU_RESET_SOFT           188
+-#define EC_HOT_EMU_RESET_HARD           189
+-#define EC_HOT_EMU_RESET_CLEAN          190
+-#define EC_HOT_VOLUME_INCREASE          191
+-#define EC_HOT_VOLUME_DECREASE          192
+-#define EC_HOT_MUTE_TOGGLE_MASTER       193
+-#define EC_HOT_VOLUME_TOGGLE_STEREO     194
+-#define EC_HOT_WINDOW_SIZE_NORMAL       195
+-#define EC_HOT_WINDOW_SIZE_FULLSCREEN   196
+-#define EC_HOT_FULLSCREEN_TOGGLE        197
++#define EC_HOT_QUIT                     147
++#define EC_HOT_TOGGLE_FDC_TIMING        148
++#define EC_HOT_TOGGLE_SPRITE_ENABLE     149
++#define EC_HOT_TOGGLE_MSX_AUDIO_SWITCH  150
++#define EC_HOT_TOGGLE_FRONT_SWITCH      151
++#define EC_HOT_TOGGLE_PAUSE_SWITCH      152
++#define EC_HOT_TOGGLE_WAVE_CAPTURE      153
++#define EC_HOT_SCREEN_CAPTURE           154
++#define EC_HOT_QUICK_LOAD_STATE         155
++#define EC_HOT_QUICK_SAVE_STATE         156
++#define EC_HOT_CARD_REMOVE_1            157
++#define EC_HOT_CARD_REMOVE_2            158
++#define EC_HOT_TOGGLE_CARD_AUTO_RESET   159
++#define EC_HOT_DISK_QUICK_CHANGE        160
++#define EC_HOT_DISK_REMOVE_A            161
++#define EC_HOT_DISK_REMOVE_B            162
++#define EC_HOT_TOGGLE_DISK_AUTO_RESET   163
++#define EC_HOT_CAS_REWIND               164
++#define EC_HOT_CAS_REMOVE               165
++#define EC_HOT_CAS_TOGGLE_READ_ONLY     166
++#define EC_HOT_TOGGLE_CAS_AUTO_REWIND   167
++#define EC_HOT_CAS_SAVE                 168
++#define EC_HOT_EMU_TOGGLE_PAUSE         169
++#define EC_HOT_EMU_STOP                 170
++#define EC_HOT_EMU_SPEED_NORMAL         171
++#define EC_HOT_EMU_SPEED_INCREASE       172
++#define EC_HOT_EMU_SPEED_DECREASE       173
++#define EC_HOT_MAX_SPEED_TOGGLE         174
++#define EC_HOT_EMU_RESET_SOFT           175
++#define EC_HOT_EMU_RESET_HARD           176
++#define EC_HOT_EMU_RESET_CLEAN          177
++#define EC_HOT_VOLUME_INCREASE          178
++#define EC_HOT_VOLUME_DECREASE          179
++#define EC_HOT_MUTE_TOGGLE_MASTER       180
++#define EC_HOT_VOLUME_TOGGLE_STEREO     181
++#define EC_HOT_WINDOW_SIZE_NORMAL       182
++#define EC_HOT_WINDOW_SIZE_FULLSCREEN   183
++#define EC_HOT_FULLSCREEN_TOGGLE        184
++#define EC_KEYCOUNT                     185
+ 
+-#define EC_KEYCOUNT                     198
++#define EC_JOY1_BUTTON3 186
++#define EC_JOY1_BUTTON4 187
++#define EC_JOY1_BUTTON5 188
++#define EC_JOY1_BUTTON6 189
++
++#define EC_JOY2_BUTTON3 190
++#define EC_JOY2_BUTTON4 191
++#define EC_JOY2_BUTTON5 192
++#define EC_JOY2_BUTTON6 193
+ 
+ // Inlines
+ extern int eventMap[256];
+diff --git a/Src/Input/MsxJoystick.c b/Src/Input/MsxJoystick.c
+index 7aad102..446ae21 100755
+--- a/Src/Input/MsxJoystick.c
++++ b/Src/Input/MsxJoystick.c
+@@ -44,7 +44,10 @@ static UInt8 read(MsxJoystick* joystick) {
+                 (inputEventGetState(EC_JOY1_LEFT)    << 2) |
+                 (inputEventGetState(EC_JOY1_RIGHT)   << 3) |
+                 (inputEventGetState(EC_JOY1_BUTTON1) << 4) |
+-                (inputEventGetState(EC_JOY1_BUTTON2) << 5);
++                (inputEventGetState(EC_JOY1_BUTTON2) << 5) |
++                (inputEventGetState(EC_F1)           << 6) |
++                (inputEventGetState(EC_F2)           << 7) |
++                (inputEventGetState(EC_F5)           << 8);
+     }
+     else {
+         state = (inputEventGetState(EC_JOY2_UP)      << 0) |
+diff --git a/libretro.c b/libretro.c
+index ce13fee..3d595e1 100644
+--- a/libretro.c
++++ b/libretro.c
+@@ -33,6 +33,10 @@
+ 
+ extern BoardInfo boardInfo;
+ 
++#define RETRO_DEVICE_MSX_JOYSTICK RETRO_DEVICE_SUBCLASS(RETRO_DEVICE_JOYPAD, 0)
++#define RETRO_DEVICE_COLECOVISION_JOYSTICK RETRO_DEVICE_SUBCLASS(RETRO_DEVICE_JOYPAD, 1)
++#define RETRO_DEVICE_MSX_KEYBOARD RETRO_DEVICE_SUBCLASS(RETRO_DEVICE_KEYBOARD, 0)
++
+ #define MAX_PADS 2
+ static unsigned input_devices[MAX_PADS];
+ 
+@@ -166,47 +170,50 @@ static unsigned btn_map[EC_KEYCOUNT] =
+    RETRO_DEVICE_ID_JOYPAD_RIGHT,    //EC_JOY1_RIGHT   103
+    RETRO_DEVICE_ID_JOYPAD_A,        //EC_JOY1_BUTTON1 104
+    RETRO_DEVICE_ID_JOYPAD_B,        //EC_JOY1_BUTTON2 105
+-   RETRO_DEVICE_ID_JOYPAD_Y,        //EC_JOY1_BUTTON3 106
+-   RETRO_DEVICE_ID_JOYPAD_X,        //EC_JOY1_BUTTON4 107
+-   RETRO_DEVICE_ID_JOYPAD_START,    //EC_JOY1_BUTTON5 108
+-   RETRO_DEVICE_ID_JOYPAD_SELECT,   //EC_JOY1_BUTTON6 109
+-
+-   RETRO_DEVICE_ID_JOYPAD_UP,       //EC_JOY2_UP      110
+-   RETRO_DEVICE_ID_JOYPAD_DOWN,     //EC_JOY2_DOWN    111
+-   RETRO_DEVICE_ID_JOYPAD_LEFT,     //EC_JOY2_LEFT    112
+-   RETRO_DEVICE_ID_JOYPAD_RIGHT,    //EC_JOY2_RIGHT   113
+-   RETRO_DEVICE_ID_JOYPAD_A,        //EC_JOY2_BUTTON1 114
+-   RETRO_DEVICE_ID_JOYPAD_B,        //EC_JOY2_BUTTON2 115
+-   RETRO_DEVICE_ID_JOYPAD_Y,        //EC_JOY2_BUTTON3 116
+-   RETRO_DEVICE_ID_JOYPAD_X,        //EC_JOY2_BUTTON4 117
+-   RETRO_DEVICE_ID_JOYPAD_START,    //EC_JOY2_BUTTON5 118
+-   RETRO_DEVICE_ID_JOYPAD_SELECT,   //EC_JOY2_BUTTON6 119
+-
+-   RETROK_UNKNOWN,   //EC_COLECO1_0    120
+-   RETROK_UNKNOWN,   //EC_COLECO1_1    121
+-   RETROK_UNKNOWN,   //EC_COLECO1_2    122
+-   RETROK_UNKNOWN,   //EC_COLECO1_3    123
+-   RETROK_UNKNOWN,   //EC_COLECO1_4    124
+-   RETROK_UNKNOWN,   //EC_COLECO1_5    125
+-   RETROK_UNKNOWN,   //EC_COLECO1_6    126
+-   RETROK_UNKNOWN,   //EC_COLECO1_7    127
+-   RETROK_UNKNOWN,   //EC_COLECO1_8    128
+-   RETROK_UNKNOWN,   //EC_COLECO1_9    129
+-   RETROK_UNKNOWN,   //EC_COLECO1_STAR 130
+-   RETROK_UNKNOWN,   //EC_COLECO1_HASH 131
+-
+-   RETROK_UNKNOWN,   //EC_COLECO2_0    140
+-   RETROK_UNKNOWN,   //EC_COLECO2_1    141
+-   RETROK_UNKNOWN,   //EC_COLECO2_2    142
+-   RETROK_UNKNOWN,   //EC_COLECO2_3    143
+-   RETROK_UNKNOWN,   //EC_COLECO2_4    144
+-   RETROK_UNKNOWN,   //EC_COLECO2_5    145
+-   RETROK_UNKNOWN,   //EC_COLECO2_6    146
+-   RETROK_UNKNOWN,   //EC_COLECO2_7    147
+-   RETROK_UNKNOWN,   //EC_COLECO2_8    148
+-   RETROK_UNKNOWN,   //EC_COLECO2_9    149
+-   RETROK_UNKNOWN,   //EC_COLECO2_STAR 150
+-   RETROK_UNKNOWN,   //EC_COLECO2_HASH 151
++   RETRO_DEVICE_ID_JOYPAD_START,    //EC_F1           106
++   RETRO_DEVICE_ID_JOYPAD_SELECT,   //EC_F2           107
++   RETRO_DEVICE_ID_JOYPAD_Y,        //EC_F5           108
++   RETRO_DEVICE_ID_JOYPAD_L,        //EC_JOY1_WHEELA  109
++   RETRO_DEVICE_ID_JOYPAD_R,        //EC_JOY1_WHEELB  110
++
++   RETRO_DEVICE_ID_JOYPAD_UP,       //EC_JOY2_UP      111
++   RETRO_DEVICE_ID_JOYPAD_DOWN,     //EC_JOY2_DOWN    112
++   RETRO_DEVICE_ID_JOYPAD_LEFT,     //EC_JOY2_LEFT    113
++   RETRO_DEVICE_ID_JOYPAD_RIGHT,    //EC_JOY2_RIGHT   114
++   RETRO_DEVICE_ID_JOYPAD_A,        //EC_JOY2_BUTTON1 115
++   RETRO_DEVICE_ID_JOYPAD_B,        //EC_JOY2_BUTTON2 116
++   RETRO_DEVICE_ID_JOYPAD_L,        //EC_JOY2_WHEELA  117
++   RETRO_DEVICE_ID_JOYPAD_R,        //EC_JOY2_WHEELB  118
++
++   RETRO_DEVICE_ID_JOYPAD_UP,       //EC_COLECO1_1    119
++   RETRO_DEVICE_ID_JOYPAD_DOWN,     //EC_COLECO1_2    120
++   RETRO_DEVICE_ID_JOYPAD_LEFT,     //EC_COLECO1_3    121
++   RETRO_DEVICE_ID_JOYPAD_RIGHT,    //EC_COLECO1_4    122
++   RETRO_DEVICE_ID_JOYPAD_A,        //EC_COLECO1_5    123
++   RETRO_DEVICE_ID_JOYPAD_B,        //EC_COLECO1_6    124
++   RETRO_DEVICE_ID_JOYPAD_X,        //EC_COLECO1_7    125
++   RETRO_DEVICE_ID_JOYPAD_Y,        //EC_COLECO1_8    126
++   RETRO_DEVICE_ID_JOYPAD_R2,       //EC_COLECO1_9    127
++   RETRO_DEVICE_ID_JOYPAD_L2,       //EC_COLECO1_0    128
++   RETRO_DEVICE_ID_JOYPAD_R,        //EC_COLECO1_BUTTON1 129
++   RETRO_DEVICE_ID_JOYPAD_L,        //EC_COLECO1_BUTTON2 130
++   RETRO_DEVICE_ID_JOYPAD_SELECT,   //EC_COLECO1_STAR 131
++   RETRO_DEVICE_ID_JOYPAD_START,    //EC_COLECO1_HASH 132
++
++   RETRO_DEVICE_ID_JOYPAD_UP,       //EC_COLECO2_1    133
++   RETRO_DEVICE_ID_JOYPAD_DOWN,     //EC_COLECO2_2    134
++   RETRO_DEVICE_ID_JOYPAD_LEFT,     //EC_COLECO2_3    135
++   RETRO_DEVICE_ID_JOYPAD_RIGHT,    //EC_COLECO2_4    136
++   RETRO_DEVICE_ID_JOYPAD_A,        //EC_COLECO2_5    137
++   RETRO_DEVICE_ID_JOYPAD_B,        //EC_COLECO2_6    138
++   RETRO_DEVICE_ID_JOYPAD_X,        //EC_COLECO2_7    139
++   RETRO_DEVICE_ID_JOYPAD_Y,        //EC_COLECO2_8    140
++   RETRO_DEVICE_ID_JOYPAD_R2,       //EC_COLECO2_9    141
++   RETRO_DEVICE_ID_JOYPAD_L2,       //EC_COLECO2_0    142
++   RETRO_DEVICE_ID_JOYPAD_R,        //EC_COLECO2_BUTTON1 143
++   RETRO_DEVICE_ID_JOYPAD_L,        //EC_COLECO2_BUTTON2 144
++   RETRO_DEVICE_ID_JOYPAD_SELECT,   //EC_COLECO2_STAR 145
++   RETRO_DEVICE_ID_JOYPAD_START,    //EC_COLECO2_HASH 146
+ };
+ 
+ 
+@@ -268,7 +275,8 @@ void retro_init(void)
+    image_buffer_height =  240;
+    double_width = 0;
+ 
+-   input_devices[0] = RETRO_DEVICE_JOYPAD;
++
++input_devices[0] = RETRO_DEVICE_JOYPAD;
+ //   for (i = 0; i < MAX_PADS; i++)
+ //      input_devices[i] = RETRO_DEVICE_JOYPAD;
+ 
+@@ -298,20 +306,22 @@ void retro_set_environment(retro_environment_t cb)
+    environ_cb = cb;
+ 
+    static const struct retro_variable vars[] = {
+-      { "bluemsx_msxtype", "Machine Type (Restart); MSX2+|MSXturboR|MSX" },
++      { "bluemsx_msxtype", "Machine Type (Restart); MSX2|MSX2+|MSXturboR|MSX|COL - ColecoVision" },
+       { "bluemsx_vdp_synctype", "VDP Sync Type (Restart); Auto|50Hz|60Hz" },
+       { "bluemsx_ym2413_enable", "Sound YM2413 Enable (Restart); enabled|disabled" },
+       { NULL, NULL },
+    };
+ 
+    static const struct retro_controller_description port[] = {
+-      { "RetroPad", RETRO_DEVICE_JOYPAD },
+-      { "RetroKeyboard", RETRO_DEVICE_KEYBOARD },
++    { "MSX Joystick", RETRO_DEVICE_MSX_JOYSTICK },
++    { "Colecovision Joystick", RETRO_DEVICE_COLECOVISION_JOYSTICK },
++    { "MSX Keyboard", RETRO_DEVICE_MSX_KEYBOARD },
+    };
+ 
+    static const struct retro_controller_info ports[] = {
+-      { port, 2 },
+-      { port, 2 },
++      { port, 3 },
++      { port, 3 },
++      { port, 3 },
+       { 0 },
+    };
+ 
+@@ -328,16 +338,19 @@ void retro_set_controller_port_device(unsigned port, unsigned device)
+ {
+    switch (device)
+    {
+-      case RETRO_DEVICE_JOYPAD:
+-         input_devices[port] = RETRO_DEVICE_JOYPAD;
++      case RETRO_DEVICE_MSX_JOYSTICK:
++         input_devices[port] = RETRO_DEVICE_MSX_JOYSTICK;
++         break;
++      case RETRO_DEVICE_COLECOVISION_JOYSTICK:
++         input_devices[port] = RETRO_DEVICE_COLECOVISION_JOYSTICK;
+          break;
+-      case RETRO_DEVICE_KEYBOARD:
+-         input_devices[port] = RETRO_DEVICE_KEYBOARD;
++      case RETRO_DEVICE_MSX_KEYBOARD:
++         input_devices[port] = RETRO_DEVICE_MSX_KEYBOARD;
+          break;
+       default:
+          if (log_cb)
+-            log_cb(RETRO_LOG_ERROR, "[libretro]: Invalid device, setting type to RETRO_DEVICE_KEYBOARD ...\n");
+-         input_devices[port] = RETRO_DEVICE_KEYBOARD;
++            log_cb(RETRO_LOG_ERROR, "[libretro]: Invalid device, setting type to RETRO_DEVICE_MSX_KEYBOARD ...\n");
++         input_devices[port] = RETRO_DEVICE_MSX_KEYBOARD;
+    }
+ }
+ 
+@@ -397,7 +410,7 @@ static void check_variables(void)
+    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
+       strcpy(msx_type, var.value);
+    else
+-      strcpy(msx_type, "MSX2+");
++      strcpy(msx_type, "MSX2");
+ 
+    var.key = "bluemsx_vdp_synctype";
+    var.value = NULL;
+@@ -644,17 +657,29 @@ void retro_run(void)
+    {
+       switch (input_devices[i])
+       {
+-         case RETRO_DEVICE_JOYPAD:
++         case RETRO_DEVICE_MSX_JOYSTICK:
+             if (i == 0)
+                for (j = EC_JOY1_UP; j <= (EC_JOY1_BUTTON6); j++)
+-                  eventMap[j] = input_state_cb(i, RETRO_DEVICE_JOYPAD, 0, btn_map[j]) ? 1 : 0;
++                  eventMap[j] = input_state_cb(i, RETRO_DEVICE_MSX_JOYSTICK, 0, btn_map[j]) ? 1 : 0;
+             else if (i == 1)
+                for (j = EC_JOY2_UP; j <= (EC_JOY2_BUTTON6); j++)
+-                  eventMap[j] = input_state_cb(i, RETRO_DEVICE_JOYPAD, 0, btn_map[j]) ? 1 : 0;
++                  eventMap[j] = input_state_cb(i, RETRO_DEVICE_MSX_JOYSTICK, 0, btn_map[j]) ? 1 : 0;
++               for (j = 0; j < EC_KEYBOARD_KEYCOUNT; j++)
++                  eventMap[j] = input_state_cb(2, RETRO_DEVICE_MSX_KEYBOARD, 0, btn_map[j]) ? 1 : 0;
++            break;
++         case RETRO_DEVICE_COLECOVISION_JOYSTICK:
++            if (i == 0)
++               for (j = EC_COLECO1_1; j <= (EC_COLECO1_HASH); j++)
++                  eventMap[j] = input_state_cb(i, RETRO_DEVICE_COLECOVISION_JOYSTICK, 0, btn_map[j]) ? 1 : 0;
++            else if (i == 1)
++               for (j = EC_COLECO2_1; j <= (EC_COLECO2_HASH); j++)
++                  eventMap[j] = input_state_cb(i, RETRO_DEVICE_COLECOVISION_JOYSTICK, 0, btn_map[j]) ? 1 : 0;
++               for (j = 0; j < EC_KEYBOARD_KEYCOUNT; j++)
++                  eventMap[j] = input_state_cb(2, RETRO_DEVICE_MSX_KEYBOARD, 0, btn_map[j]) ? 1 : 0;
+             break;
+-         case RETRO_DEVICE_KEYBOARD:
++         case RETRO_DEVICE_MSX_KEYBOARD:
+             for (j = 0; j < EC_KEYBOARD_KEYCOUNT; j++)
+-               eventMap[j] = input_state_cb(i, RETRO_DEVICE_KEYBOARD, 0, btn_map[j]) ? 1 : 0;
++               eventMap[j] = input_state_cb(i, RETRO_DEVICE_MSX_KEYBOARD, 0, btn_map[j]) ? 1 : 0;
+             break;
+       }
+    }
