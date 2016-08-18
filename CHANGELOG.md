@@ -54,6 +54,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Add a recalbox.conf option to set a video mode only for es
 - Add Catalan translation
 - Check space left before update
+- Added ColecoVison support to bluemsx libretro core
 
 ## [4.0.0-beta5] - 2016-08-13
 - Updated libretro mame 2003 core. Fixes the ratio issue in mame.
