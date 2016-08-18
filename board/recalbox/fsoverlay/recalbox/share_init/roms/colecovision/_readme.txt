@@ -4,7 +4,7 @@ Put your colecovision roms in this directory.
 
 Rom files must have a ".col" extension.
 
-You can download msx1/2 roms on planetemu :
+You can download colecovision roms on planetemu :
 http://www.planetemu.net/machine/colecovision
 
 
