@@ -56,6 +56,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Check space left before update
 - Added ColecoVison support to bluemsx libretro core
 - Added the alternative N64 core GLupeN64 on rpi2/rpi3
+- Added IPF format support to libretro-hatari (atarist ST)
 
 ## [4.0.0-beta5] - 2016-08-13
 - Updated libretro mame 2003 core. Fixes the ratio issue in mame.
