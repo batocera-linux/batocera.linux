@@ -209,6 +209,20 @@ wittyPi_stop()
     gpio mode $halt_pin up
 }
 
+pin356_start()
+{
+	python /recalbox/scripts/rpi-pin356-power.py &
+    pid=$!
+    echo "$pid" > /tmp/rpi-pin356-power.pid
+    wait "$pid"
+}
+pin356_stop()
+{
+    if [[ -f /tmp/rpi-pin356-power.pid ]]; then
+        kill `cat /tmp/rpi-pin356-power.pid`
+    fi
+}
+
 pin56_start()
 {
     mode=$1
