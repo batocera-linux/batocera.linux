@@ -3,7 +3,7 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unrelease][unreleased]
-- Fixing Makelfiles for compilation of libretro-lutro for the bump to release  2377dd37ad3bd37ddef9fc37742bba2531a78407 
+- Fixing Makelfiles for compilation of libretro-lutro for the bump to release 2377dd37ad3bd37ddef9fc37742bba2531a78407
 - Bump retroarch to last release due to integration of libretro-imageviewer in its cores, and delation of the libretro-imageviewer repos
 - Update Mame2003 core to get the mame2003-skip_warnings and avoid splash screen
 - New emulator : PPSSPP
@@ -51,6 +51,32 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Add new Traditional Chinese Language
 - Add DosBox 0.74 (rev 3989) with specific patches: SDL2, with mapping of mouse and all axis of joysticks
 - Add lutro extension
+- Add a recalbox.conf option to set a video mode only for es
+- Add Catalan translation
+- Check space left before update
+- Added ColecoVison support to bluemsx libretro core
+- Added the alternative N64 core GLupeN64 on rpi2/rpi3
+- Added IPF format support to libretro-hatari (atarist ST)
+
+## [4.0.0-beta5] - 2016-08-13
+- Updated libretro mame 2003 core. Fixes the ratio issue in mame.
+- Improved pads and gpio support for moonlight
+- Change location of PM2_HOME to fix a bug with API daemon
+- Disable printer sharing to reduce log output
+- Prevent MacOS from adding its .DS_store
+
+## [4.0.0-beta4] - 2016-06-19
+- Update to moonlight-embedded-2.2.1 (but still displays 2.2.0 when running), adds support for GFE 2.11
+- Added enet library for moonlight-embedded-2.2.0
+- Solved a bug on xarcade where B and HOTKEY were sending the same event
+- Slide transition by default in ES
+- Power management switch support (power,reset and LED) for pin 3/5/6
+- Add ifconfig -a and /boot/recalbox-boot.conf in recalbox-support.sh
+- S99Custom now trasmits its init parameter to custom.sh
+- Bumped retroarch to v1.3.4
+- Add ipega 9021 rules
+- Added stat in busybox
+- Added integer scale (Pixel Perfect) option
 
 ## [4.0.0-beta3] - 2016-04-19
 - Xarcade2jstick button remapped + better support of IPAC encoders
