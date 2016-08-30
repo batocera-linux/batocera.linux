@@ -1,11 +1,7 @@
-v4.0.0-beta2
-- Added rpi3 support (without bluetooth)
-- Added support for power management boards
-- Added rpi gpio and wiringpi
-- Added OOB remote controls
-- Fixed keyboard issue in ES
-- Fixed retroachievement support on picodrive and fceumm libretro cores
-- Fixed system locales
-- Updated 8bitdo gamepads
-- Bumped to moonlight-embedded-2.1.4
-- Overclock set to none now delete lines in config.txt
+v4.0.0-beta5
+- Updated libretro mame 2003 core. Fixes the ratio issue in mame.
+- Improved pads and gpio support for moonlight
+- Change location of PM2_HOME to fix a bug with API daemon
+- Disable printer sharing to reduce log output
+- Prevent MacOS from adding its .DS_store
+

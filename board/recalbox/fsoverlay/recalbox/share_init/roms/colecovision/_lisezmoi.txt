@@ -1,0 +1,35 @@
+## RECALBOX - SYSTEM COLECOVISION ##
+
+Placez ici vos roms colecovision.
+
+Les roms doivent avoir l'extension ".col"
+
+Vous pouvez télécharger les roms colecovision à l'adresse :
+http://www.planetemu.net/machine/colecovision
+
+
+## BIOS ##
+
+- Emulateur BlueMSX :
+Vous devez télécharger la version standalone de l'émulateur BlueMSX disponible à l'adresse suivante : http://bluemsx.msxblue.com/rel_download/blueMSXv282full.zip
+Puis extraire de ce dernier, les répertoire "Databases" et "Machines" et les ajouter dans le répertoire bios de recalbox.
+
+Vous devez ensuite télécharger le fichier coleco.rom (md5sum = 2c66f5911e5b42b8ebe113403548eee7) et l'ajouter dans le répertoire /bios/Machines/COL - ColecoVision/
+
+## MAPPING ##
+
+
+JOYPAD_UP     = COLECO 1
+JOYPAD_DOWN   = COLECO 2
+JOYPAD_LEFT   = COLECO 3
+JOYPAD_RIGHT  = COLECO 4
+JOYPAD_A      = COLECO 5
+JOYPAD_B      = COLECO 6
+JOYPAD_X      = COLECO 7
+JOYPAD_Y      = COLECO 8
+JOYPAD_R2     = COLECO 9
+JOYPAD_L2     = COLECO 0
+JOYPAD_R      = COLECO BUTTON1
+JOYPAD_L      = COLECO BUTTON2
+JOYPAD_SELECT = COLECO STAR
+JOYPAD_START  = COLECO HASH

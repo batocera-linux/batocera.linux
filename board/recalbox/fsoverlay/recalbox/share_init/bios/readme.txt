@@ -47,7 +47,7 @@ aa95aea2563cd5ec0a0919b44cc17d47  MSX.ROM
 403cdea1cbd2bb24fae506941f8f655e  PAINTER.ROM
 279efd1eae0d358eecd4edc7d9adedf3  RS232.ROM
 
-- BLUEMSX :
+- BLUEMSX (EMULATOR MSX BY DEFAULT) :
 Thanks to read the "readme.txt" file present in the "/roms/msx" folder of your recalbox.
 
 - LYNX :
@@ -61,3 +61,6 @@ b2a8570de2e850c5acf81cb80512d9f6  tos.img
 
 -ODYSSEY2/VIDEOPAC :
 562d5ebf9e030a40d6fabfc2f33139fd  o2rom.bin
+
+-COLECOVISION :
+Thanks to read the "readme.txt" file present in the "/roms/colecovision" folder of your recalbox.

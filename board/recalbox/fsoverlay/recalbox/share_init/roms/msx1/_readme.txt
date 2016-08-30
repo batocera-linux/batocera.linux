@@ -11,7 +11,7 @@ http://www.planetemu.net/roms/goodmsx1
 
 ## BIOS ##
 
-- BlueMSX :
+- BlueMSX (EMULATOR MSX BY DEFAULT) :
 You must download the BlueMSX standalone version, available to this adresse : http://bluemsx.msxblue.com/rel_download/blueMSXv282full.zip
 Then extract the "Databases" and "Machines" folders and add them to the bios folder of your recalbox.
 

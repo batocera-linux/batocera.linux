@@ -6,7 +6,7 @@ PM2=/usr/recalbox-api/node_modules/pm2/bin/pm2
 USER=root
 
 export PATH=/usr/bin:$PATH
-export PM2_HOME="/recalbox/share/system/.pm2"
+export PM2_HOME="/var/.pm2"
 export API_HOME="$API"
 
 log="/recalbox/share/system/logs/recalbox.log"

@@ -3,7 +3,7 @@
 # recalbox-manager
 #
 ################################################################################
-RECALBOX_MANAGER_VERSION = recalbox_4-x
+RECALBOX_MANAGER_VERSION = recalbox-4.1.x
 RECALBOX_MANAGER_SITE = $(call github,sveetch,recalbox-manager,$(RECALBOX_MANAGER_VERSION))
 RECALBOX_MANAGER_DEPENDENCIES = python python-psutil python-django python-autobreadcrumbs
 

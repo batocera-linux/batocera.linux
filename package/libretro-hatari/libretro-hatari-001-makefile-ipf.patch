@@ -1,0 +1,73 @@
+--- a/Makefile.libretro	2016-05-30 23:50:22.000000000 +0200
++++ b/Makefile.libretro	2016-08-19 13:49:21.601634190 +0200
+@@ -2,6 +2,13 @@
+ LIBRETRO_DIR = $(CORE_DIR)/libretro
+ ZLIB_DIR = $(LIBRETRO_DIR)/utils/zlib
+ 
++DEBUG = 0
++IPFSUPPORT = 1
++
++ifeq ($(IPFSUPPORT), 1)
++CAPS_LIB = -L$(STAGING_DIR)/usr/lib -lcapsimage
++endif
++
+ ifeq ($(platform),)
+ platform = unix
+ ifeq ($(shell uname -a),)
+@@ -81,6 +88,26 @@
+ 	-D__CELLOS_LV2 -DHAVE_MEMALIGN -DHAVE_ASPRINTF -I$(ZLIB_DIR) 
+    PLATFLAGS :=  -DALIGN_DWORD 
+    EXTERNAL_ZLIB = 1
++else ifeq (,$(findstring armv,$(platform)))
++   CC = gcc
++	TARGET := $(TARGET_NAME)_libretro.so
++   fpic := -fPIC -fsigned-char
++   SHARED :=  -lz -lpthread -shared -Wl,--version-script=$(LIBRETRO_DIR)/link.T -Wl,--no-undefined
++   PLATFLAGS := -DLSB_FIRST -DALIGN_DWORD
++   CFLAGS += -marm
++ifneq (,$(findstring neon,$(platform)))
++   CFLAGS += -mfpu=neon
++   ASFLAGS += -mfpu=neon
++   HAVE_NEON = 1
++endif
++ifneq (,$(findstring softfloat,$(platform)))
++   CFLAGS += -mfloat-abi=softfp
++   ASFLAGS += -mfloat-abi=softfp
++else ifneq (,$(findstring hardfloat,$(platform)))
++   CFLAGS += -mfloat-abi=hard
++   ASFLAGS += -mfloat-abi=hard
++endif
++   CFLAGS += -DARM
+ else
+    #CC = i586-mingw32msvc-gcc
+    CC = x86_64-w64-mingw32-gcc
+@@ -92,7 +119,7 @@
+ ifeq ($(DEBUG), 1)
+    CFLAGS += -O0 -g
+ else
+-   CFLAGS += -O3
++   CFLAGS += -O2 -DNDEBUG
+ endif
+ 
+ CFLAGS += \
+@@ -118,6 +145,11 @@
+ 
+ all: $(TARGET)
+ 
++ifeq ($(IPFSUPPORT), 1)
++INCFLAGS += -I$(STAGING_DIR)/usr/lib/capsimage
++PLATFLAGS += -DHAVE_CAPSIMAGE=1
++endif
++
+ ifeq ($(platform), wii)
+ $(TARGET): $(OBJECTS) 
+ 	$(AR) rcs $@ $(OBJECTS) 
+@@ -133,7 +165,7 @@
+ 	$(CC) $(fpic) $(SHARED) $(INCLUDES) -o $@ $(OBJECTS)  -lm -lz
+ else
+ $(TARGET): $(OBJECTS)
+-	$(CC) $(fpic) $(SHARED) $(INCLUDES) -o $@ $(OBJECTS)  -lm -lz -lpthread
++	$(CC) $(fpic) $(SHARED) $(INCLUDES) -o $@ $(OBJECTS)  -lm -lz -lpthread $(CAPS_LIB)
+ 
+ endif
+ 
