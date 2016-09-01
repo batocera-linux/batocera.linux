@@ -48,6 +48,7 @@ lsusb -v         	> "${DSYSTEM}/lsusb.txt" 2>/dev/null
 tvservice -m CEA 	> "${DSYSTEM}/tvservice-CEA.txt"
 tvservice -m DMT 	> "${DSYSTEM}/tvservice-DMT.txt"
 ifconfig -a             > "${DSYSTEM}/ifconfig.txt"
+amixer                  > "${DSYSTEM}/amixer.txt"
 connmanctl technologies > "${DSYSTEM}/connman-technologies.txt"
 connmanctl services     > "${DSYSTEM}/connman-services.txt"
 f_cp /recalbox/recalbox.version                               "${DSYSTEM}"
