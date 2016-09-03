@@ -61,6 +61,9 @@ f_cp /recalbox/share/system/.emulationstation/es_log.txt      "${DSYSTEM}"
 f_cp /recalbox/share/system/.emulationstation/es_input.cfg    "${DSYSTEM}"
 f_cp /boot/recalbox-boot.conf                                 "${DSYSTEM}"
 
+# Emulators configs
+d_cp /recalbox/share/system/configs                           "${TMPDIR}/configs"
+
 # joysticks
 DJOYS="${TMPDIR}/joysticks"
 find /dev/input > "${DJOYS}/inputs.txt"
