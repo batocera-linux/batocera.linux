@@ -5,3 +5,5 @@ SUBSYSTEM=="input", ATTRS{name}=="ipega Bluetooth Gamepad", MODE="0666", ENV{ID_
 SUBSYSTEM=="input", ATTRS{name}=="Gamepad", MODE="0666", ENV{ID_INPUT_JOYSTICK}="1"
 # Neo-Geo X Arcade Stick
 SUBSYSTEM=="input", ATTRS{name}=="TOMMO NEOGEOX Arcade Stick", MODE="0666", ENV{ID_INPUT_JOYSTICK}="1"
+#Mad Catz C.T.R.L.R gamepad
+SUBSYSTEM=="input", ATTRS{name}=="Mad Catz C.T.R.L.R", MODE="0666", ENV{ID_INPUT_JOYSTICK}="1"
