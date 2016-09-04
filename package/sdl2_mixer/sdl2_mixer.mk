@@ -16,7 +16,6 @@ SDL2_MIXER_CONF_OPTS = \
 	--with-sdl-prefix=$(STAGING_DIR)/usr \
 	--disable-music-midi \
 	--disable-music-mod \
-	--disable-music-mp3 \
 	--disable-music-flac # configure script fails when cross compiling
 
 ifeq ($(BR2_PACKAGE_LIBMAD),y)
