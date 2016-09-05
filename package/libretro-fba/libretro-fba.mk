@@ -17,7 +17,7 @@ define LIBRETRO_FBA_BUILD_CMDS
 endef
 
 define LIBRETRO_FBA_INSTALL_TARGET_CMDS
-	$(INSTALL) -D $(@D)/fba_libretro.so \
+	$(INSTALL) -D $(@D)/fbalpha_libretro.so \
 		$(TARGET_DIR)/usr/lib/libretro/fba_libretro.so
 endef
 
