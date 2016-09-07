@@ -61,6 +61,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Updated libretro-fba core from FBA 0.2.97.37 to FBA 0.2.97.38
 - Added Mad Catz C.T.R.L.R udev rules
 - Add configs to recalbox-support.sh
+- Add firmwares ASUS BT400 and Qualcomm Atheros AR3011 BT3.0
 
 ## [4.0.0-beta5] - 2016-08-13
 - Updated libretro mame 2003 core. Fixes the ratio issue in mame.
