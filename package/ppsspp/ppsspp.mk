@@ -3,8 +3,7 @@
 # PPSSPP
 #
 ################################################################################
-# This is the commit for v1.2.2. The source tar.gz doesn't contain full dependencies
-PPSSPP_VERSION = 8c9f3b9509e8a6850e086ec36a59ca7fa4082d60
+PPSSPP_VERSION = v1.2.2
 PPSSPP_SITE = $(call github,hrydgard,ppsspp,$(PPSSPP_VERSION))
 PPSSPP_GIT = https://github.com/hrydgard/ppsspp.git
 PPSSPP_DEPENDENCIES = sdl2 zlib libzip linux zip
@@ -12,8 +11,10 @@ PPSSPP_DEPENDENCIES = sdl2 zlib libzip linux zip
 # Dirty hack to download submodules
 define PPSSPP_EXTRACT_CMDS
 	rm -rf $(@D)
-	git clone --recursive --depth 1 $(PPSSPP_GIT) $(@D)
+	git clone --recursive $(PPSSPP_GIT) $(@D)
 	touch $(@D)/.stamp_downloaded
+	cd $(@D) && \
+	git reset --hard $(PPSSPP_VERSION)
 endef
 
 define PPSSPP_CONFIGURE_PI
@@ -33,4 +34,8 @@ ifeq ($(BR2_PACKAGE_MALI_OPENGLES_SDK),y)
 	PPSSPP_CONF_OPTS += -DMALISDK=1
 endif
 
+ifeq ($(BR2_PACKAGE_RECALBOX_TARGET_RPI3)$(BR2_PACKAGE_RECALBOX_TARGET_XU4),y)
+	PPSSPP_CONF_OPTS += -DARMV7=1
+endif
 $(eval $(cmake-package))
+
