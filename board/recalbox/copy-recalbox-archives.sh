@@ -122,14 +122,9 @@ case "${RECALBOX_TARGET}" in
 	cp "${BINARIES_DIR}/rootfs.tar.xz" "${RECALBOX_BINARIES_DIR}/root.tar.xz" || exit 1
 
 	# get UEFI files
-	echo "Compiled efi files from the x64 build"
-	EFIPATH=$(grep -E '^BR2_PACKAGE_RECALBOX_EFI64BITTARBALL=' "${BR2_CONFIG}" | sed -e s+'^BR2_PACKAGE_RECALBOX_EFI64BITTARBALL="\([^"]*\)"'+'\1'+)
-	if ! cp "${EFIPATH}" "${BINARIES_DIR}/EFI.tar.gz"
-	then
-	    echo "Unable to found the file ${EFIPATH} compiled from the 64 bit version to boot from EFI 64 bit computers."
-	    exit 1 # i choose to exit in error, not to skip while, it is not wanted an image without that
-	fi
-	(cd "${BINARIES_DIR}" && tar xf EFI.tar.gz) || exit 1
+	mkdir -p "${BINARIES_DIR}/EFI/BOOT" || exit 1
+	cp "${BINARIES_DIR}/bootx64.efi" "${BINARIES_DIR}/EFI/BOOT" || exit 1
+	cp "board/recalbox/grub2/grub.cfg" "${BINARIES_DIR}/EFI/BOOT" || exit 1
 
 	# boot.tar.xz
 	(cd "${BINARIES_DIR}" && tar -cJf "${RECALBOX_BINARIES_DIR}/boot.tar.xz" EFI boot recalbox-boot.conf) || exit 1

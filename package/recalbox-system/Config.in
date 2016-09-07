@@ -27,13 +27,4 @@ config BR2_PACKAGE_RECALBOX_TARGET_XU4
 config BR2_PACKAGE_RECALBOX_TARGET_X86
 	bool "x86"
 
-if BR2_PACKAGE_RECALBOX_TARGET_X86
-config BR2_PACKAGE_RECALBOX_EFI64BITTARBALL
-	string "EFI.tar.gz path"
-	default "../recalbox-buildroot-x86_64/output/images/EFI.tar.gz"
-	help
-	  Path to the EFI.tar.gz file compiled from the 64bit grub version.
-
-endif
-
 endchoice
