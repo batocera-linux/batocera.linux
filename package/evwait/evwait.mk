@@ -5,7 +5,7 @@
 ################################################################################
 
 EVWAIT_VERSION = 242a3a8ced19ff979b215607d316801d2bb15b4b
-EVWAIT_SITE = $(call github,nadenislamarre,evwait,$(EVWAIT_VERSION))
+EVWAIT_SITE = $(call github,recalbox,evwait,$(EVWAIT_VERSION))
 EVWAIT_LICENSE = GPLv2+
 EVWAIT_LICENSE_FILES = COPYING
 EVWAIT_DEPENDENCIES = host-pkgconf
