@@ -62,6 +62,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Added Mad Catz C.T.R.L.R udev rules
 - Add configs to recalbox-support.sh
 - Add firmwares ASUS BT400 and Qualcomm Atheros AR3011 BT3.0
+- Add support for PS4 Dualshock4 bluetooth controllers
 
 ## [4.0.0-beta5] - 2016-08-13
 - Updated libretro mame 2003 core. Fixes the ratio issue in mame.
