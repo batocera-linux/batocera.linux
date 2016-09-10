@@ -46,5 +46,7 @@ input_enable_hotkey_btn = "16"
 input_enable_hotkey = "escape"
 input_exit_emulator = "escape"
 
+# specific to x86
 video_driver = "sdl2"
-
+# avoid blinking borders coming sometimes
+video_black_frame_insertion = true
