@@ -1,9 +1,5 @@
 #!/bin/bash
 
-storageFile="/boot/recalbox-boot.conf"
-INTERNAL_DEVICE=$(cat "${storageFile}" | grep -E "^internal=" | head -n1 | cut -d'=' -f2)
-test -z "${INTERNAL_DEVICE}" && INTERNAL_DEVICE="/dev/mmcblk0p3"
-
 print_usage() {
     echo "${1} list"
     echo "${1} sync DEVICE_UID"
@@ -28,8 +24,9 @@ rs_list() {
 	echo "INTERNAL"
     fi
     # avoid sd card partitions
-    (blkid | grep -vE '^/dev/mmcblk' | grep ': LABEL="'
-     blkid | grep -vE '^/dev/mmcblk' | grep -v ': LABEL="' | sed -e s+':'+': LABEL="NO_NAME"'+
+    PARTPREFIX=$(/recalbox/scripts/recalbox-part.sh prefix "${INTERNALDEVICE}")
+    (blkid | grep -vE "^${PARTPREFIX}" | grep ': LABEL="'
+     blkid | grep -vE "^${PARTPREFIX}" | grep -v ': LABEL="' | sed -e s+':'+': LABEL="NO_NAME"'+
     ) | grep -vE "^${RS_CURRENT}:" | sed -e s+'^[^:]*: LABEL="\([^"]*\)" UUID="\([^"]*\)" TYPE="[^"]*"$'+'DEV \2 \1'+
 }
 
@@ -133,6 +130,8 @@ cleanExit() {
     sleep 1 # wait otherwise, you can get a busy error...
     test -n "${MOUNTPOINT}" && umount "${MOUNTPOINT}"
 }
+
+INTERNALDEVICE=$(/recalbox/scripts/recalbox-part.sh share_internal)
 
 if test $# -eq 0
 then

@@ -1,0 +1,21 @@
+diff --git a/Core/HW/MediaEngine.cpp b/Core/HW/MediaEngine.cpp
+index ba57de7..d16a6e2 100644
+--- a/Core/HW/MediaEngine.cpp
++++ b/Core/HW/MediaEngine.cpp
+@@ -37,6 +37,16 @@ extern "C" {
+ #include "libavutil/imgutils.h"
+ #include "libswscale/swscale.h"
+ 
++// for a reason i ignore, under x86 recalbox compilation, this function is not found in ffmpeg
++int av_dict_set_int(AVDictionary **pm, const char *key, int64_t value,
++                int flags)
++{
++    char valuestr[22];
++    snprintf(valuestr, sizeof(valuestr), "%"PRId64, value);
++    flags &= ~AV_DICT_DONT_STRDUP_VAL;
++    return av_dict_set(pm, key, valuestr, flags);
++}
++
+ }
+ #endif // USE_FFMPEG
+ 

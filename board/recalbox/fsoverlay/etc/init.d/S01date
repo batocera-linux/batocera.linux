@@ -5,5 +5,9 @@ then
   exit 0
 fi
 
-date -s '1980-01-01 01:00:00'
-
+# force a date over 1980 because of fat32 (to make rsync to work)
+CURDATE=$(date +%Y)
+if test "${CURDATE}" -lt 1980
+   then
+       date -s '1980-01-01 01:00:00'
+fi

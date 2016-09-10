@@ -48,6 +48,8 @@ lsusb -v         	> "${DSYSTEM}/lsusb.txt" 2>/dev/null
 tvservice -m CEA 	> "${DSYSTEM}/tvservice-CEA.txt"
 tvservice -m DMT 	> "${DSYSTEM}/tvservice-DMT.txt"
 ifconfig -a             > "${DSYSTEM}/ifconfig.txt"
+amixer                  > "${DSYSTEM}/amixer.txt"
+DISPLAY=:0 glxinfo      > "${DSYSTEM}/glxinfo.txt"
 connmanctl technologies > "${DSYSTEM}/connman-technologies.txt"
 connmanctl services     > "${DSYSTEM}/connman-services.txt"
 f_cp /recalbox/recalbox.version                               "${DSYSTEM}"
@@ -60,6 +62,7 @@ f_cp /recalbox/share/system/.emulationstation/es_settings.cfg "${DSYSTEM}"
 f_cp /recalbox/share/system/.emulationstation/es_log.txt      "${DSYSTEM}"
 f_cp /recalbox/share/system/.emulationstation/es_input.cfg    "${DSYSTEM}"
 f_cp /boot/recalbox-boot.conf                                 "${DSYSTEM}"
+f_cp /var/log/Xorg.0.log                                      "${DSYSTEM}"
 
 # Emulators configs
 d_cp /recalbox/share/system/configs                           "${TMPDIR}/configs"

@@ -19,7 +19,16 @@ RECALBOX_EMULATIONSTATION2_VERSION = rb-4.1.X
 
 RECALBOX_EMULATIONSTATION2_LICENSE = MIT
 RECALBOX_EMULATIONSTATION2_DEPENDENCIES = sdl2 sdl2_mixer boost freeimage freetype eigen alsa-lib \
-	libgles libcurl openssl
+	libcurl openssl
+
+ifeq ($(BR2_PACKAGE_HAS_LIBGL),y)
+RECALBOX_EMULATIONSTATION2_DEPENDENCIES += libgl
+endif
+
+ifeq ($(BR2_PACKAGE_HAS_LIBGLES),y)
+RECALBOX_EMULATIONSTATION2_DEPENDENCIES += libgles
+endif
+
 
 define RECALBOX_EMULATIONSTATION2_RPI_FIXUP
 	$(SED) 's|/opt/vc/include|$(STAGING_DIR)/usr/include|g' $(@D)/CMakeLists.txt

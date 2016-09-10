@@ -251,21 +251,33 @@ fi
 fi
 
 if [ "$command" == "audio" ];then
+    # this code is specific to the rpi
+    # don't set it on other boards
+    # find a more generic way would be nice
+    if [[ "${arch}" =~ "rpi" ]]
+    then
+	# this is specific to the rpi
 	cmdVal="0"
 	if [ "$mode" == "hdmi" ];then
-		cmdVal="2"
+	    cmdVal="2"
 	elif [ "$mode" == "jack" ];then
-		cmdVal="1"
+	    cmdVal="1"
 	fi
         echo "`logtime` : setting audio output mode : $mode" >> $log
 	amixer cset numid=3 $cmdVal || exit 1
-	exit 0
+    fi
+    exit 0
 fi
 
 if [ "$command" == "volume" ];then
 	if [ "$mode" != "" ];then
         	echo "`logtime` : setting audio volume : $mode" >> $log
-		amixer set PCM -- ${mode}% || exit 1
+
+		# on my pc, the master is turned off at boot
+		# i don't know what are the rules to set here.
+		amixer set Master unmute      || exit 1
+                amixer set Master -- ${mode}% || exit 1
+		amixer set PCM    -- ${mode}% || exit 1
 		exit 0
 	fi
 	exit 12

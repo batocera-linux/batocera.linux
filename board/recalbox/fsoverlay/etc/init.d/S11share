@@ -24,8 +24,7 @@ fi
 ###
 
 SHARECONFFILE="/boot/recalbox-boot.conf"
-INTERNALDEVICE=`cat ${SHARECONFFILE} | grep "internal=" | head -n1 | cut -d'=' -f2`
-[[ "$?" -ne "0" || "$INTERNALDEVICE" == "" ]] && INTERNALDEVICE=/dev/mmcblk0p3
+INTERNALDEVICE=$(/recalbox/scripts/recalbox-part.sh "share_internal")
 SHAREDEVICE=`cat ${SHARECONFFILE} | grep "sharedevice=" | head -n1 | cut -d'=' -f2`
 [[ "$?" -ne "0" || "$SHAREDEVICE" == "" ]] && SHAREDEVICE=INTERNAL
 
@@ -59,13 +58,17 @@ NB_FILES_TARGET=45000
 if ! test -e "${INTERNALDEVICE}"
 then
     # but the system partition exists
-    if test -e /dev/mmcblk0p2
+    INTERNALPREVIOUSDEVICE=$(/recalbox/scripts/recalbox-part.sh previous "${INTERNALDEVICE}")
+    
+    if test -e "${INTERNALPREVIOUSDEVICE}" # the partition n-1 must exist (just in case the parameter given is not wrong)
     then
+	PARTPREFIX=$(/recalbox/scripts/recalbox-part.sh prefix "${INTERNALDEVICE}")
+
 	# create the internal partition
-	PSTART=$(parted -s /dev/mmcblk0 -m unit b print free | tail -1 | grep -E 'free;$' | cut -d: -f 2)
+	PSTART=$(parted -s "${PARTPREFIX}" -m unit b print free | tail -1 | grep -E 'free;$' | cut -d: -f 2)
 	if test -n "${PSTART}"
 	then
-	    parted -s /dev/mmcblk0 -m unit b mkpart primary "${PSTART}" 100%
+	    parted -s "${PARTPREFIX}" -m unit b mkpart primary "${PSTART}" 100%
 	    if test -e "${INTERNALDEVICE}"
 	    then
 		#mkfs.vfat -F 32 -n SHARE /dev/mmcblk0p3 # if you replace this line, please change the INTERNALDEVICETYPE variable too in consequence
@@ -317,12 +320,13 @@ case "${MODE}" in
 	mountDeviceOrFallback "${DEVICE}" "${TDEVICE}"
 	;;
     "ANYEXTERNAL")
-	LDEVICE=$(blkid | grep -vE '^/dev/mmcblk' | head -1)
+        PARTPREFIX=$(/recalbox/scripts/recalbox-part.sh prefix "${INTERNALDEVICE}")
+	LDEVICE=$(blkid | grep -vE "^${PARTPREFIX}" | head -1)
 	while test -z "${LDEVICE}" -a "${NTRY}" -lt "${MAXTRY}" # wait the device that can take some seconds after udev started
 	do
 	    let NTRY++
 	    sleep 1
-	    LDEVICE=$(blkid | grep -vE '^/dev/mmcblk' | head -1)
+	    LDEVICE=$(blkid | grep -vE "^${PARTPREFIX}" | head -1)
 	done
 	DEVICE=$(echo "${LDEVICE}" | sed -e s+'^\([^:]*\):.*$'+'\1'+)
 	TDEVICE=$(echo "${LDEVICE}" | sed -e s+'^.* TYPE="\([^"]*\)"$'+'\1'+)

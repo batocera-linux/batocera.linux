@@ -11,7 +11,7 @@ RETROARCH_VERSION = 31bcb3d6f84b99c93844bde70251bcf3dec9ce7b
 RETROARCH_SITE = https://github.com/libretro/RetroArch.git
 RETROARCH_SITE_METHOD = git
 RETROARCH_LICENSE = GPLv3+
-RETROARCH_CONF_OPTS += --disable-oss --enable-floathard --enable-zlib
+RETROARCH_CONF_OPTS += --disable-oss --enable-zlib
 RETROARCH_DEPENDENCIES = host-pkgconf
 
 ifeq ($(BR2_PACKAGE_SDL2),y)
@@ -27,18 +27,27 @@ else
 	endif
 endif
 
+# RPI 0 and 1
+ifeq ($(BR2_arm1176jzf_s),y)
+        RETROARCH_CONF_OPTS += --enable-floathard
+endif
+
 # RPI 2 and 3
 ifeq ($(BR2_cortex_a7),y)
-        RETROARCH_CONF_OPTS += --enable-neon --enable-networking --enable-netplay
+        RETROARCH_CONF_OPTS += --enable-neon --enable-floathard
 endif
 ifeq ($(BR2_cortex_a8),y)
-        RETROARCH_CONF_OPTS += --enable-neon --enable-networking --enable-netplay
+        RETROARCH_CONF_OPTS += --enable-neon --enable-floathard
 endif
 
 # odroid xu4
 ifeq ($(BR2_cortex_a15),y)
-        RETROARCH_CONF_OPTS += --enable-neon --enable-networking --enable-netplay
+        RETROARCH_CONF_OPTS += --enable-neon --enable-floathard
 endif
+
+# x86 : no option
+
+RETROARCH_CONF_OPTS += --enable-networking --enable-netplay
 
 ifeq ($(BR2_PACKAGE_PYTHON3),y)
 RETROARCH_CONF_OPTS += --enable-python
@@ -49,7 +58,7 @@ endif
 
 ifeq ($(BR2_PACKAGE_XORG7),y)
 RETROARCH_CONF_OPTS += --enable-x11
-RETROARCH_DEPENDENCIES += x11r7
+RETROARCH_DEPENDENCIES += xserver_xorg-server
 else
 RETROARCH_CONF_OPTS += --disable-x11
 endif
@@ -135,11 +144,11 @@ define RETROARCH_CONFIGURE_CMDS
 endef
 
 define RETROARCH_BUILD_CMDS
-	$(MAKE) CC="$(TARGET_CC)" LD="$(TARGET_LD)" -C $(@D) all
+	$(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" LD="$(TARGET_LD)" -C $(@D) all
 endef
 
 define RETROARCH_INSTALL_TARGET_CMDS
-	$(MAKE) -C $(@D) DESTDIR=$(TARGET_DIR) install
+	$(MAKE) CXX="$(TARGET_CXX)" -C $(@D) DESTDIR=$(TARGET_DIR) install
 endef
 
 $(eval $(generic-package))
@@ -158,13 +167,17 @@ ifeq ($(BR2_cortex_a8),y)
         LIBRETRO_PLATFORM += armv8 cortexa8
 endif
 
+ifeq ($(BR2_x86_i586),y)
+        LIBRETRO_PLATFORM = unix
+endif
+
 ifeq ($(BR2_cortex_a15),y)
         LIBRETRO_PLATFORM += armv7
 endif
 
-ifeq ($(BR2_GCC_TARGET_FLOAT_ABI),"hard")
-        LIBRETRO_PLATFORM += hardfloat
-endif
+#ifeq ($(BR2_GCC_TARGET_FLOAT_ABI),"hard")
+#        LIBRETRO_PLATFORM += hardfloat
+#endif
 
 ifeq ($(BR2_ARM_CPU_HAS_NEON),y)
         LIBRETRO_PLATFORM += neon

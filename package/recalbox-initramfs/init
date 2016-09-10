@@ -1,0 +1,36 @@
+#!/bin/ash
+
+do_root() {
+    mount -t proc -o nodev,noexec,nosuid proc /proc  || return 1
+    mount -t sysfs -o nodev,noexec,nosuid sysfs /sys || return 1
+
+    # read the parameters
+    read -r cmdline < /proc/cmdline
+    for param in ${cmdline} ; do
+        case ${param} in
+            label=*) label=${param#label=};;
+        esac
+    done
+
+    # look for devices
+    mount -t devtmpfs none /dev
+    while ! mount -o ro LABEL=${label} /new_root
+    do
+        echo "Waiting for the root device"
+        sleep 1
+    done
+
+    # moving current mounts
+    mount --move /sys  /new_root/sys  || return 1
+    mount --move /proc /new_root/proc || return 1
+    mount --move /dev  /new_root/dev  || return 1
+
+    # switch to the new root
+    exec switch_root /new_root /sbin/init || return 1
+}
+
+if ! do_root
+then
+    echo "oooutch !"
+    /bin/ash
+fi

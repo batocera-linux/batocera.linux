@@ -1,0 +1,32 @@
+diff --git a/grub-core/kern/main.c b/grub-core/kern/main.c
+index 3262444..3e37133 100644
+--- a/grub-core/kern/main.c
++++ b/grub-core/kern/main.c
+@@ -211,8 +211,8 @@ grub_main (void)
+   grub_machine_init ();
+ 
+   /* Hello.  */
+-  grub_setcolorstate (GRUB_TERM_COLOR_HIGHLIGHT);
+-  grub_printf ("Welcome to GRUB!\n\n");
++  //grub_setcolorstate (GRUB_TERM_COLOR_HIGHLIGHT);
++  //grub_printf ("Welcome to GRUB!\n\n");
+   grub_setcolorstate (GRUB_TERM_COLOR_STANDARD);
+ 
+   /* Load pre-loaded modules and free the space.  */
+diff --git a/grub-core/normal/menu.c b/grub-core/normal/menu.c
+index 7e0a158..255db71 100644
+--- a/grub-core/normal/menu.c
++++ b/grub-core/normal/menu.c
+@@ -672,9 +672,9 @@ static void
+ notify_booting (grub_menu_entry_t entry,
+ 		void *userdata __attribute__((unused)))
+ {
+-  grub_printf ("  ");
+-  grub_printf_ (N_("Booting `%s'"), entry->title);
+-  grub_printf ("\n\n");
++  //grub_printf ("  ");
++  //grub_printf_ (N_("Booting `%s'"), entry->title);
++  grub_printf ("\nRecalbox\n");
+ }
+ 
+ /* Callback invoked when a default menu entry executed because of a timeout

@@ -1,0 +1,14 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 5f1a5b8..18bde45 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -162,6 +162,9 @@ elseif(MALISDK)
+ 	include_directories(/opt/vc/include /opt/vc/lib/libzip/include)
+ 	link_directories(/opt/vc/lib)
+ 	set(OPENGL_LIBRARIES GLESv2)
++elseif(X86)
++	include_directories(/opt/vc/include /opt/vc/lib/libzip/include)
++  	set(OPENGL_LIBRARIES GL)
+ elseif(USING_GLES2 AND NOT IOS)
+ 	set(OPENGL_LIBRARIES GLESv2)
+ elseif(NOT IOS)
