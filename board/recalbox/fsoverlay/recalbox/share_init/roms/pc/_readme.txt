@@ -13,6 +13,8 @@ miniputt.pc/MP.EXE
 
 and dosbox.bat contains : MP.EXE
 
+To quit a game, press ctrl+f9.
+
 Vous pouvez télécharger les jeux dos à l'adresse :
 You can download dos games on myabandonware :
 http://www.myabandonware.com/browse/platform/dos/
