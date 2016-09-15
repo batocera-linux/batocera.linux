@@ -1,0 +1,9 @@
+#!/bin/sh
+
+matchbox-window-manager -use_titlebar no -use_cursor no -use_desktop_mode no -use_lowlight no &
+
+export HOME=/recalbox/share/system
+export LC_ALL="${settings_lang}.UTF-8"
+
+# without windowed, time must be sleeped to wait that matchbox ended to initialize :-(
+exec emulationstation --windowed
