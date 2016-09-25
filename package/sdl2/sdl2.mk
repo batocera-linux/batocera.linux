@@ -26,6 +26,20 @@ else
 SDL2_CONF_OPTS += --disable-video-opengles
 endif
 
+# add x11 dependencies to compile sdl2 only once there are already done (otherwise, dosbox doesn't work in fullscreen in X11)
+ifeq ($(BR2_PACKAGE_XLIB_LIBXI),y)
+SDL2_DEPENDENCIES += xlib_libXi
+endif
+ifeq ($(BR2_PACKAGE_XLIB_LIBXCURSOR),y)
+SDL2_DEPENDENCIES += xlib_libXcursor
+endif
+ifeq ($(BR2_PACKAGE_XLIB_LIBXINERAMA),y)
+SDL2_DEPENDENCIES += xlib_libXinerama
+endif
+ifeq ($(BR2_PACKAGE_XLIB_LIBXRANDR),y)
+SDL2_DEPENDENCIES += xlib_libXrandr
+endif
+
 ifeq ($(BR2_PACKAGE_HAS_LIBEGL),y)
 SDL2_DEPENDENCIES += $(LIBEGL_DEPENDENCIES)
 ifeq ($(BR2_PACKAGE_PROVIDES_LIBEGL),"rpi-userland")
