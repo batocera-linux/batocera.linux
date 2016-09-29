@@ -54,6 +54,8 @@ SDL2_CONF_OPTS += --enable-video-fbdev
 # hum, ok, but i want it for x86 please
 ifeq ($(BR2_x86_i586),y)
 SDL2_CONF_OPTS += --enable-video-x11
+else ifeq ($(BR2_x86_64),y)
+SDL2_CONF_OPTS += --enable-video-x11
 else
 SDL2_CONF_OPTS += --disable-video-x11
 endif
