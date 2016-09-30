@@ -25,15 +25,11 @@ define DOSBOX_CONFIGURE_CMDS
                 LDFLAGS="$(TARGET_LDFLAGS) $(DOSBOX_LDFLAGS)" \
                 CROSS_COMPILE="$(HOST_DIR)/usr/bin/" \
 		LIBS="-lvorbisfile -lvorbis -logg" \
-                ./configure --host=arm-buildroot-linux-gnueabihf \
+                ./configure --host="$(GNU_TARGET_NAME)" \
                 --enable-core-inline --prefix=/usr \
                 --enable-dynrec --enable-unaligned_memory \
                 --disable-opengl --with-sdl=sdl2 \
                 --with-sdl-prefix="$(STAGING_DIR)/usr"; \
-        sed -i "s/C_TARGETCPU.*/C_TARGETCPU ARMV7LE/g" config.h; \
-        sed -i "s/SVN/$(DOSBOX_VERSION_TAG)/g" config.h; \
-        echo "#define C_DYNREC 1" >>config.h; \
-        echo "#define C_UNALIGNED_MEMORY 1" >>config.h \
         )
 endef
 
