@@ -8,6 +8,11 @@ PPSSPP_SITE = $(call github,hrydgard,ppsspp,$(PPSSPP_VERSION))
 PPSSPP_GIT = https://github.com/hrydgard/ppsspp.git
 PPSSPP_DEPENDENCIES = sdl2 zlib libzip linux zip
 
+# required at least on x86
+ifeq ($(BR2_PACKAGE_LIBGLU),y)
+PPSSPP_DEPENDENCIES += libglu
+endif
+
 # Dirty hack to download submodules
 define PPSSPP_EXTRACT_CMDS
 	rm -rf $(@D)

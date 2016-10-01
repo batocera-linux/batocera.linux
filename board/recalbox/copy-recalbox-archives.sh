@@ -55,7 +55,7 @@ fi
 mkdir -p "${RECALBOX_BINARIES_DIR}"
 
 # XU4, RPI0, RPI1, RPI2 or RPI3
-RECALBOX_TARGET=$(grep -E "^BR2_PACKAGE_RECALBOX_TARGET_[A-Z0-9]*=y$" "${BR2_CONFIG}" | sed -e s+'^BR2_PACKAGE_RECALBOX_TARGET_\([A-Z0-9]*\)=y$'+'\1'+)
+RECALBOX_TARGET=$(grep -E "^BR2_PACKAGE_RECALBOX_TARGET_[A-Z_0-9]*=y$" "${BR2_CONFIG}" | sed -e s+'^BR2_PACKAGE_RECALBOX_TARGET_\([A-Z_0-9]*\)=y$'+'\1'+)
 
 echo -e "\n----- Generating images/recalbox files -----\n"
 
@@ -140,8 +140,31 @@ case "${RECALBOX_TARGET}" in
 	sync || exit 1
 	;;
 
+	X86_64)
+	    # /boot
+	    rm -rf ${BINARIES_DIR}/boot || exit 1
+	    cp -pr ${BINARIES_DIR}/efi-part/EFI ${BINARIES_DIR}/boot || exit 1
+	    cp "board/recalbox/grub2/grub.cfg" ${BINARIES_DIR}/efi-part/EFI/BOOT/grub.cfg || exit 1
+	    cp "${BINARIES_DIR}/bzImage" "${BINARIES_DIR}/boot" || exit 1
+	    cp "${BINARIES_DIR}/initrd.gz" "${BINARIES_DIR}/boot" || exit 1
+
+	    # root.tar.xz
+	    cp "${BINARIES_DIR}/rootfs.tar.xz" "${RECALBOX_BINARIES_DIR}/root.tar.xz" || exit 1
+
+	    # boot.tar.xz
+	    (cd "${BINARIES_DIR}" && tar -cJf "${RECALBOX_BINARIES_DIR}/boot.tar.xz" efi-part/EFI boot recalbox-boot.conf) || exit 1
+
+	    # recalbox.img
+	    GENIMAGE_TMP="${BUILD_DIR}/genimage.tmp"
+	    RECALBOXIMG="${RECALBOX_BINARIES_DIR}/recalbox.img"
+	    rm -rf "${GENIMAGE_TMP}" || exit 1
+	    cp "board/recalbox/grub2/genimage_64.cfg" "${BINARIES_DIR}" || exit 1
+	    genimage --rootpath="${TARGET_DIR}" --inputpath="${BINARIES_DIR}" --outputpath="${RECALBOX_BINARIES_DIR}" --config="${BINARIES_DIR}/genimage_64.cfg" --tmppath="${GENIMAGE_TMP}" || exit 1
+	    rm -f "${RECALBOX_BINARIES_DIR}/boot.vfat" || exit 1
+	    sync || exit 1
+	;;
     *)
-	echo "Outch. Unknown target (see copy-recalbox-archives.sh)" >&2
+	echo "Outch. Unknown target ${RECALBOX_TARGET} (see copy-recalbox-archives.sh)" >&2
 	bash
 	exit 1
 esac
