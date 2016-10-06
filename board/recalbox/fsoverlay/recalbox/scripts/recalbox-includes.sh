@@ -8,17 +8,6 @@
 #
 ## Variables
 #
-# head -n 100 recalbox-includes.sh.old
-#!/bin/bash
-
-#
-## This is a knid of header file that can be used to declare variables and functions
-## That could turn useful in any recalbox script
-#
-
-#
-## Variables
-#
 
 _RBX=/recalbox
 _SHAREINIT=$_RBX/share_init
