@@ -25,14 +25,6 @@ function containsElement {
   return 1
 }
 
-# check if $1 is a property (ie system.element=value)
-# the value can't be empty
-function isProperty {
-  echo "$1" | grep -qE "^[;]?[[:alnum:]\-]+\.[[:alnum:].\-]+=[[:print:]]+$"
-  #[[ $? == 0 ]] && return || echo "Not a property : $1"
-  return $?
-}
-
 # Upgrade the recalbox.conf if necessary
 function doRbxConfUpgrade {
   # Update recalbox.conf
