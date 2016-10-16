@@ -5,6 +5,8 @@ then
   exit 0
 fi
 
+source /recalbox/scripts/recalbox-includes.sh
+
 IN=/recalbox/share_init
 OUT=/recalbox/share
 # force the creation of some directories
@@ -68,6 +70,9 @@ do
 	fi
     fi
 done
+
+# recalbox.conf : upgrade if necessary
+doRbxConfUpgrade
 
 # ssh : create the ssh key while the -R option of dropbear try a chown or an operation which is not permitted on fat32
 if ! test -e /recalbox/share/system/ssh
