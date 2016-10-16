@@ -242,6 +242,7 @@ menu "Emulators"
         source "package/dosbox/Config.in"
         source "package/vice/Config.in"
         source "package/reicast/Config.in"
+        source "package/dolphin-emu/Config.in"
 
 if BR2_PACKAGE_RETROARCH
 menu "Libretro Cores"
@@ -412,6 +413,7 @@ endif
 	source "package/sdl_sound/Config.in"
 	source "package/sdl_ttf/Config.in"
 	source "package/sdl2/Config.in"
+	source "package/sfml/Config.in"
 
 comment "Other GUIs"
 	source "package/qt/Config.in"
