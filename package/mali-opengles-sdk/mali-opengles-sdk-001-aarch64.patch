@@ -1,0 +1,13 @@
+diff --git a/inc/EGL/eglplatform.h b/inc/EGL/eglplatform.h
+index 41c11d8..cc4b100 100644
+--- a/inc/EGL/eglplatform.h
++++ b/inc/EGL/eglplatform.h
+@@ -83,7 +83,7 @@ typedef int   EGLNativeDisplayType;
+ typedef void *EGLNativeWindowType;
+ typedef void *EGLNativePixmapType;
+ 
+-#elif defined(__arm__) && defined(__gnu_linux__)  /* ARM Linux Mali */
++#elif (defined(__arm__) || defined(__aarch64__)) && defined(__gnu_linux__)  /* ARM Linux Mali */
+ #include <EGL/fbdev_window.h>
+ 
+ typedef void*         EGLNativeDisplayType;

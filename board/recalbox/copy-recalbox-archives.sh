@@ -7,7 +7,7 @@
 # BINARIES_DIR = images dir
 # TARGET_DIR = target dir
 
-# XU4 SD CARD (this is not exactly the same for emmc)
+# XU4 SD/EMMC CARD
 #
 #       1      31      63          719     1231    1263
 # +-----+-------+-------+-----------+--------+-------+--------+----------+--------------+
@@ -43,6 +43,32 @@ xu4_fusing() {
 
     echo "u-boot env erase"
     dd if=/dev/zero of="${RECALBOXIMG}" seek=$env_position count=32 bs=512 conv=notrunc || return 1
+}
+
+# C2 SD CARD
+#
+#       1       97         1281
+# +-----+-------+-----------+--------+----------+--------------+
+# | MBR |  bl1  |   uboot   |  BOOT  |  ROOTFS  |     FREE     |
+# +-----+-------+-----------+--------+----------+--------------+
+#      512     48K         640K
+#
+# http://odroid.com/dokuwiki/doku.php?id=en:c2_building_u-boot
+
+c2_fusing() {
+    BINARIES_DIR=$1
+    RECALBOXIMG=$2
+
+    # fusing
+    signed_bl1_position=1
+    signed_bl1_skip=0
+    uboot_position=97
+
+    echo "BL1 fusing"
+    dd if="${BINARIES_DIR}/bl1.bin.hardkernel" of="${RECALBOXIMG}" seek=$signed_bl1_position skip=$signed_bl1_skip conv=notrunc || return 1
+
+    echo "u-boot fusing"
+    dd if="${BINARIES_DIR}/u-boot.bin"         of="${RECALBOXIMG}" seek=$uboot_position                            conv=notrunc || return 1
 }
 
 RECALBOX_BINARIES_DIR="${BINARIES_DIR}/recalbox"
@@ -107,6 +133,34 @@ case "${RECALBOX_TARGET}" in
 	genimage --rootpath="${TARGET_DIR}" --inputpath="${BINARIES_DIR}" --outputpath="${RECALBOX_BINARIES_DIR}" --config="${BINARIES_DIR}/genimage.cfg" --tmppath="${GENIMAGE_TMP}" || exit 1
 	rm -f "${RECALBOX_BINARIES_DIR}/boot.vfat" || exit 1
 	xu4_fusing "${BINARIES_DIR}" "${RECALBOXIMG}" || exit 1
+	sync || exit 1
+	;;
+
+    C2)
+	# dirty boot binary files
+	for F in bl1.bin.hardkernel u-boot.bin
+	do
+	    cp "${BUILD_DIR}/uboot-odroidc2-v2015.01/sd_fuse/${F}" "${BINARIES_DIR}" || exit 1
+	done
+	cp board/hardkernel/odroidc2/boot-logo.bmp.gz ${BINARIES_DIR} || exit 1
+
+	# /boot
+	cp "board/hardkernel/odroidc2/boot.ini" ${BINARIES_DIR}/boot.ini || exit 1
+
+	# root.tar.xz
+	cp "${BINARIES_DIR}/rootfs.tar.xz" "${RECALBOX_BINARIES_DIR}/root.tar.xz" || exit 1
+
+	# boot.tar.xz
+	(cd "${BINARIES_DIR}" && tar -cJf "${RECALBOX_BINARIES_DIR}/boot.tar.xz" boot.ini Image meson64_odroidc2.dtb recalbox-boot.conf boot-logo.bmp.gz) || exit 1
+
+	# recalbox.img
+	GENIMAGE_TMP="${BUILD_DIR}/genimage.tmp"
+	RECALBOXIMG="${RECALBOX_BINARIES_DIR}/recalbox.img"
+	rm -rf "${GENIMAGE_TMP}" || exit 1
+	cp "board/hardkernel/odroidc2/genimage.cfg" "${BINARIES_DIR}" || exit 1
+	genimage --rootpath="${TARGET_DIR}" --inputpath="${BINARIES_DIR}" --outputpath="${RECALBOX_BINARIES_DIR}" --config="${BINARIES_DIR}/genimage.cfg" --tmppath="${GENIMAGE_TMP}" || exit 1
+	rm -f "${RECALBOX_BINARIES_DIR}/boot.vfat" || exit 1
+	c2_fusing "${BINARIES_DIR}" "${RECALBOXIMG}" || exit 1
 	sync || exit 1
 	;;
 

@@ -6,7 +6,7 @@
 PPSSPP_VERSION = v1.2.2
 PPSSPP_SITE = $(call github,hrydgard,ppsspp,$(PPSSPP_VERSION))
 PPSSPP_GIT = https://github.com/hrydgard/ppsspp.git
-PPSSPP_DEPENDENCIES = sdl2 zlib libzip linux zip
+PPSSPP_DEPENDENCIES = sdl2 zlib libzip linux zip ffmpeg
 
 # required at least on x86
 ifeq ($(BR2_PACKAGE_LIBGLU),y)
