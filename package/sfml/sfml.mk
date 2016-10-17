@@ -7,7 +7,7 @@
 SFML_VERSION = 2.4.0
 SFML_SOURCE = SFML-$(SFML_VERSION)-sources.zip
 SFML_SITE = http://www.sfml-dev.org/files
-SFML_DEPENDENCIES = xcb-util-image openal
+SFML_DEPENDENCIES = xcb-util-image openal jpeg flac
 
 SFML_INSTALL_STAGING = YES
 
