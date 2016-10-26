@@ -6,13 +6,7 @@
 #
 
 loadModules() {
-    if grep -qE '^dtoverlay=lirc-rpi$' /boot/config.txt
-    then
-	if ! lsmod | grep -qE '^lirc-rpi'
-	then
-	    modprobe lirc-rpi
-	fi
-    fi
+    modprobe meson-ir
 }
 
 unloadModules() {
