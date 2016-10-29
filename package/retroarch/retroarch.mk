@@ -179,6 +179,10 @@ ifeq ($(BR2_cortex_a15),y)
         LIBRETRO_PLATFORM += armv7
 endif
 
+ifeq ($(BR2_aarch64),y)
+        LIBRETRO_PLATFORM += unix
+endif
+
 #ifeq ($(BR2_GCC_TARGET_FLOAT_ABI),"hard")
 #        LIBRETRO_PLATFORM += hardfloat
 #endif
