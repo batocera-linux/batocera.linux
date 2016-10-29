@@ -19,13 +19,13 @@ BR2_TARGET_GENERIC_GETTY_BAUDRATE_115200=y
 # BR2_TARGET_GENERIC_REMOUNT_ROOTFS_RW is not set
 BR2_TARGET_TZ_INFO=y
 BR2_TARGET_LOCALTIME="Europe/Paris"
-BR2_ROOTFS_OVERLAY="board/recalbox/fsoverlay board/recalbox/fsoverlay_x86"
+BR2_ROOTFS_OVERLAY="board/recalbox/fsoverlay board/recalbox/x86/fsoverlay"
 BR2_ROOTFS_POST_BUILD_SCRIPT="board/recalbox/recalbox-patch-target.sh"
 BR2_ROOTFS_POST_IMAGE_SCRIPT="board/recalbox/copy-recalbox-archives.sh"
 BR2_LINUX_KERNEL=y
-BR2_LINUX_KERNEL_PATCH="board/recalbox/kernel_patches_x86_4.5"
+BR2_LINUX_KERNEL_PATCH="board/recalbox/x86/kernel_patches_4.5"
 BR2_LINUX_KERNEL_USE_CUSTOM_CONFIG=y
-BR2_LINUX_KERNEL_CUSTOM_CONFIG_FILE="board/recalbox/kernel-x86-4.5-defconfig.config"
+BR2_LINUX_KERNEL_CUSTOM_CONFIG_FILE="board/recalbox/x86/kernel-x86-4.5-defconfig.config"
 BR2_PACKAGE_BUSYBOX_CONFIG_FRAGMENT_FILES="board/recalbox/busybox.custom.config"
 BR2_PACKAGE_ALSA_UTILS=y
 BR2_PACKAGE_ALSA_UTILS_AMIXER=y
