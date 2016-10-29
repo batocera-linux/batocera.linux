@@ -27,9 +27,17 @@ ifeq ($(BR2_PACKAGE_RPI_USERLAND),y)
 	MUPEN64PLUS_PARAMS += VC=1
 endif
 
+ifeq ($(BR2_arm),y)
+	MUPEN64PLUS_HOST_CPU = armv7
+endif
+
+ifeq ($(BR2_aarch64),y)
+	MUPEN64PLUS_HOST_CPU = aarch64
+        MUPEN64PLUS_PARAMS += NEON=1
+endif
+
 ifeq ($(BR2_ARM_CPU_HAS_NEON),y)
         MUPEN64PLUS_PARAMS += NEON=1
-	MUPEN64PLUS_HOST_CPU = armv7
 endif
 
 ifeq ($(BR2_PACKAGE_RECALBOX_TARGET_X86),y)
