@@ -13,6 +13,9 @@ else
 	ifeq ($(BR2_ARM_CPU_HAS_ARM),y)
 		UAEPLATFLAGS=-DARM  -marm
 	endif
+	ifeq ($(BR2_aarch64),y)
+		UAEPLATFLAGS=-DAARCH64
+	endif
 endif
 
 define LIBRETRO_UAE_BUILD_CMDS
