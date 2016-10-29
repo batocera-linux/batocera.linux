@@ -4,6 +4,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unrelease][unreleased]
 - Reenable mp3 support for SDL2 mixer.
+- Solve the loading of the DB9 driver
+- N64 configgen shouldn't crash anymore if some keys are not mapped
 
 ## [4.0.0-beta5] - 2016-08-13
 - Updated libretro mame 2003 core. Fixes the ratio issue in mame.

@@ -49,7 +49,7 @@ rb_gpio_configure() {
 	# mk disabled let's check for db9
 	settings_db9="`$systemsetting -command load -key controllers.db9.enabled`"
 	if [ "$settings_db9" == "1" ];then
-            settings_db9_map="`$systemsetting -command load -key db9_args`"
+            settings_db9_map="`$systemsetting -command load -key controllers.db9.args`"
             recallog "enabling db9"
             eval $config_script "module" "load" db9_gpio_rpi "$settings_db9_map" >> $log
 	else 
