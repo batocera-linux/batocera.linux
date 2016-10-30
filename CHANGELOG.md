@@ -68,6 +68,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Solve the loading of the DB9 driver
 - N64 configgen shouldn't crash anymore if some keys are not mapped
 - Add xin-mo 20pins players and ipega 9028
+- Add new languages : arabic dutch greek korean norwegian norwegian bokmål polish
 
 ## [4.0.0-beta5] - 2016-08-13
 - Updated libretro mame 2003 core. Fixes the ratio issue in mame.
