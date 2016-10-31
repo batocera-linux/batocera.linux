@@ -83,13 +83,11 @@ then
     dropbearkey -t dss   -f /recalbox/share/system/ssh/dropbear_dss_host_key
 fi
 
-# bluetooth : copy the bluetooth files stored in /:/_/ (because of vfat)
-ls "/recalbox/share/system/bluetooth" |
-    while read X
-    do
-	UX=$(echo "${X}" | sed -e s+"@"+":"+g)
-	cp -r "/recalbox/share/system/bluetooth/${X}" "/var/lib/bluetooth/${UX}"
-    done
+# bluetooth : now gotta tar/untar, the directory structure for bluez5 is more complex
+# once untar, delete the cache folder. The exclude tar option of busybox is dreadful
+btTar=/recalbox/share/system/bluetooth/bluetooth.tar
+tar xvf "$btTar" -C / 2>/dev/null 
+
 # udev : create a link for rules persistance
 mkdir -p /recalbox/share/system/udev/rules.d
 rm -rf /run/udev/rules.d

@@ -1,0 +1,12 @@
+diff -Naur bluez-5.37/plugins/sixaxis.c bluez-5.37.patch/plugins/sixaxis.c
+--- bluez-5.37/plugins/sixaxis.c	2016-04-21 21:38:45.805962009 +0200
++++ bluez-5.37.patch/plugins/sixaxis.c	2016-04-24 15:22:36.852107941 +0200
+@@ -484,6 +484,7 @@
+ 					devices[index].version);
+ 
+ 	btd_device_set_temporary(device, false);
++	btd_device_set_trusted(device, true);
+ 	btd_device_set_record(device, HID_UUID, get_sdp_record());
+ 
+ 	return true;
+
