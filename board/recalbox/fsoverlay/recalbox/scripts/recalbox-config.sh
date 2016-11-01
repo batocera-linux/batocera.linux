@@ -379,8 +379,8 @@ EOF
 	fi
 fi
 if [[ "$command" == "hcitoolscan" ]]; then
-	killall hidd >> /dev/null
-	killall hcitool >> /dev/null
+	#killall hidd >> /dev/null
+	killall hcitool > /dev/null 2>&1
 	hcitool scan | tail -n +2
 	exit 0
 fi
@@ -388,7 +388,8 @@ fi
 if [[ "$command" == "hiddpair" ]]; then
 	name="$extra1"
 	mac1="$mode"
-	mac=`echo $mac1 | grep -oEi "([0-9A-F]{2}[:-]){5}([0-9A-F]{2})" | tr '[:upper:]' '[:lower:]'`
+	mac=`echo $mac1 | grep -oEi "([0-9A-F]{2}[:-]){5}([0-9A-F]{2})" | tr '[:lower:]' '[:upper:]'`
+	macLowerCase=`echo $mac | tr '[:upper:]' '[:lower:]'`
 	if [ "$?" != "0" ]; then 
 		exit 1
 	fi
@@ -399,32 +400,24 @@ if [[ "$command" == "hiddpair" ]]; then
                 cat "/run/udev/rules.d/99-8bitdo.rules" | grep "$mac" >> /dev/null
                 if [ "$?" != "0" ]; then
                         echo "adding rule for $mac" >> $log
-                        echo "SUBSYSTEM==\"input\", ATTRS{uniq}==\"$mac\", MODE=\"0666\", ENV{ID_INPUT_JOYSTICK}=\"1\"" >> "/run/udev/rules.d/99-8bitdo.rules"
+                        echo "SUBSYSTEM==\"input\", ATTRS{uniq}==\"$macLowerCase\", MODE=\"0666\", ENV{ID_INPUT_JOYSTICK}=\"1\"" >> "/run/udev/rules.d/99-8bitdo.rules"
                 fi
         fi
-        hidd --connect $mac
+        /recalbox/scripts/bluetooth/test-device connect "$mac"
         connected=$?
-        deviceFile=/var/lib/bluetooth/known_devices
-        if [ $connected ]; then
-                cat $deviceFile | grep $mac1
+	if [ $connected -eq 0 ]; then
+                hcitool con | grep $mac1
                 if [[ $? == "0" ]]; then
-                        echo "bluetooth : $mac1 already in $deviceFile" >> $log
+                        echo "bluetooth : $mac1 connected !" >> $log
+                        /recalbox/scripts/bluetooth/test-device trusted "$mac" yes
+                        # Save the configuration
+                        btTar=/recalbox/share/system/bluetooth/bluetooth.tar
+                        rm "$btTar" ; tar cvf "$btTar" /var/lib/bluetooth/
                 else
-                        echo "bluetooth : adding $mac1 in $deviceFile" >> $log
-                        echo "$mac1" >> "$deviceFile"
+                        echo "bluetooth : $mac1 failed connection" >> $log
                 fi
-
-		# backup files on the share directory
-		rm -rf /recalbox/share/system/bluetooth
-		if mkdir -p /recalbox/share/system/bluetooth
-		then
-		    ls /var/lib/bluetooth |
-			while read X
-			do
-			    UX=$(echo "${X}" | sed -e s+":"+"@"+g)
-			    cp -r "/var/lib/bluetooth/${X}" "/recalbox/share/system/bluetooth/${UX}"
-			done
-		fi
+        else
+                echo "bluetooth : $mac1 failed connection" >> $log
         fi
         exit $connected
 fi
@@ -474,9 +467,11 @@ if [[ "$command" == "storage" ]]; then
 fi
 
 if [[ "$command" == "forgetBT" ]]; then
-   killall -9 hidd
    killall -9 hcitool
-   rm -rf /var/lib/bluetooth/*
+   /etc/init.d/S32bluetooth stop
+   find /var/lib/bluetooth/ -type d -name cache | sed 's/:/\\:/g' | xargs rm -rf
+   rm -f /recalbox/share/system/bluetooth/bluetooth.tar
+   /etc/init.d/S32bluetooth start
    exit 0
 fi
 

@@ -7,13 +7,14 @@ case "$1" in
         enabled="`$systemsetting  -command load -key controllers.ps3.enabled`"
         if [ "$enabled" == "1" ];then
                 settings_version="`$systemsetting -command load -key controllers.ps3.driver`"
+                [ "$settings_version" == "bluez" ] && exit 0
                 if [ "$settings_version" == "" ];then
                         settings_version="official"
                 fi
-                bluetoothd -u
-                sleep 2
-                killall bluetoothd
-                echo "ok"
+                #bluetoothd -u
+                #sleep 2
+                #killall bluetoothd
+                #echo "ok"
                 /usr/sixad/$settings_version/sixad-bin 0 0 0 &
         fi
         ;;

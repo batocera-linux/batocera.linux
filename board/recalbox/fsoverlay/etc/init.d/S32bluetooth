@@ -4,16 +4,23 @@
 #
 
 systemsetting="python /usr/lib/python2.7/site-packages/configgen/settings/recalboxSettings.pyc"
+btTar=/recalbox/share/system/bluetooth/bluetooth.tar
 
 case "$1" in
   start)
         enabled="`$systemsetting  -command load -key controllers.bluetooth.enabled`"
         if [ "$enabled" == "1" ];then
-                /recalbox/scripts/bluetoothcontrollers.sh &
+        	settings_version="`$systemsetting -command load -key controllers.ps3.driver`"
+        	if [ "$settings_version" != "bluez" ]; then BLUETOOTHD_ARGS="--noplugin=sixaxis"; else  BLUETOOTHD_ARGS="--noplugin=sixaxispair"; fi
+		start-stop-daemon -S -q -m -p /var/run/bluetoothd.pid  --exec /usr/libexec/bluetooth/bluetoothd -- $BLUETOOTHD_ARGS &	
+		( /recalbox/scripts/bluetoothcontrollers.sh && \
+                  start-stop-daemon -S -q -m -p /var/run/btDaemon.pid  --exec /recalbox/scripts/bluetooth/btDaemon > /dev/null 2>&1 ) &
         fi
         ;;
   stop)
-	killall bluetoothd
+	start-stop-daemon -K -q -p /var/run/btDaemon.pid
+	start-stop-daemon -K -q -p /var/run/bluetoothd.pid
+	rm "$btTar" ; tar cvf "$btTar" /var/lib/bluetooth/ > /dev/null
 	;;
   restart|reload)
         "$0" stop

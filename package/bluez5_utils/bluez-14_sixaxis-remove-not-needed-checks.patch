@@ -1,0 +1,36 @@
+From: Szymon Janc <szymon.janc@...>
+Subject: [PATCH 4/5] profiles/input: Remove not needed sixaxis checks
+Newsgroups: gmane.linux.bluez.kernel
+Date: 2015-06-15 18:28:29 GMT (36 weeks, 4 days, 21 hours and 33 minutes ago)
+
+This check is now needed only for DualShock 4.
+---
+ profiles/input/server.c | 8 --------
+ 1 file changed, 8 deletions(-)
+
+diff --git a/profiles/input/server.c b/profiles/input/server.c
+index eb3fcf8..101108b 100644
+--- a/profiles/input/server.c
++++ b/profiles/input/server.c
+@@ -131,18 +131,10 @@ static bool dev_is_sixaxis(const bdaddr_t *src, const bdaddr_t *dst)
+ 	vid = btd_device_get_vendor(device);
+ 	pid = btd_device_get_product(device);
+
+-	/* DualShock 3 */
+-	if (vid == 0x054c && pid == 0x0268)
+-		return true;
+-
+ 	/* DualShock 4 */
+ 	if (vid == 0x054c && pid == 0x05c4)
+ 		return true;
+
+-	/* Navigation Controller */
+-	if (vid == 0x054c && pid == 0x042f)
+-		return true;
+-
+ 	return false;
+ }
+
+-- 
+2.1.4
+
