@@ -58,7 +58,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Added the alternative N64 core GLupeN64 on rpi2/rpi3
 - Added IPF format support to libretro-hatari (atarist ST)
 - Reenable mp3 support for SDL2 mixer.
-- Updated libretro-fba core from FBA 0.2.97.37 to FBA 0.2.97.38
+- Updated libretro-fba core from FBA 0.2.97.37 to FBA 0.2.97.39
 - Added Mad Catz C.T.R.L.R udev rules
 - Add configs to recalbox-support.sh
 - Add firmwares ASUS BT400 and Qualcomm Atheros AR3011 BT3.0
@@ -67,6 +67,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Updated gamecon driver from 1.0 to 1.2
 - Solve the loading of the DB9 driver
 - N64 configgen shouldn't crash anymore if some keys are not mapped
+- Add xin-mo 20pins players and ipega 9028
+- Add new languages : arabic dutch greek korean norwegian norwegian bokmål polish
+- Support PI3 internal bluetooth via bluez5
+- Add USB PS2 : GreenAsia Electronics
 
 ## [4.0.0-beta5] - 2016-08-13
 - Updated libretro mame 2003 core. Fixes the ratio issue in mame.
