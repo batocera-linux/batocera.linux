@@ -71,6 +71,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Add new languages : arabic dutch greek korean norwegian norwegian bokmål polish
 - Support PI3 internal bluetooth via bluez5
 - Add USB PS2 : GreenAsia Electronics
+- Enable highscores for fba_libretro
 
 ## [4.0.0-beta5] - 2016-08-13
 - Updated libretro mame 2003 core. Fixes the ratio issue in mame.
