@@ -72,6 +72,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Support PI3 internal bluetooth via bluez5
 - Add USB PS2 : GreenAsia Electronics
 - PSX: .bin extentions removed (use .cue instead)
+- Enable highscores for fba_libretro
 
 ## [4.0.0-beta5] - 2016-08-13
 - Updated libretro mame 2003 core. Fixes the ratio issue in mame.
