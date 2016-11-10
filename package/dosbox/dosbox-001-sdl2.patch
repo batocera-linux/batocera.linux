@@ -1,9 +1,7 @@
-Migrate dosbox to SDL2
-See http://www.vogons.org/viewtopic.php?t=34770
-
-Signed-off-by: Laurent Merckx <laurent-merckx@skynet.be>
---- dosbox/acinclude.m4	(revision 3924)
-+++ dosbox.n/acinclude.m4	(working copy)
+diff --git a/acinclude.m4 b/acinclude.m4
+index 936496e..1dbc45b 100644
+--- a/acinclude.m4
++++ b/acinclude.m4
 @@ -1,164 +1,147 @@
 -dnl AM_PATH_SDL([MINIMUM-VERSION, [ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]]])
 -dnl Test for SDL, and define SDL_CFLAGS and SDL_LIBS
@@ -18,12 +16,13 @@ Signed-off-by: Laurent Merckx <laurent-merckx@skynet.be>
 -            sdl_exec_prefix="$withval", sdl_exec_prefix="")
 -AC_ARG_ENABLE(sdltest, [  --disable-sdltest       Do not try to compile and run a test SDL program],
 -		    , enable_sdltest=yes)
+-
 +dnl Check if we have SDL (sdl-config, header and library) version >= 1.2.0
 +dnl Extra options: --with-sdl-prefix=PATH and --with-sdl={sdl12,sdl2}
 +dnl Output:
 +dnl SDL_CFLAGS and SDL_LIBS are set and AC_SUBST-ed
 +dnl HAVE_SDL_H is AC_DEFINE-d
- 
++
 +AC_DEFUN([EXULT_CHECK_SDL],[
 +  exult_backupcppflags="$CPPFLAGS"
 +  exult_backupldflags="$LDFLAGS"
@@ -97,13 +96,7 @@ Signed-off-by: Laurent Merckx <laurent-merckx@skynet.be>
 -#include <stdlib.h>
 -#include <string.h>
 -#include "SDL.h"
-+    if test $sdl_major_version -eq 1 ; then
-+      sdl_ver=sdl12
-+    else
-+      sdl_ver=sdl2
-+    fi
-+  fi
- 
+-
 -char*
 -my_strdup (char *str)
 -{
@@ -114,6 +107,13 @@ Signed-off-by: Laurent Merckx <laurent-merckx@skynet.be>
 -      new_str = (char *)malloc ((strlen (str) + 1) * sizeof(char));
 -      strcpy (new_str, str);
 -    }
++    if test $sdl_major_version -eq 1 ; then
++      sdl_ver=sdl12
++    else
++      sdl_ver=sdl2
++    fi
++  fi
++
 +  if test x"$sdl_ver" = xsdl2 ; then
 +    REQ_MAJOR=2
 +    REQ_MINOR=0
@@ -123,34 +123,38 @@ Signed-off-by: Laurent Merckx <laurent-merckx@skynet.be>
 -  
 -  return new_str;
 -}
-+    REQ_MAJOR=1
-+    REQ_MINOR=2
-+    REQ_PATCHLEVEL=0
-+  fi
-+  REQ_VERSION=$REQ_MAJOR.$REQ_MINOR.$REQ_PATCHLEVEL
- 
+-
 -int main (int argc, char *argv[])
 -{
 -  int major, minor, micro;
 -  char *tmp_version;
-+  AC_MSG_CHECKING([for SDL - version >= $REQ_VERSION])
- 
+-
 -  /* This hangs on some systems (?)
 -  system ("touch conf.sdltest");
 -  */
 -  { FILE *fp = fopen("conf.sdltest", "a"); if ( fp ) fclose(fp); }
- 
+-
 -  /* HP/UX 9 (%@#!) writes to sscanf strings */
 -  tmp_version = my_strdup("$min_sdl_version");
 -  if (sscanf(tmp_version, "%d.%d.%d", &major, &minor, &micro) != 3) {
 -     printf("%s, bad version string\n", "$min_sdl_version");
 -     exit(1);
 -   }
-+  dnl Second: include "SDL.h"
- 
+-
 -   if (($sdl_major_version > major) ||
 -      (($sdl_major_version == major) && ($sdl_minor_version > minor)) ||
 -      (($sdl_major_version == major) && ($sdl_minor_version == minor) && ($sdl_micro_version >= micro)))
++    REQ_MAJOR=1
++    REQ_MINOR=2
++    REQ_PATCHLEVEL=0
++  fi
++  REQ_VERSION=$REQ_MAJOR.$REQ_MINOR.$REQ_PATCHLEVEL
++
++  AC_MSG_CHECKING([for SDL - version >= $REQ_VERSION])
++
++
++  dnl Second: include "SDL.h"
++
 +  if test x$exult_sdlok = xyes ; then
 +    CPPFLAGS="$CPPFLAGS $SDL_CFLAGS"
 +    AC_COMPILE_IFELSE([AC_LANG_SOURCE([[
@@ -169,6 +173,8 @@ Signed-off-by: Laurent Merckx <laurent-merckx@skynet.be>
 -      printf("*** to point to the correct copy of sdl-config, and remove the file\n");
 -      printf("*** config.cache before re-running configure\n");
 -      return 1;
+-    }
+-}
 +    ]],)],sdlh_found=yes,sdlh_found=no)
 +
 +    if test x$sdlh_found = xno; then
@@ -207,26 +213,24 @@ Signed-off-by: Laurent Merckx <laurent-merckx@skynet.be>
 +
 +    AC_LINK_IFELSE([AC_LANG_SOURCE([[
 +    #include "SDL.h"
-+
-+    int main(int argc, char* argv[]) {
-+      SDL_Init(0);
-+      return 0;
-     }
--}
-+    ]])],sdllinkok=yes,sdllinkok=no)
-+    if test x$sdllinkok = xno; then
-+      exult_sdlok=no
-+    fi
-+  fi
  
 -],, no_sdl=yes,[echo $ac_n "cross compiling; assumed OK... $ac_c"])
 -       CFLAGS="$ac_save_CFLAGS"
 -       LIBS="$ac_save_LIBS"
 -     fi
--  fi
++    int main(int argc, char* argv[]) {
++      SDL_Init(0);
++      return 0;
++    }
++    ]])],sdllinkok=yes,sdllinkok=no)
++    if test x$sdllinkok = xno; then
++      exult_sdlok=no
++    fi
+   fi
 -  if test "x$no_sdl" = x ; then
 -     AC_MSG_RESULT(yes)
 -     ifelse([$2], , :, [$2])     
++
 +  AC_MSG_RESULT($exult_sdlok)
 +
 +  LDFLAGS="$exult_backupldflags"
@@ -285,7 +289,7 @@ Signed-off-by: Laurent Merckx <laurent-merckx@skynet.be>
  
  dnl Configure Paths for Alsa
  dnl Some modifications by Richard Boulton <richard-alsa@tartarus.org>
-@@ -303,6 +286,73 @@
+@@ -303,6 +286,73 @@ AC_SUBST(ALSA_CFLAGS)
  AC_SUBST(ALSA_LIBS)
  ])
  
@@ -359,10 +363,11 @@ Signed-off-by: Laurent Merckx <laurent-merckx@skynet.be>
  AH_TOP([
  /*
   *  Copyright (C) 2002-2015  The DOSBox Team
-Index: android-project/AndroidManifest.xml
-===================================================================
---- dosbox/android-project/AndroidManifest.xml	(revision 0)
-+++ dosbox.n/android-project/AndroidManifest.xml	(working copy)
+diff --git a/android-project/AndroidManifest.xml b/android-project/AndroidManifest.xml
+new file mode 100644
+index 0000000..c4b2f1b
+--- /dev/null
++++ b/android-project/AndroidManifest.xml
 @@ -0,0 +1,29 @@
 +<?xml version="1.0" encoding="utf-8"?>
 +<manifest xmlns:android="http://schemas.android.com/apk/res/android"
@@ -393,17 +398,11 @@ Index: android-project/AndroidManifest.xml
 +    <!-- Allow writing to external storage -->
 +    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" /> 
 +</manifest> 
-
-Property changes on: android-project/AndroidManifest.xml
-___________________________________________________________________
-Added: svn:executable
-## -0,0 +1 ##
-+*
-\ No newline at end of property
-Index: android-project/ant.properties
-===================================================================
---- dosbox/android-project/ant.properties	(revision 0)
-+++ dosbox.n/android-project/ant.properties	(working copy)
+diff --git a/android-project/ant.properties b/android-project/ant.properties
+new file mode 100644
+index 0000000..b0971e8
+--- /dev/null
++++ b/android-project/ant.properties
 @@ -0,0 +1,17 @@
 +# This file is used to override default values used by the Ant build system.
 +#
@@ -422,17 +421,11 @@ Index: android-project/ant.properties
 +#  'key.alias' for the name of the key to use.
 +# The password will be asked during the build when you use the 'release' target.
 +
-
-Property changes on: android-project/ant.properties
-___________________________________________________________________
-Added: svn:executable
-## -0,0 +1 ##
-+*
-\ No newline at end of property
-Index: android-project/build.properties
-===================================================================
---- dosbox/android-project/build.properties	(revision 0)
-+++ dosbox.n/android-project/build.properties	(working copy)
+diff --git a/android-project/build.properties b/android-project/build.properties
+new file mode 100644
+index 0000000..edc7f23
+--- /dev/null
++++ b/android-project/build.properties
 @@ -0,0 +1,17 @@
 +# This file is used to override default values used by the Ant build system.
 +# 
@@ -451,17 +444,11 @@ Index: android-project/build.properties
 +#  'key.alias' for the name of the key to use.
 +# The password will be asked during the build when you use the 'release' target.
 +
-
-Property changes on: android-project/build.properties
-___________________________________________________________________
-Added: svn:executable
-## -0,0 +1 ##
-+*
-\ No newline at end of property
-Index: android-project/build.xml
-===================================================================
---- dosbox/android-project/build.xml	(revision 0)
-+++ dosbox.n/android-project/build.xml	(working copy)
+diff --git a/android-project/build.xml b/android-project/build.xml
+new file mode 100644
+index 0000000..00b9bca
+--- /dev/null
++++ b/android-project/build.xml
 @@ -0,0 +1,93 @@
 +<?xml version="1.0" encoding="UTF-8"?>
 +<!-- This should be changed to the name of your project -->
@@ -556,17 +543,11 @@ Index: android-project/build.xml
 +    <import file="${sdk.dir}/tools/ant/build.xml" />
 +
 +</project>
-
-Property changes on: android-project/build.xml
-___________________________________________________________________
-Added: svn:executable
-## -0,0 +1 ##
-+*
-\ No newline at end of property
-Index: android-project/default.properties
-===================================================================
---- dosbox/android-project/default.properties	(revision 0)
-+++ dosbox.n/android-project/default.properties	(working copy)
+diff --git a/android-project/default.properties b/android-project/default.properties
+new file mode 100644
+index 0000000..4d6614c
+--- /dev/null
++++ b/android-project/default.properties
 @@ -0,0 +1,11 @@
 +# This file is automatically generated by Android Tools.
 +# Do not modify this file -- YOUR CHANGES WILL BE ERASED!
@@ -579,17 +560,11 @@ Index: android-project/default.properties
 +
 +# Project target.
 +target=android-17
-
-Property changes on: android-project/default.properties
-___________________________________________________________________
-Added: svn:executable
-## -0,0 +1 ##
-+*
-\ No newline at end of property
-Index: android-project/instructions.txt
-===================================================================
---- dosbox/android-project/instructions.txt	(revision 0)
-+++ dosbox.n/android-project/instructions.txt	(working copy)
+diff --git a/android-project/instructions.txt b/android-project/instructions.txt
+new file mode 100644
+index 0000000..1cee31e
+--- /dev/null
++++ b/android-project/instructions.txt
 @@ -0,0 +1,90 @@
 +NOTE: Chances are the (unofficially modified) DOSBox app *will* crash sooner or
 +later, although one may still build a proper package.
@@ -681,30 +656,18 @@ Index: android-project/instructions.txt
 +/-----------------------------------------------------------------------\
 +|    Left   | (H)Escape |   Motion  |  Motion   |   Middle  |   Right   |
 +\-----------------------------------------------------------------------/
-
-Property changes on: android-project/instructions.txt
-___________________________________________________________________
-Added: svn:executable
-## -0,0 +1 ##
-+*
-\ No newline at end of property
-Index: android-project/jni/Android.mk
-===================================================================
---- dosbox/android-project/jni/Android.mk	(revision 0)
-+++ dosbox.n/android-project/jni/Android.mk	(working copy)
+diff --git a/android-project/jni/Android.mk b/android-project/jni/Android.mk
+new file mode 100644
+index 0000000..5053e7d
+--- /dev/null
++++ b/android-project/jni/Android.mk
 @@ -0,0 +1 @@
 +include $(call all-subdir-makefiles)
-
-Property changes on: android-project/jni/Android.mk
-___________________________________________________________________
-Added: svn:executable
-## -0,0 +1 ##
-+*
-\ No newline at end of property
-Index: android-project/jni/Application.mk
-===================================================================
---- dosbox/android-project/jni/Application.mk	(revision 0)
-+++ dosbox.n/android-project/jni/Application.mk	(working copy)
+diff --git a/android-project/jni/Application.mk b/android-project/jni/Application.mk
+new file mode 100644
+index 0000000..e60d424
+--- /dev/null
++++ b/android-project/jni/Application.mk
 @@ -0,0 +1,6 @@
 +
 +# Uncomment this if you're using STL in your project
@@ -712,17 +675,11 @@ Index: android-project/jni/Application.mk
 +# APP_STL := stlport_static 
 +APP_STL := stlport_shared
 +APP_ABI := armeabi armeabi-v7a x86
-
-Property changes on: android-project/jni/Application.mk
-___________________________________________________________________
-Added: svn:executable
-## -0,0 +1 ##
-+*
-\ No newline at end of property
-Index: android-project/jni/src/Android.mk
-===================================================================
---- dosbox/android-project/jni/src/Android.mk	(revision 0)
-+++ dosbox.n/android-project/jni/src/Android.mk	(working copy)
+diff --git a/android-project/jni/src/Android.mk b/android-project/jni/src/Android.mk
+new file mode 100644
+index 0000000..a5f9e61
+--- /dev/null
++++ b/android-project/jni/src/Android.mk
 @@ -0,0 +1,82 @@
 +LOCAL_PATH := $(call my-dir)
 +
@@ -806,17 +763,11 @@ Index: android-project/jni/src/Android.mk
 +LOCAL_LDLIBS := -lGLESv1_CM -llog
 +
 +include $(BUILD_SHARED_LIBRARY)
-
-Property changes on: android-project/jni/src/Android.mk
-___________________________________________________________________
-Added: svn:executable
-## -0,0 +1 ##
-+*
-\ No newline at end of property
-Index: android-project/jni/src/config.h
-===================================================================
---- dosbox/android-project/jni/src/config.h	(revision 0)
-+++ dosbox.n/android-project/jni/src/config.h	(working copy)
+diff --git a/android-project/jni/src/config.h b/android-project/jni/src/config.h
+new file mode 100644
+index 0000000..e2264b8
+--- /dev/null
++++ b/android-project/jni/src/config.h
 @@ -0,0 +1,320 @@
 +/* config.h.  Generated from config.h.in by configure.  */
 +/* config.h.in.  Generated from configure.ac by autoheader.  */
@@ -1138,17 +1089,11 @@ Index: android-project/jni/src/config.h
 +#endif
 +
 +
-
-Property changes on: android-project/jni/src/config.h
-___________________________________________________________________
-Added: svn:executable
-## -0,0 +1 ##
-+*
-\ No newline at end of property
-Index: android-project/proguard-project.txt
-===================================================================
---- dosbox/android-project/proguard-project.txt	(revision 0)
-+++ dosbox.n/android-project/proguard-project.txt	(working copy)
+diff --git a/android-project/proguard-project.txt b/android-project/proguard-project.txt
+new file mode 100644
+index 0000000..f2fe155
+--- /dev/null
++++ b/android-project/proguard-project.txt
 @@ -0,0 +1,20 @@
 +# To enable ProGuard in your project, edit project.properties
 +# to define the proguard.config property as described in that file.
@@ -1170,17 +1115,11 @@ Index: android-project/proguard-project.txt
 +#-keepclassmembers class fqcn.of.javascript.interface.for.webview {
 +#   public *;
 +#}
-
-Property changes on: android-project/proguard-project.txt
-___________________________________________________________________
-Added: svn:executable
-## -0,0 +1 ##
-+*
-\ No newline at end of property
-Index: android-project/project.properties
-===================================================================
---- dosbox/android-project/project.properties	(revision 0)
-+++ dosbox.n/android-project/project.properties	(working copy)
+diff --git a/android-project/project.properties b/android-project/project.properties
+new file mode 100644
+index 0000000..a3ee5ab
+--- /dev/null
++++ b/android-project/project.properties
 @@ -0,0 +1,14 @@
 +# This file is automatically generated by Android Tools.
 +# Do not modify this file -- YOUR CHANGES WILL BE ERASED!
@@ -1196,17 +1135,11 @@ Index: android-project/project.properties
 +
 +# Project target.
 +target=android-17
-
-Property changes on: android-project/project.properties
-___________________________________________________________________
-Added: svn:executable
-## -0,0 +1 ##
-+*
-\ No newline at end of property
-Index: android-project/res/layout/main.xml
-===================================================================
---- dosbox/android-project/res/layout/main.xml	(revision 0)
-+++ dosbox.n/android-project/res/layout/main.xml	(working copy)
+diff --git a/android-project/res/layout/main.xml b/android-project/res/layout/main.xml
+new file mode 100644
+index 0000000..123c4b6
+--- /dev/null
++++ b/android-project/res/layout/main.xml
 @@ -0,0 +1,13 @@
 +<?xml version="1.0" encoding="utf-8"?>
 +<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -1221,33 +1154,21 @@ Index: android-project/res/layout/main.xml
 +    />
 +</LinearLayout>
 +
-
-Property changes on: android-project/res/layout/main.xml
-___________________________________________________________________
-Added: svn:executable
-## -0,0 +1 ##
-+*
-\ No newline at end of property
-Index: android-project/res/values/strings.xml
-===================================================================
---- dosbox/android-project/res/values/strings.xml	(revision 0)
-+++ dosbox.n/android-project/res/values/strings.xml	(working copy)
+diff --git a/android-project/res/values/strings.xml b/android-project/res/values/strings.xml
+new file mode 100644
+index 0000000..2b6a734
+--- /dev/null
++++ b/android-project/res/values/strings.xml
 @@ -0,0 +1,4 @@
 +<?xml version="1.0" encoding="utf-8"?>
 +<resources>
 +    <string name="app_name">DOSBox</string>
 +</resources>
-
-Property changes on: android-project/res/values/strings.xml
-___________________________________________________________________
-Added: svn:executable
-## -0,0 +1 ##
-+*
-\ No newline at end of property
-Index: android-project/src/com/dosbox/emu/DOSBoxActivity.java
-===================================================================
---- dosbox/android-project/src/com/dosbox/emu/DOSBoxActivity.java	(revision 0)
-+++ dosbox.n/android-project/src/com/dosbox/emu/DOSBoxActivity.java	(working copy)
+diff --git a/android-project/src/com/dosbox/emu/DOSBoxActivity.java b/android-project/src/com/dosbox/emu/DOSBoxActivity.java
+new file mode 100644
+index 0000000..5be8621
+--- /dev/null
++++ b/android-project/src/com/dosbox/emu/DOSBoxActivity.java
 @@ -0,0 +1,59 @@
 +package com.dosbox.emu;
 +
@@ -1308,17 +1229,11 @@ Index: android-project/src/com/dosbox/emu/DOSBoxActivity.java
 +        imm.toggleSoftInput(0, 0);
 +    }
 +}
-
-Property changes on: android-project/src/com/dosbox/emu/DOSBoxActivity.java
-___________________________________________________________________
-Added: svn:executable
-## -0,0 +1 ##
-+*
-\ No newline at end of property
-Index: android-project/src/org/libsdl/app/SDLActivity.java
-===================================================================
---- dosbox/android-project/src/org/libsdl/app/SDLActivity.java	(revision 0)
-+++ dosbox.n/android-project/src/org/libsdl/app/SDLActivity.java	(working copy)
+diff --git a/android-project/src/org/libsdl/app/SDLActivity.java b/android-project/src/org/libsdl/app/SDLActivity.java
+new file mode 100644
+index 0000000..7be7917
+--- /dev/null
++++ b/android-project/src/org/libsdl/app/SDLActivity.java
 @@ -0,0 +1,1077 @@
 +package org.libsdl.app;
 +
@@ -2397,65 +2312,73 @@ Index: android-project/src/org/libsdl/app/SDLActivity.java
 +        return SDLActivity.handleJoystickMotionEvent(event);
 +    }
 +}
-
-Property changes on: android-project/src/org/libsdl/app/SDLActivity.java
-___________________________________________________________________
-Added: svn:executable
-## -0,0 +1 ##
-+*
-\ No newline at end of property
-Index: android-project/src/org/libsdl/app/note.txt
-===================================================================
---- dosbox/android-project/src/org/libsdl/app/note.txt	(revision 0)
-+++ dosbox.n/android-project/src/org/libsdl/app/note.txt	(working copy)
+diff --git a/android-project/src/org/libsdl/app/note.txt b/android-project/src/org/libsdl/app/note.txt
+new file mode 100644
+index 0000000..83fcedb
+--- /dev/null
++++ b/android-project/src/org/libsdl/app/note.txt
 @@ -0,0 +1,4 @@
 +Modifications to SDLActivity.java:
 +1. stlport_shared and SDL2_net are loaded.
 +2. Non-gamepad/dpad keycodes that don't have any source are still assumed to
 +come from a keyboard (a workaround for full input from soft keyboard).
-
-Property changes on: android-project/src/org/libsdl/app/note.txt
-___________________________________________________________________
-Added: svn:executable
-## -0,0 +1 ##
-+*
-\ No newline at end of property
-Index: configure.ac
-===================================================================
---- dosbox/configure.ac	(revision 3924)
-+++ dosbox.n/configure.ac	(working copy)
-@@ -27,28 +27,95 @@
+diff --git a/configure.ac b/configure.ac
+index dc2aa0f..d040afc 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -26,29 +26,6 @@ if test x$host = xi386-pc-os2-emx ; then
+     LDFLAGS="$LDFLAGS -Zomf -Zmt"
  fi
  
- dnl Check for SDL
+-dnl Check for SDL
 -SDL_VERSION=1.2.0
 -AM_PATH_SDL($SDL_VERSION,
 -            :,
 -	    AC_MSG_ERROR([*** SDL version $SDL_VERSION not found!])
 -)
-+EXULT_CHECK_SDL(:,AC_MSG_ERROR([[*** SDL not found!]]))
- LIBS="$LIBS $SDL_LIBS"
- CPPFLAGS="$CPPFLAGS $SDL_CFLAGS"
- 
+-LIBS="$LIBS $SDL_LIBS"
+-CPPFLAGS="$CPPFLAGS $SDL_CFLAGS"
+-
 -dnl Check if SDL is 1.2.x (1.3 not supported)
 -AC_MSG_CHECKING([SDL version only being 1.2.X])
-+dnl Check if SDL is 1.2.x, 2.0.x
-+AC_MSG_CHECKING([for SDL version being 1.2.x or 2.0.x])
- AC_COMPILE_IFELSE([AC_LANG_SOURCE([
- #include "SDL.h"
- void blah(){
+-AC_COMPILE_IFELSE([AC_LANG_SOURCE([
+-#include "SDL.h"
+-void blah(){
 -#if SDL_MINOR_VERSION != 2
 -#error "Only SDL 1.2 supported"
+-#endif
+-;
+-}
+-])],AC_MSG_RESULT([yes]),[
+- AC_MSG_RESULT([no]) 
+- AC_MSG_ERROR([Only libSDL 1.2.X supported])])
+-
+ dnl Checks for header files.
+ 
+ dnl Checks for typedefs, structures, and compiler characteristics.
+@@ -372,27 +349,122 @@ else
+   AC_MSG_WARN([Can't find libpng, screenshot support disabled])
+ fi
+ 
++dnl Check for SDL
++EXULT_CHECK_SDL(:,AC_MSG_ERROR([[*** SDL not found!]]))
++LIBS="$LIBS $SDL_LIBS"
++CPPFLAGS="$CPPFLAGS $SDL_CFLAGS"
++
++dnl Check if SDL is 1.2.x, 2.0.x
++AC_MSG_CHECKING([for SDL version being 1.2.x or 2.0.x])
++AC_COMPILE_IFELSE([AC_LANG_SOURCE([
++#include "SDL.h"
++void blah(){
 +#if !((SDL_MAJOR_VERSION == 1) && (SDL_MINOR_VERSION == 2)) && !((SDL_MAJOR_VERSION == 2) && (SDL_MINOR_VERSION == 0))
 +#error "Only SDL 1.2 and 2.0 supported"
- #endif
- ;
- }
- ])],AC_MSG_RESULT([yes]),[
-  AC_MSG_RESULT([no]) 
-- AC_MSG_ERROR([Only libSDL 1.2.X supported])])
++#endif
++;
++}
++])],AC_MSG_RESULT([yes]),[
++ AC_MSG_RESULT([no]) 
 + AC_MSG_ERROR([Only libSDL 1.2.x or 2.0.x supported])])
- 
++
 +dnl Check for SDL_cdrom compatibility layer platform (used with SDL 2.0 only)
 +AC_MSG_CHECKING(for SDL_cdrom compatibility layer platform)
 +COMPAT_SDL_CDROM_GET_PLATFORM(:)
@@ -2526,11 +2449,7 @@ Index: configure.ac
 +    AC_MSG_RESULT(no)
 +fi
 +
-+
- dnl Checks for header files.
- 
- dnl Checks for typedefs, structures, and compiler characteristics.
-@@ -376,23 +443,29 @@
+ AH_TEMPLATE(C_MODEM,[Define to 1 to enable internal modem support, requires SDL_net])
  AH_TEMPLATE(C_IPX,[Define to 1 to enable IPX over Internet networking, requires SDL_net])
  AC_CHECK_HEADER(SDL_net.h,have_sdl_net_h=yes,)
  
@@ -2565,7 +2484,7 @@ Index: configure.ac
  fi
  
  AH_TEMPLATE(C_X11_XKB,[define to 1 if you have XKBlib.h and X11 lib])
-@@ -542,6 +615,9 @@
+@@ -542,6 +614,9 @@ src/misc/Makefile
  src/shell/Makefile
  src/platform/Makefile
  src/platform/visualc/Makefile
@@ -2575,10 +2494,10 @@ Index: configure.ac
  visualc_net/Makefile
  include/Makefile
  docs/Makefile
-Index: src/Makefile.am
-===================================================================
---- dosbox/src/Makefile.am	(revision 3924)
-+++ dosbox.n/src/Makefile.am	(working copy)
+diff --git a/src/Makefile.am b/src/Makefile.am
+index 184469e..fed8ee8 100644
+--- a/src/Makefile.am
++++ b/src/Makefile.am
 @@ -1,6 +1,6 @@
  AM_CPPFLAGS = -I$(top_srcdir)/include
  
@@ -2587,7 +2506,7 @@ Index: src/Makefile.am
  
  bin_PROGRAMS = dosbox
  
-@@ -13,7 +13,8 @@
+@@ -13,7 +13,8 @@ endif
  
  dosbox_SOURCES = dosbox.cpp $(ico_stuff)
  dosbox_LDADD = cpu/libcpu.a debug/libdebug.a dos/libdos.a fpu/libfpu.a  hardware/libhardware.a gui/libgui.a \
@@ -2597,10 +2516,10 @@ Index: src/Makefile.am
  
  EXTRA_DIST = winres.rc dosbox.ico
  
-Index: src/dos/cdrom.cpp
-===================================================================
---- dosbox/src/dos/cdrom.cpp	(revision 3924)
-+++ dosbox.n/src/dos/cdrom.cpp	(working copy)
+diff --git a/src/dos/cdrom.cpp b/src/dos/cdrom.cpp
+index ab98912..a8a1e4e 100644
+--- a/src/dos/cdrom.cpp
++++ b/src/dos/cdrom.cpp
 @@ -21,6 +21,8 @@
  // SDL CDROM 
  // ******************************************************
@@ -2619,7 +2538,7 @@ Index: src/dos/cdrom.cpp
  CDROM_Interface_SDL::CDROM_Interface_SDL(void) {
  	driveID		= 0;
  	oldLeadOut	= 0;
-@@ -143,6 +147,8 @@
+@@ -143,6 +147,8 @@ bool CDROM_Interface_SDL::LoadUnloadMedia(bool unload) {
  	return success;
  }
  
@@ -2628,7 +2547,7 @@ Index: src/dos/cdrom.cpp
  int CDROM_GetMountType(char* path, int forceCD) {
  // 0 - physical CDROM
  // 1 - Iso file
-@@ -157,6 +163,7 @@
+@@ -157,6 +163,7 @@ int CDROM_GetMountType(char* path, int forceCD) {
  	upcase(buffer);
  #endif
  
@@ -2636,7 +2555,7 @@ Index: src/dos/cdrom.cpp
  	int num = SDL_CDNumDrives();
  	// If cd drive is forced then check if its in range and return 0
  	if ((forceCD>=0) && (forceCD<num)) {
-@@ -169,6 +176,7 @@
+@@ -169,6 +176,7 @@ int CDROM_GetMountType(char* path, int forceCD) {
  		cdName = SDL_CDName(i);
  		if (strcmp(buffer,cdName)==0) return 0;
  	};
@@ -2644,16 +2563,16 @@ Index: src/dos/cdrom.cpp
  	
  	// Detect ISO
  	struct stat file_stat;
-@@ -214,5 +222,3 @@
+@@ -214,5 +222,3 @@ bool CDROM_Interface_Fake :: GetMediaTrayStatus(bool& mediaPresent, bool& mediaC
  	trayOpen     = false;
  	return true;
  }
 -
 -
-Index: src/dos/cdrom.h
-===================================================================
---- dosbox/src/dos/cdrom.h	(revision 3924)
-+++ dosbox.n/src/dos/cdrom.h	(working copy)
+diff --git a/src/dos/cdrom.h b/src/dos/cdrom.h
+index 79bb1a0..dcac680 100644
+--- a/src/dos/cdrom.h
++++ b/src/dos/cdrom.h
 @@ -32,6 +32,9 @@
  #include "mem.h"
  #include "mixer.h"
@@ -2674,7 +2593,7 @@ Index: src/dos/cdrom.h
  
  typedef struct SMSF {
  	unsigned char min;
-@@ -84,6 +89,7 @@
+@@ -84,6 +89,7 @@ public:
  	virtual void	InitNewMedia		(void) {};
  };	
  
@@ -2682,7 +2601,7 @@ Index: src/dos/cdrom.h
  class CDROM_Interface_SDL : public CDROM_Interface
  {
  public:
-@@ -112,6 +118,7 @@
+@@ -112,6 +118,7 @@ private:
  	int		driveID;
  	Uint32	oldLeadOut;
  };
@@ -2690,7 +2609,7 @@ Index: src/dos/cdrom.h
  
  class CDROM_Interface_Fake : public CDROM_Interface
  {
-@@ -237,6 +244,8 @@
+@@ -237,6 +244,8 @@ typedef	std::vector<Track>::iterator	track_it;
  	Bit8u	subUnit;
  };
  
@@ -2699,17 +2618,17 @@ Index: src/dos/cdrom.h
  #if defined (WIN32)	/* Win 32 */
  
  #define WIN32_LEAN_AND_MEAN		// Exclude rarely-used stuff from Windows headers
-@@ -394,4 +403,6 @@
+@@ -394,4 +403,6 @@ private:
  
  #endif /* LINUX */
  
 +#endif /* C_PHYSICAL_CDROM_MOUNT */
 +
  #endif /* __CDROM_INTERFACE__ */
-Index: src/dos/cdrom_aspi_win32.cpp
-===================================================================
---- dosbox/src/dos/cdrom_aspi_win32.cpp	(revision 3924)
-+++ dosbox.n/src/dos/cdrom_aspi_win32.cpp	(working copy)
+diff --git a/src/dos/cdrom_aspi_win32.cpp b/src/dos/cdrom_aspi_win32.cpp
+index abc48ed..5503aa4 100644
+--- a/src/dos/cdrom_aspi_win32.cpp
++++ b/src/dos/cdrom_aspi_win32.cpp
 @@ -17,11 +17,15 @@
   */
  
@@ -2727,61 +2646,61 @@ Index: src/dos/cdrom_aspi_win32.cpp
  #include "cdrom.h"
  #include "support.h"
  
-@@ -765,3 +769,4 @@
+@@ -766,3 +770,4 @@ bool CDROM_Interface_Aspi::ReadSectors(PhysPt buffer, bool raw, unsigned long se
  };
  
  #endif
 +#endif /* C_PHYSICAL_CDROM_MOUNT */
-Index: src/dos/cdrom_ioctl_linux.cpp
-===================================================================
---- dosbox/src/dos/cdrom_ioctl_linux.cpp	(revision 3924)
-+++ dosbox.n/src/dos/cdrom_ioctl_linux.cpp	(working copy)
+diff --git a/src/dos/cdrom_ioctl_linux.cpp b/src/dos/cdrom_ioctl_linux.cpp
+index 8fa0f23..8af3dcc 100644
+--- a/src/dos/cdrom_ioctl_linux.cpp
++++ b/src/dos/cdrom_ioctl_linux.cpp
 @@ -17,8 +17,12 @@
   */
   
  
+-#include <string.h>
 +#include "SDL_version.h"
-+#include "cdrom.h"
+ #include "cdrom.h"
 +
 +#if C_PHYSICAL_CDROM_MOUNT
 +
- #include <string.h>
--#include "cdrom.h"
++#include <string.h>
  #include "support.h"
  
  #if defined (LINUX)
-@@ -95,3 +99,4 @@
+@@ -95,3 +99,4 @@ bool CDROM_Interface_Ioctl::SetDevice(char* path, int forceCD)
  }
  
  #endif
 +#endif /* C_PHYSICAL_CDROM_MOUNT */
-Index: src/dos/cdrom_ioctl_os2.cpp
-===================================================================
---- dosbox/src/dos/cdrom_ioctl_os2.cpp	(revision 3924)
-+++ dosbox.n/src/dos/cdrom_ioctl_os2.cpp	(working copy)
+diff --git a/src/dos/cdrom_ioctl_os2.cpp b/src/dos/cdrom_ioctl_os2.cpp
+index d96b45d..010526e 100644
+--- a/src/dos/cdrom_ioctl_os2.cpp
++++ b/src/dos/cdrom_ioctl_os2.cpp
 @@ -17,8 +17,12 @@
   */
  
  
+-#include <string.h>
 +#include "SDL_version.h"
-+#include "dosbox.h"
+ #include "dosbox.h"
 +
 +#if C_PHYSICAL_CDROM_MOUNT
 +
- #include <string.h>
--#include "dosbox.h"
++#include <string.h>
  #include "cdrom.h"
  
  #if defined (OS2)
-@@ -150,3 +154,4 @@
+@@ -150,3 +154,4 @@ bool CDROM_Interface_Ioctl::SetDevice(char* path, int forceCD) {
  }
  
  #endif
 +#endif /* C_PHYSICAL_CDROM_MOUNT */
-Index: src/dos/cdrom_ioctl_win32.cpp
-===================================================================
---- dosbox/src/dos/cdrom_ioctl_win32.cpp	(revision 3924)
-+++ dosbox.n/src/dos/cdrom_ioctl_win32.cpp	(working copy)
+diff --git a/src/dos/cdrom_ioctl_win32.cpp b/src/dos/cdrom_ioctl_win32.cpp
+index 84e15e9..ccfd7a3 100644
+--- a/src/dos/cdrom_ioctl_win32.cpp
++++ b/src/dos/cdrom_ioctl_win32.cpp
 @@ -17,6 +17,11 @@
   */
  
@@ -2803,15 +2722,15 @@ Index: src/dos/cdrom_ioctl_win32.cpp
  // for a more sophisticated implementation of the mci cdda functionality
  // see the SDL sources, which the mci_ functions are based on
  
-@@ -621,3 +624,4 @@
+@@ -621,3 +624,4 @@ void CDROM_Interface_Ioctl::Close(void) {
  }
  
  #endif
 +#endif /* C_PHYSICAL_CDROM_MOUNT */
-Index: src/dos/dos_mscdex.cpp
-===================================================================
---- dosbox/src/dos/dos_mscdex.cpp	(revision 3924)
-+++ dosbox.n/src/dos/dos_mscdex.cpp	(working copy)
+diff --git a/src/dos/dos_mscdex.cpp b/src/dos/dos_mscdex.cpp
+index c1c96c2..495843f 100644
+--- a/src/dos/dos_mscdex.cpp
++++ b/src/dos/dos_mscdex.cpp
 @@ -48,7 +48,9 @@
  #define	REQUEST_STATUS_ERROR	0x8000
  
@@ -2822,7 +2741,7 @@ Index: src/dos/dos_mscdex.cpp
  int forceCD				= -1;
  
  static Bitu MSCDEX_Strategy_Handler(void); 
-@@ -255,6 +257,7 @@
+@@ -255,6 +257,7 @@ int CMscdex::AddDrive(Bit16u _drive, char* physicalPath, Bit8u& subUnit)
  	int result = 0;
  	// Get Mounttype and init needed cdrom interface
  	switch (CDROM_GetMountType(physicalPath,forceCD)) {
@@ -2830,7 +2749,7 @@ Index: src/dos/dos_mscdex.cpp
  	case 0x00: {	
  		LOG(LOG_MISC,LOG_NORMAL)("MSCDEX: Mounting physical cdrom: %s"	,physicalPath);
  #if defined (WIN32)
-@@ -297,6 +300,7 @@
+@@ -297,6 +300,7 @@ int CMscdex::AddDrive(Bit16u _drive, char* physicalPath, Bit8u& subUnit)
  		LOG(LOG_MISC,LOG_NORMAL)("MSCDEX: SDL Interface.");
  #endif
  		} break;
@@ -2838,7 +2757,7 @@ Index: src/dos/dos_mscdex.cpp
  	case 0x01:	// iso cdrom interface	
  		LOG(LOG_MISC,LOG_NORMAL)("MSCDEX: Mounting iso file as cdrom: %s", physicalPath);
  		cdrom[numDrives] = new CDROM_Interface_Image((Bit8u)numDrives);
-@@ -1377,10 +1381,12 @@
+@@ -1377,10 +1381,12 @@ bool MSCDEX_HasMediaChanged(Bit8u subUnit)
  	return true;
  }
  
@@ -2851,11 +2770,11 @@ Index: src/dos/dos_mscdex.cpp
  
  void MSCDEX_ShutDown(Section* /*sec*/) {
  	delete mscdex;
-Index: src/dos/dos_programs.cpp
-===================================================================
---- dosbox/src/dos/dos_programs.cpp	(revision 3924)
-+++ dosbox.n/src/dos/dos_programs.cpp	(working copy)
-@@ -50,7 +50,9 @@
+diff --git a/src/dos/dos_programs.cpp b/src/dos/dos_programs.cpp
+index 9b1312e..c1945ff 100644
+--- a/src/dos/dos_programs.cpp
++++ b/src/dos/dos_programs.cpp
+@@ -56,7 +56,9 @@
  Bitu DEBUG_EnableDebugger(void);
  #endif
  
@@ -2865,7 +2784,7 @@ Index: src/dos/dos_programs.cpp
  static Bitu ZDRIVE_NUM = 25;
  
  class MOUNT : public Program {
-@@ -177,11 +179,15 @@
+@@ -183,11 +185,15 @@ public:
  		}
  		/* Show list of cdroms */
  		if (cmd->FindExist("-cd",false)) {
@@ -2881,7 +2800,7 @@ Index: src/dos/dos_programs.cpp
  			return;
  		}
  
-@@ -319,9 +325,9 @@
+@@ -325,9 +331,9 @@ public:
  			if (temp_line[temp_line.size()-1]!=CROSS_FILESPLIT) temp_line+=CROSS_FILESPLIT;
  			Bit8u bit8size=(Bit8u) sizes[1];
  			if (type=="cdrom") {
@@ -2892,7 +2811,7 @@ Index: src/dos/dos_programs.cpp
  				if (cmd->FindExist("-aspi",false)) {
  					MSCDEX_SetCDInterface(CDROM_USE_ASPI, num);
  				} else if (cmd->FindExist("-ioctl_dio",false)) {
-@@ -350,6 +356,21 @@
+@@ -356,6 +362,21 @@ public:
  					MSCDEX_SetCDInterface(CDROM_USE_IOCTL_DIO, num);
  #endif
  				}
@@ -2914,7 +2833,7 @@ Index: src/dos/dos_programs.cpp
  				newdrive  = new cdromDrive(drive,temp_line.c_str(),sizes[0],bit8size,sizes[2],0,mediaid,error);
  				// Check Mscdex, if it worked out...
  				switch (error) {
-@@ -1331,7 +1352,9 @@
+@@ -1358,7 +1379,9 @@ public:
  					WriteOut(MSG_Get("PROGRAM_IMGMOUNT_ALREADY_MOUNTED"));
  					return;
  				}
@@ -2924,7 +2843,7 @@ Index: src/dos/dos_programs.cpp
  				// create new drives for all images
  				std::vector<DOS_Drive*> isoDisks;
  				std::vector<std::string>::size_type i;
-@@ -1482,7 +1505,11 @@
+@@ -1513,7 +1536,11 @@ static void KEYB_ProgramStart(Program * * make) {
  void DOS_SetupPrograms(void) {
  	/*Add Messages */
  
@@ -2936,7 +2855,7 @@ Index: src/dos/dos_programs.cpp
  	MSG_Add("PROGRAM_MOUNT_STATUS_FORMAT","%-5s  %-58s %-12s\n");
  	MSG_Add("PROGRAM_MOUNT_STATUS_2","Drive %c is mounted as %s\n");
  	MSG_Add("PROGRAM_MOUNT_STATUS_1","The currently mounted drives are:\n");
-@@ -1573,7 +1600,11 @@
+@@ -1604,7 +1631,11 @@ void DOS_SetupPrograms(void) {
  		);
  	MSG_Add("PROGRAM_INTRO_CDROM",
  		"\033[2J\033[32;1mHow to mount a Real/Virtual CD-ROM Drive in DOSBox:\033[0m\n"
@@ -2948,7 +2867,7 @@ Index: src/dos/dos_programs.cpp
  		"\n"
  		"The \033[33mbasic\033[0m level works on all CD-ROM drives and normal directories.\n"
  		"It installs MSCDEX and marks the files read-only.\n"
-@@ -1582,6 +1613,7 @@
+@@ -1613,6 +1644,7 @@ void DOS_SetupPrograms(void) {
  		"If it doesn't work you might have to tell DOSBox the label of the CD-ROM:\n"
  		"\033[34;1mmount d C:\\example -t cdrom -label CDLABEL\033[0m\n"
  		"\n"
@@ -2956,7 +2875,7 @@ Index: src/dos/dos_programs.cpp
  		"The \033[33mnext\033[0m level adds some low-level support.\n"
  		"Therefore only works on CD-ROM drives:\n"
  		"\033[34;1mmount d \033[0;31mD:\\\033[34;1m -t cdrom -usecd \033[33m0\033[0m\n"
-@@ -1595,6 +1627,14 @@
+@@ -1626,6 +1658,14 @@ void DOS_SetupPrograms(void) {
  		"Replace \033[0;31mD:\\\033[0m with the location of your CD-ROM.\n"
  		"Replace the \033[33;1m0\033[0m in \033[34;1m-usecd \033[33m0\033[0m with the number reported for your CD-ROM if you type:\n"
  		"\033[34;1mmount -cd\033[0m\n"
@@ -2971,11 +2890,11 @@ Index: src/dos/dos_programs.cpp
  		);
  	MSG_Add("PROGRAM_INTRO_SPECIAL",
  		"\033[2J\033[32;1mSpecial keys:\033[0m\n"
-Index: src/dos/drive_local.cpp
-===================================================================
---- dosbox/src/dos/drive_local.cpp	(revision 3924)
-+++ dosbox.n/src/dos/drive_local.cpp	(working copy)
-@@ -290,7 +290,12 @@
+diff --git a/src/dos/drive_local.cpp b/src/dos/drive_local.cpp
+index 94a30a5..37b1324 100644
+--- a/src/dos/drive_local.cpp
++++ b/src/dos/drive_local.cpp
+@@ -290,7 +290,12 @@ again:
  
  	find_size=(Bit32u) stat_block.st_size;
  	struct tm *time;
@@ -2988,7 +2907,7 @@ Index: src/dos/drive_local.cpp
  		find_date=DOS_PackDate((Bit16u)(time->tm_year+1900),(Bit16u)(time->tm_mon+1),(Bit16u)time->tm_mday);
  		find_time=DOS_PackTime((Bit16u)time->tm_hour,(Bit16u)time->tm_min,(Bit16u)time->tm_sec);
  	} else {
-@@ -408,7 +413,12 @@
+@@ -408,7 +413,12 @@ bool localDrive::FileStat(const char* name, FileStat_Block * const stat_block) {
  	if(stat(newname,&temp_stat)!=0) return false;
  	/* Convert the stat to a FileStat */
  	struct tm *time;
@@ -3001,7 +2920,7 @@ Index: src/dos/drive_local.cpp
  		stat_block->time=DOS_PackTime((Bit16u)time->tm_hour,(Bit16u)time->tm_min,(Bit16u)time->tm_sec);
  		stat_block->date=DOS_PackDate((Bit16u)(time->tm_year+1900),(Bit16u)(time->tm_mon+1),(Bit16u)time->tm_mday);
  	} else {
-@@ -547,7 +557,12 @@
+@@ -547,7 +557,12 @@ bool localFile::UpdateDateTimeFromHost(void) {
  	struct stat temp_stat;
  	fstat(fileno(fhandle),&temp_stat);
  	struct tm * ltime;
@@ -3014,11 +2933,11 @@ Index: src/dos/drive_local.cpp
  		time=DOS_PackTime((Bit16u)ltime->tm_hour,(Bit16u)ltime->tm_min,(Bit16u)ltime->tm_sec);
  		date=DOS_PackDate((Bit16u)(ltime->tm_year+1900),(Bit16u)(ltime->tm_mon+1),(Bit16u)ltime->tm_mday);
  	} else {
-Index: src/dosbox.cpp
-===================================================================
---- dosbox/src/dosbox.cpp	(revision 3924)
-+++ dosbox.n/src/dosbox.cpp	(working copy)
-@@ -441,8 +441,13 @@
+diff --git a/src/dosbox.cpp b/src/dosbox.cpp
+index 675e90d..d1f86b4 100644
+--- a/src/dosbox.cpp
++++ b/src/dosbox.cpp
+@@ -441,8 +441,13 @@ void DOSBOX_Init(void) {
  		"                  handle.");
  
  	const char* cyclest[] = { "auto","fixed","max","%u",0 };
@@ -3032,11 +2951,11 @@ Index: src/dosbox.cpp
  	Pstring->Set_values(cyclest);
  
  	Pstring = Pmulti_remain->GetSection()->Add_string("parameters",Property::Changeable::Always,"");
-Index: src/gui/sdl_mapper.cpp
-===================================================================
---- dosbox/src/gui/sdl_mapper.cpp	(revision 3924)
-+++ dosbox.n/src/gui/sdl_mapper.cpp	(working copy)
-@@ -44,7 +44,8 @@
+diff --git a/src/gui/sdl_mapper.cpp b/src/gui/sdl_mapper.cpp
+index aa861cd..665566a 100644
+--- a/src/gui/sdl_mapper.cpp
++++ b/src/gui/sdl_mapper.cpp
+@@ -44,7 +44,8 @@ enum {
  	CLR_WHITE=2,
  	CLR_RED=3,
  	CLR_BLUE=4,
@@ -3046,7 +2965,7 @@ Index: src/gui/sdl_mapper.cpp
  };
  
  enum BB_Types {
-@@ -67,7 +68,9 @@
+@@ -67,7 +68,9 @@ enum BC_Types {
  
  #define MAXSTICKS 8
  #define MAXACTIVE 16
@@ -3057,7 +2976,7 @@ Index: src/gui/sdl_mapper.cpp
  #define MAXBUTTON_CAP 16
  
  class CEvent;
-@@ -299,6 +302,9 @@
+@@ -299,6 +302,9 @@ protected:
  };
  
  
@@ -3067,14 +2986,14 @@ Index: src/gui/sdl_mapper.cpp
  #define MAX_SDLKEYS 323
  
  static bool usescancodes;
-@@ -469,23 +475,42 @@
+@@ -469,23 +475,42 @@ Bitu GetKeyCode(SDL_keysym keysym) {
  	}
  }
  
 +#endif
 +/*** End of (large) SDL 1.2 exclusive block ***/
- 
 +
+ 
  class CKeyBind;
  class CKeyBindGroup;
  
@@ -3110,7 +3029,7 @@ Index: src/gui/sdl_mapper.cpp
  };
  
  class CKeyBindGroup : public  CBindGroup {
-@@ -501,28 +526,44 @@
+@@ -501,28 +526,44 @@ public:
  		if (strncasecmp(buf,configname,strlen(configname))) return 0;
  		StripWord(buf);char * num=StripWord(buf);
  		Bitu code=ConvDecWord(num);
@@ -3155,7 +3074,7 @@ Index: src/gui/sdl_mapper.cpp
  		return new CKeyBind(&lists[(Bitu)_key],_key);
  	}
  private:
-@@ -675,7 +716,11 @@
+@@ -675,7 +716,11 @@ public:
  		if (axes_cap>axes) axes_cap=axes;
  		hats_cap=emulated_hats;
  		if (hats_cap>hats) hats_cap=hats;
@@ -3167,7 +3086,7 @@ Index: src/gui/sdl_mapper.cpp
  	}
  	~CStickBindGroup() {
  		SDL_JoystickClose(sdl_joystick);
-@@ -712,7 +757,12 @@
+@@ -712,7 +757,12 @@ public:
  			if (abs(event->jaxis.value)<25000) return 0;
  			return CreateAxisBind(event->jaxis.axis,event->jaxis.value>0);
  		} else if (event->type==SDL_JOYBUTTONDOWN) {
@@ -3180,7 +3099,7 @@ Index: src/gui/sdl_mapper.cpp
  #if defined (REDUCE_JOYSTICK_POLLING)
  			return CreateButtonBind(event->jbutton.button%button_wrap);
  #else
-@@ -881,7 +931,11 @@
+@@ -881,7 +931,11 @@ private:
  		return configname;
  	}
  	const char * BindStart(void) {
@@ -3192,7 +3111,7 @@ Index: src/gui/sdl_mapper.cpp
  		else return "[missing joystick]";
  	}
  
-@@ -1240,6 +1294,11 @@
+@@ -1240,6 +1294,11 @@ protected:
  };
  
  static struct CMapper {
@@ -3204,7 +3123,7 @@ Index: src/gui/sdl_mapper.cpp
  	SDL_Surface * surface;
  	SDL_Surface * draw_surface;
  	bool exit;
-@@ -1277,7 +1336,7 @@
+@@ -1277,7 +1336,7 @@ void CBindGroup::DeactivateBindList(CBindList * list,bool ev_trigger) {
  }
  
  static void DrawText(Bitu x,Bitu y,const char * text,Bit8u color) {
@@ -3213,7 +3132,7 @@ Index: src/gui/sdl_mapper.cpp
  	while (*text) {
  		Bit8u * font=&int10_font_14[(*text)*14];
  		Bitu i,j;Bit8u * draw_line=draw;
-@@ -1288,7 +1347,7 @@
+@@ -1288,7 +1347,7 @@ static void DrawText(Bitu x,Bitu y,const char * text,Bit8u color) {
  				else *(draw_line+j)=CLR_BLACK;
  				map<<=1;
  			}
@@ -3222,7 +3141,7 @@ Index: src/gui/sdl_mapper.cpp
  		}
  		text++;draw+=8;
  	}
-@@ -1305,7 +1364,7 @@
+@@ -1305,14 +1364,14 @@ public:
  	}
  	virtual void Draw(void) {
  		if (!enabled) return;
@@ -3231,7 +3150,6 @@ Index: src/gui/sdl_mapper.cpp
  		for (Bitu lines=0;lines<dy;lines++)  {
  			if (lines==0 || lines==(dy-1)) {
  				for (Bitu cols=0;cols<dx;cols++) *(point+cols)=color;
-@@ -1312,7 +1371,7 @@
  			} else {
  				*point=color;*(point+dx-1)=color;
  			}
@@ -3240,7 +3158,7 @@ Index: src/gui/sdl_mapper.cpp
  		}
  	}
  	virtual bool OnTop(Bitu _x,Bitu _y) {
-@@ -1343,13 +1402,21 @@
+@@ -1343,13 +1402,21 @@ protected:
  	const char * text;
  };
  
@@ -3264,7 +3182,7 @@ Index: src/gui/sdl_mapper.cpp
  		event=_event;	
  	}
  	void BindColor(void) {
-@@ -1391,10 +1458,10 @@
+@@ -1391,10 +1458,10 @@ void CCaptionButton::Change(const char * format,...) {
  static void change_action_text(const char* text,Bit8u col);
  
  static void MAPPER_SaveBinds(void);
@@ -3277,7 +3195,7 @@ Index: src/gui/sdl_mapper.cpp
  		type=_type;
  	}
  	void Click(void) {
-@@ -1433,10 +1500,10 @@
+@@ -1433,10 +1500,10 @@ protected:
  	BB_Types type;
  };
  
@@ -3290,7 +3208,7 @@ Index: src/gui/sdl_mapper.cpp
  		type=_type;
  	}
  	void Draw(void) {
-@@ -1457,13 +1524,13 @@
+@@ -1457,13 +1524,13 @@ public:
  			break;
  		}
  		if (checked) {
@@ -3307,7 +3225,7 @@ Index: src/gui/sdl_mapper.cpp
  	}
  	void Click(void) {
  		switch (type) {
-@@ -1589,25 +1656,53 @@
+@@ -1589,25 +1656,53 @@ public:
  		case MK_f1:case MK_f2:case MK_f3:case MK_f4:
  		case MK_f5:case MK_f6:case MK_f7:case MK_f8:
  		case MK_f9:case MK_f10:case MK_f11:case MK_f12:	
@@ -3361,7 +3279,7 @@ Index: src/gui/sdl_mapper.cpp
  			break;
  		}
  		sprintf(buf,"%s \"key %d%s%s%s\"",
-@@ -1689,14 +1784,27 @@
+@@ -1689,14 +1784,27 @@ static void SetActiveEvent(CEvent * event) {
  	}
  }
  
@@ -3392,7 +3310,7 @@ Index: src/gui/sdl_mapper.cpp
  }
  
  static CKeyEvent * AddKeyButtonEvent(Bitu x,Bitu y,Bitu dx,Bitu dy,char const * const title,char const * const entry,KBD_KEYS key) {
-@@ -2003,7 +2111,7 @@
+@@ -2003,7 +2111,7 @@ static void CreateLayout(void) {
  	bind_but.bind_title->Change("Bind Title");
  }
  
@@ -3401,7 +3319,7 @@ Index: src/gui/sdl_mapper.cpp
  	{0x00,0x00,0x00,0x00},			//0=black
  	{0x7f,0x7f,0x7f,0x00},			//1=grey
  	{0xff,0xff,0xff,0x00},			//2=white
-@@ -2042,6 +2150,49 @@
+@@ -2042,6 +2150,49 @@ static struct {
  	const char * eventend;
  	Bitu key;
  } DefaultKeys[]={
@@ -3451,7 +3369,7 @@ Index: src/gui/sdl_mapper.cpp
  	{"f1",SDLK_F1},		{"f2",SDLK_F2},		{"f3",SDLK_F3},		{"f4",SDLK_F4},
  	{"f5",SDLK_F5},		{"f6",SDLK_F6},		{"f7",SDLK_F7},		{"f8",SDLK_F8},
  	{"f9",SDLK_F9},		{"f10",SDLK_F10},	{"f11",SDLK_F11},	{"f12",SDLK_F12},
-@@ -2083,6 +2234,8 @@
+@@ -2083,6 +2234,8 @@ static struct {
  	{"lessthan",SDLK_LESS},
  #endif
  
@@ -3460,7 +3378,7 @@ Index: src/gui/sdl_mapper.cpp
  	{0,0}
  };
  
-@@ -2094,10 +2247,17 @@
+@@ -2094,10 +2247,17 @@ static void CreateDefaultBinds(void) {
  		CreateStringBind(buffer);
  		i++;
  	}
@@ -3478,7 +3396,7 @@ Index: src/gui/sdl_mapper.cpp
  	for (CHandlerEventVector_it hit=handlergroup.begin();hit!=handlergroup.end();hit++) {
  		(*hit)->MakeDefaultBind(buffer);
  		CreateStringBind(buffer);
-@@ -2190,17 +2350,91 @@
+@@ -2190,17 +2350,91 @@ void MAPPER_CheckEvent(SDL_Event * event) {
  
  void BIND_MappingEvents(void) {
  	SDL_Event event;
@@ -3550,7 +3468,7 @@ Index: src/gui/sdl_mapper.cpp
  				}
 -			}	
 +			}
- 			break;
++			break;
 +#if SDL_VERSION_ATLEAST(2,0,0)
 +		case SDL_WINDOWEVENT:
 +			/* The resize event MAY arrive e.g. when the mapper is
@@ -3564,7 +3482,7 @@ Index: src/gui/sdl_mapper.cpp
 +				mapper.draw_rect=GFX_GetSDLSurfaceSubwindowDims(640,480);
 +				DrawButtons();
 +			}
-+			break;
+ 			break;
 +#endif
  		case SDL_QUIT:
 +			isButtonPressed = false;
@@ -3572,7 +3490,7 @@ Index: src/gui/sdl_mapper.cpp
  			mapper.exit=true;
  			break;
  		default:
-@@ -2275,7 +2509,11 @@
+@@ -2275,7 +2509,11 @@ static void InitializeJoysticks(void) {
  
  static void CreateBindGroups(void) {
  	bindgroups.clear();
@@ -3584,7 +3502,7 @@ Index: src/gui/sdl_mapper.cpp
  	if (joytype != JOY_NONE) {
  #if defined (REDUCE_JOYSTICK_POLLING)
  		// direct access to the SDL joystick, thus removed from the event handling
-@@ -2358,11 +2596,28 @@
+@@ -2358,11 +2596,28 @@ void MAPPER_RunInternal() {
  
  	/* Be sure that there is no update in progress */
  	GFX_EndUpdate( 0 );
@@ -3614,7 +3532,7 @@ Index: src/gui/sdl_mapper.cpp
  	if (last_clicked) {
  		last_clicked->BindColor();
  		last_clicked=NULL;
-@@ -2378,10 +2633,23 @@
+@@ -2378,10 +2633,23 @@ void MAPPER_RunInternal() {
  		if (mapper.redraw) {
  			mapper.redraw=false;		
  			DrawButtons();
@@ -3638,7 +3556,7 @@ Index: src/gui/sdl_mapper.cpp
  #if defined (REDUCE_JOYSTICK_POLLING)
  	SDL_JoystickEventState(SDL_DISABLE);
  #endif
-@@ -2430,6 +2698,8 @@
+@@ -2430,6 +2698,8 @@ void MAPPER_StartUp(Section * sec) {
  	mapper.sticks.num_groups=0;
  	memset(&virtual_joysticks,0,sizeof(virtual_joysticks));
  
@@ -3647,7 +3565,7 @@ Index: src/gui/sdl_mapper.cpp
  	usescancodes = false;
  
  	if (section->Get_bool("usescancodes")) {
-@@ -2551,6 +2821,8 @@
+@@ -2551,6 +2821,8 @@ void MAPPER_StartUp(Section * sec) {
  		}
  	}
  
@@ -3656,10 +3574,10 @@ Index: src/gui/sdl_mapper.cpp
  	Prop_path* pp = section->Get_path("mapperfile");
  	mapper.filename = pp->realpath;
  	MAPPER_AddHandler(&MAPPER_Run,MK_f1,MMOD1,"mapper","Mapper");
-Index: src/gui/sdlmain.cpp
-===================================================================
---- dosbox/src/gui/sdlmain.cpp	(revision 3924)
-+++ dosbox.n/src/gui/sdlmain.cpp	(working copy)
+diff --git a/src/gui/sdlmain.cpp b/src/gui/sdlmain.cpp
+index fa4e96d..abddbf9 100644
+--- a/src/gui/sdlmain.cpp
++++ b/src/gui/sdlmain.cpp
 @@ -31,9 +31,15 @@
  #include <signal.h>
  #include <process.h>
@@ -3696,7 +3614,7 @@ Index: src/gui/sdlmain.cpp
  
  #ifndef APIENTRY
  #define APIENTRY
-@@ -81,6 +95,7 @@
+@@ -81,12 +95,14 @@ typedef GLvoid* (APIENTRYP PFNGLMAPBUFFERARBPROC) (GLenum target, GLenum access)
  typedef GLboolean (APIENTRYP PFNGLUNMAPBUFFERARBPROC) (GLenum target);
  #endif
  
@@ -3704,7 +3622,6 @@ Index: src/gui/sdlmain.cpp
  PFNGLGENBUFFERSARBPROC glGenBuffersARB = NULL;
  PFNGLBINDBUFFERARBPROC glBindBufferARB = NULL;
  PFNGLDELETEBUFFERSARBPROC glDeleteBuffersARB = NULL;
-@@ -87,6 +102,7 @@
  PFNGLBUFFERDATAARBPROC glBufferDataARB = NULL;
  PFNGLMAPBUFFERARBPROC glMapBufferARB = NULL;
  PFNGLUNMAPBUFFERARBPROC glUnmapBufferARB = NULL;
@@ -3712,7 +3629,7 @@ Index: src/gui/sdlmain.cpp
  
  #endif //C_OPENGL
  
-@@ -129,8 +145,12 @@
+@@ -129,8 +145,12 @@ struct private_hwdata {
  
  enum SCREEN_TYPES	{
  	SCREEN_SURFACE,
@@ -3725,7 +3642,7 @@ Index: src/gui/sdlmain.cpp
  	SCREEN_OPENGL
  };
  
-@@ -148,10 +168,17 @@
+@@ -148,10 +168,17 @@ struct SDL_Block {
  	bool inited;
  	bool active;							//If this isn't set don't draw
  	bool updating;
@@ -3744,7 +3661,7 @@ Index: src/gui/sdlmain.cpp
  		Bitu flags;
  		double scalex,scaley;
  		GFX_CallBack_t callback;
-@@ -161,25 +188,39 @@
+@@ -161,45 +188,72 @@ struct SDL_Block {
  		struct {
  			Bit16u width, height;
  			bool fixed;
@@ -3785,7 +3702,6 @@ Index: src/gui/sdlmain.cpp
  		GLint max_texsize;
  		bool bilinear;
  		bool packed_pixel;
-@@ -186,13 +227,15 @@
  		bool paletted_texture;
  		bool pixel_buffer_object;
  	} opengl;
@@ -3803,7 +3719,6 @@ Index: src/gui/sdlmain.cpp
  	struct {
  		PRIORITY_LEVELS focus;
  		PRIORITY_LEVELS nofocus;
-@@ -199,7 +242,18 @@
  	} priority;
  	SDL_Rect clip;
  	SDL_Surface * surface;
@@ -3822,7 +3737,7 @@ Index: src/gui/sdlmain.cpp
  	SDL_cond *cond;
  	struct {
  		bool autolock;
-@@ -207,6 +261,13 @@
+@@ -207,6 +261,13 @@ struct SDL_Block {
  		bool requestlock;
  		bool locked;
  		Bitu sensitivity;
@@ -3836,8 +3751,8 @@ Index: src/gui/sdlmain.cpp
  	} mouse;
  	SDL_Rect updateRects[1024];
  	Bitu num_joysticks;
-@@ -214,12 +275,14 @@
- 	bool using_windib;
+@@ -216,12 +277,14 @@ struct SDL_Block {
+ 	Bit32u focus_ticks;
  #endif
  	// state of alt-keys for certain special handlings
 -	Bit8u laltstate;
@@ -3853,7 +3768,7 @@ Index: src/gui/sdlmain.cpp
  #define SETMODE_SAVES 1  //Don't set Video Mode if nothing changes.
  #define SETMODE_SAVES_CLEAR 1 //Clear the screen, when the Video Mode is reused
  SDL_Surface* SDL_SetVideoMode_Wrap(int width,int height,int bpp,Bit32u flags){
-@@ -277,6 +340,38 @@
+@@ -279,6 +342,38 @@ SDL_Surface* SDL_SetVideoMode_Wrap(int width,int height,int bpp,Bit32u flags){
  	return s;
  }
  
@@ -3892,7 +3807,7 @@ Index: src/gui/sdlmain.cpp
  extern const char* RunningProgram;
  extern bool CPU_CycleAutoAdjust;
  //Globals for keyboard initialisation
-@@ -296,7 +391,11 @@
+@@ -298,7 +393,11 @@ void GFX_SetTitle(Bit32s cycles,Bits frameskip,bool paused){
  	}
  
  	if(paused) strcat(title," PAUSED");
@@ -3904,7 +3819,7 @@ Index: src/gui/sdlmain.cpp
  }
  
  static unsigned char logo[32*32*4]= {
-@@ -311,9 +410,14 @@
+@@ -313,9 +412,14 @@ static void GFX_SetIcon() {
  	SDL_Surface* logos= SDL_CreateRGBSurfaceFrom((void*)logo,32,32,32,128,0xff000000,0x00ff0000,0x0000ff00,0);
  #else
  	SDL_Surface* logos= SDL_CreateRGBSurfaceFrom((void*)logo,32,32,32,128,0x000000ff,0x0000ff00,0x00ff0000,0);
@@ -3921,7 +3836,7 @@ Index: src/gui/sdlmain.cpp
  }
  
  
-@@ -334,12 +438,21 @@
+@@ -336,12 +440,21 @@ static void PauseDOSBox(bool pressed) {
  	while (SDL_PollEvent(&event)) {
  		// flush event queue.
  	}
@@ -3944,7 +3859,7 @@ Index: src/gui/sdlmain.cpp
  			case SDL_KEYDOWN:   // Must use Pause/Break Key to resume.
  			case SDL_KEYUP:
  			if(event.key.keysym.sym == SDLK_PAUSE) {
-@@ -349,7 +462,15 @@
+@@ -351,7 +464,15 @@ static void PauseDOSBox(bool pressed) {
  				break;
  			}
  #if defined (MACOSX)
@@ -3961,7 +3876,7 @@ Index: src/gui/sdlmain.cpp
  				/* On macs, all aps exit when pressing cmd-q */
  				KillSwitch(true);
  				break;
-@@ -359,19 +480,29 @@
+@@ -361,19 +482,29 @@ static void PauseDOSBox(bool pressed) {
  	}
  }
  
@@ -3992,7 +3907,7 @@ Index: src/gui/sdlmain.cpp
  		/* Check if we can satisfy the depth it loves */
  		if (flags & GFX_LOVE_8) testbpp=8;
  		else if (flags & GFX_LOVE_15) testbpp=15;
-@@ -383,8 +514,14 @@
+@@ -385,8 +516,14 @@ check_gotbpp:
  #endif
  		if (sdl.desktop.fullscreen) gotbpp=SDL_VideoModeOK(640,480,testbpp,SDL_FULLSCREEN|SDL_HWSURFACE|SDL_HWPALETTE);
  		else gotbpp=sdl.desktop.bpp;
@@ -4008,7 +3923,7 @@ Index: src/gui/sdlmain.cpp
  		case 8:
  			if (flags & GFX_CAN_8) flags&=~(GFX_CAN_15|GFX_CAN_16|GFX_CAN_32);
  			break;
-@@ -399,8 +536,14 @@
+@@ -401,8 +538,14 @@ check_gotbpp:
  			if (flags & GFX_CAN_32) flags&=~(GFX_CAN_8|GFX_CAN_15|GFX_CAN_16);
  			break;
  		}
@@ -4024,7 +3939,7 @@ Index: src/gui/sdlmain.cpp
  #if (HAVE_DDRAW_H) && defined(WIN32)
  	case SCREEN_SURFACE_DDRAW:
  		if (!(flags&(GFX_CAN_15|GFX_CAN_16|GFX_CAN_32))) goto check_surface;
-@@ -416,9 +559,14 @@
+@@ -418,9 +561,14 @@ check_gotbpp:
  		flags|=GFX_SCALING;
  		flags&=~(GFX_CAN_8|GFX_CAN_15|GFX_CAN_16);
  		break;
@@ -4040,13 +3955,12 @@ Index: src/gui/sdlmain.cpp
  		flags|=GFX_SCALING;
  		flags&=~(GFX_CAN_8|GFX_CAN_15|GFX_CAN_16);
  		break;
-@@ -456,8 +604,147 @@
+@@ -458,19 +606,162 @@ static int int_log2 (int val) {
      return log;
  }
  
 +#if SDL_VERSION_ATLEAST(2,0,0)
- 
--static SDL_Surface * GFX_SetupSurfaceScaled(Bit32u sdl_flags, Bit32u bpp) {
++
 +static SDL_Window * GFX_SetSDLWindowMode(Bit16u width, Bit16u height, bool fullscreen, SCREEN_TYPES screenType) {
 +	static SCREEN_TYPES lastType = SCREEN_SURFACE; 
 +	if (sdl.renderer) {
@@ -4141,7 +4055,8 @@ Index: src/gui/sdlmain.cpp
 +	return GFX_SetSDLWindowMode(width, height, false, SCREEN_SURFACE);
 +#endif
 +}
-+
+ 
+-static SDL_Surface * GFX_SetupSurfaceScaled(Bit32u sdl_flags, Bit32u bpp) {
 +// Returns the rectangle in the current window to be used for scaling a
 +// sub-window with the given dimensions, like the mapper UI.
 +SDL_Rect GFX_GetSDLSurfaceSubwindowDims(Bit16u width, Bit16u height) {
@@ -4189,7 +4104,6 @@ Index: src/gui/sdlmain.cpp
  	Bit16u fixedWidth;
  	Bit16u fixedHeight;
  
-@@ -464,11 +751,15 @@
  	if (sdl.desktop.fullscreen) {
  		fixedWidth = sdl.desktop.full.fixed ? sdl.desktop.full.width : 0;
  		fixedHeight = sdl.desktop.full.fixed ? sdl.desktop.full.height : 0;
@@ -4205,7 +4119,7 @@ Index: src/gui/sdlmain.cpp
  	}
  	if (fixedWidth && fixedHeight) {
  		double ratio_w=(double)fixedWidth/(sdl.draw.width*sdl.draw.scalex);
-@@ -484,27 +775,59 @@
+@@ -486,27 +777,59 @@ static SDL_Surface * GFX_SetupSurfaceScaled(Bit32u sdl_flags, Bit32u bpp) {
  			sdl.clip.w=(Bit16u)(sdl.draw.width*sdl.draw.scalex*ratio_h + 0.4);
  			sdl.clip.h=(Bit16u)fixedHeight;			
  		}
@@ -4268,7 +4182,7 @@ Index: src/gui/sdlmain.cpp
  void GFX_TearDown(void) {
  	if (sdl.updating)
  		GFX_EndUpdate( 0 );
-@@ -514,6 +837,7 @@
+@@ -516,6 +839,7 @@ void GFX_TearDown(void) {
  		sdl.blit.surface=0;
  	}
  }
@@ -4276,14 +4190,14 @@ Index: src/gui/sdlmain.cpp
  
  Bitu GFX_SetSize(Bitu width,Bitu height,Bitu flags,double scalex,double scaley,GFX_CallBack_t callback) {
  	if (sdl.updating)
-@@ -525,20 +849,24 @@
+@@ -527,41 +851,72 @@ Bitu GFX_SetSize(Bitu width,Bitu height,Bitu flags,double scalex,double scaley,G
  	sdl.draw.scalex=scalex;
  	sdl.draw.scaley=scaley;
  
-+	Bitu retFlags = 0;
+-	int bpp=0;
+ 	Bitu retFlags = 0;
 +#if !SDL_VERSION_ATLEAST(2,0,0)
- 	int bpp=0;
--	Bitu retFlags = 0;
++	int bpp=0;
  
  	if (sdl.blit.surface) {
  		SDL_FreeSurface(sdl.blit.surface);
@@ -4302,7 +4216,6 @@ Index: src/gui/sdlmain.cpp
  		sdl.desktop.type=SCREEN_SURFACE;
  		sdl.clip.w=width;
  		sdl.clip.h=height;
-@@ -545,21 +873,48 @@
  		if (sdl.desktop.fullscreen) {
  			if (sdl.desktop.full.fixed) {
  				sdl.clip.x=(Sint16)((sdl.desktop.full.width-width)/2);
@@ -4353,7 +4266,7 @@ Index: src/gui/sdlmain.cpp
  			sdl.surface=SDL_SetVideoMode_Wrap(width,height,bpp,(flags & GFX_CAN_RANDOM) ? SDL_SWSURFACE : SDL_HWSURFACE);
  #ifdef WIN32
  			if (sdl.surface == NULL) {
-@@ -581,42 +936,121 @@
+@@ -583,42 +938,121 @@ dosurface:
  #endif
  			if (sdl.surface == NULL)
  				E_Exit("Could not set windowed video mode %ix%i-%i: %s",(int)width,(int)height,bpp,SDL_GetError());
@@ -4395,7 +4308,7 @@ Index: src/gui/sdlmain.cpp
 -				/* If this one fails be ready for some flickering... */
 -			}
 +				break;
- 		}
++		}
 +#if SDL_VERSION_ATLEAST(2,0,0)
 +		/* Fix a glitch with aspect=true occuring when
 +		changing between modes with different dimensions */
@@ -4415,7 +4328,7 @@ Index: src/gui/sdlmain.cpp
 +			/* If this one fails be ready for some flickering... */
 +		}
 +#endif
- 		break;
++		break;
 +#if SDL_VERSION_ATLEAST(2,0,0)
 +	case SCREEN_TEXTURE:
 +	{
@@ -4474,14 +4387,14 @@ Index: src/gui/sdlmain.cpp
 +			case 32:
 +				retFlags = GFX_CAN_32;
 +				break;
-+		}
+ 		}
 +		retFlags |= GFX_SCALING;
 +		SDL_RendererInfo rendererInfo;
 +		SDL_GetRendererInfo(sdl.renderer, &rendererInfo);
 +		LOG_MSG("Using driver \"%s\" for renderer", rendererInfo.name);
 +		if (rendererInfo.flags & SDL_RENDERER_ACCELERATED)
 +			retFlags |= GFX_HARDWARE;
-+		break;
+ 		break;
 +	}
 +#else	// !SDL_VERSION_ATLEAST(2,0,0)
  #if (HAVE_DDRAW_H) && defined(WIN32)
@@ -4494,7 +4407,7 @@ Index: src/gui/sdlmain.cpp
  		sdl.blit.rect.top=sdl.clip.y;
  		sdl.blit.rect.left=sdl.clip.x;
  		sdl.blit.rect.right=sdl.clip.x+sdl.clip.w;
-@@ -664,17 +1098,25 @@
+@@ -666,49 +1100,98 @@ dosurface:
  		sdl.desktop.type=SCREEN_OVERLAY;
  		retFlags = GFX_CAN_32 | GFX_SCALING | GFX_HARDWARE;
  		break;
@@ -4522,7 +4435,6 @@ Index: src/gui/sdlmain.cpp
  		int texsize=2 << int_log2(width > height ? width : height);
  		if (texsize>sdl.opengl.max_texsize) {
  			LOG_MSG("SDL:OPENGL:No support for texturesize of %d, falling back to surface",texsize);
-@@ -681,32 +1123,73 @@
  			goto dosurface;
  		}
  		SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
@@ -4535,7 +4447,7 @@ Index: src/gui/sdlmain.cpp
 +		 */
 +		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 1);
 +		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
- #endif
++#endif
 +#if SDL_VERSION_ATLEAST(2,0,0)
 +		GFX_SetupWindowScaled(sdl.desktop.want_type);
 +		/* We may simply use SDL_BYTESPERPIXEL
@@ -4554,7 +4466,7 @@ Index: src/gui/sdlmain.cpp
 +#else	// !SDL_VERSION_ATLEAST(2,0,0)
 +#if SDL_VERSION_ATLEAST(1, 2, 11)
 +		SDL_GL_SetAttribute( SDL_GL_SWAP_CONTROL, sdl.desktop.vsync ? 1 : 0 );
-+#endif
+ #endif
  		GFX_SetupSurfaceScaled(SDL_OPENGL,0);
  		if (!sdl.surface || sdl.surface->format->BitsPerPixel<15) {
  			LOG_MSG("SDL:OPENGL:Can't open drawing surface, are you running in 16bpp(or higher) mode?");
@@ -4600,7 +4512,7 @@ Index: src/gui/sdlmain.cpp
  		if (sdl.opengl.bilinear) {
  			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
  			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-@@ -715,12 +1198,13 @@
+@@ -717,12 +1200,13 @@ dosurface:
  			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
  		}
  
@@ -4617,7 +4529,7 @@ Index: src/gui/sdlmain.cpp
  		glShadeModel (GL_FLAT);
  		glDisable (GL_DEPTH_TEST);
  		glDisable (GL_LIGHTING);
-@@ -732,9 +1216,18 @@
+@@ -734,9 +1218,18 @@ dosurface:
  		GLfloat tex_width=((GLfloat)(width)/(GLfloat)texsize);
  		GLfloat tex_height=((GLfloat)(height)/(GLfloat)texsize);
  
@@ -4636,7 +4548,7 @@ Index: src/gui/sdlmain.cpp
  		glBindTexture(GL_TEXTURE_2D, sdl.opengl.texture);
  		glBegin(GL_QUADS);
  		// lower left
-@@ -747,10 +1240,13 @@
+@@ -749,10 +1242,13 @@ dosurface:
  		glTexCoord2f(0,0); glVertex2f(-1.0f, 1.0f);
  		glEnd();
  		glEndList();
@@ -4650,7 +4562,7 @@ Index: src/gui/sdlmain.cpp
  	break;
  		}//OPENGL
  #endif	//C_OPENGL
-@@ -764,13 +1260,22 @@
+@@ -766,13 +1262,22 @@ dosurface:
  	return retFlags;
  }
  
@@ -4673,7 +4585,7 @@ Index: src/gui/sdlmain.cpp
  		if (sdl.mouse.autoenable || !sdl.mouse.autolock) SDL_ShowCursor(SDL_ENABLE);
  	}
          mouselocked=sdl.mouse.locked;
-@@ -778,10 +1283,18 @@
+@@ -780,10 +1285,18 @@ void GFX_CaptureMouse(void) {
  
  void GFX_UpdateSDLCaptureState(void) {
  	if (sdl.mouse.locked) {
@@ -4692,7 +4604,7 @@ Index: src/gui/sdlmain.cpp
  		if (sdl.mouse.autoenable || !sdl.mouse.autolock) SDL_ShowCursor(SDL_ENABLE);
  	}
  	CPU_Reset_AutoAdjust();
-@@ -866,18 +1379,27 @@
+@@ -868,18 +1381,27 @@ void GFX_RestoreMode(void) {
  
  
  bool GFX_StartUpdate(Bit8u * & pixels,Bitu & pitch) {
@@ -4721,7 +4633,7 @@ Index: src/gui/sdlmain.cpp
  			pixels=(Bit8u *)sdl.surface->pixels;
  			pixels+=sdl.clip.y*sdl.surface->pitch;
  			pixels+=sdl.clip.x*sdl.surface->format->BytesPerPixel;
-@@ -885,6 +1407,19 @@
+@@ -887,6 +1409,19 @@ bool GFX_StartUpdate(Bit8u * & pixels,Bitu & pitch) {
  		}
  		sdl.updating=true;
  		return true;
@@ -4741,7 +4653,7 @@ Index: src/gui/sdlmain.cpp
  #if (HAVE_DDRAW_H) && defined(WIN32)
  	case SCREEN_SURFACE_DDRAW:
  		if (SDL_LockSurface(sdl.blit.surface)) {
-@@ -895,7 +1430,7 @@
+@@ -897,20 +1432,25 @@ bool GFX_StartUpdate(Bit8u * & pixels,Bitu & pitch) {
  		pitch=sdl.blit.surface->pitch;
  		sdl.updating=true;
  		return true;
@@ -4750,7 +4662,6 @@ Index: src/gui/sdlmain.cpp
  	case SCREEN_OVERLAY:
  		if (SDL_LockYUVOverlay(sdl.overlay)) return false;
  		pixels=(Bit8u *)*(sdl.overlay->pixels);
-@@ -902,13 +1437,18 @@
  		pitch=*(sdl.overlay->pitches);
  		sdl.updating=true;
  		return true;
@@ -4769,7 +4680,7 @@ Index: src/gui/sdlmain.cpp
  		pitch=sdl.opengl.pitch;
  		sdl.updating=true;
  		return true;
-@@ -924,11 +1464,16 @@
+@@ -926,11 +1466,16 @@ void GFX_EndUpdate( const Bit16u *changedLines ) {
  #if (HAVE_DDRAW_H) && defined(WIN32)
  	int ret;
  #endif
@@ -4786,7 +4697,7 @@ Index: src/gui/sdlmain.cpp
  		if (SDL_MUSTLOCK(sdl.surface)) {
  			if (sdl.blit.surface) {
  				SDL_UnlockSurface(sdl.blit.surface);
-@@ -938,7 +1483,9 @@
+@@ -940,7 +1485,9 @@ void GFX_EndUpdate( const Bit16u *changedLines ) {
  				SDL_UnlockSurface(sdl.surface);
  			}
  			SDL_Flip(sdl.surface);
@@ -4797,7 +4708,7 @@ Index: src/gui/sdlmain.cpp
  			Bitu y = 0, index = 0, rectCount = 0;
  			while (y < sdl.draw.height) {
  				if (!(index & 1)) {
-@@ -959,9 +1506,31 @@
+@@ -961,9 +1508,31 @@ void GFX_EndUpdate( const Bit16u *changedLines ) {
  				index++;
  			}
  			if (rectCount)
@@ -4829,7 +4740,7 @@ Index: src/gui/sdlmain.cpp
  #if (HAVE_DDRAW_H) && defined(WIN32)
  	case SCREEN_SURFACE_DDRAW:
  		SDL_UnlockSurface(sdl.blit.surface);
-@@ -981,13 +1550,15 @@
+@@ -983,13 +1552,15 @@ void GFX_EndUpdate( const Bit16u *changedLines ) {
  		}
  		SDL_Flip(sdl.surface);
  		break;
@@ -4846,7 +4757,7 @@ Index: src/gui/sdlmain.cpp
  		if (sdl.opengl.pixel_buffer_object) {
  			glUnmapBufferARB(GL_PIXEL_UNPACK_BUFFER_EXT);
  			glBindTexture(GL_TEXTURE_2D, sdl.opengl.texture);
-@@ -996,8 +1567,14 @@
+@@ -998,8 +1569,14 @@ void GFX_EndUpdate( const Bit16u *changedLines ) {
  					GL_UNSIGNED_INT_8_8_8_8_REV, 0);
  			glBindBufferARB(GL_PIXEL_UNPACK_BUFFER_EXT, 0);
  			glCallList(sdl.opengl.displaylist);
@@ -4863,17 +4774,17 @@ Index: src/gui/sdlmain.cpp
  			Bitu y = 0, index = 0;
  			glBindTexture(GL_TEXTURE_2D, sdl.opengl.texture);
  			while (y < sdl.draw.height) {
-@@ -1006,15 +1583,43 @@
+@@ -1008,15 +1585,43 @@ void GFX_EndUpdate( const Bit16u *changedLines ) {
  				} else {
  					Bit8u *pixels = (Bit8u *)sdl.opengl.framebuf + y * sdl.opengl.pitch;
  					Bitu height = changedLines[index];
 +#ifdef __ANDROID__
 +					/* Try GL_UNSIGNED_BYTE... */
- 					glTexSubImage2D(GL_TEXTURE_2D, 0, 0, y,
++					glTexSubImage2D(GL_TEXTURE_2D, 0, 0, y,
 +						sdl.draw.width, height, GL_RGBA,
 +						GL_UNSIGNED_BYTE, pixels );
 +#else
-+					glTexSubImage2D(GL_TEXTURE_2D, 0, 0, y,
+ 					glTexSubImage2D(GL_TEXTURE_2D, 0, 0, y,
  						sdl.draw.width, height, GL_BGRA_EXT,
  						GL_UNSIGNED_INT_8_8_8_8_REV, pixels );
 +#endif
@@ -4907,7 +4818,7 @@ Index: src/gui/sdlmain.cpp
  		}
  		break;
  #endif
-@@ -1025,6 +1630,8 @@
+@@ -1027,6 +1632,8 @@ void GFX_EndUpdate( const Bit16u *changedLines ) {
  
  
  void GFX_SetPalette(Bitu start,Bitu count,GFX_PalEntry * entries) {
@@ -4916,7 +4827,7 @@ Index: src/gui/sdlmain.cpp
  	/* I should probably not change the GFX_PalEntry :) */
  	if (sdl.surface->flags & SDL_HWPALETTE) {
  		if (!SDL_SetPalette(sdl.surface,SDL_PHYSPAL,(SDL_Color *)entries,start,count)) {
-@@ -1035,13 +1642,20 @@
+@@ -1037,13 +1644,20 @@ void GFX_SetPalette(Bitu start,Bitu count,GFX_PalEntry * entries) {
  			E_Exit("SDL:Can't set palette");
  		}
  	}
@@ -4937,7 +4848,7 @@ Index: src/gui/sdlmain.cpp
  	case SCREEN_OVERLAY:
  		{
  			Bit8u y =  ( 9797*(red) + 19237*(green) +  3734*(blue) ) >> 15;
-@@ -1053,10 +1667,15 @@
+@@ -1055,10 +1669,15 @@ Bitu GFX_GetRGB(Bit8u red,Bit8u green,Bit8u blue) {
  			return (u << 0) | (y << 8) | (v << 16) | (y << 24);
  #endif
  		}
@@ -4955,7 +4866,7 @@ Index: src/gui/sdlmain.cpp
  	}
  	return 0;
  }
-@@ -1071,6 +1690,36 @@
+@@ -1073,6 +1692,36 @@ void GFX_Start() {
  	sdl.active=true;
  }
  
@@ -4992,7 +4903,7 @@ Index: src/gui/sdlmain.cpp
  static void GUI_ShutDown(Section * /*sec*/) {
  	GFX_Stop();
  	if (sdl.draw.callback) (sdl.draw.callback)( GFX_CallBackStop );
-@@ -1161,6 +1810,10 @@
+@@ -1163,13 +1812,21 @@ static void GUI_StartUp(Section * sec) {
  	Section_prop * section=static_cast<Section_prop *>(sec);
  	sdl.active=false;
  	sdl.updating=false;
@@ -5003,7 +4914,6 @@ Index: src/gui/sdlmain.cpp
  
  	GFX_SetIcon();
  
-@@ -1167,7 +1820,11 @@
  	sdl.desktop.lazy_fullscreen=false;
  	sdl.desktop.lazy_fullscreen_req=false;
  
@@ -5015,7 +4925,7 @@ Index: src/gui/sdlmain.cpp
  	sdl.wait_on_error=section->Get_bool("waitonerror");
  
  	Prop_multival* p=section->Get_multival("priority");
-@@ -1196,10 +1853,18 @@
+@@ -1198,10 +1855,18 @@ static void GUI_StartUp(Section * sec) {
  	sdl.mouse.locked=false;
  	mouselocked=false; //Global for mapper
  	sdl.mouse.requestlock=false;
@@ -5034,7 +4944,7 @@ Index: src/gui/sdlmain.cpp
  	if(fullresolution && *fullresolution) {
  		char res[100];
  		safe_strncpy( res, fullresolution, sizeof( res ));
-@@ -1216,9 +1881,10 @@
+@@ -1218,9 +1883,10 @@ static void GUI_StartUp(Section * sec) {
  			}
  		}
  	}
@@ -5046,7 +4956,7 @@ Index: src/gui/sdlmain.cpp
  	const char* windowresolution=section->Get_string("windowresolution");
  	if(windowresolution && *windowresolution) {
  		char res[100];
-@@ -1233,7 +1899,24 @@
+@@ -1235,7 +1901,24 @@ static void GUI_StartUp(Section * sec) {
  			}
  		}
  	}
@@ -5072,7 +4982,7 @@ Index: src/gui/sdlmain.cpp
  #if SDL_VERSION_ATLEAST(1, 2, 10)
  	if (!sdl.desktop.full.width || !sdl.desktop.full.height){
  		//Can only be done on the very first call! Not restartable.
-@@ -1260,6 +1943,8 @@
+@@ -1262,6 +1945,8 @@ static void GUI_StartUp(Section * sec) {
  		sdl.desktop.full.height=768;
  #endif
  	}
@@ -5081,7 +4991,7 @@ Index: src/gui/sdlmain.cpp
  	sdl.mouse.autoenable=section->Get_bool("autolock");
  	if (!sdl.mouse.autoenable) SDL_ShowCursor(SDL_DISABLE);
  	sdl.mouse.autolock=false;
-@@ -1271,6 +1956,15 @@
+@@ -1273,12 +1958,22 @@ static void GUI_StartUp(Section * sec) {
  
  	if (output == "surface") {
  		sdl.desktop.want_type=SCREEN_SURFACE;
@@ -5097,7 +5007,6 @@ Index: src/gui/sdlmain.cpp
  #if (HAVE_DDRAW_H) && defined(WIN32)
  	} else if (output == "ddraw") {
  		sdl.desktop.want_type=SCREEN_SURFACE_DDRAW;
-@@ -1277,6 +1971,7 @@
  #endif
  	} else if (output == "overlay") {
  		sdl.desktop.want_type=SCREEN_OVERLAY;
@@ -5105,7 +5014,7 @@ Index: src/gui/sdlmain.cpp
  #if C_OPENGL
  	} else if (output == "opengl") {
  		sdl.desktop.want_type=SCREEN_OPENGL;
-@@ -1290,19 +1985,56 @@
+@@ -1292,19 +1987,56 @@ static void GUI_StartUp(Section * sec) {
  		sdl.desktop.want_type=SCREEN_SURFACE;//SHOULDN'T BE POSSIBLE anymore
  	}
  
@@ -5162,7 +5071,7 @@ Index: src/gui/sdlmain.cpp
  	glGenBuffersARB = (PFNGLGENBUFFERSARBPROC)SDL_GL_GetProcAddress("glGenBuffersARB");
  	glBindBufferARB = (PFNGLBINDBUFFERARBPROC)SDL_GL_GetProcAddress("glBindBufferARB");
  	glDeleteBuffersARB = (PFNGLDELETEBUFFERSARBPROC)SDL_GL_GetProcAddress("glDeleteBuffersARB");
-@@ -1319,19 +2051,37 @@
+@@ -1321,19 +2053,37 @@ static void GUI_StartUp(Section * sec) {
      	} else {
  		sdl.opengl.packed_pixel=sdl.opengl.paletted_texture=false;
  	}
@@ -5200,7 +5109,7 @@ Index: src/gui/sdlmain.cpp
  
  /* The endian part is intentionally disabled as somehow it produces correct results without according to rhoenie*/
  //#if SDL_BYTEORDER == SDL_BIG_ENDIAN
-@@ -1347,6 +2097,9 @@
+@@ -1349,6 +2099,9 @@ static void GUI_StartUp(Section * sec) {
  /* Please leave the Splash screen stuff in working order in DOSBox. We spend a lot of time making DOSBox. */
  	SDL_Surface* splash_surf = SDL_CreateRGBSurface(SDL_SWSURFACE, 640, 400, 32, rmask, gmask, bmask, 0);
  	if (splash_surf) {
@@ -5210,7 +5119,7 @@ Index: src/gui/sdlmain.cpp
  		SDL_FillRect(splash_surf, NULL, SDL_MapRGB(splash_surf->format, 0, 0, 0));
  
  		Bit8u* tmpbufp = new Bit8u[640*400*3];
-@@ -1382,16 +2135,40 @@
+@@ -1384,23 +2137,51 @@ static void GUI_StartUp(Section * sec) {
  
  			if (ct<1) {
  				SDL_FillRect(sdl.surface, NULL, SDL_MapRGB(sdl.surface->format, 0, 0, 0));
@@ -5251,7 +5160,6 @@ Index: src/gui/sdlmain.cpp
  			}
  
  		}
-@@ -1398,7 +2175,11 @@
  
  		if (use_fadeout) {
  			SDL_FillRect(sdl.surface, NULL, SDL_MapRGB(sdl.surface->format, 0, 0, 0));
@@ -5263,8 +5171,8 @@ Index: src/gui/sdlmain.cpp
  		}
  		SDL_FreeSurface(splash_surf);
  		delete [] tmpbufp;
-@@ -1416,7 +2197,11 @@
- 	MAPPER_AddHandler(&PauseDOSBox, MK_pause, MMOD2, "pause", "Pause");
+@@ -1418,7 +2199,11 @@ static void GUI_StartUp(Section * sec) {
+ 	MAPPER_AddHandler(&PauseDOSBox, MK_pause, MMOD2, "pause", "Pause DBox");
  #endif
  	/* Get Keyboard state of numlock and capslock */
 +#if SDL_VERSION_ATLEAST(2,0,0)
@@ -5275,7 +5183,7 @@ Index: src/gui/sdlmain.cpp
  	if(keystate&KMOD_NUM) startup_state_numlock = true;
  	if(keystate&KMOD_CAPS) startup_state_capslock = true;
  }
-@@ -1430,6 +2215,83 @@
+@@ -1432,6 +2217,83 @@ void Mouse_AutoLock(bool enable) {
  	}
  }
  
@@ -5359,7 +5267,7 @@ Index: src/gui/sdlmain.cpp
  static void HandleMouseMotion(SDL_MouseMotionEvent * motion) {
  	if (sdl.mouse.locked || !sdl.mouse.autoenable)
  		Mouse_CursorMoved((float)motion->xrel*sdl.mouse.sensitivity/100.0f,
-@@ -1478,6 +2340,7 @@
+@@ -1480,6 +2342,7 @@ static void HandleMouseButton(SDL_MouseButtonEvent * button) {
  		break;
  	}
  }
@@ -5367,7 +5275,7 @@ Index: src/gui/sdlmain.cpp
  
  void GFX_LosingFocus(void) {
  	sdl.laltstate=SDL_KEYUP;
-@@ -1489,6 +2352,34 @@
+@@ -1491,6 +2354,34 @@ bool GFX_IsFullscreen(void) {
  	return sdl.desktop.fullscreen;
  }
  
@@ -5402,7 +5310,7 @@ Index: src/gui/sdlmain.cpp
  void GFX_Events() {
  	SDL_Event event;
  #if defined (REDUCE_JOYSTICK_POLLING)
-@@ -1502,6 +2393,98 @@
+@@ -1504,6 +2395,98 @@ void GFX_Events() {
  #endif
  	while (SDL_PollEvent(&event)) {
  		switch (event.type) {
@@ -5501,7 +5409,7 @@ Index: src/gui/sdlmain.cpp
  		case SDL_ACTIVEEVENT:
  			if (event.active.state & SDL_APPINPUTFOCUS) {
  				if (event.active.gain) {
-@@ -1572,6 +2555,14 @@
+@@ -1577,6 +2560,14 @@ void GFX_Events() {
  				}
  			}
  			break;
@@ -5516,7 +5424,7 @@ Index: src/gui/sdlmain.cpp
  		case SDL_MOUSEMOTION:
  			HandleMouseMotion(&event.motion);
  			break;
-@@ -1579,21 +2570,26 @@
+@@ -1584,21 +2575,26 @@ void GFX_Events() {
  		case SDL_MOUSEBUTTONUP:
  			HandleMouseButton(&event.button);
  			break;
@@ -5545,8 +5453,8 @@ Index: src/gui/sdlmain.cpp
 +			if (event.key.keysym.sym==SDLK_RALT) sdl.raltstate = (SDL_EventType)event.key.type;
  			if (((event.key.keysym.sym==SDLK_TAB)) &&
  				((sdl.laltstate==SDL_KEYDOWN) || (sdl.raltstate==SDL_KEYDOWN))) break;
- #endif
-@@ -1601,7 +2597,15 @@
+ 			// This can happen as well.
+@@ -1610,7 +2606,15 @@ void GFX_Events() {
  		case SDL_KEYDOWN:
  		case SDL_KEYUP:
  			/* On macs CMD-Q is the default key to close an application */
@@ -5563,7 +5471,7 @@ Index: src/gui/sdlmain.cpp
  				KillSwitch(true);
  				break;
  			} 
-@@ -1640,7 +2644,11 @@
+@@ -1649,7 +2653,11 @@ void GFX_ShowMsg(char const* format,...) {
  	vsprintf(buf,format,msg);
          strcat(buf,"\n");
  	va_end(msg);
@@ -5575,7 +5483,7 @@ Index: src/gui/sdlmain.cpp
  }
  
  
-@@ -1652,13 +2660,17 @@
+@@ -1661,13 +2669,17 @@ void Config_Add_SDL() {
  	Prop_int* Pint;
  	Prop_multival* Pmulti;
  
@@ -5596,7 +5504,7 @@ Index: src/gui/sdlmain.cpp
  	Pstring->Set_help("What resolution to use for fullscreen: original, desktop or a fixed size (e.g. 1024x768).\n"
  	                  "  Using your monitor's native resolution with aspect=true might give the best results.\n"
  			  "  If you end up with small window on a large screen, try an output different from surface.");
-@@ -1666,20 +2678,50 @@
+@@ -1675,20 +2687,50 @@ void Config_Add_SDL() {
  	Pstring = sdl_sec->Add_string("windowresolution",Property::Changeable::Always,"original");
  	Pstring->Set_help("Scale the window to this size IF the output device supports hardware scaling.\n"
  	                  "  (output=surface does not!)");
@@ -5604,22 +5512,22 @@ Index: src/gui/sdlmain.cpp
  
  	const char* outputs[] = {
 -		"surface", "overlay",
+-#if C_OPENGL
+-		"opengl", "openglnb",
+-#endif
 +		"surface",
 +#if SDL_VERSION_ATLEAST(2, 0, 0)
 +		"texture",
 +		"texturenb",
 +#else	// !SDL_VERSION_ATLEAST(2, 0, 0)
 +		"overlay",
-+#if (HAVE_DDRAW_H) && defined(WIN32)
-+		"ddraw",
-+#endif
-+#endif	// !SDL_VERSION_ATLEAST(2, 0, 0)
- #if C_OPENGL
- 		"opengl", "openglnb",
+ #if (HAVE_DDRAW_H) && defined(WIN32)
+ 		"ddraw",
  #endif
--#if (HAVE_DDRAW_H) && defined(WIN32)
--		"ddraw",
--#endif
++#endif	// !SDL_VERSION_ATLEAST(2, 0, 0)
++#if C_OPENGL
++		"opengl", "openglnb",
++#endif
  		0 };
 +#if SDL_VERSION_ATLEAST(2, 0, 0)
 +	Pstring = sdl_sec->Add_string("output",Property::Changeable::Always,"texture");
@@ -5651,7 +5559,7 @@ Index: src/gui/sdlmain.cpp
  	Pbool = sdl_sec->Add_bool("autolock",Property::Changeable::Always,true);
  	Pbool->Set_help("Mouse will automatically lock, if you click on the screen. (Press CTRL-F10 to unlock)");
  
-@@ -1706,8 +2748,10 @@
+@@ -1715,8 +2757,10 @@ void Config_Add_SDL() {
  	Pstring = sdl_sec->Add_path("mapperfile",Property::Changeable::Always,MAPPERFILE);
  	Pstring->Set_help("File used to load/save the key/event mappings from. Resetmapper only works with the default value.");
  
@@ -5662,7 +5570,7 @@ Index: src/gui/sdlmain.cpp
  }
  
  static void show_warning(char const * const message) {
-@@ -1719,8 +2763,15 @@
+@@ -1728,8 +2772,15 @@ static void show_warning(char const * const message) {
  #endif
  	printf("%s",message);
  	if(textonly) return;
@@ -5678,7 +5586,7 @@ Index: src/gui/sdlmain.cpp
  #if SDL_BYTEORDER == SDL_BIG_ENDIAN
  	Bit32u rmask = 0xff000000;
  	Bit32u gmask = 0x00ff0000;
-@@ -1748,7 +2799,11 @@
+@@ -1757,7 +2808,11 @@ static void show_warning(char const * const message) {
  	}
     
  	SDL_BlitSurface(splash_surf, NULL, sdl.surface, NULL);
@@ -5690,7 +5598,7 @@ Index: src/gui/sdlmain.cpp
  	SDL_Delay(12000);
  }
     
-@@ -1787,7 +2842,7 @@
+@@ -1796,7 +2851,7 @@ void restart_program(std::vector<std::string> & parameters) {
  	newargs[parameters.size()] = NULL;
  	SDL_CloseAudio();
  	SDL_Delay(50);
@@ -5699,7 +5607,7 @@ Index: src/gui/sdlmain.cpp
  #if C_DEBUG
  	// shutdown curses
  	DEBUG_ShutDown(NULL);
-@@ -1960,12 +3015,16 @@
+@@ -1980,12 +3035,16 @@ int main(int argc, char* argv[]) {
  	 */
  	putenv(const_cast<char*>("SDL_DISABLE_LOCK_KEYS=1"));
  #endif
@@ -5719,7 +5627,7 @@ Index: src/gui/sdlmain.cpp
  	//Initialise Joystick separately. This way we can warn when it fails instead
  	//of exiting the application
  	if( SDL_InitSubSystem(SDL_INIT_JOYSTICK) < 0 ) LOG_MSG("Failed to init joystick support");
-@@ -1974,6 +3033,7 @@
+@@ -1994,6 +3053,7 @@ int main(int argc, char* argv[]) {
  	sdl.laltstate = SDL_KEYUP;
  	sdl.raltstate = SDL_KEYUP;
  
@@ -5727,7 +5635,7 @@ Index: src/gui/sdlmain.cpp
  #if defined (WIN32)
  #if SDL_VERSION_ATLEAST(1, 2, 10)
  		sdl.using_windib=true;
-@@ -2002,7 +3062,8 @@
+@@ -2022,7 +3082,8 @@ int main(int argc, char* argv[]) {
  		if (SDL_VideoDriverName(sdl_drv_name,128)!=NULL) {
  			if (strcmp(sdl_drv_name,"windib")==0) LOG_MSG("SDL_Init: Starting up with SDL windib video driver.\n          Try to update your video card and directx drivers!");
  		}
@@ -5737,7 +5645,7 @@ Index: src/gui/sdlmain.cpp
  	sdl.num_joysticks=SDL_NumJoysticks();
  
  	/* Parse configuration files */
-@@ -2113,10 +3174,17 @@
+@@ -2133,10 +3194,17 @@ int main(int argc, char* argv[]) {
  	sticky_keys(true); //Might not be needed if the shutdown function switches to windowed mode, but it doesn't hurt
  #endif 
  	//Force visible mouse to end user. Somehow this sometimes doesn't happen
@@ -5756,11 +5664,11 @@ Index: src/gui/sdlmain.cpp
  	return 0;
  }
  
-Index: src/hardware/mixer.cpp
-===================================================================
---- dosbox/src/hardware/mixer.cpp	(revision 3924)
-+++ dosbox.n/src/hardware/mixer.cpp	(working copy)
-@@ -412,6 +412,9 @@
+diff --git a/src/hardware/mixer.cpp b/src/hardware/mixer.cpp
+index 41ebcc2..a35d6f1 100644
+--- a/src/hardware/mixer.cpp
++++ b/src/hardware/mixer.cpp
+@@ -412,6 +412,9 @@ static void MIXER_Mix_NoSound(void) {
  }
  
  static void SDLCALL MIXER_CallBack(void * userdata, Uint8 *stream, int len) {
@@ -5770,10 +5678,10 @@ Index: src/hardware/mixer.cpp
  	Bitu need=(Bitu)len/MIXER_SSIZE;
  	Bit16s * output=(Bit16s *)stream;
  	Bitu reduce;
-Index: src/misc/cross.cpp
-===================================================================
---- dosbox/src/misc/cross.cpp	(revision 3924)
-+++ dosbox.n/src/misc/cross.cpp	(working copy)
+diff --git a/src/misc/cross.cpp b/src/misc/cross.cpp
+index 60a13b2..925f694 100644
+--- a/src/misc/cross.cpp
++++ b/src/misc/cross.cpp
 @@ -30,6 +30,10 @@
  #include <shlobj.h>
  #endif
@@ -5785,7 +5693,7 @@ Index: src/misc/cross.cpp
  #if defined HAVE_SYS_TYPES_H && defined HAVE_PWD_H
  #include <sys/types.h>
  #include <pwd.h>
-@@ -61,6 +65,10 @@
+@@ -61,6 +65,10 @@ void Cross::GetPlatformConfigDir(std::string& in) {
  #elif defined(MACOSX)
  	in = "~/Library/Preferences";
  	ResolveHomedir(in);
@@ -5796,7 +5704,7 @@ Index: src/misc/cross.cpp
  #else
  	in = "~/.dosbox";
  	ResolveHomedir(in);
-@@ -88,6 +96,11 @@
+@@ -88,6 +96,11 @@ void Cross::CreatePlatformConfigDir(std::string& in) {
  	in = "~/Library/Preferences/";
  	ResolveHomedir(in);
  	//Don't create it. Assume it exists
@@ -5808,10 +5716,11 @@ Index: src/misc/cross.cpp
  #else
  	in = "~/.dosbox";
  	ResolveHomedir(in);
-Index: src/sdl_cdrom/Makefile.am
-===================================================================
---- dosbox/src/sdl_cdrom/Makefile.am	(revision 0)
-+++ dosbox.n/src/sdl_cdrom/Makefile.am	(working copy)
+diff --git a/src/sdl_cdrom/Makefile.am b/src/sdl_cdrom/Makefile.am
+new file mode 100644
+index 0000000..2cd2eb3
+--- /dev/null
++++ b/src/sdl_cdrom/Makefile.am
 @@ -0,0 +1,10 @@
 +SUBDIRS = macos macosx
 +AM_CPPFLAGS = -I$(top_srcdir)/include
@@ -5823,17 +5732,11 @@ Index: src/sdl_cdrom/Makefile.am
 +			 SDL_syscdrom_freebsd.c SDL_syscdrom_linux.c SDL_syscdrom_mint.c \
 +			 SDL_syscdrom_openbsd.c SDL_syscdrom_os2.c SDL_syscdrom_osf.c \
 +			 SDL_syscdrom_qnx.c SDL_syscdrom_win32.c
-
-Property changes on: src/sdl_cdrom/Makefile.am
-___________________________________________________________________
-Added: svn:executable
-## -0,0 +1 ##
-+*
-\ No newline at end of property
-Index: src/sdl_cdrom/SDL_syscdrom.h
-===================================================================
---- dosbox/src/sdl_cdrom/SDL_syscdrom.h	(revision 0)
-+++ dosbox.n/src/sdl_cdrom/SDL_syscdrom.h	(working copy)
+diff --git a/src/sdl_cdrom/SDL_syscdrom.h b/src/sdl_cdrom/SDL_syscdrom.h
+new file mode 100644
+index 0000000..0feeee5
+--- /dev/null
++++ b/src/sdl_cdrom/SDL_syscdrom.h
 @@ -0,0 +1,76 @@
 +/*
 +    SDL - Simple DirectMedia Layer
@@ -5911,17 +5814,11 @@ Index: src/sdl_cdrom/SDL_syscdrom.h
 +/* Function to perform any system-specific CD-ROM related cleanup */
 +extern void SDL_SYS_CDQuit(void);
 +
-
-Property changes on: src/sdl_cdrom/SDL_syscdrom.h
-___________________________________________________________________
-Added: svn:executable
-## -0,0 +1 ##
-+*
-\ No newline at end of property
-Index: src/sdl_cdrom/SDL_syscdrom_aix.c
-===================================================================
---- dosbox/src/sdl_cdrom/SDL_syscdrom_aix.c	(revision 0)
-+++ dosbox.n/src/sdl_cdrom/SDL_syscdrom_aix.c	(working copy)
+diff --git a/src/sdl_cdrom/SDL_syscdrom_aix.c b/src/sdl_cdrom/SDL_syscdrom_aix.c
+new file mode 100644
+index 0000000..70d2bbe
+--- /dev/null
++++ b/src/sdl_cdrom/SDL_syscdrom_aix.c
 @@ -0,0 +1,665 @@
 +/*
 +    SDL - Simple DirectMedia Layer
@@ -6588,17 +6485,11 @@ Index: src/sdl_cdrom/SDL_syscdrom_aix.c
 +}
 +
 +#endif /* SDL_CDROM_AIX */
-
-Property changes on: src/sdl_cdrom/SDL_syscdrom_aix.c
-___________________________________________________________________
-Added: svn:executable
-## -0,0 +1 ##
-+*
-\ No newline at end of property
-Index: src/sdl_cdrom/SDL_syscdrom_beos.cc
-===================================================================
---- dosbox/src/sdl_cdrom/SDL_syscdrom_beos.cc	(revision 0)
-+++ dosbox.n/src/sdl_cdrom/SDL_syscdrom_beos.cc	(working copy)
+diff --git a/src/sdl_cdrom/SDL_syscdrom_beos.cc b/src/sdl_cdrom/SDL_syscdrom_beos.cc
+new file mode 100644
+index 0000000..5f3fdaa
+--- /dev/null
++++ b/src/sdl_cdrom/SDL_syscdrom_beos.cc
 @@ -0,0 +1,414 @@
 +/*
 +    SDL - Simple DirectMedia Layer
@@ -7014,17 +6905,11 @@ Index: src/sdl_cdrom/SDL_syscdrom_beos.cc
 +}
 +
 +#endif /* SDL_CDROM_BEOS */
-
-Property changes on: src/sdl_cdrom/SDL_syscdrom_beos.cc
-___________________________________________________________________
-Added: svn:executable
-## -0,0 +1 ##
-+*
-\ No newline at end of property
-Index: src/sdl_cdrom/SDL_syscdrom_bsdi.c
-===================================================================
---- dosbox/src/sdl_cdrom/SDL_syscdrom_bsdi.c	(revision 0)
-+++ dosbox.n/src/sdl_cdrom/SDL_syscdrom_bsdi.c	(working copy)
+diff --git a/src/sdl_cdrom/SDL_syscdrom_bsdi.c b/src/sdl_cdrom/SDL_syscdrom_bsdi.c
+new file mode 100644
+index 0000000..da5c99c
+--- /dev/null
++++ b/src/sdl_cdrom/SDL_syscdrom_bsdi.c
 @@ -0,0 +1,547 @@
 +/*
 +    SDL - Simple DirectMedia Layer
@@ -7573,17 +7458,11 @@ Index: src/sdl_cdrom/SDL_syscdrom_bsdi.c
 +}
 +
 +#endif /* SDL_CDROM_BSDI */
-
-Property changes on: src/sdl_cdrom/SDL_syscdrom_bsdi.c
-___________________________________________________________________
-Added: svn:executable
-## -0,0 +1 ##
-+*
-\ No newline at end of property
-Index: src/sdl_cdrom/SDL_syscdrom_dc.c
-===================================================================
---- dosbox/src/sdl_cdrom/SDL_syscdrom_dc.c	(revision 0)
-+++ dosbox.n/src/sdl_cdrom/SDL_syscdrom_dc.c	(working copy)
+diff --git a/src/sdl_cdrom/SDL_syscdrom_dc.c b/src/sdl_cdrom/SDL_syscdrom_dc.c
+new file mode 100644
+index 0000000..d4d6283
+--- /dev/null
++++ b/src/sdl_cdrom/SDL_syscdrom_dc.c
 @@ -0,0 +1,172 @@
 +/*
 +    SDL - Simple DirectMedia Layer
@@ -7757,17 +7636,11 @@ Index: src/sdl_cdrom/SDL_syscdrom_dc.c
 +}
 +
 +#endif /* SDL_CDROM_DC */
-
-Property changes on: src/sdl_cdrom/SDL_syscdrom_dc.c
-___________________________________________________________________
-Added: svn:executable
-## -0,0 +1 ##
-+*
-\ No newline at end of property
-Index: src/sdl_cdrom/SDL_syscdrom_dummy.c
-===================================================================
---- dosbox/src/sdl_cdrom/SDL_syscdrom_dummy.c	(revision 0)
-+++ dosbox.n/src/sdl_cdrom/SDL_syscdrom_dummy.c	(working copy)
+diff --git a/src/sdl_cdrom/SDL_syscdrom_dummy.c b/src/sdl_cdrom/SDL_syscdrom_dummy.c
+new file mode 100644
+index 0000000..b32f9a8
+--- /dev/null
++++ b/src/sdl_cdrom/SDL_syscdrom_dummy.c
 @@ -0,0 +1,48 @@
 +/*
 +    SDL - Simple DirectMedia Layer
@@ -7817,17 +7690,11 @@ Index: src/sdl_cdrom/SDL_syscdrom_dummy.c
 +}
 +
 +#endif /* SDL_CDROM_DUMMY || SDL_CDROM_DISABLED */
-
-Property changes on: src/sdl_cdrom/SDL_syscdrom_dummy.c
-___________________________________________________________________
-Added: svn:executable
-## -0,0 +1 ##
-+*
-\ No newline at end of property
-Index: src/sdl_cdrom/SDL_syscdrom_freebsd.c
-===================================================================
---- dosbox/src/sdl_cdrom/SDL_syscdrom_freebsd.c	(revision 0)
-+++ dosbox.n/src/sdl_cdrom/SDL_syscdrom_freebsd.c	(working copy)
+diff --git a/src/sdl_cdrom/SDL_syscdrom_freebsd.c b/src/sdl_cdrom/SDL_syscdrom_freebsd.c
+new file mode 100644
+index 0000000..0fa2c45
+--- /dev/null
++++ b/src/sdl_cdrom/SDL_syscdrom_freebsd.c
 @@ -0,0 +1,411 @@
 +/*
 +    SDL - Simple DirectMedia Layer
@@ -8240,17 +8107,11 @@ Index: src/sdl_cdrom/SDL_syscdrom_freebsd.c
 +}
 +
 +#endif /* SDL_CDROM_FREEBSD */
-
-Property changes on: src/sdl_cdrom/SDL_syscdrom_freebsd.c
-___________________________________________________________________
-Added: svn:executable
-## -0,0 +1 ##
-+*
-\ No newline at end of property
-Index: src/sdl_cdrom/SDL_syscdrom_linux.c
-===================================================================
---- dosbox/src/sdl_cdrom/SDL_syscdrom_linux.c	(revision 0)
-+++ dosbox.n/src/sdl_cdrom/SDL_syscdrom_linux.c	(working copy)
+diff --git a/src/sdl_cdrom/SDL_syscdrom_linux.c b/src/sdl_cdrom/SDL_syscdrom_linux.c
+new file mode 100644
+index 0000000..f05ea37
+--- /dev/null
++++ b/src/sdl_cdrom/SDL_syscdrom_linux.c
 @@ -0,0 +1,569 @@
 +/*
 +    SDL - Simple DirectMedia Layer
@@ -8821,17 +8682,11 @@ Index: src/sdl_cdrom/SDL_syscdrom_linux.c
 +}
 +
 +#endif /* SDL_CDROM_LINUX */
-
-Property changes on: src/sdl_cdrom/SDL_syscdrom_linux.c
-___________________________________________________________________
-Added: svn:executable
-## -0,0 +1 ##
-+*
-\ No newline at end of property
-Index: src/sdl_cdrom/SDL_syscdrom_mint.c
-===================================================================
---- dosbox/src/sdl_cdrom/SDL_syscdrom_mint.c	(revision 0)
-+++ dosbox.n/src/sdl_cdrom/SDL_syscdrom_mint.c	(working copy)
+diff --git a/src/sdl_cdrom/SDL_syscdrom_mint.c b/src/sdl_cdrom/SDL_syscdrom_mint.c
+new file mode 100644
+index 0000000..48496d6
+--- /dev/null
++++ b/src/sdl_cdrom/SDL_syscdrom_mint.c
 @@ -0,0 +1,324 @@
 +/*
 +    SDL - Simple DirectMedia Layer
@@ -9157,17 +9012,11 @@ Index: src/sdl_cdrom/SDL_syscdrom_mint.c
 +}
 +
 +#endif /* SDL_CDROM_MINT */
-
-Property changes on: src/sdl_cdrom/SDL_syscdrom_mint.c
-___________________________________________________________________
-Added: svn:executable
-## -0,0 +1 ##
-+*
-\ No newline at end of property
-Index: src/sdl_cdrom/SDL_syscdrom_openbsd.c
-===================================================================
---- dosbox/src/sdl_cdrom/SDL_syscdrom_openbsd.c	(revision 0)
-+++ dosbox.n/src/sdl_cdrom/SDL_syscdrom_openbsd.c	(working copy)
+diff --git a/src/sdl_cdrom/SDL_syscdrom_openbsd.c b/src/sdl_cdrom/SDL_syscdrom_openbsd.c
+new file mode 100644
+index 0000000..44f3681
+--- /dev/null
++++ b/src/sdl_cdrom/SDL_syscdrom_openbsd.c
 @@ -0,0 +1,421 @@
 +/*
 +    SDL - Simple DirectMedia Layer
@@ -9590,17 +9439,11 @@ Index: src/sdl_cdrom/SDL_syscdrom_openbsd.c
 +}
 +
 +#endif /* SDL_CDROM_OPENBSD */
-
-Property changes on: src/sdl_cdrom/SDL_syscdrom_openbsd.c
-___________________________________________________________________
-Added: svn:executable
-## -0,0 +1 ##
-+*
-\ No newline at end of property
-Index: src/sdl_cdrom/SDL_syscdrom_os2.c
-===================================================================
---- dosbox/src/sdl_cdrom/SDL_syscdrom_os2.c	(revision 0)
-+++ dosbox.n/src/sdl_cdrom/SDL_syscdrom_os2.c	(working copy)
+diff --git a/src/sdl_cdrom/SDL_syscdrom_os2.c b/src/sdl_cdrom/SDL_syscdrom_os2.c
+new file mode 100644
+index 0000000..aa69ef8
+--- /dev/null
++++ b/src/sdl_cdrom/SDL_syscdrom_os2.c
 @@ -0,0 +1,398 @@
 +/*
 +    SDL - Simple DirectMedia Layer
@@ -10000,17 +9843,11 @@ Index: src/sdl_cdrom/SDL_syscdrom_os2.c
 +}
 +
 +#endif /* SDL_CDROM_OS2 */
-
-Property changes on: src/sdl_cdrom/SDL_syscdrom_os2.c
-___________________________________________________________________
-Added: svn:executable
-## -0,0 +1 ##
-+*
-\ No newline at end of property
-Index: src/sdl_cdrom/SDL_syscdrom_osf.c
-===================================================================
---- dosbox/src/sdl_cdrom/SDL_syscdrom_osf.c	(revision 0)
-+++ dosbox.n/src/sdl_cdrom/SDL_syscdrom_osf.c	(working copy)
+diff --git a/src/sdl_cdrom/SDL_syscdrom_osf.c b/src/sdl_cdrom/SDL_syscdrom_osf.c
+new file mode 100644
+index 0000000..fb281f9
+--- /dev/null
++++ b/src/sdl_cdrom/SDL_syscdrom_osf.c
 @@ -0,0 +1,449 @@
 +/*
 +    Tru64 audio module for SDL (Simple DirectMedia Layer)
@@ -10461,17 +10298,11 @@ Index: src/sdl_cdrom/SDL_syscdrom_osf.c
 +}
 +
 +#endif /* SDL_CDROM_OSF */
-
-Property changes on: src/sdl_cdrom/SDL_syscdrom_osf.c
-___________________________________________________________________
-Added: svn:executable
-## -0,0 +1 ##
-+*
-\ No newline at end of property
-Index: src/sdl_cdrom/SDL_syscdrom_qnx.c
-===================================================================
---- dosbox/src/sdl_cdrom/SDL_syscdrom_qnx.c	(revision 0)
-+++ dosbox.n/src/sdl_cdrom/SDL_syscdrom_qnx.c	(working copy)
+diff --git a/src/sdl_cdrom/SDL_syscdrom_qnx.c b/src/sdl_cdrom/SDL_syscdrom_qnx.c
+new file mode 100644
+index 0000000..c656a78
+--- /dev/null
++++ b/src/sdl_cdrom/SDL_syscdrom_qnx.c
 @@ -0,0 +1,556 @@
 +/*
 +    SDL - Simple DirectMedia Layer
@@ -11029,17 +10860,11 @@ Index: src/sdl_cdrom/SDL_syscdrom_qnx.c
 +}
 +
 +#endif /* SDL_CDROM_QNX */
-
-Property changes on: src/sdl_cdrom/SDL_syscdrom_qnx.c
-___________________________________________________________________
-Added: svn:executable
-## -0,0 +1 ##
-+*
-\ No newline at end of property
-Index: src/sdl_cdrom/SDL_syscdrom_win32.c
-===================================================================
---- dosbox/src/sdl_cdrom/SDL_syscdrom_win32.c	(revision 0)
-+++ dosbox.n/src/sdl_cdrom/SDL_syscdrom_win32.c	(working copy)
+diff --git a/src/sdl_cdrom/SDL_syscdrom_win32.c b/src/sdl_cdrom/SDL_syscdrom_win32.c
+new file mode 100644
+index 0000000..67c7c6f
+--- /dev/null
++++ b/src/sdl_cdrom/SDL_syscdrom_win32.c
 @@ -0,0 +1,391 @@
 +/*
 +    SDL - Simple DirectMedia Layer
@@ -11432,17 +11257,11 @@ Index: src/sdl_cdrom/SDL_syscdrom_win32.c
 +}
 +
 +#endif /* SDL_CDROM_WIN32 */
-
-Property changes on: src/sdl_cdrom/SDL_syscdrom_win32.c
-___________________________________________________________________
-Added: svn:executable
-## -0,0 +1 ##
-+*
-\ No newline at end of property
-Index: src/sdl_cdrom/compat_SDL_cdrom.c
-===================================================================
---- dosbox/src/sdl_cdrom/compat_SDL_cdrom.c	(revision 0)
-+++ dosbox.n/src/sdl_cdrom/compat_SDL_cdrom.c	(working copy)
+diff --git a/src/sdl_cdrom/compat_SDL_cdrom.c b/src/sdl_cdrom/compat_SDL_cdrom.c
+new file mode 100644
+index 0000000..97f7659
+--- /dev/null
++++ b/src/sdl_cdrom/compat_SDL_cdrom.c
 @@ -0,0 +1,347 @@
 +/*
 +    SDL - Simple DirectMedia Layer
@@ -11791,17 +11610,11 @@ Index: src/sdl_cdrom/compat_SDL_cdrom.c
 +}
 +
 +#endif /* SDL_CDROM */
-
-Property changes on: src/sdl_cdrom/compat_SDL_cdrom.c
-___________________________________________________________________
-Added: svn:executable
-## -0,0 +1 ##
-+*
-\ No newline at end of property
-Index: src/sdl_cdrom/compat_SDL_cdrom.h
-===================================================================
---- dosbox/src/sdl_cdrom/compat_SDL_cdrom.h	(revision 0)
-+++ dosbox.n/src/sdl_cdrom/compat_SDL_cdrom.h	(working copy)
+diff --git a/src/sdl_cdrom/compat_SDL_cdrom.h b/src/sdl_cdrom/compat_SDL_cdrom.h
+new file mode 100644
+index 0000000..fa78410
+--- /dev/null
++++ b/src/sdl_cdrom/compat_SDL_cdrom.h
 @@ -0,0 +1,206 @@
 +/*
 +    SDL - Simple DirectMedia Layer
@@ -12009,34 +11822,22 @@ Index: src/sdl_cdrom/compat_SDL_cdrom.h
 +/*#include "close_code.h"*/
 +
 +#endif /* _SDL_video_h */
-
-Property changes on: src/sdl_cdrom/compat_SDL_cdrom.h
-___________________________________________________________________
-Added: svn:executable
-## -0,0 +1 ##
-+*
-\ No newline at end of property
-Index: src/sdl_cdrom/macos/Makefile.am
-===================================================================
---- dosbox/src/sdl_cdrom/macos/Makefile.am	(revision 0)
-+++ dosbox.n/src/sdl_cdrom/macos/Makefile.am	(working copy)
+diff --git a/src/sdl_cdrom/macos/Makefile.am b/src/sdl_cdrom/macos/Makefile.am
+new file mode 100644
+index 0000000..1d1fe5d
+--- /dev/null
++++ b/src/sdl_cdrom/macos/Makefile.am
 @@ -0,0 +1,5 @@
 +AM_CPPFLAGS = -I$(top_srcdir)/include
 +
 +noinst_LIBRARIES = libcsdlcdrommacos.a
 +EXTRA_DIST = DL_syscdrom_c.h
 +libcsdlcdrommacos_a_SOURCES = SDL_syscdrom.c
-
-Property changes on: src/sdl_cdrom/macos/Makefile.am
-___________________________________________________________________
-Added: svn:executable
-## -0,0 +1 ##
-+*
-\ No newline at end of property
-Index: src/sdl_cdrom/macos/SDL_syscdrom.c
-===================================================================
---- dosbox/src/sdl_cdrom/macos/SDL_syscdrom.c	(revision 0)
-+++ dosbox.n/src/sdl_cdrom/macos/SDL_syscdrom.c	(working copy)
+diff --git a/src/sdl_cdrom/macos/SDL_syscdrom.c b/src/sdl_cdrom/macos/SDL_syscdrom.c
+new file mode 100644
+index 0000000..229d064
+--- /dev/null
++++ b/src/sdl_cdrom/macos/SDL_syscdrom.c
 @@ -0,0 +1,530 @@
 +/*
 +    SDL - Simple DirectMedia Layer
@@ -12568,17 +12369,11 @@ Index: src/sdl_cdrom/macos/SDL_syscdrom.c
 +}
 +
 +#endif /* SDL_CDROM_MACOS */
-
-Property changes on: src/sdl_cdrom/macos/SDL_syscdrom.c
-___________________________________________________________________
-Added: svn:executable
-## -0,0 +1 ##
-+*
-\ No newline at end of property
-Index: src/sdl_cdrom/macos/SDL_syscdrom_c.h
-===================================================================
---- dosbox/src/sdl_cdrom/macos/SDL_syscdrom_c.h	(revision 0)
-+++ dosbox.n/src/sdl_cdrom/macos/SDL_syscdrom_c.h	(working copy)
+diff --git a/src/sdl_cdrom/macos/SDL_syscdrom_c.h b/src/sdl_cdrom/macos/SDL_syscdrom_c.h
+new file mode 100644
+index 0000000..e715a25
+--- /dev/null
++++ b/src/sdl_cdrom/macos/SDL_syscdrom_c.h
 @@ -0,0 +1,140 @@
 +/*
 +    SDL - Simple DirectMedia Layer
@@ -12720,17 +12515,11 @@ Index: src/sdl_cdrom/macos/SDL_syscdrom_c.h
 +#if PRAGMA_STRUCT_ALIGN
 +	#pragma options align=reset
 +#endif
-
-Property changes on: src/sdl_cdrom/macos/SDL_syscdrom_c.h
-___________________________________________________________________
-Added: svn:executable
-## -0,0 +1 ##
-+*
-\ No newline at end of property
-Index: src/sdl_cdrom/macosx/AudioFilePlayer.c
-===================================================================
---- dosbox/src/sdl_cdrom/macosx/AudioFilePlayer.c	(revision 0)
-+++ dosbox.n/src/sdl_cdrom/macosx/AudioFilePlayer.c	(working copy)
+diff --git a/src/sdl_cdrom/macosx/AudioFilePlayer.c b/src/sdl_cdrom/macosx/AudioFilePlayer.c
+new file mode 100644
+index 0000000..d702053
+--- /dev/null
++++ b/src/sdl_cdrom/macosx/AudioFilePlayer.c
 @@ -0,0 +1,366 @@
 +/*
 +    SDL - Simple DirectMedia Layer
@@ -13098,17 +12887,11 @@ Index: src/sdl_cdrom/macosx/AudioFilePlayer.c
 +}
 +
 +#endif /* SDL_CDROM_MACOSX */
-
-Property changes on: src/sdl_cdrom/macosx/AudioFilePlayer.c
-___________________________________________________________________
-Added: svn:executable
-## -0,0 +1 ##
-+*
-\ No newline at end of property
-Index: src/sdl_cdrom/macosx/AudioFilePlayer.h
-===================================================================
---- dosbox/src/sdl_cdrom/macosx/AudioFilePlayer.h	(revision 0)
-+++ dosbox.n/src/sdl_cdrom/macosx/AudioFilePlayer.h	(working copy)
+diff --git a/src/sdl_cdrom/macosx/AudioFilePlayer.h b/src/sdl_cdrom/macosx/AudioFilePlayer.h
+new file mode 100644
+index 0000000..886d017
+--- /dev/null
++++ b/src/sdl_cdrom/macosx/AudioFilePlayer.h
 @@ -0,0 +1,178 @@
 +/*
 +    SDL - Simple DirectMedia Layer
@@ -13288,17 +13071,11 @@ Index: src/sdl_cdrom/macosx/AudioFilePlayer.h
 +
 +#endif
 +
-
-Property changes on: src/sdl_cdrom/macosx/AudioFilePlayer.h
-___________________________________________________________________
-Added: svn:executable
-## -0,0 +1 ##
-+*
-\ No newline at end of property
-Index: src/sdl_cdrom/macosx/AudioFileReaderThread.c
-===================================================================
---- dosbox/src/sdl_cdrom/macosx/AudioFileReaderThread.c	(revision 0)
-+++ dosbox.n/src/sdl_cdrom/macosx/AudioFileReaderThread.c	(working copy)
+diff --git a/src/sdl_cdrom/macosx/AudioFileReaderThread.c b/src/sdl_cdrom/macosx/AudioFileReaderThread.c
+new file mode 100644
+index 0000000..1b48d64
+--- /dev/null
++++ b/src/sdl_cdrom/macosx/AudioFileReaderThread.c
 @@ -0,0 +1,616 @@
 +/*
 +    SDL - Simple DirectMedia Layer
@@ -13916,17 +13693,11 @@ Index: src/sdl_cdrom/macosx/AudioFileReaderThread.c
 +}
 +
 +#endif /* SDL_CDROM_MACOSX */
-
-Property changes on: src/sdl_cdrom/macosx/AudioFileReaderThread.c
-___________________________________________________________________
-Added: svn:executable
-## -0,0 +1 ##
-+*
-\ No newline at end of property
-Index: src/sdl_cdrom/macosx/CDPlayer.c
-===================================================================
---- dosbox/src/sdl_cdrom/macosx/CDPlayer.c	(revision 0)
-+++ dosbox.n/src/sdl_cdrom/macosx/CDPlayer.c	(working copy)
+diff --git a/src/sdl_cdrom/macosx/CDPlayer.c b/src/sdl_cdrom/macosx/CDPlayer.c
+new file mode 100644
+index 0000000..f86973c
+--- /dev/null
++++ b/src/sdl_cdrom/macosx/CDPlayer.c
 @@ -0,0 +1,643 @@
 +/*
 +    SDL - Simple DirectMedia Layer
@@ -14571,17 +14342,11 @@ Index: src/sdl_cdrom/macosx/CDPlayer.c
 +#endif /* SDL_CDROM_MACOSX */
 +
 +/*}; // extern "C" */
-
-Property changes on: src/sdl_cdrom/macosx/CDPlayer.c
-___________________________________________________________________
-Added: svn:executable
-## -0,0 +1 ##
-+*
-\ No newline at end of property
-Index: src/sdl_cdrom/macosx/CDPlayer.h
-===================================================================
---- dosbox/src/sdl_cdrom/macosx/CDPlayer.h	(revision 0)
-+++ dosbox.n/src/sdl_cdrom/macosx/CDPlayer.h	(working copy)
+diff --git a/src/sdl_cdrom/macosx/CDPlayer.h b/src/sdl_cdrom/macosx/CDPlayer.h
+new file mode 100644
+index 0000000..be1ac18
+--- /dev/null
++++ b/src/sdl_cdrom/macosx/CDPlayer.h
 @@ -0,0 +1,69 @@
 +/*
 +    SDL - Simple DirectMedia Layer
@@ -14652,34 +14417,22 @@ Index: src/sdl_cdrom/macosx/CDPlayer.h
 +#endif
 +
 +#endif /* __CD_Player__H__ */
-
-Property changes on: src/sdl_cdrom/macosx/CDPlayer.h
-___________________________________________________________________
-Added: svn:executable
-## -0,0 +1 ##
-+*
-\ No newline at end of property
-Index: src/sdl_cdrom/macosx/Makefile.am
-===================================================================
---- dosbox/src/sdl_cdrom/macosx/Makefile.am	(revision 0)
-+++ dosbox.n/src/sdl_cdrom/macosx/Makefile.am	(working copy)
+diff --git a/src/sdl_cdrom/macosx/Makefile.am b/src/sdl_cdrom/macosx/Makefile.am
+new file mode 100644
+index 0000000..f92f83c
+--- /dev/null
++++ b/src/sdl_cdrom/macosx/Makefile.am
 @@ -0,0 +1,5 @@
 +AM_CPPFLAGS = -I$(top_srcdir)/include
 +
 +noinst_LIBRARIES = libcsdlcdrommacosx.a
 +EXTRA_DIST = AudioFilePlayer.h CDPlayer.h SDLOSXCAGuard.h SDL_syscdrom_c.h
 +libcsdlcdrommacosx_a_SOURCES = AudioFilePlayer.c AudioFileReaderThread.c CDPlayer.c SDLOSXCAGuard.c SDL_syscdrom.c
-
-Property changes on: src/sdl_cdrom/macosx/Makefile.am
-___________________________________________________________________
-Added: svn:executable
-## -0,0 +1 ##
-+*
-\ No newline at end of property
-Index: src/sdl_cdrom/macosx/SDLOSXCAGuard.c
-===================================================================
---- dosbox/src/sdl_cdrom/macosx/SDLOSXCAGuard.c	(revision 0)
-+++ dosbox.n/src/sdl_cdrom/macosx/SDLOSXCAGuard.c	(working copy)
+diff --git a/src/sdl_cdrom/macosx/SDLOSXCAGuard.c b/src/sdl_cdrom/macosx/SDLOSXCAGuard.c
+new file mode 100644
+index 0000000..a09b55d
+--- /dev/null
++++ b/src/sdl_cdrom/macosx/SDLOSXCAGuard.c
 @@ -0,0 +1,205 @@
 +/*
 +    SDL - Simple DirectMedia Layer
@@ -14886,17 +14639,11 @@ Index: src/sdl_cdrom/macosx/SDLOSXCAGuard.c
 +}
 +
 +#endif /* SDL_CDROM_MACOSX */
-
-Property changes on: src/sdl_cdrom/macosx/SDLOSXCAGuard.c
-___________________________________________________________________
-Added: svn:executable
-## -0,0 +1 ##
-+*
-\ No newline at end of property
-Index: src/sdl_cdrom/macosx/SDLOSXCAGuard.h
-===================================================================
---- dosbox/src/sdl_cdrom/macosx/SDLOSXCAGuard.h	(revision 0)
-+++ dosbox.n/src/sdl_cdrom/macosx/SDLOSXCAGuard.h	(working copy)
+diff --git a/src/sdl_cdrom/macosx/SDLOSXCAGuard.h b/src/sdl_cdrom/macosx/SDLOSXCAGuard.h
+new file mode 100644
+index 0000000..f22c695
+--- /dev/null
++++ b/src/sdl_cdrom/macosx/SDLOSXCAGuard.h
 @@ -0,0 +1,116 @@
 +/*
 +    SDL - Simple DirectMedia Layer
@@ -15014,17 +14761,11 @@ Index: src/sdl_cdrom/macosx/SDLOSXCAGuard.h
 +
 +#endif
 +
-
-Property changes on: src/sdl_cdrom/macosx/SDLOSXCAGuard.h
-___________________________________________________________________
-Added: svn:executable
-## -0,0 +1 ##
-+*
-\ No newline at end of property
-Index: src/sdl_cdrom/macosx/SDL_syscdrom.c
-===================================================================
---- dosbox/src/sdl_cdrom/macosx/SDL_syscdrom.c	(revision 0)
-+++ dosbox.n/src/sdl_cdrom/macosx/SDL_syscdrom.c	(working copy)
+diff --git a/src/sdl_cdrom/macosx/SDL_syscdrom.c b/src/sdl_cdrom/macosx/SDL_syscdrom.c
+new file mode 100644
+index 0000000..4302330
+--- /dev/null
++++ b/src/sdl_cdrom/macosx/SDL_syscdrom.c
 @@ -0,0 +1,519 @@
 +/*
 +    SDL - Simple DirectMedia Layer
@@ -15545,17 +15286,11 @@ Index: src/sdl_cdrom/macosx/SDL_syscdrom.c
 +}
 +
 +#endif /* SDL_CDROM_MACOSX */
-
-Property changes on: src/sdl_cdrom/macosx/SDL_syscdrom.c
-___________________________________________________________________
-Added: svn:executable
-## -0,0 +1 ##
-+*
-\ No newline at end of property
-Index: src/sdl_cdrom/macosx/SDL_syscdrom_c.h
-===================================================================
---- dosbox/src/sdl_cdrom/macosx/SDL_syscdrom_c.h	(revision 0)
-+++ dosbox.n/src/sdl_cdrom/macosx/SDL_syscdrom_c.h	(working copy)
+diff --git a/src/sdl_cdrom/macosx/SDL_syscdrom_c.h b/src/sdl_cdrom/macosx/SDL_syscdrom_c.h
+new file mode 100644
+index 0000000..ae3d914
+--- /dev/null
++++ b/src/sdl_cdrom/macosx/SDL_syscdrom_c.h
 @@ -0,0 +1,136 @@
 +/*
 +    SDL - Simple DirectMedia Layer
@@ -15693,10 +15428,3 @@ Index: src/sdl_cdrom/macosx/SDL_syscdrom_c.h
 +
 +#define kErrorFakeDevice "Error: Cannot proceed since we're faking a CD-ROM device. Reinit the CD-ROM subsystem to scan for new volumes."
 +
-
-Property changes on: src/sdl_cdrom/macosx/SDL_syscdrom_c.h
-___________________________________________________________________
-Added: svn:executable
-## -0,0 +1 ##
-+*
-\ No newline at end of property
