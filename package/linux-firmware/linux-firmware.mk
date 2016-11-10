@@ -47,7 +47,8 @@ LINUX_FIRMWARE_FILES += \
 	rtlwifi/rtl8192defw.bin rtlwifi/rtl8192sefw.bin		\
 	rtlwifi/rtl8188efw.bin rtlwifi/rtl8188eufw.bin		\
 	rtlwifi/rtl8192cufw_A.bin				\
-	rtlwifi/rtl8192cufw_B.bin rtlwifi/rtl8192cufw_TMSC.bin
+	rtlwifi/rtl8192cufw_B.bin rtlwifi/rtl8192cufw_TMSC.bin  \
+        rtl_bt/rtl8192ee_fw.bin  rtl_bt/rtl8192eu_fw.bin
 LINUX_FIRMWARE_ALL_LICENSE_FILES += LICENCE.rtlwifi_firmware.txt
 endif
 
@@ -55,7 +56,9 @@ endif
 ifeq ($(BR2_PACKAGE_LINUX_FIRMWARE_RTL_87XX),y)
 LINUX_FIRMWARE_FILES += \
 	rtlwifi/rtl8712u.bin rtlwifi/rtl8723fw.bin \
-	rtlwifi/rtl8723fw_B.bin rtlwifi/rtl8723befw.bin
+	rtlwifi/rtl8723fw_B.bin rtlwifi/rtl8723befw.bin \
+	rtl_bt/rtl8723a_fw.bin  rtl_bt/rtl8723b_fw.bin \
+        rtl_bt/rtl8761a_fw.bin
 LINUX_FIRMWARE_ALL_LICENSE_FILES += LICENCE.rtlwifi_firmware.txt
 endif
 
@@ -63,7 +66,9 @@ endif
 ifeq ($(BR2_PACKAGE_LINUX_FIRMWARE_RTL_88XX),y)
 LINUX_FIRMWARE_FILES += \
 	rtlwifi/rtl8821aefw.bin \
-	rtlwifi/rtl8821aefw_wowlan.bin
+	rtlwifi/rtl8821aefw_wowlan.bin \
+        rtl_bt/rtl8812ae_fw.bin \
+        rtl_bt/rtl8821a_fw.bin
 LINUX_FIRMWARE_ALL_LICENSE_FILES += LICENCE.rtlwifi_firmware.txt
 endif
 
