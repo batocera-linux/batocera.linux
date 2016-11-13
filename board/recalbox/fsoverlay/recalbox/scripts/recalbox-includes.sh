@@ -65,4 +65,6 @@ function doRbxConfUpgrade {
   cp $cfgOut $savefile || { recallog -e "ERROR : Couldn't backup $cfgOut to $savefile" ; return 1 ; }
   rm -f $cfgOut
   mv $tmpFile $cfgOut || { recallog -e "ERROR : Couldn't apply the new recalbox.conf" ; return 1 ; }
+  cp "$rbxVersion" "$curVersion" || { recallog -e "ERROR : Couldn't set the new recalbox.conf version" ; return 1 ; }
+  recallog "UPDATE done !"
 }
