@@ -469,7 +469,8 @@ fi
 if [[ "$command" == "forgetBT" ]]; then
    killall -9 hcitool
    /etc/init.d/S32bluetooth stop
-   find /var/lib/bluetooth/ -type d -name cache | sed 's/:/\\:/g' | xargs rm -rf
+   rm -rf /var/lib/bluetooth
+   mkdir /var/lib/bluetooth
    rm -f /recalbox/share/system/bluetooth/bluetooth.tar
    /etc/init.d/S32bluetooth start
    exit 0
