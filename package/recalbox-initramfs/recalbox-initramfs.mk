@@ -36,11 +36,22 @@ define RECALBOX_INITRAMFS_BUILD_CMDS
 	$(RECALBOX_INITRAMFS_MAKE_ENV) $(MAKE) $(RECALBOX_INITRAMFS_MAKE_OPTS) -C $(@D)
 endef
 
+ifeq ($(BR2_TARGET_UBOOT),y)
 define RECALBOX_INITRAMFS_INSTALL_TARGET_CMDS
-	mkdir -p $(INITRAMFS_DIR)/{new_root,sys,proc}
+	mkdir -p $(INITRAMFS_DIR)
+	cp package/recalbox-initramfs/init $(INITRAMFS_DIR)/init
+	$(RECALBOX_INITRAMFS_MAKE_ENV) $(MAKE) $(RECALBOX_INITRAMFS_MAKE_OPTS) -C $(@D) install
+	(cd $(INITRAMFS_DIR) && find . | cpio -H newc -o > $(BINARIES_DIR)/initrd)
+	(cd $(BINARIES_DIR) && mkimage -A arm -O linux -T ramdisk -C none -a 0 -e 0 -n initrd -d ./initrd ./uInitrd)
+endef
+else
+define RECALBOX_INITRAMFS_INSTALL_TARGET_CMDS
+	mkdir -p $(INITRAMFS_DIR)
 	cp package/recalbox-initramfs/init $(INITRAMFS_DIR)/init
 	$(RECALBOX_INITRAMFS_MAKE_ENV) $(MAKE) $(RECALBOX_INITRAMFS_MAKE_OPTS) -C $(@D) install
 	(cd $(INITRAMFS_DIR) && find . | cpio -H newc -o | gzip -9 > $(BINARIES_DIR)/initrd.gz)
 endef
+endif
+
 
 $(eval $(kconfig-package))

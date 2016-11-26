@@ -208,94 +208,6 @@ mountNetwork() {
     return 0
 }
 
-do_boot_upgrade() {
-    BOOTTAR=$1
-
-    # all these files doesn't exist on non rpi platform, so, we have to test them
-    BOOTFILES="cmdline.txt config.txt recalbox-boot.conf"
-
-    # backup files to keep
-    for BOOTFILE in ${BOOTFILES}
-    do
-	if test -e "/boot/${BOOTFILE}"
-	then
-	    cp "/boot/${BOOTFILE}" "/boot/${BOOTFILE}.upgrade" || return 1
-	fi
-    done
-
-    # upgrade the boot
-    if ! (cd /boot && xz -dc < "${BOOTTAR}" | tar xvf - >> /tmp/upgrade.files)
-    then
-	return 1
-    fi
-
-    # revert backup files
-    for BOOTFILE in ${BOOTFILES}
-    do
-	if test -e "/boot/${BOOTFILE}.upgrade"
-	then
-	    mv "/boot/${BOOTFILE}.upgrade" "/boot/${BOOTFILE}" || return 1
-	fi
-    done
-}
-
-do_upgrade() {
-    BOOTTAR="/recalbox/share/system/upgrade/boot.tar.xz"
-    ROOTTAR="/recalbox/share/system/upgrade/root.tar.xz"
-
-    # percentage
-    touch /tmp/upgrade.files
-    (
-	echo "title Upgrading the system"
-	while true
-	do
-	    NF=$(cat /tmp/upgrade.files | wc -l)
-	    let NP=${NF}00/${NB_FILES_TARGET}
-	    echo "percent ${NP}"
-	    sleep 10
-	done
-    ) | /recalbox/scripts/shell2fb.py &
-    
-    # upgrading /boot
-    EXIT_CODE=1
-    date
-    echo "Upgrading /boot"
-    if mount -o remount,rw /boot
-    then
-	if do_boot_upgrade "${BOOTTAR}"
-	then
-	    EXIT_CODE=0
-	fi
-	sync
-    fi
-    test "${EXIT_CODE}" = 1 && return 1 # don't insist if /boot failed to upgrade
-
-    date
-
-    # upgrading /root
-    EXIT_CODE=1
-    date
-    echo "Upgrading /"
-    if mount -o remount,rw /
-    then
-	if (cd / && \
-	    cp ./etc/fstab ./etc/fstab.upgrade && \
-	    xz -dc < "${ROOTTAR}" | tar xvf - >> /tmp/upgrade.files && \
-	    mv ./etc/fstab.upgrade ./etc/fstab)
-	then
-	    NEW_VERSION=$(sed -rn "s/^\s*([0-9a-zA-Z.]*)\s*.*$/\1/p" /recalbox/recalbox.version)
-	    python -c "import sys; sys.path.append('/usr/lib/python2.7/site-packages/configgen'); from emulatorlauncher import config_upgrade; config_upgrade('$NEW_VERSION')"
-	    EXIT_CODE=0
-	fi
-	sync
-    fi
-    test "${EXIT_CODE}" = 1 && return 1 # don't insist if /root failed to upgrade
-
-    echo "Upgrade ended successfully."
-    date
-    return 0
-}
-
 RMODE="$SHAREDEVICE" 
 
 if echo "${RMODE}" | grep -qE '^DEV '
@@ -358,19 +270,6 @@ case "${MODE}" in
 	fi
 	;;
 esac
-
-# what about doing an upgrade ?
-if test -e "/recalbox/share/system/upgrade/boot.tar.xz" -a -e "/recalbox/share/system/upgrade/root.tar.xz"
-then
-    # let's go
-    do_upgrade > /recalbox/share/system/upgrade/upgrade.out.log 2> /recalbox/share/system/upgrade/upgrade.err.log
-    
-    # remove to not apply it indefinitly, even if it fails
-    rm "/recalbox/share/system/upgrade/boot.tar.xz" "/recalbox/share/system/upgrade/root.tar.xz"
-    
-    # rebooting now
-    shutdown -r now
-fi
 
 # share upgrade, just unzip share.zip from upgrade, no need to reboot
 if test -e "/recalbox/share/system/upgrade/share.zip"

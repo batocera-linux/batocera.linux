@@ -10,10 +10,10 @@
 # XU4 SD/EMMC CARD
 #
 #       1      31      63          719     1231    1263
-# +-----+-------+-------+-----------+--------+-------+--------+----------+--------------+
-# | MBR |  bl1  |  bl2  |   uboot   |  tzsw  | erase |  BOOT  |  ROOTFS  |     FREE     |
-# +-----+-------+-------+-----------+--------+-------+--------+----------+--------------+
-#      512     15K     31K         359K     615K    631K     64M        1.2G
+# +-----+-------+-------+-----------+--------+-------+----------+--------------+
+# | MBR |  bl1  |  bl2  |   uboot   |  tzsw  |       |   BOOT   |     FREE     |
+# +-----+-------+-------+-----------+--------+-------+----------+--------------+
+#      512     15K     31K         359K     615K    631K       1.2G
 #
 # http://odroid.com/dokuwiki/doku.php?id=en:xu3_partition_table
 # https://github.com/hardkernel/u-boot/blob/odroidxu3-v2012.07/sd_fuse/hardkernel/sd_fusing.sh
@@ -48,9 +48,9 @@ xu4_fusing() {
 # C2 SD CARD
 #
 #       1       97         1281
-# +-----+-------+-----------+--------+----------+--------------+
-# | MBR |  bl1  |   uboot   |  BOOT  |  ROOTFS  |     FREE     |
-# +-----+-------+-----------+--------+----------+--------------+
+# +-----+-------+-----------+--------+--------------+
+# | MBR |  bl1  |   uboot   |  BOOT  |     FREE     |
+# +-----+-------+-----------+--------+--------------+
 #      512     48K         640K
 #
 # http://odroid.com/dokuwiki/doku.php?id=en:c2_building_u-boot
@@ -87,20 +87,25 @@ echo -e "\n----- Generating images/recalbox files -----\n"
 
 case "${RECALBOX_TARGET}" in
     RPI0|RPI1|RPI2|RPI3)
-	# root.tar.xz
-	cp "${BINARIES_DIR}/rootfs.tar.xz" "${RECALBOX_BINARIES_DIR}/root.tar.xz" || exit 1
-
 	# boot.tar.xz
 	cp -f "${BINARIES_DIR}/"*.dtb "${BINARIES_DIR}/rpi-firmware"
-	"${HOST_DIR}/usr/bin/mkknlimg" "${BINARIES_DIR}/zImage" "${BINARIES_DIR}/rpi-firmware/zImage"
+	rm -rf "${BINARIES_DIR}/rpi-firmware/boot"   || exit 1
+	mkdir -p "${BINARIES_DIR}/rpi-firmware/boot" || exit 1
+	cp "board/recalbox/rpi/config.txt" "${BINARIES_DIR}/rpi-firmware/config.txt"   || exit 1
+	cp "board/recalbox/rpi/cmdline.txt" "${BINARIES_DIR}/rpi-firmware/cmdline.txt" || exit 1
+	"${HOST_DIR}/usr/bin/mkknlimg" "${BINARIES_DIR}/zImage" "${BINARIES_DIR}/rpi-firmware/boot/linux"
+	cp "${BINARIES_DIR}/initrd.gz" "${BINARIES_DIR}/rpi-firmware/boot" || exit 1
+	cp "${BINARIES_DIR}/rootfs.squashfs" "${BINARIES_DIR}/rpi-firmware/boot/recalbox.update" || exit 1
 	tar -cJf "${RECALBOX_BINARIES_DIR}/boot.tar.xz" -C "${BINARIES_DIR}/rpi-firmware" "." ||
 	    { echo "ERROR : unable to create boot.tar.xz" && exit 1 ;}
 
 	# recalbox.img
+	# rename the squashfs : the .update is the version that will be renamed at boot to replace the old version
+	mv "${BINARIES_DIR}/rpi-firmware/boot/recalbox.update" "${BINARIES_DIR}/rpi-firmware/boot/recalbox" || exit 1
 	GENIMAGE_TMP="${BUILD_DIR}/genimage.tmp"
 	RECALBOXIMG="${RECALBOX_BINARIES_DIR}/recalbox.img"
 	rm -rf "${GENIMAGE_TMP}" || exit 1
-	cp "board/raspberrypi/genimage.cfg" "${BINARIES_DIR}/genimage.cfg.tmp" || exit 1
+	cp "board/recalbox/rpi/genimage.cfg" "${BINARIES_DIR}/genimage.cfg.tmp" || exit 1
 	FILES=$(find "${BINARIES_DIR}/rpi-firmware" -type f | sed -e s+"^${BINARIES_DIR}/rpi-firmware/\(.*\)$"+"file \1 \{ image = 'rpi-firmware/\1' }"+ | tr '\n' '@')
 	cat "${BINARIES_DIR}/genimage.cfg.tmp" | sed -e s+'@files'+"${FILES}"+ | tr '@' '\n' > "${BINARIES_DIR}/genimage.cfg" || exit 1
 	rm -f "${BINARIES_DIR}/genimage.cfg.tmp" || exit 1
@@ -117,20 +122,26 @@ case "${RECALBOX_TARGET}" in
 	done
 
 	# /boot
-	cp "board/hardkernel/odroidxu4/boot.ini" ${BINARIES_DIR}/boot.ini || exit 1
-
-	# root.tar.xz
-	cp "${BINARIES_DIR}/rootfs.tar.xz" "${RECALBOX_BINARIES_DIR}/root.tar.xz" || exit 1
+	rm -rf "${BINARIES_DIR}/boot"         || exit 1
+	mkdir -p "${BINARIES_DIR}/boot/boot"  || exit 1
+	cp "board/recalbox/xu4/boot.ini"     "${BINARIES_DIR}/boot/boot.ini"        	 || exit 1
+	cp "${BINARIES_DIR}/zImage"          "${BINARIES_DIR}/boot/boot/linux"      	 || exit 1
+	cp "${BINARIES_DIR}/uInitrd"         "${BINARIES_DIR}/boot/boot/uInitrd"    	 || exit 1
+	cp "${BINARIES_DIR}/rootfs.squashfs" "${BINARIES_DIR}/boot/boot/recalbox.update" || exit 1
+	cp "${BINARIES_DIR}/exynos5422-odroidxu3.dtb" "${BINARIES_DIR}/boot/boot/exynos5422-odroidxu3.dtb" || exit 1
+	cp "${BINARIES_DIR}/recalbox-boot.conf" "${BINARIES_DIR}/boot/recalbox-boot.conf"                  || exit 1
 
 	# boot.tar.xz
-	(cd "${BINARIES_DIR}" && tar -cJf "${RECALBOX_BINARIES_DIR}/boot.tar.xz" boot.ini zImage exynos5422-odroidxu3.dtb recalbox-boot.conf) || exit 1
+	(cd "${BINARIES_DIR}/boot" && tar -cJf "${RECALBOX_BINARIES_DIR}/boot.tar.xz" boot.ini boot recalbox-boot.conf) || exit 1
 
 	# recalbox.img
+	# rename the squashfs : the .update is the version that will be renamed at boot to replace the old version
+	mv "${BINARIES_DIR}/boot/boot/recalbox.update" "${BINARIES_DIR}/boot/boot/recalbox" || exit 1
 	GENIMAGE_TMP="${BUILD_DIR}/genimage.tmp"
 	RECALBOXIMG="${RECALBOX_BINARIES_DIR}/recalbox.img"
 	rm -rf "${GENIMAGE_TMP}" || exit 1
-	cp "board/hardkernel/odroidxu4/genimage.cfg" "${BINARIES_DIR}" || exit 1
-	genimage --rootpath="${TARGET_DIR}" --inputpath="${BINARIES_DIR}" --outputpath="${RECALBOX_BINARIES_DIR}" --config="${BINARIES_DIR}/genimage.cfg" --tmppath="${GENIMAGE_TMP}" || exit 1
+	cp "board/recalbox/xu4/genimage.cfg" "${BINARIES_DIR}" || exit 1
+	genimage --rootpath="${TARGET_DIR}" --inputpath="${BINARIES_DIR}/boot" --outputpath="${RECALBOX_BINARIES_DIR}" --config="${BINARIES_DIR}/genimage.cfg" --tmppath="${GENIMAGE_TMP}" || exit 1
 	rm -f "${RECALBOX_BINARIES_DIR}/boot.vfat" || exit 1
 	xu4_fusing "${BINARIES_DIR}" "${RECALBOXIMG}" || exit 1
 	sync || exit 1
@@ -169,11 +180,9 @@ case "${RECALBOX_TARGET}" in
 	rm -rf ${BINARIES_DIR}/boot || exit 1
 	mkdir -p ${BINARIES_DIR}/boot/grub || exit 1
 	cp "board/recalbox/grub2/grub.cfg" ${BINARIES_DIR}/boot/grub/grub.cfg || exit 1
-	cp "${BINARIES_DIR}/bzImage" "${BINARIES_DIR}/boot" || exit 1
+	cp "${BINARIES_DIR}/bzImage" "${BINARIES_DIR}/boot/linux" || exit 1
 	cp "${BINARIES_DIR}/initrd.gz" "${BINARIES_DIR}/boot" || exit 1
-
-	# root.tar.xz
-	cp "${BINARIES_DIR}/rootfs.tar.xz" "${RECALBOX_BINARIES_DIR}/root.tar.xz" || exit 1
+	cp "${BINARIES_DIR}/rootfs.squashfs" "${BINARIES_DIR}/boot/recalbox.update" || exit 1
 
 	# get UEFI files
 	mkdir -p "${BINARIES_DIR}/EFI/BOOT" || exit 1
@@ -181,9 +190,12 @@ case "${RECALBOX_TARGET}" in
 	cp "board/recalbox/grub2/grub.cfg" "${BINARIES_DIR}/EFI/BOOT" || exit 1
 
 	# boot.tar.xz
+        # it must include the squashfs version with .update to not erase the current squashfs while running
 	(cd "${BINARIES_DIR}" && tar -cJf "${RECALBOX_BINARIES_DIR}/boot.tar.xz" EFI boot recalbox-boot.conf) || exit 1
 
 	# recalbox.img
+        # rename the squashfs : the .update is the version that will be renamed at boot to replace the old version
+        mv "${BINARIES_DIR}/boot/recalbox.update" "${BINARIES_DIR}/boot/recalbox" || exit 1
 	GENIMAGE_TMP="${BUILD_DIR}/genimage.tmp"
 	RECALBOXIMG="${RECALBOX_BINARIES_DIR}/recalbox.img"
 	rm -rf "${GENIMAGE_TMP}" || exit 1

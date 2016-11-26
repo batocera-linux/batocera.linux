@@ -1,29 +1,73 @@
 #!/bin/ash
 
 do_root() {
-    mount -t proc -o nodev,noexec,nosuid proc /proc  || return 1
-    mount -t sysfs -o nodev,noexec,nosuid sysfs /sys || return 1
+    mkdir -p /boot_root /new_root /overlay_root /sys /proc || return 1
+    mount -t proc  -o nodev,noexec,nosuid proc  /proc  	|| return 1
+    mount -t sysfs -o nodev,noexec,nosuid sysfs /sys 	|| return 1
 
     # read the parameters
     read -r cmdline < /proc/cmdline
     for param in ${cmdline} ; do
         case ${param} in
+            dev=*)   dev=${param#dev=};;
             label=*) label=${param#label=};;
         esac
     done
 
     # look for devices
     mount -t devtmpfs none /dev
-    while ! mount -o ro LABEL=${label} /new_root
+
+    MOUNTARG=none
+    test -n "${dev}"   && MOUNTARG=${dev}
+    test -n "${label}" && MOUNTARG=LABEL=${label}
+
+    while ! mount -o ro "${MOUNTARG}" /boot_root
     do
         echo "Waiting for the root device"
         sleep 1
     done
 
+    # update the squashfs
+    if test -e /boot_root/boot/recalbox.update
+    then
+      mount -o remount,rw /boot_root || return 1
+      mv /boot_root/boot/recalbox.update /boot_root/boot/recalbox || return 1
+      # remove the overlay when updating
+      mv /boot_root/boot/overlay /boot_root/boot/overlay.old      || return 1
+      mount -o remount,ro /boot_root || return 1
+    fi
+
+    # create an overlay on memory
+    mount -t tmpfs -o size=128M tmpfs /overlay_root || return 1
+    mkdir /overlay_root/base /overlay_root/overlay /overlay_root/work /overlay_root/saved || return 1
+
+    # fill the overlay with the stored one
+    if test -f /boot_root/boot/overlay
+    then
+	# the mount can fail if the fs was open in write and not correctly closed
+	if mount -o ro /boot_root/boot/overlay /overlay_root/saved
+	then
+	    cp -pr /overlay_root/saved/* /overlay_root/overlay || return 1
+	    umount /overlay_root/saved                         || return 1
+	fi
+    fi
+
+    # mount the squashfs
+    mount /boot_root/boot/recalbox /overlay_root/base || return 1
+
+    # mount the future root in ready only
+    if ! mount -t overlay overlay -o ro,lowerdir=/overlay_root/base,upperdir=/overlay_root/overlay,workdir=/overlay_root/work /new_root
+    then
+	# mount only as squashfs, no overlay (xu4 doesn't support overlayfs)
+	mount /boot_root/boot/recalbox /new_root || return 1
+    fi
+
     # moving current mounts
-    mount --move /sys  /new_root/sys  || return 1
-    mount --move /proc /new_root/proc || return 1
-    mount --move /dev  /new_root/dev  || return 1
+    mount --move /boot_root    /new_root/boot    || return 1
+    mount --move /overlay_root /new_root/overlay || return 1
+    mount --move /sys  	       /new_root/sys  	 || return 1
+    mount --move /proc 	       /new_root/proc 	 || return 1
+    mount --move /dev  	       /new_root/dev  	 || return 1
 
     # switch to the new root
     exec switch_root /new_root /sbin/init || return 1
