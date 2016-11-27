@@ -3,7 +3,7 @@
 # PPSSPP
 #
 ################################################################################
-PPSSPP_VERSION = v1.2.2
+PPSSPP_VERSION = 7ddd68de1798ac8ce5d626a1e05a910236c2ca5d
 PPSSPP_SITE = $(call github,hrydgard,ppsspp,$(PPSSPP_VERSION))
 PPSSPP_GIT = https://github.com/hrydgard/ppsspp.git
 PPSSPP_DEPENDENCIES = sdl2 zlib libzip linux zip ffmpeg
@@ -34,13 +34,26 @@ define PPSSPP_INSTALL_TO_TARGET
 endef
 
 PPSSPP_INSTALL_TARGET_CMDS = $(PPSSPP_INSTALL_TO_TARGET)
+PPSSPP_CONF_OPTS += -DUSE_FFMPEG=1 -DUSE_SYSTEM_FFMPEG=0 -DFFMPEG_BUILDDIR=1
 
 ifeq ($(BR2_PACKAGE_MALI_OPENGLES_SDK),y)
-	PPSSPP_CONF_OPTS += -DMALISDK=1
+	PPSSPP_CONF_OPTS += -DUSING_FBDEV=1
+	PPSSPP_CONF_OPTS += -DUSING_GLES2=1
 endif
 
-ifeq ($(BR2_PACKAGE_RECALBOX_TARGET_RPI3)$(BR2_PACKAGE_RECALBOX_TARGET_XU4),y)
+ifeq ($(BR2_PACKAGE_RPI_USERLAND),y)
+	PPSSPP_DEPENDENCIES += rpi-userland
+	PPSSPP_CONF_OPTS += -DUSING_FBDEV=1
+	PPSSPP_CONF_OPTS += -DUSING_GLES2=1
+endif
+
+ifeq ($(BR2_aarch64)$(BR2_ARM_CPU_HAS_NEON),y)
+	PPSSPP_CONF_OPTS += -DARM_NEON=1
+endif
+
+# odroid xu4 / rpi3
+ifeq ($(BR2_arm),y)
 	PPSSPP_CONF_OPTS += -DARMV7=1
 endif
-$(eval $(cmake-package))
 
+$(eval $(cmake-package))

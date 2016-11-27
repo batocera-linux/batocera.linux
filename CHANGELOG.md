@@ -3,6 +3,7 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unrelease][unreleased]
+- Fixing BT firmware copy for Realtek BT devices (81xx 87xx and 88xx)
 - Fixing Makelfiles for compilation of libretro-lutro for the bump to release 2377dd37ad3bd37ddef9fc37742bba2531a78407
 - Bump retroarch to last release due to integration of libretro-imageviewer in its cores, and delation of the libretro-imageviewer repos
 - Update Mame2003 core to get the mame2003-skip_warnings and avoid splash screen
@@ -71,6 +72,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Add new languages : arabic dutch greek korean norwegian norwegian bokmål polish
 - Support PI3 internal bluetooth via bluez5
 - Add USB PS2 : GreenAsia Electronics
+- PSX: .bin extentions removed (use .cue instead)
+- Enable highscores for fba_libretro
+- Add mame parent only dat file 
 
 ## [4.0.0-beta5] - 2016-08-13
 - Updated libretro mame 2003 core. Fixes the ratio issue in mame.

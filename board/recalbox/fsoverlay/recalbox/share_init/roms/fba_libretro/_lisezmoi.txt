@@ -2,11 +2,12 @@
 
 Placez ici vos roms final burn alpha pour libretro (support cps3, version plus recente, mais moins performant que piFBA).
 
-La version des roms doit etre 0.2.97.38
+La version des roms doit etre 0.2.97.39
 
 Les roms doivent avoir l'extension ".zip" ou ".fba"
 
 Le fichier fba_libretro_gamelist.txt liste les jeux compatibles.
 
-
-
+Fichiers spéciaux pour le core fba libretro :
+- Ajoutez vos fichiers samples dans le répertoire /recalbox/share/bios/fba/samples/
+- Mettez à jour le fichier hiscore.dat dans /recalbox/share/saves/fba_libretro/ si vous souhaitez avoir les derniers highscores (http://highscore.mameworld.info/download.htm) (use 'old format hiscore.dat (pre mame v0174)' version)
