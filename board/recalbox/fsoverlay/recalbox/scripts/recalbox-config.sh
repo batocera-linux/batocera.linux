@@ -12,9 +12,7 @@ extra1="$3"
 extra2="$4"
 arch=`cat /recalbox/recalbox.arch`
 
-updateversion=$(cat /recalbox/recalbox.updateversion)
-
-recalboxupdateurl="http://archive.recalbox.com/${updateversion}"
+recalboxupdateurl="http://recalbox.remix.free.fr/upgrades"
 
 preBootConfig() {
     mount -o remount,rw /boot
