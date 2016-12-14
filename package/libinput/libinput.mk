@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-LIBINPUT_VERSION = 1.2.4
+LIBINPUT_VERSION = 1.5.3
 LIBINPUT_SOURCE = libinput-$(LIBINPUT_VERSION).tar.xz
 LIBINPUT_SITE = http://www.freedesktop.org/software/libinput
 LIBINPUT_DEPENDENCIES = host-pkgconf libevdev mtdev udev
@@ -18,7 +18,7 @@ ifeq ($(BR2_PACKAGE_LIBGTK3),y)
 LIBINPUT_CONF_OPTS += --enable-event-gui
 LIBINPUT_DEPENDENCIES += libgtk3
 else
-LIBINOUT_CONF_OPTS += --disable-event-gui
+LIBINPUT_CONF_OPTS += --disable-event-gui
 endif
 
 $(eval $(autotools-package))

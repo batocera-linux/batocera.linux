@@ -1,6 +1,7 @@
 menuconfig BR2_PACKAGE_OPENCV3
 	bool "opencv3"
 	select BR2_PACKAGE_ZLIB
+	depends on BR2_TOOLCHAIN_HAS_ATOMIC
 	depends on BR2_TOOLCHAIN_HAS_THREADS_NPTL
 	depends on BR2_INSTALL_LIBSTDCPP
 	depends on BR2_USE_WCHAR
@@ -242,11 +243,11 @@ comment "3rd party support"
 
 config BR2_PACKAGE_OPENCV3_WITH_FFMPEG
 	bool "ffmpeg support"
+	depends on BR2_PACKAGE_FFMPEG_ARCH_SUPPORTS
 	select BR2_PACKAGE_BZIP2
 	select BR2_PACKAGE_FFMPEG
 	select BR2_PACKAGE_FFMPEG_AVRESAMPLE
 	select BR2_PACKAGE_FFMPEG_SWSCALE
-	depends on !BR2_nios2 # ffmpeg
 	help
 	  Use ffmpeg from the target system.
 
@@ -335,6 +336,7 @@ config BR2_PACKAGE_OPENCV3_INSTALL_DATA
 endif # BR2_PACKAGE_OPENCV3
 
 comment "opencv3 needs a toolchain w/ C++, NPTL, wchar, dynamic library"
+	depends on BR2_TOOLCHAIN_HAS_ATOMIC
 	depends on !BR2_INSTALL_LIBSTDCPP || \
 		!BR2_USE_WCHAR || \
 		!BR2_TOOLCHAIN_HAS_THREADS_NPTL || \

@@ -39,6 +39,8 @@ $(1)_DEPENDENCIES = host-lzop
 $(1)_LICENSE = GPLv2 with exceptions
 $(1)_LICENSE_FILES = COPYING
 
+$(1)_CUSTOM_EMBEDDED_ENV_PATH = $$(call qstrip,$$(BR2_TARGET_$(1)_CUSTOM_EMBEDDED_ENV_PATH))
+
 ifneq ($$(call qstrip,$$(BR2_TARGET_BAREBOX_CUSTOM_PATCH_DIR)),)
 define $(1)_APPLY_CUSTOM_PATCHES
 	$$(APPLY_PATCHES) $$(@D) \
@@ -59,6 +61,8 @@ else ifeq ($$(KERNEL_ARCH),x86_64)
 $(1)_ARCH = x86
 else ifeq ($$(KERNEL_ARCH),powerpc)
 $(1)_ARCH = ppc
+else ifeq ($$(KERNEL_ARCH),arm64)
+$(1)_ARCH = arm
 else
 $(1)_ARCH = $$(KERNEL_ARCH)
 endif
@@ -93,6 +97,13 @@ define $(1)_BUILD_CUSTOM_ENV
 endef
 define $(1)_INSTALL_CUSTOM_ENV
 	cp $$(@D)/$$($(1)_ENV_NAME) $$(BINARIES_DIR)
+endef
+endif
+
+ifneq ($$($(1)_CUSTOM_EMBEDDED_ENV_PATH),)
+define $(1)_KCONFIG_FIXUP_CMDS
+	$$(call KCONFIG_ENABLE_OPT,CONFIG_DEFAULT_ENVIRONMENT,$$(@D)/.config)
+	$$(call KCONFIG_SET_OPT,CONFIG_DEFAULT_ENVIRONMENT_PATH,"$$($(1)_CUSTOM_EMBEDDED_ENV_PATH)",$$(@D)/.config)
 endef
 endif
 
@@ -142,5 +153,5 @@ endef
 
 barebox-package=$(call inner-barebox-package,$(call UPPERCASE,$(pkgname)))
 
-# instantiate this barebox package
-$(eval $(barebox-package))
+include boot/barebox/barebox/barebox.mk
+include boot/barebox/barebox-aux/barebox-aux.mk

@@ -4,11 +4,15 @@
 #
 ################################################################################
 
-BUSYBOX_VERSION = 1.24.2
+BUSYBOX_VERSION = 1.25.1
 BUSYBOX_SITE = http://www.busybox.net/downloads
 BUSYBOX_SOURCE = busybox-$(BUSYBOX_VERSION).tar.bz2
 BUSYBOX_LICENSE = GPLv2
 BUSYBOX_LICENSE_FILES = LICENSE
+
+define BUSYBOX_HELP_CMDS
+	@echo '  busybox-menuconfig     - Run BusyBox menuconfig'
+endef
 
 BUSYBOX_CFLAGS = \
 	$(TARGET_CFLAGS)
@@ -32,6 +36,12 @@ BUSYBOX_MAKE_ENV = \
 	$(TARGET_MAKE_ENV) \
 	CFLAGS="$(BUSYBOX_CFLAGS)" \
 	CFLAGS_busybox="$(BUSYBOX_CFLAGS_busybox)"
+
+ifeq ($(BR2_REPRODUCIBLE),y)
+BUSYBOX_MAKE_ENV += \
+	KCONFIG_NOTIMESTAMP=1
+endif
+
 BUSYBOX_MAKE_OPTS = \
 	CC="$(TARGET_CC)" \
 	ARCH=$(KERNEL_ARCH) \

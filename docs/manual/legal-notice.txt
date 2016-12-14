@@ -41,9 +41,14 @@ There you will find:
   +host-sources/+ subdirectories for target and host packages respectively.
   The source code for packages that set +<PKG>_REDISTRIBUTE = NO+ will not be
   saved.
-  Patches applied to some packages by Buildroot are distributed with the
-  Buildroot sources and are not duplicated in the +sources/+ and +host-sources/+
-  subdirectories.
+  Patches that were applied are also saved, along with a file named +series+
+  that lists the patches in the order they were applied. Patches are under the
+  same license as the files that they modify.
+  Note: Buildroot applies additional patches to Libtool scripts of
+  autotools-based packages. These patches can be found under
+  +support/libtool+ in the Buildroot source and, due to technical
+  limitations, are not saved with the package sources. You may need to
+  collect them manually.
 * A manifest file (one for host and one for target packages) listing the
   configured packages, their version, license and related information.
   Some of this information might not be defined in Buildroot; such items are
@@ -67,6 +72,16 @@ Buildroot source code itself (including patches to packages for which source
 distribution is required).
 When you run +make legal-info+, Buildroot produces warnings in the +README+
 file to inform you of relevant material that could not be saved.
+
+Finally, keep in mind that the output of +make legal-info+ is based on
+declarative statements in each of the packages recipes. The Buildroot
+developers try to do their best to keep those declarative statements as
+accurate as possible, to the best of their knowledge. However, it is very
+well possible that those declarative statements are not all fully accurate
+nor exhaustive. You (or your legal department) _have_ to check the output
+of +make legal-info+ before using it as your own compliance delivery. See
+the _NO WARRANTY_ clauses (clauses 11 and 12) in the +COPYING+ file at the
+root of the Buildroot distribution.
 
 [[legal-info-list-licenses]]
 === License abbreviations

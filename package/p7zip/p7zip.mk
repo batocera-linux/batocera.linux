@@ -3,24 +3,25 @@
 # p7zip
 #
 ################################################################################
-P7ZIP_VERSION = 15.14.1
-P7ZIP_SOURCE = p7zip_${P7ZIP_VERSION}_src_all.tar.bz2
-P7ZIP_SITE = http://downloads.sourceforge.net/project/p7zip/p7zip/15.14.1
-P7ZIP_LICENCE = LGPLv2
-# http://buildroot-busybox.2317881.n4.nabble.com/PATCH-v2-p7zip-light-new-package-td9305.html
 
+P7ZIP_VERSION = 15.14.1
+P7ZIP_SOURCE = p7zip_$(P7ZIP_VERSION)_src_all.tar.bz2
+P7ZIP_SITE = http://downloads.sourceforge.net/project/p7zip/p7zip/$(P7ZIP_VERSION)
+P7ZIP_LICENSE = LGPLv2.1+ with unRAR restriction
+P7ZIP_LICENSE_FILES = DOC/License.txt
+
+# p7zip buildsystem is a mess: it plays dirty tricks with CFLAGS and
+# CXXFLAGS, so we can't pass them. Instead, it accepts ALLFLAGS_C
+# and ALLFLAGS_CPP as variables to pass the CFLAGS and CXXFLAGS.
 define P7ZIP_BUILD_CMDS
-    sed -i -e "s|CC=.*|CC=$(TARGET_CC) \$$(ALLFLAGS)|" -e "s|CXX=.*|CXX=$(TARGET_CXX) \$$(ALLFLAGS)|" $(@D)/makefile.machine
-    $(MAKE) -C $(@D) 7z
+	$(TARGET_MAKE_ENV) $(MAKE) CC="$(TARGET_CC)" ALLFLAGS_C="$(TARGET_CFLAGS)" \
+		CXX="$(TARGET_CXX)" ALLFLAGS_CPP="$(TARGET_CXXFLAGS)" \
+		LDFLAGS="$(TARGET_LDFLAGS)" \
+		-C $(@D) 7zr
 endef
 
 define P7ZIP_INSTALL_TARGET_CMDS
-    (cd $(@D); DEST_HOME=$(TARGET_DIR)/usr ./install.sh; sed -i -e "s,$(TARGET_DIR),,g" $(TARGET_DIR)/usr/bin/7z)
-endef
-
-define P7ZIP_UNINSTALL_TARGET_CMDS
-    rm -f $(TARGET_DIR)/usr/bin/7z
-    rm -rf $(TARGET_DIR)/usr/lib/p7zip
+	$(INSTALL) -D -m 0755 $(@D)/bin/7zr $(TARGET_DIR)/usr/bin/7zr
 endef
 
 $(eval $(generic-package))

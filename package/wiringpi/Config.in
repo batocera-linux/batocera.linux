@@ -1,8 +1,12 @@
 config BR2_PACKAGE_WIRINGPI
 	bool "wiringpi"
+	depends on BR2_USE_MMU # fork()
 	depends on BR2_TOOLCHAIN_HAS_THREADS
-	depends on BR2_INSTALL_LIBSTDCPP
-	depends on BR2_arm || BR2_i386 || BR2_x86_64 || BR2_mipsel
-	
 	help
-	 https://github.com/WiringPi/WiringPi
+	  wiringPi libraries (and gpio command)
+
+	  http://wiringpi.com/
+
+comment "wiringpi needs a toolchain w/ threads"
+	depends on BR2_USE_MMU
+	depends on !BR2_TOOLCHAIN_HAS_THREADS

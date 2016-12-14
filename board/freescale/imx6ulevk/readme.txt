@@ -20,7 +20,7 @@ Build all components:
 
 You will find in ./output/images/ the following files:
   - imx6ul-14x14-evk.dtb
-  - rootfs.ext2
+  - rootfs.ext4
   - rootfs.tar
   - sdcard.img
   - u-boot.imx
@@ -43,7 +43,7 @@ command as root:
 *** WARNING! This will destroy all the card content. Use with care! ***
 
 For details about the medium image layout, see the definition in
-board/freescale/imx6ulevk/genimage.cfg.
+board/freescale/common/imx/genimage.cfg.template.
 
 Boot the i.MX6UL EVK board
 =========================

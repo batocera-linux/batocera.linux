@@ -14,14 +14,17 @@ FLANNEL_LICENSE_FILES = LICENSE
 FLANNEL_DEPENDENCIES = host-go
 
 FLANNEL_MAKE_ENV = \
+	$(HOST_GO_TARGET_ENV) \
 	GOBIN="$(@D)/bin" \
 	GOPATH="$(@D)/gopath" \
-	GOARCH=$(GO_GOARCH) \
 	CGO_ENABLED=1
 
 FLANNEL_GLDFLAGS = \
 	-X github.com/coreos/flannel/version.Version=$(FLANNEL_VERSION) \
-	-extldflags '-static'
+
+ifeq ($(BR2_STATIC_LIBS),y)
+FLANNEL_GLDFLAGS += -extldflags '-static'
+endif
 
 define FLANNEL_CONFIGURE_CMDS
 	# Put sources at prescribed GOPATH location.

@@ -94,7 +94,7 @@ config BR2_i386
 
 config BR2_m68k
 	bool "m68k"
-	select BR2_ARCH_HAS_MMU_MANDATORY
+	# MMU support is set by the subarchitecture file, arch/Config.in.m68k
 	help
 	  Motorola 68000 family microprocessor
 	  http://en.wikipedia.org/wiki/M68k
@@ -193,16 +193,6 @@ config BR2_sh
 	select BR2_ARCH_HAS_MMU_OPTIONAL
 	help
 	  SuperH (or SH) is a 32-bit reduced instruction set computer (RISC)
-	  instruction set architecture (ISA) developed by Hitachi.
-	  http://www.hitachi.com/
-	  http://en.wikipedia.org/wiki/SuperH
-
-config BR2_sh64
-	bool "SuperH64"
-	depends on BR2_DEPRECATED_SINCE_2015_05
-	select BR2_ARCH_HAS_MMU_MANDATORY
-	help
-	  SuperH64 (or SH) is a 64-bit reduced instruction set computer (RISC)
 	  instruction set architecture (ISA) developed by Hitachi.
 	  http://www.hitachi.com/
 	  http://en.wikipedia.org/wiki/SuperH
@@ -336,12 +326,19 @@ config BR2_BINFMT_FLAT_ONE
 
 config BR2_BINFMT_FLAT_SEP_DATA
 	bool "Separate data and code region"
+	# this FLAT binary type technically exists on m68k, but fails
+	# to build numerous packages: due to architecture limitation,
+	# big functions cannot be built in this mode. They cause build
+	# failures such as "Tried to convert PC relative branch to
+	# absolute jump" or "error: value -yyyyy out of range".
+	depends on BR2_bfin
 	help
 	  Allow for the data and text segments to be separated and placed in
 	  different regions of memory.
 
 config BR2_BINFMT_FLAT_SHARED
 	bool "Shared binary"
+	depends on BR2_m68k || BR2_bfin
 	# Even though this really generates shared binaries, there is no libdl
 	# and dlopen() cannot be used. So packages that require shared
 	# libraries cannot be built. Therefore, we don't select
@@ -357,12 +354,8 @@ if BR2_arcle || BR2_arceb
 source "arch/Config.in.arc"
 endif
 
-if BR2_arm || BR2_armeb
+if BR2_arm || BR2_armeb || BR2_aarch64 || BR2_aarch64_be
 source "arch/Config.in.arm"
-endif
-
-if BR2_aarch64 || BR2_aarch64_be
-source "arch/Config.in.aarch64"
 endif
 
 if BR2_bfin
@@ -389,7 +382,7 @@ if BR2_powerpc || BR2_powerpc64 || BR2_powerpc64le
 source "arch/Config.in.powerpc"
 endif
 
-if BR2_sh || BR2_sh64
+if BR2_sh
 source "arch/Config.in.sh"
 endif
 

@@ -7,12 +7,15 @@
 MYSQL_VERSION_MAJOR = 5.1
 MYSQL_VERSION = $(MYSQL_VERSION_MAJOR).73
 MYSQL_SOURCE = mysql-$(MYSQL_VERSION).tar.gz
-MYSQL_SITE = http://downloads.mariadb.com/archives/mysql-$(MYSQL_VERSION_MAJOR)
+MYSQL_SITE = http://dev.mysql.com/get/Downloads/MySQL-$(MYSQL_VERSION_MAJOR)
 MYSQL_INSTALL_STAGING = YES
 MYSQL_DEPENDENCIES = readline ncurses
 MYSQL_AUTORECONF = YES
 MYSQL_LICENSE = GPLv2
 MYSQL_LICENSE_FILES = README COPYING
+
+# Unix socket. This variable can also be consulted by other buildroot packages
+MYSQL_SOCKET = /run/mysql/mysql.sock
 
 MYSQL_CONF_ENV = \
 	ac_cv_sys_restartable_syscalls=yes \
@@ -31,6 +34,7 @@ MYSQL_CONF_OPTS = \
 	--without-readline \
 	--with-low-memory \
 	--enable-thread-safe-client \
+	--with-unix-socket-path=$(MYSQL_SOCKET) \
 	--disable-mysql-maintainer-mode
 
 # host-mysql only installs what is needed to build mysql, i.e. the
@@ -43,13 +47,13 @@ HOST_MYSQL_CONF_OPTS = \
 	--disable-mysql-maintainer-mode
 
 define HOST_MYSQL_BUILD_CMDS
-	$(MAKE) -C $(@D)/include my_config.h
-	$(MAKE) -C $(@D)/mysys libmysys.a
-	$(MAKE) -C $(@D)/strings libmystrings.a
-	$(MAKE) -C $(@D)/vio libvio.a
-	$(MAKE) -C $(@D)/dbug libdbug.a
-	$(MAKE) -C $(@D)/regex libregex.a
-	$(MAKE) -C $(@D)/sql gen_lex_hash
+	$(HOST_MAKE_ENV) $(MAKE) -C $(@D)/include my_config.h
+	$(HOST_MAKE_ENV) $(MAKE) -C $(@D)/mysys libmysys.a
+	$(HOST_MAKE_ENV) $(MAKE) -C $(@D)/strings libmystrings.a
+	$(HOST_MAKE_ENV) $(MAKE) -C $(@D)/vio libvio.a
+	$(HOST_MAKE_ENV) $(MAKE) -C $(@D)/dbug libdbug.a
+	$(HOST_MAKE_ENV) $(MAKE) -C $(@D)/regex libregex.a
+	$(HOST_MAKE_ENV) $(MAKE) -C $(@D)/sql gen_lex_hash
 endef
 
 define HOST_MYSQL_INSTALL_CMDS

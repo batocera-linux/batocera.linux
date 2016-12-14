@@ -4,42 +4,43 @@
 #
 ################################################################################
 
-# omxplayer based on fmpeg 2.8.1
-OMXPLAYER_VERSION = 1cd53be67b6be027cb1c70d20582b851d18223a9
+OMXPLAYER_VERSION = 6c90c7503ba4658221774759edf7f2ae816711de
 OMXPLAYER_SITE = $(call github,popcornmix,omxplayer,$(OMXPLAYER_VERSION))
-OMXPLAYER_DEPENDENCIES = rpi-userland boost pcre freetype ffmpeg
+OMXPLAYER_LICENSE = GPLv2+
+OMXPLAYER_LICENSE_FILES = COPYING
 
-OMXPLAYER_CONFIG_OPT = \
-	CC="$(TARGET_CC)" \
-	CXX="$(TARGET_CXX)" \
-	CXXCP="$(CXX) -E" \
-	AR="$(TARGET_CROSS)ar" \
-	LD="$(TARGET_LD)" \
-	OBJDUMP="$(TARGET_CROSS)objdump" \
-	RANLIB="$(TARGET_CROSS)ranlib" \
-	STRIP="$(TARGET_CROSS)strip" \
-	PATH=$(HOST_DIR)/usr/bin:$(PATH) \
-	LDFLAGS="$(TARGET_LDFLAGS) -L$(STAGING_DIR)/lib -L$(STAGING_DIR)/usr/lib -Lpcre/build -lvchostif -lc -lWFC -lGLESv2 -lEGL -lbcm_host -lopenmaxil -lfreetype -lz"\
-	INCLUDES="-isystem./ -isystem./linux \
-		-isystem$(STAGING_DIR)/usr/include \
-		-isystem$(STAGING_DIR)/usr/include/interface/vcos/pthreads \
-		-isystem$(STAGING_DIR)/usr/include/interface/vmcs_host/linux \
-		-isystem$(STAGING_DIR)/usr/include/freetype2 \
-		-isystem$(STAGING_DIR)/usr/include/dbus-1.0 \
-		-isystem$(STAGING_DIR)/usr/lib/dbus-1.0/include"
+OMXPLAYER_DEPENDENCIES = \
+	host-pkgconf boost dbus ffmpeg freetype libidn libusb pcre \
+	rpi-userland zlib
+
+OMXPLAYER_EXTRA_CFLAGS = \
+	-DTARGET_LINUX -DTARGET_POSIX \
+	`$(PKG_CONFIG_HOST_BINARY) --cflags bcm_host` \
+	`$(PKG_CONFIG_HOST_BINARY) --cflags freetype2` \
+	`$(PKG_CONFIG_HOST_BINARY) --cflags dbus-1`
+
+# OMXplayer has support for building in Buildroot, but that
+# procedure is, well, tainted. Fix this by forcing the real,
+# correct values.
+OMXPLAYER_MAKE_ENV = \
+	USE_BUILDROOT=1 \
+	BUILDROOT=$(TOP_DIR) \
+	SDKSTAGE=$(STAGING_DIR) \
+	TARGETFS=$(TARGET_DIR) \
+	TOOLCHAIN=$(HOST_DIR)/usr \
+	HOST=$(GNU_TARGET_NAME) \
+	SYSROOT=$(STAGING_DIR) \
+	JOBS=$(PARALLEL_JOBS) \
+	$(TARGET_CONFIGURE_OPTS) \
+	STRIP=true \
+	CFLAGS="$(TARGET_CFLAGS) $(OMXPLAYER_EXTRA_CFLAGS)"
 
 define OMXPLAYER_BUILD_CMDS
-	$(MAKE) -C $(@D) $(OMXPLAYER_CONFIG_OPT) omxplayer.bin
+	$(OMXPLAYER_MAKE_ENV) $(MAKE) -C $(@D) omxplayer.bin
 endef
 
 define OMXPLAYER_INSTALL_TARGET_CMDS
-	$(INSTALL) -m 755 $(@D)/omxplayer.bin $(TARGET_DIR)/usr/bin/omxplayer.bin
-	$(INSTALL) -m 755 $(@D)/omxplayer $(TARGET_DIR)/usr/bin/omxplayer
-	mkdir -p $(TARGET_DIR)/usr/omxplayer/
-	$(INSTALL) -m 755 $(@D)/dbuscontrol.sh $(TARGET_DIR)/usr/omxplayer/dbuscontrol.sh
-	mkdir -p $(TARGET_DIR)/usr/share/fonts/truetype/freefont/
-	$(INSTALL) -m 644 $(@D)/fonts/FreeSans.ttf $(TARGET_DIR)/usr/share/fonts/truetype/freefont/
-	$(INSTALL) -m 644 $(@D)/fonts/FreeSansOblique.ttf $(TARGET_DIR)/usr/share/fonts/truetype/freefont/
+	$(INSTALL) -m 0755 -D $(@D)/omxplayer.bin $(TARGET_DIR)/usr/bin/omxplayer
 endef
 
 $(eval $(generic-package))

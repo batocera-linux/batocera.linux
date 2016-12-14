@@ -4,16 +4,16 @@
 #
 ################################################################################
 
-MPV_VERSION = 0.17.0
-MPV_WAF_VERSION = 1.8.12
+MPV_VERSION = 0.22.0
 MPV_SITE = https://github.com/mpv-player/mpv/archive
 MPV_SOURCE = v$(MPV_VERSION).tar.gz
-MPV_EXTRA_DOWNLOADS = https://waf.io/waf-$(MPV_WAF_VERSION)
 MPV_DEPENDENCIES = \
 	host-pkgconf ffmpeg zlib \
 	$(if $(BR2_PACKAGE_LIBICONV),libiconv)
 MPV_LICENSE = GPLv2+
 MPV_LICENSE_FILES = LICENSE
+
+MPV_NEEDS_EXTERNAL_WAF = YES
 
 # Some of these options need testing and/or tweaks
 MPV_CONF_OPTS = \
@@ -23,7 +23,6 @@ MPV_CONF_OPTS = \
 	--disable-cdda \
 	--disable-cocoa \
 	--disable-coreaudio \
-	--disable-gpl3 \
 	--disable-libguess \
 	--disable-libv4l2 \
 	--disable-opensles \
@@ -52,7 +51,8 @@ MPV_CONF_OPTS += --disable-gbm
 endif
 
 # jack support
-ifeq ($(BR2_PACKAGE_JACK2),y)
+# It also requires 64-bit sync intrinsics
+ifeq ($(BR2_TOOLCHAIN_HAS_SYNC_8)$(BR2_PACKAGE_JACK2),yy)
 MPV_CONF_OPTS += --enable-jack
 MPV_DEPENDENCIES += jack2
 else
@@ -166,10 +166,11 @@ endif
 
 # SDL support
 # Both can't be used at the same time, prefer newer API
-ifeq ($(BR2_PACKAGE_SDL2),y)
+# It also requires 64-bit sync intrinsics
+ifeq ($(BR2_TOOLCHAIN_HAS_SYNC_8)$(BR2_PACKAGE_SDL2),yy)
 MPV_CONF_OPTS += --enable-sdl2 --disable-sdl1
 MPV_DEPENDENCIES += sdl2
-else ifeq ($(BR2_PACKAGE_SDL),y)
+else ifeq ($(BR2_TOOLCHAIN_HAS_SYNC_8)$(BR2_PACKAGE_SDL),yy)
 MPV_CONF_OPTS += --enable-sdl1 --disable-sdl2
 MPV_DEPENDENCIES += sdl
 else
@@ -234,28 +235,4 @@ else
 MPV_CONF_OPTS += --disable-x11
 endif
 
-define MPV_COPY_WAF
-	$(INSTALL) -m 0755 $(DL_DIR)/waf-$(MPV_WAF_VERSION) $(@D)/waf
-endef
-MPV_POST_EXTRACT_HOOKS += MPV_COPY_WAF
-
-define MPV_CONFIGURE_CMDS
-	cd $(@D); \
-		$(TARGET_CONFIGURE_OPTS) \
-		./waf configure $(MPV_CONF_OPTS)
-endef
-
-define MPV_BUILD_CMDS
-	cd $(@D); \
-		$(TARGET_MAKE_ENV) \
-		./waf build
-endef
-
-define MPV_INSTALL_TARGET_CMDS
-	cd $(@D); \
-		$(TARGET_MAKE_ENV) \
-		DESTDIR=$(TARGET_DIR) \
-		./waf install
-endef
-
-$(eval $(generic-package))
+$(eval $(waf-package))

@@ -1,3 +1,513 @@
+2016.11, Released November 30th, 2016
+
+	Minor fixes.
+
+	Updated/fixed packages: bzip2, gcc, jasper, sane-backends,
+	uboot, uclibc
+
+	Issues resolved (http://bugs.buildroot.org):
+
+	#9451: packages/postgresql/postgresql.mk contains wrong POST...
+
+2016.11-rc3, Released November 28th, 2016
+
+	Fixes all over the tree, including a number of security fixes.
+
+	The move from fakeroot to pseudo unfortunately brought a
+	number of issues.  The SELinux issue described in #9386 which
+	triggered the move to pseudo has been investigated further and
+	a workaround implemented and the pseudo changes reverted.
+
+	Linux kernel: update default to 4.8.11.
+
+	Defconfigs: Updates/fixes for imx28ek, mx6udoo, imx6ulpico,
+	olimex a20 olinuxino lime mali, roseapplepi, synopsis aarch64
+	vdk, axs101, axs103 and hs38 smd vdk.
+
+	Updated/fixed packages: autossh, chrony, dosfstools,
+	dtv-scan-tables, e2fsprogs, gcc, gdb, gnuchess, gnuradio,
+	gpsd, gst1-plugins-bad, gst1-plugins-good, imagemagick,
+	kvm-unit-tests, libfribi, libuv, mesa3d, mpfr, mplayer, mpv,
+	ntp, ola, olsr, openblas, openjpeg, openssh, postgresql,
+	ptpd2python3, qemu, qextserialport, qt5base, quagga, xqwt,
+	taskd, tiff, tremor, trousers, udisks, uclibc, wireshark,
+	xapp_xload, xenomai, xmlstarlet
+
+	Issues resolved (http://bugs.buildroot.org):
+
+	#9386: ubinize fails with or without custom config
+	#9431: A misspelling
+	#9446: make raspberrypi3_defconfig compilation failure
+
+2016.11-rc2, Released November 13th, 2016
+
+	Fixes all over the tree.
+
+	Architecture: add support for MIPS XBurst cores; remove MIPS
+	support for M5100 cores.
+
+	Updated/fixed packages: mesa3d, lttng-babeltrace, tinyalsa, pseudo,
+	czmq, libxml2, makedevs, binutils, kvm-unit-tests, libnss, privoxy,
+	qemu, ser2net, net-tools, ffmpeg, assimp, libmpeg2, ccache, mpv,
+	libxslt, python, python3, php, valgrind, guile, domoticz, efl,
+	jasper, kvmtool, go, wget, sane-backends, weston, tinymembench,
+	strace, openjpeg, lcms2, quota.
+
+	Linux kernel: update default to 4.8.7.
+
+	CMake support: fix cmake wrapper to properly pass NDEBUG flag.
+
+	Filesystems: use a wrapper to pseudo, to better mimick the behaviour
+	of fakeroot; makedevs no longer breaks of the destination already
+	exists and is of the correct type/major/minor.
+
+	Defconfigs: a few legacy and broken defconfigs have been removed
+	because they now fail to build: kb9202_defconfig, mini2440_defconfig,
+	freescale_p2020ds, qmx6, calao*, atmel_sama5d4ek. Other defconfigs
+	have been updated: nanopi-neo, olimex_a20_olinuxino_lime_mali,
+	armadeus_apf51, armadeus_apf28, freescale_imx31_3stack, ci20,
+	olimex_a20_olinuxino_lime2, atmel_at91sam9260eknf,
+	atmel_at91sam9rlek, atmel_at91sam9g20dfc, atmel_at91sam9g45m10ek,
+	atmel_sama5d3xek.
+
+2016.11-rc1, Released November 3rd, 2016
+
+	Fixes all over the tree and new features.
+
+	It is now possible to specify multiple BR2_EXTERNAL
+	directories. The required files in a BR2_EXTERNAL directory
+	have changed to accomodate this feature. Refer to the
+	documentation for details of how to update them. External
+	trees now have a name and a description. Also, it is possible
+	to override a defconfig in the external tree.
+
+	The default skeleton now uses UID 65534 for the "nobody"
+	user instead of UID 99, like most distros do. See
+	https://lwn.net/Articles/695478/ for a complete discussion.
+	Programs and configuration files that explicitly refer to UID
+	99 will have to be updated.
+
+	When the build environment already has a suitable cmake version
+	(3.1 or later), that one will be used instead of building
+	host-cmake. This can speed up the build significantly.
+
+	The ExtUtils::MakeMaker perl module is now required in the
+	build environment.
+
+	An additional check is done during the build that files are
+	not installed in the output directory within the output
+	directory. This happens e.g. when the target directory is
+	contained both in --prefix and in DESTDIR. The build will
+	terminate with an error message that specifies which package
+	and which file caused the failure.
+
+	The concept of "deprecated packages" and the BR2_DEPRECATED
+	option have been removed. Instead, packages are removed
+	immediately. Packages are only removed when they don't work
+	for some reason. If you still need a removed package and
+	you have a solution for the problem(s) that caused the
+	removal, please contribute it.
+
+	Architecture: support for sh64 removed, improved support for
+	MIPS core selection.
+
+	Toolchain: support for musl powerpc64le, mips64 and mipsr6
+	toolchains, ARC toolchain components updates, gcc 6.x series
+	bumped to 6.2.0, default binutils version switched to 2.26,
+	default gcc version switched to gcc 5.x, Linaro toolchains
+	updated, uclibc-ng bumped to 1.0.19. GCC is now always built
+	with TLS support. Checking of unsafe compiler options (that
+	point to host directories) has been extended with -isystem,
+	-idirafter and -iquote.
+
+	Package infrastructure: new variable $(PKG)_DL_OPTS, addition
+	of <pkg>-show-rdepends to list reverse dependencies, and
+	<pkg>-graph-rdepends to graph reverse dependencies. Linux tools
+	are now in a separate linux-tools package instead of in the
+	kernel build. Fakeroot has been replaced by pseudo.
+
+	CMake support: the toolchainfile.cmake file now provides a
+	definition of the CMAKE_BUILD_TYPE variable. The
+	toolchainfile.cmake also no longer forces the compiler/linker
+	flags defined by Buildroot.
+
+	New defconfigs: WaRP7, Solidrun's MX6 Cubox/Hummingboard,
+	TS-4900, Grinn's liteBoard, Udoo MX6Q/DL, Qemu ARM noMMU,
+	BeagleBone Qt5 demo, Digilent Zybo, FriendlyARM Nanopi NEO.
+
+	New packages: arm-trusted-firmware, amd-catalyst, atop, aufs,
+	aufs-util, fwts, gst1-rtsp-server, libglob, libite, mfgtools,
+	mksh, motion, paho-mqtt-c, php-amqp, pseudo, python-couchdb,
+	python-crcmod, python-cssutils, python-docutils,
+	python-futures, python-mwclient, python-mwscrape,
+	python-mwscrape2slob, python-pyelftools, python-pyicu,
+	python-pylru, python-pyqt5, python-requests-toolbelt,
+	python-simpleaudio, python-slob, rabbitmq-server, shapelib,
+	vdr, vdr-plugin-vnsiserver, vexpress-firmware, xvisor, iio and
+	gpio linux tools.
+
+	Removed packages: binutils 2.24, fakeroot, gcc 4.7, ipkg,
+	kodi-addon-xvdr, libgail, sstrip, torsmo, webkit, webkitgtk24,
+	wvdial, wvstreams.
+
+	Documentation: the list of packages that was present in the
+	Buildroot manual has been removed.
+
+	Legal info: the "licenses.txt" file that concatenates all
+	license texts is no longer generated - it was not considered
+	useful. The manifest.csv contains an empty cell instead of
+	"not saved" when no license file is available.
+
+	Other: addition of a DEVELOPERS file listing developers taking
+	care of packages or architectures.
+
+	Issues resolved (http://bugs.buildroot.org):
+
+	#7802: host-python build hangs compiling getbuildinfo.o
+	#8206: mplayer uses host xorg development files
+	#8516: mkcubiecard.sh uses outdated sfdisk switch -D
+	#8536: Building sudo with PAM results in unusable sudo
+	#8646: check-host-rpath script returns false positives when rpath
+	       contains symlink
+	#8696: xdriver_xf86-input-mouse install header files in target
+	       directory
+	#8811: rp-pppoe - generated scripts commands use HOST pathnames,
+	       not necessarily TARGET
+	#8846: Orphaned/missing toolchain borks eclipse plugin
+	#8856: python tornado runtime wasn't met on buildroot 2016.02
+	#8901: gcc failes to build if fortran is enabled
+	#8916: LDFLAGS pass to openssh
+	#8941: "ls" of an NFSv4 share only works when pumped through strace
+	#8946: Valgrind fails to build with stack protection turned on
+	#9021: Kodi - Broken: Illegal instruction (core dumped)
+	#9096: rootfs.ubi not created
+	#9111: glibc 2.23: libmvec.so not copied
+	#9176: minnowboard : USB not mounted
+	#9196: raspberry pi 3 default build seem broken
+	#9201: Permission denied make: *** [core-dependencies] Error 126 in
+	       Buildroot-2015.08.1
+	#9216: log4cpp package build fails to build within install
+	#9221: Kodi needs "Python .py and .pyc support" otherwise it crashes when
+	       pressing buttons.
+	#9229: Firefly boot fails with: "failed to find part:boot"
+	#9256: [Config file] New device: Odroid-U2/U3
+	#9296: Buildroot Fails on applying patches
+	#9301: U-boot fails to build with default zynq_zed_defconfig configuration
+	#9316: U-boot fails to build if libssl-dev is not installed
+	#9321: Vanilla libcrypt++ v5.6.3 doesn't allow to work Nvidia Tegra's
+	       flash utility (tegrarcm)
+	#9326: Odroid-C2 build results in non-bootable image
+	#9336: Improve iconv support for external toolchain based builds
+	#9356: gdb package
+	#9366: no link rootfs.ext4 -> rootfs.ext2
+	#9371: openssl: download failes with "Only allow downloads from primary
+	       download site" + local server
+	#9381: check-host-rpath issues
+	#9386: ubinize fails with or without custom config
+
+2016.08, Released September 1st, 2016
+
+	Minor fixes.
+
+	Toolchain: ARC tools updated to arc-2016.09-eng010.
+
+	Updated/fixed packages: libshout, luajit, mpd, mplayer
+
+	Issues resolved (http://bugs.buildroot.org):
+
+	#7520: CodeSourcery toolchain ARM: C++11 std::exception_ptr..
+	#8341: Getting EGL Error: Could not create the egl surface:..
+	#9121: gst1-imx for i.MX6 compile failed, cannot find PXP, ..
+
+2016.08-rc3, Released August 29th, 2016
+
+	Fixes all over the tree.
+
+	Toolchain: C++ support for the internal blackfin toolchain
+	re-enabled.
+
+	Architecture: Default to bf532 CPU variant for blackfin,
+	Fix flat one memory region support for m68k and disable flat
+	seperate data support because of compatibility issues.
+
+	Defconfigs: Minnowboard and Raspberrypi: Fix errors with
+	post-build scripts when systemd is used.
+	Zynq microzed/zc706/zed: Fix u-booot configuration.
+
+	netbsd-queue package extended and renamed to
+	musl-compat-headers. With this, a number of musl compatibility
+	patches are no longer needed.
+
+	Updated/fixed packages: aircrack-ng, android-tools, babeld,
+	bcusdk, binutils, boa, busybox, connman, cpupower,
+	docker-engine, domoticz, elf2flt, ffmpeg, fwup, gcc,
+	glib-networking, gnupg, hplip, igd2-for-linux, imagemagick,
+	imx-uuc, iputils, jack2, kismet, kmsxx, libaio, libamcodec,
+	libconfuse, libffi, libfreeimage, libgcrypt, libgpg-error,
+	libiio, libraw, libsepol, libserialport, libxmlrpc, linknx,
+	linux-pam, lirc-tools, lldpd, logrotate, lshw, musl, ncurses,
+	neon, nettle, norm, ntfs-3g, openblas, openmpi, openswan,
+	pinentry, pixman, protobuf, python-meld3, qlibc, qt, qt5base,
+	quagga, rpcbind, rt-tests, runc, sane-backends, sconeserver,
+	squeezelite, stella, tftpd, tinycbor, tinydtls, trace-cmd,
+	trousers, tstools, uboot-tools, uclibc, ulogd, ustr, vlc,
+	webkitgtk, wireshark, xdriver_xf86-video-intel
+
+	Issues resolved (http://bugs.buildroot.org):
+
+	#9101: Error on support/download/git with system git older than 1.8.4
+	#9181: Compiling linux kernel fails if BR2_LINUX_KERNEL_TOOL_CPU..
+
+2016.08-rc2, Released August 17th, 2016
+
+	Fixes all over the tree.
+
+	Toolchain: disable broken C++ support for internal blackfin
+	toolchains, ARC toolchain bumped to arc-2016.09-eng008 (GCC 6)
+	to fix various issues.
+
+	System: Zoneinfo is available for the musl C library as well.
+
+	Updated/fixed packages: am33x-cm3, axel, barebox, bdwgc,
+	blktrace, cairo, dante, enlightenment, fbterm, ffmpeg, flex,
+	fontconfig, gcc, gmp, gnuplot, gnuradio, gst1-imx, hidapi,
+	inotify_tools, iproute2, kmsxx, lftp, libaio, libcofi,
+	libical, libpjsip, libsidplay2, libunwindow, libxml2,
+	linux-zigbee, lttng-libust, mpv, mtd, ncdu, netplug, ntp,
+	openblas, openipmi, owfs, php, poco, procps, qt, quota,
+	sg3_utils, spidev_test, systemd-bootchart, thrift,
+	uboot-tools, uclibc, webrtc-audio-processing, wayland, weston,
+	xdriver_xf86-video-savage, xserver_xorg-server, xen
+
+	Issues resolved (http://bugs.buildroot.org):
+
+	#9136: make graph-size fails with "ValueError: too many values to..
+	#9151: qt: fix build with ALSA >= 1.1.x
+	#9156: qt: Fix missing runtime Qt3Support dependency
+	#9161: modsetting patch not applied to xserver 1.18.4
+	#9166: Missing overlays directory in VFAT image for raspberry pi 3
+
+2016.08-rc1, Released August 6th, 2016
+
+	Fixes all over the tree and new features.
+
+	Toolchain: Fortran support added. eglibc support removed, musl
+	support no longer experimental. Blackfin and Microblaze
+	support for internal uClibc-ng toolchain, m68k/coldfire
+	improvements. The check for unsafe (build host) directories
+	access (/usr/include and /usr/lib) is now enabled by default.
+	Unused locales are now purged by default to save space (and
+	the default list of locales shrunk). The option to control
+	this has now moved from the toolchain menu to system
+	configuration.
+
+	Legal info improvements: sources are now hardlinked instead of
+	copied if possible to save space. Patches and extra downloads
+	are also saved.
+
+	An experimental configuration knob (BR2_REPRODUCIBLE) has been
+	added to make the builds more reproducible (E.G. less
+	differences in the binary output between builds of the same
+	configuration). This is still work in progress.
+
+	An option to execute a custom script inside the fakeroot
+	environment used to the generate the filesystem (E.G. to tweak
+	permissions or similar) has been added.
+
+	Git support now supports git submodules if
+	<pkg>_GIT_SUBMODULES is enabled.
+
+	Hash files for integritry validation have been added for all
+	packages.
+
+	Scanpypi utility to help creating packages from the Python
+	package index (pypi) has been added.
+
+	The makedevs utility now has support for adding file
+	capabilities using extended attributes.
+
+	New defconfigs: Arcturus uCP1020, Atmel sama5d{2,3,4} xplained
+	development configs, Blackfin GDB simulator, Linksprite
+	pcDuino, Minnow Board Max graphical demo, NXP i.MX25 PDK,
+	i.MX51 EVK, i.MX6UL Pico, i.MX7 sabresd, QEMU MIPS32r6{,el} and
+	MIPS64r6{,el} malta, Roseapple Pi, Samsung Snow chromebook,
+	Toradex Apalis i.MX6 COM, TS-4800, x86-64 PC BIOS and EFI
+	demos. A number of defconfigs have been updated and extended
+	to generate SD card images. Synopsys HS38 VDK defconfig removed.
+
+	New packages: 4th, acpica, acpitool, alljoyn, alljoyn-base,
+	alljoyn-tcl, alljoyn-tcl-base, argparse, babeld, batman-adv,
+	circus, dante, docker-containerd, docker-engine, domoticz,
+	efibootmgr, efivar, ficl, fwup, gsettings-desktop-schemas,
+	gtksourceview, gupnp-dlna, gupnp-tools, igd2-for-linux,
+	jemalloc, kmsxx, lapack, lft, libaacs, libamcodec, libbdplus,
+	libcoap, libdvdcss, libebur128, libfastjson, libminiupnpc,
+	libnatpmp, libpqxx, libuio, libvdpau, log4cpp, minissdpd,
+	mxsldr, nginx-nasxi, nginx-upload, ninja, nodm, odroid-mali,
+	odroid-scripts, omxplayer, openblas, openmpi, openzwave,
+	p7zip, pdbg, python-argh, python-dataproperty,
+	python-dateutil, python-dialog3, python-dicttoxml,
+	python-dominate, python-engineio, python-flask-jsonrpc,
+	python-flask-login, python-humanize, python-pathtools,
+	python-pathvalidate, python-pillow, python-prompt-toolkit,
+	python-pytablewriter, python-pytz, python-scapy3k,
+	python-sdnotify, python-socketio, python-tomako,
+	python-ubjson, python-u-msgpack, python-watchdog,
+	python-wcwidth, python-xlrd, python-xlsxwriter,
+	python-xlutils, python-xlwt, rs485conf, runc, sdl2_gfx,
+	sdl2_image, sdl2_ttf, shellinabox, sphinxbase, stella,
+	supertuxkart, systemd-bootchart, tekui, terminology, tinycbor,
+	tinydtls, ti-sgx-demos, ti-sgx-km, ti-sgx-um, tunctl, wavemon,
+	wiringpi, xen
+
+	Deprecated packages: ipkg, sstrip
+
+	Removed packages: sunxi-mali-prop
+
+	Issues resolved (http://bugs.buildroot.org):
+
+	#8931: segment fault when compile argp-help.c using aarch64-bu...
+	#8966: eglfs error. buildroot don't compile the library libeglfs.so
+	#8971: build for beaglebone fails
+	#8986: qt5imageformats fails to build on AArch64
+	#8991: grub2 fails to compile
+	#9001: Nodejs option not available
+	#9006: gcc with c++ support v4 and v5 fail to compile on fedora 24
+	#9016: arceb-buildroot-linux-uclibc ld uses incorrect default format
+	#9066: 8139TOO - faulty behaviour
+	#9086: Syntax Error (missing ")" in boot/uboot/uboot.mk on line 203)
+	#9091: U-Boot fails to boot with large ramdisk
+
+2016.05, Released May 31st, 2016
+
+	Minor fixes.
+
+	External toolchain: Fix for symlink handling when copying
+	links to target.
+
+	Updated/fixed packages: gcc, grantlee, gst-ffmpeg,
+	ipsec-tools, iptraf-ng, libcurl, libdrm, libsigsegv, ltris,
+	lttng-babeltrace, mbedtls, mesa3d, moarvm, mplayer, mtools,
+	net-tools, openpowerlink, pulseview, rpm, tinyalsa,
+	xdriver_xf86-video-fbturbo, xserver_xorg-server
+
+2016.05-rc3, Released May 26th, 2016
+
+	Fixes all over the tree.
+
+	Tweaks for SSP handling for external toolchains.
+
+	Updated/fixed packages: aircrack-ng, bluez5_utils, connman,
+	cups, erlang-p1-stringprep, expat, ffmpeg, flann, flannel, go,
+	gst1-libav, hidapi, hplip, iptraf-ng, jamvm, kodi,
+	kodi-screensaver-matrixtrails, libcurl, libepoxy, libgpgme,
+	libsemanage, libxslt, liquid-dsp, ltris, lxc, mesa3d, midori,
+	mpg123, mtr, openpgm, openpowerlink, oprofile, php,
+	postgresql, putty, python-service-identity, python-treq,
+	qlibc, qt5serialbus, ruby, stress-ng, strongswan, time, tinc,
+	ustr, valgrind, webkitgtk, libxml2, xorriso,
+	xserver_xorg-server
+
+	Issues resolved (http://bugs.uclibc.org):
+
+	#8936: Aircrack-ng - Alot of missing dependencies
+
+2016.05-rc2, Released May 17th, 2016
+
+	Fixes all over the tree.
+
+	Rootfs overlay handling now refuses to overwrite
+	/{usr,bin,sbin,lib} symlinks from BR2_ROOTFS_MERGED_USR option
+	even if these directories are present in the overlay.
+
+	External toolchain: Unbreak user provided libraries deployment
+	(BR2_TOOLCHAIN_EXTRA_EXTERNAL_LIBS) handling after refactoring.
+
+	QEMU coldfire: Fix for signal handling kernel issue, enable
+	networking support.
+
+	Updated/fixed packages: android-tools, assimp, boost, gcc,
+	glibc, glmark2, gmrender-resurrect, go, go-bootstrap, iputils,
+	jack2, kodi-screensaver-asterwave, kodi-screensaver-rsxs,
+	kodi-visualisation-shadertoy, libarchive, libinput, libpjsip,
+	mali-t76x, mtr, nginx, opencv, openvpn, python-coherence,
+	qt5multimeda, quagga, samba4, sg3-utils, stress-ng, turbolua
+
+2016.05-rc1, Released May 10th, 2016
+
+	Fixes all over the tree and new features.
+
+	Architectures: new ARM variants: Cortex A17 and M4, improved
+	nonmmu (cortex-M) support, m68k has been re-enabled with
+	support for ColdFire. For x86, support for the i386 variant
+	has been dropped.
+
+	Toolchain: Add GCC 6 support, remove GCC 4.5, mark GCC 4.7 as
+	deprecated. Go programming language support, Add Binutils 2.26
+	support. Old Sourcery PowerPC external toolchains removed,
+	Sourcery MIPS 2016.06-8, AMD64 2015.11-139, NiosII 2015.11-130
+	added, Linaro ARM/ARMeb/Aarch64 toolchains updated.
+
+	New defconfigs: Firefly RK3288, Boundary Devices i.MX7 Nitrogen7,
+	STM32F429 and STM32F469 Discovery boards, Hardkernel ODROID-C2,
+	Raspberry Pi Zero and Raspberry Pi 3. Some Qemu defconfigs were
+	added for m68k, eXtensa-nommu and ColdFire.
+
+	Linux: use zImage by default on ARM, subversion repository
+	support (for u-boot as well).
+
+	New packages: aer-inject, android-tools, cannelloni,
+	cbootimage, cgroupfs-mount, connman-gtk, crudini, dt,
+	gmrender-resurrect, flannel, font-awesome, freeswitch, go,
+	go-bootstrap, gr-osmosdr, granite, i7z, imx-uuc,
+	kodi-adsp-basic, kodi-adsp-freesurround,
+	kodi-audiodecoder-opus, kodi-pvr-hdhomerun,
+	kodi-screensaver-asterwave, kodi-screensaver-cpblobs,
+	kodi-screensaver-matrixtrails, kodi-screensaver-planestate,
+	kodi-screensaver-rsxs, kodi-visualisation-fishbmc,
+	kodi-visualisation-fountain, kodi-visualisation-goom, libgee,
+	libimxvpuapi, libpjsip, libtomcrypt, libtommath, libusbgx,
+	lksctp-tools, mali-t76x, mkpimage, mpv, msr-tools, nload,
+	norm, nvme, owfs, pound, privoxy, procrank_linux, putty,
+	python-autobahn, python-characteristic, python-crossbar,
+	python-cryptography, python-iniparse, python-iowait,
+	python-lmdb, python-pexpect, python-ptyprocess,
+	python-pyasn-modules, python-pygments, python-pymysql,
+	python-pynacl, python-pyopenssl, python-pysocks,
+	python-pytrie, python-rpi-gpio, python-service-identity,
+	python-setproctitle, python-shutilwhich, python-treq,
+	python-txaio, python-ujson, python-wsaccel, qt5canvas3d,
+	qt5location, qt5quickcontrols2, qt5serialbus, qt5tools,
+	raptor, scrub, taskd, tegrarcm, turbolua, valijson,
+	wayland-protocols, webkitgtk, wilc1000-firmware, wpan-tools,
+	xdriver_xf86-video-amdgpu
+
+	Removed packages: foomatic-filters, python-m2crypto,
+	qt5quick1, qt5webkit-examples, samba, xdriver_xf86-input-void
+
+	Issues resolved (http://bugs.buildroot.org):
+
+	#6830: Qt5: no fonts are installed
+	#7562: musl buildroot-toolchain and BR2_MIPS_SOFT_FLOAT break
+	#7580: Invalid filesystem in Pandaboard defconfig
+	#8346: wf111 package removes all kernel module dependencies
+	#8436: xserver_xorg-server Segmentation fault
+	#8736: IPV6 forced on in busybox
+	#8746: At startup system stops with 'cannot set terminal proces..
+	#8751: make fail [fio does not build on sh]
+	#8766: Compiling host-gcc-final-4.9.3 broken on i386
+	#8771: make savedefconfig modifies sources
+	#8781: Unable to build uboot for imx28evk
+	#8786: gdb fails to build with xz and expat support at the same
+	#8801: Compilation of Buildroot 2016.2 for Raspberry Pi with...
+	#8806: Buildroot 2016.2 for Raspberry Pi requires that ext4...
+	#8836: Can't select Vim in menuconfig
+	#8851: Make sure fio can compile with libaio support if it...
+	#8861: With buildroot 2016.02 trying to build for corei7-avx
+	       fails while trying to build host-binutils
+	#8866: Making an USB flash bootable with extlinux build with
+	        buildroot does not work
+
 2016.02, Released March 1st, 2016
 
 	Minor fixes, mostly security related.

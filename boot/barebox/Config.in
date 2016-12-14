@@ -12,7 +12,7 @@ choice
 	  Select the specific Barebox version you want to use
 
 config BR2_TARGET_BAREBOX_LATEST_VERSION
-	bool "2016.04.0"
+	bool "2016.08.0"
 
 config BR2_TARGET_BAREBOX_CUSTOM_VERSION
 	bool "Custom version"
@@ -40,7 +40,7 @@ endif
 
 config BR2_TARGET_BAREBOX_VERSION
 	string
-	default "2016.04.0"	if BR2_TARGET_BAREBOX_LATEST_VERSION
+	default "2016.08.0"	if BR2_TARGET_BAREBOX_LATEST_VERSION
 	default BR2_TARGET_BAREBOX_CUSTOM_VERSION_VALUE if BR2_TARGET_BAREBOX_CUSTOM_VERSION
 	default "custom"	if BR2_TARGET_BAREBOX_CUSTOM_TARBALL
 	default BR2_TARGET_BAREBOX_CUSTOM_GIT_VERSION if BR2_TARGET_BAREBOX_CUSTOM_GIT
@@ -64,71 +64,22 @@ config BR2_TARGET_BAREBOX_CUSTOM_GIT_VERSION
 
 endif
 
+source boot/barebox/barebox/Config.in
 
-choice
-	prompt "Barebox configuration"
-	default BR2_TARGET_BAREBOX_USE_DEFCONFIG
-
-config BR2_TARGET_BAREBOX_USE_DEFCONFIG
-	bool "Using a defconfig"
-
-config BR2_TARGET_BAREBOX_USE_CUSTOM_CONFIG
-	bool "Using a custom config file"
-
-endchoice
-
-config BR2_TARGET_BAREBOX_BOARD_DEFCONFIG
-	string "board defconfig"
-	depends on BR2_TARGET_BAREBOX_USE_DEFCONFIG
+menuconfig BR2_TARGET_BAREBOX_AUX
+	bool "Build barebox with an auxiliary config"
 	help
-	  Name of the board for which Barebox should be built, without
-	  the _defconfig suffix.
+	  Build barebox with an auxiliary configuration.
 
+	  Useful for building an SPL (Secondary Program Loader) in
+	  addition to the traditional TPL (Tertiary Program Loader),
+	  such as the X-Loader or MLO for Texas Instruments
+	  processors.
 
-config BR2_TARGET_BAREBOX_CUSTOM_CONFIG_FILE
-	string "Configuration file path"
-	depends on BR2_TARGET_BAREBOX_USE_CUSTOM_CONFIG
-	help
-	  Path to the barebox configuration file
+if BR2_TARGET_BAREBOX_AUX
 
-config BR2_TARGET_BAREBOX_CONFIG_FRAGMENT_FILES
-	string "Additional configuration fragment files"
-	help
-	  A space-separated list of configuration fragment files,
-	  that will be merged to the main Barebox configuration file.
+source boot/barebox/barebox-aux/Config.in
 
-config BR2_TARGET_BAREBOX_IMAGE_FILE
-	string "Image filename"
-	help
-	  Name of the generated barebox image, which will be copied to
-	  the images directory.
-
-	  If left empty, defaults to:
-	  - barebox.bin for barebox versions older than 2012.10.
-	  - barebox-flash-image for later versions.
-
-config BR2_TARGET_BAREBOX_BAREBOXENV
-	bool "bareboxenv tool in target"
-	help
-	  Install bareboxenv tool in target.
-
-config BR2_TARGET_BAREBOX_CUSTOM_ENV
-	bool "Generate an environment image"
-	help
-	  Generate a custom environment image. This environment will
-	  contain the variables and scripts to be used at boot by
-	  barebox.
-
-config BR2_TARGET_BAREBOX_CUSTOM_ENV_PATH
-	string "Environment path"
-	depends on BR2_TARGET_BAREBOX_CUSTOM_ENV
-	help
-	  Path to the directory containing the custom barebox
-	  environment. Depending on your setup, it will probably be
-	  based on either the content of the defaultenv or
-	  defaultenv-2 directories in the barebox source code, plus
-	  the additions needed. The output will be an image in the
-	  barebox devfs format, stored in the images directory, with
-	  the same name as the directory name given here.
+endif
 
 endif
