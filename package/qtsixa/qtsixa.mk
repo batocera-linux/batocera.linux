@@ -5,7 +5,7 @@
 ################################################################################
 QTSIXA_VERSION = gasia 
 QTSIXA_SITE = $(call github,recalbox,qtsixa,$(QTSIXA_VERSION))
-QTSIXA_DEPENDENCIES = sdl linux-headers
+QTSIXA_DEPENDENCIES = sdl linux-headers libusb-compat
 PKGCONFIG_CONFIG=$(STAGING_DIR)/usr/lib/pkgconfig
 
 QTSIXA_INCLUDES =-I$(STAGING_DIR)/usr/include

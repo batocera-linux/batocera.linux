@@ -1,6 +1,7 @@
 config BR2_PACKAGE_QTSIXA
 	depends on BR2_PACKAGE_BLUEZ5_UTILS
-	depends on BR2_PACKAGE_LIBUSB
+	select BR2_PACKAGE_LIBUSB
+	select BR2_PACKAGE_LIBUSB_COMPAT
         bool "qtsixa"
         help
           Support for ps3 controllers.
