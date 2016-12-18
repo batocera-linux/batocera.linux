@@ -74,6 +74,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Add USB PS2 : GreenAsia Electronics
 - PSX: .bin extentions removed (use .cue instead)
 - Enable highscores for fba_libretro
+- Add mame parent only dat file
+- Add ipega pg 9055 rules
 - Add mame parent only dat file 
 - Add xin-mo 18pin, mayflash N64 and correction usbhid
 
