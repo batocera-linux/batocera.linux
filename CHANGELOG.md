@@ -76,9 +76,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Enable highscores for fba_libretro
 - Add mame parent only dat file
 - Add ipega pg 9055 rules
+- Add mame parent only dat file 
+- Add xin-mo 18pin, mayflash N64 and correction usbhid
 
-## [4.0.0-beta5] - 2016-08-13
-- Updated libretro mame 2003 core. Fixes the ratio issue in mame.
+## [4.0.0-beta5] - 2016-08-13hs the ratio issue in mame.
 - Improved pads and gpio support for moonlight
 - Change location of PM2_HOME to fix a bug with API daemon
 - Disable printer sharing to reduce log output
