@@ -30,7 +30,7 @@ for file in $files; do
     recallog -e "Unable to get headers for ${url}"
     exit 2
   fi
-  filesize=`echo "$headers" | grep "Content-Length: " | grep -Po '\d+'`
+  filesize=`echo "$headers" | grep "Content-Length: " | grep -Eo '[0-9]+'`
   if [ $? -ne 0 ];then
     recallog -e "Unable to get size from headers ${url}"
     exit 3
