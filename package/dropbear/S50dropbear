@@ -44,9 +44,7 @@ start() {
 stop() {
 	printf "Stopping dropbear sshd: "
 	start-stop-daemon -K -q -p /var/run/dropbear.pid
-	ret=$?
-	[ $ret = 0 ] && killall -q -15 dropbear 2>/dev/null
-	[ $ret = 0 ] && echo "OK" || echo "FAIL"
+	start-stop-daemon -K -q -n dropbear
 }
 restart() {
 	stop
