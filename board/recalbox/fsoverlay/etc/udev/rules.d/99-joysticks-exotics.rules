@@ -2,8 +2,9 @@
 SUBSYSTEM=="input", ATTRS{name}=="NVIDIA Corporation NVIDIA Controller v01.03", MODE="0666", ENV{ID_INPUT_JOYSTICK}="1"
 # IPEGA
 SUBSYSTEM=="input", ATTRS{name}=="ipega Bluetooth Gamepad", MODE="0666", ENV{ID_INPUT_JOYSTICK}="1"
-SUBSYSTEM=="input", ATTRS{name}=="Gamepad", MODE="0666", ENV{ID_INPUT_JOYSTICK}="1"
 SUBSYSTEM=="input", ATTRS{name}=="ipega Bluetooth Gamepad   ", MODE="0666", ENV{ID_INPUT_JOYSTICK}="1"
+SUBSYSTEM=="input", ATTRS{name}=="Gamepad", MODE="0666", ENV{ID_INPUT_JOYSTICK}="1"
+SUBSYSTEM=="input", ATTRS{name}=="GamePad", MODE="0666", ENV{ID_INPUT_JOYSTICK}="1"
 # Neo-Geo X Arcade Stick
 SUBSYSTEM=="input", ATTRS{name}=="TOMMO NEOGEOX Arcade Stick", MODE="0666", ENV{ID_INPUT_JOYSTICK}="1"
 #Mad Catz C.T.R.L.R gamepad

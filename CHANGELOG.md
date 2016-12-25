@@ -74,10 +74,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Add USB PS2 : GreenAsia Electronics
 - PSX: .bin extentions removed (use .cue instead)
 - Enable highscores for fba_libretro
+- Add mame parent only dat file
+- Add ipega pg 9055 rules
 - Add mame parent only dat file 
+- Add xin-mo 18pin, mayflash N64 and correction usbhid
+- Add usbhid for Retrobit Genesis to PC USB Adapter
 
-## [4.0.0-beta5] - 2016-08-13
-- Updated libretro mame 2003 core. Fixes the ratio issue in mame.
+## [4.0.0-beta5] - 2016-08-13hs the ratio issue in mame.
 - Improved pads and gpio support for moonlight
 - Change location of PM2_HOME to fix a bug with API daemon
 - Disable printer sharing to reduce log output
