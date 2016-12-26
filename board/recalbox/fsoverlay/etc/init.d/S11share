@@ -44,11 +44,6 @@ INTERNALDEVICETYPE="ext4" # faster than waiting udev to initialize to get the ty
 MAXTRY=$(getMaxTryConfig "${SHARECONFFILE}")
 NTRY=0
 
-# a recalbox is about 40000 files in *.xz
-# we've not time to compute this value before upgrading
-# let's keep a marge to have a value always under 100% (that's just for the percentage)
-NB_FILES_TARGET=45000
-
 ##### BUT FIRST, create the internal partition if it doesn't exist
 # command that can be used for test to remove the 3rd partition : parted -s -m /dev/mmcblk0 rm 3
 # create the internal partition if it doesn't exist
