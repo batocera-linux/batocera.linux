@@ -4,14 +4,14 @@
 #
 ################################################################################
 
-RPI_USERLAND_VERSION = 52eca998aa43f278314579dba4798a3fe1da46c3
-RPI_USERLAND_VERSION = 826b0b1b089329cdd9c3c9a3a91c0ffe915cf248
+RPI_USERLAND_VERSION = a1b89e91f393c7134b4cdc36431f863bb3333163
 RPI_USERLAND_SITE = $(call github,raspberrypi,userland,$(RPI_USERLAND_VERSION))
 RPI_USERLAND_LICENSE = BSD-3c
 RPI_USERLAND_LICENSE_FILES = LICENCE
 RPI_USERLAND_INSTALL_STAGING = YES
 RPI_USERLAND_CONF_OPTS = -DVMCS_INSTALL_PREFIX=/usr \
-	-DCMAKE_C_FLAGS="-DVCFILED_LOCKFILE=\\\"/var/run/vcfiled.pid\\\""
+	-DCMAKE_C_FLAGS="$(TARGET_CFLAGS) \
+		-DVCFILED_LOCKFILE=\\\"/var/run/vcfiled.pid\\\""
 
 RPI_USERLAND_PROVIDES = libegl libgles libopenmax libopenvg
 
