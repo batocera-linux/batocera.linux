@@ -1,0 +1,13 @@
+config BR2_PACKAGE_ADVANCEMAME
+	bool "advancemame"
+	help
+	  A MAME 0.106-based emulator
+	  http://www.advancemame.it
+
+# Looks like we can't compile both at the same time, and MESS would require its own package
+#if BR2_PACKAGE_ADVANCEMAME
+#config BR2_PACKAGE_ADVANCEMAME_MESS
+#	bool "advancemess"
+#	help
+#	  Compile MESS with AdvanceMAME
+#endif

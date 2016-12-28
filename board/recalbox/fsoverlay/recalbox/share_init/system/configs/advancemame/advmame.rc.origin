@@ -1,0 +1,25 @@
+dir_hi /recalbox/share/bios/advance
+dir_image /recalbox/share/roms/image
+dir_memcard /recalbox/share/saves/advance/memcard
+dir_nvram /recalbox/share/saves/advance/nvram
+dir_rom /recalbox/share/roms/mame
+dir_sample /recalbox/share/bios/advance/samples
+dir_snap /recalbox/share/screenshots
+device_video fb
+device_joystick auto
+misc_quiet yes
+misc_safequit no
+display_magnify 1
+display_expand 1.0
+sync_resample emulation
+
+input_map[ui_cancel] keyboard[0,esc]
+input_map[ui_configure] keyboard[0,tab]
+
+input_map[ui_up] keyboard[0,up]
+input_map[ui_down] keyboard[0,down]
+input_map[ui_left] keyboard[0,left]
+input_map[ui_right] keyboard[0,right]
+input_map[ui_select] keyboard[0,enter]
+input_map[ui_save_state] keyboard[0,lshift] keyboard[0,f7]
+input_map[ui_load_state] keyboard[0,f7] not keyboard[0,lshift]
