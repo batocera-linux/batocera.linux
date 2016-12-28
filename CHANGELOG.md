@@ -80,6 +80,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Add mame parent only dat file 
 - Add xin-mo 18pin, mayflash N64 and correction usbhid
 - Add usbhid for Retrobit Genesis to PC USB Adapter
+- new arcade emulator: AdvanceMame
 
 ## [4.0.0-beta5] - 2016-08-13hs the ratio issue in mame.
 - Improved pads and gpio support for moonlight
