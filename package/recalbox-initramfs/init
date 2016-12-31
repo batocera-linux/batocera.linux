@@ -33,7 +33,10 @@ do_root() {
       mount -o remount,rw /boot_root || return 1
       mv /boot_root/boot/recalbox.update /boot_root/boot/recalbox || return 1
       # remove the overlay when updating
-      mv /boot_root/boot/overlay /boot_root/boot/overlay.old      || return 1
+      if test -e /boot_root/boot/overlay
+      then
+	  mv /boot_root/boot/overlay /boot_root/boot/overlay.old      || return 1
+      fi
       mount -o remount,ro /boot_root || return 1
     fi
 
