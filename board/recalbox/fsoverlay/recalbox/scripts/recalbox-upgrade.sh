@@ -1,6 +1,6 @@
 #!/bin/bash
 
-recalboxupdateurl="http://recalbox.remix.free.fr"
+recalboxupdateurl="http://recalbox.remix.free.fr/upgrades"
 systemsetting="python /usr/lib/python2.7/site-packages/configgen/settings/recalboxSettings.pyc"
 
 arch=$(cat /recalbox/recalbox.arch)
@@ -31,7 +31,7 @@ fi
 files="boot.tar.xz"
 size="0"
 for file in $files; do
-  url="${recalboxupdateurl}/upgrades/${arch}/${updatetype}/last/${file}"
+  url="${recalboxupdateurl}/${arch}/${updatetype}/last/${file}"
   headers=`curl -sfI ${url}`
   if [ $? -ne 0 ];then
     recallog -e "Unable to get headers for ${url}"
@@ -79,7 +79,7 @@ function cleanBeforeExit {
 }
 files="boot.tar.xz"
 for file in $files; do
-  url="${recalboxupdateurl}/upgrades/${arch}/${updatetype}/last/${file}"
+  url="${recalboxupdateurl}/${arch}/${updatetype}/last/${file}"
   if ! curl -fs "${url}" -o "/recalbox/share/system/upgrade/${file}";then
     recallog -e "Unable to download file ${url}"
     cleanBeforeExit 7
