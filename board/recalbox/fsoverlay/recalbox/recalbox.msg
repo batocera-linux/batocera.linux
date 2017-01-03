@@ -1,1 +1,1 @@
-recalbox.remix
+batocera.linux
