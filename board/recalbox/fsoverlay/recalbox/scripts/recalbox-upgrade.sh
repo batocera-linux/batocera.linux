@@ -1,6 +1,6 @@
 #!/bin/bash
 
-recalboxupdateurl="http://recalbox.remix.free.fr/upgrades"
+recalboxupdateurl="http://batocera.linux.free.fr/upgrades"
 systemsetting="python /usr/lib/python2.7/site-packages/configgen/settings/recalboxSettings.pyc"
 
 arch=$(cat /recalbox/recalbox.arch)

@@ -12,7 +12,7 @@ extra1="$3"
 extra2="$4"
 arch=`cat /recalbox/recalbox.arch`
 
-recalboxupdateurl="http://recalbox.remix.free.fr/upgrades"
+recalboxupdateurl="http://batocera.linux.free.fr/upgrades"
 
 preBootConfig() {
     mount -o remount,rw /boot
