@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-KODI_PLUGIN_VIDEO_FILMON_VERSION = 4.6.6
+KODI_PLUGIN_VIDEO_FILMON_VERSION = 4.6.7
 KODI_PLUGIN_VIDEO_FILMON_SOURCE = plugin.video.filmon-$(KODI_PLUGIN_VIDEO_FILMON_VERSION).zip
 KODI_PLUGIN_VIDEO_FILMON_SITE = http://redirect.superrepo.org/v7/addons/plugin.video.filmon
 KODI_PLUGIN_VIDEO_FILMON_PLUGINNAME=plugin.video.filmon
