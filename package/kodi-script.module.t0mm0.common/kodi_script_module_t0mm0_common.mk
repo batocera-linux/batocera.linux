@@ -6,7 +6,7 @@
 
 KODI_SCRIPT_MODULE_T0MM0_COMMON_VERSION = 2.1.1
 KODI_SCRIPT_MODULE_T0MM0_COMMON_SOURCE = script.module.t0mm0.common-$(KODI_SCRIPT_MODULE_T0MM0_COMMON_VERSION).zip
-KODI_SCRIPT_MODULE_T0MM0_COMMON_SITE = "http://mirrors.kodi.tv/addons/jarvis/script.module.t0mm0.common"
+KODI_SCRIPT_MODULE_T0MM0_COMMON_SITE = "http://ftp.halifax.rwth-aachen.de/xbmc/addons/jarvis/script.module.t0mm0.common"
 KODI_SCRIPT_MODULE_T0MM0_COMMON_PLUGINNAME=script.module.t0mm0.common
 
 KODI_PLUGIN_TARGET_DIR=$(TARGET_DIR)/usr/share/kodi/addons
