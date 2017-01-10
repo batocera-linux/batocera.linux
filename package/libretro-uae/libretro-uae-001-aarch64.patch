@@ -3,14 +3,14 @@ index 423cfdf..e04c614 100644
 --- a/sources/src/machdep/m68kops.h
 +++ b/sources/src/machdep/m68kops.h
 @@ -11,7 +11,7 @@
- 
- #ifndef ANDPORT  
- 
--#if defined(PS3PORT) || defined(WIN32PORT) || defined(__x86_64__) || defined(ARM)
-+#if defined(PS3PORT) || defined(WIN32PORT) || defined(__x86_64__) || defined(ARM) || defined(AARCH64)
+
+ #ifndef ANDROID
+
+-#if defined(__CELLOS_LV2__) || defined(WIN32PORT) || defined(__x86_64__) || defined(ARM)
++#if defined(__CELLOS_LV2__) || defined(WIN32PORT) || defined(__x86_64__) || defined(ARM) || defined(AARCH64)
  #warning "TEST TESTFLAGS no opt"
- 
- #define FLAGBIT_N	15
+
+ #define FLAGBIT_N      15
 diff --git a/sources/src/machdep/maccess.h b/sources/src/machdep/maccess.h
 index 941ad9b..ece8068 100644
 --- a/sources/src/machdep/maccess.h
@@ -18,9 +18,9 @@ index 941ad9b..ece8068 100644
 @@ -6,7 +6,7 @@
    * Copyright 1996 Bernd Schmidt
    */
- 
+
 -#ifdef __CELLOS_LV2__
 +#if defined(__CELLOS_LV2__) || defined(AARCH64)
- 
+
  STATIC_INLINE uae_u32 do_get_mem_long (uae_u32 *a)
  {
