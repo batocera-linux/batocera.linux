@@ -1,0 +1,11 @@
+config BR2_PACKAGE_LIBRETRO_SNES9X
+        bool "libretro-snes9x"
+	depends on BR2_PACKAGE_RETROARCH
+	depends on BR2_INSTALL_LIBSTDCPP
+        help
+          Snes9x - Portable Super Nintendo Entertainment System (TM) emulator http://www.snes9x.com
+
+	  http://www.libretro.com
+
+comment "LIBRETRO_SNES9X needs a toolchain w/ C++"
+	depends on !BR2_INSTALL_LIBSTDCPP
