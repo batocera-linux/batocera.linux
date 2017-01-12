@@ -1,4 +1,5 @@
 config BR2_PACKAGE_KODI_SUPERREPO_ALL
+    depends on BR2_PACKAGE_KODI
     bool "kodi-superrepo-all"
     default y
     help
