@@ -32,7 +32,7 @@ files="boot.tar.xz"
 size="0"
 for file in $files; do
   url="${recalboxupdateurl}/${arch}/${updatetype}/last/${file}"
-  headers=`curl -sfI ${url}`
+  headers=`curl -sfIL ${url}`
   if [ $? -ne 0 ];then
     recallog -e "Unable to get headers for ${url}"
     exit 2
