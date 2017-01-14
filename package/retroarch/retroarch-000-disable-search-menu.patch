@@ -1,11 +1,13 @@
---- a/menu/menu_entry.c	2015-12-17 03:02:48.000000000 +0100
-+++ b/menu/menu_entry.c	2015-12-17 16:39:44.833487570 +0100
-@@ -402,7 +402,7 @@
-             ret = cbs->action_select(entry->path, entry->label, entry->type, i);
+diff --git a/menu/widgets/menu_entry.c b/menu/widgets/menu_entry.c
+index 1fe68b8..4e472c3 100644
+--- a/menu/widgets/menu_entry.c
++++ b/menu/widgets/menu_entry.c
+@@ -545,7 +545,7 @@ int menu_entry_action(menu_entry_t *entry, unsigned i, enum menu_action action)
+                   entry->label, entry->type, i);
           break;
        case MENU_ACTION_SEARCH:
--         menu_input_ctl(MENU_INPUT_CTL_SEARCH_START, NULL);
-+         //menu_input_ctl(MENU_INPUT_CTL_SEARCH_START, NULL);
+-         menu_input_dialog_start_search();
++         //menu_input_dialog_start_search();
           break;
  
        case MENU_ACTION_SCAN:

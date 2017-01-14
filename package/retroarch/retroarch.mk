@@ -47,7 +47,7 @@ endif
 
 # x86 : no option
 
-RETROARCH_CONF_OPTS += --enable-networking --enable-netplay
+RETROARCH_CONF_OPTS += --enable-networking
 
 ifeq ($(BR2_PACKAGE_PYTHON3),y)
 RETROARCH_CONF_OPTS += --enable-python
@@ -78,10 +78,10 @@ RETROARCH_CONF_OPTS += --disable-pulse
 endif
 
 ifeq ($(BR2_PACKAGE_HAS_LIBGLES),y)
-RETROARCH_CONF_OPTS += --enable-gles
+RETROARCH_CONF_OPTS += --enable-opengles
 RETROARCH_DEPENDENCIES += libgles
 else
-RETROARCH_CONF_OPTS += --disable-gles
+RETROARCH_CONF_OPTS += --disable-opengles
 endif
 
 ifeq ($(BR2_PACKAGE_HAS_LIBEGL),y)
@@ -127,7 +127,7 @@ endef
 
 ifeq ($(BR2_PACKAGE_MALI_OPENGLES_SDK),y)
 	RETROARCH_PRE_CONFIGURE_HOOKS += RETROARCH_MALI_FIXUP
-	RETROARCH_CONF_OPTS += --enable-gles --enable-mali_fbdev
+	RETROARCH_CONF_OPTS += --enable-opengles --enable-mali_fbdev
 endif
 
 define RETROARCH_CONFIGURE_CMDS

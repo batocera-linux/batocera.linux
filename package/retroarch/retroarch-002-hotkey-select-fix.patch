@@ -1,45 +1,35 @@
---- a/input/input_driver.c.orig	2016-07-25 14:27:51.000000000 +0200
-+++ b/input/input_driver.c	2016-07-25 17:59:21.788418044 +0200
-@@ -107,6 +107,9 @@
+diff --git a/input/input_driver.c b/input/input_driver.c
+index 8f323ad..299cb87 100644
+--- a/input/input_driver.c
++++ b/input/input_driver.c
+@@ -119,6 +119,10 @@ static bool input_driver_nonblock_state           = false;
  static bool input_driver_flushing_input           = false;
  static bool input_driver_data_own                 = false;
  
-+unsigned hotkey_counter = 0;
-+#define HOTKEY_DELAY 10 // number of frames required to trigger the hotkey
++/* number of frames required to trigger the hotkey */
++#define HOTKEY_DELAY 5
++static unsigned hotkey_counter = 0;
 +
  /**
   * input_driver_find_handle:
   * @idx                : index of driver to get handle to.
-@@ -528,7 +531,7 @@
-  *
-  * Checks if 'hotkey enable' key is pressed.
-  **/
--static bool check_input_driver_block_hotkey(bool enable_hotkey)
-+static unsigned check_input_driver_block_hotkey(bool enable_hotkey)
- {
-    bool use_hotkey_enable;
-    settings_t *settings          = config_get_ptr();
-@@ -562,7 +565,13 @@
+@@ -912,9 +916,16 @@ uint64_t input_keys_pressed(
+             && current_input->input_state(
+                current_input_data, joypad_info, &binds, 0,
+                RETRO_DEVICE_JOYPAD, 0, RARCH_ENABLE_HOTKEY))
+-            input_driver_block_libretro_input = true;
+-         else
+-            input_driver_block_hotkey         = true;
++      {
++         if (hotkey_counter < HOTKEY_DELAY)
++            hotkey_counter++;
++         if (hotkey_counter == HOTKEY_DELAY)
++             input_driver_block_libretro_input = true;
++      }
++      else {
++         hotkey_counter = 0;
++         input_driver_block_hotkey = true;
++      }
+    }
  
-    /* If we hold ENABLE_HOTKEY button, block all libretro input to allow
-     * hotkeys to be bound to same keys as RetroPad. */
--   return (use_hotkey_enable && enable_hotkey);
-+
-+   if (use_hotkey_enable && enable_hotkey)
-+      hotkey_counter++;
-+   else
-+      hotkey_counter = 0;
-+
-+   return hotkey_counter;
- }
- 
- /**
-@@ -593,7 +602,7 @@
- 
-    key = RARCH_ENABLE_HOTKEY;
-    
--   if (check_input_driver_block_hotkey(input_driver_key_pressed(&key)))
-+   if (check_input_driver_block_hotkey(input_driver_key_pressed(&key)) > HOTKEY_DELAY )
-       input_driver_set_libretro_input_blocked();
-    else
-       input_driver_unset_libretro_input_blocked();
+    game_focus_toggle_valid                      = binds[RARCH_GAME_FOCUS_TOGGLE].valid;
