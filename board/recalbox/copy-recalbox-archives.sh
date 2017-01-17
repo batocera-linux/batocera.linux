@@ -153,23 +153,29 @@ case "${RECALBOX_TARGET}" in
 	do
 	    cp "${BUILD_DIR}/uboot-odroidc2-v2015.01/sd_fuse/${F}" "${BINARIES_DIR}" || exit 1
 	done
-	cp board/hardkernel/odroidc2/boot-logo.bmp.gz ${BINARIES_DIR} || exit 1
 
-	# /boot
-	cp "board/hardkernel/odroidc2/boot.ini" ${BINARIES_DIR}/boot.ini || exit 1
-
-	# root.tar.xz
-	cp "${BINARIES_DIR}/rootfs.tar.xz" "${RECALBOX_BINARIES_DIR}/root.tar.xz" || exit 1
+	# boot
+	rm -rf ${BINARIES_DIR}/boot        || exit 1
+	mkdir -p ${BINARIES_DIR}/boot/boot || exit 1
+	cp board/recalbox/c2/boot-logo.bmp.gz ${BINARIES_DIR}/boot   || exit 1
+	cp "board/recalbox/c2/boot.ini"       ${BINARIES_DIR}/boot   || exit 1
+	cp "${BINARIES_DIR}/recalbox-boot.conf" "${BINARIES_DIR}/boot/recalbox-boot.conf" || exit 1
+	cp "${BINARIES_DIR}/Image" "${BINARIES_DIR}/boot/boot/linux" || exit 1
+	cp "${BINARIES_DIR}/meson64_odroidc2.dtb" "${BINARIES_DIR}/boot/boot" || exit 1
+	cp "${BINARIES_DIR}/uInitrd"              "${BINARIES_DIR}/boot/boot" || exit 1
+	cp "${BINARIES_DIR}/rootfs.squashfs" "${BINARIES_DIR}/boot/boot/recalbox.update" || exit 1
 
 	# boot.tar.xz
-	(cd "${BINARIES_DIR}" && tar -cJf "${RECALBOX_BINARIES_DIR}/boot.tar.xz" boot.ini Image meson64_odroidc2.dtb recalbox-boot.conf boot-logo.bmp.gz) || exit 1
+	(cd "${BINARIES_DIR}/boot" && tar -cJf "${RECALBOX_BINARIES_DIR}/boot.tar.xz" boot.ini boot recalbox-boot.conf boot-logo.bmp.gz) || exit 1
 
 	# recalbox.img
+        # rename the squashfs : the .update is the version that will be renamed at boot to replace the old version
+        mv "${BINARIES_DIR}/boot/boot/recalbox.update" "${BINARIES_DIR}/boot/boot/recalbox" || exit 1
 	GENIMAGE_TMP="${BUILD_DIR}/genimage.tmp"
 	RECALBOXIMG="${RECALBOX_BINARIES_DIR}/recalbox.img"
 	rm -rf "${GENIMAGE_TMP}" || exit 1
-	cp "board/hardkernel/odroidc2/genimage.cfg" "${BINARIES_DIR}" || exit 1
-	genimage --rootpath="${TARGET_DIR}" --inputpath="${BINARIES_DIR}" --outputpath="${RECALBOX_BINARIES_DIR}" --config="${BINARIES_DIR}/genimage.cfg" --tmppath="${GENIMAGE_TMP}" || exit 1
+	cp "board/recalbox/c2/genimage.cfg" "${BINARIES_DIR}" || exit 1
+	genimage --rootpath="${TARGET_DIR}" --inputpath="${BINARIES_DIR}/boot" --outputpath="${RECALBOX_BINARIES_DIR}" --config="${BINARIES_DIR}/genimage.cfg" --tmppath="${GENIMAGE_TMP}" || exit 1
 	rm -f "${RECALBOX_BINARIES_DIR}/boot.vfat" || exit 1
 	c2_fusing "${BINARIES_DIR}" "${RECALBOXIMG}" || exit 1
 	sync || exit 1

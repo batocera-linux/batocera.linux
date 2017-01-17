@@ -42,7 +42,11 @@ define RECALBOX_INITRAMFS_INSTALL_TARGET_CMDS
 	cp package/recalbox-initramfs/init $(INITRAMFS_DIR)/init
 	$(RECALBOX_INITRAMFS_MAKE_ENV) $(MAKE) $(RECALBOX_INITRAMFS_MAKE_OPTS) -C $(@D) install
 	(cd $(INITRAMFS_DIR) && find . | cpio -H newc -o > $(BINARIES_DIR)/initrd)
+ifeq ($(BR2_aarch64),y)
+	(cd $(BINARIES_DIR) && mkimage -A arm64 -O linux -T ramdisk -C none -a 0 -e 0 -n initrd -d ./initrd ./uInitrd)
+else
 	(cd $(BINARIES_DIR) && mkimage -A arm -O linux -T ramdisk -C none -a 0 -e 0 -n initrd -d ./initrd ./uInitrd)
+endif
 endef
 else
 define RECALBOX_INITRAMFS_INSTALL_TARGET_CMDS
