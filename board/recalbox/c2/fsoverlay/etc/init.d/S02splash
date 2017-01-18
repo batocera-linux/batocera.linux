@@ -1,15 +1,6 @@
 #!/bin/bash
 
 do_start() {
-    # recalbox background
-    test -e /dev/fb0 && fbv -f -i /recalbox/system/resources/splash/logo-version.png
-
-    # Wait for emulationstation or Kodi, but not more than 20 seconds
-    count=0
-    while [[ ! -f "/tmp/emulationstation.ready" && ! -e "/var/run/kodi.msg" && $count -lt 20 ]]; do
-        sleep 1
-        ((count++))
-    done
 
     ###
     # enable tv output :
@@ -63,6 +54,16 @@ do_start() {
 	    echo 0x10001 > /sys/class/graphics/fb0/free_scale
 	    ;;
     esac
+
+    # recalbox background
+    test -e /dev/fb0 && fbv -f -i /recalbox/system/resources/splash/logo-version.png
+
+    # Wait for emulationstation or Kodi, but not more than 20 seconds
+    count=0
+    while [[ ! -f "/tmp/emulationstation.ready" && ! -e "/var/run/kodi.msg" && $count -lt 20 ]]; do
+        sleep 1
+        ((count++))
+    done
 }
 
 case "$1" in

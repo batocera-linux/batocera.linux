@@ -37,16 +37,19 @@ define RECALBOX_INITRAMFS_BUILD_CMDS
 endef
 
 ifeq ($(BR2_TARGET_UBOOT),y)
+
+ifeq ($(BR2_aarch64),y)
+RECALBOX_INITRAMFS_INITRDA=arm64
+else
+RECALBOX_INITRAMFS_INITRDA=arm
+endif
+
 define RECALBOX_INITRAMFS_INSTALL_TARGET_CMDS
 	mkdir -p $(INITRAMFS_DIR)
 	cp package/recalbox-initramfs/init $(INITRAMFS_DIR)/init
 	$(RECALBOX_INITRAMFS_MAKE_ENV) $(MAKE) $(RECALBOX_INITRAMFS_MAKE_OPTS) -C $(@D) install
 	(cd $(INITRAMFS_DIR) && find . | cpio -H newc -o > $(BINARIES_DIR)/initrd)
-ifeq ($(BR2_aarch64),y)
-	(cd $(BINARIES_DIR) && mkimage -A arm64 -O linux -T ramdisk -C none -a 0 -e 0 -n initrd -d ./initrd ./uInitrd)
-else
-	(cd $(BINARIES_DIR) && mkimage -A arm -O linux -T ramdisk -C none -a 0 -e 0 -n initrd -d ./initrd ./uInitrd)
-endif
+	(cd $(BINARIES_DIR) && mkimage -A $(RECALBOX_INITRAMFS_INITRDA) -O linux -T ramdisk -C none -a 0 -e 0 -n initrd -d ./initrd ./uInitrd)
 endef
 else
 define RECALBOX_INITRAMFS_INSTALL_TARGET_CMDS
