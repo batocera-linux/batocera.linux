@@ -1,0 +1,11 @@
+config BR2_PACKAGE_LIBRETRO_MAME2010
+        bool "libretro-mame2010"
+	depends on BR2_PACKAGE_RETROARCH
+	depends on BR2_INSTALL_LIBSTDCPP
+        help
+          A libretro mame2010 core for ARM.
+
+	  http://www.libretro.com
+
+comment "LIBRETRO_MAME2010 needs a toolchain w/ C++"
+	depends on !BR2_INSTALL_LIBSTDCPP
