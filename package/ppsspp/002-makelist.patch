@@ -1,5 +1,5 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 341513c..de89a97 100644
+index 54baf1a..31b3c54 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -1,5 +1,5 @@
@@ -9,7 +9,7 @@ index 341513c..de89a97 100644
  project(PPSSPP)
  enable_language(ASM)
  list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/Modules)
-@@ -107,6 +107,9 @@ endif()
+@@ -128,6 +128,9 @@ endif()
  # Needed for Globals.h
  include_directories("${CMAKE_SOURCE_DIR}")
  
@@ -19,7 +19,7 @@ index 341513c..de89a97 100644
  if(USING_EGL)
  	add_definitions(-DUSING_EGL)
  endif()
-@@ -234,6 +234,7 @@ set(CommonARM
+@@ -269,6 +272,7 @@ set(CommonARM
  	Common/ColorConvNEON.cpp)
  source_group(ARM FILES ${CommonARM})
  
@@ -27,7 +27,7 @@ index 341513c..de89a97 100644
  set(CommonARM64
  	Common/Arm64Emitter.h
  	Common/Arm64Emitter.cpp
-@@ -241,6 +242,7 @@ set(CommonARM64
+@@ -276,6 +280,7 @@ set(CommonARM64
  	Common/ArmEmitter.cpp
  	Core/Util/DisArm64.cpp)
  source_group(ARM64 FILES ${CommonARM64})
@@ -35,40 +35,7 @@ index 341513c..de89a97 100644
  
  set(CommonMIPS
  	Common/MipsCPUDetect.cpp
-@@ -413,18 +416,20 @@ if(USE_FFMPEG)
- 			endif(DEFINED PLATFORM_ARCH)
- 		else(NOT DEFINED FFMPEG_BUILDDIR)
- 			# Using shared libraries
--			include_directories(ffmpeg ${FFMPEG_BUILDDIR})
--
--			add_library(libavformat STATIC IMPORTED)
--			set_target_properties(libavformat PROPERTIES IMPORTED_LOCATION ${FFMPEG_BUILDDIR}/libavformat/libavformat.a)
--			add_library(libavcodec STATIC IMPORTED)
--			set_target_properties(libavcodec PROPERTIES IMPORTED_LOCATION ${FFMPEG_BUILDDIR}/libavcodec/libavcodec.a)
--			add_library(libavutil STATIC IMPORTED)
--			set_target_properties(libavutil PROPERTIES IMPORTED_LOCATION ${FFMPEG_BUILDDIR}/libavutil/libavutil.a)
--			add_library(libswresample STATIC IMPORTED)
--			set_target_properties(libswresample PROPERTIES IMPORTED_LOCATION ${FFMPEG_BUILDDIR}/libswresample/libswresample.a)
--			add_library(libswscale STATIC IMPORTED)
--			set_target_properties(libswscale PROPERTIES IMPORTED_LOCATION ${FFMPEG_BUILDDIR}/libswscale/libswscale.a)
-+			add_library(libavformat SHARED IMPORTED)
-+			set_target_properties(libavformat PROPERTIES IMPORTED_LOCATION /opt/vc/lib/libavformat.so)
-+
-+			add_library(libavcodec SHARED IMPORTED)
-+			set_target_properties(libavcodec PROPERTIES IMPORTED_LOCATION /opt/vc/lib/libavcodec.so)
-+
-+			add_library(libavutil SHARED IMPORTED)
-+			set_target_properties(libavutil PROPERTIES IMPORTED_LOCATION /opt/vc/lib/libavutil.so)
-+
-+			add_library(libswresample SHARED IMPORTED)
-+			set_target_properties(libswresample PROPERTIES IMPORTED_LOCATION /opt/vc/lib/libswresample.so)
-+
-+			add_library(libswscale SHARED IMPORTED)
-+			set_target_properties(libswscale PROPERTIES IMPORTED_LOCATION /opt/vc/lib/libswscale.so)
- 
- 			SET (FFMPEG_LIBRARIES
- 				libavformat
-@@ -618,8 +623,8 @@ else()
+@@ -551,8 +556,8 @@ else()
  endif()
  
  # FindPNG does a few things we don't want. So do it ourselves. Fixed to libpng17
@@ -79,7 +46,7 @@ index 341513c..de89a97 100644
  find_package(PackageHandleStandardArgs)
  find_package_handle_standard_args(PNG REQUIRED_VARS PNG_LIBRARY PNG_PNG_INCLUDE_DIR)
  if (PNG_FOUND)
-@@ -627,37 +632,37 @@ if (PNG_FOUND)
+@@ -560,36 +565,36 @@ if (PNG_FOUND)
  else()
  	if(ARM)
  		set(PNG_ARM_INCLUDES
@@ -91,7 +58,7 @@ index 341513c..de89a97 100644
 +            ext/native/ext/libpng16/arm/filter_neon_intrinsics.c
          )
  	endif()
--	add_library(png17 STATIC
+ 	add_library(png17 STATIC
 -		ext/native/ext/libpng17/pngconf.h
 -		ext/native/ext/libpng17/pngdebug.h
 -		ext/native/ext/libpng17/png.c
@@ -109,13 +76,11 @@ index 341513c..de89a97 100644
 -		ext/native/ext/libpng17/pngrutil.c
 -		ext/native/ext/libpng17/pngset.c
 -		ext/native/ext/libpng17/pngstruct.h
--		ext/native/ext/libpng17/pngtest.c
 -		ext/native/ext/libpng17/pngtrans.c
 -		ext/native/ext/libpng17/pngwio.c
 -		ext/native/ext/libpng17/pngwrite.c
 -		ext/native/ext/libpng17/pngwtran.c
 -		ext/native/ext/libpng17/pngwutil.c
-+	add_library(png16 STATIC
 +		ext/native/ext/libpng16/pngconf.h
 +		ext/native/ext/libpng16/pngdebug.h
 +		ext/native/ext/libpng16/png.c
@@ -133,7 +98,6 @@ index 341513c..de89a97 100644
 +		ext/native/ext/libpng16/pngrutil.c
 +		ext/native/ext/libpng16/pngset.c
 +		ext/native/ext/libpng16/pngstruct.h
-+		ext/native/ext/libpng16/pngtest.c
 +		ext/native/ext/libpng16/pngtrans.c
 +		ext/native/ext/libpng16/pngwio.c
 +		ext/native/ext/libpng16/pngwrite.c
@@ -145,11 +109,11 @@ index 341513c..de89a97 100644
  	include_directories(ext/native/ext)
  endif()
  
-@@ -1099,7 +1104,7 @@ if(ARMV7)
- 	set(CORE_NEON Core/Util/AudioFormatNEON.cpp Core/Util/AudioFormatNEON.h)
+@@ -1153,7 +1158,7 @@ if(WIN32)
+ 	list(APPEND GPU_IMPLS ${GPU_D3D9})
  endif()
  
--if(ARMV7)
+-if(ARMV7 OR ARM64)
 +if(ARM_NEON)
  	set(GPU_NEON GPU/Common/TextureDecoderNEON.cpp)
  endif()

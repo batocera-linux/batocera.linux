@@ -3,7 +3,7 @@
 # PPSSPP
 #
 ################################################################################
-PPSSPP_VERSION = 7ddd68de1798ac8ce5d626a1e05a910236c2ca5d
+PPSSPP_VERSION = 3eaa81570443506a1e8dd26217c7700854628a77
 PPSSPP_SITE = $(call github,hrydgard,ppsspp,$(PPSSPP_VERSION))
 PPSSPP_GIT = https://github.com/hrydgard/ppsspp.git
 PPSSPP_DEPENDENCIES = sdl2 zlib libzip linux zip ffmpeg
@@ -34,7 +34,13 @@ define PPSSPP_INSTALL_TO_TARGET
 endef
 
 PPSSPP_INSTALL_TARGET_CMDS = $(PPSSPP_INSTALL_TO_TARGET)
-PPSSPP_CONF_OPTS += -DUSE_FFMPEG=1 -DUSE_SYSTEM_FFMPEG=0 -DFFMPEG_BUILDDIR=1
+
+# -DUSE_SYSTEM_FFMPEG=1 is unstable
+ifeq ($(BR2_aarch64),y)
+PPSSPP_CONF_OPTS += -DUSE_FFMPEG=0
+else
+PPSSPP_CONF_OPTS += -DUSE_FFMPEG=1
+endif
 
 ifeq ($(BR2_PACKAGE_MALI_OPENGLES_SDK),y)
 	PPSSPP_CONF_OPTS += -DUSING_FBDEV=1
