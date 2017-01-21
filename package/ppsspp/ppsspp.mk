@@ -35,9 +35,9 @@ endef
 
 PPSSPP_INSTALL_TARGET_CMDS = $(PPSSPP_INSTALL_TO_TARGET)
 
-# -DUSE_SYSTEM_FFMPEG=1 is unstable
 ifeq ($(BR2_aarch64),y)
-PPSSPP_CONF_OPTS += -DUSE_FFMPEG=0
+# -DUSE_SYSTEM_FFMPEG=1 is unstable, but at least, games without videos work
+PPSSPP_CONF_OPTS += -DUSE_FFMPEG=1 -DUSE_SYSTEM_FFMPEG=1
 else
 PPSSPP_CONF_OPTS += -DUSE_FFMPEG=1
 endif
