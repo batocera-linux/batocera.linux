@@ -1,4 +1,5 @@
 config BR2_PACKAGE_KODI_RESOURCE_LANGUAGE_zh_cn
+    depends on BR2_PACKAGE_KODI
     bool "kodi-resource-language-zh_cn"
     default y
     help

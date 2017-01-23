@@ -1,4 +1,5 @@
 config BR2_PACKAGE_KODI_RESOURCE_LANGUAGE_it_it
+    depends on BR2_PACKAGE_KODI
     bool "kodi-resource-language-it_it"
     default y
     help

@@ -1,4 +1,5 @@
 config BR2_PACKAGE_KODI_VISUALISATION_WAVEFORHUE
+    depends on BR2_PACKAGE_KODI
 	bool "kodi-visualisation-waveforhue"
 	help
 	  WaveForHue visualiser for Kodi

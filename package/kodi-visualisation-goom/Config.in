@@ -1,5 +1,6 @@
 config BR2_PACKAGE_KODI_VISUALISATION_GOOM
 	bool "kodi-visualisation-goom"
+    depends on BR2_PACKAGE_KODI
 	depends on BR2_PACKAGE_HAS_LIBGL
 	help
 	  GOOM visualiser for Kodi

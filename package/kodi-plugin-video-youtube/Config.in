@@ -1,4 +1,5 @@
 config BR2_PACKAGE_KODI_PLUGIN_VIDEO_YOUTUBE
+    depends on BR2_PACKAGE_KODI
     bool "kodi-plugin-video-youtube"
     default y
     help

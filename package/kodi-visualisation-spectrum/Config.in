@@ -1,4 +1,5 @@
 config BR2_PACKAGE_KODI_VISUALISATION_SPECTRUM
+    depends on BR2_PACKAGE_KODI
 	bool "kodi-visualisation-spectrum"
 	help
 	  Spectrum visualiser for Kodi
