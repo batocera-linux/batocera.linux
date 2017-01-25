@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [ ! "$1" ];then
-	echo -e "usage : recalbox-config.sh [command] [args]\nWith command in\n\toverscan [enable|disable]\n\toverclock [none|high|turbo|extrem]\n\taudio [hdmi|jack|auto]\n\tcanupdate\n\tupdate\n\twifi [enable|disable] ssid key\n\tstorage [current|list|INTERNAL|ANYEXTERNAL|RAM|DEV UUID]\n\tsetRootPassword [password]\n\tgetRootPassword"
+	echo -e "usage : recalbox-config.sh [command] [args]\nWith command in\n\toverscan [enable|disable]\n\toverclock [none|high|turbo|extrem]\n\tlsaudio\n\tgetaudio\n\taudio [hdmi|jack|auto|custom|x,y]\n\tcanupdate\n\tupdate\n\twifi [enable|disable] ssid key\n\tstorage [current|list|INTERNAL|ANYEXTERNAL|RAM|DEV UUID]\n\tsetRootPassword [password]\n\tgetRootPassword"
 	exit 1
 fi
 configFile="/boot/config.txt"
@@ -248,6 +248,26 @@ fi
 
 fi
 
+if [ "$command" == "lsaudio" ];then
+    if [[ "${arch}" =~ "rpi" ]]
+    then
+	echo "hdmi"
+	echo "jack"
+	echo "auto"
+    elif [[ "${arch}" =~ "x86" ]];then
+	echo "auto"
+	echo "custom"
+	LANG=C aplay -l | grep -E '^card [0-9]*:' | sed -e s+'^card \([0-9]*\): [^,]*, device \([0-9]*\): [^\[]* \[\([^]]*\)].*$'+'\1,\2 \3'+
+    else
+	echo "auto"
+    fi
+fi
+
+if [ "$command" == "getaudio" ];then
+    $systemsetting -command load -key audio.device
+    exit 0
+fi
+
 if [ "$command" == "audio" ];then
     # this code is specific to the rpi
     # don't set it on other boards
@@ -263,6 +283,24 @@ if [ "$command" == "audio" ];then
 	fi
         echo "`logtime` : setting audio output mode : $mode" >> $log
 	amixer cset numid=3 $cmdVal || exit 1
+    elif [[ "${arch}" =~ "x86" ]]
+    then
+	# auto: no .asoundrc file
+	# custom: don't touch the .asoundrc file
+	# any other, create the .asoundrd file
+	if [ "$mode" == "auto" ];then
+	    rm -rf /recalbox/share/system/.asoundrc || exit 1
+	elif [ "$mode" != "custom" ];then
+	    if echo "${mode}" | grep -qE '^[0-9]*,[0-9]* '
+	    then
+		cardnb=$(echo "${mode}" | sed -e s+'^\([0-9]*\),.*$'+'\1'+)
+		devicenb=$(echo "${mode}" | sed -e s+'^[0-9]*,\([0-9]*\) .*$'+'\1'+)
+		cat > /recalbox/share/system/.asoundrc <<EOF
+	    pcm.!default { type plug slave { pcm "hw:${cardnb},${devicenb}" } }
+	    ctl.!default { type hw card ${cardnb} }
+EOF
+	    fi
+	fi
     fi
     exit 0
 fi
