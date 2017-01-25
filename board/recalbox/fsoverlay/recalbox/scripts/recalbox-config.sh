@@ -354,11 +354,18 @@ if [ "$command" == "canupdate" ];then
 	then
 	    recalboxupdateurl="${updateurl}"
 	fi
+
+	echo "Update url: ${recalboxupdateurl}/${arch}/${updatetype}/last"
 	available=`wget -qO- ${recalboxupdateurl}/${arch}/${updatetype}/last/recalbox.version`
 	if [[ "$?" != "0" ]];then
+	        echo "Unable to access the url" >&2
 		exit 2
 	fi
 	installed=`cat /recalbox/recalbox.version`
+
+	echo "Installed version: ${installed}"
+	echo "Available version: ${available}"
+
 	if [[ "$available" != "$installed" ]]; then
 		echo "update available"
 		exit 0
