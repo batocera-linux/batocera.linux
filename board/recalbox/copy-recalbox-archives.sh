@@ -99,11 +99,11 @@ case "${RECALBOX_TARGET}" in
 	tar -cJf "${RECALBOX_BINARIES_DIR}/boot.tar.xz" -C "${BINARIES_DIR}/rpi-firmware" "." ||
 	    { echo "ERROR : unable to create boot.tar.xz" && exit 1 ;}
 
-	# recalbox.img
+	# batocera.img
 	# rename the squashfs : the .update is the version that will be renamed at boot to replace the old version
 	mv "${BINARIES_DIR}/rpi-firmware/boot/recalbox.update" "${BINARIES_DIR}/rpi-firmware/boot/recalbox" || exit 1
 	GENIMAGE_TMP="${BUILD_DIR}/genimage.tmp"
-	RECALBOXIMG="${RECALBOX_BINARIES_DIR}/recalbox.img"
+	RECALBOXIMG="${RECALBOX_BINARIES_DIR}/batocera.img"
 	rm -rf "${GENIMAGE_TMP}" || exit 1
 	cp "board/recalbox/rpi/genimage.cfg" "${BINARIES_DIR}/genimage.cfg.tmp" || exit 1
 	FILES=$(find "${BINARIES_DIR}/rpi-firmware" -type f | sed -e s+"^${BINARIES_DIR}/rpi-firmware/\(.*\)$"+"file \1 \{ image = 'rpi-firmware/\1' }"+ | tr '\n' '@')
@@ -143,11 +143,11 @@ case "${RECALBOX_TARGET}" in
 	# boot.tar.xz
 	(cd "${BINARIES_DIR}/boot" && tar -cJf "${RECALBOX_BINARIES_DIR}/boot.tar.xz" boot.ini boot recalbox-boot.conf) || exit 1
 
-	# recalbox.img
+	# batocera.img
 	# rename the squashfs : the .update is the version that will be renamed at boot to replace the old version
 	mv "${BINARIES_DIR}/boot/boot/recalbox.update" "${BINARIES_DIR}/boot/boot/recalbox" || exit 1
 	GENIMAGE_TMP="${BUILD_DIR}/genimage.tmp"
-	RECALBOXIMG="${RECALBOX_BINARIES_DIR}/recalbox.img"
+	RECALBOXIMG="${RECALBOX_BINARIES_DIR}/batocera.img"
 	rm -rf "${GENIMAGE_TMP}" || exit 1
 	cp "board/recalbox/xu4/genimage.cfg" "${BINARIES_DIR}" || exit 1
 	genimage --rootpath="${TARGET_DIR}" --inputpath="${BINARIES_DIR}/boot" --outputpath="${RECALBOX_BINARIES_DIR}" --config="${BINARIES_DIR}/genimage.cfg" --tmppath="${GENIMAGE_TMP}" || exit 1
@@ -177,11 +177,11 @@ case "${RECALBOX_TARGET}" in
 	# boot.tar.xz
 	(cd "${BINARIES_DIR}/boot" && tar -cJf "${RECALBOX_BINARIES_DIR}/boot.tar.xz" boot.ini boot recalbox-boot.conf boot-logo.bmp.gz) || exit 1
 
-	# recalbox.img
+	# batocera.img
         # rename the squashfs : the .update is the version that will be renamed at boot to replace the old version
         mv "${BINARIES_DIR}/boot/boot/recalbox.update" "${BINARIES_DIR}/boot/boot/recalbox" || exit 1
 	GENIMAGE_TMP="${BUILD_DIR}/genimage.tmp"
-	RECALBOXIMG="${RECALBOX_BINARIES_DIR}/recalbox.img"
+	RECALBOXIMG="${RECALBOX_BINARIES_DIR}/batocera.img"
 	rm -rf "${GENIMAGE_TMP}" || exit 1
 	cp "board/recalbox/c2/genimage.cfg" "${BINARIES_DIR}" || exit 1
 	genimage --rootpath="${TARGET_DIR}" --inputpath="${BINARIES_DIR}/boot" --outputpath="${RECALBOX_BINARIES_DIR}" --config="${BINARIES_DIR}/genimage.cfg" --tmppath="${GENIMAGE_TMP}" || exit 1
@@ -208,11 +208,11 @@ case "${RECALBOX_TARGET}" in
         # it must include the squashfs version with .update to not erase the current squashfs while running
 	(cd "${BINARIES_DIR}" && tar -cJf "${RECALBOX_BINARIES_DIR}/boot.tar.xz" EFI boot recalbox-boot.conf) || exit 1
 
-	# recalbox.img
+	# batocera.img
         # rename the squashfs : the .update is the version that will be renamed at boot to replace the old version
         mv "${BINARIES_DIR}/boot/recalbox.update" "${BINARIES_DIR}/boot/recalbox" || exit 1
 	GENIMAGE_TMP="${BUILD_DIR}/genimage.tmp"
-	RECALBOXIMG="${RECALBOX_BINARIES_DIR}/recalbox.img"
+	RECALBOXIMG="${RECALBOX_BINARIES_DIR}/batocera.img"
 	rm -rf "${GENIMAGE_TMP}" || exit 1
 	cp "board/recalbox/grub2/genimage.cfg" "${BINARIES_DIR}" || exit 1
         cp "output/host/usr/lib/grub/i386-pc/boot.img" "${BINARIES_DIR}" || exit 1
@@ -225,3 +225,8 @@ case "${RECALBOX_TARGET}" in
 	bash
 	exit 1
 esac
+
+# common
+cp "${TARGET_DIR}/recalbox/recalbox.version" "${RECALBOX_BINARIES_DIR}" || exit 1
+
+exit 0
