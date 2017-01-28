@@ -1,35 +1,25 @@
 diff --git a/Makefile b/Makefile
-index 048a06f..a50c44f 100644
+index 048a06f..d6b8e7a 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -88,22 +88,22 @@ endif
+@@ -10,7 +10,7 @@
+ ###########################################################################
+ NATIVE :=0
  
- UNAME=$(shell uname -m)
+-UNAME=$(shell uname -a)
++UNAME=unix
  
--ifeq ($(firstword $(filter x86_64,$(UNAME))),x86_64)
-+ifeq ($(firstword $(filter x86_64,$(platform))),x86_64)
- PTR64 = 1
- endif
--ifeq ($(firstword $(filter amd64,$(UNAME))),amd64)
-+ifeq ($(firstword $(filter amd64,$(platform))),amd64)
- PTR64 = 1
- endif
--ifeq ($(firstword $(filter ppc64,$(UNAME))),ppc64)
-+ifeq ($(firstword $(filter ppc64,$(platform))),ppc64)
- PTR64 = 1
- endif
- ifneq (,$(findstring mingw64-w64,$(PATH)))
- PTR64=1
- endif
--ifneq (,$(findstring Power,$(UNAME)))
-+ifneq (,$(findstring Power,$(platform)))
- BIGENDIAN=1
- endif
--ifneq (,$(findstring ppc,$(UNAME)))
-+ifneq (,$(findstring ppc,$(platform)))
- BIGENDIAN=1
+ ifeq ($(platform),)
+ platform = unix
+@@ -86,7 +86,7 @@ ifeq ($(VRENDER),opengl)
+ 	CCOMFLAGS  += -DHAVE_OPENGL
  endif
  
+-UNAME=$(shell uname -m)
++UNAME=$(ARCH)
+ 
+ ifeq ($(firstword $(filter x86_64,$(UNAME))),x86_64)
+ PTR64 = 1
 @@ -282,16 +282,24 @@ else ifeq ($(platform), wii)
  
  # ARM
