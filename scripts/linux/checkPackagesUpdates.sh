@@ -4,13 +4,13 @@
 KODI_LANGUAGES="de_de es_es eu_es fr_fr it_it pt_br sv_se tr_tr zh_cn"
 
 PACKAGES_KODI="kodi-superrepo-repositories kodi-superrepo-repositories"
-PACKAGES_RETROARCH="retroarch libretro-pcsx libretro-snes9x-next libretro-4do libretro-81 libretro-beetle-lynx libretro-beetle-ngp libretro-beetle-pce libretro-beetle-pcfx"
+PACKAGES_RETROARCH="retroarch libretro-pcsx libretro-snes9x-next libretro-4do libretro-81 libretro-beetle-lynx libretro-beetle-ngp libretro-beetle-pce libretro-beetle-pcfx libretro-armsnes libretro-beetle-supergrafx libretro-beetle-vb libretro-beetle-wswan libretro-bluemsx libretro-cap32 libretro-catsfc libretro-cheats libretro-fba libretro-fceumm libretro-fceunext libretro-fmsx libretro-fuse libretro-gambatte libretro-genesisplusgx libretro-glupen64 libretro-gpsp libretro-gw libretro-hatari libretro-imageviewer libretro-imame libretro-lutro libretro-mame2003 libretro-mame2010 libretro-meteor libretro-mgba libretro-mupen64 libretro-nestopia libretro-nxengine libretro-o2em libretro-picodrive libretro-pocketsnes libretro-prboom libretro-prosystem libretro-quicknes libretro-scummvm libretro-stella libretro-tgbdual libretro-uae libretro-vecx libretro-virtualjaguar"
 PACKAGES_OTHERS=" dolphin-emu ppsspp"
 
 PACKAGES_NEW=""
 
 # FIXED COMMITS
-PKGVER_7ddd68de1798ac8ce5d626a1e05a910236c2ca5d=v1.3   # ppsspp
+PKGVER_3eaa81570443506a1e8dd26217c7700854628a77=v1.3   # ppsspp
 PKGVER_31bcb3d6f84b99c93844bde70251bcf3dec9ce7b=v1.3.6 # retroarch
 
 PACKAGES_GROUPS="KODI RETROARCH OTHERS"
@@ -23,15 +23,7 @@ kodi-superrepo-repositories_GETNET() { apachelistlast_GETNET "http://srp.nu/jarv
 kodi-resource-language_GETNET()      { apachelistlast_GETNET "http://mirrors.kodi.tv/addons/jarvis/resource.language.${1}?C=M;O=A" | sed -e s+"resource.language.${1}-\(.*\).zip"+'\1'+; }
 
 # RETROARCH
-retroarch_GETNET()             { githublasttag_GETNET "libretro/RetroArch"; }
-libretro-4do_GETNET()          { githublastcommit_GETNET "libretro/4do-libretro"; }
-libretro-81_GETNET()           { githublastcommit_GETNET "libretro/81-libretro"; }
-libretro-beetle-lynx_GETNET()  { githublastcommit_GETNET "libretro/beetle-lynx-libretro"; }
-libretro-beetle-ngp_GETNET()   { githublastcommit_GETNET "libretro/beetle-ngp-libretro"; }
-libretro-beetle-pce_GETNET()   { githublastcommit_GETNET "libretro/beetle-pce-fast-libretro"; }
-libretro-beetle-pcfx_GETNET()  { githublastcommit_GETNET "libretro/beetle-pcfx-libretro"; }
-libretro-snes9x-next_GETNET()  { githublastcommit_GETNET "libretro/snes9x-next"; }
-libretro-pcsx_GETNET()         { githublastcommit_GETNET "libretro/pcsx_rearmed"; }
+retroarch_GETNET()       { githublasttag_GETNET "libretro/RetroArch"; }
 
 # OTHERS
 dolphin-emu_GETNET() { githublasttag_GETNET "dolphin-emu/dolphin"; }
@@ -73,6 +65,12 @@ githublastcommit_GETNET() {
 	sed -e s+'.*:commit:\([^"]*\)".*'+'\1'+
 }
 
+githubcommitdate_GETNET() {
+    wget -qO - "https://github.com/${1}/commit/${2}" |
+	grep '<relative-time datetime=' | head -1 |
+	sed -e s+'^[ ]*<relative-time datetime=[^>]*>\(.*\)</relative-time>$'+'\1'+
+}
+
 apachelistlast_GETNET() {
     wget -qO - "${1}" |
 	grep "<a href=" | tail -1 |
@@ -102,14 +100,54 @@ kodi_eval() {
 
 isFunction() { [[ "$(declare -Ff "$1")" ]]; }
 
+github_base() {
+    GH_HASH=$(base_GETCUR "${1}")
+    GH_SIZE=$(echo "${GH_HASH}" | wc -c)
+    if test "${GH_SIZE}" = 41 -o "${GH_HASH}" = "master" # git full checksum
+    then
+	grep '_SITE = \$(call github,' package/${1}/*.mk 2>/dev/null | grep -vE '^#' | head -1 | sed -e s+'^.*call github,\([^,]*\),\([^,]*\),.*$'+'\1/\2:lastcommit'+
+    fi
+}
+
+github_eval() {
+    for pkg in ${PACKAGES}
+    do
+	GHAUTOREPO=$(github_base "$pkg")
+	# ok, found the repo directly in the mk file
+	if test -n "${GHAUTOREPO}"
+	then
+	    eval "${pkg}_GITHUB() { echo \"${GHAUTOREPO}\"; }"
+	fi
+
+	# define the last commit functions
+	if isFunction "${pkg}_GITHUB"
+	then
+	    GHREPO=$(${pkg}_GITHUB | cut -d ':' -f 1)
+	    GHTYPE=$(${pkg}_GITHUB | cut -d ':' -f 2)
+	    case "${GHTYPE}" in
+		"lastcommit")
+		    eval "${pkg}_GETNET() {
+ X1=\$(githublastcommit_GETNET ${GHREPO})
+ X2=\$(githubcommitdate_GETNET ${GHREPO} \${X1})
+ echo \"\${X1} - \${X2}\"
+ }"
+		    eval "${pkg}_GETCUR() {
+ X1=\$(base_GETCUR ${pkg})
+ X2=\$(githubcommitdate_GETNET ${GHREPO} \${X1})
+ echo \"\${X1} - \${X2}\"
+ }"
+		    ;;
+	    esac
+	fi
+    done
+}
+
 current_base_eval() {
     for pkg in ${PACKAGES}
     do
 	if ! isFunction "${pkg}_GETCUR"
 	    then
-	    eval "${pkg}_GETCUR() {
-	base_GETCUR \"\${1}\"
-    }"
+	    eval "${pkg}_GETCUR() { base_GETCUR \"\${1}\"; }"
 	fi
     done
 }
@@ -138,17 +176,18 @@ setPGroups() {
 run() {
     setPGroups "$1"
     kodi_eval "$1"
+    github_eval
     current_base_eval
 
     printf "Groups: ${PGROUPS}\n"
-    printf "+--------------------------------+------------------------------------------+------------------------------------------+\n"
-    printf "| %-30s | %-40s | %-40s |\n" "Package" "Available version" "Version"
-    printf "+--------------------------------+------------------------------------------+------------------------------------------+\n"
+    printf "+--------------------------------+---------------------------------------------------------+---------------------------------------------------------+\n"
+    printf "| %-30s | %-55s | %-55s |\n" "Package" "Available version" "Version"
+    printf "+--------------------------------+---------------------------------------------------------+---------------------------------------------------------+\n"
     for pkg in $PACKAGES
     do
 	(
-	    FNETV="${pkg}_GETNET "${pkg}""
-	    FCURV="${pkg}_GETCUR "${pkg}""
+	    FNETV="${pkg}_GETNET ${pkg}"
+	    FCURV="${pkg}_GETCUR ${pkg}"
 	    NETV=$(${FNETV})
 	    CURV=$(${FCURV})
 
@@ -163,14 +202,14 @@ run() {
 
 	    if test -n "${NETV}" -a "${NETV}" = "${CURV}"
 	    then
-		printf "| %-30s | %-40s | ${tput_green}%-40s${tput_reset} |\n" "${pkg}" "" "${CURV}${EXCPSTR}"
+		printf "| %-30s | %-55s | ${tput_green}%-55s${tput_reset} |\n" "${pkg}" "" "${CURV}${EXCPSTR}"
 	    else
-		printf "| %-30s | %-40s | ${tput_red}%-40s${tput_reset} |\n" "${pkg}" "${NETV}" "${CURV}${EXCPSTR}"
+		printf "| %-30s | %-55s | ${tput_red}%-55s${tput_reset} |\n" "${pkg}" "${NETV}" "${CURV}${EXCPSTR}"
 	    fi
 	)&
     done | sort
     wait
-    printf "+--------------------------------+------------------------------------------+------------------------------------------+\n"
+    printf "+--------------------------------+---------------------------------------------------------+---------------------------------------------------------+\n"
 }
 
 PARAM_GRP=$(echo "$1" | tr a-z A-Z)
@@ -192,46 +231,6 @@ exit $?
 # kodi-script.module.t0mm0.common
 # libcapsimage
 # libenet
-# libretro-armsnes
-# libretro-beetle-supergrafx
-# libretro-beetle-vb
-# libretro-beetle-wswan
-# libretro-bluemsx
-# libretro-cap32
-# libretro-catsfc
-# libretro-cheats
-# libretro-fba
-# libretro-fceumm
-# libretro-fceunext
-# libretro-fmsx
-# libretro-fuse
-# libretro-gambatte
-# libretro-genesisplusgx
-# libretro-glupen64
-# libretro-gpsp
-# libretro-gw
-# libretro-hatari
-# libretro-imageviewer
-# libretro-imame
-# libretro-lutro
-# libretro-mame2003
-# libretro-meteor
-# libretro-mgba
-# libretro-mupen64
-# libretro-nestopia
-# libretro-nxengine
-# libretro-o2em
-# libretro-picodrive
-# libretro-pocketsnes
-# libretro-prboom
-# libretro-prosystem
-# libretro-quicknes
-# libretro-scummvm
-# libretro-stella
-# libretro-tgbdual
-# libretro-uae
-# libretro-vecx
-# libretro-virtualjaguar
 # linapple-pie
 # megatools
 # mk_arcade_joystick_rpi
