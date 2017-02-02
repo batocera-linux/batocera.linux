@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-KODI_RESOURCE_LANGUAGE_SV_SE_VERSION = 2.0.5
+KODI_RESOURCE_LANGUAGE_SV_SE_VERSION = 2.0.7
 KODI_RESOURCE_LANGUAGE_SV_SE_SOURCE = resource.language.sv_se-$(KODI_RESOURCE_LANGUAGE_SV_SE_VERSION).zip
 KODI_RESOURCE_LANGUAGE_SV_SE_SITE = http://mirrors.kodi.tv/addons/jarvis/resource.language.sv_se
 KODI_RESOURCE_LANGUAGE_SV_SE_PLUGINNAME=resource.language.sv_se

@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-KODI_RESOURCE_LANGUAGE_PT_BR_VERSION = 2.0.5
+KODI_RESOURCE_LANGUAGE_PT_BR_VERSION = 2.0.7
 KODI_RESOURCE_LANGUAGE_PT_BR_SOURCE = resource.language.pt_br-$(KODI_RESOURCE_LANGUAGE_PT_BR_VERSION).zip
 KODI_RESOURCE_LANGUAGE_PT_BR_SITE = http://mirrors.kodi.tv/addons/jarvis/resource.language.pt_br
 KODI_RESOURCE_LANGUAGE_PT_BR_PLUGINNAME=resource.language.pt_br
