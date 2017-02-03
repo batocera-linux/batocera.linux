@@ -130,6 +130,8 @@ do
     fi
 done
 
+echo "synchronizing disk"
+
 # remount /boot in ro
 if ! mount -o remount,ro /boot
 then
@@ -137,7 +139,6 @@ then
 fi
 
 # a sync
-echo "synchronizing disk"
 rm -f "/recalbox/share/system/upgrade/boot.tar.xz"
 rm -f "/recalbox/share/system/upgrade/boot.tar.xz.md5"
 sync
