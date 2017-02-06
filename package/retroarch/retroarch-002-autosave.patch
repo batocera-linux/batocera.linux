@@ -1,0 +1,13 @@
+diff --git a/tasks/task_save.c b/tasks/task_save.c
+index ee8443c..1a06bdc 100644
+--- a/tasks/task_save.c
++++ b/tasks/task_save.c
+@@ -1129,7 +1129,7 @@ bool content_save_state(const char *path, bool save_to_disk, bool autosave)
+    {
+       if (save_to_disk)
+       {
+-         if (path_file_exists(path))
++         if (false)
+          {
+             /* Before overwritting the savestate file, load it into a buffer
+             to allow undo_save_state() to work */
