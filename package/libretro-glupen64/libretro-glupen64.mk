@@ -3,7 +3,7 @@
 # GLUPEN64
 #
 ################################################################################
-LIBRETRO_GLUPEN64_VERSION = ebd1793426bc9bd28f417e1a9f5fd6f953ac67a1
+LIBRETRO_GLUPEN64_VERSION = 7b7cb253325fca45e98d8c8a0045c81d8482ab5b
 LIBRETRO_GLUPEN64_SITE = $(call github,loganmc10,GLupeN64,$(LIBRETRO_GLUPEN64_VERSION))
 LIBRETRO_GLUPEN64_GIT = https://github.com/loganmc10/GLupeN64.git
 

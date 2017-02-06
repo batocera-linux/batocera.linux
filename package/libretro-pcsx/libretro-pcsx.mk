@@ -3,7 +3,7 @@
 # PCSXREARMED
 #
 ################################################################################
-LIBRETRO_PCSX_VERSION = abaa8b9e916f689ba162a684c2e23890cea7d6da
+LIBRETRO_PCSX_VERSION = 731139fbfd9fb303f2c5c050f9ff528878bc1371
 LIBRETRO_PCSX_SITE = $(call github,libretro,pcsx_rearmed,$(LIBRETRO_PCSX_VERSION))
 
 define LIBRETRO_PCSX_BUILD_CMDS

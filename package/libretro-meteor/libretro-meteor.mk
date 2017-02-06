@@ -3,7 +3,7 @@
 # METEOR
 #
 ################################################################################
-LIBRETRO_METEOR_VERSION = b4e749b1f2eb945661f1542b92eb515dd535746c
+LIBRETRO_METEOR_VERSION = b7f5c82094e560493219b444a7a756b5052ee2d1
 LIBRETRO_METEOR_SITE = $(call github,libretro,meteor-libretro,$(LIBRETRO_METEOR_VERSION))
 
 
