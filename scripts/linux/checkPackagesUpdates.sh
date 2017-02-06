@@ -9,6 +9,8 @@ PACKAGES_MUPEN="mupen64plus-audio-sdl mupen64plus-core mupen64plus-gles2 mupen64
 PACKAGES_OTHERS="dolphin-emu ppsspp reicast linapple-pie advancemame pifba"
 PACKAGES_MISC="virtualgamepads python-es-scraper qtsixa qtsixa-shanwan evwait raspi2png gpsp jstest2 mk_arcade_joystick_rpi"
 
+PACKAGES_UNKNOWN="db9_gpio_rpi dosbox fluidsynth freeimage gamecon_gpio_rpi kodi-plugin-video-filmon kodi-plugin-video-youtube kodi-script.module.t0mm0.common libcapsimage libenet megatools moonlight-embedded perf python-autobreadcrumbs python-rpigpio scummvm scummvm-vanfanel sdl2_mixer sfml vice xarcade2jstick xboxdrv"
+
 PACKAGES_TEST="retroarch ppsspp"
 
 # FIXED COMMITS
@@ -210,9 +212,9 @@ run() {
     current_base_eval
 
     printf "Groups: ${PGROUPS}\n"
-    printf "+--------------------------------+----------------------------------------------+---------------------------------------------------------+---------------------------------------------------------+\n"
-    printf "| %-30s | %-44s | %-55s | %-55s |\n" "Package" "Architectures" "Available version" "Version"
-    printf "+--------------------------------+----------------------------------------------+---------------------------------------------------------+---------------------------------------------------------+\n"
+    printf "+----------------------------------+----------------------------------------------+---------------------------------------------------------+---------------------------------------------------------+\n"
+    printf "| %-32s | %-44s | %-55s | %-55s |\n" "Package" "Architectures" "Available version" "Version"
+    printf "+----------------------------------+----------------------------------------------+---------------------------------------------------------+---------------------------------------------------------+\n"
     for pkg in $PACKAGES
     do
 	(
@@ -233,40 +235,31 @@ run() {
 
 	    if test -n "${NETV}" -a "${NETV}" = "${CURV}"
 	    then
-		printf "| %-30s | %44s | %-55s | ${tput_green}%-55s${tput_reset} |\n" "${pkg}" "${TARGETV}" "" "${CURV}${EXCPSTR}"
+		printf "| %-32s | %44s | %-55s | ${tput_green}%-55s${tput_reset} |\n" "${pkg}" "${TARGETV}" "" "${CURV}${EXCPSTR}"
 	    else
-		printf "| %-30s | %44s | %-55s | ${tput_red}%-55s${tput_reset} |\n" "${pkg}" "${TARGETV}" "${NETV}" "${CURV}${EXCPSTR}"
+		printf "| %-32s | %44s | %-55s | ${tput_red}%-55s${tput_reset} |\n" "${pkg}" "${TARGETV}" "${NETV}" "${CURV}${EXCPSTR}"
 	    fi
 	)&
     done | sort
     wait
-    printf "+--------------------------------+----------------------------------------------+---------------------------------------------------------+---------------------------------------------------------+\n"
+
+    if test -z "${1}" -o "${1}" = "ALL"
+    then
+	for pkg in $PACKAGES_UNKNOWN
+	do
+	    (
+		TARGETV=$(getTargets "${pkg}")
+		printf "| %-32s | %44s | %-55s | ${tput_red}%-55s${tput_reset} |\n" "${pkg}" "${TARGETV}" "unknown" "unknown"
+		
+	    )&
+	done | sort
+	wait
+    fi
+    
+    printf "+----------------------------------+----------------------------------------------+---------------------------------------------------------+---------------------------------------------------------+\n"
 }
 
 PARAM_GRP=$(echo "$1" | tr a-z A-Z)
 run "${PARAM_GRP}"
 exit $?
 ###
-
-# db9_gpio_rpi
-# dosbox
-# fluidsynth
-# freeimage
-# gamecon_gpio_rpi
-# kodi-plugin-video-filmon
-# kodi-plugin-video-youtube
-# kodi-script.module.t0mm0.common
-# libcapsimage
-# libenet
-# megatools
-# moonlight-embedded
-# perf
-# python-autobreadcrumbs
-# python-rpigpio
-# scummvm
-# scummvm-vanfanel
-# sdl2_mixer
-# sfml
-# vice
-# xarcade2jstick
-# xboxdrv
