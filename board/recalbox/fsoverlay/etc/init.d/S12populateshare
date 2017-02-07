@@ -5,8 +5,6 @@ then
   exit 0
 fi
 
-source /recalbox/scripts/recalbox-includes.sh
-
 IN=/recalbox/share_init
 OUT=/recalbox/share
 # force the creation of some directories
@@ -71,9 +69,6 @@ do
     fi
 done
 
-# recalbox.conf : upgrade if necessary
-doRbxConfUpgrade
-
 # ssh : create the ssh key while the -R option of dropbear try a chown or an operation which is not permitted on fat32
 if ! test -e /recalbox/share/system/ssh
 then
@@ -93,4 +88,20 @@ mkdir -p /recalbox/share/system/udev/rules.d
 rm -rf /run/udev/rules.d
 ln -s /recalbox/share/system/udev/rules.d/ /run/udev/
 
+## if the system was upgraded, fixes some files
+# fixes
+XNEW=$(cat /recalbox/recalbox.version)
+XCUR=$(cat /recalbox/share/system/data.version)
+test "${XCUR}" = "${XNEW}" && exit 0
+
+# retroarchcustom.cfg
+grep -qE '^video_font_path = ' /recalbox/share/system/configs/retroarch/retroarchcustom.cfg ||
+    (echo ; echo 'video_font_path = /recalbox/share/system/DejaVuSansMono.ttf') >> /recalbox/share/system/configs/retroarch/retroarchcustom.cfg
+grep -qE '^menu_driver = ' /recalbox/share/system/configs/retroarch/retroarchcustom.cfg ||
+    (echo ; echo 'menu_driver = rgui') >> /recalbox/share/system/configs/retroarch/retroarchcustom.cfg
+
+# save to avoid to redo that all the times
+cp /recalbox/recalbox.version /recalbox/share/system/data.version || exit 1
+
+exit 0
 # END
