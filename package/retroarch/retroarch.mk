@@ -10,7 +10,7 @@ RETROARCH_SITE = $(call github,libretro,RetroArch,$(RETROARCH_VERSION))
 
 RETROARCH_LICENSE = GPLv3+
 RETROARCH_CONF_OPTS += --disable-oss --enable-zlib
-RETROARCH_DEPENDENCIES = host-pkgconf
+RETROARCH_DEPENDENCIES = host-pkgconf dejavu
 
 ifeq ($(BR2_PACKAGE_SDL2),y)
 	RETROARCH_CONF_OPTS += --enable-sdl2
