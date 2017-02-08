@@ -1,0 +1,12 @@
+diff --git a/gfx/drivers/sdl2_gfx.c b/gfx/drivers/sdl2_gfx.c
+index 6d216d8..3d2750c 100644
+--- a/gfx/drivers/sdl2_gfx.c
++++ b/gfx/drivers/sdl2_gfx.c
+@@ -512,6 +512,7 @@ static bool sdl2_gfx_frame(void *data, const void *frame, unsigned width,
+    {
+       static struct retro_perf_counter sdl_copy_frame = {0};
+ 
++      SDL_RenderClear(vid->renderer);
+       sdl_refresh_input_size(vid, false, vid->video.rgb32, width, height, pitch);
+ 
+       performance_counter_init(&sdl_copy_frame, "sdl_copy_frame");
