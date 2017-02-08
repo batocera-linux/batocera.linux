@@ -4,9 +4,7 @@
 #
 ################################################################################
 
-#MUPEN64PLUS_CORE_VERSION = e58b813f5827c193c1bf5734e5029cf0b41c4b61
-#MUPEN64PLUS_CORE_SITE = $(call github,ricrpi,mupen64plus-core,$(MUPEN64PLUS_CORE_VERSION))
-MUPEN64PLUS_CORE_VERSION = 2d3d2d0761c9d1f6bab6f4da2ab65ffbbb08332f
+MUPEN64PLUS_CORE_VERSION = e0fa7db91b9df4157a81e4e5070a2e409dbc4bc7
 MUPEN64PLUS_CORE_SITE = $(call github,mupen64plus,mupen64plus-core,$(MUPEN64PLUS_CORE_VERSION))
 MUPEN64PLUS_CORE_LICENSE = MIT
 MUPEN64PLUS_CORE_DEPENDENCIES = sdl2 alsa-lib
