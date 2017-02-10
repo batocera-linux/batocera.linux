@@ -24,6 +24,31 @@ config BR2_PACKAGE_LINUX_FIRMWARE_RADEON
 	help
 	  Firmware files for AMD Radeon video cards.
 
+config BR2_PACKAGE_LINUX_FIRMWARE_NVIDIA
+	bool "Nvidia video card firmware"
+	help
+	  Firmware files for Nvidia video cards.
+
+config BR2_PACKAGE_LINUX_FIRMWARE_AMDGPU
+	bool "AMDGPU video card firmware"
+	help
+	  Firmware files for AMDGPU video cards.
+
+config BR2_PACKAGE_LINUX_FIRMWARE_I915
+	bool "I915 video card firmware"
+	help
+	  Firmware files for I915 video cards.
+
+config BR2_PACKAGE_LINUX_FIRMWARE_R128
+	bool "R128 video card firmware"
+	help
+	  Firmware files for R128 video cards.
+
+config BR2_PACKAGE_LINUX_FIRMWARE_MATROX
+	bool "Matrox video card firmware"
+	help
+	  Firmware files for Matrox video cards.
+
 endmenu # Video
 
 menu "Bluetooth firmware"
@@ -67,6 +92,46 @@ config BR2_PACKAGE_LINUX_FIRMWARE_ATHEROS_9271
 	bool "Atheros 9271"
 	help
 	  Firmware files for the Atheros 9271 module
+
+config BR2_PACKAGE_LINUX_FIRMWARE_ATHEROS_QCA4019
+	bool "Atheros QCA4019"
+	help
+	  Firmware files for the Atheros QCA4019 module
+
+config BR2_PACKAGE_LINUX_FIRMWARE_ATHEROS_QCA6174
+	bool "Atheros QCA6174"
+	help
+	  Firmware files for the Atheros QCA6174 module
+
+config BR2_PACKAGE_LINUX_FIRMWARE_ATHEROS_QCA9377
+	bool "Atheros QCA9377"
+	help
+	  Firmware files for the Atheros QCA9377 module
+
+config BR2_PACKAGE_LINUX_FIRMWARE_ATHEROS_QCA9887
+	bool "Atheros QCA9887"
+	help
+	  Firmware files for the Atheros QCA9887 module
+
+config BR2_PACKAGE_LINUX_FIRMWARE_ATHEROS_QCA9888
+	bool "Atheros QCA9888"
+	help
+	  Firmware files for the Atheros QCA9888 module
+
+config BR2_PACKAGE_LINUX_FIRMWARE_ATHEROS_QCA988X
+	bool "Atheros QCA988X"
+	help
+	  Firmware files for the Atheros QCA988X module
+
+config BR2_PACKAGE_LINUX_FIRMWARE_ATHEROS_QCA9984
+	bool "Atheros QCA9984"
+	help
+	  Firmware files for the Atheros QCA9984 module
+
+config BR2_PACKAGE_LINUX_FIRMWARE_ATHEROS_QCA99X0
+	bool "Atheros QCA99X0"
+	help
+	  Firmware files for the Atheros QCA99X0 module
 
 config BR2_PACKAGE_LINUX_FIRMWARE_BRCM_BCM43XX
 	bool "Broadcom BRCM bcm43xx"
