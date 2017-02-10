@@ -95,12 +95,24 @@ XCUR=$(cat /recalbox/share/system/data.version)
 test "${XCUR}" = "${XNEW}" && exit 0
 
 # retroarchcustom.cfg
-grep -qE '^video_font_path = ' /recalbox/share/system/configs/retroarch/retroarchcustom.cfg ||
-    (echo ; echo 'video_font_path = /recalbox/share/system/DejaVuSansMono.ttf') >> /recalbox/share/system/configs/retroarch/retroarchcustom.cfg
-grep -qE '^menu_driver = ' /recalbox/share/system/configs/retroarch/retroarchcustom.cfg ||
-    (echo ; echo 'menu_driver = rgui') >> /recalbox/share/system/configs/retroarch/retroarchcustom.cfg
-grep -qE '^menu_swap_ok_cancel_buttons = ' /recalbox/share/system/configs/retroarch/retroarchcustom.cfg ||
-    (echo ; echo 'menu_swap_ok_cancel_buttons = true') >> /recalbox/share/system/configs/retroarch/retroarchcustom.cfg
+retroarchcustom_fix_force_param() {
+    L_CFG="/recalbox/share/system/configs/retroarch/retroarchcustom.cfg"
+    L_PARAM=$1
+    L_VALUE=$2
+
+    grep -qE "^[ ]*${L_PARAM}[ ]*=[ ]*\"${L_VALUE}\"[ ]*$" "${L_CFG}" && return 0 # already done
+
+    if grep -qE "^[ ]*${L_PARAM}[ ]*=" "${L_CFG}"
+    then
+	sed -i -e s+"^[ ]*${L_PARAM}[ ]*=.*$"+"${L_PARAM} = \"${L_VALUE}\""+ "${L_CFG}"
+    else
+	(echo ; echo "${L_PARAM} = \"${L_VALUE}\"") >> "${L_CFG}"
+    fi
+}
+
+retroarchcustom_fix_force_param "video_font_path"             "/recalbox/share/system/DejaVuSansMono.ttf"
+retroarchcustom_fix_force_param "menu_driver"                 "rgui"
+retroarchcustom_fix_force_param "menu_swap_ok_cancel_buttons" "true"
 
 # save to avoid to redo that all the times
 cp /recalbox/recalbox.version /recalbox/share/system/data.version || exit 1
