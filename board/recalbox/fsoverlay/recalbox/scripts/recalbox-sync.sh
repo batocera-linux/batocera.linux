@@ -24,7 +24,7 @@ rs_list() {
 	echo "INTERNAL"
     fi
     # avoid sd card partitions
-    PARTPREFIX=$(/recalbox/scripts/recalbox-part.sh prefix "${INTERNALDEVICE}")
+    PARTPREFIX=$(/recalbox/scripts/recalbox-part.sh prefix "${INTERNAL_DEVICE}")
     (blkid | grep -vE "^${PARTPREFIX}" | grep ': LABEL="'
      blkid | grep -vE "^${PARTPREFIX}" | grep -v ': LABEL="' | sed -e s+':'+': LABEL="NO_NAME"'+
     ) | grep -vE "^${RS_CURRENT}:" | sed -e s+'^[^:]*: LABEL="\([^"]*\)" UUID="\([^"]*\)" TYPE="[^"]*"$'+'DEV \2 \1'+
@@ -131,7 +131,7 @@ cleanExit() {
     test -n "${MOUNTPOINT}" && umount "${MOUNTPOINT}"
 }
 
-INTERNALDEVICE=$(/recalbox/scripts/recalbox-part.sh share_internal)
+INTERNAL_DEVICE=$(/recalbox/scripts/recalbox-part.sh share_internal)
 
 if test $# -eq 0
 then
