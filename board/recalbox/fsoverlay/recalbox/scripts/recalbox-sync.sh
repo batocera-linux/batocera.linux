@@ -103,13 +103,13 @@ rs_sync() {
 
     EXITCODE=1
     # don't use -a to avoid links, special directories on vfat... (i got no problem to backup on ntfs (except a slower time))
-    RSYNCOPT="-a"
+    RSYNCOPT="-rlptD"
     if test "${FSTYPE}" = "vfat"
     then
-	RSYNCOPT="-rptgo --exclude system/bluetooth" # exclude bluetooth while it contains : chars not supported on fat32
+	RSYNCOPT="-rpt --exclude system/bluetooth" # exclude bluetooth while it contains : chars not supported on fat32
         rs_fix_min_dates "/recalbox/share" # if fails, will take a longer time
     fi
-    if rsync $RSYNCOPT -v --modify-window=2 --delete-during "/recalbox/share/" "${MOUNTDIR}" # modify-window because all file system such as fat32 doesn't have the same time precision
+    if rsync $RSYNCOPT -v --modify-window=2 --delete-during "/recalbox/share/" "${MOUNTDIR}" 2>&1 # modify-window because all file system such as fat32 doesn't have the same time precision
     then
 	EXITCODE=0
     fi
