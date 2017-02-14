@@ -25,9 +25,12 @@ rs_list() {
     fi
     # avoid sd card partitions
     PARTPREFIX=$(/recalbox/scripts/recalbox-part.sh prefix "${INTERNAL_DEVICE}")
-    (blkid | grep -vE "^${PARTPREFIX}" | grep ': LABEL="'
-     blkid | grep -vE "^${PARTPREFIX}" | grep -v ': LABEL="' | sed -e s+':'+': LABEL="NO_NAME"'+
-    ) | grep -vE "^${RS_CURRENT}:" | sed -e s+'^[^:]*: LABEL="\([^"]*\)" UUID="\([^"]*\)" TYPE="[^"]*"$'+'DEV \2 \1'+
+    lsblk -n -P -o NAME,FSTYPE,LABEL,UUID,SIZE,TYPE |
+	grep 'TYPE="part"' |
+	grep -v "FSTYPE=\"swap\"" |
+	sed -e s+'^NAME="'+'NAME="/dev/'+ -e s+'LABEL=""'+'LABEL="NO_NAME"'+ |
+	grep -vE "^NAME=\"${PARTPREFIX}|^NAME=\"${RS_CURRENT}\"" |
+	sed -e s+'^NAME="[^"]*" FSTYPE="[^"]*" LABEL="\([^"]*\)" UUID="\([^"]*\)" SIZE="\([^"]*\)" TYPE="[^"]*"$'+'DEV \2 \1 - \3'+
 }
 
 rs_internal_uid() {
@@ -113,6 +116,7 @@ rs_sync() {
     then
 	EXITCODE=0
     fi
+    echo "synchronizing disk"
     sync # ok, do a sync before ending
     
     if test -z "$EXISTINGMP"

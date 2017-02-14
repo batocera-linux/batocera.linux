@@ -488,9 +488,15 @@ if [[ "$command" == "storage" ]]; then
 	echo "INTERNAL"
 	echo "ANYEXTERNAL"
 	echo "RAM"
-	(blkid | grep -vE '^/dev/mmcblk' | grep ': LABEL="'
-	 blkid | grep -vE '^/dev/mmcblk' | grep -v ': LABEL="' | sed -e s+':'+': LABEL="NO_NAME"'+
-	) | sed -e s+'^[^:]*: LABEL="\([^"]*\)" UUID="\([^"]*\)" TYPE="[^"]*"$'+'DEV \2 \1'+
+
+	INTERNAL_DEVICE=$(/recalbox/scripts/recalbox-part.sh share_internal)
+	PARTPREFIX=$(/recalbox/scripts/recalbox-part.sh prefix "${INTERNAL_DEVICE}")
+	lsblk -n -P -o NAME,FSTYPE,LABEL,UUID,SIZE,TYPE |
+	    grep 'TYPE="part"' |
+	    grep -v "FSTYPE=\"swap\"" |
+	    sed -e s+'^NAME="'+'NAME="/dev/'+ -e s+'LABEL=""'+'LABEL="NO_NAME"'+ |
+	    grep -vE "^NAME=\"${PARTPREFIX}" |
+	    sed -e s+'^NAME="[^"]*" FSTYPE="[^"]*" LABEL="\([^"]*\)" UUID="\([^"]*\)" SIZE="\([^"]*\)" TYPE="[^"]*"$'+'DEV \2 \1 - \3'+
 	exit 0
     fi
     if [[ "${mode}" == "INTERNAL" || "${mode}" == "ANYEXTERNAL" || "${mode}" == "RAM" || "${mode}" == "DEV" ]]; then
