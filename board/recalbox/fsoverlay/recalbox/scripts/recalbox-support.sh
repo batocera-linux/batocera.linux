@@ -10,7 +10,7 @@ then
     REPORTNAME=$(basename "$1" | sed -e s+'^\([^.]*\)\..*$'+'\1'+)
     OUTPUTFILE=$1
 else
-    REPORTNAME="recalbox-support-"$(date +%Y%m%d%H%M%S)
+    REPORTNAME="batocera-support-"$(date +%Y%m%d%H%M%S)
     OUTPUTFILE="/recalbox/share/saves/${REPORTNAME}.tar.gz"
 fi
 
@@ -51,7 +51,7 @@ ifconfig -a             > "${DSYSTEM}/ifconfig.txt"
 lspci                   > "${DSYSTEM}/lspci.txt"
 amixer                  > "${DSYSTEM}/amixer.txt"
 aplay -l                > "${DSYSTEM}/aplay-l.txt"
-DISPLAY=:0 glxinfo      > "${DSYSTEM}/glxinfo.txt"
+DISPLAY=:0.0 glxinfo    > "${DSYSTEM}/glxinfo.txt"
 blkid                   > "${DSYSTEM}/disks.txt"
 connmanctl technologies > "${DSYSTEM}/connman-technologies.txt"
 connmanctl services     > "${DSYSTEM}/connman-services.txt"
@@ -79,7 +79,7 @@ do
     evtest --info "${J}"          > "${DJOYS}/evtest.${N}.txt"
     udevadm info -q all -n "${J}" > "${DJOYS}/udevadm.${N}.txt"
 done
-sdl2-jstest -l > "${DJOYS}/sdl2-jstest.txt"
+DISPLAY=:0.0 sdl2-jstest -l > "${DJOYS}/sdl2-jstest.txt"
 
 
 # lirc
