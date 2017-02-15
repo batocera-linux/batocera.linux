@@ -183,4 +183,7 @@ MESA3D_CONF_OPTS += --enable-static=no
 # Avoid automatic search of llvm-config
 MESA3D_CONF_OPTS += --with-llvm-prefix=$(STAGING_DIR)/usr/bin
 
+#
+MESA3D_CONF_OPTS += --enable-texture-float
+
 $(eval $(autotools-package))
