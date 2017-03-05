@@ -96,6 +96,7 @@ case "${RECALBOX_TARGET}" in
 	"${HOST_DIR}/usr/bin/mkknlimg" "${BINARIES_DIR}/zImage" "${BINARIES_DIR}/rpi-firmware/boot/linux"
 	cp "${BINARIES_DIR}/initrd.gz" "${BINARIES_DIR}/rpi-firmware/boot" || exit 1
 	cp "${BINARIES_DIR}/rootfs.squashfs" "${BINARIES_DIR}/rpi-firmware/boot/recalbox.update" || exit 1
+	echo "creating boot.tar.xz"
 	tar -cJf "${RECALBOX_BINARIES_DIR}/boot.tar.xz" -C "${BINARIES_DIR}/rpi-firmware" "." ||
 	    { echo "ERROR : unable to create boot.tar.xz" && exit 1 ;}
 
@@ -109,6 +110,7 @@ case "${RECALBOX_TARGET}" in
 	FILES=$(find "${BINARIES_DIR}/rpi-firmware" -type f | sed -e s+"^${BINARIES_DIR}/rpi-firmware/\(.*\)$"+"file \1 \{ image = 'rpi-firmware/\1' }"+ | tr '\n' '@')
 	cat "${BINARIES_DIR}/genimage.cfg.tmp" | sed -e s+'@files'+"${FILES}"+ | tr '@' '\n' > "${BINARIES_DIR}/genimage.cfg" || exit 1
 	rm -f "${BINARIES_DIR}/genimage.cfg.tmp" || exit 1
+	echo "generating image"
 	genimage --rootpath="${TARGET_DIR}" --inputpath="${BINARIES_DIR}" --outputpath="${RECALBOX_BINARIES_DIR}" --config="${BINARIES_DIR}/genimage.cfg" --tmppath="${GENIMAGE_TMP}" || exit 1
 	rm -f "${RECALBOX_BINARIES_DIR}/boot.vfat" || exit 1
 	sync || exit 1
@@ -141,6 +143,7 @@ case "${RECALBOX_TARGET}" in
 	cp "${BINARIES_DIR}/recalbox-boot.conf" "${BINARIES_DIR}/boot/recalbox-boot.conf"                  || exit 1
 
 	# boot.tar.xz
+	echo "creating boot.tar.xz"
 	(cd "${BINARIES_DIR}/boot" && tar -cJf "${RECALBOX_BINARIES_DIR}/boot.tar.xz" boot.ini boot recalbox-boot.conf) || exit 1
 
 	# batocera.img
@@ -150,6 +153,7 @@ case "${RECALBOX_TARGET}" in
 	RECALBOXIMG="${RECALBOX_BINARIES_DIR}/batocera.img"
 	rm -rf "${GENIMAGE_TMP}" || exit 1
 	cp "board/recalbox/xu4/genimage.cfg" "${BINARIES_DIR}" || exit 1
+	echo "generating image"
 	genimage --rootpath="${TARGET_DIR}" --inputpath="${BINARIES_DIR}/boot" --outputpath="${RECALBOX_BINARIES_DIR}" --config="${BINARIES_DIR}/genimage.cfg" --tmppath="${GENIMAGE_TMP}" || exit 1
 	rm -f "${RECALBOX_BINARIES_DIR}/boot.vfat" || exit 1
 	xu4_fusing "${BINARIES_DIR}" "${RECALBOXIMG}" || exit 1
@@ -175,6 +179,7 @@ case "${RECALBOX_TARGET}" in
 	cp "${BINARIES_DIR}/rootfs.squashfs" "${BINARIES_DIR}/boot/boot/recalbox.update" || exit 1
 
 	# boot.tar.xz
+	echo "creating boot.tar.xz"
 	(cd "${BINARIES_DIR}/boot" && tar -cJf "${RECALBOX_BINARIES_DIR}/boot.tar.xz" boot.ini boot recalbox-boot.conf boot-logo.bmp.gz) || exit 1
 
 	# batocera.img
@@ -184,6 +189,7 @@ case "${RECALBOX_TARGET}" in
 	RECALBOXIMG="${RECALBOX_BINARIES_DIR}/batocera.img"
 	rm -rf "${GENIMAGE_TMP}" || exit 1
 	cp "board/recalbox/c2/genimage.cfg" "${BINARIES_DIR}" || exit 1
+	echo "generating image"
 	genimage --rootpath="${TARGET_DIR}" --inputpath="${BINARIES_DIR}/boot" --outputpath="${RECALBOX_BINARIES_DIR}" --config="${BINARIES_DIR}/genimage.cfg" --tmppath="${GENIMAGE_TMP}" || exit 1
 	rm -f "${RECALBOX_BINARIES_DIR}/boot.vfat" || exit 1
 	c2_fusing "${BINARIES_DIR}" "${RECALBOXIMG}" || exit 1
@@ -206,6 +212,7 @@ case "${RECALBOX_TARGET}" in
 
 	# boot.tar.xz
         # it must include the squashfs version with .update to not erase the current squashfs while running
+	echo "creating boot.tar.xz"
 	(cd "${BINARIES_DIR}" && tar -cJf "${RECALBOX_BINARIES_DIR}/boot.tar.xz" EFI boot recalbox-boot.conf) || exit 1
 
 	# batocera.img
@@ -216,6 +223,7 @@ case "${RECALBOX_TARGET}" in
 	rm -rf "${GENIMAGE_TMP}" || exit 1
 	cp "board/recalbox/grub2/genimage.cfg" "${BINARIES_DIR}" || exit 1
         cp "output/host/usr/lib/grub/i386-pc/boot.img" "${BINARIES_DIR}" || exit 1
+	echo "generating image"
 	genimage --rootpath="${TARGET_DIR}" --inputpath="${BINARIES_DIR}" --outputpath="${RECALBOX_BINARIES_DIR}" --config="${BINARIES_DIR}/genimage.cfg" --tmppath="${GENIMAGE_TMP}" || exit 1
 	rm -f "${RECALBOX_BINARIES_DIR}/boot.vfat" || exit 1
 	sync || exit 1
