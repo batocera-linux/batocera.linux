@@ -1,0 +1,5 @@
+config BR2_PACKAGE_UNCLUTTER
+        bool "unclutter"
+	depends on BR2_PACKAGE_XORG7
+        help
+          Hide X11 Cursor
