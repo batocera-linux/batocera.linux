@@ -15,7 +15,7 @@ xset -dpms
 xset s off
 
 # auto hide the X11 cursor
-unclutter &
+unclutter -idle 2 &
 
 #
 export HOME=/recalbox/share/system
