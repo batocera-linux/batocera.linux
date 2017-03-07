@@ -1,0 +1,32 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 2547e5c..0bbaa61 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -200,7 +200,7 @@ endif()
+ 
+ 
+ # Enforce minimum GCC version
+-if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 5.0)
++if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 4.9)
+   message(FATAL_ERROR "Dolphin requires at least GCC 5.0 (found ${CMAKE_CXX_COMPILER_VERSION})")
+ endif()
+ 
+diff --git a/Source/Core/DolphinWX/GameListCtrl.cpp b/Source/Core/DolphinWX/GameListCtrl.cpp
+index a6ea420..05e0f08 100644
+--- a/Source/Core/DolphinWX/GameListCtrl.cpp
++++ b/Source/Core/DolphinWX/GameListCtrl.cpp
+@@ -167,11 +167,11 @@ static std::unordered_map<std::string, std::string> LoadCustomTitles()
+   if (!titlestxt.is_open())
+     OpenFStream(titlestxt, load_directory + "wiitdb.txt", std::ios::in);
+ 
+-  if (!titlestxt.is_open())
+-    return {};
+-
+   std::unordered_map<std::string, std::string> custom_titles;
+ 
++  if (!titlestxt.is_open())
++    return custom_titles;
++
+   std::string line;
+   while (!titlestxt.eof() && std::getline(titlestxt, line))
+   {

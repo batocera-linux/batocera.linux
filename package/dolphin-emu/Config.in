@@ -12,5 +12,6 @@ config BR2_PACKAGE_DOLPHIN_EMU
 	select BR2_PACKAGE_SFML
 	select BR2_PACKAGE_BLUEZ5_UTILS
 	select BR2_PACKAGE_WXWIDGETS
+	select BR2_PACKAGE_HIDAPI
         help
           A  gamecube/wii emulator
