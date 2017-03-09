@@ -9,7 +9,7 @@ PACKAGES_MUPEN="mupen64plus-audio-sdl mupen64plus-core mupen64plus-gles2 mupen64
 PACKAGES_OTHERS="dolphin-emu ppsspp reicast linapple-pie advancemame pifba"
 PACKAGES_MISC="virtualgamepads python-es-scraper qtsixa qtsixa-shanwan evwait raspi2png gpsp jstest2 mk_arcade_joystick_rpi"
 
-PACKAGES_UNKNOWN="db9_gpio_rpi dosbox fluidsynth freeimage gamecon_gpio_rpi kodi-plugin-video-filmon kodi-plugin-video-youtube kodi-script.module.t0mm0.common libcapsimage libenet megatools moonlight-embedded perf python-autobreadcrumbs python-rpigpio scummvm scummvm-vanfanel sdl2_mixer sfml vice xarcade2jstick xboxdrv"
+PACKAGES_UNKNOWN="db9_gpio_rpi dosbox fluidsynth freeimage gamecon_gpio_rpi kodi-plugin-video-filmon kodi-plugin-video-youtube kodi-script.module.t0mm0.common libcapsimage libenet megatools moonlight-embedded perf python-autobreadcrumbs python-rpigpio scummvm scummvm-vanfanel sdl2_mixer sfml vice xarcade2jstick xboxdrv unclutter"
 
 PACKAGES_TEST="retroarch ppsspp"
 
