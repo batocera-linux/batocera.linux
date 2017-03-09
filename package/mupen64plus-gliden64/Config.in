@@ -3,7 +3,6 @@ config BR2_PACKAGE_MUPEN64PLUS_GLIDEN64
 	select BR2_INSTALL_LIBSTDCPP
 	select BR2_PACKAGE_SDL2
 	select BR2_PACKAGE_ALSA_LIB
-	select BR2_PACKAGE_RPI_USERLAND
         help
           mupen 64 plus GLideN64 plugin
 	  https://github.com/gonetz/GLideN64
