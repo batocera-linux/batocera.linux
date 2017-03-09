@@ -15,7 +15,7 @@ SCUMMVM_DEPENDENCIES = sdl2 zlib jpeg-turbo libmpeg2 libogg libvorbis flac libma
 
 SCUMMVM_ADDITIONAL_FLAGS= -I$(STAGING_DIR)/usr/include -I$(STAGING_DIR)/usr/include/interface/vcos/pthreads -I$(STAGING_DIR)/usr/include/interface/vmcs_host/linux -lpthread -lm -L$(STAGING_DIR)/usr/lib -lGLESv2 -lEGL
 
-ifeq ($(BR2_PACKAGE_RECALBOX_TARGET_RPI1)$(BR2_PACKAGE_RECALBOX_TARGET_RPI2)$(BR2_PACKAGE_RECALBOX_TARGET_RPI3),y)
+ifeq ($(BR2_PACKAGE_RPI_USERLAND),y)
 	SCUMMVM_ADDITIONAL_FLAGS += -lbcm_host -lvchostif
 	SCUMMVM_CONF_OPTS += --host=raspberrypi
 endif
