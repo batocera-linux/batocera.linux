@@ -72,7 +72,7 @@ def checkBios(systems, prefix):
 def displayMissingBios(systems, missingBios):
     if missingBios:
         for system in missingBios:
-            print "== {} == ".format(systems[system]["name"])
+            print "> {}".format(systems[system]["name"])
             for file in missingBios[system].keys():
                 md5str = "-"
                 if missingBios[system][file]["md5"] != "":
