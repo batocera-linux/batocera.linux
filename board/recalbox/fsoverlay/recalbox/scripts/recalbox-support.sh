@@ -56,6 +56,7 @@ DISPLAY=:0.0 xrandr     > "${DSYSTEM}/xrandr.txt"
 blkid                   > "${DSYSTEM}/disks.txt"
 connmanctl technologies > "${DSYSTEM}/connman-technologies.txt"
 connmanctl services     > "${DSYSTEM}/connman-services.txt"
+/recalbox/scripts/recalbox-systems.py > "${DSYSTEM}/bios.txt"
 f_cp /recalbox/recalbox.version                               "${DSYSTEM}"
 f_cp /recalbox/recalbox.arch                                  "${DSYSTEM}"
 f_cp /boot/config.txt                                         "${DSYSTEM}"
@@ -81,7 +82,6 @@ do
     udevadm info -q all -n "${J}" > "${DJOYS}/udevadm.${N}.txt"
 done
 DISPLAY=:0.0 sdl2-jstest -l > "${DJOYS}/sdl2-jstest.txt"
-
 
 # lirc
 DLIRC="${TMPDIR}/lirc"
