@@ -3,7 +3,7 @@
 # POCKETSNESS
 #
 ################################################################################
-LIBRETRO_POCKETSNES_VERSION = 79f6be55360028a68b48d69d7a922da69eef9aa5
+LIBRETRO_POCKETSNES_VERSION = 04c179c85e266cb60c1135eb6c9cc6e7af2bb8de
 LIBRETRO_POCKETSNES_SITE = $(call github,libretro,pocketsnes-libretro,$(LIBRETRO_POCKETSNES_VERSION))
 
 define LIBRETRO_POCKETSNES_BUILD_CMDS
@@ -12,7 +12,7 @@ define LIBRETRO_POCKETSNES_BUILD_CMDS
 endef
 
 define LIBRETRO_POCKETSNES_INSTALL_TARGET_CMDS
-	$(INSTALL) -D $(@D)/libretro.so \
+	$(INSTALL) -D $(@D)/snes9x2002_libretro.so \
 		$(TARGET_DIR)/usr/lib/libretro/pocketsnes_libretro.so
 endef
 

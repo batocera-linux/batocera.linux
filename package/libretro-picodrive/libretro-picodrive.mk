@@ -3,7 +3,7 @@
 # libretro-picodrive
 #
 ################################################################################
-LIBRETRO_PICODRIVE_VERSION = d6be4fa64216d73a4bdbf8aa9a31b3917fd82ad1
+LIBRETRO_PICODRIVE_VERSION = f0a3d0dc4bd9060eb6bfdb16fb20dbb80a9e6ae9
 LIBRETRO_PICODRIVE_SITE = $(call github,libretro,picodrive,$(LIBRETRO_PICODRIVE_VERSION))
 LIBRETRO_PICODRIVE_DEPENDENCIES = libpng sdl
 

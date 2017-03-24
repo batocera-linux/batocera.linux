@@ -1,9 +1,11 @@
---- a/Makefile	2015-03-06 17:26:05.825130708 +0100
-+++ b/Makefile	2015-03-06 17:40:17.690811899 +0100
-@@ -48,6 +48,24 @@
-             -fno-exceptions -ffunction-sections \
-              -fomit-frame-pointer -fgcse-sm -fgcse-las -fgcse-after-reload \
-              -fweb -fpeel-loops
+diff --git a/Makefile b/Makefile
+index 7b1edbb..2c929c9 100644
+--- a/Makefile
++++ b/Makefile
+@@ -54,6 +54,24 @@ ifeq ($(platform), unix)
+ 
+    CFLAGS += -fno-builtin \
+             -fno-exceptions -ffunction-sections
 +else ifneq (,$(findstring armv,$(platform)))
 +       TARGET := $(TARGET_NAME)_libretro.so
 +       fpic := -fPIC
