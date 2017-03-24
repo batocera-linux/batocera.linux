@@ -20,6 +20,7 @@ unclutter -idle 2 &
 #
 export HOME=/recalbox/share/system
 export LC_ALL="${settings_lang}.UTF-8"
+export LANG=${LC_ALL}
 
 # without windowed, time must be sleeped to wait that matchbox ended to initialize :-(
 exec emulationstation --windowed
