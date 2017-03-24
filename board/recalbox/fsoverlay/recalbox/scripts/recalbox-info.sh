@@ -12,3 +12,18 @@ then
 fi
 echo "Cpu number: ${V_CPUNB}"
 echo "Cpu model: ${V_CPUMODEL1}"
+
+# battery
+if test -e /sys/class/power_supply/BAT0/capacity
+then
+    BATT=$(cat /sys/class/power_supply/BAT0/capacity)
+    echo "Battery: ${BATT}%"
+fi
+
+# temperature
+# Unit: millidegree Celsius
+TEMPE=$(cat /sys/devices/virtual/thermal/thermal_zone*/temp 2>/dev/null | sort -rn | head -1 | sed -e s+"[0-9][0-9][0-9]$"++)
+if test -n "${TEMPE}"
+then
+    echo "Temperature: ${TEMPE}°"
+fi
