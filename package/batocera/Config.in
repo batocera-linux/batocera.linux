@@ -53,6 +53,7 @@ menu "Emulators"
         source "package/batocera/amiberry/Config.in"
         source "package/batocera/reicast/Config.in"
         source "package/batocera/dolphin-emu/Config.in"
+        source "package/batocera/pcsx2/Config.in"
 
 if BR2_PACKAGE_RETROARCH
 menu "Libretro Cores"

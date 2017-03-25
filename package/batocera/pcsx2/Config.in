@@ -1,0 +1,15 @@
+config BR2_PACKAGE_PCSX2
+        bool "pcsx2"
+	depends on BR2_x86_i586
+	depends on BR2_PACKAGE_XORG7
+	select BR2_PACKAGE_ALSA_LIB
+	select BR2_PACKAGE_FREETYPE
+	select BR2_PACKAGE_ZLIB
+	select BR2_PACKAGE_LIBPNG
+	select BR2_PACKAGE_WXWIDGETS
+	select BR2_PACKAGE_LIBAIO
+	select BR2_PACKAGE_PORTAUDIO
+	select BR2_PACKAGE_LIBSOUNDTOUCH
+	select BR2_PACKAGE_SDL2
+        help
+          A  pcsx2 emulator
