@@ -1,0 +1,21 @@
+diff --git a/scraper.go b/scraper.go
+index bd97744..bf65934 100644
+--- a/scraper.go
++++ b/scraper.go
+@@ -123,7 +123,7 @@ func worker(sources []ds.DS, xmlOpts *rom.XMLOpts, gameOpts *rom.GameOpts, resul
+ 			if stop {
+ 				break
+ 			}
+-			log.Printf("INFO: Starting: %s", r.Path)
++			log.Printf("GAME: %s", r.Path)
+ 			err := r.GetGame(sources, gameOpts)
+ 			if err != nil {
+ 				log.Printf("ERR: error processing %s: %s", r.Path, err)
+@@ -529,6 +529,7 @@ func getSystems() ([]System, error) {
+ }
+ 
+ func main() {
++        log.SetFlags(0)
+ 	flag.Parse()
+ 	if *version {
+ 		fmt.Println(versionStr)

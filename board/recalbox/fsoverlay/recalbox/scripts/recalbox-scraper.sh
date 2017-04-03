@@ -37,5 +37,5 @@ esac
     do
 	EXTRAOPT=
 	test "${RDIR}" = "/recalbox/share/roms/mame" && EXTRAOPT="-mame"
-	(cd "${RDIR}" && sselph-scraper -console_src ss -lang "${sslang}" ${EXTRAOPT})
+	(cd "${RDIR}" && sselph-scraper -console_src ss -lang "${sslang}" ${EXTRAOPT}) 2>&1
     done
