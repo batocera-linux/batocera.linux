@@ -2,6 +2,7 @@
 
 systemsetting="python /usr/lib/python2.7/site-packages/configgen/settings/recalboxSettings.pyc"
 syslang=$($systemsetting -command load -key system.language)
+IMGSTYLE=$($systemsetting -command load -key scrapper.style)
 
 if test $# = 1
 then
@@ -11,21 +12,26 @@ fi
 # supported languages : en, fr, es, de, pt
 case "${syslang}" in
     fr_FR)
-	sslang=fr
+	sslang=fr,en
 	;;
     es_ES)
-	sslang=es
+	sslang=es,en
 	;;
     de_DE)
-	sslang=de
+	sslang=de,en
 	;;
     pt_PT)
-	sslang=pt
+	sslang=pt,en
 	;;
     *)
 	sslang=en
 esac
-    
+
+if test -z "${IMGSTYLE}"
+then
+    IMGSTYLE="s,b,f,a,l,3b"
+fi
+
 # find system to scrape
 (if test -n "${DOSYS}"
  then
@@ -35,7 +41,9 @@ esac
  fi) |
     while read RDIR
     do
+	BASEDIR=$(basename "${RDIR}")
+	echo "GAME: system ${BASEDIR}"
 	EXTRAOPT=
 	test "${RDIR}" = "/recalbox/share/roms/mame" && EXTRAOPT="-mame"
-	(cd "${RDIR}" && sselph-scraper -console_src ss -lang "${sslang}" ${EXTRAOPT}) 2>&1
+	(cd "${RDIR}" && sselph-scraper -console_src ss,gdb,ovgdb -lang "${sslang}" -console_img "${IMGSTYLE}" ${EXTRAOPT}) 2>&1
     done
