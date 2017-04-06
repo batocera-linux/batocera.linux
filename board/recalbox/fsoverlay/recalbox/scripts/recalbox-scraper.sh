@@ -41,9 +41,13 @@ fi
  fi) |
     while read RDIR
     do
-	BASEDIR=$(basename "${RDIR}")
-	echo "GAME: system ${BASEDIR}"
-	EXTRAOPT=
-	test "${RDIR}" = "/recalbox/share/roms/mame" && EXTRAOPT="-mame"
-	(cd "${RDIR}" && sselph-scraper -console_src ss,gdb,ovgdb -lang "${sslang}" -console_img "${IMGSTYLE}" ${EXTRAOPT}) 2>&1
+	NF=$(ls "${RDIR}" | grep -vE '\.txt$' | wc -l)
+	if test "${NF}" -gt 0
+	then
+	    BASEDIR=$(basename "${RDIR}")
+	    echo "GAME: system ${BASEDIR}"
+	    EXTRAOPT=
+	    test "${RDIR}" = "/recalbox/share/roms/mame" && EXTRAOPT="-mame"
+	    (cd "${RDIR}" && sselph-scraper -console_src ss,gdb,ovgdb -lang "${sslang}" -console_img "${IMGSTYLE}" ${EXTRAOPT}) 2>&1
+	fi
     done
