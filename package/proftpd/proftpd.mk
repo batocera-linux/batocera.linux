@@ -4,10 +4,9 @@
 #
 ################################################################################
 
-PROFTPD_VERSION = 1.3.5b
-PROFTPD_SOURCE = proftpd-$(PROFTPD_VERSION).tar.gz
+PROFTPD_VERSION = 1.3.5d
 PROFTPD_SITE = ftp://ftp.proftpd.org/distrib/source
-PROFTPD_LICENSE = GPLv2+
+PROFTPD_LICENSE = GPL-2.0+
 PROFTPD_LICENSE_FILES = COPYING
 
 PROFTPD_CONF_ENV = \

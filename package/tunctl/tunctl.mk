@@ -5,10 +5,9 @@
 ################################################################################
 
 TUNCTL_VERSION = 1.5
-TUNCTL_SOURCE = tunctl-$(TUNCTL_VERSION).tar.gz
 TUNCTL_SITE = http://downloads.sourceforge.net/project/tunctl/tunctl/$(TUNCTL_VERSION)
 
-TUNCTL_LICENSE = GPLv2
+TUNCTL_LICENSE = GPL-2.0
 TUNCTL_LICENSE_FILES = tunctl.c
 
 define TUNCTL_BUILD_CMDS

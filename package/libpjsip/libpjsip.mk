@@ -4,11 +4,11 @@
 #
 ################################################################################
 
-LIBPJSIP_VERSION = 2.5.5
+LIBPJSIP_VERSION = 2.6
 LIBPJSIP_SOURCE = pjproject-$(LIBPJSIP_VERSION).tar.bz2
 LIBPJSIP_SITE = http://www.pjsip.org/release/$(LIBPJSIP_VERSION)
 LIBPJSIP_DEPENDENCIES = libsrtp
-LIBPJSIP_LICENSE = GPLv2+
+LIBPJSIP_LICENSE = GPL-2.0+
 LIBPJSIP_LICENSE_FILES = COPYING
 LIBPJSIP_INSTALL_STAGING = YES
 LIBPJSIP_MAKE = $(MAKE1)
@@ -34,9 +34,30 @@ LIBPJSIP_CONF_OPTS = \
 	--disable-opencore-amr \
 	--disable-g7221-codec \
 	--disable-ilbc-codec \
-	--disable-webrtc \
+	--disable-libwebrtc \
 	--disable-opus \
-	--with-external-srtp=$(STAGING_DIR)/usr
+	--disable-oss \
+	--disable-ext-sound \
+	--disable-small-filter \
+	--disable-large-filter \
+	--disable-g711-codec \
+	--disable-l16-codec \
+	--disable-g722-codec \
+	--disable-libsamplerate \
+	--disable-sdl \
+	--disable-ffmpeg \
+	--disable-v4l2 \
+	--disable-openh264 \
+	--disable-libyuv \
+	--disable-ipp \
+	--disable-ssl \
+	--disable-silk \
+	--with-external-srtp
+
+# Note: aconfigure.ac is broken: --enable-epoll or --disable-epoll will
+# both enable it. But that's OK, epoll is better than the alternative,
+# so we want to use it.
+LIBPJSIP_CONF_OPTS += --enable-epoll
 
 ifeq ($(BR2_PACKAGE_OPENSSL),y)
 LIBPJSIP_DEPENDENCIES += openssl

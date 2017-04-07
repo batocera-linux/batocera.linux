@@ -21,7 +21,7 @@ QT_PATCH = https://github.com/qtproject/qtbase/commit/b8f98d956501dfa4ce03a137f1
 QT_DEPENDENCIES = host-pkgconf
 QT_INSTALL_STAGING = YES
 
-QT_LICENSE := LGPLv2.1 with exceptions or GPLv3
+QT_LICENSE := LGPL-2.1 with exceptions or GPL-3.0
 ifneq ($(BR2_PACKAGE_QT_LICENSE_APPROVED),y)
 QT_LICENSE := $(QT_LICENSE) or Digia Qt Commercial license
 endif
@@ -359,9 +359,6 @@ endif
 
 # Qt SQL Drivers
 ifeq ($(BR2_PACKAGE_QT_SQL_MODULE),y)
-ifeq ($(BR2_PACKAGE_QT_IBASE),y)
-QT_CONFIGURE_OPTS += -qt-sql-ibase
-endif
 ifeq ($(BR2_PACKAGE_QT_MYSQL),y)
 QT_CONFIGURE_OPTS += -qt-sql-mysql -mysql_config $(STAGING_DIR)/usr/bin/mysql_config
 QT_DEPENDENCIES += mysql
@@ -692,7 +689,7 @@ QT_LICENSE_FILES += src/3rdparty/fonts/COPYRIGHT.Unifont
 endif
 endif # QT_FONTS
 
-ifeq ($(BR2_PACKAGE_QT_QTFREETYPE)$(BR2_PACKAGE_QT_SYSTEMFREETYPE),y)
+ifeq ($(BR2_PACKAGE_QT_FONT_TRUETYPE),y)
 define QT_INSTALL_TARGET_FONTS_TTF
 	mkdir -p $(TARGET_DIR)/usr/lib/fonts
 	cp -dpf $(STAGING_DIR)/usr/lib/fonts/*.ttf $(TARGET_DIR)/usr/lib/fonts

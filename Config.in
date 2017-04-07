@@ -158,6 +158,13 @@ config BR2_XZCAT
 	  Command to be used to extract a xz'ed file to stdout.
 	  Default is "xzcat"
 
+config BR2_LZCAT
+	string "lzcat command"
+	default "lzip -d -c"
+	help
+	  Command to be used to extract a lzip'ed file to stdout.
+	  Default is "lzip -d -c"
+
 config BR2_TAR_OPTIONS
 	string "Tar options"
 	default ""
@@ -529,6 +536,8 @@ config BR2_GOOGLE_BREAKPAD_ENABLE
 	bool "Enable google-breakpad support"
 	select BR2_PACKAGE_GOOGLE_BREAKPAD
 	depends on BR2_INSTALL_LIBSTDCPP
+	depends on BR2_HOST_GCC_AT_LEAST_4_8 # C++11
+	depends on BR2_TOOLCHAIN_GCC_AT_LEAST_4_8 # C++11
 	depends on BR2_USE_WCHAR
 	depends on BR2_TOOLCHAIN_HAS_THREADS
 	depends on (BR2_TOOLCHAIN_USES_GLIBC || BR2_TOOLCHAIN_USES_UCLIBC)

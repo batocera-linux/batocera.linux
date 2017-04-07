@@ -4,10 +4,10 @@
 #
 ################################################################################
 
-CUPS_VERSION = 2.1.4
+CUPS_VERSION = 2.2.3
 CUPS_SOURCE = cups-$(CUPS_VERSION)-source.tar.gz
-CUPS_SITE = https://github.com/apple/cups/releases/download/release-$(CUPS_VERSION)
-CUPS_LICENSE = GPLv2 LGPLv2
+CUPS_SITE = https://github.com/apple/cups/releases/download/v$(CUPS_VERSION)
+CUPS_LICENSE = GPL-2.0, LGPL-2.0
 CUPS_LICENSE_FILES = LICENSE.txt
 CUPS_INSTALL_STAGING = YES
 CUPS_INSTALL_STAGING_OPTS = DESTDIR=$(STAGING_DIR) DSTROOT=$(STAGING_DIR) install
@@ -28,6 +28,7 @@ CUPS_CONF_OPTS = \
 CUPS_CONFIG_SCRIPTS = cups-config
 CUPS_DEPENDENCIES = \
 	host-autoconf \
+	host-pkgconf \
 	$(if $(BR2_PACKAGE_ZLIB),zlib)
 
 ifeq ($(BR2_PACKAGE_SYSTEMD),y)

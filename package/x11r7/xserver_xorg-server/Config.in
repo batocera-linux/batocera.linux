@@ -1,6 +1,11 @@
+comment "xorg-server needs a glibc or uClibc toolchain"
+	depends on BR2_arm && BR2_TOOLCHAIN_USES_MUSL
+
 config BR2_PACKAGE_XSERVER_XORG_SERVER
 	bool "xorg-server"
 	depends on BR2_USE_MMU # fork()
+	# xserver uses inb/outb on arm, which aren't available with musl
+	depends on !(BR2_arm && BR2_TOOLCHAIN_USES_MUSL)
 	# We need a SHA1 implementation. If either openssl or
 	# libgcrypt are already part of the build, we'll use one of
 	# them, otherwise, use the small libsha1 library.
@@ -47,6 +52,7 @@ config BR2_PACKAGE_XSERVER_XORG_SERVER
 	select BR2_PACKAGE_XPROTO_XPROTO
 	select BR2_PACKAGE_XUTIL_UTIL_MACROS
 	select BR2_PACKAGE_XKEYBOARD_CONFIG
+	select BR2_PACKAGE_XPROTO_DRI2PROTO if BR2_PACKAGE_SYSTEMD
 	help
 	  X.Org X server
 
@@ -73,7 +79,7 @@ choice
 	bool "X Window System server version"
 
 config BR2_PACKAGE_XSERVER_XORG_SERVER_V_1_19
-	bool "1.19.0"
+	bool "1.19.3"
 	select BR2_PACKAGE_XSERVER_XORG_SERVER_VIDEODRV_ABI_23
 	select BR2_PACKAGE_XLIB_LIBXFONT2
 	select BR2_PACKAGE_XPROTO_PRESENTPROTO
@@ -93,7 +99,7 @@ endchoice
 
 config BR2_PACKAGE_XSERVER_XORG_SERVER_VERSION
 	string
-	default "1.19.0" if BR2_PACKAGE_XSERVER_XORG_SERVER_V_1_19
+	default "1.19.3" if BR2_PACKAGE_XSERVER_XORG_SERVER_V_1_19
 	default "1.17.4" if BR2_PACKAGE_XSERVER_XORG_SERVER_V_1_17
 	default "1.14.7" if BR2_PACKAGE_XSERVER_XORG_SERVER_V_1_14
 
@@ -131,6 +137,8 @@ endchoice
 
 config BR2_PACKAGE_XSERVER_XORG_SERVER_AIGLX
 	bool "Enable AIGLX Extension"
+	# AIGLX Extension removed in 1.19.0
+	depends on BR2_PACKAGE_XSERVER_XORG_SERVER_V_1_14 || BR2_PACKAGE_XSERVER_XORG_SERVER_V_1_17
 	help
 	  Enable/Use AIGLX extension.
 

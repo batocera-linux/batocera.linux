@@ -6,7 +6,7 @@
 
 POCO_VERSION = poco-1.7.2-release
 POCO_SITE = $(call github,pocoproject,poco,$(POCO_VERSION))
-POCO_LICENSE = Boost-v1.0
+POCO_LICENSE = BSL-1.0
 POCO_LICENSE_FILES = LICENSE
 POCO_INSTALL_STAGING = YES
 POCO_PATCH = https://github.com/pocoproject/poco/commit/30159aea4b3f6421da9d74a8bf22aad6d3bf26b4.patch
@@ -57,8 +57,9 @@ define POCO_CONFIGURE_CMDS
 		--no-samples)
 endef
 
+# Use $(MAKE1) to avoid failures on heavilly parallel machines (e.g. -j25)
 define POCO_BUILD_CMDS
-	$(TARGET_MAKE_ENV) $(MAKE) POCO_TARGET_OSARCH=$(ARCH) CROSS_COMPILE=$(TARGET_CROSS) \
+	$(TARGET_MAKE_ENV) $(MAKE1) POCO_TARGET_OSARCH=$(ARCH) CROSS_COMPILE=$(TARGET_CROSS) \
 		MYSQL_LIBDIR=$(STAGING_DIR)/usr/lib/mysql \
 		MYSQL_INCDIR=$(STAGING_DIR)/usr/include/mysql \
 		DEFAULT_TARGET=$(POCO_MAKE_TARGET) -C $(@D)

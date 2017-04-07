@@ -57,12 +57,12 @@ choice
 		select BR2_TOOLCHAIN_HAS_THREADS
 		select BR2_TOOLCHAIN_HAS_THREADS_NPTL
 		depends on BR2_USE_MMU
-		depends on !BR2_m68k && !BR2_microblaze
+		depends on !BR2_m68k && !BR2_microblaze && !BR2_or1k
 
 	config BR2_PTHREADS
 		bool "linuxthreads"
 		select BR2_TOOLCHAIN_HAS_THREADS
-		depends on BR2_bfin || BR2_m68k || BR2_microblaze || BR2_arm || BR2_armeb || BR2_xtensa
+		depends on BR2_bfin || BR2_m68k || BR2_microblaze || BR2_or1k || BR2_arm || BR2_armeb || BR2_xtensa
 
 	config BR2_PTHREADS_NONE
 		bool "none"
@@ -106,6 +106,7 @@ config BR2_UCLIBC_TARGET_ARCH
 	default "m68k"	   if BR2_m68k
 	default "microblaze"   if BR2_microblaze
 	default "mips"	   if BR2_mips || BR2_mipsel || BR2_mips64 || BR2_mips64el
+	default "or1k"     if BR2_or1k
 	default "powerpc"  if BR2_powerpc
 	default "sh"	   if BR2_sh
 	default "sparc"	   if BR2_sparc
@@ -127,12 +128,11 @@ config BR2_UCLIBC_MIPS_ABI
 	default "N32" if BR2_MIPS_NABI32
 	default "N64" if BR2_MIPS_NABI64
 
-config BR2_UCLIBC_MIPS_ISA
+config BR2_UCLIBC_MIPS_NAN
 	string
 	depends on BR2_UCLIBC_TARGET_ARCH = "mips"
-	default "MIPS32" if BR2_MIPS_CPU_MIPS32
-	default "MIPS32R2" if BR2_MIPS_CPU_MIPS32R2
-	default "MIPS64" if BR2_MIPS_CPU_MIPS64
+	default "LEGACY" if BR2_MIPS_CPU_MIPS32 || BR2_MIPS_CPU_MIPS64
+	default "2008" if BR2_MIPS_CPU_MIPS32R6 || BR2_MIPS_CPU_MIPS64R6
 
 config BR2_UCLIBC_SH_TYPE
 	string

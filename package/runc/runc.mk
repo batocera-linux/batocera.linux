@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-RUNC_VERSION = v1.0.0-rc2
+RUNC_VERSION = 54296cf40ad8143b62dbcaa1d90e520a2136ddfe
 RUNC_SITE = $(call github,opencontainers,runc,$(RUNC_VERSION))
 RUNC_LICENSE = Apache-2.0
 RUNC_LICENSE_FILES = LICENSE
@@ -22,7 +22,7 @@ RUNC_GLDFLAGS = \
 	-X main.gitCommit=$(RUNC_VERSION)
 
 ifeq ($(BR2_STATIC_LIBS),y)
-FLANNEL_GLDFLAGS += -extldflags '-static'
+RUNC_GLDFLAGS += -extldflags '-static'
 endif
 
 RUNC_GOTAGS = cgo static_build

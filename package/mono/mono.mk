@@ -4,10 +4,10 @@
 #
 ################################################################################
 
-MONO_VERSION = 4.6.0.245
+MONO_VERSION = 4.6.2.16
 MONO_SITE = http://download.mono-project.com/sources/mono
 MONO_SOURCE = mono-$(MONO_VERSION).tar.bz2
-MONO_LICENSE = GPLv2 or MIT (compiler, tools), MIT (libs) or commercial
+MONO_LICENSE = GPL-2.0 or MIT (compiler, tools), MIT (libs) or commercial
 MONO_LICENSE_FILES = LICENSE mcs/COPYING eglib/COPYING \
 	external/Newtonsoft.Json/Tools/7-zip/copying.txt
 MONO_INSTALL_STAGING = YES
@@ -18,9 +18,7 @@ MONO_INSTALL_STAGING = YES
 MONO_AUTORECONF = YES
 
 # Disable managed code (mcs folder) from building
-MONO_CONF_OPTS = --disable-gtk-doc \
-	--with-mcs-docs=no \
-	--with-moonlight=no \
+MONO_CONF_OPTS = --with-mcs-docs=no \
 	--with-ikvm-native=no \
 	--enable-minimal=profiler,debug \
 	--disable-mcs-build \
@@ -44,9 +42,7 @@ MONO_DEPENDENCIES += host-mono
 
 ## Mono managed
 
-HOST_MONO_CONF_OPTS = --disable-gtk-doc \
-	--with-mcs-docs=no \
-	--with-moonlight=no \
+HOST_MONO_CONF_OPTS = --with-mcs-docs=no \
 	--disable-libraries \
 	--with-ikvm-native=no \
 	--enable-minimal=profiler,debug \

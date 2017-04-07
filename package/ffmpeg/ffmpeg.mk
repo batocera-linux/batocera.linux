@@ -4,15 +4,15 @@
 #
 ################################################################################
 
-FFMPEG_VERSION = 3.2.2
+FFMPEG_VERSION = 3.2.4
 FFMPEG_SOURCE = ffmpeg-$(FFMPEG_VERSION).tar.xz
 FFMPEG_SITE = http://ffmpeg.org/releases
 FFMPEG_INSTALL_STAGING = YES
 
-FFMPEG_LICENSE = LGPLv2.1+, libjpeg license
+FFMPEG_LICENSE = LGPL-2.1+, libjpeg license
 FFMPEG_LICENSE_FILES = LICENSE.md COPYING.LGPLv2.1
 ifeq ($(BR2_PACKAGE_FFMPEG_GPL),y)
-FFMPEG_LICENSE += and GPLv2+
+FFMPEG_LICENSE += and GPL-2.0+
 FFMPEG_LICENSE_FILES += COPYING.GPLv2
 endif
 
@@ -495,5 +495,10 @@ define FFMPEG_CONFIGURE_CMDS
 		$(FFMPEG_CONF_OPTS) \
 	)
 endef
+
+define FFMPEG_REMOVE_EXAMPLE_SRC_FILES
+	rm -rf $(TARGET_DIR)/usr/share/ffmpeg/examples
+endef
+FFMPEG_POST_INSTALL_TARGET_HOOKS += FFMPEG_REMOVE_EXAMPLE_SRC_FILES
 
 $(eval $(autotools-package))

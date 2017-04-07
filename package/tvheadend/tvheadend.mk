@@ -4,9 +4,9 @@
 #
 ################################################################################
 
-TVHEADEND_VERSION = 50a370707aedf5c127e92bb517c378aa8ac04657
+TVHEADEND_VERSION = b142383a7cf51180e00ebb1c13205c14d24338dc
 TVHEADEND_SITE = $(call github,tvheadend,tvheadend,$(TVHEADEND_VERSION))
-TVHEADEND_LICENSE = GPLv3+
+TVHEADEND_LICENSE = GPL-3.0+
 TVHEADEND_LICENSE_FILES = LICENSE.md
 TVHEADEND_DEPENDENCIES = \
 	host-gettext \

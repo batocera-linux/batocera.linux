@@ -6,7 +6,7 @@
 
 MOTION_VERSION = release-4.0.1
 MOTION_SITE = $(call github,Motion-Project,motion,$(MOTION_VERSION))
-MOTION_LICENSE = GPLv2
+MOTION_LICENSE = GPL-2.0
 MOTION_LICENSE_FILES = COPYING
 MOTION_DEPENDENCIES = host-pkgconf jpeg
 # From git and patched configure.ac
@@ -14,7 +14,7 @@ MOTION_AUTORECONF = YES
 
 # motion does not use any specific function of jpeg-turbo, so just relies on
 # jpeg selection
-MOTION_CONF_OPTS += --without-jpeg-turbo
+MOTION_CONF_OPTS += --without-jpeg-turbo --without-optimizecpu
 
 ifeq ($(BR2_PACKAGE_FFMPEG_SWSCALE),y)
 MOTION_DEPENDENCIES += ffmpeg

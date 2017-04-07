@@ -4,12 +4,12 @@
 #
 ################################################################################
 
-GST1_PLUGINS_UGLY_VERSION = 1.10.2
+GST1_PLUGINS_UGLY_VERSION = 1.10.4
 GST1_PLUGINS_UGLY_SOURCE = gst-plugins-ugly-$(GST1_PLUGINS_UGLY_VERSION).tar.xz
 GST1_PLUGINS_UGLY_SITE = https://gstreamer.freedesktop.org/src/gst-plugins-ugly
 GST1_PLUGINS_UGLY_LICENSE_FILES = COPYING
 # GPL licensed plugins will append to GST1_PLUGINS_UGLY_LICENSE if enabled.
-GST1_PLUGINS_UGLY_LICENSE = LGPLv2.1+
+GST1_PLUGINS_UGLY_LICENSE = LGPL-2.1+
 
 GST1_PLUGINS_UGLY_CONF_OPTS = --disable-examples --disable-valgrind
 
@@ -95,7 +95,7 @@ endif
 ifeq ($(BR2_PACKAGE_GST1_PLUGINS_UGLY_PLUGIN_MPEG2DEC),y)
 GST1_PLUGINS_UGLY_CONF_OPTS += --enable-mpeg2dec
 GST1_PLUGINS_UGLY_DEPENDENCIES += libmpeg2
-GST1_PLUGINS_ULGY_HAS_GPL_LICENSE = y
+GST1_PLUGINS_UGLY_HAS_GPL_LICENSE = y
 else
 GST1_PLUGINS_UGLY_CONF_OPTS += --disable-mpeg2dec
 endif
@@ -110,7 +110,7 @@ endif
 
 # Add GPL license if GPL plugins enabled.
 ifeq ($(GST1_PLUGINS_UGLY_HAS_GPL_LICENSE),y)
-GST1_PLUGINS_UGLY_LICENSE += GPLv2
+GST1_PLUGINS_UGLY_LICENSE += GPL-2.0
 endif
 
 # Use the following command to extract license info for plugins.

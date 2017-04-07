@@ -4,10 +4,10 @@
 #
 ################################################################################
 
-QEMU_VERSION = 2.7.0
+QEMU_VERSION = 2.8.0
 QEMU_SOURCE = qemu-$(QEMU_VERSION).tar.bz2
 QEMU_SITE = http://wiki.qemu.org/download
-QEMU_LICENSE = GPLv2, LGPLv2.1, MIT, BSD-3c, BSD-2c, Others/BSD-1c
+QEMU_LICENSE = GPL-2.0, LGPL-2.1, MIT, BSD-3-Clause, BSD-2-Clause, Others/BSD-1c
 QEMU_LICENSE_FILES = COPYING COPYING.LIB
 # NOTE: there is no top-level license file for non-(L)GPL licenses;
 #       the non-(L)GPL license texts are specified in the affected
@@ -118,6 +118,10 @@ endif # BR2_PACKAGE_HOST_QEMU_LINUX_USER_MODE
 ifeq ($(BR2_PACKAGE_HOST_QEMU_VDE2),y)
 HOST_QEMU_OPTS += --enable-vde
 HOST_QEMU_DEPENDENCIES += host-vde2
+endif
+
+ifeq ($(BR2_PACKAGE_HOST_QEMU_STATIC),y)
+HOST_QEMU_OPTS += --static
 endif
 
 # Override CPP, as it expects to be able to call it like it'd

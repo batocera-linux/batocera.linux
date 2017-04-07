@@ -4,14 +4,24 @@
 #
 ################################################################################
 
-LIBNSS_VERSION = 3.27.1
+LIBNSS_VERSION = 3.27.2
 LIBNSS_SOURCE = nss-$(LIBNSS_VERSION).tar.gz
 LIBNSS_SITE = https://ftp.mozilla.org/pub/mozilla.org/security/nss/releases/NSS_$(subst .,_,$(LIBNSS_VERSION))_RTM/src
 LIBNSS_DISTDIR = dist
 LIBNSS_INSTALL_STAGING = YES
 LIBNSS_DEPENDENCIES = libnspr sqlite zlib
-LIBNSS_LICENSE = MPLv2.0
+LIBNSS_LICENSE = MPL-2.0
 LIBNSS_LICENSE_FILES = nss/COPYING
+
+# --gc-sections triggers binutils ld segfault
+# https://sourceware.org/bugzilla/show_bug.cgi?id=21180
+ifeq ($(BR2_microblaze),y)
+define LIBNSS_DROP_GC_SECTIONS
+	sed -i 's:-Wl,--gc-sections::g' $(@D)/nss/coreconf/Linux.mk
+endef
+
+LIBNSS_PRE_CONFIGURE_HOOKS += LIBNSS_DROP_GC_SECTIONS
+endif
 
 LIBNSS_BUILD_VARS = \
 	MOZILLA_CLIENT=1 \

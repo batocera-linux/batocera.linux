@@ -45,6 +45,15 @@ config BR2_PACKAGE_MESA3D_NEEDS_XA
 
 comment "Gallium drivers"
 
+config BR2_PACKAGE_MESA3D_GALLIUM_DRIVER_ETNAVIV
+	bool "Gallium Etnaviv driver"
+	depends on BR2_arm
+	select BR2_PACKAGE_MESA3D_GALLIUM_DRIVER
+	select BR2_PACKAGE_LIBDRM_ETNAVIV
+	select BR2_PACKAGE_MESA3D_OPENGL_EGL
+	help
+	  Mesa driver for Vivante GPUs.
+
 config BR2_PACKAGE_MESA3D_GALLIUM_DRIVER_NOUVEAU
 	bool "Gallium nouveau driver"
 	depends on BR2_i386 || BR2_x86_64
@@ -144,10 +153,6 @@ config BR2_PACKAGE_MESA3D_VULKAN_DRIVER_INTEL
 	depends on BR2_TOOLCHAIN_HEADERS_AT_LEAST_3_18 # memfd.h
 	depends on BR2_TOOLCHAIN_USES_GLIBC # ifunc, static_assert
 	depends on BR2_PACKAGE_XORG7 # xproto_dri3proto
-	# We need a SHA1 implementation. If either openssl or
-	# libgcrypt are already part of the build, we'll use one of
-	# them, otherwise, use the small libsha1 library.
-	select BR2_PACKAGE_LIBSHA1 if (!BR2_PACKAGE_OPENSSL && !BR2_PACKAGE_LIBGCRYPT)
 	select BR2_PACKAGE_MESA3D_DRI_DRIVER_I965
 	select BR2_PACKAGE_MESA3D_VULKAN_DRIVER
 	select BR2_PACKAGE_XPROTO_DRI3PROTO
@@ -184,6 +189,29 @@ config BR2_PACKAGE_MESA3D_OPENGL_ES
 	help
 	  Use the Khronos OpenGL ES APIs. This is commonly used on embedded
 	  systems and represents a subset of the OpenGL API.
+
+config BR2_PACKAGE_MESA3D_OPENGL_TEXTURE_FLOAT
+	bool "OpenGL texture float (patented format)"
+	help
+	  GL_ARB_texture_float is required to enable GLX core profile
+	  (OpenGL3.x) otherwise the compat profile is used
+	  (OpenGL2.1).
+
+	  The source code to implement ARB_texture_float extension is
+	  included and can be toggled on at compile time, for those
+	  who purchased a license from SGI, or are in a country where
+	  the patent does not apply, etc.
+
+	  Please consult docs/patents.txt with your lawyer before
+	  building Mesa.
+
+	  Also, note that this option doesn't affect all drivers. Some
+	  drivers have support for texture float enabled
+	  unconditionally.
+
+	  If unsure, say N.
+
+	  http://www.google.com/patents/about?id=mIIOAAAAEBAJ&dq=6650327
 
 endif # BR2_PACKAGE_MESA3D_DRIVER
 

@@ -8,7 +8,7 @@ MPLAYER_VERSION = 1.3.0
 MPLAYER_SOURCE = MPlayer-$(MPLAYER_VERSION).tar.xz
 MPLAYER_SITE = http://www.mplayerhq.hu/MPlayer/releases
 MPLAYER_DEPENDENCIES = host-pkgconf
-MPLAYER_LICENSE = GPLv2
+MPLAYER_LICENSE = GPL-2.0
 MPLAYER_LICENSE_FILES = LICENSE Copyright
 MPLAYER_CFLAGS = $(TARGET_CFLAGS)
 MPLAYER_LDFLAGS = $(TARGET_LDFLAGS)
@@ -222,6 +222,12 @@ MPLAYER_DEPENDENCIES += giflib
 MPLAYER_CONF_OPTS += --enable-gif
 else
 MPLAYER_CONF_OPTS += --disable-gif
+endif
+
+# We intentionally don't pass --enable-pulse, to let the
+# autodetection find which library to link with.
+ifeq ($(BR2_PACKAGE_PULSEAUDIO),y)
+MPLAYER_DEPENDENCIES += pulseaudio
 endif
 
 # We intentionally don't pass --enable-librtmp to let autodetection

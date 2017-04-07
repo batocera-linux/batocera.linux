@@ -4,9 +4,9 @@
 #
 ################################################################################
 
-SYSTEMD_VERSION = 232
+SYSTEMD_VERSION = 233
 SYSTEMD_SITE = $(call github,systemd,systemd,v$(SYSTEMD_VERSION))
-SYSTEMD_LICENSE = LGPLv2.1+, GPLv2+ (udev), Public Domain (few source files, see README)
+SYSTEMD_LICENSE = LGPL-2.1+, GPL-2.0+ (udev), Public Domain (few source files, see README)
 SYSTEMD_LICENSE_FILES = LICENSE.GPL2 LICENSE.LGPL2.1 README
 SYSTEMD_INSTALL_STAGING = YES
 SYSTEMD_DEPENDENCIES = \
@@ -30,8 +30,6 @@ SYSTEMD_CONF_OPTS += \
 	--enable-blkid \
 	--enable-static=no \
 	--disable-manpages \
-	--disable-selinux \
-	--disable-pam \
 	--disable-ima \
 	--disable-libcryptsetup \
 	--disable-efi \
@@ -89,12 +87,6 @@ else
 SYSTEMD_CONF_OPTS += --disable-xkbcommon
 endif
 
-ifeq ($(BR2_PACKAGE_SYSTEMD_KDBUS),y)
-SYSTEMD_CONF_OPTS += --enable-kdbus
-else
-SYSTEMD_CONF_OPTS += --disable-kdbus
-endif
-
 ifeq ($(BR2_PACKAGE_BZIP2),y)
 SYSTEMD_DEPENDENCIES += bzip2
 SYSTEMD_CONF_OPTS += --enable-bzip2
@@ -107,6 +99,13 @@ SYSTEMD_DEPENDENCIES += lz4
 SYSTEMD_CONF_OPTS += --enable-lz4
 else
 SYSTEMD_CONF_OPTS += --disable-lz4
+endif
+
+ifeq ($(BR2_PACKAGE_LINUX_PAM),y)
+SYSTEMD_DEPENDENCIES += linux-pam
+SYSTEMD_CONF_OPTS += --enable-pam
+else
+SYSTEMD_CONF_OPTS += --disable-pam
 endif
 
 ifeq ($(BR2_PACKAGE_XZ),y)
@@ -151,6 +150,13 @@ SYSTEMD_CONF_OPTS += --disable-qrencode
 endif
 else
 SYSTEMD_CONF_OPTS += --disable-microhttpd --disable-qrencode
+endif
+
+ifeq ($(BR2_PACKAGE_LIBSELINUX),y)
+SYSTEMD_DEPENDENCIES += libselinux
+SYSTEMD_CONF_OPTS += --enable-selinux
+else
+SYSTEMD_CONF_OPTS += --disable-selinux
 endif
 
 ifeq ($(BR2_PACKAGE_SYSTEMD_HWDB),y)
@@ -275,6 +281,14 @@ define SYSTEMD_INSTALL_RESOLVCONF_HOOK
 	ln -sf ../run/systemd/resolve/resolv.conf \
 		$(TARGET_DIR)/etc/resolv.conf
 endef
+SYSTEMD_NETWORKD_DHCP_IFACE = $(call qstrip,$(BR2_SYSTEM_DHCP))
+ifneq ($(SYSTEMD_NETWORKD_DHCP_IFACE),)
+define SYSTEMD_INSTALL_NETWORK_CONFS
+	sed s/SYSTEMD_NETWORKD_DHCP_IFACE/$(SYSTEMD_NETWORKD_DHCP_IFACE)/ \
+		package/systemd/dhcp.network > \
+		$(TARGET_DIR)/etc/systemd/network/dhcp.network
+endef
+endif
 else
 SYSTEMD_CONF_OPTS += --disable-networkd
 define SYSTEMD_INSTALL_SERVICE_NETWORK
@@ -377,6 +391,7 @@ define SYSTEMD_INSTALL_INIT_SYSTEMD
 	$(SYSTEMD_INSTALL_SERVICE_TTY)
 	$(SYSTEMD_INSTALL_SERVICE_NETWORK)
 	$(SYSTEMD_INSTALL_SERVICE_TIMESYNC)
+	$(SYSTEMD_INSTALL_NETWORK_CONFS)
 endef
 
 $(eval $(autotools-package))

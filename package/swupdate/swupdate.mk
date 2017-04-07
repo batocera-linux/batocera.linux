@@ -4,9 +4,9 @@
 #
 ################################################################################
 
-SWUPDATE_VERSION = 2016.10
+SWUPDATE_VERSION = 2017.01
 SWUPDATE_SITE = $(call github,sbabic,swupdate,$(SWUPDATE_VERSION))
-SWUPDATE_LICENSE = GPLv2+, MIT, Public Domain
+SWUPDATE_LICENSE = GPL-2.0+, MIT, Public Domain
 SWUPDATE_LICENSE_FILES = COPYING
 
 # swupdate bundles its own version of mongoose (version 3.8)

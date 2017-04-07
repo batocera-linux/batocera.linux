@@ -6,7 +6,7 @@
 
 LIBPCAP_VERSION = 1.8.1
 LIBPCAP_SITE = http://www.tcpdump.org/release
-LIBPCAP_LICENSE = BSD-3c
+LIBPCAP_LICENSE = BSD-3-Clause
 LIBPCAP_LICENSE_FILES = LICENSE
 LIBPCAP_INSTALL_STAGING = YES
 LIBPCAP_DEPENDENCIES = zlib host-flex host-bison
@@ -53,8 +53,8 @@ else
 LIBPCAP_CONF_OPTS += --without-libnl
 endif
 
-# microblaze/sparc64 need -fPIC instead of -fpic
-ifeq ($(BR2_microblaze)$(BR2_sparc64),y)
+# microblaze/sparc/sparc64 need -fPIC instead of -fpic
+ifeq ($(BR2_microblaze)$(BR2_sparc)$(BR2_sparc64),y)
 LIBPCAP_CFLAGS += -fPIC
 endif
 

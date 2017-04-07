@@ -6,7 +6,7 @@
 
 UCLIBC_NG_TEST_VERSION = c9b9876cefc142a23aa622b821290ed16af80058
 UCLIBC_NG_TEST_SITE = git://uclibc-ng.org/git/uclibc-ng-test
-UCLIBC_NG_TEST_LICENSE = LGPLv2.1+
+UCLIBC_NG_TEST_LICENSE = LGPL-2.1+
 UCLIBC_NG_TEST_LICENSE_FILES = COPYING.LIB
 
 # the math tests are recently synced from glibc and need more adaption before
@@ -39,6 +39,7 @@ define UCLIBC_NG_TEST_BUILD_CMDS
 	$(TARGET_MAKE_ENV) $(UCLIBC_NG_TEST_MAKE_ENV) $(MAKE) -C $(@D) \
 		CC="$(TARGET_CC)" \
 		UCLIBC_EXTRA_CFLAGS="$(TARGET_CFLAGS)" \
+		UCLIBC_EXTRA_LDFLAGS="$(TARGET_LDFLAGS)" \
 		test_compile
 	$(TARGET_MAKE_ENV) $(UCLIBC_NG_TEST_MAKE_ENV) $(MAKE1) -C $(@D) \
 		CC="$(TARGET_CC)" \
@@ -47,7 +48,7 @@ define UCLIBC_NG_TEST_BUILD_CMDS
 endef
 
 define UCLIBC_NG_TEST_INSTALL_TARGET_CMDS
-        $(TARGET_MAKE_ENV) $(MAKE) -C $(@D) DESTDIR="$(TARGET_DIR)" install
+	$(TARGET_MAKE_ENV) $(MAKE) -C $(@D) DESTDIR="$(TARGET_DIR)" install
 endef
 
 $(eval $(generic-package))

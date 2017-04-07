@@ -4,8 +4,8 @@
 #
 ################################################################################
 
-HARFBUZZ_VERSION = 1.3.4
-HARFBUZZ_SITE = http://www.freedesktop.org/software/harfbuzz/release
+HARFBUZZ_VERSION = 1.4.5
+HARFBUZZ_SITE = https://www.freedesktop.org/software/harfbuzz/release
 HARFBUZZ_SOURCE = harfbuzz-$(HARFBUZZ_VERSION).tar.bz2
 HARFBUZZ_LICENSE = MIT, ISC (ucdn library)
 HARFBUZZ_LICENSE_FILES = COPYING src/hb-ucdn/COPYING

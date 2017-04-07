@@ -14,6 +14,13 @@ config BR2_PACKAGE_OPENVPN
 
 if BR2_PACKAGE_OPENVPN
 
+config BR2_PACKAGE_OPENVPN_LZ4
+	bool "LZ4 compression"
+	default y
+	select BR2_PACKAGE_LZ4
+	help
+	  Enable LZ4 compression.
+
 config BR2_PACKAGE_OPENVPN_LZO
 	bool "LZO compression"
 	default y
@@ -27,11 +34,5 @@ config BR2_PACKAGE_OPENVPN_SMALL
 	  Make OpenVPN as small as possible.
 	  You loose eurephia, debugging info, help messages and more.
 	  It saves around 100 KiB in binary file size.
-
-config BR2_PACKAGE_OPENVPN_PWSAVE
-	bool "Allow passwords in files"
-	help
-	  Allow --askpass and --auth-user-pass passwords to be read
-	  from a file.
 
 endif

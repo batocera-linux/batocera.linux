@@ -6,7 +6,7 @@
 
 OPROFILE_VERSION = 1.1.0
 OPROFILE_SITE = http://downloads.sourceforge.net/project/oprofile/oprofile/oprofile-$(OPROFILE_VERSION)
-OPROFILE_LICENSE = GPLv2+
+OPROFILE_LICENSE = GPL-2.0+
 OPROFILE_LICENSE_FILES = COPYING
 OPROFILE_CONF_OPTS = \
 	--disable-account-check \
@@ -17,7 +17,7 @@ OPROFILE_BINARIES = \
 	utils/ophelp pp/opannotate pp/oparchive pp/opgprof \
 	pp/opreport opjitconv/opjitconv \
 	utils/op-check-perfevents libabi/opimport \
-	pe_counting/ocount
+	pe_counting/ocount pe_profiling/operf
 
 ifeq ($(BR2_i386),y)
 OPROFILE_ARCH = i386

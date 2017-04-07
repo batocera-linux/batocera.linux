@@ -4,9 +4,9 @@
 #
 ################################################################################
 
-SEPOLGEN_VERSION = 1.1.9
-SEPOLGEN_SITE = https://raw.githubusercontent.com/wiki/SELinuxProject/selinux/files/releases/20130423
-SEPOLGEN_LICENSE = GPLv2
+SEPOLGEN_VERSION = 2.6
+SEPOLGEN_SITE = https://raw.githubusercontent.com/wiki/SELinuxProject/selinux/files/releases/20161014
+SEPOLGEN_LICENSE = GPL-2.0
 SEPOLGEN_LICENSE_FILES = COPYING
 
 ifeq ($(BR2_PACKAGE_PYTHON3),y)

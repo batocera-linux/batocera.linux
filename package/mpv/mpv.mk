@@ -4,13 +4,13 @@
 #
 ################################################################################
 
-MPV_VERSION = 0.22.0
+MPV_VERSION = 0.23.0
 MPV_SITE = https://github.com/mpv-player/mpv/archive
 MPV_SOURCE = v$(MPV_VERSION).tar.gz
 MPV_DEPENDENCIES = \
 	host-pkgconf ffmpeg zlib \
 	$(if $(BR2_PACKAGE_LIBICONV),libiconv)
-MPV_LICENSE = GPLv2+
+MPV_LICENSE = GPL-2.0+
 MPV_LICENSE_FILES = LICENSE
 
 MPV_NEEDS_EXTERNAL_WAF = YES
@@ -23,7 +23,6 @@ MPV_CONF_OPTS = \
 	--disable-cdda \
 	--disable-cocoa \
 	--disable-coreaudio \
-	--disable-libguess \
 	--disable-libv4l2 \
 	--disable-opensles \
 	--disable-rpi \
@@ -45,7 +44,7 @@ endif
 # GBM support is provided by mesa3d when EGL=y
 ifeq ($(BR2_PACKAGE_MESA3D_OPENGL_EGL),y)
 MPV_CONF_OPTS += --enable-gbm
-MPV_DEPENDENIES += mesa3d
+MPV_DEPENDENCIES += mesa3d
 else
 MPV_CONF_OPTS += --disable-gbm
 endif
@@ -121,14 +120,6 @@ MPV_CONF_OPTS += --enable-drm
 MPV_DEPENDENCIES += libdrm
 else
 MPV_CONF_OPTS += --disable-drm
-endif
-
-# libenca support
-ifeq ($(BR2_PACKAGE_LIBENCA),y)
-MPV_CONF_OPTS += --enable-enca
-MPV_DEPENDENCIES += libenca
-else
-MPV_CONF_OPTS += --disable-enca
 endif
 
 # LUA support, only for lua51/lua52/luajit

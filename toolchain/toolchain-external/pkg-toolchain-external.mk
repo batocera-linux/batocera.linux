@@ -91,7 +91,7 @@ TOOLCHAIN_EXTERNAL_CROSS = $(TOOLCHAIN_EXTERNAL_BIN)/$(TOOLCHAIN_EXTERNAL_PREFIX
 TOOLCHAIN_EXTERNAL_CC = $(TOOLCHAIN_EXTERNAL_CROSS)gcc$(TOOLCHAIN_EXTERNAL_SUFFIX)
 TOOLCHAIN_EXTERNAL_CXX = $(TOOLCHAIN_EXTERNAL_CROSS)g++$(TOOLCHAIN_EXTERNAL_SUFFIX)
 TOOLCHAIN_EXTERNAL_FC = $(TOOLCHAIN_EXTERNAL_CROSS)gfortran$(TOOLCHAIN_EXTERNAL_SUFFIX)
-TOOLCHAIN_EXTERNAL_READELF = $(TOOLCHAIN_EXTERNAL_CROSS)readelf$(TOOLCHAIN_EXTERNAL_SUFFIX)
+TOOLCHAIN_EXTERNAL_READELF = $(TOOLCHAIN_EXTERNAL_CROSS)readelf
 
 # Normal handling of downloaded toolchain tarball extraction.
 ifeq ($(BR2_TOOLCHAIN_EXTERNAL_DOWNLOAD),y)
@@ -124,7 +124,7 @@ endif # ! no threads
 endif
 
 ifeq ($(BR2_TOOLCHAIN_EXTERNAL_GLIBC),y)
-TOOLCHAIN_EXTERNAL_LIBS += libnss_files.so.* libnss_dns.so.* libmvec.so.*
+TOOLCHAIN_EXTERNAL_LIBS += libnss_files.so.* libnss_dns.so.* libmvec.so.* libanl.so.*
 endif
 
 ifeq ($(BR2_TOOLCHAIN_EXTERNAL_MUSL),y)
@@ -347,35 +347,27 @@ endef
 #
 # Variables are defined as follows:
 #
-#  LIBC_A_LOCATION:     location of the libc.a file in the default
-#                       multilib variant (allows to find the main
-#                       sysroot directory)
-#                       Ex: /x-tools/mips-2011.03/mips-linux-gnu/libc/usr/lib/libc.a
-#
-#  SYSROOT_DIR:         the main sysroot directory, deduced from
-#                       LIBC_A_LOCATION by removing the
-#                       usr/lib[32|64]/libc.a part of the path.
+# SYSROOT_DIR:          the main sysroot directory, deduced from the location of
+#                       the libc.a file in the default multilib variant, by
+#                       removing the usr/lib[32|64]/libc.a part of the path.
 #                       Ex: /x-tools/mips-2011.03/mips-linux-gnu/libc/
 #
-# ARCH_LIBC_A_LOCATION: location of the libc.a file in the selected
-#                       multilib variant (taking into account the
-#                       CFLAGS). Allows to find the sysroot of the
-#                       selected multilib variant.
-#                       Ex: /x-tools/mips-2011.03/mips-linux-gnu/libc/mips16/soft-float/el/usr/lib/libc.a
-#
 # ARCH_SYSROOT_DIR:     the sysroot of the selected multilib variant,
-#                       deduced from ARCH_LIBC_A_LOCATION by removing
-#                       usr/lib[32|64]/libc.a at the end of the path.
+#                       deduced from the location of the libc.a file in the
+#                       selected multilib variant (taking into account the
+#                       CFLAGS), by removing usr/lib[32|64]/libc.a at the end
+#                       of the path.
 #                       Ex: /x-tools/mips-2011.03/mips-linux-gnu/libc/mips16/soft-float/el/
 #
 # ARCH_LIB_DIR:         'lib', 'lib32' or 'lib64' depending on where libraries
-#                       are stored. Deduced from ARCH_LIBC_A_LOCATION by
-#                       looking at usr/lib??/libc.a.
+#                       are stored. Deduced from the location of the libc.a file
+#                       in the selected multilib variant, by looking at
+#                       usr/lib??/libc.a.
 #                       Ex: lib
 #
 # ARCH_SUBDIR:          the relative location of the sysroot of the selected
 #                       multilib variant compared to the main sysroot.
-#			Ex: mips16/soft-float/el
+#                       Ex: mips16/soft-float/el
 #
 # SUPPORT_LIB_DIR:      some toolchains, such as recent Linaro toolchains,
 #                       store GCC support libraries (libstdc++,
@@ -453,19 +445,19 @@ endef
 #
 # $1: destination directory (TARGET_DIR / STAGING_DIR)
 create_lib_symlinks = \
-       $(Q)DESTDIR="$(strip $1)" ; \
-       ARCH_LIB_DIR="$(call toolchain_find_libdir,$(TOOLCHAIN_EXTERNAL_CC) $(TOOLCHAIN_EXTERNAL_CFLAGS))" ; \
-       if [ ! -e "$${DESTDIR}/$${ARCH_LIB_DIR}" -a ! -e "$${DESTDIR}/usr/$${ARCH_LIB_DIR}" ]; then \
-               ln -snf lib "$${DESTDIR}/$${ARCH_LIB_DIR}" ; \
-               ln -snf lib "$${DESTDIR}/usr/$${ARCH_LIB_DIR}" ; \
-       fi
+	$(Q)DESTDIR="$(strip $1)" ; \
+	ARCH_LIB_DIR="$(call toolchain_find_libdir,$(TOOLCHAIN_EXTERNAL_CC) $(TOOLCHAIN_EXTERNAL_CFLAGS))" ; \
+	if [ ! -e "$${DESTDIR}/$${ARCH_LIB_DIR}" -a ! -e "$${DESTDIR}/usr/$${ARCH_LIB_DIR}" ]; then \
+		ln -snf lib "$${DESTDIR}/$${ARCH_LIB_DIR}" ; \
+		ln -snf lib "$${DESTDIR}/usr/$${ARCH_LIB_DIR}" ; \
+	fi
 
 define TOOLCHAIN_EXTERNAL_CREATE_STAGING_LIB_SYMLINK
-       $(call create_lib_symlinks,$(STAGING_DIR))
+	$(call create_lib_symlinks,$(STAGING_DIR))
 endef
 
 define TOOLCHAIN_EXTERNAL_CREATE_TARGET_LIB_SYMLINK
-       $(call create_lib_symlinks,$(TARGET_DIR))
+	$(call create_lib_symlinks,$(TARGET_DIR))
 endef
 
 #
@@ -561,8 +553,7 @@ define $(2)_CONFIGURE_CMDS
 		$$(call qstrip,$$(BR2_TOOLCHAIN_GCC_AT_LEAST))); \
 	if test "$$(BR2_arm)" = "y" ; then \
 		$$(call check_arm_abi,\
-			"$$(TOOLCHAIN_EXTERNAL_CC) $$(TOOLCHAIN_EXTERNAL_CFLAGS)",\
-			$$(TOOLCHAIN_EXTERNAL_READELF)) ; \
+			"$$(TOOLCHAIN_EXTERNAL_CC) $$(TOOLCHAIN_EXTERNAL_CFLAGS)") ; \
 	fi ; \
 	if test "$$(BR2_INSTALL_LIBSTDCPP)" = "y" ; then \
 		$$(call check_cplusplus,$$(TOOLCHAIN_EXTERNAL_CXX)) ; \
@@ -573,7 +564,9 @@ define $(2)_CONFIGURE_CMDS
 	if test "$$(BR2_TOOLCHAIN_EXTERNAL_UCLIBC)" = "y" ; then \
 		$$(call check_uclibc,$$$${SYSROOT_DIR}) ; \
 	elif test "$$(BR2_TOOLCHAIN_EXTERNAL_MUSL)" = "y" ; then \
-		$$(call check_musl,$$$${SYSROOT_DIR}) ; \
+		$$(call check_musl,\
+			"$$(TOOLCHAIN_EXTERNAL_CC) $$(TOOLCHAIN_EXTERNAL_CFLAGS)",\
+			$$(TOOLCHAIN_EXTERNAL_READELF)) ; \
 	else \
 		$$(call check_glibc,$$$${SYSROOT_DIR}) ; \
 	fi

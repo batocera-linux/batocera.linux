@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-SHARED_MIME_INFO_VERSION = 1.7
+SHARED_MIME_INFO_VERSION = 1.8
 SHARED_MIME_INFO_SOURCE = shared-mime-info-$(SHARED_MIME_INFO_VERSION).tar.xz
 SHARED_MIME_INFO_SITE = https://people.freedesktop.org/~hadess
 SHARED_MIME_INFO_INSTALL_STAGING = YES
@@ -16,7 +16,7 @@ SHARED_MIME_INFO_CONF_OPTS = \
 HOST_SHARED_MIME_INFO_CONF_OPTS = \
 	--disable-update-mimedb \
 	--disable-default-make-check
-SHARED_MIME_INFO_LICENSE = GPLv2
+SHARED_MIME_INFO_LICENSE = GPL-2.0
 SHARED_MIME_INFO_LICENSE_FILES = COPYING
 
 HOST_SHARED_MIME_INFO_DEPENDENCIES = \

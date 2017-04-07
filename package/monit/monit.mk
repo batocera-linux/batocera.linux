@@ -4,9 +4,9 @@
 #
 ################################################################################
 
-MONIT_VERSION = 5.17
+MONIT_VERSION = 5.20.0
 MONIT_SITE = http://mmonit.com/monit/dist
-MONIT_LICENSE = AGPLv3 with OpenSSL exception
+MONIT_LICENSE = AGPL-3.0 with OpenSSL exception
 MONIT_LICENSE_FILES = COPYING
 #
 # Touching Makefile.am:
@@ -25,6 +25,13 @@ MONIT_CONF_OPTS += --with-ssl=$(STAGING_DIR)/usr
 MONIT_DEPENDENCIES += openssl
 else
 MONIT_CONF_OPTS += --without-ssl
+endif
+
+ifeq ($(BR2_PACKAGE_ZLIB),y)
+MONIT_CONF_OPTS += --with-zlib
+MONIT_DEPENDENCIES += zlib
+else
+MONIT_CONF_OPTS += --without-zlib
 endif
 
 $(eval $(autotools-package))

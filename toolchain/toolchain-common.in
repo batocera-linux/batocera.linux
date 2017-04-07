@@ -7,6 +7,17 @@ source "package/gdb/Config.in.host"
 
 comment "Toolchain Generic Options"
 
+# https://gcc.gnu.org/bugzilla/show_bug.cgi?id=64735
+# exception_ptr, nested_exception, and future from libstdc++ are not
+# available for architectures not supporting always lock-free atomic
+# ints before GCC 7
+config BR2_TOOLCHAIN_HAS_GCC_BUG_64735
+	bool
+	default y if BR2_nios2
+	default y if BR2_ARM_CPU_ARMV4
+	default y if BR2_ARM_CPU_ARMV5
+	default y if BR2_sparc_v8
+
 # https://sourceware.org/bugzilla/show_bug.cgi?id=19405
 config BR2_TOOLCHAIN_HAS_BINUTILS_BUG_19405
 	bool
@@ -232,10 +243,15 @@ config BR2_TOOLCHAIN_HEADERS_AT_LEAST_4_9
 	bool
 	select BR2_TOOLCHAIN_HEADERS_AT_LEAST_4_8
 
+config BR2_TOOLCHAIN_HEADERS_AT_LEAST_4_10
+	bool
+	select BR2_TOOLCHAIN_HEADERS_AT_LEAST_4_9
+
 # This order guarantees that the highest version is set, as kconfig
 # stops affecting a value on the first matching default.
 config BR2_TOOLCHAIN_HEADERS_AT_LEAST
 	string
+	default "4.10" if BR2_TOOLCHAIN_HEADERS_AT_LEAST_4_10
 	default "4.9"  if BR2_TOOLCHAIN_HEADERS_AT_LEAST_4_9
 	default "4.8"  if BR2_TOOLCHAIN_HEADERS_AT_LEAST_4_8
 	default "4.7"  if BR2_TOOLCHAIN_HEADERS_AT_LEAST_4_7

@@ -35,7 +35,7 @@ PASSWD="${TARGET_DIR}/etc/passwd"
 SHADOW="${TARGET_DIR}/etc/shadow"
 GROUP="${TARGET_DIR}/etc/group"
 # /etc/gshadow is not part of the standard skeleton, so not everybody
-# will have it, but some may hav it, and its content must be in sync
+# will have it, but some may have it, and its content must be in sync
 # with /etc/group, so any use of gshadow must be conditional.
 GSHADOW="${TARGET_DIR}/etc/gshadow"
 
@@ -43,7 +43,7 @@ GSHADOW="${TARGET_DIR}/etc/gshadow"
 # such as:
 #    BR2_DEFCONFIG="$(CONFIG_DIR)/defconfig"
 # which when sourced from a shell script will eventually try to execute
-# a command name 'CONFIG_DIR', which is plain wrong for virtually every
+# a command named 'CONFIG_DIR', which is plain wrong for virtually every
 # systems out there.
 # So, we have to scan that file instead. Sigh... :-(
 PASSWD_METHOD="$( sed -r -e '/^BR2_TARGET_GENERIC_PASSWD_METHOD="(.*)"$/!d;'    \
@@ -362,7 +362,7 @@ add_one_user() {
 main() {
     local username uid group gid passwd home shell groups comment
     local line
-    local -a LINES
+    local -a ENTRIES
 
     # Some sanity checks
     if [ ${MIN_UID} -le 0 ]; then
@@ -374,7 +374,7 @@ main() {
 
     # Read in all the file in memory, exclude empty lines and comments
     while read line; do
-        LINES+=( "${line}" )
+        ENTRIES+=( "${line}" )
     done < <( sed -r -e 's/#.*//; /^[[:space:]]*$/d;' "${USERS_TABLE}" )
 
     # We first create groups whose gid is not -1, and then we create groups
@@ -383,14 +383,14 @@ main() {
     # used, rather than a different automatic gid is computed.
 
     # First, create all the main groups which gid is *not* automatic
-    for line in "${LINES[@]}"; do
+    for line in "${ENTRIES[@]}"; do
         read username uid group gid passwd home shell groups comment <<<"${line}"
         [ ${gid} -ge 0 ] || continue    # Automatic gid
         add_one_group "${group}" "${gid}"
     done
 
     # Then, create all the main groups which gid *is* automatic
-    for line in "${LINES[@]}"; do
+    for line in "${ENTRIES[@]}"; do
         read username uid group gid passwd home shell groups comment <<<"${line}"
         [ ${gid} -eq -1 ] || continue    # Non-automatic gid
         add_one_group "${group}" "${gid}"
@@ -399,7 +399,7 @@ main() {
     # Then, create all the additional groups
     # If any additional group is already a main group, we should use
     # the gid of that main group; otherwise, we can use any gid
-    for line in "${LINES[@]}"; do
+    for line in "${ENTRIES[@]}"; do
         read username uid group gid passwd home shell groups comment <<<"${line}"
         if [ "${groups}" != "-" ]; then
             for g in ${groups//,/ }; do
@@ -414,7 +414,7 @@ main() {
     # uid be generated.
 
     # Now, add users whose uid is *not* automatic
-    for line in "${LINES[@]}"; do
+    for line in "${ENTRIES[@]}"; do
         read username uid group gid passwd home shell groups comment <<<"${line}"
         [ "${username}" != "-" ] || continue # Magic string to skip user creation
         [ ${uid} -ge 0         ] || continue # Automatic uid
@@ -423,7 +423,7 @@ main() {
     done
 
     # Finally, add users whose uid *is* automatic
-    for line in "${LINES[@]}"; do
+    for line in "${ENTRIES[@]}"; do
         read username uid group gid passwd home shell groups comment <<<"${line}"
         [ "${username}" != "-" ] || continue # Magic string to skip user creation
         [ ${uid} -eq -1        ] || continue # Non-automatic uid

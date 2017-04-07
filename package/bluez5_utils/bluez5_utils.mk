@@ -4,17 +4,17 @@
 #
 ################################################################################
 
-BLUEZ5_UTILS_VERSION = 5.43
+BLUEZ5_UTILS_VERSION = 5.44
 BLUEZ5_UTILS_SOURCE = bluez-$(BLUEZ5_UTILS_VERSION).tar.xz
 BLUEZ5_UTILS_SITE = $(BR2_KERNEL_MIRROR)/linux/bluetooth
 BLUEZ5_UTILS_INSTALL_STAGING = YES
 BLUEZ5_UTILS_DEPENDENCIES = dbus libglib2
-BLUEZ5_UTILS_LICENSE = GPLv2+, LGPLv2.1+
+BLUEZ5_UTILS_LICENSE = GPL-2.0+, LGPL-2.1+
 BLUEZ5_UTILS_LICENSE_FILES = COPYING COPYING.LIB
 
-BLUEZ5_UTILS_CONF_OPTS = 	\
-	--enable-tools 		\
-	--enable-library 	\
+BLUEZ5_UTILS_CONF_OPTS =	\
+	--enable-tools		\
+	--enable-library	\
 	--disable-cups
 
 ifeq ($(BR2_PACKAGE_BLUEZ5_UTILS_OBEX),y)

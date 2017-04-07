@@ -4,9 +4,10 @@
 #
 ################################################################################
 
-TINYALSA_VERSION = v1.0.2
+TINYALSA_VERSION = 1.1.0
 TINYALSA_SITE = $(call github,tinyalsa,tinyalsa,$(TINYALSA_VERSION))
-TINYALSA_LICENSE = BSD-3c
+TINYALSA_LICENSE = BSD-3-Clause
+TINYALSA_LICENSE_FILES = NOTICE
 TINYALSA_INSTALL_STAGING = YES
 
 define TINYALSA_BUILD_CMDS

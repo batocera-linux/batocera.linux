@@ -4,10 +4,10 @@
 #
 ################################################################################
 
-CCACHE_VERSION = 3.3.3
-CCACHE_SITE = https://samba.org/ftp/ccache
+CCACHE_VERSION = 3.3.4
+CCACHE_SITE = https://www.samba.org/ftp/ccache
 CCACHE_SOURCE = ccache-$(CCACHE_VERSION).tar.xz
-CCACHE_LICENSE = GPLv3+, others
+CCACHE_LICENSE = GPL-3.0+, others
 CCACHE_LICENSE_FILES = LICENSE.txt GPL-3.0.txt
 
 # Force ccache to use its internal zlib. The problem is that without

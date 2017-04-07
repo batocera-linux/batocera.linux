@@ -8,7 +8,7 @@ GST_PLUGINS_BASE_VERSION = 0.10.36
 GST_PLUGINS_BASE_SOURCE = gst-plugins-base-$(GST_PLUGINS_BASE_VERSION).tar.xz
 GST_PLUGINS_BASE_SITE = http://gstreamer.freedesktop.org/src/gst-plugins-base
 GST_PLUGINS_BASE_INSTALL_STAGING = YES
-GST_PLUGINS_BASE_LICENSE = GPLv2+, LGPLv2+
+GST_PLUGINS_BASE_LICENSE = GPL-2.0+, LGPL-2.0+
 GST_PLUGINS_BASE_LICENSE_FILES = COPYING COPYING.LIB
 
 # freetype is only used by examples, but if it is not found
@@ -111,6 +111,7 @@ endif
 
 ifeq ($(BR2_PACKAGE_GST_PLUGINS_BASE_PLUGIN_SUBPARSE),y)
 GST_PLUGINS_BASE_CONF_OPTS += --enable-subparse
+GST_PLUGINS_BASE_DEPENDENCIES += libxml2
 else
 GST_PLUGINS_BASE_CONF_OPTS += --disable-subparse
 endif

@@ -9,7 +9,7 @@
 USTR_VERSION = 1.0.4
 USTR_SOURCE = ustr-$(USTR_VERSION).tar.bz2
 USTR_SITE = http://www.and.org/ustr/$(USTR_VERSION)
-USTR_LICENSE = BSD-2c, MIT, LGPLv2+
+USTR_LICENSE = BSD-2-Clause, MIT, LGPL-2.0+
 USTR_LICENSE_FILES = LICENSE LICENSE_BSD LICENSE_LGPL LICENSE_MIT
 USTR_AUTORECONF = YES
 USTR_PATCH = \
@@ -26,6 +26,7 @@ USTR_INSTALL_STAGING = YES
 USTR_MAKE_OPTS = all all-shared
 
 USTR_CONF_OPTS += LDCONFIG=/bin/true
+HOST_USTR_CONF_OPTS += LDCONFIG=/bin/true
 
 $(eval $(autotools-package))
 $(eval $(host-autotools-package))
