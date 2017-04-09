@@ -41,7 +41,7 @@ fi
  fi) |
     while read RDIR
     do
-	NF=$(ls "${RDIR}" | grep -vE '\.txt$|\.xml$|' | wc -l)
+	NF=$(ls "${RDIR}" | grep -vE '\.txt$|\.xml$' | wc -l)
 	if test "${NF}" -gt 0
 	then
 	    BASEDIR=$(basename "${RDIR}")
