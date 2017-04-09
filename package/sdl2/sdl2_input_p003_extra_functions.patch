@@ -127,10 +127,10 @@ index 9cbddda..86c99c1 100644
 +
 +int SDL_SYS_JoystickButtonEventCodeById(int device_index, int button)
 +{
++  int i;
 +  SDL_joylist_item* joystick = JoystickByDevIndex(device_index);
 +  if(joystick == NULL) return -1;
 +
-+  int i;
 +  for(i=0; i<KEY_MAX; i++) {
 +    if(((int)joystick->hwdata->key_map[i]) == button) {
 +      return i;
@@ -141,10 +141,10 @@ index 9cbddda..86c99c1 100644
 +
 +int SDL_SYS_JoystickAxisEventCodeById(int device_index, int axis)
 +{
++  int i;
 +  SDL_joylist_item* joystick = JoystickByDevIndex(device_index);
 +  if(joystick == NULL) return -1;
 +
-+  int i;
 +  for(i=0; i<ABS_MAX; i++) {
 +    if(((int)joystick->hwdata->abs_map[i]) == axis) {
 +      return i;
@@ -155,10 +155,10 @@ index 9cbddda..86c99c1 100644
 +
 +int SDL_SYS_JoystickHatEventCodeById(int device_index, int hat)
 +{
++  int i;
 +  SDL_joylist_item* joystick = JoystickByDevIndex(device_index);
 +  if(joystick == NULL) return -1;
 +
-+  int i;
 +  for(i=0; i<ABS_MAX; i++) {
 +    if(((int)joystick->hwdata->hat_map[i]) == hat) {
 +      return i;

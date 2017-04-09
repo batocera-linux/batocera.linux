@@ -174,6 +174,9 @@ else
 MESA3D_CONF_OPTS += --disable-gles1 --disable-gles2
 endif
 
+# force mesa3d to static=no while batocera forces it
+MESA3D_CONF_OPTS += --enable-static=no
+
 ifeq ($(BR2_PACKAGE_MESA3D_OPENGL_TEXTURE_FLOAT),y)
 MESA3D_CONF_OPTS += --enable-texture-float
 MESA3D_LICENSE_FILES += docs/patents.txt

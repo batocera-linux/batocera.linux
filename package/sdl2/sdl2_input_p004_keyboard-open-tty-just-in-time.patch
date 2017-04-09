@@ -1,52 +1,58 @@
 diff --git a/src/core/linux/SDL_evdev.c b/src/core/linux/SDL_evdev.c
-index 97da3d7..2484849 100644
+index 4761f3e..caa52d6 100644
 --- a/src/core/linux/SDL_evdev.c
 +++ b/src/core/linux/SDL_evdev.c
-@@ -480,7 +480,7 @@ SDL_EVDEV_Init(void)
- #endif /* SDL_USE_LIBUDEV */
-         
-         /* We need a physical terminal (not PTS) to be able to translate key code to symbols via the kernel tables */
--        _this->console_fd = SDL_EVDEV_get_console_fd();
-+        _this->console_fd = -1; // lazy loading, load it only when required
-         
-         /* Mute the keyboard so keystrokes only generate evdev events and do not leak through to the console */
-         _this->tty = STDIN_FILENO;
-@@ -576,6 +576,7 @@ SDL_EVDEV_Poll(void)
-     SDL_Scancode scan_code;
-     int mouse_button;
-     SDL_Mouse *mouse;
-+    int ioctlres;
- #ifdef SDL_INPUT_LINUXKD
-     Uint16 modstate;
+@@ -325,13 +325,28 @@ static void SDL_EVDEV_do_text_input(unsigned short keycode) {
      struct kbentry kbe;
-@@ -614,6 +615,10 @@ SDL_EVDEV_Poll(void)
-                         } else if (events[i].value == 1 || events[i].value == 2 /* Key repeated */ ) {
-                             SDL_SendKeyboardKey(SDL_PRESSED, scan_code);
- #ifdef SDL_INPUT_LINUXKD
-+			    if (_this->console_fd < 0) {
-+			      _this->console_fd = SDL_EVDEV_get_console_fd();
-+			    }
+     unsigned char type;
+     char text[2] = { 0 };
+-    
 +
-                             if (_this->console_fd >= 0) {
-                                 kbe.kb_index = events[i].code;
-                                 /* Convert the key to an UTF-8 char */
-@@ -643,7 +648,18 @@ SDL_EVDEV_Poll(void)
- 				  }
- 				}
++    if (_this->console_fd < 0) {
++      // in case of ioctl failure, try to reopen the tty (an other chance)
++      // it could be open too soon on the boot process
++      // tty is sometimes manipulated by an other program
++
++      /* We need a physical terminal (not PTS) to be able to translate key
++	 code to symbols via the kernel tables */
++      _this->console_fd = SDL_EVDEV_get_active_tty();
++
++      /* Mute the keyboard so keystrokes only generate evdev events and do not
++	 leak through to the console */
++      SDL_EVDEV_mute_keyboard(_this->console_fd, &_this->kb_mode);
++    }
++
+     if (_this->console_fd < 0)
+         return;
+     
+     shift_state = TIOCL_GETSHIFTSTATE;
+     if (ioctl(_this->console_fd, TIOCLINUX, &shift_state) < 0) {
+         /* TODO: error */
++        _this->console_fd = -1;
+         return;
+     }
  
--                                if (ioctl(_this->console_fd, KDGKBENT, (unsigned long)&kbe) == 0 && 
-+				ioctlres = ioctl(_this->console_fd, KDGKBENT, (unsigned long)&kbe);
-+				if(ioctlres != 0) {
-+				  // in case of ioctl failure, try to reopen the tty (an other chance)
-+				  // tty is sometimes manipulated by an other program
-+				  close(_this->console_fd); // can fails, anyway
-+				  _this->console_fd = SDL_EVDEV_get_console_fd();
-+				  if(_this->console_fd >= 0) {
-+				    ioctlres = ioctl(_this->console_fd, KDGKBENT, (unsigned long)&kbe);
-+				  }
-+				}
-+
-+                                if (ioctlres == 0 && 
-                                     ((KTYP(kbe.kb_value) == KT_LATIN) || (KTYP(kbe.kb_value) == KT_ASCII) || (KTYP(kbe.kb_value) == KT_LETTER))) 
-                                 {
-                                     kval = KVAL(kbe.kb_value);
+@@ -340,6 +355,7 @@ static void SDL_EVDEV_do_text_input(unsigned short keycode) {
+     
+     if (ioctl(_this->console_fd, KDGKBENT, &kbe) < 0) {
+         /* TODO: error */
++        _this->console_fd = -1;
+         return;
+     }
+     
+@@ -370,6 +386,7 @@ static void SDL_EVDEV_do_text_input(unsigned short keycode) {
+     
+         if (ioctl(_this->console_fd, KDGKBLED, &locks_state) < 0) {
+             /* TODO: error */
++            _this->console_fd = -1;
+             return;
+         }
+         
+@@ -378,6 +395,7 @@ static void SDL_EVDEV_do_text_input(unsigned short keycode) {
+             
+             if (ioctl(_this->console_fd, KDGKBENT, &kbe) < 0) {
+                 /* TODO: error */
++                _this->console_fd = -1;
+                 return;
+             }
+         }

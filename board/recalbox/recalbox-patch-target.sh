@@ -80,3 +80,10 @@ omx_fnt="/usr/share/fonts/dejavu/DejaVuSans-BoldOblique.ttf"
 if [[ -f ${TARGET_DIR}$omx_fnt ]] ; then
 	sed -i "s|omx_fnt=\"\"|omx_fnt=\"--font=$omx_fnt\"|g" "${TARGET_DIR}/etc/init.d/S02splash"
 fi
+
+# fix the vt100 terminal ; can probably removed in the future
+if ! grep -qE "^TERM=vt100$" "${TARGET_DIR}/etc/profile"
+then
+    echo              >> "${TARGET_DIR}/etc/profile"
+    echo "TERM=vt100" >> "${TARGET_DIR}/etc/profile"
+fi
