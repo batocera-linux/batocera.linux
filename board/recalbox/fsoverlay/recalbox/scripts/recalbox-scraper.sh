@@ -47,7 +47,12 @@ fi
 	    BASEDIR=$(basename "${RDIR}")
 	    echo "GAME: system ${BASEDIR}"
 	    EXTRAOPT=
-	    test "${RDIR}" = "/recalbox/share/roms/mame" && EXTRAOPT="-mame"
+
+	    for x in "mame" "fba" "fba_libretro" "neogeo"
+	    do
+		test "${RDIR}" = "/recalbox/share/roms/${x}" && EXTRAOPT="-mame"
+	    done
+
 	    (cd "${RDIR}" && sselph-scraper -console_src ss,gdb,ovgdb -lang "${sslang}" -console_img "${IMGSTYLE}" ${EXTRAOPT}) 2>&1
 	fi
     done
