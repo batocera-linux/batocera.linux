@@ -368,7 +368,7 @@ new file mode 100644
 index 0000000..9802b51
 --- /dev/null
 +++ b/src/video/mali-fbdev/SDL_malivideo.c
-@@ -0,0 +1,321 @@
+@@ -0,0 +1,323 @@
 +/*
 +  Simple DirectMedia Layer
 +  Copyright (C) 1997-2014 Sam Lantinga <slouken@libsdl.org>
@@ -487,6 +487,8 @@ index 0000000..9802b51
 +int
 +MALI_VideoInit(_THIS)
 +{
++    struct fb_var_screeninfo vinfo;
++    int fd;
 +    SDL_VideoDisplay display;
 +    SDL_DisplayMode current_mode;
 +    SDL_DisplayData *data;
@@ -496,11 +498,11 @@ index 0000000..9802b51
 +        return SDL_OutOfMemory();
 +    }
 +
-+    int fd = open("/dev/fb0", O_RDWR, 0);
++    fd = open("/dev/fb0", O_RDWR, 0);
 +    if (fd < 0) {
 +        return SDL_SetError("mali-fbdev: Could not open framebuffer device");
 +    }
-+    struct fb_var_screeninfo vinfo;
++
 +    if (ioctl(fd, FBIOGET_VSCREENINFO, &vinfo) < 0) {
 +        MALI_VideoQuit(_this);
 +        return SDL_SetError("mali-fbdev: Could not get framebuffer information");

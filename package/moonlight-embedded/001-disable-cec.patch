@@ -1,0 +1,13 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 00dd129..e239814 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -28,7 +28,7 @@ pkg_check_modules(AVUTIL libavutil)
+ pkg_check_modules(XLIB x11-xcb)
+ pkg_check_modules(LIBVA vdpau)
+ pkg_check_modules(PULSE libpulse-simple)
+-pkg_check_modules(CEC libcec>=3.0.0)
++#pkg_check_modules(CEC libcec>=3.0.0)
+ 
+ if(AVCODEC_FOUND AND AVUTIL_FOUND AND SDL_FOUND)
+   set(SOFTWARE_FOUND TRUE)
