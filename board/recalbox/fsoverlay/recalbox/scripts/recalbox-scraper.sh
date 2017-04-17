@@ -29,7 +29,7 @@ esac
 
 if test -z "${IMGSTYLE}"
 then
-    IMGSTYLE="s,b,f,a,l,3b"
+    IMGSTYLE="b,f,a,l,3b,s"
 fi
 
 # find system to scrape
