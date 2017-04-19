@@ -29,7 +29,7 @@ esac
 
 if test -z "${IMGSTYLE}"
 then
-    IMGSTYLE="s,b,f,a,l,3b"
+    IMGSTYLE="b,f,a,l,3b,s"
 fi
 
 # find system to scrape
@@ -41,13 +41,18 @@ fi
  fi) |
     while read RDIR
     do
-	NF=$(ls "${RDIR}" | grep -vE '\.txt$|\.xml$|' | wc -l)
+	NF=$(ls "${RDIR}" | grep -vE '\.txt$|\.xml$' | wc -l)
 	if test "${NF}" -gt 0
 	then
 	    BASEDIR=$(basename "${RDIR}")
 	    echo "GAME: system ${BASEDIR}"
 	    EXTRAOPT=
-	    test "${RDIR}" = "/recalbox/share/roms/mame" && EXTRAOPT="-mame"
+
+	    for x in "mame" "fba" "fba_libretro" "neogeo"
+	    do
+		test "${RDIR}" = "/recalbox/share/roms/${x}" && EXTRAOPT="-mame"
+	    done
+
 	    (cd "${RDIR}" && sselph-scraper -console_src ss,gdb,ovgdb -lang "${sslang}" -console_img "${IMGSTYLE}" ${EXTRAOPT}) 2>&1
 	fi
     done
