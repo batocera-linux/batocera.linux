@@ -28,6 +28,6 @@ endef
 
 
 define VIRTUALGAMEPADS_INSTALL_INIT_SYSV
-	$(INSTALL) -m 0755 -D package/virtualgamepads/S92virtualgamepads $(TARGET_DIR)/etc/init.d/S92virtualgamepads
+	$(INSTALL) -m 0755 -D package/batocera/virtualgamepads/S92virtualgamepads $(TARGET_DIR)/etc/init.d/S92virtualgamepads
 endef
 $(eval $(generic-package))

@@ -4,23 +4,16 @@
 #
 ################################################################################
 PPSSPP_VERSION = 3eaa81570443506a1e8dd26217c7700854628a77
-PPSSPP_SITE = $(call github,hrydgard,ppsspp,$(PPSSPP_VERSION))
-PPSSPP_GIT = https://github.com/hrydgard/ppsspp.git
+#PPSSPP_SITE = $(call github,hrydgard,ppsspp,$(PPSSPP_VERSION))
+PPSSPP_SITE = https://github.com/hrydgard/ppsspp.git
+PPSSPP_SITE_METHOD=git
+PPSSPP_GIT_SUBMODULES=YES
 PPSSPP_DEPENDENCIES = sdl2 zlib libzip zip ffmpeg
 
 # required at least on x86
 ifeq ($(BR2_PACKAGE_LIBGLU),y)
 PPSSPP_DEPENDENCIES += libglu
 endif
-
-# Dirty hack to download submodules
-define PPSSPP_EXTRACT_CMDS
-	rm -rf $(@D)
-	git clone --recursive $(PPSSPP_GIT) $(@D)
-	touch $(@D)/.stamp_downloaded
-	cd $(@D) && \
-	git reset --hard $(PPSSPP_VERSION)
-endef
 
 define PPSSPP_CONFIGURE_PI
 	sed -i "s+/opt/vc+$(STAGING_DIR)/usr+g" $(@D)/CMakeLists.txt

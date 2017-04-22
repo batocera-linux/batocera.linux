@@ -10,8 +10,8 @@ DB9_GPIO_RPI_SITE = http://www.niksula.hut.fi/~mhiienka/Rpi
 DB9_GPIO_RPI_DEPENDENCIES = linux
 
 define DB9_GPIO_RPI_EXTRACT_CMDS
-	cp package/db9_gpio_rpi/db9_gpio_rpi.c $(@D)
-	cp package/db9_gpio_rpi/Makefile $(@D)
+	cp package/batocera/db9_gpio_rpi/db9_gpio_rpi.c $(@D)
+	cp package/batocera/db9_gpio_rpi/Makefile $(@D)
 endef
 
 # Needed because can't pass cflags to cc

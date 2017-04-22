@@ -27,7 +27,7 @@ define FREEIMAGE_BUILD_CMDS
 endef
 
 define FREEIMAGE_INSTALL_STAGING_CMDS
-	$(INSTALL) -D -m 644 package/freeimage/freeimage.pc \
+	$(INSTALL) -D -m 644 package/batocera/freeimage/freeimage.pc \
 		$(STAGING_DIR)/usr/lib/pkgconfig/freeimage.pc
 	$(INSTALL) -D -m 644 "$(@D)/Source/FreeImage.h" \
 		"$(STAGING_DIR)/usr/include/FreeImage.h"
@@ -38,7 +38,7 @@ define FREEIMAGE_INSTALL_STAGING_CMDS
 endef
 
 define FREEIMAGE_INSTALL_TARGET_CMDS
-	$(INSTALL) -D -m 644 package/freeimage/freeimage.pc \
+	$(INSTALL) -D -m 644 package/batocera/freeimage/freeimage.pc \
 		$(TARGET_DIR)/usr/lib/pkgconfig/freeimage.pc
 	$(INSTALL) -D -m 644 "$(@D)/Source/FreeImage.h" \
 		"$(TARGET_DIR)/usr/include/FreeImage.h"

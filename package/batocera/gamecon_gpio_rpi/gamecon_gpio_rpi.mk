@@ -10,8 +10,8 @@ GAMECON_GPIO_RPI_SITE = http://www.niksula.hut.fi/~mhiienka/Rpi
 GAMECON_GPIO_RPI_DEPENDENCIES = linux
 
 define GAMECON_GPIO_RPI_EXTRACT_CMDS
-	cp package/gamecon_gpio_rpi/gamecon_gpio_rpi.c $(@D)
-	cp package/gamecon_gpio_rpi/Makefile $(@D)
+	cp package/batocera/gamecon_gpio_rpi/gamecon_gpio_rpi.c $(@D)
+	cp package/batocera/gamecon_gpio_rpi/Makefile $(@D)
 endef
 
 # Needed because can't pass cflags to cc

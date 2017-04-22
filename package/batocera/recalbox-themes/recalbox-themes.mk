@@ -11,7 +11,7 @@ define RECALBOX_THEMES_INSTALL_TARGET_CMDS
         mkdir -p $(TARGET_DIR)/recalbox/share_init/system/.emulationstation/themes/
 	cp -r $(@D)/themes/recalbox \
 		$(TARGET_DIR)/recalbox/share_init/system/.emulationstation/themes/
-	cp -r package/recalbox-themes/extras/* \
+	cp -r package/batocera/recalbox-themes/extras/* \
 		$(TARGET_DIR)/recalbox/share_init/system/.emulationstation/themes/recalbox/
 endef
 

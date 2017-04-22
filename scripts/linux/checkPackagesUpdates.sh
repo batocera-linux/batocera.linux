@@ -45,7 +45,7 @@ tput_bold="$(tput smso)"
 # HELPERS ##
 
 base_GETCUR() {
-    X=$(grep '_VERSION = ' package/${1}/*.mk 2>/dev/null | grep -vE '^#' | head -1 | sed -e s+'.* = '+''+ | sed -e s+' '++g)
+    X=$(grep '_VERSION = ' package/batocera/${1}/*.mk 2>/dev/null | grep -vE '^#' | head -1 | sed -e s+'.* = '+''+ | sed -e s+' '++g)
     if test -z "$X"
     then
 	echo "unknown (you should run from the top buildroot directory)"
@@ -106,9 +106,9 @@ github_base() {
     GH_SIZE=$(echo "${GH_VERS}" | wc -c)
     if test "${GH_SIZE}" = 41 # git full checksum
     then
-	grep '_SITE = \$(call github,' package/${1}/*.mk 2>/dev/null | grep -vE '^#' | head -1 | sed -e s+'^.*call github,\([^,]*\),\([^,]*\),.*$'+'\1/\2:lastcommit'+
+	grep '_SITE = \$(call github,' package/batocera/${1}/*.mk 2>/dev/null | grep -vE '^#' | head -1 | sed -e s+'^.*call github,\([^,]*\),\([^,]*\),.*$'+'\1/\2:lastcommit'+
     else
-	grep '_SITE = \$(call github,' package/${1}/*.mk 2>/dev/null | grep -vE '^#' | head -1 | sed -e s+'^.*call github,\([^,]*\),\([^,]*\),.*$'+'\1/\2:'"${GH_VERS}"+
+	grep '_SITE = \$(call github,' package/batocera/${1}/*.mk 2>/dev/null | grep -vE '^#' | head -1 | sed -e s+'^.*call github,\([^,]*\),\([^,]*\),.*$'+'\1/\2:'"${GH_VERS}"+
     fi
 }
 
@@ -182,7 +182,7 @@ getTargets() {
     TGTMP=
     for TG in ${ARCHIS}
     do
-	if grep -qE "^[ ]*BR2_PACKAGE_${CFGSEARCH}=y.*" "configs/recalbox-${TG}_defconfig"
+	if grep -qE "^[ ]*BR2_PACKAGE_${CFGSEARCH}=y.*" "configs/batocera-${TG}_defconfig"
 	then
 	    if test -z "${TGTMP}"
 	    then
