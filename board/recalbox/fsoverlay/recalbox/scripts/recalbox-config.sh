@@ -386,7 +386,7 @@ if [[ "$command" == "wifi" ]]; then
         if [[ "$mode" == "enable" ]]; then
             echo "`logtime` : configure wifi" >> $log
 	    mkdir -p "/var/lib/connman" || exit 1
-	    cat > "/var/lib/connman/recalbox.config" <<EOF
+	    cat > "/var/lib/connman/recalbox_wifi.config" <<EOF
 [global]
 Name=recalbox
 
@@ -396,7 +396,7 @@ Name=${ssid}
 EOF
 	    if test "${psk}" != ""
 	    then
-		echo "Passphrase=${psk}" >> "/var/lib/connman/recalbox.config"
+		echo "Passphrase=${psk}" >> "/var/lib/connman/recalbox_wifi.config"
 	    fi
 
 	    connmanctl enable wifi || exit 1
