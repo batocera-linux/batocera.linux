@@ -20,6 +20,12 @@ getPer() {
     done
 }
 
+CUSTOM_URLDIR=
+if test $# -eq 1
+then
+    CUSTOM_URLDIR=$1
+fi
+
 echo "starting the upgrade..."
 
 recalboxupdateurl="https://batocera-linux.xorhub.com/upgrades"
@@ -38,8 +44,16 @@ test "${updatetype}" != "stable" -a "${updatetype}" != "unstable" -a "${updatety
 # download directory
 mkdir -p /recalbox/share/system/upgrade || exit 1
 
+# custom the url directory
+DWD_HTTP_DIR="${recalboxupdateurl}/${arch}/${updatetype}/last"
+
+if test -n "${CUSTOM_URLDIR}"
+then
+    DWD_HTTP_DIR="${CUSTOM_URLDIR}"
+fi
+
 # get size to download
-url="${recalboxupdateurl}/${arch}/${updatetype}/last/boot.tar.xz"
+url="${DWD_HTTP_DIR}/boot.tar.xz"
 echo "url: ${url}"
 headers=$(curl -sfIL ${url})
 test $? -eq 0 || exit 1
@@ -61,7 +75,7 @@ do
 done
 
 # downlaod
-url="${recalboxupdateurl}/${arch}/${updatetype}/last/boot.tar.xz"
+url="${DWD_HTTP_DIR}/boot.tar.xz"
 
 touch "/recalbox/share/system/upgrade/boot.tar.xz"
 getPer "${size}" &
