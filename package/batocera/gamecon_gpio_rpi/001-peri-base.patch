@@ -1,0 +1,14 @@
+diff --git a/gamecon_gpio_rpi.c b/gamecon_gpio_rpi.c
+index 3a217dc..8fbb12b 100644
+--- a/gamecon_gpio_rpi.c
++++ b/gamecon_gpio_rpi.c
+@@ -36,7 +36,8 @@
+ 
+ #include <linux/ioport.h>
+ #include <asm/io.h>
+-#include <mach/platform.h>
++//#include <mach/platform.h>
++#define BCM2708_PERI_BASE        0x3F000000
+ 
+ MODULE_AUTHOR("Markus Hiienkari");
+ MODULE_DESCRIPTION("NES, SNES, N64, PSX, GC gamepad driver");

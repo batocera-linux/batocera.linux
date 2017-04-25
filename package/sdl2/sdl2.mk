@@ -23,6 +23,11 @@ SDL2_CONF_OPTS += \
 # We must enable static build to get compilation successful.
 SDL2_CONF_OPTS += --enable-static
 
+# sdl2 set the rpi video output from the host name
+ifeq ($(BR2_PACKAGE_RPI_USERLAND),y)
+SDL2_CONF_OPTS += --host=arm-raspberry-linux-gnueabihf
+endif
+
 # From https://bugs.debian.org/cgi-bin/bugreport.cgi/?bug=770670
 # "The problem lies within SDL_cpuinfo.h.  It includes altivec.h, which by
 # definition provides an unconditional vector, pixel and bool define in
