@@ -5,9 +5,7 @@
 ################################################################################
 
 SCUMMVM_VANFANEL_VERSION = acf0e0f0de9ab09198e31592ea472185462e370d
-SCUMMVM_VANFANEL_REPO = vanfanel
-
-SCUMMVM_VANFANEL_SITE = $(call github,$(SCUMMVM_VANFANEL_REPO),scummvm,$(SCUMMVM_VANFANEL_VERSION))
+SCUMMVM_VANFANEL_SITE = $(call github,vanfanel,scummvm,$(SCUMMVM_VANFANEL_VERSION))
 
 SCUMMVM_VANFANEL_LICENSE = GPL2
 SCUMMVM_VANFANEL_DEPENDENCIES = sdl zlib jpeg-turbo libmpeg2 libogg libvorbis flac libmad libpng libtheora \

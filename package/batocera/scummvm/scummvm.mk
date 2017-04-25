@@ -5,9 +5,7 @@
 ################################################################################
 
 SCUMMVM_VERSION = 55cb41798af925c55a95c767ac686c52fdfbf26f
-SCUMMVM_REPO = scummvm
-
-SCUMMVM_SITE = $(call github,$(SCUMMVM_REPO),scummvm,$(SCUMMVM_VERSION))
+SCUMMVM_SITE = $(call github,scummvm,scummvm,$(SCUMMVM_VERSION))
 
 SCUMMVM_LICENSE = GPL2
 SCUMMVM_DEPENDENCIES = sdl2 zlib jpeg libmpeg2 libogg libvorbis flac libmad libpng libtheora \
