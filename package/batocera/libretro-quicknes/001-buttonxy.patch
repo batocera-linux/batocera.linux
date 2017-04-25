@@ -1,0 +1,13 @@
+diff --git a/libretro/libretro.cpp b/libretro/libretro.cpp
+index 28d3453..98e6fcb 100644
+--- a/libretro/libretro.cpp
++++ b/libretro/libretro.cpp
+@@ -121,6 +121,8 @@ typedef struct
+ static const keymap bindmap[] = {
+    { RETRO_DEVICE_ID_JOYPAD_A, JOY_A },
+    { RETRO_DEVICE_ID_JOYPAD_B, JOY_B },
++   { RETRO_DEVICE_ID_JOYPAD_X, JOY_B },
++   { RETRO_DEVICE_ID_JOYPAD_Y, JOY_A },
+    { RETRO_DEVICE_ID_JOYPAD_SELECT, JOY_SELECT },
+    { RETRO_DEVICE_ID_JOYPAD_START, JOY_START },
+    { RETRO_DEVICE_ID_JOYPAD_UP, JOY_UP },
