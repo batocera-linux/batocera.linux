@@ -3,6 +3,7 @@
 # lesstif
 #
 ################################################################################
+
 LESSTIF_VERSION = 0.95.2
 LESSTIF_SOURCE = lesstif-$(LESSTIF_VERSION).tar.bz2
 LESSTIF_SITE = http://downloads.sourceforge.net/project/lesstif/lesstif/$(LESSTIF_VERSION)
@@ -16,7 +17,7 @@ LESSTIF_LICENSE_FILES = COPYING.LIB
 LESSTIF_CONF_OPTS = \
 	--with-gnu-ld \
 	--with-freetype-config=$(STAGING_DIR)/usr/bin/freetype-config \
-	--enable-production=yes	\
+	--enable-production=yes \
 	--enable-build-tests=no \
 	--no-recursion
 

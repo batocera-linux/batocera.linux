@@ -194,7 +194,12 @@ define UBOOT_HELP_CMDS
 endef
 endif # BR2_TARGET_UBOOT_BUILD_SYSTEM_LEGACY
 
+UBOOT_CUSTOM_DTS_PATH = $(call qstrip,$(BR2_TARGET_UBOOT_CUSTOM_DTS_PATH))
+
 define UBOOT_BUILD_CMDS
+	$(if $(UBOOT_CUSTOM_DTS_PATH),
+		cp -f $(UBOOT_CUSTOM_DTS_PATH) $(@D)/arch/$(UBOOT_ARCH)/dts/
+	)
 	$(TARGET_CONFIGURE_OPTS) 	\
 		$(MAKE) -C $(@D) $(UBOOT_MAKE_OPTS) 		\
 		$(UBOOT_MAKE_TARGET)
@@ -306,7 +311,7 @@ endif # UBOOT_BOARD_NAME
 else ifeq ($(BR2_TARGET_UBOOT_BUILD_SYSTEM_KCONFIG),y)
 ifeq ($(BR2_TARGET_UBOOT_USE_DEFCONFIG),y)
 ifeq ($(call qstrip,$(BR2_TARGET_UBOOT_BOARD_DEFCONFIG)),)
-$(error No board defconfig name specified, check your BR2_TARGET_UBOOT_DEFCONFIG setting)
+$(error No board defconfig name specified, check your BR2_TARGET_UBOOT_BOARD_DEFCONFIG setting)
 endif # qstrip BR2_TARGET_UBOOT_BOARD_DEFCONFIG
 endif # BR2_TARGET_UBOOT_USE_DEFCONFIG
 ifeq ($(BR2_TARGET_UBOOT_USE_CUSTOM_CONFIG),y)

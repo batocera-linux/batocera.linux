@@ -1,13 +1,6 @@
 ################################################################################
 #
-# Qt Embedded for Linux
-#
-# This makefile was originally composed by Thomas Lundquist <thomasez@zelow.no>
-# Later heavily modified by buildroot developers
-#
-# BTW, this uses alot of FPU calls and it's pretty slow if you use
-# the kernels FPU emulation so it's better to choose soft float in the
-# buildroot config (and uClibc.config of course, if you have your own.)
+# qt
 #
 ################################################################################
 
@@ -22,14 +15,10 @@ QT_DEPENDENCIES = host-pkgconf
 QT_INSTALL_STAGING = YES
 
 QT_LICENSE := LGPL-2.1 with exceptions or GPL-3.0
-ifneq ($(BR2_PACKAGE_QT_LICENSE_APPROVED),y)
-QT_LICENSE := $(QT_LICENSE) or Digia Qt Commercial license
-endif
 QT_LICENSE_FILES = LICENSE.LGPL LGPL_EXCEPTION.txt LICENSE.GPL3
 
-ifeq ($(BR2_PACKAGE_QT_LICENSE_APPROVED),y)
+# Opensource licenses are the only one we catter about
 QT_CONFIGURE_OPTS += -opensource -confirm-license
-endif
 
 QT_CONFIG_FILE = $(call qstrip,$(BR2_PACKAGE_QT_CONFIG_FILE))
 
@@ -78,7 +67,6 @@ QT_DEPENDENCIES += libglib2
 else
 QT_CONFIGURE_OPTS += -no-glib
 endif
-
 
 ### Pixel depths
 QT_PIXEL_DEPTHS = # empty
@@ -546,7 +534,6 @@ endef
 define QT_BUILD_CMDS
 	$(TARGET_MAKE_ENV) $(MAKE) -C $(@D)
 endef
-
 
 # Build the list of libraries and plugins to install to the target
 

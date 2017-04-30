@@ -6,24 +6,24 @@ comment "policycoreutils needs a glibc toolchain w/ threads, dynamic library"
 
 config BR2_PACKAGE_POLICYCOREUTILS
 	bool "policycoreutils"
-	select BR2_PACKAGE_LIBSEMANAGE
-	select BR2_PACKAGE_LIBCAP_NG
 	depends on BR2_PACKAGE_AUDIT_ARCH_SUPPORTS # libsemanage
 	depends on BR2_TOOLCHAIN_HAS_THREADS # libsemanage
 	depends on !BR2_STATIC_LIBS #libsemanage
 	depends on !BR2_arc # libsemanage
 	depends on BR2_TOOLCHAIN_USES_GLIBC # libsemanage
+	select BR2_PACKAGE_LIBSEMANAGE
+	select BR2_PACKAGE_LIBCAP_NG
 	help
-	  Policycoreutils is a collection of policy utilities (originally
-	  the "core" set of utilities needed to use SELinux, although it
-	  has grown a bit over time), which have different dependencies.
-	  sestatus, secon, run_init, and newrole only use libselinux.
-	  load_policy and setfiles only use libselinux and libsepol.
-	  semodule and semanage use libsemanage (and thus bring in
-	  dependencies on libsepol and libselinux as well). setsebool
-	  uses libselinux to make non-persistent boolean changes (via
-	  the kernel interface) and uses libsemanage to make persistent
-	  boolean changes.
+	  Policycoreutils is a collection of policy utilities
+	  (originally the "core" set of utilities needed to use
+	  SELinux, although it has grown a bit over time), which have
+	  different dependencies.  sestatus, secon, run_init, and
+	  newrole only use libselinux.  load_policy and setfiles only
+	  use libselinux and libsepol.  semodule and semanage use
+	  libsemanage (and thus bring in dependencies on libsepol and
+	  libselinux as well). setsebool uses libselinux to make
+	  non-persistent boolean changes (via the kernel interface)
+	  and uses libsemanage to make persistent boolean changes.
 
 	  The base package will install the following utilities:
 	      load_policy
@@ -45,12 +45,32 @@ config BR2_PACKAGE_POLICYCOREUTILS
 
 if BR2_PACKAGE_POLICYCOREUTILS
 
+config BR2_PACKAGE_POLICYCOREUTILS_AUDIT2ALLOW
+	bool "audit2allow"
+	depends on BR2_USE_WCHAR # python3, sepolgen
+	depends on BR2_USE_MMU # python3, sepolgen
+	depends on BR2_TOOLCHAIN_HAS_THREADS # python3, sepolgen, checkpolicy
+	depends on !BR2_STATIC_LIBS # python3, sepolgen
+	depends on BR2_TOOLCHAIN_USES_GLIBC # checkpolicy
+	depends on !BR2_arc # checkpolicy
+	select BR2_PACKAGE_SEPOLGEN
+	select BR2_PACKAGE_CHECKPOLICY
+	select BR2_PACKAGE_PYTHON3 if !BR2_PACKAGE_PYTHON
+	help
+	  Enable audit2allow to be built
+
+comment "audit2allow needs a glibc toolchain w/ wchar, threads, dynamic library"
+	depends on BR2_USE_MMU
+	depends on !BR2_arc
+	depends on !BR2_USE_WCHAR || !BR2_TOOLCHAIN_HAS_THREADS || \
+		BR2_STATIC_LIBS
+
 config BR2_PACKAGE_POLICYCOREUTILS_RESTORECOND
 	bool "restorecond"
-	select BR2_PACKAGE_LIBGLIB2
 	depends on BR2_USE_WCHAR # glib2
 	depends on BR2_TOOLCHAIN_HAS_THREADS # glib2
 	depends on BR2_USE_MMU # glib2
+	select BR2_PACKAGE_LIBGLIB2
 	help
 	  Enable restorecond to be built
 

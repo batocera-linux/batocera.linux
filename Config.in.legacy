@@ -145,6 +145,51 @@ endif
 ###############################################################################
 comment "Legacy options removed in 2017.05"
 
+config BR2_PACKAGE_OPENOCD_FT2XXX
+	bool "openocd ft2232 support has been removed"
+	select BR2_PACKAGE_OPENOCD_FTDI
+	select BR2_LEGACY
+	help
+	  FT2232 support in OpenOCD has been removed, it's replaced by
+	  FDTI support, which has automatically been enabled.
+
+config BR2_PACKAGE_KODI_RTMPDUMP
+	bool "kodi rtmp has been removed"
+	select BR2_LEGACY
+	help
+	  Internal rtmp support was removed from Kodi.
+
+config BR2_PACKAGE_KODI_VISUALISATION_FOUNTAIN
+	bool "kodi-visualisation-fountain has been removed"
+	select BR2_LEGACY
+	help
+	  According to upstream 'the visualization is not currently
+	  in a working shape.'
+
+config BR2_PACKAGE_PORTMAP
+	bool "portmap has been removed"
+	select BR2_LEGACY
+	select BR2_PACKAGE_RPCBIND
+	help
+	  The portmap upstream tarball is removed, no releases since
+	  ten years and latest change in upstream git in 2014.
+	  You should better use rpcbind as a RPC portmapper.
+
+config BR2_BINUTILS_VERSION_2_25_X
+	bool "binutils version 2.25 support removed"
+	select BR2_LEGACY
+	help
+	  Support for binutils version 2.25 has been removed. The
+	  current default version (2.27 or later) has been selected
+	  instead.
+
+config BR2_TOOLCHAIN_BUILDROOT_INET_RPC
+	bool "uclibc RPC support has been removed"
+	select BR2_LEGACY
+	help
+	  uClibc-ng removed internal RPC implementation in 1.0.23. You
+	  should use libtirpc instead.
+
 config BR2_TARGET_ROOTFS_EXT2_EXTRA_BLOCKS
 	int "extra size in blocks has been removed"
 	default 0

@@ -120,10 +120,6 @@ HOST_QEMU_OPTS += --enable-vde
 HOST_QEMU_DEPENDENCIES += host-vde2
 endif
 
-ifeq ($(BR2_PACKAGE_HOST_QEMU_STATIC),y)
-HOST_QEMU_OPTS += --static
-endif
-
 # Override CPP, as it expects to be able to call it like it'd
 # call the compiler.
 define HOST_QEMU_CONFIGURE_CMDS
@@ -219,42 +215,42 @@ endif
 # Override CPP, as it expects to be able to call it like it'd
 # call the compiler.
 define QEMU_CONFIGURE_CMDS
-	( cd $(@D);                                     \
-		LIBS='$(QEMU_LIBS)'                     \
-		$(TARGET_CONFIGURE_OPTS)                \
-		$(TARGET_CONFIGURE_ARGS)                \
-		CPP="$(TARGET_CC) -E"			\
-		$(QEMU_VARS)                            \
-		./configure                             \
-			--prefix=/usr                   \
-			--cross-prefix=$(TARGET_CROSS)  \
-			--with-system-pixman            \
-			--audio-drv-list=               \
-			--enable-kvm                    \
-			--enable-attr                   \
-			--enable-vhost-net              \
-			--disable-bsd-user              \
-			--disable-xen                   \
-			--disable-slirp                 \
-			--disable-vnc                   \
-			--disable-virtfs                \
-			--disable-brlapi                \
-			--disable-curses                \
-			--disable-curl                  \
-			--disable-bluez                 \
-			--disable-uuid                  \
-			--disable-vde                   \
-			--disable-linux-aio             \
-			--disable-cap-ng                \
-			--disable-docs                  \
-			--disable-spice                 \
-			--disable-rbd                   \
-			--disable-libiscsi              \
-			--disable-usb-redir             \
-			--disable-strip                 \
-			--disable-seccomp               \
-			--disable-sparse                \
-			$(QEMU_OPTS)                    \
+	( cd $(@D); \
+		LIBS='$(QEMU_LIBS)' \
+		$(TARGET_CONFIGURE_OPTS) \
+		$(TARGET_CONFIGURE_ARGS) \
+		CPP="$(TARGET_CC) -E" \
+		$(QEMU_VARS) \
+		./configure \
+			--prefix=/usr \
+			--cross-prefix=$(TARGET_CROSS) \
+			--with-system-pixman \
+			--audio-drv-list= \
+			--enable-kvm \
+			--enable-attr \
+			--enable-vhost-net \
+			--disable-bsd-user \
+			--disable-xen \
+			--disable-slirp \
+			--disable-vnc \
+			--disable-virtfs \
+			--disable-brlapi \
+			--disable-curses \
+			--disable-curl \
+			--disable-bluez \
+			--disable-uuid \
+			--disable-vde \
+			--disable-linux-aio \
+			--disable-cap-ng \
+			--disable-docs \
+			--disable-spice \
+			--disable-rbd \
+			--disable-libiscsi \
+			--disable-usb-redir \
+			--disable-strip \
+			--disable-seccomp \
+			--disable-sparse \
+			$(QEMU_OPTS) \
 	)
 endef
 

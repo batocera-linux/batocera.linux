@@ -28,16 +28,6 @@ ifeq ($(BR2_PACKAGE_RPI_USERLAND),y)
 SDL2_CONF_OPTS += --host=arm-raspberry-linux-gnueabihf
 endif
 
-# From https://bugs.debian.org/cgi-bin/bugreport.cgi/?bug=770670
-# "The problem lies within SDL_cpuinfo.h.  It includes altivec.h, which by
-# definition provides an unconditional vector, pixel and bool define in
-# standard-c++ mode.  In GNU-c++ mode this names are only defined
-# context-sensitive by cpp.  SDL_cpuinfo.h is included by SDL.h.
-# Including altivec.h makes arbitrary code break."
-ifeq ($(BR2_POWERPC_CPU_HAS_ALTIVEC),y)
-SDL2_CONF_OPTS += --disable-altivec
-endif
-
 ifeq ($(BR2_PACKAGE_HAS_UDEV),y)
 SDL2_DEPENDENCIES += udev
 SDL2_CONF_OPTS += --enable-libudev
@@ -63,7 +53,7 @@ SDL2_DEPENDENCIES += xlib_libX11 xlib_libXext
 SDL2_CONF_OPTS += --enable-video-x11 \
 	--with-x=$(STAGING_DIR) \
 	--x-includes=$(STAGING_DIR)/usr/include \
-	--x-libraries=$(STAGING_DIR)/usr/lib  \
+	--x-libraries=$(STAGING_DIR)/usr/lib \
 	--enable-video-x11-xshape
 
 ifeq ($(BR2_PACKAGE_XLIB_LIBXCURSOR),y)
