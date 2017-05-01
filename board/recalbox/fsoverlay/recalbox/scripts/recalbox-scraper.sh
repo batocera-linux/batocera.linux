@@ -56,3 +56,6 @@ fi
 	    (cd "${RDIR}" && sselph-scraper -console_src ss,gdb,ovgdb -lang "${sslang}" -console_img "${IMGSTYLE}" ${EXTRAOPT}) 2>&1
 	fi
     done
+
+# synchronize to not make the usb/sdcard slowing down once finnished
+sync
