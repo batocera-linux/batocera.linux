@@ -4,9 +4,9 @@
 #
 ################################################################################
 
-KODI_RESOURCE_LANGUAGE_EU_ES_VERSION = 2.0.0
+KODI_RESOURCE_LANGUAGE_EU_ES_VERSION = 3.0.9
 KODI_RESOURCE_LANGUAGE_EU_ES_SOURCE = resource.language.eu_es-$(KODI_RESOURCE_LANGUAGE_EU_ES_VERSION).zip
-KODI_RESOURCE_LANGUAGE_EU_ES_SITE = http://mirrors.kodi.tv/addons/jarvis/resource.language.eu_es
+KODI_RESOURCE_LANGUAGE_EU_ES_SITE = http://mirrors.kodi.tv/addons/krypton/resource.language.eu_es
 KODI_RESOURCE_LANGUAGE_EU_ES_PLUGINNAME=resource.language.eu_es
 
 KODI_PLUGIN_TARGET_DIR=$(TARGET_DIR)/usr/share/kodi/addons

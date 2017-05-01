@@ -33,4 +33,51 @@ then
     done
 fi
 
-LD_LIBRARY_PATH="/usr/lib/mysql" /usr/lib/kodi/kodi.bin --standalone -fs
+# recreate a fifo to get kodi events and be sure it's empty
+rm -f /var/run/kodi.msg
+if ! mkfifo /var/run/kodi.msg
+then
+    exit 1 # code for error
+fi
+
+(
+    LD_LIBRARY_PATH="/usr/lib/mysql" /usr/lib/kodi/kodi.bin --standalone -fs
+    echo "Kodi process ended." >&2
+    echo "EXIT" >> /var/run/kodi.msg # in case of normal, but mainly anormal end of kodi, send a message to signal the end
+)&
+
+kodiLastChance() {
+    sleep 3 # kodi, please take less than X seconds to quit
+    if ps -o comm | grep -qE '^kodi.bin$'
+    then
+	sleep 2 # let some other seconds to kodi to quit
+	killall -9 kodi.bin
+    fi
+}
+
+while read EVENT
+do
+    echo "Kodi event : ${EVENT}" >&2
+    case "$EVENT" in
+	"EXIT")
+	    kodiLastChance
+	    wait
+	    exit 0 # code for success
+	    ;;
+	"RESTART")
+	    kodiLastChance
+	    wait
+	    exit 10 # code to reboot
+	    ;;
+	"SHUTDOWN")
+	    kodiLastChance
+	    wait
+	    exit 11 # code to shutdown
+	    ;;
+    esac
+done < /var/run/kodi.msg
+
+rm -f /var/run/kodi.msg
+echo "Kodi launcher ended without event." >&2
+exit 1
+### end ###

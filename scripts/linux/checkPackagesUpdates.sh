@@ -22,8 +22,8 @@ ARCHIS="odroidc2 odroidxu4 rpi1 rpi2 rpi3 x86 x86_64"
 ## SPECIFICS ##
 
 # KODI
-kodi-superrepo-repositories_GETNET() { apachelistlast_GETNET "http://srp.nu/jarvis/repositories/superrepo?C=M;O=A" | sed -e s+'superrepo.kodi.jarvis.repositories-\(.*\).zip'+'\1'+; }
-kodi-resource-language_GETNET()      { apachelistlast_GETNET "http://mirrors.kodi.tv/addons/jarvis/resource.language.${1}?C=M;O=A" | sed -e s+"resource.language.${1}-\(.*\).zip"+'\1'+; }
+kodi-superrepo-repositories_GETNET() { apachelistlast_GETNET "http://srp.nu/krypton/repositories/superrepo?C=M;O=A" | sed -e s+'superrepo.kodi.krypton.repositories-\(.*\).zip'+'\1'+; }
+kodi-resource-language_GETNET()      { apachelistlast_GETNET "http://mirrors.kodi.tv/addons/krypton/resource.language.${1}?C=M;O=A" | sed -e s+"resource.language.${1}-\(.*\).zip"+'\1'+; }
 
 # RETROARCH
 retroarch_GETNET()                   { githublasttag_GETNET "libretro/RetroArch"; }
