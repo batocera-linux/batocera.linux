@@ -5,9 +5,9 @@
 ################################################################################
 
 KODI_SUPERREPO_REPOSITORIES_VERSION = 0.7.04
-KODI_SUPERREPO_REPOSITORIES_SOURCE = superrepo.kodi.jarvis.repositories-$(KODI_SUPERREPO_REPOSITORIES_VERSION).zip
-KODI_SUPERREPO_REPOSITORIES_SITE = http://srp.nu/jarvis/repositories/superrepo
-KODI_SUPERREPO_REPOSITORIES_PLUGINNAME=superrepo.kodi.jarvis.repositories
+KODI_SUPERREPO_REPOSITORIES_SOURCE = superrepo.kodi.krypton.repositories-$(KODI_SUPERREPO_REPOSITORIES_VERSION).zip
+KODI_SUPERREPO_REPOSITORIES_SITE = http://srp.nu/krypton/repositories/superrepo
+KODI_SUPERREPO_REPOSITORIES_PLUGINNAME=superrepo.kodi.krypton.repositories
 
 KODI_PLUGIN_TARGET_DIR=$(TARGET_DIR)/usr/share/kodi/addons
 
