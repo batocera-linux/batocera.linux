@@ -6,9 +6,9 @@ V_CPUMODEL1=$(grep -E $'^model name\t:' /proc/cpuinfo | head -1 | sed -e s+'^mod
 V_SYSTEM=$(uname -rs)
 
 # battery
-if test -e /sys/class/power_supply/BAT0/capacity
+if test -e /sys/class/power_supply/BAT0/current_now
 then
-    BATT=$(cat /sys/class/power_supply/BAT0/capacity)
+    BATT=$(cat /sys/class/power_supply/BAT0/current_now | sed -e s+'.$'++)
     echo "Battery: ${BATT}%"
 fi
 
