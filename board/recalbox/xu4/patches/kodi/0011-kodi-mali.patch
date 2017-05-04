@@ -195,27 +195,26 @@ index 0000000..083749a
 +  bool _GetNativeResolution(RESOLUTION_INFO *res) const;
 +};
 diff --git a/xbmc/windowing/egl/EGLWrapper.cpp b/xbmc/windowing/egl/EGLWrapper.cpp
-index 036d4b9..b060766 100644
+index 30f5757..2f03a66 100644
 --- a/xbmc/windowing/egl/EGLWrapper.cpp
 +++ b/xbmc/windowing/egl/EGLWrapper.cpp
-@@ -36,6 +36,9 @@
+@@ -34,6 +34,7 @@
  #if defined(HAS_IMXVPU)
    #include "EGLNativeTypeIMX.h"
  #endif
-+
 +#include "EGLNativeTypeMali.h"
-+
+ #if defined(TARGET_LINUX) && defined(HAS_LIBAMCODEC)
  #include "EGLNativeTypeAmlogic.h"
- #include "EGLWrapper.h"
- 
-@@ -105,6 +108,7 @@ bool CEGLWrapper::Initialize(const std::string &implementation)
- #if defined(HAS_IMXVPU)
-       (nativeGuess = CreateEGLNativeType<CEGLNativeTypeIMX>(implementation)) ||
  #endif
-+      (nativeGuess = CreateEGLNativeType<CEGLNativeTypeMali>(implementation)) ||
+@@ -102,6 +103,8 @@ bool CEGLWrapper::Initialize(const std::string &implementation)
+ #elif defined(TARGET_LINUX) && defined(HAS_LIBAMCODEC)
        (nativeGuess = CreateEGLNativeType<CEGLNativeTypeAmlogic>(implementation))
++ # else
++      (nativeGuess = CreateEGLNativeType<CEGLNativeTypeMali>(implementation))
+ #endif
        )
    {
+     m_nativeTypes = nativeGuess;
 diff --git a/xbmc/windowing/egl/Makefile.in b/xbmc/windowing/egl/Makefile.in
 index 32fb168..52382b5 100644
 --- a/xbmc/windowing/egl/Makefile.in
@@ -228,3 +227,17 @@ index 32fb168..52382b5 100644
  ifeq (@USE_ANDROID@,1)
  SRCS+= EGLNativeTypeAndroid.cpp
  SRCS+= EGLNativeTypeAmlAndroid.cpp
+diff --git a/xbmc/windowing/egl/CMakeLists.txt b/xbmc/windowing/egl/CMakeLists.txt
+index 51e13ab..da19e6a 100644
+--- a/xbmc/windowing/egl/CMakeLists.txt
++++ b/xbmc/windowing/egl/CMakeLists.txt
+@@ -35,6 +35,9 @@ if(IMX_FOUND)
+   list(APPEND HEADERS EGLNativeTypeIMX.h)
+ endif()
+ 
++list(APPEND SOURCES EGLNativeTypeMali.cpp)
++list(APPEND HEADERS EGLNativeTypeMali.h)
++
+ if(SOURCES)
+   core_add_library(windowing_egl)
+ endif()

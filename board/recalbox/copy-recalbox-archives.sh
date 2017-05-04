@@ -122,7 +122,7 @@ case "${RECALBOX_TARGET}" in
 	# dirty boot binary files
 	for F in bl1.bin.hardkernel bl2.bin.hardkernel tzsw.bin.hardkernel u-boot.bin.hardkernel
 	do
-	    cp "${BUILD_DIR}/uboot-odroidxu3-v2012.07/sd_fuse/hardkernel/${F}" "${BINARIES_DIR}" || exit 1
+	    cp "${BUILD_DIR}/uboot-odroid-xu4-odroidxu3-v2012.07/sd_fuse/hardkernel/${F}" "${BINARIES_DIR}" || exit 1
 	done
 
 	# /boot
