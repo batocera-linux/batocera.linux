@@ -2,7 +2,7 @@
 #Check if the firmware is alerady loaded
 ps | grep -v grep | grep -q "hciattach /dev/ttyAMA0 bcm43xx 921600"
 btPi3Running=$?
-if [ -f /boot/bcm2710-rpi-3-b.dtb ] && [ $btPi3Running -ne 0 ]; then
+if [ -f /boot/bcm2710-rpi-3-b.dtb -o -f /boot/bcm2708-rpi-0-w.dtb ] && [ $btPi3Running -ne 0 ]; then
     /usr/bin/hciattach /dev/ttyAMA0 bcm43xx 921600
 fi
 
