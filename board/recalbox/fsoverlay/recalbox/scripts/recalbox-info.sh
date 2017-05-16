@@ -8,6 +8,7 @@ V_SYSTEM=$(uname -rs)
 # battery
 BATT=$(grep -E "^POWER_SUPPLY_CAPACITY=" /sys/class/power_supply/BAT*/uevent | sed -e s+'^POWER_SUPPLY_CAPACITY='++ | sort -rn | head -1)
 if test -n "${BATT}"
+then
     echo "Battery: ${BATT}%"
 fi
 
