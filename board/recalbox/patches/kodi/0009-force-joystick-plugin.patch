@@ -1,25 +1,71 @@
+diff --git a/system/addon-manifest.xml b/system/addon-manifest.xml
+index 04cce30..6b78029 100644
+--- a/system/addon-manifest.xml
++++ b/system/addon-manifest.xml
+@@ -42,5 +42,18 @@
+   <addon>xbmc.pvr</addon>
+   <addon>xbmc.python</addon>
+   <addon>xbmc.webinterface</addon>
+-  <addon optional="true">peripheral.joystick</addon>
++  <addon>peripheral.joystick</addon>
++  <addon>superrepo.kodi.krypton.repositories</addon>
++  <addon>superrepo.kodi.krypton.all</addon>
++  <addon>plugin.video.filmon</addon>
++  <addon>plugin.video.youtube</addon>
++  <addon>resource.language.fr_fr</addon>
++  <addon>resource.language.de_de</addon>
++  <addon>resource.language.es_es</addon>
++  <addon>resource.language.eu_es</addon>
++  <addon>resource.language.it_it</addon>
++  <addon>resource.language.pt_br</addon>
++  <addon>resource.language.sv_se</addon>
++  <addon>resource.language.tr_tr</addon>
++  <addon>resource.language.zh_cn</addon>
+ </addons>
+diff --git a/system/keymaps/joystick.xml b/system/keymaps/joystick.xml
+index 937baf2..545b3d9 100644
+--- a/system/keymaps/joystick.xml
++++ b/system/keymaps/joystick.xml
+@@ -29,7 +29,7 @@
+       <y>FullScreen</y>
+       <start>ActivateWindow(PlayerControls)</start>
+       <back>PreviousMenu</back>
+-      <guide>ActivateWindow(Home)</guide>
++      <guide>ActivateWindow(10111)</guide>
+       <up>Up</up>
+       <down>Down</down>
+       <right>Right</right>
+@@ -70,7 +70,7 @@
+       <y>FullScreen</y>
+       <start>Info</start>
+       <back>Seek(-7)</back>
+-      <guide>ActivateWindow(Home)</guide>
++      <guide>ActivateWindow(10111)</guide>
+       <up>ChapterOrBigStepForward</up>
+       <down>ChapterOrBigStepBack</down>
+       <right>StepForward</right>
 diff --git a/xbmc/addons/AddonDatabase.cpp b/xbmc/addons/AddonDatabase.cpp
-index f56fbc2..0da26d7 100644
+index f56fbc2..de3d020 100644
 --- a/xbmc/addons/AddonDatabase.cpp
 +++ b/xbmc/addons/AddonDatabase.cpp
-@@ -261,6 +261,7 @@ void CAddonDatabase::UpdateTables(int version)
+@@ -261,6 +261,8 @@ void CAddonDatabase::UpdateTables(int version)
        // To not risk enabling something user didn't enable, assume that everything from the systems
        // directory is new for this release and set them to disabled.
        bool inSystem = StringUtils::StartsWith(cp_addons[i]->plugin_path, systemPath);
 +      if(id == "peripheral.joystick") { inSystem = false; }
++
        m_pDS->exec(PrepareSQL("INSERT INTO installed(addonID, enabled, installDate) VALUES "
            "('%s', NOT %d AND NOT EXISTS (SELECT * FROM disabled WHERE addonID='%s'), '%s')",
            id, inSystem, id, now.c_str()));
-@@ -345,7 +346,7 @@ void CAddonDatabase::SyncInstalled(const std::set<std::string>& ids,
+@@ -345,6 +347,7 @@ void CAddonDatabase::SyncInstalled(const std::set<std::string>& ids,
  
        if (system.find(id) != system.end() || optional.find(id) != optional.end())
          enable = 1;
--
 +      if(id == "peripheral.joystick") { enable = 1; }
+ 
        m_pDS->exec(PrepareSQL("INSERT INTO installed(addonID, enabled, installDate) "
          "VALUES('%s', %d, '%s')", id.c_str(), enable, now.c_str()));
-     }
-@@ -942,6 +943,7 @@ bool CAddonDatabase::DisableAddon(const std::string &addonID, bool disable /* =
+@@ -942,6 +945,7 @@ bool CAddonDatabase::DisableAddon(const std::string &addonID, bool disable /* =
    {
      if (NULL == m_pDB.get()) return false;
      if (NULL == m_pDS.get()) return false;
@@ -27,7 +73,7 @@ index f56fbc2..0da26d7 100644
  
      std::string sql = PrepareSQL("UPDATE installed SET enabled=%d WHERE addonID='%s'", disable ? 0 : 1, addonID.c_str());
      m_pDS->exec(sql);
-@@ -989,6 +991,9 @@ bool CAddonDatabase::GetDisabled(std::set<std::string>& addons)
+@@ -989,6 +993,9 @@ bool CAddonDatabase::GetDisabled(std::set<std::string>& addons)
  
  bool CAddonDatabase::GetBlacklisted(std::set<std::string>& addons)
  {
@@ -37,7 +83,7 @@ index f56fbc2..0da26d7 100644
    try
    {
      if (NULL == m_pDB.get()) return false;
-@@ -999,9 +1004,17 @@ bool CAddonDatabase::GetBlacklisted(std::set<std::string>& addons)
+@@ -999,9 +1006,17 @@ bool CAddonDatabase::GetBlacklisted(std::set<std::string>& addons)
      while (!m_pDS->eof())
      {
        addons.insert(m_pDS->fv(0).get_asString());
