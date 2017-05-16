@@ -1,0 +1,69 @@
+diff --git a/src/core/linux/SDL_evdev.c b/src/core/linux/SDL_evdev.c
+index caa52d6..1159984 100644
+--- a/src/core/linux/SDL_evdev.c
++++ b/src/core/linux/SDL_evdev.c
+@@ -317,6 +317,54 @@ void SDL_EVDEV_udev_callback(SDL_UDEV_deviceevent udev_event, int udev_class,
+ #endif /* SDL_USE_LIBUDEV */
+ 
+ #ifdef SDL_INPUT_LINUXKD
++
++static void SDL_EVDEV_do_text_input_old(unsigned short keycode) {
++    Uint16 modstate;
++    struct kbentry kbe;
++    static char keysym[8];
++    char *end;
++    Uint32 kval;
++
++    if (_this->console_fd >= 0) {
++      kbe.kb_index = keycode;
++      /* Convert the key to an UTF-8 char */
++      /* Ref: http://www.linuxjournal.com/article/2783 */
++      modstate = SDL_GetModState();
++      kbe.kb_table = 0;
++
++      /* Ref: http://graphics.stanford.edu/~seander/bithacks.html#ConditionalSetOrClearBitsWithoutBranching */
++      kbe.kb_table |= -((modstate & KMOD_LCTRL) != 0) & (1 << KG_CTRLL | 1 << KG_CTRL);
++      kbe.kb_table |= -((modstate & KMOD_RCTRL) != 0) & (1 << KG_CTRLR | 1 << KG_CTRL);
++      kbe.kb_table |= -((modstate & KMOD_LSHIFT) != 0) & (1 << KG_SHIFTL | 1 << KG_SHIFT);
++      kbe.kb_table |= -((modstate & KMOD_RSHIFT) != 0) & (1 << KG_SHIFTR | 1 << KG_SHIFT);
++      kbe.kb_table |= -((modstate & KMOD_LALT) != 0) & (1 << KG_ALT);
++      kbe.kb_table |= -((modstate & KMOD_RALT) != 0) & (1 << KG_ALTGR);
++
++      if (ioctl(_this->console_fd, KDGKBENT, (unsigned long)&kbe) == 0 &&
++	  ((KTYP(kbe.kb_value) == KT_LATIN) || (KTYP(kbe.kb_value) == KT_ASCII) || (KTYP(kbe.kb_value) == KT_LETTER)))
++	{
++	  kval = KVAL(kbe.kb_value);
++
++	  /* While there's a KG_CAPSSHIFT symbol, it's not useful to build the table index with it
++	   * because 1 << KG_CAPSSHIFT overflows the 8 bits of kb_table
++	   * So, we do the CAPS LOCK logic here. Note that isalpha depends on the locale!
++	   */
++	  if (modstate & KMOD_CAPS && isalpha(kval)) {
++	    if (isupper(kval)) {
++	      kval = tolower(kval);
++	    } else {
++	      kval = toupper(kval);
++	    }
++	  }
++
++	  /* Convert to UTF-8 and send */
++	  end = SDL_UCS4ToUTF8(kval, keysym);
++	  *end = '\0';
++	  SDL_SendKeyboardText(keysym);
++	}
++    }
++}
++
+ /* this logic is pulled from kbd_keycode() in drivers/tty/vt/keyboard.c in the
+    Linux kernel source */
+ static void SDL_EVDEV_do_text_input(unsigned short keycode) {
+@@ -462,7 +510,8 @@ SDL_EVDEV_Poll(void)
+                         } else if (events[i].value == 1 || events[i].value == 2 /* key repeated */) {
+                             SDL_SendKeyboardKey(SDL_PRESSED, scan_code);
+ #ifdef SDL_INPUT_LINUXKD
+-                            SDL_EVDEV_do_text_input(events[i].code);
++                            //SDL_EVDEV_do_text_input(events[i].code);
++			    SDL_EVDEV_do_text_input_old(events[i].code);
+ #endif /* SDL_INPUT_LINUXKD */
+                         }
+                     }
