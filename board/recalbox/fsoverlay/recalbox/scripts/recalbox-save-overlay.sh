@@ -6,13 +6,16 @@
 OVERLAYFILE="/boot/boot/overlay"
 OVERLAYMOUNT="/overlay/saved"
 OVERLAYRAM="/overlay/overlay"
+OVERLAYSIZE=50 # M
 
 createOverlayIfNeeded() {
+    COISIZE=$1
+
     test -e "${OVERLAYFILE}" && return 0
 
-    # 50 MB as ext4
+    # X MB as ext4
     echo "Creating an overlay file on the /boot filesystem..."
-    dd if=/dev/zero of="${OVERLAYFILE}" bs=10M count=5 || return 1
+    dd if=/dev/zero of="${OVERLAYFILE}" bs=${COISIZE}M count=1 || return 1
     echo "Formating the overlay file in ext4..."
     mkfs.ext4 "${OVERLAYFILE}"                         || return 1
 }
@@ -24,8 +27,19 @@ then
     exit 1
 fi
 
+# arg
+if test $# -eq 1
+then
+    if echo "$1" | grep -qE '[1-9][0-9]*' # must be a number
+       then
+	   echo "removing the existing overlay"
+	   rm -f "${OVERLAYFILE}" || exit 1
+	   OVERLAYSIZE=$1
+    fi
+fi
+
 # create the overlay if needed
-if ! createOverlayIfNeeded
+if ! createOverlayIfNeeded "${OVERLAYSIZE}"
 then
     mount -o remount,ro /boot
     exit 1
