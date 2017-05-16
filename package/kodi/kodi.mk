@@ -389,4 +389,9 @@ define KODI_INSTALL_INIT_SYSTEMD
 		$(TARGET_DIR)/etc/systemd/system/multi-user.target.wants/kodi.service
 endef
 
+# batocera - kodi segfaults when not with -O0 on arm
+ifeq ($(BR2_arm),y)
+KODI_CONF_OPTS += -DCMAKE_CXX_FLAGS="`echo $(TARGET_CXXFLAGS) | sed -e s+'-O[1-3]'+' '+` -O0" -DCMAKE_C_FLAGS="`echo $(TARGET_CFLAGS) | sed -e s+'-O[1-3]'+' '+` -O0"
+endif
+
 $(eval $(cmake-package))
