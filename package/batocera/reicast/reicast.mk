@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-REICAST_VERSION = 0a1689cb40753d7c4ec572304f9de57ae76897d8
+REICAST_VERSION = ca837e19b8c8247f8ff9efd699ff49533e834d9a
 REICAST_SITE = $(call github,reicast,reicast-emulator,$(REICAST_VERSION))
 REICAST_DEPENDENCIES = sdl2 libpng
 
