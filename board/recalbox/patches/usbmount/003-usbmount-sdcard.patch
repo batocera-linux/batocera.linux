@@ -1,0 +1,12 @@
+diff --git a/usbmount.rules b/usbmount.rules
+index 81d657b..ba49970 100644
+--- a/usbmount.rules
++++ b/usbmount.rules
+@@ -3,5 +3,7 @@
+ KERNEL=="sd*", DRIVERS=="sbp2",		ACTION=="add",	RUN+="/usr/share/usbmount/usbmount add"
+ KERNEL=="sd*", SUBSYSTEM=="block",	ACTION=="add",	RUN+="/usr/share/usbmount/usbmount add"
+ KERNEL=="ub*", SUBSYSTEM=="block",	ACTION=="add",	RUN+="/usr/share/usbmount/usbmount add"
++KERNEL=="mmcblk*", SUBSYSTEM=="block",	ACTION=="add",	RUN+="/usr/share/usbmount/usbmount add"
+ KERNEL=="sd*",				ACTION=="remove",	RUN+="/usr/share/usbmount/usbmount remove"
+ KERNEL=="ub*",				ACTION=="remove",	RUN+="/usr/share/usbmount/usbmount remove"
++KERNEL=="mmcblk*", SUBSYSTEM=="block",	ACTION=="remove",	RUN+="/usr/share/usbmount/usbmount remove"
