@@ -198,7 +198,7 @@ case "${RECALBOX_TARGET}" in
 	sync || exit 1
 	;;
 
-        X86|X86_64)
+    X86|X86_64)
 	# /boot
 	rm -rf ${BINARIES_DIR}/boot || exit 1
 	mkdir -p ${BINARIES_DIR}/boot/grub || exit 1
@@ -226,6 +226,12 @@ case "${RECALBOX_TARGET}" in
 	cp "board/recalbox/grub2/genimage.cfg" "${BINARIES_DIR}" || exit 1
         cp "output/host/usr/lib/grub/i386-pc/boot.img" "${BINARIES_DIR}" || exit 1
 	echo "generating image"
+	# This prevents error on Ubuntu 17.04: Total number of sectors (2457600) not a multiple of sectors per track (63)!
+	# Alternatively, the genimage.cfg file could be modified such that boot.vfat size value be a multiple of 63.
+	# Assuming 512 bytes/sector, 63 sectors/track...
+	# For instance, size=1200M = 1258291200 bytes ==> 39009.5238 tracks
+	# For instance, size=        1258274304 bytes ==> 39009 tracks.
+	export MTOOLS_SKIP_CHECK=1
 	genimage --rootpath="${TARGET_DIR}" --inputpath="${BINARIES_DIR}" --outputpath="${RECALBOX_BINARIES_DIR}" --config="${BINARIES_DIR}/genimage.cfg" --tmppath="${GENIMAGE_TMP}" || exit 1
 	rm -f "${RECALBOX_BINARIES_DIR}/boot.vfat" || exit 1
 	sync || exit 1
