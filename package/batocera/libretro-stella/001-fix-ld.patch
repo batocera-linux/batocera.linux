@@ -1,0 +1,13 @@
+diff --git a/Makefile b/Makefile
+index 1342779..e352d23 100644
+--- a/Makefile
++++ b/Makefile
+@@ -346,7 +346,7 @@ $(TARGET): $(OBJECTS)
+ ifeq ($(STATIC_LINKING), 1)
+ 	$(AR) rcs $@ $(OBJECTS)
+ else
+-	$(LD) $(LINKOUT)$@ $^ $(LDFLAGS)
++	$(LD) $(LINKOUT)$@ $^ -fPIC -shared #$(LDFLAGS)
+ endif
+ 
+ clean:
