@@ -4,9 +4,9 @@
 #
 ################################################################################
 
-MALI_OPENGLES_SDK_VERSION = v2.4.4.71fdbd
-MALI_OPENGLES_SDK_SOURCE = Mali_OpenGL_ES_SDK_v2.4.4.71fdbd_Linux_x64.tar.gz
-MALI_OPENGLES_SDK_SITE = http://malideveloper.arm.com/downloads/SDK/LINUX/2.4.4
+MALI_OPENGLES_SDK_VERSION = v2.4.4.ef7d5a_Linux_x64
+MALI_OPENGLES_SDK_SOURCE = Mali_OpenGL_ES_SDK_v2.4.4.ef7d5a_Linux_x64.tar.gz
+MALI_OPENGLES_SDK_SITE = https://developer.arm.com/-/media/Files/downloads/mali-sdk/v2.4.4
 
 MALI_OPENGLES_SDK_INSTALL_STAGING = YES
 
