@@ -58,8 +58,8 @@ do_root() {
     # mount the squashfs
     mount /boot_root/boot/recalbox /overlay_root/base || return 1
 
-    # mount the future root in ready only
-    if ! mount -t overlay overlay -o ro,lowerdir=/overlay_root/base,upperdir=/overlay_root/overlay,workdir=/overlay_root/work /new_root
+    # mount the future root in read write
+    if ! mount -t overlay overlay -o rw,lowerdir=/overlay_root/base,upperdir=/overlay_root/overlay,workdir=/overlay_root/work /new_root
     then
 	# mount only as squashfs, no overlay (xu4 doesn't support overlayfs)
 	mount /boot_root/boot/recalbox /new_root || return 1

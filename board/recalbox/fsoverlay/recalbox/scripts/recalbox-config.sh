@@ -31,7 +31,7 @@ if [ "$command" == "getRootPassword" ]; then
     # security disabled, force the default one without changing boot configuration
     securityenabled="`$systemsetting  -command load -key system.security.enabled`"
     if [ "$securityenabled" != "1" ];then
-	echo "recalboxroot"
+	echo "linux"
 	exit 0
     fi
     
