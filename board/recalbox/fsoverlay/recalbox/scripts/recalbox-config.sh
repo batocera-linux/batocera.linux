@@ -248,6 +248,44 @@ fi
 
 fi
 
+if [ "$command" == "lsoutputs" ]
+then
+    if [[ "${arch}" =~ "x86" ]]
+    then
+	xrandr --listConnectedOutputs
+    else
+	echo "auto"
+    fi
+fi
+
+if [ "$command" == "setoutput" ]
+then
+    if [[ "${arch}" =~ "x86" ]]
+    then
+	if xrandr --listConnectedOutputs | grep -qE "^${mode}$"
+	then
+	    # disable all other outputs
+	    xrandr --listConnectedOutputs | grep -vE "^${mode}$" |
+		while read OUTP
+		do
+		    xrandr --output "${OUTP}" --off
+		done
+	else
+	    # disable all except the first one
+	    xrandr --listConnectedOutputs |
+		(
+		    read FIRSTOUTPUT
+		    while read OUTP
+		    do
+			xrandr --output "${OUTP}" --off
+		    done
+		)
+	fi
+    else
+	echo "auto"
+    fi
+fi
+
 if [ "$command" == "lsaudio" ];then
     if [[ "${arch}" =~ "rpi" ]]
     then
