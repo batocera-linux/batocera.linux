@@ -252,6 +252,7 @@ if [ "$command" == "lsoutputs" ]
 then
     if [[ "${arch}" =~ "x86" ]]
     then
+	echo "auto"
 	xrandr --listConnectedOutputs
     else
 	echo "auto"
