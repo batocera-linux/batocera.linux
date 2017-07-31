@@ -338,6 +338,7 @@ if [ "$command" == "audio" ];then
 	    pcm.!default { type plug slave { pcm "hw:${cardnb},${devicenb}" } }
 	    ctl.!default { type hw card ${cardnb} }
 EOF
+		aplay "/recalbox/system/resources/sounds/Mallet.wav"
 	    fi
 	fi
     fi
