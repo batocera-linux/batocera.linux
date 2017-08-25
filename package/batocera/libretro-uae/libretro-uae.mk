@@ -3,7 +3,7 @@
 # UAE
 #
 ################################################################################
-LIBRETRO_UAE_VERSION = 1a1d7059ec63c0b7974a61ba0116d625ea7b08b0
+LIBRETRO_UAE_VERSION = 81e302900b87c6f6bc1c3bd1960dcd9ff8811b9c
 LIBRETRO_UAE_SITE = $(call github,libretro,libretro-uae,master)
 
 ifeq ($(BR2_PACKAGE_RPI_USERLAND),y)

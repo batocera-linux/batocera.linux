@@ -3,7 +3,7 @@
 # IMAME
 #
 ################################################################################
-LIBRETRO_IMAME_VERSION = 474ff5d84fa76f54c10bd00e89f78af222df369d
+LIBRETRO_IMAME_VERSION = 4027bf6fd0c2330ad8e017fd6a8ace4ea2c9cc63
 LIBRETRO_IMAME_SITE = $(call github,libretro,imame4all-libretro,$(LIBRETRO_IMAME_VERSION))
 
 define LIBRETRO_IMAME_BUILD_CMDS

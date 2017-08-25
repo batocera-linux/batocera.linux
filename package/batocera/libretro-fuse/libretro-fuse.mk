@@ -3,7 +3,7 @@
 # FUSE
 #
 ################################################################################
-LIBRETRO_FUSE_VERSION = d7600a2001f692db9e4f3d3b982b4f20e18ac96c
+LIBRETRO_FUSE_VERSION = f4572b91ac84f56b1005eec1aeb620dc72825bce
 LIBRETRO_FUSE_SITE = $(call github,libretro,fuse-libretro,$(LIBRETRO_FUSE_VERSION))
 
 define LIBRETRO_FUSE_BUILD_CMDS

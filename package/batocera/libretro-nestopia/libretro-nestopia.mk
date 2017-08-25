@@ -3,7 +3,7 @@
 # NESTOPIA
 #
 ################################################################################
-LIBRETRO_NESTOPIA_VERSION = 9d84c83769fd4b85a57dd07c30060ac15c4d3de8
+LIBRETRO_NESTOPIA_VERSION = 36b200a7e608be24d2b6d2c2935a2d0a68a0cd65
 LIBRETRO_NESTOPIA_SITE = $(call github,libretro,nestopia,$(LIBRETRO_NESTOPIA_VERSION))
 
 define LIBRETRO_NESTOPIA_BUILD_CMDS
