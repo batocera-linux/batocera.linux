@@ -89,10 +89,11 @@ f_cp "${DHOME}/.config/lirc/lircd.conf" "${DLIRC}"
 
 # kodi
 DKODI="${TMPDIR}/kodi"
-f_cp "${DHOME}/.kodi/userdata/Lircmap.xml"          "${DKODI}"
-f_cp "${DHOME}/.kodi/userdata/keymaps/recalbox.xml" "${DKODI}"
-d_cp "${DHOME}/.kodi/userdata/remotes"              "${DKODI}"
-f_cp "${DHOME}/.kodi/temp/kodi.log"                 "${DKODI}"
+f_cp "${DHOME}/.kodi/userdata/Lircmap.xml"          	      "${DKODI}"
+f_cp "${DHOME}/.kodi/userdata/keymaps/recalbox.xml" 	      "${DKODI}"
+d_cp "${DHOME}/.kodi/userdata/addon_data/peripheral.joystick" "${DKODI}"
+d_cp "${DHOME}/.kodi/userdata/remotes"              	      "${DKODI}"
+f_cp "${DHOME}/.kodi/temp/kodi.log"                 	      "${DKODI}"
 
 if ! (cd "${GTMP}" && tar cf -  "${REPORTNAME}" | gzip -c > "${OUTPUTFILE}")
 then

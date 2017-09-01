@@ -6,8 +6,6 @@
 LIBRETRO_MAME2003_VERSION = 1c84d68aeb0e92cd3d0d2be3e6c6fd42c495343a
 LIBRETRO_MAME2003_SITE = $(call github,libretro,mame2003-libretro,$(LIBRETRO_MAME2003_VERSION))
 
-
-
 define LIBRETRO_MAME2003_BUILD_CMDS
 	mkdir -p $(@D)/obj/mame/cpu/ccpu
 	#CFLAGS="$(TARGET_CFLAGS)" CXXFLAGS="$(TARGET_CXXFLAGS)" $(MAKE) CC="$(TARGET_CC)" LD="$(TARGET_CC)" RANLIB="$(TARGET_RANLIB)" AR="$(TARGET_AR)" -C $(@D)/ -f Makefile ARCH="$(TARGET_CFLAGS) -fsigned-char "

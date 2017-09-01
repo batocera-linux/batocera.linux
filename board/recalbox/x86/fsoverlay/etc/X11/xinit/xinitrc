@@ -22,5 +22,10 @@ export HOME=/recalbox/share/system
 export LC_ALL="${settings_lang}.UTF-8"
 export LANG=${LC_ALL}
 
+# because of xinerama braking es, enable only one screen at a time
+systemsetting="python /usr/lib/python2.7/site-packages/configgen/settings/recalboxSettings.pyc"
+settings_output="`$systemsetting -command load -key global.videooutput`"
+/recalbox/scripts/recalbox-config.sh setoutput "${settings_output}"
+
 # without windowed, time must be sleeped to wait that matchbox ended to initialize :-(
 exec emulationstation --windowed

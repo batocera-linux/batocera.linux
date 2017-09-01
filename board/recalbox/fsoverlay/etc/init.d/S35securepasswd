@@ -22,7 +22,7 @@ fi
 # secure ssh
 enabled="`$systemsetting  -command load -key system.security.enabled`"
 if [ "$enabled" != "1" ];then
-    MASTERPASSWD="recalboxroot"
+    MASTERPASSWD="linux"
 fi
   
 # write the /etc/shadow file

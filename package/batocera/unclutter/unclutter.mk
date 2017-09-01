@@ -6,7 +6,7 @@
 
 UNCLUTTER_VERSION = 1.09
 UNCLUTTER_SOURCE = unclutter-$(UNCLUTTER_VERSION).tar.gz
-UNCLUTTER_SITE = https://netassist.dl.sourceforge.net/project/unclutter/unclutter/source_$(UNCLUTTER_VERSION)
+UNCLUTTER_SITE = https://freefr.dl.sourceforge.net/project/unclutter/unclutter/source_$(UNCLUTTER_VERSION)
 UNCLUTTER_DEPENDENCIES = xserver_xorg-server
 
 define UNCLUTTER_BUILD_CMDS

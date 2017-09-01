@@ -1,0 +1,13 @@
+diff --git a/configure.ac b/configure.ac
+index fa14acc..948268a 100755
+--- a/configure.ac
++++ b/configure.ac
+@@ -261,7 +261,7 @@ HAS_USB_JOYSTICK_SUPPORT="no "
+ MAC_JOYSTICK_SUPPORT="no "
+ HAS_HIDMGR_SUPPORT="no "
+ HAVE_DINPUT_SUPPORT="no "
+-HAVE_SDL_NUMJOYSTICKS_SUPPORT="no "
++HAVE_SDL_NUMJOYSTICKS_SUPPORT="yes "
+ 
+ HAVE_RS232DEV_SUPPORT="no "
+ HAVE_NETWORK_SUPPORT="no "
