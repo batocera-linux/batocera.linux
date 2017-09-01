@@ -1,0 +1,47 @@
+diff --git a/xrandr.c b/xrandr.c
+index dcfdde0..11a2772 100644
+--- a/xrandr.c
++++ b/xrandr.c
+@@ -2670,6 +2670,7 @@ main (int argc, char **argv)
+     Bool	modeit = False;
+     Bool	propit = False;
+     Bool	query_1 = False;
++    Bool        listConnectedOutputs = False;
+     Bool	list_providers = False;
+     Bool        provsetoutsource = False;
+     Bool        provsetoffsink = False;
+@@ -2769,6 +2770,10 @@ main (int argc, char **argv)
+ 	    query = True;
+ 	    continue;
+ 	}
++	if (!strcmp ("--listConnectedOutputs", argv[i])) {
++	    listConnectedOutputs = True;
++	    continue;
++	}
+ 	if (!strcmp ("-o", argv[i]) || !strcmp ("--orientation", argv[i])) {
+ 	    char *endptr;
+ 	    if (++i >= argc) argerr ("%s requires an argument\n", argv[i-1]);
+@@ -3645,6 +3650,23 @@ main (int argc, char **argv)
+ 	XSync (dpy, False);
+ 	exit (0);
+     }
++    if (listConnectedOutputs)
++    {
++	output_t    *output;
++
++	get_screen (current);
++	get_crtcs ();
++	get_outputs ();
++
++	for (output = all_outputs; output; output = output->next)
++	{
++	    XRROutputInfo   *output_info = output->output_info;
++	    if(strcmp(connection[output_info->connection], "connected") == 0) {
++	      printf ("%s\n", output_info->name);
++           }
++	}
++	exit (0);
++    }
+     if (query_1_2 || (query && has_1_2 && !query_1))
+     {
+ 	output_t    *output;

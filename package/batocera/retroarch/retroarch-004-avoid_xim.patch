@@ -1,0 +1,17 @@
+diff --git a/gfx/common/x11_common.c b/gfx/common/x11_common.c
+index ab851bc..b2e9981 100644
+--- a/gfx/common/x11_common.c
++++ b/gfx/common/x11_common.c
+@@ -733,9 +733,9 @@ void x11_update_window_title(void *data, video_frame_info_t video_info)
+ 
+ bool x11_input_ctx_new(bool true_full)
+ {
+-   if (!x11_create_input_context(g_x11_dpy, g_x11_win,
+-            &g_x11_xim, &g_x11_xic))
+-      return false;
++   //if (!x11_create_input_context(g_x11_dpy, g_x11_win,
++   //         &g_x11_xim, &g_x11_xic))
++   //   return false;
+ 
+    video_driver_display_type_set(RARCH_DISPLAY_X11);
+    video_driver_display_set((uintptr_t)g_x11_dpy);

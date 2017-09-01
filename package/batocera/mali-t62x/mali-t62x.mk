@@ -5,9 +5,9 @@
 #
 ################################################################################
 
-MALI_T62X_VERSION = r7p0-02rel0
-MALI_T62X_SOURCE = mali-t62x_r7p0-02rel0_linux_1+fbdev.tar.gz
-MALI_T62X_SITE = http://malideveloper.arm.com/downloads/drivers/binary/r7p0-02rel0
+MALI_T62X_VERSION = malit62xr12p004rel0linux1fbdev
+MALI_T62X_SOURCE = malit62xr12p004rel0linux1fbdev.tar.gz
+MALI_T62X_SITE = https://developer.arm.com/-/media/Files/downloads/mali-drivers/user-space/odroid-xu3
 
 MALI_T62X_INSTALL_STAGING = YES
 MALI_T62X_DEPENDENCIES = mali-opengles-sdk
