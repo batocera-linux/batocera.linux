@@ -352,8 +352,11 @@ if [ "$command" == "volume" ];then
 		# on my pc, the master is turned off at boot
 		# i don't know what are the rules to set here.
 		amixer set Master unmute      || exit 1
-                amixer set Master -- ${mode}% || exit 1
-		amixer set PCM    -- ${mode}% || exit 1
+                amixer set Master    -- ${mode}% || exit 1
+
+		# maximize the sound to be sure it's not 0
+		amixer set PCM       -- 100% || exit 1
+		amixer set Headphone -- 100% || exit 1
 		exit 0
 	fi
 	exit 12
