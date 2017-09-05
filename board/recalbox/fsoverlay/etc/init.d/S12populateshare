@@ -120,8 +120,9 @@ retroarchcustom_fix_force_param "video_font_path"             "/recalbox/share/s
 retroarchcustom_fix_force_param "menu_driver"                 "rgui"
 retroarchcustom_fix_force_param "menu_swap_ok_cancel_buttons" "true"
 
-retroarchcustom_fix_remove_param_value "video_driver"         "sdl2"  # don't use anymore this value while it doesn't allow the shaders to work
-retroarchcustom_fix_force_param        "pause_nonactive"      "false" # required at least on x86 x86_64 otherwise, the game is paused at launch
+retroarchcustom_fix_remove_param_value "video_driver"                "sdl2"  # don't use anymore this value while it doesn't allow the shaders to work
+retroarchcustom_fix_remove_param_value "video_black_frame_insertion" "true"  # don't use anymore this value while it doesn't allow the shaders to work
+retroarchcustom_fix_force_param        "pause_nonactive"             "false" # required at least on x86 x86_64 otherwise, the game is paused at launch
 
 # save to avoid to redo that all the times
 cp /recalbox/recalbox.version /recalbox/share/system/data.version || exit 1
