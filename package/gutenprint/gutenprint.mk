@@ -43,7 +43,7 @@ GUTENPRINT_CONF_OPTS = \
 	--disable-cups-ppds
 
 # USE_PREGEN_XMLI18N_TMP_H is added by our patch
-GUTENPRINT_MAKE_ENV = BR2_USE_PREGEN_XMLI18N_TMP_H=$(HOST_DIR)/usr/include/xmli18n-tmp.h
+GUTENPRINT_MAKE_ENV = BR2_USE_PREGEN_XMLI18N_TMP_H=$(HOST_DIR)/include/xmli18n-tmp.h
 
 HOST_GUTENPRINT_DEPENDENCIES = host-pkgconf
 # The host-gutenprint shall create the required header
@@ -78,13 +78,13 @@ GUTENPRINT_POST_PATCH_HOOKS += GUTENPRINT_CREATE_M4_DIR
 HOST_GUTENPRINT_POST_PATCH_HOOKS += GUTENPRINT_CREATE_M4_DIR
 
 define HOST_GUTENPRINT_POST_BUILD_INSTAL_TMP_HEADER
-	cp $(@D)/src/xml/xmli18n-tmp.h $(HOST_DIR)/usr/include
+	cp $(@D)/src/xml/xmli18n-tmp.h $(HOST_DIR)/include
 endef
 HOST_GUTENPRINT_POST_BUILD_HOOKS += HOST_GUTENPRINT_POST_BUILD_INSTAL_TMP_HEADER
 
 define GUTENPRINT_POST_INSTALL_TARGET_FIXUP
 	mkdir -p $(TARGET_DIR)/usr/share/gutenprint/5.2
-	cp -rf $(HOST_DIR)/usr/share/gutenprint/5.2/xml $(TARGET_DIR)/usr/share/gutenprint/5.2
+	cp -rf $(HOST_DIR)/share/gutenprint/5.2/xml $(TARGET_DIR)/usr/share/gutenprint/5.2
 endef
 GUTENPRINT_POST_INSTALL_TARGET_HOOKS += GUTENPRINT_POST_INSTALL_TARGET_FIXUP
 

@@ -67,6 +67,7 @@ config BR2_PACKAGE_BOOST_CONTEXT
 	bool "boost-context"
 	depends on ((BR2_arm || BR2_armeb) && BR2_ARM_CPU_HAS_ARM) || \
 		BR2_i386 || BR2_mips || BR2_mipsel || BR2_powerpc || BR2_x86_64
+	depends on !BR2_TOOLCHAIN_HAS_GCC_BUG_64735
 
 config BR2_PACKAGE_BOOST_COROUTINE
 	bool "boost-coroutine"
@@ -98,7 +99,20 @@ config BR2_PACKAGE_BOOST_IOSTREAMS
 
 config BR2_PACKAGE_BOOST_LOCALE
 	bool "boost-locale"
+	# When boost-locale is enabled with icu support, Boost no
+	# longer supports building the libboost_* libraries as static
+	# libraries, causing build failures when other boost features
+	# than boost-locale are enabled. To work around this, we
+	# prevent using boost-locale on static linking configurations
+	# with icu enabled. See
+	# https://svn.boost.org/trac/boost/ticket/9685 for more
+	# details.
+	depends on !(BR2_STATIC_LIBS && BR2_PACKAGE_ICU)
 	select BR2_PACKAGE_LIBICONV if !BR2_ENABLE_LOCALE
+
+comment "boost-locale needs a toolchain w/ dynamic library"
+	depends on BR2_PACKAGE_ICU
+	depends on BR2_STATIC_LIBS
 
 config BR2_PACKAGE_BOOST_LOG
 	bool "boost-log"

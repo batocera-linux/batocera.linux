@@ -11,6 +11,7 @@ config BR2_TOOLCHAIN_USES_GLIBC
 	bool
 	select BR2_USE_WCHAR
 	select BR2_ENABLE_LOCALE
+	select BR2_TOOLCHAIN_HAS_FULL_GETTEXT
 	select BR2_TOOLCHAIN_HAS_THREADS
 	select BR2_TOOLCHAIN_HAS_THREADS_DEBUG
 	select BR2_TOOLCHAIN_HAS_THREADS_NPTL
@@ -28,7 +29,7 @@ config BR2_TOOLCHAIN_USES_MUSL
 	select BR2_TOOLCHAIN_HAS_THREADS
 	select BR2_TOOLCHAIN_HAS_THREADS_DEBUG
 	select BR2_TOOLCHAIN_HAS_THREADS_NPTL
-	select BR2_TOOLCHAIN_SUPPORTS_PIE
+	select BR2_TOOLCHAIN_SUPPORTS_PIE if !BR2_STATIC_LIBS
 
 choice
 	prompt "Toolchain type"
@@ -47,6 +48,8 @@ config BR2_TOOLCHAIN_BUILDROOT
 	depends on !BR2_bf608
 	depends on !BR2_bf609
 	depends on !BR2_csky
+	depends on !BR2_mips_m6250
+	depends on !BR2_mips_p6600
 
 config BR2_TOOLCHAIN_EXTERNAL
 	bool "External toolchain"

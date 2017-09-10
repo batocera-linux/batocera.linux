@@ -57,6 +57,11 @@ config BR2_HOST_GCC_AT_LEAST_6
 	default y if BR2_HOST_GCC_VERSION = "6"
 	select BR2_HOST_GCC_AT_LEAST_5
 
+config BR2_HOST_GCC_AT_LEAST_7
+	bool
+	default y if BR2_HOST_GCC_VERSION = "7"
+	select BR2_HOST_GCC_AT_LEAST_6
+
 # Hidden boolean selected by packages in need of Java in order to build
 # (example: xbmc)
 config BR2_NEEDS_HOST_JAVA
@@ -414,13 +419,10 @@ config BR2_DEBUG_3
 endchoice
 endif
 
-choice
-	prompt "strip command for binaries on target"
-	default BR2_STRIP_strip
-
 config BR2_STRIP_strip
-	bool "strip"
+	bool "strip target binaries"
 	depends on !BR2_PACKAGE_HOST_ELF2FLT
+	default y
 	help
 	  Binaries and libraries in the target filesystem will be
 	  stripped using the normal 'strip' command. This allows to save
@@ -428,15 +430,9 @@ config BR2_STRIP_strip
 	  on the target are needed for native debugging, but not when
 	  remote debugging is used.
 
-config BR2_STRIP_none
-	bool "none"
-	help
-	  Do not strip binaries and libraries in the target filesystem.
-endchoice
-
 config BR2_STRIP_EXCLUDE_FILES
 	string "executables that should not be stripped"
-	depends on !BR2_STRIP_none
+	depends on BR2_STRIP_strip
 	default ""
 	help
 	  You may specify a space-separated list of binaries and
@@ -444,7 +440,7 @@ config BR2_STRIP_EXCLUDE_FILES
 
 config BR2_STRIP_EXCLUDE_DIRS
 	string "directories that should be skipped when stripping"
-	depends on !BR2_STRIP_none
+	depends on BR2_STRIP_strip
 	default ""
 	help
 	  You may specify a space-separated list of directories that

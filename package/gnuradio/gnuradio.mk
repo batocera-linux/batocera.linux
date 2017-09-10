@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-GNURADIO_VERSION = 3.7.9.1
+GNURADIO_VERSION = 3.7.11
 GNURADIO_SITE = http://gnuradio.org/releases/gnuradio
 GNURADIO_LICENSE = GPL-3.0+
 GNURADIO_LICENSE_FILES = COPYING
@@ -29,6 +29,10 @@ GNURADIO_CONF_OPTS = \
 # For third-party blocks, the gnuradio libraries are mandatory at
 # compile time.
 GNURADIO_INSTALL_STAGING = YES
+
+ifeq ($(BR2_TOOLCHAIN_HAS_LIBATOMIC),y)
+GNURADIO_CONF_OPTS += -DCMAKE_EXE_LINKER_FLAGS=-latomic
+endif
 
 # Yes, this is silly, because -march is already known by the compiler
 # with the internal toolchain, and passed by the external wrapper for

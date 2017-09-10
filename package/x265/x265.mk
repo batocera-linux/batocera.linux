@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-X265_VERSION = 2.4
+X265_VERSION = 2.5
 X265_SOURCE = x265_$(X265_VERSION).tar.gz
 X265_SITE = https://bitbucket.org/multicoreware/x265/downloads
 X265_LICENSE = GPL-2.0+
@@ -14,6 +14,12 @@ X265_INSTALL_STAGING = YES
 
 ifeq ($(BR2_i386)$(BR2_x86_64),y)
 X265_DEPENDENCIES += host-yasm
+endif
+
+# disable altivec, it has build issues
+# https://bitbucket.org/multicoreware/x265/issues/320/
+ifeq ($(BR2_powerpc64)$(BR2_powerpc64le),y)
+X265_CONF_OPTS += -DENABLE_ALTIVEC=OFF
 endif
 
 ifeq ($(BR2_SHARED_LIBS)$(BR2_SHARED_STATIC_LIBS),y)

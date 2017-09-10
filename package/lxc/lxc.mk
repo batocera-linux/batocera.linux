@@ -4,11 +4,11 @@
 #
 ################################################################################
 
-LXC_VERSION = 2.0.7
+LXC_VERSION = 2.0.8
 LXC_SITE = https://linuxcontainers.org/downloads/lxc
 LXC_LICENSE = LGPL-2.1+
 LXC_LICENSE_FILES = COPYING
-LXC_DEPENDENCIES = libcap host-pkgconf
+LXC_DEPENDENCIES = host-pkgconf
 LXC_INSTALL_STAGING = YES
 
 LXC_CONF_OPTS = --disable-apparmor --with-distro=buildroot \
@@ -20,6 +20,13 @@ LXC_CONF_OPTS += --enable-gnutls
 LXC_DEPENDENCIES += gnutls
 else
 LXC_CONF_OPTS += --disable-gnutls
+endif
+
+ifeq ($(BR2_PACKAGE_LIBCAP),y)
+LXC_CONF_OPTS += --enable-capabilities
+LXC_DEPENDENCIES += libcap
+else
+LXC_CONF_OPTS += --disable-capabilities
 endif
 
 ifeq ($(BR2_PACKAGE_LIBSECCOMP),y)

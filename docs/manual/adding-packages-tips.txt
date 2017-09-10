@@ -45,9 +45,9 @@ continuously test random configurations. However, these only build the
 `master` branch of the git tree, and your new fancy package is not yet
 there.
 
-Buildroot provides a script in +support/scripts/test-pkg+ that uses the
-same base configurations as used by the autobuilders so you can test
-your package in the same conditions.
+Buildroot provides a script in +utils/test-pkg+ that uses the same base
+configurations as used by the autobuilders so you can test your package
+in the same conditions.
 
 First, create a config snippet that contains all the necessary options
 needed to enable your package, but without any architecture or toolchain
@@ -74,7 +74,7 @@ Then run the +test-pkg+ script, by telling it what config snippet to use
 and what package to test:
 
 ----
-$ ./support/scripts/test-pkg -c libcurl.config -p libcurl
+$ ./utils/test-pkg -c libcurl.config -p libcurl
 ----
 
 This will try to build your package against all the toolchains used
@@ -83,7 +83,7 @@ too long to do so). The output lists all toolchains and the corresponding
 result (excerpt, results are fake):
 
 ----
-$ ./support/scripts/test-pkg -c libcurl.config -p libcurl
+$ ./utils/test-pkg -c libcurl.config -p libcurl
                 armv5-ctng-linux-gnueabi [ 1/11]: OK
               armv7-ctng-linux-gnueabihf [ 2/11]: OK
                         br-aarch64-glibc [ 3/11]: SKIPPED
@@ -105,7 +105,7 @@ The results mean:
   snippet were not present in the final configuration. This is due to
   options having dependencies not satisfied by the toolchain, such as
   for example a package that +depends on BR2_USE_MMU+ with a noMMU
-  toolchain. The missing options are reported in +config.missing+ in
+  toolchain. The missing options are reported in +missing.config+ in
   the output build directory (+~/br-test-pkg/TOOLCHAIN_NAME/+ by
   default).
 * `FAILED`: the build failed. Inspect the +logfile+ file in the output
@@ -124,7 +124,7 @@ The +test-pkg+ script accepts a few options, for which you can get some
 help by running:
 
 ----
-$ ./support/scripts/test-pkg -h
+$ ./utils/test-pkg -h
 ----
 
 [[github-download-url]]

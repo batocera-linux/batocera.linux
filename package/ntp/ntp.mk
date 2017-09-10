@@ -21,6 +21,7 @@ NTP_CONF_OPTS = \
 	--with-crypto
 
 # 0002-ntp-syscalls-fallback.patch
+# 0003-ntpq-fpic.patch
 NTP_AUTORECONF = YES
 
 ifeq ($(BR2_TOOLCHAIN_HAS_SSP),y)
@@ -62,6 +63,12 @@ ifeq ($(BR2_PACKAGE_NTP_NTP_SHM_CLK),y)
 NTP_CONF_OPTS += --enable-SHM
 else
 NTP_CONF_OPTS += --disable-SHM
+endif
+
+ifeq ($(BR2_PACKAGE_NTP_SNTP),y)
+NTP_CONF_OPTS += --with-sntp
+else
+NTP_CONF_OPTS += --without-sntp
 endif
 
 NTP_INSTALL_FILES_$(BR2_PACKAGE_NTP_NTP_KEYGEN) += util/ntp-keygen

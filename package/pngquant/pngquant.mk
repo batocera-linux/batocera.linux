@@ -36,7 +36,8 @@ endef
 define HOST_PNGQUANT_CONFIGURE_CMDS
 	(cd $(@D) && \
 		$(HOST_CONFIGURE_OPTS) \
-		./configure --prefix=$(HOST_DIR)/usr \
+		CC=$(HOSTCC_NOCCACHE) \
+		./configure --prefix=$(HOST_DIR) \
 		--without-lcms2 \
 	)
 endef

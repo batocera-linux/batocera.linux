@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-EFL_VERSION = 1.19.0
+EFL_VERSION = 1.19.1
 EFL_SOURCE = efl-$(EFL_VERSION).tar.xz
 EFL_SITE = http://download.enlightenment.org/rel/libs/efl
 EFL_LICENSE = BSD-2-Clause, LGPL-2.1+, GPL-2.0+
@@ -32,13 +32,13 @@ EFL_DEPENDENCIES = host-pkgconf host-efl host-luajit dbus freetype \
 # --with-net-control=none: disable connman networkmanager.
 # --with-doxygen: disable doxygen documentation
 EFL_CONF_OPTS = \
-	--with-edje-cc=$(HOST_DIR)/usr/bin/edje_cc \
-	--with-eet-eet=$(HOST_DIR)/usr/bin/eet \
-	--with-eldbus_codegen=$(HOST_DIR)/usr/bin/eldbus-codegen \
-	--with-elementary-codegen=$(HOST_DIR)/usr/bin/elementary_codegen \
-	--with-elm-prefs-cc=$(HOST_DIR)/usr/bin/elm_prefs_cc \
-	--with-elua=$(HOST_DIR)/usr/bin/elua \
-	--with-eolian-gen=$(HOST_DIR)/usr/bin/eolian_gen \
+	--with-edje-cc=$(HOST_DIR)/bin/edje_cc \
+	--with-eet-eet=$(HOST_DIR)/bin/eet \
+	--with-eldbus_codegen=$(HOST_DIR)/bin/eldbus-codegen \
+	--with-elementary-codegen=$(HOST_DIR)/bin/elementary_codegen \
+	--with-elm-prefs-cc=$(HOST_DIR)/bin/elm_prefs_cc \
+	--with-elua=$(HOST_DIR)/bin/elua \
+	--with-eolian-gen=$(HOST_DIR)/bin/eolian_gen \
 	--disable-image-loader-jp2k \
 	--with-net-control=none \
 	--disable-lua-old \
@@ -56,7 +56,7 @@ endif
 
 ifeq ($(BR2_PACKAGE_EFL_EOLIAN_CPP),y)
 EFL_CONF_OPTS += --enable-cxx-bindings \
-	--with-eolian-cxx=$(HOST_DIR)/usr/bin/eolian_cxx
+	--with-eolian-cxx=$(HOST_DIR)/bin/eolian_cxx
 else
 EFL_CONF_OPTS += --disable-cxx-bindings
 endif
@@ -388,7 +388,7 @@ endif
 # system bus which is non-existent and does not contain
 # any upower service in it.
 define HOST_EFL_HOOK_REMOVE_UPOWER
-	rm -fr $(HOST_DIR)/usr/lib/ecore/system/upower
+	rm -fr $(HOST_DIR)/lib/ecore/system/upower
 endef
 HOST_EFL_POST_INSTALL_HOOKS = HOST_EFL_HOOK_REMOVE_UPOWER
 

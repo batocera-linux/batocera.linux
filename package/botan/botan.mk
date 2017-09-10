@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-BOTAN_VERSION = 1.10.13
+BOTAN_VERSION = 1.10.16
 BOTAN_SOURCE = Botan-$(BOTAN_VERSION).tgz
 BOTAN_SITE = http://botan.randombit.net/releases
 BOTAN_LICENSE = BSD-2-Clause
@@ -41,6 +41,12 @@ endif
 ifeq ($(BR2_PACKAGE_ZLIB),y)
 BOTAN_DEPENDENCIES += zlib
 BOTAN_CONF_OPTS += --with-zlib
+endif
+
+ifeq ($(BR2_POWERPC_CPU_HAS_ALTIVEC),y)
+BOTAN_CONF_OPTS += --enable-altivec
+else
+BOTAN_CONF_OPTS += --disable-altivec
 endif
 
 define BOTAN_CONFIGURE_CMDS

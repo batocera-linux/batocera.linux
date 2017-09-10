@@ -1,9 +1,9 @@
 config BR2_PACKAGE_KODI_ARCH_SUPPORTS
 	bool
+	default y if BR2_PACKAGE_FFMPEG_ARCH_SUPPORTS
+	# i386: needs sse (see upstream PR 10351)
+	depends on !(BR2_i386 && !BR2_X86_CPU_HAS_SSE)
 	depends on BR2_USE_MMU # libcdio, and others
-	default y if (BR2_arm || (BR2_mipsel && BR2_TOOLCHAIN_USES_GLIBC) || BR2_i386 || BR2_x86_64 || BR2_aarch64) \
-		&& BR2_PACKAGE_FFMPEG_ARCH_SUPPORTS \
-		&& BR2_TOOLCHAIN_HAS_SYNC_8
 
 comment "kodi needs python w/ .py modules, a uClibc or glibc toolchain w/ C++, locale, threads, wchar, dynamic library, gcc >= 4.8, host gcc >= 4.6"
 	depends on BR2_PACKAGE_KODI_ARCH_SUPPORTS
@@ -207,7 +207,8 @@ config BR2_PACKAGE_KODI_LIBSHAIRPLAY
 	select BR2_PACKAGE_LIBSHAIRPLAY
 	help
 	  Enable Shairport support.
-	  Select this if you want to stream content from an Apple device.
+	  Select this if you want to stream content from an Apple
+	  device.
 
 config BR2_PACKAGE_KODI_LIBSMBCLIENT
 	bool "samba"
@@ -240,25 +241,25 @@ config BR2_PACKAGE_KODI_LIBUSB
 
 config BR2_PACKAGE_KODI_LIBVA
 	bool "va"
-	depends on BR2_PACKAGE_KODI_EGL_GL
+	depends on BR2_PACKAGE_KODI_GL_EGL
 	depends on BR2_PACKAGE_XORG7
 	select BR2_PACKAGE_LIBVA
 	help
 	  Enable libva support.
 
 comment "libva support needs X.org with an openGL backend"
-	depends on !BR2_PACKAGE_XORG7 || !BR2_PACKAGE_KODI_EGL_GL
+	depends on !BR2_PACKAGE_XORG7 || !BR2_PACKAGE_KODI_GL_EGL
 
 config BR2_PACKAGE_KODI_LIBVDPAU
 	bool "vdpau"
-	depends on BR2_PACKAGE_KODI_EGL_GL
+	depends on BR2_PACKAGE_KODI_GL_EGL
 	depends on BR2_PACKAGE_XORG7
 	select BR2_PACKAGE_LIBVDPAU
 	help
 	  Enable libvdpau support.
 
 comment "libvdpau support needs X.org with an openGL backend"
-	depends on !BR2_PACKAGE_XORG7 || !BR2_PACKAGE_KODI_EGL_GL
+	depends on !BR2_PACKAGE_XORG7 || !BR2_PACKAGE_KODI_GL_EGL
 
 config BR2_PACKAGE_KODI_UPNP
 	bool "upnp"
@@ -266,7 +267,9 @@ config BR2_PACKAGE_KODI_UPNP
 	  Enable UPnP support
 
 config BR2_PACKAGE_KODI_OPTICALDRIVE
-	bool
+	bool "optical drives"
+	help
+	  Add support for optical drives, to read e.g. DVDs...
 
 menu "Audio decoder addons"
 	source "package/kodi-audiodecoder-modplug/Config.in"
@@ -289,6 +292,17 @@ menu "Audio encoder addons"
 	source "package/kodi-audioencoder-lame/Config.in"
 	source "package/kodi-audioencoder-vorbis/Config.in"
 	source "package/kodi-audioencoder-wav/Config.in"
+endmenu
+
+menu "Peripheral addons"
+	source "package/kodi-peripheral-joystick/Config.in"
+	source "package/kodi-peripheral-steamcontroller/Config.in"
+	source "package/kodi-peripheral-xarcade/Config.in"
+endmenu
+
+menu "Inputstream addons"
+	source "package/kodi-inputstream-adaptive/Config.in"
+	source "package/kodi-inputstream-rtmp/Config.in"
 endmenu
 
 menu "PVR addons"
@@ -324,6 +338,10 @@ menu "Screensavers"
 	source "package/kodi-screensaver-pyro/Config.in"
 	source "package/kodi-screensaver-rsxs/Config.in"
 	source "package/kodi-screensaver-stars/Config.in"
+endmenu
+
+menu "Skins"
+	source "package/kodi-skin-confluence/Config.in"
 endmenu
 
 menu "Visualisations"

@@ -1,0 +1,20 @@
+--- a/Source/Core/VideoBackends/Vulkan/RasterFont.cpp	2017-03-06 12:05:47.000000000 +0100
++++ b/Source/Core/VideoBackends/Vulkan/RasterFont.cpp	2017-09-09 15:15:30.927917457 +0200
+@@ -15,12 +15,13 @@
+ // Based on OGL RasterFont
+ // TODO: We should move this to common.
+ 
++#define CHAR_WIDTH 8
++#define CHAR_HEIGHT 13
++#define CHAR_OFFSET 32
++#define CHAR_COUNT 95
++
+ namespace Vulkan
+ {
+-constexpr int CHAR_WIDTH = 8;
+-constexpr int CHAR_HEIGHT = 13;
+-constexpr int CHAR_OFFSET = 32;
+-constexpr int CHAR_COUNT = 95;
+ 
+ static const u8 rasters[CHAR_COUNT][CHAR_HEIGHT] = {
+     {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00},

@@ -4,16 +4,12 @@
 #
 ################################################################################
 
-GIT_VERSION = 2.12.2
+GIT_VERSION = 2.13.5
 GIT_SOURCE = git-$(GIT_VERSION).tar.xz
-GIT_SITE = https://www.kernel.org/pub/software/scm/git
+GIT_SITE = $(BR2_KERNEL_MIRROR)/software/scm/git
 GIT_LICENSE = GPL-2.0, LGPL-2.1+
 GIT_LICENSE_FILES = COPYING LGPL-2.1
-GIT_DEPENDENCIES = zlib host-gettext
-
-ifeq ($(BR2_PACKAGE_GETTEXT),y)
-GIT_DEPENDENCIES += gettext
-endif
+GIT_DEPENDENCIES = zlib $(TARGET_NLS_DEPENDENCIES)
 
 ifeq ($(BR2_PACKAGE_OPENSSL),y)
 GIT_DEPENDENCIES += openssl
@@ -60,6 +56,12 @@ GIT_CONF_OPTS += --with-tcltk
 else
 GIT_CONF_OPTS += --without-tcltk
 endif
+
+ifeq ($(BR2_SYSTEM_ENABLE_NLS),)
+GIT_MAKE_OPTS = NO_GETTEXT=1
+endif
+
+GIT_INSTALL_TARGET_OPTS = $(GIT_MAKE_OPTS) DESTDIR=$(TARGET_DIR) install
 
 # assume yes for these tests, configure will bail out otherwise
 # saying error: cannot run test program while cross compiling

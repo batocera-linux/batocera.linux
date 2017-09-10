@@ -1,6 +1,5 @@
 menuconfig BR2_PACKAGE_UTIL_LINUX
 	bool "util-linux"
-	select BR2_PACKAGE_GETTEXT if BR2_NEEDS_GETTEXT_IF_LOCALE
 	help
 	  Various useful/essential linux libraries and utilities.
 
@@ -55,12 +54,12 @@ config BR2_PACKAGE_UTIL_LINUX_BINARIES
 	  Install the basic set of util-linux binaries.
 
 	  blkdiscard, blkid, blockdev, chcpu, col, colcrt, colrm,
-	  column, ctrlaltdel, dmesg, fdisk, findfs, findmnt, flock,
-	  fsfreeze, fstrim, getopt, hexdump, ipcmk, isosize, ldattach,
-	  look, lsblk, lscpu, lsipc, lslocks, lsns, mcookie, mkfs,
-	  mkswap, namei, prlimit, readprofile, renice, rev, rtcwake,
-	  script, scriptreplay, setarch, setsid, sfdisk, swaplabel,
-	  swapoff, swapon, tailf, uuidgen, whereis, wipefs
+	  column, ctrlaltdel, dmesg, fdisk, fincore, findfs, findmnt,
+	  flock, fsfreeze, fstrim, getopt, hexdump, ipcmk, isosize,
+	  ldattach, look, lsblk, lscpu, lsipc, lslocks, lsns, mcookie,
+	  mkfs, mkswap, namei, prlimit, readprofile, renice, rev,
+	  rtcwake, script, scriptreplay, setarch, setsid, sfdisk,
+	  swaplabel, swapoff, swapon, uuidgen, whereis, wipefs
 
 	  The setarch utility also installs architecture-specific
 	  symlinks like linux32, linux64, uname26, i386 and x86_64.
@@ -95,11 +94,17 @@ comment "chfn/chsh needs a uClibc or glibc toolchain w/ wchar, locale, dynamic l
 	depends on !(BR2_ENABLE_LOCALE && BR2_USE_WCHAR) \
 		|| BR2_STATIC_LIBS || BR2_TOOLCHAIN_USES_MUSL
 
+config BR2_PACKAGE_UTIL_LINUX_CHMEM
+	bool "chmem"
+	help
+	  Sets a particular size or range of memory online or offline
+
 config BR2_PACKAGE_UTIL_LINUX_CRAMFS
 	bool "cramfs utilities"
 	select BR2_PACKAGE_ZLIB
 	help
-	  Utilities for compressed ROM file system (fsck.cramfs, mkfs.cramfs)
+	  Utilities for compressed ROM file system (fsck.cramfs,
+	  mkfs.cramfs)
 
 config BR2_PACKAGE_UTIL_LINUX_EJECT
 	bool "eject"
@@ -192,6 +197,13 @@ config BR2_PACKAGE_UTIL_LINUX_LSLOGINS
 	select BR2_PACKAGE_UTIL_LINUX_LIBSMARTCOLS
 	help
 	  Display information about known users in the system
+
+config BR2_PACKAGE_UTIL_LINUX_LSMEM
+	bool "lsmem"
+	depends on BR2_USE_MMU # libsmartcols
+	select BR2_PACKAGE_UTIL_LINUX_LIBSMARTCOLS
+	help
+	  List the ranges of available memory with their online status
 
 config BR2_PACKAGE_UTIL_LINUX_MESG
 	bool "mesg"

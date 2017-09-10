@@ -8,9 +8,6 @@ QT_VERSION_MAJOR = 4.8
 QT_VERSION = $(QT_VERSION_MAJOR).7
 QT_SOURCE = qt-everywhere-opensource-src-$(QT_VERSION).tar.gz
 QT_SITE = http://download.qt-project.org/official_releases/qt/$(QT_VERSION_MAJOR)/$(QT_VERSION)
-# Patch fixing ALSA detection. Taken from Qt5, but applies fine to
-# Qt4.
-QT_PATCH = https://github.com/qtproject/qtbase/commit/b8f98d956501dfa4ce03a137f15d404930a56066.patch
 QT_DEPENDENCIES = host-pkgconf
 QT_INSTALL_STAGING = YES
 
@@ -464,7 +461,7 @@ endif
 # End of workaround.
 
 # Variable for other Qt applications to use
-QT_QMAKE = $(HOST_DIR)/usr/bin/qmake -spec qws/linux-$(QT_EMB_PLATFORM)-g++
+QT_QMAKE = $(HOST_DIR)/bin/qmake -spec qws/linux-$(QT_EMB_PLATFORM)-g++
 
 ################################################################################
 # QT_QMAKE_SET -- helper macro to set <variable> = <value> in
@@ -505,7 +502,7 @@ define QT_CONFIGURE_CMDS
 	$(call QT_QMAKE_SET,QMAKE_CFLAGS,$(QT_CFLAGS),$(@D))
 	$(call QT_QMAKE_SET,QMAKE_CXXFLAGS,$(QT_CXXFLAGS),$(@D))
 	$(call QT_QMAKE_SET,QMAKE_LFLAGS,$(QT_LDFLAGS),$(@D))
-	$(call QT_QMAKE_SET,PKG_CONFIG,$(HOST_DIR)/usr/bin/pkg-config,$(@D))
+	$(call QT_QMAKE_SET,PKG_CONFIG,$(HOST_DIR)/bin/pkg-config,$(@D))
 # Don't use TARGET_CONFIGURE_OPTS here, qmake would be compiled for the target
 # instead of the host then. So set PKG_CONFIG* manually.
 	(cd $(@D); \
@@ -593,7 +590,7 @@ ifeq ($(BR2_PACKAGE_QT_TEST),y)
 QT_INSTALL_LIBS += QtTest
 endif
 
-QT_CONF_FILE = $(HOST_DIR)/usr/bin/qt.conf
+QT_CONF_FILE = $(HOST_DIR)/bin/qt.conf
 
 # Since host programs and spec files have been moved to $(HOST_DIR),
 # we need to tell qmake the new location of the various elements,
@@ -601,11 +598,11 @@ QT_CONF_FILE = $(HOST_DIR)/usr/bin/qt.conf
 define QT_INSTALL_QT_CONF
 	mkdir -p $(dir $(QT_CONF_FILE))
 	echo "[Paths]"                             > $(QT_CONF_FILE)
-	echo "Prefix=$(HOST_DIR)/usr"             >> $(QT_CONF_FILE)
+	echo "Prefix=$(HOST_DIR)"                 >> $(QT_CONF_FILE)
 	echo "Headers=$(STAGING_DIR)/usr/include" >> $(QT_CONF_FILE)
 	echo "Libraries=$(STAGING_DIR)/usr/lib"   >> $(QT_CONF_FILE)
-	echo "Data=$(HOST_DIR)/usr"               >> $(QT_CONF_FILE)
-	echo "Binaries=$(HOST_DIR)/usr/bin"       >> $(QT_CONF_FILE)
+	echo "Data=$(HOST_DIR)"                   >> $(QT_CONF_FILE)
+	echo "Binaries=$(HOST_DIR)/bin"           >> $(QT_CONF_FILE)
 endef
 
 # After running Qt normal installation process (which installs
@@ -617,12 +614,12 @@ endef
 # automatically.
 define QT_INSTALL_STAGING_CMDS
 	$(TARGET_MAKE_ENV) $(MAKE) -C $(@D) install
-	mkdir -p $(HOST_DIR)/usr/bin
-	mv $(addprefix $(STAGING_DIR)/usr/bin/,$(QT_HOST_PROGRAMS)) $(HOST_DIR)/usr/bin
-	ln -sf $(STAGING_DIR)/usr/mkspecs $(HOST_DIR)/usr/mkspecs
+	mkdir -p $(HOST_DIR)/bin
+	mv $(addprefix $(STAGING_DIR)/usr/bin/,$(QT_HOST_PROGRAMS)) $(HOST_DIR)/bin
+	ln -sf $(STAGING_DIR)/usr/mkspecs $(HOST_DIR)/mkspecs
 	$(QT_INSTALL_QT_CONF)
 	for i in moc uic rcc lupdate lrelease ; do \
-		$(SED) "s,^$${i}_location=.*,$${i}_location=$(HOST_DIR)/usr/bin/$${i}," \
+		$(SED) "s,^$${i}_location=.*,$${i}_location=$(HOST_DIR)/bin/$${i}," \
 			$(STAGING_DIR)/usr/lib/pkgconfig/Qt*.pc ; \
 	done
 	$(SED) "s,$(STAGING_DIR)/,,g" $(STAGING_DIR)/usr/lib/pkgconfig/Qt*.pc
