@@ -7,8 +7,7 @@
 # BINARIES_DIR = images dir
 # TARGET_DIR = target dir
 
-RECALBOX_BINARIES_DIR="${BINARIES_DIR}/recalbox"
-RECALBOX_TARGET_DIR="${TARGET_DIR}/recalbox"
+RECALBOX_TARGET=$(grep -E "^BR2_PACKAGE_RECALBOX_TARGET_[A-Z_0-9]*=y$" "${BR2_CONFIG}" | sed -e s+'^BR2_PACKAGE_RECALBOX_TARGET_\([A-Z_0-9]*\)=y$'+'\1'+)
 
 sed -i "s|root:x:0:0:root:/root:/bin/sh|root:x:0:0:root:/recalbox/share/system:/bin/sh|g" "${TARGET_DIR}/etc/passwd" || exit 1
 rm -rf "${TARGET_DIR}/etc/dropbear" || exit 1
@@ -86,4 +85,11 @@ if ! grep -qE "^TERM=vt100$" "${TARGET_DIR}/etc/profile"
 then
     echo              >> "${TARGET_DIR}/etc/profile"
     echo "TERM=vt100" >> "${TARGET_DIR}/etc/profile"
+fi
+
+# fix pixbuf : Unable to load image-loading module: /lib/gdk-pixbuf-2.0/2.10.0/loaders/libpixbufloader-png.so
+# this fix is to be removed once fixed. i've not found the exact source in buildroot. it prevents to display icons in filemanager and some others
+if test "${RECALBOX_TARGET}" = "X86" -o "${RECALBOX_TARGET}" = X86_64
+then
+    ln -sf "/usr/lib/gdk-pixbuf-2.0" "${TARGET_DIR}/lib/gdk-pixbuf-2.0" || exit 1
 fi
