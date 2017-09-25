@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-REICAST_VERSION = ca837e19b8c8247f8ff9efd699ff49533e834d9a
+REICAST_VERSION = 8a680202a4f33d9ace253930b2dd6ab02295021d
 REICAST_SITE = $(call github,reicast,reicast-emulator,$(REICAST_VERSION))
 REICAST_DEPENDENCIES = sdl2 libpng
 
@@ -38,7 +38,7 @@ define REICAST_BUILD_CMDS
 endef
 
 define REICAST_INSTALL_TARGET_CMDS
-	$(INSTALL) -D -m 0755 $(@D)/shell/linux/reicast.elf $(TARGET_DIR)/usr/bin
+	$(INSTALL) -D -m 0755 $(@D)/shell/linux/reicast.elf $(TARGET_DIR)/usr/bin/reicast.elf
 endef
 
 $(eval $(generic-package))
