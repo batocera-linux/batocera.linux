@@ -30,4 +30,6 @@ VICE_CONF_OPTS += --with-zlib
 VICE_CONF_OPTS += --with-jpeg
 VICE_CONF_OPTS += --with-png
 
+VICE_CONF_ENV += LDFLAGS=-lSDL2
+
 $(eval $(autotools-package))
