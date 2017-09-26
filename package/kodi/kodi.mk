@@ -402,8 +402,8 @@ endef
 KODI_POST_INSTALL_TARGET_HOOKS += KODI_INSTALL_CONFIG_DIR
 
 define KODI_INSTALL_INIT_SYSV
-	$(INSTALL) -D -m 755 package/kodi/S60kodi \
-		$(TARGET_DIR)/etc/init.d/S60kodi
+	$(INSTALL) -D -m 755 package/kodi/S50kodi \
+		$(TARGET_DIR)/etc/init.d/S50kodi
 endef
 
 define KODI_INSTALL_INIT_SYSTEMD
