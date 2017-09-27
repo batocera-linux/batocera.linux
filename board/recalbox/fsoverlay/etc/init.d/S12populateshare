@@ -116,7 +116,7 @@ retroarchcustom_fix_remove_param_value() {
     sed -i -e s+"^[ ]*${L_PARAM}[ ]*=[ ]*\"\?${L_VALUE}\"\?[ ]*$"+""+ "${L_CFG}"
 }
 
-retroarchcustom_fix_force_param "video_font_path"             "/recalbox/share/system/DejaVuSansMono.ttf"
+retroarchcustom_fix_force_param "video_font_path"             "/usr/share/fonts/dejavu/DejaVuSansMono.ttf"
 retroarchcustom_fix_force_param "menu_driver"                 "rgui"
 retroarchcustom_fix_force_param "menu_swap_ok_cancel_buttons" "true"
 
