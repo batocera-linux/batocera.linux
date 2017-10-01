@@ -13,6 +13,8 @@ endef
 define LIBRETRO_NESTOPIA_INSTALL_TARGET_CMDS
 	$(INSTALL) -D $(@D)/libretro/nestopia_libretro.so \
 		$(TARGET_DIR)/usr/lib/libretro/nestopia_libretro.so
+	$(INSTALL) -D $(@D)/NstDatabase.xml \
+		$(TARGET_DIR)/recalbox/share_init/bios/NstDatabase.xml
 endef
 
 $(eval $(generic-package))
