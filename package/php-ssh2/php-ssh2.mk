@@ -4,8 +4,9 @@
 #
 ################################################################################
 
-PHP_SSH2_VERSION = 12dd52236c601577a63e33ee71e3ce6dad811e40
-PHP_SSH2_SITE = $(call github,php,pecl-networking-ssh2,$(PHP_SSH2_VERSION))
+PHP_SSH2_VERSION = 1.0
+PHP_SSH2_SOURCE = ssh2-$(PHP_SSH2_VERSION).tgz
+PHP_SSH2_SITE = https://pecl.php.net/get
 PHP_SSH2_CONF_OPTS = --with-php-config=$(STAGING_DIR)/usr/bin/php-config \
 	--with-ssh2=$(STAGING_DIR)/usr
 # phpize does the autoconf magic
@@ -15,8 +16,8 @@ PHP_SSH2_LICENSE_FILES = LICENSE
 
 define PHP_SSH2_PHPIZE
 	(cd $(@D); \
-		PHP_AUTOCONF=$(HOST_DIR)/usr/bin/autoconf \
-		PHP_AUTOHEADER=$(HOST_DIR)/usr/bin/autoheader \
+		PHP_AUTOCONF=$(HOST_DIR)/bin/autoconf \
+		PHP_AUTOHEADER=$(HOST_DIR)/bin/autoheader \
 		$(STAGING_DIR)/usr/bin/phpize)
 endef
 

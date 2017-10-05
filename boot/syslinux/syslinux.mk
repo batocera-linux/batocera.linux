@@ -13,7 +13,8 @@ SYSLINUX_LICENSE_FILES = COPYING
 
 SYSLINUX_INSTALL_IMAGES = YES
 
-SYSLINUX_DEPENDENCIES = host-nasm host-upx util-linux
+# host-util-linux needed to provide libuuid when building host tools
+SYSLINUX_DEPENDENCIES = host-nasm host-upx util-linux host-util-linux
 
 ifeq ($(BR2_TARGET_SYSLINUX_LEGACY_BIOS),y)
 SYSLINUX_TARGET += bios
@@ -54,7 +55,7 @@ define SYSLINUX_BUILD_CMDS
 	$(TARGET_MAKE_ENV) $(MAKE1) \
 		CC="$(TARGET_CC)" \
 		LD="$(TARGET_LD)" \
-		NASM="$(HOST_DIR)/usr/bin/nasm" \
+		NASM="$(HOST_DIR)/bin/nasm" \
 		CC_FOR_BUILD="$(HOSTCC)" \
 		CFLAGS_FOR_BUILD="$(HOST_CFLAGS)" \
 		LDFLAGS_FOR_BUILD="$(HOST_LDFLAGS)" \
@@ -77,7 +78,7 @@ endef
 # However, buildroot makes no usage of it, so better delete it than have it
 # installed at the wrong place
 define SYSLINUX_POST_INSTALL_CLEANUP
-	rm -rf $(HOST_DIR)/usr/bin/syslinux
+	rm -rf $(HOST_DIR)/bin/syslinux
 endef
 SYSLINUX_POST_INSTALL_TARGET_HOOKS += SYSLINUX_POST_INSTALL_CLEANUP
 
@@ -96,7 +97,7 @@ define SYSLINUX_INSTALL_IMAGES_CMDS
 		$(INSTALL) -D -m 0755 $(@D)/$$i $(BINARIES_DIR)/syslinux/$${i##*/}; \
 	done
 	for i in $(SYSLINUX_C32); do \
-		$(INSTALL) -D -m 0755 $(HOST_DIR)/usr/share/syslinux/$${i} \
+		$(INSTALL) -D -m 0755 $(HOST_DIR)/share/syslinux/$${i} \
 			$(BINARIES_DIR)/syslinux/$${i}; \
 	done
 endef

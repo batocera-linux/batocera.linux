@@ -22,7 +22,6 @@ ifeq ($$($(1)_VERSION),custom)
 $(1)_TARBALL = $$(call qstrip,$$(BR2_TARGET_BAREBOX_CUSTOM_TARBALL_LOCATION))
 $(1)_SITE = $$(patsubst %/,%,$$(dir $$($(1)_TARBALL)))
 $(1)_SOURCE = $$(notdir $$($(1)_TARBALL))
-BR_NO_CHECK_HASH_FOR += $$($(1)_SOURCE)
 else ifeq ($$(BR2_TARGET_BAREBOX_CUSTOM_GIT),y)
 $(1)_SITE = $$(call qstrip,$$(BR2_TARGET_BAREBOX_CUSTOM_GIT_REPO_URL))
 $(1)_SITE_METHOD = git
@@ -30,9 +29,6 @@ else
 # Handle stable official Barebox versions
 $(1)_SOURCE = barebox-$$($(1)_VERSION).tar.bz2
 $(1)_SITE = http://www.barebox.org/download
-ifeq ($$(BR2_TARGET_BAREBOX_CUSTOM_VERSION),y)
-BR_NO_CHECK_HASH_FOR += $$($(1)_SOURCE)
-endif
 endif
 
 $(1)_DEPENDENCIES = host-lzop
@@ -113,11 +109,11 @@ define $(1)_BUILD_CMDS
 	$$($(1)_BUILD_CUSTOM_ENV)
 endef
 
-$(1)_IMAGE_FILE = $$(call qstrip,$$(BR2_TARGET_$(1)_IMAGE_FILE))
+$(1)_IMAGE_FILES = $$(call qstrip,$$(BR2_TARGET_$(1)_IMAGE_FILE))
 
 define $(1)_INSTALL_IMAGES_CMDS
-	if test -n "$$($(1)_IMAGE_FILE)"; then \
-		cp -L $$(@D)/$$($(1)_IMAGE_FILE) $$(BINARIES_DIR) ; \
+	if test -n "$$($(1)_IMAGE_FILES)"; then \
+		cp -L $$(foreach image,$$($(1)_IMAGE_FILES),$$(@D)/$$(image)) $$(BINARIES_DIR) ; \
 	elif test -h $$(@D)/barebox-flash-image ; then \
 		cp -L $$(@D)/barebox-flash-image $$(BINARIES_DIR)/barebox.bin ; \
 	else \
@@ -155,3 +151,7 @@ barebox-package=$(call inner-barebox-package,$(call UPPERCASE,$(pkgname)))
 
 include boot/barebox/barebox/barebox.mk
 include boot/barebox/barebox-aux/barebox-aux.mk
+
+ifeq ($(BR2_TARGET_BAREBOX)$(BR2_TARGET_BAREBOX_LATEST_VERSION),y)
+BR_NO_CHECK_HASH_FOR += $(BAREBOX_SOURCE)
+endif

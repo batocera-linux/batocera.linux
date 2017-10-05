@@ -47,10 +47,12 @@ endif
 
 NCURSES_TERMINFO_FILES = \
 	a/ansi \
+	d/dumb \
 	l/linux \
 	p/putty \
 	p/putty-vt100 \
 	s/screen \
+	s/screen-256color \
 	v/vt100 \
 	v/vt100-putty \
 	v/vt102 \

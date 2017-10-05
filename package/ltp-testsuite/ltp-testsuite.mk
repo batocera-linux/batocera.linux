@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-LTP_TESTSUITE_VERSION = 20170116
+LTP_TESTSUITE_VERSION = 20170516
 LTP_TESTSUITE_SOURCE = ltp-full-$(LTP_TESTSUITE_VERSION).tar.xz
 LTP_TESTSUITE_SITE = https://github.com/linux-test-project/ltp/releases/download/$(LTP_TESTSUITE_VERSION)
 LTP_TESTSUITE_LICENSE = GPL-2.0, GPL-2.0+
@@ -66,6 +66,14 @@ define LTP_TESTSUITE_REMOVE_UNSUPPORTED
 	rm -f $(@D)/testcases/misc/math/float/float_bessel.c
 endef
 LTP_TESTSUITE_POST_PATCH_HOOKS += LTP_TESTSUITE_REMOVE_UNSUPPORTED
+endif
+
+# ldd command build system tries to build a shared library unconditionally.
+ifeq ($(BR2_STATIC_LIBS),y)
+define LTP_TESTSUITE_REMOVE_LDD
+	rm -rf $(@D)/testcases/commands/ldd
+endef
+LTP_TESTSUITE_POST_PATCH_HOOKS += LTP_TESTSUITE_REMOVE_LDD
 endif
 
 $(eval $(autotools-package))

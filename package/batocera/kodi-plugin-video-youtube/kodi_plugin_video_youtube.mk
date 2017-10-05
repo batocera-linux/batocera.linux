@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-KODI_PLUGIN_VIDEO_YOUTUBE_VERSION = 5.3.8
+KODI_PLUGIN_VIDEO_YOUTUBE_VERSION = 5.4.0
 KODI_PLUGIN_VIDEO_YOUTUBE_SOURCE = plugin.video.youtube-$(KODI_PLUGIN_VIDEO_YOUTUBE_VERSION).zip
 KODI_PLUGIN_VIDEO_YOUTUBE_SITE = http://mirrors.kodi.tv/addons/krypton/plugin.video.youtube
 KODI_PLUGIN_VIDEO_YOUTUBE_PLUGINNAME=plugin.video.youtube

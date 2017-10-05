@@ -102,7 +102,6 @@ menu "Libretro Cores"
        source "package/batocera/libretro-o2em/Config.in"
        source "package/batocera/libretro-hatari/Config.in"
        source "package/batocera/libretro-quicknes/Config.in"
-       source "package/batocera/libretro-glupen64/Config.in"
        source "package/batocera/libretro-yabause/Config.in"
 endmenu
 endif
@@ -146,6 +145,5 @@ menu "Libraries"
 	source "package/batocera/libenet/Config.in"
 	source "package/batocera/python-rpigpio/Config.in"
 	source "package/batocera/python-autobreadcrumbs/Config.in"
-        source "package/batocera/sdl2_mixer/Config.in"
 endmenu
 endmenu

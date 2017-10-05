@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-SAMBA4_VERSION = 4.5.8
+SAMBA4_VERSION = 4.6.6
 SAMBA4_SITE = https://download.samba.org/pub/samba/stable
 SAMBA4_SOURCE = samba-$(SAMBA4_VERSION).tar.gz
 SAMBA4_INSTALL_STAGING = YES
@@ -15,7 +15,19 @@ SAMBA4_DEPENDENCIES = \
 	e2fsprogs popt python zlib \
 	$(if $(BR2_PACKAGE_LIBAIO),libaio) \
 	$(if $(BR2_PACKAGE_LIBCAP),libcap) \
-	$(if $(BR2_PACKAGE_READLINE),readline)
+	$(if $(BR2_PACKAGE_READLINE),readline) \
+	$(TARGET_NLS_DEPENDENCIES)
+SAMBA4_CFLAGS = $(TARGET_CFLAGS)
+SAMBA4_LDFLAGS = $(TARGET_LDFLAGS)
+SAMBA4_CONF_ENV = \
+	CFLAGS="$(SAMBA4_CFLAGS)" \
+	LDFLAGS="$(SAMBA4_LDFLAGS)"
+
+ifeq ($(BR2_PACKAGE_LIBTIRPC),y)
+SAMBA4_CFLAGS += `$(PKG_CONFIG_HOST_BINARY) --cflags libtirpc`
+SAMBA4_LDFLAGS += `$(PKG_CONFIG_HOST_BINARY) --libs libtirpc`
+SAMBA4_DEPENDENCIES += libtirpc host-pkgconf
+endif
 
 ifeq ($(BR2_PACKAGE_ACL),y)
 SAMBA4_CONF_OPTS += --with-acl-support
@@ -32,6 +44,10 @@ else
 SAMBA4_CONF_OPTS += --disable-cups
 endif
 
+ifeq ($(BR2_PACKAGE_DBUS),y)
+SAMBA4_DEPENDENCIES += dbus
+endif
+
 ifeq ($(BR2_PACKAGE_DBUS)$(BR2_PACKAGE_AVAHI_DAEMON),yy)
 SAMBA4_CONF_OPTS += --enable-avahi
 SAMBA4_DEPENDENCIES += avahi
@@ -44,12 +60,6 @@ SAMBA4_CONF_OPTS += --with-fam
 SAMBA4_DEPENDENCIES += gamin
 else
 SAMBA4_CONF_OPTS += --without-fam
-endif
-
-ifeq ($(BR2_PACKAGE_GETTEXT),y)
-SAMBA4_DEPENDENCIES += gettext
-else
-SAMBA4_CONF_OPTS += --without-gettext
 endif
 
 ifeq ($(BR2_PACKAGE_GNUTLS),y)

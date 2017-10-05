@@ -166,17 +166,17 @@ PYTHON3_CONF_OPTS += \
 # '_freeze_importlib'. Unfortunately, for the target Python, they are
 # built for the target, while we need to run them at build time. So
 # when installing host-python, we copy them to
-# $(HOST_DIR)/usr/bin. And then, when building the target python
+# $(HOST_DIR)/bin. And then, when building the target python
 # package, we tell the configure script where they are located.
 define HOST_PYTHON3_INSTALL_TOOLS
-	cp $(@D)/Parser/pgen $(HOST_DIR)/usr/bin/python-pgen
-	cp $(@D)/Programs/_freeze_importlib $(HOST_DIR)/usr/bin/python-freeze-importlib
+	cp $(@D)/Parser/pgen $(HOST_DIR)/bin/python-pgen
+	cp $(@D)/Programs/_freeze_importlib $(HOST_DIR)/bin/python-freeze-importlib
 endef
 HOST_PYTHON3_POST_INSTALL_HOOKS += HOST_PYTHON3_INSTALL_TOOLS
 
 PYTHON3_CONF_ENV += \
-	PGEN_FOR_BUILD=$(HOST_DIR)/usr/bin/python-pgen \
-	FREEZE_IMPORTLIB_FOR_BUILD=$(HOST_DIR)/usr/bin/python-freeze-importlib
+	PGEN_FOR_BUILD=$(HOST_DIR)/bin/python-pgen \
+	FREEZE_IMPORTLIB_FOR_BUILD=$(HOST_DIR)/bin/python-freeze-importlib
 
 #
 # Remove useless files. In the config/ directory, only the Makefile
@@ -224,15 +224,15 @@ endif
 # for the target.
 ifeq ($(BR2_PACKAGE_PYTHON3),y)
 define HOST_PYTHON3_INSTALL_SYMLINK
-	ln -fs python3 $(HOST_DIR)/usr/bin/python
-	ln -fs python3-config $(HOST_DIR)/usr/bin/python-config
+	ln -fs python3 $(HOST_DIR)/bin/python
+	ln -fs python3-config $(HOST_DIR)/bin/python-config
 endef
 
 HOST_PYTHON3_POST_INSTALL_HOOKS += HOST_PYTHON3_INSTALL_SYMLINK
 endif
 
 # Provided to other packages
-PYTHON3_PATH = $(TARGET_DIR)/usr/lib/python$(PYTHON3_VERSION_MAJOR)/:$(TARGET_DIR)/usr/lib/python$(PYTHON3_VERSION_MAJOR)/site-packages/
+PYTHON3_PATH = $(TARGET_DIR)/usr/lib/python$(PYTHON3_VERSION_MAJOR)/
 
 $(eval $(autotools-package))
 $(eval $(host-autotools-package))
@@ -247,7 +247,7 @@ endif
 define PYTHON3_CREATE_PYC_FILES
 	$(PYTHON3_FIX_TIME)
 	PYTHONPATH="$(PYTHON3_PATH)" \
-	cd $(TARGET_DIR) && $(HOST_DIR)/usr/bin/python$(PYTHON3_VERSION_MAJOR) \
+	cd $(TARGET_DIR) && $(HOST_DIR)/bin/python$(PYTHON3_VERSION_MAJOR) \
 		$(TOPDIR)/support/scripts/pycompile.py \
 		$(if $(BR2_REPRODUCIBLE),--force) \
 		usr/lib/python$(PYTHON3_VERSION_MAJOR)

@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-GO_VERSION = 1.7.4
+GO_VERSION = 1.8.3
 GO_SITE = https://storage.googleapis.com/golang
 GO_SOURCE = go$(GO_VERSION).src.tar.gz
 
@@ -37,7 +37,7 @@ GO_GOARCH = mips64le
 endif
 
 HOST_GO_DEPENDENCIES = host-go-bootstrap
-HOST_GO_ROOT = $(HOST_DIR)/usr/lib/go
+HOST_GO_ROOT = $(HOST_DIR)/lib/go
 
 # For the convienience of target packages.
 HOST_GO_TOOLDIR = $(HOST_GO_ROOT)/pkg/tool/linux_$(GO_GOARCH)
@@ -99,8 +99,8 @@ define HOST_GO_INSTALL_CMDS
 	$(INSTALL) -D -m 0755 $(HOST_GO_TMP)/bin/go $(HOST_GO_ROOT)/bin/go
 	$(INSTALL) -D -m 0755 $(HOST_GO_TMP)/bin/gofmt $(HOST_GO_ROOT)/bin/gofmt
 
-	ln -sf ../lib/go/bin/go $(HOST_DIR)/usr/bin/
-	ln -sf ../lib/go/bin/gofmt $(HOST_DIR)/usr/bin/
+	ln -sf ../lib/go/bin/go $(HOST_DIR)/bin/
+	ln -sf ../lib/go/bin/gofmt $(HOST_DIR)/bin/
 
 	cp -a $(@D)/lib $(HOST_GO_ROOT)/
 

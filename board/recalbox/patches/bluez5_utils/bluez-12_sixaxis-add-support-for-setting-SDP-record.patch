@@ -29,7 +29,7 @@ index 3ef0340..859aa3c 100644
 +	if (!rec)
 +		return;
 +
-+	req = browse_request_new(device, NULL);
++	req = browse_request_new(device, NULL, NULL);
 +	if (!req)
 +		return;
 +

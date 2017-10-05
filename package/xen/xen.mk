@@ -4,11 +4,11 @@
 #
 ################################################################################
 
-XEN_VERSION = 4.8.1
-XEN_SITE = http://bits.xensource.com/oss-xen/release/$(XEN_VERSION)
+XEN_VERSION = 4.9.0
+XEN_SITE = https://downloads.xenproject.org/release/xen/$(XEN_VERSION)
 XEN_LICENSE = GPL-2.0
 XEN_LICENSE_FILES = COPYING
-XEN_DEPENDENCIES = host-python
+XEN_DEPENDENCIES = host-acpica host-python
 
 # Calculate XEN_ARCH
 ifeq ($(ARCH),aarch64)
@@ -19,7 +19,7 @@ endif
 
 XEN_CONF_OPTS = --disable-ocamltools
 
-XEN_CONF_ENV = PYTHON=$(HOST_DIR)/usr/bin/python2
+XEN_CONF_ENV = PYTHON=$(HOST_DIR)/bin/python2
 XEN_MAKE_ENV = \
 	XEN_TARGET_ARCH=$(XEN_ARCH) \
 	CROSS_COMPILE=$(TARGET_CROSS) \

@@ -7,7 +7,10 @@
 OPENOCD_VERSION = 0.10.0
 OPENOCD_SOURCE = openocd-$(OPENOCD_VERSION).tar.bz2
 OPENOCD_SITE = http://sourceforge.net/projects/openocd/files/openocd/$(OPENOCD_VERSION)
-
+OPENOCD_LICENSE = GPL-2.0+
+OPENOCD_LICENSE_FILES = COPYING
+# 0002-configure-enable-build-on-uclinux.patch patches configure.ac
+OPENOCD_AUTORECONF = YES
 OPENOCD_CONF_ENV = CFLAGS="$(TARGET_CFLAGS) -std=gnu99"
 
 OPENOCD_CONF_OPTS = \
@@ -88,8 +91,8 @@ HOST_OPENOCD_CONF_OPTS = \
 	--enable-openjtag \
 	--enable-buspirate \
 	--enable-sysfsgpio \
-	--oldincludedir=$(HOST_DIR)/usr/include \
-	--includedir=$(HOST_DIR)/usr/include \
+	--oldincludedir=$(HOST_DIR)/include \
+	--includedir=$(HOST_DIR)/include \
 	--disable-doxygen-html \
 	--with-jim-shared=no \
 	--disable-shared \

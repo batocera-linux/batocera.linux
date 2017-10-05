@@ -214,7 +214,7 @@ case "${RECALBOX_TARGET}" in
 
 	# boot.tar.xz
         # it must include the squashfs version with .update to not erase the current squashfs while running
-	echo "creating boot.tar.xz"
+	echo "creating ${RECALBOX_BINARIES_DIR}/boot.tar.xz"
 	(cd "${BINARIES_DIR}" && tar -cJf "${RECALBOX_BINARIES_DIR}/boot.tar.xz" EFI boot recalbox-boot.conf) || exit 1
 
 	# batocera.img
@@ -225,7 +225,7 @@ case "${RECALBOX_TARGET}" in
 	rm -rf "${GENIMAGE_TMP}" || exit 1
 	cp "board/recalbox/grub2/genimage.cfg" "${BINARIES_DIR}" || exit 1
         cp "output/host/usr/lib/grub/i386-pc/boot.img" "${BINARIES_DIR}" || exit 1
-	echo "generating image"
+	echo "creating ${RECALBOX_BINARIES_DIR}/batocera.img"
 	genimage --rootpath="${TARGET_DIR}" --inputpath="${BINARIES_DIR}" --outputpath="${RECALBOX_BINARIES_DIR}" --config="${BINARIES_DIR}/genimage.cfg" --tmppath="${GENIMAGE_TMP}" || exit 1
 	rm -f "${RECALBOX_BINARIES_DIR}/boot.vfat" || exit 1
 	sync || exit 1
@@ -239,4 +239,11 @@ esac
 # common
 cp "${TARGET_DIR}/recalbox/recalbox.version" "${RECALBOX_BINARIES_DIR}" || exit 1
 
+#
+for FILE in "${RECALBOX_BINARIES_DIR}/boot.tar.xz"
+do
+    echo "creating ${FILE}.md5"
+    CKS=$(md5sum "${FILE}" | sed -e s+'^\([^ ]*\) .*$'+'\1'+)
+    echo "${CKS}" > "${FILE}.md5"
+done
 exit 0

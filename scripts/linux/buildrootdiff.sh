@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#BR_LAST_MERGE_COMMIT=8b639c7f318aec5a18907ae11a1f13e70be7eab4
+#BR_LAST_MERGE_COMMIT=8ce27bb9fee80a406a4199657ef90e3c315e7457
 #git checkout ${BR_LAST_MERGE_COMMIT}
 #git checkout -b buildroot-${BR_LAST_MERGE_COMMIT}
 #git checkout master
