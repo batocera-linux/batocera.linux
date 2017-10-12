@@ -1,0 +1,9 @@
+config BR2_PACKAGE_LIBRETRO_PARALLEL_N64
+       bool "libretro-parallel-n64"
+       depends on BR2_PACKAGE_RETROARCH
+       depends on BR2_INSTALL_LIBSTDCPP
+        help
+          A alternative libretro N64 emulator core
+
+comment "LIBRETRO_PARALLEL_N64 needs a toolchain w/ C++"
+       depends on !BR2_INSTALL_LIBSTDCPP
