@@ -3,6 +3,7 @@ config BR2_PACKAGE_VICE
        depends on BR2_PACKAGE_FFMPEG
        select BR2_PACKAGE_SDL2
        select BR2_PACKAGE_PNG
+       select BR2_PACKAGE_JPEG
        select BR2_PACKAGE_GIFLIB
        select BR2_PACKAGE_ZLIB
        select BR2_PACKAGE_LAME
