@@ -1,32 +1,21 @@
-import RPi.GPIO as GPIO
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
 import os
-import argparse
-
-parser = argparse.ArgumentParser(description='power manager')
-parser.add_argument("-m", help="mode onoff or push", type=str, required=True)
-args = parser.parse_args()
-
-mode = args.m
+import RPi.GPIO as GPIO
+import time
 
 GPIO.setmode(GPIO.BCM)
-# GPIO on pin 5 is the GPIO 3 in BCM mode
-GPIO.setup(3, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+GPIO.setup(3, GPIO.IN, pull_up_down=GPIO.PUD_UP)	# GPIO on pin 5 is the GPIO 3 in BCM mode
 
-def shutdown():
-  os.system("shutdown -h now")
 
-try:
-  if mode == "onoff" :
-    GPIO.wait_for_edge(3, GPIO.RISING)
-    shutdown()
-  elif mode == "push":
-    GPIO.wait_for_edge(3, GPIO.FALLING)
-    shutdown()
-  else:
-    print("Unrecognized mode")
-except KeyboardInterrupt:
-    print ""
+def shutdownBatocera(channel):
+    print 'shutdownBatocera'
+    os.system('shutdown -h now')
 
-finally:
-    print "cleaning up gpio"
-    GPIO.cleanup()
+
+GPIO.add_event_detect(3, GPIO.FALLING, callback=shutdownBatocera,
+                      bouncetime=500)
+
+while True:
+    time.sleep(0.2)
