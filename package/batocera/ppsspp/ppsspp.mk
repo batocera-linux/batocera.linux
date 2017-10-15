@@ -3,7 +3,7 @@
 # PPSSPP
 #
 ################################################################################
-PPSSPP_VERSION = 3eaa81570443506a1e8dd26217c7700854628a77
+PPSSPP_VERSION = 3ae4c122e5131a818ca88c54b1e62a66710d8799
 #PPSSPP_SITE = $(call github,hrydgard,ppsspp,$(PPSSPP_VERSION))
 PPSSPP_SITE = https://github.com/hrydgard/ppsspp.git
 PPSSPP_SITE_METHOD=git
