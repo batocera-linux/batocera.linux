@@ -174,8 +174,7 @@ case "$1" in
 	rb_wifi_configure 2&  # 0.6
 	rb_wifi_configure 3&  # 0.6
 	rb_xbox&              # 0.6
-	rb_audio_configure&   # 0.5
-	rb_volume_configure&  # 0.5
+	( rb_volume_configure ; rb_audio_configure ) &  # 1.0
 	rb_timezone&          # 0.4
 	rb_hostname&          # 0.4
 	rb_xarcade2jstick&    # 0.1
