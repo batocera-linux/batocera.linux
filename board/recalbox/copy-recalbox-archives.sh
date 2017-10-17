@@ -163,12 +163,6 @@ case "${RECALBOX_TARGET}" in
 	;;
 
     C2)
-	# dirty boot binary files
-	for F in bl1.bin.hardkernel u-boot.bin
-	do
-	    cp "${BUILD_DIR}/uboot-odroidc2-v2015.01/sd_fuse/${F}" "${BINARIES_DIR}" || exit 1
-	done
-
 	# boot
 	rm -rf ${BINARIES_DIR}/boot        || exit 1
 	mkdir -p ${BINARIES_DIR}/boot/boot || exit 1
