@@ -13,8 +13,7 @@ SDL2_MIXER_INSTALL_STAGING = YES
 SDL2_MIXER_DEPENDENCIES = sdl2 host-pkgconf
 
 SDL2_MIXER_CONF_OPTS = \
-	--disable-fluidsynth \
-	--disable-music-mp3
+	--disable-fluidsynth
 
 ifeq ($(BR2_PACKAGE_FLAC),y)
 SDL2_MIXER_CONF_OPTS += --enable-music-flac
@@ -36,5 +35,8 @@ SDL2_MIXER_DEPENDENCIES += tremor
 else
 SDL2_MIXER_CONF_OPTS += --disable-music-ogg-tremor
 endif
+
+SDL2_MIXER_CONF_OPTS += --enable-music-mp3-mad-gpl
+SDL2_MIXER_DEPENDENCIES += libmad
 
 $(eval $(autotools-package))
