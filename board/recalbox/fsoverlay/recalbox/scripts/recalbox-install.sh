@@ -16,6 +16,7 @@ do_help() {
     echo "${PROG} listDisks" >&2
     echo "${PROG} listArchs" >&2
     echo "${PROG} install <disk> <arch>" >&2
+    echo "${PROG} install <disk> --img=/recalbox/share/batocera-YYYYMMDD.img.gz" >&2
 }
 
 determine_part_prefix() {
@@ -93,6 +94,20 @@ do_install() {
     INSDISK=$1
     INSARCH=$2
 
+    # when using --img
+    for i in "$@"
+    do
+    case $i in
+        --img=*)
+        FILETARGET="${i#*=}"
+        shift # past argument=value
+        ;;
+        *)
+              # unknown option
+        ;;
+    esac
+    done
+
     # unmount mounts associated with the disk
     if ! do_unmount_disk "${INSDISK}"
     then
@@ -100,6 +115,8 @@ do_install() {
 	return 1
     fi
     
+    if ! test -s "$FILETARGET"
+    then
     # download directory
     mkdir -p "/recalbox/share/system/installs/${INSARCH}" || return 1
 
@@ -163,7 +180,7 @@ do_install() {
 	wait "${GETPERPID}" 2>/dev/null # hide the Killed message
 	GETPERPID=
     fi
-
+    fi
     # install
     echo "writting the disk ${INSDISK}, please wait..."
     if ! zcat "${FILETARGET}" | dd of="/dev/${INSDISK}" bs=40M
