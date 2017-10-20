@@ -110,6 +110,11 @@ do_install() {
 	INSARCH=$2
     fi
 
+    if ! test -e "/dev/${INSDISK}"
+    then
+	echo "invalid disk ${INSDISK}" >&2
+	return 1
+    fi
 
     # unmount mounts associated with the disk
     if ! do_unmount_disk "${INSDISK}"
