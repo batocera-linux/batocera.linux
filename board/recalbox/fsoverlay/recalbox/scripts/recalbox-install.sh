@@ -8,6 +8,7 @@ arch=$(cat /recalbox/recalbox.arch)
 updateurl=$($systemsetting -command load -key updates.url)
 test -n "${updateurl}" && recalboxupdateurl="${updateurl}"
 
+IMGFOLDER="/recalbox/share/system/installs"
 ACTION=$1
 shift
 
@@ -15,7 +16,8 @@ do_help() {
     PROG=$1
     echo "${PROG} listDisks" >&2
     echo "${PROG} listArchs" >&2
-    echo "${PROG} install <disk> <arch>" >&2
+    echo "${PROG} listFiles" >&2
+    echo "${PROG} install <disk> <arch|file>" >&2
 }
 
 determine_part_prefix() {
@@ -62,6 +64,13 @@ do_listArchs() {
 	wget -qO - "${recalboxupdateurl}/installs.txt" | sed -e s+'^\([^/]*\)/.*$'+'\1'+ | sort -u
 }
 
+do_listFiles() {
+    if test -d "${IMGFOLDER}"
+    then
+	find "${IMGFOLDER}" -name "*.img.gz" -type f
+    fi
+}
+
 getPer() {
     TARVAL=$1
     TARFILE=$2
@@ -91,7 +100,16 @@ do_unmount_disk() {
 
 do_install() {
     INSDISK=$1
-    INSARCH=$2
+    INSIMG=
+    INSARCH=
+
+    if test -f "${2}"
+    then
+	INSIMG=$2
+    else
+	INSARCH=$2
+    fi
+
 
     # unmount mounts associated with the disk
     if ! do_unmount_disk "${INSDISK}"
@@ -99,78 +117,84 @@ do_install() {
 	echo "unable to free the disk ${INSDISK}" >&2
 	return 1
     fi
-    
-    # download directory
-    mkdir -p "/recalbox/share/system/installs/${INSARCH}" || return 1
 
-    # url
-    RELATIVPATH=$(wget -qO - "${recalboxupdateurl}/installs.txt" | grep -E "^${INSARCH}/" | head -1)
-    FILEBASENAME=$(basename "${RELATIVPATH}")
-    FILETARGET="/recalbox/share/system/installs/${INSARCH}/${FILEBASENAME}"
-    test -z "${RELATIVPATH}" && return 1
-    url="${recalboxupdateurl}/${RELATIVPATH}"
-
-    # get size to download
-    echo "url: ${url}"
-    headers=$(curl -sfIL ${url})
-    test $? -eq 0 || return 1
-    bytessize=$(echo "$headers" | grep "Content-Length: " | sed -e s+'^Content-Length: \([0-9]*\).*$'+'\1'+)
-    size=$((bytessize / 1024 / 1024))
-    test $? -eq 0 || return 1
-
-    FILETHERE=0
-    if test -f "${FILETARGET}"
+    ### DOWNLOADING
+    if test -n "${INSARCH}"
     then
-	CURVAL=$(stat "${FILETARGET}" | grep -E '^[ ]*Size:' | sed -e s+'^[ ]*Size: \([0-9][0-9]*\) .*$'+'\1'+)
-	if test "${CURVAL}" = "${bytessize}"
+	# download directory
+	mkdir -p "${IMGFOLDER}/${INSARCH}" || return 1
+
+	# url
+	RELATIVPATH=$(wget -qO - "${recalboxupdateurl}/installs.txt" | grep -E "^${INSARCH}/" | head -1)
+	FILEBASENAME=$(basename "${RELATIVPATH}")
+	INSIMG="${IMGFOLDER}/${INSARCH}/${FILEBASENAME}"
+	test -z "${RELATIVPATH}" && return 1
+	url="${recalboxupdateurl}/${RELATIVPATH}"
+
+	# get size to download
+	echo "url: ${url}"
+	headers=$(curl -sfIL ${url})
+	test $? -eq 0 || return 1
+	bytessize=$(echo "$headers" | grep "Content-Length: " | sed -e s+'^Content-Length: \([0-9]*\).*$'+'\1'+)
+	size=$((bytessize / 1024 / 1024))
+	test $? -eq 0 || return 1
+
+	FILETHERE=0
+	if test -f "${INSIMG}"
 	then
-	    FILETHERE=1
-	fi
-    fi
-    
-    # if the file is already there, skip the download
-    if test "${FILETHERE}" = 1
-    then
-	echo "file already downloaded at ${FILETARGET}."
-	echo "skip the download."
-    else
-	echo "need to download ${size}mB"
-
-	# check free space on fs
-	for fs in /recalbox/share
-	do
-	    freespace=$(df -m "${fs}" | tail -1 | awk '{print $4}')
-	    test $? -eq 0 || return 1
-	    if test "${size}" -gt "${freespace}"
+	    CURVAL=$(stat "${INSIMG}" | grep -E '^[ ]*Size:' | sed -e s+'^[ ]*Size: \([0-9][0-9]*\) .*$'+'\1'+)
+	    if test "${CURVAL}" = "${bytessize}"
 	    then
-		echo "Not enough space on ${fs} to download the update"
+		FILETHERE=1
+	    fi
+	fi
+    
+	# if the file is already there, skip the download
+	if test "${FILETHERE}" = 1
+	then
+	    echo "file already downloaded at ${INSIMG}."
+	    echo "skip the download."
+	else
+	    echo "need to download ${size}mB"
+
+	    # check free space on fs
+	    for fs in /recalbox/share
+	    do
+		freespace=$(df -m "${fs}" | tail -1 | awk '{print $4}')
+		test $? -eq 0 || return 1
+		if test "${size}" -gt "${freespace}"
+		then
+		    echo "Not enough space on ${fs} to download the update"
+		    return 1
+		fi
+	    done
+
+	    # download
+	    touch "${INSIMG}"
+	    getPer "${size}" "${INSIMG}" &
+	    GETPERPID=$!
+
+	    if ! curl -sfL "${url}" -o "${INSIMG}"
+	    then
+		echo "Downloading failed" >&2
+		kill -9 "${GETPERPID}"
 		return 1
 	    fi
-	done
-	
-	# download
-	touch "${FILETARGET}"
-	getPer "${size}" "${FILETARGET}" &
-	GETPERPID=$!
-	
-	if ! curl -sfL "${url}" -o "${FILETARGET}"
-	then
-	    echo "Downloading failed" >&2
 	    kill -9 "${GETPERPID}"
-	    return 1
+	    wait "${GETPERPID}" 2>/dev/null # hide the Killed message
+	    GETPERPID=
 	fi
-	kill -9 "${GETPERPID}"
-	wait "${GETPERPID}" 2>/dev/null # hide the Killed message
-	GETPERPID=
     fi
 
     # install
     echo "writting the disk ${INSDISK}, please wait..."
-    if ! zcat "${FILETARGET}" | dd of="/dev/${INSDISK}" bs=40M
+    if ! zcat "${INSIMG}" | dd of="/dev/${INSDISK}" bs=40M
     then
 	return 1
     fi
+    echo "synchronizing..."
     sync
+    echo "done"
     return 0
 }
 
@@ -185,6 +209,9 @@ case "${ACTION}" in
 	;;
     listArchs)
 	do_listArchs
+	;;
+    listFiles)
+	do_listFiles
 	;;
     install)
 	if test $# -ne 2
