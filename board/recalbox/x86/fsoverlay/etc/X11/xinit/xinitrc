@@ -27,5 +27,23 @@ systemsetting="python /usr/lib/python2.7/site-packages/configgen/settings/recalb
 settings_output="`$systemsetting -command load -key global.videooutput`"
 /recalbox/scripts/recalbox-config.sh setoutput "${settings_output}"
 
+#####################
+## CUSTOMISATIONS ###
+# to customize your display, you can copy this file to ~/.xinitrc and then modify it
+
+# rotate the screen
+# xrandr -o left
+# xrandr -o right
+# xrandr -o inverted
+
+# change the resolution
+# xrandr -s 640x480
+
+# change the resolution and the Hz
+# xrandr -s 640x480 -r 60
+
+#####################
+#####################
+
 # without windowed, time must be sleeped to wait that matchbox ended to initialize :-(
 exec emulationstation --windowed
