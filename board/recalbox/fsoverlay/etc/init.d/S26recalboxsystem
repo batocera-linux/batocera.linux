@@ -159,6 +159,15 @@ rb_xarcade2jstick() {
     fi
 }
 
+# from https://batocera-linux.xorhub.com/forum/d/794-how-to-hdmi-sound-on-x86-builds
+rb_alsa_load() {
+    alsactl restore -f /recalbox/share/system/asound.state
+}
+
+rb_alsa_save() {
+    alsactl store -f /recalbox/share/system/asound.state
+}
+
 case "$1" in
   start)
 	recallog "starting new log"
@@ -174,13 +183,14 @@ case "$1" in
 	rb_wifi_configure 2&  # 0.6
 	rb_wifi_configure 3&  # 0.6
 	rb_xbox&              # 0.6
-	( rb_volume_configure ; rb_audio_configure ) &  # 1.0
+	( rb_volume_configure ; rb_audio_configure ; rb_alsa_load) &  # 1.0
 	rb_timezone&          # 0.4
 	rb_hostname&          # 0.4
 	rb_xarcade2jstick&    # 0.1
 	wait
 	;;
   stop)
+        rb_alsa_save
 	;;
   restart|reload)
 	;;
