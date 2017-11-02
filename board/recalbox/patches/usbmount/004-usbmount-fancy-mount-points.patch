@@ -1,0 +1,108 @@
+diff --git a/usbmount b/usbmount
+index 06102cd..27193f6 100755
+--- a/usbmount
++++ b/usbmount
+@@ -44,7 +44,6 @@ in_list()
+ 
+ # Default values for configuration variables.
+ ENABLED=1
+-MOUNTPOINTS=
+ FILESYSTEMS=
+ MOUNTOPTIONS=
+ FS_MOUNTOPTIONS=
+@@ -101,13 +100,26 @@ if [ "$1" = add ]; then
+ 	# types to mount.
+ 	if in_list "$fstype" "$FILESYSTEMS"; then
+ 	    # Search an available mountpoint.
+-	    for v in $MOUNTPOINTS; do
+-		if [ -d "$v" ] && ! grep -q "^[^ ][^ ]*  *$v " /proc/mounts; then
+-		    mountpoint="$v"
+-		    log debug "mountpoint $mountpoint is available for $DEVNAME"
+-		    break
+-		fi
+-	    done
++	    if test -n "${ID_FS_LABEL}" && echo "${ID_FS_LABEL}" | grep -qE '^[0-9a-zA-z_ \.-]*$'
++	    then
++		NEWMOUNTPOINT=/media/${ID_FS_LABEL}
++	    else
++		NEWMOUNTPOINT=/media/NO_LABEL
++	    fi
++	    if test -e "${NEWMOUNTPOINT}"
++	    then
++		NNEW=1
++		while test -e "${NEWMOUNTPOINT}_${NNEW}"
++		do
++		    let NNEW++
++		done
++		NEWMOUNTPOINT="${NEWMOUNTPOINT}_${NNEW}"
++	    fi
++	    if ! grep -q "^[^ ][^ ]*  *${NEWMOUNTPOINT} " /proc/mounts; then
++		mountpoint="${NEWMOUNTPOINT}"
++		log debug "mountpoint $mountpoint is available for $DEVNAME"
++		break
++	    fi
+ 	    if [ -n "$mountpoint" ]; then
+ 		# Determine mount options.
+ 		options=
+@@ -123,6 +135,7 @@ if [ "$1" = add ]; then
+ 
+ 		# Mount the filesystem.
+ 		log info "executing command: mount -t$fstype ${options:+-o$options} $DEVNAME $mountpoint"
++		mkdir -p "${mountpoint}"
+ 		/recalbox/scripts/recalbox-mount.sh "$fstype" 0 "${DEVNAME}" "${mountpoint}"
+ 
+ 		# Determine vendor and model.
+@@ -169,18 +182,16 @@ if [ "$1" = add ]; then
+ 	fi
+     fi
+ elif [ "$1" = remove ]; then
+-
+     # A block or partition device has been removed.
+     # Test if it is mounted.
+     while read device mountpoint fstype remainder; do
+ 	if [ "$DEVNAME" = "$device" ]; then
+ 	    # If the mountpoint and filesystem type are maintained by
+ 	    # this script, unmount the filesystem.
+-	    if in_list "$mountpoint" "$MOUNTPOINTS" &&
++	    if echo "$mountpoint" | grep -E "^/media/" &&
+ 		in_list "$fstype" "$FILESYSTEMS"; then
+ 		log info "executing command: umount -l $mountpoint"
+ 		umount -l "$mountpoint"
+-
+ 		# Run hook scripts; ignore errors.
+ 		export UM_DEVICE="$DEVNAME"
+ 		export UM_MOUNTPOINT="$mountpoint"
+@@ -191,6 +202,15 @@ elif [ "$1" = remove ]; then
+ 	    break
+ 	fi
+     done < /proc/mounts
++
++    # remove no more mounted /media
++    ls /media | while read mountpoint
++    do
++	if ! grep -q "^[^ ][^ ]*  */media/${mountpoint} " /proc/mounts; then
++	    rmdir "/media/${mountpoint}"
++	fi
++    done
++    
+ else
+     log err "unexpected: action '$1'"
+     exit 1
+diff --git a/usbmount.conf b/usbmount.conf
+index 97f7ccc..15884ce 100644
+--- a/usbmount.conf
++++ b/usbmount.conf
+@@ -5,13 +5,6 @@
+ # Change to zero to disable usbmount
+ ENABLED=1
+ 
+-# Mountpoints: These directories are eligible as mointpoints for
+-# removable storage devices.  A newly plugged in device is mounted on
+-# the first directory in this list that exists and on which nothing is
+-# mounted yet.
+-MOUNTPOINTS="/media/usb0 /media/usb1 /media/usb2 /media/usb3
+-             /media/usb4 /media/usb5 /media/usb6 /media/usb7"
+-
+ # Filesystem types: removable storage devices are only mounted if they
+ # contain a filesystem type which is in this list.
+ FILESYSTEMS="vfat ext2 ext3 ext4 hfsplus"
