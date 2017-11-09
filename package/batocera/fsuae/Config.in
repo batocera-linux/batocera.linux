@@ -1,0 +1,11 @@
+config BR2_PACKAGE_FSUAE
+        bool "fs-uae"
+	depends on BR2_PACKAGE_LIBGLIB2
+	depends on BR2_PACKAGE_XORG7
+	select BR2_PACKAGE_OPENAL_SOFT
+	select BR2_PACKAGE_LIBPNG
+	select BR2_PACKAGE_SDL2
+	select BR2_PACKAGE_ZLIB
+	select BR2_PACKAGE_LIBMPEG2
+        help
+          A crossplatform amiga emulator

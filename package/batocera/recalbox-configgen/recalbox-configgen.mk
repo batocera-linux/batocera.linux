@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-RECALBOX_CONFIGGEN_VERSION = batocera-5.X
+RECALBOX_CONFIGGEN_VERSION = master
 
 RECALBOX_CONFIGGEN_SITE = $(call github,nadenislamarre,recalbox-configgen,$(RECALBOX_CONFIGGEN_VERSION))
 
