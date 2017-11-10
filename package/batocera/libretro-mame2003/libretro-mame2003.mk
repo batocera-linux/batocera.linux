@@ -3,10 +3,8 @@
 # MAME2003
 #
 ################################################################################
-LIBRETRO_MAME2003_VERSION = a6e82919fed01f6e0d2d90acb4b865791d655a2a
+LIBRETRO_MAME2003_VERSION = 1c84d68aeb0e92cd3d0d2be3e6c6fd42c495343a
 LIBRETRO_MAME2003_SITE = $(call github,libretro,mame2003-libretro,$(LIBRETRO_MAME2003_VERSION))
-
-
 
 define LIBRETRO_MAME2003_BUILD_CMDS
 	mkdir -p $(@D)/obj/mame/cpu/ccpu
