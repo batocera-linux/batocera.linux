@@ -3,7 +3,7 @@
 # 4DO
 #
 ################################################################################
-LIBRETRO_4DO_VERSION = c141664f13ecbcc4c4b91dd4d00d49b691d7d546
+LIBRETRO_4DO_VERSION = d3d6831ff6c223a8cdb861c3ddb529f8d9a471f7
 LIBRETRO_4DO_SITE = $(call github,libretro,4do-libretro,$(LIBRETRO_4DO_VERSION))
 
 define LIBRETRO_4DO_BUILD_CMDS
