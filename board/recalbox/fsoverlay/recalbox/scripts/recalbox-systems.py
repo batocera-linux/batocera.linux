@@ -8,7 +8,7 @@ systems = {
     "atarist":   { "name": "Atari ST",                             "biosFiles": [ { "md5": "b2a8570de2e850c5acf81cb80512d9f6", "file": "bios/tos.img"           } ] },
     "dreamcast": { "name": "Dreamcast",                            "biosFiles": [ { "md5": "e10c53c2f8b90bab96ead2d368858623", "file": "bios/dc_boot.bin"       },
                                                                                   { "md5": "",                                 "file": "bios/dc_flash.bin"      } ] },
-    "amiga500":  { "name": "Amiga500",  "biosFiles":  [ { "md5": "82a21c1890cae844b3df741f2762d48d", "file": "bios/Kickstart v 1.3 r34.5 (1987)(Commodore)(A500-A1000-A2000-CDTV)[!].rom" } ] },
+    "amiga500":  { "name": "Amiga500",  "biosFiles":  [ { "md5": "82a21c1890cae844b3df741f2762d48d", "file": "bios/Kickstart v1.3 r34.5 (1987)(Commodore)(A500-A1000-A2000-CDTV)[!].rom" } ] },
     "amiga500p": { "name": "Amiga500+", "biosFiles":  [ { "md5": "dc10d7bdd1b6f450773dfb558477c230", "file": "bios/Kickstart v2.04 r37.175 (1991)(Commodore)(A500+)[!].rom"               } ] },
     "amiga600":  { "name": "Amiga600",  "biosFiles":  [ { "md5": "465646c9b6729f77eea5314d1f057951", "file": "bios/Kickstart v2.05 r37.350 (1992)(Commodore)(A600HD)[!].rom"              } ] },
     "amiga1000": { "name": "Amiga1000", "biosFiles":  [ { "md5": "85ad74194e87c08904327de1a9443b7a", "file": "bios/Kickstart v1.2 r33.180 (1986)(Commodore)(A500-A1000-A2000)[!].rom"     } ] },
