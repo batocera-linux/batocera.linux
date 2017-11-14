@@ -8,6 +8,9 @@ OVERLAYMOUNT="/overlay/saved"
 OVERLAYRAM="/overlay/overlay"
 OVERLAYSIZE=50 # M
 
+# fix for winscp running bash and then not sourcing /etc/profile
+PATH=$PATH:/sbin
+
 createOverlayIfNeeded() {
     COISIZE=$1
 
