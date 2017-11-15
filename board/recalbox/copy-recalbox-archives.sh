@@ -231,6 +231,14 @@ case "${RECALBOX_TARGET}" in
 esac
 
 # common
+
+# renaming
+SUFFIXVERSION=$(cat "${TARGET_DIR}/recalbox/recalbox.updateversion")
+SUFFIXTARGET=$(echo "${RECALBOX_TARGET}" | tr A-Z a-z)
+SUFFIXDATE=$(date +%Y%m%d)
+SUFFIXIMG="-${SUFFIXVERSION}-${SUFFIXTARGET}-${SUFFIXDATE}"
+mv "${RECALBOX_BINARIES_DIR}/batocera.img" "${RECALBOX_BINARIES_DIR}/batocera${SUFFIXIMG}.img" || exit 1
+
 cp "${TARGET_DIR}/recalbox/recalbox.version" "${RECALBOX_BINARIES_DIR}" || exit 1
 
 #
