@@ -1,0 +1,27 @@
+diff --git a/src/main-win.c b/src/main-win.c
+index 574a7d2..4933ed5 100644
+--- a/src/main-win.c
++++ b/src/main-win.c
+@@ -957,14 +957,14 @@ static void fm_main_win_init(FmMainWin *win)
+     g_signal_connect(win->location, "activate", G_CALLBACK(on_location_activate), win);
+     if(geteuid() == 0) /* if we're using root, Give the user some warnings */
+     {
+-        GtkWidget* warning = gtk_image_new_from_stock(GTK_STOCK_DIALOG_WARNING, GTK_ICON_SIZE_SMALL_TOOLBAR);
+-        gtk_widget_set_tooltip_markup(warning, _("You are in super user mode"));
+-
+-        toolitem = gtk_tool_item_new();
+-        gtk_container_add( GTK_CONTAINER(toolitem), warning );
+-        gtk_toolbar_insert(win->toolbar, gtk_separator_tool_item_new(), 0);
+-
+-        gtk_toolbar_insert(win->toolbar, toolitem, 0);
++//        GtkWidget* warning = gtk_image_new_from_stock(GTK_STOCK_DIALOG_WARNING, GTK_ICON_SIZE_SMALL_TOOLBAR);
++//        gtk_widget_set_tooltip_markup(warning, _("You are in super user mode"));
++//
++//        toolitem = gtk_tool_item_new();
++//        gtk_container_add( GTK_CONTAINER(toolitem), warning );
++//        gtk_toolbar_insert(win->toolbar, gtk_separator_tool_item_new(), 0);
++//
++//        gtk_toolbar_insert(win->toolbar, toolitem, 0);
+     }
+ 
+     win->path_bar = fm_path_bar_new();

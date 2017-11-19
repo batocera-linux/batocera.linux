@@ -1,0 +1,87 @@
+diff --git a/src/gtk/fm-places-model.c b/src/gtk/fm-places-model.c
+index 104f988..45fd463 100644
+--- a/src/gtk/fm-places-model.c
++++ b/src/gtk/fm-places-model.c
+@@ -56,7 +56,11 @@ typedef enum
+     FM_PLACES_ID_APPLICATIONS,
+     FM_PLACES_ID_COMPUTER,
+     FM_PLACES_ID_NETWORK,
+-    FM_PLACES_ID_OTHER
++    FM_PLACES_ID_OTHER,
++    FM_PLACES_ID_BATOCERA_SHARE,
++    FM_PLACES_ID_BATOCERA_BIOS,
++    FM_PLACES_ID_BATOCERA_ROMS,
++    FM_PLACES_ID_BATOCERA_SCREENSHOTS,
+ } FmPlacesOrder;
+ 
+ struct _FmPlacesItem
+@@ -988,11 +992,35 @@ static void fm_places_model_init(FmPlacesModel *self)
+     self->eject_icon = fm_pixbuf_from_icon(icon, fm_config->pane_icon_size);
+     g_object_unref(icon);
+ 
+-    if(fm_config->places_home)
++//    if(fm_config->places_home)
++//    {
++//        path = fm_path_get_home();
++//        new_path_item(model, &it, path, FM_PLACES_ID_HOME,
++//                      _("Home Folder"), "user-home", job);
++//    }
++
+     {
+-        path = fm_path_get_home();
+-        new_path_item(model, &it, path, FM_PLACES_ID_HOME,
+-                      _("Home Folder"), "user-home", job);
++      path = fm_path_new_for_str("/recalbox/share");
++      new_path_item(model, &it, path, FM_PLACES_ID_BATOCERA_SHARE,
++		    _("Share"), "share", job);
++    }
++
++    {
++      path = fm_path_new_for_str("/recalbox/share/roms");
++      new_path_item(model, &it, path, FM_PLACES_ID_BATOCERA_ROMS,
++		    _("Roms"), "roms", job);
++    }
++
++     {
++      path = fm_path_new_for_str("/recalbox/share/screenshots");
++      new_path_item(model, &it, path, FM_PLACES_ID_BATOCERA_SCREENSHOTS,
++		    _("Screenshots"), "screenshots", job);
++    }
++
++    {
++      path = fm_path_new_for_str("/recalbox/share/bios");
++      new_path_item(model, &it, path, FM_PLACES_ID_BATOCERA_BIOS,
++		    _("Bios"), "bios", job);
+     }
+ 
+     /* Only show desktop in side pane when the user has a desktop dir. */
+@@ -1056,17 +1084,18 @@ static void fm_places_model_init(FmPlacesModel *self)
+ 
+     /* add volumes to side-pane */
+     /* respect fm_config->places_unmounted */
+-    if (fm_config->places_unmounted)
+-    {
+-        vols = g_volume_monitor_get_volumes(self->vol_mon);
+-        for(l=vols;l;l=l->next)
+-        {
+-            GVolume* vol = G_VOLUME(l->data);
+-            add_volume_or_mount(self, G_OBJECT(vol), job);
+-            g_object_unref(vol);
+-        }
+-        g_list_free(vols);
+-    }
++
++//    if (fm_config->places_unmounted)
++//    {
++//        vols = g_volume_monitor_get_volumes(self->vol_mon);
++//        for(l=vols;l;l=l->next)
++//        {
++//            GVolume* vol = G_VOLUME(l->data);
++//            add_volume_or_mount(self, G_OBJECT(vol), job);
++//            g_object_unref(vol);
++//        }
++//        g_list_free(vols);
++//    }
+ 
+     /* add mounts to side-pane */
+     vols = g_volume_monitor_get_mounts(self->vol_mon);
