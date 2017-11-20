@@ -12,6 +12,21 @@ then
     echo "Battery: ${BATT}%"
 fi
 
+# PAD Battery
+for PADBAT in /sys/class/power_supply/*/device/uevent
+do
+    # HID devices only
+    PADNAME=$(grep -E '^HID_NAME=' "${PADBAT}" | sed -e s+'^HID_NAME='++)
+    if test -n "${PADNAME}"
+    then
+	# parent of parent / uevent
+	BATTUEVENT=$(dirname "${PADBAT}")
+	BATTUEVENT=$(dirname "${BATTUEVENT}")/uevent
+	BATT=$(grep -E "^POWER_SUPPLY_CAPACITY=" "${BATTUEVENT}" | sed -e s+'^POWER_SUPPLY_CAPACITY='++ | sort -rn | head -1)
+	echo "${PADNAME}: ${BATT}%"
+    fi
+done
+
 # temperature
 # Unit: millidegree Celsius
 TEMPE=$(cat /sys/devices/virtual/thermal/thermal_zone*/temp 2>/dev/null | sort -rn | head -1 | sed -e s+"[0-9][0-9][0-9]$"++)
