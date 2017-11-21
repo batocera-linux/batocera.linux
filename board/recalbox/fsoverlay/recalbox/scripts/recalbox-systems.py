@@ -40,6 +40,7 @@ systems = {
     "neogeo":    { "name": "NeoGeo",                               "biosFiles": [ { "md5": "",                                 "file": "roms/neogeo/neogeo.zip" } ] },
     "o2em":      { "name": "Odyssey 2",                            "biosFiles": [ { "md5": "562d5ebf9e030a40d6fabfc2f33139fd", "file": "bios/o2rom.bin"         } ] },
     "pcengine":  { "name": "PC Engine",                            "biosFiles": [ { "md5": "ff1a674273fe3540ccef576376407d1d", "file": "bios/syscard3.pce"      } ] },
+    "pcfx":      { "name": "PC-FX",                                "biosFiles": [ { "md5": "08e36edbea28a017f79f8d4f7ff9b6d7", "file": "bios/pcfx.rom"          } ] },
     "psx":       { "name": "PSX",                                  "biosFiles": [ { "md5": "924e392ed05558ffdb115408c263dccf", "file": "bios/SCPH1001.BIN"      },
                                                                                   { "md5": "239665b1a3dade1b5a52c06338011044", "file": "bios/SCPH1000.BIN"      },
                                                                                   { "md5": "490f666e1afb15b7362b406ed1cea246", "file": "bios/SCPH7003.BIN"      } ] },
