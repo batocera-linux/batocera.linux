@@ -2,6 +2,7 @@
 
 from hashlib import md5
 from os.path import isfile
+from collections import OrderedDict
 
 systems = {
     "3d0":       { "name": "3DO",                                  "biosFiles": [ { "md5": "51f2f43ae2f3508a14d9f56597e2d3ce", "file": "bios/panafz10.bin"      } ] },
@@ -82,14 +83,15 @@ def checkBios(systems, prefix):
     return missingBios
 
 def displayMissingBios(systems, missingBios):
-    if missingBios:
-        for system in missingBios:
+    sortedMissingBios = OrderedDict(sorted(missingBios.items()))
+    if sortedMissingBios:
+        for system in sortedMissingBios:
             print "> {}".format(systems[system]["name"])
-            for file in missingBios[system].keys():
+            for file in sortedMissingBios[system].keys():
                 md5str = "-"
-                if missingBios[system][file]["md5"] != "":
-                    md5str = missingBios[system][file]["md5"]
-                print "{} {} {}".format(missingBios[system][file]["status"], md5str, missingBios[system][file]["file"])
+                if sortedMissingBios[system][file]["md5"] != "":
+                    md5str = sortedMissingBios[system][file]["md5"]
+                print "{} {} {}".format(sortedMissingBios[system][file]["status"], md5str, sortedMissingBios[system][file]["file"])
     else:
         print "No missing bios"
 
