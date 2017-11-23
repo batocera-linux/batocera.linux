@@ -4,6 +4,7 @@ from hashlib import md5
 from os.path import isfile
 
 systems = {
+    "3d0":       { "name": "3DO",                                  "biosFiles": [ { "md5": "51f2f43ae2f3508a14d9f56597e2d3ce", "file": "bios/panafz10.bin"      } ] },
     "atari7800": { "name": "Atari 7800",                           "biosFiles": [ { "md5": "0763f1ffb006ddbe32e52d497ee848ae", "file": "bios/7800 BIOS (U).rom" } ] },
     "atarist":   { "name": "Atari ST",                             "biosFiles": [ { "md5": "b2a8570de2e850c5acf81cb80512d9f6", "file": "bios/tos.img"           } ] },
     "dreamcast": { "name": "Dreamcast",                            "biosFiles": [ { "md5": "e10c53c2f8b90bab96ead2d368858623", "file": "bios/dc_boot.bin"       },
