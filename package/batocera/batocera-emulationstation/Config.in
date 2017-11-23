@@ -1,5 +1,5 @@
-config BR2_PACKAGE_RECALBOX_EMULATIONSTATION2
-        bool "recalbox Emulationstation 2"
+config BR2_PACKAGE_BATOCERA_EMULATIONSTATION
+        bool "batocera Emulationstation"
 	depends on BR2_INSTALL_LIBSTDCPP
 	select BR2_PACKAGE_SDL2
 	select BR2_PACKAGE_SDL2_MIXER
@@ -25,12 +25,12 @@ config BR2_PACKAGE_RECALBOX_EMULATIONSTATION2
 
 	  https://github.com/Aloshi/EmulationStation
 
-if BR2_PACKAGE_RECALBOX_EMULATIONSTATION2
+if BR2_PACKAGE_BATOCERA_EMULATIONSTATION
 choice
     prompt "ES version to compile"
-    config BR2_PACKAGE_RECALBOX_EMULATIONSTATION2_STANDARD        
+    config BR2_PACKAGE_BATOCERA_EMULATIONSTATION_STANDARD
           bool "standard"
-    config BR2_PACKAGE_RECALBOX_EMULATIONSTATION2_ARCADE        
+    config BR2_PACKAGE_BATOCERA_EMULATIONSTATION_ARCADE
           bool "arcade"
  endchoice
 endif
