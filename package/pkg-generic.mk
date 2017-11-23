@@ -85,7 +85,7 @@ define step_pkg_size
 		$(if $(filter start,$(1)),$(call step_pkg_size_start,$(3))) \
 		$(if $(filter end,$(1)),$(call step_pkg_size_end,$(3))))
 endef
-GLOBAL_INSTRUMENTATION_HOOKS += step_pkg_size
+#GLOBAL_INSTRUMENTATION_HOOKS += step_pkg_size
 
 # Relies on step_pkg_size, so must be after
 define check_bin_arch
