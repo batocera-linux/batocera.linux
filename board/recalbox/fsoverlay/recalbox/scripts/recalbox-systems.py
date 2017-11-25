@@ -15,7 +15,7 @@ systems = {
     "amiga600":  { "name": "Amiga600",  "biosFiles":  [ { "md5": "465646c9b6729f77eea5314d1f057951", "file": "bios/Kickstart v2.05 r37.350 (1992)(Commodore)(A600HD)[!].rom"              } ] },
     "amiga1000": { "name": "Amiga1000", "biosFiles":  [ { "md5": "85ad74194e87c08904327de1a9443b7a", "file": "bios/Kickstart v1.2 r33.180 (1986)(Commodore)(A500-A1000-A2000)[!].rom"     } ] },
     "amiga1200": { "name": "Amiga1200", "biosFiles":  [ { "md5": "646773759326fbac3b2311fd8c8793ee", "file": "bios/Kickstart v3.1 r40.68 (1993)(Commodore)(A1200)[!].rom"                 } ] },
-    "amiga3000": { "name": "Amiga3000", "biosFiles":  [ { "md5": "", "file": "bios/Kickstart v3.1 r40.68 (1993)(Commodore)(A3000).rom"                    } ] },
+    "amiga3000": { "name": "Amiga3000", "biosFiles":  [ { "md5": "413590e50098a056cfec418d3df0212d", "file": "bios/Kickstart v3.1 r40.68 (1993)(Commodore)(A3000).rom"                    } ] },
     "amiga4000": { "name": "Amiga4000", "biosFiles":  [ { "md5": "9bdedde6a4f33555b4a270c8ca53297d", "file": "bios/Kickstart v3.1 r40.68 (1993)(Commodore)(A4000).rom"                    } ] },
     "amigacd32": { "name": "Amiga CD32", "biosFiles": [ { "md5": "5f8924d013dd57a89cf349f4cdedc6b1", "file": "bios/Kickstart v3.1 r40.60 (1993)(Commodore)(CD32).rom"                     },
                                                         { "md5": "bb72565701b1b6faece07d68ea5da639", "file": "bios/CD32 Extended-ROM r40.60 (1993)(Commodore)(CD32).rom"                  }, ] },
