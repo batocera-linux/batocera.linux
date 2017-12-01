@@ -41,7 +41,7 @@ then
 fi
 
 (
-    LD_LIBRARY_PATH="/usr/lib/mysql" /usr/lib/kodi/kodi.bin --standalone -fs
+    LD_LIBRARY_PATH="/usr/lib/mysql" /usr/lib/kodi/kodi.bin --standalone -fs -l /var/run/lirc/lircd 
     echo "Kodi process ended." >&2
     echo "EXIT" >> /var/run/kodi.msg # in case of normal, but mainly anormal end of kodi, send a message to signal the end
 )&
