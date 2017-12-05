@@ -1,0 +1,12 @@
+config BR2_PACKAGE_AMIBERRY
+        bool "amiberry"
+        select BR2_PACKAGE_SDL
+	select BR2_PACKAGE_SDL_IMAGE
+	select BR2_PACKAGE_SDL_GFX
+	select BR2_PACKAGE_SDL_TTF
+	select BR2_PACKAGE_MPG123
+	select BR2_PACKAGE_LIBXML2
+	select BR2_PACKAGE_LIBMPEG2
+	select BR2_PACKAGE_GUICHAN
+        help
+          An amiga emulator for arm

@@ -89,6 +89,7 @@ ln -s /recalbox/share/system/udev/rules.d/ /run/udev/
 # fixes
 XNEW=$(cat /recalbox/recalbox.version)
 XCUR=$(cat /recalbox/share/system/data.version)
+XARCH=$(cat /recalbox/recalbox.arch)
 test "${XCUR}" = "${XNEW}" && exit 0
 
 # retroarchcustom.cfg
@@ -116,6 +117,15 @@ retroarchcustom_fix_remove_param_value() {
     sed -i -e s+"^[ ]*${L_PARAM}[ ]*=[ ]*\"\?${L_VALUE}\"\?[ ]*$"+""+ "${L_CFG}"
 }
 
+recalboxconf_force_value() {
+    L_CFG="/recalbox/share/system/recalbox.conf"
+    L_PARAM=$1
+    L_VALUE=$2
+
+    grep -q "${L_PARAM}" "${L_CFG}" && return 0 # already set
+    echo "${L_PARAM}=${L_VALUE}" >> "${L_CFG}"
+}
+
 retroarchcustom_fix_force_param "video_font_path"             "/usr/share/fonts/dejavu/DejaVuSansMono.ttf"
 retroarchcustom_fix_force_param "menu_driver"                 "rgui"
 retroarchcustom_fix_force_param "menu_swap_ok_cancel_buttons" "true"
@@ -123,6 +133,21 @@ retroarchcustom_fix_force_param "menu_swap_ok_cancel_buttons" "true"
 retroarchcustom_fix_remove_param_value "video_driver"                "sdl2"  # don't use anymore this value while it doesn't allow the shaders to work
 retroarchcustom_fix_remove_param_value "video_black_frame_insertion" "true"  # don't use anymore this value while it doesn't allow the shaders to work
 retroarchcustom_fix_force_param        "pause_nonactive"             "false" # required at least on x86 x86_64 otherwise, the game is paused at launch
+
+# recalbox.conf
+if test "${XARCH}" == rpi1 -o "${XARCH}" == rpi2 -o "${XARCH}" == rpi3
+then
+    recalboxconf_force_value "amiga500.emulator" "amiberry"
+    recalboxconf_force_value "amiga500.core"     "A500"
+    recalboxconf_force_value "amiga500p.emulator" "amiberry"
+    recalboxconf_force_value "amiga500p.core"     "A500P"
+    recalboxconf_force_value "amiga1200.emulator" "amiberry"
+    recalboxconf_force_value "amiga1200.core"     "A1200"
+    recalboxconf_force_value "amiga4000.emulator" "amiberry"
+    recalboxconf_force_value "amiga4000.core"     "A4000"
+    recalboxconf_force_value "amigacd32.emulator" "amiberry"
+    recalboxconf_force_value "amigacd32.core"     "CD32"
+fi
 
 # save to avoid to redo that all the times
 cp /recalbox/recalbox.version /recalbox/share/system/data.version || exit 1

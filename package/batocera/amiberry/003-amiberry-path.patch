@@ -1,0 +1,61 @@
+diff --git a/src/osdep/pandora.cpp b/src/osdep/pandora.cpp
+index 2edfa0c..ca1d82a 100644
+--- a/src/osdep/pandora.cpp
++++ b/src/osdep/pandora.cpp
+@@ -329,7 +329,7 @@ void fetch_datapath(char *out, int size)
+ 
+ void fetch_saveimagepath(char *out, int size, int dir)
+ {
+-	strncpy(out, start_path_data, size);
++	strncpy(out, "/recalbox/share/saves/amiga", size);
+ 	strncat(out, "/savestates/", size);
+ }
+ 
+@@ -366,14 +366,14 @@ void fetch_rp9path(char *out, int size)
+ 
+ void fetch_savestatepath(char *out, int size)
+ {
+-	strncpy(out, start_path_data, size);
++	strncpy(out, "/recalbox/share/saves/amiga", size);
+ 	strncat(out, "/savestates/", size);
+ }
+ 
+ 
+ void fetch_screenshotpath(char *out, int size)
+ {
+-	strncpy(out, start_path_data, size);
++	strncpy(out, "/recalbox/share", size);
+ 	strncat(out, "/screenshots/", size);
+ }
+ 
+@@ -536,7 +536,7 @@ void saveAdfDir(void)
+ 	char path[MAX_DPATH];
+ 	int i;
+ 
+-	snprintf(path, MAX_DPATH, "%s/conf/adfdir.conf", start_path_data);
++	snprintf(path, MAX_DPATH, "%s/conf/adfdir.conf", "/recalbox/share/system/configs/amiberry");
+ 	FILE *f = fopen(path, "w");
+ 	if (!f)
+ 		return;
+@@ -603,10 +603,10 @@ void loadAdfDir(void)
+ 
+ 	strcpy(currentDir, start_path_data);
+ 	snprintf(config_path, MAX_DPATH, "%s/conf/", start_path_data);
+-	snprintf(rom_path, MAX_DPATH, "%s/kickstarts/", start_path_data);
++	snprintf(rom_path, MAX_DPATH, "/recalbox/share/bios/");
+ 	snprintf(rp9_path, MAX_DPATH, "%s/rp9/", start_path_data);
+ 
+-	snprintf(path, MAX_DPATH, "%s/conf/adfdir.conf", start_path_data);
++	snprintf(path, MAX_DPATH, "%s/conf/adfdir.conf", "/recalbox/share/system/configs/amiberry");
+ 	FILE *f1 = fopen(path, "rt");
+ 	if (f1)
+ 	{
+@@ -794,7 +794,7 @@ int main(int argc, char *argv[])
+ 	loadAdfDir();
+ 	rp9_init();
+ 
+-	snprintf(savestate_fname, MAX_PATH, "%s/saves/default.ads", start_path_data);
++	snprintf(savestate_fname, MAX_PATH, "%s/saves/default.ads", "/recalbox/share/saves/amiga");
+ 	logging_init();
+ 
+ 	memset(&action, 0, sizeof(action));

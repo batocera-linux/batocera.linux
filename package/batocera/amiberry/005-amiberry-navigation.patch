@@ -1,0 +1,296 @@
+diff --git a/src/cfgfile.cpp b/src/cfgfile.cpp
+index 0fc8451..59e9913 100644
+--- a/src/cfgfile.cpp
++++ b/src/cfgfile.cpp
+@@ -890,6 +890,7 @@ void cfgfile_save_options(struct zfile *f, struct uae_prefs *p, int type)
+ 	cfgfile_write(f, _T("key_for_quit"), _T("%d"), p->key_for_quit);
+ 	cfgfile_write(f, _T("button_for_menu"), _T("%d"), p->button_for_menu);
+ 	cfgfile_write(f, _T("button_for_quit"), _T("%d"), p->button_for_quit);
++	cfgfile_write(f, _T("button_for_hotkey"), _T("%d"), p->button_for_hotkey);
+ 
+ 	cfgfile_write(f, _T("gfx_framerate"), _T("%d"), p->gfx_framerate);
+ 	write_resolution(f, _T("gfx_width"), _T("gfx_height"), &p->gfx_size); /* compatibility with old versions */
+@@ -1527,6 +1528,9 @@ static int cfgfile_parse_host(struct uae_prefs *p, TCHAR *option, TCHAR *value)
+ 
+ 	if (cfgfile_intval(option, value, "button_for_quit", &p->button_for_quit, 1))
+ 		return 1;
++
++	if (cfgfile_intval(option, value, "button_for_hotkey", &p->button_for_hotkey, 1))
++	  return 1;
+ 	
+ 	if (_tcscmp(option, _T("gfx_width_windowed")) == 0) {
+ 		if (!_tcscmp(value, _T("native"))) {
+@@ -3856,6 +3860,7 @@ void default_prefs(struct uae_prefs *p, int type)
+ 	p->key_for_quit = 0;
+ 	p->button_for_menu = -1;
+ 	p->button_for_quit = -1;
++	p->button_for_hotkey = -1;
+ 
+ 	inputdevice_default_prefs(p);
+ 	blkdev_default_prefs(p);
+diff --git a/src/include/options.h b/src/include/options.h
+index 1efe1c1..4994029 100644
+--- a/src/include/options.h
++++ b/src/include/options.h
+@@ -243,6 +243,7 @@ struct uae_prefs {
+   int key_for_quit;
+   int button_for_menu;
+   int button_for_quit;
++  int button_for_hotkey;
+ 
+   /* input */
+ 
+diff --git a/src/osdep/gui/Navigation.cpp b/src/osdep/gui/Navigation.cpp
+index 1f6d0cf..92c319f 100644
+--- a/src/osdep/gui/Navigation.cpp
++++ b/src/osdep/gui/Navigation.cpp
+@@ -11,6 +11,9 @@
+ #include "config.h"
+ #include "gui_handling.h"
+ 
++#include "options.h"
++#include "uae.h"
++
+ typedef struct
+ {
+     std::string activeWidget;
+@@ -20,7 +23,6 @@ typedef struct
+     std::string downWidget;
+ } NavigationMap;
+ 
+-
+ static NavigationMap navMap[] =
+ {
+ //  active              move left         move right        move up             move down
+@@ -330,3 +332,57 @@ bool HandleNavigation(int direction)
+         focusTarget->requestFocus();
+     return (focusTarget != NULL);
+ }
++
++void handleNavigationJoystick_down(SDL_Event* event, int* btn_hotkey) {
++  // button ok
++  if (currprefs.button_for_menu != -1 && event->jbutton.button == currprefs.button_for_menu && *btn_hotkey == 0) {
++    event->type = SDL_KEYDOWN;
++    event->key.keysym.sym = SDLK_RETURN;
++    event->key.keysym.mod = KMOD_NONE;
++    gui_input->pushInput(*event); // Fire key down
++    event->type = SDL_KEYUP;  // and the key up
++  }
++
++  // button menu+hotkey
++  if (currprefs.button_for_menu != -1 && event->jbutton.button == currprefs.button_for_menu && *btn_hotkey == 1) {
++    *btn_hotkey = 0;
++    gui_running = false;
++  }
++
++  // button quit+hotkey
++  if (currprefs.button_for_quit != -1 && event->jbutton.button == currprefs.button_for_quit && *btn_hotkey == 1) {
++    *btn_hotkey = 0;
++
++    gcn::FocusHandler* focusHdl;
++    gcn::Widget* activeWidget;
++    focusHdl = gui_top->_getFocusHandler();
++    activeWidget = focusHdl->getFocused();
++    if(dynamic_cast<gcn::TextField*>(activeWidget) == NULL)
++      {
++	// ...but only if we are not in a Textfield...
++	uae_quit();
++	gui_running = false;
++      }
++  }
++
++  // button hotkey
++  if (currprefs.button_for_hotkey != -1 && event->jbutton.button == currprefs.button_for_hotkey)
++    *btn_hotkey = 1;
++}
++
++void handleNavigationJoystick_hat(SDL_Event event) {
++  switch(event.jhat.value) {
++  case SDL_HAT_UP:
++    HandleNavigation(DIRECTION_UP);
++    break;
++  case SDL_HAT_DOWN:
++    HandleNavigation(DIRECTION_DOWN);
++    break;
++  case SDL_HAT_LEFT:
++    HandleNavigation(DIRECTION_LEFT);
++    break;
++  case SDL_HAT_RIGHT:
++    HandleNavigation(DIRECTION_RIGHT);
++    break;
++  }
++}
+diff --git a/src/osdep/gui/SelectFile.cpp b/src/osdep/gui/SelectFile.cpp
+index a762103..5c5134b 100644
+--- a/src/osdep/gui/SelectFile.cpp
++++ b/src/osdep/gui/SelectFile.cpp
+@@ -14,7 +14,7 @@
+ #include "fsdb.h"
+ #include "gui.h"
+ #include "gui_handling.h"
+-
++#include "options.h"
+ 
+ #define DIALOG_WIDTH 520
+ #define DIALOG_HEIGHT 400
+@@ -339,6 +339,45 @@ static void SelectFileLoop(void)
+ 				}
+ 			}
+ 
++			else if (event.type == SDL_JOYBUTTONDOWN) {
++			  // button ok
++			  if (currprefs.button_for_menu != -1 && event.jbutton.button == currprefs.button_for_menu) {
++			    event.type = SDL_KEYDOWN;
++			    event.key.keysym.sym = SDLK_RETURN;
++			    event.key.keysym.mod = KMOD_NONE;
++			    gui_input->pushInput(event); // Fire key down
++			    event.type = SDL_KEYUP;  // and the key up
++			  }
++
++			  // hotkey
++			  if (currprefs.button_for_quit != -1 && event.jbutton.button == currprefs.button_for_quit) {
++			    dialogFinished = true;
++			  }
++
++			}
++
++			else if(event.type == SDL_JOYHATMOTION) {
++			  switch(event.jhat.value) {
++			  case SDL_HAT_UP:
++			    event.key.keysym.sym = SDLK_UP;
++			    break;
++			  case SDL_HAT_DOWN:
++			    event.key.keysym.sym = SDLK_DOWN;
++			    break;
++			  case SDL_HAT_LEFT:
++			    event.key.keysym.sym = SDLK_TAB;
++			    break;
++			  case SDL_HAT_RIGHT:
++			    event.key.keysym.sym = SDLK_TAB;
++			    break;
++			  }
++
++			  event.type = SDL_KEYDOWN;
++			  event.key.keysym.mod = KMOD_NONE;
++			  gui_input->pushInput(event); // Fire key down
++			  event.type = SDL_KEYUP;  // and the key up
++			}
++
+ 			            //-------------------------------------------------
+ 			            // Send event to guichan-controls
+ 			            //-------------------------------------------------
+diff --git a/src/osdep/gui/SelectFolder.cpp b/src/osdep/gui/SelectFolder.cpp
+index b24486b..5ad08ec 100644
+--- a/src/osdep/gui/SelectFolder.cpp
++++ b/src/osdep/gui/SelectFolder.cpp
+@@ -191,6 +191,8 @@ static void ExitSelectFolder(void)
+ 
+ static void SelectFolderLoop(void)
+ {
++  static int btn_hotkey = 0;
++
+ 	while (!dialogFinished)
+ 	{
+ 		SDL_Event event;
+@@ -241,6 +243,15 @@ static void SelectFolderLoop(void)
+ 				}
+ 			}
+ 
++			else if (event.type == SDL_JOYBUTTONDOWN) {
++			  handleNavigationJoystick_down(&event, &btn_hotkey);
++			}
++
++			else if(event.type == SDL_JOYHATMOTION) {
++			  handleNavigationJoystick_hat(event);
++			}
++
++
+ 			            //-------------------------------------------------
+ 			            // Send event to guichan-controls
+ 			            //-------------------------------------------------
+diff --git a/src/osdep/gui/gui_handling.h b/src/osdep/gui/gui_handling.h
+index a32d3fd..0561d3b 100644
+--- a/src/osdep/gui/gui_handling.h
++++ b/src/osdep/gui/gui_handling.h
+@@ -112,6 +112,8 @@ extern void FilterFiles(std::vector<std::string> *files, const char *filter[]);
+ 
+ enum { DIRECTION_NONE, DIRECTION_UP, DIRECTION_DOWN, DIRECTION_LEFT, DIRECTION_RIGHT };
+ bool HandleNavigation(int direction);
++void handleNavigationJoystick_down(SDL_Event* event, int* btn_hotkey);
++void handleNavigationJoystick_hat(SDL_Event event);
+ 
+ #define MAX_HD_DEVICES 5
+ extern void CreateDefaultDevicename(char *name);
+diff --git a/src/osdep/gui/main_window.cpp b/src/osdep/gui/main_window.cpp
+index 386bb85..ec004d8 100644
+--- a/src/osdep/gui/main_window.cpp
++++ b/src/osdep/gui/main_window.cpp
+@@ -168,6 +168,8 @@ namespace sdl
+ 
+ 	void gui_run()
+ 	{
++	  static int btn_hotkey = 0;
++
+ 		//-------------------------------------------------
+ 		// The main loop
+ 		//-------------------------------------------------
+@@ -189,6 +191,19 @@ namespace sdl
+ 					break;
+ 				}
+ 
++				else if (event.type == SDL_JOYBUTTONDOWN) {
++				  handleNavigationJoystick_down(&event, &btn_hotkey);
++				}
++
++				else if(event.type == SDL_JOYHATMOTION) {
++				  handleNavigationJoystick_hat(event);
++				}
++
++				else if (event.type == SDL_JOYBUTTONUP) {
++				  if (currprefs.button_for_hotkey != -1 && event.jbutton.button == currprefs.button_for_hotkey)
++				    btn_hotkey = 0;
++				}
++
+ 				else if (event.type == SDL_KEYDOWN)
+ 				{
+ 					gcn::FocusHandler* focusHdl;
+diff --git a/src/osdep/pandora.cpp b/src/osdep/pandora.cpp
+index d16db49..86acfe3 100644
+--- a/src/osdep/pandora.cpp
++++ b/src/osdep/pandora.cpp
+@@ -863,6 +863,7 @@ int handle_msgpump(void)
+ 	int modifier;
+ 	int handled = 0;
+ 	int i;
++	static int btn_hotkey = 0;
+ 	
+ 	if (delayed_mousebutton)
+ 	{
+@@ -883,11 +884,22 @@ int handle_msgpump(void)
+ 			break;
+ 
+ 		case SDL_JOYBUTTONDOWN:
+-			if (currprefs.button_for_menu != -1 && rEvent.jbutton.button == currprefs.button_for_menu)
+-				inputdevice_add_inputcode(AKS_ENTERGUI, 1);
+-			if (currprefs.button_for_quit != -1 && rEvent.jbutton.button == currprefs.button_for_quit)
+-				inputdevice_add_inputcode(AKS_QUIT, 1);
+-			break;
++		  if (currprefs.button_for_menu != -1 && rEvent.jbutton.button == currprefs.button_for_menu && btn_hotkey == 1) {
++		    btn_hotkey = 0;
++		    inputdevice_add_inputcode(AKS_ENTERGUI, 1);
++		  }
++		  if (currprefs.button_for_quit != -1 && rEvent.jbutton.button == currprefs.button_for_quit && btn_hotkey == 1) {
++		    btn_hotkey = 0;
++		    inputdevice_add_inputcode(AKS_QUIT, 1);
++		  }
++		  if (currprefs.button_for_hotkey != -1 && rEvent.jbutton.button == currprefs.button_for_hotkey)
++		    btn_hotkey = 1;
++		  break;
++
++		case SDL_JOYBUTTONUP:
++		  if (currprefs.button_for_hotkey != -1 && rEvent.jbutton.button == currprefs.button_for_hotkey)
++		    btn_hotkey = 0;
++		  break;
+ 	        
+ 		case SDL_KEYDOWN:
+ 			if (currprefs.key_for_menu != 0 && rEvent.key.keysym.sym == currprefs.key_for_menu)

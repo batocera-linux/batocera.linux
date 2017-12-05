@@ -1,0 +1,9 @@
+config BR2_PACKAGE_GUICHAN
+	bool "guichan"
+        select BR2_PACKAGE_SDL
+	help
+	  GUICHAN c++ library
+
+	  http://sourceforge.net/projects/guichan/
+
+comment "guichan"

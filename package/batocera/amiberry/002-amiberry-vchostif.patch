@@ -1,0 +1,13 @@
+diff --git a/Makefile b/Makefile
+index 822b48e..80a83ea 100644
+--- a/Makefile
++++ b/Makefile
+@@ -43,7 +43,7 @@ MORE_CFLAGS += -Wno-unused -Wno-format -DGCCCONSTFUNC="__attribute__((const))"
+ MORE_CFLAGS += -fexceptions -fpermissive
+ 
+ LDFLAGS += -lSDL -lpthread -lm -lz -lSDL_image -lpng -lrt -lxml2 -lFLAC -lmpg123 -ldl
+-LDFLAGS += -lSDL_ttf -lguichan_sdl -lguichan -lbcm_host -L/opt/vc/lib 
++LDFLAGS += -lSDL_ttf -lguichan_sdl -lguichan -lbcm_host -lvchostif -L/opt/vc/lib
+ 
+ ifndef DEBUG
+ MORE_CFLAGS += -Ofast -pipe

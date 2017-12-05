@@ -1,0 +1,14 @@
+diff --git a/Makefile b/Makefile
+index 822b48e..5ec6bf5 100644
+--- a/Makefile
++++ b/Makefile
+@@ -29,7 +29,8 @@ PANDORA=1
+ #GEN_PROFILE=1
+ #USE_PROFILE=1
+ 
+-SDL_CFLAGS = `sdl-config --cflags`
++SDL_CONFIG ?= sdl-config
++SDL_CFLAGS = $(shell $(SDL_CONFIG) --cflags)
+ 
+ DEFS +=  `xml2-config --cflags`
+ DEFS += -DCPU_arm -DARMV6_ASSEMBLY -DPANDORA -DPICASSO96
