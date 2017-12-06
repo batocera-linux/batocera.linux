@@ -1,6 +1,7 @@
 config BR2_PACKAGE_GUICHAN
 	bool "guichan"
         select BR2_PACKAGE_SDL
+	select BR2_PACKAGE_SDL_IMAGE
 	help
 	  GUICHAN c++ library
 

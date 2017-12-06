@@ -13,7 +13,7 @@ GUICHAN_SITE = http://pkgs.fedoraproject.org/repo/pkgs/guichan/guichan-$(GUICHAN
 #http://guichan.sourceforge.net/wiki/
 
 GUICHAN_LICENSE = BSD
-GUICHAN_DEPENDENCIES = sdl
+GUICHAN_DEPENDENCIES = sdl sdl_image
 
 GUICHAN_INSTALL_STAGING = YES
 
