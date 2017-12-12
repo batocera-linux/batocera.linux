@@ -1,0 +1,13 @@
+Index: gpu-r6p1/ump/common/ump_kernel_api.c
+===================================================================
+--- gpu-r6p1.orig/ump/common/ump_kernel_api.c	2016-04-06 14:10:31.000000000 +0800
++++ gpu-r6p1/ump/common/ump_kernel_api.c	2016-04-19 15:32:23.891911801 +0800
+@@ -284,7 +284,7 @@
+ 		    (ump_secure_id)args->secure_id, args->op, args->address, args->mapping));
+ 
+ 	if (args->address) {
+-		virtual = (void *)((u32)args->address);
++		virtual = (void *)((uintptr_t)args->address);
+ 		offset = (u32)((args->address) - (args->mapping));
+ 	} else {
+ 		/* Flush entire mapping when no address is specified. */

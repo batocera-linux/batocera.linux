@@ -1,0 +1,12 @@
+Index: gpu-r6p1/mali/Kconfig
+===================================================================
+--- gpu-r6p1.orig/mali/Kconfig	2016-04-06 14:10:31.000000000 +0800
++++ gpu-r6p1/mali/Kconfig	2016-04-19 15:32:23.911911801 +0800
+@@ -55,6 +55,7 @@
+ config MALI400_UMP
+ 	bool "Enable UMP support"
+ 	depends on MALI400
++	default n
+ 	---help---
+ 	  This enables support for the UMP memory sharing API in the Mali driver.
+ 

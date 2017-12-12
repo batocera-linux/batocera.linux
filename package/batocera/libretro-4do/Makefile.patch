@@ -1,0 +1,13 @@
+--- a/Makefile	2017-12-12 15:38:01.094533115 +0800
++++ b/Makefile	2017-12-12 15:37:43.382532362 +0800
+@@ -60,6 +60,10 @@
+             CFLAGS = -mcpu=cortex-a53
+         endif
+ 
++    # Amlogic S905
++    else ifneq (,$(findstring s905,$(platform)))
++        CFLAGS = -mcpu=cortex-a53
++
+ 	# ODROIDs
+     else ifneq (,$(findstring odroid,$(platform)))
+         CFLAGS += -fomit-frame-pointer -ffast-math -DARM -marm -mfloat-abi=hard
