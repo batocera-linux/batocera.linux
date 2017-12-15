@@ -1,10 +1,10 @@
 diff --git a/drivers/hid/usbhid/hid-quirks.c b/drivers/hid/usbhid/hid-quirks.c
-index d01f668..91e0b41 100644
+index e6cfd32..7aa0ff0 100644
 --- a/drivers/hid/usbhid/hid-quirks.c
 +++ b/drivers/hid/usbhid/hid-quirks.c
-@@ -122,6 +122,53 @@ static const struct hid_blacklist {
- 	{ USB_VENDOR_ID_SYNAPTICS, USB_DEVICE_ID_SYNAPTICS_LTS2, HID_QUIRK_NO_INIT_REPORTS },
- 	{ USB_VENDOR_ID_SIS, USB_DEVICE_ID_SIS_TS, HID_QUIRK_NO_INIT_REPORTS },
+@@ -163,6 +163,53 @@ static const struct hid_blacklist {
+ 	{ USB_VENDOR_ID_DRACAL_RAPHNET, USB_DEVICE_ID_RAPHNET_2NES2SNES, HID_QUIRK_MULTI_INPUT },
+ 	{ USB_VENDOR_ID_DRACAL_RAPHNET, USB_DEVICE_ID_RAPHNET_4NES4SNES, HID_QUIRK_MULTI_INPUT },
  
 +// Juyao
 +	{ 0x0314,0x0326,0x040 },

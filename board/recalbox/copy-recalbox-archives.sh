@@ -141,7 +141,7 @@ case "${RECALBOX_TARGET}" in
 	else
 	    cp "${BINARIES_DIR}/rootfs.squashfs" "${BINARIES_DIR}/boot/boot/recalbox.update" || exit 1
 	fi
-	cp "${BINARIES_DIR}/exynos5422-odroidxu3.dtb" "${BINARIES_DIR}/boot/boot/exynos5422-odroidxu3.dtb" || exit 1
+	cp "${BINARIES_DIR}/exynos5422-odroidxu4.dtb" "${BINARIES_DIR}/boot/boot/exynos5422-odroidxu4.dtb" || exit 1
 	cp "${BINARIES_DIR}/recalbox-boot.conf" "${BINARIES_DIR}/boot/recalbox-boot.conf"                  || exit 1
 
 	# boot.tar.xz

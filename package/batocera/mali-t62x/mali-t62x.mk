@@ -5,12 +5,12 @@
 #
 ################################################################################
 
-MALI_T62X_VERSION = malit62xr12p004rel0linux1fbdev
-MALI_T62X_SOURCE = malit62xr12p004rel0linux1fbdev.tar.gz
+MALI_T62X_VERSION = malit62xr12p004rel0linux1wayland
+MALI_T62X_SOURCE = malit62xr12p004rel0linux1wayland.tar.gz
 MALI_T62X_SITE = https://developer.arm.com/-/media/Files/downloads/mali-drivers/user-space/odroid-xu3
 
 MALI_T62X_INSTALL_STAGING = YES
-MALI_T62X_DEPENDENCIES = mali-opengles-sdk
+MALI_T62X_DEPENDENCIES = mali-opengles-sdk wayland mesa3d
 MALI_T62X_PROVIDES = libegl libgles
 
 MALI_T62X_TARGET_DIR=$(TARGET_DIR)/usr/lib
