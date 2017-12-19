@@ -4,9 +4,23 @@
 #
 ################################################################################
 
-GLIBC_VERSION = 2.25
-GLIBC_SITE = $(BR2_GNU_MIRROR)/libc
-GLIBC_SOURCE = glibc-$(GLIBC_VERSION).tar.xz
+ifeq ($(BR2_arc),y)
+GLIBC_VERSION =  arc-2017.09-release
+GLIBC_SITE = $(call github,foss-for-synopsys-dwc-arc-processors,glibc,$(GLIBC_VERSION))
+GLIBC_SOURCE = glibc-$(GLIBC_VERSION).tar.gz
+else
+# Generate version string using:
+#   git describe --match 'glibc-*' --abbrev=40 origin/release/MAJOR.MINOR/master
+GLIBC_VERSION = glibc-2.26-73-g4b692dffb95ac4812b161eb6a16113d7e824982e
+# Upstream doesn't officially provide an https download link.
+# There is one (https://sourceware.org/git/glibc.git) but it's not reliable,
+# sometimes the connection times out. So use an unofficial github mirror.
+# When updating the version, check it on the official repository;
+# *NEVER* decide on a version string by looking at the mirror.
+# Then check that the mirror has been synced already (happens once a day.)
+GLIBC_SITE = $(call github,bminor,glibc,$(GLIBC_VERSION))
+endif
+
 GLIBC_SRC_SUBDIR = .
 
 GLIBC_LICENSE = GPL-2.0+ (programs), LGPL-2.1+, BSD-3-Clause, MIT (library)
@@ -113,35 +127,5 @@ define GLIBC_INSTALL_TARGET_CMDS
 		$(call copy_toolchain_lib_root,$$libpattern) ; \
 	done
 endef
-
-# MIPS R6 requires to have NaN2008 support which is currently not
-# supported by the Linux kernel. In order to prevent building the
-# glibc against kernels not having NaN2008 support on platforms that
-# requires it, glibc currently checks for an (inexisting) 10.0.0
-# kernel headers version.
-#
-# Since in practice the kernel support for NaN2008 is not really
-# required for things to work properly, we adjust the glibc check to
-# make it believe that NaN2008 support was added in the kernel
-# starting from version 4.0.0.
-#
-# In general the compatibility issues introduced by mis-matched NaN
-# encodings will not cause a problem as signalling NaNs are rarely used
-# in average code. For MIPS R6 there isn't actually any compatibility
-# issue as the hardware is always NaN2008 and software is always
-# NaN2008. The problem only comes from when older MIPS code is linked in
-# via a DSO and multiple NaN encodings are introduced. Since Buildroot
-# is intended to have all code built from source then this scenario is
-# highly unlikely. The failure mode, if it ever occurs, would be either
-# that a signalling NaN fails to raise an invalid operation exception or
-# (more likely) an ordinary NaN raises an invalid operation exception.
-ifeq ($(BR2_MIPS_CPU_MIPS32R6)$(BR2_MIPS_CPU_MIPS64R6),y)
-define GLIBC_FIX_MIPS_R6
-	$(SED) 's#10.0.0#4.0.0#' \
-		$(@D)/sysdeps/unix/sysv/linux/mips/configure \
-		$(@D)/sysdeps/unix/sysv/linux/mips/configure.ac
-endef
-GLIBC_POST_EXTRACT_HOOKS += GLIBC_FIX_MIPS_R6
-endif
 
 $(eval $(autotools-package))

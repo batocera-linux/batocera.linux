@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-SHAIRPORT_SYNC_VERSION = 3.0.2
+SHAIRPORT_SYNC_VERSION = 3.1.4
 SHAIRPORT_SYNC_SITE = $(call github,mikebrady,shairport-sync,$(SHAIRPORT_SYNC_VERSION))
 
 SHAIRPORT_SYNC_LICENSE = MIT, BSD-3-Clause
@@ -18,6 +18,8 @@ SHAIRPORT_SYNC_CONF_OPTS = --with-alsa \
 	--with-metadata \
 	--with-pipe \
 	--with-stdout
+
+SHAIRPORT_SYNC_CONF_ENV += LIBS="$(SHAIRPORT_SYNC_CONF_LIBS)"
 
 # Avahi or tinysvcmdns (shaiport-sync bundles its own version of tinysvcmdns).
 # Avahi support needs libavahi-client, which is built by avahi if avahi-daemon
@@ -38,6 +40,10 @@ SHAIRPORT_SYNC_CONF_OPTS += --with-ssl=openssl
 else
 SHAIRPORT_SYNC_DEPENDENCIES += mbedtls
 SHAIRPORT_SYNC_CONF_OPTS += --with-ssl=mbedtls
+SHAIRPORT_SYNC_CONF_LIBS += -lmbedx509 -lmbedcrypto
+ifeq ($(BR2_PACKAGE_MBEDTLS_COMPRESSION),y)
+SHAIRPORT_SYNC_CONF_LIBS += -lz
+endif
 endif
 
 ifeq ($(BR2_PACKAGE_SHAIRPORT_SYNC_LIBSOXR),y)

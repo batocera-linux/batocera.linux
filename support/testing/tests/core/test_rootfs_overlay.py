@@ -3,17 +3,20 @@ import subprocess
 
 import infra.basetest
 
+
 def compare_file(file1, file2):
     return subprocess.call(["cmp", file1, file2])
+
 
 class TestRootfsOverlay(infra.basetest.BRTest):
 
     rootfs_overlay_path = infra.filepath("tests/core/rootfs-overlay")
-    rootfs_overlay = "BR2_ROOTFS_OVERLAY=\"{0}1 {0}2\"".format(rootfs_overlay_path)
 
     config = infra.basetest.BASIC_TOOLCHAIN_CONFIG + \
-            infra.basetest.MINIMAL_CONFIG + \
-            rootfs_overlay
+        infra.basetest.MINIMAL_CONFIG + \
+        """
+        BR2_ROOTFS_OVERLAY="{0}1 {0}2"
+        """.format(rootfs_overlay_path)
 
     def test_run(self):
         target_file = os.path.join(self.builddir, "target", "test-file1")

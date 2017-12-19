@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-LIBCURL_VERSION = 7.55.0
+LIBCURL_VERSION = 7.57.0
 LIBCURL_SOURCE = curl-$(LIBCURL_VERSION).tar.xz
 LIBCURL_SITE = https://curl.haxx.se/download
 LIBCURL_DEPENDENCIES = host-pkgconf \
@@ -21,6 +21,12 @@ LIBCURL_INSTALL_STAGING = YES
 # http://curl.haxx.se/docs/manpage.html#--ntlm.
 LIBCURL_CONF_OPTS = --disable-manual --disable-ntlm-wb \
 	--enable-hidden-symbols --with-random=/dev/urandom --disable-curldebug
+
+ifeq ($(BR2_TOOLCHAIN_HAS_THREADS),y)
+LIBCURL_CONF_OPTS += --enable-threaded-resolver
+else
+LIBCURL_CONF_OPTS += --disable-threaded-resolver
+endif
 
 ifeq ($(BR2_PACKAGE_LIBCURL_VERBOSE),y)
 LIBCURL_CONF_OPTS += --enable-verbose

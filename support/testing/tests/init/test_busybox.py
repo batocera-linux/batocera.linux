@@ -1,17 +1,17 @@
 import infra.basetest
 from tests.init.base import InitSystemBase as InitSystemBase
 
+
 class InitSystemBusyboxBase(InitSystemBase):
     config = infra.basetest.BASIC_TOOLCHAIN_CONFIG + \
         """
         # BR2_TARGET_ROOTFS_TAR is not set
         """
 
-    def checkInit(self):
-        super(InitSystemBusyboxBase, self).checkInit("/bin/busybox")
+    def check_init(self):
+        super(InitSystemBusyboxBase, self).check_init("/bin/busybox")
 
 
-#-------------------------------------------------------------------------------
 class TestInitSystemBusyboxRo(InitSystemBusyboxBase):
     config = InitSystemBusyboxBase.config + \
         """
@@ -20,12 +20,11 @@ class TestInitSystemBusyboxRo(InitSystemBusyboxBase):
         """
 
     def test_run(self):
-        self.startEmulator("squashfs")
-        self.checkInit()
-        self.checkNetwork("eth0", 1)
+        self.start_emulator("squashfs")
+        self.check_init()
+        self.check_network("eth0", 1)
 
 
-#-------------------------------------------------------------------------------
 class TestInitSystemBusyboxRw(InitSystemBusyboxBase):
     config = InitSystemBusyboxBase.config + \
         """
@@ -33,12 +32,11 @@ class TestInitSystemBusyboxRw(InitSystemBusyboxBase):
         """
 
     def test_run(self):
-        self.startEmulator("ext2")
-        self.checkInit()
-        self.checkNetwork("eth0", 1)
+        self.start_emulator("ext2")
+        self.check_init()
+        self.check_network("eth0", 1)
 
 
-#-------------------------------------------------------------------------------
 class TestInitSystemBusyboxRoNet(InitSystemBusyboxBase):
     config = InitSystemBusyboxBase.config + \
         """
@@ -48,12 +46,11 @@ class TestInitSystemBusyboxRoNet(InitSystemBusyboxBase):
         """
 
     def test_run(self):
-        self.startEmulator("squashfs")
-        self.checkInit()
-        self.checkNetwork("eth0")
+        self.start_emulator("squashfs")
+        self.check_init()
+        self.check_network("eth0")
 
 
-#-------------------------------------------------------------------------------
 class TestInitSystemBusyboxRwNet(InitSystemBusyboxBase):
     config = InitSystemBusyboxBase.config + \
         """
@@ -62,6 +59,6 @@ class TestInitSystemBusyboxRwNet(InitSystemBusyboxBase):
         """
 
     def test_run(self):
-        self.startEmulator("ext2")
-        self.checkInit()
-        self.checkNetwork("eth0")
+        self.start_emulator("ext2")
+        self.check_init()
+        self.check_network("eth0")

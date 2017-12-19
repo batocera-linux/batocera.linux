@@ -12,6 +12,7 @@ RESBLKCNT_PROP = "Reserved block count"
 
 CHECK_FS_TYPE_CMD = "mount | grep '/dev/root on / type {}'"
 
+
 def dumpe2fs_run(builddir, image):
     cmd = ["host/sbin/dumpe2fs", os.path.join("images", image)]
     ret = subprocess.check_output(cmd,
@@ -20,11 +21,13 @@ def dumpe2fs_run(builddir, image):
                                   env={"LANG": "C"})
     return ret.strip().splitlines()
 
+
 def dumpe2fs_getprop(out, prop):
     for line in out:
         fields = line.split(": ")
         if fields[0] == prop:
             return fields[1].strip()
+
 
 def boot_img_and_check_fs_type(emulator, builddir, fs_type):
     img = os.path.join(builddir, "images", "rootfs.{}".format(fs_type))
@@ -37,14 +40,15 @@ def boot_img_and_check_fs_type(emulator, builddir, fs_type):
     _, exit_code = emulator.run(CHECK_FS_TYPE_CMD.format(fs_type))
     return exit_code
 
+
 class TestExt2(infra.basetest.BRTest):
     config = infra.basetest.BASIC_TOOLCHAIN_CONFIG + \
-"""
-BR2_TARGET_ROOTFS_EXT2=y
-BR2_TARGET_ROOTFS_EXT2_2r0=y
-BR2_TARGET_ROOTFS_EXT2_LABEL="foobaz"
-# BR2_TARGET_ROOTFS_TAR is not set
-"""
+        """
+        BR2_TARGET_ROOTFS_EXT2=y
+        BR2_TARGET_ROOTFS_EXT2_2r0=y
+        BR2_TARGET_ROOTFS_EXT2_LABEL="foobaz"
+        # BR2_TARGET_ROOTFS_TAR is not set
+        """
 
     def test_run(self):
         out = dumpe2fs_run(self.builddir, "rootfs.ext2")
@@ -55,14 +59,15 @@ BR2_TARGET_ROOTFS_EXT2_LABEL="foobaz"
                                                self.builddir, "ext2")
         self.assertEqual(exit_code, 0)
 
+
 class TestExt2r1(infra.basetest.BRTest):
     config = infra.basetest.BASIC_TOOLCHAIN_CONFIG + \
-"""
-BR2_TARGET_ROOTFS_EXT2=y
-BR2_TARGET_ROOTFS_EXT2_2r1=y
-BR2_TARGET_ROOTFS_EXT2_LABEL="foobar"
-# BR2_TARGET_ROOTFS_TAR is not set
-"""
+        """
+        BR2_TARGET_ROOTFS_EXT2=y
+        BR2_TARGET_ROOTFS_EXT2_2r1=y
+        BR2_TARGET_ROOTFS_EXT2_LABEL="foobar"
+        # BR2_TARGET_ROOTFS_TAR is not set
+        """
 
     def test_run(self):
         out = dumpe2fs_run(self.builddir, "rootfs.ext2")
@@ -74,13 +79,14 @@ BR2_TARGET_ROOTFS_EXT2_LABEL="foobar"
                                                self.builddir, "ext2")
         self.assertEqual(exit_code, 0)
 
+
 class TestExt3(infra.basetest.BRTest):
     config = infra.basetest.BASIC_TOOLCHAIN_CONFIG + \
-"""
-BR2_TARGET_ROOTFS_EXT2=y
-BR2_TARGET_ROOTFS_EXT2_3=y
-# BR2_TARGET_ROOTFS_TAR is not set
-"""
+        """
+        BR2_TARGET_ROOTFS_EXT2=y
+        BR2_TARGET_ROOTFS_EXT2_3=y
+        # BR2_TARGET_ROOTFS_TAR is not set
+        """
 
     def test_run(self):
         out = dumpe2fs_run(self.builddir, "rootfs.ext3")
@@ -92,16 +98,17 @@ BR2_TARGET_ROOTFS_EXT2_3=y
                                                self.builddir, "ext3")
         self.assertEqual(exit_code, 0)
 
+
 class TestExt4(infra.basetest.BRTest):
     config = infra.basetest.BASIC_TOOLCHAIN_CONFIG + \
-"""
-BR2_TARGET_ROOTFS_EXT2=y
-BR2_TARGET_ROOTFS_EXT2_4=y
-BR2_TARGET_ROOTFS_EXT2_SIZE="16384"
-BR2_TARGET_ROOTFS_EXT2_INODES=3000
-BR2_TARGET_ROOTFS_EXT2_RESBLKS=10
-# BR2_TARGET_ROOTFS_TAR is not set
-"""
+        """
+        BR2_TARGET_ROOTFS_EXT2=y
+        BR2_TARGET_ROOTFS_EXT2_4=y
+        BR2_TARGET_ROOTFS_EXT2_SIZE="16384"
+        BR2_TARGET_ROOTFS_EXT2_INODES=3000
+        BR2_TARGET_ROOTFS_EXT2_RESBLKS=10
+        # BR2_TARGET_ROOTFS_TAR is not set
+        """
 
     def test_run(self):
         out = dumpe2fs_run(self.builddir, "rootfs.ext4")
@@ -116,5 +123,3 @@ BR2_TARGET_ROOTFS_EXT2_RESBLKS=10
         exit_code = boot_img_and_check_fs_type(self.emulator,
                                                self.builddir, "ext4")
         self.assertEqual(exit_code, 0)
-
-

@@ -18,9 +18,9 @@ GCC_SITE = $(call github,openrisc,or1k-gcc,$(GCC_VERSION))
 GCC_SOURCE = gcc-$(GCC_VERSION).tar.gz
 else
 GCC_SITE = $(BR2_GNU_MIRROR:/=)/gcc/gcc-$(GCC_VERSION)
-# From version 6.4.0 and 7.2.0 a bz2 release tarball is not provided
-# anymore. Use the xz tarball instead.
-ifeq ($(BR2_GCC_VERSION_6_X)$(BR2_GCC_VERSION_7_X),y)
+# From version 5.5.0, 6.4.0 and 7.2.0 a bz2 release tarball is not
+# provided anymore. Use the xz tarball instead.
+ifeq ($(BR2_GCC_VERSION_5_X)$(BR2_GCC_VERSION_6_X)$(BR2_GCC_VERSION_7_X),y)
 GCC_SOURCE = gcc-$(GCC_VERSION).tar.xz
 else
 GCC_SOURCE = gcc-$(GCC_VERSION).tar.bz2
@@ -252,6 +252,14 @@ ifeq ($(BR2_TOOLCHAIN_USES_MUSL)$(BR2_powerpc64),yy)
 HOST_GCC_COMMON_CONF_OPTS += \
 	--with-abi=elfv2 \
 	--without-long-double-128
+endif
+
+# Since glibc >= 2.26, poerpc64le requires double/long double which
+# requires at least gcc 6.2.
+# See sysdeps/powerpc/powerpc64le/configure.ac
+ifeq ($(BR2_TOOLCHAIN_USES_GLIBC)$(BR2_TOOLCHAIN_GCC_AT_LEAST_6)$(BR2_powerpc64le),yyy)
+HOST_GCC_COMMON_CONF_OPTS += \
+	--with-long-double-128
 endif
 
 HOST_GCC_COMMON_TOOLCHAIN_WRAPPER_ARGS += -DBR_CROSS_PATH_SUFFIX='".br_real"'
