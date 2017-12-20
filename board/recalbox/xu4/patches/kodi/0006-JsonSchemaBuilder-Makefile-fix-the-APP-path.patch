@@ -1,0 +1,28 @@
+From 0ee839bf34ed7f5c54214077f5f37f41a0eea948 Mon Sep 17 00:00:00 2001
+From: Max Kellermann <max@duempel.org>
+Date: Mon, 24 Apr 2017 14:38:05 +0200
+Subject: [PATCH 06/62] JsonSchemaBuilder/Makefile: fix the APP path
+
+The program gets installed to $(PREFIX)/bin, not to $(SOURCE).
+
+Signed-off-by: memeka <mihailescu2m@gmail.com>
+---
+ tools/depends/native/JsonSchemaBuilder/Makefile | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/tools/depends/native/JsonSchemaBuilder/Makefile b/tools/depends/native/JsonSchemaBuilder/Makefile
+index 77d7c3f..f615d3b 100644
+--- a/tools/depends/native/JsonSchemaBuilder/Makefile
++++ b/tools/depends/native/JsonSchemaBuilder/Makefile
+@@ -16,7 +16,7 @@ endif
+ SOURCE=$(ROOT_DIR)/src
+ 
+ CONFIGURE=./configure --prefix=$(PREFIX)
+-APP=$(SOURCE)/JsonSchemaBuilder
++APP=$(PREFIX)/bin/JsonSchemaBuilder
+ 
+ all: .installed-$(PLATFORM)
+ 
+-- 
+2.7.4
+

@@ -1,0 +1,61 @@
+From ff56b0ac823918fee029e5d3428f3eeba7100a7c Mon Sep 17 00:00:00 2001
+From: Max Kellermann <max@duempel.org>
+Date: Mon, 24 Apr 2017 14:38:06 +0200
+Subject: [PATCH 16/62] Video/VAAPI: use 0 instead of None, which is a libX11
+ macro
+
+Signed-off-by: memeka <mihailescu2m@gmail.com>
+---
+ xbmc/cores/VideoPlayer/DVDCodecs/Video/VAAPI.cpp                    | 2 +-
+ xbmc/cores/VideoPlayer/DVDCodecs/Video/VAAPI.h                      | 4 ++--
+ xbmc/cores/VideoPlayer/VideoRenderers/HwDecRender/RendererVAAPI.cpp | 6 +++---
+ 3 files changed, 6 insertions(+), 6 deletions(-)
+
+diff --git a/xbmc/cores/VideoPlayer/DVDCodecs/Video/VAAPI.cpp b/xbmc/cores/VideoPlayer/DVDCodecs/Video/VAAPI.cpp
+index bf7b710..51c7d2b 100644
+--- a/xbmc/cores/VideoPlayer/DVDCodecs/Video/VAAPI.cpp
++++ b/xbmc/cores/VideoPlayer/DVDCodecs/Video/VAAPI.cpp
+@@ -2346,7 +2346,7 @@ void COutput::ReleaseBufferPool(bool precleanup)
+     if (pic->texture)
+     {
+       glDeleteTextures(1, &pic->texture);
+-      pic->texture = None;
++      pic->texture = 0;
+     }
+     av_frame_free(&pic->avFrame);
+     pic->valid = false;
+diff --git a/xbmc/cores/VideoPlayer/DVDCodecs/Video/VAAPI.h b/xbmc/cores/VideoPlayer/DVDCodecs/Video/VAAPI.h
+index cbaf4a6..7f62cfe 100644
+--- a/xbmc/cores/VideoPlayer/DVDCodecs/Video/VAAPI.h
++++ b/xbmc/cores/VideoPlayer/DVDCodecs/Video/VAAPI.h
+@@ -189,8 +189,8 @@ class CVaapiRenderPicture
+   friend class COutput;
+ public:
+   CVaapiRenderPicture(CCriticalSection &section)
+-    : texWidth(0), texHeight(0), texture(None), textureY(None), textureVU(None), valid(false), vaapi(NULL), avFrame(NULL),
+-      usefence(false), refCount(0), renderPicSection(section) { fence = None; }
++    : texWidth(0), texHeight(0), texture(0), textureY(0), textureVU(0), valid(false), vaapi(NULL), avFrame(NULL),
++      usefence(false), refCount(0), renderPicSection(section) { fence = 0; }
+   void Sync();
+   DVDVideoPicture DVDPic;
+   int texWidth, texHeight;
+diff --git a/xbmc/cores/VideoPlayer/VideoRenderers/HwDecRender/RendererVAAPI.cpp b/xbmc/cores/VideoPlayer/VideoRenderers/HwDecRender/RendererVAAPI.cpp
+index 3fd4953..9140181 100644
+--- a/xbmc/cores/VideoPlayer/VideoRenderers/HwDecRender/RendererVAAPI.cpp
++++ b/xbmc/cores/VideoPlayer/VideoRenderers/HwDecRender/RendererVAAPI.cpp
+@@ -139,9 +139,9 @@ void CRendererVAAPI::DeleteTexture(int index)
+   m_buffers[index].hwDec = NULL;
+ 
+   YUVFIELDS &fields = m_buffers[index].fields;
+-  fields[FIELD_FULL][0].id = None;
+-  fields[FIELD_FULL][1].id = None;
+-  fields[FIELD_FULL][2].id = None;
++  fields[FIELD_FULL][0].id = 0;
++  fields[FIELD_FULL][1].id = 0;
++  fields[FIELD_FULL][2].id = 0;
+ }
+ 
+ bool CRendererVAAPI::UploadTexture(int index)
+-- 
+2.7.4
+

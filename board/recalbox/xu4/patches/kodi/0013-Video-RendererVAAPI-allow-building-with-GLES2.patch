@@ -1,0 +1,55 @@
+From bae3dbb802076d3bedaaa4a3b38d6a7830efb0ea Mon Sep 17 00:00:00 2001
+From: Max Kellermann <max@duempel.org>
+Date: Mon, 24 Apr 2017 14:38:06 +0200
+Subject: [PATCH 13/62] Video/RendererVAAPI: allow building with GLES2
+
+Signed-off-by: memeka <mihailescu2m@gmail.com>
+---
+ .../VideoPlayer/VideoRenderers/HwDecRender/RendererVAAPI.cpp     | 4 ++--
+ .../cores/VideoPlayer/VideoRenderers/HwDecRender/RendererVAAPI.h | 9 ++++++++-
+ 2 files changed, 10 insertions(+), 3 deletions(-)
+
+diff --git a/xbmc/cores/VideoPlayer/VideoRenderers/HwDecRender/RendererVAAPI.cpp b/xbmc/cores/VideoPlayer/VideoRenderers/HwDecRender/RendererVAAPI.cpp
+index 0d196d0..3fd4953 100644
+--- a/xbmc/cores/VideoPlayer/VideoRenderers/HwDecRender/RendererVAAPI.cpp
++++ b/xbmc/cores/VideoPlayer/VideoRenderers/HwDecRender/RendererVAAPI.cpp
+@@ -80,12 +80,12 @@ CRenderInfo CRendererVAAPI::GetRenderInfo()
+ 
+ bool CRendererVAAPI::Supports(ERENDERFEATURE feature)
+ {
+-  return CLinuxRendererGL::Supports(feature);
++  return CRendererVAAPIBase::Supports(feature);
+ }
+ 
+ bool CRendererVAAPI::Supports(ESCALINGMETHOD method)
+ {
+-  return CLinuxRendererGL::Supports(method);
++  return CRendererVAAPIBase::Supports(method);
+ }
+ 
+ bool CRendererVAAPI::LoadShadersHook()
+diff --git a/xbmc/cores/VideoPlayer/VideoRenderers/HwDecRender/RendererVAAPI.h b/xbmc/cores/VideoPlayer/VideoRenderers/HwDecRender/RendererVAAPI.h
+index c2d4646..de2126c 100644
+--- a/xbmc/cores/VideoPlayer/VideoRenderers/HwDecRender/RendererVAAPI.h
++++ b/xbmc/cores/VideoPlayer/VideoRenderers/HwDecRender/RendererVAAPI.h
+@@ -24,9 +24,16 @@
+ 
+ #ifdef HAVE_LIBVA
+ 
++#ifdef HAS_GL
+ #include "cores/VideoPlayer/VideoRenderers/LinuxRendererGL.h"
++using CRendererVAAPIBase = CLinuxRendererGL;
++#else
++#include "cores/VideoPlayer/VideoRenderers/LinuxRendererGLES.h"
++using CRendererVAAPIBase = CLinuxRendererGLES;
++#endif
++
+ 
+-class CRendererVAAPI : public CLinuxRendererGL
++class CRendererVAAPI : public CRendererVAAPIBase
+ {
+ public:
+   CRendererVAAPI();
+-- 
+2.7.4
+
