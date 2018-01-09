@@ -1,0 +1,17 @@
+diff --git a/configure b/configure
+index b622085..55e0d4d 100755
+--- a/configure
++++ b/configure
+@@ -19487,10 +19487,10 @@ fi
+     if test x$enable_video = xyes -a x$enable_video_rpi = xyes; then
+         if test x$ARCH = xnetbsd; then
+             RPI_CFLAGS="-I/usr/pkg/include -I/usr/pkg/include/interface/vcos/pthreads -I/usr/pkg/include/interface/vmcs_host/linux"
+-            RPI_LDFLAGS="-Wl,-R/usr/pkg/lib -L/usr/pkg/lib -lbcm_host"
++            RPI_LDFLAGS="-Wl,-R/usr/pkg/lib -L/usr/pkg/lib -lbcm_host -lvchostif"
+         else
+             RPI_CFLAGS="-I/opt/vc/include -I/opt/vc/include/interface/vcos/pthreads -I/opt/vc/include/interface/vmcs_host/linux"
+-            RPI_LDFLAGS="-L/opt/vc/lib -lbcm_host"
++            RPI_LDFLAGS="-L/opt/vc/lib -lbcm_host -lvchostif"
+         fi
+ 
+         # Save the original compiler flags and libraries
