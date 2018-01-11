@@ -39,4 +39,8 @@ endif
 SDL2_MIXER_CONF_OPTS += --enable-music-mp3-mad-gpl
 SDL2_MIXER_DEPENDENCIES += libmad
 
+ifeq ($(BR2_PACKAGE_LIBVORBIS),y)
+SDL2_MIXER_DEPENDENCIES += libvorbis
+endif
+
 $(eval $(autotools-package))

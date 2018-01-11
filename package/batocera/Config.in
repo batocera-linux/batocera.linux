@@ -134,8 +134,10 @@ menu "Utils"
         source "package/batocera/megatools/Config.in"
         source "package/batocera/jstest2/Config.in"
         source "package/batocera/unclutter/Config.in"
-	source "package/batocera/evwait/Config.in"
 	source "package/batocera/fluidsynth/Config.in"
+endmenu
+menu "Fonts"
+        source "package/batocera/nanum-font/Config.in"
 endmenu
 menu "Gpu"
 	source "package/batocera/mali-450/Config.in"

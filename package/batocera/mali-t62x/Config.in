@@ -4,6 +4,9 @@ config BR2_PACKAGE_MALI_T62X
 	select BR2_PACKAGE_MALI_OPENGLES_SDK
 	select BR2_PACKAGE_HAS_LIBEGL
 	select BR2_PACKAGE_HAS_LIBGLES
+	select BR2_PACKAGE_WAYLAND
+	# required for gbm
+	select BR2_PACKAGE_MESA3D
 	help
 	  Install the binary user-space components for the ARM Mali Midgard
 	  T62X GPU. This package requires a kernel with the ARM Mali Midgard

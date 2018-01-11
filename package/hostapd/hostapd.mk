@@ -5,7 +5,10 @@
 ################################################################################
 
 HOSTAPD_VERSION = 2.6
-HOSTAPD_SITE = http://hostap.epitest.fi/releases
+HOSTAPD_SITE = http://w1.fi/releases
+HOSTAPD_PATCH = \
+	http://w1.fi/security/2017-1/rebased-v2.6-0001-hostapd-Avoid-key-reinstallation-in-FT-handshake.patch \
+	http://w1.fi/security/2017-1/rebased-v2.6-0005-Fix-PTK-rekeying-to-generate-a-new-ANonce.patch
 HOSTAPD_SUBDIR = hostapd
 HOSTAPD_CONFIG = $(HOSTAPD_DIR)/$(HOSTAPD_SUBDIR)/.config
 HOSTAPD_DEPENDENCIES = host-pkgconf libnl
@@ -35,13 +38,18 @@ HOSTAPD_LIBS += -lnl-3 -lm -lpthread
 endif
 
 # Try to use openssl if it's already available
-ifeq ($(BR2_PACKAGE_OPENSSL),y)
-HOSTAPD_DEPENDENCIES += openssl
+ifeq ($(BR2_PACKAGE_LIBOPENSSL),y)
+HOSTAPD_DEPENDENCIES += libopenssl
 HOSTAPD_LIBS += $(if $(BR2_STATIC_LIBS),-lcrypto -lz)
 HOSTAPD_CONFIG_EDITS += 's/\#\(CONFIG_TLS=openssl\)/\1/'
 else
 HOSTAPD_CONFIG_DISABLE += CONFIG_EAP_PWD
 HOSTAPD_CONFIG_EDITS += 's/\#\(CONFIG_TLS=\).*/\1internal/'
+endif
+
+ifeq ($(BR2_PACKAGE_HOSTAPD_DRIVER_RTW),y)
+HOSTAPD_PATCH += https://github.com/pritambaral/hostapd-rtl871xdrv/raw/master/rtlxdrv.patch
+HOSTAPD_CONFIG_SET += CONFIG_DRIVER_RTW
 endif
 
 ifeq ($(BR2_PACKAGE_HOSTAPD_ACS),y)

@@ -4,9 +4,9 @@
 #
 ################################################################################
 
-GNUPG2_VERSION = 2.1.21
+GNUPG2_VERSION = 2.2.2
 GNUPG2_SOURCE = gnupg-$(GNUPG2_VERSION).tar.bz2
-GNUPG2_SITE = ftp://ftp.gnupg.org/gcrypt/gnupg
+GNUPG2_SITE = https://gnupg.org/ftp/gcrypt/gnupg
 GNUPG2_LICENSE = GPL-3.0+
 GNUPG2_LICENSE_FILES = COPYING
 GNUPG2_DEPENDENCIES = zlib libgpg-error libgcrypt libassuan libksba libnpth \
@@ -19,13 +19,12 @@ GNUPG2_CONF_OPTS = \
 	--with-libassuan-prefix=$(STAGING_DIR)/usr \
 	--with-ksba-prefix=$(STAGING_DIR)/usr \
 	--with-npth-prefix=$(STAGING_DIR)/usr
-GNUPG2_CONF_ENV = gl_cv_header_working_stdint_h=yes
 
-ifneq ($(BR2_PACKAGE_GNUPG2_GPGV2),y)
-define GNUPG2_REMOVE_GPGV2
-	rm -f $(TARGET_DIR)/usr/bin/gpgv2
+ifneq ($(BR2_PACKAGE_GNUPG2_GPGV),y)
+define GNUPG2_REMOVE_GPGV
+	rm -f $(TARGET_DIR)/usr/bin/gpgv
 endef
-GNUPG2_POST_INSTALL_TARGET_HOOKS += GNUPG2_REMOVE_GPGV2
+GNUPG2_POST_INSTALL_TARGET_HOOKS += GNUPG2_REMOVE_GPGV
 endif
 
 ifeq ($(BR2_PACKAGE_BZIP2),y)
@@ -42,10 +41,10 @@ else
 GNUPG2_CONF_OPTS += --disable-gnutls
 endif
 
-ifeq ($(BR2_PACKAGE_LIBUSB_COMPAT),y)
+ifeq ($(BR2_PACKAGE_LIBUSB),y)
 GNUPG2_CONF_ENV += CPPFLAGS="$(TARGET_CPPFLAGS) -I$(STAGING_DIR)/usr/include/libusb-1.0"
 GNUPG2_CONF_OPTS += --enable-ccid-driver
-GNUPG2_DEPENDENCIES += libusb-compat
+GNUPG2_DEPENDENCIES += libusb
 else
 GNUPG2_CONF_OPTS += --disable-ccid-driver
 endif

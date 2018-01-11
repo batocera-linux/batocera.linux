@@ -1,0 +1,29 @@
+From b3742ee37bc7c0fd0f7a80b4df8bd1365310932f Mon Sep 17 00:00:00 2001
+From: Sam Spilsbury <smspillaz@gmail.com>
+Date: Mon, 24 Apr 2017 14:38:08 +0200
+Subject: [PATCH 38/62] wayland: WAYLAND_TEST_LIBS comes from AC_SUBST, not the
+ Makefile
+
+Use the substitution syntax.
+
+Signed-off-by: memeka <mihailescu2m@gmail.com>
+---
+ xbmc/windowing/tests/wayland/Makefile.in | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/xbmc/windowing/tests/wayland/Makefile.in b/xbmc/windowing/tests/wayland/Makefile.in
+index dc286d0..655e3da 100644
+--- a/xbmc/windowing/tests/wayland/Makefile.in
++++ b/xbmc/windowing/tests/wayland/Makefile.in
+@@ -44,7 +44,7 @@ xbmc_wayland_test_client_protocol.h: $(WAYLAND_TEST_MODULE_PROTOCOL)
+ 
+ ifeq (@USE_WAYLAND_TEST_EXTENSION@,1)
+ xbmc-wayland-test-extension.so: $(WAYLAND_TEST_MODULE_PROTOCOL_SRCS:.c=.o) $(WAYLAND_TEST_MODULE_SRCS:.cpp=.o)
+-	$(SILENT_LD) $(CXX) $(CXXFLAGS) $(LDFLAGS) $(WAYLAND_TEST_LIBS) -shared -o $@ $+ -rdynamic
++	$(SILENT_LD) $(CXX) $(CXXFLAGS) $(LDFLAGS) @WAYLAND_TEST_LIBS@ -shared -o $@ $+ -rdynamic
+ endif
+ 
+ endif
+-- 
+2.7.4
+

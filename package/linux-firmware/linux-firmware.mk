@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-LINUX_FIRMWARE_VERSION = a3a26af24e29c818ef9b5661856018e21a5c49fb
+LINUX_FIRMWARE_VERSION = 17e6288135d4500f9fe60224dce2b46d850c346b
 LINUX_FIRMWARE_SITE = http://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git
 LINUX_FIRMWARE_SITE_METHOD = git
 
@@ -474,6 +474,20 @@ LINUX_FIRMWARE_FILES += \
 	brcm/brcmfmac43602-pcie.ap.bin brcm/brcmfmac43602-pcie.bin \
 	brcm/brcmfmac43430-sdio.bin
 LINUX_FIRMWARE_ALL_LICENSE_FILES += LICENCE.broadcom_bcm43xx
+endif
+
+# ql2xxx
+ifeq ($(BR2_PACKAGE_LINUX_FIRMWARE_QLOGIC_2XXX),y)
+LINUX_FIRMWARE_FILES += \
+	ql2100_fw.bin ql2200_fw.bin ql2300_fw.bin ql2322_fw.bin \
+	ql2400_fw.bin ql2500_fw.bin
+LINUX_FIRMWARE_ALL_LICENSE_FILES += LICENCE.qla2xxx
+endif
+
+ifeq ($(BR2_PACKAGE_LINUX_FIRMWARE_REDPINE_RS9113),y)
+LINUX_FIRMWARE_FILES += rsi/rs9113_wlan_qspi.rps
+# No license file; the license is in the file WHENCE
+# which is installed unconditionally
 endif
 
 ifneq ($(LINUX_FIRMWARE_FILES),)

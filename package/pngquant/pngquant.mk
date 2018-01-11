@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-PNGQUANT_VERSION = 2.9.1
+PNGQUANT_VERSION = 2.10.1
 PNGQUANT_SOURCE = pngquant-$(PNGQUANT_VERSION)-src.tar.gz
 PNGQUANT_SITE = https://pngquant.org
 PNGQUANT_LICENSE = GPL-3.0+
@@ -22,6 +22,7 @@ define PNGQUANT_CONFIGURE_CMDS
 		./configure --prefix=/usr \
 		$(if $(BR2_PACKAGE_LCMS2),--with-lcms2,--without-lcms2) \
 		$(if $(BR2_X86_CPU_HAS_SSE),--enable-sse,--disable-sse) \
+		$(TARGET_CONFIGURE_OPTS) \
 	)
 endef
 

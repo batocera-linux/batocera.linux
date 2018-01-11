@@ -7,6 +7,7 @@ import multiprocessing
 
 from infra.basetest import BRTest
 
+
 def main():
     parser = argparse.ArgumentParser(description='Run Buildroot tests')
     parser.add_argument('testname', nargs='*',
@@ -57,6 +58,7 @@ def main():
             return 1
 
     BRTest.downloaddir = os.path.abspath(args.download)
+    os.putenv("BR2_DL_DIR", BRTest.downloaddir)
 
     if args.output is None:
         print "Missing output directory, please use -o/--output"
@@ -108,13 +110,14 @@ def main():
 
     nose2_args = ["-v",
                   "-N", str(args.testcases),
-                  "-s", "support/testing",
-                  "-c", "support/testing/conf/unittest.cfg"]
+                  "-s", test_dir,
+                  "-c", os.path.join(test_dir, "conf/unittest.cfg")]
 
     if len(args.testname) != 0:
         nose2_args += args.testname
 
     nose2.discover(argv=nose2_args)
+
 
 if __name__ == "__main__":
     sys.exit(main())

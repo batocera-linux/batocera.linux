@@ -26,6 +26,10 @@ else ifeq ($(BR2_PACKAGE_RECALBOX_TARGET_X86_64),y)
 	RECALBOX_SYSTEM=x64
 endif
 
+ifeq ($(BR2_PACKAGE_SDL2_KMSDRM),y)
+	REICAST_EXTRA_ARGS="USE_SDL=1"
+endif
+
 # Sadly the NEON optimizations in the PNG library don't work yet, so disable them
 define REICAST_BUILD_CMDS
 	$(TARGET_CONFIGURE_OPTS) $(MAKE) \
@@ -34,7 +38,7 @@ define REICAST_BUILD_CMDS
 		CC="$(TARGET_CC) -DPNG_ARM_NEON_OPT=0" \
 		AS="$(TARGET_CC)" \
 		STRIP="$(TARGET_STRIP)" \
-		-C $(@D)/shell/linux -f Makefile platform=$(RECALBOX_SYSTEM)
+		-C $(@D)/shell/linux -f Makefile platform=$(RECALBOX_SYSTEM) $(REICAST_EXTRA_ARGS)
 endef
 
 define REICAST_INSTALL_TARGET_CMDS

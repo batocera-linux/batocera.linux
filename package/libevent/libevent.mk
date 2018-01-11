@@ -12,6 +12,7 @@ LIBEVENT_LICENSE_FILES = LICENSE
 # For 0001-Disable-building-test-programs.patch
 LIBEVENT_AUTORECONF = YES
 LIBEVENT_CONF_OPTS = --disable-samples
+HOST_LIBEVENT_CONF_OPTS = --disable-samples --disable-openssl
 
 define LIBEVENT_REMOVE_PYSCRIPT
 	rm $(TARGET_DIR)/usr/bin/event_rpcgen.py
@@ -23,8 +24,8 @@ ifneq ($(BR2_PACKAGE_PYTHON),y)
 LIBEVENT_POST_INSTALL_TARGET_HOOKS += LIBEVENT_REMOVE_PYSCRIPT
 endif
 
-ifeq ($(BR2_PACKAGE_OPENSSL),y)
-LIBEVENT_DEPENDENCIES += host-pkgconf openssl
+ifeq ($(BR2_PACKAGE_LIBOPENSSL),y)
+LIBEVENT_DEPENDENCIES += host-pkgconf libopenssl
 LIBEVENT_CONF_OPTS += --enable-openssl
 else
 LIBEVENT_CONF_OPTS += --disable-openssl

@@ -1,3 +1,170 @@
+2017.11, Released November 30, 2017
+
+	Fixes all over the tree.
+
+	Toolchain: Use github mirror for Glibc.
+
+	Defconfigs: Correct boot.cmd for bananapi-m1.
+
+	Makefiles: Workaround include order issues for certain make
+	versions by explicitly sorting the result of wildcard where it
+	matters.
+
+	Download: Ensure subversion runs in non-interactive mode.
+
+	Updated/fixed packages: asterisk, boost, chrony, dovecot,
+	dvb-apps, exim, feh, freerdp, fwup, google-breakpad, jose,
+	kvm-unit-test, lftp, libcurl, libevent, libfastjson, libpjsip,
+	libupnp, linphone, localedef, lttng-tools, mp4v2, mtools,
+	ndisc6, oracle-mysql, parted, pdbg, qt, qt5connectivity,
+	qt5declarative, qt5webkit, rauc, runc, samba4, shairport-sync,
+	systemd-bootchart, webkitgtk, wireguard, xlib_libXcursor,
+	xlib_libXfont, xlib_libXfont2,
+
+	Issues resolved (http://bugs.buildroot.org):
+
+	10501: host-localedef fails to compile on Ubuntu 17.10
+	10506: Changed kernel image type (e.g. zImage to uImage)...
+
+2017.11-rc2, Released November 13th, 2017
+
+	Fixes all over the tree.
+
+	Updated/fixed packages: collectd, ffmpeg, freerdp,
+	go-bootstrap, imagemagick, jimtcl, libpjsip, libplist, libuv,
+	mesa3d, nodejs, ntp, openjpeg, postgresql, python-numpy, ruby,
+	snmp++, usb_modeswitch, util-linux, vboot-utils, webkitgtk,
+	wireshark, wpa_supplicant, xapp_xdriinfo
+
+	Issues resolved (http://bugs.buildroot.org):
+
+	#10326: mesa3d package fails to build when BR2_SHARED_STATIC_LIBS=y
+	#10491: Cannot output security warning when compiled with buildroot..
+
+2017.11-rc1, Released November 6th, 2017
+
+	Fixes all over the tree and new features.
+
+	Openssl is now a virtual package, which may be provided by
+	OpenSSL (now renamed to libopenssl) or LibreSSL.
+
+	libssh2: there is now an explicit choice of the backend to use
+	(mbedtls, gnutls or openssl). Previously, the choice was implicit
+	based on the TLS library that was selected. Now, it is possible to
+	choose the backend, which is important if several TLS libraries are
+	selected.
+
+	netsnmp: all MIB files are now installed, making the target filesystem a
+	bit bigger than before. To remove unneeded MIBS, you should use a
+	post-build script.
+
+	Toolchain: Linaro toolchains updated to 2017.08, ARC toolchain
+	updated to 2017.09, Glibc updated to 2.26, Glibc support for
+	ARCv2. The toolchain wrapper now handles SOURCE_DATE_EPOCH for
+	older (pre-gcc7.x) toolchains for BR2_REPRODUCIBLE.
+
+	New defconfigs: Atmel SAM45D27, Bananapi M1 and M2 Plus,
+	Engicam i.CoreM6 Qt5 configuration, i.MX6 sabreauto (mainline
+	kernel/u-boot), i.MX6Q sabresd Qt5 configuration, i.MX7d-pico,
+	QEMU ppc64le, Raspberry pi3 Qt5 webengine configuration,
+	Technologic TS-7680.
+
+	New packages: asterisk, azmq, bcg729, boinc, dahdi-linux,
+	dahdi-tools, freeswitch-mod-bcg729, fscryptctl, libb64,
+	libpri, libss7, lua-basexx, lua-compat53, lua-cqueues,
+	lua-curl, lua-datafile, lua-fifo, lua-httpd,
+	lua-lpeg-patterns, lua-markdown, lua-sailor, lua-value,
+	luksmeta, minetest, minetest-game, pdmenu, prosody,
+	python-aiocoap, python-automat, python-ibmiotf,
+	python-iso8601, python-m2r, python-simplesqlite,
+	python-websockets, python-xmltodict, qt5wayland, qt5webengine,
+	restorecond, selinux-python, semodule-utils, uhubctl,
+	wireguard, wsapi-fcgi, wsapi-xavante
+
+	Removed packages: aiccu, rfkill, sepolgen
+
+	Issues resolved (http://bugs.buildroot.org):
+
+	#10281: lsblk does not compile for util-linux
+	#10336: lttng compilation fails : linking error
+	#10351: glibc missing in rootfs
+	#10356: nfs-utils missing header
+	#10361: python3 python-config script generates invalid includes
+	#10366: dropbear download url has changed
+	#10391: WiringPi retrieves wrong (old) version
+	#10406: Beaglebone black: Buggy SGX driver version, swapped...
+	#10426: uboot-tools' fw_setenv does not update the redundant...
+	#10451: libpcap 1.8.x and 1.7x does not compile on PPC
+
+2017.08.2, Released November 28th, 2017
+
+	Important / security related fixes.
+
+	Qt: 5.6 version updated to 5.6.3.
+
+	Reproducible: Do not override SOURCE_DATE_EPOCH if already set
+	in the environment.
+
+	Makefiles: Workaround include order issues for certain make
+	versions by explicitly sorting the result of wildcard where it
+	matters.
+
+	Updated/fixed packages: apr, apr-util, arqp-standalone,
+	azure-iot-sdk-c, collectd, dvb-apps, ffmpeg, go-bootstrap,
+	google-breakpad, gstreamer, imagemagick, irssi, jimtcl,
+	kvm-unit-test, libcurl, libfastjson, libglib2, libidn,
+	libpjsip, libplist, localedef, lttng-tools, luajit, mesa3d,
+	moarvm, mp4v2, openssh, openssl, oracle-mysql, postgresql,
+	python3, python-pyqt5, qt, qt5base, qt5canvas3d,
+	qt5connectivity, qt5declarative, qt5engineio,
+	qt5graphicaleffects, qt5imageformats, qt5location,
+	qt5multimedia, qt5quickcontrols, qt5quickcontrols2, qt5script,
+	qt5sensors, qt5serialbus, qt5serialport, qt5svg, qt5tools,
+	qt5webchannel, qt5webkit, qt5websockets, qt5x11extras,
+	qt5xmlpatterns, quagga, redis, ruby, samba4, sdl2, snmppp,
+	swupdate, ti-gfx, uboot-tools, usb_modeswitch, vboot-utils,
+	webkitgtk, wget, wireshark, xapp_xdriinfo.
+
+	Issues resolved (http://bugs.buildroot.org):
+
+	10326: mesa3d package fails to build when BR2_SHARED_STATIC_LIBS=y
+	10361: python3 python-config script generates invalid includes
+	10501: host-localedef fails to compile on Ubuntu 17.10
+
+2017.08.1, Released October 23rd, 2017
+
+	Important / security related fixes.
+
+	Webkitgtk bumped to the 2.18.x series, fixing a large number
+	of security issues.
+
+	Defconfigs: galileo: fix ext4 related kernel config, bump
+	kernel for gcc 6.x compatibility, enable wchar support for
+	grub2. wandboard: correct rootfs offset
+
+	support: Ensure gzip compression level 6 is used for git
+	tarballs. check-bin-arch: Correctly handle (ignore) symbolic
+	links. check-rpath: Also handle PIE binaries
+
+	External toolchain: Correctly handle glibc Buildroot
+	toolchains built with merged /usr
+
+	musl: fix ARMv4 build with binutils 2.27.51+, fix for
+	CVE-2017-15650
+
+	Updated/fixed packages: apache, augeas, bind, bluez5_utils,
+	busybox, bzip2, cmake, dnsmasq, ejabberd, gcc, git, go, ffmpeg, file,
+	flashrom, gd, gdk-pixbug, gnupg2, hostapd, ifupdown-scripts,
+	imagemagick, iucode-tool, kernel-module-imx-gpu-viv, lame,
+	libarchive, libcurl, libffi, libidn, libmbim, libnspr, libnss,
+	libressl, librsync, libsoup, libxml2, libzip, mbedtls, musl,
+	netplug, nginx, openvpn, pkgconf, poppler, proxychains-ng,
+	qemu, qt, rpi-userland, syslog, ruby, samba4, softether,
+	sqlite, strongswan, subversion, supertuxkart, supervisor, tcpdump,
+	tor, unrar, urq, vboot-utils, webkitgtk, wpa_supplicant, xen,
+	xmlstarlet, xlib_libXfont, xlib_libXfont2,
+	xserver_xorg-server, zsh
+
 2017.08, Released September 1st, 2017
 
 	Minor fixes.
@@ -492,6 +659,81 @@
 	#9836: triggerhappy: systemd unit broken
 	#9846: musl libc not installed correctly in target folder
 	#9856: build libubox failed on ubuntu 17.04 64bit
+
+2017.02.8, Released November 27th, 2017
+
+	Important / security related fixes.
+
+	Qt: 5.6 version updated to 5.6.3.
+
+	Reproducible: Do not override SOURCE_DATE_EPOCH if already set
+	in the environment.
+
+	Updated/fixed packages: apr, apr-util, arqp-standalone,
+	collectd, dvb-apps, ffmpeg, google-breakpad, gstreamer,
+	imagemagick, libfastjson, libglib2, libpjsip, libplist,
+	localedef, luajit, mesa3d, openssh, openssl, postgresql,
+	python3, python-pyqt5, qt5base, qt5canvas3d, qt5connectivity,
+	qt5declarative, qt5engineio, qt5graphicaleffects,
+	qt5imageformats, qt5location, qt5multimedia, qt5quickcontrols,
+	qt5quickcontrols2, qt5script, qt5sensors, qt5serialbus,
+	qt5serialport, qt5svg, qt5tools, qt5webchannel, qt5webkit,
+	qt5websockets, qt5x11extras, qt5xmlpatterns, quagga, ruby,
+	samba4, snmppp, ti-gfx, vboot-utils, webkitgtk, wireshark,
+	xapp_xdriinfo.
+
+	Issues resolved (http://bugs.buildroot.org):
+
+	10326: mesa3d package fails to build when BR2_SHARED_STATIC_LIBS=y
+	10361: python3 python-config script generates invalid includes
+	10501: host-localedef fails to compile on Ubuntu 17.10
+
+2017.02.7, Released October 28th, 2017
+
+	Important / security related fixes.
+
+	Webkitgtk bumped to the 2.18.x series, fixing a large number
+	of security issues.
+
+	Defconfigs: wandboard: Correct rootfs offset
+
+	Toolchain: Linaro toolchains updated to 2017.08 release,
+	fixing a number of issues. Musl: fix for CVE-2017-15650.
+
+	Updated/fixed packages: busybox, bzip2, dnsmasq, git, go,
+	hostapd, irssi, iucode-tool, lame, libcurl, libffi, libnspr,
+	libnss, nodejs, openssh, openvpn, qemu, qt, redis, sdl2,
+	webkitgtk, wget, wpa_supplicant, xen, xlib_libXfont,
+	xlib_libXfont2, xserver_xorg-server
+
+2017.02.6, Released September 24th, 2017
+
+	Important / security related fixes.
+
+	Cmake: Ensure correct pkg-config is used when building host
+	packages
+
+	fs/iso9660: Ensure files from earlier builds are not included.
+
+	Updated/fixed packages: apache, bcusdk, bind, binutils,
+	bluez5_utils, botan, cmake, connman, dbus, dialog, e2fsprogs,
+	faad2, fakeroot, ffmpeg, file, flashrom, gcc, gd, gdb,
+	gdk-pixbuf, git, gnupg, gpsd, grub2, gst1-plugins-bad,
+	imagemagick, iostat, iucode-tool, jack2, libarchive, libcurl,
+	libgcrypt, libidn, libphidget, librsync, librsvg, libsoup,
+	libxml2, linux-tools, lua, mariadb, mbedtls, mediastreamer,
+	minidlna, netplug, nss-pam-ldapd, nvidia-driver, openjpeg,
+	postgresql, proxychains-ng, python-libconfig,
+	python-service-identity, qt, rpcbind, ruby, samba4, squashfs,
+	squid, strongswan, subversion, supervisor, sysvinit, tcpdump,
+	tor, transmission, unrar, valgrind, vim, webkitgtk, whois,
+	xen, zmqpp
+
+	Issues resolved (http://bugs.buildroot.org):
+
+	#10141: Squashfs extended attribute failures
+	#10261: Grub2 fails to build for x86_64
+	#10276: BR2_PACKAGE_LINUX_TOOLS_GPIO fails for MIPS with...
 
 2017.02.5, Released July 27th, 2017
 

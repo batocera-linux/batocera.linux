@@ -15,6 +15,8 @@ DVB_APPS_DEPENDENCIES = libiconv
 DVB_APPS_LDLIBS += -liconv
 endif
 
+DVB_APPS_MAKE_OPTS = PERL5LIB=$(@D)/util/scan
+
 ifeq ($(BR2_STATIC_LIBS),y)
 DVB_APPS_MAKE_OPTS += enable_shared=no
 else ifeq ($(BR2_SHARED_LIBS),y)
@@ -25,7 +27,7 @@ DVB_APPS_INSTALL_STAGING = YES
 
 define DVB_APPS_BUILD_CMDS
 	$(TARGET_CONFIGURE_OPTS) LDLIBS="$(DVB_APPS_LDLIBS)" \
-		$(MAKE) -C $(@D) CROSS_ROOT=$(STAGING_DIR) \
+		$(MAKE1) -C $(@D) CROSS_ROOT=$(STAGING_DIR) \
 		$(DVB_APPS_MAKE_OPTS)
 endef
 

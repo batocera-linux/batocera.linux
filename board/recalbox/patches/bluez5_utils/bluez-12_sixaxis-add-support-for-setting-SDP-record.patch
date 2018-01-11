@@ -46,7 +46,7 @@ index 3ef0340..859aa3c 100644
 +	g_dbus_emit_property_changed(dbus_conn, req->device->path,
 +						DEVICE_INTERFACE, "UUIDs");
 +
-+	device_svc_resolved(device, device->bdaddr_type, 0);
++	device_svc_resolved(device, BROWSE_SDP, device->bdaddr_type, 0);
 +}
 +
  const sdp_record_t *btd_device_get_record(struct btd_device *device,

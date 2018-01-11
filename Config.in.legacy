@@ -143,7 +143,136 @@ comment "----------------------------------------------------"
 endif
 
 ###############################################################################
+comment "Legacy options removed in 2018.02"
+
+config BR2_PACKAGE_GNUPG2_GPGV2
+	bool "gnupg2 gpgv2 option removed"
+	select BR2_LEGACY
+	select BR2_PACKAGE_GNUPG2_GPGV
+	help
+	  The gpgv2 executable is now named gpgv. The config option
+	  has been renamed accordingly.
+
+###############################################################################
+comment "Legacy options removed in 2017.11"
+
+config BR2_PACKAGE_RFKILL
+	bool "rfkill package removed"
+	select BR2_LEGACY
+	select BR2_PACKAGE_UTIL_LINUX
+	select BR2_PACKAGE_UTIL_LINUX_RFKILL
+	help
+	  The rfkill program is now provided by the util-linux package.
+
+config BR2_PACKAGE_UTIL_LINUX_RESET
+	bool "util-linux reset option removed"
+	select BR2_LEGACY
+	help
+	  The util-linux package no longer offers a "reset" command. Use
+	  either the reset command provided by BusyBox or select ncurses
+	  programs, which will install a symlink from "tset" to reset.
+
+config BR2_PACKAGE_POLICYCOREUTILS_AUDIT2ALLOW
+	bool "policycoreutils audit2allow option removed"
+	select BR2_LEGACY
+	select BR2_PACKAGE_SELINUX_PYTHON
+	select BR2_PACKAGE_SELINUX_PYTHON_AUDIT2ALLOW
+	help
+	  The policycoreutils package no longer offers audit2allow
+	  as a option. This package has been moved into the
+	  selinux-python package by the SELinux maintainers.
+
+config BR2_PACKAGE_POLICYCOREUTILS_RESTORECOND
+	bool "policycoreutils restorecond option removed"
+	select BR2_LEGACY
+	select BR2_PACKAGE_RESTORECOND
+	help
+	  The policycoreutils package no longer offers restorecond
+	  as a option.  This package has been moved into a seperate
+	  package maintained by the SELinux maintainers.
+
+config BR2_PACKAGE_SEPOLGEN
+	bool "sepolgen package has been removed"
+	select BR2_LEGACY
+	select BR2_PACKAGE_SELINUX_PYTHON
+	select BR2_PACKAGE_SELINUX_PYTHON_SEPOLGEN
+	help
+	  Sepolgen is no longer a individual package, but instead has
+	  been moved into the selinux-python package by the SELinux
+	  maintainers.
+
+config BR2_PACKAGE_OPENOBEX_BLUEZ
+	bool "openobex bluez option removed"
+	select BR2_LEGACY
+	select BR2_PACKAGE_BLUEZ_UTILS
+	help
+	  The OpenOBEX package no longer offers an option to enable or
+	  disable BlueZ support. Instead, BlueZ support is always
+	  included when the bluez5_utils or bluez_utils package is
+	  selected.
+
+config BR2_PACKAGE_OPENOBEX_LIBUSB
+	bool "openobex libusb option removed"
+	select BR2_LEGACY
+	select BR2_PACKAGE_LIBUSB
+	help
+	  The OpenOBEX package no longer offers an option to enable or
+	  disable libusb support. Instead, USB support is always
+	  included when the libusb package is selected.
+
+config BR2_PACKAGE_OPENOBEX_APPS
+	bool "openobex apps option removed"
+	select BR2_LEGACY
+	help
+	  The OpenOBEX package no longer offers an option to enable or
+	  disable apps support.
+
+config BR2_PACKAGE_OPENOBEX_SYSLOG
+	bool "openobex syslog option removed"
+	select BR2_LEGACY
+	help
+	  The OpenOBEX package no longer offers an option to enable or
+	  disable syslog support.
+
+config BR2_PACKAGE_OPENOBEX_DUMP
+	bool "openobex dump option removed"
+	select BR2_LEGACY
+	help
+	  The OpenOBEX package no longer offers an option to enable or
+	  disable dump support.
+
+config BR2_PACKAGE_AICCU
+	bool "aiccu utility removed"
+	select BR2_LEGACY
+	help
+	  As the SixXS project has ceased its operation on 2017-06-06,
+	  the AICCU utility has no use anymore and has been removed.
+
+	  https://www.sixxs.net/sunset/
+
+config BR2_PACKAGE_UTIL_LINUX_LOGIN_UTILS
+	bool "util-linux login utilities option removed"
+	select BR2_LEGACY
+	select BR2_PACKAGE_UTIL_LINUX_LAST
+	select BR2_PACKAGE_UTIL_LINUX_LOGIN
+	select BR2_PACKAGE_UTIL_LINUX_RUNUSER
+	select BR2_PACKAGE_UTIL_LINUX_SU
+	select BR2_PACKAGE_UTIL_LINUX_SULOGIN
+	help
+	  Login utilities (last, login, runuser, su, sulogin) now have
+	  their own configuration options in the util-linux menu.
+
+###############################################################################
 comment "Legacy options removed in 2017.08"
+
+config BR2_TARGET_GRUB
+	bool "grub (aka grub-legacy) has been removed"
+	select BR2_LEGACY
+	help
+	  grub-legacy is no longer maintained, and no longer builds with
+	  recent binutils versions.
+
+	  Use grub2 or syslinux instead.
 
 config BR2_PACKAGE_SIMICSFS
 	bool "simicsfs support removed"
@@ -1024,13 +1153,6 @@ config BR2_x86_i386
 	help
 	  The support for the i386 processors of the x86 architecture
 	  has been removed.
-
-config BR2_PACKAGE_QT5WEBKIT_EXAMPLES
-	bool "qt5webkit-examples package removed"
-	select BR2_LEGACY
-	help
-	  The qt5webkit-examples package has been removed, since it
-	  was removed from upstream starting from Qt 5.6.
 
 config BR2_PACKAGE_QT5QUICK1
 	bool "qt5quick1 package removed"
