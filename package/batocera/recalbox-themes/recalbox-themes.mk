@@ -5,7 +5,7 @@
 ################################################################################
 
 RECALBOX_THEMES_VERSION = 4.1.X
-RECALBOX_THEMES_SITE = $(call github,recalbox,recalbox-themes,$(RECALBOX_THEMES_VERSION))
+RECALBOX_THEMES_SITE = $(call github,batocera-linux,recalbox-themes,$(RECALBOX_THEMES_VERSION))
 
 define RECALBOX_THEMES_INSTALL_TARGET_CMDS
         mkdir -p $(TARGET_DIR)/recalbox/share_init/system/.emulationstation/themes/

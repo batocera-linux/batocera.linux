@@ -8,7 +8,7 @@ ifeq ($(BR2_PACKAGE_MK_ARCADE_JOYSTICK_RPI_HOTKEY),y)
 else
 	MK_ARCADE_JOYSTICK_RPI_VERSION = v0.1.5
 endif	
-MK_ARCADE_JOYSTICK_RPI_SITE = $(call github,recalbox,mk_arcade_joystick_rpi,$(MK_ARCADE_JOYSTICK_RPI_VERSION))
+MK_ARCADE_JOYSTICK_RPI_SITE = $(call github,batocera-linux,mk_arcade_joystick_rpi,$(MK_ARCADE_JOYSTICK_RPI_VERSION))
 MK_ARCADE_JOYSTICK_RPI_DEPENDENCIES = linux
 
 

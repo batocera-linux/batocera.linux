@@ -4,7 +4,7 @@
 #
 ################################################################################
 QTSIXA_VERSION = gasia 
-QTSIXA_SITE = $(call github,recalbox,qtsixa,$(QTSIXA_VERSION))
+QTSIXA_SITE = $(call github,batocera-linux,qtsixa,$(QTSIXA_VERSION))
 QTSIXA_DEPENDENCIES = sdl linux-headers libusb-compat bluez5_utils
 PKGCONFIG_CONFIG=$(STAGING_DIR)/usr/lib/pkgconfig
 

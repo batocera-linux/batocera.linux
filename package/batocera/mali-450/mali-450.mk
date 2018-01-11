@@ -19,7 +19,7 @@
 #MALI_450_SITE = http://sources.libreelec.tv/devel
 
 MALI_450_VERSION = r6p1-01rel0
-MALI_450_SITE = $(call github,recalbox,opengl-meson-gxbb,$(MALI_450_VERSION))
+MALI_450_SITE = $(call github,batocera-linux,opengl-meson-gxbb,$(MALI_450_VERSION))
 
 MALI_450_INSTALL_STAGING = YES
 MALI_450_DEPENDENCIES = mali-opengles-sdk
