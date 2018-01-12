@@ -18,7 +18,7 @@ BATOCERA_EMULATIONSTATION_SITE = $(call github,batocera-linux,batocera-emulation
 BATOCERA_EMULATIONSTATION_VERSION = master
 
 BATOCERA_EMULATIONSTATION_LICENSE = MIT
-BATOCERA_EMULATIONSTATION_DEPENDENCIES = sdl2 sdl2_mixer boost freeimage freetype eigen alsa-lib \
+BATOCERA_EMULATIONSTATION_DEPENDENCIES = sdl2 sdl2_mixer boost libfreeimage freetype eigen alsa-lib \
 	libcurl openssl
 
 ifeq ($(BR2_PACKAGE_HAS_LIBGL),y)
