@@ -14,6 +14,8 @@ else ifeq ($(BR2_PACKAGE_RECALBOX_TARGET_XU4),y)
        LIBRETRO_4DO_PLATFORM=unix-odroidxu4
 else ifeq ($(BR2_PACKAGE_RECALBOX_TARGET_C2),y)
        LIBRETRO_4DO_PLATFORM=unix-odroid
+else ifeq ($(BR2_PACKAGE_RECALBOX_TARGET_S905),y)
+       LIBRETRO_4DO_PLATFORM=unix-s905
 else ifeq ($(BR2_x86_i586),y)
        LIBRETRO_4DO_PLATFORM=unix
 else

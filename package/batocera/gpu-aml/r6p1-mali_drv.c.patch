@@ -1,0 +1,13 @@
+Index: gpu-r6p1/egl/x11/drm_module/mali_drm/mali/mali_drv.c
+===================================================================
+--- gpu-r6p1.orig/egl/x11/drm_module/mali_drm/mali/mali_drv.c	2016-04-06 14:10:31.000000000 +0800
++++ gpu-r6p1/egl/x11/drm_module/mali_drm/mali/mali_drv.c	2016-04-19 15:37:19.523917087 +0800
+@@ -8,7 +8,7 @@
+  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+  */
+ 
+-#include <linux/vermagic.h>
++//#include <linux/vermagic.h>
+ #include <linux/version.h>
+ #include "drmP.h"
+ #include "mali_drm.h"

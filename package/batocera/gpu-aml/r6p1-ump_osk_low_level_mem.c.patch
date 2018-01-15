@@ -1,0 +1,25 @@
+Index: gpu-2015-11-04-6a0c587df8/ump/linux/ump_osk_low_level_mem.c
+===================================================================
+--- gpu-2015-11-04-6a0c587df8.orig/ump/linux/ump_osk_low_level_mem.c	2015-10-20 00:20:04.000000000 +0800
++++ gpu-2015-11-04-6a0c587df8/ump/linux/ump_osk_low_level_mem.c	2015-11-05 13:58:52.203418683 +0800
+@@ -35,6 +35,11 @@
+ 	ump_memory_allocation *descriptor;
+ } ump_vma_usage_tracker;
+ 
++void (*__cpuc_flush_dcache_area)(void *, size_t);
++void (*__cpuc_flush_kern_all)(void);
++void outer_clean_range(phys_addr_t start, phys_addr_t end);
++void outer_flush_range(phys_addr_t start, phys_addr_t end);
++void outer_inv_range(phys_addr_t start, phys_addr_t end);
+ static void ump_vma_open(struct vm_area_struct *vma);
+ static void ump_vma_close(struct vm_area_struct *vma);
+ #if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,26)
+@@ -198,7 +203,7 @@
+ 
+ 	if (NULL == vma) return _MALI_OSK_ERR_FAULT;
+ 
+-	retval = remap_pfn_range(vma, ((u32)descriptor->mapping) + offset, (*phys_addr) >> PAGE_SHIFT, size, vma->vm_page_prot) ? _MALI_OSK_ERR_FAULT : _MALI_OSK_ERR_OK;;
++	retval = remap_pfn_range(vma, ((uintptr_t)descriptor->mapping) + offset, (*phys_addr) >> PAGE_SHIFT, size, vma->vm_page_prot) ? _MALI_OSK_ERR_FAULT : _MALI_OSK_ERR_OK;;
+ 
+ 	DBG_MSG(4, ("Mapping virtual to physical memory. ID: %u, vma: 0x%08lx, virtual addr:0x%08lx, physical addr: 0x%08lx, size:%lu, prot:0x%x, vm_flags:0x%x RETVAL: 0x%x\n",
+ 		    ump_dd_secure_id_get(descriptor->handle),
