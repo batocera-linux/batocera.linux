@@ -1,42 +1,25 @@
 config BR2_PACKAGE_GPU_AML
-	bool "amlogic gpu driver git repo"
-	depends on BR2_LINUX_KERNEL	
-	help
-	  The git of amlogic gpu driver git repo
-
-config BR2_PACKAGE_GPU_AML_VERSION
-	string "amlogic gpu branch" 
-	depends on BR2_PACKAGE_GPU_AML
-	help
-	  the branch of amlogic gpu driver
-
-config BR2_PACKAGE_GPU_AML_GIT_URL
-	string "amlogic gpu driver git repo url"
-	depends on BR2_PACKAGE_GPU_AML
-	help
-	  the URL of amlogic gpu driver git repo
-
-config BR2_PACKAGE_GPU_AML_CUSTOM_TARBALL_LOCATION
-	string "amlogic gpu driver tarball url"
-	depends on BR2_PACKAGE_GPU_AML
-	help
-	  the URL of amlogic gpu driver
+	bool "amlogic gpu driver"
+	depends on BR2_LINUX_KERNEL
 
 config BR2_PACKAGE_GPU_AML_STANDALONE
 	bool "standalone kernel module"
 	depends on BR2_PACKAGE_GPU_AML
 	help
 	  compile ko directly
+
 config BR2_PACKAGE_GPU_AML_UMP
 	bool "enable ump"
 	depends on BR2_PACKAGE_GPU_AML
 	help
 	  enable ump on standalone ko
+
 config BR2_PACKAGE_GPU_AML_MALI_DRM
 	bool "enable mali_drm"
 	depends on BR2_PACKAGE_GPU_AML
 	help
 	  build mali_drm.ko
+
 config BR2_PACKAGE_GPU_AML_MALI_DMA_SHARED_BUFFER
 	bool "enable mali dma shared buffer"
 	depends on BR2_PACKAGE_GPU_AML
