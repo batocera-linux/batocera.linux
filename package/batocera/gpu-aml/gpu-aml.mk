@@ -4,15 +4,9 @@
 #
 ################################################################################
 LINUX_VERSION_PROBED = `$(MAKE) $(LINUX_MAKE_FLAGS) -C $(LINUX_DIR) --no-print-directory -s kernelrelease 2>/dev/null`
-GPU_AML_VERSION = $(call qstrip,$(BR2_PACKAGE_GPU_AML_VERSION))
-ifneq ($(BR2_PACKAGE_GPU_AML_CUSTOM_TARBALL_LOCATION),"")
-GPU_AML_TARBALL = $(call qstrip,$(BR2_PACKAGE_GPU_AML_CUSTOM_TARBALL_LOCATION))
-GPU_AML_SITE    = $(patsubst %/,%,$(dir $(GPU_AML_TARBALL)))
-GPU_AML_SOURCE  = $(notdir $(GPU_AML_TARBALL))
-else
-GPU_AML_SITE = $(call qstrip,$(BR2_PACKAGE_GPU_AML_GIT_URL))
-GPU_AML_SITE_METHOD = git
-endif
+GPU_AML_VERSION = 2016-05-04-2364187a0c
+GPU_AML_SITE    = http://openlinux.amlogic.com:8000/download/ARM/gpu
+GPU_AML_SOURCE  = gpu-$(GPU_AML_VERSION).tar.gz
 GPU_AML_MODULE_DIR = kernel/amlogic/gpu
 GPU_AML_INSTALL_DIR = $(TARGET_DIR)/lib/modules/$(LINUX_VERSION_PROBED)/$(GPU_AML_MODULE_DIR)
 ifeq ($(BR2_PACKAGE_GPU_AML_STANDALONE),y)
