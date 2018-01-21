@@ -13,22 +13,13 @@ rb_volume_configure() {
 }
 
 rb_wifi_configure() {
-    X=$1
-
-    if test "$X" = 1
-    then
-	settings_ssid="`$systemsetting -command load -key wifi.ssid`"
-	settings_key="`$systemsetting -command load -key wifi.key`"
-	settings_file="/var/lib/connman/recalbox_wifi.config"
-	settings_name="default"
-    else
+	[ "$1" = "1" ] && X="" || X="$1"
 	settings_ssid="`$systemsetting -command load -key wifi${X}.ssid`"
 	settings_key="`$systemsetting -command load -key wifi${X}.key`"
 	settings_file="/var/lib/connman/recalbox_wifi${X}.config"
-	settings_name="${X}"
-    fi
+	[ "$1" = "1" ] && settings_name="default" || settings_name="${X}"
 
-    if [[ "$settings_ssid" != "" ]] ;then
+	if [[ "$settings_ssid" != "" ]] ;then
 	mkdir -p "/var/lib/connman"
 	cat > "${settings_file}" <<EOF
 [global]
@@ -48,7 +39,7 @@ EOF
 	    then
 		# sed the replace by the secure value in recalbox.conf
 		settings_key=$(/recalbox/scripts/recalbox-encode.sh encode "${settings_key}")
-		sed -i -e s@'^[ \t]*wifi.key[ \t]*=.*$'@"wifi.key=${settings_key}"@ "/recalbox/share/system/recalbox.conf"
+		sed -i "s|^wifi${X}.key=.*|wifi${X}.key=${settings_key}|g" /recalbox/share/system/recalbox.conf
 	    fi
 	fi
 	recallog "updated wifi settings : ssid=$settings_ssid"
