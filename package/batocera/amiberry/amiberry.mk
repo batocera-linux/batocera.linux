@@ -6,7 +6,7 @@
 
 AMIBERRY_VERSION = 1f27fdf4f55302068e0419783ff0d6972dff5e1c
 AMIBERRY_SITE = $(call github,midwan,amiberry,$(AMIBERRY_VERSION))
-AMIBERRY_DEPENDENCIES = sdl sdl_image sdl_gfx sdl_ttf mpg123 libxml2 libmpeg2 guichan flac
+AMIBERRY_DEPENDENCIES = sdl sdl_image sdl_gfx sdl_ttf mpg123 libxml2 libmpeg2 guichan flac rpi-userland
 
 ifeq ($(BR2_PACKAGE_RECALBOX_TARGET_RPI3),y)
 	RECALBOX_SYSTEM=rpi3

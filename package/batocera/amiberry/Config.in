@@ -9,5 +9,6 @@ config BR2_PACKAGE_AMIBERRY
 	select BR2_PACKAGE_LIBMPEG2
 	select BR2_PACKAGE_GUICHAN
 	select BR2_PACKAGE_FLAC
+	depends on BR2_PACKAGE_RPI_USERLAND
         help
           An amiga emulator for arm
