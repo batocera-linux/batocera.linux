@@ -11,7 +11,7 @@ GPIO.setup(3, GPIO.IN, pull_up_down=GPIO.PUD_UP)	# GPIO on pin 5 is the GPIO 3 i
 
 def exitAllBatoceraEmulator(channel):
     print 'exitAllBatoceraEmulator'
-    os.system('killall -9 retroarch PPSSPPSDL reicast.elf mupen64plus linapple x64 fba2x scummvm dosbox advmame')
+    os.system('killall -9 retroarch PPSSPPSDL reicast.elf mupen64plus linapple-pie x64 fba2x scummvm dosbox advmame pifba vice amiberry fsuae dolphin-emu')
 
 
 GPIO.add_event_detect(3, GPIO.FALLING, callback=exitAllBatoceraEmulator,
