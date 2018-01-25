@@ -6,7 +6,7 @@
 
 KODI_PLUGIN_VIDEO_FILMON_VERSION = 4.6.7
 KODI_PLUGIN_VIDEO_FILMON_SOURCE = plugin.video.filmon-$(KODI_PLUGIN_VIDEO_FILMON_VERSION).zip
-KODI_PLUGIN_VIDEO_FILMON_SITE = http://redirect.superrepo.org/v7/addons/plugin.video.filmon
+KODI_PLUGIN_VIDEO_FILMON_SITE = http://ftp.snt.utwente.nl/pub/software/superrepo/v7/addons/plugin.video.filmon
 KODI_PLUGIN_VIDEO_FILMON_PLUGINNAME=plugin.video.filmon
 
 KODI_PLUGIN_TARGET_DIR=$(TARGET_DIR)/usr/share/kodi/addons
