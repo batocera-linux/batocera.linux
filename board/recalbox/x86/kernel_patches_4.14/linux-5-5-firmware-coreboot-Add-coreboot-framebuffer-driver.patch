@@ -1,0 +1,198 @@
+diff --git a/drivers/firmware/google/Kconfig b/drivers/firmware/google/Kconfig
+index f16b381a569c..a456a000048b 100644
+--- a/drivers/firmware/google/Kconfig
++++ b/drivers/firmware/google/Kconfig
+@@ -55,6 +55,14 @@ config GOOGLE_MEMCONSOLE_X86_LEGACY
+ 	  the EBDA on Google servers.  If found, this log is exported to
+ 	  userland in the file /sys/firmware/log.
+ 
++config GOOGLE_FRAMEBUFFER_COREBOOT
++	tristate "Coreboot Framebuffer"
++	depends on FB_SIMPLE
++	depends on GOOGLE_COREBOOT_TABLE
++	help
++	  This option enables the kernel to search for a framebuffer in
++	  the coreboot table.  If found, it is registered with simplefb.
++
+ config GOOGLE_MEMCONSOLE_COREBOOT
+ 	tristate "Firmware Memory Console"
+ 	depends on GOOGLE_COREBOOT_TABLE
+diff --git a/drivers/firmware/google/Makefile b/drivers/firmware/google/Makefile
+index dcd3675efcfc..d0b3fba96194 100644
+--- a/drivers/firmware/google/Makefile
++++ b/drivers/firmware/google/Makefile
+@@ -4,6 +4,7 @@ obj-$(CONFIG_GOOGLE_SMI)		+= gsmi.o
+ obj-$(CONFIG_GOOGLE_COREBOOT_TABLE)        += coreboot_table.o
+ obj-$(CONFIG_GOOGLE_COREBOOT_TABLE_ACPI)   += coreboot_table-acpi.o
+ obj-$(CONFIG_GOOGLE_COREBOOT_TABLE_OF)     += coreboot_table-of.o
++obj-$(CONFIG_GOOGLE_FRAMEBUFFER_COREBOOT)  += framebuffer-coreboot.o
+ obj-$(CONFIG_GOOGLE_MEMCONSOLE)            += memconsole.o
+ obj-$(CONFIG_GOOGLE_MEMCONSOLE_COREBOOT)   += memconsole-coreboot.o
+ obj-$(CONFIG_GOOGLE_MEMCONSOLE_X86_LEGACY) += memconsole-x86-legacy.o
+diff --git a/drivers/firmware/google/coreboot_table.h b/drivers/firmware/google/coreboot_table.h
+index 26a3f3f3ac9c..8ad95a94481b 100644
+--- a/drivers/firmware/google/coreboot_table.h
++++ b/drivers/firmware/google/coreboot_table.h
+@@ -3,6 +3,7 @@
+  *
+  * Internal header for coreboot table access.
+  *
++ * Copyright 2014 Gerd Hoffmann <kraxel@redhat.com>
+  * Copyright 2017 Google Inc.
+  * Copyright 2017 Samuel Holland <samuel@sholland.org>
+  *
+@@ -46,12 +47,33 @@ struct lb_cbmem_ref {
+ 	u64 cbmem_addr;
+ };
+ 
++/* Describes framebuffer setup by coreboot */
++struct lb_framebuffer {
++	u32 tag;
++	u32 size;
++
++	u64 physical_address;
++	u32 x_resolution;
++	u32 y_resolution;
++	u32 bytes_per_line;
++	u8  bits_per_pixel;
++	u8  red_mask_pos;
++	u8  red_mask_size;
++	u8  green_mask_pos;
++	u8  green_mask_size;
++	u8  blue_mask_pos;
++	u8  blue_mask_size;
++	u8  reserved_mask_pos;
++	u8  reserved_mask_size;
++};
++
+ /* A device, additionally with information from coreboot. */
+ struct coreboot_device {
+ 	struct device dev;
+ 	union {
+ 		struct coreboot_table_entry entry;
+ 		struct lb_cbmem_ref cbmem_ref;
++		struct lb_framebuffer framebuffer;
+ 	};
+ };
+ 
+diff --git a/drivers/firmware/google/framebuffer-coreboot.c b/drivers/firmware/google/framebuffer-coreboot.c
+new file mode 100644
+index 000000000000..b8b49c067157
+--- /dev/null
++++ b/drivers/firmware/google/framebuffer-coreboot.c
+@@ -0,0 +1,115 @@
++/*
++ * framebuffer-coreboot.c
++ *
++ * Memory based framebuffer accessed through coreboot table.
++ *
++ * Copyright 2012-2013 David Herrmann <dh.herrmann@gmail.com>
++ * Copyright 2017 Google Inc.
++ * Copyright 2017 Samuel Holland <samuel@sholland.org>
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License v2.0 as published by
++ * the Free Software Foundation.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ */
++
++#include <linux/device.h>
++#include <linux/kernel.h>
++#include <linux/mm.h>
++#include <linux/module.h>
++#include <linux/platform_data/simplefb.h>
++#include <linux/platform_device.h>
++
++#include "coreboot_table.h"
++
++#define CB_TAG_FRAMEBUFFER 0x12
++
++static const struct simplefb_format formats[] = SIMPLEFB_FORMATS;
++
++static int framebuffer_probe(struct coreboot_device *dev)
++{
++	int i;
++	u32 length;
++	struct lb_framebuffer *fb = &dev->framebuffer;
++	struct platform_device *pdev;
++	struct resource res;
++	struct simplefb_platform_data pdata = {
++		.width = fb->x_resolution,
++		.height = fb->y_resolution,
++		.stride = fb->bytes_per_line,
++		.format = NULL,
++	};
++
++	for (i = 0; i < ARRAY_SIZE(formats); ++i) {
++		if (fb->bits_per_pixel     == formats[i].bits_per_pixel &&
++		    fb->red_mask_pos       == formats[i].red.offset &&
++		    fb->red_mask_size      == formats[i].red.length &&
++		    fb->green_mask_pos     == formats[i].green.offset &&
++		    fb->green_mask_size    == formats[i].green.length &&
++		    fb->blue_mask_pos      == formats[i].blue.offset &&
++		    fb->blue_mask_size     == formats[i].blue.length &&
++		    fb->reserved_mask_pos  == formats[i].transp.offset &&
++		    fb->reserved_mask_size == formats[i].transp.length)
++			pdata.format = formats[i].name;
++	}
++	if (!pdata.format)
++		return -ENODEV;
++
++	memset(&res, 0, sizeof(res));
++	res.flags = IORESOURCE_MEM | IORESOURCE_BUSY;
++	res.name = "Coreboot Framebuffer";
++	res.start = fb->physical_address;
++	length = PAGE_ALIGN(fb->y_resolution * fb->bytes_per_line);
++	res.end = res.start + length - 1;
++	if (res.end <= res.start)
++		return -EINVAL;
++
++	pdev = platform_device_register_resndata(&dev->dev,
++						 "simple-framebuffer", 0,
++						 &res, 1, &pdata,
++						 sizeof(pdata));
++	if (IS_ERR(pdev))
++		pr_warn("coreboot: could not register framebuffer\n");
++	else
++		dev_set_drvdata(&dev->dev, pdev);
++
++	return PTR_ERR_OR_ZERO(pdev);
++}
++
++static int framebuffer_remove(struct coreboot_device *dev)
++{
++	struct platform_device *pdev = dev_get_drvdata(&dev->dev);
++
++	platform_device_unregister(pdev);
++
++	return 0;
++}
++
++static struct coreboot_driver framebuffer_driver = {
++	.probe = framebuffer_probe,
++	.remove = framebuffer_remove,
++	.drv = {
++		.name = "framebuffer",
++	},
++	.tag = CB_TAG_FRAMEBUFFER,
++};
++
++static int __init coreboot_framebuffer_init(void)
++{
++	return coreboot_driver_register(&framebuffer_driver);
++}
++
++static void coreboot_framebuffer_exit(void)
++{
++	coreboot_driver_unregister(&framebuffer_driver);
++}
++
++module_init(coreboot_framebuffer_init);
++module_exit(coreboot_framebuffer_exit);
++
++MODULE_AUTHOR("Samuel Holland <samuel@sholland.org>");
++MODULE_LICENSE("GPL");
