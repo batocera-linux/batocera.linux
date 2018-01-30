@@ -4,7 +4,7 @@
 #
 ################################################################################
 LINUX_VERSION_PROBED = `$(MAKE) $(LINUX_MAKE_FLAGS) -C $(LINUX_DIR) --no-print-directory -s kernelrelease 2>/dev/null`
-GPU_AML_VERSION = 2016-05-04-2364187a0c
+GPU_AML_VERSION = 2016-08-18-fe6d7b1d1b
 GPU_AML_SITE    = http://openlinux.amlogic.com:8000/download/ARM/gpu
 GPU_AML_SOURCE  = gpu-$(GPU_AML_VERSION).tar.gz
 GPU_AML_MODULE_DIR = kernel/amlogic/gpu
