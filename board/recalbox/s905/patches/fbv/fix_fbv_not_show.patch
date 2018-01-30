@@ -1,0 +1,12 @@
+--- a/fb_display.c	2018-01-30 22:46:05.525319483 +0800
++++ b/fb_display.c	2018-01-30 22:52:40.128058168 +0800
+@@ -375,7 +375,8 @@
+ 	    *cpp = 4;
+ 	    i_fbbuff = (unsigned int *) malloc(count * sizeof(unsigned int));
+ 	    for(i = 0; i < count ; i++)
+-		i_fbbuff[i] = ((rgbbuff[i*3] << 16) & 0xFF0000) |
++		i_fbbuff[i] = (0xFF << 24) |
++			    ((rgbbuff[i*3] << 16) & 0xFF0000) |
+ 			    ((rgbbuff[i*3+1] << 8) & 0xFF00) |
+ 			    (rgbbuff[i*3+2] & 0xFF);
+ 	    fbbuff = (void *) i_fbbuff;
