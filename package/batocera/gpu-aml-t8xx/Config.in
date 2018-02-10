@@ -1,0 +1,3 @@
+config BR2_PACKAGE_GPU_AML_T8XX
+	bool "amlogic t8xx gpu driver"
+	depends on BR2_LINUX_KERNEL

@@ -1,0 +1,28 @@
+diff --git a/t83x/kernel/drivers/gpu/arm/midgard/platform/devicetree/mali_clock.c b/t83x/kernel/drivers/gpu/arm/midgard/platform/devicetree/mali_clock.c
+index 6ddf39f..370eb16 100644
+--- a/t83x/kernel/drivers/gpu/arm/midgard/platform/devicetree/mali_clock.c
++++ b/t83x/kernel/drivers/gpu/arm/midgard/platform/devicetree/mali_clock.c
+@@ -339,8 +339,8 @@ int mali_dt_info(struct platform_device *pdev, struct mali_plat_info_t *mpdata)
+ 	ret = of_property_read_u32(gpu_dn,"def_clk",
+ 			&mpdata->def_clock);
+ 	if (ret) {
+-		dev_notice(&pdev->dev, "default clk set to %d\n", mpdata->dvfs_table_size/2-1);
+-		mpdata->def_clock = mpdata->dvfs_table_size/2 - 1;
++		dev_notice(&pdev->dev, "default clk set to %d\n", mpdata->turbo_clock);
++		mpdata->def_clock = mpdata->turbo_clock;
+ 	}
+ 	_dev_info(&pdev->dev, "default clk  is %d\n", mpdata->def_clock);
+ 
+diff --git a/t83x/kernel/drivers/gpu/arm/midgard/platform/devicetree/scaling.c b/t83x/kernel/drivers/gpu/arm/midgard/platform/devicetree/scaling.c
+index 16fe365..3e4508f 100644
+--- a/t83x/kernel/drivers/gpu/arm/midgard/platform/devicetree/scaling.c
++++ b/t83x/kernel/drivers/gpu/arm/midgard/platform/devicetree/scaling.c
+@@ -29,7 +29,7 @@ static int lastStep;
+ static struct work_struct wq_work;
+ static mali_plat_info_t* pmali_plat = NULL;
+ #endif
+-static int  scaling_mode = MALI_PP_FS_SCALING;
++static int  scaling_mode = MALI_TURBO_MODE;
+ extern int  mali_pm_statue;
+ //static int  scaling_mode = MALI_SCALING_DISABLE;
+ //static int  scaling_mode = MALI_PP_SCALING;

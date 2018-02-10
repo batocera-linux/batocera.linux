@@ -1,0 +1,38 @@
+commit 49fc5912d6454eb3c7ffa3117d70abad70cd05f5
+Author: kszaq <kszaquitto@gmail.com>
+Date:   Sun Aug 27 20:54:39 2017 +0200
+
+    fbdev_window: wait for fence to be signalled and closed
+
+diff --git a/hybris/egl/platforms/fbdev/fbdev_window.cpp b/hybris/egl/platforms/fbdev/fbdev_window.cpp
+index 0b3f835..56e976a 100644
+--- a/hybris/egl/platforms/fbdev/fbdev_window.cpp
++++ b/hybris/egl/platforms/fbdev/fbdev_window.cpp
+@@ -24,6 +24,10 @@
+ #include <stdio.h>
+ #include <string.h>
+ 
++extern "C" {
++#include <sync/sync.h>
++};
++
+ #define FRAMEBUFFER_PARTITIONS 2
+ 
+ static pthread_cond_t _cond = PTHREAD_COND_INITIALIZER;
+@@ -261,6 +265,16 @@ int FbDevNativeWindow::queueBuffer(BaseNativeWindowBuffer* buffer, int fenceFd)
+ 
+     pthread_mutex_unlock(&_mutex);
+ 
++#if ANDROID_VERSION_MAJOR>=4 && ANDROID_VERSION_MINOR>=2 || ANDROID_VERSION_MAJOR>=5
++    HYBRIS_TRACE_BEGIN("fbdev-platform", "queueBuffer_waiting_for_fence", "-%p", fbnb);
++    if (fenceFd >= 0)
++    {
++        sync_wait(fenceFd, -1);
++        close(fenceFd);
++    }
++    HYBRIS_TRACE_END("fbdev-platform", "queueBuffer_waiting_for_fence", "-%p", fbnb);
++#endif
++
+     HYBRIS_TRACE_BEGIN("fbdev-platform", "queueBuffer-post", "-%p", fbnb);
+ 
+     int rv = m_fbDev->post(m_fbDev, fbnb->handle);

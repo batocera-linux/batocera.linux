@@ -1,0 +1,17 @@
+diff --git a/fs/cifs/connect.c b/fs/cifs/connect.c
+index d95744d..3b75c7e 100644
+--- a/fs/cifs/connect.c
++++ b/fs/cifs/connect.c
+@@ -1270,9 +1270,9 @@ cifs_parse_mount_options(const char *mountdata, const char *devname,
+ 
+ 	vol->actimeo = CIFS_DEF_ACTIMEO;
+ 
+-	/* FIXME: add autonegotiation -- for now, SMB1 is default */
+-	vol->ops = &smb1_operations;
+-	vol->vals = &smb1_values;
++	/* FIXME: add autonegotiation -- for now, SMB2.1 is default */
++	vol->ops = &smb21_operations;
++	vol->vals = &smb21_values;
+ 
+ 	vol->echo_interval = SMB_ECHO_INTERVAL_DEFAULT;
+

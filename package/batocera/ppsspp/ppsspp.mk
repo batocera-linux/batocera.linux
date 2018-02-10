@@ -59,4 +59,11 @@ ifeq ($(BR2_arm),y)
 	PPSSPP_CONF_OPTS += -DARMV7=1
 endif
 
+# libhybris
+ifeq ($(BR2_PACKAGE_LIBHYBRIS),y)
+	PPSSPP_CONF_OPTS += -DUSING_FBDEV=1
+	PPSSPP_CONF_OPTS += -DUSING_GLES2=1
+	PPSSPP_CONF_OPTS += -DUSING_EGL=1
+endif
+
 $(eval $(cmake-package))

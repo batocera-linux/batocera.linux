@@ -226,7 +226,40 @@ case "${RECALBOX_TARGET}" in
 	sync || exit 1
 	;;
 
-        X86|X86_64)
+    S912)
+	# boot
+	rm -rf ${BINARIES_DIR}/boot        || exit 1
+	mkdir -p ${BINARIES_DIR}/boot/boot || exit 1
+	cp board/recalbox/s912/boot-logo.bmp.gz ${BINARIES_DIR}/boot   || exit 1
+	cp board/recalbox/s912/s905_autoscript ${BINARIES_DIR}/boot	|| exit 1
+	cp board/recalbox/s912/aml_autoscript ${BINARIES_DIR}/boot     || exit 1
+	cp board/recalbox/s912/aml_autoscript.zip ${BINARIES_DIR}/boot     || exit 1
+	cp "${BINARIES_DIR}/recalbox-boot.conf" "${BINARIES_DIR}/boot/recalbox-boot.conf" || exit 1
+	cp "${BINARIES_DIR}/Image" "${BINARIES_DIR}/boot/boot/Image" || exit 1
+	cp "${BINARIES_DIR}/uInitrd"              "${BINARIES_DIR}/boot/boot" || exit 1
+	cp "${BINARIES_DIR}/rootfs.squashfs" "${BINARIES_DIR}/boot/boot/recalbox.update" || exit 1
+	cp "${BINARIES_DIR}/gxm_q200_2g.dtb" "${BINARIES_DIR}/boot/boot" || exit 1
+	cp "${BINARIES_DIR}/gxm_q201_1g.dtb" "${BINARIES_DIR}/boot/boot" || exit 1
+	cp "${BINARIES_DIR}/gxm_q201_2g.dtb" "${BINARIES_DIR}/boot/boot" || exit 1
+	cp "${BINARIES_DIR}/gxm_q20xrmii_2g.dtb" "${BINARIES_DIR}/boot/boot" || exit 1
+	# boot.tar.xz
+	echo "creating boot.tar.xz"
+	(cd "${BINARIES_DIR}/boot" && tar -cJf "${RECALBOX_BINARIES_DIR}/boot.tar.xz"  boot recalbox-boot.conf boot-logo.bmp.gz) || exit 1
+
+	# batocera.img
+        # rename the squashfs : the .update is the version that will be renamed at boot to replace the old version
+        mv "${BINARIES_DIR}/boot/boot/recalbox.update" "${BINARIES_DIR}/boot/boot/recalbox" || exit 1
+	GENIMAGE_TMP="${BUILD_DIR}/genimage.tmp"
+	RECALBOXIMG="${RECALBOX_BINARIES_DIR}/batocera.img"
+	rm -rf "${GENIMAGE_TMP}" || exit 1
+	cp "board/recalbox/s912/genimage.cfg" "${BINARIES_DIR}" || exit 1
+	echo "generating image"
+	genimage --rootpath="${TARGET_DIR}" --inputpath="${BINARIES_DIR}/boot" --outputpath="${RECALBOX_BINARIES_DIR}" --config="${BINARIES_DIR}/genimage.cfg" --tmppath="${GENIMAGE_TMP}" || exit 1
+	rm -f "${RECALBOX_BINARIES_DIR}/boot.vfat" || exit 1
+	sync || exit 1
+	;;
+
+    X86|X86_64)
 	# /boot
 	rm -rf ${BINARIES_DIR}/boot || exit 1
 	mkdir -p ${BINARIES_DIR}/boot/grub || exit 1
