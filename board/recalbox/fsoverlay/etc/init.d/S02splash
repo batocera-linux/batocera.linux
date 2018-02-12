@@ -26,7 +26,13 @@ do_start ()
         omx_fnt=""
         omx_opt="--no-keys --layer=10000 --aspect-mode=fill"
         omx_srt="--no-ghost-box --lines=1 --align=left $omx_fnt --font-size=20 --subtitles=/recalbox/system/resources/splash/recalboxintro.srt"
-        /usr/bin/omxplayer -o both $omx_opt $omx_srt $video &
+
+	omx_nosound=
+	if grep -qE "^[ ]*splashsound[ ]*=[ ]*off[ ]*$" /boot/recalbox-boot.conf
+	then
+	    omx_nosound="-n -1"
+	fi
+        /usr/bin/omxplayer -o both $omx_opt $omx_srt $omx_nosound $video &
         PID=$!
 
         # Stop the video when ready
