@@ -7,7 +7,7 @@
 MUPEN64PLUS_CORE_VERSION = e0fa7db91b9df4157a81e4e5070a2e409dbc4bc7
 MUPEN64PLUS_CORE_SITE = $(call github,mupen64plus,mupen64plus-core,$(MUPEN64PLUS_CORE_VERSION))
 MUPEN64PLUS_CORE_LICENSE = MIT
-MUPEN64PLUS_CORE_DEPENDENCIES = sdl2 alsa-lib freetype
+MUPEN64PLUS_CORE_DEPENDENCIES = sdl2 alsa-lib freetype dejavu
 MUPEN64PLUS_CORE_INSTALL_STAGING = YES
 
 MUPEN64PLUS_GL_CFLAGS = -I$(STAGING_DIR)/usr/include -L$(STAGING_DIR)/usr/lib
@@ -68,7 +68,10 @@ define MUPEN64PLUS_CORE_INSTALL_STAGING_CMDS
 endef
 
 define MUPEN64PLUS_CORE_INSTALL_TARGET_CMDS
+	mkdir -p $(TARGET_DIR)/usr/lib
 	$(INSTALL) -m 0644 $(@D)/projects/unix/libmupen64plus.so.2.0.0 $(TARGET_DIR)/usr/lib
+	mkdir -p $(TARGET_DIR)/usr/share/mupen64plus
+	ln -sf /usr/share/fonts/dejavu/DejaVuSans.ttf $(TARGET_DIR)/usr/share/mupen64plus/font.ttf
 endef
 
 define MUPEN64PLUS_CORE_CROSS_FIXUP
