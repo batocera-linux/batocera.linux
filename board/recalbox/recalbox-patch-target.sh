@@ -74,7 +74,7 @@ TGVERSION=$(cat "${TARGET_DIR}/recalbox/recalbox.version")
 convert "${TARGET_DIR}/recalbox/system/resources/splash/logo.png" -fill white -pointsize 30 -annotate +50+1020 "${TGVERSION}" "${TARGET_DIR}/recalbox/system/resources/splash/logo-version.png" || exit 1
 
 # Splash video subtitle
-echo -e "1\n00:00:00,000 --> 00:00:02,000\n${RVERSION} "$(date "+%Y/%m/%d %H:%M") > "${TARGET_DIR}/recalbox/system/resources/splash/recalboxintro.srt"
+echo -e "1\n00:00:00,000 --> 00:00:02,000\n${RVERSION} "$(date "+%Y/%m/%d %H:%M") > "${TARGET_DIR}/recalbox/system/resources/splash/splash.srt"
 omx_fnt="/usr/share/fonts/dejavu/DejaVuSans-BoldOblique.ttf"
 if [[ -f ${TARGET_DIR}$omx_fnt ]] ; then
 	sed -i "s|omx_fnt=\"\"|omx_fnt=\"--font=$omx_fnt\"|g" "${TARGET_DIR}/etc/init.d/S02splash"

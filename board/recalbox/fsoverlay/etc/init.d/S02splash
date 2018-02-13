@@ -2,7 +2,12 @@
 
 do_start ()
 {
-    video="/recalbox/system/resources/splash/recalboxintro.mp4"
+    if test -f "/boot/splash.mp4"
+    then
+	video="/boot/splash.mp4"
+    else
+	video="/recalbox/system/resources/splash/splash.mp4"
+    fi
 
     # odroid xu4 has not omxplayer, make it run this code make it flash
     if [[ -f $video && -f /usr/bin/omxplayer ]]; then
@@ -25,14 +30,18 @@ do_start ()
         # Launch the video
         omx_fnt=""
         omx_opt="--no-keys --layer=10000 --aspect-mode=fill"
-        omx_srt="--no-ghost-box --lines=1 --align=left $omx_fnt --font-size=20 --subtitles=/recalbox/system/resources/splash/recalboxintro.srt"
+        omx_srt="--no-ghost-box --lines=1 --align=left $omx_fnt --font-size=20 --subtitles=/recalbox/system/resources/splash/splash.srt"
 
 	omx_nosound=
 	if grep -qE "^[ ]*splashsound[ ]*=[ ]*off[ ]*$" /boot/recalbox-boot.conf
 	then
 	    omx_nosound="-n -1"
 	fi
-        /usr/bin/omxplayer -o both $omx_opt $omx_srt $omx_nosound $video &
+
+	# -911 = Volume set to 35% (On omxplayer)
+	# 1/(10^(911/2000)) = 0.35034828830157
+
+        /usr/bin/omxplayer -o both --vol -911 $omx_opt $omx_srt $omx_nosound $video &
         PID=$!
 
         # Stop the video when ready
