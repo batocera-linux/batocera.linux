@@ -11,7 +11,7 @@ define LIBRETRO_FREEINTV_BUILD_CMDS
         $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" LD="$(TARGET_LD)" RANLIB="$(TARGET_RANLIB)" AR="$(TARGET_AR)" -C $(@D)/freeintv -f Makefile platform="$(LIBRETRO_PLATFORM)"
 endef
 
-define LIBRETRO_DESMUME_INSTALL_TARGET_CMDS
+define LIBRETRO_FREEINTV_INSTALL_TARGET_CMDS
 	$(INSTALL) -D $(@D)/freeintv/freeintv_libretro.so \
 		$(TARGET_DIR)/usr/lib/libretro/freeintv_libretro.so
 endef
