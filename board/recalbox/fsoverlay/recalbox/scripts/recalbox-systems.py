@@ -52,9 +52,9 @@ systems = {
     "segacd":    { "name": "Sega CD",                              "biosFiles": [ { "md5": "854b9150240a198070150e4566ae1290", "file": "bios/us_scd2_9306.bin"  },
                                                                                   { "md5": "d8b8b720dea6c6ba25c309ed633930f4", "file": "bios/eu_mcd2_9306.bin"  },
                                                                                   { "md5": "bdeb4c47da613946d422d97d98b21cda", "file": "bios/jp_mcd1_9112.bin"  } ] },
-    "freeintv":  { "name": "Mattel Intellivision",                  "biosFiles": [ { "md5": "62e761035cb657903761800f4437b8af", "file": "bios/exec.bin"  },
+    "freeintv":  { "name": "Mattel Intellivision",                 "biosFiles": [ { "md5": "62e761035cb657903761800f4437b8af", "file": "bios/exec.bin"  },
                                                                                   { "md5": "0cd5946c6473e42e8e4c2137785e427f", "file": "bios/grom.bin"  },
-																				  { "md5": "2e72a9a2b897d330a35c8b07a6146c52", "file": "bios/ECS.bin"   },
+										  { "md5": "2e72a9a2b897d330a35c8b07a6146c52", "file": "bios/ECS.bin"   },
                                                                                   { "md5": "d5530f74681ec6e0f282dab42e6b1c5f", "file": "bios/IVOICE.bin"  } ] },
 }
 
