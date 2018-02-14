@@ -1,0 +1,13 @@
+diff --git a/core/cfg/ini.cpp b/core/cfg/ini.cpp
+index 771be4c..ca114f2 100644
+--- a/core/cfg/ini.cpp
++++ b/core/cfg/ini.cpp
+@@ -111,7 +111,7 @@ ConfigSection* ConfigFile::get_section(string name, bool is_virtual)
+ ConfigEntry* ConfigFile::get_entry(string section_name, string entry_name)
+ {
+ 	ConfigSection* section = this->get_section(section_name, true);
+-	if(section != NULL)
++	if(section != NULL && section->has_entry(entry_name))
+ 	{
+ 		return section->get_entry(entry_name);
+ 	}
