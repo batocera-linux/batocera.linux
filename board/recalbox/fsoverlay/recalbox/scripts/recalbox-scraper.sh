@@ -23,6 +23,9 @@ case "${syslang}" in
     pt_PT)
 	sslang=pt,en
 	;;
+	pt_BR)
+	sslang=pt,en
+	;;
     *)
 	sslang=en
 esac
