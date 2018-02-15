@@ -3,7 +3,8 @@
 # retroarch
 #
 ################################################################################
-RETROARCH_VERSION = 8ec326a43fb432f5861779164b17ad1607f8e2f0
+#RETROARCH_VERSION = 1.6.9
+RETROARCH_VERSION = e8b10d342a7c5723bd8ad6a8d5eac830d1259ab4
 
 RETROARCH_SITE = $(call github,libretro,RetroArch,$(RETROARCH_VERSION))
 
