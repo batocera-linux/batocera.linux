@@ -4,7 +4,8 @@
 #
 ################################################################################
 
-SSELPH_SCRAPER_VERSION = f132e6aef08ad391d91ae79ab820b87862102493
+#SSELPH_SCRAPER_VERSION = 1.4.5
+SSELPH_SCRAPER_VERSION = cf56be9bee81d44c93da058c0f966e7c136e11d9
 SSELPH_SCRAPER_SITE = $(call github,sselph,scraper,$(SSELPH_SCRAPER_VERSION))
 
 SSELPH_SCRAPER_DEPENDENCIES = host-go
