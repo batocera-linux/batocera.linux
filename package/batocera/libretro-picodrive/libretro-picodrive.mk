@@ -3,7 +3,7 @@
 # libretro-picodrive
 #
 ################################################################################
-LIBRETRO_PICODRIVE_VERSION = f0a3d0dc4bd9060eb6bfdb16fb20dbb80a9e6ae9
+LIBRETRO_PICODRIVE_VERSION = 4ad0087f4ed1304f335f236c86695919f77eb0ef
 #LIBRETRO_PICODRIVE_SITE = $(call github,libretro,picodrive,$(LIBRETRO_PICODRIVE_VERSION))
 LIBRETRO_PICODRIVE_SITE = https://github.com/libretro/picodrive.git
 LIBRETRO_PICODRIVE_SITE_METHOD=git
