@@ -1,0 +1,110 @@
+<theme>
+	<formatVersion>4</formatVersion>
+	<include>./../main.xml</include>
+	<include>./custom.xml</include>
+
+	<view name="basic">
+		<textlist name="gamelist">
+			<pos>0.24 0.21</pos>
+			<size>0.52 0.695</size>
+			<alignment>center</alignment>
+			<horizontalMargin>0.01</horizontalMargin>
+		</textlist>
+		<image name="backtext1" extra="true">
+			<color>9F9F9F</color>
+		</image>
+	</view>
+
+	<view name="detailed">
+		<image name="backtext2" extra="true">
+			<color>9F9F9F</color>
+		</image>
+		<image name="backtext3" extra="true">
+			<color>9F9F9F</color>
+		</image>
+		<image name="md_image">
+			<pos>0.58 0.395</pos>
+			<maxSize>0.26 0.37</maxSize>
+			<origin>0.5 0.5</origin>
+		</image>
+
+		<text name="md_lbl_rating">
+			<pos>0.72 0.20</pos>
+		</text>
+
+		<text name="md_lbl_releasedate">
+			<pos>0.72 0.24</pos>
+		</text>
+
+		<text name="md_lbl_developer">
+			<pos>0.72 0.28</pos>
+		</text>
+
+		<text name="md_lbl_publisher">
+			<pos>0.72 0.32</pos>
+		</text>
+
+		<text name="md_lbl_genre">
+			<pos>0.72 0.36</pos>
+		</text>
+
+		<text name="md_lbl_players">
+			<pos>0.72 0.40</pos>
+		</text>
+
+		<text name="md_lbl_lastplayed">
+			<pos>0.72 0.44</pos>
+		</text>
+
+		<text name="md_lbl_playcount">
+			<pos>0.72 0.48</pos>
+		</text>
+
+		<text name="md_lbl_favorite">
+			<pos>0.72 0.52</pos>
+		</text>
+
+		<datetime name="md_releasedate">
+			<pos>0.845 0.24</pos>
+		</datetime>
+
+		<text name="md_developer">
+			<pos>0.845 0.28</pos>
+		</text>
+
+		<text name="md_publisher">
+			<pos>0.845 0.32</pos>
+		</text>
+		<text name="md_genre">
+			<pos>0.845 0.36</pos>
+		</text>
+
+		<text name="md_players">
+			<pos>0.845 0.40</pos>
+		</text>
+
+		<datetime name="md_lastplayed">
+			<pos>0.845 0.44</pos>
+		</datetime>
+
+		<text name="md_playcount">
+			<pos>0.845 0.48</pos>
+		</text>
+
+		<text name="md_favorite">
+			<pos>0.845 0.52</pos>
+		</text>
+
+		<text name="md_description">
+			<pos>0.45 0.60</pos>
+			<size>0.52 0.3</size>
+		</text>
+
+		<textlist name="gamelist">
+			<pos>0.025 0.20</pos>
+			<size>0.39 0.7</size>
+			<alignment>left</alignment>
+			<horizontalMargin>0.01</horizontalMargin>
+		</textlist>
+	</view>
+</theme>
