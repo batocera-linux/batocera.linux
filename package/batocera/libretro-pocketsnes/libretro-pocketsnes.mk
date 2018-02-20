@@ -3,7 +3,7 @@
 # POCKETSNESS
 #
 ################################################################################
-LIBRETRO_POCKETSNES_VERSION = 04c179c85e266cb60c1135eb6c9cc6e7af2bb8de
+LIBRETRO_POCKETSNES_VERSION = d8084b0e8f906feac45c387db8e7bd00fced2f98
 LIBRETRO_POCKETSNES_SITE = $(call github,libretro,pocketsnes-libretro,$(LIBRETRO_POCKETSNES_VERSION))
 
 define LIBRETRO_POCKETSNES_BUILD_CMDS
