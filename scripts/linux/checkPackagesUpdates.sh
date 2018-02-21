@@ -249,7 +249,60 @@ run() {
     printf "+----------------------------------+----------------------------------------------+---------------------------------------------------------+---------------------------------------------------------+\n"
 }
 
-PARAM_GRP=$(echo "$1" | tr a-z A-Z)
-run "${PARAM_GRP}"
-exit $?
+base_UPDATE() {
+    sed -i -e s+"^\([ ]*[a-zA-Z0-9_]*_VERSION[ ]*=[ ]*\).*$"+"\1${2}"+ package/batocera/${1}/*.mk
+}
+
+run_update() {
+    updpkg=${1}
+
+    if test ! -d "package/batocera/${updpkg}"
+    then
+	echo "invalid package name \"${updpkg}\"" >&2
+	return 1
+    fi
+
+    setPGroups ""
+    kodi_eval ""
+    github_eval
+    current_base_eval
+
+    FCURV="${updpkg}_GETCUR ${updpkg}"
+    CURV=$(${FCURV})
+    echo "current version: ${CURV}"
+
+    FNETV="${updpkg}_GETNET ${updpkg}"
+    NETV=$(${FNETV})
+    # the FNETV function format is : "^(VERSION) [date]"
+    NETVSTRING=$(echo "${NETV}" | sed -e s+" .*$"+""+)
+    if test -n "${NETV}"
+    then
+	if test "${NETV}" != "${CURV}"
+	then
+	    echo "new version: ${NETV}"
+	    base_UPDATE "${updpkg}" "${NETVSTRING}"
+	else
+	    echo "package already up to date"
+	fi
+	printf "| %-32s | ${tput_green}%-55s${tput_reset} |\n" "${updpkg}" "${NETV}"
+    else
+	echo "no update found"
+	printf "| %-32s | ${tput_red}%-55s${tput_reset} |\n" "${updpkg}" "${CURV}"
+    fi
+}
+
+if test "${1}" == "--update"
+then
+    if test $# -ne 2
+    then
+	echo "Syntaxe: ${0} --update <package>"
+	exit 1
+    fi
+    run_update "${2}"
+    exit $?
+else
+    PARAM_GRP=$(echo "$1" | tr a-z A-Z)
+    run "${PARAM_GRP}"
+    exit $?
+fi
 ###
