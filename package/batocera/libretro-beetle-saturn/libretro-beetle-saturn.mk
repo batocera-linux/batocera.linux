@@ -3,8 +3,7 @@
 # BEETLE-SATURN
 #
 ################################################################################
-LIBRETRO_BEETLE_SATURN_VERSION = #ceffed066ad14f894e2e11a25c20743399157000
-LIBRETRO_BEETLE_SATURN_VERSION = bb5d0c126feb25cf980f5cc1fc57d6a5a6f6e7ab
+LIBRETRO_BEETLE_SATURN_VERSION = 672ef1c03f5ff575bb1a027872c6aeba8276aa4a
 LIBRETRO_BEETLE_SATURN_SITE = $(call github,libretro,beetle-saturn-libretro,$(LIBRETRO_BEETLE_SATURN_VERSION))
 
 define LIBRETRO_BEETLE_SATURN_BUILD_CMDS
