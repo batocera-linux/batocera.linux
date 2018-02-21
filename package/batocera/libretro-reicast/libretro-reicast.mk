@@ -3,7 +3,7 @@
 # REICAST
 #
 ################################################################################
-LIBRETRO_REICAST_VERSION = 148638c654a61aa32df7023498f261c4fb23c9aa
+LIBRETRO_REICAST_VERSION = fff2eb2f92251db82cb763d3ab1d19be4a705f95
 LIBRETRO_REICAST_SITE = $(call github,libretro,reicast-emulator,$(LIBRETRO_REICAST_VERSION))
 
 define LIBRETRO_REICAST_BUILD_CMDS
