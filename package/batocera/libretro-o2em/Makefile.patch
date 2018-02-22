@@ -1,8 +1,10 @@
---- a/Makefile	2015-10-15 16:36:32.000000000 +0200
-+++ b/Makefile	2015-12-11 15:29:29.115647789 +0100
-@@ -122,6 +122,25 @@
-    STATIC_LINKING = 1
- 	FLAGS += -DVITA
+diff --git a/Makefile b/Makefile
+index aadfdf5..9475da1 100644
+--- a/Makefile
++++ b/Makefile
+@@ -277,6 +277,25 @@ PSS_STYLE :=2
+ LDFLAGS += -DLL
+ CFLAGS += -D_CRT_SECURE_NO_DEPRECATE
  
 +# ARM
 +else ifneq (,$(findstring armv,$(platform)))
@@ -18,11 +20,11 @@
 +               FLAGS += -mfloat-abi=hard
 +       endif
 +       ifneq (,$(findstring neon,$(platform)))
-+               FLAGS += -mfpu=neon
++              FLAGS += -mfpu=neon
 +               HAVE_NEON = 1
 +       endif
 +       FLAGS += -DARM
 +
+ # Windows
  else
     TARGET := $(TARGET_NAME)_libretro.dll
-    CC = gcc
