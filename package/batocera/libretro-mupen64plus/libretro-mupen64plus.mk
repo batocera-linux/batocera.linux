@@ -3,7 +3,7 @@
 # MUPEN64PLUS
 #
 ################################################################################
-LIBRETRO_MUPEN64PLUS_VERSION = d1451bbfc47d465b8ffaa3fb9b39935ee8d37037
+LIBRETRO_MUPEN64PLUS_VERSION = 6f80cbc13978a192193c828010e894a172b9d917
 LIBRETRO_MUPEN64PLUS_SITE = $(call github,libretro,mupen64plus-libretro,$(LIBRETRO_MUPEN64PLUS_VERSION))
 
 ifeq ($(BR2_PACKAGE_RPI_USERLAND),y)
