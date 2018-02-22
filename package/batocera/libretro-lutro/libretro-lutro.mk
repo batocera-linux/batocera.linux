@@ -3,7 +3,7 @@
 # LUTRO
 #
 ################################################################################
-LIBRETRO_LUTRO_VERSION = 2377dd37ad3bd37ddef9fc37742bba2531a78407
+LIBRETRO_LUTRO_VERSION = 8ec9b6d1478e2d77ffddc98a0d53223d2f7f5172
 LIBRETRO_LUTRO_SITE = $(call github,libretro,libretro-lutro,$(LIBRETRO_LUTRO_VERSION))
 
 define LIBRETRO_LUTRO_BUILD_CMDS

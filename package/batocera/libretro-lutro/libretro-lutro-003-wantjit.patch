@@ -1,8 +1,8 @@
 diff --git a/Makefile b/Makefile
-index 198681e..5a90347 100644
+index 82af5ed..d1d21d2 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -57,7 +57,7 @@ ifeq ($(platform), unix)
+@@ -63,7 +63,7 @@ ifeq ($(platform), unix)
     LDFLAGS += -Wl,-E
  
  ifeq ($(ARCH), $(filter $(ARCH), intel))
@@ -11,12 +11,3 @@ index 198681e..5a90347 100644
  endif
  else ifeq ($(platform), linux-portable)
     TARGET := $(TARGET_NAME)_libretro.so
-@@ -76,7 +76,7 @@ else ifeq ($(platform), osx)
-    MMD :=
- 
- ifeq ($(ARCH), $(filter $(ARCH), intel))
--	WANT_JIT = 1
-+	WANT_JIT = 0
- endif
- 
-    # for 64bit osx:

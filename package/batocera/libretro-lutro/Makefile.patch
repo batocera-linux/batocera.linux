@@ -1,6 +1,8 @@
---- a/Makefile	2016-07-26 08:57:48.949430075 +0200
-+++ b/Makefile	2016-07-26 09:16:20.325450940 +0200
-@@ -184,6 +184,35 @@
+diff --git a/Makefile b/Makefile
+index e93af98..82af5ed 100644
+--- a/Makefile
++++ b/Makefile
+@@ -198,6 +198,35 @@ else ifeq ($(platform), sncps3)
     LUA_MYCFLAGS := $(DEFINES) $(CFLAGS)
  	STATIC_LINKING = 1
     MMD :=

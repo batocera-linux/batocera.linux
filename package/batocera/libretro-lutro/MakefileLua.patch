@@ -1,10 +1,12 @@
---- a/deps/lua/src/Makefile	2016-07-26 09:42:38.077480560 +0200
-+++ b/deps/lua/src/Makefile	2016-07-26 09:43:07.913481120 +0200
+diff --git a/deps/lua/src/Makefile b/deps/lua/src/Makefile
+index e9167cc..753b6ad 100644
+--- a/deps/lua/src/Makefile
++++ b/deps/lua/src/Makefile
 @@ -8,7 +8,7 @@
  PLAT= none
  
  CC= gcc
--CFLAGS= -O2 -Wall $(MYCFLAGS)
+-CFLAGS= -O2 -Wall -fPIC $(MYCFLAGS)
 +CFLAGS= -O2 -Wall $(MYCFLAGS) -fPIC
  AR= ar rcu
  RANLIB= ranlib
