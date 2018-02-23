@@ -490,6 +490,10 @@ LINUX_FIRMWARE_FILES += rsi/rs9113_wlan_qspi.rps
 # which is installed unconditionally
 endif
 
+ifeq ($(BR2_PACKAGE_LINUX_FIRMWARE_S5PMFCV8),y)
+LINUX_FIRMWARE_FILES += s5p-mfc-v8.fw
+endif
+
 ifneq ($(LINUX_FIRMWARE_FILES),)
 define LINUX_FIRMWARE_INSTALL_FILES
 	cd $(@D) ; \
