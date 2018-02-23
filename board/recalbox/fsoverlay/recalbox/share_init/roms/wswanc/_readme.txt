@@ -1,5 +1,5 @@
 ## RECALBOX - SYSTEM WONDERSWAN COLOR ##
 -------------------------------------------------------------------------------
-ROM files extensions accepted: ".ws/.wsc/.zip"
+ROM files extensions accepted: ".7z .wsc .zip"
 -------------------------------------------------------------------------------
-Extensions des fichiers ROMs permises: ".ws/.wsc/.zip"
+Extensions des fichiers ROMs permises: ".7z .wsc .zip"
