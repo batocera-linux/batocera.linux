@@ -1,30 +1,30 @@
 diff --git a/gfx/common/x11_common.c b/gfx/common/x11_common.c
-index 4543e83..3285efa 100644
+index fd28325..596456e 100644
 --- a/gfx/common/x11_common.c
 +++ b/gfx/common/x11_common.c
-@@ -372,23 +372,23 @@ static void x11_handle_key_event(XEvent *event, XIC ic, bool filter)
+@@ -404,23 +404,23 @@ static void x11_handle_key_event(XEvent *event, XIC ic, bool filter)
           char keybuf[32];
  
           keybuf[0] = '\0';
 -#ifdef X_HAVE_UTF8_STRING
--         Status status = 0;
+-         status = 0;
 -
 -         /* XwcLookupString doesn't seem to work. */
 -         num = Xutf8LookupString(ic, &event->xkey, keybuf, ARRAY_SIZE(keybuf), &keysym, &status);
 -
--         /* libc functions need UTF-8 locale to work properly, 
+-         /* libc functions need UTF-8 locale to work properly,
 -          * which makes mbrtowc a bit impractical.
 -          *
 -          * Use custom UTF8 -> UTF-32 conversion. */
 -         num = utf8_conv_utf32(chars, ARRAY_SIZE(chars), keybuf, num);
 -#else
 +//#ifdef X_HAVE_UTF8_STRING
-+//         Status status = 0;
++//         status = 0;
 +//
 +//         /* XwcLookupString doesn't seem to work. */
 +//         num = Xutf8LookupString(ic, &event->xkey, keybuf, ARRAY_SIZE(keybuf), &keysym, &status);
 +//
-+//         /* libc functions need UTF-8 locale to work properly, 
++//         /* libc functions need UTF-8 locale to work properly,
 +//          * which makes mbrtowc a bit impractical.
 +//          *
 +//          * Use custom UTF8 -> UTF-32 conversion. */
