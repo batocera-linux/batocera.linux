@@ -18,7 +18,7 @@ createOverlayIfNeeded() {
 
     # X MB as ext4
     echo "Creating an overlay file on the /boot filesystem..."
-    dd if=/dev/zero of="${OVERLAYFILE}" bs=${COISIZE}M count=1 || return 1
+    dd if=/dev/zero of="${OVERLAYFILE}" bs="${COISIZE}"M count=1 || return 1
     echo "Formating the overlay file in ext4..."
     mkfs.ext4 "${OVERLAYFILE}"                         || return 1
 }
