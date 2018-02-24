@@ -1,8 +1,10 @@
-function findIdByName {
+#!/bin/sh
+foo() {
+        findIdByName
 	joysticksystemindex=-1
 
 	name="$1"
-	handlers=`cat /proc/bus/input/devices | grep -A 6 "$name" | grep "H: Handlers"`
+	handlers=$(cat < proc/bus/input/devices | grep -A 6 "$name" | grep "H: Handlers")
 	regex="js([0-9]+)"
 	echo "searching id of joystick '$name' in $handlers" >> ~/generateconfig.log
 	IFS=$'\n'
