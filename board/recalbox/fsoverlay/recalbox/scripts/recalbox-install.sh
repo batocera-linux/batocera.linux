@@ -34,8 +34,8 @@ determine_part_prefix() {
 }
 
 disks_to_keep() {
-    grep -E '^[^ ]* /boot |^[^ ]* /recalbox/share' /proc/mounts | sed -e s+"^\([^ ]*\) .*$"+'\1'+ |
-	while read X
+    grep -E '^[^ ]* /boot |^[^ ]* /recalbox/share' /proc/mounts | sed -e s+"^\\([^ ]*\\) .*$"+'\1'+ |
+	while read -r X
 	do
 	    determine_part_prefix "${X}"
 	done |
@@ -48,7 +48,7 @@ do_listDisks() {
 	grep -E '^TYPE=\"disk\" ' |
 	sed -e s+' [ ]*"$'+'"'+ | # remove trailing spaces
 	sed -e s+'^TYPE="[^"]*" NAME=\"\([^"]*\)\" SIZE=\"\([^"]*\)\" MODEL=\"\([^"]*\)\"$'+'\1 \3 (\2)'+ |
-	while read XDRIVE XTEXT
+	while read -r XDRIVE XTEXT
 	do
 	    for XKEEP in $(disks_to_keep)
 	    do
@@ -79,7 +79,7 @@ getPer() {
     do
 	CURVAL=$(stat "${TARFILE}" | grep -E '^[ ]*Size:' | sed -e s+'^[ ]*Size: \([0-9][0-9]*\) .*$'+'\1'+)
 	CURVAL=$((CURVAL / 1024 / 1024))
-	PER=$(expr ${CURVAL} '*' 100 / ${TARVAL})
+	PER=$(expr "${CURVAL}" '*' 100 / "${TARVAL}")
 	echo "downloading >>> ${PER}%"
 	sleep 5
     done
@@ -89,7 +89,7 @@ do_unmount_disk() {
     UDSK=$1
 
     grep "/dev/${UDSK}" /proc/mounts | cut -d ' ' -f 2 |
-	while read X
+	while read -r X
 	do
 	    umount "${X}"
 	done
@@ -138,7 +138,7 @@ do_install() {
 
 	# get size to download
 	echo "url: ${url}"
-	headers=$(curl -sfIL ${url})
+	headers=$(curl -sfIL "${url}")
 	test $? -eq 0 || return 1
 	bytessize=$(echo "$headers" | grep "Content-Length: " | sed -e s+'^Content-Length: \([0-9]*\).*$'+'\1'+)
 	size=$((bytessize / 1024 / 1024))
@@ -163,7 +163,7 @@ do_install() {
 	    echo "need to download ${size}mB"
 
 	    # check free space on fs
-	    for fs in /recalbox/share
+	    for fs in dir/* /recalbox/share
 	    do
 		freespace=$(df -m "${fs}" | tail -1 | awk '{print $4}')
 		test $? -eq 0 || return 1
