@@ -1,6 +1,6 @@
 #!/bin/sh
 foo() {
-        findIdByName
+	findIdByName
 	joysticksystemindex=-1
 
 	name="$1"
