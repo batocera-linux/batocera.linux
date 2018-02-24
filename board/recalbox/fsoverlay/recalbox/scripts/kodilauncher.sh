@@ -1,15 +1,15 @@
 #!/bin/bash
 
 systemsetting="python /usr/lib/python2.7/site-packages/configgen/settings/recalboxSettings.pyc"
-WAITMODE="`$systemsetting  -command load -key kodi.network.waitmode`"
+WAITMODE="$($systemsetting  -command load -key kodi.network.waitmode)"
 
 # if the mode is required or wish,
 # kodi waits for the network before starting
 # in fact, it waits that an ip is available (such as a db service for example)
 if test "${WAITMODE}" = "required" -o "${WAITMODE}" = "wish"
 then
-    WAITTIME="`$systemsetting  -command load -key kodi.network.waittime`"
-    WAITHOST="`$systemsetting  -command load -key kodi.network.waithost`"
+    WAITTIME="$($systemsetting  -command load -key kodi.network.waittime)"
+    WAITHOST="$($systemsetting  -command load -key kodi.network.waithost)"
 
     DOCONT=1
     NWAITED=0
@@ -20,7 +20,7 @@ then
 	    DOCONT=0
 	else
 	    sleep 1 # wait, in case the host is not correct
-	    let NWAITED=$NWAITED+4
+	    (( NWAITED=$((NWAITED))+4 ))
 	    if test "${NWAITED}" -gt "${WAITTIME}"
 	    then
 		DOCONT=0
@@ -48,14 +48,14 @@ fi
 
 kodiLastChance() {
     sleep 3 # kodi, please take less than X seconds to quit
-    if ps -o comm | grep -qE '^kodi.bin$'
+    if pgrep -f '^kodi.bin$'
     then
 	sleep 2 # let some other seconds to kodi to quit
 	killall -9 kodi.bin
     fi
 }
 
-while read EVENT
+while read -r EVENT
 do
     echo "Kodi event : ${EVENT}" >&2
     case "$EVENT" in
