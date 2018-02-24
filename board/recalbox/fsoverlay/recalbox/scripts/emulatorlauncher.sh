@@ -31,10 +31,10 @@ extension="${filename##*.}"
 systemsetting=/recalbox/scripts/systemsetting.sh
 
 
-echo $fullfilename
-echo $filename
-echo $dirName
-echo $1
+echo "$fullfilename"
+echo "$filename"
+echo "$dirName"
+echo "$1"
 
 if [[ ! "$emulator" ]]; then
 	#seeking emulator from extension (needed for news)
@@ -65,7 +65,7 @@ if [[ "$emulator" == "psx" ]]; then
 fi
 
 if [[ "$emulator" == "snes" ]]; then
-        settings_snes="`$systemsetting get snes_emulator`"
+        settings_snes="$(systemsetting get snes_emulator)"
         if [[ "$settings_snes" == "catsfc" ]];then
                 /recalbox/scripts/runcommand.sh 4 "$retroarchbin -L $retroarchcores/catsfc_libretro.so --config /recalbox/configs/retroarch/retroarchcustom.cfg \"$1\""
         elif [[ "$settings_snes" == "snes9x_next" ]];then
@@ -85,7 +85,7 @@ if [[ "$emulator" == "virtualboy" ]]; then
 fi
 
 if [[ "$emulator" == "n64" ]]; then
-        settings_n64="`$systemsetting get n64.pluginvideo`"
+        settings_n64="($systemsetting get n64.pluginvideo)"
         if [[ "$settings_n64" == "n64" ]];then
                 /recalbox/scripts/runcommand.sh 4 "SDL_VIDEO_GL_DRIVER=/usr/lib/libGLESv2.so  mupen64plus --corelib /usr/lib/libmupen64plus.so.2.0.0 --gfx /usr/lib/mupen64plus/mupen64plus-video-n64.so --configdir /recalbox/configs/mupen64/ --datadir /recalbox/configs/mupen64/ \"$1\""
         elif [[ "$settings_n64" == "rice" ]];then
@@ -183,7 +183,7 @@ if [[ "$emulator" == "msx" ]]; then
 fi
 
 if [[ "$emulator" == "neogeo" ]]; then
-        settings_neogeo="`$systemsetting get neogeo_emulator`"
+        settings_neogeo="($systemsetting get neogeo_emulator)"
         if [[ "$settings_neogeo" == "fbalibretro" ]];then
                 /recalbox/scripts/runcommand.sh 4 "$retroarchbin -L $retroarchcores/fba_libretro.so --config /recalbox/configs/retroarch/retroarchcustom.cfg \"$1\""
         elif [[ "$settings_neogeo" == "imame" ]];then
