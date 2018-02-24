@@ -1,3 +1,4 @@
+#!/bin/bash
 	declare -A retroarchbtn
 	retroarchbtn['a']='a'
 	retroarchbtn['b']='b'
@@ -51,7 +52,7 @@ function createRetroarchConfig {
 	player="$2"
 
         # Read xml of emulationstation
-        inputs=`xml sel -T -t -m "//*[@deviceGUID='$uuid']/*" -v "concat(@name,'|',  @type,'|', @id,'|', @value)" -n "$es_input"`
+        inputs=$(xml sel -T -t -m "//*[@deviceGUID='$uuid']/*" -v "concat(@name,'|',  @type,'|', @id,'|', @value)" -n "$es_input")
 
         deviceName="$3"
 	#`xml sel -t -v "//*[@deviceGUID='$uuid']/@deviceName" -n < "$es_input"`
@@ -69,11 +70,11 @@ function createRetroarchConfig {
 	
 	onlyjoystick="1"
         for rawinput in $inputs; do
-                input=`echo $rawinput | cut -d '|' -f1`
-                type=`echo $rawinput | cut -d '|' -f2`
-                id=`echo $rawinput | cut -d '|' -f3`
+                input=$(echo "$rawinput" | cut -d '|' -f1)
+                type=$(echo "$rawinput" | cut -d '|' -f2)
+                id=$(echo "$rawinput" | cut -d '|' -f3)
                 originid=$id
-                value=`echo $rawinput | cut -d '|' -f4`
+                value=$(echo "$rawinput" | cut -d '|' -f4)
 		if [ "$type" == "axis" ]; then
 			if [[ "$value" == "-1" ]]; then
 				id="-$id"
@@ -185,24 +186,24 @@ function setRetroarchJoypadIndexes {
 }
 
 function setRetroarchExtraConfigs {
-        settingsSmooth=`cat "$es_settings" | sed -n 's/.*name="Smooth" value="\(.*\)".*/\1/p'`
+        settingsSmooth=$(cat < "$es_settings" | sed -n 's/.*name="Smooth" value="\(.*\)".*/\1/p')
         if [ "$settingsSmooth" == "" ];then
                 settingsSmooth="true"
         fi
         if [ "$settingsSmooth" == "false" ];then
-                sed -i "s/#\?video_smooth =.*/video_smooth = false/g" "$retroarch_config"
+                sed -i "s/#\\?video_smooth =.*/video_smooth = false/g" "$retroarch_config"
         fi
         if [ "$settingsSmooth" == "true" ];then
-                sed -i "s/#\?video_smooth =.*/video_smooth = true/g" "$retroarch_config"
+                sed -i "s/#\\?video_smooth =.*/video_smooth = true/g" "$retroarch_config"
         fi
-        settingsGameRatio=`cat "$es_settings" | sed -n 's/.*name="GameRatio" value="\(.*\)".*/\1/p'`
+        settingsGameRatio=$(cat < "$es_settings" | sed -n 's/.*name="GameRatio" value="\(.*\)".*/\1/p')
         if [ "$settingsGameRatio" == "" ] || [ "$settingsGameRatio" == "auto" ];then
                 settingsGameRatio="4/3"
         fi
         if [ "$settingsGameRatio" == "4/3" ];then
-                sed -i "s/#\?aspect_ratio_index =.*/aspect_ratio_index = 0/g" "$retroarch_config"
+                sed -i "s/#\\?aspect_ratio_index =.*/aspect_ratio_index = 0/g" "$retroarch_config"
         elif [ "$settingsGameRatio" == "16/9" ];then
-                sed -i "s/#\?aspect_ratio_index =.*/aspect_ratio_index = 1/g" "$retroarch_config"
+                sed -i "s/#\\?aspect_ratio_index =.*/aspect_ratio_index = 1/g" "$retroarch_config"
         fi
 
 
@@ -211,12 +212,12 @@ function setRetroarchExtraConfigs {
 function switchHotkeyiMame {
 
         uuid="$1"
-        hotkey=`xml sel -T -t -m "//*[@deviceGUID='$uuid']/*[@name='hotkey']" -v "@id" -n "$es_input"` || exit 1
-        select=`xml sel -T -t -m "//*[@deviceGUID='$uuid']/*[@name='select']" -v "@id" -n "$es_input"` || exit 1
+        hotkey=$(xml sel -T -t -m "//*[@deviceGUID='$uuid']/*[@name='hotkey']" -v "@id" -n "$es_input") || exit 1
+        select=$(xml sel -T -t -m "//*[@deviceGUID='$uuid']/*[@name='select']" -v "@id" -n "$es_input") || exit 1
 
         if [[ "$hotkey" == "$select" ]]; then
-                r1=`xml sel -T -t -m "//*[@deviceGUID='$uuid']/*[@name='pagedown']" -v "@id" -n "$es_input"`
-                r1type=`xml sel -T -t -m "//*[@deviceGUID='$uuid']/*[@name='pagedown']" -v "@type" -n "$es_input"`
+                r1=$(xml sel -T -t -m "//*[@deviceGUID='$uuid']/*[@name='pagedown']" -v "@id" -n "$es_input")
+                r1type=$(xml sel -T -t -m "//*[@deviceGUID='$uuid']/*[@name='pagedown']" -v "@type" -n "$es_input")
                 sed -i "s/input_enable_hotkey.*/input_enable_hotkey_${typetoname[$r1type]} = $r1/g" "$retroarch_config"
         fi
 }
