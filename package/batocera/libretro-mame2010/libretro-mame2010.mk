@@ -3,13 +3,21 @@
 # MAME2010
 #
 ################################################################################
-LIBRETRO_MAME2010_VERSION = 81c75bb2966a210c26e8fca1c6a2ecf62e7b715a
+LIBRETRO_MAME2010_VERSION = 38715084cf39e58e7c0db636ad0714fca4a21db9
 LIBRETRO_MAME2010_SITE = $(call github,libretro,mame2010-libretro,$(LIBRETRO_MAME2010_VERSION))
 
 LIBRETRO_MAME2010_SUPP_OPT=
 
 ifeq ($(BR2_x86_64),y)
-	LIBRETRO_MAME2010_SUPP_OPT=ARCH=x86_64
+	LIBRETRO_MAME2010_SUPP_OPT=ARCH=x86_64 PTR64=1
+endif
+
+ifeq ($(BR2_x86_i586),y)
+	LIBRETRO_MAME2010_SUPP_OPT=PTR64=0
+endif
+
+ifeq ($(BR2_arm),y)
+	LIBRETRO_MAME2010_SUPP_OPT=ARM_ENABLED=1 PTR64=0
 endif
 
 ifeq ($(BR2_aarch64),y)
