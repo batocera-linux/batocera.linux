@@ -1,5 +1,5 @@
 diff --git a/Makefile b/Makefile
-index deaaa9a..9854940 100644
+index deaaa9a..e1d8337 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -315,7 +315,7 @@ else ifneq (,$(findstring rpi,$(platform)))
@@ -11,3 +11,12 @@ index deaaa9a..9854940 100644
     CCOMFLAGS += -fomit-frame-pointer -ffast-math -fsigned-char
     ARM_ENABLED = 1
     X86_SH2DRC = 0
+@@ -356,7 +356,7 @@ else ifneq (,$(findstring hardfloat,$(platform)))
+    ASFLAGS += -mfloat-abi=hard
+ endif
+    CFLAGS += -DARM
+-	LIBS += -lstdc++ -lpthread
++	LIBS += -lstdc++ -lpthread -lm
+ 
+ else ifeq ($(platform), wincross)
+    TARGETLIB := $(TARGET_NAME)_libretro.dll
