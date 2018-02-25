@@ -1,7 +1,0 @@
-config BR2_PACKAGE_RECALBOX_MANAGER
-	bool "recalbox-manager"
-	select BR2_PACKAGE_PYTHON_DJANGO
-	select BR2_PACKAGE_PYTHON_PSUTIL
-	select BR2_PACKAGE_PYTHON_AUTOBREADCRUMBS
-	help
-	 https://github.com/sveetch/recalbox-manager
