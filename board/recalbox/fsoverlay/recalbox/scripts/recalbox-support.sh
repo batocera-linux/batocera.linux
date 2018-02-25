@@ -77,7 +77,7 @@ DJOYS="${TMPDIR}/joysticks"
 find /dev/input > "${DJOYS}/inputs.txt"
 for J in /dev/input/event*
 do
-    N=$(basename ${J})
+    N=$(basename "${J}")
     evtest --info "${J}"          > "${DJOYS}/evtest.${N}.txt"
     udevadm info -q all -n "${J}" > "${DJOYS}/udevadm.${N}.txt"
 done

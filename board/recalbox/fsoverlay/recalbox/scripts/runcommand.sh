@@ -13,56 +13,56 @@ systemsetting=/recalbox/scripts/systemsetting.sh
 
 starttype=$1
 shift
-settings_mode="`$systemsetting get game_hdmi_mode`"
+settings_mode="$($systemsetting get game_hdmi_mode)"
 
 if [[ "$starttype" == "4" ]] &&  [[ "$settings_mode" != "" ]];then
     tvservice -e "CEA $settings_mode"
     fbset -depth 8 && fbset -depth 16
-    eval $@
+    eval "$@"
     tvservice -p
     fbset -depth 8 && fbset -depth 16
-elif [[ $starttype -eq 1 && ! -z `tvservice -m CEA | egrep -w "mode 1"` ]] || [[ $starttype -eq 3 ]]; then
+elif [[ $starttype -eq 1 && ! -z $(tvservice -m CEA | grep -E -w "mode 1") ]] || [[ $starttype -eq 3 ]]; then
     tvservice -e "CEA 1"
     fbset -depth 8 && fbset -depth 16
 #   fbset -rgba 5,6,5
-    eval $@
+    eval "$@"
     tvservice -p
     fbset -depth 8 && fbset -depth 16
 elif [[ $starttype -eq 2 ]]; then
-    eval $@
-elif [[ $starttype -eq 4 && ! -z `tvservice -m CEA | egrep -w "mode 4"` ]]; then
+    eval "$@"
+elif [[ $starttype -eq 4 && ! -z $(tvservice -m CEA | grep -E -w "mode 4") ]]; then
     tvservice -e "CEA 4"
     fbset -depth 8 && fbset -depth 16
 #   fbset -rgba 5,6,5
-    eval $@
+    eval "$@"
     tvservice -p
     fbset -depth 8 && fbset -depth 16
-elif [[ $starttype -eq 5 && ! -z `tvservice -m CEA | egrep -w "mode 17"` ]]; then
+elif [[ $starttype -eq 5 && ! -z $(tvservice -m CEA | grep -E -w "mode 17") ]]; then
     tvservice -e "CEA 17"
     fbset -depth 8 && fbset -depth 16
-    eval $@
+    eval "$@"
     tvservice -p
     fbset -depth 8 && fbset -depth 16
-elif [[ $starttype -eq 6 && ! -z `tvservice -m CEA | egrep -w "mode 19"` ]]; then
+elif [[ $starttype -eq 6 && ! -z $(tvservice -m CEA | grep -E -w "mode 19") ]]; then
     tvservice -e "CEA 19"
     fbset -depth 8 && fbset -depth 16
-    eval $@
+    eval "$@"
     tvservice -p
     fbset -depth 8 && fbset -depth 16
 elif [[ $starttype -eq 7 ]]; then
     tvservice -c "PAL 4:3"
     fbset -depth 8 && fbset -depth 16
-    eval $@
+    eval "$@"
     tvservice -p
     fbset -depth 8 && fbset -depth 16
 elif [[ $starttype -eq 8 ]]; then
     tvservice -c "NTSC 4:3"
     fbset -depth 8 && fbset -depth 16
-    eval $@
+    eval "$@"
     tvservice -p
     fbset -depth 8 && fbset -depth 16
 else
-    eval $@
+    eval "$@"
 fi
 
 # set cpu governor profile ondemand

@@ -24,7 +24,7 @@ determine_default_share_part() {
 	return 1
     fi
 
-    XSHARE=$(expr ${XBOOT} + 1)
+    XSHARE=$(( "${XBOOT}" + 1))
     echo "${BOOTPART}" | sed -e s+"${XBOOT}$"+"${XSHARE}"+
 }
 
@@ -51,7 +51,7 @@ determine_previous_part() {
 	return 1
     fi
 
-    XPREVPART=$(expr ${XPART} - 1)
+    XPREVPART=$(( "${XPART}" - 1))
     echo "${PART}" | sed -e s+"${XPART}$"+"${XPREVPART}"+
 }
 
@@ -83,5 +83,4 @@ case "${PARTNAME}" in
 	exit 1
     ;;
 esac
-
 exit 0

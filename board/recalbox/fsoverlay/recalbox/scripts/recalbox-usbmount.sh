@@ -22,8 +22,8 @@ fi
 # it will be played by the S11share script after the mounting of /recalbox/share
 if mkdir -p /var/run/usbmount.delay
 then
-    N=$(ls /var/run/usbmount.delay | wc -l)
-    let N++
+    N=$(find . /var/run/usbmount.delay)
+    (( N++ ))
     set |
 	grep -E '^DEVNAME=|^ID_FS_USAGE=|^ID_FS_UUID=|^ID_FS_TYPE=|^ID_FS_LABEL=' |
 	sed -e s+'^'+'export '+ > /var/run/usbmount.delay/"$N"."$1"

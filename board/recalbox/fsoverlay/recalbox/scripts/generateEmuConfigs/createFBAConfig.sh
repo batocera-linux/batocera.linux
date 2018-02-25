@@ -1,13 +1,16 @@
-function createFBAConfig {
+#!/bin/sh
+foo() {
+        createFBAConfig
    # usage "$1" : guid,  "$2" player
    echo "will generate FBA config for uid $1 and player $2" >> ~/generateconfig.log
-   if [[ "$1" != "DEFAULT" ]];then
+   if ! "$1" != "DEFAULT"
+   then
 	uuid="$1"
 	player="$2"
 
 
 	# Read xml of emulationstation
-	inputs=`xml sel -T -t -m "//*[@deviceGUID='$uuid']/*" -v "concat(@name,'|',  @type,'|', @id,'|', @value)" -n "$es_input"` 
+	inputs=$(xml sel -T -t -m "//*[@deviceGUID='$uuid']/*" -v "concat(@name,'|',  @type,'|', @id,'|', @value)" -n "$es_input") 
 
 
 	#inputsNames=`xml sel -t -v "//*[@deviceGUID='$1']/*/@name" -n < "$es_input"`
@@ -62,10 +65,10 @@ function createFBAConfig {
 
 	#6buttons
         for rawinput in $inputs; do
-                input=`echo $rawinput | cut -d '|' -f1`
-                type=`echo $rawinput | cut -d '|' -f2`
-                id=`echo $rawinput | cut -d '|' -f3`
-                value=`echo $rawinput | cut -d '|' -f4`
+                input=$(echo "$rawinput" | cut -d '|' -f1)
+                type=$(echo "$rawinput" | cut -d '|' -f2)
+                id=$(echo "$rawinput" | cut -d '|' -f3)
+                value=$(echo "$rawinput" | cut -d '|' -f4)
 
                 if [[ ${fbadir[$input]} ]]; then
                         if [[ "$type" == "axis" ]]; then
@@ -83,10 +86,10 @@ function createFBAConfig {
         done
 	#4 buttons
 	for rawinput in $inputs; do
-		input=`echo $rawinput | cut -d '|' -f1`
-		type=`echo $rawinput | cut -d '|' -f2`
-		id=`echo $rawinput | cut -d '|' -f3`
-		value=`echo $rawinput | cut -d '|' -f4`
+		input=$(echo "$rawinput" | cut -d '|' -f1)
+		type=$(echo "$rawinput" | cut -d '|' -f2)
+		id=$(echo "$rawinput" | cut -d '|' -f3)
+		value=$(echo "$rawinput" | cut -d '|' -f4)
 		if [[ ${fbadir[$input]} ]]; then
 			if [[ "$type" == "axis" ]]; then
 			        echo "JA_${fbaaxis[$input]}_${player}=${id}"  >> "$fba_config"
@@ -106,7 +109,8 @@ function createFBAConfig {
 
 declare -A usedJoysticks
 
-function setFBAJoypadIndexes {
+foo() {
+        setFBAJoypadIndexes
 	# 1 trouver les id a partir des noms
 	findIdByName "$1"
 	joyindex[1]=$joysticksystemindex
@@ -130,9 +134,10 @@ function setFBAJoypadIndexes {
 	done
 }
 
-function setFBAExtraConfig {
+foo() {
+        setFBAExtraConfig
 	#smoothing enable by default
-	settingsSmooth=`cat "$es_settings" | sed -n 's/.*name="Smooth" value="\(.*\)".*/\1/p'`
+	settingsSmooth=$(cat < "$es_settings" | sed -n 's/.*name="Smooth" value="\(.*\)".*/\1/p')
 	if [ "$settingsSmooth" == "" ];then
         	settingsSmooth="true"
 	fi
@@ -140,8 +145,7 @@ function setFBAExtraConfig {
 		sed -i "s/DisplaySmoothStretch=.*/DisplaySmoothStretch=0/g" "$fba_config"
 		sed -i "s/DisplaySmoothStretch=.*/DisplaySmoothStretch=0/g" "$fba_config_6btn"
 	fi
-
-	settingsGameRatio=`cat "$es_settings" | sed -n 's/.*name="GameRatio" value="\(.*\)".*/\1/p'`
+	settingsGameRatio=$(cat < "$es_settings" | sed -n 's/.*name="GameRatio" value="\(.*\)".*/\1/p')
         if [ "$settingsGameRatio" == "" ] || [ "$settingsGameRatio" == "auto" ];then
                 settingsGameRatio="4/3"
         fi
