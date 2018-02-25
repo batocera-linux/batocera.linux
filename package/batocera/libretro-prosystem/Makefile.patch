@@ -1,9 +1,11 @@
---- a/Makefile	2015-07-03 17:27:33.073342243 +0200
-+++ b/Makefile	2015-07-03 17:34:00.917327652 +0200
-@@ -107,6 +107,33 @@
+diff --git a/Makefile b/Makefile
+index 5cb3222..6e72de5 100644
+--- a/Makefile
++++ b/Makefile
+@@ -180,6 +180,33 @@ else ifeq ($(platform), psp1)
  	AR = psp-ar$(EXE_EXT)
-    STATIC_LINKING = 1
- 	FLAGS += -G0 -DLSB_FIRST
+ 	STATIC_LINKING = 1
+ 	FLAGS += -G0
 +else ifneq (,$(findstring armv,$(platform)))
 +   TARGET := $(TARGET_NAME)_libretro.so
 +   SHARED := -shared -Wl,--no-undefined -Wl,--version-script=link.T
@@ -31,6 +33,6 @@
 +   ASFLAGS += -mfloat-abi=hard
 +endif
 +   CFLAGS += -DARM
- else
-    TARGET := $(TARGET_NAME)_libretro.dll
-    CC = gcc
+ 
+ # Vita
+ else ifeq ($(platform), vita)
