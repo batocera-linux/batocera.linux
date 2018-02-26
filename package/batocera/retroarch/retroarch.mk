@@ -123,7 +123,7 @@ define RETROARCH_MALI_FIXUP
 	$(SED) 's|mali_native_window|fbdev_window|g' $(@D)/gfx/drivers_context/mali_fbdev_ctx.c
 endef
 
-ifeq ($(BR2_PACKAGE_MALI_OPENGLES_SDK),y)
+ifeq ($(BR2_PACKAGE_MALI_OPENGLES_SDK)$(BR2_PACKAGE_LIBHYBRIS),y)
 	RETROARCH_PRE_CONFIGURE_HOOKS += RETROARCH_MALI_FIXUP
 	RETROARCH_CONF_OPTS += --enable-opengles --enable-mali_fbdev
 endif

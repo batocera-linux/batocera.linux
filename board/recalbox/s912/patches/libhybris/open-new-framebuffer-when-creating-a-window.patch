@@ -1,0 +1,48 @@
+From bd11dbc285303c0fe4039b5058360f38c5614cae Mon Sep 17 00:00:00 2001
+From: kszaq <kszaquitto@gmail.com>
+Date: Tue, 16 Jan 2018 23:41:52 +0100
+Subject: [PATCH] eglplatform_fbdev: open new framebuffer when creating a
+ window
+
+Framebuffer device has to be reopened when creating a new window
+to adapt its size to display. This is required e.g. after screen
+resolution changed.
+---
+ hybris/egl/platforms/fbdev/eglplatform_fbdev.cpp | 17 ++++++++++-------
+ 1 file changed, 10 insertions(+), 7 deletions(-)
+
+diff --git a/hybris/egl/platforms/fbdev/eglplatform_fbdev.cpp b/hybris/egl/platforms/fbdev/eglplatform_fbdev.cpp
+index c25a2d74..c75073f7 100644
+--- a/hybris/egl/platforms/fbdev/eglplatform_fbdev.cpp
++++ b/hybris/egl/platforms/fbdev/eglplatform_fbdev.cpp
+@@ -29,13 +29,6 @@ extern "C" void fbdevws_init_module(struct ws_egl_interface *egl_iface)
+ 		assert(0);
+ 	}
+ 
+-	err = framebuffer_open((hw_module_t *) gralloc, &framebuffer);
+-	if (err) {
+-		fprintf(stderr, "ERROR: failed to open framebuffer: (%s)\n",strerror(-err));
+-		assert(0);
+-	}
+-	TRACE("** framebuffer_open: status=(%s) format=x%x", strerror(-err), framebuffer->format);
+-
+ 	err = gralloc_open((const hw_module_t *) gralloc, &alloc);
+ 	if (err) {
+ 		fprintf(stderr, "ERROR: failed to open gralloc: (%s)\n",strerror(-err));
+@@ -66,6 +59,16 @@ extern "C" EGLNativeWindowType fbdevws_CreateWindow(EGLNativeWindowType win, _EG
+ 	assert (gralloc != NULL);
+ 	assert (_nativewindow == NULL);
+ 
++	if (framebuffer)
++		framebuffer_close(framebuffer);
++
++	int err = framebuffer_open((hw_module_t *) gralloc, &framebuffer);
++	if (err) {
++		fprintf(stderr, "ERROR: failed to open framebuffer: (%s)\n",strerror(-err));
++		assert(0);
++	}
++	TRACE("** framebuffer_open: status=(%s) format=x%x", strerror(-err), framebuffer->format);
++
+ 	_nativewindow = new FbDevNativeWindow(alloc, framebuffer);
+ 	_nativewindow->common.incRef(&_nativewindow->common);
+ 	return (EGLNativeWindowType) static_cast<struct ANativeWindow *>(_nativewindow);
