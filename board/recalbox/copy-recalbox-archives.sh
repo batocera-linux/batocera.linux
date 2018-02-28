@@ -204,10 +204,7 @@ case "${RECALBOX_TARGET}" in
 	cp "${BINARIES_DIR}/Image" "${BINARIES_DIR}/boot/boot/Image" || exit 1
 	cp "${BINARIES_DIR}/uInitrd"              "${BINARIES_DIR}/boot/boot" || exit 1
 	cp "${BINARIES_DIR}/rootfs.squashfs" "${BINARIES_DIR}/boot/boot/recalbox.update" || exit 1
-	cp "${BINARIES_DIR}/gxbb_p200_2G.dtb" "${BINARIES_DIR}/boot/boot" || exit 1
-	cp "${BINARIES_DIR}/gxbb_p200.dtb" "${BINARIES_DIR}/boot/boot" || exit 1
-	cp "${BINARIES_DIR}/gxl_p212_1g.dtb" "${BINARIES_DIR}/boot/boot" || exit 1
-	cp "${BINARIES_DIR}/gxl_p212_2g.dtb" "${BINARIES_DIR}/boot/boot" || exit 1
+	cp -f "${BINARIES_DIR}/"*.dtb "${BINARIES_DIR}/boot/boot" || exit 1
 
 	# boot.tar.xz
 	echo "creating boot.tar.xz"
@@ -219,7 +216,10 @@ case "${RECALBOX_TARGET}" in
 	GENIMAGE_TMP="${BUILD_DIR}/genimage.tmp"
 	RECALBOXIMG="${RECALBOX_BINARIES_DIR}/batocera.img"
 	rm -rf "${GENIMAGE_TMP}" || exit 1
-	cp "board/recalbox/s905/genimage.cfg" "${BINARIES_DIR}" || exit 1
+	cp "board/recalbox/s905/genimage.cfg" "${BINARIES_DIR}/genimage.cfg.tmp" || exit 1
+        FILES=$(find "${BINARIES_DIR}/boot/boot" -type f | sed -e s+"^${BINARIES_DIR}/boot/boot/\(.*\)$"+"file \1 \{ image = 'boot/\1' }"+ | tr '\n' '@')
+        cat "${BINARIES_DIR}/genimage.cfg.tmp" | sed -e s+'@files'+"${FILES}"+ | tr '@' '\n' > "${BINARIES_DIR}/genimage.cfg" || exit 1
+        rm -f "${BINARIES_DIR}/genimage.cfg.tmp" || exit 1
 	echo "generating image"
 	genimage --rootpath="${TARGET_DIR}" --inputpath="${BINARIES_DIR}/boot" --outputpath="${RECALBOX_BINARIES_DIR}" --config="${BINARIES_DIR}/genimage.cfg" --tmppath="${GENIMAGE_TMP}" || exit 1
 	rm -f "${RECALBOX_BINARIES_DIR}/boot.vfat" || exit 1
@@ -238,10 +238,7 @@ case "${RECALBOX_TARGET}" in
 	cp "${BINARIES_DIR}/Image" "${BINARIES_DIR}/boot/boot/Image" || exit 1
 	cp "${BINARIES_DIR}/uInitrd"              "${BINARIES_DIR}/boot/boot" || exit 1
 	cp "${BINARIES_DIR}/rootfs.squashfs" "${BINARIES_DIR}/boot/boot/recalbox.update" || exit 1
-	cp "${BINARIES_DIR}/gxm_q200_2g.dtb" "${BINARIES_DIR}/boot/boot" || exit 1
-	cp "${BINARIES_DIR}/gxm_q201_1g.dtb" "${BINARIES_DIR}/boot/boot" || exit 1
-	cp "${BINARIES_DIR}/gxm_q201_2g.dtb" "${BINARIES_DIR}/boot/boot" || exit 1
-	cp "${BINARIES_DIR}/gxm_q20xrmii_2g.dtb" "${BINARIES_DIR}/boot/boot" || exit 1
+	cp -f "${BINARIES_DIR}/"*.dtb "${BINARIES_DIR}/boot/boot" || exit 1
 	# boot.tar.xz
 	echo "creating boot.tar.xz"
 	(cd "${BINARIES_DIR}/boot" && tar -cJf "${RECALBOX_BINARIES_DIR}/boot.tar.xz"  boot recalbox-boot.conf boot-logo.bmp.gz) || exit 1
@@ -252,7 +249,10 @@ case "${RECALBOX_TARGET}" in
 	GENIMAGE_TMP="${BUILD_DIR}/genimage.tmp"
 	RECALBOXIMG="${RECALBOX_BINARIES_DIR}/batocera.img"
 	rm -rf "${GENIMAGE_TMP}" || exit 1
-	cp "board/recalbox/s912/genimage.cfg" "${BINARIES_DIR}" || exit 1
+	cp "board/recalbox/s912/genimage.cfg" "${BINARIES_DIR}/genimage.cfg.tmp" || exit 1
+	FILES=$(find "${BINARIES_DIR}/boot/boot" -type f | sed -e s+"^${BINARIES_DIR}/boot/boot/\(.*\)$"+"file \1 \{ image = 'boot/\1' }"+ | tr '\n' '@')
+	cat "${BINARIES_DIR}/genimage.cfg.tmp" | sed -e s+'@files'+"${FILES}"+ | tr '@' '\n' > "${BINARIES_DIR}/genimage.cfg" || exit 1
+	rm -f "${BINARIES_DIR}/genimage.cfg.tmp" || exit 1
 	echo "generating image"
 	genimage --rootpath="${TARGET_DIR}" --inputpath="${BINARIES_DIR}/boot" --outputpath="${RECALBOX_BINARIES_DIR}" --config="${BINARIES_DIR}/genimage.cfg" --tmppath="${GENIMAGE_TMP}" || exit 1
 	rm -f "${RECALBOX_BINARIES_DIR}/boot.vfat" || exit 1
