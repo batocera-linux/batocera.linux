@@ -161,4 +161,7 @@ menu "Libraries"
 	source "package/batocera/python-rpigpio/Config.in"
 	source "package/batocera/python-autobreadcrumbs/Config.in"
 endmenu
+menu "Device Trees"
+	source "package/batocera/device-trees-aml-s9xx/Config.in"
+endmenu
 endmenu
