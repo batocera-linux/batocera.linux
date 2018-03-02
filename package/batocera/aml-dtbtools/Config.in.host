@@ -1,0 +1,7 @@
+config BR2_PACKAGE_HOST_AML_DTBTOOLS
+	bool "aml-dtbTools"
+	depends on BR2_arm || BR2_aarch64
+	help
+	    Comprises of a splitter and builder of AmLogic's multi-dtb formats.
+	    The format is deduced from the AmLogic u-boot code
+	    The dtbTool is based on dtbTool source from the CyanogenMod project.
