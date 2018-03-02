@@ -193,18 +193,20 @@ case "${RECALBOX_TARGET}" in
 	;;
 
     S905)
+	MKIMAGE=${HOST_DIR}/bin/mkimage
+	MKBOOTIMAGE=${HOST_DIR}/bin/mkbootimg
+	BOARD_DIR="board/recalbox/s905"
 	# boot
 	rm -rf ${BINARIES_DIR}/boot        || exit 1
 	mkdir -p ${BINARIES_DIR}/boot/boot || exit 1
-	cp board/recalbox/s905/boot-logo.bmp.gz ${BINARIES_DIR}/boot   || exit 1
-	cp board/recalbox/s905/s905_autoscript ${BINARIES_DIR}/boot	|| exit 1
-	cp board/recalbox/s905/aml_autoscript ${BINARIES_DIR}/boot     || exit 1
-	cp board/recalbox/s905/aml_autoscript.zip ${BINARIES_DIR}/boot     || exit 1
+	cp ${BOARD_DIR}/boot-logo.bmp.gz ${BINARIES_DIR}/boot   || exit 1
+	$MKIMAGE -C none -A arm64 -T script -d ${BOARD_DIR}/s905_autoscript.txt ${BINARIES_DIR}/boot/s905_autoscript
+	$MKIMAGE -C none -A arm64 -T script -d ${BOARD_DIR}/aml_autoscript.txt ${BINARIES_DIR}/boot/aml_autoscript
+	cp ${BOARD_DIR}/aml_autoscript.zip ${BINARIES_DIR}/boot     || exit 1
 	cp "${BINARIES_DIR}/recalbox-boot.conf" "${BINARIES_DIR}/boot/recalbox-boot.conf" || exit 1
-	cp "${BINARIES_DIR}/Image" "${BINARIES_DIR}/boot/boot/Image" || exit 1
-	cp "${BINARIES_DIR}/uInitrd"              "${BINARIES_DIR}/boot/boot" || exit 1
+	$MKBOOTIMAGE --kernel "${BINARIES_DIR}/Image" --ramdisk "${BINARIES_DIR}/initrd" --second "${BINARIES_DIR}/dtb.img" --output "${BINARIES_DIR}/boot.img" || exit 1
+	cp "${BINARIES_DIR}/boot.img" "${BINARIES_DIR}/boot/boot/boot.img" || exit 1
 	cp "${BINARIES_DIR}/rootfs.squashfs" "${BINARIES_DIR}/boot/boot/recalbox.update" || exit 1
-	cp -f "${BINARIES_DIR}/"*.dtb "${BINARIES_DIR}/boot/boot" || exit 1
 
 	# boot.tar.xz
 	echo "creating boot.tar.xz"
@@ -216,10 +218,7 @@ case "${RECALBOX_TARGET}" in
 	GENIMAGE_TMP="${BUILD_DIR}/genimage.tmp"
 	RECALBOXIMG="${RECALBOX_BINARIES_DIR}/batocera.img"
 	rm -rf "${GENIMAGE_TMP}" || exit 1
-	cp "board/recalbox/s905/genimage.cfg" "${BINARIES_DIR}/genimage.cfg.tmp" || exit 1
-        FILES=$(find "${BINARIES_DIR}/boot/boot" -type f | sed -e s+"^${BINARIES_DIR}/boot/boot/\(.*\)$"+"file \1 \{ image = 'boot/\1' }"+ | tr '\n' '@')
-        cat "${BINARIES_DIR}/genimage.cfg.tmp" | sed -e s+'@files'+"${FILES}"+ | tr '@' '\n' > "${BINARIES_DIR}/genimage.cfg" || exit 1
-        rm -f "${BINARIES_DIR}/genimage.cfg.tmp" || exit 1
+	cp "${BOARD_DIR}/genimage.cfg" "${BINARIES_DIR}/genimage.cfg" || exit 1
 	echo "generating image"
 	genimage --rootpath="${TARGET_DIR}" --inputpath="${BINARIES_DIR}/boot" --outputpath="${RECALBOX_BINARIES_DIR}" --config="${BINARIES_DIR}/genimage.cfg" --tmppath="${GENIMAGE_TMP}" || exit 1
 	rm -f "${RECALBOX_BINARIES_DIR}/boot.vfat" || exit 1
@@ -227,18 +226,21 @@ case "${RECALBOX_TARGET}" in
 	;;
 
     S912)
+	MKIMAGE=${HOST_DIR}/bin/mkimage
+	MKBOOTIMAGE=${HOST_DIR}/bin/mkbootimg
+	BOARD_DIR="board/recalbox/s912"
 	# boot
 	rm -rf ${BINARIES_DIR}/boot        || exit 1
 	mkdir -p ${BINARIES_DIR}/boot/boot || exit 1
-	cp board/recalbox/s912/boot-logo.bmp.gz ${BINARIES_DIR}/boot   || exit 1
-	cp board/recalbox/s912/s905_autoscript ${BINARIES_DIR}/boot	|| exit 1
-	cp board/recalbox/s912/aml_autoscript ${BINARIES_DIR}/boot     || exit 1
-	cp board/recalbox/s912/aml_autoscript.zip ${BINARIES_DIR}/boot     || exit 1
+	cp ${BOARD_DIR}/boot-logo.bmp.gz ${BINARIES_DIR}/boot   || exit 1
+	$MKIMAGE -C none -A arm64 -T script -d ${BOARD_DIR}/s905_autoscript.txt ${BINARIES_DIR}/boot/s905_autoscript
+	$MKIMAGE -C none -A arm64 -T script -d ${BOARD_DIR}/aml_autoscript.txt ${BINARIES_DIR}/boot/aml_autoscript
+	cp ${BOARD_DIR}/aml_autoscript.zip ${BINARIES_DIR}/boot     || exit 1
 	cp "${BINARIES_DIR}/recalbox-boot.conf" "${BINARIES_DIR}/boot/recalbox-boot.conf" || exit 1
-	cp "${BINARIES_DIR}/Image" "${BINARIES_DIR}/boot/boot/Image" || exit 1
-	cp "${BINARIES_DIR}/uInitrd"              "${BINARIES_DIR}/boot/boot" || exit 1
+	$MKBOOTIMAGE --kernel "${BINARIES_DIR}/Image" --ramdisk "${BINARIES_DIR}/initrd" --second "${BINARIES_DIR}/dtb.img" --output "${BINARIES_DIR}/boot.img" || exit 1
+	cp "${BINARIES_DIR}/boot.img" "${BINARIES_DIR}/boot/boot/boot.img" || exit 1
 	cp "${BINARIES_DIR}/rootfs.squashfs" "${BINARIES_DIR}/boot/boot/recalbox.update" || exit 1
-	cp -f "${BINARIES_DIR}/"*.dtb "${BINARIES_DIR}/boot/boot" || exit 1
+
 	# boot.tar.xz
 	echo "creating boot.tar.xz"
 	(cd "${BINARIES_DIR}/boot" && tar -cJf "${RECALBOX_BINARIES_DIR}/boot.tar.xz"  boot recalbox-boot.conf boot-logo.bmp.gz) || exit 1
@@ -249,10 +251,7 @@ case "${RECALBOX_TARGET}" in
 	GENIMAGE_TMP="${BUILD_DIR}/genimage.tmp"
 	RECALBOXIMG="${RECALBOX_BINARIES_DIR}/batocera.img"
 	rm -rf "${GENIMAGE_TMP}" || exit 1
-	cp "board/recalbox/s912/genimage.cfg" "${BINARIES_DIR}/genimage.cfg.tmp" || exit 1
-	FILES=$(find "${BINARIES_DIR}/boot/boot" -type f | sed -e s+"^${BINARIES_DIR}/boot/boot/\(.*\)$"+"file \1 \{ image = 'boot/\1' }"+ | tr '\n' '@')
-	cat "${BINARIES_DIR}/genimage.cfg.tmp" | sed -e s+'@files'+"${FILES}"+ | tr '@' '\n' > "${BINARIES_DIR}/genimage.cfg" || exit 1
-	rm -f "${BINARIES_DIR}/genimage.cfg.tmp" || exit 1
+	cp "${BOARD_DIR}/genimage.cfg" "${BINARIES_DIR}/genimage.cfg" || exit 1
 	echo "generating image"
 	genimage --rootpath="${TARGET_DIR}" --inputpath="${BINARIES_DIR}/boot" --outputpath="${RECALBOX_BINARIES_DIR}" --config="${BINARIES_DIR}/genimage.cfg" --tmppath="${GENIMAGE_TMP}" || exit 1
 	rm -f "${RECALBOX_BINARIES_DIR}/boot.vfat" || exit 1

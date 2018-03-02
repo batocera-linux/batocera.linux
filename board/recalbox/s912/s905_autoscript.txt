@@ -1,0 +1,7 @@
+setenv condev "console=ttyS0,115200n8 console=tty2 loglevel=0 earlyprintk no_console_suspend consoleblank=0"
+setenv bootargs "label=RECALBOX rootflags=data=writeback rw ${condev} fsck.repair=yes net.ifnames=0 mac=${mac}"
+if fatload usb 0 ${loadaddr} /boot/boot.img; then bootm;fi;
+if fatload usb 1 ${loadaddr} /boot/boot.img; then bootm;fi;
+if fatload usb 2 ${loadaddr} /boot/boot.img; then bootm;fi;
+if fatload usb 3 ${loadaddr} /boot/boot.img; then bootm;fi;
+if fatload mmc 0 ${loadaddr} /boot/boot.img; then bootm;fi;

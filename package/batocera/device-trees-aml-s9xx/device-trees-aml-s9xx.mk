@@ -4,9 +4,9 @@
 #
 ################################################################################
 DEVICE_TREES_AML_S9XX_VERSION = master
-DEVICE_TREES_AML_S9XX_SITE = $(call github,kszaq,device-trees-amlogic,$(DEVICE_TREES_AML_S9XX_VERSION))
+DEVICE_TREES_AML_S9XX_SITE = $(call github,suzuke,device-trees-amlogic,$(DEVICE_TREES_AML_S9XX_VERSION))
 
-DEVICE_TREES_AML_S9XX_DEPENDENCIES = linux
+DEVICE_TREES_AML_S9XX_DEPENDENCIES = linux host-aml-dtbtools
 DEVICE_TREES_AML_S9XX_INSTALL_IMAGES = YES
 
 DEVICE_TREES_AML_S9XX_ARCH = ${ARCH}
@@ -33,18 +33,25 @@ DEVICE_TREES_AML_S9XX_DTS_NAME =$(basename $(DEVICE_TREES_AML_S9XX_DTS))
 DEVICE_TREES_AML_S9XX_DTBS = $(addprefix amlogic/, $(addsuffix .dtb,$(DEVICE_TREES_AML_S9XX_DTS_NAME)))
 
 define DEVICE_TREES_AML_S9XX_BUILD_CMDS
-	for f in $(DEVICE_TREES_AML_S9XX_DTS) ; do \
-		sed -i 's/le-dt-id/amlogic-dt-id/g' $(@D)/$$f; \
-		cp -f $(@D)/$$f $(DTS_PATH); \
+	for f in $(DEVICE_TREES_AML_S9XX_DTS_NAME) ; do \
+		sed -i '/le-dt-id/d' $(@D)/$$f.dts; \
+		sed -i '/amlogic-dt-id/d' $(@D)/$$f.dts; \
+		echo -e "/ {\n\tamlogic-dt-id = \"$$f\";\n};" >> $(@D)/$$f.dts; \
 	done
+	cp -f $(@D)/* $(DTS_PATH); \
 	$(MAKE) -C $(LINUX_DIR) ARCH=$(KERNEL_ARCH) \
-                CROSS_COMPILE=$(TARGET_CROSS) $(DEVICE_TREES_AML_S9XX_DTBS)
+                CROSS_COMPILE=$(TARGET_CROSS) $(DEVICE_TREES_AML_S9XX_DTBS) ; \
+	$(HOST_DIR)/bin/dtbTool -o $(LINUX_DIR)/arch/$(DEVICE_TREES_AML_S9XX_ARCH)/boot/dts/dtb.img $(DTS_PATH);
 endef
 
 define DEVICE_TREES_AML_S9XX_INSTALL_IMAGES_CMDS
-	for f in $(DEVICE_TREES_AML_S9XX_DTBS) ; do \
-		cp -f $(LINUX_DIR)/arch/$(DEVICE_TREES_AML_S9XX_ARCH)/boot/dts/$$f $(BINARIES_DIR); \
-	done
+	cp -f $(LINUX_DIR)/arch/$(DEVICE_TREES_AML_S9XX_ARCH)/boot/dts/dtb.img $(BINARIES_DIR);
 endef
+
+#define DEVICE_TREES_AML_S9XX_INSTALL_IMAGES_CMDS
+#	for f in $(DEVICE_TREES_AML_S9XX_DTBS) ; do \
+#		cp -f $(LINUX_DIR)/arch/$(DEVICE_TREES_AML_S9XX_ARCH)/boot/dts/$$f $(BINARIES_DIR); \
+#	done
+#endef
 
 $(eval $(generic-package))
