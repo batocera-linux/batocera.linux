@@ -1,0 +1,13 @@
+diff --git a/libretro/libretro-core.c b/libretro/libretro-core.c
+index 96d9aa3..1bdb60c 100644
+--- a/libretro/libretro-core.c
++++ b/libretro/libretro-core.c
+@@ -562,7 +562,7 @@ void retro_get_system_info(struct retro_system_info *info)
+ {
+    memset(info, 0, sizeof(*info));
+    info->library_name     = "Atari800";
+-   info->library_version  = "3.1.0" GIT_VERSION;
++   info->library_version  = "3.1.0";
+    info->valid_extensions = "xfd|atr|cdm|cas|bin|a52|zip|atx";
+    info->need_fullpath    = true;
+    info->block_extract = false;
