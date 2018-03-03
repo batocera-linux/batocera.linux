@@ -4,6 +4,7 @@
 #
 ################################################################################
 LIBRETRO_ATARI800_VERSION = f892b4437d52a3e1c4b42b18f3edc564a1d1045b
+LIBRETRO_ATARI800_LICENSE = GPL
 LIBRETRO_ATARI800_SITE = $(call github,libretro,libretro-atari800,$(LIBRETRO_ATARI800_VERSION))
 
 define LIBRETRO_ATARI800_BUILD_CMDS
