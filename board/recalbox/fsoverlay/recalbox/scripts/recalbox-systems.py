@@ -45,7 +45,7 @@ systems = {
     "pcfx":      { "name": "PC-FX",                                "biosFiles": [ { "md5": "08e36edbea28a017f79f8d4f7ff9b6d7", "file": "bios/pcfx.rom"          } ] },
     "psx":       { "name": "PSX",                                  "biosFiles": [ { "md5": "924e392ed05558ffdb115408c263dccf", "file": "bios/SCPH1001.BIN"      },
                                                                                   { "md5": "239665b1a3dade1b5a52c06338011044", "file": "bios/SCPH1000.BIN"      },
-                                                                                  { "md5": "490f666e1afb15b7362b406ed1cea246", "file": "bios/SCPH7003.BIN"      }, 
+                                                                                  { "md5": "490f666e1afb15b7362b406ed1cea246", "file": "bios/SCPH7003.BIN"      },
                                                                                   { "md5": "8dd7d5296a650fac7319bce665a6a53c", "file": "bios/scph5500.bin"      },
                                                                                   { "md5": "490f666e1afb15b7362b406ed1cea246", "file": "bios/scph5501.bin"      },
                                                                                   { "md5": "32736f17079d0b2b7024407c39bd3050", "file": "bios/scph5502.bin"      } ] },
@@ -56,10 +56,15 @@ systems = {
     "segacd":    { "name": "Sega CD",                              "biosFiles": [ { "md5": "854b9150240a198070150e4566ae1290", "file": "bios/us_scd2_9306.bin"  },
                                                                                   { "md5": "d8b8b720dea6c6ba25c309ed633930f4", "file": "bios/eu_mcd2_9306.bin"  },
                                                                                   { "md5": "bdeb4c47da613946d422d97d98b21cda", "file": "bios/jp_mcd1_9112.bin"  } ] },
-    "intellivision":  { "name": "Mattel Intellivision",            "biosFiles": [ { "md5": "62e761035cb657903761800f4437b8af", "file": "bios/exec.bin"  },
-                                                                                  { "md5": "0cd5946c6473e42e8e4c2137785e427f", "file": "bios/grom.bin"  },
-										  { "md5": "2e72a9a2b897d330a35c8b07a6146c52", "file": "bios/ECS.bin"   },
-                                                                                  { "md5": "d5530f74681ec6e0f282dab42e6b1c5f", "file": "bios/IVOICE.bin"  } ] },
+    "intellivision":  { "name": "Mattel Intellivision",            "biosFiles": [ { "md5": "62e761035cb657903761800f4437b8af", "file": "bios/exec.bin"          },
+                                                                                  { "md5": "0cd5946c6473e42e8e4c2137785e427f", "file": "bios/grom.bin"          },
+										                                          { "md5": "2e72a9a2b897d330a35c8b07a6146c52", "file": "bios/ECS.bin"           },
+                                                                                  { "md5": "d5530f74681ec6e0f282dab42e6b1c5f", "file": "bios/IVOICE.bin"        } ] },
+    "atari5200":  { "name": "Atari 5200",                          "biosFiles": [ { "md5": "281f20ea4320404ec820fb7ec0693b38", "file": "bios/5200.rom"          },
+                                                                                  { "md5": "06daac977823773a3eea3422fd26a703", "file": "bios/ATARIXL.ROM"       },
+										                                          { "md5": "0bac0c6a50104045d902df4503a4c30b", "file": "bios/ATARIBAS.ROM"      },
+                                                                                  { "md5": "eb1f32f5d9f382db1bbfb8d7f9cb343a", "file": "bios/ATARIOSA.ROM"      },
+                                                                                  { "md5": "a3e8d617c95d08031fe1b20d541434b2", "file": "bios/ATARIOSB.ROM"      } ] },
 }
 
 class BiosStatus:
