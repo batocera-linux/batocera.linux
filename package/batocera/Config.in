@@ -57,6 +57,7 @@ menu "Emulators"
 if BR2_PACKAGE_RETROARCH
 menu "Libretro Cores"
        source "package/batocera/libretro-armsnes/Config.in"
+			 source "package/batocera/libretro-atari800/Config.in"
        source "package/batocera/libretro-pocketsnes/Config.in"
        source "package/batocera/libretro-catsfc/Config.in"
        source "package/batocera/libretro-beetle-vb/Config.in"
