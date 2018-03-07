@@ -2,7 +2,7 @@
 
 # reste a faire GBA
 
-if [ -z "$1" ] || [ -z "$2" ] || [ -z "$3" ] || [ -z "$4" ] || [ -z "$5" ] || [ -z "$6" ] || [ -z "$7" ] || [ -z "$8" ] || [ -z "$9" ] || [ -z "$10" ] || [ -z "$11" ] || [ -z "$12" ] || [ -z "$13" ]; then
+if [ -z "$1" ] || [ -z "$2" ] || [ -z "$3" ] || [ -z "$4" ] || [ -z "$5" ] || [ -z "$6" ] || [ -z "$7" ] || [ -z "$8" ] || [ -z "$9" ] || [ -z "${10}" ] || [ -z "${11}" ] || [ -z "${12}" ] || [ -z "${13}" ]; then
 	echo "Usage : generateConfig.sh guid1 udevindex1 name1 guid2 udevindex2 name2 guid3 udevindex3 name3 guid4 udevindex4 name4 system"
 	exit -1
 fi
