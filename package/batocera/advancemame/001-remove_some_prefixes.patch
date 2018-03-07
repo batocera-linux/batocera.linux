@@ -1,8 +1,8 @@
 diff --git a/configure.ac b/configure.ac
-index 4d99d59..863be71 100644
+index 79bf05f..0326320 100644
 --- a/configure.ac
 +++ b/configure.ac
-@@ -710,7 +710,7 @@ AC_ARG_ENABLE(
+@@ -779,7 +779,7 @@ AC_ARG_ENABLE(
  if test $ac_lib_freetype = auto; then
  	AC_PATH_PROGS(
  		[ac_lib_freetype_config],
@@ -11,7 +11,7 @@ index 4d99d59..863be71 100644
  		[],
  		[${ac_lib_freetype_path}]
  	)
-@@ -741,12 +741,12 @@ if test $ac_lib_freetype = auto; then
+@@ -814,12 +814,12 @@ if test $ac_lib_freetype = auto; then
  elif test $ac_lib_freetype = yes; then
  	AC_PATH_PROGS(
  		[ac_lib_freetype_config],
@@ -26,17 +26,17 @@ index 4d99d59..863be71 100644
  	else
  		ac_save_CFLAGS="$CFLAGS"
  		ac_save_LIBS="$LIBS"
-@@ -798,7 +798,7 @@ AC_ARG_ENABLE(
- if test $ac_lib_sdl = auto; then
- 	AC_PATH_PROGS(
- 		[ac_lib_sdl_config],
--		[${ac_tool_prefix}sdl-config],
-+		[sdl-config],
- 		[],
- 		[${ac_lib_sdl_path}]
- 	)
-@@ -829,12 +829,12 @@ if test $ac_lib_sdl = auto; then
- elif test $ac_lib_sdl = yes; then
+@@ -994,7 +994,7 @@ if test $ac_lib_sdl = auto; then
+ 		else
+ 			AC_PATH_PROGS(
+ 				[ac_lib_sdl_config],
+-				[${ac_tool_prefix}sdl-config],
++				[sdl-config],
+ 				[],
+ 				[${ac_lib_sdl_path}]
+ 			)
+@@ -1030,12 +1030,12 @@ elif test $ac_lib_sdl = yes; then
+ 	fi
  	AC_PATH_PROGS(
  		[ac_lib_sdl_config],
 -		[${ac_tool_prefix}sdl-config],
