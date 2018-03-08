@@ -12,7 +12,7 @@ endef
 
 define LIBRETRO_REICAST_INSTALL_TARGET_CMDS
 	$(INSTALL) -D $(@D)/reicast_libretro.so \
-		$(TARGET_DIR)/usr/lib/libretro/reicast_libretro.so
+		$(TARGET_DIR)/usr/lib/libretro/libretro-reicast_libretro.so
 endef
 
 $(eval $(generic-package))
