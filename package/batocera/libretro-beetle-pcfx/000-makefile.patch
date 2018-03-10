@@ -1,0 +1,13 @@
+diff --git a/Makefile b/Makefile
+index c2689ef..bbb9c3e 100644
+--- a/Makefile
++++ b/Makefile
+@@ -423,7 +423,7 @@ ifeq ($(platform), emscripten)
+ else ifeq ($(STATIC_LINKING), 1)
+ 	$(AR) rcs $@ $(OBJECTS)
+ else
+-	$(LD) $(LINKOUT)$@ $^ $(LDFLAGS) $(LIBS)
++	$(CXX) -o $@ $^ $(LDFLAGS)
+ endif
+ 
+ %.o: %.cpp
