@@ -1,0 +1,33 @@
+diff --git a/core/libretro/libretro.cpp b/core/libretro/libretro.cpp
+index 581e0fa..ab0cd70 100644
+--- a/core/libretro/libretro.cpp
++++ b/core/libretro/libretro.cpp
+@@ -16,7 +16,7 @@
+ 
+ int screen_width  = 640;
+ int screen_height = 480;
+-bool boot_to_bios;
++bool boot_to_bios = true;
+ 
+ u16 kcode[4] = {0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF};
+ u8 rt[4] = {0, 0, 0, 0};
+@@ -545,8 +545,8 @@ bool retro_load_game(const struct retro_game_info *game)
+    if (!(environ_cb(RETRO_ENVIRONMENT_GET_SYSTEM_DIRECTORY, &dir) && dir))
+       dir = game_dir;
+ 
+-   snprintf(game_dir, sizeof(game_dir), "%s%cdc%c", dir, slash, slash);
+-   snprintf(game_dir_no_slash, sizeof(game_dir_no_slash), "%s%cdc", dir, slash);
++   snprintf(game_dir, sizeof(game_dir), "%s", dir);
++   snprintf(game_dir_no_slash, sizeof(game_dir_no_slash), "%s", dir);
+ 
+    settings.dreamcast.cable = 3;
+    update_variables();
+@@ -560,7 +560,7 @@ bool retro_load_game(const struct retro_game_info *game)
+    {
+       char data_dir[1024];
+ 
+-      snprintf(data_dir, sizeof(data_dir), "%s%s", game_dir, "data");
++      snprintf(data_dir, sizeof(data_dir), "%s", game_dir);
+ 
+       printf("Creating dir: %s\n", data_dir);
+       struct stat buf;
