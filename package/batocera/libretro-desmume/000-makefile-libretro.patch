@@ -1,0 +1,13 @@
+diff --git a/desmume/src/frontend/libretro/Makefile.libretro b/desmume/src/frontend/libretro/Makefile.libretro
+index 1dd4fa8..afc7944 100644
+--- a/desmume/src/frontend/libretro/Makefile.libretro
++++ b/desmume/src/frontend/libretro/Makefile.libretro
+@@ -372,7 +372,7 @@ $(TARGET): $(OBJECTS)
+ ifeq ($(STATIC_LINKING), 1)
+ 	$(AR) rcs $@ $(OBJECTS)
+ else
+-	$(LD) $(LDFLAGS) $(fpic) $(SHARED) $(LINKOUT)$@ $(OBJECTS) $(LIBS)
++	$(CXX) $(LDFLAGS) $(fpic) $(SHARED) -o $@ $(OBJECTS) $(LIBS)
+ endif
+
+ %.o: %.c

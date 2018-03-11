@@ -4,19 +4,18 @@
 KODI_LANGUAGES="de_de es_es eu_es fr_fr it_it pt_br sv_se tr_tr zh_cn"
 
 PACKAGES_KODI="kodi-superrepo-repositories kodi-superrepo-repositories"
-PACKAGES_RETROARCH="retroarch libretro-pcsx libretro-snes9x-next libretro-4do libretro-81 libretro-beetle-lynx libretro-beetle-ngp libretro-beetle-pce libretro-beetle-pcfx libretro-armsnes libretro-beetle-supergrafx libretro-beetle-vb libretro-beetle-wswan libretro-bluemsx libretro-cap32 libretro-catsfc libretro-cheats libretro-fba libretro-fceumm libretro-fceunext libretro-fmsx libretro-fuse libretro-gambatte libretro-genesisplusgx libretro-gpsp libretro-gw libretro-hatari libretro-imageviewer libretro-imame libretro-lutro libretro-mame2003 libretro-mame2010 libretro-meteor libretro-mgba libretro-mupen64 libretro-nestopia libretro-nxengine libretro-o2em libretro-picodrive libretro-pocketsnes libretro-prboom libretro-prosystem libretro-quicknes libretro-scummvm libretro-stella libretro-tgbdual libretro-uae libretro-vecx libretro-virtualjaguar libretro-snes9x libretro-yabause libretro-beetle-saturn libretro-reicast libretro-desmume libretro-mupen64plus libretro-parallel-n64 libretro-freeintv"
+PACKAGES_RETROARCH="retroarch libretro-pcsx libretro-snes9x-next libretro-4do libretro-81 libretro-beetle-lynx libretro-beetle-ngp libretro-beetle-pce libretro-beetle-pcfx libretro-armsnes libretro-beetle-supergrafx libretro-beetle-vb libretro-beetle-wswan libretro-bluemsx libretro-cap32 libretro-catsfc libretro-cheats libretro-fba libretro-fceumm libretro-fceunext libretro-fmsx libretro-fuse libretro-gambatte libretro-genesisplusgx libretro-gpsp libretro-gw libretro-hatari libretro-imageviewer libretro-imame libretro-lutro libretro-mame2003 libretro-mame2010 libretro-meteor libretro-mgba libretro-mupen64 libretro-nestopia libretro-nxengine libretro-o2em libretro-picodrive libretro-pocketsnes libretro-prboom libretro-prosystem libretro-quicknes libretro-scummvm libretro-stella libretro-tgbdual libretro-uae libretro-vecx libretro-virtualjaguar libretro-snes9x libretro-yabause libretro-beetle-saturn libretro-reicast libretro-desmume libretro-mupen64plus libretro-parallel-n64 libretro-freeintv libretro-atari800"
 PACKAGES_MUPEN="mupen64plus-audio-sdl mupen64plus-core mupen64plus-gles2 mupen64plus-gles2rice mupen64plus-gliden64 mupen64plus-input-sdl mupen64plus-omx mupen64plus-rice mupen64plus-rsphle mupen64plus-uiconsole mupen64plus-video-glide64mk2"
-PACKAGES_OTHERS="dolphin-emu ppsspp reicast linapple-pie advancemame pifba vice amiberry fsuae"
+PACKAGES_OTHERS="dolphin-emu ppsspp reicast linapple-pie advancemame pifba vice amiberry fsuae dosbox"
 PACKAGES_MISC="virtualgamepads python-es-scraper qtsixa qtsixa-shanwan evwait raspi2png gpsp jstest2 mk_arcade_joystick_rpi sselph-scraper"
 
 PACKAGES_TEST="retroarch ppsspp"
 
 # FIXED COMMITS
-PKGVER_3eaa81570443506a1e8dd26217c7700854628a77=v1.3   # ppsspp
-PKGVER_31bcb3d6f84b99c93844bde70251bcf3dec9ce7b=v1.3.6 # retroarch
+# PKGVER_6fc6bfbb243de4da05a86d1edc3950815a964f1e=v1.7.1 # retroarch
 
 PACKAGES_GROUPS="KODI RETROARCH MUPEN MISC OTHERS"
-ARCHIS="odroidc2 odroidxu4 rpi1 rpi2 rpi3 x86 x86_64"
+ARCHIS="odroidc2 odroidxu4 rpi1 rpi2 rpi3 x86 x86_64 s905 s912"
 ### ############# ###
 
 ## SPECIFICS ##
@@ -36,6 +35,7 @@ tput_reset="$(tput sgr0)"
 tput_red="$(tput bold ; tput setaf 1)"
 tput_green="$(tput bold ; tput setaf 2)"
 tput_yellow="$(tput bold ; tput setaf 3)"
+tput_pink="$(tput bold ; tput setaf 5)"
 tput_bold="$(tput smso)"
 
 # /COLORS ##
@@ -43,7 +43,7 @@ tput_bold="$(tput smso)"
 # HELPERS ##
 
 base_GETCUR() {
-    X=$(grep '_VERSION = ' package/batocera/${1}/*.mk 2>/dev/null | grep -vE '^#' | head -1 | sed -e s+'.* = '+''+ | sed -e s+' '++g)
+    X=$(grep '_VERSION = ' "package/batocera/${1}/"*".mk" 2>/dev/null | grep -vE '^#' | head -1 | sed -e s+'.* = '+''+ | sed -e s+' '++g)
     if test -z "$X"
     then
 	echo "unknown (you should run from the top buildroot directory)"
@@ -103,9 +103,9 @@ github_base() {
     GH_SIZE=$(echo "${GH_VERS}" | wc -c)
     if test "${GH_SIZE}" = 41 # git full checksum
     then
-	grep '_SITE = \$(call github,' package/batocera/${1}/*.mk 2>/dev/null | grep -vE '^#' | head -1 | sed -e s+'^.*call github,\([^,]*\),\([^,]*\),.*$'+'\1/\2:lastcommit'+
+	grep '_SITE = \$(call github,' "package/batocera/${1}/"*".mk" 2>/dev/null | grep -vE '^#' | head -1 | sed -e s+'^.*call github,\([^,]*\),\([^,]*\),.*$'+'\1/\2:lastcommit'+
     else
-	grep '_SITE = \$(call github,' package/batocera/${1}/*.mk 2>/dev/null | grep -vE '^#' | head -1 | sed -e s+'^.*call github,\([^,]*\),\([^,]*\),.*$'+'\1/\2:'"${GH_VERS}"+
+	grep '_SITE = \$(call github,' "package/batocera/${1}/"*".mk" 2>/dev/null | grep -vE '^#' | head -1 | sed -e s+'^.*call github,\([^,]*\),\([^,]*\),.*$'+'\1/\2:'"${GH_VERS}"+
     fi
 }
 
@@ -122,8 +122,8 @@ github_eval() {
 	# define the last commit functions
 	if isFunction "${pkg}_GITHUB"
 	then
-	    GHREPO=$(${pkg}_GITHUB | cut -d ':' -f 1)
-	    GHTYPE=$(${pkg}_GITHUB | cut -d ':' -f 2)
+	    GHREPO=$("${pkg}_GITHUB" | cut -d ':' -f 1)
+	    GHTYPE=$("${pkg}_GITHUB" | cut -d ':' -f 2)
 	    case "${GHTYPE}" in
 		"lastcommit")
 		    eval "${pkg}_GETNET() {
@@ -181,8 +181,10 @@ setPGroups() {
 }
 
 getTargets() {
-    CFGSEARCH=$(echo "$1" | tr a-z A-Z | tr - _)
+    CFGSEARCH=$(echo "$1" | tr '[:lower:]' '[:upper:]' | tr - _)
     TGTMP=
+    MISSNUM=0
+    MISSLAST=
     for TG in ${ARCHIS}
     do
 	if grep -qE "^[ ]*BR2_PACKAGE_${CFGSEARCH}=y.*" "configs/batocera-${TG}_defconfig"
@@ -194,16 +196,22 @@ getTargets() {
 		TGTMP="${TGTMP} ${TG}"
 	    fi
 	else
-	    TGEVAL=$(echo "${TG}" | sed -e s+"."+" "+g)
-	    if test -z "${TGTMP}"
-	    then
-		TGTMP="${TGEVAL}"
-	    else
-		TGTMP="${TGTMP} ${TGEVAL}"
-	    fi
+	    let MISSNUM++
+	    MISSLAST=${TG}
 	fi
     done
-    echo "${TGTMP}"
+    if test "${ARCHIS}" = "${TGTMP}"
+    then
+	# all
+	echo "*"
+    elif test "${MISSNUM}" -eq 1
+    then
+	# all but 1
+	echo "-${MISSLAST}"
+    else
+	# too complex, display them
+	echo "${TGTMP}"
+    fi
 }
 
 ## /GENERATORS ##
@@ -214,7 +222,7 @@ run() {
     github_eval
     current_base_eval
 
-    printf "Groups: ${PGROUPS}\n"
+    printf "Groups: %s\n" "${PGROUPS}"
     printf "+----------------------------------+----------------------------------------------+---------------------------------------------------------+---------------------------------------------------------+\n"
     printf "| %-32s | %-44s | %-55s | %-55s |\n" "Package" "Architectures" "Available version" "Version"
     printf "+----------------------------------+----------------------------------------------+---------------------------------------------------------+---------------------------------------------------------+\n"
@@ -236,11 +244,25 @@ run() {
 		EXCPSTR="*"
 	    fi
 
-	    if test -n "${NETV}" -a "${NETV}" = "${CURV}"
+	    if test "${CURV}" = "master"
 	    then
-		printf "| %-32s | %44s | %-55s | ${tput_green}%-55s${tput_reset} |\n" "${pkg}" "${TARGETV}" "" "${CURV}${EXCPSTR}"
+		# plug on last version
+		printf "| %-32s | %44s | %-55s | ${tput_yellow}%-55s${tput_reset} |\n" "${pkg}" "${TARGETV}" "" "${CURV}${EXCPSTR}"
 	    else
-		printf "| %-32s | %44s | %-55s | ${tput_red}%-55s${tput_reset} |\n" "${pkg}" "${TARGETV}" "${NETV}" "${CURV}${EXCPSTR}"
+		if test -n "${NETV}" -a "${NETV}" = "${CURV}"
+		then
+		    # good
+		    printf "| %-32s | %44s | %-55s | ${tput_green}%-55s${tput_reset} |\n" "${pkg}" "${TARGETV}" "" "${CURV}${EXCPSTR}"
+		else
+		    if test -z "${NETV}"
+		    then
+			# unknown
+			printf "| %-32s | %44s | %-55s | ${tput_pink}%-55s${tput_reset} |\n" "${pkg}" "${TARGETV}" "${NETV}" "${CURV}${EXCPSTR}"
+		    else
+			# not good
+			printf "| %-32s | %44s | %-55s | ${tput_red}%-55s${tput_reset} |\n" "${pkg}" "${TARGETV}" "${NETV}" "${CURV}${EXCPSTR}"
+		    fi
+		fi
 	    fi
 	)&
     done | sort
@@ -250,7 +272,7 @@ run() {
 }
 
 base_UPDATE() {
-    sed -i -e s+"^\([ ]*[a-zA-Z0-9_]*_VERSION[ ]*=[ ]*\).*$"+"\1${2}"+ package/batocera/${1}/*.mk
+    sed -i -e s+"^\([ ]*[a-zA-Z0-9_]*_VERSION[ ]*=[ ]*\).*$"+"\1${2}"+ "package/batocera/${1}/"*".mk"
 }
 
 run_update() {
@@ -301,7 +323,7 @@ then
     run_update "${2}"
     exit $?
 else
-    PARAM_GRP=$(echo "$1" | tr a-z A-Z)
+    PARAM_GRP=$(echo "$1" | tr '[:lower:]' '[:upper:]')
     run "${PARAM_GRP}"
     exit $?
 fi
