@@ -1,0 +1,13 @@
+diff --git a/Makefile.libretro b/Makefile.libretro
+index 774b7cb..9f6c517 100644
+--- a/Makefile.libretro
++++ b/Makefile.libretro
+@@ -471,7 +471,7 @@ $(TARGET): $(OBJS)
+ ifeq ($(STATIC_LINKING), 1)
+ 	$(AR) rcs $@ $(OBJS)
+ else
+-	$(LD) $(LINKOUT)$@ $(SHARED) $(OBJS) $(LDFLAGS) $(LIBS)
++	$(CXX) -o $@ $(SHARED) $(OBJS) $(LDFLAGS) $(LIBS)
+ endif
+ 
+ 
