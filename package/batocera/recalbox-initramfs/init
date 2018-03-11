@@ -41,7 +41,7 @@ do_root() {
     fi
 
     # create an overlay on memory
-    mount -t tmpfs -o size=128M tmpfs /overlay_root || return 1
+    mount -t tmpfs -o size=256M tmpfs /overlay_root || return 1
     mkdir /overlay_root/base /overlay_root/overlay /overlay_root/work /overlay_root/saved || return 1
 
     # fill the overlay with the stored one
