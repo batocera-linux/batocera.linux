@@ -1,7 +1,16 @@
 diff --git a/Makefile b/Makefile
-index 7c9cc23..c616590 100644
+index cada1b8..c616590 100644
 --- a/Makefile
 +++ b/Makefile
+@@ -61,7 +61,7 @@ else ifeq ($(platform), linux-portable)
+ 	LDFLAGS += -nostdlib
+ else ifneq (,$(findstring rpi,$(platform)))
+    TARGET := $(TARGET_NAME)_libretro.so
+-   LDFLAGS += -shared -Wl,--version-script=libretro/link.T
++   #LDFLAGS += -shared -Wl,--version-script=libretro/link.T
+    fpic = -fPIC
+    SHARED := -shared -Wl,-version-script=link.T -Wl,-no-undefined
+ else ifeq ($(platform), osx)
 @@ -391,7 +391,7 @@ $(TARGET): $(OBJECTS)
  ifeq ($(STATIC_LINKING), 1)
  	$(AR) rcs $@ $(OBJECTS)
