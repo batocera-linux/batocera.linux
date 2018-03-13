@@ -1,0 +1,44 @@
+diff --git a/core/hw/maple/maple_devs.cpp b/core/hw/maple/maple_devs.cpp
+index 6dbf28b..b5d15c1 100644
+--- a/core/hw/maple/maple_devs.cpp
++++ b/core/hw/maple/maple_devs.cpp
+@@ -270,7 +270,7 @@ struct maple_sega_vmu: maple_base
+ 		memset(lcd_data,0,sizeof(lcd_data));
+ 		wchar tempy[512];
+ 		sprintf(tempy,"vmu_save_%s.bin",logical_port);
+-		string apath=get_writable_data_path(tempy);
++		string apath=get_writable_data_save(tempy);
+ 
+ 		file=fopen(apath.c_str(),"rb+");
+ 		if (!file)
+diff --git a/core/stdclass.cpp b/core/stdclass.cpp
+index fd1f40a..628595d 100644
+--- a/core/stdclass.cpp
++++ b/core/stdclass.cpp
+@@ -41,3 +41,14 @@ string get_writable_data_path(const string& filename)
+ #endif
+          + filename);
+ }
++
++string get_writable_data_save(const string& filename)
++{
++   return std::string("/recalbox/share/saves/dreamcast/" + 
++#ifdef _WIN32
++         std::string("\\")
++#else
++         std::string("/")
++#endif
++         + filename);
++}
+diff --git a/core/stdclass.h b/core/stdclass.h
+index 2da2323..cef0c7d 100644
+--- a/core/stdclass.h
++++ b/core/stdclass.h
+@@ -108,6 +108,7 @@ void add_system_data_dir(const string& dir);
+ 
+ //subpath format: /data/fsca-table.bit
+ string get_writable_data_path(const string& filename);
++string get_writable_data_save(const string& filename);
+ 
+ struct VArray2
+ {
