@@ -1,0 +1,57 @@
+diff --git a/core/nullDC.cpp b/core/nullDC.cpp
+index e727065..3eba09a 100644
+--- a/core/nullDC.cpp
++++ b/core/nullDC.cpp
+@@ -25,6 +25,9 @@ extern void init_mem();
+ extern void arm_Init();
+ extern void term_mem();
+ 
++std::string recalboxBiosPath = "/recalbox/share/bios/";
++std::string recalboxNvmemPath = "/recalbox/share/bios/";
++
+ /*
+ 	libndc
+ 
+@@ -189,22 +192,13 @@ int dc_init(int argc,wchar* argv[])
+ 
+    extern char game_dir_no_slash[1024];
+ 
+-   char new_system_dir[1024];
+-
+-#ifdef _WIN32
+-   sprintf(new_system_dir, "%s\\", game_dir_no_slash);
+-#else
+-   sprintf(new_system_dir, "%s/", game_dir_no_slash);
+-#endif
+-
+-   if (
+-         settings.bios.UseReios || !LoadRomFiles(new_system_dir)
+-      )
+-	{
+-      if (!LoadHle(new_system_dir))
+-			return -3;
+-      printf("Did not load bios, using reios\n");
+-	}
++   if (settings.bios.UseReios || !LoadRomFiles(recalboxBiosPath))
++   {
++      if (!LoadHle(recalboxBiosPath))
++	return -3;
++    
++	printf("Did not load bios, using reios\n");
++    }
+ 
+    LoadSpecialSettingsCPU();
+ 
+@@ -242,11 +236,7 @@ void dc_term(void)
+ 	plugins_Term();
+ 	_vmem_release();
+ 
+-#ifdef _WIN32
+-	SaveRomFiles(get_writable_data_path("data\\"));
+-#else
+-	SaveRomFiles(get_writable_data_path("data/"));
+-#endif
++	SaveRomFiles(recalboxNvmemPath);
+ }
+ 
+ void LoadSettings(void)
