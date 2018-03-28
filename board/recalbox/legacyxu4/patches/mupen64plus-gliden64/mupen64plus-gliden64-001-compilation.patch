@@ -1,0 +1,14 @@
+diff --git a/src/GLideNHQ/CMakeLists.txt b/src/GLideNHQ/CMakeLists.txt
+index 4aabf4f..9367de5 100644
+--- a/src/GLideNHQ/CMakeLists.txt
++++ b/src/GLideNHQ/CMakeLists.txt
+@@ -2,6 +2,9 @@ cmake_minimum_required(VERSION 2.6)
+ 
+ project( GLideNHQ )
+ 
++# it's not really bcmhost which is wanted, but it avoid using precompiled binaries
++set(BCMHOST ON)
++
+ set(GLideNHQ_SOURCES
+   TextureFilters.cpp
+   TextureFilters_2xsai.cpp
