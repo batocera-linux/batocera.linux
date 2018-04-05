@@ -24,13 +24,6 @@ else
 LINKNX_CONF_OPTS += --without-libcurl
 endif
 
-ifeq ($(BR2_PACKAGE_LUA),y)
-LINKNX_CONF_OPTS += --with-lua
-LINKNX_DEPENDENCIES += lua
-else
-LINKNX_CONF_OPTS += --without-lua
-endif
-
 ifeq ($(BR2_PACKAGE_MYSQL),y)
 LINKNX_CONF_OPTS += --with-mysql=$(STAGING_DIR)/usr
 LINKNX_DEPENDENCIES += mysql
