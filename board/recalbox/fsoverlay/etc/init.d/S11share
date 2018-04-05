@@ -108,6 +108,63 @@ mountDeviceOrFallback() {
     fi
 }
 
+systemsetting="python /usr/lib/python2.7/site-packages/configgen/settings/recalboxSettings.pyc"
+rb_wifi_configure() {
+    X=$1
+
+    if test "$X" = 1
+    then
+	settings_ssid="`$systemsetting -command load -key wifi.ssid`"
+	settings_key="`$systemsetting -command load -key wifi.key`"
+	settings_file="/var/lib/connman/recalbox_wifi.config"
+	settings_name="default"
+    else
+	settings_ssid="`$systemsetting -command load -key wifi${X}.ssid`"
+	settings_key="`$systemsetting -command load -key wifi${X}.key`"
+	settings_file="/var/lib/connman/recalbox_wifi${X}.config"
+	settings_name="${X}"
+    fi
+
+    if [[ "$settings_ssid" != "" ]] ;then
+	mkdir -p "/var/lib/connman"
+	cat > "${settings_file}" <<EOF
+[global]
+Name=recalbox
+
+[service_recalbox_${settings_name}]
+Type=wifi
+Name=${settings_ssid}
+EOF
+	if test "${settings_key}" != ""
+	then
+	    settings_key_dec=$(/recalbox/scripts/recalbox-encode.sh decode "${settings_key}")
+	    echo "Passphrase=${settings_key_dec}" >> "${settings_file}"
+
+	    # saved the value encoded
+	    if test "${settings_key}" = "${settings_key_dec}"
+	    then
+		# sed the replace by the secure value in recalbox.conf
+		settings_key=$(/recalbox/scripts/recalbox-encode.sh encode "${settings_key}")
+		sed -i -e s@'^[ \t]*wifi.key[ \t]*=.*$'@"wifi.key=${settings_key}"@ "/recalbox/share/system/recalbox.conf"
+	    fi
+	fi
+    fi
+}
+
+# wifi configuration is related to the share mounting
+# because some share mounts may depend on the wifi
+# because wifi password are on the share
+rb_wifi_configure_all() {
+    rb_wifi_configure 1&  # 0.6
+    rb_wifi_configure 2&  # 0.6
+    rb_wifi_configure 3&  # 0.6
+    wait
+
+    # wait a bit, otherwise, connman is not really started
+    sleep 2
+    /recalbox/scripts/recalbox-config.sh wifi start
+}
+
 mountNetwork() {
     # /boot/recalbox-boot.conf examples :
     # sharedevice=NETWORK
@@ -183,14 +240,17 @@ mountNetwork() {
 			esac
 		    fi
 
-		    echo "${CMD_EXEC}" >> /tmp/mountNetwork.log
+		    echo "${CMD_EXEC}"
 		    if ${CMD_EXEC}
 		    then
+			echo "success"
 			XTRY=0
 		    else
+			echo "fail (${XTRY} : ${CMD_EXEC})"
 			# give up
 			if test ${XTRY} = 0
 			then
+			    echo "giving up"
 			    return 1
 			fi
 			sleep ${XWAIT} # wait n seconds between each try
@@ -225,6 +285,7 @@ case "${MODE}" in
 	DEVICE=$(echo "${LDEVICE}" | sed -e s+'^\([^:]*\):.*$'+'\1'+)
 	TDEVICE=$(echo "${LDEVICE}" | sed -e s+'^.* TYPE="\([^"]*\)"$'+'\1'+)
 	mountDeviceOrFallback "${DEVICE}" "${TDEVICE}"
+	rb_wifi_configure_all& # configure the wifi at the end
 	;;
     "ANYEXTERNAL")
         PARTPREFIX=$(/recalbox/scripts/recalbox-part.sh prefix "${INTERNALDEVICE}")
@@ -238,6 +299,7 @@ case "${MODE}" in
 	DEVICE=$(echo "${LDEVICE}" | sed -e s+'^\([^:]*\):.*$'+'\1'+)
 	TDEVICE=$(echo "${LDEVICE}" | sed -e s+'^.* TYPE="\([^"]*\)"$'+'\1'+)
 	mountDeviceOrFallback "${DEVICE}" "${TDEVICE}"
+	rb_wifi_configure_all& # configure the wifi at the end
 	;;
     "RAM")
 	mount -t tmpfs -o size=128M tmpfs /recalbox/share
@@ -246,8 +308,12 @@ case "${MODE}" in
 	# first, INTERNAL mount, then, network mount over the NETWORK mounts
 	# to allow to mount over /recalbox/share, but only over /recalbox/share/roms if wanted
 	# mounting network mounts over usb key have not really sense
-	if ! /recalbox/scripts/recalbox-mount.sh "${INTERNALDEVICETYPE}" 1 "${INTERNALDEVICE}" /recalbox/share
+	if /recalbox/scripts/recalbox-mount.sh "${INTERNALDEVICETYPE}" 1 "${INTERNALDEVICE}" /recalbox/share
 	then
+	    # we try to configure the wifi here
+	    # for people using the internal device for the wifi and some others mounts for data
+	    rb_wifi_configure_all
+	else
 	    # fallback
 	    mount -t tmpfs -o size=128M tmpfs /recalbox/share
 	fi
@@ -263,6 +329,7 @@ case "${MODE}" in
 	    # the internal partition is no more required in fact
 	    mount -t tmpfs -o size=128M tmpfs /recalbox/share
 	fi
+	rb_wifi_configure_all& # configure the wifi at the end
 	;;
 esac
 
