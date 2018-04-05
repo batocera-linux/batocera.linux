@@ -2,11 +2,25 @@
 
 do_start ()
 {
+    # on some sytems, fb0 is not immediatly loaded, so, keep a chance by waiting a bit
+    N=0
+    while ! test -e /dev/fb0 -o $N -gt 15
+    do
+	sleep 1
+	let N++
+    done
+    
     if test -f "/boot/splash.mp4"
     then
 	video="/boot/splash.mp4"
     else
 	video="/recalbox/system/resources/splash/splash.mp4"
+    fi
+
+    nosound=0
+    if grep -qE "^[ ]*splashsound[ ]*=[ ]*off[ ]*$" /boot/recalbox-boot.conf
+    then
+	nosound=1
     fi
 
     # odroid xu4 has not omxplayer, make it run this code make it flash
@@ -33,7 +47,7 @@ do_start ()
         omx_srt="--no-ghost-box --lines=1 --align=left $omx_fnt --font-size=20 --subtitles=/recalbox/system/resources/splash/splash.srt"
 
 	omx_nosound=
-	if grep -qE "^[ ]*splashsound[ ]*=[ ]*off[ ]*$" /boot/recalbox-boot.conf
+	if test "${nosound}" = 1
 	then
 	    omx_nosound="-n -1"
 	fi
@@ -65,15 +79,19 @@ do_start ()
             # Ready flag set or timeout occured; stop video process.
             dbus-send --print-reply=literal --session --dest=org.mpris.MediaPlayer2.omxplayer /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.Action int32:15 >/dev/null
         fi
+    elif [[ -f $video && -f /usr/bin/mplayer ]]; then
+	mplayer_nosound=
+	if test "${nosound}" = 1
+	then
+	    mplayer_nosound=-nosound
+	fi
+
+	# compute the scale
+	SCREENW=$(cat /sys/class/graphics/fb0/modes | sed -e s+'^[^:]:\([0-9]*\)x\([0-9]*\)[a-z]*.*$'+'\1'+)
+	SCREENH=$(cat /sys/class/graphics/fb0/modes | sed -e s+'^[^:]:\([0-9]*\)x\([0-9]*\)[a-z]*.*$'+'\2'+)
+	/usr/bin/mplayer -vo fbdev2 $mplayer_nosound "${video}" -vf expand=${SCREENW}:-1,scale=-2:${SCREENH}
     fi
 
-    # on some sytems, fb0 is not immediatly loaded, so, keep a chance by waiting a bit
-    N=0
-    while ! test -e /dev/fb0 -o $N -gt 15
-    do
-	sleep 1
-	let N++
-    done
     test -e /dev/fb0 && fbv -f -i /recalbox/system/resources/splash/logo-version.png
 }
 
