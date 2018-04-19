@@ -5,7 +5,7 @@
 ################################################################################
 
 
-MUPEN64PLUS_GLIDEN64_VERSION = 34fa719a61fa2338025facc9810ad2ef1a00e7ee
+MUPEN64PLUS_GLIDEN64_VERSION = e3a7acadb2778a23a1dba407721b542ddfaa8c40
 MUPEN64PLUS_GLIDEN64_SITE = $(call github,gonetz,GLideN64,$(MUPEN64PLUS_GLIDEN64_VERSION))
 MUPEN64PLUS_GLIDEN64_LICENSE = MIT
 MUPEN64PLUS_GLIDEN64_DEPENDENCIES = sdl2 alsa-lib mupen64plus-core
@@ -23,8 +23,8 @@ endif
 define MUPEN64PLUS_GLIDEN64_INSTALL_TARGET_CMDS
 	mkdir -p $(TARGET_DIR)/recalbox/configs/mupen64/
 	mkdir -p $(TARGET_DIR)/usr/share/mupen64plus/
-	$(INSTALL) -D $(@D)/src/plugin/release/mupen64plus-video-GLideN64.so \
-		$(TARGET_DIR)/usr/lib/mupen64plus/mupen64plus-video-gliden64.so
+	$(INSTALL) -D $(@D)/src/plugin/Release/mupen64plus-video-GLideN64.so \
+		$(TARGET_DIR)/usr/lib/mupen64plus/mupen64plus-video-GLideN64.so
 	$(INSTALL) -D $(@D)/ini/* \
 		$(TARGET_DIR)/usr/share/mupen64plus/
 	$(INSTALL) -D $(@D)/ini/* \
