@@ -1,0 +1,11 @@
+config BR2_PACKAGE_LIBRETRO_PX68K
+        bool "libretro-px68k"
+	depends on BR2_PACKAGE_RETROARCH
+	depends on BR2_INSTALL_LIBSTDCPP
+        help
+          A libretro SHARP X68000 emulator core.
+
+	  http://www.libretro.com
+
+comment "LIBRETRO_PX68K needs a toolchain w/ C++"
+	depends on !BR2_INSTALL_LIBSTDCPP
