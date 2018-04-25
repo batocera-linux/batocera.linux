@@ -1,8 +1,8 @@
 diff --git a/gfx/common/x11_common.c b/gfx/common/x11_common.c
-index fd28325..596456e 100644
+index f5cd494..0857f6a 100644
 --- a/gfx/common/x11_common.c
 +++ b/gfx/common/x11_common.c
-@@ -404,23 +404,23 @@ static void x11_handle_key_event(XEvent *event, XIC ic, bool filter)
+@@ -426,25 +426,25 @@ static void x11_handle_key_event(XEvent *event, XIC ic, bool filter)
           char keybuf[32];
  
           keybuf[0] = '\0';
@@ -10,7 +10,8 @@ index fd28325..596456e 100644
 -         status = 0;
 -
 -         /* XwcLookupString doesn't seem to work. */
--         num = Xutf8LookupString(ic, &event->xkey, keybuf, ARRAY_SIZE(keybuf), &keysym, &status);
+-         num = Xutf8LookupString(ic, &event->xkey, keybuf,
+-               ARRAY_SIZE(keybuf), &keysym, &status);
 -
 -         /* libc functions need UTF-8 locale to work properly,
 -          * which makes mbrtowc a bit impractical.
@@ -22,7 +23,8 @@ index fd28325..596456e 100644
 +//         status = 0;
 +//
 +//         /* XwcLookupString doesn't seem to work. */
-+//         num = Xutf8LookupString(ic, &event->xkey, keybuf, ARRAY_SIZE(keybuf), &keysym, &status);
++//         num = Xutf8LookupString(ic, &event->xkey, keybuf,
++//               ARRAY_SIZE(keybuf), &keysym, &status);
 +//
 +//         /* libc functions need UTF-8 locale to work properly,
 +//          * which makes mbrtowc a bit impractical.
@@ -31,7 +33,8 @@ index fd28325..596456e 100644
 +//         num = utf8_conv_utf32(chars, ARRAY_SIZE(chars), keybuf, num);
 +//#else
           (void)ic;
-          num = XLookupString(&event->xkey, keybuf, sizeof(keybuf), &keysym, NULL); /* ASCII only. */
+          num = XLookupString(&event->xkey, keybuf,
+                sizeof(keybuf), &keysym, NULL); /* ASCII only. */
           for (i = 0; i < num; i++)
              chars[i] = keybuf[i] & 0x7f;
 -#endif
