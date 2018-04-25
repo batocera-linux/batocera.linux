@@ -1,0 +1,71 @@
+diff --git a/src/core/linux/SDL_udev.c b/src/core/linux/SDL_udev.c
+index 37bc422..fc2cd2d 100644
+--- a/src/core/linux/SDL_udev.c
++++ b/src/core/linux/SDL_udev.c
+@@ -191,12 +191,31 @@ SDL_UDEV_Quit(void)
+     }
+ }
+ 
++struct joypad_udev_entry
++{
++   const char *devnode;
++   struct udev_list_entry *item;
++   struct udev_device *dev;
++};
++
++/* Used for sorting devnodes to appear in the correct order */
++static int sort_devnodes(const void *a, const void *b)
++{
++   const struct joypad_udev_entry *aa = a;
++   const struct joypad_udev_entry *bb = b;
++   return strcmp(aa->devnode, bb->devnode);
++}
++
+ void
+ SDL_UDEV_Scan(void)
+ {
+     struct udev_enumerate *enumerate = NULL;
+     struct udev_list_entry *devs = NULL;
+-    struct udev_list_entry *item = NULL;  
++    struct udev_list_entry *item = NULL;
++
++    unsigned sorted_count = 0;
++    struct joypad_udev_entry sorted[64];
++    int i;
+     
+     if (_this == NULL) {
+         return;
+@@ -218,15 +237,30 @@ SDL_UDEV_Scan(void)
+         const char *path = _this->udev_list_entry_get_name(item);
+         struct udev_device *dev = _this->udev_device_new_from_syspath(_this->udev, path);
+         if (dev != NULL) {
+-            device_event(SDL_UDEV_DEVICEADDED, dev);
+-            _this->udev_device_unref(dev);
++         const char* devnode = _this->udev_device_get_devnode(dev);
++         if(devnode != NULL) {
++	    sorted[sorted_count].devnode = devnode;
++	    sorted[sorted_count].dev     = dev;
++	    sorted[sorted_count].item = item;
++	    sorted_count++;
++         }
+         }
+     }
+ 
++   /* Sort the udev entries by devnode name so that they are
++    * created in the proper order */
++   qsort(sorted, sorted_count,
++         sizeof(struct joypad_udev_entry), sort_devnodes);
++
++   for (i = 0; i < sorted_count; i++)
++   {
++     device_event(SDL_UDEV_DEVICEADDED, sorted[i].dev);
++     _this->udev_device_unref(sorted[i].dev);
++   }
++
+     _this->udev_enumerate_unref(enumerate);
+ }
+ 
+-
+ void
+ SDL_UDEV_UnloadLibrary(void)
+ {
