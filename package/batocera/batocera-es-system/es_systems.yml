@@ -1,0 +1,943 @@
+snes:
+  name:       Super Nintendo Entertainment System
+  extensions: [7z, bin, bs, fig, smc, sfc, swc, mgd, zip]
+  emulators:
+    libretro:
+      catsfc:      { require: [BR2_PACKAGE_LIBRETRO_CATSFC]      }
+      pocketsnes:  { require: [BR2_PACKAGE_LIBRETRO_POCKETSNES]  }
+      snes9x_next: { require: [BR2_PACKAGE_LIBRETRO_SNES9X_NEXT] }
+      snes9x:      { require: [BR2_PACKAGE_LIBRETRO_SNES9X]      }
+
+c64:
+  name:       Commodore c64
+  extensions: [crt, d64, d71, d80, d81, d82, g41, g64, t64, x64, tap, prg, p00, crt, zip]
+  emulators:
+    vice:
+      x64: { require: [BR2_PACKAGE_VICE] }
+
+amiga500:
+  name:       Amiga 500
+  extensions: [zip, adf, uae, ipf, dms, adz]
+  path:       amiga/amiga500
+  theme:      amiga
+  emulators:
+    fsuae:
+      A500: { require: [BR2_PACKAGE_FSUAE]    }
+    amiberry:
+      A500: { require: [BR2_PACKAGE_AMIBERRY] }
+
+amiga500p:
+  name:       Amiga 500+
+  extensions: [zip, adf, uae, ipf, dms, adz]
+  path:       amiga/amiga500p
+  theme:      amiga
+  emulators:
+    fsuae:
+      A500+: { require: [BR2_PACKAGE_FSUAE]    }
+    amiberry:
+      A500P: { require: [BR2_PACKAGE_AMIBERRY] }
+
+amiga600:
+  name:       Amiga 600
+  extensions: [zip, adf, uae, ipf, dms, adz]
+  path:       amiga/amiga600
+  emulators:
+    fsuae:
+      A600: { require: [BR2_PACKAGE_FSUAE] }
+
+amiga1000:
+  name:       Amiga 1000
+  extensions: [zip, adf, uae, ipf, dms, adz]
+  path:       amiga/amiga1000
+  theme:      amiga
+  emulators:
+    fsuae:
+      A1000: { require: [BR2_PACKAGE_FSUAE] }
+
+amiga1200:
+  name:       Amiga 1200
+  extensions: [zip, adf, uae, ipf, dms, adz]
+  path:       amiga/amiga1200
+  emulators:
+    fsuae:
+      A1200: { require: [BR2_PACKAGE_FSUAE]    }
+    amiberry:
+      A1200: { require: [BR2_PACKAGE_AMIBERRY] }
+
+amiga3000:
+  name:       Amiga 3000
+  extensions: [zip, adf, uae, ipf, dms, adz]
+  path:       amiga/amiga3000
+  theme:      amiga
+  emulators:
+    fsuae:
+      A3000: { require: [BR2_PACKAGE_FSUAE] }
+
+amiga4000:
+  name:       Amiga 4000
+  extensions: [zip, adf, uae, ipf, dms, adz]
+  path:       amiga/amiga4000
+  theme:      amiga
+  emulators:
+    fsuae:
+      A4000: { require: [BR2_PACKAGE_FSUAE]    }
+    amiberry:
+      A4000: { require: [BR2_PACKAGE_AMIBERRY] }
+
+amigacd32:
+  name:       Amiga CD32
+  extensions: [iso]
+  path:       amiga/amigacd32
+  theme:      amiga
+  emulators:
+    fsuae:
+      CD32: { require: [BR2_PACKAGE_FSUAE]    }
+    amiberry:
+      CD32: { require: [BR2_PACKAGE_AMIBERRY] }
+
+amigacdtv:
+  name:       Amiga CDTV
+  extensions: [bin, cue, iso]
+  path:       amiga/amigacdtv
+  theme:      amiga
+  emulators:
+    fsuae:
+      CDTV: { require: [BR2_PACKAGE_FSUAE] }
+
+nes:
+  name:       Nintendo Entertainment System
+  extensions: [7z, nes, zip]
+  emulators:
+    libretro:
+      fceumm:   { require: [BR2_PACKAGE_LIBRETRO_FCEUMM]   }
+      fceunext: { require: [BR2_PACKAGE_LIBRETRO_FCEUNEXT] }
+      nestopia: { require: [BR2_PACKAGE_LIBRETRO_NESTOPIA] }
+      quicknes: { require: [BR2_PACKAGE_LIBRETRO_QUICKNES] }
+
+n64:
+  name:       Nintendo 64
+  extensions: [z64, n64, v64]
+  emulators:
+    mupen64plus:
+      gliden64:   { require: [BR2_PACKAGE_MUPEN64PLUS_GLIDEN64]         }
+      n64:        { require: [BR2_PACKAGE_MUPEN64PLUS_CORE]             }
+      rice:       { require: [BR2_PACKAGE_MUPEN64PLUS_GLES2RICE]        }
+      glide64mk2: { require: [BR2_PACKAGE_MUPEN64PLUS_VIDEO_GLIDE64MK2] }
+    libretro:
+      mupen64plus:  { require: [BR2_PACKAGE_LIBRETRO_MUPEN64PLUS]  }
+      parallel_n64: { require: [BR2_PACKAGE_LIBRETRO_PARALLEL_N64] }
+
+gba:
+  name:       Game Boy Advance
+  extensions: [7z, gba, gb, gbc, zip]
+  emulators:
+    libretro:
+      gpsp:   { require: [BR2_PACKAGE_LIBRETRO_GPSP]   }
+      mgba:   { require: [BR2_PACKAGE_LIBRETRO_MGBA]   }
+      meteor: { require: [BR2_PACKAGE_LIBRETRO_METEOR] }
+
+gbc:
+  name:       Game Boy Color
+  extensions: [7z, gb, gbc, zip]
+  emulators:
+    libretro:
+      gambatte: { require: [BR2_PACKAGE_LIBRETRO_GAMBATTE] }
+      tgbdual:  { require: [BR2_PACKAGE_LIBRETRO_TGBDUAL]  }
+
+gb:
+  name:       Game Boy
+  extensions: [7z, gb, gbc, zip]
+  emulators:
+    libretro:
+      gambatte: { require: [BR2_PACKAGE_LIBRETRO_GAMBATTE] }
+      tgbdual:  { require: [BR2_PACKAGE_LIBRETRO_TGBDUAL]  }
+
+nds:
+  name:       Nintendo DS
+  extensions: [bin, nds, zip]
+  emulators:
+    libretro:
+      desmume: { require: [BR2_PACKAGE_LIBRETRO_DESMUME] }
+
+fds:
+  name:       Family Computer Disk System
+  extensions: [7z, nes, fds, zip]
+  emulators:
+    libretro:
+      fceumm:   { require: [BR2_PACKAGE_LIBRETRO_FCEUMM]   }
+      nestopia: { require: [BR2_PACKAGE_LIBRETRO_NESTOPIA] }
+
+virtualboy:
+  name:       Virtual Boy
+  extensions: [7z, vb, zip]
+  emulators:
+    libretro:
+      vb: { require: [BR2_PACKAGE_LIBRETRO_BEETLE_VB] }
+
+gw:
+  name:       Game and Watch
+  extensions: [mgw, zip]
+  emulators:
+    libretro:
+      vb: { require: [BR2_PACKAGE_LIBRETRO_GW] }
+
+dreamcast:
+  name:       Dreamcast
+  extensions: [cdi, chd, gdi]
+  emulators:
+    libretro:
+      libretro-reicast: { require: [BR2_PACKAGE_LIBRETRO_REICAST] }
+    reicast:
+      reicast: { require: [BR2_PACKAGE_REICAST] }
+
+megadrive:
+  name:       Sega Megadrive
+  extensions: [7z, smd, bin, gen, md, sg, smd, zip]
+  platform:   genesis, megadrive
+  emulators:
+    libretro:
+      genesisplusgx: { require: [BR2_PACKAGE_LIBRETRO_GENESISPLUSGX] }
+      picodrive:     { require: [BR2_PACKAGE_LIBRETRO_PICODRIVE]     }
+
+segacd:
+  name:       Sega CD
+  extensions: [chd, cue, iso]
+  emulators:
+    libretro:
+      genesisplusgx: { require: [BR2_PACKAGE_LIBRETRO_GENESISPLUSGX] }
+      picodrive:     { require: [BR2_PACKAGE_LIBRETRO_PICODRIVE]     }
+
+sega32x:
+  name:       Sega 32x
+  extensions: [7z, 32x, smd, bin, md, zip]
+  emulators:
+    libretro:
+      picodrive: { require: [BR2_PACKAGE_LIBRETRO_PICODRIVE] }
+
+mastersystem:
+  name:       Sega Master System / Mark III
+  extensions: [7z, bin, sms, zip]
+  emulators:
+    libretro:
+      genesisplusgx: { require: [BR2_PACKAGE_LIBRETRO_GENESISPLUSGX] }
+      picodrive:     { require: [BR2_PACKAGE_LIBRETRO_PICODRIVE]     }
+
+gamegear:
+  name:       Sega Game Gear
+  extensions: [7z, bin, gg, zip]
+  emulators:
+    libretro:
+      genesisplusgx: { require: [BR2_PACKAGE_LIBRETRO_GENESISPLUSGX] }
+
+sg1000:
+  name:       Sega SG1000
+  extensions: [7z, bin, sg, zip]
+  emulators:
+    libretro:
+      genesisplusgx: { require: [BR2_PACKAGE_LIBRETRO_GENESISPLUSGX] }
+      picodrive:     { require: [BR2_PACKAGE_LIBRETRO_PICODRIVE]     }
+
+psp:
+  name:       Sony Playstation Portable
+  extensions: [iso, cso, pbp, elf, prx]
+  emulators:
+    ppsspp:
+      ppsspp: { require: [BR2_PACKAGE_PPSSPP] }
+
+psx:
+  name:       Sony Playstation 1
+  extensions: [chd, cue, cbn, ccd, img, iso, m3u, mdf, pbp, toc, z, znx]
+  emulators:
+    libretro:
+      pcsx_rearmed: { require: [BR2_PACKAGE_LIBRETRO_PCSX]       }
+      mednafen_psx: { require: [BR2_PACKAGE_LIBRETRO_BEETLE_PSX] }
+
+pcengine:
+  name:       PC Engine
+  extensions: [7z, ccd, chd, cue, pce, sgx, zip]
+  emulators:
+    libretro:
+      mednafen_supergrafx: { require: [BR2_PACKAGE_LIBRETRO_BEETLE_SUPERGRAFX] }
+      pce:                 { require: [BR2_PACKAGE_LIBRETRO_PCE]               }
+
+pcenginecd:
+  name:       PC Engine CD
+  extensions: [7z, ccd, chd, cue, pce, sgx, zip]
+  emulators:
+    libretro:
+      mednafen_supergrafx: { require: [BR2_PACKAGE_LIBRETRO_BEETLE_SUPERGRAFX] }
+      pce:                 { require: [BR2_PACKAGE_LIBRETRO_PCE]               }
+
+supergrafx:
+  name:       Supergrafx
+  extensions: [7z, ccd, chd, cue, pce, sgx, zip]
+  emulators:
+    libretro:
+      mednafen_supergrafx: { require: [BR2_PACKAGE_LIBRETRO_BEETLE_SUPERGRAFX] }
+      pce:                 { require: [BR2_PACKAGE_LIBRETRO_PCE]               }
+
+pcfx:
+  name:       PC-FX
+  extensions: [cue, bin]
+  emulators:
+    libretro:
+      pcfx: { require: [BR2_PACKAGE_LIBRETRO_BEETLE_PCFX] }
+
+scummvm:
+  name:       ScummVM
+  extensions: [7z, svm, scummvm, residualvm, zip]
+  platform:   pc
+  includeEmulators: no
+  emulators:
+    scummvm:
+      scummvm: { require: [BR2_PACKAGE_SCUMMVM] }
+  comment_en: |
+    Put scummvm games foders in this folder.
+    
+    For each game, you must create a file named from the short name of the game and with the extension ".7z .svm .scummvm .residualvm .zip"
+    
+    Short game names can be found at http://scummvm.org/compatibility/
+    For example, for "Broken Sword" create the file "Broken Sword/sword1.scummvm"
+  comment_fr: |
+    Placez les dossiers de jeux scummvm dans ce dossier.
+    
+    Pour chaque jeu, dans son repertoire, vous devez creer un fichier portant le nom court du jeu et finissant par ".7z .svm .scummvm .residualvm .zip"
+    
+    Vous trouverez les noms courts a l'adresse : http://scummvm.org/compatibility/
+    Par exemple pour "Les Chevaliers de Baphomet" creez le fichier "Les Chevaliers de Baphomet/sword1.scummvm"
+
+dos:
+  name:       Dos (x86)
+  extensions: [pc, dos]
+  theme:      pc
+  platform:   pc
+  includeEmulators: no
+  emulators:
+    dos:
+      dos: { require: [BR2_PACKAGE_DOSBOX] }
+  comment_en: |
+    Each game (files) must be placed its own directory having the ".pc .dos" extension.
+    In each directory, a dosbox.bat file must contain the command line for launching the game.
+    
+    For example:
+    miniputt.pc/
+    miniputt.pc/dosbox.bat
+    miniputt.pc/MP.DAT
+    miniputt.pc/MP.EXE
+    
+    WHere dosbox.bat contains: MP.EXE
+    
+    To quit a game, press CTRL + F9.
+    
+    Games files are available on myabandonware:
+    http://www.myabandonware.com/browse/platform/dos/
+  comment_fr: |
+    Chaque jeu (fichiers) doit être contenu dans un dossier ayant l'extension ".pc .dos".
+    Dans chaque dossier, un fichier dosbox.bat doit comporter la ligne de commande pour lancer le jeu.
+    
+    Par exemple:
+    miniputt.pc/
+    miniputt.pc/dosbox.bat
+    miniputt.pc/MP.DAT
+    miniputt.pc/MP.EXE
+    
+    Et dosbox.bat contient: MP.EXE
+    
+    Pour quitter un jeu, appuyer sur CTRL + F9.
+    
+    Les jeux DOS sont disponibles sur myabandonware:
+    http://www.myabandonware.com/browse/platform/dos/
+
+fba:
+  name:       FBA
+  extensions: [7z, fba, zip]
+  platform:   arcade
+  emulators:
+    libretro:
+      fba: { require: [BR2_PACKAGE_LIBRETRO_FBA] }
+    fba2x:
+      fba2x: { require: [BR2_PACKAGE_PIFBA] }
+  comment_en: |
+    ROMs version must be 0.2.97.42
+    
+    The file clrmamepro/piFBA_gamelist.txt list compatible games.
+    The file fba_029671_od_release_10_working_roms.dat may be used to check ROMs with clrmamepro available at http://mamedev.emulab.it/clrmamepro/
+  comment_fr: |
+    La version des ROMs doit être 0.2.97.42
+    
+    Le fichier clrmamepro/piFBA_gamelist.txt liste les jeux compatibles.
+    Le fichier fba_029671_od_release_10_working_roms.dat peut servir à valider les ROMs avec clrmamepro disponible sur http://mamedev.emulab.it/clrmamepro/
+
+fba_libretro:
+  name:       FBA LIBRETRO
+  extensions: [7z, fba, zip]
+  platform:   arcade
+  emulators:
+    libretro:
+        fba: { require: [BR2_PACKAGE_LIBRETRO_FBA] }
+  comment_en: |
+    ROMs version must be 0.2.97.42
+    
+    This emulator has CPS3 support, updated version, but less performant than piFBA.
+    
+    The file fba_libretro_gamelist.txt list compatible games.
+    
+    Special files for fba libretro core:
+    - Add your (audio) samples files in /recalbox/share/bios/fba/samples/
+    - Update the hiscore.dat file in /recalbox/share/saves/fba_libretro/ if you want latest highscores
+    (http://highscore.mameworld.info/download.htm) (use 'old format hiscore.dat (pre mame v0174)' version)
+  comment_fr: |
+    La version des ROMs doit être 0.2.97.42
+    
+    Cet émulateur supporte CPS3, version plus récente, mais moins performant que piFBA).
+    
+    Le fichier fba_libretro_gamelist.txt liste les jeux compatibles.
+    
+    Fichiers spéciaux pour le core fba libretro:
+    - Ajoutez vos samples (audio) dans le répertoire /recalbox/share/bios/fba/samples/
+    - Mettez à jour le fichier hiscore.dat dans /recalbox/share/saves/fba_libretro/ si vous souhaitez avoir les derniers highscores
+    (http://highscore.mameworld.info/download.htm) (use 'old format hiscore.dat (pre mame v0174)' version)
+
+mame:
+  name:       Mame
+  extensions: [zip]
+  platform:   arcade
+  emulators:
+    libretro:
+      imame4all:   { require: [BR2BR2_PACKAGE_LIBRETRO_IMAME] }
+      mame078:     { require: [BR2_PACKAGE_LIBRETRO_MAME2003] }
+      mame0139:    { require: [BR2_PACKAGE_LIBRETRO_MAME2010] }
+    advancemame:
+      advancemame: { require: [BR2_PACKAGE_ADVANCEMAME]       }
+  comment_en: |
+    The system uses libretro mame2003 as default core: compatible ROMs must come from set 0.78 
+    The libretro core imame4all, based on MAME v0.37b5, is also included.
+    
+    To imame4all core instead, edit the recalbox.conf file following instructions of this page:
+    https://github.com/recalbox/recalbox-os/wiki/recalbox.conf-%28EN%29
+    
+    You can use clrmamepro available at http://mamedev.emulab.it/clrmamepro/ and
+    use the .dat file in clrmamepro directory to check your roms.
+    
+    Special files for mame2003 core:
+    - Add your samples files in /recalbox/share/bios/mame2003/samples/
+    - Update the hiscore.dat file in /recalbox/share/bios/mame2003/ if you want latest highscores (http://highscore.mameworld.info/download.htm)
+    - Download cheat.dat in /recalbox/share/bios/mame2003/ to enable cheat codes (http://cheat.retrogames.com/download/cheat081.zip)
+    - Download history.dat in /recalbox/share/bios/mame2003/ to enable ingame history menu (http://www.arcade-history.com/index.php?page=download)
+  comment_fr: |
+    Le système utilise le core libretro mame2003 implicitement: Les ROMs compatibles doivent provenir du set 0.78
+    Le core imame4all, basé sur MAME v0.37b5 est également disponible.
+    
+    Pour utiliser le core imame4all, modifier le fichier recalbox.conf selon les informations à la page suivante:
+    https://github.com/recalbox/recalbox-os/wiki/recalbox.conf-%28FR%29
+    
+    Vous pouvez utiliser clrmamepro disponible sur http://mamedev.emulab.it/clrmamepro/
+    et utiliser le fichier .dat dans le répertoire clrmamepro pour vérifier la version de vos roms.
+    
+    Fichiers spéciaux pour le core mame2003 :
+    - Ajoutez vos fichiers samples dans le répertoire /recalbox/share/bios/mame2003/samples/
+    - Mettez à jour le fichier hiscore.dat dans /recalbox/share/bios/mame2003/ si vous souhaitez avoir les derniers highscores (http://highscore.mameworld.info/download.htm)
+    - Téléchargez cheat.dat dans /recalbox/share/bios/mame2003/ pour activer les codes de triche (http://cheat.retrogames.com/download/cheat081.zip)
+    - Téléchargez history.dat dans /recalbox/share/bios/mame2003/ pour activer en jeu le menu history (http://www.arcade-history.com/index.php?page=download)
+
+neogeo:
+  name:       Neo-Geo
+  extensions: [7z, fba, zip]
+  emulators:
+    libretro:
+      imame4all: { require: [BR2BR2_PACKAGE_LIBRETRO_IMAME] }
+      mame078:   { require: [BR2_PACKAGE_LIBRETRO_MAME2003] }
+      mame0139:  { require: [BR2_PACKAGE_LIBRETRO_MAME2010] }
+      fba:       { require: [BR2_PACKAGE_LIBRETRO_FBA]      }
+    fba2x:
+      fba2x:     { require: [BR2_PACKAGE_PIFBA]             }
+
+colecovision:
+  name:       ColecoVision
+  extensions: [bin, col, rom, zip]
+  emulators:
+    libretro:
+      bluemsx: { require: [BR2_PACKAGE_LIBRETRO_BLUEMSX] }
+  comment_en: |
+    ## BIOS ##
+    
+    - BlueMSX:
+    You must download the BlueMSX standalone version, available to this URL:
+    http://bluemsx.msxblue.com/rel_download/blueMSXv282full.zip
+    
+    Extract the "Databases" and "Machines" folders and add them to the bios folder.
+    
+    Ensure the coleco.rom file (md5sum = 2c66f5911e5b42b8ebe113403548eee7) is inside the folder /bios/Machines/COL - ColecoVision/
+    
+    ## MAPPING ##
+    
+    JOYPAD_UP     = COLECO 1
+    JOYPAD_DOWN   = COLECO 2
+    JOYPAD_LEFT   = COLECO 3
+    JOYPAD_RIGHT  = COLECO 4
+    JOYPAD_A      = COLECO 5
+    JOYPAD_B      = COLECO 6
+    JOYPAD_X      = COLECO 7
+    JOYPAD_Y      = COLECO 8
+    JOYPAD_R2     = COLECO 9
+    JOYPAD_L2     = COLECO 0
+    JOYPAD_R      = COLECO BUTTON1
+    JOYPAD_L      = COLECO BUTTON2
+    JOYPAD_SELECT = COLECO STAR
+    JOYPAD_START  = COLECO HASH
+  comment_fr: |
+    ## BIOS ##
+    
+    - BlueMSX:
+    Vous devez télécharger la version standalone de l'émulateur BlueMSX disponible à l'adresse suivante:
+    http://bluemsx.msxblue.com/rel_download/blueMSXv282full.zip
+    
+    Extraire de ce dernier, les répertoire "Databases" et "Machines" et les ajouter dans le répertoire bios.
+    
+    Valider que le fichier coleco.rom (md5sum = 2c66f5911e5b42b8ebe113403548eee7) est bien dans le répertoire /bios/Machines/COL - ColecoVision/
+
+atari2600:
+  name:       Atari 2600
+  extensions: [7z, a26, bin, gz, rom, zip]
+  emulators:
+    libretro:
+      stella: { require: [BR2_PACKAGE_LIBRETRO_STELLA] }
+
+atari5200:
+  name:       Atari 5200
+  extensions: [xfd, atr, atx, cdm, cas, bin, a52, xex, zip]
+  emulators:
+    libretro:
+      atari800: { require: [BR2_PACKAGE_LIBRETRO_ATARI800] }
+
+atari7800:
+  name:       Atari 7800
+  extensions: [a78, bin, zip]
+  emulators:
+    libretro:
+      prosystem: { require: [BR2_PACKAGE_LIBRETRO_PROSYSTEM] }
+
+lynx:
+  name:       Lynx
+  extensions: [7z, lnx, zip]
+  platform:   atarilynx
+  emulators:
+    libretro:
+      mednafen_lynx: { require: [BR2_PACKAGE_LIBRETRO_BEETLE_LYNX] }
+
+ngp:
+  name: Neo-Geo Pocket
+  extensions: [7z, ngp, zip]
+  emulators:
+    libretro:
+      mednafen_ngp: { require: [BR2_PACKAGE_LIBRETRO_BEETLE_NGP] }
+
+ngpc:
+  name:       Neo-Geo Pocket Color
+  extensions: [ngc, zip]
+  emulators:
+    libretro:
+      mednafen_ngp: { require: [BR2_PACKAGE_LIBRETRO_BEETLE_NGP] }
+
+wswan:
+  name:       WonderSwan
+  extensions: [7z, ws, zip]
+  theme:      wonderswan
+  platform:   wonderswan
+  emulators:
+    libretro:
+      mednafen_wswan: { require: [BR2_PACKAGE_LIBRETRO_BEETLE_WSWAN] }
+
+wswanc:
+  name:       WonderSwan Color
+  extensions: [7z, wsc, zip]
+  theme:      wonderswancolor
+  platform:   wonderswancolor
+  emulators:
+    libretro:
+      mednafen_wswan: { require: [BR2_PACKAGE_LIBRETRO_BEETLE_WSWAN] }
+
+prboom:
+  name:       PrBoom
+  extensions: [wad, iwad]
+  emulators:
+    libretro:
+      prboom: { require: [BR2_PACKAGE_LIBRETRO_PRBOOM] }
+  comment_en: |
+    Put DOOM 1 and 2 games (and their associated mods) in this directory.
+    Put your soundtrack in the directory ./game-musics
+    
+    DON'T ERASE "prboom.wad".
+  comment_fr: |
+    Placez ici vos jeux DOOM 1 et 2 (et les mods associés).
+    Placez vos soundtracks dans le répertoire ./game-musics
+    
+    NE PAS EFFACER "prboom.wad"
+
+vectrex:
+  name:       Vectrex
+  extensions: [7z, bin, gam, vec, zip]
+  emulators:
+    libretro:
+      vecx: { require: [BR2_PACKAGE_LIBRETRO_VECX] }
+
+lutro:
+  name:       Lutro
+  extensions: [lua, lutro, zip]
+  emulators:
+    libretro:
+      lutro: { require: [BR2_PACKAGE_LIBRETRO_LUTRO] }
+  comment_en: |
+    LUA demo games on github:
+    https://github.com/libretro/lutro-platformer
+    https://github.com/libretro/lutro-game-of-life
+    https://github.com/libretro/lutro-snake
+    https://github.com/libretro/lutro-tetris
+    https://github.com/libretro/lutro-iyfct
+    https://github.com/libretro/lutro-pong
+    
+    lutro demo games on libretro website: 
+    http://buildbot.libretro.com/assets/cores/Lutro/
+
+cavestory:
+  name:       Cave Story
+  extensions: [exe]
+  emulators:
+    libretro:
+      nxengine: { require: [BR2_PACKAGE_LIBRETRO_NXENGINE] }
+  comment_en: |
+    Download the game from the following URL and uncompress it in this folder.
+    http://www.cavestory.org/downloads/cavestoryen.zip
+    
+    It is recommended to use the english version.
+    Other versions may freeze the system.
+  comment_fr: |
+    Télécharger le jeu de l'adresse suivante et décompresser le fichier dans ce dossier.
+    http://www.cavestory.org/downloads/cavestoryen.zip
+    
+    Il est recommendé d'utiliser la version anglophone.
+    Les autres versions pourraient figer le système.
+
+atarist:
+  name:       Atarist
+  extensions: [zip, st, stx, img, rom, raw, ipf, ctr]
+  emulators:
+    libretro:
+      hatari: { require: [BR2_PACKAGE_LIBRETRO_HATARI] }
+
+amstradcpc:
+  name:       AmstradCPC
+  extensions: [cdt, cpc, dsk]
+  emulators:
+    libretro:
+      cap32: { require: [BR2_PACKAGE_LIBRETRO_CAP32] }
+  comment_en: |
+    To enable gamepad support, go in RetroArch menu with "Hotkey + B", then switch this option:
+    "Quick Menu/Core Input Options/User 1 Device type: Retropad" with "Amstrad Joystick"
+  comment_fr: |
+    Pour activer le gamepad, entrer dans le menu Retroarch avec "Hotkey+B", puis modifiez l'option: 
+    "Quick Menu/Core Input Options/User 1 Device type : Retropad" en "Amstrad Joystick"
+
+msx:
+  name:       MSX
+  extensions: [dsk, cas, mx1, mx2, m3u, rom, zip]
+  emulators:
+    libretro:
+      fmsx:    { require: [BR2_PACKAGE_LIBRETRO_FMSX]    }
+      bluemsx: { require: [BR2_PACKAGE_LIBRETRO_BLUEMSX] }
+  comment_en: |
+    ## BIOS ##
+    
+    - BlueMSX (DEFAULT) :
+    You must download the BlueMSX standalone version, available to this adresse: http://bluemsx.msxblue.com/rel_download/blueMSXv282full.zip
+    Then extract the "Databases" and "Machines" folders and add them to the bios folder.
+    
+    - FMSX :
+    You must have these following files, available with fmsx distribution, in the bios folder:
+    CARTS.SHA
+    CYRILLIC.FNT
+    DISK.ROM
+    FMPAC.ROM
+    FMPAC16.ROM
+    ITALIC.FNT
+    KANJI.ROM
+    MSX.ROM
+    MSX2.ROM
+    MSX2EXT.ROM
+    MSX2P.ROM
+    MSX2PEXT.ROM
+    MSXDOS2.ROM
+    PAINTER.ROM
+    RS232.ROM
+  comment_fr: |
+    ## BIOS ##
+    
+    - Emulateur BlueMSX (choix initial) :
+    Vous devez télécharger la version standalone de l'émulateur BlueMSX disponible à l'adresse suivante: http://bluemsx.msxblue.com/rel_download/blueMSXv282full.zip
+    Puis extraire de ce dernier, les répertoire "Databases" et "Machines" et les ajouter dans le répertoire bios.
+    
+    - Emulateur FMSX :
+    Vous devez avoir les fichiers fournis avec la distribution de fmsx suivant dans le dossier bios:
+    CARTS.SHA
+    CYRILLIC.FNT
+    DISK.ROM
+    FMPAC.ROM
+    FMPAC16.ROM
+    ITALIC.FNT
+    KANJI.ROM
+    MSX.ROM
+    MSX2.ROM
+    MSX2EXT.ROM
+    MSX2P.ROM
+    MSX2PEXT.ROM
+    MSXDOS2.ROM
+    PAINTER.ROM
+    RS232.ROM
+
+msx1:
+  name:       MSX1
+  extensions: [dsk, cas, mx1, mx2, m3u, rom, zip]
+  platform:   msx
+  emulators:
+    libretro:
+      fmsx:    { require: [BR2_PACKAGE_LIBRETRO_FMSX]    }
+      bluemsx: { require: [BR2_PACKAGE_LIBRETRO_BLUEMSX] }
+  comment_en: |
+    ## BIOS ##
+    
+    - BlueMSX (DEFAULT) :
+    You must download the BlueMSX standalone version, available to this adresse: http://bluemsx.msxblue.com/rel_download/blueMSXv282full.zip
+    Then extract the "Databases" and "Machines" folders and add them to the bios folder.
+    
+    - FMSX :
+    You must have these following files, available with fmsx distribution, in the bios folder:
+    CARTS.SHA
+    CYRILLIC.FNT
+    DISK.ROM
+    FMPAC.ROM
+    FMPAC16.ROM
+    ITALIC.FNT
+    KANJI.ROM
+    MSX.ROM
+    MSX2.ROM
+    MSX2EXT.ROM
+    MSX2P.ROM
+    MSX2PEXT.ROM
+    MSXDOS2.ROM
+    PAINTER.ROM
+    RS232.ROM
+  comment_fr: |
+    ## BIOS ##
+    
+    - Emulateur BlueMSX (choix initial) :
+    Vous devez télécharger la version standalone de l'émulateur BlueMSX disponible à l'adresse suivante: http://bluemsx.msxblue.com/rel_download/blueMSXv282full.zip
+    Puis extraire de ce dernier, les répertoire "Databases" et "Machines" et les ajouter dans le répertoire bios.
+    
+    - Emulateur FMSX :
+    Vous devez avoir les fichiers fournis avec la distribution de fmsx suivant dans le dossier bios:
+    CARTS.SHA
+    CYRILLIC.FNT
+    DISK.ROM
+    FMPAC.ROM
+    FMPAC16.ROM
+    ITALIC.FNT
+    KANJI.ROM
+    MSX.ROM
+    MSX2.ROM
+    MSX2EXT.ROM
+    MSX2P.ROM
+    MSX2PEXT.ROM
+    MSXDOS2.ROM
+    PAINTER.ROM
+    RS232.ROM
+
+msx2:
+  name: MSX2
+  extensions: [dsk, cas, mx1, mx2, m3u, rom, zip]
+  platform:   msx
+  emulators:
+    libretro:
+      fmsx:    { require: [BR2_PACKAGE_LIBRETRO_FMSX]    }
+      bluemsx: { require: [BR2_PACKAGE_LIBRETRO_BLUEMSX] }
+  comment_en: |
+    ## BIOS ##
+    
+    - BlueMSX (DEFAULT) :
+    You must download the BlueMSX standalone version, available to this adresse: http://bluemsx.msxblue.com/rel_download/blueMSXv282full.zip
+    Then extract the "Databases" and "Machines" folders and add them to the bios folder.
+    
+    - FMSX :
+    You must have these following files, available with fmsx distribution, in the bios folder:
+    CARTS.SHA
+    CYRILLIC.FNT
+    DISK.ROM
+    FMPAC.ROM
+    FMPAC16.ROM
+    ITALIC.FNT
+    KANJI.ROM
+    MSX.ROM
+    MSX2.ROM
+    MSX2EXT.ROM
+    MSX2P.ROM
+    MSX2PEXT.ROM
+    MSXDOS2.ROM
+    PAINTER.ROM
+    RS232.ROM
+  comment_fr: |
+    ## BIOS ##
+    
+    - Emulateur BlueMSX (choix initial) :
+    Vous devez télécharger la version standalone de l'émulateur BlueMSX disponible à l'adresse suivante: http://bluemsx.msxblue.com/rel_download/blueMSXv282full.zip
+    Puis extraire de ce dernier, les répertoire "Databases" et "Machines" et les ajouter dans le répertoire bios.
+    
+    - Emulateur FMSX :
+    Vous devez avoir les fichiers fournis avec la distribution de fmsx suivant dans le dossier bios:
+    CARTS.SHA
+    CYRILLIC.FNT
+    DISK.ROM
+    FMPAC.ROM
+    FMPAC16.ROM
+    ITALIC.FNT
+    KANJI.ROM
+    MSX.ROM
+    MSX2.ROM
+    MSX2EXT.ROM
+    MSX2P.ROM
+    MSX2PEXT.ROM
+    MSXDOS2.ROM
+    PAINTER.ROM
+    RS232.ROM
+
+odyssey2:
+  name:       Odyssey2
+  extensions: [bin, zip]
+  path:       o2em
+  emulators:
+    libretro:
+      o2em: { require: [BR2_PACKAGE_LIBRETRO_O2EM] }
+
+zx81:
+  name:       ZX81
+  extensions: [tzx, p, zip]
+  emulators:
+    libretro:
+      81: { require: [BR2_PACKAGE_LIBRETRO_81] }
+  comment_en: |
+    To enable your gamepad support, go in retroarch menu with "Hotkey+B", then switch this option:
+    "Settings/Input/Input User 1 Binds/User 1 Device type: Retropad" with "Cursor Joystick"
+  comment_fr: |
+    Pour activer le support du gamepad, veuillez entrer dans le menu Retroarch avec "Hotkey+B", puis modifiez l'option: 
+    "Settings/Input/Input User 1 Binds/User 1 Device type: Retropad" en "Cursor Joystick"
+
+zxspectrum:
+  name:       ZXSpectrum
+  extensions: [7z, sna, szx, z80, tap, tzx, gz, udi, mgt, img, trd, scl, dsk, zip, rzx]
+  emulators:
+    libretro:
+      fuse: { require: [BR2_PACKAGE_LIBRETRO_FUSE] }
+  comment_en: |
+    ## Input Devices ##
+    
+    There are seven types of joysticks emulated:
+    
+        Cursor
+        Kempston
+        Sinclair 1
+        Sinclair 2
+        Timex 1
+        Timex 2
+        Fuller Joystick
+    
+    Users can configure their joystick types in the input configuration on the front end (Hotkey+B). However, fuse-libretro allows for two joysticks at maximum so only users one and two can actually use theirs in the emulation.
+    
+    Users 1 and 2 can choose any of the joysticks as their device types, user 3 can only choose the Sinclair Keyboard.
+    
+    Buttons A, X and Y are mapped to the joystick's fire button, and button B is mapped to the UP directional button. Buttons L1 and R1 are mapped to RETURN and SPACE, respectively. The SELECT button brings up the embedded, on-screen keyboard which is useful if you only have controllers attached to your box.
+    
+    There are some conflicts in the way the input devices interact because of the use of the physical keyboard keys as joystick buttons. For a good gaming experience, set the user device types as follows:
+    
+        For joystick games: Set user 1 to a joystick type. Optionally, set user 2 to another joystick type (local cooperative games). Set user 3 to none. This way, you can use L1 as RETURN, R1 as SPACE, and SELECT to bring the embedded keyboard.
+        For keyboard games: Set users 1 and 2 to none, and user 3 to Sinclair Keyboard. You won't have any joystick and the embedded keyboard won't work, but the entire physical keyboard will be available for you to type in those text adventure commands.
+    
+    If you set a joystick along with the keyboard, the joystick will work just fine except for the bindings to RETURN and SPACE, and the keyboard won't register the keys assigned to the Cursor joystick, or to the L1 and R1 buttons for all other joystick types.
+
+moonlight:
+  name:       Moonlight
+  extensions: [moonlight]
+  emulators:
+    moonlight:
+      moonlight: { require: [BR2_PACKAGE_MOONLIGHT_EMBEDDED] }
+
+apple2:
+  name:       Apple II
+  extensions: [nib, do, po, dsk]
+  includeEmulators: no
+  emulators:
+    apple2:
+      apple2: { require: [BR2_PACKAGE_LINAPPLE_PIE] }
+
+saturn:
+  name:       Sega Saturn
+  extensions: [bin, cue, ccd, chd, iso, zip]
+  emulators:
+    libretro:
+      yabause:       { require: [BR2_PACKAGE_LIBRETRO_YABAUSE]       }
+      beetle-saturn: { require: [BR2_PACKAGE_LIBRETRO_BEETLE_SATURN] }
+
+jaguar:
+  name:       Jaguar
+  extensions: [j64, jag, zip]
+  emulators:
+    libretro:
+      virtualjaguar: { require: [BR2_PACKAGE_LIBRETRO_VIRTUALJAGUAR] }
+
+gamecube:
+  name:       GameCube
+  extensions: [ciso, iso, gc, gcz, gcm]
+  theme:      gc
+  includeEmulators: no
+  emulators:
+    dolphin-emu:
+      dolphin-emu: { require: [BR2_PACKAGE_DOLPHIN_EMU] }
+
+wii:
+  name:       Wii
+  extensions: [iso, wbfs, elf, dol, gcm, ciso, gcz, wad]
+  includeEmulators: no
+  emulators:
+    dolphin-emu:
+      dolphin-emu: { require: [BR2_PACKAGE_DOLPHIN_EMU] }
+  comment_en: |
+    To use a virtual horizontal wiimote, include ".side." in the filename (for example ".side.iso").
+  comment_fr: |
+    Pour utiliser une wiimote virtuelle en mode horizontal, il faut rajouter ".side." dans le nom du fichier (par exemple ".side.iso").
+
+3do:
+  name:       3DO
+  extensions: [cue, iso]
+  emulators:
+    libretro:
+      4do: { require: [BR2_PACKAGE_LIBRETRO_4DO] }
+
+intellivision:
+  name:       Mattel Intellivision
+  extensions: [int, itv, bin, rom]
+  emulators:
+    libretro:
+      freeintv: { require: [BR2_PACKAGE_LIBRETRO_FREEINTV] }
+
+imageviewer:
+  name:       Screenshots
+  extensions: [jpg, jpeg, png, bmp, psd, tga, gif, hdr, pic, ppm, pgm]
+  path:       /recalbox/share/screenshots
+  platform:   ignore
+  emulators:
+    libretro:
+      imageviewer: { require: [] }
+
+# Favorites
+favorites:
+  name:  Favorites
+  force: yes
+  path:
+  platform:
