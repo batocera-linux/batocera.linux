@@ -136,7 +136,8 @@ then
 fi
 if test "${XARCH}" == odroidxu4
 then
-    retroarchcustom_fix_force_param "video_driver"                 "sdl2"
+    #retroarchcustom_fix_force_param "video_driver"                 "sdl2"       # kernel 4.x
+    retroarchcustom_fix_remove_param_value "video_driver"                "sdl2"  # kernel 3.x
 fi
 
 retroarchcustom_fix_remove_param_value "video_black_frame_insertion" "true"  # don't use anymore this value while it doesn't allow the shaders to work
