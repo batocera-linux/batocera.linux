@@ -926,6 +926,13 @@ intellivision:
     libretro:
       freeintv: { require: [BR2_PACKAGE_LIBRETRO_FREEINTV] }
 
+x68000:
+  name:       Sharp X68000
+  extensions: [dim, zip, img, d88, 88d, hdm, dup, 2hd, xdf, hdf, cmd, m3u]
+  emulators:
+    libretro:
+      px68k: { require: [BR2_PACKAGE_LIBRETRO_PX68K] }
+
 imageviewer:
   name:       Screenshots
   extensions: [jpg, jpeg, png, bmp, psd, tga, gif, hdr, pic, ppm, pgm]

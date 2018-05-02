@@ -67,6 +67,8 @@ systems = {
 										                                          { "md5": "0bac0c6a50104045d902df4503a4c30b", "file": "bios/ATARIBAS.ROM"      },
                                                                                   { "md5": "eb1f32f5d9f382db1bbfb8d7f9cb343a", "file": "bios/ATARIOSA.ROM"      },
                                                                                   { "md5": "a3e8d617c95d08031fe1b20d541434b2", "file": "bios/ATARIOSB.ROM"      } ] },
+    "x68000":  { "name": "Sharp x68000",                           "biosFiles": [ { "md5": "cb0a5cfcf7247a7eab74bb2716260269", "file": "bios/keropi/cgrom.dat"  },
+                                                                                  { "md5": "7fd4caabac1d9169e289f0f7bbf71d8e", "file": "bios/keropi/iplrom.dat" } ] },
 }
 
 class BiosStatus:
