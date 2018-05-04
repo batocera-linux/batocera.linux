@@ -1,0 +1,240 @@
+2018/__/__ - batocera.linux 5.16 - release
+
+2018/05/01 - batocera.linux 5.15 - release
+        * rpi3+ support
+        * Atari 5200
+        * theme update (light version)
+        * some emulators updated
+        * gamecube: set automatically 16/9 ratio if appropriated (or forced)
+        * the update message now contains the old and new version before upgrading
+        * change the default keyboard keys in es
+        * nas: you can now mount roms and bios via wifi at startup
+        * fix ssh on external storage
+        * some minor fixes
+
+2018/03/08 - batocera.linux 5.14 - release
+        * rpi: new splash video
+        * rpi: mutable splash video (add splashsound=off in /boot/recalbox-boot.conf to disable the sound)
+        * rpi: customizable splash video (put a video in /boot/splash.mp4)
+        * link update MameDB and Screenscraper
+        * configgen: partially rewritten / more robust
+        * decoration (bezel): available for different resolutions
+        * mupen64: add osd message when available on the architecture
+        * s905/c2 : add mame 2010
+        * new emulator for intellivision
+        * most of emulators updated
+        * reicast: you can choose 16/9 in advanced options. not set automatically, because it's buggy in some cases
+        * wii: automatically set 16/9 by default if your resolution is 16/9 or higher (or if set to auto or 16/9 in advanced options)
+
+2018/02/02 - batocera.linux 5.13 - release
+        * fix the bluetooth bug
+
+2018/01/22 - batocera.linux 5.12 - release
+        * buildroot upgrade to 2017/12
+        * kodi 17.6
+        * joystick battery information (information menu)
+        * x86/x86_64: 3do support
+        * rpi1/2/3 : amiga (amiberry, support of amiga 500 500p 1200 4000 cdtv)
+        * x86*: linux kernel 4.14
+        * fix sdcard mount
+        * fix Korean language
+        * new architecture support : s905
+        * bezel support (1920x1080 game resolution only, decoration option in the game menu)
+        * some bugfixes
+
+2017/11/22 - batocera.linux 5.11 - release
+        * x86*: (others coming later) : amiga support : amiga500 amiga500+ amiga600 amiga1000 amiga1200 amiga3000 amiga4000 amigacd32 amigacdtv
+        * amiga: caps img plugin
+        * rpi3: optimize the psp ini
+        * retroarch: adding the mupen64plus core (previously known as gliden64)
+        * retroarch: adding the parallel-n64 core (forked from gliden64)
+        * wii: .side. in rom names switches virtual wiimotes on the horizontal side
+        * wii: for each game, you can choose if the axis controls: i(nfrared), s(wing), t(ilt) or n(unchuk),
+        for example, to play mariokart wii, rename it mario_kart.side.ti.iso (to get the tilt on the first axis and infrared on the 2nd one)
+        for example, to play mario galaxy, rename it mario_galaxy.ni.iso (got get the nunchuk on the first axis and infrared on the 2nd one)
+        * wii: tilt instead of swing by default on the 2nd axis
+        * mame: disable rewinding while it make fail several games
+        * system: fixes some sound issues
+        * system: installation from the system menu for any platform and from any platform
+        * system: fancy mount points (explorer, kodi)
+        * es: fix the mp3 player
+        * kodi: fix plugins
+
+2017/10/10 - batocera.linux 5.10 - release
+        * rpi3 overclocking options
+        * system: update to buildroot 201708
+        * system: update to kodi 17.3
+        * psp: fix select when it's a hotkey
+        * c64: add the commodore64 emulator
+        * fix some joystick issues
+        * ctrl+alt+f4 switches on alsamixer (to control sound in an advanced way)
+        * upgrading retroarch
+        * xu4: add nintendo ds (desmume)
+        * several bugs fixed
+
+2017/09/06 - batocera.linux 5.9 - release
+        * system: new video output option (for multiple outputs computer, plugged on the tv via hdmi)
+        * system: make the overlay rw by default (instead of ro)
+        * system: change the hostname to batocera
+        * system: change the default root password to linux
+        * system: installer script (recalbox-install.sh, not yet on the gui)
+        * xu4: upgrade the mali driver
+        * emulator: fix reicast fps under some circonstances
+        * emulator: reicast hotkeys : hotkey+start is required to quit the game
+        * emulator: ppsspp hotkeys : quit, save, load, menu
+        * emulator: upgrade mame2003 (fixing a sound issue)
+        * emulator: fix shaders on x86*
+        * emulator: enable rewinding for sega cd, virtualboy, psx, fba, mame, vectrex
+        * emulator: add mame2010 for rpi2
+        * multimedia: add libaccs, libdvdcss, x265 for a better media support
+        * multimedia: fix the kodi joystick mapping in some cases
+
+2017/06/25 - batocera.linux 5.8 - release
+        * fix some pads not working with kodi (mainly xbox 360)
+
+2017/06/04 - batocera.linux 5.7 - release
+        * technical upgrade (buildroot 201704, gcc 5.4)
+        * rpi*: bump to linux 4.9
+        * support of the rapsberry pi zero W (including wifi and bluetooth)
+        * removal of recalbox-api and recalbox-manager
+        * update of virtual gamepad
+        * nes: map x and y to b and a for convenience (fceunext & quicknes)
+        * new libretro-beetle-psx core
+        * psx: remove the .bin extension. please use .cue.
+        * kodi 17.1
+        * fix dreamcast (players, vmu, config)
+        * psp: fixes
+        * bump reicast
+        * mount sdcards
+        * pt_PT language
+
+2017/04/21 - batocera.linux 5.6 - release
+        * x86* : add nintendo ds (desmume)
+        * rpi3: add mame2010
+        * add an automatic scraping menu using sselph/scraper and screenscraper
+        * bios missing listed in a new menu in game menu
+        * add temperature and battery information when available in the information menu
+        * wii: system language configured automatically
+        * wii: ratio is automatically set to 16/9. If you explicitly set it to 4/3 in option, it will take it.
+        * gamecube: language set from the batocera system language
+        * psx: update and fix
+        * support file can be generated from the system menu
+        * some emulators upgraded
+        libretro-beetle-wswan
+        libretro-cap32
+        libretro-catsfc
+        libretro-gw
+        libretro-gambatte
+        libretro-picodrive
+        libretro-pocketsnes
+        mupen64plus-video-glide64mk2
+
+2017/03/18 - batocera.linux 5.5 - release
+        * fix playstation 1
+
+2017/03/17 - batocera.linux 5.4 - release
+        * wii/gamecube: add hotkeys (exit, pause, screenshot, save/load state)
+        * wii/gamecube: support for 3d tv (hotkey + r1)
+        * add scummmvm for x86*
+        * add the Jaguar emulator for x86* xu4 c2
+        * add nintendo 64 gliden renderer for xu4, not as default while it's not centered but better n64 rendering (change it in advanced options menu)
+        * system menu: add system informations in the system menu
+        * x86*: add a file manager callable by pressing f1
+        * fix: the external drives names
+        * fix: disable the x11 screensaver in some cases
+        * fix: gamecube pads (some were not working)
+        * x86*: add the xrandr tool (for screen resolution/rotation)
+
+2017/02/19 - batocera.linux 5.3 - release
+        * Upgrade several emulators
+        * Fix the autosave function
+        * Fix randomly blinking black borders on x86*
+        * New logo
+        * Better video card support on x86*
+        * Several minor fixes
+        * Backup from the system menu
+        backup is from internal to external, external to external or external to internal
+        backup are differential : if you redo a backup, it will change only changed files
+        you can use the backup as an external device
+        to restore, boot on the backup, and restore on the internal device
+        Special thanks to Vincent, Gérard and Antoine for the new logo.
+
+2017/01/30 - batocera.linux 5.2 - release
+        * saturn emulator for x86/x86_64 (yabause)
+        * snes9x emulator (by default on xu4, change it if you have saves to load)
+        * ps1 emulator upgraded to support 3 players or more
+        * psp emulator upgraded and fixed when a video is played (except for the odroid c2)
+        * mame2010 for xu4/x86/x86_64
+        * choose the sound card from the menu (x86/x86_64)
+        * fix the web manager
+        * download percentage during the upgrade process
+        * fix the automatic upgrade process (see the manual upgrade in the wiki section if needed)
+
+2017/01/04 -  batocera.linux 5.1 - release
+        * Technical upgrade to buildroot (december 2016)
+        * Linux kernel 4.9 (more supported hardware)
+        * HDD driver compiled into the kernel (you can now install batocera.linux on an HDD)
+        * Fix Atari ST
+        * Due to the new download urls and a bug, automatic upgrades are broken and fixed for the next version.
+        You can however manually upgrade using wiki/=en:upgrade_manually.
+
+2016/12/26 - batocera.linux
+        * recalbox.remix becomes batocera.linux
+        A batocera rufomaculata is an insect of the coleoptera order that my son dreams to capture for his collection.
+
+2016/12/12
+        * squashfs/overlayfs
+        Note: this version is the first one with real wiimotes working on x86_64 architectures.
+        Recalbox.remix is now mainly 3 files on the USB key/SD card (SD CARD CONTENT - grub) :
+        - /boot/linux (os system, ~5/10mb)
+        - /boot/recalbox (root filesystem, ~350mb)
+        - /boot/initrd.gz (technical file needed to start the recalbox file from linux ~500kb)
+
+2016/11/14
+        * play Wii with real wiimotes
+        The real wiimote is now working thanks to the Dolphin emulator.
+
+2016/10/31
+        * Recalbox live USB on x86_64 (Alpha 4)
+        Add Grub to be able to boot from a legacy bios.
+
+2016/10/29
+        * Recalbox on Odroid C2 (Alpha 2)
+        N64, lirc, virtual keyboard supports are added.
+
+2016/10/17
+        * Recalbox on Odroid C2 (first Alpha)
+        I built a first Alpha for the Odroid C2 for people who are interested to test it.
+        I've made Kodi working, which was not that easy while Kodi 16 doesn't support aarch64
+        and while Kodi 17 isn't out. I've found the 2 mini commits to backports the changes and make it work.
+
+2016/10/01
+        * Recalbox live usb on x86_64 : GameCube and Wii
+        The ports on x86 and x86_64 are almost done. I'm including the GameCube and the Wii into Recalbox.
+
+2016/07/28
+        * Recalbox live usb - progress
+        I'm working on my next Recalbox port : PC.
+        There is still a lot of work.
+
+2016/06/23
+        * N64 pad precision - next releases
+        Can't really play to Golden Eyes 007 ?
+        Effectively, the pad precision configuration is not well defined in current releases. I'm fixing it for the next releases.
+
+2016/06/23
+        * Odroid XU4 Release - release
+        This is the first stable version for the Odroid XU4. You can get the full details of what is supported here.
+        This is compiled from the official recalbox sources. Once installed, don't forget to configure
+        your recalbox.conf to upgrade from this website (see previous post).
+
+2016/06/21
+        * Network shares - advanced configuration
+        You've not enough space on your sdcard or on your usbkey ?
+        You can now use your nas (like a freebox) as a usbkey (not from the graphical interface for the moment).
+        You need to edit the /boot/recalbox-boot.conf file like this :
+        sharedevice=NETWORK
+        sharenetwork_nfs1=ROMS@192.168.0.1:/mnt/Documents/recalbox/roms
+        sharenetwork_nfs2=SAVES@192.168.0.1:/mnt/Documents/recalbox/saves
+        sharenetwork_nfs3=BIOS@192.168.0.1:/mnt/Documents/recalbox/bios
+        #sharenetwork_smb1=SHARE@192.168.0.1:Documents/recalbox:guest
