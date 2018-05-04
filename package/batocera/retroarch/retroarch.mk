@@ -3,8 +3,8 @@
 # retroarch
 #
 ################################################################################
-#RETROARCH_VERSION = 1.7.2
-RETROARCH_VERSION = 023e28031909222765d248f38d9b98d764597e96
+#RETROARCH_VERSION = 1.7.3
+RETROARCH_VERSION = b2ceb50897bc5c314bbd653a583a95050f03e1e2
 
 RETROARCH_SITE = $(call github,libretro,RetroArch,$(RETROARCH_VERSION))
 
@@ -12,18 +12,19 @@ RETROARCH_LICENSE = GPLv3+
 RETROARCH_CONF_OPTS += --disable-oss --enable-zlib
 RETROARCH_DEPENDENCIES = host-pkgconf dejavu
 
-ifeq ($(BR2_PACKAGE_SDL2),y)
-	RETROARCH_CONF_OPTS += --enable-sdl2
-	RETROARCH_DEPENDENCIES += sdl2
-else
-	RETROARCH_CONF_OPTS += --disable-sdl2
-	ifeq ($(BR2_PACKAGE_SDL),y)
-		RETROARCH_CONF_OPTS += --enable-sdl
-		RETROARCH_DEPENDENCIES += sdl
-	else
-		RETROARCH_CONF_OPTS += --disable-sdl
-	endif
-endif
+
+#ifeq ($(BR2_PACKAGE_SDL2),y)
+#	RETROARCH_CONF_OPTS += --enable-sdl2
+#	RETROARCH_DEPENDENCIES += sdl2
+#else
+#	RETROARCH_CONF_OPTS += --disable-sdl2
+#	ifeq ($(BR2_PACKAGE_SDL),y)
+#		RETROARCH_CONF_OPTS += --enable-sdl
+#		RETROARCH_DEPENDENCIES += sdl
+#	else
+#		RETROARCH_CONF_OPTS += --disable-sdl
+#	endif
+#endif
 
 # RPI 0 and 1
 ifeq ($(BR2_arm1176jzf_s),y)
@@ -82,12 +83,12 @@ else
 RETROARCH_CONF_OPTS += --disable-opengles
 endif
 
-ifeq ($(BR2_PACKAGE_HAS_LIBEGL),y)
-RETROARCH_CONF_OPTS += --enable-egl
-RETROARCH_DEPENDENCIES += libegl
-else
-RETROARCH_CONF_OPTS += --disable-egl
-endif
+#ifeq ($(BR2_PACKAGE_HAS_LIBEGL),y)
+#RETROARCH_CONF_OPTS += --enable-egl
+#RETROARCH_DEPENDENCIES += libegl
+#else
+#RETROARCH_CONF_OPTS += --disable-egl
+#endif
 
 ifeq ($(BR2_PACKAGE_HAS_LIBOPENVG),y)
 RETROARCH_DEPENDENCIES += libopenvg

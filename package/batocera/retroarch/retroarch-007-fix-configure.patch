@@ -1,8 +1,12 @@
 diff --git a/qb/qb.comp.sh b/qb/qb.comp.sh
-index 1477154..eaec4be 100644
+index 902afac..eaec4be 100644
 --- a/qb/qb.comp.sh
 +++ b/qb/qb.comp.sh
-@@ -14,17 +14,12 @@ cc_works=0
+@@ -11,26 +11,19 @@ int main(void) { puts("Hai world!"); return 0; }
+ EOF
+ 
+ cc_works=0
+-HAVE_CC=no
  if [ "$CC" ]; then
  	"$CC" -o "$TEMP_EXE" "$TEMP_C" >/dev/null 2>&1 && cc_works=1
  else
@@ -23,7 +27,16 @@ index 1477154..eaec4be 100644
  
  cc_status='does not work'
  if [ "$cc_works" = '1' ]; then
-@@ -49,17 +44,12 @@ cxx_works=0
+ 	cc_status='works'
+-	HAVE_CC='yes'
+ elif [ -z "$CC" ]; then
+ 	cc_status='not found'
+ fi
+@@ -48,26 +41,19 @@ int main() { std::cout << "Hai guise" << std::endl; return 0; }
+ EOF
+ 
+ cxx_works=0
+-HAVE_CXX=no
  if [ "$CXX" ]; then
  	"$CXX" -o "$TEMP_EXE" "$TEMP_CXX" >/dev/null 2>&1 && cxx_works=1
  else
@@ -44,7 +57,19 @@ index 1477154..eaec4be 100644
  
  cxx_status='does not work'
  if [ "$cxx_works" = '1' ]; then
-@@ -77,22 +67,23 @@ fi
+ 	cxx_status='works'
+-	HAVE_CXX='yes'
+ elif [ -z "$CXX" ]; then
+ 	cxx_status='not found'
+ fi
+@@ -75,48 +61,29 @@ fi
+ echo "Checking for suitable working C++ compiler ... $CXX $cxx_status"
+ 
+ if [ "$cxx_works" = '0' ] && [ "$USE_LANG_CXX" = 'yes' ]; then
+-	die : 'Warning: A working C++ compiler was not found, C++ features will be disabled.'
++	die 1 'Error: Cannot proceed without a working C++ compiler.'
+ fi
+ 
  if [ "$OS" = "Win32" ]; then
  	echobuf="Checking for windres"
  	if [ -z "$WINDRES" ]; then
@@ -56,6 +81,26 @@ index 1477154..eaec4be 100644
  	echo "$echobuf ... $WINDRES"
  fi
  
+-if [ "$HAVE_QT" != "no" ]; then
+-	echobuf="Checking for moc"
+-	if [ -z "$MOC" ]; then
+-		MOC_PATH="none"
+-		for moc in moc-qt5 moc; do
+-			MOC="$(exists "$moc")" || MOC=""
+-			[ "${MOC}" ] && {
+-				MOC_PATH="$MOC"
+-				break
+-			}
+-		done
+-	fi
+-
+-	echo "$echobuf ... $MOC_PATH"
+-
+-	if [ "$MOC_PATH" = "none" ]; then
+-		die : 'Warning: moc not found, Qt companion support will be disabled.'
+-	fi
+-fi
+-
 -if [ -z "$PKG_CONF_PATH" ]; then
 +[ -n "$PKG_CONF_PATH" ] || {
  	PKG_CONF_PATH="none"
