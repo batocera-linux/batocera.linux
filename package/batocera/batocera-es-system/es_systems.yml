@@ -287,22 +287,23 @@ scummvm:
   name:       ScummVM
   extensions: [7z, svm, scummvm, residualvm, zip]
   platform:   pc
-  includeEmulators: no
   emulators:
     scummvm:
       scummvm: { require: [BR2_PACKAGE_SCUMMVM] }
+    libretro:
+      scummvm: { require: [BR2_PACKAGE_LIBRETRO_SCUMMVM] }
   comment_en: |
     Put scummvm games foders in this folder.
-    
+
     For each game, you must create a file named from the short name of the game and with the extension ".7z .svm .scummvm .residualvm .zip"
-    
+
     Short game names can be found at http://scummvm.org/compatibility/
     For example, for "Broken Sword" create the file "Broken Sword/sword1.scummvm"
   comment_fr: |
     Placez les dossiers de jeux scummvm dans ce dossier.
-    
+
     Pour chaque jeu, dans son repertoire, vous devez creer un fichier portant le nom court du jeu et finissant par ".7z .svm .scummvm .residualvm .zip"
-    
+
     Vous trouverez les noms courts a l'adresse : http://scummvm.org/compatibility/
     Par exemple pour "Les Chevaliers de Baphomet" creez le fichier "Les Chevaliers de Baphomet/sword1.scummvm"
 
@@ -318,33 +319,33 @@ dos:
   comment_en: |
     Each game (files) must be placed its own directory having the ".pc .dos" extension.
     In each directory, a dosbox.bat file must contain the command line for launching the game.
-    
+
     For example:
     miniputt.pc/
     miniputt.pc/dosbox.bat
     miniputt.pc/MP.DAT
     miniputt.pc/MP.EXE
-    
+
     WHere dosbox.bat contains: MP.EXE
-    
+
     To quit a game, press CTRL + F9.
-    
+
     Games files are available on myabandonware:
     http://www.myabandonware.com/browse/platform/dos/
   comment_fr: |
     Chaque jeu (fichiers) doit être contenu dans un dossier ayant l'extension ".pc .dos".
     Dans chaque dossier, un fichier dosbox.bat doit comporter la ligne de commande pour lancer le jeu.
-    
+
     Par exemple:
     miniputt.pc/
     miniputt.pc/dosbox.bat
     miniputt.pc/MP.DAT
     miniputt.pc/MP.EXE
-    
+
     Et dosbox.bat contient: MP.EXE
-    
+
     Pour quitter un jeu, appuyer sur CTRL + F9.
-    
+
     Les jeux DOS sont disponibles sur myabandonware:
     http://www.myabandonware.com/browse/platform/dos/
 
@@ -359,12 +360,12 @@ fba:
       fba2x: { require: [BR2_PACKAGE_PIFBA] }
   comment_en: |
     ROMs version must be 0.2.97.42
-    
+
     The file clrmamepro/piFBA_gamelist.txt list compatible games.
     The file fba_029671_od_release_10_working_roms.dat may be used to check ROMs with clrmamepro available at http://mamedev.emulab.it/clrmamepro/
   comment_fr: |
     La version des ROMs doit être 0.2.97.42
-    
+
     Le fichier clrmamepro/piFBA_gamelist.txt liste les jeux compatibles.
     Le fichier fba_029671_od_release_10_working_roms.dat peut servir à valider les ROMs avec clrmamepro disponible sur http://mamedev.emulab.it/clrmamepro/
 
@@ -377,22 +378,22 @@ fba_libretro:
         fba: { require: [BR2_PACKAGE_LIBRETRO_FBA] }
   comment_en: |
     ROMs version must be 0.2.97.42
-    
+
     This emulator has CPS3 support, updated version, but less performant than piFBA.
-    
+
     The file fba_libretro_gamelist.txt list compatible games.
-    
+
     Special files for fba libretro core:
     - Add your (audio) samples files in /recalbox/share/bios/fba/samples/
     - Update the hiscore.dat file in /recalbox/share/saves/fba_libretro/ if you want latest highscores
     (http://highscore.mameworld.info/download.htm) (use 'old format hiscore.dat (pre mame v0174)' version)
   comment_fr: |
     La version des ROMs doit être 0.2.97.42
-    
+
     Cet émulateur supporte CPS3, version plus récente, mais moins performant que piFBA).
-    
+
     Le fichier fba_libretro_gamelist.txt liste les jeux compatibles.
-    
+
     Fichiers spéciaux pour le core fba libretro:
     - Ajoutez vos samples (audio) dans le répertoire /recalbox/share/bios/fba/samples/
     - Mettez à jour le fichier hiscore.dat dans /recalbox/share/saves/fba_libretro/ si vous souhaitez avoir les derniers highscores
@@ -410,15 +411,15 @@ mame:
     advancemame:
       advancemame: { require: [BR2_PACKAGE_ADVANCEMAME]       }
   comment_en: |
-    The system uses libretro mame2003 as default core: compatible ROMs must come from set 0.78 
+    The system uses libretro mame2003 as default core: compatible ROMs must come from set 0.78
     The libretro core imame4all, based on MAME v0.37b5, is also included.
-    
+
     To imame4all core instead, edit the recalbox.conf file following instructions of this page:
     https://github.com/recalbox/recalbox-os/wiki/recalbox.conf-%28EN%29
-    
+
     You can use clrmamepro available at http://mamedev.emulab.it/clrmamepro/ and
     use the .dat file in clrmamepro directory to check your roms.
-    
+
     Special files for mame2003 core:
     - Add your samples files in /recalbox/share/bios/mame2003/samples/
     - Update the hiscore.dat file in /recalbox/share/bios/mame2003/ if you want latest highscores (http://highscore.mameworld.info/download.htm)
@@ -427,13 +428,13 @@ mame:
   comment_fr: |
     Le système utilise le core libretro mame2003 implicitement: Les ROMs compatibles doivent provenir du set 0.78
     Le core imame4all, basé sur MAME v0.37b5 est également disponible.
-    
+
     Pour utiliser le core imame4all, modifier le fichier recalbox.conf selon les informations à la page suivante:
     https://github.com/recalbox/recalbox-os/wiki/recalbox.conf-%28FR%29
-    
+
     Vous pouvez utiliser clrmamepro disponible sur http://mamedev.emulab.it/clrmamepro/
     et utiliser le fichier .dat dans le répertoire clrmamepro pour vérifier la version de vos roms.
-    
+
     Fichiers spéciaux pour le core mame2003 :
     - Ajoutez vos fichiers samples dans le répertoire /recalbox/share/bios/mame2003/samples/
     - Mettez à jour le fichier hiscore.dat dans /recalbox/share/bios/mame2003/ si vous souhaitez avoir les derniers highscores (http://highscore.mameworld.info/download.htm)
@@ -460,17 +461,17 @@ colecovision:
       bluemsx: { require: [BR2_PACKAGE_LIBRETRO_BLUEMSX] }
   comment_en: |
     ## BIOS ##
-    
+
     - BlueMSX:
     You must download the BlueMSX standalone version, available to this URL:
     http://bluemsx.msxblue.com/rel_download/blueMSXv282full.zip
-    
+
     Extract the "Databases" and "Machines" folders and add them to the bios folder.
-    
+
     Ensure the coleco.rom file (md5sum = 2c66f5911e5b42b8ebe113403548eee7) is inside the folder /bios/Machines/COL - ColecoVision/
-    
+
     ## MAPPING ##
-    
+
     JOYPAD_UP     = COLECO 1
     JOYPAD_DOWN   = COLECO 2
     JOYPAD_LEFT   = COLECO 3
@@ -487,13 +488,13 @@ colecovision:
     JOYPAD_START  = COLECO HASH
   comment_fr: |
     ## BIOS ##
-    
+
     - BlueMSX:
     Vous devez télécharger la version standalone de l'émulateur BlueMSX disponible à l'adresse suivante:
     http://bluemsx.msxblue.com/rel_download/blueMSXv282full.zip
-    
+
     Extraire de ce dernier, les répertoire "Databases" et "Machines" et les ajouter dans le répertoire bios.
-    
+
     Valider que le fichier coleco.rom (md5sum = 2c66f5911e5b42b8ebe113403548eee7) est bien dans le répertoire /bios/Machines/COL - ColecoVision/
 
 atari2600:
@@ -566,12 +567,12 @@ prboom:
   comment_en: |
     Put DOOM 1 and 2 games (and their associated mods) in this directory.
     Put your soundtrack in the directory ./game-musics
-    
+
     DON'T ERASE "prboom.wad".
   comment_fr: |
     Placez ici vos jeux DOOM 1 et 2 (et les mods associés).
     Placez vos soundtracks dans le répertoire ./game-musics
-    
+
     NE PAS EFFACER "prboom.wad"
 
 vectrex:
@@ -595,8 +596,8 @@ lutro:
     https://github.com/libretro/lutro-tetris
     https://github.com/libretro/lutro-iyfct
     https://github.com/libretro/lutro-pong
-    
-    lutro demo games on libretro website: 
+
+    lutro demo games on libretro website:
     http://buildbot.libretro.com/assets/cores/Lutro/
 
 cavestory:
@@ -608,13 +609,13 @@ cavestory:
   comment_en: |
     Download the game from the following URL and uncompress it in this folder.
     http://www.cavestory.org/downloads/cavestoryen.zip
-    
+
     It is recommended to use the english version.
     Other versions may freeze the system.
   comment_fr: |
     Télécharger le jeu de l'adresse suivante et décompresser le fichier dans ce dossier.
     http://www.cavestory.org/downloads/cavestoryen.zip
-    
+
     Il est recommendé d'utiliser la version anglophone.
     Les autres versions pourraient figer le système.
 
@@ -635,7 +636,7 @@ amstradcpc:
     To enable gamepad support, go in RetroArch menu with "Hotkey + B", then switch this option:
     "Quick Menu/Core Input Options/User 1 Device type: Retropad" with "Amstrad Joystick"
   comment_fr: |
-    Pour activer le gamepad, entrer dans le menu Retroarch avec "Hotkey+B", puis modifiez l'option: 
+    Pour activer le gamepad, entrer dans le menu Retroarch avec "Hotkey+B", puis modifiez l'option:
     "Quick Menu/Core Input Options/User 1 Device type : Retropad" en "Amstrad Joystick"
 
 msx:
@@ -647,11 +648,11 @@ msx:
       bluemsx: { require: [BR2_PACKAGE_LIBRETRO_BLUEMSX] }
   comment_en: |
     ## BIOS ##
-    
+
     - BlueMSX (DEFAULT) :
     You must download the BlueMSX standalone version, available to this adresse: http://bluemsx.msxblue.com/rel_download/blueMSXv282full.zip
     Then extract the "Databases" and "Machines" folders and add them to the bios folder.
-    
+
     - FMSX :
     You must have these following files, available with fmsx distribution, in the bios folder:
     CARTS.SHA
@@ -671,11 +672,11 @@ msx:
     RS232.ROM
   comment_fr: |
     ## BIOS ##
-    
+
     - Emulateur BlueMSX (choix initial) :
     Vous devez télécharger la version standalone de l'émulateur BlueMSX disponible à l'adresse suivante: http://bluemsx.msxblue.com/rel_download/blueMSXv282full.zip
     Puis extraire de ce dernier, les répertoire "Databases" et "Machines" et les ajouter dans le répertoire bios.
-    
+
     - Emulateur FMSX :
     Vous devez avoir les fichiers fournis avec la distribution de fmsx suivant dans le dossier bios:
     CARTS.SHA
@@ -704,11 +705,11 @@ msx1:
       bluemsx: { require: [BR2_PACKAGE_LIBRETRO_BLUEMSX] }
   comment_en: |
     ## BIOS ##
-    
+
     - BlueMSX (DEFAULT) :
     You must download the BlueMSX standalone version, available to this adresse: http://bluemsx.msxblue.com/rel_download/blueMSXv282full.zip
     Then extract the "Databases" and "Machines" folders and add them to the bios folder.
-    
+
     - FMSX :
     You must have these following files, available with fmsx distribution, in the bios folder:
     CARTS.SHA
@@ -728,11 +729,11 @@ msx1:
     RS232.ROM
   comment_fr: |
     ## BIOS ##
-    
+
     - Emulateur BlueMSX (choix initial) :
     Vous devez télécharger la version standalone de l'émulateur BlueMSX disponible à l'adresse suivante: http://bluemsx.msxblue.com/rel_download/blueMSXv282full.zip
     Puis extraire de ce dernier, les répertoire "Databases" et "Machines" et les ajouter dans le répertoire bios.
-    
+
     - Emulateur FMSX :
     Vous devez avoir les fichiers fournis avec la distribution de fmsx suivant dans le dossier bios:
     CARTS.SHA
@@ -761,11 +762,11 @@ msx2:
       bluemsx: { require: [BR2_PACKAGE_LIBRETRO_BLUEMSX] }
   comment_en: |
     ## BIOS ##
-    
+
     - BlueMSX (DEFAULT) :
     You must download the BlueMSX standalone version, available to this adresse: http://bluemsx.msxblue.com/rel_download/blueMSXv282full.zip
     Then extract the "Databases" and "Machines" folders and add them to the bios folder.
-    
+
     - FMSX :
     You must have these following files, available with fmsx distribution, in the bios folder:
     CARTS.SHA
@@ -785,11 +786,11 @@ msx2:
     RS232.ROM
   comment_fr: |
     ## BIOS ##
-    
+
     - Emulateur BlueMSX (choix initial) :
     Vous devez télécharger la version standalone de l'émulateur BlueMSX disponible à l'adresse suivante: http://bluemsx.msxblue.com/rel_download/blueMSXv282full.zip
     Puis extraire de ce dernier, les répertoire "Databases" et "Machines" et les ajouter dans le répertoire bios.
-    
+
     - Emulateur FMSX :
     Vous devez avoir les fichiers fournis avec la distribution de fmsx suivant dans le dossier bios:
     CARTS.SHA
@@ -826,7 +827,7 @@ zx81:
     To enable your gamepad support, go in retroarch menu with "Hotkey+B", then switch this option:
     "Settings/Input/Input User 1 Binds/User 1 Device type: Retropad" with "Cursor Joystick"
   comment_fr: |
-    Pour activer le support du gamepad, veuillez entrer dans le menu Retroarch avec "Hotkey+B", puis modifiez l'option: 
+    Pour activer le support du gamepad, veuillez entrer dans le menu Retroarch avec "Hotkey+B", puis modifiez l'option:
     "Settings/Input/Input User 1 Binds/User 1 Device type: Retropad" en "Cursor Joystick"
 
 zxspectrum:
@@ -837,9 +838,9 @@ zxspectrum:
       fuse: { require: [BR2_PACKAGE_LIBRETRO_FUSE] }
   comment_en: |
     ## Input Devices ##
-    
+
     There are seven types of joysticks emulated:
-    
+
         Cursor
         Kempston
         Sinclair 1
@@ -847,18 +848,18 @@ zxspectrum:
         Timex 1
         Timex 2
         Fuller Joystick
-    
+
     Users can configure their joystick types in the input configuration on the front end (Hotkey+B). However, fuse-libretro allows for two joysticks at maximum so only users one and two can actually use theirs in the emulation.
-    
+
     Users 1 and 2 can choose any of the joysticks as their device types, user 3 can only choose the Sinclair Keyboard.
-    
+
     Buttons A, X and Y are mapped to the joystick's fire button, and button B is mapped to the UP directional button. Buttons L1 and R1 are mapped to RETURN and SPACE, respectively. The SELECT button brings up the embedded, on-screen keyboard which is useful if you only have controllers attached to your box.
-    
+
     There are some conflicts in the way the input devices interact because of the use of the physical keyboard keys as joystick buttons. For a good gaming experience, set the user device types as follows:
-    
+
         For joystick games: Set user 1 to a joystick type. Optionally, set user 2 to another joystick type (local cooperative games). Set user 3 to none. This way, you can use L1 as RETURN, R1 as SPACE, and SELECT to bring the embedded keyboard.
         For keyboard games: Set users 1 and 2 to none, and user 3 to Sinclair Keyboard. You won't have any joystick and the embedded keyboard won't work, but the entire physical keyboard will be available for you to type in those text adventure commands.
-    
+
     If you set a joystick along with the keyboard, the joystick will work just fine except for the bindings to RETURN and SPACE, and the keyboard won't register the keys assigned to the Cursor joystick, or to the L1 and R1 buttons for all other joystick types.
 
 moonlight:
