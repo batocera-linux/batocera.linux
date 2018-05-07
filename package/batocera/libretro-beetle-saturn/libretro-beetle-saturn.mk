@@ -3,7 +3,8 @@
 # BEETLE-SATURN
 #
 ################################################################################
-LIBRETRO_BEETLE_SATURN_VERSION = 672ef1c03f5ff575bb1a027872c6aeba8276aa4a
+# Version.: Commits on May 3, 2018
+LIBRETRO_BEETLE_SATURN_VERSION = 884f71fa8b0fe0a5ce8dcd20b3d43c935c50016f
 LIBRETRO_BEETLE_SATURN_SITE = $(call github,libretro,beetle-saturn-libretro,$(LIBRETRO_BEETLE_SATURN_VERSION))
 
 define LIBRETRO_BEETLE_SATURN_BUILD_CMDS
