@@ -3,7 +3,8 @@
 # PARALLEL_N64
 #
 ################################################################################
-LIBRETRO_PARALLEL_N64_VERSION = ed8b882901df8936fa6b7cc66f40fa41150e12b7
+# Version.: Commits on Apr 22, 2018
+LIBRETRO_PARALLEL_N64_VERSION = 55c4ee7007f0eb4ab8e66dced66de406ff96a10c
 LIBRETRO_PARALLEL_N64_SITE = $(call github,libretro,parallel-n64,$(LIBRETRO_PARALLEL_N64_VERSION))
 
 ifeq ($(BR2_PACKAGE_RPI_USERLAND),y)
