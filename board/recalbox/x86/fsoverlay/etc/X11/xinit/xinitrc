@@ -1,6 +1,6 @@
 #!/bin/sh
 
-matchbox-window-manager -use_titlebar no -use_desktop_mode no -use_lowlight no &
+matchbox-window-manager -use_cursor no -use_titlebar no -use_desktop_mode no -use_lowlight no &
 
 # set the keyboard
 systemsetting="python /usr/lib/python2.7/site-packages/configgen/settings/recalboxSettings.pyc"
@@ -13,9 +13,6 @@ setxkbmap "${map_name}"
 # disable dpms to prevent screen from blanking
 xset -dpms
 xset s off
-
-# auto hide the X11 cursor
-unclutter -idle 2 &
 
 #
 export HOME=/recalbox/share/system
