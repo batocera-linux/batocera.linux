@@ -622,14 +622,14 @@ cavestory:
 
 atarist:
   name:       Atarist
-  extensions: [zip, st, stx, img, rom, raw, ipf, ctr]
+  extensions: [zip, st, stx, img, rom, raw, ipf, ctr, zip]
   emulators:
     libretro:
       hatari: { require: [BR2_PACKAGE_LIBRETRO_HATARI] }
 
 amstradcpc:
   name:       AmstradCPC
-  extensions: [cdt, cpc, dsk]
+  extensions: [cdt, cpc, dsk, zip]
   emulators:
     libretro:
       cap32: { require: [BR2_PACKAGE_LIBRETRO_CAP32] }
