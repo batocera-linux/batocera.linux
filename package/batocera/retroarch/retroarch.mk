@@ -137,6 +137,7 @@ define RETROARCH_CONFIGURE_CMDS
 		CROSS_COMPILE="$(HOST_DIR)/usr/bin/" \
 		./configure \
 		--prefix=/usr \
+		--disable-qt \
 		$(RETROARCH_CONF_OPTS) \
 	)
 endef
