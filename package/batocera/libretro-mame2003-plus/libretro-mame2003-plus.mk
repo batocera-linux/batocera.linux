@@ -3,8 +3,8 @@
 # MAME2003 PLUS
 #
 ################################################################################
-#LIBRETRO_MAME2003_PLUS_VERSION = mame078p - Commits on May 6, 2018 
-LIBRETRO_MAME2003_PLUS_VERSION = f880445bcfb637287bab40bb36b31aba936bebe4
+#LIBRETRO_MAME2003_PLUS_VERSION = mame078p - Commits on May 9, 2018 
+LIBRETRO_MAME2003_PLUS_VERSION = 1bb93a110a8d10b07b98c04b874433676874d7d4
 LIBRETRO_MAME2003_PLUS_SITE = $(call github,libretro,mame2003-plus-libretro,$(LIBRETRO_MAME2003_PLUS_VERSION))
 
 
@@ -18,7 +18,7 @@ endef
 
 define LIBRETRO_MAME2003_PLUS_INSTALL_TARGET_CMDS
 	$(INSTALL) -D $(@D)/mame2003_plus_libretro.so \
-		$(TARGET_DIR)/usr/lib/libretro/mame078p_libretro.so
+		$(TARGET_DIR)/usr/lib/libretro/mame078plus_libretro.so
 endef
 
 define LIBRETRO_MAME2003_PLUS_NAMCO_QUICK_FIX
