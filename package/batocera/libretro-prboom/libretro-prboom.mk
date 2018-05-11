@@ -3,7 +3,8 @@
 # PRBOOM
 #
 ################################################################################
-LIBRETRO_PRBOOM_VERSION = 76261fb93f346bb4dd11ff93bd742cede59f8c2a
+# Version.: Commits on Apr 30, 2018
+LIBRETRO_PRBOOM_VERSION = 1ddc0c12f75fa3e84f5eb7d5f47e7d9e2ad9a2ff
 LIBRETRO_PRBOOM_SITE = $(call github,libretro,libretro-prboom,$(LIBRETRO_PRBOOM_VERSION))
 
 define LIBRETRO_PRBOOM_BUILD_CMDS
