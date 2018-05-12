@@ -1,5 +1,5 @@
 diff --git a/es-core/src/InputConfig.cpp b/es-core/src/InputConfig.cpp
-index 539d6d3..d6e5bf7 100644
+index 2b75f19..a735986 100644
 --- a/es-core/src/InputConfig.cpp
 +++ b/es-core/src/InputConfig.cpp
 @@ -199,5 +199,9 @@ void InputConfig::writeToXML(pugi::xml_node parent)
@@ -13,18 +13,18 @@ index 539d6d3..d6e5bf7 100644
  	}
  }
 diff --git a/es-core/src/InputConfig.h b/es-core/src/InputConfig.h
-index e6cbe95..cc398c8 100644
+index e76f176..fa2c545 100644
 --- a/es-core/src/InputConfig.h
 +++ b/es-core/src/InputConfig.h
-@@ -26,6 +26,7 @@ public:
+@@ -27,6 +27,7 @@ public:
  	InputType type;
  	int id;
  	int value;
-+	int code;
++        int code;
  	bool configured;
  
  	Input()
-@@ -34,6 +35,7 @@ public:
+@@ -35,6 +36,7 @@ public:
  		configured = false;
  		id = -1;
  		value = -999;
@@ -32,7 +32,7 @@ index e6cbe95..cc398c8 100644
  		type = TYPE_COUNT;
  	}
  
-@@ -78,6 +80,25 @@ public:
+@@ -79,6 +81,25 @@ public:
  
  		return stream.str();
  	}
@@ -41,7 +41,7 @@ index e6cbe95..cc398c8 100644
 +    if(device == DEVICE_KEYBOARD) {
 +      return;
 +    }
-+    
++
 +    switch(type) {
 +    case TYPE_AXIS:
 +      code = SDL_JoystickAxisEventCodeById(device, id);
@@ -59,29 +59,29 @@ index e6cbe95..cc398c8 100644
  
  class InputConfig
 diff --git a/es-core/src/InputManager.cpp b/es-core/src/InputManager.cpp
-index f8a392c..499498b 100644
+index f7e6dea..23767ff 100644
 --- a/es-core/src/InputManager.cpp
 +++ b/es-core/src/InputManager.cpp
-@@ -527,6 +527,7 @@ std::string InputManager::configureEmulators() {
- 
-         if(playerInputConfig != NULL){
-             command << "-p" << player+1 << "index " <<  playerInputConfig->getDeviceIndex() << " -p" << player+1 << "guid " << playerInputConfig->getDeviceGUIDString() << " -p" << player+1 << "name \"" <<  playerInputConfig->getDeviceName() << "\" -p" << player+1 << "nbaxes " << playerInputConfig->getDeviceNbAxes() << " ";
-+	    command << "-p" << player+1 << "devicepath " <<  SDL_JoystickDevicePathById(playerInputConfig->getDeviceIndex()) << " ";
-         }/*else {
-             command << " " << "DEFAULT" << " -1 DEFAULTDONOTFINDMEINCOMMAND";
-         }*/
+@@ -570,6 +570,7 @@ std::string InputManager::configureEmulators() {
+     InputConfig * playerInputConfig = playerJoysticks[player];
+     if(playerInputConfig != NULL){
+       command << "-p" << player+1 << "index " <<  playerInputConfig->getDeviceIndex() << " -p" << player+1 << "guid " << playerInputConfig->getDeviceGUIDString() << " -p" << player+1 << "name \"" <<  playerInputConfig->getDeviceName() << "\" -p" << player+1 << "nbaxes " << playerInputConfig->getDeviceNbAxes() << " ";
++      command << "-p" << player+1 << "devicepath " <<  SDL_JoystickDevicePathById(playerInputConfig->getDeviceIndex()) << " ";
+     }
+   }
+   LOG(LogInfo) << "Configure emulators command : " << command.str().c_str();
 diff --git a/es-core/src/guis/GuiInputConfig.cpp b/es-core/src/guis/GuiInputConfig.cpp
-index 81b73b4..a5b5e17 100644
+index 15fb01f..07c84a0 100644
 --- a/es-core/src/guis/GuiInputConfig.cpp
 +++ b/es-core/src/guis/GuiInputConfig.cpp
-@@ -282,6 +282,10 @@ bool GuiInputConfig::assign(Input input, int inputId, int inputIndex)
+@@ -286,6 +286,10 @@ bool GuiInputConfig::assign(Input input, int inputId, int inputIndex)
  	setAssignedTo(mMappings.at(inputIndex), input);
  	
  	input.configured = true;
 +
 +	// set a code while the device is still connected
 +	input.computeCode();
-+	
++
  	mTargetConfig->mapInput(inputName[inputId], input);
  
  	LOG(LogInfo) << "  Mapping [" << input.string() << "] -> " << inputName[inputId];
