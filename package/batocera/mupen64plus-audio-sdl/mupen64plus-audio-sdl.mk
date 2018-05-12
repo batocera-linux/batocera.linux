@@ -3,8 +3,8 @@
 # mupen64plus audio sdl
 #
 ################################################################################
-
-MUPEN64PLUS_AUDIO_SDL_VERSION = d9b7e7366262ee2b469f5e961e0d42785a972bdf
+# Version.: Commits on Feb 4, 2018
+MUPEN64PLUS_AUDIO_SDL_VERSION = 732722c1b7e8e7bbcebfbd64103687e9ecd6f58c
 MUPEN64PLUS_AUDIO_SDL_SITE = $(call github,mupen64plus,mupen64plus-audio-sdl,$(MUPEN64PLUS_AUDIO_SDL_VERSION))
 MUPEN64PLUS_AUDIO_SDL_LICENSE = MIT
 MUPEN64PLUS_AUDIO_SDL_DEPENDENCIES = sdl2 alsa-lib mupen64plus-core
@@ -20,7 +20,7 @@ define MUPEN64PLUS_AUDIO_SDL_BUILD_CMDS
         APIDIR="$(STAGING_DIR)/usr/include/mupen64plus" \
 	GL_CFLAGS="$(MUPEN64PLUS_GL_CFLAGS)" \
 	GL_LDLIBS="$(MUPEN64PLUS_GL_LDLIBS)" \
-	-C $(@D)/projects/unix all $(MUPEN64PLUS_PARAMS) OPTFLAGS="$(TARGET_CXXFLAGS)" 
+	-C $(@D)/projects/unix all $(MUPEN64PLUS_PARAMS) OPTFLAGS="$(TARGET_CXXFLAGS)"
 endef
 
 define MUPEN64PLUS_AUDIO_SDL_INSTALL_TARGET_CMDS
