@@ -3,8 +3,8 @@
 # mupen64plus video rice
 #
 ################################################################################
-
-MUPEN64PLUS_RICE_VERSION = 6cb0f0c0dee9dbd430bfda1be1378ebd3a1b6f1d
+# Version.: Commits on Feb 4, 2018
+MUPEN64PLUS_RICE_VERSION = 7f1044867db2a1a5f8ccb6b1e270e93cc4cbfec2
 MUPEN64PLUS_RICE_SITE = $(call github,mupen64plus,mupen64plus-video-rice,$(MUPEN64PLUS_RICE_VERSION))
 MUPEN64PLUS_RICE_LICENSE = MIT
 MUPEN64PLUS_RICE_DEPENDENCIES = sdl2 alsa-lib rpi-userland mupen64plus-core
@@ -20,7 +20,7 @@ define MUPEN64PLUS_RICE_BUILD_CMDS
         APIDIR="$(STAGING_DIR)/usr/include/mupen64plus" \
 	GL_CFLAGS="$(MUPEN64PLUS_GL_CFLAGS)" \
 	GL_LDLIBS="$(MUPEN64PLUS_GL_LDLIBS)" \
-	-C $(@D)/projects/unix all $(MUPEN64PLUS_PARAMS) OPTFLAGS="$(TARGET_CXXFLAGS)" 
+	-C $(@D)/projects/unix all $(MUPEN64PLUS_PARAMS) OPTFLAGS="$(TARGET_CXXFLAGS)"
 endef
 
 define MUPEN64PLUS_RICE_INSTALL_TARGET_CMDS
