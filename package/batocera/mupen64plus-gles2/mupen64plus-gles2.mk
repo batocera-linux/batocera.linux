@@ -3,9 +3,8 @@
 # mupen64plus video gles2
 #
 ################################################################################
-
-#MUPEN64PLUS_GLES2_VERSION = 12d0073e44c3116c6e9bcc14667c7495e2d3188a
-MUPEN64PLUS_GLES2_VERSION = 29071fa9d8c265a9bd52f6d82d8471d4122d1fbf
+# Version.: Commits on Oct 7, 2017
+MUPEN64PLUS_GLES2_VERSION = aef5b1703b4adf6395d638f2e1a30391a6191fd3
 MUPEN64PLUS_GLES2_SITE = $(call github,ricrpi,mupen64plus-video-gles2n64,$(MUPEN64PLUS_GLES2_VERSION))
 MUPEN64PLUS_GLES2_LICENSE = MIT
 MUPEN64PLUS_GLES2_DEPENDENCIES = sdl2 alsa-lib rpi-userland mupen64plus-core
@@ -21,7 +20,7 @@ define MUPEN64PLUS_GLES2_BUILD_CMDS
         APIDIR="$(STAGING_DIR)/usr/include/mupen64plus" \
 	GL_CFLAGS="$(MUPEN64PLUS_GL_CFLAGS)" \
 	GL_LDLIBS="$(MUPEN64PLUS_GL_LDLIBS)" \
-	-C $(@D)/projects/unix all $(MUPEN64PLUS_PARAMS) OPTFLAGS="$(TARGET_CXXFLAGS)" 
+	-C $(@D)/projects/unix all $(MUPEN64PLUS_PARAMS) OPTFLAGS="$(TARGET_CXXFLAGS)"
 endef
 
 define MUPEN64PLUS_GLES2_INSTALL_TARGET_CMDS
