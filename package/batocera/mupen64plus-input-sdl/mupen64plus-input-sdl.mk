@@ -3,8 +3,8 @@
 # mupen64plus input sdl
 #
 ################################################################################
-
-MUPEN64PLUS_INPUT_SDL_VERSION = ec69700961ad85aeeaee004f301f71ed3989b484
+# Version.: Commits on Apr 16, 2018
+MUPEN64PLUS_INPUT_SDL_VERSION = 4aff87c99c13bdcbbf4b9db18dff90f1d9bc2502
 MUPEN64PLUS_INPUT_SDL_SITE = $(call github,mupen64plus,mupen64plus-input-sdl,$(MUPEN64PLUS_INPUT_SDL_VERSION))
 MUPEN64PLUS_INPUT_SDL_LICENSE = MIT
 MUPEN64PLUS_INPUT_SDL_DEPENDENCIES = sdl2 alsa-lib mupen64plus-core
@@ -20,7 +20,7 @@ define MUPEN64PLUS_INPUT_SDL_BUILD_CMDS
         APIDIR="$(STAGING_DIR)/usr/include/mupen64plus" \
 	GL_CFLAGS="$(MUPEN64PLUS_GL_CFLAGS)" \
 	GL_LDLIBS="$(MUPEN64PLUS_GL_LDLIBS)" \
-	-C $(@D)/projects/unix all $(MUPEN64PLUS_PARAMS) OPTFLAGS="$(TARGET_CXXFLAGS)" 
+	-C $(@D)/projects/unix all $(MUPEN64PLUS_PARAMS) OPTFLAGS="$(TARGET_CXXFLAGS)"
 endef
 
 define MUPEN64PLUS_INPUT_SDL_INSTALL_TARGET_CMDS
