@@ -3,8 +3,8 @@
 # mupen64plus ui-console
 #
 ################################################################################
-
-MUPEN64PLUS_UICONSOLE_VERSION = 1e9a53456c150de61ed722984e7a337f9a9d7c64
+# Version.: committed on Sep 25, 2017
+MUPEN64PLUS_UICONSOLE_VERSION = 36d7cd8eb32e83fef9cae979a71c1f8accd7287b
 MUPEN64PLUS_UICONSOLE_SITE = $(call github,mupen64plus,mupen64plus-ui-console,$(MUPEN64PLUS_UICONSOLE_VERSION))
 MUPEN64PLUS_UICONSOLE_LICENSE = MIT
 MUPEN64PLUS_UICONSOLE_DEPENDENCIES = sdl2 alsa-lib mupen64plus-core
@@ -17,7 +17,7 @@ define MUPEN64PLUS_UICONSOLE_BUILD_CMDS
 	HOST_CPU="$(MUPEN64PLUS_HOST_CPU)" \
 	PKG_CONFIG="$(HOST_DIR)/usr/bin/pkg-config" \
 	APIDIR="$(STAGING_DIR)/usr/include/mupen64plus" \
-	-C $(@D)/projects/unix all $(MUPEN64PLUS_PARAMS) OPTFLAGS="$(TARGET_CXXFLAGS)" 
+	-C $(@D)/projects/unix all $(MUPEN64PLUS_PARAMS) OPTFLAGS="$(TARGET_CXXFLAGS)"
 endef
 
 define MUPEN64PLUS_UICONSOLE_INSTALL_TARGET_CMDS
