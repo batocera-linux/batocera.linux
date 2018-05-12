@@ -3,8 +3,8 @@
 # mupen64plus audio omx
 #
 ################################################################################
-
-MUPEN64PLUS_OMX_VERSION = 63939f7cc2acac457bdecf536075109a9d261f03
+# Version.: Commits on Feb 13, 2016
+MUPEN64PLUS_OMX_VERSION = 3225ca52206c0a484a22212a76c9cf94e219c8c7
 MUPEN64PLUS_OMX_SITE = $(call github,ricrpi,mupen64plus-audio-omx,$(MUPEN64PLUS_OMX_VERSION))
 MUPEN64PLUS_OMX_LICENSE = MIT
 MUPEN64PLUS_OMX_DEPENDENCIES = sdl2 alsa-lib rpi-userland mupen64plus-core
@@ -20,7 +20,7 @@ define MUPEN64PLUS_OMX_BUILD_CMDS
         APIDIR="$(STAGING_DIR)/usr/include/mupen64plus" \
 	GL_CFLAGS="$(MUPEN64PLUS_GL_CFLAGS)" \
 	GL_LDLIBS="$(MUPEN64PLUS_GL_LDLIBS)" \
-	-C $(@D)/projects/unix all $(MUPEN64PLUS_PARAMS) MACHINE=armv6l OPTFLAGS="$(TARGET_CXXFLAGS)" 
+	-C $(@D)/projects/unix all $(MUPEN64PLUS_PARAMS) MACHINE=armv6l OPTFLAGS="$(TARGET_CXXFLAGS)"
 endef
 
 define MUPEN64PLUS_OMX_INSTALL_TARGET_CMDS
