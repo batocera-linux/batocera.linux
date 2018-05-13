@@ -82,10 +82,9 @@ rb_xbox() {
 
 rb_timezone() {
     settings_timezone="`$systemsetting -command load -key system.timezone`"
-    if [[ "$settings_timezone" != "" && -f "/usr/share/zoneinfo/$settings_timezone" ]];then
+    if [[ "$settings_timezone" != "" ]];then
         recallog "setting timezone to $settings_timezone"
-        echo "$settings_timezone" > /etc/timezone
-        ln -sf "/usr/share/zoneinfo/$settings_timezone" /etc/localtime
+        eval $config_script "tz" "$settings_timezone" >> $log
     fi
 }
 

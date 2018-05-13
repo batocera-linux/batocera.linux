@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [ ! "$1" ];then
-	echo -e "usage : recalbox-config.sh [command] [args]\nWith command in\n\toverscan [enable|disable]\n\toverclock [none|high|turbo|extrem]\n\tlsaudio\n\tgetaudio\n\taudio [hdmi|jack|auto|custom|x,y]\n\tcanupdate\n\tupdate\n\twifi [enable|disable] ssid key\n\tstorage [current|list|INTERNAL|ANYEXTERNAL|RAM|DEV UUID]\n\tsetRootPassword [password]\n\tgetRootPassword"
+	echo -e "usage : recalbox-config.sh [command] [args]\nWith command in\n\toverscan [enable|disable]\n\toverclock [none|high|turbo|extrem]\n\tlsaudio\n\tgetaudio\n\taudio [hdmi|jack|auto|custom|x,y]\n\tcanupdate\n\tupdate\n\twifi [enable|disable] ssid key\n\tstorage [current|list|INTERNAL|ANYEXTERNAL|RAM|DEV UUID]\n\tsetRootPassword [password]\n\tgetRootPassword\n\ttz [|tz]"
 	exit 1
 fi
 configFile="/boot/config.txt"
@@ -599,6 +599,20 @@ if [[ "$command" == "forgetBT" ]]; then
    rm -f /recalbox/share/system/bluetooth/bluetooth.tar
    /etc/init.d/S32bluetooth start
    exit 0
+fi
+
+if [ "$command" == "tz" ];then
+    if test "$mode" == ""
+    then
+	cat /recalbox/system/resources/tz
+    else
+	if test -f "/usr/share/zoneinfo/${mode}"
+	then
+	    echo "${mode}" > /etc/timezone
+            ln -sf "/usr/share/zoneinfo/${mode}" /etc/localtime
+	fi
+    fi
+    exit $?
 fi
 
 exit 10
