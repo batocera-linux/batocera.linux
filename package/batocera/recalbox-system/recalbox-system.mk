@@ -55,6 +55,12 @@ define RECALBOX_SYSTEM_INSTALL_TARGET_CMDS
 	cp package/batocera/recalbox-system/$(RECALBOX_SYSTEM_RECALBOX_CONF)/recalbox.conf $(TARGET_DIR)/recalbox/share_init/system/recalbox.conf.template
 	# recalbox-boot.conf
         $(INSTALL) -D -m 0644 package/batocera/recalbox-system/recalbox-boot.conf $(BINARIES_DIR)/$(RECALBOX_SYSTEM_SUBDIR)/recalbox-boot.conf
+
+	# timezone
+	# file generated from the output directory and compared to https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+	# because i don't know how to list correctly them
+        (cd $(TARGET_DIR)/usr/share/zoneinfo && find -L . -type f | grep -vE '/right/|/posix/|\.tab|Factory' | sed -e s+'^\./'++ | sort) > $(TARGET_DIR)/recalbox/system/resources/tz
+
 endef
 
 $(eval $(generic-package))
