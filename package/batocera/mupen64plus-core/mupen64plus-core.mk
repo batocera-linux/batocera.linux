@@ -2,6 +2,8 @@
 #
 # mupen64plus core
 #
+# (05.13.18) Not selected because it does not perform satisfactorily 
+#
 ################################################################################
 
 MUPEN64PLUS_CORE_VERSION = e0fa7db91b9df4157a81e4e5070a2e409dbc4bc7
@@ -53,7 +55,7 @@ define MUPEN64PLUS_CORE_BUILD_CMDS
 	PREFIX="$(STAGING_DIR)/usr" \
 	PKG_CONFIG="$(HOST_DIR)/usr/bin/pkg-config" \
 	HOST_CPU="$(MUPEN64PLUS_HOST_CPU)" \
-	-C $(@D)/projects/unix all $(MUPEN64PLUS_PARAMS) OPTFLAGS="$(TARGET_CXXFLAGS)" 
+	-C $(@D)/projects/unix all $(MUPEN64PLUS_PARAMS) OPTFLAGS="$(TARGET_CXXFLAGS)"
 endef
 
 define MUPEN64PLUS_CORE_INSTALL_STAGING_CMDS

@@ -2,6 +2,8 @@
 #
 # mupen64plus video GLIDEN64
 #
+# (05.13.18) Not selected because it does not perform satisfactorily for x86_64
+#
 ################################################################################
 
 
@@ -43,5 +45,3 @@ MUPEN64PLUS_GLIDEN64_PRE_CONFIGURE_HOOKS += MUPEN64PLUS_GLIDEN64_PRE_CONFIGURE_F
 
 
 $(eval $(cmake-package))
-
-
