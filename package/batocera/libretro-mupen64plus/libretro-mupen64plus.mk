@@ -2,6 +2,8 @@
 #
 # MUPEN64PLUS
 #
+# (05.13.18) Not selected because it does not perform satisfactorily for RPI3
+#
 ################################################################################
 # Version.: Commits on Apr 10, 2018
 LIBRETRO_MUPEN64PLUS_VERSION = d2abd0cda0b524d05adae9f338dcd1fee78aaf72

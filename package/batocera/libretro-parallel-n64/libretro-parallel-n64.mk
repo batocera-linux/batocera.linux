@@ -2,6 +2,8 @@
 #
 # PARALLEL_N64
 #
+# (05.13.18) Not selected because it does not perform satisfactorily for RPI3
+#
 ################################################################################
 # Version.: Commits on Apr 22, 2018
 LIBRETRO_PARALLEL_N64_VERSION = 55c4ee7007f0eb4ab8e66dced66de406ff96a10c
