@@ -94,3 +94,8 @@ if test "${RECALBOX_TARGET}" = "X86" -o "${RECALBOX_TARGET}" = X86_64
 then
     ln -sf "/usr/lib/gdk-pixbuf-2.0" "${TARGET_DIR}/lib/gdk-pixbuf-2.0" || exit 1
 fi
+
+# timezone
+# file generated from the output directory and compared to https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+# because i don't know how to list correctly them
+(cd "${TARGET_DIR}/usr/share/zoneinfo" && find -L . -type f | grep -vE '/right/|/posix/|\.tab|Factory' | sed -e s+'^\./'++ | sort) > "${TARGET_DIR}/recalbox/system/resources/tz"
