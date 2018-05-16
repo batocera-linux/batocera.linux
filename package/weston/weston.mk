@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-WESTON_VERSION = 3.0.0
+WESTON_VERSION = 4.0.0
 WESTON_SITE = http://wayland.freedesktop.org/releases
 WESTON_SOURCE = weston-$(WESTON_VERSION).tar.xz
 WESTON_LICENSE = MIT
@@ -86,7 +86,6 @@ ifeq ($(BR2_PACKAGE_WESTON_DRM),y)
 WESTON_CONF_OPTS += \
 	--enable-drm-compositor \
 	WESTON_NATIVE_BACKEND=drm-backend.so
-WESTON_DEPENDENCIES += libdrm
 else
 WESTON_CONF_OPTS += --disable-drm-compositor
 endif

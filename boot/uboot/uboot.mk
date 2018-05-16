@@ -61,10 +61,6 @@ UBOOT_BINS += u-boot.ais
 UBOOT_MAKE_TARGET += u-boot.ais
 endif
 
-ifeq ($(BR2_TARGET_UBOOT_FORMAT_LDR),y)
-UBOOT_BINS += u-boot.ldr
-endif
-
 ifeq ($(BR2_TARGET_UBOOT_FORMAT_NAND_BIN),y)
 UBOOT_BINS += u-boot-nand.bin
 endif
@@ -131,8 +127,13 @@ endif
 UBOOT_MAKE_OPTS += \
 	CROSS_COMPILE="$(TARGET_CROSS)" \
 	ARCH=$(UBOOT_ARCH) \
-	HOSTCC="$(HOSTCC) $(HOST_CFLAGS)" \
+	HOSTCC="$(HOSTCC) $(subst -I/,-isystem /,$(subst -I /,-isystem /,$(HOST_CFLAGS)))" \
 	HOSTLDFLAGS="$(HOST_LDFLAGS)"
+
+ifeq ($(BR2_TARGET_UBOOT_NEEDS_ATF_BL31),y)
+UBOOT_DEPENDENCIES += arm-trusted-firmware
+UBOOT_MAKE_OPTS += BL31=$(BINARIES_DIR)/bl31.bin
+endif
 
 ifeq ($(BR2_TARGET_UBOOT_NEEDS_DTC),y)
 UBOOT_DEPENDENCIES += host-dtc
@@ -183,17 +184,22 @@ define UBOOT_APPLY_LOCAL_PATCHES
 endef
 UBOOT_POST_PATCH_HOOKS += UBOOT_APPLY_LOCAL_PATCHES
 
-# Bug: https://patchwork.ozlabs.org/patch/833760/
-define UBOOT_FIX_LIBFDT_SYSTEM_PATH
-	[ ! -e $(@D)/tools/fdtgrep.c ] || \
-	$(SED) 's%<../include/libfdt.h>%"../include/libfdt.h"%' $(@D)/tools/fdtgrep.c
+# This is equivalent to upstream commit
+# http://git.denx.de/?p=u-boot.git;a=commitdiff;h=e0d20dc1521e74b82dbd69be53a048847798a90a. It
+# fixes a build failure when libfdt-devel is installed system-wide.
+# This only works when scripts/dtc/libfdt exists (E.G. versions containing
+# http://git.denx.de/?p=u-boot.git;a=commitdiff;h=c0e032e0090d6541549b19cc47e06ccd1f302893)
+define UBOOT_FIXUP_LIBFDT_INCLUDE
+	if [ -d $(@D)/scripts/dtc/libfdt ]; then \
+		$(SED) 's%-I$$(srctree)/lib/libfdt%-I$$(srctree)/scripts/dtc/libfdt%' $(@D)/tools/Makefile; \
+	fi
 endef
-UBOOT_POST_PATCH_HOOKS += UBOOT_FIX_LIBFDT_SYSTEM_PATH
+UBOOT_POST_PATCH_HOOKS += UBOOT_FIXUP_LIBFDT_INCLUDE
 
 ifeq ($(BR2_TARGET_UBOOT_BUILD_SYSTEM_LEGACY),y)
 define UBOOT_CONFIGURE_CMDS
-	$(TARGET_CONFIGURE_OPTS) 	\
-		$(MAKE) -C $(@D) $(UBOOT_MAKE_OPTS)		\
+	$(TARGET_CONFIGURE_OPTS) \
+		$(MAKE) -C $(@D) $(UBOOT_MAKE_OPTS) \
 		$(UBOOT_BOARD_NAME)_config
 endef
 else ifeq ($(BR2_TARGET_UBOOT_BUILD_SYSTEM_KCONFIG),y)
@@ -220,16 +226,16 @@ define UBOOT_BUILD_CMDS
 	$(if $(UBOOT_CUSTOM_DTS_PATH),
 		cp -f $(UBOOT_CUSTOM_DTS_PATH) $(@D)/arch/$(UBOOT_ARCH)/dts/
 	)
-	$(TARGET_CONFIGURE_OPTS) 	\
-		$(MAKE) -C $(@D) $(UBOOT_MAKE_OPTS) 		\
+	$(TARGET_CONFIGURE_OPTS) \
+		$(MAKE) -C $(@D) $(UBOOT_MAKE_OPTS) \
 		$(UBOOT_MAKE_TARGET)
 	$(if $(BR2_TARGET_UBOOT_FORMAT_SD),
 		$(@D)/tools/mxsboot sd $(@D)/u-boot.sb $(@D)/u-boot.sd)
 	$(if $(BR2_TARGET_UBOOT_FORMAT_NAND),
 		$(@D)/tools/mxsboot \
-			-w $(BR2_TARGET_UBOOT_FORMAT_NAND_PAGE_SIZE)	\
-			-o $(BR2_TARGET_UBOOT_FORMAT_NAND_OOB_SIZE)	\
-			-e $(BR2_TARGET_UBOOT_FORMAT_NAND_ERASE_SIZE)	\
+			-w $(BR2_TARGET_UBOOT_FORMAT_NAND_PAGE_SIZE) \
+			-o $(BR2_TARGET_UBOOT_FORMAT_NAND_OOB_SIZE) \
+			-e $(BR2_TARGET_UBOOT_FORMAT_NAND_ERASE_SIZE) \
 			nand $(@D)/u-boot.sb $(@D)/u-boot.nand)
 endef
 
@@ -237,6 +243,18 @@ define UBOOT_BUILD_OMAP_IFT
 	$(HOST_DIR)/bin/gpsign -f $(@D)/u-boot.bin \
 		-c $(call qstrip,$(BR2_TARGET_UBOOT_OMAP_IFT_CONFIG))
 endef
+
+ifneq ($(BR2_TARGET_UBOOT_ENVIMAGE),)
+define UBOOT_GENERATE_ENV_IMAGE
+	cat $(call qstrip,$(BR2_TARGET_UBOOT_ENVIMAGE_SOURCE)) \
+		>$(@D)/buildroot-env.txt
+	$(HOST_DIR)/bin/mkenvimage -s $(BR2_TARGET_UBOOT_ENVIMAGE_SIZE) \
+		$(if $(BR2_TARGET_UBOOT_ENVIMAGE_REDUNDANT),-r) \
+		$(if $(filter BIG,$(BR2_ENDIAN)),-b) \
+		-o $(BINARIES_DIR)/uboot-env.bin \
+		$(@D)/buildroot-env.txt
+endef
+endif
 
 define UBOOT_INSTALL_IMAGES_CMDS
 	$(foreach f,$(UBOOT_BINS), \
@@ -249,12 +267,7 @@ define UBOOT_INSTALL_IMAGES_CMDS
 			cp -dpf $(@D)/$(f) $(BINARIES_DIR)/
 		)
 	)
-	$(if $(BR2_TARGET_UBOOT_ENVIMAGE),
-		cat $(call qstrip,$(BR2_TARGET_UBOOT_ENVIMAGE_SOURCE)) | \
-			$(HOST_DIR)/bin/mkenvimage -s $(BR2_TARGET_UBOOT_ENVIMAGE_SIZE) \
-			$(if $(BR2_TARGET_UBOOT_ENVIMAGE_REDUNDANT),-r) \
-			$(if $(filter BIG,$(BR2_ENDIAN)),-b) \
-			-o $(BINARIES_DIR)/uboot-env.bin -)
+	$(UBOOT_GENERATE_ENV_IMAGE)
 	$(if $(BR2_TARGET_UBOOT_BOOT_SCRIPT),
 		$(HOST_DIR)/bin/mkimage -C none -A $(MKIMAGE_ARCH) -T script \
 			-d $(call qstrip,$(BR2_TARGET_UBOOT_BOOT_SCRIPT_SOURCE)) \

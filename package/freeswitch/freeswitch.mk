@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-FREESWITCH_VERSION = 1.6.19
+FREESWITCH_VERSION = 1.6.20
 FREESWITCH_SOURCE = freeswitch-$(FREESWITCH_VERSION).tar.xz
 FREESWITCH_SITE = http://files.freeswitch.org/freeswitch-releases
 # External modules need headers/libs from staging
@@ -273,6 +273,17 @@ endif
 ifeq ($(BR2_PACKAGE_OPENCV),y)
 FREESWITCH_DEPENDENCIES += opencv
 FREESWITCH_ENABLED_MODULES += applications/mod_cv
+endif
+
+ifeq ($(BR2_PACKAGE_POSTGRESQL),y)
+FREESWITCH_CONF_ENV += \
+	ac_cv_path_PG_CONFIG=$(STAGING_DIR)/usr/bin/pg_config
+FREESWITCH_CONF_OPTS += \
+	--enable-core-pgsql-pkgconfig \
+	--enable-core-pgsql-support
+FREESWITCH_DEPENDENCIES += postgresql
+else
+FREESWITCH_CONF_OPTS += --disable-core-pgsql-support
 endif
 
 ifeq ($(BR2_PACKAGE_UNIXODBC),y)

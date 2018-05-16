@@ -4,13 +4,14 @@
 #
 ################################################################################
 
-LIBOSTREE_VERSION = 2017.13
+LIBOSTREE_VERSION = 2018.4
 LIBOSTREE_SOURCE = libostree-$(LIBOSTREE_VERSION).tar.xz
 LIBOSTREE_SITE = https://github.com/ostreedev/ostree/releases/download/v$(LIBOSTREE_VERSION)
 
-LIBOSTREE_LICENSE = GPL-2.0+
+LIBOSTREE_LICENSE = LGPL-2.0+
 LIBOSTREE_LICENSE_FILES = COPYING
-LIBOSTREE_DEPENDENCIES = e2fsprogs host-pkgconf libfuse libglib2 libgpgme xz
+LIBOSTREE_DEPENDENCIES = e2fsprogs host-bison host-pkgconf libfuse libglib2 libgpgme xz
+LIBOSTREE_INSTALL_STAGING = YES
 
 LIBOSTREE_CONF_OPTS += \
 	--with-gpgme-prefix=$(STAGING_DIR)/usr \
@@ -26,7 +27,11 @@ else
 LIBOSTREE_CONF_OPTS += --without-openssl
 endif
 
-ifeq ($(BR2_PACKAGE_AVAHI),y)
+# Avahi support needs libavahi-client, which is built by avahi if avahi-daemon
+# and dbus is selected. Since there is no BR2_PACKAGE_LIBAVAHI_CLIENT config
+# option yet, use the avahi-daemon and dbus config symbols to check for
+# libavahi-client.
+ifeq ($(BR2_PACKAGE_AVAHI_DAEMON)$(BR2_PACKAGE_DBUS),yy)
 LIBOSTREE_CONF_OPTS += --with-avahi
 LIBOSTREE_DEPENDENCIES += avahi
 else

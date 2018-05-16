@@ -5,8 +5,8 @@ menuconfig BR2_PACKAGE_GST1_PLUGINS_GOOD
 	select BR2_PACKAGE_XLIB_LIBXEXT if BR2_PACKAGE_XORG7
 	select BR2_PACKAGE_XLIB_LIBXV if BR2_PACKAGE_XORG7
 	help
-	  A set of well-supported plug-ins for GStreamer under the preferred
-	  license.
+	  A set of well-supported plug-ins for GStreamer under the
+	  preferred license.
 
 	  http://gstreamer.freedesktop.org/
 
@@ -70,7 +70,8 @@ config BR2_PACKAGE_GST1_PLUGINS_GOOD_PLUGIN_AUPARSE
 config BR2_PACKAGE_GST1_PLUGINS_GOOD_PLUGIN_AUTODETECT
 	bool "autodetect"
 	help
-	  Plugin contains auto-detection plugins for video/audio in- and outputs
+	  Plugin contains auto-detection plugins for video/audio in-
+	  and outputs
 
 config BR2_PACKAGE_GST1_PLUGINS_GOOD_PLUGIN_AVI
 	bool "avi (*.avi video)"
@@ -358,14 +359,12 @@ comment "taglib needs a toolchain w/ C++, wchar"
 
 config BR2_PACKAGE_GST1_PLUGINS_GOOD_PLUGIN_VPX
 	bool "vpx (webm)"
-	depends on !BR2_bfin # libvpx
 	depends on BR2_TOOLCHAIN_HAS_THREADS # libvpx
 	select BR2_PACKAGE_LIBVPX
 	help
 	  VP8 plugin
 
 comment "libvpx needs a toolchain w/ threads"
-	depends on !BR2_bfin
 	depends on !BR2_TOOLCHAIN_HAS_THREADS
 
 config BR2_PACKAGE_GST1_PLUGINS_GOOD_PLUGIN_WAVPACK

@@ -4,7 +4,7 @@
 # It needs to be regenerated every time a defconfig is added, using
 # "make .gitlab-ci.yml".
 
-image: buildroot/base
+image: buildroot/base:20180318.1724
 
 .defconfig_script: &defconfig_script
     - echo 'Configure Buildroot'
@@ -30,9 +30,21 @@ check-DEVELOPERS:
     script:
         - "! utils/get-developers | grep -v 'No action specified'"
 
+check-flake8:
+    before_script:
+        # Help flake8 to find the Python files without .py extension.
+        - find * -type f -name '*.py' > files.txt
+        - find * -type f -print0 | xargs -0 file | grep 'Python script' | cut -d':' -f1 >> files.txt
+        - sort -u files.txt | tee files.processed
+    script:
+        - python -m flake8 --statistics --count $(cat files.processed)
+    after_script:
+        - wc -l files.processed
+
 check-package:
     script:
-        - find . -type f \( -name '*.mk' -o -name '*.hash' \) -exec ./utils/check-package {} +
+        - find . -type f \( -name '*.mk' -o -name '*.hash' -o -name 'Config.*' \)
+            -exec ./utils/check-package {} +
 
 .defconfig: &defconfig
     # Running the defconfigs for every push is too much, so limit to
@@ -61,17 +73,21 @@ check-package:
         expire_in: 2 weeks
         paths:
             - test-output/*.log
+            - test-output/*/.config
             - test-output/*/images/*
 acmesystems_aria_g25_128mb_defconfig: *defconfig
 acmesystems_aria_g25_256mb_defconfig: *defconfig
 acmesystems_arietta_g25_128mb_defconfig: *defconfig
 acmesystems_arietta_g25_256mb_defconfig: *defconfig
+amarula_vyasa_rk3288_defconfig: *defconfig
+arcturus_ucls1012a_defconfig: *defconfig
 arcturus_ucp1020_defconfig: *defconfig
 arm_foundationv8_defconfig: *defconfig
 arm_juno_defconfig: *defconfig
 armadeus_apf27_defconfig: *defconfig
 armadeus_apf28_defconfig: *defconfig
 armadeus_apf51_defconfig: *defconfig
+asus_tinker_rk3288_defconfig: *defconfig
 at91sam9260eknf_defconfig: *defconfig
 at91sam9g20dfc_defconfig: *defconfig
 at91sam9g45m10ek_defconfig: *defconfig
@@ -94,13 +110,13 @@ atmel_sama5d4_xplained_mmc_defconfig: *defconfig
 atmel_sama5d4_xplained_mmc_dev_defconfig: *defconfig
 bananapi_m1_defconfig: *defconfig
 bananapi_m2_plus_defconfig: *defconfig
+bananapi_m64_defconfig: *defconfig
 bananapro_defconfig: *defconfig
 beagleboardx15_defconfig: *defconfig
 beaglebone_defconfig: *defconfig
 beaglebone_qt5_defconfig: *defconfig
 chromebook_snow_defconfig: *defconfig
 ci20_defconfig: *defconfig
-ci40_defconfig: *defconfig
 csky_gx6605s_defconfig: *defconfig
 cubieboard2_defconfig: *defconfig
 engicam_imx6qdl_icore_defconfig: *defconfig
@@ -108,22 +124,19 @@ engicam_imx6qdl_icore_qt5_defconfig: *defconfig
 engicam_imx6qdl_icore_rqs_defconfig: *defconfig
 engicam_imx6ul_geam_defconfig: *defconfig
 engicam_imx6ul_isiot_defconfig: *defconfig
-firefly_rk3288_defconfig: *defconfig
-firefly_rk3288_demo_defconfig: *defconfig
 freescale_imx28evk_defconfig: *defconfig
-freescale_imx31_3stack_defconfig: *defconfig
 freescale_imx6dlsabreauto_defconfig: *defconfig
 freescale_imx6dlsabresd_defconfig: *defconfig
 freescale_imx6qsabreauto_defconfig: *defconfig
 freescale_imx6qsabresd_defconfig: *defconfig
-freescale_imx6sololiteevk_defconfig: *defconfig
 freescale_imx6sxsabresd_defconfig: *defconfig
-freescale_imx6ulevk_defconfig: *defconfig
 freescale_imx7dsabresd_defconfig: *defconfig
-freescale_mpc8315erdb_defconfig: *defconfig
-freescale_p1010rdb_pa_defconfig: *defconfig
+freescale_imx8mqevk_defconfig: *defconfig
+freescale_p1025twr_defconfig: *defconfig
+freescale_t1040d4rdb_defconfig: *defconfig
+friendlyarm_nanopi_a64_defconfig: *defconfig
+friendlyarm_nanopi_neo2_defconfig: *defconfig
 galileo_defconfig: *defconfig
-gdb_bfin_bf512_defconfig: *defconfig
 grinn_chiliboard_defconfig: *defconfig
 grinn_liteboard_defconfig: *defconfig
 imx23evk_defconfig: *defconfig
@@ -158,16 +171,24 @@ olimex_a20_olinuxino_lime2_defconfig: *defconfig
 olimex_a20_olinuxino_lime_defconfig: *defconfig
 olimex_a20_olinuxino_lime_mali_defconfig: *defconfig
 olimex_a20_olinuxino_micro_defconfig: *defconfig
+olimex_a64_olinuxino_defconfig: *defconfig
 olimex_imx233_olinuxino_defconfig: *defconfig
 openblocks_a6_defconfig: *defconfig
+orangepi_lite_defconfig: *defconfig
 orangepi_one_defconfig: *defconfig
+orangepi_pc2_defconfig: *defconfig
 orangepi_pc_defconfig: *defconfig
 orangepi_pc_plus_defconfig: *defconfig
 orangepi_plus_defconfig: *defconfig
+orangepi_prime_defconfig: *defconfig
+orangepi_win_defconfig: *defconfig
 orangepi_zero_defconfig: *defconfig
+orangepi_zero_plus2_defconfig: *defconfig
 pandaboard_defconfig: *defconfig
 pc_x86_64_bios_defconfig: *defconfig
 pc_x86_64_efi_defconfig: *defconfig
+pine64_defconfig: *defconfig
+pine64_sopine_defconfig: *defconfig
 qemu_aarch64_virt_defconfig: *defconfig
 qemu_arm_versatile_defconfig: *defconfig
 qemu_arm_versatile_nommu_defconfig: *defconfig
@@ -186,6 +207,7 @@ qemu_mips64r6_malta_defconfig: *defconfig
 qemu_mips64r6el_malta_defconfig: *defconfig
 qemu_nios2_10m50_defconfig: *defconfig
 qemu_or1k_defconfig: *defconfig
+qemu_ppc64_e5500_defconfig: *defconfig
 qemu_ppc64_pseries_defconfig: *defconfig
 qemu_ppc64le_pseries_defconfig: *defconfig
 qemu_ppc_g3beige_defconfig: *defconfig
@@ -200,12 +222,12 @@ qemu_x86_defconfig: *defconfig
 qemu_xtensa_lx60_defconfig: *defconfig
 qemu_xtensa_lx60_nommu_defconfig: *defconfig
 raspberrypi0_defconfig: *defconfig
+raspberrypi0w_defconfig: *defconfig
 raspberrypi2_defconfig: *defconfig
 raspberrypi3_64_defconfig: *defconfig
 raspberrypi3_defconfig: *defconfig
 raspberrypi3_qt5we_defconfig: *defconfig
 raspberrypi_defconfig: *defconfig
-riotboard_defconfig: *defconfig
 roseapplepi_defconfig: *defconfig
 s6lx9_microboard_defconfig: *defconfig
 sheevaplug_defconfig: *defconfig
@@ -213,15 +235,18 @@ snps_aarch64_vdk_defconfig: *defconfig
 snps_arc700_axs101_defconfig: *defconfig
 snps_archs38_axs103_defconfig: *defconfig
 snps_archs38_haps_defconfig: *defconfig
+snps_archs38_hsdk_defconfig: *defconfig
 snps_archs38_vdk_defconfig: *defconfig
 socrates_cyclone5_defconfig: *defconfig
+solidrun_clearfog_defconfig: *defconfig
+solidrun_macchiatobin_mainline_defconfig: *defconfig
+solidrun_macchiatobin_marvell_defconfig: *defconfig
 stm32f429_disco_defconfig: *defconfig
 stm32f469_disco_defconfig: *defconfig
-telit_evk_pro3_defconfig: *defconfig
 toradex_apalis_imx6_defconfig: *defconfig
 ts4800_defconfig: *defconfig
 ts4900_defconfig: *defconfig
-ts5x00_defconfig: *defconfig
+ts5500_defconfig: *defconfig
 ts7680_defconfig: *defconfig
 wandboard_defconfig: *defconfig
 warp7_defconfig: *defconfig
@@ -230,6 +255,9 @@ zynq_microzed_defconfig: *defconfig
 zynq_zc706_defconfig: *defconfig
 zynq_zed_defconfig: *defconfig
 zynq_zybo_defconfig: *defconfig
+tests.boot.test_atf.TestATFAllwinner: *runtime_test
+tests.boot.test_atf.TestATFMarvell: *runtime_test
+tests.boot.test_atf.TestATFVexpress: *runtime_test
 tests.core.test_post_scripts.TestPostScripts: *runtime_test
 tests.core.test_rootfs_overlay.TestRootfsOverlay: *runtime_test
 tests.core.test_timezone.TestGlibcAllTimezone: *runtime_test
@@ -240,8 +268,10 @@ tests.fs.test_ext.TestExt2r1: *runtime_test
 tests.fs.test_ext.TestExt3: *runtime_test
 tests.fs.test_ext.TestExt4: *runtime_test
 tests.fs.test_iso9660.TestIso9660Grub2External: *runtime_test
+tests.fs.test_iso9660.TestIso9660Grub2ExternalCompress: *runtime_test
 tests.fs.test_iso9660.TestIso9660Grub2Internal: *runtime_test
 tests.fs.test_iso9660.TestIso9660SyslinuxExternal: *runtime_test
+tests.fs.test_iso9660.TestIso9660SyslinuxExternalCompress: *runtime_test
 tests.fs.test_iso9660.TestIso9660SyslinuxInternal: *runtime_test
 tests.fs.test_jffs2.TestJffs2: *runtime_test
 tests.fs.test_squashfs.TestSquashfs: *runtime_test
@@ -263,6 +293,11 @@ tests.package.test_ipython.TestIPythonPy2: *runtime_test
 tests.package.test_ipython.TestIPythonPy3: *runtime_test
 tests.package.test_python.TestPython2: *runtime_test
 tests.package.test_python.TestPython3: *runtime_test
+tests.package.test_python_cryptography.TestPythonPy2Cryptography: *runtime_test
+tests.package.test_python_cryptography.TestPythonPy3Cryptography: *runtime_test
+tests.package.test_rust.TestRust: *runtime_test
+tests.package.test_rust.TestRustBin: *runtime_test
+tests.package.test_syslog_ng.TestSyslogNg: *runtime_test
 tests.toolchain.test_external.TestExternalToolchainBuildrootMusl: *runtime_test
 tests.toolchain.test_external.TestExternalToolchainBuildrootuClibc: *runtime_test
 tests.toolchain.test_external.TestExternalToolchainCCache: *runtime_test

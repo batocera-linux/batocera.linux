@@ -4,18 +4,14 @@
 #
 ################################################################################
 
-GST1_PLUGINS_BAD_VERSION = 1.12.3
+GST1_PLUGINS_BAD_VERSION = 1.12.4
 GST1_PLUGINS_BAD_SOURCE = gst-plugins-bad-$(GST1_PLUGINS_BAD_VERSION).tar.xz
 GST1_PLUGINS_BAD_SITE = https://gstreamer.freedesktop.org/src/gst-plugins-bad
 GST1_PLUGINS_BAD_INSTALL_STAGING = YES
-GST1_PLUGINS_BAD_LICENSE_FILES = COPYING COPYING.LIB
-# Unknown and GPL licensed plugins will append to GST1_PLUGINS_BAD_LICENSE if
-# enabled.
-GST1_PLUGINS_BAD_LICENSE = LGPL-2.0+, LGPL-2.1+
-
-# patch 0001-openjpeg-Fix-build-against-openjpeg-2.2.patch touches configure.ac
-GST1_PLUGINS_BAD_AUTORECONF = YES
-GST1_PLUGINS_BAD_GETTEXTIZE = YES
+# Unknown and GPL licensed plugins will append to GST1_PLUGINS_BAD_LICENSE and
+# GST1_PLUGINS_BAD_LICENSE_FILES if enabled.
+GST1_PLUGINS_BAD_LICENSE_FILES = COPYING.LIB
+GST1_PLUGINS_BAD_LICENSE := LGPL-2.0+, LGPL-2.1+
 
 GST1_PLUGINS_BAD_CONF_OPTS = \
 	--disable-examples \
@@ -775,12 +771,13 @@ endif
 
 # Add GPL license if GPL licensed plugins enabled.
 ifeq ($(GST1_PLUGINS_BAD_HAS_GPL_LICENSE),y)
-GST1_PLUGINS_BAD_LICENSE += GPL
+GST1_PLUGINS_BAD_LICENSE := $(GST1_PLUGINS_BAD_LICENSE), GPL
+GST1_PLUGINS_BAD_LICENSE_FILES += COPYING
 endif
 
 # Add Unknown license if Unknown licensed plugins enabled.
 ifeq ($(GST1_PLUGINS_BAD_HAS_UNKNOWN_LICENSE),y)
-GST1_PLUGINS_BAD_LICENSE += UNKNOWN
+GST1_PLUGINS_BAD_LICENSE := $(GST1_PLUGINS_BAD_LICENSE), UNKNOWN
 endif
 
 # Use the following command to extract license info for plugins.

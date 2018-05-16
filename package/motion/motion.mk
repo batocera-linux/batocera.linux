@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-MOTION_VERSION = release-4.1
+MOTION_VERSION = release-4.1.1
 MOTION_SITE = $(call github,Motion-Project,motion,$(MOTION_VERSION))
 MOTION_LICENSE = GPL-2.0
 MOTION_LICENSE_FILES = COPYING
@@ -59,7 +59,7 @@ endif
 # directories: docs, examples and init scripts
 define MOTION_INSTALL_TARGET_CMDS
 	$(INSTALL) -D -m 0644 $(@D)/motion-dist.conf \
-		$(TARGET_DIR)/etc/motion.conf
+		$(TARGET_DIR)/etc/motion/motion.conf
 	$(INSTALL) -D -m 0755 $(@D)/motion $(TARGET_DIR)/usr/bin/motion
 endef
 
