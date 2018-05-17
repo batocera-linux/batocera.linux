@@ -202,6 +202,9 @@ else
 HOST_UTIL_LINUX_CONF_OPTS += --disable-all-programs
 endif
 
+# batocera / fix compilation error
+HOST_UTIL_LINUX_CONF_OPTS += --enable-libsmartcols
+
 # Install libmount Python bindings
 ifeq ($(BR2_PACKAGE_PYTHON)$(BR2_PACKAGE_PYTHON3),y)
 UTIL_LINUX_CONF_OPTS += --with-python

@@ -11,6 +11,8 @@ ADWAITA_ICON_THEME_SOURCE = adwaita-icon-theme-$(ADWAITA_ICON_THEME_VERSION).tar
 ADWAITA_ICON_THEME_INSTALL_STAGING = YES
 ADWAITA_ICON_THEME_LICENSE = LGPL-3.0 or CC-BY-SA-3.0
 ADWAITA_ICON_THEME_LICENSE_FILES = COPYING COPYING_LGPL COPYING_CCBYSA3
-ADWAITA_ICON_THEME_DEPENDENCIES = host-intltool host-libgtk3
+#ADWAITA_ICON_THEME_DEPENDENCIES = host-intltool host-libgtk3
+# batocera / fix compilation issues on a not required package for batocera
+ADWAITA_ICON_THEME_DEPENDENCIES = host-intltool
 
 $(eval $(autotools-package))
