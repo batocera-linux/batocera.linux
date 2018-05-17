@@ -3,7 +3,7 @@
 # DESMUME
 #
 ################################################################################
-LIBRETRO_DESMUME_VERSION = 80321a121df568d48b918b31ad8cb325a52e7e95
+LIBRETRO_DESMUME_VERSION = 9fb1e8c1f4ccd819f15b29e2114a05e45140fec0
 LIBRETRO_DESMUME_SITE = $(call github,libretro,desmume,$(LIBRETRO_DESMUME_VERSION))
 
 define LIBRETRO_DESMUME_BUILD_CMDS
