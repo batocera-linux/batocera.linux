@@ -137,12 +137,8 @@ define NODEJS_BUILD_CMDS
 		$(TARGET_CONFIGURE_OPTS) \
 		NO_LOAD=cctest.target.mk \
 		PATH=$(@D)/bin:$(BR_PATH) \
-		LD="$(TARGET_CXX)" \
-		CXXFLAGS="-D_GLIBCXX_USE_C99_MATH -std=c++11"
+		LD="$(TARGET_CXX)"
 endef
-
-# batocera / add this to avoid std::isnan is not a member of std
-# CXXFLAGS="-D_GLIBCXX_USE_C99_MATH -std=c++11"
 
 #
 # Build the list of modules to install.
