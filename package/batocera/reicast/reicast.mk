@@ -4,11 +4,7 @@
 #
 ################################################################################
 
-<<<<<<< HEAD
-REICAST_VERSION = d9e65bfbe4c3a988d522fe570b2479eefaae8576
-=======
 REICAST_VERSION = a50861b249b83abbdc2a9281434b75b25520baa5
->>>>>>> d7ebafc... Update reicast standalone
 REICAST_SITE = $(call github,reicast,reicast-emulator,$(REICAST_VERSION))
 REICAST_DEPENDENCIES = sdl2 libpng
 
