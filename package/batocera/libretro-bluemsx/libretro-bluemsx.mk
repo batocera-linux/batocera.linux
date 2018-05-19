@@ -3,7 +3,8 @@
 # BLUEMSX
 #
 ################################################################################
-LIBRETRO_BLUEMSX_VERSION = 997643b92b3fc5947b7678841a1cd60375e6f78d
+# Version.: Commits on Apr 13, 2018
+LIBRETRO_BLUEMSX_VERSION = 406c9856c79cd66605e9d1f0402f2e37c014848c
 LIBRETRO_BLUEMSX_SITE = $(call github,libretro,blueMSX-libretro,$(LIBRETRO_BLUEMSX_VERSION))
 
 define LIBRETRO_BLUEMSX_BUILD_CMDS
