@@ -3,7 +3,8 @@
 # BEETLE_PCE
 #
 ################################################################################
-LIBRETRO_BEETLE_PCE_VERSION = 20105f7966951e062f6cc78cc4a3c932b55d8b3e
+# Version.: Commits on Apr 24, 2018
+LIBRETRO_BEETLE_PCE_VERSION = 11f7aaaf0271ca150e2ad77b21ead59baf327bbe
 LIBRETRO_BEETLE_PCE_SITE = $(call github,libretro,beetle-pce-fast-libretro,$(LIBRETRO_BEETLE_PCE_VERSION))
 
 
