@@ -3,6 +3,7 @@
 # ZX81
 #
 ################################################################################
+# Version.: Commits on Dec 21, 2017
 LIBRETRO_81_VERSION = 6ae21e0980bb8190fe1fc3cb6c4f00797cc6bf0e
 LIBRETRO_81_SITE = $(call github,libretro,81-libretro,$(LIBRETRO_81_VERSION))
 
