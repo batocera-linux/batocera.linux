@@ -3,7 +3,8 @@
 # METEOR
 #
 ################################################################################
-LIBRETRO_METEOR_VERSION = a0527761b0e3003a209643e2a1e1772577f12b07
+# Version.: Commits on Apr 9, 2018
+LIBRETRO_METEOR_VERSION = f8ab66ce5f68991bf9f926bf1dd5b662abd9d74b
 LIBRETRO_METEOR_SITE = $(call github,libretro,meteor-libretro,$(LIBRETRO_METEOR_VERSION))
 
 
