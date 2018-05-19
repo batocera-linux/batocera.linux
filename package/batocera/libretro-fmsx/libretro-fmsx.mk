@@ -3,7 +3,8 @@
 # FMSX
 #
 ################################################################################
-LIBRETRO_FMSX_VERSION = 3ad7ded589484f881d7902f5592aeeab9e5b1e14
+# Version.: Commits on Apr 6, 2018
+LIBRETRO_FMSX_VERSION = d856a29a4bd324de57cdf26495eee37a16f3418c
 LIBRETRO_FMSX_SITE = $(call github,libretro,fmsx-libretro,$(LIBRETRO_FMSX_VERSION))
 
 define LIBRETRO_FMSX_BUILD_CMDS
