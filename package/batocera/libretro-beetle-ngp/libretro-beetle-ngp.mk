@@ -3,7 +3,8 @@
 # BEETLE_NGP
 #
 ################################################################################
-LIBRETRO_BEETLE_NGP_VERSION = 9e33e1b9c32c98b96010691740c089508afe0167
+# Version.: Commits on Apr 19, 2018
+LIBRETRO_BEETLE_NGP_VERSION = b2b5c2c421df5784791ced965b1e373b9ffd5ab6
 LIBRETRO_BEETLE_NGP_SITE = $(call github,libretro,beetle-ngp-libretro,$(LIBRETRO_BEETLE_NGP_VERSION))
 
 define LIBRETRO_BEETLE_NGP_BUILD_CMDS
