@@ -3,8 +3,9 @@
 # POCKETSNESS
 #
 ################################################################################
-LIBRETRO_POCKETSNES_VERSION = d8084b0e8f906feac45c387db8e7bd00fced2f98
-LIBRETRO_POCKETSNES_SITE = $(call github,libretro,pocketsnes-libretro,$(LIBRETRO_POCKETSNES_VERSION))
+# Version.: Commits on Apr 20, 2018
+LIBRETRO_POCKETSNES_VERSION = 39d8b168453556fe80905c51c8f38fdbade8fd13
+LIBRETRO_POCKETSNES_SITE = $(call github,libretro,snes9x2002,$(LIBRETRO_POCKETSNES_VERSION))
 
 define LIBRETRO_POCKETSNES_BUILD_CMDS
 		CFLAGS="$(TARGET_CFLAGS)" LD="$(TARGET_LD)" \
