@@ -3,6 +3,7 @@
 # FCEUNEXT
 #
 ################################################################################
+# Version.: Commits on Mar 17, 2016
 LIBRETRO_FCEUNEXT_VERSION = ebd46a592c23a8091abd72e74cf0d9f4517769e1
 LIBRETRO_FCEUNEXT_SITE = $(call github,libretro,fceu-next,$(LIBRETRO_FCEUNEXT_VERSION))
 
