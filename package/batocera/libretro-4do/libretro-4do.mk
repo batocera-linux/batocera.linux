@@ -3,7 +3,8 @@
 # 4DO
 #
 ################################################################################
-LIBRETRO_4DO_VERSION = 12eba56e3ddb1cd3c53bf26f62adeca7cc0389af
+# Version.: Commits on May 15, 2018
+LIBRETRO_4DO_VERSION = 75e2cf939a84040a9721324b8c75896d2faaf368
 LIBRETRO_4DO_SITE = $(call github,libretro,4do-libretro,$(LIBRETRO_4DO_VERSION))
 
 ifeq ($(BR2_PACKAGE_RECALBOX_TARGET_RPI3),y)
