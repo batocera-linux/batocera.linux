@@ -3,7 +3,8 @@
 # QUICKNES
 #
 ################################################################################
-LIBRETRO_QUICKNES_VERSION = b4598fdf3fd7518c037db5bdd6bf69cc169a021d
+# Version.: Commits on Apr 24, 2018
+LIBRETRO_QUICKNES_VERSION = 6d50e29d1869ad5b69af013c3441a542e2c2b205
 LIBRETRO_QUICKNES_SITE = $(call github,libretro,quicknes_core,$(LIBRETRO_QUICKNES_VERSION))
 
 define LIBRETRO_QUICKNES_BUILD_CMDS
