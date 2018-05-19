@@ -3,11 +3,9 @@
 # SCUMMVM
 #
 ################################################################################
-#	VERSION.: Commits on Apr 17, 2018
-LIBRETRO_SCUMMVM_VERSION = 8f4300b5ed90d310e0156d3a33e9e1380e405ea2
+#	VERSION.: Commits on May 17, 2018
+LIBRETRO_SCUMMVM_VERSION = 3a9d1f574a92ac4f0310616dc9fee94063a707a8
 LIBRETRO_SCUMMVM_SITE = $(call github,libretro,scummvm,$(LIBRETRO_SCUMMVM_VERSION))
-#CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" \
-#	LD="$(TARGET_LD)" RANLIB="$(TARGET_RANLIB)" AR="$(TARGET_AR) cru"  \
 
 define LIBRETRO_SCUMMVM_BUILD_CMDS
 	CFLAGS="$(TARGET_CFLAGS)" CXXFLAGS="$(TARGET_CXXFLAGS)" LDFLAGS="-shared -Wl,--no-undefined" $(MAKE) \
