@@ -3,8 +3,8 @@
 # XBOXDRV
 #
 ################################################################################
-XBOXDRV_VERSION = 18c5fabf3bdaa06a541caa6126a06f262e1174b2
-XBOXDRV_SITE =  $(call github,Grumbel,xboxdrv,$(XBOXDRV_VERSION))
+XBOXDRV_VERSION = fbbb7d8b3718b76945b22c195b90ea66401dcb24
+XBOXDRV_SITE =  $(call github,xboxdrv,xboxdrv,$(XBOXDRV_VERSION))
 XBOXDRV_DEPENDENCIES = libusb dbus-python host-scons boost
 
 define XBOXDRV_BUILD_CMDS
@@ -24,6 +24,5 @@ define XBOXDRV_HOOK_SCONS
 endef
 
 XBOXDRV_PRE_CONFIGURE_HOOKS += XBOXDRV_HOOK_SCONS
-
 
 $(eval $(generic-package))
