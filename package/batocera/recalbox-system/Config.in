@@ -31,7 +31,7 @@ config BR2_PACKAGE_RECALBOX_SYSTEM
     select BR2_PACKAGE_BLUEZ5_UTILS                      # bluetooth
     select BR2_PACKAGE_BLUEZ5_UTILS_CLIENT               # bluetooth
     select BR2_PACKAGE_BLUEZ5_UTILS_TEST                 # bluetooth
-    select BR2_PACKAGE_BLUEZ5_PLUGINS_SIXAXIS            # bluetooth
+    select BR2_PACKAGE_BLUEZ5_UTILS_PLUGINS_SIXAXIS      # bluetooth
     select BR2_PACKAGE_BLUEZ5_UTILS_DEPRECATED           # bluetooth
     select BR2_PACKAGE_WIRINGPI                          if BR2_PACKAGE_RECALBOX_TARGET_RPI1 || BR2_PACKAGE_RECALBOX_TARGET_RPI2 || BR2_PACKAGE_RECALBOX_TARGET_RPI3 # gpio
     select BR2_PACKAGE_PARTED                            # partition management (for the first boot)
