@@ -3,6 +3,7 @@
 # PCSXREARMED
 #
 ################################################################################
+# Version.: Commits on Apr 26, 2018
 LIBRETRO_PCSX_VERSION = c6e7ce9ef2e39e798dfc0b0fe071064b11b4ca9e
 LIBRETRO_PCSX_SITE = $(call github,libretro,pcsx_rearmed,$(LIBRETRO_PCSX_VERSION))
 

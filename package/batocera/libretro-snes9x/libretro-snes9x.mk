@@ -3,6 +3,7 @@
 # SNES9X
 #
 ################################################################################
+# Version.: Commits on May 7, 2018
 LIBRETRO_SNES9X_VERSION = 4d9f365bb672e691f749beb8a9f8e8388b563b01
 LIBRETRO_SNES9X_SITE = $(call github,libretro,snes9x,$(LIBRETRO_SNES9X_VERSION))
 

@@ -3,6 +3,7 @@
 # DESMUME
 #
 ################################################################################
+# Version.: Commits on Apr 16, 2018
 LIBRETRO_DESMUME_VERSION = 9fb1e8c1f4ccd819f15b29e2114a05e45140fec0
 LIBRETRO_DESMUME_SITE = $(call github,libretro,desmume,$(LIBRETRO_DESMUME_VERSION))
 

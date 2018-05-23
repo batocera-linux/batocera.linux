@@ -3,7 +3,7 @@
 # GENESISPLUSGX
 #
 ################################################################################
-
+# Version.: Commits on Apr 30, 2018
 LIBRETRO_GENESISPLUSGX_VERSION = b2667eb1665d03df0fdb83f33afc3a159bf71f72
 LIBRETRO_GENESISPLUSGX_SITE = $(call github,libretro,Genesis-Plus-GX,$(LIBRETRO_GENESISPLUSGX_VERSION))
 
