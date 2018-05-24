@@ -1,5 +1,5 @@
 diff --git a/shell/linux/Makefile b/shell/linux/Makefile
-index 25cbc8c..68ed7cb 100644
+index ca3cc63..37fdea0 100644
 --- a/shell/linux/Makefile
 +++ b/shell/linux/Makefile
 @@ -7,7 +7,6 @@ USE_ALSA := 1
@@ -10,19 +10,14 @@ index 25cbc8c..68ed7cb 100644
  
  CXX=${CC_PREFIX}g++
  CC=${CC_PREFIX}gcc
-@@ -126,6 +125,15 @@ else ifneq (,$(findstring rpi2,$(platform)))
-     LIBS += -L/opt/vc/lib/  -L../linux-deps/lib -lbcm_host
-     USE_GLES := 1
+@@ -148,7 +147,9 @@ else ifneq (,$(findstring rpi,$(platform)))
+         CFLAGS += -D TARGET_VIDEOCORE
+         CXXFLAGS += -DGLES
+         USE_OMX := 1
+-        USE_DISPMANX := 1
++        #USE_DISPMANX := 1
++        INCS +=  -I../linux-deps/include
++        USE_GLES := 1
+     endif
+     undefine USE_X11
  
-+# Raspberry Pi 3
-+else ifneq (,$(findstring rpi3,$(platform)))
-+    MFLAGS += -marm -march=armv8-a -mtune=cortex-a53 -mfpu=neon -mfloat-abi=hard -funroll-loops
-+    ASFLAGS += -march=armv8-a -mfpu=neon -mfloat-abi=hard
-+    CFLAGS += -D TARGET_BEAGLE -D TARGET_LINUX_ARMELv7 -DARM_HARDFP -fsingle-precision-constant
-+    INCS += -I/opt/vc/include/ -I/opt/vc/include/interface/vmcs_host/linux -I/opt/vc/include/interface/vcos/pthreads -I../linux-deps/include
-+    LIBS += -L/opt/vc/lib/  -L../linux-deps/lib -lbcm_host
-+    USE_GLES := 1
-+
- # BeagleBone Black
- else ifneq (,$(findstring beagle,$(platform)))
-     CC_PREFIX ?= arm-none-linux-gnueabi-
