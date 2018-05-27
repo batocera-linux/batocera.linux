@@ -158,6 +158,7 @@ nds:
   emulators:
     libretro:
       desmume: { require: [BR2_PACKAGE_LIBRETRO_DESMUME] }
+      desmume2015: { require: [BR2_PACKAGE_LIBRETRO_DESMUME2015] }
 
 fds:
   name:       Family Computer Disk System
