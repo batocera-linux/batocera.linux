@@ -1,0 +1,12 @@
+config BR2_PACKAGE_LIBRETRO_THEODORE
+    bool "libretro-theodore"
+	depends on BR2_PACKAGE_RETROARCH
+	depends on BR2_INSTALL_LIBSTDCPP
+	select BR2_PACKAGE_RECALBOX_ROMFS_THOMSON
+    help
+    A libretro Thomson TO8 emulator core.
+
+	  https://github.com/Zlika/theodore
+
+comment "LIBRETRO_THEODORE needs a toolchain w/ C++"
+	depends on !BR2_INSTALL_LIBSTDCPP
