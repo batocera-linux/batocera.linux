@@ -934,7 +934,14 @@ x68000:
   emulators:
     libretro:
       px68k: { require: [BR2_PACKAGE_LIBRETRO_PX68K] }
-
+      
+tO8:
+  name:       Thomson TO8
+  extensions: [fd, sap, k7, m7, rom, zip]
+  emulators:
+    libretro:
+      theodore: { require: [BR2_PACKAGE_LIBRETRO_THEODORE] }
+      
 imageviewer:
   name:       Screenshots
   extensions: [jpg, jpeg, png, bmp, psd, tga, gif, hdr, pic, ppm, pgm]
