@@ -209,20 +209,18 @@ index a28e83f..605a421 100644
  #undef SDL_VIDEO_DRIVER_X11_DYNAMIC_XEXT
  #undef SDL_VIDEO_DRIVER_X11_DYNAMIC_XCURSOR
 diff --git a/src/video/SDL_egl.c b/src/video/SDL_egl.c
-index 9ccc2c3..9e726ea 100644
+index 0daf98a..5295c1c 100644
 --- a/src/video/SDL_egl.c
 +++ b/src/video/SDL_egl.c
-@@ -51,8 +51,8 @@
- #define DEFAULT_OGL_ES_PVR "/opt/vc/lib/libGLES_CM.so"
- #define DEFAULT_OGL_ES "/opt/vc/lib/libGLESv1_CM.so"
+@@ -51,7 +51,7 @@
+ #define DEFAULT_OGL_ES_PVR ( vc4 ? "libGLES_CM.so.1" : "libbrcmGLESv2.so" )
+ #define DEFAULT_OGL_ES ( vc4 ? "libGLESv1_CM.so.1" : "libbrcmGLESv2.so" )
  
 -#elif SDL_VIDEO_DRIVER_ANDROID || SDL_VIDEO_DRIVER_VIVANTE
--/* Android */
 +#elif SDL_VIDEO_DRIVER_ANDROID || SDL_VIDEO_DRIVER_VIVANTE || SDL_VIDEO_DRIVER_MALI
-+/* Android and Mali-fbdev */
+ /* Android */
  #define DEFAULT_EGL "libEGL.so"
  #define DEFAULT_OGL_ES2 "libGLESv2.so"
- #define DEFAULT_OGL_ES_PVR "libGLES_CM.so"
 diff --git a/src/video/SDL_sysvideo.h b/src/video/SDL_sysvideo.h
 index 811fe19..991245e 100644
 --- a/src/video/SDL_sysvideo.h
@@ -236,19 +234,19 @@ index 811fe19..991245e 100644
  extern SDL_VideoDevice *SDL_GetVideoDevice(void);
  extern int SDL_AddBasicVideoDisplay(const SDL_DisplayMode * desktop_mode);
 diff --git a/src/video/SDL_video.c b/src/video/SDL_video.c
-index 60b2147..384f8ee 100644
+index 8cf195d..7ade62a 100644
 --- a/src/video/SDL_video.c
 +++ b/src/video/SDL_video.c
-@@ -99,6 +99,9 @@ static VideoBootStrap *bootstrap[] = {
- #endif
- #if SDL_VIDEO_DRIVER_RPI
-     &RPI_bootstrap,
-+#endif
-+#if SDL_VIDEO_DRIVER_MALI
-+    &MALI_bootstrap,
- #endif 
+@@ -100,6 +100,9 @@ static VideoBootStrap *bootstrap[] = {
  #if SDL_VIDEO_DRIVER_KMSDRM
      &KMSDRM_bootstrap,
+ #endif
++#if SDL_VIDEO_DRIVER_MALI
++    &MALI_bootstrap,
++#endif
+ #if SDL_VIDEO_DRIVER_RPI
+     &RPI_bootstrap,
+ #endif
 diff --git a/src/video/mali-fbdev/SDL_maliopengles.c b/src/video/mali-fbdev/SDL_maliopengles.c
 index e69de29..0814ba3 100644
 --- a/src/video/mali-fbdev/SDL_maliopengles.c
