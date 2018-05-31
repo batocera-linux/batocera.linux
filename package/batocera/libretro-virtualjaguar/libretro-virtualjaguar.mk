@@ -3,6 +3,7 @@
 # VIRTUALJAGUAR
 #
 ################################################################################
+# Version.: Commits on May 2, 2018
 LIBRETRO_VIRTUALJAGUAR_VERSION = 2ce1ec0a5f3e8d357795a3b5cfeffc8d91cdd52a
 LIBRETRO_VIRTUALJAGUAR_SITE = $(call github,libretro,virtualjaguar-libretro,$(LIBRETRO_VIRTUALJAGUAR_VERSION))
 
