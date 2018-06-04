@@ -133,7 +133,7 @@ endif
 # Hardlinks between binaries in different directories cause a problem
 # with rpath fixup, so we de-hardlink those binaries, and replace them
 # with copies instead.
-BINUTILS_TOOLS = ar as ld ld.bfd nm objcopy objdump ranlib readelf strip
+BINUTILS_TOOLS = ar as ld ld.bfd nm objcopy objdump ranlib readelf strip strings
 define HOST_BINUTILS_FIXUP_HARDLINKS
 	$(foreach tool,$(BINUTILS_TOOLS),\
 		rm -f $(HOST_DIR)/$(GNU_TARGET_NAME)/bin/$(tool) && \
