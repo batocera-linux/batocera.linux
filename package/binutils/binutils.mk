@@ -147,8 +147,9 @@ BINUTILSUSR_TOOLS = strings
 define HOST_BINUTILSUSR_FIXUP_HARDLINKS
 	$(foreach tool,$(BINUTILSUSR_TOOLS),\
 		rm -f $(HOST_DIR)/$(GNU_TARGET_NAME)/usr/bin/$(tool) && \
+		mkdir -p $(HOST_DIR)/$(GNU_TARGET_NAME)/sysroot/usr/bin/ && \
 		cp -a $(HOST_DIR)/bin/$(GNU_TARGET_NAME)-$(tool) \
-			$(HOST_DIR)/usr/bin/$(tool)
+			$(HOST_DIR)/$(GNU_TARGET_NAME)/sysroot/usr/bin/$(tool)
 	)
 endef
 HOST_BINUTILS_POST_INSTALL_HOOKS += HOST_BINUTILSUSR_FIXUP_HARDLINKS
