@@ -1,13 +1,13 @@
 config BR2_PACKAGE_LINAPPLE_PIE
 	bool "LinApple-Pie"
 	depends on BR2_INSTALL_LIBSTDCPP
-	depends on BR2_PACKAGE_SDL
-	depends on BR2_PACKAGE_SDL_IMAGE
-	depends on BR2_PACKAGE_SDL_IMAGE_BMP
-	depends on BR2_PACKAGE_SDL_IMAGE_XPM
-	depends on BR2_PACKAGE_CURL
-	depends on BR2_PACKAGE_ZLIB
-	depends on BR2_PACKAGE_LIBZIP
+	select BR2_PACKAGE_SDL
+	select BR2_PACKAGE_SDL_IMAGE
+	select BR2_PACKAGE_SDL_IMAGE_BMP
+	select BR2_PACKAGE_SDL_IMAGE_XPM
+	select BR2_PACKAGE_LIBCURL
+	select BR2_PACKAGE_ZLIB
+	select BR2_PACKAGE_LIBZIP
 	help
 	  Linapple on Raspberry Pi
 	  Great thanks to Mark Ormond for fine tuning LinApple and 
