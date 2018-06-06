@@ -120,7 +120,6 @@ n64:
   emulators:
     mupen64plus:
       gliden64:   { require: [BR2_PACKAGE_MUPEN64PLUS_GLIDEN64]         }
-      n64:        { require: [BR2_PACKAGE_MUPEN64PLUS_CORE]             }
       rice:       { require: [BR2_PACKAGE_MUPEN64PLUS_GLES2RICE]        }
       glide64mk2: { require: [BR2_PACKAGE_MUPEN64PLUS_VIDEO_GLIDE64MK2] }
     libretro:
