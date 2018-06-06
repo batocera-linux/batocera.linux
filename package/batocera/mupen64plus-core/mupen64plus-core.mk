@@ -3,8 +3,8 @@
 # mupen64plus core
 #
 ################################################################################
-
-MUPEN64PLUS_CORE_VERSION = e0fa7db91b9df4157a81e4e5070a2e409dbc4bc7
+# Version.: Commits on Jun 3, 2018
+MUPEN64PLUS_CORE_VERSION = 77a2f8813251b5257382ec477c3f0ef3ea49c37f
 MUPEN64PLUS_CORE_SITE = $(call github,mupen64plus,mupen64plus-core,$(MUPEN64PLUS_CORE_VERSION))
 MUPEN64PLUS_CORE_LICENSE = MIT
 MUPEN64PLUS_CORE_DEPENDENCIES = sdl2 alsa-lib freetype dejavu
@@ -53,7 +53,7 @@ define MUPEN64PLUS_CORE_BUILD_CMDS
 	PREFIX="$(STAGING_DIR)/usr" \
 	PKG_CONFIG="$(HOST_DIR)/usr/bin/pkg-config" \
 	HOST_CPU="$(MUPEN64PLUS_HOST_CPU)" \
-	-C $(@D)/projects/unix all $(MUPEN64PLUS_PARAMS) OPTFLAGS="$(TARGET_CXXFLAGS)" 
+	-C $(@D)/projects/unix all $(MUPEN64PLUS_PARAMS) OPTFLAGS="$(TARGET_CXXFLAGS)"
 endef
 
 define MUPEN64PLUS_CORE_INSTALL_STAGING_CMDS
