@@ -16,19 +16,19 @@ LIBRETRO_REICAST_PLATFORM = $(LIBRETRO_PLATFORM)
 # an other proper way may be to redo the Makefile to do "if rpi elif unix ..." (from specific to general)
 # the Makefile imposes that the platform has gles (or force FORCE_GLES is set) to not link with lGL
 
-ifeq ($(BR2_PACKAGE_RECALBOX_TARGET_RPI1),y)
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI1),y)
 	LIBRETRO_REICAST_PLATFORM = rpi-gles
 endif
 
-ifeq ($(BR2_PACKAGE_RECALBOX_TARGET_RPI2),y)
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI2),y)
 	LIBRETRO_REICAST_PLATFORM = rpi2-gles
 endif
 
-ifeq ($(BR2_PACKAGE_RECALBOX_TARGET_RPI3),y)
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI3),y)
 	LIBRETRO_REICAST_PLATFORM = rpi3-gles
 endif
 
-ifeq ($(BR2_PACKAGE_RECALBOX_TARGET_XU4)$(BR2_PACKAGE_RECALBOX_TARGET_LEGACYXU4),y)
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_XU4)$(BR2_PACKAGE_BATOCERA_TARGET_LEGACYXU4),y)
 	LIBRETRO_REICAST_PLATFORM = odroid-ODROID-XU3-gles
 endif
 

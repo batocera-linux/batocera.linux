@@ -7,7 +7,7 @@
 # BINARIES_DIR = images dir
 # TARGET_DIR = target dir
 
-RECALBOX_TARGET=$(grep -E "^BR2_PACKAGE_RECALBOX_TARGET_[A-Z_0-9]*=y$" "${BR2_CONFIG}" | sed -e s+'^BR2_PACKAGE_RECALBOX_TARGET_\([A-Z_0-9]*\)=y$'+'\1'+)
+BATOCERA_TARGET=$(grep -E "^BR2_PACKAGE_BATOCERA_TARGET_[A-Z_0-9]*=y$" "${BR2_CONFIG}" | sed -e s+'^BR2_PACKAGE_BATOCERA_TARGET_\([A-Z_0-9]*\)=y$'+'\1'+)
 
 sed -i "s|root:x:0:0:root:/root:/bin/sh|root:x:0:0:root:/recalbox/share/system:/bin/sh|g" "${TARGET_DIR}/etc/passwd" || exit 1
 rm -rf "${TARGET_DIR}/etc/dropbear" || exit 1
@@ -90,7 +90,7 @@ fi
 
 # fix pixbuf : Unable to load image-loading module: /lib/gdk-pixbuf-2.0/2.10.0/loaders/libpixbufloader-png.so
 # this fix is to be removed once fixed. i've not found the exact source in buildroot. it prevents to display icons in filemanager and some others
-if test "${RECALBOX_TARGET}" = "X86" -o "${RECALBOX_TARGET}" = X86_64
+if test "${BATOCERA_TARGET}" = "X86" -o "${BATOCERA_TARGET}" = X86_64
 then
     ln -sf "/usr/lib/gdk-pixbuf-2.0" "${TARGET_DIR}/lib/gdk-pixbuf-2.0" || exit 1
 fi

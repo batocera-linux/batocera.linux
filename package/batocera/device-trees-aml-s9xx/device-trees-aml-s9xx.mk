@@ -20,7 +20,7 @@ endif
 
 DTS_PATH = $(LINUX_DIR)/arch/$(DEVICE_TREES_AML_S9XX_ARCH)/boot/dts/amlogic/
 
-ifeq ($(BR2_PACKAGE_RECALBOX_TARGET_S912),y)
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_S912),y)
 	ifeq ($(BR2_PACKAGE_DEVICE_TREES_AML_S9XX_GXM_KVIM2),y)
 		DEVICE_TREES_AML_S9XX_DTS += $(foreach f,$(notdir $(wildcard $(@D)/gxm_kvim2*.dts)),$f)
 	endif
@@ -30,7 +30,7 @@ ifeq ($(BR2_PACKAGE_RECALBOX_TARGET_S912),y)
 	endif
 endif
 
-ifeq ($(BR2_PACKAGE_RECALBOX_TARGET_S905),y)
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_S905),y)
 	ifeq ($(BR2_PACKAGE_DEVICE_TREES_AML_S9XX_GXBB_P200),y)
 		DEVICE_TREES_AML_S9XX_DTS += $(foreach f,$(notdir $(wildcard $(@D)/gxbb_p200*.dts)),$f)
 	endif
