@@ -72,7 +72,7 @@ c2_fusing() {
 }
 
 RECALBOX_BINARIES_DIR="${BINARIES_DIR}/recalbox"
-RECALBOX_TARGET_DIR="${TARGET_DIR}/recalbox"
+BATOCERA_TARGET_DIR="${TARGET_DIR}/recalbox"
 
 if [ -d "${RECALBOX_BINARIES_DIR}" ]; then
     rm -rf "${RECALBOX_BINARIES_DIR}"
@@ -81,11 +81,11 @@ fi
 mkdir -p "${RECALBOX_BINARIES_DIR}"
 
 # XU4, RPI0, RPI1, RPI2 or RPI3
-RECALBOX_TARGET=$(grep -E "^BR2_PACKAGE_RECALBOX_TARGET_[A-Z_0-9]*=y$" "${BR2_CONFIG}" | sed -e s+'^BR2_PACKAGE_RECALBOX_TARGET_\([A-Z_0-9]*\)=y$'+'\1'+)
+BATOCERA_TARGET=$(grep -E "^BR2_PACKAGE_BATOCERA_TARGET_[A-Z_0-9]*=y$" "${BR2_CONFIG}" | sed -e s+'^BR2_PACKAGE_BATOCERA_TARGET_\([A-Z_0-9]*\)=y$'+'\1'+)
 
 echo -e "\n----- Generating images/recalbox files -----\n"
 
-case "${RECALBOX_TARGET}" in
+case "${BATOCERA_TARGET}" in
     RPI0|RPI1|RPI2|RPI3)
 	# boot.tar.xz
 	cp -f "${BINARIES_DIR}/"*.dtb "${BINARIES_DIR}/rpi-firmware"
@@ -335,7 +335,7 @@ case "${RECALBOX_TARGET}" in
 	sync || exit 1
 	;;
     *)
-	echo "Outch. Unknown target ${RECALBOX_TARGET} (see copy-recalbox-archives.sh)" >&2
+	echo "Outch. Unknown target ${BATOCERA_TARGET} (see copy-recalbox-archives.sh)" >&2
 	bash
 	exit 1
 esac
@@ -344,7 +344,7 @@ esac
 
 # renaming
 SUFFIXVERSION=$(cat "${TARGET_DIR}/recalbox/recalbox.updateversion")
-SUFFIXTARGET=$(echo "${RECALBOX_TARGET}" | tr A-Z a-z)
+SUFFIXTARGET=$(echo "${BATOCERA_TARGET}" | tr A-Z a-z)
 SUFFIXDATE=$(date +%Y%m%d)
 SUFFIXIMG="-${SUFFIXVERSION}-${SUFFIXTARGET}-${SUFFIXDATE}"
 mv "${RECALBOX_BINARIES_DIR}/batocera.img" "${RECALBOX_BINARIES_DIR}/batocera${SUFFIXIMG}.img" || exit 1
