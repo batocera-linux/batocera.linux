@@ -10,11 +10,11 @@ BATOCERA_ES_SYSTEM_VERSION=1.0
 
 define BATOCERA_ES_SYSTEM_BUILD_CMDS
 	$(HOST_DIR)/bin/python \
-		package/batocera/batocera-es-system/batocera-es-system.py \
-		package/batocera/batocera-es-system/es_systems.yml        \
+		package/batocera/batocera-linux/batocera-es-system/batocera-es-system.py \
+		package/batocera/batocera-linux/batocera-es-system/es_systems.yml        \
 		.config \
 		$(@D)/es_systems.cfg \
-		package/batocera/batocera-es-system/roms \
+		package/batocera/batocera-linux/batocera-es-system/roms \
 		$(@D)/roms
 endef
 
