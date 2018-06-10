@@ -59,7 +59,8 @@ config BR2_PACKAGE_UTIL_LINUX_BINARIES
 	  ldattach, look, lsblk, lscpu, lsipc, lslocks, lsns, mcookie,
 	  mkfs, mkswap, namei, prlimit, readprofile, renice, rev,
 	  rtcwake, script, scriptreplay, setarch, setsid, sfdisk,
-	  swaplabel, swapoff, swapon, uuidgen, whereis, wipefs
+	  swaplabel, swapoff, swapon, uuidgen, uuidparse, whereis,
+	  wipefs
 
 	  The setarch utility also installs architecture-specific
 	  symlinks like linux32, linux64, uname26, i386 and x86_64.
@@ -164,25 +165,25 @@ config BR2_PACKAGE_UTIL_LINUX_LINE
 	help
 	  Read one line
 
-config BR2_PACKAGE_UTIL_LINUX_LOGIN_UTILS
-	bool "login utilities"
-	depends on BR2_USE_MMU # fork() (login, runuser, su, sulogin)
-	depends on (BR2_ENABLE_LOCALE && BR2_USE_WCHAR) # linux-pam
-	depends on !BR2_STATIC_LIBS
-	depends on !BR2_TOOLCHAIN_USES_MUSL # linux-pam
-	depends on BR2_USE_MMU # linux-pam
-	select BR2_PACKAGE_LINUX_PAM
-	help
-	  Login utilities (last, login, runuser, su, sulogin)
-
-comment "login utilities needs a uClibc or glibc toolchain w/ wchar, locale, dynamic library"
-	depends on !(BR2_ENABLE_LOCALE && BR2_USE_WCHAR) \
-		|| BR2_STATIC_LIBS || BR2_TOOLCHAIN_USES_MUSL
-
 config BR2_PACKAGE_UTIL_LINUX_LOGGER
 	bool "logger"
 	help
 	  Enter messages into the system log
+
+config BR2_PACKAGE_UTIL_LINUX_LOGIN
+	bool "login"
+	depends on BR2_ENABLE_LOCALE # linux-pam
+	depends on BR2_USE_WCHAR # linux-pam
+	depends on !BR2_STATIC_LIBS # linux-pam
+	depends on !BR2_TOOLCHAIN_USES_MUSL # linux-pam
+	depends on BR2_USE_MMU # fork(), linux-pam
+	select BR2_PACKAGE_LINUX_PAM
+	help
+	  Begin a session on the system
+
+comment "login needs a uClibc or glibc toolchain w/ wchar, locale, dynamic library"
+	depends on !(BR2_ENABLE_LOCALE && BR2_USE_WCHAR) \
+		|| BR2_STATIC_LIBS || BR2_TOOLCHAIN_USES_MUSL
 
 config BR2_PACKAGE_UTIL_LINUX_LOSETUP
 	bool "losetup"
@@ -291,10 +292,30 @@ config BR2_PACKAGE_UTIL_LINUX_RENAME
 	help
 	  Rename files
 
-config BR2_PACKAGE_UTIL_LINUX_RESET
-	bool "reset"
+config BR2_PACKAGE_UTIL_LINUX_RFKILL
+	bool "rfkill"
+	depends on BR2_USE_MMU # libsmartcols
+	select BR2_PACKAGE_UTIL_LINUX_LIBSMARTCOLS
 	help
-	  Reset the terminal
+	  Tool for enabling and disabling wireless devices. This new
+	  implementation is based upon, and backward compatible with,
+	  the original rfkill from Johannes Berg and Marcel Holtmann.
+
+config BR2_PACKAGE_UTIL_LINUX_RUNUSER
+	bool "runuser"
+	depends on (BR2_ENABLE_LOCALE && BR2_USE_WCHAR) # linux-pam
+	depends on !BR2_STATIC_LIBS
+	depends on !BR2_TOOLCHAIN_USES_MUSL # linux-pam
+	depends on BR2_USE_MMU # fork(), linux-pam
+	select BR2_PACKAGE_LINUX_PAM
+	help
+	  Run a command with substitute user and group ID (does not need
+	  to ask for a password, because it may be executed by the root
+	  user only)
+
+comment "runuser needs a uClibc or glibc toolchain w/ wchar, locale, dynamic library"
+	depends on !(BR2_ENABLE_LOCALE && BR2_USE_WCHAR) \
+		|| BR2_STATIC_LIBS || BR2_TOOLCHAIN_USES_MUSL
 
 config BR2_PACKAGE_UTIL_LINUX_SCHEDUTILS
 	bool "scheduling utilities"
@@ -312,6 +333,26 @@ config BR2_PACKAGE_UTIL_LINUX_SETTERM
 	select BR2_PACKAGE_NCURSES
 	help
 	  Set terminal attributes
+
+config BR2_PACKAGE_UTIL_LINUX_SU
+	bool "su"
+	depends on (BR2_ENABLE_LOCALE && BR2_USE_WCHAR) # linux-pam
+	depends on !BR2_STATIC_LIBS
+	depends on !BR2_TOOLCHAIN_USES_MUSL # linux-pam
+	depends on BR2_USE_MMU # fork(), linux-pam
+	select BR2_PACKAGE_LINUX_PAM
+	help
+	  Run a command with substitute user and group ID
+
+comment "su needs a uClibc or glibc toolchain w/ wchar, locale, dynamic library"
+	depends on !(BR2_ENABLE_LOCALE && BR2_USE_WCHAR) \
+		|| BR2_STATIC_LIBS || BR2_TOOLCHAIN_USES_MUSL
+
+config BR2_PACKAGE_UTIL_LINUX_SULOGIN
+	bool "sulogin"
+	depends on BR2_USE_MMU # fork()
+	help
+	  Single-user login
 
 config BR2_PACKAGE_UTIL_LINUX_SWITCH_ROOT
 	bool "switch_root"

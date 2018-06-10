@@ -12,6 +12,7 @@ case "$1" in
         if [ "$enabled" == "1" ];then
         	settings_version="`$systemsetting -command load -key controllers.ps3.driver`"
         	if [ "$settings_version" != "bluez" ]; then BLUETOOTHD_ARGS="--noplugin=sixaxis"; else  BLUETOOTHD_ARGS="--noplugin=sixaxispair"; fi
+		rfkill unblock bluetooth # soft unblock bluetooth
 		start-stop-daemon -S -q -m -p /var/run/bluetoothd.pid  --exec /usr/libexec/bluetooth/bluetoothd -- $BLUETOOTHD_ARGS &	
 		( /recalbox/scripts/bluetoothcontrollers.sh && \
                   start-stop-daemon -S -q -m -p /var/run/btDaemon.pid  --exec /recalbox/scripts/bluetooth/btDaemon > /dev/null 2>&1 ) &
