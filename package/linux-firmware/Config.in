@@ -19,6 +19,7 @@ endmenu # Audio
 
 menu "Video firmware"
 
+# batocera
 config BR2_PACKAGE_LINUX_FIRMWARE_AMDGPU
 	bool "AMD GPU video card firmware"
 	help
@@ -34,6 +35,7 @@ config BR2_PACKAGE_LINUX_FIRMWARE_RADEON
 	help
 	  Firmware files for AMD Radeon video cards.
 
+# batocera
 config BR2_PACKAGE_LINUX_FIRMWARE_NVIDIA
 	bool "Nvidia video card firmware"
 	help
@@ -241,11 +243,11 @@ config BR2_PACKAGE_LINUX_FIRMWARE_IWLWIFI_8265
 	  Firmware files for the Intel Wifi 8265 devices supported by
 	  the iwlwifi kernel driver.
 
-config BR2_PACKAGE_LINUX_FIRMWARE_IWLWIFI_9XXX
-	bool "Intel iwlwifi 9xxx"
+# batocera
+config BR2_PACKAGE_LINUX_FIRMWARE_IWLWIFI_ALL
+	bool "all iwlwifi"
 	help
-	  Firmware files for the Intel Wifi 9xxx devices supported by
-	  the iwlwifi kernel driver.
+	  Firmware files iwlwifi.
 
 config BR2_PACKAGE_LINUX_FIRMWARE_LIBERTAS_SD8686_V8
 	bool "Libertas SD 8686 v8"
@@ -347,6 +349,7 @@ config BR2_PACKAGE_LINUX_FIRMWARE_REDPINE_RS9113
 	help
 	  Firmware files for WLAN and Bluetooth modules rs9113
 
+# batocera
 config BR2_PACKAGE_LINUX_FIRMWARE_S5PMFCV8
 	bool "s5p-mfc-v8.fw"
 	help
