@@ -155,6 +155,8 @@ EOF
 # because some share mounts may depend on the wifi
 # because wifi password are on the share
 rb_wifi_configure_all() {
+    rfkill unblock wifi
+
     rb_wifi_configure 1&  # 0.6
     rb_wifi_configure 2&  # 0.6
     rb_wifi_configure 3&  # 0.6
