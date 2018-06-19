@@ -69,6 +69,7 @@ endif
 else # !BR2_TARGET_ENABLE_ROOT_LOGIN
 SKELETON_INIT_COMMON_ROOT_PASSWORD = "*"
 endif
+# batocera
 #define SKELETON_INIT_COMMON_SET_ROOT_PASSWD
 #	$(SED) s,^root:[^:]*:,root:$(SKELETON_INIT_COMMON_ROOT_PASSWORD):, $(TARGET_DIR)/etc/shadow
 #endef

@@ -29,6 +29,7 @@ LINUX_FIRMWARE_DIRS += radeon
 LINUX_FIRMWARE_ALL_LICENSE_FILES += LICENSE.radeon
 endif
 
+# batocera
 ifeq ($(BR2_PACKAGE_LINUX_FIRMWARE_NVIDIA),y)
 LINUX_FIRMWARE_DIRS += nvidia
 LINUX_FIRMWARE_ALL_LICENSE_FILES += LICENSE.nvidia
@@ -422,6 +423,7 @@ LINUX_FIRMWARE_FILES += iwlwifi-8265-*.ucode
 LINUX_FIRMWARE_ALL_LICENSE_FILES += LICENCE.iwlwifi_firmware
 endif
 
+# batocera
 ifeq ($(BR2_PACKAGE_LINUX_FIRMWARE_IWLWIFI_ALL),y)
 LINUX_FIRMWARE_FILES += iwlwifi-*.ucode
 LINUX_FIRMWARE_ALL_LICENSE_FILES += LICENCE.iwlwifi_firmware
@@ -536,6 +538,7 @@ LINUX_FIRMWARE_FILES += rsi/rs9113_wlan_qspi.rps
 # which is installed unconditionally
 endif
 
+# batocera
 ifeq ($(BR2_PACKAGE_LINUX_FIRMWARE_S5PMFCV8),y)
 LINUX_FIRMWARE_FILES += s5p-mfc-v8.fw
 endif

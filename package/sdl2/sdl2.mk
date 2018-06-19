@@ -23,6 +23,7 @@ SDL2_CONF_OPTS += \
 # We must enable static build to get compilation successful.
 SDL2_CONF_OPTS += --enable-static
 
+# batocera
 # sdl2 set the rpi video output from the host name
 ifeq ($(BR2_PACKAGE_RPI_USERLAND),y)
 SDL2_CONF_OPTS += --host=arm-raspberry-linux-gnueabihf

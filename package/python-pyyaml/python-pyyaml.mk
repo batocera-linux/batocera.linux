@@ -11,7 +11,11 @@ PYTHON_PYYAML_SETUP_TYPE = distutils
 PYTHON_PYYAML_LICENSE = MIT
 PYTHON_PYYAML_LICENSE_FILES = LICENSE
 PYTHON_PYYAML_DEPENDENCIES = libyaml
+
+# batocera
 HOST_PYTHON_PYTYAML_DEPENDENCIES = host-libyaml
 
 $(eval $(python-package))
+
+# batocera
 $(eval $(host-python-package))

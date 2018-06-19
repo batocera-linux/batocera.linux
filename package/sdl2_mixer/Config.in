@@ -1,6 +1,7 @@
 config BR2_PACKAGE_SDL2_MIXER
 	bool "sdl2_mixer"
 	depends on BR2_PACKAGE_SDL2
+	# batocera - required for mp3
 	select BR2_PACKAGE_LIBMAD
 	help
 	  SDL_mixer is a sample multi-channel audio mixer library.  It

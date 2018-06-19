@@ -9,6 +9,7 @@ test -r /etc/default/dropbear && . /etc/default/dropbear
 systemsetting="python /usr/lib/python2.7/site-packages/configgen/settings/recalboxSettings.pyc"
 
 start() {
+        # batocera
         enabled="`$systemsetting  -command load -key system.ssh.enabled`"
         if [ "$enabled" == "0" ];then
           echo "SSH services: disabled"

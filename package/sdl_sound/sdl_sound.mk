@@ -10,6 +10,7 @@ SDL_SOUND_SITE = http://icculus.org/SDL_sound/downloads
 SDL_SOUND_LICENSE = LGPL-2.1+
 SDL_SOUND_LICENSE_FILES = COPYING
 SDL_SOUND_INSTALL_STAGING = YES
+# batocera
 SDL_SOUND_DEPENDENCIES = sdl2
 
 ifneq ($(BR2_ENABLE_LOCALE),y)
@@ -64,12 +65,12 @@ else
 SDL_SOUND_CONF_OPTS += --disable-mmx
 endif
 
+# batocera
 define SDL_SOUND_PATCH_CONFIGURE
 	(cd $(@D); \
 	sed -ie 's/sdl-config/sdl2-config/g' configure \
 	)
 endef
-
 SDL_SOUND_PRE_CONFIGURE_HOOKS += SDL_SOUND_PATCH_CONFIGURE
 
 define SDL_SOUND_REMOVE_PLAYSOUND

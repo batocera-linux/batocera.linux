@@ -33,6 +33,7 @@ define EIGEN_INSTALL_STAGING_CMDS
 	$(RM) -r $(EIGEN_DEST_DIR)
 	mkdir -p $(EIGEN_DEST_DIR)
 	cp -a $(@D)/Eigen $(EIGEN_DEST_DIR)
+        # batocera
         cp $(@D)/signature_of_eigen3_matrix_library $(EIGEN_DEST_DIR)
 	$(EIGEN_INSTALL_UNSUPPORTED_MODULES_CMDS)
 	$(INSTALL) -D -m 0644 $(@D)/eigen3.pc \

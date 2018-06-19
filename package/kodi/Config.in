@@ -1,7 +1,8 @@
-config BR2_PACKAGE_KODI_ARCH_SUPPORTS
+fconfig BR2_PACKAGE_KODI_ARCH_SUPPORTS
 	bool
 	default y if BR2_PACKAGE_FFMPEG_ARCH_SUPPORTS
 	# i386: needs sse (see upstream PR 10351)
+	# batocera
 	#depends on !(BR2_i386 && !BR2_X86_CPU_HAS_SSE)
 	depends on BR2_USE_MMU # libcdio, and others
 
@@ -95,6 +96,7 @@ if BR2_PACKAGE_KODI
 
 source "package/kodi-platform/Config.in"
 
+# batocera
 config BR2_PACKAGE_KODI_GBM
        bool "gbm"
        depends on BR2_PACKAGE_MESA3D
