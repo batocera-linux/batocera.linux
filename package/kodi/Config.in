@@ -1,4 +1,4 @@
-fconfig BR2_PACKAGE_KODI_ARCH_SUPPORTS
+config BR2_PACKAGE_KODI_ARCH_SUPPORTS
 	bool
 	default y if BR2_PACKAGE_FFMPEG_ARCH_SUPPORTS
 	# i386: needs sse (see upstream PR 10351)
