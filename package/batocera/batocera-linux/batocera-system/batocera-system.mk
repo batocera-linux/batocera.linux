@@ -52,10 +52,10 @@ define BATOCERA_SYSTEM_INSTALL_TARGET_CMDS
 	mkdir -p $(TARGET_DIR)/recalbox/
 	echo -n "$(BATOCERA_SYSTEM_VERSION)" > $(TARGET_DIR)/recalbox/recalbox.arch
 	mkdir -p $(TARGET_DIR)/recalbox/share_init/system
-	cp package/batocera/batocera-system/$(BATOCERA_SYSTEM_BATOCERA_CONF)/recalbox.conf $(TARGET_DIR)/recalbox/share_init/system
-	cp package/batocera/batocera-system/$(BATOCERA_SYSTEM_BATOCERA_CONF)/recalbox.conf $(TARGET_DIR)/recalbox/share_init/system/recalbox.conf.template
+	cp package/batocera/batocera-linux/batocera-system/$(BATOCERA_SYSTEM_BATOCERA_CONF)/recalbox.conf $(TARGET_DIR)/recalbox/share_init/system
+	cp package/batocera/batocera-linux/batocera-system/$(BATOCERA_SYSTEM_BATOCERA_CONF)/recalbox.conf $(TARGET_DIR)/recalbox/share_init/system/recalbox.conf.template
 	# recalbox-boot.conf
-        $(INSTALL) -D -m 0644 package/batocera/batocera-system/recalbox-boot.conf $(BINARIES_DIR)/$(BATOCERA_SYSTEM_SUBDIR)/recalbox-boot.conf
+        $(INSTALL) -D -m 0644 package/batocera/batocera-linux/batocera-system/recalbox-boot.conf $(BINARIES_DIR)/$(BATOCERA_SYSTEM_SUBDIR)/recalbox-boot.conf
 endef
 
 $(eval $(generic-package))
