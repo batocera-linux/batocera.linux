@@ -36,6 +36,8 @@ endef
 define QTSIXA_INSTALL_TARGET_CMDS
 	$(INSTALL) -D $(@D)/utils/bins/sixpair \
 		$(TARGET_DIR)/usr/bin/sixpair
+	$(INSTALL) -D $(@D)/utils/bins/sixpair-kbd \
+		$(TARGET_DIR)/usr/bin/sixpair-kbd
 	$(MAKE) INSTALLDIR="official" BINDIR="official" DESTDIR=$(TARGET_DIR) -C $(@D)/sixad install
 endef
 
