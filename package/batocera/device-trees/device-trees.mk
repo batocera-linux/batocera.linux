@@ -1,0 +1,1 @@
+include $(sort $(wildcard package/batocera/device-trees/*/*.mk))
