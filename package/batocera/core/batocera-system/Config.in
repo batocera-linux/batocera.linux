@@ -1,5 +1,5 @@
 config BR2_PACKAGE_BATOCERA_SYSTEM
-    bool "batocera.linux System"
+    bool "batocera.linux minimal"
 
     # minimal system required packages
     select BR2_PACKAGE_RECALBOX_INITRAMFS                # initramfs to boot the system
@@ -104,13 +104,13 @@ config BR2_PACKAGE_BATOCERA_TARGET_X86_64
 endchoice
 
 config BR2_PACKAGE_BATOCERA_EXTRAS
-       bool "Tools to extends the batocera system (but not required)"
+       bool "batocera.linux tools packages selection"
        select BR2_PACKAGE_VIRTUALGAMEPADS # web virtual gamepads
        help
         Tools to extends the batocera system (but not required)
 
 config BR2_PACKAGE_BATOCERA_TOOLS
-       bool "System tools"
+       bool "batocera.linux system tools packages selection"
        select BR2_PACKAGE_JSTEST2 # joysticks tester
        select BR2_PACKAGE_EVTEST  # joysticks tester
        select BR2_PACKAGE_VIM     # basic vi emulator
@@ -123,7 +123,7 @@ config BR2_PACKAGE_BATOCERA_TOOLS
 
 #### systems ####
 config BR2_PACKAGE_BATOCERA_ALL_SYSTEMS
-        bool "All avaible systems for the selected architecture"
+        bool "batocera.linux all emulators packages selection"
 
         select BR2_PACKAGE_BATOCERA_RETROARCH   # ALL # retroarch (multiple systems)
         select BR2_PACKAGE_MOONLIGHT_EMBEDDED   # ALL # moonlight
@@ -160,7 +160,7 @@ config BR2_PACKAGE_BATOCERA_ALL_SYSTEMS
           All avaible systems for the selected architecture
 
 config BR2_PACKAGE_BATOCERA_RETROARCH
-        bool "Retroarch"
+        bool "batocera.linux Retroarch packages selection"
         select BR2_PACKAGE_RETROARCH
         select BR2_PACKAGE_LIBRETRO_CHEATS
         select BR2_PACKAGE_BATOCERA_BEZEL
@@ -267,7 +267,7 @@ config BR2_PACKAGE_BATOCERA_RETROARCH
           Retroarch
 
 config BR2_PACKAGE_BATOCERA_MUPEN64
-        bool "Mupen64"
+        bool "batocera.linux Mupen64 packages selection"
 
         select BR2_PACKAGE_MUPEN64PLUS_CORE
         select BR2_PACKAGE_MUPEN64PLUS_UICONSOLE
@@ -289,7 +289,7 @@ config BR2_PACKAGE_BATOCERA_MUPEN64
           Mupen64
 
 config BR2_PACKAGE_BATOCERA_KODI
-       bool "Kodi packages"
+       bool "batocera.linux Kodi packages selection"
        select BR2_PACKAGE_KODI              # kodi
        select BR2_PACKAGE_KODI_JOYSTICK     # joysticks for kodi
        select BR2_PACKAGE_PYTHON_PYOPENSSL  # used by some kodi plugins
@@ -372,7 +372,7 @@ config BR2_PACKAGE_BATOCERA_KODI
         Tools to extends the batocera system (but not required)
 
 config BR2_PACKAGE_BATOCERA_LINUX_FIRMWARES
-       bool "Firmwares"
+       bool "batocera.linux Firmwares packages selection"
 
        select BR2_PACKAGE_LINUX_FIRMWARE
 

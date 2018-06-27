@@ -1,5 +1,8 @@
 menu "Target packages"
 
+     	# batocera.linux
+	source "package/batocera/Config.in"
+
 	source "package/busybox/Config.in"
 	source "package/skeleton/Config.in"
 	source "package/skeleton-custom/Config.in"
@@ -203,9 +206,6 @@ menu "Filesystem and flash utilities"
 	source "package/unionfs/Config.in"
 	source "package/xfsprogs/Config.in"
 endmenu
-
-# batocera.linux
-source "package/batocera/Config.in"
 
 menu "Fonts, cursors, icons, sounds and themes"
 
