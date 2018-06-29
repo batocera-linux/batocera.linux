@@ -7,10 +7,9 @@ moonlight_config_dir=/recalbox/share/system/configs/moonlight
 moonlight_romsdir=/recalbox/share/roms/moonlight
 moonlight_ip=
 moonlight_screen="720"
-moonlight_fps="60fps"
+moonlight_fps="60"
 moonlight_mapping="$moonlight_config_dir/mapping.conf"
 moonlight_keydir="$moonlight_config_dir/keydir"
-moonlight_output="/dev/null 2>&1"
 moonlight_gamesnames="$moonlight_config_dir/gamelist.txt"
 SEPERATOR=";"
 
@@ -107,9 +106,6 @@ EOF
   echo '</gameList>' >> $GAMELIST
 }
 
-# Uncomment this line for debug (less perfs)
-#moonlight_output="$moonlight_dir/moonlight.log"
-
 mkdir -p $moonlight_keydir;
 
 case $1 in
@@ -133,15 +129,14 @@ case $1 in
     app)
         shift
         game=`findRealGameName $*`
-        cmd="moonlight stream -remote -keydir ${moonlight_keydir} -${moonlight_screen} -${moonlight_fps} -mapping ${moonlight_mapping} -app \"$game\" ${moonlight_ip}" ;;
+        cmd="moonlight stream -remote -keydir ${moonlight_keydir} -${moonlight_screen} -fps ${moonlight_fps} -mapping ${moonlight_mapping} -app \"$game\" ${moonlight_ip}" ;;
 
     clean)
         cmd="rm -rf $moonlight_config_dir/keydir && echo 'You can now pair again your recalbox with a PC'" ;;
 
     *)
-        cmd="moonlight stream -remote -keydir ${moonlight_keydir} -${moonlight_screen} -${moonlight_fps} -mapping ${moonlight_mapping} ${moonlight_ip}" ;;
+        cmd="moonlight stream -remote -keydir ${moonlight_keydir} -${moonlight_screen} -fps ${moonlight_fps} -mapping ${moonlight_mapping} ${moonlight_ip}" ;;
 
 esac
 
-$cmd = "$cmd > ${moonlight_output}"
-eval $cmd
+$cmd
