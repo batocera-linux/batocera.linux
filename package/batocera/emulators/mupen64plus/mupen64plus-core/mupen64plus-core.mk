@@ -4,8 +4,8 @@
 #
 ################################################################################
 # Version.: Commits on Jun 3, 2018
-MUPEN64PLUS_CORE_VERSION = 77a2f8813251b5257382ec477c3f0ef3ea49c37f
-# 755a26bd2ed40d09c45b0a8c72457cd2a28e79af used for xu4 5.16 because the next commit breaks and segfault on 1080 for example
+MUPEN64PLUS_CORE_VERSION = 755a26bd2ed40d09c45b0a8c72457cd2a28e79af
+# for xu4 ,rpi3 because the next commit breaks and segfault on 1080 for example
 MUPEN64PLUS_CORE_SITE = $(call github,mupen64plus,mupen64plus-core,$(MUPEN64PLUS_CORE_VERSION))
 MUPEN64PLUS_CORE_LICENSE = MIT
 MUPEN64PLUS_CORE_DEPENDENCIES = sdl2 alsa-lib freetype dejavu
