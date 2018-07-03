@@ -298,7 +298,6 @@ config BR2_PACKAGE_BATOCERA_KODI
        select BR2_PACKAGE_LIBAACS           # decoder
        select BR2_PACKAGE_LIBDVDCSS         # decoder
        select BR2_PACKAGE_GNUTLS            # https streams
-       select BR2_PACKAGE_KODI_PVR_ADDONS   # pvr
 
        # ffmpeg enabler that i'm not sure it has an impact on kodi
        select BR2_PACKAGE_FFMPEG_AVRESAMPLE # audio resampler
