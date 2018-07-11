@@ -20,7 +20,7 @@
 
 xu4_fusing() {
     BINARIES_DIR=$1
-    RECALBOXIMG=$2
+    BATOCERAIMG=$2
 
     # fusing
     signed_bl1_position=1
@@ -30,19 +30,19 @@ xu4_fusing() {
     env_position=1231
 
     echo "BL1 fusing"
-    dd if="${BINARIES_DIR}/bl1.bin.hardkernel"    of="${RECALBOXIMG}" seek=$signed_bl1_position conv=notrunc || return 1
+    dd if="${BINARIES_DIR}/bl1.bin.hardkernel"    of="${BATOCERAIMG}" seek=$signed_bl1_position conv=notrunc || return 1
 
     echo "BL2 fusing"
-    dd if="${BINARIES_DIR}/bl2.bin.hardkernel"    of="${RECALBOXIMG}" seek=$bl2_position        conv=notrunc || return 1
+    dd if="${BINARIES_DIR}/bl2.bin.hardkernel"    of="${BATOCERAIMG}" seek=$bl2_position        conv=notrunc || return 1
 
     echo "u-boot fusing"
-    dd if="${BINARIES_DIR}/u-boot.bin.hardkernel" of="${RECALBOXIMG}" seek=$uboot_position      conv=notrunc || return 1
+    dd if="${BINARIES_DIR}/u-boot.bin.hardkernel" of="${BATOCERAIMG}" seek=$uboot_position      conv=notrunc || return 1
 
     echo "TrustZone S/W fusing"
-    dd if="${BINARIES_DIR}/tzsw.bin.hardkernel"   of="${RECALBOXIMG}" seek=$tzsw_position       conv=notrunc || return 1
+    dd if="${BINARIES_DIR}/tzsw.bin.hardkernel"   of="${BATOCERAIMG}" seek=$tzsw_position       conv=notrunc || return 1
 
     echo "u-boot env erase"
-    dd if=/dev/zero of="${RECALBOXIMG}" seek=$env_position count=32 bs=512 conv=notrunc || return 1
+    dd if=/dev/zero of="${BATOCERAIMG}" seek=$env_position count=32 bs=512 conv=notrunc || return 1
 }
 
 # C2 SD CARD
@@ -57,7 +57,7 @@ xu4_fusing() {
 
 c2_fusing() {
     BINARIES_DIR=$1
-    RECALBOXIMG=$2
+    BATOCERAIMG=$2
 
     # fusing
     signed_bl1_position=1
@@ -65,25 +65,25 @@ c2_fusing() {
     uboot_position=97
 
     echo "BL1 fusing"
-    dd if="${BINARIES_DIR}/bl1.bin.hardkernel" of="${RECALBOXIMG}" seek=$signed_bl1_position skip=$signed_bl1_skip conv=notrunc || return 1
+    dd if="${BINARIES_DIR}/bl1.bin.hardkernel" of="${BATOCERAIMG}" seek=$signed_bl1_position skip=$signed_bl1_skip conv=notrunc || return 1
 
     echo "u-boot fusing"
-    dd if="${BINARIES_DIR}/u-boot.bin"         of="${RECALBOXIMG}" seek=$uboot_position                            conv=notrunc || return 1
+    dd if="${BINARIES_DIR}/u-boot.bin"         of="${BATOCERAIMG}" seek=$uboot_position                            conv=notrunc || return 1
 }
 
-RECALBOX_BINARIES_DIR="${BINARIES_DIR}/recalbox"
-BATOCERA_TARGET_DIR="${TARGET_DIR}/recalbox"
+BATOCERA_BINARIES_DIR="${BINARIES_DIR}/batocera"
+BATOCERA_TARGET_DIR="${TARGET_DIR}/batocera"
 
-if [ -d "${RECALBOX_BINARIES_DIR}" ]; then
-    rm -rf "${RECALBOX_BINARIES_DIR}"
+if [ -d "${BATOCERA_BINARIES_DIR}" ]; then
+    rm -rf "${BATOCERA_BINARIES_DIR}"
 fi
 
-mkdir -p "${RECALBOX_BINARIES_DIR}"
+mkdir -p "${BATOCERA_BINARIES_DIR}"
 
 # XU4, RPI0, RPI1, RPI2 or RPI3
 BATOCERA_TARGET=$(grep -E "^BR2_PACKAGE_BATOCERA_TARGET_[A-Z_0-9]*=y$" "${BR2_CONFIG}" | sed -e s+'^BR2_PACKAGE_BATOCERA_TARGET_\([A-Z_0-9]*\)=y$'+'\1'+)
 
-echo -e "\n----- Generating images/recalbox files -----\n"
+echo -e "\n----- Generating images/batocera files -----\n"
 
 case "${BATOCERA_TARGET}" in
     RPI0|RPI1|RPI2|RPI3)
@@ -99,22 +99,22 @@ case "${BATOCERA_TARGET}" in
 	cp "${BINARIES_DIR}/initrd.gz" "${BINARIES_DIR}/rpi-firmware/boot" || exit 1
 	cp "${BINARIES_DIR}/rootfs.squashfs" "${BINARIES_DIR}/rpi-firmware/boot/recalbox.update" || exit 1
 	echo "creating boot.tar.xz"
-	tar -cJf "${RECALBOX_BINARIES_DIR}/boot.tar.xz" -C "${BINARIES_DIR}/rpi-firmware" "." ||
+	tar -cJf "${BATOCERA_BINARIES_DIR}/boot.tar.xz" -C "${BINARIES_DIR}/rpi-firmware" "." ||
 	    { echo "ERROR : unable to create boot.tar.xz" && exit 1 ;}
 
 	# batocera.img
 	# rename the squashfs : the .update is the version that will be renamed at boot to replace the old version
 	mv "${BINARIES_DIR}/rpi-firmware/boot/recalbox.update" "${BINARIES_DIR}/rpi-firmware/boot/recalbox" || exit 1
 	GENIMAGE_TMP="${BUILD_DIR}/genimage.tmp"
-	RECALBOXIMG="${RECALBOX_BINARIES_DIR}/batocera.img"
+	BATOCERAIMG="${BATOCERA_BINARIES_DIR}/batocera.img"
 	rm -rf "${GENIMAGE_TMP}" || exit 1
 	cp "board/batocera/rpi/genimage.cfg" "${BINARIES_DIR}/genimage.cfg.tmp" || exit 1
 	FILES=$(find "${BINARIES_DIR}/rpi-firmware" -type f | sed -e s+"^${BINARIES_DIR}/rpi-firmware/\(.*\)$"+"file \1 \{ image = 'rpi-firmware/\1' }"+ | tr '\n' '@')
 	cat "${BINARIES_DIR}/genimage.cfg.tmp" | sed -e s+'@files'+"${FILES}"+ | tr '@' '\n' > "${BINARIES_DIR}/genimage.cfg" || exit 1
 	rm -f "${BINARIES_DIR}/genimage.cfg.tmp" || exit 1
 	echo "generating image"
-	genimage --rootpath="${TARGET_DIR}" --inputpath="${BINARIES_DIR}" --outputpath="${RECALBOX_BINARIES_DIR}" --config="${BINARIES_DIR}/genimage.cfg" --tmppath="${GENIMAGE_TMP}" || exit 1
-	rm -f "${RECALBOX_BINARIES_DIR}/boot.vfat" || exit 1
+	genimage --rootpath="${TARGET_DIR}" --inputpath="${BINARIES_DIR}" --outputpath="${BATOCERA_BINARIES_DIR}" --config="${BINARIES_DIR}/genimage.cfg" --tmppath="${GENIMAGE_TMP}" || exit 1
+	rm -f "${BATOCERA_BINARIES_DIR}/boot.vfat" || exit 1
 	sync || exit 1
 	;;
 
@@ -146,19 +146,19 @@ case "${BATOCERA_TARGET}" in
 
 	# boot.tar.xz
 	echo "creating boot.tar.xz"
-	(cd "${BINARIES_DIR}/boot" && tar -cJf "${RECALBOX_BINARIES_DIR}/boot.tar.xz" boot.ini boot recalbox-boot.conf) || exit 1
+	(cd "${BINARIES_DIR}/boot" && tar -cJf "${BATOCERA_BINARIES_DIR}/boot.tar.xz" boot.ini boot recalbox-boot.conf) || exit 1
 
 	# batocera.img
 	# rename the squashfs : the .update is the version that will be renamed at boot to replace the old version
 	mv "${BINARIES_DIR}/boot/boot/recalbox.update" "${BINARIES_DIR}/boot/boot/recalbox" || exit 1
 	GENIMAGE_TMP="${BUILD_DIR}/genimage.tmp"
-	RECALBOXIMG="${RECALBOX_BINARIES_DIR}/batocera.img"
+	BATOCERAIMG="${BATOCERA_BINARIES_DIR}/batocera.img"
 	rm -rf "${GENIMAGE_TMP}" || exit 1
 	cp "board/batocera/xu4/genimage.cfg" "${BINARIES_DIR}" || exit 1
 	echo "generating image"
-	genimage --rootpath="${TARGET_DIR}" --inputpath="${BINARIES_DIR}/boot" --outputpath="${RECALBOX_BINARIES_DIR}" --config="${BINARIES_DIR}/genimage.cfg" --tmppath="${GENIMAGE_TMP}" || exit 1
-	rm -f "${RECALBOX_BINARIES_DIR}/boot.vfat" || exit 1
-	xu4_fusing "${BINARIES_DIR}" "${RECALBOXIMG}" || exit 1
+	genimage --rootpath="${TARGET_DIR}" --inputpath="${BINARIES_DIR}/boot" --outputpath="${BATOCERA_BINARIES_DIR}" --config="${BINARIES_DIR}/genimage.cfg" --tmppath="${GENIMAGE_TMP}" || exit 1
+	rm -f "${BATOCERA_BINARIES_DIR}/boot.vfat" || exit 1
+	xu4_fusing "${BINARIES_DIR}" "${BATOCERAIMG}" || exit 1
 	sync || exit 1
 	;;
 
@@ -190,19 +190,19 @@ case "${BATOCERA_TARGET}" in
 
 	# boot.tar.xz
 	echo "creating boot.tar.xz"
-	(cd "${BINARIES_DIR}/boot" && tar -cJf "${RECALBOX_BINARIES_DIR}/boot.tar.xz" boot.ini boot recalbox-boot.conf) || exit 1
+	(cd "${BINARIES_DIR}/boot" && tar -cJf "${BATOCERA_BINARIES_DIR}/boot.tar.xz" boot.ini boot recalbox-boot.conf) || exit 1
 
 	# batocera.img
 	# rename the squashfs : the .update is the version that will be renamed at boot to replace the old version
 	mv "${BINARIES_DIR}/boot/boot/recalbox.update" "${BINARIES_DIR}/boot/boot/recalbox" || exit 1
 	GENIMAGE_TMP="${BUILD_DIR}/genimage.tmp"
-	RECALBOXIMG="${RECALBOX_BINARIES_DIR}/batocera.img"
+	BATOCERAIMG="${BATOCERA_BINARIES_DIR}/batocera.img"
 	rm -rf "${GENIMAGE_TMP}" || exit 1
 	cp "board/batocera/legacyxu4/genimage.cfg" "${BINARIES_DIR}" || exit 1
 	echo "generating image"
-	genimage --rootpath="${TARGET_DIR}" --inputpath="${BINARIES_DIR}/boot" --outputpath="${RECALBOX_BINARIES_DIR}" --config="${BINARIES_DIR}/genimage.cfg" --tmppath="${GENIMAGE_TMP}" || exit 1
-	rm -f "${RECALBOX_BINARIES_DIR}/boot.vfat" || exit 1
-	xu4_fusing "${BINARIES_DIR}" "${RECALBOXIMG}" || exit 1
+	genimage --rootpath="${TARGET_DIR}" --inputpath="${BINARIES_DIR}/boot" --outputpath="${BATOCERA_BINARIES_DIR}" --config="${BINARIES_DIR}/genimage.cfg" --tmppath="${GENIMAGE_TMP}" || exit 1
+	rm -f "${BATOCERA_BINARIES_DIR}/boot.vfat" || exit 1
+	xu4_fusing "${BINARIES_DIR}" "${BATOCERAIMG}" || exit 1
 	sync || exit 1
 	;;
 
@@ -220,19 +220,19 @@ case "${BATOCERA_TARGET}" in
 
 	# boot.tar.xz
 	echo "creating boot.tar.xz"
-	(cd "${BINARIES_DIR}/boot" && tar -cJf "${RECALBOX_BINARIES_DIR}/boot.tar.xz" boot.ini boot recalbox-boot.conf boot-logo.bmp.gz) || exit 1
+	(cd "${BINARIES_DIR}/boot" && tar -cJf "${BATOCERA_BINARIES_DIR}/boot.tar.xz" boot.ini boot recalbox-boot.conf boot-logo.bmp.gz) || exit 1
 
 	# batocera.img
         # rename the squashfs : the .update is the version that will be renamed at boot to replace the old version
         mv "${BINARIES_DIR}/boot/boot/recalbox.update" "${BINARIES_DIR}/boot/boot/recalbox" || exit 1
 	GENIMAGE_TMP="${BUILD_DIR}/genimage.tmp"
-	RECALBOXIMG="${RECALBOX_BINARIES_DIR}/batocera.img"
+	BATOCERAIMG="${BATOCERA_BINARIES_DIR}/batocera.img"
 	rm -rf "${GENIMAGE_TMP}" || exit 1
 	cp "board/batocera/c2/genimage.cfg" "${BINARIES_DIR}" || exit 1
 	echo "generating image"
-	genimage --rootpath="${TARGET_DIR}" --inputpath="${BINARIES_DIR}/boot" --outputpath="${RECALBOX_BINARIES_DIR}" --config="${BINARIES_DIR}/genimage.cfg" --tmppath="${GENIMAGE_TMP}" || exit 1
-	rm -f "${RECALBOX_BINARIES_DIR}/boot.vfat" || exit 1
-	c2_fusing "${BINARIES_DIR}" "${RECALBOXIMG}" || exit 1
+	genimage --rootpath="${TARGET_DIR}" --inputpath="${BINARIES_DIR}/boot" --outputpath="${BATOCERA_BINARIES_DIR}" --config="${BINARIES_DIR}/genimage.cfg" --tmppath="${GENIMAGE_TMP}" || exit 1
+	rm -f "${BATOCERA_BINARIES_DIR}/boot.vfat" || exit 1
+	c2_fusing "${BINARIES_DIR}" "${BATOCERAIMG}" || exit 1
 	sync || exit 1
 	;;
 
@@ -254,18 +254,18 @@ case "${BATOCERA_TARGET}" in
 
 	# boot.tar.xz
 	echo "creating boot.tar.xz"
-	(cd "${BINARIES_DIR}/boot" && tar -cJf "${RECALBOX_BINARIES_DIR}/boot.tar.xz"  boot recalbox-boot.conf boot-logo.bmp.gz) || exit 1
+	(cd "${BINARIES_DIR}/boot" && tar -cJf "${BATOCERA_BINARIES_DIR}/boot.tar.xz"  boot recalbox-boot.conf boot-logo.bmp.gz) || exit 1
 
 	# batocera.img
         # rename the squashfs : the .update is the version that will be renamed at boot to replace the old version
         mv "${BINARIES_DIR}/boot/boot/recalbox.update" "${BINARIES_DIR}/boot/boot/recalbox" || exit 1
 	GENIMAGE_TMP="${BUILD_DIR}/genimage.tmp"
-	RECALBOXIMG="${RECALBOX_BINARIES_DIR}/batocera.img"
+	BATOCERAIMG="${BATOCERA_BINARIES_DIR}/batocera.img"
 	rm -rf "${GENIMAGE_TMP}" || exit 1
 	cp "${BOARD_DIR}/genimage.cfg" "${BINARIES_DIR}/genimage.cfg" || exit 1
 	echo "generating image"
-	genimage --rootpath="${TARGET_DIR}" --inputpath="${BINARIES_DIR}/boot" --outputpath="${RECALBOX_BINARIES_DIR}" --config="${BINARIES_DIR}/genimage.cfg" --tmppath="${GENIMAGE_TMP}" || exit 1
-	rm -f "${RECALBOX_BINARIES_DIR}/boot.vfat" || exit 1
+	genimage --rootpath="${TARGET_DIR}" --inputpath="${BINARIES_DIR}/boot" --outputpath="${BATOCERA_BINARIES_DIR}" --config="${BINARIES_DIR}/genimage.cfg" --tmppath="${GENIMAGE_TMP}" || exit 1
+	rm -f "${BATOCERA_BINARIES_DIR}/boot.vfat" || exit 1
 	sync || exit 1
 	;;
 
@@ -287,18 +287,18 @@ case "${BATOCERA_TARGET}" in
 
 	# boot.tar.xz
 	echo "creating boot.tar.xz"
-	(cd "${BINARIES_DIR}/boot" && tar -cJf "${RECALBOX_BINARIES_DIR}/boot.tar.xz"  boot recalbox-boot.conf boot-logo.bmp.gz) || exit 1
+	(cd "${BINARIES_DIR}/boot" && tar -cJf "${BATOCERA_BINARIES_DIR}/boot.tar.xz"  boot recalbox-boot.conf boot-logo.bmp.gz) || exit 1
 
 	# batocera.img
         # rename the squashfs : the .update is the version that will be renamed at boot to replace the old version
         mv "${BINARIES_DIR}/boot/boot/recalbox.update" "${BINARIES_DIR}/boot/boot/recalbox" || exit 1
 	GENIMAGE_TMP="${BUILD_DIR}/genimage.tmp"
-	RECALBOXIMG="${RECALBOX_BINARIES_DIR}/batocera.img"
+	BATOCERAIMG="${BATOCERA_BINARIES_DIR}/batocera.img"
 	rm -rf "${GENIMAGE_TMP}" || exit 1
 	cp "${BOARD_DIR}/genimage.cfg" "${BINARIES_DIR}/genimage.cfg" || exit 1
 	echo "generating image"
-	genimage --rootpath="${TARGET_DIR}" --inputpath="${BINARIES_DIR}/boot" --outputpath="${RECALBOX_BINARIES_DIR}" --config="${BINARIES_DIR}/genimage.cfg" --tmppath="${GENIMAGE_TMP}" || exit 1
-	rm -f "${RECALBOX_BINARIES_DIR}/boot.vfat" || exit 1
+	genimage --rootpath="${TARGET_DIR}" --inputpath="${BINARIES_DIR}/boot" --outputpath="${BATOCERA_BINARIES_DIR}" --config="${BINARIES_DIR}/genimage.cfg" --tmppath="${GENIMAGE_TMP}" || exit 1
+	rm -f "${BATOCERA_BINARIES_DIR}/boot.vfat" || exit 1
 	sync || exit 1
 	;;
 
@@ -318,20 +318,20 @@ case "${BATOCERA_TARGET}" in
 
 	# boot.tar.xz
         # it must include the squashfs version with .update to not erase the current squashfs while running
-	echo "creating ${RECALBOX_BINARIES_DIR}/boot.tar.xz"
-	(cd "${BINARIES_DIR}" && tar -cJf "${RECALBOX_BINARIES_DIR}/boot.tar.xz" EFI boot recalbox-boot.conf) || exit 1
+	echo "creating ${BATOCERA_BINARIES_DIR}/boot.tar.xz"
+	(cd "${BINARIES_DIR}" && tar -cJf "${BATOCERA_BINARIES_DIR}/boot.tar.xz" EFI boot recalbox-boot.conf) || exit 1
 
 	# batocera.img
         # rename the squashfs : the .update is the version that will be renamed at boot to replace the old version
         mv "${BINARIES_DIR}/boot/recalbox.update" "${BINARIES_DIR}/boot/recalbox" || exit 1
 	GENIMAGE_TMP="${BUILD_DIR}/genimage.tmp"
-	RECALBOXIMG="${RECALBOX_BINARIES_DIR}/batocera.img"
+	BATOCERAIMG="${BATOCERA_BINARIES_DIR}/batocera.img"
 	rm -rf "${GENIMAGE_TMP}" || exit 1
 	cp "board/batocera/grub2/genimage.cfg" "${BINARIES_DIR}" || exit 1
         cp "output/host/usr/lib/grub/i386-pc/boot.img" "${BINARIES_DIR}" || exit 1
-	echo "creating ${RECALBOX_BINARIES_DIR}/batocera.img"
-	genimage --rootpath="${TARGET_DIR}" --inputpath="${BINARIES_DIR}" --outputpath="${RECALBOX_BINARIES_DIR}" --config="${BINARIES_DIR}/genimage.cfg" --tmppath="${GENIMAGE_TMP}" || exit 1
-	rm -f "${RECALBOX_BINARIES_DIR}/boot.vfat" || exit 1
+	echo "creating ${BATOCERA_BINARIES_DIR}/batocera.img"
+	genimage --rootpath="${TARGET_DIR}" --inputpath="${BINARIES_DIR}" --outputpath="${BATOCERA_BINARIES_DIR}" --config="${BINARIES_DIR}/genimage.cfg" --tmppath="${GENIMAGE_TMP}" || exit 1
+	rm -f "${BATOCERA_BINARIES_DIR}/boot.vfat" || exit 1
 	sync || exit 1
 	;;
     *)
@@ -347,12 +347,12 @@ SUFFIXVERSION=$(cat "${TARGET_DIR}/recalbox/recalbox.updateversion")
 SUFFIXTARGET=$(echo "${BATOCERA_TARGET}" | tr A-Z a-z)
 SUFFIXDATE=$(date +%Y%m%d)
 SUFFIXIMG="-${SUFFIXVERSION}-${SUFFIXTARGET}-${SUFFIXDATE}"
-mv "${RECALBOX_BINARIES_DIR}/batocera.img" "${RECALBOX_BINARIES_DIR}/batocera${SUFFIXIMG}.img" || exit 1
+mv "${BATOCERA_BINARIES_DIR}/batocera.img" "${BATOCERA_BINARIES_DIR}/batocera${SUFFIXIMG}.img" || exit 1
 
-cp "${TARGET_DIR}/recalbox/recalbox.version" "${RECALBOX_BINARIES_DIR}" || exit 1
+cp "${TARGET_DIR}/recalbox/recalbox.version" "${BATOCERA_BINARIES_DIR}" || exit 1
 
 #
-for FILE in "${RECALBOX_BINARIES_DIR}/boot.tar.xz"
+for FILE in "${BATOCERA_BINARIES_DIR}/boot.tar.xz"
 do
     echo "creating ${FILE}.md5"
     CKS=$(md5sum "${FILE}" | sed -e s+'^\([^ ]*\) .*$'+'\1'+)
