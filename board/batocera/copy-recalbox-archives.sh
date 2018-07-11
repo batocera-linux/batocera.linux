@@ -91,8 +91,8 @@ case "${BATOCERA_TARGET}" in
 	cp -f "${BINARIES_DIR}/"*.dtb "${BINARIES_DIR}/rpi-firmware"
 	rm -rf "${BINARIES_DIR}/rpi-firmware/boot"   || exit 1
 	mkdir -p "${BINARIES_DIR}/rpi-firmware/boot" || exit 1
-	cp "board/recalbox/rpi/config.txt" "${BINARIES_DIR}/rpi-firmware/config.txt"   || exit 1
-	cp "board/recalbox/rpi/cmdline.txt" "${BINARIES_DIR}/rpi-firmware/cmdline.txt" || exit 1
+	cp "board/batocera/rpi/config.txt" "${BINARIES_DIR}/rpi-firmware/config.txt"   || exit 1
+	cp "board/batocera/rpi/cmdline.txt" "${BINARIES_DIR}/rpi-firmware/cmdline.txt" || exit 1
 
 	KERNEL_VERSION=$(grep -E "^BR2_LINUX_KERNEL_VERSION=" "${BR2_CONFIG}" | sed -e s+'^BR2_LINUX_KERNEL_VERSION="\(.*\)"$'+'\1'+)
 	"output/build/linux-${KERNEL_VERSION}/scripts/mkknlimg" "${BINARIES_DIR}/zImage" "${BINARIES_DIR}/rpi-firmware/boot/linux"
@@ -108,7 +108,7 @@ case "${BATOCERA_TARGET}" in
 	GENIMAGE_TMP="${BUILD_DIR}/genimage.tmp"
 	RECALBOXIMG="${RECALBOX_BINARIES_DIR}/batocera.img"
 	rm -rf "${GENIMAGE_TMP}" || exit 1
-	cp "board/recalbox/rpi/genimage.cfg" "${BINARIES_DIR}/genimage.cfg.tmp" || exit 1
+	cp "board/batocera/rpi/genimage.cfg" "${BINARIES_DIR}/genimage.cfg.tmp" || exit 1
 	FILES=$(find "${BINARIES_DIR}/rpi-firmware" -type f | sed -e s+"^${BINARIES_DIR}/rpi-firmware/\(.*\)$"+"file \1 \{ image = 'rpi-firmware/\1' }"+ | tr '\n' '@')
 	cat "${BINARIES_DIR}/genimage.cfg.tmp" | sed -e s+'@files'+"${FILES}"+ | tr '@' '\n' > "${BINARIES_DIR}/genimage.cfg" || exit 1
 	rm -f "${BINARIES_DIR}/genimage.cfg.tmp" || exit 1
@@ -128,7 +128,7 @@ case "${BATOCERA_TARGET}" in
 	# /boot
 	rm -rf "${BINARIES_DIR}/boot"         || exit 1
 	mkdir -p "${BINARIES_DIR}/boot/boot"  || exit 1
-	cp "board/recalbox/xu4/boot.ini"     "${BINARIES_DIR}/boot/boot.ini"        	 || exit 1
+	cp "board/batocera/xu4/boot.ini"     "${BINARIES_DIR}/boot/boot.ini"        	 || exit 1
 	cp "${BINARIES_DIR}/zImage"          "${BINARIES_DIR}/boot/boot/linux"      	 || exit 1
 	cp "${BINARIES_DIR}/uInitrd"         "${BINARIES_DIR}/boot/boot/uInitrd"    	 || exit 1
 
@@ -154,7 +154,7 @@ case "${BATOCERA_TARGET}" in
 	GENIMAGE_TMP="${BUILD_DIR}/genimage.tmp"
 	RECALBOXIMG="${RECALBOX_BINARIES_DIR}/batocera.img"
 	rm -rf "${GENIMAGE_TMP}" || exit 1
-	cp "board/recalbox/xu4/genimage.cfg" "${BINARIES_DIR}" || exit 1
+	cp "board/batocera/xu4/genimage.cfg" "${BINARIES_DIR}" || exit 1
 	echo "generating image"
 	genimage --rootpath="${TARGET_DIR}" --inputpath="${BINARIES_DIR}/boot" --outputpath="${RECALBOX_BINARIES_DIR}" --config="${BINARIES_DIR}/genimage.cfg" --tmppath="${GENIMAGE_TMP}" || exit 1
 	rm -f "${RECALBOX_BINARIES_DIR}/boot.vfat" || exit 1
@@ -172,7 +172,7 @@ case "${BATOCERA_TARGET}" in
 	# /boot
 	rm -rf "${BINARIES_DIR}/boot"         || exit 1
 	mkdir -p "${BINARIES_DIR}/boot/boot"  || exit 1
-	cp "board/recalbox/legacyxu4/boot.ini" "${BINARIES_DIR}/boot/boot.ini"        	 || exit 1
+	cp "board/batocera/legacyxu4/boot.ini" "${BINARIES_DIR}/boot/boot.ini"        	 || exit 1
 	cp "${BINARIES_DIR}/zImage"            "${BINARIES_DIR}/boot/boot/linux"      	 || exit 1
 	cp "${BINARIES_DIR}/uInitrd"           "${BINARIES_DIR}/boot/boot/uInitrd"    	 || exit 1
 
@@ -198,7 +198,7 @@ case "${BATOCERA_TARGET}" in
 	GENIMAGE_TMP="${BUILD_DIR}/genimage.tmp"
 	RECALBOXIMG="${RECALBOX_BINARIES_DIR}/batocera.img"
 	rm -rf "${GENIMAGE_TMP}" || exit 1
-	cp "board/recalbox/legacyxu4/genimage.cfg" "${BINARIES_DIR}" || exit 1
+	cp "board/batocera/legacyxu4/genimage.cfg" "${BINARIES_DIR}" || exit 1
 	echo "generating image"
 	genimage --rootpath="${TARGET_DIR}" --inputpath="${BINARIES_DIR}/boot" --outputpath="${RECALBOX_BINARIES_DIR}" --config="${BINARIES_DIR}/genimage.cfg" --tmppath="${GENIMAGE_TMP}" || exit 1
 	rm -f "${RECALBOX_BINARIES_DIR}/boot.vfat" || exit 1
@@ -210,8 +210,8 @@ case "${BATOCERA_TARGET}" in
 	# boot
 	rm -rf ${BINARIES_DIR}/boot        || exit 1
 	mkdir -p ${BINARIES_DIR}/boot/boot || exit 1
-	cp board/recalbox/c2/boot-logo.bmp.gz ${BINARIES_DIR}/boot   || exit 1
-	cp "board/recalbox/c2/boot.ini"       ${BINARIES_DIR}/boot   || exit 1
+	cp board/batocera/c2/boot-logo.bmp.gz ${BINARIES_DIR}/boot   || exit 1
+	cp "board/batocera/c2/boot.ini"       ${BINARIES_DIR}/boot   || exit 1
 	cp "${BINARIES_DIR}/recalbox-boot.conf" "${BINARIES_DIR}/boot/recalbox-boot.conf" || exit 1
 	cp "${BINARIES_DIR}/Image" "${BINARIES_DIR}/boot/boot/linux" || exit 1
 	cp "${BINARIES_DIR}/meson64_odroidc2.dtb" "${BINARIES_DIR}/boot/boot" || exit 1
@@ -228,7 +228,7 @@ case "${BATOCERA_TARGET}" in
 	GENIMAGE_TMP="${BUILD_DIR}/genimage.tmp"
 	RECALBOXIMG="${RECALBOX_BINARIES_DIR}/batocera.img"
 	rm -rf "${GENIMAGE_TMP}" || exit 1
-	cp "board/recalbox/c2/genimage.cfg" "${BINARIES_DIR}" || exit 1
+	cp "board/batocera/c2/genimage.cfg" "${BINARIES_DIR}" || exit 1
 	echo "generating image"
 	genimage --rootpath="${TARGET_DIR}" --inputpath="${BINARIES_DIR}/boot" --outputpath="${RECALBOX_BINARIES_DIR}" --config="${BINARIES_DIR}/genimage.cfg" --tmppath="${GENIMAGE_TMP}" || exit 1
 	rm -f "${RECALBOX_BINARIES_DIR}/boot.vfat" || exit 1
@@ -239,7 +239,7 @@ case "${BATOCERA_TARGET}" in
     S905)
 	MKIMAGE=${HOST_DIR}/bin/mkimage
 	MKBOOTIMAGE=${HOST_DIR}/bin/mkbootimg
-	BOARD_DIR="board/recalbox/s905"
+	BOARD_DIR="board/batocera/s905"
 	# boot
 	rm -rf ${BINARIES_DIR}/boot        || exit 1
 	mkdir -p ${BINARIES_DIR}/boot/boot || exit 1
@@ -272,7 +272,7 @@ case "${BATOCERA_TARGET}" in
     S912)
 	MKIMAGE=${HOST_DIR}/bin/mkimage
 	MKBOOTIMAGE=${HOST_DIR}/bin/mkbootimg
-	BOARD_DIR="board/recalbox/s912"
+	BOARD_DIR="board/batocera/s912"
 	# boot
 	rm -rf ${BINARIES_DIR}/boot        || exit 1
 	mkdir -p ${BINARIES_DIR}/boot/boot || exit 1
@@ -306,7 +306,7 @@ case "${BATOCERA_TARGET}" in
 	# /boot
 	rm -rf ${BINARIES_DIR}/boot || exit 1
 	mkdir -p ${BINARIES_DIR}/boot/grub || exit 1
-	cp "board/recalbox/grub2/grub.cfg" ${BINARIES_DIR}/boot/grub/grub.cfg || exit 1
+	cp "board/batocera/grub2/grub.cfg" ${BINARIES_DIR}/boot/grub/grub.cfg || exit 1
 	cp "${BINARIES_DIR}/bzImage" "${BINARIES_DIR}/boot/linux" || exit 1
 	cp "${BINARIES_DIR}/initrd.gz" "${BINARIES_DIR}/boot" || exit 1
 	cp "${BINARIES_DIR}/rootfs.squashfs" "${BINARIES_DIR}/boot/recalbox.update" || exit 1
@@ -314,7 +314,7 @@ case "${BATOCERA_TARGET}" in
 	# get UEFI files
 	mkdir -p "${BINARIES_DIR}/EFI/BOOT" || exit 1
 	cp "${BINARIES_DIR}/bootx64.efi" "${BINARIES_DIR}/EFI/BOOT" || exit 1
-	cp "board/recalbox/grub2/grub.cfg" "${BINARIES_DIR}/EFI/BOOT" || exit 1
+	cp "board/batocera/grub2/grub.cfg" "${BINARIES_DIR}/EFI/BOOT" || exit 1
 
 	# boot.tar.xz
         # it must include the squashfs version with .update to not erase the current squashfs while running
@@ -327,7 +327,7 @@ case "${BATOCERA_TARGET}" in
 	GENIMAGE_TMP="${BUILD_DIR}/genimage.tmp"
 	RECALBOXIMG="${RECALBOX_BINARIES_DIR}/batocera.img"
 	rm -rf "${GENIMAGE_TMP}" || exit 1
-	cp "board/recalbox/grub2/genimage.cfg" "${BINARIES_DIR}" || exit 1
+	cp "board/batocera/grub2/genimage.cfg" "${BINARIES_DIR}" || exit 1
         cp "output/host/usr/lib/grub/i386-pc/boot.img" "${BINARIES_DIR}" || exit 1
 	echo "creating ${RECALBOX_BINARIES_DIR}/batocera.img"
 	genimage --rootpath="${TARGET_DIR}" --inputpath="${BINARIES_DIR}" --outputpath="${RECALBOX_BINARIES_DIR}" --config="${BINARIES_DIR}/genimage.cfg" --tmppath="${GENIMAGE_TMP}" || exit 1
