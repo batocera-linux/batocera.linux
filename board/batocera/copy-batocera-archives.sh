@@ -335,7 +335,7 @@ case "${BATOCERA_TARGET}" in
 	sync || exit 1
 	;;
     *)
-	echo "Outch. Unknown target ${BATOCERA_TARGET} (see copy-recalbox-archives.sh)" >&2
+	echo "Outch. Unknown target ${BATOCERA_TARGET} (see copy-batocera-archives.sh)" >&2
 	bash
 	exit 1
 esac
