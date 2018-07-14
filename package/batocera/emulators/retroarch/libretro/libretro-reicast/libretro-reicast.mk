@@ -3,8 +3,8 @@
 # REICAST
 #
 ################################################################################
-# Version.: Commits on Apr 11, 2018
-LIBRETRO_REICAST_VERSION = 03d3cc391959e30360c19375d2fc531853efb524
+# Version.: Commits on Jul 14, 2018
+LIBRETRO_REICAST_VERSION = fc8eb6db0484def28291466f3d03d305db1098bc
 LIBRETRO_REICAST_SITE = $(call github,libretro,reicast-emulator,$(LIBRETRO_REICAST_VERSION))
 
 LIBRETRO_REICAST_PLATFORM = $(LIBRETRO_PLATFORM)
@@ -38,7 +38,7 @@ endef
 
 define LIBRETRO_REICAST_INSTALL_TARGET_CMDS
 	$(INSTALL) -D $(@D)/reicast_libretro.so \
-		$(TARGET_DIR)/usr/lib/libretro/libretro-reicast_libretro.so
+		$(TARGET_DIR)/usr/lib/libretro/reicast_libretro.so
 endef
 
 $(eval $(generic-package))
