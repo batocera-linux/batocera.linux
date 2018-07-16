@@ -6,7 +6,7 @@ menu "System"
   source "package/batocera/core/recalbox-retrogame/Config.in"
 
   menu "Boot"
-    source "package/batocera/boot/recalbox-initramfs/Config.in"
+    source "package/batocera/boot/batocera-initramfs/Config.in"
     source "package/batocera/boot/recalbox-x86_64_efi/Config.in"
     source "package/batocera/boot/uboot-odroid-xu4/Config.in"
     source "package/batocera/boot/uboot-odroid-c2/Config.in"
