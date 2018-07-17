@@ -65,4 +65,10 @@ endif
 #	ADVANCEMAME_CONF_OPTS += --with-emu=mess
 #endif
 
+define ADVANCEMAME_HOOK_INSTALLDIRS
+  mkdir -p $(TARGET_DIR)/usr/share/advance/image/ti99_4a
+endef
+
+ADVANCEMAME_PRE_INSTALL_TARGET_HOOKS += ADVANCEMAME_HOOK_INSTALLDIRS
+
 $(eval $(autotools-package))
