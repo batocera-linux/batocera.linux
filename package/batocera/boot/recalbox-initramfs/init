@@ -1,5 +1,11 @@
 #!/bin/ash
 
+do_mount() {
+    if mount -o ro "${1}"           /boot_root; then return 0; fi
+    if mount -o ro "LABEL=RECALBOX" /boot_root; then return 0; fi # LEGACY BOOT FOR IMAGES BURNT BEFORE 5.17
+    return 1
+}
+
 do_root() {
     mkdir -p /boot_root /new_root /overlay_root /sys /proc || return 1
     mount -t proc  -o nodev,noexec,nosuid proc  /proc  	|| return 1
@@ -21,7 +27,7 @@ do_root() {
     test -n "${dev}"   && MOUNTARG=${dev}
     test -n "${label}" && MOUNTARG=LABEL=${label}
 
-    while ! mount -o ro "${MOUNTARG}" /boot_root
+    while ! do_mount "${MOUNTARG}"
     do
         echo "Waiting for the root device"
         sleep 1
