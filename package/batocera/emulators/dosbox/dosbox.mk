@@ -5,8 +5,8 @@
 ################################################################################
 
 DOSBOX_VERSION_TAG = 0.74
-DOSBOX_VERSION = r3989
-DOSBOX_SITE =  svn://svn.code.sf.net/p/dosbox/code-0/dosbox/trunk 
+DOSBOX_VERSION = 3989
+DOSBOX_SITE =  svn://svn.code.sf.net/p/dosbox/code-0/dosbox/trunk
 DOSBOX_SITE_METHOD = svn
 DOSBOX_LICENSE = GPL2
 DOSBOX_LICENSE_FILES = COPYING
