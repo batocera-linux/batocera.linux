@@ -1,10 +1,14 @@
 ################################################################################
 #
-# Retrogame Batocera https://github.com/batocera-linux/Recalbox-Retrogame-2Players-Pi2
+# RetroGame Batocera
 #
 ################################################################################
-BATOCERA_RETROGAME_VERSION = 8d3e90ed179146d717201b6f4337290100f9ca26
-BATOCERA_RETROGAME_SITE = $(call github,batocera-linux,Recalbox-Retrogame-2Players-Pi2,$(BATOCERA_RETROGAME_VERSION))
+BATOCERA_RETROGAME_VERSION = 1.0
+BATOCERA_RETROGAME_SOURCE=  
+
+define BATOCERA_RETROGAME_EXTRACT_CMDS
+	cp package/batocera/core/batocera-retrogame/RetroGame/* $(@D)
+endef
 
 define BATOCERA_RETROGAME_BUILD_CMDS
 	CFLAGS="$(TARGET_CFLAGS)" CXXFLAGS="$(TARGET_CXXFLAGS)" $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" -C $(@D) retrogame
