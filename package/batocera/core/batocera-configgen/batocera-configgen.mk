@@ -1,15 +1,17 @@
 ################################################################################
 #
-# batocera configgen version https://github.com/batocera-linux/recalbox-configgen
+# batocera configgen
 #
 ################################################################################
 
-BATOCERA_CONFIGGEN_VERSION = master
-
-BATOCERA_CONFIGGEN_SITE = $(call github,batocera-linux,recalbox-configgen,$(BATOCERA_CONFIGGEN_VERSION))
-
-BATOCERA_CONFIGGEN_LICENSE = GPL2
+BATOCERA_CONFIGGEN_VERSION = 1.0
+BATOCERA_CONFIGGEN_LICENSE = GPL
+BATOCERA_CONFIGGEN_SOURCE=
 BATOCERA_CONFIGGEN_DEPENDENCIES = python
+
+define BATOCERA_CONFIGGEN_EXTRACT_CMDS
+	cp -R package/batocera/core/batocera-configgen/configgen/* $(@D)
+endef
 
 BATOCERA_CONFIGGEN_SETUP_TYPE = distutils
 
