@@ -3,7 +3,7 @@
 # REICAST
 #
 ################################################################################
-
+# Version.: Commits on Apr 21, 2018
 REICAST_VERSION = a50861b249b83abbdc2a9281434b75b25520baa5
 REICAST_SITE = $(call github,reicast,reicast-emulator,$(REICAST_VERSION))
 REICAST_DEPENDENCIES = sdl2 libpng
@@ -15,15 +15,15 @@ endef
 REICAST_PRE_CONFIGURE_HOOKS += REICAST_UPDATE_INCLUDES
 
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI3),y)
-	RECALBOX_SYSTEM=rpi3
+	BATOCERA_SYSTEM=rpi3
 else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI2),y)
-	RECALBOX_SYSTEM=rpi2
+	BATOCERA_SYSTEM=rpi2
 else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_XU4)$(BR2_PACKAGE_BATOCERA_TARGET_LEGACYXU4),y)
-	RECALBOX_SYSTEM=odroidxu4
+	BATOCERA_SYSTEM=odroidxu4
 else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86),y)
-	RECALBOX_SYSTEM=x86
+	BATOCERA_SYSTEM=x86
 else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86_64),y)
-	RECALBOX_SYSTEM=x64
+	BATOCERA_SYSTEM=x64
 endif
 
 ifeq ($(BR2_PACKAGE_SDL2_KMSDRM),y)
@@ -38,7 +38,7 @@ define REICAST_BUILD_CMDS
 		CC="$(TARGET_CC) -DPNG_ARM_NEON_OPT=0" \
 		AS="$(TARGET_CC)" \
 		STRIP="$(TARGET_STRIP)" \
-		-C $(@D)/shell/linux -f Makefile platform=$(RECALBOX_SYSTEM) $(REICAST_EXTRA_ARGS)
+		-C $(@D)/shell/linux -f Makefile platform=$(BATOCERA_SYSTEM) $(REICAST_EXTRA_ARGS)
 endef
 
 define REICAST_INSTALL_TARGET_CMDS

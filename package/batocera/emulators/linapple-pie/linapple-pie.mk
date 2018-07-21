@@ -3,8 +3,8 @@
 # lineapple-pie
 #
 ################################################################################
-
-LINAPPLE_PIE_VERSION = recalbox
+# Version.: Commits on Mar 13, 2016
+LINAPPLE_PIE_VERSION = 7bfddb5692d5ed4203da1bdf1911cdfa99653661
 LINAPPLE_PIE_SITE = $(call github,LaurentMarchelli,linapple-pie,$(LINAPPLE_PIE_VERSION))
 LINAPPLE_PIE_LICENSE = GPL2
 LINAPPLE_PIE_LICENSE_FILES = COPYING
@@ -31,7 +31,7 @@ define LINAPPLE_PIE_BUILD_CMDS
 	$(LINAPPLE_PIE_MAKE_ENV) $(MAKE) all $(LINAPPLE_PIE_MAKE_OPTS)
 endef
 
-ifeq ($(BR2_PACKAGE_RECALBOX_SYSTEM),y)
+ifeq ($(BR2_PACKAGE_BATOCERA_SYSTEM),y)
 LINAPPLE_PIE_CONFDIR = $(TARGET_DIR)/recalbox/share_init/system/.linapple
 LINAPPLE_PIE_CONFFILE = $(LINAPPLE_PIE_CONFDIR)/linapple.conf
 define LINAPPLE_PIE_INSTALL_TARGET_CMDS

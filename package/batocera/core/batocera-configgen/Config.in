@@ -1,0 +1,8 @@
+config BR2_PACKAGE_BATOCERA_CONFIGGEN
+        bool "batocera configgen"
+	select BR2_PACKAGE_PYTHON
+        help
+          The configuration utility for batocera
+
+	  https://github.com/batocera-linux/recalbox-configgen
+
