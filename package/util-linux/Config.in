@@ -59,8 +59,7 @@ config BR2_PACKAGE_UTIL_LINUX_BINARIES
 	  ldattach, look, lsblk, lscpu, lsipc, lslocks, lsns, mcookie,
 	  mkfs, mkswap, namei, prlimit, readprofile, renice, rev,
 	  rtcwake, script, scriptreplay, setarch, setsid, sfdisk,
-	  swaplabel, swapoff, swapon, uuidgen, uuidparse, whereis,
-	  wipefs
+	  swaplabel, swapoff, swapon, uuidgen, whereis, wipefs
 
 	  The setarch utility also installs architecture-specific
 	  symlinks like linux32, linux64, uname26, i386 and x86_64.
@@ -292,14 +291,10 @@ config BR2_PACKAGE_UTIL_LINUX_RENAME
 	help
 	  Rename files
 
-config BR2_PACKAGE_UTIL_LINUX_RFKILL
-	bool "rfkill"
-	depends on BR2_USE_MMU # libsmartcols
-	select BR2_PACKAGE_UTIL_LINUX_LIBSMARTCOLS
+config BR2_PACKAGE_UTIL_LINUX_RESET
+	bool "reset"
 	help
-	  Tool for enabling and disabling wireless devices. This new
-	  implementation is based upon, and backward compatible with,
-	  the original rfkill from Johannes Berg and Marcel Holtmann.
+	  Reset the terminal
 
 config BR2_PACKAGE_UTIL_LINUX_RUNUSER
 	bool "runuser"

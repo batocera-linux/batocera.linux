@@ -4,17 +4,24 @@
 #
 ################################################################################
 
-UTIL_LINUX_VERSION_MAJOR = 2.32
-UTIL_LINUX_VERSION = $(UTIL_LINUX_VERSION_MAJOR)
+UTIL_LINUX_VERSION_MAJOR = 2.30
+UTIL_LINUX_VERSION = $(UTIL_LINUX_VERSION_MAJOR).2
 UTIL_LINUX_SOURCE = util-linux-$(UTIL_LINUX_VERSION).tar.xz
 UTIL_LINUX_SITE = $(BR2_KERNEL_MIRROR)/linux/utils/util-linux/v$(UTIL_LINUX_VERSION_MAJOR)
 
+# 0001-Revert-build-sys-ncurses-headers-cleanup.patch
+UTIL_LINUX_AUTORECONF = YES
+
 # README.licensing claims that some files are GPL-2.0 only, but this is not true.
-# Some files are GPL-3.0+ but only in tests. rfkill uses an ISC-style license.
-UTIL_LINUX_LICENSE = GPL-2.0+, BSD-4-Clause, LGPL-2.1+ (libblkid, libfdisk, libmount), BSD-3-Clause (libuuid) ISC (rfkill)
-UTIL_LINUX_LICENSE_FILES = README.licensing Documentation/licenses/COPYING.GPLv2 Documentation/licenses/COPYING.UCB Documentation/licenses/COPYING.LGPLv2.1 Documentation/licenses/COPYING.BSD-3 Documentation/licenses/COPYING.ISC
+# Some files are GPL-3.0+ but only in tests.
+UTIL_LINUX_LICENSE = GPL-2.0+, BSD-4-Clause, LGPL-2.1+ (libblkid, libfdisk, libmount), BSD-3-Clause (libuuid)
+UTIL_LINUX_LICENSE_FILES = README.licensing Documentation/licenses/COPYING.GPLv2 Documentation/licenses/COPYING.UCB Documentation/licenses/COPYING.LGPLv2.1 Documentation/licenses/COPYING.BSD-3
 UTIL_LINUX_INSTALL_STAGING = YES
 UTIL_LINUX_DEPENDENCIES = host-pkgconf $(TARGET_NLS_DEPENDENCIES)
+# uClibc needs NTP_LEGACY for sys/timex.h -> ntp_gettime() support
+# (used in logger.c), and the common default is N.
+UTIL_LINUX_CONF_ENV = scanf_cv_type_modifier=no \
+	$(if $(BR2_TOOLCHAIN_USES_UCLIBC),ac_cv_header_sys_timex_h=no)
 UTIL_LINUX_CONF_OPTS += \
 	--disable-rpath \
 	--disable-makeinstall-chown
@@ -35,13 +42,6 @@ HOST_UTIL_LINUX_CONF_OPTS = --without-python
 # wins the fight over who gets to have their utils actually installed
 ifeq ($(BR2_PACKAGE_BUSYBOX),y)
 UTIL_LINUX_DEPENDENCIES += busybox
-endif
-
-# Prevent the installation from attempting to move shared libraries from
-# ${usrlib_execdir} (/usr/lib) to ${libdir} (/lib), since both paths are
-# the same when merged usr is in use.
-ifeq ($(BR2_ROOTFS_MERGED_USR),y)
-UTIL_LINUX_CONF_OPTS += --bindir=/usr/bin --sbindir=/usr/sbin --libdir=/usr/lib
 endif
 
 ifeq ($(BR2_PACKAGE_NCURSES),y)
@@ -134,7 +134,7 @@ UTIL_LINUX_CONF_OPTS += \
 	$(if $(BR2_PACKAGE_UTIL_LINUX_PIVOT_ROOT),--enable-pivot_root,--disable-pivot_root) \
 	$(if $(BR2_PACKAGE_UTIL_LINUX_RAW),--enable-raw,--disable-raw) \
 	$(if $(BR2_PACKAGE_UTIL_LINUX_RENAME),--enable-rename,--disable-rename) \
-	$(if $(BR2_PACKAGE_UTIL_LINUX_RFKILL),--enable-rfkill,--disable-rfkill) \
+	$(if $(BR2_PACKAGE_UTIL_LINUX_RESET),--enable-reset,--disable-reset) \
 	$(if $(BR2_PACKAGE_UTIL_LINUX_RUNUSER),--enable-runuser,--disable-runuser) \
 	$(if $(BR2_PACKAGE_UTIL_LINUX_SCHEDUTILS),--enable-schedutils,--disable-schedutils) \
 	$(if $(BR2_PACKAGE_UTIL_LINUX_SETPRIV),--enable-setpriv,--disable-setpriv) \
@@ -167,43 +167,11 @@ HOST_UTIL_LINUX_CONF_OPTS += \
 
 ifeq ($(BR2_PACKAGE_HOST_UTIL_LINUX),y)
 HOST_UTIL_LINUX_CONF_OPTS += --disable-makeinstall-chown
-# disable commands that have ncurses dependency, as well as
-# other ones that are useless on the host
-HOST_UTIL_LINUX_CONF_OPTS += \
-	--disable-agetty \
-	--disable-chfn-chsh \
-	--disable-chmem \
-	--disable-login \
-	--disable-lslogins \
-	--disable-mesg \
-	--disable-more \
-	--disable-newgrp \
-	--disable-nologin \
-	--disable-nsenter \
-	--disable-pg \
-	--disable-rfkill \
-	--disable-schedutils \
-	--disable-setpriv \
-	--disable-setterm \
-	--disable-su \
-	--disable-sulogin \
-	--disable-tunelp \
-	--disable-ul \
-	--disable-unshare \
-	--disable-uuidd \
-	--disable-vipw \
-	--disable-wall \
-	--disable-wdctl \
-	--disable-write \
-	--disable-zramctl
-# Used by cramfs utils
-HOST_UTIL_LINUX_DEPENDENCIES += host-zlib
+# disable more command because of ncurses dependency
+HOST_UTIL_LINUX_CONF_OPTS += --disable-more
 else
 HOST_UTIL_LINUX_CONF_OPTS += --disable-all-programs
 endif
-
-# batocera / fix compilation error
-HOST_UTIL_LINUX_CONF_OPTS += --enable-libsmartcols
 
 # Install libmount Python bindings
 ifeq ($(BR2_PACKAGE_PYTHON)$(BR2_PACKAGE_PYTHON3),y)
