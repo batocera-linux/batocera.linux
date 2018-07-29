@@ -34,10 +34,11 @@ do_root() {
     done
 
     # update the squashfs
-    if test -e /boot_root/boot/recalbox.update
+    if test -e /boot_root/boot/batocera.update
     then
       mount -o remount,rw /boot_root || return 1
-      mv /boot_root/boot/recalbox.update /boot_root/boot/recalbox || return 1
+      rm -f /boot_root/boot/recalbox.update /boot_root/boot/recalbox # legacy cleaning
+      mv /boot_root/boot/batocera.update /boot_root/boot/batocera || return 1
       # remove the overlay when updating
       if test -e /boot_root/boot/overlay
       then
@@ -62,13 +63,13 @@ do_root() {
     fi
 
     # mount the squashfs
-    mount /boot_root/boot/recalbox /overlay_root/base || return 1
+    mount /boot_root/boot/batocera /overlay_root/base || return 1
 
     # mount the future root in read write
     if ! mount -t overlay overlay -o rw,lowerdir=/overlay_root/base,upperdir=/overlay_root/overlay,workdir=/overlay_root/work /new_root
     then
 	# mount only as squashfs, no overlay (xu4 doesn't support overlayfs)
-	mount /boot_root/boot/recalbox /new_root || return 1
+	mount /boot_root/boot/batocera /new_root || return 1
     fi
 
     # moving current mounts

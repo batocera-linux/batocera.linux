@@ -97,14 +97,14 @@ case "${BATOCERA_TARGET}" in
 	KERNEL_VERSION=$(grep -E "^BR2_LINUX_KERNEL_VERSION=" "${BR2_CONFIG}" | sed -e s+'^BR2_LINUX_KERNEL_VERSION="\(.*\)"$'+'\1'+)
 	"output/build/linux-${KERNEL_VERSION}/scripts/mkknlimg" "${BINARIES_DIR}/zImage" "${BINARIES_DIR}/rpi-firmware/boot/linux"
 	cp "${BINARIES_DIR}/initrd.gz" "${BINARIES_DIR}/rpi-firmware/boot" || exit 1
-	cp "${BINARIES_DIR}/rootfs.squashfs" "${BINARIES_DIR}/rpi-firmware/boot/recalbox.update" || exit 1
+	cp "${BINARIES_DIR}/rootfs.squashfs" "${BINARIES_DIR}/rpi-firmware/boot/batocera.update" || exit 1
 	echo "creating boot.tar.xz"
 	tar -cJf "${BATOCERA_BINARIES_DIR}/boot.tar.xz" -C "${BINARIES_DIR}/rpi-firmware" "." ||
 	    { echo "ERROR : unable to create boot.tar.xz" && exit 1 ;}
 
 	# batocera.img
 	# rename the squashfs : the .update is the version that will be renamed at boot to replace the old version
-	mv "${BINARIES_DIR}/rpi-firmware/boot/recalbox.update" "${BINARIES_DIR}/rpi-firmware/boot/recalbox" || exit 1
+	mv "${BINARIES_DIR}/rpi-firmware/boot/batocera.update" "${BINARIES_DIR}/rpi-firmware/boot/batocera" || exit 1
 	GENIMAGE_TMP="${BUILD_DIR}/genimage.tmp"
 	BATOCERAIMG="${BATOCERA_BINARIES_DIR}/batocera.img"
 	rm -rf "${GENIMAGE_TMP}" || exit 1
@@ -137,9 +137,9 @@ case "${BATOCERA_TARGET}" in
 	grep -qE "^BR2_TARGET_ROOTFS_EXT2=y$" "${BR2_CONFIG}" && ROOTFSEXT2=1
 	if test "${ROOTFSEXT2}" = 1
 	then
-	    cp "${BINARIES_DIR}/rootfs.ext2" "${BINARIES_DIR}/boot/boot/recalbox.update" || exit 1
+	    cp "${BINARIES_DIR}/rootfs.ext2" "${BINARIES_DIR}/boot/boot/batocera.update" || exit 1
 	else
-	    cp "${BINARIES_DIR}/rootfs.squashfs" "${BINARIES_DIR}/boot/boot/recalbox.update" || exit 1
+	    cp "${BINARIES_DIR}/rootfs.squashfs" "${BINARIES_DIR}/boot/boot/batocera.update" || exit 1
 	fi
 	cp "${BINARIES_DIR}/exynos5422-odroidxu4.dtb" "${BINARIES_DIR}/boot/boot/exynos5422-odroidxu4.dtb" || exit 1
 	cp "${BINARIES_DIR}/recalbox-boot.conf" "${BINARIES_DIR}/boot/recalbox-boot.conf"                  || exit 1
@@ -150,7 +150,7 @@ case "${BATOCERA_TARGET}" in
 
 	# batocera.img
 	# rename the squashfs : the .update is the version that will be renamed at boot to replace the old version
-	mv "${BINARIES_DIR}/boot/boot/recalbox.update" "${BINARIES_DIR}/boot/boot/recalbox" || exit 1
+	mv "${BINARIES_DIR}/boot/boot/batocera.update" "${BINARIES_DIR}/boot/boot/batocera" || exit 1
 	GENIMAGE_TMP="${BUILD_DIR}/genimage.tmp"
 	BATOCERAIMG="${BATOCERA_BINARIES_DIR}/batocera.img"
 	rm -rf "${GENIMAGE_TMP}" || exit 1
@@ -181,9 +181,9 @@ case "${BATOCERA_TARGET}" in
 	grep -qE "^BR2_TARGET_ROOTFS_EXT2=y$" "${BR2_CONFIG}" && ROOTFSEXT2=1
 	if test "${ROOTFSEXT2}" = 1
 	then
-	    cp "${BINARIES_DIR}/rootfs.ext2" "${BINARIES_DIR}/boot/boot/recalbox.update" || exit 1
+	    cp "${BINARIES_DIR}/rootfs.ext2" "${BINARIES_DIR}/boot/boot/batocera.update" || exit 1
 	else
-	    cp "${BINARIES_DIR}/rootfs.squashfs" "${BINARIES_DIR}/boot/boot/recalbox.update" || exit 1
+	    cp "${BINARIES_DIR}/rootfs.squashfs" "${BINARIES_DIR}/boot/boot/batocera.update" || exit 1
 	fi
 	cp "${BINARIES_DIR}/exynos5422-odroidxu3.dtb" "${BINARIES_DIR}/boot/boot/exynos5422-odroidxu3.dtb" || exit 1
 	cp "${BINARIES_DIR}/recalbox-boot.conf" "${BINARIES_DIR}/boot/recalbox-boot.conf"                  || exit 1
@@ -194,7 +194,7 @@ case "${BATOCERA_TARGET}" in
 
 	# batocera.img
 	# rename the squashfs : the .update is the version that will be renamed at boot to replace the old version
-	mv "${BINARIES_DIR}/boot/boot/recalbox.update" "${BINARIES_DIR}/boot/boot/recalbox" || exit 1
+	mv "${BINARIES_DIR}/boot/boot/batocera.update" "${BINARIES_DIR}/boot/boot/batocera" || exit 1
 	GENIMAGE_TMP="${BUILD_DIR}/genimage.tmp"
 	BATOCERAIMG="${BATOCERA_BINARIES_DIR}/batocera.img"
 	rm -rf "${GENIMAGE_TMP}" || exit 1
@@ -216,7 +216,7 @@ case "${BATOCERA_TARGET}" in
 	cp "${BINARIES_DIR}/Image" "${BINARIES_DIR}/boot/boot/linux" || exit 1
 	cp "${BINARIES_DIR}/meson64_odroidc2.dtb" "${BINARIES_DIR}/boot/boot" || exit 1
 	cp "${BINARIES_DIR}/uInitrd"              "${BINARIES_DIR}/boot/boot" || exit 1
-	cp "${BINARIES_DIR}/rootfs.squashfs" "${BINARIES_DIR}/boot/boot/recalbox.update" || exit 1
+	cp "${BINARIES_DIR}/rootfs.squashfs" "${BINARIES_DIR}/boot/boot/batocera.update" || exit 1
 
 	# boot.tar.xz
 	echo "creating boot.tar.xz"
@@ -224,7 +224,7 @@ case "${BATOCERA_TARGET}" in
 
 	# batocera.img
         # rename the squashfs : the .update is the version that will be renamed at boot to replace the old version
-        mv "${BINARIES_DIR}/boot/boot/recalbox.update" "${BINARIES_DIR}/boot/boot/recalbox" || exit 1
+        mv "${BINARIES_DIR}/boot/boot/batocera.update" "${BINARIES_DIR}/boot/boot/batocera" || exit 1
 	GENIMAGE_TMP="${BUILD_DIR}/genimage.tmp"
 	BATOCERAIMG="${BATOCERA_BINARIES_DIR}/batocera.img"
 	rm -rf "${GENIMAGE_TMP}" || exit 1
@@ -250,7 +250,7 @@ case "${BATOCERA_TARGET}" in
 	cp "${BINARIES_DIR}/recalbox-boot.conf" "${BINARIES_DIR}/boot/recalbox-boot.conf" || exit 1
 	$MKBOOTIMAGE --kernel "${BINARIES_DIR}/Image" --ramdisk "${BINARIES_DIR}/initrd" --second "${BINARIES_DIR}/dtb.img" --output "${BINARIES_DIR}/boot.img" || exit 1
 	cp "${BINARIES_DIR}/boot.img" "${BINARIES_DIR}/boot/boot/boot.img" || exit 1
-	cp "${BINARIES_DIR}/rootfs.squashfs" "${BINARIES_DIR}/boot/boot/recalbox.update" || exit 1
+	cp "${BINARIES_DIR}/rootfs.squashfs" "${BINARIES_DIR}/boot/boot/batocera.update" || exit 1
 
 	# boot.tar.xz
 	echo "creating boot.tar.xz"
@@ -258,7 +258,7 @@ case "${BATOCERA_TARGET}" in
 
 	# batocera.img
         # rename the squashfs : the .update is the version that will be renamed at boot to replace the old version
-        mv "${BINARIES_DIR}/boot/boot/recalbox.update" "${BINARIES_DIR}/boot/boot/recalbox" || exit 1
+        mv "${BINARIES_DIR}/boot/boot/batocera.update" "${BINARIES_DIR}/boot/boot/batocera" || exit 1
 	GENIMAGE_TMP="${BUILD_DIR}/genimage.tmp"
 	BATOCERAIMG="${BATOCERA_BINARIES_DIR}/batocera.img"
 	rm -rf "${GENIMAGE_TMP}" || exit 1
@@ -283,7 +283,7 @@ case "${BATOCERA_TARGET}" in
 	cp "${BINARIES_DIR}/recalbox-boot.conf" "${BINARIES_DIR}/boot/recalbox-boot.conf" || exit 1
 	$MKBOOTIMAGE --kernel "${BINARIES_DIR}/Image" --ramdisk "${BINARIES_DIR}/initrd" --second "${BINARIES_DIR}/dtb.img" --output "${BINARIES_DIR}/boot.img" || exit 1
 	cp "${BINARIES_DIR}/boot.img" "${BINARIES_DIR}/boot/boot/boot.img" || exit 1
-	cp "${BINARIES_DIR}/rootfs.squashfs" "${BINARIES_DIR}/boot/boot/recalbox.update" || exit 1
+	cp "${BINARIES_DIR}/rootfs.squashfs" "${BINARIES_DIR}/boot/boot/batocera.update" || exit 1
 
 	# boot.tar.xz
 	echo "creating boot.tar.xz"
@@ -291,7 +291,7 @@ case "${BATOCERA_TARGET}" in
 
 	# batocera.img
         # rename the squashfs : the .update is the version that will be renamed at boot to replace the old version
-        mv "${BINARIES_DIR}/boot/boot/recalbox.update" "${BINARIES_DIR}/boot/boot/recalbox" || exit 1
+        mv "${BINARIES_DIR}/boot/boot/batocera.update" "${BINARIES_DIR}/boot/boot/batocera" || exit 1
 	GENIMAGE_TMP="${BUILD_DIR}/genimage.tmp"
 	BATOCERAIMG="${BATOCERA_BINARIES_DIR}/batocera.img"
 	rm -rf "${GENIMAGE_TMP}" || exit 1
@@ -309,7 +309,7 @@ case "${BATOCERA_TARGET}" in
 	cp "board/batocera/grub2/grub.cfg" ${BINARIES_DIR}/boot/grub/grub.cfg || exit 1
 	cp "${BINARIES_DIR}/bzImage" "${BINARIES_DIR}/boot/linux" || exit 1
 	cp "${BINARIES_DIR}/initrd.gz" "${BINARIES_DIR}/boot" || exit 1
-	cp "${BINARIES_DIR}/rootfs.squashfs" "${BINARIES_DIR}/boot/recalbox.update" || exit 1
+	cp "${BINARIES_DIR}/rootfs.squashfs" "${BINARIES_DIR}/boot/batocera.update" || exit 1
 
 	# get UEFI files
 	mkdir -p "${BINARIES_DIR}/EFI/BOOT" || exit 1
@@ -323,7 +323,7 @@ case "${BATOCERA_TARGET}" in
 
 	# batocera.img
         # rename the squashfs : the .update is the version that will be renamed at boot to replace the old version
-        mv "${BINARIES_DIR}/boot/recalbox.update" "${BINARIES_DIR}/boot/recalbox" || exit 1
+        mv "${BINARIES_DIR}/boot/batocera.update" "${BINARIES_DIR}/boot/batocera" || exit 1
 	GENIMAGE_TMP="${BUILD_DIR}/genimage.tmp"
 	BATOCERAIMG="${BATOCERA_BINARIES_DIR}/batocera.img"
 	rm -rf "${GENIMAGE_TMP}" || exit 1
