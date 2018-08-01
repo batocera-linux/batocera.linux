@@ -1,0 +1,6 @@
+#!/bin/bash
+
+if test "$1" = "start"
+then
+	insmod /lib/modules/3.14.29/kernel/gpu/mali.ko
+fi

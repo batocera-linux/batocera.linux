@@ -238,7 +238,6 @@ case "${BATOCERA_TARGET}" in
 
     S905)
 	MKIMAGE=${HOST_DIR}/bin/mkimage
-	MKBOOTIMAGE=${HOST_DIR}/bin/mkbootimg
 	BOARD_DIR="board/batocera/s905"
 	# boot
 	rm -rf ${BINARIES_DIR}/boot        || exit 1
@@ -248,13 +247,18 @@ case "${BATOCERA_TARGET}" in
 	$MKIMAGE -C none -A arm64 -T script -d ${BOARD_DIR}/aml_autoscript.txt ${BINARIES_DIR}/boot/aml_autoscript
 	cp ${BOARD_DIR}/aml_autoscript.zip ${BINARIES_DIR}/boot     || exit 1
 	cp "${BINARIES_DIR}/recalbox-boot.conf" "${BINARIES_DIR}/boot/recalbox-boot.conf" || exit 1
-	$MKBOOTIMAGE --kernel "${BINARIES_DIR}/Image" --ramdisk "${BINARIES_DIR}/initrd" --second "${BINARIES_DIR}/dtb.img" --output "${BINARIES_DIR}/boot.img" || exit 1
-	cp "${BINARIES_DIR}/boot.img" "${BINARIES_DIR}/boot/boot/boot.img" || exit 1
+	for DTB in gxbb_p200_2G.dtb  gxbb_p200.dtb  gxl_p212_1g.dtb  gxl_p212_2g.dtb all_merged.dtb
+	do
+	    cp "${BINARIES_DIR}/${DTB}" "${BINARIES_DIR}/boot/boot" || exit 1
+	done
+
+	cp "${BINARIES_DIR}/Image"           "${BINARIES_DIR}/boot/boot/linux"           || exit 1
+	cp "${BINARIES_DIR}/uInitrd"         "${BINARIES_DIR}/boot/boot/uInitrd"    	 || exit 1
 	cp "${BINARIES_DIR}/rootfs.squashfs" "${BINARIES_DIR}/boot/boot/batocera.update" || exit 1
 
 	# boot.tar.xz
 	echo "creating boot.tar.xz"
-	(cd "${BINARIES_DIR}/boot" && tar -cJf "${BATOCERA_BINARIES_DIR}/boot.tar.xz"  boot recalbox-boot.conf boot-logo.bmp.gz) || exit 1
+	(cd "${BINARIES_DIR}/boot" && tar -cJf "${BATOCERA_BINARIES_DIR}/boot.tar.xz"  boot recalbox-boot.conf boot-logo.bmp.gz aml_autoscript.zip aml_autoscript s905_autoscript) || exit 1
 
 	# batocera.img
         # rename the squashfs : the .update is the version that will be renamed at boot to replace the old version

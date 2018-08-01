@@ -73,7 +73,7 @@ BUILD_DTS_CMD = \
                 CROSS_COMPILE=$(TARGET_CROSS) $(DEVICE_TREES_AML_S9XX_DTBS)
 
 COMBINE_DTS_CMD = \
-	$(HOST_DIR)/bin/dtbTool -o $(LINUX_DIR)/arch/$(DEVICE_TREES_AML_S9XX_ARCH)/boot/dts/dtb.img $(DTS_PATH)
+	$(HOST_DIR)/bin/dtbTool -o $(LINUX_DIR)/arch/$(DEVICE_TREES_AML_S9XX_ARCH)/boot/dts/all_merged.dtb $(DTS_PATH)
 
 define DEVICE_TREES_AML_S9XX_BUILD_CMDS
 	${PREPARE_DTS_CMD}
@@ -83,7 +83,7 @@ define DEVICE_TREES_AML_S9XX_BUILD_CMDS
 endef
 
 define DEVICE_TREES_AML_S9XX_INSTALL_IMAGES_CMDS
-	cp -f $(LINUX_DIR)/arch/$(DEVICE_TREES_AML_S9XX_ARCH)/boot/dts/dtb.img $(BINARIES_DIR);
+	cp -f $(LINUX_DIR)/arch/$(DEVICE_TREES_AML_S9XX_ARCH)/boot/dts/all_merged.dtb $(BINARIES_DIR);
 endef
 
 $(eval $(generic-package))
