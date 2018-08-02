@@ -247,6 +247,7 @@ case "${BATOCERA_TARGET}" in
 	$MKIMAGE -C none -A arm64 -T script -d ${BOARD_DIR}/aml_autoscript.txt ${BINARIES_DIR}/boot/aml_autoscript
 	cp ${BOARD_DIR}/aml_autoscript.zip ${BINARIES_DIR}/boot     || exit 1
 	cp "${BINARIES_DIR}/recalbox-boot.conf" "${BINARIES_DIR}/boot/recalbox-boot.conf" || exit 1
+	cp "${BOARD_DIR}/README.txt" "${BINARIES_DIR}/boot/README.txt" || exit 1
 	for DTB in gxbb_p200_2G.dtb  gxbb_p200.dtb  gxl_p212_1g.dtb  gxl_p212_2g.dtb all_merged.dtb
 	do
 	    cp "${BINARIES_DIR}/${DTB}" "${BINARIES_DIR}/boot/boot" || exit 1
