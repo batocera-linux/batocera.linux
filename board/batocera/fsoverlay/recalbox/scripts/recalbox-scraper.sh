@@ -35,6 +35,24 @@ then
     IMGSTYLE="b,f,a,l,3b,s"
 fi
 
+do_scrap() {
+    LRDIR=$1
+    NF=$(ls "${LRDIR}" | grep -vE '\.txt$|\.xml$' | wc -l)
+    if test "${NF}" -gt 0
+    then
+	BASEDIR=$(basename "${LRDIR}")
+	echo "GAME: system ${BASEDIR}"
+	EXTRAOPT=
+
+	for x in "mame" "fba" "fba_libretro" "neogeo"
+	do
+	    test "${LRDIR}" = "/recalbox/share/roms/${x}" && EXTRAOPT="-mame"
+	done
+
+	(cd "${LRDIR}" && sselph-scraper -console_src ss,gdb,ovgdb -lang "${sslang}" -console_img "${IMGSTYLE}" -workers 5 ${EXTRAOPT}) 2>&1
+    fi
+}
+
 # find system to scrape
 (if test -n "${DOSYS}"
  then
@@ -42,22 +60,19 @@ fi
  else
      find /recalbox/share/roms -maxdepth 1 -mindepth 1 -type d
  fi) |
-    while read RDIR
+    while read RDIR1
     do
-	NF=$(ls "${RDIR}" | grep -vE '\.txt$|\.xml$' | wc -l)
-	if test "${NF}" -gt 0
-	then
-	    BASEDIR=$(basename "${RDIR}")
-	    echo "GAME: system ${BASEDIR}"
-	    EXTRAOPT=
+	# read the 2 next dir
+	read RDIR2
+	read RDIR3
+	read RDIR4
 
-	    for x in "mame" "fba" "fba_libretro" "neogeo"
-	    do
-		test "${RDIR}" = "/recalbox/share/roms/${x}" && EXTRAOPT="-mame"
-	    done
+	do_scrap "${RDIR1}" &
+	test -n "${RDIR2}" && do_scrap "${RDIR2}" &
+	test -n "${RDIR3}" && do_scrap "${RDIR3}" &
+	test -n "${RDIR4}" && do_scrap "${RDIR4}" &
+	wait
 
-	    (cd "${RDIR}" && sselph-scraper -console_src ss,gdb,ovgdb -lang "${sslang}" -console_img "${IMGSTYLE}" ${EXTRAOPT}) 2>&1
-	fi
     done
 
 # synchronize to not make the usb/sdcard slowing down once finnished
