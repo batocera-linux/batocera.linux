@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-BLUEZ5_UTILS_VERSION = 5.46
+BLUEZ5_UTILS_VERSION = 5.47
 BLUEZ5_UTILS_SOURCE = bluez-$(BLUEZ5_UTILS_VERSION).tar.xz
 BLUEZ5_UTILS_SITE = $(BR2_KERNEL_MIRROR)/linux/bluetooth
 BLUEZ5_UTILS_INSTALL_STAGING = YES
@@ -16,6 +16,8 @@ BLUEZ5_UTILS_CONF_OPTS = \
 	--enable-tools \
 	--enable-library \
 	--disable-cups
+
+BLUEZ5_UTILS_CONF_OPTS += --enable-deprecated
 
 ifeq ($(BR2_PACKAGE_BLUEZ5_UTILS_OBEX),y)
 BLUEZ5_UTILS_CONF_OPTS += --enable-obex
@@ -68,7 +70,7 @@ BLUEZ5_UTILS_CONF_OPTS += --disable-sap
 endif
 
 # enable sixaxis plugin
-ifeq ($(BR2_PACKAGE_BLUEZ5_UTILS_PLUGINS_SIXAXIS),y)
+ifeq ($(BR2_PACKAGE_BLUEZ5_PLUGINS_SIXAXIS),y)
 BLUEZ5_UTILS_CONF_OPTS += --enable-sixaxis
 else
 BLUEZ5_UTILS_CONF_OPTS += --disable-sixaxis
@@ -80,6 +82,10 @@ define BLUEZ5_UTILS_INSTALL_GATTTOOL
 	$(INSTALL) -D -m 0755 $(@D)/attrib/gatttool $(TARGET_DIR)/usr/bin/gatttool
 endef
 BLUEZ5_UTILS_POST_INSTALL_TARGET_HOOKS += BLUEZ5_UTILS_INSTALL_GATTTOOL
+# hciattach_bcm43xx defines default firmware path in `/etc/firmware`, but
+# Broadcom firmware blobs are usually located in `/lib/firmware`.
+BLUEZ5_UTILS_CONF_ENV += \
+	CPPFLAGS='$(TARGET_CPPFLAGS) -DFIRMWARE_DIR=\"/lib/firmware\"'
 BLUEZ5_UTILS_CONF_OPTS += --enable-deprecated
 else
 BLUEZ5_UTILS_CONF_OPTS += --disable-deprecated
