@@ -54,6 +54,9 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
     select BR2_PACKAGE_PCMANFM                           if BR2_PACKAGE_XSERVER_XORG_SERVER # file manager
     select BR2_PACKAGE_XTERM                             if BR2_PACKAGE_XSERVER_XORG_SERVER # terminal
     select BR2_PACKAGE_MATCHBOX                          if BR2_PACKAGE_XSERVER_XORG_SERVER # window manager
+    select BR2_PACKAGE_AVAHI_DAEMON                      # ping batocera.local
+    select BR2_PACKAGE_AVAHI_LIBDNSSD_COMPATIBILITY      # bonjour
+
 
     # compression tools
     select BR2_PACKAGE_UNZIP                             # for /recalbox/share/system/upgrade/share.zip
@@ -365,6 +368,11 @@ config BR2_PACKAGE_BATOCERA_KODI
        select BR2_PACKAGE_KODI_PVR_WMC
        select BR2_PACKAGE_KODI_UPNP
        select BR2_PACKAGE_KODI_LIBBLURAY
+
+       #
+       select BR2_PACKAGE_KODI_SUPERREPO_REPOSITORIES
+       select BR2_PACKAGE_KODI_SUPERREPO_ALL
+       select BR2_PACKAGE_KODI_PLUGIN_VIDEO_FILMON
 
        # GBM
        select BR2_PACKAGE_KODI_GBM if BR2_PACKAGE_BATOCERA_TARGET_XU4
