@@ -70,7 +70,7 @@ BLUEZ5_UTILS_CONF_OPTS += --disable-sap
 endif
 
 # enable sixaxis plugin
-ifeq ($(BR2_PACKAGE_BLUEZ5_PLUGINS_SIXAXIS),y)
+ifeq ($(BR2_PACKAGE_BLUEZ5_UTILS_PLUGINS_SIXAXIS),y)
 BLUEZ5_UTILS_CONF_OPTS += --enable-sixaxis
 else
 BLUEZ5_UTILS_CONF_OPTS += --disable-sixaxis
