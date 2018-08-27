@@ -3,8 +3,13 @@
 # PPSSPP
 #
 ################################################################################
-# Version.: Commits on Jun 27, 2018 (v1.6.3)
-PPSSPP_VERSION = 5abf324da97597d386255ff5dd6b082c19fb1964
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI3),y)
+	# Version.: committed on Dec 20, 2017 (v1.5.4)
+	PPSSPP_VERSION = c27d64f273c231241e84498eb9392fbc05635780
+else	
+	# Version.: Commits on Jul 15, 2018 (v1.6.3)
+	PPSSPP_VERSION = ea1ef9277cd7d5b439951099bee15f074999c7c1
+endif
 PPSSPP_SITE = https://github.com/hrydgard/ppsspp.git
 PPSSPP_SITE_METHOD=git
 PPSSPP_GIT_SUBMODULES=YES
@@ -54,11 +59,9 @@ ifeq ($(BR2_PACKAGE_LIBHYBRIS),y)
 	PPSSPP_CONF_OPTS += -DUSING_FBDEV=ON -DUSING_GLES2=ON -DUSING_EGL=OFF -DUSING_X11_VULKAN=OFF
 endif
 
-define PPSSPP_INSTALL_TO_TARGET
+define PPSSPP_INSTALL_TARGET_CMDS
 	$(INSTALL) -D -m 0755 $(@D)/PPSSPPSDL $(TARGET_DIR)/usr/bin
 	cp -R $(@D)/assets $(TARGET_DIR)/usr/bin
 endef
-
-PPSSPP_INSTALL_TARGET_CMDS = $(PPSSPP_INSTALL_TO_TARGET)
 
 $(eval $(cmake-package))
