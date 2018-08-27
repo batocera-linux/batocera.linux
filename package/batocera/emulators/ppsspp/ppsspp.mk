@@ -3,13 +3,8 @@
 # PPSSPP
 #
 ################################################################################
-ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI3),y)
-	# Version.: committed on Dec 20, 2017 (v1.5.4)
-	PPSSPP_VERSION = c27d64f273c231241e84498eb9392fbc05635780
-else	
-	# Version.: Commits on Jul 15, 2018 (v1.6.3)
-	PPSSPP_VERSION = ea1ef9277cd7d5b439951099bee15f074999c7c1
-endif
+# Version.: Commits on Jul 15, 2018 (v1.6.3)
+PPSSPP_VERSION = ea1ef9277cd7d5b439951099bee15f074999c7c1
 PPSSPP_SITE = https://github.com/hrydgard/ppsspp.git
 PPSSPP_SITE_METHOD=git
 PPSSPP_GIT_SUBMODULES=YES
