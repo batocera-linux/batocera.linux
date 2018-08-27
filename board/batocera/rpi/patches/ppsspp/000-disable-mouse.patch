@@ -1,0 +1,15 @@
+diff --git a/SDL/SDLMain.cpp b/SDL/SDLMain.cpp
+index 6606630..e7039d0 100644
+--- a/SDL/SDLMain.cpp
++++ b/SDL/SDLMain.cpp
+@@ -658,10 +658,7 @@ int main(int argc, char *argv[]) {
+ 
+ 	SDL_SetWindowTitle(g_Screen, (app_name_nice + " " + PPSSPP_GIT_VERSION).c_str());
+ 
+-#ifdef MOBILE_DEVICE
+ 	SDL_ShowCursor(SDL_DISABLE);
+-#endif
+-
+ 
+ #ifndef USING_GLES2
+ 	// Some core profile drivers elide certain extensions from GL_EXTENSIONS/etc.
