@@ -1,0 +1,15 @@
+diff --git a/UI/EmuScreen.cpp b/UI/EmuScreen.cpp
+index 28c6cb2..77a37fe 100644
+--- a/UI/EmuScreen.cpp
++++ b/UI/EmuScreen.cpp
+@@ -651,8 +651,8 @@ void EmuScreen::pspKey(int pspKeyCode, int flags) {
+ 			__CtrlButtonUp(pspKeyCode);
+ 
+ 		/* batocera hotkeys */
+-		if(batocera_hotkey == 1) {
+-		  int buttons = __CtrlPeekButtons();
++		int buttons = __CtrlPeekButtons();
++		if(batocera_hotkey == 1 || (buttons & CTRL_SELECT) == CTRL_SELECT) {
+ 
+ 		  if((buttons & CTRL_CROSS) == CTRL_CROSS) {
+ 		    batocera_hotkey = 0;        // disable, because in case of menu, the down is not got
