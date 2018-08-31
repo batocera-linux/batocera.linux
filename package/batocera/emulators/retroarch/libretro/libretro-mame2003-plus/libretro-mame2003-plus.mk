@@ -3,11 +3,9 @@
 # MAME2003 PLUS
 #
 ################################################################################
-#LIBRETRO_MAME2003_PLUS_VERSION = mame078p - Commits on May 9, 2018 
-LIBRETRO_MAME2003_PLUS_VERSION = 1bb93a110a8d10b07b98c04b874433676874d7d4
+#LIBRETRO_MAME2003_PLUS_VERSION = mame078p - Commits on Aug 30, 2018
+LIBRETRO_MAME2003_PLUS_VERSION = 15678a0a455d0cce35cd9979b0b048e3c927885c
 LIBRETRO_MAME2003_PLUS_SITE = $(call github,libretro,mame2003-plus-libretro,$(LIBRETRO_MAME2003_PLUS_VERSION))
-
-
 
 define LIBRETRO_MAME2003_PLUS_BUILD_CMDS
 	mkdir -p $(@D)/obj/mame/cpu/ccpu
