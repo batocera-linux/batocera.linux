@@ -3,8 +3,8 @@
 # UAE
 #
 ################################################################################
-# Version.: Commits on Apr 9, 2018
-LIBRETRO_UAE_VERSION = 555bfce24ca3966912e4b9ecdd4cc16bbe9beb20
+# Version.: Commits on Aug 12, 2018
+LIBRETRO_UAE_VERSION = cfb9f1e2f6d3ca72183d26b882b74f2a272b780b
 LIBRETRO_UAE_SITE = $(call github,libretro,libretro-uae,$(LIBRETRO_UAE_VERSION))
 
 ifeq ($(BR2_PACKAGE_RPI_USERLAND),y)
