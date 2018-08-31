@@ -3,8 +3,8 @@
 # 4DO
 #
 ################################################################################
-# Version.: Commits on May 15, 2018
-LIBRETRO_4DO_VERSION = 75e2cf939a84040a9721324b8c75896d2faaf368
+# Version.: Commits on Aug 29, 2018
+LIBRETRO_4DO_VERSION = 9d76c93c140d227211411b351ad03b8252d21a3a
 LIBRETRO_4DO_SITE = $(call github,libretro,4do-libretro,$(LIBRETRO_4DO_VERSION))
 
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI3),y)
