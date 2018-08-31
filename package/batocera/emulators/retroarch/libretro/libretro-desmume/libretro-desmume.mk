@@ -3,8 +3,8 @@
 # DESMUME
 #
 ################################################################################
-# Version.: Commits on Apr 16, 2018
-LIBRETRO_DESMUME_VERSION = 9fb1e8c1f4ccd819f15b29e2114a05e45140fec0
+# Version.: Commits on Aug 7, 2018
+LIBRETRO_DESMUME_VERSION = f546d2dd15c8c8c44907e4332339c36d9f8319d5
 LIBRETRO_DESMUME_SITE = $(call github,libretro,desmume,$(LIBRETRO_DESMUME_VERSION))
 
 define LIBRETRO_DESMUME_BUILD_CMDS
