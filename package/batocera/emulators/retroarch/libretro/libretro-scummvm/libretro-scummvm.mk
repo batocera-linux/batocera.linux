@@ -3,8 +3,8 @@
 # SCUMMVM
 #
 ################################################################################
-#	VERSION.: Commits on May 17, 2018
-LIBRETRO_SCUMMVM_VERSION = 3a9d1f574a92ac4f0310616dc9fee94063a707a8
+# VERSION.: Commits on May 23, 2018
+LIBRETRO_SCUMMVM_VERSION = 60c47acfcbdd664cd3adeb97688b5466e82d70ea
 LIBRETRO_SCUMMVM_SITE = $(call github,libretro,scummvm,$(LIBRETRO_SCUMMVM_VERSION))
 
 define LIBRETRO_SCUMMVM_BUILD_CMDS
