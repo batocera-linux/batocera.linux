@@ -3,8 +3,8 @@
 # O2EM
 #
 ################################################################################
-# Version.: Commits on May 2, 2018
-LIBRETRO_O2EM_VERSION = 26715cb218d15f6703bda2e8fa0a51da2d38dfa9
+# Version.: Commits on Aug 12, 2018
+LIBRETRO_O2EM_VERSION = 925fc14d818abcbb9665cae4dd995f8b751db46c
 LIBRETRO_O2EM_SITE = $(call github,libretro,libretro-o2em,$(LIBRETRO_O2EM_VERSION))
 
 define LIBRETRO_O2EM_BUILD_CMDS
