@@ -3,13 +3,13 @@
 # YABAUSE
 #
 ################################################################################
-# Version.: Commits on Apr 19, 2018
-LIBRETRO_YABAUSE_VERSION = e0c0f99d70e191290e857797710f5cbe16d5b62e
+# Version.: Commits on Aug 25, 2018
+LIBRETRO_YABAUSE_VERSION = fae968218a93d10ca9b811ed47df942f8bec697d
 LIBRETRO_YABAUSE_SITE = $(call github,libretro,yabause,$(LIBRETRO_YABAUSE_VERSION))
 
 define LIBRETRO_YABAUSE_BUILD_CMDS
 	CFLAGS="$(TARGET_CFLAGS)" CXXFLAGS="$(TARGET_CXXFLAGS)" \
-        $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" LD="$(TARGET_LD)" RANLIB="$(TARGET_RANLIB)" AR="$(TARGET_AR)" -C $(@D)/libretro -f Makefile platform="$(LIBRETRO_PLATFORM)"
+        $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" LD="$(TARGET_CXX)" RANLIB="$(TARGET_RANLIB)" AR="$(TARGET_AR)" -C $(@D)/libretro -f Makefile platform="$(LIBRETRO_PLATFORM)"
 endef
 
 define LIBRETRO_YABAUSE_INSTALL_TARGET_CMDS
