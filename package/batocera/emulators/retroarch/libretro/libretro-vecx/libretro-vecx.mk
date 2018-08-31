@@ -3,8 +3,8 @@
 # VECX
 #
 ################################################################################
-# Version.: Commits on Apr 12, 2018
-LIBRETRO_VECX_VERSION = 25bfdd94900dcf5fd3d555ef686d857c0f087c2f
+# Version.: Commits on Aug 12, 2018
+LIBRETRO_VECX_VERSION = 7c16fe2eaff5c0538df2ce63467ff7111b49d56b
 LIBRETRO_VECX_SITE = $(call github,libretro,libretro-vecx,$(LIBRETRO_VECX_VERSION))
 
 define LIBRETRO_VECX_BUILD_CMDS
