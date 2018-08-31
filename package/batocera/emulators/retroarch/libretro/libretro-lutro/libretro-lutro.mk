@@ -3,8 +3,8 @@
 # LUTRO
 #
 ################################################################################
-# Version.: Commits on Apr 6, 2018
-LIBRETRO_LUTRO_VERSION = d12f58ed23091a3f4f1855c46f3acb6ecaa2b894
+# Version.: Commits on Aug 21, 2018
+LIBRETRO_LUTRO_VERSION = b69dd3e566dfcffee17dd33049674b3d3dcd441c
 LIBRETRO_LUTRO_SITE = $(call github,libretro,libretro-lutro,$(LIBRETRO_LUTRO_VERSION))
 
 define LIBRETRO_LUTRO_BUILD_CMDS
