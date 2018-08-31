@@ -4,7 +4,7 @@
 #
 ################################################################################
 #RETROARCH_VERSION = 1.7.3
-RETROARCH_VERSION = b2ceb50897bc5c314bbd653a583a95050f03e1e2
+RETROARCH_VERSION = v1.7.4
 
 RETROARCH_SITE = $(call github,libretro,RetroArch,$(RETROARCH_VERSION))
 
