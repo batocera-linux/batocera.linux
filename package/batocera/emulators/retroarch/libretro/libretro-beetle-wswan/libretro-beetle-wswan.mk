@@ -3,8 +3,8 @@
 # BEETLE_WSWAN
 #
 ################################################################################
-# Version.: Commits on Apr 13, 2018
-LIBRETRO_BEETLE_WSWAN_VERSION = 4d702bcf03c415c6f26b84b522f9e9b8e8cec65c
+# Version.: Commits on Jul 20, 2018
+LIBRETRO_BEETLE_WSWAN_VERSION = b4dc85b0ada2b27af3d4420439b0e4528363ef67
 LIBRETRO_BEETLE_WSWAN_SITE = $(call github,libretro,beetle-wswan-libretro,$(LIBRETRO_BEETLE_WSWAN_VERSION))
 
 define LIBRETRO_BEETLE_WSWAN_BUILD_CMDS
