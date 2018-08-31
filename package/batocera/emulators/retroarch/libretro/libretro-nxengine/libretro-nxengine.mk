@@ -3,8 +3,8 @@
 # NXENGINE
 #
 ################################################################################
-# Version.: Commits on May 9, 2018
-LIBRETRO_NXENGINE_VERSION = ff2a938175bcfa0f4674d59b55e5420e31fe0c26
+# Version.: Commits on Aug 29, 2018
+LIBRETRO_NXENGINE_VERSION = 053e28334cf46ce8ea12041b3fe6fd173cc07593
 LIBRETRO_NXENGINE_SITE = $(call github,libretro,nxengine-libretro,$(LIBRETRO_NXENGINE_VERSION))
 
 define LIBRETRO_NXENGINE_BUILD_CMDS
