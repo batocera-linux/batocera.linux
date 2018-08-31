@@ -3,8 +3,8 @@
 # BEETLE_VB
 #
 ################################################################################
-# Version.: Commits on Apr 12, 2018
-LIBRETRO_BEETLE_VB_VERSION = 60a085902ce463e2ecd0e12de80cd3e029654efa
+# Version.: Commits on Jul 20, 2018
+LIBRETRO_BEETLE_VB_VERSION = cc11960675aaef4bb9c8e50b8ada6c81d9044d96
 LIBRETRO_BEETLE_VB_SITE = $(call github,libretro,beetle-vb-libretro,$(LIBRETRO_BEETLE_VB_VERSION))
 
 define LIBRETRO_BEETLE_VB_BUILD_CMDS
