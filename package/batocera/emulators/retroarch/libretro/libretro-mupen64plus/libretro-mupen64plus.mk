@@ -3,8 +3,8 @@
 # MUPEN64PLUS
 #
 ################################################################################
-# Version.: Commits on Apr 10, 2018
-LIBRETRO_MUPEN64PLUS_VERSION = d2abd0cda0b524d05adae9f338dcd1fee78aaf72
+# Version.: Commits on Jul 28, 2018
+LIBRETRO_MUPEN64PLUS_VERSION = 4ca2fa8633666e26e2f163dcd3c226b598cb2aa4
 LIBRETRO_MUPEN64PLUS_SITE = $(call github,libretro,mupen64plus-libretro,$(LIBRETRO_MUPEN64PLUS_VERSION))
 
 ifeq ($(BR2_PACKAGE_RPI_USERLAND),y)
