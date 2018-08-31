@@ -3,8 +3,8 @@
 # LIBRETRO_FREEINTV
 #
 ################################################################################
-# Version.: Commits on May 3, 2018
-LIBRETRO_FREEINTV_VERSION = 233f362ceea2e7d863b3b40695d8a4793793a414
+# Version.: Commits on Jul 29, 2018
+LIBRETRO_FREEINTV_VERSION = f20a0a5da15479dc4f223750a616812958597417
 LIBRETRO_FREEINTV_SITE = $(call github,libretro,freeintv,$(LIBRETRO_FREEINTV_VERSION))
 
 define LIBRETRO_FREEINTV_BUILD_CMDS
