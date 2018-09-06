@@ -185,6 +185,7 @@ dreamcast:
   extensions: [cdi, chd, gdi]
   emulators:
     libretro:
+      redream: { require: [BR2_PACKAGE_LIBRETRO_REDREAM] }
       reicast: { require: [BR2_PACKAGE_LIBRETRO_REICAST] }
       reicast_oit: { require: [BR2_PACKAGE_LIBRETRO_REICAST_OIT] }
     reicast:
