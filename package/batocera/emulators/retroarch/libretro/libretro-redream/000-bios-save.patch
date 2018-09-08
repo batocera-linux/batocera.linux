@@ -1,0 +1,102 @@
+diff --git a/src/core/filesystem.c b/src/core/filesystem.c
+index fc00a22..8de7eb8 100644
+--- a/src/core/filesystem.c
++++ b/src/core/filesystem.c
+@@ -3,6 +3,7 @@
+ #include "core/core.h"
+ 
+ static char appdir[PATH_MAX];
++static char appdirbios[PATH_MAX];
+ 
+ static inline int fs_is_separator(char c) {
+ #if PLATFORM_WINDOWS
+@@ -74,3 +75,17 @@ void fs_set_appdir(const char *path) {
+ const char *fs_appdir() {
+   return appdir;
+ }
++
++void fs_set_appdirbios(const char *path) {
++  strncpy(appdirbios, path, sizeof(appdirbios));
++
++  if (!fs_mkdir(appdirbios)) {
++    LOG_FATAL("fs_set_appdirbios failed to create %s", appdirbios);
++  }
++
++  LOG_INFO("fs_set_appdirbios path=%s", path);
++}
++
++const char *fs_appdirbios() {
++  return appdirbios;
++}
+diff --git a/src/core/filesystem.h b/src/core/filesystem.h
+index 59f63b8..7cf75a3 100644
+--- a/src/core/filesystem.h
++++ b/src/core/filesystem.h
+@@ -32,6 +32,9 @@
+ const char *fs_appdir();
+ void fs_set_appdir(const char *path);
+ 
++const char *fs_appdirbios();
++void fs_set_appdirbios(const char *path);
++
+ int fs_userdir(char *userdir, size_t size);
+ int fs_mediadirs(char *dirs, int num, size_t size);
+ 
+diff --git a/src/guest/rom/boot.c b/src/guest/rom/boot.c
+index 313f82f..506d59b 100644
+--- a/src/guest/rom/boot.c
++++ b/src/guest/rom/boot.c
+@@ -13,9 +13,9 @@ static const char *boot_bin_path() {
+   static char filename[PATH_MAX];
+ 
+   if (!filename[0]) {
+-    const char *appdir = fs_appdir();
+-    snprintf(filename, sizeof(filename), "%s" PATH_SEPARATOR "boot.bin",
+-             appdir);
++    const char *appdirbios = fs_appdirbios();
++    snprintf(filename, sizeof(filename), "%s" PATH_SEPARATOR "dc_boot.bin",
++             appdirbios);
+   }
+ 
+   return filename;
+diff --git a/src/guest/rom/flash.c b/src/guest/rom/flash.c
+index a1f799c..11d25e9 100644
+--- a/src/guest/rom/flash.c
++++ b/src/guest/rom/flash.c
+@@ -27,9 +27,9 @@ static const char *flash_bin_path() {
+   static char filename[PATH_MAX];
+ 
+   if (!filename[0]) {
+-    const char *appdir = fs_appdir();
+-    snprintf(filename, sizeof(filename), "%s" PATH_SEPARATOR "flash.bin",
+-             appdir);
++    const char *appdirbios = fs_appdirbios();
++    snprintf(filename, sizeof(filename), "%s" PATH_SEPARATOR "dc_flash.bin",
++             appdirbios);
+   }
+ 
+   return filename;
+diff --git a/src/host/retro_host.c b/src/host/retro_host.c
+index b973207..8bdf65b 100644
+--- a/src/host/retro_host.c
++++ b/src/host/retro_host.c
+@@ -194,10 +194,18 @@ void retro_init() {
+   const char *sysdir = NULL;
+   if (env_cb(RETRO_ENVIRONMENT_GET_SYSTEM_DIRECTORY, &sysdir)) {
+     char appdir[PATH_MAX];
+-    snprintf(appdir, sizeof(appdir), "%s" PATH_SEPARATOR "dc", sysdir);
++    snprintf(appdir, sizeof(appdir), "%s" PATH_SEPARATOR "saves" PATH_SEPARATOR "dreamcast", "/recalbox/share");
+     fs_set_appdir(appdir);
+   }
+ 
++  /* set application directory bios */
++  const char *sysdirbios = NULL;
++  if (env_cb(RETRO_ENVIRONMENT_GET_SYSTEM_DIRECTORY, &sysdirbios)) {
++    char appdirbios[PATH_MAX];
++    snprintf(appdirbios, sizeof(appdirbios), "%s" PATH_SEPARATOR "bios", "/recalbox/share");
++    fs_set_appdirbios(appdirbios);
++  }
++
+   /* load base options from config */
+   const char *appdir = fs_appdir();
+   char config[PATH_MAX] = {0};
