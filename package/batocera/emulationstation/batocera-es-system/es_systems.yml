@@ -921,6 +921,14 @@ wii:
         par exemple, pour jouer à mariokart wii, renommer le jeu en mario_kart.side.ti.iso (vous aurez le tilt sur le 1er axe et l'infrarouge sur le 2e (ti))
         par exemple, pour jouer à mario galaxy, renommer le jeu en mario_galaxy.ni.iso (vous aurez le nunchuk sur le 1er axe et l'infrarouge sur le 2e (ni))
 
+ps2:
+  name:       Sony Playstation 2
+  extensions: [iso]
+  includeEmulators: no
+  emulators:
+    pcsx2:
+      pcsx2: { require: [BR2_PACKAGE_PCSX2, BR2_PACKAGE_PCSX2_AVX2] }
+
 3do:
   name:       3DO
   extensions: [cue, iso]

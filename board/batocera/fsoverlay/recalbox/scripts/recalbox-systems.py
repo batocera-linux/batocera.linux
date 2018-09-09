@@ -49,6 +49,11 @@ systems = {
                                                                                   { "md5": "8dd7d5296a650fac7319bce665a6a53c", "file": "bios/scph5500.bin"      },
                                                                                   { "md5": "490f666e1afb15b7362b406ed1cea246", "file": "bios/scph5501.bin"      },
                                                                                   { "md5": "32736f17079d0b2b7024407c39bd3050", "file": "bios/scph5502.bin"      } ] },
+    # only 1 of the ps2 bios is required (japan, european or us)
+    "ps2":       { "name": "PS2",                                  "biosFiles": [ { "md5": "28922c703cc7d2cf856f177f2985b3a9", "file": "bios/PS2 Bios 30004R V6 Pal.bin" },
+                                                                                  { "md5": "acf4730ceb38ac9d8c7d8e21f2614600", "file": "bios/scph10000.bin"     },
+                                                                                  { "md5": "d5ce2c7d119f563ce04bc04dbc3a323e", "file": "bios/scph39001.bin"     },
+                                                                                  { "md5": "dc752f160044f2ed5fc1f4964db2a095", "file": "bios/SCPH-70004_BIOS_V12_PAL_200.BIN" } ] },
     "saturn":    { "name": "Sega Saturn",                          "biosFiles": [ { "md5": "3240872c70984b6cbfda1586cab68dbe", "file": "bios/saturn_bios.bin"   },
                                                                                   { "md5": "85ec9ca47d8f6807718151cbcca8b964", "file": "bios/sega_101.bin"      },
                                                                                   { "md5": "3240872c70984b6cbfda1586cab68dbe", "file": "bios/mpr-17933.bin"     } ] },

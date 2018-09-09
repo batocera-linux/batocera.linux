@@ -1,0 +1,81 @@
+diff --git a/plugins/onepad_legacy/CMakeLists.txt b/plugins/onepad_legacy/CMakeLists.txt
+index 4039a68..c35bd32 100644
+--- a/plugins/onepad_legacy/CMakeLists.txt
++++ b/plugins/onepad_legacy/CMakeLists.txt
+@@ -99,6 +99,7 @@ set(onepadFinalLibs
+ 	${wxWidgets_LIBRARIES}
+ 	${GTK2_LIBRARIES}
+ 	${X11_LIBRARIES}
++	"Xtst"
+ )
+ 
+ set(onepadFinalSources
+diff --git a/plugins/onepad_legacy/Linux/linux.cpp b/plugins/onepad_legacy/Linux/linux.cpp
+index 43f6b27..4636172 100644
+--- a/plugins/onepad_legacy/Linux/linux.cpp
++++ b/plugins/onepad_legacy/Linux/linux.cpp
+@@ -27,6 +27,7 @@
+ #include <string.h>
+ #include <gtk/gtk.h>
+ #include "linux.h"
++#include <X11/extensions/XTest.h>
+ 
+ Display *GSdsp;
+ Window GSwin;
+@@ -89,6 +90,21 @@ void _PADclose()
+     s_vgamePad.clear();
+ }
+ 
++void handle_hotkey(int key, int value) {
++  static int hotkey_pressure = 0;
++
++  if(key == PAD_HOTKEY) {
++    hotkey_pressure = value ? 1 : 0;
++  }
++  if(hotkey_pressure == 1) {
++    if(key == PAD_START && value == 1) {
++      KeyCode code = XKeysymToKeycode(GSdsp, XStringToKeysym("Escape"));
++      XTestFakeKeyEvent(GSdsp, code, 1, 0);
++      //Sys_SuspendResume();
++    }
++  }
++}
++
+ void PollForJoystickInput(int cpad)
+ {
+     int joyid = conf->get_joyid(cpad);
+@@ -108,6 +124,7 @@ void PollForJoystickInput(int cpad)
+                 else
+                     key_status->release(cpad, i);
+ 
++		handle_hotkey(i, value);
+                 break;
+             }
+             case PAD_HAT: {
+diff --git a/plugins/onepad_legacy/controller.h b/plugins/onepad_legacy/controller.h
+index ccf2716..e1b30e9 100644
+--- a/plugins/onepad_legacy/controller.h
++++ b/plugins/onepad_legacy/controller.h
+@@ -21,7 +21,7 @@
+ 
+ #pragma once
+ #include <string.h> // for memset
+-#define MAX_KEYS 24
++#define MAX_KEYS 25
+ 
+ enum KeyType {
+     PAD_JOYBUTTONS = 0,
+diff --git a/plugins/onepad_legacy/onepad.h b/plugins/onepad_legacy/onepad.h
+index d4840e0..bac41c4 100644
+--- a/plugins/onepad_legacy/onepad.h
++++ b/plugins/onepad_legacy/onepad.h
+@@ -119,7 +119,8 @@ enum gamePadValues {
+     PAD_R_UP,     // Right joystick (Up) ↑
+     PAD_R_RIGHT,  // Right joystick (Right) →
+     PAD_R_DOWN,   // Right joystick (Down) ↓
+-    PAD_R_LEFT    // Right joystick (Left) ←
++    PAD_R_LEFT,    // Right joystick (Left) ←
++    PAD_HOTKEY
+ };
+ 
+ extern keyEvent event;

@@ -1,5 +1,5 @@
-config BR2_PACKAGE_PCSX2
-        bool "pcsx2"
+config BR2_PACKAGE_PCSX2_AVX2
+        bool "pcsx2_avx2"
 	depends on BR2_x86_i586
 	depends on BR2_PACKAGE_XORG7
 	select BR2_PACKAGE_ALSA_LIB
@@ -13,4 +13,4 @@ config BR2_PACKAGE_PCSX2
 	select BR2_PACKAGE_SDL2
 	select BR2_PACKAGE_XLIB_LIBXTST # HOTKEYS
         help
-          A  pcsx2 emulator
+          A  pcsx2 emulator (avx2 required)

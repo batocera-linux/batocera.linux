@@ -20,6 +20,7 @@ setup(name='batocera-configgen',
         'configgen.generators.ppsspp',
         'configgen.generators.reicast',
         'configgen.generators.dolphin',
+        'configgen.generators.pcsx2',
         'configgen.generators.advancemame',
         'configgen.settings',
         'configgen.utils']

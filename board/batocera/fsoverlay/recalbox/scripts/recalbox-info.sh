@@ -48,3 +48,7 @@ then
 fi
 echo "Cpu model: ${V_CPUMODEL1}"
 echo "Cpu number: ${V_CPUNB}"
+if grep -q " avx2" /proc/cpuinfo
+then
+    echo "Cpu feature: avx2"
+fi

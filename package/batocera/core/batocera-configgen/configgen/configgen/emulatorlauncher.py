@@ -15,6 +15,7 @@ from generators.mupen.mupenGenerator import MupenGenerator
 from generators.ppsspp.ppssppGenerator import PPSSPPGenerator
 from generators.reicast.reicastGenerator import ReicastGenerator
 from generators.dolphin.dolphinGenerator import DolphinGenerator
+from generators.pcsx2.pcsx2Generator import Pcsx2Generator
 from generators.scummvm.scummvmGenerator import ScummVMGenerator
 from generators.dosbox.dosboxGenerator import DosBoxGenerator
 from generators.vice.viceGenerator import ViceGenerator
@@ -45,6 +46,7 @@ generators = {
     'amiberry': AmiberryGenerator(),
     'reicast': ReicastGenerator(),
     'dolphin': DolphinGenerator(),
+    'pcsx2': Pcsx2Generator(),
     'ppsspp': PPSSPPGenerator(),
     'advancemame' : AdvMameGenerator()
 }
@@ -134,6 +136,8 @@ def getDefaultEmulator(systemName):
         return Emulator(name='gamecube',   emulator='dolphin')
     if systemName == "wii":
         return Emulator(name='wii',        emulator='dolphin')
+    if systemName == "ps2":
+        return Emulator(name='ps2',        emulator='pcsx2')
     if systemName == "nds":
         return Emulator(name='nds',        emulator='libretro',    core='desmume')
 
