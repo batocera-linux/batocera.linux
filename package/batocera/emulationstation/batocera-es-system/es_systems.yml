@@ -244,6 +244,7 @@ psp:
   emulators:
     ppsspp:
       ppsspp: { require: [BR2_PACKAGE_PPSSPP] }
+      ppsspp: { require: [BR2_PACKAGE_PPSSPP15] }
 
 psx:
   name:       Sony Playstation 1
