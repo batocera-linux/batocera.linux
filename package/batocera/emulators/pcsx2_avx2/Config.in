@@ -11,6 +11,5 @@ config BR2_PACKAGE_PCSX2_AVX2
 	select BR2_PACKAGE_PORTAUDIO
 	select BR2_PACKAGE_LIBSOUNDTOUCH
 	select BR2_PACKAGE_SDL2
-	select BR2_PACKAGE_XLIB_LIBXTST # HOTKEYS
         help
           A  pcsx2 emulator (avx2 required)

@@ -25,7 +25,7 @@ index 607a934..57cf5f6 100644
  	{
 -		return GetDocuments() + Base::Savestates();
 +	  //return GetDocuments() + Base::Savestates();
-+	  return wxDirName("/recalbox/share/saves/pcsx2");
++	  return wxDirName("/recalbox/share/saves/ps2");
  	}
  
  	wxDirName GetMemoryCards()

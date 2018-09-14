@@ -6,7 +6,7 @@
 
 PCSX2_AVX2_VERSION = fc1d88cb516236fda5e6c678bedbb0839a474be3
 PCSX2_AVX2_SITE = $(call github,pcsx2,pcsx2,$(PCSX2_AVX2_VERSION))
-PCSX2_AVX2_DEPENDENCIES = xserver_xorg-server alsa-lib freetype zlib libpng wxwidgets libaio portaudio libsoundtouch sdl2 xlib_libXtst
+PCSX2_AVX2_DEPENDENCIES = xserver_xorg-server alsa-lib freetype zlib libpng wxwidgets libaio portaudio libsoundtouch sdl2
 
 PCSX2_AVX2_CONF_OPTS += -DCMAKE_BUILD_TYPE=Release
 PCSX2_AVX2_CONF_OPTS += -DXDG_STD=TRUE
