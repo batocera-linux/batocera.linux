@@ -35,13 +35,13 @@ class Pcsx2Generator(Generator):
         real_pluginsDir = recalboxFiles.pcsx2PluginsDir
         if isAVX2:
             real_pluginsDir = recalboxFiles.pcsx2Avx2PluginsDir
-        commandArray.append("--gs="   + recalboxFiles.pcsx2PluginsDir + "/libGSdx.so")
-        commandArray.append("--pad="  + recalboxFiles.pcsx2PluginsDir + "/libonepad-legacy.so")
-        commandArray.append("--cdvd=" + recalboxFiles.pcsx2PluginsDir + "/libCDVDnull.so")
-        commandArray.append("--usb="  + recalboxFiles.pcsx2PluginsDir + "/libUSBnull-0.7.0.so")
-        commandArray.append("--fw="   + recalboxFiles.pcsx2PluginsDir + "/libFWnull-0.7.0.so")
-        commandArray.append("--dev9=" + recalboxFiles.pcsx2PluginsDir + "/libdev9null-0.5.0.so")
-        commandArray.append("--spu2=" + recalboxFiles.pcsx2PluginsDir + "/libspu2x-2.0.0.so")
+        commandArray.append("--gs="   + real_pluginsDir + "/libGSdx.so")
+        commandArray.append("--pad="  + real_pluginsDir + "/libonepad-legacy.so")
+        commandArray.append("--cdvd=" + real_pluginsDir + "/libCDVDnull.so")
+        commandArray.append("--usb="  + real_pluginsDir + "/libUSBnull-0.7.0.so")
+        commandArray.append("--fw="   + real_pluginsDir + "/libFWnull-0.7.0.so")
+        commandArray.append("--dev9=" + real_pluginsDir + "/libdev9null-0.5.0.so")
+        commandArray.append("--spu2=" + real_pluginsDir + "/libspu2x-2.0.0.so")
         
         if 'args' in system.config and system.config['args'] is not None:
              commandArray.extend(system.config['args'])
