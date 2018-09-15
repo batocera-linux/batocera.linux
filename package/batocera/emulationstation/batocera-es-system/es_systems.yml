@@ -899,18 +899,20 @@ gamecube:
   name:       GameCube
   extensions: [ciso, iso, gc, gcz, gcm]
   theme:      gc
-  includeEmulators: no
   emulators:
     dolphin-emu:
       dolphin-emu: { require: [BR2_PACKAGE_DOLPHIN_EMU] }
+    libretro:
+      dolphin: { require: [BR2_PACKAGE_LIBRETRO_DOLPHIN] }
 
 wii:
   name:       Wii
   extensions: [iso, wbfs, elf, dol, gcm, ciso, gcz, wad]
-  includeEmulators: no
   emulators:
     dolphin-emu:
       dolphin-emu: { require: [BR2_PACKAGE_DOLPHIN_EMU] }
+    libretro:
+      dolphin: { require: [BR2_PACKAGE_LIBRETRO_DOLPHIN] }
   comment_en: |
     To use a virtual horizontal wiimote, include ".side." in the filename (for example ".side.iso").
     You can choose the axis controls among i(nfrared), s(wing), t(ilt) or n(unchuk) :
