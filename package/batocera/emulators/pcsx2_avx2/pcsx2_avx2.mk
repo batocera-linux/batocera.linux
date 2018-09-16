@@ -25,7 +25,7 @@ define PCSX2_AVX2_INSTALL_TARGET_CMDS
 	$(INSTALL) -m 0755 -D $(@D)/pcsx2/PCSX2 $(TARGET_DIR)/usr/PCSX_AVX2/bin/PCSX2
 	cp -pr $(@D)/bin/Langs      $(TARGET_DIR)/usr/PCSX_AVX2/bin
         mkdir -p $(TARGET_DIR)/usr/PCSX_AVX2/bin/plugins
-	cp -pr $(@D)/plugins/*/*.so $(@D)/plugins/*/*/*.so $(TARGET_DIR)/usr/PCSX/bin/plugins
+	cp -pr $(@D)/plugins/*/*.so $(@D)/plugins/*/*/*.so $(TARGET_DIR)/usr/PCSX_AVX2/bin/plugins
 endef
 
 $(eval $(cmake-package))
