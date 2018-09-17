@@ -46,7 +46,7 @@ index 43f6b27..4f022da 100644
  void SysMessage(const char *fmt, ...)
  {
      va_list list;
-@@ -89,6 +92,62 @@ void _PADclose()
+@@ -89,6 +92,64 @@ void _PADclose()
      s_vgamePad.clear();
  }
  
@@ -63,8 +63,10 @@ index 43f6b27..4f022da 100644
 +	return (unsigned long)(t.time*1000+t.millitm);
 +}
 +
-+void handle_hotkey(int key, int value) {
++void handle_hotkey(int cpad, int key, int value) {
 +  static int hotkey_pressure = 0;
++
++  if(cpad != 0) return; // only for player 1
 +
 +  if(key == PAD_HOTKEY) {
 +    hotkey_pressure = value ? 1 : 0;
@@ -113,7 +115,7 @@ index 43f6b27..4f022da 100644
                  else
                      key_status->release(cpad, i);
  
-+		handle_hotkey(i, value);
++		handle_hotkey(cpad, i, value);
                  break;
              }
              case PAD_HAT: {
@@ -127,11 +129,11 @@ index 43f6b27..4f022da 100644
 -                else
 -                    key_status->release(cpad, i);
 -
-+		    handle_hotkey(i, 1);
++		    handle_hotkey(cpad, i, 1);
 +		}
 +                else {
 +		  key_status->release(cpad, i);
-+		  handle_hotkey(i, 0);
++		  handle_hotkey(cpad, i, 0);
 +		}
                  break;
              }
@@ -146,11 +148,11 @@ index 43f6b27..4f022da 100644
 -                        key_status->release(cpad, i);
 +		  if (abs(value) > gamePad->GetDeadzone()) {
 +		    key_status->press(cpad, i, value);
-+		    handle_hotkey(i, 1);
++		    handle_hotkey(cpad, i, 1);
 +		  }
 +		  else {
 +		    key_status->release(cpad, i);
-+		    handle_hotkey(i, 0);
++		    handle_hotkey(cpad, i, 0);
 +		  }
  
                  } else {
@@ -161,11 +163,11 @@ index 43f6b27..4f022da 100644
 -                        else
 +                        if (value > gamePad->GetDeadzone()) {
 +			  key_status->press(cpad, i, min(value / 256, 0xFF));
-+			  handle_hotkey(i, 1);
++			  handle_hotkey(cpad, i, 1);
 +			}
 +                        else {
                              key_status->release(cpad, i);
-+			    handle_hotkey(i, 0);
++			    handle_hotkey(cpad, i, 0);
 +			}
  
                      } else {
@@ -173,16 +175,16 @@ index 43f6b27..4f022da 100644
 +		      if (sign && (-value > gamePad->GetDeadzone())) {
                              key_status->press(cpad, i, min(-value / 128, 0xFF));
 -                        else if (!sign && (value > gamePad->GetDeadzone()))
-+			    handle_hotkey(i, 1);
++			    handle_hotkey(cpad, i, 1);
 +		      }
 +		      else if (!sign && (value > gamePad->GetDeadzone())) {
                              key_status->press(cpad, i, min(value / 128, 0xFF));
 -                        else
-+			    handle_hotkey(i, 1);
++			    handle_hotkey(cpad, i, 1);
 +		      }
 +		      else {
                              key_status->release(cpad, i);
-+			    handle_hotkey(i, 0);
++			    handle_hotkey(cpad, i, 0);
 +		      }
                      }
                  }
