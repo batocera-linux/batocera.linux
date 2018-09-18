@@ -91,7 +91,7 @@ def writeKey(f, nplayer, x, key, padInputs):
             f.write("[{}][{}] = 0x{:02x}\n".format(nplayer, x, button_to_key(input.id)))
         elif input.type == "axis":
             sign = 0
-            if input.value > 0:
+            if input.value < 0:
                 sign = 1
             if reversedAxis:
                 if sign == 0:

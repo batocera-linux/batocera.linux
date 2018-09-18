@@ -1,0 +1,17 @@
+diff --git a/plugins/onepad_legacy/Linux/linux.cpp b/plugins/onepad_legacy/Linux/linux.cpp
+index d64cc0c..e186fd5 100644
+--- a/plugins/onepad_legacy/Linux/linux.cpp
++++ b/plugins/onepad_legacy/Linux/linux.cpp
+@@ -193,6 +193,12 @@ void PollForJoystickInput(int cpad)
+                 bool sign = key_to_axis_sign(cpad, i);
+                 bool full_axis = key_to_axis_type(cpad, i);
+ 
++		// for an unknown reason, up and down are reversed
++		if(i == PAD_UP   || i == PAD_L_UP   || i == PAD_R_UP ||
++		   i == PAD_DOWN || i == PAD_L_DOWN || i == PAD_R_DOWN) {
++		  value *= -1;
++		}
++
+                 if (IsAnalogKey(i)) {
+ 		  if (abs(value) > gamePad->GetDeadzone()) {
+ 		    key_status->press(cpad, i, value);

@@ -18,6 +18,7 @@ class Pcsx2Generator(Generator):
         # config files
         configureReg(recalboxFiles.pcsx2ConfigDir)
         configureUI(recalboxFiles.pcsx2ConfigDir, recalboxFiles.BIOS, system.config, gameResolution)
+        configureGFX(recalboxFiles.pcsx2ConfigDir, system.config['showFPS'] == 'true')
         configureAudio(recalboxFiles.pcsx2ConfigDir)
 
         if isAVX2:
@@ -68,6 +69,30 @@ def configureReg(config_directory):
     f.write("Install_Dir=/usr/PCSX/bin\n")
     f.write("RunWizard=0\n")
     f.close()
+
+def configureGFX(config_directory, printFPS):
+    configFileName = "{}/{}".format(config_directory + "/inis", "GSdx.ini")
+    if not os.path.exists(config_directory):
+        os.makedirs(config_directory + "/inis")
+
+    if os.path.exists(configFileName):
+        # existing configuration file
+        pcsx2GFXSettings = UnixSettings(configFileName, separator=' ')
+        pcsx2GFXSettings.save("osd_fontname", "/usr/share/fonts/dejavu/DejaVuSans.ttf")
+        pcsx2GFXSettings.save("osd_indicator_enabled", 1)
+        if printFPS:
+            pcsx2GFXSettings.save("osd_monitor_enabled", 1)
+        else:
+            pcsx2GFXSettings.save("osd_monitor_enabled", 0)
+    else:
+        f = open(configFileName, "w")
+        f.write("osd_fontname = /usr/share/fonts/dejavu/DejaVuSans.ttf\n")
+        f.write("osd_indicator_enabled = 1\n")
+        if printFPS:
+            f.write("osd_monitor_enabled = 1\n")
+        else:
+            f.write("osd_monitor_enabled = 0\n")
+        f.close()
 
 def configureUI(config_directory, bios_directory, system_config, gameResolution):
     configFileName = "{}/{}".format(config_directory + "/inis", "PCSX2_ui.ini")
