@@ -46,7 +46,7 @@ index 43f6b27..4f022da 100644
  void SysMessage(const char *fmt, ...)
  {
      va_list list;
-@@ -89,6 +92,64 @@ void _PADclose()
+@@ -89,6 +92,69 @@ void _PADclose()
      s_vgamePad.clear();
  }
  
@@ -81,29 +81,34 @@ index 43f6b27..4f022da 100644
 +	case PAD_START:
 +	  hot_keyevent.evt = KEYPRESS;
 +	  hot_keyevent.key = XK_Escape; // quit
-+          break;
++	  lastHotkeyTime = timeGetTime();
++         break;
 +	case PAD_SQUARE:
 +	  hot_keyevent.evt = KEYPRESS;
 +	  hot_keyevent.key = XK_F1; // save state
-+          break;
++	  lastHotkeyTime = timeGetTime();
++         break;
 +	case PAD_TRIANGLE:
 +	  hot_keyevent.evt = KEYPRESS;
 +	  hot_keyevent.key = XK_F3; // restore state
-+          break;
++	  lastHotkeyTime = timeGetTime();
++         break;
 +	case PAD_UP:
 +	  hot_keyevent.evt = KEYPRESS;
 +	  hot_keyevent.key = XK_F2; // slot up
-+          break;
++	  lastHotkeyTime = timeGetTime();
++         break;
 +	case PAD_DOWN:
 +	  hot_keyevent.evt = KEYPRESS;
 +	  hot_keyevent.key = XK_F4; // slot down
-+          break;
++	  lastHotkeyTime = timeGetTime();
++         break;
 +	case PAD_L1:
 +	  hot_keyevent.evt = KEYPRESS;
 +	  hot_keyevent.key = XK_F8; // screenshot
-+          break;
++	  lastHotkeyTime = timeGetTime();
++         break;
 +	}
-+	lastHotkeyTime = timeGetTime();
 +      }
 +    }
 +  }
