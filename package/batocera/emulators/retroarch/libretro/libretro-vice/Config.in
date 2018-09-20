@@ -1,0 +1,11 @@
+config BR2_PACKAGE_LIBRETRO_VICE
+        bool "libretro-vice"
+	depends on BR2_PACKAGE_RETROARCH
+	depends on BR2_INSTALL_LIBSTDCPP
+        help
+          Versatile Commodore 8-bit Emulator
+
+	  http://www.libretro.com
+
+comment "LIBRETRO_VICE needs a toolchain w/ C++"
+	depends on !BR2_INSTALL_LIBSTDCPP

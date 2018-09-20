@@ -14,6 +14,8 @@ c64:
   emulators:
     vice:
       x64: { require: [BR2_PACKAGE_VICE] }
+    libretro:
+      vice: { require: [BR2_PACKAGE_LIBRETRO_VICE] }
 
 amiga500:
   name:       Amiga 500
