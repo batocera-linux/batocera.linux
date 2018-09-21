@@ -1,8 +1,17 @@
 diff --git a/core/linux-dist/evdev.cpp b/core/linux-dist/evdev.cpp
-index 3cf4c1d..960a13b 100644
+index 6eb6062..b89d3a7 100644
 --- a/core/linux-dist/evdev.cpp
 +++ b/core/linux-dist/evdev.cpp
-@@ -310,12 +310,14 @@
+@@ -501,6 +501,8 @@
+ 		}
+ 	}
+ 
++	void dc_term();
++
+ 	bool input_evdev_handle(u32 port)
+ 	{
+ 		EvdevController* controller = &evdev_controllers[port];
+@@ -512,12 +514,14 @@
  		}
  
  		input_event ie;
@@ -17,28 +26,27 @@ index 3cf4c1d..960a13b 100644
  					if (ie.code == controller->mapping->Btn_A) {
  						SET_FLAG(kcode[port], DC_BTN_A, ie.value);
  					} else if (ie.code == controller->mapping->Btn_B) {
-@@ -333,8 +335,7 @@
+@@ -535,7 +539,7 @@
  					} else if (ie.code == controller->mapping->Btn_Start) {
  						SET_FLAG(kcode[port], DC_BTN_START, ie.value);
  					} else if (ie.code == controller->mapping->Btn_Escape) {
--						dc_term();
--						die("death by escape key");
-+					  batocera_hotkey = ie.value;
+-						dc_stop();
++						batocera_hotkey = ie.value;
  					} else if (ie.code == controller->mapping->Btn_DPad_Left) {
  						SET_FLAG(kcode[port], DC_DPAD_LEFT, ie.value);
  					} else if (ie.code == controller->mapping->Btn_DPad_Right) {
-@@ -356,6 +357,14 @@
+@@ -557,6 +561,14 @@
  					} else if (ie.code == controller->mapping->Btn_Trigger_Right) {
  						rt[port] = (ie.value ? 255 : 0);
  					}
-+				  } else {
-+				    if (ie.code == controller->mapping->Btn_Escape) {
-+				      batocera_hotkey = ie.value;
-+				    } else if (ie.code == controller->mapping->Btn_Start) {
-+				      dc_term();
-+				      die("death by escape key");
-+				    }
-+				  }
++				     	 } else {
++					if (ie.code == controller->mapping->Btn_Escape) {
++					   batocera_hotkey = ie.value;
++					} else if (ie.code == controller->mapping->Btn_Start) {
++					   dc_term();
++					   die("death by escape key");
++					}
++				     	 }
  					break;
  				case EV_ABS:
  					if (ie.code == controller->mapping->Axis_DPad_X)

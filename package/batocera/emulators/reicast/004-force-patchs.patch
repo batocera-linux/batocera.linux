@@ -1,8 +1,8 @@
 diff --git a/core/nullDC.cpp b/core/nullDC.cpp
-index 0358c68..150a6fb 100755
+index 27cf443..c284fdf 100755
 --- a/core/nullDC.cpp
 +++ b/core/nullDC.cpp
-@@ -18,6 +18,9 @@
+@@ -19,6 +19,9 @@
  
  settings_t settings;
  
@@ -12,23 +12,23 @@ index 0358c68..150a6fb 100755
  /*
  	libndc
  
-@@ -165,7 +168,8 @@ int dc_init(int argc,wchar* argv[])
+@@ -187,7 +190,8 @@ int dc_init(int argc,wchar* argv[])
      #define DATA_PATH "/"
  #endif
-     
+ 
 -	if (settings.bios.UseReios || !LoadRomFiles(get_readonly_data_path(DATA_PATH)))
 +	//if (settings.bios.UseReios || !LoadRomFiles(get_readonly_data_path(DATA_PATH)))
 +	if (settings.bios.UseReios || !LoadRomFiles(recalboxBiosPath))
  	{
  		if (!LoadHle(get_readonly_data_path(DATA_PATH)))
- 			return -3;
-@@ -224,7 +228,8 @@ void dc_term()
+ 		{
+@@ -266,7 +270,8 @@ void dc_term()
  #ifndef _ANDROID
  	SaveSettings();
  #endif
 -	SaveRomFiles(get_writable_data_path("/data/"));
 +	//SaveRomFiles(get_writable_data_path("/data/"));
 +	SaveRomFiles(recalboxNvmemPath);
- }
  
- void LoadSettings()
+     TermAudio();
+ }
