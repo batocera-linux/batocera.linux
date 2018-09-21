@@ -3,8 +3,8 @@
 # REICAST
 #
 ################################################################################
-# Version.: Commits on Apr 21, 2018
-REICAST_VERSION = a50861b249b83abbdc2a9281434b75b25520baa5
+# Version.: Commits on Sep 12, 2018
+REICAST_VERSION = r8.1
 REICAST_SITE = $(call github,reicast,reicast-emulator,$(REICAST_VERSION))
 REICAST_DEPENDENCIES = sdl2 libpng
 
