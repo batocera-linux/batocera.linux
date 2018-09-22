@@ -249,6 +249,12 @@ config BR2_PACKAGE_LINUX_FIRMWARE_IWLWIFI_ALL
 	help
 	  Firmware files iwlwifi.
 
+# batocera
+config BR2_PACKAGE_LINUX_FIRMWARE_AR3K
+	bool "ar3k"
+	help
+	  Firmware files ar3k.
+
 config BR2_PACKAGE_LINUX_FIRMWARE_LIBERTAS_SD8686_V8
 	bool "Libertas SD 8686 v8"
 	help

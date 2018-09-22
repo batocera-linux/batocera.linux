@@ -429,6 +429,11 @@ LINUX_FIRMWARE_FILES += iwlwifi-*.ucode
 LINUX_FIRMWARE_ALL_LICENSE_FILES += LICENCE.iwlwifi_firmware
 endif
 
+# batocera
+ifeq ($(BR2_PACKAGE_LINUX_FIRMWARE_AR3K),y)
+LINUX_FIRMWARE_DIRS += ar3k
+endif
+
 ifeq ($(BR2_PACKAGE_LINUX_FIRMWARE_BNX2X),y)
 LINUX_FIRMWARE_FILES += bnx2x/*
 # No license file; the license is in the file WHENCE
