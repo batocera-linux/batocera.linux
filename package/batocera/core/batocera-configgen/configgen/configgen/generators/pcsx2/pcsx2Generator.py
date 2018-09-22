@@ -46,7 +46,16 @@ class Pcsx2Generator(Generator):
         
         if 'args' in system.config and system.config['args'] is not None:
              commandArray.extend(system.config['args'])
-        return Command.Command(array=commandArray, env={"XDG_CONFIG_HOME":recalboxFiles.CONF})
+
+        # arch
+        arch = "x86"
+        with open('/recalbox/recalbox.arch', 'r') as content_file:
+            arch = content_file.read()
+
+        if arch == "x86":
+            return Command.Command(array=commandArray, env={"XDG_CONFIG_HOME":recalboxFiles.CONF})
+        else:
+            return Command.Command(array=commandArray, env={"XDG_CONFIG_HOME":recalboxFiles.CONF, "LD_LIBRARY_PATH": "/lib32", "LIBGL_DRIVERS_PATH": "/lib32/dri"})
 
 def getGfxRatioFromConfig(config, gameResolution):
     # 2: 4:3 ; 1: 16:9

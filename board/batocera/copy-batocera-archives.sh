@@ -365,4 +365,12 @@ do
     CKS=$(md5sum "${FILE}" | sed -e s+'^\([^ ]*\) .*$'+'\1'+)
     echo "${CKS}" > "${FILE}.md5"
 done
+
+# pcsx2 package
+if grep -qE "^BR2_PACKAGE_PCSX2=y$" "${BR2_CONFIG}"
+then
+    echo "building the pcsx2 package..."
+    ./board/batocera/doPcsx2package.sh "${TARGET_DIR}" "${BINARIES_DIR}/pcsx2" "${BATOCERA_BINARIES_DIR}" || exit 1
+fi
+
 exit 0
