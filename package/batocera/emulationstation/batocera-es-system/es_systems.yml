@@ -938,6 +938,7 @@ ps2:
   emulators:
     pcsx2:
       pcsx2: { require: [BR2_PACKAGE_PCSX2, BR2_PACKAGE_PCSX2_AVX2] }
+      pcsx2: { require: [BR2_PACKAGE_PCSX2_X86] }
 
 3do:
   name:       3DO
