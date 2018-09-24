@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-POSTGRESQL_VERSION = 10.3
+POSTGRESQL_VERSION = 10.5
 POSTGRESQL_SOURCE = postgresql-$(POSTGRESQL_VERSION).tar.bz2
 POSTGRESQL_SITE = http://ftp.postgresql.org/pub/source/v$(POSTGRESQL_VERSION)
 POSTGRESQL_LICENSE = PostgreSQL
@@ -68,6 +68,14 @@ POSTGRESQL_DEPENDENCIES += openldap
 POSTGRESQL_CONF_OPTS += --with-ldap
 else
 POSTGRESQL_CONF_OPTS += --without-ldap
+endif
+
+ifeq ($(BR2_PACKAGE_LIBXML2),y)
+POSTGRESQL_DEPENDENCIES += libxml2
+POSTGRESQL_CONF_OPTS += --with-libxml
+POSTGRESQL_CONF_ENV += XML2_CONFIG=$(STAGING_DIR)/usr/bin/xml2-config
+else
+POSTGRESQL_CONF_OPTS += --without-libxml
 endif
 
 define POSTGRESQL_USERS

@@ -4,6 +4,7 @@
 #
 ################################################################################
 
+# batocera: xu4: fix util-linux
 UTIL_LINUX_VERSION_MAJOR = 2.30
 UTIL_LINUX_VERSION_MINOR = 1
 UTIL_LINUX_VERSION = $(UTIL_LINUX_VERSION_MAJOR).$(UTIL_LINUX_VERSION_MINOR)

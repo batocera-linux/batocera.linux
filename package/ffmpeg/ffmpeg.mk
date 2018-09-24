@@ -4,6 +4,7 @@
 #
 ################################################################################
 
+# batocera: kodi: fix video with noisy sound
 FFMPEG_VERSION = 3.3.5
 FFMPEG_SOURCE = ffmpeg-$(FFMPEG_VERSION).tar.xz
 FFMPEG_SITE = http://ffmpeg.org/releases
