@@ -2,6 +2,7 @@
 #
 # LIBRETRO PPSSPP
 #
+# Disable.: Many games are not yet running
 ################################################################################
 # Version.: Commits on Jul 15, 2018 (v1.6.3)
 LIBRETRO_PPSSPP_VERSION = ea1ef9277cd7d5b439951099bee15f074999c7c1
