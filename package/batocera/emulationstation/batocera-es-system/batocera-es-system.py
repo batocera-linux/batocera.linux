@@ -58,19 +58,8 @@ class EsSystemConf:
         for emulator in sorted(data["emulators"]):
             emulatorData = data["emulators"][emulator]
             for core in sorted(emulatorData):
-                if len(emulatorData[core]["requireAnyOf"]) == 0:
+                if EsSystemConf.isValidRequirements(config, emulatorData[core]["requireAnyOf"]):
                     return True
-                for requirement in emulatorData[core]["requireAnyOf"]:
-                    if isinstance(requirement, list):
-                        requirementValid = True
-                        for reqitem in requirement:
-                            if reqitem not in config:
-                                requirementValid = False
-                        if requirementValid:
-                            return True
-                    else:
-                        if requirement in config:
-                            return True
         return False
 
     # Loads the .config file
@@ -218,6 +207,25 @@ class EsSystemConf:
                     extension += " ." + item.upper()
         return extension
 
+    # Returns the validity of prerequisites
+    @staticmethod
+    def isValidRequirements(config, requirements):
+        if len(requirements) == 0:
+            return True
+
+        for requirement in requirements:
+            if isinstance(requirement, list):
+                subreqValid = True
+                for reqitem in requirement:
+                    if reqitem not in config:
+                        subreq = False
+                if subreq:
+                    return True
+            else:
+                if requirement in config:
+                    return True
+        return False
+
     # Returns the enabled cores in the .config file for the emulator
     @staticmethod
     def listEmulators(data, config):
@@ -236,21 +244,7 @@ class EsSystemConf:
             # CORES
             coresTxt = ""
             for core in sorted(emulatorData):
-                requirementValid = False
-                if len(emulatorData[core]["requireAnyOf"]) == 0:
-                    requirementValid = True
-                for requirement in emulatorData[core]["requireAnyOf"]:
-                    if isinstance(requirement, list):
-                        subreqValid = True
-                        for reqitem in requirement:
-                            if reqitem not in config:
-                                subreq = False
-                        if subreq:
-                            requirementValid = True
-                    else:
-                        if requirement in config:
-                            requirementValid = True
-                if requirementValid:
+                if EsSystemConf.isValidRequirements(config, emulatorData[core]["requireAnyOf"]):
                     coresTxt += "                    <core>%s</core>\n" % (core)
 
             if coresTxt == "":
