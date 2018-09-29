@@ -2,10 +2,6 @@ config BR2_PACKAGE_LIBRETRO_DOLPHIN
 	bool "libretro-dolphin"
 	depends on BR2_PACKAGE_RETROARCH
 	depends on BR2_INSTALL_LIBSTDCPP
-	depends on BR2_PACKAGE_QT5
-	select BR2_PACKAGE_QT5BASE
-	select BR2_PACKAGE_QT5BASE_GUI
-	select BR2_PACKAGE_QT5BASE_WIDGETS
 	help
           A libretro Wii and Game Cube emulator core.
 
