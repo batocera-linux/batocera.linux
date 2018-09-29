@@ -3,19 +3,19 @@ snes:
   extensions: [7z, bin, bs, fig, smc, sfc, swc, mgd, zip]
   emulators:
     libretro:
-      catsfc:      { require: [BR2_PACKAGE_LIBRETRO_CATSFC]      }
-      pocketsnes:  { require: [BR2_PACKAGE_LIBRETRO_POCKETSNES]  }
-      snes9x_next: { require: [BR2_PACKAGE_LIBRETRO_SNES9X_NEXT] }
-      snes9x:      { require: [BR2_PACKAGE_LIBRETRO_SNES9X]      }
+      catsfc:      { requireAnyOf: [BR2_PACKAGE_LIBRETRO_CATSFC]      }
+      pocketsnes:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_POCKETSNES]  }
+      snes9x_next: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_SNES9X_NEXT] }
+      snes9x:      { requireAnyOf: [BR2_PACKAGE_LIBRETRO_SNES9X]      }
 
 c64:
   name:       Commodore c64
   extensions: [crt, d64, d71, d80, d81, d82, g41, g64, t64, x64, tap, prg, p00, crt, zip]
   emulators:
     vice:
-      x64: { require: [BR2_PACKAGE_VICE] }
+      x64: { requireAnyOf: [BR2_PACKAGE_VICE] }
     libretro:
-      vice: { require: [BR2_PACKAGE_LIBRETRO_VICE] }
+      vice: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_VICE] }
 
 amiga500:
   name:       Amiga 500
@@ -24,9 +24,9 @@ amiga500:
   theme:      amiga
   emulators:
     fsuae:
-      A500: { require: [BR2_PACKAGE_FSUAE]    }
+      A500: { requireAnyOf: [BR2_PACKAGE_FSUAE]    }
     amiberry:
-      A500: { require: [BR2_PACKAGE_AMIBERRY] }
+      A500: { requireAnyOf: [BR2_PACKAGE_AMIBERRY] }
 
 amiga500p:
   name:       Amiga 500+
@@ -35,9 +35,9 @@ amiga500p:
   theme:      amiga
   emulators:
     fsuae:
-      A500+: { require: [BR2_PACKAGE_FSUAE]    }
+      A500+: { requireAnyOf: [BR2_PACKAGE_FSUAE]    }
     amiberry:
-      A500P: { require: [BR2_PACKAGE_AMIBERRY] }
+      A500P: { requireAnyOf: [BR2_PACKAGE_AMIBERRY] }
 
 amiga600:
   name:       Amiga 600
@@ -45,7 +45,7 @@ amiga600:
   path:       amiga/amiga600
   emulators:
     fsuae:
-      A600: { require: [BR2_PACKAGE_FSUAE] }
+      A600: { requireAnyOf: [BR2_PACKAGE_FSUAE] }
 
 amiga1000:
   name:       Amiga 1000
@@ -54,7 +54,7 @@ amiga1000:
   theme:      amiga
   emulators:
     fsuae:
-      A1000: { require: [BR2_PACKAGE_FSUAE] }
+      A1000: { requireAnyOf: [BR2_PACKAGE_FSUAE] }
 
 amiga1200:
   name:       Amiga 1200
@@ -62,9 +62,9 @@ amiga1200:
   path:       amiga/amiga1200
   emulators:
     fsuae:
-      A1200: { require: [BR2_PACKAGE_FSUAE]    }
+      A1200: { requireAnyOf: [BR2_PACKAGE_FSUAE]    }
     amiberry:
-      A1200: { require: [BR2_PACKAGE_AMIBERRY] }
+      A1200: { requireAnyOf: [BR2_PACKAGE_AMIBERRY] }
 
 amiga3000:
   name:       Amiga 3000
@@ -73,7 +73,7 @@ amiga3000:
   theme:      amiga
   emulators:
     fsuae:
-      A3000: { require: [BR2_PACKAGE_FSUAE] }
+      A3000: { requireAnyOf: [BR2_PACKAGE_FSUAE] }
 
 amiga4000:
   name:       Amiga 4000
@@ -82,9 +82,9 @@ amiga4000:
   theme:      amiga
   emulators:
     fsuae:
-      A4000: { require: [BR2_PACKAGE_FSUAE]    }
+      A4000: { requireAnyOf: [BR2_PACKAGE_FSUAE]    }
     amiberry:
-      A4000: { require: [BR2_PACKAGE_AMIBERRY] }
+      A4000: { requireAnyOf: [BR2_PACKAGE_AMIBERRY] }
 
 amigacd32:
   name:       Amiga CD32
@@ -93,9 +93,9 @@ amigacd32:
   theme:      amiga
   emulators:
     fsuae:
-      CD32: { require: [BR2_PACKAGE_FSUAE]    }
+      CD32: { requireAnyOf: [BR2_PACKAGE_FSUAE]    }
     amiberry:
-      CD32: { require: [BR2_PACKAGE_AMIBERRY] }
+      CD32: { requireAnyOf: [BR2_PACKAGE_AMIBERRY] }
 
 amigacdtv:
   name:       Amiga CDTV
@@ -104,94 +104,94 @@ amigacdtv:
   theme:      amiga
   emulators:
     fsuae:
-      CDTV: { require: [BR2_PACKAGE_FSUAE] }
+      CDTV: { requireAnyOf: [BR2_PACKAGE_FSUAE] }
 
 nes:
   name:       Nintendo Entertainment System
   extensions: [7z, nes, zip]
   emulators:
     libretro:
-      fceumm:   { require: [BR2_PACKAGE_LIBRETRO_FCEUMM]   }
-      fceunext: { require: [BR2_PACKAGE_LIBRETRO_FCEUNEXT] }
-      nestopia: { require: [BR2_PACKAGE_LIBRETRO_NESTOPIA] }
-      quicknes: { require: [BR2_PACKAGE_LIBRETRO_QUICKNES] }
+      fceumm:   { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FCEUMM]   }
+      fceunext: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FCEUNEXT] }
+      nestopia: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_NESTOPIA] }
+      quicknes: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_QUICKNES] }
 
 n64:
   name:       Nintendo 64
   extensions: [z64, n64, v64]
   emulators:
     mupen64plus:
-      gliden64:   { require: [BR2_PACKAGE_MUPEN64PLUS_GLIDEN64]         }
-      rice:       { require: [BR2_PACKAGE_MUPEN64PLUS_GLES2RICE]        }
-      glide64mk2: { require: [BR2_PACKAGE_MUPEN64PLUS_VIDEO_GLIDE64MK2] }
+      gliden64:   { requireAnyOf: [BR2_PACKAGE_MUPEN64PLUS_GLIDEN64]         }
+      rice:       { requireAnyOf: [BR2_PACKAGE_MUPEN64PLUS_GLES2RICE]        }
+      glide64mk2: { requireAnyOf: [BR2_PACKAGE_MUPEN64PLUS_VIDEO_GLIDE64MK2] }
     libretro:
-      mupen64plus:  { require: [BR2_PACKAGE_LIBRETRO_MUPEN64PLUS]  }
-      parallel_n64: { require: [BR2_PACKAGE_LIBRETRO_PARALLEL_N64] }
+      mupen64plus:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MUPEN64PLUS]  }
+      parallel_n64: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PARALLEL_N64] }
 
 gba:
   name:       Game Boy Advance
   extensions: [7z, gba, gb, gbc, zip]
   emulators:
     libretro:
-      gpsp:   { require: [BR2_PACKAGE_LIBRETRO_GPSP]   }
-      mgba:   { require: [BR2_PACKAGE_LIBRETRO_MGBA]   }
-      meteor: { require: [BR2_PACKAGE_LIBRETRO_METEOR] }
+      gpsp:   { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GPSP]   }
+      mgba:   { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MGBA]   }
+      meteor: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_METEOR] }
 
 gbc:
   name:       Game Boy Color
   extensions: [7z, gb, gbc, zip]
   emulators:
     libretro:
-      gambatte: { require: [BR2_PACKAGE_LIBRETRO_GAMBATTE] }
-      tgbdual:  { require: [BR2_PACKAGE_LIBRETRO_TGBDUAL]  }
+      gambatte: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GAMBATTE] }
+      tgbdual:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_TGBDUAL]  }
 
 gb:
   name:       Game Boy
   extensions: [7z, gb, gbc, zip]
   emulators:
     libretro:
-      gambatte: { require: [BR2_PACKAGE_LIBRETRO_GAMBATTE] }
-      tgbdual:  { require: [BR2_PACKAGE_LIBRETRO_TGBDUAL]  }
+      gambatte: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GAMBATTE] }
+      tgbdual:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_TGBDUAL]  }
 
 nds:
   name:       Nintendo DS
   extensions: [bin, nds, zip]
   emulators:
     libretro:
-      desmume: { require: [BR2_PACKAGE_LIBRETRO_DESMUME] }
+      desmume: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_DESMUME] }
 
 fds:
   name:       Family Computer Disk System
   extensions: [7z, nes, fds, zip]
   emulators:
     libretro:
-      fceumm:   { require: [BR2_PACKAGE_LIBRETRO_FCEUMM]   }
-      nestopia: { require: [BR2_PACKAGE_LIBRETRO_NESTOPIA] }
+      fceumm:   { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FCEUMM]   }
+      nestopia: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_NESTOPIA] }
 
 virtualboy:
   name:       Virtual Boy
   extensions: [7z, vb, zip]
   emulators:
     libretro:
-      vb: { require: [BR2_PACKAGE_LIBRETRO_BEETLE_VB] }
+      vb: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BEETLE_VB] }
 
 gw:
   name:       Game and Watch
   extensions: [mgw, zip]
   emulators:
     libretro:
-      vb: { require: [BR2_PACKAGE_LIBRETRO_GW] }
+      vb: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GW] }
 
 dreamcast:
   name:       Dreamcast
   extensions: [cdi, chd, gdi]
   emulators:
     libretro:
-      redream: { require: [BR2_PACKAGE_LIBRETRO_REDREAM] }
-      reicast: { require: [BR2_PACKAGE_LIBRETRO_REICAST] }
-      reicast_oit: { require: [BR2_PACKAGE_LIBRETRO_REICAST_OIT] }
+      redream: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_REDREAM] }
+      reicast: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_REICAST] }
+      reicast_oit: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_REICAST_OIT] }
     reicast:
-      reicast: { require: [BR2_PACKAGE_REICAST] }
+      reicast: { requireAnyOf: [BR2_PACKAGE_REICAST] }
 
 megadrive:
   name:       Sega Megadrive
@@ -199,95 +199,94 @@ megadrive:
   platform:   genesis, megadrive
   emulators:
     libretro:
-      genesisplusgx: { require: [BR2_PACKAGE_LIBRETRO_GENESISPLUSGX] }
-      picodrive:     { require: [BR2_PACKAGE_LIBRETRO_PICODRIVE]     }
+      genesisplusgx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GENESISPLUSGX] }
+      picodrive:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PICODRIVE]     }
 
 segacd:
   name:       Sega CD
   extensions: [chd, cue, iso]
   emulators:
     libretro:
-      genesisplusgx: { require: [BR2_PACKAGE_LIBRETRO_GENESISPLUSGX] }
-      picodrive:     { require: [BR2_PACKAGE_LIBRETRO_PICODRIVE]     }
+      genesisplusgx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GENESISPLUSGX] }
+      picodrive:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PICODRIVE]     }
 
 sega32x:
   name:       Sega 32x
   extensions: [7z, 32x, smd, bin, md, zip]
   emulators:
     libretro:
-      picodrive: { require: [BR2_PACKAGE_LIBRETRO_PICODRIVE] }
+      picodrive: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PICODRIVE] }
 
 mastersystem:
   name:       Sega Master System / Mark III
   extensions: [7z, bin, sms, zip]
   emulators:
     libretro:
-      genesisplusgx: { require: [BR2_PACKAGE_LIBRETRO_GENESISPLUSGX] }
-      picodrive:     { require: [BR2_PACKAGE_LIBRETRO_PICODRIVE]     }
+      genesisplusgx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GENESISPLUSGX] }
+      picodrive:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PICODRIVE]     }
 
 gamegear:
   name:       Sega Game Gear
   extensions: [7z, bin, gg, zip]
   emulators:
     libretro:
-      genesisplusgx: { require: [BR2_PACKAGE_LIBRETRO_GENESISPLUSGX] }
+      genesisplusgx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GENESISPLUSGX] }
 
 sg1000:
   name:       Sega SG1000
   extensions: [7z, bin, sg, zip]
   emulators:
     libretro:
-      genesisplusgx: { require: [BR2_PACKAGE_LIBRETRO_GENESISPLUSGX] }
-      picodrive:     { require: [BR2_PACKAGE_LIBRETRO_PICODRIVE]     }
+      genesisplusgx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GENESISPLUSGX] }
+      picodrive:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PICODRIVE]     }
 
 psp:
   name:       Sony Playstation Portable
   extensions: [iso, cso, pbp, elf, prx]
   emulators:
     ppsspp:
-      ppsspp: { require: [BR2_PACKAGE_PPSSPP] }
-      ppsspp: { require: [BR2_PACKAGE_PPSSPP15] }
+      ppsspp: { requireAnyOf: [BR2_PACKAGE_PPSSPP, BR2_PACKAGE_PPSSPP15] }
     libretro:
-      ppsspp: { require: [BR2_PACKAGE_LIBRETRO_PPSSPP] }
+      ppsspp: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PPSSPP] }
 
 psx:
   name:       Sony Playstation 1
   extensions: [chd, cue, cbn, ccd, img, iso, m3u, mdf, pbp, toc, z, znx]
   emulators:
     libretro:
-      pcsx_rearmed: { require: [BR2_PACKAGE_LIBRETRO_PCSX]       }
-      mednafen_psx: { require: [BR2_PACKAGE_LIBRETRO_BEETLE_PSX] }
+      pcsx_rearmed: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PCSX]       }
+      mednafen_psx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BEETLE_PSX] }
 
 pcengine:
   name:       PC Engine
   extensions: [7z, ccd, chd, cue, pce, sgx, zip]
   emulators:
     libretro:
-      mednafen_supergrafx: { require: [BR2_PACKAGE_LIBRETRO_BEETLE_SUPERGRAFX] }
-      pce:                 { require: [BR2_PACKAGE_LIBRETRO_PCE]               }
+      mednafen_supergrafx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BEETLE_SUPERGRAFX] }
+      pce:                 { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PCE]               }
 
 pcenginecd:
   name:       PC Engine CD
   extensions: [7z, ccd, chd, cue, pce, sgx, zip]
   emulators:
     libretro:
-      mednafen_supergrafx: { require: [BR2_PACKAGE_LIBRETRO_BEETLE_SUPERGRAFX] }
-      pce:                 { require: [BR2_PACKAGE_LIBRETRO_PCE]               }
+      mednafen_supergrafx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BEETLE_SUPERGRAFX] }
+      pce:                 { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PCE]               }
 
 supergrafx:
   name:       Supergrafx
   extensions: [7z, ccd, chd, cue, pce, sgx, zip]
   emulators:
     libretro:
-      mednafen_supergrafx: { require: [BR2_PACKAGE_LIBRETRO_BEETLE_SUPERGRAFX] }
-      pce:                 { require: [BR2_PACKAGE_LIBRETRO_PCE]               }
+      mednafen_supergrafx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BEETLE_SUPERGRAFX] }
+      pce:                 { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PCE]               }
 
 pcfx:
   name:       PC-FX
   extensions: [cue, bin]
   emulators:
     libretro:
-      pcfx: { require: [BR2_PACKAGE_LIBRETRO_BEETLE_PCFX] }
+      pcfx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BEETLE_PCFX] }
 
 scummvm:
   name:       ScummVM
@@ -295,9 +294,9 @@ scummvm:
   platform:   pc
   emulators:
     scummvm:
-      scummvm: { require: [BR2_PACKAGE_SCUMMVM] }
+      scummvm: { requireAnyOf: [BR2_PACKAGE_SCUMMVM] }
     libretro:
-      scummvm: { require: [BR2_PACKAGE_LIBRETRO_SCUMMVM] }
+      scummvm: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_SCUMMVM] }
   comment_en: |
     Put scummvm games foders in this folder.
 
@@ -320,9 +319,9 @@ dos:
   platform:   pc
   emulators:
     dos:
-      dos: { require: [BR2_PACKAGE_DOSBOX] }
+      dos: { requireAnyOf: [BR2_PACKAGE_DOSBOX] }
     libretro:
-      dosbox: { require: [BR2_PACKAGE_LIBRETRO_DOSBOX] }
+      dosbox: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_DOSBOX] }
   comment_en: |
     Each game (files) must be placed its own directory having the ".pc .dos" extension.
     In each directory, a dosbox.bat file must contain the command line for launching the game.
@@ -362,9 +361,9 @@ fba:
   platform:   arcade
   emulators:
     libretro:
-      fba: { require: [BR2_PACKAGE_LIBRETRO_FBA] }
+      fba: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FBA] }
     fba2x:
-      fba2x: { require: [BR2_PACKAGE_PIFBA] }
+      fba2x: { requireAnyOf: [BR2_PACKAGE_PIFBA] }
   comment_en: |
     ROMs version must be 0.2.97.42
 
@@ -382,7 +381,7 @@ fba_libretro:
   platform:   arcade
   emulators:
     libretro:
-        fba: { require: [BR2_PACKAGE_LIBRETRO_FBA] }
+        fba: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FBA] }
   comment_en: |
     ROMs version must be 0.2.97.42
 
@@ -412,13 +411,13 @@ mame:
   platform:   arcade
   emulators:
     libretro:
-      imame4all:   { require: [BR2BR2_PACKAGE_LIBRETRO_IMAME] }
-      mame078:     { require: [BR2_PACKAGE_LIBRETRO_MAME2003] }
-      mame078plus:    { require: [BR2_PACKAGE_LIBRETRO_MAME2003_PLUS] }
-      mame0139:    { require: [BR2_PACKAGE_LIBRETRO_MAME2010] }
-      mame0174:    { require: [BR2_PACKAGE_LIBRETRO_MAME2016] }
+      imame4all:   { requireAnyOf: [BR2BR2_PACKAGE_LIBRETRO_IMAME] }
+      mame078:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME2003] }
+      mame078plus:    { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME2003_PLUS] }
+      mame0139:    { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME2010] }
+      mame0174:    { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME2016] }
     advancemame:
-      advancemame: { require: [BR2_PACKAGE_ADVANCEMAME]       }
+      advancemame: { requireAnyOf: [BR2_PACKAGE_ADVANCEMAME]       }
   comment_en: |
     The system uses libretro mame2003 as default core: compatible ROMs must come from set 0.78
     The libretro core imame4all, based on MAME v0.37b5, is also included.
@@ -455,20 +454,20 @@ neogeo:
   extensions: [7z, fba, zip]
   emulators:
     libretro:
-      imame4all: { require: [BR2BR2_PACKAGE_LIBRETRO_IMAME] }
-      mame078:   { require: [BR2_PACKAGE_LIBRETRO_MAME2003] }
-      mame0139:  { require: [BR2_PACKAGE_LIBRETRO_MAME2010] }
-      mame0174:  { require: [BR2_PACKAGE_LIBRETRO_MAME2016] }
-      fba:       { require: [BR2_PACKAGE_LIBRETRO_FBA]      }
+      imame4all: { requireAnyOf: [BR2BR2_PACKAGE_LIBRETRO_IMAME] }
+      mame078:   { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME2003] }
+      mame0139:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME2010] }
+      mame0174:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME2016] }
+      fba:       { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FBA]      }
     fba2x:
-      fba2x:     { require: [BR2_PACKAGE_PIFBA]             }
+      fba2x:     { requireAnyOf: [BR2_PACKAGE_PIFBA]             }
 
 colecovision:
   name:       ColecoVision
   extensions: [bin, col, rom, zip]
   emulators:
     libretro:
-      bluemsx: { require: [BR2_PACKAGE_LIBRETRO_BLUEMSX] }
+      bluemsx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BLUEMSX] }
   comment_en: |
     ## BIOS ##
 
@@ -512,21 +511,21 @@ atari2600:
   extensions: [7z, a26, bin, gz, rom, zip]
   emulators:
     libretro:
-      stella: { require: [BR2_PACKAGE_LIBRETRO_STELLA] }
+      stella: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_STELLA] }
 
 atari5200:
   name:       Atari 5200
   extensions: [xfd, atr, atx, cdm, cas, bin, a52, xex, zip]
   emulators:
     libretro:
-      atari800: { require: [BR2_PACKAGE_LIBRETRO_ATARI800] }
+      atari800: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_ATARI800] }
 
 atari7800:
   name:       Atari 7800
   extensions: [a78, bin, zip]
   emulators:
     libretro:
-      prosystem: { require: [BR2_PACKAGE_LIBRETRO_PROSYSTEM] }
+      prosystem: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PROSYSTEM] }
 
 lynx:
   name:       Lynx
@@ -534,21 +533,21 @@ lynx:
   platform:   atarilynx
   emulators:
     libretro:
-      mednafen_lynx: { require: [BR2_PACKAGE_LIBRETRO_BEETLE_LYNX] }
+      mednafen_lynx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BEETLE_LYNX] }
 
 ngp:
   name: Neo-Geo Pocket
   extensions: [7z, ngp, zip]
   emulators:
     libretro:
-      mednafen_ngp: { require: [BR2_PACKAGE_LIBRETRO_BEETLE_NGP] }
+      mednafen_ngp: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BEETLE_NGP] }
 
 ngpc:
   name:       Neo-Geo Pocket Color
   extensions: [ngc, zip]
   emulators:
     libretro:
-      mednafen_ngp: { require: [BR2_PACKAGE_LIBRETRO_BEETLE_NGP] }
+      mednafen_ngp: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BEETLE_NGP] }
 
 wswan:
   name:       WonderSwan
@@ -557,7 +556,7 @@ wswan:
   platform:   wonderswan
   emulators:
     libretro:
-      mednafen_wswan: { require: [BR2_PACKAGE_LIBRETRO_BEETLE_WSWAN] }
+      mednafen_wswan: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BEETLE_WSWAN] }
 
 wswanc:
   name:       WonderSwan Color
@@ -566,14 +565,14 @@ wswanc:
   platform:   wonderswancolor
   emulators:
     libretro:
-      mednafen_wswan: { require: [BR2_PACKAGE_LIBRETRO_BEETLE_WSWAN] }
+      mednafen_wswan: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BEETLE_WSWAN] }
 
 prboom:
   name:       PrBoom
   extensions: [wad, iwad]
   emulators:
     libretro:
-      prboom: { require: [BR2_PACKAGE_LIBRETRO_PRBOOM] }
+      prboom: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PRBOOM] }
   comment_en: |
     Put DOOM 1 and 2 games (and their associated mods) in this directory.
     Put your soundtrack in the directory ./game-musics
@@ -590,14 +589,14 @@ vectrex:
   extensions: [7z, bin, gam, vec, zip]
   emulators:
     libretro:
-      vecx: { require: [BR2_PACKAGE_LIBRETRO_VECX] }
+      vecx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_VECX] }
 
 lutro:
   name:       Lutro
   extensions: [lua, lutro, zip]
   emulators:
     libretro:
-      lutro: { require: [BR2_PACKAGE_LIBRETRO_LUTRO] }
+      lutro: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_LUTRO] }
   comment_en: |
     LUA demo games on github:
     https://github.com/libretro/lutro-platformer
@@ -615,7 +614,7 @@ cavestory:
   extensions: [exe]
   emulators:
     libretro:
-      nxengine: { require: [BR2_PACKAGE_LIBRETRO_NXENGINE] }
+      nxengine: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_NXENGINE] }
   comment_en: |
     Download the game from the following URL and uncompress it in this folder.
     http://www.cavestory.org/downloads/cavestoryen.zip
@@ -634,14 +633,14 @@ atarist:
   extensions: [zip, st, stx, img, rom, raw, ipf, ctr, zip]
   emulators:
     libretro:
-      hatari: { require: [BR2_PACKAGE_LIBRETRO_HATARI] }
+      hatari: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_HATARI] }
 
 amstradcpc:
   name:       AmstradCPC
   extensions: [cdt, cpc, dsk, zip]
   emulators:
     libretro:
-      cap32: { require: [BR2_PACKAGE_LIBRETRO_CAP32] }
+      cap32: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_CAP32] }
   comment_en: |
     To enable gamepad support, go in RetroArch menu with "Hotkey + B", then switch this option:
     "Quick Menu/Core Input Options/User 1 Device type: Retropad" with "Amstrad Joystick"
@@ -654,8 +653,8 @@ msx:
   extensions: [dsk, cas, mx1, mx2, m3u, rom, zip]
   emulators:
     libretro:
-      fmsx:    { require: [BR2_PACKAGE_LIBRETRO_FMSX]    }
-      bluemsx: { require: [BR2_PACKAGE_LIBRETRO_BLUEMSX] }
+      fmsx:    { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FMSX]    }
+      bluemsx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BLUEMSX] }
   comment_en: |
     ## BIOS ##
 
@@ -711,8 +710,8 @@ msx1:
   platform:   msx
   emulators:
     libretro:
-      fmsx:    { require: [BR2_PACKAGE_LIBRETRO_FMSX]    }
-      bluemsx: { require: [BR2_PACKAGE_LIBRETRO_BLUEMSX] }
+      fmsx:    { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FMSX]    }
+      bluemsx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BLUEMSX] }
   comment_en: |
     ## BIOS ##
 
@@ -768,8 +767,8 @@ msx2:
   platform:   msx
   emulators:
     libretro:
-      fmsx:    { require: [BR2_PACKAGE_LIBRETRO_FMSX]    }
-      bluemsx: { require: [BR2_PACKAGE_LIBRETRO_BLUEMSX] }
+      fmsx:    { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FMSX]    }
+      bluemsx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BLUEMSX] }
   comment_en: |
     ## BIOS ##
 
@@ -825,14 +824,14 @@ odyssey2:
   path:       o2em
   emulators:
     libretro:
-      o2em: { require: [BR2_PACKAGE_LIBRETRO_O2EM] }
+      o2em: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_O2EM] }
 
 zx81:
   name:       ZX81
   extensions: [tzx, p, zip]
   emulators:
     libretro:
-      81: { require: [BR2_PACKAGE_LIBRETRO_81] }
+      81: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_81] }
   comment_en: |
     To enable your gamepad support, go in retroarch menu with "Hotkey+B", then switch this option:
     "Settings/Input/Input User 1 Binds/User 1 Device type: Retropad" with "Cursor Joystick"
@@ -845,7 +844,7 @@ zxspectrum:
   extensions: [7z, sna, szx, z80, tap, tzx, gz, udi, mgt, img, trd, scl, dsk, zip, rzx]
   emulators:
     libretro:
-      fuse: { require: [BR2_PACKAGE_LIBRETRO_FUSE] }
+      fuse: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FUSE] }
   comment_en: |
     ## Input Devices ##
 
@@ -877,7 +876,7 @@ moonlight:
   extensions: [moonlight]
   emulators:
     moonlight:
-      moonlight: { require: [BR2_PACKAGE_MOONLIGHT_EMBEDDED] }
+      moonlight: { requireAnyOf: [BR2_PACKAGE_MOONLIGHT_EMBEDDED] }
 
 apple2:
   name:       Apple II
@@ -885,22 +884,22 @@ apple2:
   includeEmulators: no
   emulators:
     apple2:
-      apple2: { require: [BR2_PACKAGE_LINAPPLE_PIE] }
+      apple2: { requireAnyOf: [BR2_PACKAGE_LINAPPLE_PIE] }
 
 saturn:
   name:       Sega Saturn
   extensions: [bin, cue, ccd, chd, iso, zip]
   emulators:
     libretro:
-      yabause:       { require: [BR2_PACKAGE_LIBRETRO_YABAUSE]       }
-      beetle-saturn: { require: [BR2_PACKAGE_LIBRETRO_BEETLE_SATURN] }
+      yabause:       { requireAnyOf: [BR2_PACKAGE_LIBRETRO_YABAUSE]       }
+      beetle-saturn: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BEETLE_SATURN] }
 
 jaguar:
   name:       Jaguar
   extensions: [j64, jag, zip]
   emulators:
     libretro:
-      virtualjaguar: { require: [BR2_PACKAGE_LIBRETRO_VIRTUALJAGUAR] }
+      virtualjaguar: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_VIRTUALJAGUAR] }
 
 gamecube:
   name:       GameCube
@@ -908,18 +907,18 @@ gamecube:
   theme:      gc
   emulators:
     dolphin-emu:
-      dolphin-emu: { require: [BR2_PACKAGE_DOLPHIN_EMU] }
+      dolphin-emu: { requireAnyOf: [BR2_PACKAGE_DOLPHIN_EMU] }
     libretro:
-      dolphin: { require: [BR2_PACKAGE_LIBRETRO_DOLPHIN] }
+      dolphin: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_DOLPHIN] }
 
 wii:
   name:       Wii
   extensions: [iso, wbfs, elf, dol, gcm, ciso, gcz, wad]
   emulators:
     dolphin-emu:
-      dolphin-emu: { require: [BR2_PACKAGE_DOLPHIN_EMU] }
+      dolphin-emu: { requireAnyOf: [BR2_PACKAGE_DOLPHIN_EMU] }
     libretro:
-      dolphin: { require: [BR2_PACKAGE_LIBRETRO_DOLPHIN] }
+      dolphin: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_DOLPHIN] }
   comment_en: |
     To use a virtual horizontal wiimote, include ".side." in the filename (for example ".side.iso").
     You can choose the axis controls among i(nfrared), s(wing), t(ilt) or n(unchuk) :
@@ -937,29 +936,28 @@ ps2:
   includeEmulators: no
   emulators:
     pcsx2:
-      pcsx2: { require: [BR2_PACKAGE_PCSX2, BR2_PACKAGE_PCSX2_AVX2] }
-      pcsx2: { require: [BR2_PACKAGE_PCSX2_X86] }
+      pcsx2: { requireAnyOf: [BR2_PACKAGE_PCSX2, BR2_PACKAGE_PCSX2_AVX2, BR2_PACKAGE_PCSX2_X86] }
 
 3do:
   name:       3DO
   extensions: [cue, iso]
   emulators:
     libretro:
-      4do: { require: [BR2_PACKAGE_LIBRETRO_4DO] }
+      4do: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_4DO] }
 
 intellivision:
   name:       Mattel Intellivision
   extensions: [int, itv, bin, rom]
   emulators:
     libretro:
-      freeintv: { require: [BR2_PACKAGE_LIBRETRO_FREEINTV] }
+      freeintv: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FREEINTV] }
 
 x68000:
   name:       Sharp X68000
   extensions: [dim, zip, img, d88, 88d, hdm, dup, 2hd, xdf, hdf, cmd, m3u]
   emulators:
     libretro:
-      px68k: { require: [BR2_PACKAGE_LIBRETRO_PX68K] }
+      px68k: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PX68K] }
 
 imageviewer:
   name:       Screenshots
@@ -968,7 +966,7 @@ imageviewer:
   platform:   ignore
   emulators:
     libretro:
-      imageviewer: { require: [] }
+      imageviewer: { requireAnyOf: [] }
 
 # Favorites
 favorites:

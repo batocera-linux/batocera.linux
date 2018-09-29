@@ -46,7 +46,7 @@ class EsSystemConf:
                     EsSystemConf.createFolders(system, rules[system], romsdirsource, romsdirtarget)
                     EsSystemConf.infoSystem(system, rules[system], romsdirtarget)
                 else:
-                    print "skipping system " + system
+                    print "skipping directory for system " + system
 
     # check if the folder is required
     @staticmethod
@@ -58,13 +58,19 @@ class EsSystemConf:
         for emulator in sorted(data["emulators"]):
             emulatorData = data["emulators"][emulator]
             for core in sorted(emulatorData):
-                requirementValid = True
-                for requirement in emulatorData[core]["require"]:
-                    if requirement not in config:
-                        requirementValid = False
-                # found a core with valid requirements
-                if requirementValid:
+                if len(emulatorData[core]["requireAnyOf"]) == 0:
                     return True
+                for requirement in emulatorData[core]["requireAnyOf"]:
+                    if isinstance(requirement, list):
+                        requirementValid = True
+                        for reqitem in requirement:
+                            if reqitem not in config:
+                                requirementValid = False
+                        if requirementValid:
+                            return True
+                    else:
+                        if requirement in config:
+                            return True
         return False
 
     # Loads the .config file
@@ -230,10 +236,20 @@ class EsSystemConf:
             # CORES
             coresTxt = ""
             for core in sorted(emulatorData):
-                requirementValid = True
-                for requirement in emulatorData[core]["require"]:
-                    if requirement not in config:
-                        requirementValid = False
+                requirementValid = False
+                if len(emulatorData[core]["requireAnyOf"]) == 0:
+                    requirementValid = True
+                for requirement in emulatorData[core]["requireAnyOf"]:
+                    if isinstance(requirement, list):
+                        subreqValid = True
+                        for reqitem in requirement:
+                            if reqitem not in config:
+                                subreq = False
+                        if subreq:
+                            requirementValid = True
+                    else:
+                        if requirement in config:
+                            requirementValid = True
                 if requirementValid:
                     coresTxt += "                    <core>%s</core>\n" % (core)
 
