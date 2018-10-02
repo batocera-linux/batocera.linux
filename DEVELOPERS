@@ -203,6 +203,7 @@ F:	package/python-bcrypt/
 F:	package/python-engineio/
 F:	package/python-fire/
 F:	package/python-jsonmodels/
+F:	package/python-lxml/
 F:	package/python-paramiko/
 F:	package/python-pyasn1/
 F:	package/python-pyroute2/
@@ -742,6 +743,7 @@ F:	package/gssdp/
 F:	package/gupnp/
 F:	package/gupnp-dlna/
 F:	package/gupnp-tools/
+F:	package/haproxy/
 F:	package/hiredis/
 F:	package/i2pd/
 F:	package/igd2-for-linux/
@@ -1298,6 +1300,13 @@ F:	package/lynx/
 N:	Mario Rugiero <mrugiero@gmail.com>
 F:	package/ratpoison/
 
+N:	Mark Corbin <mark.corbin@embecosm.com>
+F:	arch/arch.mk.riscv
+F:	arch/Config.in.riscv
+F:	board/qemu/riscv64-virt/
+F:	boot/riscv-pk/
+F:	configs/qemu_riscv64_virt_defconfig
+
 N:	Markos Chandras <markos.chandras@imgtec.com>
 F:	package/harfbuzz/
 F:	package/libsecret/
@@ -1506,9 +1515,6 @@ F:	package/libgeotiff/
 N:	Mylène Josserand <mylene.josserand@bootlin.com>
 F:	package/rtl8723bu/
 
-N:	Nathan Lynch <ntl@pobox.com>
-F:	package/chrony/
-
 N:	Nathaniel Roach <nroach44@gmail.com>
 F:	package/bandwidthd/
 F:	package/libgudev/
@@ -1628,6 +1634,7 @@ F:	package/python-texttable/
 F:	package/python-validators/
 F:	package/python-webob/
 F:	package/python-websocket-client/
+F:	package/sedutil/
 F:	package/triggerhappy/
 
 N:	Peter Seiderer <ps.report@gmx.net>
@@ -1761,7 +1768,6 @@ F:	package/aubio/
 F:	package/bullet/
 F:	package/efl/
 F:	package/enlightenment/
-F:	package/expedite/
 F:	package/flare-engine/
 F:	package/flare-game/
 F:	package/irrlicht/
