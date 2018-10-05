@@ -66,6 +66,8 @@ f_cp /var/log/messages                                        "${DSYSTEM}"
 f_cp /recalbox/share/system/.emulationstation/es_settings.cfg "${DSYSTEM}"
 f_cp /recalbox/share/system/.emulationstation/es_log.txt      "${DSYSTEM}"
 f_cp /recalbox/share/system/.emulationstation/es_input.cfg    "${DSYSTEM}"
+f_cp /recalbox/share/system/logs/es_launch_stdout.log         "${DSYSTEM}"
+f_cp /recalbox/share/system/logs/es_launch_stderr.log         "${DSYSTEM}"
 f_cp /boot/recalbox-boot.conf                                 "${DSYSTEM}"
 f_cp /var/log/Xorg.0.log                                      "${DSYSTEM}"
 
