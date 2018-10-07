@@ -50,6 +50,7 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
     select BR2_PACKAGE_LIRC_TOOLS                        # lirc (remote control)
     select BR2_SYSTEM_ENABLE_NLS                         # locales
     select BR2_PACKAGE_ACPID                             if BR2_PACKAGE_BATOCERA_TARGET_X86 || BR2_PACKAGE_BATOCERA_TARGET_X86_64
+    select BR2_PACKAGE_BATOCERA_DESKTOPAPPS              if BR2_PACKAGE_XSERVER_XORG_SERVER # batocera applications config and scripts
     select BR2_PACKAGE_LEAFPAD                           if BR2_PACKAGE_XSERVER_XORG_SERVER # text editor
     select BR2_PACKAGE_PCMANFM                           if BR2_PACKAGE_XSERVER_XORG_SERVER # file manager
     select BR2_PACKAGE_XTERM                             if BR2_PACKAGE_XSERVER_XORG_SERVER # terminal

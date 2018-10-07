@@ -4,6 +4,7 @@ menu "System"
   source "package/batocera/core/batocera-system/Config.in"
   source "package/batocera/core/batocera-configgen/Config.in"
   source "package/batocera/core/batocera-retrogame/Config.in"
+  source "package/batocera/core/batocera-desktopapps/Config.in"
 
   menu "Boot"
     source "package/batocera/boot/batocera-initramfs/Config.in"
