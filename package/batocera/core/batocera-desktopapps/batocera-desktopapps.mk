@@ -21,6 +21,12 @@ ifeq ($(BR2_PACKAGE_DOLPHIN_EMU),y)
   BATOCERA_DESKTOPAPPS_APPS    += dolphin-config.desktop
 endif
 
+# retroarch
+ifeq ($(BR2_PACKAGE_RETROARCH),y)
+  BATOCERA_DESKTOPAPPS_SCRIPTS += recalbox-config-retroarch.sh
+  BATOCERA_DESKTOPAPPS_APPS    += retroarch-config.desktop
+endif
+
 define BATOCERA_DESKTOPAPPS_INSTALL_TARGET_CMDS
 	# scripts
 	mkdir -p $(TARGET_DIR)/recalbox/scripts
