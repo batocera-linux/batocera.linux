@@ -55,6 +55,7 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
     select BR2_PACKAGE_PCMANFM                           if BR2_PACKAGE_XSERVER_XORG_SERVER # file manager
     select BR2_PACKAGE_XTERM                             if BR2_PACKAGE_XSERVER_XORG_SERVER # terminal
     select BR2_PACKAGE_MATCHBOX                          if BR2_PACKAGE_XSERVER_XORG_SERVER # window manager
+    select BR2_PACKAGE_AVAHI                             # service discovery on local network
     select BR2_PACKAGE_AVAHI_DAEMON                      # ping batocera.local
     select BR2_PACKAGE_AVAHI_LIBDNSSD_COMPATIBILITY      # bonjour
 
