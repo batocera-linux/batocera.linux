@@ -1,0 +1,4 @@
+#!/bin/bash
+
+# kernel option for xbox 360 controllers
+echo 1 > /sys/module/bluetooth/parameters/disable_ertm
