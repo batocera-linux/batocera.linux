@@ -159,6 +159,9 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
     else:
         retroarchConfig['video_scale_integer'] = 'false'
 
+    # disable the threaded video while it is causing issues to several people
+    retroarchConfig['video_threaded'] = 'false'
+
     if(system.name in systemToBluemsx):
         if system.config['core'] == 'bluemsx':
             coreSettings.save('bluemsx_msxtype', systemToBluemsx[system.name])
