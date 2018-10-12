@@ -143,7 +143,6 @@ gbc:
   emulators:
     libretro:
       gambatte: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GAMBATTE] }
-      tgbdual:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_TGBDUAL]  }
 
 gb:
   name:       Game Boy
@@ -151,6 +150,19 @@ gb:
   emulators:
     libretro:
       gambatte: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GAMBATTE] }
+
+gbc2players:
+  name:       Game Boy Color
+  extensions: [7z, gb, gbc, zip]
+  emulators:
+    libretro:
+      tgbdual:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_TGBDUAL]  }
+
+gb2players:
+  name:       Game Boy
+  extensions: [7z, gb, gbc, zip]
+  emulators:
+    libretro:
       tgbdual:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_TGBDUAL]  }
 
 nds:

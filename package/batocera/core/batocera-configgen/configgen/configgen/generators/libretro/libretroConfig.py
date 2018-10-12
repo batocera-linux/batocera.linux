@@ -162,11 +162,20 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
     # disable the threaded video while it is causing issues to several people
     retroarchConfig['video_threaded'] = 'false'
 
+    # core options
     if(system.name in systemToBluemsx):
         if system.config['core'] == 'bluemsx':
             coreSettings.save('bluemsx_msxtype', systemToBluemsx[system.name])
             retroarchConfig['input_libretro_device_p1'] = systemToP1Device[system.name]
             retroarchConfig['input_libretro_device_p2'] = systemToP2Device[system.name]
+    # forced values (so that if the config is not correct, fix it)
+    if system.config['core'] == 'tgbdual':
+        retroarchConfig['aspect_ratio_index'] = '21' # reset each time in this function
+        coreSettings.save('tgbdual_audio_output',     'Game Boy #1')
+        coreSettings.save('tgbdual_gblink_enable',    'enabled')
+        coreSettings.save('tgbdual_screen_placement', 'left-right')
+        coreSettings.save('tgbdual_single_screen_mp', 'both players')
+        coreSettings.save('tgbdual_switch_screens',   'normal')
 
     # Netplay management
     if 'netplaymode' in system.config and system.config['netplaymode'] in systemNetplayModes:

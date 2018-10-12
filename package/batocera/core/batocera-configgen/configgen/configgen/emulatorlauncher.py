@@ -128,6 +128,10 @@ def getDefaultEmulator(systemName):
         return Emulator(name='gb',         emulator='libretro',    core='gambatte')
     if systemName == "gbc":
         return Emulator(name='gbc',        emulator='libretro',    core='gambatte')
+    if systemName == "gb2players":
+        return Emulator(name='gb2players',         emulator='libretro',    core='tgbdual')
+    if systemName == "gbc2players":
+        return Emulator(name='gbc2players',        emulator='libretro',    core='tgbdual')
     if systemName == "fds":
         return Emulator(name='fds',        emulator='libretro',    core='nestopia')
     if systemName == "virtualboy":
