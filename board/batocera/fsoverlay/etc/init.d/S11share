@@ -17,7 +17,7 @@ fi
 ###
 # SHARECONFFILE
 # can contain :
-# INTERNAL     => /dev/mmcblk0p3
+# INTERNAL     => /dev/mmcblk0p2
 # RAM          => tmpfs
 # ANYEXTERNAL  => any device found not starting by /dev/mmcblk0p (use it when you've several usb keys, but plug only one at a time)
 # DEV [FSUUID] => a device having the FSUID uuid
@@ -45,10 +45,10 @@ MAXTRY=$(getMaxTryConfig "${SHARECONFFILE}")
 NTRY=0
 
 ##### BUT FIRST, create the internal partition if it doesn't exist
-# command that can be used for test to remove the 3rd partition : parted -s -m /dev/mmcblk0 rm 3
+# command that can be used for test to remove the 3rd partition : parted -s -m /dev/mmcblk0 rm 2
 # create the internal partition if it doesn't exist
 #
-# we don't remove data ;  only create a new partition if p3 is missing, and some free space is available only at the end of the disk
+# we don't remove data ;  only create a new partition if p2 is missing, and some free space is available only at the end of the disk
 #
 if ! test -e "${INTERNALDEVICE}"
 then
@@ -64,13 +64,24 @@ then
 	if test -n "${PSTART}"
 	then
 	    parted -s "${PARTPREFIX}" -m unit b mkpart primary "${PSTART}" 100%
+
+	    # wait that the partition is visible on the linux side
+	    NTEST=0
+	    while test ! -e "${INTERNALDEVICE}" -a "${NTEST}" -lt 10
+	    do
+		sleep 1
+		let NTEST++
+	    done
+
+	    # format the partition
 	    if test -e "${INTERNALDEVICE}"
 	    then
-		#mkfs.vfat -F 32 -n SHARE /dev/mmcblk0p3 # if you replace this line, please change the INTERNALDEVICETYPE variable too in consequence
-		#fsck.fat /dev/mmcblk0p3 -a
+		#mkfs.vfat -F 32 -n SHARE /dev/mmcblk0p2 # if you replace this line, please change the INTERNALDEVICETYPE variable too in consequence
+		#fsck.fat /dev/mmcblk0p2 -a
 		mkfs.ext4 "${INTERNALDEVICE}" -q -F -L SHARE
 		e2fsck -f -p "${INTERNALDEVICE}"
 	    fi
+	    sync
 	fi
     fi
 fi
