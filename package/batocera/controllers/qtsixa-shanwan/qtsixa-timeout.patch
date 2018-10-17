@@ -1,0 +1,22 @@
+diff --git a/sixad/shared.cpp b/sixad/shared.cpp
+index 5fea91c..b2aa4fe 100644
+--- a/sixad/shared.cpp
++++ b/sixad/shared.cpp
+@@ -119,7 +119,7 @@ struct device_settings init_values(const char *addr)
+         settings.rumble.old_mode = textfile_get_int(pathname, "old_rumble_mode", 0);
+ 
+         settings.timeout.enabled = textfile_get_int(pathname, "enable_timeout", 1);
+-        settings.timeout.timeout = textfile_get_int(pathname, "timeout_mins", 30);
++        settings.timeout.timeout = textfile_get_int(pathname, "timeout_mins", 10);
+ 
+         settings.auto_disconnect = (bool)textfile_get_int(pathname, "out_of_reach_disconnects", 0);
+ 
+@@ -181,7 +181,7 @@ struct device_settings init_values(const char *addr)
+         settings.rumble.old_mode = textfile_get_int(pathname, "old_rumble_mode", 0);
+ 
+         settings.timeout.enabled = textfile_get_int(pathname, "enable_timeout", 1);
+-        settings.timeout.timeout = textfile_get_int(pathname, "timeout_mins", 30);
++        settings.timeout.timeout = textfile_get_int(pathname, "timeout_mins", 10);
+ 
+         settings.auto_disconnect = (bool)textfile_get_int(pathname, "out_of_reach_disconnects", 0);
+ 
