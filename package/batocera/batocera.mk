@@ -1,1 +1,1 @@
-include $(sort $(wildcard package/batocera/*/*/*.mk package/batocera/*/*/*/*.mk package/batocera/*/*/*/*/*.mk))
+include $(sort $(wildcard package/batocera/*/*.mk package/batocera/*/*/*.mk package/batocera/*/*/*/*.mk package/batocera/*/*/*/*/*.mk))
