@@ -51,7 +51,8 @@ menu "Controllers"
   source "package/batocera/controllers/qtsixa-shanwan/Config.in"
   source "package/batocera/controllers/virtualgamepads/Config.in"
   source "package/batocera/controllers/xarcade2jstick/Config.in"
-  source "package/batocera/controllers/xboxdrv/Config.in"	
+  source "package/batocera/controllers/xboxdrv/Config.in"
+  source "package/batocera/controllers/ds4drv/Config.in"
 endmenu
 
 menu "Emulators"
@@ -195,6 +196,7 @@ menu "Libraries"
   source "package/batocera/libraries/python-rpigpio/Config.in"
   source "package/batocera/libraries/sfml/Config.in"
   source "package/batocera/libraries/wxwidgets/Config.in"
+  source "package/batocera/libraries/python-evdev/Config.in"
 endmenu
 
 endmenu
