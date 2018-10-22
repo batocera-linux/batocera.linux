@@ -1,8 +1,13 @@
 #!/bin/bash
 
+systemsetting="python /usr/lib/python2.7/site-packages/configgen/settings/recalboxSettings.pyc"
+
 case "${1}" in
 start)
-  ds4drv --hidraw --daemon --daemon-pid /var/run/ds4drv.pid --daemon-log /var/log/ds4drv.log
+  enabled="`$systemsetting  -command load -key controllers.ps4.enabled`"
+  if [ "$enabled" == "1" ];then
+      ds4drv --hidraw --daemon --daemon-pid /var/run/ds4drv.pid --daemon-log /var/log/ds4drv.log
+  fi
 ;;
 stop)
   NPID=$(cat /var/run/ds4drv.pid)
