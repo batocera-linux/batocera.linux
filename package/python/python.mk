@@ -57,8 +57,8 @@ HOST_PYTHON_MAKE = $(MAKE1)
 PYTHON_DEPENDENCIES = host-python libffi $(TARGET_NLS_DEPENDENCIES)
 
 # batocera - required for ds4drv / playstation4 pads
-ifeq ($(BR2_PACKAGE_BLUEZ5_UTILS),y)
-PYTHON_DEPENDENCIES += bluez5_utils
+ifeq ($(BR2_PACKAGE_BLUEZ5_UTILS_HEADERS),y)
+PYTHON_DEPENDENCIES += bluez5_utils-headers
 endif
 
 HOST_PYTHON_DEPENDENCIES = host-expat host-zlib
