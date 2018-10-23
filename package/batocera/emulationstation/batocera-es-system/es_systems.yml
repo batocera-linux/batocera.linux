@@ -196,7 +196,7 @@ gw:
 
 dreamcast:
   name:       Dreamcast
-  extensions: [cdi, chd, gdi]
+  extensions: [cdi, chd, gdi, lst, bin, dat]
   emulators:
     libretro:
       redream: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_REDREAM] }
