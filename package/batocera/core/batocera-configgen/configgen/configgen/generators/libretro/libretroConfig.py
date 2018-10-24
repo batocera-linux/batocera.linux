@@ -26,8 +26,8 @@ def defined(key, dict):
 
 # Warning the values in the array must be exactly at the same index than
 # https://github.com/libretro/RetroArch/blob/master/gfx/video_driver.c#L132
-ratioIndexes = ["4/3", "16/9", "16/10", "16/15", "1/1", "2/1", "3/2", "3/4", "4/1", "4/4", "5/4", "6/5", "7/9", "8/3",
-                "8/7", "19/12", "19/14", "30/17", "32/9", "config", "squarepixel"]
+ratioIndexes = ["4/3", "16/9", "16/10", "16/15", "21/9", "1/1", "2/1", "3/2", "3/4", "4/1", "4/4", "5/4", "6/5", "7/9", "8/3",
+                "8/7", "19/12", "19/14", "30/17", "32/9", "config", "squarepixel", "core", "custom"]
 
 
 # Define the libretro device type corresponding to the libretro cores, when needed.
@@ -170,7 +170,7 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
             retroarchConfig['input_libretro_device_p2'] = systemToP2Device[system.name]
     # forced values (so that if the config is not correct, fix it)
     if system.config['core'] == 'tgbdual':
-        retroarchConfig['aspect_ratio_index'] = '21' # reset each time in this function
+        retroarchConfig['aspect_ratio_index'] = str(ratioIndexes.index("core")) # reset each time in this function
         coreSettings.save('tgbdual_audio_output',     'Game Boy #1')
         coreSettings.save('tgbdual_gblink_enable',    'enabled')
         coreSettings.save('tgbdual_screen_placement', 'left-right')
@@ -277,7 +277,7 @@ def writeBezelConfig(bezel, retroarchConfig, systemName, rom, gameResolution):
     retroarchConfig['input_overlay']              = overlay_cfg_file
     retroarchConfig['input_overlay_hide_in_menu'] = "true"
     retroarchConfig['input_overlay_opacity']  = infos["opacity"]
-    retroarchConfig['aspect_ratio_index']     = 22 # overwrited from the beginning of this file
+    retroarchConfig['aspect_ratio_index']     = str(ratioIndexes.index("custom")) # overwritted from the beginning of this file
 
     if bezelNeedAdaptation:
         wratio = gameResolution["width"]  / float(infos["width"])
