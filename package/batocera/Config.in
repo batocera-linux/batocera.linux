@@ -37,7 +37,7 @@ endmenu
 
 menu "Emulationstation"
   source "package/batocera/emulationstation/batocera-emulationstation/Config.in"
-  source "package/batocera/emulationstation/batocera-es-system/Config.in"	
+  source "package/batocera/emulationstation/batocera-es-system/Config.in"
   source "package/batocera/emulationstation/python-es-scraper/Config.in"
   source "package/batocera/emulationstation/recalbox-themes/Config.in"
   source "package/batocera/emulationstation/sselph-scraper/Config.in"
@@ -127,7 +127,7 @@ menu "Emulators"
     source "package/batocera/emulators/retroarch/libretro/libretro-mame2016/Config.in"
     endmenu
   endmenu
-  
+
   source "package/batocera/emulators/advancemame/Config.in"
   source "package/batocera/emulators/amiberry/Config.in"
   source "package/batocera/emulators/dolphin-emu/Config.in"
@@ -170,7 +170,7 @@ menu "Kodi"
   source "package/batocera/kodi/kodi-superrepo-repositories/Config.in"
   source "package/batocera/kodi/kodi-resource-language-de_de/Config.in"
   source "package/batocera/kodi/kodi-resource-language-es_es/Config.in"
-  source "package/batocera/kodi/kodi-resource-language-eu_es/Config.in"	
+  source "package/batocera/kodi/kodi-resource-language-eu_es/Config.in"
   source "package/batocera/kodi/kodi-resource-language-fr_fr/Config.in"
   source "package/batocera/kodi/kodi-resource-language-it_it/Config.in"
   source "package/batocera/kodi/kodi-resource-language-pt_br/Config.in"
@@ -198,6 +198,7 @@ menu "Libraries"
   source "package/batocera/libraries/sfml/Config.in"
   source "package/batocera/libraries/wxwidgets/Config.in"
   source "package/batocera/libraries/python-evdev/Config.in"
+  source "package/batocera/libraries/libglvnd/Config.in"
 endmenu
 
 endmenu
