@@ -3,8 +3,8 @@
 # PPSSPP
 #
 ################################################################################
-# Version.: Commits on Jul 15, 2018 (v1.6.3)
-PPSSPP_VERSION = ea1ef9277cd7d5b439951099bee15f074999c7c1
+# Version.: Commits on Oct 27, 2018
+PPSSPP_VERSION = v1.7
 PPSSPP_SITE = https://github.com/hrydgard/ppsspp.git
 PPSSPP_SITE_METHOD=git
 PPSSPP_GIT_SUBMODULES=YES
@@ -57,6 +57,7 @@ endif
 define PPSSPP_INSTALL_TARGET_CMDS
 	$(INSTALL) -D -m 0755 $(@D)/PPSSPPSDL $(TARGET_DIR)/usr/bin
 	cp -R $(@D)/assets $(TARGET_DIR)/usr/bin
+	cp -R $(@D)/lib/*.so $(TARGET_DIR)/lib
 endef
 
 $(eval $(cmake-package))
