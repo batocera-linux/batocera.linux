@@ -1,5 +1,20 @@
 #!/bin/bash
 
+### short version (for osd)
+if test "$1" = "--short"
+then
+    BATT=$(grep -E "^POWER_SUPPLY_CAPACITY=" /sys/class/power_supply/BAT*/uevent | sed -e s+'^POWER_SUPPLY_CAPACITY='++ | sort -rn | head -1)
+    DT=$(date +%H:%M)
+    if test -n "${BATT}"
+    then
+	echo "Battery: ${BATT}% - ${DT}"
+    else
+	echo "${DT}"
+    fi
+    exit 0
+fi
+###
+
 V_ARCH=$(cat /recalbox/recalbox.arch)
 V_CPUNB=$(grep -E $'^processor\t:' /proc/cpuinfo | wc -l)
 V_CPUMODEL1=$(grep -E $'^model name\t:' /proc/cpuinfo | head -1 | sed -e s+'^model name\t: '++)
