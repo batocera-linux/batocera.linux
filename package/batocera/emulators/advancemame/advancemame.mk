@@ -66,7 +66,9 @@ ifeq ($(BR2_PACKAGE_RPI_USERLAND),y)
 endif
 
 define ADVANCEMAME_HOOK_INSTALLDIRS
+  # precreate these directories, otherwise, some files are put instead of directories
   mkdir -p $(TARGET_DIR)/usr/share/advance/image/ti99_4a
+  mkdir -p $(TARGET_DIR)/usr/share/advance/snap
 endef
 
 ADVANCEMAME_PRE_INSTALL_TARGET_HOOKS += ADVANCEMAME_HOOK_INSTALLDIRS
