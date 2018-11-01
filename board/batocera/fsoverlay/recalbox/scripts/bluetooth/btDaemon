@@ -168,7 +168,5 @@ if __name__ == '__main__':
 		if "org.bluez.Device1" in interfaces:
 			devices[path] = interfaces["org.bluez.Device1"]
 
-	adapter.StartDiscovery()
-
 	mainloop = GObject.MainLoop()
 	mainloop.run()
