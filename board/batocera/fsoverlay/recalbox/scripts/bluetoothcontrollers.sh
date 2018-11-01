@@ -7,6 +7,6 @@ if [ -f /boot/bcm2710-rpi-3-b.dtb -o -f /boot/bcm2708-rpi-0-w.dtb ] && [ $btPi3R
 fi
 
 /usr/bin/hciconfig hci0 up piscan
-/usr/bin/hciconfig hci0 name Recalbox
+/usr/bin/hciconfig hci0 name batocera
 exit 0
 
