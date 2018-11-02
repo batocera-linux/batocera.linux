@@ -358,8 +358,12 @@ mv "${BATOCERA_BINARIES_DIR}/batocera.img" "${BATOCERA_BINARIES_DIR}/batocera${S
 
 cp "${TARGET_DIR}/recalbox/recalbox.version" "${BATOCERA_BINARIES_DIR}" || exit 1
 
+
+# gzip image
+gzip "${BATOCERA_BINARIES_DIR}/batocera${SUFFIXIMG}.img" || exit 1
+
 #
-for FILE in "${BATOCERA_BINARIES_DIR}/boot.tar.xz"
+for FILE in "${BATOCERA_BINARIES_DIR}/boot.tar.xz" "${BATOCERA_BINARIES_DIR}/batocera${SUFFIXIMG}.img.gz"
 do
     echo "creating ${FILE}.md5"
     CKS=$(md5sum "${FILE}" | sed -e s+'^\([^ ]*\) .*$'+'\1'+)
