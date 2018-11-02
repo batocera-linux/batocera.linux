@@ -67,11 +67,11 @@ rm -f "${TARGET_DIR}/etc/shadow"                         || exit 1
 ln -sf "/run/recalbox.shadow" "${TARGET_DIR}/etc/shadow" || exit 1
 
 # Add the date while the version can be nightly or unstable
-RVERSION=$(cat "${TARGET_DIR}/recalbox/recalbox.version")
-echo "${RVERSION} "$(date "+%Y/%m/%d %H:%M") > "${TARGET_DIR}/recalbox/recalbox.version"
+RVERSION=$(cat "${TARGET_DIR}/recalbox/batocera.version")
+echo "${RVERSION} "$(date "+%Y/%m/%d %H:%M") > "${TARGET_DIR}/recalbox/batocera.version"
 
 # bootsplash
-TGVERSION=$(cat "${TARGET_DIR}/recalbox/recalbox.version")
+TGVERSION=$(cat "${TARGET_DIR}/recalbox/batocera.version")
 convert "${TARGET_DIR}/recalbox/system/resources/splash/logo.png" -fill white -pointsize 30 -annotate +50+1020 "${TGVERSION}" "${TARGET_DIR}/recalbox/system/resources/splash/logo-version.png" || exit 1
 
 # Splash video subtitle

@@ -427,12 +427,12 @@ if [ "$command" == "canupdate" ];then
 	fi
 
 	#echo "Update url: ${recalboxupdateurl}/${arch}/${updatetype}/last"
-	available=`wget -qO- ${recalboxupdateurl}/${arch}/${updatetype}/last/recalbox.version`
+	available=`wget -qO- ${recalboxupdateurl}/${arch}/${updatetype}/last/batocera.version`
 	if [[ "$?" != "0" ]];then
 	        echo "Unable to access the url" >&2
 		exit 2
 	fi
-	installed=`cat /recalbox/recalbox.version`
+	installed=`cat /recalbox/batocera.version`
 
 	echo "Current: ${installed}"
 	echo "New: ${available}"
