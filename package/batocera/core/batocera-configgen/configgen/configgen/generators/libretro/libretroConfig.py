@@ -255,22 +255,12 @@ def writeBezelConfig(bezel, retroarchConfig, systemName, rom, gameResolution):
     # if image is not at the correct size, find the correct size
     bezelNeedAdaptation = False
     if gameResolution["width"] != infos["width"] and gameResolution["height"] != infos["height"]:
-        bezelNeedAdaptation = True
-        resolutionDir = str(gameResolution["width"]) + 'x' + str(gameResolution["height"])
-        overlay_png_file  = recalboxFiles.overlayUser + "/" + bezel + "/" + resolutionDir + "/games/" + rom + ".png"
-        if not os.path.isfile(overlay_png_file):
-            overlay_png_file  = recalboxFiles.overlaySystem + "/" + bezel + "/" + resolutionDir + "/games/" + rom + ".png"
-            if not os.path.isfile(overlay_png_file):
-                overlay_png_file  = recalboxFiles.overlayUser + "/" + bezel + "/" + resolutionDir + "/systems/" + systemName + ".png"
-                if not os.path.isfile(overlay_png_file):
-                    overlay_png_file  = recalboxFiles.overlaySystem + "/" + bezel + "/" + resolutionDir + "/systems/" + systemName + ".png"
-                    if not os.path.isfile(overlay_png_file):
-                        overlay_png_file  = recalboxFiles.overlayUser + "/" + bezel + "/" + resolutionDir + "/default.png"
-                        if not os.path.isfile(overlay_png_file):
-                            overlay_png_file  = recalboxFiles.overlaySystem + "/" + bezel + "/" + resolutionDir + "/default.png"
-                            if not os.path.isfile(overlay_png_file):
-                                eslog.log("no bezel found: " +  recalboxFiles.overlaySystem + "/" + bezel + "/" + resolutionDir + "/systems/" + systemName + ".png")
-                                return
+        infosRatio = float(infos["width"]) / float(infos["height"])
+        gameRatio  = float(gameResolution["width"]) / float(gameResolution["height"])
+        if gameRatio >= infosRatio - 0.1: # keep a marge
+            bezelNeedAdaptation = True
+        else:
+            return
 
     retroarchConfig['input_overlay_enable']       = "true"
     retroarchConfig['input_overlay_scale']        = "1.0"
