@@ -350,7 +350,7 @@ esac
 # common
 
 # renaming
-SUFFIXVERSION=$(cat "${TARGET_DIR}/recalbox/batocera.version | sed -e s+'^\([0-9\.]*\).*$'+'\1'+) # xx.yy version
+SUFFIXVERSION=$(cat "${TARGET_DIR}/recalbox/batocera.version" | sed -e s+'^\([0-9\.]*\).*$'+'\1'+) # xx.yy version
 SUFFIXTARGET=$(echo "${BATOCERA_TARGET}" | tr A-Z a-z)
 SUFFIXDATE=$(date +%Y%m%d)
 SUFFIXIMG="-${SUFFIXVERSION}-${SUFFIXTARGET}-${SUFFIXDATE}"
