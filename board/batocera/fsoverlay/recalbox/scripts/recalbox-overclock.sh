@@ -5,7 +5,7 @@ GRPICONFFILE="/boot/config.txt"
 
 if test "${ARCH}" = "rpi3"
 then
-    if grep -q "^Raspberry Pi 3+" "/proc/device-tree/model"
+    if grep -q "^Raspberry Pi 3 Model [A-Z] Plus" "/proc/device-tree/model"
     then
 	ARCH="rpi3+"
     fi
