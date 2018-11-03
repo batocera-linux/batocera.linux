@@ -1,0 +1,128 @@
+diff --git a/xrandr.c b/xrandr.c
+index 115dbcc..d038481 100644
+--- a/xrandr.c
++++ b/xrandr.c
+@@ -2670,6 +2670,7 @@ main (int argc, char **argv)
+     Bool	modeit = False;
+     Bool	propit = False;
+     Bool	query_1 = False;
++    Bool	query_3 = False;
+     Bool        listConnectedOutputs = False;
+     Bool	list_providers = False;
+     Bool        provsetoutsource = False;
+@@ -3103,6 +3104,11 @@ main (int argc, char **argv)
+ 	    query_1 = True;
+ 	    continue;
+ 	}
++	if (!strcmp ("--listResolutions", argv[i]))
++	{
++	    query_3 = True;
++	    continue;
++	}
+ 	if (!strcmp ("--newmode", argv[i]))
+ 	{
+ 	    umode_t  *m = calloc (1, sizeof (umode_t));
+@@ -3667,7 +3673,7 @@ main (int argc, char **argv)
+ 	}
+ 	exit (0);
+     }
+-    if (query_1_2 || (query && has_1_2 && !query_1))
++    if (query_1_2 || (query && has_1_2 && !query_1) || query_3)
+     {
+ 	output_t    *output;
+ 	int	    m;
+@@ -3678,10 +3684,12 @@ main (int argc, char **argv)
+ 	get_crtcs ();
+ 	get_outputs ();
+ 
+-        printf ("Screen %d: minimum %d x %d, current %d x %d, maximum %d x %d\n",
+-		screen, minWidth, minHeight,
+-		DisplayWidth (dpy, screen), DisplayHeight(dpy, screen),
+-		maxWidth, maxHeight);
++	if(!query_3) {
++	  printf ("Screen %d: minimum %d x %d, current %d x %d, maximum %d x %d\n",
++		  screen, minWidth, minHeight,
++		  DisplayWidth (dpy, screen), DisplayHeight(dpy, screen),
++		  maxWidth, maxHeight);
++	}
+ 
+ 	for (output = all_outputs; output; output = output->next)
+ 	{
+@@ -3694,6 +3702,7 @@ main (int argc, char **argv)
+ 	    Bool	    *mode_shown;
+ 	    Rotation	    rotations = output_rotations (output);
+ 
++	    if(!query_3) {
+ 	    printf ("%s %s", output_info->name, connection[output_info->connection]);
+ 	    if (output->primary) {
+ 		printf(" primary");
+@@ -3771,8 +3780,9 @@ main (int argc, char **argv)
+ 			    pan->border_right, pan->border_bottom);
+ 	    }
+ 	    printf ("\n");
++	    }
+ 
+-	    if (verbose)
++	    if (verbose && !query_3)
+ 	    {
+ 		printf ("\tIdentifier: 0x%x\n", (int)output->output.xid);
+ 		printf ("\tTimestamp:  %d\n", (int)output_info->timestamp);
+@@ -3812,7 +3822,7 @@ main (int argc, char **argv)
+ 			    pan->border_right, pan->border_bottom);
+ 		}
+ 	    }
+-	    if (verbose)
++	    if (verbose && !query_3)
+ 	    {
+ 		int x, y;
+ 
+@@ -3828,7 +3838,7 @@ main (int argc, char **argv)
+ 		    printf ("\n\t           filter: %s", output->transform.filter);
+ 		printf ("\n");
+ 	    }
+-	    if (verbose || properties)
++	    if ((verbose || properties)  && !query_3)
+ 	    {
+ 		props = XRRListOutputProperties (dpy, output->output.xid,
+ 						 &nprop);
+@@ -3890,7 +3900,7 @@ main (int argc, char **argv)
+ 		}
+ 	    }
+ 
+-	    if (verbose)
++	    if (verbose && !query_3)
+ 	    {
+ 		for (j = 0; j < output_info->nmode; j++)
+ 		{
+@@ -3913,8 +3923,12 @@ main (int argc, char **argv)
+ 		    if (mode_shown[j]) continue;
+     
+ 		    jmode = find_mode_by_xid (output_info->modes[j]);
++		    if (!query_3) {
+ 		    printf (" ");
+ 		    printf ("  %-12s", jmode->name);
++		    } else {
++		      printf ("%s", jmode->name);
++		    }
+ 		    for (k = j; k < output_info->nmode; k++)
+ 		    {
+ 			if (mode_shown[k]) continue;
+@@ -3922,6 +3936,7 @@ main (int argc, char **argv)
+ 			if (strcmp (jmode->name, kmode->name) != 0) continue;
+ 			mode_shown[k] = True;
+ 			kmode->modeFlags |= ModeShown;
++			if (!query_3) {
+ 			printf (" %6.2f", mode_refresh (kmode));
+ 			if (kmode == output->mode_info)
+ 			    printf ("*");
+@@ -3931,6 +3946,10 @@ main (int argc, char **argv)
+ 			    printf ("+");
+ 			else
+ 			    printf (" ");
++		        } else {
++			  if (kmode == output->mode_info)
++			    printf ("*");
++			}
+ 		    }
+ 		    printf ("\n");
+ 		}

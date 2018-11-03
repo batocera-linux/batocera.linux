@@ -42,5 +42,32 @@ settings_output="`$systemsetting -command load -key global.videooutput`"
 #####################
 #####################
 
+setMaximumResolution() {
+    # maximum resolution: 1920x1080
+    MAXWIDTH=1920
+    MAXHEIGHT=1080
+    CURRENT_RESOLUTION=$(xrandr --listResolutions | grep -E "\*$" | sed -e s+'\*$'++)
+    CURRENTWIDTH=$(echo "${CURRENT_RESOLUTION}" | cut -d x -f 1)
+    CURRENTHEIGHT=$(echo "${CURRENT_RESOLUTION}" | cut -d x -f 2)
+
+    if test "${CURRENTWIDTH}" -gt "${MAXWIDTH}" -o "${CURRENTHEIGHT}" -gt "${MAXHEIGHT}"
+    then
+	# select a new one
+	# select the first one valid
+	# is it the best ? or should we loop to search the first with the same ratio ?
+	xrandr --listResolutions | grep -vE "\*$" | tr "x" " " |
+	    while read SUGGWIDTH SUGGHEIGHT
+	    do
+		if test "${SUGGWIDTH}" -le "${MAXWIDTH}" -a "${SUGGHEIGHT}" -le "${MAXHEIGHT}"
+		then
+		    xrandr -s "${SUGGWIDTH}x${SUGGHEIGHT}"
+		    return
+		fi
+	    done
+    fi
+}
+
+setMaximumResolution
+
 # without windowed, time must be sleeped to wait that matchbox ended to initialize :-(
 exec emulationstation --windowed
