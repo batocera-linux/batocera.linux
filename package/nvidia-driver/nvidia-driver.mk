@@ -20,39 +20,21 @@ ifeq ($(BR2_PACKAGE_NVIDIA_DRIVER_XORG),y)
 # are build dependencies of packages that depend on nvidia-driver, so
 # they should be built prior to those packages, and the only simple
 # way to do so is to make nvidia-driver depend on them.
-NVIDIA_DRIVER_DEPENDENCIES = mesa3d-headers xlib_libX11 xlib_libXext
-NVIDIA_DRIVER_PROVIDES = libgl libegl libgles
+#batocera enable nvidia-driver and mesa3d to coexist in the same fs
+NVIDIA_DRIVER_DEPENDENCIES = mesa3d xlib_libX11 xlib_libXext libglvnd
+# NVIDIA_DRIVER_PROVIDES = libgl libegl libgles
 
-# libGL.so.$(NVIDIA_DRIVER_VERSION) is the legacy libGL.so library; it
-# has been replaced with libGL.so.1.0.0. Installing both is technically
-# possible, but great care must be taken to ensure they do not conflict,
-# so that EGL still works. The legacy library exposes an NVidia-specific
-# API, so it should not be needed, except for legacy, binary-only
-# applications (in other words: we don't care).
-#
-# libGL.so.1.0.0 is the new vendor-neutral library, aimed at replacing
-# the old libGL.so.$(NVIDIA_DRIVER_VERSION) library. The latter contains
-# NVidia extensions (which is deemed bad now), while the former follows
-# the newly-introduced vendor-neutral "dispatching" API/ABI:
+#batocera modified to suport the vendor-neutral "dispatching" API/ABI
 #   https://github.com/aritger/linux-opengl-abi-proposal/blob/master/linux-opengl-abi-proposal.txt
-# However, this is not very usefull to us, as we don't support multiple
-# GL providers at the same time on the system, which this proposal is
-# aimed at supporting.
-#
-# So we only install the legacy library for now.
+#batocera generic GL libraries are provided by libglvnd
+#batocera only vendor version are installed
 NVIDIA_DRIVER_LIBS_GL = \
-	libGLX.so.0 \
-	libGL.so.$(NVIDIA_DRIVER_VERSION) \
 	libGLX_nvidia.so.$(NVIDIA_DRIVER_VERSION)
 
 NVIDIA_DRIVER_LIBS_EGL = \
-	libEGL.so.1.1.0 \
-	libGLdispatch.so.0 \
 	libEGL_nvidia.so.$(NVIDIA_DRIVER_VERSION)
 
 NVIDIA_DRIVER_LIBS_GLES = \
-	libGLESv1_CM.so.1.2.0 \
-	libGLESv2.so.2.1.0 \
 	libGLESv1_CM_nvidia.so.$(NVIDIA_DRIVER_VERSION) \
 	libGLESv2_nvidia.so.$(NVIDIA_DRIVER_VERSION)
 
@@ -94,7 +76,6 @@ endif
 # We refer to the destination path; the origin file has no directory component
 NVIDIA_DRIVER_X_MODS = \
 	drivers/nvidia_drv.so \
-	extensions/libglx.so.$(NVIDIA_DRIVER_VERSION) \
 	libnvidia-wfb.so.$(NVIDIA_DRIVER_VERSION)
 
 endif # X drivers
@@ -176,7 +157,7 @@ endef
 # For staging, install libraries and development files
 define NVIDIA_DRIVER_INSTALL_STAGING_CMDS
 	$(call NVIDIA_DRIVER_INSTALL_LIBS,$(STAGING_DIR))
-	$(NVIDIA_DRIVER_INSTALL_GL_DEV)
+	# $(NVIDIA_DRIVER_INSTALL_GL_DEV)
 endef
 
 # For target, install libraries and X.org modules
@@ -191,6 +172,21 @@ define NVIDIA_DRIVER_INSTALL_TARGET_CMDS
 			$(TARGET_DIR)/usr/bin/$(p)
 	)
 	$(NVIDIA_DRIVER_INSTALL_KERNEL_MODULE)
+
+#batocera install files needed by libglvnd
+	$(INSTALL) -D -m 0644 $(@D)/10_nvidia.json \
+		$(TARGET_DIR)/usr/share/glvnd/egl_vendor.d/10_nvidia.json
+
+	$(INSTALL) -D -m 0644 $(@D)/nvidia-drm-outputclass.conf \
+		$(TARGET_DIR)/usr/share/X11/xorg.conf.d/10-nvidia-drm-outputclass.conf
+
+	$(INSTALL) -D -m 0644 $(@D)/libglxserver_nvidia.so.$(NVIDIA_DRIVER_VERSION) \
+	 	$(TARGET_DIR)/usr/lib/xorg/modules/extensions/libglxserver_nvidia.so.$(NVIDIA_DRIVER_VERSION)
+	ln -sf libglxserver_nvidia.so.$(NVIDIA_DRIVER_VERSION) \
+	 	$(TARGET_DIR)/usr/lib/xorg/modules/extensions/libglxserver_nvidia.so
+	ln -sf libglxserver_nvidia.so.$(NVIDIA_DRIVER_VERSION) \
+	 	$(TARGET_DIR)/usr/lib/xorg/modules/extensions/libglxserver_nvidia.so.1
+
 endef
 
 $(eval $(generic-package))
