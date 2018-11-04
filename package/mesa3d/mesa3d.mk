@@ -23,6 +23,11 @@ MESA3D_DEPENDENCIES = \
 	libdrm \
 	zlib
 
+#batocera enable libglvnd support
+ifeq ($(BR2_PACKAGE_LIBGLVND),y)
+MESA3D_DEPENDENCIES += libglvnd
+endif
+
 # Disable assembly usage.
 MESA3D_CONF_OPTS = --disable-asm
 
@@ -229,6 +234,11 @@ MESA3D_CONF_OPTS += --enable-lmsensors
 MESA3D_DEPENDENCIES += lm-sensors
 else
 MESA3D_CONF_OPTS += --disable-lmsensors
+endif
+
+#batocera enable libglvnd support
+ifeq ($(BR2_PACKAGE_LIBGLVND),y)
+MESA3D_CONF_OPTS += --enable-libglvnd
 endif
 
 $(eval $(autotools-package))
