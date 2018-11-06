@@ -34,14 +34,15 @@ config BR2_PACKAGE_NVIDIA_DRIVER_XORG
 
 if BR2_PACKAGE_NVIDIA_DRIVER_XORG
 
-config BR2_PACKAGE_PROVIDES_LIBGL
-	default "nvidia-driver"
+#batocera let MESA3D set itself as default provider for gl, egl, and gles
+#config BR2_PACKAGE_PROVIDES_LIBGL
+#	default "nvidia-driver"
 
-config BR2_PACKAGE_PROVIDES_LIBEGL
-	default "nvidia-driver"
+#config BR2_PACKAGE_PROVIDES_LIBEGL
+#	default "nvidia-driver"
 
-config BR2_PACKAGE_PROVIDES_LIBGLES
-	default "nvidia-driver"
+#config BR2_PACKAGE_PROVIDES_LIBGLES
+#	default "nvidia-driver"
 
 config BR2_PACKAGE_NVIDIA_DRIVER_PRIVATE_LIBS
 	bool "Install private libraries"
