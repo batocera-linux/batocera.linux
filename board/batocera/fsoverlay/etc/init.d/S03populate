@@ -5,9 +5,6 @@ then
   exit 0
 fi
 
-# read /boot/recalbox-boot.conf
-[ -f /boot/recalbox-boot.conf ] && . /boot/recalbox-boot.conf
-
 # sixad
 mkdir -p /var/lib/sixad/profiles
 cp /etc/sixad.profile /var/lib/sixad/profiles/default
@@ -38,10 +35,10 @@ mkdir -p /run/udev/
 mkdir -p /var/log
 
 # nvidia-driver
-if [ "$nvidia_driver" == "true" ]; then
+if grep -qE "^[ ]*nvidia-driver[ ]*=[ ]*true[ ]*$" /boot/recalbox-boot.conf
 	echo "blacklist nouveau" > /etc/modprobe.d/blacklist-nouveau.conf
 	echo "options nvidia-drm modeset=1" > /etc/modprobe.d/nvidia-drm.conf
-  for m in nvidia nvidia_modeset nvidia_uvm nvidia_drm ; do modprobe $m ; done
+	for m in nvidia nvidia_modeset nvidia_uvm nvidia_drm ; do modprobe $m ; done
 else
 	[ -f /etc/modprobe.d/blacklist-nouveau.conf ] && rm /etc/modprobe.d/blacklist-nouveau.conf;
 	[ -f /etc/modprobe.d/nvidia-drm.conf ] && rm /etc/modprobe.d/nvidia-drm.conf;

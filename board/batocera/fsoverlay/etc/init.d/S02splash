@@ -33,7 +33,7 @@ do_start ()
         omx_srt="--no-ghost-box --lines=1 --align=left $omx_fnt --font-size=20 --subtitles=/recalbox/system/resources/splash/splash.srt"
 
 	omx_nosound=
-	if grep -qE "^[ ]*splashsound[ ]*=[ ]*off[ ]*$" /boot/recalbox-boot.conf
+	if grep -qE "^[ ]*splashsound[ ]*=[ ]*false[ ]*$" /boot/recalbox-boot.conf
 	then
 	    omx_nosound="-n -1"
 	fi
