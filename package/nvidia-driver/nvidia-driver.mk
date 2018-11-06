@@ -154,11 +154,12 @@ define NVIDIA_DRIVER_INSTALL_LIBS
 	)
 endef
 
+#batocera nvidia libs are runtime linked via libglvnd
 # For staging, install libraries and development files
-define NVIDIA_DRIVER_INSTALL_STAGING_CMDS
-	$(call NVIDIA_DRIVER_INSTALL_LIBS,$(STAGING_DIR))
-	# $(NVIDIA_DRIVER_INSTALL_GL_DEV)
-endef
+# define NVIDIA_DRIVER_INSTALL_STAGING_CMDS
+# 	$(call NVIDIA_DRIVER_INSTALL_LIBS,$(STAGING_DIR))
+# 	$(NVIDIA_DRIVER_INSTALL_GL_DEV)
+# endef
 
 # For target, install libraries and X.org modules
 define NVIDIA_DRIVER_INSTALL_TARGET_CMDS
