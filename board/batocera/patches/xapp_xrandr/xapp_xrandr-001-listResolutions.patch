@@ -1,5 +1,5 @@
 diff --git a/xrandr.c b/xrandr.c
-index 115dbcc..d038481 100644
+index 115dbcc..5be8212 100644
 --- a/xrandr.c
 +++ b/xrandr.c
 @@ -2670,6 +2670,7 @@ main (int argc, char **argv)
@@ -48,15 +48,16 @@ index 115dbcc..d038481 100644
  
  	for (output = all_outputs; output; output = output->next)
  	{
-@@ -3694,6 +3702,7 @@ main (int argc, char **argv)
+@@ -3694,6 +3702,8 @@ main (int argc, char **argv)
  	    Bool	    *mode_shown;
  	    Rotation	    rotations = output_rotations (output);
  
++	    if(!query_3 || output->primary) {
 +	    if(!query_3) {
  	    printf ("%s %s", output_info->name, connection[output_info->connection]);
  	    if (output->primary) {
  		printf(" primary");
-@@ -3771,8 +3780,9 @@ main (int argc, char **argv)
+@@ -3771,8 +3781,9 @@ main (int argc, char **argv)
  			    pan->border_right, pan->border_bottom);
  	    }
  	    printf ("\n");
@@ -67,7 +68,7 @@ index 115dbcc..d038481 100644
  	    {
  		printf ("\tIdentifier: 0x%x\n", (int)output->output.xid);
  		printf ("\tTimestamp:  %d\n", (int)output_info->timestamp);
-@@ -3812,7 +3822,7 @@ main (int argc, char **argv)
+@@ -3812,7 +3823,7 @@ main (int argc, char **argv)
  			    pan->border_right, pan->border_bottom);
  		}
  	    }
@@ -76,7 +77,7 @@ index 115dbcc..d038481 100644
  	    {
  		int x, y;
  
-@@ -3828,7 +3838,7 @@ main (int argc, char **argv)
+@@ -3828,7 +3839,7 @@ main (int argc, char **argv)
  		    printf ("\n\t           filter: %s", output->transform.filter);
  		printf ("\n");
  	    }
@@ -85,7 +86,7 @@ index 115dbcc..d038481 100644
  	    {
  		props = XRRListOutputProperties (dpy, output->output.xid,
  						 &nprop);
-@@ -3890,7 +3900,7 @@ main (int argc, char **argv)
+@@ -3890,7 +3901,7 @@ main (int argc, char **argv)
  		}
  	    }
  
@@ -94,7 +95,7 @@ index 115dbcc..d038481 100644
  	    {
  		for (j = 0; j < output_info->nmode; j++)
  		{
-@@ -3913,8 +3923,12 @@ main (int argc, char **argv)
+@@ -3913,8 +3924,12 @@ main (int argc, char **argv)
  		    if (mode_shown[j]) continue;
      
  		    jmode = find_mode_by_xid (output_info->modes[j]);
@@ -107,7 +108,7 @@ index 115dbcc..d038481 100644
  		    for (k = j; k < output_info->nmode; k++)
  		    {
  			if (mode_shown[k]) continue;
-@@ -3922,6 +3936,7 @@ main (int argc, char **argv)
+@@ -3922,6 +3937,7 @@ main (int argc, char **argv)
  			if (strcmp (jmode->name, kmode->name) != 0) continue;
  			mode_shown[k] = True;
  			kmode->modeFlags |= ModeShown;
@@ -115,7 +116,7 @@ index 115dbcc..d038481 100644
  			printf (" %6.2f", mode_refresh (kmode));
  			if (kmode == output->mode_info)
  			    printf ("*");
-@@ -3931,6 +3946,10 @@ main (int argc, char **argv)
+@@ -3931,12 +3947,18 @@ main (int argc, char **argv)
  			    printf ("+");
  			else
  			    printf (" ");
@@ -126,3 +127,19 @@ index 115dbcc..d038481 100644
  		    }
  		    printf ("\n");
  		}
+ 		free (mode_shown);
+ 	    }
+ 	}
++	}
++	if (!query_3) {
+ 	for (m = 0; m < res->nmode; m++)
+ 	{
+ 	    XRRModeInfo	*mode = &res->modes[m];
+@@ -3944,6 +3966,7 @@ main (int argc, char **argv)
+ 	    if (!(mode->modeFlags & ModeShown))
+ 		print_verbose_mode(mode, False, False);
+ 	}
++	}
+ 	exit (0);
+     }
+     if (list_providers) {

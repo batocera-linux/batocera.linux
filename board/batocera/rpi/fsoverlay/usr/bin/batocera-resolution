@@ -1,0 +1,21 @@
+#!/bin/bash
+
+ACTION=$1
+shift
+
+case "${ACTION}" in
+    "listModes")
+	tvservice --list-modes
+	;;
+    "setMode")
+	MODE=$1
+	tvservice -e "${MODE}"
+	;;
+    "currentMode")
+	tvservice --current-mode
+	;;
+    "currentResolution")
+	tvservice --current-resolution
+	;;
+esac
+exit 0

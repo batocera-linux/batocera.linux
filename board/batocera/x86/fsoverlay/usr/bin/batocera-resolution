@@ -1,0 +1,19 @@
+#!/bin/bash
+
+ACTION=$1
+shift
+
+case "${ACTION}" in
+    "listModes")
+	xrandr --listResolutions | sed -e s+'\*$'++ | sed -e s+'^\(.*\)$'+'\1:\1'+
+    ;;
+    "setMode")
+	MODE=$1
+	xrandr -s "${MODE}"
+	;;
+    "currentMode"|"currentResolution")
+        # mode can be different from resolution (ie on rpi)
+	xrandr --listResolutions | grep -E '\*$' | sed -e s+'\*$'++
+	;;
+esac
+exit 0
