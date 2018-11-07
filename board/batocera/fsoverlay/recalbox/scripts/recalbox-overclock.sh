@@ -37,12 +37,12 @@ doList() {
 	    echo "turbo TURBO (1325Mhz)"
 	    echo "extrem EXTREM (1350Mhz)"
 	    ;;
-	#"rpi3+")
-	#    echo "none NONE ()"
-	#    echo "high HIGH ()"
-	#    echo "turbo TURBO ()"
-	#    echo "extrem EXTREM ()"
-	#;;
+	"rpi3+")
+	    echo "none NONE (1400Mhz)"
+	    echo "high HIGH (1425Mhz)"
+	    echo "turbo TURBO (1450Mhz)"
+	    echo "extrem EXTREM (1500Mhz)"
+	;;
 	*)
 	    echo "none NONE"
     esac
@@ -144,15 +144,15 @@ setValue() {
 		"none")
 		    setValue_rpiNone
 		    ;;
-		#"high")
-		#    setValue_rpiPutVars
-		#    ;;
-		#"turbo")
-		#    setValue_rpiPutVars
-		#    ;;
-		#"extrem")
-		#    setValue_rpiPutVars
-		#    ;;
+		"high")
+		    setValue_rpiPutVars 1425 525 500 0 4 4 500
+		    ;;
+		"turbo")
+		    setValue_rpiPutVars 1450 525 520 0 4 4 500
+		    ;;
+		"extrem")
+		    setValue_rpiPutVars 1500 550 550 1 4 5 525
+		    ;;
 	    esac
 	    ;;
     esac
