@@ -1,10 +1,12 @@
 comment "nvidia-driver needs a glibc toolchain"
-	depends on BR2_i386 || BR2_x86_64
+#batocera nvidia dropped x86 support
+	depends on BR2_x86_64
 	depends on !BR2_TOOLCHAIN_USES_GLIBC
 
 config BR2_PACKAGE_NVIDIA_DRIVER
 	bool "nvidia-driver"
-	depends on BR2_i386 || BR2_x86_64
+#batocera nvidia dropped x86 support
+	depends on BR2_x86_64
 	depends on BR2_TOOLCHAIN_USES_GLIBC
 	help
 	  The binary-only driver blob for NVidia cards.
