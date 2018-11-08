@@ -76,10 +76,14 @@ echo "libs..."
 for BIN in "${G_TARGETDIR}/usr/PCSX/bin/PCSX2" \
 	   "${G_TARGETDIR}/usr/PCSX_AVX2/bin/PCSX2" \
 	   "${G_TARGETDIR}/usr/PCSX/bin/plugins/"*.so \
-	   "${G_TARGETDIR}/usr/PCSX_AVX2/bin/plugins/"*.so
+	   "${G_TARGETDIR}/usr/PCSX_AVX2/bin/plugins/"*.so \
+     "${G_TARGETDIR}/usr/lib/libEGL_mesa"* \
+     "${G_TARGETDIR}/usr/lib/libGLX_mesa"*
 do
     findDeps "${BIN}" "${TMPOUT}/lib32" || exit 1
 done
+cp "${G_TARGETDIR}/usr/lib/libEGL_mesa"* "${TMPOUT}/lib32"
+cp "${G_TARGETDIR}/usr/lib/libGLX_mesa"* "${TMPOUT}/lib32"
 
 # binaries
 echo "binaries..."
