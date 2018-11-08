@@ -10,6 +10,7 @@ case "${ACTION}" in
     "setMode")
 	MODE=$1
 	tvservice -e "${MODE}"
+	sleep 0.5 # let time for the video to change the resolution (the commands returns before it's really done, at least, on rpi ;-(
 	;;
     "currentMode")
 	tvservice --current-mode

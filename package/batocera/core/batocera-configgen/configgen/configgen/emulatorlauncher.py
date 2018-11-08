@@ -62,7 +62,7 @@ def main(args):
                                                               args.p5index, args.p5guid, args.p5name, args.p5devicepath, args.p5nbaxes)
     # find the system to run
     systemName = args.system
-    eslog.log("Running system: " + systemName)
+    eslog.log("Running system: {}".format(systemName))
     system = getDefaultEmulator(systemName)
     if system is None:
         eslog.log("no emulator defined. exiting.")
@@ -70,12 +70,18 @@ def main(args):
     system.configure(args.emulator, args.core, args.ratio, args.netplay)
 
     # the resolution must be changed before configuration while the configuration may depend on it (ie bezels)
-    newResolution = generators[system.config['emulator']].getResolution(system.config)
+    wantedGameMode = generators[system.config['emulator']].getResolutionMode(system.config)
+    systemMode = videoMode.getCurrentMode()
+    resolutionChanged = False
     exitCode = -1
     try:
-        videoMode.changeResolution(newResolution)
+        eslog.log("current video mode: {}".format(systemMode))
+        eslog.log("wanted video mode: {}".format(wantedGameMode))
+        if wantedGameMode != 'default' and wantedGameMode != systemMode:
+            videoMode.changeMode(wantedGameMode)
+            resolutionChanged = True
         gameResolution = videoMode.getCurrentResolution()
-        eslog.log("resolution: " + str(gameResolution["width"]) + "x" + str(gameResolution["height"]))
+        eslog.log("resolution: {}x{}".format(str(gameResolution["width"]), str(gameResolution["height"])))
 
         # savedir: create the save directory is not already done
         dirname = os.path.join(recalboxFiles.savesDir, system.name)
@@ -86,9 +92,9 @@ def main(args):
         exitCode = runCommand(generators[system.config['emulator']].generate(system, args.rom, playersControllers, gameResolution))
     finally:
         # always restore the resolution
-        if newResolution != 'default':
+        if resolutionChanged:
             try:
-                videoMode.resetResolution()
+                videoMode.changeMode(systemMode)
             except Exception:
                 pass # don't fail
     # exit
@@ -98,8 +104,9 @@ def runCommand(command):
     global proc
 
     command.env.update(os.environ)
-    eslog.log("command:" + str(command.array))
-    eslog.log("env: "    + str(command.env))
+    eslog.log("command: {}".format(str(command)))
+    eslog.log("command: {}".format(str(command.array)))
+    eslog.log("env: {}".format(str(command.env)))
     proc = subprocess.Popen(command.array, env=command.env, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     exitcode = -1
     try:
@@ -335,7 +342,7 @@ if __name__ == '__main__':
         eslog.log("configgen exception: ")
         eslog.logtrace()
     time.sleep(1) # this seems to be required so that the gpu memory is restituated and available for es
-    eslog.log("Exiting configgen with status " + str(exitcode))
+    eslog.log("Exiting configgen with status {}".format(str(exitcode)))
     exit(exitcode)
 
 # Local Variables:

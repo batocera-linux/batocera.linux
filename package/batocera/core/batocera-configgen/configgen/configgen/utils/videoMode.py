@@ -10,42 +10,31 @@ import json
 import eslog
 
 # Set a specific video mode
-def changeResolution(videomode):
-    eslog.log("videomode: " + videomode)
-    if videomode != 'default':
-        cmd = createVideoModeLine(videomode)
+def changeMode(videomode):
+    if checkModeExists(videomode):
+        cmd = "batocera-resolution setMode {}".format(videomode)
         if cmd is not None:
-            eslog.log("setVideoMode(" + videomode + "): " + cmd)
+            eslog.log("setVideoMode({}): {} ".format(videomode, cmd))
             os.system(cmd)
-            time.sleep(0.5) # let time for the video to change the resolution (the commands returns before it's really done ;-(
-    
-def createVideoModeLine(videoMode):
-    # pattern (CEA|DMT) [0-9]{1,2} HDMI
-    if re.match("^(CEA|DMT) [0-9]{1,2}( HDMI)?$", videoMode):
-        return "tvservice -e '{}'".format(videoMode)
-    if re.match("^hdmi_cvt [\d\s]{10,20}$", videoMode):
-        return "vcgencmd {} && tvservice -e 'DMT 87'".format(videoMode)
-    if re.match("^hdmi_timings [\d\s]{48,58}$", videoMode):
-        return "vcgencmd {} && tvservice -e 'DMT 87'".format(videoMode)
-    return None
 
-# Switch to prefered mode
-def resetResolution():
-    recalSettings = UnixSettings(recalboxFiles.recalboxConf)
-    esVideoMode = recalSettings.load('system.es.videomode')
-    if esVideoMode is None:
-        cmd = "tvservice -p"
-        eslog.log("resetting video mode: " + cmd)
-        os.system(cmd)
-    else:
-        setVideoMode(esVideoMode)
+def getCurrentMode():
+	proc = subprocess.Popen(["batocera-resolution currentMode"], stdout=subprocess.PIPE, shell=True)
+	(out, err) = proc.communicate()
+        for val in out.splitlines():
+            return val # return the first line
 
 def getCurrentResolution():
-	proc = subprocess.Popen(["tvservice.current"], stdout=subprocess.PIPE, shell=True)
+	proc = subprocess.Popen(["batocera-resolution currentResolution"], stdout=subprocess.PIPE, shell=True)
 	(out, err) = proc.communicate()
-	tvmodes = json.loads(out)
+        vals = out.split("x")
+        return { "width": int(vals[0]), "height": int(vals[1]) }
 
-	for tvmode in tvmodes:
-	    return { "width": tvmode["width"], "height": tvmode["height"] }
-
-        raise Exception("No current resolution found")
+def checkModeExists(videomode):
+	proc = subprocess.Popen(["batocera-resolution listModes"], stdout=subprocess.PIPE, shell=True)
+	(out, err) = proc.communicate()
+        for valmod in out.splitlines():
+            vals = valmod.split(":")
+            if(videomode == vals[0]):
+                return True
+        eslog.log("invalid video mode {}".format(videomode))
+        return False

@@ -8,5 +8,5 @@ class Generator(object):
     def generate(self, system, rom, playersControllers, gameResolution):
         pass
 
-    def getResolution(self, config):
+    def getResolutionMode(self, config):
         return config['videomode']

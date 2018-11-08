@@ -9,7 +9,7 @@ import os.path
 
 class AdvMameGenerator(Generator):
 
-    def getResolution(self, config):
+    def getResolutionMode(self, config):
         return 'default'
     
     # Main entry of the module

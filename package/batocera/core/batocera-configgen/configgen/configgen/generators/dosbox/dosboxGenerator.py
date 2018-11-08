@@ -8,7 +8,7 @@ import glob
 
 class DosBoxGenerator(Generator):
 
-    def getResolution(self, config):
+    def getResolutionMode(self, config):
         return 'default'
     
     # Main entry of the module
