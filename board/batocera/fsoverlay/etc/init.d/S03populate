@@ -36,6 +36,7 @@ mkdir -p /var/log
 
 # nvidia-driver
 if grep -qE "^[ ]*nvidia-driver[ ]*=[ ]*true[ ]*$" /boot/recalbox-boot.conf
+then
 	echo "blacklist nouveau" > /etc/modprobe.d/blacklist-nouveau.conf
 	echo "options nvidia-drm modeset=1" > /etc/modprobe.d/nvidia-drm.conf
 	for m in nvidia nvidia_modeset nvidia_uvm nvidia_drm ; do modprobe $m ; done
