@@ -5,15 +5,17 @@ shift
 
 case "${ACTION}" in
     "listModes")
-	xrandr --listResolutions | sed -e s+'\*$'++ | sed -e s+'^\(.*\)$'+'\1:\1'+
+	xrandr --listModes | sed -e s+'\*$'++ | sed -e s+'^\(.*\)$'+'\1:\1'+
     ;;
     "setMode")
 	MODE=$1
 	xrandr -s "${MODE}"
 	;;
-    "currentMode"|"currentResolution")
-        # mode can be different from resolution (ie on rpi)
-	xrandr --listResolutions | grep -E '\*$' | sed -e s+'\*$'++
+    "currentMode")
+	xrandr --listModes | grep -E '\*$' | sed -e s+'\*$'++
+	;;
+    "currentResolution")
+	xrandr --currentResolution
 	;;
 esac
 exit 0
