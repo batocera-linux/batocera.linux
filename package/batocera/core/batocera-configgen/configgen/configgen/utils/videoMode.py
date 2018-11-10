@@ -12,7 +12,7 @@ import eslog
 # Set a specific video mode
 def changeMode(videomode):
     if checkModeExists(videomode):
-        cmd = "batocera-resolution setMode {}".format(videomode)
+        cmd = "batocera-resolution setMode \"{}\"".format(videomode)
         if cmd is not None:
             eslog.log("setVideoMode({}): {} ".format(videomode, cmd))
             os.system(cmd)
