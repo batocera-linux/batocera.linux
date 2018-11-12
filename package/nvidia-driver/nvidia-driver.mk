@@ -24,7 +24,7 @@ ifeq ($(BR2_PACKAGE_NVIDIA_DRIVER_XORG),y)
 NVIDIA_DRIVER_DEPENDENCIES = mesa3d xlib_libX11 xlib_libXext libglvnd
 # NVIDIA_DRIVER_PROVIDES = libgl libegl libgles
 
-#batocera modified to suport the vendor-neutral "dispatching" API/ABI
+# batocera modified to suport the vendor-neutral "dispatching" API/ABI
 #   https://github.com/aritger/linux-opengl-abi-proposal/blob/master/linux-opengl-abi-proposal.txt
 #batocera generic GL libraries are provided by libglvnd
 #batocera only vendor version are installed
@@ -52,6 +52,18 @@ NVIDIA_DRIVER_LIBS = \
 	$(NVIDIA_DRIVER_LIBS_EGL) \
 	$(NVIDIA_DRIVER_LIBS_GLES) \
 	$(NVIDIA_DRIVER_LIBS_MISC)
+
+# batocera 32bit libraries
+NVIDIA_DRIVER_32 = \
+	$(NVIDIA_DRIVER_LIBS_GL) \
+	$(NVIDIA_DRIVER_LIBS_EGL) \
+	$(NVIDIA_DRIVER_LIBS_GLES) \
+	libnvidia-eglcore.so.$(NVIDIA_DRIVER_VERSION) \
+	libnvidia-glcore.so.$(NVIDIA_DRIVER_VERSION) \
+	libnvidia-glsi.so.$(NVIDIA_DRIVER_VERSION) \
+	tls/libnvidia-tls.so.$(NVIDIA_DRIVER_VERSION) \
+	libvdpau_nvidia.so.$(NVIDIA_DRIVER_VERSION) \
+	libnvidia-ml.so.$(NVIDIA_DRIVER_VERSION)
 
 # Install the gl.pc file
 define NVIDIA_DRIVER_INSTALL_GL_DEV
@@ -154,7 +166,24 @@ define NVIDIA_DRIVER_INSTALL_LIBS
 	)
 endef
 
-#batocera nvidia libs are runtime linked via libglvnd
+# batocera install 32bit libraries
+define NVIDIA_DRIVER_INSTALL_32
+	$(foreach lib,$(NVIDIA_DRIVER_32),\
+		$(INSTALL) -D -m 0644 $(@D)/32/$(lib) $(1)/lib32/$(notdir $(lib))
+		libsoname="$$( $(TARGET_READELF) -d "$(@D)/$(lib)" \
+			|sed -r -e '/.*\(SONAME\).*\[(.*)\]$$/!d; s//\1/;' )"; \
+		if [ -n "$${libsoname}" -a "$${libsoname}" != "$(notdir $(lib))" ]; then \
+			ln -sf $(notdir $(lib)) \
+				$(1)/lib32/$${libsoname}; \
+		fi
+		baseso=$(firstword $(subst .,$(space),$(notdir $(lib)))).so; \
+		if [ -n "$${baseso}" -a "$${baseso}" != "$(notdir $(lib))" ]; then \
+			ln -sf $(notdir $(lib)) $(1)/lib32/$${baseso}; \
+		fi
+	)
+endef
+
+# batocera nvidia libs are runtime linked via libglvnd
 # For staging, install libraries and development files
 # define NVIDIA_DRIVER_INSTALL_STAGING_CMDS
 # 	$(call NVIDIA_DRIVER_INSTALL_LIBS,$(STAGING_DIR))
@@ -164,6 +193,7 @@ endef
 # For target, install libraries and X.org modules
 define NVIDIA_DRIVER_INSTALL_TARGET_CMDS
 	$(call NVIDIA_DRIVER_INSTALL_LIBS,$(TARGET_DIR))
+	$(call NVIDIA_DRIVER_INSTALL_32,$(TARGET_DIR))
 	$(foreach m,$(NVIDIA_DRIVER_X_MODS), \
 		$(INSTALL) -D -m 0644 $(@D)/$(notdir $(m)) \
 			$(TARGET_DIR)/usr/lib/xorg/modules/$(m)
@@ -174,7 +204,7 @@ define NVIDIA_DRIVER_INSTALL_TARGET_CMDS
 	)
 	$(NVIDIA_DRIVER_INSTALL_KERNEL_MODULE)
 
-#batocera install files needed by libglvnd
+# batocera install files needed by libglvnd
 	$(INSTALL) -D -m 0644 $(@D)/10_nvidia.json \
 		$(TARGET_DIR)/usr/share/glvnd/egl_vendor.d/10_nvidia.json
 
