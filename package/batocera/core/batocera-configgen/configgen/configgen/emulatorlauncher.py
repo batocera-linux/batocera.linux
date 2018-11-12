@@ -169,6 +169,8 @@ def getDefaultEmulator(systemName):
         return Emulator(name='saturn',       emulator='libretro', core='yabause')
     if systemName == "dreamcast":
         return Emulator(name='dreamcast',    emulator='reicast')
+    if systemName == "naomi":
+        return Emulator(name='naomi',        emulator='libretro', core='reicast')
 
      # Arcade
     if systemName == "neogeo":

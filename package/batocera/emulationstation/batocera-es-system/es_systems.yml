@@ -196,13 +196,20 @@ gw:
 
 dreamcast:
   name:       Dreamcast
-  extensions: [cdi, chd, gdi, lst, bin, dat]
+  extensions: [cdi, chd, gdi]
   emulators:
     libretro:
       redream: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_REDREAM] }
       reicast: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_REICAST] }
     reicast:
       reicast: { requireAnyOf: [BR2_PACKAGE_REICAST] }
+
+naomi:
+  name:       Naomi Dreamcast
+  extensions: [cdi, chd, gdi, lst, bin, dat]
+  emulators:
+    libretro:
+      reicast: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_REICAST] }
 
 megadrive:
   name:       Sega Megadrive
