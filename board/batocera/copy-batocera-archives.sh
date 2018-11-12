@@ -95,7 +95,7 @@ case "${BATOCERA_TARGET}" in
 	cp "board/batocera/rpi/cmdline.txt" "${BINARIES_DIR}/rpi-firmware/cmdline.txt" || exit 1
 
 	KERNEL_VERSION=$(grep -E "^BR2_LINUX_KERNEL_VERSION=" "${BR2_CONFIG}" | sed -e s+'^BR2_LINUX_KERNEL_VERSION="\(.*\)"$'+'\1'+)
-	"output/build/linux-${KERNEL_VERSION}/scripts/mkknlimg" "${BINARIES_DIR}/zImage" "${BINARIES_DIR}/rpi-firmware/boot/linux"
+	"${BUILD_DIR}/linux-${KERNEL_VERSION}/scripts/mkknlimg" "${BINARIES_DIR}/zImage" "${BINARIES_DIR}/rpi-firmware/boot/linux"
 	cp "${BINARIES_DIR}/initrd.gz" "${BINARIES_DIR}/rpi-firmware/boot" || exit 1
 	cp "${BINARIES_DIR}/rootfs.squashfs" "${BINARIES_DIR}/rpi-firmware/boot/batocera.update" || exit 1
 	echo "creating boot.tar.xz"
@@ -329,13 +329,13 @@ case "${BATOCERA_TARGET}" in
 	(cd "${BINARIES_DIR}" && tar -cJf "${BATOCERA_BINARIES_DIR}/boot.tar.xz" EFI boot recalbox-boot.conf) || exit 1
 
 	# batocera.img
-        # rename the squashfs : the .update is the version that will be renamed at boot to replace the old version
-        mv "${BINARIES_DIR}/boot/batocera.update" "${BINARIES_DIR}/boot/batocera" || exit 1
+	# rename the squashfs : the .update is the version that will be renamed at boot to replace the old version
+	mv "${BINARIES_DIR}/boot/batocera.update" "${BINARIES_DIR}/boot/batocera" || exit 1
 	GENIMAGE_TMP="${BUILD_DIR}/genimage.tmp"
 	BATOCERAIMG="${BATOCERA_BINARIES_DIR}/batocera.img"
 	rm -rf "${GENIMAGE_TMP}" || exit 1
 	cp "board/batocera/grub2/genimage.cfg" "${BINARIES_DIR}" || exit 1
-        cp "output/host/usr/lib/grub/i386-pc/boot.img" "${BINARIES_DIR}" || exit 1
+	cp "${HOST_DIR}/usr/lib/grub/i386-pc/boot.img" "${BINARIES_DIR}" || exit 1
 	echo "creating ${BATOCERA_BINARIES_DIR}/batocera.img"
 	genimage --rootpath="${TARGET_DIR}" --inputpath="${BINARIES_DIR}" --outputpath="${BATOCERA_BINARIES_DIR}" --config="${BINARIES_DIR}/genimage.cfg" --tmppath="${GENIMAGE_TMP}" || exit 1
 	rm -f "${BATOCERA_BINARIES_DIR}/boot.vfat" || exit 1
