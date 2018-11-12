@@ -1,17 +1,17 @@
 diff --git a/core/libretro/libretro.cpp b/core/libretro/libretro.cpp
-index 830e828..3d43ff0 100644
+index 4d2bb17..2799c9a 100644
 --- a/core/libretro/libretro.cpp
 +++ b/core/libretro/libretro.cpp
-@@ -25,7 +25,7 @@ extern int screen_height;
- char save_dir[PATH_MAX];
+@@ -51,7 +51,7 @@ char save_dir[PATH_MAX];
  char eeprom_file[PATH_MAX];
  char nvmem_file[PATH_MAX];
+ char nvmem_file2[PATH_MAX];		// AtomisWave
 -bool boot_to_bios;
 +bool boot_to_bios = true;
  
  static int astick_deadzone = 0;
  static int trigger_deadzone = 0;
-@@ -696,8 +696,8 @@ bool retro_load_game(const struct retro_game_info *game)
+@@ -1300,8 +1300,8 @@ bool retro_load_game(const struct retro_game_info *game)
     if (!(environ_cb(RETRO_ENVIRONMENT_GET_SYSTEM_DIRECTORY, &dir) && dir))
        dir = game_dir;
  
@@ -22,7 +22,7 @@ index 830e828..3d43ff0 100644
  
     settings.dreamcast.cable = 3;
     update_variables(true);
-@@ -872,7 +872,7 @@ bool retro_load_game(const struct retro_game_info *game)
+@@ -1335,7 +1335,7 @@ bool retro_load_game(const struct retro_game_info *game)
     {
        char data_dir[1024];
  
