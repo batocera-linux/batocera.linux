@@ -1,6 +1,7 @@
 config BR2_PACKAGE_AMIBERRY
         bool "amiberry"
         select BR2_PACKAGE_SDL
+	select BR2_PACKAGE_SDL_IMAGE_PNG
 	select BR2_PACKAGE_SDL_IMAGE
 	select BR2_PACKAGE_SDL_GFX
 	select BR2_PACKAGE_SDL_TTF
