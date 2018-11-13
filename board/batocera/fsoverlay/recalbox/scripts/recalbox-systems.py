@@ -40,6 +40,7 @@ systems = {
                                                                                   { "md5": "aa95aea2563cd5ec0a0919b44cc17d47", "file": "bios/MSX.ROM"           },
                                                                                   { "md5": "403cdea1cbd2bb24fae506941f8f655e", "file": "bios/PAINTER.ROM"       },
                                                                                   { "md5": "279efd1eae0d358eecd4edc7d9adedf3", "file": "bios/RS232.ROM"         } ] },
+    "naomi":     { "name": "Naomi",                                "biosFiles": [ { "md5": "3bffafac42a7767d8dcecf771f5552ba", "file": "bios/naomi_boot.bin"         } ] },
     "neogeo":    { "name": "NeoGeo",                               "biosFiles": [ { "md5": "",                                 "file": "roms/neogeo/neogeo.zip" } ] },
     "o2em":      { "name": "Odyssey 2",                            "biosFiles": [ { "md5": "562d5ebf9e030a40d6fabfc2f33139fd", "file": "bios/o2rom.bin"         } ] },
     "pcengine":  { "name": "PC Engine",                            "biosFiles": [ { "md5": "ff1a674273fe3540ccef576376407d1d", "file": "bios/syscard3.pce"      } ] },
