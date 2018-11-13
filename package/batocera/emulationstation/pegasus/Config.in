@@ -1,0 +1,22 @@
+config BR2_PACKAGE_PEGASUS
+        bool "pegasus" 
+        select BR2_PACKAGE_QT5
+        select BR2_PACKAGE_QT5_VERSION_LATEST
+        select BR2_PACKAGE_QT5BASE
+        select BR2_PACKAGE_QT5BASE_EGLFS
+        select BR2_PACKAGE_QT5BASE_JPEG
+        select BR2_PACKAGE_QT5BASE_PNG
+        select BR2_PACKAGE_QT5BASE_FONTCONFIG
+        select BR2_PACKAGE_QT5MULTIMEDIA
+        select BR2_PACKAGE_QT5DECLARATIVE
+        select BR2_PACKAGE_QT5QUICKCONTROLS2
+        select BR2_PACKAGE_QT5GRAPHICALEFFECTS        
+        select BR2_PACKAGE_QT5TOOLS
+        select BR2_PACKAGE_QT5TOOLS_LINGUIST_TOOLS 
+        select BR2_PACKAGE_QT5IMAGEFORMATS
+        select BR2_PACKAGE_QT5SVG
+        select BR2_PACKAGE_QT5GAMEPAD	    
+        
+        help
+            A multi emulator frontend.
+            https://github.com/mmatyas/pegasus-frontend
