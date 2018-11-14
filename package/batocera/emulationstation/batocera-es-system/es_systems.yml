@@ -434,6 +434,7 @@ mame:
       mame078plus:    { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME2003_PLUS] }
       mame0139:    { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME2010] }
       mame0174:    { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME2016] }
+      mame:       { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME]      }
     advancemame:
       advancemame: { requireAnyOf: [BR2_PACKAGE_ADVANCEMAME]       }
   comment_en: |
@@ -476,6 +477,7 @@ neogeo:
       mame078:   { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME2003] }
       mame0139:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME2010] }
       mame0174:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME2016] }
+      mame:      { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME]     }
       fba:       { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FBA]      }
     fba2x:
       fba2x:     { requireAnyOf: [BR2_PACKAGE_PIFBA]             }
