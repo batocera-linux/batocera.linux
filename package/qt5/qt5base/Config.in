@@ -86,7 +86,7 @@ comment "PostgreSQL plugin needs a toolchain w/ dynamic library"
 
 choice
 	prompt "SQLite 3 support"
-	default BR2_PACKAGE_QT5BASE_SQLITE_NONE
+	default BR2_PACKAGE_QT5BASE_SQLITE_SYSTEM # batocera workaround for qt5base
 	help
 	  Select SQLite support.
 
