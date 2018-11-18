@@ -27,12 +27,11 @@ define QT5GAMEPAD_INSTALL_STAGING_CMDS
 endef
 
 define QT5GAMEPAD_INSTALL_TARGET_CMDS
-	# $(INSTALL) -D $(STAGING_DIR)/usr/lib/libQt5Gamepad*.so.*             $(TARGET_DIR)/usr/lib
 	cp -dpf $(STAGING_DIR)/usr/lib/libQt5Gamepad*.so.*                        $(TARGET_DIR)/usr/lib/
 	cp -dpf $(STAGING_DIR)/usr/lib/libQt5Gamepad.prl                          $(TARGET_DIR)/usr/lib/
-	# cp -dpf $(STAGING_DIR)/usr/lib/qt/mkspecs/modules/qt_lib_gamepad*         $(TARGET_DIR)/usr/lib/qt/mkspecs/modules
 	cp -dpf $(STAGING_DIR)/usr/lib/qt/plugins/gamepads/libevdevgamepad.so     $(TARGET_DIR)/usr/lib/qt/plugins/gamepads/
 	cp -dpf $(STAGING_DIR)/usr/lib/qt/plugins/gamepads/libsdl2gamepad.so      $(TARGET_DIR)/usr/lib/qt/plugins/gamepads/
+	mkdir -p $(TARGET_DIR)/usr/qml/QtGamepad/
 	cp -dpf $(STAGING_DIR)/usr/qml/QtGamepad/libdeclarative_gamepad.so        $(TARGET_DIR)/usr/qml/QtGamepad/
 	cp -dpf $(STAGING_DIR)/usr/qml/QtGamepad/plugins.qmltypes                 $(TARGET_DIR)/usr/qml/QtGamepad/
 	cp -dpf $(STAGING_DIR)/usr/qml/QtGamepad/qmldir                           $(TARGET_DIR)/usr/qml/QtGamepad/
