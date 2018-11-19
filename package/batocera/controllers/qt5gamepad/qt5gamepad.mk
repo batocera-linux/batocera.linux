@@ -29,6 +29,7 @@ endef
 define QT5GAMEPAD_INSTALL_TARGET_CMDS
 	cp -dpf $(STAGING_DIR)/usr/lib/libQt5Gamepad*.so.*                        $(TARGET_DIR)/usr/lib/
 	cp -dpf $(STAGING_DIR)/usr/lib/libQt5Gamepad.prl                          $(TARGET_DIR)/usr/lib/
+	mkdir -p $(TARGET_DIR)/usr/lib/qt/plugins/gamepads/
 	cp -dpf $(STAGING_DIR)/usr/lib/qt/plugins/gamepads/libevdevgamepad.so     $(TARGET_DIR)/usr/lib/qt/plugins/gamepads/
 	cp -dpf $(STAGING_DIR)/usr/lib/qt/plugins/gamepads/libsdl2gamepad.so      $(TARGET_DIR)/usr/lib/qt/plugins/gamepads/
 	mkdir -p $(TARGET_DIR)/usr/qml/QtGamepad/
