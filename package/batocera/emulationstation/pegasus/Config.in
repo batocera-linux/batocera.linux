@@ -7,6 +7,7 @@ config BR2_PACKAGE_PEGASUS
         select BR2_PACKAGE_QT5BASE_PNG
         select BR2_PACKAGE_QT5BASE_FONTCONFIG
         select BR2_PACKAGE_QT5BASE_SQLITE_SYSTEM
+        select BR2_PACKAGE_QT5BASE_XCB
         select BR2_PACKAGE_QT5MULTIMEDIA
         select BR2_PACKAGE_QT5DECLARATIVE
         select BR2_PACKAGE_QT5QUICKCONTROLS2
@@ -16,12 +17,18 @@ config BR2_PACKAGE_PEGASUS
         select BR2_PACKAGE_QT5IMAGEFORMATS
         select BR2_PACKAGE_QT5SVG
         select BR2_PACKAGE_QT5GAMEPAD
-        select BR2_PACKAGE_QT5BASE_XCB
         select BR2_PACKAGE_GSTREAMER1
         select BR2_PACKAGE_GST1_PLUGINS_GOOD
         select BR2_PACKAGE_GST1_LIBAV
         select BR2_PACKAGE_GST1_PLUGINS_BASE_PLUGIN_ALSA
-
+        select BR2_PACKAGE_GST1_PLUGINS_BASE_PLUGIN_AUDIOCONVERT # runtime
+      	select BR2_PACKAGE_GST1_PLUGINS_BASE_PLUGIN_AUDIOMIXER # runtime
+      	select BR2_PACKAGE_GST1_PLUGINS_BASE_PLUGIN_AUDIORESAMPLE # runtime
+      	select BR2_PACKAGE_GST1_PLUGINS_BASE_PLUGIN_VIDEOCONVERT # runtime
+      	select BR2_PACKAGE_GST1_PLUGINS_BASE_PLUGIN_VIDEOSCALE # runtime
+      	select BR2_PACKAGE_GST1_PLUGINS_BASE_PLUGIN_VOLUME # runtime
+      	select BR2_PACKAGE_GST1_PLUGINS_GOOD_PLUGIN_IMAGEFREEZE # runtime
+        
         help
             A multi emulator frontend.
             https://github.com/mmatyas/pegasus-frontend
