@@ -70,4 +70,9 @@ setMaximumResolution() {
 setMaximumResolution
 
 # without windowed, time must be sleeped to wait that matchbox ended to initialize :-(
-exec emulationstation --windowed
+if grep -qE "^[ ]*frontend.pegasus[ ]*=[ ]*true[ ]*$" /recalbox/share/system/recalbox.conf
+then
+	exec pegasus-fe -platform xcb
+else
+	exec emulationstation --windowed
+fi
