@@ -67,7 +67,8 @@ setMaximumResolution() {
     fi
 }
 
-setMaximumResolution
+# disable minimize resolution (for 4ktv), xrand have to be modified first
+#setMaximumResolution
 
 # without windowed, time must be sleeped to wait that matchbox ended to initialize :-(
 exec emulationstation --windowed
