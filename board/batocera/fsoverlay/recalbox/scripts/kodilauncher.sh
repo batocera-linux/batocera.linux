@@ -1,6 +1,6 @@
 #!/bin/bash
 
-systemsetting="python /usr/lib/python2.7/site-packages/configgen/settings/recalboxSettings.pyc"
+systemsetting="python /usr/lib/python2.7/site-packages/configgen/settings/recalboxSettings.py"
 WAITMODE="`$systemsetting  -command load -key kodi.network.waitmode`"
 
 # if the mode is required or wish,
