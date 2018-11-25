@@ -30,6 +30,8 @@ controller1=3
 controller2=3
 region=0
 flags=0
+crossx=15
+crossy=15
 [de3e9496cb7341f865f27e5a72c7f2f5]
 title=Alien Brigade
 type=2
@@ -37,6 +39,16 @@ pokey=false
 controller1=3
 controller2=3
 region=1
+flags=0
+crossx=15
+crossy=-20
+[510ea66b6375a848a21db019b36078dd]
+title=Apple Snaffle (Aug 3-Rev 1.30) (2010)
+type=1
+pokey=true
+controller1=1
+controller2=1
+region=0
 flags=0
 [07342c78619ba6ffcc61c10e907e3b50]
 title=Asteroids
@@ -54,6 +66,7 @@ controller1=1
 controller2=1
 region=0
 flags=0
+hblank=28
 [b558814d54904ce0582e2f6a801d03af]
 title=Ballblazer
 type=0
@@ -62,22 +75,27 @@ controller1=1
 controller2=1
 region=1
 flags=0
+hblank=28
 [42682415906c21c6af80e4198403ffda]
 title=Barnyard Blaster
 type=1
-pokey=true
-controller1=1
+pokey=false
+controller1=2
 controller2=1
 region=0
 flags=0
+crossx=0
+crossy=10
 [babe2bc2976688bafb8b23c192658126]
 title=Barnyard Blaster
 type=1
-pokey=true
-controller1=1
+pokey=false
+controller1=2
 controller2=1
 region=1
 flags=0
+crossx=0
+crossy=12
 [f5f6b69c5eb4b55fc163158d1a6b423e]
 title=Basketbrawl
 type=4
@@ -85,7 +103,7 @@ pokey=false
 controller1=1
 controller2=1
 region=0
-flags=1
+flags=0
 [fba002089fcfa176454ab507e0eb76cb]
 title=Basketbrawl
 type=4
@@ -93,6 +111,22 @@ pokey=false
 controller1=1
 controller2=1
 region=1
+flags=0
+[7adbd2cec2e2cbc1e0ad237778ee46b9]
+title=Beef Drop (Jul 18 2006)
+type=0
+pokey=true
+controller1=1
+controller2=1
+region=0
+flags=0
+[aefb78276913e8a166e460222e378fec]
+title=Beef Drop (Oct 15 2006)
+type=0
+pokey=true
+controller1=1
+controller2=1
+region=0
 flags=0
 [5a09946e57dbe30408a8f253a28d07db]
 title=Centipede
@@ -117,7 +151,7 @@ pokey=false
 controller1=1
 controller2=1
 region=0
-flags=1
+flags=0
 [59d4edb0230b5acc918b94f6bc94779f]
 title=Choplifter
 type=0
@@ -125,7 +159,7 @@ pokey=false
 controller1=1
 controller2=1
 region=1
-flags=1
+flags=0
 [2e8e28f6ad8b9b9267d518d880c73ebb]
 title=Commando
 type=1
@@ -166,6 +200,8 @@ controller1=3
 controller2=3
 region=0
 flags=0
+crossx=15
+crossy=10
 [63db371d67a98daec547b2abd5e7aa95]
 title=Crossbow
 type=2
@@ -174,6 +210,8 @@ controller1=3
 controller2=3
 region=1
 flags=0
+crossx=15
+crossy=5
 [179b76ff729d4849b8f66a502398acae]
 title=Dark Chambers
 type=1
@@ -213,7 +251,7 @@ pokey=false
 controller1=1
 controller2=1
 region=0
-flags=1;
+flags=0
 [408dca9fc40e2b5d805f403fa0509436]
 title=Dig Dug
 type=0
@@ -448,7 +486,7 @@ region=0
 flags=0
 [5e0a1e832bbcea6facb832fde23a440a]
 title=Karateka                        
-type=0
+type=4
 pokey=false
 controller1=1
 controller2=1
@@ -469,7 +507,7 @@ pokey=false
 controller1=1
 controller2=1
 region=0
-flags=2;
+flags=0
 [2931b75811ad03f3ac9330838f3d231b]
 title=Kung Fu Master
 type=0
@@ -530,18 +568,22 @@ flags=0
 title=Meltdown
 type=4
 pokey=false
-controller1=1
-controller2=1
+controller1=2
+controller2=2
 region=0
 flags=0
+crossx=0
+crossy=20
 [c80155d7eec9e3dcb79aa6b83c9ccd1e]
 title=Meltdown
 type=4
 pokey=false
-controller1=1
-controller2=1
+controller1=2
+controller2=2
 region=1
 flags=0
+crossx=0
+crossy=10
 [bc1e905db1008493a9632aa83ab4682b]
 title=Midnight Mutants
 type=4
@@ -549,7 +591,7 @@ pokey=false
 controller1=1
 controller2=1
 region=0
-flags=1
+flags=0
 [6794ea31570eba0b88a0bf1ead3f3f1b]
 title=Midnight Mutants
 type=4
@@ -557,7 +599,7 @@ pokey=false
 controller1=1
 controller2=1
 region=1
-flags=1
+flags=0
 [017066f522908081ec3ee624f5e4a8aa]
 title=Missing in Action
 type=2
@@ -565,7 +607,7 @@ pokey=false
 controller1=1
 controller2=1
 region=0
-flags=2
+flags=3
 [3bc8f554cf86f8132a623cc2201a564b]
 title=Motor Psycho
 type=4
@@ -669,7 +711,7 @@ pokey=false
 controller1=1
 controller2=1
 region=0
-flags=1
+flags=0
 [2837a8fd49b7fc7ccd70fd45b69c5099]
 title=Planet Smashers
 type=4
@@ -758,6 +800,7 @@ controller1=1
 controller2=1
 region=0
 flags=0
+dualanalog=true
 [980c35ae9625773a450aa7ef51751c04]
 title=Scrapyard Dog
 type=4
@@ -782,6 +825,8 @@ controller1=2
 controller2=2
 region=0
 flags=0
+crossx=13
+crossy=-13
 [5469b4de0608f23a5c4f98f331c9e75f]
 title=Sentinel
 type=4
@@ -790,12 +835,14 @@ controller1=2
 controller2=2
 region=1
 flags=0
+crossx=20
+crossy=25
 [2d643ac548c40e58c99d0fe433ba4ba0]
 title=Sirius
 type=3
 pokey=false
-controller1=2
-controller2=2
+controller1=1
+controller2=1
 region=0
 flags=0
 [cbb0746192540a13b4c7775c7ce2021f]
@@ -965,7 +1012,7 @@ pokey=false
 controller1=1
 controller2=1
 region=0
-flags=1
+flags=0
 [b1a9f196ce5f47ca8caf8fa7bc4ca46c]
 title=Xevious
 type=0
