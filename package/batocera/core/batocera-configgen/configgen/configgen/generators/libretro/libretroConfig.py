@@ -159,8 +159,9 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
     else:
         retroarchConfig['video_scale_integer'] = 'false'
 
-    # disable the threaded video while it is causing issues to several people
-    retroarchConfig['video_threaded'] = 'false'
+    # disable the threaded video while it is causing issues to several people ?
+    # this must be set to true on xu4 for performance issues
+    retroarchConfig['video_threaded'] = 'true'
 
     # core options
     if(system.name in systemToBluemsx):
