@@ -13,7 +13,7 @@ import shutil
 class EsSystemConf:
 
     default_parentpath = "/recalbox/share/roms"
-    default_command    = "python /usr/lib/python2.7/site-packages/configgen/emulatorlauncher.pyc %CONTROLLERSCONFIG% -system %SYSTEM% -rom %ROM% -emulator %EMULATOR% -core %CORE% -ratio %RATIO%"
+    default_command    = "python /usr/lib/python2.7/site-packages/configgen/emulatorlauncher.py %CONTROLLERSCONFIG% -system %SYSTEM% -rom %ROM% -emulator %EMULATOR% -core %CORE% -ratio %RATIO%"
 
     # Generate the es_systems.cfg file by searching the information in the es_system.yml file
     @staticmethod

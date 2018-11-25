@@ -23,7 +23,7 @@ postBootConfig() {
 }
 
 log=/recalbox/share/system/logs/recalbox.log
-systemsetting="python /usr/lib/python2.7/site-packages/configgen/settings/recalboxSettings.pyc"
+systemsetting="python /usr/lib/python2.7/site-packages/configgen/settings/recalboxSettings.py"
 
 echo "---- recalbox-config.sh ----" >> $log
 

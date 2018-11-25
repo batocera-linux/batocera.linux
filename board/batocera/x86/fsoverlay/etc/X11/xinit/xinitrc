@@ -3,7 +3,7 @@
 matchbox-window-manager -use_cursor no -use_titlebar no -use_desktop_mode no -use_lowlight no &
 
 # set the keyboard
-systemsetting="python /usr/lib/python2.7/site-packages/configgen/settings/recalboxSettings.pyc"
+systemsetting="python /usr/lib/python2.7/site-packages/configgen/settings/recalboxSettings.py"
 settings_lang="`$systemsetting -command load -key system.language`"
 
 # not always true (en_US for us), but it's really better than always english
@@ -20,7 +20,7 @@ export LC_ALL="${settings_lang}.UTF-8"
 export LANG=${LC_ALL}
 
 # because of xinerama braking es, enable only one screen at a time
-systemsetting="python /usr/lib/python2.7/site-packages/configgen/settings/recalboxSettings.pyc"
+systemsetting="python /usr/lib/python2.7/site-packages/configgen/settings/recalboxSettings.py"
 settings_output="`$systemsetting -command load -key global.videooutput`"
 /recalbox/scripts/recalbox-config.sh setoutput "${settings_output}"
 

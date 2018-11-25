@@ -5,7 +5,7 @@ then
   exit 0
 fi
 
-systemsetting="python /usr/lib/python2.7/site-packages/configgen/settings/recalboxSettings.pyc"
+systemsetting="python /usr/lib/python2.7/site-packages/configgen/settings/recalboxSettings.py"
 
 # /etc/shadow is dynamically generated from the password found in /boot/recalbox-boot.conf
 # the password is visible only in the es interface
