@@ -409,8 +409,6 @@ fba_libretro:
 
     Special files for fba libretro core:
     - Add your (audio) samples files in /recalbox/share/bios/fba/samples/
-    - Update the hiscore.dat file in /recalbox/share/saves/fba_libretro/ if you want latest highscores
-    (http://highscore.mameworld.info/download.htm) (use 'old format hiscore.dat (pre mame v0174)' version)
   comment_fr: |
     La version des ROMs doit être 0.2.97.42
 
@@ -420,8 +418,6 @@ fba_libretro:
 
     Fichiers spéciaux pour le core fba libretro:
     - Ajoutez vos samples (audio) dans le répertoire /recalbox/share/bios/fba/samples/
-    - Mettez à jour le fichier hiscore.dat dans /recalbox/share/saves/fba_libretro/ si vous souhaitez avoir les derniers highscores
-    (http://highscore.mameworld.info/download.htm) (use 'old format hiscore.dat (pre mame v0174)' version)
 
 mame:
   name:       Mame
@@ -444,14 +440,8 @@ mame:
     To imame4all core instead, edit the recalbox.conf file following instructions of this page:
     https://github.com/recalbox/recalbox-os/wiki/recalbox.conf-%28EN%29
 
-    You can use clrmamepro available at http://mamedev.emulab.it/clrmamepro/ and
-    use the .dat file in clrmamepro directory to check your roms.
-
     Special files for mame2003 core:
     - Add your samples files in /recalbox/share/bios/mame2003/samples/
-    - Update the hiscore.dat file in /recalbox/share/bios/mame2003/ if you want latest highscores (http://highscore.mameworld.info/download.htm)
-    - Download cheat.dat in /recalbox/share/bios/mame2003/ to enable cheat codes (http://cheat.retrogames.com/download/cheat081.zip)
-    - Download history.dat in /recalbox/share/bios/mame2003/ to enable ingame history menu (http://www.arcade-history.com/index.php?page=download)
   comment_fr: |
     Le système utilise le core libretro mame2003 implicitement: Les ROMs compatibles doivent provenir du set 0.78
     Le core imame4all, basé sur MAME v0.37b5 est également disponible.
@@ -459,14 +449,8 @@ mame:
     Pour utiliser le core imame4all, modifier le fichier recalbox.conf selon les informations à la page suivante:
     https://github.com/recalbox/recalbox-os/wiki/recalbox.conf-%28FR%29
 
-    Vous pouvez utiliser clrmamepro disponible sur http://mamedev.emulab.it/clrmamepro/
-    et utiliser le fichier .dat dans le répertoire clrmamepro pour vérifier la version de vos roms.
-
     Fichiers spéciaux pour le core mame2003 :
     - Ajoutez vos fichiers samples dans le répertoire /recalbox/share/bios/mame2003/samples/
-    - Mettez à jour le fichier hiscore.dat dans /recalbox/share/bios/mame2003/ si vous souhaitez avoir les derniers highscores (http://highscore.mameworld.info/download.htm)
-    - Téléchargez cheat.dat dans /recalbox/share/bios/mame2003/ pour activer les codes de triche (http://cheat.retrogames.com/download/cheat081.zip)
-    - Téléchargez history.dat dans /recalbox/share/bios/mame2003/ pour activer en jeu le menu history (http://www.arcade-history.com/index.php?page=download)
 
 neogeo:
   name:       Neo-Geo
