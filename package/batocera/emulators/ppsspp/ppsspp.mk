@@ -3,8 +3,8 @@
 # PPSSPP
 #
 ################################################################################
-# Version.: Commits on Nov 3, 2018
-PPSSPP_VERSION = v1.7.2
+# Version.: Commits on Nov 23, 2018
+PPSSPP_VERSION = v1.7.4
 PPSSPP_SITE = https://github.com/hrydgard/ppsspp.git
 PPSSPP_SITE_METHOD=git
 PPSSPP_GIT_SUBMODULES=YES
