@@ -40,7 +40,6 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
     select BR2_PACKAGE_BLUEZ5_UTILS_DEPRECATED           # bluetooth
     select BR2_PACKAGE_QTSIXA_SHANWAN                    # ps3 pad
     select BR2_PACKAGE_UTIL_LINUX_RFKILL                 # bluetooth
-    select BR2_PACKAGE_DS4DRV                            # ps4 controller
     select BR2_PACKAGE_BLUEZ_ALSA                        # bluetooth audio devices
     select BR2_PACKAGE_DBUS_PYTHON                       # required for bluetooth scripts
     select BR2_PACKAGE_WIRINGPI                          if BR2_PACKAGE_BATOCERA_TARGET_RPI1 || BR2_PACKAGE_BATOCERA_TARGET_RPI2 || BR2_PACKAGE_BATOCERA_TARGET_RPI3 # gpio
