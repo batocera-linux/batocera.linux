@@ -80,8 +80,8 @@ define ARM_TRUSTED_FIRMWARE_BL31_UBOOT_BUILD
 # Get the entry point address from the elf.
 	BASE_ADDR=$$($(TARGET_READELF) -h $(ARM_TRUSTED_FIRMWARE_IMG_DIR)/bl31/bl31.elf | \
 	             sed -r '/^  Entry point address:\s*(.*)/!d; s//\1/') && \
-	$(HOST_DIR)/bin/mkimage \
-		-A arm64 -O arm-trusted-firmware -C none \
+	$(MKIMAGE) \
+		-A $(MKIMAGE_ARCH) -O arm-trusted-firmware -C none \
 		-a $${BASE_ADDR} -e $${BASE_ADDR} \
 		-d $(ARM_TRUSTED_FIRMWARE_IMG_DIR)/bl31.bin \
 		$(ARM_TRUSTED_FIRMWARE_IMG_DIR)/atf-uboot.ub
@@ -96,9 +96,8 @@ endif
 
 define ARM_TRUSTED_FIRMWARE_BUILD_CMDS
 	$(ARM_TRUSTED_FIRMWARE_BUILD_FIPTOOL)
-	$(TARGET_CONFIGURE_OPTS) \
-		$(MAKE) -C $(@D) $(ARM_TRUSTED_FIRMWARE_MAKE_OPTS) \
-			$(ARM_TRUSTED_FIRMWARE_MAKE_TARGETS)
+	$(TARGET_MAKE_ENV) $(MAKE) -C $(@D) $(ARM_TRUSTED_FIRMWARE_MAKE_OPTS) \
+		$(ARM_TRUSTED_FIRMWARE_MAKE_TARGETS)
 	$(ARM_TRUSTED_FIRMWARE_BL31_UBOOT_BUILD)
 endef
 

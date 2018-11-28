@@ -16,7 +16,7 @@ CA_CERTIFICATES_LICENSE = GPL-2.0+ (script), MPL-2.0 (data)
 CA_CERTIFICATES_LICENSE_FILES = debian/copyright
 
 define CA_CERTIFICATES_BUILD_CMDS
-	$(TARGET_MAKE_ENV) $(MAKE) -C $(@D) all
+	$(TARGET_MAKE_ENV) $(MAKE) -C $(@D) clean all
 endef
 
 define CA_CERTIFICATES_INSTALL_TARGET_CMDS
@@ -31,13 +31,17 @@ define CA_CERTIFICATES_INSTALL_TARGET_CMDS
 	# Create symlinks to certificates under /etc/ssl/certs
 	# and generate the bundle
 	cd $(TARGET_DIR) ;\
-	for i in `find usr/share/ca-certificates -name "*.crt"` ; do \
+	for i in `find usr/share/ca-certificates -name "*.crt" | LC_COLLATE=C sort` ; do \
 		ln -sf ../../../$$i etc/ssl/certs/`basename $${i} .crt`.pem ;\
-		cat $$i >>etc/ssl/certs/ca-certificates.crt ;\
-	done
+		cat $$i ;\
+	done >$(@D)/ca-certificates.crt
 
 	# Create symlinks to the certificates by their hash values
 	$(HOST_DIR)/bin/c_rehash $(TARGET_DIR)/etc/ssl/certs
+
+	# Install the certificates bundle
+	$(INSTALL) -D -m 644 $(@D)/ca-certificates.crt \
+		$(TARGET_DIR)/etc/ssl/certs/ca-certificates.crt
 endef
 
 $(eval $(generic-package))

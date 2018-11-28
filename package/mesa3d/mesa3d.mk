@@ -5,11 +5,12 @@
 ################################################################################
 
 # When updating the version, please also update mesa3d-headers
-MESA3D_VERSION = 18.2.2
+MESA3D_VERSION = 18.2.4
 MESA3D_SOURCE = mesa-$(MESA3D_VERSION).tar.xz
 MESA3D_SITE = https://mesa.freedesktop.org/archive
 MESA3D_LICENSE = MIT, SGI, Khronos
 MESA3D_LICENSE_FILES = docs/license.html
+# 0002-configure.ac-invert-order-for-wayland-scanner-check.patch
 MESA3D_AUTORECONF = YES
 
 MESA3D_INSTALL_STAGING = YES
@@ -47,6 +48,9 @@ else
 # Avoid automatic search of llvm-config
 MESA3D_CONF_OPTS += --disable-llvm
 endif
+
+# Disable opencl in case libclc is detected
+MESA3D_CONF_OPTS += --disable-opencl
 
 ifeq ($(BR2_PACKAGE_MESA3D_NEEDS_ELFUTILS),y)
 MESA3D_DEPENDENCIES += elfutils

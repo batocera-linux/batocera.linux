@@ -71,6 +71,7 @@ F:	package/webkitgtk/
 F:	package/woff2/
 
 N:	Adrien Gallouët <adrien@gallouet.fr>
+F:	package/bird/
 F:	package/glorytun/
 
 N:	Aleksander Morgado <aleksander@aleksander.es>
@@ -199,38 +200,7 @@ F:	package/stress/
 
 N:	Asaf Kahlon <asafka7@gmail.com>
 F:	package/libuv/
-F:	package/python-attrs/
-F:	package/python-bcrypt/
-F:	package/python-bitstring/
-F:	package/python-constantly/
-F:	package/python-engineio/
-F:	package/python-fire/
-F:	package/python-h2/
-F:	package/python-idna/
-F:	package/python-incremental/
-F:	package/python-jinja2/
-F:	package/python-jsonmodels/
-F:	package/python-logbook/
-F:	package/python-lxml/
-F:	package/python-paramiko/
-F:	package/python-passlib/
-F:	package/python-priority/
-F:	package/python-pyasn1/
-F:	package/python-pyasn1-modules/
-F:	package/python-pyhamcrest/
-F:	package/python-pyopenssl/
-F:	package/python-pyqrcode/
-F:	package/python-pyroute2/
-F:	package/python-pytz/
-F:	package/python-reentry/
-F:	package/python-sdnotify/
-F:	package/python-subprocess32/
-F:	package/python-txtorcon/
-F:	package/python-twisted/
-F:	package/python-u-msgpack/
-F:	package/python-ubjson/
-F:	package/python-yieldfrom/
-F:	package/python-zope-interface/
+F:	package/python*
 F:	package/zeromq/
 
 N:	Ash Charles <ash.charles@savoirfairelinux.com>
@@ -404,6 +374,7 @@ F:	package/python-slob/
 F:	package/rtmpdump/
 F:	package/samba4/
 F:	package/softether/
+F:	package/spandsp/
 F:	package/sqlite/
 F:	package/taglib/
 F:	package/tinyxml2/
@@ -442,6 +413,7 @@ N:	Carlo Caione <carlo.caione@gmail.com>
 F:	package/sunxi-boards/
 
 N:	Carlos Santos <casantos@datacom.com.br>
+F:	package/aer-inject/
 F:	package/busybox/
 F:	package/gtest/
 F:	package/initscripts/
@@ -497,6 +469,7 @@ F:	package/batman-adv/
 F:	package/docker-containerd/
 F:	package/docker-engine/
 F:	package/docker-proxy/
+F:	package/go/
 F:	package/mosh/
 F:	package/rtl8821au/
 F:	package/runc/
@@ -903,6 +876,7 @@ F:	package/leptonica/
 F:	package/ocrad/
 F:	package/tesseract-ocr/
 F:	package/webp/
+F:	package/xapian/
 
 N:	Giulio Benetti <giulio.benetti@micronovasrl.com>
 F:	package/sunxi-mali-mainline/
@@ -918,8 +892,13 @@ F:	package/libwebsock/
 F:	package/sofia-sip/
 
 N:	Grzegorz Blach <grzegorz@blach.pl>
+F:	fs/f2fs/
+F:	package/bluez5_utils-headers/
+F:	package/f2fs-tools/
+F:	package/pigpio/
 F:	package/python-falcon/
 F:	package/python-mimeparse/
+F:	package/python-pigpio/
 
 N:	Guillaume Gardet <guillaume.gardet@oliseo.fr>
 F:	package/c-icap/
@@ -984,6 +963,7 @@ F:	board/orangepi/orangepi-prime/
 F:	board/orangepi/orangepi-win/
 F:	board/orangepi/orangepi-zero-plus2/
 F:	board/pine64/
+F:	configs/amarula_a64_relic_defconfig
 F:	configs/amarula_vyasa_rk3288_defconfig
 F:	configs/asus_tinker_rk3288_defconfig
 F:	configs/bananapi_m1_defconfig
@@ -1002,6 +982,11 @@ F:	configs/orangepi_win_defconfig
 F:	configs/orangepi_zero_plus2_defconfig
 F:	configs/pine64_defconfig
 F:	configs/pine64_sopine_defconfig
+
+N:	James Hilliard <james.hilliard1@gmail.com>
+F:	package/python-async-timeout/
+F:	package/python-multidict/
+F:	package/python-yarl/
 
 N:	James Knight <james.knight@rockwellcollins.com>
 F:	package/atkmm/
@@ -1032,6 +1017,9 @@ N:	Jan Viktorin <viktorin@rehivetech.com>
 F:	package/python-pexpect/
 F:	package/python-ptyprocess/
 F:	package/zynq-boot-bin/
+
+N:	Jared Bents <jared.bents@rockwellcollins.com>
+F:	package/davici/
 
 N:	Jarkko Sakkinen <jarkko.sakkinen@intel.com>
 F:	package/quota/
@@ -1066,6 +1054,7 @@ N:	Joel Carlson <JoelsonCarl@gmail.com>
 F:	package/capnproto/
 F:	package/cmocka/
 F:	package/flatcc/
+F:	package/libcorrect/
 
 N:	Joel Stanley <joel@jms.id.au>
 F:	package/pdbg/
@@ -1666,6 +1655,7 @@ F:	package/ddrescue/
 F:	package/dejavu/
 F:	package/dillo/
 F:	package/edid-decode/
+F:	package/ell/
 F:	package/ghostscript-fonts/
 F:	package/gstreamer1/gst1-interpipe/
 F:	package/gstreamer1/gst1-validate/
@@ -1715,6 +1705,10 @@ F:	package/lttng-modules/
 F:	package/lttng-tools/
 F:	package/python-ipython/
 F:	package/liburcu/
+
+N:	Pierre Crokaert <pct@crookies.net>
+F:	board/hardkernel/odroidxu4/
+F:	configs/odroidxu4_defconfig
 
 N:	Pierre Ducroquet <pinaraf@pinaraf.info>
 F:	package/kf5/
@@ -1810,7 +1804,11 @@ F:	package/supertuxkart/
 F:	package/terminology/
 F:	package/tk/
 F:	package/upower/
+F:	package/waffle/
 F:	package/xenomai/
+F:	toolchain/toolchain-external/toolchain-external-arm-aarch64/
+F:	toolchain/toolchain-external/toolchain-external-arm-aarch64-be/
+F:	toolchain/toolchain-external/toolchain-external-arm-arm/
 
 N:	Roman Gorbenkov <roman.gorbenkov@ens2m.org>
 F:	package/davfs2/
@@ -2093,9 +2091,6 @@ F:	package/wayland/
 F:	package/weston/
 F:	toolchain/
 
-N:	Tiago Brusamarello <tiago.brusamarello@datacom.com.br>
-F:	package/aer-inject/
-
 N:	Timo Ketola <timo.ketola@exertus.fi>
 F:	package/fbgrab/
 
@@ -2105,6 +2100,7 @@ F:	package/tstools/
 
 N:	Valentin Korenblit <valentinkorenblit@gmail.com>
 F:	package/clang/
+F:	package/libclc/
 F:	package/llvm/
 
 N:	Vanya Sergeev <vsergeev@gmail.com>
@@ -2122,6 +2118,9 @@ F:	package/openblas/
 F:	package/openmpi/
 F:	package/pinentry/
 F:	package/trinity/
+
+N:	Vincent Prince <vincent.prince.fr@gmail.com>
+F:	package/nss-myhostname/
 
 N:	Vincent Stehlé <vincent.stehle@laposte.net>
 F:	package/i7z/
