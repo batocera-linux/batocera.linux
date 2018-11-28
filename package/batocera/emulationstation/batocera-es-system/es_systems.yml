@@ -206,7 +206,7 @@ dreamcast:
 
 naomi:
   name:       Naomi Dreamcast
-  extensions: [lst, bin, dat]
+  extensions: [lst, bin, dat, 7z, zip]
   emulators:
     libretro:
       reicast: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_REICAST] }
