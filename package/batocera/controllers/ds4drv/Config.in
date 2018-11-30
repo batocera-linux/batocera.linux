@@ -1,6 +1,0 @@
-config BR2_PACKAGE_DS4DRV
-        bool "ps4 driver"
-	select BR2_PACKAGE_PYTHON
-	select BR2_PACKAGE_PYTHON_EVDEV
-        help
-	  https://github.com/chrippa/ds4drv
