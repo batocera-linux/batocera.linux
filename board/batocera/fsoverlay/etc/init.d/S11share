@@ -25,7 +25,7 @@ fi
 
 SHARECONFFILE="/boot/recalbox-boot.conf"
 INTERNALDEVICE=$(/recalbox/scripts/recalbox-part.sh "share_internal")
-SHAREDEVICE=`cat ${SHARECONFFILE} | grep "sharedevice=" | head -n1 | cut -d'=' -f2`
+SHAREDEVICE=$(cat "${SHARECONFFILE}" | grep -E '^[ ]*sharedevice=' | head -n1 | cut -d'=' -f2)
 [[ "$?" -ne "0" || "$SHAREDEVICE" == "" ]] && SHAREDEVICE=INTERNAL
 
 getMaxTryConfig() {
