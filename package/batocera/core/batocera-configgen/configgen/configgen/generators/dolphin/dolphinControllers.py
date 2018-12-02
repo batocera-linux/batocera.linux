@@ -135,9 +135,8 @@ def generateHotkeys(playersControllers):
     }
 
     nplayer = 1
-    for playercontroller in playersControllers:
+    for playercontroller, pad in sorted(playersControllers.items()):
         if nplayer == 1:
-            pad = playersControllers[playercontroller]
             f.write("[Hotkeys1]" + "\n")
             f.write("Device = evdev/0/" + pad.realName + "\n")
 
@@ -177,9 +176,8 @@ def generateControllerConfig_any(playersControllers, filename, anyDefKey, anyMap
     # in case of two pads having the same name, dolphin wants a number to handle this
     double_pads = dict()
 
-    for playercontroller in playersControllers:
+    for playercontroller, pad in sorted(playersControllers.items()):
         # handle x pads having the same name
-        pad = playersControllers[playercontroller]
         if pad.configName in double_pads:
             nsamepad = double_pads[pad.configName]
         else:

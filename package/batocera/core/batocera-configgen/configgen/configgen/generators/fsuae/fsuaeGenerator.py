@@ -96,9 +96,9 @@ class FsuaeGenerator(Generator):
 
         # controllers
         n = 0
-        for pad in playersControllers:
+        for playercontroller, pad in sorted(playersControllers.items()):
             if n <= 3:
-                commandArray.append("--joystick_port_" + str(n) + "=" + playersControllers[pad].realName + "")
+                commandArray.append("--joystick_port_" + str(n) + "=" + pad.realName + "")
                 n += 1
 
         if 'args' in system.config and system.config['args'] is not None:

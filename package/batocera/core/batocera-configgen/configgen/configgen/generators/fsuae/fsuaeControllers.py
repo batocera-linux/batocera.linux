@@ -30,8 +30,7 @@ def generateControllerConfig(system, playersControllers):
     if not os.path.exists(confDirectory):
         os.makedirs(confDirectory)
 
-    for playercontroller in playersControllers:
-        pad = playersControllers[playercontroller]
+    for playercontroller, pad in sorted(playersControllers.items()):
         configFileName = "{}/{}".format(recalboxFiles.fsuaeConfig, "Controllers/" + pad.guid + "_linux.conf")
         f = open(configFileName, "w")
 
