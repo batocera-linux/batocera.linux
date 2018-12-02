@@ -7,10 +7,10 @@
 NMAP_VERSION = 7.70
 NMAP_SITE = https://nmap.org/dist
 NMAP_SOURCE = nmap-$(NMAP_VERSION).tar.bz2
-NMAP_DEPENDENCIES = libpcap
+NMAP_DEPENDENCIES = liblinear libpcap
 NMAP_CONF_OPTS = --without-liblua --without-zenmap \
-	--with-libdnet=included --with-liblinear=included
-NMAP_LICENSE = GPL-2.0
+	--with-libdnet=included
+NMAP_LICENSE = nmap license
 NMAP_LICENSE_FILES = COPYING
 
 # needed by libpcap

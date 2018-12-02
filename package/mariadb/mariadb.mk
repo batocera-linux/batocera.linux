@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-MARIADB_VERSION = 10.2.17
+MARIADB_VERSION = 10.3.10
 MARIADB_SITE = https://downloads.mariadb.org/interstitial/mariadb-$(MARIADB_VERSION)/source
 MARIADB_LICENSE = GPL-2.0 (server), GPL-2.0 with FLOSS exception (GPL client library), LGPL-2.0 (LGPL client library)
 # Tarball no longer contains LGPL license text
@@ -56,12 +56,23 @@ MARIADB_CONF_OPTS += -DCMAKE_CROSSCOMPILING=1
 MARIADB_CONF_OPTS += -DENABLE_DTRACE=0
 
 ifeq ($(BR2_PACKAGE_MARIADB_SERVER),y)
+ifeq ($(BR2_PACKAGE_MARIADB_SERVER_EMBEDDED),y)
 MARIADB_CONF_OPTS += -DWITH_EMBEDDED_SERVER=ON
+else
+MARIADB_CONF_OPTS += -DWITH_EMBEDDED_SERVER=OFF
+endif
 else
 MARIADB_CONF_OPTS += -DWITHOUT_SERVER=ON
 endif
 
+MARIADB_CXXFLAGS = $(TARGET_CXXFLAGS)
+
+ifeq ($(BR2_TOOLCHAIN_HAS_LIBATOMIC),y)
+MARIADB_CXXFLAGS += -latomic
+endif
+
 MARIADB_CONF_OPTS += \
+	-DCMAKE_CXX_FLAGS="$(MARIADB_CXXFLAGS)" \
 	-DINSTALL_DOCDIR=share/doc/mariadb-$(MARIADB_VERSION) \
 	-DINSTALL_DOCREADMEDIR=share/doc/mariadb-$(MARIADB_VERSION) \
 	-DINSTALL_MANDIR=share/man \
@@ -116,8 +127,6 @@ endif
 # We also don't need the test suite on the target
 define MARIADB_POST_INSTALL
 	mkdir -p $(TARGET_DIR)/var/lib/mysql
-	$(INSTALL) -D -m 644 $(TARGET_DIR)/usr/share/mysql/my-small.cnf \
-		$(TARGET_DIR)/etc/mysql/my.cnf
 	$(RM) $(TARGET_DIR)/usr/bin/mysql_config
 	$(RM) -r $(TARGET_DIR)/usr/share/mysql/test
 endef
