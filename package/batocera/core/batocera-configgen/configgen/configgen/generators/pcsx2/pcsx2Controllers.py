@@ -48,9 +48,8 @@ def generateControllerConfig(system, playersControllers, rom):
     nplayer = 0
 
     # players with a controller
-    for playercontroller in playersControllers:
+    for playercontroller, pad in sorted(playersControllers.items()):
         if nplayer < 2:
-            pad = playersControllers[playercontroller]
             f.write("[{}][name] = {}\n".format(nplayer, pad.realName))
 
             for x in pcsx2Keys:
