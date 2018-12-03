@@ -151,6 +151,8 @@ def getDefaultEmulator(systemName):
         return Emulator(name='ps2',        emulator='pcsx2')
     if systemName == "nds":
         return Emulator(name='nds',        emulator='libretro',    core='desmume')
+    if systemName == "3ds":
+        return Emulator(name='3ds',        emulator='libretro',    core='citra')
 
     # Sega
     if systemName == "sg1000":
