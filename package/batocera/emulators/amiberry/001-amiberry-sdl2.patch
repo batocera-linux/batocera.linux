@@ -1,0 +1,16 @@
+diff --git a/Makefile b/Makefile
+index a50c6a0..9dbca04 100644
+--- a/Makefile
++++ b/Makefile
+@@ -192,8 +192,9 @@ endif
+ #
+ ifdef USE_SDL2
+ all: guisan $(PROG)
+-SDL_CFLAGS := $(shell sdl2-config --cflags)
+-SDL_LDFLAGS := $(shell sdl2-config --libs)
++SDL_CONFIG ?= sdl2-config
++SDL_CFLAGS = $(shell $(SDL_CONFIG) --cflags)
++SDL_LDFLAGS = $(shell $(SDL_CONFIG) --libs)
+ 
+ CPPFLAGS += $(SDL_CFLAGS) -Iguisan-dev/include
+ LDFLAGS += $(SDL_LDFLAGS) -lSDL2_image -lSDL2_ttf -lguisan -Lguisan-dev/lib

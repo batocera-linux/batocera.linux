@@ -1,8 +1,6 @@
-diff --git a/src/main.cpp b/src/main.cpp
-index 62b8289..bc596b7 100644
---- a/src/main.cpp
-+++ b/src/main.cpp
-@@ -61,6 +61,7 @@ bool kickstart_rom = 1;
+--- a/src/main.cpp	2018-11-21 14:53:47.472668866 +0000
++++ b/src/main.cpp	2018-11-21 14:53:53.988563914 +0000
+@@ -60,6 +60,7 @@
  struct gui_info gui_data;
  
  TCHAR optionsfile[256];
@@ -10,9 +8,9 @@ index 62b8289..bc596b7 100644
  
  void my_trim(TCHAR *s)
  {
-@@ -455,6 +456,11 @@ static void parse_cmdline(int argc, TCHAR **argv)
- 			target_cfgfile_load(&currprefs, txt, -1, 0);
- 			xfree(txt);
+@@ -506,6 +507,11 @@
+ 			firstconfig = false;
+ 			loaded = true;
  		}
 +		else if (_tcsncmp(argv[i], _T("-core="), 6) == 0) {
 +		  TCHAR *txt = parsetextpath(argv[i] + 6);
@@ -20,20 +18,21 @@ index 62b8289..bc596b7 100644
 +		  xfree(txt);
 +		}
  		else if (_tcsncmp(argv[i], _T("-statefile="), 11) == 0) {
- 			TCHAR *txt = parsetextpath(argv[i] + 11);
+ 			const auto txt = parsetextpath(argv[i] + 11);
  			savestate_state = STATE_DORESTORE;
-@@ -646,6 +652,7 @@ static int real_main2(int argc, TCHAR **argv)
- 	};
+@@ -665,6 +671,7 @@
+ 		abort();
+ 	}
  #endif
- 
 +	_tcscpy(core, _T(""));
  	keyboard_settrans();
- 
+ 	set_config_changed();
  	if (restart_config[0]) {
-@@ -676,6 +683,20 @@ static int real_main2(int argc, TCHAR **argv)
+@@ -693,6 +700,21 @@
+ 	inputdevice_init();
  
  	changed_prefs = currprefs;
- 
++
 +	if(_tcsncmp(core, _T("A500"), 4) == 0) {
 +	  bip_a500(&currprefs, -1);
 +	} else if(_tcsncmp(core, _T("A500P"), 5) == 0) {
@@ -47,7 +46,7 @@ index 62b8289..bc596b7 100644
 +	} else if(_tcsncmp(core, _T("CD32"), 4) == 0) {
 +	  bip_cd32(&currprefs, -1);
 +	}
-+
++	
  	no_gui = !currprefs.start_gui;
  	if (restart_program == 2)
- 		no_gui = 1;
+ 		no_gui = true;

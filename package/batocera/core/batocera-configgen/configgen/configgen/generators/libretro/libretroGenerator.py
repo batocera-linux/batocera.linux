@@ -6,7 +6,7 @@ import libretroConfig
 import shutil
 from generators.Generator import Generator
 import os.path
-
+from settings.unixSettings import UnixSettings
 
 class LibretroGenerator(Generator):
 
@@ -21,13 +21,14 @@ class LibretroGenerator(Generator):
             if not os.path.isfile(recalboxFiles.retroarchCustom):
                 shutil.copyfile(recalboxFiles.retroarchCustomOrigin, recalboxFiles.retroarchCustom)
             #  Write controllers configuration files
-            libretroControllers.writeControllersConfig(system, playersControllers)
+            retroconfig = UnixSettings(recalboxFiles.retroarchCustom, separator=' ')
+            libretroControllers.writeControllersConfig(retroconfig, system, playersControllers)
             # Write configuration to retroarchcustom.cfg
             if 'bezel' not in system.config or system.config['bezel'] == '':
                 bezel = None
             else:
                 bezel = system.config['bezel']
-            libretroConfig.writeLibretroConfig(system, playersControllers, rom, bezel, gameResolution)
+            libretroConfig.writeLibretroConfig(retroconfig, system, playersControllers, rom, bezel, gameResolution)
 
         # Retroarch core on the filesystem
         retroarchCore = recalboxFiles.retroarchCores + system.config['core'] + recalboxFiles.libretroExt

@@ -1,8 +1,6 @@
-diff --git a/src/osdep/pandora.cpp b/src/osdep/pandora.cpp
-index 2edfa0c..ca1d82a 100644
---- a/src/osdep/pandora.cpp
-+++ b/src/osdep/pandora.cpp
-@@ -329,7 +329,7 @@ void fetch_datapath(char *out, int size)
+--- a/src/osdep/amiberry.cpp	2018-11-21 14:49:03.821237723 +0000
++++ b/src/osdep/amiberry.cpp	2018-11-21 14:50:47.443568695 +0000
+@@ -459,7 +459,7 @@
  
  void fetch_saveimagepath(char *out, int size, int dir)
  {
@@ -11,7 +9,7 @@ index 2edfa0c..ca1d82a 100644
  	strncat(out, "/savestates/", size);
  }
  
-@@ -366,14 +366,14 @@ void fetch_rp9path(char *out, int size)
+@@ -516,13 +516,13 @@
  
  void fetch_savestatepath(char *out, int size)
  {
@@ -20,7 +18,6 @@ index 2edfa0c..ca1d82a 100644
  	strncat(out, "/savestates/", size);
  }
  
- 
  void fetch_screenshotpath(char *out, int size)
  {
 -	strncpy(out, start_path_data, size);
@@ -28,34 +25,71 @@ index 2edfa0c..ca1d82a 100644
  	strncat(out, "/screenshots/", size);
  }
  
-@@ -536,7 +536,7 @@ void saveAdfDir(void)
+@@ -670,7 +670,7 @@
+ {
  	char path[MAX_DPATH];
- 	int i;
  
 -	snprintf(path, MAX_DPATH, "%s/conf/adfdir.conf", start_path_data);
 +	snprintf(path, MAX_DPATH, "%s/conf/adfdir.conf", "/recalbox/share/system/configs/amiberry");
- 	FILE *f = fopen(path, "w");
+ 	const auto f = fopen(path, "we");
  	if (!f)
  		return;
-@@ -603,10 +603,10 @@ void loadAdfDir(void)
+@@ -679,13 +679,13 @@
+ 	snprintf(buffer, MAX_DPATH, "path=%s\n", currentDir);
+ 	fputs(buffer, f);
  
- 	strcpy(currentDir, start_path_data);
- 	snprintf(config_path, MAX_DPATH, "%s/conf/", start_path_data);
+-	snprintf(buffer, MAX_DPATH, "config_path=%s\n", config_path);
++	snprintf(buffer, MAX_DPATH, "/recalbox/share/system/configs/amiberry/conf", config_path);
+ 	fputs(buffer, f);
+ 
+-	snprintf(buffer, MAX_DPATH, "controllers_path=%s\n", controllers_path);
++	snprintf(buffer, MAX_DPATH, "/recalbox/share/system/configs/amiberry/conf/retroarch/inputs", controllers_path);
+ 	fputs(buffer, f);
+ 
+-	snprintf(buffer, MAX_DPATH, "retroarch_config=%s\n", retroarch_file);
++	snprintf(buffer, MAX_DPATH, "/recalbox/share/system/configs/amiberry/conf/retroarch/retroarchcustom.cfg", retroarch_file);
+ 	fputs(buffer, f);
+ 
+ 	snprintf(buffer, MAX_DPATH, "rom_path=%s\n", rom_path);
+@@ -756,9 +756,12 @@
+ #else
+ 	strncpy(currentDir, start_path_data, MAX_DPATH);
+ #endif
+-	snprintf(config_path, MAX_DPATH, "%s/conf/", start_path_data);
+-	snprintf(controllers_path, MAX_DPATH, "%s/controllers/", start_path_data);
+-	snprintf(retroarch_file, MAX_DPATH, "%s/conf/retroarch.cfg", start_path_data);
++	
++	/* snprintf(config_path, MAX_DPATH, "%s/conf/", start_path_data);  */
++	snprintf(config_path, MAX_DPATH, "/recalbox/share/system/configs/amiberry/conf");
++	
++	snprintf(controllers_path, MAX_DPATH, "/recalbox/share/system/configs/amiberry/conf/retroarch/inputs");
++	snprintf(retroarch_file, MAX_DPATH, "/recalbox/share/system/configs/amiberry/conf/retroarch/retroarchcustom.cfg");
+ 
+ #ifdef ANDROID
+     char afepath[MAX_DPATH];
+@@ -769,13 +772,13 @@
+         closedir(afedir);
+     }
+ 	else
+-        snprintf(rom_path, MAX_DPATH, "%s/kickstarts/", start_path_data);
++        snprintf(rom_path, MAX_DPATH, "/recalbox/share/bios/");
+ #else
 -	snprintf(rom_path, MAX_DPATH, "%s/kickstarts/", start_path_data);
 +	snprintf(rom_path, MAX_DPATH, "/recalbox/share/bios/");
+ #endif
  	snprintf(rp9_path, MAX_DPATH, "%s/rp9/", start_path_data);
  
 -	snprintf(path, MAX_DPATH, "%s/conf/adfdir.conf", start_path_data);
 +	snprintf(path, MAX_DPATH, "%s/conf/adfdir.conf", "/recalbox/share/system/configs/amiberry");
- 	FILE *f1 = fopen(path, "rt");
- 	if (f1)
- 	{
-@@ -794,7 +794,7 @@ int main(int argc, char *argv[])
+ 
+ 	const auto fh = zfile_fopen(path, _T("r"), ZFD_NORMAL);
+ 	if (fh) {
+@@ -892,7 +895,7 @@
  	loadAdfDir();
  	rp9_init();
  
--	snprintf(savestate_fname, MAX_PATH, "%s/saves/default.ads", start_path_data);
-+	snprintf(savestate_fname, MAX_PATH, "%s/saves/default.ads", "/recalbox/share/saves/amiga");
+-	snprintf(savestate_fname, sizeof savestate_fname, "%s/savestates/default.ads", start_path_data);
++	snprintf(savestate_fname, sizeof savestate_fname, "%s/savestates/default.ads", "/recalbox/share/saves/amiga");
  	logging_init();
  
- 	memset(&action, 0, sizeof(action));
+ 	memset(&action, 0, sizeof action);
