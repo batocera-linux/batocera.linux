@@ -4,18 +4,16 @@
 #
 ################################################################################
 
-AMIBERRY_VERSION = 1f27fdf4f55302068e0419783ff0d6972dff5e1c
+AMIBERRY_VERSION = aafa0a03c661cea12cf3c20d8cecb09d89247ba1
 AMIBERRY_SITE = $(call github,midwan,amiberry,$(AMIBERRY_VERSION))
-AMIBERRY_DEPENDENCIES = sdl sdl_image sdl_gfx sdl_ttf mpg123 libxml2 libmpeg2 guichan flac rpi-userland
+AMIBERRY_DEPENDENCIES = sdl2 sdl2_image sdl_gfx sdl2_ttf mpg123 libxml2 libmpeg2 guichan flac rpi-userland
 
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI3),y)
-	BATOCERA_SYSTEM=rpi3
+	AMIBERRY_BATOCERA_SYSTEM=rpi3-sdl2
 else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI2),y)
-	BATOCERA_SYSTEM=rpi2
+	AMIBERRY_BATOCERA_SYSTEM=rpi2-sdl2
 else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI1),y)
-	BATOCERA_SYSTEM=rpi1
-else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_XU4)$(BR2_PACKAGE_BATOCERA_TARGET_LEGACYXU4),y)
-	BATOCERA_SYSTEM=odroidxu4
+	AMIBERRY_BATOCERA_SYSTEM=rpi1-sdl2
 endif
 
 define AMIBERRY_CONFIGURE_PI
@@ -31,15 +29,17 @@ define AMIBERRY_BUILD_CMDS
 		CC="$(TARGET_CC)" \
 		AS="$(TARGET_CC)" \
 		STRIP="$(TARGET_STRIP)" \
-                SDL_CONFIG=$(STAGING_DIR)/usr/bin/sdl-config \
-		-C $(@D) PLATFORM=$(BATOCERA_SYSTEM)
+                SDL_CONFIG=$(STAGING_DIR)/usr/bin/sdl2-config \
+		-C $(@D) PLATFORM=$(AMIBERRY_BATOCERA_SYSTEM)
 endef
 
 define AMIBERRY_INSTALL_TARGET_CMDS
-	$(INSTALL) -D $(@D)/amiberry $(TARGET_DIR)/usr/bin/amiberry
-	rm -rf $(TARGET_DIR)/usr/share/amiberry/data
-	mkdir -p $(TARGET_DIR)/usr/share/amiberry
-	cp -r $(@D)/data $(TARGET_DIR)/usr/share/amiberry
+	$(INSTALL) -D $(@D)/amiberry-$(AMIBERRY_BATOCERA_SYSTEM) $(TARGET_DIR)/usr/bin/amiberry
+        mkdir -p $(TARGET_DIR)/usr/share/amiberry
+	ln -sf /recalbox/share/system/configs/amiberry/whdboot $(TARGET_DIR)/usr/share/amiberry/whdboot
+        mkdir -p $(TARGET_DIR)/recalbox/share_init/system/configs/amiberry
+	cp -pr $(@D)/whdboot $(TARGET_DIR)/recalbox/share_init/system/configs/amiberry/
+	cp -rf $(@D)/data $(TARGET_DIR)/usr/share/amiberry
 endef
 
 $(eval $(generic-package))

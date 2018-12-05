@@ -50,8 +50,8 @@ systemToP2Device = {'msx': '257', 'msx1': '257', 'msx2': '257', 'colecovision': 
 # Netplay modes
 systemNetplayModes = {'host', 'client'}
 
-def writeLibretroConfig(system, controllers, rom, bezel, gameResolution):
-    writeLibretroConfigToFile(createLibretroConfig(system, controllers, rom, bezel, gameResolution))
+def writeLibretroConfig(retroconfig, system, controllers, rom, bezel, gameResolution):
+    writeLibretroConfigToFile(retroconfig, createLibretroConfig(system, controllers, rom, bezel, gameResolution))
 
 
 # take a system, and returns a dict of retroarch.cfg compatible parameters
@@ -205,9 +205,9 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
 
     return retroarchConfig
 
-def writeLibretroConfigToFile(config):
+def writeLibretroConfigToFile(retroconfig, config):
     for setting in config:
-        libretroSettings.save(setting, config[setting])
+        retroconfig.save(setting, config[setting])
 
 def writeBezelConfig(bezel, retroarchConfig, systemName, rom, gameResolution):
     # disable the overlay

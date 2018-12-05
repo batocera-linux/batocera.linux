@@ -9,7 +9,6 @@ from settings.unixSettings import UnixSettings
 import recalboxFiles
 import utils.slugify as slugify
 
-libretroSettings = UnixSettings(recalboxFiles.retroarchCustom, separator=' ')
 coreSettings = UnixSettings(recalboxFiles.retroarchCoreCustom, separator=' ')
 recalboxConfSettings = UnixSettings(recalboxFiles.recalboxConf)
 
@@ -42,39 +41,40 @@ retroarchspecials = retroarchspecialsnomenu.copy()
 retroarchspecials['b'] = 'menu_toggle'
 
 # Write a configuration for a specified controller
-def writeControllersConfig(system, controllers):
-    cleanControllerConfig(controllers)
+# Warning, function used by amiberry because it reads the same retroarch formatting
+def writeControllersConfig(retroconfig, system, controllers):
+    cleanControllerConfig(retroconfig, controllers)
     for controller in controllers:
-        writeControllerConfig(controllers[controller], controller, system)
-    writeHotKeyConfig(controllers)
+        writeControllerConfig(retroconfig, controllers[controller], controller, system)
+    writeHotKeyConfig(retroconfig, controllers)
     if ('inputdriver' not in system.config) or (system.config['inputdriver'] == 'auto'):
         system.config['inputdriver'] = getInputDriver(controllers)
 
 
 # remove all controller configurations
-def cleanControllerConfig(controllers):
-    libretroSettings.disableAll('input_player')
+def cleanControllerConfig(retroconfig, controllers):
+    retroconfig.disableAll('input_player')
     for specialkey in retroarchspecials:
-        libretroSettings.disableAll('input_{}'.format(retroarchspecials[specialkey]))
+        retroconfig.disableAll('input_{}'.format(retroarchspecials[specialkey]))
 
 
 # Write the hotkey for player 1
-def writeHotKeyConfig(controllers):
+def writeHotKeyConfig(retroconfig, controllers):
     if '1' in controllers:
         if 'hotkey' in controllers['1'].inputs:
-            libretroSettings.save('input_enable_hotkey_btn', controllers['1'].inputs['hotkey'].id)
+            retroconfig.save('input_enable_hotkey_btn', controllers['1'].inputs['hotkey'].id)
 
 
 # Write a configuration for a specified controller
-def writeControllerConfig(controller, playerIndex, system):
+def writeControllerConfig(retroconfig, controller, playerIndex, system):
     if not 'specials' in system.config:
         system.config['specials'] = 'default'
     generatedConfig = generateControllerConfig(controller, system.config['specials'])
     for key in generatedConfig:
-        libretroSettings.save(key, generatedConfig[key])
+        retroconfig.save(key, generatedConfig[key])
 
-    libretroSettings.save('input_player{}_joypad_index'.format(playerIndex), controller.index)
-    libretroSettings.save('input_player{}_analog_dpad_mode'.format(playerIndex),
+    retroconfig.save('input_player{}_joypad_index'.format(playerIndex), controller.index)
+    retroconfig.save('input_player{}_analog_dpad_mode'.format(playerIndex),
                           getAnalogMode(controller, system))
 
 

@@ -114,3 +114,7 @@ advancemameConfigOrigin = CONF + '/advancemame/advmame.rc.origin'
 overlaySystem = "/recalbox/share_init/decorations"
 overlayUser = "/recalbox/share/decorations"
 overlayConfigFile = "/recalbox/share/system/configs/retroarch/overlay.cfg"
+
+amiberryRoot = CONF + '/amiberry'
+amiberryRetroarchInputsDir = amiberryRoot + '/conf/retroarch/inputs'
+amiberryRetroarchCustom = amiberryRoot + '/conf/retroarch/retroarchcustom.cfg'
