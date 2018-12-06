@@ -8,6 +8,7 @@ LIBRETRO_CITRA_VERSION = a0c222c00645bff70b2347ddef66767bfc303535
 LIBRETRO_CITRA_SITE = https://github.com/libretro/citra.git
 LIBRETRO_CITRA_SITE_METHOD=git
 LIBRETRO_CITRA_GIT_SUBMODULES=YES
+LIBRETRO_CITRA_DEPENDENCIES = fmt boost
 
 # Should be set when the package cannot be built inside the source tree but needs a separate build directory.
 LIBRETRO_CITRA_SUPPORTS_IN_SOURCE_BUILD = NO
@@ -25,9 +26,6 @@ define LIBRETRO_CITRA_INSTALL_TARGET_CMDS
 	
 	$(INSTALL) -D $(@D)/buildroot-build/externals/dynarmic/src/libdynarmic.so \
 		$(TARGET_DIR)/usr/lib/libdynarmic.so
-
-	$(INSTALL) -D $(@D)/buildroot-build/externals/fmt/libfmt.so.5.1.0 \
-		$(TARGET_DIR)/usr/lib/libfmt.so.5
 endef
 
 $(eval $(cmake-package))
