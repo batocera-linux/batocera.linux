@@ -963,6 +963,13 @@ x68000:
     libretro:
       px68k: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PX68K] }
 
+3ds:
+  name:       Nintendo 3DS
+  extensions: [3ds, 3dsx, elf, axf, cci, cxi, app]
+  emulators:
+    libretro:
+      citra: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_CITRA] }
+
 imageviewer:
   name:       Screenshots
   extensions: [jpg, jpeg, png, bmp, psd, tga, gif, hdr, pic, ppm, pgm]

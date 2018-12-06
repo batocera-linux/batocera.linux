@@ -1,0 +1,13 @@
+config BR2_PACKAGE_LIBRETRO_CITRA
+        bool "libretro-citra"
+        depends on BR2_PACKAGE_RETROARCH
+        depends on BR2_INSTALL_LIBSTDCPP
+        select BR2_PACKAGE_FMT
+        select BR2_PACKAGE_BOOST
+        help
+          A libretro Citra core for Nintendo 3DS.
+
+	  http://www.libretro.com
+
+comment "LIBRETRO_CITRA needs a toolchain w/ C++"
+	depends on !BR2_INSTALL_LIBSTDCPP
