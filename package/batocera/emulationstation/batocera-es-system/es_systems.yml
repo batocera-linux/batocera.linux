@@ -944,7 +944,7 @@ ps2:
 
 3do:
   name:       3DO
-  extensions: [cue, iso]
+  extensions: [cue, iso, chd]
   emulators:
     libretro:
       4do: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_4DO] }
