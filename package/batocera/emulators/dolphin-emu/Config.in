@@ -11,7 +11,15 @@ config BR2_PACKAGE_DOLPHIN_EMU
 	select BR2_PACKAGE_LIBCURL
 	select BR2_PACKAGE_SFML
 	select BR2_PACKAGE_BLUEZ5_UTILS
-	select BR2_PACKAGE_WXWIDGETS
 	select BR2_PACKAGE_HIDAPI
-        help
-          A  gamecube/wii emulator
+  select BR2_PACKAGE_QT5
+  select BR2_PACKAGE_QT5BASE
+  select BR2_PACKAGE_QT5BASE_GUI
+  select BR2_PACKAGE_QT5BASE_WIDGETS
+  select BR2_PACKAGE_QT5BASE_OPENGL_DESKTOP
+
+  help
+    Gamecube/Wii emulator
+
+  comment "DOLPHIN_EMU needs a toolchain w/ C++"
+    depends on !BR2_INSTALL_LIBSTDCPP
