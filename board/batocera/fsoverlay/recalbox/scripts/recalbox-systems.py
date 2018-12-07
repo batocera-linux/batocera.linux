@@ -3,6 +3,7 @@
 from hashlib import md5
 from os.path import isfile
 from collections import OrderedDict
+import sys
 
 systems = {
     "3do":	{ "name": "3DO", "biosFiles": [ { "md5": "f47264dd47fe30f73ab3c010015c155b", "file": "bios/panafz1.bin"				    },
@@ -178,6 +179,16 @@ def displayMissingBios(systems, missingBios):
     else:
         print "No missing bios"
 
+def createReadme(systems):
+    for system in sorted(systems):
+        print "{}:".format(systems[system]["name"])
+        for bios in systems[system]["biosFiles"]:
+            print "{} {}".format(bios["md5"], bios["file"])
+        print ""
+
 if __name__ == '__main__':
-    prefix = "/recalbox/share"
-    displayMissingBios(systems, checkBios(systems, prefix))
+    if len(sys.argv) == 1:
+        prefix = "/recalbox/share"
+        displayMissingBios(systems, checkBios(systems, prefix))
+    elif sys.argv[1] == "--createReadme":
+        createReadme(systems)

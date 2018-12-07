@@ -112,3 +112,6 @@ fi
 # on x86_64, pcsx2 has no sound because getgrnam_r returns successfully but the result parameter is not filled for an unknown reason (in alsa-lib)
 AUDIOGROUP=$(grep -E "^audio:" "${TARGET_DIR}/etc/group" | cut -d : -f 3)
 sed -i -e s+'defaults.pcm.ipc_gid .*$'+'defaults.pcm.ipc_gid '"${AUDIOGROUP}"+ "${TARGET_DIR}/usr/share/alsa/alsa.conf" || exit 1
+
+# bios file
+python "board/batocera/fsoverlay/recalbox/scripts/recalbox-systems.py" --createReadme > "${TARGET_DIR}/recalbox/share_init/bios/readme.txt" || exit 1
