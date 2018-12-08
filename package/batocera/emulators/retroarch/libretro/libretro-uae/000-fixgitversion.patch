@@ -1,0 +1,13 @@
+diff --git a/libretro/libretro.c b/libretro/libretro.c
+index 3dce433..34d8d82 100644
+--- a/libretro/libretro.c
++++ b/libretro/libretro.c
+@@ -642,7 +642,7 @@ void retro_get_system_info(struct retro_system_info *info)
+ {
+    memset(info, 0, sizeof(*info));
+    info->library_name     = "PUAE";
+-   info->library_version  = "2.6.1" GIT_VERSION;
++   info->library_version  = "2.6.1";
+    info->need_fullpath    = true;
+    info->block_extract    = false;	
+    info->valid_extensions = "adf|dms|fdi|ipf|zip|hdf|hdz|uae|m3u";
