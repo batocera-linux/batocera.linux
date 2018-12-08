@@ -3,8 +3,8 @@
 # PROSYSTEM
 #
 ################################################################################
-# Version.: Commits on Aug 12, 2018
-LIBRETRO_PROSYSTEM_VERSION = 463dfff97f2e7d707ee5ae238cb2e8e70beb585a
+# Version.: Commits on Sep 29, 2018
+LIBRETRO_PROSYSTEM_VERSION = 247d5f2dccd748495c5310081e6a9c4ff33a377f
 LIBRETRO_PROSYSTEM_SITE = $(call github,libretro,prosystem-libretro,$(LIBRETRO_PROSYSTEM_VERSION))
 
 define LIBRETRO_PROSYSTEM_BUILD_CMDS
