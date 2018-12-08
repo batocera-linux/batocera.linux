@@ -3,8 +3,8 @@
 # SNES9X_NEXT
 #
 ################################################################################
-# Version.: Commits on Jun 26, 2018
-LIBRETRO_SNES9X_NEXT_VERSION = 21e176e8f0595c5577e6c2fb5164f92b8855396e
+# Version.: Commits on Nov 8, 2018
+LIBRETRO_SNES9X_NEXT_VERSION = ead24f29b2af0df83f3365d3e887bdd81979c1a2
 LIBRETRO_SNES9X_NEXT_SITE = $(call github,libretro,snes9x2010,$(LIBRETRO_SNES9X_NEXT_VERSION))
 
 define LIBRETRO_SNES9X_NEXT_BUILD_CMDS
