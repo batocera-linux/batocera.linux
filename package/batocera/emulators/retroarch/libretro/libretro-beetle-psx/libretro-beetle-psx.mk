@@ -3,8 +3,8 @@
 # LIBRETRO_BEETLE_PSX
 #
 ################################################################################
-# Version.: Commits on Apr 24, 2018
-LIBRETRO_BEETLE_PSX_VERSION = 4a75947e0f979c10ab0337d9bbd7b4f485674537
+# Version.: Commits on Nov 2, 2018
+LIBRETRO_BEETLE_PSX_VERSION = 74bd7550ff07e9953f353e1d434663ad627afa20
 LIBRETRO_BEETLE_PSX_SITE = $(call github,libretro,beetle-psx-libretro,$(LIBRETRO_BEETLE_PSX_VERSION))
 
 LIBRETRO_BEETLE_PSX_EXTRAOPT=
