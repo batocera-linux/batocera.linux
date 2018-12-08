@@ -3,8 +3,8 @@
 # LIBRETRO-VICE
 #
 ################################################################################
-# Version.: Commits on Sep 16, 2018
-LIBRETRO_VICE_VERSION = 0fc467f2fd4a0c44f3e94d05f413db72bf2e827a
+# Version.: Commits on Nov 11, 2018
+LIBRETRO_VICE_VERSION = ce4524df3c4e93e25dd97a6586c24c5e40d30c60
 LIBRETRO_VICE_SITE = $(call github,libretro,vice-libretro,$(LIBRETRO_VICE_VERSION))
 
 define LIBRETRO_VICE_BUILD_CMDS
