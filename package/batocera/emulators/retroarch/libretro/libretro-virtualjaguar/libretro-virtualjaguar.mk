@@ -3,8 +3,8 @@
 # VIRTUALJAGUAR
 #
 ################################################################################
-# Version.: Commits on Aug 12, 2018
-LIBRETRO_VIRTUALJAGUAR_VERSION = f3cf607b20ee69e78dbfd80010d3f485fdf67283
+# Version.: Commits on Nov 30, 2018
+LIBRETRO_VIRTUALJAGUAR_VERSION = d13c60574c2a8c1fefef792188cc9bdb62eb4722
 LIBRETRO_VIRTUALJAGUAR_SITE = $(call github,libretro,virtualjaguar-libretro,$(LIBRETRO_VIRTUALJAGUAR_VERSION))
 
 define LIBRETRO_VIRTUALJAGUAR_BUILD_CMDS
