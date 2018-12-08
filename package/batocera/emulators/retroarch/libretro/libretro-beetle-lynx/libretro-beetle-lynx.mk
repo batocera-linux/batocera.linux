@@ -3,8 +3,8 @@
 # BEETLE_LYNX
 #
 ################################################################################
-# Version.: Commits on Apr 7, 2018
-LIBRETRO_BEETLE_LYNX_VERSION = 6816829ae785e2d468256d346fcd90b5baaa7327
+# Version.: Commits on Nov 30, 2018
+LIBRETRO_BEETLE_LYNX_VERSION = 1583a66c4135f675f5bdd2839f2b4a3c9848aa45
 LIBRETRO_BEETLE_LYNX_SITE = $(call github,libretro,beetle-lynx-libretro,$(LIBRETRO_BEETLE_LYNX_VERSION))
 
 define LIBRETRO_BEETLE_LYNX_BUILD_CMDS
