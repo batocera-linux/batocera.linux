@@ -3,8 +3,8 @@
 # IMAME
 #
 ################################################################################
-# Version.: Commits on Apr 20, 2018
-LIBRETRO_IMAME_VERSION = bd3833c41f6894ba1c5d2f3f35b29190658517a0
+# Version.: Commits on Nov 8, 2018
+LIBRETRO_IMAME_VERSION = 2084351834e26a94be89c961c64fd2199084767a
 LIBRETRO_IMAME_SITE = $(call github,libretro,mame2000-libretro,$(LIBRETRO_IMAME_VERSION))
 
 define LIBRETRO_IMAME_BUILD_CMDS
