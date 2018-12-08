@@ -3,8 +3,8 @@
 # FCEUMM
 #
 ################################################################################
-# Version.: Commits on Aug 15, 2018
-LIBRETRO_FCEUMM_VERSION = a37c3bc6644a5f5befac7787f559b16370452861
+# Version.: Commits on Nov 8, 2018
+LIBRETRO_FCEUMM_VERSION = efb578323408fe2b14598af298f918335fd79fa5
 LIBRETRO_FCEUMM_SITE = $(call github,libretro,libretro-fceumm,$(LIBRETRO_FCEUMM_VERSION))
 
 define LIBRETRO_FCEUMM_BUILD_CMDS
