@@ -3,8 +3,8 @@
 # LIBRETRO-REICAST
 #
 ################################################################################
-# Version.: Commits on Nov 26, 2018
-LIBRETRO_REICAST_VERSION = 01ffff9facb9b970ac2a7c5336fd1bf301e386f7
+# Version.: Commits on Dec 6, 2018
+LIBRETRO_REICAST_VERSION = 57b76774c6f5a9c5830b911f701a3cc99ae2c16a
 LIBRETRO_REICAST_SITE = $(call github,libretro,reicast-emulator,$(LIBRETRO_REICAST_VERSION))
 
 LIBRETRO_REICAST_PLATFORM = $(LIBRETRO_PLATFORM)
