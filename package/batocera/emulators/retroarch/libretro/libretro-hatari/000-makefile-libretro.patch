@@ -1,5 +1,5 @@
 diff --git a/Makefile.libretro b/Makefile.libretro
-index ccd5d04..cde3bd7 100755
+index e7527c7..c5225e5 100755
 --- a/Makefile.libretro
 +++ b/Makefile.libretro
 @@ -4,6 +4,13 @@ ZLIB_DIR = $(LIBRETRO_DIR)/utils/zlib
@@ -16,7 +16,7 @@ index ccd5d04..cde3bd7 100755
  ifeq ($(platform),)
  platform = unix
  ifeq ($(shell uname -a),)
-@@ -44,6 +51,28 @@ else ifeq ($(platform), osx)
+@@ -77,6 +84,28 @@ else ifeq ($(platform), osx)
     SHARED := -dynamiclib
     PLATFLAGS := -DLSB_FIRST -DALIGN_DWORD
  
@@ -45,7 +45,7 @@ index ccd5d04..cde3bd7 100755
  # iOS
  else ifneq (,$(findstring ios,$(platform)))
  
-@@ -116,7 +145,7 @@ endif
+@@ -149,7 +178,7 @@ endif
  ifeq ($(DEBUG), 1)
     CFLAGS += -O0 -g
  else
@@ -54,7 +54,7 @@ index ccd5d04..cde3bd7 100755
  endif
  
  CFLAGS += \
-@@ -142,11 +171,16 @@ OBJECTS := $(SOURCES_C:.c=.o)
+@@ -175,12 +204,17 @@ OBJECTS := $(SOURCES_C:.c=.o)
  
  all: $(TARGET)
  
@@ -64,11 +64,12 @@ index ccd5d04..cde3bd7 100755
 +endif
 +
  $(TARGET): $(OBJECTS)
+ 	@echo "** BUILDING $(TARGET) FOR PLATFORM $(platform) **"
  ifeq ($(STATIC_LINKING_LINK),1)
  	$(AR) rcs $@ $(OBJECTS) 
  else
 -	$(CC) $(fpic) $(INCLUDES) -o $@ $(OBJECTS)  -lm -lz $(SHARED)
 +	$(CC) $(fpic) $(SHARED) $(INCLUDES) -o $@ $(OBJECTS)  -lm -lz -lpthread $(CAPS_LIB)
  endif
+ 	@echo "** BUILD SUCCESSFUL! GG NO RE **"
  
- %.o: %.c
