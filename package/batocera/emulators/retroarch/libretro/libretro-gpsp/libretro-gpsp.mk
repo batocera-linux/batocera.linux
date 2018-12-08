@@ -3,8 +3,8 @@
 # GPSP
 #
 ################################################################################
-# Version.: Commits on Aug 12, 2018
-LIBRETRO_GPSP_VERSION = d99f3ac9f1da201b6a0a3f90739503644dce1645
+# Version.: Commits on Nov 3, 2018
+LIBRETRO_GPSP_VERSION = 19aed0288d5ca154be28c54f71769dfd80342b78
 LIBRETRO_GPSP_SITE = $(call github,libretro,gpsp,$(LIBRETRO_GPSP_VERSION))
 
 define LIBRETRO_GPSP_BUILD_CMDS
