@@ -3,8 +3,8 @@
 # MAME2003 PLUS
 #
 ################################################################################
-#LIBRETRO_MAME2003_PLUS_VERSION = mame078p - Commits on Aug 30, 2018
-LIBRETRO_MAME2003_PLUS_VERSION = 15678a0a455d0cce35cd9979b0b048e3c927885c
+#LIBRETRO_MAME2003_PLUS_VERSION = mame078p - Commits on Nov 15, 2018
+LIBRETRO_MAME2003_PLUS_VERSION = 3743cf0dd3db15ae6b4113085bbee8bff091e4a5
 LIBRETRO_MAME2003_PLUS_SITE = $(call github,libretro,mame2003-plus-libretro,$(LIBRETRO_MAME2003_PLUS_VERSION))
 
 define LIBRETRO_MAME2003_PLUS_BUILD_CMDS
