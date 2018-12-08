@@ -3,8 +3,8 @@
 # STELLA
 #
 ################################################################################
-# Version.: Commits on Apr 11, 2018
-LIBRETRO_STELLA_VERSION = b0d525b724fa0a9a313e2ea33a590aba98deaabf
+# Version.: Commits on Nov 11, 2018
+LIBRETRO_STELLA_VERSION = 6a8e20909e0a39a4e01f9102dc935113e38cd62b
 LIBRETRO_STELLA_SITE = $(call github,libretro,stella-libretro,$(LIBRETRO_STELLA_VERSION))
 
 define LIBRETRO_STELLA_BUILD_CMDS
