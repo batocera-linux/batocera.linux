@@ -3,8 +3,8 @@
 # DOSBOX
 #
 ################################################################################
-# Version.: Commits on Sep 4, 2018
-LIBRETRO_DOSBOX_VERSION = d87d7cc43f53af83c3cf42e0a3b701cfe3639cd0
+# Version.: Commits on Sep 30, 2018
+LIBRETRO_DOSBOX_VERSION = 8f2d7318b6e66e397448a5905b30bc4f92de7133
 LIBRETRO_DOSBOX_SITE = $(call github,libretro,dosbox-libretro,$(LIBRETRO_DOSBOX_VERSION))
 
 define LIBRETRO_DOSBOX_BUILD_CMDS
