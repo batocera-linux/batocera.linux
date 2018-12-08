@@ -3,8 +3,8 @@
 # MGBA
 #
 ################################################################################
-# Version.: Commits on Jul 8, 2018
-LIBRETRO_MGBA_VERSION = abf712f061c816c96e028b878a2e12dc49426088
+# Version.: Commits on Nov 5, 2018
+LIBRETRO_MGBA_VERSION = c32d83154010453409bf7b1f56e10404972ad127
 LIBRETRO_MGBA_SITE = $(call github,libretro,mgba,$(LIBRETRO_MGBA_VERSION))
 
 ifeq ($(BR2_ARM_CPU_HAS_NEON),y)
