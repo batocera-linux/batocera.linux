@@ -3,8 +3,8 @@
 # ZX81
 #
 ################################################################################
-# Version.: Commits on Aug 12, 2018
-LIBRETRO_81_VERSION = b3608533c692e952071e98f760ad98e105384ca1
+# Version.: Commits on Nov 11, 2018
+LIBRETRO_81_VERSION = 7d2720fc6f5a6b6a5650d19e6dbc93506f03656d
 LIBRETRO_81_SITE = $(call github,libretro,81-libretro,$(LIBRETRO_81_VERSION))
 
 define LIBRETRO_81_BUILD_CMDS
