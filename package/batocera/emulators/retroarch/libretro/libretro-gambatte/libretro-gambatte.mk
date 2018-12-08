@@ -3,8 +3,8 @@
 # GAMBATTE
 #
 ################################################################################
-# Version.: Commits on Jul 9, 2018
-LIBRETRO_GAMBATTE_VERSION = 7722012ce85e56c324cb2080645347689ca379ae
+# Version.: Commits on Nov 11, 2018
+LIBRETRO_GAMBATTE_VERSION = 85edb5b900dcdc12df7d734f0cedcdcfbf84d70f
 LIBRETRO_GAMBATTE_SITE = $(call github,libretro,gambatte-libretro,$(LIBRETRO_GAMBATTE_VERSION))
 
 define LIBRETRO_GAMBATTE_BUILD_CMDS
