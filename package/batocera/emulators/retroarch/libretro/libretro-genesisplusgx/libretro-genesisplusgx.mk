@@ -3,8 +3,8 @@
 # GENESISPLUSGX
 #
 ################################################################################
-# Version.: Commits on Aug 17, 2018
-LIBRETRO_GENESISPLUSGX_VERSION = 7856b7208981fa4dc33623f89c4f330a95019c26
+# Version.: Commits on Nov 7, 2018
+LIBRETRO_GENESISPLUSGX_VERSION = 5993fd8295bafe7b7b132375f6b9dcdda0129e54
 LIBRETRO_GENESISPLUSGX_SITE = $(call github,libretro,Genesis-Plus-GX,$(LIBRETRO_GENESISPLUSGX_VERSION))
 
 define LIBRETRO_GENESISPLUSGX_BUILD_CMDS
