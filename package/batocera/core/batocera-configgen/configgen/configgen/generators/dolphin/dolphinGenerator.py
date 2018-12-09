@@ -65,7 +65,7 @@ class DolphinGenerator(Generator):
         except Exception:
             pass # don't fail in case of SYSCONF update
 
-        commandArray = [recalboxFiles.recalboxBins[system.config['emulator']], "-e", rom]
+        commandArray = [recalboxFiles.recalboxBins[system.config['emulator']], "-platform", "xcb", "-e", rom]
         return Command.Command(array=commandArray, env={"XDG_CONFIG_HOME":recalboxFiles.CONF, "XDG_DATA_HOME":recalboxFiles.SAVES})
 
 def getGfxRatioFromConfig(config, gameResolution):

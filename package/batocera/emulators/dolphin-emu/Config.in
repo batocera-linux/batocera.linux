@@ -17,9 +17,10 @@ config BR2_PACKAGE_DOLPHIN_EMU
   select BR2_PACKAGE_QT5BASE_GUI
   select BR2_PACKAGE_QT5BASE_WIDGETS
   select BR2_PACKAGE_QT5BASE_OPENGL_DESKTOP
+  select BR2_PACKAGE_QT5BASE_XCB
 
   help
     Gamecube/Wii emulator
 
-  comment "DOLPHIN_EMU needs a toolchain w/ C++"
-    depends on !BR2_INSTALL_LIBSTDCPP
+  comment "DOLPHIN_EMU needs a toolchain w/ C++, OpenGL"
+    depends on !BR2_INSTALL_LIBSTDCPP || !BR2_PACKAGE_HAS_LIBGL
