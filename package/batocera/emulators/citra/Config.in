@@ -1,0 +1,12 @@
+config BR2_PACKAGE_CITRA
+    bool "citra"
+    select BR2_PACKAGE_SDL2
+    select BR2_PACKAGE_FMT
+    select BR2_PACKAGE_BOOST
+        
+    help
+      A Emulator Citra core for Nintendo 3DS.
+
+	    https://citra-emu.org/
+
+

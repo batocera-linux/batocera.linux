@@ -969,6 +969,8 @@ x68000:
   emulators:
     libretro:
       citra: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_CITRA] }
+    citra:
+      citra: { requireAnyOf: [BR2_PACKAGE_CITRA] }
 
 imageviewer:
   name:       Screenshots
