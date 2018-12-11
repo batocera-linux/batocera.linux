@@ -19,4 +19,15 @@ CITRA_CONF_OPTS += -DCMAKE_BUILD_TYPE=Release
 CITRA_CONF_OPTS += -DENABLE_WEB_SERVICE=OFF
 CITRA_CONF_OPTS += -DTHREADS_PTHREAD_ARG=OFF
 
+define CITRA_INSTALL_TARGET_CMDS
+	$(INSTALL) -D $(@D)/buildroot-build/bin/citra \
+		$(TARGET_DIR)/usr/bin/citra
+	
+	$(INSTALL) -D $(@D)/buildroot-build/externals/inih/libinih.so \
+		$(TARGET_DIR)/usr/lib/libinih.so
+
+	$(INSTALL) -D $(@D)/buildroot-build/externals/cubeb/libcubeb.so \
+		$(TARGET_DIR)/usr/lib/libcubeb.so
+endef
+
 $(eval $(cmake-package))
