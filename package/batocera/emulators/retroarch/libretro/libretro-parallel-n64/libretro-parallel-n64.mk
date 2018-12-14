@@ -3,8 +3,16 @@
 # PARALLEL_N64
 #
 ################################################################################
-# Version.: Commits on Aug 8, 2018
-LIBRETRO_PARALLEL_N64_VERSION = ab155da18068f638e5ace2e5e6f7387bddc3511b
+
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI2)$(BR2_PACKAGE_BATOCERA_TARGET_RPI3),y)
+       # for rpi2, rpi3 because the next commit breaks and has lost performance.
+       # Version.: Commits on Aug 8, 2018 
+       LIBRETRO_PARALLEL_N64_VERSION = ab155da18068f638e5ace2e5e6f7387bddc3511b              
+else       
+       # Version.: Commits on Dec 13, 2018
+       LIBRETRO_PARALLEL_N64_VERSION = 7e204b0fda06185fd4d5a134cdd3b14996c29687
+endif
+
 LIBRETRO_PARALLEL_N64_SITE = $(call github,libretro,parallel-n64,$(LIBRETRO_PARALLEL_N64_VERSION))
 
 ifeq ($(BR2_PACKAGE_RPI_USERLAND),y)
