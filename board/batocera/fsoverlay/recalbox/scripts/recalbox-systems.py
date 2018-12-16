@@ -100,10 +100,17 @@ systems = {
 
 	"prboom": { "name": "Doom (PrBoom)", "biosFiles": [ { "md5": "", "file": "roms/prboom/prboom.wad" } ] },
 
-	# only 1 of the ps2 bios is required (japan, european or us)
+	# Only 1 of the ps2 bios is required (EU or US)
+	# For JAP region use the US bios file
     "ps2": { "name": "PS2", "biosFiles": [ { "md5": "28922c703cc7d2cf856f177f2985b3a9", "file": "bios/SCPH30004R.bin" },
+										   { "md5": "ea592129bf0c9189cafe772657261148", "file": "bios/SCPH30004R.NVM" },
+										   { "md5": "3faf7c064a4984f53e2ef5e80ed543bc", "file": "bios/SCPH30004R.MEC" },
 										   { "md5": "d5ce2c7d119f563ce04bc04dbc3a323e", "file": "bios/scph39001.bin"  },
-										   { "md5": "acf4730ceb38ac9d8c7d8e21f2614600", "file": "bios/scph10000.bin"  } ] },
+										   { "md5": "0639a9ff5f5f3fd7833b924b9d97a8ae", "file": "bios/scph39001.NVM" },
+										   { "md5": "3faf7c064a4984f53e2ef5e80ed543bc", "file": "bios/scph39001.MEC" },
+										   { "md5": "9a9e8ed7668e6adfc8f7766c08ab9cd0", "file": "bios/EROM.BIN" },
+										   { "md5": "44552702b05697a14ccbe2ca22ee7139", "file": "bios/rom1.bin" },
+										   { "md5": "b406d05922dac2eaf3c2e68157b1b468", "file": "bios/ROM2.BIN" } ] },
 
 	"psx": { "name": "PSX", "biosFiles": [ { "md5": "924e392ed05558ffdb115408c263dccf", "file": "bios/SCPH1001.BIN" },
 										   { "md5": "239665b1a3dade1b5a52c06338011044", "file": "bios/SCPH1000.BIN" },
