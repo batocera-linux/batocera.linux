@@ -14,7 +14,7 @@ class LibretroGenerator(Generator):
     # Configure retroarch and return a command
     def generate(self, system, rom, playersControllers, gameResolution):
         # Settings recalbox default config file if no user defined one
-        if not system.config['configfile']:
+        if not 'configfile' in system.config:
             # Using recalbox config file
             system.config['configfile'] = recalboxFiles.retroarchCustom
             # Create retroarchcustom.cfg if does not exists
@@ -64,9 +64,5 @@ class LibretroGenerator(Generator):
             elif system.config['netplaymode'] == 'client':
                 commandArray.extend(["--connect", system.config['netplay.server.address']])
 
-        # Optionnal arguments
-        if 'args' in system.config and system.config['args'] is not None:
-             commandArray.extend(system.config['args'])
-             
         commandArray.append(rom)
         return Command.Command(array=commandArray)

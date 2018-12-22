@@ -2,26 +2,19 @@
 import sys
 import os
 import recalboxFiles
+from Emulator import Emulator
 from settings.unixSettings import UnixSettings
 
 sys.path.append(
     os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
 
-
 fbaSettings = UnixSettings(recalboxFiles.fbaCustom)
-
-# return true if the option is considered enabled (for boolean options)
-def enabled(key, dict):
-    return key in dict and (dict[key] == '1' or dict[key] == 'true')
-
 
 # return true if the option is considered defined
 def defined(key, dict):
     return key in dict and isinstance(dict[key], str) and len(dict[key]) > 0
 
-
 ratioIndexes = {'16/9': '0', '4/3': '1'}
-
 
 def writeFBAConfig(system):
     writeFBAConfigToFile(createFBAConfig(system))
@@ -31,7 +24,7 @@ def writeFBAConfig(system):
 def createFBAConfig(system):
     fbaConfig = dict()
     recalboxConfig = system.config
-    if enabled('smooth', recalboxConfig):
+    if system.isOptSet('smooth') and system.getOptBoolean('smooth') == True:
         fbaConfig['DisplaySmoothStretch'] = '1'
     else:
         fbaConfig['DisplaySmoothStretch'] = '0'

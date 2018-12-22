@@ -7,7 +7,6 @@ sys.path.append(
 
 from settings.unixSettings import UnixSettings
 import recalboxFiles
-import utils.slugify as slugify
 
 coreSettings = UnixSettings(recalboxFiles.retroarchCoreCustom, separator=' ')
 recalboxConfSettings = UnixSettings(recalboxFiles.recalboxConf)

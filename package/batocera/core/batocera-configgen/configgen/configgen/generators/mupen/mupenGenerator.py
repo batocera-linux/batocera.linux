@@ -12,7 +12,7 @@ class MupenGenerator(Generator):
     # Configure mupen and return a command
     def generate(self, system, rom, playersControllers, gameResolution):
         # Settings recalbox default config file if no user defined one
-        if not system.config['configfile']:
+        if not 'configfile' in system.config:
             # Using recalbox config file
             system.config['configfile'] = recalboxFiles.mupenCustom
             # Write configuration file
@@ -22,8 +22,6 @@ class MupenGenerator(Generator):
 
         commandArray = [recalboxFiles.recalboxBins[system.config['emulator']], "--corelib", "/usr/lib/libmupen64plus.so.2.0.0", "--gfx", "/usr/lib/mupen64plus/mupen64plus-video-{}.so".format(system.config['core']),
                         "--configdir", recalboxFiles.mupenConf, "--datadir", recalboxFiles.mupenConf]
-        if 'args' in system.config and system.config['args'] is not None:
-            commandArray.extend(system.config['args'])
         commandArray.append(rom)
 
         return Command.Command(array=commandArray, env={"SDL_VIDEO_GL_DRIVER":"/usr/lib/libGLESv2.so"})

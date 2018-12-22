@@ -44,9 +44,6 @@ class Pcsx2Generator(Generator):
         commandArray.append("--dev9=" + real_pluginsDir + "/libdev9null-0.5.0.so")
         commandArray.append("--spu2=" + real_pluginsDir + "/libspu2x-2.0.0.so")
         
-        if 'args' in system.config and system.config['args'] is not None:
-             commandArray.extend(system.config['args'])
-
         # arch
         arch = "x86"
         with open('/recalbox/recalbox.arch', 'r') as content_file:

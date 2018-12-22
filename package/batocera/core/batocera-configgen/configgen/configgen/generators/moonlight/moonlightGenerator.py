@@ -19,8 +19,6 @@ class MoonlightGenerator(Generator):
         configFile = controllersConfig.generateSDLGameDBAllControllers(playersControllers, outputFile)
         gameName,confFile = self.getRealGameNameAndConfigFile(rom)
         commandArray = [recalboxFiles.recalboxBins[system.config['emulator']], 'stream','-config',  confFile]
-        if 'args' in system.config and system.config['args'] is not None:
-            commandArray.extend(system.config['args'])
         commandArray.append('-app')
         commandArray.append(gameName)
         return Command.Command(array=commandArray, env={"XDG_DATA_DIRS": recalboxFiles.CONF})

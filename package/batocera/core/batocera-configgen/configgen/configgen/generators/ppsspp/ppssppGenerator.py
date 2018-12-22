@@ -15,7 +15,7 @@ class PPSSPPGenerator(Generator):
     # Main entry of the module
     # Configure fba and return a command
     def generate(self, system, rom, playersControllers, gameResolution):
-        if not system.config['configfile']:
+        if not 'configfile' in system.config:
             ppssppConfig.writePPSSPPConfig(system)
             # For each pad detected
             for index in playersControllers :
@@ -31,8 +31,6 @@ class PPSSPPGenerator(Generator):
 
         # the command to run  
         commandArray = [recalboxFiles.recalboxBins[system.config['emulator']]]
-        if 'args' in system.config and system.config['args'] is not None:
-            commandArray.extend(system.config['args'])
         commandArray.append(rom)
         # The next line is a reminder on how to quit PPSSPP with just the HK
         #commandArray = [recalboxFiles.recalboxBins[system.config['emulator']], rom, "--escape-exit"]

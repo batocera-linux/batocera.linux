@@ -66,8 +66,6 @@ class DolphinGenerator(Generator):
             pass # don't fail in case of SYSCONF update
 
         commandArray = [recalboxFiles.recalboxBins[system.config['emulator']], "-e", rom]
-        if 'args' in system.config and system.config['args'] is not None:
-             commandArray.extend(system.config['args'])
         return Command.Command(array=commandArray, env={"XDG_CONFIG_HOME":recalboxFiles.CONF, "XDG_DATA_HOME":recalboxFiles.SAVES})
 
 def getGfxRatioFromConfig(config, gameResolution):
