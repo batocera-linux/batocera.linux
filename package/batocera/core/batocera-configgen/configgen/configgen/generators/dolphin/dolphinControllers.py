@@ -2,12 +2,13 @@
 # -*- coding: utf-8 -*-
 
 import recalboxFiles
+from Emulator import Emulator
 
 # Create the controller configuration file
 def generateControllerConfig(system, playersControllers, rom):
     generateHotkeys(playersControllers)
     if system.name == "wii":
-        if 'emulatedwiimotes' in system.config and system.config['emulatedwiimotes'] == '1':
+        if system.isOptSet('emulatedwiimotes') and system.getOptBoolean('emulatedwiimotes') == True:
             generateControllerConfig_emulatedwiimotes(playersControllers, rom)
         else:
             generateControllerConfig_realwiimotes("WiimoteNew.ini", "Wiimote")

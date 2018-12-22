@@ -59,8 +59,6 @@ class AmiberryGenerator(Generator):
             commandArray.append("-s")
             commandArray.append("show_leds=true")
         
-        if 'args' in system.config and system.config['args'] is not None:
-            commandArray.extend(system.config['args'])
         os.chdir("/usr/share/amiberry")
         return Command.Command(array=commandArray)
 

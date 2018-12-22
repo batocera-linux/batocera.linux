@@ -17,14 +17,11 @@ class AdvMameGenerator(Generator):
         romName = os.path.basename(os.path.splitext(rom)[0])
         commandArray = [recalboxFiles.recalboxBins[system.config['emulator']]]
         
-        if not system.config['configfile']:
+        if not 'configfile' in system.config:
             # Using recalbox config file
             system.config['configfile'] = recalboxFiles.advancemameConfig
             advMameControllers.writeControllersConfig(system, playersControllers)
             
-        if 'args' in system.config and system.config['args'] is not None:
-            commandArray.extend(system.config['args'])
-        
         commandArray.extend( ['-cfg', system.config['configfile']] )
         commandArray.append(romName)
         

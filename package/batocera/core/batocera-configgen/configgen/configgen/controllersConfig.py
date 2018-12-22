@@ -130,24 +130,6 @@ def loadControllerConfig(p1index, p1guid, p1name, p1dev, p1nbaxes, p2index, p2gu
         playerControllers["5"] = newController
     return playerControllers
 
-def loadControllerConfig2(**kwargs):
-    playerControllers = dict()
-    controllers = loadAllControllersConfig()
-    
-    for i in range(1, 6):
-        num = str(i)
-        pguid = kwargs.get('p{}guid'.format(num), None)
-        pindex = kwargs.get('p{}index'.format(num), None)
-        pname = kwargs.get('p{}name'.format(num), None)
-        pdev = kwargs.get('p{}dev'.format(num), None)
-        pnbaxes = kwargs.get('p{}nbaxes'.format(num), None)
-        if pdev is None:
-            pdev = kwargs.get('p{}devicepath'.format(num), None)
-        newController = findBestControllerConfig(controllers, num, pguid, pindex, pname, pdev, pnbaxes)
-        if newController:
-            playerControllers[num] = newController
-    return playerControllers
-
 def findBestControllerConfig(controllers, x, pxguid, pxindex, pxname, pxdev, pxnbaxes):
     # when there will have more joysticks, use hash tables
     for controllerGUID in controllers:

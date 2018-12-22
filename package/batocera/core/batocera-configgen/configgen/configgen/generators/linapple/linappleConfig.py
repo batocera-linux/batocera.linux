@@ -5,6 +5,7 @@ Created on Mar 6, 2016
 '''
 import os
 import re
+from Emulator import Emulator
 
 joystick_translator = {
         # linapple : recalboxOS
@@ -167,7 +168,7 @@ class LinappleConfig(object):
             self.settings['Disk Image 1'] = ''
             self.settings['Slot 6 Autoload'] = '0'
         
-        if filename and system.config.get('autosave', '0') == '1':
+        if filename and system.isOptSet('autosave') and system.getOptBoolean('autosave') == True:
             name = os.path.join(self.settings['Save State Directory'], 
                 os.path.splitext(os.path.split(filename)[1])[0] + '.sve')
             self.settings['Save State Filename'] = name

@@ -4,56 +4,49 @@ import recalboxFiles
 from settings.unixSettings import UnixSettings
 import xml.etree.ElementTree as ET
 import shlex
+import utils.eslog as eslog
 
 class Emulator():
 
-    def __init__(self, name, emulator, core='', videomode='CEA 4 HDMI', shaders='', ratio='auto', smooth='1', rewind='0', configfile=None, showFPS=None):
+    def __init__(self, name, config):
         self.name = name
-        self.config = dict()
-        self.config['videomode']  = videomode
-        self.config['core']       = core
-        self.config['emulator']   = emulator
-        self.config['shaders']    = shaders
-        self.config['ratio']      = ratio
-        self.config['smooth']     = smooth
-        self.config['rewind']     = rewind
-        self.config['configfile'] = configfile
-        self.config['netplay']    = None
-        self.config['showFPS']    = showFPS
-        self.config['args']       = None
+        self.config = config
         
     def configure(self, emulator='default', core='default', ratio='auto', netplay=None):
         recalSettings = UnixSettings(recalboxFiles.recalboxConf)
         globalSettings = recalSettings.loadAll('global')
         self.config['specials'] = recalSettings.load('system.emulators.specialkeys', 'default')
-        self.config['netplaymode'] = netplay
         self.updateConfiguration(globalSettings)
         self.updateConfiguration(recalSettings.loadAll(self.name))
         self.updateForcedConfig(emulator, core, ratio)
 
+    def isOptSet(self, key):
+        return key in self.config
+
+    def getOptBoolean(self, key):
+        if self.config[key] == '1'    and type(self.config[key]) == type('1'):
+            return True
+        if self.config[key] == 'true' and type(self.config[key]) == type('true'):
+            return True
+        if self.config[key] == True   and type(self.config[key]) == type(True):
+            return True
+        return False
+
     def updateConfiguration(self, settings):
         systemSettings = self.config
-        # Special case of auto ratio
-        if 'ratio' in settings and settings['ratio'] == 'auto':
-            del settings['ratio']
-        if 'emulator' in settings and settings['emulator'] == 'default':
-            del settings['emulator']
-        if 'core' in settings and settings['core'] == 'default':
-            del settings['core']
+
+        # ignore all values "default", "auto", "" to take the system value instead
+        # ideally, such value must not be in the configuration file
+        # but historically some user have them
+        toremove = [k for k in settings if settings[k] == "" or settings[k] == "default" or settings[k] == "auto"]
+        for k in toremove: del settings[k]
+
         systemSettings.update(settings)
         # ShaderSets
-        if ('shaderset' in settings and settings['shaderset'] != ''):
+        if 'shaderset' in settings:
             self.updateShaders(settings['shaderset'])
         # Draw FPS
-        if self.config['showFPS'] is None or self.config['showFPS'] not in ['false', 'true']:
-            self.updateDrawFPS()
-        # Optionnal emulator args ONLY if security is disabled
-        recalSettings = UnixSettings(recalboxFiles.recalboxConf)
-        security = recalSettings.load("system.security.enabled")
-        if (security != "1" and'args' in settings and settings['args'] != ''):
-            self.config['args'] = shlex.split(settings['args'])
-        else:
-            self.config['args'] = None
+        self.updateDrawFPS()
 
     def updateShaders(self, shaderSet):
         if shaderSet != None and shaderSet != 'none':
@@ -63,13 +56,14 @@ class Emulator():
                 self.config['shaders'] = systemShader
 
     def updateForcedConfig(self, emulator, core, ratio):
-        if emulator != None and emulator != 'default':
+        if emulator != None and emulator != 'auto':
             self.config['emulator'] = emulator
-        if core != None and core != 'default':
+        if core != None and core != 'auto':
             self.config['core'] = core
         if ratio != None and ratio != 'auto':
             self.config['ratio'] = ratio
 
+    # fps value is from es
     def updateDrawFPS(self):
         try:
             esConfig = ET.parse(recalboxFiles.esSettings)

@@ -17,7 +17,7 @@ class ReicastGenerator(Generator):
     # Main entry of the module
     # Configure fba and return a command
     def generate(self, system, rom, playersControllers, gameResolution):
-        if not system.config['configfile']:
+        if not 'configfile' in system.config:
             # Write emu.cfg to map joysticks, init with the default emu.cfg
             Config = ConfigParser.ConfigParser()
             Config.optionxform = str
@@ -65,8 +65,6 @@ class ReicastGenerator(Generator):
 
         # the command to run  
         commandArray = [recalboxFiles.recalboxBins[system.config['emulator']]]
-        if 'args' in system.config and system.config['args'] is not None:
-            commandArray.extend(system.config['args'])
         commandArray.append(rom)
         # Here is the trick to make reicast find files :
         # emu.cfg is in $XDG_CONFIG_DIRS or $XDG_CONFIG_HOME. The latter is better

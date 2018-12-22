@@ -2,6 +2,7 @@
 import sys
 import os
 import recalboxFiles
+from Emulator import Emulator
 import settings
 from settings.unixSettings import UnixSettings
 import json
@@ -12,12 +13,6 @@ sys.path.append(
 
 libretroSettings = UnixSettings(recalboxFiles.retroarchCustom, separator=' ')
 coreSettings = UnixSettings(recalboxFiles.retroarchCoreCustom, separator=' ')
-
-
-# return true if the option is considered enabled (for boolean options)
-def enabled(key, dict):
-    return key in dict and (dict[key] == '1' or dict[key] == 'true')
-
 
 # return true if the option is considered defined
 def defined(key, dict):
@@ -58,7 +53,7 @@ def writeLibretroConfig(retroconfig, system, controllers, rom, bezel, gameResolu
 def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
     retroarchConfig = dict()
     recalboxConfig = system.config
-    if enabled('smooth', recalboxConfig):
+    if system.isOptSet('smooth') and system.getOptBoolean('smooth') == True:
         retroarchConfig['video_smooth'] = 'true'
     else:
         retroarchConfig['video_smooth'] = 'false'
@@ -83,13 +78,13 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
 
     retroarchConfig['rewind_enable'] = 'false'
 
-    if enabled('rewind', recalboxConfig):
+    if system.isOptSet('rewind') and system.getOptBoolean('rewind') == True:
         if(not system.name in systemNoRewind):
             retroarchConfig['rewind_enable'] = 'true'
     else:
         retroarchConfig['rewind_enable'] = 'false'
 
-    if enabled('autosave', recalboxConfig):
+    if system.isOptSet('autosave') and system.getOptBoolean('autosave') == True:
         retroarchConfig['savestate_auto_save'] = 'true'
         retroarchConfig['savestate_auto_load'] = 'true'
     else:
@@ -126,42 +121,45 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
     retroarchConfig['cheevos_verbose_enable'] = 'false'
     retroarchConfig['cheevos_auto_screenshot'] = 'false'
 
-    if enabled('retroachievements', recalboxConfig):
+    if system.isOptSet('retroachievements') and system.getOptBoolean('retroachievements') == True:
         if(system.name in systemToRetroachievements):
             retroarchConfig['cheevos_enable'] = 'true'
             retroarchConfig['cheevos_username'] = recalboxConfig.get('retroachievements.username', "")
             retroarchConfig['cheevos_password'] = recalboxConfig.get('retroachievements.password', "")
             # retroachievements_hardcore_mode
-            if enabled('retroachievements.hardcore', recalboxConfig):
+            if system.isOptSet('retroachievements.hardcore') and system.getOptBoolean('retroachievements.hardcore') == True:
                 retroarchConfig['cheevos_hardcore_mode_enable'] = 'true'
             else:
                 retroarchConfig['cheevos_hardcore_mode_enable'] = 'false'
             # retroachievements_leaderboards
-            if enabled('retroachievements.leaderboards', recalboxConfig):
+            if system.isOptSet('retroachievements.leaderboards') and system.getOptBoolean('retroachievements.leaderboards') == True:
                 retroarchConfig['cheevos_leaderboards_enable'] = 'true'
             else:
                 retroarchConfig['cheevos_leaderboards_enable'] = 'false'
             # retroachievements_verbose_mode
-            if enabled('retroachievements.verbose', recalboxConfig):
+            if system.isOptSet('retroachievements.verbose') and system.getOptBoolean('retroachievements.verbose') == True:
                 retroarchConfig['cheevos_verbose_enable'] = 'true'
             else:
                 retroarchConfig['cheevos_verbose_enable'] = 'false'
             # retroachievements_automatic_screenshot
-            if enabled('retroachievements.screenshot', recalboxConfig):
+            if system.isOptSet('retroachievements.screenshot') and system.getOptBoolean('retroachievements.screenshot') == True:
                 retroarchConfig['cheevos_auto_screenshot'] = 'true'
             else:
                 retroarchConfig['cheevos_auto_screenshot'] = 'false'
     else:
         retroarchConfig['cheevos_enable'] = 'false'
 
-    if enabled('integerscale', recalboxConfig):
+    if system.isOptSet('integerscale') and system.getOptBoolean('integerscale') == True:
         retroarchConfig['video_scale_integer'] = 'true'
     else:
         retroarchConfig['video_scale_integer'] = 'false'
 
     # disable the threaded video while it is causing issues to several people ?
     # this must be set to true on xu4 for performance issues
-    retroarchConfig['video_threaded'] = 'true'
+    if system.config['video_threaded']:
+        retroarchConfig['video_threaded'] = 'true'
+    else:
+        retroarchConfig['video_threaded'] = 'false'
 
     # core options
     if(system.name in systemToBluemsx):
@@ -195,7 +193,7 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
             retroarchConfig['netplay_client_swap_input'] = "true"
 
     # Display FPS
-    if enabled('showFPS', recalboxConfig):
+    if system.isOptSet('showFPS') and system.getOptBoolean('showFPS') == True:
         retroarchConfig['fps_show'] = 'true'
     else:
         retroarchConfig['fps_show'] = 'false'

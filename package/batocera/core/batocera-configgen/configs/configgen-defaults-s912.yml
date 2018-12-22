@@ -1,0 +1,10 @@
+default:
+  options:
+    video_threaded: true
+
+snes:
+  emulator: libretro
+  core: snes9x_next
+n64:
+  emulator: libretro
+  core: parallel_n64

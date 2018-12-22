@@ -101,6 +101,4 @@ class FsuaeGenerator(Generator):
                 commandArray.append("--joystick_port_" + str(n) + "=" + pad.realName + "")
                 n += 1
 
-        if 'args' in system.config and system.config['args'] is not None:
-             commandArray.extend(system.config['args'])
         return Command.Command(array=commandArray)

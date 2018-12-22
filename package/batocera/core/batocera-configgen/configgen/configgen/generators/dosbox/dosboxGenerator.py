@@ -30,6 +30,5 @@ class DosBoxGenerator(Generator):
         else:
             commandArray.append("-conf")
             commandArray.append("""{}""".format(recalboxFiles.dosboxConfig))
-        if 'args' in system.config and system.config['args'] is not None:
-            commandArray.extend(system.config['args'])
+
         return Command.Command(array=commandArray, env={"SDL_VIDEO_GL_DRIVER":"/usr/lib/libGLESv2.so"})
