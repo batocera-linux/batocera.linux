@@ -143,6 +143,7 @@ gbc:
   emulators:
     libretro:
       gambatte: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GAMBATTE] }
+      mgba:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MGBA]     }
 
 gb:
   name:       Game Boy
@@ -150,6 +151,7 @@ gb:
   emulators:
     libretro:
       gambatte: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GAMBATTE] }
+      mgba:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MGBA]     }
 
 gbc2players:
   name:       Game Boy Color
