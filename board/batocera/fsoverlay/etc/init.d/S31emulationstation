@@ -8,10 +8,8 @@ systemsetting="python /usr/lib/python2.7/site-packages/configgen/settings/recalb
 case "$1" in
   start)
 	enabled="`$systemsetting  -command load -key system.es.atstartup`"
-	videoMode="`$systemsetting  -command load -key system.es.videomode`"
         if [ "$enabled" != "0" ];then
-		echo $videoMode | grep -qE "(CEA|DMT) [0-9]{1,2} (HDMI|DVI)"
-		[ $? = "0" ] && tvservice -e "$videoMode"
+                batocera-resolution minTomaxResolution
 		settings_lang="`$systemsetting -command load -key system.language`"
         	recallog "starting emulationstation with lang = $settings_lang"
                 command="HOME=/recalbox/share/system LANG=\"${settings_lang}.UTF-8\" SDL_VIDEO_GL_DRIVER=/usr/lib/libGLESv2.so SDL_VIDEO_EGL_DRIVER=/usr/lib/libGLESv2.so SDL_NOMOUSE=1 /usr/bin/emulationstation"
