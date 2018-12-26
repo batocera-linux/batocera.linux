@@ -26,7 +26,7 @@ index 7d37d0e..2e51267 100644
     { "dumpedid",           required_argument,   NULL,    OPT_DUMPEDID},
     { "audio",              no_argument,         NULL,    OPT_AUDIOSUP},
     { "json",               no_argument,         NULL,    OPT_JSON },
-@@ -314,6 +320,45 @@ static int get_modes( HDMI_RES_GROUP_T group, int json_output)
+@@ -314,6 +320,46 @@ static int get_modes( HDMI_RES_GROUP_T group, int json_output)
     return 0;
  }
  
@@ -50,7 +50,8 @@ index 7d37d0e..2e51267 100644
 +
 +   for ( i = 0; i < num_modes; i++ )
 +   {
-+      LOG_STD( "%s %u HDMI:%s %ux%u %s%uHz %s",
++      LOG_STD( "%ux%u:%s %u HDMI:%s %ux%u %s%uHz %s",
++	       supported_modes[i].width, supported_modes[i].height,
 +	       group == HDMI_RES_GROUP_CEA ? "CEA" : "DMT",
 +	       supported_modes[i].code,
 +	       group == HDMI_RES_GROUP_CEA ? "TV" : "MONITOR",

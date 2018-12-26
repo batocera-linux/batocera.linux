@@ -28,7 +28,7 @@ index 115dbcc..811091f 100644
  	if (!strcmp ("--newmode", argv[i]))
  	{
  	    umode_t  *m = calloc (1, sizeof (umode_t));
-@@ -3667,6 +3679,81 @@ main (int argc, char **argv)
+@@ -3667,6 +3679,82 @@ main (int argc, char **argv)
  	}
  	exit (0);
      }
@@ -62,6 +62,7 @@ index 115dbcc..811091f 100644
 +		  if (mode_shown[j]) continue;
 +
 +		  jmode = find_mode_by_xid (output_info->modes[j]);
++		  printf ("%ix%i ", jmode->width, jmode->height);
 +		  printf ("%s", jmode->name);
 +
 +		  for (k = j; k < output_info->nmode; k++)

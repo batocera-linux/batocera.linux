@@ -37,7 +37,7 @@ index dcfdde0..11a2772 100644
 +	{
 +	    XRROutputInfo   *output_info = output->output_info;
 +	    if(strcmp(connection[output_info->connection], "connected") == 0) {
-+	      printf ("%s\n", output_info->name);
++             printf ("%s%s\n", output_info->name, output->mode_info == NULL ? "" : "*");
 +           }
 +	}
 +	exit (0);
