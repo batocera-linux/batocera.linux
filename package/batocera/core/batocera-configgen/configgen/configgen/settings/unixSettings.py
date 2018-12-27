@@ -33,7 +33,7 @@ class UnixSettings():
 
 
     def load(self, name, default=None):
-        eslog.log("{0}: Looking for {1} from {2}".format(__source__, name, self.settingsFile))
+        eslog.log("{0}: Looking for {1} in {2}".format(__source__, name, self.settingsFile))
         return self.config.get('DEFAULT', name, default)
 
     def save(self, name, value):
@@ -52,7 +52,7 @@ class UnixSettings():
         self.config.remove(name)
 
     def disableAll(self, name):
-        eslog.log("{0}: Disabling all options from from {1}".format(__source__, self.settingsFile))
+        eslog.log("{0}: Disabling all options from {1}".format(__source__, self.settingsFile))
         # TODO: check if is ok to remove whole DEFAULT section
         self.config.remove_section('DEFAULT')
 
@@ -61,7 +61,7 @@ class UnixSettings():
         self.config.remove_option('DEFAULT', name)
 
     def loadAll(self, name):
-        eslog.log("{0}: Looking for {1}.* from {2}".format(__source__, name, self.settingsFile))
+        eslog.log("{0}: Looking for {1}.* in {2}".format(__source__, name, self.settingsFile))
         res = dict()
         for (key, value) in self.config.items('DEFAULT'):
             m = re.match(r"^" + name + "\.(.+?)", key)
