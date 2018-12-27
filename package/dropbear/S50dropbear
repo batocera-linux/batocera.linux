@@ -6,7 +6,7 @@
 # Allow a few customizations from a config file
 test -r /etc/default/dropbear && . /etc/default/dropbear
 
-systemsetting="python /usr/lib/python2.7/site-packages/configgen/settings/recalboxSettings.pyc"
+systemsetting="python /usr/lib/python2.7/site-packages/configgen/settings/recalboxSettings.py"
 
 start() {
         # batocera
