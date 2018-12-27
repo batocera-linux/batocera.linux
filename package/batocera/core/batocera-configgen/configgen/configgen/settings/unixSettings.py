@@ -64,7 +64,7 @@ class UnixSettings():
         eslog.log("{0}: Looking for {1}.* in {2}".format(__source__, name, self.settingsFile))
         res = dict()
         for (key, value) in self.config.items('DEFAULT'):
-            m = re.match(r"^" + name + "\.(.+?)", key)
+            m = re.match(r"^" + name + "\.(.+)", key)
             if m:
                 res[m.group(1)] = value;
 
