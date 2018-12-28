@@ -86,7 +86,8 @@ mame:
   emulator: libretro
   core:     mame078
 fba:
-  emulator: fba2x
+  emulator: libretro
+  core:     fba
 fba_libretro:
   emulator: libretro
   core:     fba
@@ -146,7 +147,7 @@ odyssey2:
   core:     o2em
 zx81:
   emulator: libretro
-  core:     81
+  core:     '81'
 dos:
   emulator: dosbox
   options:
