@@ -39,8 +39,8 @@ systems = {
 														{ "md5": "ce6a86574d0c9de9075705f14e99d090", "file": "bios/ProSystem.dat"     } ] },
     "atarist":   { "name": "Atari ST", "biosFiles":   [ { "md5": "b2a8570de2e850c5acf81cb80512d9f6", "file": "bios/tos.img"           } ] },
 
-    "dreamcast": { "name": "Dreamcast", "biosFiles": [ { "md5": "d407fcf70b56acb84b8c77c93b0e5327", "file": "bios/dc_boot.bin"  },
-													   { "md5": "93a9766f14159b403178ac77417c6b68", "file": "bios/dc_flash.bin" },
+    "dreamcast": { "name": "Dreamcast", "biosFiles": [ { "md5": "e10c53c2f8b90bab96ead2d368858623", "file": "bios/dc_boot.bin"  },
+													   { "md5": "0a93f7940c455905bea6e392dfde92a4", "file": "bios/dc_flash.bin" },
 													   { "md5": "4bffb9b29b9aeb29aa618f3891a300ce", "file": "bios/dc_nvmem.bin" } ] },
 
     "naomi": { "name": "Naomi", "biosFiles": [ { "md5": "3bffafac42a7767d8dcecf771f5552ba", "file": "bios/naomi_boot.bin" } ] },
