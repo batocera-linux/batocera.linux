@@ -15,7 +15,11 @@ MALI_RK450_STAGING_DIR=$(STAGING_DIR)
 
 define MALI_RK450_INSTALL_STAGING_CMDS
 	mkdir -p $(MALI_RK450_STAGING_DIR)
-	cp -r $(@D)/lib/aarch64-linux-gnu/libmali-midgard-t86x-r14p0-gbm.so $(MALI_RK450_STAGING_DIR)/usr/lib
+	ifeq ($(BR2_arm),y)
+	  cp -r $(@D)/lib/arm-linux-gnueabihf/libmali-midgard-t86x-r14p0-gbm.so $(MALI_RK450_STAGING_DIR)/usr/lib
+	else
+	  cp -r $(@D)/lib/aarch64-linux-gnu/libmali-midgard-t86x-r14p0-gbm.so $(MALI_RK450_STAGING_DIR)/usr/lib
+	endif
 	(cd $(MALI_RK450_STAGING_DIR)/usr/lib && ln -sf libmali-midgard-t86x-r14p0-gbm.so libmali.so)
 
 	(cd $(MALI_RK450_STAGING_DIR)/usr/lib && ln -sf libmali.so libEGL.so)
@@ -30,7 +34,11 @@ endef
 
 define MALI_RK450_INSTALL_TARGET_CMDS
 	mkdir -p $(MALI_RK450_TARGET_DIR)
-	cp -r $(@D)/lib/aarch64-linux-gnu/libmali-midgard-t86x-r14p0-gbm.so $(MALI_RK450_TARGET_DIR)/usr/lib
+	ifeq ($(BR2_arm),y)
+	  cp -r $(@D)/lib/arm-linux-gnueabihf/libmali-midgard-t86x-r14p0-gbm.so $(MALI_RK450_TARGET_DIR)/usr/lib
+        else
+	  cp -r $(@D)/lib/aarch64-linux-gnu/libmali-midgard-t86x-r14p0-gbm.so $(MALI_RK450_TARGET_DIR)/usr/lib
+	endif
 	(cd $(MALI_RK450_TARGET_DIR)/usr/lib && ln -sf libmali-midgard-t86x-r14p0-gbm.so libmali.so)
 
 	(cd $(MALI_RK450_TARGET_DIR)/usr/lib && ln -sf libmali.so libEGL.so)
