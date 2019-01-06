@@ -79,10 +79,16 @@ while read f; do
 		continue
 	fi
 
-	printf 'ERROR: architecture for "%s" is "%s", should be "%s"\n' \
-	       "${f}" "${arch}" "${arch_name}"
+	# batocera: support Compiling arm64 in arm userspace - will eventually want to update to verify kernel is 64bit
+	if [ "${arch}" = "AArch64" -a "${arch_name}" = "ARM" ] ; then
+		printf 'NOTE: Detected Arch is AArch64 with ARM Userspace for file:\n"%s"\n\n' \
+		"${f}"
+	else
+		printf 'ERROR: architecture for "%s" is "%s", should be "%s"\n' \
+		       "${f}" "${arch}" "${arch_name}"
+		exitcode=1
+	fi
 
-	exitcode=1
 done < <( sed -r -e "/^${package},\.(.+)$/!d; s//\1/;" ${pkg_list} )
 
 exit ${exitcode}
