@@ -3,8 +3,8 @@
 # FBA
 #
 ################################################################################
-#LIBRETRO_FBA_VERSION = Commits on Nov 13, 2018
-LIBRETRO_FBA_VERSION = 79704a667cd0aa5865feffd0f55b6fc4acc13dec
+#LIBRETRO_FBA_VERSION = Commits on Jan 5, 2019
+LIBRETRO_FBA_VERSION = 6cc1a5918a0b8c5362d2b32ae17b1d15b4049e0d
 LIBRETRO_FBA_SITE = $(call github,libretro,fbalpha,$(LIBRETRO_FBA_VERSION))
 
 define LIBRETRO_FBA_BUILD_CMDS

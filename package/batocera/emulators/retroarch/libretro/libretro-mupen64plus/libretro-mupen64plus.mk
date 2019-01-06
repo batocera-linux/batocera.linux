@@ -4,13 +4,13 @@
 #
 ################################################################################
 
-ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI2)$(BR2_PACKAGE_BATOCERA_TARGET_RPI3),y)
-       # for rpi2, rpi3 because the next commit breaks and has lost performance.
-       # Version.: Commits on Jul 28, 2018
-       LIBRETRO_MUPEN64PLUS_VERSION = 4ca2fa8633666e26e2f163dcd3c226b598cb2aa4       
-else
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86)$(BR2_PACKAGE_BATOCERA_TARGET_X86_64),y)
        # Version.: Commits on Nov 10, 2018
        LIBRETRO_MUPEN64PLUS_VERSION = a4fbedf5c30db1761812627cbb4923cef8bb92b4
+else 
+       # for rpi2, rpi3 and odroid because the next commit breaks and has lost performance.
+       # Version.: Commits on Jul 28, 2018
+       LIBRETRO_MUPEN64PLUS_VERSION = 4ca2fa8633666e26e2f163dcd3c226b598cb2aa4       
 endif
 
 LIBRETRO_MUPEN64PLUS_SITE = $(call github,libretro,mupen64plus-libretro,$(LIBRETRO_MUPEN64PLUS_VERSION))
