@@ -224,6 +224,9 @@ ifeq ($(KERNEL_ARCH),i386)
 LINUX_ARCH_PATH = $(LINUX_DIR)/arch/x86
 else ifeq ($(KERNEL_ARCH),x86_64)
 LINUX_ARCH_PATH = $(LINUX_DIR)/arch/x86
+else ifeq ($(BR2_LINUX_X64_KERNEL_IN_X32_USER),y)
+# arm64 kernel when arch is arm
+LINUX_ARCH_PATH = $(LINUX_DIR)/arch/arm64
 else
 LINUX_ARCH_PATH = $(LINUX_DIR)/arch/$(KERNEL_ARCH)
 endif
