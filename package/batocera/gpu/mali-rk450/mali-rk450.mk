@@ -13,13 +13,16 @@ MALI_RK450_PROVIDES = libegl libgles
 MALI_RK450_TARGET_DIR=$(TARGET_DIR)
 MALI_RK450_STAGING_DIR=$(STAGING_DIR)
 
+ifeq ($(BR2_arm),y)
+  MALI_RK450_LIBDIR=arm-linux-gnueabihf
+else
+  MALI_RK450_LIBDIR=aarch64-linux-gnu
+endif
+
 define MALI_RK450_INSTALL_STAGING_CMDS
 	mkdir -p $(MALI_RK450_STAGING_DIR)
-	ifeq ($(BR2_arm),y)
-	  cp -r $(@D)/lib/arm-linux-gnueabihf/libmali-midgard-t86x-r14p0-gbm.so $(MALI_RK450_STAGING_DIR)/usr/lib
-	else
-	  cp -r $(@D)/lib/aarch64-linux-gnu/libmali-midgard-t86x-r14p0-gbm.so $(MALI_RK450_STAGING_DIR)/usr/lib
-	endif
+        cp -r $(@D)/lib/$(MALI_RK450_LIBDIR)/libmali-midgard-t86x-r14p0-gbm.so $(MALI_RK450_STAGING_DIR)/usr/lib
+
 	(cd $(MALI_RK450_STAGING_DIR)/usr/lib && ln -sf libmali-midgard-t86x-r14p0-gbm.so libmali.so)
 
 	(cd $(MALI_RK450_STAGING_DIR)/usr/lib && ln -sf libmali.so libEGL.so)
@@ -30,16 +33,14 @@ define MALI_RK450_INSTALL_STAGING_CMDS
 	(cd $(MALI_RK450_STAGING_DIR)/usr/lib && ln -sf libmali.so libMali.so)
 
 	cp -pr $(@D)/include $(MALI_RK450_STAGING_DIR)/usr
+	cp package/batocera/gpu/mali-rk450/gbm.pc $(MALI_RK450_STAGING_DIR)/usr/lib/pkgconfig/gbm.pc
 endef
 
 define MALI_RK450_INSTALL_TARGET_CMDS
 	mkdir -p $(MALI_RK450_TARGET_DIR)
-	ifeq ($(BR2_arm),y)
-	  cp -r $(@D)/lib/arm-linux-gnueabihf/libmali-midgard-t86x-r14p0-gbm.so $(MALI_RK450_TARGET_DIR)/usr/lib
-        else
-	  cp -r $(@D)/lib/aarch64-linux-gnu/libmali-midgard-t86x-r14p0-gbm.so $(MALI_RK450_TARGET_DIR)/usr/lib
-	endif
-	(cd $(MALI_RK450_TARGET_DIR)/usr/lib && ln -sf libmali-midgard-t86x-r14p0-gbm.so libmali.so)
+        cp -r $(@D)/lib/$(MALI_RK450_LIBDIR)/libmali-midgard-t86x-r14p0-gbm.so $(MALI_RK450_TARGET_DIR)/usr/lib
+
+        (cd $(MALI_RK450_TARGET_DIR)/usr/lib && ln -sf libmali-midgard-t86x-r14p0-gbm.so libmali.so)
 
 	(cd $(MALI_RK450_TARGET_DIR)/usr/lib && ln -sf libmali.so libEGL.so)
 	(cd $(MALI_RK450_TARGET_DIR)/usr/lib && ln -sf libmali.so libEGL.so.1)

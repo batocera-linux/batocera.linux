@@ -43,6 +43,11 @@ ifeq ($(BR2_cortex_a15),y)
         RETROARCH_CONF_OPTS += --enable-neon --enable-floathard
 endif
 
+# rockpro64
+ifeq ($(BR2_cortex_a72_a53),y)
+        RETROARCH_CONF_OPTS += --enable-neon --enable-floathard
+endif
+
 # x86 : no option
 
 RETROARCH_CONF_OPTS += --enable-networking
@@ -82,11 +87,15 @@ else
 RETROARCH_CONF_OPTS += --disable-opengles
 endif
 
-ifeq ($(BR2_PACKAGE_HAS_LIBEGL),y)
+ifeq ($(BR2_PACKAGE_MALI_RK450),y)
+RETROARCH_CONF_OPTS += --disable-egl
+else
+  ifeq ($(BR2_PACKAGE_HAS_LIBEGL),y)
 RETROARCH_CONF_OPTS += --enable-egl
 RETROARCH_DEPENDENCIES += libegl
-else
+  else
 RETROARCH_CONF_OPTS += --disable-egl
+  endif
 endif
 
 ifeq ($(BR2_PACKAGE_HAS_LIBOPENVG),y)
@@ -168,6 +177,10 @@ ifeq ($(BR2_cortex_a8),y)
 endif
 
 ifeq ($(BR2_cortex_a15),y)
+        LIBRETRO_PLATFORM += armv7
+endif
+
+ifeq ($(BR2_arm)$(BR2_cortex_a72_a53),yy)
         LIBRETRO_PLATFORM += armv7
 endif
 
