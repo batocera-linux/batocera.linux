@@ -112,10 +112,7 @@ systems = {
 										   { "md5": "44552702b05697a14ccbe2ca22ee7139", "file": "bios/rom1.bin" },
 										   { "md5": "b406d05922dac2eaf3c2e68157b1b468", "file": "bios/ROM2.BIN" } ] },
 
-	"psx": { "name": "PSX", "biosFiles": [ { "md5": "924e392ed05558ffdb115408c263dccf", "file": "bios/SCPH1001.BIN" },
-										   { "md5": "239665b1a3dade1b5a52c06338011044", "file": "bios/SCPH1000.BIN" },
-										   { "md5": "490f666e1afb15b7362b406ed1cea246", "file": "bios/SCPH7003.BIN" },
-										   { "md5": "8dd7d5296a650fac7319bce665a6a53c", "file": "bios/scph5500.bin" },
+	"psx": { "name": "PSX", "biosFiles": [ { "md5": "8dd7d5296a650fac7319bce665a6a53c", "file": "bios/scph5500.bin" },
 										   { "md5": "490f666e1afb15b7362b406ed1cea246", "file": "bios/scph5501.bin" },
 										   { "md5": "32736f17079d0b2b7024407c39bd3050", "file": "bios/scph5502.bin" } ] },
 
