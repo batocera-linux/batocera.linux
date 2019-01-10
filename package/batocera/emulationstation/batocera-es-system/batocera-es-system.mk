@@ -20,6 +20,7 @@ endef
 
 define BATOCERA_ES_SYSTEM_INSTALL_TARGET_CMDS
 	$(INSTALL) -m 0644 -D $(@D)/es_systems.cfg $(TARGET_DIR)/recalbox/share_init/system/.emulationstation/es_systems.cfg
+        mkdir -p $(@D)/roms # in case there is no rom
 	cp -pr $(@D)/roms $(TARGET_DIR)/recalbox/share_init/
 endef
 

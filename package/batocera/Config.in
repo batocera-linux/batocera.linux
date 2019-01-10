@@ -12,6 +12,11 @@ menu "System"
     source "package/batocera/boot/batocera-x86_64_efi/Config.in"
     source "package/batocera/boot/uboot-odroid-xu4/Config.in"
     source "package/batocera/boot/uboot-odroid-c2/Config.in"
+    source "package/batocera/boot/rockpro64-blobs/Config.in"
+  endmenu
+
+  menu "Toolchain"
+    source "package/batocera/toolchain/toolchain-optional-linaro-aarch64/Config.in"
   endmenu
 
   menu "Fonts"
@@ -23,6 +28,7 @@ menu "System"
     source "package/batocera/gpu/gpu-aml/Config.in"
     source "package/batocera/gpu/gpu-aml-t8xx/Config.in"
     source "package/batocera/gpu/libhybris/Config.in"
+    source "package/batocera/gpu/mali-rk450/Config.in"
     source "package/batocera/gpu/mali-450/Config.in"
     source "package/batocera/gpu/mali-opengles-sdk/Config.in"
     source "package/batocera/gpu/mali-t62x-fbdev/Config.in"
