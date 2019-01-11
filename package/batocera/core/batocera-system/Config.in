@@ -154,8 +154,7 @@ config BR2_PACKAGE_BATOCERA_ALL_SYSTEMS
         select BR2_PACKAGE_BATOCERA_RETROARCH   # ALL # retroarch (multiple systems)
         select BR2_PACKAGE_MOONLIGHT_EMBEDDED   # ALL # moonlight
         select BR2_PACKAGE_LINAPPLE_PIE         if BR2_PACKAGE_BATOCERA_TARGET_RPI2 || BR2_PACKAGE_BATOCERA_TARGET_RPI3 || \
-                                                   BR2_PACKAGE_BATOCERA_TARGET_X86  || BR2_PACKAGE_BATOCERA_TARGET_X86_64    || \
-                                                   BR2_PACKAGE_BATOCERA_TARGET_ROCKPRO64 # apple II
+                                                   BR2_PACKAGE_BATOCERA_TARGET_X86  || BR2_PACKAGE_BATOCERA_TARGET_X86_64 # apple II
         select BR2_PACKAGE_BATOCERA_MUPEN64     if BR2_PACKAGE_BATOCERA_TARGET_RPI2 || BR2_PACKAGE_BATOCERA_TARGET_RPI3      || \
                                                    BR2_PACKAGE_BATOCERA_TARGET_X86  || BR2_PACKAGE_BATOCERA_TARGET_X86_64    || \
 						   BR2_PACKAGE_BATOCERA_TARGET_XU4  || BR2_PACKAGE_BATOCERA_TARGET_LEGACYXU4 || \
