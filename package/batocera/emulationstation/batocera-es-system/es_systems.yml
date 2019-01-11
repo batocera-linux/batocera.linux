@@ -283,7 +283,7 @@ pcengine:
   emulators:
     libretro:
       mednafen_supergrafx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BEETLE_SUPERGRAFX] }
-      pce:                 { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PCE]               }
+      pce:                 { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BEETLE_PCE]        }
 
 pcenginecd:
   name:       PC Engine CD
@@ -291,7 +291,7 @@ pcenginecd:
   emulators:
     libretro:
       mednafen_supergrafx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BEETLE_SUPERGRAFX] }
-      pce:                 { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PCE]               }
+      pce:                 { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BEETLE_PCE]        }
 
 supergrafx:
   name:       Supergrafx
@@ -299,7 +299,7 @@ supergrafx:
   emulators:
     libretro:
       mednafen_supergrafx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BEETLE_SUPERGRAFX] }
-      pce:                 { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PCE]               }
+      pce:                 { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BEETLE_PCE]        }
 
 pcfx:
   name:       PC-FX
