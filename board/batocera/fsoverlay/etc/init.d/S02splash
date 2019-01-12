@@ -65,16 +65,26 @@ do_start ()
             # Ready flag set or timeout occured; stop video process.
             dbus-send --print-reply=literal --session --dest=org.mpris.MediaPlayer2.omxplayer /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.Action int32:15 >/dev/null
         fi
+    elif [[ -f $video && -f /usr/bin/ffplay ]]; then
+	/usr/bin/ffplay -autoexit -loglevel 0 "$video" &
+	PID=$!
+	# Wait for emulationstation or Kodi, but not more than 20 seconds
+        count=0
+        while [[ ! -f "/tmp/emulationstation.ready" && ! -e "/var/run/kodi.msg" && $count -lt 200 ]]; do
+            sleep 0.1
+            ((count++))
+        done
+	kill -9 "${PID}"
+    else
+	# on some sytems, fb0 is not immediatly loaded, so, keep a chance by waiting a bit
+	N=0
+	while ! test -e /dev/fb0 -o $N -gt 15
+	do
+	    sleep 1
+	    let N++
+	done
+	test -e /dev/fb0 && fbv -f -i /recalbox/system/resources/splash/logo-version.png
     fi
-
-    # on some sytems, fb0 is not immediatly loaded, so, keep a chance by waiting a bit
-    N=0
-    while ! test -e /dev/fb0 -o $N -gt 15
-    do
-	sleep 1
-	let N++
-    done
-    test -e /dev/fb0 && fbv -f -i /recalbox/system/resources/splash/logo-version.png
 }
 
 case "$1" in
