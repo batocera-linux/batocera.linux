@@ -99,7 +99,6 @@ source "package/kodi-platform/Config.in"
 # batocera
 config BR2_PACKAGE_KODI_GBM
        bool "gbm"
-       depends on BR2_PACKAGE_MESA3D
        help
 	 Enable gbm support.
 

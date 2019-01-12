@@ -1,0 +1,37 @@
+From 516af449829392378a881ce1e796fd3022ef17fe Mon Sep 17 00:00:00 2001
+From: Max Kellermann <max@duempel.org>
+Date: Mon, 24 Apr 2017 14:38:06 +0200
+Subject: [PATCH 12/62] Video/RenderManager: move protected #includes out of
+ #if block
+
+Signed-off-by: memeka <mihailescu2m@gmail.com>
+---
+ xbmc/cores/VideoPlayer/VideoRenderers/RenderManager.cpp | 7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
+
+diff --git a/xbmc/cores/VideoPlayer/VideoRenderers/RenderManager.cpp b/xbmc/cores/VideoPlayer/VideoRenderers/RenderManager.cpp
+index 420b5b5..07207cc 100644
+--- a/xbmc/cores/VideoPlayer/VideoRenderers/RenderManager.cpp
++++ b/xbmc/cores/VideoPlayer/VideoRenderers/RenderManager.cpp
+@@ -34,15 +34,14 @@
+ #include "settings/MediaSettings.h"
+ #include "settings/Settings.h"
+ 
+-#if defined(HAS_GL)
+ #include "LinuxRendererGL.h"
+ #include "HwDecRender/RendererVAAPI.h"
+ #include "HwDecRender/RendererVDPAU.h"
+-#if defined(TARGET_DARWIN_OSX)
+ #include "HwDecRender/RendererVTBGL.h"
+-#endif
++#include "LinuxRendererGLES.h"
++
++#if defined(HAS_GL)
+ #elif HAS_GLES == 2
+-  #include "LinuxRendererGLES.h"
+ #if defined(HAS_MMAL)
+ #include "HwDecRender/MMALRenderer.h"
+ #endif
+-- 
+2.7.4
+

@@ -1,0 +1,91 @@
+From 4092fde57f3e69728cf89b86bca4027155e1e2a9 Mon Sep 17 00:00:00 2001
+From: Max Kellermann <max@duempel.org>
+Date: Mon, 24 Apr 2017 14:38:07 +0200
+Subject: [PATCH 32/62] windowing/test/wayland: eliminate boost::tokenizer
+
+Requested on https://github.com/xbmc/xbmc/pull/8980
+
+Signed-off-by: memeka <mihailescu2m@gmail.com>
+---
+ xbmc/windowing/tests/wayland/WestonProcess.cpp | 48 ++++++++++++++++++--------
+ 1 file changed, 33 insertions(+), 15 deletions(-)
+
+diff --git a/xbmc/windowing/tests/wayland/WestonProcess.cpp b/xbmc/windowing/tests/wayland/WestonProcess.cpp
+index a230553..e40527a 100644
+--- a/xbmc/windowing/tests/wayland/WestonProcess.cpp
++++ b/xbmc/windowing/tests/wayland/WestonProcess.cpp
+@@ -19,9 +19,9 @@
+  */
+ #include <sstream>
+ #include <stdexcept>
++#include <list>
+ 
+-#include <boost/tokenizer.hpp>
+-
++#include <string.h>
+ #include <unistd.h>
+ #include <signal.h>
+ 
+@@ -34,6 +34,35 @@
+ 
+ namespace xt = xbmc::test;
+ 
++template<typename F>
++static void
++SplitForEach(const char *p, char separator, F &&f)
++{
++  while (true) {
++    const char *q = strchr(p, separator);
++    if (q == nullptr) {
++      if (*p != 0)
++        f(p);
++      break;
++    }
++
++    if (q > p)
++      f(std::string(p, q).c_str());
++
++    p = q + 1;
++  }
++}
++
++static std::list<std::string>
++Split(const char *p, char separator)
++{
++  std::list<std::string> list;
++
++  SplitForEach(p, separator, [&list](const char *token){
++      list.push_back(token);
++    });
++}
++
+ namespace
+ {
+ std::string
+@@ -42,21 +71,10 @@ FindBinaryFromPATH(const std::string &binary)
+   const char *pathEnvironmentCArray = getenv("PATH");
+   if (!pathEnvironmentCArray)
+     throw std::runtime_error("PATH is not set");
+-
+-  std::string pathEnvironment(pathEnvironmentCArray);
+-  
+-  typedef boost::char_separator<char> CharSeparator;
+-  typedef boost::tokenizer<CharSeparator> CharTokenizer;
+   
+-  CharTokenizer paths(pathEnvironment,
+-                      CharSeparator(":"));
+-
+-  for (CharTokenizer::iterator it = paths.begin();
+-       it != paths.end();
+-       ++it)
+-  {
++  for (const auto &path : Split(pathEnvironmentCArray, ':')) {
+     std::stringstream possibleBinaryLocationStream;
+-    possibleBinaryLocationStream << *it
++    possibleBinaryLocationStream << path
+                                  << "/"
+                                  << binary;
+     std::string possibleBinaryLocation(possibleBinaryLocationStream.str());
+-- 
+2.7.4
+

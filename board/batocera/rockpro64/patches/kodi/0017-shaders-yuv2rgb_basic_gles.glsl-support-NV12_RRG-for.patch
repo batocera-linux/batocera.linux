@@ -1,0 +1,53 @@
+From 7875445bac1bd27242ed4b269d0e984ebef2f2f1 Mon Sep 17 00:00:00 2001
+From: Max Kellermann <max@duempel.org>
+Date: Mon, 24 Apr 2017 14:38:06 +0200
+Subject: [PATCH 17/62] shaders/yuv2rgb_basic_gles.glsl: support NV12_RRG
+ format
+
+Fixes missing green channel when VA-API is used with GLES2.  This
+switch was already present in OpenGL, but not in GLES2.
+
+Signed-off-by: memeka <mihailescu2m@gmail.com>
+---
+ system/shaders/yuv2rgb_basic_gles.glsl                             | 7 +++++++
+ .../VideoPlayer/VideoRenderers/VideoShaders/YUV2RGBShader.cpp      | 2 ++
+ 2 files changed, 9 insertions(+)
+
+diff --git a/system/shaders/yuv2rgb_basic_gles.glsl b/system/shaders/yuv2rgb_basic_gles.glsl
+index 07bae91..82fa003 100644
+--- a/system/shaders/yuv2rgb_basic_gles.glsl
++++ b/system/shaders/yuv2rgb_basic_gles.glsl
+@@ -32,10 +32,17 @@ uniform mat4      m_yuvmat;
+ void main()
+ {
+   vec4 yuv, rgb;
++#if defined(XBMC_NV12_RRG)
++  yuv.rgba = vec4( texture2D(m_sampY, m_cordY).r
++                 , texture2D(m_sampU, m_cordU).r
++                 , texture2D(m_sampV, m_cordV).g
++                 , 1.0);
++#else
+   yuv.rgba = vec4( texture2D(m_sampY, m_cordY).r
+                  , texture2D(m_sampU, m_cordU).g
+                  , texture2D(m_sampV, m_cordV).a
+                  , 1.0);
++#endif
+ 
+   rgb   = m_yuvmat * yuv;
+   rgb.a = m_alpha;
+diff --git a/xbmc/cores/VideoPlayer/VideoRenderers/VideoShaders/YUV2RGBShader.cpp b/xbmc/cores/VideoPlayer/VideoRenderers/VideoShaders/YUV2RGBShader.cpp
+index 9cc3c42..3e549ae 100644
+--- a/xbmc/cores/VideoPlayer/VideoRenderers/VideoShaders/YUV2RGBShader.cpp
++++ b/xbmc/cores/VideoPlayer/VideoRenderers/VideoShaders/YUV2RGBShader.cpp
+@@ -245,6 +245,8 @@ BaseYUV2RGBGLSLShader::BaseYUV2RGBGLSLShader(bool rect, unsigned flags, ERenderF
+     m_defines += "#define XBMC_NV12\n";
+   else if (m_format == RENDER_FMT_CVBREF)
+     m_defines += "#define XBMC_YV12\n";
++  else if (m_format == RENDER_FMT_VAAPI)
++    m_defines += "#define XBMC_NV12_RRG\n";
+   else
+     CLog::Log(LOGERROR, "GL: BaseYUV2RGBGLSLShader - unsupported format %d", m_format);
+ 
+-- 
+2.7.4
+

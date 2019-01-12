@@ -256,7 +256,11 @@ endif
 
 # batocera
 ifeq ($(BR2_PACKAGE_KODI_GBM),y)
-KODI_DEPENDENCIES += mesa3d
+
+  ifeq ($(BR2_PACKAGE_MESA3D),y)
+    KODI_DEPENDENCIES += mesa3d
+  endif
+
 KODI_CONF_OPTS += -DENABLE_GBM=ON
 else
 KODI_CONF_OPTS += -DENABLE_GBM=OFF
