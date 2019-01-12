@@ -1,0 +1,32 @@
+From 4a9c18883f40702b145b173092c5c0a98b016491 Mon Sep 17 00:00:00 2001
+From: Max Kellermann <max@duempel.org>
+Date: Mon, 24 Apr 2017 14:38:06 +0200
+Subject: [PATCH 15/62] Video/VAAPI: make compatible with GLES2
+
+Signed-off-by: memeka <mihailescu2m@gmail.com>
+---
+ xbmc/cores/VideoPlayer/DVDCodecs/Video/VAAPI.cpp | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/xbmc/cores/VideoPlayer/DVDCodecs/Video/VAAPI.cpp b/xbmc/cores/VideoPlayer/DVDCodecs/Video/VAAPI.cpp
+index 2f65025..bf7b710 100644
+--- a/xbmc/cores/VideoPlayer/DVDCodecs/Video/VAAPI.cpp
++++ b/xbmc/cores/VideoPlayer/DVDCodecs/Video/VAAPI.cpp
+@@ -2375,12 +2375,14 @@ bool COutput::GLInit()
+   }
+ #endif
+ 
++#ifdef HAS_GL
+   if (!g_Windowing.IsExtSupported("GL_ARB_texture_non_power_of_two") &&
+        g_Windowing.IsExtSupported("GL_ARB_texture_rectangle"))
+   {
+     m_textureTarget = GL_TEXTURE_RECTANGLE_ARB;
+   }
+   else
++#endif
+     m_textureTarget = GL_TEXTURE_2D;
+ 
+   eglCreateImageKHR = (PFNEGLCREATEIMAGEKHRPROC)eglGetProcAddress("eglCreateImageKHR");
+-- 
+2.7.4
+

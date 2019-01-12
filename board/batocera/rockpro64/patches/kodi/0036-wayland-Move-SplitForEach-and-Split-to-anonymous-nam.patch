@@ -1,0 +1,50 @@
+From 652a7c7f41751684ebcf5e2b9729ef16573ef180 Mon Sep 17 00:00:00 2001
+From: Sam Spilsbury <smspillaz@gmail.com>
+Date: Mon, 24 Apr 2017 14:38:07 +0200
+Subject: [PATCH 36/62] wayland: Move SplitForEach and Split to anonymous
+ namespace
+
+Its essentially the same thing as static
+
+Signed-off-by: memeka <mihailescu2m@gmail.com>
+---
+ xbmc/windowing/tests/wayland/WestonProcess.cpp | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/xbmc/windowing/tests/wayland/WestonProcess.cpp b/xbmc/windowing/tests/wayland/WestonProcess.cpp
+index 1fba0cd..76d9646 100644
+--- a/xbmc/windowing/tests/wayland/WestonProcess.cpp
++++ b/xbmc/windowing/tests/wayland/WestonProcess.cpp
+@@ -34,8 +34,10 @@
+ 
+ namespace xt = xbmc::test;
+ 
++namespace
++{
+ template<typename F>
+-static void
++void
+ SplitForEach(const char *p, char separator, F &&f)
+ {
+   while (true) {
+@@ -53,7 +55,7 @@ SplitForEach(const char *p, char separator, F &&f)
+   }
+ }
+ 
+-static std::list<std::string>
++std::list<std::string>
+ Split(const char *p, char separator)
+ {
+   std::list<std::string> list;
+@@ -65,8 +67,6 @@ Split(const char *p, char separator)
+   return list;
+ }
+ 
+-namespace
+-{
+ std::string
+ FindBinaryFromPATH(const std::string &binary)
+ {
+-- 
+2.7.4
+
