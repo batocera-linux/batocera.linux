@@ -1,5 +1,9 @@
 #!/bin/bash
 
+soundDisabled() {
+    grep -qE "^[ ]*splashsound[ ]*=[ ]*false[ ]*$" /boot/recalbox-boot.conf
+}
+
 do_start ()
 {
     if test -f "/boot/splash.mp4"
@@ -33,7 +37,7 @@ do_start ()
         omx_srt="--no-ghost-box --lines=1 --align=left $omx_fnt --font-size=20 --subtitles=/recalbox/system/resources/splash/splash.srt"
 
 	omx_nosound=
-	if grep -qE "^[ ]*splashsound[ ]*=[ ]*false[ ]*$" /boot/recalbox-boot.conf
+	if soundDisabled
 	then
 	    omx_nosound="-n -1"
 	fi
@@ -66,7 +70,12 @@ do_start ()
             dbus-send --print-reply=literal --session --dest=org.mpris.MediaPlayer2.omxplayer /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.Action int32:15 >/dev/null
         fi
     elif [[ -f $video && -f /usr/bin/ffplay ]]; then
-	/usr/bin/ffplay -autoexit -loglevel 0 "$video" &
+	ffplay_opt=
+	if soundDisabled
+	then
+	    ffplay_opt=-an
+	fi
+	/usr/bin/ffplay $ffplay_opt -autoexit -loglevel 0 "$video" &
 	PID=$!
 	# Wait for emulationstation or Kodi, but not more than 20 seconds
         count=0
