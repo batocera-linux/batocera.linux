@@ -2,9 +2,6 @@ default:
   options:
     video_threaded: true
 
-snes:
-  emulator: libretro
-  core: snes9x_next
 n64:
-  emulator: libretro
+  emulator: mupen64plus
   core: glide64mk2
