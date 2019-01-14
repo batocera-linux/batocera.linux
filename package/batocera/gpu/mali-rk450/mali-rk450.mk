@@ -34,6 +34,7 @@ define MALI_RK450_INSTALL_STAGING_CMDS
 
 	cp -pr $(@D)/include $(MALI_RK450_STAGING_DIR)/usr
 	cp package/batocera/gpu/mali-rk450/gbm.pc $(MALI_RK450_STAGING_DIR)/usr/lib/pkgconfig/gbm.pc
+	cp package/batocera/gpu/mali-rk450/egl.pc $(MALI_RK450_STAGING_DIR)/usr/lib/pkgconfig/egl.pc
 endef
 
 define MALI_RK450_INSTALL_TARGET_CMDS
