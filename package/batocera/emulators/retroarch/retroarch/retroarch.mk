@@ -25,6 +25,10 @@ else
 	endif
 endif
 
+ifeq ($(BR2_PACKAGE_LIBDRM),y)
+RETROARCH_CONF_OPTS += --enable-kms
+endif
+
 # RPI 0 and 1
 ifeq ($(BR2_arm1176jzf_s),y)
         RETROARCH_CONF_OPTS += --enable-floathard
@@ -87,15 +91,11 @@ else
 RETROARCH_CONF_OPTS += --disable-opengles
 endif
 
-ifeq ($(BR2_PACKAGE_MALI_RK450),y)
-RETROARCH_CONF_OPTS += --disable-egl
-else
-  ifeq ($(BR2_PACKAGE_HAS_LIBEGL),y)
+ifeq ($(BR2_PACKAGE_HAS_LIBEGL),y)
 RETROARCH_CONF_OPTS += --enable-egl
 RETROARCH_DEPENDENCIES += libegl
-  else
+else
 RETROARCH_CONF_OPTS += --disable-egl
-  endif
 endif
 
 ifeq ($(BR2_PACKAGE_HAS_LIBOPENVG),y)
