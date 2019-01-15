@@ -512,6 +512,13 @@ colecovision:
 
     Valider que le fichier coleco.rom (md5sum = 2c66f5911e5b42b8ebe113403548eee7) est bien dans le répertoire /bios/Machines/COL - ColecoVision/
 
+atari800:
+  name:       Atari 800
+  extensions: [rom, xfd, atr, atx, cdm, cas, bin, a52, xex, zip]
+  emulators:
+    libretro:
+      atari800: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_ATARI800] }
+
 atari2600:
   name:       Atari 2600
   extensions: [7z, a26, bin, gz, rom, zip]
