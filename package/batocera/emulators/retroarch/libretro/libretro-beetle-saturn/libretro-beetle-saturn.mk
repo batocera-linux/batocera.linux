@@ -9,11 +9,11 @@ LIBRETRO_BEETLE_SATURN_SITE = $(call github,libretro,beetle-saturn-libretro,$(LI
 
 define LIBRETRO_BEETLE_SATURN_BUILD_CMDS
 	CFLAGS="$(TARGET_CFLAGS)" CXXFLAGS="$(TARGET_CXXFLAGS)" \
-        $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" LD="$(TARGET_CXX)" RANLIB="$(TARGET_RANLIB)" AR="$(TARGET_AR)" -C $(@D) -f Makefile platform="$(LIBRETRO_PLATFORM)"
+        $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" LD="$(TARGET_CXX)" RANLIB="$(TARGET_RANLIB)" AR="$(TARGET_AR)" -C $(@D) -f Makefile HAVE_OPENGL=1 platform="$(LIBRETRO_PLATFORM)"
 endef
 
 define LIBRETRO_BEETLE_SATURN_INSTALL_TARGET_CMDS
-	$(INSTALL) -D $(@D)/mednafen_saturn_libretro.so \
+	$(INSTALL) -D $(@D)/mednafen_saturn_hw_libretro.so \
 		$(TARGET_DIR)/usr/lib/libretro/beetle-saturn_libretro.so
 endef
 
