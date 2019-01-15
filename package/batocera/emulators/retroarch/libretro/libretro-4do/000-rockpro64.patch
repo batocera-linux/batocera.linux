@@ -1,0 +1,15 @@
+diff --git a/Makefile b/Makefile
+index fb19dde..5368119 100644
+--- a/Makefile
++++ b/Makefile
+@@ -91,6 +91,10 @@ ifneq (,$(findstring unix,$(platform)))
+         endif
+     endif
+ 
++    # RockPro64
++    else ifneq (,$(findstring rockpro64,$(platform)))        
++	     CFLAGS += -marm -mfloat-abi=hard -mcpu=cortex-a72 -mtune=cortex-a72.cortex-a53 -mfpu=neon-fp-armv8 -mvectorize-with-neon-quad -march=armv7-a
++
+ else ifeq ($(platform), osx)
+    TARGET := $(TARGET_NAME)_libretro.dylib
+    fpic := -fPIC
