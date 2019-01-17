@@ -23,6 +23,10 @@ menu "System"
     source "package/batocera/fonts/nanum-font/Config.in"
   endmenu
 
+  menu "Arch"
+    source "package/batocera/arch/firmware-rockpro64/Config.in"
+  endmenu
+
   menu "Gpu"
     source "package/batocera/gpu/android-headers/Config.in"
     source "package/batocera/gpu/gpu-aml/Config.in"
