@@ -4,14 +4,9 @@
 #
 ################################################################################
 
-ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86)$(BR2_PACKAGE_BATOCERA_TARGET_X86_64),y)
-       # Version.: Commits on Nov 10, 2018
-       LIBRETRO_MUPEN64PLUS_VERSION = a4fbedf5c30db1761812627cbb4923cef8bb92b4
-else 
-       # for rpi2, rpi3 and odroid because the next commit breaks and has lost performance.
-       # Version.: Commits on Jul 28, 2018
-       LIBRETRO_MUPEN64PLUS_VERSION = 4ca2fa8633666e26e2f163dcd3c226b598cb2aa4       
-endif
+# for rpi2, rpi3 and odroid because the next commit breaks and has lost performance.
+# Version.: Commits on Jul 28, 2018
+LIBRETRO_MUPEN64PLUS_VERSION = 4ca2fa8633666e26e2f163dcd3c226b598cb2aa4       
 
 LIBRETRO_MUPEN64PLUS_SITE = $(call github,libretro,mupen64plus-libretro,$(LIBRETRO_MUPEN64PLUS_VERSION))
 
@@ -39,12 +34,15 @@ else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_S912),y)
 else ifeq ($(BR2_x86_i586),y)
        LIBRETRO_MUPEN64PLUS_SUPP_OPT=ARCH=i586
        LIBRETRO_MUPEN64PLUS_PLATFORM=linux
+else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_ROCKPRO64),y)
+       LIBRETRO_MUPEN64PLUS_PLATFORM=rockpro64
 else
        LIBRETRO_MUPEN64PLUS_PLATFORM=$(LIBRETRO_PLATFORM)
 endif
 
 define LIBRETRO_MUPEN64PLUS_BUILD_CMDS
-       CFLAGS="$(TARGET_CFLAGS)" CXXFLAGS="$(TARGET_CXXFLAGS)" $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" -C $(@D)/ -f Makefile platform="$(LIBRETRO_MUPEN64PLUS_PLATFORM)" $(LIBRETRO_MUPEN64PLUS_SUPP_OPT)
+       CFLAGS="$(TARGET_CFLAGS)" CXXFLAGS="$(TARGET_CXXFLAGS)" CPPFLAGS="$(TARGET_CPPFLAGS)" \
+              $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" LD="$(TARGET_CXX)" RANLIB="$(TARGET_RANLIB)" AR="$(TARGET_AR)" -C $(@D)/ -f Makefile platform="$(LIBRETRO_MUPEN64PLUS_PLATFORM)" $(LIBRETRO_MUPEN64PLUS_SUPP_OPT)
 endef
 
 define LIBRETRO_MUPEN64PLUS_INSTALL_TARGET_CMDS
