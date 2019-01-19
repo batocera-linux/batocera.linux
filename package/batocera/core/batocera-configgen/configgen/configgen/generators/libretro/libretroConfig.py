@@ -115,6 +115,14 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
         retroarchConfig['input_libretro_device_p1'] = '513'
         retroarchConfig['input_libretro_device_p2'] = '513'
 
+    # Emulator Atari800 option for roms Atari800
+    if (system.name == 'atari800'):
+        coreSettings.save('atari800_system', '400/800 (OS B)')
+
+    # Emulator Atari800 option for roms Atari5200
+    if (system.name == 'atari5200'):
+        coreSettings.save('atari800_system', '5200')
+
     retroarchConfig['cheevos_enable'] = 'false'
     retroarchConfig['cheevos_hardcore_mode_enable'] = 'false'
     retroarchConfig['cheevos_leaderboards_enable'] = 'false'
