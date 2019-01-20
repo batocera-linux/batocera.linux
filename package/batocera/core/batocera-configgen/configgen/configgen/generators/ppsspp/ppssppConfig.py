@@ -22,6 +22,7 @@ def writePPSSPPConfigDefault():
         f.write("[Graphics]\n")
         f.write("FrameSkip = 0\n")
         f.write("ShowFPSCounter = 0\n")
+        f.write("FrameSkipType = 0\n")
         f.close()
 
 def createPPSSPPConfig(system):
@@ -38,6 +39,11 @@ def createPPSSPPConfig(system):
         ppssppConfig['FrameSkip'] = '1'
     else:
         ppssppConfig['FrameSkip'] = '0'
+
+    if system.isOptSet('frameskiptype'):
+        ppssppConfig['FrameSkipType'] = system.config["frameskiptype"]
+    else:
+        ppssppConfig['FrameSkipType'] = '0'
 
     return ppssppConfig
 
