@@ -1,10 +1,9 @@
 #!/usr/bin/env python
-
 import ConfigParser
 import StringIO
 import os
 import re
-import utils.eslog as eslog
+from configgen.utils.logger import eslog
 
 __source__ = os.path.basename(__file__)
 
@@ -17,7 +16,7 @@ class UnixSettings():
         self.comment = defaultComment
 
         # use ConfigParser as backend.
-        eslog.log("{0}: Creating parser for {1}".format(__source__, self.settingsFile))
+        eslog.debug("{0}: Creating parser for {1}".format(__source__, self.settingsFile))
         self.config = ConfigParser.ConfigParser()
         try:
             # TODO: remove me when we migrate to Python 3
@@ -29,22 +28,25 @@ class UnixSettings():
 
             self.config.readfp(file)
         except IOError, e:
-            eslog.log("{0}: {1}".format(__source__, str(e)))
+            eslog.debug("{0}: {1}".format(__source__, str(e)))
 
-
-    def load(self, name, default=None):
-        eslog.log("{0}: Looking for {1} in {2}".format(__source__, name, self.settingsFile))
-        return self.config.get('DEFAULT', name, default)
-
-    def save(self, name, value):
-        eslog.log("{0}: Writing {1} = {2} to {3}".format(__source__, name, value, self.settingsFile))
-        # TODO: should we call loadAll first?
-        # TODO: do we need proper section support? PSP config is an ini file
-        self.config.set('DEFAULT', name, str(value))
+    def write(self):
         fp = open(self.settingsFile, 'w')
         for (key, value) in self.config.items('DEFAULT'):
             fp.write("{0}{2}={2}{1}\n".format(key, str(value), self.separator))
         fp.close()
+
+    def load(self, name, default=None):
+        eslog.debug("{0}: Looking for {1} in {2}".format(__source__, name, self.settingsFile))
+        return self.config.get('DEFAULT', name, default)
+
+    def save(self, name, value):
+        eslog.debug("{0}: Writing {1} = {2} to {3}".format(__source__, name, value, self.settingsFile))
+        # TODO: should we call loadAll first?
+        # TODO: do we need proper section support? PSP config is an ini file
+        self.config.set('DEFAULT', name, str(value))
+        # TODO: do we need to call write() on every save()?
+        self.write()
 
     def disable(self, name):
         raise Exception
@@ -52,7 +54,8 @@ class UnixSettings():
         self.config.remove(name)
 
     def disableAll(self, name):
-        eslog.log("{0}: Disabling all options from {1}".format(__source__, self.settingsFile))
+        # TODO: do we need to call write() after disableAll()?
+        eslog.debug("{0}: Disabling all options from {1}".format(__source__, self.settingsFile))
         # TODO: check if is ok to remove whole DEFAULT section
         self.config.remove_section('DEFAULT')
 
@@ -61,7 +64,7 @@ class UnixSettings():
         self.config.remove_option('DEFAULT', name)
 
     def loadAll(self, name):
-        eslog.log("{0}: Looking for {1}.* in {2}".format(__source__, name, self.settingsFile))
+        eslog.debug("{0}: Looking for {1}.* in {2}".format(__source__, name, self.settingsFile))
         res = dict()
         for (key, value) in self.config.items('DEFAULT'):
             m = re.match(r"^" + name + "\.(.+)", key)

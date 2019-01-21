@@ -31,7 +31,7 @@ import os
 import subprocess
 import json
 import utils.videoMode as videoMode
-import utils.eslog as eslog
+from utils.logger import eslog
 
 generators = {
     'fba2x': Fba2xGenerator(),
@@ -221,8 +221,7 @@ if __name__ == '__main__':
         exitcode = -1
         exitcode = main(args)
     except Exception as e:
-        eslog.log("configgen exception: ")
-        eslog.logtrace()
+        eslog.error("configgen exception: ", exc_info=True)
     time.sleep(1) # this seems to be required so that the gpu memory is restituated and available for es
     eslog.log("Exiting configgen with status {}".format(str(exitcode)))
     exit(exitcode)

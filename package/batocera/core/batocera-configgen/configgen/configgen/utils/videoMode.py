@@ -7,7 +7,7 @@ from settings.unixSettings import UnixSettings
 import time
 import subprocess
 import json
-import eslog
+from logger import eslog
 
 # Set a specific video mode
 def changeMode(videomode):
