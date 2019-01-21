@@ -23,6 +23,7 @@ def writePPSSPPConfigDefault():
         f.write("FrameSkip = 0\n")
         f.write("ShowFPSCounter = 0\n")
         f.write("FrameSkipType = 0\n")
+        f.write("InternalResolution = 1\n")
         f.close()
 
 def createPPSSPPConfig(system):
@@ -44,6 +45,11 @@ def createPPSSPPConfig(system):
         ppssppConfig['FrameSkipType'] = system.config["frameskiptype"]
     else:
         ppssppConfig['FrameSkipType'] = '0'
+
+    if system.isOptSet('internalresolution'):
+        ppssppConfig['InternalResolution'] = system.config["internalresolution"]
+    else:
+        ppssppConfig['InternalResolution'] = '1'
 
     return ppssppConfig
 
