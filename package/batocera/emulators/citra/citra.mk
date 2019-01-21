@@ -3,8 +3,8 @@
 # CITRA
 #
 ################################################################################
-# Version.: Commits on Jan 16, 2019
-CITRA_VERSION = e1d1dcdcd93004b656e9c10eed7d9ff35604ee45
+# Version.: Commits on Sep 30, 2018
+CITRA_VERSION = 9d142f981dd4810085355b0659173d2cb0a12e7f
 CITRA_SITE = https://github.com/citra-emu/citra.git
 CITRA_SITE_METHOD=git
 CITRA_GIT_SUBMODULES=YES
@@ -20,7 +20,7 @@ CITRA_CONF_OPTS += -DENABLE_WEB_SERVICE=OFF
 CITRA_CONF_OPTS += -DTHREADS_PREFER_PTHREAD_FLAG0=ON
 
 define CITRA_INSTALL_TARGET_CMDS
-	$(INSTALL) -D $(@D)/buildroot-build/bin/citra \
+	$(INSTALL) -D $(@D)/buildroot-build/src/citra/citra \
 		$(TARGET_DIR)/usr/bin/citra
 	
 	cp -pr $(@D)/buildroot-build/externals/inih/*.so \
@@ -29,8 +29,6 @@ define CITRA_INSTALL_TARGET_CMDS
 	cp -pr $(@D)/buildroot-build/externals/cubeb/*.so \
 		$(TARGET_DIR)/usr/lib/
 
-	cp -pr $(@D)/buildroot-build/externals/teakra/src/*.so \
-		$(TARGET_DIR)/usr/lib/
 endef
 
 $(eval $(cmake-package))
