@@ -43,7 +43,7 @@ NVIDIA_DRIVER_LIBS_MISC = \
 	libnvidia-egl-wayland.so.1.1.0 \
 	libnvidia-glcore.so.$(NVIDIA_DRIVER_VERSION) \
 	libnvidia-glsi.so.$(NVIDIA_DRIVER_VERSION) \
-	tls/libnvidia-tls.so.$(NVIDIA_DRIVER_VERSION) \
+	libnvidia-tls.so.$(NVIDIA_DRIVER_VERSION) \
 	libvdpau_nvidia.so.$(NVIDIA_DRIVER_VERSION) \
 	libnvidia-ml.so.$(NVIDIA_DRIVER_VERSION)
 
@@ -61,7 +61,7 @@ NVIDIA_DRIVER_32 = \
 	libnvidia-eglcore.so.$(NVIDIA_DRIVER_VERSION) \
 	libnvidia-glcore.so.$(NVIDIA_DRIVER_VERSION) \
 	libnvidia-glsi.so.$(NVIDIA_DRIVER_VERSION) \
-	tls/libnvidia-tls.so.$(NVIDIA_DRIVER_VERSION) \
+	libnvidia-tls.so.$(NVIDIA_DRIVER_VERSION) \
 	libvdpau_nvidia.so.$(NVIDIA_DRIVER_VERSION) \
 	libnvidia-ml.so.$(NVIDIA_DRIVER_VERSION)
 
