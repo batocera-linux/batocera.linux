@@ -31,6 +31,7 @@ recalboxBins = {'dosbox'      : '/usr/bin/dosbox'
               , 'pcsx2'       : '/usr/PCSX/bin/PCSX2'
               , 'pcsx2_avx2'  : '/usr/PCSX_AVX2/bin/PCSX2'
               , 'advancemame' : '/usr/bin/advmame'
+              , 'citra'       : '/usr/bin/citra'
 }
 
 
