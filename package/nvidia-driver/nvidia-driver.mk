@@ -208,15 +208,14 @@ define NVIDIA_DRIVER_INSTALL_TARGET_CMDS
 	$(INSTALL) -D -m 0644 $(@D)/10_nvidia.json \
 		$(TARGET_DIR)/usr/share/glvnd/egl_vendor.d/10_nvidia.json
 
-	$(INSTALL) -D -m 0644 $(@D)/nvidia-drm-outputclass.conf \
+	$(INSTALL) -D -m 0644 package/nvidia-driver/nvidia-drm-outputclass.conf \
 		$(TARGET_DIR)/usr/share/X11/xorg.conf.d/10-nvidia-drm-outputclass.conf
 
-	$(INSTALL) -D -m 0644 $(@D)/libglxserver_nvidia.so.$(NVIDIA_DRIVER_VERSION) \
-	 	$(TARGET_DIR)/usr/lib/xorg/modules/extensions/libglxserver_nvidia.so.$(NVIDIA_DRIVER_VERSION)
-	ln -sf libglxserver_nvidia.so.$(NVIDIA_DRIVER_VERSION) \
-	 	$(TARGET_DIR)/usr/lib/xorg/modules/extensions/libglxserver_nvidia.so
-	ln -sf libglxserver_nvidia.so.$(NVIDIA_DRIVER_VERSION) \
-	 	$(TARGET_DIR)/usr/lib/xorg/modules/extensions/libglxserver_nvidia.so.1
+	# GLX extension module for X
+    $(INSTALL) -D -m755 $(@D)/libglx.so.$(NVIDIA_DRIVER_VERSION) \
+		$(TARGET_DIR)/usr/lib/nvidia/xorg/libglx.so.$(NVIDIA_DRIVER_VERSION)
+    ln -s libglx.so.$(NVIDIA_DRIVER_VERSION) $(TARGET_DIR)/usr/lib/nvidia/xorg/libglx.so.1
+    ln -s libglx.so.$(NVIDIA_DRIVER_VERSION) $(TARGET_DIR)/usr/lib/nvidia/xorg/libglx.so
 
 endef
 
