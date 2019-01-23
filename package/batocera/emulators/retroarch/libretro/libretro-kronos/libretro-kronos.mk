@@ -3,8 +3,8 @@
 # LIBRETRO-KRONOS
 #
 ################################################################################
-# Version.: Commits on Dec 25, 2018
-LIBRETRO_KRONOS_VERSION = 8ba32ca31cb26a816ea61fcfa6a86668dfe6d1ee
+# Version.: Commits on Jan 11, 2019
+LIBRETRO_KRONOS_VERSION = 958d215b4d5262f3ef8a066cc03ef9db848abb75
 LIBRETRO_KRONOS_SITE = $(call github,libretro-mirrors,Kronos,$(LIBRETRO_KRONOS_VERSION))
 
 define LIBRETRO_KRONOS_BUILD_CMDS
