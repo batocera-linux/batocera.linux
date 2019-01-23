@@ -468,6 +468,13 @@ neogeo:
     fba2x:
       fba2x:     { requireAnyOf: [BR2_PACKAGE_PIFBA]             }
 
+neogeocd:
+  name:       Neo-Geo CD
+  extensions: [cue]
+  emulators:
+    libretro:
+      fba:       { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FBA]      }
+
 colecovision:
   name:       ColecoVision
   extensions: [bin, col, rom, zip]
