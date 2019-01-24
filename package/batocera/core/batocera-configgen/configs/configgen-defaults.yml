@@ -82,11 +82,15 @@ naomi:
 neogeo:
   emulator: libretro
   core:     fba
+neogeocd:
+  emulator: libretro
+  core:     fba
 mame:
   emulator: libretro
   core:     mame078
 fba:
-  emulator: fba2x
+  emulator: libretro
+  core:     fba
 fba_libretro:
   emulator: libretro
   core:     fba
@@ -146,7 +150,7 @@ odyssey2:
   core:     o2em
 zx81:
   emulator: libretro
-  core:     81
+  core:     '81'
 dos:
   emulator: dosbox
   options:
@@ -209,6 +213,9 @@ atari5200:
 atari7800:
   emulator: libretro
   core:     prosystem
+atari800:
+  emulator: libretro
+  core:     atari800
 prboom:
   emulator: libretro
   core:     prboom

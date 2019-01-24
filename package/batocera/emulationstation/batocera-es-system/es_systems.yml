@@ -283,7 +283,7 @@ pcengine:
   emulators:
     libretro:
       mednafen_supergrafx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BEETLE_SUPERGRAFX] }
-      pce:                 { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PCE]               }
+      pce:                 { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BEETLE_PCE]        }
 
 pcenginecd:
   name:       PC Engine CD
@@ -291,7 +291,7 @@ pcenginecd:
   emulators:
     libretro:
       mednafen_supergrafx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BEETLE_SUPERGRAFX] }
-      pce:                 { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PCE]               }
+      pce:                 { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BEETLE_PCE]        }
 
 supergrafx:
   name:       Supergrafx
@@ -299,7 +299,7 @@ supergrafx:
   emulators:
     libretro:
       mednafen_supergrafx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BEETLE_SUPERGRAFX] }
-      pce:                 { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PCE]               }
+      pce:                 { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BEETLE_PCE]        }
 
 pcfx:
   name:       PC-FX
@@ -468,6 +468,13 @@ neogeo:
     fba2x:
       fba2x:     { requireAnyOf: [BR2_PACKAGE_PIFBA]             }
 
+neogeocd:
+  name:       Neo-Geo CD
+  extensions: [cue]
+  emulators:
+    libretro:
+      fba:       { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FBA]      }
+
 colecovision:
   name:       ColecoVision
   extensions: [bin, col, rom, zip]
@@ -511,6 +518,13 @@ colecovision:
     Extraire de ce dernier, les répertoire "Databases" et "Machines" et les ajouter dans le répertoire bios.
 
     Valider que le fichier coleco.rom (md5sum = 2c66f5911e5b42b8ebe113403548eee7) est bien dans le répertoire /bios/Machines/COL - ColecoVision/
+
+atari800:
+  name:       Atari 800
+  extensions: [rom, xfd, atr, atx, cdm, cas, bin, a52, xex, zip]
+  emulators:
+    libretro:
+      atari800: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_ATARI800] }
 
 atari2600:
   name:       Atari 2600

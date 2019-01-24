@@ -3,8 +3,8 @@
 # CITRA
 #
 ################################################################################
-# Version.: Commits on Dec 9, 2018
-CITRA_VERSION = 80f1076a07ff3a7a312d6a19ad2e67bddee19665
+# Version.: Commits on Sep 30, 2018
+CITRA_VERSION = 9d142f981dd4810085355b0659173d2cb0a12e7f
 CITRA_SITE = https://github.com/citra-emu/citra.git
 CITRA_SITE_METHOD=git
 CITRA_GIT_SUBMODULES=YES
@@ -17,17 +17,18 @@ CITRA_CONF_OPTS  = -DENABLE_QT=OFF
 CITRA_CONF_OPTS += -DENABLE_SDL2=ON
 CITRA_CONF_OPTS += -DCMAKE_BUILD_TYPE=Release
 CITRA_CONF_OPTS += -DENABLE_WEB_SERVICE=OFF
-CITRA_CONF_OPTS += -DTHREADS_PTHREAD_ARG=OFF
+CITRA_CONF_OPTS += -DTHREADS_PREFER_PTHREAD_FLAG0=ON
 
 define CITRA_INSTALL_TARGET_CMDS
-	$(INSTALL) -D $(@D)/buildroot-build/bin/citra \
+	$(INSTALL) -D $(@D)/buildroot-build/src/citra/citra \
 		$(TARGET_DIR)/usr/bin/citra
 	
-	$(INSTALL) -D $(@D)/buildroot-build/externals/inih/libinih.so \
-		$(TARGET_DIR)/usr/lib/libinih.so
+	cp -pr $(@D)/buildroot-build/externals/inih/*.so \
+		$(TARGET_DIR)/usr/lib/
 
-	$(INSTALL) -D $(@D)/buildroot-build/externals/cubeb/libcubeb.so \
-		$(TARGET_DIR)/usr/lib/libcubeb.so
+	cp -pr $(@D)/buildroot-build/externals/cubeb/*.so \
+		$(TARGET_DIR)/usr/lib/
+
 endef
 
 $(eval $(cmake-package))

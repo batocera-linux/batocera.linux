@@ -4,15 +4,10 @@
 #
 ################################################################################
 
-ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI2)$(BR2_PACKAGE_BATOCERA_TARGET_RPI3),y)
-       # for rpi2, rpi3 because the next commit breaks and has lost performance.
-       # Version.: Commits on Aug 8, 2018 
-       LIBRETRO_PARALLEL_N64_VERSION = ab155da18068f638e5ace2e5e6f7387bddc3511b              
-else       
-       # Version.: Commits on Dec 13, 2018
-       LIBRETRO_PARALLEL_N64_VERSION = 7e204b0fda06185fd4d5a134cdd3b14996c29687
-endif
-
+# for rpi2, rpi3 and odroid because the next commit breaks and has lost performance.
+# Version.: Commits on Aug 8, 2018 
+LIBRETRO_PARALLEL_N64_VERSION = ab155da18068f638e5ace2e5e6f7387bddc3511b              
+       
 LIBRETRO_PARALLEL_N64_SITE = $(call github,libretro,parallel-n64,$(LIBRETRO_PARALLEL_N64_VERSION))
 
 ifeq ($(BR2_PACKAGE_RPI_USERLAND),y)
@@ -39,12 +34,15 @@ else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_S912),y)
 else ifeq ($(BR2_x86_i586),y)
        LIBRETRO_PARALLEL_N64_SUPP_OPT=ARCH=i386
        LIBRETRO_PARALLEL_N64_PLATFORM=unix
+else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_ROCKPRO64),y)
+       LIBRETRO_PARALLEL_N64_PLATFORM=rockpro64
 else
        LIBRETRO_PARALLEL_N64_PLATFORM=$(LIBRETRO_PLATFORM)
 endif
 
 define LIBRETRO_PARALLEL_N64_BUILD_CMDS
-       CFLAGS="$(TARGET_CFLAGS)" CXXFLAGS="$(TARGET_CXXFLAGS)" $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" -C $(@D)/ -f Makefile platform="$(LIBRETRO_PARALLEL_N64_PLATFORM)" $(LIBRETRO_PARALLEL_N64_SUPP_OPT)
+       CFLAGS="$(TARGET_CFLAGS)" CXXFLAGS="$(TARGET_CXXFLAGS)" \
+              $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" LD="$(TARGET_CXX)" RANLIB="$(TARGET_RANLIB)" AR="$(TARGET_AR)" -C $(@D)/ -f Makefile platform="$(LIBRETRO_PARALLEL_N64_PLATFORM)" $(LIBRETRO_PARALLEL_N64_SUPP_OPT)
 endef
 
 define LIBRETRO_PARALLEL_N64_INSTALL_TARGET_CMDS

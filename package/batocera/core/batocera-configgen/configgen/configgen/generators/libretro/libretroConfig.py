@@ -30,10 +30,10 @@ coreToP1Device = {'cap32': '513', '81': '257', 'fuse': '513'};
 coreToP2Device = {'fuse': '513'};
 
 # Define systems compatible with retroachievements
-systemToRetroachievements = {'snes', 'nes', 'gba', 'gb', 'gbc', 'megadrive', 'mastersystem', 'pcengine', 'lynx', 'ngp', 'atari2600', 'virtualboy', 'neogeo'};
+systemToRetroachievements = {'snes', 'nes', 'gba', 'gb', 'gbc', 'megadrive', 'mastersystem', 'pcengine', 'lynx', 'ngp', 'atari2600', 'virtualboy', 'neogeo', 'neogeocd'};
 
 # Define systems not compatible with rewind option
-systemNoRewind = {'sega32x', 'psx', 'zxspectrum', 'odyssey2', 'mame', 'n64', 'dreamcast', 'naomi'};
+systemNoRewind = {'sega32x', 'psx', 'zxspectrum', 'odyssey2', 'mame', 'n64', 'dreamcast', 'naomi', 'neogeocd'};
 
 # Define system emulated by bluemsx core
 systemToBluemsx = {'msx': '"MSX2"', 'msx1': '"MSX2"', 'msx2': '"MSX2"', 'colecovision': '"COL - ColecoVision"' };
@@ -114,6 +114,14 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
     if system.config['core'] == 'atari800':
         retroarchConfig['input_libretro_device_p1'] = '513'
         retroarchConfig['input_libretro_device_p2'] = '513'
+
+    # Emulator Atari800 option for roms Atari800
+    if (system.name == 'atari800'):
+        coreSettings.save('atari800_system', '400/800 (OS B)')
+
+    # Emulator Atari800 option for roms Atari5200
+    if (system.name == 'atari5200'):
+        coreSettings.save('atari800_system', '5200')
 
     retroarchConfig['cheevos_enable'] = 'false'
     retroarchConfig['cheevos_hardcore_mode_enable'] = 'false'

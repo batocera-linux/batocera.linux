@@ -1,0 +1,18 @@
+MRFIXIT: Limit the main thread to execution on the BIG cores only - big boost in performance
+--- a/SDL/SDLMain.cpp
++++ b/SDL/SDLMain.cpp
+@@ -340,6 +340,14 @@
+ #undef main
+ #endif
+ int main(int argc, char *argv[]) {
++
++	cpu_set_t cpu_set;
++	CPU_ZERO(&cpu_set);
++	CPU_SET(4, &cpu_set);
++	CPU_SET(5, &cpu_set);
++	int temp = pthread_setaffinity_np(pthread_self(), sizeof(cpu_set_t), &cpu_set);
++	printf("setaffinity=%d\n", temp);
++
+ 	for (int i = 1; i < argc; i++) {
+ 		if (!strcmp(argv[i], "--version")) {
+ 			printf("%s\n", PPSSPP_GIT_VERSION);

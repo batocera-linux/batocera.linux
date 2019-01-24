@@ -21,6 +21,7 @@ config BR2_PACKAGE_BATOCERA_EMULATIONSTATION
 	select BR2_PACKAGE_LIBCURL
 	select BR2_PACKAGE_XMLSTARLET
 	select BR2_PACKAGE_NANUM_FONT
+	select BR2_PACKAGE_FPING
         help
           A multi emulator frontend.
 

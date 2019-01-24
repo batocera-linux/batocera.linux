@@ -1,0 +1,29 @@
+From cd10b58d4638ed1a314185430c2fa2fe1351c8ea Mon Sep 17 00:00:00 2001
+From: Max Kellermann <max@duempel.org>
+Date: Mon, 24 Apr 2017 14:38:06 +0200
+Subject: [PATCH 19/62] lib/gtest: use only FUSED_GTEST_SRC for fused-gtest
+ dependency
+
+Fix out-of-tree build due to VPATH breakage.
+
+Signed-off-by: memeka <mihailescu2m@gmail.com>
+---
+ lib/gtest/Makefile.am | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/lib/gtest/Makefile.am b/lib/gtest/Makefile.am
+index 9c96b42..3f565fd 100644
+--- a/lib/gtest/Makefile.am
++++ b/lib/gtest/Makefile.am
+@@ -273,7 +273,7 @@ test_fused_gtest_test_CPPFLAGS = -I"$(srcdir)/fused-src"
+ # Build rules for putting fused Google Test files into the distribution
+ # package. The user can also create those files by manually running
+ # scripts/fuse_gtest_files.py.
+-$(test_fused_gtest_test_SOURCES): fused-gtest
++$(FUSED_GTEST_SRC): fused-gtest
+ 
+ fused-gtest: $(pkginclude_HEADERS) $(pkginclude_internal_HEADERS) \
+              $(GTEST_SRC) src/gtest-all.cc src/gtest_main.cc \
+-- 
+2.7.4
+

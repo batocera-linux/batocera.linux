@@ -101,7 +101,7 @@ mountDeviceOrFallback() {
 	    then
 		if mkdir -p "${RECALBOXFULLFS}/recalbox"
 		then
-		    if mount "${RECALBOXFULLFS}/recalbox" "/recalbox/share" -o "noatime"
+		    if mount "${RECALBOXFULLFS}/recalbox" "/userdata" -o "noatime"
 		    then
 			FALLBACK=0
 		    fi
@@ -112,9 +112,9 @@ mountDeviceOrFallback() {
 
     if test "${FALLBACK}" = 1
     then
-	if ! /recalbox/scripts/recalbox-mount.sh "${INTERNALDEVICETYPE}" 1 "${INTERNALDEVICE}" /recalbox/share
+	if ! /recalbox/scripts/recalbox-mount.sh "${INTERNALDEVICETYPE}" 1 "${INTERNALDEVICE}" /userdata
 	then
-	    mount -t tmpfs -o size=128M tmpfs /recalbox/share
+	    mount -t tmpfs -o size=128M tmpfs /userdata
 	fi
     fi
 }
@@ -156,7 +156,7 @@ EOF
 	    then
 		# sed the replace by the secure value in recalbox.conf
 		settings_key=$(/recalbox/scripts/recalbox-encode.sh encode "${settings_key}")
-		sed -i -e s@'^[ \t]*wifi.key[ \t]*=.*$'@"wifi.key=${settings_key}"@ "/recalbox/share/system/recalbox.conf"
+		sed -i -e s@'^[ \t]*wifi.key[ \t]*=.*$'@"wifi.key=${settings_key}"@ "/userdata/system/recalbox.conf"
 	    fi
 	fi
     fi
@@ -192,12 +192,12 @@ mountNetwork() {
     # sharenetwork_smb1=SHARE@192.168.0.1:Documents/recalbox:guest
     #
     # Advanced commands : sharenetwork_cmd<[0-9]>=<command to run>
-    # sharenetwork_cmd1=mount -o port=2049,nolock,proto=tcp 192.168.0.1:/Documents/recalbox /recalbox/share
+    # sharenetwork_cmd1=mount -o port=2049,nolock,proto=tcp 192.168.0.1:/Documents/recalbox /userdata
     # or
-    # sharenetwork_cmd1=mount -o port=2049,nolock,proto=tcp 192.168.0.1:/Documents/recalbox/roms /recalbox/share/roms
-    # sharenetwork_cmd2=mount -o port=2049,nolock,proto=tcp 192.168.0.1:/Documents/recalbox/saves /recalbox/share/saves
+    # sharenetwork_cmd1=mount -o port=2049,nolock,proto=tcp 192.168.0.1:/Documents/recalbox/roms /userdata/roms
+    # sharenetwork_cmd2=mount -o port=2049,nolock,proto=tcp 192.168.0.1:/Documents/recalbox/saves /userdata/saves
     # or
-    # sharenetwork_cmd1=mount.cifs //192.168.0.1/recalbox /recalbox/share -o guest
+    # sharenetwork_cmd1=mount.cifs //192.168.0.1/recalbox /userdata -o guest
 
 
     # execute all commands in /boot/recalbox-boot.conf which are like : sharenetwork_cmd1=my command
@@ -223,19 +223,19 @@ mountNetwork() {
 			CMD_OPT=$(echo "${CMD}" | sed -e s+'^[^@]*@[^:]*:[^:]*'+''+ -e s+'^:'++)
 
 			# MAP to the recalbox directory
-			CMD_TDIR="/recalbox/share"
+			CMD_TDIR="/userdata"
 			case "${CMD_TARGET}" in
 			    "SHARE")
-				CMD_TDIR="/recalbox/share"
+				CMD_TDIR="/userdata"
 			    ;;
 			    "ROMS")
-				CMD_TDIR="/recalbox/share/roms"
+				CMD_TDIR="/userdata/roms"
 			    ;;
 			    "SAVES")
-				CMD_TDIR="/recalbox/share/saves"
+				CMD_TDIR="/userdata/saves"
 			    ;;
 			    "BIOS")
-				CMD_TDIR="/recalbox/share/bios"
+				CMD_TDIR="/userdata/bios"
 			    ;;
 			esac
 
@@ -315,20 +315,20 @@ case "${MODE}" in
 	rb_wifi_configure_all& # configure the wifi at the end
 	;;
     "RAM")
-	mount -t tmpfs -o size=128M tmpfs /recalbox/share
+	mount -t tmpfs -o size=128M tmpfs /userdata
 	;;
     "NETWORK")
 	# first, INTERNAL mount, then, network mount over the NETWORK mounts
-	# to allow to mount over /recalbox/share, but only over /recalbox/share/roms if wanted
+	# to allow to mount over /userdata, but only over /userdata/roms if wanted
 	# mounting network mounts over usb key have not really sense
-	if /recalbox/scripts/recalbox-mount.sh "${INTERNALDEVICETYPE}" 1 "${INTERNALDEVICE}" /recalbox/share
+	if /recalbox/scripts/recalbox-mount.sh "${INTERNALDEVICETYPE}" 1 "${INTERNALDEVICE}" /userdata
 	then
 	    # we try to configure the wifi here
 	    # for people using the internal device for the wifi and some others mounts for data
 	    rb_wifi_configure_all
 	else
 	    # fallback
-	    mount -t tmpfs -o size=128M tmpfs /recalbox/share
+	    mount -t tmpfs -o size=128M tmpfs /userdata
 	fi
 
 	# Network mounts
@@ -336,22 +336,22 @@ case "${MODE}" in
 	mountNetwork > /tmp/mountNetwork.log 2> /tmp/mountNetwork.err # could be usefull to debug
 	;;
     "INTERNAL"|*)
-	if ! /recalbox/scripts/recalbox-mount.sh "${INTERNALDEVICETYPE}" 1 "${INTERNALDEVICE}" /recalbox/share
+	if ! /recalbox/scripts/recalbox-mount.sh "${INTERNALDEVICETYPE}" 1 "${INTERNALDEVICE}" /userdata
 	then
 	    # fallback
 	    # the internal partition is no more required in fact
-	    mount -t tmpfs -o size=128M tmpfs /recalbox/share
+	    mount -t tmpfs -o size=128M tmpfs /userdata
 	fi
 	rb_wifi_configure_all& # configure the wifi at the end
 	;;
 esac
 
 # share upgrade, just unzip share.zip from upgrade, no need to reboot
-if test -e "/recalbox/share/system/upgrade/share.zip"
+if test -e "/userdata/system/upgrade/share.zip"
 then
-    (cd /recalbox/share && unzip -o /recalbox/share/system/upgrade/share.zip) > /recalbox/share/system/upgrade/upgrade.share.out.log 2> /recalbox/share/system/upgrade/upgrade.share.err.log
+    (cd /userdata && unzip -o /userdata/system/upgrade/share.zip) > /userdata/system/upgrade/upgrade.share.out.log 2> /userdata/system/upgrade/upgrade.share.err.log
     # always remove to not apply indefinitly
-    rm -f /recalbox/share/system/upgrade/share.zip
+    rm -f /userdata/system/upgrade/share.zip
 fi
 
 # now, let mount delayed usbmount devices

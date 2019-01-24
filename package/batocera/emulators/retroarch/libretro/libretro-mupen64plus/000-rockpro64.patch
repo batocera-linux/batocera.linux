@@ -1,0 +1,22 @@
+diff --git a/Makefile b/Makefile
+index 3efb820..5269c48 100644
+--- a/Makefile
++++ b/Makefile
+@@ -115,6 +115,17 @@ else ifneq (,$(findstring odroid,$(platform)))
+       CPUFLAGS += -mcpu=cortex-a9
+    endif
+ 
++# RockPro64
++else ifneq (,$(findstring rockpro64,$(platform)))
++   TARGET := $(TARGET_NAME)_libretro.so
++   LDFLAGS += -shared -Wl,--version-script=$(LIBRETRO_DIR)/link.T -Wl,--no-undefined
++   GLES = 1
++   GL_LIB := -lGLESv2
++   CPUFLAGS += -marm -mfloat-abi=hard -mfpu=neon
++   HAVE_NEON = 1
++   WITH_DYNAREC=arm
++   CPUFLAGS += -march=armv7ve -mcpu=cortex-a72 -mtune=cortex-a72.cortex-a53
++
+ # OS X
+ else ifneq (,$(findstring osx,$(platform)))
+    TARGET := $(TARGET_NAME)_libretro.dylib

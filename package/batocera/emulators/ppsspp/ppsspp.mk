@@ -3,8 +3,8 @@
 # PPSSPP
 #
 ################################################################################
-# Version.: Commits on Nov 23, 2018
-PPSSPP_VERSION = v1.7.4
+# Version.: Wed Jan 16 23:03:24 2019 +0100
+PPSSPP_VERSION = 90a45deabda02b333faa399cc31fd7b82982ad3f
 PPSSPP_SITE = https://github.com/hrydgard/ppsspp.git
 PPSSPP_SITE_METHOD=git
 PPSSPP_GIT_SUBMODULES=YES
@@ -44,13 +44,18 @@ ifeq ($(BR2_PACKAGE_RPI_USERLAND),y)
 	PPSSPP_CONF_OPTS += -DRASPBIAN=ON -DUSING_FBDEV=ON -DUSING_GLES2=ON -DUSING_EGL=ON -DUSING_X11_VULKAN=OFF
 endif
 
-# odroid xu4 / rpi3
+# odroid xu4 / rpi3 / rockpro64
 ifeq ($(BR2_arm),y)
 	PPSSPP_CONF_OPTS += -DARMV7=ON
 endif
 
 # s912 (libhybris)
 ifeq ($(BR2_PACKAGE_LIBHYBRIS),y)
+	PPSSPP_CONF_OPTS += -DUSING_FBDEV=ON -DUSING_GLES2=ON -DUSING_EGL=OFF -DUSING_X11_VULKAN=OFF
+endif
+
+# rockpro64
+ifeq ($(BR2_PACKAGE_MALI_RK450),y)
 	PPSSPP_CONF_OPTS += -DUSING_FBDEV=ON -DUSING_GLES2=ON -DUSING_EGL=OFF -DUSING_X11_VULKAN=OFF
 endif
 

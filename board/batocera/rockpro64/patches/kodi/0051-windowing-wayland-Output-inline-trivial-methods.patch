@@ -1,0 +1,161 @@
+From 96a02face4513260f0bec1231fd2a6d82e7e45ca Mon Sep 17 00:00:00 2001
+From: Max Kellermann <max.kellermann@gmail.com>
+Date: Mon, 24 Apr 2017 14:38:08 +0200
+Subject: [PATCH 51/62] windowing/wayland/Output: inline trivial methods
+
+Signed-off-by: memeka <mihailescu2m@gmail.com>
+---
+ xbmc/windowing/wayland/Output.cpp | 45 ---------------------------------------
+ xbmc/windowing/wayland/Output.h   | 32 ++++++++++++++++++++++------
+ 2 files changed, 25 insertions(+), 52 deletions(-)
+
+diff --git a/xbmc/windowing/wayland/Output.cpp b/xbmc/windowing/wayland/Output.cpp
+index 5ad2f91..bebaa80 100644
+--- a/xbmc/windowing/wayland/Output.cpp
++++ b/xbmc/windowing/wayland/Output.cpp
+@@ -21,8 +21,6 @@
+ #include <iostream>
+ #include <stdexcept>
+ 
+-#include <wayland-client.h>
+-
+ #include "Output.h"
+ 
+ namespace xw = xbmc::wayland;
+@@ -45,17 +43,6 @@ xw::Output::Output(struct wl_output *output) :
+                          reinterpret_cast<void *>(this));
+ }
+ 
+-xw::Output::~Output()
+-{
+-  wl_output_destroy(m_output);
+-}
+-
+-struct wl_output *
+-xw::Output::GetWlOutput()
+-{
+-  return m_output;
+-}
+-
+ /* It is a precondition violation to use CurrentMode() and
+  * PreferredMode() before output modes have arrived yet, use
+  * a synchronization function to ensure that this is the case */
+@@ -79,24 +66,6 @@ xw::Output::PreferredMode()
+   return m_preferred;
+ }
+ 
+-const std::vector <xw::Output::ModeGeometry> &
+-xw::Output::AllModes()
+-{
+-  return m_modes;
+-}
+-
+-const xw::Output::PhysicalGeometry &
+-xw::Output::Geometry()
+-{
+-  return m_geometry;
+-}
+-
+-uint32_t
+-xw::Output::ScaleFactor()
+-{
+-  return m_scaleFactor;
+-}
+-
+ void
+ xw::Output::GeometryCallback(void *data,
+                              struct wl_output *output,
+@@ -232,17 +201,3 @@ xw::Output::Mode(uint32_t flags,
+     m_preferredValid = true;
+   }
+ }
+-
+-void
+-xw::Output::Done()
+-{
+-}
+-
+-/* This function is called whenever the scaling factor for this
+- * output changes. It there for clients to support HiDPI displays,
+- * although unused as of present */
+-void
+-xw::Output::Scale(int32_t factor)
+-{
+-  m_scaleFactor = factor;
+-}
+diff --git a/xbmc/windowing/wayland/Output.h b/xbmc/windowing/wayland/Output.h
+index 8653d6f..0e9645f 100644
+--- a/xbmc/windowing/wayland/Output.h
++++ b/xbmc/windowing/wayland/Output.h
+@@ -32,7 +32,9 @@ struct Output
+ public:
+ 
+   Output(struct wl_output *);
+-  ~Output();
++  ~Output() {
++    wl_output_destroy(m_output);
++  }
+ 
+   Output(const Output &) = delete;
+   Output &operator=(const Output &) = delete;
+@@ -54,7 +56,9 @@ public:
+     enum wl_output_transform outputTransformation;
+   };
+ 
+-  struct wl_output * GetWlOutput();
++  struct wl_output * GetWlOutput() {
++    return m_output;
++  }
+ 
+   /* It is a precondition violation to use the following four
+    * functions when the first modes have not yet been received.
+@@ -74,10 +78,14 @@ public:
+    * of this size in order to avoid scaling. */
+   const ModeGeometry & PreferredMode();
+ 
+-  const std::vector <ModeGeometry> & AllModes();
++  const std::vector <ModeGeometry> & AllModes() const {
++    return m_modes;
++  }
+ 
+   /* The geometry represents the physical geometry of this monitor */
+-  const PhysicalGeometry & Geometry();
++  const PhysicalGeometry & Geometry() const {
++    return m_geometry;
++  }
+   
+   /* The scale factor of this output is an integer value representing
+    * the number of output pixels per hardware pixel. For instance,
+@@ -86,7 +94,9 @@ public:
+    * "2". This is useful for supporting HiDPI display modes where,
+    * for instance we allocate a 3360x2100 buffer but display our UI
+    * elements at 1680x1050 */
+-  uint32_t ScaleFactor();
++  uint32_t ScaleFactor() const {
++    return m_scaleFactor;
++  }
+ 
+   static void GeometryCallback(void *,
+                                struct wl_output *,
+@@ -126,8 +136,16 @@ private:
+             int32_t width,
+             int32_t height,
+             int32_t refresh);
+-  void Scale(int32_t);
+-  void Done();
++
++  /* This function is called whenever the scaling factor for this
++   * output changes. It there for clients to support HiDPI displays,
++   * although unused as of present */
++  void Scale(int32_t factor) {
++    m_scaleFactor = factor;
++  }
++
++  void Done() {
++  }
+ 
+   struct wl_output *m_output;
+ 
+-- 
+2.7.4
+

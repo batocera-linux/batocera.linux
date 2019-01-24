@@ -39,8 +39,8 @@ systems = {
 														{ "md5": "ce6a86574d0c9de9075705f14e99d090", "file": "bios/ProSystem.dat"     } ] },
     "atarist":   { "name": "Atari ST", "biosFiles":   [ { "md5": "b2a8570de2e850c5acf81cb80512d9f6", "file": "bios/tos.img"           } ] },
 
-    "dreamcast": { "name": "Dreamcast", "biosFiles": [ { "md5": "d407fcf70b56acb84b8c77c93b0e5327", "file": "bios/dc_boot.bin"  },
-													   { "md5": "93a9766f14159b403178ac77417c6b68", "file": "bios/dc_flash.bin" },
+    "dreamcast": { "name": "Dreamcast", "biosFiles": [ { "md5": "e10c53c2f8b90bab96ead2d368858623", "file": "bios/dc_boot.bin"  },
+													   { "md5": "0a93f7940c455905bea6e392dfde92a4", "file": "bios/dc_flash.bin" },
 													   { "md5": "4bffb9b29b9aeb29aa618f3891a300ce", "file": "bios/dc_nvmem.bin" } ] },
 
     "naomi": { "name": "Naomi", "biosFiles": [ { "md5": "3bffafac42a7767d8dcecf771f5552ba", "file": "bios/naomi_boot.bin" } ] },
@@ -89,6 +89,9 @@ systems = {
 
 	"neogeo": { "name": "NeoGeo", "biosFiles": [ { "md5": "", "file": "roms/neogeo/neogeo.zip" } ] },
 
+	"neogeocd": { "name": "NeoGeo CD", "biosFiles": [ { "md5": "", "file": "roms/neogeocd/neogeo.zip" }, 
+													  { "md5": "", "file": "roms/neogeocd/neocdz.zip" }	] },
+
 	"o2em": { "name": "Odyssey 2", "biosFiles": [ { "md5": "562d5ebf9e030a40d6fabfc2f33139fd", "file": "bios/o2rom.bin" },
 												  { "md5": "f1071cdb0b6b10dde94d3bc8a6146387", "file": "bios/c52.bin"   },
 												  { "md5": "c500ff71236068e0dc0d0603d265ae76", "file": "bios/g7400.bin" },
@@ -112,10 +115,7 @@ systems = {
 										   { "md5": "44552702b05697a14ccbe2ca22ee7139", "file": "bios/rom1.bin" },
 										   { "md5": "b406d05922dac2eaf3c2e68157b1b468", "file": "bios/ROM2.BIN" } ] },
 
-	"psx": { "name": "PSX", "biosFiles": [ { "md5": "924e392ed05558ffdb115408c263dccf", "file": "bios/SCPH1001.BIN" },
-										   { "md5": "239665b1a3dade1b5a52c06338011044", "file": "bios/SCPH1000.BIN" },
-										   { "md5": "490f666e1afb15b7362b406ed1cea246", "file": "bios/SCPH7003.BIN" },
-										   { "md5": "8dd7d5296a650fac7319bce665a6a53c", "file": "bios/scph5500.bin" },
+	"psx": { "name": "PSX", "biosFiles": [ { "md5": "8dd7d5296a650fac7319bce665a6a53c", "file": "bios/scph5500.bin" },
 										   { "md5": "490f666e1afb15b7362b406ed1cea246", "file": "bios/scph5501.bin" },
 										   { "md5": "32736f17079d0b2b7024407c39bd3050", "file": "bios/scph5502.bin" } ] },
 

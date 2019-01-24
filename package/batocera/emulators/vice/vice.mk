@@ -3,8 +3,8 @@
 # Vice Emulation
 #
 ################################################################################
-# Version.: May 20, 2018
-VICE_VERSION = 3.2
+# Version.: Dec 20, 2018
+VICE_VERSION = 3.3
 VICE_SOURCE = vice-$(VICE_VERSION).tar.gz
 VICE_SITE = https://freefr.dl.sourceforge.net/project/vice-emu/releases
 
@@ -16,7 +16,6 @@ VICE_CONF_OPTS += --disable-option-checking
 VICE_DEPENDENCIES += ffmpeg
 VICE_CONF_OPTS += --enable-external-ffmpeg
 
-VICE_CONF_OPTS += --enable-sdlui2
 VICE_CONF_OPTS += --enable-midi
 VICE_CONF_OPTS += --enable-lame
 VICE_CONF_OPTS += --with-alsa

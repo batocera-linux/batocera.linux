@@ -1,0 +1,54 @@
+From 8495a05d73fbc555a36c6ac346acd4f1559039d0 Mon Sep 17 00:00:00 2001
+From: Max Kellermann <max.kellermann@gmail.com>
+Date: Mon, 24 Apr 2017 14:38:09 +0200
+Subject: [PATCH 55/62] windowing/wayland/Seat: inline trivial methods
+
+Signed-off-by: memeka <mihailescu2m@gmail.com>
+---
+ xbmc/windowing/wayland/Seat.cpp | 7 -------
+ xbmc/windowing/wayland/Seat.h   | 4 +++-
+ 2 files changed, 3 insertions(+), 8 deletions(-)
+
+diff --git a/xbmc/windowing/wayland/Seat.cpp b/xbmc/windowing/wayland/Seat.cpp
+index 69baa09..c38de02 100644
+--- a/xbmc/windowing/wayland/Seat.cpp
++++ b/xbmc/windowing/wayland/Seat.cpp
+@@ -21,8 +21,6 @@
+ #include <iostream>
+ #include <stdexcept>
+ 
+-#include <wayland-client.h>
+-
+ #include "Seat.h"
+ 
+ namespace xw = xbmc::wayland;
+@@ -43,11 +41,6 @@ xw::Seat::Seat(struct wl_seat *seat,
+   wl_seat_add_listener(m_seat, &m_listener, reinterpret_cast<void *>(this));
+ }
+ 
+-xw::Seat::~Seat()
+-{
+-  wl_seat_destroy(m_seat);
+-}
+-
+ void xw::Seat::HandleCapabilitiesCallback(void *data,
+                                           struct wl_seat *seat,
+                                           uint32_t cap)
+diff --git a/xbmc/windowing/wayland/Seat.h b/xbmc/windowing/wayland/Seat.h
+index 07e3060..45c367b 100644
+--- a/xbmc/windowing/wayland/Seat.h
++++ b/xbmc/windowing/wayland/Seat.h
+@@ -44,7 +44,9 @@ public:
+ 
+   Seat(struct wl_seat *,
+        IInputReceiver &);
+-  ~Seat();
++  ~Seat() {
++    wl_seat_destroy(m_seat);
++  }
+ 
+   Seat(const Seat &) = delete;
+   Seat &operator=(const Seat &) = delete;
+-- 
+2.7.4
+

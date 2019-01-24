@@ -6,6 +6,11 @@ config BR2_LINUX_KERNEL
 	  Enable this option if you want to build a Linux kernel for
 	  your embedded device
 
+# batocera
+config BR2_LINUX_AARCH64_KERNEL_IN_ARM_USER
+ 	bool "aarch64 bit kernel in arm32 bit userland"
+ 	select BR2_TOOLCHAIN_OPTIONAL_LINARO_AARCH64
+
 if BR2_LINUX_KERNEL
 
 comment "Linux kernel in thumb mode may be broken with binutils >= 2.29"

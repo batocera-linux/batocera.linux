@@ -1,0 +1,14 @@
+diff --git a/src/connect.c b/src/connect.c
+index 6c09c3f..d0c9e2c 100644
+--- a/src/connect.c
++++ b/src/connect.c
+@@ -476,7 +476,8 @@ int ssh_select(ssh_channel *channels, ssh_channel *outchannels, socket_t maxfd,
+     fd_set *readfds, struct timeval *timeout) {
+   fd_set origfds;
+   socket_t fd;
+-  int i,j;
++  int i;
++  unsigned int j;
+   int rc;
+   int base_tm, tm;
+   struct ssh_timestamp ts;

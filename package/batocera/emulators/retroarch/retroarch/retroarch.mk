@@ -25,6 +25,10 @@ else
 	endif
 endif
 
+ifeq ($(BR2_PACKAGE_LIBDRM),y)
+RETROARCH_CONF_OPTS += --enable-kms
+endif
+
 # RPI 0 and 1
 ifeq ($(BR2_arm1176jzf_s),y)
         RETROARCH_CONF_OPTS += --enable-floathard
@@ -40,6 +44,11 @@ endif
 
 # odroid xu4
 ifeq ($(BR2_cortex_a15),y)
+        RETROARCH_CONF_OPTS += --enable-neon --enable-floathard
+endif
+
+# rockpro64
+ifeq ($(BR2_cortex_a72_a53),y)
         RETROARCH_CONF_OPTS += --enable-neon --enable-floathard
 endif
 
@@ -168,6 +177,10 @@ ifeq ($(BR2_cortex_a8),y)
 endif
 
 ifeq ($(BR2_cortex_a15),y)
+        LIBRETRO_PLATFORM += armv7
+endif
+
+ifeq ($(BR2_arm)$(BR2_cortex_a72_a53),yy)
         LIBRETRO_PLATFORM += armv7
 endif
 
