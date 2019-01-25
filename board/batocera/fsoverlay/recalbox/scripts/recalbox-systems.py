@@ -119,11 +119,12 @@ systems = {
 										   { "md5": "490f666e1afb15b7362b406ed1cea246", "file": "bios/scph5501.bin" },
 										   { "md5": "32736f17079d0b2b7024407c39bd3050", "file": "bios/scph5502.bin" } ] },
 
-	"saturn": { "name": "Sega Saturn", "biosFiles": [ { "md5": "af5828fdff51384f99b3c4926be27762", "file": "bios/saturn_bios.bin"  },
-													  { "md5": "85ec9ca47d8f6807718151cbcca8b964", "file": "bios/sega_101.bin"     },
-													  { "md5": "3240872c70984b6cbfda1586cab68dbe", "file": "bios/mpr-17933.bin"    },
-													  { "md5": "255113ba943c92a54facd25a10fd780c", "file": "bios/mpr-18811-mx.ic1" },
-													  { "md5": "1cd19988d1d72a3e7caa0b73234c96b4", "file": "bios/mpr-19367-mx.ic1" } ] },
+	"saturn": { "name": "Sega Saturn", "biosFiles": [ { "md5": "af5828fdff51384f99b3c4926be27762", "file": "bios/saturn_bios.bin"	},
+													  { "md5": "85ec9ca47d8f6807718151cbcca8b964", "file": "bios/sega_101.bin"		},
+													  { "md5": "3240872c70984b6cbfda1586cab68dbe", "file": "bios/mpr-17933.bin"		},
+													  { "md5": "255113ba943c92a54facd25a10fd780c", "file": "bios/mpr-18811-mx.ic1"	},
+													  { "md5": "1cd19988d1d72a3e7caa0b73234c96b4", "file": "bios/mpr-19367-mx.ic1"	},
+													  { "md5": "53a094ad3a188f86de4e64624fe9b3ca", "file": "bios/stvbios.zip"		}] },
 
     "sega32x": { "name": "Sega 32x", "biosFiles": [ { "md5": "e66fa1dc5820d254611fdcdba0662372", "file": "bios/bios_CD_E.bin" },
 													{ "md5": "854b9150240a198070150e4566ae1290", "file": "bios/bios_CD_U.bin" },
