@@ -19,6 +19,7 @@ endif
 
 define LIBRETRO_MAME2016_BUILD_CMDS
         mkdir -p "$(@D)/3rdparty/genie/build/gmake.linux/obj/Release/src/host"
+	mkdir -p "$(@D)/build/gmake/libretro/obj/x64/libretro/src/osd/retro"
 	CFLAGS="$(TARGET_CFLAGS)" CXXFLAGS="$(TARGET_CXXFLAGS)" \
         $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" LD="$(TARGET_LD)" RANLIB="$(TARGET_RANLIB)" AR="$(TARGET_AR)" -C $(@D)/ -f Makefile.libretro $(LIBRETRO_MAME2016_PLATFORM) platform="$(LIBRETRO_PLATFORM)"
 endef
