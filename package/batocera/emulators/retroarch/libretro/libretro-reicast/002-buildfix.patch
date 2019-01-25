@@ -1,0 +1,30 @@
+diff -Naur reicast-a2a14be/Makefile reicast.patch/Makefile
+--- reicast-a2a14be/Makefile	2018-08-12 16:28:43.398877322 +0200
++++ reicast.patch/Makefile	2018-08-12 16:04:39.396217020 +0200
+@@ -21,18 +21,12 @@
+ TARGET_NAME   := reicast
+ endif
+ 
+-CXX      = ${CC_PREFIX}g++
+-CC       = ${CC_PREFIX}gcc
+-CC_AS    = ${CC_PREFIX}as
+ 
+ MFLAGS   := 
+ ASFLAGS  := 
+-LDFLAGS  :=
+ LDFLAGS_END :=
+ INCFLAGS :=
+ LIBS     :=
+-CFLAGS   := 
+-CXXFLAGS :=
+ 
+ GIT_VERSION := " $(shell git rev-parse --short HEAD || echo unknown)"
+ ifneq ($(GIT_VERSION)," unknown")
+@@ -604,7 +598,7 @@
+ PREFIX        ?= /usr/local
+ 
+ ifneq (,$(findstring arm, $(ARCH)))
+-	CC_AS    = ${CC_PREFIX}gcc #The ngen_arm.S must be compiled with gcc, not as
++	CC_AS    = ${CC_PREFIX}${CC} #The ngen_arm.S must be compiled with gcc, not as
+ 	ASFLAGS  += $(CFLAGS)
+ endif
