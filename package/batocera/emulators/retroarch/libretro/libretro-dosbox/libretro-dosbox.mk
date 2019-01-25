@@ -3,13 +3,17 @@
 # DOSBOX
 #
 ################################################################################
-# Version.: Commits on Sep 30, 2018
-LIBRETRO_DOSBOX_VERSION = 8f2d7318b6e66e397448a5905b30bc4f92de7133
+# Version.: Commits on Nov 26, 2018
+LIBRETRO_DOSBOX_VERSION = 7216efe33153f028573ad68a843d897bdb11a69c
 LIBRETRO_DOSBOX_SITE = $(call github,libretro,dosbox-libretro,$(LIBRETRO_DOSBOX_VERSION))
+
+ifeq ($(BR2_arm),y)
+	LIBRETRO_DOSBOX_CONF_OPTS = WITH_DYNAREC=arm
+endif
 
 define LIBRETRO_DOSBOX_BUILD_CMDS
 	CFLAGS="$(TARGET_CFLAGS)" CXXFLAGS="$(TARGET_CXXFLAGS)" \
-        $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" LD="$(TARGET_LD)" RANLIB="$(TARGET_RANLIB)" AR="$(TARGET_AR)" -C $(@D)/ -f Makefile.libretro platform="$(LIBRETRO_PLATFORM)"
+        $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" LD="$(TARGET_LD)" RANLIB="$(TARGET_RANLIB)" AR="$(TARGET_AR)" -C $(@D)/ -f Makefile.libretro 
 endef
 
 define LIBRETRO_DOSBOX_INSTALL_TARGET_CMDS
