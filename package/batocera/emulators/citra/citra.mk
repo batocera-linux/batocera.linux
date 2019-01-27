@@ -18,13 +18,15 @@ CITRA_CONF_OPTS += -DENABLE_SDL2=ON
 CITRA_CONF_OPTS += -DCMAKE_BUILD_TYPE=Release
 CITRA_CONF_OPTS += -DENABLE_WEB_SERVICE=OFF
 
+CITRA_CONF_ENV += LDFLAGS=-lpthread
+
 define CITRA_INSTALL_TARGET_CMDS
         mkdir -p $(TARGET_DIR)/usr/bin
         mkdir -p $(TARGET_DIR)/usr/lib
 
 	$(INSTALL) -D $(@D)/buildroot-build/src/citra/citra \
 		$(TARGET_DIR)/usr/bin/citra
-	
+
 	cp -pr $(@D)/buildroot-build/externals/inih/*.so \
 		$(TARGET_DIR)/usr/lib/
 
