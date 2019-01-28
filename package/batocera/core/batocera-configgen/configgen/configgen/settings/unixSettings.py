@@ -16,7 +16,7 @@ class UnixSettings():
         self.comment = defaultComment
 
         # use ConfigParser as backend.
-        eslog.debug("{0}: Creating parser for {1}".format(__source__, self.settingsFile))
+        eslog.debug("Creating parser for {0}".format(self.settingsFile))
         self.config = ConfigParser.ConfigParser()
         try:
             # TODO: remove me when we migrate to Python 3
@@ -28,7 +28,7 @@ class UnixSettings():
 
             self.config.readfp(file)
         except IOError, e:
-            eslog.debug("{0}: {1}".format(__source__, str(e)))
+            eslog.debug(str(e))
 
     def write(self):
         fp = open(self.settingsFile, 'w')
@@ -37,11 +37,11 @@ class UnixSettings():
         fp.close()
 
     def load(self, name, default=None):
-        eslog.debug("{0}: Looking for {1} in {2}".format(__source__, name, self.settingsFile))
+        eslog.debug("Looking for {0} in {1}".format(name, self.settingsFile))
         return self.config.get('DEFAULT', name, default)
 
     def save(self, name, value):
-        eslog.debug("{0}: Writing {1} = {2} to {3}".format(__source__, name, value, self.settingsFile))
+        eslog.debug("Writing {0} = {1} to {2}".format(name, value, self.settingsFile))
         # TODO: should we call loadAll first?
         # TODO: do we need proper section support? PSP config is an ini file
         self.config.set('DEFAULT', name, str(value))
@@ -54,17 +54,18 @@ class UnixSettings():
         self.config.remove(name)
 
     def disableAll(self, name):
-        # TODO: do we need to call write() after disableAll()?
-        eslog.debug("{0}: Disabling all options from {1}".format(__source__, self.settingsFile))
-        # TODO: check if is ok to remove whole DEFAULT section
-        self.config.remove_section('DEFAULT')
+        eslog.debug("Disabling {0} from {1}".format(name, self.settingsFile))
+        for (key, value) in self.config.items('DEFAULT'):
+            m = re.match(r"^" + name, key)
+            if m:
+                self.config.remove_option('DEFAULT', key)
 
     def remove(self, name):
         raise Exception
         self.config.remove_option('DEFAULT', name)
 
     def loadAll(self, name):
-        eslog.debug("{0}: Looking for {1}.* in {2}".format(__source__, name, self.settingsFile))
+        eslog.debug("Looking for {0}.* in {1}".format(name, self.settingsFile))
         res = dict()
         for (key, value) in self.config.items('DEFAULT'):
             m = re.match(r"^" + name + "\.(.+)", key)
