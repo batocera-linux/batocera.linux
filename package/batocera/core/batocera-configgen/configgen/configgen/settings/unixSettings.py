@@ -37,8 +37,11 @@ class UnixSettings():
         fp.close()
 
     def load(self, name, default=None):
-        eslog.debug("Looking for {0} in {1}".format(name, self.settingsFile))
-        return self.config.get('DEFAULT', name, default)
+        try:
+            eslog.debug("Looking for {0} in {1}".format(name, self.settingsFile))
+            return self.config.get('DEFAULT', name, default)
+        except ConfigParser.NoOptionError, e:
+            return None
 
     def save(self, name, value):
         eslog.debug("Writing {0} = {1} to {2}".format(name, value, self.settingsFile))
