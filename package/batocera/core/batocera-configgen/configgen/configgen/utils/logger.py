@@ -135,7 +135,7 @@ class Logger(object):
             format='%(asctime)s %(levelname)s %(message)s',
             datefmt='%Y-%m-%d %H:%M:%S')
 
-Logger.basicConfig(level=DEBUG)
+Logger.basicConfig(level=INFO)
 eslog = Logger()
 
 if __name__ == '__main__':
