@@ -1,0 +1,13 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 2797d18..ff16b09 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -191,7 +191,7 @@ if (NOT Boost_FOUND)
+ endif()
+ 
+ # Prefer the -pthread flag on Linux.
+-set(THREADS_PREFER_PTHREAD_FLAG ON)
++set(THREADS_PREFER_PTHREAD_FLAG OFF)
+ find_package(Threads REQUIRED)
+ 
+ if (ENABLE_SDL2)

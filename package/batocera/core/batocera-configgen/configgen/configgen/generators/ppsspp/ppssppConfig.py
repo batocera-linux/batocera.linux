@@ -17,6 +17,8 @@ def writePPSSPPConfig(system):
 
 def writePPSSPPConfigDefault():
     if not os.path.exists(recalboxFiles.ppssppConfig):
+        if not os.path.exists(os.path.dirname(recalboxFiles.ppssppConfig)):
+            os.makedirs(os.path.dirname(recalboxFiles.ppssppConfig))
         # write default values template, so that the rest of the config can set values
         f = open(recalboxFiles.ppssppConfig, "w")
         f.write("[Graphics]\n")
