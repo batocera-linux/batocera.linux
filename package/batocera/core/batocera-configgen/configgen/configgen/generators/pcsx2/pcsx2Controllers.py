@@ -72,19 +72,19 @@ def writeKey(f, nplayer, x, key, padInputs):
     reversedAxis = False
     if key == "joystick1down":
         reversedAxis = True
-        key = "joystick1up"
+        configkey = "joystick1up"
     elif key == "joystick1right":
         reversedAxis = True
-        key = "joystick1left"
+        configkey = "joystick1left"
     elif key == "joystick2down":
         reversedAxis = True
-        key = "joystick2up"
+        configkey = "joystick2up"
     elif key == "joystick2right":
         reversedAxis = True
-        key = "joystick2left"
+        configkey = "joystick2left"
 
-    if key in padInputs:
-        input = padInputs[key]
+    if configkey in padInputs:
+        input = padInputs[configkey]
         #f.write("# key: name="+input.name+", type="+input.type+", id="+str(input.id)+", value="+str(input.value)+"\n")
         if input.type == "button":
             f.write("[{}][{}] = 0x{:02x}\n".format(nplayer, x, button_to_key(input.id)))
