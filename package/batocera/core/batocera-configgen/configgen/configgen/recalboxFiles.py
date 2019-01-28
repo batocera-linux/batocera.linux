@@ -7,6 +7,7 @@ SAVES = '/recalbox/share/saves'
 SCREENSHOTS = '/recalbox/share/screenshots'
 BIOS = '/recalbox/share/bios'
 OVERLAYS = '/recalbox/share/overlays'
+CACHE = '/recalbox/share/system/cache'
 
 esInputs = HOME + '/.emulationstation/es_input.cfg'
 esSettings = HOME + '/.emulationstation/es_settings.cfg'
@@ -31,6 +32,7 @@ recalboxBins = {'dosbox'      : '/usr/bin/dosbox'
               , 'pcsx2'       : '/usr/PCSX/bin/PCSX2'
               , 'pcsx2_avx2'  : '/usr/PCSX_AVX2/bin/PCSX2'
               , 'advancemame' : '/usr/bin/advmame'
+              , 'citra'       : '/usr/bin/citra'
 }
 
 
@@ -96,6 +98,8 @@ ppssppControlsIni = ppssppConf + '/controls.ini'
 ppssppControls = CONF + '/ppsspp/gamecontrollerdb.txt'
 ppssppControlsInit = HOME_INIT + 'configs/ppsspp/PSP/SYSTEM/controls.ini'
 ppssppConfig = ppssppConf + '/ppsspp.ini'
+
+citraConfig = CONF + '/citra-emu/sdl2-config.ini'
 
 dosboxCustom = CONF + '/dosbox'
 dosboxConfig = dosboxCustom + '/dosbox.conf'
