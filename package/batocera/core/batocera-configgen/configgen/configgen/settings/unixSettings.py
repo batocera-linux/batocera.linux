@@ -42,15 +42,13 @@ class UnixSettings():
 
     def save(self, name, value):
         eslog.debug("Writing {0} = {1} to {2}".format(name, value, self.settingsFile))
-        # TODO: should we call loadAll first?
         # TODO: do we need proper section support? PSP config is an ini file
         self.config.set('DEFAULT', name, str(value))
-        # TODO: do we need to call write() on every save()?
         self.write()
 
     def disable(self, name):
+        # unused?
         raise Exception
-        # TODO: check if is ok to remove option instead of comment it
         self.config.remove(name)
 
     def disableAll(self, name):
@@ -61,6 +59,7 @@ class UnixSettings():
                 self.config.remove_option('DEFAULT', key)
 
     def remove(self, name):
+        # unused?
         raise Exception
         self.config.remove_option('DEFAULT', name)
 
