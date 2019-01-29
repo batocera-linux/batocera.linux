@@ -3,8 +3,8 @@
 # LIBRETRO-REICAST
 #
 ################################################################################
-# Version.: Commits on Jan 22, 2019
-LIBRETRO_REICAST_VERSION = b3ac84189693a9d97624282f3dd511ad932a4233
+# Version.: Commits on Jan 29, 2019
+LIBRETRO_REICAST_VERSION = aefaf1068f5bc70b9e0a5eb6b0143288153d7031
 LIBRETRO_REICAST_SITE = $(call github,libretro,reicast-emulator,$(LIBRETRO_REICAST_VERSION))
 
 LIBRETRO_REICAST_PLATFORM = $(LIBRETRO_PLATFORM)
@@ -18,7 +18,7 @@ LIBRETRO_REICAST_EXTRA_ARGS = HAVE_OPENMP=0
 # the Makefile imposes that the platform has gles (or force FORCE_GLES is set) to not link with lGL
 
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI3),y)
-	LIBRETRO_REICAST_PLATFORM = rpi2
+	LIBRETRO_REICAST_PLATFORM = rpi3
 	LIBRETRO_REICAST_EXTRA_ARGS += FORCE_GLES=1 ARCH=arm
 endif
 
