@@ -1,65 +1,77 @@
 #!/usr/bin/env python
-
-import re
+import ConfigParser
+import StringIO
 import os
+import re
+from configgen.utils.logger import eslog
 
+__source__ = os.path.basename(__file__)
 
 class UnixSettings():
+
     def __init__(self, settingsFile, separator='', defaultComment='#'):
         self.settingsFile = settingsFile
-
         self.separator = separator
+        # unused. left for compatibility with previous implementation
         self.comment = defaultComment
 
+        # use ConfigParser as backend.
+        eslog.debug("Creating parser for {0}".format(self.settingsFile))
+        self.config = ConfigParser.ConfigParser()
+        try:
+            # TODO: remove me when we migrate to Python 3
+            # pretend where have a [DEFAULT] section
+            file = StringIO.StringIO()
+            file.write('[DEFAULT]\n')
+            file.write(open(self.settingsFile).read())
+            file.seek(0, os.SEEK_SET)
+
+            self.config.readfp(file)
+        except IOError, e:
+            eslog.debug(str(e))
+
+    def write(self):
+        fp = open(self.settingsFile, 'w')
+        for (key, value) in self.config.items('DEFAULT'):
+            fp.write("{0}{2}={2}{1}\n".format(key, str(value), self.separator))
+        fp.close()
+
     def load(self, name, default=None):
-        separ = self.separator
-        if separ is not '':
-            separ += "?"
-        if not os.path.isfile(self.settingsFile):
-            return default
-        with open(self.settingsFile) as lines:
-            for line in open(self.settingsFile):
-                if name in line:
-                    m = re.match(r"^" + name + separ + "=" + separ + "\"(.+)\"", line)
-                    if m:
-                        return m.group(1)
-                    else:
-                        m = re.match(r"^" + name + separ + "=" + separ + "(.+)", line)
-                        if m:
-                            return m.group(1)
-            return default
+        try:
+            eslog.debug("Looking for {0} in {1}".format(name, self.settingsFile))
+            return self.config.get('DEFAULT', name, default)
+        except ConfigParser.NoOptionError, e:
+            return None
 
     def save(self, name, value):
-        if os.path.isfile(self.settingsFile):
-            os.system(
-                "sed -i 's|^{}\?{}{}=.*|{}{}={}{}|g' {}".format(self.comment, name, self.separator, name,
-                                                                  self.separator, self.separator,
-                                                                  value, self.settingsFile))
-        if self.load(name) is None:
-            with open(self.settingsFile, "a+") as settings:
-                settings.write("\n{}{}={}{}".format(name, self.separator, self.separator, value))
+        eslog.debug("Writing {0} = {1} to {2}".format(name, value, self.settingsFile))
+        # TODO: do we need proper section support? PSP config is an ini file
+        self.config.set('DEFAULT', name, str(value))
+        self.write()
 
     def disable(self, name):
-        os.system(
-            "sed -i \"s|^.*\({}{}\?=.*\)|{}\\1|g\" {}".format(name, self.separator, self.comment, self.settingsFile))
+        # unused?
+        raise Exception
+        self.config.remove(name)
 
     def disableAll(self, name):
-        os.system("sed -i \"s|^.*\({}.*\)|{}\\1|g\" {}".format(name, self.comment, self.settingsFile))
+        eslog.debug("Disabling {0} from {1}".format(name, self.settingsFile))
+        for (key, value) in self.config.items('DEFAULT'):
+            m = re.match(r"^" + name, key)
+            if m:
+                self.config.remove_option('DEFAULT', key)
 
     def remove(self, name):
-        os.system(
-            "sed -i \"\\|^.*\({}{}\?=.*\)|d\" {}".format(name, self.separator, self.settingsFile))
+        # unused?
+        raise Exception
+        self.config.remove_option('DEFAULT', name)
 
     def loadAll(self, name):
+        eslog.debug("Looking for {0}.* in {1}".format(name, self.settingsFile))
         res = dict()
-        with open(self.settingsFile) as lines:
-            for line in lines:
-                if name in line:
-                    m = re.match(r"^" + name + "\.(.+?)=" + self.separator + "\"(.+)\"", line)
-                    if m:
-                        res[m.group(1)] = m.group(2);
-                    else:
-                        m = re.match(r"^" + name + "\.(.+?)=" + self.separator + "(.+)", line)
-                        if m:
-                            res[m.group(1)] = m.group(2);
+        for (key, value) in self.config.items('DEFAULT'):
+            m = re.match(r"^" + name + "\.(.+)", key)
+            if m:
+                res[m.group(1)] = value;
+
         return res

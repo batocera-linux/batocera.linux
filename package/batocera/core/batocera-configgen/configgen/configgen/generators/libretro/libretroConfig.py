@@ -6,7 +6,7 @@ from Emulator import Emulator
 import settings
 from settings.unixSettings import UnixSettings
 import json
-import utils.eslog as eslog
+from utils.logger import eslog
 
 sys.path.append(
     os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))

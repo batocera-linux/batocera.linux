@@ -4,14 +4,14 @@ import recalboxFiles
 from settings.unixSettings import UnixSettings
 import xml.etree.ElementTree as ET
 import shlex
-import utils.eslog as eslog
+from utils.logger import eslog
 
 class Emulator():
 
     def __init__(self, name, config):
         self.name = name
         self.config = config
-        
+
     def configure(self, emulator='default', core='default', ratio='auto', netplay=None):
         recalSettings = UnixSettings(recalboxFiles.recalboxConf)
         globalSettings = recalSettings.loadAll('global')
