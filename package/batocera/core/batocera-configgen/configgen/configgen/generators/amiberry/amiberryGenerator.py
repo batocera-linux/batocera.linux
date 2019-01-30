@@ -35,7 +35,7 @@ class AmiberryGenerator(Generator):
             commandArray.append("-autowhdload="+rom)
         else:
 	    commandArray.append("-s")
-	    commandArray.append("pandora.floppy_path=/recalbox/share/roms/amiga/" + system.config['core'])
+	    commandArray.append("pandora.floppy_path=/userdata/roms/amiga/" + system.config['core'])
 
         # controller
         libretroControllers.writeControllersConfig(retroconfig, system, playersControllers)

@@ -22,7 +22,7 @@ postBootConfig() {
     mount -o remount,ro /boot
 }
 
-log=/recalbox/share/system/logs/recalbox.log
+log=/userdata/system/logs/recalbox.log
 systemsetting="python /usr/lib/python2.7/site-packages/configgen/settings/recalboxSettings.py"
 
 echo "---- recalbox-config.sh ----" >> $log
@@ -168,13 +168,13 @@ if [ "$command" == "audio" ];then
 	# custom: don't touch the .asoundrc file
 	# any other, create the .asoundrd file
 	if [ "$mode" == "auto" ];then
-	    rm -rf /recalbox/share/system/.asoundrc || exit 1
+	    rm -rf /userdata/system/.asoundrc || exit 1
 	elif [ "$mode" != "custom" ];then
 	    if echo "${mode}" | grep -qE '^[0-9]*,[0-9]* '
 	    then
 		cardnb=$(echo "${mode}" | sed -e s+'^\([0-9]*\),.*$'+'\1'+)
 		devicenb=$(echo "${mode}" | sed -e s+'^[0-9]*,\([0-9]*\) .*$'+'\1'+)
-		cat > /recalbox/share/system/.asoundrc <<EOF
+		cat > /userdata/system/.asoundrc <<EOF
 	    pcm.!default { type plug slave { pcm "hw:${cardnb},${devicenb}" } }
 	    ctl.!default { type hw card ${cardnb} }
 EOF
@@ -365,7 +365,7 @@ if [[ "$command" == "forgetBT" ]]; then
    /etc/init.d/S32bluetooth stop
    rm -rf /var/lib/bluetooth
    mkdir /var/lib/bluetooth
-   rm -f /recalbox/share/system/bluetooth/bluetooth.tar
+   rm -f /userdata/system/bluetooth/bluetooth.tar
    /etc/init.d/S32bluetooth start
    exit 0
 fi

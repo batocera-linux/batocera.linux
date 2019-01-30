@@ -2,7 +2,7 @@
 #
 #
 
-log=/recalbox/share/system/logs/recalbox.log
+log=/userdata/system/logs/recalbox.log
 systemsetting="python /usr/lib/python2.7/site-packages/configgen/settings/recalboxSettings.py"
 
 case "$1" in
@@ -12,7 +12,7 @@ case "$1" in
 		settings_lang="`$systemsetting -command load -key system.language`"
         	recallog "starting emulationstation with lang = $settings_lang"
 		# HOME is important to be able to call ~/.xinitrc
-                command="HOME=/recalbox/share/system startx"
+                command="HOME=/userdata/system startx"
         	recallog "Starting emulationstation with command : "
         	recallog "$command"
         	eval $command >> $log &

@@ -9,15 +9,15 @@
 
 BATOCERA_TARGET=$(grep -E "^BR2_PACKAGE_BATOCERA_TARGET_[A-Z_0-9]*=y$" "${BR2_CONFIG}" | sed -e s+'^BR2_PACKAGE_BATOCERA_TARGET_\([A-Z_0-9]*\)=y$'+'\1'+)
 
-sed -i "s|root:x:0:0:root:/root:/bin/sh|root:x:0:0:root:/recalbox/share/system:/bin/sh|g" "${TARGET_DIR}/etc/passwd" || exit 1
+sed -i "s|root:x:0:0:root:/root:/bin/sh|root:x:0:0:root:/userdata/system:/bin/sh|g" "${TARGET_DIR}/etc/passwd" || exit 1
 rm -rf "${TARGET_DIR}/etc/dropbear" || exit 1
-ln -sf "/recalbox/share/system/ssh" "${TARGET_DIR}/etc/dropbear" || exit 1
+ln -sf "/userdata/system/ssh" "${TARGET_DIR}/etc/dropbear" || exit 1
 
 mkdir -p ${TARGET_DIR}/etc/emulationstation || exit 1
 ln -sf "/recalbox/share_init/system/.emulationstation/es_systems.cfg" "${TARGET_DIR}/etc/emulationstation/es_systems.cfg" || exit 1
 ln -sf "/recalbox/share_init/system/.emulationstation/themes"         "${TARGET_DIR}/etc/emulationstation/themes"         || exit 1
 mkdir -p "${TARGET_DIR}/recalbox/share_init/cheats" || exit 1
-ln -sf "/recalbox/share/cheats"                                       "${TARGET_DIR}/recalbox/share_init/cheats/custom"   || exit 1
+ln -sf "/userdata/cheats"                                       "${TARGET_DIR}/recalbox/share_init/cheats/custom"   || exit 1
 
 # we don't want the kodi startup script
 rm -f "${TARGET_DIR}/etc/init.d/S50kodi" || exit 1

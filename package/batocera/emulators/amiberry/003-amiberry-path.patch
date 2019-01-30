@@ -5,7 +5,7 @@
  void fetch_saveimagepath(char *out, int size, int dir)
  {
 -	strncpy(out, start_path_data, size);
-+	strncpy(out, "/recalbox/share/saves/amiga", size);
++	strncpy(out, "/userdata/saves/amiga", size);
  	strncat(out, "/savestates/", size);
  }
  
@@ -14,14 +14,14 @@
  void fetch_savestatepath(char *out, int size)
  {
 -	strncpy(out, start_path_data, size);
-+	strncpy(out, "/recalbox/share/saves/amiga", size);
++	strncpy(out, "/userdata/saves/amiga", size);
  	strncat(out, "/savestates/", size);
  }
  
  void fetch_screenshotpath(char *out, int size)
  {
 -	strncpy(out, start_path_data, size);
-+	strncpy(out, "/recalbox/share", size);
++	strncpy(out, "/userdata", size);
  	strncat(out, "/screenshots/", size);
  }
  
@@ -30,7 +30,7 @@
  	char path[MAX_DPATH];
  
 -	snprintf(path, MAX_DPATH, "%s/conf/adfdir.conf", start_path_data);
-+	snprintf(path, MAX_DPATH, "%s/conf/adfdir.conf", "/recalbox/share/system/configs/amiberry");
++	snprintf(path, MAX_DPATH, "%s/conf/adfdir.conf", "/userdata/system/configs/amiberry");
  	const auto f = fopen(path, "we");
  	if (!f)
  		return;
@@ -39,15 +39,15 @@
  	fputs(buffer, f);
  
 -	snprintf(buffer, MAX_DPATH, "config_path=%s\n", config_path);
-+	snprintf(buffer, MAX_DPATH, "/recalbox/share/system/configs/amiberry/conf", config_path);
++	snprintf(buffer, MAX_DPATH, "/userdata/system/configs/amiberry/conf", config_path);
  	fputs(buffer, f);
  
 -	snprintf(buffer, MAX_DPATH, "controllers_path=%s\n", controllers_path);
-+	snprintf(buffer, MAX_DPATH, "/recalbox/share/system/configs/amiberry/conf/retroarch/inputs", controllers_path);
++	snprintf(buffer, MAX_DPATH, "/userdata/system/configs/amiberry/conf/retroarch/inputs", controllers_path);
  	fputs(buffer, f);
  
 -	snprintf(buffer, MAX_DPATH, "retroarch_config=%s\n", retroarch_file);
-+	snprintf(buffer, MAX_DPATH, "/recalbox/share/system/configs/amiberry/conf/retroarch/retroarchcustom.cfg", retroarch_file);
++	snprintf(buffer, MAX_DPATH, "/userdata/system/configs/amiberry/conf/retroarch/retroarchcustom.cfg", retroarch_file);
  	fputs(buffer, f);
  
  	snprintf(buffer, MAX_DPATH, "rom_path=%s\n", rom_path);
@@ -60,10 +60,10 @@
 -	snprintf(retroarch_file, MAX_DPATH, "%s/conf/retroarch.cfg", start_path_data);
 +	
 +	/* snprintf(config_path, MAX_DPATH, "%s/conf/", start_path_data);  */
-+	snprintf(config_path, MAX_DPATH, "/recalbox/share/system/configs/amiberry/conf");
++	snprintf(config_path, MAX_DPATH, "/userdata/system/configs/amiberry/conf");
 +	
-+	snprintf(controllers_path, MAX_DPATH, "/recalbox/share/system/configs/amiberry/conf/retroarch/inputs");
-+	snprintf(retroarch_file, MAX_DPATH, "/recalbox/share/system/configs/amiberry/conf/retroarch/retroarchcustom.cfg");
++	snprintf(controllers_path, MAX_DPATH, "/userdata/system/configs/amiberry/conf/retroarch/inputs");
++	snprintf(retroarch_file, MAX_DPATH, "/userdata/system/configs/amiberry/conf/retroarch/retroarchcustom.cfg");
  
  #ifdef ANDROID
      char afepath[MAX_DPATH];
@@ -72,15 +72,15 @@
      }
  	else
 -        snprintf(rom_path, MAX_DPATH, "%s/kickstarts/", start_path_data);
-+        snprintf(rom_path, MAX_DPATH, "/recalbox/share/bios/");
++        snprintf(rom_path, MAX_DPATH, "/userdata/bios/");
  #else
 -	snprintf(rom_path, MAX_DPATH, "%s/kickstarts/", start_path_data);
-+	snprintf(rom_path, MAX_DPATH, "/recalbox/share/bios/");
++	snprintf(rom_path, MAX_DPATH, "/userdata/bios/");
  #endif
  	snprintf(rp9_path, MAX_DPATH, "%s/rp9/", start_path_data);
  
 -	snprintf(path, MAX_DPATH, "%s/conf/adfdir.conf", start_path_data);
-+	snprintf(path, MAX_DPATH, "%s/conf/adfdir.conf", "/recalbox/share/system/configs/amiberry");
++	snprintf(path, MAX_DPATH, "%s/conf/adfdir.conf", "/userdata/system/configs/amiberry");
  
  	const auto fh = zfile_fopen(path, _T("r"), ZFD_NORMAL);
  	if (fh) {
@@ -89,7 +89,7 @@
  	rp9_init();
  
 -	snprintf(savestate_fname, sizeof savestate_fname, "%s/savestates/default.ads", start_path_data);
-+	snprintf(savestate_fname, sizeof savestate_fname, "%s/savestates/default.ads", "/recalbox/share/saves/amiga");
++	snprintf(savestate_fname, sizeof savestate_fname, "%s/savestates/default.ads", "/userdata/saves/amiga");
  	logging_init();
  
  	memset(&action, 0, sizeof action);

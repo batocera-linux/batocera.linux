@@ -1,5 +1,5 @@
 #!/bin/sh
-log="/recalbox/share/system/logs/recalbox.log"
+log="/userdata/system/logs/recalbox.log"
 if [[ "$1" == "-e" ]];then
   shift
   echo "`logtime` : $@" >> $log

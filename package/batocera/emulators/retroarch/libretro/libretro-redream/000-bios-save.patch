@@ -85,7 +85,7 @@ index b973207..8bdf65b 100644
    if (env_cb(RETRO_ENVIRONMENT_GET_SYSTEM_DIRECTORY, &sysdir)) {
      char appdir[PATH_MAX];
 -    snprintf(appdir, sizeof(appdir), "%s" PATH_SEPARATOR "dc", sysdir);
-+    snprintf(appdir, sizeof(appdir), "%s" PATH_SEPARATOR "saves" PATH_SEPARATOR "dreamcast", "/recalbox/share");
++    snprintf(appdir, sizeof(appdir), "%s" PATH_SEPARATOR "saves" PATH_SEPARATOR "dreamcast", "/userdata");
      fs_set_appdir(appdir);
    }
  
@@ -93,7 +93,7 @@ index b973207..8bdf65b 100644
 +  const char *sysdirbios = NULL;
 +  if (env_cb(RETRO_ENVIRONMENT_GET_SYSTEM_DIRECTORY, &sysdirbios)) {
 +    char appdirbios[PATH_MAX];
-+    snprintf(appdirbios, sizeof(appdirbios), "%s" PATH_SEPARATOR "bios", "/recalbox/share");
++    snprintf(appdirbios, sizeof(appdirbios), "%s" PATH_SEPARATOR "bios", "/userdata");
 +    fs_set_appdirbios(appdirbios);
 +  }
 +

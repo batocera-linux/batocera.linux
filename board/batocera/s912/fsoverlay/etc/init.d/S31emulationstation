@@ -2,7 +2,7 @@
 #
 #
 
-log=/recalbox/share/system/logs/recalbox.log
+log=/userdata/system/logs/recalbox.log
 systemsetting="python /usr/lib/python2.7/site-packages/configgen/settings/recalboxSettings.py"
 
 case "$1" in
@@ -14,7 +14,7 @@ case "$1" in
 		[ $? = "0" ] && tvservice -e "$videoMode"
 		settings_lang="`$systemsetting -command load -key system.language`"
         	recallog "starting emulationstation with lang = $settings_lang"
-                command="HOME=/recalbox/share/system LANG=\"${settings_lang}.UTF-8\" SDL_VIDEO_EGL_DRIVER=/usr/lib/libEGL.so SDL_NOMOUSE=1 /usr/bin/emulationstation"
+                command="HOME=/userdata/system LANG=\"${settings_lang}.UTF-8\" SDL_VIDEO_EGL_DRIVER=/usr/lib/libEGL.so SDL_NOMOUSE=1 /usr/bin/emulationstation"
         	recallog "Starting emulationstation with command : "
         	recallog "$command"
         	eval $command >> $log &

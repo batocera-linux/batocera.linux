@@ -105,7 +105,7 @@ fi
 
 if [[ "$emulator" == "gba" ]]; then
 	/recalbox/scripts/runcommand.sh 4 "$retroarchbin -L $retroarchcores/gpsp_libretro.so --config /recalbox/configs/retroarch/retroarchcustom.cfg \"$1\""
-#	/recalbox/scripts/runcommand.sh 4 "$gpspbin \"/recalbox/share/roms/gba/${fullfilename}\""
+#	/recalbox/scripts/runcommand.sh 4 "$gpspbin \"/userdata/roms/gba/${fullfilename}\""
 fi
 
 if [[ "$emulator" == "gbc" ]]; then
@@ -237,5 +237,5 @@ if [[ "$emulator" == "fbalibretro" ]]; then
 fi
 
 if [[ "$emulator" == "scummvm" ]]; then
-         /recalbox/scripts/runcommand.sh 2 "scummvm --joystick=0 --screenshotspath=/recalbox/share/screenshots --extrapath=/usr/share/scummvm --path=\"$dirName\" \"$filenameNoExt\""
+         /recalbox/scripts/runcommand.sh 2 "scummvm --joystick=0 --screenshotspath=/userdata/screenshots --extrapath=/usr/share/scummvm --path=\"$dirName\" \"$filenameNoExt\""
 fi

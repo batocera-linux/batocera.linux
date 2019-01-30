@@ -8,7 +8,7 @@ arch=$(cat /recalbox/recalbox.arch)
 updateurl=$($systemsetting -command load -key updates.url)
 test -n "${updateurl}" && recalboxupdateurl="${updateurl}"
 
-IMGFOLDER="/recalbox/share/system/installs"
+IMGFOLDER="/userdata/system/installs"
 ACTION=$1
 shift
 
@@ -34,7 +34,7 @@ determine_part_prefix() {
 }
 
 disks_to_keep() {
-    grep -E '^[^ ]* /boot |^[^ ]* /recalbox/share' /proc/mounts | sed -e s+"^\([^ ]*\) .*$"+'\1'+ |
+    grep -E '^[^ ]* /boot |^[^ ]* /userdata' /proc/mounts | sed -e s+"^\([^ ]*\) .*$"+'\1'+ |
 	while read X
 	do
 	    determine_part_prefix "${X}"
@@ -163,7 +163,7 @@ do_install() {
 	    echo "need to download ${size}mB"
 
 	    # check free space on fs
-	    for fs in /recalbox/share
+	    for fs in /userdata
 	    do
 		freespace=$(df -m "${fs}" | tail -1 | awk '{print $4}')
 		test $? -eq 0 || return 1

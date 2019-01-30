@@ -68,7 +68,7 @@ class ReicastGenerator(Generator):
         commandArray.append(rom)
         # Here is the trick to make reicast find files :
         # emu.cfg is in $XDG_CONFIG_DIRS or $XDG_CONFIG_HOME. The latter is better
-        # VMU will be in $XDG_DATA_HOME because it needs rw access -> /recalbox/share/saves/dreamcast
+        # VMU will be in $XDG_DATA_HOME because it needs rw access -> /userdata/saves/dreamcast
         # BIOS will be in $XDG_DATA_DIRS
         # controller cfg files are set with an absolute path, so no worry
         return Command.Command(array=commandArray, env={"XDG_CONFIG_HOME":recalboxFiles.CONF, "XDG_DATA_HOME":recalboxFiles.reicastSaves, "XDG_DATA_DIRS":recalboxFiles.reicastBios})

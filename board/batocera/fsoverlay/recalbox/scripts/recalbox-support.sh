@@ -2,7 +2,7 @@
 
 
 GTMP="/tmp"
-DHOME="/recalbox/share/system"
+DHOME="/userdata/system"
 
 # to be callable by any external tool
 if test $# -eq 1
@@ -11,7 +11,7 @@ then
     OUTPUTFILE=$1
 else
     REPORTNAME="batocera-support-"$(date +%Y%m%d%H%M%S)
-    OUTPUTFILE="/recalbox/share/saves/${REPORTNAME}.tar.gz"
+    OUTPUTFILE="/userdata/saves/${REPORTNAME}.tar.gz"
 fi
 
 TMPDIR="${GTMP}/${REPORTNAME}"
@@ -60,19 +60,19 @@ connmanctl services     > "${DSYSTEM}/connman-services.txt"
 f_cp /recalbox/batocera.version                               "${DSYSTEM}"
 f_cp /recalbox/recalbox.arch                                  "${DSYSTEM}"
 f_cp /boot/config.txt                                         "${DSYSTEM}"
-f_cp /recalbox/share/system/recalbox.conf                     "${DSYSTEM}"
-d_cp /recalbox/share/system/logs                              "${DSYSTEM}"
+f_cp /userdata/system/recalbox.conf                     "${DSYSTEM}"
+d_cp /userdata/system/logs                              "${DSYSTEM}"
 f_cp /var/log/messages                                        "${DSYSTEM}"
-f_cp /recalbox/share/system/.emulationstation/es_settings.cfg "${DSYSTEM}"
-f_cp /recalbox/share/system/.emulationstation/es_log.txt      "${DSYSTEM}"
-f_cp /recalbox/share/system/.emulationstation/es_input.cfg    "${DSYSTEM}"
-f_cp /recalbox/share/system/logs/es_launch_stdout.log         "${DSYSTEM}"
-f_cp /recalbox/share/system/logs/es_launch_stderr.log         "${DSYSTEM}"
+f_cp /userdata/system/.emulationstation/es_settings.cfg "${DSYSTEM}"
+f_cp /userdata/system/.emulationstation/es_log.txt      "${DSYSTEM}"
+f_cp /userdata/system/.emulationstation/es_input.cfg    "${DSYSTEM}"
+f_cp /userdata/system/logs/es_launch_stdout.log         "${DSYSTEM}"
+f_cp /userdata/system/logs/es_launch_stderr.log         "${DSYSTEM}"
 f_cp /boot/recalbox-boot.conf                                 "${DSYSTEM}"
 f_cp /var/log/Xorg.0.log                                      "${DSYSTEM}"
 
 # Emulators configs
-d_cp /recalbox/share/system/configs                           "${TMPDIR}/configs"
+d_cp /userdata/system/configs                           "${TMPDIR}/configs"
 
 # joysticks
 DJOYS="${TMPDIR}/joysticks"

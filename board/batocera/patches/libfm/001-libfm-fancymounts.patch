@@ -31,25 +31,25 @@ index 104f988..45fd463 100644
 -        path = fm_path_get_home();
 -        new_path_item(model, &it, path, FM_PLACES_ID_HOME,
 -                      _("Home Folder"), "user-home", job);
-+      path = fm_path_new_for_str("/recalbox/share");
++      path = fm_path_new_for_str("/userdata");
 +      new_path_item(model, &it, path, FM_PLACES_ID_BATOCERA_SHARE,
 +		    _("Share"), "share", job);
 +    }
 +
 +    {
-+      path = fm_path_new_for_str("/recalbox/share/roms");
++      path = fm_path_new_for_str("/userdata/roms");
 +      new_path_item(model, &it, path, FM_PLACES_ID_BATOCERA_ROMS,
 +		    _("Roms"), "roms", job);
 +    }
 +
 +     {
-+      path = fm_path_new_for_str("/recalbox/share/screenshots");
++      path = fm_path_new_for_str("/userdata/screenshots");
 +      new_path_item(model, &it, path, FM_PLACES_ID_BATOCERA_SCREENSHOTS,
 +		    _("Screenshots"), "screenshots", job);
 +    }
 +
 +    {
-+      path = fm_path_new_for_str("/recalbox/share/bios");
++      path = fm_path_new_for_str("/userdata/bios");
 +      new_path_item(model, &it, path, FM_PLACES_ID_BATOCERA_BIOS,
 +		    _("Bios"), "bios", job);
      }
