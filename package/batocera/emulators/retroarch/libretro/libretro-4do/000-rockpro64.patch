@@ -8,7 +8,7 @@ index fb19dde..5368119 100644
  
 +    # RockPro64
 +    else ifneq (,$(findstring rockpro64,$(platform)))        
-+	     CFLAGS += -marm -mfloat-abi=hard -mcpu=cortex-a72 -mtune=cortex-a72.cortex-a53 -mfpu=neon-fp-armv8 -mvectorize-with-neon-quad -march=armv7-a
++	     CFLAGS += -fomit-frame-pointer -ffast-math -DARM -marm -mfloat-abi=hard -mcpu=cortex-a72 -mtune=cortex-a72.cortex-a53 -mfpu=neon-fp-armv8 -mvectorize-with-neon-quad -march=armv7-a
 +
  else ifeq ($(platform), osx)
     TARGET := $(TARGET_NAME)_libretro.dylib
