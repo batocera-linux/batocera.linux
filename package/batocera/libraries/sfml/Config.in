@@ -4,5 +4,6 @@ config BR2_PACKAGE_SFML
 	select BR2_PACKAGE_OPENAL
 	select BR2_PACKAGE_JPEG
 	select BR2_PACKAGE_FLAC
+	select BR2_PACKAGE_LIBVORBIS
         help
           Simple and Fast Multimedia Library
