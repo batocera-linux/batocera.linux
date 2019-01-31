@@ -2,8 +2,8 @@
 log="/userdata/system/logs/recalbox.log"
 if [[ "$1" == "-e" ]];then
   shift
-  echo "`logtime` : $@" >> $log
+  echo "$@" >> $log
   echo "$@"
 else
-  echo "`logtime` : $@" >> $log
+  echo "$@" >> $log
 fi
