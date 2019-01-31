@@ -6,7 +6,7 @@ then
 fi
 
 IN=/recalbox/share_init
-OUT=/recalbox/share
+OUT=/userdata
 # force the creation of some directories
 for DIR in cheats \
            system/.cache \
@@ -67,33 +67,33 @@ do
 done
 
 # ssh : create the ssh key while the -R option of dropbear try a chown or an operation which is not permitted on fat32
-if mkdir -p /recalbox/share/system/ssh
+if mkdir -p /userdata/system/ssh
 then
-    test -e /recalbox/share/system/ssh/dropbear_ecdsa_host_key || dropbearkey -t ecdsa -f /recalbox/share/system/ssh/dropbear_ecdsa_host_key
-    test -e /recalbox/share/system/ssh/dropbear_rsa_host_key   || dropbearkey -t rsa   -f /recalbox/share/system/ssh/dropbear_rsa_host_key
-    test -e /recalbox/share/system/ssh/dropbear_dss_host_key   || dropbearkey -t dss   -f /recalbox/share/system/ssh/dropbear_dss_host_key
+    test -e /userdata/system/ssh/dropbear_ecdsa_host_key || dropbearkey -t ecdsa -f /userdata/system/ssh/dropbear_ecdsa_host_key
+    test -e /userdata/system/ssh/dropbear_rsa_host_key   || dropbearkey -t rsa   -f /userdata/system/ssh/dropbear_rsa_host_key
+    test -e /userdata/system/ssh/dropbear_dss_host_key   || dropbearkey -t dss   -f /userdata/system/ssh/dropbear_dss_host_key
 fi
 
 # bluetooth : now gotta tar/untar, the directory structure for bluez5 is more complex
 # once untar, delete the cache folder. The exclude tar option of busybox is dreadful
-btTar=/recalbox/share/system/bluetooth/bluetooth.tar
+btTar=/userdata/system/bluetooth/bluetooth.tar
 tar xvf "$btTar" -C / 2>/dev/null 
 
 # udev : create a link for rules persistance
-mkdir -p /recalbox/share/system/udev/rules.d
+mkdir -p /userdata/system/udev/rules.d
 rm -rf /run/udev/rules.d
-ln -s /recalbox/share/system/udev/rules.d/ /run/udev/
+ln -s /userdata/system/udev/rules.d/ /run/udev/
 
 ## if the system was upgraded, fixes some files
 # fixes
 XNEW=$(cat /recalbox/batocera.version)
-XCUR=$(cat /recalbox/share/system/data.version)
+XCUR=$(cat /userdata/system/data.version)
 XARCH=$(cat /recalbox/recalbox.arch)
 test "${XCUR}" = "${XNEW}" && exit 0
 
 # retroarchcustom.cfg
 retroarchcustom_fix_force_param() {
-    L_CFG="/recalbox/share/system/configs/retroarch/retroarchcustom.cfg"
+    L_CFG="/userdata/system/configs/retroarch/retroarchcustom.cfg"
     L_PARAM=$1
     L_VALUE=$2
 
@@ -108,7 +108,7 @@ retroarchcustom_fix_force_param() {
 }
 
 retroarchcustom_fix_remove_param_value() {
-    L_CFG="/recalbox/share/system/configs/retroarch/retroarchcustom.cfg"
+    L_CFG="/userdata/system/configs/retroarch/retroarchcustom.cfg"
     L_PARAM=$1
     L_VALUE=$2
 
@@ -117,7 +117,7 @@ retroarchcustom_fix_remove_param_value() {
 }
 
 recalboxconf_force_value() {
-    L_CFG="/recalbox/share/system/recalbox.conf"
+    L_CFG="/userdata/system/recalbox.conf"
     L_PARAM=$1
     L_VALUE=$2
 
@@ -164,7 +164,7 @@ then
 fi
 
 # save to avoid to redo that all the times
-cp /recalbox/batocera.version /recalbox/share/system/data.version || exit 1
+cp /recalbox/batocera.version /userdata/system/data.version || exit 1
 
 exit 0
 # END

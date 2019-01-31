@@ -196,7 +196,7 @@ def createReadme(systems):
 
 if __name__ == '__main__':
     if len(sys.argv) == 1:
-        prefix = "/recalbox/share"
+        prefix = "/userdata"
         displayMissingBios(systems, checkBios(systems, prefix))
     elif sys.argv[1] == "--createReadme":
         createReadme(systems)

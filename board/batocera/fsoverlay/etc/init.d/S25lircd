@@ -8,7 +8,7 @@
 start() {
 	echo -n "Starting lirc: "
 	mkdir -p /var/run/lirc
-	start-stop-daemon -b -S -q -m -p /var/run/lirc.pid --exec /usr/sbin/lircd -- -n --driver=default --device=/dev/lirc0 --output=/var/run/lirc/lircd --pidfile=/var/run/lirc/lircd-lirc0.pid /recalbox/share/system/.config/lirc/lircd.conf
+	start-stop-daemon -b -S -q -m -p /var/run/lirc.pid --exec /usr/sbin/lircd -- -n --driver=default --device=/dev/lirc0 --output=/var/run/lirc/lircd --pidfile=/var/run/lirc/lircd-lirc0.pid /userdata/system/.config/lirc/lircd.conf
 	echo "OK"
 }
 

@@ -71,7 +71,7 @@ def configureReg(config_directory):
     f.write("DocumentsFolderMode=User\n")
     f.write("CustomDocumentsFolder=/usr/PCSX/bin\n")
     f.write("UseDefaultSettingsFolder=enabled\n")
-    f.write("SettingsFolder=/recalbox/share/system/configs/PCSX2/inis\n")
+    f.write("SettingsFolder=/userdata/system/configs/PCSX2/inis\n")
     f.write("Install_Dir=/usr/PCSX/bin\n")
     f.write("RunWizard=0\n")
     f.close()

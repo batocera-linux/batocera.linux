@@ -39,13 +39,13 @@ define LINAPPLE_PIE_INSTALL_TARGET_CMDS
 	mkdir -p $(LINAPPLE_PIE_CONFDIR)
 	cp $(@D)/linapple-pie/Master.dsk $(LINAPPLE_PIE_CONFDIR)/
 	cp $(@D)/linapple-pie/linapple.installed.conf $(LINAPPLE_PIE_CONFFILE)
-	$(SED) "s|^\(\s*\)Slot 6 Directory =.*|\1Slot 6 Directory = /recalbox/share/roms/apple2|g" $(LINAPPLE_PIE_CONFFILE)
-	$(SED) "s|^\(\s*\)Save State Directory =.*|\1Save State Directory = /recalbox/share/saves/apple2|g" $(LINAPPLE_PIE_CONFFILE)
-	$(SED) "s|^\(\s*\)FTP Local Dir =.*|\1FTP Local Dir = /recalbox/share/roms/apple2|g" $(LINAPPLE_PIE_CONFFILE)
+	$(SED) "s|^\(\s*\)Slot 6 Directory =.*|\1Slot 6 Directory = /userdata/roms/apple2|g" $(LINAPPLE_PIE_CONFFILE)
+	$(SED) "s|^\(\s*\)Save State Directory =.*|\1Save State Directory = /userdata/saves/apple2|g" $(LINAPPLE_PIE_CONFFILE)
+	$(SED) "s|^\(\s*\)FTP Local Dir =.*|\1FTP Local Dir = /userdata/roms/apple2|g" $(LINAPPLE_PIE_CONFFILE)
 	echo -e "\n##########################################################################" >> $(LINAPPLE_PIE_CONFFILE)
 	echo -e "#\tRecalbox specific parameters\n" >> $(LINAPPLE_PIE_CONFFILE)
-	echo -e "\tRecalboxRomDirectory =\t/recalbox/share/roms/apple2" >> $(LINAPPLE_PIE_CONFFILE)
-	echo -e "\tRecalboxSaveDirectory =\t/recalbox/share/saves/apple2" >> $(LINAPPLE_PIE_CONFFILE)
+	echo -e "\tRecalboxRomDirectory =\t/userdata/roms/apple2" >> $(LINAPPLE_PIE_CONFFILE)
+	echo -e "\tRecalboxSaveDirectory =\t/userdata/saves/apple2" >> $(LINAPPLE_PIE_CONFFILE)
 endef
 else
 LINAPPLE_PIE_STARTUP = /usr/bin/linapple

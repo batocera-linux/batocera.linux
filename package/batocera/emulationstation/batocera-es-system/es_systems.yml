@@ -410,7 +410,7 @@ fba_libretro:
     The file fba_libretro_gamelist.txt list compatible games.
 
     Special files for fba libretro core:
-    - Add your (audio) samples files in /recalbox/share/bios/fba/samples/
+    - Add your (audio) samples files in /userdata/bios/fba/samples/
   comment_fr: |
     La version des ROMs doit être 0.2.97.42
 
@@ -419,7 +419,7 @@ fba_libretro:
     Le fichier fba_libretro_gamelist.txt liste les jeux compatibles.
 
     Fichiers spéciaux pour le core fba libretro:
-    - Ajoutez vos samples (audio) dans le répertoire /recalbox/share/bios/fba/samples/
+    - Ajoutez vos samples (audio) dans le répertoire /userdata/bios/fba/samples/
 
 mame:
   name:       Mame
@@ -443,7 +443,7 @@ mame:
     https://github.com/recalbox/recalbox-os/wiki/recalbox.conf-%28EN%29
 
     Special files for mame2003 core:
-    - Add your samples files in /recalbox/share/bios/mame2003/samples/
+    - Add your samples files in /userdata/bios/mame2003/samples/
   comment_fr: |
     Le système utilise le core libretro mame2003 implicitement: Les ROMs compatibles doivent provenir du set 0.78
     Le core imame4all, basé sur MAME v0.37b5 est également disponible.
@@ -452,7 +452,7 @@ mame:
     https://github.com/recalbox/recalbox-os/wiki/recalbox.conf-%28FR%29
 
     Fichiers spéciaux pour le core mame2003 :
-    - Ajoutez vos fichiers samples dans le répertoire /recalbox/share/bios/mame2003/samples/
+    - Ajoutez vos fichiers samples dans le répertoire /userdata/bios/mame2003/samples/
 
 neogeo:
   name:       Neo-Geo
@@ -992,7 +992,7 @@ x68000:
 imageviewer:
   name:       Screenshots
   extensions: [jpg, jpeg, png, bmp, psd, tga, gif, hdr, pic, ppm, pgm]
-  path:       /recalbox/share/screenshots
+  path:       /userdata/screenshots
   platform:   ignore
   emulators:
     libretro:

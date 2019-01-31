@@ -1,13 +1,13 @@
 #!/usr/bin/env python
 HOME_INIT = '/recalbox/share_init/system/'
-HOME = '/recalbox/share/system'
+HOME = '/userdata/system'
 CONF_INIT = HOME_INIT + '/configs'
 CONF = HOME + '/configs'
-SAVES = '/recalbox/share/saves'
-SCREENSHOTS = '/recalbox/share/screenshots'
-BIOS = '/recalbox/share/bios'
-OVERLAYS = '/recalbox/share/overlays'
-CACHE = '/recalbox/share/system/cache'
+SAVES = '/userdata/saves'
+SCREENSHOTS = '/userdata/screenshots'
+BIOS = '/userdata/bios'
+OVERLAYS = '/userdata/overlays'
+CACHE = '/userdata/system/cache'
 
 esInputs = HOME + '/.emulationstation/es_input.cfg'
 esSettings = HOME + '/.emulationstation/es_settings.cfg'
@@ -43,11 +43,11 @@ retroarchCustomOrigin = retroarchRootInit + "/retroarchcustom.cfg"
 retroarchCoreCustom = retroarchRoot + "/cores/retroarch-core-options.cfg"
 
 retroarchCores = "/usr/lib/libretro/"
-shadersRoot = "/recalbox/share/shaders/presets/"
+shadersRoot = "/userdata/shaders/presets/"
 shadersExt = '.gplsp'
 libretroExt = '_libretro.so'
-screenshotsDir = "/recalbox/share/screenshots/"
-savesDir = "/recalbox/share/saves/"
+screenshotsDir = "/userdata/screenshots/"
+savesDir = "/userdata/saves/"
 
 fbaRoot = CONF + '/fba/'
 fbaCustom = fbaRoot + 'fba2x.cfg'
@@ -91,7 +91,7 @@ dolphinSYSCONF = dolphinData + "/Wii/shared2/sys/SYSCONF"
 
 pcsx2PluginsDir     = "/usr/PCSX/bin/plugins"
 pcsx2Avx2PluginsDir = "/usr/PCSX_AVX2/bin/plugins"
-pcsx2ConfigDir      = "/recalbox/share/system/configs/PCSX2"
+pcsx2ConfigDir      = "/userdata/system/configs/PCSX2"
 
 ppssppConf = CONF + '/ppsspp/PSP/SYSTEM'
 ppssppControlsIni = ppssppConf + '/controls.ini'
@@ -116,8 +116,8 @@ advancemameConfig = CONF + '/advancemame/advmame.rc'
 advancemameConfigOrigin = CONF + '/advancemame/advmame.rc.origin'
 
 overlaySystem = "/recalbox/share_init/decorations"
-overlayUser = "/recalbox/share/decorations"
-overlayConfigFile = "/recalbox/share/system/configs/retroarch/overlay.cfg"
+overlayUser = "/userdata/decorations"
+overlayConfigFile = "/userdata/system/configs/retroarch/overlay.cfg"
 
 amiberryRoot = CONF + '/amiberry'
 amiberryRetroarchInputsDir = amiberryRoot + '/conf/retroarch/inputs'

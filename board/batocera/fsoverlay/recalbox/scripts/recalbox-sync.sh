@@ -6,7 +6,7 @@ print_usage() {
 }
 
 rs_current() {
-    grep -E "^[^ ]* /recalbox/share " /proc/mounts | sed -e s+'^\([^ ]*\) .*$'+'\1'+
+    grep -E "^[^ ]* /userdata " /proc/mounts | sed -e s+'^\([^ ]*\) .*$'+'\1'+
 }
 
 # hum, i'm very carefull
@@ -59,7 +59,7 @@ rs_fix_min_dates() {
   # i won't force a fixed date while having the same date (at 2 seconds, means being the same content)
   # so, the touch to the current time is a way to randomize dates
   # keep this while some people could have some old files while the recalbox got date from 1970 before
-  find /recalbox/share ! -newer /tmp/min_timestamp | while read X; do touch "${X}"; done
+  find /userdata ! -newer /tmp/min_timestamp | while read X; do touch "${X}"; done
 }
 
 rs_sync() {
@@ -110,9 +110,9 @@ rs_sync() {
     if test "${FSTYPE}" = "vfat"
     then
 	RSYNCOPT="-rpt --exclude system/bluetooth" # exclude bluetooth while it contains : chars not supported on fat32
-        rs_fix_min_dates "/recalbox/share" # if fails, will take a longer time
+        rs_fix_min_dates "/userdata" # if fails, will take a longer time
     fi
-    if rsync $RSYNCOPT -v --modify-window=2 --delete-during "/recalbox/share/" "${MOUNTDIR}" 2>&1 # modify-window because all file system such as fat32 doesn't have the same time precision
+    if rsync $RSYNCOPT -v --modify-window=2 --delete-during "/userdata/" "${MOUNTDIR}" 2>&1 # modify-window because all file system such as fat32 doesn't have the same time precision
     then
 	EXITCODE=0
     fi

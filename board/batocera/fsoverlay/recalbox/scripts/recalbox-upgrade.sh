@@ -2,8 +2,8 @@
 
 do_clean() {
     test -n "${GETPERPID}" && kill -9 "${GETPERPID}"
-    rm -f "/recalbox/share/system/upgrade/boot.tar.xz"
-    rm -f "/recalbox/share/system/upgrade/boot.tar.xz.md5"
+    rm -f "/userdata/system/upgrade/boot.tar.xz"
+    rm -f "/userdata/system/upgrade/boot.tar.xz.md5"
 }
 trap do_clean EXIT
 
@@ -12,7 +12,7 @@ getPer() {
 
     while true
     do
-	CURVAL=$(stat "/recalbox/share/system/upgrade/boot.tar.xz" | grep -E '^[ ]*Size:' | sed -e s+'^[ ]*Size: \([0-9][0-9]*\) .*$'+'\1'+)
+	CURVAL=$(stat "/userdata/system/upgrade/boot.tar.xz" | grep -E '^[ ]*Size:' | sed -e s+'^[ ]*Size: \([0-9][0-9]*\) .*$'+'\1'+)
 	CURVAL=$((CURVAL / 1024 / 1024))
 	PER=$(expr ${CURVAL} '*' 100 / ${TARVAL})
 	echo "downloading >>> ${PER}%"
@@ -42,7 +42,7 @@ test -n "${updateurl}" && recalboxupdateurl="${updateurl}"
 test "${updatetype}" != "stable" -a "${updatetype}" != "unstable" -a "${updatetype}" != "beta" && updatetype="stable"
 
 # download directory
-mkdir -p /recalbox/share/system/upgrade || exit 1
+mkdir -p /userdata/system/upgrade || exit 1
 
 # custom the url directory
 DWD_HTTP_DIR="${recalboxupdateurl}/${arch}/${updatetype}/last"
@@ -63,7 +63,7 @@ test $? -eq 0 || exit 1
 echo "need to download ${size}mB"
 
 # check free space on fs
-for fs in /recalbox/share /boot
+for fs in /userdata /boot
 do
     freespace=$(df -m "${fs}" | tail -1 | awk '{print $4}')
     test $? -eq 0 || exit 1
@@ -77,20 +77,20 @@ done
 # downlaod
 url="${DWD_HTTP_DIR}/boot.tar.xz"
 
-touch "/recalbox/share/system/upgrade/boot.tar.xz"
+touch "/userdata/system/upgrade/boot.tar.xz"
 getPer "${size}" &
 GETPERPID=$!
-mkdir -p "/recalbox/share/system/upgrade" || exit 1
-curl -sfL "${url}" -o "/recalbox/share/system/upgrade/boot.tar.xz" || exit 1
+mkdir -p "/userdata/system/upgrade" || exit 1
+curl -sfL "${url}" -o "/userdata/system/upgrade/boot.tar.xz" || exit 1
 kill -9 "${GETPERPID}"
 GETPERPID=
 
 # try to download an md5 checksum
-curl -sfL "${url}.md5" -o "/recalbox/share/system/upgrade/boot.tar.xz.md5"
-if test -e "/recalbox/share/system/upgrade/boot.tar.xz.md5"
+curl -sfL "${url}.md5" -o "/userdata/system/upgrade/boot.tar.xz.md5"
+if test -e "/userdata/system/upgrade/boot.tar.xz.md5"
 then
-    DISTMD5=$(cat "/recalbox/share/system/upgrade/boot.tar.xz.md5")
-    CURRMD5=$(md5sum "/recalbox/share/system/upgrade/boot.tar.xz" | sed -e s+' .*$'++)
+    DISTMD5=$(cat "/userdata/system/upgrade/boot.tar.xz.md5")
+    CURRMD5=$(md5sum "/userdata/system/upgrade/boot.tar.xz" | sed -e s+' .*$'++)
     if test "${DISTMD5}" = "${CURRMD5}"
     then
 	echo "valid checksum."
@@ -127,7 +127,7 @@ done
 
 # extract file on /boot
 echo "extracting files"
-if ! (cd /boot && xz -dc < "/recalbox/share/system/upgrade/boot.tar.xz" | tar xvf -)
+if ! (cd /boot && xz -dc < "/userdata/system/upgrade/boot.tar.xz" | tar xvf -)
 then
     exit 1
 fi
@@ -153,8 +153,8 @@ then
 fi
 
 # a sync
-rm -f "/recalbox/share/system/upgrade/boot.tar.xz"
-rm -f "/recalbox/share/system/upgrade/boot.tar.xz.md5"
+rm -f "/userdata/system/upgrade/boot.tar.xz"
+rm -f "/userdata/system/upgrade/boot.tar.xz.md5"
 sync
 
 echo "done."

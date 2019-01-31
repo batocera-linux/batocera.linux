@@ -1,10 +1,10 @@
 #!/bin/bash
 
 # More options available here: https://github.com/irtimmer/moonlight-embedded/tree/master/docs
-#cd /recalbox/share/roms/moonlight/
+#cd /userdata/roms/moonlight/
 moonlight_dir=/recalbox/scripts/moonlight
-moonlight_config_dir=/recalbox/share/system/configs/moonlight
-moonlight_romsdir=/recalbox/share/roms/moonlight
+moonlight_config_dir=/userdata/system/configs/moonlight
+moonlight_romsdir=/userdata/roms/moonlight
 moonlight_ip=
 moonlight_screen="720"
 moonlight_fps="60"
@@ -35,8 +35,8 @@ findRealGameName () {
 
 scrape () {
   GDBURL="http://thegamesdb.net/api/GetGame.php?platform=pc&exactname="
-  GAMELIST=/recalbox/share/roms/moonlight/gamelist.xml
-  IMGPATH=/recalbox/share/roms/moonlight/downloaded_images
+  GAMELIST=/userdata/roms/moonlight/gamelist.xml
+  IMGPATH=/userdata/roms/moonlight/downloaded_images
 
   # Test if $GDBURL is online, and stop if it's offline
   dbdns=$(echo $GDBURL | awk -F/ '{print $3}')
