@@ -7,29 +7,14 @@ BTD_PID=$(ps -eo pid,args | grep "/bin/bash $RUN" | grep -v grep | awk '{print $
 # Carry out specific functions when asked to by the system
 case "$1" in
     start)
-        recallog "Starting $NAME"
-        if [ -z "$BTD_PID" ]; then
-            nice -n 19 $RUN start&
-            if [ $? -eq 0 ]; then
-                recallog "script $RUN [ STARTED ]"
-            fi
-        else
-            recallog "script $RUN already started ["$BTD_PID"]!"
-        fi
+        nice -n 19 $RUN start&
     ;;
     stop)
-        recallog "Stopping $NAME"
         if [ ! -z "$BTD_PID" ]; then
             kill $BTD_PID
-            if [ $? -eq 0 ]; then
-                recallog "script $RUN [ STOPPED ]"
-            fi
             $RUN stop
         elif test -e "/tmp/poweroff.please"; then
-            recallog "script $RUN initiated the poweroff"
             $RUN stop
-        else
-            recallog "script $RUN already stopped !"
         fi
     ;;
     status)
