@@ -1,21 +1,13 @@
 #!/bin/sh
-#
-#
-
-log=/userdata/system/logs/recalbox.log
-systemsetting="python /usr/lib/python2.7/site-packages/configgen/settings/recalboxSettings.py"
 
 case "$1" in
-  start)
+    start)
+	systemsetting="python /usr/lib/python2.7/site-packages/configgen/settings/recalboxSettings.py"
 	enabled="`$systemsetting  -command load -key system.es.atstartup`"
         if [ "$enabled" != "0" ];then
 		settings_lang="`$systemsetting -command load -key system.language`"
-        	recallog "starting emulationstation with lang = $settings_lang"
 		# HOME is important to be able to call ~/.xinitrc
-                command="HOME=/userdata/system startx"
-        	recallog "Starting emulationstation with command : "
-        	recallog "$command"
-        	eval $command >> $log &
+                HOME=/userdata/system startx &
 	fi
 	;;
   stop)
