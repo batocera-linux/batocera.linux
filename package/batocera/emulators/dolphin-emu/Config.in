@@ -1,5 +1,5 @@
 config BR2_PACKAGE_DOLPHIN_EMU
-  bool "dolphin-emu"
+	bool "dolphin-emu"
 	depends on BR2_x86_64
 	depends on BR2_PACKAGE_XORG7
 	select BR2_PACKAGE_LIBEVDEV
@@ -12,19 +12,16 @@ config BR2_PACKAGE_DOLPHIN_EMU
 	select BR2_PACKAGE_SFML
 	select BR2_PACKAGE_BLUEZ5_UTILS
 	select BR2_PACKAGE_HIDAPI
-  select BR2_PACKAGE_QT5
-  select BR2_PACKAGE_QT5BASE
-  select BR2_PACKAGE_QT5BASE_OPENGL
-  select BR2_PACKAGE_QT5BASE_XCB
-  select BR2_PACKAGE_QT5BASE_FONTCONFIG
-  select BR2_PACKAGE_QT5BASE_GUI
+	select BR2_PACKAGE_QT5
+	select BR2_PACKAGE_QT5BASE
+	select BR2_PACKAGE_QT5BASE_OPENGL
+	select BR2_PACKAGE_QT5BASE_XCB
+	select BR2_PACKAGE_QT5BASE_FONTCONFIG
+	select BR2_PACKAGE_QT5BASE_GUI
 	select BR2_PACKAGE_QT5BASE_WIDGETS
-  select BR2_PACKAGE_HICOLOR_ICON_THEME
-#  fixme
-#  select BR2_PACKAGE_QT5CT
-#  select BR2_PACKAGE_ADWAITA_QT
-  help
-    Gamecube/Wii emulator
+	select BR2_PACKAGE_HICOLOR_ICON_THEME
+	help
+	  Gamecube/Wii emulator
 
-  comment "DOLPHIN_EMU needs a toolchain w/ C++, OpenGL"
-    depends on !BR2_INSTALL_LIBSTDCPP || !BR2_PACKAGE_HAS_LIBGL
+	comment "DOLPHIN_EMU needs a toolchain w/ C++, OpenGL"
+	depends on !BR2_INSTALL_LIBSTDCPP || !BR2_PACKAGE_HAS_LIBGL
