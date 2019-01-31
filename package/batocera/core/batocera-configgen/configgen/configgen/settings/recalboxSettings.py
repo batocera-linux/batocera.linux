@@ -1,10 +1,5 @@
 #!/usr/bin/env python
 import sys
-# import os
-# if __name__ == '__main__':
-#     sys.path.append(
-#         os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir)))
-#
 import argparse
 import configgen.recalboxFiles as recalboxFiles
 from configgen.settings.unixSettings import UnixSettings
