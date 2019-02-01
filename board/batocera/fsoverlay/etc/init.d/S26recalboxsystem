@@ -94,7 +94,7 @@ rb_xarcade2jstick() {
         if [ $? -ne "0" ]
         then
             # the user must have a keyboard encoder then
-            for dev in /recalbox/share_init/system/configs/xarcade2jstick/*
+            for dev in /usr/share/batocera/datainit/system/configs/xarcade2jstick/*
             do
                 dev=$(basename "$dev")
                 [ -h "/dev/input/by-id/$dev" ] && /usr/bin/xarcade2jstick -d -e "/dev/input/by-id/$dev" && break
