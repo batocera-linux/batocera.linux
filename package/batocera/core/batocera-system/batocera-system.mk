@@ -59,9 +59,9 @@ endif
 define BATOCERA_SYSTEM_INSTALL_TARGET_CMDS
 	mkdir -p $(TARGET_DIR)/recalbox/
 	echo -n "$(BATOCERA_SYSTEM_VERSION)" > $(TARGET_DIR)/recalbox/recalbox.arch
-	mkdir -p $(TARGET_DIR)/recalbox/share_init/system
-	cp package/batocera/core/batocera-system/$(BATOCERA_SYSTEM_BATOCERA_CONF)/recalbox.conf $(TARGET_DIR)/recalbox/share_init/system
-	cp package/batocera/core/batocera-system/$(BATOCERA_SYSTEM_BATOCERA_CONF)/recalbox.conf $(TARGET_DIR)/recalbox/share_init/system/recalbox.conf.template
+	mkdir -p $(TARGET_DIR)/usr/share/batocera/datainit/system
+	cp package/batocera/core/batocera-system/$(BATOCERA_SYSTEM_BATOCERA_CONF)/recalbox.conf $(TARGET_DIR)/usr/share/batocera/datainit/system
+	cp package/batocera/core/batocera-system/$(BATOCERA_SYSTEM_BATOCERA_CONF)/recalbox.conf $(TARGET_DIR)/usr/share/batocera/datainit/system/recalbox.conf.template
 	# recalbox-boot.conf
         $(INSTALL) -D -m 0644 package/batocera/core/batocera-system/recalbox-boot.conf $(BINARIES_DIR)/$(BATOCERA_SYSTEM_SUBDIR)/recalbox-boot.conf
 endef

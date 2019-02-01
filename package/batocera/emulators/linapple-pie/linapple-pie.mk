@@ -32,7 +32,7 @@ define LINAPPLE_PIE_BUILD_CMDS
 endef
 
 ifeq ($(BR2_PACKAGE_BATOCERA_SYSTEM),y)
-LINAPPLE_PIE_CONFDIR = $(TARGET_DIR)/recalbox/share_init/system/.linapple
+LINAPPLE_PIE_CONFDIR = $(TARGET_DIR)/usr/share/batocera/datainit/system/.linapple
 LINAPPLE_PIE_CONFFILE = $(LINAPPLE_PIE_CONFDIR)/linapple.conf
 define LINAPPLE_PIE_INSTALL_TARGET_CMDS
 	cp $(@D)/linapple-pie/linapple $(TARGET_DIR)/usr/bin/
