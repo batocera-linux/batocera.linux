@@ -1,0 +1,139 @@
+MRFIXIT: Update the wlan driver to handle the AP6359SA, point it to the right firmware, and fixup the device tree for SDIO, Wifi, and Bluetooth
+
+--- a/drivers/net/wireless/rockchip_wlan/rkwifi/rk_wifi_config.c
++++ b/drivers/net/wireless/rockchip_wlan/rkwifi/rk_wifi_config.c
+@@ -17,8 +17,8 @@
+  * Set Firmware Path
+  */
+  
+-#define VENDOR_ETC_FIRMWARE "/vendor/etc/firmware/"
+-#define SYSTEM_ETC_FIRMWARE "/system/etc/firmware/"
++#define VENDOR_ETC_FIRMWARE "/lib/firmware/"
++#define SYSTEM_ETC_FIRMWARE "/lib/firmware/"
+ char ANDROID_FW_PATH[64] = {0};
+ 
+ extern int get_wifi_chip_type(void);
+@@ -78,6 +78,12 @@ if (chip == WIFI_AP6255) {
+     sprintf(fw, "%s%s", ANDROID_FW_PATH, "fw_bcm43455c0_ag.bin");
+     sprintf(nvram, "%s%s", ANDROID_FW_PATH, "nvram_ap6255.txt");
+ }
++
++if (chip == WIFI_AP6359SA) {
++    sprintf(fw, "%s%s", ANDROID_FW_PATH, "brcm/fw_bcm4359c0_ag.bin");
++    sprintf(nvram, "%s%s", ANDROID_FW_PATH, "brcm/nvram_ap6359sa.txt");
++}
++
+ if (chip == WIFI_AP6441) {
+     sprintf(fw, "%s%s", ANDROID_FW_PATH, "fw_bcm43341b0_ag.bin");
+ 	sprintf(nvram, "%s%s", ANDROID_FW_PATH, "nvram_AP6441.txt");
+--- a/include/linux/rfkill-wlan.h
++++ b/include/linux/rfkill-wlan.h
+@@ -54,6 +54,7 @@ enum {
+     WIFI_AP6212,
+     WIFI_AP6234,
+     WIFI_AP6255,
++    WIFI_AP6359SA,
+     WIFI_AP6330,
+     WIFI_AP6335,
+     WIFI_AP6354,
+--- a/net/rfkill/rfkill-wlan.c
++++ b/net/rfkill/rfkill-wlan.c
+@@ -118,6 +118,8 @@ int get_wifi_chip_type(void)
+ 	type = WIFI_AP6234;
+     } else if (strcmp(wifi_chip_type_string, "ap6255") == 0) {
+ 	type = WIFI_AP6255;
++    } else if (strcmp(wifi_chip_type_string, "ap6359sa") == 0) {
++	type = WIFI_AP6359SA;
+     } else if (strcmp(wifi_chip_type_string, "ap6330") == 0) {
+         type = WIFI_AP6330;
+     } else if (strcmp(wifi_chip_type_string, "ap6335") == 0) {
+
+--- a/arch/arm64/boot/dts/rockchip/rk3399-rockpro64.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3399-rockpro64.dts
+@@ -104,6 +104,27 @@
+ 		regulator-max-microvolt = <1800000>;
+ 		regulator-always-on;
+ 	};
++	
++	vcc1v8_sdio: vcca1v8_sdio: vcc1v8-sdio {
++		compatible = "regulator-fixed";
++		regulator-name = "vcc1v8_sdio";
++		regulator-always-on;
++		regulator-boot-on;
++		regulator-min-microvolt = <1800000>;
++		regulator-max-microvolt = <1800000>;
++		vin-supply = <&vcc_1v8>;
++	};
++
++	vcc1v8_wifi: vcc1v8-wifi {
++		compatible = "regulator-fixed";
++		enable-active-high;
++		gpios = <&gpio0 RK_PB5 GPIO_ACTIVE_HIGH>; 
++		pinctrl-names = "default";
++		pinctrl-0 = <&wifi_pwr>;
++		regulator-name = "vcc1v8_wifi";
++		regulator-boot-on;
++		vin-supply = <&vcc_1v8>;
++	};
+ 
+ 	vcc_sys: vcc-sys {
+ 		compatible = "regulator-fixed";
+@@ -194,7 +215,7 @@
+ 	wireless-wlan {
+ 		compatible = "wlan-platdata";
+ 		rockchip,grf = <&grf>;
+-		wifi_chip_type = "ap6354";
++		wifi_chip_type = "ap6359sa";
+ 		sdio_vref = <1800>;
+ 		WIFI,host_wake_irq = <&gpio0 3 GPIO_ACTIVE_HIGH>;
+ 		status = "okay";
+@@ -332,7 +353,9 @@
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&sdio0_bus4 &sdio0_cmd &sdio0_clk>;
+ 	sd-uhs-sdr104;
+-	status = "disabled";
++	vqmmc-supply = &vcc1v8_sdio;	/* IO line */
++	vmmc-supply = &vcc_sd;			/* card's power */
++	status = "okay";
+ };
+ 
+ &emmc_phy {
+@@ -532,12 +555,12 @@
+ 			vcc_sd: LDO_REG4 {
+ 				regulator-name = "vcc_sd";
+ 				regulator-min-microvolt = <1800000>;
+-				regulator-max-microvolt = <3300000>;
++				regulator-max-microvolt = <3000000>;
+ 				regulator-always-on;
+ 				regulator-boot-on;
+ 				regulator-state-mem {
+ 					regulator-on-in-suspend;
+-					regulator-suspend-microvolt = <3300000>;
++					regulator-suspend-microvolt = <3000000>;
+ 				};
+ 			};
+ 
+@@ -717,7 +740,7 @@
+ &uart0 {
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&uart0_xfer &uart0_cts>;
+-	status = "disabled";
++	status = "okay";
+ };
+ 
+ &uart2 {
+@@ -916,7 +939,13 @@
+ 	wireless-bluetooth {
+ 		uart0_gpios: uart0-gpios {
+ 			rockchip,pins =
+-				<2 19 RK_FUNC_GPIO &pcfg_pull_none>;
++				<2 19 RK_FUNC_1 &pcfg_pull_up>;
++		};
++	};
++
++	wireless-wlan {
++		wifi_pwr: wifi-pwr {
++			rockchip,pins = <0 RK_PB5 RK_FUNC_GPIO &pcfg_pull_none>;
+ 		};
+ 	};
+ 
