@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-HOME_INIT = '/recalbox/share_init/system/'
+HOME_INIT = '/usr/share/batocera/datainit/system/'
 HOME = '/userdata/system'
 CONF_INIT = HOME_INIT + '/configs'
 CONF = HOME + '/configs'
@@ -59,9 +59,9 @@ mupenCustom = mupenConf + "mupen64plus.cfg"
 mupenInput = mupenConf + "InputAutoCfg.ini"
 mupenSaves = SAVES + "/n64"
 mupenMappingUser    = mupenConf + 'input.xml'
-mupenMappingSystem  = '/recalbox/share_init/system/configs/mupen64/input.xml'
+mupenMappingSystem  = '/usr/share/batocera/datainit/system/configs/mupen64/input.xml'
 
-shaderPresetRoot = "/recalbox/share_init/system/configs/shadersets/"
+shaderPresetRoot = "/usr/share/batocera/datainit/system/configs/shadersets/"
 
 kodiJoystick = HOME + '/.kodi/userdata/addon_data/peripheral.joystick/resources/buttonmaps/xml/linux/batocera_{}.xml'
 
@@ -79,7 +79,7 @@ reicastConfig = reicastCustom + '/emu.cfg'
 reicastConfigInit = HOME_INIT + 'configs/reicast/emu.cfg'
 reicastSaves = SAVES
 reicastBios = BIOS
-reicastVMUBlank = '/recalbox/share_init/saves/reicast/vmu_save_blank.bin'
+reicastVMUBlank = '/usr/share/batocera/datainit/saves/reicast/vmu_save_blank.bin'
 reicastVMUA1 = reicastSaves + '/reicast/vmu_save_A1.bin'
 reicastVMUA2 = reicastSaves + '/reicast/vmu_save_A2.bin'
 
@@ -115,7 +115,7 @@ viceConfig = CONF + "/vice/vice.conf"
 advancemameConfig = CONF + '/advancemame/advmame.rc'
 advancemameConfigOrigin = CONF + '/advancemame/advmame.rc.origin'
 
-overlaySystem = "/recalbox/share_init/decorations"
+overlaySystem = "/usr/share/batocera/datainit/decorations"
 overlayUser = "/userdata/decorations"
 overlayConfigFile = "/userdata/system/configs/retroarch/overlay.cfg"
 
