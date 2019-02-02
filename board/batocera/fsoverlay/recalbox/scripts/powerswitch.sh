@@ -44,13 +44,13 @@ atx_raspi_start()
                 shutdownSignal=$(cat /sys/class/gpio/gpio$SHUTDOWN/value)
             done
             #pulse went LOW, check if it was long enough, and trigger reboot
-            if [ $(($(date +%s%N | cut -b1-13)-$pulseStart)) -gt $REBOOTPULSEMINIMUM ]; then 
+            if [ $(($(date +%s%N | cut -b1-13)-$pulseStart)) -gt $REBOOTPULSEMINIMUM ]; then
                 echo "ATXRaspi triggered a reboot signal, recycling Rpi ... "
                 reboot
                 exit
             fi
         fi
-    done    
+    done
 }
 
 atx_raspi_stop()
@@ -74,13 +74,13 @@ mausberry_start()
     echo "out" > /sys/class/gpio/gpio$2/direction
     echo "1" > /sys/class/gpio/gpio$2/value
 
-    # Wait for switch off signal 
+    # Wait for switch off signal
     power=0
     while [ "$power" = "0" ]; do
         sleep 1
         power=$(cat /sys/class/gpio/gpio$1/value)
     done
-    
+
     # Switch off
     if [ "$?" = "0" ]; then
         touch "/tmp/poweroff.please"
@@ -100,12 +100,12 @@ mausberry_stop()
 # http://www.msldigital.com/pages/support-for-remotepi-board-plus-2015
 msldigital_start()
 {
-    # Init GPIO : 
+    # Init GPIO :
     # $1 is the GPIO pin receiving the shut-down signal
     echo "$1" > /sys/class/gpio/export
     echo "in" > /sys/class/gpio/gpio$1/direction
 
-    # Wait for switch off signal 
+    # Wait for switch off signal
     power=0
     while [ "$power" = "0" ]; do
         sleep 1
@@ -209,32 +209,47 @@ wittyPi_stop()
     gpio mode $halt_pin up
 }
 
-pin356_start()
+killemulator_start()
 {
-	python /recalbox/scripts/rpi-pin356-power.py &
+	python /recalbox/scripts/rpi-killemulator-56-power.py &
     pid=$!
-    echo "$pid" > /tmp/rpi-pin356-power.pid
+    echo "$pid" > /tmp/rpi-killemulator-56-power.pid
     wait "$pid"
 }
-pin356_stop()
+killemulator_stop()
 {
-    if [[ -f /tmp/rpi-pin356-power.pid ]]; then
-        kill `cat /tmp/rpi-pin356-power.pid`
+    if [[ -f /tmp/rpi-killemulator-56-power.pid ]]; then
+        kill `cat /tmp/rpi-killemulator-56-power.pid`
     fi
 }
 
-pin56_start()
+onoff_start()
 {
     mode=$1
-    python /recalbox/scripts/rpi-pin56-power.py -m "$mode" &
+    python /recalbox/scripts/rpi-onoff-56-power.py -m "$mode" &
     pid=$!
-    echo "$pid" > /tmp/rpi-pin56-power.pid
+    echo "$pid" > /tmp/rpi-onoff-56-power.pid
     wait "$pid"
 }
-pin56_stop()
+onoff_stop()
 {
-    if [[ -f /tmp/rpi-pin56-power.pid ]]; then
-        kill `cat /tmp/rpi-pin56-power.pid`
+    if [[ -f /tmp/rpi-onoff-56-power.pid ]]; then
+        kill `cat /tmp/rpi-onoff-56-power.pid`
+    fi
+}
+
+retroflag_start()
+{
+    mode=$1
+    python /recalbox/scripts/rpi-retroflag-356-power.py -m "$mode" &
+    pid=$!
+    echo "$pid" > /tmp/rpi-retroflag-356-power.pid
+    wait "$pid"
+}
+retroflag_stop()
+{
+    if [[ -f /tmp/rpi-retroflag-356-power.pid ]]; then
+        kill `cat /tmp/rpi-retroflag-356-power.pid`
     fi
 }
 
@@ -244,7 +259,7 @@ if [[ "$1" != "start" && $1 != "stop" ]]; then
 fi
 
 CONFFILE="/userdata/system/recalbox.conf"
-CONFPARAM="system.power.switch" 
+CONFPARAM="system.power.switch"
 CONFVALUE=
 if [ -e $CONFFILE ]; then
     CONFVALUE=$(sed -rn "s/^$CONFPARAM=(\w*)\s*.*$/\1/p" $CONFFILE | tail -n 1)
@@ -266,15 +281,19 @@ case "$CONFVALUE" in
     "WITTYPI")
         wittyPi_$1 0 7
     ;;
-    "PIN56ONOFF")
-        pin56_$1 onoff
+    "PIN56ONOFFSWITCH")
+        onoff_$1 onoff
     ;;
-    "PIN56PUSH")
-        echo "will start pin56_$1"
-        pin56_$1 push
+    "PIN56ONOFFBUTTON")
+        echo "will start onoff_$1"
+        onoff_$1 push
     ;;
-    "PIN356ONOFFRESET")
-        echo "will start pin356_$1"
-        pin356_$1 noparam
+    "PIN56KILLEMULATOR")
+        echo "will start killemulator_$1"
+        killemulator_$1 push
+    ;;
+    "PIN356RETROFLAGONOFF")
+        echo "will start retroflag_$1"
+        retroflag_$1 push
     ;;
 esac

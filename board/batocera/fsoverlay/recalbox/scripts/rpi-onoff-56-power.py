@@ -11,11 +11,10 @@ GPIO.setup(3, GPIO.IN, pull_up_down=GPIO.PUD_UP)	# GPIO on pin 5 is the GPIO 3 i
 
 def shutdownBatocera(channel):
     print 'shutdownBatocera'
-    os.system('shutdown -h now')
+    os.system('shutdown -r now')
 
 
-GPIO.add_event_detect(3, GPIO.FALLING, callback=shutdownBatocera,
-                      bouncetime=500)
+GPIO.add_event_detect(3, GPIO.FALLING, callback=shutdownBatocera, bouncetime=500)
 
 while True:
     time.sleep(0.2)
