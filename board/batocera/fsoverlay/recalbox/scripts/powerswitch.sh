@@ -211,15 +211,15 @@ wittyPi_stop()
 
 killemulator_start()
 {
-	python /recalbox/scripts/rpi-killemulator-56-power.py &
+	python /recalbox/scripts/rpi-killemulator-56.py &
     pid=$!
-    echo "$pid" > /tmp/rpi-killemulator-56-power.pid
+    echo "$pid" > /tmp/rpi-killemulator-56.pid
     wait "$pid"
 }
 killemulator_stop()
 {
-    if [[ -f /tmp/rpi-killemulator-56-power.pid ]]; then
-        kill `cat /tmp/rpi-killemulator-56-power.pid`
+    if [[ -f /tmp/rpi-killemulator-56.pid ]]; then
+        kill `cat /tmp/rpi-killemulator-56.pid`
     fi
 }
 
