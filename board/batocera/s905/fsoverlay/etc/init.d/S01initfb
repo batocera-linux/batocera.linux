@@ -9,8 +9,6 @@ do_start() {
     # taken from the libreelec project
     # https://github.com/LibreELEC/LibreELEC.tv/blob/master/projects/S905/initramfs/platform_init
 
-    display_mode=$(cat /sys/class/display/mode)
-
     hdmimode=1080p60hz
 
     # Parse command line arguments
@@ -67,10 +65,6 @@ do_start() {
       echo 0 > "$part"
     done
 
-    # Set 1GHz minimum CPU speed for both clusters
-    echo 1000000 > /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq
-    echo 1000000 > /sys/devices/system/cpu/cpu4/cpufreq/scaling_min_freq
-
     # set smp_affinity
     #            Binary       Hex
     #    CPU 0    0001         1
@@ -85,21 +79,11 @@ do_start() {
     echo 4 > /sys/module/amvdec_h264/parameters/dec_control
 
     echo 1 > /sys/devices/system/cpu/cpufreq/ondemand/io_is_busy
-
-    # recalbox background
-    test -e /dev/fb0 && fbv -f -i /recalbox/system/resources/splash/logo-version.png
-
-    # Wait for emulationstation or Kodi, but not more than 20 seconds
-    count=0
-    while [[ ! -f "/tmp/emulationstation.ready" && ! -e "/var/run/kodi.msg" && $count -lt 20 ]]; do
-        sleep 1
-        ((count++))
-    done
 }
 
 case "$1" in
     start)
-        do_start &
+        do_start
         ;;
     stop)
 	   ;;

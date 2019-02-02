@@ -1,0 +1,26 @@
+#!/bin/bash
+
+do_start ()
+{
+    # on some sytems, fb0 is not immediatly loaded, so, keep a chance by waiting a bit
+    N=0
+    while ! test -e /dev/fb0 -o $N -gt 15
+    do
+	sleep 1
+	let N++
+    done
+    test -e /dev/fb0 && fbv -f -i /usr/share/batocera/splash/logo-version.png
+}
+
+case "$1" in
+    start)
+        do_start &
+        ;;
+    stop)
+	   ;;
+    restart|reload)
+	   ;;
+    *)
+esac
+
+exit $?

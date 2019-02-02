@@ -1,0 +1,43 @@
+#!/bin/bash
+
+soundDisabled() {
+    grep -qE "^[ ]*splashsound[ ]*=[ ]*false[ ]*$" /boot/recalbox-boot.conf
+}
+
+do_start ()
+{
+    if test -f "/boot/splash.mp4"
+    then
+	video="/boot/splash.mp4"
+    else
+	video="/usr/share/batocera/splash/splash.mp4"
+    fi
+
+    ffplay_opt=
+    if soundDisabled
+    then
+	ffplay_opt=-an
+    fi
+    /usr/bin/ffplay $ffplay_opt -autoexit -loglevel 0 "$video" &
+    PID=$!
+    # Wait for emulationstation or Kodi, but not more than 20 seconds
+    count=0
+    while [[ ! -f "/tmp/emulationstation.ready" && ! -e "/var/run/kodi.msg" && $count -lt 200 ]]; do
+        sleep 0.1
+        ((count++))
+    done
+    kill -9 "${PID}"
+}
+
+case "$1" in
+    start)
+        do_start &
+        ;;
+    stop)
+	   ;;
+    restart|reload)
+	   ;;
+    *)
+esac
+
+exit $?

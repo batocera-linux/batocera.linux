@@ -119,7 +119,7 @@ else
     XTARGET_IMAGE="${PWD}/${TARGET_IMAGE}"
 fi
 
-XTARGET_VERSION=$(cat "${G_TARGETDIR}/recalbox/batocera.version" | sed -e s+" .*$"++)
+XTARGET_VERSION=$(cat "${G_TARGETDIR}/usr/share/batocera/batocera.version" | sed -e s+" .*$"++)
 XTARGET_ARCH=$(cat "${G_TARGETDIR}/recalbox/recalbox.arch")
 XTARGET_FILE="pcsx2-${XTARGET_ARCH}-${XTARGET_VERSION}.tar.gz"
 
