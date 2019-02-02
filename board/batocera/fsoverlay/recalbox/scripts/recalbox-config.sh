@@ -244,7 +244,7 @@ if [ "$command" == "canupdate" ];then
 	        echo "Unable to access the url" >&2
 		exit 2
 	fi
-	installed=`cat /recalbox/batocera.version`
+	installed=`cat /usr/share/batocera/batocera.version`
 
 	echo "Current: ${installed}"
 	echo "New: ${available}"
