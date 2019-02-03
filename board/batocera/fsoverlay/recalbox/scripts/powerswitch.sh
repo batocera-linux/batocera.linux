@@ -240,8 +240,7 @@ onoff_stop()
 
 retroflag_start()
 {
-    mode=$1
-    python /recalbox/scripts/rpi-retroflag-356-power.py -m "$mode" &
+	python /recalbox/scripts/rpi-retroflag-356-power.py &
     pid=$!
     echo "$pid" > /tmp/rpi-retroflag-356-power.pid
     wait "$pid"
