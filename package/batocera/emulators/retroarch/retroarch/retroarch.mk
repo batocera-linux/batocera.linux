@@ -3,8 +3,8 @@
 # retroarch
 #
 ################################################################################
-#Version.: Commits on Oct 01, 2018 
-RETROARCH_VERSION = v1.7.5
+#Version.: Commits on Feb 4, 2019 
+RETROARCH_VERSION = v1.7.6
 
 RETROARCH_SITE = $(call github,libretro,RetroArch,$(RETROARCH_VERSION))
 
