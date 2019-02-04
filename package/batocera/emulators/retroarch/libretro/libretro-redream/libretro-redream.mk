@@ -3,9 +3,10 @@
 # REDREAM
 #
 ################################################################################
-# Version.: Commits on Jul 27, 2018
-LIBRETRO_REDREAM_VERSION = 3dfea38c8200152e53a228df9bc5c2d0dc146516
-LIBRETRO_REDREAM_SITE = $(call github,libretro,redream,$(LIBRETRO_REDREAM_VERSION))
+# Version.: Commits on Apr 18, 2018
+LIBRETRO_REDREAM_VERSION = ffb7302245ff40515cb9f0f0b0e233a4b39342d3
+LIBRETRO_REDREAM_SITE = $(call github,inolen,redream,$(LIBRETRO_REDREAM_VERSION))
+LIBRETRO_REDREAM_LICENSE="MIT"
 
 define LIBRETRO_REDREAM_BUILD_CMDS
         CFLAGS="$(TARGET_CFLAGS)" CXXFLAGS="$(TARGET_CXXFLAGS)" $(MAKE) CXX="$(TARGET_CXX)" \
