@@ -6,6 +6,7 @@
 # Version.: Commits on Apr 9, 2018
 LIBRETRO_METEOR_VERSION = f8ab66ce5f68991bf9f926bf1dd5b662abd9d74b
 LIBRETRO_METEOR_SITE = $(call github,libretro,meteor-libretro,$(LIBRETRO_METEOR_VERSION))
+LIBRETRO_METEOR_LICENSE="GPLv3"
 
 
 define LIBRETRO_METEOR_BUILD_CMDS
