@@ -3,9 +3,10 @@
 # SCUMMVM
 #
 ################################################################################
-# VERSION.: Commits on Oct 9, 2018
-LIBRETRO_SCUMMVM_VERSION = 20d71cd7189ae7fdd453a3041f3103bffabea13e
+# VERSION.: Commits on Jan 30, 2019
+LIBRETRO_SCUMMVM_VERSION = 602a26cedd55677942648cbf488f52bd951a95d8
 LIBRETRO_SCUMMVM_SITE = $(call github,libretro,scummvm,$(LIBRETRO_SCUMMVM_VERSION))
+LIBRETRO_SCUMMVM_LICENSE="GPLv2"
 
 define LIBRETRO_SCUMMVM_BUILD_CMDS
 	CFLAGS="$(TARGET_CFLAGS)" CXXFLAGS="$(TARGET_CXXFLAGS)" LDFLAGS="-shared -Wl,--no-undefined" $(MAKE) \
