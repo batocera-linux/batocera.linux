@@ -3,9 +3,10 @@
 # LIBRETRO_FREEINTV
 #
 ################################################################################
-# Version.: Commits on Nov 11, 2018
-LIBRETRO_FREEINTV_VERSION = cc72320d81b1352e452ad79b671fc83b87fc67a9
+# Version.: Commits on Jan 5, 2019
+LIBRETRO_FREEINTV_VERSION = b888da9a0dbae404c1fb52a6514c7f6800dfe11b
 LIBRETRO_FREEINTV_SITE = $(call github,libretro,freeintv,$(LIBRETRO_FREEINTV_VERSION))
+LIBRETRO_FREEINTV_LICENSE="GPLv3"
 
 define LIBRETRO_FREEINTV_BUILD_CMDS
 	CFLAGS="$(TARGET_CFLAGS)" CXXFLAGS="$(TARGET_CXXFLAGS)" \
