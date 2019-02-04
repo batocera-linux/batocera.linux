@@ -4,11 +4,12 @@
 #
 # Disable.: Many games are not yet running
 ################################################################################
-# Version.: Commits on Jul 15, 2018 (v1.6.3)
-LIBRETRO_PPSSPP_VERSION = ea1ef9277cd7d5b439951099bee15f074999c7c1
+# Version.: Commits on Feb 4, 2019
+LIBRETRO_PPSSPP_VERSION = 128c0adc3918914935d2e03c95cc46edd85d963d
 LIBRETRO_PPSSPP_SITE = https://github.com/hrydgard/ppsspp.git
 LIBRETRO_PPSSPP_SITE_METHOD=git
 LIBRETRO_PPSSPP_GIT_SUBMODULES=YES
+LIBRETRO_PPSSPP_LICENSE="GPLv2"
 
 # x86
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86),y)
