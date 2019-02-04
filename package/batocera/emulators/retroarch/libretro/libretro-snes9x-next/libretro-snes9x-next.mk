@@ -3,9 +3,10 @@
 # SNES9X_NEXT
 #
 ################################################################################
-# Version.: Commits on Nov 8, 2018
-LIBRETRO_SNES9X_NEXT_VERSION = ead24f29b2af0df83f3365d3e887bdd81979c1a2
+# Version.: Commits on Dec 27, 2018
+LIBRETRO_SNES9X_NEXT_VERSION = d0606eb568d1ec13dd2ca8949ae990b86cfb1034
 LIBRETRO_SNES9X_NEXT_SITE = $(call github,libretro,snes9x2010,$(LIBRETRO_SNES9X_NEXT_VERSION))
+LIBRETRO_SNES9X_NEXT_LICENSE="Non-commercial"
 
 define LIBRETRO_SNES9X_NEXT_BUILD_CMDS
 	CFLAGS="$(TARGET_CFLAGS)" CXXFLAGS="$(TARGET_CXXFLAGS)" $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" -C $(@D)/ -f Makefile.libretro platform="$(LIBRETRO_PLATFORM)"
