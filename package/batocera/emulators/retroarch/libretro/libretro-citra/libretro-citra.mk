@@ -3,12 +3,13 @@
 # CITRA
 #
 ################################################################################
-# Version.: Commits on Sep 30, 2018
-LIBRETRO_CITRA_VERSION = a0c222c00645bff70b2347ddef66767bfc303535
+# Version.: Commits on Jan 6, 2019
+LIBRETRO_CITRA_VERSION = d4543ac9cd486b24ae33458e2708dfeb05aa2eb8
 LIBRETRO_CITRA_SITE = https://github.com/libretro/citra.git
 LIBRETRO_CITRA_SITE_METHOD=git
 LIBRETRO_CITRA_GIT_SUBMODULES=YES
 LIBRETRO_CITRA_DEPENDENCIES = fmt boost
+LIBRETRO_CITRA_LICENSE="GPLv2+"
 
 # Should be set when the package cannot be built inside the source tree but needs a separate build directory.
 LIBRETRO_CITRA_SUPPORTS_IN_SOURCE_BUILD = NO
