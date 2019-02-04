@@ -3,9 +3,10 @@
 # LIBRETRO DOLPHIN
 #
 ################################################################################
-# Version.: Commits on Aug 27, 2018
-LIBRETRO_DOLPHIN_VERSION = a5bce7d67abeaa9142d466a578ca5049197073e9
+# Version.: Commits on Jan 30, 2019
+LIBRETRO_DOLPHIN_VERSION = f4cb42618fdb9483b019ccdd885ed58695557165
 LIBRETRO_DOLPHIN_SITE = $(call github,libretro,dolphin,$(LIBRETRO_DOLPHIN_VERSION))
+LIBRETRO_DOLPHIN_LICENSE="GPLv2"
 
 LIBRETRO_DOLPHIN_CONF_OPTS = -DBUILD_SHARED_LIBS=OFF -DLIBRETRO=ON -DENABLE_QT2=False
 
