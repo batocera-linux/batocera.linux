@@ -32,11 +32,10 @@ typetoname = {'button': 'btn', 'hat': 'btn', 'axis': 'axis', 'key': 'key'}
 hatstoname = {'1': 'up', '2': 'right', '4': 'down', '8': 'left'}
 
 # Map buttons to the corresponding retroarch specials keys
-retroarchspecialsnomenu = {'x': 'load_state', 'y': 'save_state', 'pageup': 'screenshot', \
-                           'start': 'exit_emulator', 'up': 'state_slot_increase', \
-                           'down': 'state_slot_decrease', 'left': 'rewind', 'right': 'hold_fast_forward', \
-                           'l2': 'shader_prev', 'r2': 'shader_next', 'a': 'reset'}
-retroarchspecials = retroarchspecialsnomenu.copy()
+retroarchspecials = {'x': 'load_state', 'y': 'save_state', 'pageup': 'screenshot', \
+                     'start': 'exit_emulator', 'up': 'state_slot_increase', \
+                     'down': 'state_slot_decrease', 'left': 'rewind', 'right': 'hold_fast_forward', \
+                     'l2': 'shader_prev', 'r2': 'shader_next', 'a': 'reset'}
 retroarchspecials['b'] = 'menu_toggle'
 
 # Write a configuration for a specified controller
@@ -46,9 +45,6 @@ def writeControllersConfig(retroconfig, system, controllers):
     for controller in controllers:
         writeControllerConfig(retroconfig, controllers[controller], controller, system)
     writeHotKeyConfig(retroconfig, controllers)
-    if ('inputdriver' not in system.config) or (system.config['inputdriver'] == 'auto'):
-        system.config['inputdriver'] = getInputDriver(controllers)
-
 
 # remove all controller configurations
 def cleanControllerConfig(retroconfig, controllers):
@@ -66,9 +62,7 @@ def writeHotKeyConfig(retroconfig, controllers):
 
 # Write a configuration for a specified controller
 def writeControllerConfig(retroconfig, controller, playerIndex, system):
-    if not 'specials' in system.config:
-        system.config['specials'] = 'default'
-    generatedConfig = generateControllerConfig(controller, system.config['specials'])
+    generatedConfig = generateControllerConfig(controller)
     for key in generatedConfig:
         retroconfig.save(key, generatedConfig[key])
 
@@ -78,7 +72,7 @@ def writeControllerConfig(retroconfig, controller, playerIndex, system):
 
 
 # Create a configuration for a given controller
-def generateControllerConfig(controller, specials = 'default'):
+def generateControllerConfig(controller):
     config = dict()
     # config['input_device'] = '"%s"' % controller.realName
     for btnkey in retroarchbtns:
@@ -100,11 +94,7 @@ def generateControllerConfig(controller, specials = 'default'):
             config['input_player%s_%s_minus_axis' % (controller.player, jsvalue)] = '-%s' % input.id
             config['input_player%s_%s_plus_axis' % (controller.player, jsvalue)] = '+%s' % input.id
     if controller.player == '1':
-        specialMap = dict()
-        if specials == 'nomenu':
-            specialMap = retroarchspecialsnomenu
-        if specials == 'default':
-            specialMap = retroarchspecials
+        specialMap = retroarchspecials
         for specialkey in specialMap:
             specialvalue = specialMap[specialkey]
             if specialkey in controller.inputs:
@@ -148,16 +138,3 @@ def getAnalogCoreMode(controller):
             if (controller.inputs[dirkey].type == 'button') or (controller.inputs[dirkey].type == 'hat'):
                 return 'analog'
     return 'standard'
-
-
-# find the driver for controllers
-# Write a configuration for a specified controller
-def getInputDriver(controllers):
-    for controller in controllers:
-        for controllerName in sdl2driverControllers:
-            if controllerName in controllers[controller].realName:
-                return 'sdl2'
-    return 'udev'
-
-# list of controllers that works only with sdl2 driver
-sdl2driverControllers = ['Bluetooth Wireless Controller', 'szmy-power', 'XiaoMi Bluetooth Wireless GameController', 'ipega Bluetooth Gamepad', 'ipega Bluetooth Gamepad   ']
