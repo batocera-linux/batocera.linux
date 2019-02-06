@@ -15,7 +15,6 @@ class Emulator():
     def configure(self, emulator='default', core='default', ratio='auto', netplay=None):
         recalSettings = UnixSettings(recalboxFiles.recalboxConf)
         globalSettings = recalSettings.loadAll('global')
-        self.config['specials'] = recalSettings.load('system.emulators.specialkeys', 'default')
         self.updateConfiguration(globalSettings)
         self.updateConfiguration(recalSettings.loadAll(self.name))
         self.updateForcedConfig(emulator, core, ratio)

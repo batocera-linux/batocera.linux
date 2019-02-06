@@ -91,10 +91,7 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
         retroarchConfig['savestate_auto_save'] = 'false'
         retroarchConfig['savestate_auto_load'] = 'false'
 
-    if defined('inputdriver', recalboxConfig):
-        retroarchConfig['input_joypad_driver'] = recalboxConfig['inputdriver']
-    else:
-        retroarchConfig['input_joypad_driver'] = 'udev'
+    retroarchConfig['input_joypad_driver'] = 'udev'
 
     retroarchConfig['savestate_directory'] = recalboxFiles.savesDir + system.name
     retroarchConfig['savefile_directory'] = recalboxFiles.savesDir + system.name
