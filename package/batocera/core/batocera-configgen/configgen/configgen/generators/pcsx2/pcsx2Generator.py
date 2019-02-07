@@ -46,7 +46,7 @@ class Pcsx2Generator(Generator):
         
         # arch
         arch = "x86"
-        with open('/recalbox/recalbox.arch', 'r') as content_file:
+        with open('/usr/share/batocera/batocera.arch', 'r') as content_file:
             arch = content_file.read()
 
         if arch == "x86":

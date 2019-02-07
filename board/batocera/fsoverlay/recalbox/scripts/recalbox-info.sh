@@ -15,7 +15,7 @@ then
 fi
 ###
 
-V_ARCH=$(cat /recalbox/recalbox.arch)
+V_ARCH=$(cat /usr/share/batocera/batocera.arch)
 V_CPUNB=$(grep -E $'^processor\t:' /proc/cpuinfo | wc -l)
 V_CPUMODEL1=$(grep -E $'^model name\t:' /proc/cpuinfo | head -1 | sed -e s+'^model name\t: '++)
 V_SYSTEM=$(uname -rs)

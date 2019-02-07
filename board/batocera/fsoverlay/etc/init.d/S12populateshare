@@ -88,7 +88,7 @@ ln -s /userdata/system/udev/rules.d/ /run/udev/
 # fixes
 XNEW=$(cat /usr/share/batocera/batocera.version)
 XCUR=$(cat /userdata/system/data.version)
-XARCH=$(cat /recalbox/recalbox.arch)
+XARCH=$(cat /usr/share/batocera/batocera.arch)
 test "${XCUR}" = "${XNEW}" && exit 0
 
 # retroarchcustom.cfg
