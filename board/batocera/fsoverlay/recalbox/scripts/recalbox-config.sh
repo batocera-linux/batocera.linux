@@ -10,7 +10,7 @@ command="$1"
 mode="$2"
 extra1="$3"
 extra2="$4"
-arch=`cat /recalbox/recalbox.arch`
+arch=`cat /usr/share/batocera/batocera.arch`
 
 recalboxupdateurl="https://batocera-linux.xorhub.com/upgrades"
 

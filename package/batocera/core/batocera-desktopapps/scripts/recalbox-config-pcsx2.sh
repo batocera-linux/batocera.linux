@@ -10,7 +10,7 @@ then
     matchbox-remote -s # show the mouse
 fi
 
-ARCH=$(cat /recalbox/recalbox.arch)
+ARCH=$(cat /usr/share/batocera/batocera.arch)
 
 if test "${ARCH}" != "x86"
 then
