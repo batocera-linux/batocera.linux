@@ -1,0 +1,9 @@
+config BR2_PACKAGE_LIBRETRO_MUPEN64PLUS_NEXT
+       bool "libretro-mupen64plus-next"
+       depends on BR2_PACKAGE_RETROARCH
+       depends on BR2_INSTALL_LIBSTDCPP
+        help
+          A alternative libretro N64 emulator core
+
+comment "LIBRETRO_MUPEN64PLUS_NX needs a toolchain w/ C++"
+       depends on !BR2_INSTALL_LIBSTDCPP
