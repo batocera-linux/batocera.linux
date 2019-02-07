@@ -16,7 +16,7 @@ coreSettings = UnixSettings(recalboxFiles.retroarchCoreCustom, separator=' ')
 
 # return true if the option is considered defined
 def defined(key, dict):
-    return key in dict and isinstance(dict[key], str) and len(dict[key]) > 0
+    return key in dict and isinstance(dict[key], basestring) and len(dict[key]) > 0
 
 
 # Warning the values in the array must be exactly at the same index than
