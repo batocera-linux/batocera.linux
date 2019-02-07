@@ -14,7 +14,8 @@ def shutdownBatocera(channel):
     os.system('shutdown -h now')
 
 
-GPIO.add_event_detect(3, GPIO.FALLING, callback=shutdownBatocera, bouncetime=500)
+GPIO.add_event_detect(3, GPIO.FALLING, callback=shutdownBatocera,
+                      bouncetime=500)
 
 while True:
     time.sleep(0.2)
