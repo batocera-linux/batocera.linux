@@ -5,7 +5,6 @@ import recalboxFiles
 from generators.Generator import Generator
 import shutil
 import os
-from settings.unixSettings import UnixSettings
 import ConfigParser
 
 class CitraGenerator(Generator):
