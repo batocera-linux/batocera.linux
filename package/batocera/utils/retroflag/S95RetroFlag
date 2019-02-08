@@ -1,0 +1,11 @@
+#!/bin/bash
+
+if test "$1" = start
+then
+    retroflag_SafeShutdown.py&
+fi
+
+if test "$1" = stop
+then
+    killall -9 retroflag_SafeShutdown.py &
+fi
