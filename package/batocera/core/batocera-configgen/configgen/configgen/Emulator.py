@@ -23,11 +23,11 @@ class Emulator():
         return key in self.config
 
     def getOptBoolean(self, key):
-        if self.config[key] == '1'    and type(self.config[key]) == type('1'):
+        if unicode(self.config[key]) == u'1':
             return True
-        if self.config[key] == 'true' and type(self.config[key]) == type('true'):
+        if unicode(self.config[key]) == u'true':
             return True
-        if self.config[key] == True   and type(self.config[key]) == type(True):
+        if self.config[key] == True:
             return True
         return False
 
