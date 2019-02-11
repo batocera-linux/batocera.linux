@@ -2,10 +2,18 @@
 
 if test "$1" = start
 then
-    retroflag_SafeShutdown.py&
+    systemsetting="python /usr/lib/python2.7/site-packages/configgen/settings/recalboxSettings.py"
+    powerswitch="`$systemsetting  -command load -key system.power.switch`"
+    if test "${powerswitch}" = "RETROFLAG"
+    then
+	python /usr/bin/retroflag_SafeShutdown.py &
+    fi
 fi
 
 if test "$1" = stop
 then
-    killall -9 retroflag_SafeShutdown.py &
+    BTD_PID=$(ps -eo pid,args | grep "python /usr/bin/retroflag_SafeShutdown.py" | grep -v grep | awk '{print $1}')
+    if [ ! -z "$BTD_PID" ]; then
+        kill $BTD_PID
+    fi
 fi

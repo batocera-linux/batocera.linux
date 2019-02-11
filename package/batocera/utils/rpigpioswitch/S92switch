@@ -1,13 +1,19 @@
 #!/bin/bash
 
 NAME="S92switch"
-RUN="/recalbox/scripts/powerswitch.sh"
+RUN="/usr/bin/rpi_gpioswitch"
 BTD_PID=$(ps -eo pid,args | grep "/bin/bash $RUN" | grep -v grep | awk '{print $1}')
 
 # Carry out specific functions when asked to by the system
 case "$1" in
     start)
-        nice -n 19 $RUN start&
+	systemsetting="python /usr/lib/python2.7/site-packages/configgen/settings/recalboxSettings.py"
+	powerswitch="`$systemsetting  -command load -key system.power.switch`"
+	case "${powerswitch}" in
+	    ATX_RASPI_R2_6|MAUSBERRY|REMOTEPIBOARD_2003|REMOTEPIBOARD_2005|WITTYPI|PIN56ONOFF|PIN56PUSH|PIN356ONOFFRESET)
+		nice -n 19 $RUN start&
+		;;
+	esac
     ;;
     stop)
         if [ ! -z "$BTD_PID" ]; then
@@ -19,9 +25,9 @@ case "$1" in
     ;;
     status)
         if [ ! -z "$BTD_PID" ]; then
-            echo "Service powerswitch.sh ["$BTD_PID"] [ OK ]"
+            echo "Service rpi_gpioswitch ["$BTD_PID"] [ OK ]"
         else
-            echo "Service powerswitch.sh [ KO ]"
+            echo "Service rpi_gpioswitch [ KO ]"
         fi
     ;;
     *)
