@@ -211,7 +211,7 @@ wittyPi_stop()
 
 pin356_start()
 {
-	python /recalbox/scripts/rpi-pin356-power.py &
+	rpi-pin356-power &
     pid=$!
     echo "$pid" > /tmp/rpi-pin356-power.pid
     wait "$pid"
@@ -226,7 +226,7 @@ pin356_stop()
 pin56_start()
 {
     mode=$1
-    python /recalbox/scripts/rpi-pin56-power.py -m "$mode" &
+    rpi-pin56-power -m "$mode" &
     pid=$!
     echo "$pid" > /tmp/rpi-pin56-power.pid
     wait "$pid"
