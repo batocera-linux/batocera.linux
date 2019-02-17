@@ -2,45 +2,69 @@
 import os, sys
 import recalboxFiles
 import settings
-from settings.unixSettings import UnixSettings
 import subprocess
 import json
 
-mupenSettings = UnixSettings(recalboxFiles.mupenCustom, separator=' ')
+def setMupenConfig(iniConfig, system, controllers, gameResolution):
 
-def writeMupenConfig(system, controllers, gameResolution):
-	setPaths()
-	writeHotKeyConfig(controllers)
+        # hotkeys
+	setHotKeyConfig(iniConfig, controllers)
 
-	# set resolution
-	mupenSettings.save('ScreenWidth', "{}".format(gameResolution["width"]))
-	mupenSettings.save('ScreenHeight', "{}".format(gameResolution["height"]))
+        # paths
+        if not iniConfig.has_section("Core"):
+            iniConfig.add_section("Core")
+        iniConfig.set("Core", "Version", "1.01") # version is important for the .ini creation otherwise, mupen remove the section
+        iniConfig.set("Core", "ScreenshotPath", recalboxFiles.SCREENSHOTS)
+	iniConfig.set("Core", "SaveStatePath",  recalboxFiles.mupenSaves)
+	iniConfig.set("Core", "SaveSRAMPath",   recalboxFiles.mupenSaves)
+        iniConfig.set("Core", "SharedDataPath", recalboxFiles.mupenConf)
+
+	# resolution
+        if not iniConfig.has_section("Video-General"):
+            iniConfig.add_section("Video-General")
+        iniConfig.set("Video-General", "Version", "1")
+        iniConfig.set("Video-General", "ScreenWidth",  gameResolution["width"])
+        iniConfig.set("Video-General", "ScreenHeight", gameResolution["height"])
+        # i don't know which value of VerticalSync should be set (it was False in original configgen)
+        iniConfig.set("Video-General", "VerticalSync", "False")
 	
-	#Draw or not FPS
+        # fps
+        if not iniConfig.has_section("Video-Rice"):
+                iniConfig.add_section("Video-Rice")
+        iniConfig.set("Video-Rice", "Version", "1")
+        if not iniConfig.has_section("Video-Glide64mk2"):
+                iniConfig.add_section("Video-Glide64mk2")
+        iniConfig.set("Video-Glide64mk2", "Version", "1")
 	if system.config['showFPS'] == 'true':
-		mupenSettings.save('ShowFPS', 'True')
-                # show_fps is used for Video-Glide64mk2
-                mupenSettings.save('show_fps', '4')
+		iniConfig.set("Video-Rice",      "ShowFPS",  "True")
+                iniConfig.set("Video-Glide64mk2", "show_fps", "4")
 	else:
-		mupenSettings.save('ShowFPS', 'False')
-                mupenSettings.save('show_fps', '8')
-
+                iniConfig.set("Video-Rice",       "ShowFPS",  "False")
+                iniConfig.set("Video-Glide64mk2", "show_fps", "8")
 	
-def writeHotKeyConfig(controllers):
+def setHotKeyConfig(iniConfig, controllers):
+        if not iniConfig.has_section("CoreEvents"):
+                iniConfig.add_section("CoreEvents")
+        iniConfig.set("CoreEvents", "Version", "1")
+        
 	if '1' in controllers:
 		if 'hotkey' in controllers['1'].inputs:
 			if 'start' in controllers['1'].inputs:
-				mupenSettings.save('Joy Mapping Stop', "\"J{}{}/{}\"".format(controllers['1'].index, createButtonCode(controllers['1'].inputs['hotkey']), createButtonCode(controllers['1'].inputs['start'])))
+				iniConfig.set("CoreEvents", "Joy Mapping Stop", "\"J{}{}/{}\"".format(controllers['1'].index, createButtonCode(controllers['1'].inputs['hotkey']), createButtonCode(controllers['1'].inputs['start'])))
 			if 'y' in controllers['1'].inputs:	
-				mupenSettings.save('Joy Mapping Save State', "\"J{}{}/{}\"".format(controllers['1'].index, createButtonCode(controllers['1'].inputs['hotkey']), createButtonCode(controllers['1'].inputs['y'])))
+				iniConfig.set("CoreEvents", "Joy Mapping Save State", "\"J{}{}/{}\"".format(controllers['1'].index, createButtonCode(controllers['1'].inputs['hotkey']), createButtonCode(controllers['1'].inputs['y'])))
 			if 'x' in controllers['1'].inputs:	
-				mupenSettings.save('Joy Mapping Load State', "\"J{}{}/{}\"".format(controllers['1'].index, createButtonCode(controllers['1'].inputs['hotkey']), createButtonCode(controllers['1'].inputs['x'])))
+				iniConfig.set("CoreEvents", "Joy Mapping Load State", "\"J{}{}/{}\"".format(controllers['1'].index, createButtonCode(controllers['1'].inputs['hotkey']), createButtonCode(controllers['1'].inputs['x'])))
 			if 'pageup' in controllers['1'].inputs:	
-				mupenSettings.save('Joy Mapping Screenshot', "\"J{}{}/{}\"".format(controllers['1'].index, createButtonCode(controllers['1'].inputs['hotkey']), createButtonCode(controllers['1'].inputs['pageup'])))
+				iniConfig.set("CoreEvents", "Joy Mapping Screenshot", "\"J{}{}/{}\"".format(controllers['1'].index, createButtonCode(controllers['1'].inputs['hotkey']), createButtonCode(controllers['1'].inputs['pageup'])))
 			if 'up' in controllers['1'].inputs:	
-				mupenSettings.save('Joy Mapping Increment Slot', "\"J{}{}/{}\"".format(controllers['1'].index, createButtonCode(controllers['1'].inputs['hotkey']), createButtonCode(controllers['1'].inputs['up'])))
+				iniConfig.set("CoreEvents", "Joy Mapping Increment Slot", "\"J{}{}/{}\"".format(controllers['1'].index, createButtonCode(controllers['1'].inputs['hotkey']), createButtonCode(controllers['1'].inputs['up'])))
 			if 'right' in controllers['1'].inputs:	
-				mupenSettings.save('Joy Mapping Fast Forward', "\"J{}{}/{}\"".format(controllers['1'].index, createButtonCode(controllers['1'].inputs['hotkey']), createButtonCode(controllers['1'].inputs['right'])))
+				iniConfig.set("CoreEvents", "Joy Mapping Fast Forward", "\"J{}{}/{}\"".format(controllers['1'].index, createButtonCode(controllers['1'].inputs['hotkey']), createButtonCode(controllers['1'].inputs['right'])))
+                        if 'a' in controllers['1'].inputs:	
+				iniConfig.set("CoreEvents", "Joy Mapping Reset", "\"J{}{}/{}\"".format(controllers['1'].index, createButtonCode(controllers['1'].inputs['hotkey']), createButtonCode(controllers['1'].inputs['a'])))
+                        if 'b' in controllers['1'].inputs:	
+				iniConfig.set("CoreEvents", "Joy Mapping Pause", "\"J{}{}/{}\"".format(controllers['1'].index, createButtonCode(controllers['1'].inputs['hotkey']), createButtonCode(controllers['1'].inputs['b'])))
 
 			
 def createButtonCode(button):
@@ -53,8 +77,3 @@ def createButtonCode(button):
 		return 'B'+button.id
 	if(button.type == 'hat'):
 		return 'H'+button.id+'V'+button.value
-
-def setPaths():
-	mupenSettings.save('ScreenshotPath', recalboxFiles.SCREENSHOTS)
-	mupenSettings.save('SaveStatePath', recalboxFiles.mupenSaves)
-	mupenSettings.save('SaveSRAMPath', recalboxFiles.mupenSaves)
