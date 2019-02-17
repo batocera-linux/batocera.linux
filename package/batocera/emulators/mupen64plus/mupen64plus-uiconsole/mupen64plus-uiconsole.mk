@@ -31,6 +31,7 @@ define MUPEN64PLUS_UICONSOLE_INSTALL_TARGET_CMDS
 	INSTALL_STRIP_FLAG="" \
 	-C $(@D)/projects/unix all $(MUPEN64PLUS_PARAMS) OPTFLAGS="$(TARGET_CXXFLAGS)" install
 #	$(INSTALL) -m 0644 $(@D)/projects/unix/libmupen64plus.so.2.0.0 $(TARGET_DIR)/usr/lib
+	cp package/batocera/emulators/mupen64plus/mupen64plus-uiconsole/mupencheat.txt "$(TARGET_DIR)/usr/share/mupen64plus/mupencheat.txt"
 endef
 
 define MUPEN64PLUS_UICONSOLE_CROSS_FIXUP
