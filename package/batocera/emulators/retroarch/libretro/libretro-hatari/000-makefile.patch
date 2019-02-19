@@ -1,5 +1,5 @@
 diff --git a/Makefile.libretro b/Makefile.libretro
-index e46f3a2..023b730 100755
+index e46f3a2..17f86bc 100755
 --- a/Makefile.libretro
 +++ b/Makefile.libretro
 @@ -4,6 +4,13 @@ ZLIB_DIR = $(LIBRETRO_DIR)/utils/zlib
@@ -10,7 +10,7 @@ index e46f3a2..023b730 100755
 +IPFSUPPORT = 1
 +
 +ifeq ($(IPFSUPPORT), 1)
-+   CAPS_LIB = -L$(STAGING_DIR)/usr/lib -lcapsimage
++  CAPS_LIB = -L$(STAGING_DIR)/usr/lib -lcapsimage
 +endif
 +
  ifeq ($(platform),)
@@ -23,7 +23,7 @@ index e46f3a2..023b730 100755
 +# ARM
 +else ifneq (,$(findstring armv,$(platform)))
 +   CC = gcc
-+	TARGET := $(TARGET_NAME)_libretro.so
++   TARGET := $(TARGET_NAME)_libretro.so
 +   fpic := -fPIC -fsigned-char
 +   SHARED :=  -lz -lpthread -shared -Wl,--version-script=$(LIBRETRO_DIR)/link.T -Wl,--no-undefined
 +   PLATFLAGS := -DLSB_FIRST -DALIGN_DWORD
@@ -45,13 +45,23 @@ index e46f3a2..023b730 100755
  # iOS
  else ifneq (,$(findstring ios,$(platform)))
  
-@@ -176,12 +205,17 @@ OBJECTS := $(SOURCES_C:.c=.o)
+@@ -155,6 +184,10 @@ else
+ endif
+ CFLAGS := -fsigned-char -D__LIBRETRO__ -fno-builtin $(CFLAGS)
+ 
++ifeq ($(IPFSUPPORT), 1)
++    PLATFLAGS += -DHAVE_CAPSIMAGE=1
++endif
++
+ CFLAGS := $(fpic) $(CFLAGS) $(PLATFLAGS)
+ CXXFLAGS := $(CFLAGS)
+ CPPFLAGS := $(CFLAGS)
+@@ -176,12 +209,16 @@ OBJECTS := $(SOURCES_C:.c=.o)
  
  all: $(TARGET)
  
 +ifeq ($(IPFSUPPORT), 1)
-+INCFLAGS += -I$(STAGING_DIR)/usr/lib/capsimage
-+PLATFLAGS += -DHAVE_CAPSIMAGE=1
++    INCFLAGS += -I$(STAGING_DIR)/usr/lib/capsimage
 +endif
 +
  $(TARGET): $(OBJECTS)
@@ -60,7 +70,7 @@ index e46f3a2..023b730 100755
  	$(AR) rcs $@ $(OBJECTS) 
  else
 -	$(CC) $(CFLAGS) $(INCFLAGS) $(LDFLAGS) $(OBJECTS) -o $@ -lm -lz $(SHARED)
-+	$(CC) $(fpic) $(SHARED) $(INCLUDES) -o $@ $(OBJECTS)  -lm -lz -lpthread $(CAPS_LIB)
++	$(CC) $(CFLAGS) $(INCFLAGS) $(LDFLAGS) $(OBJECTS) -o $@ -lm -lz $(SHARED) -lpthread $(CAPS_LIB)
  endif
  	@echo "** BUILD SUCCESSFUL! GG NO RE **"
  
