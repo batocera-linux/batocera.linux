@@ -3,13 +3,14 @@
 # CAP32
 #
 ################################################################################
-# Version.: Commits on Jan 28, 2019
-LIBRETRO_CAP32_VERSION = 1a8bcf4d68b633bb8e92e20da460ac7618e8b950
+# Version.: Commits on Feb 18, 2019
+LIBRETRO_CAP32_VERSION = 7802837a61f4d57db31322f48fd64729ed976cad
 LIBRETRO_CAP32_SITE = $(call github,libretro,libretro-cap32,$(LIBRETRO_CAP32_VERSION))
 LIBRETRO_CAP32_LICENSE="GPLv2"
 
 define LIBRETRO_CAP32_BUILD_CMDS
-	CFLAGS="$(TARGET_CFLAGS)" CXXFLAGS="$(TARGET_CXXFLAGS)" LDFLAGS="$(TARGET_LDFLAGS)" $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" -C $(@D) -f Makefile
+	CFLAGS="$(TARGET_CFLAGS)" CXXFLAGS="$(TARGET_CXXFLAGS)" \
+        $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" LD="$(TARGET_LD)" RANLIB="$(TARGET_RANLIB)" AR="$(TARGET_AR)" -C $(@D)/ -f Makefile platform="$(LIBRETRO_PLATFORM)"
 endef
 
 define LIBRETRO_CAP32_INSTALL_TARGET_CMDS
