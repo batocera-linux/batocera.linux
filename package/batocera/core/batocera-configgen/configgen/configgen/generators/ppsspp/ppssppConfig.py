@@ -1,61 +1,51 @@
 #!/usr/bin/env python
+
 import sys
 import os
+import io
 import recalboxFiles
 import settings
 from Emulator import Emulator
 from settings.unixSettings import UnixSettings
-
-sys.path.append(
-    os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
-
-ppssppSettings = UnixSettings(recalboxFiles.ppssppConfig, separator=' ')
+import ConfigParser
 
 def writePPSSPPConfig(system):
-    writePPSSPPConfigDefault()
-    writePPSSPPConfigToFile(createPPSSPPConfig(system))
+    iniConfig = ConfigParser.ConfigParser()
+    # To prevent ConfigParser from converting to lower case
+    iniConfig.optionxform = str
+    if os.path.exists(recalboxFiles.ppssppConfig):
+        with io.open(recalboxFiles.ppssppConfig, 'r', encoding='utf_8_sig') as fp:
+            iniConfig.readfp(fp)
 
-def writePPSSPPConfigDefault():
-    if not os.path.exists(recalboxFiles.ppssppConfig):
-        if not os.path.exists(os.path.dirname(recalboxFiles.ppssppConfig)):
-            os.makedirs(os.path.dirname(recalboxFiles.ppssppConfig))
-        # write default values template, so that the rest of the config can set values
-        f = open(recalboxFiles.ppssppConfig, "w")
-        f.write("[Graphics]\n")
-        f.write("FrameSkip = 0\n")
-        f.write("ShowFPSCounter = 0\n")
-        f.write("FrameSkipType = 0\n")
-        f.write("InternalResolution = 1\n")
-        f.close()
+    createPPSSPPConfig(iniConfig, system)
+    # save the ini file
+    if not os.path.exists(os.path.dirname(recalboxFiles.ppssppConfig)):
+        os.makedirs(os.path.dirname(recalboxFiles.ppssppConfig))
+    with open(recalboxFiles.ppssppConfig, 'w') as configfile:
+        iniConfig.write(configfile)
 
-def createPPSSPPConfig(system):
-    ppssppConfig = dict()
+def createPPSSPPConfig(iniConfig, system):
+    if not iniConfig.has_section("Graphics"):
+        iniConfig.add_section("Graphics")
 
     # Display FPS
     if system.isOptSet('showFPS') and system.getOptBoolean('showFPS') == True:
-        ppssppConfig['ShowFPSCounter'] = '3' # 1 for Speed%, 2 for FPS, 3 for both
+        iniConfig.set("Graphics", "ShowFPSCounter", "3") # 1 for Speed%, 2 for FPS, 3 for both
     else:
-        ppssppConfig['ShowFPSCounter'] = '0'
+        iniConfig.set("Graphics", "ShowFPSCounter", "0")
 
     # Performances
     if system.isOptSet('frameskip') and system.getOptBoolean('frameskip') == True:
-        ppssppConfig['FrameSkip'] = '1'
+        iniConfig.set("Graphics", "FrameSkip",  "1")
     else:
-        ppssppConfig['FrameSkip'] = '0'
+        iniConfig.set("Graphics", "FrameSkip", "0")
 
     if system.isOptSet('frameskiptype'):
-        ppssppConfig['FrameSkipType'] = system.config["frameskiptype"]
+        iniConfig.set("Graphics", "FrameSkipType", system.config["frameskiptype"])
     else:
-        ppssppConfig['FrameSkipType'] = '0'
+        iniConfig.set("Graphics", "FrameSkipType",  "0")
 
     if system.isOptSet('internalresolution'):
-        ppssppConfig['InternalResolution'] = system.config["internalresolution"]
+        iniConfig.set("Graphics", "InternalResolution", system.config["internalresolution"])
     else:
-        ppssppConfig['InternalResolution'] = '1'
-
-    return ppssppConfig
-
-
-def writePPSSPPConfigToFile(config):
-    for setting in config:
-        ppssppSettings.save(setting, config[setting])
+        iniConfig.set("Graphics", "InternalResolution", "1")

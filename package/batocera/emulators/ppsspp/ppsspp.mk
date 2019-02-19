@@ -66,8 +66,10 @@ endef
 PPSSPP_PRE_CONFIGURE_HOOKS += PPSSPP_UPDATE_INCLUDES
 
 define PPSSPP_INSTALL_TARGET_CMDS
+        mkdir -p $(TARGET_DIR)/usr/bin
 	$(INSTALL) -D -m 0755 $(@D)/PPSSPPSDL $(TARGET_DIR)/usr/bin
 	cp -R $(@D)/assets $(TARGET_DIR)/usr/bin
+        mkdir -p $(TARGET_DIR)/lib
 	cp -R $(@D)/lib/*.so $(TARGET_DIR)/lib
 endef
 
