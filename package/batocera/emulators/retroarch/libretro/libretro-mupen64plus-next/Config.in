@@ -4,3 +4,27 @@ config BR2_PACKAGE_LIBRETRO_MUPEN64PLUS_NEXT
 
 	help
 	  A alternative libretro N64 emulator core
+
+choice
+prompt "libretro-mupen64plus-next compilation platform"
+default BR2_PACKAGE_LIBRETRO_MUPEN64PLUS_NEXT_PLATFORM_UNIX
+
+config BR2_PACKAGE_LIBRETRO_MUPEN64PLUS_NEXT_PLATFORM_UNIX
+        bool "unix"
+
+config BR2_PACKAGE_LIBRETRO_MUPEN64PLUS_NEXT_PLATFORM_RPI2
+        bool "rpi2"
+
+config BR2_PACKAGE_LIBRETRO_MUPEN64PLUS_NEXT_PLATFORM_RPI3
+        bool "rpi3"
+
+config BR2_PACKAGE_LIBRETRO_MUPEN64PLUS_NEXT_PLATFORM_ODROIDXU
+        bool "odroidxu"
+
+config BR2_PACKAGE_LIBRETRO_MUPEN64PLUS_NEXT_PLATFORM_ODROIDC
+        bool "odroidc"
+
+config BR2_PACKAGE_LIBRETRO_MUPEN64PLUS_NEXT_PLATFORM_ROCKPRO64
+        bool "rockpro64"
+
+endchoice
