@@ -71,19 +71,22 @@ systems = {
 
 
     # Nintendo
-	"fds": { "name": "Nintendo Family Computer Disk System", "biosFiles": [ { "md5": "7bfe8c0540ed4bd6a0f1e2a0f0118ced", "file": "bios/NstDatabase.xml" },
-																		    { "md5": "ca30b50f880eb660a320674ed365ef7a", "file": "bios/disksys.rom"     } ] },
-	"gb":  { "name": "Game Boy", "biosFiles":                             [ { "md5": "32fbbd84168d3482956eb3c5051637f5", "file": "bios/gb_bios.bin"  	},
-											                                { "md5": "dbfce9db9deaa2567f6a84fde55f9680", "file": "bios/gbc_bios.bin" 	} ] },
-	"gbc": { "name": "Game Boy Color", "biosFiles":                       [ { "md5": "32fbbd84168d3482956eb3c5051637f5", "file": "bios/gb_bios.bin"  	},
-													                        { "md5": "dbfce9db9deaa2567f6a84fde55f9680", "file": "bios/gbc_bios.bin" 	} ] },
-    "gba": { "name": "Game Boy Advance", "biosFiles":                     [ { "md5": "a860e8c0b6d573d191e4ec7db1b1e4f6", "file": "bios/gba_bios.bin" 	},
-														                    { "md5": "32fbbd84168d3482956eb3c5051637f5", "file": "bios/gb_bios.bin"  	},
-														                    { "md5": "dbfce9db9deaa2567f6a84fde55f9680", "file": "bios/gbc_bios.bin" 	},
-														                    { "md5": "d574d4f9c12f305074798f54c091a8b4", "file": "bios/sgb_bios.bin" 	} ] },
-    "nds": { "name": "Nintendo DS", "biosFiles":                          [ { "md5": "145eaef5bd3037cbc247c213bb3da1b3", "file": "bios/firmware.bin" 	},
-												                            { "md5": "df692a80a5b1bc90728bc3dfc76cd948", "file": "bios/bios7.bin"    	},
-												                            { "md5": "a392174eb3e572fed6447e956bde4b25", "file": "bios/bios9.bin"    	} ] },
+	"fds":         { "name": "Nintendo Family Computer Disk System", "biosFiles": [ { "md5": "7bfe8c0540ed4bd6a0f1e2a0f0118ced", "file": "bios/NstDatabase.xml" },
+																		            { "md5": "ca30b50f880eb660a320674ed365ef7a", "file": "bios/disksys.rom"     } ] },
+    "gb":          { "name": "Game Boy", "biosFiles":                             [ { "md5": "32fbbd84168d3482956eb3c5051637f5", "file": "bios/gb_bios.bin"  	},
+											                                        { "md5": "dbfce9db9deaa2567f6a84fde55f9680", "file": "bios/gbc_bios.bin" 	} ] },
+	"gbc":         { "name": "Game Boy Color", "biosFiles":                       [ { "md5": "32fbbd84168d3482956eb3c5051637f5", "file": "bios/gb_bios.bin"  	},
+													                                { "md5": "dbfce9db9deaa2567f6a84fde55f9680", "file": "bios/gbc_bios.bin" 	} ] },
+    "gba":         { "name": "Game Boy Advance", "biosFiles":                     [ { "md5": "a860e8c0b6d573d191e4ec7db1b1e4f6", "file": "bios/gba_bios.bin" 	},
+														                            { "md5": "32fbbd84168d3482956eb3c5051637f5", "file": "bios/gb_bios.bin"  	},
+														                            { "md5": "dbfce9db9deaa2567f6a84fde55f9680", "file": "bios/gbc_bios.bin" 	},
+														                            { "md5": "d574d4f9c12f305074798f54c091a8b4", "file": "bios/sgb_bios.bin" 	} ] },
+    "n64":         { "name": "Nintendo 64", "biosFiles":                          [ { "md5": "8d3d9f294b6e174bc7b1d2fd1c727530", "file": "bios/64DD_IPL.bin"    } ] },
+    "nds":         { "name": "Nintendo DS", "biosFiles":                          [ { "md5": "145eaef5bd3037cbc247c213bb3da1b3", "file": "bios/firmware.bin" 	},
+												                                    { "md5": "df692a80a5b1bc90728bc3dfc76cd948", "file": "bios/bios7.bin"    	},
+												                                    { "md5": "a392174eb3e572fed6447e956bde4b25", "file": "bios/bios9.bin"    	} ] },
+    "satellaview": { "name": "Satellaview", "biosFiles":                          [ { "md5": "fed4d8242cfbed61343d53d48432aced", "file": "bios/BS-X.bin"        } ] },
+    "sufami":      { "name": "Sufami", "biosFiles":                               [ { "md5": "d3a44ba7d42a74d3ac58cb9c14c6a5ca", "file": "bios/STBIOS.bin"      } ] },
 
 
     # Panasonic, Sanyo and Goldstar
@@ -128,10 +131,6 @@ systems = {
 													   { "md5": "", "file": "bios/keropi/iplromxv.dat" },
 													   { "md5": "", "file": "bios/keropi/cgrom.dat"	   } ] },
 
-
-    # SNES
-    "satellaview": { "name": "Satellaview", "biosFiles": [ { "md5": "fed4d8242cfbed61343d53d48432aced", "file": "bios/BS-X.bin"   } ] },
-    "snes":        { "name": "SNES", "biosFiles":        [ { "md5": "d3a44ba7d42a74d3ac58cb9c14c6a5ca", "file": "bios/STBIOS.bin" } ] },
 
     # SNK
 	"neogeo":   { "name": "NeoGeo", "biosFiles":    [ { "md5": "", "file": "roms/neogeo/neogeo.zip" } ] },
