@@ -52,6 +52,11 @@ ifeq ($(BR2_cortex_a72_a53),y)
         RETROARCH_CONF_OPTS += --enable-neon --enable-floathard
 endif
 
+# odroidn2
+ifeq ($(BR2_cortex_a73_a53),y)
+        RETROARCH_CONF_OPTS += --enable-neon --enable-floathard
+endif
+
 # x86 : no option
 
 RETROARCH_CONF_OPTS += --enable-networking
@@ -181,6 +186,10 @@ ifeq ($(BR2_cortex_a15),y)
 endif
 
 ifeq ($(BR2_arm)$(BR2_cortex_a72_a53),yy)
+        LIBRETRO_PLATFORM += armv7
+endif
+
+ifeq ($(BR2_arm)$(BR2_cortex_a73_a53),yy)
         LIBRETRO_PLATFORM += armv7
 endif
 

@@ -374,6 +374,39 @@ case "${BATOCERA_TARGET}" in
         rm -f "${BATOCERA_BINARIES_DIR}/boot.vfat" || exit 1
         sync || exit 1
         ;;
+    ODROIDN2)
+        # /boot
+        rm -rf "${BINARIES_DIR}/boot"            || exit 1
+        mkdir -p "${BINARIES_DIR}/boot/boot"     || exit 1
+        cp "${BINARIES_DIR}/Image"                 "${BINARIES_DIR}/boot/boot/linux"                || exit 1
+	gzip "${BINARIES_DIR}/boot/boot/linux"                                                      || exit 1
+        cp "${BINARIES_DIR}/uInitrd"             "${BINARIES_DIR}/boot/boot/uInitrd"                || exit 1
+        cp "${BINARIES_DIR}/rootfs.squashfs"       "${BINARIES_DIR}/boot/boot/batocera.update"      || exit 1
+        cp "${BINARIES_DIR}/meson64_odroidn2.dtb"  "${BINARIES_DIR}/boot/boot/meson64_odroidn2.dtb" || exit 1
+        cp "${BINARIES_DIR}/recalbox-boot.conf"    "${BINARIES_DIR}/boot/recalbox-boot.conf"        || exit 1
+	cp "board/batocera/odroidn2/boot.ini"      "${BINARIES_DIR}/boot/boot.ini"                  || exit 1
+        # boot.tar.xz
+        echo "creating boot.tar.xz"
+        (cd "${BINARIES_DIR}/boot" && tar -cJf "${BATOCERA_BINARIES_DIR}/boot.tar.xz" boot.ini boot recalbox-boot.conf) || exit 1
+
+	# blobs
+	for F in u-boot.bin
+	do
+	    cp "${BINARIES_DIR}/${F}" "${BINARIES_DIR}/boot/${F}" || exit 1
+	done
+
+        # batocera.img
+        # rename the squashfs : the .update is the version that will be renamed at boot to replace the old version
+        mv "${BINARIES_DIR}/boot/boot/batocera.update" "${BINARIES_DIR}/boot/boot/batocera" || exit 1
+        GENIMAGE_TMP="${BUILD_DIR}/genimage.tmp"
+        BATOCERAIMG="${BATOCERA_BINARIES_DIR}/batocera.img"
+        rm -rf "${GENIMAGE_TMP}" || exit 1
+        cp "board/batocera/odroidn2/genimage.cfg" "${BINARIES_DIR}" || exit 1
+        echo "generating image"
+        genimage --rootpath="${TARGET_DIR}" --inputpath="${BINARIES_DIR}/boot" --outputpath="${BATOCERA_BINARIES_DIR}" --config="${BINARIES_DIR}/genimage.cfg" --tmppath="${GENIMAGE_TMP}" || exit 1
+        rm -f "${BATOCERA_BINARIES_DIR}/boot.vfat" || exit 1
+        sync || exit 1
+        ;;
 *)
 	echo "Outch. Unknown target ${BATOCERA_TARGET} (see copy-batocera-archives.sh)" >&2
 	bash
