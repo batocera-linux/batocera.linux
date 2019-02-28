@@ -53,6 +53,10 @@ def writeLibretroConfig(retroconfig, system, controllers, rom, bezel, gameResolu
 def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
     retroarchConfig = dict()
     recalboxConfig = system.config
+
+    # fs is required at least for x86* and odroidn2
+    retroarchConfig['video_fullscreen'] = 'true'
+
     if system.isOptSet('smooth') and system.getOptBoolean('smooth') == True:
         retroarchConfig['video_smooth'] = 'true'
     else:
