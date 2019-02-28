@@ -22,6 +22,8 @@ class MupenGenerator(Generator):
         mupenControllers.setControllersConfig(iniConfig, playersControllers)
 
         # save the ini file
+        if not os.path.exists(os.path.dirname(recalboxFiles.mupenCustom)):
+            os.makedirs(os.path.dirname(recalboxFiles.mupenCustom))
         with open(recalboxFiles.mupenCustom, 'w') as configfile:
             iniConfig.write(configfile)
 
