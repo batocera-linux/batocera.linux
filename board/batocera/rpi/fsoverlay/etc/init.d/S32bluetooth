@@ -14,6 +14,8 @@ case "$1" in
         	if [ "$settings_version" != "bluez" ]; then BLUETOOTHD_ARGS="--noplugin=sixaxis"; else  BLUETOOTHD_ARGS="--noplugin=sixaxispair"; fi
 		rfkill unblock bluetooth # soft unblock bluetooth
 		start-stop-daemon -S -q -m -p /var/run/bluetoothd.pid  --exec /usr/libexec/bluetooth/bluetoothd -- $BLUETOOTHD_ARGS &	
+		/usr/bin/hciattach /dev/ttyAMA0 bcm43xx 921600 # specific rpi0 and rpi3
+                /usr/bin/hciconfig hci0 up piscan              # specific rpi
 		start-stop-daemon -S -q -m -p /var/run/btDaemon.pid    --exec /recalbox/scripts/bluetooth/btDaemon > /dev/null 2>&1 &
         fi
         ;;
