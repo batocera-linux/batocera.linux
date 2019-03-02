@@ -13,8 +13,11 @@ def writePPSSPPConfig(system):
     # To prevent ConfigParser from converting to lower case
     iniConfig.optionxform = str
     if os.path.exists(recalboxFiles.ppssppConfig):
-        with io.open(recalboxFiles.ppssppConfig, 'r', encoding='utf_8_sig') as fp:
-            iniConfig.readfp(fp)
+        try:
+            with io.open(recalboxFiles.ppssppConfig, 'r', encoding='utf_8_sig') as fp:
+                iniConfig.readfp(fp)
+        except:
+            pass
 
     createPPSSPPConfig(iniConfig, system)
     # save the ini file
