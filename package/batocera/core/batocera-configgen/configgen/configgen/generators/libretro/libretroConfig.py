@@ -11,9 +11,6 @@ from utils.logger import eslog
 sys.path.append(
     os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
 
-libretroSettings = UnixSettings(recalboxFiles.retroarchCustom, separator=' ')
-coreSettings = UnixSettings(recalboxFiles.retroarchCoreCustom, separator=' ')
-
 # return true if the option is considered defined
 def defined(key, dict):
     return key in dict and isinstance(dict[key], basestring) and len(dict[key]) > 0
@@ -51,6 +48,8 @@ def writeLibretroConfig(retroconfig, system, controllers, rom, bezel, gameResolu
 
 # take a system, and returns a dict of retroarch.cfg compatible parameters
 def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
+    coreSettings = UnixSettings(recalboxFiles.retroarchCoreCustom, separator=' ')
+
     retroarchConfig = dict()
     recalboxConfig = system.config
 

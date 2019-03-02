@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 import sys
 import os
-from settings.unixSettings import UnixSettings
 import recalboxFiles
 from controllersConfig import Input
 from shutil import copyfile

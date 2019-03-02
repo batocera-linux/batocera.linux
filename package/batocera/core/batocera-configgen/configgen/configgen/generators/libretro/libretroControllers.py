@@ -8,11 +8,6 @@ sys.path.append(
 from settings.unixSettings import UnixSettings
 import recalboxFiles
 
-coreSettings = UnixSettings(recalboxFiles.retroarchCoreCustom, separator=' ')
-recalboxConfSettings = UnixSettings(recalboxFiles.recalboxConf)
-
-settingsRoot = recalboxFiles.retroarchRoot
-
 # Map an emulationstation button name to the corresponding retroarch name
 retroarchbtns = {'a': 'a', 'b': 'b', 'x': 'x', 'y': 'y', \
                  'pageup': 'l', 'pagedown': 'r', 'l2': 'l2', 'r2': 'r2', \
