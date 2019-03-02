@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-NVIDIA_DRIVER_VERSION = 415.27
+NVIDIA_DRIVER_VERSION = 418.43
 NVIDIA_DRIVER_SUFFIX = $(if $(BR2_x86_64),_64)
 NVIDIA_DRIVER_SITE = http://download.nvidia.com/XFree86/Linux-x86$(NVIDIA_DRIVER_SUFFIX)/$(NVIDIA_DRIVER_VERSION)
 NVIDIA_DRIVER_SOURCE = NVIDIA-Linux-x86$(NVIDIA_DRIVER_SUFFIX)-$(NVIDIA_DRIVER_VERSION).run
@@ -38,9 +38,10 @@ NVIDIA_DRIVER_LIBS_GLES = \
 	libGLESv1_CM_nvidia.so.$(NVIDIA_DRIVER_VERSION) \
 	libGLESv2_nvidia.so.$(NVIDIA_DRIVER_VERSION)
 
+#batocera libnvidia-egl-wayland soname bump
 NVIDIA_DRIVER_LIBS_MISC = \
 	libnvidia-eglcore.so.$(NVIDIA_DRIVER_VERSION) \
-	libnvidia-egl-wayland.so.1.1.0 \
+	libnvidia-egl-wayland.so.1.1.2 \
 	libnvidia-glcore.so.$(NVIDIA_DRIVER_VERSION) \
 	libnvidia-glsi.so.$(NVIDIA_DRIVER_VERSION) \
 	libnvidia-tls.so.$(NVIDIA_DRIVER_VERSION) \
@@ -86,10 +87,10 @@ NVIDIA_DRIVER_LIBS += \
 endif
 
 # We refer to the destination path; the origin file has no directory component
+# batocera libnvidia-wfb removed in 418.43
 NVIDIA_DRIVER_X_MODS = \
-	drivers/nvidia_drv.so \
-	libnvidia-wfb.so.$(NVIDIA_DRIVER_VERSION)
-
+	drivers/nvidia_drv.so 
+#	libnvidia-wfb.so.$(NVIDIA_DRIVER_VERSION)
 endif # X drivers
 
 ifeq ($(BR2_PACKAGE_NVIDIA_DRIVER_CUDA),y)
