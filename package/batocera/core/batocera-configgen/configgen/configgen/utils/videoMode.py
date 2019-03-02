@@ -3,7 +3,6 @@ import os
 import sys
 import recalboxFiles
 import re
-from settings.unixSettings import UnixSettings
 import time
 import subprocess
 import json

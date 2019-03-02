@@ -6,7 +6,6 @@ import io
 import recalboxFiles
 import settings
 from Emulator import Emulator
-from settings.unixSettings import UnixSettings
 import ConfigParser
 
 def writePPSSPPConfig(system):
