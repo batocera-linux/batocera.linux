@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-KODI_RESOURCE_LANGUAGE_IT_IT_VERSION = 3.0.14
+KODI_RESOURCE_LANGUAGE_IT_IT_VERSION = 3.0.15
 KODI_RESOURCE_LANGUAGE_IT_IT_SOURCE = resource.language.it_it-$(KODI_RESOURCE_LANGUAGE_IT_IT_VERSION).zip
 KODI_RESOURCE_LANGUAGE_IT_IT_SITE = http://mirrors.kodi.tv/addons/krypton/resource.language.it_it
 KODI_RESOURCE_LANGUAGE_IT_IT_PLUGINNAME=resource.language.it_it
