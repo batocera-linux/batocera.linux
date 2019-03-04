@@ -7,6 +7,9 @@ import Command
 import os
 from settings.unixSettings import UnixSettings
 import re
+import ConfigParser
+import StringIO
+import io
 
 class Pcsx2Generator(Generator):
 
@@ -117,21 +120,41 @@ def configureUI(config_directory, bios_directory, system_config, gameResolution)
         raise Exception("No bios found")
 
     resolution = getGfxRatioFromConfig(system_config, gameResolution)
+
+    # this file looks like a .ini, but no, it miss the first section name...
+    iniConfig = ConfigParser.ConfigParser()
+    # To prevent ConfigParser from converting to lower case
+    iniConfig.optionxform = str
     if os.path.exists(configFileName):
-        # existing configuration file
-        pcsx2Settings = UnixSettings(configFileName)
-        pcsx2Settings.save("BIOS", biosFile)
-        pcsx2Settings.save("AspectRatio", resolution)
-    else:
-        # new configuration file
-        f = open(configFileName, "w")
-        f.write("[ProgramLog]\n")
-        f.write("Visible=disabled\n")
-        f.write("[Filenames]\n")
-        f.write("BIOS=" + biosFile + "\n")
-        f.write("[GSWindow]\n")
-        f.write("AspectRatio=" + resolution + "\n")
-        f.close()
+        try:
+            file = StringIO.StringIO()
+            # fake an initial section, because pcsx2 doesn't put one
+            file.write('[NO_SECTION]\n')
+            file.write(io.open(configFileName, encoding='utf_8_sig').read())
+            file.seek(0, os.SEEK_SET)
+            iniConfig.readfp(file)
+        except:
+            pass
+
+    for section in [ "ProgramLog", "Filenames", "GSWindow" ]:
+        if not iniConfig.has_section(section):
+            iniConfig.add_section(section)
+
+    iniConfig.set("ProgramLog", "Visible",     "disabled")
+    iniConfig.set("Filenames",  "BIOS",        biosFile)
+    iniConfig.set("GSWindow",   "AspectRatio", resolution)
+
+    # save the ini file
+    if not os.path.exists(os.path.dirname(configFileName)):
+        os.makedirs(os.path.dirname(configFileName))
+    with open(configFileName, 'w') as configfile:
+        iniConfig.write(configfile)
+
+    # remove the first line (the [NO_SECTION])
+    with open(configFileName, 'r') as fin:
+        data = fin.read().splitlines(True)
+    with open(configFileName, 'w') as fout:
+        fout.writelines(data[1:])
 
 def configureAudio(config_directory):
     configFileName = "{}/{}".format(config_directory + "/inis", "spu2-x.ini")
