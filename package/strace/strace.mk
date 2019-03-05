@@ -3,8 +3,8 @@
 # strace
 #
 ################################################################################
-
-STRACE_VERSION = 4.23
+# batocera version bump for kernel 4.19.23
+STRACE_VERSION = 4.26
 STRACE_SOURCE = strace-$(STRACE_VERSION).tar.xz
 STRACE_SITE = https://strace.io/files/$(STRACE_VERSION)
 STRACE_LICENSE = BSD-3-Clause
