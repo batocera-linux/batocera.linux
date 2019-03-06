@@ -35,6 +35,10 @@ class Pcsx2Generator(Generator):
         # no gui
         commandArray.append("--nogui")
 
+        # fullboot
+        if system.isOptSet('fullboot') and system.getOptBoolean('fullboot') == True:
+            commandArray.append("--fullboot")
+
         # plugins
         real_pluginsDir = recalboxFiles.pcsx2PluginsDir
         if isAVX2:
