@@ -103,8 +103,7 @@ systems = {
 
     # Sega
     "dreamcast":    { "name": "Dreamcast", "biosFiles":    [ { "md5": "e10c53c2f8b90bab96ead2d368858623", "file": "bios/dc_boot.bin"   	  },
-													         { "md5": "0a93f7940c455905bea6e392dfde92a4", "file": "bios/dc_flash.bin"  	  },
-													         { "md5": "4bffb9b29b9aeb29aa618f3891a300ce", "file": "bios/dc_nvmem.bin"  	  } ] },
+													         { "md5": "0a93f7940c455905bea6e392dfde92a4", "file": "bios/dc_flash.bin"  	  } ] },
     "gamegear":     { "name": "Game Gear", "biosFiles":    [ { "md5": "672e104c3be3a238301aceffc3b23fd6", "file": "bios/bios.gg" 	   	  } ] },
     "mastersystem": { "name": "MasterSystem", "biosFiles": [ { "md5": "840481177270d5642a14ca71ee72844c", "file": "bios/bios_E.sms"    	  },
 															 { "md5": "840481177270d5642a14ca71ee72844c", "file": "bios/bios_U.sms"    	  },
@@ -143,10 +142,8 @@ systems = {
 										   { "md5": "490f666e1afb15b7362b406ed1cea246", "file": "bios/scph5501.bin"   },
 										   { "md5": "32736f17079d0b2b7024407c39bd3050", "file": "bios/scph5502.bin"   } ] },
     "ps2": { "name": "PS2", "biosFiles": [ { "md5": "28922c703cc7d2cf856f177f2985b3a9", "file": "bios/SCPH30004R.bin" },
-										   { "md5": "ea592129bf0c9189cafe772657261148", "file": "bios/SCPH30004R.NVM" },
 										   { "md5": "3faf7c064a4984f53e2ef5e80ed543bc", "file": "bios/SCPH30004R.MEC" },
 										   { "md5": "d5ce2c7d119f563ce04bc04dbc3a323e", "file": "bios/scph39001.bin"  },
-										   { "md5": "0639a9ff5f5f3fd7833b924b9d97a8ae", "file": "bios/scph39001.NVM"  },
 										   { "md5": "3faf7c064a4984f53e2ef5e80ed543bc", "file": "bios/scph39001.MEC"  },
 										   { "md5": "9a9e8ed7668e6adfc8f7766c08ab9cd0", "file": "bios/EROM.BIN" 	  },
 										   { "md5": "44552702b05697a14ccbe2ca22ee7139", "file": "bios/rom1.bin" 	  },
