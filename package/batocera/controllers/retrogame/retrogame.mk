@@ -16,7 +16,7 @@ endef
 
 define RETROGAME_INSTALL_TARGET_CMDS
 	$(INSTALL) -D $(@D)/retrogame \
-		$(TARGET_DIR)/usr/bin/recalbox-retrogame
+		$(TARGET_DIR)/usr/bin/retrogame
 endef
 
 $(eval $(generic-package))
