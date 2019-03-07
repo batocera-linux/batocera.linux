@@ -8,6 +8,7 @@ default:
     smooth:         true
     rewind:         true
     bezel:          default
+    forceNoBezel:   false
 
 nes:
   emulator: libretro
@@ -170,8 +171,10 @@ ngpc:
   emulator: libretro
   core:     mednafen_ngp
 gw:
-  emulator: libretro
-  core:     gw
+  emulator:     libretro
+  core:         gw
+  options:
+    forceNoBezel: true
 vectrex:
   emulator: libretro
   core:     vecx
