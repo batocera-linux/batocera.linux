@@ -238,11 +238,11 @@ def writeBezelConfig(bezel, retroarchConfig, systemName, rom, gameResolution):
     # default name (default.png)
     # else return
     romBase = os.path.splitext(os.path.basename(rom))[0] # filename without extension
-    overlay_info_file = recalboxFiles.overlayUser + "/" + bezel + "/games/" + rom + ".info"
-    overlay_png_file  = recalboxFiles.overlayUser + "/" + bezel + "/games/" + rom + ".png"
+    overlay_info_file = recalboxFiles.overlayUser + "/" + bezel + "/games/" + romBase + ".info"
+    overlay_png_file  = recalboxFiles.overlayUser + "/" + bezel + "/games/" + romBase + ".png"
     if not (os.path.isfile(overlay_info_file) and os.path.isfile(overlay_png_file)):
-        overlay_info_file = recalboxFiles.overlaySystem + "/" + bezel + "/games/" + rom + ".info"
-        overlay_png_file  = recalboxFiles.overlaySystem + "/" + bezel + "/games/" + rom + ".png"
+        overlay_info_file = recalboxFiles.overlaySystem + "/" + bezel + "/games/" + romBase + ".info"
+        overlay_png_file  = recalboxFiles.overlaySystem + "/" + bezel + "/games/" + romBase + ".png"
         if not (os.path.isfile(overlay_info_file) and os.path.isfile(overlay_png_file)):
             overlay_info_file = recalboxFiles.overlayUser + "/" + bezel + "/systems/" + systemName + ".info"
             overlay_png_file  = recalboxFiles.overlayUser + "/" + bezel + "/systems/" + systemName + ".png"
@@ -298,7 +298,7 @@ def writeBezelConfig(bezel, retroarchConfig, systemName, rom, gameResolution):
 def writeBezelCfgConfig(cfgFile, overlay_png_file):
     fd = open(cfgFile, "w")
     fd.write("overlays = 1\n")
-    fd.write("overlay0_overlay = " + overlay_png_file + "\n")
+    fd.write("overlay0_overlay = \"" + overlay_png_file + "\"\n")
     fd.write("overlay0_full_screen = true\n")
     fd.write("overlay0_descs = 0\n")
     fd.close()
