@@ -213,6 +213,13 @@ naomi:
     libretro:
       reicast: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_REICAST] }
 
+atomiswave:
+  name:       Atomiswave
+  extensions: [lst, bin, dat, 7z, zip]
+  emulators:
+    libretro:
+      reicast: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_REICAST] }
+
 megadrive:
   name:       Sega Megadrive
   extensions: [7z, smd, bin, gen, md, sg, smd, zip]
