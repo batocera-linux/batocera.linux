@@ -31,6 +31,13 @@ ifeq ($(BR2_PACKAGE_RETROARCH),y)
 	BATOCERA_DESKTOPAPPS_ICONS   += retroarch.png
 endif
 
+# ppsspp
+ifeq ($(BR2_PACKAGE_PPSSPP),y)
+  BATOCERA_DESKTOPAPPS_SCRIPTS += batocera-config-ppsspp.sh
+  BATOCERA_DESKTOPAPPS_APPS    += ppsspp-config.desktop
+	BATOCERA_DESKTOPAPPS_ICONS   += ppsspp.png
+endif
+
 define BATOCERA_DESKTOPAPPS_INSTALL_TARGET_CMDS
 	# scripts
 	mkdir -p $(TARGET_DIR)/recalbox/scripts
