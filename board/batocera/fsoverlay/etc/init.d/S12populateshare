@@ -29,7 +29,7 @@ done
 # there are almost empty, it's just for the structure
 # the user can delete the directory, it will recreate the structure
 # the user can delete files, files will not be recreated
-for FILE in music bios extractions kodi saves screenshots decorations \
+for FILE in music bios extractions kodi saves screenshots \
             system/.config/lirc/lircd.conf \
             system/.emulationstation/{es_input.cfg,es_settings.cfg} \
             system/{.hatari,.kodi} \
@@ -40,6 +40,11 @@ do
     # not wanted for kodi
     test -e "$IN""/""$FILE" && test ! -e "$OUT""/""$FILE" && cp -r "$IN""/""$FILE" "$OUT""/""$FILE"
 done
+
+### specific directories
+# decorations - copy only the readme file
+mkdir -p "${OUT}/decorations"
+test -e "${OUT}/decorations/readme.txt" || cp -r "${IN}/decorations/readme.txt" "${OUT}/decorations/readme.txt"
 
 # directories to force directories exists
 # files are linked
