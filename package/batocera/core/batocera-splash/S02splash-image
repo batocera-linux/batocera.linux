@@ -2,6 +2,13 @@
 
 do_start ()
 {
+    if test -f "/boot/splash.png"
+    then
+	image="/boot/splash.png"
+    else
+	image="/usr/share/batocera/splash/logo-version.png"
+    fi
+
     # on some sytems, fb0 is not immediatly loaded, so, keep a chance by waiting a bit
     N=0
     while ! test -e /dev/fb0 -o $N -gt 15
@@ -9,7 +16,7 @@ do_start ()
 	sleep 1
 	let N++
     done
-    test -e /dev/fb0 && fbv -f -i /usr/share/batocera/splash/logo-version.png
+    test -e /dev/fb0 && fbv -f -i "${image}"
 }
 
 case "$1" in
