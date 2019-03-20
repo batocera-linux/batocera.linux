@@ -392,41 +392,15 @@ fba:
     fba2x:
       fba2x: { requireAnyOf: [BR2_PACKAGE_PIFBA] }
   comment_en: |
-    ROMs version must be 0.2.97.42
+    ROMs version must be 0.2.97.44
 
     The file clrmamepro/piFBA_gamelist.txt list compatible games.
     The file fba_029671_od_release_10_working_roms.dat may be used to check ROMs with clrmamepro available at http://mamedev.emulab.it/clrmamepro/
   comment_fr: |
-    La version des ROMs doit être 0.2.97.42
+    La version des ROMs doit être 0.2.97.44
 
     Le fichier clrmamepro/piFBA_gamelist.txt liste les jeux compatibles.
     Le fichier fba_029671_od_release_10_working_roms.dat peut servir à valider les ROMs avec clrmamepro disponible sur http://mamedev.emulab.it/clrmamepro/
-
-fba_libretro:
-  name:       FBA LIBRETRO
-  extensions: [7z, fba, zip]
-  platform:   arcade
-  emulators:
-    libretro:
-        fba: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FBA] }
-  comment_en: |
-    ROMs version must be 0.2.97.42
-
-    This emulator has CPS3 support, updated version, but less performant than piFBA.
-
-    The file fba_libretro_gamelist.txt list compatible games.
-
-    Special files for fba libretro core:
-    - Add your (audio) samples files in /userdata/bios/fba/samples/
-  comment_fr: |
-    La version des ROMs doit être 0.2.97.42
-
-    Cet émulateur supporte CPS3, version plus récente, mais moins performant que piFBA).
-
-    Le fichier fba_libretro_gamelist.txt liste les jeux compatibles.
-
-    Fichiers spéciaux pour le core fba libretro:
-    - Ajoutez vos samples (audio) dans le répertoire /userdata/bios/fba/samples/
 
 mame:
   name:       Mame
