@@ -13,9 +13,10 @@ config BR2_LINUX_AARCH64_KERNEL_IN_ARM_USER
 
 if BR2_LINUX_KERNEL
 
-comment "Linux kernel in thumb mode may be broken with binutils >= 2.29"
+# https://sourceware.org/bugzilla/show_bug.cgi?id=21458
+comment "Linux kernel in thumb mode may be broken with binutils 2.30"
 	depends on BR2_arm || BR2_armeb
-	depends on !BR2_BINUTILS_VERSION_2_28_X
+	depends on BR2_BINUTILS_VERSION_2_30_X
 
 # Packages that need to have a kernel with support for loadable modules,
 # but do not use the kernel-modules infrastructure, should select that
@@ -34,12 +35,13 @@ config BR2_LINUX_NEEDS_MODULES
 choice
 	prompt "Kernel version"
 
+# We are intentionally staying at 4.19 for the next Buildroot LTS
+# release (2019.02)
 config BR2_LINUX_KERNEL_LATEST_VERSION
-# batocera
 	bool "Latest version (4.19)"
 
 config BR2_LINUX_KERNEL_LATEST_CIP_VERSION
-	bool "Latest CIP SLTS version (v4.4.138-cip25)"
+	bool "Latest CIP SLTS version (v4.4.171-cip30)"
 	help
 	  CIP launched in the spring of 2016 to address the needs of
 	  organizations in industries such as power generation and
@@ -126,9 +128,8 @@ endif
 
 config BR2_LINUX_KERNEL_VERSION
 	string
-# batocera
-	default "4.19.21" if BR2_LINUX_KERNEL_LATEST_VERSION
-	default "v4.4.138-cip25" if BR2_LINUX_KERNEL_LATEST_CIP_VERSION
+	default "4.19.25" if BR2_LINUX_KERNEL_LATEST_VERSION
+	default "v4.4.171-cip30" if BR2_LINUX_KERNEL_LATEST_CIP_VERSION
 	default BR2_LINUX_KERNEL_CUSTOM_VERSION_VALUE \
 		if BR2_LINUX_KERNEL_CUSTOM_VERSION
 	default "custom" if BR2_LINUX_KERNEL_CUSTOM_TARBALL
@@ -262,7 +263,7 @@ config BR2_LINUX_KERNEL_SIMPLEIMAGE
 
 config BR2_LINUX_KERNEL_IMAGE
 	bool "Image"
-	depends on BR2_aarch64
+	depends on BR2_aarch64 || BR2_riscv
 
 config BR2_LINUX_KERNEL_LINUX_BIN
 	bool "linux.bin"
@@ -398,6 +399,14 @@ config BR2_LINUX_KERNEL_CUSTOM_DTS_PATH
 	  Path to to out-of-tree device tree source files.
 	  You can provide a list of dts paths to copy and
 	  build, separated by spaces.
+
+config BR2_LINUX_KERNEL_DTB_OVERLAY_SUPPORT
+	bool "Build Device Tree with overlay support"
+	help
+	  If enabled, pass the "-@" option to dtc, such that
+	  symbols are generated in the compiled Device Tree.
+	  Choose this option to support Device Tree overlays
+	  on the target system.
 
 endif
 

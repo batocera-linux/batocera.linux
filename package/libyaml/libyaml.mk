@@ -12,6 +12,4 @@ LIBYAML_LICENSE = MIT
 LIBYAML_LICENSE_FILES = LICENSE
 
 $(eval $(autotools-package))
-
-# batocera
-$(eval $(host-package))
+$(eval $(host-autotools-package))

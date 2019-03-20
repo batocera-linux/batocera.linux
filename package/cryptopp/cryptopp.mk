@@ -4,10 +4,10 @@
 #
 ################################################################################
 
-CRYPTOPP_VERSION = 7.0.0
+CRYPTOPP_VERSION = 8.1.0
 CRYPTOPP_SOURCE = cryptopp$(subst .,,$(CRYPTOPP_VERSION)).zip
-CRYPTOPP_SITE = http://cryptopp.com/
-CRYPTOPP_LICENSE = BSL-1.0
+CRYPTOPP_SITE = https://cryptopp.com
+CRYPTOPP_LICENSE = BSL-1.0, BSD-3-Clause (CRYPTOGAMS), Public domain (ChaCha SSE2 and AVX)
 CRYPTOPP_LICENSE_FILES = License.txt
 CRYPTOPP_INSTALL_STAGING = YES
 
@@ -24,7 +24,7 @@ define HOST_CRYPTOPP_BUILD_CMDS
 endef
 
 define HOST_CRYPTOPP_INSTALL_CMDS
-	$(HOST_MAKE_ENV) $(MAKE) -C $(@D) PREFIX=$(HOST_DIR) install
+	$(HOST_MAKE_ENV) $(MAKE) -C $(@D) PREFIX=$(HOST_DIR) install-lib
 endef
 
 $(eval $(host-generic-package))
