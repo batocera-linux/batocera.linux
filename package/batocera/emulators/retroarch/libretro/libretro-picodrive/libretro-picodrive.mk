@@ -22,7 +22,7 @@ endif
 ifeq ($(BR2_cortex_a7),y)
   PICOPLATFORM=$(LIBRETRO_PLATFORM) armasm
 endif
-ifeq ($(BR2_cortex_a8),y)
+ifeq ($(BR2_cortex_a53),y)
   PICOPLATFORM=$(LIBRETRO_PLATFORM) armasm
 endif
 
