@@ -68,6 +68,10 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
     else:
         retroarchConfig['video_shader_enable'] = 'false'
 
+    # shaders not working on fba
+    if system.config['core'] == 'fba':
+        retroarchConfig['video_shader_enable'] = 'false'
+
     retroarchConfig['aspect_ratio_index'] = '' # reset in case config was changed (or for overlays)
     if defined('ratio', recalboxConfig):
         if recalboxConfig['ratio'] in ratioIndexes:
