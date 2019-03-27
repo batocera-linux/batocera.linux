@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-SFML_VERSION = 2.5.0
+SFML_VERSION = 2.5.1
 SFML_SOURCE = SFML-$(SFML_VERSION)-sources.zip
 SFML_SITE = http://www.sfml-dev.org/files
 SFML_DEPENDENCIES = xcb-util-image openal jpeg flac
