@@ -888,7 +888,7 @@ apple2:
 
 saturn:
   name:       Sega Saturn
-  extensions: [bin, cue, ccd, chd, iso, zip]
+  extensions: [bin, cue, ccd, chd, iso]
   emulators:
     libretro:
       yabause:       { requireAnyOf: [BR2_PACKAGE_LIBRETRO_YABAUSE]       }
