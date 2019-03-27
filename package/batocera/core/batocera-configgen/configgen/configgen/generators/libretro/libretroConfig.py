@@ -191,10 +191,6 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
         coreSettings.save('mame2003-plus_skip_disclaimer', 'enabled')
         coreSettings.save('mame2003-plus_skip_warnings',   'enabled')
 
-    if system.config['core'] == 'mame078':
-        coreSettings.save('mame2003_skip_disclaimer', 'enabled')
-        coreSettings.save('mame2003_skip_warnings',   'enabled')
-
     # Netplay management
     if 'netplaymode' in system.config and system.config['netplaymode'] in systemNetplayModes:
         # Security : hardcore mode disables save states, which would kill netplay
