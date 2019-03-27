@@ -3,8 +3,8 @@
 # MAME
 #
 ################################################################################
-# Version.: Commits on Feb 2, 2019 (0.206)
-LIBRETRO_MAME_VERSION = a7f6d0d690f9dad84878dbe01bfcbb88b19493f1
+# Version.: Commits on Mar 3, 2019 (0.207)
+LIBRETRO_MAME_VERSION = dd899f5c63ce1d725d23706c1d882c58738d8f3c
 LIBRETRO_MAME_SITE = $(call github,libretro,mame,$(LIBRETRO_MAME_VERSION))
 LIBRETRO_MAME_LICENSE="MAME"
 
