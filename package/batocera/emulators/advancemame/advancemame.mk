@@ -3,8 +3,8 @@
 # advancemame
 #
 ################################################################################
-# Version.: Commits on Sep 8, 2018
-ADVANCEMAME_VERSION = v3.9
+# Version.: Commits on Sep 25, 2018 (v3.9)
+ADVANCEMAME_VERSION = 0038b8d3fc0976576b550eebad5295033d306ab5
 ADVANCEMAME_SITE = $(call github,amadvance,advancemame,$(ADVANCEMAME_VERSION))
 ADVANCEMAME_LICENSE = GPLv2
 
