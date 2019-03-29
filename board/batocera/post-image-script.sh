@@ -91,8 +91,8 @@ case "${BATOCERA_TARGET}" in
 	cp -f "${BINARIES_DIR}/"*.dtb "${BINARIES_DIR}/rpi-firmware"
 	rm -rf "${BINARIES_DIR}/rpi-firmware/boot"   || exit 1
 	mkdir -p "${BINARIES_DIR}/rpi-firmware/boot" || exit 1
-	cp "board/batocera/rpi/config.txt" "${BINARIES_DIR}/rpi-firmware/config.txt"   || exit 1
-	cp "board/batocera/rpi/cmdline.txt" "${BINARIES_DIR}/rpi-firmware/cmdline.txt" || exit 1
+	cp "board/batocera/rpi/boot/config.txt" "${BINARIES_DIR}/rpi-firmware/config.txt"   || exit 1
+	cp "board/batocera/rpi/boot/cmdline.txt" "${BINARIES_DIR}/rpi-firmware/cmdline.txt" || exit 1
 
 	KERNEL_VERSION=$(grep -E "^BR2_LINUX_KERNEL_VERSION=" "${BR2_CONFIG}" | sed -e s+'^BR2_LINUX_KERNEL_VERSION="\(.*\)"$'+'\1'+)
 	"${BUILD_DIR}/linux-${KERNEL_VERSION}/scripts/mkknlimg" "${BINARIES_DIR}/zImage" "${BINARIES_DIR}/rpi-firmware/boot/linux"
