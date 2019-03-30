@@ -6,17 +6,14 @@ from Emulator import Emulator
 import settings
 from settings.unixSettings import UnixSettings
 import json
-import utils.eslog as eslog
+from utils.logger import eslog
 
 sys.path.append(
     os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
 
-libretroSettings = UnixSettings(recalboxFiles.retroarchCustom, separator=' ')
-coreSettings = UnixSettings(recalboxFiles.retroarchCoreCustom, separator=' ')
-
 # return true if the option is considered defined
 def defined(key, dict):
-    return key in dict and isinstance(dict[key], str) and len(dict[key]) > 0
+    return key in dict and isinstance(dict[key], basestring) and len(dict[key]) > 0
 
 
 # Warning the values in the array must be exactly at the same index than
@@ -30,10 +27,10 @@ coreToP1Device = {'cap32': '513', '81': '257', 'fuse': '513'};
 coreToP2Device = {'fuse': '513'};
 
 # Define systems compatible with retroachievements
-systemToRetroachievements = {'snes', 'nes', 'gba', 'gb', 'gbc', 'megadrive', 'mastersystem', 'pcengine', 'lynx', 'ngp', 'atari2600', 'virtualboy', 'neogeo'};
+systemToRetroachievements = {'snes', 'nes', 'gba', 'gb', 'gbc', 'megadrive', 'mastersystem', 'pcengine', 'lynx', 'ngp', 'atari2600', 'virtualboy', 'neogeo', 'neogeocd'};
 
 # Define systems not compatible with rewind option
-systemNoRewind = {'sega32x', 'psx', 'zxspectrum', 'odyssey2', 'mame', 'n64', 'dreamcast', 'naomi'};
+systemNoRewind = {'sega32x', 'psx', 'zxspectrum', 'odyssey2', 'mame', 'n64', 'dreamcast', 'naomi', 'neogeocd', 'saturn'};
 
 # Define system emulated by bluemsx core
 systemToBluemsx = {'msx': '"MSX2"', 'msx1': '"MSX2"', 'msx2': '"MSX2"', 'colecovision': '"COL - ColecoVision"' };
@@ -51,8 +48,14 @@ def writeLibretroConfig(retroconfig, system, controllers, rom, bezel, gameResolu
 
 # take a system, and returns a dict of retroarch.cfg compatible parameters
 def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
+    coreSettings = UnixSettings(recalboxFiles.retroarchCoreCustom, separator=' ')
+
     retroarchConfig = dict()
     recalboxConfig = system.config
+
+    # fs is required at least for x86* and odroidn2
+    retroarchConfig['video_fullscreen'] = 'true'
+
     if system.isOptSet('smooth') and system.getOptBoolean('smooth') == True:
         retroarchConfig['video_smooth'] = 'true'
     else:
@@ -91,10 +94,7 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
         retroarchConfig['savestate_auto_save'] = 'false'
         retroarchConfig['savestate_auto_load'] = 'false'
 
-    if defined('inputdriver', recalboxConfig):
-        retroarchConfig['input_joypad_driver'] = recalboxConfig['inputdriver']
-    else:
-        retroarchConfig['input_joypad_driver'] = 'udev'
+    retroarchConfig['input_joypad_driver'] = 'udev'
 
     retroarchConfig['savestate_directory'] = recalboxFiles.savesDir + system.name
     retroarchConfig['savefile_directory'] = recalboxFiles.savesDir + system.name
@@ -184,6 +184,17 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
         coreSettings.save('tgbdual_single_screen_mp', 'both players')
         coreSettings.save('tgbdual_switch_screens',   'normal')
 
+    if system.config['core'] == 'desmume':
+        coreSettings.save('desmume_pointer_device_r', 'emulated')
+
+    if system.config['core'] == 'mame078plus':
+        coreSettings.save('mame2003-plus_skip_disclaimer', 'enabled')
+        coreSettings.save('mame2003-plus_skip_warnings',   'enabled')
+
+    if system.config['core'] == 'mame078':
+        coreSettings.save('mame2003_skip_disclaimer', 'enabled')
+        coreSettings.save('mame2003_skip_warnings',   'enabled')
+
     # Netplay management
     if 'netplaymode' in system.config and system.config['netplaymode'] in systemNetplayModes:
         # Security : hardcore mode disables save states, which would kill netplay
@@ -238,11 +249,11 @@ def writeBezelConfig(bezel, retroarchConfig, systemName, rom, gameResolution):
     # default name (default.png)
     # else return
     romBase = os.path.splitext(os.path.basename(rom))[0] # filename without extension
-    overlay_info_file = recalboxFiles.overlayUser + "/" + bezel + "/games/" + rom + ".info"
-    overlay_png_file  = recalboxFiles.overlayUser + "/" + bezel + "/games/" + rom + ".png"
+    overlay_info_file = recalboxFiles.overlayUser + "/" + bezel + "/games/" + romBase + ".info"
+    overlay_png_file  = recalboxFiles.overlayUser + "/" + bezel + "/games/" + romBase + ".png"
     if not (os.path.isfile(overlay_info_file) and os.path.isfile(overlay_png_file)):
-        overlay_info_file = recalboxFiles.overlaySystem + "/" + bezel + "/games/" + rom + ".info"
-        overlay_png_file  = recalboxFiles.overlaySystem + "/" + bezel + "/games/" + rom + ".png"
+        overlay_info_file = recalboxFiles.overlaySystem + "/" + bezel + "/games/" + romBase + ".info"
+        overlay_png_file  = recalboxFiles.overlaySystem + "/" + bezel + "/games/" + romBase + ".png"
         if not (os.path.isfile(overlay_info_file) and os.path.isfile(overlay_png_file)):
             overlay_info_file = recalboxFiles.overlayUser + "/" + bezel + "/systems/" + systemName + ".info"
             overlay_png_file  = recalboxFiles.overlayUser + "/" + bezel + "/systems/" + systemName + ".png"
@@ -298,7 +309,7 @@ def writeBezelConfig(bezel, retroarchConfig, systemName, rom, gameResolution):
 def writeBezelCfgConfig(cfgFile, overlay_png_file):
     fd = open(cfgFile, "w")
     fd.write("overlays = 1\n")
-    fd.write("overlay0_overlay = " + overlay_png_file + "\n")
+    fd.write("overlay0_overlay = \"" + overlay_png_file + "\"\n")
     fd.write("overlay0_full_screen = true\n")
     fd.write("overlay0_descs = 0\n")
     fd.close()

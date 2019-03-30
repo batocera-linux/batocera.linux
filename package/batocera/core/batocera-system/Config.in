@@ -23,6 +23,9 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
     select BR2_PACKAGE_NTFS_3G                           # required for ntfs
     select BR2_PACKAGE_NTFS_3G_NTFSPROGS                 # required for ntfs
     select BR2_PACKAGE_RASPI2PNG                         if BR2_PACKAGE_BATOCERA_TARGET_RPI1 || BR2_PACKAGE_BATOCERA_TARGET_RPI2 || BR2_PACKAGE_BATOCERA_TARGET_RPI3 # screenshots
+    select BR2_PACKAGE_RETROFLAG                         if BR2_PACKAGE_BATOCERA_TARGET_RPI1 || BR2_PACKAGE_BATOCERA_TARGET_RPI2 || BR2_PACKAGE_BATOCERA_TARGET_RPI3 # retroflag buttons
+    select BR2_PACKAGE_RPIGPIOSWITCH                     if BR2_PACKAGE_BATOCERA_TARGET_RPI1 || BR2_PACKAGE_BATOCERA_TARGET_RPI2 || BR2_PACKAGE_BATOCERA_TARGET_RPI3 # gpio switchs
+    select BR2_PACKAGE_RETROGAME                         if BR2_PACKAGE_BATOCERA_TARGET_RPI1 || BR2_PACKAGE_BATOCERA_TARGET_RPI2 || BR2_PACKAGE_BATOCERA_TARGET_RPI3 # gpio pads
     select BR2_PACKAGE_CONNMAN                           # network manager
     select BR2_PACKAGE_CONNMAN_WIFI                      # network manager
     select BR2_PACKAGE_CONNMAN_CLIENT                    # network manager
@@ -46,6 +49,9 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
     select BR2_PACKAGE_PARTED                            # partition management (for the first boot)
     select BR2_PACKAGE_USBMOUNT                          # usb key/sd card mounter
     select BR2_PACKAGE_USBUTILS                          # usb key/sd card tools
+    select BR2_PACKAGE_BATOCERA_SPLASH                   # boot splash
+    # choices: select BR2_PACKAGE_BATOCERA_SPLASH_OMXPLAYER if BR2_PACKAGE_BATOCERA_TARGET_RPI1 || BR2_PACKAGE_BATOCERA_TARGET_RPI2      || BR2_PACKAGE_BATOCERA_TARGET_RPI3
+    # choices: select BR2_PACKAGE_BATOCERA_SPLASH_FFPLAY    if BR2_PACKAGE_BATOCERA_TARGET_XU4  || BR2_PACKAGE_BATOCERA_TARGET_LEGACYXU4 || BR2_PACKAGE_BATOCERA_TARGET_ROCKPRO64
     select BR2_PACKAGE_WGET                              # download tools
     select BR2_PACKAGE_CURL                              # download tools
     select BR2_PACKAGE_CA_CERTIFICATES                   # ssl certificates
@@ -82,7 +88,7 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
     select BR2_PACKAGE_BATOCERA_XORG                     if BR2_PACKAGE_BATOCERA_TARGET_X86  || BR2_PACKAGE_BATOCERA_TARGET_X86_64
 
     # compression tools
-    select BR2_PACKAGE_UNZIP                             # for /recalbox/share/system/upgrade/share.zip
+    select BR2_PACKAGE_UNZIP                             # for /userdata/system/upgrade/share.zip
     select BR2_PACKAGE_XZ                                # for updates
 
     help
@@ -182,6 +188,7 @@ config BR2_PACKAGE_BATOCERA_ALL_SYSTEMS
 	select BR2_PACKAGE_PCSX2                if BR2_PACKAGE_BATOCERA_TARGET_X86
 	select BR2_PACKAGE_PCSX2_AVX2           if BR2_PACKAGE_BATOCERA_TARGET_X86
 	select BR2_PACKAGE_PCSX2_X86            if BR2_PACKAGE_BATOCERA_TARGET_X86_64
+        select BR2_PACKAGE_CITRA                if BR2_PACKAGE_BATOCERA_TARGET_X86_64
 
         help
           All avaible systems for the selected architecture
@@ -194,6 +201,11 @@ config BR2_PACKAGE_BATOCERA_RETROARCH
 	select BR2_PACKAGE_BATOCERA_SHADERS
 
         # n64
+        select BR2_PACKAGE_LIBRETRO_MUPEN64PLUS_NEXT  if BR2_PACKAGE_BATOCERA_TARGET_RPI2 || BR2_PACKAGE_BATOCERA_TARGET_RPI3      || \
+                                                         BR2_PACKAGE_BATOCERA_TARGET_X86  || BR2_PACKAGE_BATOCERA_TARGET_X86_64    || \
+                                                         BR2_PACKAGE_BATOCERA_TARGET_XU4  || BR2_PACKAGE_BATOCERA_TARGET_LEGACYXU4 || \
+                                                         BR2_PACKAGE_BATOCERA_TARGET_S912 || \
+                                                         BR2_PACKAGE_BATOCERA_TARGET_ROCKPRO64 # MUPEN64PLUS_NEXT
         select BR2_PACKAGE_LIBRETRO_MUPEN64PLUS       if BR2_PACKAGE_BATOCERA_TARGET_RPI2 || BR2_PACKAGE_BATOCERA_TARGET_RPI3      || \
                                                          BR2_PACKAGE_BATOCERA_TARGET_X86  || BR2_PACKAGE_BATOCERA_TARGET_X86_64    || \
 							 BR2_PACKAGE_BATOCERA_TARGET_XU4  || BR2_PACKAGE_BATOCERA_TARGET_LEGACYXU4 || \
@@ -301,14 +313,18 @@ config BR2_PACKAGE_BATOCERA_RETROARCH
 							 BR2_PACKAGE_BATOCERA_TARGET_S905 || BR2_PACKAGE_BATOCERA_TARGET_S912      || \
 							 BR2_PACKAGE_BATOCERA_TARGET_ROCKPRO64 # PSX
         select BR2_PACKAGE_LIBRETRO_BEETLE_SATURN     if BR2_PACKAGE_BATOCERA_TARGET_X86  || BR2_PACKAGE_BATOCERA_TARGET_X86_64
-        select BR2_PACKAGE_LIBRETRO_REICAST           if BR2_PACKAGE_BATOCERA_TARGET_X86_64
+        select BR2_PACKAGE_LIBRETRO_REICAST           if BR2_PACKAGE_BATOCERA_TARGET_RPI3 || BR2_PACKAGE_BATOCERA_TARGET_X86_64    || \
+                                                         BR2_PACKAGE_BATOCERA_TARGET_XU4  || BR2_PACKAGE_BATOCERA_TARGET_ROCKPRO64 # LIBRETRO_REICAST
         # select BR2_PACKAGE_LIBRETRO_DOLPHIN         if BR2_PACKAGE_BATOCERA_TARGET_X86_64
         # select BR2_PACKAGE_LIBRETRO_PPSSPP          if BR2_PACKAGE_BATOCERA_TARGET_X86  || BR2_PACKAGE_BATOCERA_TARGET_X86_64 || BR2_PACKAGE_BATOCERA_TARGET_RPI3
-        select BR2_PACKAGE_LIBRETRO_DOSBOX            if BR2_PACKAGE_BATOCERA_TARGET_X86  || BR2_PACKAGE_BATOCERA_TARGET_X86_64
+        select BR2_PACKAGE_LIBRETRO_DOSBOX            if BR2_PACKAGE_BATOCERA_TARGET_RPI3 || BR2_PACKAGE_BATOCERA_TARGET_XU4    || \
+                                                         BR2_PACKAGE_BATOCERA_TARGET_X86  || BR2_PACKAGE_BATOCERA_TARGET_X86_64 || \
+                                                         BR2_PACKAGE_BATOCERA_TARGET_ROCKPRO64 # LIBRETRO_DOSBOX
         select BR2_PACKAGE_LIBRETRO_VICE              if BR2_PACKAGE_BATOCERA_TARGET_X86  || BR2_PACKAGE_BATOCERA_TARGET_X86_64
-        select BR2_PACKAGE_LIBRETRO_MAME2016          if BR2_PACKAGE_BATOCERA_TARGET_X86  || BR2_PACKAGE_BATOCERA_TARGET_X86_64  
+        select BR2_PACKAGE_LIBRETRO_MAME2016          if BR2_PACKAGE_BATOCERA_TARGET_X86  || BR2_PACKAGE_BATOCERA_TARGET_X86_64
+        select BR2_PACKAGE_LIBRETRO_MAME              if BR2_PACKAGE_BATOCERA_TARGET_X86  || BR2_PACKAGE_BATOCERA_TARGET_X86_64
         select BR2_PACKAGE_LIBRETRO_CITRA             if BR2_PACKAGE_BATOCERA_TARGET_X86_64
-        select BR2_PACKAGE_LIBRETRO_KRONOS            if BR2_PACKAGE_BATOCERA_TARGET_X86  || BR2_PACKAGE_BATOCERA_TARGET_X86_64                                             
+        select BR2_PACKAGE_LIBRETRO_KRONOS            if BR2_PACKAGE_BATOCERA_TARGET_X86  || BR2_PACKAGE_BATOCERA_TARGET_X86_64
         help
           Retroarch
 
@@ -415,7 +431,7 @@ config BR2_PACKAGE_BATOCERA_KODI
 
        #
        select BR2_PACKAGE_KODI_SUPERREPO_REPOSITORIES
-       select BR2_PACKAGE_KODI_SUPERREPO_ALL
+       #select BR2_PACKAGE_KODI_SUPERREPO_ALL
        select BR2_PACKAGE_KODI_PLUGIN_VIDEO_FILMON
 
        # GBM
@@ -473,6 +489,7 @@ config BR2_PACKAGE_BATOCERA_XORG
        select BR2_PACKAGE_XDRIVER_XF86_VIDEO_TRIDENT
        select BR2_PACKAGE_XDRIVER_XF86_VIDEO_VESA
        select BR2_PACKAGE_XDRIVER_XF86_VIDEO_VOODOO
+       select BR2_PACKAGE_XDRIVER_XF86_VIDEO_AMDGPU         if BR2_PACKAGE_BATOCERA_TARGET_X86_64
 
        # applications
        select BR2_PACKAGE_XAPP_SETXKBMAP

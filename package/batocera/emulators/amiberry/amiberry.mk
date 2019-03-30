@@ -36,9 +36,9 @@ endef
 define AMIBERRY_INSTALL_TARGET_CMDS
 	$(INSTALL) -D $(@D)/amiberry-$(AMIBERRY_BATOCERA_SYSTEM) $(TARGET_DIR)/usr/bin/amiberry
         mkdir -p $(TARGET_DIR)/usr/share/amiberry
-	ln -sf /recalbox/share/system/configs/amiberry/whdboot $(TARGET_DIR)/usr/share/amiberry/whdboot
-        mkdir -p $(TARGET_DIR)/recalbox/share_init/system/configs/amiberry
-	cp -pr $(@D)/whdboot $(TARGET_DIR)/recalbox/share_init/system/configs/amiberry/
+	ln -sf /userdata/system/configs/amiberry/whdboot $(TARGET_DIR)/usr/share/amiberry/whdboot
+        mkdir -p $(TARGET_DIR)/usr/share/batocera/datainit/system/configs/amiberry
+	cp -pr $(@D)/whdboot $(TARGET_DIR)/usr/share/batocera/datainit/system/configs/amiberry/
 	cp -rf $(@D)/data $(TARGET_DIR)/usr/share/amiberry
 endef
 

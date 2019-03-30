@@ -3,7 +3,7 @@
 # the aim of this script
 # is to make things happend in this way :
 # udev
-# mounting /recalbox/share
+# mounting /userdata
 # mounting other devices
 #
 # because:
@@ -19,7 +19,7 @@ then
 fi
 
 # if not, delay the automounting by saving the context for later
-# it will be played by the S11share script after the mounting of /recalbox/share
+# it will be played by the S11share script after the mounting of /userdata
 if mkdir -p /var/run/usbmount.delay
 then
     N=$(ls /var/run/usbmount.delay | wc -l)

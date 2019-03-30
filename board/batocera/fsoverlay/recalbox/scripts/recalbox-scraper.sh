@@ -46,7 +46,7 @@ do_scrap() {
 
 	for x in "mame" "fba" "fba_libretro" "neogeo"
 	do
-	    test "${LRDIR}" = "/recalbox/share/roms/${x}" && EXTRAOPT="-mame"
+	    test "${LRDIR}" = "/userdata/roms/${x}" && EXTRAOPT="-mame"
 	done
 
 	(cd "${LRDIR}" && sselph-scraper -console_src ss,gdb,ovgdb -lang "${sslang}" -console_img "${IMGSTYLE}" -workers 5 ${EXTRAOPT}) 2>&1
@@ -56,9 +56,9 @@ do_scrap() {
 # find system to scrape
 (if test -n "${DOSYS}"
  then
-     test -d "/recalbox/share/roms/${DOSYS}" && echo "/recalbox/share/roms/${DOSYS}"
+     test -d "/userdata/roms/${DOSYS}" && echo "/userdata/roms/${DOSYS}"
  else
-     find /recalbox/share/roms -maxdepth 1 -mindepth 1 -type d
+     find /userdata/roms -maxdepth 1 -mindepth 1 -type d
  fi) |
     while read RDIR1
     do

@@ -3,9 +3,10 @@
 # IMAME
 #
 ################################################################################
-# Version.: Commits on Nov 8, 2018
-LIBRETRO_IMAME_VERSION = 2084351834e26a94be89c961c64fd2199084767a
+# Version.: Commits on Jan 31, 2019
+LIBRETRO_IMAME_VERSION = 90d9909ab60dace88d5ab281fa1e9e43e5f25364
 LIBRETRO_IMAME_SITE = $(call github,libretro,mame2000-libretro,$(LIBRETRO_IMAME_VERSION))
+LIBRETRO_IMAME_LICENSE="MAME"
 
 define LIBRETRO_IMAME_BUILD_CMDS
 	mkdir -p $(@D)/obj_libretro_libretro/cpu

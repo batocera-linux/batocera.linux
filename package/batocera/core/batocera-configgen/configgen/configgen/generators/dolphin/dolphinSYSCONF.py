@@ -116,4 +116,4 @@ def update(config, filepath, gameResolution):
     readWriteFile(filepath, arg_setval)
 
 if __name__ == '__main__':
-    readWriteFile("/recalbox/share/saves/dolphin-emu/Wii/shared2/sys/SYSCONF", {})
+    readWriteFile("/userdata/saves/dolphin-emu/Wii/shared2/sys/SYSCONF", {})

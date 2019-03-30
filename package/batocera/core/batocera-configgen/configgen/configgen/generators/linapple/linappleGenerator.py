@@ -21,11 +21,11 @@ class LinappleGenerator(Generator):
     Args:
         path_init (str):
             Full path name where default settings are stored.
-            ('/recalbox/share_init/system/.linapple')
+            ('/usr/share/batocera/datainit/system/.linapple')
         
         path_user (str):
             Full path name where user settings are stored.
-            ('/recalbox/share/system/.linapple')
+            ('/userdata/system/.linapple')
             
     '''
     def __init__(self, path_init, path_user):

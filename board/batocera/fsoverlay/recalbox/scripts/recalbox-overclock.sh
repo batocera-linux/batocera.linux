@@ -1,6 +1,6 @@
 #!/bin/bash
 
-ARCH=$(cat /recalbox/recalbox.arch)
+ARCH=$(cat /usr/share/batocera/batocera.arch)
 GRPICONFFILE="/boot/config.txt"
 
 if test "${ARCH}" = "rpi3"

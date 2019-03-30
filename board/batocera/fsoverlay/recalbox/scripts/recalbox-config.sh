@@ -10,7 +10,7 @@ command="$1"
 mode="$2"
 extra1="$3"
 extra2="$4"
-arch=`cat /recalbox/recalbox.arch`
+arch=`cat /usr/share/batocera/batocera.arch`
 
 recalboxupdateurl="https://batocera-linux.xorhub.com/upgrades"
 
@@ -22,7 +22,7 @@ postBootConfig() {
     mount -o remount,ro /boot
 }
 
-log=/recalbox/share/system/logs/recalbox.log
+log=/userdata/system/logs/recalbox.log
 systemsetting="python /usr/lib/python2.7/site-packages/configgen/settings/recalboxSettings.py"
 
 echo "---- recalbox-config.sh ----" >> $log
@@ -103,11 +103,11 @@ if [ -f "$configFile" ];then
 	fi
 
 	if [ "$mode" == "enable" ];then
-		echo "`logtime` : enabling overscan" >> $log
+		echo "enabling overscan" >> $log
 		sed -i "s/#\?disable_overscan=.*/disable_overscan=0/g" "$configFile"
 		sed -i "s/#\?overscan_scale=.*/overscan_scale=1/g" "$configFile"
 	elif [ "$mode" == "disable" ];then
-                echo "`logtime` : disabling overscan" >> $log
+                echo "disabling overscan" >> $log
                 sed -i "s/#\?disable_overscan=.*/disable_overscan=1/g" "$configFile"
                 sed -i "s/#\?overscan_scale=.*/overscan_scale=0/g" "$configFile"
 	else
@@ -160,7 +160,7 @@ if [ "$command" == "audio" ];then
 	elif [ "$mode" == "jack" ];then
 	    cmdVal="1"
 	fi
-        echo "`logtime` : setting audio output mode : $mode" >> $log
+        echo "setting audio output mode : $mode" >> $log
 	amixer cset numid=3 $cmdVal || exit 1
     elif [[ "${arch}" =~ "x86" ]]
     then
@@ -168,13 +168,13 @@ if [ "$command" == "audio" ];then
 	# custom: don't touch the .asoundrc file
 	# any other, create the .asoundrd file
 	if [ "$mode" == "auto" ];then
-	    rm -rf /recalbox/share/system/.asoundrc || exit 1
+	    rm -rf /userdata/system/.asoundrc || exit 1
 	elif [ "$mode" != "custom" ];then
 	    if echo "${mode}" | grep -qE '^[0-9]*,[0-9]* '
 	    then
 		cardnb=$(echo "${mode}" | sed -e s+'^\([0-9]*\),.*$'+'\1'+)
 		devicenb=$(echo "${mode}" | sed -e s+'^[0-9]*,\([0-9]*\) .*$'+'\1'+)
-		cat > /recalbox/share/system/.asoundrc <<EOF
+		cat > /userdata/system/.asoundrc <<EOF
 	    pcm.!default { type plug slave { pcm "hw:${cardnb},${devicenb}" } }
 	    ctl.!default { type hw card ${cardnb} }
 EOF
@@ -187,7 +187,7 @@ fi
 
 if [ "$command" == "volume" ];then
 	if [ "$mode" != "" ];then
-        	echo "`logtime` : setting audio volume : $mode" >> $log
+        	echo "setting audio volume : $mode" >> $log
 
 		# on my pc, the master is turned off at boot
 		# i don't know what are the rules to set here.
@@ -216,7 +216,7 @@ if [ "$command" == "module" ];then
 	rmmod /lib/modules/`uname -r`/extra/${modulename}.ko >> $log
 
         if [ "$mode" == "load" ];then
-	        echo "`logtime` : loading module $modulename args = $map" >> $log
+	        echo "loading module $modulename args = $map" >> $log
 		insmod /lib/modules/`uname -r`/extra/${modulename}.ko $map >> $log
 		[ "$?" ] || exit 1
         fi
@@ -244,7 +244,7 @@ if [ "$command" == "canupdate" ];then
 	        echo "Unable to access the url" >&2
 		exit 2
 	fi
-	installed=`cat /recalbox/batocera.version`
+	installed=`cat /usr/share/batocera/batocera.version`
 
 	echo "Current: ${installed}"
 	echo "New: ${available}"
@@ -265,7 +265,7 @@ if [[ "$command" == "wifi" ]]; then
         psk="$4"
 
         if [[ "$mode" == "enable" ]]; then
-            echo "`logtime` : configure wifi" >> $log
+            echo "configure wifi" >> $log
 	    mkdir -p "/var/lib/connman" || exit 1
 	    cat > "/var/lib/connman/recalbox_wifi.config" <<EOF
 [global]
@@ -365,7 +365,7 @@ if [[ "$command" == "forgetBT" ]]; then
    /etc/init.d/S32bluetooth stop
    rm -rf /var/lib/bluetooth
    mkdir /var/lib/bluetooth
-   rm -f /recalbox/share/system/bluetooth/bluetooth.tar
+   rm -f /userdata/system/bluetooth/bluetooth.tar
    /etc/init.d/S32bluetooth start
    exit 0
 fi

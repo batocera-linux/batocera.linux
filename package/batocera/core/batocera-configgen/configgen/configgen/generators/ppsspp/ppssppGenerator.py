@@ -15,19 +15,18 @@ class PPSSPPGenerator(Generator):
     # Main entry of the module
     # Configure fba and return a command
     def generate(self, system, rom, playersControllers, gameResolution):
-        if not 'configfile' in system.config:
-            ppssppConfig.writePPSSPPConfig(system)
-            # For each pad detected
-            for index in playersControllers :
-                controller = playersControllers[index]
-                # we only care about player 1
-                if controller.player != "1":
-                    continue
-                ppssppControllers.generateControllerConfig(controller)
-                cfgFile = open(recalboxFiles.ppssppControls, "w")
-                cfgFile.write(controller.generateSDLGameDBLine())
-                cfgFile.close()
-                break
+        ppssppConfig.writePPSSPPConfig(system)
+        # For each pad detected
+        for index in playersControllers :
+            controller = playersControllers[index]
+            # we only care about player 1
+            if controller.player != "1":
+                continue
+            ppssppControllers.generateControllerConfig(controller)
+            cfgFile = open(recalboxFiles.ppssppControls, "w")
+            cfgFile.write(controller.generateSDLGameDBLine())
+            cfgFile.close()
+            break
 
         # the command to run  
         commandArray = [recalboxFiles.recalboxBins[system.config['emulator']]]

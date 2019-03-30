@@ -35,7 +35,8 @@ choice
 	prompt "Kernel version"
 
 config BR2_LINUX_KERNEL_LATEST_VERSION
-	bool "Latest version (4.18)"
+# batocera
+	bool "Latest version (4.19)"
 
 config BR2_LINUX_KERNEL_LATEST_CIP_VERSION
 	bool "Latest CIP SLTS version (v4.4.138-cip25)"
@@ -125,7 +126,8 @@ endif
 
 config BR2_LINUX_KERNEL_VERSION
 	string
-	default "4.18.20" if BR2_LINUX_KERNEL_LATEST_VERSION
+# batocera
+	default "4.19.21" if BR2_LINUX_KERNEL_LATEST_VERSION
 	default "v4.4.138-cip25" if BR2_LINUX_KERNEL_LATEST_CIP_VERSION
 	default BR2_LINUX_KERNEL_CUSTOM_VERSION_VALUE \
 		if BR2_LINUX_KERNEL_CUSTOM_VERSION

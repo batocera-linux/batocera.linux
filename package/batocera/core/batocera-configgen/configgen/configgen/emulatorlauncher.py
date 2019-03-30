@@ -24,6 +24,7 @@ from generators.vice.viceGenerator import ViceGenerator
 from generators.fsuae.fsuaeGenerator import FsuaeGenerator
 from generators.amiberry.amiberryGenerator import AmiberryGenerator
 from generators.advancemame.advMameGenerator import AdvMameGenerator
+from generators.citra.citraGenerator import CitraGenerator
 import controllersConfig as controllers
 import signal
 import recalboxFiles
@@ -31,7 +32,7 @@ import os
 import subprocess
 import json
 import utils.videoMode as videoMode
-import utils.eslog as eslog
+from utils.logger import eslog
 
 generators = {
     'fba2x': Fba2xGenerator(),
@@ -50,7 +51,8 @@ generators = {
     'dolphin': DolphinGenerator(),
     'pcsx2': Pcsx2Generator(),
     'ppsspp': PPSSPPGenerator(),
-    'advancemame' : AdvMameGenerator()
+    'advancemame' : AdvMameGenerator(),
+    'citra' : CitraGenerator()
 }
 
 def main(args):
@@ -66,6 +68,7 @@ def main(args):
     eslog.log("Running system: {}".format(systemName))
     system = getDefaultEmulator(systemName)
     system.configure(args.emulator, args.core, args.ratio, args.netplay)
+    eslog.debug("Settings: {}".format(system.config))
     if "emulator" in system.config and "core" in system.config:
         eslog.log("emulator: {}, core: {}".format(system.config["emulator"], system.config["core"]))
     else:
@@ -221,8 +224,7 @@ if __name__ == '__main__':
         exitcode = -1
         exitcode = main(args)
     except Exception as e:
-        eslog.log("configgen exception: ")
-        eslog.logtrace()
+        eslog.error("configgen exception: ", exc_info=True)
     time.sleep(1) # this seems to be required so that the gpu memory is restituated and available for es
     eslog.log("Exiting configgen with status {}".format(str(exitcode)))
     exit(exitcode)

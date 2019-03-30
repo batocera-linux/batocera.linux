@@ -22,7 +22,7 @@ index fd1f40a..628595d 100644
 +
 +string get_writable_data_save(const string& filename)
 +{
-+   return std::string("/recalbox/share/saves/dreamcast/" + 
++   return std::string("/userdata/saves/dreamcast/" + 
 +#ifdef _WIN32
 +         std::string("\\")
 +#else

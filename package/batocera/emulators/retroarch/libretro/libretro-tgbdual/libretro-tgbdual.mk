@@ -3,9 +3,10 @@
 # TGBDUAL
 #
 ################################################################################
-# Version.: Commits on Nov 11, 2018
-LIBRETRO_TGBDUAL_VERSION = 0a644e78e71c2aae33be36abaa7bc6e79bbf497e
+# Version.: Commits on Jan 4, 2019
+LIBRETRO_TGBDUAL_VERSION = c13b9418664dede869362d965cdc8eeb6382e779
 LIBRETRO_TGBDUAL_SITE = $(call github,libretro,tgbdual-libretro,$(LIBRETRO_TGBDUAL_VERSION))
+LIBRETRO_TGBDUAL_LICENSE="GPLv2"
 
 define LIBRETRO_TGBDUAL_BUILD_CMDS
 		CFLAGS="$(TARGET_CFLAGS)" LD="$(TARGET_LD)" \

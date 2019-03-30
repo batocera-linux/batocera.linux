@@ -125,8 +125,9 @@ n64:
       rice:       { requireAnyOf: [BR2_PACKAGE_MUPEN64PLUS_GLES2RICE]        }
       glide64mk2: { requireAnyOf: [BR2_PACKAGE_MUPEN64PLUS_VIDEO_GLIDE64MK2] }
     libretro:
-      mupen64plus:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MUPEN64PLUS]  }
-      parallel_n64: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PARALLEL_N64] }
+      mupen64plus:      { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MUPEN64PLUS]      }
+      mupen64plus-next: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MUPEN64PLUS_NEXT] }
+      parallel_n64:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PARALLEL_N64]     }
 
 gba:
   name:       Game Boy Advance
@@ -201,13 +202,19 @@ dreamcast:
   extensions: [cdi, chd, gdi]
   emulators:
     libretro:
-      redream: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_REDREAM] }
       reicast: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_REICAST] }
     reicast:
       reicast: { requireAnyOf: [BR2_PACKAGE_REICAST] }
 
 naomi:
   name:       Naomi Dreamcast
+  extensions: [lst, bin, dat, 7z, zip]
+  emulators:
+    libretro:
+      reicast: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_REICAST] }
+
+atomiswave:
+  name:       Atomiswave
   extensions: [lst, bin, dat, 7z, zip]
   emulators:
     libretro:
@@ -385,41 +392,15 @@ fba:
     fba2x:
       fba2x: { requireAnyOf: [BR2_PACKAGE_PIFBA] }
   comment_en: |
-    ROMs version must be 0.2.97.42
+    ROMs version must be 0.2.97.44
 
     The file clrmamepro/piFBA_gamelist.txt list compatible games.
     The file fba_029671_od_release_10_working_roms.dat may be used to check ROMs with clrmamepro available at http://mamedev.emulab.it/clrmamepro/
   comment_fr: |
-    La version des ROMs doit être 0.2.97.42
+    La version des ROMs doit être 0.2.97.44
 
     Le fichier clrmamepro/piFBA_gamelist.txt liste les jeux compatibles.
     Le fichier fba_029671_od_release_10_working_roms.dat peut servir à valider les ROMs avec clrmamepro disponible sur http://mamedev.emulab.it/clrmamepro/
-
-fba_libretro:
-  name:       FBA LIBRETRO
-  extensions: [7z, fba, zip]
-  platform:   arcade
-  emulators:
-    libretro:
-        fba: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FBA] }
-  comment_en: |
-    ROMs version must be 0.2.97.42
-
-    This emulator has CPS3 support, updated version, but less performant than piFBA.
-
-    The file fba_libretro_gamelist.txt list compatible games.
-
-    Special files for fba libretro core:
-    - Add your (audio) samples files in /recalbox/share/bios/fba/samples/
-  comment_fr: |
-    La version des ROMs doit être 0.2.97.42
-
-    Cet émulateur supporte CPS3, version plus récente, mais moins performant que piFBA).
-
-    Le fichier fba_libretro_gamelist.txt liste les jeux compatibles.
-
-    Fichiers spéciaux pour le core fba libretro:
-    - Ajoutez vos samples (audio) dans le répertoire /recalbox/share/bios/fba/samples/
 
 mame:
   name:       Mame
@@ -443,7 +424,7 @@ mame:
     https://github.com/recalbox/recalbox-os/wiki/recalbox.conf-%28EN%29
 
     Special files for mame2003 core:
-    - Add your samples files in /recalbox/share/bios/mame2003/samples/
+    - Add your samples files in /userdata/bios/mame2003/samples/
   comment_fr: |
     Le système utilise le core libretro mame2003 implicitement: Les ROMs compatibles doivent provenir du set 0.78
     Le core imame4all, basé sur MAME v0.37b5 est également disponible.
@@ -452,7 +433,7 @@ mame:
     https://github.com/recalbox/recalbox-os/wiki/recalbox.conf-%28FR%29
 
     Fichiers spéciaux pour le core mame2003 :
-    - Ajoutez vos fichiers samples dans le répertoire /recalbox/share/bios/mame2003/samples/
+    - Ajoutez vos fichiers samples dans le répertoire /userdata/bios/mame2003/samples/
 
 neogeo:
   name:       Neo-Geo
@@ -467,6 +448,13 @@ neogeo:
       fba:       { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FBA]      }
     fba2x:
       fba2x:     { requireAnyOf: [BR2_PACKAGE_PIFBA]             }
+
+neogeocd:
+  name:       Neo-Geo CD
+  extensions: [cue]
+  emulators:
+    libretro:
+      fba:       { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FBA]      }
 
 colecovision:
   name:       ColecoVision
@@ -985,7 +973,7 @@ x68000:
 imageviewer:
   name:       Screenshots
   extensions: [jpg, jpeg, png, bmp, psd, tga, gif, hdr, pic, ppm, pgm]
-  path:       /recalbox/share/screenshots
+  path:       /userdata/screenshots
   platform:   ignore
   emulators:
     libretro:

@@ -43,3 +43,7 @@ avoid_safe_mode=1
 
 kernel=boot/linux
 initramfs boot/initrd.gz
+
+# enable UART (required for for retroflag)
+# affect rpi performances
+# enable_uart=1

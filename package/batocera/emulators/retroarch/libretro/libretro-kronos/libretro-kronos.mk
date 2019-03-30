@@ -3,9 +3,10 @@
 # LIBRETRO-KRONOS
 #
 ################################################################################
-# Version.: Commits on Dec 25, 2018
-LIBRETRO_KRONOS_VERSION = 8ba32ca31cb26a816ea61fcfa6a86668dfe6d1ee
+# Version.: Commits on Feb 9, 2019 (1.6.0)
+LIBRETRO_KRONOS_VERSION = 1c9aebcefd9b2720049b08d8426a3ec9e7b54aa4
 LIBRETRO_KRONOS_SITE = $(call github,libretro-mirrors,Kronos,$(LIBRETRO_KRONOS_VERSION))
+LIBRETRO_KRONOS_LICENSE="BSD-3-Clause"
 
 define LIBRETRO_KRONOS_BUILD_CMDS
 	CFLAGS="$(TARGET_CFLAGS)" CXXFLAGS="$(TARGET_CXXFLAGS)" \

@@ -1,12 +1,13 @@
 #!/usr/bin/env python
-HOME_INIT = '/recalbox/share_init/system/'
-HOME = '/recalbox/share/system'
+HOME_INIT = '/usr/share/batocera/datainit/system/'
+HOME = '/userdata/system'
 CONF_INIT = HOME_INIT + '/configs'
 CONF = HOME + '/configs'
-SAVES = '/recalbox/share/saves'
-SCREENSHOTS = '/recalbox/share/screenshots'
-BIOS = '/recalbox/share/bios'
-OVERLAYS = '/recalbox/share/overlays'
+SAVES = '/userdata/saves'
+SCREENSHOTS = '/userdata/screenshots'
+BIOS = '/userdata/bios'
+OVERLAYS = '/userdata/overlays'
+CACHE = '/userdata/system/cache'
 
 esInputs = HOME + '/.emulationstation/es_input.cfg'
 esSettings = HOME + '/.emulationstation/es_settings.cfg'
@@ -31,6 +32,7 @@ recalboxBins = {'dosbox'      : '/usr/bin/dosbox'
               , 'pcsx2'       : '/usr/PCSX/bin/PCSX2'
               , 'pcsx2_avx2'  : '/usr/PCSX_AVX2/bin/PCSX2'
               , 'advancemame' : '/usr/bin/advmame'
+              , 'citra'       : '/usr/bin/citra'
 }
 
 
@@ -41,11 +43,11 @@ retroarchCustomOrigin = retroarchRootInit + "/retroarchcustom.cfg"
 retroarchCoreCustom = retroarchRoot + "/cores/retroarch-core-options.cfg"
 
 retroarchCores = "/usr/lib/libretro/"
-shadersRoot = "/recalbox/share/shaders/presets/"
+shadersRoot = "/userdata/shaders/presets/"
 shadersExt = '.gplsp'
 libretroExt = '_libretro.so'
-screenshotsDir = "/recalbox/share/screenshots/"
-savesDir = "/recalbox/share/saves/"
+screenshotsDir = "/userdata/screenshots/"
+savesDir = "/userdata/saves/"
 
 fbaRoot = CONF + '/fba/'
 fbaCustom = fbaRoot + 'fba2x.cfg'
@@ -57,9 +59,9 @@ mupenCustom = mupenConf + "mupen64plus.cfg"
 mupenInput = mupenConf + "InputAutoCfg.ini"
 mupenSaves = SAVES + "/n64"
 mupenMappingUser    = mupenConf + 'input.xml'
-mupenMappingSystem  = '/recalbox/share_init/system/configs/mupen64/input.xml'
+mupenMappingSystem  = '/usr/share/batocera/datainit/system/configs/mupen64/input.xml'
 
-shaderPresetRoot = "/recalbox/share_init/system/configs/shadersets/"
+shaderPresetRoot = "/usr/share/batocera/datainit/system/configs/shadersets/"
 
 kodiJoystick = HOME + '/.kodi/userdata/addon_data/peripheral.joystick/resources/buttonmaps/xml/linux/batocera_{}.xml'
 
@@ -77,7 +79,7 @@ reicastConfig = reicastCustom + '/emu.cfg'
 reicastConfigInit = HOME_INIT + 'configs/reicast/emu.cfg'
 reicastSaves = SAVES
 reicastBios = BIOS
-reicastVMUBlank = '/recalbox/share_init/saves/reicast/vmu_save_blank.bin'
+reicastVMUBlank = '/usr/share/batocera/datainit/saves/reicast/vmu_save_blank.bin'
 reicastVMUA1 = reicastSaves + '/reicast/vmu_save_A1.bin'
 reicastVMUA2 = reicastSaves + '/reicast/vmu_save_A2.bin'
 
@@ -89,13 +91,15 @@ dolphinSYSCONF = dolphinData + "/Wii/shared2/sys/SYSCONF"
 
 pcsx2PluginsDir     = "/usr/PCSX/bin/plugins"
 pcsx2Avx2PluginsDir = "/usr/PCSX_AVX2/bin/plugins"
-pcsx2ConfigDir      = "/recalbox/share/system/configs/PCSX2"
+pcsx2ConfigDir      = "/userdata/system/configs/PCSX2"
 
 ppssppConf = CONF + '/ppsspp/PSP/SYSTEM'
 ppssppControlsIni = ppssppConf + '/controls.ini'
 ppssppControls = CONF + '/ppsspp/gamecontrollerdb.txt'
 ppssppControlsInit = HOME_INIT + 'configs/ppsspp/PSP/SYSTEM/controls.ini'
 ppssppConfig = ppssppConf + '/ppsspp.ini'
+
+citraConfig = CONF + '/citra-emu/sdl2-config.ini'
 
 dosboxCustom = CONF + '/dosbox'
 dosboxConfig = dosboxCustom + '/dosbox.conf'
@@ -111,9 +115,9 @@ viceConfig = CONF + "/vice/vice.conf"
 advancemameConfig = CONF + '/advancemame/advmame.rc'
 advancemameConfigOrigin = CONF + '/advancemame/advmame.rc.origin'
 
-overlaySystem = "/recalbox/share_init/decorations"
-overlayUser = "/recalbox/share/decorations"
-overlayConfigFile = "/recalbox/share/system/configs/retroarch/overlay.cfg"
+overlaySystem = "/usr/share/batocera/datainit/decorations"
+overlayUser = "/userdata/decorations"
+overlayConfigFile = "/userdata/system/configs/retroarch/overlay.cfg"
 
 amiberryRoot = CONF + '/amiberry'
 amiberryRetroarchInputsDir = amiberryRoot + '/conf/retroarch/inputs'

@@ -8,14 +8,14 @@ index 607a934..57cf5f6 100644
  	{
 -		return GetDocuments() + Base::Snapshots();
 +	  //return GetDocuments() + Base::Snapshots();
-+	  return wxDirName("/recalbox/share/screenshots");
++	  return wxDirName("/userdata/screenshots");
  	}
  
  	wxDirName GetBios()
  	{
 -		return GetDocuments() + Base::Bios();;
 +	  //return GetDocuments() + Base::Bios();;
-+	  return wxDirName("/recalbox/share/bios");
++	  return wxDirName("/userdata/bios");
  	}
  
  	wxDirName GetCheats()
@@ -25,7 +25,7 @@ index 607a934..57cf5f6 100644
  	{
 -		return GetDocuments() + Base::Savestates();
 +	  //return GetDocuments() + Base::Savestates();
-+	  return wxDirName("/recalbox/share/saves/ps2");
++	  return wxDirName("/userdata/saves/ps2");
  	}
  
  	wxDirName GetMemoryCards()

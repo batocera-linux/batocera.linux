@@ -3,11 +3,10 @@ import os
 import sys
 import recalboxFiles
 import re
-from settings.unixSettings import UnixSettings
 import time
 import subprocess
 import json
-import eslog
+from logger import eslog
 
 # Set a specific video mode
 def changeMode(videomode):
@@ -36,5 +35,5 @@ def checkModeExists(videomode):
             vals = valmod.split(":")
             if(videomode == vals[0]):
                 return True
-        eslog.log("invalid video mode {}".format(videomode))
+        eslog.error("invalid video mode {}".format(videomode))
         return False

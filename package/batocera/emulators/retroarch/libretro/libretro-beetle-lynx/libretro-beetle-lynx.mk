@@ -3,9 +3,10 @@
 # BEETLE_LYNX
 #
 ################################################################################
-# Version.: Commits on Nov 30, 2018
-LIBRETRO_BEETLE_LYNX_VERSION = 1583a66c4135f675f5bdd2839f2b4a3c9848aa45
+# Version.: Commits on Feb 2, 2019
+LIBRETRO_BEETLE_LYNX_VERSION = 169ebde6b7bab9219cadf15261eabcd96b0abb78
 LIBRETRO_BEETLE_LYNX_SITE = $(call github,libretro,beetle-lynx-libretro,$(LIBRETRO_BEETLE_LYNX_VERSION))
+LIBRETRO_BEETLE_LYNX_LICENSE="GPLv2"
 
 define LIBRETRO_BEETLE_LYNX_BUILD_CMDS
 	CFLAGS="$(TARGET_CFLAGS)" CXXFLAGS="$(TARGET_CXXFLAGS)" $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" -C $(@D)/ -f Makefile platform="$(LIBRETRO_PLATFORM)"

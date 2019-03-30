@@ -383,13 +383,13 @@ esac
 # common
 
 # renaming
-SUFFIXVERSION=$(cat "${TARGET_DIR}/recalbox/batocera.version" | sed -e s+'^\([0-9\.]*\).*$'+'\1'+) # xx.yy version
+SUFFIXVERSION=$(cat "${TARGET_DIR}/usr/share/batocera/batocera.version" | sed -e s+'^\([0-9\.]*\).*$'+'\1'+) # xx.yy version
 SUFFIXTARGET=$(echo "${BATOCERA_TARGET}" | tr A-Z a-z)
 SUFFIXDATE=$(date +%Y%m%d)
 SUFFIXIMG="-${SUFFIXVERSION}-${SUFFIXTARGET}-${SUFFIXDATE}"
 mv "${BATOCERA_BINARIES_DIR}/batocera.img" "${BATOCERA_BINARIES_DIR}/batocera${SUFFIXIMG}.img" || exit 1
 
-cp "${TARGET_DIR}/recalbox/batocera.version" "${BATOCERA_BINARIES_DIR}" || exit 1
+cp "${TARGET_DIR}/usr/share/batocera/batocera.version" "${BATOCERA_BINARIES_DIR}" || exit 1
 
 
 # gzip image
