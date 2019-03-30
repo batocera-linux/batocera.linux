@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-NVIDIA_DRIVER_VERSION = 390.87
+NVIDIA_DRIVER_VERSION = 390.116
 NVIDIA_DRIVER_SUFFIX = $(if $(BR2_x86_64),_64)
 NVIDIA_DRIVER_SITE = http://download.nvidia.com/XFree86/Linux-x86$(NVIDIA_DRIVER_SUFFIX)/$(NVIDIA_DRIVER_VERSION)
 NVIDIA_DRIVER_SOURCE = NVIDIA-Linux-x86$(NVIDIA_DRIVER_SUFFIX)-$(NVIDIA_DRIVER_VERSION).run
@@ -214,8 +214,8 @@ define NVIDIA_DRIVER_INSTALL_TARGET_CMDS
 	# GLX extension module for X
     $(INSTALL) -D -m755 $(@D)/libglx.so.$(NVIDIA_DRIVER_VERSION) \
 		$(TARGET_DIR)/usr/lib/nvidia/xorg/libglx.so.$(NVIDIA_DRIVER_VERSION)
-    ln -s libglx.so.$(NVIDIA_DRIVER_VERSION) $(TARGET_DIR)/usr/lib/nvidia/xorg/libglx.so.1
-    ln -s libglx.so.$(NVIDIA_DRIVER_VERSION) $(TARGET_DIR)/usr/lib/nvidia/xorg/libglx.so
+	ln -s libglx.so.$(NVIDIA_DRIVER_VERSION) $(TARGET_DIR)/usr/lib/nvidia/xorg/libglx.so.1
+	ln -s libglx.so.$(NVIDIA_DRIVER_VERSION) $(TARGET_DIR)/usr/lib/nvidia/xorg/libglx.so
 
 endef
 
