@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-RECALBOX_THEMES_VERSION = master
+RECALBOX_THEMES_VERSION = 2206cfcd0f224b4028b618840c98943bca1b3d4c
 RECALBOX_THEMES_SITE = $(call github,batocera-linux,recalbox-themes,$(RECALBOX_THEMES_VERSION))
 
 define RECALBOX_THEMES_INSTALL_TARGET_CMDS

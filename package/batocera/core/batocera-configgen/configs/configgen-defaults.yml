@@ -8,6 +8,7 @@ default:
     smooth:         true
     rewind:         true
     bezel:          default
+    forceNoBezel:   false
 
 nes:
   emulator: libretro
@@ -47,6 +48,8 @@ wii:
     emulatedwiimotes: false
 ps2:
   emulator: pcsx2
+  options:
+    fullboot: true
 nds:
   emulator: libretro
   core:     desmume
@@ -87,11 +90,8 @@ neogeocd:
   core:     fba
 mame:
   emulator: libretro
-  core:     mame078
+  core:     mame078plus
 fba:
-  emulator: libretro
-  core:     fba
-fba_libretro:
   emulator: libretro
   core:     fba
 advancemame:
@@ -168,8 +168,10 @@ ngpc:
   emulator: libretro
   core:     mednafen_ngp
 gw:
-  emulator: libretro
-  core:     gw
+  emulator:     libretro
+  core:         gw
+  options:
+    forceNoBezel: true
 vectrex:
   emulator: libretro
   core:     vecx

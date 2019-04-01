@@ -45,7 +45,8 @@ class AmiberryGenerator(Generator):
         nplayer = 1
         for playercontroller, pad in sorted(playersControllers.items()):
             replacements = {'_player' + str(nplayer) + '_':'_'}
-            playerInputFilename = recalboxFiles.amiberryRetroarchInputsDir + "/" + pad.realName + ".cfg"
+            # amiberry remove / included in pads names like "USB Downlo01.80 PS3/USB Corded Gamepad"
+            playerInputFilename = recalboxFiles.amiberryRetroarchInputsDir + "/" + pad.realName.replace("/", "") + ".cfg"
             with open(recalboxFiles.amiberryRetroarchCustom) as infile, open(playerInputFilename, 'w') as outfile:
 	        for line in infile:
                     for src, target in replacements.iteritems():

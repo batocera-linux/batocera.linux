@@ -20,7 +20,7 @@ endef
 ifeq ($(BR2_cortex_a7),y)
         MK_ARCADE_JOYSTICK_RPI_PRE_CONFIGURE_HOOKS += MK_ARCADE_JOYSTICK_RPI_RPI2_HOOK
 endif
-ifeq ($(BR2_cortex_a8),y)
+ifeq ($(BR2_cortex_a53),y)
         MK_ARCADE_JOYSTICK_RPI_PRE_CONFIGURE_HOOKS += MK_ARCADE_JOYSTICK_RPI_RPI2_HOOK
 endif
 

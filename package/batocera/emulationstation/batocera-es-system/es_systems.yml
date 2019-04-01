@@ -213,6 +213,13 @@ naomi:
     libretro:
       reicast: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_REICAST] }
 
+atomiswave:
+  name:       Atomiswave
+  extensions: [lst, bin, dat, 7z, zip]
+  emulators:
+    libretro:
+      reicast: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_REICAST] }
+
 megadrive:
   name:       Sega Megadrive
   extensions: [7z, smd, bin, gen, md, sg, smd, zip]
@@ -385,41 +392,15 @@ fba:
     fba2x:
       fba2x: { requireAnyOf: [BR2_PACKAGE_PIFBA] }
   comment_en: |
-    ROMs version must be 0.2.97.42
+    ROMs version must be 0.2.97.44
 
     The file clrmamepro/piFBA_gamelist.txt list compatible games.
     The file fba_029671_od_release_10_working_roms.dat may be used to check ROMs with clrmamepro available at http://mamedev.emulab.it/clrmamepro/
   comment_fr: |
-    La version des ROMs doit être 0.2.97.42
+    La version des ROMs doit être 0.2.97.44
 
     Le fichier clrmamepro/piFBA_gamelist.txt liste les jeux compatibles.
     Le fichier fba_029671_od_release_10_working_roms.dat peut servir à valider les ROMs avec clrmamepro disponible sur http://mamedev.emulab.it/clrmamepro/
-
-fba_libretro:
-  name:       FBA LIBRETRO
-  extensions: [7z, fba, zip]
-  platform:   arcade
-  emulators:
-    libretro:
-        fba: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FBA] }
-  comment_en: |
-    ROMs version must be 0.2.97.42
-
-    This emulator has CPS3 support, updated version, but less performant than piFBA.
-
-    The file fba_libretro_gamelist.txt list compatible games.
-
-    Special files for fba libretro core:
-    - Add your (audio) samples files in /userdata/bios/fba/samples/
-  comment_fr: |
-    La version des ROMs doit être 0.2.97.42
-
-    Cet émulateur supporte CPS3, version plus récente, mais moins performant que piFBA).
-
-    Le fichier fba_libretro_gamelist.txt liste les jeux compatibles.
-
-    Fichiers spéciaux pour le core fba libretro:
-    - Ajoutez vos samples (audio) dans le répertoire /userdata/bios/fba/samples/
 
 mame:
   name:       Mame
@@ -427,14 +408,13 @@ mame:
   platform:   arcade
   emulators:
     libretro:
-      imame4all:   { requireAnyOf: [BR2BR2_PACKAGE_LIBRETRO_IMAME] }
-      mame078:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME2003] }
-      mame078plus:    { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME2003_PLUS] }
-      mame0139:    { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME2010] }
-      mame0174:    { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME2016] }
-      mame:       { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME]      }
+      imame4all:    { requireAnyOf: [BR2BR2_PACKAGE_LIBRETRO_IMAME] }
+      mame078plus:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME2003_PLUS] }
+      mame0139:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME2010] }
+      mame0174:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME2016] }
+      mame:         { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME]      }
     advancemame:
-      advancemame: { requireAnyOf: [BR2_PACKAGE_ADVANCEMAME]       }
+      advancemame:  { requireAnyOf: [BR2_PACKAGE_ADVANCEMAME]       }
   comment_en: |
     The system uses libretro mame2003 as default core: compatible ROMs must come from set 0.78
     The libretro core imame4all, based on MAME v0.37b5, is also included.
@@ -459,14 +439,14 @@ neogeo:
   extensions: [7z, fba, zip]
   emulators:
     libretro:
-      imame4all: { requireAnyOf: [BR2BR2_PACKAGE_LIBRETRO_IMAME] }
-      mame078:   { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME2003] }
-      mame0139:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME2010] }
-      mame0174:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME2016] }
-      mame:      { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME]     }
-      fba:       { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FBA]      }
+      imame4all:    { requireAnyOf: [BR2BR2_PACKAGE_LIBRETRO_IMAME] }
+      mame078plus:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME2003_PLUS] }
+      mame0139:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME2010] }
+      mame0174:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME2016] }
+      mame:         { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME]     }
+      fba:          { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FBA]      }
     fba2x:
-      fba2x:     { requireAnyOf: [BR2_PACKAGE_PIFBA]             }
+      fba2x:        { requireAnyOf: [BR2_PACKAGE_PIFBA]             }
 
 neogeocd:
   name:       Neo-Geo CD
@@ -908,7 +888,7 @@ apple2:
 
 saturn:
   name:       Sega Saturn
-  extensions: [bin, cue, ccd, chd, iso, zip]
+  extensions: [bin, cue, ccd, chd, iso]
   emulators:
     libretro:
       yabause:       { requireAnyOf: [BR2_PACKAGE_LIBRETRO_YABAUSE]       }

@@ -1,5 +1,5 @@
 2019/xx/xx - batocera.linux 5.21
-	* nvidia-driver: version bump (415.27)
+	* nvidia-driver: version bump (418.43)
 	* arcade: new core - lr-mame (mame-0.206)
 	* nintendo 3DS: added citra emulator
 	* emulator: atari 800 and atari 5200 were separated
@@ -9,7 +9,12 @@
 	* add: libretro-mupen64plus-next for Nintendo 64
 	* RetroFlag: Shutdown script added + Cleaning
 	* n64: fixes mupen64 configuration including pads
+	* rockpro64: wifi/bluetooth
 	* x86/x86_64: fix support for intel gpus
+	* x86_64: support for amd ryzen
+	* wii: wiimote and pads can be used at the same time
+	* New 20 Ambiance Bezels : TV with scratched effects on glass, Retro Room, etc (special thanks to fery65)
+	* add decorations folder into the share folder to make easier bezels overlays' customization
 
 2019/01/22 - batocera.linux 5.20
 	* better ps4 pad support
@@ -91,7 +96,7 @@
 
 2018/03/08 - batocera.linux 5.14 - release
         * rpi: new splash video
-        * rpi: mutable splash video (add splashsound=off in /boot/recalbox-boot.conf to disable the sound)
+        * rpi: mutable splash video (add splashsound=false in /boot/recalbox-boot.conf to disable the sound)
         * rpi: customizable splash video (put a video in /boot/splash.mp4)
         * link update MameDB and Screenscraper
         * configgen: partially rewritten / more robust

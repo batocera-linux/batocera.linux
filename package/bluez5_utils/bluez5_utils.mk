@@ -15,7 +15,8 @@ BLUEZ5_UTILS_LICENSE_FILES = COPYING COPYING.LIB
 BLUEZ5_UTILS_CONF_OPTS = \
 	--enable-tools \
 	--enable-library \
-	--disable-cups
+	--disable-cups \
+	--with-dbusconfdir=/etc
 
 BLUEZ5_UTILS_CONF_OPTS += --enable-deprecated
 

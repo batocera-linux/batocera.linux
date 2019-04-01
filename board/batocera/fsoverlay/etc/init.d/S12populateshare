@@ -33,13 +33,18 @@ for FILE in music bios extractions kodi saves screenshots \
             system/.config/lirc/lircd.conf \
             system/.emulationstation/{es_input.cfg,es_settings.cfg} \
             system/{.hatari,.kodi} \
-            system/configs/{fba,moonlight,ppsspp,reicast,retroarch,shadersets,xarcade2jstick,dosbox,advancemame,vice,amiberry} \
+            system/configs/{moonlight,reicast,retroarch,shadersets,xarcade2jstick,dosbox,advancemame,vice,amiberry} \
             system/recalbox.conf \
             bios/mame2003
 do
     # not wanted for kodi
     test -e "$IN""/""$FILE" && test ! -e "$OUT""/""$FILE" && cp -r "$IN""/""$FILE" "$OUT""/""$FILE"
 done
+
+### specific directories
+# decorations - copy only the readme file
+mkdir -p "${OUT}/decorations"
+test -e "${OUT}/decorations/readme.txt" || cp -r "${IN}/decorations/readme.txt" "${OUT}/decorations/readme.txt"
 
 # directories to force directories exists
 # files are linked
