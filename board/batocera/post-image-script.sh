@@ -384,7 +384,7 @@ case "${BATOCERA_TARGET}" in
         cp "${BINARIES_DIR}/rootfs.squashfs"       "${BINARIES_DIR}/boot/boot/batocera.update"      || exit 1
         cp "${BINARIES_DIR}/meson64_odroidn2.dtb"  "${BINARIES_DIR}/boot/boot/meson64_odroidn2.dtb" || exit 1
         cp "${BINARIES_DIR}/recalbox-boot.conf"    "${BINARIES_DIR}/boot/recalbox-boot.conf"        || exit 1
-	cp "board/batocera/odroidn2/boot.ini"      "${BINARIES_DIR}/boot/boot.ini"                  || exit 1
+	cp "board/batocera/odroidn2/boot/boot.ini"      "${BINARIES_DIR}/boot/boot.ini"                  || exit 1
         # boot.tar.xz
         echo "creating boot.tar.xz"
         (cd "${BINARIES_DIR}/boot" && tar -cJf "${BATOCERA_BINARIES_DIR}/boot.tar.xz" boot.ini boot recalbox-boot.conf) || exit 1
