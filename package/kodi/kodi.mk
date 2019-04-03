@@ -168,7 +168,8 @@ KODI_CONF_OPTS += -DENABLE_AML=ON -DENABLE_OPENGLES=ON
 # The following line can be removed when bumping to 18.0-Leia,
 # see upstream PR 13425
 KODI_CXX_FLAGS += -DMESA_EGL_NO_X11_HEADERS
-KODI_DEPENDENCIES += libamcodec odroid-mali
+# batocera
+KODI_DEPENDENCIES += libamcodec
 else
 KODI_CONF_OPTS += -DENABLE_AML=OFF
 endif
