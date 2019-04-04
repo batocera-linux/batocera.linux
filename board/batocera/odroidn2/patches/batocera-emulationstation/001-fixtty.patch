@@ -1,0 +1,13 @@
+diff --git a/es-core/src/Window.cpp b/es-core/src/Window.cpp
+index e6738ab..a8dd9de 100644
+--- a/es-core/src/Window.cpp
++++ b/es-core/src/Window.cpp
+@@ -103,6 +103,8 @@ bool Window::init(unsigned int width, unsigned int height, bool initRenderer)
+ 	if(peekGui())
+ 		peekGui()->updateHelpPrompts();
+ 
++	system("chvt 2");
++	system("chvt 1");
+ 	return true;
+ }
+ 
