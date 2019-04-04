@@ -6,9 +6,9 @@
 
 # for rpi2, rpi3 and odroid because the next commit breaks and has lost performance.
 # Version.: Commits on Aug 8, 2018 
-LIBRETRO_PARALLEL_N64_VERSION = ab155da18068f638e5ace2e5e6f7387bddc3511b              
-       
+LIBRETRO_PARALLEL_N64_VERSION = ab155da18068f638e5ace2e5e6f7387bddc3511b
 LIBRETRO_PARALLEL_N64_SITE = $(call github,libretro,parallel-n64,$(LIBRETRO_PARALLEL_N64_VERSION))
+LIBRETRO_PARALLEL_N64_LICENSE="GPLv2"
 
 ifeq ($(BR2_PACKAGE_RPI_USERLAND),y)
        LIBRETRO_PARALLEL_N64_DEPENDENCIES += rpi-userland
@@ -36,6 +36,8 @@ else ifeq ($(BR2_x86_i586),y)
        LIBRETRO_PARALLEL_N64_PLATFORM=unix
 else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_ROCKPRO64),y)
        LIBRETRO_PARALLEL_N64_PLATFORM=rockpro64
+else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_ODROIDN2),y)
+       LIBRETRO_PARALLEL_N64_PLATFORM=odroidn2
 else
        LIBRETRO_PARALLEL_N64_PLATFORM=$(LIBRETRO_PLATFORM)
 endif

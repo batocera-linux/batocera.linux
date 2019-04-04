@@ -1,0 +1,69 @@
+diff --git a/src/mesa/drivers/dri/i915/intel_extensions.c b/src/mesa/drivers/dri/i915/intel_extensions.c
+index 05ac487..794a67e 100644
+--- a/src/mesa/drivers/dri/i915/intel_extensions.c
++++ b/src/mesa/drivers/dri/i915/intel_extensions.c
+@@ -92,12 +92,8 @@ intelInitExtensions(struct gl_context *ctx)
+       ctx->Extensions.EXT_stencil_two_side = true;
+       ctx->Extensions.ATI_texture_env_combine3 = true;
+       ctx->Extensions.NV_texture_env_combine4 = true;
+-
+-      if (driQueryOptionb(&intel->optionCache, "fragment_shader"))
+-         ctx->Extensions.ARB_fragment_shader = true;
+-
+-      if (driQueryOptionb(&intel->optionCache, "stub_occlusion_query"))
+-         ctx->Extensions.ARB_occlusion_query = true;
++      ctx->Extensions.ARB_fragment_shader = true;
++      ctx->Extensions.ARB_occlusion_query = true;
+    }
+ 
+    ctx->Extensions.EXT_texture_compression_s3tc = true;
+diff --git a/src/mesa/drivers/dri/i915/intel_screen.c b/src/mesa/drivers/dri/i915/intel_screen.c
+index 882c498..a7f00dd 100644
+--- a/src/mesa/drivers/dri/i915/intel_screen.c
++++ b/src/mesa/drivers/dri/i915/intel_screen.c
+@@ -61,10 +61,6 @@ DRI_CONF_BEGIN
+ 	 DRI_CONF_DESC(en, "Enable early Z in classic mode (unstable, 945-only).")
+       DRI_CONF_OPT_END
+ 
+-      DRI_CONF_OPT_BEGIN_B(fragment_shader, "true")
+-	 DRI_CONF_DESC(en, "Enable limited ARB_fragment_shader support on 915/945.")
+-      DRI_CONF_OPT_END
+-
+    DRI_CONF_SECTION_END
+    DRI_CONF_SECTION_QUALITY
+    DRI_CONF_SECTION_END
+@@ -77,10 +73,6 @@ DRI_CONF_BEGIN
+       DRI_CONF_DISABLE_GLSL_LINE_CONTINUATIONS("false")
+       DRI_CONF_DISABLE_BLEND_FUNC_EXTENDED("false")
+ 
+-      DRI_CONF_OPT_BEGIN_B(stub_occlusion_query, "false")
+-	 DRI_CONF_DESC(en, "Enable stub ARB_occlusion_query support on 915/945.")
+-      DRI_CONF_OPT_END
+-
+       DRI_CONF_OPT_BEGIN_B(shader_precompile, "true")
+ 	 DRI_CONF_DESC(en, "Perform code generation at shader link time.")
+       DRI_CONF_OPT_END
+@@ -1135,21 +1127,12 @@ set_max_gl_versions(struct intel_screen *screen)
+    __DRIscreen *psp = screen->driScrnPriv;
+ 
+    switch (screen->gen) {
+-   case 3: {
+-      bool has_fragment_shader = driQueryOptionb(&screen->optionCache, "fragment_shader");
+-      bool has_occlusion_query = driQueryOptionb(&screen->optionCache, "stub_occlusion_query");
+-
++   case 3:
+       psp->max_gl_core_version = 0;
+       psp->max_gl_es1_version = 11;
+       psp->max_gl_es2_version = 20;
+-
+-      if (has_fragment_shader && has_occlusion_query) {
+-         psp->max_gl_compat_version = 21;
+-      } else {
+-         psp->max_gl_compat_version = 14;
+-      }
++      psp->max_gl_compat_version = 21;
+       break;
+-   }
+    case 2:
+       psp->max_gl_core_version = 0;
+       psp->max_gl_compat_version = 13;

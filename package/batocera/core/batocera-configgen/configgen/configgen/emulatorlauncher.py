@@ -68,6 +68,7 @@ def main(args):
     eslog.log("Running system: {}".format(systemName))
     system = getDefaultEmulator(systemName)
     system.configure(args.emulator, args.core, args.ratio, args.netplay)
+    eslog.debug("Settings: {}".format(system.config))
     if "emulator" in system.config and "core" in system.config:
         eslog.log("emulator: {}, core: {}".format(system.config["emulator"], system.config["core"]))
     else:

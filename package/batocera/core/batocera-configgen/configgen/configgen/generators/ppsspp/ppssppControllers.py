@@ -1,14 +1,11 @@
 #!/usr/bin/env python
+
 # -*- coding: utf-8 -*-
 import sys
 import os
 import ConfigParser
 import recalboxFiles
 
-sys.path.append(
-    os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
-
-import settings.unixSettings as unixSettings
 import recalboxFiles
 
 # This configgen is based on PPSSPP 1.2.2. Therefore, all code/github references are valid at this version, and may not be valid with later updates
@@ -124,6 +121,8 @@ def generateControllerConfig(controller):
 	Config.read(recalboxFiles.ppssppControlsInit)
 	# As we start with the default ini file, no need to create the section
 	section = "ControlMapping"
+        if not Config.has_section(section):
+            Config.add_section(section)
 
 	# Parse controller inputs
 	for index in controller.inputs:
@@ -173,7 +172,9 @@ def generateControllerConfig(controller):
 			val = "{}-{}".format( DEVICE_ID_PAD_0, pspcode )
 			val = optionValue(Config, section, var, val)
 			Config.set(section, var, val)
-		
+
+        if not os.path.exists(os.path.dirname(configFileName)):
+                os.makedirs(os.path.dirname(configFileName))
 	cfgfile = open(configFileName,'w+')
 	Config.write(cfgfile)
 	cfgfile.close()
@@ -194,4 +195,3 @@ def optionValue(config, section, option, value):
 		return "{},{}".format(config.get(section, option), value)
 	else:
 		return value
-

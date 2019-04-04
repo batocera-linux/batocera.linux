@@ -7,8 +7,8 @@
 # for rpi2, rpi3 and odroid because the next commit breaks and has lost performance.
 # Version.: Commits on Jul 28, 2018
 LIBRETRO_MUPEN64PLUS_VERSION = 4ca2fa8633666e26e2f163dcd3c226b598cb2aa4       
-
 LIBRETRO_MUPEN64PLUS_SITE = $(call github,libretro,mupen64plus-libretro,$(LIBRETRO_MUPEN64PLUS_VERSION))
+LIBRETRO_MUPEN64PLUS_LICENSE="GPLv2"
 
 ifeq ($(BR2_PACKAGE_RPI_USERLAND),y)
        LIBRETRO_MUPEN64PLUS_DEPENDENCIES += rpi-userland
@@ -36,6 +36,8 @@ else ifeq ($(BR2_x86_i586),y)
        LIBRETRO_MUPEN64PLUS_PLATFORM=linux
 else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_ROCKPRO64),y)
        LIBRETRO_MUPEN64PLUS_PLATFORM=rockpro64
+else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_ODROIDN2),y)
+       LIBRETRO_MUPEN64PLUS_PLATFORM=odroidn2
 else
        LIBRETRO_MUPEN64PLUS_PLATFORM=$(LIBRETRO_PLATFORM)
 endif

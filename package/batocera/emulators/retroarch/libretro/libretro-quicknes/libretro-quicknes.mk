@@ -3,9 +3,10 @@
 # QUICKNES
 #
 ################################################################################
-# Version.: Commits on Nov 16, 2018
-LIBRETRO_QUICKNES_VERSION = 1fd4e1b7a6c62095a813b7eb352682af55c1d7e0
-LIBRETRO_QUICKNES_SITE = $(call github,libretro,quicknes_core,$(LIBRETRO_QUICKNES_VERSION))
+# Version.: Commits on Feb 17, 2019
+LIBRETRO_QUICKNES_VERSION = a7c05b71899a5d416ec8511f6007a31598efe971
+LIBRETRO_QUICKNES_SITE = $(call github,libretro,QuickNES_Core,$(LIBRETRO_QUICKNES_VERSION))
+LIBRETRO_QUICKNES_LICENSE="LGPLv2.1+"
 
 define LIBRETRO_QUICKNES_BUILD_CMDS
 	CFLAGS="$(TARGET_CFLAGS)" CXXFLAGS="$(TARGET_CXXFLAGS)" $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" -C $(@D)/ -f Makefile platform="$(LIBRETRO_PLATFORM)"

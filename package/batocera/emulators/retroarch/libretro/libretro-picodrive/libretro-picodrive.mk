@@ -3,12 +3,13 @@
 # libretro-picodrive
 #
 ################################################################################
-# Version.: Commits on Oct 12, 2018
-LIBRETRO_PICODRIVE_VERSION = c64747fd2b28fa2c48058678f035a3379838a182
+# Version.: Commits on Feb 17, 2019
+LIBRETRO_PICODRIVE_VERSION = 7d6deb99a9f4ef34a2fe29587211ba59a6d7a014
 LIBRETRO_PICODRIVE_SITE = https://github.com/libretro/picodrive.git
 LIBRETRO_PICODRIVE_SITE_METHOD=git
 LIBRETRO_PICODRIVE_GIT_SUBMODULES=YES
 LIBRETRO_PICODRIVE_DEPENDENCIES = libpng sdl
+LIBRETRO_PICODRIVE_LICENSE="MAME"
 
 PICOPLATFORM=$(LIBRETRO_PLATFORM)
 
@@ -21,7 +22,7 @@ endif
 ifeq ($(BR2_cortex_a7),y)
   PICOPLATFORM=$(LIBRETRO_PLATFORM) armasm
 endif
-ifeq ($(BR2_cortex_a8),y)
+ifeq ($(BR2_cortex_a53),y)
   PICOPLATFORM=$(LIBRETRO_PLATFORM) armasm
 endif
 

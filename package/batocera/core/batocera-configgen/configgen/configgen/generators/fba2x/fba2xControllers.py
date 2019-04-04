@@ -1,15 +1,9 @@
 #!/usr/bin/env python
+
 import sys
 import os
-
-sys.path.append(
-    os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
-
-import settings.unixSettings as unixSettings
+import ConfigParser
 import recalboxFiles
-
-fbaSettings = unixSettings.UnixSettings(recalboxFiles.fbaCustom)
-
 
 # Map an emulationstation button name to the corresponding fba2x name
 fba4bnts = {'a': 'Y', 'b': 'X', 'x': 'B', 'y': 'A', \
@@ -27,19 +21,23 @@ fbaHatToAxis = {'1': 'UP', '2': 'LR', '4': 'UD', '8': 'LR'}
 # Map buttons to the corresponding fba2x specials keys
 fbaspecials = {'start': 'QUIT', 'hotkey': 'HOTKEY'}
 
+def updateControllersConfig(iniConfig, system, rom, controllers):
+    # remove any previous section to remove all configured keys
+    if iniConfig.has_section("Joystick"):
+        iniConfig.remove_section("Joystick")
+    iniConfig.add_section("Joystick")
 
-def writeControllersConfig(system, rom, controllers):
-    writeIndexes(controllers)
-    sixBtnConfig = is6btn(rom)
+    # indexes
+    for player in range(1, 5):
+        iniConfig.set("Joystick", "SDLID_{}".format(player), "-1")
+    for player in controllers:
+        iniConfig.set("Joystick", "SDLID_{}".format(player), controllers[player].index)
+
     for controller in controllers:
-        playerConfig = generateControllerConfig(controller, controllers[controller], sixBtnConfig)
-        for input in playerConfig:
-            fbaSettings.save(input, playerConfig[input])
-
+        updateControllerConfig(iniConfig, controller, controllers[controller], is6btn(rom))
 
 # Create a configuration file for a given controller
-def generateControllerConfig(player, controller, special6=False):
-    config = dict()
+def updateControllerConfig(iniConfig, player, controller, special6=False):
     fbaBtns = fba4bnts
     if special6:
         fbaBtns = fba6bnts
@@ -49,43 +47,30 @@ def generateControllerConfig(player, controller, special6=False):
         if dirkey in controller.inputs:
             input = controller.inputs[dirkey]
             if input.type == 'button':
-                config['{}_{}'.format(dirvalue, player)] = input.id
+                iniConfig.set("Joystick", '{}_{}'.format(dirvalue, player), input.id)
 
     for axis in fbaaxis:
         axisvalue = fbaaxis[axis]
         if axis in controller.inputs:
             input = controller.inputs[axis]
-            config['{}_{}'.format(axisvalue, player)] = input.id
+            iniConfig.set("Joystick", '{}_{}'.format(axisvalue, player), input.id)
 
     for btnkey in fbaBtns:
         btnvalue = fbaBtns[btnkey]
         if btnkey in controller.inputs:
             input = controller.inputs[btnkey]
-            config['{}_{}'.format(btnvalue, player)] = input.id
+            iniConfig.set("Joystick", '{}_{}'.format(btnvalue, player), input.id)
 
     if player == '1':
         for btnkey in fbaspecials:
             btnvalue = fbaspecials[btnkey]
             if btnkey in controller.inputs:
                 input = controller.inputs[btnkey]
-                config['{}'.format(btnvalue)] = input.id
-
-    return config
-
-
-def writeIndexes(controllers):
-    for player in range(1, 5):
-        fbaSettings.save('SDLID_{}'.format(player), '-1')
-    for player in controllers:
-        controller = controllers[player]
-        fbaSettings.save('SDLID_{}'.format(player), controller.index)
-
-
-sixBtnGames = ['sfa', 'sfz', 'sf2', 'dstlk', 'hsf2', 'msh', 'mshvsf', 'mvsc', 'nwarr', 'ssf2', 'vsav', 'vhunt', 'xmvsf',
-               'xmcota']
-
+                iniConfig.set("Joystick", '{}'.format(btnvalue), input.id)
 
 def is6btn(rom):
+    sixBtnGames = ['sfa', 'sfz', 'sf2', 'dstlk', 'hsf2', 'msh', 'mshvsf', 'mvsc', 'nwarr', 'ssf2', 'vsav', 'vhunt', 'xmvsf', 'xmcota']
+
     rom = os.path.basename(rom)
     for game in sixBtnGames:
         if game in rom:

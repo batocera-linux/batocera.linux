@@ -3,8 +3,8 @@
 # PPSSPP
 #
 ################################################################################
-# Version.: Wed Jan 16 23:03:24 2019 +0100
-PPSSPP_VERSION = 90a45deabda02b333faa399cc31fd7b82982ad3f
+# Version.: Commits on Mar 14, 2019
+PPSSPP_VERSION = v1.8.0
 PPSSPP_SITE = https://github.com/hrydgard/ppsspp.git
 PPSSPP_SITE_METHOD=git
 PPSSPP_GIT_SUBMODULES=YES
@@ -33,8 +33,8 @@ ifeq ($(BR2_PACKAGE_SDL2_KMSDRM),y)
 	PPSSPP_CONF_OPTS += -DUSING_EGL=OFF -DUSING_X11_VULKAN=OFF
 endif
 
-# odroid xu4 legacy
-ifeq ($(BR2_PACKAGE_MALI_OPENGLES_SDK),y)
+# odroid xu4 legacy / odroid n2
+ifeq ($(BR2_PACKAGE_MALI_OPENGLES_SDK)$(BR2_PACKAGE_MALI_HKG52FBDEV),y)
 	PPSSPP_CONF_OPTS += -DUSING_FBDEV=ON -DUSING_GLES2=ON -DUSING_EGL=ON -DUSING_X11_VULKAN=OFF
 endif
 
@@ -66,8 +66,10 @@ endef
 PPSSPP_PRE_CONFIGURE_HOOKS += PPSSPP_UPDATE_INCLUDES
 
 define PPSSPP_INSTALL_TARGET_CMDS
+        mkdir -p $(TARGET_DIR)/usr/bin
 	$(INSTALL) -D -m 0755 $(@D)/PPSSPPSDL $(TARGET_DIR)/usr/bin
 	cp -R $(@D)/assets $(TARGET_DIR)/usr/bin
+        mkdir -p $(TARGET_DIR)/lib
 	cp -R $(@D)/lib/*.so $(TARGET_DIR)/lib
 endef
 

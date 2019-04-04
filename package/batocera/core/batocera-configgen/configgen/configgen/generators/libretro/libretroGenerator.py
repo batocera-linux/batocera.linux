@@ -28,6 +28,10 @@ class LibretroGenerator(Generator):
                 bezel = None
             else:
                 bezel = system.config['bezel']
+            # some systems (ie gw) won't bezels
+            if system.isOptSet('forceNoBezel') and system.getOptBoolean('forceNoBezel'):
+                bezel = None
+
             libretroConfig.writeLibretroConfig(retroconfig, system, playersControllers, rom, bezel, gameResolution)
 
         # Retroarch core on the filesystem

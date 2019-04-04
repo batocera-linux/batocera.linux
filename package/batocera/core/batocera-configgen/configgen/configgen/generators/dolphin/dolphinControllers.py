@@ -12,6 +12,8 @@ def generateControllerConfig(system, playersControllers, rom):
             generateControllerConfig_emulatedwiimotes(playersControllers, rom)
         else:
             generateControllerConfig_realwiimotes("WiimoteNew.ini", "Wiimote")
+        # you can use the gamecube pads on the wii together with wiimotes
+        generateControllerConfig_gamecube(playersControllers)
     elif system.name == "gamecube":
         generateControllerConfig_gamecube(playersControllers)
     else:

@@ -138,7 +138,7 @@ if __name__ == '__main__':
 
 	adapter.StartDiscovery()
         gadapter = adapter
-        glib.timeout_add_seconds(20, stopDiscovering)
+        glib.timeout_add_seconds(30, stopDiscovering)
 	mainloop = GObject.MainLoop()
 	mainloop.run()
         exit(gExit)

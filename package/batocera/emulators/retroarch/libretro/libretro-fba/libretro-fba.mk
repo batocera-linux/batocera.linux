@@ -3,9 +3,10 @@
 # FBA
 #
 ################################################################################
-#LIBRETRO_FBA_VERSION = Commits on Jan 23, 2019
-LIBRETRO_FBA_VERSION = b5fcd3fef09b584a4dbef6db1f0e7764539fd3a4
+# Version.: Commits on Feb 3, 2019
+LIBRETRO_FBA_VERSION = 1f3fc82c49b76f41a43babab89bf76c444a3833a
 LIBRETRO_FBA_SITE = $(call github,libretro,fbalpha,$(LIBRETRO_FBA_VERSION))
+LIBRETRO_FBA_LICENSE="Non-commercial"
 
 ifeq ($(BR2_ARM_FPU_NEON_VFPV4)$(BR2_ARM_FPU_NEON)$(BR2_ARM_FPU_NEON_FP_ARMV8),y)
     LIBRETRO_FBA_EXTRA_ARGS = HAVE_NEON=1

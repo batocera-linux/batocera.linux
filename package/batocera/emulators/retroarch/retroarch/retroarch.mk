@@ -3,8 +3,8 @@
 # retroarch
 #
 ################################################################################
-#Version.: Commits on Oct 01, 2018 
-RETROARCH_VERSION = v1.7.5
+#Version.: Commits on Mar 9, 2019 (v1.7.6) 
+RETROARCH_VERSION = ed5bd8023ee063f19540ed1d23f4c5e7b04e9d89
 
 RETROARCH_SITE = $(call github,libretro,RetroArch,$(RETROARCH_VERSION))
 
@@ -38,7 +38,7 @@ endif
 ifeq ($(BR2_cortex_a7),y)
         RETROARCH_CONF_OPTS += --enable-neon --enable-floathard
 endif
-ifeq ($(BR2_cortex_a8),y)
+ifeq ($(BR2_cortex_a53),y)
         RETROARCH_CONF_OPTS += --enable-neon --enable-floathard
 endif
 
@@ -49,6 +49,11 @@ endif
 
 # rockpro64
 ifeq ($(BR2_cortex_a72_a53),y)
+        RETROARCH_CONF_OPTS += --enable-neon --enable-floathard
+endif
+
+# odroidn2
+ifeq ($(BR2_cortex_a73_a53),y)
         RETROARCH_CONF_OPTS += --enable-neon --enable-floathard
 endif
 
@@ -172,7 +177,7 @@ ifeq ($(BR2_cortex_a7),y)
         LIBRETRO_PLATFORM += armv7
 endif
 
-ifeq ($(BR2_cortex_a8),y)
+ifeq ($(BR2_cortex_a53),y)
         LIBRETRO_PLATFORM += armv8 cortexa8
 endif
 
@@ -181,6 +186,10 @@ ifeq ($(BR2_cortex_a15),y)
 endif
 
 ifeq ($(BR2_arm)$(BR2_cortex_a72_a53),yy)
+        LIBRETRO_PLATFORM += armv7
+endif
+
+ifeq ($(BR2_arm)$(BR2_cortex_a73_a53),yy)
         LIBRETRO_PLATFORM += armv7
 endif
 

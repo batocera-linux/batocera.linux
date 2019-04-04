@@ -3,9 +3,10 @@
 # 4DO
 #
 ################################################################################
-# Version.: Commits on Jan 4, 2019
-LIBRETRO_4DO_VERSION = d562264f9cff503686551317eaed515735ed6235
+# Version.: Commits on Jan 31, 2019
+LIBRETRO_4DO_VERSION = e2ba1ebcbf6f210fcb8807ea43f57fe03c5a10ba
 LIBRETRO_4DO_SITE = $(call github,libretro,4do-libretro,$(LIBRETRO_4DO_VERSION))
+LIBRETRO_4DO__LICENSE="LGPL with additional notes"
 
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI3),y)
        LIBRETRO_4DO_PLATFORM=unix-rpi3
@@ -23,6 +24,8 @@ else ifeq ($(BR2_x86_i586),y)
        LIBRETRO_4DO_PLATFORM=unix
 else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_ROCKPRO64),y)
        LIBRETRO_4DO_PLATFORM=unix-rockpro64
+else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_ODROIDN2),y)
+       LIBRETRO_4DO_PLATFORM=unix-odroidn2
 else
        LIBRETRO_4DO_PLATFORM=unix
 endif

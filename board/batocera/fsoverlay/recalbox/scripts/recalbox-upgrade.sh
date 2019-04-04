@@ -31,7 +31,7 @@ echo "starting the upgrade..."
 recalboxupdateurl="https://batocera-linux.xorhub.com/upgrades"
 systemsetting="python /usr/lib/python2.7/site-packages/configgen/settings/recalboxSettings.py"
 
-arch=$(cat /recalbox/recalbox.arch)
+arch=$(cat /usr/share/batocera/batocera.arch)
 updatetype=$($systemsetting -command load -key updates.type)
 updateurl=$($systemsetting -command load -key updates.url)
 

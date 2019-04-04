@@ -1,23 +1,14 @@
 #!/usr/bin/env python
-import sys
+
 import os
 import ConfigParser
 from controllersConfig import Input
 from xml.dom import minidom
 
-sys.path.append(
-    os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
-
-from settings.unixSettings import UnixSettings
 import recalboxFiles
 
 # Must read :
 # http://mupen64plus.org/wiki/index.php?title=Mupen64Plus_Plugin_Parameters
-
-mupenSettings = UnixSettings(recalboxFiles.mupenCustom, separator=' ')
-Config = ConfigParser.ConfigParser()
-# To prevent ConfigParser from converting to lower case
-Config.optionxform = str
 
 # Mupen doesn't like to have 2 buttons mapped for N64 pad entry. That's why r2 is commented for now. 1 axis and 1 button is ok
 mupenHatToAxis = {'1': 'Up', '2': 'Right', '4': 'Down', '8': 'Left'}
@@ -40,19 +31,20 @@ def getMupenMapping():
                                 map[input.attributes['name'].value] = input.attributes['value'].value
     return map
 
-# Write a configuration for a specified controller
-def writeControllersConfig(controllers):
-	if os.path.isfile(recalboxFiles.mupenInput):
-		os.remove(recalboxFiles.mupenInput)
+def setControllersConfig(iniConfig, controllers):
+    nplayer = 1
+    for playercontroller, pad in sorted(controllers.items()):
+	# Dynamic controller bindings
+	config = defineControllerKeys(pad)
+	fillIniPlayer(nplayer, iniConfig, pad, config)
+        nplayer += 1
 
-	for controller in controllers:
-		player = controllers[controller]
-		# Dynamic controller bindings
-		config = defineControllerKeys(player)
-		# Write to file
-		writeToIni(player, config)
-
-
+    # remove section with no player
+    for x in range(nplayer, 4):
+        section = "Input-SDL-Control"+str(x)
+        if iniConfig.has_section(section):
+	    iniConfig.remove_section(section)
+                
 def defineControllerKeys(controller):
         mupenmapping = getMupenMapping()
 
@@ -64,7 +56,6 @@ def defineControllerKeys(controller):
 	# Dirty hack : the input.xml adds 2 directions per joystick, ES handles just 1
 	fakeSticks = { 'joystick2up' : 'joystick2down'
 			, 'joystick2left' : 'joystick2right'}
-	print "Banzaiiiii"
 	# Cheat on the controller
 	for realStick, fakeStick in fakeSticks.iteritems():
 		if realStick in controller.inputs:
@@ -134,33 +125,24 @@ def setControllerLine(mupenmapping, input, mupenSettingName):
                                 value = "axis({}-)".format(input.id)
 	return value
 
+def fillIniPlayer(nplayer, iniConfig, controller, config):
+	section = "Input-SDL-Control"+str(nplayer)
 
-def writeToIni(controller, config):
-	Config.read(recalboxFiles.mupenInput)
-	section = controller.realName
+	# set static config
+        if not iniConfig.has_section(section):
+	    iniConfig.add_section(section)
+        iniConfig.set(section, 'Version', '2')
+        iniConfig.set(section, 'mode', 0)
+	iniConfig.set(section, 'device', controller.index)
+        iniConfig.set(section, 'name', controller.realName)
+	iniConfig.set(section, 'plugged', True)
+	iniConfig.set(section, 'plugin', 2)
+	iniConfig.set(section, 'AnalogDeadzone', config['AnalogDeadzone'])
+	iniConfig.set(section, 'AnalogPeak', "32768,32768")
+	iniConfig.set(section, 'Mempak switch', "")
+	iniConfig.set(section, 'Rumblepak switch', "")
+	iniConfig.set(section, 'mouse', "False")
 
-	# Avoid a crash when writing twice a same section
-	if Config.has_section(section):
-		return None
-
-	# Open file
-	cfgfile = open(recalboxFiles.mupenInput,'w+')
-
-	# Write static config
-	Config.add_section(section)
-	Config.set(section, 'plugged', True)
-	Config.set(section, 'plugin', 2)
-	Config.set(section, 'AnalogDeadzone', config['AnalogDeadzone'])
-	Config.set(section, 'AnalogPeak', "32768,32768")
-	Config.set(section, 'Mempak switch', "")
-	Config.set(section, 'Rumblepak switch', "")
-	Config.set(section, 'mouse', "False")
-	#Config.set(section, 'name', controller.realName)
-	#Config.set(section, 'device', controller.index)
-
-	# Write dynamic config
+	# set dynamic config
 	for inputName in sorted(config):
-		Config.set(section, inputName, config[inputName])
-
-	Config.write(cfgfile)
-	cfgfile.close()
+		iniConfig.set(section, inputName, config[inputName])

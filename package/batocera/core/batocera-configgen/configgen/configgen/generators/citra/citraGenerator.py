@@ -5,7 +5,6 @@ import recalboxFiles
 from generators.Generator import Generator
 import shutil
 import os
-from settings.unixSettings import UnixSettings
 import ConfigParser
 
 class CitraGenerator(Generator):
@@ -52,6 +51,14 @@ class CitraGenerator(Generator):
         if not citraConfig.has_section("Layout"):
             citraConfig.add_section("Layout")
         citraConfig.set("Layout", "custom_layout", "1")
+        citraConfig.set("Layout", "custom_top_left", "100")
+        citraConfig.set("Layout", "custom_top_top", "10")
+        citraConfig.set("Layout", "custom_top_right", "540")
+        citraConfig.set("Layout", "custom_top_bottom", "300")
+        citraConfig.set("Layout", "custom_bottom_left", "190")
+        citraConfig.set("Layout", "custom_bottom_top", "300")
+        citraConfig.set("Layout", "custom_bottom_right", "450")
+        citraConfig.set("Layout", "custom_bottom_bottom", "470")
 
         # controls section
         if not citraConfig.has_section("Controls"):

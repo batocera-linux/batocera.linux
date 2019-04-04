@@ -3,23 +3,20 @@
 # MAME
 #
 ################################################################################
-# Version.: Commits on Jan 7, 2019 (0.205)
-LIBRETRO_MAME_VERSION = e11fc3af7c6e9775e0d6b590d88989a52946947d
+# Version.: Commits on Mar 3, 2019 (0.207)
+LIBRETRO_MAME_VERSION = dd899f5c63ce1d725d23706c1d882c58738d8f3c
 LIBRETRO_MAME_SITE = $(call github,libretro,mame,$(LIBRETRO_MAME_VERSION))
+LIBRETRO_MAME_LICENSE="MAME"
 
-# x86
 ifeq ($(BR2_x86_i586),y)
-	LIBRETRO_MAME_PLATFORM = PTR64=0
-endif
-
-# x86_64
-ifeq ($(BR2_x86_64),y)
-	LIBRETRO_MAME_PLATFORM = PTR64=1
+	LIBRETRO_MAME_EXTRA_ARGS = PTR64=0
+else
+	LIBRETRO_MAME_EXTRA_ARGS = PTR64=1
 endif
 
 define LIBRETRO_MAME_BUILD_CMDS
 	CFLAGS="$(TARGET_CFLAGS)" CXXFLAGS="$(TARGET_CXXFLAGS)" \
-        $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" LD="$(TARGET_LD)" RANLIB="$(TARGET_RANLIB)" AR="$(TARGET_AR)" -C $(@D)/ -f Makefile.libretro platform="$(LIBRETRO_PLATFORM)"
+        $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" LD="$(TARGET_LD)" RANLIB="$(TARGET_RANLIB)" AR="$(TARGET_AR)" -C $(@D)/ -f Makefile.libretro $(LIBRETRO_MAME_EXTRA_ARGS) platform="$(LIBRETRO_PLATFORM)"
 endef
 
 define LIBRETRO_MAME_INSTALL_TARGET_CMDS

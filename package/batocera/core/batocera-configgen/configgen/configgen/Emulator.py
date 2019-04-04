@@ -15,7 +15,6 @@ class Emulator():
     def configure(self, emulator='default', core='default', ratio='auto', netplay=None):
         recalSettings = UnixSettings(recalboxFiles.recalboxConf)
         globalSettings = recalSettings.loadAll('global')
-        self.config['specials'] = recalSettings.load('system.emulators.specialkeys', 'default')
         self.updateConfiguration(globalSettings)
         self.updateConfiguration(recalSettings.loadAll(self.name))
         self.updateForcedConfig(emulator, core, ratio)
@@ -24,11 +23,11 @@ class Emulator():
         return key in self.config
 
     def getOptBoolean(self, key):
-        if self.config[key] == '1'    and type(self.config[key]) == type('1'):
+        if unicode(self.config[key]) == u'1':
             return True
-        if self.config[key] == 'true' and type(self.config[key]) == type('true'):
+        if unicode(self.config[key]) == u'true':
             return True
-        if self.config[key] == True   and type(self.config[key]) == type(True):
+        if self.config[key] == True:
             return True
         return False
 

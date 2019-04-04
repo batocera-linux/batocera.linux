@@ -1,8 +1,10 @@
 #!/usr/bin/env python
+
 import ConfigParser
 import StringIO
 import os
 import re
+import io
 from configgen.utils.logger import eslog
 
 __source__ = os.path.basename(__file__)
@@ -23,7 +25,7 @@ class UnixSettings():
             # pretend where have a [DEFAULT] section
             file = StringIO.StringIO()
             file.write('[DEFAULT]\n')
-            file.write(open(self.settingsFile).read())
+            file.write(io.open(self.settingsFile, encoding='utf_8_sig').read())
             file.seek(0, os.SEEK_SET)
 
             self.config.readfp(file)
