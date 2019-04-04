@@ -38,6 +38,13 @@ ifeq ($(BR2_PACKAGE_PPSSPP),y)
 	BATOCERA_DESKTOPAPPS_ICONS   += ppsspp.png
 endif
 
+# reicast
+ifeq ($(BR2_PACKAGE_REICAST),y)
+  BATOCERA_DESKTOPAPPS_SCRIPTS += batocera-config-reicast.sh
+  BATOCERA_DESKTOPAPPS_APPS    += reicast-config.desktop
+	BATOCERA_DESKTOPAPPS_ICONS   += reicast.png
+endif
+
 define BATOCERA_DESKTOPAPPS_INSTALL_TARGET_CMDS
 	# scripts
 	mkdir -p $(TARGET_DIR)/recalbox/scripts
