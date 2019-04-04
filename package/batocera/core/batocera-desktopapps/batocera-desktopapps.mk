@@ -45,6 +45,13 @@ ifeq ($(BR2_PACKAGE_REICAST),y)
 	BATOCERA_DESKTOPAPPS_ICONS   += reicast.png
 endif
 
+# scummvm
+ifeq ($(BR2_PACKAGE_SCUMMVM),y)
+  BATOCERA_DESKTOPAPPS_SCRIPTS += batocera-config-scummvm.sh
+  BATOCERA_DESKTOPAPPS_APPS    += scummvm-config.desktop
+	BATOCERA_DESKTOPAPPS_ICONS   += scummvm.png
+endif
+
 define BATOCERA_DESKTOPAPPS_INSTALL_TARGET_CMDS
 	# scripts
 	mkdir -p $(TARGET_DIR)/recalbox/scripts
