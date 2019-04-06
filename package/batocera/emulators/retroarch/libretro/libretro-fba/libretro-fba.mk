@@ -3,8 +3,8 @@
 # FBA
 #
 ################################################################################
-# Version.: Commits on Feb 3, 2019
-LIBRETRO_FBA_VERSION = 1f3fc82c49b76f41a43babab89bf76c444a3833a
+# Version.: Commits on Apr 6, 2019
+LIBRETRO_FBA_VERSION = 9fc762065d0d27322a668603a7c383f2e1183012
 LIBRETRO_FBA_SITE = $(call github,libretro,fbalpha,$(LIBRETRO_FBA_VERSION))
 LIBRETRO_FBA_LICENSE="Non-commercial"
 
