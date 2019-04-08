@@ -153,6 +153,7 @@ config BR2_PACKAGE_BATOCERA_TOOLS
        select BR2_PACKAGE_NANO    # basic nano emulator
        select BR2_PACKAGE_ZIP     # zip tool
        select BR2_PACKAGE_P7ZIP   # zip tool
+       select BR2_PACKAGE_HTOP    # multi-cpus usage
 
        help
         System tools
