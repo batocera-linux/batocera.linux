@@ -3,8 +3,8 @@
 # Recalbox themes for EmulationStation : https://github.com/recalbox/recalbox-themes
 #
 ################################################################################
-# Version.: Commits on Apr 7, 2019
-RECALBOX_THEMES_VERSION = 2937c7b34becf9d5138b823774cecff8f1972996
+# Version.: Commits on Apr 9, 2019
+RECALBOX_THEMES_VERSION = 1693d996643065ffa6f6eb3de4225f8743d3f1e5
 RECALBOX_THEMES_SITE = $(call github,batocera-linux,recalbox-themes,$(RECALBOX_THEMES_VERSION))
 
 define RECALBOX_THEMES_INSTALL_TARGET_CMDS

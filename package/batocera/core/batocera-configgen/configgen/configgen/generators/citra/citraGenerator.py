@@ -14,7 +14,7 @@ class CitraGenerator(Generator):
         CitraGenerator.writeCITRAConfig(recalboxFiles.citraConfig, system, playersControllers)
 
         commandArray = [recalboxFiles.recalboxBins[system.config['emulator']], "-f", rom]
-        return Command.Command(array=commandArray, env={"XDG_CONFIG_HOME":recalboxFiles.CONF, "XDG_DATA_HOME":recalboxFiles.SAVES, "XDG_CACHE_HOME":recalboxFiles.CACHE})
+        return Command.Command(array=commandArray, env={"XDG_CONFIG_HOME":recalboxFiles.CONF, "XDG_DATA_HOME":recalboxFiles.citraSaves, "XDG_CACHE_HOME":recalboxFiles.CACHE})
 
     @staticmethod
     def writeCITRAConfig(citraConfigFile, system, playersControllers):
