@@ -3,8 +3,8 @@
 # FSUAE
 #
 ################################################################################
-# FSUAE v2.9.7dev4
-FSUAE_VERSION = 3d6a8dc7a60ffe15a1878fd813f7d96fa432a41a
+# Version.: Commits on Aug 4, 2018 (v2.9.7dev4)
+FSUAE_VERSION = 7f4b992d180c72f80783f0aa1dcae1dc2e7c0434
 FSUAE_SITE = $(call github,FrodeSolheim,fs-uae,$(FSUAE_VERSION))
 FSUAE_DEPENDENCIES = xserver_xorg-server openal-soft libpng sdl2 zlib libmpeg2 libglib2
 
