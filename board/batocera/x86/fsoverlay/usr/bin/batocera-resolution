@@ -72,5 +72,7 @@ case "${ACTION}" in
 		fi
 	    done
 	;;
+	"setDPI")
+	xrandr --dpi $1
 esac
 exit 0

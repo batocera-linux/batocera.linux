@@ -19,10 +19,14 @@ export HOME=/userdata/system
 export LC_ALL="${settings_lang}.UTF-8"
 export LANG=${LC_ALL}
 
-# because of xinerama braking es, enable only one screen at a time
+# because of xinerama breaking es, enable only one screen at a time
 systemsetting="python /usr/lib/python2.7/site-packages/configgen/settings/recalboxSettings.py"
 settings_output="`$systemsetting -command load -key global.videooutput`"
 batocera-resolution setOutput "${settings_output}" # empty or invalid values defaults to the first valid
+
+# dpi override for nvidia gpus
+settings_output="`$systemsetting -command load -key global.dpi`"
+[ ! -z "${settings_output}" ] && batocera-resolution setDPI "${settings_output}"
 
 #####################
 ## CUSTOMISATIONS ###
@@ -41,6 +45,11 @@ batocera-resolution setOutput "${settings_output}" # empty or invalid values def
 
 #####################
 #####################
+
+# set user desired resolution
+# nice workaround for displays which tell X11 to use strange resolutions
+settings_output="`$systemsetting -command load -key global.videomode`"
+[ ! -z "${settings_output}" ] && batocera-resolution setMode "${settings_output}"
 
 batocera-resolution minTomaxResolution
 
