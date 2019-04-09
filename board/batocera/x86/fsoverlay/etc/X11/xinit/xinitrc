@@ -46,6 +46,11 @@ settings_output="`$systemsetting -command load -key global.dpi`"
 #####################
 #####################
 
+# set user desired resolution
+# nice workaround for displays which tell X11 to use strange resolutions
+settings_output="`$systemsetting -command load -key global.videomode`"
+[ ! -z "${settings_output}" ] && batocera-resolution setMode "${settings_output}"
+
 batocera-resolution minTomaxResolution
 
 # without windowed, time must be sleeped to wait that matchbox ended to initialize :-(
