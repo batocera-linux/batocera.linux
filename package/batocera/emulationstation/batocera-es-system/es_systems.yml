@@ -21,7 +21,7 @@ amiga500:
   name:       Amiga 500
   extensions: [zip, adf, uae, ipf, dms, adz, lha]
   path:       amiga/amiga500
-  theme:      amiga
+  theme:      amiga500
   emulators:
     fsuae:
       A500: { requireAnyOf: [BR2_PACKAGE_FSUAE]    }
@@ -32,7 +32,7 @@ amiga500p:
   name:       Amiga 500+
   extensions: [zip, adf, uae, ipf, dms, adz, lha]
   path:       amiga/amiga500p
-  theme:      amiga
+  theme:      amiga500p
   emulators:
     fsuae:
       A500+: { requireAnyOf: [BR2_PACKAGE_FSUAE]    }
@@ -52,7 +52,7 @@ amiga1000:
   name:       Amiga 1000
   extensions: [zip, adf, uae, ipf, dms, adz]
   path:       amiga/amiga1000
-  theme:      amiga
+  theme:      amiga1000
   emulators:
     fsuae:
       A1000: { requireAnyOf: [BR2_PACKAGE_FSUAE] }
@@ -72,7 +72,7 @@ amiga3000:
   name:       Amiga 3000
   extensions: [zip, adf, uae, ipf, dms, adz]
   path:       amiga/amiga3000
-  theme:      amiga
+  theme:      amiga3000
   emulators:
     fsuae:
       A3000: { requireAnyOf: [BR2_PACKAGE_FSUAE] }
@@ -81,7 +81,7 @@ amiga4000:
   name:       Amiga 4000
   extensions: [zip, adf, uae, ipf, dms, adz, lha]
   path:       amiga/amiga4000
-  theme:      amiga
+  theme:      amiga4000
   emulators:
     fsuae:
       A4000: { requireAnyOf: [BR2_PACKAGE_FSUAE]    }
@@ -92,7 +92,7 @@ amigacd32:
   name:       Amiga CD32
   extensions: [iso, cue, zip, lha]
   path:       amiga/amigacd32
-  theme:      amiga
+  theme:      amigacd32
   emulators:
     fsuae:
       CD32: { requireAnyOf: [BR2_PACKAGE_FSUAE]    }
@@ -103,7 +103,7 @@ amigacdtv:
   name:       Amiga CDTV
   extensions: [bin, cue, iso]
   path:       amiga/amigacdtv
-  theme:      amiga
+  theme:      amigacdtv
   emulators:
     fsuae:
       CDTV: { requireAnyOf: [BR2_PACKAGE_FSUAE] }
