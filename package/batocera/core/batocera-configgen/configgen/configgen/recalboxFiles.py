@@ -100,6 +100,7 @@ ppssppControlsInit = HOME_INIT + 'configs/ppsspp/PSP/SYSTEM/controls.ini'
 ppssppConfig = ppssppConf + '/ppsspp.ini'
 
 citraConfig = CONF + '/citra-emu/sdl2-config.ini'
+citraSaves = SAVES + '/3ds'
 
 dosboxCustom = CONF + '/dosbox'
 dosboxConfig = dosboxCustom + '/dosbox.conf'
