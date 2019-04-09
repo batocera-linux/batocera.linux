@@ -43,6 +43,7 @@ amiga600:
   name:       Amiga 600
   extensions: [zip, adf, uae, ipf, dms, adz]
   path:       amiga/amiga600
+  theme:      amiga
   emulators:
     fsuae:
       A600: { requireAnyOf: [BR2_PACKAGE_FSUAE] }
@@ -60,6 +61,7 @@ amiga1200:
   name:       Amiga 1200
   extensions: [zip, adf, uae, ipf, dms, adz, lha]
   path:       amiga/amiga1200
+  theme:      amiga
   emulators:
     fsuae:
       A1200: { requireAnyOf: [BR2_PACKAGE_FSUAE]    }
