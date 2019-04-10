@@ -19,7 +19,7 @@ class MupenGenerator(Generator):
             iniConfig.read(recalboxFiles.mupenCustom)
 
         mupenConfig.setMupenConfig(iniConfig, system, playersControllers, gameResolution)
-        mupenControllers.setControllersConfig(iniConfig, playersControllers)
+        mupenControllers.setControllersConfig(iniConfig, playersControllers, system.config)
 
         # save the ini file
         if not os.path.exists(os.path.dirname(recalboxFiles.mupenCustom)):

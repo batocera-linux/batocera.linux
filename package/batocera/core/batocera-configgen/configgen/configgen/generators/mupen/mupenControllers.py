@@ -31,11 +31,11 @@ def getMupenMapping():
                                 map[input.attributes['name'].value] = input.attributes['value'].value
     return map
 
-def setControllersConfig(iniConfig, controllers):
+def setControllersConfig(iniConfig, controllers, systemconfig):
     nplayer = 1
     for playercontroller, pad in sorted(controllers.items()):
 	# Dynamic controller bindings
-	config = defineControllerKeys(pad)
+	config = defineControllerKeys(pad, systemconfig)
 	fillIniPlayer(nplayer, iniConfig, pad, config)
         nplayer += 1
 
@@ -43,16 +43,23 @@ def setControllersConfig(iniConfig, controllers):
     for x in range(nplayer, 4):
         section = "Input-SDL-Control"+str(x)
         if iniConfig.has_section(section):
-	    iniConfig.remove_section(section)
+            cleanPlayer(nplayer, iniConfig)
                 
-def defineControllerKeys(controller):
+def defineControllerKeys(controller, systemconfig):
         mupenmapping = getMupenMapping()
 
 	# config holds the final pad configuration in the mupen style
 	# ex: config['DPad U'] = "button(1)"
 	config = dict()
+
+        # deadzone and peak from config files
 	config['AnalogDeadzone'] = mupenmapping['AnalogDeadzone']
-	
+        config['AnalogPeak']     = mupenmapping['AnalogPeak']
+	if 'analogdeadzone' in systemconfig:
+            config['AnalogDeadzone'] = systemconfig['analogdeadzone']
+        if 'analogpeak' in systemconfig:
+            config['AnalogPeak']     = systemconfig['analogpeak']
+
 	# Dirty hack : the input.xml adds 2 directions per joystick, ES handles just 1
 	fakeSticks = { 'joystick2up' : 'joystick2down'
 			, 'joystick2left' : 'joystick2right'}
@@ -138,11 +145,41 @@ def fillIniPlayer(nplayer, iniConfig, controller, config):
 	iniConfig.set(section, 'plugged', True)
 	iniConfig.set(section, 'plugin', 2)
 	iniConfig.set(section, 'AnalogDeadzone', config['AnalogDeadzone'])
-	iniConfig.set(section, 'AnalogPeak', "32768,32768")
-	iniConfig.set(section, 'Mempak switch', "")
-	iniConfig.set(section, 'Rumblepak switch', "")
+	iniConfig.set(section, 'AnalogPeak', config['AnalogPeak'])
 	iniConfig.set(section, 'mouse', "False")
 
-	# set dynamic config
+	# set dynamic config - clear all keys then fill
+	iniConfig.set(section, "Mempak switch", "")
+	iniConfig.set(section, "Rumblepak switch", "")
+	iniConfig.set(section, "C Button R", "")
+	iniConfig.set(section, "A Button", "")
+	iniConfig.set(section, "C Button U", "")
+	iniConfig.set(section, "B Button", "")
+	iniConfig.set(section, "Start", "")
+	iniConfig.set(section, "L Trig", "")
+	iniConfig.set(section, "R Trig", "")
+	iniConfig.set(section, "Z Trig", "")
+	iniConfig.set(section, "DPad U", "")
+	iniConfig.set(section, "DPad D", "")
+	iniConfig.set(section, "DPad R", "")
+	iniConfig.set(section, "DPad L", "")
+	iniConfig.set(section, "Y Axis", "")
+	iniConfig.set(section, "Y Axis", "")
+	iniConfig.set(section, "X Axis", "")
+	iniConfig.set(section, "X Axis", "")
+	iniConfig.set(section, "C Button U", "")
+	iniConfig.set(section, "C Button D", "")
+	iniConfig.set(section, "C Button L", "")
+	iniConfig.set(section, "C Button R", "")
 	for inputName in sorted(config):
 		iniConfig.set(section, inputName, config[inputName])
+
+def cleanPlayer(nplayer, iniConfig):
+	section = "Input-SDL-Control"+str(nplayer)
+
+	# set static config
+        if not iniConfig.has_section(section):
+	    iniConfig.add_section(section)
+        iniConfig.set(section, 'Version', '2')
+        iniConfig.set(section, 'plugged', False)
+
