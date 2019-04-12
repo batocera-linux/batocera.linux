@@ -3,8 +3,8 @@
 # mupen64plus video video-glide64mk2
 #
 ################################################################################
-# Version.: Commits on Apr 16, 2018
-MUPEN64PLUS_VIDEO_GLIDE64MK2_VERSION = 6107f82a6803389111925e4ae8a00f89c96e16ea
+# Version.: Commits on Mar 18, 2019
+MUPEN64PLUS_VIDEO_GLIDE64MK2_VERSION = a91b7c9bedc6d7876b7835671a614f9d75eb0086
 MUPEN64PLUS_VIDEO_GLIDE64MK2_SITE = $(call github,mupen64plus,mupen64plus-video-glide64mk2,$(MUPEN64PLUS_VIDEO_GLIDE64MK2_VERSION))
 
 MUPEN64PLUS_VIDEO_GLIDE64MK2_LICENSE = MIT
