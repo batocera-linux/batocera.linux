@@ -43,8 +43,6 @@ retroarchCustomOrigin = retroarchRootInit + "/retroarchcustom.cfg"
 retroarchCoreCustom = retroarchRoot + "/cores/retroarch-core-options.cfg"
 
 retroarchCores = "/usr/lib/libretro/"
-shadersRoot = "/userdata/shaders/presets/"
-shadersExt = '.gplsp'
 libretroExt = '_libretro.so'
 screenshotsDir = "/userdata/screenshots/"
 savesDir = "/userdata/saves/"
@@ -60,8 +58,6 @@ mupenInput = mupenConf + "InputAutoCfg.ini"
 mupenSaves = SAVES + "/n64"
 mupenMappingUser    = mupenConf + 'input.xml'
 mupenMappingSystem  = '/usr/share/batocera/datainit/system/configs/mupen64/input.xml'
-
-shaderPresetRoot = "/usr/share/batocera/datainit/system/configs/shadersets/"
 
 kodiJoystick = HOME + '/.kodi/userdata/addon_data/peripheral.joystick/resources/buttonmaps/xml/linux/batocera_{}.xml'
 
