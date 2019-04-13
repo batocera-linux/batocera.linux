@@ -51,7 +51,8 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
     coreSettings = UnixSettings(recalboxFiles.retroarchCoreCustom, separator=' ')
 
     retroarchConfig = dict()
-    recalboxConfig = system.config
+    systemConfig = system.config
+    renderConfig = system.renderconfig
 
     # fs is required at least for x86* and odroidn2
     retroarchConfig['video_fullscreen'] = 'true'
@@ -61,19 +62,28 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
     else:
         retroarchConfig['video_smooth'] = 'false'
 
-    if defined('shaders', recalboxConfig):
-        retroarchConfig['video_shader'] = recalboxConfig['shaders']
+    if 'shader' in renderConfig and renderConfig['shader'] != None:
         retroarchConfig['video_shader_enable'] = 'true'
-        retroarchConfig['video_smooth'] = 'false'
+        retroarchConfig['video_smooth']        = 'false'
+        shaderFilename = renderConfig['shader'] + ".glslp"
+
+        eslog.log("searching shader {}".format(shaderFilename))
+        if os.path.exists("/userdata/shaders/" + shaderFilename):
+            retroarchConfig['video_shader_dir'] = "/userdata/shaders"
+            eslog.log("shader {} found in /userdata/shaders".format(shaderFilename))
+        else:
+            retroarchConfig['video_shader_dir'] = "/usr/share/batocera/shaders"
+
+        retroarchConfig['video_shader'] = retroarchConfig['video_shader_dir'] + "/" + shaderFilename
     else:
         retroarchConfig['video_shader_enable'] = 'false'
 
     retroarchConfig['aspect_ratio_index'] = '' # reset in case config was changed (or for overlays)
-    if defined('ratio', recalboxConfig):
-        if recalboxConfig['ratio'] in ratioIndexes:
-            retroarchConfig['aspect_ratio_index'] = ratioIndexes.index(recalboxConfig['ratio'])
+    if defined('ratio', systemConfig):
+        if systemConfig['ratio'] in ratioIndexes:
+            retroarchConfig['aspect_ratio_index'] = ratioIndexes.index(systemConfig['ratio'])
             retroarchConfig['video_aspect_ratio_auto'] = 'false'
-        elif recalboxConfig['ratio'] == "custom":
+        elif systemConfig['ratio'] == "custom":
             retroarchConfig['video_aspect_ratio_auto'] = 'false'
         else:
             retroarchConfig['video_aspect_ratio_auto'] = 'true'
@@ -132,8 +142,8 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
     if system.isOptSet('retroachievements') and system.getOptBoolean('retroachievements') == True:
         if(system.name in systemToRetroachievements):
             retroarchConfig['cheevos_enable'] = 'true'
-            retroarchConfig['cheevos_username'] = recalboxConfig.get('retroachievements.username', "")
-            retroarchConfig['cheevos_password'] = recalboxConfig.get('retroachievements.password', "")
+            retroarchConfig['cheevos_username'] = systemConfig.get('retroachievements.username', "")
+            retroarchConfig['cheevos_password'] = systemConfig.get('retroachievements.password', "")
             # retroachievements_hardcore_mode
             if system.isOptSet('retroachievements.hardcore') and system.getOptBoolean('retroachievements.hardcore') == True:
                 retroarchConfig['cheevos_hardcore_mode_enable'] = 'true'
@@ -197,14 +207,14 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
         retroarchConfig['cheevos_hardcore_mode_enable'] = 'false'
         # Quite strangely, host mode requires netplay_mode to be set to false when launched from command line
         retroarchConfig['netplay_mode']              = "false"
-        retroarchConfig['netplay_ip_port']           = recalboxConfig.get('netplay.server.port', "")
-        retroarchConfig['netplay_delay_frames']      = recalboxConfig.get('netplay.frames', "")
-        retroarchConfig['netplay_nickname']          = recalboxConfig.get('netplay.nick', "")
+        retroarchConfig['netplay_ip_port']           = systemConfig.get('netplay.server.port', "")
+        retroarchConfig['netplay_delay_frames']      = systemConfig.get('netplay.frames', "")
+        retroarchConfig['netplay_nickname']          = systemConfig.get('netplay.nick', "")
         retroarchConfig['netplay_client_swap_input'] = "false"
         if system.config['netplaymode'] == 'client':
             # But client needs netplay_mode = true ... bug ?
             retroarchConfig['netplay_mode']              = "true"
-            retroarchConfig['netplay_ip_address']        = recalboxConfig.get('netplay.server.ip', "")
+            retroarchConfig['netplay_ip_address']        = systemConfig.get('netplay.server.ip', "")
             retroarchConfig['netplay_client_swap_input'] = "true"
 
     # Display FPS
