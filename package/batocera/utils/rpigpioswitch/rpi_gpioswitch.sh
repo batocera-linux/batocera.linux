@@ -243,7 +243,7 @@ if [[ "$1" != "start" && $1 != "stop" ]]; then
     exit 1
 fi
 
-CONFFILE="/userdata/system/recalbox.conf"
+CONFFILE="/userdata/system/batocera.conf"
 CONFPARAM="system.power.switch" 
 CONFVALUE=
 if [ -e $CONFFILE ]; then

@@ -11,7 +11,7 @@ CACHE = '/userdata/system/cache'
 
 esInputs = HOME + '/.emulationstation/es_input.cfg'
 esSettings = HOME + '/.emulationstation/es_settings.cfg'
-recalboxConf = HOME + '/recalbox.conf'
+recalboxConf = HOME + '/batocera.conf'
 logdir = HOME + '/logs/'
 
 # This dict is indexed on the emulator name, not on the system
