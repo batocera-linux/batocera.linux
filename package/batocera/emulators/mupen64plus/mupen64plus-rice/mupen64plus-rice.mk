@@ -3,8 +3,8 @@
 # mupen64plus video rice
 #
 ################################################################################
-# Version.: Commits on Feb 4, 2018
-MUPEN64PLUS_RICE_VERSION = 7f1044867db2a1a5f8ccb6b1e270e93cc4cbfec2
+# Version.: Commits on Mar 3, 2019
+MUPEN64PLUS_RICE_VERSION = 25a3864d006f9ae1355ac8240f0329bcdc7e1b92
 MUPEN64PLUS_RICE_SITE = $(call github,mupen64plus,mupen64plus-video-rice,$(MUPEN64PLUS_RICE_VERSION))
 MUPEN64PLUS_RICE_LICENSE = MIT
 MUPEN64PLUS_RICE_DEPENDENCIES = sdl2 alsa-lib rpi-userland mupen64plus-core

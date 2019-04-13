@@ -3,9 +3,8 @@
 # mupen64plus core
 #
 ################################################################################
-# Version.: Commits on Jun 3, 2018
-MUPEN64PLUS_CORE_VERSION = 755a26bd2ed40d09c45b0a8c72457cd2a28e79af
-# for xu4 ,rpi3 because the next commit breaks and segfault on 1080 for example
+# Version.: Commits on Mar 3, 2019
+MUPEN64PLUS_CORE_VERSION = b4566a6562441489ae274dff6514ff046f6f0515
 MUPEN64PLUS_CORE_SITE = $(call github,mupen64plus,mupen64plus-core,$(MUPEN64PLUS_CORE_VERSION))
 MUPEN64PLUS_CORE_LICENSE = MIT
 MUPEN64PLUS_CORE_DEPENDENCIES = sdl2 alsa-lib freetype dejavu
@@ -75,7 +74,7 @@ define MUPEN64PLUS_CORE_INSTALL_TARGET_CMDS
 	$(INSTALL) -m 0644 $(@D)/projects/unix/libmupen64plus.so.2.0.0 $(TARGET_DIR)/usr/lib
 	mkdir -p $(TARGET_DIR)/usr/share/mupen64plus
 	ln -sf /usr/share/fonts/dejavu/DejaVuSans.ttf $(TARGET_DIR)/usr/share/mupen64plus/font.ttf
-	cp "package/batocera/emulators/mupen64plus/mupen64plus-core/mupen64plus.ini" "$(TARGET_DIR)/usr/share/mupen64plus/mupen64plus.ini"
+	cp $(@D)/data/mupen64plus.ini $(TARGET_DIR)/usr/share/mupen64plus/mupen64plus.ini
 endef
 
 define MUPEN64PLUS_CORE_CROSS_FIXUP

@@ -3,7 +3,7 @@
 # mupen64plus video gles2rice
 #
 ################################################################################
-# Version.: Commits on Sep 19, 2015
+# Version.: Commits on Sep 19, 2015 (discontinued)
 MUPEN64PLUS_GLES2RICE_VERSION = b3ae992491c849bf70dea442f0296dad90d98dc0
 MUPEN64PLUS_GLES2RICE_SITE = $(call github,CornN64,mupen64plus-video-gles2rice,$(MUPEN64PLUS_GLES2RICE_VERSION))
 MUPEN64PLUS_GLES2RICE_LICENSE = MIT

@@ -3,7 +3,7 @@
 # mupen64plus video gles2
 #
 ################################################################################
-# Version.: Commits on Oct 7, 2017
+# Version.: Commits on Oct 7, 2017 (discontinued)
 MUPEN64PLUS_GLES2_VERSION = aef5b1703b4adf6395d638f2e1a30391a6191fd3
 MUPEN64PLUS_GLES2_SITE = $(call github,ricrpi,mupen64plus-video-gles2n64,$(MUPEN64PLUS_GLES2_VERSION))
 MUPEN64PLUS_GLES2_LICENSE = MIT
