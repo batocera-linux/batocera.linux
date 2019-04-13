@@ -1,6 +1,6 @@
 #!/bin/bash
 
-system_settings=/userdata/system/recalbox.conf
+system_settings=/userdata/system/batocera.conf
 
 command="$1"
 argsetting="$2"

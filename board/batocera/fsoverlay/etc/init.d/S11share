@@ -154,9 +154,9 @@ EOF
 	    # saved the value encoded
 	    if test "${settings_key}" = "${settings_key_dec}"
 	    then
-		# sed the replace by the secure value in recalbox.conf
+		# sed the replace by the secure value in batocera.conf
 		settings_key=$(/recalbox/scripts/recalbox-encode.sh encode "${settings_key}")
-		sed -i -e s@'^[ \t]*wifi.key[ \t]*=.*$'@"wifi.key=${settings_key}"@ "/userdata/system/recalbox.conf"
+		sed -i -e s@'^[ \t]*wifi.key[ \t]*=.*$'@"wifi.key=${settings_key}"@ "/userdata/system/batocera.conf"
 	    fi
 	fi
     fi
@@ -176,6 +176,10 @@ rb_wifi_configure_all() {
     # wait a bit, otherwise, connman is not really started
     sleep 2
     /recalbox/scripts/recalbox-config.sh wifi start
+}
+
+fixbatoceraconfname() {
+    test -e /userdata/recalbox.conf && mv /userdata/recalbox.conf /userdata/batocera.conf
 }
 
 mountNetwork() {
@@ -298,6 +302,7 @@ case "${MODE}" in
 	DEVICE=$(echo "${LDEVICE}" | sed -e s+'^\([^:]*\):.*$'+'\1'+)
 	TDEVICE=$(echo "${LDEVICE}" | sed -e s+'^.* TYPE="\([^"]*\)"$'+'\1'+)
 	mountDeviceOrFallback "${DEVICE}" "${TDEVICE}"
+	fixbatoceraconfname
 	rb_wifi_configure_all& # configure the wifi at the end
 	;;
     "ANYEXTERNAL")
@@ -312,6 +317,7 @@ case "${MODE}" in
 	DEVICE=$(echo "${LDEVICE}" | sed -e s+'^\([^:]*\):.*$'+'\1'+)
 	TDEVICE=$(echo "${LDEVICE}" | sed -e s+'^.* TYPE="\([^"]*\)"$'+'\1'+)
 	mountDeviceOrFallback "${DEVICE}" "${TDEVICE}"
+	fixbatoceraconfname
 	rb_wifi_configure_all& # configure the wifi at the end
 	;;
     "RAM")
@@ -325,6 +331,7 @@ case "${MODE}" in
 	then
 	    # we try to configure the wifi here
 	    # for people using the internal device for the wifi and some others mounts for data
+	    fixbatoceraconfname
 	    rb_wifi_configure_all
 	else
 	    # fallback
@@ -342,6 +349,7 @@ case "${MODE}" in
 	    # the internal partition is no more required in fact
 	    mount -t tmpfs -o size=128M tmpfs /userdata
 	fi
+	fixbatoceraconfname
 	rb_wifi_configure_all& # configure the wifi at the end
 	;;
 esac

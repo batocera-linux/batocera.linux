@@ -117,7 +117,7 @@ rb_alsa_save() {
 case "$1" in
   start)
 	# Dos carriage return characters
-	sed -i 's/\r//g' /userdata/system/recalbox.conf
+	sed -i 's/\r//g' /userdata/system/batocera.conf
 	
 	# configure
 	rb_gpio_configure&    # 0.9 start by the gpio while it's the longer

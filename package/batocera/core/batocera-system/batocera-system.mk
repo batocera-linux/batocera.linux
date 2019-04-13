@@ -69,8 +69,7 @@ define BATOCERA_SYSTEM_INSTALL_TARGET_CMDS
 
 	# datainit
 	mkdir -p $(TARGET_DIR)/usr/share/batocera/datainit/system
-	cp package/batocera/core/batocera-system/$(BATOCERA_SYSTEM_BATOCERA_CONF)/recalbox.conf $(TARGET_DIR)/usr/share/batocera/datainit/system
-	cp package/batocera/core/batocera-system/$(BATOCERA_SYSTEM_BATOCERA_CONF)/recalbox.conf $(TARGET_DIR)/usr/share/batocera/datainit/system/recalbox.conf.template
+	cp package/batocera/core/batocera-system/$(BATOCERA_SYSTEM_BATOCERA_CONF)/batocera.conf $(TARGET_DIR)/usr/share/batocera/datainit/system
 
 	# recalbox-boot.conf
         $(INSTALL) -D -m 0644 package/batocera/core/batocera-system/recalbox-boot.conf $(BINARIES_DIR)/$(BATOCERA_SYSTEM_SUBDIR)/recalbox-boot.conf
