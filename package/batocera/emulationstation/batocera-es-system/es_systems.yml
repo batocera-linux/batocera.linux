@@ -446,7 +446,7 @@ neogeo:
 
 neogeocd:
   name:       Neo-Geo CD
-  extensions: [cue]
+  extensions: [cue, iso]
   emulators:
     libretro:
       fba:       { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FBA]      }
