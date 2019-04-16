@@ -3,8 +3,8 @@
 # advancemame
 #
 ################################################################################
-# Version.: Commits on Sep 25, 2018 (v3.9)
-ADVANCEMAME_VERSION = 0038b8d3fc0976576b550eebad5295033d306ab5
+# Version.: Commits on Feb 5, 2018
+ADVANCEMAME_VERSION = v3.7
 ADVANCEMAME_SITE = $(call github,amadvance,advancemame,$(ADVANCEMAME_VERSION))
 ADVANCEMAME_LICENSE = GPLv2
 
@@ -16,6 +16,9 @@ endef
 
 ADVANCEMAME_PRE_CONFIGURE_HOOKS += ADVANCEMAME_RUN_AUTOGEN
 
+ADVANCEMAME_CONF_ENV += LDFLAGS=-L$(STAGING_DIR)/usr/lib/
+ADVANCEMAME_CONF_ENV += CFLAGS=-I$(STAGING_DIR)/usr/include/freetype2
+
 ADVANCEMAME_CONF_OPTS += \
 	--prefix=$(TARGET_DIR)/usr \
 	--exec-prefix=$(TARGET_DIR)/usr \
@@ -24,11 +27,11 @@ ADVANCEMAME_CONF_OPTS += \
 	--disable-oss \
 	--with-emu=mame
 
-ifeq ($(BR2_PACKAGE_SDL2),y)
-	ADVANCEMAME_DEPENDENCIES += sdl2
+ifeq ($(BR2_PACKAGE_SDL),y)
+	ADVANCEMAME_DEPENDENCIES += sdl
 	ADVANCEMAME_CONF_OPTS += \
-		--enable-sdl2 \
-		--with-sdl2-prefix=$(STAGING_DIR)/usr \
+		--enable-sdl \
+		--with-sdl-prefix=$(STAGING_DIR)/usr \
 		--enable-jsdl \
 		--enable-ksdl \
 		--enable-msdl 
