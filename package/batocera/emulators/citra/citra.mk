@@ -3,8 +3,8 @@
 # CITRA
 #
 ################################################################################
-# Version.: Commits on Sep 30, 2018
-CITRA_VERSION = 9d142f981dd4810085355b0659173d2cb0a12e7f
+# Version.: Commits on Apr 17, 2019
+CITRA_VERSION = 0ec45f694cc24cfda2782421a926737aa47b4395
 CITRA_SITE = https://github.com/citra-emu/citra.git
 CITRA_SITE_METHOD=git
 CITRA_GIT_SUBMODULES=YES
@@ -17,6 +17,7 @@ CITRA_CONF_OPTS  = -DENABLE_QT=OFF
 CITRA_CONF_OPTS += -DENABLE_SDL2=ON
 CITRA_CONF_OPTS += -DCMAKE_BUILD_TYPE=Release
 CITRA_CONF_OPTS += -DENABLE_WEB_SERVICE=OFF
+CITRA_CONF_OPTS += -DENABLE_FFMPEG=ON
 
 CITRA_CONF_ENV += LDFLAGS=-lpthread
 
@@ -24,7 +25,7 @@ define CITRA_INSTALL_TARGET_CMDS
         mkdir -p $(TARGET_DIR)/usr/bin
         mkdir -p $(TARGET_DIR)/usr/lib
 
-	$(INSTALL) -D $(@D)/buildroot-build/src/citra/citra \
+	$(INSTALL) -D $(@D)/buildroot-build/bin/citra \
 		$(TARGET_DIR)/usr/bin/citra
 
 	cp -pr $(@D)/buildroot-build/externals/inih/*.so \
@@ -33,6 +34,11 @@ define CITRA_INSTALL_TARGET_CMDS
 	cp -pr $(@D)/buildroot-build/externals/cubeb/*.so \
 		$(TARGET_DIR)/usr/lib/
 
+	cp -pr $(@D)/buildroot-build/externals/dynarmic/src/*.so \
+		$(TARGET_DIR)/usr/lib/
+	
+	cp -pr $(@D)/buildroot-build/externals/teakra/src/*.so \
+		$(TARGET_DIR)/usr/lib/
 endef
 
 $(eval $(cmake-package))
