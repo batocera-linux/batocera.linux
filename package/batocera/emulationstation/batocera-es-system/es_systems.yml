@@ -450,6 +450,7 @@ neogeocd:
   emulators:
     libretro:
       fba:       { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FBA]      }
+      neocd:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_NEOCD]    }
 
 colecovision:
   name:       ColecoVision
