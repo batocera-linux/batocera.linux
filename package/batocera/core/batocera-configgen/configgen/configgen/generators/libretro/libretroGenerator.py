@@ -39,8 +39,8 @@ class LibretroGenerator(Generator):
         romName = os.path.basename(rom)
 
         # the command to run
-        # For the NeoGeo CD it is necessary to add the parameter: --subsystem neocd
-        if (system.name == 'neogeocd'):
+        # For the NeoGeo CD (lr-fba) it is necessary to add the parameter: --subsystem neocd
+        if system.name == 'neogeocd' and system.config['core'] == "fba":
             commandArray = [recalboxFiles.recalboxBins[system.config['emulator']], "-L", retroarchCore, "--subsystem", "neocd", "--config", system.config['configfile']]
         else:
             commandArray = [recalboxFiles.recalboxBins[system.config['emulator']], "-L", retroarchCore, "--config", system.config['configfile']]
