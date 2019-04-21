@@ -12,7 +12,7 @@ cp /etc/sixad.profile /var/lib/sixad/profiles/default
 # custom network config
 mkdir -p "/var/lib/connman"
 ln -sf "/userdata/system/network-connman.config" "/var/lib/connman/recalbox-custom.config"
-ln -sf "/boot/network-connman.config"                  "/var/lib/connman/recalbox-boot-custom.config"
+ln -sf "/boot/network-connman.config"                  "/var/lib/connman/batocera-boot-custom.config"
 
 # bluetooth
 mkdir -p /var/lib/bluetooth
@@ -35,7 +35,7 @@ mkdir -p /run/udev/
 mkdir -p /var/log
 
 # nvidia-driver
-if grep -qE "^[ ]*nvidia-driver[ ]*=[ ]*true[ ]*$" /boot/recalbox-boot.conf
+if grep -qE "^[ ]*nvidia-driver[ ]*=[ ]*true[ ]*$" /boot/batocera-boot.conf
 then
 	echo "blacklist nouveau" > /etc/modprobe.d/blacklist-nouveau.conf
 	echo "options nvidia-drm modeset=1" > /etc/modprobe.d/nvidia-drm.conf

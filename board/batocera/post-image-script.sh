@@ -142,11 +142,11 @@ case "${BATOCERA_TARGET}" in
 	    cp "${BINARIES_DIR}/rootfs.squashfs" "${BINARIES_DIR}/boot/boot/batocera.update" || exit 1
 	fi
 	cp "${BINARIES_DIR}/exynos5422-odroidxu4.dtb" "${BINARIES_DIR}/boot/boot/exynos5422-odroidxu4.dtb" || exit 1
-	cp "${BINARIES_DIR}/recalbox-boot.conf" "${BINARIES_DIR}/boot/recalbox-boot.conf"                  || exit 1
+	cp "${BINARIES_DIR}/batocera-boot.conf" "${BINARIES_DIR}/boot/batocera-boot.conf"                  || exit 1
 
 	# boot.tar.xz
 	echo "creating boot.tar.xz"
-	(cd "${BINARIES_DIR}/boot" && tar -cJf "${BATOCERA_BINARIES_DIR}/boot.tar.xz" boot.ini boot recalbox-boot.conf) || exit 1
+	(cd "${BINARIES_DIR}/boot" && tar -cJf "${BATOCERA_BINARIES_DIR}/boot.tar.xz" boot.ini boot batocera-boot.conf) || exit 1
 
 	# batocera.img
 	# rename the squashfs : the .update is the version that will be renamed at boot to replace the old version
@@ -186,11 +186,11 @@ case "${BATOCERA_TARGET}" in
 	    cp "${BINARIES_DIR}/rootfs.squashfs" "${BINARIES_DIR}/boot/boot/batocera.update" || exit 1
 	fi
 	cp "${BINARIES_DIR}/exynos5422-odroidxu3.dtb" "${BINARIES_DIR}/boot/boot/exynos5422-odroidxu3.dtb" || exit 1
-	cp "${BINARIES_DIR}/recalbox-boot.conf" "${BINARIES_DIR}/boot/recalbox-boot.conf"                  || exit 1
+	cp "${BINARIES_DIR}/batocera-boot.conf" "${BINARIES_DIR}/boot/batocera-boot.conf"                  || exit 1
 
 	# boot.tar.xz
 	echo "creating boot.tar.xz"
-	(cd "${BINARIES_DIR}/boot" && tar -cJf "${BATOCERA_BINARIES_DIR}/boot.tar.xz" boot.ini boot recalbox-boot.conf) || exit 1
+	(cd "${BINARIES_DIR}/boot" && tar -cJf "${BATOCERA_BINARIES_DIR}/boot.tar.xz" boot.ini boot batocera-boot.conf) || exit 1
 
 	# batocera.img
 	# rename the squashfs : the .update is the version that will be renamed at boot to replace the old version
@@ -212,7 +212,7 @@ case "${BATOCERA_TARGET}" in
 	mkdir -p ${BINARIES_DIR}/boot/boot || exit 1
 	cp board/batocera/odroidc2/boot/boot-logo.bmp.gz ${BINARIES_DIR}/boot   || exit 1
 	cp "board/batocera/odroidc2/boot/boot.ini"       ${BINARIES_DIR}/boot   || exit 1
-	cp "${BINARIES_DIR}/recalbox-boot.conf" "${BINARIES_DIR}/boot/recalbox-boot.conf" || exit 1
+	cp "${BINARIES_DIR}/batocera-boot.conf" "${BINARIES_DIR}/boot/batocera-boot.conf" || exit 1
 	cp "${BINARIES_DIR}/Image" "${BINARIES_DIR}/boot/boot/linux" || exit 1
 	cp "${BINARIES_DIR}/meson64_odroidc2.dtb" "${BINARIES_DIR}/boot/boot" || exit 1
 	cp "${BINARIES_DIR}/uInitrd"              "${BINARIES_DIR}/boot/boot" || exit 1
@@ -220,7 +220,7 @@ case "${BATOCERA_TARGET}" in
 
 	# boot.tar.xz
 	echo "creating boot.tar.xz"
-	(cd "${BINARIES_DIR}/boot" && tar -cJf "${BATOCERA_BINARIES_DIR}/boot.tar.xz" boot.ini boot recalbox-boot.conf boot-logo.bmp.gz) || exit 1
+	(cd "${BINARIES_DIR}/boot" && tar -cJf "${BATOCERA_BINARIES_DIR}/boot.tar.xz" boot.ini boot batocera-boot.conf boot-logo.bmp.gz) || exit 1
 
 	# batocera.img
         # rename the squashfs : the .update is the version that will be renamed at boot to replace the old version
@@ -246,7 +246,7 @@ case "${BATOCERA_TARGET}" in
 	$MKIMAGE -C none -A arm64 -T script -d ${BOARD_DIR}/boot/s905_autoscript.txt ${BINARIES_DIR}/boot/s905_autoscript
 	$MKIMAGE -C none -A arm64 -T script -d ${BOARD_DIR}/boot/aml_autoscript.txt ${BINARIES_DIR}/boot/aml_autoscript
 	cp ${BOARD_DIR}/boot/aml_autoscript.zip ${BINARIES_DIR}/boot     || exit 1
-	cp "${BINARIES_DIR}/recalbox-boot.conf" "${BINARIES_DIR}/boot/recalbox-boot.conf" || exit 1
+	cp "${BINARIES_DIR}/batocera-boot.conf" "${BINARIES_DIR}/boot/batocera-boot.conf" || exit 1
 	cp "${BOARD_DIR}/boot/README.txt" "${BINARIES_DIR}/boot/README.txt" || exit 1
 	for DTB in gxbb_p200_2G.dtb  gxbb_p200.dtb  gxl_p212_1g.dtb  gxl_p212_2g.dtb all_merged.dtb
 	do
@@ -259,7 +259,7 @@ case "${BATOCERA_TARGET}" in
 
 	# boot.tar.xz
 	echo "creating boot.tar.xz"
-	(cd "${BINARIES_DIR}/boot" && tar -cJf "${BATOCERA_BINARIES_DIR}/boot.tar.xz"  boot recalbox-boot.conf boot-logo.bmp.gz aml_autoscript.zip aml_autoscript s905_autoscript) || exit 1
+	(cd "${BINARIES_DIR}/boot" && tar -cJf "${BATOCERA_BINARIES_DIR}/boot.tar.xz"  boot batocera-boot.conf boot-logo.bmp.gz aml_autoscript.zip aml_autoscript s905_autoscript) || exit 1
 
 	# batocera.img
         # rename the squashfs : the .update is the version that will be renamed at boot to replace the old version
@@ -285,7 +285,7 @@ case "${BATOCERA_TARGET}" in
 	$MKIMAGE -C none -A arm64 -T script -d ${BOARD_DIR}/boot/s905_autoscript.txt ${BINARIES_DIR}/boot/s905_autoscript
 	$MKIMAGE -C none -A arm64 -T script -d ${BOARD_DIR}/boot/aml_autoscript.txt ${BINARIES_DIR}/boot/aml_autoscript
 	cp ${BOARD_DIR}/boot/aml_autoscript.zip ${BINARIES_DIR}/boot     || exit 1
-	cp "${BINARIES_DIR}/recalbox-boot.conf" "${BINARIES_DIR}/boot/recalbox-boot.conf" || exit 1
+	cp "${BINARIES_DIR}/batocera-boot.conf" "${BINARIES_DIR}/boot/batocera-boot.conf" || exit 1
 	cp "${BINARIES_DIR}/all_merged.dtb" "${BINARIES_DIR}/dtb.img" || exit 1
 	$MKBOOTIMAGE --kernel "${BINARIES_DIR}/Image" --ramdisk "${BINARIES_DIR}/initrd" --second "${BINARIES_DIR}/dtb.img" --output "${BINARIES_DIR}/linux" || exit 1
        cp "${BINARIES_DIR}/linux" "${BINARIES_DIR}/boot/boot/linux" || exit 1
@@ -294,7 +294,7 @@ case "${BATOCERA_TARGET}" in
 
 	# boot.tar.xz
 	echo "creating boot.tar.xz"
-	(cd "${BINARIES_DIR}/boot" && tar -cJf "${BATOCERA_BINARIES_DIR}/boot.tar.xz"  boot recalbox-boot.conf boot-logo.bmp.gz aml_autoscript.zip aml_autoscript s905_autoscript) || exit 1
+	(cd "${BINARIES_DIR}/boot" && tar -cJf "${BATOCERA_BINARIES_DIR}/boot.tar.xz"  boot batocera-boot.conf boot-logo.bmp.gz aml_autoscript.zip aml_autoscript s905_autoscript) || exit 1
 
 	# batocera.img
         # rename the squashfs : the .update is the version that will be renamed at boot to replace the old version
@@ -326,7 +326,7 @@ case "${BATOCERA_TARGET}" in
 	# boot.tar.xz
         # it must include the squashfs version with .update to not erase the current squashfs while running
 	echo "creating ${BATOCERA_BINARIES_DIR}/boot.tar.xz"
-	(cd "${BINARIES_DIR}" && tar -cJf "${BATOCERA_BINARIES_DIR}/boot.tar.xz" EFI boot recalbox-boot.conf) || exit 1
+	(cd "${BINARIES_DIR}" && tar -cJf "${BATOCERA_BINARIES_DIR}/boot.tar.xz" EFI boot batocera-boot.conf) || exit 1
 
 	# batocera.img
 	# rename the squashfs : the .update is the version that will be renamed at boot to replace the old version
@@ -350,11 +350,11 @@ case "${BATOCERA_TARGET}" in
         cp "${BINARIES_DIR}/initrd.gz"             "${BINARIES_DIR}/boot/boot/initrd.gz"            || exit 1
         cp "${BINARIES_DIR}/rootfs.squashfs"       "${BINARIES_DIR}/boot/boot/batocera.update"      || exit 1
         cp "${BINARIES_DIR}/rk3399-rockpro64.dtb"  "${BINARIES_DIR}/boot/boot/rk3399-rockpro64.dtb" || exit 1
-        cp "${BINARIES_DIR}/recalbox-boot.conf"    "${BINARIES_DIR}/boot/recalbox-boot.conf"        || exit 1
+        cp "${BINARIES_DIR}/batocera-boot.conf"    "${BINARIES_DIR}/boot/batocera-boot.conf"        || exit 1
 	cp "board/batocera/rockpro64/boot/extlinux.conf" ${BINARIES_DIR}/boot/extlinux                   || exit 1
         # boot.tar.xz
         echo "creating boot.tar.xz"
-        (cd "${BINARIES_DIR}/boot" && tar -cJf "${BATOCERA_BINARIES_DIR}/boot.tar.xz" extlinux boot recalbox-boot.conf) || exit 1
+        (cd "${BINARIES_DIR}/boot" && tar -cJf "${BATOCERA_BINARIES_DIR}/boot.tar.xz" extlinux boot batocera-boot.conf) || exit 1
 
 	# blobs
 	for F in idbloader.img trust.img uboot.img
@@ -383,11 +383,11 @@ case "${BATOCERA_TARGET}" in
         cp "${BINARIES_DIR}/uInitrd"             "${BINARIES_DIR}/boot/boot/uInitrd"                || exit 1
         cp "${BINARIES_DIR}/rootfs.squashfs"       "${BINARIES_DIR}/boot/boot/batocera.update"      || exit 1
         cp "${BINARIES_DIR}/meson64_odroidn2.dtb"  "${BINARIES_DIR}/boot/boot/meson64_odroidn2.dtb" || exit 1
-        cp "${BINARIES_DIR}/recalbox-boot.conf"    "${BINARIES_DIR}/boot/recalbox-boot.conf"        || exit 1
+        cp "${BINARIES_DIR}/batocera-boot.conf"    "${BINARIES_DIR}/boot/batocera-boot.conf"        || exit 1
 	cp "board/batocera/odroidn2/boot/boot.ini"      "${BINARIES_DIR}/boot/boot.ini"                  || exit 1
         # boot.tar.xz
         echo "creating boot.tar.xz"
-        (cd "${BINARIES_DIR}/boot" && tar -cJf "${BATOCERA_BINARIES_DIR}/boot.tar.xz" boot.ini boot recalbox-boot.conf) || exit 1
+        (cd "${BINARIES_DIR}/boot" && tar -cJf "${BATOCERA_BINARIES_DIR}/boot.tar.xz" boot.ini boot batocera-boot.conf) || exit 1
 
 	# blobs
 	for F in u-boot.bin

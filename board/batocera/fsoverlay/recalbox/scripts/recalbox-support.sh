@@ -68,7 +68,7 @@ f_cp /userdata/system/.emulationstation/es_log.txt      "${DSYSTEM}"
 f_cp /userdata/system/.emulationstation/es_input.cfg    "${DSYSTEM}"
 f_cp /userdata/system/logs/es_launch_stdout.log         "${DSYSTEM}"
 f_cp /userdata/system/logs/es_launch_stderr.log         "${DSYSTEM}"
-f_cp /boot/recalbox-boot.conf                                 "${DSYSTEM}"
+f_cp /boot/batocera-boot.conf                                 "${DSYSTEM}"
 f_cp /var/log/Xorg.0.log                                      "${DSYSTEM}"
 
 # Emulators configs
