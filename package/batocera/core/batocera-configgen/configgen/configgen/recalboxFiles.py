@@ -31,7 +31,6 @@ recalboxBins = {'dosbox'      : '/usr/bin/dosbox'
               , 'dolphin'     : '/usr/bin/dolphin-emu-wx'
               , 'pcsx2'       : '/usr/PCSX/bin/PCSX2'
               , 'pcsx2_avx2'  : '/usr/PCSX_AVX2/bin/PCSX2'
-              , 'advancemame' : '/usr/bin/advmame'
               , 'citra'       : '/usr/bin/citra'
 }
 
@@ -108,9 +107,6 @@ fsuaeSaves = SAVES + "/amiga"
 scummvmSaves = SAVES + '/scummvm'
 
 viceConfig = CONF + "/vice/vice.conf"
-
-advancemameConfig = CONF + '/advancemame/advmame.rc'
-advancemameConfigOrigin = CONF + '/advancemame/advmame.rc.origin'
 
 overlaySystem = "/usr/share/batocera/datainit/decorations"
 overlayUser = "/userdata/decorations"
