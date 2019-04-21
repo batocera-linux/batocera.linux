@@ -42,8 +42,12 @@ sections = { 'emulator' : ['mapping_name', 'btn_escape'],
 # returns its name
 def generateControllerConfig(controller):
 	# Set config file name
-    configFileName = "{}/controllerP{}.cfg".format(recalboxFiles.reicastCustom,controller.player)
+    configFileName = "{}/controllerP{}.cfg".format(recalboxFiles.reicastCustom, controller.player)
     Config = ConfigParser.ConfigParser()
+
+    if not os.path.exists(os.path.dirname(configFileName)):
+            os.makedirs(os.path.dirname(configFileName))
+         
     cfgfile = open(configFileName,'w+')
     
     # create ini sections

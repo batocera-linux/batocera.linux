@@ -71,7 +71,6 @@ moonlightMapping[4] = moonlightCustom + '/mappingP4.conf'
 
 reicastCustom = CONF + '/reicast'
 reicastConfig = reicastCustom + '/emu.cfg'
-reicastConfigInit = HOME_INIT + 'configs/reicast/emu.cfg'
 reicastSaves = SAVES + '/dreamcast'
 reicastBios = BIOS
 reicastVMUBlank = '/usr/share/batocera/datainit/saves/reicast/vmu_save_blank.bin'
