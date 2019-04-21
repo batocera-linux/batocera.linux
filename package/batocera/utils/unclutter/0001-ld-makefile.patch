@@ -1,0 +1,11 @@
+--- a/Makefile    2019-04-17 00:10:42.221094819 -0300
++++ b/Makefile 2019-04-17 00:11:23.041224953 -0300
+@@ -37,7 +37,7 @@ all: clean $(TARGET) mans
+
+ .PHONY: $(TARGET)
+ $(TARGET): $(OBJS)
+-       $(LD) $(OBJS) $(LDFLAGS) -o "$(TARGET)"
++       $(CC) $(OBJS) $(LDFLAGS) -o "$(TARGET)"
+
+ $(ODIR)/%.o: $(SDIR)/%.c $(INCS)
+        $(CC) $(CPPFLAGS) $(CFLAGS) -o "$@" -c "$<"
