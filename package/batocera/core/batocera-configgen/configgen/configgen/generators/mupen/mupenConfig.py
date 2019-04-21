@@ -28,12 +28,31 @@ def setMupenConfig(iniConfig, system, controllers, gameResolution):
         # i don't know which value of VerticalSync should be set (it was False in original configgen)
         iniConfig.set("Video-General", "VerticalSync", "False")
 	
+	# wide screen mode
+	# Glide64mk2.: Adjust screen aspect for wide screen mode: -1=Game default, 0=disable. 1=enable
+	# Glide64mk2.: Aspect ratio: -1=Game default, 0=Force 4:3, 1=Force 16:9, 2=Stretch, 3=Original	
+	if not iniConfig.has_section("Video-Glide64mk2"):
+            iniConfig.add_section("Video-Glide64mk2")
+        if system.config["ratio"] == "16/9":
+        	iniConfig.set("Video-Glide64mk2", "adjust_aspect", "1")
+		iniConfig.set("Video-Glide64mk2", "aspect", "1")
+        	
+	else:
+		iniConfig.set("Video-Glide64mk2", "adjust_aspect", "-1")
+		iniConfig.set("Video-Glide64mk2", "aspect", "-1")
+
+	# GLideN64.: Screen aspect ratio (0=stretch, 1=force 4:3, 2=force 16:9, 3=adjust)
+	if not iniConfig.has_section("Video-GLideN64"):
+            iniConfig.add_section("Video-GLideN64")
+        if system.config["ratio"] == "16/9":
+		iniConfig.set("Video-GLideN64", "AspectRatio", "2")
+	else:
+		iniConfig.set("Video-GLideN64", "AspectRatio", "1")
+
         # fps
         if not iniConfig.has_section("Video-Rice"):
                 iniConfig.add_section("Video-Rice")
         iniConfig.set("Video-Rice", "Version", "1")
-        if not iniConfig.has_section("Video-Glide64mk2"):
-                iniConfig.add_section("Video-Glide64mk2")
         iniConfig.set("Video-Glide64mk2", "Version", "1")
 	if system.config['showFPS'] == 'true':
 		iniConfig.set("Video-Rice",      "ShowFPS",  "True")
