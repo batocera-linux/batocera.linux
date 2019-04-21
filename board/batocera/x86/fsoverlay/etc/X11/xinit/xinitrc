@@ -1,6 +1,6 @@
 #!/bin/sh
 
-matchbox-window-manager -use_cursor no -use_titlebar no -use_desktop_mode no -use_lowlight no &
+ratpoison &
 
 # set the keyboard
 systemsetting="python /usr/lib/python2.7/site-packages/configgen/settings/recalboxSettings.py"
