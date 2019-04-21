@@ -21,7 +21,6 @@ from generators.dosbox.dosboxGenerator import DosBoxGenerator
 from generators.vice.viceGenerator import ViceGenerator
 from generators.fsuae.fsuaeGenerator import FsuaeGenerator
 from generators.amiberry.amiberryGenerator import AmiberryGenerator
-from generators.advancemame.advMameGenerator import AdvMameGenerator
 from generators.citra.citraGenerator import CitraGenerator
 import controllersConfig as controllers
 import signal
@@ -49,7 +48,6 @@ generators = {
     'dolphin': DolphinGenerator(),
     'pcsx2': Pcsx2Generator(),
     'ppsspp': PPSSPPGenerator(),
-    'advancemame' : AdvMameGenerator(),
     'citra' : CitraGenerator()
 }
 
