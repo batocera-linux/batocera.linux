@@ -24,7 +24,7 @@ done
 
 # directories / files to copy when initializing the user data
 #
-# NO UPDATE IS POSSIBLE ON THESE DIRECTORIES WHEN RECALBOX IS UPDATED
+# NO UPDATE IS POSSIBLE ON THESE DIRECTORIES WHEN batocera.linux IS UPDATED
 #
 # there are almost empty, it's just for the structure
 # the user can delete the directory, it will recreate the structure
@@ -49,11 +49,11 @@ test -e "${OUT}/decorations/readme.txt" || cp -r "${IN}/decorations/readme.txt" 
 # directories to force directories exists
 # files are linked
 #
-# ONLY NEW DIRECTORIES ARE UPDATED WHEN RECALBOX IS UPDATED
+# ONLY NEW DIRECTORIES ARE UPDATED WHEN batocera.linux IS UPDATED
 #
 # the user can't delete any directory, otherwise, it will recreate it, with link inside
 # the user can delete links and add its own files
-# to reset the directory or update it, the user has to remove the directory (we are unable to differenciate new files from recalbox update from a file removed by the user)
+# to reset the directory or update it, the user has to remove the directory (we are unable to differenciate new files from batocera.linux update from a file removed by the user)
 for DIR in roms roms/mame/mame2003
 do
     if mkdir -p "$OUT""/""$DIR"

@@ -7,7 +7,7 @@ from configgen.settings.unixSettings import UnixSettings
 settingsFile = batoceraFiles.batoceraConf
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='recalbox-config script')
+    parser = argparse.ArgumentParser(description='batocera-config script')
     parser.add_argument("-command", help="load, save or disable", type=str, required=True)
     parser.add_argument("-key", help="key to load", type=str, required=True)
     parser.add_argument("-value", help="if command = save value to save", type=str, required=False)

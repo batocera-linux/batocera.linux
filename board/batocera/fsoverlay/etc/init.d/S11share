@@ -123,7 +123,7 @@ mountDeviceOrFallback() {
     fi
 }
 
-systemsetting="python /usr/lib/python2.7/site-packages/configgen/settings/recalboxSettings.py"
+systemsetting="python /usr/lib/python2.7/site-packages/configgen/settings/batoceraSettings.py"
 rb_wifi_configure() {
     X=$1
 
@@ -376,4 +376,4 @@ ls /var/run/usbmount.delay |
 	 /usr/share/usbmount/usbmount "${RTYPE}"
 	 rm "/var/run/usbmount.delay/${RULE}")
     done
-touch /var/run/recalbox.share.mounted # reenable standard usbmount
+touch /var/run/batocera.share.mounted # reenable standard usbmount

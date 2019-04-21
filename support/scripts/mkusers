@@ -347,7 +347,7 @@ add_one_user() {
            "${username}" "${uid}" "${_gid}"     \
            "${comment}" "${_home}" "${_shell}"  \
            >>"${PASSWD}"
-    # recalbox doesn't use the /etc/shadow
+    # batocera doesn't use the /etc/shadow
     #printf "%s:%s:::::::\n"      \
     #       "${username}" "${_passwd}"   \
     #       >>"${SHADOW}"
