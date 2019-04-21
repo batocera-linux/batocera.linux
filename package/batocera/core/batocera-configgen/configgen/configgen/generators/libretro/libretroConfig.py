@@ -196,6 +196,10 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
 
     if system.config['core'] == 'desmume':
         coreSettings.save('desmume_pointer_device_r', 'emulated')
+    
+    if system.config['core'] == 'mame078':
+        coreSettings.save('mame2003_skip_disclaimer', 'enabled')
+        coreSettings.save('mame2003_skip_warnings',   'enabled')
 
     if system.config['core'] == 'mame078plus':
         coreSettings.save('mame2003-plus_skip_disclaimer', 'enabled')
