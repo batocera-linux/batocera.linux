@@ -16,7 +16,7 @@ index 0444076..06f12c9 100644
  
  # All architectures, optimized for the machine NeoCD is compiled on
 -# set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -march=native ${BASE_CXX_OPTIONS}")
-+set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -march=armv8-a -mtune=cortex-a72.cortex-a53 ${BASE_CXX_OPTIONS}")
++set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -march=armv7-a -mtune=cortex-a15.cortex-a7 ${BASE_CXX_OPTIONS}")
  
  # Linker options
  if (CMAKE_BUILD_TYPE MATCHES Release)
