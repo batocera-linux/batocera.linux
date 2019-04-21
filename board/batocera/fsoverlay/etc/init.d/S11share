@@ -90,18 +90,22 @@ fi
 mountDeviceOrFallback() {
     DEVICE=$1
     TDEVICE=$2
-    RECALBOXFULLFS="/var/recalboxfs"
+    BATOCERAFULLFS="/var/batocerafs"
     FALLBACK=1
 
     if test -n "${DEVICE}"
     then
-	if mkdir -p "${RECALBOXFULLFS}"
+	if mkdir -p "${BATOCERAFULLFS}"
 	then
-	    if /recalbox/scripts/recalbox-mount.sh "${TDEVICE}" 1 "${DEVICE}" "${RECALBOXFULLFS}"
+	    if /recalbox/scripts/recalbox-mount.sh "${TDEVICE}" 1 "${DEVICE}" "${BATOCERAFULLFS}"
 	    then
-		if mkdir -p "${RECALBOXFULLFS}/recalbox"
+		if test -d "${BATOCERAFULLFS}/recalbox" -a ! -d "${BATOCERAFULLFS}/batocera" # legacy renaming (rename only if batocera doesn't exist and recalbox does)
 		then
-		    if mount "${RECALBOXFULLFS}/recalbox" "/userdata" -o "noatime"
+		    mv "${BATOCERAFULLFS}/recalbox" "${BATOCERAFULLFS}/batocera"
+		fi
+		if mkdir -p "${BATOCERAFULLFS}/batocera"
+		then
+		    if mount "${BATOCERAFULLFS}/batocera" "/userdata" -o "noatime"
 		    then
 			FALLBACK=0
 		    fi
@@ -140,9 +144,9 @@ rb_wifi_configure() {
 	mkdir -p "/var/lib/connman"
 	cat > "${settings_file}" <<EOF
 [global]
-Name=recalbox
+Name=batocera
 
-[service_recalbox_${settings_name}]
+[service_batocera_${settings_name}]
 Type=wifi
 Name=${settings_ssid}
 EOF
@@ -188,20 +192,20 @@ mountNetwork() {
     #
     # Basic commands : sharenetwork_<nfs|smb><[0-9]>=<SHARE|ROMS|SAVES|BIOS>@<host>:<remote directory>:<mount options>
     #
-    # sharenetwork_nfs1=SHARE@192.168.0.1:/Documents/recalbox
+    # sharenetwork_nfs1=SHARE@192.168.0.1:/Documents/batocera
     # or
-    # sharenetwork_nfs1=ROMS@192.168.0.1:/Documents/recalbox/roms
-    # sharenetwork_nfs2=SAVES@192.168.0.1:/Documents/recalbox/saves
+    # sharenetwork_nfs1=ROMS@192.168.0.1:/Documents/batocera/roms
+    # sharenetwork_nfs2=SAVES@192.168.0.1:/Documents/batocera/saves
     # or
-    # sharenetwork_smb1=SHARE@192.168.0.1:Documents/recalbox:guest
+    # sharenetwork_smb1=SHARE@192.168.0.1:Documents/batocera:guest
     #
     # Advanced commands : sharenetwork_cmd<[0-9]>=<command to run>
-    # sharenetwork_cmd1=mount -o port=2049,nolock,proto=tcp 192.168.0.1:/Documents/recalbox /userdata
+    # sharenetwork_cmd1=mount -o port=2049,nolock,proto=tcp 192.168.0.1:/Documents/batocera /userdata
     # or
-    # sharenetwork_cmd1=mount -o port=2049,nolock,proto=tcp 192.168.0.1:/Documents/recalbox/roms /userdata/roms
-    # sharenetwork_cmd2=mount -o port=2049,nolock,proto=tcp 192.168.0.1:/Documents/recalbox/saves /userdata/saves
+    # sharenetwork_cmd1=mount -o port=2049,nolock,proto=tcp 192.168.0.1:/Documents/batocera/roms /userdata/roms
+    # sharenetwork_cmd2=mount -o port=2049,nolock,proto=tcp 192.168.0.1:/Documents/batocera/saves /userdata/saves
     # or
-    # sharenetwork_cmd1=mount.cifs //192.168.0.1/recalbox /userdata -o guest
+    # sharenetwork_cmd1=mount.cifs //192.168.0.1/batocera /userdata -o guest
 
 
     # execute all commands in /boot/batocera-boot.conf which are like : sharenetwork_cmd1=my command
@@ -226,7 +230,7 @@ mountNetwork() {
 			CMD_RDIR=$(echo "${CMD}" | sed -e s+'^[^@]*@[^:]*:\([^:]*\).*$'+'\1'+)
 			CMD_OPT=$(echo "${CMD}" | sed -e s+'^[^@]*@[^:]*:[^:]*'+''+ -e s+'^:'++)
 
-			# MAP to the recalbox directory
+			# MAP to the batocera directory
 			CMD_TDIR="/userdata"
 			case "${CMD_TARGET}" in
 			    "SHARE")
