@@ -47,6 +47,14 @@ do_root() {
       mount -o remount,ro /boot_root || return 1
     fi
 
+    # rename the batocera-boot.conf file
+    if test -e /boot_root/boot/recalbox-boot.conf # legacy cleaning
+    then
+	mount -o remount,rw /boot_root || return 1
+	mv /boot_root/boot/recalbox-boot.conf /boot_root/boot/batocera-boot.conf || return 1
+	mount -o remount,ro /boot_root || return 1
+    fi
+
     # create an overlay on memory
     mount -t tmpfs -o size=256M tmpfs /overlay_root || return 1
     mkdir /overlay_root/base /overlay_root/overlay /overlay_root/work /overlay_root/saved || return 1

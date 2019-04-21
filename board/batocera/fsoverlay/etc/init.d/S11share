@@ -23,7 +23,7 @@ fi
 # DEV [FSUUID] => a device having the FSUID uuid
 ###
 
-SHARECONFFILE="/boot/recalbox-boot.conf"
+SHARECONFFILE="/boot/batocera-boot.conf"
 INTERNALDEVICE=$(/recalbox/scripts/recalbox-part.sh "share_internal")
 SHAREDEVICE=$(cat "${SHARECONFFILE}" | grep -E '^[ ]*sharedevice=' | head -n1 | cut -d'=' -f2)
 [[ "$?" -ne "0" || "$SHAREDEVICE" == "" ]] && SHAREDEVICE=INTERNAL
@@ -183,7 +183,7 @@ fixbatoceraconfname() {
 }
 
 mountNetwork() {
-    # /boot/recalbox-boot.conf examples :
+    # /boot/batocera-boot.conf examples :
     # sharedevice=NETWORK
     #
     # Basic commands : sharenetwork_<nfs|smb><[0-9]>=<SHARE|ROMS|SAVES|BIOS>@<host>:<remote directory>:<mount options>
@@ -204,7 +204,7 @@ mountNetwork() {
     # sharenetwork_cmd1=mount.cifs //192.168.0.1/recalbox /userdata -o guest
 
 
-    # execute all commands in /boot/recalbox-boot.conf which are like : sharenetwork_cmd1=my command
+    # execute all commands in /boot/batocera-boot.conf which are like : sharenetwork_cmd1=my command
     if ! grep -E '^[ ]*sharenetwork_[a-z]*[0-9][ ]*=' "${SHARECONFFILE}" |
 	    sed -e s+'^[ ]*sharenetwork_\([a-z]*\)[0-9][ ]*='+'\1 '+ |
 	    while read CTYPE CMD

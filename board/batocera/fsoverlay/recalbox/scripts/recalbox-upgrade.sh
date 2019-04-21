@@ -113,7 +113,7 @@ fi
 # all these files doesn't exist on non rpi platform, so, we have to test them
 # don't put the boot.ini file while it's not really to be customized
 echo "backing up some boot files"
-BOOTFILES="config.txt recalbox-boot.conf"
+BOOTFILES="config.txt batocera-boot.conf"
 for BOOTFILE in ${BOOTFILES}
 do
     if test -e "/boot/${BOOTFILE}"
