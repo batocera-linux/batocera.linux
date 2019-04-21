@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import Command
-import recalboxFiles
+import batoceraFiles
 from generators.Generator import Generator
 import os.path
 import glob
@@ -19,7 +19,7 @@ class DosBoxGenerator(Generator):
         batFile = gameDir + "/dosbox.bat"
         gameConfFile = gameDir + "/dosbox.cfg"
            
-        commandArray = [recalboxFiles.recalboxBins[system.config['emulator']], 
+        commandArray = [batoceraFiles.batoceraBins[system.config['emulator']], 
 			"-userconf", 
 			"-exit", 
 			"""{}""".format(batFile),
@@ -29,6 +29,6 @@ class DosBoxGenerator(Generator):
             commandArray.append("""{}""".format(gameConfFile))
         else:
             commandArray.append("-conf")
-            commandArray.append("""{}""".format(recalboxFiles.dosboxConfig))
+            commandArray.append("""{}""".format(batoceraFiles.dosboxConfig))
 
         return Command.Command(array=commandArray, env={"SDL_VIDEO_GL_DRIVER":"/usr/lib/libGLESv2.so"})

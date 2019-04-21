@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import sys
 import os
-import recalboxFiles
+import batoceraFiles
 from Emulator import Emulator
 import settings
 from settings.unixSettings import UnixSettings
@@ -48,7 +48,7 @@ def writeLibretroConfig(retroconfig, system, controllers, rom, bezel, gameResolu
 
 # take a system, and returns a dict of retroarch.cfg compatible parameters
 def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
-    coreSettings = UnixSettings(recalboxFiles.retroarchCoreCustom, separator=' ')
+    coreSettings = UnixSettings(batoceraFiles.retroarchCoreCustom, separator=' ')
 
     retroarchConfig = dict()
     systemConfig = system.config
@@ -106,8 +106,8 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
 
     retroarchConfig['input_joypad_driver'] = 'udev'
 
-    retroarchConfig['savestate_directory'] = recalboxFiles.savesDir + system.name
-    retroarchConfig['savefile_directory'] = recalboxFiles.savesDir + system.name
+    retroarchConfig['savestate_directory'] = batoceraFiles.savesDir + system.name
+    retroarchConfig['savefile_directory'] = batoceraFiles.savesDir + system.name
 
     retroarchConfig['input_libretro_device_p1'] = '1'
     retroarchConfig['input_libretro_device_p2'] = '1'
@@ -240,7 +240,7 @@ def writeBezelConfig(bezel, retroarchConfig, systemName, rom, gameResolution):
     # disable the overlay
     # if all steps are passed, enable them
     retroarchConfig['input_overlay_hide_in_menu'] = "false"
-    overlay_cfg_file  = recalboxFiles.overlayConfigFile
+    overlay_cfg_file  = batoceraFiles.overlayConfigFile
 
     # bezel are disabled
     # default values in case something wrong append
@@ -259,23 +259,23 @@ def writeBezelConfig(bezel, retroarchConfig, systemName, rom, gameResolution):
     # default name (default.png)
     # else return
     romBase = os.path.splitext(os.path.basename(rom))[0] # filename without extension
-    overlay_info_file = recalboxFiles.overlayUser + "/" + bezel + "/games/" + romBase + ".info"
-    overlay_png_file  = recalboxFiles.overlayUser + "/" + bezel + "/games/" + romBase + ".png"
+    overlay_info_file = batoceraFiles.overlayUser + "/" + bezel + "/games/" + romBase + ".info"
+    overlay_png_file  = batoceraFiles.overlayUser + "/" + bezel + "/games/" + romBase + ".png"
     if not (os.path.isfile(overlay_info_file) and os.path.isfile(overlay_png_file)):
-        overlay_info_file = recalboxFiles.overlaySystem + "/" + bezel + "/games/" + romBase + ".info"
-        overlay_png_file  = recalboxFiles.overlaySystem + "/" + bezel + "/games/" + romBase + ".png"
+        overlay_info_file = batoceraFiles.overlaySystem + "/" + bezel + "/games/" + romBase + ".info"
+        overlay_png_file  = batoceraFiles.overlaySystem + "/" + bezel + "/games/" + romBase + ".png"
         if not (os.path.isfile(overlay_info_file) and os.path.isfile(overlay_png_file)):
-            overlay_info_file = recalboxFiles.overlayUser + "/" + bezel + "/systems/" + systemName + ".info"
-            overlay_png_file  = recalboxFiles.overlayUser + "/" + bezel + "/systems/" + systemName + ".png"
+            overlay_info_file = batoceraFiles.overlayUser + "/" + bezel + "/systems/" + systemName + ".info"
+            overlay_png_file  = batoceraFiles.overlayUser + "/" + bezel + "/systems/" + systemName + ".png"
             if not (os.path.isfile(overlay_info_file) and os.path.isfile(overlay_png_file)):
-                overlay_info_file = recalboxFiles.overlaySystem + "/" + bezel + "/systems/" + systemName + ".info"
-                overlay_png_file  = recalboxFiles.overlaySystem + "/" + bezel + "/systems/" + systemName + ".png"
+                overlay_info_file = batoceraFiles.overlaySystem + "/" + bezel + "/systems/" + systemName + ".info"
+                overlay_png_file  = batoceraFiles.overlaySystem + "/" + bezel + "/systems/" + systemName + ".png"
                 if not (os.path.isfile(overlay_info_file) and os.path.isfile(overlay_png_file)):
-                    overlay_info_file = recalboxFiles.overlayUser + "/" + bezel + "/default.info"
-                    overlay_png_file  = recalboxFiles.overlayUser + "/" + bezel + "/default.png"
+                    overlay_info_file = batoceraFiles.overlayUser + "/" + bezel + "/default.info"
+                    overlay_png_file  = batoceraFiles.overlayUser + "/" + bezel + "/default.png"
                     if not (os.path.isfile(overlay_info_file) and os.path.isfile(overlay_png_file)):
-                        overlay_info_file = recalboxFiles.overlaySystem + "/" + bezel + "/default.info"
-                        overlay_png_file  = recalboxFiles.overlaySystem + "/" + bezel + "/default.png"
+                        overlay_info_file = batoceraFiles.overlaySystem + "/" + bezel + "/default.info"
+                        overlay_png_file  = batoceraFiles.overlaySystem + "/" + bezel + "/default.png"
                         if not (os.path.isfile(overlay_info_file) and os.path.isfile(overlay_png_file)):
                             return
     infos = json.load(open(overlay_info_file))

@@ -11,11 +11,11 @@ CACHE = '/userdata/system/cache'
 
 esInputs = HOME + '/.emulationstation/es_input.cfg'
 esSettings = HOME + '/.emulationstation/es_settings.cfg'
-recalboxConf = HOME + '/batocera.conf'
+batoceraConf = HOME + '/batocera.conf'
 logdir = HOME + '/logs/'
 
 # This dict is indexed on the emulator name, not on the system
-recalboxBins = {'dosbox'      : '/usr/bin/dosbox'
+batoceraBins = {'dosbox'      : '/usr/bin/dosbox'
               , 'fba2x'       : '/usr/bin/fba2x'
               , 'kodi'        : '/recalbox/scripts/kodilauncher.sh'
               , 'libretro'    : '/usr/bin/retroarch'

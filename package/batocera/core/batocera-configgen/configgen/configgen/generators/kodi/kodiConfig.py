@@ -3,7 +3,7 @@
 import controllersConfig as controllers
 import signal
 import os
-import recalboxFiles
+import batoceraFiles
 from xml.dom import minidom
 
 def writeKodiConfigs(currentControllers):
@@ -38,7 +38,7 @@ def writeKodiConfigs(currentControllers):
         cur = currentControllers[controller]
 
         # initialized the file
-        kodiJoy = open(recalboxFiles.kodiJoystick.format(cur.guid), "w")
+        kodiJoy = open(batoceraFiles.kodiJoystick.format(cur.guid), "w")
         config = minidom.Document()
         xmlbuttonmap = config.createElement('buttonmap')
         config.appendChild(xmlbuttonmap)
@@ -128,7 +128,7 @@ def writeKodiConfig(controllersFromES):
     # or this allows people to plug the last used joystick
     if len(controllersFromES) == 0:
         return
-    directory = os.path.dirname(recalboxFiles.kodiJoystick)
+    directory = os.path.dirname(batoceraFiles.kodiJoystick)
     if not os.path.exists(directory):
         os.makedirs(directory)
     writeKodiConfigs(controllersFromES)

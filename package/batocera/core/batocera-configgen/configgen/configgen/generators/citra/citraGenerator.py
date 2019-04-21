@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import Command
-import recalboxFiles
+import batoceraFiles
 from generators.Generator import Generator
 import shutil
 import os
@@ -11,10 +11,10 @@ class CitraGenerator(Generator):
 
     # Main entry of the module
     def generate(self, system, rom, playersControllers, gameResolution):
-        CitraGenerator.writeCITRAConfig(recalboxFiles.citraConfig, system, playersControllers)
+        CitraGenerator.writeCITRAConfig(batoceraFiles.citraConfig, system, playersControllers)
 
-        commandArray = [recalboxFiles.recalboxBins[system.config['emulator']], "-f", rom]
-        return Command.Command(array=commandArray, env={"XDG_CONFIG_HOME":recalboxFiles.CONF, "XDG_DATA_HOME":recalboxFiles.citraSaves, "XDG_CACHE_HOME":recalboxFiles.CACHE})
+        commandArray = [batoceraFiles.batoceraBins[system.config['emulator']], "-f", rom]
+        return Command.Command(array=commandArray, env={"XDG_CONFIG_HOME":batoceraFiles.CONF, "XDG_DATA_HOME":batoceraFiles.citraSaves, "XDG_CACHE_HOME":batoceraFiles.CACHE})
 
     @staticmethod
     def writeCITRAConfig(citraConfigFile, system, playersControllers):

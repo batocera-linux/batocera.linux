@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import os, sys
-import recalboxFiles
+import batoceraFiles
 import settings
 import subprocess
 import json
@@ -14,10 +14,10 @@ def setMupenConfig(iniConfig, system, controllers, gameResolution):
         if not iniConfig.has_section("Core"):
             iniConfig.add_section("Core")
         iniConfig.set("Core", "Version", "1.01") # version is important for the .ini creation otherwise, mupen remove the section
-        iniConfig.set("Core", "ScreenshotPath", recalboxFiles.SCREENSHOTS)
-	iniConfig.set("Core", "SaveStatePath",  recalboxFiles.mupenSaves)
-	iniConfig.set("Core", "SaveSRAMPath",   recalboxFiles.mupenSaves)
-        iniConfig.set("Core", "SharedDataPath", recalboxFiles.mupenConf)
+        iniConfig.set("Core", "ScreenshotPath", batoceraFiles.SCREENSHOTS)
+	iniConfig.set("Core", "SaveStatePath",  batoceraFiles.mupenSaves)
+	iniConfig.set("Core", "SaveSRAMPath",   batoceraFiles.mupenSaves)
+        iniConfig.set("Core", "SharedDataPath", batoceraFiles.mupenConf)
 
 	# resolution
         if not iniConfig.has_section("Video-General"):

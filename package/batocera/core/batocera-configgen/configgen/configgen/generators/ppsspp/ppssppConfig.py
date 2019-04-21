@@ -3,7 +3,7 @@
 import sys
 import os
 import io
-import recalboxFiles
+import batoceraFiles
 import settings
 from Emulator import Emulator
 import ConfigParser
@@ -12,18 +12,18 @@ def writePPSSPPConfig(system):
     iniConfig = ConfigParser.ConfigParser()
     # To prevent ConfigParser from converting to lower case
     iniConfig.optionxform = str
-    if os.path.exists(recalboxFiles.ppssppConfig):
+    if os.path.exists(batoceraFiles.ppssppConfig):
         try:
-            with io.open(recalboxFiles.ppssppConfig, 'r', encoding='utf_8_sig') as fp:
+            with io.open(batoceraFiles.ppssppConfig, 'r', encoding='utf_8_sig') as fp:
                 iniConfig.readfp(fp)
         except:
             pass
 
     createPPSSPPConfig(iniConfig, system)
     # save the ini file
-    if not os.path.exists(os.path.dirname(recalboxFiles.ppssppConfig)):
-        os.makedirs(os.path.dirname(recalboxFiles.ppssppConfig))
-    with open(recalboxFiles.ppssppConfig, 'w') as configfile:
+    if not os.path.exists(os.path.dirname(batoceraFiles.ppssppConfig)):
+        os.makedirs(os.path.dirname(batoceraFiles.ppssppConfig))
+    with open(batoceraFiles.ppssppConfig, 'w') as configfile:
         iniConfig.write(configfile)
 
 def createPPSSPPConfig(iniConfig, system):

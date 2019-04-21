@@ -2,7 +2,7 @@
 
 import Command
 import fba2xControllers
-import recalboxFiles
+import batoceraFiles
 import fba2xConfig
 from generators.Generator import Generator
 import os.path
@@ -14,19 +14,19 @@ class Fba2xGenerator(Generator):
         iniConfig = ConfigParser.ConfigParser()
         # To prevent ConfigParser from converting to lower case
         iniConfig.optionxform = str
-        if os.path.exists(recalboxFiles.fbaCustom):
-            with io.open(recalboxFiles.fbaCustom, 'r', encoding='utf_8_sig') as fp:
+        if os.path.exists(batoceraFiles.fbaCustom):
+            with io.open(batoceraFiles.fbaCustom, 'r', encoding='utf_8_sig') as fp:
                 iniConfig.readfp(fp)
 
         fba2xConfig.updateFBAConfig(iniConfig, system)
         fba2xControllers.updateControllersConfig(iniConfig, system, rom, playersControllers)
 
         # save the ini file
-        if not os.path.exists(os.path.dirname(recalboxFiles.fbaCustom)):
-            os.makedirs(os.path.dirname(recalboxFiles.fbaCustom))
-        with open(recalboxFiles.fbaCustom, 'w') as configfile:
+        if not os.path.exists(os.path.dirname(batoceraFiles.fbaCustom)):
+            os.makedirs(os.path.dirname(batoceraFiles.fbaCustom))
+        with open(batoceraFiles.fbaCustom, 'w') as configfile:
             iniConfig.write(configfile)
 
-        commandArray = [recalboxFiles.recalboxBins[system.config['emulator']], "--configfile", recalboxFiles.fbaCustom, '--logfile', recalboxFiles.logdir+"/fba2x.log"]
+        commandArray = [batoceraFiles.batoceraBins[system.config['emulator']], "--configfile", batoceraFiles.fbaCustom, '--logfile', batoceraFiles.logdir+"/fba2x.log"]
         commandArray.append(rom)
         return Command.Command(array=commandArray)

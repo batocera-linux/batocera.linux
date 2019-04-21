@@ -1,6 +1,6 @@
 import sys
 import os
-import recalboxFiles
+import batoceraFiles
 from settings.unixSettings import UnixSettings
 import xml.etree.ElementTree as ET
 import shlex
@@ -19,8 +19,8 @@ class Emulator():
             eslog.log("no emulator defined. exiting.")
             raise Exception("No emulator found")
 
-        # load configuration from recalbox.conf
-        recalSettings = UnixSettings(recalboxFiles.recalboxConf)
+        # load configuration from batocera.conf
+        recalSettings = UnixSettings(batoceraFiles.batoceraConf)
         globalSettings = recalSettings.loadAll('global')
         systemSettings = recalSettings.loadAll(self.name)
 
@@ -87,7 +87,7 @@ class Emulator():
         dict_all = Emulator.get_generic_config(system, defaultyml, defaultarchyml)
 
         # options are in the yaml, not in the system structure
-        # it is flat in the recalbox.conf which is easier for the end user, but i prefer not flat in the yml files
+        # it is flat in the batocera.conf which is easier for the end user, but i prefer not flat in the yml files
         dict_result = {"emulator": dict_all["emulator"], "core": dict_all["core"]}
         if "options" in dict_all:
             Emulator.dict_merge(dict_result, dict_all["options"])
@@ -118,7 +118,7 @@ class Emulator():
     # fps value is from es
     def updateDrawFPS(self):
         try:
-            esConfig = ET.parse(recalboxFiles.esSettings)
+            esConfig = ET.parse(batoceraFiles.esSettings)
             value = esConfig.find("./bool[@name='DrawFramerate']").attrib["value"]
         except:
             value = 'false'

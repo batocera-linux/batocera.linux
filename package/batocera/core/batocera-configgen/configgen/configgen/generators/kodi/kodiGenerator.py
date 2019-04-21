@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import Command
-import recalboxFiles
+import batoceraFiles
 from generators.Generator import Generator
 import kodiConfig
 
@@ -10,5 +10,5 @@ class KodiGenerator(Generator):
     # Configure kodi inputs and return the command to run
     def generate(self, system, rom, playersControllers, gameResolution):
         kodiConfig.writeKodiConfig(playersControllers)
-        commandArray = [recalboxFiles.recalboxBins[system.config['emulator']]]
+        commandArray = [batoceraFiles.batoceraBins[system.config['emulator']]]
         return Command.Command(array=commandArray)

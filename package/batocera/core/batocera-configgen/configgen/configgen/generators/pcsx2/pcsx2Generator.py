@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 from generators.Generator import Generator
-import recalboxFiles
+import batoceraFiles
 import pcsx2Controllers
 import Command
 import os
@@ -19,15 +19,15 @@ class Pcsx2Generator(Generator):
         pcsx2Controllers.generateControllerConfig(system, playersControllers, rom)
 
         # config files
-        configureReg(recalboxFiles.pcsx2ConfigDir)
-        configureUI(recalboxFiles.pcsx2ConfigDir, recalboxFiles.BIOS, system.config, gameResolution)
-        configureGFX(recalboxFiles.pcsx2ConfigDir, system.config['showFPS'] == 'true')
-        configureAudio(recalboxFiles.pcsx2ConfigDir)
+        configureReg(batoceraFiles.pcsx2ConfigDir)
+        configureUI(batoceraFiles.pcsx2ConfigDir, batoceraFiles.BIOS, system.config, gameResolution)
+        configureGFX(batoceraFiles.pcsx2ConfigDir, system.config['showFPS'] == 'true')
+        configureAudio(batoceraFiles.pcsx2ConfigDir)
 
         if isAVX2:
-            commandArray = [recalboxFiles.recalboxBins['pcsx2_avx2'], rom]
+            commandArray = [batoceraFiles.batoceraBins['pcsx2_avx2'], rom]
         else:
-            commandArray = [recalboxFiles.recalboxBins['pcsx2'], rom]
+            commandArray = [batoceraFiles.batoceraBins['pcsx2'], rom]
 
         # fullscreen
         commandArray.append("--fullscreen")
@@ -40,9 +40,9 @@ class Pcsx2Generator(Generator):
             commandArray.append("--fullboot")
 
         # plugins
-        real_pluginsDir = recalboxFiles.pcsx2PluginsDir
+        real_pluginsDir = batoceraFiles.pcsx2PluginsDir
         if isAVX2:
-            real_pluginsDir = recalboxFiles.pcsx2Avx2PluginsDir
+            real_pluginsDir = batoceraFiles.pcsx2Avx2PluginsDir
         commandArray.append("--gs="   + real_pluginsDir + "/libGSdx.so")
         commandArray.append("--pad="  + real_pluginsDir + "/libonepad-legacy.so")
         commandArray.append("--cdvd=" + real_pluginsDir + "/libCDVDnull.so")
@@ -57,9 +57,9 @@ class Pcsx2Generator(Generator):
             arch = content_file.read()
 
         if arch == "x86":
-            return Command.Command(array=commandArray, env={"XDG_CONFIG_HOME":recalboxFiles.CONF})
+            return Command.Command(array=commandArray, env={"XDG_CONFIG_HOME":batoceraFiles.CONF})
         else:
-            return Command.Command(array=commandArray, env={"XDG_CONFIG_HOME":recalboxFiles.CONF, "LD_LIBRARY_PATH": "/lib32", "LIBGL_DRIVERS_PATH": "/lib32/dri"})
+            return Command.Command(array=commandArray, env={"XDG_CONFIG_HOME":batoceraFiles.CONF, "LD_LIBRARY_PATH": "/lib32", "LIBGL_DRIVERS_PATH": "/lib32/dri"})
 
 def getGfxRatioFromConfig(config, gameResolution):
     # 2: 4:3 ; 1: 16:9
