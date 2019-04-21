@@ -24,7 +24,7 @@ from generators.amiberry.amiberryGenerator import AmiberryGenerator
 from generators.citra.citraGenerator import CitraGenerator
 import controllersConfig as controllers
 import signal
-import recalboxFiles
+import batoceraFiles
 import os
 import subprocess
 import json
@@ -34,8 +34,8 @@ from utils.logger import eslog
 generators = {
     'fba2x': Fba2xGenerator(),
     'kodi': KodiGenerator(),
-    'linapple': LinappleGenerator(os.path.join(recalboxFiles.HOME_INIT, '.linapple'),
-                                  os.path.join(recalboxFiles.HOME, '.linapple')),
+    'linapple': LinappleGenerator(os.path.join(batoceraFiles.HOME_INIT, '.linapple'),
+                                  os.path.join(batoceraFiles.HOME, '.linapple')),
     'libretro': LibretroGenerator(),
     'moonlight': MoonlightGenerator(),
     'scummvm': ScummVMGenerator(),
@@ -85,7 +85,7 @@ def main(args):
         eslog.log("resolution: {}x{}".format(str(gameResolution["width"]), str(gameResolution["height"])))
 
         # savedir: create the save directory if not already done
-        dirname = os.path.join(recalboxFiles.savesDir, system.name)
+        dirname = os.path.join(batoceraFiles.savesDir, system.name)
         if not os.path.exists(dirname):
             os.makedirs(dirname)
 

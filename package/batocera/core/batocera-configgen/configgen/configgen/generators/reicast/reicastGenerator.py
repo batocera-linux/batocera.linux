@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import Command
 #~ import reicastControllers
-import recalboxFiles
+import batoceraFiles
 from generators.Generator import Generator
 import reicastControllers
 import shutil
@@ -20,8 +20,8 @@ class ReicastGenerator(Generator):
         # Write emu.cfg to map joysticks, init with the default emu.cfg
         Config = ConfigParser.ConfigParser()
         Config.optionxform = str
-        if os.path.exists(recalboxFiles.reicastConfig):
-            Config.read(recalboxFiles.reicastConfig)
+        if os.path.exists(batoceraFiles.reicastConfig):
+            Config.read(batoceraFiles.reicastConfig)
         
         if not Config.has_section("input"):
             Config.add_section("input")
@@ -58,30 +58,30 @@ class ReicastGenerator(Generator):
             Config.set("config", "rend.WideScreen", "0")
 
         ### update the configuration file
-        if not os.path.exists(os.path.dirname(recalboxFiles.reicastConfig)):
-            os.makedirs(os.path.dirname(recalboxFiles.reicastConfig))
-        with open(recalboxFiles.reicastConfig, 'w+') as cfgfile:
+        if not os.path.exists(os.path.dirname(batoceraFiles.reicastConfig)):
+            os.makedirs(os.path.dirname(batoceraFiles.reicastConfig))
+        with open(batoceraFiles.reicastConfig, 'w+') as cfgfile:
             Config.write(cfgfile)        
             cfgfile.close()
             
         # internal config
         # vmuA1
-        if not isfile(recalboxFiles.reicastVMUA1):
-            if not isdir(dirname(recalboxFiles.reicastVMUA1)):
-                os.mkdir(dirname(recalboxFiles.reicastVMUA1))
-            copyfile(recalboxFiles.reicastVMUBlank, recalboxFiles.reicastVMUA1)
+        if not isfile(batoceraFiles.reicastVMUA1):
+            if not isdir(dirname(batoceraFiles.reicastVMUA1)):
+                os.mkdir(dirname(batoceraFiles.reicastVMUA1))
+            copyfile(batoceraFiles.reicastVMUBlank, batoceraFiles.reicastVMUA1)
         # vmuA2
-        if not isfile(recalboxFiles.reicastVMUA2):
-            if not isdir(dirname(recalboxFiles.reicastVMUA2)):
-                os.mkdir(dirname(recalboxFiles.reicastVMUA2))
-            copyfile(recalboxFiles.reicastVMUBlank, recalboxFiles.reicastVMUA2)
+        if not isfile(batoceraFiles.reicastVMUA2):
+            if not isdir(dirname(batoceraFiles.reicastVMUA2)):
+                os.mkdir(dirname(batoceraFiles.reicastVMUA2))
+            copyfile(batoceraFiles.reicastVMUBlank, batoceraFiles.reicastVMUA2)
 
         # the command to run  
-        commandArray = [recalboxFiles.recalboxBins[system.config['emulator']]]
+        commandArray = [batoceraFiles.batoceraBins[system.config['emulator']]]
         commandArray.append(rom)
         # Here is the trick to make reicast find files :
         # emu.cfg is in $XDG_CONFIG_DIRS or $XDG_CONFIG_HOME. The latter is better
         # VMU will be in $XDG_DATA_HOME because it needs rw access -> /userdata/saves/dreamcast
         # BIOS will be in $XDG_DATA_DIRS
         # controller cfg files are set with an absolute path, so no worry
-        return Command.Command(array=commandArray, env={"XDG_CONFIG_HOME":recalboxFiles.CONF, "XDG_DATA_HOME":recalboxFiles.reicastSaves, "XDG_DATA_DIRS":recalboxFiles.reicastBios})
+        return Command.Command(array=commandArray, env={"XDG_CONFIG_HOME":batoceraFiles.CONF, "XDG_DATA_HOME":batoceraFiles.reicastSaves, "XDG_DATA_DIRS":batoceraFiles.reicastBios})

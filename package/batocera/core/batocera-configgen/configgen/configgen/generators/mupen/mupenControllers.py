@@ -5,7 +5,7 @@ import ConfigParser
 from controllersConfig import Input
 from xml.dom import minidom
 
-import recalboxFiles
+import batoceraFiles
 
 # Must read :
 # http://mupen64plus.org/wiki/index.php?title=Mupen64Plus_Plugin_Parameters
@@ -15,10 +15,10 @@ mupenHatToAxis = {'1': 'Up', '2': 'Right', '4': 'Down', '8': 'Left'}
 mupenDoubleAxis = {0:'X Axis', 1:'Y Axis'}
 
 def getMupenMappingFile():
-    if os.path.exists(recalboxFiles.mupenMappingUser):
-        return recalboxFiles.mupenMappingUser
+    if os.path.exists(batoceraFiles.mupenMappingUser):
+        return batoceraFiles.mupenMappingUser
     else:
-        return recalboxFiles.mupenMappingSystem
+        return batoceraFiles.mupenMappingSystem
 
 def getMupenMapping():
     dom = minidom.parse(getMupenMappingFile())

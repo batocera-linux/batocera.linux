@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 import sys
 import argparse
-import configgen.recalboxFiles as recalboxFiles
+import configgen.batoceraFiles as batoceraFiles
 from configgen.settings.unixSettings import UnixSettings
 
-settingsFile = recalboxFiles.recalboxConf
+settingsFile = batoceraFiles.batoceraConf
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='recalbox-config script')

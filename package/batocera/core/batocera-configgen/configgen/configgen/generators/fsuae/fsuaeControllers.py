@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import recalboxFiles
+import batoceraFiles
 import os.path
 
 # Create the controller configuration file
@@ -26,12 +26,12 @@ def generateControllerConfig(system, playersControllers):
                                 'joystick2up': 'joystick2down', 'joystick2left': 'joystick2right',}
 
     # create the directory for the first time
-    confDirectory = recalboxFiles.fsuaeConfig + "/Controllers"
+    confDirectory = batoceraFiles.fsuaeConfig + "/Controllers"
     if not os.path.exists(confDirectory):
         os.makedirs(confDirectory)
 
     for playercontroller, pad in sorted(playersControllers.items()):
-        configFileName = "{}/{}".format(recalboxFiles.fsuaeConfig, "Controllers/" + pad.guid + "_linux.conf")
+        configFileName = "{}/{}".format(batoceraFiles.fsuaeConfig, "Controllers/" + pad.guid + "_linux.conf")
         f = open(configFileName, "w")
 
         # fs-uae-controller

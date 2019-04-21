@@ -4,9 +4,9 @@
 import sys
 import os
 import ConfigParser
-import recalboxFiles
+import batoceraFiles
 
-import recalboxFiles
+import batoceraFiles
 
 # This configgen is based on PPSSPP 1.2.2. Therefore, all code/github references are valid at this version, and may not be valid with later updates
 
@@ -114,11 +114,11 @@ ppssppMapping =  { 'a' :             {'button': 'Circle'},
 # returns its name
 def generateControllerConfig(controller):
 	# Set config file name
-	configFileName = recalboxFiles.ppssppControlsIni
+	configFileName = batoceraFiles.ppssppControlsIni
 	Config = ConfigParser.ConfigParser()
 	Config.optionxform = str
 	# We need to read the default file as PPSSPP needs the keyboard defs ine the controlls.ini file otherwise the GYUI won't repond
-	Config.read(recalboxFiles.ppssppControlsInit)
+	Config.read(batoceraFiles.ppssppControlsInit)
 	# As we start with the default ini file, no need to create the section
 	section = "ControlMapping"
         if not Config.has_section(section):

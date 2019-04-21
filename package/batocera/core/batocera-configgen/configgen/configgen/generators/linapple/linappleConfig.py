@@ -8,7 +8,7 @@ import re
 from Emulator import Emulator
 
 joystick_translator = {
-        # linapple : recalboxOS
+        # linapple : batoceraOS
         'Joy0Axis0' :   ('joystick1left', 'joystick2left', 'left'),
         'Joy0Axis1' :   ('joystick1up', 'joystick2up', 'up'),
         'Joy0Button1' : ('pagedown','x'),
@@ -107,7 +107,7 @@ class LinappleConfig(object):
         for e, (n, c) in enumerate(joysticks):
             assert(n == c.player)   # Just if Controller source code changed
             
-            # Use the translator to get recalbox value from linapple keyword 
+            # Use the translator to get batocera value from linapple keyword 
             inputs = c.inputs
             joy_i = 'Joy{}'.format(e)
             transl = [(a, r) for (a, r) in joystick_translator.items() 
@@ -150,7 +150,7 @@ class LinappleConfig(object):
     
     def system(self, system, filename):
         '''
-        Configure Recalbox system settings
+        Configure batocera system settings
             
         Args:
             system (Emulator):
