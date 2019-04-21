@@ -2,7 +2,7 @@
 
 systemsetting="python /usr/lib/python2.7/site-packages/configgen/settings/recalboxSettings.py"
 config_script=/recalbox/scripts/recalbox-config.sh
-log="/userdata/system/logs/recalbox.log"
+log="/userdata/system/logs/batocera.log"
 
 rb_volume_configure() {
     settingsVolume="`$systemsetting -command load -key audio.volume`"

@@ -22,7 +22,7 @@ postBootConfig() {
     mount -o remount,ro /boot
 }
 
-log=/userdata/system/logs/recalbox.log
+log=/userdata/system/logs/batocera.log
 systemsetting="python /usr/lib/python2.7/site-packages/configgen/settings/recalboxSettings.py"
 
 echo "---- recalbox-config.sh ----" >> $log
@@ -269,9 +269,9 @@ if [[ "$command" == "wifi" ]]; then
 	    mkdir -p "/var/lib/connman" || exit 1
 	    cat > "/var/lib/connman/recalbox_wifi.config" <<EOF
 [global]
-Name=recalbox
+Name=batocera
 
-[service_recalbox_default]
+[service_batocera_default]
 Type=wifi
 Name=${ssid}
 EOF

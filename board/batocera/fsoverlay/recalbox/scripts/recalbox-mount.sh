@@ -17,7 +17,7 @@ RWREQUIRED="$2"
 MOUNTDEVICE="$3"
 MOUNTPOINT="$4"
 FSMOUNTOPT="noatime"
-TESTFILE="${MOUNTPOINT}/recalbox.fsrw.test"
+TESTFILE="${MOUNTPOINT}/batocera.fsrw.test"
 
 # for non vfat and ntfs systems, it's easy
 if test "${FSTYPE}" != "vfat" -a "${FSTYPE}" != "ntfs" -a "${FSTYPE}" != "exfat"

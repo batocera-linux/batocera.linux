@@ -12,7 +12,7 @@
 # 3) for some others actions, such as /dev/mmcblk0p3 fs growing, it must not be mounted
 
 # if share is already mounted, just use the basic usbmount
-if test -e /var/run/recalbox.share.mounted
+if test -e /var/run/batocera.share.mounted
 then
     /usr/share/usbmount/usbmount "$1"
     exit $?
