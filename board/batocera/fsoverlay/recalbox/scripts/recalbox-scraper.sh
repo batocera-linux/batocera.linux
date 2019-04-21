@@ -1,6 +1,6 @@
 #!/bin/bash
 
-systemsetting="python /usr/lib/python2.7/site-packages/configgen/settings/recalboxSettings.py"
+systemsetting="python /usr/lib/python2.7/site-packages/configgen/settings/batoceraSettings.py"
 syslang=$($systemsetting -command load -key system.language)
 IMGSTYLE=$($systemsetting -command load -key scrapper.style)
 

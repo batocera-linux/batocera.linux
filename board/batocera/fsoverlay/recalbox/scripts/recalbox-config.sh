@@ -23,7 +23,7 @@ postBootConfig() {
 }
 
 log=/userdata/system/logs/batocera.log
-systemsetting="python /usr/lib/python2.7/site-packages/configgen/settings/recalboxSettings.py"
+systemsetting="python /usr/lib/python2.7/site-packages/configgen/settings/batoceraSettings.py"
 
 echo "---- recalbox-config.sh ----" >> $log
 

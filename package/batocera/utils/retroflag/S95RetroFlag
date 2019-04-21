@@ -2,7 +2,7 @@
 
 if test "$1" = start
 then
-    systemsetting="python /usr/lib/python2.7/site-packages/configgen/settings/recalboxSettings.py"
+    systemsetting="python /usr/lib/python2.7/site-packages/configgen/settings/batoceraSettings.py"
     powerswitch="`$systemsetting  -command load -key system.power.switch`"
     if test "${powerswitch}" = "RETROFLAG"
     then

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 recalboxupdateurl="https://batocera-linux.xorhub.com/upgrades"
-systemsetting="python /usr/lib/python2.7/site-packages/configgen/settings/recalboxSettings.py"
+systemsetting="python /usr/lib/python2.7/site-packages/configgen/settings/batoceraSettings.py"
 
 # customizable upgrade url website
 updateurl=$($systemsetting -command load -key updates.url)
