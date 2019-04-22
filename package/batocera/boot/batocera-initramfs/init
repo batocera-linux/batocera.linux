@@ -48,10 +48,10 @@ do_root() {
     fi
 
     # rename the batocera-boot.conf file
-    if test -e /boot_root/boot/recalbox-boot.conf # legacy cleaning
+    if test -e /boot_root/recalbox-boot.conf # legacy cleaning
     then
 	mount -o remount,rw /boot_root || return 1
-	mv /boot_root/boot/recalbox-boot.conf /boot_root/boot/batocera-boot.conf || return 1
+	mv /boot_root/recalbox-boot.conf /boot_root/batocera-boot.conf || return 1
 	mount -o remount,ro /boot_root || return 1
     fi
 
