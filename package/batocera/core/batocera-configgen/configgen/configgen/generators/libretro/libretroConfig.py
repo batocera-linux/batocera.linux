@@ -62,7 +62,7 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
     else:
         retroarchConfig['video_smooth'] = 'false'
 
-    if 'shader' in renderConfig and renderConfig['shader'] != "none":
+    if 'shader' in renderConfig and renderConfig['shader'] != None:
         retroarchConfig['video_shader_enable'] = 'true'
         retroarchConfig['video_smooth']        = 'false'
         shaderFilename = renderConfig['shader'] + ".glslp"

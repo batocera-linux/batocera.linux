@@ -31,7 +31,7 @@ class Emulator():
 
         # update renderconfig
         self.renderconfig = Emulator.get_generic_config(self.name, "/usr/share/batocera/shaders/configs/rendering-defaults.yml", "/usr/share/batocera/shaders/configs/rendering-defaults-arch.yml")
-        if "shaderset" in self.config and self.config["shaderset"] != "":
+        if "shaderset" in self.config and self.config["shaderset"] != "none":
             eslog.log("shaderset={}".format(self.config["shaderset"]))
             globalSettings = recalSettings.loadAll('global-renderer-' + self.config["shaderset"])
             systemSettings = recalSettings.loadAll(self.name + "-renderer-" + self.config["shaderset"])
