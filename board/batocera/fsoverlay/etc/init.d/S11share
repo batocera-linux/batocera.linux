@@ -183,7 +183,7 @@ rb_wifi_configure_all() {
 }
 
 fixbatoceraconfname() {
-    test -e /userdata/recalbox.conf && mv /userdata/recalbox.conf /userdata/batocera.conf
+    test -e /userdata/system/recalbox.conf && mv /userdata/system/recalbox.conf /userdata/system/batocera.conf
 }
 
 mountNetwork() {
