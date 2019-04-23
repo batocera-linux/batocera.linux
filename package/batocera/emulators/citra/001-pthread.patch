@@ -7,7 +7,7 @@ index 2797d18..ff16b09 100644
  
  # Prefer the -pthread flag on Linux.
 -set(THREADS_PREFER_PTHREAD_FLAG ON)
-+set(THREADS_PREFER_PTHREAD_FLAG OFF)
++set(THREADS_PTHREAD_ARG "0" CACHE STRING "Result from TRY_RUN" FORCE)
  find_package(Threads REQUIRED)
  
  if (ENABLE_SDL2)

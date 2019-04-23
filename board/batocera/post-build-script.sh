@@ -62,9 +62,9 @@ rm -rf "${TARGET_DIR}/usr/share/kodi/system/keymaps/joystick."*.xml || exit 1
 rm -rf "${TARGET_DIR}/"{var,run,sys,tmp} || exit 1
 mkdir "${TARGET_DIR}/"{var,run,sys,tmp}  || exit 1
 
-# make /etc/shadow a file generated from /boot/recalbox-boot.conf for security
+# make /etc/shadow a file generated from /boot/batocera-boot.conf for security
 rm -f "${TARGET_DIR}/etc/shadow"                         || exit 1
-ln -sf "/run/recalbox.shadow" "${TARGET_DIR}/etc/shadow" || exit 1
+ln -sf "/run/batocera.shadow" "${TARGET_DIR}/etc/shadow" || exit 1
 
 # fix the vt100 terminal ; can probably removed in the future
 if ! grep -qE "^TERM=vt100$" "${TARGET_DIR}/etc/profile"

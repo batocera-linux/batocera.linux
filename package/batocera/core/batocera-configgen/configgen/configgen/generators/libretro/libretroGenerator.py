@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import Command
 import libretroControllers
-import recalboxFiles
+import batoceraFiles
 import libretroConfig
 import shutil
 from generators.Generator import Generator
@@ -13,15 +13,15 @@ class LibretroGenerator(Generator):
     # Main entry of the module
     # Configure retroarch and return a command
     def generate(self, system, rom, playersControllers, gameResolution):
-        # Settings recalbox default config file if no user defined one
+        # Settings batocera default config file if no user defined one
         if not 'configfile' in system.config:
-            # Using recalbox config file
-            system.config['configfile'] = recalboxFiles.retroarchCustom
+            # Using batocera config file
+            system.config['configfile'] = batoceraFiles.retroarchCustom
             # Create retroarchcustom.cfg if does not exists
-            if not os.path.isfile(recalboxFiles.retroarchCustom):
-                shutil.copyfile(recalboxFiles.retroarchCustomOrigin, recalboxFiles.retroarchCustom)
+            if not os.path.isfile(batoceraFiles.retroarchCustom):
+                shutil.copyfile(batoceraFiles.retroarchCustomOrigin, batoceraFiles.retroarchCustom)
             #  Write controllers configuration files
-            retroconfig = UnixSettings(recalboxFiles.retroarchCustom, separator=' ')
+            retroconfig = UnixSettings(batoceraFiles.retroarchCustom, separator=' ')
             libretroControllers.writeControllersConfig(retroconfig, system, playersControllers)
             # Write configuration to retroarchcustom.cfg
             if 'bezel' not in system.config or system.config['bezel'] == '':
@@ -35,30 +35,30 @@ class LibretroGenerator(Generator):
             libretroConfig.writeLibretroConfig(retroconfig, system, playersControllers, rom, bezel, gameResolution)
 
         # Retroarch core on the filesystem
-        retroarchCore = recalboxFiles.retroarchCores + system.config['core'] + recalboxFiles.libretroExt
+        retroarchCore = batoceraFiles.retroarchCores + system.config['core'] + batoceraFiles.libretroExt
         romName = os.path.basename(rom)
 
         # the command to run
-        # For the NeoGeo CD it is necessary to add the parameter: --subsystem neocd
-        if (system.name == 'neogeocd'):
-            commandArray = [recalboxFiles.recalboxBins[system.config['emulator']], "-L", retroarchCore, "--subsystem", "neocd", "--config", system.config['configfile']]
+        # For the NeoGeo CD (lr-fba) it is necessary to add the parameter: --subsystem neocd
+        if system.name == 'neogeocd' and system.config['core'] == "fba":
+            commandArray = [batoceraFiles.batoceraBins[system.config['emulator']], "-L", retroarchCore, "--subsystem", "neocd", "--config", system.config['configfile']]
         else:
-            commandArray = [recalboxFiles.recalboxBins[system.config['emulator']], "-L", retroarchCore, "--config", system.config['configfile']]
+            commandArray = [batoceraFiles.batoceraBins[system.config['emulator']], "-L", retroarchCore, "--config", system.config['configfile']]
 
         configToAppend = []
         
         # Custom configs - per core
-        customCfg = "{}/{}.cfg".format(recalboxFiles.retroarchRoot, system.name)
+        customCfg = "{}/{}.cfg".format(batoceraFiles.retroarchRoot, system.name)
         if os.path.isfile(customCfg):
             configToAppend.append(customCfg)
         
         # Custom configs - per game
-        customGameCfg = "{}/{}/{}.cfg".format(recalboxFiles.retroarchRoot, system.name, romName)
+        customGameCfg = "{}/{}/{}.cfg".format(batoceraFiles.retroarchRoot, system.name, romName)
         if os.path.isfile(customGameCfg):
             configToAppend.append(customGameCfg)
         
         # Overlay management
-        overlayFile = "{}/{}/{}.cfg".format(recalboxFiles.OVERLAYS, system.name, romName)
+        overlayFile = "{}/{}/{}.cfg".format(batoceraFiles.OVERLAYS, system.name, romName)
         if os.path.isfile(overlayFile):
             configToAppend.append(overlayFile)
         

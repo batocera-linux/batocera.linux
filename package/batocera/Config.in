@@ -51,8 +51,9 @@ endmenu
 menu "Emulationstation"
   source "package/batocera/emulationstation/batocera-emulationstation/Config.in"
   source "package/batocera/emulationstation/batocera-es-system/Config.in"
+  source "package/batocera/emulationstation/batocera-emulationstation-fonts/Config.in"
   source "package/batocera/emulationstation/python-es-scraper/Config.in"
-  source "package/batocera/emulationstation/recalbox-themes/Config.in"
+  source "package/batocera/emulationstation/batocera-themes/Config.in"
   source "package/batocera/emulationstation/sselph-scraper/Config.in"
 endmenu
 
@@ -142,10 +143,10 @@ menu "Emulators"
     source "package/batocera/emulators/retroarch/libretro/libretro-mame/Config.in"
     source "package/batocera/emulators/retroarch/libretro/libretro-citra/Config.in"
     source "package/batocera/emulators/retroarch/libretro/libretro-kronos/Config.in"
+    source "package/batocera/emulators/retroarch/libretro/libretro-neocd/Config.in"
     endmenu
   endmenu
 
-  source "package/batocera/emulators/advancemame/Config.in"
   source "package/batocera/emulators/amiberry/Config.in"
   source "package/batocera/emulators/dolphin-emu/Config.in"
   source "package/batocera/emulators/dosbox/Config.in"
@@ -167,6 +168,7 @@ menu "Emulators"
     source "package/batocera/emulators/mupen64plus/mupen64plus-rsphle/Config.in"
     source "package/batocera/emulators/mupen64plus/mupen64plus-rice/Config.in"
     source "package/batocera/emulators/mupen64plus/mupen64plus-gliden64/Config.in"
+    source "package/batocera/emulators/mupen64plus/mupen64plus-v20-gliden64/Config.in"
   endmenu
 
   source "package/batocera/emulators/pcsx2/Config.in"

@@ -3,7 +3,7 @@
 # the only partition we know when booting from linux is the root device on which linux booted.
 # by convention, the share partition is the next partition on the same disk
 
-# recalbox has 2 partitions
+# batocera.linux has 2 partitions
 # 1 : the boot partition
 # 2 : the share partition (user data)
 #
@@ -76,8 +76,8 @@ case "${PARTNAME}" in
 
     *)
 	echo "${0} <boot|share_internal|prefix x|previous x>" >&2
-	echo "  boot: the recalbox boot partition" >&2
-	echo "  share_internal: the recalbox share internal partition " >&2
+	echo "  boot: the batocera.linux boot partition" >&2
+	echo "  share_internal: the batocera.linux share internal partition " >&2
 	echo "  prefix x: the disk of the partition x (without the partition number)" >&2
 	echo "  previous x: the partition before x on the same disk" >&2
 	exit 1

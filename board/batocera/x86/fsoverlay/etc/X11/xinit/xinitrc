@@ -2,8 +2,9 @@
 
 ratpoison &
 
+systemsetting="python /usr/lib/python2.7/site-packages/configgen/settings/batoceraSettings.py"
+
 # set the keyboard
-systemsetting="python /usr/lib/python2.7/site-packages/configgen/settings/recalboxSettings.py"
 settings_lang="`$systemsetting -command load -key system.language`"
 
 # not always true (en_US for us), but it's really better than always english
@@ -20,7 +21,6 @@ export LC_ALL="${settings_lang}.UTF-8"
 export LANG=${LC_ALL}
 
 # because of xinerama breaking es, enable only one screen at a time
-systemsetting="python /usr/lib/python2.7/site-packages/configgen/settings/recalboxSettings.py"
 settings_output="`$systemsetting -command load -key global.videooutput`"
 batocera-resolution setOutput "${settings_output}" # empty or invalid values defaults to the first valid
 

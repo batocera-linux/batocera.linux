@@ -8,7 +8,7 @@ import os
 import Command
 from generators.Generator import Generator
 from generators.linapple.linappleConfig import LinappleConfig
-import recalboxFiles
+import batoceraFiles
 
 class LinappleGenerator(Generator):
     '''
@@ -95,7 +95,7 @@ class LinappleGenerator(Generator):
 
         # Save changes 
         config.save(filename=usr_conf)
-        commandArray = [ recalboxFiles.recalboxBins[system.config['emulator']] ]
+        commandArray = [ batoceraFiles.batoceraBins[system.config['emulator']] ]
 
         return Command.Command(array=commandArray)
 

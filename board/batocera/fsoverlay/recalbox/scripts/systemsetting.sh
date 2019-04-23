@@ -1,10 +1,10 @@
 #!/bin/bash
 
-system_settings=/userdata/system/recalbox.conf
+system_settings=/userdata/system/batocera.conf
 
 command="$1"
 argsetting="$2"
-log=/userdata/system/logs/recalbox.log
+log=/userdata/system/logs/batocera.log
 
 if [[ "$command" == "get" ]];then
 	echo "systemsetting.sh - searching for $argsetting" >> $log

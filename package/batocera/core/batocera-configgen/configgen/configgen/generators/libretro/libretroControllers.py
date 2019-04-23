@@ -6,7 +6,7 @@ sys.path.append(
     os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
 
 from settings.unixSettings import UnixSettings
-import recalboxFiles
+import batoceraFiles
 
 # Map an emulationstation button name to the corresponding retroarch name
 retroarchbtns = {'a': 'a', 'b': 'b', 'x': 'x', 'y': 'y', \

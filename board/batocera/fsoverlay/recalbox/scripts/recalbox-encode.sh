@@ -2,7 +2,7 @@
 
 # use to hide password from people having no access to the ssh connection
 # based on unique values of you rpi :
-#    * based on the mac address of the ethernet card (so, not for rpi0) - not secure for people having access to the local network, but for people having access to your external drive or recalbox.conf file
+#    * based on the mac address of the ethernet card (so, not for rpi0) - not secure for people having access to the local network, but for people having access to your external drive or batocera.conf file
 #    * based on the rpi serial number - limited security while it's only 8 numbers and guessable partially i think
 
 ACTION=$1

@@ -3,7 +3,7 @@
 import sys
 import os
 import ConfigParser
-import recalboxFiles
+import batoceraFiles
 
 # Map an emulationstation button name to the corresponding fba2x name
 fba4bnts = {'a': 'Y', 'b': 'X', 'x': 'B', 'y': 'A', \

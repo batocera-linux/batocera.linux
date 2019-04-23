@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import Command
-import recalboxFiles
+import batoceraFiles
 from generators.Generator import Generator
 import dolphinControllers
 import dolphinSYSCONF
@@ -12,8 +12,8 @@ import ConfigParser
 class DolphinGenerator(Generator):
 
     def generate(self, system, rom, playersControllers, gameResolution):
-        if not os.path.exists(os.path.dirname(recalboxFiles.dolphinIni)):
-            os.makedirs(os.path.dirname(recalboxFiles.dolphinIni))
+        if not os.path.exists(os.path.dirname(batoceraFiles.dolphinIni)):
+            os.makedirs(os.path.dirname(batoceraFiles.dolphinIni))
 
         dolphinControllers.generateControllerConfig(system, playersControllers, rom)
 
@@ -21,8 +21,8 @@ class DolphinGenerator(Generator):
         dolphinSettings = ConfigParser.ConfigParser()
         # To prevent ConfigParser from converting to lower case
         dolphinSettings.optionxform = str
-        if os.path.exists(recalboxFiles.dolphinIni):
-            dolphinSettings.read(recalboxFiles.dolphinIni)
+        if os.path.exists(batoceraFiles.dolphinIni):
+            dolphinSettings.read(batoceraFiles.dolphinIni)
 
         # sections
         if not dolphinSettings.has_section("General"):
@@ -62,31 +62,31 @@ class DolphinGenerator(Generator):
         dolphinSettings.set("Core", "SIDevice3", "6")
 
         # save dolphin.ini
-        with open(recalboxFiles.dolphinIni, 'w') as configfile:
+        with open(batoceraFiles.dolphinIni, 'w') as configfile:
             dolphinSettings.write(configfile)
 
         # gfx.ini
         dolphinGFXSettings = ConfigParser.ConfigParser()
         # To prevent ConfigParser from converting to lower case
         dolphinGFXSettings.optionxform = str
-        dolphinGFXSettings.read(recalboxFiles.dolphinGfxIni)
+        dolphinGFXSettings.read(batoceraFiles.dolphinGfxIni)
 
         if not dolphinGFXSettings.has_section("Settings"):
             dolphinGFXSettings.add_section("Settings")
         dolphinGFXSettings.set("Settings", "AspectRatio", getGfxRatioFromConfig(system.config, gameResolution))
 
         # save gfx.ini
-        with open(recalboxFiles.dolphinGfxIni, 'w') as configfile:
+        with open(batoceraFiles.dolphinGfxIni, 'w') as configfile:
             dolphinGFXSettings.write(configfile)
 
         # update SYSCONF
         try:
-            dolphinSYSCONF.update(system.config, recalboxFiles.dolphinSYSCONF, gameResolution)
+            dolphinSYSCONF.update(system.config, batoceraFiles.dolphinSYSCONF, gameResolution)
         except Exception:
             pass # don't fail in case of SYSCONF update
 
-        commandArray = [recalboxFiles.recalboxBins[system.config['emulator']], "-platform", "xcb", "-e", rom]
-        return Command.Command(array=commandArray, env={"XDG_CONFIG_HOME":recalboxFiles.CONF, "XDG_DATA_HOME":recalboxFiles.SAVES})
+        commandArray = [batoceraFiles.batoceraBins[system.config['emulator']], "-platform", "xcb", "-e", rom]
+        return Command.Command(array=commandArray, env={"XDG_CONFIG_HOME":batoceraFiles.CONF, "XDG_DATA_HOME":batoceraFiles.SAVES})
 
 def getGfxRatioFromConfig(config, gameResolution):
     # 2: 4:3 ; 1: 16:9  ; 0: auto

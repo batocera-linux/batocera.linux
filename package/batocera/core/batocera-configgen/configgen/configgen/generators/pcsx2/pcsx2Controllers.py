@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import recalboxFiles
+import batoceraFiles
 import os
 
 # Create the controller configuration file
@@ -34,7 +34,7 @@ def generateControllerConfig(system, playersControllers, rom):
         24: "hotkey"
     }
 
-    configDir      = "{}/{}".format(recalboxFiles.pcsx2ConfigDir, "inis")
+    configDir      = "{}/{}".format(batoceraFiles.pcsx2ConfigDir, "inis")
     configFileName = "{}/{}".format(configDir, "OnePAD.ini")
     if not os.path.exists(configDir):
         os.makedirs(configDir)

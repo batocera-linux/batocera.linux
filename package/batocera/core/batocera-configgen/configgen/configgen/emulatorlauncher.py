@@ -3,8 +3,6 @@
 import argparse
 import time
 import sys
-import yaml
-import collections
 from sys import exit
 from Emulator import Emulator
 import generators
@@ -23,11 +21,10 @@ from generators.dosbox.dosboxGenerator import DosBoxGenerator
 from generators.vice.viceGenerator import ViceGenerator
 from generators.fsuae.fsuaeGenerator import FsuaeGenerator
 from generators.amiberry.amiberryGenerator import AmiberryGenerator
-from generators.advancemame.advMameGenerator import AdvMameGenerator
 from generators.citra.citraGenerator import CitraGenerator
 import controllersConfig as controllers
 import signal
-import recalboxFiles
+import batoceraFiles
 import os
 import subprocess
 import json
@@ -37,8 +34,8 @@ from utils.logger import eslog
 generators = {
     'fba2x': Fba2xGenerator(),
     'kodi': KodiGenerator(),
-    'linapple': LinappleGenerator(os.path.join(recalboxFiles.HOME_INIT, '.linapple'),
-                                  os.path.join(recalboxFiles.HOME, '.linapple')),
+    'linapple': LinappleGenerator(os.path.join(batoceraFiles.HOME_INIT, '.linapple'),
+                                  os.path.join(batoceraFiles.HOME, '.linapple')),
     'libretro': LibretroGenerator(),
     'moonlight': MoonlightGenerator(),
     'scummvm': ScummVMGenerator(),
@@ -51,7 +48,6 @@ generators = {
     'dolphin': DolphinGenerator(),
     'pcsx2': Pcsx2Generator(),
     'ppsspp': PPSSPPGenerator(),
-    'advancemame' : AdvMameGenerator(),
     'citra' : CitraGenerator()
 }
 
@@ -66,8 +62,7 @@ def main(args):
     # find the system to run
     systemName = args.system
     eslog.log("Running system: {}".format(systemName))
-    system = getDefaultEmulator(systemName)
-    system.configure(args.emulator, args.core, args.ratio, args.netplay)
+    system = Emulator(systemName)
     eslog.debug("Settings: {}".format(system.config))
     if "emulator" in system.config and "core" in system.config:
         eslog.log("emulator: {}, core: {}".format(system.config["emulator"], system.config["core"]))
@@ -90,7 +85,7 @@ def main(args):
         eslog.log("resolution: {}x{}".format(str(gameResolution["width"]), str(gameResolution["height"])))
 
         # savedir: create the save directory if not already done
-        dirname = os.path.join(recalboxFiles.savesDir, system.name)
+        dirname = os.path.join(batoceraFiles.savesDir, system.name)
         if not os.path.exists(dirname):
             os.makedirs(dirname)
 
@@ -124,56 +119,6 @@ def runCommand(command):
         eslog("emulator exited")
 
     return exitcode
-
-# to be updated for python3: https://gist.github.com/angstwad/bf22d1822c38a92ec0a9
-def dict_merge(dct, merge_dct):
-    """ Recursive dict merge. Inspired by :meth:``dict.update()``, instead of
-    updating only top-level keys, dict_merge recurses down into dicts nested
-    to an arbitrary depth, updating keys. The ``merge_dct`` is merged into
-    ``dct``.
-    :param dct: dict onto which the merge is executed
-    :param merge_dct: dct merged into dct
-    :return: None
-    """
-    for k, v in merge_dct.iteritems():
-        if (k in dct and isinstance(dct[k], dict)
-                and isinstance(merge_dct[k], collections.Mapping)):
-            dict_merge(dct[k], merge_dct[k])
-        else:
-            dct[k] = merge_dct[k]
-
-def get_system_config(system):
-    systems_default      = yaml.load(file("/recalbox/system/configgen/configgen-defaults.yml", "r"))
-    systems_default_arch = yaml.load(file("/recalbox/system/configgen/configgen-defaults-arch.yml", "r"))
-    dict_all = {}
-
-    if "default" in systems_default:
-        dict_all = systems_default["default"]
-
-    if "default" in systems_default_arch:
-        dict_merge(dict_all, systems_default_arch["default"])
-
-    if system in systems_default:
-        dict_merge(dict_all, systems_default[system])
-
-    if system in systems_default_arch:
-        dict_merge(dict_all, systems_default_arch[system])
-
-    # options are in the yaml, not in the system structure
-    # it is flat in the recalbox.conf which is easier for the end user, but i prefer not flat in the yml files
-    dict_result = {"emulator": dict_all["emulator"], "core": dict_all["core"]}
-    if "options" in dict_all:
-      dict_merge(dict_result, dict_all["options"])
-    return dict_result
-
-# List emulators with their default emulator/cores
-def getDefaultEmulator(systemName):
-    system = get_system_config(systemName)
-    if "emulator" not in system or system["emulator"] == "":
-        eslog.log("no emulator defined. exiting.")
-        raise Exception("No emulator found")
-
-    return Emulator(name=systemName, config=system)
 
 def signal_handler(signal, frame):
     global proc

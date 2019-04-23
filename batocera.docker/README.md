@@ -16,7 +16,7 @@ sudo docker run -it --rm -v $PWD/batocera.linux:/build batocera-docker
 cat /etc/lsb-release # Ubuntu 18.04
 make batocera-rpi3_defconfig
 make
-ls output/images/recalbox
+ls output/images/batocera
 exit # exit from the docker, your files are still here in $PWD/batocera.linux
 ```
 to return in the docker and continue to work

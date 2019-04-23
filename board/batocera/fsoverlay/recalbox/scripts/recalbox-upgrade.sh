@@ -29,7 +29,7 @@ fi
 echo "starting the upgrade..."
 
 recalboxupdateurl="https://batocera-linux.xorhub.com/upgrades"
-systemsetting="python /usr/lib/python2.7/site-packages/configgen/settings/recalboxSettings.py"
+systemsetting="python /usr/lib/python2.7/site-packages/configgen/settings/batoceraSettings.py"
 
 arch=$(cat /usr/share/batocera/batocera.arch)
 updatetype=$($systemsetting -command load -key updates.type)
@@ -113,7 +113,7 @@ fi
 # all these files doesn't exist on non rpi platform, so, we have to test them
 # don't put the boot.ini file while it's not really to be customized
 echo "backing up some boot files"
-BOOTFILES="config.txt recalbox-boot.conf"
+BOOTFILES="config.txt batocera-boot.conf"
 for BOOTFILE in ${BOOTFILES}
 do
     if test -e "/boot/${BOOTFILE}"

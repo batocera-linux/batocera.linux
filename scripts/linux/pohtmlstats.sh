@@ -1,7 +1,7 @@
 #!/bin/bash
 
 print_usage() {
-    echo "${1}"" <recalbox-emulationstation2-recalbox-buildroot directory>"
+    echo "${1}"" <batocera-emulationstation-buildroot directory>"
 }
 
 if test $# -ne 1
@@ -17,7 +17,7 @@ echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.or
 echo '<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr" lang="fr">'
 echo '<head>'
 echo '<meta http-equiv="Content-type" content="text/html; charset=utf-8" />'
-echo '<title>Recalbox translation status - '${GENDATE}'</title>'
+echo '<title>batocera.linux translation status - '${GENDATE}'</title>'
 echo '</head>'
 echo "<style>
 table {

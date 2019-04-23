@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import recalboxFiles
+import batoceraFiles
 from Emulator import Emulator
 
 # Create the controller configuration file
@@ -113,7 +113,7 @@ def generateControllerConfig_gamecube(playersControllers):
     generateControllerConfig_any(playersControllers, "GCPadNew.ini", "GCPad", gamecubeMapping, gamecubeReverseAxes)
 
 def generateControllerConfig_realwiimotes(filename, anyDefKey):
-    configFileName = "{}/{}".format(recalboxFiles.dolphinConfig, filename)
+    configFileName = "{}/{}".format(batoceraFiles.dolphinConfig, filename)
     f = open(configFileName, "w")
     nplayer = 1
     while nplayer <= 4:
@@ -124,7 +124,7 @@ def generateControllerConfig_realwiimotes(filename, anyDefKey):
     f.close()
 
 def generateHotkeys(playersControllers):
-    configFileName = "{}/{}".format(recalboxFiles.dolphinConfig, "Hotkeys.ini")
+    configFileName = "{}/{}".format(batoceraFiles.dolphinConfig, "Hotkeys.ini")
     f = open(configFileName, "w")
 
     hotkeysMapping = {
@@ -171,7 +171,7 @@ def generateHotkeys(playersControllers):
     f.close()
 
 def generateControllerConfig_any(playersControllers, filename, anyDefKey, anyMapping, anyReverseAxes, extraOptions = {}):
-    configFileName = "{}/{}".format(recalboxFiles.dolphinConfig, filename)
+    configFileName = "{}/{}".format(batoceraFiles.dolphinConfig, filename)
     f = open(configFileName, "w")
     nplayer = 1
     nsamepad = 0

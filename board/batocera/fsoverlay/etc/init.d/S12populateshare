@@ -24,7 +24,7 @@ done
 
 # directories / files to copy when initializing the user data
 #
-# NO UPDATE IS POSSIBLE ON THESE DIRECTORIES WHEN RECALBOX IS UPDATED
+# NO UPDATE IS POSSIBLE ON THESE DIRECTORIES WHEN batocera.linux IS UPDATED
 #
 # there are almost empty, it's just for the structure
 # the user can delete the directory, it will recreate the structure
@@ -33,8 +33,8 @@ for FILE in music bios extractions kodi saves screenshots \
             system/.config/lirc/lircd.conf \
             system/.emulationstation/{es_input.cfg,es_settings.cfg} \
             system/{.hatari,.kodi} \
-            system/configs/{moonlight,reicast,retroarch,shadersets,xarcade2jstick,dosbox,advancemame,vice,amiberry} \
-            system/recalbox.conf \
+            system/configs/{moonlight,reicast,retroarch,shadersets,xarcade2jstick,dosbox,vice,amiberry} \
+            system/batocera.conf \
             bios/mame2003
 do
     # not wanted for kodi
@@ -49,11 +49,11 @@ test -e "${OUT}/decorations/readme.txt" || cp -r "${IN}/decorations/readme.txt" 
 # directories to force directories exists
 # files are linked
 #
-# ONLY NEW DIRECTORIES ARE UPDATED WHEN RECALBOX IS UPDATED
+# ONLY NEW DIRECTORIES ARE UPDATED WHEN batocera.linux IS UPDATED
 #
 # the user can't delete any directory, otherwise, it will recreate it, with link inside
 # the user can delete links and add its own files
-# to reset the directory or update it, the user has to remove the directory (we are unable to differenciate new files from recalbox update from a file removed by the user)
+# to reset the directory or update it, the user has to remove the directory (we are unable to differenciate new files from batocera.linux update from a file removed by the user)
 for DIR in roms roms/mame/mame2003
 do
     if mkdir -p "$OUT""/""$DIR"
@@ -121,15 +121,6 @@ retroarchcustom_fix_remove_param_value() {
     sed -i -e s+"^[ ]*${L_PARAM}[ ]*=[ ]*\"\?${L_VALUE}\"\?[ ]*$"+""+ "${L_CFG}"
 }
 
-recalboxconf_force_value() {
-    L_CFG="/userdata/system/recalbox.conf"
-    L_PARAM=$1
-    L_VALUE=$2
-
-    grep -q "${L_PARAM}" "${L_CFG}" && return 0 # already set
-    echo "${L_PARAM}=${L_VALUE}" >> "${L_CFG}"
-}
-
 # retroarch
 retroarchcustom_fix_force_param "video_font_path"             "/usr/share/fonts/dejavu/DejaVuSansMono.ttf"
 retroarchcustom_fix_force_param "menu_driver"                 "rgui"
@@ -152,21 +143,6 @@ fi
 
 retroarchcustom_fix_remove_param_value "video_black_frame_insertion" "true"  # don't use anymore this value while it doesn't allow the shaders to work
 retroarchcustom_fix_force_param        "pause_nonactive"             "false" # required at least on x86 x86_64 otherwise, the game is paused at launch
-
-# recalbox.conf
-if test "${XARCH}" == rpi1 -o "${XARCH}" == rpi2 -o "${XARCH}" == rpi3
-then
-    recalboxconf_force_value "amiga500.emulator" "amiberry"
-    recalboxconf_force_value "amiga500.core"     "A500"
-    recalboxconf_force_value "amiga500p.emulator" "amiberry"
-    recalboxconf_force_value "amiga500p.core"     "A500P"
-    recalboxconf_force_value "amiga1200.emulator" "amiberry"
-    recalboxconf_force_value "amiga1200.core"     "A1200"
-    recalboxconf_force_value "amiga4000.emulator" "amiberry"
-    recalboxconf_force_value "amiga4000.core"     "A4000"
-    recalboxconf_force_value "amigacd32.emulator" "amiberry"
-    recalboxconf_force_value "amigacd32.core"     "CD32"
-fi
 
 # save to avoid to redo that all the times
 cp /usr/share/batocera/batocera.version /userdata/system/data.version || exit 1

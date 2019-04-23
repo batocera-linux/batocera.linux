@@ -5,6 +5,11 @@
 	* fix: libretro-genesisplusgx for rockpro64
 	* fix: Citra emulator in the center of the screen
 	* add: naomi and atomiswave for odroid xu4
+	* add: libretro-neocd for NeoGeo CD
+	* advancemame: removed
+	* citra-emu: updated and standard core for the Nintendo 3DS
+	* mupen64plus: bump to 2.5.9
+	* fix: mupen64 widescreen mode
 	* wii/gc: dolphin version bump (5.0-9896)
 
 2019/03/29 - batocera.linux 5.21
@@ -105,7 +110,7 @@
 
 2018/03/08 - batocera.linux 5.14 - release
         * rpi: new splash video
-        * rpi: mutable splash video (add splashsound=false in /boot/recalbox-boot.conf to disable the sound)
+        * rpi: mutable splash video (add splashsound=false in /boot/batocera-boot.conf to disable the sound)
         * rpi: customizable splash video (put a video in /boot/splash.mp4)
         * link update MameDB and Screenscraper
         * configgen: partially rewritten / more robust
@@ -317,13 +322,13 @@
         * Odroid XU4 Release - release
         This is the first stable version for the Odroid XU4. You can get the full details of what is supported here.
         This is compiled from the official recalbox sources. Once installed, don't forget to configure
-        your recalbox.conf to upgrade from this website (see previous post).
+        your batocera.conf to upgrade from this website (see previous post).
 
 2016/06/21
         * Network shares - advanced configuration
         You've not enough space on your sdcard or on your usbkey ?
         You can now use your nas (like a freebox) as a usbkey (not from the graphical interface for the moment).
-        You need to edit the /boot/recalbox-boot.conf file like this :
+        You need to edit the /boot/batocera-boot.conf file like this :
         sharedevice=NETWORK
         sharenetwork_nfs1=ROMS@192.168.0.1:/mnt/Documents/recalbox/roms
         sharenetwork_nfs2=SAVES@192.168.0.1:/mnt/Documents/recalbox/saves

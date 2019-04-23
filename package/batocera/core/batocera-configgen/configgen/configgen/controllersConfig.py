@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 import xml.etree.ElementTree as ET
-import recalboxFiles
+import batoceraFiles
 
-esInputs = recalboxFiles.esInputs
+esInputs = batoceraFiles.esInputs
 
 
 class Input:

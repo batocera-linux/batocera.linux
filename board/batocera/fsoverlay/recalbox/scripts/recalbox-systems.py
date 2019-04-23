@@ -134,7 +134,9 @@ systems = {
     # SNK
 	"neogeo":   { "name": "NeoGeo", "biosFiles":    [ { "md5": "", "file": "roms/neogeo/neogeo.zip" } ] },
 	"neogeocd": { "name": "NeoGeo CD", "biosFiles": [ { "md5": "", "file": "bios/neogeo.zip" },
-													  { "md5": "", "file": "bios/neocdz.zip" }	] },
+													  { "md5": "", "file": "bios/neocdz.zip" },
+                                                      { "md5": "", "file": "bios/ng-lo.rom"  },
+                                                      { "md5": "", "file": "bios/neocd_z.rom"} ] },
 
 
     # Sony Computer Entertainment

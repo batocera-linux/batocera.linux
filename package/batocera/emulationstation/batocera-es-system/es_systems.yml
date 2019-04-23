@@ -123,7 +123,7 @@ n64:
   extensions: [z64, n64, v64, 7z, zip]
   emulators:
     mupen64plus:
-      gliden64:   { requireAnyOf: [BR2_PACKAGE_MUPEN64PLUS_GLIDEN64]         }
+      gliden64:   { requireAnyOf: [BR2_PACKAGE_MUPEN64PLUS_GLIDEN64, BR2_PACKAGE_MUPEN64PLUS_V20_GLIDEN64] }
       rice:       { requireAnyOf: [BR2_PACKAGE_MUPEN64PLUS_GLES2RICE]        }
       glide64mk2: { requireAnyOf: [BR2_PACKAGE_MUPEN64PLUS_VIDEO_GLIDE64MK2] }
     libretro:
@@ -411,27 +411,20 @@ mame:
   emulators:
     libretro:
       imame4all:    { requireAnyOf: [BR2BR2_PACKAGE_LIBRETRO_IMAME] }
+      mame078:      { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME2003] }
       mame078plus:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME2003_PLUS] }
       mame0139:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME2010] }
       mame0174:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME2016] }
       mame:         { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME]      }
-    advancemame:
-      advancemame:  { requireAnyOf: [BR2_PACKAGE_ADVANCEMAME]       }
   comment_en: |
     The system uses libretro mame2003 as default core: compatible ROMs must come from set 0.78
     The libretro core imame4all, based on MAME v0.37b5, is also included.
-
-    To imame4all core instead, edit the recalbox.conf file following instructions of this page:
-    https://github.com/recalbox/recalbox-os/wiki/recalbox.conf-%28EN%29
 
     Special files for mame2003 core:
     - Add your samples files in /userdata/bios/mame2003/samples/
   comment_fr: |
     Le système utilise le core libretro mame2003 implicitement: Les ROMs compatibles doivent provenir du set 0.78
     Le core imame4all, basé sur MAME v0.37b5 est également disponible.
-
-    Pour utiliser le core imame4all, modifier le fichier recalbox.conf selon les informations à la page suivante:
-    https://github.com/recalbox/recalbox-os/wiki/recalbox.conf-%28FR%29
 
     Fichiers spéciaux pour le core mame2003 :
     - Ajoutez vos fichiers samples dans le répertoire /userdata/bios/mame2003/samples/
@@ -452,10 +445,11 @@ neogeo:
 
 neogeocd:
   name:       Neo-Geo CD
-  extensions: [cue]
+  extensions: [cue, iso]
   emulators:
     libretro:
       fba:       { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FBA]      }
+      neocd:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_NEOCD]    }
 
 colecovision:
   name:       ColecoVision

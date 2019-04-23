@@ -5,7 +5,7 @@ if [ ! "$1" ];then
 	exit 1
 fi
 configFile="/boot/config.txt"
-storageFile="/boot/recalbox-boot.conf"
+storageFile="/boot/batocera-boot.conf"
 command="$1"
 mode="$2"
 extra1="$3"
@@ -22,8 +22,8 @@ postBootConfig() {
     mount -o remount,ro /boot
 }
 
-log=/userdata/system/logs/recalbox.log
-systemsetting="python /usr/lib/python2.7/site-packages/configgen/settings/recalboxSettings.py"
+log=/userdata/system/logs/batocera.log
+systemsetting="python /usr/lib/python2.7/site-packages/configgen/settings/batoceraSettings.py"
 
 echo "---- recalbox-config.sh ----" >> $log
 
@@ -269,9 +269,9 @@ if [[ "$command" == "wifi" ]]; then
 	    mkdir -p "/var/lib/connman" || exit 1
 	    cat > "/var/lib/connman/recalbox_wifi.config" <<EOF
 [global]
-Name=recalbox
+Name=batocera
 
-[service_recalbox_default]
+[service_batocera_default]
 Type=wifi
 Name=${ssid}
 EOF
