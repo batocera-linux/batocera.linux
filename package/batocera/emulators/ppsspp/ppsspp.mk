@@ -28,14 +28,9 @@ else
 	PPSSPP_CONF_OPTS += -DUSE_FFMPEG=ON
 endif
 
-# odroid xu4
-ifeq ($(BR2_PACKAGE_SDL2_KMSDRM),y)
-	PPSSPP_CONF_OPTS += -DUSING_EGL=OFF -DUSING_X11_VULKAN=OFF
-endif
-
-# odroid xu4 legacy / odroid n2
+# odroid xu4 / odroid xu4 legacy / odroid n2
 ifeq ($(BR2_PACKAGE_MALI_OPENGLES_SDK)$(BR2_PACKAGE_MALI_HKG52FBDEV),y)
-	PPSSPP_CONF_OPTS += -DUSING_FBDEV=ON -DUSING_GLES2=ON -DUSING_EGL=ON -DUSING_X11_VULKAN=OFF
+	PPSSPP_CONF_OPTS += -DUSING_FBDEV=ON -DUSING_GLES2=ON -DUSING_EGL=OFF -DUSING_X11_VULKAN=OFF
 endif
 
 # rpi1 / rpi2 /rp3
@@ -46,7 +41,7 @@ endif
 
 # odroid xu4 / rpi3 / rockpro64
 ifeq ($(BR2_arm),y)
-	PPSSPP_CONF_OPTS += -DARMV7=ON
+	PPSSPP_CONF_OPTS += -DARMV7=ON 
 endif
 
 # s912 (libhybris)
