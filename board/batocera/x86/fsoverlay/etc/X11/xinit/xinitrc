@@ -1,6 +1,8 @@
 #!/bin/sh
 
-ratpoison &
+openbox --config-file /etc/openbox/rc.xml &
+# hide mouse cursor
+unclutter -b
 
 systemsetting="python /usr/lib/python2.7/site-packages/configgen/settings/batoceraSettings.py"
 
@@ -15,7 +17,7 @@ setxkbmap "${map_name}"
 xset -dpms
 xset s off
 
-#
+# environment
 export HOME=/userdata/system
 export LC_ALL="${settings_lang}.UTF-8"
 export LANG=${LC_ALL}
