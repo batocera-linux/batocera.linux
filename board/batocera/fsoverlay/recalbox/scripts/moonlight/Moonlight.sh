@@ -132,8 +132,8 @@ case $1 in
         cmd="moonlight stream -remote -keydir ${moonlight_keydir} -${moonlight_screen} -fps ${moonlight_fps} -mapping ${moonlight_mapping} -app \"$game\" ${moonlight_ip}" ;;
 
     clean)
-        cmd="rm -rf $moonlight_config_dir/keydir && echo 'You can now pair again your batocera.linux with a PC'" ;;
-
+        cmd="rm -rf $moonlight_config_dir/keydir" && echo "You can now pair again your batocera.linux with a PC" ;;
+        
     *)
         cmd="moonlight stream -remote -keydir ${moonlight_keydir} -${moonlight_screen} -fps ${moonlight_fps} -mapping ${moonlight_mapping} ${moonlight_ip}" ;;
 
