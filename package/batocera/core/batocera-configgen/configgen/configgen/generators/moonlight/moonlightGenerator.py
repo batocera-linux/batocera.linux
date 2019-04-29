@@ -33,7 +33,7 @@ class MoonlightGenerator(Generator):
                 gfeRom, gfeGame, confFile = line.rstrip().split(';')
                 #confFile = confFile.rstrip()
             except:
-                gfeRom, gfeGame = line.split(';')
+                gfeRom, gfeGame = line.rstrip().split(';')
                 confFile = batoceraFiles.moonlightConfig
             #If found
             if gfeRom == romName:
