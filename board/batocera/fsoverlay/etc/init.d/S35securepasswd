@@ -9,14 +9,14 @@ systemsetting="python /usr/lib/python2.7/site-packages/configgen/settings/batoce
 
 # /etc/shadow is dynamically generated from the password found in /boot/batocera-boot.conf
 # the password is visible only in the es interface
-# or to people having already a ssh password via the command : /recalbox/scripts/recalbox-config.sh setRootPassword xyz
-MASTERPASSWD=$(/recalbox/scripts/recalbox-config.sh getRootPassword)
+# or to people having already a ssh password via the command : /recalbox/scripts/batocera-config.sh setRootPassword xyz
+MASTERPASSWD=$(/recalbox/scripts/batocera-config.sh getRootPassword)
 if test -z "${MASTERPASSWD}"
 then
     # generate a new one
     # hum, in case of error, what to do ? nothing.
-    /recalbox/scripts/recalbox-config.sh setRootPassword
-    MASTERPASSWD=$(/recalbox/scripts/recalbox-config.sh getRootPassword)
+    /recalbox/scripts/batocera-config.sh setRootPassword
+    MASTERPASSWD=$(/recalbox/scripts/batocera-config.sh getRootPassword)
 fi
 
 # secure ssh

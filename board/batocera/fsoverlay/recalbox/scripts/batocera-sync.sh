@@ -11,7 +11,7 @@ rs_current() {
 
 # hum, i'm very carefull
 # and i'm looking only in /media/usb
-# while it could be mounting over the recalbox subdirectory or something else
+# while it could be mounting over the batocera subdirectory or something else
 # we try to use an existing mount point because ntfs-3g doesn't support multiple mount points
 rs_mounted_point() {
     grep -E "^${1} /media/usb" /proc/mounts | cut -d' ' -f 2 | grep -E '^/media/usb[0-9]$' | head -1
@@ -24,7 +24,7 @@ rs_list() {
 	echo "INTERNAL"
     fi
     # avoid sd card partitions
-    PARTPREFIX=$(/recalbox/scripts/recalbox-part.sh prefix "${INTERNAL_DEVICE}")
+    PARTPREFIX=$(/recalbox/scripts/batocera-part.sh prefix "${INTERNAL_DEVICE}")
     lsblk -n -P -o NAME,FSTYPE,LABEL,UUID,SIZE,TYPE |
 	grep 'TYPE="part"' |
 	grep -v "FSTYPE=\"swap\"" |
@@ -58,7 +58,7 @@ rs_fix_min_dates() {
 
   # i won't force a fixed date while having the same date (at 2 seconds, means being the same content)
   # so, the touch to the current time is a way to randomize dates
-  # keep this while some people could have some old files while the recalbox got date from 1970 before
+  # keep this while some people could have some old files while the batocera got date from 1970 before
   find /userdata ! -newer /tmp/min_timestamp | while read X; do touch "${X}"; done
 }
 
@@ -66,7 +66,7 @@ rs_sync() {
     FSID=$1
     FSDEV=$(blkid | grep "UUID=\"${FSID}\"" | sed -e s+'^\([^:]*\):.*$'+'\1'+)
     FSTYPE=$(blkid | grep "UUID=\"${FSID}\"" | sed -e s+'^.* TYPE=\"\([^\"]*\)\"$'+'\1'+)
-    MOUNTPOINT="/var/run/recalbox-sync"
+    MOUNTPOINT="/var/run/batocera-sync"
     
     if test -z "${FSDEV}"
     then
@@ -86,7 +86,7 @@ rs_sync() {
 	    return 1
 	fi
 	
-	if ! /recalbox/scripts/recalbox-mount.sh "${FSTYPE}" 1 "${FSDEV}" "${MOUNTPOINT}"
+	if ! /recalbox/scripts/batocera-mount.sh "${FSTYPE}" 1 "${FSDEV}" "${MOUNTPOINT}"
 	then
 	    return 1
 	fi
@@ -135,7 +135,7 @@ cleanExit() {
     test -n "${MOUNTPOINT}" && umount "${MOUNTPOINT}"
 }
 
-INTERNAL_DEVICE=$(/recalbox/scripts/recalbox-part.sh share_internal)
+INTERNAL_DEVICE=$(/recalbox/scripts/batocera-part.sh share_internal)
 
 if test $# -eq 0
 then

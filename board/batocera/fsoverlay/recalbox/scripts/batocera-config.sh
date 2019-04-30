@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [ ! "$1" ];then
-	echo -e "usage : recalbox-config.sh [command] [args]\nWith command in\n\toverscan [enable|disable]\n\tlsaudio\n\tgetaudio\n\taudio [hdmi|jack|auto|custom|x,y]\n\tcanupdate\n\tupdate\n\twifi [enable|disable] ssid key\n\tstorage [current|list|INTERNAL|ANYEXTERNAL|RAM|DEV UUID]\n\tsetRootPassword [password]\n\tgetRootPassword\n\ttz [|tz]"
+	echo -e "usage : batocera-config.sh [command] [args]\nWith command in\n\toverscan [enable|disable]\n\tlsaudio\n\tgetaudio\n\taudio [hdmi|jack|auto|custom|x,y]\n\tcanupdate\n\tupdate\n\twifi [enable|disable] ssid key\n\tstorage [current|list|INTERNAL|ANYEXTERNAL|RAM|DEV UUID]\n\tsetRootPassword [password]\n\tgetRootPassword\n\ttz [|tz]"
 	exit 1
 fi
 configFile="/boot/config.txt"
@@ -12,7 +12,7 @@ extra1="$3"
 extra2="$4"
 arch=`cat /usr/share/batocera/batocera.arch`
 
-recalboxupdateurl="https://batocera-linux.xorhub.com/upgrades"
+batoceraupdateurl="https://batocera-linux.xorhub.com/upgrades"
 
 preBootConfig() {
     mount -o remount,rw /boot
@@ -25,7 +25,7 @@ postBootConfig() {
 log=/userdata/system/logs/batocera.log
 systemsetting="python /usr/lib/python2.7/site-packages/configgen/settings/batoceraSettings.py"
 
-echo "---- recalbox-config.sh ----" >> $log
+echo "---- batocera-config.sh ----" >> $log
 
 if [ "$command" == "getRootPassword" ]; then
     # security disabled, force the default one without changing boot configuration
@@ -40,7 +40,7 @@ if [ "$command" == "getRootPassword" ]; then
     then
 	exit 1
     fi
-    if ! /recalbox/scripts/recalbox-encode.sh decode "${ENCPASSWD}"
+    if ! /recalbox/scripts/batocera-encode.sh decode "${ENCPASSWD}"
     then
 	exit 1
     fi
@@ -61,7 +61,7 @@ if [ "$command" == "setRootPassword" ]; then
     then
 	PASSWD=$(tr -cd _A-Z-a-z-0-9 < /dev/urandom | fold -w8 | head -n1)
     fi
-    PASSWDENC=$(/recalbox/scripts/recalbox-encode.sh encode "${PASSWD}")
+    PASSWDENC=$(/recalbox/scripts/batocera-encode.sh encode "${PASSWD}")
     
     preBootConfig
     if grep -qE '^[ \t]*rootshadowpassword[ \t]*=' "${storageFile}"
@@ -235,11 +235,11 @@ if [ "$command" == "canupdate" ];then
 	# customizable upgrade url website
 	if test -n "${updateurl}"
 	then
-	    recalboxupdateurl="${updateurl}"
+	    batoceraupdateurl="${updateurl}"
 	fi
 
-	#echo "Update url: ${recalboxupdateurl}/${arch}/${updatetype}/last"
-	available=`wget -qO- ${recalboxupdateurl}/${arch}/${updatetype}/last/batocera.version`
+	#echo "Update url: ${batoceraupdateurl}/${arch}/${updatetype}/last"
+	available=`wget -qO- ${batoceraupdateurl}/${arch}/${updatetype}/last/batocera.version`
 	if [[ "$?" != "0" ]];then
 	        echo "Unable to access the url" >&2
 		exit 2
@@ -256,7 +256,7 @@ if [ "$command" == "canupdate" ];then
 fi
 
 if [ "$command" == "update" ];then
-	/recalbox/scripts/recalbox-upgrade.sh
+	/recalbox/scripts/batocera-upgrade.sh
 	exit $?
 fi
 
@@ -267,7 +267,7 @@ if [[ "$command" == "wifi" ]]; then
         if [[ "$mode" == "enable" ]]; then
             echo "configure wifi" >> $log
 	    mkdir -p "/var/lib/connman" || exit 1
-	    cat > "/var/lib/connman/recalbox_wifi.config" <<EOF
+	    cat > "/var/lib/connman/batocera_wifi.config" <<EOF
 [global]
 Name=batocera
 
@@ -277,7 +277,7 @@ Name=${ssid}
 EOF
 	    if test "${psk}" != ""
 	    then
-		echo "Passphrase=${psk}" >> "/var/lib/connman/recalbox_wifi.config"
+		echo "Passphrase=${psk}" >> "/var/lib/connman/batocera_wifi.config"
 	    fi
 
 	    connmanctl enable wifi || exit 1
@@ -327,8 +327,8 @@ if [[ "$command" == "storage" ]]; then
 	echo "ANYEXTERNAL"
 	echo "RAM"
 
-	INTERNAL_DEVICE=$(/recalbox/scripts/recalbox-part.sh share_internal)
-	PARTPREFIX=$(/recalbox/scripts/recalbox-part.sh prefix "${INTERNAL_DEVICE}")
+	INTERNAL_DEVICE=$(/recalbox/scripts/batocera-part.sh share_internal)
+	PARTPREFIX=$(/recalbox/scripts/batocera-part.sh prefix "${INTERNAL_DEVICE}")
 	lsblk -n -P -o NAME,FSTYPE,LABEL,UUID,SIZE,TYPE |
 	    grep 'TYPE="part"' |
 	    grep -v "FSTYPE=\"swap\"" |
