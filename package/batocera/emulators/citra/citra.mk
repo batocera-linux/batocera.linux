@@ -8,6 +8,7 @@ CITRA_VERSION = 0ec45f694cc24cfda2782421a926737aa47b4395
 CITRA_SITE = https://github.com/citra-emu/citra.git
 CITRA_SITE_METHOD=git
 CITRA_GIT_SUBMODULES=YES
+CITRA_LICENSE = GPLv2
 CITRA_DEPENDENCIES = sdl2 fmt ffmpeg boost
 
 # Should be set when the package cannot be built inside the source tree but needs a separate build directory.

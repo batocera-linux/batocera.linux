@@ -6,8 +6,7 @@
 
 PIFBA_VERSION = 419faa7c3967560f6fa149f2f78b5aedca5b123a
 PIFBA_SITE = $(call github,batocera-linux,pifba,$(PIFBA_VERSION))
-
-PIFBA_LICENSE = MIT
+PIFBA_LICENSE = GPLv2
 PIFBA_DEPENDENCIES = sdl2 alsa-lib rpi-userland
 
 SDL_CONFIG=$(STAGING_DIR)/usr/bin/sdl2-config
