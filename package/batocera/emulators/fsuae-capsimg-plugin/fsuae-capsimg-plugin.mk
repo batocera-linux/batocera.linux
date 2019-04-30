@@ -6,6 +6,7 @@
 
 FSUAE_CAPSIMG_PLUGIN_VERSION = 067db4cc6bfdcd1ab684b812da6fedbb8f96e04a
 FSUAE_CAPSIMG_PLUGIN_SITE = $(call github,FrodeSolheim,capsimg,$(FSUAE_CAPSIMG_PLUGIN_VERSION))
+FSUAE_CAPSIMG_LICENSE = Non-commercial
 
 define FSUAE_CAPSIMG_PLUGIN_HOOK_BOOTSTRAP
   cd $(@D) && ./bootstrap

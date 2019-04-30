@@ -8,8 +8,7 @@ DOSBOX_VERSION_TAG = 0.74
 DOSBOX_VERSION = r4178
 DOSBOX_SITE =  svn://svn.code.sf.net/p/dosbox/code-0/dosbox/trunk
 DOSBOX_SITE_METHOD = svn
-DOSBOX_LICENSE = GPL2
-DOSBOX_LICENSE_FILES = COPYING
+DOSBOX_LICENSE = GPLv2
 DOSBOX_DEPENDENCIES = sdl2 zlib libpng libogg libvorbis sdl_sound
 
 DOSBOX_LDFLAGS = -L$(STAGING_DIR)/usr/lib

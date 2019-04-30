@@ -5,7 +5,9 @@
 ################################################################################
 GPSP_VERSION = d884dfcc1bf6951473b28cda5d34cceec093a263
 GPSP_SITE = $(call github,gizmo98,gpsp,$(GPSP_VERSION))
+GPSP_LICENSE = GPLv2
 GPSP_DEPENDENCIES = sdl rpi-userland
+
 SDL_CONFIG=$(STAGING_DIR)/usr/bin/sdl-config
 GPSP_INCLUDES=-I$(STAGING_DIR)/usr/include -I$(STAGING_DIR)/usr/include/interface/vcos/pthreads -I$(STAGING_DIR)/usr/include/interface/vmcs_host/linux
 GPSP_CFLAGS= -DARM_ARCH -DRPI_BUILD -Wall $(GPSP_INCLUDES)

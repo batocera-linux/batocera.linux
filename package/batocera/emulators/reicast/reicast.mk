@@ -6,12 +6,14 @@
 # Version.: Commits on Sep 12, 2018
 REICAST_VERSION = r8.1
 REICAST_SITE = $(call github,reicast,reicast-emulator,$(REICAST_VERSION))
+REICAST_LICENSE = GPLv2
 REICAST_DEPENDENCIES = sdl2 libpng
 
 define REICAST_UPDATE_INCLUDES
 	sed -i "s+/opt/vc+$(STAGING_DIR)/usr+g" $(@D)/shell/linux/Makefile
 	sed -i "s+sdl2-config+$(STAGING_DIR)/usr/bin/sdl2-config+g" $(@D)/shell/linux/Makefile
 endef
+
 REICAST_PRE_CONFIGURE_HOOKS += REICAST_UPDATE_INCLUDES
 
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI3),y)

@@ -6,6 +6,7 @@
 
 PCSX2_VERSION = fc1d88cb516236fda5e6c678bedbb0839a474be3
 PCSX2_SITE = $(call github,pcsx2,pcsx2,$(PCSX2_VERSION))
+PCSX2_LICENSE = GPLv2 GPLv3 LGPLv2.1 LGPLv3
 PCSX2_DEPENDENCIES = xserver_xorg-server alsa-lib freetype zlib libpng wxwidgets libaio portaudio libsoundtouch sdl2
 
 PCSX2_CONF_OPTS += -DCMAKE_BUILD_TYPE=Release
