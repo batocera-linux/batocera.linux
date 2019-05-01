@@ -37,6 +37,7 @@ endif
 
 define BATOCERA_CONFIGGEN_CONFIGS
 	mkdir -p $(TARGET_DIR)/recalbox/system/configgen
+	cp -pr package/batocera/core/batocera-configgen/datainit $(TARGET_DIR)/usr/lib/python2.7/site-packages/configgen/
 	cp package/batocera/core/batocera-configgen/configs/configgen-defaults.yml $(TARGET_DIR)/recalbox/system/configgen/configgen-defaults.yml
 	cp package/batocera/core/batocera-configgen/configs/configgen-defaults-$(BATOCERA_CONFIGGEN_SYSTEM).yml $(TARGET_DIR)/recalbox/system/configgen/configgen-defaults-arch.yml
 endef
