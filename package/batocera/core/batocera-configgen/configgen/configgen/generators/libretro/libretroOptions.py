@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import sys
 import os
+import ConfigParser
 from settings.unixSettings import UnixSettings
 
 def generateCoreSettings(retroarchCore, system):
@@ -69,3 +70,21 @@ def generateCoreSettings(retroarchCore, system):
 
     if (system.config['core'] == 'fuse'):
         coreSettings.save('fuse_machine',   'Spectrum 128K')
+
+def generateHatariConf(hatariConf):
+    hatariConfig = ConfigParser.ConfigParser()
+    # To prevent ConfigParser from converting to lower case
+    hatariConfig.optionxform = str
+    if os.path.exists(hatariConf):
+        hatariConfig.read(hatariConf)
+
+    # Screen section
+    if not hatariConfig.has_section("Screen"):
+        hatariConfig.add_section("Screen")
+    hatariConfig.set("Screen", "bAllowOverscan", "FALSE")
+
+    # update the configuration file
+    if not os.path.exists(os.path.dirname(hatariConf)):
+        os.makedirs(os.path.dirname(hatariConf))
+    with open(hatariConf, 'w') as configfile:
+        hatariConfig.write(configfile)
