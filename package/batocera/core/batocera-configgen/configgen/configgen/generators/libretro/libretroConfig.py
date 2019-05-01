@@ -51,6 +51,10 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
     # Create/update retroarch-core-options.cfg
     libretroOptions.generateCoreSettings(batoceraFiles.retroarchCoreCustom, system)
 
+    # Create/update hatari.cfg
+    if system.name == 'atarist':
+        libretroOptions.generateHatariConf(batoceraFiles.hatariConf)
+
     retroarchConfig = dict()
     systemConfig = system.config
     renderConfig = system.renderconfig
