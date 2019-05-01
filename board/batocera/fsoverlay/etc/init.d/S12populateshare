@@ -46,6 +46,9 @@ done
 mkdir -p "${OUT}/decorations"
 test -e "${OUT}/decorations/readme.txt" || cp -r "${IN}/decorations/readme.txt" "${OUT}/decorations/readme.txt"
 
+# themes
+mkdir -p "${OUT}/themes"
+
 # directories to force directories exists
 # files are linked
 #

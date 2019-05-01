@@ -54,4 +54,5 @@ settings_output="`$systemsetting -command load -key global.videomode`"
 batocera-resolution minTomaxResolution
 
 # without windowed, time must be sleeped to wait that matchbox ended to initialize :-(
+cd /userdata # es needs a PWD
 exec emulationstation --windowed
