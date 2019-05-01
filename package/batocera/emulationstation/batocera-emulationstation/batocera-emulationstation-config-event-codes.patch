@@ -1,22 +1,22 @@
 diff --git a/es-core/src/InputConfig.cpp b/es-core/src/InputConfig.cpp
-index 2b75f19..a735986 100644
+index f8078d3..048af7d 100644
 --- a/es-core/src/InputConfig.cpp
 +++ b/es-core/src/InputConfig.cpp
-@@ -199,5 +199,9 @@ void InputConfig::writeToXML(pugi::xml_node parent)
+@@ -223,5 +223,9 @@ void InputConfig::writeToXML(pugi::xml_node& parent)
  		input.append_attribute("type") = inputTypeToString(iterator->second.type).c_str();
  		input.append_attribute("id").set_value(iterator->second.id);
  		input.append_attribute("value").set_value(iterator->second.value);
-+
 +		if(iterator->second.code != -1) {
 +		  input.append_attribute("code").set_value(iterator->second.code);
 +		}
++
  	}
  }
 diff --git a/es-core/src/InputConfig.h b/es-core/src/InputConfig.h
-index e76f176..fa2c545 100644
+index de750d4..dc76c8e 100644
 --- a/es-core/src/InputConfig.h
 +++ b/es-core/src/InputConfig.h
-@@ -27,6 +27,7 @@ public:
+@@ -33,6 +33,7 @@ public:
  	InputType type;
  	int id;
  	int value;
@@ -24,7 +24,7 @@ index e76f176..fa2c545 100644
  	bool configured;
  
  	Input()
-@@ -35,6 +36,7 @@ public:
+@@ -41,6 +42,7 @@ public:
  		configured = false;
  		id = -1;
  		value = -999;
@@ -32,37 +32,37 @@ index e76f176..fa2c545 100644
  		type = TYPE_COUNT;
  	}
  
-@@ -79,6 +81,25 @@ public:
+@@ -93,6 +95,25 @@ public:
  
  		return stream.str();
  	}
 +
-+  void computeCode() {
-+    if(device == DEVICE_KEYBOARD) {
-+      return;
-+    }
++  	void computeCode() {
++	  if(device == DEVICE_KEYBOARD) {
++	    return;
++	  }
 +
-+    switch(type) {
-+    case TYPE_AXIS:
-+      code = SDL_JoystickAxisEventCodeById(device, id);
-+      break;
-+    case TYPE_BUTTON:
-+      code = SDL_JoystickButtonEventCodeById(device, id);
-+      break;
-+    case TYPE_HAT:
-+      code = SDL_JoystickHatEventCodeById(device, id);
-+      break;
-+    }
-+  }
++	  switch(type) {
++	  case TYPE_AXIS:
++	    code = SDL_JoystickAxisEventCodeById(device, id);
++	    break;
++	  case TYPE_BUTTON:
++	    code = SDL_JoystickButtonEventCodeById(device, id);
++	    break;
++	  case TYPE_HAT:
++	    code = SDL_JoystickHatEventCodeById(device, id);
++	    break;
++	  }
++	}
 +
  };
  
  class InputConfig
 diff --git a/es-core/src/InputManager.cpp b/es-core/src/InputManager.cpp
-index f7e6dea..23767ff 100644
+index d18eeac..50d22e7 100644
 --- a/es-core/src/InputManager.cpp
 +++ b/es-core/src/InputManager.cpp
-@@ -570,6 +570,7 @@ std::string InputManager::configureEmulators() {
+@@ -668,6 +668,7 @@ std::string InputManager::configureEmulators() {
      InputConfig * playerInputConfig = playerJoysticks[player];
      if(playerInputConfig != NULL){
        command << "-p" << player+1 << "index " <<  playerInputConfig->getDeviceIndex() << " -p" << player+1 << "guid " << playerInputConfig->getDeviceGUIDString() << " -p" << player+1 << "name \"" <<  playerInputConfig->getDeviceName() << "\" -p" << player+1 << "nbaxes " << playerInputConfig->getDeviceNbAxes() << " ";
@@ -71,17 +71,15 @@ index f7e6dea..23767ff 100644
    }
    LOG(LogInfo) << "Configure emulators command : " << command.str().c_str();
 diff --git a/es-core/src/guis/GuiInputConfig.cpp b/es-core/src/guis/GuiInputConfig.cpp
-index 15fb01f..07c84a0 100644
+index 3249162..dd01a72 100644
 --- a/es-core/src/guis/GuiInputConfig.cpp
 +++ b/es-core/src/guis/GuiInputConfig.cpp
-@@ -286,6 +286,10 @@ bool GuiInputConfig::assign(Input input, int inputId, int inputIndex)
- 	setAssignedTo(mMappings.at(inputIndex), input);
+@@ -352,6 +352,8 @@ bool GuiInputConfig::assign(Input input, int inputId)
+ 	setAssignedTo(mMappings.at(inputId), input);
  	
  	input.configured = true;
-+
 +	// set a code while the device is still connected
 +	input.computeCode();
-+
- 	mTargetConfig->mapInput(inputName[inputId], input);
+ 	mTargetConfig->mapInput(GUI_INPUT_CONFIG_LIST[inputId].name, input);
  
- 	LOG(LogInfo) << "  Mapping [" << input.string() << "] -> " << inputName[inputId];
+ 	LOG(LogInfo) << "  Mapping [" << input.string() << "] -> " << GUI_INPUT_CONFIG_LIST[inputId].name;
