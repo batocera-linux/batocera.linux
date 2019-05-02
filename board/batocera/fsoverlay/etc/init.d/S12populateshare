@@ -1,4 +1,4 @@
-#!/bin/bash
+i#!/bin/bash
 
 if test "$1" != "start"
 then
@@ -11,7 +11,6 @@ OUT=/userdata
 for DIR in cheats \
            system/.cache \
            system/.config/lirc \
-           system/.emulationstation/themes \
            system/bluetooth \
            system/configs \
            system/logs
@@ -31,7 +30,7 @@ done
 # the user can delete files, files will not be recreated
 for FILE in music bios extractions kodi saves screenshots \
             system/.config/lirc/lircd.conf \
-            system/.emulationstation/{es_input.cfg,es_settings.cfg} \
+            system/configs/emulationstation/{es_input.cfg,es_settings.cfg} \
             system/{.hatari,.kodi} \
             system/configs/{moonlight,reicast,retroarch,shadersets,xarcade2jstick,dosbox,vice,amiberry} \
             system/batocera.conf \

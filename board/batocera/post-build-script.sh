@@ -14,8 +14,8 @@ rm -rf "${TARGET_DIR}/etc/dropbear" || exit 1
 ln -sf "/userdata/system/ssh" "${TARGET_DIR}/etc/dropbear" || exit 1
 
 mkdir -p ${TARGET_DIR}/etc/emulationstation || exit 1
-ln -sf "/usr/share/batocera/datainit/system/.emulationstation/es_systems.cfg" "${TARGET_DIR}/etc/emulationstation/es_systems.cfg" || exit 1
-ln -sf "/usr/share/batocera/datainit/system/.emulationstation/themes"         "${TARGET_DIR}/etc/emulationstation/themes"         || exit 1
+ln -sf "/usr/share/emulationstation/es_systems.cfg" "${TARGET_DIR}/etc/emulationstation/es_systems.cfg" || exit 1
+ln -sf "/usr/share/emulationstation/themes"         "${TARGET_DIR}/etc/emulationstation/themes"         || exit 1
 mkdir -p "${TARGET_DIR}/usr/share/batocera/datainit/cheats" || exit 1
 ln -sf "/userdata/cheats"                                       "${TARGET_DIR}/usr/share/batocera/datainit/cheats/custom"   || exit 1
 

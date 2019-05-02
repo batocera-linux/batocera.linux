@@ -9,8 +9,8 @@ BIOS = '/userdata/bios'
 OVERLAYS = '/userdata/overlays'
 CACHE = '/userdata/system/cache'
 
-esInputs = HOME + '/.emulationstation/es_input.cfg'
-esSettings = HOME + '/.emulationstation/es_settings.cfg'
+esInputs = CONF + '/emulationstation/es_input.cfg'
+esSettings = CONF + '/emulationstation/es_settings.cfg'
 batoceraConf = HOME + '/batocera.conf'
 logdir = HOME + '/logs/'
 
