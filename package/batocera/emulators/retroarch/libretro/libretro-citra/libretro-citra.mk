@@ -9,7 +9,7 @@ LIBRETRO_CITRA_SITE = https://github.com/libretro/citra.git
 LIBRETRO_CITRA_SITE_METHOD=git
 LIBRETRO_CITRA_GIT_SUBMODULES=YES
 LIBRETRO_CITRA_DEPENDENCIES = fmt boost
-LIBRETRO_CITRA_LICENSE="GPLv2+"
+LIBRETRO_CITRA_LICENSE = GPLv2+
 
 # Should be set when the package cannot be built inside the source tree but needs a separate build directory.
 LIBRETRO_CITRA_SUPPORTS_IN_SOURCE_BUILD = NO

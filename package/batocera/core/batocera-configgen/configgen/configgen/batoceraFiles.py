@@ -73,7 +73,7 @@ reicastCustom = CONF + '/reicast'
 reicastConfig = reicastCustom + '/emu.cfg'
 reicastSaves = SAVES + '/dreamcast'
 reicastBios = BIOS
-reicastVMUBlank = '/usr/share/batocera/datainit/saves/reicast/vmu_save_blank.bin'
+reicastVMUBlank = '/usr/lib/python2.7/site-packages/configgen/datainit/reicast/vmu_save_blank.bin'
 reicastVMUA1 = reicastSaves + '/reicast/vmu_save_A1.bin'
 reicastVMUA2 = reicastSaves + '/reicast/vmu_save_A2.bin'
 
@@ -114,3 +114,5 @@ overlayConfigFile = "/userdata/system/configs/retroarch/overlay.cfg"
 amiberryRoot = CONF + '/amiberry'
 amiberryRetroarchInputsDir = amiberryRoot + '/conf/retroarch/inputs'
 amiberryRetroarchCustom = amiberryRoot + '/conf/retroarch/retroarchcustom.cfg'
+
+hatariConf = HOME + '/.hatari/hatari.cfg'

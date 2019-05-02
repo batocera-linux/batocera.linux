@@ -6,6 +6,7 @@ menu "System"
   source "package/batocera/core/batocera-desktopapps/Config.in"
   source "package/batocera/alllinuxfirmwares/Config.in"
   source "package/batocera/core/batocera-splash/Config.in"
+  source "package/batocera/core/batocera-scripts/Config.in"
 
   menu "Boot"
     source "package/batocera/boot/batocera-initramfs/Config.in"
@@ -51,9 +52,8 @@ endmenu
 menu "Emulationstation"
   source "package/batocera/emulationstation/batocera-emulationstation/Config.in"
   source "package/batocera/emulationstation/batocera-es-system/Config.in"
-  source "package/batocera/emulationstation/batocera-emulationstation-fonts/Config.in"
   source "package/batocera/emulationstation/python-es-scraper/Config.in"
-  source "package/batocera/emulationstation/batocera-themes/Config.in"
+  source "package/batocera/emulationstation/es-theme-carbon/Config.in"
   source "package/batocera/emulationstation/sselph-scraper/Config.in"
 endmenu
 

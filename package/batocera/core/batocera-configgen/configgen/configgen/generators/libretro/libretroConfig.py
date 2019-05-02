@@ -2,6 +2,7 @@
 import sys
 import os
 import batoceraFiles
+import libretroOptions
 from Emulator import Emulator
 import settings
 from settings.unixSettings import UnixSettings
@@ -45,10 +46,14 @@ systemNetplayModes = {'host', 'client'}
 def writeLibretroConfig(retroconfig, system, controllers, rom, bezel, gameResolution):
     writeLibretroConfigToFile(retroconfig, createLibretroConfig(system, controllers, rom, bezel, gameResolution))
 
-
 # take a system, and returns a dict of retroarch.cfg compatible parameters
 def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
-    coreSettings = UnixSettings(batoceraFiles.retroarchCoreCustom, separator=' ')
+    # Create/update retroarch-core-options.cfg
+    libretroOptions.generateCoreSettings(batoceraFiles.retroarchCoreCustom, system)
+
+    # Create/update hatari.cfg
+    if system.name == 'atarist':
+        libretroOptions.generateHatariConf(batoceraFiles.hatariConf)
 
     retroarchConfig = dict()
     systemConfig = system.config
@@ -125,14 +130,6 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
         retroarchConfig['input_libretro_device_p1'] = '513'
         retroarchConfig['input_libretro_device_p2'] = '513'
 
-    # Emulator Atari800 option for roms Atari800
-    if (system.name == 'atari800'):
-        coreSettings.save('atari800_system', '400/800 (OS B)')
-
-    # Emulator Atari800 option for roms Atari5200
-    if (system.name == 'atari5200'):
-        coreSettings.save('atari800_system', '5200')
-
     retroarchConfig['cheevos_enable'] = 'false'
     retroarchConfig['cheevos_hardcore_mode_enable'] = 'false'
     retroarchConfig['cheevos_leaderboards_enable'] = 'false'
@@ -182,29 +179,12 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
     # core options
     if(system.name in systemToBluemsx):
         if system.config['core'] == 'bluemsx':
-            coreSettings.save('bluemsx_msxtype', systemToBluemsx[system.name])
             retroarchConfig['input_libretro_device_p1'] = systemToP1Device[system.name]
             retroarchConfig['input_libretro_device_p2'] = systemToP2Device[system.name]
     # forced values (so that if the config is not correct, fix it)
     if system.config['core'] == 'tgbdual':
         retroarchConfig['aspect_ratio_index'] = str(ratioIndexes.index("core")) # reset each time in this function
-        coreSettings.save('tgbdual_audio_output',     'Game Boy #1')
-        coreSettings.save('tgbdual_gblink_enable',    'enabled')
-        coreSettings.save('tgbdual_screen_placement', 'left-right')
-        coreSettings.save('tgbdual_single_screen_mp', 'both players')
-        coreSettings.save('tgbdual_switch_screens',   'normal')
-
-    if system.config['core'] == 'desmume':
-        coreSettings.save('desmume_pointer_device_r', 'emulated')
-    
-    if system.config['core'] == 'mame078':
-        coreSettings.save('mame2003_skip_disclaimer', 'enabled')
-        coreSettings.save('mame2003_skip_warnings',   'enabled')
-
-    if system.config['core'] == 'mame078plus':
-        coreSettings.save('mame2003-plus_skip_disclaimer', 'enabled')
-        coreSettings.save('mame2003-plus_skip_warnings',   'enabled')
-
+        
     # Netplay management
     if 'netplaymode' in system.config and system.config['netplaymode'] in systemNetplayModes:
         # Security : hardcore mode disables save states, which would kill netplay

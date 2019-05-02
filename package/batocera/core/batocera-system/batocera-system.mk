@@ -6,7 +6,8 @@
 
 BATOCERA_SYSTEM_SOURCE=
 
-BATOCERA_SYSTEM_VERSION=5.22-dev
+BATOCERA_SYSTEM_VERSION = 5.22-dev
+BATOCERA_SYSTEM_DATE_TIME = $(shell date "+%Y/%m/%d %H:%M") 
 BATOCERA_SYSTEM_DEPENDENCIES = tzdata
 
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI3),y)
@@ -65,7 +66,7 @@ define BATOCERA_SYSTEM_INSTALL_TARGET_CMDS
 	# version/arch
 	mkdir -p $(TARGET_DIR)/usr/share/batocera
 	echo -n "$(BATOCERA_SYSTEM_ARCH)" > $(TARGET_DIR)/usr/share/batocera/batocera.arch
-	echo $(BATOCERA_SYSTEM_VERSION)" "$(date "+%Y/%m/%d %H:%M") > $(TARGET_DIR)/usr/share/batocera/batocera.version
+	echo $(BATOCERA_SYSTEM_VERSION) $(BATOCERA_SYSTEM_DATE_TIME) > $(TARGET_DIR)/usr/share/batocera/batocera.version
 
 	# datainit
 	mkdir -p $(TARGET_DIR)/usr/share/batocera/datainit/system
