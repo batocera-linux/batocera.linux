@@ -5,7 +5,7 @@
 ################################################################################
 
 # Version.: Commits on Mar 27, 2019
-BATOCERA_EMULATIONSTATION_VERSION = 453a68b051b2bd0e4bacc1abbfe7523e65842fee
+BATOCERA_EMULATIONSTATION_VERSION = f4d0707caf901f818453131ebb183d07da586cec
 BATOCERA_EMULATIONSTATION_SITE = https://github.com/batocera-linux/batocera-emulationstation
 BATOCERA_EMULATIONSTATION_SITE_METHOD = git
 BATOCERA_EMULATIONSTATION_LICENSE = MIT
@@ -40,9 +40,9 @@ define BATOCERA_EMULATIONSTATION_RPI_FIXUP
 endef
 
 define BATOCERA_EMULATIONSTATION_RESOURCES
-	$(INSTALL) -m 0755 -d $(TARGET_DIR)/usr/share/batocera/datainit/system/.emulationstation/resources/help
-	$(INSTALL) -m 0644 -D $(@D)/resources/*.* $(TARGET_DIR)/usr/share/batocera/datainit/system/.emulationstation/resources
-	$(INSTALL) -m 0644 -D $(@D)/resources/help/*.* $(TARGET_DIR)/usr/share/batocera/datainit/system/.emulationstation/resources/help
+	$(INSTALL) -m 0755 -d $(TARGET_DIR)/usr/share/emulationstation/resources/help
+	$(INSTALL) -m 0644 -D $(@D)/resources/*.* $(TARGET_DIR)/usr/share/emulationstation/resources
+	$(INSTALL) -m 0644 -D $(@D)/resources/help/*.* $(TARGET_DIR)/usr/share/emulationstation/resources/help
 endef
 
 BATOCERA_EMULATIONSTATION_PRE_CONFIGURE_HOOKS += BATOCERA_EMULATIONSTATION_RPI_FIXUP
