@@ -4,8 +4,8 @@
 #
 ################################################################################
 
-# Version.: Commits on Mar 27, 2019
-BATOCERA_EMULATIONSTATION_VERSION = f4d0707caf901f818453131ebb183d07da586cec
+# Version.: Commits on May 03, 2019
+BATOCERA_EMULATIONSTATION_VERSION = 432c1c1a1d2d567144ab1fa35e73fcdf25e94561
 BATOCERA_EMULATIONSTATION_SITE = https://github.com/batocera-linux/batocera-emulationstation
 BATOCERA_EMULATIONSTATION_SITE_METHOD = git
 BATOCERA_EMULATIONSTATION_LICENSE = MIT
@@ -35,6 +35,7 @@ endif
 
 define BATOCERA_EMULATIONSTATION_RPI_FIXUP
 	$(SED) 's|.{CMAKE_FIND_ROOT_PATH}/opt/vc|$(STAGING_DIR)/usr|g' $(@D)/CMakeLists.txt
+	$(SED) 's|.{CMAKE_FIND_ROOT_PATH}/usr|$(STAGING_DIR)/usr|g'    $(@D)/CMakeLists.txt
 endef
 
 define BATOCERA_EMULATIONSTATION_RESOURCES
