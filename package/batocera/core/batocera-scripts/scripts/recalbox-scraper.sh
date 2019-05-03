@@ -49,7 +49,7 @@ do_scrap() {
 	    test "${LRDIR}" = "/userdata/roms/${x}" && EXTRAOPT="-mame"
 	done
 
-	(cd "${LRDIR}" && sselph-scraper -console_src ss,gdb,ovgdb -lang "${sslang}" -console_img "${IMGSTYLE}" -workers 5 ${EXTRAOPT}) 2>&1
+	(cd "${LRDIR}" && sselph-scraper -console_src ss,gdb,ovgdb -lang "${sslang}" -console_img "${IMGSTYLE}" -download_videos -workers 5 ${EXTRAOPT}) 2>&1
     fi
 }
 
