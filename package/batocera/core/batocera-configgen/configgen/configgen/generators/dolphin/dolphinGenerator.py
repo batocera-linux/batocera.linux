@@ -85,7 +85,7 @@ class DolphinGenerator(Generator):
         except Exception:
             pass # don't fail in case of SYSCONF update
 
-        commandArray = [batoceraFiles.batoceraBins[system.config['emulator']], "-e", rom]
+        commandArray = [batoceraFiles.batoceraBins[system.config['emulator']], "-platform", "xcb", "-e", rom]
         return Command.Command(array=commandArray, env={"XDG_CONFIG_HOME":batoceraFiles.CONF, "XDG_DATA_HOME":batoceraFiles.SAVES})
 
 def getGfxRatioFromConfig(config, gameResolution):

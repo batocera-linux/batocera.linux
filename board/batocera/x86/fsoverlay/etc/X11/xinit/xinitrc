@@ -1,6 +1,7 @@
 #!/bin/sh
 
-matchbox-window-manager -use_cursor no -use_titlebar no -use_desktop_mode no -use_lowlight no &
+# hide mouse cursor
+unclutter --timeout 1 -b
 
 systemsetting="python /usr/lib/python2.7/site-packages/configgen/settings/batoceraSettings.py"
 
@@ -15,7 +16,7 @@ setxkbmap "${map_name}"
 xset -dpms
 xset s off
 
-#
+# environment
 export HOME=/userdata/system
 export LC_ALL="${settings_lang}.UTF-8"
 export LANG=${LC_ALL}
@@ -53,6 +54,5 @@ settings_output="`$systemsetting -command load -key global.videomode`"
 
 batocera-resolution minTomaxResolution
 
-# without windowed, time must be sleeped to wait that matchbox ended to initialize :-(
 cd /userdata # es needs a PWD
-exec emulationstation --windowed
+openbox --config-file /etc/openbox/rc.xml --startup emulationstation
