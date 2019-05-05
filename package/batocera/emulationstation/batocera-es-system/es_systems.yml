@@ -851,6 +851,13 @@ x68000:
     citra:
       citra: { requireAnyOf: [BR2_PACKAGE_CITRA] }
 
+satellaview:
+  name:       Satellaview
+  extensions: [7z, bs, smc, sfc, zip]
+  emulators:
+    libretro:
+      snes9x: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_SNES9X]      }
+
 imageviewer:
   name:       Screenshots
   extensions: [jpg, jpeg, png, bmp, psd, tga, gif, hdr, pic, ppm, pgm]
