@@ -192,7 +192,7 @@ virtualboy:
     libretro:
       vb: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BEETLE_VB] }
 
-gw:
+gameandwatch:
   name:       Game and Watch
   extensions: [mgw, zip]
   emulators:
@@ -264,6 +264,7 @@ gamegear:
 sg1000:
   name:       Sega SG1000
   extensions: [7z, bin, sg, zip]
+  theme:      sg-1000
   emulators:
     libretro:
       genesisplusgx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GENESISPLUSGX] }
@@ -297,6 +298,7 @@ pcengine:
 pcenginecd:
   name:       PC Engine CD
   extensions: [7z, ccd, chd, cue, pce, sgx, zip]
+  theme:      pce-cd
   emulators:
     libretro:
       mednafen_supergrafx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BEETLE_SUPERGRAFX] }
@@ -526,6 +528,7 @@ atari7800:
 lynx:
   name:       Lynx
   extensions: [7z, lnx, zip]
+  theme:      atarilynx
   platform:   atarilynx
   emulators:
     libretro:
@@ -780,6 +783,7 @@ saturn:
 jaguar:
   name:       Jaguar
   extensions: [j64, jag, zip]
+  theme:      atarijaguar
   emulators:
     libretro:
       virtualjaguar: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_VIRTUALJAGUAR] }
