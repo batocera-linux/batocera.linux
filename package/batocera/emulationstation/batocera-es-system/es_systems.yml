@@ -851,6 +851,27 @@ x68000:
     citra:
       citra: { requireAnyOf: [BR2_PACKAGE_CITRA] }
 
+satellaview:
+  name:       Satellaview
+  extensions: [7z, bs, smc, sfc, zip]
+  emulators:
+    libretro:
+      snes9x: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_SNES9X] }
+
+sufami:
+  name:       SuFami Turbo
+  extensions: [7z, st, fig, bs, smc, sfc, zip]
+  emulators:
+    libretro:
+      snes9x: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_SNES9X] }
+
+pokemini:
+  name:       Pokemon-Mini
+  extensions: [min]
+  emulators:
+    libretro:
+      pokemini: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_POKEMINI] }
+
 imageviewer:
   name:       Screenshots
   extensions: [jpg, jpeg, png, bmp, psd, tga, gif, hdr, pic, ppm, pgm]

@@ -1,0 +1,11 @@
+config BR2_PACKAGE_LIBRETRO_POKEMINI
+        bool "libretro-pokemini"
+	depends on BR2_PACKAGE_RETROARCH
+	depends on BR2_INSTALL_LIBSTDCPP
+        help
+          A libretro PokeMini emulator core.
+
+	  http://www.libretro.com
+
+comment "LIBRETRO_POKEMINI needs a toolchain w/ C++"
+	depends on !BR2_INSTALL_LIBSTDCPP
