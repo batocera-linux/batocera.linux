@@ -876,6 +876,13 @@ pokemini:
     libretro:
       pokemini: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_POKEMINI] }
 
+gx4000:
+  name:       Amstrad GX4000
+  extensions: [dsk, m3u]
+  emulators:
+    libretro:
+      cap32: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_CAP32] }
+
 imageviewer:
   name:       Screenshots
   extensions: [jpg, jpeg, png, bmp, psd, tga, gif, hdr, pic, ppm, pgm]
