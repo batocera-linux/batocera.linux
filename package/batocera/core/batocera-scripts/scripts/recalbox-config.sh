@@ -246,8 +246,7 @@ if [ "$command" == "canupdate" ];then
 	fi
 	installed=`cat /usr/share/batocera/batocera.version`
 
-	echo "Current: ${installed}"
-	echo "New: ${available}"
+	echo "${available}"
 
 	if [[ "$available" != "$installed" ]]; then
 		exit 0
