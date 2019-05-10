@@ -204,7 +204,8 @@ dreamcast:
   extensions: [cdi, chd, gdi]
   emulators:
     libretro:
-      reicast: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_REICAST] }
+      reicast:        { requireAnyOf: [BR2_PACKAGE_LIBRETRO_REICAST]        }
+      reicast_wince:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_REICAST_WINCE]  }
     reicast:
       reicast: { requireAnyOf: [BR2_PACKAGE_REICAST] }
 
