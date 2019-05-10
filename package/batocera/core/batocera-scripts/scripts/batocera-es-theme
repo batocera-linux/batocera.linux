@@ -1,0 +1,63 @@
+#!/bin/bash 
+#
+# Download and install EmulationStation themes for Batocera
+#
+# @lbrpdx on Batocera Forums and Discord
+#
+# Usage:
+# batocera-es-theme <theme>
+# 
+# If you don't provide a <theme>, the list of themes available online will be returned back to you
+#
+CONFIGDIR="/userdata/themes/"
+# THEMESLIST="https://batocera-linux.xorhub.com/themes.list"
+THEMESLIST="/tmp/outlistthemes"
+# themes.list must be in the format 'theme_name   https://githubURL'
+THEME=""
+
+###############################
+#
+function usage() {
+	echo "$0 <theme>"
+	echo " - where <theme> is the Batocera EmulationStation theme you want to install"
+	echo "If you don't provide a <theme>, the list of themes available online will be returned"
+	echo "back to you as a list of 'theme-name [A/I]' where [A] means Available and [I] installed."
+	exit 1
+}
+
+###############################
+#
+function list_themes() {
+	fn=$(date +"%s")
+	tmp="/tmp/themes_$fn"
+	echo "$fn - Listing themes"
+	# curl -sfL "$THEMESLIST" -o "$tmp" || exit 1
+	tmp="$THEMESLIST"
+	while IFS=$' \t' read name url ; do
+		ia="[A]"
+		[ -d "$CONFIGDIR"/"$name" ] && ia="[I]"
+		echo "$name $ia"
+	done < "$tmp"
+	# rm "$tmp"
+
+}
+
+###############################
+#
+function install_theme() {
+	theme="$1"
+	fn=$(date +"%s")
+	tmpfile=/tmp/ra_$fn
+	echo "$fn - Installing $theme"
+}
+
+#### Main loop
+#
+if [ $# -ge 1 ]; then
+	tmp="$1"
+	[ x"${tmp::1}" == "x-" ] && usage || THEME="$1"
+	install_theme $THEME
+else 
+	list_themes
+fi
+
