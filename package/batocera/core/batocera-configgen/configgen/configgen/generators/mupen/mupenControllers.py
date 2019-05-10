@@ -18,13 +18,14 @@ def getMupenMapping():
     # load system values and override by user values in case some user values are missing
     map = dict()
     for file in [batoceraFiles.mupenMappingSystem, batoceraFiles.mupenMappingUser]:
-        dom = minidom.parse(file)
-        for inputs in dom.getElementsByTagName('inputList'):
-            for input in inputs.childNodes:
-                if input.attributes:
-                    if input.attributes['name']:
-                        if input.attributes['value']:
-                            map[input.attributes['name'].value] = input.attributes['value'].value
+        if os.path.exists(file):
+            dom = minidom.parse(file)
+            for inputs in dom.getElementsByTagName('inputList'):
+                for input in inputs.childNodes:
+                    if input.attributes:
+                        if input.attributes['name']:
+                            if input.attributes['value']:
+                                map[input.attributes['name'].value] = input.attributes['value'].value
     return map
 
 def setControllersConfig(iniConfig, controllers, systemconfig):
