@@ -377,6 +377,7 @@ config BR2_PACKAGE_BATOCERA_KODI
        select BR2_PACKAGE_GNUTLS            # https streams
 
        # ffmpeg enabler that i'm not sure it has an impact on kodi
+       select BR2_PACKAGE_FFMPEG_GPL        # video recording
        select BR2_PACKAGE_FFMPEG_AVRESAMPLE # audio resampler
        select BR2_PACKAGE_LIBCDIO_PARANOIA  # cd-audio
        select BR2_PACKAGE_LIBOPENH264       # openh264
