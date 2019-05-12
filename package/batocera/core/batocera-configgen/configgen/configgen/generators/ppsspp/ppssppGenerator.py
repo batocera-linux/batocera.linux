@@ -8,7 +8,8 @@ import ppssppControllers
 import shutil
 import os.path
 import ConfigParser
-
+# TODO: python3 - delete me!
+import codecs
 
 class PPSSPPGenerator(Generator):
 
@@ -23,12 +24,13 @@ class PPSSPPGenerator(Generator):
             if controller.player != "1":
                 continue
             ppssppControllers.generateControllerConfig(controller)
-            cfgFile = open(batoceraFiles.ppssppControls, "w")
+            # TODO: python 3 - workawround to encode files in utf-8
+            cfgFile = codecs.open(batoceraFiles.ppssppControls, "w", "utf-8")
             cfgFile.write(controller.generateSDLGameDBLine())
             cfgFile.close()
             break
 
-        # the command to run  
+        # the command to run
         commandArray = [batoceraFiles.batoceraBins[system.config['emulator']]]
         commandArray.append(rom)
         commandArray.append("--fullscreen")
