@@ -85,9 +85,19 @@ function install_theme() {
 			exit 1
 		else
 			gitname=$(git_name "$url")
-			[ -d "$CONFIGDIR"/"$gitname" ] && rm -rf "$CONFIGDIR"/"$gitname" 
-			cd "$CONFIGDIR" && git clone "$url"
-			echo "$theme is now installed."
+			cd "$CONFIGDIR"
+			echo "Downloading from $url"
+			curl -sfL "$url/archive/master.zip" -o "$gitname.zip"
+			if [ -f "$gitname.zip" ]; then 
+				[ -d "$CONFIGDIR"/"$gitname" ] && rm -rf "$CONFIGDIR"/"$gitname" 
+				unzip "$gitname.zip"
+				mv "$gitname-master" "$gitname"
+				rm "$gitname.zip"
+			else
+				echo "Error - $theme zip file could not be downloaded from $url"
+				exit 1
+			fi
+			echo "Theme $theme is now installed."
 		fi
 	done < "$tmp"
 	rm "$tmp"
