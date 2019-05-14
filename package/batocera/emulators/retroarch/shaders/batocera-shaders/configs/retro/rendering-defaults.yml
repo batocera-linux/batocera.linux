@@ -4,104 +4,104 @@ default:
   # scanline affect fba2x
   scanline: false
 snes:
-  shader: crt-caligari_gamma_115
+  shader: crt/crt-caligari_gamma
 nes:
-  shader: crt-caligari_gamma_115
+  shader: crt/crt-caligari_gamma
 n64:
-  shader: scanline
+  shader: misc/scanline
 gba:
-  shader: lcd3x_gamma_115
+  shader: handheld/lcd3x
 gb:
-  shader: dot-green2
+  shader: handheld/dot
 gbc:
-  shader: lcd3x_gamma_115
+  shader: handheld/lcd3x
 fds:
-  shader: scanline
+  shader: misc/scanline
 virtualboy:
-  shader: scanline
+  shader: misc/scanline
 # Sega
 sg1000:
-  shader: scanline
+  shader: misc/scanline
 mastersystem:
-  shader: crt-caligari_gamma_115
+  shader: crt/crt-caligari_gamma
 megadrive:
-  shader: crt-caligari
+  shader: crt/crt-caligari
 gamegear:
-  shader: scanline_gamma_115
+  shader: misc/cscanline
 sega32x:
-  shader: crt-caligari_gamma_115
+  shader: crt/crt-caligari_gamma
 segacd:
-  shader: scanline
+  shader: misc/scanline
 # Arcade
 neogeo:
-  shader: crt-caligari_gamma_125
+  shader: crt/crt-caligari_gamma
 neogeocd:
-  shader: crt-caligari_gamma_125
+  shader: crt/crt-caligari_gamma
 mame:
-  shader: crt-caligari_gamma_115
+  shader: crt/crt-caligari_gamma
 fba:
-  shader: crt-caligari_gamma_115
+  shader: crt/crt-caligari_gamma
 naomi:
-  shader: crt-caligari_gamma_115
+  shader: crt/crt-caligari_gamma
 atomiswave:
-  shader: crt-caligari_gamma_115
+  shader: crt/crt-caligari_gamma
 #
 ngp:
-  shader: lcd3x
+  shader: handheld/lcd3x
 ngpc:
-  shader: lcd3x
+  shader: handheld/lcd3x
 gw:
-  shader: scanline
+  shader: misc/scanline
 vectrex:
   shader:
 lynx:
-  shader: lcd3x_gamma_125
+  shader: handheld/lcd3x
 lutro:
-  shader: scanline
+  shader: misc/scanline
 wswan:
-  shader: lcd3x_gamma_115
+  shader: handheld/lcd3x
 wswanc:
-  shader: lcd3x_gamma_115
+  shader: handheld/lcd3x
 pcengine:
-  shader: crt-caligari
+  shader: crt/crt-caligari
 pcenginecd:
-  shader: crt-caligari
+  shader: crt/crt-caligari
 supergrafx:
-  shader: crt-caligari
+  shader: crt/crt-caligari
 atari800:
-  shader: scanline
+  shader: misc/scanline
 atari2600:
-  shader: scanline
+  shader: misc/scanline
 atari5200:
-  shader: scanline
+  shader: misc/scanline
 atari7800:
-  shader: scanline
+  shader: misc/scanline
 prboom:
-  shader: crt-caligari_gamma_115
+  shader: crt/crt-caligari_gamma
 psx:
-  shader: crt-caligari_gamma_115
+  shader: crt/crt-caligari_gamma
 colecovision:
-  shader: crt-caligari_gamma_115
+  shader: crt/crt-caligari_gamma
 # Computers
 msx:
-  shader: scanline
+  shader: misc/scanline
 msx1:
-  shader: scanline
+  shader: misc/scanline
 msx2:
-  shader: scanline
+  shader: misc/scanline
 amiga:
-  shader: crt-caligari_gamma_115
+  shader: crt/crt-caligari_gamma
 amstradcpc:
-  shader: crt-caligari_gamma_115
+  shader: crt/crt-caligari_gamma
 atarist:
-  shader: crt-caligari_gamma_115
+  shader: crt/crt-caligari_gamma
 zxspectrum:
-  shader: scanline
+  shader: misc/scanline
 odyssey2:
-  shader: scanline
+  shader: misc/scanline
 zx81:
-  shader: scanline
+  shader: misc/scanline
 pcfx:
-  shader: scanline
+  shader: misc/scanline
 x68000:
-  shader: scanline
+  shader: misc/scanline
