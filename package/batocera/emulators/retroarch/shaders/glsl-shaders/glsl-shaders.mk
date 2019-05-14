@@ -13,8 +13,8 @@ define GLSL_SHADERS_BUILD_CMDS
 endef
 
 define GLSL_SHADERS_INSTALL_TARGET_CMDS
-	mkdir -p $(TARGET_DIR)/usr/share/common-shaders
-	$(MAKE) CXX="$(TARGET_CXX)" -C $(@D) INSTALLDIR=$(TARGET_DIR)/usr/share/common-shaders install
+	mkdir -p $(TARGET_DIR)/usr/share/batocera/shaders
+	$(MAKE) CXX="$(TARGET_CXX)" -C $(@D) INSTALLDIR=$(TARGET_DIR)/usr/share/batocera/shaders install
 endef
 
 $(eval $(generic-package))
