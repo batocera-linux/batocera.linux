@@ -115,4 +115,4 @@ amiberryRoot = CONF + '/amiberry'
 amiberryRetroarchInputsDir = amiberryRoot + '/conf/retroarch/inputs'
 amiberryRetroarchCustom = amiberryRoot + '/conf/retroarch/retroarchcustom.cfg'
 
-hatariConf = HOME + '/.hatari/hatari.cfg'
+hatariConf = CONF + '/hatari/hatari.cfg'
