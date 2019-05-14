@@ -3,8 +3,8 @@
 # EmulationStation theme "Carbon"
 #
 ################################################################################
-
-ES_THEME_CARBON_VERSION = master
+# Version.: Commits on Jan 29, 2019
+ES_THEME_CARBON_VERSION = 37413452b33497385c314b4d630d1b1ccafbb7d6
 ES_THEME_CARBON_SITE = $(call github,RetroPie,es-theme-carbon,$(ES_THEME_CARBON_VERSION))
 
 define ES_THEME_CARBON_INSTALL_TARGET_CMDS
