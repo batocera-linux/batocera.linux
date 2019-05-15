@@ -29,32 +29,12 @@ ifeq ($(BR2_PACKAGE_LIBDRM),y)
 RETROARCH_CONF_OPTS += --enable-kms
 endif
 
-# RPI 0 and 1
-ifeq ($(BR2_arm1176jzf_s),y)
+ifeq ($(BR2_ARM_FPU_NEON_VFPV4)$(BR2_ARM_FPU_NEON)$(BR2_ARM_FPU_NEON_FP_ARMV8),y)
+        RETROARCH_CONF_OPTS += --enable-neon
+endif
+
+ifeq ($(BR2_GCC_TARGET_FLOAT_ABI),hard)
         RETROARCH_CONF_OPTS += --enable-floathard
-endif
-
-# RPI 2 and 3
-ifeq ($(BR2_cortex_a7),y)
-        RETROARCH_CONF_OPTS += --enable-neon --enable-floathard
-endif
-ifeq ($(BR2_cortex_a53),y)
-        RETROARCH_CONF_OPTS += --enable-neon --enable-floathard
-endif
-
-# odroid xu4
-ifeq ($(BR2_cortex_a15),y)
-        RETROARCH_CONF_OPTS += --enable-neon --enable-floathard
-endif
-
-# rockpro64
-ifeq ($(BR2_cortex_a72_a53),y)
-        RETROARCH_CONF_OPTS += --enable-neon --enable-floathard
-endif
-
-# odroidn2
-ifeq ($(BR2_cortex_a73_a53),y)
-        RETROARCH_CONF_OPTS += --enable-neon --enable-floathard
 endif
 
 # x86 : no option
@@ -187,8 +167,8 @@ ifeq ($(BR2_cortex_a7),y)
         LIBRETRO_PLATFORM += armv7
 endif
 
-ifeq ($(BR2_cortex_a53),y)
-        LIBRETRO_PLATFORM += armv8 cortexa8
+ifeq ($(BR2_cortex_a53)$(BR2_arm),yy)
+        LIBRETRO_PLATFORM += armv8
 endif
 
 ifeq ($(BR2_cortex_a15),y)
