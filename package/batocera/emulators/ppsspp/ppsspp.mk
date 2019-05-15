@@ -24,7 +24,7 @@ endif
 # odroid c2 / S905 and variants
 ifeq ($(BR2_aarch64),y)
 	# -DUSE_SYSTEM_FFMPEG=1 is unstable, but at least, games without videos work
-	PPSSPP_CONF_OPTS += -DUSE_FFMPEG=ON -DUSE_SYSTEM_FFMPEG=ON -DARM_NEON=ON
+	PPSSPP_CONF_OPTS += -DUSE_FFMPEG=ON -DARM_NEON=ON
 else
 	PPSSPP_CONF_OPTS += -DUSE_FFMPEG=ON
 endif
