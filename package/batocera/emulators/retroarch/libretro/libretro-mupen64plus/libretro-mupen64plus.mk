@@ -3,10 +3,8 @@
 # MUPEN64PLUS
 #
 ################################################################################
-
-# for rpi2, rpi3 and odroid because the next commit breaks and has lost performance.
-# Version.: Commits on Jul 28, 2018
-LIBRETRO_MUPEN64PLUS_VERSION = 4ca2fa8633666e26e2f163dcd3c226b598cb2aa4       
+# Version.: Commits on Apr 26, 2019
+LIBRETRO_MUPEN64PLUS_VERSION = af7a4bf219ded4036257a92060b146d7d4333f0f       
 LIBRETRO_MUPEN64PLUS_SITE = $(call github,libretro,mupen64plus-libretro,$(LIBRETRO_MUPEN64PLUS_VERSION))
 LIBRETRO_MUPEN64PLUS_LICENSE = GPLv2
 
