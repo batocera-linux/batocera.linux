@@ -3,8 +3,8 @@
 # DOSBOX
 #
 ################################################################################
-# Version.: Commits on Nov 26, 2018
-LIBRETRO_DOSBOX_VERSION = 7216efe33153f028573ad68a843d897bdb11a69c
+# Version.: Commits on Mar 20, 2019
+LIBRETRO_DOSBOX_VERSION = 2aa0bd13b372956b2fe989ca5e9d8e45f75fb44d
 LIBRETRO_DOSBOX_SITE = $(call github,libretro,dosbox-libretro,$(LIBRETRO_DOSBOX_VERSION))
 LIBRETRO_DOSBOX_LICENSE = GPLv2
 
