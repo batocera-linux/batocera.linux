@@ -13,8 +13,7 @@ GLIBC_SITE = $(call github,riscv,riscv-glibc,$(GLIBC_VERSION))
 else
 # Generate version string using:
 #   git describe --match 'glibc-*' --abbrev=40 origin/release/MAJOR.MINOR/master | cut -d '-' -f 2-
-# batocera - back to this version to avoid locales generation errors on various languages
-GLIBC_VERSION = glibc-2.26-73-g4b692dffb95ac4812b161eb6a16113d7e824982e
+GLIBC_VERSION = 2.29-6-g067fc32968b601493f4b247a3ac00caeea3f3d61
 # Upstream doesn't officially provide an https download link.
 # There is one (https://sourceware.org/git/glibc.git) but it's not reliable,
 # sometimes the connection times out. So use an unofficial github mirror.
@@ -132,10 +131,9 @@ endef
 # to install the libraries, and nothing more.
 #
 
-# batocera (libnsl.so)
 GLIBC_LIBS_LIB = \
 	ld*.so.* libanl.so.* libc.so.* libcrypt.so.* libdl.so.* libgcc_s.so.* \
-	libm.so.* libnsl.so.* libpthread.so.* libresolv.so.* librt.so.* \
+	libm.so.* libpthread.so.* libresolv.so.* librt.so.* \
 	libutil.so.* libnss_files.so.* libnss_dns.so.* libmvec.so.*
 
 ifeq ($(BR2_PACKAGE_GDB),y)
