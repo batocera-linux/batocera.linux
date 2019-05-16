@@ -3,10 +3,8 @@
 # PARALLEL_N64
 #
 ################################################################################
-
-# for rpi2, rpi3 and odroid because the next commit breaks and has lost performance.
-# Version.: Commits on Aug 8, 2018 
-LIBRETRO_PARALLEL_N64_VERSION = ab155da18068f638e5ace2e5e6f7387bddc3511b
+# Version.: Commits on May 10, 2019
+LIBRETRO_PARALLEL_N64_VERSION = 68d89c77c37cb6d3da05245f75ea6f949096da96
 LIBRETRO_PARALLEL_N64_SITE = $(call github,libretro,parallel-n64,$(LIBRETRO_PARALLEL_N64_VERSION))
 LIBRETRO_PARALLEL_N64_LICENSE = GPLv2
 
