@@ -3,13 +3,13 @@
 # retroarch
 #
 ################################################################################
-#Version.: Commits on Mar 9, 2019 (v1.7.6) 
-RETROARCH_VERSION = ed5bd8023ee063f19540ed1d23f4c5e7b04e9d89
+#Version.: Commits on Mar 14, 2019 (v1.7.7) 
+RETROARCH_VERSION = 56396f6a375d12cabb027d0948122cd60ada3a9f
 
 RETROARCH_SITE = $(call github,libretro,RetroArch,$(RETROARCH_VERSION))
 
 RETROARCH_LICENSE = GPLv3+
-RETROARCH_CONF_OPTS += --disable-oss --enable-zlib
+RETROARCH_CONF_OPTS += --disable-oss --enable-zlib --disable-qt
 RETROARCH_DEPENDENCIES = host-pkgconf dejavu
 
 ifeq ($(BR2_PACKAGE_SDL2),y)
@@ -87,13 +87,6 @@ ifeq ($(BR2_PACKAGE_HAS_LIBOPENVG),y)
 RETROARCH_DEPENDENCIES += libopenvg
 endif
 
-ifeq ($(BR2_PACKAGE_LIBXML2),y)
-RETROARCH_CONF_OPTS += --enable-libxml2
-RETROARCH_DEPENDENCIES += libxml2
-else
-RETROARCH_CONF_OPTS += --disable-libxml2
-endif
-
 ifeq ($(BR2_PACKAGE_ZLIB),y)
 RETROARCH_CONF_OPTS += --enable-zlib
 RETROARCH_DEPENDENCIES += zlib
@@ -131,7 +124,6 @@ define RETROARCH_CONFIGURE_CMDS
 		CROSS_COMPILE="$(HOST_DIR)/usr/bin/" \
 		./configure \
 		--prefix=/usr \
-		--disable-qt \
 		$(RETROARCH_CONF_OPTS) \
 	)
 endef
