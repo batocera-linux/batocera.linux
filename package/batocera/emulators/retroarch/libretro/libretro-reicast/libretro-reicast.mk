@@ -3,8 +3,8 @@
 # LIBRETRO-REICAST
 #
 ################################################################################
-# Version.: Commits on Feb 24, 2019
-LIBRETRO_REICAST_VERSION = 2abb3428b8d7d2c3d1da21ca9402a8e25bf9dc40
+# Version.: Commits on May 8, 2019
+LIBRETRO_REICAST_VERSION = 8c38fcedbe064f7fbda9c2213fd6987b7d4e4dbc
 LIBRETRO_REICAST_SITE = $(call github,libretro,reicast-emulator,$(LIBRETRO_REICAST_VERSION))
 LIBRETRO_REICAST_LICENSE = GPLv2
 
