@@ -3,13 +3,13 @@
 # retroarch
 #
 ################################################################################
-#Version.: Commits on Mar 9, 2019 (v1.7.6) 
-RETROARCH_VERSION = ed5bd8023ee063f19540ed1d23f4c5e7b04e9d89
+#Version.: Commits on Mar 14, 2019 (v1.7.7) 
+RETROARCH_VERSION = 56396f6a375d12cabb027d0948122cd60ada3a9f
 
 RETROARCH_SITE = $(call github,libretro,RetroArch,$(RETROARCH_VERSION))
 
 RETROARCH_LICENSE = GPLv3+
-RETROARCH_CONF_OPTS += --disable-oss --enable-zlib
+RETROARCH_CONF_OPTS += --disable-oss --enable-zlib --disable-qt
 RETROARCH_DEPENDENCIES = host-pkgconf dejavu
 
 ifeq ($(BR2_PACKAGE_SDL2),y)
@@ -29,32 +29,12 @@ ifeq ($(BR2_PACKAGE_LIBDRM),y)
 RETROARCH_CONF_OPTS += --enable-kms
 endif
 
-# RPI 0 and 1
-ifeq ($(BR2_arm1176jzf_s),y)
+ifeq ($(BR2_ARM_FPU_NEON_VFPV4)$(BR2_ARM_FPU_NEON)$(BR2_ARM_FPU_NEON_FP_ARMV8),y)
+        RETROARCH_CONF_OPTS += --enable-neon
+endif
+
+ifeq ($(BR2_GCC_TARGET_FLOAT_ABI),hard)
         RETROARCH_CONF_OPTS += --enable-floathard
-endif
-
-# RPI 2 and 3
-ifeq ($(BR2_cortex_a7),y)
-        RETROARCH_CONF_OPTS += --enable-neon --enable-floathard
-endif
-ifeq ($(BR2_cortex_a53),y)
-        RETROARCH_CONF_OPTS += --enable-neon --enable-floathard
-endif
-
-# odroid xu4
-ifeq ($(BR2_cortex_a15),y)
-        RETROARCH_CONF_OPTS += --enable-neon --enable-floathard
-endif
-
-# rockpro64
-ifeq ($(BR2_cortex_a72_a53),y)
-        RETROARCH_CONF_OPTS += --enable-neon --enable-floathard
-endif
-
-# odroidn2
-ifeq ($(BR2_cortex_a73_a53),y)
-        RETROARCH_CONF_OPTS += --enable-neon --enable-floathard
 endif
 
 # x86 : no option
@@ -107,13 +87,6 @@ ifeq ($(BR2_PACKAGE_HAS_LIBOPENVG),y)
 RETROARCH_DEPENDENCIES += libopenvg
 endif
 
-ifeq ($(BR2_PACKAGE_LIBXML2),y)
-RETROARCH_CONF_OPTS += --enable-libxml2
-RETROARCH_DEPENDENCIES += libxml2
-else
-RETROARCH_CONF_OPTS += --disable-libxml2
-endif
-
 ifeq ($(BR2_PACKAGE_ZLIB),y)
 RETROARCH_CONF_OPTS += --enable-zlib
 RETROARCH_DEPENDENCIES += zlib
@@ -151,17 +124,26 @@ define RETROARCH_CONFIGURE_CMDS
 		CROSS_COMPILE="$(HOST_DIR)/usr/bin/" \
 		./configure \
 		--prefix=/usr \
-		--disable-qt \
 		$(RETROARCH_CONF_OPTS) \
 	)
 endef
 
 define RETROARCH_BUILD_CMDS
-	$(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" LD="$(TARGET_LD)" -C $(@D) all
+	$(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" LD="$(TARGET_LD)" -C $(@D)/
+	$(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" LD="$(TARGET_LD)" -C $(@D)/gfx/video_filters 
+	$(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" LD="$(TARGET_LD)" -C $(@D)/libretro-common/audio/dsp_filters
 endef
 
 define RETROARCH_INSTALL_TARGET_CMDS
 	$(MAKE) CXX="$(TARGET_CXX)" -C $(@D) DESTDIR=$(TARGET_DIR) install
+	
+	mkdir -p $(TARGET_DIR)/usr/share/video_filters
+	cp $(@D)/gfx/video_filters/*.so $(TARGET_DIR)/usr/share/video_filters
+	cp $(@D)/gfx/video_filters/*.filt $(TARGET_DIR)/usr/share/video_filters
+	
+	mkdir -p $(TARGET_DIR)/usr/share/audio_filters
+	cp $(@D)/libretro-common/audio/dsp_filters/*.so $(TARGET_DIR)/usr/share/audio_filters
+	cp $(@D)/libretro-common/audio/dsp_filters/*.dsp $(TARGET_DIR)/usr/share/audio_filters
 endef
 
 $(eval $(generic-package))
@@ -177,8 +159,8 @@ ifeq ($(BR2_cortex_a7),y)
         LIBRETRO_PLATFORM += armv7
 endif
 
-ifeq ($(BR2_cortex_a53),y)
-        LIBRETRO_PLATFORM += armv8 cortexa8
+ifeq ($(BR2_cortex_a53)$(BR2_arm),yy)
+        LIBRETRO_PLATFORM += armv8
 endif
 
 ifeq ($(BR2_cortex_a15),y)

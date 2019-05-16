@@ -124,8 +124,8 @@ n64:
   emulators:
     mupen64plus:
       gliden64:   { requireAnyOf: [BR2_PACKAGE_MUPEN64PLUS_GLIDEN64, BR2_PACKAGE_MUPEN64PLUS_V20_GLIDEN64] }
-      rice:       { requireAnyOf: [BR2_PACKAGE_MUPEN64PLUS_GLES2RICE]        }
-      glide64mk2: { requireAnyOf: [BR2_PACKAGE_MUPEN64PLUS_VIDEO_GLIDE64MK2] }
+      rice:       { requireAnyOf: [BR2_PACKAGE_MUPEN64PLUS_RICE]              }
+      glide64mk2: { requireAnyOf: [BR2_PACKAGE_MUPEN64PLUS_VIDEO_GLIDE64MK2]  }
     libretro:
       mupen64plus:      { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MUPEN64PLUS]      }
       mupen64plus-next: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MUPEN64PLUS_NEXT] }
@@ -192,7 +192,7 @@ virtualboy:
     libretro:
       vb: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BEETLE_VB] }
 
-gw:
+gameandwatch:
   name:       Game and Watch
   extensions: [mgw, zip]
   emulators:
@@ -204,7 +204,8 @@ dreamcast:
   extensions: [cdi, chd, gdi]
   emulators:
     libretro:
-      reicast: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_REICAST] }
+      reicast:        { requireAnyOf: [BR2_PACKAGE_LIBRETRO_REICAST]        }
+      reicast_wince:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_REICAST_WINCE]  }
     reicast:
       reicast: { requireAnyOf: [BR2_PACKAGE_REICAST] }
 
@@ -264,6 +265,7 @@ gamegear:
 sg1000:
   name:       Sega SG1000
   extensions: [7z, bin, sg, zip]
+  theme:      sg-1000
   emulators:
     libretro:
       genesisplusgx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GENESISPLUSGX] }
@@ -297,6 +299,7 @@ pcengine:
 pcenginecd:
   name:       PC Engine CD
   extensions: [7z, ccd, chd, cue, pce, sgx, zip]
+  theme:      pce-cd
   emulators:
     libretro:
       mednafen_supergrafx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BEETLE_SUPERGRAFX] }
@@ -526,6 +529,7 @@ atari7800:
 lynx:
   name:       Lynx
   extensions: [7z, lnx, zip]
+  theme:      atarilynx
   platform:   atarilynx
   emulators:
     libretro:
@@ -700,120 +704,6 @@ msx:
     PAINTER.ROM
     RS232.ROM
 
-msx1:
-  name:       MSX1
-  extensions: [dsk, cas, mx1, mx2, m3u, rom, zip]
-  platform:   msx
-  emulators:
-    libretro:
-      fmsx:    { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FMSX]    }
-      bluemsx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BLUEMSX] }
-  comment_en: |
-    ## BIOS ##
-
-    - BlueMSX (DEFAULT) :
-    You must download the BlueMSX standalone version, available to this adresse: http://bluemsx.msxblue.com/rel_download/blueMSXv282full.zip
-    Then extract the "Databases" and "Machines" folders and add them to the bios folder.
-
-    - FMSX :
-    You must have these following files, available with fmsx distribution, in the bios folder:
-    CARTS.SHA
-    CYRILLIC.FNT
-    DISK.ROM
-    FMPAC.ROM
-    FMPAC16.ROM
-    ITALIC.FNT
-    KANJI.ROM
-    MSX.ROM
-    MSX2.ROM
-    MSX2EXT.ROM
-    MSX2P.ROM
-    MSX2PEXT.ROM
-    MSXDOS2.ROM
-    PAINTER.ROM
-    RS232.ROM
-  comment_fr: |
-    ## BIOS ##
-
-    - Emulateur BlueMSX (choix initial) :
-    Vous devez télécharger la version standalone de l'émulateur BlueMSX disponible à l'adresse suivante: http://bluemsx.msxblue.com/rel_download/blueMSXv282full.zip
-    Puis extraire de ce dernier, les répertoire "Databases" et "Machines" et les ajouter dans le répertoire bios.
-
-    - Emulateur FMSX :
-    Vous devez avoir les fichiers fournis avec la distribution de fmsx suivant dans le dossier bios:
-    CARTS.SHA
-    CYRILLIC.FNT
-    DISK.ROM
-    FMPAC.ROM
-    FMPAC16.ROM
-    ITALIC.FNT
-    KANJI.ROM
-    MSX.ROM
-    MSX2.ROM
-    MSX2EXT.ROM
-    MSX2P.ROM
-    MSX2PEXT.ROM
-    MSXDOS2.ROM
-    PAINTER.ROM
-    RS232.ROM
-
-msx2:
-  name: MSX2
-  extensions: [dsk, cas, mx1, mx2, m3u, rom, zip]
-  platform:   msx
-  emulators:
-    libretro:
-      fmsx:    { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FMSX]    }
-      bluemsx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BLUEMSX] }
-  comment_en: |
-    ## BIOS ##
-
-    - BlueMSX (DEFAULT) :
-    You must download the BlueMSX standalone version, available to this adresse: http://bluemsx.msxblue.com/rel_download/blueMSXv282full.zip
-    Then extract the "Databases" and "Machines" folders and add them to the bios folder.
-
-    - FMSX :
-    You must have these following files, available with fmsx distribution, in the bios folder:
-    CARTS.SHA
-    CYRILLIC.FNT
-    DISK.ROM
-    FMPAC.ROM
-    FMPAC16.ROM
-    ITALIC.FNT
-    KANJI.ROM
-    MSX.ROM
-    MSX2.ROM
-    MSX2EXT.ROM
-    MSX2P.ROM
-    MSX2PEXT.ROM
-    MSXDOS2.ROM
-    PAINTER.ROM
-    RS232.ROM
-  comment_fr: |
-    ## BIOS ##
-
-    - Emulateur BlueMSX (choix initial) :
-    Vous devez télécharger la version standalone de l'émulateur BlueMSX disponible à l'adresse suivante: http://bluemsx.msxblue.com/rel_download/blueMSXv282full.zip
-    Puis extraire de ce dernier, les répertoire "Databases" et "Machines" et les ajouter dans le répertoire bios.
-
-    - Emulateur FMSX :
-    Vous devez avoir les fichiers fournis avec la distribution de fmsx suivant dans le dossier bios:
-    CARTS.SHA
-    CYRILLIC.FNT
-    DISK.ROM
-    FMPAC.ROM
-    FMPAC16.ROM
-    ITALIC.FNT
-    KANJI.ROM
-    MSX.ROM
-    MSX2.ROM
-    MSX2EXT.ROM
-    MSX2P.ROM
-    MSX2PEXT.ROM
-    MSXDOS2.ROM
-    PAINTER.ROM
-    RS232.ROM
-
 odyssey2:
   name:       Odyssey2
   extensions: [bin, zip]
@@ -894,6 +784,7 @@ saturn:
 jaguar:
   name:       Jaguar
   extensions: [j64, jag, zip]
+  theme:      atarijaguar
   emulators:
     libretro:
       virtualjaguar: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_VIRTUALJAGUAR] }
@@ -964,6 +855,34 @@ x68000:
       citra: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_CITRA] }
     citra:
       citra: { requireAnyOf: [BR2_PACKAGE_CITRA] }
+
+satellaview:
+  name:       Satellaview
+  extensions: [7z, bs, smc, sfc, zip]
+  emulators:
+    libretro:
+      snes9x: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_SNES9X] }
+
+sufami:
+  name:       SuFami Turbo
+  extensions: [7z, st, fig, bs, smc, sfc, zip]
+  emulators:
+    libretro:
+      snes9x: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_SNES9X] }
+
+pokemini:
+  name:       Pokemon-Mini
+  extensions: [min]
+  emulators:
+    libretro:
+      pokemini: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_POKEMINI] }
+
+gx4000:
+  name:       Amstrad GX4000
+  extensions: [dsk, m3u, cpr, zip]
+  emulators:
+    libretro:
+      cap32: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_CAP32] }
 
 imageviewer:
   name:       Screenshots

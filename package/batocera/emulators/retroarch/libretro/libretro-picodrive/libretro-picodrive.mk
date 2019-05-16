@@ -13,22 +13,25 @@ LIBRETRO_PICODRIVE_LICENSE = MAME
 
 PICOPLATFORM=$(LIBRETRO_PLATFORM)
 
-# RPI 0 and 1
-ifeq ($(BR2_arm1176jzf_s),y)
-  PICOPLATFORM=$(LIBRETRO_PLATFORM) armasm
-endif
+ifeq ($(BR2_arm),y)
+  # RPI 0 and 1
+  ifeq ($(BR2_arm1176jzf_s),y)
+    PICOPLATFORM=$(LIBRETRO_PLATFORM) armasm
+  endif
 
-# RPI 2 and 3
-ifeq ($(BR2_cortex_a7),y)
-  PICOPLATFORM=$(LIBRETRO_PLATFORM) armasm
-endif
-ifeq ($(BR2_cortex_a53),y)
-  PICOPLATFORM=$(LIBRETRO_PLATFORM) armasm
-endif
+  # RPI 2 and 3
+  ifeq ($(BR2_cortex_a7),y)
+    PICOPLATFORM=$(LIBRETRO_PLATFORM) armasm
+  endif
 
-# odroid xu4
-ifeq ($(BR2_cortex_a15),y)
-  PICOPLATFORM=$(LIBRETRO_PLATFORM) armasm
+  ifeq ($(BR2_cortex_a53),y)
+    PICOPLATFORM=$(LIBRETRO_PLATFORM) armasm
+  endif
+
+  # odroid xu4
+  ifeq ($(BR2_cortex_a15),y)
+    PICOPLATFORM=$(LIBRETRO_PLATFORM) armasm
+  endif
 endif
 
 define LIBRETRO_PICODRIVE_BUILD_CMDS

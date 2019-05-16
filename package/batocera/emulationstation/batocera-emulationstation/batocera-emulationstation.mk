@@ -4,8 +4,8 @@
 #
 ################################################################################
 
-# Version.: Commits on Mar 27, 2019
-BATOCERA_EMULATIONSTATION_VERSION = 453a68b051b2bd0e4bacc1abbfe7523e65842fee
+# Version.: Commits on May 16, 2019
+BATOCERA_EMULATIONSTATION_VERSION = ee3cd025dc1600ff9b67c9660ab72779e23541f6
 BATOCERA_EMULATIONSTATION_SITE = https://github.com/batocera-linux/batocera-emulationstation
 BATOCERA_EMULATIONSTATION_SITE_METHOD = git
 BATOCERA_EMULATIONSTATION_LICENSE = MIT
@@ -34,15 +34,14 @@ else
 endif
 
 define BATOCERA_EMULATIONSTATION_RPI_FIXUP
-	$(SED) 's|/opt/vc/include|$(STAGING_DIR)/usr/include|g' $(@D)/CMakeLists.txt
-	$(SED) 's|/opt/vc/lib|$(STAGING_DIR)/usr/lib|g' $(@D)/CMakeLists.txt
-	$(SED) 's|/usr/lib|$(STAGING_DIR)/usr/lib|g' $(@D)/CMakeLists.txt
+	$(SED) 's|.{CMAKE_FIND_ROOT_PATH}/opt/vc|$(STAGING_DIR)/usr|g' $(@D)/CMakeLists.txt
+	$(SED) 's|.{CMAKE_FIND_ROOT_PATH}/usr|$(STAGING_DIR)/usr|g'    $(@D)/CMakeLists.txt
 endef
 
 define BATOCERA_EMULATIONSTATION_RESOURCES
-	$(INSTALL) -m 0755 -d $(TARGET_DIR)/usr/share/batocera/datainit/system/.emulationstation/resources/help
-	$(INSTALL) -m 0644 -D $(@D)/resources/*.* $(TARGET_DIR)/usr/share/batocera/datainit/system/.emulationstation/resources
-	$(INSTALL) -m 0644 -D $(@D)/resources/help/*.* $(TARGET_DIR)/usr/share/batocera/datainit/system/.emulationstation/resources/help
+	$(INSTALL) -m 0755 -d $(TARGET_DIR)/usr/share/emulationstation/resources/help
+	$(INSTALL) -m 0644 -D $(@D)/resources/*.* $(TARGET_DIR)/usr/share/emulationstation/resources
+	$(INSTALL) -m 0644 -D $(@D)/resources/help/*.* $(TARGET_DIR)/usr/share/emulationstation/resources/help
 endef
 
 BATOCERA_EMULATIONSTATION_PRE_CONFIGURE_HOOKS += BATOCERA_EMULATIONSTATION_RPI_FIXUP

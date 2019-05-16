@@ -28,7 +28,7 @@ class Controller:
             self.inputs = dict()
         else:
             self.inputs = inputs
-            
+
     def generateSDLGameDBLine(self):
         # Making a dirty assumption here : if a dpad is an axis, then it shouldn't have any analog joystick
         nameMapping = {
@@ -59,19 +59,20 @@ class Controller:
             'button' : 'b',
             'hat'    : 'h0.' # Force dpad 0 until ES handles others
         }
-        
+
         if not self.inputs:
             return None
-            
-        strOut = "{},{},platform:Linux,".format(self.guid, self.configName)
-        
+        # TODO: python3 - force to use unicode
+        strOut = u"{},{},platform:Linux,".format(self.guid, self.configName)
+
         for idx, input in self.inputs.iteritems():
             if input.name in nameMapping and input.type in typePrefix and input.type in nameMapping[input.name] :
                 if input.type == 'hat':
-                    strOut += "{}:{}{},".format(nameMapping[input.name][input.type], typePrefix[input.type], input.value)
+                    # TODO: python3 - force to use unicode
+                    strOut += u"{}:{}{},".format(nameMapping[input.name][input.type], typePrefix[input.type], input.value)
                 else:
-                    strOut += "{}:{}{},".format(nameMapping[input.name][input.type], typePrefix[input.type], input.id)
-        
+                    # TODO: python3 - force to use unicode
+                    strOut += u"{}:{}{},".format(nameMapping[input.name][input.type], typePrefix[input.type], input.id)
         return strOut
 
 
@@ -132,6 +133,9 @@ def loadControllerConfig(p1index, p1guid, p1name, p1dev, p1nbaxes, p2index, p2gu
 
 def findBestControllerConfig(controllers, x, pxguid, pxindex, pxname, pxdev, pxnbaxes):
     # when there will have more joysticks, use hash tables
+    # TODO: python3 - workawround for names with utf-8 chars
+    if (pxname != None):
+        pxname = pxname.decode('utf-8')
     for controllerGUID in controllers:
         controller = controllers[controllerGUID]
         if controller.guid == pxguid and controller.configName == pxname:

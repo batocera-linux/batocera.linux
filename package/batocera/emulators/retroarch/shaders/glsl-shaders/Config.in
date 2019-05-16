@@ -1,0 +1,7 @@
+config BR2_PACKAGE_GLSL_SHADERS
+        bool "glsl-shaders"
+	depends on BR2_PACKAGE_RETROARCH
+        help
+          Common GSLS shaders for RetroArch.
+
+	  http://www.libretro.com

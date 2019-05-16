@@ -14,20 +14,17 @@ import batoceraFiles
 mupenHatToAxis = {'1': 'Up', '2': 'Right', '4': 'Down', '8': 'Left'}
 mupenDoubleAxis = {0:'X Axis', 1:'Y Axis'}
 
-def getMupenMappingFile():
-    if os.path.exists(batoceraFiles.mupenMappingUser):
-        return batoceraFiles.mupenMappingUser
-    else:
-        return batoceraFiles.mupenMappingSystem
-
 def getMupenMapping():
-    dom = minidom.parse(getMupenMappingFile())
+    # load system values and override by user values in case some user values are missing
     map = dict()
-    for inputs in dom.getElementsByTagName('inputList'):
-        for input in inputs.childNodes:
-            if input.attributes:
-                if input.attributes['name']:
-                        if input.attributes['value']:
+    for file in [batoceraFiles.mupenMappingSystem, batoceraFiles.mupenMappingUser]:
+        if os.path.exists(file):
+            dom = minidom.parse(file)
+            for inputs in dom.getElementsByTagName('inputList'):
+                for input in inputs.childNodes:
+                    if input.attributes:
+                        if input.attributes['name']:
+                            if input.attributes['value']:
                                 map[input.attributes['name'].value] = input.attributes['value'].value
     return map
 

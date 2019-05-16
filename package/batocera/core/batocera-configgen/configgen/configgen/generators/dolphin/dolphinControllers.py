@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import batoceraFiles
+import os
 from Emulator import Emulator
 
 # Create the controller configuration file
@@ -10,10 +11,10 @@ def generateControllerConfig(system, playersControllers, rom):
     if system.name == "wii":
         if system.isOptSet('emulatedwiimotes') and system.getOptBoolean('emulatedwiimotes') == True:
             generateControllerConfig_emulatedwiimotes(playersControllers, rom)
+            removeControllerConfig_gamecube() # because pads will already be used as emulated wiimotes
         else:
             generateControllerConfig_realwiimotes("WiimoteNew.ini", "Wiimote")
-        # you can use the gamecube pads on the wii together with wiimotes
-        generateControllerConfig_gamecube(playersControllers)
+            generateControllerConfig_gamecube(playersControllers) # you can use the gamecube pads on the wii together with wiimotes
     elif system.name == "gamecube":
         generateControllerConfig_gamecube(playersControllers)
     else:
@@ -111,6 +112,10 @@ def generateControllerConfig_gamecube(playersControllers):
         'C-Stick/Left':    'C-Stick/Right'
     }
     generateControllerConfig_any(playersControllers, "GCPadNew.ini", "GCPad", gamecubeMapping, gamecubeReverseAxes)
+
+def removeControllerConfig_gamecube():
+    configFileName = "{}/{}".format(batoceraFiles.dolphinConfig, "GCPadNew.ini")
+    os.remove(configFileName)
 
 def generateControllerConfig_realwiimotes(filename, anyDefKey):
     configFileName = "{}/{}".format(batoceraFiles.dolphinConfig, filename)

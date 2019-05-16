@@ -1,0 +1,6 @@
+config BR2_PACKAGE_UNCLUTTER
+	bool "unclutter"
+	depends on BR2_PACKAGE_XORG7
+	select BR2_PACKAGE_LIBEV
+	help
+	  This is a rewrite of the popular tool unclutter, but using the x11-xfixes extension.

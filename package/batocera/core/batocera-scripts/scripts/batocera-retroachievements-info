@@ -1,0 +1,45 @@
+#!/bin/bash
+#
+# Get RetroAchievements information for Batocera
+#
+# @lbrpdx on Batocera Forums and Discord
+#
+# Usage:
+# batocera-retroachievements-info
+#
+CONFIGFILE="/userdata/system/batocera.conf"
+USER=""
+
+###############################
+#
+function usage() {
+	echo "$0 username"
+	echo " - where username is the RetroAchievements username you want to check"
+	exit 1
+}
+
+###############################
+#
+function process() {
+	#fn=(date -Iseconds)
+	fn=$(date +"%s")
+	tmpfile=/tmp/ra_$fn
+	curl -o $tmpfile https://retroachievements.org/user/$USER 2>/dev/null
+	cat $tmpfile |  awk -v FS="(<div class='username'><span class='username'>|</div><div class='userpage recentlyplayed' >)" '{print $2}' | uniq > "$tmpfile"_2
+	points=$(cat "$tmpfile"_2 | sed -e "/^[[:blank:]]*$/d" | awk -v FS="(</strong></a>&nbsp;|<span class='TrueRatio'>)" '{print $2}')
+	rank=$(cat "$tmpfile"_2  | sed -e "/^[[:blank:]]*$/d" | awk -v FS="(userList.php|<br/><br/>)" '{print $3}' | sed -e "s/\?s=2'>//" -e "s;<.*a>;;" )
+	echo "Player $USER $points is $rank"
+	rm $tmpfile "$tmpfile"_2
+}
+
+#### Main loop
+#
+if [ $# -lt 1 ]; then
+	[ -f "$CONFIGFILE" ] && USER=$(grep -E "^[ \t]*global.retroachievements.username=" "$CONFIGFILE" | cut -d= -f2 | uniq)
+else
+	tmp="$1"
+	[ x"${tmp::1}" == "x-" ] && usage || USER="$1"
+fi
+
+[ x"$USER" == x ] && usage || process
+
