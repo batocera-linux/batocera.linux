@@ -197,7 +197,7 @@ gameandwatch:
   extensions: [mgw, zip]
   emulators:
     libretro:
-      vb: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GW] }
+      gw: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GW] }
 
 dreamcast:
   name:       Dreamcast
