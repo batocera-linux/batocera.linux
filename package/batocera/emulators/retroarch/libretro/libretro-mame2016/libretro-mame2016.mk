@@ -30,4 +30,9 @@ define LIBRETRO_MAME2016_INSTALL_TARGET_CMDS
 		$(TARGET_DIR)/usr/lib/libretro/mame0174_libretro.so
 endef
 
+define LIBRETRO_MAME2016_LIBM_FIXUP
+        $(SED) s+-lm+$(STAGING_DIR)/usr/lib/libm.a+ $(@D)/3rdparty/genie/build/gmake.linux/genie.make
+endef
+LIBRETRO_MAME2016_PRE_CONFIGURE_HOOKS += LIBRETRO_MAME2016_LIBM_FIXUP
+
 $(eval $(generic-package))

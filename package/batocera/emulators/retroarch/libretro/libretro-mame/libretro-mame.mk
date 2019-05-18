@@ -24,4 +24,9 @@ define LIBRETRO_MAME_INSTALL_TARGET_CMDS
 		$(TARGET_DIR)/usr/lib/libretro/mame_libretro.so
 endef
 
+define LIBRETRO_MAME_LIBM_FIXUP
+        $(SED) s+-lm+$(STAGING_DIR)/usr/lib/libm.a+ $(@D)/3rdparty/genie/build/gmake.linux/genie.make
+endef
+LIBRETRO_MAME_PRE_CONFIGURE_HOOKS += LIBRETRO_MAME_LIBM_FIXUP
+
 $(eval $(generic-package))
