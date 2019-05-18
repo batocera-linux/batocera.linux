@@ -3,8 +3,8 @@
 # LIBRETRO REICAST WINCE
 #
 ################################################################################
-# Version.: Commits on May 9, 2019
-LIBRETRO_REICAST_WINCE_VERSION = 122007bf36b55e400da039c80f931a10aa8e24bb
+# Version.: Commits on May 15, 2019
+LIBRETRO_REICAST_WINCE_VERSION = 4649dcf566445deaf168e8a7973d337e083877a1
 LIBRETRO_REICAST_WINCE_SITE = $(call github,libretro,reicast-emulator,$(LIBRETRO_REICAST_WINCE_VERSION))
 LIBRETRO_REICAST_WINCE_LICENSE = GPLv2
 
