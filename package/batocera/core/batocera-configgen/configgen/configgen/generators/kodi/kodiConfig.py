@@ -5,6 +5,8 @@ import signal
 import os
 import batoceraFiles
 from xml.dom import minidom
+# TODO: python3 - delete me!
+import codecs
 
 def writeKodiConfigs(currentControllers):
     kodihatspositions    = {1: 'up', 2: 'right', 4: 'down', 8: 'left'}
@@ -39,6 +41,8 @@ def writeKodiConfigs(currentControllers):
 
         # initialized the file
         kodiJoy = open(batoceraFiles.kodiJoystick.format(cur.guid), "w")
+        # TODO: python 3 - workawround to encode files in utf-8
+        kodiJoy = codecs.open(batoceraFiles.kodiJoystick.format(cur.guid), "w", "utf-8")
         config = minidom.Document()
         xmlbuttonmap = config.createElement('buttonmap')
         config.appendChild(xmlbuttonmap)
@@ -48,7 +52,7 @@ def writeKodiConfigs(currentControllers):
             break;
         else:
             controllersDone[cur.configName] = True
-        
+
         nbuttons = 0
         naxis    = int(cur.nbaxes)
         for x in cur.inputs:
@@ -67,7 +71,7 @@ def writeKodiConfigs(currentControllers):
         xmlcontroller.attributes["id"] = "game.controller.default"
 
         sticksNode = {}
-        
+
         for x in cur.inputs:
             input = cur.inputs[x]
             if input.name in kodimapping:
