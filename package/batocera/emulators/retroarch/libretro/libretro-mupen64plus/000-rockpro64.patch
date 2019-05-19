@@ -1,12 +1,11 @@
 diff --git a/Makefile b/Makefile
-index 0d9b74c..de73c56 100644
+index 3efb820..5269c48 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -216,6 +216,21 @@ else ifneq (,$(findstring odroid,$(platform)))
+@@ -115,6 +115,17 @@ else ifneq (,$(findstring odroid,$(platform)))
+       CPUFLAGS += -mcpu=cortex-a9
+    endif
  
-    COREFLAGS += -DOS_LINUX
-    ASFLAGS = -f elf -d ELF_TYPE
-+
 +# RockPro64
 +else ifneq (,$(findstring rockpro64,$(platform)))
 +   TARGET := $(TARGET_NAME)_libretro.so
@@ -17,9 +16,6 @@ index 0d9b74c..de73c56 100644
 +   HAVE_NEON = 1
 +   WITH_DYNAREC=arm
 +   CPUFLAGS += -march=armv7ve -mcpu=cortex-a72 -mtune=cortex-a72.cortex-a53
-+
-+   COREFLAGS += -DOS_LINUX
-+   ASFLAGS = -f elf -d ELF_TYPE
 +
  # OS X
  else ifneq (,$(findstring osx,$(platform)))
