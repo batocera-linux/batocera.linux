@@ -8,7 +8,7 @@ ACTIONSDIR="/batocera/actions"
 
 echo_msg() {
     arch=$1
-    echo $(date "+%Y/%m/%d %H:%m:%S") "[${arch}]" $1
+    echo $(date "+%Y/%m/%d %H:%m:%S") "[${arch}]" $2
 }
 
 do_push() {
