@@ -24,7 +24,6 @@ BR2_TARGET_LOCALTIME="Europe/Paris"
 BR2_ROOTFS_OVERLAY="board/batocera/fsoverlay board/batocera/s912/fsoverlay"
 BR2_ROOTFS_POST_BUILD_SCRIPT="board/batocera/post-build-script.sh"
 BR2_ROOTFS_POST_IMAGE_SCRIPT="board/batocera/post-image-script.sh"
-BR2_PACKAGE_HOST_LINUX_HEADERS_CUSTOM_3_14=y
 BR2_LINUX_KERNEL=y
 BR2_LINUX_KERNEL_CUSTOM_TARBALL=y
 BR2_LINUX_KERNEL_CUSTOM_TARBALL_LOCATION="https://github.com/kszaq/linux-amlogic-le/archive/79b5701.tar.gz"
