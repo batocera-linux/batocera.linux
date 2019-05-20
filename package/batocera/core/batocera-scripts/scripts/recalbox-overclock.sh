@@ -21,7 +21,7 @@ postBootRPIConfig() {
 
 doList() {
     case "${ARCH}" in
-	"rpi")
+	"rpi1")
 	    echo "none NONE"
 	    echo "high HIGH (950Mhz)"
 	    echo "turbo TURBO (1000Mhz)"
@@ -96,7 +96,7 @@ setValue() {
     VALUE=$1
 
     case "${ARCH}" in
-	"rpi")
+	"rpi1")
 	    case "${VALUE}" in
 		"none")
 		    setValue_rpiNone
