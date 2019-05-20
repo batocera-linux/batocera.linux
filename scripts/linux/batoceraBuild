@@ -6,12 +6,16 @@ BUILDDIR="/batocera/archs"
 DLDIR="/batocera/DL"
 ACTIONSDIR="/batocera/actions"
 
+echo_msg() {
+    arch=$1
+    echo $(date "+%Y/%m/%d %H:%m:%S") "[${arch}]" $1
+}
+
 do_push() {
     ftptarget=$1
     arch=$2
 
-    date
-    echo "pusing ${ftptarget} ${arch}..."
+    echo_msg "${arch}" "pusing ${ftptarget}..."
     case "${ftptarget}" in
 	"beta")
 	    lftp ftp://"${FTPBATOCERA}" -e "set ssl:verify-certificate false; mirror -R -e ${BUILDDIR}/${arch}/output/images/batocera /upgrades/${arch}/beta/last ; quit"
@@ -20,9 +24,15 @@ do_push() {
 	    lftp ftp://"${FTPBATOCERA}" -e "set ssl:verify-certificate false; mirror -R -e ${BUILDDIR}/${arch}/output/images/batocera /upgrades/${arch}/stable/last/next ; quit"
 	    ;;
 	*)
-	    echo "invalid ftp target" >&2
+	    echo_msg "${arch}" "invalid ftp target" >&2
 	    return 1
     esac
+}
+
+do_html() {
+    arch=$1
+
+    (cd "${BUILDDIR}/${arch}" && sudo docker run --rm --name "${arch}_html_"$(date "+%Y%m%d_%H%m%S") -v $PWD:/build batocera/batocera.linux-build /bin/bash -c "/build/scripts/linux/buildstats.sh /build > /build/output/images/batocera/index.html")
 }
 
 # wakeonlan b4:b5:2f:cb:74:07
@@ -34,7 +44,7 @@ checkFtpTarget() {
     ftptarget=$1
     if test "${ftptarget}" != "beta" -a "${ftptarget}" != "next"
     then
-	echo "invalid ftp target ${ftptarget}" >&2
+	echo_msg "-" "invalid ftp target ${ftptarget}" >&2
 	return 1
     fi
     return 0
@@ -47,11 +57,10 @@ buildAll() {
     touch "${ACTIONSDIR}/suspend" || exit 1
     while true
     do
-	NEXTITEM=$(ls | head -1)
+	NEXTITEM=$(ls -1t | head -1)
 	if test -z "${NEXTITEM}"
 	then
-	    echo "Ended."
-	    date
+	    echo_msg "-" "Ended."
 	    if test -e "${ACTIONSDIR}/suspend"
 	    then
 		do_suspend
@@ -60,17 +69,18 @@ buildAll() {
 	fi
 	rm -f "${SEARCHDIR}/${NEXTITEM}"
 
-	date
-	echo "building ${NEXTITEM}..."
-	if (cd "${BUILDDIR}/${NEXTITEM}" && sudo docker run -t --rm -v $PWD:/build -v /batocera/DL:/build/dl batocera/batocera.linux-build make) > "${LOGDIR}/build-${NEXTITEM}.log" 2> "${LOGDIR}/build-${NEXTITEM}.err"
+	echo_msg "${NEXTITEM}" "building..."
+	if (cd "${BUILDDIR}/${NEXTITEM}" && sudo docker run -t --rm --name "${arch}_build_"$(date "+%Y%m%d_%H%m%S") -v $PWD:/build -v /batocera/DL:/build/dl batocera/batocera.linux-build make) > "${LOGDIR}/build-${NEXTITEM}.log" 2> "${LOGDIR}/build-${NEXTITEM}.err"
 	then
+	    do_html "${NEXTITEM}"
+
 	    if test -n "${ftptarget}"
 	    then
 		if do_push "${ftptarget}" "${NEXTITEM}"
 		then
-		    echo "${NEXTITEM} pushed"
+		    echo_msg "${NEXTITEM}" "pushed"
 		else
-		    echo "unable to push ${NEXTITEM}"
+		    echo_msg "${NEXTITEM}" "unable to push"
 		fi
 	    fi
 	fi
@@ -98,7 +108,7 @@ case "${1}" in
     "enter")
 	arch="${2}"
 	cd "${BUILDDIR}/${arch}" || exit 1
-	sudo docker run -it --rm -v "${PWD}:/build" -v "${DLDIR}:/build/dl" "batocera/batocera.linux-build"
+	sudo docker run -it --rm --name "${arch}_enter_"$(date "+%Y%m%d_%H%m%S") -v "${PWD}:/build" -v "${DLDIR}:/build/dl" "batocera/batocera.linux-build"
 	;;
     "add")
 	while test -n "${2}"
@@ -109,7 +119,7 @@ case "${1}" in
 	done
 	;;
     "list")
-	ls "${SEARCHDIR}"
+	ls -1t "${SEARCHDIR}"
 	;;
     "gitlog")
 	for arch in "${BUILDDIR}/"*
@@ -135,7 +145,7 @@ case "${1}" in
     "logpkg")
 	if test -z "${2}"
 	then
-	    echo "missing argument" >&2
+	    echo_msg "-" "missing argument" >&2
 	    exit 1
 	fi
 	arch="${2}"
@@ -144,7 +154,7 @@ case "${1}" in
     "push")
 	if test -z "${FTPBATOCERA}"
 	then
-	    echo "FTPBATOCERA not set" >&2
+	    echo_msg "-" "FTPBATOCERA not set" >&2
 	    exit 1
 	fi
 	ftptarget=${2}
@@ -158,6 +168,12 @@ case "${1}" in
 	    do_push "${ftptarget}" "${arch}" || exit 1
 	done
 	;;
+    "html")
+	shift
+	arch="${1}"
+	do_html "${arch}" || exit 1
+	;;
+
     "suspend")
 	do_suspend
 	;;
