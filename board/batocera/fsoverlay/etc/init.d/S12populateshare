@@ -37,7 +37,7 @@ for FILE in music bios extractions kodi saves screenshots \
             bios/mame2003
 do
     # not wanted for kodi
-    test -e "$IN""/""$FILE" && test ! -e "$OUT""/""$FILE" && cp -r "$IN""/""$FILE" "$OUT""/""$FILE"
+    test -e "${IN}/${FILE}" && test ! -e "${OUT}/${FILE}" && mkdir -p $(dirname "${OUT}/${FILE}") && cp -r "${IN}/${FILE}" "${OUT}/${FILE}"
 done
 
 ### specific directories
