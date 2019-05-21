@@ -49,6 +49,7 @@ def generateCoreSettings(retroarchCore, system):
     if (system.config['core'] == 'mame078plus'):
         coreSettings.save('mame2003-plus_skip_disclaimer',  'enabled')
         coreSettings.save('mame2003-plus_skip_warnings',    'enabled')
+        coreSettings.save('mame2003-plus_analog',           'digital')
 
     if (system.config['core'] == 'pce'):
         coreSettings.save('pce_keepaspect', 'enabled')

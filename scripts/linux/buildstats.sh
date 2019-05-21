@@ -1,7 +1,7 @@
 #!/bin/bash
 
 print_usage() {
-    echo "${1}"" <batocera-emulationstation-buildroot directory>"
+    echo "${1}"" <buildroot directory>"
 }
 
 if test $# -ne 1
@@ -10,14 +10,16 @@ then
     exit 1
 fi
 
-ESDIR="${1}"
-GENDATE=$(date +%D)
+BRDIR="${1}"
+ESDIR="${BRDIR}/output/build/"$(ls -t "${BRDIR}/output/build" | grep -E "^batocera-emulationstation-" | head -1)
+
+GENDATE=$(date "+%Y/%m/%d %H:%m:%S")
 
 echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">'
 echo '<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr" lang="fr">'
 echo '<head>'
 echo '<meta http-equiv="Content-type" content="text/html; charset=utf-8" />'
-echo '<title>batocera.linux translation status - '${GENDATE}'</title>'
+echo '<title>batocera.linux - '${GENDATE}'</title>'
 echo '</head>'
 echo "<style>
 table {
@@ -32,6 +34,20 @@ th, td {
 </style>"
 echo '<body>'
 
+echo -n "<h1>"
+cat ${BRDIR}/output/images/batocera/batocera.version
+echo "</h1>"
+echo "<h2>Files</h2>"
+echo "<ul>"
+ls ${BRDIR}/output/images/batocera/*.{xz,gz} |
+    while read FILE
+    do
+	FILENAME=$(basename "${FILE}")
+	echo "<li>""<a href=\"${FILENAME}\">${FILENAME}</a></li>"
+    done
+echo "</ul>"
+
+echo "<h2>Translations</h2>"
 echo "<table>"
 echo "<tr><th>Language</th><th>Status</th><th>Translated</th><th>Fuzzy</th><th>Untranslated</th></tr>"
 for POFILE in "${ESDIR}"/locale/lang/*/LC_MESSAGES/emulationstation2.po
@@ -50,11 +66,13 @@ do
     let PER_FUZZY_W=$NBFUZZY'*'100/$TOTAL'*'2
     let PER_UNTRANSLATED_W=$NBUNTRANSLATED'*'100/$TOTAL'*'2
     let PER_TRANSLATED_W=200-$PER_FUZZY_W-PER_UNTRANSLATED_W
+    let PER_TRANSLATED=$NBTRANSLATED'*'100/$TOTAL
+    LINK="https://raw.githubusercontent.com/batocera-linux/batocera-emulationstation/master/locale/lang/${POLANG}/LC_MESSAGES/emulationstation2.po"
     
     echo "<tr>"
-    echo "<td>${POLANG}</td>"
+    echo "<td><a href=\"${LINK}\">${POLANG}</a></td>"
     echo "<td>"
-    echo "<div style=\"width:${PER_TRANSLATED_W}px; height:20px; background:green; float:left\"></div><div style=\"width:${PER_FUZZY_W}px; height:20px; background:orange; float:left\"></div><div style=\"width:${PER_UNTRANSLATED_W}px; height:20px; background:red; float:left\"></div>"
+    echo "<div style=\"width:${PER_TRANSLATED_W}px; height:20px; background:green; float:left\">${PER_TRANSLATED}%</div><div style=\"width:${PER_FUZZY_W}px; height:20px; background:orange; float:left\"></div><div style=\"width:${PER_UNTRANSLATED_W}px; height:20px; background:red; float:left\"></div>"
     echo "</td>"
     echo "<td>"
     test "${NBTRANSLATED}" -gt 0 && echo "${NBTRANSLATED}"
@@ -68,6 +86,7 @@ do
     echo "</tr>"
 done
 echo '</table>'
+echo "<p>If your language is not available, please translate <a href=\"https://raw.githubusercontent.com/batocera-linux/batocera-emulationstation/master/locale/emulationstation2.pot\">this file</a> and send it us.<br />You can read other translations to take them as exemple.</p>"
 echo "Generated on ${GENDATE}"
 echo '</body>'
 echo '</html>'

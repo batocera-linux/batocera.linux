@@ -4,8 +4,8 @@
 #
 # Disable.: Many games are not yet running
 ################################################################################
-# Version.: Commits on Feb 4, 2019
-LIBRETRO_PPSSPP_VERSION = 128c0adc3918914935d2e03c95cc46edd85d963d
+# Version.: Commits on Mar 14, 2019
+LIBRETRO_PPSSPP_VERSION = v1.8.0
 LIBRETRO_PPSSPP_SITE = https://github.com/hrydgard/ppsspp.git
 LIBRETRO_PPSSPP_SITE_METHOD=git
 LIBRETRO_PPSSPP_GIT_SUBMODULES=YES

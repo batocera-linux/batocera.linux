@@ -3,8 +3,8 @@
 # GW
 #
 ################################################################################
-# Version.: Commits on Nov 18, 2018
-LIBRETRO_GW_VERSION = dc0feaf9a779a9dc4862351584a585d4fc871c3f
+# Version.: Commits on May 5, 2019
+LIBRETRO_GW_VERSION = 40fb9baefc0a259e0ffb5da6d3494775c5d6475b
 LIBRETRO_GW_SITE = $(call github,libretro,gw-libretro,$(LIBRETRO_GW_VERSION))
 LIBRETRO_GW_LICENSE = GPLv3
 
