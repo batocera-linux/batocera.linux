@@ -159,7 +159,7 @@ EOF
 	    if test "${settings_key}" = "${settings_key_dec}"
 	    then
 		# sed the replace by the secure value in batocera.conf
-		settings_key=$(/recalbox/scripts/recalbox-encode.sh encode "${settings_key}")
+		#settings_key=$(/recalbox/scripts/recalbox-encode.sh encode "${settings_key}")
 		sed -i -e s@'^[ \t]*wifi.key[ \t]*=.*$'@"wifi.key=${settings_key}"@ "/userdata/system/batocera.conf"
 	    fi
 	fi
