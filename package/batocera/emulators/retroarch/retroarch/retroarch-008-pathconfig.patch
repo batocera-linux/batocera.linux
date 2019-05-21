@@ -1,0 +1,16 @@
+diff --git a/retroarch.c b/retroarch.c
+index 1331327..3f5d345 100644
+--- a/retroarch.c
++++ b/retroarch.c
+@@ -2701,9 +2701,9 @@ bool rarch_ctl(enum rarch_ctl_state state, void *data)
+                if (settings)
+                   options_path = settings->paths.path_core_options;
+ 
+-               if (string_is_empty(options_path) && !path_is_empty(RARCH_PATH_CONFIG))
++               if (string_is_empty(options_path))
+                {
+-                  fill_pathname_resolve_relative(buf, path_get(RARCH_PATH_CONFIG),
++                  fill_pathname_resolve_relative(buf, "/recalbox/share/system/configs/retroarch/cores/",
+                         file_path_str(FILE_PATH_CORE_OPTIONS_CONFIG), sizeof(buf));
+                   options_path = buf;
+                }
