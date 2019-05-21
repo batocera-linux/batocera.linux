@@ -21,7 +21,6 @@ function usage() {
 ###############################
 #
 function process() {
-	#fn=(date -Iseconds)
 	fn=$(date +"%s")
 	tmpfile=/tmp/ra_$fn
 	curl -o $tmpfile https://retroachievements.org/user/$USER 2>/dev/null
@@ -29,7 +28,12 @@ function process() {
 	points=$(cat "$tmpfile"_2 | sed -e "/^[[:blank:]]*$/d" | awk -v FS="(</strong></a>&nbsp;|<span class='TrueRatio'>)" '{print $2}')
 	rank=$(cat "$tmpfile"_2  | sed -e "/^[[:blank:]]*$/d" | awk -v FS="(userList.php|<br/><br/>)" '{print $3}' | sed -e "s/\?s=2'>//" -e "s;<.*a>;;" )
 	echo "Player $USER $points is $rank"
-	rm $tmpfile "$tmpfile"_2
+	if  [ x"$rank" != x ]; then
+		echo "Last RetroAchievements games played:"
+		cat $tmpfile | awk '{match($0,/Game.*points.<br\/><div class=/); s=substr($0,RSTART, RLENGTH); printf "%s",s }' | sed -e "/^[[:blank:]]*$/d" | sed -e 's/points.<br\/><div class=/pts\@\\\n/g;' > "$tmpfile"_2
+		cat "$tmpfile"_2 | awk -v FS="(Game/[0-9]*'>|@)" '{print $2}' | sed -e "s;</a><br/>Last played[ 0-9:-]*<br/>; ~ ;" | sed -e "s;Earned ;;" | sed "s;achievements;achv;" 
+	fi
+	rm "$tmpfile" "$tmpfile"_2
 }
 
 #### Main loop
