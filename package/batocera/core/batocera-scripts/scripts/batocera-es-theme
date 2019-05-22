@@ -69,7 +69,7 @@ function list_themes() {
 #
 function install_theme() {
 	theme="$1"
-	echo "* Installing $theme *"
+	success_installed=0
 	fn=$(date +"%s")
 	tmp="/tmp/themes_$fn"
 	if [ -f $LOCALTHEMESLIST ]; then
@@ -93,14 +93,21 @@ function install_theme() {
 				unzip "$gitname.zip"
 				mv "$gitname-master" "$gitname"
 				rm "$gitname.zip"
+				success_installed=1
 			else
 				echo "Error - $theme zip file could not be downloaded from $url"
 				exit 1
 			fi
-			echo "Theme $theme is now installed."
 		fi
 	done < "$tmp"
 	rm "$tmp"
+	if [ "$success_installed" == 1 ]; then
+		echo "Theme $theme is now installed"
+		exit 0
+	else
+		echo "Error - theme $theme could not be found"
+		exit 1
+	fi
 }
 
 #### Main loop
