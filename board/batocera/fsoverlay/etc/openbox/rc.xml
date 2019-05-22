@@ -5,11 +5,18 @@
 		<firstdesk>1</firstdesk>
 	</desktops>
 	<applications>
-		<application class="*">
+		<application name="emulationstation">
 			<decor>no</decor>
 			<maximized>true</maximized>
  			<focus>yes</focus>
 			<layer>normal</layer>
+			<fullscreen>yes</fullscreen>
+		</application>
+		<application name="pcmanfm">
+			<decor>yes</decor>
+			<maximized>false</maximized>
+			<focus>yes</focus>
+			<layer>above</layer>
 			<fullscreen>yes</fullscreen>
 		</application>
 	</applications>
