@@ -21,7 +21,10 @@ class ReicastGenerator(Generator):
         Config = ConfigParser.ConfigParser()
         Config.optionxform = str
         if os.path.exists(batoceraFiles.reicastConfig):
-            Config.read(batoceraFiles.reicastConfig)
+            try:
+                Config.read(batoceraFiles.reicastConfig)
+            except:
+                pass # give up the file
         
         if not Config.has_section("input"):
             Config.add_section("input")
