@@ -26,6 +26,11 @@ endef
 define LIBRETRO_FBNEO_INSTALL_TARGET_CMDS
 	$(INSTALL) -D $(@D)/src/burner/libretro/fbneo_libretro.so \
 		$(TARGET_DIR)/usr/lib/libretro/fbneo_libretro.so
+
+	mkdir -p $(TARGET_DIR)/usr/share/batocera/datainit/bios/fbneo/samples
+	
+	cp -r $(@D)/metadata/hiscore.dat \
+		$(TARGET_DIR)/usr/share/batocera/datainit/bios/fbneo	
 endef
 
 $(eval $(generic-package))
