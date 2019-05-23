@@ -393,9 +393,10 @@ fba:
   platform:   arcade
   emulators:
     libretro:
-      fba: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FBA] }
+      fba:    { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FBA]    }
+      fbneo:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FBNEO]  }
     fba2x:
-      fba2x: { requireAnyOf: [BR2_PACKAGE_PIFBA] }
+      fba2x:  { requireAnyOf: [BR2_PACKAGE_PIFBA]           }
   comment_en: |
     ROMs version must be 0.2.97.44
 
@@ -437,14 +438,15 @@ neogeo:
   extensions: [7z, fba, zip]
   emulators:
     libretro:
-      imame4all:    { requireAnyOf: [BR2BR2_PACKAGE_LIBRETRO_IMAME] }
-      mame078plus:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME2003_PLUS] }
-      mame0139:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME2010] }
-      mame0174:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME2016] }
-      mame:         { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME]     }
-      fba:          { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FBA]      }
+      imame4all:    { requireAnyOf: [BR2BR2_PACKAGE_LIBRETRO_IMAME]       }
+      mame078plus:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME2003_PLUS]  }
+      mame0139:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME2010]       }
+      mame0174:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME2016]       }
+      mame:         { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME]           }
+      fba:          { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FBA]            }
+      fbneo:        { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FBNEO]          }
     fba2x:
-      fba2x:        { requireAnyOf: [BR2_PACKAGE_PIFBA]             }
+      fba2x:        { requireAnyOf: [BR2_PACKAGE_PIFBA]                   }
 
 neogeocd:
   name:       Neo-Geo CD
