@@ -71,14 +71,14 @@ def generateControllerConfig(controller):
 				break
 		
 		# Sadly, we don't get the right axis code for Y hats. So, dirty hack time
-		code = input.code
-		if input.type == 'hat':
-		    if input.name == 'up':
-    			code = int(input.code) + 1
-		    else:
-    			code = input.code
-		
-		Config.set(section, var, code)
+                if input.code is not None:
+		    code = input.code
+		    if input.type == 'hat':
+		        if input.name == 'up':
+    			    code = int(input.code) + 1
+		        else:
+    			    code = input.code
+		    Config.set(section, var, code)
 
     Config.write(cfgfile)
     cfgfile.close()
