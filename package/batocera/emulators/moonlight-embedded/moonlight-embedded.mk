@@ -3,8 +3,8 @@
 # moonlight-embedded
 #
 ################################################################################
-# Version.: Commits on Apr 18, 2019 (v2.4.7)
-MOONLIGHT_EMBEDDED_VERSION = 7b46b4b2ea4e51bc758a02d18cf80313ba442161
+# Version.: Commits on May 27, 2019
+MOONLIGHT_EMBEDDED_VERSION = v2.4.10
 MOONLIGHT_EMBEDDED_SITE = git://github.com/irtimmer/moonlight-embedded.git
 MOONLIGHT_EMBEDDED_GIT_SUBMODULES=y
 MOONLIGHT_EMBEDDED_LICENSE = GPLv3
