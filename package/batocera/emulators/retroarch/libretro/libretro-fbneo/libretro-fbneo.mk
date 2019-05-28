@@ -3,8 +3,8 @@
 # FBNEO
 #
 ################################################################################
-# Version.: Commits on May 23, 2019
-LIBRETRO_FBNEO_VERSION = b1d48239f86c6a7d1e5a768651d2f97918236f9a
+# Version.: Commits on May 28, 2019
+LIBRETRO_FBNEO_VERSION = 189b99fae9a2f241752e27d7250c525ea077607c
 LIBRETRO_FBNEO_SITE = $(call github,libretro,FBNeo,$(LIBRETRO_FBNEO_VERSION))
 LIBRETRO_FBNEO_LICENSE = Non-commercial
 
@@ -29,7 +29,10 @@ define LIBRETRO_FBNEO_INSTALL_TARGET_CMDS
 
 	mkdir -p $(TARGET_DIR)/usr/share/batocera/datainit/bios/fbneo/samples
 	
-	cp -r $(@D)/metadata/hiscore.dat \
+	cp -r $(@D)/metadata/* \
+		$(TARGET_DIR)/usr/share/batocera/datainit/bios/fbneo
+
+	cp -r $(@D)/dats/* \
 		$(TARGET_DIR)/usr/share/batocera/datainit/bios/fbneo	
 endef
 

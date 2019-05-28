@@ -393,7 +393,6 @@ fba:
   platform:   arcade
   emulators:
     libretro:
-      fba:    { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FBA]    }
       fbneo:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FBNEO]  }
     fba2x:
       fba2x:  { requireAnyOf: [BR2_PACKAGE_PIFBA]           }
@@ -443,7 +442,6 @@ neogeo:
       mame0139:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME2010]       }
       mame0174:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME2016]       }
       mame:         { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME]           }
-      fba:          { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FBA]            }
       fbneo:        { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FBNEO]          }
     fba2x:
       fba2x:        { requireAnyOf: [BR2_PACKAGE_PIFBA]                   }
@@ -453,8 +451,8 @@ neogeocd:
   extensions: [cue, iso]
   emulators:
     libretro:
-      fba:       { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FBA]      }
-      neocd:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_NEOCD]    }
+      neocd:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_NEOCD]  }
+      fbneo:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FBNEO]  }
 
 colecovision:
   name:       ColecoVision
