@@ -58,11 +58,6 @@ def generateCoreSettings(retroarchCore, system):
         coreSettings.save('picodrive_input1',   '"6 button pad"')
         coreSettings.save('picodrive_input2',   '"6 button pad"')
         
-    if (system.config['core'] == 'fba'):
-        coreSettings.save('fba-diagnostics',    '"disabled"')
-        coreSettings.save('fba-unibios',        '"disabled"')
-        coreSettings.save('fba-controls',       '"gamepad"')
-
     if (system.config['core'] == '81'):
         coreSettings.save('81_sound',   '"Zon X-81"')
 
