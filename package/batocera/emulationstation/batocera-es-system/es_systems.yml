@@ -9,7 +9,7 @@ snes:
       snes9x:      { requireAnyOf: [BR2_PACKAGE_LIBRETRO_SNES9X]      }
 
 c64:
-  name:       Commodore c64
+  name:       Commodore 64
   extensions: [crt, d64, d71, d80, d81, d82, g41, g64, t64, x64, tap, prg, p00, crt, zip]
   emulators:
     vice:
@@ -200,7 +200,7 @@ gameandwatch:
       gw: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GW] }
 
 dreamcast:
-  name:       Dreamcast
+  name:       Sega Dreamcast
   extensions: [cdi, chd, gdi]
   emulators:
     libretro:
@@ -210,7 +210,7 @@ dreamcast:
       reicast: { requireAnyOf: [BR2_PACKAGE_REICAST] }
 
 naomi:
-  name:       Naomi Dreamcast
+  name:       Sega Naomi
   extensions: [lst, bin, dat, 7z, zip]
   emulators:
     libretro:
@@ -248,7 +248,7 @@ sega32x:
       picodrive: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PICODRIVE] }
 
 mastersystem:
-  name:       Sega Master System / Mark III
+  name:       Sega Master System
   extensions: [7z, bin, sms, zip]
   emulators:
     libretro:
@@ -388,7 +388,7 @@ dos:
     http://www.myabandonware.com/browse/platform/dos/
 
 fba:
-  name:       FBA
+  name:       Final Burn Alpha
   extensions: [7z, fba, zip]
   platform:   arcade
   emulators:
@@ -529,7 +529,7 @@ atari7800:
       prosystem: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PROSYSTEM] }
 
 lynx:
-  name:       Lynx
+  name:       Atari Lynx
   extensions: [7z, lnx, zip]
   theme:      atarilynx
   platform:   atarilynx
@@ -538,7 +538,7 @@ lynx:
       mednafen_lynx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BEETLE_LYNX] }
 
 ngp:
-  name: Neo-Geo Pocket
+  name:       Neo-Geo Pocket
   extensions: [7z, ngp, zip]
   emulators:
     libretro:
@@ -631,14 +631,14 @@ cavestory:
     Les autres versions pourraient figer le système.
 
 atarist:
-  name:       Atarist
+  name:       Atari ST
   extensions: [zip, st, stx, img, rom, raw, ipf, ctr, zip]
   emulators:
     libretro:
       hatari: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_HATARI] }
 
 amstradcpc:
-  name:       AmstradCPC
+  name:       Amstrad CPC
   extensions: [cdt, cpc, dsk, zip]
   emulators:
     libretro:
@@ -760,7 +760,7 @@ zxspectrum:
     If you set a joystick along with the keyboard, the joystick will work just fine except for the bindings to RETURN and SPACE, and the keyboard won't register the keys assigned to the Cursor joystick, or to the L1 and R1 buttons for all other joystick types.
 
 moonlight:
-  name:       Moonlight
+  name:       Moonlight Embedded
   extensions: [moonlight]
   emulators:
     moonlight:
@@ -784,7 +784,7 @@ saturn:
       kronos:        { requireAnyOf: [BR2_PACKAGE_LIBRETRO_KRONOS]        }
 
 jaguar:
-  name:       Jaguar
+  name:       Atari Jaguar
   extensions: [j64, jag, zip]
   theme:      atarijaguar
   emulators:
@@ -792,7 +792,7 @@ jaguar:
       virtualjaguar: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_VIRTUALJAGUAR] }
 
 gamecube:
-  name:       GameCube
+  name:       Nintendo GameCube
   extensions: [ciso, iso, gc, gcz, gcm]
   theme:      gc
   emulators:
@@ -802,7 +802,7 @@ gamecube:
       dolphin: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_DOLPHIN] }
 
 wii:
-  name:       Wii
+  name:       Nintendo Wii
   extensions: [iso, wbfs, elf, dol, gcm, ciso, gcz, wad]
   emulators:
     dolphin-emu:
@@ -829,7 +829,7 @@ ps2:
       pcsx2: { requireAnyOf: [BR2_PACKAGE_PCSX2, BR2_PACKAGE_PCSX2_AVX2, BR2_PACKAGE_PCSX2_X86] }
 
 3do:
-  name:       3DO
+  name:       3DO Interactive Multiplayer
   extensions: [cue, iso, chd]
   emulators:
     libretro:
