@@ -75,6 +75,9 @@ def generateCoreSettings(retroarchCore, system):
     if (system.config['core'] == 'fuse'):
         coreSettings.save('fuse_machine',   '"Spectrum 128K"')
 
+    if (system.config['core'] == '4do'):
+        coreSettings.save('4do_dsp_threaded',   '"enabled"')
+
 def generateHatariConf(hatariConf):
     hatariConfig = ConfigParser.ConfigParser()
     # To prevent ConfigParser from converting to lower case
