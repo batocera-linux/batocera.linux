@@ -1,0 +1,26 @@
+From 11dae03575da1ac26fbc5930bea1bd74503fe8d0 Mon Sep 17 00:00:00 2001
+From: Max Kellermann <max@duempel.org>
+Date: Mon, 24 Apr 2017 14:38:06 +0200
+Subject: [PATCH 18/62] tools/depends/target/libdvdcss: generate empty
+ ChangeLog to prevent "git log" call
+
+Signed-off-by: memeka <mihailescu2m@gmail.com>
+---
+ tools/depends/target/libdvdcss/Makefile | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/tools/depends/target/libdvdcss/Makefile b/tools/depends/target/libdvdcss/Makefile
+index 518ce2b..cf7f5a4 100644
+--- a/tools/depends/target/libdvdcss/Makefile
++++ b/tools/depends/target/libdvdcss/Makefile
+@@ -44,6 +44,7 @@ $(PLATFORM): $(TARBALLS_LOCATION)/$(ARCHIVE) $(DEPS)
+ 	cd $(PLATFORM); $(AUTORECONF) -vif && ac_cv_path_GIT= ./configure $(config)
+ 
+ $(PLATFORM)/.libs/$(LIBNAME).a: $(PLATFORM)
++	[ -f $(PLATFORM)/ChangeLog ] || touch $(PLATFORM)/ChangeLog
+ 	[ -d $(PLATFORM)/.libs ] && [ ! -f $@ ] && $(MAKE) -C $(PLATFORM) clean || :
+ 	$(MAKE) -C $(PLATFORM)
+ 
+-- 
+2.7.4
+

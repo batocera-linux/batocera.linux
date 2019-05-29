@@ -42,6 +42,8 @@ menu "System"
     source "package/batocera/gpu/mali-opengles-sdk/Config.in"
     source "package/batocera/gpu/mali-t62x-fbdev/Config.in"
     source "package/batocera/gpu/mali-t62x-wayland/Config.in"
+    source "package/batocera/gpu/mali-bifrost/Config.in"
+    source "package/batocera/gpu/mali-bifrost-module/Config.in"
     source "package/batocera/gpu/opengl-meson-t82x/Config.in"
   endmenu
 

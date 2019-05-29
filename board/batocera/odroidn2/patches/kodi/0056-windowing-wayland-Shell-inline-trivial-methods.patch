@@ -1,0 +1,125 @@
+From 6db0682f39481b6b03a1e105e36ec1d670f7d9ec Mon Sep 17 00:00:00 2001
+From: Max Kellermann <max.kellermann@gmail.com>
+Date: Mon, 24 Apr 2017 14:38:09 +0200
+Subject: [PATCH 56/62] windowing/wayland/Shell: inline trivial methods
+
+Signed-off-by: memeka <mihailescu2m@gmail.com>
+---
+ xbmc/windowing/wayland/CMakeLists.txt |  1 -
+ xbmc/windowing/wayland/Shell.cpp      | 46 -----------------------------------
+ xbmc/windowing/wayland/Shell.h        | 23 ++++++++++++------
+ 3 files changed, 16 insertions(+), 54 deletions(-)
+ delete mode 100644 xbmc/windowing/wayland/Shell.cpp
+
+diff --git a/xbmc/windowing/wayland/CMakeLists.txt b/xbmc/windowing/wayland/CMakeLists.txt
+index 21b059c..73a8803 100644
+--- a/xbmc/windowing/wayland/CMakeLists.txt
++++ b/xbmc/windowing/wayland/CMakeLists.txt
+@@ -12,7 +12,6 @@ set(SOURCES Callback.cpp
+             PollThread.cpp
+             Registry.cpp
+             Seat.cpp
+-            Shell.cpp
+             ShellSurface.cpp
+             Surface.cpp
+             Wayland12EventQueueStrategy.cpp
+diff --git a/xbmc/windowing/wayland/Shell.cpp b/xbmc/windowing/wayland/Shell.cpp
+deleted file mode 100644
+index f804c0b..0000000
+--- a/xbmc/windowing/wayland/Shell.cpp
++++ /dev/null
+@@ -1,46 +0,0 @@
+-/*
+- *      Copyright (C) 2011-2013 Team XBMC
+- *      http://xbmc.org
+- *
+- *  This Program is free software; you can redistribute it and/or modify
+- *  it under the terms of the GNU General Public License as published by
+- *  the Free Software Foundation; either version 2, or (at your option)
+- *  any later version.
+- *
+- *  This Program is distributed in the hope that it will be useful,
+- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+- *  GNU General Public License for more details.
+- *
+- *  You should have received a copy of the GNU General Public License
+- *  along with XBMC; see the file COPYING.  If not, see
+- *  <http://www.gnu.org/licenses/>.
+- *
+- */
+-#include <wayland-client.h>
+-
+-#include "Shell.h"
+-
+-namespace xw = xbmc::wayland;
+-
+-xw::Shell::Shell(struct wl_shell *shell) :
+-  m_shell(shell)
+-{
+-}
+-
+-xw::Shell::~Shell()
+-{
+-  wl_shell_destroy(m_shell);
+-}
+-
+-struct wl_shell *
+-xw::Shell::GetWlShell()
+-{
+-  return m_shell;
+-}
+-
+-struct wl_shell_surface *
+-xw::Shell::CreateShellSurface(struct wl_surface *surface)
+-{
+-  return wl_shell_get_shell_surface(m_shell, surface);
+-}
+diff --git a/xbmc/windowing/wayland/Shell.h b/xbmc/windowing/wayland/Shell.h
+index b901268..5bd5b4f 100644
+--- a/xbmc/windowing/wayland/Shell.h
++++ b/xbmc/windowing/wayland/Shell.h
+@@ -20,9 +20,7 @@
+  *
+  */
+ 
+-struct wl_shell;
+-struct wl_shell_surface;
+-struct wl_surface;
++#include <wayland-client.h>
+ 
+ namespace xbmc
+ {
+@@ -32,14 +30,25 @@ class Shell
+ {
+ public:
+ 
+-  explicit Shell(struct wl_shell *shell);
+-  ~Shell();
++  explicit Shell(struct wl_shell *shell) :
++    m_shell(shell)
++  {
++  }
++
++  ~Shell() {
++    wl_shell_destroy(m_shell);
++  }
+ 
+   Shell(const Shell &) = delete;
+   Shell &operator=(const Shell &) = delete;
+ 
+-  struct wl_shell * GetWlShell();
+-  struct wl_shell_surface * CreateShellSurface(struct wl_surface *);
++  struct wl_shell * GetWlShell() {
++    return m_shell;
++  }
++
++  struct wl_shell_surface * CreateShellSurface(struct wl_surface *surface) {
++    return wl_shell_get_shell_surface(m_shell, surface);
++  }
+ 
+ private:
+ 
+-- 
+2.7.4
+

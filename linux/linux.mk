@@ -421,9 +421,6 @@ define LINUX_BUILD_DTB
 endef
 ifeq ($(BR2_LINUX_KERNEL_APPENDED_DTB),)
 define LINUX_INSTALL_DTB
-	# batocera bad hack for odroidn2 -- amlogic dir issues
-	if test "$(LINUX_DTBS)" = meson64_odroidn2.dtb; then cp $(LINUX_ARCH_PATH)/boot/dts/amlogic/$(LINUX_DTBS) $(LINUX_ARCH_PATH)/boot; fi
-
 	# dtbs moved from arch/<ARCH>/boot to arch/<ARCH>/boot/dts since 3.8-rc1
 	cp $(addprefix \
 		$(LINUX_ARCH_PATH)/boot/$(if $(wildcard \

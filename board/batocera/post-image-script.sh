@@ -381,13 +381,14 @@ case "${BATOCERA_TARGET}" in
         # /boot
         rm -rf "${BINARIES_DIR}/boot"            || exit 1
         mkdir -p "${BINARIES_DIR}/boot/boot"     || exit 1
-        cp "${BINARIES_DIR}/Image"                 "${BINARIES_DIR}/boot/boot/linux"                || exit 1
-	gzip "${BINARIES_DIR}/boot/boot/linux"                                                      || exit 1
+	"${HOST_DIR}/bin/mkimage" -A arm64 -O linux -T kernel -C none -a 0x1080000 -e 0x1080000 -n 5.x -d "${BINARIES_DIR}/Image" "${BINARIES_DIR}/uImage" || exit 1
+        cp "${BINARIES_DIR}/uImage"                "${BINARIES_DIR}/boot/boot/linux"                || exit 1
         cp "${BINARIES_DIR}/uInitrd"             "${BINARIES_DIR}/boot/boot/uInitrd"                || exit 1
         cp "${BINARIES_DIR}/rootfs.squashfs"       "${BINARIES_DIR}/boot/boot/batocera.update"      || exit 1
-        cp "${BINARIES_DIR}/meson64_odroidn2.dtb"  "${BINARIES_DIR}/boot/boot/meson64_odroidn2.dtb" || exit 1
+        cp "${BINARIES_DIR}/meson-g12b-odroid-n2.dtb"  "${BINARIES_DIR}/boot/boot/meson-g12b-odroid-n2.dtb" || exit 1
         cp "${BINARIES_DIR}/batocera-boot.conf"    "${BINARIES_DIR}/boot/batocera-boot.conf"        || exit 1
 	cp "board/batocera/odroidn2/boot/boot.ini"      "${BINARIES_DIR}/boot/boot.ini"                  || exit 1
+
         # boot.tar.xz
         echo "creating boot.tar.xz"
         (cd "${BINARIES_DIR}/boot" && tar -cJf "${BATOCERA_BINARIES_DIR}/boot.tar.xz" boot.ini boot batocera-boot.conf) || exit 1
