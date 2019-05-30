@@ -27,12 +27,11 @@ define LIBRETRO_FBNEO_INSTALL_TARGET_CMDS
 	$(INSTALL) -D $(@D)/src/burner/libretro/fbneo_libretro.so \
 		$(TARGET_DIR)/usr/lib/libretro/fbneo_libretro.so
 
+	# Bios
 	mkdir -p $(TARGET_DIR)/usr/share/batocera/datainit/bios/fbneo/samples
-	
-	cp -r $(@D)/metadata/* \
+	$(INSTALL) -D $(@D)/metadata/* \
 		$(TARGET_DIR)/usr/share/batocera/datainit/bios/fbneo
-
-	cp -r $(@D)/dats/* \
+	$(INSTALL) -D $(@D)/dats/* \
 		$(TARGET_DIR)/usr/share/batocera/datainit/bios/fbneo	
 endef
 
