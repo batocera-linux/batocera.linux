@@ -16,6 +16,11 @@ endef
 define LIBRETRO_MAME2003_INSTALL_TARGET_CMDS
 	$(INSTALL) -D $(@D)/mame2003_libretro.so \
 		$(TARGET_DIR)/usr/lib/libretro/mame078_libretro.so
+
+	# Bios
+	mkdir -p $(TARGET_DIR)/usr/share/batocera/datainit/bios/mame2003/samples
+	$(INSTALL) -D $(@D)/metadata/* \
+		$(TARGET_DIR)/usr/share/batocera/datainit/bios/mame2003
 endef
 
 define LIBRETRO_MAME2003_NAMCO_QUICK_FIX
