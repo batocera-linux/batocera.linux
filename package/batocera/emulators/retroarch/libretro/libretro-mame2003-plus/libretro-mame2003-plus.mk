@@ -19,7 +19,7 @@ define LIBRETRO_MAME2003_PLUS_INSTALL_TARGET_CMDS
 
 	# Bios
 	mkdir -p $(TARGET_DIR)/usr/share/batocera/datainit/bios/mame2003-plus/samples
-	$(INSTALL) -D $(@D)/metadata/* \
+	cp -r $(@D)/metadata/* \
 		$(TARGET_DIR)/usr/share/batocera/datainit/bios/mame2003-plus
 endef
 
