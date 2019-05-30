@@ -14,7 +14,7 @@ case "$1" in
   stop) # Safe Shutdown for securing metadata
         PID=$(pidof -s emulationstation)
         killall emulationstation
-        while [ -e /proc/$PID || -z $PID ]; do
+        while [ -e "/proc/$PID" -a "$PID" ]; do
             sleep 0.25
         done
 	;;
