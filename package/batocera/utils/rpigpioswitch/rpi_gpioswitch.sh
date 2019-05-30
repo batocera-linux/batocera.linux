@@ -126,6 +126,14 @@ onoffshim_start()
     fi
 }
 
+onoffshim_stop()
+{
+    # Cleanup GPIO init
+    for i in $*; do
+        echo "$i" > /sys/class/gpio/unexport
+    done
+}
+
 # http://www.msldigital.com/pages/support-for-remotepi-board-2013
 # http://www.msldigital.com/pages/support-for-remotepi-board-plus-2015
 msldigital_start()
