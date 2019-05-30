@@ -96,6 +96,36 @@ mausberry_stop()
     done
 }
 
+# https://shop.pimoroni.com/products/onoff-shim/
+onoffshim_start()
+{
+    #Check if dtooverlay is setted in /boot/config
+    #This is needed to do proper restarts/shutdowns
+    if ! grep -q "^dtoverlay=gpio-poweroff,gpiopin=$2,active_low=1,input=1" "/boot/config.txt"; then
+         mount -o remount, rw /boot
+         echo "dtoverlay=gpio-poweroff,gpiopin=$2,active_low=1,input=1" >> "/boot/config.txt"
+    fi
+
+    # This is Button command (GPIO17 default)
+    echo $1 > /sys/class/gpio/export
+    echo in > /sys/class/gpio/gpio$1/direction
+
+    power=$(cat /sys/class/gpio/gpio$1/value)
+    [ $power -eq 0 ] && switchtype=1 #Sliding Switch
+    [ $power -eq 1 ] && switchtype=0 #Momentary push button
+
+    until [ $power -eq $switchtype ]; do
+        power=$(cat /sys/class/gpio/gpio$1/value)
+        sleep 1
+    done
+
+    # Switch off
+    if [ "$?" = "0" ]; then
+        touch "/tmp/poweroff.please"
+        poweroff  
+    fi
+}
+
 # http://www.msldigital.com/pages/support-for-remotepi-board-2013
 # http://www.msldigital.com/pages/support-for-remotepi-board-plus-2015
 msldigital_start()
@@ -256,6 +286,9 @@ case "$CONFVALUE" in
     ;;
     "MAUSBERRY")
         mausberry_$1 23 24
+    ;;
+    "ONOFFSHIM")
+        onoffshim_$1 17 4
     ;;
     "REMOTEPIBOARD_2003")
         msldigital_$1 22
