@@ -11,12 +11,8 @@ case "$1" in
                 HOME=/userdata/system LANG="${settings_lang}.UTF-8" SDL_VIDEO_GL_DRIVER=/usr/lib/libGLESv2.so SDL_VIDEO_EGL_DRIVER=/usr/lib/libGLESv2.so SDL_NOMOUSE=1 /usr/bin/emulationstation --no-splash &
 	fi
 	;;
-  stop) # Safe Shutdown for securing metadata
-        PID=$(pidof -s emulationstation)
+  stop)
         killall emulationstation
-        while [ -e "/proc/$PID" -a "$PID" ]; do
-            sleep 0.25
-        done
 	;;
   restart|reload)
         "$0" stop
