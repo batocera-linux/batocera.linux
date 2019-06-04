@@ -1,5 +1,5 @@
-config BR2_PACKAGE_LIBRETRO_FBA
-        bool "libretro-fba"
+config BR2_PACKAGE_LIBRETRO_FBNEO
+        bool "libretro-fbneo"
 	depends on BR2_PACKAGE_RETROARCH
 	depends on BR2_INSTALL_LIBSTDCPP
         help
@@ -7,5 +7,5 @@ config BR2_PACKAGE_LIBRETRO_FBA
 
 	  http://www.libretro.com
 
-comment "LIBRETRO_FBA needs a toolchain w/ C++"
+comment "LIBRETRO_FBNEO needs a toolchain w/ C++"
 	depends on !BR2_INSTALL_LIBSTDCPP

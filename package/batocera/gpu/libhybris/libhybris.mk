@@ -5,8 +5,8 @@
 # Allows to run bionic-based HW adaptations in glibc systems - libs
 #
 ################################################################################
-LIBHYBRIS_VERSION = 070c3ab
-LIBHYBRIS_SITE    = $(call github,libhybris,libhybris,$(LIBHYBRIS_VERSION))
+LIBHYBRIS_VERSION = c21320b
+LIBHYBRIS_SITE    = $(call github,kszaq,libhybris,$(LIBHYBRIS_VERSION))
 LIBHYBRIS_SUBDIR  = hybris
 LIBHYBRIS_DEPENDENCIES = android-headers
 LIBHYBRIS_AUTORECONF = YES

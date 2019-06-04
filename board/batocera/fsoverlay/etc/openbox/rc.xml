@@ -5,12 +5,8 @@
 		<firstdesk>1</firstdesk>
 	</desktops>
 	<applications>
-		<application class="*">
-			<decor>no</decor>
-			<maximized>true</maximized>
- 			<focus>yes</focus>
-			<layer>normal</layer>
-			<fullscreen>yes</fullscreen>
-		</application>
+	  <application type="normal">
+	    <fullscreen>yes</fullscreen>
+	  </application>
 	</applications>
 </openbox_config>

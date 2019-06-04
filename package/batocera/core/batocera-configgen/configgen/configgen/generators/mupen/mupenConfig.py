@@ -83,7 +83,8 @@ def setHotKeyConfig(iniConfig, controllers):
                         if 'a' in controllers['1'].inputs:	
 				iniConfig.set("CoreEvents", "Joy Mapping Reset", "\"J{}{}/{}\"".format(controllers['1'].index, createButtonCode(controllers['1'].inputs['hotkey']), createButtonCode(controllers['1'].inputs['a'])))
                         if 'b' in controllers['1'].inputs:	
-				iniConfig.set("CoreEvents", "Joy Mapping Pause", "\"J{}{}/{}\"".format(controllers['1'].index, createButtonCode(controllers['1'].inputs['hotkey']), createButtonCode(controllers['1'].inputs['b'])))
+				#iniConfig.set("CoreEvents", "Joy Mapping Pause", "\"J{}{}/{}\"".format(controllers['1'].index, createButtonCode(controllers['1'].inputs['hotkey']), createButtonCode(controllers['1'].inputs['b'])))
+                                iniConfig.set("CoreEvents", "Joy Mapping Pause", "")
 
 			
 def createButtonCode(button):

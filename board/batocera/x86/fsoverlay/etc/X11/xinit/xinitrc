@@ -55,4 +55,4 @@ settings_output="`$systemsetting -command load -key global.videomode`"
 batocera-resolution minTomaxResolution
 
 cd /userdata # es needs a PWD
-openbox --config-file /etc/openbox/rc.xml --startup emulationstation
+openbox --config-file /etc/openbox/rc.xml --startup "emulationstation --windowed"

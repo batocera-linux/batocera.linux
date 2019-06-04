@@ -3,14 +3,14 @@
 # retroarch
 #
 ################################################################################
-#Version.: Commits on Mar 14, 2019 (v1.7.7) 
-RETROARCH_VERSION = 56396f6a375d12cabb027d0948122cd60ada3a9f
-
+# Version.: Commits on Mar 15, 2019 (v1.7.7) 
+RETROARCH_VERSION = 3064d0d441bfcd2a13ff46a1a813f6c7339c4c24
 RETROARCH_SITE = $(call github,libretro,RetroArch,$(RETROARCH_VERSION))
-
 RETROARCH_LICENSE = GPLv3+
-RETROARCH_CONF_OPTS += --disable-oss --enable-zlib --disable-qt
 RETROARCH_DEPENDENCIES = host-pkgconf dejavu
+
+RETROARCH_CONF_OPTS = --disable-oss --enable-zlib --disable-qt --enable-threads
+RETROARCH_CONF_OPTS += --enable-flac --enable-lua --enable-networking
 
 ifeq ($(BR2_PACKAGE_SDL2),y)
 	RETROARCH_CONF_OPTS += --enable-sdl2
@@ -26,83 +26,81 @@ else
 endif
 
 ifeq ($(BR2_PACKAGE_LIBDRM),y)
-RETROARCH_CONF_OPTS += --enable-kms
+	RETROARCH_CONF_OPTS += --enable-kms
 endif
 
 ifeq ($(BR2_ARM_FPU_NEON_VFPV4)$(BR2_ARM_FPU_NEON)$(BR2_ARM_FPU_NEON_FP_ARMV8),y)
-        RETROARCH_CONF_OPTS += --enable-neon
+    RETROARCH_CONF_OPTS += --enable-neon
 endif
 
 ifeq ($(BR2_GCC_TARGET_FLOAT_ABI),hard)
-        RETROARCH_CONF_OPTS += --enable-floathard
+    RETROARCH_CONF_OPTS += --enable-floathard
 endif
 
 # x86 : no option
 
-RETROARCH_CONF_OPTS += --enable-networking
-
 ifeq ($(BR2_PACKAGE_PYTHON3),y)
-RETROARCH_CONF_OPTS += --enable-python
-RETROARCH_DEPENDENCIES += python
+	RETROARCH_CONF_OPTS += --enable-python
+	RETROARCH_DEPENDENCIES += python
 else
-RETROARCH_CONF_OPTS += --disable-python
+	RETROARCH_CONF_OPTS += --disable-python
 endif
 
 ifeq ($(BR2_PACKAGE_XORG7),y)
-RETROARCH_CONF_OPTS += --enable-x11
-RETROARCH_DEPENDENCIES += xserver_xorg-server
+	RETROARCH_CONF_OPTS += --enable-x11
+	RETROARCH_DEPENDENCIES += xserver_xorg-server
 else
-RETROARCH_CONF_OPTS += --disable-x11
+	RETROARCH_CONF_OPTS += --disable-x11
 endif
 
 ifeq ($(BR2_PACKAGE_ALSA_LIB),y)
-RETROARCH_CONF_OPTS += --enable-alsa
-RETROARCH_DEPENDENCIES += alsa-lib
+	RETROARCH_CONF_OPTS += --enable-alsa
+	RETROARCH_DEPENDENCIES += alsa-lib
 else
-RETROARCH_CONF_OPTS += --disable-alsa
+	RETROARCH_CONF_OPTS += --disable-alsa
 endif
 
 ifeq ($(BR2_PACKAGE_PULSEAUDIO),y)
-RETROARCH_CONF_OPTS += --enable-pulse
-RETROARCH_DEPENDENCIES += pulseaudio
+	RETROARCH_CONF_OPTS += --enable-pulse
+	RETROARCH_DEPENDENCIES += pulseaudio
 else
-RETROARCH_CONF_OPTS += --disable-pulse
+	RETROARCH_CONF_OPTS += --disable-pulse
 endif
 
 ifeq ($(BR2_PACKAGE_HAS_LIBGLES),y)
-RETROARCH_CONF_OPTS += --enable-opengles
-RETROARCH_DEPENDENCIES += libgles
+	RETROARCH_CONF_OPTS += --enable-opengles
+	RETROARCH_DEPENDENCIES += libgles
 else
-RETROARCH_CONF_OPTS += --disable-opengles
+	RETROARCH_CONF_OPTS += --disable-opengles
 endif
 
 ifeq ($(BR2_PACKAGE_HAS_LIBEGL),y)
-RETROARCH_CONF_OPTS += --enable-egl
-RETROARCH_DEPENDENCIES += libegl
+	RETROARCH_CONF_OPTS += --enable-egl
+	RETROARCH_DEPENDENCIES += libegl
 else
-RETROARCH_CONF_OPTS += --disable-egl
+	RETROARCH_CONF_OPTS += --disable-egl
 endif
 
 ifeq ($(BR2_PACKAGE_HAS_LIBOPENVG),y)
-RETROARCH_DEPENDENCIES += libopenvg
+	RETROARCH_DEPENDENCIES += libopenvg
 endif
 
 ifeq ($(BR2_PACKAGE_ZLIB),y)
-RETROARCH_CONF_OPTS += --enable-zlib
-RETROARCH_DEPENDENCIES += zlib
+	RETROARCH_CONF_OPTS += --enable-zlib
+	RETROARCH_DEPENDENCIES += zlib
 else
-RETROARCH_CONF_OPTS += --disable-zlib
+	RETROARCH_CONF_OPTS += --disable-zlib
 endif
 
 ifeq ($(BR2_PACKAGE_UDEV),y)
-RETROARCH_DEPENDENCIES += udev
+	RETROARCH_DEPENDENCIES += udev
 endif
 
 ifeq ($(BR2_PACKAGE_FREETYPE),y)
-RETROARCH_CONF_OPTS += --enable-freetype
-RETROARCH_DEPENDENCIES += freetype
+	RETROARCH_CONF_OPTS += --enable-freetype
+	RETROARCH_DEPENDENCIES += freetype
 else
-RETROARCH_CONF_OPTS += --disable-freetype
+	RETROARCH_CONF_OPTS += --disable-freetype
 endif
 
 define RETROARCH_MALI_FIXUP
@@ -152,31 +150,31 @@ $(eval $(generic-package))
 LIBRETRO_PLATFORM = unix
 
 ifeq ($(BR2_ARM_CPU_ARMV6),y)
-        LIBRETRO_PLATFORM += armv6
+    LIBRETRO_PLATFORM += armv6
 endif
 
 ifeq ($(BR2_cortex_a7),y)
-        LIBRETRO_PLATFORM += armv7
+    LIBRETRO_PLATFORM += armv7
 endif
 
 ifeq ($(BR2_cortex_a53)$(BR2_arm),yy)
-        LIBRETRO_PLATFORM += armv8
+    LIBRETRO_PLATFORM += armv8
 endif
 
 ifeq ($(BR2_cortex_a15),y)
-        LIBRETRO_PLATFORM += armv7
+    LIBRETRO_PLATFORM += armv7
 endif
 
 ifeq ($(BR2_arm)$(BR2_cortex_a72_a53),yy)
-        LIBRETRO_PLATFORM += armv7
+    LIBRETRO_PLATFORM += armv7
 endif
 
 ifeq ($(BR2_arm)$(BR2_cortex_a73_a53),yy)
-        LIBRETRO_PLATFORM += armv7
+    LIBRETRO_PLATFORM += armv7
 endif
 
 ifeq ($(BR2_ARM_CPU_HAS_NEON),y)
-        LIBRETRO_PLATFORM += neon
+    LIBRETRO_PLATFORM += neon
 endif
 
 ifeq ($(BR2_PACKAGE_RPI_USERLAND),y)

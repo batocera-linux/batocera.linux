@@ -1,6 +1,6 @@
 2019/06/XX - batocera.linux 5.22
 	* nvidia-driver: version bump (418.74)
-	* moonlight: bump to v2.4.7
+	* moonlight: bump to v2.4.10
 	* amiberry: bump v2.25
 	* fix: libretro-genesisplusgx for rockpro64
 	* fix: Citra emulator in the center of the screen
@@ -14,7 +14,7 @@
 	* es-retropie integration
 		* theme compatibility with retropie
 		* videos previews
-	* add: ES theme installer
+	* add: ES theme installer (menu> system> update> install theme)
 	* add: ES menu for RetroAchievements status
 	* new default theme : es-theme-carbon
 	* add: screensavers for slideshow and "random video" (aka demo mode)
@@ -27,6 +27,7 @@
 	* add: sufami turbo
 	* add: nintendo satellaview
 	* add: amstrad GX4000
+	* decoration/bezels: Add light realistic Cathodic CRT effect to improve original fidelity image. (Possibility to use shaders too)
 	* remove recalbox-theme (because of new licence restrictions)
 	* specific favorite system removed (will be added properly later)
 	* emulator configuration by game removed (will be added properly later)
@@ -34,6 +35,7 @@
 	* retroarch: added audio and video filters
 	* retroarch: bump to v1.7.7
 	* update: libretro packages
+	* substituted: libretro-fbalpha by libretro-fbneo
 
 2019/03/29 - batocera.linux 5.21
 	* nvidia-driver: version bump (418.43)

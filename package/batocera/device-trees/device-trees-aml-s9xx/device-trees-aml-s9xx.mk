@@ -4,7 +4,7 @@
 #
 ################################################################################
 DEVICE_TREES_AML_S9XX_VERSION = master
-DEVICE_TREES_AML_S9XX_SITE = $(call github,suzuke,device-trees-amlogic,$(DEVICE_TREES_AML_S9XX_VERSION))
+DEVICE_TREES_AML_S9XX_SITE = $(call github,CoreELEC,device-trees-amlogic,$(DEVICE_TREES_AML_S9XX_VERSION))
 
 DEVICE_TREES_AML_S9XX_DEPENDENCIES = linux host-aml-dtbtools
 DEVICE_TREES_AML_S9XX_INSTALL_IMAGES = YES
