@@ -35,6 +35,11 @@ endef
 define LIBRETRO_MAME2010_INSTALL_TARGET_CMDS
 	$(INSTALL) -D $(@D)/mame2010_libretro.so \
 		$(TARGET_DIR)/usr/lib/libretro/mame0139_libretro.so
+
+	# Bios
+	mkdir -p $(TARGET_DIR)/usr/share/batocera/datainit/bios/mame2010/samples
+	$(INSTALL) -D $(@D)/metadata/* \
+		$(TARGET_DIR)/usr/share/batocera/datainit/bios/mame2010
 endef
 
 $(eval $(generic-package))

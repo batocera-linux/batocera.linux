@@ -15,6 +15,9 @@ endef
 define LIBRETRO_NESTOPIA_INSTALL_TARGET_CMDS
 	$(INSTALL) -D $(@D)/libretro/nestopia_libretro.so \
 		$(TARGET_DIR)/usr/lib/libretro/nestopia_libretro.so
+	
+	# Bios
+	mkdir -p $(TARGET_DIR)/usr/share/batocera/datainit/bios
 	$(INSTALL) -D $(@D)/NstDatabase.xml \
 		$(TARGET_DIR)/usr/share/batocera/datainit/bios/NstDatabase.xml
 endef
