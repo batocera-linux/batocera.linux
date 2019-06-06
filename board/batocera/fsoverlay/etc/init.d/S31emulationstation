@@ -12,7 +12,7 @@ case "$1" in
 	fi
 	;;
   stop)
-	killall emulationstation
+        killall emulationstation
 	;;
   restart|reload)
         "$0" stop

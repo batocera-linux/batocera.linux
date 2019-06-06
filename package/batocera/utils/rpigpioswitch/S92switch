@@ -10,7 +10,7 @@ case "$1" in
 	systemsetting="python /usr/lib/python2.7/site-packages/configgen/settings/batoceraSettings.py"
 	powerswitch="`$systemsetting  -command load -key system.power.switch`"
 	case "${powerswitch}" in
-	    ATX_RASPI_R2_6|MAUSBERRY|REMOTEPIBOARD_2003|REMOTEPIBOARD_2005|WITTYPI|PIN56ONOFF|PIN56PUSH|PIN356ONOFFRESET)
+	    ATX_RASPI_R2_6|MAUSBERRY|REMOTEPIBOARD_2003|REMOTEPIBOARD_2005|WITTYPI|PIN56ONOFF|PIN56PUSH|PIN356ONOFFRESET|ONOFFSHIM)
 		nice -n 19 $RUN start&
 		;;
 	esac
