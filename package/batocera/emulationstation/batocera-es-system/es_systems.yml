@@ -533,7 +533,8 @@ lynx:
   platform:   atarilynx
   emulators:
     libretro:
-      mednafen_lynx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BEETLE_LYNX] }
+      mednafen_lynx:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BEETLE_LYNX] }
+      handy:          { requireAnyOf: [BR2_PACKAGE_LIBRETRO_HANDY]       }
 
 ngp:
   name:       Neo-Geo Pocket

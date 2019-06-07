@@ -1,0 +1,11 @@
+config BR2_PACKAGE_LIBRETRO_HANDY
+        bool "libretro-handy"
+	depends on BR2_PACKAGE_RETROARCH
+	depends on BR2_INSTALL_LIBSTDCPP
+        help
+          A libretro Lynx emulator core for ARM.
+
+	  http://www.libretro.com
+
+comment "LIBRETRO_HANDY needs a toolchain w/ C++"
+	depends on !BR2_INSTALL_LIBSTDCPP
