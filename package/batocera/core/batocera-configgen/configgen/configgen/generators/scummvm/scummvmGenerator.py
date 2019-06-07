@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import Command
-import recalboxFiles
+import batoceraFiles
 from generators.Generator import Generator
 import os.path
 
@@ -17,12 +17,12 @@ class ScummVMGenerator(Generator):
         romPath = os.path.dirname(rom)
         romName = os.path.splitext(os.path.basename(rom))[0]
         # Get rom name without extension
-        commandArray = [recalboxFiles.recalboxBins[system.config['emulator']],
+        commandArray = [batoceraFiles.batoceraBins[system.config['emulator']],
                         "-f",
                         "--joystick=0", 
-                        "--screenshotspath="+recalboxFiles.screenshotsDir, 
+                        "--screenshotspath="+batoceraFiles.screenshotsDir, 
                         "--extrapath=/usr/share/scummvm",
-                        "--savepath="+recalboxFiles.scummvmSaves,
+                        "--savepath="+batoceraFiles.scummvmSaves,
                         "--path=""{}""".format(romPath)]
         commandArray.append("""{}""".format(romName))
 

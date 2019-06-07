@@ -3,7 +3,7 @@
 import sys
 import os
 import ConfigParser
-import recalboxFiles
+import batoceraFiles
 
 # Map an emulationstation button name to the corresponding fba2x name
 fba4bnts = {'a': 'Y', 'b': 'X', 'x': 'B', 'y': 'A', \
@@ -23,7 +23,7 @@ fbaspecials = {'start': 'QUIT', 'hotkey': 'HOTKEY'}
 
 def updateControllersConfig(iniConfig, system, rom, controllers):
     # remove any previous section to remove all configured keys
-    if not iniConfig.has_section("Joystick"):
+    if iniConfig.has_section("Joystick"):
         iniConfig.remove_section("Joystick")
     iniConfig.add_section("Joystick")
 

@@ -3,11 +3,12 @@
 # PPSSPP
 #
 ################################################################################
-# Version.: Wed Jan 16 23:03:24 2019 +0100
-PPSSPP_VERSION = 90a45deabda02b333faa399cc31fd7b82982ad3f
+# Version.: Commits on Mar 14, 2019
+PPSSPP_VERSION = v1.8.0
 PPSSPP_SITE = https://github.com/hrydgard/ppsspp.git
 PPSSPP_SITE_METHOD=git
 PPSSPP_GIT_SUBMODULES=YES
+PPSSPP_LICENSE = GPLv2
 PPSSPP_DEPENDENCIES = sdl2 zlib libzip zip ffmpeg
 
 # x86
@@ -23,19 +24,14 @@ endif
 # odroid c2 / S905 and variants
 ifeq ($(BR2_aarch64),y)
 	# -DUSE_SYSTEM_FFMPEG=1 is unstable, but at least, games without videos work
-	PPSSPP_CONF_OPTS += -DUSE_FFMPEG=ON -DUSE_SYSTEM_FFMPEG=ON -DARM_NEON=ON
+	PPSSPP_CONF_OPTS += -DUSE_FFMPEG=ON -DARM_NEON=ON
 else
 	PPSSPP_CONF_OPTS += -DUSE_FFMPEG=ON
 endif
 
-# odroid xu4
-ifeq ($(BR2_PACKAGE_SDL2_KMSDRM),y)
-	PPSSPP_CONF_OPTS += -DUSING_EGL=OFF -DUSING_X11_VULKAN=OFF
-endif
-
-# odroid xu4 legacy
-ifeq ($(BR2_PACKAGE_MALI_OPENGLES_SDK),y)
-	PPSSPP_CONF_OPTS += -DUSING_FBDEV=ON -DUSING_GLES2=ON -DUSING_EGL=ON -DUSING_X11_VULKAN=OFF
+# odroid xu4 / odroid xu4 legacy / odroid n2
+ifeq ($(BR2_PACKAGE_MALI_OPENGLES_SDK)$(BR2_PACKAGE_MALI_HKG52FBDEV),y)
+	PPSSPP_CONF_OPTS += -DUSING_FBDEV=ON -DUSING_GLES2=ON -DUSING_EGL=OFF -DUSING_X11_VULKAN=OFF
 endif
 
 # rpi1 / rpi2 /rp3
@@ -46,7 +42,7 @@ endif
 
 # odroid xu4 / rpi3 / rockpro64
 ifeq ($(BR2_arm),y)
-	PPSSPP_CONF_OPTS += -DARMV7=ON
+	PPSSPP_CONF_OPTS += -DARMV7=ON 
 endif
 
 # s912 (libhybris)

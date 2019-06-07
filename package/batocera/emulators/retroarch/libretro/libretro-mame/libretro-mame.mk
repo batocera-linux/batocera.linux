@@ -3,10 +3,10 @@
 # MAME
 #
 ################################################################################
-# Version.: Commits on Feb 2, 2019 (0.206)
-LIBRETRO_MAME_VERSION = a7f6d0d690f9dad84878dbe01bfcbb88b19493f1
+# Version.: Commits on Apr 30, 2019 (0.209)
+LIBRETRO_MAME_VERSION = 47c241e4f528f663a36ae82a3bbaa789d929e282
 LIBRETRO_MAME_SITE = $(call github,libretro,mame,$(LIBRETRO_MAME_VERSION))
-LIBRETRO_MAME_LICENSE="MAME"
+LIBRETRO_MAME_LICENSE = MAME
 
 ifeq ($(BR2_x86_i586),y)
 	LIBRETRO_MAME_EXTRA_ARGS = PTR64=0

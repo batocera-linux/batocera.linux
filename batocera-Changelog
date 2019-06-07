@@ -1,5 +1,43 @@
-2019/xx/xx - batocera.linux 5.21
-	* nvidia-driver: version bump (390.116)
+2019/06/XX - batocera.linux 5.22
+	* moonlight: bump to v2.4.10
+	* amiberry: bump v2.25
+	* fix: libretro-genesisplusgx for rockpro64
+	* fix: Citra emulator in the center of the screen
+	* add: naomi and atomiswave for odroid xu4
+	* add: libretro-neocd for NeoGeo CD
+	* advancemame: removed
+	* citra-emu: updated and standard core for the Nintendo 3DS
+	* mupen64plus: bump to 2.5.9
+	* fix: mupen64 widescreen mode
+	* wii/gc: dolphin version bump (5.0-9896)
+	* es-retropie integration
+		* theme compatibility with retropie
+		* videos previews
+	* add: ES theme installer (menu> system> update> install theme)
+	* add: ES menu for RetroAchievements status
+	* new default theme : es-theme-carbon
+	* add: screensavers for slideshow and "random video" (aka demo mode)
+	* kid/kiosk modes
+	* choose the default system at startup
+	* choose randomly a game
+	* cec in es
+	* scrapper fixed
+	* add: pokemon-mini
+	* add: sufami turbo
+	* add: nintendo satellaview
+	* add: amstrad GX4000
+	* decoration/bezels: Add light realistic Cathodic CRT effect to improve original fidelity image. (Possibility to use shaders too)
+	* remove recalbox-theme (because of new licence restrictions)
+	* specific favorite system removed (will be added properly later)
+	* emulator configuration by game removed (will be added properly later)
+	* add: libretro-reicast-wince (x64)
+	* retroarch: added audio and video filters
+	* retroarch: bump to v1.7.7
+	* update: libretro packages
+	* substituted: libretro-fbalpha by libretro-fbneo
+
+2019/03/29 - batocera.linux 5.21
+	* nvidia-driver: version bump (418.43)
 	* arcade: new core - lr-mame (mame-0.206)
 	* nintendo 3DS: added citra emulator
 	* emulator: atari 800 and atari 5200 were separated
@@ -96,7 +134,7 @@
 
 2018/03/08 - batocera.linux 5.14 - release
         * rpi: new splash video
-        * rpi: mutable splash video (add splashsound=false in /boot/recalbox-boot.conf to disable the sound)
+        * rpi: mutable splash video (add splashsound=false in /boot/batocera-boot.conf to disable the sound)
         * rpi: customizable splash video (put a video in /boot/splash.mp4)
         * link update MameDB and Screenscraper
         * configgen: partially rewritten / more robust
@@ -308,13 +346,13 @@
         * Odroid XU4 Release - release
         This is the first stable version for the Odroid XU4. You can get the full details of what is supported here.
         This is compiled from the official recalbox sources. Once installed, don't forget to configure
-        your recalbox.conf to upgrade from this website (see previous post).
+        your batocera.conf to upgrade from this website (see previous post).
 
 2016/06/21
         * Network shares - advanced configuration
         You've not enough space on your sdcard or on your usbkey ?
         You can now use your nas (like a freebox) as a usbkey (not from the graphical interface for the moment).
-        You need to edit the /boot/recalbox-boot.conf file like this :
+        You need to edit the /boot/batocera-boot.conf file like this :
         sharedevice=NETWORK
         sharenetwork_nfs1=ROMS@192.168.0.1:/mnt/Documents/recalbox/roms
         sharenetwork_nfs2=SAVES@192.168.0.1:/mnt/Documents/recalbox/saves

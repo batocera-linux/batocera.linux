@@ -3,10 +3,10 @@
 # STELLA
 #
 ################################################################################
-# Version.: Commits on Jan 4, 2019
-LIBRETRO_STELLA_VERSION = bf7070d81ee87e6fb4d9bbb5ad61a4ceec54ec7f
-LIBRETRO_STELLA_SITE = $(call github,libretro,stella-libretro,$(LIBRETRO_STELLA_VERSION))
-LIBRETRO_STELLA_LICENSE="GPLv2"
+# Version.: Commits on May 1, 2019
+LIBRETRO_STELLA_VERSION = a7acf2246cc721202b204ef57bc15eddb1f9949f
+LIBRETRO_STELLA_SITE = $(call github,libretro,stella2014-libretro,$(LIBRETRO_STELLA_VERSION))
+LIBRETRO_STELLA_LICENSE = GPLv2
 
 define LIBRETRO_STELLA_BUILD_CMDS
 	CFLAGS="$(TARGET_CFLAGS)" CXXFLAGS="$(TARGET_CXXFLAGS)" \
@@ -14,7 +14,7 @@ define LIBRETRO_STELLA_BUILD_CMDS
 endef
 
 define LIBRETRO_STELLA_INSTALL_TARGET_CMDS
-	$(INSTALL) -D $(@D)/stella_libretro.so \
+	$(INSTALL) -D $(@D)/stella2014_libretro.so \
 		$(TARGET_DIR)/usr/lib/libretro/stella_libretro.so
 endef
 

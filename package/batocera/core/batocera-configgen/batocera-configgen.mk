@@ -31,10 +31,13 @@ else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86)$(BR2_PACKAGE_BATOCERA_TARGET_X86_6
 	BATOCERA_CONFIGGEN_SYSTEM=x86
 else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_ROCKPRO64),y)
 	BATOCERA_CONFIGGEN_SYSTEM=rockpro64
+else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_ODROIDN2),y)
+	BATOCERA_CONFIGGEN_SYSTEM=odroidn2
 endif
 
 define BATOCERA_CONFIGGEN_CONFIGS
 	mkdir -p $(TARGET_DIR)/recalbox/system/configgen
+	cp -pr package/batocera/core/batocera-configgen/datainit $(TARGET_DIR)/usr/lib/python2.7/site-packages/configgen/
 	cp package/batocera/core/batocera-configgen/configs/configgen-defaults.yml $(TARGET_DIR)/recalbox/system/configgen/configgen-defaults.yml
 	cp package/batocera/core/batocera-configgen/configs/configgen-defaults-$(BATOCERA_CONFIGGEN_SYSTEM).yml $(TARGET_DIR)/recalbox/system/configgen/configgen-defaults-arch.yml
 endef

@@ -3,32 +3,35 @@
 # libretro-picodrive
 #
 ################################################################################
-# Version.: Commits on Feb 3, 2019
-LIBRETRO_PICODRIVE_VERSION = 03f663dd1a65f11cadbd51bd4389dc82581f2f23
+# Version.: Commits on May 1, 2019
+LIBRETRO_PICODRIVE_VERSION = 82f7735d8ec942fb954917dec61f42ff9da809cb
 LIBRETRO_PICODRIVE_SITE = https://github.com/libretro/picodrive.git
 LIBRETRO_PICODRIVE_SITE_METHOD=git
 LIBRETRO_PICODRIVE_GIT_SUBMODULES=YES
 LIBRETRO_PICODRIVE_DEPENDENCIES = libpng sdl
-LIBRETRO_PICODRIVE_LICENSE="MAME"
+LIBRETRO_PICODRIVE_LICENSE = MAME
 
 PICOPLATFORM=$(LIBRETRO_PLATFORM)
 
-# RPI 0 and 1
-ifeq ($(BR2_arm1176jzf_s),y)
-  PICOPLATFORM=$(LIBRETRO_PLATFORM) armasm
-endif
+ifeq ($(BR2_arm),y)
+  # RPI 0 and 1
+  ifeq ($(BR2_arm1176jzf_s),y)
+    PICOPLATFORM=$(LIBRETRO_PLATFORM) armasm
+  endif
 
-# RPI 2 and 3
-ifeq ($(BR2_cortex_a7),y)
-  PICOPLATFORM=$(LIBRETRO_PLATFORM) armasm
-endif
-ifeq ($(BR2_cortex_a8),y)
-  PICOPLATFORM=$(LIBRETRO_PLATFORM) armasm
-endif
+  # RPI 2 and 3
+  ifeq ($(BR2_cortex_a7),y)
+    PICOPLATFORM=$(LIBRETRO_PLATFORM) armasm
+  endif
 
-# odroid xu4
-ifeq ($(BR2_cortex_a15),y)
-  PICOPLATFORM=$(LIBRETRO_PLATFORM) armasm
+  ifeq ($(BR2_cortex_a53),y)
+    PICOPLATFORM=$(LIBRETRO_PLATFORM) armasm
+  endif
+
+  # odroid xu4
+  ifeq ($(BR2_cortex_a15),y)
+    PICOPLATFORM=$(LIBRETRO_PLATFORM) armasm
+  endif
 endif
 
 define LIBRETRO_PICODRIVE_BUILD_CMDS

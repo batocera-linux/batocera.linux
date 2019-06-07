@@ -47,7 +47,7 @@ NVIDIA_DRIVER_LIBS_MISC = \
 	libvdpau_nvidia.so.$(NVIDIA_DRIVER_VERSION) \
 	libnvidia-ml.so.$(NVIDIA_DRIVER_VERSION)
 
-NVIDIA_DRIVER_LIBS = \
+NVIDIA_DRIVER_LIBS += \
 	$(NVIDIA_DRIVER_LIBS_GL) \
 	$(NVIDIA_DRIVER_LIBS_EGL) \
 	$(NVIDIA_DRIVER_LIBS_GLES) \
@@ -109,6 +109,8 @@ ifeq ($(BR2_PACKAGE_NVIDIA_DRIVER_OPENCL),y)
 NVIDIA_DRIVER_LIBS += \
 	libOpenCL.so.1.0.0 \
 	libnvidia-opencl.so.$(NVIDIA_DRIVER_VERSION)
+NVIDIA_DRIVER_DEPENDENCIES += mesa3d-headers
+NVIDIA_DRIVER_PROVIDES += libopencl
 endif
 
 # Build and install the kernel modules if needed

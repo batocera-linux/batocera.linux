@@ -3,10 +3,10 @@
 # CAP32
 #
 ################################################################################
-# Version.: Commits on Feb 18, 2019
-LIBRETRO_CAP32_VERSION = 7802837a61f4d57db31322f48fd64729ed976cad
+# Version.: Commits on Mar 26, 2019
+LIBRETRO_CAP32_VERSION = 6ca94b368fbbef074a82c103fa84c494654071c1
 LIBRETRO_CAP32_SITE = $(call github,libretro,libretro-cap32,$(LIBRETRO_CAP32_VERSION))
-LIBRETRO_CAP32_LICENSE="GPLv2"
+LIBRETRO_CAP32_LICENSE = GPLv2
 
 define LIBRETRO_CAP32_BUILD_CMDS
 	CFLAGS="$(TARGET_CFLAGS)" CXXFLAGS="$(TARGET_CXXFLAGS)" \

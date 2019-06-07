@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import Command
-import recalboxFiles
+import batoceraFiles
 from generators.Generator import Generator
 import shutil
 import os
@@ -11,10 +11,10 @@ class CitraGenerator(Generator):
 
     # Main entry of the module
     def generate(self, system, rom, playersControllers, gameResolution):
-        CitraGenerator.writeCITRAConfig(recalboxFiles.citraConfig, system, playersControllers)
+        CitraGenerator.writeCITRAConfig(batoceraFiles.citraConfig, system, playersControllers)
 
-        commandArray = [recalboxFiles.recalboxBins[system.config['emulator']], "-f", rom]
-        return Command.Command(array=commandArray, env={"XDG_CONFIG_HOME":recalboxFiles.CONF, "XDG_DATA_HOME":recalboxFiles.SAVES, "XDG_CACHE_HOME":recalboxFiles.CACHE})
+        commandArray = [batoceraFiles.batoceraBins[system.config['emulator']], "-f", rom]
+        return Command.Command(array=commandArray, env={"XDG_CONFIG_HOME":batoceraFiles.CONF, "XDG_DATA_HOME":batoceraFiles.citraSaves, "XDG_CACHE_HOME":batoceraFiles.CACHE})
 
     @staticmethod
     def writeCITRAConfig(citraConfigFile, system, playersControllers):
@@ -51,6 +51,14 @@ class CitraGenerator(Generator):
         if not citraConfig.has_section("Layout"):
             citraConfig.add_section("Layout")
         citraConfig.set("Layout", "custom_layout", "1")
+        citraConfig.set("Layout", "custom_top_left", "100")
+        citraConfig.set("Layout", "custom_top_top", "10")
+        citraConfig.set("Layout", "custom_top_right", "540")
+        citraConfig.set("Layout", "custom_top_bottom", "300")
+        citraConfig.set("Layout", "custom_bottom_left", "190")
+        citraConfig.set("Layout", "custom_bottom_top", "300")
+        citraConfig.set("Layout", "custom_bottom_right", "450")
+        citraConfig.set("Layout", "custom_bottom_bottom", "470")
 
         # controls section
         if not citraConfig.has_section("Controls"):

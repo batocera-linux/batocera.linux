@@ -1,0 +1,142 @@
+diff --git a/localedata/locales/ca_ES b/localedata/locales/ca_ES
+index 0ba74cc..50a7e0c 100644
+--- a/localedata/locales/ca_ES
++++ b/localedata/locales/ca_ES
+@@ -100,18 +100,6 @@ day        "diumenge";/
+            "dijous";/
+            "divendres";/
+            "dissabte"
+-ab_alt_mon "gen.";/
+-           "febr.";/
+-           "mar<U00E7>";/
+-           "abr.";/
+-           "maig";/
+-           "juny";/
+-           "jul.";/
+-           "ag.";/
+-           "set.";/
+-           "oct.";/
+-           "nov.";/
+-           "des."
+ abmon      "de gen.";/
+            "de febr.";/
+            "de mar<U00E7>";/
+@@ -124,18 +112,6 @@ abmon      "de gen.";/
+            "d<U2019>oct.";/
+            "de nov.";/
+            "de des."
+-alt_mon    "gener";/
+-           "febrer";/
+-           "mar<U00E7>";/
+-           "abril";/
+-           "maig";/
+-           "juny";/
+-           "juliol";/
+-           "agost";/
+-           "setembre";/
+-           "octubre";/
+-           "novembre";/
+-           "desembre"
+ mon        "de gener";/
+            "de febrer";/
+            "de mar<U00E7>";/
+diff --git a/localedata/locales/el_GR b/localedata/locales/el_GR
+index 7362492..8b922ef 100644
+--- a/localedata/locales/el_GR
++++ b/localedata/locales/el_GR
+@@ -104,30 +104,12 @@ day     "<U039A><U03C5><U03C1><U03B9><U03B1><U03BA><U03AE>";/
+         "<U03A0><U03AD><U03BC><U03C0><U03C4><U03B7>";/
+         "<U03A0><U03B1><U03C1><U03B1><U03C3><U03BA><U03B5><U03C5><U03AE>";/
+         "<U03A3><U03AC><U03B2><U03B2><U03B1><U03C4><U03BF>"
+-ab_alt_mon "<U0399><U03B1><U03BD>";"<U03A6><U03B5><U03B2>";/
+-        "<U039C><U03AC><U03C1>";"<U0391><U03C0><U03C1>";/
+-        "<U039C><U03AC><U03B9>";"<U0399><U03BF><U03CD><U03BD>";/
+-        "<U0399><U03BF><U03CD><U03BB>";"<U0391><U03CD><U03B3>";/
+-        "<U03A3><U03B5><U03C0>";"<U039F><U03BA><U03C4>";/
+-        "<U039D><U03BF><U03AD>";"<U0394><U03B5><U03BA>"
+ abmon   "<U0399><U03B1><U03BD>";"<U03A6><U03B5><U03B2>";/
+         "<U039C><U03B1><U03C1>";"<U0391><U03C0><U03C1>";/
+         "<U039C><U03B1><U0390>";"<U0399><U03BF><U03C5><U03BD>";/
+         "<U0399><U03BF><U03C5><U03BB>";"<U0391><U03C5><U03B3>";/
+         "<U03A3><U03B5><U03C0>";"<U039F><U03BA><U03C4>";/
+         "<U039D><U03BF><U03B5>";"<U0394><U03B5><U03BA>"
+-alt_mon "<U0399><U03B1><U03BD><U03BF><U03C5><U03AC><U03C1><U03B9><U03BF><U03C2>";/
+-        "<U03A6><U03B5><U03B2><U03C1><U03BF><U03C5><U03AC><U03C1><U03B9><U03BF><U03C2>";/
+-        "<U039C><U03AC><U03C1><U03C4><U03B9><U03BF><U03C2>";/
+-        "<U0391><U03C0><U03C1><U03AF><U03BB><U03B9><U03BF><U03C2>";/
+-        "<U039C><U03AC><U03B9><U03BF><U03C2>";/
+-        "<U0399><U03BF><U03CD><U03BD><U03B9><U03BF><U03C2>";/
+-        "<U0399><U03BF><U03CD><U03BB><U03B9><U03BF><U03C2>";/
+-        "<U0391><U03CD><U03B3><U03BF><U03C5><U03C3><U03C4><U03BF><U03C2>";/
+-        "<U03A3><U03B5><U03C0><U03C4><U03AD><U03BC><U03B2><U03C1><U03B9><U03BF><U03C2>";/
+-        "<U039F><U03BA><U03C4><U03CE><U03B2><U03C1><U03B9><U03BF><U03C2>";/
+-        "<U039D><U03BF><U03AD><U03BC><U03B2><U03C1><U03B9><U03BF><U03C2>";/
+-        "<U0394><U03B5><U03BA><U03AD><U03BC><U03B2><U03C1><U03B9><U03BF><U03C2>"
+ mon     "<U0399><U03B1><U03BD><U03BF><U03C5><U03B1><U03C1><U03AF><U03BF><U03C5>";/
+         "<U03A6><U03B5><U03B2><U03C1><U03BF><U03C5><U03B1><U03C1><U03AF><U03BF><U03C5>";/
+         "<U039C><U03B1><U03C1><U03C4><U03AF><U03BF><U03C5>";/
+diff --git a/localedata/locales/pl_PL b/localedata/locales/pl_PL
+index 4c1b2a8..0c1b5ff 100644
+--- a/localedata/locales/pl_PL
++++ b/localedata/locales/pl_PL
+@@ -189,18 +189,6 @@ abmon   "sty";"lut";/
+         "lip";"sie";/
+         "wrz";"pa<U017A>";/
+         "lis";"gru"
+-alt_mon "stycze<U0144>";/
+-        "luty";/
+-        "marzec";/
+-        "kwiecie<U0144>";/
+-        "maj";/
+-        "czerwiec";/
+-        "lipiec";/
+-        "sierpie<U0144>";/
+-        "wrzesie<U0144>";/
+-        "pa<U017A>dziernik";/
+-        "listopad";/
+-        "grudzie<U0144>"
+ mon     "stycznia";/
+         "lutego";/
+         "marca";/
+diff --git a/localedata/locales/ru_RU b/localedata/locales/ru_RU
+index fdb2059..13c0031 100644
+--- a/localedata/locales/ru_RU
++++ b/localedata/locales/ru_RU
+@@ -118,18 +118,6 @@ abday   "<U0412><U0441>";/
+         "<U0427><U0442>";/
+         "<U041F><U0442>";/
+         "<U0421><U0431>"
+-alt_mon "<U042F><U043D><U0432><U0430><U0440><U044C>";/
+-        "<U0424><U0435><U0432><U0440><U0430><U043B><U044C>";/
+-        "<U041C><U0430><U0440><U0442>";/
+-        "<U0410><U043F><U0440><U0435><U043B><U044C>";/
+-        "<U041C><U0430><U0439>";/
+-        "<U0418><U044E><U043D><U044C>";/
+-        "<U0418><U044E><U043B><U044C>";/
+-        "<U0410><U0432><U0433><U0443><U0441><U0442>";/
+-        "<U0421><U0435><U043D><U0442><U044F><U0431><U0440><U044C>";/
+-        "<U041E><U043A><U0442><U044F><U0431><U0440><U044C>";/
+-        "<U041D><U043E><U044F><U0431><U0440><U044C>";/
+-        "<U0414><U0435><U043A><U0430><U0431><U0440><U044C>"
+ mon     "<U044F><U043D><U0432><U0430><U0440><U044F>";/
+         "<U0444><U0435><U0432><U0440><U0430><U043B><U044F>";/
+         "<U043C><U0430><U0440><U0442><U0430>";/
+@@ -142,18 +130,6 @@ mon     "<U044F><U043D><U0432><U0430><U0440><U044F>";/
+         "<U043E><U043A><U0442><U044F><U0431><U0440><U044F>";/
+         "<U043D><U043E><U044F><U0431><U0440><U044F>";/
+         "<U0434><U0435><U043A><U0430><U0431><U0440><U044F>"
+-ab_alt_mon "<U044F><U043D><U0432>";/
+-        "<U0444><U0435><U0432>";/
+-        "<U043C><U0430><U0440>";/
+-        "<U0430><U043F><U0440>";/
+-        "<U043C><U0430><U0439>";/
+-        "<U0438><U044E><U043D>";/
+-        "<U0438><U044E><U043B>";/
+-        "<U0430><U0432><U0433>";/
+-        "<U0441><U0435><U043D>";/
+-        "<U043E><U043A><U0442>";/
+-        "<U043D><U043E><U044F>";/
+-        "<U0434><U0435><U043A>"
+ abmon   "<U044F><U043D><U0432>";/
+         "<U0444><U0435><U0432>";/
+         "<U043C><U0430><U0440>";/

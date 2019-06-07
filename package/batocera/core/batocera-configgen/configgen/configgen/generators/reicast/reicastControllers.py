@@ -3,12 +3,12 @@
 import sys
 import os
 import ConfigParser
-import recalboxFiles
+import batoceraFiles
 
 sys.path.append(
     os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
 
-import recalboxFiles
+import batoceraFiles
 
 
 reicastMapping = { 'a' :             {'button': 'btn_b'},
@@ -42,8 +42,12 @@ sections = { 'emulator' : ['mapping_name', 'btn_escape'],
 # returns its name
 def generateControllerConfig(controller):
 	# Set config file name
-    configFileName = "{}/controllerP{}.cfg".format(recalboxFiles.reicastCustom,controller.player)
+    configFileName = "{}/controllerP{}.cfg".format(batoceraFiles.reicastCustom,controller.player)
     Config = ConfigParser.ConfigParser()
+
+    if not os.path.exists(os.path.dirname(configFileName)):
+            os.makedirs(os.path.dirname(configFileName))
+         
     cfgfile = open(configFileName,'w+')
     
     # create ini sections
@@ -67,14 +71,14 @@ def generateControllerConfig(controller):
 				break
 		
 		# Sadly, we don't get the right axis code for Y hats. So, dirty hack time
-		code = input.code
-		if input.type == 'hat':
-		    if input.name == 'up':
-    			code = int(input.code) + 1
-		    else:
-    			code = input.code
-		
-		Config.set(section, var, code)
+                if input.code is not None:
+		    code = input.code
+		    if input.type == 'hat':
+		        if input.name == 'up':
+    			    code = int(input.code) + 1
+		        else:
+    			    code = input.code
+		    Config.set(section, var, code)
 
     Config.write(cfgfile)
     cfgfile.close()

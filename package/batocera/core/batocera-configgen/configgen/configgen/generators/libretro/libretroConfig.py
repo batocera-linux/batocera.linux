@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 import sys
 import os
-import recalboxFiles
+import batoceraFiles
+import libretroOptions
 from Emulator import Emulator
 import settings
 from settings.unixSettings import UnixSettings
@@ -45,13 +46,18 @@ systemNetplayModes = {'host', 'client'}
 def writeLibretroConfig(retroconfig, system, controllers, rom, bezel, gameResolution):
     writeLibretroConfigToFile(retroconfig, createLibretroConfig(system, controllers, rom, bezel, gameResolution))
 
-
 # take a system, and returns a dict of retroarch.cfg compatible parameters
 def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
-    coreSettings = UnixSettings(recalboxFiles.retroarchCoreCustom, separator=' ')
+    # Create/update retroarch-core-options.cfg
+    libretroOptions.generateCoreSettings(batoceraFiles.retroarchCoreCustom, system)
+
+    # Create/update hatari.cfg
+    if system.name == 'atarist':
+        libretroOptions.generateHatariConf(batoceraFiles.hatariConf)
 
     retroarchConfig = dict()
-    recalboxConfig = system.config
+    systemConfig = system.config
+    renderConfig = system.renderconfig
 
     # fs is required at least for x86* and odroidn2
     retroarchConfig['video_fullscreen'] = 'true'
@@ -61,19 +67,28 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
     else:
         retroarchConfig['video_smooth'] = 'false'
 
-    if defined('shaders', recalboxConfig):
-        retroarchConfig['video_shader'] = recalboxConfig['shaders']
+    if 'shader' in renderConfig and renderConfig['shader'] != None:
         retroarchConfig['video_shader_enable'] = 'true'
-        retroarchConfig['video_smooth'] = 'false'
+        retroarchConfig['video_smooth']        = 'false'
+        shaderFilename = renderConfig['shader'] + ".glslp"
+
+        eslog.log("searching shader {}".format(shaderFilename))
+        if os.path.exists("/userdata/shaders/" + shaderFilename):
+            retroarchConfig['video_shader_dir'] = "/userdata/shaders"
+            eslog.log("shader {} found in /userdata/shaders".format(shaderFilename))
+        else:
+            retroarchConfig['video_shader_dir'] = "/usr/share/batocera/shaders"
+
+        retroarchConfig['video_shader'] = retroarchConfig['video_shader_dir'] + "/" + shaderFilename
     else:
         retroarchConfig['video_shader_enable'] = 'false'
 
     retroarchConfig['aspect_ratio_index'] = '' # reset in case config was changed (or for overlays)
-    if defined('ratio', recalboxConfig):
-        if recalboxConfig['ratio'] in ratioIndexes:
-            retroarchConfig['aspect_ratio_index'] = ratioIndexes.index(recalboxConfig['ratio'])
+    if defined('ratio', systemConfig):
+        if systemConfig['ratio'] in ratioIndexes:
+            retroarchConfig['aspect_ratio_index'] = ratioIndexes.index(systemConfig['ratio'])
             retroarchConfig['video_aspect_ratio_auto'] = 'false'
-        elif recalboxConfig['ratio'] == "custom":
+        elif systemConfig['ratio'] == "custom":
             retroarchConfig['video_aspect_ratio_auto'] = 'false'
         else:
             retroarchConfig['video_aspect_ratio_auto'] = 'true'
@@ -96,8 +111,8 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
 
     retroarchConfig['input_joypad_driver'] = 'udev'
 
-    retroarchConfig['savestate_directory'] = recalboxFiles.savesDir + system.name
-    retroarchConfig['savefile_directory'] = recalboxFiles.savesDir + system.name
+    retroarchConfig['savestate_directory'] = batoceraFiles.savesDir + system.name
+    retroarchConfig['savefile_directory'] = batoceraFiles.savesDir + system.name
 
     retroarchConfig['input_libretro_device_p1'] = '1'
     retroarchConfig['input_libretro_device_p2'] = '1'
@@ -115,14 +130,6 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
         retroarchConfig['input_libretro_device_p1'] = '513'
         retroarchConfig['input_libretro_device_p2'] = '513'
 
-    # Emulator Atari800 option for roms Atari800
-    if (system.name == 'atari800'):
-        coreSettings.save('atari800_system', '400/800 (OS B)')
-
-    # Emulator Atari800 option for roms Atari5200
-    if (system.name == 'atari5200'):
-        coreSettings.save('atari800_system', '5200')
-
     retroarchConfig['cheevos_enable'] = 'false'
     retroarchConfig['cheevos_hardcore_mode_enable'] = 'false'
     retroarchConfig['cheevos_leaderboards_enable'] = 'false'
@@ -132,8 +139,8 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
     if system.isOptSet('retroachievements') and system.getOptBoolean('retroachievements') == True:
         if(system.name in systemToRetroachievements):
             retroarchConfig['cheevos_enable'] = 'true'
-            retroarchConfig['cheevos_username'] = recalboxConfig.get('retroachievements.username', "")
-            retroarchConfig['cheevos_password'] = recalboxConfig.get('retroachievements.password', "")
+            retroarchConfig['cheevos_username'] = systemConfig.get('retroachievements.username', "")
+            retroarchConfig['cheevos_password'] = systemConfig.get('retroachievements.password', "")
             # retroachievements_hardcore_mode
             if system.isOptSet('retroachievements.hardcore') and system.getOptBoolean('retroachievements.hardcore') == True:
                 retroarchConfig['cheevos_hardcore_mode_enable'] = 'true'
@@ -172,43 +179,26 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
     # core options
     if(system.name in systemToBluemsx):
         if system.config['core'] == 'bluemsx':
-            coreSettings.save('bluemsx_msxtype', systemToBluemsx[system.name])
             retroarchConfig['input_libretro_device_p1'] = systemToP1Device[system.name]
             retroarchConfig['input_libretro_device_p2'] = systemToP2Device[system.name]
     # forced values (so that if the config is not correct, fix it)
     if system.config['core'] == 'tgbdual':
         retroarchConfig['aspect_ratio_index'] = str(ratioIndexes.index("core")) # reset each time in this function
-        coreSettings.save('tgbdual_audio_output',     'Game Boy #1')
-        coreSettings.save('tgbdual_gblink_enable',    'enabled')
-        coreSettings.save('tgbdual_screen_placement', 'left-right')
-        coreSettings.save('tgbdual_single_screen_mp', 'both players')
-        coreSettings.save('tgbdual_switch_screens',   'normal')
-
-    if system.config['core'] == 'desmume':
-        coreSettings.save('desmume_pointer_device_r', 'emulated')
-
-    if system.config['core'] == 'mame078plus':
-        coreSettings.save('mame2003-plus_skip_disclaimer', 'enabled')
-        coreSettings.save('mame2003-plus_skip_warnings',   'enabled')
-
-    if system.config['core'] == 'mame078':
-        coreSettings.save('mame2003_skip_disclaimer', 'enabled')
-        coreSettings.save('mame2003_skip_warnings',   'enabled')
-
+        
     # Netplay management
     if 'netplaymode' in system.config and system.config['netplaymode'] in systemNetplayModes:
         # Security : hardcore mode disables save states, which would kill netplay
         retroarchConfig['cheevos_hardcore_mode_enable'] = 'false'
         # Quite strangely, host mode requires netplay_mode to be set to false when launched from command line
         retroarchConfig['netplay_mode']              = "false"
-        retroarchConfig['netplay_ip_port']           = recalboxConfig.get('netplay.server.port', "")
-        retroarchConfig['netplay_delay_frames']      = recalboxConfig.get('netplay.frames', "")
-        retroarchConfig['netplay_nickname']          = recalboxConfig.get('netplay.nick', "")
+        retroarchConfig['netplay_ip_port']           = systemConfig.get('netplay.server.port', "")
+        retroarchConfig['netplay_delay_frames']      = systemConfig.get('netplay.frames', "")
+        retroarchConfig['netplay_nickname']          = systemConfig.get('netplay.nick', "")
         retroarchConfig['netplay_client_swap_input'] = "false"
         if system.config['netplaymode'] == 'client':
             # But client needs netplay_mode = true ... bug ?
             retroarchConfig['netplay_mode']              = "true"
-            retroarchConfig['netplay_ip_address']        = recalboxConfig.get('netplay.server.ip', "")
+            retroarchConfig['netplay_ip_address']        = systemConfig.get('netplay.server.ip', "")
             retroarchConfig['netplay_client_swap_input'] = "true"
 
     # Display FPS
@@ -230,7 +220,7 @@ def writeBezelConfig(bezel, retroarchConfig, systemName, rom, gameResolution):
     # disable the overlay
     # if all steps are passed, enable them
     retroarchConfig['input_overlay_hide_in_menu'] = "false"
-    overlay_cfg_file  = recalboxFiles.overlayConfigFile
+    overlay_cfg_file  = batoceraFiles.overlayConfigFile
 
     # bezel are disabled
     # default values in case something wrong append
@@ -249,23 +239,23 @@ def writeBezelConfig(bezel, retroarchConfig, systemName, rom, gameResolution):
     # default name (default.png)
     # else return
     romBase = os.path.splitext(os.path.basename(rom))[0] # filename without extension
-    overlay_info_file = recalboxFiles.overlayUser + "/" + bezel + "/games/" + romBase + ".info"
-    overlay_png_file  = recalboxFiles.overlayUser + "/" + bezel + "/games/" + romBase + ".png"
+    overlay_info_file = batoceraFiles.overlayUser + "/" + bezel + "/games/" + romBase + ".info"
+    overlay_png_file  = batoceraFiles.overlayUser + "/" + bezel + "/games/" + romBase + ".png"
     if not (os.path.isfile(overlay_info_file) and os.path.isfile(overlay_png_file)):
-        overlay_info_file = recalboxFiles.overlaySystem + "/" + bezel + "/games/" + romBase + ".info"
-        overlay_png_file  = recalboxFiles.overlaySystem + "/" + bezel + "/games/" + romBase + ".png"
+        overlay_info_file = batoceraFiles.overlaySystem + "/" + bezel + "/games/" + romBase + ".info"
+        overlay_png_file  = batoceraFiles.overlaySystem + "/" + bezel + "/games/" + romBase + ".png"
         if not (os.path.isfile(overlay_info_file) and os.path.isfile(overlay_png_file)):
-            overlay_info_file = recalboxFiles.overlayUser + "/" + bezel + "/systems/" + systemName + ".info"
-            overlay_png_file  = recalboxFiles.overlayUser + "/" + bezel + "/systems/" + systemName + ".png"
+            overlay_info_file = batoceraFiles.overlayUser + "/" + bezel + "/systems/" + systemName + ".info"
+            overlay_png_file  = batoceraFiles.overlayUser + "/" + bezel + "/systems/" + systemName + ".png"
             if not (os.path.isfile(overlay_info_file) and os.path.isfile(overlay_png_file)):
-                overlay_info_file = recalboxFiles.overlaySystem + "/" + bezel + "/systems/" + systemName + ".info"
-                overlay_png_file  = recalboxFiles.overlaySystem + "/" + bezel + "/systems/" + systemName + ".png"
+                overlay_info_file = batoceraFiles.overlaySystem + "/" + bezel + "/systems/" + systemName + ".info"
+                overlay_png_file  = batoceraFiles.overlaySystem + "/" + bezel + "/systems/" + systemName + ".png"
                 if not (os.path.isfile(overlay_info_file) and os.path.isfile(overlay_png_file)):
-                    overlay_info_file = recalboxFiles.overlayUser + "/" + bezel + "/default.info"
-                    overlay_png_file  = recalboxFiles.overlayUser + "/" + bezel + "/default.png"
+                    overlay_info_file = batoceraFiles.overlayUser + "/" + bezel + "/default.info"
+                    overlay_png_file  = batoceraFiles.overlayUser + "/" + bezel + "/default.png"
                     if not (os.path.isfile(overlay_info_file) and os.path.isfile(overlay_png_file)):
-                        overlay_info_file = recalboxFiles.overlaySystem + "/" + bezel + "/default.info"
-                        overlay_png_file  = recalboxFiles.overlaySystem + "/" + bezel + "/default.png"
+                        overlay_info_file = batoceraFiles.overlaySystem + "/" + bezel + "/default.info"
+                        overlay_png_file  = batoceraFiles.overlaySystem + "/" + bezel + "/default.png"
                         if not (os.path.isfile(overlay_info_file) and os.path.isfile(overlay_png_file)):
                             return
     infos = json.load(open(overlay_info_file))

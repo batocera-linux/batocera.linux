@@ -54,7 +54,7 @@ nds:
   emulator: libretro
   core:     desmume
 3ds:
-  emulator: libretro
+  emulator: citra
   core:     citra
 sg1000:
   emulator: libretro
@@ -79,26 +79,24 @@ saturn:
   core:     yabause
 dreamcast:
   emulator: reicast
+atomiswave:
+  emulator: libretro
+  core:     reicast
 naomi:
   emulator: libretro
   core:     reicast
 neogeo:
   emulator: libretro
-  core:     fba
+  core:     fbneo
 neogeocd:
   emulator: libretro
-  core:     fba
+  core:     neocd
 mame:
   emulator: libretro
   core:     mame078
 fba:
   emulator: libretro
-  core:     fba
-fba_libretro:
-  emulator: libretro
-  core:     fba
-advancemame:
-  emulator: advmame
+  core:     fbneo
 msx:
   emulator: libretro
   core:     bluemsx
@@ -170,9 +168,9 @@ ngp:
 ngpc:
   emulator: libretro
   core:     mednafen_ngp
-gw:
-  emulator:     libretro
-  core:         gw
+gameandwatch:
+  emulator: libretro
+  core:     gw
   options:
     forceNoBezel: true
 vectrex:
@@ -254,3 +252,15 @@ moonlight:
   emulator: moonlight
 psp:
   emulator: ppsspp
+satellaview:
+  emulator: libretro
+  core:     snes9x
+sufami:
+  emulator: libretro
+  core:     snes9x
+pokemini:
+  emulator: libretro
+  core:     pokemini
+gx4000:
+  emulator: libretro
+  core:     cap32

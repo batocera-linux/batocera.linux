@@ -1,14 +1,15 @@
 #!/usr/bin/env python
 import Command
 #~ import reicastControllers
-import recalboxFiles
+import batoceraFiles
 from generators.Generator import Generator
 import ppssppConfig
 import ppssppControllers
 import shutil
 import os.path
 import ConfigParser
-
+# TODO: python3 - delete me!
+import codecs
 
 class PPSSPPGenerator(Generator):
 
@@ -23,15 +24,16 @@ class PPSSPPGenerator(Generator):
             if controller.player != "1":
                 continue
             ppssppControllers.generateControllerConfig(controller)
-            cfgFile = open(recalboxFiles.ppssppControls, "w")
+            # TODO: python 3 - workawround to encode files in utf-8
+            cfgFile = codecs.open(batoceraFiles.ppssppControls, "w", "utf-8")
             cfgFile.write(controller.generateSDLGameDBLine())
             cfgFile.close()
             break
 
-        # the command to run  
-        commandArray = [recalboxFiles.recalboxBins[system.config['emulator']]]
+        # the command to run
+        commandArray = [batoceraFiles.batoceraBins[system.config['emulator']]]
         commandArray.append(rom)
         commandArray.append("--fullscreen")
         # The next line is a reminder on how to quit PPSSPP with just the HK
-        #commandArray = [recalboxFiles.recalboxBins[system.config['emulator']], rom, "--escape-exit"]
-        return Command.Command(array=commandArray, env={"XDG_CONFIG_HOME":recalboxFiles.CONF, "SDL_VIDEO_GL_DRIVER": "/usr/lib/libGLESv2.so", "SDL_VIDEO_EGL_DRIVER": "/usr/lib/libGLESv2.so", "PPSSPP_GAME_CONTROLLER_DB_PATH": recalboxFiles.ppssppControls})
+        #commandArray = [batoceraFiles.batoceraBins[system.config['emulator']], rom, "--escape-exit"]
+        return Command.Command(array=commandArray, env={"XDG_CONFIG_HOME":batoceraFiles.CONF, "SDL_VIDEO_GL_DRIVER": "/usr/lib/libGLESv2.so", "SDL_VIDEO_EGL_DRIVER": "/usr/lib/libGLESv2.so", "PPSSPP_GAME_CONTROLLER_DB_PATH": batoceraFiles.ppssppControls})

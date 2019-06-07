@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import os
 import sys
-import recalboxFiles
+import batoceraFiles
 import re
 import time
 import subprocess
