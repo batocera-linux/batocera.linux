@@ -89,8 +89,19 @@ def main(args):
         if not os.path.exists(dirname):
             os.makedirs(dirname)
 
+        # run a script before emulator starts
+        # We are parsing 4 parameters to /userdata/system/scripts/script_at_start.sh
+        # $1=systemname (lynx), $2==emulatorcore (mednafen_lynx)
+        # $3=Fullpath to rom+Romname, $4=emulatortype
+        os.system('/userdata/system/scripts/script_at_start.sh "%s" "%s" "%s" "%s"' % (args.system, system.config['core'], args.rom, system.config['emulator']))
+
         # run the emulator
         exitCode = runCommand(generators[system.config['emulator']].generate(system, args.rom, playersControllers, gameResolution))
+
+        # run a script after emulator shuts down
+        # We are parsing 4 parameters to /userdata/system/scripts/script_at_end.sh
+        os.system('/userdata/system/scripts/script_at_end.sh "%s" "%s" "%s" "%s"' % (args.system, system.config['core'], args.rom, system.config['emulator']))
+   
     finally:
         # always restore the resolution
         if resolutionChanged:
