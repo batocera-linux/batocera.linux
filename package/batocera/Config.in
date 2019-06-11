@@ -74,6 +74,7 @@ endmenu
 menu "Emulators"
   menu "Retroarch"
     source "package/batocera/emulators/retroarch/retroarch/Config.in"
+    source "package/batocera/emulators/retroarch/retroarch-assets/Config.in"
     source "package/batocera/emulators/retroarch/batocera-bezel/Config.in"
     menu "Shaders"
       source "package/batocera/emulators/retroarch/shaders/batocera-shaders/Config.in"
