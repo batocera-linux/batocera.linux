@@ -13,7 +13,7 @@ c64:
   extensions: [crt, d64, d71, d80, d81, d82, g41, g64, t64, x64, tap, prg, p00, crt, zip]
   emulators:
     vice:
-      x64: { requireAnyOf: [BR2_PACKAGE_VICE] }
+      x64:  { requireAnyOf: [BR2_PACKAGE_VICE]          }
     libretro:
       vice: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_VICE] }
 
@@ -114,7 +114,6 @@ nes:
   emulators:
     libretro:
       fceumm:   { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FCEUMM]   }
-      fceunext: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FCEUNEXT] }
       nestopia: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_NESTOPIA] }
       quicknes: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_QUICKNES] }
 
@@ -124,8 +123,9 @@ n64:
   emulators:
     mupen64plus:
       gliden64:   { requireAnyOf: [BR2_PACKAGE_MUPEN64PLUS_GLIDEN64, BR2_PACKAGE_MUPEN64PLUS_V20_GLIDEN64] }
-      rice:       { requireAnyOf: [BR2_PACKAGE_MUPEN64PLUS_RICE]              }
       glide64mk2: { requireAnyOf: [BR2_PACKAGE_MUPEN64PLUS_VIDEO_GLIDE64MK2]  }
+      rice:       { requireAnyOf: [BR2_PACKAGE_MUPEN64PLUS_RICE]              }
+      n64:        { requireAnyOf: [BR2_PACKAGE_MUPEN64PLUS_GLES2]             }
     libretro:
       mupen64plus:      { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MUPEN64PLUS]      }
       mupen64plus-next: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MUPEN64PLUS_NEXT] }
@@ -138,7 +138,6 @@ gba:
     libretro:
       gpsp:   { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GPSP]   }
       mgba:   { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MGBA]   }
-      meteor: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_METEOR] }
 
 gbc:
   name:       Game Boy Color
@@ -204,24 +203,24 @@ dreamcast:
   extensions: [cdi, chd, gdi]
   emulators:
     libretro:
-      reicast:        { requireAnyOf: [BR2_PACKAGE_LIBRETRO_REICAST]        }
-      reicast_wince:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_REICAST_WINCE]  }
+      flycast:        { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FLYCAST]        }
+      flycast_wince:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FLYCAST_WINCE]  }
     reicast:
-      reicast: { requireAnyOf: [BR2_PACKAGE_REICAST] }
+      reicast:        { requireAnyOf: [BR2_PACKAGE_REICAST]                 }
 
 naomi:
   name:       Sega Naomi
   extensions: [lst, bin, dat, 7z, zip]
   emulators:
     libretro:
-      reicast: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_REICAST] }
+      flycast: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FLYCAST] }
 
 atomiswave:
   name:       Atomiswave
   extensions: [lst, bin, dat, 7z, zip]
   emulators:
     libretro:
-      reicast: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_REICAST] }
+      flycast: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FLYCAST] }
 
 megadrive:
   name:       Sega Megadrive
@@ -269,16 +268,15 @@ sg1000:
   emulators:
     libretro:
       genesisplusgx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GENESISPLUSGX] }
-      picodrive:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PICODRIVE]     }
-
+      
 psp:
   name:       Sony Playstation Portable
   extensions: [iso, cso, pbp, elf, prx]
   emulators:
     ppsspp:
-      ppsspp: { requireAnyOf: [BR2_PACKAGE_PPSSPP, BR2_PACKAGE_PPSSPP15] }
+      ppsspp: { requireAnyOf: [BR2_PACKAGE_PPSSPP, BR2_PACKAGE_PPSSPP15]  }
     libretro:
-      ppsspp: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PPSSPP] }
+      ppsspp: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PPSSPP]               }
 
 psx:
   name:       Sony Playstation 1
@@ -351,7 +349,7 @@ dos:
   platform:   pc
   emulators:
     dos:
-      dos: { requireAnyOf: [BR2_PACKAGE_DOSBOX] }
+      dos:    { requireAnyOf: [BR2_PACKAGE_DOSBOX]          }
     libretro:
       dosbox: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_DOSBOX] }
   comment_en: |
@@ -413,12 +411,12 @@ mame:
   platform:   arcade
   emulators:
     libretro:
-      imame4all:    { requireAnyOf: [BR2BR2_PACKAGE_LIBRETRO_IMAME] }
-      mame078:      { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME2003] }
-      mame078plus:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME2003_PLUS] }
-      mame0139:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME2010] }
-      mame0174:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME2016] }
-      mame:         { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME]      }
+      imame4all:    { requireAnyOf: [BR2BR2_PACKAGE_LIBRETRO_IMAME]       }
+      mame078:      { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME2003]       }
+      mame078plus:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME2003_PLUS]  }
+      mame0139:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME2010]       }
+      mame0174:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME2016]       }
+      mame:         { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME]           }
   comment_en: |
     The system uses libretro mame2003 as default core: compatible ROMs must come from set 0.78
     The libretro core imame4all, based on MAME v0.37b5, is also included.
@@ -533,7 +531,8 @@ lynx:
   platform:   atarilynx
   emulators:
     libretro:
-      mednafen_lynx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BEETLE_LYNX] }
+      mednafen_lynx:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BEETLE_LYNX] }
+      handy:          { requireAnyOf: [BR2_PACKAGE_LIBRETRO_HANDY]       }
 
 ngp:
   name:       Neo-Geo Pocket
@@ -795,18 +794,18 @@ gamecube:
   theme:      gc
   emulators:
     dolphin-emu:
-      dolphin-emu: { requireAnyOf: [BR2_PACKAGE_DOLPHIN_EMU] }
+      dolphin-emu:  { requireAnyOf: [BR2_PACKAGE_DOLPHIN_EMU]       }
     libretro:
-      dolphin: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_DOLPHIN] }
+      dolphin:      { requireAnyOf: [BR2_PACKAGE_LIBRETRO_DOLPHIN]  }
 
 wii:
   name:       Nintendo Wii
   extensions: [iso, wbfs, elf, dol, gcm, ciso, gcz, wad]
   emulators:
     dolphin-emu:
-      dolphin-emu: { requireAnyOf: [BR2_PACKAGE_DOLPHIN_EMU] }
+      dolphin-emu:  { requireAnyOf: [BR2_PACKAGE_DOLPHIN_EMU]       }
     libretro:
-      dolphin: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_DOLPHIN] }
+      dolphin:      { requireAnyOf: [BR2_PACKAGE_LIBRETRO_DOLPHIN]  }
   comment_en: |
     To use a virtual horizontal wiimote, include ".side." in the filename (for example ".side.iso").
     You can choose the axis controls among i(nfrared), s(wing), t(ilt) or n(unchuk) :
@@ -854,7 +853,7 @@ x68000:
     libretro:
       citra: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_CITRA] }
     citra:
-      citra: { requireAnyOf: [BR2_PACKAGE_CITRA] }
+      citra: { requireAnyOf: [BR2_PACKAGE_CITRA]          }
 
 satellaview:
   name:       Satellaview

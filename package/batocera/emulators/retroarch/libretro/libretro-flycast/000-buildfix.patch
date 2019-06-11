@@ -1,0 +1,29 @@
+diff --git a/Makefile b/Makefile
+index 4f43f6c..211b3a5 100644
+--- a/Makefile
++++ b/Makefile
+@@ -22,15 +22,10 @@ HAVE_CLANG    := 0
+ TARGET_NAME   := flycast
+ 
+ ifeq ($(HAVE_CLANG),1)
+-	CXX      = ${CC_PREFIX}clang++
+-	CC       = ${CC_PREFIX}clang
+ 	SHARED   := -fuse-ld=lld
+ else
+-	CXX      = ${CC_PREFIX}g++
+-	CC       = ${CC_PREFIX}gcc
+ 	SHARED   :=
+ endif
+-CC_AS    = ${CC_PREFIX}as
+ 
+ MFLAGS   := 
+ ASFLAGS  := 
+@@ -882,7 +877,7 @@ LIBS     += -lm
+ PREFIX        ?= /usr/local
+ 
+ ifneq (,$(findstring arm, $(ARCH)))
+-	CC_AS    = ${CC_PREFIX}gcc #The ngen_arm.S must be compiled with gcc, not as
++	CC_AS    = ${CC_PREFIX}${CC} #The ngen_arm.S must be compiled with gcc, not as
+ 	ASFLAGS  += $(CFLAGS)
+ endif
+ 

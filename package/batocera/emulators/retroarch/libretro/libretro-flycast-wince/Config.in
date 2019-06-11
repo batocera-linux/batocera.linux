@@ -1,5 +1,5 @@
-config BR2_PACKAGE_LIBRETRO_REICAST
-        bool "libretro-reicast"
+config BR2_PACKAGE_LIBRETRO_FLYCAST_WINCE
+        bool "libretro-flycast-wince"
 	depends on BR2_PACKAGE_RETROARCH
 	depends on BR2_INSTALL_LIBSTDCPP
         help
@@ -7,5 +7,5 @@ config BR2_PACKAGE_LIBRETRO_REICAST
 
 	  http://www.libretro.com
 
-comment "LIBRETRO_REICAST needs a toolchain w/ C++"
+comment "LIBRETRO_FLYCAST_WINCE needs a toolchain w/ C++"
 	depends on !BR2_INSTALL_LIBSTDCPP

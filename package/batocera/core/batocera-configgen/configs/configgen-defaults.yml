@@ -12,10 +12,10 @@ default:
 
 nes:
   emulator: libretro
-  core:     fceunext
+  core:     fceumm
 snes:
   emulator: libretro
-  core:     snes9x
+  core:     snes9x_next
 n64:
   emulator: mupen64plus
   core:     gliden64
@@ -24,7 +24,7 @@ gba:
   core:     mgba
 gb:
   emulator: libretro
-  core:     gambatte
+  core:     mgba
 gbc:
   emulator: libretro
   core:     gambatte
@@ -81,10 +81,10 @@ dreamcast:
   emulator: reicast
 atomiswave:
   emulator: libretro
-  core:     reicast
+  core:     flycast
 naomi:
   emulator: libretro
-  core:     reicast
+  core:     flycast
 neogeo:
   emulator: libretro
   core:     fbneo
@@ -93,17 +93,11 @@ neogeocd:
   core:     neocd
 mame:
   emulator: libretro
-  core:     mame078
+  core:     mame078plus
 fba:
   emulator: libretro
   core:     fbneo
 msx:
-  emulator: libretro
-  core:     bluemsx
-msx1:
-  emulator: libretro
-  core:     bluemsx
-msx2:
   emulator: libretro
   core:     bluemsx
 amiga500:
