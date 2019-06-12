@@ -1,3 +1,107 @@
 default:
-  shader: ntsc/ntsc-256px-gauss-scanline
-  scanline: true
+  # shader affects retroarch shaders
+  shader: crt/crt-lottes-fast
+  # scanline affect fba2x
+  scanline: false
+snes:
+  shader: crt/crt-lottes-fast
+nes:
+  shader: crt/crt-lottes-fast
+n64:
+  shader: retro/sharp-bilinear-scanlines
+gba:
+  shader: handheld/gba-color
+gb:
+  shader: handheld/gameboy
+gbc:
+  shader: handheld/gbc-color
+fds:
+  shader: retro/sharp-bilinear-scanlines
+virtualboy:
+  shader: retro/sharp-bilinear-scanlines
+# Sega
+sg1000:
+  shader: retro/sharp-bilinear-scanlines
+mastersystem:
+  shader: crt/crt-lottes-fast
+megadrive:
+  shader: crt/crt-lottes-fast
+gamegear:
+  shader: handheld/lcd3x
+sega32x:
+  shader: crt/crt-lottes-fast
+segacd:
+  shader: retro/sharp-bilinear-scanlines
+# Arcade
+neogeo:
+  shader: crt/crt-lottes-fast
+neogeocd:
+  shader: crt/crt-lottes-fast
+mame:
+  shader: crt/crt-lottes-fast
+fba:
+  shader: crt/crt-lottes-fast
+naomi:
+  shader: crt/crt-lottes-fast
+atomiswave:
+  shader: crt/crt-lottes-fast
+#
+ngp:
+  shader: handheld/lcd3x
+ngpc:
+  shader: handheld/lcd3x
+gw:
+  shader: retro/sharp-bilinear-scanlines
+vectrex:
+  shader:
+lynx:
+  shader: handheld/lcd3x
+lutro:
+  shader: retro/sharp-bilinear-scanlines
+wswan:
+  shader: handheld/lcd3x
+wswanc:
+  shader: handheld/lcd3x
+pcengine:
+  shader: crt/crt-lottes-fast
+pcenginecd:
+  shader: crt/crt-lottes-fast
+supergrafx:
+  shader: crt/crt-lottes-fast
+atari800:
+  shader: retro/sharp-bilinear-scanlines
+atari2600:
+  shader: retro/sharp-bilinear-scanlines
+atari5200:
+  shader: retro/sharp-bilinear-scanlines
+atari7800:
+  shader: retro/sharp-bilinear-scanlines
+prboom:
+  shader: crt/crt-lottes-fast
+psx:
+  shader: crt/crt-lottes-fast
+colecovision:
+  shader: crt/crt-lottes-fast
+# Computers
+msx:
+  shader: retro/sharp-bilinear-scanlines
+msx1:
+  shader: retro/sharp-bilinear-scanlines
+msx2:
+  shader: retro/sharp-bilinear-scanlines
+amiga:
+  shader: crt/crt-lottes-fast
+amstradcpc:
+  shader: crt/crt-lottes-fast
+atarist:
+  shader: crt/crt-lottes-fast
+zxspectrum:
+  shader: retro/sharp-bilinear-scanlines
+odyssey2:
+  shader: retro/sharp-bilinear-scanlines
+zx81:
+  shader: retro/sharp-bilinear-scanlines
+pcfx:
+  shader: retro/sharp-bilinear-scanlines
+x68000:
+  shader: retro/sharp-bilinear-scanlines
