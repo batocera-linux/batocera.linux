@@ -90,17 +90,13 @@ def main(args):
             os.makedirs(dirname)
 
         # run a script before emulator starts
-        # We are parsing 4 parameters to /userdata/system/scripts/script_at_start.sh
-        # $1=systemname (lynx), $2==emulatorcore (mednafen_lynx)
-        # $3=Fullpath to rom+Romname, $4=emulatortype
-        os.system('/userdata/system/scripts/script_at_start.sh "%s" "%s" "%s" "%s"' % (args.system, system.config['core'], args.rom, system.config['emulator']))
+        callExternalScripts("/userdata/system/scripts", "gameStart", [systemName, system.config['emulator'], system.config["core"], args.rom])
 
         # run the emulator
         exitCode = runCommand(generators[system.config['emulator']].generate(system, args.rom, playersControllers, gameResolution))
 
         # run a script after emulator shuts down
-        # We are parsing 4 parameters to /userdata/system/scripts/script_at_end.sh
-        os.system('/userdata/system/scripts/script_at_end.sh "%s" "%s" "%s" "%s"' % (args.system, system.config['core'], args.rom, system.config['emulator']))
+        callExternalScripts("/userdata/system/scripts", "gameStop", [systemName, system.config['emulator'], system.config["core"], args.rom])
    
     finally:
         # always restore the resolution
@@ -111,6 +107,18 @@ def main(args):
                 pass # don't fail
     # exit
     return exitCode
+
+def callExternalScripts(folder, event, args):
+    if not os.path.isdir(folder):
+        return
+
+    for file in os.listdir(folder):
+        if os.path.isdir(os.path.join(folder, file)):
+            callScripts(os.path.join(folder, file), event, args)
+        else:
+            if os.access(os.path.join(folder, file), os.X_OK):
+                eslog.log("calling external script: " + str([os.path.join(folder, file), event] + args))
+                subprocess.call([os.path.join(folder, file), event] + args)
 
 def runCommand(command):
     global proc
