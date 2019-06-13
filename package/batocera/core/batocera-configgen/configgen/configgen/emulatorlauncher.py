@@ -114,7 +114,7 @@ def callExternalScripts(folder, event, args):
 
     for file in os.listdir(folder):
         if os.path.isdir(os.path.join(folder, file)):
-            callScripts(os.path.join(folder, file), event, args)
+            callExternalScripts(os.path.join(folder, file), event, args)
         else:
             if os.access(os.path.join(folder, file), os.X_OK):
                 eslog.log("calling external script: " + str([os.path.join(folder, file), event] + args))
