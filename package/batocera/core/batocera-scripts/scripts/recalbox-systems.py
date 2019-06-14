@@ -22,10 +22,13 @@ systems = {
 
     # Commodore
 	"amiga500":  { "name": "Amiga500",	"biosFiles":  [ { "md5": "82a21c1890cae844b3df741f2762d48d", "file": "bios/Kickstart v1.3 r34.5 (1987)(Commodore)(A500-A1000-A2000-CDTV)[!].rom" } ] },
+    "amiga500":  { "name": "Amiga500",	"biosFiles":  [ { "md5": "82a21c1890cae844b3df741f2762d48d", "file": "bios/kick34005.A500"                                                       } ] },
     "amiga500p": { "name": "Amiga500+", "biosFiles":  [ { "md5": "dc10d7bdd1b6f450773dfb558477c230", "file": "bios/Kickstart v2.04 r37.175 (1991)(Commodore)(A500+)[!].rom"              } ] },
     "amiga600":  { "name": "Amiga600",  "biosFiles":  [ { "md5": "465646c9b6729f77eea5314d1f057951", "file": "bios/Kickstart v2.05 r37.350 (1992)(Commodore)(A600HD)[!].rom"             } ] },
+    "amiga600":  { "name": "Amiga600",  "biosFiles":  [ { "md5": "e40a5dfb3d017ba8779faba30cbd1c8e", "file": "bios/kick40063.A600"                                                       } ] },
     "amiga1000": { "name": "Amiga1000", "biosFiles":  [ { "md5": "85ad74194e87c08904327de1a9443b7a", "file": "bios/Kickstart v1.2 r33.180 (1986)(Commodore)(A500-A1000-A2000)[!].rom"    } ] },
     "amiga1200": { "name": "Amiga1200", "biosFiles":  [ { "md5": "646773759326fbac3b2311fd8c8793ee", "file": "bios/Kickstart v3.1 r40.68 (1993)(Commodore)(A1200)[!].rom"                } ] },
+    "amiga1200": { "name": "Amiga1200", "biosFiles":  [ { "md5": "646773759326fbac3b2311fd8c8793ee", "file": "bios/kick40068.A1200"                                                      } ] },
     "amiga3000": { "name": "Amiga3000", "biosFiles":  [ { "md5": "413590e50098a056cfec418d3df0212d", "file": "bios/Kickstart v3.1 r40.68 (1993)(Commodore)(A3000).rom"                   } ] },
     "amiga4000": { "name": "Amiga4000", "biosFiles":  [ { "md5": "9bdedde6a4f33555b4a270c8ca53297d", "file": "bios/Kickstart v3.1 r40.68 (1993)(Commodore)(A4000).rom"                   } ] },
     "amigacd32": { "name": "Amiga CD32", "biosFiles": [ { "md5": "5f8924d013dd57a89cf349f4cdedc6b1", "file": "bios/Kickstart v3.1 r40.60 (1993)(Commodore)(CD32).rom"                    },
