@@ -10,7 +10,7 @@ import collections
 
 class Emulator():
 
-    def __init__(self, name):
+    def __init__(self, name, rom):
         self.name = name
 
         # read the configuration from the system name
@@ -23,10 +23,12 @@ class Emulator():
         recalSettings = UnixSettings(batoceraFiles.batoceraConf)
         globalSettings = recalSettings.loadAll('global')
         systemSettings = recalSettings.loadAll(self.name)
+        gameSettings = recalSettings.loadAll(os.path.basename(rom))
 
         # update config
         Emulator.updateConfiguration(self.config, globalSettings)
         Emulator.updateConfiguration(self.config, systemSettings)
+        Emulator.updateConfiguration(self.config, gameSettings)
         self.updateDrawFPS()
 
         # update renderconfig
@@ -38,6 +40,7 @@ class Emulator():
             self.renderconfig = Emulator.get_generic_config(self.name, "/usr/share/batocera/shaders/configs/" + self.config["shaderset"] + "/rendering-defaults.yml", "/usr/share/batocera/shaders/configs/" + self.config["shaderset"] + "/rendering-defaults-arch.yml")
             Emulator.updateConfiguration(self.renderconfig, globalSettings)
             Emulator.updateConfiguration(self.renderconfig, systemSettings)
+            Emulator.updateConfiguration(self.renderconfig, gameSettings)
             eslog.log("shader file={}".format(self.renderconfig["shader"]))
         else:
             eslog.log("no shader")

@@ -62,7 +62,7 @@ def main(args):
     # find the system to run
     systemName = args.system
     eslog.log("Running system: {}".format(systemName))
-    system = Emulator(systemName)
+    system = Emulator(systemName, args.rom)
     eslog.debug("Settings: {}".format(system.config))
     if "emulator" in system.config and "core" in system.config:
         eslog.log("emulator: {}, core: {}".format(system.config["emulator"], system.config["core"]))
