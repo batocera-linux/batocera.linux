@@ -20,6 +20,9 @@ class UnixSettings():
         # use ConfigParser as backend.
         eslog.debug("Creating parser for {0}".format(self.settingsFile))
         self.config = ConfigParser.ConfigParser()
+        # To prevent ConfigParser from converting to lower case
+        self.config.optionxform = str
+
         try:
             # TODO: remove me when we migrate to Python 3
             # pretend where have a [DEFAULT] section
@@ -68,11 +71,15 @@ class UnixSettings():
         raise Exception
         self.config.remove_option('DEFAULT', name)
 
+    @staticmethod
+    def protectString(str):
+        return re.sub('[^A-Za-z0-9\.]+', '_', str)
+
     def loadAll(self, name):
         eslog.debug("Looking for {0}.* in {1}".format(name, self.settingsFile))
         res = dict()
         for (key, value) in self.config.items('DEFAULT'):
-            m = re.match(r"^" + name + "\.(.+)", key)
+            m = re.match(r"^" + UnixSettings.protectString(name) + "\.(.+)", UnixSettings.protectString(key))
             if m:
                 res[m.group(1)] = value;
 
