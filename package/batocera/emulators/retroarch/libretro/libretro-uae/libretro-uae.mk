@@ -3,8 +3,8 @@
 # UAE
 #
 ################################################################################
-# Version.: Commits on Apr 7, 2019
-LIBRETRO_UAE_VERSION = 8796e817a15320f26cdbcc2b124549b573c799f6
+# Version.: Commits on May 29, 2019
+LIBRETRO_UAE_VERSION = 0846a5118db1cb83cba005cdd4888f489fb0d100
 LIBRETRO_UAE_SITE = $(call github,libretro,libretro-uae,$(LIBRETRO_UAE_VERSION))
 LIBRETRO_UAE__LICENSE = GPLv2
 
