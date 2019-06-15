@@ -1,54 +1,63 @@
 #!/bin/bash
 # Setup Credentials for WIFI
 #
-# To import keyfile place wifikeyfile.txt to /boot (this is visible FAT32 ext. in Windows)
-# To import keyfile activate WiFi in EmulationStation and reboot
+# To import credentials enter open batocera-boot.conf (this file is visible in FAT32 in windows systems)
+# and remove comments and enter your credentials, now boot BATOCERA and
+# activate WiFi in EmulationStation, reboot and voila wifi credentials are imported to wifi2 settings
 #
-# wifikeyfile.txt must be placed to /boot and cotain following structure
-# psk="write your key here"
-# ssid="set your wifi SSID here"
+# batocera-boot.conf is available in /boot and cotain following structure
+# REMOVE # in batocera-boot.conf to activate import feature!
+# wifi.import.key=write your key here
+# wifi.import.ssid=set your wifi SSID here
 #
 # Triggers for activating this script
 # 1. Wifi must be activated by ES
-# 2. File /boot/wifikeyfile.txt is present
+# 2. File /boot/batocera-boot.conf contains activated wifi credentials
+# 3. Values of /boot/batocera-boot.conf are not equal to batocera.conf
 
 readonly BATOCERA_CONFIGFILE="/userdata/system/batocera.conf"
-readonly WIFI_KEYFILE="/boot/wifikeyfile.txt"
+readonly WIFI_KEYFILE="/boot/batocera-boot.conf"
 readonly COMMENT_CHAR="#"
 
 function get_config() {
      local val
-     val=$(grep -E -m1 ^$COMMENT_CHAR?\s*$1 $BATOCERA_CONFIGFILE) 
-     [[ "${val:0:1}" == "$COMMENT_CHAR" ]] && rem_config "$1"
+     local key=$1
+     local file=$2
+     val="$(grep -E -m1 ^$COMMENT_CHAR?\s*$key $file)"
+     
+     # Check comment char in /boot/batocera-boot.conf, if true set value # 
+     [[ "${val:0:1}" == "$COMMENT_CHAR" && "$file" == "$WIFI_KEYFILE" ]] && val="$COMMENT_CHAR"
+     
+     # Check comment char in /userdata/system/batocera.conf, if true remove # sign
+     [[ "${val:0:1}" == "$COMMENT_CHAR" && "$file" == "$BATOCERA_CONFIGFILE" ]] && rem_config "$key" "$file" 
      val="${val#*=}"
      echo "$val"
 }
 
 function set_config() {
-     sed -i "s|^\(\s*$1\s*=\).*|\1$2|" "$BATOCERA_CONFIGFILE"
+     local key=$1
+     local value=$2
+     local file=$3
+     sed -i "s|^\(\s*$key\s*=\).*|\1$value|" "$file"
 }
 
 function rem_config() {
-     sed -i "s|^$COMMENT_CHAR\(\s*$1\)|\1|" "$BATOCERA_CONFIGFILE"
+    local key=$1
+    local file=$2
+    sed -i "s|^$COMMENT_CHAR\(\s*$1\)|\1|" "$file"
 }
 
-[[ "$1" == "stop" ]] || exit                                  #Only start with stop parameter paresed during /etc/init.d/ shutdown
-[[ -e "$WIFI_KEYFILE" ]] || exit                              #If no file present then exit
-[[ "$(get_config wifi.enabled)" -eq 1 ]] || exit              #If WiFi is disabled then exit 
+[[ "$1" == "stop" ]] || exit                                            #Only start with stop parameter paresed during /etc/init.d/ shutdown
+[[ "$(get_config wifi.enabled $BATOCERA_CONFIGFILE)" -eq 1 ]] || exit   #If WiFi is disabled then exit 
 
-while read line; do
-    if [[ "$line" =~ "psk=\"" ]]; then
-        psk="${line#*\"}"
-        psk="${psk%\"*}"
-        val=$(get_config wifi2.key)
-        [[ "$psk" == "$val" || -z "$val" ]] && psk=          #If Passkey already setted then clear psk var
-    elif [[ "$line" =~ "ssid=\"" ]]; then
-        ssid="${line#*\"}"
-        ssid="${ssid%\"*}" 
-        val=$(get_config wifi2.ssid)
-        [[ "$ssid" == "$val" || -z "$val"  ]] && ssid=         #If SSID is setted then clear ssid var
-    fi
-done < <(tr -d '\r' < "$WIFI_KEYFILE")
+psk="$(get_config wifi.import.key $WIFI_KEYFILE)"
+ssid="$(get_config wifi.import.ssid $WIFI_KEYFILE)"
 
-[[ -z $psk ]] || set_config wifi2.key "$psk"     # If PSK is empty then key stored is equal to keyfile setted one
-[[ -z $ssid ]] || set_config wifi2.ssid "$ssid"  # If SSID is empty then key stored in Keyfile is equal
+[[ "$psk" == "$COMMENT_CHAR" ]] && exit                                 #If key in batocera-boot.conf is activated
+[[ "$ssid" == "$COMMENT_CHAR" ]] && exit                                #If key in batocera-boot.conf is activated
+
+[[ "$(get_config wifi2.ssid $BATOCERA_CONFIGFILE)" != "$ssid" ]] || exit
+[[ "$(get_config wifi2.key $BATOCERA_CONFIGFILE)" != "$psk" ]] || exit
+
+set_config wifi2.key "$psk" "$BATOCERA_CONFIGFILE"
+set_config wifi2.ssid "$ssid" "$BATOCERA_CONFIGFILE"
