@@ -53,7 +53,7 @@ function rem_config() {
 psk="$(get_config wifi.import.key $WIFI_KEYFILE)"
 ssid="$(get_config wifi.import.ssid $WIFI_KEYFILE)"
 
-[[ -n "$psk" && -n "$ssid" ]] || exit                                       #If keys in batocera-boot.conf are available then proceed                                               #If key in batocera-boot.conf is empty or not setted
+[[ -n "$psk" && -n "$ssid" ]] || exit                                       #If keys in batocera-boot.conf are available then proceed
 [[ "$psk" == "$COMMENT_CHAR" || "$ssid" == "$COMMENT_CHAR" ]] && exit       #If keys in batocera-boot.conf are commented out then proceed
 
 [[ "$(get_config wifi2.ssid $BATOCERA_CONFIGFILE)" != "$ssid" ]] || exit    #If key in batocera-boot.conf and batocera.conf are not equal
