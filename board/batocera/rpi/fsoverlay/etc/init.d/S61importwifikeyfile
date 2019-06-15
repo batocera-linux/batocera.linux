@@ -47,17 +47,17 @@ function rem_config() {
     sed -i "s|^$COMMENT_CHAR\(\s*$1\)|\1|" "$file"
 }
 
-[[ "$1" == "stop" ]] || exit                                            #Only start with stop parameter paresed during /etc/init.d/ shutdown
-[[ "$(get_config wifi.enabled $BATOCERA_CONFIGFILE)" -eq 1 ]] || exit   #If WiFi is disabled then exit 
+[[ "$1" == "stop" ]] || exit                                                #Only start with stop parameter paresed during /etc/init.d/ shutdown
+[[ "$(get_config wifi.enabled $BATOCERA_CONFIGFILE)" -eq 1 ]] || exit       #If WiFi is disabled then exit 
 
 psk="$(get_config wifi.import.key $WIFI_KEYFILE)"
 ssid="$(get_config wifi.import.ssid $WIFI_KEYFILE)"
 
-[[ "$psk" == "$COMMENT_CHAR" ]] && exit                                 #If key in batocera-boot.conf is activated
-[[ "$ssid" == "$COMMENT_CHAR" ]] && exit                                #If key in batocera-boot.conf is activated
+[[ -n "$psk" && -n "$ssid" ]] || exit                                       #If keys in batocera-boot.conf are available then proceed                                               #If key in batocera-boot.conf is empty or not setted
+[[ "$psk" == "$COMMENT_CHAR" || "$ssid" == "$COMMENT_CHAR" ]] && exit       #If keys in batocera-boot.conf are commented out then proceed
 
-[[ "$(get_config wifi2.ssid $BATOCERA_CONFIGFILE)" != "$ssid" ]] || exit
-[[ "$(get_config wifi2.key $BATOCERA_CONFIGFILE)" != "$psk" ]] || exit
+[[ "$(get_config wifi2.ssid $BATOCERA_CONFIGFILE)" != "$ssid" ]] || exit    #If key in batocera-boot.conf and batocera.conf are not equal
+[[ "$(get_config wifi2.key $BATOCERA_CONFIGFILE)" != "$psk" ]] || exit      #If key in batocera-boot.conf and batocera.conf are not equal
 
-set_config wifi2.key "$psk" "$BATOCERA_CONFIGFILE"
-set_config wifi2.ssid "$ssid" "$BATOCERA_CONFIGFILE"
+set_config wifi2.key "$psk" "$BATOCERA_CONFIGFILE"                          #Set key according to /boot/batocera-boot.conf wifi.import.key
+set_config wifi2.ssid "$ssid" "$BATOCERA_CONFIGFILE"                        #Set key according to /boot/batocera-boot.conf wifi.import.ssid
