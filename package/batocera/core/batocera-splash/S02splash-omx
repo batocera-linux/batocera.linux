@@ -42,7 +42,7 @@ do_start ()
     # -911 = Volume set to 35% (On omxplayer)
     # 1/(10^(911/2000)) = 0.35034828830157
 
-    /usr/bin/omxplayer -o both --vol -911 $omx_opt $omx_srt $omx_nosound $video &
+    /usr/bin/omxplayer -o both --vol -2500 $omx_opt $omx_srt $omx_nosound $video &
     PID=$!
 
     # Stop the video when ready
