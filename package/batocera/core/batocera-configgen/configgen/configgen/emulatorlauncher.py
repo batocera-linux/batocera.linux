@@ -62,7 +62,7 @@ def main(args):
     # find the system to run
     systemName = args.system
     eslog.log("Running system: {}".format(systemName))
-    system = Emulator(systemName)
+    system = Emulator(systemName, args.rom)
     eslog.debug("Settings: {}".format(system.config))
     if "emulator" in system.config and "core" in system.config:
         eslog.log("emulator: {}, core: {}".format(system.config["emulator"], system.config["core"]))
@@ -89,8 +89,15 @@ def main(args):
         if not os.path.exists(dirname):
             os.makedirs(dirname)
 
+        # run a script before emulator starts
+        callExternalScripts("/userdata/system/scripts", "gameStart", [systemName, system.config['emulator'], system.config["core"], args.rom])
+
         # run the emulator
         exitCode = runCommand(generators[system.config['emulator']].generate(system, args.rom, playersControllers, gameResolution))
+
+        # run a script after emulator shuts down
+        callExternalScripts("/userdata/system/scripts", "gameStop", [systemName, system.config['emulator'], system.config["core"], args.rom])
+   
     finally:
         # always restore the resolution
         if resolutionChanged:
@@ -100,6 +107,18 @@ def main(args):
                 pass # don't fail
     # exit
     return exitCode
+
+def callExternalScripts(folder, event, args):
+    if not os.path.isdir(folder):
+        return
+
+    for file in os.listdir(folder):
+        if os.path.isdir(os.path.join(folder, file)):
+            callExternalScripts(os.path.join(folder, file), event, args)
+        else:
+            if os.access(os.path.join(folder, file), os.X_OK):
+                eslog.log("calling external script: " + str([os.path.join(folder, file), event] + args))
+                subprocess.call([os.path.join(folder, file), event] + args)
 
 def runCommand(command):
     global proc

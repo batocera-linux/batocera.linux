@@ -46,32 +46,35 @@ class LibretroGenerator(Generator):
             commandArray = [batoceraFiles.batoceraBins[system.config['emulator']], "-L", retroarchCore, "--config", system.config['configfile']]
 
         configToAppend = []
-        
+
         # Custom configs - per core
         customCfg = "{}/{}.cfg".format(batoceraFiles.retroarchRoot, system.name)
         if os.path.isfile(customCfg):
             configToAppend.append(customCfg)
-        
+
         # Custom configs - per game
         customGameCfg = "{}/{}/{}.cfg".format(batoceraFiles.retroarchRoot, system.name, romName)
         if os.path.isfile(customGameCfg):
             configToAppend.append(customGameCfg)
-        
+
         # Overlay management
         overlayFile = "{}/{}/{}.cfg".format(batoceraFiles.OVERLAYS, system.name, romName)
         if os.path.isfile(overlayFile):
             configToAppend.append(overlayFile)
-        
+
         # Generate the append
         if configToAppend:
             commandArray.extend(["--appendconfig", "|".join(configToAppend)])
-            
+
          # Netplay mode
         if 'netplaymode' in system.config:
             if system.config['netplaymode'] == 'host':
                 commandArray.append("--host")
             elif system.config['netplaymode'] == 'client':
                 commandArray.extend(["--connect", system.config['netplay.server.address']])
+
+        # Verbose logs
+        commandArray.extend(['--verbose'])
 
         commandArray.append(rom)
         return Command.Command(array=commandArray)
