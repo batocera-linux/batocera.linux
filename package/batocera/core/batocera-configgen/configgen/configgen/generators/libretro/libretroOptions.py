@@ -39,6 +39,13 @@ def generateCoreSettings(retroarchCore, system):
         coreSettings.save('tgbdual_single_screen_mp',   '"both players"')
         coreSettings.save('tgbdual_switch_screens',     '"normal"')
 
+    if (system.config['core'] == 'gambatte'):
+        if 'colorization' in system.renderconfig and system.renderconfig['colorization'] != None:
+            coreSettings.save('gambatte_gb_colorization',     '"internal"')
+            coreSettings.save('gambatte_gb_internal_palette', '"' + system.renderconfig['colorization'] + '"')
+        else:
+            coreSettings.save('gambatte_gb_colorization',     '"disabled"')
+        
     if (system.config['core'] == 'desmume'):
         coreSettings.save('desmume_pointer_device_r',   '"emulated"')
 
