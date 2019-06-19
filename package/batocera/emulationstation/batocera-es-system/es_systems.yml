@@ -871,6 +871,16 @@ gx4000:
     libretro:
       cap32: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_CAP32] }
 
+lightgun:
+  name:       Light Gun
+  extensions: [zip, 7z]
+  platform:   arcade
+  emulators:
+    libretro:
+      mame078plus:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME2003_PLUS]  }
+      mame078:      { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME2003]       }
+      mame0139:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME2010]       }
+
 imageviewer:
   name:       Screenshots
   extensions: [jpg, jpeg, png, bmp, psd, tga, gif, hdr, pic, ppm, pgm]
