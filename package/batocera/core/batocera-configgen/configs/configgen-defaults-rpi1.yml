@@ -1,8 +1,10 @@
 default:
   options:
+    videomode:      CEA 4 HDMI
     video_threaded: true
     rewind:         false
-    videomode:      CEA 4 HDMI
+    smooth:         false
+    rewind:         false
 
 snes:
   emulator: libretro

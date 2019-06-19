@@ -207,6 +207,14 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
     else:
         retroarchConfig['fps_show'] = 'false'
 
+    # adaptation for small resolution
+    if gameResolution["width"] < 400 and gameResolution["height"] < 400:
+        retroarchConfig['video_font_size'] = '12'
+        retroarchConfig['menu_driver'] = 'rgui'
+    else:
+        retroarchConfig['video_font_size'] = '32'
+        retroarchConfig['menu_driver'] = 'ozone'
+
     # bezel
     writeBezelConfig(bezel, retroarchConfig, system.name, rom, gameResolution)
 
