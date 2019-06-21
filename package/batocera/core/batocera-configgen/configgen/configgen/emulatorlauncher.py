@@ -6,7 +6,6 @@ import sys
 from sys import exit
 from Emulator import Emulator
 import generators
-from generators.fba2x.fba2xGenerator import Fba2xGenerator
 from generators.kodi.kodiGenerator import KodiGenerator
 from generators.linapple.linappleGenerator import LinappleGenerator
 from generators.libretro.libretroGenerator import LibretroGenerator
@@ -32,7 +31,6 @@ import utils.videoMode as videoMode
 from utils.logger import eslog
 
 generators = {
-    'fba2x': Fba2xGenerator(),
     'kodi': KodiGenerator(),
     'linapple': LinappleGenerator(os.path.join(batoceraFiles.HOME_INIT, '.linapple'),
                                   os.path.join(batoceraFiles.HOME, '.linapple')),
