@@ -27,8 +27,6 @@ amiga500:
       A500: { requireAnyOf: [BR2_PACKAGE_FSUAE]         }
     amiberry:
       A500: { requireAnyOf: [BR2_PACKAGE_AMIBERRY]      }
-    libretro:
-      puae:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_UAE]  }
 
 amiga500p:
   name:       Amiga 500+
@@ -49,8 +47,6 @@ amiga600:
   emulators:
     fsuae:
       A600: { requireAnyOf: [BR2_PACKAGE_FSUAE]         }
-    libretro:
-      puae:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_UAE]  }
 
 amiga1000:
   name:       Amiga 1000
@@ -71,8 +67,6 @@ amiga1200:
       A1200: { requireAnyOf: [BR2_PACKAGE_FSUAE]        }
     amiberry:
       A1200: { requireAnyOf: [BR2_PACKAGE_AMIBERRY]     }
-    libretro:
-      puae:   { requireAnyOf: [BR2_PACKAGE_LIBRETRO_UAE] }
 
 amiga3000:
   name:       Amiga 3000
