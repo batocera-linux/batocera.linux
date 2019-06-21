@@ -83,6 +83,10 @@ def generateCoreSettings(retroarchCore, system):
     if (system.config['core'] == 'virtualjaguar'):
         coreSettings.save('virtualjaguar_usefastblitter',   '"enabled"')
 
+    if (system.config['core'] == 'vice'):
+        coreSettings.save('vice_Controller',    '"joystick"')
+        coreSettings.save('vice_JoyPort',       '"port_1"')
+ 
 def generateHatariConf(hatariConf):
     hatariConfig = ConfigParser.ConfigParser()
     # To prevent ConfigParser from converting to lower case
