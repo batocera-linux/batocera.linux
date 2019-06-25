@@ -1,7 +1,8 @@
 #!/bin/bash
 
-# batoceraSettings.sh to mimic batoceraSettings.py
+# batocera-settings can mimic batoceraSettings.py
 # goal: abbolish this python script, it's useless for the sake of the load feature only
+#       get a more user friendly environment for setting, getting and saving keys
 #
 # Usage of BASE COMMAND:
 #           <filename> -command <cmd> -key <key> -value <value>
@@ -12,18 +13,18 @@
 #                       use quotation marks to avoid globbing use slashe escape special characters 
 
 # This script reads only 1st occourance if string and writes only to 1st occurance
-# So 10 entries overwritten with system.power.switch will never occour again.
 #
-# This script uses #-Character to comment vales
+# This script uses #-Character to comment values
 #
 # If there is a bolean value (0,1) then then enable and disable command will set the correspondending
 # boolean value.
 
 # Examples:
-# ./batoceraSettings.sh -command load -key wifi.enabled will print out 0 or 1
-# ./batoceraSettings.sh -command write -key wifi.ssid -value "This is my NET" will set wlan.ssid=This is my NET
-# ./batoceraSettings.sh -command enable -key wifi.ssid will remove # from  configfile (activate)
-# ./batoceraSettings.sh -command disable -key wifi.enabled will set key wifi.enabled=0
+# 'batocera-settings -command load -key wifi.enabled' will print out 0 or 1
+# 'batocera-settings -command write -key wifi.ssid -value "This is my NET"' will set 'wlan.ssid=This is my NET'
+# 'batocera-settings -command enable -key wifi.ssid' will remove # from  configfile (activate)
+# 'batocera-settings -command disable -key wifi.enabled' will set key wifi.enabled=0
+# 'botocera-settings /myown/config.file -command status -key my.key' will output status of own config.file and my.key 
 
 # by cyperghost - 2019/06/25
 
