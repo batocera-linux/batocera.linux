@@ -5,11 +5,13 @@
 #       get a more user friendly environment for setting, getting and saving keys
 #
 # Usage of BASE COMMAND:
-#           <filename> -command <cmd> -key <key> -value <value>
+#           longform:   <filename> --command <cmd> --key <key> --value <value>
 #
-#           -command    load write enable disable status
-#           -key        any key in batocera.conf (kodi.enabled...)
-#           -value      any alphanumerical string
+#           shortform:  <file> <cmd> <key> <value>
+#
+#           --command    load write enable disable status
+#           --key        any key in batocera.conf (kodi.enabled...)
+#           --value      any alphanumerical string
 #                       use quotation marks to avoid globbing use slashe escape special characters 
 
 # This script reads only 1st occourance if string and writes only to 1st occurance
@@ -20,11 +22,11 @@
 # boolean value.
 
 # Examples:
-# 'batocera-settings -command load -key wifi.enabled' will print out 0 or 1
-# 'batocera-settings -command write -key wifi.ssid -value "This is my NET"' will set 'wlan.ssid=This is my NET'
-# 'batocera-settings -command enable -key wifi.ssid' will remove # from  configfile (activate)
-# 'batocera-settings -command disable -key wifi.enabled' will set key wifi.enabled=0
-# 'botocera-settings /myown/config.file -command status -key my.key' will output status of own config.file and my.key 
+# 'batocera-settings --command load --key wifi.enabled' will print out 0 or 1
+# 'batocera-settings --command write --key wifi.ssid -value "This is my NET"' will set 'wlan.ssid=This is my NET'
+# 'batocera-settings enable wifi.ssid' will remove # from  configfile (activate)
+# 'batocera-settings disable wifi.enabled' will set key wifi.enabled=0
+# 'botocera-settings /myown/config.file --command status --key my.key' will output status of own config.file and my.key 
 
 # by cyperghost - 2019/06/25
 
@@ -73,25 +75,43 @@ function check_argument() {
     fi
 }
 
+function pythonscript_style() {
+
+   #This is done the call old python script!
+
+    #First command line parameter set
+    [[ "${1,,}" != *command ]] && usage && exit 1
+    check_argument $1 $2
+    [[ $? -eq 0 ]] || exit 1
+    command="$2"
+
+    #Second command line parameter set
+    [[ "${3,,}" != *key ]] && usage && exit 1
+    check_argument $1 $2
+    [[ $? -eq 0 ]] || exit 1
+    keyvalue="$4"
+}
+
+
 function usage() {
 val=" Usage of BASE COMMAND:
 
-           <file> -command <cmd> -key <key> -value <value>
+           <file> --command <cmd> --key <key> --value <value>
 
-           -command    load write enable disable status
-           -key        any key in batocera.conf (kodi.enabled...)
-           -value      any alphanumerical string
+           shortform: <file> <cmd> <key> <value>
+
+           --command    load write enable disable status
+           --key        any key in batocera.conf (kodi.enabled...)
+           --value      any alphanumerical string
                        use quotation marks to avoid globbing
 
-           Special charcters like brackets needs to be escaped!
-
-           For write command -value <value> must be provided
+           For write command --value <value> must be provided
 
            exit codes: exit 0  = value is available, proper exit
                        exit 1  = general error
                        exit 2  = file error
                        exit 11 = value found, but not activated
-                       exit 12 = value not found 
+                       exit 12 = value not found
 
            If you don't set a filename then default is '~/batocera.conf'"
 
@@ -110,20 +130,18 @@ function main() {
        [[ -f "$BATOCERA_CONFIGFILE" ]] || { echo "not found: $BATOCERA_CONFIGFILE" >&2; exit 2; }
     fi
 
-    #First command line parameter set, shift 2
-    [[ "${1,,}" != "-command" ]] && usage && exit 1
-    check_argument $1 $2
-    [[ $? -eq 0 ]] || exit 1
-    command="$2"
-    shift 2
-
-    #Second command line parameter set, shift
-    [[ "${1,,}" != "-key" ]] && usage && exit 1
-    check_argument $1 $2
-    [[ $? -eq 0 ]] || exit 1
-    keyvalue="$2"
-    shift 2
-
+    if [[ ${#@} -eq 0 && ${#@} -gt 6 ]]; then
+        usage
+        exit 1
+    elif [[ ${#@} -le 3 ]]; then
+        command="$1"
+        keyvalue="$2"
+        shift 2
+    else
+        pythonscript_style "$@"
+        shift 4
+    fi
+ 
     # value processing, switch case
     case "$command" in
 
@@ -136,7 +154,7 @@ function main() {
 
         "stat"|"status")
             val="$(get_config $keyvalue)"
-            [[ -f "$BATOCERA_CONFIGFILE" ]] && echo "ok: found '$BATOCERA_CONFIGFILE'" >&2|| echo "error: not found '$BATOCERA_CONFIGFILE'" >&2
+            [[ -f "$BATOCERA_CONFIGFILE" ]] && echo "ok: found '$BATOCERA_CONFIGFILE'" >&2 || echo "error: not found '$BATOCERA_CONFIGFILE'" >&2
             [[ -w "$BATOCERA_CONFIGFILE" ]] && echo "ok: r/w file '$BATOCERA_CONFIGFILE'" >&2 || echo "error: r/o file '$BATOCERA_CONFIGFILE'" >&2
             [[ -z "$val" ]] && echo "error: '$keyvalue' not found!" >&2
             [[ "$val" == "$COMMENT_CHAR" ]] && echo "error: '$keyvalue' is commented $COMMENT_CHAR!" >&2 && val=
@@ -145,9 +163,8 @@ function main() {
         ;;
 
         "set"|"write"|"save")
-            [[ ${1,,} != "-value" ]] && usage && exit 1
-            check_argument $1 $2
-            [[ $? -eq 0 ]] || exit 1
+            [[ ${1,,} == "-value" || ${1,,} == "--value" ]] && shift
+            [[ -z "$1" ]] && echo "error: '$keyvalue' needs value to be setted" >&2 && exit 1
 
             ! [[ -w "$BATOCERA_CONFIGFILE" ]] && echo "r/o only: $BATOCERA_CONFIGFILE" >&2 && exit 2
 
@@ -155,14 +172,14 @@ function main() {
             if [[ "$val" == "$COMMENT_CHAR" ]]; then
                 echo "$keyvalue: hashed out!" >&2
                 uncomment_config "$keyvalue"
-                set_config "$keyvalue" "$2"
-                echo "$keyvalue: set to $2" >&2
+                set_config "$keyvalue" "$1"
+                echo "$keyvalue: set to $1" >&2
                 exit 0
             elif [[ -z "$val" ]]; then
                 echo "$keyvalue: not found!" >&2
                 exit 12
-            elif [[ "$val" != "$2" ]]; then
-                set_config "$keyvalue" "$2"
+            elif [[ "$val" != "$1" ]]; then
+                set_config "$keyvalue" "$1"
                 exit 0 
             fi
         ;;
@@ -204,7 +221,6 @@ function main() {
 }
 
 # Prepare arrays from fob python script
-# Delimiter is |
 # Keyword for python call is mimic_python
 # Attention the unset is needed to eliminate first argument (python basefile)
 
