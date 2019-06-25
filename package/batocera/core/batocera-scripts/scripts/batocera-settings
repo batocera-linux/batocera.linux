@@ -76,8 +76,8 @@ function check_argument() {
 }
 
 function pythonscript_style() {
-
-   #This is done the call old python script!
+    #This function is needed to "simulate" the python script!
+    #with it's -command -key -value structure
 
     #First command line parameter set
     [[ "${1,,}" != *command ]] && usage && exit 1
@@ -87,7 +87,7 @@ function pythonscript_style() {
 
     #Second command line parameter set
     [[ "${3,,}" != *key ]] && usage && exit 1
-    check_argument $1 $2
+    check_argument $3 $4
     [[ $? -eq 0 ]] || exit 1
     keyvalue="$4"
 }
