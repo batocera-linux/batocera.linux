@@ -24,7 +24,7 @@ BR2_TARGET_GENERIC_GETTY_BAUDRATE_115200=y
 # BR2_TARGET_GENERIC_REMOUNT_ROOTFS_RW is not set
 BR2_TARGET_TZ_INFO=y
 BR2_TARGET_LOCALTIME="Europe/Paris"
-BR2_ROOTFS_OVERLAY="board/batocera/fsoverlay board/batocera/rpi/fsoverlay"
+BR2_ROOTFS_OVERLAY="board/batocera/fsoverlay board/batocera/rpi/fsoverlay board/batocera/rpi1/fsoverlay"
 BR2_ROOTFS_POST_BUILD_SCRIPT="board/batocera/post-build-script.sh"
 BR2_ROOTFS_POST_IMAGE_SCRIPT="board/batocera/post-image-script.sh"
 BR2_LINUX_KERNEL=y
@@ -76,5 +76,4 @@ BR2_PACKAGE_PYTHON_PSUTIL=y
 BR2_PACKAGE_OPENVPN=y
 
 # choices can be put in _defconfig files only
-BR2_PACKAGE_BATOCERA_SPLASH_OMXPLAYER=y
 BR2_PACKAGE_MK_ARCADE_JOYSTICK_RPI=y
