@@ -28,10 +28,11 @@
 # 'batocera-settings disable wifi.enabled' will set key wifi.enabled=0
 # 'botocera-settings /myown/config.file --command status --key my.key' will output status of own config.file and my.key 
 
-# by cyperghost - 2019/06/25
+# by cyperghost - 2019/07/01
 
 ##### INITS #####
 BATOCERA_CONFIGFILE="/userdata/system/batocera.conf"
+COMMENT_CHAR_SEARCH="[#|;]"
 COMMENT_CHAR="#"
 ##### INITS #####
 
@@ -43,9 +44,9 @@ function get_config() {
      #Otherwise strip to equal-char
     local val
     local ret
-    val="$(grep -E -m1 ^$COMMENT_CHAR?\s*$1\s*= $BATOCERA_CONFIGFILE)"
+    val="$(grep -E -m1 ^$COMMENT_CHAR_SEARCH?\s*$1\s*= $BATOCERA_CONFIGFILE)"
     ret=$?
-    if [[ "${val:0:1}" == "$COMMENT_CHAR" ]]; then
+    if [[ "$val" =~ ^$COMMENT_CHAR_SEARCH ]]; then
          val="$COMMENT_CHAR"
     else
          #Maybe here some finetuning to catch key.value = ENTRY without blanks
@@ -62,7 +63,7 @@ function set_config() {
 
 function uncomment_config() {
      #Will look for first Comment Char at line beginning and remove it
-     sed -i "1,/^$COMMENT_CHAR\(\s*$1\)/s//\1/" "$BATOCERA_CONFIGFILE"
+     sed -i "1,/^$COMMENT_CHAR_SEARCH\(\s*$1\)/s//\1/" "$BATOCERA_CONFIGFILE"
 }
 
 function comment_config() {
@@ -84,16 +85,14 @@ function check_argument() {
 
 function dash_style() {
     #This function is needed to "simulate" the python script with single dash
-    #commands. It will also accept the more common posix double dashes
-    
-    #Set array for commands according given arguments
-    local array
-    [[ ${#@} -gt 4 ]] && array=(--command --key --value) || array=(--command --key)
-
+    #commands. It will also accept the more common posix double dashes   
     #Accept dashes and double dashes and build new array ii with parameter set
     #The else-branch can be used for the shortform
-    for i in ${array[@]}; do
-        if [[ "$i" =~ ^\-{0,1}${1,,} ]]; then
+
+    for i in --command --key --value; do
+        if [[ -z "$1" ]]; then
+            continue 
+        elif [[ "$i" =~ ^-{0,1}"${1,,}" ]]; then
             check_argument $1 $2
             [[ $? -eq 0 ]] || exit 1
             ii+=("$2")
@@ -140,7 +139,7 @@ function main() {
     #Filename parsed?
     if [[ -f "$1" ]]; then
         BATOCERA_CONFIGFILE="$1"
-        shift 1
+        shift 
     else
        [[ -f "$BATOCERA_CONFIGFILE" ]] || { echo "not found: $BATOCERA_CONFIGFILE" >&2; exit 2; }
     fi
