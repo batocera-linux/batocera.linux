@@ -1,0 +1,13 @@
+diff --git a/configure b/configure
+index b622085..9ae6037 100755
+--- a/configure
++++ b/configure
+@@ -2695,7 +2695,7 @@ ac_configure="$SHELL $ac_aux_dir/configure"  # Please don't use this var.
+ 
+ 
+ 
+-
++CFLAGS="$CFLAGS -DMESA_EGL_NO_X11_HEADERS"
+ orig_CFLAGS="$CFLAGS"
+ 
+ #
