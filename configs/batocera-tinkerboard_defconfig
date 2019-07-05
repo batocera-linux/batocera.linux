@@ -34,6 +34,7 @@ BR2_LINUX_KERNEL_CUSTOM_TARBALL_LOCATION="https://github.com/rockchip-linux/kern
 BR2_LINUX_KERNEL_PATCH="board/batocera/tinkerboard/kernel-patches"
 BR2_LINUX_KERNEL_USE_CUSTOM_CONFIG=y
 BR2_LINUX_KERNEL_CUSTOM_CONFIG_FILE="board/batocera/tinkerboard/kernel_defconfig"
+BR2_LINUX_KERNEL_CONFIG_FRAGMENT_FILES="board/batocera/tinkerboard/linux-defconfig-fragment.config"
 BR2_LINUX_KERNEL_DTS_SUPPORT=y
 BR2_LINUX_KERNEL_INTREE_DTS_NAME="rk3288-miniarm"
 BR2_PACKAGE_BUSYBOX_CONFIG_FRAGMENT_FILES="board/batocera/busybox.custom.config"
