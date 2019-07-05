@@ -412,7 +412,7 @@ case "${BATOCERA_TARGET}" in
         rm -rf "${BINARIES_DIR}/boot"            || exit 1
         mkdir -p "${BINARIES_DIR}/boot/boot"     || exit 1
 	    mkdir -p "${BINARIES_DIR}/boot/extlinux" || exit 1
-        cp "${BINARIES_DIR}/Image"                 "${BINARIES_DIR}/boot/boot/linux"                || exit 1
+        cp "${BINARIES_DIR}/zImage"                 "${BINARIES_DIR}/boot/boot/linux"                || exit 1
         cp "${BINARIES_DIR}/initrd.gz"             "${BINARIES_DIR}/boot/boot/initrd.gz"            || exit 1
         cp "${BINARIES_DIR}/rootfs.squashfs"       "${BINARIES_DIR}/boot/boot/batocera.update"      || exit 1
         cp "${BINARIES_DIR}/rk3288-miniarm.dtb"  "${BINARIES_DIR}/boot/boot/rk3288-miniarm.dtb" || exit 1
