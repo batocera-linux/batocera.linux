@@ -423,6 +423,11 @@ case "${BATOCERA_TARGET}" in
         (cd "${BINARIES_DIR}/boot" && tar -cJf "${BATOCERA_BINARIES_DIR}/boot.tar.xz" extlinux boot batocera-boot.conf) || exit 1
 
 	# blobs
+     MKIMAGE=$HOST_DIR/bin/mkimage
+     BOARD_DIR="board/batocera/tinkerboard"
+
+     $MKIMAGE -n rk3288 -T rksd -d $BINARIES_DIR/u-boot-spl-dtb.bin $BINARIES_DIR/u-boot-spl-dtb.img
+     cat $BINARIES_DIR/u-boot-dtb.bin >> $BINARIES_DIR/u-boot-spl-dtb.img
 	for F in u-boot-spl-dtb.img
 	do
 	    cp "${BINARIES_DIR}/${F}" "${BINARIES_DIR}/boot/${F}" || exit 1
