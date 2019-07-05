@@ -249,41 +249,66 @@ def writeBezelConfig(bezel, retroarchConfig, systemName, rom, gameResolution):
     romBase = os.path.splitext(os.path.basename(rom))[0] # filename without extension
     overlay_info_file = batoceraFiles.overlayUser + "/" + bezel + "/games/" + romBase + ".info"
     overlay_png_file  = batoceraFiles.overlayUser + "/" + bezel + "/games/" + romBase + ".png"
-    if not (os.path.isfile(overlay_info_file) and os.path.isfile(overlay_png_file)):
+    if not os.path.exists(overlay_png_file):
         overlay_info_file = batoceraFiles.overlaySystem + "/" + bezel + "/games/" + romBase + ".info"
         overlay_png_file  = batoceraFiles.overlaySystem + "/" + bezel + "/games/" + romBase + ".png"
-        if not (os.path.isfile(overlay_info_file) and os.path.isfile(overlay_png_file)):
+        if not os.path.exists(overlay_png_file):
             overlay_info_file = batoceraFiles.overlayUser + "/" + bezel + "/systems/" + systemName + ".info"
             overlay_png_file  = batoceraFiles.overlayUser + "/" + bezel + "/systems/" + systemName + ".png"
-            if not (os.path.isfile(overlay_info_file) and os.path.isfile(overlay_png_file)):
+            if not os.path.exists(overlay_png_file):
                 overlay_info_file = batoceraFiles.overlaySystem + "/" + bezel + "/systems/" + systemName + ".info"
                 overlay_png_file  = batoceraFiles.overlaySystem + "/" + bezel + "/systems/" + systemName + ".png"
-                if not (os.path.isfile(overlay_info_file) and os.path.isfile(overlay_png_file)):
+                if not os.path.exists(overlay_png_file):
                     overlay_info_file = batoceraFiles.overlayUser + "/" + bezel + "/default.info"
                     overlay_png_file  = batoceraFiles.overlayUser + "/" + bezel + "/default.png"
-                    if not (os.path.isfile(overlay_info_file) and os.path.isfile(overlay_png_file)):
+                    if not os.path.exists(overlay_png_file):
                         overlay_info_file = batoceraFiles.overlaySystem + "/" + bezel + "/default.info"
                         overlay_png_file  = batoceraFiles.overlaySystem + "/" + bezel + "/default.png"
-                        if not (os.path.isfile(overlay_info_file) and os.path.isfile(overlay_png_file)):
+                        if not os.path.exists(overlay_png_file):
                             return
-    infos = json.load(open(overlay_info_file))
+
+    # only the png file is mandatory
+    if os.path.exists(overlay_info_file):
+        infos = json.load(open(overlay_info_file))
+    else:
+        infos = {}
 
     # if image is not at the correct size, find the correct size
     bezelNeedAdaptation = False
-    if gameResolution["width"] != infos["width"] and gameResolution["height"] != infos["height"]:
-        infosRatio = float(infos["width"]) / float(infos["height"])
+    viewPortUsed = True
+    if "width" not in infos or "height" not in infos or "top" not in infos or "left" not in infos or "bottom" not in infos or "right" not in infos:
+        viewPortUsed = False
+
+    if viewPortUsed:
+        if gameResolution["width"] != infos["width"] and gameResolution["height"] != infos["height"]:
+            infosRatio = float(infos["width"]) / float(infos["height"])
+            gameRatio  = float(gameResolution["width"]) / float(gameResolution["height"])
+            if gameRatio < infosRatio - 0.1: # keep a marge
+                return
+            else:
+                bezelNeedAdaptation = True
+        retroarchConfig['aspect_ratio_index']     = str(ratioIndexes.index("custom")) # overwritted from the beginning of this file
+    else:
+        # when there is no information about width and height in the .info, assume that the tv is 16/9 and infos are core provided
+        infosRatio = 1920.0 / 1080.0
         gameRatio  = float(gameResolution["width"]) / float(gameResolution["height"])
-        if gameRatio >= infosRatio - 0.1: # keep a marge
-            bezelNeedAdaptation = True
-        else:
+        if gameRatio < infosRatio - 0.1: # keep a marge
             return
+        retroarchConfig['aspect_ratio_index']     = str(ratioIndexes.index("core")) # overwritted from the beginning of this file
 
     retroarchConfig['input_overlay_enable']       = "true"
     retroarchConfig['input_overlay_scale']        = "1.0"
     retroarchConfig['input_overlay']              = overlay_cfg_file
     retroarchConfig['input_overlay_hide_in_menu'] = "true"
-    retroarchConfig['input_overlay_opacity']  = infos["opacity"]
-    retroarchConfig['aspect_ratio_index']     = str(ratioIndexes.index("custom")) # overwritted from the beginning of this file
+
+    if "opacity" not in infos:
+        infos["opacity"] = 1.0
+    if "messagex" not in infos:
+        infos["messagex"] = 0.0
+    if "messagey" not in infos:
+        infos["messagey"] = 0.0
+
+    retroarchConfig['input_overlay_opacity'] = infos["opacity"]
 
     if bezelNeedAdaptation:
         wratio = gameResolution["width"]  / float(infos["width"])
@@ -295,10 +320,11 @@ def writeBezelConfig(bezel, retroarchConfig, systemName, rom, gameResolution):
         retroarchConfig['video_message_pos_x']    = infos["messagex"] * wratio
         retroarchConfig['video_message_pos_y']    = infos["messagey"] * hratio
     else:
-        retroarchConfig['custom_viewport_x']      = infos["left"]
-        retroarchConfig['custom_viewport_y']      = infos["top"]
-        retroarchConfig['custom_viewport_width']  = infos["width"]  - infos["left"] - infos["right"]
-        retroarchConfig['custom_viewport_height'] = infos["height"] - infos["top"]  - infos["bottom"]
+        if viewPortUsed:
+            retroarchConfig['custom_viewport_x']      = infos["left"]
+            retroarchConfig['custom_viewport_y']      = infos["top"]
+            retroarchConfig['custom_viewport_width']  = infos["width"]  - infos["left"] - infos["right"]
+            retroarchConfig['custom_viewport_height'] = infos["height"] - infos["top"]  - infos["bottom"]
         retroarchConfig['video_message_pos_x']    = infos["messagex"]
         retroarchConfig['video_message_pos_y']    = infos["messagey"]
 
