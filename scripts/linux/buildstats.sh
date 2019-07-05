@@ -87,6 +87,7 @@ do
 done
 echo '</table>'
 echo "<p>If your language is not available, please translate <a href=\"https://raw.githubusercontent.com/batocera-linux/batocera-emulationstation/master/locale/emulationstation2.pot\">this file</a> and send it us.<br />You can read other translations to take them as exemple.</p>"
+echo "<p><a href=\"archives\">archives</a></p>"
 echo "Generated on ${GENDATE}"
 echo '</body>'
 echo '</html>'
