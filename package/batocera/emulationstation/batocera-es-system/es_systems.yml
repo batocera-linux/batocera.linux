@@ -880,6 +880,14 @@ lightgun:
       mame078plus:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME2003_PLUS]  }
       mame078:      { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME2003]       }
       mame0139:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME2010]       }
+  comment_en: |
+          Here are MAME games that can be played with a light gun, recognised as a mouse in MAME.
+          An example of a working setup is to use a DolphinBar in 'mode 4' with a Wiimote as the gun.
+          If you have more than one mouse installed, the DolphinBar / Wiimote should be seen as one of the first two mouses.
+  comment_fr: |
+          Placez ici les jeux MAME qui peuvent se jouer au lightgun, reconnu comme une souris sous MAME.
+          Un exemple de setup qui fonctionne est si vous utilisez une DolphinBar en 'mode 4' avec une Wiimote comme flingue.
+          Si vous avez plus d'une souris installee, assurez-vous que la DolphinBar / Wiimote soit reconnue comme une des deux premieres.
 
 imageviewer:
   name:       Screenshots
