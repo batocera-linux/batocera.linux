@@ -14,7 +14,7 @@
 #           --value      any alphanumerical string
 #                        use quotation marks to avoid globbing use slashes escape special characters 
 
-# This script reads only 1st occurrence if string and writes only to 1st occurrence
+# This script reads only 1st occurrence if string and writes only to this first hit
 #
 # This script uses #-Character to comment values
 #
@@ -28,7 +28,7 @@
 # 'batocera-settings disable wifi.enabled' will set key wifi.enabled=0
 # 'botocera-settings /myown/config.file --command status --key my.key' will output status of own config.file and my.key 
 
-# by cyperghost - 2019/07/01
+# by cyperghost - 2019/07/07
 
 ##### INITS #####
 BATOCERA_CONFIGFILE="/userdata/system/batocera.conf"
@@ -39,12 +39,12 @@ COMMENT_CHAR="#"
 ##### Function Calls #####
 
 function get_config() {
-     #Will look for key.value and #key.value for only one occurrence
-     #If the character is the COMMENT CHAR then set value to it
-     #Otherwise strip to equal-char
+    #Will search for key.value and #key.value for only one occurrence
+    #If the character is the COMMENT CHAR then set value to it
+    #Otherwise strip till the equal-char to obtain value
     local val
     local ret
-    val="$(grep -E -m1 ^$COMMENT_CHAR_SEARCH?\s*$1\s*= $BATOCERA_CONFIGFILE)"
+    val="$(grep -E -m1 "^$COMMENT_CHAR_SEARCH?\s*$1\s*=" $BATOCERA_CONFIGFILE)"
     ret=$?
     if [[ "$val" =~ ^$COMMENT_CHAR_SEARCH ]]; then
          val="$COMMENT_CHAR"
@@ -57,17 +57,17 @@ function get_config() {
 }
 
 function set_config() {
-     #Will look for first key.name at line beginning and write value to it
+     #Will search for first key.name at beginning of line and write value to it
      sed -i "1,/^\(\s*$1\s*=\).*/s//\1$2/" "$BATOCERA_CONFIGFILE"
 }
 
 function uncomment_config() {
-     #Will look for first Comment Char at line beginning and remove it
+     #Will search for first Comment Char at beginning of line and remove it
      sed -i "1,/^$COMMENT_CHAR_SEARCH\(\s*$1\)/s//\1/" "$BATOCERA_CONFIGFILE"
 }
 
 function comment_config() {
-     #Will look for first key.name at line beginning and add a comment char to it
+     #Will search for first key.name at beginning of line and add a comment char to it
      sed -i "1,/^\(\s*$1\)/s//$COMMENT_CHAR\1/" "$BATOCERA_CONFIGFILE"
 }
 
@@ -157,10 +157,10 @@ function main() {
         unset ii
     fi
 
-    [[ -z $keyvalue ]] && { usage; exit 1; }
+    [[ -z $keyvalue ]] && { echo "error: Please provide a proper keyvalue" >&2; exit 1; }
 
     # value processing, switch case
-    case "$command" in
+    case "${command,,}" in
 
         "read"|"get"|"load")
             val="$(get_config $keyvalue)"
@@ -185,8 +185,8 @@ function main() {
 
         "set"|"write"|"save")
             #Is file write protected?
-            [[ -w "$BATOCERA_CONFIGFILE" ]] || { echo "r/o only: $BATOCERA_CONFIGFILE" >&2; exit 2; }
-
+            [[ -w "$BATOCERA_CONFIGFILE" ]] || { echo "r/o file: $BATOCERA_CONFIGFILE" >&2; exit 2; }
+            #We can comment line above to erase keys, it's much saver to check if a value is setted
             [[ -z "$newvalue" ]] && echo "error: '$keyvalue' needs value to be setted" >&2 && exit 1
 
             val="$(get_config $keyvalue)"
