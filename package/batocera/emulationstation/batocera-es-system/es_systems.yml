@@ -403,7 +403,6 @@ mame:
       mame078:      { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME2003]       }
       mame078plus:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME2003_PLUS]  }
       mame0139:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME2010]       }
-      mame0174:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME2016]       }
       mame:         { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME]           }
   comment_en: |
     The system uses libretro mame2003 as default core: compatible ROMs must come from set 0.78
