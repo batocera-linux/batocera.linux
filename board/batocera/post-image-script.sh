@@ -411,7 +411,7 @@ case "${BATOCERA_TARGET}" in
         # /boot
         rm -rf "${BINARIES_DIR}/boot"            || exit 1
         mkdir -p "${BINARIES_DIR}/boot/boot"     || exit 1
-	    mkdir -p "${BINARIES_DIR}/boot/extlinux" || exit 1
+	mkdir -p "${BINARIES_DIR}/boot/extlinux" || exit 1
         cp "${BINARIES_DIR}/zImage"                 "${BINARIES_DIR}/boot/boot/linux"                || exit 1
         cp "${BINARIES_DIR}/initrd.gz"             "${BINARIES_DIR}/boot/boot/initrd.gz"            || exit 1
         cp "${BINARIES_DIR}/rootfs.squashfs"       "${BINARIES_DIR}/boot/boot/batocera.update"      || exit 1
@@ -423,11 +423,11 @@ case "${BATOCERA_TARGET}" in
         (cd "${BINARIES_DIR}/boot" && tar -cJf "${BATOCERA_BINARIES_DIR}/boot.tar.xz" extlinux boot batocera-boot.conf) || exit 1
 
 	# blobs
-     MKIMAGE=$HOST_DIR/bin/mkimage
-     BOARD_DIR="board/batocera/tinkerboard"
+	MKIMAGE=$HOST_DIR/bin/mkimage
+	BOARD_DIR="board/batocera/tinkerboard"
 
-     $MKIMAGE -n rk3288 -T rksd -d $BINARIES_DIR/u-boot-spl-dtb.bin $BINARIES_DIR/u-boot-spl-dtb.img
-     cat $BINARIES_DIR/u-boot-dtb.bin >> $BINARIES_DIR/u-boot-spl-dtb.img
+	$MKIMAGE -n rk3288 -T rksd -d $BINARIES_DIR/u-boot-spl-dtb.bin $BINARIES_DIR/u-boot-spl-dtb.img
+	cat $BINARIES_DIR/u-boot-dtb.bin >> $BINARIES_DIR/u-boot-spl-dtb.img
 	for F in u-boot-spl-dtb.img
 	do
 	    cp "${BINARIES_DIR}/${F}" "${BINARIES_DIR}/boot/${F}" || exit 1
