@@ -13,6 +13,9 @@ define BATOCERA_SCRIPTS_INSTALL_TARGET_CMDS
 
 	cp -R package/batocera/core/batocera-scripts/scripts/* \
 		$(TARGET_DIR)/recalbox/scripts 
+		
+	cp package/batocera/core/batocera-scripts/scripts/batocera-settings $(TARGET_DIR)/usr/bin/batocera-settings
+	
 endef
 
 $(eval $(generic-package))
