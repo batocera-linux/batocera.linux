@@ -7,5 +7,6 @@ config BR2_PACKAGE_FSUAE
 	select BR2_PACKAGE_SDL2
 	select BR2_PACKAGE_ZLIB
 	select BR2_PACKAGE_LIBMPEG2
+	select BR2_PACKAGE_CAPSIMG
         help
           A crossplatform amiga emulator
