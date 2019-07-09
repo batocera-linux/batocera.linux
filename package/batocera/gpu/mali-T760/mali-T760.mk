@@ -20,8 +20,10 @@ ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_MIQI),y)
     cp -r $(@D)/lib/$(MALI_T760_LIBDIR)/libmali-midgard-t76x-r14p0-r1p0-gbm.so $(MALI_T760_STAGING_DIR)/usr/lib
     (cd $(MALI_T760_STAGING_DIR)/usr/lib && ln -sf libmali-midgard-t76x-r14p0-r1p0-gbm.so libmali.so)
 else
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_TINKERBOARD),y)
     cp -r $(@D)/lib/$(MALI_T760_LIBDIR)/libmali-midgard-t76x-r14p0-r0p0-gbm.so $(MALI_T760_STAGING_DIR)/usr/lib
     (cd $(MALI_T760_STAGING_DIR)/usr/lib && ln -sf libmali-midgard-t76x-r14p0-r0p0-gbm.so libmali.so)
+endif
 endif
 	(cd $(MALI_T760_STAGING_DIR)/usr/lib && ln -sf libmali.so libEGL.so)
 	(cd $(MALI_T760_STAGING_DIR)/usr/lib && ln -sf libmali.so libEGL.so.1)
@@ -42,8 +44,10 @@ ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_MIQI),y)
     cp -r $(@D)/lib/$(MALI_T760_LIBDIR)/libmali-midgard-t76x-r14p0-r1p0-gbm.so $(MALI_T760_TARGET_DIR)/usr/lib
     (cd $(MALI_T760_TARGET_DIR)/usr/lib && ln -sf libmali-midgard-t76x-r14p0-r1p0-gbm.so libmali.so)
 else
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_TINKERBOARD),y)
     cp -r $(@D)/lib/$(MALI_T760_LIBDIR)/libmali-midgard-t76x-r14p0-r0p0-gbm.so $(MALI_T760_TARGET_DIR)/usr/lib
     (cd $(MALI_T760_TARGET_DIR)/usr/lib && ln -sf libmali-midgard-t76x-r14p0-r0p0-gbm.so libmali.so)
+endif
 endif
 
 	(cd $(MALI_T760_TARGET_DIR)/usr/lib && ln -sf libmali.so libEGL.so)
