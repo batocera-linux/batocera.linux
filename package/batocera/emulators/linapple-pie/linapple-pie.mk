@@ -3,61 +3,37 @@
 # lineapple-pie
 #
 ################################################################################
-# Version.: Commits on Mar 13, 2016
-LINAPPLE_PIE_VERSION = 7bfddb5692d5ed4203da1bdf1911cdfa99653661
-LINAPPLE_PIE_SITE = $(call github,LaurentMarchelli,linapple-pie,$(LINAPPLE_PIE_VERSION))
+# Version.: Commits on Oct 22, 2018
+LINAPPLE_PIE_VERSION = c22ba0c3ad6c317b4f13486b7ff06a340c831122
+LINAPPLE_PIE_SITE = $(call github,dabonetn,linapple-pie,$(LINAPPLE_PIE_VERSION))
 LINAPPLE_PIE_LICENSE = GPLv2
 LINAPPLE_PIE_DEPENDENCIES = sdl sdl_image libcurl zlib libzip
 
 ifeq ($(BR2_PACKAGE_RPI_USERLAND),y)
-LINAPPLE_PIE_DEPENDENCIES += rpi-userland
+	LINAPPLE_PIE_DEPENDENCIES += rpi-userland
 endif
 
-LINAPPLE_PIE_MAKE_ENV = CFLAGS="$(TARGET_CFLAGS)" CXXFLAGS="$(TARGET_CXXFLAGS)" LDFLAGS="$(TARGET_LDFLAGS)"
-LINAPPLE_PIE_MAKE_OPTS = \
-	-C $(@D)/linapple-pie/src/ \
-	CC="$(TARGET_CC)" \
-	CXX="$(TARGET_CXX) -I $(STAGING_DIR)/usr/lib/libzip/include/" \
-	SDL_CONFIG=$(STAGING_DIR)/usr/bin/sdl-config \
-	CURL_CONFIG=$(STAGING_DIR)/usr/bin/curl-config
-
-define LINAPPLE_PIE_FIX_EXTRACT
-	$(SED) "s|strip|$(STAGING_DIR)/../bin/strip|g"  $(@D)/linapple-pie/src/Makefile
-	$(SED) "s|mkdir \"$(INSTDIR)|mkdir -p \"$(INSTDIR)|g" $(@D)/linapple-pie/src/Makefile
-endef
-
 define LINAPPLE_PIE_BUILD_CMDS
-	$(LINAPPLE_PIE_MAKE_ENV) $(MAKE) all $(LINAPPLE_PIE_MAKE_OPTS)
+	CFLAGS="$(TARGET_CFLAGS)" CXXFLAGS="$(TARGET_CXXFLAGS)" LDFLAGS="$(TARGET_LDFLAGS)" \
+	$(MAKE) all -C $(@D)/src/ \
+				CC="$(TARGET_CC)" \
+				CXX="$(TARGET_CXX) -I $(STAGING_DIR)/usr/lib/libzip/include/" \
+				SDL_CONFIG=$(STAGING_DIR)/usr/bin/sdl-config \
+				CURL_CONFIG=$(STAGING_DIR)/usr/bin/curl-config
 endef
 
-ifeq ($(BR2_PACKAGE_BATOCERA_SYSTEM),y)
 LINAPPLE_PIE_CONFDIR = $(TARGET_DIR)/usr/share/batocera/datainit/system/.linapple
 LINAPPLE_PIE_CONFFILE = $(LINAPPLE_PIE_CONFDIR)/linapple.conf
+
 define LINAPPLE_PIE_INSTALL_TARGET_CMDS
-	cp $(@D)/linapple-pie/linapple $(TARGET_DIR)/usr/bin/
+	cp $(@D)/linapple $(TARGET_DIR)/usr/bin/
 	mkdir -p $(LINAPPLE_PIE_CONFDIR)
-	cp $(@D)/linapple-pie/Master.dsk $(LINAPPLE_PIE_CONFDIR)/
-	cp $(@D)/linapple-pie/linapple.installed.conf $(LINAPPLE_PIE_CONFFILE)
+	cp $(@D)/Master.dsk $(LINAPPLE_PIE_CONFDIR)/
+	cp $(@D)/linapple.installed.conf $(LINAPPLE_PIE_CONFFILE)
 	$(SED) "s|^\(\s*\)Slot 6 Directory =.*|\1Slot 6 Directory = /userdata/roms/apple2|g" $(LINAPPLE_PIE_CONFFILE)
 	$(SED) "s|^\(\s*\)Save State Directory =.*|\1Save State Directory = /userdata/saves/apple2|g" $(LINAPPLE_PIE_CONFFILE)
 	$(SED) "s|^\(\s*\)FTP Local Dir =.*|\1FTP Local Dir = /userdata/roms/apple2|g" $(LINAPPLE_PIE_CONFFILE)
-	echo -e "\n##########################################################################" >> $(LINAPPLE_PIE_CONFFILE)
-	echo -e "#\tRecalbox specific parameters\n" >> $(LINAPPLE_PIE_CONFFILE)
-	echo -e "\tRecalboxRomDirectory =\t/userdata/roms/apple2" >> $(LINAPPLE_PIE_CONFFILE)
-	echo -e "\tRecalboxSaveDirectory =\t/userdata/saves/apple2" >> $(LINAPPLE_PIE_CONFFILE)
+	$(SED) "s|^\(\s*\)Fullscreen =.*|\1Fullscreen = 1|g" $(LINAPPLE_PIE_CONFFILE)
 endef
-else
-LINAPPLE_PIE_STARTUP = /usr/bin/linapple
-LINAPPLE_PIE_INSTDIR = /usr/linapple
-define LINAPPLE_PIE_INSTALL_TARGET_CMDS
-	$(LINAPPLE_PIE_MAKE_ENV) $(MAKE) install $(LINAPPLE_PIE_MAKE_OPTS) \
-		STARTUP=$(TARGET_DIR)$(LINAPPLE_PIE_STARTUP)\
-		INSTDIR=$(TARGET_DIR)$(LINAPPLE_PIE_INSTDIR)
-	echo "cd \"$(LINAPPLE_PIE_INSTDIR)\"; ./linapple; cd -" >"$(TARGET_DIR)$(LINAPPLE_PIE_STARTUP)"
-	chmod 755 "$(TARGET_DIR)$(LINAPPLE_PIE_STARTUP)"
-endef
-endif
-
-LINAPPLE_PIE_POST_EXTRACT_HOOKS += LINAPPLE_PIE_FIX_EXTRACT
 
 $(eval $(generic-package))
