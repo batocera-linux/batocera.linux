@@ -16,10 +16,13 @@ MALI_T760_LIBDIR=arm-linux-gnueabihf
 
 define MALI_T760_INSTALL_STAGING_CMDS
 	mkdir -p $(MALI_T760_STAGING_DIR)
-        cp -r $(@D)/lib/$(MALI_T760_LIBDIR)/libmali-midgard-t76x-r14p0-r0p0-gbm.so $(MALI_T760_STAGING_DIR)/usr/lib
-
-	(cd $(MALI_T760_STAGING_DIR)/usr/lib && ln -sf libmali-midgard-t76x-r14p0-r0p0-gbm.so libmali.so)
-
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_MIQI),y)
+    cp -r $(@D)/lib/$(MALI_T760_LIBDIR)/libmali-midgard-t76x-r14p0-r1p0-gbm.so $(MALI_T760_STAGING_DIR)/usr/lib
+    (cd $(MALI_T760_STAGING_DIR)/usr/lib && ln -sf libmali-midgard-t76x-r14p0-r1p0-gbm.so libmali.so)
+else
+    cp -r $(@D)/lib/$(MALI_T760_LIBDIR)/libmali-midgard-t76x-r14p0-r0p0-gbm.so $(MALI_T760_STAGING_DIR)/usr/lib
+    (cd $(MALI_T760_STAGING_DIR)/usr/lib && ln -sf libmali-midgard-t76x-r14p0-r0p0-gbm.so libmali.so)
+endif
 	(cd $(MALI_T760_STAGING_DIR)/usr/lib && ln -sf libmali.so libEGL.so)
 	(cd $(MALI_T760_STAGING_DIR)/usr/lib && ln -sf libmali.so libEGL.so.1)
 	(cd $(MALI_T760_STAGING_DIR)/usr/lib && ln -sf libmali.so libgbm.so)
@@ -35,9 +38,13 @@ endef
 
 define MALI_T760_INSTALL_TARGET_CMDS
 	mkdir -p $(MALI_T760_TARGET_DIR)
-        cp -r $(@D)/lib/$(MALI_T760_LIBDIR)/libmali-midgard-t76x-r14p0-r0p0-gbm.so $(MALI_T760_TARGET_DIR)/usr/lib
-
-        (cd $(MALI_T760_TARGET_DIR)/usr/lib && ln -sf libmali-midgard-t76x-r14p0-r0p0-gbm.so libmali.so)
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_MIQI),y)
+    cp -r $(@D)/lib/$(MALI_T760_LIBDIR)/libmali-midgard-t76x-r14p0-r1p0-gbm.so $(MALI_T760_TARGET_DIR)/usr/lib
+    (cd $(MALI_T760_TARGET_DIR)/usr/lib && ln -sf libmali-midgard-t76x-r14p0-r1p0-gbm.so libmali.so)
+else
+    cp -r $(@D)/lib/$(MALI_T760_LIBDIR)/libmali-midgard-t76x-r14p0-r0p0-gbm.so $(MALI_T760_TARGET_DIR)/usr/lib
+    (cd $(MALI_T760_TARGET_DIR)/usr/lib && ln -sf libmali-midgard-t76x-r14p0-r0p0-gbm.so libmali.so)
+endif
 
 	(cd $(MALI_T760_TARGET_DIR)/usr/lib && ln -sf libmali.so libEGL.so)
 	(cd $(MALI_T760_TARGET_DIR)/usr/lib && ln -sf libmali.so libEGL.so.1)
