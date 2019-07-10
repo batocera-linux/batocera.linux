@@ -7,7 +7,7 @@ index c09a865..7d89dbf 100755
  		# Mount the filesystem.
  		log info "executing command: mount -t$fstype ${options:+-o$options} $DEVNAME $mountpoint"
 -		mount "-t$fstype" "${options:+-o$options}" "$DEVNAME" "$mountpoint"
-+		/recalbox/scripts/recalbox-mount.sh "$fstype" 0 "${DEVNAME}" "${mountpoint}"
++		batocera-mount "$fstype" 0 "${DEVNAME}" "${mountpoint}"
  
  		# Determine vendor and model.
  		vendor=
