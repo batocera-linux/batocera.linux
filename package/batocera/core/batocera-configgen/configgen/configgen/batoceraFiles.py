@@ -16,7 +16,7 @@ logdir = HOME + '/logs/'
 
 # This dict is indexed on the emulator name, not on the system
 batoceraBins = {'dosbox'      : '/usr/bin/dosbox'
-              , 'kodi'        : '/recalbox/scripts/kodilauncher.sh'
+              , 'kodi'        : '/usr/bin/batocera-kodilauncher'
               , 'libretro'    : '/usr/bin/retroarch'
               , 'linapple'    : '/usr/bin/linapple'
               , 'moonlight'   : '/usr/bin/moonlight'

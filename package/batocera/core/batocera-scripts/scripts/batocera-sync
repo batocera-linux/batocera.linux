@@ -24,7 +24,7 @@ rs_list() {
 	echo "INTERNAL"
     fi
     # avoid sd card partitions
-    PARTPREFIX=$(/recalbox/scripts/recalbox-part.sh prefix "${INTERNAL_DEVICE}")
+    PARTPREFIX=$(batocera-part prefix "${INTERNAL_DEVICE}")
     lsblk -n -P -o NAME,FSTYPE,LABEL,UUID,SIZE,TYPE |
 	grep 'TYPE="part"' |
 	grep -v "FSTYPE=\"swap\"" |
@@ -86,7 +86,7 @@ rs_sync() {
 	    return 1
 	fi
 	
-	if ! /recalbox/scripts/recalbox-mount.sh "${FSTYPE}" 1 "${FSDEV}" "${MOUNTPOINT}"
+	if ! batocera-mount "${FSTYPE}" 1 "${FSDEV}" "${MOUNTPOINT}"
 	then
 	    return 1
 	fi
@@ -135,7 +135,7 @@ cleanExit() {
     test -n "${MOUNTPOINT}" && umount "${MOUNTPOINT}"
 }
 
-INTERNAL_DEVICE=$(/recalbox/scripts/recalbox-part.sh share_internal)
+INTERNAL_DEVICE=$(batocera-part share_internal)
 
 if test $# -eq 0
 then
