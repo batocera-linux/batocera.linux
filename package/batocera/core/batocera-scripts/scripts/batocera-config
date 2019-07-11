@@ -12,7 +12,7 @@ extra1="$3"
 extra2="$4"
 arch=`cat /usr/share/batocera/batocera.arch`
 
-recalboxupdateurl="https://batocera-linux.xorhub.com/upgrades"
+updateurl="https://batocera-linux.xorhub.com/upgrades"
 
 preBootConfig() {
     mount -o remount,rw /boot
@@ -235,11 +235,11 @@ if [ "$command" == "canupdate" ];then
 	# customizable upgrade url website
 	if test -n "${updateurl}"
 	then
-	    recalboxupdateurl="${updateurl}"
+	    updateurl="${updateurl}"
 	fi
 
-	#echo "Update url: ${recalboxupdateurl}/${arch}/${updatetype}/last"
-	available=`wget -qO- ${recalboxupdateurl}/${arch}/${updatetype}/last/batocera.version`
+	#echo "Update url: ${updateurl}/${arch}/${updatetype}/last"
+	available=`wget -qO- ${updateurl}/${arch}/${updatetype}/last/batocera.version`
 	if [[ "$?" != "0" ]];then
 	        echo "Unable to access the url" >&2
 		exit 2
@@ -266,7 +266,7 @@ if [[ "$command" == "wifi" ]]; then
         if [[ "$mode" == "enable" ]]; then
             echo "configure wifi" >> $log
 	    mkdir -p "/var/lib/connman" || exit 1
-	    cat > "/var/lib/connman/recalbox_wifi.config" <<EOF
+	    cat > "/var/lib/connman/batocera_wifi.config" <<EOF
 [global]
 Name=batocera
 
@@ -276,7 +276,7 @@ Name=${ssid}
 EOF
 	    if test "${psk}" != ""
 	    then
-		echo "Passphrase=${psk}" >> "/var/lib/connman/recalbox_wifi.config"
+		echo "Passphrase=${psk}" >> "/var/lib/connman/batocera_wifi.config"
 	    fi
 
 	    connmanctl enable wifi || exit 1

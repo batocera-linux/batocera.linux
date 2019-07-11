@@ -28,7 +28,7 @@ fi
 
 echo "starting the upgrade..."
 
-recalboxupdateurl="https://batocera-linux.xorhub.com/upgrades"
+updateurl="https://batocera-linux.xorhub.com/upgrades"
 systemsetting="python /usr/lib/python2.7/site-packages/configgen/settings/batoceraSettings.py"
 
 arch=$(cat /usr/share/batocera/batocera.arch)
@@ -36,7 +36,7 @@ updatetype=$($systemsetting -command load -key updates.type)
 updateurl=$($systemsetting -command load -key updates.url)
 
 # customizable upgrade url website
-test -n "${updateurl}" && recalboxupdateurl="${updateurl}"
+test -n "${updateurl}" && updateurl="${updateurl}"
 
 # force a default value in case the value is removed or miswritten
 test "${updatetype}" != "stable" -a "${updatetype}" != "unstable" -a "${updatetype}" != "beta" && updatetype="stable"
@@ -45,7 +45,7 @@ test "${updatetype}" != "stable" -a "${updatetype}" != "unstable" -a "${updatety
 mkdir -p /userdata/system/upgrade || exit 1
 
 # custom the url directory
-DWD_HTTP_DIR="${recalboxupdateurl}/${arch}/${updatetype}/last"
+DWD_HTTP_DIR="${updateurl}/${arch}/${updatetype}/last"
 
 if test -n "${CUSTOM_URLDIR}"
 then
