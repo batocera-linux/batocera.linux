@@ -44,6 +44,7 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
     select BR2_PACKAGE_BLUEZ5_UTILS_PLUGINS_SIXAXIS      # bluetooth
     select BR2_PACKAGE_BLUEZ5_UTILS_DEPRECATED           # bluetooth
     select BR2_PACKAGE_QTSIXA_SHANWAN                    # ps3 pad
+    select BR2_PACKAGE_XARCADE2JSTICK                    # keyboard events of the Xarcade Tankstick
     select BR2_PACKAGE_UTIL_LINUX_RFKILL                 # bluetooth
     select BR2_PACKAGE_BLUEZ_ALSA                        # bluetooth audio devices
     select BR2_PACKAGE_DBUS_PYTHON                       # required for bluetooth scripts
@@ -97,6 +98,10 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
 
     # script tool
     select BR2_PACKAGE_DIALOG
+
+    # tools
+    select BR2_PACKAGE_OPENVPN
+    select BR2_PACKAGE_I2C_TOOLS
 
     help
       Install the batocera.linux system files
