@@ -1,11 +1,11 @@
 #!/bin/bash
 
-recalboxupdateurl="https://batocera-linux.xorhub.com/upgrades"
+updateurl="https://batocera-linux.xorhub.com/upgrades"
 systemsetting="python /usr/lib/python2.7/site-packages/configgen/settings/batoceraSettings.py"
 
 # customizable upgrade url website
 updateurl=$($systemsetting -command load -key updates.url)
-test -n "${updateurl}" && recalboxupdateurl="${updateurl}"
+test -n "${updateurl}" && updateurl="${updateurl}"
 
 IMGFOLDER="/userdata/system/installs"
 ACTION=$1
@@ -60,7 +60,7 @@ do_listDisks() {
 }
 
 do_listArchs() {
-	wget -qO - "${recalboxupdateurl}/installs.txt" | sed -e s+'^\([^/]*\)/.*$'+'\1'+ | sort -u
+	wget -qO - "${updateurl}/installs.txt" | sed -e s+'^\([^/]*\)/.*$'+'\1'+ | sort -u
 }
 
 do_listFiles() {
@@ -129,11 +129,11 @@ do_install() {
 	mkdir -p "${IMGFOLDER}/${INSARCH}" || return 1
 
 	# url
-	RELATIVPATH=$(wget -qO - "${recalboxupdateurl}/installs.txt" | grep -E "^${INSARCH}/" | head -1)
+	RELATIVPATH=$(wget -qO - "${updateurl}/installs.txt" | grep -E "^${INSARCH}/" | head -1)
 	FILEBASENAME=$(basename "${RELATIVPATH}")
 	INSIMG="${IMGFOLDER}/${INSARCH}/${FILEBASENAME}"
 	test -z "${RELATIVPATH}" && return 1
-	url="${recalboxupdateurl}/${RELATIVPATH}"
+	url="${updateurl}/${RELATIVPATH}"
 
 	# get size to download
 	echo "url: ${url}"
