@@ -7,7 +7,7 @@
 AMIBERRY_VERSION = v2.25
 AMIBERRY_SITE = $(call github,midwan,amiberry,$(AMIBERRY_VERSION))
 AMIBERRY_LICENSE = GPLv3
-AMIBERRY_DEPENDENCIES = sdl2 sdl2_image sdl_gfx sdl2_ttf mpg123 libxml2 libmpeg2 guichan flac
+AMIBERRY_DEPENDENCIES = sdl2 sdl2_image sdl2_ttf mpg123 libxml2 libmpeg2 flac
 
 ifeq ($(BR2_PACKAGE_RPI_USERLAND),y)
 	AMIBERRY_DEPENDENCIES += rpi-userland
