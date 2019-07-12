@@ -33,10 +33,10 @@ systemsetting="python /usr/lib/python2.7/site-packages/configgen/settings/batoce
 
 arch=$(cat /usr/share/batocera/batocera.arch)
 updatetype=$($systemsetting -command load -key updates.type)
-updateurl=$($systemsetting -command load -key updates.url)
+settingsupdateurl=$($systemsetting -command load -key updates.url)
 
 # customizable upgrade url website
-test -n "${updateurl}" && updateurl="${updateurl}"
+test -n "${settingsupdateurl}" && updateurl="${settingsupdateurl}"
 
 # force a default value in case the value is removed or miswritten
 test "${updatetype}" != "stable" -a "${updatetype}" != "unstable" -a "${updatetype}" != "beta" && updatetype="stable"

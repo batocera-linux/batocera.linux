@@ -4,8 +4,8 @@ updateurl="https://batocera-linux.xorhub.com/upgrades"
 systemsetting="python /usr/lib/python2.7/site-packages/configgen/settings/batoceraSettings.py"
 
 # customizable upgrade url website
-updateurl=$($systemsetting -command load -key updates.url)
-test -n "${updateurl}" && updateurl="${updateurl}"
+settingsupdateurl=$($systemsetting -command load -key updates.url)
+test -n "${settingsupdateurl}" && updateurl="${settingsupdateurl}"
 
 IMGFOLDER="/userdata/system/installs"
 ACTION=$1

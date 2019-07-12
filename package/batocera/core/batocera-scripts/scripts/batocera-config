@@ -230,12 +230,12 @@ if [ "$command" == "canupdate" ];then
 		# force a default value in case the value is removed or miswritten
 		updatetype="stable"
 	fi
-	updateurl="`$systemsetting  -command load -key updates.url`"
+	settingsupdateurl="`$systemsetting  -command load -key updates.url`"
 
 	# customizable upgrade url website
-	if test -n "${updateurl}"
+	if test -n "${settingsupdateurl}"
 	then
-	    updateurl="${updateurl}"
+	    updateurl="${settingsupdateurl}"
 	fi
 
 	#echo "Update url: ${updateurl}/${arch}/${updatetype}/last"
