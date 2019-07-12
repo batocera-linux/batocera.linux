@@ -9,10 +9,13 @@ BATOCERA_SCRIPTS_LICENSE = GPL
 BATOCERA_SCRIPTS_SOURCE=
 
 define BATOCERA_SCRIPTS_INSTALL_TARGET_CMDS
+	mkdir -p $(TARGET_DIR)/usr/lib/python2.7 $(TARGET_DIR)/usr/bin
 
-	mkdir -p $(TARGET_DIR)/recalbox/scripts
-
-	cp -R package/batocera/core/batocera-scripts/scripts/bluetooth                    $(TARGET_DIR)/recalbox/scripts
+	cp package/batocera/core/batocera-scripts/scripts/bluetooth/bluezutils.py            $(TARGET_DIR)/usr/lib/python2.7/ # any variable ?
+	cp package/batocera/core/batocera-scripts/scripts/bluetooth/batocera-btDaemon        $(TARGET_DIR)/usr/bin/
+	cp package/batocera/core/batocera-scripts/scripts/bluetooth/batocera-bt-list-devices $(TARGET_DIR)/usr/bin/
+	cp package/batocera/core/batocera-scripts/scripts/bluetooth/batocera-bt-pair-device  $(TARGET_DIR)/usr/bin/
+	cp package/batocera/core/batocera-scripts/scripts/bluetooth/batocera-bt-test-device  $(TARGET_DIR)/usr/bin/
 
 	cp package/batocera/core/batocera-scripts/scripts/batocera-settings               $(TARGET_DIR)/usr/bin/
 	cp package/batocera/core/batocera-scripts/scripts/batocera-save-overlay           $(TARGET_DIR)/usr/bin/
