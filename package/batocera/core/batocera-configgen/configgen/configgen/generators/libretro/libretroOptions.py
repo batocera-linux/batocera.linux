@@ -70,9 +70,9 @@ def generateCoreSettings(retroarchCore, system):
 
     if (system.config['core'] == 'cap32'):
         if (system.name == 'gx4000'):
-            coreSettings.save('cap32_Model',    '"6128+"')
+            coreSettings.save('cap32_model',    '"6128+"')
         else:
-            coreSettings.save('cap32_Model',    '"6128"')
+            coreSettings.save('cap32_model',    '"6128"')
 
     if (system.config['core'] == 'fuse'):
         coreSettings.save('fuse_machine',   '"Spectrum 128K"')
