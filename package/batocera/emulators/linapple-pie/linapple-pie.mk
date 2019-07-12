@@ -22,6 +22,11 @@ define LINAPPLE_PIE_BUILD_CMDS
 				CURL_CONFIG=$(STAGING_DIR)/usr/bin/curl-config
 endef
 
+define LINAPPLE_PIE_FIX_EXTRACT
+	$(SED) "s|strip|$(STAGING_DIR)/../bin/strip|g"  $(@D)/src/Makefile
+	$(SED) "s|mkdir \"$(INSTDIR)|mkdir -p \"$(INSTDIR)|g" $(@D)/src/Makefile
+endef
+
 LINAPPLE_PIE_CONFDIR = $(TARGET_DIR)/usr/share/batocera/datainit/system/.linapple
 LINAPPLE_PIE_CONFFILE = $(LINAPPLE_PIE_CONFDIR)/linapple.conf
 
@@ -35,5 +40,7 @@ define LINAPPLE_PIE_INSTALL_TARGET_CMDS
 	$(SED) "s|^\(\s*\)FTP Local Dir =.*|\1FTP Local Dir = /userdata/roms/apple2|g" $(LINAPPLE_PIE_CONFFILE)
 	$(SED) "s|^\(\s*\)Fullscreen =.*|\1Fullscreen = 1|g" $(LINAPPLE_PIE_CONFFILE)
 endef
+
+LINAPPLE_PIE_POST_EXTRACT_HOOKS += LINAPPLE_PIE_FIX_EXTRACT
 
 $(eval $(generic-package))
