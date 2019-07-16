@@ -49,7 +49,7 @@ index 06102cd..27193f6 100755
  		# Mount the filesystem.
  		log info "executing command: mount -t$fstype ${options:+-o$options} $DEVNAME $mountpoint"
 +		mkdir -p "${mountpoint}"
- 		/recalbox/scripts/recalbox-mount.sh "$fstype" 0 "${DEVNAME}" "${mountpoint}"
+ 		batocera-mount "$fstype" 0 "${DEVNAME}" "${mountpoint}"
  
  		# Determine vendor and model.
 @@ -169,18 +182,16 @@ if [ "$1" = add ]; then

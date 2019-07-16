@@ -1,0 +1,22 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 0444076..06f12c9 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -36,7 +36,7 @@ set(CMAKE_INCLUDE_CURRENT_DIR TRUE)
+ set(BASE_CXX_OPTIONS "-std=c++11 -Ofast -fomit-frame-pointer -fno-exceptions -fno-rtti")
+ 
+ # Generic x64 options
+-set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -march=x86-64 -mtune=generic ${BASE_CXX_OPTIONS}")
++# set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -march=x86-64 -mtune=generic ${BASE_CXX_OPTIONS}")
+ 
+ # Generic x64 options, generate profile guided optimization files
+ # set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -march=x86-64 -mtune=generic ${BASE_CXX_OPTIONS} -fprofile-generate=${CL_OUTPUT_DIRECTORY}")
+@@ -45,7 +45,7 @@ set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -march=x86-64 -mtune=gen
+ # set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -march=x86-64 -mtune=generic ${BASE_CXX_OPTIONS} -fprofile-use=${CL_OUTPUT_DIRECTORY}")
+ 
+ # All architectures, optimized for the machine NeoCD is compiled on
+-# set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -march=native ${BASE_CXX_OPTIONS}")
++set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -march=armv7-a -mtune=cortex-a15.cortex-a7 ${BASE_CXX_OPTIONS}")
+ 
+ # Linker options
+ if (CMAKE_BUILD_TYPE MATCHES Release)

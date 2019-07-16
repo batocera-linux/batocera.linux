@@ -1,0 +1,26 @@
+diff --git a/libretro/retro_events.c b/libretro/retro_events.c
+index 670db3d..66099b3 100644
+--- a/libretro/retro_events.c
++++ b/libretro/retro_events.c
+@@ -297,6 +297,10 @@ void ev_joysticks() {
+       retro_computer_cfg.padcfg[ID_PLAYER1] != PADCFG_JOYSTICK)
+          return;
+ 
++   if( input_state_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_R)) {
++      ev_events_joy();
++   }
++
+    if( input_state_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_SELECT)) {
+       ev_events_joy();
+    } else {
+@@ -313,8 +317,8 @@ void ev_joysticks() {
+  **/
+ void ev_joy_vkeyboard(){
+    uint32_t pressed = 0;
+-   if ( (input_state_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_SELECT))
+-        && (input_state_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_START)) ) {
++   if ( (input_state_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_SELECT) && input_state_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_START))
++      || (input_state_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_R) && input_state_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_START)) ) {
+       BIT_SET(pressed, 3);
+       if(pressed != combo_last_event) {
+          showkeyb=-showkeyb;

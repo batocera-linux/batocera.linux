@@ -9,7 +9,7 @@ PPSSPP15_SITE = https://github.com/hrydgard/ppsspp.git
 PPSSPP15_SITE_METHOD=git
 PPSSPP15_GIT_SUBMODULES=YES
 PPSSPP15_LICENSE = GPLv2
-PPSSPP15_DEPENDENCIES = sdl2 zlib libzip zip ffmpeg
+PPSSPP15_DEPENDENCIES = sdl2 libzip ffmpeg
 
 # x86
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86),y)

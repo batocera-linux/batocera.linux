@@ -15,7 +15,7 @@ case "$1" in
 		rfkill unblock bluetooth # soft unblock bluetooth
 		start-stop-daemon -S -q -m -p /var/run/bluetoothd.pid  --exec /usr/libexec/bluetooth/bluetoothd -- $BLUETOOTHD_ARGS &	
 		/usr/bin/hciattach /dev/ttyS0 bcm43xx 1500000 flow nosleep # rockpro64 specific
-		start-stop-daemon -S -q -m -p /var/run/btDaemon.pid    --exec /recalbox/scripts/bluetooth/btDaemon > /dev/null 2>&1 &
+		start-stop-daemon -S -q -m -p /var/run/btDaemon.pid    --exec /usr/bin/batocera-btDaemon > /dev/null 2>&1 &
         fi
         ;;
   stop)
