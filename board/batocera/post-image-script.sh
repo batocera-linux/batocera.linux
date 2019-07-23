@@ -287,8 +287,8 @@ case "${BATOCERA_TARGET}" in
 	cp ${BOARD_DIR}/boot/aml_autoscript.zip ${BINARIES_DIR}/boot     || exit 1
 	cp "${BINARIES_DIR}/batocera-boot.conf" "${BINARIES_DIR}/boot/batocera-boot.conf" || exit 1
 	cp "${BINARIES_DIR}/all_merged.dtb" "${BINARIES_DIR}/dtb.img" || exit 1
-	$MKBOOTIMAGE --kernel "${BINARIES_DIR}/Image" --ramdisk "${BINARIES_DIR}/initrd" --second "${BINARIES_DIR}/dtb.img" --output "${BINARIES_DIR}/linux" || exit 1
-       cp "${BINARIES_DIR}/Image" "${BINARIES_DIR}/boot/boot/linux" || exit 1
+	$MKBOOTIMAGE --base 0x0 --kernel_offset 0x1080000 "${BINARIES_DIR}/Image" --ramdisk "${BINARIES_DIR}/initrd" --second "${BINARIES_DIR}/dtb.img" --output "${BINARIES_DIR}/linux" || exit 1
+       cp "${BINARIES_DIR}/kernel.img" "${BINARIES_DIR}/boot/boot/linux" || exit 1
 
 	cp "${BINARIES_DIR}/rootfs.squashfs" "${BINARIES_DIR}/boot/boot/batocera.update" || exit 1
 
