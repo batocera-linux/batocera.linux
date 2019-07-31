@@ -282,28 +282,25 @@ psx:
 
 pcengine:
   name:       PC Engine
-  extensions: [pce, zip, 7z]
+  extensions: [pce, bin, zip, 7z]
   emulators:
     libretro:
-      mednafen_supergrafx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BEETLE_SUPERGRAFX] }
-      pce:                 { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BEETLE_PCE]        }
+      pce:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BEETLE_PCE] }
 
 pcenginecd:
   name:       PC Engine CD
-  extensions: [ccd, chd, cue, pce, zip, 7z]
+  extensions: [pce, cue, ccd, iso, img, bin, chd, zip, 7z]
   theme:      pce-cd
   emulators:
     libretro:
-      mednafen_supergrafx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BEETLE_SUPERGRAFX] }
-      pce:                 { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BEETLE_PCE]        }
+      pce:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BEETLE_PCE]  }
 
 supergrafx:
   name:       Supergrafx
-  extensions: [ccd, chd, cue, pce, sgx, zip, 7z]
+  extensions: [pce, sgx, cue, ccd, chd]
   emulators:
     libretro:
       mednafen_supergrafx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BEETLE_SUPERGRAFX] }
-      pce:                 { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BEETLE_PCE]        }
 
 pcfx:
   name:       PC-FX
