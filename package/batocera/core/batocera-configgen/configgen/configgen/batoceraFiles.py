@@ -16,8 +16,7 @@ logdir = HOME + '/logs/'
 
 # This dict is indexed on the emulator name, not on the system
 batoceraBins = {'dosbox'      : '/usr/bin/dosbox'
-              , 'fba2x'       : '/usr/bin/fba2x'
-              , 'kodi'        : '/recalbox/scripts/kodilauncher.sh'
+              , 'kodi'        : '/usr/bin/batocera-kodilauncher'
               , 'libretro'    : '/usr/bin/retroarch'
               , 'linapple'    : '/usr/bin/linapple'
               , 'moonlight'   : '/usr/bin/moonlight'
@@ -45,11 +44,6 @@ retroarchCores = "/usr/lib/libretro/"
 libretroExt = '_libretro.so'
 screenshotsDir = "/userdata/screenshots/"
 savesDir = "/userdata/saves/"
-
-fbaRoot = CONF + '/fba/'
-fbaCustom = fbaRoot + 'fba2x.cfg'
-fbaCustomOrigin = fbaRoot + 'fba2x.cfg.origin'
-
 
 mupenConf = CONF + '/mupen64/'
 mupenCustom = mupenConf + "mupen64plus.cfg"

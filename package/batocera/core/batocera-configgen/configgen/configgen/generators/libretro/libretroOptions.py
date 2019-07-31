@@ -39,6 +39,13 @@ def generateCoreSettings(retroarchCore, system):
         coreSettings.save('tgbdual_single_screen_mp',   '"both players"')
         coreSettings.save('tgbdual_switch_screens',     '"normal"')
 
+    if (system.config['core'] == 'gambatte'):
+        if 'colorization' in system.renderconfig and system.renderconfig['colorization'] != None:
+            coreSettings.save('gambatte_gb_colorization',     '"internal"')
+            coreSettings.save('gambatte_gb_internal_palette', '"' + system.renderconfig['colorization'] + '"')
+        else:
+            coreSettings.save('gambatte_gb_colorization',     '"disabled"')
+        
     if (system.config['core'] == 'desmume'):
         coreSettings.save('desmume_pointer_device_r',   '"emulated"')
 
@@ -63,9 +70,9 @@ def generateCoreSettings(retroarchCore, system):
 
     if (system.config['core'] == 'cap32'):
         if (system.name == 'gx4000'):
-            coreSettings.save('cap32_Model',    '"6128+"')
+            coreSettings.save('cap32_model',    '"6128+"')
         else:
-            coreSettings.save('cap32_Model',    '"6128"')
+            coreSettings.save('cap32_model',    '"6128"')
 
     if (system.config['core'] == 'fuse'):
         coreSettings.save('fuse_machine',   '"Spectrum 128K"')
@@ -76,6 +83,10 @@ def generateCoreSettings(retroarchCore, system):
     if (system.config['core'] == 'virtualjaguar'):
         coreSettings.save('virtualjaguar_usefastblitter',   '"enabled"')
 
+    if (system.config['core'] == 'vice'):
+        coreSettings.save('vice_Controller',    '"joystick"')
+        coreSettings.save('vice_JoyPort',       '"port_1"')
+ 
 def generateHatariConf(hatariConf):
     hatariConfig = ConfigParser.ConfigParser()
     # To prevent ConfigParser from converting to lower case

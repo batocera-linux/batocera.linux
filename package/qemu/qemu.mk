@@ -4,12 +4,17 @@
 #
 ################################################################################
 
+ifeq ($(BR2_csky),y)
+QEMU_VERSION = b517e1dc3125a57555d67a8deed9eac7b42288e2
+QEMU_SITE = $(call github,c-sky,qemu,$(QEMU_VERSION))
+else
 QEMU_VERSION = 3.1.0
 QEMU_SOURCE = qemu-$(QEMU_VERSION).tar.xz
 QEMU_SITE = http://download.qemu.org
+endif
 QEMU_LICENSE = GPL-2.0, LGPL-2.1, MIT, BSD-3-Clause, BSD-2-Clause, Others/BSD-1c
 QEMU_LICENSE_FILES = COPYING COPYING.LIB
-# NOTE: there is no top-level license file for non-(L)GPL licenses;
+# NOTE: there is no top-level license file for non-(L)GPL licenses;
 #       the non-(L)GPL license texts are specified in the affected
 #       individual source files.
 
@@ -95,7 +100,8 @@ endif
 # Override CPP, as it expects to be able to call it like it'd
 # call the compiler.
 define QEMU_CONFIGURE_CMDS
-	( cd $(@D); \
+	unset TARGET_DIR; \
+	cd $(@D); \
 		LIBS='$(QEMU_LIBS)' \
 		$(TARGET_CONFIGURE_OPTS) \
 		$(TARGET_CONFIGURE_ARGS) \
@@ -137,15 +143,16 @@ define QEMU_CONFIGURE_CMDS
 			--disable-capstone \
 			--disable-git-update \
 			--disable-opengl \
-			$(QEMU_OPTS) \
-	)
+			$(QEMU_OPTS)
 endef
 
 define QEMU_BUILD_CMDS
+	unset TARGET_DIR; \
 	$(TARGET_MAKE_ENV) $(MAKE) -C $(@D)
 endef
 
 define QEMU_INSTALL_TARGET_CMDS
+	unset TARGET_DIR; \
 	$(TARGET_MAKE_ENV) $(MAKE) -C $(@D) $(QEMU_MAKE_ENV) DESTDIR=$(TARGET_DIR) install
 endef
 
@@ -207,6 +214,13 @@ endif
 ifeq ($(HOST_QEMU_ARCH),sh4aeb)
 HOST_QEMU_ARCH = sh4eb
 endif
+ifeq ($(HOST_QEMU_ARCH),csky)
+ifeq ($(BR2_ck610),y)
+HOST_QEMU_ARCH = cskyv1
+else
+HOST_QEMU_ARCH = cskyv2
+endif
+endif
 HOST_QEMU_SYS_ARCH ?= $(HOST_QEMU_ARCH)
 
 ifeq ($(BR2_PACKAGE_HOST_QEMU_SYSTEM_MODE),y)
@@ -264,6 +278,7 @@ endif
 # Override CPP, as it expects to be able to call it like it'd
 # call the compiler.
 define HOST_QEMU_CONFIGURE_CMDS
+	unset TARGET_DIR; \
 	cd $(@D); $(HOST_CONFIGURE_OPTS) CPP="$(HOSTCC) -E" \
 		./configure \
 		--target-list="$(HOST_QEMU_TARGETS)" \
@@ -277,10 +292,12 @@ define HOST_QEMU_CONFIGURE_CMDS
 endef
 
 define HOST_QEMU_BUILD_CMDS
+	unset TARGET_DIR; \
 	$(HOST_MAKE_ENV) $(MAKE) -C $(@D)
 endef
 
 define HOST_QEMU_INSTALL_CMDS
+	unset TARGET_DIR; \
 	$(HOST_MAKE_ENV) $(MAKE) -C $(@D) install
 endef
 
