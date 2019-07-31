@@ -3,11 +3,10 @@ snes:
   extensions: [smc, fig, sfc, gd3, gd7, dx2, bsx, swc, zip, 7z]
   emulators:
     libretro:
-      catsfc:      { requireAnyOf: [BR2_PACKAGE_LIBRETRO_CATSFC]      }
       pocketsnes:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_POCKETSNES]  }
       snes9x_next: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_SNES9X_NEXT] }
       snes9x:      { requireAnyOf: [BR2_PACKAGE_LIBRETRO_SNES9X]      }
-
+      
 c64:
   name:       Commodore 64
   extensions: [d64, zip, 7z]
@@ -115,7 +114,6 @@ nes:
     libretro:
       fceumm:   { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FCEUMM]   }
       nestopia: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_NESTOPIA] }
-      quicknes: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_QUICKNES] }
 
 n64:
   name:       Nintendo 64
