@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-NETSNIFF_NG_VERSION = 0.6.5
+NETSNIFF_NG_VERSION = 0.6.6
 NETSNIFF_NG_SITE = http://pub.netsniff-ng.org/netsniff-ng
 NETSNIFF_NG_SOURCE = netsniff-ng-$(NETSNIFF_NG_VERSION).tar.xz
 NETSNIFF_NG_LICENSE = GPL-2.0
@@ -54,7 +54,7 @@ endef
 
 define NETSNIFF_NG_INSTALL_TARGET_CMDS
 	$(TARGET_MAKE_ENV) $(MAKE) $(TARGET_CONFIGURE_OPTS) \
-		PREFIX=$(TARGET_DIR)/usr ETCDIR=$(TARGET_DIR)/etc install \
+		PREFIX=$(TARGET_DIR)/usr ETCDIR=$(TARGET_DIR)/etc \
 			-C $(@D) $(NETSNIFF_NG_INSTALL_MAKE_TARGET)
 endef
 

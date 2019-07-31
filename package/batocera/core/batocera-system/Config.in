@@ -181,9 +181,7 @@ config BR2_PACKAGE_BATOCERA_ALL_SYSTEMS
         select BR2_PACKAGE_SCUMMVM              # ALL # scummvm
         select BR2_PACKAGE_DOSBOX               # ALL # dos
         select BR2_PACKAGE_VICE                 # ALL # c64
-        
-        select BR2_PACKAGE_LINAPPLE_PIE         if BR2_PACKAGE_BATOCERA_TARGET_RPI2 || BR2_PACKAGE_BATOCERA_TARGET_RPI3   || \
-                                                   BR2_PACKAGE_BATOCERA_TARGET_X86  || BR2_PACKAGE_BATOCERA_TARGET_X86_64 # apple II
+        select BR2_PACKAGE_LINAPPLE_PIE         # ALL # apple II
 
         select BR2_PACKAGE_BATOCERA_MUPEN64     if BR2_PACKAGE_BATOCERA_TARGET_RPI2      || BR2_PACKAGE_BATOCERA_TARGET_RPI3      || BR2_PACKAGE_BATOCERA_TARGET_C2   || \
                                                    BR2_PACKAGE_BATOCERA_TARGET_X86       || BR2_PACKAGE_BATOCERA_TARGET_X86_64    || BR2_PACKAGE_BATOCERA_TARGET_S905 || \
