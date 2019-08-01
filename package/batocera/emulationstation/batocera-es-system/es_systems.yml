@@ -420,7 +420,7 @@ neogeo:
     
 neogeocd:
   name:       Neo-Geo CD
-  extensions: [cue, iso]
+  extensions: [cue, iso, chd]
   emulators:
     libretro:
       neocd:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_NEOCD]  }
