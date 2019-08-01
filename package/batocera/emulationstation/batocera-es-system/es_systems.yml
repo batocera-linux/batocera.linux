@@ -132,7 +132,6 @@ gba:
   extensions: [gba, zip, 7z]
   emulators:
     libretro:
-      gpsp:   { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GPSP]   }
       mgba:   { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MGBA]   }
 
 gbc:
