@@ -4,8 +4,8 @@
 #
 ################################################################################
 
-MALI_T760_VERSION = 3d777c26fc4ee005c0b92b388b8874e1e77b134b
-MALI_T760_SITE = $(call github,ayufan-rock64,libmali,$(MALI_T760_VERSION))
+MALI_T760_VERSION = 4cbf211cfd9b07854aab4978e50b1151052c6d4c
+MALI_T760_SITE = $(call github,LibreELEC,libmali,$(MALI_T760_VERSION))
 
 MALI_T760_INSTALL_STAGING = YES
 MALI_T760_PROVIDES = libegl libgles
