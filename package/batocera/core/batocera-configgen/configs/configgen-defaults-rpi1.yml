@@ -1,15 +1,14 @@
 default:
   options:
+    videomode:      CEA 4 HDMI
     video_threaded: true
     rewind:         false
-    videomode:      CEA 4 HDMI
+    smooth:         false
+    rewind:         false
 
 snes:
   emulator: libretro
   core:     pocketsnes
-gba:
-  emulator: libretro
-  core:     gpsp
 mame:
   emulator: libretro
   core:     imame4all
@@ -32,8 +31,5 @@ mastersystem:
   emulator: libretro
   core:     picodrive
 megadrive:
-  emulator: libretro
-  core:     picodrive
-segacd:
   emulator: libretro
   core:     picodrive

@@ -10,7 +10,7 @@ import collections
 
 class Emulator():
 
-    def __init__(self, name):
+    def __init__(self, name, rom):
         self.name = name
 
         # read the configuration from the system name
@@ -23,24 +23,27 @@ class Emulator():
         recalSettings = UnixSettings(batoceraFiles.batoceraConf)
         globalSettings = recalSettings.loadAll('global')
         systemSettings = recalSettings.loadAll(self.name)
+        gameSettings = recalSettings.loadAll(os.path.basename(rom))
 
         # update config
         Emulator.updateConfiguration(self.config, globalSettings)
         Emulator.updateConfiguration(self.config, systemSettings)
+        Emulator.updateConfiguration(self.config, gameSettings)
         self.updateDrawFPS()
 
         # update renderconfig
-        self.renderconfig = Emulator.get_generic_config(self.name, "/usr/share/batocera/shaders/configs/rendering-defaults.yml", "/usr/share/batocera/shaders/configs/rendering-defaults-arch.yml")
+        self.renderconfig = {}
         if "shaderset" in self.config and self.config["shaderset"] != "none":
-            eslog.log("shaderset={}".format(self.config["shaderset"]))
-            globalSettings = recalSettings.loadAll('global-renderer-' + self.config["shaderset"])
-            systemSettings = recalSettings.loadAll(self.name + "-renderer-" + self.config["shaderset"])
             self.renderconfig = Emulator.get_generic_config(self.name, "/usr/share/batocera/shaders/configs/" + self.config["shaderset"] + "/rendering-defaults.yml", "/usr/share/batocera/shaders/configs/" + self.config["shaderset"] + "/rendering-defaults-arch.yml")
-            Emulator.updateConfiguration(self.renderconfig, globalSettings)
-            Emulator.updateConfiguration(self.renderconfig, systemSettings)
-            eslog.log("shader file={}".format(self.renderconfig["shader"]))
-        else:
-            eslog.log("no shader")
+        if "shaderset" not in self.config: # auto
+            self.renderconfig = Emulator.get_generic_config(self.name, "/usr/share/batocera/shaders/configs/rendering-defaults.yml", "/usr/share/batocera/shaders/configs/rendering-defaults-arch.yml")
+
+        systemSettings = recalSettings.loadAll(self.name + "-renderer")
+        gameSettings = recalSettings.loadAll(os.path.basename(rom) + "-renderer")
+
+        # es only allow to update systemSettings and gameSettings in fact for the moment
+        Emulator.updateConfiguration(self.renderconfig, systemSettings)
+        Emulator.updateConfiguration(self.renderconfig, gameSettings)
 
     # to be updated for python3: https://gist.github.com/angstwad/bf22d1822c38a92ec0a9
     @staticmethod

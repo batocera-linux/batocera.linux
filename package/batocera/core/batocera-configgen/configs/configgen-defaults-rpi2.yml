@@ -3,6 +3,9 @@ default:
     video_threaded: true
     videomode:      CEA 4 HDMI
 
+snes:
+  emulator: libretro
+  core:     pocketsnes
 n64:
   options:
     videomode: DMT 4 HDMI
@@ -25,8 +28,5 @@ mastersystem:
   emulator: libretro
   core:     picodrive
 megadrive:
-  emulator: libretro
-  core:     picodrive
-segacd:
   emulator: libretro
   core:     picodrive

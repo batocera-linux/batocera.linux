@@ -14,7 +14,7 @@ case "$1" in
         	if [ "$settings_version" != "bluez" ]; then BLUETOOTHD_ARGS="--noplugin=sixaxis"; else  BLUETOOTHD_ARGS="--noplugin=sixaxispair"; fi
 		rfkill unblock bluetooth # soft unblock bluetooth
 		start-stop-daemon -S -q -m -p /var/run/bluetoothd.pid  --exec /usr/libexec/bluetooth/bluetoothd -- $BLUETOOTHD_ARGS &	
-		start-stop-daemon -S -q -m -p /var/run/btDaemon.pid    --exec /recalbox/scripts/bluetooth/btDaemon > /dev/null 2>&1 &
+		start-stop-daemon -S -q -m -p /var/run/btDaemon.pid    --exec /usr/bin/batocera-btDaemon > /dev/null 2>&1 &
         fi
         ;;
   stop)
