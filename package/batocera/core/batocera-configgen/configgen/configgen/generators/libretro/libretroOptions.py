@@ -27,6 +27,7 @@ def generateCoreSettings(retroarchCore, system):
     # Colecovision and MSX
     if (system.config['core'] == 'bluemsx'):
         coreSettings.save('bluemsx_msxtype', '"Auto"')
+        coreSettings.save('bluemsx_overscan', '"enabled"')
 
     if (system.config['core'] == 'fmsx'):
         coreSettings.save('fmsx_mode',              '"MSX2"')

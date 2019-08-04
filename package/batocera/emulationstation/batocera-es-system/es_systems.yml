@@ -3,11 +3,10 @@ snes:
   extensions: [smc, fig, sfc, gd3, gd7, dx2, bsx, swc, zip, 7z]
   emulators:
     libretro:
-      catsfc:      { requireAnyOf: [BR2_PACKAGE_LIBRETRO_CATSFC]      }
       pocketsnes:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_POCKETSNES]  }
       snes9x_next: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_SNES9X_NEXT] }
       snes9x:      { requireAnyOf: [BR2_PACKAGE_LIBRETRO_SNES9X]      }
-
+      
 c64:
   name:       Commodore 64
   extensions: [d64, zip, 7z]
@@ -115,7 +114,6 @@ nes:
     libretro:
       fceumm:   { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FCEUMM]   }
       nestopia: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_NESTOPIA] }
-      quicknes: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_QUICKNES] }
 
 n64:
   name:       Nintendo 64
@@ -134,7 +132,6 @@ gba:
   extensions: [gba, zip, 7z]
   emulators:
     libretro:
-      gpsp:   { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GPSP]   }
       mgba:   { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MGBA]   }
 
 gbc:
@@ -284,28 +281,25 @@ psx:
 
 pcengine:
   name:       PC Engine
-  extensions: [pce, zip, 7z]
+  extensions: [pce, bin, zip, 7z]
   emulators:
     libretro:
-      mednafen_supergrafx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BEETLE_SUPERGRAFX] }
-      pce:                 { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BEETLE_PCE]        }
+      pce:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BEETLE_PCE] }
 
 pcenginecd:
   name:       PC Engine CD
-  extensions: [ccd, chd, cue, pce, zip, 7z]
+  extensions: [pce, cue, ccd, iso, img, bin, chd, zip, 7z]
   theme:      pce-cd
   emulators:
     libretro:
-      mednafen_supergrafx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BEETLE_SUPERGRAFX] }
-      pce:                 { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BEETLE_PCE]        }
+      pce:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BEETLE_PCE]  }
 
 supergrafx:
   name:       Supergrafx
-  extensions: [ccd, chd, cue, pce, sgx, zip, 7z]
+  extensions: [pce, sgx, cue, ccd, chd]
   emulators:
     libretro:
       mednafen_supergrafx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BEETLE_SUPERGRAFX] }
-      pce:                 { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BEETLE_PCE]        }
 
 pcfx:
   name:       PC-FX
@@ -425,7 +419,7 @@ neogeo:
     
 neogeocd:
   name:       Neo-Geo CD
-  extensions: [cue, iso]
+  extensions: [cue, iso, chd]
   emulators:
     libretro:
       neocd:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_NEOCD]  }
