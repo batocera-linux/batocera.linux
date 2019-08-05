@@ -1,0 +1,37 @@
+#!/bin/sh
+#
+# Auto connect bluetooth controllers
+#
+
+systemsetting="python /usr/lib/python2.7/site-packages/configgen/settings/batoceraSettings.py"
+btTar=/userdata/system/bluetooth/bluetooth.tar
+
+case "$1" in
+  start)
+        enabled="`$systemsetting  -command load -key controllers.bluetooth.enabled`"
+        if [ "$enabled" == "1" ];then
+        	settings_version="`$systemsetting -command load -key controllers.ps3.driver`"
+        	if [ "$settings_version" != "bluez" ]; then BLUETOOTHD_ARGS="--noplugin=sixaxis"; else  BLUETOOTHD_ARGS="--noplugin=sixaxispair"; fi
+		rfkill unblock bluetooth # soft unblock bluetooth
+		start-stop-daemon -S -q -m -p /var/run/bluetoothd.pid  --exec /usr/libexec/bluetooth/bluetoothd -- $BLUETOOTHD_ARGS &	
+		/usr/bin/hciattach /dev/ttyS0 bcm43xx 1500000 flow nosleep # rockpro64 specific
+		start-stop-daemon -S -q -m -p /var/run/btDaemon.pid    --exec /usr/bin/batocera-btDaemon > /dev/null 2>&1 &
+        fi
+        ;;
+  stop)
+	start-stop-daemon -K -q -p /var/run/btDaemon.pid
+	start-stop-daemon -K -q -p /var/run/bluetoothd.pid
+	rm "$btTar" ; tar cvf "$btTar" /var/lib/bluetooth/ > /dev/null
+	;;
+  restart|reload)
+        "$0" stop
+        "$0" start
+	;;
+  *)
+	echo "Usage: $0 {start|stop|restart}"
+	exit 1
+esac
+
+exit $?
+
+
