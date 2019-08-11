@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-ROCK960_BLOBS_VERSION = 1.0
+ROCK960_BLOBS_VERSION = 1d68303
 ROCK960_BLOBS_SITE = https://github.com/Multi-Retropie/rock960-blobs.git
 ROCK960_BLOBS_SITE_METHOD=git
 
