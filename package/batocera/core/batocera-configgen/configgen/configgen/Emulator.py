@@ -29,7 +29,8 @@ class Emulator():
         Emulator.updateConfiguration(self.config, globalSettings)
         Emulator.updateConfiguration(self.config, systemSettings)
         Emulator.updateConfiguration(self.config, gameSettings)
-        self.updateDrawFPS()
+        self.updateFromESSettings()
+        eslog.log("uimode: {}".format(self.config['uimode']))
 
         # update renderconfig
         self.renderconfig = {}
@@ -119,12 +120,29 @@ class Emulator():
         config.update(settings)
 
     # fps value is from es
-    def updateDrawFPS(self):
+    def updateFromESSettings(self):
         try:
             esConfig = ET.parse(batoceraFiles.esSettings)
-            value = esConfig.find("./bool[@name='DrawFramerate']").attrib["value"]
+
+            # showFPS
+            try:
+                drawframerate_value = esConfig.find("./bool[@name='DrawFramerate']").attrib["value"]
+            except:
+                drawframerate_value = 'false'
+            if drawframerate_value not in ['false', 'true']:
+                drawframerate_value = 'false'
+            self.config['showFPS'] = drawframerate_value
+
+            # uimode
+            try:
+                uimode_value = esConfig.find("./string[@name='UIMode']").attrib["value"]
+            except:
+                uimode_value = 'Full'
+            if uimode_value not in ['Full', 'Kiosk', 'Kid']:
+                uimode_value = 'Full'
+            self.config['uimode'] = uimode_value
+
         except:
-            value = 'false'
-        if value not in ['false', 'true']:
-            value = 'false'
-        self.config['showFPS'] = value
+            self.config['showFPS'] = False
+            self.config['uimode'] = "Full"
+
