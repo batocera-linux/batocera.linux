@@ -60,7 +60,12 @@ batocera-systems        > "${DSYSTEM}/bios.txt"
 f_cp /usr/share/batocera/batocera.version                     "${DSYSTEM}"
 f_cp /usr/share/batocera/batocera.arch                        "${DSYSTEM}"
 f_cp /boot/config.txt                                         "${DSYSTEM}"
-f_cp /userdata/system/batocera.conf                     "${DSYSTEM}"
+# remove RetroAchievements password from batocera.conf
+tfn=$(date +"%s")
+mkdir /tmp/"$tfn"
+sed -e"s/\(global.retroachievements.password\s*\)=\(.*\)/\1=_HIDDEN_/" /userdata/system/batocera.conf > /tmp/"$tfn"/batocera.conf
+f_cp /tmp/"$tfn"/batocera.conf                     "${DSYSTEM}"
+rm -rf /tmp/"$tfn"
 d_cp /userdata/system/logs                              "${DSYSTEM}"
 f_cp /var/log/messages                                        "${DSYSTEM}"
 f_cp /userdata/system/configs/emulationstation/es_settings.cfg "${DSYSTEM}"
