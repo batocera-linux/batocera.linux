@@ -287,8 +287,7 @@ function remove() {
 			echo "Error - bezels for system $systemname could not be found"
 			return 1
 		else
-			rm -rf "$DECODIR$BEZELPROJECTGAMESDIR$systemname/*"
-			rm -d "$DECODIR$BEZELPROJECTGAMESDIR$systemname"
+			rm -rf "$DECODIR$BEZELPROJECTGAMESDIR$systemname"
 			rm -f "$DECODIR$BEZELPROJECTSYSTEMDIR$systemname.png"
 			rm -f "$DECODIR$BEZELPROJECTSYSTEMDIR$systemname.info"
 		fi
