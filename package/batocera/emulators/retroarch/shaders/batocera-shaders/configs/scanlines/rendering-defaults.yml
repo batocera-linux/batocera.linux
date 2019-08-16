@@ -1,20 +1,21 @@
+## SCANLINES
 default:
   # shader affects retroarch shaders
-  shader: crt/crt-lottes-fast
+  shader: crt/crt-pi
   # scanline affect fba2x
-  scanline: false
+  scanline: true
 snes:
-  shader: crt/crt-lottes-fast
+  shader: crt/crt-pi
 nes:
-  shader: crt/crt-lottes-fast
+  shader: crt/crt-pi
 n64:
   shader: retro/sharp-bilinear-scanlines
 gba:
-  shader: handheld/gba-color
+  shader: handheld/zfast-lcd
 gb:
-  shader: handheld/gameboy
+  shader: handheld/zfast-lcd
 gbc:
-  shader: handheld/gbc-color
+  shader: handheld/zfast-lcd
 fds:
   shader: retro/sharp-bilinear-scanlines
 virtualboy:
@@ -23,51 +24,51 @@ virtualboy:
 sg1000:
   shader: retro/sharp-bilinear-scanlines
 mastersystem:
-  shader: crt/crt-lottes-fast
+  shader: crt/crt-pi
 megadrive:
-  shader: crt/crt-lottes-fast
+  shader: crt/crt-pi
 gamegear:
-  shader: handheld/lcd3x
+  shader: handheld/zfast-lcd
 sega32x:
-  shader: crt/crt-lottes-fast
+  shader: crt/crt-pi
 segacd:
   shader: retro/sharp-bilinear-scanlines
 # Arcade
 neogeo:
-  shader: crt/crt-lottes-fast
+  shader: retro/sharp-bilinear-scanlines
 neogeocd:
-  shader: crt/crt-lottes-fast
+  shader: retro/sharp-bilinear-scanlines
 mame:
-  shader: crt/crt-lottes-fast
+  shader: retro/sharp-bilinear-scanlines
 fba:
-  shader: crt/crt-lottes-fast
+  shader: retro/sharp-bilinear-scanlines
 naomi:
-  shader: crt/crt-lottes-fast
+  shader: retro/sharp-bilinear-scanlines
 atomiswave:
-  shader: crt/crt-lottes-fast
+  shader: retro/sharp-bilinear-scanlines
 #
 ngp:
-  shader: handheld/lcd3x
+  shader: handheld/zfast-lcd
 ngpc:
-  shader: handheld/lcd3x
+  shader: handheld/zfast-lcd
 gw:
-  shader: retro/sharp-bilinear-scanlines
+  shader: crt/crt-pi
 vectrex:
-  shader:
+  shader: crt/crt-pi
 lynx:
-  shader: handheld/lcd3x
+  shader: handheld/zfast-lcd
 lutro:
   shader: retro/sharp-bilinear-scanlines
 wswan:
-  shader: handheld/lcd3x
+  shader: handheld/zfast-lcd
 wswanc:
-  shader: handheld/lcd3x
+  shader: handheld/zfast-lcd
 pcengine:
-  shader: crt/crt-lottes-fast
+  shader: crt/crt-pi
 pcenginecd:
-  shader: crt/crt-lottes-fast
+  shader: crt/crt-pi
 supergrafx:
-  shader: crt/crt-lottes-fast
+  shader: crt/crt-pi
 atari800:
   shader: retro/sharp-bilinear-scanlines
 atari2600:
@@ -77,11 +78,11 @@ atari5200:
 atari7800:
   shader: retro/sharp-bilinear-scanlines
 prboom:
-  shader: crt/crt-lottes-fast
+  shader: crt/crt-pi
 psx:
-  shader: crt/crt-lottes-fast
+  shader: crt/crt-pi
 colecovision:
-  shader: crt/crt-lottes-fast
+  shader: crt/crt-pi
 # Computers
 msx:
   shader: retro/sharp-bilinear-scanlines
@@ -90,11 +91,11 @@ msx1:
 msx2:
   shader: retro/sharp-bilinear-scanlines
 amiga:
-  shader: crt/crt-lottes-fast
+  shader: crt/crt-pi
 amstradcpc:
-  shader: crt/crt-lottes-fast
+  shader: crt/crt-pi
 atarist:
-  shader: crt/crt-lottes-fast
+  shader: crt/crt-pi
 zxspectrum:
   shader: retro/sharp-bilinear-scanlines
 odyssey2:
