@@ -3,11 +3,10 @@ snes:
   extensions: [smc, fig, sfc, gd3, gd7, dx2, bsx, swc, zip, 7z]
   emulators:
     libretro:
-      catsfc:      { requireAnyOf: [BR2_PACKAGE_LIBRETRO_CATSFC]      }
       pocketsnes:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_POCKETSNES]  }
       snes9x_next: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_SNES9X_NEXT] }
       snes9x:      { requireAnyOf: [BR2_PACKAGE_LIBRETRO_SNES9X]      }
-
+      
 c64:
   name:       Commodore 64
   extensions: [d64, zip, 7z]
@@ -17,82 +16,27 @@ c64:
     libretro:
       vice: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_VICE] }
 
-amiga500:
-  name:       Amiga 500
+amiga:
+  name:       Commodore Amiga
   extensions: [zip, adf, uae, ipf, dms, adz, lha]
-  path:       amiga/amiga500
-  theme:      amiga500
   emulators:
     fsuae:
-      A500: { requireAnyOf: [BR2_PACKAGE_FSUAE]         }
+      A500:   { requireAnyOf: [BR2_PACKAGE_FSUAE] }
+      A500+:  { requireAnyOf: [BR2_PACKAGE_FSUAE] }
+      A600:   { requireAnyOf: [BR2_PACKAGE_FSUAE] }
+      A1000:  { requireAnyOf: [BR2_PACKAGE_FSUAE] }
+      A1200:  { requireAnyOf: [BR2_PACKAGE_FSUAE] }
+      A3000:  { requireAnyOf: [BR2_PACKAGE_FSUAE] }
+      A4000:  { requireAnyOf: [BR2_PACKAGE_FSUAE] }
     amiberry:
-      A500: { requireAnyOf: [BR2_PACKAGE_AMIBERRY]      }
-
-amiga500p:
-  name:       Amiga 500+
-  extensions: [zip, adf, uae, ipf, dms, adz, lha]
-  path:       amiga/amiga500p
-  theme:      amiga500p
-  emulators:
-    fsuae:
-      A500+: { requireAnyOf: [BR2_PACKAGE_FSUAE]    }
-    amiberry:
-      A500P: { requireAnyOf: [BR2_PACKAGE_AMIBERRY] }
-
-amiga600:
-  name:       Amiga 600
-  extensions: [zip, adf, uae, ipf, dms, adz]
-  path:       amiga/amiga600
-  theme:      amiga600
-  emulators:
-    fsuae:
-      A600: { requireAnyOf: [BR2_PACKAGE_FSUAE]         }
-
-amiga1000:
-  name:       Amiga 1000
-  extensions: [zip, adf, uae, ipf, dms, adz]
-  path:       amiga/amiga1000
-  theme:      amiga1000
-  emulators:
-    fsuae:
-      A1000: { requireAnyOf: [BR2_PACKAGE_FSUAE] }
-
-amiga1200:
-  name:       Amiga 1200
-  extensions: [zip, adf, uae, ipf, dms, adz, lha]
-  path:       amiga/amiga1200
-  theme:      amiga1200
-  emulators:
-    fsuae:
-      A1200: { requireAnyOf: [BR2_PACKAGE_FSUAE]        }
-    amiberry:
-      A1200: { requireAnyOf: [BR2_PACKAGE_AMIBERRY]     }
-
-amiga3000:
-  name:       Amiga 3000
-  extensions: [zip, adf, uae, ipf, dms, adz]
-  path:       amiga/amiga3000
-  theme:      amiga3000
-  emulators:
-    fsuae:
-      A3000: { requireAnyOf: [BR2_PACKAGE_FSUAE] }
-
-amiga4000:
-  name:       Amiga 4000
-  extensions: [zip, adf, uae, ipf, dms, adz, lha]
-  path:       amiga/amiga4000
-  theme:      amiga4000
-  emulators:
-    fsuae:
-      A4000: { requireAnyOf: [BR2_PACKAGE_FSUAE]    }
-    amiberry:
-      A4000: { requireAnyOf: [BR2_PACKAGE_AMIBERRY] }
+      A500:   { requireAnyOf: [BR2_PACKAGE_AMIBERRY]  }
+      A500+:  { requireAnyOf: [BR2_PACKAGE_AMIBERRY]  }
+      A1200:  { requireAnyOf: [BR2_PACKAGE_AMIBERRY]  }
+      A4000:  { requireAnyOf: [BR2_PACKAGE_AMIBERRY]  }
 
 amigacd32:
   name:       Amiga CD32
   extensions: [iso, cue, zip, lha]
-  path:       amiga/amigacd32
-  theme:      amigacd32
   emulators:
     fsuae:
       CD32: { requireAnyOf: [BR2_PACKAGE_FSUAE]    }
@@ -102,8 +46,6 @@ amigacd32:
 amigacdtv:
   name:       Amiga CDTV
   extensions: [bin, cue, iso]
-  path:       amiga/amigacdtv
-  theme:      amigacdtv
   emulators:
     fsuae:
       CDTV: { requireAnyOf: [BR2_PACKAGE_FSUAE] }
@@ -115,7 +57,6 @@ nes:
     libretro:
       fceumm:   { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FCEUMM]   }
       nestopia: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_NESTOPIA] }
-      quicknes: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_QUICKNES] }
 
 n64:
   name:       Nintendo 64
@@ -134,7 +75,6 @@ gba:
   extensions: [gba, zip, 7z]
   emulators:
     libretro:
-      gpsp:   { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GPSP]   }
       mgba:   { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MGBA]   }
 
 gbc:
@@ -284,28 +224,25 @@ psx:
 
 pcengine:
   name:       PC Engine
-  extensions: [pce, zip, 7z]
+  extensions: [pce, bin, zip, 7z]
   emulators:
     libretro:
-      mednafen_supergrafx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BEETLE_SUPERGRAFX] }
-      pce:                 { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BEETLE_PCE]        }
+      pce:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BEETLE_PCE] }
 
 pcenginecd:
   name:       PC Engine CD
-  extensions: [ccd, chd, cue, pce, zip, 7z]
+  extensions: [pce, cue, ccd, iso, img, bin, chd, zip, 7z]
   theme:      pce-cd
   emulators:
     libretro:
-      mednafen_supergrafx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BEETLE_SUPERGRAFX] }
-      pce:                 { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BEETLE_PCE]        }
+      pce:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BEETLE_PCE]  }
 
 supergrafx:
   name:       Supergrafx
-  extensions: [ccd, chd, cue, pce, sgx, zip, 7z]
+  extensions: [pce, sgx, cue, ccd, chd]
   emulators:
     libretro:
       mednafen_supergrafx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BEETLE_SUPERGRAFX] }
-      pce:                 { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BEETLE_PCE]        }
 
 pcfx:
   name:       PC-FX
@@ -425,7 +362,7 @@ neogeo:
     
 neogeocd:
   name:       Neo-Geo CD
-  extensions: [cue, iso]
+  extensions: [cue, iso, chd]
   emulators:
     libretro:
       neocd:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_NEOCD]  }
@@ -772,15 +709,15 @@ gamecube:
   extensions: [gcm, iso, gcz, ciso, wbfs]
   theme:      gc
   emulators:
-    dolphin-emu:
-      dolphin-emu:  { requireAnyOf: [BR2_PACKAGE_DOLPHIN_EMU]       }
+    dolphin:
+      dolphin:  { requireAnyOf: [BR2_PACKAGE_DOLPHIN_EMU]       }
 
 wii:
   name:       Nintendo Wii
   extensions: [gcm, iso, gcz, ciso, wbfs]
   emulators:
-    dolphin-emu:
-      dolphin-emu:  { requireAnyOf: [BR2_PACKAGE_DOLPHIN_EMU]       }
+    dolphin:
+      dolphin:  { requireAnyOf: [BR2_PACKAGE_DOLPHIN_EMU]       }
   comment_en: |
     To use a virtual horizontal wiimote, include ".side." in the filename (for example ".side.iso").
     You can choose the axis controls among i(nfrared), s(wing), t(ilt) or n(unchuk) :

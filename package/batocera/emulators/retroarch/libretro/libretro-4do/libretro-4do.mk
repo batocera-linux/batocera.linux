@@ -28,6 +28,8 @@ else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_ODROIDN2),y)
        LIBRETRO_4DO_PLATFORM=unix-odroidn2
 else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_TINKERBOARD),y)
        LIBRETRO_4DO_PLATFORM=unix-tinkerboard
+else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_MIQI),y)
+       LIBRETRO_4DO_PLATFORM=unix-miqi
 else
        LIBRETRO_4DO_PLATFORM=unix
 endif

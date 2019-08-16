@@ -4,13 +4,13 @@
 #
 ################################################################################
 
-# Version: 1.5
-UNCLUTTER_VERSION = 10fd337bb77e4e93c3380f630a0555372778a948
+# Version: 1.5-batocera
+UNCLUTTER_VERSION = v1.5-batocera
 UNCLUTTER_LICENSE = MIT
-UNCLUTTER_SITE = $(call github,Airblader,unclutter-xfixes,$(UNCLUTTER_VERSION))
+UNCLUTTER_SITE = $(call github,batocera-linux,unclutter-xfixes,$(UNCLUTTER_VERSION))
 UNCLUTTER_DEPENDENCIES = xserver_xorg-server libev
 
-UNCLUTTER_CFLAGS="-I$(@D)/include"
+UNCLUTTER_CFLAGS="-I$(@D)/include -D'__VERSION=\"$(UNCLUTTER_VERSION)\"'"
 UNCLUTTER_LDFLAGS="-lev -lX11 -lXi -lXfixes"
 
 define UNCLUTTER_BUILD_CMDS
@@ -20,6 +20,7 @@ endef
 
 define UNCLUTTER_INSTALL_TARGET_CMDS
 	$(INSTALL) -D $(@D)/unclutter $(TARGET_DIR)/usr/bin/unclutter
+	$(INSTALL) -D $(@D)/bin/unclutter-remote $(TARGET_DIR)/usr/bin/unclutter-remote
 endef
 
 $(eval $(generic-package))

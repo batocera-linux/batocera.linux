@@ -31,7 +31,7 @@ coreToP2Device = {'fuse': '513'};
 systemToRetroachievements = {'snes', 'nes', 'gba', 'gb', 'gbc', 'megadrive', 'mastersystem', 'pcengine', 'lynx', 'ngp', 'atari2600', 'virtualboy', 'neogeo', 'neogeocd'};
 
 # Define systems not compatible with rewind option
-systemNoRewind = {'sega32x', 'psx', 'zxspectrum', 'odyssey2', 'mame', 'n64', 'dreamcast', 'naomi', 'neogeocd', 'saturn'};
+systemNoRewind = {'sega32x', 'psx', 'zxspectrum', 'odyssey2', 'mame', 'n64', 'dreamcast', 'atomiswave', 'naomi', 'neogeocd', 'saturn'};
 
 # Define system emulated by bluemsx core
 systemToBluemsx = {'msx': '"MSX2"', 'msx1': '"MSX2"', 'msx2': '"MSX2"', 'colecovision': '"COL - ColecoVision"' };
@@ -240,6 +240,8 @@ def writeBezelConfig(bezel, retroarchConfig, systemName, rom, gameResolution):
         return
 
     # by order choose :
+    # rom name in the system subfolder of the user directory (gb/mario.png)
+    # rom name in the system subfolder of the system directory (gb/mario.png)
     # rom name in the user directory (mario.png)
     # rom name in the system directory (mario.png)
     # system name in the user directory (gb.png)
@@ -247,25 +249,31 @@ def writeBezelConfig(bezel, retroarchConfig, systemName, rom, gameResolution):
     # default name (default.png)
     # else return
     romBase = os.path.splitext(os.path.basename(rom))[0] # filename without extension
-    overlay_info_file = batoceraFiles.overlayUser + "/" + bezel + "/games/" + romBase + ".info"
-    overlay_png_file  = batoceraFiles.overlayUser + "/" + bezel + "/games/" + romBase + ".png"
+    overlay_info_file = batoceraFiles.overlayUser + "/" + bezel + "/games/" + systemName + "/" + romBase + ".info"
+    overlay_png_file  = batoceraFiles.overlayUser + "/" + bezel + "/games/" + systemName + "/" + romBase + ".png"
     if not os.path.exists(overlay_png_file):
-        overlay_info_file = batoceraFiles.overlaySystem + "/" + bezel + "/games/" + romBase + ".info"
-        overlay_png_file  = batoceraFiles.overlaySystem + "/" + bezel + "/games/" + romBase + ".png"
+        overlay_info_file = batoceraFiles.overlaySystem + "/" + bezel + "/games/" + systemName + "/" + romBase + ".info"
+        overlay_png_file  = batoceraFiles.overlaySystem + "/" + bezel + "/games/" + systemName + "/" + romBase + ".png"
         if not os.path.exists(overlay_png_file):
-            overlay_info_file = batoceraFiles.overlayUser + "/" + bezel + "/systems/" + systemName + ".info"
-            overlay_png_file  = batoceraFiles.overlayUser + "/" + bezel + "/systems/" + systemName + ".png"
+            overlay_info_file = batoceraFiles.overlayUser + "/" + bezel + "/games/" + romBase + ".info"
+            overlay_png_file  = batoceraFiles.overlayUser + "/" + bezel + "/games/" + romBase + ".png"
             if not os.path.exists(overlay_png_file):
-                overlay_info_file = batoceraFiles.overlaySystem + "/" + bezel + "/systems/" + systemName + ".info"
-                overlay_png_file  = batoceraFiles.overlaySystem + "/" + bezel + "/systems/" + systemName + ".png"
+                overlay_info_file = batoceraFiles.overlaySystem + "/" + bezel + "/games/" + romBase + ".info"
+                overlay_png_file  = batoceraFiles.overlaySystem + "/" + bezel + "/games/" + romBase + ".png"
                 if not os.path.exists(overlay_png_file):
-                    overlay_info_file = batoceraFiles.overlayUser + "/" + bezel + "/default.info"
-                    overlay_png_file  = batoceraFiles.overlayUser + "/" + bezel + "/default.png"
+                    overlay_info_file = batoceraFiles.overlayUser + "/" + bezel + "/systems/" + systemName + ".info"
+                    overlay_png_file  = batoceraFiles.overlayUser + "/" + bezel + "/systems/" + systemName + ".png"
                     if not os.path.exists(overlay_png_file):
-                        overlay_info_file = batoceraFiles.overlaySystem + "/" + bezel + "/default.info"
-                        overlay_png_file  = batoceraFiles.overlaySystem + "/" + bezel + "/default.png"
+                        overlay_info_file = batoceraFiles.overlaySystem + "/" + bezel + "/systems/" + systemName + ".info"
+                        overlay_png_file  = batoceraFiles.overlaySystem + "/" + bezel + "/systems/" + systemName + ".png"
                         if not os.path.exists(overlay_png_file):
-                            return
+                            overlay_info_file = batoceraFiles.overlayUser + "/" + bezel + "/default.info"
+                            overlay_png_file  = batoceraFiles.overlayUser + "/" + bezel + "/default.png"
+                            if not os.path.exists(overlay_png_file):
+                                overlay_info_file = batoceraFiles.overlaySystem + "/" + bezel + "/default.info"
+                                overlay_png_file  = batoceraFiles.overlaySystem + "/" + bezel + "/default.png"
+                                if not os.path.exists(overlay_png_file):
+                                    return
 
     # only the png file is mandatory
     if os.path.exists(overlay_info_file):
