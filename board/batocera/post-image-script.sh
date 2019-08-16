@@ -411,7 +411,7 @@ case "${BATOCERA_TARGET}" in
         # /boot
         rm -rf "${BINARIES_DIR}/boot"            || exit 1
         mkdir -p "${BINARIES_DIR}/boot/boot"     || exit 1
-	mkdir -p "${BINARIES_DIR}/boot/extlinux" || exit 1
+	    mkdir -p "${BINARIES_DIR}/boot/extlinux" || exit 1
         cp "${BINARIES_DIR}/zImage"                 "${BINARIES_DIR}/boot/boot/linux"                || exit 1
         cp "${BINARIES_DIR}/initrd.gz"             "${BINARIES_DIR}/boot/boot/initrd.gz"            || exit 1
         cp "${BINARIES_DIR}/rootfs.squashfs"       "${BINARIES_DIR}/boot/boot/batocera.update"      || exit 1
@@ -422,16 +422,16 @@ case "${BATOCERA_TARGET}" in
         echo "creating boot.tar.xz"
         (cd "${BINARIES_DIR}/boot" && tar -cJf "${BATOCERA_BINARIES_DIR}/boot.tar.xz" extlinux boot batocera-boot.conf) || exit 1
 
-	# blobs
-	MKIMAGE=$HOST_DIR/bin/mkimage
-	BOARD_DIR="board/batocera/tinkerboard"
+	    # blobs
+	    MKIMAGE=$HOST_DIR/bin/mkimage
+	    BOARD_DIR="board/batocera/tinkerboard"
 
-	$MKIMAGE -n rk3288 -T rksd -d $BINARIES_DIR/u-boot-spl-dtb.bin $BINARIES_DIR/u-boot-spl-dtb.img
-	cat $BINARIES_DIR/u-boot-dtb.bin >> $BINARIES_DIR/u-boot-spl-dtb.img
-	for F in u-boot-spl-dtb.img
-	do
-	    cp "${BINARIES_DIR}/${F}" "${BINARIES_DIR}/boot/${F}" || exit 1
-	done
+	    $MKIMAGE -n rk3288 -T rksd -d $BINARIES_DIR/u-boot-spl-dtb.bin $BINARIES_DIR/u-boot-spl-dtb.img
+	    cat $BINARIES_DIR/u-boot-dtb.bin >> $BINARIES_DIR/u-boot-spl-dtb.img
+	    for F in u-boot-spl-dtb.img
+        do
+        cp "${BINARIES_DIR}/${F}" "${BINARIES_DIR}/boot/${F}" || exit 1
+        done
 
         # batocera.img
         # rename the squashfs : the .update is the version that will be renamed at boot to replace the old version
@@ -440,6 +440,44 @@ case "${BATOCERA_TARGET}" in
         BATOCERAIMG="${BATOCERA_BINARIES_DIR}/batocera.img"
         rm -rf "${GENIMAGE_TMP}" || exit 1
         cp "board/batocera/tinkerboard/genimage.cfg" "${BINARIES_DIR}" || exit 1
+        echo "generating image"
+        genimage --rootpath="${TARGET_DIR}" --inputpath="${BINARIES_DIR}/boot" --outputpath="${BATOCERA_BINARIES_DIR}" --config="${BINARIES_DIR}/genimage.cfg" --tmppath="${GENIMAGE_TMP}" || exit 1
+        rm -f "${BATOCERA_BINARIES_DIR}/boot.vfat" || exit 1
+        sync || exit 1
+        ;;
+    MIQI)
+        # /boot
+        rm -rf "${BINARIES_DIR}/boot"            || exit 1
+        mkdir -p "${BINARIES_DIR}/boot/boot"     || exit 1
+	    mkdir -p "${BINARIES_DIR}/boot/extlinux" || exit 1
+        cp "${BINARIES_DIR}/zImage"                 "${BINARIES_DIR}/boot/boot/linux"                || exit 1
+        cp "${BINARIES_DIR}/initrd.gz"             "${BINARIES_DIR}/boot/boot/initrd.gz"            || exit 1
+        cp "${BINARIES_DIR}/rootfs.squashfs"       "${BINARIES_DIR}/boot/boot/batocera.update"      || exit 1
+        cp "${BINARIES_DIR}/rk3288-miqi.dtb"  "${BINARIES_DIR}/boot/boot/rk3288-miqi.dtb" || exit 1
+        cp "${BINARIES_DIR}/batocera-boot.conf"    "${BINARIES_DIR}/boot/batocera-boot.conf"        || exit 1
+	    cp "board/batocera/miqi/boot/extlinux.conf" ${BINARIES_DIR}/boot/extlinux                   || exit 1
+        # boot.tar.xz
+        echo "creating boot.tar.xz"
+        (cd "${BINARIES_DIR}/boot" && tar -cJf "${BATOCERA_BINARIES_DIR}/boot.tar.xz" extlinux boot batocera-boot.conf) || exit 1
+
+	    # blobs
+	    MKIMAGE=$HOST_DIR/bin/mkimage
+	    BOARD_DIR="board/batocera/miqi"
+
+	    $MKIMAGE -n rk3288 -T rksd -d $BINARIES_DIR/u-boot-spl-dtb.bin $BINARIES_DIR/u-boot-spl-dtb.img
+	    cat $BINARIES_DIR/u-boot-dtb.bin >> $BINARIES_DIR/u-boot-spl-dtb.img
+	    for F in u-boot-spl-dtb.img
+	    do
+	    cp "${BINARIES_DIR}/${F}" "${BINARIES_DIR}/boot/${F}" || exit 1
+	    done
+
+        # batocera.img
+        # rename the squashfs : the .update is the version that will be renamed at boot to replace the old version
+        mv "${BINARIES_DIR}/boot/boot/batocera.update" "${BINARIES_DIR}/boot/boot/batocera" || exit 1
+        GENIMAGE_TMP="${BUILD_DIR}/genimage.tmp"
+        BATOCERAIMG="${BATOCERA_BINARIES_DIR}/batocera.img"
+        rm -rf "${GENIMAGE_TMP}" || exit 1
+        cp "board/batocera/miqi/genimage.cfg" "${BINARIES_DIR}" || exit 1
         echo "generating image"
         genimage --rootpath="${TARGET_DIR}" --inputpath="${BINARIES_DIR}/boot" --outputpath="${BATOCERA_BINARIES_DIR}" --config="${BINARIES_DIR}/genimage.cfg" --tmppath="${GENIMAGE_TMP}" || exit 1
         rm -f "${BATOCERA_BINARIES_DIR}/boot.vfat" || exit 1

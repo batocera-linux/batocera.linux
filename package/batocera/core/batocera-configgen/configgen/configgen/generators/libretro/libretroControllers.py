@@ -26,23 +26,28 @@ typetoname = {'button': 'btn', 'hat': 'btn', 'axis': 'axis', 'key': 'key'}
 # Map an emulationstation input hat to the corresponding retroarch hat value
 hatstoname = {'1': 'up', '2': 'right', '4': 'down', '8': 'left'}
 
-# Map buttons to the corresponding retroarch specials keys
-retroarchspecials = {'x': 'load_state', 'y': 'save_state', 'pageup': 'screenshot', \
-                     'start': 'exit_emulator', 'up': 'state_slot_increase', \
-                     'down': 'state_slot_decrease', 'left': 'rewind', 'right': 'hold_fast_forward', \
-                     'l2': 'shader_prev', 'r2': 'shader_next', 'a': 'reset'}
-retroarchspecials['b'] = 'menu_toggle'
-
 # Write a configuration for a specified controller
 # Warning, function used by amiberry because it reads the same retroarch formatting
 def writeControllersConfig(retroconfig, system, controllers):
-    cleanControllerConfig(retroconfig, controllers)
+    # Map buttons to the corresponding retroarch specials keys
+    retroarchspecials = {'x': 'load_state', 'y': 'save_state', 'pageup': 'screenshot', \
+                         'start': 'exit_emulator', 'up': 'state_slot_increase', \
+                         'down': 'state_slot_decrease', 'left': 'rewind', 'right': 'hold_fast_forward', \
+                         'l2': 'shader_prev', 'r2': 'shader_next', 'a': 'reset'}
+    retroarchspecials['b'] = 'menu_toggle'
+
+    cleanControllerConfig(retroconfig, controllers, retroarchspecials)
+
+    # no menu in non full uimode
+    if system.config["uimode"] != "Full":
+        del retroarchspecials['b']
+
     for controller in controllers:
-        writeControllerConfig(retroconfig, controllers[controller], controller, system)
+        writeControllerConfig(retroconfig, controllers[controller], controller, system, retroarchspecials)
     writeHotKeyConfig(retroconfig, controllers)
 
 # remove all controller configurations
-def cleanControllerConfig(retroconfig, controllers):
+def cleanControllerConfig(retroconfig, controllers, retroarchspecials):
     retroconfig.disableAll('input_player')
     for specialkey in retroarchspecials:
         retroconfig.disableAll('input_{}'.format(retroarchspecials[specialkey]))
@@ -56,8 +61,8 @@ def writeHotKeyConfig(retroconfig, controllers):
 
 
 # Write a configuration for a specified controller
-def writeControllerConfig(retroconfig, controller, playerIndex, system):
-    generatedConfig = generateControllerConfig(controller)
+def writeControllerConfig(retroconfig, controller, playerIndex, system, retroarchspecials):
+    generatedConfig = generateControllerConfig(controller, retroarchspecials)
     for key in generatedConfig:
         retroconfig.save(key, generatedConfig[key])
 
@@ -67,7 +72,7 @@ def writeControllerConfig(retroconfig, controller, playerIndex, system):
 
 
 # Create a configuration for a given controller
-def generateControllerConfig(controller):
+def generateControllerConfig(controller, retroarchspecials):
     config = dict()
     # config['input_device'] = '"%s"' % controller.realName
     for btnkey in retroarchbtns:

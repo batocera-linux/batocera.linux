@@ -3,21 +3,15 @@ default:
     video_threaded: true
     videomode:      CEA 4 HDMI
 
+snes:
+  emulator: libretro
+  core:     pocketsnes
 n64:
   options:
     videomode: DMT 4 HDMI
-amiga500:
-  emulator: amiberry
-  core:     A500
-amiga500p:
-  emulator: amiberry
-  core:     A500P
-amiga1200:
+amiga:
   emulator: amiberry
   core:     A1200
-amiga4000:
-  emulator: amiberry
-  core:     A4000
 amigacd32:
   emulator: amiberry
   core:     CD32
