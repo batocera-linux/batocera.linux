@@ -1,0 +1,96 @@
+From 80b3686e3410e72e3a9bd240fbf28dc9fcc209ef Mon Sep 17 00:00:00 2001
+From: Lukas Rusak <lorusak@gmail.com>
+Date: Mon, 24 Apr 2017 14:38:07 +0200
+Subject: [PATCH 61/62] allow building with ENABLE_GBM
+
+Signed-off-by: memeka <mihailescu2m@gmail.com>
+---
+ project/cmake/CMakeLists.txt                   |  4 +++
+ project/cmake/modules/FindGBM.cmake            | 44 ++++++++++++++++++++++++++
+ project/cmake/treedata/optional/common/gbm.txt |  1 +
+ 3 files changed, 49 insertions(+)
+ create mode 100644 project/cmake/modules/FindGBM.cmake
+ create mode 100644 project/cmake/treedata/optional/common/gbm.txt
+
+diff --git a/project/cmake/CMakeLists.txt b/project/cmake/CMakeLists.txt
+index 562a8ce..28f2bf6 100644
+--- a/project/cmake/CMakeLists.txt
++++ b/project/cmake/CMakeLists.txt
+@@ -52,6 +52,7 @@ if(UNIX)
+   option(ENABLE_INTERNAL_CROSSGUID "Enable internal crossguid?" ON)
+   option(ENABLE_OPENSSL     "Enable OpenSSL?" ON)
+   option(ENABLE_SDL         "Enable SDL?" OFF)
++  option(ENABLE_GBM         "Enable GBM?" OFF)
+   option(ENABLE_WAYLAND     "Enable Wayland?" OFF)
+   if(CORE_SYSTEM_NAME STREQUAL linux OR CORE_SYSTEM_NAME STREQUAL freebsd)
+     option(ENABLE_X11         "Enable X11 support?" ON)
+@@ -204,6 +205,9 @@ if(NOT WIN32)
+       if (ENABLE_WAYLAND)
+         core_require_dep(Wayland ENABLE_WAYLAND)
+         core_optional_dep(LibDRM ENABLE_WAYLAND)
++      elseif(ENABLE_GBM)
++        core_require_dep(GBM ENABLE_GBM)
++        core_require_dep(LibDRM ENABLE_GBM)
+       else()
+         core_optional_dep(X ENABLE_X11)
+         core_optional_dep(LibDRM ENABLE_X11)
+diff --git a/project/cmake/modules/FindGBM.cmake b/project/cmake/modules/FindGBM.cmake
+new file mode 100644
+index 0000000..ac95241
+--- /dev/null
++++ b/project/cmake/modules/FindGBM.cmake
+@@ -0,0 +1,44 @@
++# FindGBM
++# ----------
++# Finds the GBM library
++#
++# This will will define the following variables::
++#
++# GBM_FOUND - system has GBM
++# GBM_INCLUDE_DIRS - the GBM include directory
++# GBM_LIBRARIES - the GBM libraries
++# GBM_DEFINITIONS  - the GBM definitions
++#
++# and the following imported targets::
++#
++#   GBM::GBM   - The GBM library
++
++if(PKG_CONFIG_FOUND)
++  pkg_check_modules(PC_GBM gbm QUIET)
++endif()
++
++find_path(GBM_INCLUDE_DIR NAMES gbm.h
++                          PATHS ${PC_GBM_INCLUDEDIR})
++find_library(GBM_LIBRARY NAMES gbm
++                         PATHS ${PC_GBM_LIBDIR})
++
++set(GBM_VERSION ${PC_GBM_VERSION})
++
++include(FindPackageHandleStandardArgs)
++find_package_handle_standard_args(GBM
++                                  REQUIRED_VARS GBM_LIBRARY GBM_INCLUDE_DIR
++                                  VERSION_VAR GBM_VERSION)
++
++if(GBM_FOUND)
++  set(GBM_LIBRARIES ${GBM_LIBRARY})
++  set(GBM_INCLUDE_DIRS ${GBM_INCLUDE_DIR})
++  set(GBM_DEFINITIONS -DHAVE_GBM=1)
++    if(NOT TARGET GBM::GBM)
++    add_library(GBM::GBM UNKNOWN IMPORTED)
++    set_target_properties(GBM::GBM PROPERTIES
++                                   IMPORTED_LOCATION "${GBM_LIBRARY}"
++                                   INTERFACE_INCLUDE_DIRECTORIES "${GBM_INCLUDE_DIR}")
++  endif()
++endif()
++
++mark_as_advanced(GBM_INCLUDE_DIR GBM_LIBRARY)
+diff --git a/project/cmake/treedata/optional/common/gbm.txt b/project/cmake/treedata/optional/common/gbm.txt
+new file mode 100644
+index 0000000..1adde93
+--- /dev/null
++++ b/project/cmake/treedata/optional/common/gbm.txt
+@@ -0,0 +1 @@
++xbmc/windowing/gbm windowing/gbm # GBM
+-- 
+2.7.4
+

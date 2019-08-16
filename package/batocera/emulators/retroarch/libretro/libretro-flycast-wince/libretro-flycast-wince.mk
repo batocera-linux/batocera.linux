@@ -3,8 +3,8 @@
 # LIBRETRO FLYCAST WINCE
 #
 ################################################################################
-# Version.: Commits on Jul 12, 2019
-LIBRETRO_FLYCAST_WINCE_VERSION = 74b40a41fc522474f77b5f386ff34751ac0900e8
+# Version.: Commits on Aug 13, 2019
+LIBRETRO_FLYCAST_WINCE_VERSION = 33c2ce0fcacd43b963448d1899c30dbbb15e8464
 LIBRETRO_FLYCAST_WINCE_SITE = $(call github,libretro,flycast,$(LIBRETRO_FLYCAST_WINCE_VERSION))
 LIBRETRO_FLYCAST_WINCE_LICENSE = GPLv2
 

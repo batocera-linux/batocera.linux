@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # hide mouse cursor
-unclutter --timeout 1 -b
+unclutter --noevents -b
 
 systemsetting="python /usr/lib/python2.7/site-packages/configgen/settings/batoceraSettings.py"
 
