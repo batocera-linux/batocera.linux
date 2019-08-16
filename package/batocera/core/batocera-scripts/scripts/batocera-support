@@ -96,6 +96,10 @@ d_cp "${DHOME}/.kodi/userdata/addon_data/peripheral.joystick" "${DKODI}"
 d_cp "${DHOME}/.kodi/userdata/remotes"              	      "${DKODI}"
 f_cp "${DHOME}/.kodi/temp/kodi.log"                 	      "${DKODI}"
 
+# core dumps
+DCORE="${TMPDIR}/coredumps"
+f_cp "${DHOME}/core.*" "${DCORE}"
+
 if ! (cd "${GTMP}" && tar cf -  "${REPORTNAME}" | gzip -c > "${OUTPUTFILE}")
 then
     echo "Reporting zip creation failed" >&2
