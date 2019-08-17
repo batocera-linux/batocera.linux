@@ -3,7 +3,7 @@
 # device-trees-aml-s9xx
 #
 ################################################################################
-DEVICE_TREES_AML_S9XX_VERSION = master
+DEVICE_TREES_AML_S9XX_VERSION = cdfe64399f04ef958b4bd8ac629026007c9dd900
 DEVICE_TREES_AML_S9XX_SITE = $(call github,CoreELEC,device-trees-amlogic,$(DEVICE_TREES_AML_S9XX_VERSION))
 
 DEVICE_TREES_AML_S9XX_DEPENDENCIES = linux host-aml-dtbtools
