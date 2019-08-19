@@ -25,7 +25,7 @@ d_cp() {
 }
 
 
-if mkdir "${TMPDIR}" && mkdir "${TMPDIR}/"{system,joysticks,lirc,kodi}
+if mkdir "${TMPDIR}" && mkdir "${TMPDIR}/"{system,joysticks,lirc,kodi,coredumps}
 then
     if ! cd "${TMPDIR}"
     then
@@ -98,7 +98,10 @@ f_cp "${DHOME}/.kodi/temp/kodi.log"                 	      "${DKODI}"
 
 # core dumps
 DCORE="${TMPDIR}/coredumps"
-f_cp "${DHOME}/core.*" "${DCORE}"
+for C in /userdata/core.*
+do
+    f_cp "${C}" "${DCORE}"
+done
 
 if ! (cd "${GTMP}" && tar cf -  "${REPORTNAME}" | gzip -c > "${OUTPUTFILE}")
 then
