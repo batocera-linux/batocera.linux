@@ -116,8 +116,6 @@ rb_alsa_save() {
 
 ba_es_core_dump() {
 	sysctl -w kernel.core_pattern=/userdata/core.%e
-	ulimit -S -c 0
-	ulimit -S -c unlimited emulationstation
 }
 
 case "$1" in
