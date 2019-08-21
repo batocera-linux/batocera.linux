@@ -57,6 +57,7 @@ nes:
     libretro:
       fceumm:   { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FCEUMM]   }
       nestopia: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_NESTOPIA] }
+      mesen:   { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MESEN]   }
 
 n64:
   name:       Nintendo 64
