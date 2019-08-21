@@ -1,0 +1,11 @@
+config BR2_PACKAGE_LIBRETRO_NEOCD
+        bool "libretro-neocd"
+	depends on BR2_PACKAGE_RETROARCH
+	depends on BR2_INSTALL_LIBSTDCPP
+        help
+          Neo Geo CD emulator for libretro
+
+	  http://www.libretro.com
+
+comment "LIBRETRO_NEOCD needs a toolchain w/ C++"
+	depends on !BR2_INSTALL_LIBSTDCPP

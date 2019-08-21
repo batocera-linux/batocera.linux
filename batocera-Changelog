@@ -1,7 +1,150 @@
-2018/xx/xx - batocera.linux 5.17 - release
+2019/xx/xx - batocera.linux 5.23
+	* games collections (custom, last played games, favorites)
+	* /userdata/system/scripts user scripts to react to starting/stopping of games
+	* new options available from es : fullboot for ps2 and emulatedwiimotes for wi
+	* new options : game boy colorization
+	* options configurable by game
+	* nvidia-driver: version bump (430.40)
+	* new shaders sets for "retro" and "scanlines", and added a new "enhanced" set
+	* add: ability to display/hide gaming systems from the "UI Settings" menu
+	* add: "Lightgun" system (to use with a Dolphinbar)
+	* add: system-specific background music (by system folder in /userdata/music/)
+	* add: new option for a pop-up with music titles
+	* add: music fades out when launching a game
+	* add: 2 new arcade 4:3 format bezels and 3 arcade vertical format bezel (configurable by game)
+	* add: new atomiswave and naomi default bezels (replacing old bezels since they are arcade cabinet systems)
+	* add: new bezel called "atomiswave_naomi_vertical" (configure per game vertical format)
+	* add: amstrad gx4000 bezel
+	* add: integration with theBezelProject for per-game bezels on some systems
+	* add: tinkerboard support
+	* renamed: lbretro-reicast for libretro-flycast
+	* add: libretro-handy para o Atari Lynx
+	* add: amiberry for odroid xu4 and rockpro64
+	* add: libretro-vice for RPI3
+	* bump: libretro-genesisplusgx
+	* bump: citra-emu
+	* bump: scummvm
+	* bump: libretro-fbneo
+	* bump: libretro-cap32
+	* bump: libretro-mame2003-plus
+	* bump: linapple-pie
+	* bump: fsuae to 2.9.12dev
+	* removed: libertro-mupen64plus (discontinued)
+	* bump: libretro-mame to 0.212
+	* removed: libretro-quicknes and libretro-catsfc
+	* snes9x: replacing repository
+	* bump: libretro-neocd (added .chd)
+	* removed: libretro-gpsp
+	* rockpro64: enable lr-mame
+	* amiga: new folder structure (amiga, amigacd32 and amigacdtv)
+
+2019/06/12 - batocera.linux 5.22
+	* nvidia-driver: version bump (418.74)
+	* moonlight: bump to v2.4.10
+	* amiberry: bump v2.25
+	* fix: libretro-genesisplusgx for rockpro64
+	* fix: Citra emulator in the center of the screen
+	* add: naomi and atomiswave for odroid xu4
+	* add: libretro-neocd for NeoGeo CD
+	* advancemame: removed
+	* citra-emu: updated and standard core for the Nintendo 3DS
+	* mupen64plus: bump to 2.5.9
+	* fix: mupen64 widescreen mode
+	* wii/gc: dolphin version bump (5.0-9896)
+	* es-retropie integration
+		* theme compatibility with retropie
+		* videos previews
+	* add: ES theme installer (menu> system> update> install theme)
+	* add: ES menu for RetroAchievements status
+	* new default theme : es-theme-carbon
+	* add: screensavers for slideshow and "random video" (aka demo mode)
+	* kid/kiosk modes
+	* choose the default system at startup
+	* choose randomly a game
+	* cec in es
+	* scrapper fixed
+	* add: pokemon-mini
+	* add: sufami turbo
+	* add: nintendo satellaview
+	* add: amstrad GX4000
+	* decoration/bezels: Add light realistic Cathodic CRT effect to improve original fidelity image. (Possibility to use shaders too)
+	* remove recalbox-theme (because of new licence restrictions)
+	* specific favorite system removed (will be added properly later)
+	* emulator configuration by game removed (will be added properly later)
+	* add: libretro-reicast-wince (x64)
+	* retroarch: added audio and video filters
+	* retroarch: bump to v1.7.7
+	* update: libretro packages
+	* substituted: libretro-fbalpha by libretro-fbneo
+
+2019/03/29 - batocera.linux 5.21
+	* nvidia-driver: version bump (418.43)
+	* arcade: new core - lr-mame (mame-0.206)
+	* nintendo 3DS: added citra emulator
+	* emulator: atari 800 and atari 5200 were separated
+	* libretro-reicast: added support for the arm platform
+	* update: RetroArch 1.7.6 and libretro core
+	* add: NeoGeo CD
+	* add: libretro-mupen64plus-next for Nintendo 64
+	* RetroFlag: Shutdown script added + Cleaning
+	* n64: fixes mupen64 configuration including pads
+	* rockpro64: wifi/bluetooth
+	* x86/x86_64: fix support for intel gpus
+	* x86_64: support for amd ryzen
+	* wii: wiimote and pads can be used at the same time
+	* New 20 Ambiance Bezels : TV with scratched effects on glass, Retro Room, etc (special thanks to fery65)
+	* add decorations folder into the share folder to make easier bezels overlays' customization
+
+2019/01/22 - batocera.linux 5.20
+	* better ps4 pad support
+	* add Nintendo 3DS support (libretro-citra) (x86_64)
+	* amiberry: upgraded/add whdload support/better joystick support
+	* add: libretro-kronos: new core for Sega Saturn
+	* update: libretro cores (all cores)
+	* Bezels: New NDS, 3DS, Wii, FBA, Mame, FBA_libretro bezels
+	* Bezels: review of all existing bezels, aspect and rendering improved, light 3D effect added. Luminosity and darkness lightened. Homogeneity and sobriety respected.
+
+2018/11/25 - batocera.linux 5.19
+	* technical upgrade
+	* configuration applications for ps2, wii, gamecube via f1, then applications (x86*)
+	* ps2: fix extensions list
+	* ps2: fix pad for player 2
+	* gameboy/gameboy color: 2 players out of the box
+	* xbox one pad (via bluetooth and usb)
+	* ps4 pad (via bluetooth and usb) (not enabled by default)
+	* better hardware firmwares support
+	* better bluetooth association
+	* xosd : f5 display battery / time (x86*)
+	* rpi3+ overclocking
+	* support for nvidia proprietary driver
+	* libretro-reicast: reicast libretro and reicast OIT libretro merged into one. ( https://www.libretro.com/index.php/reicast-libretro-and-reicast-oit-libretro-merged-into-one-what-you-need-to-know/ )
+	* libretro-reicast: Naomi added (lst, bin, dat)
+	* video mode (resolution) customizable by emulator from the gui (rpi / x86*)
+	* some fixes
+
+2018/10/02 - batocera.linux 5.18
+	* retroarch: update to 1.7.4
+        * libretro: update core (atari800, beetle-ngp, beetle-pce, beetle-pcfx, beetle-saturn, beetle-vb, beetle-wswan,
+          bluemsx, cap32, catsfc, 81, desmume, fba, fceumm, fmsx, freeintv, fuse, gambatte, genesisplusgx, gpsp, gw, hatari,
+          lutro, mame2003, mame2003plus, mgba, mupen64plus, nestopia, nxengine, o2em, parallel-n64, pcsx, picodrive, pocketsnes,
+          px68k, scummmvm, snes9x, snes9x-next, uae, vecx, virtualjaguar, yabause, reicast, reicast_oit)
+        * pcsx2 : playstation2 (x86_64 and x86)
+        * commodore64: vice emulator update to 3.2
+        * amigacd32: added cue and zip extensions
+        * advancedmame: update to 3.9
+        * reicast: update to r8.1
+        * add: libretro-dosbox (x86_32 and x86_64)
+        * add: libretro-mame2016 (x86_32 and x86_64)
+        * add: libretro-vice (x86_32 and x86_64)
+
+2018/09/02 - batocera.linux 5.17 - release
 	* fix moonlight
 	* fix n64 (crashes for some games on some plateforms)
 	* remove virtualgamepads (useless)
+	* update: libretro-reicast
+	* add: libretro-reicast-oit for x86_64
+	* various fixes (bluetooth, ps3 pads, ...)
+	* fix all architectures
 
 2018/06/25 - batocera.linux 5.16 - release
         * x86: better mouse handling (fixing scummvm)
@@ -32,7 +175,7 @@
 
 2018/03/08 - batocera.linux 5.14 - release
         * rpi: new splash video
-        * rpi: mutable splash video (add splashsound=off in /boot/recalbox-boot.conf to disable the sound)
+        * rpi: mutable splash video (add splashsound=false in /boot/batocera-boot.conf to disable the sound)
         * rpi: customizable splash video (put a video in /boot/splash.mp4)
         * link update MameDB and Screenscraper
         * configgen: partially rewritten / more robust
@@ -244,13 +387,13 @@
         * Odroid XU4 Release - release
         This is the first stable version for the Odroid XU4. You can get the full details of what is supported here.
         This is compiled from the official recalbox sources. Once installed, don't forget to configure
-        your recalbox.conf to upgrade from this website (see previous post).
+        your batocera.conf to upgrade from this website (see previous post).
 
 2016/06/21
         * Network shares - advanced configuration
         You've not enough space on your sdcard or on your usbkey ?
         You can now use your nas (like a freebox) as a usbkey (not from the graphical interface for the moment).
-        You need to edit the /boot/recalbox-boot.conf file like this :
+        You need to edit the /boot/batocera-boot.conf file like this :
         sharedevice=NETWORK
         sharenetwork_nfs1=ROMS@192.168.0.1:/mnt/Documents/recalbox/roms
         sharenetwork_nfs2=SAVES@192.168.0.1:/mnt/Documents/recalbox/saves

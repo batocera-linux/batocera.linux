@@ -19,7 +19,6 @@ endmenu # Audio
 
 menu "Video firmware"
 
-# batocera
 config BR2_PACKAGE_LINUX_FIRMWARE_AMDGPU
 	bool "AMD GPU video card firmware"
 	help
@@ -34,32 +33,6 @@ config BR2_PACKAGE_LINUX_FIRMWARE_RADEON
 	bool "AMD Radeon video card firmware"
 	help
 	  Firmware files for AMD Radeon video cards.
-
-# batocera
-config BR2_PACKAGE_LINUX_FIRMWARE_NVIDIA
-	bool "Nvidia video card firmware"
-	help
-	  Firmware files for Nvidia video cards.
-
-config BR2_PACKAGE_LINUX_FIRMWARE_AMDGPU
-	bool "AMDGPU video card firmware"
-	help
-	  Firmware files for AMDGPU video cards.
-
-config BR2_PACKAGE_LINUX_FIRMWARE_I915
-	bool "I915 video card firmware"
-	help
-	  Firmware files for I915 video cards.
-
-config BR2_PACKAGE_LINUX_FIRMWARE_R128
-	bool "R128 video card firmware"
-	help
-	  Firmware files for R128 video cards.
-
-config BR2_PACKAGE_LINUX_FIRMWARE_MATROX
-	bool "Matrox video card firmware"
-	help
-	  Firmware files for Matrox video cards.
 
 config BR2_PACKAGE_LINUX_FIRMWARE_QCOM_VENUS
 	bool "Qualcomm Venus video codec accelerator"
@@ -81,10 +54,20 @@ config BR2_PACKAGE_LINUX_FIRMWARE_IBT
 	  Firmware files for Intel 3160/7260/7265/8260/8265 Wireless
 	  bluetooth support.
 
+config BR2_PACKAGE_LINUX_FIRMWARE_MEDIATEK_MT7650
+	bool "MediaTek MT7650"
+	help
+	  Firmware files for MediaTek MT7650 bluetooth support
+
 config BR2_PACKAGE_LINUX_FIRMWARE_QUALCOMM_6174A_BT
 	bool "Qualcomm Atheros Rome 6174A Bluetooth"
 	help
 	  Firmware files for QCA Rome 6174A bluetooth support.
+
+config BR2_PACKAGE_LINUX_FIRMWARE_TI_CC2560
+	bool "TI CC2560"
+	help
+	  Firmware files for Bluetooth modules CC2560 and CC2560A
 
 endmenu # Bluetooth
 
@@ -119,46 +102,6 @@ config BR2_PACKAGE_LINUX_FIRMWARE_ATHEROS_9271
 	bool "Atheros 9271"
 	help
 	  Firmware files for the Atheros 9271 module
-
-config BR2_PACKAGE_LINUX_FIRMWARE_ATHEROS_QCA4019
-	bool "Atheros QCA4019"
-	help
-	  Firmware files for the Atheros QCA4019 module
-
-config BR2_PACKAGE_LINUX_FIRMWARE_ATHEROS_QCA6174
-	bool "Atheros QCA6174"
-	help
-	  Firmware files for the Atheros QCA6174 module
-
-config BR2_PACKAGE_LINUX_FIRMWARE_ATHEROS_QCA9377
-	bool "Atheros QCA9377"
-	help
-	  Firmware files for the Atheros QCA9377 module
-
-config BR2_PACKAGE_LINUX_FIRMWARE_ATHEROS_QCA9887
-	bool "Atheros QCA9887"
-	help
-	  Firmware files for the Atheros QCA9887 module
-
-config BR2_PACKAGE_LINUX_FIRMWARE_ATHEROS_QCA9888
-	bool "Atheros QCA9888"
-	help
-	  Firmware files for the Atheros QCA9888 module
-
-config BR2_PACKAGE_LINUX_FIRMWARE_ATHEROS_QCA988X
-	bool "Atheros QCA988X"
-	help
-	  Firmware files for the Atheros QCA988X module
-
-config BR2_PACKAGE_LINUX_FIRMWARE_ATHEROS_QCA9984
-	bool "Atheros QCA9984"
-	help
-	  Firmware files for the Atheros QCA9984 module
-
-config BR2_PACKAGE_LINUX_FIRMWARE_ATHEROS_QCA99X0
-	bool "Atheros QCA99X0"
-	help
-	  Firmware files for the Atheros QCA99X0 module
 
 config BR2_PACKAGE_LINUX_FIRMWARE_ATHEROS_10K_QCA998X
 	bool "Atheros 10k (QCA998X)"
@@ -243,11 +186,11 @@ config BR2_PACKAGE_LINUX_FIRMWARE_IWLWIFI_8265
 	  Firmware files for the Intel Wifi 8265 devices supported by
 	  the iwlwifi kernel driver.
 
-# batocera
-config BR2_PACKAGE_LINUX_FIRMWARE_IWLWIFI_ALL
-	bool "all iwlwifi"
+config BR2_PACKAGE_LINUX_FIRMWARE_IWLWIFI_9XXX
+	bool "Intel iwlwifi 9xxx"
 	help
-	  Firmware files iwlwifi.
+	  Firmware files for the Intel Wifi 9xxx devices supported by
+	  the iwlwifi kernel driver.
 
 config BR2_PACKAGE_LINUX_FIRMWARE_LIBERTAS_SD8686_V8
 	bool "Libertas SD 8686 v8"
@@ -309,6 +252,11 @@ config BR2_PACKAGE_LINUX_FIRMWARE_MEDIATEK_MT7601U
 	help
 	  MediaTek MT7601U
 
+config BR2_PACKAGE_LINUX_FIRMWARE_MEDIATEK_MT76X2E
+	bool "MediaTek MT76x2e"
+	help
+	  MediaTek MT76x2e
+
 config BR2_PACKAGE_LINUX_FIRMWARE_QUALCOMM_6174
 	bool "Qualcomm Atheros 6174"
 	help
@@ -349,12 +297,6 @@ config BR2_PACKAGE_LINUX_FIRMWARE_REDPINE_RS9113
 	help
 	  Firmware files for WLAN and Bluetooth modules rs9113
 
-# batocera
-config BR2_PACKAGE_LINUX_FIRMWARE_S5PMFCV8
-	bool "s5p-mfc-v8.fw"
-	help
-	  Firmware file for s5p-mfc
-
 config BR2_PACKAGE_LINUX_FIRMWARE_TI_WL127X
 	bool "TI wl127x"
 	help
@@ -392,6 +334,18 @@ config BR2_PACKAGE_LINUX_FIRMWARE_CXGB4_T5
 	help
 	  Firmware files for Chelsio T5 1Gb and 10Gb ethernet cards
 	  (cxgb4)
+
+config BR2_PACKAGE_LINUX_FIRMWARE_INTEL_E100
+	bool "Intel e100 825xx"
+	help
+	  Firmware files for Intel 825xx handled by driver e100
+	  (e100)
+
+config BR2_PACKAGE_LINUX_FIRMWARE_QLOGIC_4X
+	bool "QLogic FastLinQ 4xxxx"
+	help
+	  Firmware files for QLogic FastLinQ 4xxxx ethernet devices
+	  (qede)
 
 config BR2_PACKAGE_LINUX_FIRMWARE_RTL_8169
 	bool "Realtek 8169"

@@ -4,15 +4,13 @@
 #
 ################################################################################
 
-ZEROMQ_VERSION = 4.2.5
+ZEROMQ_VERSION = 4.3.2
 ZEROMQ_SITE = https://github.com/zeromq/libzmq/releases/download/v$(ZEROMQ_VERSION)
 ZEROMQ_INSTALL_STAGING = YES
 ZEROMQ_DEPENDENCIES = util-linux
 ZEROMQ_CONF_OPTS = --without-documentation
 ZEROMQ_LICENSE = LGPL-3.0+ with exceptions
 ZEROMQ_LICENSE_FILES = COPYING COPYING.LESSER
-# 0001-configure.ac-serach-for-dladdr-only-on-libunwind.patch touches configure.ac
-ZEROMQ_AUTORECONF = YES
 
 # Assume these flags are always available. It is true, at least for
 # SOCK_CLOEXEC, since linux v2.6.27.
@@ -22,6 +20,12 @@ ZEROMQ_CONF_ENV = libzmq_cv_sock_cloexec=yes \
 	libzmq_cv_tcp_keepcnt=yes \
 	libzmq_cv_tcp_keepidle=yes \
 	libzmq_cv_tcp_keepintvl=yes
+
+# Internal error, aborting at dwarf2cfi.c:2752 in connect_traces
+# https://gcc.gnu.org/bugzilla/show_bug.cgi?id=58864
+ifeq ($(BR2_m68k_cf),y)
+ZEROMQ_CONF_OPTS += CXXFLAGS="$(TARGET_CXXFLAGS) -fno-defer-pop"
+endif
 
 # Only tools/curve_keygen.c needs this, but it doesn't hurt to pass it
 # for the rest of the build as well (which automatically includes stdc++).
@@ -41,6 +45,12 @@ ZEROMQ_DEPENDENCIES += host-pkgconf openpgm
 ZEROMQ_CONF_OPTS += --with-pgm
 else
 ZEROMQ_CONF_OPTS += --without-pgm
+endif
+
+ifeq ($(BR2_PACKAGE_ZEROMQ_DRAFTS),y)
+ZEROMQ_CONF_OPTS += --enable-drafts
+else
+ZEROMQ_CONF_OPTS += --disable-drafts
 endif
 
 # ZeroMQ uses libsodium if it's available.

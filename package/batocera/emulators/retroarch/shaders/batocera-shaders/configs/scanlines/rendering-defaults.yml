@@ -1,0 +1,108 @@
+## SCANLINES
+default:
+  # shader affects retroarch shaders
+  shader: crt/crt-pi
+  # scanline affect fba2x
+  scanline: true
+snes:
+  shader: crt/crt-pi
+nes:
+  shader: crt/crt-pi
+n64:
+  shader: retro/sharp-bilinear-scanlines
+gba:
+  shader: handheld/zfast-lcd
+gb:
+  shader: handheld/zfast-lcd
+gbc:
+  shader: handheld/zfast-lcd
+fds:
+  shader: retro/sharp-bilinear-scanlines
+virtualboy:
+  shader: retro/sharp-bilinear-scanlines
+# Sega
+sg1000:
+  shader: retro/sharp-bilinear-scanlines
+mastersystem:
+  shader: crt/crt-pi
+megadrive:
+  shader: crt/crt-pi
+gamegear:
+  shader: handheld/zfast-lcd
+sega32x:
+  shader: crt/crt-pi
+segacd:
+  shader: retro/sharp-bilinear-scanlines
+# Arcade
+neogeo:
+  shader: retro/sharp-bilinear-scanlines
+neogeocd:
+  shader: retro/sharp-bilinear-scanlines
+mame:
+  shader: retro/sharp-bilinear-scanlines
+fba:
+  shader: retro/sharp-bilinear-scanlines
+naomi:
+  shader: retro/sharp-bilinear-scanlines
+atomiswave:
+  shader: retro/sharp-bilinear-scanlines
+#
+ngp:
+  shader: handheld/zfast-lcd
+ngpc:
+  shader: handheld/zfast-lcd
+gw:
+  shader: crt/crt-pi
+vectrex:
+  shader: crt/crt-pi
+lynx:
+  shader: handheld/zfast-lcd
+lutro:
+  shader: retro/sharp-bilinear-scanlines
+wswan:
+  shader: handheld/zfast-lcd
+wswanc:
+  shader: handheld/zfast-lcd
+pcengine:
+  shader: crt/crt-pi
+pcenginecd:
+  shader: crt/crt-pi
+supergrafx:
+  shader: crt/crt-pi
+atari800:
+  shader: retro/sharp-bilinear-scanlines
+atari2600:
+  shader: retro/sharp-bilinear-scanlines
+atari5200:
+  shader: retro/sharp-bilinear-scanlines
+atari7800:
+  shader: retro/sharp-bilinear-scanlines
+prboom:
+  shader: crt/crt-pi
+psx:
+  shader: crt/crt-pi
+colecovision:
+  shader: crt/crt-pi
+# Computers
+msx:
+  shader: retro/sharp-bilinear-scanlines
+msx1:
+  shader: retro/sharp-bilinear-scanlines
+msx2:
+  shader: retro/sharp-bilinear-scanlines
+amiga:
+  shader: crt/crt-pi
+amstradcpc:
+  shader: crt/crt-pi
+atarist:
+  shader: crt/crt-pi
+zxspectrum:
+  shader: retro/sharp-bilinear-scanlines
+odyssey2:
+  shader: retro/sharp-bilinear-scanlines
+zx81:
+  shader: retro/sharp-bilinear-scanlines
+pcfx:
+  shader: retro/sharp-bilinear-scanlines
+x68000:
+  shader: retro/sharp-bilinear-scanlines

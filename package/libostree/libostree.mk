@@ -4,15 +4,18 @@
 #
 ################################################################################
 
-LIBOSTREE_VERSION = 2018.5
+LIBOSTREE_VERSION_MAJOR = 2018.9
+LIBOSTREE_VERSION= $(LIBOSTREE_VERSION_MAJOR).1
 LIBOSTREE_SOURCE = libostree-$(LIBOSTREE_VERSION).tar.xz
-LIBOSTREE_SITE = https://github.com/ostreedev/ostree/releases/download/v$(LIBOSTREE_VERSION)
+LIBOSTREE_SITE = https://github.com/ostreedev/ostree/releases/download/v$(LIBOSTREE_VERSION_MAJOR)
 
 LIBOSTREE_LICENSE = LGPL-2.0+
 LIBOSTREE_LICENSE_FILES = COPYING
-LIBOSTREE_DEPENDENCIES = e2fsprogs host-bison host-pkgconf libfuse libglib2 libgpgme xz
+LIBOSTREE_DEPENDENCIES = e2fsprogs host-bison host-pkgconf libfuse libglib2 libgpg-error libgpgme xz
 LIBOSTREE_INSTALL_STAGING = YES
 
+LIBOSTREE_CONF_ENV = \
+	GPG_ERROR_CONFIG=$(STAGING_DIR)/usr/bin/gpg-error-config
 LIBOSTREE_CONF_OPTS += \
 	--with-gpgme-prefix=$(STAGING_DIR)/usr \
 	--disable-gtk-doc \
@@ -40,7 +43,7 @@ endif
 
 #cURL support depends on libsoup
 ifeq ($(BR2_PACKAGE_LIBSOUP),y)
-LIBOSTREE_CONF_OPTS += --with-libsoup
+LIBOSTREE_CONF_OPTS += --with-soup
 LIBOSTREE_DEPENDENCIES += libsoup
 ifeq ($(BR2_PACKAGE_LIBCURL),y)
 LIBOSTREE_CONF_OPTS += --with-curl
@@ -49,7 +52,7 @@ else
 LIBOSTREE_CONF_OPTS += --without-curl
 endif
 else
-LIBOSTREE_CONF_OPTS += --without-libsoup --without-curl
+LIBOSTREE_CONF_OPTS += --without-soup --without-curl
 endif
 
 ifeq ($(BR2_PACKAGE_LIBARCHIVE),y)
@@ -64,6 +67,15 @@ LIBOSTREE_CONF_OPTS += --with-selinux
 LIBOSTREE_DEPENDENCIES += libselinux
 else
 LIBOSTREE_CONF_OPTS += --without-selinux
+endif
+
+ifeq ($(BR2_INIT_SYSTEMD),y)
+LIBOSTREE_CONF_OPTS += \
+	--with-libsystemd \
+	--with-systemdsystemunitdir=/usr/lib/systemd/system
+LIBOSTREE_DEPENDENCIES += systemd
+else
+LIBOSTREE_CONF_OPTS += --without-libsystemd
 endif
 
 $(eval $(autotools-package))

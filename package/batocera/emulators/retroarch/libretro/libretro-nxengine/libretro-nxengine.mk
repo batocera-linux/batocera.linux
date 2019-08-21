@@ -3,9 +3,10 @@
 # NXENGINE
 #
 ################################################################################
-# Version.: Commits on May 9, 2018
-LIBRETRO_NXENGINE_VERSION = ff2a938175bcfa0f4674d59b55e5420e31fe0c26
+# Version.: Commits on Jan 4, 2019
+LIBRETRO_NXENGINE_VERSION = f83ccdc9a3c14bdcc5e9c291230a603e4686cfec
 LIBRETRO_NXENGINE_SITE = $(call github,libretro,nxengine-libretro,$(LIBRETRO_NXENGINE_VERSION))
+LIBRETRO_NXENGINE_LICENSE = GPLv3
 
 define LIBRETRO_NXENGINE_BUILD_CMDS
 	CFLAGS="$(TARGET_CFLAGS)" CXXFLAGS="$(TARGET_CXXFLAGS)" $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" -C $(@D)/ -f Makefile platform="$(LIBRETRO_PLATFORM)"

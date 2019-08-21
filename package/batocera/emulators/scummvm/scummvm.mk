@@ -3,13 +3,11 @@
 # Scummvm
 #
 ################################################################################
-# Version.: 2.0.0 - committed on Dec 8, 2017
-SCUMMVM_VERSION = fae5ccd1ed7100478a23f3afc41ea935d2ee7abc
+# Version.: Commits on Jun 13, 2019
+SCUMMVM_VERSION = d29727d02aacbacaee3722e390b0cba455d52168
 SCUMMVM_SITE = $(call github,scummvm,scummvm,$(SCUMMVM_VERSION))
-
-SCUMMVM_LICENSE = GPL2
-SCUMMVM_DEPENDENCIES = sdl2 zlib jpeg libmpeg2 libogg libvorbis flac libmad libpng libtheora \
-	faad2 fluidsynth freetype
+SCUMMVM_LICENSE = GPLv2
+SCUMMVM_DEPENDENCIES = sdl2 zlib jpeg libmpeg2 libogg libvorbis flac libmad libpng libtheora faad2 fluidsynth freetype
 
 SCUMMVM_ADDITIONAL_FLAGS= -I$(STAGING_DIR)/usr/include -I$(STAGING_DIR)/usr/include/interface/vcos/pthreads -I$(STAGING_DIR)/usr/include/interface/vmcs_host/linux -lpthread -lm -L$(STAGING_DIR)/usr/lib -lGLESv2 -lEGL
 

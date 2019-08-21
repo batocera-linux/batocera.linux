@@ -1,0 +1,52 @@
+--- a/src/main.cpp	2018-11-21 14:53:47.472668866 +0000
++++ b/src/main.cpp	2018-11-21 14:53:53.988563914 +0000
+@@ -60,6 +60,7 @@
+ struct gui_info gui_data;
+ 
+ TCHAR optionsfile[256];
++TCHAR core[32];
+ 
+ void my_trim(TCHAR *s)
+ {
+@@ -506,6 +507,11 @@
+ 			firstconfig = false;
+ 			loaded = true;
+ 		}
++		else if (_tcsncmp(argv[i], _T("-core="), 6) == 0) {
++		  TCHAR *txt = parsetextpath(argv[i] + 6);
++		  _tcscpy(core, txt);
++		  xfree(txt);
++		}
+ 		else if (_tcsncmp(argv[i], _T("-statefile="), 11) == 0) {
+ 			const auto txt = parsetextpath(argv[i] + 11);
+ 			savestate_state = STATE_DORESTORE;
+@@ -665,6 +671,7 @@
+ 		abort();
+ 	}
+ #endif
++	_tcscpy(core, _T(""));
+ 	keyboard_settrans();
+ 	set_config_changed();
+ 	if (restart_config[0]) {
+@@ -693,6 +700,21 @@
+ 	inputdevice_init();
+ 
+ 	changed_prefs = currprefs;
++
++	if(_tcsncmp(core, _T("A500"), 4) == 0) {
++	  bip_a500(&currprefs, -1);
++	} else if(_tcsncmp(core, _T("A500P"), 5) == 0) {
++	  bip_a500plus(&currprefs, -1);
++	} else if(_tcsncmp(core, _T("A1200"), 5) == 0) {
++	  bip_a1200(&currprefs, -1);
++	} else if(_tcsncmp(core, _T("A2000"), 5) == 0) {
++	  bip_a2000(&currprefs, -1);
++	} else if(_tcsncmp(core, _T("A4000"), 5) == 0) {
++	  bip_a4000(&currprefs, -1);
++	} else if(_tcsncmp(core, _T("CD32"), 4) == 0) {
++	  bip_cd32(&currprefs, -1);
++	}
++	
+ 	no_gui = !currprefs.start_gui;
+ 	if (restart_program == 2)
+ 		no_gui = true;

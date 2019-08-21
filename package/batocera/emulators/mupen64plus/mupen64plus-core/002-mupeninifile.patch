@@ -1,0 +1,14 @@
+diff --git a/src/main/rom.c b/src/main/rom.c
+index 88b429b..0839a6d 100644
+--- a/src/main/rom.c
++++ b/src/main/rom.c
+@@ -400,7 +400,8 @@ void romdatabase_open(void)
+ 
+     int counter, value, lineno;
+     unsigned char index;
+-    const char *pathname = ConfigGetSharedDataFilepath("mupen64plus.ini");
++    //const char *pathname = ConfigGetSharedDataFilepath("mupen64plus.ini");
++    const char *pathname = "/usr/share/mupen64plus/mupen64plus.ini";
+ 
+     if(g_romdatabase.have_database)
+         return;

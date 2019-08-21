@@ -1,0 +1,20 @@
+diff --git a/pcsx2/SaveState.cpp b/pcsx2/SaveState.cpp
+index 3e90d2d..2477418 100644
+--- a/pcsx2/SaveState.cpp
++++ b/pcsx2/SaveState.cpp
+@@ -56,11 +56,11 @@ wxString SaveStateBase::GetFilename( int slot )
+ 	wxString serialName( DiscSerial );
+ 	if (serialName.IsEmpty()) serialName = L"BIOS";
+ 
+-	return (g_Conf->Folders.Savestates +
+-		pxsFmt( L"%s (%08X).%02d.p2s", WX_STR(serialName), ElfCRC, slot )).GetFullPath();
+-
+ 	//return (g_Conf->Folders.Savestates +
+-	//	pxsFmt( L"%08X.%03d", ElfCRC, slot )).GetFullPath();
++	//	pxsFmt( L"%s (%08X).%02d.p2s", WX_STR(serialName), ElfCRC, slot )).GetFullPath();
++
++	return (g_Conf->Folders.Savestates +
++		pxsFmt( L"%08X.%03d", ElfCRC, slot )).GetFullPath();
+ }
+ 
+ SaveStateBase::SaveStateBase( SafeArray<u8>& memblock )

@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-GREP_VERSION = 3.1
+GREP_VERSION = 3.3
 GREP_SITE = $(BR2_GNU_MIRROR)/grep
 GREP_SOURCE = grep-$(GREP_VERSION).tar.xz
 GREP_LICENSE = GPL-3.0+
@@ -23,11 +23,6 @@ GREP_CONF_OPTS += --enable-perl-regexp
 GREP_DEPENDENCIES += pcre
 else
 GREP_CONF_OPTS += --disable-perl-regexp
-endif
-
-# Full grep preferred over busybox grep
-ifeq ($(BR2_PACKAGE_BUSYBOX),y)
-GREP_DEPENDENCIES += busybox
 endif
 
 $(eval $(autotools-package))

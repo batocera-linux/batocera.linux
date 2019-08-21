@@ -3,15 +3,17 @@
 # REICAST
 #
 ################################################################################
-# Version.: Commits on Apr 21, 2018
-REICAST_VERSION = a50861b249b83abbdc2a9281434b75b25520baa5
+# Version.: Commits on Sep 12, 2018
+REICAST_VERSION = r8.1
 REICAST_SITE = $(call github,reicast,reicast-emulator,$(REICAST_VERSION))
+REICAST_LICENSE = GPLv2
 REICAST_DEPENDENCIES = sdl2 libpng
 
 define REICAST_UPDATE_INCLUDES
 	sed -i "s+/opt/vc+$(STAGING_DIR)/usr+g" $(@D)/shell/linux/Makefile
 	sed -i "s+sdl2-config+$(STAGING_DIR)/usr/bin/sdl2-config+g" $(@D)/shell/linux/Makefile
 endef
+
 REICAST_PRE_CONFIGURE_HOOKS += REICAST_UPDATE_INCLUDES
 
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI3),y)
@@ -24,6 +26,12 @@ else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86),y)
 	BATOCERA_SYSTEM=x86
 else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86_64),y)
 	BATOCERA_SYSTEM=x64
+else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_ROCKPRO64),y)
+	BATOCERA_SYSTEM=rockpro64
+else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_ODROIDN2),y)
+	BATOCERA_SYSTEM=odroidn2
+else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_TINKERBOARD)$(BR2_PACKAGE_BATOCERA_TARGET_MIQI),y)
+	BATOCERA_SYSTEM=odroidxu4
 endif
 
 ifeq ($(BR2_PACKAGE_SDL2_KMSDRM),y)

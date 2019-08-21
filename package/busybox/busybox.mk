@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-BUSYBOX_VERSION = 1.28.4
+BUSYBOX_VERSION = 1.31.0
 BUSYBOX_SITE = http://www.busybox.net/downloads
 BUSYBOX_SOURCE = busybox-$(BUSYBOX_VERSION).tar.bz2
 BUSYBOX_LICENSE = GPL-2.0
@@ -19,6 +19,56 @@ BUSYBOX_CFLAGS = \
 
 BUSYBOX_LDFLAGS = \
 	$(TARGET_LDFLAGS)
+
+# Packages that provide commands that may also be busybox applets:
+BUSYBOX_DEPENDENCIES = \
+	$(if $(BR2_PACKAGE_ATTR),attr) \
+	$(if $(BR2_PACKAGE_BASH),bash) \
+	$(if $(BR2_PACKAGE_BC),bc) \
+	$(if $(BR2_PACKAGE_BINUTILS),binutils) \
+	$(if $(BR2_PACKAGE_COREUTILS),coreutils) \
+	$(if $(BR2_PACKAGE_CPIO),cpio) \
+	$(if $(BR2_PACKAGE_DCRON),dcron) \
+	$(if $(BR2_PACKAGE_DEBIANUTILS),debianutils) \
+	$(if $(BR2_PACKAGE_DIFFUTILS),diffutils) \
+	$(if $(BR2_PACKAGE_DOS2UNIX),dos2unix) \
+	$(if $(BR2_PACKAGE_DOSFSTOOLS),dosfstools) \
+	$(if $(BR2_PACKAGE_E2FSPROGS),e2fsprogs) \
+	$(if $(BR2_PACKAGE_FBSET),fbset) \
+	$(if $(BR2_PACKAGE_GAWK),gawk) \
+	$(if $(BR2_PACKAGE_GREP),grep) \
+	$(if $(BR2_PACKAGE_GZIP),gzip) \
+	$(if $(BR2_PACKAGE_I2C_TOOLS),i2c-tools) \
+	$(if $(BR2_PACKAGE_IFENSLAVE),ifenslave) \
+	$(if $(BR2_PACKAGE_IFPLUGD),ifplugd) \
+	$(if $(BR2_PACKAGE_IFUPDOWN),ifupdown) \
+	$(if $(BR2_PACKAGE_IPROUTE2),iproute2) \
+	$(if $(BR2_PACKAGE_IPUTILS),iputils) \
+	$(if $(BR2_PACKAGE_KMOD),kmod) \
+	$(if $(BR2_PACKAGE_LESS),less) \
+	$(if $(BR2_PACKAGE_LSOF),lsof) \
+	$(if $(BR2_PACKAGE_MTD),mtd) \
+	$(if $(BR2_PACKAGE_NET_TOOLS),net-tools) \
+	$(if $(BR2_PACKAGE_NETCAT),netcat) \
+	$(if $(BR2_PACKAGE_NETCAT_OPENSBSD),netcat-openbsd) \
+	$(if $(BR2_PACKAGE_NMAP),nmap) \
+	$(if $(BR2_PACKAGE_NTP),ntp) \
+	$(if $(BR2_PACKAGE_PCIUTILS),pciutils) \
+	$(if $(BR2_PACKAGE_PROCPS_NG),procps-ng) \
+	$(if $(BR2_PACKAGE_PSMISC),psmisc) \
+	$(if $(BR2_PACKAGE_START_STOP_DAEMON),start-stop-daemon) \
+	$(if $(BR2_PACKAGE_SYSKLOGD),sysklogd) \
+	$(if $(BR2_PACKAGE_SYSTEMD),systemd) \
+	$(if $(BR2_PACKAGE_SYSVINIT),sysvinit) \
+	$(if $(BR2_PACKAGE_TAR),tar) \
+	$(if $(BR2_PACKAGE_TFTPD),tftpd) \
+	$(if $(BR2_PACKAGE_TRACEROUTE),traceroute) \
+	$(if $(BR2_PACKAGE_UNZIP),unzip) \
+	$(if $(BR2_PACKAGE_USBUTILS),usbutils) \
+	$(if $(BR2_PACKAGE_UTIL_LINUX),util-linux) \
+	$(if $(BR2_PACKAGE_VIM),vim) \
+	$(if $(BR2_PACKAGE_WGET),wget) \
+	$(if $(BR2_PACKAGE_WHOIS),whois)
 
 # Link against libtirpc if available so that we can leverage its RPC
 # support for NFS mounting with BusyBox
@@ -194,12 +244,21 @@ define BUSYBOX_INSTALL_INDIVIDUAL_BINARIES
 endef
 endif
 
+# Only install our logging scripts if no other package does it.
+ifeq ($(BR2_PACKAGE_SYSKLOGD)$(BR2_PACKAGE_RSYSLOG)$(BR2_PACKAGE_SYSLOG_NG),)
 define BUSYBOX_INSTALL_LOGGING_SCRIPT
-	if grep -q CONFIG_SYSLOGD=y $(@D)/.config; then \
-		$(INSTALL) -m 0755 -D package/busybox/S01logging \
-			$(TARGET_DIR)/etc/init.d/S01logging; \
+	if grep -q CONFIG_SYSLOGD=y $(@D)/.config; \
+	then \
+		$(INSTALL) -m 0755 -D package/busybox/S01syslogd \
+			$(TARGET_DIR)/etc/init.d/S01syslogd; \
+	fi; \
+	if grep -q CONFIG_KLOGD=y $(@D)/.config; \
+	then \
+		$(INSTALL) -m 0755 -D package/busybox/S02klogd \
+			$(TARGET_DIR)/etc/init.d/S02klogd; \
 	fi
 endef
+endif
 
 ifeq ($(BR2_INIT_BUSYBOX),y)
 define BUSYBOX_INSTALL_INITTAB
@@ -253,12 +312,6 @@ define BUSYBOX_INSTALL_ADD_TO_SHELLS
 endef
 BUSYBOX_TARGET_FINALIZE_HOOKS += BUSYBOX_INSTALL_ADD_TO_SHELLS
 
-# Enable "noclobber" in install.sh, to prevent BusyBox from overwriting any
-# full-blown versions of apps installed by other packages with sym/hard links.
-define BUSYBOX_NOCLOBBER_INSTALL
-	$(SED) 's/^noclobber="0"$$/noclobber="1"/' $(@D)/applets/install.sh
-endef
-
 define BUSYBOX_KCONFIG_FIXUP_CMDS
 	$(BUSYBOX_SET_MMU)
 	$(BUSYBOX_PREFER_STATIC)
@@ -271,16 +324,14 @@ define BUSYBOX_KCONFIG_FIXUP_CMDS
 	$(BUSYBOX_SET_INDIVIDUAL_BINARIES)
 endef
 
-define BUSYBOX_CONFIGURE_CMDS
-	$(BUSYBOX_NOCLOBBER_INSTALL)
-endef
-
 define BUSYBOX_BUILD_CMDS
 	$(BUSYBOX_MAKE_ENV) $(MAKE) $(BUSYBOX_MAKE_OPTS) -C $(@D)
 endef
 
 define BUSYBOX_INSTALL_TARGET_CMDS
-	$(BUSYBOX_MAKE_ENV) $(MAKE) $(BUSYBOX_MAKE_OPTS) -C $(@D) install
+	# Use the 'noclobber' install rule, to prevent BusyBox from overwriting
+	# any full-blown versions of apps installed by other packages.
+	$(BUSYBOX_MAKE_ENV) $(MAKE) $(BUSYBOX_MAKE_OPTS) -C $(@D) install-noclobber
 	$(BUSYBOX_INSTALL_INITTAB)
 	$(BUSYBOX_INSTALL_UDHCPC_SCRIPT)
 	$(BUSYBOX_INSTALL_MDEV_CONF)

@@ -16,8 +16,8 @@ index e0152aa..72e68ed 100644
  using namespace MUSIC_INFO;
  using namespace PERIPHERALS;
  
-+void RecalboxMsg(unsigned int dwMessage) {
-+  //CLog::Log(LOGNOTICE, "RECALBOX MESSAGE %i (SHUTDOWN=%i, POWERDOWN=%i, QUIT=%i, RESTART=%i)", pMsg->dwMessage, TMSG_SHUTDOWN, TMSG_POWERDOWN, TMSG_QUIT, TMSG_RESTART);
++void batoceraMsg(unsigned int dwMessage) {
++  //CLog::Log(LOGNOTICE, "batocera MESSAGE %i (SHUTDOWN=%i, POWERDOWN=%i, QUIT=%i, RESTART=%i)", pMsg->dwMessage, TMSG_SHUTDOWN, TMSG_POWERDOWN, TMSG_QUIT, TMSG_RESTART);
 +  if(dwMessage == TMSG_QUIT || dwMessage == TMSG_RESTART || dwMessage == TMSG_POWERDOWN) {
 +    FILE* fd = fopen("/var/run/kodi.msg", "a");
 +    if(fd != NULL) {
@@ -44,7 +44,7 @@ index e0152aa..72e68ed 100644
  
  void CApplicationMessenger::ProcessMessage(ThreadMessage *pMsg)
  {
-+  RecalboxMsg(pMsg->dwMessage);
++  batoceraMsg(pMsg->dwMessage);
 +
    //special case for this that we handle ourselves
    if (pMsg->dwMessage == TMSG_CALLBACK)

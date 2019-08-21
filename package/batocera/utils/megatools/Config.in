@@ -1,9 +1,0 @@
-config BR2_PACKAGE_MEGATOOLS
-        bool "megatools"
-	select BR2_PACKAGE_OPENSSL
-	select BR2_PACKAGE_LIBCURL
-        help
-          A command line client for Mega.nz
-
-          https://github.com/megous/megatools
-

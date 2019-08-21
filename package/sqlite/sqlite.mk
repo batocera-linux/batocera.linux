@@ -4,9 +4,9 @@
 #
 ################################################################################
 
-SQLITE_VERSION = 3220000
+SQLITE_VERSION = 3280000
 SQLITE_SOURCE = sqlite-autoconf-$(SQLITE_VERSION).tar.gz
-SQLITE_SITE = http://www.sqlite.org/2018
+SQLITE_SITE = https://www.sqlite.org/2019
 SQLITE_LICENSE = Public domain
 SQLITE_LICENSE_FILES = tea/license.terms
 SQLITE_INSTALL_STAGING = YES
@@ -39,8 +39,14 @@ ifeq ($(BR2_PACKAGE_SQLITE_NO_SYNC),y)
 SQLITE_CFLAGS += -DSQLITE_NO_SYNC
 endif
 
+# Building with Microblaze Gcc 4.9 makes compiling to hang.
+# Work around using -O0
+ifeq ($(BR2_microblaze):$(BR2_TOOLCHAIN_GCC_AT_LEAST_5),y:)
+SQLITE_CFLAGS += $(TARGET_CFLAGS) -O0
+else
 # fallback to standard -O3 when -Ofast is present to avoid -ffast-math
 SQLITE_CFLAGS += $(subst -Ofast,-O3,$(TARGET_CFLAGS))
+endif
 
 SQLITE_CONF_ENV = CFLAGS="$(SQLITE_CFLAGS)"
 
@@ -54,6 +60,7 @@ ifeq ($(BR2_TOOLCHAIN_HAS_THREADS),y)
 SQLITE_CONF_OPTS += --enable-threadsafe
 else
 SQLITE_CONF_OPTS += --disable-threadsafe
+SQLITE_CFLAGS += -DSQLITE_THREADSAFE=0
 endif
 
 ifeq ($(BR2_PACKAGE_NCURSES)$(BR2_PACKAGE_READLINE),yy)

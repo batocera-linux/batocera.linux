@@ -48,7 +48,6 @@ define inner-meson-package
 $(2)_CONF_ENV		?=
 $(2)_CONF_OPTS		?=
 $(2)_NINJA_ENV		?=
-$(2)_SRCDIR		= $$($(2)_DIR)/$$($(2)_SUBDIR)
 
 #
 # Configure step. Only define it if not already defined by the package
@@ -58,18 +57,36 @@ $(2)_SRCDIR		= $$($(2)_DIR)/$$($(2)_SUBDIR)
 ifndef $(2)_CONFIGURE_CMDS
 ifeq ($(4),target)
 
+$(2)_CFLAGS ?= $$(TARGET_CFLAGS)
+$(2)_LDFLAGS ?= $$(TARGET_LDFLAGS)
+$(2)_CXXFLAGS ?= $$(TARGET_CXXFLAGS)
+
+$(2)_MESON_SED_CFLAGS = $$(if $$(strip $$($(2)_CFLAGS)),`printf '"%s"$$(comma) ' $$($(2)_CFLAGS)`)
+$(2)_MESON_SED_LDFLAGS = $$(if $$(strip $$($(2)_LDFLAGS)),`printf '"%s"$$(comma) ' $$($(2)_LDFLAGS)`)
+$(2)_MESON_SED_CXXFLAGS = $$(if $$(strip $$($(2)_CXXFLAGS)),`printf '"%s"$$(comma) ' $$($(2)_CXXFLAGS)`)
+
 # Configure package for target
 #
 #
 define $(2)_CONFIGURE_CMDS
 	rm -rf $$($$(PKG)_SRCDIR)/build
 	mkdir -p $$($$(PKG)_SRCDIR)/build
+	sed -e "s%@TARGET_CROSS@%$$(TARGET_CROSS)%g" \
+	    -e "s%@TARGET_ARCH@%$$(HOST_MESON_TARGET_CPU_FAMILY)%g" \
+	    -e "s%@TARGET_CPU@%$$(GCC_TARGET_CPU)%g" \
+	    -e "s%@TARGET_ENDIAN@%$$(call LOWERCASE,$$(BR2_ENDIAN))%g" \
+	    -e "s%@TARGET_CFLAGS@%$$($(2)_MESON_SED_CFLAGS)%g" \
+	    -e "s%@TARGET_LDFLAGS@%$$($(2)_MESON_SED_LDFLAGS)%g" \
+	    -e "s%@TARGET_CXXFLAGS@%$$($(2)_MESON_SED_CXXFLAGS)%g" \
+	    -e "s%@HOST_DIR@%$$(HOST_DIR)%g" \
+	    package/meson/cross-compilation.conf.in \
+	    > $$($$(PKG)_SRCDIR)/build/cross-compilation.conf
 	PATH=$$(BR_PATH) $$($$(PKG)_CONF_ENV) $$(MESON) \
 		--prefix=/usr \
 		--libdir=lib \
 		--default-library=$(if $(BR2_STATIC_LIBS),static,shared) \
 		--buildtype=$(if $(BR2_ENABLE_DEBUG),debug,release) \
-		--cross-file=$(HOST_DIR)/etc/meson/cross-compilation.conf \
+		--cross-file=$$($$(PKG)_SRCDIR)/build/cross-compilation.conf \
 		$$($$(PKG)_CONF_OPTS) \
 		$$($$(PKG)_SRCDIR) $$($$(PKG)_SRCDIR)/build
 endef
@@ -103,12 +120,12 @@ ifndef $(2)_BUILD_CMDS
 ifeq ($(4),target)
 define $(2)_BUILD_CMDS
 	$$(TARGET_MAKE_ENV) $$($$(PKG)_NINJA_ENV) \
-		$$(NINJA) $$(NINJA_OPTS) -C $$($$(PKG)_SRCDIR)/build
+		$$(NINJA) $$(NINJA_OPTS) $$($$(PKG)_NINJA_OPTS) -C $$($$(PKG)_SRCDIR)/build
 endef
 else
 define $(2)_BUILD_CMDS
 	$$(HOST_MAKE_ENV) $$($$(PKG)_NINJA_ENV) \
-		$$(NINJA) $$(NINJA_OPTS) -C $$($$(PKG)_SRCDIR)/build
+		$$(NINJA) $$(NINJA_OPTS) $$($$(PKG)_NINJA_OPTS) -C $$($$(PKG)_SRCDIR)/build
 endef
 endif
 endif

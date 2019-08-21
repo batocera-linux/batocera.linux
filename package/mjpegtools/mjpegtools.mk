@@ -7,8 +7,15 @@
 MJPEGTOOLS_VERSION = 2.1.0
 MJPEGTOOLS_SITE = http://sourceforge.net/projects/mjpeg/files/mjpegtools/$(MJPEGTOOLS_VERSION)
 MJPEGTOOLS_DEPENDENCIES = host-pkgconf jpeg
+MJPEGTOOLS_INSTALL_STAGING = YES
 MJPEGTOOLS_LICENSE = GPL-2.0+
 MJPEGTOOLS_LICENSE_FILES = COPYING
+
+ifeq ($(BR2_PACKAGE_MJPEGTOOLS_SIMD_SUPPORT),y)
+MJPEGTOOLS_CONF_OPTS += --enable-simd-accel
+else
+MJPEGTOOLS_CONF_OPTS += --disable-simd-accel
+endif
 
 ifeq ($(BR2_PACKAGE_LIBPNG),y)
 MJPEGTOOLS_CONF_OPTS += --with-libpng

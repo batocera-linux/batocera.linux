@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-EIGEN_VERSION = 3.3.4
+EIGEN_VERSION = 3.3.7
 EIGEN_SOURCE = $(EIGEN_VERSION).tar.bz2
 EIGEN_SITE = https://bitbucket.org/eigen/eigen/get
 EIGEN_LICENSE = MPL2, BSD-3-Clause, LGPL-2.1
@@ -23,7 +23,8 @@ endif
 # Generate the .pc file at build time
 define EIGEN_BUILD_CMDS
 	sed -r -e 's,^Version: .*,Version: $(EIGEN_VERSION),' \
-		-e 's,^Cflags: .*,Cflags: -I$(EIGEN_DEST_DIR),' \
+		-e 's,^Cflags: .*,Cflags: -I$$\{prefix\}/include/eigen3,' \
+		-e 's,^prefix.*,prefix=/usr,' \
 		$(@D)/eigen3.pc.in >$(@D)/eigen3.pc
 endef
 

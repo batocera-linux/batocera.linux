@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-LLVM_VERSION = 5.0.2
+LLVM_VERSION = 8.0.0
 LLVM_SITE = http://llvm.org/releases/$(LLVM_VERSION)
 LLVM_SOURCE = llvm-$(LLVM_VERSION).src.tar.xz
 LLVM_LICENSE = NCSA
@@ -16,6 +16,13 @@ LLVM_INSTALL_STAGING = YES
 # host-python: Python interpreter 2.7 or newer is required for builds and testing.
 HOST_LLVM_DEPENDENCIES = host-python
 LLVM_DEPENDENCIES = host-llvm
+
+# LLVM >= 9.0 will soon require C++14 support, building llvm 8.x using a
+# toolchain using gcc < 5.1 gives an error but actually still works. Setting
+# this option makes it still build with gcc >= 4.8.
+# https://reviews.llvm.org/D57264
+HOST_LLVM_CONF_OPTS += -DLLVM_TEMPORARILY_ALLOW_OLD_TOOLCHAIN=ON
+LLVM_CONF_OPTS += -DLLVM_TEMPORARILY_ALLOW_OLD_TOOLCHAIN=ON
 
 # Don't build clang libcxx libcxxabi lldb compiler-rt lld polly as llvm subprojects
 # This flag assumes that projects are checked out side-by-side and not nested
@@ -29,11 +36,6 @@ LLVM_CONF_OPTS += -DLLVM_CCACHE_BUILD=$(if $(BR2_CCACHE),ON,OFF)
 # binaries. Otherwise, llvm-config (host variant installed in STAGING)
 # will try to use target's libc.
 HOST_LLVM_CONF_OPTS += -DCMAKE_INSTALL_RPATH="$(HOST_DIR)/lib"
-
-# Disable experimental Global Instruction Selection support.
-# https://llvm.org/docs/GlobalISel.html
-HOST_LLVM_CONF_OPTS += -DLLVM_BUILD_GLOBAL_ISEL=OFF
-LLVM_CONF_OPTS += -DLLVM_BUILD_GLOBAL_ISEL=OFF
 
 # Get target architecture
 LLVM_TARGET_ARCH = $(call qstrip,$(BR2_PACKAGE_LLVM_TARGET_ARCH))
@@ -61,6 +63,9 @@ endif
 
 # Use native llvm-tblgen from host-llvm (needed for cross-compilation)
 LLVM_CONF_OPTS += -DLLVM_TABLEGEN=$(HOST_DIR)/bin/llvm-tblgen
+
+# Use native llvm-config from host-llvm (needed for cross-compilation)
+LLVM_CONF_OPTS += -DLLVM_CONFIG_PATH=$(HOST_DIR)/bin/llvm-config
 
 # BUILD_SHARED_LIBS has a misleading name. It is in fact an option for
 # LLVM developers to build all LLVM libraries as separate shared libraries.

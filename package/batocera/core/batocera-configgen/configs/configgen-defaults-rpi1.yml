@@ -1,0 +1,26 @@
+default:
+  options:
+    videomode:      CEA 4 HDMI
+    video_threaded: true
+    rewind:         false
+    smooth:         false
+    rewind:         false
+
+snes:
+  emulator: libretro
+  core:     pocketsnes
+mame:
+  emulator: libretro
+  core:     imame4all
+amiga:
+  emulator: amiberry
+  core:     A1200
+amigacd32:
+  emulator: amiberry
+  core:     CD32
+mastersystem:
+  emulator: libretro
+  core:     picodrive
+megadrive:
+  emulator: libretro
+  core:     picodrive

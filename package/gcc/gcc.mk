@@ -13,8 +13,11 @@ GCC_VERSION = $(call qstrip,$(BR2_GCC_VERSION))
 ifeq ($(BR2_GCC_VERSION_ARC),y)
 GCC_SITE = $(call github,foss-for-synopsys-dwc-arc-processors,gcc,$(GCC_VERSION))
 GCC_SOURCE = gcc-$(GCC_VERSION).tar.gz
-else ifeq ($(BR2_or1k),y)
+else ifeq ($(BR2_GCC_VERSION_OR1K),y)
 GCC_SITE = $(call github,openrisc,or1k-gcc,$(GCC_VERSION))
+GCC_SOURCE = gcc-$(GCC_VERSION).tar.gz
+else ifeq ($(BR2_csky),y)
+GCC_SITE = $(call github,c-sky,gcc,$(GCC_VERSION))
 GCC_SOURCE = gcc-$(GCC_VERSION).tar.gz
 else
 GCC_SITE = $(BR2_GNU_MIRROR:/=)/gcc/gcc-$(GCC_VERSION)
@@ -62,14 +65,7 @@ define HOST_GCC_APPLY_PATCHES
 endef
 
 HOST_GCC_EXCLUDES = \
-	libjava/* libgo/* \
-	gcc/testsuite/* libstdc++-v3/testsuite/*
-
-define HOST_GCC_FAKE_TESTSUITE
-	mkdir -p $(@D)/libstdc++-v3/testsuite/
-	echo "all:" > $(@D)/libstdc++-v3/testsuite/Makefile.in
-	echo "install:" >> $(@D)/libstdc++-v3/testsuite/Makefile.in
-endef
+	libjava/* libgo/*
 
 #
 # Create 'build' directory and configure symlink
@@ -94,10 +90,11 @@ HOST_GCC_COMMON_DEPENDENCIES = \
 HOST_GCC_COMMON_CONF_OPTS = \
 	--target=$(GNU_TARGET_NAME) \
 	--with-sysroot=$(STAGING_DIR) \
-	--disable-__cxa_atexit \
+	--enable-__cxa_atexit \
 	--with-gnu-ld \
 	--disable-libssp \
 	--disable-multilib \
+	--disable-decimal-float \
 	--with-gmp=$(HOST_DIR) \
 	--with-mpc=$(HOST_DIR) \
 	--with-mpfr=$(HOST_DIR) \
@@ -183,7 +180,7 @@ else
 HOST_GCC_COMMON_CONF_OPTS += --without-isl --without-cloog
 endif
 
-ifeq ($(BR2_arc)$(BR2_or1k),y)
+ifeq ($(BR2_arc)$(BR2_GCC_VERSION_OR1K),y)
 HOST_GCC_COMMON_DEPENDENCIES += host-flex host-bison
 endif
 
@@ -195,44 +192,33 @@ HOST_GCC_COMMON_CONF_OPTS += --with-float=soft
 endif
 endif
 
-ifeq ($(BR2_GCC_SUPPORTS_FINEGRAINEDMTUNE),y)
-HOST_GCC_COMMON_CONF_OPTS += --disable-decimal-float
-endif
-
 # Determine arch/tune/abi/cpu options
-ifneq ($(call qstrip,$(BR2_GCC_TARGET_ARCH)),)
-HOST_GCC_COMMON_CONF_OPTS += --with-arch=$(BR2_GCC_TARGET_ARCH)
+ifneq ($(GCC_TARGET_ARCH),)
+HOST_GCC_COMMON_CONF_OPTS += --with-arch="$(GCC_TARGET_ARCH)"
 endif
-ifneq ($(call qstrip,$(BR2_GCC_TARGET_ABI)),)
-HOST_GCC_COMMON_CONF_OPTS += --with-abi=$(BR2_GCC_TARGET_ABI)
+ifneq ($(GCC_TARGET_ABI),)
+HOST_GCC_COMMON_CONF_OPTS += --with-abi="$(GCC_TARGET_ABI)"
 endif
 ifeq ($(BR2_TOOLCHAIN_HAS_MNAN_OPTION),y)
-ifneq ($(call qstrip,$(BR2_GCC_TARGET_NAN)),)
-HOST_GCC_COMMON_CONF_OPTS += --with-nan=$(BR2_GCC_TARGET_NAN)
+ifneq ($(GCC_TARGET_NAN),)
+HOST_GCC_COMMON_CONF_OPTS += --with-nan="$(GCC_TARGET_NAN)"
 endif
 endif
-ifneq ($(call qstrip,$(BR2_GCC_TARGET_FP32_MODE)),)
-HOST_GCC_COMMON_CONF_OPTS += --with-fp-32=$(BR2_GCC_TARGET_FP32_MODE)
+ifneq ($(GCC_TARGET_FP32_MODE),)
+HOST_GCC_COMMON_CONF_OPTS += --with-fp-32="$(GCC_TARGET_FP32_MODE)"
 endif
-ifneq ($(call qstrip,$(BR2_GCC_TARGET_CPU)),)
-ifneq ($(call qstrip,$(BR2_GCC_TARGET_CPU_REVISION)),)
-HOST_GCC_COMMON_CONF_OPTS += --with-cpu=$(call qstrip,$(BR2_GCC_TARGET_CPU)-$(BR2_GCC_TARGET_CPU_REVISION))
-else
-HOST_GCC_COMMON_CONF_OPTS += --with-cpu=$(call qstrip,$(BR2_GCC_TARGET_CPU))
-endif
+ifneq ($(GCC_TARGET_CPU),)
+HOST_GCC_COMMON_CONF_OPTS += --with-cpu=$(GCC_TARGET_CPU)
 endif
 
-GCC_TARGET_FPU = $(call qstrip,$(BR2_GCC_TARGET_FPU))
 ifneq ($(GCC_TARGET_FPU),)
 HOST_GCC_COMMON_CONF_OPTS += --with-fpu=$(GCC_TARGET_FPU)
 endif
 
-GCC_TARGET_FLOAT_ABI = $(call qstrip,$(BR2_GCC_TARGET_FLOAT_ABI))
 ifneq ($(GCC_TARGET_FLOAT_ABI),)
 HOST_GCC_COMMON_CONF_OPTS += --with-float=$(GCC_TARGET_FLOAT_ABI)
 endif
 
-GCC_TARGET_MODE = $(call qstrip,$(BR2_GCC_TARGET_MODE))
 ifneq ($(GCC_TARGET_MODE),)
 HOST_GCC_COMMON_CONF_OPTS += --with-mode=$(GCC_TARGET_MODE)
 endif

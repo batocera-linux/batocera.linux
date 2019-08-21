@@ -1,0 +1,23 @@
+diff --git a/src/GLideNHQ/TextureFilters_xbrz.cpp b/src/GLideNHQ/TextureFilters_xbrz.cpp
+index edd8e44..9fd57e5 100644
+--- a/src/GLideNHQ/TextureFilters_xbrz.cpp
++++ b/src/GLideNHQ/TextureFilters_xbrz.cpp
+@@ -17,6 +17,7 @@
+ #include <cassert>
+ #include <algorithm>
+ #include <vector>
++#include <cmath>
+ 
+ namespace
+ {
+diff --git a/src/gDP.cpp b/src/gDP.cpp
+index af89651..582ec7d 100644
+--- a/src/gDP.cpp
++++ b/src/gDP.cpp
+@@ -1,5 +1,6 @@
+ #include <assert.h>
+ #include <algorithm>
++#include <cmath>
+ #include "GLideN64.h"
+ #include "N64.h"
+ #include "GBI.h"

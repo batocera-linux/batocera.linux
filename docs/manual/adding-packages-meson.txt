@@ -85,12 +85,33 @@ A few additional variables, specific to the Meson infrastructure, can also be
 defined. Many of them are only useful in very specific cases, typical packages
 will therefore only use a few of them.
 
+* +FOO_SUBDIR+ may contain the name of a subdirectory inside the
+  package that contains the main meson.build file. This is useful,
+  if for example, the main meson.build file is not at the root of
+  the tree extracted by the tarball. If +HOST_FOO_SUBDIR+ is not
+  specified, it defaults to +FOO_SUBDIR+.
+
 * +FOO_CONF_ENV+, to specify additional environment variables to pass to
   +meson+ for the configuration step. By default, empty.
 
 * +FOO_CONF_OPTS+, to specify additional options to pass to +meson+ for the
   configuration step. By default, empty.
 
+* +FOO_CFLAGS+, to specify compiler arguments added to the package specific
+  +cross-compile.conf+ file +c_args+ property. By default, the value of
+  +TARGET_CFLAGS+.
+
+* +FOO_CXXFLAGS+, to specify compiler arguments added to the package specific
+  +cross-compile.conf+ file +cpp_args+ property. By default, the value of
+  +TARGET_CXXFLAGS+.
+
+* +FOO_LDFLAGS+, to specify compiler arguments added to the package specific
+  +cross-compile.conf+ file +c_link_args+ and +cpp_link_args+ properties. By
+  default, the value of +TARGET_LDFLAGS+.
+
 * +FOO_NINJA_ENV+, to specify additional environment variables to pass to
   +ninja+, meson companion tool in charge of the build operations. By default,
   empty.
+
+* +FOO_NINJA_OPTS+, to specify a space-separated list of targets to build. By
+  default, empty, to build the default target(s).

@@ -3,9 +3,10 @@
 # ZX81
 #
 ################################################################################
-# Version.: Commits on Dec 21, 2017
-LIBRETRO_81_VERSION = 6ae21e0980bb8190fe1fc3cb6c4f00797cc6bf0e
+# Version.: Commits on Nov 18, 2018
+LIBRETRO_81_VERSION = 7900d647e084edb71ab587bbf34fe8cb83d28bff
 LIBRETRO_81_SITE = $(call github,libretro,81-libretro,$(LIBRETRO_81_VERSION))
+LIBRETRO_81_LICENSE = GPLv3
 
 define LIBRETRO_81_BUILD_CMDS
 	CFLAGS="$(TARGET_CFLAGS)" CXXFLAGS="$(TARGET_CXXFLAGS)" $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" -C $(@D)/ -f Makefile platform="$(LIBRETRO_PLATFORM)"

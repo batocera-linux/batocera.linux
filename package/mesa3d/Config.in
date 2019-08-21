@@ -8,13 +8,13 @@ menuconfig BR2_PACKAGE_MESA3D
 	select BR2_PACKAGE_EXPAT
 	select BR2_PACKAGE_HAS_LIBGL if BR2_PACKAGE_XORG7
 	select BR2_PACKAGE_WAYLAND_PROTOCOLS if BR2_PACKAGE_WAYLAND
-	select BR2_PACKAGE_XPROTO_DRI2PROTO if BR2_PACKAGE_XORG7
-	select BR2_PACKAGE_XPROTO_GLPROTO if BR2_PACKAGE_XORG7
-	select BR2_PACKAGE_XPROTO_XF86DRIPROTO if BR2_PACKAGE_XORG7
+	select BR2_PACKAGE_XORGPROTO if BR2_PACKAGE_XORG7
 	select BR2_PACKAGE_XLIB_LIBX11 if BR2_PACKAGE_XORG7
 	select BR2_PACKAGE_XLIB_LIBXEXT if BR2_PACKAGE_XORG7
 	select BR2_PACKAGE_XLIB_LIBXDAMAGE if BR2_PACKAGE_XORG7
 	select BR2_PACKAGE_XLIB_LIBXFIXES if BR2_PACKAGE_XORG7
+	select BR2_PACKAGE_XLIB_LIBXRANDR if BR2_PACKAGE_XORG7
+	select BR2_PACKAGE_XLIB_LIBXXF86VM if BR2_PACKAGE_XORG7
 	select BR2_PACKAGE_LIBXCB if BR2_PACKAGE_XORG7
 	select BR2_PACKAGE_ZLIB
 	help
@@ -51,6 +51,17 @@ comment "llvm support needs a toolchain not affected by GCC bug 64735"
 	depends on BR2_PACKAGE_LLVM_ARCH_SUPPORTS
 	depends on BR2_TOOLCHAIN_HAS_GCC_BUG_64735
 
+# clang and libclc dependencies are satisfied by
+# BR2_PACKAGE_MESA3D_LLVM
+config BR2_PACKAGE_MESA3D_OPENCL
+	bool "OpenCL support"
+	depends on BR2_PACKAGE_MESA3D_LLVM
+	depends on BR2_PACKAGE_MESA3D_GALLIUM_DRIVER_R600 || \
+		BR2_PACKAGE_MESA3D_GALLIUM_DRIVER_RADEONSI
+	select BR2_PACKAGE_CLANG
+	select BR2_PACKAGE_LIBCLC
+	select BR2_PACKAGE_HAS_LIBOPENCL
+
 # inform the .mk file of gallium, dri or vulkan driver selection
 config BR2_PACKAGE_MESA3D_GALLIUM_DRIVER
 	bool
@@ -59,15 +70,8 @@ config BR2_PACKAGE_MESA3D_GALLIUM_DRIVER
 config BR2_PACKAGE_MESA3D_DRI_DRIVER
 	bool
 	select BR2_PACKAGE_MESA3D_DRIVER
-	# xlib-libxshmfence needs sync_4, so we cannot select it if
-	# BR2_TOOLCHAIN_HAS_SYNC_4 is false. xproto-presentproto
-	# doesn't need sync_4, but it is only needed in conjunction
-	# with xlib-libxshmfence and dri3proto to provide dri3
-	# support, so we also only select it if sync_4 is available.
 	select BR2_PACKAGE_XLIB_LIBXSHMFENCE if \
-		(BR2_PACKAGE_XPROTO_DRI3PROTO && BR2_TOOLCHAIN_HAS_SYNC_4)
-	select BR2_PACKAGE_XPROTO_PRESENTPROTO if \
-		(BR2_PACKAGE_XPROTO_DRI3PROTO && BR2_TOOLCHAIN_HAS_SYNC_4)
+		(BR2_PACKAGE_XORG7 && BR2_TOOLCHAIN_HAS_SYNC_4)
 
 config BR2_PACKAGE_MESA3D_VULKAN_DRIVER
 	bool
@@ -79,6 +83,12 @@ config BR2_PACKAGE_MESA3D_DRIVER
 config BR2_PACKAGE_MESA3D_NEEDS_XA
 	bool
 
+# Quote from mesa3d meson.build: "kmsro driver requires one or more
+# renderonly drivers (vc4, etnaviv, freedreno)". But only vc4 support
+# is available by using the (deprecated) autotools build system.
+config BR2_PACKAGE_MESA3D_GALLIUM_KMSRO
+	bool
+
 comment "Gallium drivers"
 
 config BR2_PACKAGE_MESA3D_GALLIUM_DRIVER_ETNAVIV
@@ -88,6 +98,16 @@ config BR2_PACKAGE_MESA3D_GALLIUM_DRIVER_ETNAVIV
 	select BR2_PACKAGE_MESA3D_OPENGL_EGL
 	help
 	  Mesa driver for Vivante GPUs.
+
+config BR2_PACKAGE_MESA3D_GALLIUM_DRIVER_KMSRO
+	bool "Gallium KMSRO driver"
+	depends on BR2_PACKAGE_MESA3D_GALLIUM_KMSRO
+	help
+	  Support various sorts of KMS displays with the
+	  renderonly layer used to attach a GPU.
+
+comment "Gallium KMSRO needs one or more renderonly drivers"
+	depends on !BR2_PACKAGE_MESA3D_GALLIUM_KMSRO
 
 config BR2_PACKAGE_MESA3D_GALLIUM_DRIVER_NOUVEAU
 	bool "Gallium nouveau driver"
@@ -121,6 +141,7 @@ comment "R600 driver needs a uClibc or glibc toolchain when llvm is enabled"
 
 config BR2_PACKAGE_MESA3D_GALLIUM_DRIVER_RADEONSI
 	bool "Gallium Radeon SI driver"
+	depends on BR2_USE_MMU # libdrm
 	depends on BR2_i386 || BR2_x86_64
 	depends on BR2_PACKAGE_MESA3D_LLVM
 	depends on BR2_TOOLCHAIN_USES_UCLIBC || BR2_TOOLCHAIN_USES_GLIBC # elfutils
@@ -137,6 +158,7 @@ config BR2_PACKAGE_MESA3D_GALLIUM_DRIVER_RADEONSI
 # Radeon SI needs libelf
 # musl is not currently compatible with elfutils
 comment "Radeon SI driver needs a uClibc or glibc toolchain"
+	depends on BR2_USE_MMU
 	depends on BR2_PACKAGE_MESA3D_LLVM
 	depends on !(BR2_TOOLCHAIN_USES_UCLIBC || BR2_TOOLCHAIN_USES_GLIBC)
 
@@ -160,6 +182,7 @@ config BR2_PACKAGE_MESA3D_GALLIUM_DRIVER_VC4
 	bool "Gallium vc4 driver"
 	depends on BR2_ARM_CPU_HAS_NEON || BR2_aarch64
 	select BR2_PACKAGE_MESA3D_GALLIUM_DRIVER
+	select BR2_PACKAGE_MESA3D_GALLIUM_KMSRO
 	select BR2_PACKAGE_LIBDRM_VC4
 	select BR2_PACKAGE_MESA3D_NEEDS_XA
 	select BR2_PACKAGE_MESA3D_OPENGL_EGL
@@ -195,10 +218,15 @@ config BR2_PACKAGE_MESA3D_DRI_DRIVER_I915
 config BR2_PACKAGE_MESA3D_DRI_DRIVER_I965
 	bool "DRI i965 driver"
 	depends on BR2_i386 || BR2_x86_64
+	depends on BR2_TOOLCHAIN_HEADERS_AT_LEAST_3_17 # memfd.h
 	select BR2_PACKAGE_MESA3D_DRI_DRIVER
 	select BR2_PACKAGE_LIBDRM_INTEL
 	help
 	  Support for i965-based Intel GPUs.
+
+comment "DRI i965 driver needs a toolchain w/ headers >= 3.17"
+	depends on BR2_i386 || BR2_x86_64
+	depends on !BR2_TOOLCHAIN_HEADERS_AT_LEAST_3_17
 
 config BR2_PACKAGE_MESA3D_DRI_DRIVER_NOUVEAU
 	bool "DRI nouveau driver"
@@ -219,17 +247,20 @@ comment "Vulkan drivers"
 config BR2_PACKAGE_MESA3D_VULKAN_DRIVER_INTEL
 	bool "Vulkan Intel driver"
 	depends on BR2_i386 || BR2_x86_64
-	depends on BR2_TOOLCHAIN_HEADERS_AT_LEAST_3_18 # memfd.h
+	depends on BR2_TOOLCHAIN_HAS_SYNC_4 # libxshmfence
+	depends on BR2_TOOLCHAIN_HEADERS_AT_LEAST_3_17 # memfd.h
 	depends on BR2_TOOLCHAIN_USES_GLIBC # ifunc, static_assert
-	depends on BR2_PACKAGE_XORG7 # xproto_dri3proto
+	depends on BR2_PACKAGE_XORG7 # xorgproto
 	select BR2_PACKAGE_MESA3D_VULKAN_DRIVER
-	select BR2_PACKAGE_XPROTO_DRI3PROTO
+	select BR2_PACKAGE_XORGPROTO
+	select BR2_PACKAGE_XLIB_LIBXSHMFENCE
 	help
 	  Vulkan driver for Intel hardware from Ivy Bridge onward.
 
-comment "intel vulkan depends on X.org and needs a glibc toolchain w/ headers >= 3.18"
+comment "intel vulkan depends on X.org and needs a glibc toolchain w/ headers >= 3.17"
 	depends on BR2_i386 || BR2_x86_64
-	depends on !BR2_TOOLCHAIN_HEADERS_AT_LEAST_3_18 || \
+	depends on BR2_TOOLCHAIN_HAS_SYNC_4
+	depends on !BR2_TOOLCHAIN_HEADERS_AT_LEAST_3_17 || \
 		!BR2_TOOLCHAIN_USES_GLIBC || !BR2_PACKAGE_XORG7
 
 comment "Off-screen Rendering"
@@ -259,29 +290,6 @@ config BR2_PACKAGE_MESA3D_OPENGL_ES
 	  Use the Khronos OpenGL ES APIs. This is commonly used on
 	  embedded systems and represents a subset of the OpenGL API.
 
-config BR2_PACKAGE_MESA3D_OPENGL_TEXTURE_FLOAT
-	bool "OpenGL texture float (patented format)"
-	help
-	  GL_ARB_texture_float is required to enable GLX core profile
-	  (OpenGL3.x) otherwise the compat profile is used
-	  (OpenGL2.1).
-
-	  The source code to implement ARB_texture_float extension is
-	  included and can be toggled on at compile time, for those
-	  who purchased a license from SGI, or are in a country where
-	  the patent does not apply, etc.
-
-	  Please consult docs/patents.txt with your lawyer before
-	  building Mesa.
-
-	  Also, note that this option doesn't affect all drivers. Some
-	  drivers have support for texture float enabled
-	  unconditionally.
-
-	  If unsure, say N.
-
-	  http://www.google.com/patents/about?id=mIIOAAAAEBAJ&dq=6650327
-
 endif # BR2_PACKAGE_MESA3D_DRIVER
 
 config BR2_PACKAGE_PROVIDES_LIBGL
@@ -292,6 +300,9 @@ config BR2_PACKAGE_PROVIDES_LIBEGL
 
 config BR2_PACKAGE_PROVIDES_LIBGLES
 	default "mesa3d" if BR2_PACKAGE_MESA3D_OPENGL_ES
+
+config BR2_PACKAGE_PROVIDES_LIBOPENCL
+	default "mesa3d" if BR2_PACKAGE_MESA3D_OPENCL
 
 endif # BR2_PACKAGE_MESA3D
 

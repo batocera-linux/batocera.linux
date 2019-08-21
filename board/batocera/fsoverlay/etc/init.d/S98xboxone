@@ -1,0 +1,7 @@
+#!/bin/bash
+
+if test "$1" = "start"
+then
+    # kernel option for xbox one controllers
+    echo 1 > /sys/module/bluetooth/parameters/disable_ertm
+fi

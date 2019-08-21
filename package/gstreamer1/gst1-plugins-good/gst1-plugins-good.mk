@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-GST1_PLUGINS_GOOD_VERSION = 1.12.4
+GST1_PLUGINS_GOOD_VERSION = 1.16.0
 GST1_PLUGINS_GOOD_SOURCE = gst-plugins-good-$(GST1_PLUGINS_GOOD_VERSION).tar.xz
 GST1_PLUGINS_GOOD_SITE = https://gstreamer.freedesktop.org/src/gst-plugins-good
 GST1_PLUGINS_GOOD_LICENSE_FILES = COPYING
@@ -24,12 +24,18 @@ GST1_PLUGINS_GOOD_CONF_OPTS = \
 
 # Options which require currently unpackaged libraries
 GST1_PLUGINS_GOOD_CONF_OPTS += \
-	--disable-jack \
 	--disable-libdv \
 	--disable-dv1394 \
 	--disable-shout2
 
 GST1_PLUGINS_GOOD_DEPENDENCIES = gstreamer1 gst1-plugins-base
+
+ifeq ($(BR2_PACKAGE_GST1_PLUGINS_GOOD_PLUGIN_JACK),y)
+GST1_PLUGINS_GOOD_CONF_OPTS += --enable-jack
+GST1_PLUGINS_GOOD_DEPENDENCIES += jack2
+else
+GST1_PLUGINS_GOOD_CONF_OPTS += --disable-jack
+endif
 
 ifeq ($(BR2_PACKAGE_LIBV4L),y)
 GST1_PLUGINS_GOOD_CONF_OPTS += --with-libv4l2
@@ -175,6 +181,20 @@ else
 GST1_PLUGINS_GOOD_CONF_OPTS += --disable-isomp4
 endif
 
+ifeq ($(BR2_PACKAGE_GST1_PLUGINS_GOOD_PLUGIN_LAME),y)
+GST1_PLUGINS_GOOD_CONF_OPTS += --enable-lame
+GST1_PLUGINS_GOOD_DEPENDENCIES += lame
+else
+GST1_PLUGINS_GOOD_CONF_OPTS += --disable-lame
+endif
+
+ifeq ($(BR2_PACKAGE_GST1_PLUGINS_GOOD_PLUGIN_MPG123),y)
+GST1_PLUGINS_GOOD_CONF_OPTS += --enable-mpg123
+GST1_PLUGINS_GOOD_DEPENDENCIES += mpg123
+else
+GST1_PLUGINS_GOOD_CONF_OPTS += --disable-mpg123
+endif
+
 ifeq ($(BR2_PACKAGE_GST1_PLUGINS_GOOD_PLUGIN_LAW),y)
 GST1_PLUGINS_GOOD_CONF_OPTS += --enable-law
 else
@@ -313,6 +333,16 @@ else
 GST1_PLUGINS_GOOD_CONF_OPTS += --disable-oss4
 endif
 
+ifeq ($(BR2_PACKAGE_GST1_PLUGINS_GOOD_PLUGIN_QMLGL),y)
+GST1_PLUGINS_GOOD_CONF_OPTS += --enable-qt
+GST1_PLUGINS_GOOD_DEPENDENCIES += qt5declarative
+ifeq ($(BR2_PACKAGE_QT5BASE_XCB),y)
+GST1_PLUGINS_GOOD_DEPENDENCIES += qt5x11extras
+endif
+else
+GST1_PLUGINS_GOOD_CONF_OPTS += --disable-qt
+endif
+
 ifeq ($(BR2_PACKAGE_GST1_PLUGINS_GOOD_PLUGIN_V4L2),y)
 GST1_PLUGINS_GOOD_CONF_OPTS += --enable-gst_v4l2
 else
@@ -397,6 +427,13 @@ GST1_PLUGINS_GOOD_CONF_OPTS += --enable-taglib
 GST1_PLUGINS_GOOD_DEPENDENCIES += taglib
 else
 GST1_PLUGINS_GOOD_CONF_OPTS += --disable-taglib
+endif
+
+ifeq ($(BR2_PACKAGE_GST1_PLUGINS_GOOD_PLUGIN_TWOLAME),y)
+GST1_PLUGINS_GOOD_CONF_OPTS += --enable-twolame
+GST1_PLUGINS_GOOD_DEPENDENCIES += twolame
+else
+GST1_PLUGINS_GOOD_CONF_OPTS += --disable-twolame
 endif
 
 ifeq ($(BR2_PACKAGE_GST1_PLUGINS_GOOD_PLUGIN_VPX),y)

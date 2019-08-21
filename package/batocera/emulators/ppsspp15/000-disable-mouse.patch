@@ -1,0 +1,14 @@
+diff --git a/ext/native/base/PCMain.cpp b/ext/native/base/PCMain.cpp
+index 2f0d1ad..46e612d 100644
+--- a/ext/native/base/PCMain.cpp
++++ b/ext/native/base/PCMain.cpp
+@@ -577,9 +577,7 @@ int main(int argc, char *argv[]) {
+ 	SDL_SetWindowTitle(g_Screen, (app_name_nice + " " + PPSSPP_GIT_VERSION).c_str());
+ #endif
+ 
+-#ifdef MOBILE_DEVICE
+ 	SDL_ShowCursor(SDL_DISABLE);
+-#endif
+ 
+ 
+ #ifndef USING_GLES2

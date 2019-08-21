@@ -4,8 +4,8 @@
 #
 ################################################################################
 
-LIBSELINUX_VERSION = 2.7
-LIBSELINUX_SITE = https://raw.githubusercontent.com/wiki/SELinuxProject/selinux/files/releases/20170804
+LIBSELINUX_VERSION = 2.9
+LIBSELINUX_SITE = https://github.com/SELinuxProject/selinux/releases/download/20190315
 LIBSELINUX_LICENSE = Public Domain
 LIBSELINUX_LICENSE_FILES = LICENSE
 
@@ -14,11 +14,14 @@ LIBSELINUX_DEPENDENCIES = libsepol pcre
 LIBSELINUX_INSTALL_STAGING = YES
 
 # Filter out D_FILE_OFFSET_BITS=64. This fixes errors caused by glibc 2.22.
+# Set SHLIBDIR to /usr/lib so it has the same value than LIBDIR, as a result
+# we won't have to use a relative path in 0002-revert-ln-relative.patch
 LIBSELINUX_MAKE_OPTS = \
 	$(TARGET_CONFIGURE_OPTS) \
 	CFLAGS="$(filter-out -D_FILE_OFFSET_BITS=64,$(TARGET_CFLAGS))" \
 	LDFLAGS="$(TARGET_LDFLAGS) -lpcre -lpthread" \
-	ARCH=$(KERNEL_ARCH)
+	ARCH=$(KERNEL_ARCH) \
+	SHLIBDIR=/usr/lib
 
 LIBSELINUX_MAKE_INSTALL_TARGETS = install
 
@@ -34,6 +37,7 @@ LIBSELINUX_PYLIBVER = python$(PYTHON_VERSION_MAJOR)
 endif
 
 LIBSELINUX_MAKE_OPTS += \
+	PYTHON=$(LIBSELINUX_PYLIBVER) \
 	PYINC="$(LIBSELINUX_PYINC)" \
 	PYSITEDIR=$(TARGET_DIR)/usr/lib/$(LIBSELINUX_PYLIBVER)/site-packages \
 	SWIG_LIB="$(HOST_DIR)/share/swig/$(SWIG_VERSION)/"
@@ -85,7 +89,9 @@ endif
 
 HOST_LIBSELINUX_MAKE_OPTS = \
 	$(HOST_CONFIGURE_OPTS) \
+	PYTHON=$(HOST_LIBSELINUX_PYLIBVER) \
 	PREFIX=$(HOST_DIR) \
+	SHLIBDIR=$(HOST_DIR)/lib \
 	LDFLAGS="$(HOST_LDFLAGS) -lpcre -lpthread" \
 	PYINC="$(HOST_LIBSELINUX_PYINC)" \
 	PYSITEDIR="$(HOST_DIR)/lib/$(HOST_LIBSELINUX_PYLIBVER)/site-packages" \
@@ -102,7 +108,6 @@ endef
 define HOST_LIBSELINUX_INSTALL_CMDS
 	$(HOST_MAKE_ENV) $(MAKE) -C $(@D) \
 		$(HOST_LIBSELINUX_MAKE_OPTS) install
-	ln -sf libselinux.so.1 $(HOST_DIR)/lib/libselinux.so
 	# Install python interface wrapper
 	$(HOST_MAKE_ENV) $(MAKE) -C $(@D) \
 		$(HOST_LIBSELINUX_MAKE_OPTS) install-pywrap

@@ -4,16 +4,17 @@
 #
 ################################################################################
 
-GNURADIO_VERSION = 3.7.11
+GNURADIO_VERSION = 3.7.13.3
 GNURADIO_SITE = http://gnuradio.org/releases/gnuradio
 GNURADIO_LICENSE = GPL-3.0+
 GNURADIO_LICENSE_FILES = COPYING
 
 GNURADIO_SUPPORTS_IN_SOURCE_BUILD = NO
 
-# host-python-cheetah is needed for volk to compile
+# host-python-mako and host-python-six are needed for volk to compile
 GNURADIO_DEPENDENCIES = \
-	host-python-cheetah \
+	host-python-mako \
+	host-python-six \
 	host-swig \
 	boost
 
@@ -24,7 +25,9 @@ endif
 GNURADIO_CONF_OPTS = \
 	-DENABLE_DEFAULT=OFF \
 	-DENABLE_VOLK=ON \
-	-DENABLE_GNURADIO_RUNTIME=ON
+	-DENABLE_GNURADIO_RUNTIME=ON \
+	-DENABLE_GR_QTGUI=OFF \
+	-DXMLTO_EXECUTABLE=NOTFOUND
 
 # For third-party blocks, the gnuradio libraries are mandatory at
 # compile time.
@@ -100,7 +103,7 @@ GNURADIO_CONF_OPTS += -DENABLE_GR_FEC=OFF
 endif
 
 ifeq ($(BR2_PACKAGE_GNURADIO_FFT),y)
-GNURADIO_DEPENDENCIES += fftw
+GNURADIO_DEPENDENCIES += fftw-single
 GNURADIO_CONF_OPTS += -DENABLE_GR_FFT=ON
 else
 GNURADIO_CONF_OPTS += -DENABLE_GR_FFT=OFF
@@ -110,6 +113,13 @@ ifeq ($(BR2_PACKAGE_GNURADIO_FILTER),y)
 GNURADIO_CONF_OPTS += -DENABLE_GR_FILTER=ON
 else
 GNURADIO_CONF_OPTS += -DENABLE_GR_FILTER=OFF
+endif
+
+ifeq ($(BR2_PACKAGE_GNURADIO_LOG),y)
+GNURADIO_DEPENDENCIES += log4cpp
+GNURADIO_CONF_OPTS += -DENABLE_GR_LOG=ON
+else
+GNURADIO_CONF_OPTS += -DENABLE_GR_LOG=OFF
 endif
 
 ifeq ($(BR2_PACKAGE_GNURADIO_PYTHON),y)
@@ -125,13 +135,6 @@ else
 GNURADIO_CONF_OPTS += -DENABLE_PAGER=OFF
 endif
 
-ifeq ($(BR2_PACKAGE_GNURADIO_QTGUI),y)
-GNURADIO_DEPENDENCIES += python-pyqt qwt
-GNURADIO_CONF_OPTS += -DENABLE_GR_QTGUI=ON
-else
-GNURADIO_CONF_OPTS += -DENABLE_GR_QTGUI=OFF
-endif
-
 ifeq ($(BR2_PACKAGE_GNURADIO_TRELLIS),y)
 GNURADIO_CONF_OPTS += -DENABLE_GR_TRELLIS=ON
 else
@@ -142,6 +145,16 @@ ifeq ($(BR2_PACKAGE_GNURADIO_UTILS),y)
 GNURADIO_CONF_OPTS += -DENABLE_GR_UTILS=ON
 else
 GNURADIO_CONF_OPTS += -DENABLE_GR_UTILS=OFF
+endif
+
+ifeq ($(BR2_PACKAGE_GNURADIO_ZEROMQ),y)
+GNURADIO_DEPENDENCIES += cppzmq
+ifeq ($(BR2_PACKAGE_GNURADIO_PYTHON),y)
+GNURADIO_DEPENDENCIES += python-pyzmq
+endif
+GNURADIO_CONF_OPTS += -DENABLE_GR_ZEROMQ=ON
+else
+GNURADIO_CONF_OPTS += -DENABLE_GR_ZEROMQ=OFF
 endif
 
 $(eval $(cmake-package))

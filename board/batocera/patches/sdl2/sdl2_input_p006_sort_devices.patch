@@ -1,5 +1,5 @@
 diff --git a/src/core/linux/SDL_udev.c b/src/core/linux/SDL_udev.c
-index 37bc422..fc2cd2d 100644
+index 751e2ca..bec1485 100644
 --- a/src/core/linux/SDL_udev.c
 +++ b/src/core/linux/SDL_udev.c
 @@ -191,12 +191,31 @@ SDL_UDEV_Quit(void)
@@ -35,13 +35,13 @@ index 37bc422..fc2cd2d 100644
      
      if (_this == NULL) {
          return;
-@@ -218,15 +237,30 @@ SDL_UDEV_Scan(void)
-         const char *path = _this->udev_list_entry_get_name(item);
-         struct udev_device *dev = _this->udev_device_new_from_syspath(_this->udev, path);
+@@ -218,11 +237,28 @@ SDL_UDEV_Scan(void)
+         const char *path = _this->syms.udev_list_entry_get_name(item);
+         struct udev_device *dev = _this->syms.udev_device_new_from_syspath(_this->udev, path);
          if (dev != NULL) {
 -            device_event(SDL_UDEV_DEVICEADDED, dev);
--            _this->udev_device_unref(dev);
-+         const char* devnode = _this->udev_device_get_devnode(dev);
+-            _this->syms.udev_device_unref(dev);
++         const char* devnode = _this->syms.udev_device_get_devnode(dev);
 +         if(devnode != NULL) {
 +	    sorted[sorted_count].devnode = devnode;
 +	    sorted[sorted_count].dev     = dev;
@@ -59,13 +59,10 @@ index 37bc422..fc2cd2d 100644
 +   for (i = 0; i < sorted_count; i++)
 +   {
 +     device_event(SDL_UDEV_DEVICEADDED, sorted[i].dev);
-+     _this->udev_device_unref(sorted[i].dev);
++     _this->syms.udev_device_unref(sorted[i].dev);
 +   }
 +
-     _this->udev_enumerate_unref(enumerate);
++
+     _this->syms.udev_enumerate_unref(enumerate);
  }
  
--
- void
- SDL_UDEV_UnloadLibrary(void)
- {

@@ -1,0 +1,17 @@
+config BR2_PACKAGE_MALI_RK450
+	bool "MALI_RK450"
+	depends on BR2_aarch64 || BR2_arm
+	select BR2_PACKAGE_HAS_LIBEGL
+	select BR2_PACKAGE_HAS_LIBGLES
+
+if BR2_PACKAGE_MALI_RK450
+
+config BR2_PACKAGE_PROVIDES_LIBEGL
+	default "mali-rk450"
+
+config BR2_PACKAGE_PROVIDES_LIBGLES
+	default "mali-rk450"
+
+endif
+
+comment "mali-rk450"

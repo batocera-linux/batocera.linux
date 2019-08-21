@@ -3,9 +3,10 @@
 # MAME2010
 #
 ################################################################################
-# Version.: Commits on Apr 17, 2018
-LIBRETRO_MAME2010_VERSION = 70732f9137f6bb2bde4014746ea8bc613173dd1e
+# Version.: Commits on Jul 7, 2019
+LIBRETRO_MAME2010_VERSION = c66718f3670ef8d5a94a9a2cadfcccf46061a894
 LIBRETRO_MAME2010_SITE = $(call github,libretro,mame2010-libretro,$(LIBRETRO_MAME2010_VERSION))
+LIBRETRO_MAME2010_LICENSE = MAME
 
 LIBRETRO_MAME2010_SUPP_OPT=
 
@@ -34,6 +35,11 @@ endef
 define LIBRETRO_MAME2010_INSTALL_TARGET_CMDS
 	$(INSTALL) -D $(@D)/mame2010_libretro.so \
 		$(TARGET_DIR)/usr/lib/libretro/mame0139_libretro.so
+
+	# Bios
+	mkdir -p $(TARGET_DIR)/usr/share/batocera/datainit/bios/mame2010/samples
+	$(INSTALL) -D $(@D)/metadata/* \
+		$(TARGET_DIR)/usr/share/batocera/datainit/bios/mame2010
 endef
 
 $(eval $(generic-package))

@@ -1,0 +1,198 @@
+#!/bin/bash
+
+SEARCHDIR="/batocera/current"
+LOGDIR="/batocera/logs"
+BUILDDIR="/batocera/archs"
+DLDIR="/batocera/DL"
+ACTIONSDIR="/batocera/actions"
+
+echo_msg() {
+    arch=$1
+    echo $(date "+%Y/%m/%d %H:%M:%S") "[${arch}]" $2
+}
+
+do_push() {
+    ftptarget=$1
+    arch=$2
+
+    echo_msg "${arch}" "pusing ${ftptarget}..."
+    case "${ftptarget}" in
+	"beta")
+	    lftp ftp://"${FTPBATOCERA}" -e "set ssl:verify-certificate false; mirror -R -e ${BUILDDIR}/${arch}/output/images/batocera /upgrades/${arch}/beta/last ; quit"
+	    ;;
+	"next")
+	    lftp ftp://"${FTPBATOCERA}" -e "set ssl:verify-certificate false; mirror -R -e ${BUILDDIR}/${arch}/output/images/batocera /upgrades/${arch}/stable/last/next ; quit"
+	    ;;
+	*)
+	    echo_msg "${arch}" "invalid ftp target" >&2
+	    return 1
+    esac
+}
+
+do_html() {
+    arch=$1
+
+    (cd "${BUILDDIR}/${arch}" && sudo docker run --rm --name "${arch}_html_"$(date "+%Y%m%d_%H%M%S") -v $PWD:/build batocera/batocera.linux-build /bin/bash -c "/build/scripts/linux/buildstats.sh /build > /build/output/images/batocera/index.html")
+}
+
+# wakeonlan b4:b5:2f:cb:74:07
+do_suspend() {
+    sudo systemctl suspend
+}
+
+checkFtpTarget() {
+    ftptarget=$1
+    if test "${ftptarget}" != "beta" -a "${ftptarget}" != "next"
+    then
+	echo_msg "-" "invalid ftp target ${ftptarget}" >&2
+	return 1
+    fi
+    return 0
+}
+
+buildAll() {
+    ftptarget=$1
+    cd "${SEARCHDIR}"    || exit 1
+    mkdir -p "${LOGDIR}" "${ACTIONSDIR}" || exit 1
+    touch "${ACTIONSDIR}/suspend" || exit 1
+    while true
+    do
+	NEXTITEM=$(ls -1t | head -1)
+	if test -z "${NEXTITEM}"
+	then
+	    echo_msg "-" "Ended."
+	    if test -e "${ACTIONSDIR}/suspend"
+	    then
+		do_suspend
+	    fi
+	    exit 0
+	fi
+	rm -f "${SEARCHDIR}/${NEXTITEM}"
+
+	echo_msg "${NEXTITEM}" "building..."
+	if (cd "${BUILDDIR}/${NEXTITEM}" && sudo docker run -t --rm --name "${arch}_build_"$(date "+%Y%m%d_%H%M%S") -v $PWD:/build -v /batocera/DL:/build/dl batocera/batocera.linux-build make) > "${LOGDIR}/build-${NEXTITEM}.log" 2> "${LOGDIR}/build-${NEXTITEM}.err"
+	then
+	    do_html "${NEXTITEM}"
+
+	    if test -n "${ftptarget}"
+	    then
+		if do_push "${ftptarget}" "${NEXTITEM}"
+		then
+		    echo_msg "${NEXTITEM}" "pushed"
+		else
+		    echo_msg "${NEXTITEM}" "unable to push"
+		fi
+	    fi
+	fi
+    done
+}
+
+case "${1}" in
+    "buildfg")
+	ftptarget=$2
+	if test -n "${ftptarget}"
+	then
+	    checkFtpTarget "${ftptarget}" || exit 1
+	fi
+	buildAll "${ftptarget}" || exit 1
+	;;
+    "build")
+	ftptarget=$2
+	if test -n "${ftptarget}"
+	then
+	    checkFtpTarget "${ftptarget}" || exit 1
+	fi
+	nohup "${0}" buildfg "${ftptarget}" > "${LOGDIR}/run.log" 2>&1 &
+	exit 0
+	;;
+    "enter")
+	arch="${2}"
+	cd "${BUILDDIR}/${arch}" || exit 1
+	sudo docker run -it --rm --name "${arch}_enter_"$(date "+%Y%m%d_%H%M%S") -v "${PWD}:/build" -v "${DLDIR}:/build/dl" "batocera/batocera.linux-build"
+	;;
+    "add")
+	while test -n "${2}"
+	do
+	    arch="${2}"
+	    shift
+	    touch "${SEARCHDIR}/${arch}"
+	done
+	;;
+    "list")
+	ls -1t "${SEARCHDIR}"
+	;;
+    "gitlog")
+	for arch in "${BUILDDIR}/"*
+	do
+	    (cd "${arch}" && (basename "${arch}" ; git log --oneline -1))
+	done
+	;;
+    "gitpull")
+	for arch in "${BUILDDIR}/"*
+	do
+	    (cd "${arch}" && (basename "${arch}" ; git pull))
+	done
+	;;
+    "log")
+	if test -n "${2}"
+	then
+	    arch="${2}"
+	    tail -f "${LOGDIR}/build-${arch}.log"
+	else
+	    tail -f "${LOGDIR}/run.log"
+	fi
+	;;
+    "logpkg")
+	if test -z "${2}"
+	then
+	    echo_msg "-" "missing argument" >&2
+	    exit 1
+	fi
+	arch="${2}"
+	tail -f "${BUILDDIR}/${arch}/output/build/build-time.log"
+	;;
+    "push")
+	if test -z "${FTPBATOCERA}"
+	then
+	    echo_msg "-" "FTPBATOCERA not set" >&2
+	    exit 1
+	fi
+	ftptarget=${2}
+	checkFtpTarget "${ftptarget}" || exit 1
+	shift
+	shift
+	while test -n "${1}"
+	do
+	    arch="${1}"
+	    shift
+	    do_push "${ftptarget}" "${arch}" || exit 1
+	done
+	;;
+    "html")
+	shift
+	arch="${1}"
+	do_html "${arch}" || exit 1
+	;;
+
+    "suspend")
+	do_suspend
+	;;
+
+    *)
+	PROGNAME=$(basename "${0}")
+	echo "${PROGNAME} build beta"
+	echo "${PROGNAME} build next"
+	echo "${PROGNAME} enter x86"
+	echo "${PROGNAME} add x86"
+	echo "${PROGNAME} list"
+	echo "${PROGNAME} log"
+	echo "${PROGNAME} log x86"
+	echo "${PROGNAME} logpkg x86"
+	echo "${PROGNAME} push beta x86 rpi3 rpi1"
+	echo "${PROGNAME} push next x86 rpi3 rpi1"
+	echo "${PROGNAME} suspend"
+	echo "${PROGNAME} gitlog"
+	echo "${PROGNAME} gitpull"
+esac
+
+exit 0

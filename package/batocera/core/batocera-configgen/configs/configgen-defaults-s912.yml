@@ -1,0 +1,10 @@
+default:
+  options:
+    video_threaded: true
+
+n64:
+  emulator: libretro
+  core: parallel_n64
+psp:
+  options:
+    frameskip: true

@@ -28,7 +28,7 @@ $(1)_SITE_METHOD = git
 else
 # Handle stable official Barebox versions
 $(1)_SOURCE = barebox-$$($(1)_VERSION).tar.bz2
-$(1)_SITE = http://www.barebox.org/download
+$(1)_SITE = https://www.barebox.org/download
 endif
 
 $(1)_DEPENDENCIES = host-lzop
@@ -75,6 +75,10 @@ endif
 $(1)_KCONFIG_FRAGMENT_FILES = $$(call qstrip,$$(BR2_TARGET_$(1)_CONFIG_FRAGMENT_FILES))
 $(1)_KCONFIG_EDITORS = menuconfig xconfig gconfig nconfig
 $(1)_KCONFIG_OPTS = $$($(1)_MAKE_FLAGS)
+
+$(1)_KCONFIG_DEPENDENCIES = \
+	$(BR2_BISON_HOST_DEPENDENCY) \
+	$(BR2_FLEX_HOST_DEPENDENCY)
 
 ifeq ($$(BR2_TARGET_$(1)_BAREBOXENV),y)
 define $(1)_BUILD_BAREBOXENV_CMDS

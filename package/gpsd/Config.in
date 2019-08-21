@@ -154,6 +154,11 @@ config BR2_PACKAGE_GPSD_GPSCLOCK
 	help
 	  GPSClock support
 
+config BR2_PACKAGE_GPSD_GREIS
+	bool "Greis"
+	help
+	  Greis support
+
 config BR2_PACKAGE_GPSD_ISYNC
 	bool "iSync"
 	help
@@ -216,6 +221,11 @@ config BR2_PACKAGE_GPSD_SIRF
 	bool "SiRF"
 	help
 	  SiRF binary support
+
+config BR2_PACKAGE_GPSD_SKYTRAQ
+	bool "Skytraq"
+	help
+	  Skytraq support
 
 config BR2_PACKAGE_GPSD_SUPERSTAR2
 	bool "SuperStarII"

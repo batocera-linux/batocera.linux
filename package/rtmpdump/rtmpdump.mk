@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-RTMPDUMP_VERSION = fa8646daeb19dfd12c181f7d19de708d623704c0
+RTMPDUMP_VERSION = c5f04a58fc2aeea6296ca7c44ee4734c18401aa3
 RTMPDUMP_SITE = git://git.ffmpeg.org/rtmpdump
 RTMPDUMP_INSTALL_STAGING = YES
 # Note that rtmpdump is GPL-2.0 but librtmp has its own license and since we only
@@ -16,9 +16,6 @@ RTMPDUMP_DEPENDENCIES = zlib
 ifeq ($(BR2_PACKAGE_GNUTLS),y)
 RTMPDUMP_DEPENDENCIES += gnutls
 RTMPDUMP_CRYPTO = GNUTLS
-else ifeq ($(BR2_PACKAGE_OPENSSL),y)
-RTMPDUMP_DEPENDENCIES += openssl
-RTMPDUMP_CRYPTO = OPENSSL
 else
 # no crypto
 RTMPDUMP_CRYPTO =

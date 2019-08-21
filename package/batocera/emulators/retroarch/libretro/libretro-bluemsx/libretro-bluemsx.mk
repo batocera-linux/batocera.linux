@@ -3,9 +3,10 @@
 # BLUEMSX
 #
 ################################################################################
-# Version.: Commits on Apr 13, 2018
-LIBRETRO_BLUEMSX_VERSION = 406c9856c79cd66605e9d1f0402f2e37c014848c
+# Version.: Commits on Apr 20, 2019
+LIBRETRO_BLUEMSX_VERSION = fe31638aed9c12ed8218965506c3054f11fabf7c
 LIBRETRO_BLUEMSX_SITE = $(call github,libretro,blueMSX-libretro,$(LIBRETRO_BLUEMSX_VERSION))
+LIBRETRO_BLUEMSX_LICENSE = GPLv2
 
 define LIBRETRO_BLUEMSX_BUILD_CMDS
 	CFLAGS="$(TARGET_CFLAGS)" CXXFLAGS="$(TARGET_CXXFLAGS)" \

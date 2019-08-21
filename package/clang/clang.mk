@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-CLANG_VERSION = 5.0.2
+CLANG_VERSION = 8.0.0
 CLANG_SITE = http://llvm.org/releases/$(CLANG_VERSION)
 CLANG_SOURCE = cfe-$(CLANG_VERSION).src.tar.xz
 CLANG_LICENSE = NCSA
@@ -14,6 +14,13 @@ CLANG_INSTALL_STAGING = YES
 
 HOST_CLANG_DEPENDENCIES = host-llvm host-libxml2
 CLANG_DEPENDENCIES = llvm host-clang
+
+# LLVM >= 9.0 will soon require C++14 support, building llvm 8.x using a
+# toolchain using gcc < 5.1 gives an error but actually still works. Setting
+# this option makes it still build with gcc >= 4.8.
+# https://reviews.llvm.org/D57264
+HOST_CLANG_CONF_OPTS += -DLLVM_TEMPORARILY_ALLOW_OLD_TOOLCHAIN=ON
+CLANG_CONF_OPTS += -DLLVM_TEMPORARILY_ALLOW_OLD_TOOLCHAIN=ON
 
 # This option is needed, otherwise multiple shared libs
 # (libclangAST.so, libclangBasic.so, libclangFrontend.so, etc.) will
@@ -49,10 +56,11 @@ CLANG_CONF_OPTS += \
 	-DCLANG_INCLUDE_DOCS=OFF \
 	-DCLANG_INCLUDE_TESTS=OFF
 
-HOST_CLANG_CONF_OPTS += -DLLVM_CONFIG:FILEPATH=$(HOST_DIR)/bin/llvm-config
-CLANG_CONF_OPTS += -DLLVM_CONFIG:FILEPATH=$(STAGING_DIR)/usr/bin/llvm-config \
-	-DCLANG_TABLEGEN:FILEPATH=$(HOST_DIR)/usr/bin/clang-tblgen \
-	-DLLVM_TABLEGEN_EXE:FILEPATH=$(HOST_DIR)/usr/bin/llvm-tblgen
+HOST_CLANG_CONF_OPTS += -DLLVM_DIR=$(HOST_DIR)/lib/cmake/llvm \
+	-DCLANG_DEFAULT_LINKER=$(TARGET_LD)
+CLANG_CONF_OPTS += -DLLVM_DIR=$(STAGING_DIR)/usr/lib/cmake/llvm \
+	-DCLANG_TABLEGEN:FILEPATH=$(HOST_DIR)/bin/clang-tblgen \
+	-DLLVM_TABLEGEN_EXE:FILEPATH=$(HOST_DIR)/bin/llvm-tblgen
 
 # Clang can't be used as compiler on the target since there are no
 # development files (headers) and other build tools. So remove clang
@@ -81,7 +89,7 @@ CLANG_POST_INSTALL_TARGET_HOOKS += CLANG_CLEANUP_TARGET
 # for cross-compiling clang
 define HOST_CLANG_INSTALL_CLANG_TBLGEN
 	$(INSTALL) -D -m 0755 $(HOST_CLANG_BUILDDIR)/bin/clang-tblgen \
-		$(HOST_DIR)/usr/bin/clang-tblgen
+		$(HOST_DIR)/bin/clang-tblgen
 endef
 HOST_CLANG_POST_INSTALL_HOOKS = HOST_CLANG_INSTALL_CLANG_TBLGEN
 

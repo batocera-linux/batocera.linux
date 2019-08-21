@@ -2,15 +2,22 @@ menu "Kernel"
 
 config BR2_LINUX_KERNEL
 	bool "Linux Kernel"
+	select BR2_PACKAGE_HOST_IMAGEMAGICK if BR2_LINUX_KERNEL_CUSTOM_LOGO_PATH != ""
 	help
 	  Enable this option if you want to build a Linux kernel for
 	  your embedded device
 
+# batocera
+config BR2_LINUX_AARCH64_KERNEL_IN_ARM_USER
+ 	bool "aarch64 bit kernel in arm32 bit userland"
+ 	select BR2_TOOLCHAIN_OPTIONAL_LINARO_AARCH64
+
 if BR2_LINUX_KERNEL
 
-comment "Linux kernel in thumb mode may be broken with binutils >= 2.29"
+# https://sourceware.org/bugzilla/show_bug.cgi?id=21458
+comment "Linux kernel in thumb mode may be broken with binutils 2.30"
 	depends on BR2_arm || BR2_armeb
-	depends on !BR2_BINUTILS_VERSION_2_28_X
+	depends on BR2_BINUTILS_VERSION_2_30_X
 
 # Packages that need to have a kernel with support for loadable modules,
 # but do not use the kernel-modules infrastructure, should select that
@@ -30,10 +37,10 @@ choice
 	prompt "Kernel version"
 
 config BR2_LINUX_KERNEL_LATEST_VERSION
-	bool "Latest version (4.17)"
+	bool "Latest version (5.2)"
 
 config BR2_LINUX_KERNEL_LATEST_CIP_VERSION
-	bool "Latest CIP SLTS version (v4.4.130-cip23)"
+	bool "Latest CIP SLTS version (v4.19.13-cip1)"
 	help
 	  CIP launched in the spring of 2016 to address the needs of
 	  organizations in industries such as power generation and
@@ -120,8 +127,8 @@ endif
 
 config BR2_LINUX_KERNEL_VERSION
 	string
-	default "4.17" if BR2_LINUX_KERNEL_LATEST_VERSION
-	default "v4.4.130-cip23" if BR2_LINUX_KERNEL_LATEST_CIP_VERSION
+	default "5.2" if BR2_LINUX_KERNEL_LATEST_VERSION
+	default "v4.19.13-cip1" if BR2_LINUX_KERNEL_LATEST_CIP_VERSION
 	default BR2_LINUX_KERNEL_CUSTOM_VERSION_VALUE \
 		if BR2_LINUX_KERNEL_CUSTOM_VERSION
 	default "custom" if BR2_LINUX_KERNEL_CUSTOM_TARBALL
@@ -188,6 +195,14 @@ config BR2_LINUX_KERNEL_CONFIG_FRAGMENT_FILES
 	  A space-separated list of kernel configuration fragment files,
 	  that will be merged to the main kernel configuration file.
 
+config BR2_LINUX_KERNEL_CUSTOM_LOGO_PATH
+	string "Custom boot logo file path"
+	help
+	  Use a custom Linux framebuffer boot logo.
+	  Custom logo should be in PNG or JPEG format, it will be
+	  converted to the linux kernel format (224 colors only)
+	  and copied over the original logo file.
+
 #
 # Binary format
 #
@@ -247,7 +262,7 @@ config BR2_LINUX_KERNEL_SIMPLEIMAGE
 
 config BR2_LINUX_KERNEL_IMAGE
 	bool "Image"
-	depends on BR2_aarch64
+	depends on BR2_aarch64 || BR2_riscv
 
 config BR2_LINUX_KERNEL_LINUX_BIN
 	bool "linux.bin"
@@ -383,6 +398,14 @@ config BR2_LINUX_KERNEL_CUSTOM_DTS_PATH
 	  Path to to out-of-tree device tree source files.
 	  You can provide a list of dts paths to copy and
 	  build, separated by spaces.
+
+config BR2_LINUX_KERNEL_DTB_OVERLAY_SUPPORT
+	bool "Build Device Tree with overlay support"
+	help
+	  If enabled, pass the "-@" option to dtc, such that
+	  symbols are generated in the compiled Device Tree.
+	  Choose this option to support Device Tree overlays
+	  on the target system.
 
 endif
 

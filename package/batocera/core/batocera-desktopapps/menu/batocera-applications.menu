@@ -1,0 +1,25 @@
+<!DOCTYPE Menu PUBLIC "-//freedesktop//DTD Menu 1.0//EN"
+ "http://www.freedesktop.org/standards/menu-spec/1.0/menu.dtd">
+
+<Menu>
+
+  <Name>Applications</Name>
+
+  <DefaultAppDirs/>
+
+  <Menu>
+    <Name>batocera.linux</Name>
+    <Directory>batocera.directory</Directory>
+    <DefaultLayout inline="true" inline_limit="20" inline_header="false">
+      <Merge type="menus"/>
+      <Merge type="files"/>
+    </DefaultLayout>
+    <Menu>
+      <Name>batocera.linux</Name>
+      <Include>
+	<Category>batocera.linux</Category>
+      </Include>
+    </Menu>
+  </Menu>
+
+</Menu>

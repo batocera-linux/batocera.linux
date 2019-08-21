@@ -241,14 +241,11 @@ check_glibc = \
 # $2: cross-readelf path
 check_musl = \
 	__CROSS_CC=$(strip $1) ; \
-	__CROSS_READELF=$(strip $2) ; \
-	echo 'void main(void) {}' | $${__CROSS_CC} -x c -o $(BUILD_DIR)/.br-toolchain-test.tmp - >/dev/null 2>&1; \
-	if ! $${__CROSS_READELF} -l $(BUILD_DIR)/.br-toolchain-test.tmp 2> /dev/null | grep 'program interpreter: /lib/ld-musl' -q; then \
-		rm -f $(BUILD_DIR)/.br-toolchain-test.tmp*; \
+	libc_a_path=`$${__CROSS_CC} -print-file-name=libc.a` ; \
+	if ! strings $${libc_a_path} | grep -q MUSL_LOCPATH ; then \
 		echo "Incorrect selection of the C library" ; \
 		exit -1; \
-	fi ; \
-	rm -f $(BUILD_DIR)/.br-toolchain-test.tmp*
+	fi
 
 #
 # Check the conformity of Buildroot configuration with regard to the
@@ -358,6 +355,24 @@ check_fortran = \
 	if test $$? -ne 0 ; then \
 		rm -f $${__o}* ; \
 		echo "Fortran support is selected but is not available in external toolchain" ; \
+		exit 1 ; \
+	fi ; \
+	rm -f $${__o}* \
+
+#
+#
+# Check that the external toolchain supports OpenMP
+#
+# $1: cross-gcc path
+#
+check_openmp = \
+	__CROSS_CC=$(strip $1) ; \
+	__o=$(BUILD_DIR)/.br-toolchain-test-openmp.tmp ; \
+	printf '\#include <omp.h>\nint main(void) { return omp_get_thread_num(); }' | \
+	$${__CROSS_CC} -fopenmp -x c -o $${__o} - ; \
+	if test $$? -ne 0 ; then \
+		rm -f $${__o}* ; \
+		echo "OpenMP support is selected but is not available in external toolchain"; \
 		exit 1 ; \
 	fi ; \
 	rm -f $${__o}* \

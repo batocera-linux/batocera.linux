@@ -8,6 +8,7 @@ config BR2_PACKAGE_VICE
        select BR2_PACKAGE_ZLIB
        select BR2_PACKAGE_LAME
        select BR2_PACKAGE_ALSA_LIB
+       select BR2_PACKAGE_HOST_XA
        help
 	VICE is an emulator collection which emulates the C64, the C64-DTV, the C128, the VIC20, practically all PET models, the PLUS4 and the CBM-II (aka C610). It runs on Unix, MS-DOS, Win32, OS/2, Acorn RISC OS, BeOS, QNX 6.x, Amiga, GP2X or Mac OS X machines.
 

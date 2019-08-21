@@ -37,13 +37,23 @@ endef
 
 define QT5SCRIPT_INSTALL_STAGING_CMDS
 	$(TARGET_MAKE_ENV) $(MAKE) -C $(@D) install
-	$(QT5_LA_PRL_FILES_FIXUP)
 endef
 
 ifeq ($(BR2_STATIC_LIBS),)
-define QT5SCRIPT_INSTALL_TARGET_CMDS
+define QT5SCRIPT_INSTALL_TARGET_LIBS
 	cp -dpf $(STAGING_DIR)/usr/lib/libQt5Script*.so.* $(TARGET_DIR)/usr/lib
 endef
 endif
+
+ifeq ($(BR2_PACKAGE_QT5BASE_EXAMPLES),y)
+define QT5SCRIPT_INSTALL_TARGET_EXAMPLES
+	cp -dpfr $(STAGING_DIR)/usr/lib/qt/examples/script $(TARGET_DIR)/usr/lib/qt/examples/
+endef
+endif
+
+define QT5SCRIPT_INSTALL_TARGET_CMDS
+	$(QT5SCRIPT_INSTALL_TARGET_LIBS)
+	$(QT5SCRIPT_INSTALL_TARGET_EXAMPLES)
+endef
 
 $(eval $(generic-package))

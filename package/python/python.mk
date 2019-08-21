@@ -5,7 +5,7 @@
 ################################################################################
 
 PYTHON_VERSION_MAJOR = 2.7
-PYTHON_VERSION = $(PYTHON_VERSION_MAJOR).14
+PYTHON_VERSION = $(PYTHON_VERSION_MAJOR).16
 PYTHON_SOURCE = Python-$(PYTHON_VERSION).tar.xz
 PYTHON_SITE = https://python.org/ftp/python/$(PYTHON_VERSION)
 PYTHON_LICENSE = Python-2.0, others
@@ -55,6 +55,11 @@ HOST_PYTHON_CONF_ENV += \
 HOST_PYTHON_MAKE = $(MAKE1)
 
 PYTHON_DEPENDENCIES = host-python libffi $(TARGET_NLS_DEPENDENCIES)
+
+# batocera - required for ds4drv / playstation4 pads
+ifeq ($(BR2_PACKAGE_BLUEZ5_UTILS_HEADERS),y)
+PYTHON_DEPENDENCIES += bluez5_utils-headers
+endif
 
 HOST_PYTHON_DEPENDENCIES = host-expat host-zlib
 

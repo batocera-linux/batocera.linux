@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-COREUTILS_VERSION = 8.27
+COREUTILS_VERSION = 8.30
 COREUTILS_SITE = $(BR2_GNU_MIRROR)/coreutils
 COREUTILS_SOURCE = coreutils-$(COREUTILS_VERSION).tar.xz
 COREUTILS_LICENSE = GPL-3.0+
@@ -14,8 +14,15 @@ COREUTILS_LICENSE_FILES = COPYING
 COREUTILS_AUTORECONF = YES
 COREUTILS_GETTEXTIZE = YES
 
-COREUTILS_CONF_OPTS = --disable-rpath --enable-single-binary=symlinks \
+COREUTILS_CONF_OPTS = --disable-rpath \
 	$(if $(BR2_TOOLCHAIN_USES_MUSL),--with-included-regex)
+
+ifeq ($(BR2_PACKAGE_COREUTILS_INDIVIDUAL_BINARIES),y)
+COREUTILS_CONF_OPTS += --disable-single-binary
+else
+COREUTILS_CONF_OPTS += --enable-single-binary=symlinks
+endif
+
 COREUTILS_CONF_ENV = ac_cv_c_restrict=no \
 	ac_cv_func_chown_works=yes \
 	ac_cv_func_euidaccess=no \
@@ -55,15 +62,9 @@ COREUTILS_CONF_ENV = ac_cv_c_restrict=no \
 	MAKEINFO=true \
 	INSTALL_PROGRAM=$(INSTALL)
 
-COREUTILS_BIN_PROGS = cat chgrp chmod chown cp date dd df dir echo false \
+COREUTILS_BIN_PROGS = base64 cat chgrp chmod chown cp date dd df dir echo false \
 	kill link ln ls mkdir mknod mktemp mv nice printenv pwd rm rmdir \
 	vdir sleep stty sync touch true uname join
-
-# If both coreutils and busybox are selected, make certain coreutils
-# wins the fight over who gets to have their utils actually installed.
-ifeq ($(BR2_PACKAGE_BUSYBOX),y)
-COREUTILS_DEPENDENCIES = busybox
-endif
 
 ifeq ($(BR2_PACKAGE_ACL),y)
 COREUTILS_DEPENDENCIES += acl
@@ -102,27 +103,49 @@ COREUTILS_DEPENDENCIES += openssl
 endif
 
 ifeq ($(BR2_ROOTFS_MERGED_USR),)
-define COREUTILS_CLEANUP_BIN
+# We want to move a few binaries from /usr/bin to /bin. In the case of
+# coreutils being built as multi-call binary, we do so by re-creating
+# the corresponding symlinks. If coreutils is built with individual
+# binaries, we actually move the binaries.
+ifeq ($(BR2_PACKAGE_COREUTILS_INDIVIDUAL_BINARIES),y)
+define COREUTILS_FIX_BIN_LOCATION
+	$(foreach f,$(COREUTILS_BIN_PROGS), \
+		mv $(TARGET_DIR)/usr/bin/$(f) $(TARGET_DIR)/bin
+	)
+endef
+else
+define COREUTILS_FIX_BIN_LOCATION
 	# some things go in /bin rather than /usr/bin
 	$(foreach f,$(COREUTILS_BIN_PROGS), \
 		rm -f $(TARGET_DIR)/usr/bin/$(f) && \
 		ln -sf ../usr/bin/coreutils $(TARGET_DIR)/bin/$(f)
 	)
 endef
-COREUTILS_POST_INSTALL_TARGET_HOOKS += COREUTILS_CLEANUP_BIN
+endif
+COREUTILS_POST_INSTALL_TARGET_HOOKS += COREUTILS_FIX_BIN_LOCATION
 endif
 
 ifeq ($(BR2_STATIC_LIBS),y)
 COREUTILS_CONF_OPTS += --enable-no-install-program=stdbuf
 endif
 
-define COREUTILS_CLEANUP
-	# link for archaic shells
+# link for archaic shells
+define COREUTILS_CREATE_TEST_SYMLINK
 	ln -fs test $(TARGET_DIR)/usr/bin/[
-	# gnu thinks chroot is in bin, debian thinks it's in sbin
-	mv -f $(TARGET_DIR)/usr/bin/chroot $(TARGET_DIR)/usr/sbin/chroot
 endef
+COREUTILS_POST_INSTALL_TARGET_HOOKS += COREUTILS_CREATE_TEST_SYMLINK
 
-COREUTILS_POST_INSTALL_TARGET_HOOKS += COREUTILS_CLEANUP
+# gnu thinks chroot is in bin, debian thinks it's in sbin
+ifeq ($(BR2_PACKAGE_COREUTILS_INDIVIDUAL_BINARIES),y)
+define COREUTILS_FIX_CHROOT_LOCATION
+	mv $(TARGET_DIR)/usr/bin/chroot $(TARGET_DIR)/usr/sbin
+endef
+else
+define COREUTILS_FIX_CHROOT_LOCATION
+	rm -f $(TARGET_DIR)/usr/bin/chroot
+	ln -sf ../bin/coreutils $(TARGET_DIR)/usr/sbin/chroot
+endef
+endif
+COREUTILS_POST_INSTALL_TARGET_HOOKS += COREUTILS_FIX_CHROOT_LOCATION
 
 $(eval $(autotools-package))

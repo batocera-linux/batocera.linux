@@ -6,6 +6,7 @@ import argparse
 import inspect
 import os
 import re
+import six
 import sys
 
 import checkpackagelib.lib_config
@@ -32,6 +33,7 @@ def parse_args():
                         default="http://nightly.buildroot.org/",
                         help="default: %(default)s")
     parser.add_argument("--verbose", "-v", action="count", default=0)
+    parser.add_argument("--quiet", "-q", action="count", default=0)
 
     # Now the debug options in the order they are processed.
     parser.add_argument("--include-only", dest="include_list", action="append",
@@ -127,10 +129,19 @@ def check_file_using_lib(fname):
 
     for cf in objects:
         nwarnings += print_warnings(cf.before())
-    for lineno, text in enumerate(open(fname, "r").readlines()):
+    if six.PY3:
+        f = open(fname, "r", errors="surrogateescape")
+    else:
+        f = open(fname, "r")
+    lastline = ""
+    for lineno, text in enumerate(f.readlines()):
         nlines += 1
         for cf in objects:
+            if cf.disable.search(lastline):
+                continue
             nwarnings += print_warnings(cf.check_line(lineno + 1, text))
+        lastline = text
+    f.close()
     for cf in objects:
         nwarnings += print_warnings(cf.after())
 
@@ -167,8 +178,10 @@ def __main__():
     # (e.g. counted by 'wc'), so for stats use stderr. Wait all warnings are
     # printed, for the case there are many of them, before printing stats.
     sys.stdout.flush()
-    print("{} lines processed".format(total_lines), file=sys.stderr)
-    print("{} warnings generated".format(total_warnings), file=sys.stderr)
+
+    if not flags.quiet:
+        print("{} lines processed".format(total_lines), file=sys.stderr)
+        print("{} warnings generated".format(total_warnings), file=sys.stderr)
 
     if total_warnings > 0:
         sys.exit(1)

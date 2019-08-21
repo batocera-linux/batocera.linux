@@ -3,9 +3,11 @@
 # DESMUME
 #
 ################################################################################
-# Version.: Commits on Apr 16, 2018
-LIBRETRO_DESMUME_VERSION = 9fb1e8c1f4ccd819f15b29e2114a05e45140fec0
+# Version.: Commits on Apr 26, 2019
+LIBRETRO_DESMUME_VERSION = 3069551c2e1de633c333739cca8bb7108ca3d3e9
 LIBRETRO_DESMUME_SITE = $(call github,libretro,desmume,$(LIBRETRO_DESMUME_VERSION))
+LIBRETRO_DESMUME_LICENSE = GPLv2
+LIBRETRO_DESMUME_DEPENDENCIES = libpcap
 
 define LIBRETRO_DESMUME_BUILD_CMDS
 	CFLAGS="$(TARGET_CFLAGS)" CXXFLAGS="$(TARGET_CXXFLAGS)" \

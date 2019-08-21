@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-PHP_VERSION = 7.2.5
+PHP_VERSION = 7.3.7
 PHP_SITE = http://www.php.net/distributions
 PHP_SOURCE = php-$(PHP_VERSION).tar.xz
 PHP_INSTALL_STAGING = YES
@@ -22,7 +22,6 @@ PHP_CONF_OPTS = \
 	--disable-phpdbg \
 	--disable-rpath
 PHP_CONF_ENV = \
-	ac_cv_func_strcasestr=yes \
 	EXTRA_LIBS="$(PHP_EXTRA_LIBS)"
 
 ifeq ($(BR2_STATIC_LIBS),y)
@@ -137,7 +136,7 @@ endif
 
 ifeq ($(BR2_PACKAGE_PHP_EXT_LIBXML2),y)
 PHP_CONF_ENV += php_cv_libxml_build_works=yes
-PHP_CONF_OPTS += --enable-libxml --with-libxml-dir=${STAGING_DIR}/usr
+PHP_CONF_OPTS += --enable-libxml --with-libxml-dir=$(STAGING_DIR)/usr
 PHP_DEPENDENCIES += libxml2
 endif
 
@@ -151,6 +150,10 @@ PHP_CONF_OPTS += \
 	--with-xmlrpc \
 	$(if $(BR2_PACKAGE_LIBICONV),--with-iconv-dir=$(STAGING_DIR)/usr)
 PHP_DEPENDENCIES += $(if $(BR2_PACKAGE_LIBICONV),libiconv)
+endif
+
+ifeq ($(BR2_PACKAGE_PHP_EXT_ZIP),y)
+PHP_DEPENDENCIES += libzip
 endif
 
 ifneq ($(BR2_PACKAGE_PHP_EXT_ZLIB)$(BR2_PACKAGE_PHP_EXT_ZIP),)
@@ -196,6 +199,12 @@ endif
 ifeq ($(BR2_PACKAGE_PHP_EXT_MYSQLI),y)
 PHP_CONF_OPTS += --with-mysqli
 endif
+
+ifeq ($(BR2_PACKAGE_PHP_EXT_PGSQL),y)
+PHP_CONF_OPTS += --with-pgsql=$(STAGING_DIR)/usr
+PHP_DEPENDENCIES += postgresql
+endif
+
 ifeq ($(BR2_PACKAGE_PHP_EXT_SQLITE),y)
 PHP_CONF_OPTS += --with-sqlite3=$(STAGING_DIR)/usr
 PHP_DEPENDENCIES += sqlite
@@ -234,9 +243,18 @@ endef
 PHP_POST_CONFIGURE_HOOKS += PHP_DISABLE_VALGRIND
 
 ### Use external PCRE if it's available
-ifeq ($(BR2_PACKAGE_PCRE),y)
+ifeq ($(BR2_PACKAGE_PCRE2),y)
 PHP_CONF_OPTS += --with-pcre-regex=$(STAGING_DIR)/usr
-PHP_DEPENDENCIES += pcre
+PHP_DEPENDENCIES += pcre2
+
+ifeq ($(BR2_PACKAGE_PCRE2_JIT),y)
+PHP_CONF_OPTS += --with-pcre-jit=yes
+PHP_CONF_ENV += ac_cv_have_pcre2_jit=yes
+else
+PHP_CONF_OPTS += --with-pcre-jit=no
+PHP_CONF_ENV += ac_cv_have_pcre2_jit=no
+endif
+
 else
 # The bundled pcre library is not configurable through ./configure options,
 # and by default is configured to be thread-safe, so it wants pthreads. So
@@ -253,7 +271,7 @@ endif
 endif
 
 ifeq ($(BR2_PACKAGE_PHP_EXT_CURL),y)
-PHP_CONF_OPTS += --with-curl=$(STAGING_DIR)/usr
+PHP_CONF_OPTS += --with-curl
 PHP_DEPENDENCIES += libcurl
 endif
 

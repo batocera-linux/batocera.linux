@@ -14,6 +14,12 @@ GDB_SOURCE = gdb-$(GDB_VERSION).tar.gz
 GDB_FROM_GIT = y
 endif
 
+ifeq ($(BR2_csky),y)
+GDB_SITE = $(call github,c-sky,binutils-gdb,$(GDB_VERSION))
+GDB_SOURCE = gdb-$(GDB_VERSION).tar.gz
+GDB_FROM_GIT = y
+endif
+
 GDB_LICENSE = GPL-2.0+, LGPL-2.0+, GPL-3.0+, LGPL-3.0+
 GDB_LICENSE_FILES = COPYING COPYING.LIB COPYING3 COPYING3.LIB
 
@@ -87,6 +93,16 @@ GDB_CONF_ENV = \
 GDB_CONF_ENV += gl_cv_func_gettimeofday_clobber=no
 GDB_MAKE_ENV += gl_cv_func_gettimeofday_clobber=no
 
+# Similarly, starting with gdb 8.1, the bundled gnulib tries to use
+# rpl_strerror. Let's tell gnulib the C library implementation works
+# well enough.
+GDB_CONF_ENV += \
+	gl_cv_func_working_strerror=yes \
+	gl_cv_func_strerror_0_works=yes
+GDB_MAKE_ENV += \
+	gl_cv_func_working_strerror=yes \
+	gl_cv_func_strerror_0_works=yes
+
 # Starting with glibc 2.25, the proc_service.h header has been copied
 # from gdb to glibc so other tools can use it. However, that makes it
 # necessary to make sure that declaration of prfpregset_t declaration
@@ -113,7 +129,8 @@ GDB_CONF_OPTS = \
 	--with-curses \
 	--without-included-gettext \
 	--disable-werror \
-	--enable-static
+	--enable-static \
+	--without-mpfr
 
 # When gdb is built as C++ application for ARC it segfaults at runtime
 # So we pass --disable-build-with-cxx config option to force gdb not to
@@ -126,6 +143,11 @@ endif
 # when we don't have C++ support in the toolchain
 ifneq ($(BR2_INSTALL_LIBSTDCPP),y)
 GDB_CONF_OPTS += --disable-build-with-cxx
+endif
+
+# inprocess-agent can't be built statically
+ifeq ($(BR2_STATIC_LIBS),y)
+GDB_CONF_OPTS += --disable-inprocess-agent
 endif
 
 ifeq ($(BR2_PACKAGE_GDB_TUI),y)
@@ -202,6 +224,7 @@ HOST_GDB_CONF_OPTS = \
 	--disable-werror \
 	--without-included-gettext \
 	--with-curses \
+	--without-mpfr \
 	$(GDB_DISABLE_BINUTILS_CONF_OPTS)
 
 ifeq ($(BR2_PACKAGE_HOST_GDB_TUI),y)

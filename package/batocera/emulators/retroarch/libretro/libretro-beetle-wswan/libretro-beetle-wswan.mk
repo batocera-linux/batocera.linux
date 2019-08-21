@@ -3,9 +3,10 @@
 # BEETLE_WSWAN
 #
 ################################################################################
-# Version.: Commits on Apr 13, 2018
-LIBRETRO_BEETLE_WSWAN_VERSION = 4d702bcf03c415c6f26b84b522f9e9b8e8cec65c
+# Version.: Commits on Apr 2, 2019
+LIBRETRO_BEETLE_WSWAN_VERSION = b231cff853da4bf221189df8aaed8bc275459db2
 LIBRETRO_BEETLE_WSWAN_SITE = $(call github,libretro,beetle-wswan-libretro,$(LIBRETRO_BEETLE_WSWAN_VERSION))
+LIBRETRO_BEETLE_WSWAN_LICENSE = GPLv2
 
 define LIBRETRO_BEETLE_WSWAN_BUILD_CMDS
 	CFLAGS="$(TARGET_CFLAGS)" CXXFLAGS="$(TARGET_CXXFLAGS)" $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" -C $(@D)/ -f Makefile platform="$(LIBRETRO_PLATFORM)"

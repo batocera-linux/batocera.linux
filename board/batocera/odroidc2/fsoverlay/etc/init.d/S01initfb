@@ -1,0 +1,70 @@
+#!/bin/bash
+
+do_start() {
+
+    ###
+    # enable tv output :
+    ###
+
+    # taken from the libreelec project
+    # https://github.com/LibreELEC/LibreELEC.tv/blob/master/projects/Odroid_C2/initramfs/platform_init
+
+    hdmimode=1080p60hz
+
+    # Parse command line arguments
+    for arg in $(cat /proc/cmdline); do
+	case $arg in
+	    hdmimode=*)
+		hdmimode="${arg#*=}"
+		;;
+	esac
+    done
+
+    # Enable first framebuffer
+    echo 0 > /sys/class/graphics/fb0/blank
+
+    # Disable second framebuffer
+    echo 1 > /sys/class/graphics/fb1/blank
+
+    # Disable framebuffer scaling
+    echo 0 > /sys/class/graphics/fb0/free_scale
+    echo 0 > /sys/class/graphics/fb1/free_scale
+
+    # set initial video state
+    echo 1 > /sys/class/video/disable_video
+
+    # Set framebuffer geometry to match the resolution
+    case $hdmimode in
+	480*)            X=720  Y=480  ;;
+	576*)            X=720  Y=576  ;;
+	720p*)           X=1280 Y=720  ;;
+	*)               X=1920 Y=1080 ;;
+    esac
+
+    fbset -fb /dev/fb0 -g $X $Y 1920 2160 32
+    fbset -fb /dev/fb1 -g 32 32 32 32 32
+
+    # Enable scaling for 4K output
+    case $hdmimode in
+	4k*|smpte*|2160*)
+	    echo 0 0 1919 1079 > /sys/class/graphics/fb0/free_scale_axis
+	    echo 0 0 3839 2159 > /sys/class/graphics/fb0/window_axis
+	    echo 1920 > /sys/class/graphics/fb0/scale_width
+	    echo 1080 > /sys/class/graphics/fb0/scale_height
+	    echo 0x10001 > /sys/class/graphics/fb0/free_scale
+	    ;;
+    esac
+}
+
+case "$1" in
+    start)
+        do_start
+        ;;
+    stop)
+	   ;;
+    restart|reload)
+	   ;;
+    *)
+esac
+
+exit $?

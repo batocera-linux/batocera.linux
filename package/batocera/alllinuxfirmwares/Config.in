@@ -1,0 +1,7 @@
+config BR2_PACKAGE_ALLLINUXFIRMWARES
+	bool "alllinuxfirmwares"
+	help
+	  This package provides various binary firmware files (closed
+	  binary blobs) for such devices like LAN, WLAN cards etc.
+
+	  https://git.kernel.org/?p=linux/kernel/git/firmware/linux-firmware.git

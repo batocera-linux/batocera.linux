@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-ALSA_UTILS_VERSION = 1.1.6
+ALSA_UTILS_VERSION = 1.1.9
 ALSA_UTILS_SOURCE = alsa-utils-$(ALSA_UTILS_VERSION).tar.bz2
 ALSA_UTILS_SITE = ftp://ftp.alsa-project.org/pub/utils
 ALSA_UTILS_LICENSE = GPL-2.0
@@ -40,7 +40,8 @@ endif
 
 ifeq ($(BR2_PACKAGE_ALSA_UTILS_BAT),y)
 ALSA_UTILS_CONF_OPTS += --enable-bat
-ALSA_UTILS_DEPENDENCIES += fftw
+# Analysis support requires fftw single precision
+ALSA_UTILS_DEPENDENCIES += $(if $(BR2_PACKAGE_FFTW_SINGLE),fftw-single)
 else
 ALSA_UTILS_CONF_OPTS += --disable-bat
 endif
@@ -80,5 +81,21 @@ define ALSA_UTILS_INSTALL_TARGET_CMDS
 		cp -rdpf $(STAGING_DIR)/usr/share/alsa/ $(TARGET_DIR)/usr/share/alsa/; \
 	fi
 endef
+
+ifeq ($(BR2_PACKAGE_ALSA_UTILS_ALSACTL)$(BR2_INIT_SYSTEMD),yy)
+ALSA_UTILS_DEPENDENCIES += systemd
+ALSA_UTILS_CONF_OPTS += --with-systemdsystemunitdir=/usr/lib/systemd/system
+define ALSA_UTILS_INSTALL_INIT_SYSTEMD
+	$(INSTALL) -D -m 0644 $(@D)/alsactl/alsa-restore.service \
+		$(TARGET_DIR)/usr/lib/systemd/system/alsa-restore.service
+	$(INSTALL) -D -m 0644 $(@D)/alsactl/alsa-state.service \
+		$(TARGET_DIR)/usr/lib/systemd/system/alsa-state.service
+	mkdir -p $(TARGET_DIR)/etc/systemd/system/sound.target.wants
+	ln -sf ../../../../lib/systemd/system/alsa-restore.service \
+		$(TARGET_DIR)/etc/systemd/system/sound.target.wants/alsa-restore.service
+	ln -sf ../../../../lib/systemd/system/alsa-state.service \
+		$(TARGET_DIR)/etc/systemd/system/sound.target.wants/alsa-state.service
+endef
+endif
 
 $(eval $(autotools-package))

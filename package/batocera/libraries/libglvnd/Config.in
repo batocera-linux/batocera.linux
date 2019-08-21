@@ -1,0 +1,10 @@
+config BR2_PACKAGE_LIBGLVND
+  bool "libglvnd"
+  depends on BR2_i386 || BR2_x86_64
+  depends on BR2_PACKAGE_XSERVER_XORG_SERVER_MODULAR
+  depends on BR2_PACKAGE_MESA3D
+  help
+    libglvnd is a vendor-neutral dispatch layer for arbitrating
+    OpenGL API call between multiple vendors.
+
+    https://github.com/NVIDIA/libglvnd

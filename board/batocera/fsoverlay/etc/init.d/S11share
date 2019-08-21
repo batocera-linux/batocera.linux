@@ -17,15 +17,15 @@ fi
 ###
 # SHARECONFFILE
 # can contain :
-# INTERNAL     => /dev/mmcblk0p3
+# INTERNAL     => /dev/mmcblk0p2
 # RAM          => tmpfs
 # ANYEXTERNAL  => any device found not starting by /dev/mmcblk0p (use it when you've several usb keys, but plug only one at a time)
 # DEV [FSUUID] => a device having the FSUID uuid
 ###
 
-SHARECONFFILE="/boot/recalbox-boot.conf"
-INTERNALDEVICE=$(/recalbox/scripts/recalbox-part.sh "share_internal")
-SHAREDEVICE=`cat ${SHARECONFFILE} | grep "sharedevice=" | head -n1 | cut -d'=' -f2`
+SHARECONFFILE="/boot/batocera-boot.conf"
+INTERNALDEVICE=$(batocera-part "share_internal")
+SHAREDEVICE=$(cat "${SHARECONFFILE}" | grep -E '^[ ]*sharedevice=' | head -n1 | cut -d'=' -f2)
 [[ "$?" -ne "0" || "$SHAREDEVICE" == "" ]] && SHAREDEVICE=INTERNAL
 
 getMaxTryConfig() {
@@ -45,32 +45,43 @@ MAXTRY=$(getMaxTryConfig "${SHARECONFFILE}")
 NTRY=0
 
 ##### BUT FIRST, create the internal partition if it doesn't exist
-# command that can be used for test to remove the 3rd partition : parted -s -m /dev/mmcblk0 rm 3
+# command that can be used for test to remove the 3rd partition : parted -s -m /dev/mmcblk0 rm 2
 # create the internal partition if it doesn't exist
 #
-# we don't remove data ;  only create a new partition if p3 is missing, and some free space is available only at the end of the disk
+# we don't remove data ;  only create a new partition if p2 is missing, and some free space is available only at the end of the disk
 #
 if ! test -e "${INTERNALDEVICE}"
 then
     # but the system partition exists
-    INTERNALPREVIOUSDEVICE=$(/recalbox/scripts/recalbox-part.sh previous "${INTERNALDEVICE}")
+    INTERNALPREVIOUSDEVICE=$(batocera-part previous "${INTERNALDEVICE}")
     
     if test -e "${INTERNALPREVIOUSDEVICE}" # the partition n-1 must exist (just in case the parameter given is not wrong)
     then
-	PARTPREFIX=$(/recalbox/scripts/recalbox-part.sh prefix "${INTERNALDEVICE}")
+	PARTPREFIX=$(batocera-part prefix "${INTERNALDEVICE}")
 
 	# create the internal partition
 	PSTART=$(parted -s "${PARTPREFIX}" -m unit b print free | tail -1 | grep -E 'free;$' | cut -d: -f 2)
 	if test -n "${PSTART}"
 	then
 	    parted -s "${PARTPREFIX}" -m unit b mkpart primary "${PSTART}" 100%
+
+	    # wait that the partition is visible on the linux side
+	    NTEST=0
+	    while test ! -e "${INTERNALDEVICE}" -a "${NTEST}" -lt 10
+	    do
+		sleep 1
+		let NTEST++
+	    done
+
+	    # format the partition
 	    if test -e "${INTERNALDEVICE}"
 	    then
-		#mkfs.vfat -F 32 -n SHARE /dev/mmcblk0p3 # if you replace this line, please change the INTERNALDEVICETYPE variable too in consequence
-		#fsck.fat /dev/mmcblk0p3 -a
+		#mkfs.vfat -F 32 -n SHARE /dev/mmcblk0p2 # if you replace this line, please change the INTERNALDEVICETYPE variable too in consequence
+		#fsck.fat /dev/mmcblk0p2 -a
 		mkfs.ext4 "${INTERNALDEVICE}" -q -F -L SHARE
 		e2fsck -f -p "${INTERNALDEVICE}"
 	    fi
+	    sync
 	fi
     fi
 fi
@@ -79,18 +90,22 @@ fi
 mountDeviceOrFallback() {
     DEVICE=$1
     TDEVICE=$2
-    RECALBOXFULLFS="/var/recalboxfs"
+    BATOCERAFULLFS="/var/batocerafs"
     FALLBACK=1
 
     if test -n "${DEVICE}"
     then
-	if mkdir -p "${RECALBOXFULLFS}"
+	if mkdir -p "${BATOCERAFULLFS}"
 	then
-	    if /recalbox/scripts/recalbox-mount.sh "${TDEVICE}" 1 "${DEVICE}" "${RECALBOXFULLFS}"
+	    if batocera-mount "${TDEVICE}" 1 "${DEVICE}" "${BATOCERAFULLFS}"
 	    then
-		if mkdir -p "${RECALBOXFULLFS}/recalbox"
+		if test -d "${BATOCERAFULLFS}/recalbox" -a ! -d "${BATOCERAFULLFS}/batocera" # legacy renaming (rename only if batocera doesn't exist and recalbox does)
 		then
-		    if mount "${RECALBOXFULLFS}/recalbox" "/recalbox/share" -o "noatime"
+		    mv "${BATOCERAFULLFS}/recalbox" "${BATOCERAFULLFS}/batocera"
+		fi
+		if mkdir -p "${BATOCERAFULLFS}/batocera"
+		then
+		    if mount "${BATOCERAFULLFS}/batocera" "/userdata" -o "noatime"
 		    then
 			FALLBACK=0
 		    fi
@@ -101,14 +116,14 @@ mountDeviceOrFallback() {
 
     if test "${FALLBACK}" = 1
     then
-	if ! /recalbox/scripts/recalbox-mount.sh "${INTERNALDEVICETYPE}" 1 "${INTERNALDEVICE}" /recalbox/share
+	if ! batocera-mount "${INTERNALDEVICETYPE}" 1 "${INTERNALDEVICE}" /userdata
 	then
-	    mount -t tmpfs -o size=128M tmpfs /recalbox/share
+	    mount -t tmpfs -o size=128M tmpfs /userdata
 	fi
     fi
 }
 
-systemsetting="python /usr/lib/python2.7/site-packages/configgen/settings/recalboxSettings.pyc"
+systemsetting="python /usr/lib/python2.7/site-packages/configgen/settings/batoceraSettings.py"
 rb_wifi_configure() {
     X=$1
 
@@ -116,12 +131,12 @@ rb_wifi_configure() {
     then
 	settings_ssid="`$systemsetting -command load -key wifi.ssid`"
 	settings_key="`$systemsetting -command load -key wifi.key`"
-	settings_file="/var/lib/connman/recalbox_wifi.config"
+	settings_file="/var/lib/connman/batocera_wifi.config"
 	settings_name="default"
     else
 	settings_ssid="`$systemsetting -command load -key wifi${X}.ssid`"
 	settings_key="`$systemsetting -command load -key wifi${X}.key`"
-	settings_file="/var/lib/connman/recalbox_wifi${X}.config"
+	settings_file="/var/lib/connman/batocera_wifi${X}.config"
 	settings_name="${X}"
     fi
 
@@ -129,23 +144,23 @@ rb_wifi_configure() {
 	mkdir -p "/var/lib/connman"
 	cat > "${settings_file}" <<EOF
 [global]
-Name=recalbox
+Name=batocera
 
-[service_recalbox_${settings_name}]
+[service_batocera_${settings_name}]
 Type=wifi
 Name=${settings_ssid}
 EOF
 	if test "${settings_key}" != ""
 	then
-	    settings_key_dec=$(/recalbox/scripts/recalbox-encode.sh decode "${settings_key}")
+	    settings_key_dec=$(batocera-encode decode "${settings_key}")
 	    echo "Passphrase=${settings_key_dec}" >> "${settings_file}"
 
 	    # saved the value encoded
 	    if test "${settings_key}" = "${settings_key_dec}"
 	    then
-		# sed the replace by the secure value in recalbox.conf
-		settings_key=$(/recalbox/scripts/recalbox-encode.sh encode "${settings_key}")
-		sed -i -e s@'^[ \t]*wifi.key[ \t]*=.*$'@"wifi.key=${settings_key}"@ "/recalbox/share/system/recalbox.conf"
+		# sed the replace by the secure value in batocera.conf
+		#settings_key=$(batocera-encode encode "${settings_key}")
+		sed -i -e s@'^[ \t]*wifi.key[ \t]*=.*$'@"wifi.key=${settings_key}"@ "/userdata/system/batocera.conf"
 	    fi
 	fi
     fi
@@ -164,32 +179,36 @@ rb_wifi_configure_all() {
 
     # wait a bit, otherwise, connman is not really started
     sleep 2
-    /recalbox/scripts/recalbox-config.sh wifi start
+    batocera-config wifi start
+}
+
+fixbatoceraconfname() {
+    test -e /userdata/system/recalbox.conf && mv /userdata/system/recalbox.conf /userdata/system/batocera.conf
 }
 
 mountNetwork() {
-    # /boot/recalbox-boot.conf examples :
+    # /boot/batocera-boot.conf examples :
     # sharedevice=NETWORK
     #
     # Basic commands : sharenetwork_<nfs|smb><[0-9]>=<SHARE|ROMS|SAVES|BIOS>@<host>:<remote directory>:<mount options>
     #
-    # sharenetwork_nfs1=SHARE@192.168.0.1:/Documents/recalbox
+    # sharenetwork_nfs1=SHARE@192.168.0.1:/Documents/batocera
     # or
-    # sharenetwork_nfs1=ROMS@192.168.0.1:/Documents/recalbox/roms
-    # sharenetwork_nfs2=SAVES@192.168.0.1:/Documents/recalbox/saves
+    # sharenetwork_nfs1=ROMS@192.168.0.1:/Documents/batocera/roms
+    # sharenetwork_nfs2=SAVES@192.168.0.1:/Documents/batocera/saves
     # or
-    # sharenetwork_smb1=SHARE@192.168.0.1:Documents/recalbox:guest
+    # sharenetwork_smb1=SHARE@192.168.0.1:Documents/batocera:guest
     #
     # Advanced commands : sharenetwork_cmd<[0-9]>=<command to run>
-    # sharenetwork_cmd1=mount -o port=2049,nolock,proto=tcp 192.168.0.1:/Documents/recalbox /recalbox/share
+    # sharenetwork_cmd1=mount -o port=2049,nolock,proto=tcp 192.168.0.1:/Documents/batocera /userdata
     # or
-    # sharenetwork_cmd1=mount -o port=2049,nolock,proto=tcp 192.168.0.1:/Documents/recalbox/roms /recalbox/share/roms
-    # sharenetwork_cmd2=mount -o port=2049,nolock,proto=tcp 192.168.0.1:/Documents/recalbox/saves /recalbox/share/saves
+    # sharenetwork_cmd1=mount -o port=2049,nolock,proto=tcp 192.168.0.1:/Documents/batocera/roms /userdata/roms
+    # sharenetwork_cmd2=mount -o port=2049,nolock,proto=tcp 192.168.0.1:/Documents/batocera/saves /userdata/saves
     # or
-    # sharenetwork_cmd1=mount.cifs //192.168.0.1/recalbox /recalbox/share -o guest
+    # sharenetwork_cmd1=mount.cifs //192.168.0.1/batocera /userdata -o guest
 
 
-    # execute all commands in /boot/recalbox-boot.conf which are like : sharenetwork_cmd1=my command
+    # execute all commands in /boot/batocera-boot.conf which are like : sharenetwork_cmd1=my command
     if ! grep -E '^[ ]*sharenetwork_[a-z]*[0-9][ ]*=' "${SHARECONFFILE}" |
 	    sed -e s+'^[ ]*sharenetwork_\([a-z]*\)[0-9][ ]*='+'\1 '+ |
 	    while read CTYPE CMD
@@ -211,20 +230,20 @@ mountNetwork() {
 			CMD_RDIR=$(echo "${CMD}" | sed -e s+'^[^@]*@[^:]*:\([^:]*\).*$'+'\1'+)
 			CMD_OPT=$(echo "${CMD}" | sed -e s+'^[^@]*@[^:]*:[^:]*'+''+ -e s+'^:'++)
 
-			# MAP to the recalbox directory
-			CMD_TDIR="/recalbox/share"
+			# MAP to the batocera directory
+			CMD_TDIR="/userdata"
 			case "${CMD_TARGET}" in
 			    "SHARE")
-				CMD_TDIR="/recalbox/share"
+				CMD_TDIR="/userdata"
 			    ;;
 			    "ROMS")
-				CMD_TDIR="/recalbox/share/roms"
+				CMD_TDIR="/userdata/roms"
 			    ;;
 			    "SAVES")
-				CMD_TDIR="/recalbox/share/saves"
+				CMD_TDIR="/userdata/saves"
 			    ;;
 			    "BIOS")
-				CMD_TDIR="/recalbox/share/bios"
+				CMD_TDIR="/userdata/bios"
 			    ;;
 			esac
 
@@ -287,10 +306,11 @@ case "${MODE}" in
 	DEVICE=$(echo "${LDEVICE}" | sed -e s+'^\([^:]*\):.*$'+'\1'+)
 	TDEVICE=$(echo "${LDEVICE}" | sed -e s+'^.* TYPE="\([^"]*\)"$'+'\1'+)
 	mountDeviceOrFallback "${DEVICE}" "${TDEVICE}"
+	fixbatoceraconfname
 	rb_wifi_configure_all& # configure the wifi at the end
 	;;
     "ANYEXTERNAL")
-        PARTPREFIX=$(/recalbox/scripts/recalbox-part.sh prefix "${INTERNALDEVICE}")
+        PARTPREFIX=$(batocera-part prefix "${INTERNALDEVICE}")
 	LDEVICE=$(blkid | grep -vE "^${PARTPREFIX}" | head -1)
 	while test -z "${LDEVICE}" -a "${NTRY}" -lt "${MAXTRY}" # wait the device that can take some seconds after udev started
 	do
@@ -301,23 +321,25 @@ case "${MODE}" in
 	DEVICE=$(echo "${LDEVICE}" | sed -e s+'^\([^:]*\):.*$'+'\1'+)
 	TDEVICE=$(echo "${LDEVICE}" | sed -e s+'^.* TYPE="\([^"]*\)"$'+'\1'+)
 	mountDeviceOrFallback "${DEVICE}" "${TDEVICE}"
+	fixbatoceraconfname
 	rb_wifi_configure_all& # configure the wifi at the end
 	;;
     "RAM")
-	mount -t tmpfs -o size=128M tmpfs /recalbox/share
+	mount -t tmpfs -o size=128M tmpfs /userdata
 	;;
     "NETWORK")
 	# first, INTERNAL mount, then, network mount over the NETWORK mounts
-	# to allow to mount over /recalbox/share, but only over /recalbox/share/roms if wanted
+	# to allow to mount over /userdata, but only over /userdata/roms if wanted
 	# mounting network mounts over usb key have not really sense
-	if /recalbox/scripts/recalbox-mount.sh "${INTERNALDEVICETYPE}" 1 "${INTERNALDEVICE}" /recalbox/share
+	if batocera-mount "${INTERNALDEVICETYPE}" 1 "${INTERNALDEVICE}" /userdata
 	then
 	    # we try to configure the wifi here
 	    # for people using the internal device for the wifi and some others mounts for data
+	    fixbatoceraconfname
 	    rb_wifi_configure_all
 	else
 	    # fallback
-	    mount -t tmpfs -o size=128M tmpfs /recalbox/share
+	    mount -t tmpfs -o size=128M tmpfs /userdata
 	fi
 
 	# Network mounts
@@ -325,22 +347,23 @@ case "${MODE}" in
 	mountNetwork > /tmp/mountNetwork.log 2> /tmp/mountNetwork.err # could be usefull to debug
 	;;
     "INTERNAL"|*)
-	if ! /recalbox/scripts/recalbox-mount.sh "${INTERNALDEVICETYPE}" 1 "${INTERNALDEVICE}" /recalbox/share
+	if ! batocera-mount "${INTERNALDEVICETYPE}" 1 "${INTERNALDEVICE}" /userdata
 	then
 	    # fallback
 	    # the internal partition is no more required in fact
-	    mount -t tmpfs -o size=128M tmpfs /recalbox/share
+	    mount -t tmpfs -o size=128M tmpfs /userdata
 	fi
+	fixbatoceraconfname
 	rb_wifi_configure_all& # configure the wifi at the end
 	;;
 esac
 
 # share upgrade, just unzip share.zip from upgrade, no need to reboot
-if test -e "/recalbox/share/system/upgrade/share.zip"
+if test -e "/userdata/system/upgrade/share.zip"
 then
-    (cd /recalbox/share && unzip -o /recalbox/share/system/upgrade/share.zip) > /recalbox/share/system/upgrade/upgrade.share.out.log 2> /recalbox/share/system/upgrade/upgrade.share.err.log
+    (cd /userdata && unzip -o /userdata/system/upgrade/share.zip) > /userdata/system/upgrade/upgrade.share.out.log 2> /userdata/system/upgrade/upgrade.share.err.log
     # always remove to not apply indefinitly
-    rm -f /recalbox/share/system/upgrade/share.zip
+    rm -f /userdata/system/upgrade/share.zip
 fi
 
 # now, let mount delayed usbmount devices
@@ -353,4 +376,4 @@ ls /var/run/usbmount.delay |
 	 /usr/share/usbmount/usbmount "${RTYPE}"
 	 rm "/var/run/usbmount.delay/${RULE}")
     done
-touch /var/run/recalbox.share.mounted # reenable standard usbmount
+touch /var/run/batocera.share.mounted # reenable standard usbmount

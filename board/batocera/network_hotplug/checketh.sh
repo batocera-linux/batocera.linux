@@ -1,1 +1,0 @@
-../fsoverlay/root/checketh.sh

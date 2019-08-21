@@ -1,9 +1,11 @@
 #!/bin/sh
 
-matchbox-window-manager -use_cursor no -use_titlebar no -use_desktop_mode no -use_lowlight no &
+# hide mouse cursor
+unclutter --noevents -b
+
+systemsetting="python /usr/lib/python2.7/site-packages/configgen/settings/batoceraSettings.py"
 
 # set the keyboard
-systemsetting="python /usr/lib/python2.7/site-packages/configgen/settings/recalboxSettings.pyc"
 settings_lang="`$systemsetting -command load -key system.language`"
 
 # not always true (en_US for us), but it's really better than always english
@@ -14,15 +16,18 @@ setxkbmap "${map_name}"
 xset -dpms
 xset s off
 
-#
-export HOME=/recalbox/share/system
+# environment
+export HOME=/userdata/system
 export LC_ALL="${settings_lang}.UTF-8"
 export LANG=${LC_ALL}
 
-# because of xinerama braking es, enable only one screen at a time
-systemsetting="python /usr/lib/python2.7/site-packages/configgen/settings/recalboxSettings.pyc"
+# because of xinerama breaking es, enable only one screen at a time
 settings_output="`$systemsetting -command load -key global.videooutput`"
-/recalbox/scripts/recalbox-config.sh setoutput "${settings_output}"
+batocera-resolution setOutput "${settings_output}" # empty or invalid values defaults to the first valid
+
+# dpi override for nvidia gpus
+settings_output="`$systemsetting -command load -key global.dpi`"
+[ ! -z "${settings_output}" ] && batocera-resolution setDPI "${settings_output}"
 
 #####################
 ## CUSTOMISATIONS ###
@@ -42,5 +47,16 @@ settings_output="`$systemsetting -command load -key global.videooutput`"
 #####################
 #####################
 
-# without windowed, time must be sleeped to wait that matchbox ended to initialize :-(
-exec emulationstation --windowed
+# set user desired resolution
+# nice workaround for displays which tell X11 to use strange resolutions
+settings_output="`$systemsetting -command load -key global.videomode`"
+[ ! -z "${settings_output}" ] && batocera-resolution setMode "${settings_output}"
+
+batocera-resolution minTomaxResolution
+
+# allow coredumps for ES
+ulimit -H -c unlimited
+ulimit -S -c unlimited emulationstation
+
+cd /userdata # es needs a PWD
+openbox --config-file /etc/openbox/rc.xml --startup "emulationstation --windowed"

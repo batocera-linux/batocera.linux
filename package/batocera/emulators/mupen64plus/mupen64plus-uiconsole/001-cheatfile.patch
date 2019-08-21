@@ -1,0 +1,14 @@
+diff --git a/src/cheat.c b/src/cheat.c
+index e538472..5404522 100644
+--- a/src/cheat.c
++++ b/src/cheat.c
+@@ -202,7 +202,8 @@ static void CheatAddVariables(cheat_code * Code, char *varlist)
+ static void ReadCheats(char *RomSection)
+ {
+     sCheatInfo *curr_code = NULL;
+-    const char *romdbpath = ConfigGetSharedDataFilepath(CHEAT_FILE);
++    //const char *romdbpath = ConfigGetSharedDataFilepath(CHEAT_FILE);
++    const char *romdbpath = "/usr/share/mupen64plus/mupencheat.txt";
+     if (romdbpath == NULL)
+     {
+         DebugMessage(M64MSG_WARNING, "cheat code database file '%s' not found.", CHEAT_FILE);

@@ -4,7 +4,7 @@
 #git diff --name-only $BR_LAST_MERGE_COMMIT > buildroot.batocera.diff
 
 cat buildroot.batocera.diff                              |
-    grep -vE '^board/recalbox/'                          | # batocera board
+    grep -vE '^board/batocera/'                          | # batocera board
     grep -vE '^configs/batocera-'                        | # batocera defconfig
     grep -vE '^scripts/linux'                            | # batocera utilities
     grep -vE '^package/batocera/'                        | # batocera packages

@@ -3,12 +3,11 @@
 # mupen64plus ui-console
 #
 ################################################################################
-# Version.: Commits on May 12, 2018
-MUPEN64PLUS_UICONSOLE_VERSION = 5b9eba4cabbbdcee668b37fa263b50c614b8be69
+# Version.: Commits on Mar 3, 2019
+MUPEN64PLUS_UICONSOLE_VERSION = b8fa2dea54b98a8a4f8a6ce7bb67ad93a306d843
 MUPEN64PLUS_UICONSOLE_SITE = $(call github,mupen64plus,mupen64plus-ui-console,$(MUPEN64PLUS_UICONSOLE_VERSION))
-MUPEN64PLUS_UICONSOLE_LICENSE = MIT
+MUPEN64PLUS_UICONSOLE_LICENSE = GPLv2
 MUPEN64PLUS_UICONSOLE_DEPENDENCIES = sdl2 alsa-lib mupen64plus-core
-
 
 define MUPEN64PLUS_UICONSOLE_BUILD_CMDS
         CFLAGS="$(TARGET_CFLAGS)" CXXFLAGS="$(TARGET_CXXFLAGS)" \
@@ -30,7 +29,7 @@ define MUPEN64PLUS_UICONSOLE_INSTALL_TARGET_CMDS
 	INSTALL="/usr/bin/install" \
 	INSTALL_STRIP_FLAG="" \
 	-C $(@D)/projects/unix all $(MUPEN64PLUS_PARAMS) OPTFLAGS="$(TARGET_CXXFLAGS)" install
-#	$(INSTALL) -m 0644 $(@D)/projects/unix/libmupen64plus.so.2.0.0 $(TARGET_DIR)/usr/lib
+	cp package/batocera/emulators/mupen64plus/mupen64plus-uiconsole/mupencheat.txt "$(TARGET_DIR)/usr/share/mupen64plus/mupencheat.txt"
 endef
 
 define MUPEN64PLUS_UICONSOLE_CROSS_FIXUP

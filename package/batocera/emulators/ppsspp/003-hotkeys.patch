@@ -79,7 +79,7 @@ index 3e1b322..19aa874 100644
 +		     // Request the framework to exit cleanly.
 +		     System_SendMessage("finish", "");
 +		     // However, let's make sure the config was saved, since it may not have been.
-+		     g_Config.Save();
++		     g_Config.Save("EmuScreen::pspKey");
 +		  }
 +
 +		  if((buttons & CTRL_LEFT) == CTRL_LEFT) {

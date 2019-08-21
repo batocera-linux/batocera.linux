@@ -1,0 +1,113 @@
+diff --git a/xrandr.c b/xrandr.c
+index 115dbcc..811091f 100644
+--- a/xrandr.c
++++ b/xrandr.c
+@@ -2670,6 +2670,8 @@ main (int argc, char **argv)
+     Bool	modeit = False;
+     Bool	propit = False;
+     Bool	query_1 = False;
++    Bool	listModes = False;
++    Bool	currentResolution = False;
+     Bool        listConnectedOutputs = False;
+     Bool	list_providers = False;
+     Bool        provsetoutsource = False;
+@@ -3103,6 +3105,16 @@ main (int argc, char **argv)
+ 	    query_1 = True;
+ 	    continue;
+ 	}
++	if (!strcmp ("--listModes", argv[i]))
++	{
++	    listModes = True;
++	    continue;
++	}
++	if (!strcmp ("--currentResolution", argv[i]))
++	{
++	    currentResolution = True;
++	    continue;
++	}
+ 	if (!strcmp ("--newmode", argv[i]))
+ 	{
+ 	    umode_t  *m = calloc (1, sizeof (umode_t));
+@@ -3667,6 +3679,82 @@ main (int argc, char **argv)
+ 	}
+ 	exit (0);
+     }
++    if (listModes) {
++      output_t    *output;
++
++#define ModeShown   0x80000000
++
++      get_screen (current);
++      get_crtcs ();
++      get_outputs ();
++
++      for (output = all_outputs; output; output = output->next)
++	{
++	  XRROutputInfo   *output_info = output->output_info;
++	  crtc_t	    *cur_crtc = output->crtc_info;
++	  XRRCrtcInfo	    *crtc_info = cur_crtc ? cur_crtc->crtc_info : NULL;
++	  XRRModeInfo	    *cur_mode = output->mode_info;
++	  int		    j;
++	  Bool	    *mode_shown;
++
++	  if(cur_mode) {
++	    {
++	      mode_shown = calloc (output_info->nmode, sizeof (Bool));
++	      if (!mode_shown) fatal ("out of memory\n");
++	      for (j = 0; j < output_info->nmode; j++)
++		{
++		  XRRModeInfo *jmode, *kmode;
++		  int k;
++
++		  if (mode_shown[j]) continue;
++
++		  jmode = find_mode_by_xid (output_info->modes[j]);
++		  printf ("%ix%i ", jmode->width, jmode->height);
++		  printf ("%s", jmode->name);
++
++		  for (k = j; k < output_info->nmode; k++)
++		    {
++		      if (mode_shown[k]) continue;
++		      kmode = find_mode_by_xid (output_info->modes[k]);
++		      if (strcmp (jmode->name, kmode->name) != 0) continue;
++		      mode_shown[k] = True;
++		      kmode->modeFlags |= ModeShown;
++
++		      if (kmode == output->mode_info)
++			printf ("*");
++		    }
++		  printf ("\n");
++		}
++	      free (mode_shown);
++	    }
++	  }
++	}
++      exit (0);
++    }
++
++    if (currentResolution) {
++      output_t    *output;
++      get_screen (current);
++      get_crtcs ();
++      get_outputs ();
++
++      for (output = all_outputs; output; output = output->next)
++	{
++	  crtc_t	    *cur_crtc = output->crtc_info;
++	  XRRCrtcInfo	    *crtc_info = cur_crtc ? cur_crtc->crtc_info : NULL;
++	  XRRModeInfo	    *cur_mode = output->mode_info;
++
++	  if(cur_mode) {
++	    if (crtc_info) {
++	      printf ("%dx%d\n", crtc_info->width, crtc_info->height);
++	    } else {
++	      printf ("%dx%d\n", cur_mode->width, cur_mode->height);
++	    }
++	  }
++	}
++      exit (0);
++    }
++
+     if (query_1_2 || (query && has_1_2 && !query_1))
+     {
+ 	output_t    *output;

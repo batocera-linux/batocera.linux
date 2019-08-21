@@ -1,0 +1,144 @@
+#!/usr/bin/python
+
+from __future__ import absolute_import, print_function, unicode_literals
+
+try:
+  from gi.repository import GObject
+except ImportError:
+  import gobject as GObject
+
+import dbus
+import dbus.mainloop.glib
+from optparse import OptionParser, make_option
+import bluezutils
+import time
+import glib
+
+devices = {}
+
+gadapter = None
+gExit = 1
+
+def stopDiscovering():
+        global gadapter
+
+        if gadapter is not None:
+                try:
+                        gadapter.StopDiscovery()
+                except:
+                        pass
+                mainloop.quit()
+
+def doConnect(address):
+        global gExit
+
+        device = bluezutils.find_device(address)
+        ntry=5
+
+        while ntry > 0:
+                ntry = ntry -1
+                try:
+		        device.Connect()
+                        gExit = 0
+                        print("Connected successfully")
+                        return
+                except:
+                        print("Connection failed.")
+                        time.sleep(1)
+        raise Exception("connexion failed")
+
+def doAction(path, properties):
+        bluezProps = dbus.Interface(bus.get_object("org.bluez", path), "org.freedesktop.DBus.Properties")
+
+        # trust any device
+        if "Trusted" in properties:
+                if properties["Trusted"] == False:
+                        print("Trusting...")
+                        bluezProps.Set("org.bluez.Device1", "Trusted", True)
+
+        # connect
+        if "Connected" in properties and "Address" in properties:
+                if properties["Connected"] == False:
+                        try:
+                                doConnect(properties["Address"])
+
+                                # exit after a device is connected
+                                stopDiscovering()
+                        except:
+                                pass
+
+def interfaces_added(path, interfaces):
+        if "org.bluez.Device1" not in interfaces:
+                return
+
+	properties = interfaces["org.bluez.Device1"]
+	if not properties:
+		return
+
+	if path in devices:
+		dev = devices[path]
+		devices[path] = dict(devices[path].items() + properties.items())
+	else:
+		devices[path] = properties
+
+	if "Address" in devices[path]:
+		address = properties["Address"]
+	else:
+		address = "<unknown>"
+
+	doAction(path, devices[path])
+
+def properties_changed(interface, changed, invalidated, path):
+	if interface != "org.bluez.Device1":
+		return
+
+	if path in devices:
+		dev = devices[path]
+		devices[path] = dict(devices[path].items() + changed.items())
+	else:
+		devices[path] = changed
+
+	if "Address" in devices[path]:
+		address = devices[path]["Address"]
+	else:
+		address = "<unknown>"
+
+	doAction(path, devices[path])
+
+def property_changed(name, value):
+	if (name == "Discovering" and not value):
+		mainloop.quit()
+
+if __name__ == '__main__':
+	dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
+
+	bus = dbus.SystemBus()
+	adapter = bluezutils.find_adapter()
+
+	bus.add_signal_receiver(interfaces_added,
+			dbus_interface = "org.freedesktop.DBus.ObjectManager",
+			signal_name = "InterfacesAdded")
+
+	bus.add_signal_receiver(properties_changed,
+			dbus_interface = "org.freedesktop.DBus.Properties",
+			signal_name = "PropertiesChanged",
+			arg0 = "org.bluez.Device1",
+			path_keyword = "path")
+
+	bus.add_signal_receiver(property_changed,
+					dbus_interface = "org.bluez.Adapter1",
+					signal_name = "PropertyChanged")
+
+	om = dbus.Interface(bus.get_object("org.bluez", "/"),
+				"org.freedesktop.DBus.ObjectManager")
+	objects = om.GetManagedObjects()
+	for path, interfaces in objects.iteritems():
+		if "org.bluez.Device1" in interfaces:
+			devices[path] = interfaces["org.bluez.Device1"]
+
+	adapter.StartDiscovery()
+        gadapter = adapter
+        glib.timeout_add_seconds(30, stopDiscovering)
+	mainloop = GObject.MainLoop()
+	mainloop.run()
+        exit(gExit)

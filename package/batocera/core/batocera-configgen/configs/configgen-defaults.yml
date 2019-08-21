@@ -1,0 +1,245 @@
+default:
+  emulator:
+  core:
+  options:
+    videomode:      default
+    ratio:          auto
+    video_threaded: false
+    smooth:         true
+    rewind:         true
+    bezel:          default
+    forceNoBezel:   false
+
+nes:
+  emulator: libretro
+  core:     fceumm
+snes:
+  emulator: libretro
+  core:     snes9x
+n64:
+  emulator: mupen64plus
+  core:     gliden64
+gba:
+  emulator: libretro
+  core:     mgba
+gb:
+  emulator: libretro
+  core:     gambatte
+gbc:
+  emulator: libretro
+  core:     gambatte
+gb2players:
+  emulator: libretro
+  core:     tgbdual
+gbc2players:
+  emulator: libretro
+  core:     tgbdual
+fds:
+  emulator: libretro
+  core:     fceumm
+virtualboy:
+  emulator: libretro
+  core:     vb
+gamecube:
+  emulator: dolphin
+wii:
+  emulator: dolphin
+  options:
+    emulatedwiimotes: false
+ps2:
+  emulator: pcsx2
+  options:
+    fullboot: true
+nds:
+  emulator: libretro
+  core:     desmume
+3ds:
+  emulator: citra
+  core:     citra
+sg1000:
+  emulator: libretro
+  core:     genesisplusgx
+mastersystem:
+  emulator: libretro
+  core:     genesisplusgx
+megadrive:
+  emulator: libretro
+  core:     genesisplusgx
+gamegear:
+  emulator: libretro
+  core:     genesisplusgx
+sega32x:
+  emulator: libretro
+  core:     picodrive
+segacd:
+  emulator: libretro
+  core:     genesisplusgx
+saturn:
+  emulator: libretro
+  core:     yabause
+dreamcast:
+  emulator: reicast
+atomiswave:
+  emulator: libretro
+  core:     flycast
+naomi:
+  emulator: libretro
+  core:     flycast
+neogeo:
+  emulator: libretro
+  core:     fbneo
+neogeocd:
+  emulator: libretro
+  core:     neocd
+mame:
+  emulator: libretro
+  core:     mame078plus
+fba:
+  emulator: libretro
+  core:     fbneo
+msx:
+  emulator: libretro
+  core:     bluemsx
+amiga:
+  emulator: fsuae
+  core:     A1200
+amigacd32:
+  emulator: fsuae
+  core:     CD32
+amigacdtv:
+  emulator: fsuae
+  core:     CDTV
+amstradcpc:
+  emulator: libretro
+  core:     cap32
+apple2:
+  emulator: linapple
+  options:
+    videomode: default
+atarist:
+  emulator: libretro
+  core:     hatari
+zxspectrum:
+  emulator: libretro
+  core:     fuse
+odyssey2:
+  emulator: libretro
+  core:     o2em
+zx81:
+  emulator: libretro
+  core:     '81'
+dos:
+  emulator: dosbox
+  options:
+    videomode: default
+c64:
+  emulator: vice
+  core:     x64
+x68000:
+  emulator: libretro
+  core:     px68k
+ngp:
+  emulator: libretro
+  core:     mednafen_ngp
+ngpc:
+  emulator: libretro
+  core:     mednafen_ngp
+gameandwatch:
+  emulator: libretro
+  core:     gw
+  options:
+    forceNoBezel: true
+vectrex:
+  emulator: libretro
+  core:     vecx
+lynx:
+  emulator: libretro
+  core:     mednafen_lynx
+lutro:
+  emulator: libretro
+  core:     lutro
+wswan:
+  emulator: libretro
+  core:     mednafen_wswan
+  options:
+    ratio: 16/10
+wswanc:
+  emulator: libretro
+  core: mednafen_wswan
+  options:
+    ratio: 16/10
+pcengine:
+  emulator: libretro
+  core:     pce
+pcenginecd:
+  emulator: libretro
+  core:     pce
+supergrafx:
+  emulator: libretro
+  core:     mednafen_supergrafx
+pcfx:
+  emulator: libretro
+  core:     pcfx
+intellivision:
+  emulator: libretro
+  core:     freeintv
+atari2600:
+  emulator: libretro
+  core:     stella
+atari5200:
+  emulator: libretro
+  core:     atari800
+atari7800:
+  emulator: libretro
+  core:     prosystem
+atari800:
+  emulator: libretro
+  core:     atari800
+prboom:
+  emulator: libretro
+  core:     prboom
+psx:
+  emulator: libretro
+  core:     pcsx_rearmed
+cavestory:
+  emulator: libretro
+  core:     nxengine
+imageviewer:
+  emulator: libretro
+  core:     imageviewer
+scummvm:
+  emulator: scummvm
+  options:
+    videomode: default
+colecovision:
+  emulator: libretro
+  core:     bluemsx
+jaguar:
+  emulator: libretro
+  core:     virtualjaguar
+3do:
+  emulator: libretro
+  core:     4do
+kodi:
+  emulator: kodi
+  options:
+    videomode: default
+moonlight:
+  emulator: moonlight
+psp:
+  emulator: ppsspp
+satellaview:
+  emulator: libretro
+  core:     snes9x
+sufami:
+  emulator: libretro
+  core:     snes9x
+pokemini:
+  emulator: libretro
+  core:     pokemini
+gx4000:
+  emulator: libretro
+  core:     cap32
+lightgun:
+  emulator: libretro
+  core:     mame078plus

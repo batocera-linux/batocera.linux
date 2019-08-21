@@ -5,11 +5,11 @@
 
 import re
 
-from base import _CheckFunction
-from lib import ConsecutiveEmptyLines  # noqa: F401
-from lib import EmptyLastLine          # noqa: F401
-from lib import NewlineAtEof           # noqa: F401
-from lib import TrailingSpace          # noqa: F401
+from checkpackagelib.base import _CheckFunction
+from checkpackagelib.lib import ConsecutiveEmptyLines  # noqa: F401
+from checkpackagelib.lib import EmptyLastLine          # noqa: F401
+from checkpackagelib.lib import NewlineAtEof           # noqa: F401
+from checkpackagelib.lib import TrailingSpace          # noqa: F401
 
 
 def _empty_or_comment(text):
@@ -58,6 +58,72 @@ class AttributesOrder(_CheckFunction):
                     " select, help ({}#_config_files)"
                     .format(self.filename, lineno, self.url_to_manual),
                     text]
+
+
+class CommentsMenusPackagesOrder(_CheckFunction):
+    print_package_warning = [True, True, True, True, True, True]
+    menu_of_packages = ["", "", "", "", "", ""]
+    package = ["", "", "", "", "", ""]
+
+    def before(self):
+        self.state = ""
+
+    def get_level(self):
+        return len(self.state.split('-')) - 1
+
+    def check_line(self, lineno, text):
+        if text.startswith("comment") or text.startswith("if") or \
+           text.startswith("menu"):
+
+            if text.startswith("comment"):
+                if not self.state.endswith("-comment"):
+                    self.state += "-comment"
+
+            elif text.startswith("if") or text.startswith("menu"):
+                if text.startswith("if"):
+                    self.state += "-if"
+
+                elif text.startswith("menu"):
+                    self.state += "-menu"
+
+            level = self.get_level()
+            self.package[level] = ""
+            self.print_package_warning[level] = True
+            self.menu_of_packages[level] = text[:-1]
+
+        elif text.startswith("endif") or text.startswith("endmenu"):
+            if self.state.endswith("comment"):
+                self.state = self.state[:-8]
+
+            if text.startswith("endif"):
+                self.state = self.state[:-3]
+
+            elif text.startswith("endmenu"):
+                self.state = self.state[:-5]
+
+        elif text.startswith('\tsource "package/'):
+            level = self.get_level()
+            new_package = text[17: -(len(self.filename)-5):]
+
+            # We order _ before A, so replace it with .
+            new_package_ord = new_package.replace('_', '.')
+
+            if self.package[level] != "" and \
+               self.print_package_warning[level] and \
+               new_package_ord < self.package[level]:
+                self.print_package_warning[level] = False
+                prefix = "{}:{}: ".format(self.filename, lineno)
+                spaces = " " * len(prefix)
+                return ["{prefix}Packages in: {menu},\n"
+                        "{spaces}are not alphabetically ordered;\n"
+                        "{spaces}correct order: '-', '_', digits, capitals, lowercase;\n"
+                        "{spaces}first incorrect package: {package}"
+                        .format(prefix=prefix, spaces=spaces,
+                                menu=self.menu_of_packages[level],
+                                package=new_package),
+                        text]
+
+            self.package[level] = new_package_ord
 
 
 class HelpText(_CheckFunction):

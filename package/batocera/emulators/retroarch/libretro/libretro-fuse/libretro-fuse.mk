@@ -3,9 +3,10 @@
 # FUSE
 #
 ################################################################################
-# Version.: Commits on Apr 19, 2018
-LIBRETRO_FUSE_VERSION = fa6ecc43754be89ec5a156877f04adb8f9cc7a09
+# Version.: Commits on Nov 17, 2018
+LIBRETRO_FUSE_VERSION = 43d01dec6ad26e6014fabf79dbcf6a04ac2c7eea
 LIBRETRO_FUSE_SITE = $(call github,libretro,fuse-libretro,$(LIBRETRO_FUSE_VERSION))
+LIBRETRO_FUSE_LICENSE = GPLv3
 
 define LIBRETRO_FUSE_BUILD_CMDS
 	CFLAGS="$(TARGET_CFLAGS)" CXXFLAGS="$(TARGET_CXXFLAGS)" LDFLAGS="$(TARGET_LDFLAGS)" $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" -C $(@D)/ -f Makefile.libretro

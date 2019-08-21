@@ -22,7 +22,7 @@ endef
 ifeq ($(BR2_cortex_a7),y)
         GAMECON_GPIO_RPI_PRE_CONFIGURE_HOOKS += GAMECON_GPIO_RPI_RPI2_HOOK
 endif
-ifeq ($(BR2_cortex_a8),y)
+ifeq ($(BR2_cortex_a53),y)
         GAMECON_GPIO_RPI_PRE_CONFIGURE_HOOKS += GAMECON_GPIO_RPI_RPI2_HOOK
 endif
 

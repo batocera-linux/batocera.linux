@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-MTD_VERSION = 2.0.2
+MTD_VERSION = 2.1.0
 MTD_SOURCE = mtd-utils-$(MTD_VERSION).tar.bz2
 MTD_SITE = ftp://ftp.infradead.org/pub/mtd-utils
 MTD_LICENSE = GPL-2.0
@@ -21,6 +21,12 @@ endif
 ifeq ($(BR2_PACKAGE_MTD_UBIFS_UTILS),y)
 MTD_DEPENDENCIES += util-linux zlib lzo host-pkgconf
 MTD_CONF_OPTS += --with-ubifs
+ifeq ($(BR2_PACKAGE_OPENSSL),y)
+MTD_DEPENDENCIES += openssl
+MTD_CONF_OPTS += --with-crypto
+else
+MTD_CONF_OPTS += --without-crypto
+endif
 else
 MTD_CONF_OPTS += --without-ubifs
 endif
@@ -29,10 +35,6 @@ ifeq ($(BR2_PACKAGE_MTD_TESTS),y)
 MTD_CONF_OPTS += --enable-tests --enable-install-tests
 else
 MTD_CONF_OPTS += --disable-tests --disable-install-tests
-endif
-
-ifeq ($(BR2_PACKAGE_BUSYBOX),y)
-MTD_DEPENDENCIES += busybox
 endif
 
 # If extended attributes are required, the acl package must

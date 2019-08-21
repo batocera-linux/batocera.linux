@@ -3,9 +3,10 @@
 # PRBOOM
 #
 ################################################################################
-# Version.: Commits on Apr 30, 2018
-LIBRETRO_PRBOOM_VERSION = 1ddc0c12f75fa3e84f5eb7d5f47e7d9e2ad9a2ff
+# Version.: Commits on May 4, 2019
+LIBRETRO_PRBOOM_VERSION = ba5c034b71015b38144b9c569ddb5db973511b71
 LIBRETRO_PRBOOM_SITE = $(call github,libretro,libretro-prboom,$(LIBRETRO_PRBOOM_VERSION))
+LIBRETRO_PRBOOM_LICENSE = GPLv2
 
 define LIBRETRO_PRBOOM_BUILD_CMDS
 	CFLAGS="$(TARGET_CFLAGS)" CXXFLAGS="$(TARGET_CXXFLAGS)" $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" -C $(@D)/ -f Makefile platform="$(LIBRETRO_PLATFORM)"

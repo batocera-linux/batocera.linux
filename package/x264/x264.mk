@@ -4,6 +4,7 @@
 #
 ################################################################################
 
+# batocera: kodi: fix video with noisy sound
 X264_VERSION = df79067c0cf33da712d344b5f8869be7eaf326f3
 X264_SITE = git://git.videolan.org/x264.git
 X264_LICENSE = GPL-2.0+

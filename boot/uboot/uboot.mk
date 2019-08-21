@@ -70,6 +70,11 @@ UBOOT_BINS += u-boot-dtb.img
 UBOOT_MAKE_TARGET += u-boot-dtb.img
 endif
 
+ifeq ($(BR2_TARGET_UBOOT_FORMAT_DTB_IMX),y)
+UBOOT_BINS += u-boot-dtb.imx
+UBOOT_MAKE_TARGET += u-boot-dtb.imx
+endif
+
 ifeq ($(BR2_TARGET_UBOOT_FORMAT_DTB_BIN),y)
 UBOOT_BINS += u-boot-dtb.bin
 UBOOT_MAKE_TARGET += u-boot-dtb.bin
@@ -132,7 +137,11 @@ UBOOT_MAKE_OPTS += \
 
 ifeq ($(BR2_TARGET_UBOOT_NEEDS_ATF_BL31),y)
 UBOOT_DEPENDENCIES += arm-trusted-firmware
+ifeq ($(BR2_TARGET_UBOOT_NEEDS_ATF_BL31_ELF),y)
+UBOOT_MAKE_OPTS += BL31=$(BINARIES_DIR)/bl31.elf
+else
 UBOOT_MAKE_OPTS += BL31=$(BINARIES_DIR)/bl31.bin
+endif
 endif
 
 ifeq ($(BR2_TARGET_UBOOT_NEEDS_DTC),y)
@@ -143,8 +152,16 @@ ifeq ($(BR2_TARGET_UBOOT_NEEDS_PYLIBFDT),y)
 UBOOT_DEPENDENCIES += host-python host-swig
 endif
 
+ifeq ($(BR2_TARGET_UBOOT_NEEDS_PYELFTOOLS),y)
+UBOOT_DEPENDENCIES += host-python-pyelftools
+endif
+
 ifeq ($(BR2_TARGET_UBOOT_NEEDS_OPENSSL),y)
 UBOOT_DEPENDENCIES += host-openssl
+endif
+
+ifeq ($(BR2_TARGET_UBOOT_NEEDS_LZOP),y)
+UBOOT_DEPENDENCIES += host-lzop
 endif
 
 # prior to u-boot 2013.10 the license info was in COPYING. Copy it so
@@ -211,7 +228,16 @@ endif # BR2_TARGET_UBOOT_USE_DEFCONFIG
 
 UBOOT_KCONFIG_FRAGMENT_FILES = $(call qstrip,$(BR2_TARGET_UBOOT_CONFIG_FRAGMENT_FILES))
 UBOOT_KCONFIG_EDITORS = menuconfig xconfig gconfig nconfig
-UBOOT_KCONFIG_OPTS = $(UBOOT_MAKE_OPTS)
+
+# UBOOT_MAKE_OPTS overrides HOSTCC / HOSTLDFLAGS to allow the build to
+# find our host-openssl. However, this triggers a bug in the kconfig
+# build script that causes it to build with /usr/include/ncurses.h
+# (which is typically wchar) but link with
+# $(HOST_DIR)/lib/libncurses.so (which is not).  We don't actually
+# need any host-package for kconfig, so remove the HOSTCC/HOSTLDFLAGS
+# override again. In addition, host-ccache is not ready at kconfig
+# time, so use HOSTCC_NOCCACHE.
+UBOOT_KCONFIG_OPTS = $(UBOOT_MAKE_OPTS) HOSTCC="$(HOSTCC_NOCCACHE)" HOSTLDFLAGS=""
 define UBOOT_HELP_CMDS
 	@echo '  uboot-menuconfig       - Run U-Boot menuconfig'
 	@echo '  uboot-savedefconfig    - Run U-Boot savedefconfig'
@@ -250,7 +276,7 @@ define UBOOT_GENERATE_ENV_IMAGE
 		>$(@D)/buildroot-env.txt
 	$(HOST_DIR)/bin/mkenvimage -s $(BR2_TARGET_UBOOT_ENVIMAGE_SIZE) \
 		$(if $(BR2_TARGET_UBOOT_ENVIMAGE_REDUNDANT),-r) \
-		$(if $(filter BIG,$(BR2_ENDIAN)),-b) \
+		$(if $(filter "BIG",$(BR2_ENDIAN)),-b) \
 		-o $(BINARIES_DIR)/uboot-env.bin \
 		$(@D)/buildroot-env.txt
 endef
@@ -269,10 +295,39 @@ define UBOOT_INSTALL_IMAGES_CMDS
 	)
 	$(UBOOT_GENERATE_ENV_IMAGE)
 	$(if $(BR2_TARGET_UBOOT_BOOT_SCRIPT),
-		$(HOST_DIR)/bin/mkimage -C none -A $(MKIMAGE_ARCH) -T script \
+		$(MKIMAGE) -C none -A $(MKIMAGE_ARCH) -T script \
 			-d $(call qstrip,$(BR2_TARGET_UBOOT_BOOT_SCRIPT_SOURCE)) \
 			$(BINARIES_DIR)/boot.scr)
 endef
+
+ifeq ($(BR2_TARGET_UBOOT_ZYNQMP),y)
+
+UBOOT_ZYNQMP_PMUFW = $(call qstrip,$(BR2_TARGET_UBOOT_ZYNQMP_PMUFW))
+
+ifneq ($(findstring ://,$(UBOOT_ZYNQMP_PMUFW)),)
+UBOOT_EXTRA_DOWNLOADS += $(UBOOT_ZYNQMP_PMUFW)
+BR_NO_CHECK_HASH_FOR += $(notdir $(UBOOT_ZYNQMP_PMUFW))
+UBOOT_ZYNQMP_PMUFW_PATH = $(UBOOT_DL_DIR)/$(notdir $(UBOOT_ZYNQMP_PMUFW))
+else ifneq ($(UBOOT_ZYNQMP_PMUFW),)
+UBOOT_ZYNQMP_PMUFW_PATH = $(shell readlink -f $(UBOOT_ZYNQMP_PMUFW))
+endif
+
+define UBOOT_ZYNQMP_KCONFIG_PMUFW
+	$(call KCONFIG_SET_OPT,CONFIG_PMUFW_INIT_FILE,"$(UBOOT_ZYNQMP_PMUFW_PATH)", \
+	       $(@D)/.config)
+endef
+
+UBOOT_ZYNQMP_PSU_INIT = $(call qstrip,$(BR2_TARGET_UBOOT_ZYNQMP_PSU_INIT_FILE))
+UBOOT_ZYNQMP_PSU_INIT_PATH = $(shell readlink -f $(UBOOT_ZYNQMP_PSU_INIT))
+
+ifneq ($(UBOOT_ZYNQMP_PSU_INIT),)
+define UBOOT_ZYNQMP_KCONFIG_PSU_INIT
+	$(call KCONFIG_SET_OPT,CONFIG_XILINX_PS_INIT_FILE,"$(UBOOT_ZYNQMP_PSU_INIT_PATH)", \
+		$(@D)/.config)
+endef
+endif
+
+endif # BR2_TARGET_UBOOT_ZYNQMP
 
 define UBOOT_INSTALL_OMAP_IFT_IMAGE
 	cp -dpf $(@D)/$(UBOOT_BIN_IFT) $(BINARIES_DIR)/
@@ -322,6 +377,11 @@ endef
 UBOOT_DEPENDENCIES += host-mkpimage
 UBOOT_POST_INSTALL_IMAGES_HOOKS += UBOOT_CRC_ALTERA_SOCFPGA_IMAGE
 endif
+
+define UBOOT_KCONFIG_FIXUP_CMDS
+	$(UBOOT_ZYNQMP_KCONFIG_PMUFW)
+	$(UBOOT_ZYNQMP_KCONFIG_PSU_INIT)
+endef
 
 ifeq ($(BR2_TARGET_UBOOT_ENVIMAGE),y)
 ifeq ($(BR_BUILDING),y)
@@ -400,7 +460,14 @@ endif # BR2_TARGET_UBOOT_CUSTOM_GIT || BR2_TARGET_UBOOT_CUSTOM_HG
 endif # BR2_TARGET_UBOOT && BR_BUILDING
 
 ifeq ($(BR2_TARGET_UBOOT_BUILD_SYSTEM_LEGACY),y)
+UBOOT_DEPENDENCIES += \
+	$(BR2_BISON_HOST_DEPENDENCY) \
+	$(BR2_FLEX_HOST_DEPENDENCY)
 $(eval $(generic-package))
 else ifeq ($(BR2_TARGET_UBOOT_BUILD_SYSTEM_KCONFIG),y)
+UBOOT_MAKE_ENV = $(TARGET_MAKE_ENV)
+UBOOT_KCONFIG_DEPENDENCIES = \
+	$(BR2_BISON_HOST_DEPENDENCY) \
+	$(BR2_FLEX_HOST_DEPENDENCY)
 $(eval $(kconfig-package))
 endif # BR2_TARGET_UBOOT_BUILD_SYSTEM_LEGACY

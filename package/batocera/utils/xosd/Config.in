@@ -1,0 +1,5 @@
+config BR2_PACKAGE_XOSD
+        bool "xosd"
+	depends on BR2_PACKAGE_XORG7
+        help
+          overlay text on a X display

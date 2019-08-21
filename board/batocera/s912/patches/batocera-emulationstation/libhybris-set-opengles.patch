@@ -5,7 +5,7 @@
  endif()
  
 +# libhybris
-+if(EXISTS "/usr/lib/libhybris-common.so")
++if(EXISTS "${CMAKE_FIND_ROOT_PATH}/usr/lib/libhybris-common.so")
 +    MESSAGE("libhybris-common.so found")
 +    set(GLSystem "OpenGL ES")
 +else()

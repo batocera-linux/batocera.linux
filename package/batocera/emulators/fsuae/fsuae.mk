@@ -3,10 +3,11 @@
 # FSUAE
 #
 ################################################################################
-# FSUAE v2.9.7dev4
-FSUAE_VERSION = 3d6a8dc7a60ffe15a1878fd813f7d96fa432a41a
+# Version.: Commits on May 29, 2019 (2.9.12dev)
+FSUAE_VERSION = 595943e321fc53417d531af936607501d1d9d55a
 FSUAE_SITE = $(call github,FrodeSolheim,fs-uae,$(FSUAE_VERSION))
-FSUAE_DEPENDENCIES = xserver_xorg-server openal-soft libpng sdl2 zlib libmpeg2 libglib2
+FSUAE_LICENSE = GPLv2
+FSUAE_DEPENDENCIES = xserver_xorg-server openal libpng sdl2 zlib libmpeg2 libglib2 capsimg
 
 FSUAE_CONF_OPTS += --disable-codegen
 

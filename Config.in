@@ -67,6 +67,9 @@ config BR2_HOST_GCC_AT_LEAST_8
 	default y if BR2_HOST_GCC_VERSION = "8"
 	select BR2_HOST_GCC_AT_LEAST_7
 
+# When adding new entries above, be sure to update
+# the HOSTCC_MAX_VERSION variable in the Makefile.
+
 # Hidden boolean selected by packages in need of Java in order to build
 # (example: kodi)
 config BR2_NEEDS_HOST_JAVA
@@ -132,10 +135,6 @@ config BR2_LOCALFILES
 config BR2_SCP
 	string "Secure copy (scp) command"
 	default "scp"
-
-config BR2_SSH
-	string "Secure shell (ssh) command"
-	default "ssh"
 
 config BR2_HG
 	string "Mercurial (hg) command"
@@ -678,6 +677,18 @@ config BR2_COMPILER_PARANOID_UNSAFE_PATH
 	  and external toolchain backends (through the toolchain
 	  wrapper).
 
+config BR2_FORCE_HOST_BUILD
+	bool "Force the building of host dependencies"
+	help
+	  Build all available host dependencies, even if they are
+	  already installed on the system.
+
+	  This option can be used to ensure that the download cache of
+	  source archives for packages remain consistent between
+	  different build hosts.
+
+	  This option will increase build time.
+
 config BR2_REPRODUCIBLE
 	bool "Make the build reproducible (experimental)"
 	# SOURCE_DATE_EPOCH support in toolchain-wrapper requires GCC 4.4
@@ -753,6 +764,12 @@ config BR2_SSP_ALL
 
 endchoice
 
+config BR2_SSP_OPTION
+	string
+	default "-fstack-protector"        if BR2_SSP_REGULAR
+	default "-fstack-protector-strong" if BR2_SSP_STRONG
+	default "-fstack-protector-all"    if BR2_SSP_ALL
+
 comment "Stack Smashing Protection needs a toolchain w/ SSP"
 	depends on !BR2_TOOLCHAIN_HAS_SSP
 
@@ -809,6 +826,8 @@ config BR2_FORTIFY_SOURCE_NONE
 
 config BR2_FORTIFY_SOURCE_1
 	bool "Conservative"
+	# gcc bug https://gcc.gnu.org/bugzilla/show_bug.cgi?id=61164
+	depends on !BR2_TOOLCHAIN_BUILDROOT || BR2_TOOLCHAIN_GCC_AT_LEAST_6
 	help
 	  This option sets _FORTIFY_SOURCE to 1 and only introduces
 	  checks that shouldn't change the behavior of conforming
@@ -816,6 +835,8 @@ config BR2_FORTIFY_SOURCE_1
 
 config BR2_FORTIFY_SOURCE_2
 	bool "Aggressive"
+	# gcc bug https://gcc.gnu.org/bugzilla/show_bug.cgi?id=61164
+	depends on !BR2_TOOLCHAIN_BUILDROOT || BR2_TOOLCHAIN_GCC_AT_LEAST_6
 	help
 	  This option sets _FORTIFY_SOURCES to 2 and some more
 	  checking is added, but some conforming programs might fail.

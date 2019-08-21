@@ -4,17 +4,12 @@
 #
 ################################################################################
 
-WGET_VERSION = 1.19.5
+WGET_VERSION = 1.20.3
 WGET_SOURCE = wget-$(WGET_VERSION).tar.lz
 WGET_SITE = $(BR2_GNU_MIRROR)/wget
 WGET_DEPENDENCIES = host-pkgconf
 WGET_LICENSE = GPL-3.0+
 WGET_LICENSE_FILES = COPYING
-
-# Prefer full-blown wget over busybox
-ifeq ($(BR2_PACKAGE_BUSYBOX),y)
-WGET_DEPENDENCIES += busybox
-endif
 
 ifeq ($(BR2_PACKAGE_GNUTLS),y)
 WGET_CONF_OPTS += --with-ssl=gnutls
@@ -42,6 +37,16 @@ WGET_CONF_OPTS += --with-zlib
 WGET_DEPENDENCIES += zlib
 else
 WGET_CONF_OPTS += --without-zlib
+endif
+
+ifeq ($(BR2_PACKAGE_PCRE2),y)
+WGET_CONF_OPTS += --disable-pcre --enable-pcre2
+WGET_DEPENDENCIES += pcre2
+else ifeq ($(BR2_PACKAGE_PCRE),y)
+WGET_CONF_OPTS += --enable-pcre --disable-pcre2
+WGET_DEPENDENCIES += pcre
+else
+WGET_CONF_OPTS += --disable-pcre --disable-pcre2
 endif
 
 $(eval $(autotools-package))

@@ -4,22 +4,14 @@
 #
 ################################################################################
 
-ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI3),y)
-        BATOCERA_EMULATIONSTATION_CONF_OPTS = -DRPI_VERSION=3
-else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI2),y)
-        BATOCERA_EMULATIONSTATION_CONF_OPTS = -DRPI_VERSION=2
-else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI1),y)
-        BATOCERA_EMULATIONSTATION_CONF_OPTS = -DRPI_VERSION=1
-else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI0),y)
-        BATOCERA_EMULATIONSTATION_CONF_OPTS = -DRPI_VERSION=1
-endif
-
-BATOCERA_EMULATIONSTATION_SITE = $(call github,batocera-linux,batocera-emulationstation,$(BATOCERA_EMULATIONSTATION_VERSION))
-BATOCERA_EMULATIONSTATION_VERSION = master
-
+# Version.: Commits on Aug 19, 2019
+BATOCERA_EMULATIONSTATION_VERSION = 4f2b7f9f8c59f7c5513d8391bf2c912f362de5ec
+BATOCERA_EMULATIONSTATION_SITE = https://github.com/batocera-linux/batocera-emulationstation
+BATOCERA_EMULATIONSTATION_SITE_METHOD = git
 BATOCERA_EMULATIONSTATION_LICENSE = MIT
-BATOCERA_EMULATIONSTATION_DEPENDENCIES = sdl2 sdl2_mixer boost libfreeimage freetype eigen alsa-lib \
-	libcurl openssl
+BATOCERA_EMULATIONSTATION_GIT_SUBMODULES = YES
+BATOCERA_EMULATIONSTATION_LICENSE = MIT, Apache-2.0
+BATOCERA_EMULATIONSTATION_DEPENDENCIES = sdl2 sdl2_mixer boost libfreeimage freetype alsa-lib libcurl vlc rapidjson
 
 ifeq ($(BR2_PACKAGE_HAS_LIBGL),y)
 BATOCERA_EMULATIONSTATION_DEPENDENCIES += libgl
@@ -29,13 +21,30 @@ ifeq ($(BR2_PACKAGE_HAS_LIBGLES),y)
 BATOCERA_EMULATIONSTATION_DEPENDENCIES += libgles
 endif
 
+ifeq ($(BR2_PACKAGE_KODI),y)
+	BATOCERA_EMULATIONSTATION_CONF_OPTS += -DDISABLE_KODI=0
+else
+	BATOCERA_EMULATIONSTATION_CONF_OPTS += -DDISABLE_KODI=1
+endif
+
+ifeq ($(BR2_PACKAGE_XORG7),y)
+	BATOCERA_EMULATIONSTATION_CONF_OPTS += -DENABLE_FILEMANAGER=1
+else
+	BATOCERA_EMULATIONSTATION_CONF_OPTS += -DENABLE_FILEMANAGER=0
+endif
 
 define BATOCERA_EMULATIONSTATION_RPI_FIXUP
-	$(SED) 's|/opt/vc/include|$(STAGING_DIR)/usr/include|g' $(@D)/CMakeLists.txt
-	$(SED) 's|/opt/vc/lib|$(STAGING_DIR)/usr/lib|g' $(@D)/CMakeLists.txt
-	$(SED) 's|/usr/lib|$(STAGING_DIR)/usr/lib|g' $(@D)/CMakeLists.txt
+	$(SED) 's|.{CMAKE_FIND_ROOT_PATH}/opt/vc|$(STAGING_DIR)/usr|g' $(@D)/CMakeLists.txt
+	$(SED) 's|.{CMAKE_FIND_ROOT_PATH}/usr|$(STAGING_DIR)/usr|g'    $(@D)/CMakeLists.txt
+endef
+
+define BATOCERA_EMULATIONSTATION_RESOURCES
+	$(INSTALL) -m 0755 -d $(TARGET_DIR)/usr/share/emulationstation/resources/help
+	$(INSTALL) -m 0644 -D $(@D)/resources/*.* $(TARGET_DIR)/usr/share/emulationstation/resources
+	$(INSTALL) -m 0644 -D $(@D)/resources/help/*.* $(TARGET_DIR)/usr/share/emulationstation/resources/help
 endef
 
 BATOCERA_EMULATIONSTATION_PRE_CONFIGURE_HOOKS += BATOCERA_EMULATIONSTATION_RPI_FIXUP
+BATOCERA_EMULATIONSTATION_POST_INSTALL_TARGET_HOOKS += BATOCERA_EMULATIONSTATION_RESOURCES
 
 $(eval $(cmake-package))

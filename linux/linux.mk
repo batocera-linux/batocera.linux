@@ -30,22 +30,17 @@ else ifeq ($(BR2_LINUX_KERNEL_CUSTOM_SVN),y)
 LINUX_SITE = $(call qstrip,$(BR2_LINUX_KERNEL_CUSTOM_REPO_URL))
 LINUX_SITE_METHOD = svn
 else ifeq ($(BR2_LINUX_KERNEL_LATEST_CIP_VERSION),y)
-LINUX_SITE = git://git.kernel.org/pub/scm/linux/kernel/git/bwh/linux-cip.git
+LINUX_SITE = git://git.kernel.org/pub/scm/linux/kernel/git/cip/linux-cip.git
 else ifneq ($(findstring -rc,$(LINUX_VERSION)),)
 # Since 4.12-rc1, -rc kernels are generated from cgit. This also works for
 # older -rc kernels.
 LINUX_SITE = https://git.kernel.org/torvalds/t
 else
 LINUX_SOURCE = linux-$(LINUX_VERSION).tar.xz
-# In X.Y.Z, get X and Y. We replace dots and dashes by spaces in order
-# to use the $(word) function. We support versions such as 4.0, 3.1,
-# 2.6.32, 2.6.32-rc1, 3.0-rc6, etc.
 ifeq ($(findstring x2.6.,x$(LINUX_VERSION)),x2.6.)
 LINUX_SITE = $(BR2_KERNEL_MIRROR)/linux/kernel/v2.6
-else ifeq ($(findstring x3.,x$(LINUX_VERSION)),x3.)
-LINUX_SITE = $(BR2_KERNEL_MIRROR)/linux/kernel/v3.x
-else ifeq ($(findstring x4.,x$(LINUX_VERSION)),x4.)
-LINUX_SITE = $(BR2_KERNEL_MIRROR)/linux/kernel/v4.x
+else
+LINUX_SITE = $(BR2_KERNEL_MIRROR)/linux/kernel/v$(firstword $(subst ., ,$(LINUX_VERSION))).x
 endif
 endif
 
@@ -55,14 +50,34 @@ endif
 
 LINUX_PATCHES = $(call qstrip,$(BR2_LINUX_KERNEL_PATCH))
 
+# We have no way to know the hashes for user-supplied patches.
+BR_NO_CHECK_HASH_FOR += $(notdir $(LINUX_PATCHES))
+
 # We rely on the generic package infrastructure to download and apply
 # remote patches (downloaded from ftp, http or https). For local
 # patches, we can't rely on that infrastructure, because there might
 # be directories in the patch list (unlike for other packages).
 LINUX_PATCH = $(filter ftp://% http://% https://%,$(LINUX_PATCHES))
 
+LINUX_MAKE_ENV = \
+	$(TARGET_MAKE_ENV) \
+	BR_BINARIES_DIR=$(BINARIES_DIR)
+
 LINUX_INSTALL_IMAGES = YES
-LINUX_DEPENDENCIES += host-bison host-flex host-kmod
+LINUX_DEPENDENCIES = host-kmod \
+	$(if $(BR2_PACKAGE_INTEL_MICROCODE),intel-microcode)
+
+# Starting with 4.16, the generated kconfig paser code is no longer
+# shipped with the kernel sources, so we need flex and bison, but
+# only if the host does not have them.
+LINUX_KCONFIG_DEPENDENCIES = \
+	$(BR2_BISON_HOST_DEPENDENCY) \
+	$(BR2_FLEX_HOST_DEPENDENCY)
+
+# Starting with 4.18, the kconfig in the kernel calls the
+# cross-compiler to check its capabilities. So we need the
+# toolchain before we can call the configurators.
+LINUX_KCONFIG_DEPENDENCIES += toolchain
 
 # host tools needed for kernel compression
 ifeq ($(BR2_LINUX_KERNEL_LZ4),y)
@@ -85,7 +100,13 @@ LINUX_DEPENDENCIES += host-openssl
 endif
 
 ifeq ($(BR2_LINUX_KERNEL_NEEDS_HOST_LIBELF),y)
-LINUX_DEPENDENCIES += host-elfutils
+LINUX_DEPENDENCIES += host-elfutils host-pkgconf
+LINUX_MAKE_ENV += \
+	PKG_CONFIG="$(PKG_CONFIG_HOST_BINARY)" \
+	PKG_CONFIG_SYSROOT_DIR="/" \
+	PKG_CONFIG_ALLOW_SYSTEM_CFLAGS=1 \
+	PKG_CONFIG_ALLOW_SYSTEM_LIBS=1 \
+	PKG_CONFIG_LIBDIR="$(HOST_DIR)/lib/pkgconfig:$(HOST_DIR)/share/pkgconfig"
 endif
 
 # If host-uboot-tools is selected by the user, assume it is needed to
@@ -102,16 +123,24 @@ LINUX_POST_EXTRACT_HOOKS += LINUX_XTENSA_OVERLAY_EXTRACT
 LINUX_EXTRA_DOWNLOADS += $(ARCH_XTENSA_OVERLAY_URL)
 endif
 
+# batocera
+ifeq ($(BR2_LINUX_AARCH64_KERNEL_IN_ARM_USER),y)
+# make 64-bit kernel in 32-bit userspace
+LINUX_DEPENDENCIES += host-toolchain-optional-linaro-aarch64
+LINUX_MAKE_FLAGS = \
+	HOSTCC="$(HOSTCC) $(HOST_CFLAGS) $(HOST_LDFLAGS)" \
+	ARCH=arm64 \
+	INSTALL_MOD_PATH=$(TARGET_DIR) \
+	CROSS_COMPILE="$(HOST_DIR)/lib/gcc-linaro-aarch64-linux-gnu/bin/aarch64-linux-gnu-" \
+	DEPMOD=$(HOST_DIR)/sbin/depmod
+else
 LINUX_MAKE_FLAGS = \
 	HOSTCC="$(HOSTCC) $(HOST_CFLAGS) $(HOST_LDFLAGS)" \
 	ARCH=$(KERNEL_ARCH) \
 	INSTALL_MOD_PATH=$(TARGET_DIR) \
 	CROSS_COMPILE="$(TARGET_CROSS)" \
 	DEPMOD=$(HOST_DIR)/sbin/depmod
-
-LINUX_MAKE_ENV = \
-	$(TARGET_MAKE_ENV) \
-	BR_BINARIES_DIR=$(BINARIES_DIR)
+endif
 
 ifeq ($(BR2_REPRODUCIBLE),y)
 LINUX_MAKE_ENV += \
@@ -119,6 +148,20 @@ LINUX_MAKE_ENV += \
 	KBUILD_BUILD_USER=buildroot \
 	KBUILD_BUILD_HOST=buildroot \
 	KBUILD_BUILD_TIMESTAMP="$(shell LC_ALL=C date -d @$(SOURCE_DATE_EPOCH))"
+endif
+
+# gcc-8 started warning about function aliases that have a
+# non-matching prototype.  This seems rather useful in general, but it
+# causes tons of warnings in the Linux kernel, where we rely on
+# abusing those aliases for system call entry points, in order to
+# sanitize the arguments passed from user space in registers.
+# https://gcc.gnu.org/bugzilla/show_bug.cgi?id=82435
+ifeq ($(BR2_TOOLCHAIN_GCC_AT_LEAST_8),y)
+LINUX_MAKE_ENV += KCFLAGS=-Wno-attribute-alias
+endif
+
+ifeq ($(BR2_LINUX_KERNEL_DTB_OVERLAY_SUPPORT),y)
+LINUX_MAKE_ENV += DTC_FLAGS=-@
 endif
 
 # Get the real Linux version, which tells us where kernel modules are
@@ -190,6 +233,12 @@ ifeq ($(KERNEL_ARCH),i386)
 LINUX_ARCH_PATH = $(LINUX_DIR)/arch/x86
 else ifeq ($(KERNEL_ARCH),x86_64)
 LINUX_ARCH_PATH = $(LINUX_DIR)/arch/x86
+
+# batocera
+else ifeq ($(BR2_LINUX_AARCH64_KERNEL_IN_ARM_USER),y)
+# arm64 kernel when arch is arm
+LINUX_ARCH_PATH = $(LINUX_DIR)/arch/arm64
+
 else
 LINUX_ARCH_PATH = $(LINUX_DIR)/arch/$(KERNEL_ARCH)
 endif
@@ -226,6 +275,17 @@ define LINUX_TRY_PATCH_TIMECONST
 endef
 LINUX_POST_PATCH_HOOKS += LINUX_TRY_PATCH_TIMECONST
 
+LINUX_KERNEL_CUSTOM_LOGO_PATH = $(call qstrip,$(BR2_LINUX_KERNEL_CUSTOM_LOGO_PATH))
+ifneq ($(LINUX_KERNEL_CUSTOM_LOGO_PATH),)
+LINUX_DEPENDENCIES += host-imagemagick
+define LINUX_KERNEL_CUSTOM_LOGO_CONVERT
+	$(HOST_DIR)/bin/convert $(LINUX_KERNEL_CUSTOM_LOGO_PATH) \
+		-dither None -colors 224 -compress none \
+		$(LINUX_DIR)/drivers/video/logo/logo_linux_clut224.ppm
+endef
+LINUX_PRE_BUILD_HOOKS += LINUX_KERNEL_CUSTOM_LOGO_CONVERT
+endif
+
 ifeq ($(BR2_LINUX_KERNEL_USE_DEFCONFIG),y)
 LINUX_KCONFIG_DEFCONFIG = $(call qstrip,$(BR2_LINUX_KERNEL_DEFCONFIG))_defconfig
 else ifeq ($(BR2_LINUX_KERNEL_USE_ARCH_DEFAULT_CONFIG),y)
@@ -236,13 +296,16 @@ endif
 LINUX_KCONFIG_FRAGMENT_FILES = $(call qstrip,$(BR2_LINUX_KERNEL_CONFIG_FRAGMENT_FILES))
 LINUX_KCONFIG_EDITORS = menuconfig xconfig gconfig nconfig
 
-# LINUX_MAKE_FLAGS overrides HOSTCC to allow the kernel build to find our
-# host-openssl and host-libelf. However, this triggers a bug in the kconfig
-# build script that causes it to build with /usr/include/ncurses.h (which is
-# typically wchar) but link with $(HOST_DIR)/lib/libncurses.so (which is not).
-# We don't actually need any host-package for kconfig, so remove the HOSTCC
-# override again.
-LINUX_KCONFIG_OPTS = $(LINUX_MAKE_FLAGS) HOSTCC="$(HOSTCC)"
+# LINUX_MAKE_FLAGS overrides HOSTCC to allow the kernel build to find
+# our host-openssl and host-libelf. However, this triggers a bug in
+# the kconfig build script that causes it to build with
+# /usr/include/ncurses.h (which is typically wchar) but link with
+# $(HOST_DIR)/lib/libncurses.so (which is not).  We don't actually
+# need any host-package for kconfig, so remove the HOSTCC override
+# again. In addition, even though linux depends on the toolchain and
+# therefore host-ccache would be ready, we use HOSTCC_NOCCACHE for
+# consistency with other kconfig packages.
+LINUX_KCONFIG_OPTS = $(LINUX_MAKE_FLAGS) HOSTCC="$(HOSTCC_NOCCACHE)"
 
 # If no package has yet set it, set it from the Kconfig option
 LINUX_NEEDS_MODULES ?= $(BR2_LINUX_NEEDS_MODULES)
@@ -271,6 +334,8 @@ define LINUX_KCONFIG_FIXUP_CMDS
 	$(LINUX_FIXUP_CONFIG_ENDIANNESS)
 	$(if $(BR2_arm)$(BR2_armeb),
 		$(call KCONFIG_ENABLE_OPT,CONFIG_AEABI,$(@D)/.config))
+	$(if $(BR2_powerpc)$(BR2_powerpc64)$(BR2_powerpc64le),
+		$(call KCONFIG_ENABLE_OPT,CONFIG_PPC_DISABLE_WERROR,$(@D)/.config))
 	$(if $(BR2_TARGET_ROOTFS_CPIO),
 		$(call KCONFIG_ENABLE_OPT,CONFIG_BLK_DEV_INITRD,$(@D)/.config))
 	# As the kernel gets compiled before root filesystems are
@@ -278,6 +343,7 @@ define LINUX_KCONFIG_FIXUP_CMDS
 	# replaced later by the real cpio archive, and the kernel will be
 	# rebuilt using the linux-rebuild-with-initramfs target.
 	$(if $(BR2_TARGET_ROOTFS_INITRAMFS),
+		mkdir -p $(BINARIES_DIR)
 		touch $(BINARIES_DIR)/rootfs.cpio
 		$(call KCONFIG_SET_OPT,CONFIG_INITRAMFS_SOURCE,"$${BR_BINARIES_DIR}/rootfs.cpio",$(@D)/.config)
 		$(call KCONFIG_SET_OPT,CONFIG_INITRAMFS_ROOT_UID,0,$(@D)/.config)
@@ -287,11 +353,21 @@ define LINUX_KCONFIG_FIXUP_CMDS
 		$(call KCONFIG_ENABLE_OPT,CONFIG_DEVTMPFS_MOUNT,$(@D)/.config))
 	$(if $(BR2_ROOTFS_DEVICE_CREATION_DYNAMIC_EUDEV),
 		$(call KCONFIG_ENABLE_OPT,CONFIG_INOTIFY_USER,$(@D)/.config))
+	$(if $(BR2_PACKAGE_AUDIT),
+		$(call KCONFIG_ENABLE_OPT,CONFIG_NET,$(@D)/.config)
+		$(call KCONFIG_ENABLE_OPT,CONFIG_AUDIT,$(@D)/.config))
+	$(if $(BR2_PACKAGE_INTEL_MICROCODE),
+		$(call KCONFIG_ENABLE_OPT,CONFIG_MICROCODE,$(@D)/.config)
+		$(call KCONFIG_ENABLE_OPT,CONFIG_MICROCODE_INTEL,$(@D)/.config))
 	$(if $(BR2_PACKAGE_KTAP),
 		$(call KCONFIG_ENABLE_OPT,CONFIG_DEBUG_FS,$(@D)/.config)
 		$(call KCONFIG_ENABLE_OPT,CONFIG_ENABLE_DEFAULT_TRACERS,$(@D)/.config)
 		$(call KCONFIG_ENABLE_OPT,CONFIG_PERF_EVENTS,$(@D)/.config)
 		$(call KCONFIG_ENABLE_OPT,CONFIG_FUNCTION_TRACER,$(@D)/.config))
+	$(if $(BR2_PACKAGE_LINUX_TOOLS_PERF),
+		$(call KCONFIG_ENABLE_OPT,CONFIG_PERF_EVENTS,$(@D)/.config))
+	$(if $(BR2_PACKAGE_PCM_TOOLS),
+		$(call KCONFIG_ENABLE_OPT,CONFIG_X86_MSR,$(@D)/.config))
 	$(if $(BR2_PACKAGE_SYSTEMD),
 		$(call KCONFIG_ENABLE_OPT,CONFIG_CGROUPS,$(@D)/.config)
 		$(call KCONFIG_ENABLE_OPT,CONFIG_INOTIFY_USER,$(@D)/.config)
@@ -325,15 +401,27 @@ define LINUX_KCONFIG_FIXUP_CMDS
 		$(call KCONFIG_ENABLE_OPT,CONFIG_ARM_APPENDED_DTB,$(@D)/.config))
 	$(if $(BR2_PACKAGE_KERNEL_MODULE_IMX_GPU_VIV),
 		$(call KCONFIG_DISABLE_OPT,CONFIG_MXC_GPU_VIV,$(@D)/.config))
+	$(if $(LINUX_KERNEL_CUSTOM_LOGO_PATH),
+		$(call KCONFIG_ENABLE_OPT,CONFIG_FB,$(@D)/.config)
+		$(call KCONFIG_ENABLE_OPT,CONFIG_LOGO,$(@D)/.config)
+		$(call KCONFIG_ENABLE_OPT,CONFIG_LOGO_LINUX_CLUT224,$(@D)/.config))
 endef
 
 ifeq ($(BR2_LINUX_KERNEL_DTS_SUPPORT),y)
+# Starting with 4.17, the generated dtc parser code is no longer
+# shipped with the kernel sources, so we need flex and bison. For
+# reproducibility, we use our owns rather than the host ones.
+LINUX_DEPENDENCIES += host-bison host-flex
+
 ifeq ($(BR2_LINUX_KERNEL_DTB_IS_SELF_BUILT),)
 define LINUX_BUILD_DTB
 	$(LINUX_MAKE_ENV) $(MAKE) $(LINUX_MAKE_FLAGS) -C $(@D) $(LINUX_DTBS)
 endef
 ifeq ($(BR2_LINUX_KERNEL_APPENDED_DTB),)
 define LINUX_INSTALL_DTB
+	# batocera bad hack for odroidn2 -- amlogic dir issues
+	if test "$(LINUX_DTBS)" = meson64_odroidn2.dtb; then cp $(LINUX_ARCH_PATH)/boot/dts/amlogic/$(LINUX_DTBS) $(LINUX_ARCH_PATH)/boot; fi
+
 	# dtbs moved from arch/<ARCH>/boot to arch/<ARCH>/boot/dts since 3.8-rc1
 	cp $(addprefix \
 		$(LINUX_ARCH_PATH)/boot/$(if $(wildcard \
@@ -375,15 +463,16 @@ endif
 endif
 
 # Compilation. We make sure the kernel gets rebuilt when the
-# configuration has changed.
+# configuration has changed. We call the 'all' and
+# '$(LINUX_TARGET_NAME)' targets separately because calling them in
+# the same $(MAKE) invocation has shown to cause parallel build
+# issues.
 define LINUX_BUILD_CMDS
-	@for dts in $(call qstrip,$(BR2_LINUX_KERNEL_CUSTOM_DTS_PATH)); do \
-		cp -f $${dts} $(LINUX_ARCH_PATH)/boot/dts/ ; \
-	done
+	$(foreach dts,$(call qstrip,$(BR2_LINUX_KERNEL_CUSTOM_DTS_PATH)), \
+		cp -f $(dts) $(LINUX_ARCH_PATH)/boot/dts/
+	)
+	$(LINUX_MAKE_ENV) $(MAKE) $(LINUX_MAKE_FLAGS) -C $(@D) all
 	$(LINUX_MAKE_ENV) $(MAKE) $(LINUX_MAKE_FLAGS) -C $(@D) $(LINUX_TARGET_NAME)
-	@if grep -q "CONFIG_MODULES=y" $(@D)/.config; then \
-		$(LINUX_MAKE_ENV) $(MAKE) $(LINUX_MAKE_FLAGS) -C $(@D) modules ; \
-	fi
 	$(LINUX_BUILD_DTB)
 	$(LINUX_APPEND_DTB)
 endef
@@ -414,9 +503,7 @@ define LINUX_INSTALL_HOST_TOOLS
 	# Installing dtc (device tree compiler) as host tool, if selected
 	if grep -q "CONFIG_DTC=y" $(@D)/.config; then \
 		$(INSTALL) -D -m 0755 $(@D)/scripts/dtc/dtc $(HOST_DIR)/bin/linux-dtc ; \
-		if [ ! -e $(HOST_DIR)/bin/dtc ]; then \
-			ln -sf linux-dtc $(HOST_DIR)/bin/dtc ; \
-		fi \
+		$(if $(BR2_PACKAGE_HOST_DTC),,ln -sf linux-dtc $(HOST_DIR)/bin/dtc;) \
 	fi
 endef
 

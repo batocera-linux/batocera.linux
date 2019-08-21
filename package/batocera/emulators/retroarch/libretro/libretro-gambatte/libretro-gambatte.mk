@@ -3,9 +3,10 @@
 # GAMBATTE
 #
 ################################################################################
-# Version.: Commits on Apr 17, 2018
-LIBRETRO_GAMBATTE_VERSION = 5e33cd5a84a1cbcc00ca7f3d93ec0fd14c67866a
+# Version.: Commits on Apr 12, 2019
+LIBRETRO_GAMBATTE_VERSION = 7d4beec1ff69098a602c12d38a76465510cb8ebc
 LIBRETRO_GAMBATTE_SITE = $(call github,libretro,gambatte-libretro,$(LIBRETRO_GAMBATTE_VERSION))
+LIBRETRO_GAMBATTE_LICENSE = GPLv2
 
 define LIBRETRO_GAMBATTE_BUILD_CMDS
 	CFLAGS="$(TARGET_CFLAGS)" CXXFLAGS="$(TARGET_CXXFLAGS)" $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" -C $(@D) -f Makefile platform="$(LIBRETRO_PLATFORM)"

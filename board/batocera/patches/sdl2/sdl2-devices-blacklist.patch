@@ -1,0 +1,18 @@
+diff --git a/src/joystick/linux/SDL_sysjoystick.c b/src/joystick/linux/SDL_sysjoystick.c
+index b3c0e3f..948b22b 100644
+--- a/src/joystick/linux/SDL_sysjoystick.c
++++ b/src/joystick/linux/SDL_sysjoystick.c
+@@ -243,6 +243,13 @@ IsJoystick(int fd, char *namebuf, const size_t namebuflen, SDL_JoystickGUID *gui
+         SDL_ShouldIgnoreGameController(namebuf, *guid)) {
+         return 0;
+     }
++
++    // blacklist some devices recognized as pads
++    if (SDL_strcmp(namebuf, "Sony Interactive Entertainment Wireless Controller Touchpad")       == 0) { return 0; }
++    if (SDL_strcmp(namebuf, "Sony Interactive Entertainment Wireless Controller Motion Sensors") == 0) { return 0; }
++    if (SDL_strcmp(namebuf, "Sony Interactive Entertainment Game Controller Motion Sensors")     == 0) { return 0; }
++    if (SDL_strcmp(namebuf, "Wireless Controller Motion Sensors")                                == 0) { return 0; }
++
+     return 1;
+ }
+ 

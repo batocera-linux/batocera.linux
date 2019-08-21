@@ -9,134 +9,6 @@ menuconfig BR2_PACKAGE_GST1_PLUGINS_BAD
 
 if BR2_PACKAGE_GST1_PLUGINS_BAD
 
-comment "libraries with external dependencies"
-
-menuconfig BR2_PACKAGE_GST1_PLUGINS_BAD_LIB_OPENGL
-	bool "opengl"
-	depends on BR2_PACKAGE_HAS_LIBGL || BR2_PACKAGE_HAS_LIBGLES
-
-if BR2_PACKAGE_GST1_PLUGINS_BAD_LIB_OPENGL
-
-config BR2_PACKAGE_GST1_PLUGINS_BAD_HAS_LIB_OPENGL
-	def_bool BR2_PACKAGE_GST1_PLUGINS_BAD_LIB_OPENGL_HAS_WINDOW
-
-comment "The opengl library needs an API, a platform and a window system"
-	depends on !BR2_PACKAGE_GST1_PLUGINS_BAD_HAS_LIB_OPENGL
-
-comment "APIs"
-
-config BR2_PACKAGE_GST1_PLUGINS_BAD_LIB_OPENGL_HAS_API
-	bool
-
-config BR2_PACKAGE_GST1_PLUGINS_BAD_LIB_OPENGL_OPENGL
-	bool "opengl"
-	default y
-	depends on BR2_PACKAGE_HAS_LIBGL
-	select BR2_PACKAGE_LIBGLU
-	select BR2_PACKAGE_GST1_PLUGINS_BAD_LIB_OPENGL_HAS_API
-
-comment "opengl needs an OpenGL backend"
-	depends on !BR2_PACKAGE_HAS_LIBGL
-
-config BR2_PACKAGE_GST1_PLUGINS_BAD_LIB_OPENGL_GLES2
-	bool "gles2"
-	default y
-	depends on BR2_PACKAGE_HAS_LIBGLES
-	select BR2_PACKAGE_GST1_PLUGINS_BAD_LIB_OPENGL_HAS_API
-
-comment "gles2 needs an OpenGL ES backend"
-	depends on !BR2_PACKAGE_HAS_LIBGLES
-
-comment "Platforms"
-
-config BR2_PACKAGE_GST1_PLUGINS_BAD_LIB_OPENGL_HAS_PLATFORM
-	bool
-
-config BR2_PACKAGE_GST1_PLUGINS_BAD_LIB_OPENGL_GLX
-	bool "glx"
-	default y
-	depends on BR2_PACKAGE_GST1_PLUGINS_BAD_LIB_OPENGL_OPENGL
-	depends on BR2_PACKAGE_XSERVER_XORG_SERVER_MODULAR # mesa needs big X
-	depends on !BR2_PACKAGE_RPI_USERLAND # x11
-	select BR2_PACKAGE_XLIB_LIBXRENDER
-	select BR2_PACKAGE_XPROTO_GLPROTO
-	select BR2_PACKAGE_GST1_PLUGINS_BAD_LIB_OPENGL_X11
-	select BR2_PACKAGE_GST1_PLUGINS_BAD_LIB_OPENGL_HAS_PLATFORM
-	help
-	  OpenGL Extension to the X Window System
-
-comment "glx not supported with rpi-userland"
-	depends on BR2_PACKAGE_RPI_USERLAND
-
-comment "glx needs the opengl API and modular X.org"
-	depends on !BR2_PACKAGE_RPI_USERLAND && \
-		(!BR2_PACKAGE_GST1_PLUGINS_BAD_LIB_OPENGL_OPENGL || \
-		!BR2_PACKAGE_XSERVER_XORG_SERVER_MODULAR)
-
-config BR2_PACKAGE_GST1_PLUGINS_BAD_LIB_OPENGL_EGL
-	bool "egl"
-	default y
-	depends on BR2_PACKAGE_GST1_PLUGINS_BAD_LIB_OPENGL_HAS_API
-	depends on BR2_PACKAGE_HAS_LIBEGL
-	select BR2_PACKAGE_GST1_PLUGINS_BAD_LIB_OPENGL_HAS_PLATFORM
-
-comment "egl needs an API and an EGL backend"
-	depends on !BR2_PACKAGE_GST1_PLUGINS_BAD_LIB_OPENGL_HAS_API || \
-		!BR2_PACKAGE_HAS_LIBEGL
-
-comment "Window systems"
-
-config BR2_PACKAGE_GST1_PLUGINS_BAD_LIB_OPENGL_HAS_WINDOW
-	bool
-
-config BR2_PACKAGE_GST1_PLUGINS_BAD_LIB_OPENGL_X11
-	bool "x11"
-	default y
-	depends on BR2_PACKAGE_GST1_PLUGINS_BAD_LIB_OPENGL_HAS_PLATFORM
-	depends on !BR2_PACKAGE_RPI_USERLAND
-	depends on BR2_PACKAGE_XORG7
-	select BR2_PACKAGE_XLIB_LIBX11
-	select BR2_PACKAGE_XLIB_LIBXEXT
-	select BR2_PACKAGE_GST1_PLUGINS_BAD_LIB_OPENGL_HAS_WINDOW
-
-comment "x11 not supported with rpi-userland"
-	depends on BR2_PACKAGE_RPI_USERLAND
-
-comment "x11 needs a platform and X.org"
-	depends on !BR2_PACKAGE_RPI_USERLAND && \
-		(!BR2_PACKAGE_GST1_PLUGINS_BAD_LIB_OPENGL_HAS_PLATFORM || \
-		!BR2_PACKAGE_XORG7)
-
-config BR2_PACKAGE_GST1_PLUGINS_BAD_LIB_OPENGL_WAYLAND
-	bool "wayland"
-	default y
-	depends on BR2_PACKAGE_GST1_PLUGINS_BAD_LIB_OPENGL_EGL
-	depends on BR2_PACKAGE_WAYLAND
-	select BR2_PACKAGE_WAYLAND_PROTOCOLS
-	select BR2_PACKAGE_GST1_PLUGINS_BAD_LIB_OPENGL_HAS_WINDOW
-
-comment "wayland needs the egl platform and the wayland package"
-	depends on !BR2_PACKAGE_GST1_PLUGINS_BAD_LIB_OPENGL_EGL || \
-		!BR2_PACKAGE_WAYLAND
-
-config BR2_PACKAGE_GST1_PLUGINS_BAD_LIB_OPENGL_DISPMANX
-	bool "dispmanx"
-	default y
-	depends on BR2_PACKAGE_GST1_PLUGINS_BAD_LIB_OPENGL_EGL
-	depends on BR2_PACKAGE_RPI_USERLAND
-	select BR2_PACKAGE_GST1_PLUGINS_BAD_LIB_OPENGL_HAS_WINDOW
-	help
-	  Raspberry Pi's Dispmanx windowing system
-
-comment "dispmanx needs the egl platform and rpi-userland"
-	depends on !BR2_PACKAGE_GST1_PLUGINS_BAD_LIB_OPENGL_EGL || \
-		!BR2_PACKAGE_RPI_USERLAND
-
-endif
-
-comment "opengl needs an OpenGL or OpenGL ES backend"
-	depends on !BR2_PACKAGE_HAS_LIBGL && !BR2_PACKAGE_HAS_LIBGLES
-
 comment "dependency-less plugins"
 
 config BR2_PACKAGE_GST1_PLUGINS_BAD_PLUGIN_ACCURIP
@@ -174,20 +46,15 @@ config BR2_PACKAGE_GST1_PLUGINS_BAD_PLUGIN_AUDIOFXBAD
 	help
 	  Audio filters plugin
 
-config BR2_PACKAGE_GST1_PLUGINS_BAD_PLUGIN_AUDIOMIXER
-	bool "audiomixer"
+config BR2_PACKAGE_GST1_PLUGINS_BAD_PLUGIN_AUDIOLATENCY
+	bool "audiolatency"
 	help
-	  Audio mixer plugin
+	  Audio latency plugin
 
 config BR2_PACKAGE_GST1_PLUGINS_BAD_PLUGIN_AUDIOMIXMATRIX
 	bool "audiomixmatrix"
 	help
 	  Audio N:M mixer plugin
-
-config BR2_PACKAGE_GST1_PLUGINS_BAD_PLUGIN_COMPOSITOR
-	bool "compositor"
-	help
-	  Video compositor plugin
 
 config BR2_PACKAGE_GST1_PLUGINS_BAD_PLUGIN_AUDIOVISUALIZERS
 	bool "audiovisualizers"
@@ -350,6 +217,11 @@ config BR2_PACKAGE_GST1_PLUGINS_BAD_PLUGIN_PNM
 	help
 	  PNM plugin
 
+config BR2_PACKAGE_GST1_PLUGINS_BAD_PLUGIN_PROXY
+	bool "proxy"
+	help
+	  Proxy plugin
+
 config BR2_PACKAGE_GST1_PLUGINS_BAD_PLUGIN_RAWPARSE
 	bool "rawparse"
 	help
@@ -396,9 +268,6 @@ config BR2_PACKAGE_GST1_PLUGINS_BAD_PLUGIN_SUBENC
 	help
 	  subtitle encoders
 
-config BR2_PACKAGE_GST1_PLUGINS_BAD_PLUGIN_STEREO
-	bool "stereo"
-
 config BR2_PACKAGE_GST1_PLUGINS_BAD_PLUGIN_TIMECODE
 	bool "timecode"
 
@@ -411,11 +280,6 @@ config BR2_PACKAGE_GST1_PLUGINS_BAD_PLUGIN_VIDEOFRAME_AUDIOLEVEL
 	bool "videoframe_audiolevel"
 	help
 	  videoframe_audiolevel
-
-config BR2_PACKAGE_GST1_PLUGINS_BAD_PLUGIN_IQA
-	bool "iqa"
-	help
-	  Image Quality Assessment
 
 config BR2_PACKAGE_GST1_PLUGINS_BAD_PLUGIN_VIDEOPARSERS
 	bool "videoparsers"
@@ -444,6 +308,28 @@ config BR2_PACKAGE_GST1_PLUGINS_BAD_PLUGIN_ASSRENDER
 	bool "assrender"
 	select BR2_PACKAGE_LIBASS
 
+config BR2_PACKAGE_GST1_PLUGINS_BAD_PLUGIN_BLUEZ
+	bool "bluez"
+	depends on BR2_USE_WCHAR # bluez5_utils -> libglib2
+	depends on BR2_TOOLCHAIN_HAS_THREADS # bluez5_utils -> dbus, libglib2
+	depends on BR2_USE_MMU # bluez5_utils -> dbus
+	depends on !BR2_STATIC_LIBS # bluez5_utils -> uses dlfcn
+	depends on !BR2_PACKAGE_BLUEZ_UTILS # bluez5_utils -> conflicts with 4.x version
+	depends on BR2_TOOLCHAIN_HEADERS_AT_LEAST_3_4 # bluez5_utils
+	depends on BR2_TOOLCHAIN_HAS_SYNC_4 # bluez5_utils
+	select BR2_PACKAGE_BLUEZ5_UTILS
+	help
+	  Bluetooth audio A2DP/AVDTP sink, AVDTP source plugin
+
+comment "bluez plugin needs a toolchain w/ wchar, threads, headers >= 3.4, dynamic library"
+	depends on !BR2_USE_WCHAR || !BR2_TOOLCHAIN_HAS_THREADS || \
+		!BR2_TOOLCHAIN_HEADERS_AT_LEAST_3_4 || BR2_STATIC_LIBS
+	depends on BR2_TOOLCHAIN_HAS_SYNC_4
+	depends on BR2_USE_MMU
+
+comment "bluez plugin conflicts with older bluez-utils version"
+	depends on BR2_PACKAGE_BLUEZ_UTILS
+
 config BR2_PACKAGE_GST1_PLUGINS_BAD_PLUGIN_BZ2
 	bool "bz2"
 	select BR2_PACKAGE_BZIP2
@@ -465,11 +351,12 @@ config BR2_PACKAGE_GST1_PLUGINS_BAD_PLUGIN_DASH
 config BR2_PACKAGE_GST1_PLUGINS_BAD_PLUGIN_DECKLINK
 	bool "decklink"
 	depends on BR2_INSTALL_LIBSTDCPP
+	depends on !BR2_STATIC_LIBS # <dlfcn.h>
 	help
 	  Blackmagic Decklink plugin
 
-comment "decklink needs a toolchain w/ C++"
-	depends on !BR2_INSTALL_LIBSTDCPP
+comment "decklink needs a toolchain w/ C++, dynamic library"
+	depends on !BR2_INSTALL_LIBSTDCPP  || BR2_STATIC_LIBS
 
 config BR2_PACKAGE_GST1_PLUGINS_BAD_PLUGIN_DIRECTFB
 	bool "directfb"
@@ -513,10 +400,10 @@ comment "fdk-aac needs a toolchain w/ C++"
 config BR2_PACKAGE_GST1_PLUGINS_BAD_PLUGIN_GL
 	bool "gl"
 	default y
-	depends on BR2_PACKAGE_GST1_PLUGINS_BAD_HAS_LIB_OPENGL
+	depends on BR2_PACKAGE_GST1_PLUGINS_BASE_HAS_LIB_OPENGL
 
-comment "gl needs the gst1-plugins-bad opengl library"
-	depends on !BR2_PACKAGE_GST1_PLUGINS_BAD_HAS_LIB_OPENGL
+comment "gl needs the gst1-plugins-base opengl library"
+	depends on !BR2_PACKAGE_GST1_PLUGINS_BASE_HAS_LIB_OPENGL
 
 config BR2_PACKAGE_GST1_PLUGINS_BAD_PLUGIN_HLS
 	bool "hls"
@@ -567,9 +454,18 @@ comment "ttml needs a toolchain w/ wchar, threads, C++"
 
 config BR2_PACKAGE_GST1_PLUGINS_BAD_PLUGIN_MPEG2ENC
 	bool "mpeg2enc"
+	depends on BR2_USE_MMU # fork
+	depends on BR2_INSTALL_LIBSTDCPP
+	depends on BR2_TOOLCHAIN_HAS_THREADS
 	select BR2_PACKAGE_LIBMPEG2
+	select BR2_PACKAGE_MJPEGTOOLS
 	help
 	  High-quality MPEG-1/2 video encoder
+
+comment "mpeg2enc needs a toolchain w/ threads, C++"
+	depends on BR2_USE_MMU
+	depends on !BR2_TOOLCHAIN_HAS_THREADS \
+		|| !BR2_INSTALL_LIBSTDCPP
 
 config BR2_PACKAGE_GST1_PLUGINS_BAD_PLUGIN_MUSEPACK
 	bool "musepack"
@@ -592,27 +488,6 @@ comment "openal plugin needs a toolchain w/ NPTL, C++"
 	depends on BR2_PAKCAGE_OPENAL_ARCH_SUPPORTS
 	depends on !BR2_TOOLCHAIN_HAS_THREADS_NPTL \
 		|| !BR2_INSTALL_LIBSTDCPP
-
-config BR2_PACKAGE_GST1_PLUGINS_BAD_PLUGIN_OPENCV
-	bool "opencv"
-	depends on BR2_PACKAGE_OPENCV
-	# Remove the following opencv modules when gstreamer fixes the
-	# problem of including the old "cv.h" header
-	# bug: https://bugzilla.gnome.org/show_bug.cgi?id=725163
-	select BR2_PACKAGE_OPENCV_LIB_CALIB3D
-	select BR2_PACKAGE_OPENCV_LIB_CONTRIB
-	select BR2_PACKAGE_OPENCV_LIB_FEATURES2D
-	select BR2_PACKAGE_OPENCV_LIB_FLANN
-	select BR2_PACKAGE_OPENCV_LIB_IMGPROC
-	select BR2_PACKAGE_OPENCV_LIB_LEGACY
-	select BR2_PACKAGE_OPENCV_LIB_ML
-	select BR2_PACKAGE_OPENCV_LIB_OBJDETECT
-	select BR2_PACKAGE_OPENCV_LIB_VIDEO
-	help
-	  GStreamer OpenCV Plugins
-
-comment "opencv plugin needs OpenCV-2.4"
-	depends on !BR2_PACKAGE_OPENCV
 
 config BR2_PACKAGE_GST1_PLUGINS_BAD_PLUGIN_OPENH264
 	bool "openh264"
@@ -670,9 +545,6 @@ config BR2_PACKAGE_GST1_PLUGINS_BAD_PLUGIN_SRTP
 	bool "srtp"
 	select BR2_PACKAGE_LIBSRTP
 
-config BR2_PACKAGE_GST1_PLUGINS_BAD_PLUGIN_VCD
-	bool "vcd"
-
 config BR2_PACKAGE_GST1_PLUGINS_BAD_PLUGIN_VOAACENC
 	bool "voaacenc"
 	select BR2_PACKAGE_VO_AACENC
@@ -691,6 +563,17 @@ config BR2_PACKAGE_GST1_PLUGINS_BAD_PLUGIN_WEBP
 	help
 	  Webp image format plugin
 
+config BR2_PACKAGE_GST1_PLUGINS_BAD_PLUGIN_WEBRTC
+	bool "webrtc"
+	depends on !BR2_STATIC_LIBS # libnice -> gnutls
+	select BR2_PACKAGE_GST1_PLUGINS_BASE # libgstsdp
+	select BR2_PACKAGE_LIBNICE
+	help
+	  WebRTC plugins (webrtcbin - a bin for webrtc connections)
+
+comment "webrtc needs a toolchain w/ dynamic library"
+	depends on BR2_STATIC_LIBS
+
 config BR2_PACKAGE_GST1_PLUGINS_BAD_PLUGIN_WEBRTCDSP
 	bool "webrtcdsp"
 	# All depends from webrtc-audio-processing
@@ -708,6 +591,16 @@ comment "webrtcdsp needs a toolchain w/ C++, NPTL, gcc >= 4.8"
 	depends on !BR2_INSTALL_LIBSTDCPP || !BR2_TOOLCHAIN_HAS_THREADS_NPTL \
 		|| !BR2_TOOLCHAIN_GCC_AT_LEAST_4_8
 
+config BR2_PACKAGE_GST1_PLUGINS_BAD_PLUGIN_WPE
+	bool "wpe"
+	default y
+	depends on BR2_PACKAGE_WPEWEBKIT
+	depends on BR2_PACKAGE_GST1_PLUGINS_BASE_HAS_LIB_OPENGL
+
+comment "wpe needs the gst1-plugins-base opengl library and wpewebkit"
+	depends on !BR2_PACKAGE_WPEWEBKIT \
+		|| !BR2_PACKAGE_GST1_PLUGINS_BASE_HAS_LIB_OPENGL
+
 config BR2_PACKAGE_GST1_PLUGINS_BAD_PLUGIN_X265
 	bool "x265"
 	depends on BR2_INSTALL_LIBSTDCPP
@@ -719,5 +612,18 @@ config BR2_PACKAGE_GST1_PLUGINS_BAD_PLUGIN_X265
 
 comment "x265 needs a toolchain w/ C++, dynamic library"
 	depends on !BR2_INSTALL_LIBSTDCPP || BR2_STATIC_LIBS
+
+config BR2_PACKAGE_GST1_PLUGINS_BAD_ZBAR
+	bool "zbar"
+	depends on BR2_TOOLCHAIN_HAS_THREADS # zbar-> libv4l
+	depends on BR2_USE_MMU # zbar-> libv4l
+	depends on BR2_INSTALL_LIBSTDCPP # zbar-> libv4l
+	depends on BR2_TOOLCHAIN_HEADERS_AT_LEAST_3_0 # zbar -> libv4l
+	select BR2_PACKAGE_ZBAR
+
+comment "zbar plugin needs a toolchain w/ threads, C++ and headers >= 3.0"
+	depends on BR2_USE_MMU
+	depends on !BR2_TOOLCHAIN_HAS_THREADS \
+		|| !BR2_INSTALL_LIBSTDCPP || !BR2_TOOLCHAIN_HEADERS_AT_LEAST_3_0
 
 endif

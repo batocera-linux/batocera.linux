@@ -12,8 +12,8 @@ import shutil
 
 class EsSystemConf:
 
-    default_parentpath = "/recalbox/share/roms"
-    default_command    = "python /usr/lib/python2.7/site-packages/configgen/emulatorlauncher.pyc %CONTROLLERSCONFIG% -system %SYSTEM% -rom %ROM% -emulator %EMULATOR% -core %CORE% -ratio %RATIO%"
+    default_parentpath = "/userdata/roms"
+    default_command    = "python /usr/lib/python2.7/site-packages/configgen/emulatorlauncher.py %CONTROLLERSCONFIG% -system %SYSTEM% -rom %ROM%"
 
     # Generate the es_systems.cfg file by searching the information in the es_system.yml file
     @staticmethod
@@ -46,7 +46,7 @@ class EsSystemConf:
                     EsSystemConf.createFolders(system, rules[system], romsdirsource, romsdirtarget)
                     EsSystemConf.infoSystem(system, rules[system], romsdirtarget)
                 else:
-                    print "skipping system " + system
+                    print "skipping directory for system " + system
 
     # check if the folder is required
     @staticmethod
@@ -58,12 +58,7 @@ class EsSystemConf:
         for emulator in sorted(data["emulators"]):
             emulatorData = data["emulators"][emulator]
             for core in sorted(emulatorData):
-                requirementValid = True
-                for requirement in emulatorData[core]["require"]:
-                    if requirement not in config:
-                        requirementValid = False
-                # found a core with valid requirements
-                if requirementValid:
+                if EsSystemConf.isValidRequirements(config, emulatorData[core]["requireAnyOf"]):
                     return True
         return False
 
@@ -212,6 +207,25 @@ class EsSystemConf:
                     extension += " ." + item.upper()
         return extension
 
+    # Returns the validity of prerequisites
+    @staticmethod
+    def isValidRequirements(config, requirements):
+        if len(requirements) == 0:
+            return True
+
+        for requirement in requirements:
+            if isinstance(requirement, list):
+                subreqValid = True
+                for reqitem in requirement:
+                    if reqitem not in config:
+                        subreq = False
+                if subreq:
+                    return True
+            else:
+                if requirement in config:
+                    return True
+        return False
+
     # Returns the enabled cores in the .config file for the emulator
     @staticmethod
     def listEmulators(data, config):
@@ -230,11 +244,7 @@ class EsSystemConf:
             # CORES
             coresTxt = ""
             for core in sorted(emulatorData):
-                requirementValid = True
-                for requirement in emulatorData[core]["require"]:
-                    if requirement not in config:
-                        requirementValid = False
-                if requirementValid:
+                if EsSystemConf.isValidRequirements(config, emulatorData[core]["requireAnyOf"]):
                     coresTxt += "                    <core>%s</core>\n" % (core)
 
             if coresTxt == "":

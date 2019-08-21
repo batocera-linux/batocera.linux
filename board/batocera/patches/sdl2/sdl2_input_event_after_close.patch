@@ -1,0 +1,22 @@
+diff --git a/src/joystick/SDL_joystick.c b/src/joystick/SDL_joystick.c
+index 724239e..8058947 100644
+--- a/src/joystick/SDL_joystick.c
++++ b/src/joystick/SDL_joystick.c
+@@ -1055,7 +1055,7 @@ SDL_JoystickUpdate(void)
+             if (joystick->delayed_guide_button) {
+                 SDL_GameControllerHandleDelayedGuideButton(joystick);
+             }
+-        }
++
+ 
+         if (joystick->force_recentering) {
+             /* Tell the app that everything is centered/unpressed... */
+@@ -1075,6 +1075,8 @@ SDL_JoystickUpdate(void)
+ 
+             joystick->force_recentering = SDL_FALSE;
+         }
++
++	}
+     }
+ 
+     SDL_LockJoysticks();

@@ -4,8 +4,8 @@
 #
 ################################################################################
 
-LIQUID_DSP_VERSION = v1.3.0
-LIQUID_DSP_SITE = $(call github,jgaeddert,liquid-dsp,$(LIQUID_DSP_VERSION))
+LIQUID_DSP_VERSION = 1.3.0
+LIQUID_DSP_SITE = $(call github,jgaeddert,liquid-dsp,v$(LIQUID_DSP_VERSION))
 LIQUID_DSP_LICENSE = MIT
 LIQUID_DSP_LICENSE_FILES = LICENSE
 LIQUID_DSP_INSTALL_STAGING = YES
@@ -30,21 +30,14 @@ LIQUID_DSP_CFLAGS += -ffast-math
 endif
 
 # use FFTW instead of built-in FFT
-ifeq ($(BR2_PACKAGE_FFTW_PRECISION_SINGLE),y)
+ifeq ($(BR2_PACKAGE_FFTW_SINGLE),y)
 LIQUID_DSP_LDFLAGS += -lfftw3f
+LIQUID_DSP_DEPENDENCIES += fftw-single
 endif
 
 # disable altivec, it has build issues
 ifeq ($(BR2_powerpc)$(BR2_powerpc64)$(BR2_powerpc64le),y)
 LIQUID_DSP_CONF_OPTS += --enable-simdoverride
-endif
-
-ifeq ($(BR2_PACKAGE_FFTW_PRECISION_DOUBLE),y)
-LIQUID_DSP_LDFLAGS += -lfftw3
-endif
-
-ifeq ($(BR2_PACKAGE_FFTW_PRECISION_LONG_DOUBLE),y)
-LIQUID_DSP_LDFLAGS += -lfftw3l
 endif
 
 LIQUID_DSP_CONF_OPTS += \

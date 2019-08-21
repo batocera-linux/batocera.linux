@@ -4,16 +4,14 @@
 #
 ################################################################################
 
-VIM_VERSION = v8.0.0329
-VIM_SITE = $(call github,vim,vim,$(VIM_VERSION))
-# Win over busybox vi since vim is more feature-rich
-VIM_DEPENDENCIES = \
-	ncurses $(TARGET_NLS_DEPENDENCIES) \
-	$(if $(BR2_PACKAGE_BUSYBOX),busybox)
+VIM_VERSION = 8.1.0133
+VIM_SITE = $(call github,vim,vim,v$(VIM_VERSION))
+VIM_DEPENDENCIES = ncurses $(TARGET_NLS_DEPENDENCIES)
 VIM_SUBDIR = src
 VIM_CONF_ENV = \
 	vim_cv_toupper_broken=no \
 	vim_cv_terminfo=yes \
+	vim_cv_tgetent=zero \
 	vim_cv_tty_group=world \
 	vim_cv_tty_mode=0620 \
 	vim_cv_getcwd_broken=no \
@@ -65,9 +63,15 @@ define VIM_REMOVE_DOCS
 endef
 
 # Avoid oopses with vipw/vigr, lack of $EDITOR and 'vi' command expectation
+ifeq ($(BR2_ROOTFS_MERGED_USR),y)
 define VIM_INSTALL_VI_SYMLINK
-	ln -sf /usr/bin/vim $(TARGET_DIR)/bin/vi
+	ln -sf vim $(TARGET_DIR)/usr/bin/vi
 endef
+else
+define VIM_INSTALL_VI_SYMLINK
+	ln -sf ../usr/bin/vim $(TARGET_DIR)/bin/vi
+endef
+endif
 VIM_POST_INSTALL_TARGET_HOOKS += VIM_INSTALL_VI_SYMLINK
 
 ifeq ($(BR2_PACKAGE_VIM_RUNTIME),y)
@@ -76,6 +80,13 @@ VIM_POST_INSTALL_TARGET_HOOKS += VIM_REMOVE_DOCS
 endif
 
 HOST_VIM_DEPENDENCIES = host-ncurses
+HOST_VIM_CONF_OPTS = \
+	--with-tlib=ncurses \
+	--enable-gui=no \
+	--without-x \
+	--disable-acl \
+	--disable-gpm \
+	--disable-selinux
 
 $(eval $(autotools-package))
 $(eval $(host-autotools-package))

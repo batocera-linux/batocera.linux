@@ -1,0 +1,7 @@
+config BR2_PACKAGE_SLANG_SHADERS
+        bool "slang-shaders"
+	depends on BR2_PACKAGE_RETROARCH
+        help
+          Common Slang shaders for RetroArch.
+
+	  http://www.libretro.com

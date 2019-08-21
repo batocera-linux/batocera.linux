@@ -1,8 +1,9 @@
 config BR2_PACKAGE_BATOCERA_CONFIGGEN
         bool "batocera configgen"
 	select BR2_PACKAGE_PYTHON
+	select BR2_PACKAGE_PYTHON_PYYAML
         help
           The configuration utility for batocera
-
-	  https://github.com/batocera-linux/recalbox-configgen
+	  The purpose of the lib is to automatically configure emulators, using the environment variables available in Batocera.
+          The main program is emulatorlauncher.py, taking 13 parameters, that are the system and 4 controllers configurations.
 

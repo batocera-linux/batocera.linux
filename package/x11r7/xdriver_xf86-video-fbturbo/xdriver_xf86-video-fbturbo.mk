@@ -12,26 +12,13 @@ XDRIVER_XF86_VIDEO_FBTURBO_DEPENDENCIES = \
 	xserver_xorg-server \
 	libdrm \
 	pixman \
-	xproto_fontsproto \
-	xproto_randrproto \
-	xproto_renderproto \
-	xproto_videoproto \
-	xproto_xproto \
-	xproto_xf86driproto
+	xorgproto
 
 ifeq ($(BR2_PACKAGE_LIBPCIACCESS),y)
 XDRIVER_XF86_VIDEO_FBTURBO_DEPENDENCIES += libpciaccess
 XDRIVER_XF86_VIDEO_FBTURBO_CONF_OPTS += --enable-pciaccess
 else
 XDRIVER_XF86_VIDEO_FBTURBO_CONF_OPTS += --disable-pciaccess
-endif
-
-ifeq ($(BR2_PACKAGE_LIBUMP),y)
-XDRIVER_XF86_VIDEO_FBTURBO_DEPENDENCIES += libump
-endif
-
-ifeq ($(BR2_PACKAGE_XPROTO_DRI2PROTO),y)
-XDRIVER_XF86_VIDEO_FBTURBO_DEPENDENCIES += xproto_dri2proto
 endif
 
 define XDRIVER_XF86_VIDEO_FBTURBO_INSTALL_CONF_FILE

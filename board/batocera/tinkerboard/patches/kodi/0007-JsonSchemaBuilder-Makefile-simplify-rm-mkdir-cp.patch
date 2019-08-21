@@ -1,0 +1,28 @@
+From d1630a08fb8fd87a78a43acc40362eff4f76b291 Mon Sep 17 00:00:00 2001
+From: Max Kellermann <max@duempel.org>
+Date: Mon, 24 Apr 2017 14:38:05 +0200
+Subject: [PATCH 07/62] JsonSchemaBuilder/Makefile: simplify rm/mkdir/cp
+
+Signed-off-by: memeka <mihailescu2m@gmail.com>
+---
+ tools/depends/native/JsonSchemaBuilder/Makefile | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/tools/depends/native/JsonSchemaBuilder/Makefile b/tools/depends/native/JsonSchemaBuilder/Makefile
+index f615d3b..876dae3 100644
+--- a/tools/depends/native/JsonSchemaBuilder/Makefile
++++ b/tools/depends/native/JsonSchemaBuilder/Makefile
+@@ -21,8 +21,8 @@ APP=$(PREFIX)/bin/JsonSchemaBuilder
+ all: .installed-$(PLATFORM)
+ 
+ $(PLATFORM):
+-	-rm -rf $(PLATFORM)/*; mkdir -p $(PLATFORM)
+-	cd $(PLATFORM); cp -a $(SOURCE)/* .
++	rm -rf $(PLATFORM)
++	cp -a $(SOURCE) $(PLATFORM)
+ 	cd $(PLATFORM); ./autogen.sh
+ 	cd $(PLATFORM); $(CONFIGURE)
+ 
+-- 
+2.7.4
+

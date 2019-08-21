@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-E2FSPROGS_VERSION = 1.44.2
+E2FSPROGS_VERSION = 1.45.2
 E2FSPROGS_SOURCE = e2fsprogs-$(E2FSPROGS_VERSION).tar.xz
 E2FSPROGS_SITE = $(BR2_KERNEL_MIRROR)/linux/kernel/people/tytso/e2fsprogs/v$(E2FSPROGS_VERSION)
 E2FSPROGS_LICENSE = GPL-2.0, MIT-like with advertising clause (libss and libet)
@@ -17,12 +17,6 @@ E2FSPROGS_INSTALL_STAGING = YES
 E2FSPROGS_DEPENDENCIES = host-pkgconf util-linux
 HOST_E2FSPROGS_DEPENDENCIES = host-pkgconf host-util-linux
 
-# If both e2fsprogs and busybox are selected, make certain e2fsprogs
-# wins the fight over who gets to have their utils actually installed
-ifeq ($(BR2_PACKAGE_BUSYBOX),y)
-E2FSPROGS_DEPENDENCIES += busybox
-endif
-
 # e4defrag doesn't build on older systems like RHEL5.x, and we don't
 # need it on the host anyway.
 # Disable fuse2fs as well to avoid carrying over deps, and it's unused
@@ -32,11 +26,13 @@ HOST_E2FSPROGS_CONF_OPTS = \
 	--disable-fuse2fs \
 	--disable-libblkid \
 	--disable-libuuid \
+	--disable-testio-debug \
 	--enable-symlink-install \
-	--disable-testio-debug
+	--enable-elf-shlibs \
+	--with-crond-dir=no
 
-# Set the binary directories to "/bin" and "/sbin" to override programs
-# installed by busybox.
+# Set the binary directories to "/bin" and "/sbin", as busybox does,
+# so that we do not end up with two versions of e2fs tools.
 E2FSPROGS_CONF_OPTS = \
 	--bindir=/bin \
 	--sbindir=/sbin \
@@ -65,32 +61,17 @@ ifeq ($(BR2_nios2),y)
 E2FSPROGS_CONF_ENV += ac_cv_func_fallocate=no
 endif
 
-# Some programs are built for the host, but use definitions guessed by
-# the configure script (i.e with the cross-compiler). Help them by
-# saying that <sys/stat.h> is available on the host, which is needed
-# for util/subst.c to build properly.
-E2FSPROGS_CONF_ENV += BUILD_CFLAGS="-DHAVE_SYS_STAT_H"
+E2FSPROGS_CONF_ENV += ac_cv_path_LDCONFIG=true
 
-# Disable use of the host magic.h, as on older hosts (e.g. RHEL 5)
-# it doesn't provide definitions expected by e2fsprogs support lib.
-HOST_E2FSPROGS_CONF_ENV += \
-	ac_cv_header_magic_h=no \
-	ac_cv_lib_magic_magic_file=no
-
-E2FSPROGS_MAKE_OPTS = LDCONFIG=true
+HOST_E2FSPROGS_CONF_ENV += ac_cv_path_LDCONFIG=true
 
 E2FSPROGS_INSTALL_STAGING_OPTS = \
 	DESTDIR=$(STAGING_DIR) \
-	LDCONFIG=true \
 	install-libs
 
-E2FSPROGS_INSTALL_TARGET_OPTS = \
-	DESTDIR=$(TARGET_DIR) \
-	LDCONFIG=true \
-	install
-
+# Package does not build in parallel due to improper make rules
 define HOST_E2FSPROGS_INSTALL_CMDS
-	$(HOST_MAKE_ENV) $(MAKE) -C $(@D) install install-libs
+	$(HOST_MAKE_ENV) $(MAKE1) -C $(@D) install install-libs
 endef
 
 $(eval $(autotools-package))

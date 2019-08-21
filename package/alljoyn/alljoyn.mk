@@ -11,10 +11,8 @@ ALLJOYN_SITE = https://mirrors.kernel.org/allseenalliance/alljoyn/$(ALLJOYN_REV)
 # See https://allseenalliance.org/alliance/ip-policy
 ALLJOYN_LICENSE = ISC
 
-ALLJOYN_DEPENDENCIES = host-scons libcap openssl
+ALLJOYN_DEPENDENCIES = host-python host-scons libcap
 ALLJOYN_INSTALL_STAGING = YES
-
-ALLJOYN_CRYPTO = openssl
 
 # AllJoyn can be compiled in debug or release mode. By default, AllJoyn is built
 # in debug mode.
@@ -39,7 +37,7 @@ ALLJOYN_SCONS_OPTS = \
 	CPU=$(ALLJOYN_CPU) \
 	VARIANT=$(ALLJOYN_VARIANT) \
 	BR=off \
-	CRYPTO=$(ALLJOYN_CRYPTO) \
+	CRYPTO=builtin \
 	BINDINGS=$(ALLJOYN_BINDINGS) \
 	TARGET_CFLAGS="$(TARGET_CFLAGS)" \
 	TARGET_CPPFLAGS="$(TARGET_CPPFLAGS)" \
@@ -53,7 +51,7 @@ ALLJOYN_SCONS_OPTS = \
 	TARGET_PATH="$(BR_PATH)"
 
 define ALLJOYN_BUILD_CMDS
-	cd $(@D); $(SCONS) $(ALLJOYN_SCONS_OPTS)
+	cd $(@D); $(HOST_DIR)/bin/python2 $(SCONS) $(ALLJOYN_SCONS_OPTS)
 endef
 
 define ALLJOYN_INSTALL_STAGING_CMDS
