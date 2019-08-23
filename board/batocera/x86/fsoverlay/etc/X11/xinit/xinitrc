@@ -54,6 +54,16 @@ settings_output="`$systemsetting -command load -key global.videomode`"
 
 batocera-resolution minTomaxResolution
 
+### forces resolution specified in file /boot/batocera-boot.conf
+if [ "$(cat /boot/batocera-boot.conf | grep ^resolution)" ]; then
+    xRes="$(cat /boot/batocera-boot.conf | grep ^resolution | cut -d '=' -f 2 | cut -d 'x' -f 1)"
+    yRes="$(cat /boot/batocera-boot.conf | grep ^resolution | cut -d '=' -f 2 | cut -d 'x' -f 2)"
+    Freq="$(cat /boot/batocera-boot.conf | grep ^resolution | cut -d '=' -f 2 | cut -d 'x' -f 3)"
+    xrandr -r "${Freq}" -s "${xRes}x${yRes}"
+    xset -dpms
+    xset s off
+fi
+
 # allow coredumps for ES
 ulimit -H -c unlimited
 ulimit -S -c unlimited emulationstation
