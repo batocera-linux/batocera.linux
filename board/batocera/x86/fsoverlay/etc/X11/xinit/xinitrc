@@ -54,5 +54,9 @@ settings_output="`$systemsetting -command load -key global.videomode`"
 
 batocera-resolution minTomaxResolution
 
+# allow coredumps for ES
+ulimit -H -c unlimited
+ulimit -S -c unlimited emulationstation
+
 cd /userdata # es needs a PWD
 openbox --config-file /etc/openbox/rc.xml --startup "emulationstation --windowed"

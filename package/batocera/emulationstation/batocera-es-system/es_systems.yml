@@ -57,6 +57,7 @@ nes:
     libretro:
       fceumm:   { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FCEUMM]   }
       nestopia: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_NESTOPIA] }
+      mesen:   { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MESEN]   }
 
 n64:
   name:       Nintendo 64
@@ -695,6 +696,7 @@ saturn:
       yabause:       { requireAnyOf: [BR2_PACKAGE_LIBRETRO_YABAUSE]       }
       beetle-saturn: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BEETLE_SATURN] }
       kronos:        { requireAnyOf: [BR2_PACKAGE_LIBRETRO_KRONOS]        }
+      yabasanshiro:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_YABASANSHIRO]  }
 
 jaguar:
   name:       Atari Jaguar

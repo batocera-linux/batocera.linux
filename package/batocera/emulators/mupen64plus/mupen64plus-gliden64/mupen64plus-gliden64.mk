@@ -17,13 +17,19 @@ ifeq ($(BR2_PACKAGE_RPI_USERLAND),y)
 endif
 
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_S905)$(BR2_PACKAGE_BATOCERA_TARGET_S912)$(BR2_PACKAGE_BATOCERA_TARGET_C2)$(BR2_PACKAGE_BATOCERA_TARGET_XU4)$(BR2_PACKAGE_BATOCERA_TARGET_LEGACYXU4)$(BR2_PACKAGE_BATOCERA_TARGET_ROCKPRO64)$(BR2_PACKAGE_BATOCERA_TARGET_ODROIDN2)$(BR2_PACKAGE_BATOCERA_TARGET_TINKERBOARD)$(BR2_PACKAGE_BATOCERA_TARGET_MIQI),y)
-       MUPEN64PLUS_GLIDEN64_CONF_OPTS += -DGLES2=ON
+	MUPEN64PLUS_GLIDEN64_CONF_OPTS += -DGLES2=ON
+endif
+
+ifeq ($(BR2_ENABLE_DEBUG),y)
+	MUPEN64PLUS_GLIDEN64_RELTYPE= Debug
+else
+	MUPEN64PLUS_GLIDEN64_RELTYPE = Release
 endif
 
 define MUPEN64PLUS_GLIDEN64_INSTALL_TARGET_CMDS
 	mkdir -p $(TARGET_DIR)/recalbox/configs/mupen64/
 	mkdir -p $(TARGET_DIR)/usr/share/mupen64plus/
-	$(INSTALL) -D $(@D)/src/plugin/Release/mupen64plus-video-GLideN64.so \
+	$(INSTALL) -D $(@D)/src/plugin/$(MUPEN64PLUS_GLIDEN64_RELTYPE)/mupen64plus-video-GLideN64.so \
 		$(TARGET_DIR)/usr/lib/mupen64plus/mupen64plus-video-gliden64.so
 	$(INSTALL) -D $(@D)/ini/* \
 		$(TARGET_DIR)/usr/share/mupen64plus/
@@ -36,12 +42,9 @@ define MUPEN64PLUS_GLIDEN64_PRE_CONFIGURE_FIXUP
 	sh $(@D)/src/getRevision.sh
 	$(SED) 's|/opt/vc/include|$(STAGING_DIR)/usr/include|g' $(@D)/src/CMakeLists.txt
 	$(SED) 's|/opt/vc/lib|$(STAGING_DIR)/usr/lib|g' $(@D)/src/CMakeLists.txt
-
 endef
 
 MUPEN64PLUS_GLIDEN64_PRE_CONFIGURE_HOOKS += MUPEN64PLUS_GLIDEN64_PRE_CONFIGURE_FIXUP
 
 
 $(eval $(cmake-package))
-
-
