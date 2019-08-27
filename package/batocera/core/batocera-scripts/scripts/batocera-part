@@ -3,14 +3,9 @@
 # the only partition we know when booting from linux is the root device on which linux booted.
 # by convention, the share partition is the next partition on the same disk
 
-# batocera.linux has 2 partitions on most archs
-# 1 : the bopartition
+# batocera.linux has 2 partitions
+# 1 : the boot partition
 # 2 : the share partition (user data)
-#
-# since 5.23, x86/x86_64 has 3 partitions because of GPT support
-# 1 : bios_grub partition
-# 2 : the boot partition
-# 3 : the share partition (user data)
 #
 # from the root device partition the partitions can be determined
 # the root partition is not always /dev/mmcblk0p1, mainly in case you boot from an usb stick or a hard drive
