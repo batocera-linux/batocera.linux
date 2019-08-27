@@ -78,7 +78,8 @@ endef
 # However, buildroot makes no usage of it, so better delete it than have it
 # installed at the wrong place
 define SYSLINUX_POST_INSTALL_CLEANUP
-	rm -rf $(HOST_DIR)/bin/syslinux
+#batocera
+#	rm -rf $(HOST_DIR)/bin/syslinux
 endef
 SYSLINUX_POST_INSTALL_TARGET_HOOKS += SYSLINUX_POST_INSTALL_CLEANUP
 
@@ -86,6 +87,8 @@ SYSLINUX_IMAGES-$(BR2_TARGET_SYSLINUX_ISOLINUX) += bios/core/isolinux.bin
 SYSLINUX_IMAGES-$(BR2_TARGET_SYSLINUX_PXELINUX) += bios/core/pxelinux.bin
 SYSLINUX_IMAGES-$(BR2_TARGET_SYSLINUX_MBR) += bios/mbr/mbr.bin
 SYSLINUX_IMAGES-$(BR2_TARGET_SYSLINUX_EFI) += $(SYSLINUX_EFI_BITS)/efi/syslinux.efi
+#batocera install gptmbr.bin
+SYSLINUX_IMAGES-y += bios/mbr/gptmbr.bin
 
 SYSLINUX_C32 = $(call qstrip,$(BR2_TARGET_SYSLINUX_C32))
 
