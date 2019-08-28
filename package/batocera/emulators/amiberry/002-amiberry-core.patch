@@ -1,6 +1,8 @@
---- a/src/main.cpp	2018-11-21 14:53:47.472668866 +0000
-+++ b/src/main.cpp	2018-11-21 14:53:53.988563914 +0000
-@@ -60,6 +60,7 @@
+diff --git a/src/main.cpp b/src/main.cpp
+index b0bde38..b4e60a6 100644
+--- a/src/main.cpp
++++ b/src/main.cpp
+@@ -60,6 +60,7 @@ bool kickstart_rom = true;
  struct gui_info gui_data;
  
  TCHAR optionsfile[256];
@@ -8,27 +10,27 @@
  
  void my_trim(TCHAR *s)
  {
-@@ -506,6 +507,11 @@
+@@ -529,6 +530,11 @@ static void parse_cmdline(int argc, TCHAR **argv)
  			firstconfig = false;
  			loaded = true;
  		}
-+		else if (_tcsncmp(argv[i], _T("-core="), 6) == 0) {
-+		  TCHAR *txt = parsetextpath(argv[i] + 6);
-+		  _tcscpy(core, txt);
-+		  xfree(txt);
-+		}
++        else if (_tcsncmp(argv[i], _T("-core="), 6) == 0) {
++            TCHAR *txt = parsetextpath(argv[i] + 6);
++            _tcscpy(core, txt);
++            xfree(txt);
++        }
  		else if (_tcsncmp(argv[i], _T("-statefile="), 11) == 0) {
  			const auto txt = parsetextpath(argv[i] + 11);
  			savestate_state = STATE_DORESTORE;
-@@ -665,6 +671,7 @@
- 		abort();
+@@ -742,6 +748,7 @@ static int real_main2 (int argc, TCHAR **argv)
  	}
  #endif
-+	_tcscpy(core, _T(""));
+ 
++    _tcscpy(core, _T(""));
  	keyboard_settrans();
  	set_config_changed();
  	if (restart_config[0]) {
-@@ -693,6 +700,21 @@
+@@ -770,6 +777,21 @@ static int real_main2 (int argc, TCHAR **argv)
  	inputdevice_init();
  
  	changed_prefs = currprefs;
@@ -46,7 +48,7 @@
 +	} else if(_tcsncmp(core, _T("CD32"), 4) == 0) {
 +	  bip_cd32(&currprefs, -1);
 +	}
-+	
++
  	no_gui = !currprefs.start_gui;
  	if (restart_program == 2)
  		no_gui = true;
