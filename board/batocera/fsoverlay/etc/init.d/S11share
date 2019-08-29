@@ -118,7 +118,7 @@ mountDeviceOrFallback() {
     then
 	if ! batocera-mount "${INTERNALDEVICETYPE}" 1 "${INTERNALDEVICE}" /userdata
 	then
-	    mount -t tmpfs -o size=128M tmpfs /userdata
+	    mount -t tmpfs -o size=256M tmpfs /userdata
 	fi
     fi
 }
@@ -325,7 +325,7 @@ case "${MODE}" in
 	rb_wifi_configure_all& # configure the wifi at the end
 	;;
     "RAM")
-	mount -t tmpfs -o size=128M tmpfs /userdata
+	mount -t tmpfs -o size=256M tmpfs /userdata
 	;;
     "NETWORK")
 	# first, INTERNAL mount, then, network mount over the NETWORK mounts
@@ -339,7 +339,7 @@ case "${MODE}" in
 	    rb_wifi_configure_all
 	else
 	    # fallback
-	    mount -t tmpfs -o size=128M tmpfs /userdata
+	    mount -t tmpfs -o size=256M tmpfs /userdata
 	fi
 
 	# Network mounts
@@ -351,7 +351,7 @@ case "${MODE}" in
 	then
 	    # fallback
 	    # the internal partition is no more required in fact
-	    mount -t tmpfs -o size=128M tmpfs /userdata
+	    mount -t tmpfs -o size=256M tmpfs /userdata
 	fi
 	fixbatoceraconfname
 	rb_wifi_configure_all& # configure the wifi at the end
