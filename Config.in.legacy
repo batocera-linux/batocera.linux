@@ -146,6 +146,55 @@ endif
 
 comment "Legacy options removed in 2019.08"
 
+config BR2_PACKAGE_LIBAMCODEC
+	bool "liamcodec package was removed"
+	select BR2_LEGACY
+	help
+	  Support for odroidc2 based systems was removed, making the
+	  libamcodec package useless.
+
+config BR2_PACKAGE_ODROID_SCRIPTS
+	bool "odroid-scripts package was removed"
+	select BR2_LEGACY
+	help
+	  Support for odroidc2 based systems was removed, making the
+	  odroid-scripts package useless.
+
+config BR2_PACKAGE_ODROID_MALI
+	bool "odroid-mali package was removed"
+	select BR2_LEGACY
+	help
+	  Support for odroidc2 based systems was removed, making the
+	  odroid-mali package useless.
+
+config BR2_PACKAGE_KODI_PLATFORM_AML
+	bool "Kodi AMLogic support was removed"
+	select BR2_LEGACY
+	help
+	  Support for AMLogic was removed due to the removal of the
+	  odroidc2 defconfig.
+
+config BR2_GCC_VERSION_6_X
+	bool "gcc 6.x support removed"
+	select BR2_LEGACY
+	help
+	  Support for gcc version 6.x has been removed. The current
+	  default version (8.x or later) has been selected instead.
+
+config BR2_GCC_VERSION_4_9_X
+	bool "gcc 4.9.x support removed"
+	select BR2_LEGACY
+	help
+	  Support for gcc version 4.9.x has been removed. The current
+	  default version (8.x or later) has been selected instead.
+
+config BR2_GDB_VERSION_7_12
+	bool "gdb 7.12.x has been removed"
+	select BR2_LEGACY
+	help
+	  The 7.12.x version of gdb has been removed. Use a newer
+	  version instead.
+
 config BR2_PACKAGE_XAPP_MKFONTDIR
 	bool "mkfontdir is now included in xapp_mkfontscale"
 	select BR2_PACKAGE_XAPP_MKFONTSCALE
