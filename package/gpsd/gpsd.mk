@@ -4,9 +4,9 @@
 #
 ################################################################################
 
-GPSD_VERSION = 3.18.1
+GPSD_VERSION = 3.19
 GPSD_SITE = http://download-mirror.savannah.gnu.org/releases/gpsd
-GPSD_LICENSE = BSD-3-Clause
+GPSD_LICENSE = BSD-2-Clause
 GPSD_LICENSE_FILES = COPYING
 GPSD_INSTALL_STAGING = YES
 
@@ -18,13 +18,14 @@ GPSD_CFLAGS = $(TARGET_CFLAGS)
 GPSD_SCONS_ENV = $(TARGET_CONFIGURE_OPTS)
 
 GPSD_SCONS_OPTS = \
-	arch=$(ARCH)\
+	arch=$(ARCH) \
 	manbuild=no \
-	prefix=/usr\
-	sysroot=$(STAGING_DIR)\
-	strip=no\
+	prefix=/usr \
+	sysroot=$(STAGING_DIR) \
+	strip=no \
 	python=no \
-	qt=no
+	qt=no \
+	ntpshm=yes
 
 ifeq ($(BR2_PACKAGE_NCURSES),y)
 GPSD_DEPENDENCIES += ncurses
@@ -161,9 +162,6 @@ GPSD_SCONS_OPTS += ublox=no
 endif
 
 # Features
-ifneq ($(BR2_PACKAGE_GPSD_NTP_SHM),y)
-GPSD_SCONS_OPTS += ntpshm=no
-endif
 ifneq ($(BR2_PACKAGE_GPSD_PPS),y)
 GPSD_SCONS_OPTS += pps=no
 endif
