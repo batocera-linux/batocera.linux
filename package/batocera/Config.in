@@ -10,7 +10,7 @@ menu "System"
 
   menu "Boot"
     source "package/batocera/boot/batocera-initramfs/Config.in"
-    source "package/batocera/boot/batocera-x86_64_efi/Config.in"
+    source "package/batocera/boot/batocera-syslinux-efi/Config.in"
     source "package/batocera/boot/uboot-odroid-xu4/Config.in"
     source "package/batocera/boot/uboot-odroid-n2/Config.in"
     source "package/batocera/boot/uboot-odroid-c2/Config.in"

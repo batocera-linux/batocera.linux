@@ -319,9 +319,8 @@ case "${BATOCERA_TARGET}" in
 	cp "${BINARIES_DIR}/rootfs.squashfs" "${BINARIES_DIR}/boot/batocera.update" || exit 1
 
 	# get UEFI files
-	mkdir -p "${BINARIES_DIR}/EFI/BOOT" || exit 1
-	cp "${BINARIES_DIR}/bootx64.efi" "${BINARIES_DIR}/EFI/BOOT" || exit 1
-	cp "board/batocera/x86/boot/grub.cfg" "${BINARIES_DIR}/EFI/BOOT" || exit 1
+	mkdir -p "${BINARIES_DIR}/EFI/syslinux" || exit 1
+	cp "board/batocera/x86/boot/syslinux.cfg" ${BINARIES_DIR/}/EFI/syslinux/syslinux.cfg || exit 1
 
 	# boot.tar.xz
 	# it must include the squashfs version with .update to not erase the current squashfs while running
