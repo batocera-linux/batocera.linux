@@ -4,16 +4,17 @@
 #
 ################################################################################
 
-OPENJDK_VERSION_MAJOR = 12
-OPENJDK_VERSION_MINOR = 33
-OPENJDK_VERSION = jdk-$(OPENJDK_VERSION_MAJOR)+$(OPENJDK_VERSION_MINOR)
-OPENJDK_SITE = $(call github,AdoptOpenJDK,openjdk-jdk12u,$(OPENJDK_VERSION))
+OPENJDK_VERSION_MAJOR = 12.0.1
+OPENJDK_VERSION_MINOR = 12
+OPENJDK_VERSION = $(OPENJDK_VERSION_MAJOR)+$(OPENJDK_VERSION_MINOR)
+OPENJDK_SITE = $(call github,AdoptOpenJDK,openjdk-jdk12u,jdk-$(OPENJDK_VERSION))
 OPENJDK_LICENSE = GPL-2.0+ with exception
 OPENJDK_LICENSE_FILES = LICENSE
 
 # OpenJDK requires Alsa, cups, and X11 even for a headless build.
 # host-zip is needed for the zip executable.
 OPENJDK_DEPENDENCIES = \
+	host-gawk \
 	host-openjdk-bin \
 	host-pkgconf \
 	host-zip \
@@ -34,16 +35,15 @@ OPENJDK_DEPENDENCIES = \
 
 # JVM variants
 ifeq ($(BR2_PACKAGE_OPENJDK_JVM_VARIANT_CLIENT),y)
-OPENJDK_JVM_VARIANTS += client
+OPENJDK_JVM_VARIANT = client
 endif
 ifeq ($(BR2_PACKAGE_OPENJDK_JVM_VARIANT_SERVER),y)
-OPENJDK_JVM_VARIANTS += server
+OPENJDK_JVM_VARIANT = server
 endif
 ifeq ($(BR2_PACKAGE_OPENJDK_JVM_VARIANT_ZERO),y)
-OPENJDK_JVM_VARIANTS += zero
+OPENJDK_JVM_VARIANT = zero
 OPENJDK_DEPENDENCIES += libffi
 endif
-OPENJDK_JVM_VARIANT_LIST = $(subst $(space),$(comma),$(OPENJDK_JVM_VARIANTS))
 
 # OpenJDK ignores some variables unless passed via the environment.
 # These variables are PATH, LD, CC, CXX, and CPP.
@@ -75,7 +75,7 @@ OPENJDK_CONF_OPTS = \
 	--with-extra-cxxflags="$(TARGET_CXXFLAGS)" \
 	--with-giflib=system \
 	--with-jobs=$(PARALLEL_JOBS) \
-	--with-jvm-variants=$(OPENJDK_JVM_VARIANT_LIST) \
+	--with-jvm-variants=$(OPENJDK_JVM_VARIANT) \
 	--with-lcms=system \
 	--with-libjpeg=system \
 	--with-libpng=system \
@@ -109,7 +109,7 @@ endef
 # Make -jn is unsupported. Instead, set the "--with-jobs=" configure option,
 # and use $(MAKE1).
 define OPENJDK_BUILD_CMDS
-	$(MAKE1) -C $(@D) legacy-jre-image
+	$(TARGET_MAKE_ENV) $(MAKE1) -C $(@D) legacy-jre-image
 endef
 
 # Calling make install always builds and installs the JDK instead of the JRE,

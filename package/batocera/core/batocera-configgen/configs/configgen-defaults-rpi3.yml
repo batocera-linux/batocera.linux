@@ -5,7 +5,7 @@ default:
 
 snes:
   emulator: libretro
-  core: snes9x_next
+  core:     snes9x_next
 n64:
   options:
     videomode: DMT 4 HDMI
@@ -13,18 +13,15 @@ psp:
   options:
     frameskip: true
     videomode: DMT 4 HDMI
-amiga500:
-  emulator: amiberry
-  core:     A500
-amiga500p:
-  emulator: amiberry
-  core:     A500P
-amiga1200:
+amiga:
   emulator: amiberry
   core:     A1200
-amiga4000:
-  emulator: amiberry
-  core:     A4000
 amigacd32:
   emulator: amiberry
   core:     CD32
+mastersystem:
+  emulator: libretro
+  core:     picodrive
+megadrive:
+  emulator: libretro
+  core:     picodrive

@@ -7,7 +7,7 @@
 RETROARCH_VERSION = 3064d0d441bfcd2a13ff46a1a813f6c7339c4c24
 RETROARCH_SITE = $(call github,libretro,RetroArch,$(RETROARCH_VERSION))
 RETROARCH_LICENSE = GPLv3+
-RETROARCH_DEPENDENCIES = host-pkgconf dejavu
+RETROARCH_DEPENDENCIES = host-pkgconf dejavu retroarch-assets
 
 RETROARCH_CONF_OPTS = --disable-oss --enable-zlib --disable-qt --enable-threads
 RETROARCH_CONF_OPTS += --enable-flac --enable-lua --enable-networking
@@ -162,6 +162,10 @@ ifeq ($(BR2_cortex_a53)$(BR2_arm),yy)
 endif
 
 ifeq ($(BR2_cortex_a15),y)
+    LIBRETRO_PLATFORM += armv7
+endif
+
+ifeq ($(BR2_cortex_a17),y)
     LIBRETRO_PLATFORM += armv7
 endif
 

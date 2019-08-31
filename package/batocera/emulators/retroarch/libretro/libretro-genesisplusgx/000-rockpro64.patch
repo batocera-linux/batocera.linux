@@ -1,18 +1,18 @@
 diff --git a/Makefile.libretro b/Makefile.libretro
-index 1409ac5..418876a 100644
+index d6a9e2b..f3c5a36 100644
 --- a/Makefile.libretro
 +++ b/Makefile.libretro
-@@ -70,6 +70,13 @@ ifneq (,$(findstring unix,$(platform)))
-       endif
-    endif
-    
+@@ -56,6 +56,13 @@ ifneq (,$(findstring unix,$(platform)))
+    ENDIANNESS_DEFINES := -DLSB_FIRST -DBYTE_ORDER=LITTLE_ENDIAN
+    PLATFORM_DEFINES := -DHAVE_ZLIB
+ 
 +   # RockPro64
 +   ifneq (,$(findstring rockpro64,$(platform)))
 +      ENDIANNESS_DEFINES += -DALIGN_LONG
 +      CFLAGS += -fomit-frame-pointer -ffast-math
 +      PLATFORM_DEFINES += -DARM -marm -march=armv7ve -mcpu=cortex-a72 -mtune=cortex-a72.cortex-a53 -mfloat-abi=hard
 +   endif
-+   
- # (armv7 a7, hard point, neon based) ### 
- # NESC, SNESC, C64 mini 
- else ifeq ($(platform), classic_armv7_a7)
++
+    # Raspberry Pi
+    ifneq (,$(findstring rpi,$(platform)))
+       ENDIANNESS_DEFINES += -DALIGN_LONG

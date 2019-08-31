@@ -12,7 +12,7 @@ default:
 
 nes:
   emulator: libretro
-  core:     fceunext
+  core:     fceumm
 snes:
   emulator: libretro
   core:     snes9x
@@ -36,7 +36,7 @@ gbc2players:
   core:     tgbdual
 fds:
   emulator: libretro
-  core:     nestopia
+  core:     fceumm
 virtualboy:
   emulator: libretro
   core:     vb
@@ -61,10 +61,10 @@ sg1000:
   core:     genesisplusgx
 mastersystem:
   emulator: libretro
-  core:     picodrive
+  core:     genesisplusgx
 megadrive:
   emulator: libretro
-  core:     picodrive
+  core:     genesisplusgx
 gamegear:
   emulator: libretro
   core:     genesisplusgx
@@ -73,7 +73,7 @@ sega32x:
   core:     picodrive
 segacd:
   emulator: libretro
-  core:     picodrive
+  core:     genesisplusgx
 saturn:
   emulator: libretro
   core:     yabause
@@ -81,10 +81,10 @@ dreamcast:
   emulator: reicast
 atomiswave:
   emulator: libretro
-  core:     reicast
+  core:     flycast
 naomi:
   emulator: libretro
-  core:     reicast
+  core:     flycast
 neogeo:
   emulator: libretro
   core:     fbneo
@@ -93,40 +93,16 @@ neogeocd:
   core:     neocd
 mame:
   emulator: libretro
-  core:     mame078
+  core:     mame078plus
 fba:
   emulator: libretro
   core:     fbneo
 msx:
   emulator: libretro
   core:     bluemsx
-msx1:
-  emulator: libretro
-  core:     bluemsx
-msx2:
-  emulator: libretro
-  core:     bluemsx
-amiga500:
-  emulator: fsuae
-  core:     A500
-amiga500p:
-  emulator: fsuae
-  core:     A500+
-amiga600:
-  emulator: fsuae
-  core:     A600
-amiga1000:
-  emulator: fsuae
-  core:     A1000
-amiga1200:
+amiga:
   emulator: fsuae
   core:     A1200
-amiga3000:
-  emulator: fsuae
-  core:     A3000
-amiga4000:
-  emulator: fsuae
-  core:     A4000
 amigacd32:
   emulator: fsuae
   core:     CD32
@@ -194,10 +170,10 @@ wswanc:
     ratio: 16/10
 pcengine:
   emulator: libretro
-  core:     mednafen_supergrafx
+  core:     pce
 pcenginecd:
   emulator: libretro
-  core:     mednafen_supergrafx
+  core:     pce
 supergrafx:
   emulator: libretro
   core:     mednafen_supergrafx
@@ -264,3 +240,6 @@ pokemini:
 gx4000:
   emulator: libretro
   core:     cap32
+lightgun:
+  emulator: libretro
+  core:     mame078plus

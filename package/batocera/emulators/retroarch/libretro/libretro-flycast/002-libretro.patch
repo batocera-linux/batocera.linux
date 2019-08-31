@@ -1,0 +1,35 @@
+diff --git a/core/libretro/libretro.cpp b/core/libretro/libretro.cpp
+index db23e04..2b5d6de 100644
+--- a/core/libretro/libretro.cpp
++++ b/core/libretro/libretro.cpp
+@@ -58,7 +58,7 @@ char save_dir[PATH_MAX];
+ char eeprom_file[PATH_MAX];
+ char nvmem_file[PATH_MAX];
+ char nvmem_file2[PATH_MAX];		// AtomisWave
+-bool boot_to_bios;
++bool boot_to_bios = true;
+ 
+ static bool devices_need_refresh = false;
+ static int device_type[4] = {-1,-1,-1,-1};
+@@ -1769,9 +1769,9 @@ bool retro_load_game(const struct retro_game_info *game)
+    if (!(environ_cb(RETRO_ENVIRONMENT_GET_SYSTEM_DIRECTORY, &dir) && dir))
+       dir = game_dir;
+ 
+-   snprintf(game_dir, sizeof(game_dir), "%s%cdc%c", dir, slash, slash);
+-   snprintf(game_dir_no_slash, sizeof(game_dir_no_slash), "%s%cdc", dir, slash);
+-
++   snprintf(game_dir, sizeof(game_dir), "%s", dir);
++   snprintf(game_dir_no_slash, sizeof(game_dir_no_slash), "%s", dir);
++ 
+    // Per-content VMU additions START
+    // > Get save directory
+    if (!(environ_cb(RETRO_ENVIRONMENT_GET_SAVE_DIRECTORY, &vmu_dir) && vmu_dir))
+@@ -1844,7 +1844,7 @@ bool retro_load_game(const struct retro_game_info *game)
+    {
+       char data_dir[1024];
+ 
+-      snprintf(data_dir, sizeof(data_dir), "%s%s", game_dir, "data");
++      snprintf(data_dir, sizeof(data_dir), "%s", game_dir);
+ 
+       printf("Creating dir: %s\n", data_dir);
+       struct stat buf;

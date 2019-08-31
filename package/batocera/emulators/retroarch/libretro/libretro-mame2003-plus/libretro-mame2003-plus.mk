@@ -3,8 +3,8 @@
 # MAME2003 PLUS
 #
 ################################################################################
-# Version.: Commits on May 14, 2019
-LIBRETRO_MAME2003_PLUS_VERSION = ee491ad23cf25041089ff765827050c6f1342e7f
+# Version.: Commits on Aug 3, 2019
+LIBRETRO_MAME2003_PLUS_VERSION = 76be8aba9ebb07583293df0b80d39796afaf31d9
 LIBRETRO_MAME2003_PLUS_SITE = $(call github,libretro,mame2003-plus-libretro,$(LIBRETRO_MAME2003_PLUS_VERSION))
 LIBRETRO_MAME2003_PLUS_LICENSE = MAME
 
@@ -16,6 +16,11 @@ endef
 define LIBRETRO_MAME2003_PLUS_INSTALL_TARGET_CMDS
 	$(INSTALL) -D $(@D)/mame2003_plus_libretro.so \
 		$(TARGET_DIR)/usr/lib/libretro/mame078plus_libretro.so
+
+	# Bios
+	mkdir -p $(TARGET_DIR)/usr/share/batocera/datainit/bios/mame2003-plus/samples
+	cp -r $(@D)/metadata/* \
+		$(TARGET_DIR)/usr/share/batocera/datainit/bios/mame2003-plus
 endef
 
 define LIBRETRO_MAME2003_PLUS_NAMCO_QUICK_FIX

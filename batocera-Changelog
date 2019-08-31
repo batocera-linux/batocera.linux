@@ -1,4 +1,47 @@
-2019/06/XX - batocera.linux 5.22
+2019/xx/xx - batocera.linux 5.23
+	* games collections (custom, last played games, favorites)
+	* /userdata/system/scripts user scripts to react to starting/stopping of games
+	* new options available from es : fullboot for ps2 and emulated wiimotes for wii
+	* new options : game boy colorization
+	* options configurable by game
+	* nvidia-driver: version bump (430.40)
+	* new shaders sets for "retro" and "scanlines", and added a new "enhanced" set
+	* add: ability to display/hide gaming systems from the "UI Settings" menu
+	* add: "Lightgun" system (to use with a Dolphinbar)
+	* add: system-specific background music (by system folder in /userdata/music/)
+	* add: new option for a pop-up with music titles
+	* add: music fades out when launching a game
+	* add: 2 new arcade 4:3 format bezels and 3 arcade vertical format bezel (configurable by game)
+	* add: new atomiswave and naomi default bezels (replacing old bezels since they are arcade cabinet systems)
+	* add: new bezel called "atomiswave_naomi_vertical" (configure per game vertical format)
+	* add: amstrad gx4000 bezel
+	* add: integration with theBezelProject for per-game bezels on some systems
+	* add: tinkerboard support
+	* add: miqi support
+	* renamed: libretro-reicast to libretro-flycast
+	* add: libretro-handy Atari Lynx Core
+	* add: amiberry support for - odroid xu4 - Pine64 rockpro64 - Asus Tinkerboard - MQmaker MiQi
+	* add: libretro-vice for RPI3
+	* add: libretro-yabasanshiro Sega Saturn Core for X86/X86_64
+	* bump: libretro-genesisplusgx
+	* bump: citra-emu
+	* bump: scummvm
+	* bump: libretro-fbneo
+	* bump: libretro-cap32
+	* bump: libretro-mame2003-plus
+	* bump: linapple-pie
+	* bump: fsuae to 2.9.12dev
+	* bump: libretro-mupen64plus-next & Enable core on Tinkerboard & MiQi
+	* removed: libertro-mupen64plus (discontinued)
+	* bump: libretro-mame to 0.212 and add support for - Pine64 rockpro64 - Asus Tinkerboard - MQmaker MiQi
+	* removed: libretro-quicknes and libretro-catsfc
+	* snes9x: replacing repository
+	* bump: libretro-neocd (adds .chd support)
+	* removed: libretro-gpsp
+	* amiga: new rom folder structure (amiga, amigacd32 and amigacdtv)
+
+2019/06/12 - batocera.linux 5.22
+	* nvidia-driver: version bump (418.74)
 	* moonlight: bump to v2.4.10
 	* amiberry: bump v2.25
 	* fix: libretro-genesisplusgx for rockpro64

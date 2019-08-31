@@ -1,0 +1,10 @@
+#!/bin/bash
+
+export XDG_MENU_PREFIX=batocera-
+export XDG_CONFIG_DIRS=/etc/xdg
+
+unclutter-remote -s
+
+DISPLAY=:0.0 pcmanfm /userdata
+
+unclutter-remote -h

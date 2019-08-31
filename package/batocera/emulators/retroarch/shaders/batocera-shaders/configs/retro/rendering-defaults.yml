@@ -1,108 +1,108 @@
+## RETRO
 default:
   # shader affects retroarch shaders
-  shader:
+  shader: retro/sharp-bilinear-simple
   # scanline affect fba2x
   scanline: false
 snes:
-  shader: crt/crt-caligari
+  shader: retro/sharp-bilinear-simple
 nes:
-  shader: crt/crt-caligari
+  shader: retro/sharp-bilinear-simple
 n64:
-  shader: retro/sharp-bilinear-scanlines
+  shader: retro/sharp-bilinear-simple
 gba:
   shader: handheld/gba-color
 gb:
-  shader: handheld/gameboy
+  shader: handheld/gb-palette-dmg
 gbc:
-  shader: handheld/lcd3x
+  shader: handheld/gbc-color
 fds:
-  shader: retro/sharp-bilinear-scanlines
+  shader: retro/sharp-bilinear-simple
 virtualboy:
-  shader: retro/sharp-bilinear-scanlines
+  shader: retro/sharp-bilinear-simple
 # Sega
 sg1000:
-  shader: retro/sharp-bilinear-scanlines
+  shader: retro/sharp-bilinear-simple
 mastersystem:
-  shader: crt/crt-caligari
+  shader: retro/sharp-bilinear-simple
 megadrive:
-  shader: crt/crt-caligari
+  shader: retro/sharp-bilinear-simple
 gamegear:
-  shader: retro/sharp-bilinear-scanlines
+  shader: retro/sharp-bilinear-simple
 sega32x:
-  shader: crt/crt-caligari
+  shader: retro/sharp-bilinear-simple
 segacd:
-  shader: retro/sharp-bilinear-scanlines
+  shader: retro/sharp-bilinear-simple
 # Arcade
 neogeo:
-  shader: crt/crt-caligari
+  shader: retro/sharp-bilinear-simple
 neogeocd:
-  shader: crt/crt-caligari
+  shader: retro/sharp-bilinear-simple
 mame:
-  shader: crt/crt-caligari
+  shader: retro/sharp-bilinear-simple
 fba:
-  shader: crt/crt-caligari
+  shader: retro/sharp-bilinear-simple
 naomi:
-  shader: crt/crt-caligari
+  shader: retro/sharp-bilinear-simple
 atomiswave:
-  shader: crt/crt-caligari
+  shader: retro/sharp-bilinear-simple
 #
 ngp:
   shader: handheld/lcd3x
 ngpc:
   shader: handheld/lcd3x
 gw:
-  shader: retro/sharp-bilinear-scanlines
+  shader: retro/sharp-bilinear-simple
 vectrex:
   shader:
 lynx:
   shader: handheld/lcd3x
 lutro:
-  shader: retro/sharp-bilinear-scanlines
+  shader: retro/sharp-bilinear-simple
 wswan:
   shader: handheld/lcd3x
 wswanc:
   shader: handheld/lcd3x
 pcengine:
-  shader: crt/crt-caligari
+  shader: retro/sharp-bilinear-simple
 pcenginecd:
-  shader: crt/crt-caligari
+  shader: retro/sharp-bilinear-simple
 supergrafx:
-  shader: crt/crt-caligari
+  shader: retro/sharp-bilinear-simple
 atari800:
-  shader: retro/sharp-bilinear-scanlines
+  shader: retro/sharp-bilinear-simple
 atari2600:
-  shader: retro/sharp-bilinear-scanlines
+  shader: retro/sharp-bilinear-simple
 atari5200:
-  shader: retro/sharp-bilinear-scanlines
+  shader: retro/sharp-bilinear-simple
 atari7800:
-  shader: retro/sharp-bilinear-scanlines
+  shader: retro/sharp-bilinear-simple
 prboom:
-  shader: crt/crt-caligari
+  shader: retro/sharp-bilinear-simple
 psx:
-  shader: crt/crt-caligari
+  shader: retro/sharp-bilinear-simple
 colecovision:
-  shader: crt/crt-caligari
+  shader: retro/sharp-bilinear-simple
 # Computers
 msx:
-  shader: retro/sharp-bilinear-scanlines
+  shader: retro/sharp-bilinear-simple
 msx1:
-  shader: retro/sharp-bilinear-scanlines
+  shader: retro/sharp-bilinear-simple
 msx2:
-  shader: retro/sharp-bilinear-scanlines
+  shader: retro/sharp-bilinear-simple
 amiga:
-  shader: crt/crt-caligari
+  shader: retro/sharp-bilinear-simple
 amstradcpc:
-  shader: crt/crt-caligari
+  shader: retro/sharp-bilinear-simple
 atarist:
-  shader: crt/crt-caligari
+  shader: retro/sharp-bilinear-simple
 zxspectrum:
-  shader: retro/sharp-bilinear-scanlines
+  shader: retro/sharp-bilinear-simple
 odyssey2:
-  shader: retro/sharp-bilinear-scanlines
+  shader: retro/sharp-bilinear-simple
 zx81:
-  shader: retro/sharp-bilinear-scanlines
+  shader: retro/sharp-bilinear-simple
 pcfx:
-  shader: retro/sharp-bilinear-scanlines
+  shader: retro/sharp-bilinear-simple
 x68000:
-  shader: retro/sharp-bilinear-scanlines
-
+  shader: retro/sharp-bilinear-simple

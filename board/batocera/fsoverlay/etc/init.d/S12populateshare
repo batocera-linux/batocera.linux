@@ -123,11 +123,6 @@ retroarchcustom_fix_remove_param_value() {
     sed -i -e s+"^[ ]*${L_PARAM}[ ]*=[ ]*\"\?${L_VALUE}\"\?[ ]*$"+""+ "${L_CFG}"
 }
 
-# retroarch
-retroarchcustom_fix_force_param "video_font_path"             "/usr/share/fonts/dejavu/DejaVuSansMono.ttf"
-retroarchcustom_fix_force_param "menu_driver"                 "rgui"
-retroarchcustom_fix_force_param "menu_swap_ok_cancel_buttons" "true"
-
 if test "${XARCH}" == x86 -o "${XARCH}" == x86_64
 then
     retroarchcustom_fix_remove_param_value "video_driver"                "sdl2"  # don't use anymore this value while it doesn't allow the shaders to work

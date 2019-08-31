@@ -1,0 +1,46 @@
+diff --git a/core/nullDC.cpp b/core/nullDC.cpp
+index 424c6cd..62f3c84 100644
+--- a/core/nullDC.cpp
++++ b/core/nullDC.cpp
+@@ -431,7 +431,7 @@ void dc_term(void)
+ 	plugins_Term();
+ 	_vmem_release();
+ 
+-	SaveRomFiles(get_writable_data_path(""));
++	SaveRomFiles(get_writable_data_save(""));
+ }
+ 
+ void dc_stop()
+diff --git a/core/stdclass.cpp b/core/stdclass.cpp
+index 8f95dd8..a6e79ea 100644
+--- a/core/stdclass.cpp
++++ b/core/stdclass.cpp
+@@ -42,6 +42,16 @@ string get_writable_data_path(const string& filename)
+          + filename);
+ }
+ 
++string get_writable_data_save(const string& filename)
++{
++   return std::string("/userdata/saves/dreamcast/" + 
++#ifdef _WIN32
++         std::string("\\")
++#else
++         std::string("/")
++#endif
++         + filename);
++}
+ string get_writable_vmu_path(const char *logical_port)
+ {
+    extern char vmu_dir_no_slash[PATH_MAX];
+diff --git a/core/stdclass.h b/core/stdclass.h
+index dce22a0..a831f57 100644
+--- a/core/stdclass.h
++++ b/core/stdclass.h
+@@ -242,6 +242,7 @@ void add_system_data_dir(const string& dir);
+ 
+ //subpath format: /data/fsca-table.bit
+ string get_writable_data_path(const string& filename);
++string get_writable_data_save(const string& filename);
+ string get_writable_vmu_path(const char *logical_port);
+ 
+ class VArray2
