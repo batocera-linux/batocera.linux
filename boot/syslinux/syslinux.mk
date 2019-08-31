@@ -78,7 +78,7 @@ endef
 # However, buildroot makes no usage of it, so better delete it than have it
 # installed at the wrong place
 define SYSLINUX_POST_INSTALL_CLEANUP
-#batocera
+#batocera need syslinux util
 #	rm -rf $(HOST_DIR)/bin/syslinux
 endef
 SYSLINUX_POST_INSTALL_TARGET_HOOKS += SYSLINUX_POST_INSTALL_CLEANUP
