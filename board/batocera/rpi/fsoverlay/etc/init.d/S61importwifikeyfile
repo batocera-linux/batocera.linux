@@ -1,0 +1,39 @@
+#!/bin/bash
+# Setup Credentials for WiFi from /boot/batocera-boot.conf
+#
+# This imports WiFi credentials open batocera-boot.conf (this file is visible in FAT32 in windows systems)
+# to setup remove comments from wifi keys and enter your WiFi credentials
+# now boot to BATOCERA, reboot ... and voila wifi credentials are imported to wifi3 settings
+#
+# "/boot/batocera-boot.conf" should contain following structure
+# wifi.import.enabled=1
+# nas.wifi.key=write your key here
+# nas.wifi.ssid=set your wifi SSID here
+#
+# Triggers for activating this script
+# 1. 'wifi.import.enabled' key in /boot/batocera-boot must be enabled with 1
+# 2. File /boot/batocera-boot.conf contains activated wifi credentials
+# 3. Values of /boot/batocera-boot.conf are not equal to batocera.conf
+
+#
+# This demonstrates usage of batocera-settings
+# we will use read command, disable command, write command
+
+WIFI_KEYFILE="/boot/batocera-boot.conf"
+
+[[ "$1" == "stop" ]] || exit
+[[ $(batocera-settings $WIFI_KEYFILE -command load -key wifi.import.enabled) -eq 1 ]] || exit
+
+# This is a one time shoot, disable key import for next boot
+mount -o remount, rw /boot
+batocera-settings $WIFI_KEYFILE -command disable -key wifi.import.enabled
+
+psk="$(batocera-settings $WIFI_KEYFILE -command load -key nas.wifi.key)"
+[[ $? -eq 0 ]] || exit
+ssid="$($systemsetting $WIFI_KEYFILE -command load -key nas.wifi.ssid)"
+[[ $? -eq 0 ]] || exit
+
+# Set keys from "/boot/batocera-boot.conf" to wifi3.key and wifi3.ssid
+# These keys are not visible on ES Network config screen
+batocera-settings -command write -key wifi3.key -value "$psk"
+batocera-settings -command write -key wifi3.ssid -value "$ssid"
