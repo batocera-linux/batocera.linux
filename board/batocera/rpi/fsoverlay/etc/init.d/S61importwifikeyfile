@@ -13,9 +13,7 @@
 # Triggers for activating this script
 # 1. 'wifi.import.enabled' key in /boot/batocera-boot must be enabled with 1
 # 2. File /boot/batocera-boot.conf contains activated wifi credentials
-# 3. Values of /boot/batocera-boot.conf are not equal to batocera.conf
 
-#
 # This demonstrates usage of batocera-settings
 # we will use read command, disable command, write command
 
@@ -30,7 +28,7 @@ batocera-settings $WIFI_KEYFILE -command disable -key wifi.import.enabled
 
 psk="$(batocera-settings $WIFI_KEYFILE -command load -key nas.wifi.key)"
 [[ $? -eq 0 ]] || exit
-ssid="$($systemsetting $WIFI_KEYFILE -command load -key nas.wifi.ssid)"
+ssid="$(batocera-settings $WIFI_KEYFILE -command load -key nas.wifi.ssid)"
 [[ $? -eq 0 ]] || exit
 
 # Set keys from "/boot/batocera-boot.conf" to wifi3.key and wifi3.ssid
