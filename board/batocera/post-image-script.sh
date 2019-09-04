@@ -309,22 +309,21 @@ case "${BATOCERA_TARGET}" in
 	sync || exit 1
 	;;
 
-    X86|X86_64)
+	X86|X86_64)
 	# /boot
 	rm -rf ${BINARIES_DIR}/boot || exit 1
-	mkdir -p ${BINARIES_DIR}/boot/grub || exit 1
-	cp "board/batocera/x86/boot/grub.cfg" ${BINARIES_DIR}/boot/grub/grub.cfg || exit 1
+	mkdir -p ${BINARIES_DIR}/boot || exit 1
+	cp "board/batocera/x86/boot/syslinux.cfg" ${BINARIES_DIR/}/boot/syslinux.cfg || exit 1
 	cp "${BINARIES_DIR}/bzImage" "${BINARIES_DIR}/boot/linux" || exit 1
 	cp "${BINARIES_DIR}/initrd.gz" "${BINARIES_DIR}/boot" || exit 1
 	cp "${BINARIES_DIR}/rootfs.squashfs" "${BINARIES_DIR}/boot/batocera.update" || exit 1
 
 	# get UEFI files
-	mkdir -p "${BINARIES_DIR}/EFI/BOOT" || exit 1
-	cp "${BINARIES_DIR}/bootx64.efi" "${BINARIES_DIR}/EFI/BOOT" || exit 1
-	cp "board/batocera/x86/boot/grub.cfg" "${BINARIES_DIR}/EFI/BOOT" || exit 1
+	mkdir -p "${BINARIES_DIR}/EFI/syslinux" || exit 1
+	cp "board/batocera/x86/boot/syslinux.cfg" ${BINARIES_DIR/}/EFI/syslinux/syslinux.cfg || exit 1
 
 	# boot.tar.xz
-        # it must include the squashfs version with .update to not erase the current squashfs while running
+	# it must include the squashfs version with .update to not erase the current squashfs while running
 	echo "creating ${BATOCERA_BINARIES_DIR}/boot.tar.xz"
 	(cd "${BINARIES_DIR}" && tar -cJf "${BATOCERA_BINARIES_DIR}/boot.tar.xz" EFI boot batocera-boot.conf) || exit 1
 
@@ -332,15 +331,19 @@ case "${BATOCERA_TARGET}" in
 	# rename the squashfs : the .update is the version that will be renamed at boot to replace the old version
 	mv "${BINARIES_DIR}/boot/batocera.update" "${BINARIES_DIR}/boot/batocera" || exit 1
 	GENIMAGE_TMP="${BUILD_DIR}/genimage.tmp"
-	BATOCERAIMG="${BATOCERA_BINARIES_DIR}/batocera.img"
+	rm -rf "${GENIMAGE_TMP}" || exit 1
+	cp "board/batocera/x86/genimage-boot.cfg" "${BINARIES_DIR}" || exit 1
+	echo "creating ${BINARIES_DIR}/batocera-boot.img"
+	genimage --rootpath="${TARGET_DIR}" --inputpath="${BINARIES_DIR}" --outputpath="${BINARIES_DIR}" --config="${BINARIES_DIR}/genimage-boot.cfg" --tmppath="${GENIMAGE_TMP}" || exit 1
+	syslinux -i "${BINARIES_DIR}/batocera-boot.img" -d /boot/syslinux
 	rm -rf "${GENIMAGE_TMP}" || exit 1
 	cp "board/batocera/x86/genimage.cfg" "${BINARIES_DIR}" || exit 1
-	cp "${HOST_DIR}/usr/lib/grub/i386-pc/boot.img" "${BINARIES_DIR}" || exit 1
 	echo "creating ${BATOCERA_BINARIES_DIR}/batocera.img"
 	genimage --rootpath="${TARGET_DIR}" --inputpath="${BINARIES_DIR}" --outputpath="${BATOCERA_BINARIES_DIR}" --config="${BINARIES_DIR}/genimage.cfg" --tmppath="${GENIMAGE_TMP}" || exit 1
-	rm -f "${BATOCERA_BINARIES_DIR}/boot.vfat" || exit 1
+	rm -f "${BINARIES_DIR}/batocera-boot.img" || exit 1
 	sync || exit 1
 	;;
+
     ROCKPRO64)
         # /boot
         rm -rf "${BINARIES_DIR}/boot"            || exit 1

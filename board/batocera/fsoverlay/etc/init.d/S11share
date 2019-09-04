@@ -54,10 +54,14 @@ if ! test -e "${INTERNALDEVICE}"
 then
     # but the system partition exists
     INTERNALPREVIOUSDEVICE=$(batocera-part previous "${INTERNALDEVICE}")
-    
+
     if test -e "${INTERNALPREVIOUSDEVICE}" # the partition n-1 must exist (just in case the parameter given is not wrong)
     then
 	PARTPREFIX=$(batocera-part prefix "${INTERNALDEVICE}")
+
+    # workaround to allocate all disk space in GPT
+    # no effect in MBR
+    parted "${PARTPREFIX}" print free ---pretend-input-tty Fix > /dev/null
 
 	# create the internal partition
 	PSTART=$(parted -s "${PARTPREFIX}" -m unit b print free | tail -1 | grep -E 'free;$' | cut -d: -f 2)
@@ -284,7 +288,7 @@ mountNetwork() {
     return 0
 }
 
-RMODE="$SHAREDEVICE" 
+RMODE="$SHAREDEVICE"
 
 if echo "${RMODE}" | grep -qE '^DEV '
 then
