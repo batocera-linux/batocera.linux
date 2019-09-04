@@ -1,4 +1,4 @@
-config BR2_PACKAGE_LIBRETRO_MESEN-S
+config BR2_PACKAGE_LIBRETRO_MESEN_S
         bool "libretro-mesen-s"
 	depends on BR2_PACKAGE_RETROARCH
 	depends on BR2_INSTALL_LIBSTDCPP
@@ -7,5 +7,5 @@ config BR2_PACKAGE_LIBRETRO_MESEN-S
 
 	  http://www.libretro.com
 
-comment "LIBRETRO_MESEN-S needs a toolchain w/ C++"
+comment "LIBRETRO_MESEN_S needs a toolchain w/ C++"
 	depends on !BR2_INSTALL_LIBSTDCPP
