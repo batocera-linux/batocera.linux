@@ -78,6 +78,7 @@ gba:
   emulators:
     libretro:
       mgba:   { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MGBA]   }
+      vba-m:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_VBA_M]  }
 
 gbc:
   name:       Game Boy Color
