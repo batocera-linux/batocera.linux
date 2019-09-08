@@ -1,0 +1,11 @@
+config BR2_PACKAGE_LIBRETRO_VBA_M
+        bool "libretro-vba-m"
+	depends on BR2_PACKAGE_RETROARCH
+	depends on BR2_INSTALL_LIBSTDCPP
+        help
+          VBA-M
+
+	  http://www.libretro.com
+
+comment "LIBRETRO_VBA_M needs a toolchain w/ C++"
+	depends on !BR2_INSTALL_LIBSTDCPP
