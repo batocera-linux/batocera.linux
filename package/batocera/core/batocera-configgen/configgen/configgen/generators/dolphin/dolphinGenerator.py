@@ -75,6 +75,15 @@ class DolphinGenerator(Generator):
             dolphinGFXSettings.add_section("Settings")
         dolphinGFXSettings.set("Settings", "AspectRatio", getGfxRatioFromConfig(system.config, gameResolution))
 
+        # for to search for custom textures
+        dolphinGFXSettings.set("Settings", "HiresTextures", "True")
+        dolphinGFXSettings.set("Settings", "CacheHiresTextures", "True")
+
+        if system.isOptSet('internalresolution'):
+            dolphinGFXSettings.set("Settings", "InternalResolution", system.config["internalresolution"])
+        else:
+            dolphinGFXSettings.set("Settings", "InternalResolution", "0")
+
         # save gfx.ini
         with open(batoceraFiles.dolphinGfxIni, 'w') as configfile:
             dolphinGFXSettings.write(configfile)
