@@ -4,7 +4,7 @@
 #
 ################################################################################
 # Version.: Commits on Sep 04, 2019
-ES_THEME_CARBON_VERSION = 62509737c2f732b81ce7bf37f6c4c3b82dafae28
+ES_THEME_CARBON_VERSION = ec9f636a2d44b79f55eea4af2ac02ebdf8aab01f
 ES_THEME_CARBON_SITE = $(call github,fabricecaruso,es-theme-carbon,$(ES_THEME_CARBON_VERSION))
 
 define ES_THEME_CARBON_INSTALL_TARGET_CMDS
