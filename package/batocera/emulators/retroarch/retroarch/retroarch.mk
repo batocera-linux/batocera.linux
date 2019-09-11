@@ -3,14 +3,14 @@
 # retroarch
 #
 ################################################################################
-# Version.: Commits on Mar 15, 2019 (v1.7.7) 
-RETROARCH_VERSION = 3064d0d441bfcd2a13ff46a1a813f6c7339c4c24
+# Version.: Commits on Sep 11, 2019 (v1.7.8 (v3)) 
+RETROARCH_VERSION = 561a4cd4bf6f3476f78e719861e3f2328350c8f3
 RETROARCH_SITE = $(call github,libretro,RetroArch,$(RETROARCH_VERSION))
 RETROARCH_LICENSE = GPLv3+
 RETROARCH_DEPENDENCIES = host-pkgconf dejavu retroarch-assets
 
 RETROARCH_CONF_OPTS = --disable-oss --enable-zlib --disable-qt --enable-threads
-RETROARCH_CONF_OPTS += --enable-flac --enable-lua --enable-networking
+RETROARCH_CONF_OPTS += --enable-flac --enable-lua --enable-networking --enable-translate --enable-cdrom
 
 ifeq ($(BR2_PACKAGE_SDL2),y)
 	RETROARCH_CONF_OPTS += --enable-sdl2
