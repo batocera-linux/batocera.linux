@@ -2,6 +2,42 @@
 	* x86/x86_64: fix support for +2TB disks
 	* libretro: update core (nestopia)
 	* wii/gamecube: custom textures in /userdata/saves/dolphin-emu/Load/Textures/<game id> will be loaded automatically.
+	* es: option "enable navigation sounds" in menus.
+	* es: Load systems using threaded loading when processor threads > 2
+	* es: Added a progressbar during loading
+	* es: The titlescreen/progressbar is also displayed when "UPDATE GAMES LISTS" runs.
+	* es: Full support for menu themings & help images
+	* es: Full support for recalbox themes & every existing EmulationStation Themes.
+	* es: Add video & marquee support in detailed view (video is used in RB detailed view)
+	* es: Fixes for video start delay & fadings.
+	* es: Updated menu & buttons resources : they need to be white to draw correctly with themed menus.
+	* es: GuiMenu opening animation.
+	* es: Menu navigation : when on top & moving top, select last item ( et inversement... )
+	* es: Menus : Better animations + fix size calculation problems.
+	* es: Clock : use font & color of help system
+	* es: Options : Add FavoritesFirst & CollectionShowSystemInfo options
+	* es: F5 Key : Use it to reload themes ( for themers )...
+	* es: Added to abitity to theme clock
+	* es: New config item audio.display_titles_time=10 in batocera.conf to display the song titles pop-up window
+	* es: Small Screen / GPI : Show menus in fullscreen & scaled
+	* es: NinePatchComponent : fixed & added support for color, centerColor, edgeColor and cornerSize in themes & can be created as "extra" in themes.
+	* es: VideoVlcComponent : can now be added as extra in themes + support forminSize.
+	* es: ScreenScraper : Added options PREFERED IMAGE SOURCE, PREFERED THUMBNAIL SOURCE, SCRAPE MARQUEE and SCRAPE VIDEOS for manual scrapping using ScreenScraper.
+	* es: Add a developer option to disable logs
+	* es: Show lowercases when the Keyboard is in lowercase....
+	* es: Support for French Layout
+	* es: UI : Added new option START ON GAMELIST
+	* es: ImageComponent : Support for reflexion element in themes
+	* es: Themes : Support for custom views
+	* es: ThemeData : Support tinyscreen attribute in includes
+	* es: Theme installer : Brand new look
+	* es: CECInput : Change Name that appear on the TV to Batocera
+	* es: GuiMsgBox : Support for icons
+	* es: Video component : Add bump effect
+	* es: Added "SHOW FOLDERS" option to display (or not) flat game list
+	* es: Removed filter "HIDDEN" replaced by option "SHOW HIDDEN FILES"
+	* es: Added "UPDATE GAMES LISTS" in Gamelist options.
+	* es: Moved SHOW FAVORITES ON TOP option in gamelist options
 
 2019/09/06 - batocera.linux 5.23
 	* games collections (custom, last played games, favorites)
