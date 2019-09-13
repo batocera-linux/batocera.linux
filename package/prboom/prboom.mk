@@ -51,7 +51,7 @@ endif
 define PRBOOM_INSTALL_TARGET_CMDS
 	$(INSTALL) -D $(@D)/src/prboom $(TARGET_DIR)/usr/games/prboom
 	$(INSTALL) -D $(@D)/src/prboom-game-server $(TARGET_DIR)/usr/games/prboom-game-server
-	$(INSTALL) -D $(@D)/data/prboom.wad $(TARGET_DIR)/usr/share/games/doom/prboom.wad
+	$(INSTALL) -D $(@D)/data/prboom.wad $(TARGET_DIR)/usr/share/batocera/datainit/bios/doom/prboom.wad
 endef
 
 $(eval $(autotools-package))
