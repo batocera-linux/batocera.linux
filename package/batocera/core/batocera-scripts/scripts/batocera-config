@@ -372,7 +372,7 @@ fi
 if [ "$command" == "tz" ];then
     if test "$mode" == ""
     then
-	cat /recalbox/system/resources/tz
+	cat /usr/share/batocera/tz
     else
 	if test -f "/usr/share/zoneinfo/${mode}"
 	then
