@@ -14,7 +14,7 @@ class Emulator():
         self.name = name
 
         # read the configuration from the system name
-        self.config = Emulator.get_system_config(self.name, "/recalbox/system/configgen/configgen-defaults.yml", "/recalbox/system/configgen/configgen-defaults-arch.yml")
+        self.config = Emulator.get_system_config(self.name, "/usr/share/batocera/configgen/configgen-defaults.yml", "/usr/share/batocera/configgen/configgen-defaults-arch.yml")
         if "emulator" not in self.config or self.config["emulator"] == "":
             eslog.log("no emulator defined. exiting.")
             raise Exception("No emulator found")
