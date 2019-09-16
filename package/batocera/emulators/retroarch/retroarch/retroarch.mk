@@ -3,8 +3,8 @@
 # retroarch
 #
 ################################################################################
-# Version.: Commits on Sep 11, 2019 (v1.7.8 (v3)) 
-RETROARCH_VERSION = 561a4cd4bf6f3476f78e719861e3f2328350c8f3
+# Version.: Commits on Sept 16, 2019 (v1.7.8 (v4)) 
+RETROARCH_VERSION = ea7e6822531a778565c6459a6ff2731bcbf90ba5
 RETROARCH_SITE = $(call github,libretro,RetroArch,$(RETROARCH_VERSION))
 RETROARCH_LICENSE = GPLv3+
 RETROARCH_DEPENDENCIES = host-pkgconf dejavu retroarch-assets
