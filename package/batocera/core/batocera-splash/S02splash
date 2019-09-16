@@ -10,7 +10,7 @@ do_start ()
     then
 	video="/boot/splash.mp4"
     else
-	video="/recalbox/system/resources/splash/splash.mp4"
+	video="/usr/share/batocera/splash/splash.mp4"
     fi
 
     # odroid xu4 has not omxplayer, make it run this code make it flash
@@ -34,7 +34,7 @@ do_start ()
         # Launch the video
         omx_fnt=""
         omx_opt="--no-keys --layer=10000 --aspect-mode=fill"
-        omx_srt="--no-ghost-box --lines=1 --align=left $omx_fnt --font-size=20 --subtitles=/recalbox/system/resources/splash/splash.srt"
+        omx_srt="--no-ghost-box --lines=1 --align=left $omx_fnt --font-size=20 --subtitles=/usr/share/batocera/splash/splash.srt"
 
 	omx_nosound=
 	if soundDisabled
@@ -92,7 +92,7 @@ do_start ()
 	    sleep 1
 	    let N++
 	done
-	test -e /dev/fb0 && fbv -f -i /recalbox/system/resources/splash/logo-version.png
+	test -e /dev/fb0 && fbv -f -i /usr/share/batocera/splash/logo-version.png
     fi
 }
 
