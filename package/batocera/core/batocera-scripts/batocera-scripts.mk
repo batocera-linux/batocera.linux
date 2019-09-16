@@ -9,7 +9,8 @@ BATOCERA_SCRIPTS_LICENSE = GPL
 BATOCERA_SCRIPTS_SOURCE=
 
 define BATOCERA_SCRIPTS_INSTALL_TARGET_CMDS
-	mkdir -p $(TARGET_DIR)/usr/lib/python2.7 $(TARGET_DIR)/usr/bin
+	mkdir -p $(TARGET_DIR)/usr/lib/python2.7 $(TARGET_DIR)/usr/bin $(TARGET_DIR)/usr/share/sounds
+	cp package/batocera/core/batocera-scripts/Mallet.wav           $(TARGET_DIR)/usr/share/sounds
 
 	cp package/batocera/core/batocera-scripts/scripts/bluetooth/bluezutils.py            $(TARGET_DIR)/usr/lib/python2.7/ # any variable ?
 	cp package/batocera/core/batocera-scripts/scripts/bluetooth/batocera-btDaemon        $(TARGET_DIR)/usr/bin/
