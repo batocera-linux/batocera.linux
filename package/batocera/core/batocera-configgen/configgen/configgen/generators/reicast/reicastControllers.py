@@ -42,7 +42,7 @@ sections = { 'emulator' : ['mapping_name', 'btn_escape'],
 # returns its name
 def generateControllerConfig(controller):
 	# Set config file name
-    configFileName = "{}/controllerP{}.cfg".format(batoceraFiles.reicastCustom,controller.player)
+    configFileName = "{}/evdev_{}.cfg".format(batoceraFiles.reicastMapping,controller.realName)
     Config = ConfigParser.ConfigParser()
 
     if not os.path.exists(os.path.dirname(configFileName)):

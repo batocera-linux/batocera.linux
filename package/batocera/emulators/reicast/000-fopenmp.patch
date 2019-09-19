@@ -1,0 +1,18 @@
+diff --git a/reicast/linux/Makefile b/reicast/linux/Makefile
+index ca8df9e..f10d38a 100644
+--- a/reicast/linux/Makefile
++++ b/reicast/linux/Makefile
+@@ -23,11 +23,11 @@ CHD5_FLAC := 1
+ 
+ MFLAGS :=
+ ASFLAGS :=
+-LDFLAGS := -g -Wl,-Map,$(notdir $@).map,--gc-sections -Wl,-O3 -Wl,--sort-common -fopenmp #defaults
++LDFLAGS := -g -Wl,-Map,$(notdir $@).map,--gc-sections -Wl,-O3 -Wl,--sort-common #defaults
+ INCS :=
+ LIBS := -lm -lpthread #defaults
+ 
+-CFLAGS := -g -O3 -D RELEASE -c -D USES_HOMEDIR -fopenmp # defaults
++CFLAGS := -g -O3 -D RELEASE -c -D USES_HOMEDIR # defaults
+ CFLAGS += -frename-registers -fno-strict-aliasing
+ CFLAGS += -ffast-math -ftree-vectorize
+ 
