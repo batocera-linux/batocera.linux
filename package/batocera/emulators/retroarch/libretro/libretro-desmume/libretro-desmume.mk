@@ -3,8 +3,8 @@
 # DESMUME
 #
 ################################################################################
-# Version.: Commits on Apr 26, 2019
-LIBRETRO_DESMUME_VERSION = 3069551c2e1de633c333739cca8bb7108ca3d3e9
+# Version.: Commits on Sep 1, 2019
+LIBRETRO_DESMUME_VERSION = e8cf461f83eebb195f09e70090f57b07d1bcdd9f
 LIBRETRO_DESMUME_SITE = $(call github,libretro,desmume,$(LIBRETRO_DESMUME_VERSION))
 LIBRETRO_DESMUME_LICENSE = GPLv2
 LIBRETRO_DESMUME_DEPENDENCIES = libpcap
