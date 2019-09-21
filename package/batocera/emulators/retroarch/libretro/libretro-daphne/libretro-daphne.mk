@@ -3,7 +3,8 @@
 # DAPHNE
 #
 ################################################################################
-LIBRETRO_DAPHNE_VERSION = 5949fa10f376fd09d6237212a8606428b79626e0
+# Version.: Commits on Aug 17, 2019
+LIBRETRO_DAPHNE_VERSION = c1f7d09c8b3a9bf17b28bd5a123635fb6784f8ba
 LIBRETRO_DAPHNE_SITE = $(call github,libretro,daphne,$(LIBRETRO_DAPHNE_VERSION))
 
 define LIBRETRO_DAPHNE_BUILD_CMDS

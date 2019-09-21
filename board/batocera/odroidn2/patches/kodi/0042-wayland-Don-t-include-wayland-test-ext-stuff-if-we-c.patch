@@ -1,0 +1,45 @@
+From 26f6da33cd389d707ef1d315f8fa719b401bbdaf Mon Sep 17 00:00:00 2001
+From: Sam Spilsbury <smspillaz@gmail.com>
+Date: Mon, 24 Apr 2017 14:38:08 +0200
+Subject: [PATCH 42/62] wayland: Don't include wayland-test-ext stuff if we
+ can't compile it
+
+Signed-off-by: memeka <mihailescu2m@gmail.com>
+---
+ xbmc/windowing/tests/wayland/TestEGLNativeTypeWayland.cpp | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
+
+diff --git a/xbmc/windowing/tests/wayland/TestEGLNativeTypeWayland.cpp b/xbmc/windowing/tests/wayland/TestEGLNativeTypeWayland.cpp
+index b2d79b6..2c5c7cf 100644
+--- a/xbmc/windowing/tests/wayland/TestEGLNativeTypeWayland.cpp
++++ b/xbmc/windowing/tests/wayland/TestEGLNativeTypeWayland.cpp
+@@ -41,14 +41,15 @@
+ 
+ #include "TmpEnv.h"
+ #include "WestonTest.h"
++
++#if defined(HAVE_WAYLAND_XBMC_PROTO)
+ #include "XBMCWayland.h"
++#endif
+ 
+ using ::testing::Values;
+ using ::testing::WithParamInterface;
+ 
+-namespace xt = xbmc::test;
+ namespace xw = xbmc::wayland;
+-namespace xtw = xbmc::test::wayland;
+ 
+ class EGLNativeTypeWaylandWestonTest :
+   public WestonTest
+@@ -191,6 +192,8 @@ TEST_F(ConnectedEGLNativeTypeWaylandWestonTest, GetMostRecentSurface)
+ 
+ #if defined(HAVE_WAYLAND_XBMC_PROTO)
+ 
++namespace xtw = xbmc::test::wayland;
++
+ class AssistedEGLNativeTypeWaylandTest :
+   public ConnectedEGLNativeTypeWaylandWestonTest
+ {
+-- 
+2.7.4
+

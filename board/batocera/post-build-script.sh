@@ -9,7 +9,7 @@
 
 BATOCERA_TARGET=$(grep -E "^BR2_PACKAGE_BATOCERA_TARGET_[A-Z_0-9]*=y$" "${BR2_CONFIG}" | sed -e s+'^BR2_PACKAGE_BATOCERA_TARGET_\([A-Z_0-9]*\)=y$'+'\1'+)
 
-sed -i "s|root:x:0:0:root:/root:/bin/sh|root:x:0:0:root:/userdata/system:/bin/sh|g" "${TARGET_DIR}/etc/passwd" || exit 1
+sed -i "s|root:x:0:0:root:/root:/bin/bash|root:x:0:0:root:/userdata/system:/bin/sh|g" "${TARGET_DIR}/etc/passwd" || exit 1
 rm -rf "${TARGET_DIR}/etc/dropbear" || exit 1
 ln -sf "/userdata/system/ssh" "${TARGET_DIR}/etc/dropbear" || exit 1
 
@@ -91,7 +91,7 @@ fi
 # timezone
 # file generated from the output directory and compared to https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
 # because i don't know how to list correctly them
-(cd "${TARGET_DIR}/usr/share/zoneinfo" && find -L . -type f | grep -vE '/right/|/posix/|\.tab|Factory' | sed -e s+'^\./'++ | sort) > "${TARGET_DIR}/recalbox/system/resources/tz"
+(cd "${TARGET_DIR}/usr/share/zoneinfo" && find -L . -type f | grep -vE '/right/|/posix/|\.tab|Factory' | sed -e s+'^\./'++ | sort) > "${TARGET_DIR}/usr/share/batocera/tz"
 
 # alsa lib
 # on x86_64, pcsx2 has no sound because getgrnam_r returns successfully but the result parameter is not filled for an unknown reason (in alsa-lib)

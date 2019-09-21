@@ -1,24 +1,33 @@
 diff --git a/Makefile b/Makefile
-index 4f43f6c..211b3a5 100644
+index f4ca328..909cd54 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -22,15 +22,10 @@ HAVE_CLANG    := 0
- TARGET_NAME   := flycast
+@@ -24,24 +24,16 @@ THREADED_RENDERING_DEFAULT := 0
+ TARGET_NAME   := flycast_wince
  
  ifeq ($(HAVE_CLANG),1)
 -	CXX      = ${CC_PREFIX}clang++
 -	CC       = ${CC_PREFIX}clang
  	SHARED   := -fuse-ld=lld
  else
--	CXX      = ${CC_PREFIX}g++
--	CC       = ${CC_PREFIX}gcc
+-	CXX      ?= ${CC_PREFIX}g++
+-	CC       ?= ${CC_PREFIX}gcc
  	SHARED   :=
  endif
--CC_AS    = ${CC_PREFIX}as
+-CC_AS    ?= ${CC_PREFIX}as
  
  MFLAGS   := 
  ASFLAGS  := 
-@@ -882,7 +877,7 @@ LIBS     += -lm
+-LDFLAGS  :=
+ LDFLAGS_END :=
+ INCFLAGS :=
+ LIBS     :=
+-CFLAGS   := 
+-CXXFLAGS :=
+ 
+ GIT_VERSION := " $(shell git rev-parse --short HEAD || echo unknown)"
+ ifneq ($(GIT_VERSION)," unknown")
+@@ -969,7 +961,7 @@ LIBS     += -lm
  PREFIX        ?= /usr/local
  
  ifneq (,$(findstring arm, $(ARCH)))
