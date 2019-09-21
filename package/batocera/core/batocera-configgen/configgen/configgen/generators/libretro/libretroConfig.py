@@ -215,7 +215,7 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
         retroarchConfig['video_font_size'] = '32'
         retroarchConfig['menu_driver'] = 'ozone'
         # force the assets directory while it was wrong in some beta versions
-        retroarchConfig['assets_directory'] = '/usr/share/retroarch/assets'
+        retroarchConfig['assets_directory'] = '/usr/share/libretro/assets'
 
     # bezel
     writeBezelConfig(bezel, retroarchConfig, system.name, rom, gameResolution)
