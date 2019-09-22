@@ -1,7 +1,11 @@
 2019/xx/xx - batocera.linux 5.24
 	* x86/x86_64: fix support for +2TB disks
+	* x86_64: support for recent UEFI-only motherboards, including Apple MacBook Pro
 	* libretro: update core (nestopia)
 	* wii/gamecube: custom textures in /userdata/saves/dolphin-emu/Load/Textures/<game id> will be loaded automatically.
+	* New default music themes (chiptunes by Waterflame)
+	* Refreshed Batocera logo (when loading ES)
+	* add: new "curvature" shader set
 	* es: option "enable navigation sounds" in menus.
 	* es: Load systems using threaded loading when processor threads > 2
 	* es: Added a progressbar during loading
@@ -31,6 +35,7 @@
 	* es: Themes : Support for custom views
 	* es: ThemeData : Support tinyscreen attribute in includes
 	* es: Theme installer : Brand new look
+	* es: TheBezelProject installer : same brand new look
 	* es: CECInput : Change Name that appear on the TV to Batocera
 	* es: GuiMsgBox : Support for icons
 	* es: Video component : Add bump effect
@@ -38,6 +43,7 @@
 	* es: Removed filter "HIDDEN" replaced by option "SHOW HIDDEN FILES"
 	* es: Added "UPDATE GAMES LISTS" in Gamelist options.
 	* es: Moved SHOW FAVORITES ON TOP option in gamelist options
+	* es: Song names pop-up display time is now configurable
 
 2019/09/06 - batocera.linux 5.23
 	* games collections (custom, last played games, favorites)
