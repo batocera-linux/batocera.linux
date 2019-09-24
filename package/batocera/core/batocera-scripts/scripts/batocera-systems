@@ -21,7 +21,7 @@ systems = {
 
 
     # Commodore
-	"amiga":  { "name": "Amiga",	"biosFiles":  [ { "md5": "bb72565701b1b6faece07d68ea5da639", "file": "bios/CD32 Extended-ROM r40.60 (1993)(Commodore)(CD32).rom"                 }, 
+	"amiga":  { "name": "Amiga",	"biosFiles":  [ { "md5": "bb72565701b1b6faece07d68ea5da639", "file": "bios/CD32 Extended-ROM r40.60 (1993)(Commodore)(CD32).rom"                 },
                                                     { "md5": "89da1838a24460e4b93f4f0c5d92d48d", "file": "bios/CDTV Extended-ROM v1.0 (1991)(Commodore)(CDTV)[!].rom"                },
                                                     { "md5": "85ad74194e87c08904327de1a9443b7a", "file": "bios/Kickstart v1.2 r33.180 (1986)(Commodore)(A500-A1000-A2000)[!].rom"    },
                                                     { "md5": "68c9c0826f6c0ca20546d588ee77391c", "file": "bios/Kickstart v1.2 rev 33.166 (1986)(Commodore)(A1000).rom"               },
@@ -86,6 +86,7 @@ systems = {
     "nds":         { "name": "Nintendo DS", "biosFiles":                          [ { "md5": "145eaef5bd3037cbc247c213bb3da1b3", "file": "bios/firmware.bin" 	},
 												                                    { "md5": "df692a80a5b1bc90728bc3dfc76cd948", "file": "bios/bios7.bin"    	},
 												                                    { "md5": "a392174eb3e572fed6447e956bde4b25", "file": "bios/bios9.bin"    	} ] },
+    "pokemini":    { "name": "Nintendo Pokémon Mini", "biosFiles":                [ { "md5": "1e4fb124a3a886865acb574f388c803d", "file": "bios/bios.min"        } ] },
     "satellaview": { "name": "Satellaview", "biosFiles":                          [ { "md5": "fed4d8242cfbed61343d53d48432aced", "file": "bios/BS-X.bin"        } ] },
     "sufami":      { "name": "Sufami", "biosFiles":                               [ { "md5": "d3a44ba7d42a74d3ac58cb9c14c6a5ca", "file": "bios/STBIOS.bin"      } ] },
 
@@ -141,9 +142,12 @@ systems = {
 
 
     # Sony Computer Entertainment
-    "psx": { "name": "PSX", "biosFiles": [ { "md5": "8dd7d5296a650fac7319bce665a6a53c", "file": "bios/scph5500.bin"   },
+    "psx": { "name": "PSX", "biosFiles": [ { "md5": "6E3735FF4C7DC899EE98981385F6F3D0", "file": "bios/scph101.bin"    },
+                                           { "md5": "dc2b9bf8da62ec93e868cfd29f0d067d", "file": "bios/scph1001.bin"   },
+                                           { "md5": "8dd7d5296a650fac7319bce665a6a53c", "file": "bios/scph5500.bin"   },
 										   { "md5": "490f666e1afb15b7362b406ed1cea246", "file": "bios/scph5501.bin"   },
-										   { "md5": "32736f17079d0b2b7024407c39bd3050", "file": "bios/scph5502.bin"   } ] },
+										   { "md5": "32736f17079d0b2b7024407c39bd3050", "file": "bios/scph5502.bin"   },
+                                           { "md5": "1e68c231d0896b7eadcad1d7d8e76129", "file": "bios/scph7001.bin"   } ] },
     "ps2": { "name": "PS2", "biosFiles": [ { "md5": "28922c703cc7d2cf856f177f2985b3a9", "file": "bios/SCPH30004R.bin" },
 										   { "md5": "3faf7c064a4984f53e2ef5e80ed543bc", "file": "bios/SCPH30004R.MEC" },
 										   { "md5": "d5ce2c7d119f563ce04bc04dbc3a323e", "file": "bios/scph39001.bin"  },
