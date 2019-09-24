@@ -7,7 +7,7 @@ snes:
       snes9x_next: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_SNES9X_NEXT] }
       snes9x:      { requireAnyOf: [BR2_PACKAGE_LIBRETRO_SNES9X]      }
       mesen-s:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MESEN_S]     }
-      
+
 c64:
   name:       Commodore 64
   extensions: [d64, zip, 7z]
@@ -141,7 +141,7 @@ gameandwatch:
 
 dreamcast:
   name:       Sega Dreamcast
-  extensions: [cdi, gdi, chd]
+  extensions: [cdi, gdi, chd, zip, 7z]
   emulators:
     libretro:
       flycast:        { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FLYCAST]        }
@@ -174,7 +174,7 @@ megadrive:
 
 segacd:
   name:       Sega CD
-  extensions: [chd, cue, iso]
+  extensions: [chd, cue, iso, zip, 7z]
   emulators:
     libretro:
       genesisplusgx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GENESISPLUSGX] }
@@ -209,7 +209,7 @@ sg1000:
   emulators:
     libretro:
       genesisplusgx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GENESISPLUSGX] }
-      
+
 psp:
   name:       Sony Playstation Portable
   extensions: [iso, cso, pbp]
@@ -219,7 +219,7 @@ psp:
 
 psx:
   name:       Sony Playstation 1
-  extensions: [bin, cue, img, mdf, pbp, toc, cbn, m3u, ccd, chd]
+  extensions: [bin, cue, img, mdf, pbp, toc, cbn, m3u, ccd, chd, zip, 7z]
   emulators:
     libretro:
       pcsx_rearmed: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PCSX]       }
@@ -242,14 +242,14 @@ pcenginecd:
 
 supergrafx:
   name:       Supergrafx
-  extensions: [pce, sgx, cue, ccd, chd]
+  extensions: [pce, sgx, cue, ccd, chd, zip, 7z]
   emulators:
     libretro:
       mednafen_supergrafx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BEETLE_SUPERGRAFX] }
 
 pcfx:
   name:       PC-FX
-  extensions: [cue, ccd, toc, chd]
+  extensions: [cue, ccd, toc, chd, zip, 7z]
   emulators:
     libretro:
       pcfx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BEETLE_PCFX] }
@@ -362,10 +362,10 @@ neogeo:
   emulators:
     libretro:
       fbneo:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FBNEO] }
-    
+
 neogeocd:
   name:       Neo-Geo CD
-  extensions: [cue, iso, chd]
+  extensions: [cue, iso, chd, zip, 7z]
   emulators:
     libretro:
       neocd:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_NEOCD]  }
@@ -692,7 +692,7 @@ apple2:
 
 saturn:
   name:       Sega Saturn
-  extensions: [bin, cue, ccd, chd, iso]
+  extensions: [bin, cue, ccd, chd, iso, zip, 7z]
   emulators:
     libretro:
       yabause:       { requireAnyOf: [BR2_PACKAGE_LIBRETRO_YABAUSE]       }
@@ -745,14 +745,14 @@ ps2:
 
 3do:
   name:       3DO Interactive Multiplayer
-  extensions: [iso, bin, chd, cue]
+  extensions: [iso, bin, chd, cue, zip, 7z]
   emulators:
     libretro:
       4do: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_4DO] }
 
 intellivision:
   name:       Mattel Intellivision
-  extensions: [int, bin, rom]
+  extensions: [int, bin, rom, zip, 7z]
   emulators:
     libretro:
       freeintv: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FREEINTV] }
@@ -766,7 +766,7 @@ x68000:
 
 3ds:
   name:       Nintendo 3DS
-  extensions: [3ds, 3dsx]
+  extensions: [3ds, 3dsx, cxi, axf, elf]
   emulators:
     citra:
       citra: { requireAnyOf: [BR2_PACKAGE_CITRA]          }
@@ -787,14 +787,14 @@ sufami:
 
 pokemini:
   name:       Pokemon-Mini
-  extensions: [min]
+  extensions: [min, zip, 7z]
   emulators:
     libretro:
       pokemini: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_POKEMINI] }
 
 gx4000:
   name:       Amstrad GX4000
-  extensions: [dsk, m3u, cpr, zip]
+  extensions: [dsk, m3u, cpr, zip, 7z]
   emulators:
     libretro:
       cap32: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_CAP32] }
