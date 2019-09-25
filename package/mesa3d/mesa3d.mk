@@ -37,13 +37,6 @@ ifeq ($(BR2_PACKAGE_LIBGLVND),y)
 MESA3D_DEPENDENCIES += libglvnd
 endif
 
-# batocera
-# Disable static, otherwise configure will fail with: "Cannot enable both static
-# and shared."
-ifeq ($(BR2_SHARED_STATIC_LIBS),y)
-MESA3D_CONF_OPTS += --disable-static
-endif
-
 ifeq ($(BR2_PACKAGE_MESA3D_LLVM),y)
 MESA3D_DEPENDENCIES += host-llvm llvm
 MESA3D_CONF_ENV += LLVM_CONFIG=$(STAGING_DIR)/usr/bin/llvm-config
@@ -266,7 +259,7 @@ endif
 
 # batocera enable libglvnd support
 ifeq ($(BR2_PACKAGE_LIBGLVND),y)
-MESA3D_CONF_OPTS += -Dlibglvnd=true
+MESA3D_CONF_OPTS += -Dglvnd=true
 endif
 
 $(eval $(meson-package))
