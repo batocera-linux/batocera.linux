@@ -59,6 +59,9 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
     systemConfig = system.config
     renderConfig = system.renderconfig
 
+    # basic configuration
+    retroarchConfig['quit_press_twice'] = 'false'
+
     # fs is required at least for x86* and odroidn2
     retroarchConfig['video_fullscreen'] = 'true'
 
