@@ -5,8 +5,8 @@
 ################################################################################
 
 # LLVM and Clang should be version bumped together
-LLVM_VERSION = 8.0.0
-LLVM_SITE = http://llvm.org/releases/$(LLVM_VERSION)
+LLVM_VERSION = 8.0.1
+LLVM_SITE = https://github.com/llvm/llvm-project/releases/download/llvmorg-$(LLVM_VERSION)
 LLVM_SOURCE = llvm-$(LLVM_VERSION).src.tar.xz
 LLVM_LICENSE = NCSA
 LLVM_LICENSE_FILES = LICENSE.TXT
@@ -17,6 +17,9 @@ LLVM_INSTALL_STAGING = YES
 # host-python: Python interpreter 2.7 or newer is required for builds and testing.
 HOST_LLVM_DEPENDENCIES = host-python
 LLVM_DEPENDENCIES = host-llvm
+
+# batocera - requirement for nouveau
+HOST_LLVM_CONF_OPTS += -DLLVM_ENABLE_RTTI=ON
 
 # LLVM >= 9.0 will soon require C++14 support, building llvm 8.x using a
 # toolchain using gcc < 5.1 gives an error but actually still works. Setting
