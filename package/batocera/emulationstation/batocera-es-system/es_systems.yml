@@ -146,7 +146,6 @@ dreamcast:
   emulators:
     libretro:
       flycast:        { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FLYCAST]        }
-      flycast_wince:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FLYCAST_WINCE]  }
     reicast:
       reicast:        { requireAnyOf: [BR2_PACKAGE_REICAST]                 }
 
