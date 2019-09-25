@@ -30,7 +30,6 @@ define BATOCERA_SCRIPTS_INSTALL_TARGET_CMDS
 	cp package/batocera/core/batocera-scripts/scripts/batocera-mount                  $(TARGET_DIR)/usr/bin/
 	cp package/batocera/core/batocera-scripts/scripts/batocera-overclock              $(TARGET_DIR)/usr/bin/
 	cp package/batocera/core/batocera-scripts/scripts/batocera-part                   $(TARGET_DIR)/usr/bin/
-	cp package/batocera/core/batocera-scripts/scripts/batocera-scraper                $(TARGET_DIR)/usr/bin/
 	cp package/batocera/core/batocera-scripts/scripts/batocera-support                $(TARGET_DIR)/usr/bin/
 	cp package/batocera/core/batocera-scripts/scripts/batocera-sync                   $(TARGET_DIR)/usr/bin/
 	cp package/batocera/core/batocera-scripts/scripts/batocera-upgrade                $(TARGET_DIR)/usr/bin/
