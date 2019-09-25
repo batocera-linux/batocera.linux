@@ -770,6 +770,8 @@ x68000:
   emulators:
     citra:
       citra: { requireAnyOf: [BR2_PACKAGE_CITRA]          }
+    libretro:
+      citra: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_CITRA] }
 
 satellaview:
   name:       Satellaview
