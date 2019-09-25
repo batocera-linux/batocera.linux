@@ -7,6 +7,7 @@ snes:
       snes9x_next: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_SNES9X_NEXT] }
       snes9x:      { requireAnyOf: [BR2_PACKAGE_LIBRETRO_SNES9X]      }
       mesen-s:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MESEN_S]     }
+      bsnes:       { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BSNES]       }
 
 c64:
   name:       Commodore 64
