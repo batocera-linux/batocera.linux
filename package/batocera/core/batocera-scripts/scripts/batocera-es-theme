@@ -46,6 +46,12 @@ function git_name() {
 
 ###############################
 #
+function repo_name() {
+	echo "$1" | sed "s,.*github.com/\([A-Za-z0-9_-]*\)/.*,\1,"
+}
+
+###############################
+#
 function list_themes() {
 	fn=$(date +"%s")
 	tmp="/tmp/themes_$fn"
@@ -63,6 +69,21 @@ function list_themes() {
 		echo "$ia $name - $url"
 	done < "$tmp"
 	rm "$tmp"
+}
+
+
+###############################
+#
+function getPer() {
+	TARFILE="$1"
+	TARVAL="$2"
+	while true; do
+		CURVAL=$(stat "$TARFILE" | grep -E '^[ ]*Size:' | sed -e s+'^[ ]*Size: \([0-9][0-9]*\) .*$'+'\1'+)
+		CURVAL=$((CURVAL / 1024 / 1024))
+		PER=$(expr ${CURVAL} '*' 100 / ${TARVAL})
+		echo ">>> ${PER}%"
+		sleep 2
+	done
 }
 
 ###############################
@@ -84,13 +105,26 @@ function install_theme() {
 			echo "Error - invalid theme URL $url"
 			exit 1
 		else
+			reponame=$(repo_name "$url")
 			gitname=$(git_name "$url")
 			cd "$CONFIGDIR"
-			echo "Downloading from $url"
-			curl -sfL "$url/archive/master.zip" -o "$gitname.zip"
+			filezip="${url}/archive/master.zip"
+			# get size to download (hack to get it from github)
+			size=$(curl -sfL https://api.github.com/repos/"$reponame"/"$gitname" | grep size | head -1 | tr -dc '[:digit:]')
+			size=$((size / 1024 ))
+			test $? -eq 0 || exit 1
+			echo "Need to download ${size}MB from $url"
+			touch "$gitname.zip"
+			getPer "$CONFIGDIR"/"$gitname.zip" "${size}" &
+			GETPERPID=$!
+			curl -sfL "${filezip}" -o "$gitname.zip" || exit 1
+			kill -9 "${GETPERPID}" >/dev/null 2>/dev/null
+			GETPERPID=
+			echo ">>> 100%"
 			if [ -f "$gitname.zip" ]; then 
+				echo "Unzipping $gitname theme files..."
 				[ -d "$CONFIGDIR"/"$gitname" ] && rm -rf "$CONFIGDIR"/"$gitname" 
-				unzip "$gitname.zip"
+				unzip "$gitname.zip" >/dev/null
 				mv "$gitname-master" "$gitname"
 				rm "$gitname.zip"
 				success_installed=1
