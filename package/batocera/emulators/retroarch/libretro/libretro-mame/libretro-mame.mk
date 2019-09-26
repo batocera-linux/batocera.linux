@@ -22,11 +22,11 @@ ifeq ($(BR2_arm),y)
 	LIBRETRO_MAME_ARCHOPTS += -D__arm__
 endif
 
-define LIBRETRO_MAME_BUILD_CMDS
-	$(MAKE) -C $(@D)/ REGENIE=1 VERBOSE=1 NOWERROR=1 PYTHON_EXECUTABLE=python2                     \
+define LIBRETRO_MAME_BUILD_CMDS 
+	$(MAKE) -C $(@D)/ OPENMP=1 REGENIE=1 VERBOSE=1 NOWERROR=1 PYTHON_EXECUTABLE=python2            \
 		CONFIG=libretro LIBRETRO_OS="unix" ARCH="" PROJECT="" ARCHOPTS="$(LIBRETRO_MAME_ARCHOPTS)" \
 		DISTRO="debian-stable" OVERRIDE_CC="$(TARGET_CC)" OVERRIDE_CXX="$(TARGET_CXX)"             \
-		OVERRIDE_LD="$(TARGET_LD)" RANLIB="$(TARGET_RANLIB)" AR="$(TARGET_AR)"                      \
+		OVERRIDE_LD="$(TARGET_LD)" RANLIB="$(TARGET_RANLIB)" AR="$(TARGET_AR)"                     \
 		$(LIBRETRO_MAME_EXTRA_ARGS) CROSS_BUILD=1 TARGET="mame" SUBTARGET="arcade" RETRO=1         \
 		OSD="retro"
 endef
