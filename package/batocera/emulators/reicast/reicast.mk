@@ -3,15 +3,15 @@
 # REICAST
 #
 ################################################################################
-# Version.: Commits on Sep 12, 2018
-REICAST_VERSION = r8.1
+# Version.: Commits on Aug 30, 2019
+REICAST_VERSION = d350e68e859eba7fbc546fef1331f2825517a062
 REICAST_SITE = $(call github,reicast,reicast-emulator,$(REICAST_VERSION))
 REICAST_LICENSE = GPLv2
 REICAST_DEPENDENCIES = sdl2 libpng
 
 define REICAST_UPDATE_INCLUDES
-	sed -i "s+/opt/vc+$(STAGING_DIR)/usr+g" $(@D)/shell/linux/Makefile
-	sed -i "s+sdl2-config+$(STAGING_DIR)/usr/bin/sdl2-config+g" $(@D)/shell/linux/Makefile
+	sed -i "s+/opt/vc+$(STAGING_DIR)/usr+g" $(@D)/reicast/linux/Makefile
+	sed -i "s+sdl2-config+$(STAGING_DIR)/usr/bin/sdl2-config+g" $(@D)/reicast/linux/Makefile
 endef
 
 REICAST_PRE_CONFIGURE_HOOKS += REICAST_UPDATE_INCLUDES
@@ -46,11 +46,11 @@ define REICAST_BUILD_CMDS
 		CC="$(TARGET_CC) -DPNG_ARM_NEON_OPT=0" \
 		AS="$(TARGET_CC)" \
 		STRIP="$(TARGET_STRIP)" \
-		-C $(@D)/shell/linux -f Makefile platform=$(BATOCERA_SYSTEM) $(REICAST_EXTRA_ARGS)
+		-C $(@D)/reicast/linux -f Makefile platform=$(BATOCERA_SYSTEM) $(REICAST_EXTRA_ARGS)
 endef
 
 define REICAST_INSTALL_TARGET_CMDS
-	$(INSTALL) -D -m 0755 $(@D)/shell/linux/reicast.elf $(TARGET_DIR)/usr/bin/reicast.elf
+	$(INSTALL) -D -m 0755 $(@D)/reicast/linux/reicast.elf $(TARGET_DIR)/usr/bin/reicast.elf
 endef
 
 $(eval $(generic-package))

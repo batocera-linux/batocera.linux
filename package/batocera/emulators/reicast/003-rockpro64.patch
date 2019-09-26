@@ -1,8 +1,8 @@
-diff --git a/shell/linux/Makefile b/shell/linux/Makefile
-index debbed4..a43989a 100644
---- a/shell/linux/Makefile
-+++ b/shell/linux/Makefile
-@@ -209,6 +209,14 @@ else ifneq (,$(findstring odroid,$(platform)))
+diff --git a/reicast/linux/configure-platform.make b/reicast/linux/configure-platform.make
+index f845230..36cd511 100644
+--- a/reicast/linux/configure-platform.make
++++ b/reicast/linux/configure-platform.make
+@@ -165,6 +165,14 @@ else ifneq (,$(findstring odroid,$(platform)))
          endif
      endif
  
