@@ -9,7 +9,6 @@ LIBRETRO_FLYCAST_SITE = $(call github,libretro,flycast,$(LIBRETRO_FLYCAST_VERSIO
 LIBRETRO_FLYCAST_LICENSE = GPLv2
 
 LIBRETRO_FLYCAST_PLATFORM = $(LIBRETRO_PLATFORM)
-LIBRETRO_FLYCAST_EXTRA_ARGS = HAVE_OPENMP=0
 
 # LIBRETRO_PLATFORM is not good for this core, because
 # for rpi, it contains "unix rpi" and this core do an "if unix elif rpi ..."
