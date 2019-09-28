@@ -33,6 +33,11 @@ else
 	BATOCERA_EMULATIONSTATION_CONF_OPTS += -DENABLE_FILEMANAGER=0
 endif
 
+# cec is causing issues with es on xu4
+ifeq ($(BR2_PACKAGE_LIBCEC_EXYNOS_API),y)
+	BATOCERA_EMULATIONSTATION_CONF_OPTS += -DCEC=OFF
+endif
+
 define BATOCERA_EMULATIONSTATION_RPI_FIXUP
 	$(SED) 's|.{CMAKE_FIND_ROOT_PATH}/opt/vc|$(STAGING_DIR)/usr|g' $(@D)/CMakeLists.txt
 	$(SED) 's|.{CMAKE_FIND_ROOT_PATH}/usr|$(STAGING_DIR)/usr|g'    $(@D)/CMakeLists.txt
