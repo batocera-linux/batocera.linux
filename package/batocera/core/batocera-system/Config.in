@@ -132,6 +132,10 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
     select BR2_PACKAGE_OPENVPN
     select BR2_PACKAGE_I2C_TOOLS
 
+    # required gcc flags
+    # required for different emulators, i suggest to enable it always to not have different behavior depending on boards
+    select BR2_GCC_ENABLE_OPENMP
+
     help
       Install the batocera.linux system files
 
