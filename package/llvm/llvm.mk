@@ -20,6 +20,7 @@ LLVM_DEPENDENCIES = host-llvm
 
 # batocera - requirement for nouveau
 HOST_LLVM_CONF_OPTS += -DLLVM_ENABLE_RTTI=ON
+LLVM_CONF_OPTS      += -DLLVM_ENABLE_RTTI=ON
 
 # LLVM >= 9.0 will soon require C++14 support, building llvm 8.x using a
 # toolchain using gcc < 5.1 gives an error but actually still works. Setting
