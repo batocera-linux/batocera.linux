@@ -22,7 +22,10 @@ ifeq ($(BR2_arm),y)
 	LIBRETRO_MAME_ARCHOPTS += -D__arm__
 endif
 
-define LIBRETRO_MAME_BUILD_CMDS 
+define LIBRETRO_MAME_BUILD_CMDS
+	# create some dirs while with parallelism, sometimes it fails because this directory is missing
+	mkdir -p $(@D)/build/libretro/obj/x64/libretro/src/osd/libretro/libretro-internal
+
 	$(MAKE) -C $(@D)/ OPENMP=1 REGENIE=1 VERBOSE=1 NOWERROR=1 PYTHON_EXECUTABLE=python2            \
 		CONFIG=libretro LIBRETRO_OS="unix" ARCH="" PROJECT="" ARCHOPTS="$(LIBRETRO_MAME_ARCHOPTS)" \
 		DISTRO="debian-stable" OVERRIDE_CC="$(TARGET_CC)" OVERRIDE_CXX="$(TARGET_CXX)"             \
