@@ -1,0 +1,129 @@
+From cf883c496df88bc6a1ab7a20e1feb30240825867 Mon Sep 17 00:00:00 2001
+From: Max Kellermann <max.kellermann@gmail.com>
+Date: Mon, 24 Apr 2017 14:38:09 +0200
+Subject: [PATCH 53/62] windowing/wayland/Region: inline trivial methods
+
+Signed-off-by: memeka <mihailescu2m@gmail.com>
+---
+ xbmc/windowing/wayland/CMakeLists.txt |  1 -
+ xbmc/windowing/wayland/Region.cpp     | 49 -----------------------------------
+ xbmc/windowing/wayland/Region.h       | 20 ++++++++++----
+ 3 files changed, 15 insertions(+), 55 deletions(-)
+ delete mode 100644 xbmc/windowing/wayland/Region.cpp
+
+diff --git a/xbmc/windowing/wayland/CMakeLists.txt b/xbmc/windowing/wayland/CMakeLists.txt
+index bff9ddf..21b059c 100644
+--- a/xbmc/windowing/wayland/CMakeLists.txt
++++ b/xbmc/windowing/wayland/CMakeLists.txt
+@@ -10,7 +10,6 @@ set(SOURCES Callback.cpp
+             Pointer.cpp
+             PointerProcessor.cpp
+             PollThread.cpp
+-            Region.cpp
+             Registry.cpp
+             Seat.cpp
+             Shell.cpp
+diff --git a/xbmc/windowing/wayland/Region.cpp b/xbmc/windowing/wayland/Region.cpp
+deleted file mode 100644
+index 34cfe32..0000000
+--- a/xbmc/windowing/wayland/Region.cpp
++++ /dev/null
+@@ -1,49 +0,0 @@
+-/*
+- *      Copyright (C) 2011-2013 Team XBMC
+- *      http://xbmc.org
+- *
+- *  This Program is free software; you can redistribute it and/or modify
+- *  it under the terms of the GNU General Public License as published by
+- *  the Free Software Foundation; either version 2, or (at your option)
+- *  any later version.
+- *
+- *  This Program is distributed in the hope that it will be useful,
+- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+- *  GNU General Public License for more details.
+- *
+- *  You should have received a copy of the GNU General Public License
+- *  along with XBMC; see the file COPYING.  If not, see
+- *  <http://www.gnu.org/licenses/>.
+- *
+- */
+-#include <wayland-client.h>
+-
+-#include "Region.h"
+-
+-namespace xw = xbmc::wayland;
+-
+-xw::Region::Region(struct wl_region *region) :
+-  m_region(region)
+-{
+-}
+-
+-xw::Region::~Region()
+-{
+-  wl_region_destroy(m_region);
+-}
+-
+-struct wl_region *
+-xw::Region::GetWlRegion()
+-{
+-  return m_region;
+-}
+-
+-void
+-xw::Region::AddRectangle(int32_t x,
+-                         int32_t y,
+-                         int32_t width,
+-                         int32_t height)
+-{
+-  wl_region_add(m_region, x, y, width, height);
+-}
+diff --git a/xbmc/windowing/wayland/Region.h b/xbmc/windowing/wayland/Region.h
+index 3029962..4093a38 100644
+--- a/xbmc/windowing/wayland/Region.h
++++ b/xbmc/windowing/wayland/Region.h
+@@ -20,7 +20,7 @@
+  *
+  */
+ 
+-struct wl_region;
++#include <wayland-client.h>
+ 
+ namespace xbmc
+ {
+@@ -30,18 +30,28 @@ class Region
+ {
+ public:
+ 
+-  explicit Region(struct wl_region *);
+-  ~Region();
++  explicit Region(struct wl_region *region) :
++    m_region(region)
++  {
++  }
++
++  ~Region() {
++    wl_region_destroy(m_region);
++  }
+ 
+   Region(const Region &) = delete;
+   Region &operator=(const Region &) = delete;
+   
+-  struct wl_region * GetWlRegion();
++  struct wl_region * GetWlRegion() {
++    return m_region;
++  }
+ 
+   void AddRectangle(int32_t x,
+                     int32_t y,
+                     int32_t width,
+-                    int32_t height);
++                    int32_t height) {
++    wl_region_add(m_region, x, y, width, height);
++  }
+ 
+ private:
+ 
+-- 
+2.7.4
+

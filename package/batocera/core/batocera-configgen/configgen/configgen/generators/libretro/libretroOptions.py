@@ -7,10 +7,16 @@ from settings.unixSettings import UnixSettings
 def generateCoreSettings(retroarchCore, system):
     # retroarch-core-options.cfg
     if not os.path.exists(os.path.dirname(retroarchCore)):
-        os.makedirs(os.path.dirname(retroarchCore))    
-    
-    coreSettings = UnixSettings(retroarchCore, separator=' ')
-    
+        os.makedirs(os.path.dirname(retroarchCore))
+
+    try:
+        coreSettings = UnixSettings(retroarchCore, separator=' ')
+    except UnicodeError:
+        # invalid retroarch-core-options.cfg
+        # remove it and try again
+        os.remove(retroarchCore)
+        coreSettings = UnixSettings(retroarchCore, separator=' ')
+
     # Atari 800 and 5200
     if (system.config['core'] == 'atari800'):
         if (system.name == 'atari800'):
@@ -27,6 +33,7 @@ def generateCoreSettings(retroarchCore, system):
     # Colecovision and MSX
     if (system.config['core'] == 'bluemsx'):
         coreSettings.save('bluemsx_msxtype', '"Auto"')
+        coreSettings.save('bluemsx_overscan', '"enabled"')
 
     if (system.config['core'] == 'fmsx'):
         coreSettings.save('fmsx_mode',              '"MSX2"')
@@ -45,7 +52,7 @@ def generateCoreSettings(retroarchCore, system):
             coreSettings.save('gambatte_gb_internal_palette', '"' + system.renderconfig['colorization'] + '"')
         else:
             coreSettings.save('gambatte_gb_colorization',     '"disabled"')
-        
+
     if (system.config['core'] == 'desmume'):
         coreSettings.save('desmume_pointer_device_r',   '"emulated"')
 
@@ -60,11 +67,11 @@ def generateCoreSettings(retroarchCore, system):
 
     if (system.config['core'] == 'pce'):
         coreSettings.save('pce_keepaspect', '"enabled"')
-        
+
     if (system.config['core'] == 'picodrive'):
         coreSettings.save('picodrive_input1',   '"6 button pad"')
         coreSettings.save('picodrive_input2',   '"6 button pad"')
-        
+
     if (system.config['core'] == '81'):
         coreSettings.save('81_sound',   '"Zon X-81"')
 
@@ -86,7 +93,7 @@ def generateCoreSettings(retroarchCore, system):
     if (system.config['core'] == 'vice'):
         coreSettings.save('vice_Controller',    '"joystick"')
         coreSettings.save('vice_JoyPort',       '"port_1"')
- 
+
 def generateHatariConf(hatariConf):
     hatariConfig = ConfigParser.ConfigParser()
     # To prevent ConfigParser from converting to lower case

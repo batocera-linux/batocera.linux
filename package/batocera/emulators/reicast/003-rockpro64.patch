@@ -1,0 +1,19 @@
+diff --git a/reicast/linux/configure-platform.make b/reicast/linux/configure-platform.make
+index f845230..36cd511 100644
+--- a/reicast/linux/configure-platform.make
++++ b/reicast/linux/configure-platform.make
+@@ -165,6 +165,14 @@ else ifneq (,$(findstring odroid,$(platform)))
+         endif
+     endif
+ 
++# ROCKPRO64
++else ifneq (,$(findstring rockpro64,$(platform)))
++    MFLAGS += -marm -mfpu=neon -mfloat-abi=hard -funroll-loops -march=armv7-a
++    ASFLAGS += -mfpu=neon -mfloat-abi=hard -march=armv7-a
++    CFLAGS += -D TARGET_BEAGLE -D TARGET_LINUX_ARMELv7 -DARM_HARDFP -fsingle-precision-constant
++    USE_GLES := 1
++    INCS += -I/opt/vc/include/ -I../linux-deps/include
++
+ # GCW Zero
+ else ifneq (,$(findstring gcwz,$(platform)))
+     NOT_ARM := 1

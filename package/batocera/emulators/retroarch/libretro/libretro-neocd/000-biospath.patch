@@ -1,127 +1,13 @@
-diff --git a/src/libretro.cpp b/src/libretro.cpp
-index 4c4ef5f..0e6bf5c 100644
---- a/src/libretro.cpp
-+++ b/src/libretro.cpp
-@@ -101,7 +101,7 @@ static std::string makeSystemPath(const std::string& filename)
-     std::string result;
- 
-     if (systemDirectory)
--        result = std::string(systemDirectory) + "/neocd/" + filename;
-+        result = std::string(systemDirectory) + filename;
-     else
-         result = filename;
- 
-@@ -218,7 +218,7 @@ static void patchBIOS()
-     {
-         // Speed hacks to avoid busy looping
-         if (cdSpeedHack)
--        {         
-+        {
-             installSpeedHack(0xC0FFCA); // b
-             installSpeedHack(0xC1000E); // a
-             installSpeedHack(0xC1004E); // b
-@@ -313,9 +313,9 @@ static void buildVariableList()
-     variables.clear();
- 
-     variables.emplace_back(retro_variable{ REGION_VARIABLE, "Region; Japan|USA|Europe" });
--    
-+
-     biosChoices.clear();
--    
-+
-     if (biosList.size())
-     {
-         biosChoices = "BIOS Select; ";
-@@ -371,7 +371,7 @@ static void updateVariables(bool needReset)
- 
-     var.value = NULL;
-     var.key = REGION_VARIABLE;
--    
-+
-     if (libretro.environment(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
-     {
-         uint32_t nationality = NeoGeoCD::NationalityJapan;
-@@ -390,7 +390,7 @@ static void updateVariables(bool needReset)
- 
-     var.value = NULL;
-     var.key = BIOS_VARIABLE;
--    
-+
-     if (libretro.environment(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
-     {
-         int index = biosDescriptionToIndex(var.value);
-@@ -405,7 +405,7 @@ static void updateVariables(bool needReset)
- 
-     var.value = NULL;
-     var.key = SPEEDHACK_VARIABLE;
--    
-+
-     if (libretro.environment(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
-     {
-         bool newValue = strcmp(var.value, "On") ? false : true;
-@@ -419,10 +419,10 @@ static void updateVariables(bool needReset)
- 
-     var.value = NULL;
-     var.key = LOADSKIP_VARIABLE;
--    
-+
-     if (libretro.environment(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
-         skipCDLoading = strcmp(var.value, "On") ? false : true;
--        
-+
-     if (needReset)
-         neocd.reset();
+diff --git a/src/path.cpp b/src/path.cpp
+index 5645c29..1bc1157 100644
+--- a/src/path.cpp
++++ b/src/path.cpp
+@@ -13,8 +13,6 @@ static void system_path_internal(char* buffer, size_t len)
+     
+     if (!path_ends_with_slash(buffer))
+         strlcat(buffer, path_default_slash(), len);
+-
+-    strlcat(buffer, "neocd", len);
  }
-@@ -471,7 +471,7 @@ void retro_set_controller_port_device(unsigned port, unsigned device)
- void retro_get_system_info(struct retro_system_info *info)
- {
-     std::memset(info, 0, sizeof(retro_system_info));
--    
-+
-     info->library_name = "NeoCD";
-     info->library_version = "2018";
-     info->valid_extensions = "cue";
-@@ -481,7 +481,7 @@ void retro_get_system_info(struct retro_system_info *info)
- void retro_get_system_av_info(struct retro_system_av_info *info)
- {
-     std::memset(info, 0, sizeof(retro_system_av_info));
--    
-+
-     info->timing.fps = Timer::FRAME_RATE;
-     info->timing.sample_rate = static_cast<double>(Audio::SAMPLE_RATE);
-     info->geometry.base_width = Video::FRAMEBUFFER_WIDTH;
-@@ -520,7 +520,7 @@ bool retro_unserialize(const void *data, size_t size)
-         return false;
  
-     DataPacker state(const_cast<char*>(reinterpret_cast<const char*>(data)), size, size);
--    
-+
-     if (neocd.restoreState(state))
-         return true;
- 
-@@ -546,14 +546,14 @@ bool retro_load_game(const struct retro_game_info *info)
-     loadBackupRam();
- 
-     libretro.environment(RETRO_ENVIRONMENT_SET_INPUT_DESCRIPTORS, (void*)neogeoCDPadDescriptors);
--    
-+
-     enum retro_pixel_format fmt = RETRO_PIXEL_FORMAT_RGB565;
-     if (!libretro.environment(RETRO_ENVIRONMENT_SET_PIXEL_FORMAT, &fmt))
-     {
-         LOG(LOG_ERROR, "RGB565 support is required!\n");
-         return false;
-     }
--    
-+
-     if (!loadYZoomROM())
-         return false;
- 
-@@ -672,7 +672,7 @@ void retro_init(void)
-         libretro.log = log.log;
-     else
-         libretro.log = nullptr;
--    
-+
-     libretro.environment(RETRO_ENVIRONMENT_GET_SYSTEM_DIRECTORY, &systemDirectory);
- 
-     // Initialize the emulation
+ std::string path_replace_filename(const char* path, const char* new_filename)

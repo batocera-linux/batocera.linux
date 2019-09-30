@@ -4,8 +4,8 @@
 #
 ################################################################################
 
-# Version.: Commits on Jul 15, 2019
-BATOCERA_EMULATIONSTATION_VERSION = cd8d0ec76a6194ebdf5f2abd0206ed0f1409d7f2
+# Version.: Commits on September 28, 2019
+BATOCERA_EMULATIONSTATION_VERSION = 336bb93b6f63d6f860f8efd96fca67a706c691b7
 BATOCERA_EMULATIONSTATION_SITE = https://github.com/batocera-linux/batocera-emulationstation
 BATOCERA_EMULATIONSTATION_SITE_METHOD = git
 BATOCERA_EMULATIONSTATION_LICENSE = MIT
@@ -44,7 +44,38 @@ define BATOCERA_EMULATIONSTATION_RESOURCES
 	$(INSTALL) -m 0644 -D $(@D)/resources/help/*.* $(TARGET_DIR)/usr/share/emulationstation/resources/help
 endef
 
+
+### S31emulationstation
+
+# default for most of architectures (framebuffer and no splash while it doest work nicely with the splash video)
+BATOCERA_EMULATIONSTATION_BOOT_SCRIPT=S31emulationstation_fb_nosplash
+
+# on rpi, it is not a problem to mix video and es splash
+ifeq ($(BR2_PACKAGE_RPI_USERLAND),y)
+	BATOCERA_EMULATIONSTATION_BOOT_SCRIPT=S31emulationstation_fb_splash
+endif
+
+# on rpi1, 1 cpu
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI1),y)
+	BATOCERA_EMULATIONSTATION_BOOT_SCRIPT=S31emulationstation_fb_1cpu
+endif
+
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_S912),y)
+	BATOCERA_EMULATIONSTATION_BOOT_SCRIPT=S31emulationstation_fbegl_nosplash
+endif
+
+ifeq ($(BR2_PACKAGE_XSERVER_XORG_SERVER),y)
+	BATOCERA_EMULATIONSTATION_BOOT_SCRIPT=S31emulationstation_xorg
+endif
+
+### ### ###
+
+define BATOCERA_EMULATIONSTATION_BOOT
+	cp package/batocera/emulationstation/batocera-emulationstation/$(BATOCERA_EMULATIONSTATION_BOOT_SCRIPT) $(TARGET_DIR)/etc/init.d/S31emulationstation
+endef
+
 BATOCERA_EMULATIONSTATION_PRE_CONFIGURE_HOOKS += BATOCERA_EMULATIONSTATION_RPI_FIXUP
 BATOCERA_EMULATIONSTATION_POST_INSTALL_TARGET_HOOKS += BATOCERA_EMULATIONSTATION_RESOURCES
+BATOCERA_EMULATIONSTATION_POST_INSTALL_TARGET_HOOKS += BATOCERA_EMULATIONSTATION_BOOT
 
 $(eval $(cmake-package))

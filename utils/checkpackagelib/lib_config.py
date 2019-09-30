@@ -61,9 +61,9 @@ class AttributesOrder(_CheckFunction):
 
 
 class CommentsMenusPackagesOrder(_CheckFunction):
-    print_package_warning = [True, True, True, True, True, True]
-    menu_of_packages = ["", "", "", "", "", ""]
-    package = ["", "", "", "", "", ""]
+    menu_of_packages = [""]
+    package = [""]
+    print_package_warning = [True]
 
     def before(self):
         self.state = ""
@@ -72,8 +72,14 @@ class CommentsMenusPackagesOrder(_CheckFunction):
         return len(self.state.split('-')) - 1
 
     def check_line(self, lineno, text):
-        if text.startswith("comment") or text.startswith("if") or \
-           text.startswith("menu"):
+        # We only want to force sorting for the top-level menus
+        if self.filename not in ["package/Config.in",
+                                 "package/Config.in.host"]:
+            return
+
+        m = re.match(r'^\s*source ".*/([^/]*)/Config.in(.host)?"', text)
+        if text.startswith("comment ") or text.startswith("if ") or \
+           text.startswith("menu "):
 
             if text.startswith("comment"):
                 if not self.state.endswith("-comment"):
@@ -87,9 +93,15 @@ class CommentsMenusPackagesOrder(_CheckFunction):
                     self.state += "-menu"
 
             level = self.get_level()
-            self.package[level] = ""
-            self.print_package_warning[level] = True
-            self.menu_of_packages[level] = text[:-1]
+
+            try:
+                self.menu_of_packages[level] = text[:-1]
+                self.package[level] = ""
+                self.print_package_warning[level] = True
+            except IndexError:
+                self.menu_of_packages.append(text[:-1])
+                self.package.append("")
+                self.print_package_warning.append(True)
 
         elif text.startswith("endif") or text.startswith("endmenu"):
             if self.state.endswith("comment"):
@@ -101,9 +113,9 @@ class CommentsMenusPackagesOrder(_CheckFunction):
             elif text.startswith("endmenu"):
                 self.state = self.state[:-5]
 
-        elif text.startswith('\tsource "package/'):
+        elif m:
             level = self.get_level()
-            new_package = text[17: -(len(self.filename)-5):]
+            new_package = m.group(1)
 
             # We order _ before A, so replace it with .
             new_package_ord = new_package.replace('_', '.')

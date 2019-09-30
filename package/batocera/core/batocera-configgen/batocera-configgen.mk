@@ -23,6 +23,8 @@ else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_XU4)$(BR2_PACKAGE_BATOCERA_TARGET_LEGAC
 	BATOCERA_CONFIGGEN_SYSTEM=xu4
 else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_TINKERBOARD),y)
 	BATOCERA_CONFIGGEN_SYSTEM=tinkerboard
+else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_MIQI),y)
+	BATOCERA_CONFIGGEN_SYSTEM=miqi
 else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_C2),y)
 	BATOCERA_CONFIGGEN_SYSTEM=c2
 else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_S905),y)
@@ -38,10 +40,10 @@ else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_ODROIDN2),y)
 endif
 
 define BATOCERA_CONFIGGEN_CONFIGS
-	mkdir -p $(TARGET_DIR)/recalbox/system/configgen
+	mkdir -p $(TARGET_DIR)/usr/share/batocera/configgen
 	cp -pr package/batocera/core/batocera-configgen/datainit $(TARGET_DIR)/usr/lib/python2.7/site-packages/configgen/
-	cp package/batocera/core/batocera-configgen/configs/configgen-defaults.yml $(TARGET_DIR)/recalbox/system/configgen/configgen-defaults.yml
-	cp package/batocera/core/batocera-configgen/configs/configgen-defaults-$(BATOCERA_CONFIGGEN_SYSTEM).yml $(TARGET_DIR)/recalbox/system/configgen/configgen-defaults-arch.yml
+	cp package/batocera/core/batocera-configgen/configs/configgen-defaults.yml $(TARGET_DIR)/usr/share/batocera/configgen/configgen-defaults.yml
+	cp package/batocera/core/batocera-configgen/configs/configgen-defaults-$(BATOCERA_CONFIGGEN_SYSTEM).yml $(TARGET_DIR)/usr/share/batocera/configgen/configgen-defaults-arch.yml
 endef
 BATOCERA_CONFIGGEN_POST_INSTALL_TARGET_HOOKS = BATOCERA_CONFIGGEN_CONFIGS
 

@@ -1,30 +1,96 @@
-2019/xx/xx - batocera.linux 5.23
+2019/xx/xx - batocera.linux 5.24
+	* x86/x86_64: fix support for +2TB disks
+	* x86_64: support for recent UEFI-only motherboards, including Apple MacBook Pro
+	* libretro: update core (nestopia)
+	* wii/gamecube: custom textures in /userdata/saves/dolphin-emu/Load/Textures/<game id> will be loaded automatically.
+	* New default music themes (chiptunes by Waterflame)
+	* Refreshed Batocera logo (when loading ES)
+	* add: new "curvature" shader set
+	* es: option "enable navigation sounds" in menus.
+	* es: Load systems using threaded loading when processor threads > 2
+	* es: Added a progressbar during loading
+	* es: The titlescreen/progressbar is also displayed when "UPDATE GAMES LISTS" runs.
+	* es: Full support for menu themings & help images
+	* es: Full support for recalbox themes & every existing EmulationStation Themes.
+	* es: Add video & marquee support in detailed view (video is used in RB detailed view)
+	* es: Fixes for video start delay & fadings.
+	* es: Updated menu & buttons resources : they need to be white to draw correctly with themed menus.
+	* es: GuiMenu opening animation.
+	* es: Menu navigation : when on top & moving top, select last item ( et inversement... )
+	* es: Menus : Better animations + fix size calculation problems.
+	* es: Clock : use font & color of help system
+	* es: Options : Add FavoritesFirst & CollectionShowSystemInfo options
+	* es: F5 Key : Use it to reload themes ( for themers )...
+	* es: Added to abitity to theme clock
+	* es: New config item audio.display_titles_time=10 in batocera.conf to display the song titles pop-up window
+	* es: Small Screen / GPI : Show menus in fullscreen & scaled
+	* es: NinePatchComponent : fixed & added support for color, centerColor, edgeColor and cornerSize in themes & can be created as "extra" in themes.
+	* es: VideoVlcComponent : can now be added as extra in themes + support forminSize.
+	* es: ScreenScraper : Added options PREFERED IMAGE SOURCE, PREFERED THUMBNAIL SOURCE, SCRAPE MARQUEE and SCRAPE VIDEOS for manual scrapping using ScreenScraper.
+	* es: Add a developer option to disable logs
+	* es: Show lowercases when the Keyboard is in lowercase....
+	* es: Support for French Layout
+	* es: UI : Added new option START ON GAMELIST
+	* es: ImageComponent : Support for reflexion element in themes
+	* es: Themes : Support for custom views
+	* es: ThemeData : Support tinyscreen attribute in includes
+	* es: Theme installer : Brand new look
+	* es: TheBezelProject installer : same brand new look
+	* es: CECInput : Change Name that appear on the TV to Batocera
+	* es: GuiMsgBox : Support for icons
+	* es: Video component : Add bump effect
+	* es: Added "SHOW FOLDERS" option to display (or not) flat game list
+	* es: Removed filter "HIDDEN" replaced by option "SHOW HIDDEN FILES"
+	* es: Added "UPDATE GAMES LISTS" in Gamelist options.
+	* es: Moved SHOW FAVORITES ON TOP option in gamelist options
+	* es: Song names pop-up display time is now configurable
+	* nvidia-driver: version bump (435.21)
+	* libretro: updated cores
+	* 3ds: bump citra-emu
+	* 3ds: added libretro-citra
+	* snes: added libretro-bsnes
+
+2019/09/06 - batocera.linux 5.23
 	* games collections (custom, last played games, favorites)
 	* /userdata/system/scripts user scripts to react to starting/stopping of games
-	* new options available from es : fullboot for ps2 and emulatedwiimotes for wi
+	* new options available from es : fullboot for ps2 and emulated wiimotes for wii
 	* new options : game boy colorization
 	* options configurable by game
-	* nvidia-driver: version bump (430.26)
+	* nvidia-driver: version bump (430.40)
 	* new shaders sets for "retro" and "scanlines", and added a new "enhanced" set
 	* add: ability to display/hide gaming systems from the "UI Settings" menu
 	* add: "Lightgun" system (to use with a Dolphinbar)
-	* add: System-specific background music (by system folder in /userdata/music/)
-	* Add 2 new arcade 4:3 format bezels and 3 arcade vertical format bezel (configurable by game)
-	* Add amstrad gx4000 bezel
-	* tinkerboard support
-	* renamed: lbretro-reicast for libretro-flycast
-	* add: libretro-handy para o Atari Lynx
-	* add: amiberry for odroid xu4 and rockpro64
+	* add: system-specific background music (by system folder in /userdata/music/)
+	* add: new option for a pop-up with music titles
+	* add: music fades out when launching a game
+	* add: 2 new arcade 4:3 format bezels and 3 arcade vertical format bezel (configurable by game)
+	* add: new atomiswave and naomi default bezels (replacing old bezels since they are arcade cabinet systems)
+	* add: new bezel called "atomiswave_naomi_vertical" (configure per game vertical format)
+	* add: amstrad gx4000 bezel
+	* add: integration with theBezelProject for per-game bezels on some systems
+	* add: tinkerboard support
+	* add: miqi support
+	* renamed: libretro-reicast to libretro-flycast
+	* add: libretro-handy Atari Lynx Core
+	* add: amiberry support for - odroid xu4 - Pine64 rockpro64 - Asus Tinkerboard - MQmaker MiQi
 	* add: libretro-vice for RPI3
+	* add: libretro-yabasanshiro Sega Saturn Core for X86/X86_64
 	* bump: libretro-genesisplusgx
 	* bump: citra-emu
 	* bump: scummvm
 	* bump: libretro-fbneo
 	* bump: libretro-cap32
+	* bump: libretro-mame2003-plus
 	* bump: linapple-pie
 	* bump: fsuae to 2.9.12dev
+	* bump: libretro-mupen64plus-next & Enable core on Tinkerboard & MiQi
 	* removed: libertro-mupen64plus (discontinued)
-	* bump: libretro-mame to 0.211
+	* bump: libretro-mame to 0.212 and add support for - Pine64 rockpro64 - Asus Tinkerboard - MQmaker MiQi
+	* removed: libretro-quicknes and libretro-catsfc
+	* snes9x: replacing repository
+	* bump: libretro-neocd (adds .chd support)
+	* removed: libretro-gpsp
+	* amiga: new rom folder structure (amiga, amigacd32 and amigacdtv)
 
 2019/06/12 - batocera.linux 5.22
 	* nvidia-driver: version bump (418.74)

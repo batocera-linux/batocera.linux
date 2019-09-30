@@ -14,7 +14,7 @@ class Emulator():
         self.name = name
 
         # read the configuration from the system name
-        self.config = Emulator.get_system_config(self.name, "/recalbox/system/configgen/configgen-defaults.yml", "/recalbox/system/configgen/configgen-defaults-arch.yml")
+        self.config = Emulator.get_system_config(self.name, "/usr/share/batocera/configgen/configgen-defaults.yml", "/usr/share/batocera/configgen/configgen-defaults-arch.yml")
         if "emulator" not in self.config or self.config["emulator"] == "":
             eslog.log("no emulator defined. exiting.")
             raise Exception("No emulator found")
@@ -29,7 +29,8 @@ class Emulator():
         Emulator.updateConfiguration(self.config, globalSettings)
         Emulator.updateConfiguration(self.config, systemSettings)
         Emulator.updateConfiguration(self.config, gameSettings)
-        self.updateDrawFPS()
+        self.updateFromESSettings()
+        eslog.log("uimode: {}".format(self.config['uimode']))
 
         # update renderconfig
         self.renderconfig = {}
@@ -119,12 +120,29 @@ class Emulator():
         config.update(settings)
 
     # fps value is from es
-    def updateDrawFPS(self):
+    def updateFromESSettings(self):
         try:
             esConfig = ET.parse(batoceraFiles.esSettings)
-            value = esConfig.find("./bool[@name='DrawFramerate']").attrib["value"]
+
+            # showFPS
+            try:
+                drawframerate_value = esConfig.find("./bool[@name='DrawFramerate']").attrib["value"]
+            except:
+                drawframerate_value = 'false'
+            if drawframerate_value not in ['false', 'true']:
+                drawframerate_value = 'false'
+            self.config['showFPS'] = drawframerate_value
+
+            # uimode
+            try:
+                uimode_value = esConfig.find("./string[@name='UIMode']").attrib["value"]
+            except:
+                uimode_value = 'Full'
+            if uimode_value not in ['Full', 'Kiosk', 'Kid']:
+                uimode_value = 'Full'
+            self.config['uimode'] = uimode_value
+
         except:
-            value = 'false'
-        if value not in ['false', 'true']:
-            value = 'false'
-        self.config['showFPS'] = value
+            self.config['showFPS'] = False
+            self.config['uimode'] = "Full"
+

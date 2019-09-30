@@ -3,8 +3,8 @@
 # MAME2003 PLUS
 #
 ################################################################################
-# Version.: Commits on May 14, 2019
-LIBRETRO_MAME2003_PLUS_VERSION = ee491ad23cf25041089ff765827050c6f1342e7f
+# Version.: Commits on Aug 19, 2019
+LIBRETRO_MAME2003_PLUS_VERSION = 382cb6fe4af15a9b2259fc4687bde8a69f1234f5
 LIBRETRO_MAME2003_PLUS_SITE = $(call github,libretro,mame2003-plus-libretro,$(LIBRETRO_MAME2003_PLUS_VERSION))
 LIBRETRO_MAME2003_PLUS_LICENSE = MAME
 
@@ -18,6 +18,8 @@ define LIBRETRO_MAME2003_PLUS_INSTALL_TARGET_CMDS
 		$(TARGET_DIR)/usr/lib/libretro/mame078plus_libretro.so
 
 	# Bios
+    # Need to think of another way to use these files.
+    # They take up a lot of space on tmpfs.
 	mkdir -p $(TARGET_DIR)/usr/share/batocera/datainit/bios/mame2003-plus/samples
 	cp -r $(@D)/metadata/* \
 		$(TARGET_DIR)/usr/share/batocera/datainit/bios/mame2003-plus

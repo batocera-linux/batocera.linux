@@ -1,3 +1,4 @@
+## ENHANCED
 default:
   # shader affects retroarch shaders
   shader: anti-aliasing/advanced-aa
@@ -10,11 +11,11 @@ nes:
 n64:
   shader: anti-aliasing/advanced-aa
 gba:
-  shader: handheld/gba-color
+  shader: handheld/zfast-lcd
 gb:
-  shader: handheld/gameboy
+  shader: handheld/zfast-lcd
 gbc:
-  shader: handheld/gbc-color
+  shader: handheld/zfast-lcd
 fds:
   shader: handheld/zfast-lcd
 virtualboy:
@@ -34,17 +35,17 @@ segacd:
   shader: anti-aliasing/advanced-aa
 # Arcade
 neogeo:
-  shader: xbr/super-xbr-2p-small-details
+  shader: scalehq/2xScaleHQ
 neogeocd:
-  shader: xbr/super-xbr-2p-small-details
+  shader: scalehq/2xScaleHQ
 mame:
-  shader: xbr/super-xbr-2p-small-details
+  shader: scalehq/2xScaleHQ
 fba:
-  shader: xbr/super-xbr-2p-small-details
+  shader: scalehq/2xScaleHQ
 naomi:
-  shader: xbr/super-xbr-2p-small-details
+  shader: scalehq/2xScaleHQ
 atomiswave:
-  shader: xbr/super-xbr-2p-small-details
+  shader: scalehq/2xScaleHQ
 #
 ngp:
   shader: handheld/zfast-lcd
@@ -79,7 +80,7 @@ atari7800:
 prboom:
   shader: anti-aliasing/advanced-aa
 psx:
-  shader: xbr/super-xbr-2p-small-details
+  shader: scalehq/2xScaleHQ
 colecovision:
   shader: anti-aliasing/advanced-aa
 # Computers

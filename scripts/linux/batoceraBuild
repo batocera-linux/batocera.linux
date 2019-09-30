@@ -8,7 +8,7 @@ ACTIONSDIR="/batocera/actions"
 
 echo_msg() {
     arch=$1
-    echo $(date "+%Y/%m/%d %H:%m:%S") "[${arch}]" $2
+    echo $(date "+%Y/%m/%d %H:%M:%S") "[${arch}]" $2
 }
 
 do_push() {
@@ -32,7 +32,7 @@ do_push() {
 do_html() {
     arch=$1
 
-    (cd "${BUILDDIR}/${arch}" && sudo docker run --rm --name "${arch}_html_"$(date "+%Y%m%d_%H%m%S") -v $PWD:/build batocera/batocera.linux-build /bin/bash -c "/build/scripts/linux/buildstats.sh /build > /build/output/images/batocera/index.html")
+    (cd "${BUILDDIR}/${arch}" && sudo docker run --rm --name "${arch}_html_"$(date "+%Y%m%d_%H%M%S") -v $PWD:/build batocera/batocera.linux-build /bin/bash -c "/build/scripts/linux/buildstats.sh /build > /build/output/images/batocera/index.html")
 }
 
 # wakeonlan b4:b5:2f:cb:74:07
@@ -70,7 +70,7 @@ buildAll() {
 	rm -f "${SEARCHDIR}/${NEXTITEM}"
 
 	echo_msg "${NEXTITEM}" "building..."
-	if (cd "${BUILDDIR}/${NEXTITEM}" && sudo docker run -t --rm --name "${arch}_build_"$(date "+%Y%m%d_%H%m%S") -v $PWD:/build -v /batocera/DL:/build/dl batocera/batocera.linux-build make) > "${LOGDIR}/build-${NEXTITEM}.log" 2> "${LOGDIR}/build-${NEXTITEM}.err"
+	if (cd "${BUILDDIR}/${NEXTITEM}" && sudo docker run -t --rm --name "${arch}_build_"$(date "+%Y%m%d_%H%M%S") -v $PWD:/build -v /batocera/DL:/build/dl batocera/batocera.linux-build make) > "${LOGDIR}/build-${NEXTITEM}.log" 2> "${LOGDIR}/build-${NEXTITEM}.err"
 	then
 	    do_html "${NEXTITEM}"
 
@@ -108,7 +108,7 @@ case "${1}" in
     "enter")
 	arch="${2}"
 	cd "${BUILDDIR}/${arch}" || exit 1
-	sudo docker run -it --rm --name "${arch}_enter_"$(date "+%Y%m%d_%H%m%S") -v "${PWD}:/build" -v "${DLDIR}:/build/dl" "batocera/batocera.linux-build"
+	sudo docker run -it --rm --name "${arch}_enter_"$(date "+%Y%m%d_%H%M%S") -v "${PWD}:/build" -v "${DLDIR}:/build/dl" "batocera/batocera.linux-build"
 	;;
     "add")
 	while test -n "${2}"

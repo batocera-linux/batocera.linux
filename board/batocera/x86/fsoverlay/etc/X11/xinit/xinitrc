@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # hide mouse cursor
-unclutter --timeout 1 -b
+unclutter --noevents -b
 
 systemsetting="python /usr/lib/python2.7/site-packages/configgen/settings/batoceraSettings.py"
 
@@ -53,6 +53,10 @@ settings_output="`$systemsetting -command load -key global.videomode`"
 [ ! -z "${settings_output}" ] && batocera-resolution setMode "${settings_output}"
 
 batocera-resolution minTomaxResolution
+
+# allow coredumps for ES
+ulimit -H -c unlimited
+ulimit -S -c unlimited emulationstation
 
 cd /userdata # es needs a PWD
 openbox --config-file /etc/openbox/rc.xml --startup "emulationstation --windowed"

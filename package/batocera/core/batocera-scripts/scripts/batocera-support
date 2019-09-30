@@ -25,7 +25,7 @@ d_cp() {
 }
 
 
-if mkdir "${TMPDIR}" && mkdir "${TMPDIR}/"{system,joysticks,lirc,kodi}
+if mkdir "${TMPDIR}" && mkdir "${TMPDIR}/"{system,joysticks,lirc,kodi,coredumps}
 then
     if ! cd "${TMPDIR}"
     then
@@ -60,7 +60,7 @@ batocera-systems        > "${DSYSTEM}/bios.txt"
 f_cp /usr/share/batocera/batocera.version                     "${DSYSTEM}"
 f_cp /usr/share/batocera/batocera.arch                        "${DSYSTEM}"
 f_cp /boot/config.txt                                         "${DSYSTEM}"
-f_cp /userdata/system/batocera.conf                     "${DSYSTEM}"
+grep -vE '^[ #]*global.retroachievements.password[ ]*=' /userdata/system/batocera.conf > "${DSYSTEM}/batocera.conf"
 d_cp /userdata/system/logs                              "${DSYSTEM}"
 f_cp /var/log/messages                                        "${DSYSTEM}"
 f_cp /userdata/system/configs/emulationstation/es_settings.cfg "${DSYSTEM}"
@@ -95,6 +95,13 @@ f_cp "${DHOME}/.kodi/userdata/Lircmap.xml"          	      "${DKODI}"
 d_cp "${DHOME}/.kodi/userdata/addon_data/peripheral.joystick" "${DKODI}"
 d_cp "${DHOME}/.kodi/userdata/remotes"              	      "${DKODI}"
 f_cp "${DHOME}/.kodi/temp/kodi.log"                 	      "${DKODI}"
+
+# core dumps
+DCORE="${TMPDIR}/coredumps"
+for C in /userdata/core.*
+do
+    f_cp "${C}" "${DCORE}"
+done
 
 if ! (cd "${GTMP}" && tar cf -  "${REPORTNAME}" | gzip -c > "${OUTPUTFILE}")
 then

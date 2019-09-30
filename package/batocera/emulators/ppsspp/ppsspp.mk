@@ -3,8 +3,8 @@
 # PPSSPP
 #
 ################################################################################
-# Version.: Commits on Mar 14, 2019
-PPSSPP_VERSION = v1.8.0
+# Version.: Commits on Sep 25, 2019
+PPSSPP_VERSION = v1.9.1
 PPSSPP_SITE = https://github.com/hrydgard/ppsspp.git
 PPSSPP_SITE_METHOD=git
 PPSSPP_GIT_SUBMODULES=YES
@@ -30,7 +30,7 @@ else
 endif
 
 # odroid xu4 / odroid xu4 legacy / odroid n2
-ifeq ($(BR2_PACKAGE_MALI_OPENGLES_SDK)$(BR2_PACKAGE_MALI_HKG52FBDEV),y)
+ifeq ($(BR2_PACKAGE_MALI_OPENGLES_SDK)$(BR2_PACKAGE_MALI_HKG52FBDEV)$(BR2_PACKAGE_MALI_BIFROST),y)
 	PPSSPP_CONF_OPTS += -DUSING_FBDEV=ON -DUSING_GLES2=ON -DUSING_EGL=OFF -DUSING_X11_VULKAN=OFF
 endif
 
