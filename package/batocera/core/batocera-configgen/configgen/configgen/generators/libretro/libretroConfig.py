@@ -57,7 +57,6 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
 
     retroarchConfig = dict()
     systemConfig = system.config
-    renderConfig = system.renderconfig
 
     # basic configuration
     retroarchConfig['quit_press_twice'] = 'false'
@@ -69,22 +68,6 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
         retroarchConfig['video_smooth'] = 'true'
     else:
         retroarchConfig['video_smooth'] = 'false'
-
-    if 'shader' in renderConfig and renderConfig['shader'] != None:
-        retroarchConfig['video_shader_enable'] = 'true'
-        retroarchConfig['video_smooth']        = 'false'
-        shaderFilename = renderConfig['shader'] + ".glslp"
-
-        eslog.log("searching shader {}".format(shaderFilename))
-        if os.path.exists("/userdata/shaders/" + shaderFilename):
-            retroarchConfig['video_shader_dir'] = "/userdata/shaders"
-            eslog.log("shader {} found in /userdata/shaders".format(shaderFilename))
-        else:
-            retroarchConfig['video_shader_dir'] = "/usr/share/batocera/shaders"
-
-        retroarchConfig['video_shader'] = retroarchConfig['video_shader_dir'] + "/" + shaderFilename
-    else:
-        retroarchConfig['video_shader_enable'] = 'false'
 
     retroarchConfig['aspect_ratio_index'] = '' # reset in case config was changed (or for overlays)
     if defined('ratio', systemConfig):
