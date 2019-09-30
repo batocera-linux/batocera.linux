@@ -79,10 +79,11 @@ case ${1,,} in
     ;;
 
     --emukill|--shutdown)
-        emu_kill && sleep 2
+        RC_PID=$(check_emurun)
+        [[ -n $RC_PID ]] && emu_kill && sleep 2
+
         ES_PID=$(check_esrun)
-        if [[ "$1" == "--shutdown" && -n $ES_PID ]]; then
-            [[ -z $RC_PID ]] || smart_wait 1 $RC_PID && sleep 3
+        if [[ "${1,,}" == "--shutdown" && -n $ES_PID ]]; then
             kill $ES_PID         
             smart_wait 0 $ES_PID
             shutdown -h now
@@ -90,7 +91,9 @@ case ${1,,} in
     ;;
 
     --kodi)
-        emu_kill && sleep 2
+        RC_PID=$(check_emurun)
+        [[ -n $RC_PID ]] && emu_kill && sleep 2
+        
         /etc/init.d/S31emulationstation stop
         batocera-kodilauncher &
         wait $!
