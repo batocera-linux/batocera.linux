@@ -1,7 +1,49 @@
 #!/bin/bash
 
+#v1.0 // ol style script
+#Notes:
+#WittyPi makes use of wiringPi (gpio) which may be dropped from further dev
+
+#v1.1 - add dialog to select your switch
+#     - cleaned off scripts
+#     - $2 argument is parsed by S92switch script now /etc/init.d
+#     - added help section, type 'rpi_gpioswitch help'
+#     - some other small improvements .... cyperghost 30.09.2019
+
+#dialog for selecting your switch or power device
+function powerdevice_dialog()
+{
+    local powerdevices #array
+    local switch cmd button #dialog variabels
+    local currentswitch #show current switch
+
+    currentswitch=$(batocera-settings --command load --key system.power.switch)
+    [[ -z $currentswitch || $currentswitch == "#" ]] && currentswitch="disabled"
+
+    powerdevices=(
+                  RETROFLAG "Including NESPi+ SuperPi and MegaPi cases" \
+                  MAUSBERRY "A neat power device from Mausberry circuits" \
+                  ONOFFSHIM "The cheapest power device from Pimoroni" \
+                  REMOTEPIBOARD_2003 "Any remote control as pswitch v2013" \
+                  REMOTEPIBOARD_2005 "Any remote control as pswitch v2015" \
+                  WITTYPI "RTC and PowerBoost all in one board" \
+                  ATX_RASPI_R2_6 "ATXRaspi is a smart power controller SBC" \
+                  PIN56ONOFF "py: Sliding switch for proper shutdown" \
+                  PIN56PUSH "py: Momentary push button for shutdown" \
+                  PIN356ONOFFRESET "py: Power button and reset button" \
+                 )
+
+    cmd=(dialog --backtitle "BATOCERA Power Switch Selection Toolset" \
+           --title " SWITCH/POWER DEVICE SETUP " \
+           --ok-label "Select" --cancel-label "Abort" \
+           --stdout --menu "Currently selected device: $currentswitch" 17 74 14)
+    switch=$("${cmd[@]}" "${powerdevices[@]}")
+    echo "$switch"
+}
+
+
 # http://lowpowerlab.com/atxraspi/#installation
-atx_raspi_start()
+function atx_raspi_start()
 {
     # This is GPIO 7 (pin 26 on the pinout diagram).
     # This is an input from ATXRaspi to the Pi.
@@ -44,16 +86,16 @@ atx_raspi_start()
                 shutdownSignal=$(cat /sys/class/gpio/gpio$SHUTDOWN/value)
             done
             #pulse went LOW, check if it was long enough, and trigger reboot
-            if [ $(($(date +%s%N | cut -b1-13)-$pulseStart)) -gt $REBOOTPULSEMINIMUM ]; then 
+            if [ $(($(date +%s%N | cut -b1-13)-$pulseStart)) -gt $REBOOTPULSEMINIMUM ]; then
                 echo "ATXRaspi triggered a reboot signal, recycling Rpi ... "
                 reboot
                 exit
             fi
         fi
-    done    
+    done
 }
 
-atx_raspi_stop()
+function atx_raspi_stop()
 {
     # Cleanup GPIO init
     for i in $*; do
@@ -62,7 +104,7 @@ atx_raspi_stop()
 }
 
 # http://mausberry-circuits.myshopify.com/pages/setup
-mausberry_start()
+function mausberry_start()
 {
     # Init GPIO :
     # $1 is the GPIO pin connected to the lead on switch labeled OUT
@@ -74,13 +116,13 @@ mausberry_start()
     echo "out" > /sys/class/gpio/gpio$2/direction
     echo "1" > /sys/class/gpio/gpio$2/value
 
-    # Wait for switch off signal 
+    # Wait for switch off signal
     power=0
     while [ "$power" = "0" ]; do
         sleep 1
         power=$(cat /sys/class/gpio/gpio$1/value)
     done
-    
+
     # Switch off
     if [ "$?" = "0" ]; then
         touch "/tmp/poweroff.please"
@@ -88,7 +130,7 @@ mausberry_start()
     fi
 }
 
-mausberry_stop()
+function mausberry_stop()
 {
     # Cleanup GPIO init
     for i in $*; do
@@ -97,7 +139,7 @@ mausberry_stop()
 }
 
 # https://shop.pimoroni.com/products/onoff-shim/
-onoffshim_start()
+function onoffshim_start()
 {
     #Check if dtooverlay is setted in /boot/config
     #This is needed to do proper restarts/shutdowns
@@ -122,11 +164,11 @@ onoffshim_start()
     # Switch off
     if [ "$?" = "0" ]; then
         touch "/tmp/poweroff.please"
-        poweroff  
+        poweroff
     fi
 }
 
-onoffshim_stop()
+function onoffshim_stop()
 {
     # Cleanup GPIO init
     for i in $*; do
@@ -136,14 +178,14 @@ onoffshim_stop()
 
 # http://www.msldigital.com/pages/support-for-remotepi-board-2013
 # http://www.msldigital.com/pages/support-for-remotepi-board-plus-2015
-msldigital_start()
+function msldigital_start()
 {
-    # Init GPIO : 
+    # Init GPIO :
     # $1 is the GPIO pin receiving the shut-down signal
     echo "$1" > /sys/class/gpio/export
     echo "in" > /sys/class/gpio/gpio$1/direction
 
-    # Wait for switch off signal 
+    # Wait for switch off signal
     power=0
     while [ "$power" = "0" ]; do
         sleep 1
@@ -157,7 +199,7 @@ msldigital_start()
     fi
 }
 
-msldigital_stop()
+function msldigital_stop()
 {
     if [ -f "/tmp/shutdown.please" -o -f "/tmp/poweroff.please" ]; then
         if [ -f "/tmp/shutdown.please" -a "$CONFVALUE" = "REMOTEPIBOARD_2005" ]; then
@@ -191,7 +233,7 @@ msldigital_stop()
 
 # http://www.uugear.com/witty-pi-realtime-clock-power-management-for-raspberry-pi/
 # https://github.com/uugear/Witty-Pi/blob/master/wittyPi/daemon.sh
-wittyPi_start()
+function wittyPi_start()
 {
     # LED on GPIO-17 (wiringPi pin 0)
     led_pin=$1
@@ -228,7 +270,7 @@ wittyPi_start()
     shutdown -h now
 }
 
-wittyPi_stop()
+function wittyPi_stop()
 {
     # LED on GPIO-17 (wiringPi pin 0)
     led_pin=$1
@@ -247,21 +289,21 @@ wittyPi_stop()
     gpio mode $halt_pin up
 }
 
-pin356_start()
+function pin356_start()
 {
-	rpi-pin356-power &
+    rpi-pin356-power &
     pid=$!
     echo "$pid" > /tmp/rpi-pin356-power.pid
     wait "$pid"
 }
-pin356_stop()
+function pin356_stop()
 {
     if [[ -f /tmp/rpi-pin356-power.pid ]]; then
         kill `cat /tmp/rpi-pin356-power.pid`
     fi
 }
 
-pin56_start()
+function pin56_start()
 {
     mode=$1
     rpi-pin56-power -m "$mode" &
@@ -269,26 +311,35 @@ pin56_start()
     echo "$pid" > /tmp/rpi-pin56-power.pid
     wait "$pid"
 }
-pin56_stop()
+
+function pin56_stop()
 {
     if [[ -f /tmp/rpi-pin56-power.pid ]]; then
         kill `cat /tmp/rpi-pin56-power.pid`
     fi
 }
 
+#-----------------------------------------
+#------------------ MAIN -----------------
+#-----------------------------------------
+
 # First parameter must be start or stop
-if [[ "$1" != "start" && $1 != "stop" ]]; then
+# Followed by switch parameter from S92switch
+# If you start by CLI a dialog will appear
+
+if [[ "$1" == "start" || "$1" == "stop" ]]; then
+    [[ -n "$2" ]] || exit 1
+    CONFVALUE="$2"
+elif [[ -z "$1" ]]; then
+    CONFVALUE="DIALOG"
+elif [[ "${1^^}" =~ "HELP" ]]; then
+    CONFVALUE="--HELP"
+else
     exit 1
 fi
 
-CONFFILE="/userdata/system/batocera.conf"
-CONFPARAM="system.power.switch" 
-CONFVALUE=
-if [ -e $CONFFILE ]; then
-    CONFVALUE=$(sed -rn "s/^$CONFPARAM=(\w*)\s*.*$/\1/p" $CONFFILE | tail -n 1)
-fi
-
 case "$CONFVALUE" in
+
     "ATX_RASPI_R2_6")
         atx_raspi_$1 7 8
     ;;
@@ -317,5 +368,27 @@ case "$CONFVALUE" in
     "PIN356ONOFFRESET")
         echo "will start pin356_$1"
         pin356_$1 noparam
+    ;;
+    "DIALOG")
+        # Go to selection dialog
+        switch="$(powerdevice_dialog)"
+
+        # Write values and display MsgBox
+        [[ -n $switch ]] || { echo "Abort! Nothing changed...."; exit 1;}
+        batocera-settings --command write --key system.power.switch --value "$switch"
+        [[ $? -eq 0 ]] && info_msg="No error! Everthing went okay!" || info_msg="An Error occourd!"
+        dialog --backtitle "BATOCERA Power Switch Selection Toolset" \
+               --title " STATUS OF NEW VALUE " \
+               --msgbox "${info_msg}\n\n$(batocera-settings status system.power.switch)" 0 0
+    ;;
+    --HELP|*)
+    [[ $CONFVALUE == "--HELP" ]] || echo "Wrong argument given to start or stop parameter"
+    echo
+    echo "Try: rpi_gpioswitch.sh [start|stop] [value]"
+    echo
+    echo "Vaild values are: ATX_RASPI_R2_6, MAUSBERRY, ONOFFSHIM, REMOTEPIBOARD_2003 
+                  REMOTEPIBOARD_2005, WITTYPI, PIN56ONOFF, PIN56PUSH
+                  PIN356ONOFFRESET"
+    exit 1
     ;;
 esac
