@@ -11,7 +11,7 @@ case "$1" in
 	powerswitch="`$systemsetting  -command load -key system.power.switch`"
 	case "${powerswitch}" in
 	    ATX_RASPI_R2_6|MAUSBERRY|REMOTEPIBOARD_2003|REMOTEPIBOARD_2005|WITTYPI|PIN56ONOFF|PIN56PUSH|PIN356ONOFFRESET|ONOFFSHIM)
-		nice -n 19 $RUN start&
+		nice -n 19 $RUN start $powerswitch &
 		;;
 	esac
     ;;
@@ -20,7 +20,7 @@ case "$1" in
             kill $BTD_PID
             $RUN stop
         elif test -e "/tmp/poweroff.please"; then
-            $RUN stop
+            $RUN stop $powerswitch
         fi
     ;;
     status)
