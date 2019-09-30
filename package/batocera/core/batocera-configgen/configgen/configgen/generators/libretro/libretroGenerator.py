@@ -7,6 +7,7 @@ import shutil
 from generators.Generator import Generator
 import os.path
 from settings.unixSettings import UnixSettings
+from utils.logger import eslog
 
 class LibretroGenerator(Generator):
 
@@ -61,6 +62,19 @@ class LibretroGenerator(Generator):
         overlayFile = "{}/{}/{}.cfg".format(batoceraFiles.OVERLAYS, system.name, romName)
         if os.path.isfile(overlayFile):
             configToAppend.append(overlayFile)
+
+        # RetroArch 1.7.8 (Batocera 5.24) now requires the shaders to be passed as command line argument
+        renderConfig = system.renderconfig
+        if 'shader' in renderConfig and renderConfig['shader'] != None:
+            shaderFilename = renderConfig['shader'] + ".glslp"
+            eslog.log("searching shader {}".format(shaderFilename))
+            if os.path.exists("/userdata/shaders/" + shaderFilename):
+                video_shader_dir = "/userdata/shaders"
+                eslog.log("shader {} found in /userdata/shaders".format(shaderFilename))
+            else:
+                video_shader_dir = "/usr/share/batocera/shaders"
+            video_shader = video_shader_dir + "/" + shaderFilename
+            commandArray.extend(["--set-shader", video_shader])
 
         # Generate the append
         if configToAppend:
