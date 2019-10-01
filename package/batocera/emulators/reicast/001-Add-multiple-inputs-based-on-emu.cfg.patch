@@ -1,0 +1,30 @@
+diff --git a/core/hw/maple/maple_cfg.cpp b/core/hw/maple/maple_cfg.cpp
+index a705fd6..9f8227e 100644
+--- a/core/hw/maple/maple_cfg.cpp
++++ b/core/hw/maple/maple_cfg.cpp
+@@ -4,6 +4,8 @@
+ #include "maple_devs.h"
+ #include "maple_cfg.h"
+ #include "cfg/cfg.h"
++#include "linux-dist/evdev.h"
++#include "cfg/cfg.h"
+ 
+ #define HAS_VMU
+ /*
+@@ -83,7 +85,15 @@ int numberOfControl = cfgLoadInt("players", "nb", 1);
+ 		numberOfControl = 4;
+ 
+ 	for (int i = 0; i < numberOfControl; i++){
+-		mcfg_Create(MDT_SegaController, i, 5);
++		int deviceId, size_needed;
++		size_needed = snprintf(NULL, 0, EVDEV_DEVICE_CONFIG_KEY, i+1) + 1;
++		char* evdev_config_key = (char*)malloc(size_needed);
++		sprintf(evdev_config_key, EVDEV_DEVICE_CONFIG_KEY, i+1);
++		deviceId = cfgLoadInt("input", evdev_config_key, EVDEV_DEFAULT_DEVICE_ID(i+1));
++		free(evdev_config_key);
++		if (deviceId >= 0) {
++		  mcfg_Create(MDT_SegaController, i, 5);
++		}
+ 	}
+ 
+ 	mcfg_Create(MDT_SegaVMU,0,0);
