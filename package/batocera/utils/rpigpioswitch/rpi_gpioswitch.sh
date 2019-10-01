@@ -34,9 +34,9 @@ function powerdevice_dialog()
                  )
 
     cmd=(dialog --backtitle "BATOCERA Power Switch Selection Toolset" \
-           --title " SWITCH/POWER DEVICE SETUP " \
-           --ok-label "Select" --cancel-label "Abort" \
-           --stdout --menu "Currently selected device: $currentswitch" 17 74 14)
+                --title " SWITCH/POWER DEVICE SETUP " \
+                --ok-label "Select" --cancel-label "Abort" \
+                --stdout --menu "Currently selected device: $currentswitch" 17 74 14)
     switch=$("${cmd[@]}" "${powerdevices[@]}")
     echo "$switch"
 }
@@ -376,13 +376,13 @@ case "$CONFVALUE" in
         # Write values and display MsgBox
         [[ -n $switch ]] || { echo "Abort! Nothing changed...."; exit 1;}
         batocera-settings --command write --key system.power.switch --value "$switch"
-        [[ $? -eq 0 ]] && info_msg="No error! Everthing went okay!" || info_msg="An Error occourd!"
-        dialog --backtitle "BATOCERA Power Switch Selection Toolset" \
+        [[ $? -eq 0 ]] && info_msg="No error! Everything went okay!" || info_msg="An error occurred!"
+        dialog --backtitle "BATOCERA Power Switch Selection Toolkit" \
                --title " STATUS OF NEW VALUE " \
                --msgbox "${info_msg}\n\n$(batocera-settings status system.power.switch)" 0 0
     ;;
     --HELP|*)
-    [[ $CONFVALUE == "--HELP" ]] || echo "Wrong argument given to start or stop parameter"
+    [[ $CONFVALUE == "--HELP" ]] || echo "Wrong argument given to 'start' or 'stop' parameter"
     echo
     echo "Try: rpi_gpioswitch.sh [start|stop] [value]"
     echo
