@@ -64,7 +64,6 @@ moonlightMapping[3] = moonlightCustom + '/mappingP3.conf'
 moonlightMapping[4] = moonlightCustom + '/mappingP4.conf'
 
 reicastCustom = CONF + '/reicast'
-reicastMapping = reicastCustom + '/mappings'
 reicastConfig = reicastCustom + '/emu.cfg'
 reicastSaves = SAVES + '/dreamcast'
 reicastBios = BIOS
