@@ -80,6 +80,7 @@ gba:
     libretro:
       mgba:   { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MGBA]   }
       vba-m:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_VBA_M]  }
+      gpsp:   { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GPSP]   }
 
 gbc:
   name:       Game Boy Color
