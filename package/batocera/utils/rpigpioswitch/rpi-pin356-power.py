@@ -4,6 +4,7 @@
 import os
 import RPi.GPIO as GPIO
 import time
+import signal
 
 GPIO.setwarnings(False)                                 # no warnings
 GPIO.setmode(GPIO.BCM)                                  # BCM mode
@@ -14,19 +15,27 @@ GPIO.output(4, GPIO.HIGH)                               # Turn on LED
 
 def shutdownBatocera(channel):
     print 'shutdownBatocera'
-    os.system('shutdown -h now')
-    #os.system('batocera-es-swissknife --shutdown')
+    os.system('(sleep 2; shutdown -h now) &')
+    #os.system('batocera-es-swissknife --shutdown &')
+    blinkLED()
     
 def exitAllBatoceraEmulator(channel):
     print 'exitAllBatoceraEmulator'
     os.system('killall -9 retroarch PPSSPPSDL reicast.elf mupen64plus linapple-pie x64 scummvm dosbox vice amiberry fsuae dolphin-emu')
     #os.system('batocera-es-swissknife --emukill')
 
+def blinkLED():
+    while True:
+        GPIO.output(4, GPIO.LOW)
+        time.sleep(0.5)
+        GPIO.output(4, GPIO.HIGH)
+        time.sleep(0.5)
+    
 GPIO.add_event_detect(2, GPIO.FALLING, callback=exitAllBatoceraEmulator,
-                      bouncetime=500)
+                      bouncetime=1000)
 
 GPIO.add_event_detect(3, GPIO.FALLING, callback=shutdownBatocera,
                       bouncetime=500)
 
 while True:
-    time.sleep(0.2)
+    signal.pause()
