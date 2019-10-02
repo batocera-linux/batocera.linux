@@ -1,0 +1,60 @@
+<html>
+  <head>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script>
+$(function() {
+    $.getJSON("batocera_systemsReport.json", function(data) {
+	var tab = "<table>"
+
+	// archs
+	tab += "<tr><th></th>"
+	$.each(data, function(arch, arch_data) {
+	    tab += "<th>" + arch + "</th>"
+	})
+	tab += "</tr>"
+
+	// systems
+	var any_arch = ""
+	$.each(data, function(arch, arch_data) {
+	    one_arch = arch
+	})
+
+	$.each(data[one_arch], function(system, one_arch_system_data) {
+	    tab += "<tr>"
+	    tab += "<td>" + one_arch_system_data.name + "</td>"
+	    $.each(data, function(arch, arch_data) {
+		if(arch_data[system].red_flag) {
+		    tab += "<td style=\"background-color: red\">"
+		} else {
+		    tab += "<td>"
+		}
+		$.each(arch_data[system].emulators, function(emulator, emulator_data) {
+		    $.each(emulator_data, function(x, core) {
+			tab += emulator + "/" + core + "<br />"
+		    })
+		})
+		tab += "</td>"
+	    })
+	    tab += "</tr>"
+	})
+
+	tab += "</table>"
+	$("#id_table").html(tab)
+    })
+})
+    </script>
+    <style>
+      table {
+      display: inline-table;
+      border: solid 1px;
+      }
+      table th, table td {
+      border: solid 1px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="id_table" />
+  </body>
+</html>
