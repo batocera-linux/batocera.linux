@@ -32,7 +32,7 @@ $(function() {
 		    if(n == 1) {
 			// system
 			var nb_system_cores = one_arch_system_data["nb_all_variants"]
-			tab += "<td rowspan=\"" + nb_system_cores + "\">" + one_arch_system_data.name + "</td>"
+			tab += "<td rowspan=\"" + nb_system_cores + "\"><span data-tippy-content=\"" + system + "\">" + one_arch_system_data.name + "</span></td>"
 		    }
 		    // core
 		    if(one_emulator == one_core) {
@@ -59,7 +59,11 @@ $(function() {
 					}
 					tab += "</td>"
 				    } else {
-					tab += "<td></td>"
+	  				if(arch_data[system].red_flag) {
+					    tab += "<td class=\"noreasonflag\"></td>"
+					} else {
+					    tab += "<td></td>"
+					}
 				    }
 				}
 			    })
@@ -94,6 +98,9 @@ table th, table td {
 .greenflag {
     text-align: center;
     background-color: #2b6;
+}
+.noreasonflag {
+  background-color: #fcf;
 }
 .archname {
     writing-mode: vertical-rl;

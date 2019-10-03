@@ -1,49 +1,36 @@
 default:
-  amiga:
-    amiberry:
-      A1200:
+  3do:
+    libretro:
+      4do:
         explanation: |
-          A1200, A4000, A500 and A500+ are the same core, but with a different behavior depending on the amiga we want to emulate.
-      A4000:
-        explanation: |
-          A1200, A4000, A500 and A500+ are the same core, but with a different behavior depending on the amiga we want to emulate.
-      A500:
-        explanation: |
-          A1200, A4000, A500 and A500+ are the same core, but with a different behavior depending on the amiga we want to emulate.
-      A500+:
-        explanation: |
-          A1200, A4000, A500 and A500+ are the same core, but with a different behavior depending on the amiga we want to emulate.
-    fsuae:
-      A1000:
-        explanation: |
-          A1000, A1200, A3000, A4000, A500, A500+, A600 are the same core, but with a different behavior depending on the amiga we want to emulate.
-      A1200:
-        explanation: |
-          A1000, A1200, A3000, A4000, A500, A500+, A600 are the same core, but with a different behavior depending on the amiga we want to emulate.
-      A3000:
-        explanation: |
-          A1000, A1200, A3000, A4000, A500, A500+, A600 are the same core, but with a different behavior depending on the amiga we want to emulate.
-      A4000:
-        explanation: |
-          A1000, A1200, A3000, A4000, A500, A500+, A600 are the same core, but with a different behavior depending on the amiga we want to emulate.
-      A500:
-        explanation: |
-          A1000, A1200, A3000, A4000, A500, A500+, A600 are the same core, but with a different behavior depending on the amiga we want to emulate.
-      A500+:
-        explanation: |
-          A1000, A1200, A3000, A4000, A500, A500+, A600 are the same core, but with a different behavior depending on the amiga we want to emulate.
-      A600:
-        explanation: |
-          A1000, A1200, A3000, A4000, A500, A500+, A600 are the same core, but with a different behavior depending on the amiga we want to emulate.
+          only some boards are available : requires a powerfull board
   3ds:
     citra:
-      citra:
+      citra: &citra_standalone_core
         explanation: |
           The standalone citra works better, but it lacks the mouse and bezels features that the libretro/citra has.
     libretro:
-      citra:
+      citra: *citra_standalone_core
+
+  amiga:
+    amiberry:
+      A1200: &amiberry_multicore
         explanation: |
-          The standalone citra works better, but it lacks the mouse and bezels features that the libretro/citra has.
+          A1200, A4000, A500 and A500+ are the same core, but with a different behavior depending on the amiga we want to emulate.
+      A4000: *amiberry_multicore
+      A500:  *amiberry_multicore
+      A500+: *amiberry_multicore
+    fsuae:
+      A1000: &fsuae_multicore
+        explanation: |
+          A1000, A1200, A3000, A4000, A500, A500+, A600 are the same core, but with a different behavior depending on the amiga we want to emulate.
+          fsuae works only on x86 and x86_64 architectures
+      A1200: *fsuae_multicore
+      A3000: *fsuae_multicore
+      A4000: *fsuae_multicore
+      A500:  *fsuae_multicore
+      A500+: *fsuae_multicore
+      A600:  *fsuae_multicore
 rpi1:
   snes:
     libretro:
