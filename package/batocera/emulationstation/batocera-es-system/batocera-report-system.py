@@ -24,8 +24,12 @@ class SortedListEncoder(json.JSONEncoder):
 class EsSystemConf:
 
     @staticmethod
-    def hasRedFlag(nb_variants, nb_explanations):
-        if nb_variants <= 1:
+    def hasRedFlag(nb_variants, nb_explanations, nb_all_explanations):
+        if nb_variants == 0 and nb_all_explanations == 0:
+            return True
+        if nb_variants == 0 and nb_all_explanations >= 1:
+            return False
+        if nb_variants == 1:
             return False
         if nb_variants == nb_explanations:
             return False
@@ -46,7 +50,7 @@ class EsSystemConf:
             for system in rules:
                 emulators = EsSystemConf.listEmulators(arch, system, rules[system], explanations, config)
                 if any(emulators["emulators"]):
-                    emulators["red_flag"] = EsSystemConf.hasRedFlag(emulators["nb_variants"], emulators["nb_explanations"])
+                    emulators["red_flag"] = EsSystemConf.hasRedFlag(emulators["nb_variants"], emulators["nb_explanations"], emulators["nb_all_explanations"])
                     result_systems[system] = emulators
             result_archs[arch] = result_systems
 
@@ -90,6 +94,7 @@ class EsSystemConf:
         nb_variants = 0
         nb_all_variants = 0
         nb_explanations = 0
+        nb_all_explanations = 0
         
         emulators = {}
         if "emulators" in data:
@@ -114,7 +119,14 @@ class EsSystemConf:
                         result_cores[core]["explanation"] = None
                 else:
                     result_cores[core]["enabled"] = False
-                    result_cores[core]["explanation"] = None
+                    if EsSystemConf.keys_exists(explanationsYaml, arch, system, emulator, core, "explanation"):
+                        result_cores[core]["explanation"] = explanationsYaml[arch][system][emulator][core]["explanation"]
+                        nb_all_explanations += 1
+                    elif EsSystemConf.keys_exists(explanationsYaml, "default", system, emulator, core, "explanation"):
+                        result_cores[core]["explanation"] = explanationsYaml["default"][system][emulator][core]["explanation"]
+                        nb_all_explanations += 1
+                    else:
+                        result_cores[core]["explanation"] = None
             emulators_result[emulator] = result_cores
 
         result = {}
@@ -122,6 +134,7 @@ class EsSystemConf:
         result["nb_variants"] = nb_variants
         result["nb_all_variants"] = nb_all_variants
         result["nb_explanations"] = nb_explanations
+        result["nb_all_explanations"] = nb_all_explanations
         result["emulators"] = emulators_result
         return result
 
