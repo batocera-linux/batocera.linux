@@ -24,21 +24,31 @@ class SortedListEncoder(json.JSONEncoder):
 class EsSystemConf:
 
     @staticmethod
-    def generate(rulesYaml, configsDir):
+    def hasRedFlag(nb_variants, nb_explanations):
+        if nb_variants <= 1:
+            return False
+        if nb_variants == nb_explanations:
+            return False
+        return True
+    
+    @staticmethod
+    def generate(rulesYaml, explanationsYaml, configsDir):
         #rules = yaml.load(open(rulesYaml, "r"), Loader=yaml.FullLoader)
         rules = yaml.load(open(rulesYaml, "r"))
+        #explanations = yaml.load(open(explanationsYaml, "r"), Loader=yaml.FullLoader)
+        explanations = yaml.load(open(explanationsYaml, "r"))
         result_archs = {}
 
         for configFile in os.listdir(configsDir):
-            archName = configFile.replace("config_", "")
+            arch = configFile.replace("config_", "")
             config = EsSystemConf.loadConfig(configsDir + "/" + configFile)
             result_systems = {}
             for system in rules:
-                emulators = EsSystemConf.listEmulators(rules[system], config)
+                emulators = EsSystemConf.listEmulators(arch, system, rules[system], explanations, config)
                 if any(emulators["emulators"]):
-                    emulators["red_flag"] = emulators["nb_variants"] > 1
+                    emulators["red_flag"] = EsSystemConf.hasRedFlag(emulators["nb_variants"], emulators["nb_explanations"])
                     result_systems[system] = emulators
-            result_archs[archName] = result_systems
+            result_archs[arch] = result_systems
 
         print(json.dumps(result_archs, indent=2, sort_keys=True, cls=SortedListEncoder))
 
@@ -75,9 +85,11 @@ class EsSystemConf:
         return False
 
     @staticmethod
-    def listEmulators(data, config):
+    def listEmulators(arch, system, data, explanationsYaml, config):
         emulators_result = {}
         nb_variants = 0
+        nb_all_variants = 0
+        nb_explanations = 0
         
         emulators = {}
         if "emulators" in data:
@@ -85,22 +97,56 @@ class EsSystemConf:
 
         for emulator in sorted(emulators):
             emulatorData = data["emulators"][emulator]
-            result_cores = []
+            result_cores = {}
             for core in sorted(emulatorData):
+                result_cores[core] = {}
+                nb_all_variants += 1
                 if EsSystemConf.isValidRequirements(config, emulatorData[core]["requireAnyOf"]):
-                    result_cores.append(core)
+                    result_cores[core]["enabled"] = True
                     nb_variants += 1
+                    if EsSystemConf.keys_exists(explanationsYaml, arch, system, emulator, core, "explanation"):
+                        result_cores[core]["explanation"] = explanationsYaml[arch][system][emulator][core]["explanation"]
+                        nb_explanations += 1
+                    elif EsSystemConf.keys_exists(explanationsYaml, "default", system, emulator, core, "explanation"):
+                        result_cores[core]["explanation"] = explanationsYaml["default"][system][emulator][core]["explanation"]
+                        nb_explanations += 1
+                    else:
+                        result_cores[core]["explanation"] = None
+                else:
+                    result_cores[core]["enabled"] = False
+                    result_cores[core]["explanation"] = None
             emulators_result[emulator] = result_cores
 
         result = {}
         result["name"] = data["name"]
         result["nb_variants"] = nb_variants
+        result["nb_all_variants"] = nb_all_variants
+        result["nb_explanations"] = nb_explanations
         result["emulators"] = emulators_result
         return result
 
+    @staticmethod
+    def keys_exists(element, *keys):
+        '''
+        Check if *keys (nested) exists in `element` (dict).
+        '''
+        if not isinstance(element, dict):
+            raise AttributeError('keys_exists() expects dict as first argument.')
+        if len(keys) == 0:
+            raise AttributeError('keys_exists() expects at least two arguments, one given.')
+    
+        _element = element
+        for key in keys:
+            try:
+                _element = _element[key]
+            except KeyError:
+                return False
+        return True
+    
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("yml",        help="es_systems.yml definition file")
+    parser.add_argument("yml",              help="es_systems.yml definition file")
+    parser.add_argument("explanationsYaml", help="explanations.yml definition file")
     parser.add_argument("configs",     help="directory containing config buildroot files")
     args = parser.parse_args()
-    EsSystemConf.generate(args.yml, args.configs)
+    EsSystemConf.generate(args.yml, args.explanationsYaml, args.configs)

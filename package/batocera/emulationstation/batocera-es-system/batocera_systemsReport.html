@@ -1,0 +1,107 @@
+<html>
+  <head>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+    <script src="http://batocera-linux.xorhub.com/assets/js/jquery-3.4.1.min.js"></script>
+    <script src="http://batocera-linux.xorhub.com/assets/js/popper.js@1"></script>
+    <script src="http://batocera-linux.xorhub.com/assets/js/tippy.js@5"></script>
+    <link rel="stylesheet" href="http://batocera-linux.xorhub.com/assets/css/backdrop.css" />
+    <script>
+$(function() {
+    $.getJSON("batocera_systemsReport.json", function(data) {
+	var tab = "<table>"
+
+	// archs
+	tab += "<tr><th>System</th><th>Emulator</th>"
+	$.each(data, function(arch, arch_data) {
+	    tab += "<th class=\"archname\">" + arch + "</th>"
+	})
+	tab += "</tr>"
+
+	// systems
+	var any_arch = ""
+	$.each(data, function(arch, arch_data) {
+	    one_arch = arch
+	})
+
+	$.each(data[one_arch], function(system, one_arch_system_data) {
+	    // core
+	    var n = 1
+	    $.each(one_arch_system_data["emulators"], function(one_emulator, one_arch_emulator_data) {
+	    	$.each(one_arch_emulator_data, function(one_core, one_arch_core_data) {
+		    tab += "<tr>"
+		    if(n == 1) {
+			// system
+			var nb_system_cores = one_arch_system_data["nb_all_variants"]
+			tab += "<td rowspan=\"" + nb_system_cores + "\">" + one_arch_system_data.name + "</td>"
+		    }
+		    // core
+		    if(one_emulator == one_core) {
+	    		tab += "<td>" + one_emulator + "</td>"
+	    	    } else {
+	    		tab += "<td>" + one_emulator + "/" + one_core + "</td>"
+	    	    }
+
+		    // each arch core
+		    $.each(data, function(arch, arch_data) {
+			$.each(arch_data[system].emulators, function(emulator, emulator_data) {
+			    $.each(emulator_data, function(core, core_data) {
+				if(emulator == one_emulator && core == one_core) {
+				    if(core_data.enabled) {
+					if(arch_data[system].red_flag) {
+	    				    tab += "<td class=\"redflag\">"
+					} else {
+					    tab += "<td class=\"greenflag\">"
+					}
+					if(core_data.explanation) {
+					    tab += "<span data-tippy-content=\"" + core_data.explanation + "\">OK*</span>"
+					} else {
+					    tab += "OK"
+					}
+					tab += "</td>"
+				    } else {
+					tab += "<td></td>"
+				    }
+				}
+			    })
+			})
+		    })
+
+		    
+		    tab += "</tr>"
+		    n++
+	    	})
+	    })
+	})
+
+	tab += "</table>"
+	$("#id_table").html(tab)
+	tippy('[data-tippy-content]')
+    })
+})
+    </script>
+    <style>
+table {
+    display: inline-table;
+    border: solid 1px;
+}
+table th, table td {
+    border: solid 1px;
+}
+.redflag {
+    text-align: center;
+    background-color: #e0c;
+}
+.greenflag {
+    text-align: center;
+    background-color: #2b6;
+}
+.archname {
+    writing-mode: vertical-rl;
+    text-orientation: upright;
+}
+    </style>
+  </head>
+  <body>
+    <div id="id_table" />
+  </body>
+</html>
