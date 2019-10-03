@@ -523,4 +523,6 @@ then
     ./board/batocera/doPcsx2package.sh "${TARGET_DIR}" "${BINARIES_DIR}/pcsx2" "${BATOCERA_BINARIES_DIR}" || exit 1
 fi
 
+./scripts/linux/systemsReport.sh "${PWD}"
+
 exit 0
