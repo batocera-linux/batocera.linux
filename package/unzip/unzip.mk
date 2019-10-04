@@ -26,7 +26,9 @@ UNZIP_PATCH = \
 	https://sources.debian.org/data/main/u/unzip/6.0-25/debian/patches/20-cve-2018-1000035-unzip-buffer-overflow.patch \
 	https://sources.debian.org/data/main/u/unzip/6.0-25/debian/patches/21-fix-warning-messages-on-big-files.patch \
 	https://sources.debian.org/data/main/u/unzip/6.0-25/debian/patches/22-cve-2019-13232-fix-bug-in-undefer-input.patch \
-	https://sources.debian.org/data/main/u/unzip/6.0-25/debian/patches/23-cve-2019-13232-zip-bomb-with-overlapped-entries.patch \
-	https://sources.debian.org/data/main/u/unzip/6.0-25/debian/patches/24-cve-2019-13232-do-not-raise-alert-for-misplaced-central-directory.patch
+	https://sources.debian.org/data/main/u/unzip/6.0-25/debian/patches/23-cve-2019-13232-zip-bomb-with-overlapped-entries.patch
+
+	# batocera - remove false positive zip bomb for themes
+	# https://sources.debian.org/data/main/u/unzip/6.0-25/debian/patches/24-cve-2019-13232-do-not-raise-alert-for-misplaced-central-directory.patch
 
 $(eval $(cmake-package))
