@@ -31,9 +31,35 @@ default:
       A500:  *fsuae_multicore
       A500+: *fsuae_multicore
       A600:  *fsuae_multicore
+  wii:
+    dolphin:
+      dolphin: &dolphin_arch
+        explanation: |
+          Dolphin works only on x86_64 and armv8 platforms and requires 2Ghz of cpu minimum.
+  gamecube:
+    dolphin:
+      dolphin: *dolphin_arch
+
+  ps2:
+    pcsx2:
+      pcsx2:
+        explanation: |
+          PCSX2 works only on x86 and x86_64 platforms and requires a good cpu.
 rpi1:
   snes:
     libretro:
       pocketsnes:
         explanation: |
           pocketsnes is the emulators which works the best on rpi1. However, it is not perfect, some games like Mario Kart have some glitches.
+  gba:
+    libretro:
+      gpsp:
+        explanation: |
+          libretro/gpsp is the only one that works correctly for gba on rpi1
+odroidn2:
+  megadrive:
+    libretro:
+      genesisplusgx: &odroidn2_megadrive
+        explanation: |
+          On the odroid n2, genesisplusgx crashes with some games (for example at the begining of Altered beast when you start to control the player).
+      picodrive: *odroidn2_megadrive
