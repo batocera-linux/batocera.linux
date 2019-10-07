@@ -18,7 +18,7 @@ case "$1" in
     stop)
         if [ ! -z "$BTD_PID" ]; then
             kill $BTD_PID
-            $RUN stop
+            $RUN stop $powerswitch
         elif test -e "/tmp/poweroff.please"; then
             $RUN stop $powerswitch
         fi
@@ -30,8 +30,11 @@ case "$1" in
             echo "Service rpi_gpioswitch [ KO ]"
         fi
     ;;
+    setup)
+        rpi_gpioswitch
+    ;;
     *)
-        echo "Usage: /etc/init.d/S92switch {start | stop | status}"
+        echo "Usage: /etc/init.d/S92switch {start | stop | status | setup}"
         exit 1
     ;;
 esac
