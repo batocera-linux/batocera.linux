@@ -3,7 +3,6 @@
 
 import os
 import RPi.GPIO as GPIO
-import time
 import signal
 
 GPIO.setwarnings(False)                             # no warnings
