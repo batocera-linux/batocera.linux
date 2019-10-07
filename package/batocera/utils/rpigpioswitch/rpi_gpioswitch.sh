@@ -319,6 +319,19 @@ function pin56_stop()
     fi
 }
 
+function retroflag_start()
+{
+    rpi-retroflag-SafeShutdown &
+    pid=$!
+    wait "$pid"
+}
+
+function retroflag_stop()
+{
+    kill $(pgrep -f rpi-retroflag-SafeShutdown)
+}
+
+
 #-----------------------------------------
 #------------------ MAIN -----------------
 #-----------------------------------------
@@ -369,6 +382,9 @@ case "$CONFVALUE" in
         echo "will start pin356_$1"
         pin356_$1 noparam
     ;;
+     "RETROFLAG")
+         retroflag_$1
+    ;;
     "DIALOG")
         # Go to selection dialog
         switch="$(powerdevice_dialog)"
@@ -387,7 +403,7 @@ case "$CONFVALUE" in
     echo "Try: rpi_gpioswitch.sh [start|stop] [value]"
     echo
     echo "Vaild values are: ATX_RASPI_R2_6, MAUSBERRY, ONOFFSHIM, REMOTEPIBOARD_2003 
-                  REMOTEPIBOARD_2005, WITTYPI, PIN56ONOFF, PIN56PUSH
+                  REMOTEPIBOARD_2005, WITTYPI, PIN56ONOFF, PIN56PUSH, RETROFLAG
                   PIN356ONOFFRESET"
     exit 1
     ;;
