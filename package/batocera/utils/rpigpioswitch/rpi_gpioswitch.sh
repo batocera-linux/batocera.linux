@@ -171,7 +171,7 @@ function onoffshim_start()
 function onoffshim_stop()
 {
     # Cleanup GPIO init
-    for i in $*; do
+    for i in $@; do
         echo "$i" > /sys/class/gpio/unexport
     done
 }
@@ -296,6 +296,7 @@ function pin356_start()
     echo "$pid" > /tmp/rpi-pin356-power.pid
     wait "$pid"
 }
+
 function pin356_stop()
 {
     if [[ -f /tmp/rpi-pin356-power.pid ]]; then
