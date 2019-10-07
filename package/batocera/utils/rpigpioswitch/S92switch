@@ -3,13 +3,13 @@
 NAME="S92switch"
 RUN="/usr/bin/rpi_gpioswitch"
 BTD_PID=$(ps -eo pid,args | grep "/bin/bash $RUN" | grep -v grep | awk '{print $1}')
-systemsetting="python /usr/lib/python2.7/site-packages/configgen/settings/batoceraSettings.py"
-powerswitch="`$systemsetting  -command load -key system.power.switch`"
 
 # Carry out specific functions when asked to by the system
 case "$1" in
     start)
-	case "${powerswitch}" in
+        systemsetting="python /usr/lib/python2.7/site-packages/configgen/settings/batoceraSettings.py"
+        powerswitch="`$systemsetting  -command load -key system.power.switch`"
+        case "${powerswitch}" in
 	    ATX_RASPI_R2_6|REMOTEPIBOARD_2003|REMOTEPIBOARD_2005|\
 	    MAUSBERRY|WITTYPI|ONOFFSHIM|RETROFLAG|\
 	    PIN56ONOFF|PIN56PUSH|PIN356ONOFFRESET)
@@ -18,6 +18,8 @@ case "$1" in
 	esac
     ;;
     stop)
+        systemsetting="python /usr/lib/python2.7/site-packages/configgen/settings/batoceraSettings.py"
+        powerswitch="`$systemsetting  -command load -key system.power.switch`"
         if [ ! -z "$BTD_PID" ]; then
             kill $BTD_PID
             $RUN stop $powerswitch
