@@ -10,6 +10,8 @@
 #     - added help section, type 'rpi_gpioswitch help'
 #     - some other small improvements .... cyperghost 30.09.2019
 
+#v1.2 - add RETROFLAG power devices (means NESPi+, MegaPi, SuperPi+)
+
 #dialog for selecting your switch or power device
 function powerdevice_dialog()
 {
@@ -320,6 +322,7 @@ function pin56_stop()
     fi
 }
 
+#https://www.retroflag.com
 function retroflag_start()
 {
     rpi-retroflag-SafeShutdown &
@@ -329,7 +332,8 @@ function retroflag_start()
 
 function retroflag_stop()
 {
-    kill $(pgrep -f rpi-retroflag-SafeShutdown)
+    pids=$(pgrep -f rpi-retroflag-SafeShutdown)
+    [[ -n $pids ]] && kill $pids
 }
 
 
@@ -403,9 +407,9 @@ case "$CONFVALUE" in
     echo
     echo "Try: rpi_gpioswitch.sh [start|stop] [value]"
     echo
-    echo "Vaild values are: ATX_RASPI_R2_6, MAUSBERRY, ONOFFSHIM, REMOTEPIBOARD_2003 
-                  REMOTEPIBOARD_2005, WITTYPI, PIN56ONOFF, PIN56PUSH, RETROFLAG
-                  PIN356ONOFFRESET"
+    echo "Vaild values are: REMOTEPIBOARD_2003, REMOTEPIBOARD_2005, WITTYPI 
+                  ATX_RASPI_R2_6, MAUSBERRY, ONOFFSHIM, RETROFLAG 
+                  PIN56ONOFF, PIN56PUSH, PIN356ONOFFRESET"
     exit 1
     ;;
 esac
