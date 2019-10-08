@@ -171,10 +171,8 @@ function onoffshim_start()
 
 function onoffshim_stop()
 {
-    # Cleanup GPIO init
-    for i in $*; do
-        echo "$i" > /sys/class/gpio/unexport
-    done
+    # Cleanup GPIO init, default Button command (GPIO 17)
+    echo "$1" > /sys/class/gpio/unexport
 }
 
 # http://www.msldigital.com/pages/support-for-remotepi-board-2013
