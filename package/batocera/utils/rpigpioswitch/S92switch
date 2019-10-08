@@ -24,11 +24,11 @@ case "$1" in
         systemsetting="python /usr/lib/python2.7/site-packages/configgen/settings/batoceraSettings.py"
         powerswitch="`$systemsetting  -command load -key system.power.switch`"
         for i in ${devices[@]}; do
-	    [ "$i" == "$powerswitch" ] && break
-	done
-	if [ $? -eq 0 ]; then
-	    nice -n 19 $RUN start $powerswitch &
-	fi
+            [ "$i" == "$powerswitch" ] && break
+        done
+        if [ $? -eq 0 ]; then
+            nice -n 19 $RUN start $powerswitch &
+        fi
     ;;
     stop)
         systemsetting="python /usr/lib/python2.7/site-packages/configgen/settings/batoceraSettings.py"
