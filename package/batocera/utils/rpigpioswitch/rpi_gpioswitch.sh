@@ -334,7 +334,7 @@ function retroflag_stop()
 {
     pid_file="/tmp/rpi-retroflag-SafeShutdown.pid"
     if [[ -e $pid_file ]]; then
-        pid=$(cat /tmp/rpi-retroflag-SafeShutdown.pid)
+        pid=$(cat $pid_file)
         kill $(pgrep -P $pid)
     fi
 }
