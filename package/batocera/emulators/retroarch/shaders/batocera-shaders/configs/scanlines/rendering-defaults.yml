@@ -9,60 +9,60 @@ snes:
 nes:
   shader: crt/crt-pi
 n64:
-  shader: retro/sharp-bilinear-scanlines
+  shader: interpolation/sharp-bilinear-scanlines
 gba:
-  shader: handheld/zfast-lcd
+  shader: handheld/lcd-grid-v2
 gb:
-  shader: handheld/zfast-lcd
+  shader: handheld/lcd-grid-v2
 gbc:
-  shader: handheld/zfast-lcd
+  shader: handheld/lcd-grid-v2
 fds:
-  shader: retro/sharp-bilinear-scanlines
+  shader: interpolation/sharp-bilinear-scanlines
 virtualboy:
-  shader: retro/sharp-bilinear-scanlines
+  shader: interpolation/sharp-bilinear-scanlines
 # Sega
 sg1000:
-  shader: retro/sharp-bilinear-scanlines
+  shader: interpolation/sharp-bilinear-scanlines
 mastersystem:
   shader: crt/crt-pi
 megadrive:
   shader: crt/crt-pi
 gamegear:
-  shader: handheld/zfast-lcd
+  shader: handheld/lcd-grid-v2
 sega32x:
   shader: crt/crt-pi
 segacd:
-  shader: retro/sharp-bilinear-scanlines
+  shader: interpolation/sharp-bilinear-scanlines
 # Arcade
 neogeo:
-  shader: retro/sharp-bilinear-scanlines
+  shader: interpolation/sharp-bilinear-scanlines
 neogeocd:
-  shader: retro/sharp-bilinear-scanlines
+  shader: interpolation/sharp-bilinear-scanlines
 mame:
-  shader: retro/sharp-bilinear-scanlines
+  shader: interpolation/sharp-bilinear-scanlines
 fba:
-  shader: retro/sharp-bilinear-scanlines
+  shader: interpolation/sharp-bilinear-scanlines
 naomi:
-  shader: retro/sharp-bilinear-scanlines
+  shader: interpolation/sharp-bilinear-scanlines
 atomiswave:
-  shader: retro/sharp-bilinear-scanlines
+  shader: interpolation/sharp-bilinear-scanlines
 #
 ngp:
-  shader: handheld/zfast-lcd
+  shader: handheld/lcd-grid-v2
 ngpc:
-  shader: handheld/zfast-lcd
+  shader: handheld/lcd-grid-v2
 gw:
   shader: crt/crt-pi
 vectrex:
   shader: crt/crt-pi
 lynx:
-  shader: handheld/zfast-lcd
+  shader: handheld/lcd-grid-v2
 lutro:
-  shader: retro/sharp-bilinear-scanlines
+  shader: interpolation/sharp-bilinear-scanlines
 wswan:
-  shader: handheld/zfast-lcd
+  shader: handheld/lcd-grid-v2
 wswanc:
-  shader: handheld/zfast-lcd
+  shader: handheld/lcd-grid-v2
 pcengine:
   shader: crt/crt-pi
 pcenginecd:
@@ -70,13 +70,13 @@ pcenginecd:
 supergrafx:
   shader: crt/crt-pi
 atari800:
-  shader: retro/sharp-bilinear-scanlines
+  shader: interpolation/sharp-bilinear-scanlines
 atari2600:
-  shader: retro/sharp-bilinear-scanlines
+  shader: interpolation/sharp-bilinear-scanlines
 atari5200:
-  shader: retro/sharp-bilinear-scanlines
+  shader: interpolation/sharp-bilinear-scanlines
 atari7800:
-  shader: retro/sharp-bilinear-scanlines
+  shader: interpolation/sharp-bilinear-scanlines
 prboom:
   shader: crt/crt-pi
 psx:
@@ -85,11 +85,11 @@ colecovision:
   shader: crt/crt-pi
 # Computers
 msx:
-  shader: retro/sharp-bilinear-scanlines
+  shader: interpolation/sharp-bilinear-scanlines
 msx1:
-  shader: retro/sharp-bilinear-scanlines
+  shader: interpolation/sharp-bilinear-scanlines
 msx2:
-  shader: retro/sharp-bilinear-scanlines
+  shader: interpolation/sharp-bilinear-scanlines
 amiga:
   shader: crt/crt-pi
 amstradcpc:
@@ -97,12 +97,12 @@ amstradcpc:
 atarist:
   shader: crt/crt-pi
 zxspectrum:
-  shader: retro/sharp-bilinear-scanlines
+  shader: interpolation/sharp-bilinear-scanlines
 odyssey2:
-  shader: retro/sharp-bilinear-scanlines
+  shader: interpolation/sharp-bilinear-scanlines
 zx81:
-  shader: retro/sharp-bilinear-scanlines
+  shader: interpolation/sharp-bilinear-scanlines
 pcfx:
-  shader: retro/sharp-bilinear-scanlines
+  shader: interpolation/sharp-bilinear-scanlines
 x68000:
-  shader: retro/sharp-bilinear-scanlines
+  shader: interpolation/sharp-bilinear-scanlines
