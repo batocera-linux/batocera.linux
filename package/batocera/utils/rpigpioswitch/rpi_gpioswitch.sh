@@ -43,7 +43,6 @@ function powerdevice_dialog()
     echo "$switch"
 }
 
-
 # http://lowpowerlab.com/atxraspi/#installation
 function atx_raspi_start()
 {
@@ -173,7 +172,7 @@ function onoffshim_start()
 function onoffshim_stop()
 {
     # Cleanup GPIO init
-    for i in $@; do
+    for i in $*; do
         echo "$i" > /sys/class/gpio/unexport
     done
 }
@@ -327,13 +326,17 @@ function retroflag_start()
 {
     rpi-retroflag-SafeShutdown &
     pid=$!
+    echo "$pid" > /tmp/rpi-retroflag-SafeShutdown.pid
     wait "$pid"
 }
 
 function retroflag_stop()
 {
-    pids=$(pgrep -f rpi-retroflag-SafeShutdown)
-    [[ -n $pids ]] && kill $pids
+    pid_file="/tmp/rpi-retroflag-SafeShutdown.pid"
+    if [[ -e $pid_file ]]; then
+        pid=$(cat /tmp/rpi-retroflag-SafeShutdown.pid)
+        kill $(pgrep -P $pid)
+    fi
 }
 
 
