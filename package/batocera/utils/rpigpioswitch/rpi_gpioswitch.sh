@@ -404,13 +404,13 @@ case "$CONFVALUE" in
                --msgbox "${info_msg}\n\n$(batocera-settings status system.power.switch)" 0 0
     ;;
     --HELP|*)
-    [[ $CONFVALUE == "--HELP" ]] || echo "Wrong argument given to 'start' or 'stop' parameter"
-    echo
-    echo "Try: rpi_gpioswitch.sh [start|stop] [value]"
-    echo
-    echo "Vaild values are: REMOTEPIBOARD_2003, REMOTEPIBOARD_2005, WITTYPI 
+        [[ $CONFVALUE == "--HELP" ]] || echo "Wrong argument given to 'start' or 'stop' parameter"
+        echo
+        echo "Try: rpi_gpioswitch.sh [start|stop] [value]"
+        echo
+        echo "Vaild values are: REMOTEPIBOARD_2003, REMOTEPIBOARD_2005, WITTYPI 
                   ATX_RASPI_R2_6, MAUSBERRY, ONOFFSHIM, RETROFLAG 
                   PIN56ONOFF, PIN56PUSH, PIN356ONOFFRESET"
-    exit 1
+        exit 1
     ;;
 esac
