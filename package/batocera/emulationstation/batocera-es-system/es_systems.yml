@@ -89,6 +89,7 @@ gbc:
     libretro:
       gambatte: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GAMBATTE] }
       mgba:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MGBA]     }
+      vba-m:    { requireAnyOf: [BR2_PACKAGE_LIBRETRO_VBA_M]    }
 
 gb:
   name:       Game Boy
@@ -97,6 +98,7 @@ gb:
     libretro:
       gambatte: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GAMBATTE] }
       mgba:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MGBA]     }
+      vba-m:    { requireAnyOf: [BR2_PACKAGE_LIBRETRO_VBA_M]    }
 
 gbc2players:
   name:       Game Boy Color
