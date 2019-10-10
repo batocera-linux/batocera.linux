@@ -10,6 +10,8 @@
 #     - added help section, type 'rpi_gpioswitch help'
 #     - some other small improvements .... cyperghost 30.09.2019
 
+#v1.2 - add RETROFLAG power devices (means NESPi+, MegaPi, SuperPi+)
+
 #dialog for selecting your switch or power device
 function powerdevice_dialog()
 {
@@ -40,7 +42,6 @@ function powerdevice_dialog()
     switch=$("${cmd[@]}" "${powerdevices[@]}")
     echo "$switch"
 }
-
 
 # http://lowpowerlab.com/atxraspi/#installation
 function atx_raspi_start()
@@ -170,10 +171,8 @@ function onoffshim_start()
 
 function onoffshim_stop()
 {
-    # Cleanup GPIO init
-    for i in $*; do
-        echo "$i" > /sys/class/gpio/unexport
-    done
+    # Cleanup GPIO init, default Button command (GPIO 17)
+    echo "$1" > /sys/class/gpio/unexport
 }
 
 # http://www.msldigital.com/pages/support-for-remotepi-board-2013
@@ -296,6 +295,7 @@ function pin356_start()
     echo "$pid" > /tmp/rpi-pin356-power.pid
     wait "$pid"
 }
+
 function pin356_stop()
 {
     if [[ -f /tmp/rpi-pin356-power.pid ]]; then
@@ -318,6 +318,25 @@ function pin56_stop()
         kill `cat /tmp/rpi-pin56-power.pid`
     fi
 }
+
+#https://www.retroflag.com
+function retroflag_start()
+{
+    rpi-retroflag-SafeShutdown &
+    pid=$!
+    echo "$pid" > /tmp/rpi-retroflag-SafeShutdown.pid
+    wait "$pid"
+}
+
+function retroflag_stop()
+{
+    pid_file="/tmp/rpi-retroflag-SafeShutdown.pid"
+    if [[ -e $pid_file ]]; then
+        pid=$(cat $pid_file)
+        kill $(pgrep -P $pid)
+    fi
+}
+
 
 #-----------------------------------------
 #------------------ MAIN -----------------
@@ -369,6 +388,9 @@ case "$CONFVALUE" in
         echo "will start pin356_$1"
         pin356_$1 noparam
     ;;
+     "RETROFLAG")
+         retroflag_$1
+    ;;
     "DIALOG")
         # Go to selection dialog
         switch="$(powerdevice_dialog)"
@@ -382,13 +404,13 @@ case "$CONFVALUE" in
                --msgbox "${info_msg}\n\n$(batocera-settings status system.power.switch)" 0 0
     ;;
     --HELP|*)
-    [[ $CONFVALUE == "--HELP" ]] || echo "Wrong argument given to 'start' or 'stop' parameter"
-    echo
-    echo "Try: rpi_gpioswitch.sh [start|stop] [value]"
-    echo
-    echo "Vaild values are: ATX_RASPI_R2_6, MAUSBERRY, ONOFFSHIM, REMOTEPIBOARD_2003 
-                  REMOTEPIBOARD_2005, WITTYPI, PIN56ONOFF, PIN56PUSH
-                  PIN356ONOFFRESET"
-    exit 1
+        [[ $CONFVALUE == "--HELP" ]] || echo "Wrong argument given to 'start' or 'stop' parameter"
+        echo
+        echo "Try: rpi_gpioswitch.sh [start|stop] [value]"
+        echo
+        echo "Vaild values are: REMOTEPIBOARD_2003, REMOTEPIBOARD_2005, WITTYPI 
+                  ATX_RASPI_R2_6, MAUSBERRY, ONOFFSHIM, RETROFLAG 
+                  PIN56ONOFF, PIN56PUSH, PIN356ONOFFRESET"
+        exit 1
     ;;
 esac
