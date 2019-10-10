@@ -31,20 +31,44 @@ default:
       A500:  *fsuae_multicore
       A500+: *fsuae_multicore
       A600:  *fsuae_multicore
+  amigacd32:
+    fsuae:
+      CD32: *fsuae_multicore
+  amigacdtv:
+    fsuae:
+      CDTV: *fsuae_multicore
+  gb:
+    libretro:
+      gambatte: &gambatte_mgba_vbam
+        explanation: |
+          For gb, gbc and gba, gambatte, mgba and vba-m are working very well and are maintained.
+      mgba:  *gambatte_mgba_vbam
+      vba-m: *gambatte_mgba_vbam
+  gbc:
+    libretro:
+      gambatte: *gambatte_mgba_vbam
+      mgba:     *gambatte_mgba_vbam
+      vba-m:    *gambatte_mgba_vbam
   wii:
     dolphin:
       dolphin: &dolphin_arch
+        flags: [opengl3.0]
         explanation: |
           Dolphin works only on x86_64 and armv8 platforms and requires 2Ghz of cpu minimum.
   gamecube:
     dolphin:
       dolphin: *dolphin_arch
-
   ps2:
     pcsx2:
       pcsx2:
         explanation: |
           PCSX2 works only on x86 and x86_64 platforms and requires a good cpu.
+  snes:
+    libretro:
+      bsnes:
+        explanation: |
+          bsnes is included because of the mode 7 hd. Bsnes is very resource intensive. So, only x86_64.
+
 rpi1:
   snes:
     libretro:
@@ -56,6 +80,16 @@ rpi1:
       gpsp:
         explanation: |
           libretro/gpsp is the only one that works correctly for gba on rpi1
+rpi2:
+  n64:
+    mupen64plus:
+      gliden64:
+        flags: [slow_games, overclocking]
+rpi3:
+  n64:
+    mupen64plus:
+      gliden64:
+        flags: [slow_games]
 odroidn2:
   megadrive:
     libretro:

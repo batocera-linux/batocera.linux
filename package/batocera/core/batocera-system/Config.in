@@ -356,7 +356,7 @@ config BR2_PACKAGE_BATOCERA_RETROARCH
         select BR2_PACKAGE_LIBRETRO_PROSYSTEM         # ALL
         select BR2_PACKAGE_LIBRETRO_TGBDUAL           # ALL
         select BR2_PACKAGE_LIBRETRO_MGBA              # ALL
-        select BR2_PACKAGE_LIBRETRO_VBA_M             if BR2_PACKAGE_BATOCERA_CORES_EXPERIMENTAL
+        select BR2_PACKAGE_LIBRETRO_VBA_M             # ALL
         select BR2_PACKAGE_LIBRETRO_MAME2003_PLUS     # ALL
         select BR2_PACKAGE_LIBRETRO_MESEN             # ALL
         select BR2_PACKAGE_LIBRETRO_MESEN_S           # ALL

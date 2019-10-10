@@ -109,6 +109,7 @@ class EsSystemConf:
                 if EsSystemConf.isValidRequirements(config, emulatorData[core]["requireAnyOf"]):
                     result_cores[core]["enabled"] = True
                     nb_variants += 1
+                    # tell why this core is selected
                     if EsSystemConf.keys_exists(explanationsYaml, arch, system, emulator, core, "explanation"):
                         result_cores[core]["explanation"] = explanationsYaml[arch][system][emulator][core]["explanation"]
                         nb_explanations += 1
@@ -117,7 +118,15 @@ class EsSystemConf:
                         nb_explanations += 1
                     else:
                         result_cores[core]["explanation"] = None
+                    # flags - flags are cumulative
+                    setFlags = []
+                    if EsSystemConf.keys_exists(explanationsYaml, arch, system, emulator, core, "flags"):
+                        setFlags += explanationsYaml[arch][system][emulator][core]["flags"]
+                    if EsSystemConf.keys_exists(explanationsYaml, "default", system, emulator, core, "flags"):
+                        setFlags += explanationsYaml["default"][system][emulator][core]["flags"]
+                    result_cores[core]["flags"] = setFlags
                 else:
+                    # explanations tell why a core is not enabled too
                     result_cores[core]["enabled"] = False
                     if EsSystemConf.keys_exists(explanationsYaml, arch, system, emulator, core, "explanation"):
                         result_cores[core]["explanation"] = explanationsYaml[arch][system][emulator][core]["explanation"]
