@@ -1,5 +1,5 @@
 diff --git a/retroarch.c b/retroarch.c
-index 416a4ba..4bc44e6 100644
+index 416a4ba..a0e00da 100644
 --- a/retroarch.c
 +++ b/retroarch.c
 @@ -11444,6 +11444,10 @@ void fire_connection_listener(unsigned port, input_device_driver_t *driver)
@@ -13,22 +13,21 @@ index 416a4ba..4bc44e6 100644
  /**
   * input_driver_find_handle:
   * @idx                : index of driver to get handle to.
-@@ -13101,12 +13105,16 @@ static void input_menu_keys_pressed(input_bits_t *p_new_state,
-                && current_input->input_state(current_input_data, joypad_info,
-                   &binds[0], port, RETRO_DEVICE_JOYPAD, 0, RARCH_ENABLE_HOTKEY))
-          {
+@@ -13269,10 +13273,13 @@ static void input_keys_pressed(input_bits_t *p_new_state)
+                && current_input->input_state(
+                   current_input_data, joypad_info,
+                   &binds, port,
+-                  RETRO_DEVICE_JOYPAD, 0, RARCH_ENABLE_HOTKEY))
 -            input_driver_block_libretro_input = true;
-+	   if (hotkey_counter < HOTKEY_DELAY)
-+	     hotkey_counter++;
-+	   if (hotkey_counter == HOTKEY_DELAY)
-+             input_driver_block_libretro_input = true;
-             break;
-          }
-          else
-          {
+-         else
 -            input_driver_block_hotkey         = true;
-+	    hotkey_counter = 0;
-+	    input_driver_block_hotkey = true;
-             break;
-          }
++                  RETRO_DEVICE_JOYPAD, 0, RARCH_ENABLE_HOTKEY)) {
++	   if (hotkey_counter  < HOTKEY_DELAY) hotkey_counter++;
++	   if (hotkey_counter == HOTKEY_DELAY) input_driver_block_libretro_input = true;
++         } else {
++	   hotkey_counter = 0;
++	   input_driver_block_hotkey         = true;
++	 }
        }
+ 
+       if (binds[RARCH_GAME_FOCUS_TOGGLE].valid)
