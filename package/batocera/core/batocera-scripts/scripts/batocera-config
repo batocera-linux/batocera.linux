@@ -10,6 +10,8 @@ command="$1"
 mode="$2"
 extra1="$3"
 extra2="$4"
+extra3="$5"
+extra4="$6"
 arch=`cat /usr/share/batocera/batocera.arch`
 
 updateurl="https://batocera-linux.xorhub.com/upgrades"
@@ -20,6 +22,19 @@ preBootConfig() {
 
 postBootConfig() {
     mount -o remount,ro /boot
+}
+
+bato_config_set_value () {
+	key=$1
+	value=$2
+	[ -z "$value" ] && value=0
+	cat "$configFile" | grep "$key"
+        valPresent=$?
+	if [ "$valPresent" != "0" ];then
+		echo "$key=$value" >> "$configFile"
+	else
+		sed -i "s/#\?$key=.*/$key=$value/g" "$configFile"
+	fi
 }
 
 log=/userdata/system/logs/batocera.log
@@ -87,29 +102,38 @@ if [ "$command" == "setRootPassword" ]; then
 fi
 
 if [ "$command" == "overscan" ]; then
+if [ "$mode" == "set" ];then
+# set will set overscan values abd  also enable this mode
+	if [ -z "$extra1" ] || [ -z "$extra2" ] || [ -z "$extra3" ] || [ -z "$extra4" ]; then
+		echo "$0 $command $mode needs 4 arguments:"
+		echo "$0 $command $mode overscan_left overscan_right overscan_top overscan_bottom"
+		exit 2
+	fi
+	preBootConfig
+	[ -f "$configFile" ] || touch "$configFile"
+
+	echo "setting overscan values $extra1 $extra2 $extra3 $extra4 " >> $log
+	bato_config_set_value disable_overscan 0
+	bato_config_set_value overscan_scale 1
+	bato_config_set_value overscan_left "$extra1"
+	bato_config_set_value overscan_right "$extra2"
+	bato_config_set_value overscan_top "$extra3"
+	bato_config_set_value overscan_bottom "$extra4"
+
+	postBootConfig
+	exit 0
+
+fi
 if [ -f "$configFile" ];then
         preBootConfig
-        cat "$configFile" | grep "disable_overscan"
-	overscanPresent=$?
-
-	if [ "$overscanPresent" != "0" ];then
-		echo "disable_overscan=1" >> "$configFile"
-	fi
-	cat "$configFile" | grep "overscan_scale"
-	overscanScalePresent=$?
-
-	if [ "$overscanScalePresent" != "0" ];then
-		echo "overscan_scale=1" >> "$configFile"
-	fi
-
 	if [ "$mode" == "enable" ];then
 		echo "enabling overscan" >> $log
-		sed -i "s/#\?disable_overscan=.*/disable_overscan=0/g" "$configFile"
-		sed -i "s/#\?overscan_scale=.*/overscan_scale=1/g" "$configFile"
+		bato_config_set_value disable_overscan 0
+		bato_config_set_value overscan_scale 1
 	elif [ "$mode" == "disable" ];then
                 echo "disabling overscan" >> $log
-                sed -i "s/#\?disable_overscan=.*/disable_overscan=1/g" "$configFile"
-                sed -i "s/#\?overscan_scale=.*/overscan_scale=0/g" "$configFile"
+		bato_config_set_value disable_overscan 1
+		bato_config_set_value overscan_scale 0
 	else
                 postBootConfig
 		exit 1
