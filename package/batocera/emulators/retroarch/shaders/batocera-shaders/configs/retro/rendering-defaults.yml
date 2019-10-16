@@ -1,108 +1,108 @@
 ## RETRO
 default:
   # shader affects retroarch shaders
-  shader: retro/sharp-bilinear-simple
+  shader: interpolation/sharp-bilinear-simple
   # scanline affect fba2x
   scanline: false
 snes:
-  shader: retro/sharp-bilinear-simple
+  shader: interpolation/sharp-bilinear-simple
 nes:
-  shader: retro/sharp-bilinear-simple
+  shader: interpolation/sharp-bilinear-simple
 n64:
-  shader: retro/sharp-bilinear-simple
+  shader: interpolation/sharp-bilinear-simple
 gba:
-  shader: handheld/gba-color
+  shader: handheld/bevel
 gb:
-  shader: handheld/gb-palette-dmg
+  shader: handheld/bevel
 gbc:
-  shader: handheld/gbc-color
+  shader: handheld/bevel
 fds:
-  shader: retro/sharp-bilinear-simple
+  shader: interpolation/sharp-bilinear-simple
 virtualboy:
-  shader: retro/sharp-bilinear-simple
+  shader: interpolation/sharp-bilinear-simple
 # Sega
 sg1000:
-  shader: retro/sharp-bilinear-simple
+  shader: interpolation/sharp-bilinear-simple
 mastersystem:
-  shader: retro/sharp-bilinear-simple
+  shader: interpolation/sharp-bilinear-simple
 megadrive:
-  shader: retro/sharp-bilinear-simple
+  shader: interpolation/sharp-bilinear-simple
 gamegear:
-  shader: retro/sharp-bilinear-simple
+  shader: interpolation/sharp-bilinear-simple
 sega32x:
-  shader: retro/sharp-bilinear-simple
+  shader: interpolation/sharp-bilinear-simple
 segacd:
-  shader: retro/sharp-bilinear-simple
+  shader: interpolation/sharp-bilinear-simple
 # Arcade
 neogeo:
-  shader: retro/sharp-bilinear-simple
+  shader: interpolation/sharp-bilinear-simple
 neogeocd:
-  shader: retro/sharp-bilinear-simple
+  shader: interpolation/sharp-bilinear-simple
 mame:
-  shader: retro/sharp-bilinear-simple
+  shader: interpolation/sharp-bilinear-simple
 fba:
-  shader: retro/sharp-bilinear-simple
+  shader: interpolation/sharp-bilinear-simple
 naomi:
-  shader: retro/sharp-bilinear-simple
+  shader: interpolation/sharp-bilinear-simple
 atomiswave:
-  shader: retro/sharp-bilinear-simple
+  shader: interpolation/sharp-bilinear-simple
 #
 ngp:
-  shader: handheld/lcd3x
+  shader: handheld/bevel
 ngpc:
-  shader: handheld/lcd3x
+  shader: handheld/bevel
 gw:
-  shader: retro/sharp-bilinear-simple
+  shader: interpolation/sharp-bilinear-simple
 vectrex:
-  shader:
+  shader: handheld/bevel
 lynx:
-  shader: handheld/lcd3x
+  shader: handheld/bevel
 lutro:
-  shader: retro/sharp-bilinear-simple
+  shader: interpolation/sharp-bilinear-simple
 wswan:
-  shader: handheld/lcd3x
+  shader: handheld/bevel
 wswanc:
-  shader: handheld/lcd3x
+  shader: handheld/bevel
 pcengine:
-  shader: retro/sharp-bilinear-simple
+  shader: interpolation/sharp-bilinear-simple
 pcenginecd:
-  shader: retro/sharp-bilinear-simple
+  shader: interpolation/sharp-bilinear-simple
 supergrafx:
-  shader: retro/sharp-bilinear-simple
+  shader: interpolation/sharp-bilinear-simple
 atari800:
-  shader: retro/sharp-bilinear-simple
+  shader: interpolation/sharp-bilinear-simple
 atari2600:
-  shader: retro/sharp-bilinear-simple
+  shader: interpolation/sharp-bilinear-simple
 atari5200:
-  shader: retro/sharp-bilinear-simple
+  shader: interpolation/sharp-bilinear-simple
 atari7800:
-  shader: retro/sharp-bilinear-simple
+  shader: interpolation/sharp-bilinear-simple
 prboom:
-  shader: retro/sharp-bilinear-simple
+  shader: interpolation/sharp-bilinear-simple
 psx:
-  shader: retro/sharp-bilinear-simple
+  shader: interpolation/sharp-bilinear-simple
 colecovision:
-  shader: retro/sharp-bilinear-simple
+  shader: interpolation/sharp-bilinear-simple
 # Computers
 msx:
-  shader: retro/sharp-bilinear-simple
+  shader: interpolation/sharp-bilinear-simple
 msx1:
-  shader: retro/sharp-bilinear-simple
+  shader: interpolation/sharp-bilinear-simple
 msx2:
-  shader: retro/sharp-bilinear-simple
+  shader: interpolation/sharp-bilinear-simple
 amiga:
-  shader: retro/sharp-bilinear-simple
+  shader: interpolation/sharp-bilinear-simple
 amstradcpc:
-  shader: retro/sharp-bilinear-simple
+  shader: interpolation/sharp-bilinear-simple
 atarist:
-  shader: retro/sharp-bilinear-simple
+  shader: interpolation/sharp-bilinear-simple
 zxspectrum:
-  shader: retro/sharp-bilinear-simple
+  shader: interpolation/sharp-bilinear-simple
 odyssey2:
-  shader: retro/sharp-bilinear-simple
+  shader: interpolation/sharp-bilinear-simple
 zx81:
-  shader: retro/sharp-bilinear-simple
+  shader: interpolation/sharp-bilinear-simple
 pcfx:
-  shader: retro/sharp-bilinear-simple
+  shader: interpolation/sharp-bilinear-simple
 x68000:
-  shader: retro/sharp-bilinear-simple
+  shader: interpolation/sharp-bilinear-simple
