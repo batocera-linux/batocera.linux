@@ -8,6 +8,7 @@ RETROARCH_VERSION = v1.7.9.2
 RETROARCH_SITE = $(call github,libretro,RetroArch,$(RETROARCH_VERSION))
 RETROARCH_LICENSE = GPLv3+
 RETROARCH_DEPENDENCIES = host-pkgconf dejavu retroarch-assets
+RETROARCH_INSTALL_STAGING = YES
 
 RETROARCH_CONF_OPTS = --disable-oss --enable-zlib --disable-qt --enable-threads
 RETROARCH_CONF_OPTS += --enable-flac --enable-lua --enable-networking --enable-translate --enable-cdrom
@@ -135,6 +136,10 @@ define RETROARCH_INSTALL_TARGET_CMDS
 	mkdir -p $(TARGET_DIR)/usr/share/audio_filters
 	cp $(@D)/libretro-common/audio/dsp_filters/*.so $(TARGET_DIR)/usr/share/audio_filters
 	cp $(@D)/libretro-common/audio/dsp_filters/*.dsp $(TARGET_DIR)/usr/share/audio_filters
+endef
+
+define RETROARCH_INSTALL_STAGING_CMDS
+	$(MAKE) CXX="$(TARGET_CXX)" -C $(@D) DESTDIR=$(STAGING_DIR) install
 endef
 
 $(eval $(generic-package))

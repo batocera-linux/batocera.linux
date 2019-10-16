@@ -8,6 +8,7 @@ LIBRETRO_MAME_VERSION = ad047b8a4d18cb12bd51cd350b43188bf65e6670
 LIBRETRO_MAME_SITE = $(call github,libretro,mame,$(LIBRETRO_MAME_VERSION))
 # LIBRETRO_MAME_OVERRIDE_SRCDIR = /sources/mame
 LIBRETRO_MAME_LICENSE = MAME
+LIBRETRO_MAME_INSTALL_STAGING=YES
 
 ifeq ($(BR2_x86_64),y)
 	LIBRETRO_MAME_EXTRA_ARGS += PTR64=1 LIBRETRO_CPU=x86_64 PLATFORM=x86_64
@@ -37,6 +38,11 @@ endef
 define LIBRETRO_MAME_INSTALL_TARGET_CMDS
 	$(INSTALL) -D $(@D)/mamearcade_libretro.so \
 		$(TARGET_DIR)/usr/lib/libretro/mame_libretro.so
+endef
+
+define LIBRETRO_MAME_INSTALL_STAGING_CMDS
+	$(INSTALL) -D $(@D)/mamearcade_libretro.so \
+		$(STAGING_DIR)/usr/lib/libretro/mame_libretro.so
 endef
 
 $(eval $(generic-package))
