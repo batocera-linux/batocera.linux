@@ -3,4 +3,12 @@ default:
   # shader affects retroarch shaders
   shader:
   # scanline affect fba2x
-  scanline:
+  scanline: false
+  # affect gameboy/gambatte (colorization: GB - DMG)
+  colorization:
+
+gb:
+  colorization: GB - DMG
+
+gb2players:
+  colorization: GB - DMG
