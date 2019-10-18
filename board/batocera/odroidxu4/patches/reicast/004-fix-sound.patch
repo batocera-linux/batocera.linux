@@ -39,26 +39,3 @@ index 2ad9ffa..b52c7f1 100644
  	if (rc < 0)
  	{
  		fprintf(stderr, "Error:snd_pcm_hw_params_set_format %s\n", snd_strerror(rc));
-@@ -77,22 +91,6 @@ static void alsa_init()
- 		return;
- 	}
- 
--	/* Set period size to settings.aica.BufferSize frames. */
--	frames = 2 * 1024;//settings.aica.BufferSize;
--	rc=snd_pcm_hw_params_set_period_size_near(handle, params, &frames, &dir);
--	if (rc < 0)
--	{
--		fprintf(stderr, "Error:snd_pcm_hw_params_set_buffer_size_near %s\n", snd_strerror(rc));
--		return;
--	}
--	frames*=4;
--	rc=snd_pcm_hw_params_set_buffer_size_near(handle, params, &frames);
--	if (rc < 0)
--	{
--		fprintf(stderr, "Error:snd_pcm_hw_params_set_buffer_size_near %s\n", snd_strerror(rc));
--		return;
--	}
--
- 	/* Write the parameters to the driver */
- 	rc = snd_pcm_hw_params(handle, params);
- 	if (rc < 0)
