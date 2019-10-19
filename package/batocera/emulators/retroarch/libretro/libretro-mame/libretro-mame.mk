@@ -8,6 +8,7 @@ LIBRETRO_MAME_VERSION = ad047b8a4d18cb12bd51cd350b43188bf65e6670
 LIBRETRO_MAME_SITE = $(call github,libretro,mame,$(LIBRETRO_MAME_VERSION))
 # LIBRETRO_MAME_OVERRIDE_SRCDIR = /sources/mame
 LIBRETRO_MAME_LICENSE = MAME
+# install in staging for debugging (gdb)
 LIBRETRO_MAME_INSTALL_STAGING=YES
 
 ifeq ($(BR2_x86_64),y)
