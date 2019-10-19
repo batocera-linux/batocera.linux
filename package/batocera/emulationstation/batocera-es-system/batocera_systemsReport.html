@@ -11,11 +11,13 @@ $(function() {
 	var tab = "<table>"
 
 	// archs
+	tab += "<thead>"
 	tab += "<tr><th>System</th><th>Emulator</th>"
 	$.each(data, function(arch, arch_data) {
 	    tab += "<th class=\"archname\">" + arch + "</th>"
 	})
 	tab += "</tr>"
+	tab += "</thead>"
 
 	// systems
 	var any_arch = ""
@@ -23,6 +25,7 @@ $(function() {
 	    one_arch = arch
 	})
 
+	tab += "<tbody>"
 	$.each(data[one_arch], function(system, one_arch_system_data) {
 	    // core
 	    var n = 1
@@ -52,11 +55,31 @@ $(function() {
 					} else {
 					    tab += "<td class=\"greenflag\">"
 					}
-					if(core_data.explanation) {
-					    tab += "<span data-tippy-content=\"" + core_data.explanation + "\">OK*</span>"
-					} else {
-					    tab += "OK"
+					if(core_data.default && arch_data[system].nb_all_variants != 1) {
+					    tab += "<img src=\"https://batocera-linux.xorhub.com/images/sys_default.png\" />"
 					}
+					if(core_data.explanation) {
+					    tab += "<span data-tippy-content=\"" + core_data.explanation + "\">.<img src=\"https://batocera-linux.xorhub.com/images/sys_ok.png\" /></span>"
+					} else {
+					    tab += "<img src=\"https://batocera-linux.xorhub.com/images/sys_ok.png\" />"
+					}
+	                                $.each(core_data.flags, function(n, flag) {
+					    tab += "<span data-tippy-content=\"" + flag + "\">"
+					    switch(flag) {
+					    case "overclocking":
+						tab += "<img src=\"https://batocera-linux.xorhub.com/images/sys_overclock.png\" />"
+						break;
+					    case "slow_games":
+						tab += "<img src=\"https://batocera-linux.xorhub.com/images/sys_depends_games.png\" />"
+						break;
+					    case "opengl3.0":
+						tab += "<img src=\"https://batocera-linux.xorhub.com/images/sys_opengl.png\" />"
+						break;
+					    default:
+						tab += flag
+					    }
+					    tab += "</span>"
+					})
 					tab += "</td>"
 				    } else {
 	  				if(arch_data[system].red_flag) {
@@ -76,6 +99,7 @@ $(function() {
 	    	})
 	    })
 	})
+	tab += "</tbody>"
 
 	tab += "</table>"
 	$("#id_table").html(tab)
@@ -84,6 +108,10 @@ $(function() {
 })
     </script>
     <style>
+body {
+    background-color: #101050;
+    color: #aaa;
+}
 table {
     display: inline-table;
     border: solid 1px;
@@ -91,13 +119,15 @@ table {
 table th, table td {
     border: solid 1px;
 }
+ul {
+  list-style: none;
+}
 .redflag {
     text-align: center;
     background-color: #e0c;
 }
 .greenflag {
     text-align: center;
-    background-color: #2b6;
 }
 .noreasonflag {
   background-color: #fcf;
@@ -109,6 +139,13 @@ table th, table td {
     </style>
   </head>
   <body>
+    <ul>
+    <li><img src="https://batocera-linux.xorhub.com/images/sys_ok.png" /> Available</li>
+    <li><img src="https://batocera-linux.xorhub.com/images/sys_default.png" /> Default emulator (when several are available)</li>
+    <li><img src="https://batocera-linux.xorhub.com/images/sys_overclock.png" /> Require overclocking</li>
+    <li><img src="https://batocera-linux.xorhub.com/images/sys_depends_games.png" /> Lower performances for some games on this board</li>
+    </ul>
+
     <div id="id_table" />
   </body>
 </html>

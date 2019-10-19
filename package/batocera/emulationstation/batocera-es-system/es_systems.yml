@@ -286,8 +286,8 @@ dos:
   theme:      pc
   platform:   pc
   emulators:
-    dos:
-      dos:    { requireAnyOf: [BR2_PACKAGE_DOSBOX]  }
+    dosbox:
+      dosbox:    { requireAnyOf: [BR2_PACKAGE_DOSBOX]  }
   comment_en: |
     Each game (files) must be placed its own directory having the ".pc .dos" extension.
     In each directory, a dosbox.bat file must contain the command line for launching the game.
@@ -639,7 +639,7 @@ zx81:
   extensions: [tzx, p, zip, 7z]
   emulators:
     libretro:
-      81: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_81] }
+      '81': { requireAnyOf: [BR2_PACKAGE_LIBRETRO_81] }
   comment_en: |
     To enable your gamepad support, go in retroarch menu with "Hotkey+B", then switch this option:
     "Settings/Input/Input User 1 Binds/User 1 Device type: Retropad" with "Cursor Joystick"
@@ -691,8 +691,8 @@ apple2:
   extensions: [nib, do, po, dsk]
   includeEmulators: no
   emulators:
-    apple2:
-      apple2: { requireAnyOf: [BR2_PACKAGE_LINAPPLE_PIE] }
+    linapple:
+      linapple: { requireAnyOf: [BR2_PACKAGE_LINAPPLE_PIE] }
 
 saturn:
   name:       Sega Saturn

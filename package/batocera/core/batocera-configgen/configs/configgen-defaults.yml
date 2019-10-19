@@ -42,12 +42,15 @@ virtualboy:
   core:     vb
 gamecube:
   emulator: dolphin
+  core: dolphin
 wii:
   emulator: dolphin
+  core: dolphin
   options:
     emulatedwiimotes: false
 ps2:
   emulator: pcsx2
+  core: pcsx2
   options:
     fullboot: true
 nds:
@@ -79,6 +82,7 @@ saturn:
   core:     yabause
 dreamcast:
   emulator: reicast
+  core: reicast
 atomiswave:
   emulator: libretro
   core:     flycast
@@ -114,6 +118,7 @@ amstradcpc:
   core:     cap32
 apple2:
   emulator: linapple
+  core: linapple
   options:
     videomode: default
 atarist:
@@ -130,6 +135,7 @@ zx81:
   core:     '81'
 dos:
   emulator: dosbox
+  core: dosbox
   options:
     videomode: default
 c64:
@@ -209,6 +215,7 @@ imageviewer:
   core:     imageviewer
 scummvm:
   emulator: scummvm
+  core: scummvm
   options:
     videomode: default
 colecovision:
@@ -226,8 +233,10 @@ kodi:
     videomode: default
 moonlight:
   emulator: moonlight
+  core: moonlight
 psp:
   emulator: ppsspp
+  core: ppsspp
 satellaview:
   emulator: libretro
   core:     snes9x
