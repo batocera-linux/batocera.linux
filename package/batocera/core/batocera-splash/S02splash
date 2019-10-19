@@ -52,8 +52,8 @@ do_start ()
         if [[ $? -eq 0 ]]; then
             # Wait for emulationstation or Kodi, but not more than 20 seconds
             count=0
-            while [[ ! -f "/tmp/emulationstation.ready" && ! -e "/var/run/kodi.msg" && $count -lt 20 ]]; do
-                sleep 1
+            while [[ ! -f "/tmp/emulationstation.ready" && ! -e "/var/run/kodi.msg" && $count -lt 400 ]]; do
+                sleep 0.1
                 ((count++))
             done
              # Finish with a one second fade out.
