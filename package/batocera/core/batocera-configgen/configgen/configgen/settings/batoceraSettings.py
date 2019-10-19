@@ -1,31 +1,9 @@
 #!/usr/bin/env python
+
 import sys
-import argparse
-import configgen.batoceraFiles as batoceraFiles
-from configgen.settings.unixSettings import UnixSettings
+import os
 
-settingsFile = batoceraFiles.batoceraConf
-
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='batocera-config script')
-    parser.add_argument("-command", help="load, save or disable", type=str, required=True)
-    parser.add_argument("-key", help="key to load", type=str, required=True)
-    parser.add_argument("-value", help="if command = save value to save", type=str, required=False)
-    args = parser.parse_args()
-
-    config = UnixSettings(settingsFile)
-
-    if args.command == "save" :
-        # TODO: only load is unused internally. UnixSettings.write() removes file comments.
-        #       we can provide inplace editing for small changes
-        raise "not supported"
-        # save(args.key, args.value)
-    if args.command == "load" :
-        v = config.load(args.key)
-        if v is not None:
-            sys.stdout.write(v)
-    if args.command == "disable":
-        # TODO: only load is unused internally. UnixSettings.write() removes file comments.
-        #       we can provide inplace editing for small changes
-        raise "not supported"
-        # disable(args.key)
+scriptDir = "/usr/bin"
+sys.argv[0]="mimic_python"
+str1 = '\n'.join(str(i) for i in sys.argv)
+os.system('"%s"/batocera-settings "%s"' % (scriptDir, str1))
