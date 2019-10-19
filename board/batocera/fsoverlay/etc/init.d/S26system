@@ -115,7 +115,7 @@ rb_alsa_save() {
 }
 
 ba_es_core_dump() {
-	sysctl -w kernel.core_pattern=/userdata/core.%e
+	sysctl -w kernel.core_pattern=/userdata/system/logs/core.%e
 }
 
 case "$1" in

@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-# Version.: Commits on Oct 04, 2019
+# Version: Commits on Oct 04, 2019
 BATOCERA_EMULATIONSTATION_VERSION = 9b86453b54835a8feaac42aede76dc1869a66fe2
 BATOCERA_EMULATIONSTATION_SITE = https://github.com/batocera-linux/batocera-emulationstation
 BATOCERA_EMULATIONSTATION_SITE_METHOD = git
@@ -12,6 +12,8 @@ BATOCERA_EMULATIONSTATION_LICENSE = MIT
 BATOCERA_EMULATIONSTATION_GIT_SUBMODULES = YES
 BATOCERA_EMULATIONSTATION_LICENSE = MIT, Apache-2.0
 BATOCERA_EMULATIONSTATION_DEPENDENCIES = sdl2 sdl2_mixer boost libfreeimage freetype alsa-lib libcurl vlc rapidjson
+# install in staging for debugging (gdb)
+BATOCERA_EMULATIONSTATION_INSTALL_STAGING = YES
 
 ifeq ($(BR2_PACKAGE_HAS_LIBGL),y)
 BATOCERA_EMULATIONSTATION_DEPENDENCIES += libgl
