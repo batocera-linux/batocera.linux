@@ -31,8 +31,9 @@ ES_YML="${BR_DIR}/package/batocera/emulationstation/batocera-es-system/es_system
 EXP_YML="${BR_DIR}/package/batocera/emulationstation/batocera-es-system/systems-explanations.yml"
 PYGEN="${BR_DIR}/package/batocera/emulationstation/batocera-es-system/batocera-report-system.py"
 HTML_GEN="${BR_DIR}/package/batocera/emulationstation/batocera-es-system/batocera_systemsReport.html"
+DEFAULTSDIR="${BR_DIR}/package/batocera/core/batocera-configgen/configs"
 mkdir -p "${BR_DIR}/output/images/batocera" || exit 1
-python "${PYGEN}" "${ES_YML}" "${EXP_YML}" "${TMP_CONFIGS}" > "${BR_DIR}/output/images/batocera/batocera_systemsReport.json" || exit 1
+python "${PYGEN}" "${ES_YML}" "${EXP_YML}" "${DEFAULTSDIR}" "${TMP_CONFIGS}" > "${BR_DIR}/output/images/batocera/batocera_systemsReport.json" || exit 1
 cp "${HTML_GEN}" "${BR_DIR}/output/images/batocera" || exit 1
 
 rm -rf "${TMP_DIR}"
