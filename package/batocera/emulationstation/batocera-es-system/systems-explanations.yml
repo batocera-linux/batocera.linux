@@ -37,6 +37,11 @@ default:
   amigacdtv:
     fsuae:
       CDTV: *fsuae_multicore
+  Commodore 64:
+    libretro: Vice 3.3 LIBRETRO
+      Vice 64 3.3 SDL2: Remove
+        explanation: |
+          Port of VICE 3.3 for libretro by default: All features are supported and controlled through the stdandard Retroarch GUI. Virtual keyboard, .m3u support for multidisk, bezel, shaders... way more user friendly than standalone build. Tested on RPI 3 and Linux. 
   gb:
     libretro:
       gambatte: &gambatte_mgba_vbam
