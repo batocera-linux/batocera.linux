@@ -73,6 +73,20 @@ default:
       yabasanshiro:
         explanation: |
           Some sports games are nicer with yabasanshiro : college slam & slam n jam 96 is a number of best sport games to play on saturn, when you use yabause on these games they have a lot of graphical issues, when you use yabasanshiro it is very playable with almost no graphical issues.
+  mastersystem:
+    libretro:
+      genesisplusgx: &genesisplusgx_and_picodrive
+        explanation: |
+          genesisplusgx is required for Sega SG1000 and picodrive is required for Sega 32x. Thus both are enabled. Historically, genesisplusgx is set by default except on weak boards where picodrive runs faster. genesisplus is alone to read CHD files.
+      picodrive: *genesisplusgx_and_picodrive
+  megadrive:
+    libretro:
+      genesisplusgx: *genesisplusgx_and_picodrive
+      picodrive:     *genesisplusgx_and_picodrive
+  segacd:
+    libretro:
+      genesisplusgx: *genesisplusgx_and_picodrive
+      picodrive:     *genesisplusgx_and_picodrive
 
 rpi1:
   snes:
