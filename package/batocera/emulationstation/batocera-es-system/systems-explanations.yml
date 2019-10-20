@@ -3,12 +3,12 @@ default:
     libretro:
       4do:
         explanation: |
-          only some boards are available : requires a powerfull board
+          only available on selected boards: requires a powerfull one
   3ds:
     citra:
       citra: &citra_standalone_core
         explanation: |
-          The standalone citra works better, but it lacks the mouse and bezels features that the libretro/citra has.
+          Standalone citra works better, but it lacks  mouse and bezels features which libretro/citra has.
     libretro:
       citra: *citra_standalone_core
 
@@ -16,15 +16,15 @@ default:
     amiberry:
       A1200: &amiberry_multicore
         explanation: |
-          A1200, A4000, A500 and A500+ are the same core, but with a different behavior depending on the amiga we want to emulate.
+          A1200, A4000, A500 and A500+ are the same core, but with a different behavior depending on the amiga model you want to emulate.
       A4000: *amiberry_multicore
       A500:  *amiberry_multicore
       A500+: *amiberry_multicore
     fsuae:
       A1000: &fsuae_multicore
         explanation: |
-          A1000, A1200, A3000, A4000, A500, A500+, A600 are the same core, but with a different behavior depending on the amiga we want to emulate.
-          fsuae works only on x86 and x86_64 architectures
+          A1000, A1200, A3000, A4000, A500, A500+, A600 are the same core, but with a different behavior depending on the amiga model you want to emulate.
+          fsuae only works on x86 and x86_64 architectures
       A1200: *fsuae_multicore
       A3000: *fsuae_multicore
       A4000: *fsuae_multicore
@@ -41,7 +41,7 @@ default:
     libretro:
       gambatte: &gambatte_mgba_vbam
         explanation: |
-          For gb, gbc and gba, gambatte, mgba and vba-m are working very well and are maintained.
+          For gb, gbc and gba, ggambatte, mgba and vba-m are working very well and are maintained.
       mgba:  *gambatte_mgba_vbam
       vba-m: *gambatte_mgba_vbam
   gbc:
@@ -54,7 +54,7 @@ default:
       dolphin: &dolphin_arch
         flags: [opengl3.0]
         explanation: |
-          Dolphin works only on x86_64 and armv8 platforms and requires 2Ghz of cpu minimum.
+          Dolphin only works on x86_64 and armv8 platforms and requires 2GHz CPU (minimum).
   gamecube:
     dolphin:
       dolphin: *dolphin_arch
@@ -62,29 +62,29 @@ default:
     pcsx2:
       pcsx2:
         explanation: |
-          PCSX2 works only on x86 and x86_64 platforms and requires a good cpu.
+          PCSX2 only works  on x86 and x86_64 platforms and requires a good cpu.
   snes:
     libretro:
       bsnes:
         explanation: |
-          bsnes is included because of the mode 7 hd. Bsnes is very resource intensive. So, only x86_64.
+          bsnes is included because of the HD mode 7. Bsnes is very resource intensive. So, only x86_64.
   saturn:
     libretro:
       yabasanshiro:
         explanation: |
-          Some sports games are nicer with yabasanshiro : college slam & slam n jam 96 is a number of best sport games to play on saturn, when you use yabause on these games they have a lot of graphical issues, when you use yabasanshiro it is very playable with almost no graphical issues.
+          Some sports games are good with yabasanshiro: college slam & slam n jam 96. These game on yabause present a lot of graphical issues.
 
 rpi1:
   snes:
     libretro:
       pocketsnes:
         explanation: |
-          pocketsnes is the emulators which works the best on rpi1. However, it is not perfect, some games like Mario Kart have some glitches.
+          pocketsnes is the best emulator for rpi1. However it is not perfect. Some games, like Mario Kart, have glitches.
   gba:
     libretro:
       gpsp:
         explanation: |
-          libretro/gpsp is the only one that works correctly for gba on rpi1
+          libretro/gpsp is the only option for gba on rpi1
 rpi2:
   n64:
     mupen64plus:
@@ -100,5 +100,5 @@ odroidn2:
     libretro:
       genesisplusgx: &odroidn2_megadrive
         explanation: |
-          On the odroid n2, genesisplusgx crashes with some games (for example at the begining of Altered beast when you start to control the player).
+          On  odroid n2, genesisplusgx crashes with some games (for example at the begining of Altered Beast).
       picodrive: *odroidn2_megadrive
