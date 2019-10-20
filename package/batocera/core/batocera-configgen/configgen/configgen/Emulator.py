@@ -23,7 +23,7 @@ class Emulator():
         recalSettings = UnixSettings(batoceraFiles.batoceraConf)
         globalSettings = recalSettings.loadAll('global')
         systemSettings = recalSettings.loadAll(self.name)
-        gameSettings = recalSettings.loadAll(os.path.basename(rom))
+        gameSettings = recalSettings.loadAll(self.name + "[\"" + os.path.basename(rom) + "\"]")
 
         # update config
         Emulator.updateConfiguration(self.config, globalSettings)
@@ -40,7 +40,7 @@ class Emulator():
             self.renderconfig = Emulator.get_generic_config(self.name, "/usr/share/batocera/shaders/configs/rendering-defaults.yml", "/usr/share/batocera/shaders/configs/rendering-defaults-arch.yml")
 
         systemSettings = recalSettings.loadAll(self.name + "-renderer")
-        gameSettings = recalSettings.loadAll(os.path.basename(rom) + "-renderer")
+        gameSettings = recalSettings.loadAll(self.name + "[\"" + os.path.basename(rom) + "\"]" + "-renderer")
 
         # es only allow to update systemSettings and gameSettings in fact for the moment
         Emulator.updateConfiguration(self.renderconfig, systemSettings)
