@@ -38,11 +38,13 @@ $(function() {
 			tab += "<td rowspan=\"" + nb_system_cores + "\"><span data-tippy-content=\"" + system + "\">" + one_arch_system_data.name + "</span></td>"
 		    }
 		    // core
+		    tab += "<td>"
 		    if(one_emulator == one_core) {
-	    		tab += "<td>" + one_emulator + "</td>"
+	    		tab += one_emulator
 	    	    } else {
-	    		tab += "<td>" + one_emulator + "/" + one_core + "</td>"
+	    		tab += one_emulator + "/" + one_core
 	    	    }
+		    tab += "</td>"
 
 		    // each arch core
 		    $.each(data, function(arch, arch_data) {
@@ -51,7 +53,11 @@ $(function() {
 				if(emulator == one_emulator && core == one_core) {
 				    if(core_data.enabled) {
 					if(arch_data[system].red_flag) {
-	    				    tab += "<td class=\"redflag\">"
+					    if(core_data.explanation) {
+	    					tab += "<td class=\"redflagexp\">"
+					    } else {
+						tab += "<td class=\"redflag\">"
+					    }
 					} else {
 					    tab += "<td class=\"greenflag\">"
 					}
@@ -82,7 +88,7 @@ $(function() {
 					})
 					tab += "</td>"
 				    } else {
-	  				if(arch_data[system].red_flag) {
+	  				if(arch_data[system].red_flag && !core_data.explanation) {
 					    tab += "<td class=\"noreasonflag\"></td>"
 					} else {
 					    tab += "<td></td>"
@@ -124,7 +130,11 @@ ul {
 }
 .redflag {
     text-align: center;
-    background-color: #e0c;
+    background-color: #f0a;
+}
+.redflagexp {
+    text-align: center;
+    background-color: #f9d;
 }
 .greenflag {
     text-align: center;
@@ -144,6 +154,7 @@ ul {
     <li><img src="https://batocera-linux.xorhub.com/images/sys_default.png" /> Default emulator (when several are available)</li>
     <li><img src="https://batocera-linux.xorhub.com/images/sys_overclock.png" /> Require overclocking</li>
     <li><img src="https://batocera-linux.xorhub.com/images/sys_depends_games.png" /> Lower performances for some games on this board</li>
+    <li><img src="https://batocera-linux.xorhub.com/images/sys_opengl.png" /> Minimum OpenGL version required</li>
     </ul>
 
     <div id="id_table" />
