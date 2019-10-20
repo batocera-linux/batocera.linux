@@ -209,6 +209,11 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
     # bezel
     writeBezelConfig(bezel, retroarchConfig, system.name, rom, gameResolution)
 
+    # custom : allow the user to configure directly retroarch.cfg via batocera.conf via lines like : snes.retroarch.menu_driver=rgui
+    for user_config in systemConfig:
+        if user_config[:10] == "retroarch.":
+            retroarchConfig[user_config[10:]] = systemConfig[user_config]
+
     return retroarchConfig
 
 def writeLibretroConfigToFile(retroconfig, config):
