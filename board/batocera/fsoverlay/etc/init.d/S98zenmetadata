@@ -1,0 +1,26 @@
+#!/bin/bash
+#Save Shutdown to save metadata
+#After 20 seconds loop will force break
+if [[ $1 == stop ]]; then
+    es_pid=$(pidof emulationstation)
+    
+    #Assume that es_pid is already empty by menu shutdown
+    #if you forced shutdown by a button press then this help you
+    #to proper exit emulationstation and save your metadata
+    #Timeout (watchdog) is in while loop and set to 20s
+    #Please respect the work of others!
+    if [[ -n $es_pid ]]; then
+        kill $es_pid
+        sleep 0.5
+            
+        while [[ -e /proc/$es_pid ]]; do
+            sleep 0.5                
+                if [[ -n $watchdog ]]; then
+                    [[ -e /proc/$watchdog ]] || break
+                else
+                    sleep 20 &
+                    watchdog=$!
+                fi
+        done
+    fi 
+fi
