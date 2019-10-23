@@ -805,6 +805,13 @@ gx4000:
     libretro:
       cap32: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_CAP32] }
 
+daphne:
+  name:       Arcade (Daphne)
+  extensions: [zip]
+  emulators:
+    libretro:
+      daphne: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_DAPHNE] }
+
 lightgun:
   name:       Light Gun
   extensions: [zip, 7z]
