@@ -364,6 +364,8 @@ config BR2_PACKAGE_BATOCERA_RETROARCH
         select BR2_PACKAGE_LIBRETRO_NESTOPIA          # ALL
         select BR2_PACKAGE_LIBRETRO_SNES9X            # ALL
         select BR2_PACKAGE_LIBRETRO_SNES9X_NEXT       # ALL
+        select BR2_PACKAGE_LIBRETRO_DAPHNE            if BR2_PACKAGE_BATOCERA_CORES_EXPERIMENTAL
+
         help
           Retroarch
 
