@@ -14,17 +14,13 @@ case "$1" in
   stop)
         killall emulationstation
         if [[ $? -eq 0 ]]; then
-            sleep 0.25
+            sleep 20 &
+            watchdog=$!
             while [[ -n $(pidof emulationstation) ]]; do
-                sleep 0.5
-                if [[ -n $watchdog ]]; then
-                    [[ -e /proc/$watchdog ]] || break
-                else
-                    sleep 20 &
-                    watchdog=$!
-                fi
+                sleep 0.25
+                $(kill -0 $watchdog) || exit
             done
-            kill -0 $watchdog > /dev/null 2>&1 && kill -9 $watchdog
+            kill -9 $watchdog
         fi
         ;;
   restart|reload)
