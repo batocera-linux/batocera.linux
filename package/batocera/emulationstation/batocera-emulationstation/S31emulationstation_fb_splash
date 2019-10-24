@@ -24,7 +24,7 @@ case "$1" in
                     watchdog=$!
                 fi
             done
-            [[ -e /proc/$watchdog ]] && kill -9 $watchdog
+            kill -0 $watchdog > /dev/null 2>&1 && kill -9 $watchdog
         fi
         ;;
   restart|reload)
