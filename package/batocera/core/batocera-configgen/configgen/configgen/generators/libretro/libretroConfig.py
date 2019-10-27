@@ -57,6 +57,7 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
 
     retroarchConfig = dict()
     systemConfig = system.config
+    renderConfig = system.renderconfig
 
     # basic configuration
     retroarchConfig['quit_press_twice'] = 'false'            # not aligned behavior on other emus
@@ -71,6 +72,18 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
         retroarchConfig['video_smooth'] = 'true'
     else:
         retroarchConfig['video_smooth'] = 'false'
+
+    if 'shader' in renderConfig and renderConfig['shader'] != None:
+        retroarchConfig['video_shader_enable'] = 'true'
+        retroarchConfig['video_smooth']        = 'false'     # seems to be necessary for weaker SBCs
+        shaderFilename = renderConfig['shader'] + ".glslp"
+        if os.path.exists("/userdata/shaders/" + shaderFilename):
+            retroarchConfig['video_shader_dir'] = "/userdata/shaders"
+            eslog.log("shader {} found in /userdata/shaders".format(shaderFilename))
+        else:
+            retroarchConfig['video_shader_dir'] = "/usr/share/batocera/shaders"
+    else:
+        retroarchConfig['video_shader_enable'] = 'false'
 
     retroarchConfig['aspect_ratio_index'] = '' # reset in case config was changed (or for overlays)
     if defined('ratio', systemConfig):
