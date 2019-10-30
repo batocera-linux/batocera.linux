@@ -34,21 +34,19 @@ class EsSystemConf:
         if nb_variants == nb_explanations:
             return False
         return True
-    
+
     @staticmethod
     def generate(rulesYaml, explanationsYaml, configsDir, defaultsDir):
-        #rules = yaml.load(open(rulesYaml, "r"), Loader=yaml.FullLoader)
-        rules = yaml.load(open(rulesYaml, "r"))
-        #explanations = yaml.load(open(explanationsYaml, "r"), Loader=yaml.FullLoader)
-        explanations = yaml.load(open(explanationsYaml, "r"))
+        rules = yaml.safe_load(open(rulesYaml, "r"))
+        explanations = yaml.safe_load(open(explanationsYaml, "r"))
         result_archs = {}
 
-        systemsConfig = yaml.load(open(defaultsDir + "/configgen-defaults.yml", "r"))
-        
+        systemsConfig = yaml.safe_load(open(defaultsDir + "/configgen-defaults.yml", "r"))
+
         for configFile in os.listdir(configsDir):
             arch = configFile.replace("config_", "")
             config = EsSystemConf.loadConfig(configsDir + "/" + configFile)
-            archSystemsConfig = yaml.load(open(defaultsDir + "/configgen-defaults-" + arch + ".yml", "r"))
+            archSystemsConfig = yaml.safe_load(open(defaultsDir + "/configgen-defaults-" + arch + ".yml", "r"))
             result_systems = {}
             for system in rules:
                 # default emulator
@@ -113,7 +111,7 @@ class EsSystemConf:
         nb_all_explanations = 0
 
         defaultFound = False
-        
+
         emulators = {}
         if "emulators" in data:
             emulators = data["emulators"]
@@ -164,7 +162,7 @@ class EsSystemConf:
 
         if nb_variants > 0 and defaultFound == False:
             raise Exception("default core not enabled for " + arch + "/" + system + " (" + defaultEmulator + "/" + defaultCore + ")")
-            
+
         result = {}
         result["name"] = data["name"]
         result["nb_variants"] = nb_variants
@@ -183,7 +181,7 @@ class EsSystemConf:
             raise AttributeError('keys_exists() expects dict as first argument.')
         if len(keys) == 0:
             raise AttributeError('keys_exists() expects at least two arguments, one given.')
-    
+
         _element = element
         for key in keys:
             try:
@@ -191,7 +189,7 @@ class EsSystemConf:
             except KeyError:
                 return False
         return True
-    
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("yml",              help="es_systems.yml definition file")
