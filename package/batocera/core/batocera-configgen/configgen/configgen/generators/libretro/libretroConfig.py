@@ -219,6 +219,18 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
         # force the assets directory while it was wrong in some beta versions
         retroarchConfig['assets_directory'] = '/usr/share/libretro/assets'
 
+    # AI service for game translations
+    if system.isOptSet('ai_service_enabled') and system.getOptBoolean('ai_service_enabled') == True:
+        retroarchConfig['ai_service_enable'] = 'true'
+        retroarchConfig['ai_service_mode'] = '0'
+        retroarchConfig['ai_service_source_lang'] = '0'
+        if system.config['ai_service_url']:
+            retroarchConfig['ai_service_url'] = system.config['ai_service_url']+'&mode=Fast&output=png&target_lang='+system.config['ai_target_lang']
+        else:
+            retroarchConfig['ai_service_url'] = 'http://ztranslate.net/service?api_key=BATOCERA&mode=Fast&output=png&target_lang='+system.config['ai_target_lang']
+    else:
+        retroarchConfig['ai_service_enable'] = 'false'
+
     # bezel
     writeBezelConfig(bezel, retroarchConfig, system.name, rom, gameResolution)
 
