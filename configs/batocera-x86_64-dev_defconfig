@@ -67,7 +67,11 @@ BR2_PACKAGE_HOST_GDB=y
 BR2_PACKAGE_GDB_DEBUGGER=y
 BR2_PACKAGE_GDB_SERVER=y
 BR2_ENABLE_DEBUG=y
+<<<<<<< Updated upstream
 BR2_STRIP_EXCLUDE_FILES="retroarch emulationstation"
+=======
+BR2_STRIP_EXCLUDE_FILES="retroarch emulationstation mametiny_libretro.so"
+>>>>>>> Stashed changes
 # gcc8.3.x doesn't like -Og
 # BR2_OPTIMIZE_G=y
 BR2_OPTIMIZE_2=y
