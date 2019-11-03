@@ -1,10 +1,10 @@
 <html>
   <head>
     <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
-    <script src="https://batocera-linux.xorhub.com/assets/js/jquery-3.4.1.min.js"></script>
-    <script src="https://batocera-linux.xorhub.com/assets/js/popper.js@1"></script>
-    <script src="https://batocera-linux.xorhub.com/assets/js/tippy.js@5"></script>
-    <link rel="stylesheet" href="https://batocera-linux.xorhub.com/assets/css/backdrop.css" />
+    <script src="https://batocera.org/assets/js/jquery-3.4.1.min.js"></script>
+    <script src="https://batocera.org/assets/js/popper.js@1"></script>
+    <script src="https://batocera.org/assets/js/tippy.js@5"></script>
+    <link rel="stylesheet" href="https://batocera.org/assets/css/backdrop.css" />
     <script>
 $(function() {
     $.getJSON("batocera_systemsReport.json", function(data) {
@@ -62,24 +62,24 @@ $(function() {
 					    tab += "<td class=\"greenflag\">"
 					}
 					if(core_data.default && arch_data[system].nb_all_variants != 1) {
-					    tab += "<img src=\"https://batocera-linux.xorhub.com/images/sys_default.png\" />"
+					    tab += "<img src=\"https://batocera.org/images/sys_default.png\" />"
 					}
 					if(core_data.explanation) {
-					    tab += "<span data-tippy-content=\"" + core_data.explanation + "\">.<img src=\"https://batocera-linux.xorhub.com/images/sys_ok.png\" /></span>"
+					    tab += "<span data-tippy-content=\"" + core_data.explanation + "\">.<img src=\"https://batocera.org/images/sys_ok.png\" /></span>"
 					} else {
-					    tab += "<img src=\"https://batocera-linux.xorhub.com/images/sys_ok.png\" />"
+					    tab += "<img src=\"https://batocera.org/images/sys_ok.png\" />"
 					}
 	                                $.each(core_data.flags, function(n, flag) {
 					    tab += "<span data-tippy-content=\"" + flag + "\">"
 					    switch(flag) {
 					    case "overclocking":
-						tab += "<img src=\"https://batocera-linux.xorhub.com/images/sys_overclock.png\" />"
+						tab += "<img src=\"https://batocera.org/images/sys_overclock.png\" />"
 						break;
 					    case "slow_games":
-						tab += "<img src=\"https://batocera-linux.xorhub.com/images/sys_depends_games.png\" />"
+						tab += "<img src=\"https://batocera.org/images/sys_depends_games.png\" />"
 						break;
 					    case "opengl3.0":
-						tab += "<img src=\"https://batocera-linux.xorhub.com/images/sys_opengl.png\" />"
+						tab += "<img src=\"https://batocera.org/images/sys_opengl.png\" />"
 						break;
 					    default:
 						tab += flag
@@ -151,11 +151,11 @@ ul {
   </head>
   <body>
     <ul>
-    <li><img src="https://batocera-linux.xorhub.com/images/sys_ok.png" /> Available</li>
-    <li><img src="https://batocera-linux.xorhub.com/images/sys_default.png" /> Default emulator (when several options are available)</li>
-    <li><img src="https://batocera-linux.xorhub.com/images/sys_overclock.png" /> Requires overclocking</li>
-    <li><img src="https://batocera-linux.xorhub.com/images/sys_depends_games.png" /> Low performance for some games</li>
-    <li><img src="https://batocera-linux.xorhub.com/images/sys_opengl.png" /> Requires a minimum OpenGL version</li>
+    <li><img src="https://batocera.org/images/sys_ok.png" /> Available</li>
+    <li><img src="https://batocera.org/images/sys_default.png" /> Default emulator (when several options are available)</li>
+    <li><img src="https://batocera.org/images/sys_overclock.png" /> Requires overclocking</li>
+    <li><img src="https://batocera.org/images/sys_depends_games.png" /> Low performance for some games</li>
+    <li><img src="https://batocera.org/images/sys_opengl.png" /> Requires a minimum OpenGL version</li>
     </ul>
 
     <div id="id_table" />
