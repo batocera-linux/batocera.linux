@@ -3,8 +3,8 @@
 # PPSSPP
 #
 ################################################################################
-# Version.: Commits on Sep 25, 2019
-PPSSPP_VERSION = v1.9.1
+# Version: 1.9.4
+PPSSPP_VERSION = v1.9.4
 PPSSPP_SITE = https://github.com/hrydgard/ppsspp.git
 PPSSPP_SITE_METHOD=git
 PPSSPP_GIT_SUBMODULES=YES
@@ -42,7 +42,7 @@ endif
 
 # odroid xu4 / rpi3 / rockpro64
 ifeq ($(BR2_arm),y)
-	PPSSPP_CONF_OPTS += -DARMV7=ON 
+	PPSSPP_CONF_OPTS += -DARMV7=ON
 endif
 
 # s912 (libhybris)
@@ -62,10 +62,10 @@ endef
 PPSSPP_PRE_CONFIGURE_HOOKS += PPSSPP_UPDATE_INCLUDES
 
 define PPSSPP_INSTALL_TARGET_CMDS
-        mkdir -p $(TARGET_DIR)/usr/bin
+	mkdir -p $(TARGET_DIR)/usr/bin
 	$(INSTALL) -D -m 0755 $(@D)/PPSSPPSDL $(TARGET_DIR)/usr/bin
 	cp -R $(@D)/assets $(TARGET_DIR)/usr/bin
-        mkdir -p $(TARGET_DIR)/lib
+	mkdir -p $(TARGET_DIR)/lib
 	cp -R $(@D)/lib/*.so $(TARGET_DIR)/lib
 endef
 
