@@ -5,293 +5,469 @@
 # @evoflash and @lbrpdx on Batocera Forums and Discord
 #
 # Usage:
-# batocera-es-thebezelproject 'list', 'install or remove <system_name>'
+# batocera-es-thebezelproject 'list', 'install or remove <system>'
 #
 #
-DECODIR="/userdata/decorations/"
-ROMSDIR="/userdata/roms/"
-DEFAULTBEZELDIR="default/systems/"
-BEZELPROJECTDIR="thebezelproject/"
-BEZELPROJECTGAMESDIR="thebezelproject/games/"
-BEZELPROJECTSYSTEMDIR="thebezelproject/systems/"
-BEZELSLIST="https://batocera.org/upgrades/bezels.txt"
-LOCALBEZELSLIST="/userdata/system/bezels.txt"
-# bezels.txt must be a plain file with the format 'bezel_name https://githubURL' (spaces or tabs)
-# Example of a bezels.txt file:
+readonly VERSION="2.00_20191104"
+readonly TITLE="the BezelProject for Batocera"
+readonly LOGS_DIR="/userdata/system/logs"
+readonly DECORATION_DIR="/userdata/decorations"
+readonly ROMS_DIR="/userdata/roms"
+readonly BEZELPROJECT_DIR="thebezelproject"
+readonly BEZELPROJECT_GAMES_DIR="thebezelproject/games"
+readonly DEFAULT_BEZEL_URL="https://batocera.org/upgrades/thebezelproject"
+readonly SYSTEMS_LIST="https://batocera.org/upgrades/bezels.txt"
+readonly LOCAL_SYSTEMS_LIST="/userdata/system/bezels.txt"
+readonly INDEX_LIST="https://batocera.org/upgrades/thebezelproject/tbp_"
+readonly LOCAL_INDEX_LIST="/userdata/system/thebezelproject/tbp_"
+readonly TMP_SYSTEMS_LIST=`mktemp`
+readonly TMP_INDEX_LIST=`mktemp`
+readonly TMP_PROGRESS_COUNT=`mktemp`
+
+# bezels.txt must be a plain text file with the format
+# 'bezel_name https://githubURL' (spaces or tabs)
+# Example of bezels.txt file:
 # fba	https://github.com/thebezelproject/bezelproject-MAME
 # snes	https://github.com/thebezelproject/bezelproject-SNES
-DEBUG=0
+
+# tbp_<system_name>.txt is a plain text file with the format
+# 'md5 rom_name' for each rom_name.png (spaces or tabs)
+# An external script generates this file for each Batocera system
+# available in the BezelProject (with weekly update)
+# Example of tbp_snes.txt file:
+# 29aa1cf6a91c472fd0e2db50ebf38 2020 Super Baseball (USA).png
 
 ###############################
 #
 function usage() {
-	echo "$(basename $0) - downloads and installs The Bezel Project for Batocera"
-	echo " "
-	echo "It accepts three modes: 'list', 'install' and 'remove' <system>'"
-	echo "- 'list' for the list of systems installed on the system, and available within TheBezelProject, and if they are"
-	echo "   [A]vailable to install, [I]nstalled or [?]unknown."
-	echo "- 'install <system>' to install the bezels for this <system>."
-	echo "- 'remove <system>' to remove the bezels for this <system>."
-	echo "- 'remove all' to remove all the bezels."
-	echo " "
-	echo "If you have a local $LOCALBEZELSLIST file,"
-	echo "it will override the one hosted on Batocera website."
-	return 1
+		record "Showing usage for '$TITLE'"
+		record "$(basename $0) - downloads and installs $TITLE" "2"
+		record " " "2"
+		record "It accepts three modes: 'list', 'install' and 'remove' <system>'" "2"
+		record "- 'list' to list systems installed locally, which are available within TheBezelProject:" "2"
+		record "   [A]vailable to install, [I]nstalled or [?]unknown." "2"
+		record "- 'install <system>' to install the bezels for this <system>." "2"
+		record "- 'remove <system>' to remove the bezels for this <system>." "2"
+		record "- 'remove all' to remove all the bezels from TheBezelProject." "2"
+		record " " "2"
+		record "If you have a local system list $LOCAL_SYSTEMS_LIST file" "2"
+		record "and the corresponding index files $LOCAL_INDEX_LIST*.txt" "2"
+		record "they will override those hosted on Batocera website." "2"
+		return 1
+}
+
+###############################
+# Cleanup process for exiting
+function do_clean() {
+		record "* Cleanup and exiting"
+
+		# kill job process
+		if [ -n "$PID" ]; then
+			record "Killing process: $PID"
+			kill -9 "$PID"
+		fi
+
+		# remove temporary files
+		if [ -f "$TMP_SYSTEMS_LIST" ]; then
+			record "Removing systems list: $TMP_SYSTEMS_LIST"
+			rm "$TMP_SYSTEMS_LIST"
+		fi
+
+		if [ -f "$TMP_INDEX_LIST" ]; then
+			record "Removing index list: $TMP_INDEX_LIST"
+			rm "$TMP_INDEX_LIST"
+		fi
+
+		if [ -f "$TMP_PROGRESS_COUNT" ]; then
+			record "Removing progress count: $TMP_PROGRESS_COUNT"
+			rm "$TMP_PROGRESS_COUNT"
+		fi
+}
+
+###############################
+# log messages for debugging
+function get_per() {
+		local system_name=$1
+	    local roms_filescount=$2
+		while true
+		do
+				curval=$(cat  "$TMP_PROGRESS_COUNT")
+		 		local per=$(expr "$curval" '*' 100 / "$roms_filescount")
+		 		record "Installing bezels for $system_name >>> $per%" "2"
+				sleep 2
+		done
+}
+
+###############################
+# log messages for debugging
+function record() {
+		local STAMP_TIME="$(date "+%Y-%m-%d %T")"
+	    local backup="$LOGS_DIR"/thebezelproject.log
+		local message="$1"
+	    local show_msg="$2"
+	     # 0 disables stdout output and enables log
+	     # 1 enables stdout output and enables log
+	     # 2 enables stdout output only
+	     # -1 left empty nothing happens
+	    [[ $show_msg -lt 0 ]] && return
+	    [[ $show_msg -lt 2 ]] && echo "$STAMP_TIME $1" >> "$backup"
+	    [[ $show_msg -gt 0 ]] && echo "$1"
 }
 
 ###############################
 # check if url format is valid
 function check_url() {
-	[[ "$1" =~ ^(https?|ftp)://.*$ ]] && echo "[A]" || echo "[?]"
+		[[ "$1" =~ ^(https?|ftp)://.*$ ]] && echo "[A]" || echo "[?]"
 }
 
 ###############################
 # return the git name
 function git_name() {
-	echo "$1" | sed "s,.*/\(.*\),\1,"
+		echo "$1" | sed "s,.*/\(.*\),\1,"
 }
 
 ###############################
 # return the number of files in a directory
 function files_count() {
-	echo `find "$1" -maxdepth 1 -type f -name "[!.]*" | wc -l`
+		# we want only files and not those starting with '.' or '_' or "gamelist*"
+		echo `find "$1" -maxdepth 1 -type f -iname "[!._]*" -and ! -iname "gamelist*" | wc -l`
 }
 
 ###############################
 #
 function list() {
-	local count=0
-	local fn=$(date +"%s")
-	local tmp="/tmp/bezels_$fn"
-	local filescount
-	local systemname
-	local url
+		local systems_count=0
+		local systems_available=0
+		local roms_filescount
+		local system_name
+		local url
 
-	[ $DEBUG -eq 1 ] && echo "DEBUG: path to bezels $DECODIR$BEZELPROJECTGAMESDIR"
-	echo "* Batocera bezels *"
-	
-	# create temporary files in /tmp
-	if [ -f $LOCALBEZELSLIST ]; then
-		cp -f "$LOCALBEZELSLIST" "$tmp"
-	else
-		curl -sfL "$BEZELSLIST" -o "$tmp" || return 1
-	fi
-	
-	# reading bezels list from configuration file
-	while IFS=$' \t' read systemname url ; do
-		[ -z "$systemname" ] && continue
-		let count+=1
-		[ $DEBUG -eq 1 ] && echo "DEBUG: bezels for system $systemname (from bezels list)"
-		# check if roms/<system> directory exist
-		if [ ! -d "$ROMSDIR$systemname" ]; then continue; fi
-		# there is at least one file in each roms/<system> directory (i.e. _info.txt)
-		filescount=$(files_count "$ROMSDIR$systemname")
-		if [ "$filescount" -le 1 ]; then	 continue; fi
-		# check if url is valid and return [A] else [?]
-		ia=$(check_url "$url")
-		# if games/<system> directory exist we assume the bezels are already installed
-		if [ -d "$DECODIR$BEZELPROJECTGAMESDIR$systemname" ]; then ia="[I]"; fi
-		echo "$ia $systemname - $url"
-	done < "$tmp"
-	
-	[ $DEBUG -eq 1 ] && echo "DEBUG:  there are $count systems (from bezels list)"
-	rm "$tmp"
+		record "* List"
+		record "Path to games bezels $DECORATION_DIR"/"$BEZELPROJECT_GAMES_DIR"
+
+		# create temporary files for systems list
+		if [ -f $LOCAL_SYSTEMS_LIST ]; then
+				record "File for local systems list $LOCAL_SYSTEMS_LIST"
+				cp -f "$LOCAL_SYSTEMS_LIST" "$TMP_SYSTEMS_LIST"
+		else
+				record "File for systems list $SYSTEMS_LIST"
+				curl -sfL "$SYSTEMS_LIST" -o "$TMP_SYSTEMS_LIST"
+				if [ "$?" -ne 0 ]; then
+						record "Error : file $SYSTEMS_LIST could not be downloaded" "1"
+						return 1
+				fi
+		fi
+
+		# read systems list from configuration file
+		while IFS=$'  \t' read system_name url ; do
+				[ -z "$system_name" ] && continue
+				let systems_count+=1
+				record "System #$systems_count $system_name"
+				# check if roms/<system> directory exists
+				if [ ! -d "$ROMS_DIR"/"$system_name" ]; then continue; fi
+				# there is at least one ROM in the roms/<system_name> directory
+				roms_filescount=$(files_count "$ROMS_DIR"/"$system_name")
+				if [ "$roms_filescount" -eq 0 ]; then continue; fi
+				let systems_available+=1
+				# check if url is valid and returns [A] or [?]
+				ia=$(check_url "$url")
+				# if games/<system_name> directory exists, then we assume the bezels are already installed
+				if [ -d "$DECORATION_DIR"/"$BEZELPROJECT_GAMES_DIR"/"$system_name" ]; then ia="[I]"; fi
+				record "$ia $system_name - $url" "1"
+		done < "$TMP_SYSTEMS_LIST"
+		record "There are $systems_count systems ($systems_available availables)"
+		rm "$TMP_SYSTEMS_LIST"
 }
 
 ###############################
 #
 function install() {
-	local count=0
-	local fn=$(date +"%s")
-	local tmp="/tmp/bezels_$fn"
-	local gitname
-	local gitsystem
-	local filescount
-	local filename
-	local romname
-	local systemname
-	local url
-	local systemtoinstall="$1"
-	local systemfound=0
-	
-	[ $DEBUG -eq 1 ] && echo "DEBUG: path to bezels $DECODIR$BEZELPROJECTGAMESDIR"
+		local roms_filescount
+		local roms_count=0
+		local systems_count=0
+		local system_found=0
+		local bezels_installed=0
+		local matching_rom
+		local system_to_install="$1"
+		local OS
 
-	# create temporary files in /tmp
-	if [ -f $LOCALBEZELSLIST ]; then
-		cp -f "$LOCALBEZELSLIST" "$tmp"
-	else
-		curl -sfL "$BEZELSLIST" -o "$tmp" || return 1
-	fi
-	
-	# reading bezels list from configuration file
-	while IFS=$' \t' read systemname url ; do
-		[ -z "$systemname" ] && continue
-		[ $DEBUG -eq 1 ] && echo "DEBUG: bezels for system $systemname (from bezels list)"
-		[ "$systemname" != "$systemtoinstall" ] && continue
-		# check if url is valid and return [A] else [?]
-		ia=$(check_url "$url")
-		if [ "$ia" != "[A]" ]; then
-			echo "Error - invalid bezels URL $url"
-			return 1
+		local git_name
+		local git_system
+		local file_name
+		local rom_name
+		local bezel_md5
+
+		local rom_no_ext
+		local rom_no_brkts
+
+		local index_ext
+		local index_no_ext
+		local index_no_brkts
+
+		local index_bezel_name
+		local formated_index_bezel_name
+		local index_bezel_md5
+
+		local system_name
+		local url
+		local full_url
+
+		record "* Install"
+		record "Path to games bezels $DECORATION_DIR"/"$BEZELPROJECT_GAMES_DIR"
+
+		# create temporary files for systems list
+		if [ -f $LOCAL_SYSTEMS_LIST ]; then
+				record "File for local systems list $LOCAL_SYSTEMS_LIST"
+				cp -f "$LOCAL_SYSTEMS_LIST" "$TMP_SYSTEMS_LIST"
 		else
-			systemfound=1
-			break
+				record "File for systems list $SYSTEMS_LIST"
+				curl -sfL "$SYSTEMS_LIST" -o "$TMP_SYSTEMS_LIST"
+				if [ "$?" -ne 0 ]; then
+						record "Error : file $SYSTEMS_LIST could not be downloaded" "1"
+						return 1
+				fi
 		fi
-	done < "$tmp"
-	rm "$tmp"
-	
-	# in case of TheBezelProject does not own the system we want to install
-	if [ "$systemfound" -eq 0 ]; then
-		echo -n "Error - system $systemtoinstall could not be found in "
-		[ -f $LOCALBEZELSLIST ] && echo "$LOCALBEZELSLIST" || echo "$BEZELSLIST"
-		return 1
-	fi
 
-	# check if roms/<system> directory exists
-	if [ ! -d "$ROMSDIR$systemtoinstall" ]; then
-		echo "Error - ROMs directory for system $systemtoinstall could not be found"
-		return 1
-	fi
-	
-	# there is at least one file in each roms/<system> directory (i.e. _info.txt)
-	filescount=$(files_count "$ROMSDIR$systemtoinstall")
-	[ $DEBUG -eq 1 ] && echo "DEBUG: roms files count $filescount"
-	if [ "$filescount" -le 1 ]; then
-		echo "Error - ROMs directory for system $systemtoinstall is empty"
-		return 1
-	fi
+		# read systems list from configuration file
+		while IFS=$'  \t' read system_name url ; do
+				[ -z "$system_name" ] && continue
+				let systems_count+=1
+				[ "$system_name" != "$system_to_install" ] && continue
+				# check if url is valid and return [A] else [?]
+				ia=$(check_url "$url")
+				if [ "$ia" != "[A]" ]; then
+						record "Error : invalid bezels URL $url" "1"
+						return 1
+				else
+						record "Found system #$systems_count $system_name"
+						system_found=1
+						break
+				fi
+		done < "$TMP_SYSTEMS_LIST"
+		rm "$TMP_SYSTEMS_LIST"
 
-	# create temporary directory in /tmp
-	fn=$(date +"%s")
-	tmp="/tmp/dl_$fn"
-	[ $DEBUG -eq 1 ] && echo "DEBUG: path to roms $ROMSDIR$systemtoinstall"
-	[ $DEBUG -eq 1 ] && echo "DEBUG: path for downloading $tmp"
-	# extract gitname from the url
-	gitname=$(git_name "$url")
-	# keep only the final word for searching sub-folders of /retroarch/overlay/GameBezels/<gitsystem>
-	gitsystem=${gitname#bezelproject-}
-	mkdir -p "$tmp"
-	cd "$tmp"
-	echo "Downloading bezels for system $systemtoinstall"
-	curl -sfL "$url/archive/master.zip" -o "$gitname.zip"
-	# error while downloading ?
-	if [[ "$?" -ne 0 || ! -f "$gitname.zip" ]]; then
-		echo "Error - $gitname zip file could not be downloaded from $url"
-		# leave current directory and remove all downloads
-		cd
-		rm -r "$tmp"
-		return 1
-	fi
-	
-	# if it doesn't already exist, create the games bezels directory
-	if [ ! -d "$DECODIR$BEZELPROJECTGAMESDIR$systemtoinstall" ]; then
-		[ $DEBUG -eq 1 ] && echo "DEBUG: creating $DECODIR$BEZELPROJECTGAMESDIR$systemtoinstall"
-		mkdir -p "$DECODIR$BEZELPROJECTGAMESDIR$systemtoinstall"
-	else
-		[ $DEBUG -eq 1 ] && echo "DEBUG: directory $DECODIR$BEZELPROJECTGAMESDIR$systemtoinstall already exist"
-	fi
-	
-	# if it doesn't already exist, create the systems bezels directory
-	if [ ! -d "$DECODIR$BEZELPROJECTSYSTEMDIR" ]; then
-		[ $DEBUG -eq 1 ] && echo "DEBUG: creating $DECODIR$BEZELPROJECTSYSTEMDIR"
-		mkdir -p "$DECODIR$BEZELPROJECTSYSTEMDIR"
-	else
-		[ $DEBUG -eq 1 ] && echo "DEBUG: directory $DECODIR$BEZELPROJECTSYSTEMDIR already exist"
-	fi
-	
-	# unzip archive for working on and remove the zip file
-	echo "Installing/Updating bezels for system $systemtoinstall..."
-	unzip -q "$gitname.zip"
-	mv "$gitname-master" "$gitname"
-	rm "$gitname.zip"
-	
-	# install games bezels if provided by TheBezelProject
-	echo "installing games bezels"
-	find "$ROMSDIR$systemtoinstall" -maxdepth 1 -type f -name "[!.]*" |
-	while read filename; do
-		filename=$(basename "$filename")
-		romname=${filename%%.*}
-		[ -z "$romname" ] && continue
-		let count+=1
-		[ $DEBUG -eq 1 ] && echo "DEBUG: rom -> $romname"
-		if [ "$systemtoinstall" == "mame" ] || [ "$systemtoinstall" == "fba" ] || [ "$systemtoinstall" == "neogeo" ]; then
-			# is there a matching PNG for arcade rom name ?
-			if [ -f "$tmp/$gitname/retroarch/overlay/ArcadeBezels/$romname.png" ]; then
-				[ $DEBUG -eq 1 ] && echo "DEBUG: found PNG for $romname"
-				# copy the PNG matching the arcade romname
-				cp "$tmp/$gitname/retroarch/overlay/ArcadeBezels/$romname.png" "$DECODIR$BEZELPROJECTGAMESDIR$systemtoinstall"
-			fi
+		# In case TheBezelProject doesn't provide the system we want to install
+		if [ "$system_found" -eq 0 ]; then
+				record  "Error : system $system_to_install could not be found" "1"
+				return 1
+		fi
+
+		# check if roms/<system_name> directory exists
+		if [ ! -d "$ROMS_DIR"/"$system_to_install" ]; then
+				record "Error : ROMs directory for system $system_to_install could not be found" "1"
+				return 1
+		fi
+
+		# check that there is at least one ROM in roms/<system_name> directory
+		roms_filescount=$(files_count "$ROMS_DIR"/"$system_to_install")
+		record "Found $roms_filescount ROMs in $ROMS_DIR"/"$system_to_install"
+		if [ "$roms_filescount" -eq 0 ]; then
+				record "Error : ROMs directory for system $system_to_install is empty" "1"
+				return 1
+		fi
+
+		# if it doesn't already exist, create the games bezels directory
+		if [ ! -d "$DECORATION_DIR"/"$BEZELPROJECT_GAMES_DIR"/"$system_to_install" ]; then
+				record "Creating $DECORATION_DIR"/"$BEZELPROJECT_GAMES_DIR"/"$system_to_install"
+				mkdir -p "$DECORATION_DIR"/"$BEZELPROJECT_GAMES_DIR"/"$system_to_install"
 		else
-			if [ -f "$tmp/$gitname/retroarch/overlay/GameBezels/$gitsystem/$romname.png" ]; then
-				[ $DEBUG -eq 1 ] && echo "DEBUG: found PNG for $romname"
-				# copy the PNG matching the romname
-				cp "$tmp/$gitname/retroarch/overlay/GameBezels/$gitsystem/$romname.png" "$DECODIR$BEZELPROJECTGAMESDIR$systemtoinstall"
-			fi
+				record "Directory $DECORATION_DIR"/"$BEZELPROJECT_GAMES_DIR"/"$system_to_install already exist"
 		fi
-	done
-	echo "found $count bezels (installed ?)"
-	
-	# install system bezel if provided by TheBezelProject
-	echo "installing system bezel"
-	# * Arcade *
-	if [ "$systemtoinstall" == "mame" ] || [ "$systemtoinstall" == "fba" ] || [ "$systemtoinstall" == "neogeo" ]; then
-		# copy the HORIZONTAL system bezel to the correct directory and rename it
-		cp "$tmp/$gitname/retroarch/overlay/MAME-Horizontal.png" "$DECODIR$BEZELPROJECTSYSTEMDIR$systemtoinstall.png"
-	else
-		# * Other *
-		filescount=$(find "$tmp/$gitname/retroarch/overlay" -maxdepth 1 -type f -name "*.png" | wc -l)
- 		if [ "$filescount" -eq 1 ]; then
-			rm -f "$DECODIR$BEZELPROJECTSYSTEMDIR$systemname.png"
-			rm -f "$DECODIR$BEZELPROJECTSYSTEMDIR$systemname.info"
- 			# copy the system bezel to the correct directory and rename it
- 			filename=$(ls -1 "$tmp/$gitname"/retroarch/overlay/*.png)
- 			cp "$filename" "$DECODIR$BEZELPROJECTSYSTEMDIR$systemtoinstall.png"
- 		else
-			# make a symbolic link to the Batocera's bezel default system pack
-			ln -fs "$DECODIR$DEFAULTBEZELDIR$systemtoinstall.png" "$DECODIR$BEZELPROJECTSYSTEMDIR$systemtoinstall.png"
-			ln -fs "$DECODIR$DEFAULTBEZELDIR$systemtoinstall.info" "$DECODIR$BEZELPROJECTSYSTEMDIR$systemtoinstall.info"
+
+		# create temporary files for index list
+		if [ -f "$LOCAL_INDEX_LIST$system_to_install.txt" ]; then
+				record "File for local index list $LOCAL_INDEX_LIST$system_to_install.txt"
+				cp -f "$LOCAL_INDEX_LIST$system_to_install.txt" "$TMP_INDEX_LIST"
+		else
+				record "File for index list $INDEX_LIST$system_to_install.txt"
+				curl -sfL "$INDEX_LIST$system_to_install.txt" -o "$TMP_INDEX_LIST"
+				if [ "$?" -ne 0 ]; then
+						record "Error : file $INDEX_LIST$system_to_install.txt could not be downloaded" "1"
+						return 1
+				fi
 		fi
-	fi
-	
-	# install default bezel (i.e. system not supported in TheBezelProject)
-	echo "installing default bezels"
-	if [ -d "$DECODIR$BEZELPROJECTDIR" ]; then
-		echo "TODO : install the @fery65's default.png bezel"
-	fi
-	
-	# leave current directory and remove all downloads
-	echo "Bezels for system $systemtoinstall are now installed"
-	cd
-	rm -r "$tmp"
+
+		# extract git_name from the url
+		git_name=$(git_name "$url")
+		record "Git name : $git_name"
+		# keep only the final word for searching sub-folders of /retroarch/overlay/GameBezels/<git_system>
+		git_system=${git_name#bezelproject-}
+		record "Git system : $git_system"
+		record "Installing games bezels for $roms_filescount ROMs..." "1"
+
+		# start job process (for background refresh)
+		echo "0" > "$TMP_PROGRESS_COUNT"
+		PID=
+		get_per "$system_to_install" "$roms_filescount" &
+		PID=$!
+
+		# check if running on a Mac or on Busybox
+		# (Mac for debug purposes, Batocera runs on Linux)
+		OS=`uname`
+
+		# *****************************************
+		# parse ROMs files in system_to_install
+		while read file_name; do
+				rom_name=$(basename "$file_name")
+				rom_no_ext="${rom_name%.*}"
+				rom_no_brkts="${rom_no_ext%% [*}"
+				rom_no_brkts="${rom_no_brkts%% (*}"
+				[ -z "$rom_name" ] && continue
+				let roms_count+=1
+				echo $roms_count > "$TMP_PROGRESS_COUNT"
+				record "ROM: #$roms_count $rom_name"
+
+				# ********************************************************
+				# parse index file for maching rom_name
+				matching_rom=0
+				while IFS=$'  \t' read index_bezel_md5 index_bezel_name ; do
+						[ -z "$index_bezel_name" ] && continue
+						index_ext="${index_bezel_name##*.}"
+						index_no_ext="${index_bezel_name%.*}"
+						index_no_brkts="${index_no_ext%% [*}"
+						index_no_brkts="${index_no_brkts%% (*}"
+
+						# ************************
+						# is there a match?
+						if [ "$rom_no_brkts" = "$index_no_brkts" ]; then
+								matching_rom=1
+
+								# *******************************************
+								# does the bezel for this game already exist?
+								if [ -f "$DECORATION_DIR"/"$BEZELPROJECT_GAMES_DIR"/"$system_to_install"/"$rom_no_ext.$index_ext" ]; then
+
+										# ********************************************************
+										# Check MD5, in case the bezel has been modified/updated ?
+										if [ $OS = "Darwin" ]; then
+												# MacOS X Version
+												bezel_md5=$(md5 -q "$DECORATION_DIR"/"$BEZELPROJECT_GAMES_DIR"/"$system_to_install"/"$rom_no_ext.$index_ext")
+										else
+												# Busybox version
+												bezel_md5=$(md5sum "$DECORATION_DIR"/"$BEZELPROJECT_GAMES_DIR"/"$system_to_install"/"$rom_no_ext.$index_ext" | cut -d ' ' -f 1)
+										fi
+										if [ "$bezel_md5" != "$index_bezel_md5" ]; then
+												# MODIFIED (updated)
+												record "MODIFIED : $index_bezel_name"
+												# replace all spaces with %20 for url request
+												formated_index_bezel_name=${index_bezel_name// /%20}
+												let bezels_installed+=1
+							 					# Arcade
+												if [ "$system_to_install" == "mame" ] ||
+														[ "$system_to_install" == "fba" ] ||
+														[ "$system_to_install" == "neogeo" ]; then
+														full_url="$url/raw/master/retroarch/overlay/ArcadeBezels/$formated_index_bezel_name"
+														curl -sfL "$full_url" -o "$DECORATION_DIR"/"$BEZELPROJECT_GAMES_DIR"/"$system_to_install"/"$rom_no_ext.$index_ext"
+														if [ "$?" -ne 0 ]; then
+																record "Warning : file $index_bezel_name could not be downloaded from $url"
+														fi
+												else
+														# Consoles
+														full_url="$url/raw/master/retroarch/overlay/GameBezels/$git_system/$formated_index_bezel_name"
+														curl -sfL "$full_url" -o "$DECORATION_DIR"/"$BEZELPROJECT_GAMES_DIR"/"$system_to_install"/"$rom_no_ext.$index_ext"
+														if [ "$?" -ne 0 ]; then
+																record "Warning : file $index_bezel_name could not be downloaded from $url"
+														fi
+												fi
+										else
+												# SKIPPED
+												record "SKIPPED : $index_bezel_name"
+										fi
+
+								else
+											# COPIED
+											record "COPIED : $index_bezel_name"
+											# replace all spaces with %20 for url request
+											formated_index_bezel_name=${index_bezel_name// /%20}
+											let bezels_installed+=1
+						 					# Arcade
+											if [ "$system_to_install" == "mame" ] ||
+													[ "$system_to_install" == "fba" ] ||
+													[ "$system_to_install" == "neogeo" ]; then
+													full_url="$url/raw/master/retroarch/overlay/ArcadeBezels/$formated_index_bezel_name"
+													curl -sfL "$full_url" -o "$DECORATION_DIR"/"$BEZELPROJECT_GAMES_DIR"/"$system_to_install"/"$rom_no_ext.$index_ext"
+													if [ "$?" -ne 0 ]; then
+															record "Warning : file $index_bezel_name could not be downloaded from $url"
+													fi
+											else
+													# Consoles
+													full_url="$url/raw/master/retroarch/overlay/GameBezels/$git_system/$formated_index_bezel_name"
+													curl -sfL "$full_url" -o "$DECORATION_DIR"/"$BEZELPROJECT_GAMES_DIR"/"$system_to_install"/"$rom_no_ext.$index_ext"
+													if [ "$?" -ne 0 ]; then
+															record "Warning : file $index_bezel_name could not be downloaded from $url"
+													fi
+											fi
+								fi
+								# break loop from index (we found a match, go to next ROM)
+								break
+						fi
+				done < "$TMP_INDEX_LIST"
+
+				# NOT MATCHING
+				if [ "$matching_rom" -eq 0 ]; then
+						record "NOT MATCHING : $rom_name"
+				fi
+		done < <(find "$ROMS_DIR"/"$system_to_install" -maxdepth 1 -type f -iname "[!._]*" -and ! -iname "gamelist*")
+		rm "$TMP_INDEX_LIST"
+
+		# kill job process
+		kill -9 "$PID"
+		PID=
+
+		record "$bezels_installed bezels for system $system_to_install ($roms_count ROMs) were installed/modified" "1"
+
+		# install default bezel (i.e. system not supported in TheBezelProject)
+		record "Installing default bezel" "1"
+		if [ -d "$DECORATION_DIR"/"$BEZELPROJECT_DIR" ]; then
+				url="$DEFAULT_BEZEL_URL"/default.png
+				curl -sfL "$url" -o "$DECORATION_DIR"/"$BEZELPROJECT_DIR"/default.png
+				if [ "$?" -ne 0 ]; then
+						record "Warning : file $(basename $url) could not be downloaded from $(dirname $url)"
+				fi
+				url="$DEFAULT_BEZEL_URL"/default.info
+				curl -sfL "$url" -o "$DECORATION_DIR"/"$BEZELPROJECT_DIR"/default.info
+				if [ "$?" -ne 0 ]; then
+						record "Warning : file $(basename $url) could not be downloaded from $(dirname $url)"
+				fi
+		fi
+
+		# sync disk
+		sync
+		return 0
 }
 
 ###############################
 #
 function remove() {
-	systemname="$1"
-	
-	#  do we want to remove all TheBezelProject ?
-	if [ "$systemname" == "all" ]; then
-		if [ -d "$DECODIR$BEZELPROJECTDIR" ]; then
-			read -p "Do you wish to remove all bezels ? " yn
-			if [[ "$yn" = "y" || "$yn" = "Y" ]]; then
-				rm -rf "$DECODIR$BEZELPROJECTDIR"
-			fi
+		local system_name="$1"
+
+		record "* Remove"
+		#  do you want to remove all bezels from TheBezelProject ?
+		if [ "$system_name" = "all" ]; then
+				if [ -d "$DECORATION_DIR"/"$BEZELPROJECT_DIR" ]; then
+						read -p "Do you wish to remove all bezels from TheBezelProject ? " yn
+						if [[ "$yn" = "y" || "$yn" = "Y" ]]; then
+								rm -rf "$DECORATION_DIR"/"$BEZELPROJECT_DIR"
+								record "Deleting : $DECORATION_DIR"/"$BEZELPROJECT_DIR"
+						fi
+						else
+								record "Error : bezels directory $DECORATION_DIR"/"$BEZELPROJECT_DIR is not valid" "1"
+								return 1
+					fi
 		else
-			echo "Error - bezels directory $DECODIR$BEZELPROJECTDIR is not valid"
-			return 1
+				# check if games/<system> directory exists
+				if [ ! -d "$DECORATION_DIR"/"$BEZELPROJECT_GAMES_DIR"/"$system_name" ]; then
+						record "Error : bezels for system $system_name could not be found" "1"
+						return 1
+				else
+						rm -rf "$DECORATION_DIR"/"$BEZELPROJECT_GAMES_DIR"/"$system_name"
+						record "Deleting : $DECORATION_DIR"/"$BEZELPROJECT_GAMES_DIR"/"$system_name"
+						rm -f "$DECORATION_DIR"/"$BEZELPROJECT_DIR"/default.*
+						record "Deleting : $DECORATION_DIR"/"$BEZELPROJECT_DIR"/default.*
+				fi
 		fi
-	else
-		# check if games/<system> directory exist
-		if [ ! -d "$DECODIR$BEZELPROJECTGAMESDIR$systemname" ]; then
-			echo "Error - bezels for system $systemname could not be found"
-			return 1
-		else
-			rm -rf "$DECODIR$BEZELPROJECTGAMESDIR$systemname"
-			rm -f "$DECODIR$BEZELPROJECTSYSTEMDIR$systemname.png"
-			rm -f "$DECODIR$BEZELPROJECTSYSTEMDIR$systemname.info"
-		fi
-	fi
+		# sync disk
+		sync
+		return 0
 }
 
 ###############################
@@ -300,17 +476,20 @@ function remove() {
 command="$1"
 system="$2"
 
-if [ ! -d "$DECODIR" ]; then
-	echo "Error - decorations directory $DECODIR is not valid"
-	exit 1
+trap do_clean EXIT
+record "Starting script v$VERSION"
+
+if [ ! -d "$DECORATION_DIR" ]; then
+		record "Error : decorations directory $DECORATION_DIR is not valid" "1"
+		exit 1
 fi
 
-if [[ "$command" == "list" ]]; then
-	list
-elif [[ "$command" == "install" && -n "$system" ]]; then
-	 install "$system"
-elif [[ "$command" == "remove" && -n "$system" ]]; then
-	 remove "$system"
+if [[ "$command" = "list" ]]; then
+		list
+elif [[ "$command" = "install" && -n "$system" ]]; then
+		install "$system"
+elif [[ "$command" = "remove" && -n "$system" ]]; then
+		remove "$system"
 else
-	usage
+		usage
 fi
