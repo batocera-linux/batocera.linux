@@ -2,6 +2,7 @@ config BR2_PACKAGE_LIBRETRO_FLYCAST
         bool "libretro-flycast"
 	depends on BR2_PACKAGE_RETROARCH
 	depends on BR2_INSTALL_LIBSTDCPP
+	depends on BR2_GCC_ENABLE_OPENMP
         help
           A libretro dreamcast emulator core.
 

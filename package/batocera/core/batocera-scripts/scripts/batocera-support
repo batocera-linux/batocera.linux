@@ -98,7 +98,7 @@ f_cp "${DHOME}/.kodi/temp/kodi.log"                 	      "${DKODI}"
 
 # core dumps
 DCORE="${TMPDIR}/coredumps"
-for C in /userdata/core.*
+for C in /userdata/system/logs/core.*
 do
     f_cp "${C}" "${DCORE}"
 done

@@ -59,6 +59,13 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
     systemConfig = system.config
     renderConfig = system.renderconfig
 
+    # basic configuration
+    retroarchConfig['quit_press_twice'] = 'false'            # not aligned behavior on other emus
+    retroarchConfig['video_driver'] = ''                     # keep the default one, always the best
+    retroarchConfig['video_black_frame_insertion'] = 'false' # don't use anymore this value while it doesn't allow the shaders to work
+    retroarchConfig['pause_nonactive'] = 'false'             # required at least on x86 x86_64 otherwise, the game is paused at launch
+    retroarchConfig['cache_directory'] = '/userdata/system/.cache'
+
     # fs is required at least for x86* and odroidn2
     retroarchConfig['video_fullscreen'] = 'true'
 
@@ -69,17 +76,13 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
 
     if 'shader' in renderConfig and renderConfig['shader'] != None:
         retroarchConfig['video_shader_enable'] = 'true'
-        retroarchConfig['video_smooth']        = 'false'
+        retroarchConfig['video_smooth']        = 'false'     # seems to be necessary for weaker SBCs
         shaderFilename = renderConfig['shader'] + ".glslp"
-
-        eslog.log("searching shader {}".format(shaderFilename))
         if os.path.exists("/userdata/shaders/" + shaderFilename):
             retroarchConfig['video_shader_dir'] = "/userdata/shaders"
             eslog.log("shader {} found in /userdata/shaders".format(shaderFilename))
         else:
             retroarchConfig['video_shader_dir'] = "/usr/share/batocera/shaders"
-
-        retroarchConfig['video_shader'] = retroarchConfig['video_shader_dir'] + "/" + shaderFilename
     else:
         retroarchConfig['video_shader_enable'] = 'false'
 
@@ -215,10 +218,27 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
         retroarchConfig['video_font_size'] = '32'
         retroarchConfig['menu_driver'] = 'ozone'
         # force the assets directory while it was wrong in some beta versions
-        retroarchConfig['assets_directory'] = '/usr/share/retroarch/assets'
+        retroarchConfig['assets_directory'] = '/usr/share/libretro/assets'
+
+    # AI service for game translations
+    if system.isOptSet('ai_service_enabled') and system.getOptBoolean('ai_service_enabled') == True:
+        retroarchConfig['ai_service_enable'] = 'true'
+        retroarchConfig['ai_service_mode'] = '0'
+        retroarchConfig['ai_service_source_lang'] = '0'
+        if system.isOptSet('ai_service_url') and system.config['ai_service_url']:
+            retroarchConfig['ai_service_url'] = system.config['ai_service_url']+'&mode=Fast&output=png&target_lang='+system.config['ai_target_lang']
+        else:
+            retroarchConfig['ai_service_url'] = 'http://ztranslate.net/service?api_key=BATOCERA&mode=Fast&output=png&target_lang='+system.config['ai_target_lang']
+    else:
+        retroarchConfig['ai_service_enable'] = 'false'
 
     # bezel
     writeBezelConfig(bezel, retroarchConfig, system.name, rom, gameResolution)
+
+    # custom : allow the user to configure directly retroarch.cfg via batocera.conf via lines like : snes.retroarch.menu_driver=rgui
+    for user_config in systemConfig:
+        if user_config[:10] == "retroarch.":
+            retroarchConfig[user_config[10:]] = systemConfig[user_config]
 
     return retroarchConfig
 

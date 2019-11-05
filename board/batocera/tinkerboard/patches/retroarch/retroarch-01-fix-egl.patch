@@ -1,13 +1,12 @@
 diff --git a/Makefile.common b/Makefile.common
-index b5d7ea0c0e..d798aa1e48 100644
+index 0b2889f0b2..9cd9b9fe8a 100644
 --- a/Makefile.common
 +++ b/Makefile.common
-@@ -1066,7 +1066,7 @@ OBJ += gfx/drivers_context/gfx_null_ctx.o \
+@@ -1101,7 +1101,7 @@ OBJ += gfx/drivers_context/gfx_null_ctx.o
  ifeq ($(HAVE_KMS), 1)
     HAVE_AND_WILL_USE_DRM = 1
     OBJ += gfx/drivers_context/drm_ctx.o
--   DEFINES += $(GBM_CFLAGS) $(DRM_CFLAGS) $(EGL_CFLAGS)
-+   DEFINES += $(GBM_CFLAGS) $(DRM_CFLAGS) $(EGL_CFLAGS) -D__GBM__
-    LIBS += $(GBM_LIBS) $(DRM_LIBS) $(EGL_LIBS)
+-   DEF_FLAGS += $(GBM_CFLAGS) $(DRM_CFLAGS)
++   DEF_FLAGS += $(GBM_CFLAGS) $(DRM_CFLAGS) -D__GBM__
+    LIBS += $(GBM_LIBS) $(DRM_LIBS)
  endif
- 

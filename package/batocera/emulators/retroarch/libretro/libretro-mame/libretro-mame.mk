@@ -3,11 +3,15 @@
 # MAME
 #
 ################################################################################
-# Version.: Commits on Aug 4, 2019 (0.212)
-LIBRETRO_MAME_VERSION = d69ac66741ae89b27d843bc645944bdc1f37265f
-LIBRETRO_MAME_SITE = $(call github,libretro,mame,$(LIBRETRO_MAME_VERSION))
+# Version: 0.214
+LIBRETRO_MAME_VERSION = mame-0.214
+# using poke-1,0 repo until upstream accepts our PRs
+LIBRETRO_MAME_SITE = $(call github,tcamargo,mame,$(LIBRETRO_MAME_VERSION))
+# LIBRETRO_MAME_SITE = $(call github,libretro,mame,$(LIBRETRO_MAME_VERSION))
+# LIBRETRO_MAME_OVERRIDE_SRCDIR = /sources/mame
 LIBRETRO_MAME_LICENSE = MAME
-
+# install in staging for debugging (gdb)
+LIBRETRO_MAME_INSTALL_STAGING=YES
 
 ifeq ($(BR2_x86_64),y)
 	LIBRETRO_MAME_EXTRA_ARGS += PTR64=1 LIBRETRO_CPU=x86_64 PLATFORM=x86_64
@@ -22,18 +26,30 @@ ifeq ($(BR2_arm),y)
 	LIBRETRO_MAME_ARCHOPTS += -D__arm__
 endif
 
+ifeq ($(BR2_ENABLE_DEBUG),y)
+	LIBRETRO_MAME_EXTRA_ARGS += SYMBOLS=1 SYMLEVEL=2 OPTIMIZE=0
+endif
+
 define LIBRETRO_MAME_BUILD_CMDS
-	$(MAKE) -C $(@D)/ REGENIE=1 VERBOSE=1 NOWERROR=1 PYTHON_EXECUTABLE=python2                     \
+	# create some dirs while with parallelism, sometimes it fails because this directory is missing
+	mkdir -p $(@D)/build/libretro/obj/x64/libretro/src/osd/libretro/libretro-internal
+
+	$(MAKE) -C $(@D)/ OPENMP=1 REGENIE=1 VERBOSE=1 NOWERROR=1 PYTHON_EXECUTABLE=python2            \
 		CONFIG=libretro LIBRETRO_OS="unix" ARCH="" PROJECT="" ARCHOPTS="$(LIBRETRO_MAME_ARCHOPTS)" \
 		DISTRO="debian-stable" OVERRIDE_CC="$(TARGET_CC)" OVERRIDE_CXX="$(TARGET_CXX)"             \
-		OVERRIDE_LD="$(TARGET_LD)" RANLIB="$(TARGET_RANLIB)" AR="$(TARGET_AR)"                      \
+		OVERRIDE_LD="$(TARGET_LD)" RANLIB="$(TARGET_RANLIB)" AR="$(TARGET_AR)"                     \
 		$(LIBRETRO_MAME_EXTRA_ARGS) CROSS_BUILD=1 TARGET="mame" SUBTARGET="arcade" RETRO=1         \
-		OSD="retro"
+		OSD="retro" DEBUG=0
 endef
 
 define LIBRETRO_MAME_INSTALL_TARGET_CMDS
 	$(INSTALL) -D $(@D)/mamearcade_libretro.so \
 		$(TARGET_DIR)/usr/lib/libretro/mame_libretro.so
+endef
+
+define LIBRETRO_MAME_INSTALL_STAGING_CMDS
+	$(INSTALL) -D $(@D)/mamearcade_libretro.so \
+		$(STAGING_DIR)/usr/lib/libretro/mame_libretro.so
 endef
 
 $(eval $(generic-package))

@@ -1,0 +1,163 @@
+<html>
+  <head>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+    <script src="https://batocera.org/assets/js/jquery-3.4.1.min.js"></script>
+    <script src="https://batocera.org/assets/js/popper.js@1"></script>
+    <script src="https://batocera.org/assets/js/tippy.js@5"></script>
+    <link rel="stylesheet" href="https://batocera.org/assets/css/backdrop.css" />
+    <script>
+$(function() {
+    $.getJSON("batocera_systemsReport.json", function(data) {
+	var tab = "<table>"
+
+	// archs
+	tab += "<thead>"
+	tab += "<tr><th>System</th><th>Emulator</th>"
+	$.each(data, function(arch, arch_data) {
+	    tab += "<th class=\"archname\">" + arch + "</th>"
+	})
+	tab += "</tr>"
+	tab += "</thead>"
+
+	// systems
+	var any_arch = ""
+	$.each(data, function(arch, arch_data) {
+	    one_arch = arch
+	})
+
+	tab += "<tbody>"
+	$.each(data[one_arch], function(system, one_arch_system_data) {
+	    // core
+	    var n = 1
+	    $.each(one_arch_system_data["emulators"], function(one_emulator, one_arch_emulator_data) {
+	    	$.each(one_arch_emulator_data, function(one_core, one_arch_core_data) {
+		    tab += "<tr>"
+		    if(n == 1) {
+			// system
+			var nb_system_cores = one_arch_system_data["nb_all_variants"]
+			tab += "<td rowspan=\"" + nb_system_cores + "\"><span data-tippy-content=\"" + system + "\">" + one_arch_system_data.name + "</span></td>"
+		    }
+		    // core
+		    tab += "<td>"
+		    if(one_emulator == one_core) {
+	    		tab += one_emulator
+	    	    } else {
+	    		tab += one_emulator + "/" + one_core
+	    	    }
+		    tab += "</td>"
+
+		    // each arch core
+		    $.each(data, function(arch, arch_data) {
+			$.each(arch_data[system].emulators, function(emulator, emulator_data) {
+			    $.each(emulator_data, function(core, core_data) {
+				if(emulator == one_emulator && core == one_core) {
+				    if(core_data.enabled) {
+					if(arch_data[system].red_flag) {
+					    if(core_data.explanation) {
+	    					tab += "<td class=\"redflagexp\">"
+					    } else {
+						tab += "<td class=\"redflag\">"
+					    }
+					} else {
+					    tab += "<td class=\"greenflag\">"
+					}
+					if(core_data.default && arch_data[system].nb_all_variants != 1) {
+					    tab += "<img src=\"https://batocera.org/images/sys_default.png\" />"
+					}
+					if(core_data.explanation) {
+					    tab += "<span data-tippy-content=\"" + core_data.explanation + "\">.<img src=\"https://batocera.org/images/sys_ok.png\" /></span>"
+					} else {
+					    tab += "<img src=\"https://batocera.org/images/sys_ok.png\" />"
+					}
+	                                $.each(core_data.flags, function(n, flag) {
+					    tab += "<span data-tippy-content=\"" + flag + "\">"
+					    switch(flag) {
+					    case "overclocking":
+						tab += "<img src=\"https://batocera.org/images/sys_overclock.png\" />"
+						break;
+					    case "slow_games":
+						tab += "<img src=\"https://batocera.org/images/sys_depends_games.png\" />"
+						break;
+					    case "opengl3.0":
+						tab += "<img src=\"https://batocera.org/images/sys_opengl.png\" />"
+						break;
+					    default:
+						tab += flag
+					    }
+					    tab += "</span>"
+					})
+					tab += "</td>"
+				    } else {
+	  				if(arch_data[system].red_flag && !core_data.explanation) {
+					    tab += "<td class=\"noreasonflag\"></td>"
+					} else {
+					    tab += "<td></td>"
+					}
+				    }
+				}
+			    })
+			})
+		    })
+
+
+		    tab += "</tr>"
+		    n++
+	    	})
+	    })
+	})
+	tab += "</tbody>"
+
+	tab += "</table>"
+	$("#id_table").html(tab)
+	tippy('[data-tippy-content]')
+    })
+})
+    </script>
+    <style>
+body {
+    background-color: #101050;
+    color: #aaa;
+}
+table {
+    display: inline-table;
+    border: solid 1px;
+    border-collapse: collapse;
+}
+table th, table td {
+    border: solid 1px;
+}
+ul {
+  list-style: none;
+}
+.redflag {
+    text-align: center;
+    background-color: #f0a;
+}
+.redflagexp {
+    text-align: center;
+    background-color: #f9d;
+}
+.greenflag {
+    text-align: center;
+}
+.noreasonflag {
+  background-color: #fcf;
+}
+.archname {
+    writing-mode: vertical-rl;
+    text-orientation: upright;
+}
+    </style>
+  </head>
+  <body>
+    <ul>
+    <li><img src="https://batocera.org/images/sys_ok.png" /> Available</li>
+    <li><img src="https://batocera.org/images/sys_default.png" /> Default emulator (when several options are available)</li>
+    <li><img src="https://batocera.org/images/sys_overclock.png" /> Requires overclocking</li>
+    <li><img src="https://batocera.org/images/sys_depends_games.png" /> Low performance for some games</li>
+    <li><img src="https://batocera.org/images/sys_opengl.png" /> Requires a minimum OpenGL version</li>
+    </ul>
+
+    <div id="id_table" />
+  </body>
+</html>

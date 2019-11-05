@@ -47,6 +47,9 @@ ls ${BRDIR}/output/images/batocera/*.{xz,gz} |
     done
 echo "</ul>"
 
+echo "<h2>Emulators details</h2>"
+echo "<a href=\"batocera_systemsReport.html\">Emulator details</a>"
+
 echo "<h2>Translations</h2>"
 echo "<table>"
 echo "<tr><th>Language</th><th>Status</th><th>Translated</th><th>Fuzzy</th><th>Untranslated</th></tr>"
