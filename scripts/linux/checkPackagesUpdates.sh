@@ -7,7 +7,7 @@ PACKAGES_KODI="kodi-superrepo-repositories kodi-superrepo-repositories"
 PACKAGES_RETROARCH="retroarch libretro-pcsx libretro-snes9x-next libretro-4do libretro-81 libretro-beetle-lynx libretro-beetle-ngp libretro-beetle-pce libretro-beetle-pcfx libretro-armsnes libretro-beetle-supergrafx libretro-beetle-vb libretro-beetle-wswan libretro-bluemsx libretro-cap32 libretro-cheats libretro-fbneo libretro-fceumm libretro-fmsx libretro-fuse libretro-gambatte libretro-genesisplusgx libretro-gpsp libretro-gw libretro-hatari libretro-imageviewer libretro-imame libretro-lutro libretro-mame2003 libretro-mesen libretro-mesen-s libretro-vba-m libretro-mame2010 libretro-mgba libretro-mupen64 libretro-nestopia libretro-nxengine libretro-o2em libretro-picodrive libretro-pocketsnes libretro-prboom libretro-prosystem libretro-stella libretro-tgbdual libretro-vecx libretro-virtualjaguar libretro-snes9x libretro-yabause libretro-beetle-saturn libretro-flycast libretro-desmume libretro-mupen64plus libretro-parallel-n64 libretro-freeintv libretro-atari800"
 PACKAGES_MUPEN="mupen64plus-audio-sdl mupen64plus-core mupen64plus-gles2 mupen64plus-gliden64 mupen64plus-input-sdl mupen64plus-omx mupen64plus-rice mupen64plus-rsphle mupen64plus-uiconsole mupen64plus-video-glide64mk2"
 PACKAGES_OTHERS="dolphin-emu ppsspp reicast linapple-pie advancemame vice amiberry fsuae dosbox"
-PACKAGES_MISC="virtualgamepads python-es-scraper qtsixa qtsixa-shanwan evwait raspi2png jstest2 mk_arcade_joystick_rpi sselph-scraper"
+PACKAGES_MISC="virtualgamepads qtsixa qtsixa-shanwan raspi2png jstest2 mk_arcade_joystick_rpi"
 
 PACKAGES_TEST="retroarch ppsspp"
 
@@ -15,7 +15,6 @@ PACKAGES_TEST="retroarch ppsspp"
 # PKGVER_6fc6bfbb243de4da05a86d1edc3950815a964f1e=v1.7.1 # retroarch
 
 PACKAGES_GROUPS="KODI RETROARCH MUPEN MISC OTHERS"
-ARCHIS="odroidc2 odroidxu4 rpi1 rpi2 rpi3 x86 x86_64 s905 s912"
 ### ############# ###
 
 ## SPECIFICS ##
@@ -43,7 +42,7 @@ tput_bold="$(tput smso)"
 # HELPERS ##
 
 base_GETCUR() {
-    X=$(grep '_VERSION = ' "package/batocera/${1}/"*".mk" 2>/dev/null | grep -vE '^#' | head -1 | sed -e s+'.* = '+''+ | sed -e s+' '++g)
+    X=$(grep '_VERSION = ' $(find package/batocera -name "${1}.mk") 2>/dev/null | grep -vE '^#' | head -1 | sed -e s+'.* = '+''+ | sed -e s+' '++g)
     if test -z "$X"
     then
 	echo "unknown (you should run from the top buildroot directory)"
@@ -103,9 +102,9 @@ github_base() {
     GH_SIZE=$(echo "${GH_VERS}" | wc -c)
     if test "${GH_SIZE}" = 41 # git full checksum
     then
-	grep '_SITE = \$(call github,' "package/batocera/${1}/"*".mk" 2>/dev/null | grep -vE '^#' | head -1 | sed -e s+'^.*call github,\([^,]*\),\([^,]*\),.*$'+'\1/\2:lastcommit'+
+	grep '_SITE = \$(call github,' $(find package/batocera -name "${1}.mk") 2>/dev/null | grep -vE '^#' | head -1 | sed -e s+'^.*call github,\([^,]*\),\([^,]*\),.*$'+'\1/\2:lastcommit'+
     else
-	grep '_SITE = \$(call github,' "package/batocera/${1}/"*".mk" 2>/dev/null | grep -vE '^#' | head -1 | sed -e s+'^.*call github,\([^,]*\),\([^,]*\),.*$'+'\1/\2:'"${GH_VERS}"+
+	grep '_SITE = \$(call github,' $(find package/batocera -name "${1}.mk") 2>/dev/null | grep -vE '^#' | head -1 | sed -e s+'^.*call github,\([^,]*\),\([^,]*\),.*$'+'\1/\2:'"${GH_VERS}"+
     fi
 }
 
@@ -165,7 +164,7 @@ setPGroups() {
     if test -z "${PGROUPS}" -o "${PGROUPS}" = "ALL"
     then
 	PGROUPS=${PACKAGES_GROUPS}
-	PACKAGES=$(find package/batocera -mindepth 1 -maxdepth 1 -type d | sed -e s+'^package/batocera/'++ | tr '\n' ' ')
+	PACKAGES=$(find package/batocera -name "*.mk" | grep -vE '/batocera\.mk$' | sed -e s+"^.*/\([^/]*\).mk$"+"\1"+ | tr '\n' ' ')
 	return
     fi
 
@@ -180,40 +179,6 @@ setPGroups() {
     done
 }
 
-getTargets() {
-    CFGSEARCH=$(echo "$1" | tr '[:lower:]' '[:upper:]' | tr - _)
-    TGTMP=
-    MISSNUM=0
-    MISSLAST=
-    for TG in ${ARCHIS}
-    do
-	if grep -qE "^[ ]*BR2_PACKAGE_${CFGSEARCH}=y.*" "configs/batocera-${TG}_defconfig"
-	then
-	    if test -z "${TGTMP}"
-	    then
-		TGTMP="${TG}"
-	    else
-		TGTMP="${TGTMP} ${TG}"
-	    fi
-	else
-	    let MISSNUM++
-	    MISSLAST=${TG}
-	fi
-    done
-    if test "${ARCHIS}" = "${TGTMP}"
-    then
-	# all
-	echo "*"
-    elif test "${MISSNUM}" -eq 1
-    then
-	# all but 1
-	echo "-${MISSLAST}"
-    else
-	# too complex, display them
-	echo "${TGTMP}"
-    fi
-}
-
 ## /GENERATORS ##
 
 run() {
@@ -223,9 +188,9 @@ run() {
     current_base_eval
 
     printf "Groups: %s\n" "${PGROUPS}"
-    printf "+----------------------------------+----------------------------------------------+---------------------------------------------------------+---------------------------------------------------------+\n"
-    printf "| %-32s | %-44s | %-55s | %-55s |\n" "Package" "Architectures" "Available version" "Version"
-    printf "+----------------------------------+----------------------------------------------+---------------------------------------------------------+---------------------------------------------------------+\n"
+    printf "+----------------------------------+---------------------------------------------------------+---------------------------------------------------------+\n"
+    printf "| %-32s | %-55s | %-55s |\n" "Package" "Available version" "Version"
+    printf "+----------------------------------+---------------------------------------------------------+---------------------------------------------------------+\n"
     for pkg in $PACKAGES
     do
 	(
@@ -233,7 +198,6 @@ run() {
 	    FCURV="${pkg}_GETCUR ${pkg}"
 	    NETV=$(${FNETV})
 	    CURV=$(${FCURV})
-	    TARGETV=$(getTargets "${pkg}")
 
 	    # versions can have an indirection level thanks to VER_ variables
 	    EXCPSTR=
@@ -247,20 +211,20 @@ run() {
 	    if test "${CURV}" = "master"
 	    then
 		# plug on last version
-		printf "| %-32s | %44s | %-55s | ${tput_yellow}%-55s${tput_reset} |\n" "${pkg}" "${TARGETV}" "" "${CURV}${EXCPSTR}"
+		printf "| %-32s | %-55s | ${tput_yellow}%-55s${tput_reset} |\n" "${pkg}" "" "${CURV}${EXCPSTR}"
 	    else
 		if test -n "${NETV}" -a "${NETV}" = "${CURV}"
 		then
 		    # good
-		    printf "| %-32s | %44s | %-55s | ${tput_green}%-55s${tput_reset} |\n" "${pkg}" "${TARGETV}" "" "${CURV}${EXCPSTR}"
+		    printf "| %-32s | %-55s | ${tput_green}%-55s${tput_reset} |\n" "${pkg}" "" "${CURV}${EXCPSTR}"
 		else
 		    if test -z "${NETV}"
 		    then
 			# unknown
-			printf "| %-32s | %44s | %-55s | ${tput_pink}%-55s${tput_reset} |\n" "${pkg}" "${TARGETV}" "${NETV}" "${CURV}${EXCPSTR}"
+			printf "| %-32s | %-55s | ${tput_pink}%-55s${tput_reset} |\n" "${pkg}" "${NETV}" "${CURV}${EXCPSTR}"
 		    else
 			# not good
-			printf "| %-32s | %44s | %-55s | ${tput_red}%-55s${tput_reset} |\n" "${pkg}" "${TARGETV}" "${NETV}" "${CURV}${EXCPSTR}"
+			printf "| %-32s | %-55s | ${tput_red}%-55s${tput_reset} |\n" "${pkg}" "${NETV}" "${CURV}${EXCPSTR}"
 		    fi
 		fi
 	    fi
@@ -268,17 +232,17 @@ run() {
     done | sort
     wait
 
-    printf "+----------------------------------+----------------------------------------------+---------------------------------------------------------+---------------------------------------------------------+\n"
+    printf "+----------------------------------+---------------------------------------------------------+---------------------------------------------------------+\n"
 }
 
 base_UPDATE() {
-    sed -i -e s+"^\([ ]*[a-zA-Z0-9_]*_VERSION[ ]*=[ ]*\).*$"+"\1${2}"+ "package/batocera/${1}/"*".mk"
+    sed -i -e s+"^\([ ]*[a-zA-Z0-9_]*_VERSION[ ]*=[ ]*\).*$"+"\1${2}"+ $(find package/batocera -name "${1}.mk")
 }
 
 run_update() {
     updpkg=${1}
 
-    if test ! -d "package/batocera/${updpkg}"
+    if test ! -f $(find package/batocera -name "${1}.mk")
     then
 	echo "invalid package name \"${updpkg}\"" >&2
 	return 1
