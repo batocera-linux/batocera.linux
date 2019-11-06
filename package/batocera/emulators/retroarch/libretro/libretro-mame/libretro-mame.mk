@@ -4,7 +4,7 @@
 #
 ################################################################################
 # Version: 0.214
-LIBRETRO_MAME_VERSION = 4d35f0d1212be9104abd56a1b7c7c142d2e5977e
+LIBRETRO_MAME_VERSION = 3f88377f0257949dda5ab142b731b1e26a91e9ce
 # using poke-1,0 repo until upstream accepts our PRs
 LIBRETRO_MAME_SITE = $(call github,tcamargo,mame,$(LIBRETRO_MAME_VERSION))
 # LIBRETRO_MAME_SITE = $(call github,libretro,mame,$(LIBRETRO_MAME_VERSION))
