@@ -8,44 +8,52 @@
 	* Refreshed Batocera logo (when loading ES)
 	* add: new "curvature" shader set
 	* add: new "splash screen" Batocera intro video. (special thanks to Christo Snakervill).
-	* es: option "enable navigation sounds" in menus.
-	* es: Load systems using threaded loading when processor threads > 2
-	* es: Added a progressbar during loading
-	* es: The titlescreen/progressbar is also displayed when "UPDATE GAMES LISTS" runs.
-	* es: Full support for menu themings & help images
-	* es: Full support for recalbox themes & every existing EmulationStation Themes.
-	* es: Add video & marquee support in detailed view (video is used in RB detailed view)
-	* es: Fixes for video start delay & fadings.
-	* es: Updated menu & buttons resources : they need to be white to draw correctly with themed menus.
-	* es: GuiMenu opening animation.
-	* es: Menu navigation : when on top & moving top, select last item ( et inversement... )
-	* es: Menus : Better animations + fix size calculation problems.
-	* es: Clock : use font & color of help system
-	* es: Options : Add FavoritesFirst & CollectionShowSystemInfo options
+	* es: Performance : Load systems using threaded loading when processor threads > 2
+	* es: Performance : Async loading for images
+	* es: Memory : VRam usage optimisations for images & videos. Optimisations in image management.
+	* es: Memory : Ram usage optimisation (gamelist storage...)
+	* es: UI : Added a progressbar during loading, changing themes and reloading game lists.
+	* es: UI : Enhanced Grid Views modes.
+	* es: UI : Updated menu & buttons resources.
+	* es: UI : Added menu animations.
+	* es: UI : Show decorations preview.
+	* es: UI : Menu navigation when on top & moving top, select last item
+	* es: UI : On Screen Keyboard : Fixed lowercasing + Support for French Layout
+	* es: UI : New developer menu containing advanced ES tools for developers.
+	* es: UI : Added icons in message boxes
+	* es: Themes : support for menu themings, help, clock, controllers activity
+	* es: Themes : full support for recalbox themes & every existing EmulationStation Themes.
+	* es: Themes : Support for Theme musics.
+	* es: Themes : NinePatchComponent : fixed & added support for color, centerColor, edgeColor and cornerSize in themes & can be created as "extra" in themes.
+	* es: Themes : VideoVlcComponent : can now be added as extra in themes
+	* es: Themes : Add video, marquee & thumbnail support in detailed view
+	* es: Themes : new "screen" view ( to display OSD text and images )
+	* es: Themes : new "custom" views.
+	* es: Themes : custom subsets
+	* es: Themes : Support for tinyscreens
+	* es: Themes : Support for localisation
+	* es: Video component : Optimizations & Fixes. Added support for minSize. Add bump effect.
+	* es: Image component : Support for reflexion, fixed opacity, scaling
+	* es: Text component : Support for reflexion, fixed opacity
+	* es: Scraper : Scrapping in a background thread.
+	* es: ScreenScraper : Added options IMAGE SOURCE, BOX SOURCE, LOGO SOURCE and SCRAPE VIDEOS for ScreenScraper.
+	* es: new option : Add Show Folders
+	* es: new option : Show Favorites First
+	* es: new option : Show System name in collection.
+	* es: new option : Show System name in collection.
+	* es: new option : Show Filenames in lists.
+	* es: new option : Show controllers activity.
+	* es: new option : Start on gamelist
+	* es: new option : Enable navigation sounds.
+	* es: new option : Add a developer option to change log level or disable logging.
+	* es: new option : Song names pop-up display time is now configurable
+	* es: new option : Removed filter "HIDDEN" replaced by option "SHOW HIDDEN FILES"
+	* es: ScreenSaver : Show logos & text in video and image screensavers.
+	* es: ScreenSaver : Show decorations in video and image screensavers.
 	* es: F5 Key : Use it to reload themes ( for themers )...
-	* es: Added to abitity to theme clock
-	* es: New config item audio.display_titles_time=10 in batocera.conf to display the song titles pop-up window
 	* es: Small Screen / GPI : Show menus in fullscreen & scaled
-	* es: NinePatchComponent : fixed & added support for color, centerColor, edgeColor and cornerSize in themes & can be created as "extra" in themes.
-	* es: VideoVlcComponent : can now be added as extra in themes + support forminSize.
-	* es: ScreenScraper : Added options PREFERED IMAGE SOURCE, PREFERED THUMBNAIL SOURCE, SCRAPE MARQUEE and SCRAPE VIDEOS for manual scrapping using ScreenScraper.
-	* es: Add a developer option to disable logs
-	* es: Show lowercases when the Keyboard is in lowercase....
-	* es: Support for French Layout
-	* es: UI : Added new option START ON GAMELIST
-	* es: ImageComponent : Support for reflexion element in themes
-	* es: Themes : Support for custom views
-	* es: ThemeData : Support tinyscreen attribute in includes
-	* es: Theme installer : Brand new look
-	* es: TheBezelProject installer : same brand new look
-	* es: CECInput : Change Name that appear on the TV to Batocera
-	* es: GuiMsgBox : Support for icons
-	* es: Video component : Add bump effect
-	* es: Added "SHOW FOLDERS" option to display (or not) flat game list
-	* es: Removed filter "HIDDEN" replaced by option "SHOW HIDDEN FILES"
-	* es: Added "UPDATE GAMES LISTS" in Gamelist options.
-	* es: Moved SHOW FAVORITES ON TOP option in gamelist options
-	* es: Song names pop-up display time is now configurable
+	* es: Theme installer : Brand new look + download/install in background
+	* es: TheBezelProject : Brand new look + download/install in background
 	* nvidia-driver: version bump (435.21)
 	* libretro: updated cores
 	* 3ds: bump citra-emu
