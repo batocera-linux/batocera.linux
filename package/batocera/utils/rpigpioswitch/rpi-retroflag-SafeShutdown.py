@@ -33,7 +33,6 @@ def ledBlink():
 	while True:
 		GPIO.output(ledPin, GPIO.HIGH)
 		GPIO.wait_for_edge(powerPin, GPIO.FALLING)
-		start = time.time()
 		while GPIO.input(powerPin) == GPIO.LOW:
 			GPIO.output(ledPin, GPIO.LOW)
 			time.sleep(0.2)
@@ -61,5 +60,3 @@ if __name__ == "__main__":
 	powerProcess.join()
 	ledProcess.join()
 	resetProcess.join()
-
-	GPIO.cleanup()
