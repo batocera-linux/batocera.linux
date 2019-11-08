@@ -64,6 +64,7 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
     retroarchConfig['video_driver'] = ''                     # keep the default one, always the best
     retroarchConfig['video_black_frame_insertion'] = 'false' # don't use anymore this value while it doesn't allow the shaders to work
     retroarchConfig['pause_nonactive'] = 'false'             # required at least on x86 x86_64 otherwise, the game is paused at launch
+    retroarchConfig['cache_directory'] = '/userdata/system/.cache'
 
     # fs is required at least for x86* and odroidn2
     retroarchConfig['video_fullscreen'] = 'true'
@@ -224,7 +225,7 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
         retroarchConfig['ai_service_enable'] = 'true'
         retroarchConfig['ai_service_mode'] = '0'
         retroarchConfig['ai_service_source_lang'] = '0'
-        if system.config['ai_service_url']:
+        if system.isOptSet('ai_service_url') and system.config['ai_service_url']:
             retroarchConfig['ai_service_url'] = system.config['ai_service_url']+'&mode=Fast&output=png&target_lang='+system.config['ai_target_lang']
         else:
             retroarchConfig['ai_service_url'] = 'http://ztranslate.net/service?api_key=BATOCERA&mode=Fast&output=png&target_lang='+system.config['ai_target_lang']

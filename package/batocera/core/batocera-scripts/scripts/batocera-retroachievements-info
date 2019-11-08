@@ -37,7 +37,7 @@ function process() {
 		# UserPic=$(cat $tmpfile | grep 'meta property=.og:image. content=' | cut -d= -f3 | awk -F\' '{print $2}')
 		echo "Player $USER $points is $rank"
 		echo "Last RetroAchievements games played:"
-		cat $tmpfile | awk '{match($0,/Game.*points.<br\/><div class=/); s=substr($0, RSTART, RLENGTH); printf "%s",s }' | sed -e "/^[[:blank:]]*$/d" | sed -e 's/points.<br\/><div class=/points\@\\\n/g;' > "$tmpfile"_2
+		cat $tmpfile | awk '{match($0,/Game.*points.<br\/>/); s=substr($0, RSTART, RLENGTH); printf "%s",s }' | sed -e "/^[[:blank:]]*$/d" | sed -e 's/points.<br\/>/points\@\\\n/g;' > "$tmpfile"_2
 		cat "$tmpfile"_2 | awk -v FS="(Game/[0-9]*'>|@)" '{print $2}' | sed -e "s;</a><br/>\(Last played[ 0-9:-]*\)<br/>\(.*\);@\2@\1;" | sed -e "s;achievements, ;achievements@;" | sed -e "s;Earned ;;"
 	else
 		echo "Player $USER not found on https://retroachievements.org"
