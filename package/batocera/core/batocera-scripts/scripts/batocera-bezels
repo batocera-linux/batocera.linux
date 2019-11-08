@@ -1,0 +1,75 @@
+#!/bin/bash
+
+ACTION=$1
+
+do_help() {
+    echo "${1} list"
+}
+
+do_list() {
+    (
+	GLOBAL_DIR="/usr/share/batocera/datainit/decorations"
+	USER_DIR="/userdata/decorations"
+	
+	ls "${GLOBAL_DIR}" |
+	    while read X
+	    do
+		if test -d "${GLOBAL_DIR}/${X}"
+		then
+		    if test ! -d "${USER_DIR}/${X}" # priority to user dirs
+		    then
+			do_list_item "${GLOBAL_DIR}" "${X}"
+		    fi
+		fi
+	    done
+
+	USER_DIR="/userdata/decorations"
+	ls "${USER_DIR}" |
+	    while read X
+	    do
+		if test -d "${USER_DIR}/${X}"
+		then
+		    do_list_item "${USER_DIR}" "${X}"
+		fi
+	    done
+    ) | sort
+}
+
+do_list_item() {
+    PARENT_DIR=$1
+    X=$2
+
+    # find the default image
+    if test -e "${PARENT_DIR}/${X}/default.png"
+    then
+	echo "${X} ${PARENT_DIR}/${X}/default.png"
+	return
+    fi
+
+    # find image in a system
+    ANYSYS=$(ls "${PARENT_DIR}/${X}/systems/"*".png" 2>/dev/null | head -1)
+    if test -n "${ANYSYS}"
+    then
+	echo "${X} ${ANYSYS}"
+	return
+    fi
+
+    # find image in a game
+    ANYSYS=$(ls "${PARENT_DIR}/${X}/games/"*".png" 2>/dev/null | head -1)
+    if test -n "${ANYSYS}"
+    then
+	echo "${X} ${ANYSYS}"
+	return
+    fi
+
+    # nothing found
+    echo "${X} xxxx"
+}
+
+case "${ACTION}" in
+    "list")
+	do_list
+	;;
+    *)
+	do_help "${0}"
+esac

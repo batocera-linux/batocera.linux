@@ -1,4 +1,71 @@
-2019/xx/xx - batocera.linux 5.23
+2019/xx/xx - batocera.linux 5.24
+	* x86/x86_64: fix support for +2TB disks
+	* x86_64: support for recent UEFI-only motherboards, including Apple MacBook Pro
+	* libretro: update core (nestopia)
+	* libretro: enable AI game translation
+	* wii/gamecube: custom textures in /userdata/saves/dolphin-emu/Load/Textures/<game id> will be loaded automatically.
+	* New default music themes (chiptunes by Waterflame)
+	* Refreshed Batocera logo (when loading ES)
+	* add: new "curvature" shader set
+	* add: new "splash screen" Batocera intro video. (special thanks to Christo Snakervill).
+	* es: Performance : Load systems using threaded loading when processor threads > 2
+	* es: Performance : Async loading for images
+	* es: Memory : VRam usage optimisations for images & videos. Optimisations in image management.
+	* es: Memory : Ram usage optimisation (gamelist storage...)
+	* es: UI : Added a progressbar during loading, changing themes and reloading game lists.
+	* es: UI : Enhanced Grid Views modes.
+	* es: UI : Updated menu & buttons resources.
+	* es: UI : Added menu animations.
+	* es: UI : Show decorations preview.
+	* es: UI : Menu navigation when on top & moving top, select last item
+	* es: UI : On Screen Keyboard : Fixed lowercasing + Support for French Layout
+	* es: UI : New developer menu containing advanced ES tools for developers.
+	* es: UI : Added icons in message boxes
+	* es: Themes : support for menu themings, help, clock, controllers activity
+	* es: Themes : full support for recalbox themes & every existing EmulationStation Themes.
+	* es: Themes : Support for Theme musics.
+	* es: Themes : NinePatchComponent : fixed & added support for color, centerColor, edgeColor and cornerSize in themes & can be created as "extra" in themes.
+	* es: Themes : VideoVlcComponent : can now be added as extra in themes
+	* es: Themes : Add video, marquee & thumbnail support in detailed view
+	* es: Themes : new "screen" view ( to display OSD text and images )
+	* es: Themes : new "custom" views.
+	* es: Themes : custom subsets
+	* es: Themes : Support for tinyscreens
+	* es: Themes : Support for localisation
+	* es: Video component : Optimizations & Fixes. Added support for minSize. Add bump effect.
+	* es: Image component : Support for reflexion, fixed opacity, scaling
+	* es: Text component : Support for reflexion, fixed opacity
+	* es: Scraper : Scrapping in a background thread.
+	* es: ScreenScraper : Added options IMAGE SOURCE, BOX SOURCE, LOGO SOURCE and SCRAPE VIDEOS for ScreenScraper.
+	* es: new option : Add Show Folders
+	* es: new option : Show Favorites First
+	* es: new option : Show System name in collection.
+	* es: new option : Show System name in collection.
+	* es: new option : Show Filenames in lists.
+	* es: new option : Show controllers activity.
+	* es: new option : Start on gamelist
+	* es: new option : Enable navigation sounds.
+	* es: new option : Add a developer option to change log level or disable logging.
+	* es: new option : Song names pop-up display time is now configurable
+	* es: new option : Removed filter "HIDDEN" replaced by option "SHOW HIDDEN FILES"
+	* es: ScreenSaver : Show logos & text in video and image screensavers.
+	* es: ScreenSaver : Show decorations in video and image screensavers.
+	* es: F5 Key : Use it to reload themes ( for themers )...
+	* es: Small Screen / GPI : Show menus in fullscreen & scaled
+	* es: Theme installer : Brand new look + download/install in background
+	* es: TheBezelProject : Brand new look + download/install in background
+	* nvidia-driver: version bump (435.21)
+	* libretro: updated cores
+	* 3ds: bump citra-emu
+	* 3ds: added libretro-citra
+	* snes: added libretro-bsnes
+	* lr-mame: version bump (0.214)
+	* retroarch: version bump (1.7.9.2)
+	* lr-mame2003plus: version bump
+	* ppsspp: version bump (1.9.4)
+	* lightgun bezel (by Orions Angel, modified, screen enlarged and improved by Fery65)
+
+2019/09/06 - batocera.linux 5.23
 	* games collections (custom, last played games, favorites)
 	* /userdata/system/scripts user scripts to react to starting/stopping of games
 	* new options available from es : fullboot for ps2 and emulated wiimotes for wii

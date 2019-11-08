@@ -4,16 +4,19 @@
 #
 ################################################################################
 
-LIBEVENT_VERSION = 2.1.10
+LIBEVENT_VERSION = 2.1.11
 LIBEVENT_SITE = https://github.com/libevent/libevent/releases/download/release-$(LIBEVENT_VERSION)-stable
 LIBEVENT_SOURCE = libevent-$(LIBEVENT_VERSION)-stable.tar.gz
 LIBEVENT_INSTALL_STAGING = YES
 LIBEVENT_LICENSE = BSD-3-Clause, OpenBSD
 LIBEVENT_LICENSE_FILES = LICENSE
-# For 0001-Disable-building-test-programs.patch
-LIBEVENT_AUTORECONF = YES
-LIBEVENT_CONF_OPTS = --disable-samples
-HOST_LIBEVENT_CONF_OPTS = --disable-samples --disable-openssl
+LIBEVENT_CONF_OPTS = \
+	--disable-libevent-regress \
+	--disable-samples
+HOST_LIBEVENT_CONF_OPTS = \
+	--disable-libevent-regress \
+	--disable-samples \
+	--disable-openssl
 
 define LIBEVENT_REMOVE_PYSCRIPT
 	rm $(TARGET_DIR)/usr/bin/event_rpcgen.py

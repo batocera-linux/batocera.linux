@@ -27,14 +27,11 @@ else
 endif
 
 define MUPEN64PLUS_GLIDEN64_INSTALL_TARGET_CMDS
-	mkdir -p $(TARGET_DIR)/recalbox/configs/mupen64/
 	mkdir -p $(TARGET_DIR)/usr/share/mupen64plus/
 	$(INSTALL) -D $(@D)/src/plugin/$(MUPEN64PLUS_GLIDEN64_RELTYPE)/mupen64plus-video-GLideN64.so \
 		$(TARGET_DIR)/usr/lib/mupen64plus/mupen64plus-video-gliden64.so
 	$(INSTALL) -D $(@D)/ini/* \
 		$(TARGET_DIR)/usr/share/mupen64plus/
-	$(INSTALL) -D $(@D)/ini/* \
-		$(TARGET_DIR)/recalbox/configs/mupen64/
 endef
 
 define MUPEN64PLUS_GLIDEN64_PRE_CONFIGURE_FIXUP

@@ -16,8 +16,4 @@ ifeq ($(BR2_PACKAGE_RPI_USERLAND),y)
 	MOONLIGHT_EMBEDDED_DEPENDENCIES += rpi-userland
 endif
 
-ifeq ($(BR2_PACKAGE_LIBAMCODEC),y)
-	MOONLIGHT_EMBEDDED_DEPENDENCIES += libamcodec
-endif
-
 $(eval $(cmake-package))

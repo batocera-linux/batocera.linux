@@ -6,7 +6,9 @@ snes:
       pocketsnes:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_POCKETSNES]  }
       snes9x_next: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_SNES9X_NEXT] }
       snes9x:      { requireAnyOf: [BR2_PACKAGE_LIBRETRO_SNES9X]      }
-      
+      mesen-s:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MESEN_S]     }
+      bsnes:       { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BSNES]       }
+
 c64:
   name:       Commodore 64
   extensions: [d64, zip, 7z]
@@ -57,6 +59,7 @@ nes:
     libretro:
       fceumm:   { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FCEUMM]   }
       nestopia: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_NESTOPIA] }
+      mesen:   { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MESEN]   }
 
 n64:
   name:       Nintendo 64
@@ -76,6 +79,8 @@ gba:
   emulators:
     libretro:
       mgba:   { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MGBA]   }
+      vba-m:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_VBA_M]  }
+      gpsp:   { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GPSP]   }
 
 gbc:
   name:       Game Boy Color
@@ -84,6 +89,7 @@ gbc:
     libretro:
       gambatte: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GAMBATTE] }
       mgba:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MGBA]     }
+      vba-m:    { requireAnyOf: [BR2_PACKAGE_LIBRETRO_VBA_M]    }
 
 gb:
   name:       Game Boy
@@ -92,6 +98,7 @@ gb:
     libretro:
       gambatte: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GAMBATTE] }
       mgba:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MGBA]     }
+      vba-m:    { requireAnyOf: [BR2_PACKAGE_LIBRETRO_VBA_M]    }
 
 gbc2players:
   name:       Game Boy Color
@@ -138,11 +145,10 @@ gameandwatch:
 
 dreamcast:
   name:       Sega Dreamcast
-  extensions: [cdi, gdi, chd]
+  extensions: [cdi, gdi, chd, zip, 7z]
   emulators:
     libretro:
       flycast:        { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FLYCAST]        }
-      flycast_wince:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FLYCAST_WINCE]  }
     reicast:
       reicast:        { requireAnyOf: [BR2_PACKAGE_REICAST]                 }
 
@@ -171,7 +177,7 @@ megadrive:
 
 segacd:
   name:       Sega CD
-  extensions: [chd, cue, iso]
+  extensions: [chd, cue, iso, zip, 7z]
   emulators:
     libretro:
       genesisplusgx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GENESISPLUSGX] }
@@ -202,11 +208,12 @@ gamegear:
 sg1000:
   name:       Sega SG1000
   extensions: [bin, sg, zip, 7z]
+  platform:   sg-1000
   theme:      sg-1000
   emulators:
     libretro:
       genesisplusgx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GENESISPLUSGX] }
-      
+
 psp:
   name:       Sony Playstation Portable
   extensions: [iso, cso, pbp]
@@ -216,7 +223,7 @@ psp:
 
 psx:
   name:       Sony Playstation 1
-  extensions: [bin, cue, img, mdf, pbp, toc, cbn, m3u, ccd, chd]
+  extensions: [bin, cue, img, mdf, pbp, toc, cbn, m3u, ccd, chd, zip, 7z, iso]
   emulators:
     libretro:
       pcsx_rearmed: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PCSX]       }
@@ -239,14 +246,14 @@ pcenginecd:
 
 supergrafx:
   name:       Supergrafx
-  extensions: [pce, sgx, cue, ccd, chd]
+  extensions: [pce, sgx, cue, ccd, chd, zip, 7z]
   emulators:
     libretro:
       mednafen_supergrafx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BEETLE_SUPERGRAFX] }
 
 pcfx:
   name:       PC-FX
-  extensions: [cue, ccd, toc, chd]
+  extensions: [cue, ccd, toc, chd, zip, 7z]
   emulators:
     libretro:
       pcfx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BEETLE_PCFX] }
@@ -279,8 +286,8 @@ dos:
   theme:      pc
   platform:   pc
   emulators:
-    dos:
-      dos:    { requireAnyOf: [BR2_PACKAGE_DOSBOX]  }
+    dosbox:
+      dosbox:    { requireAnyOf: [BR2_PACKAGE_DOSBOX]  }
   comment_en: |
     Each game (files) must be placed its own directory having the ".pc .dos" extension.
     In each directory, a dosbox.bat file must contain the command line for launching the game.
@@ -359,10 +366,10 @@ neogeo:
   emulators:
     libretro:
       fbneo:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FBNEO] }
-    
+
 neogeocd:
   name:       Neo-Geo CD
-  extensions: [cue, iso, chd]
+  extensions: [cue, iso, chd, zip, 7z]
   emulators:
     libretro:
       neocd:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_NEOCD]  }
@@ -632,7 +639,7 @@ zx81:
   extensions: [tzx, p, zip, 7z]
   emulators:
     libretro:
-      81: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_81] }
+      '81': { requireAnyOf: [BR2_PACKAGE_LIBRETRO_81] }
   comment_en: |
     To enable your gamepad support, go in retroarch menu with "Hotkey+B", then switch this option:
     "Settings/Input/Input User 1 Binds/User 1 Device type: Retropad" with "Cursor Joystick"
@@ -684,17 +691,18 @@ apple2:
   extensions: [nib, do, po, dsk]
   includeEmulators: no
   emulators:
-    apple2:
-      apple2: { requireAnyOf: [BR2_PACKAGE_LINAPPLE_PIE] }
+    linapple:
+      linapple: { requireAnyOf: [BR2_PACKAGE_LINAPPLE_PIE] }
 
 saturn:
   name:       Sega Saturn
-  extensions: [bin, cue, ccd, chd, iso]
+  extensions: [bin, cue, ccd, chd, iso, zip, 7z]
   emulators:
     libretro:
       yabause:       { requireAnyOf: [BR2_PACKAGE_LIBRETRO_YABAUSE]       }
       beetle-saturn: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BEETLE_SATURN] }
       kronos:        { requireAnyOf: [BR2_PACKAGE_LIBRETRO_KRONOS]        }
+      yabasanshiro:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_YABASANSHIRO]  }
 
 jaguar:
   name:       Atari Jaguar
@@ -707,6 +715,7 @@ jaguar:
 gamecube:
   name:       Nintendo GameCube
   extensions: [gcm, iso, gcz, ciso, wbfs]
+  platform:   gc
   theme:      gc
   emulators:
     dolphin:
@@ -723,12 +732,13 @@ wii:
     You can choose the axis controls among i(nfrared), s(wing), t(ilt) or n(unchuk) :
         for example, to play mariokart wii, rename it mario_kart.side.ti.iso (to get the tilt on the first axis and infrared on the 2nd one (ti))
         for example, to play mario galaxy, rename it mario_galaxy.ni.iso (got get the nunchuk on the first axis and infrared on the 2nd one (ni))
+    To use custom textures, put them in /userdata/saves/dolphin-emu/Load/Textures/<game id>.
   comment_fr: |
     Pour utiliser une wiimote virtuelle en mode horizontal, il faut rajouter ".side." dans le nom du fichier (par exemple ".side.iso").
     Vous pouvez également choisir quels axes contrôler parmi i(nfra rouge), s(wing), t(ilt) ou n(unchuk) :
         par exemple, pour jouer à mariokart wii, renommer le jeu en mario_kart.side.ti.iso (vous aurez le tilt sur le 1er axe et l'infrarouge sur le 2e (ti))
         par exemple, pour jouer à mario galaxy, renommer le jeu en mario_galaxy.ni.iso (vous aurez le nunchuk sur le 1er axe et l'infrarouge sur le 2e (ni))
-
+    Mettez les textures personnalisées dans /userdata/saves/dolphin-emu/Load/Textures/<game id>.
 ps2:
   name:       Sony Playstation 2
   extensions: [iso, mdf, nrg, bin, img, dump, gz, cso]
@@ -739,14 +749,14 @@ ps2:
 
 3do:
   name:       3DO Interactive Multiplayer
-  extensions: [iso, bin, chd, cue]
+  extensions: [iso, bin, chd, cue, zip, 7z]
   emulators:
     libretro:
       4do: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_4DO] }
 
 intellivision:
   name:       Mattel Intellivision
-  extensions: [int, bin, rom]
+  extensions: [int, bin, rom, zip, 7z]
   emulators:
     libretro:
       freeintv: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FREEINTV] }
@@ -760,10 +770,12 @@ x68000:
 
 3ds:
   name:       Nintendo 3DS
-  extensions: [3ds, 3dsx]
+  extensions: [3ds, 3dsx, cxi, axf, elf]
   emulators:
     citra:
       citra: { requireAnyOf: [BR2_PACKAGE_CITRA]          }
+    libretro:
+      citra: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_CITRA] }
 
 satellaview:
   name:       Satellaview
@@ -781,17 +793,24 @@ sufami:
 
 pokemini:
   name:       Pokemon-Mini
-  extensions: [min]
+  extensions: [min, zip, 7z]
   emulators:
     libretro:
       pokemini: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_POKEMINI] }
 
 gx4000:
   name:       Amstrad GX4000
-  extensions: [dsk, m3u, cpr, zip]
+  extensions: [dsk, m3u, cpr, zip, 7z]
   emulators:
     libretro:
       cap32: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_CAP32] }
+
+daphne:
+  name:       Arcade (Daphne)
+  extensions: [zip]
+  emulators:
+    libretro:
+      daphne: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_DAPHNE] }
 
 lightgun:
   name:       Light Gun

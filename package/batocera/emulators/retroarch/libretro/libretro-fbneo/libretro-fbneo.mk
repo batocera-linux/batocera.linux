@@ -3,8 +3,8 @@
 # FBNEO
 #
 ################################################################################
-# Version.: Commits on Jul 8, 2019
-LIBRETRO_FBNEO_VERSION = d3c79ea6bf0c7d89bc55120da1b3823772b06090
+# Version.: Commits on Sep 1, 2019
+LIBRETRO_FBNEO_VERSION = a28d26f0418c7eb9771c1f026cfe1a6c141d2eb3
 LIBRETRO_FBNEO_SITE = $(call github,libretro,FBNeo,$(LIBRETRO_FBNEO_VERSION))
 LIBRETRO_FBNEO_LICENSE = Non-commercial
 
@@ -31,6 +31,9 @@ define LIBRETRO_FBNEO_INSTALL_TARGET_CMDS
 	mkdir -p $(TARGET_DIR)/usr/share/batocera/datainit/bios/fbneo/samples
 	$(INSTALL) -D $(@D)/metadata/* \
 		$(TARGET_DIR)/usr/share/batocera/datainit/bios/fbneo
+
+    # Need to think of another way to use these files.
+    # They take up a lot of space on tmpfs.
 	$(INSTALL) -D $(@D)/dats/* \
 		$(TARGET_DIR)/usr/share/batocera/datainit/bios/fbneo	
 endef

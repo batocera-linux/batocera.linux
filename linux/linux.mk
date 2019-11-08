@@ -353,6 +353,8 @@ define LINUX_KCONFIG_FIXUP_CMDS
 		$(call KCONFIG_ENABLE_OPT,CONFIG_DEVTMPFS_MOUNT,$(@D)/.config))
 	$(if $(BR2_ROOTFS_DEVICE_CREATION_DYNAMIC_EUDEV),
 		$(call KCONFIG_ENABLE_OPT,CONFIG_INOTIFY_USER,$(@D)/.config))
+	$(if $(BR2_ROOTFS_DEVICE_CREATION_DYNAMIC_MDEV),
+		$(call KCONFIG_ENABLE_OPT,CONFIG_NET,$(@D)/.config))
 	$(if $(BR2_PACKAGE_AUDIT),
 		$(call KCONFIG_ENABLE_OPT,CONFIG_NET,$(@D)/.config)
 		$(call KCONFIG_ENABLE_OPT,CONFIG_AUDIT,$(@D)/.config))
@@ -390,7 +392,8 @@ define LINUX_KCONFIG_FIXUP_CMDS
 	$(if $(BR2_PACKAGE_XTABLES_ADDONS),
 		$(call KCONFIG_ENABLE_OPT,CONFIG_NETFILTER_ADVANCED,$(@D)/.config)
 		$(call KCONFIG_ENABLE_OPT,CONFIG_NF_CONNTRACK,$(@D)/.config)
-		$(call KCONFIG_ENABLE_OPT,CONFIG_NF_CONNTRACK_MARK,$(@D)/.config))
+		$(call KCONFIG_ENABLE_OPT,CONFIG_NF_CONNTRACK_MARK,$(@D)/.config)
+		$(call KCONFIG_ENABLE_OPT,CONFIG_NF_NAT,$(@D)/.config))
 	$(if $(BR2_PACKAGE_WIREGUARD),
 		$(call KCONFIG_ENABLE_OPT,CONFIG_INET,$(@D)/.config)
 		$(call KCONFIG_ENABLE_OPT,CONFIG_NET,$(@D)/.config)
@@ -419,9 +422,6 @@ define LINUX_BUILD_DTB
 endef
 ifeq ($(BR2_LINUX_KERNEL_APPENDED_DTB),)
 define LINUX_INSTALL_DTB
-	# batocera bad hack for odroidn2 -- amlogic dir issues
-	if test "$(LINUX_DTBS)" = meson64_odroidn2.dtb; then cp $(LINUX_ARCH_PATH)/boot/dts/amlogic/$(LINUX_DTBS) $(LINUX_ARCH_PATH)/boot; fi
-
 	# dtbs moved from arch/<ARCH>/boot to arch/<ARCH>/boot/dts since 3.8-rc1
 	cp $(addprefix \
 		$(LINUX_ARCH_PATH)/boot/$(if $(wildcard \

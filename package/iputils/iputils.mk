@@ -49,6 +49,17 @@ IPUTILS_CONF_OPTS += -DUSE_CRYPTO=none
 IPUTILS_CONF_OPTS += -DBUILD_NINFOD=false
 endif
 
+# ninfod requires <pthread.h>
+ifneq ($(BR2_TOOLCHAIN_HAS_THREADS),y)
+IPUTILS_CONF_OPTS += -DBUILD_NINFOD=false
+endif
+
+ifeq ($(BR2_SYSTEM_ENABLE_NLS),y)
+IPUTILS_CONF_OPTS += -DUSE_GETTEXT=true
+else
+IPUTILS_CONF_OPTS += -DUSE_GETTEXT=false
+endif
+
 IPUTILS_CONF_OPTS += -DBUILD_TRACEROUTE6=true
 
 # XSL Stylesheets for DocBook 5 not packaged for buildroot
@@ -73,11 +84,23 @@ IPUTILS_POST_INSTALL_TARGET_HOOKS += IPUTILS_CREATE_PING6_SYMLINK
 
 # handle permissions ourselves
 IPUTILS_CONF_OPTS += -DNO_SETCAP_OR_SUID=true
+ifeq ($(BR2_ROOTFS_DEVICE_TABLE_SUPPORTS_EXTENDED_ATTRIBUTES),y)
 define IPUTILS_PERMISSIONS
-	/usr/sbin/arping      f 4755 0 0 - - - - -
+	/usr/sbin/arping      f 755 0 0 - - - - -
+	/usr/bin/clockdiff    f 755 0 0 - - - - -
+	|xattr cap_net_raw+p
+	/bin/ping             f 755 0 0 - - - - -
+	|xattr cap_net_raw+p
+	/usr/bin/traceroute6  f 755 0 0 - - - - -
+	|xattr cap_net_raw+p
+endef
+else
+define IPUTILS_PERMISSIONS
+	/usr/sbin/arping      f  755 0 0 - - - - -
 	/usr/bin/clockdiff    f 4755 0 0 - - - - -
 	/bin/ping             f 4755 0 0 - - - - -
 	/usr/bin/traceroute6  f 4755 0 0 - - - - -
 endef
+endif
 
 $(eval $(meson-package))

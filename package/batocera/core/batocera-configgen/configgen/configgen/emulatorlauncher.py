@@ -87,14 +87,22 @@ def main(args):
         if not os.path.exists(dirname):
             os.makedirs(dirname)
 
+        # core
+        effectiveCore = ""
+        if "core" in system.config and system.config["core"] is not None:
+            effectiveCore = system.config["core"]
+        effectiveRom = ""
+        if args.rom is not None:
+            effectiveRom = args.rom
+
         # run a script before emulator starts
-        callExternalScripts("/userdata/system/scripts", "gameStart", [systemName, system.config['emulator'], system.config["core"], args.rom])
+        callExternalScripts("/userdata/system/scripts", "gameStart", [systemName, system.config['emulator'], effectiveCore, effectiveRom])
 
         # run the emulator
         exitCode = runCommand(generators[system.config['emulator']].generate(system, args.rom, playersControllers, gameResolution))
 
         # run a script after emulator shuts down
-        callExternalScripts("/userdata/system/scripts", "gameStop", [systemName, system.config['emulator'], system.config["core"], args.rom])
+        callExternalScripts("/userdata/system/scripts", "gameStop", [systemName, system.config['emulator'], effectiveCore, effectiveRom])
    
     finally:
         # always restore the resolution

@@ -26,9 +26,6 @@
 #   infrastructure, and will be CC'ed on all patches that add or
 #   modify packages that use this infrastructure.
 
-N:	Abhilash Tuse <abhilash.tuse@imgtec.com>
-F:	package/gstreamer1/gst1-rtsp-server/
-
 N:	Adam Duskett <aduskett@gmail.com>
 F:	package/audit/
 F:	package/busybox/
@@ -71,6 +68,9 @@ F:	package/setools/
 F:	package/sngrep/
 F:	package/systemd/
 
+N:	Adam Heinrich <adam@adamh.cz>
+F:	package/jack1/
+
 N:	Adrian Perez de Castro <aperez@igalia.com>
 F:	package/brotli/
 F:	package/cog/
@@ -103,11 +103,11 @@ F:	package/fastd/
 F:	package/libuecc/
 F:	package/putty/
 
+N:	Alexander Kurz <akurz@blala.de>
+F:	package/minimodem/
+
 N:	Alexander Lukichev <alexander.lukichev@espotel.com>
 F:	package/openpgm/
-
-N:	Alexander Mukhin <alexander.i.mukhin@gmail.com>
-F:	package/hostapd/
 
 N:	Alexander Sverdlin <alexander.sverdlin@gmail.com>
 F:	package/mini-snmpd/
@@ -122,8 +122,14 @@ N:	Alexandre Esse <alexandre.esse.dev@gmail.com>
 F:	package/kvazaar/
 F:	package/v4l2loopback/
 
+N:	Alexey Brodkin <alexey.brodkin@synopsys.com>
+F:	board/cubietech/cubieboard2/
+F:	configs/cubieboard2_defconfig
+
 N:	Alistair Francis <alistair@alistair23.me>
+F:	board/sifive/
 F:	boot/opensbi/
+F:	configs/hifive_unleashed_defconfig
 F:	package/xen/
 
 N:	Alvaro G. M <alvaro.gamez@hazent.com>
@@ -159,9 +165,6 @@ F:	package/zstd/
 N:	Andrey Yurovsky <yurovsky@gmail.com>
 F:	package/rauc/
 
-N:	Andy Kennedy <andy.kennedy@adtran.com>
-F:	package/libunwind/
-
 N:	Angelo Compagnucci <angelo.compagnucci@gmail.com>
 F:	package/corkscrew/
 F:	package/fail2ban/
@@ -175,6 +178,7 @@ F:	package/python-can/
 F:	package/python-pillow/
 F:	package/python-pydal/
 F:	package/python-web2py/
+F:	package/sshguard/
 F:	package/sysdig/
 
 N:	Anisse Astier <anisse@astier.eu>
@@ -221,8 +225,10 @@ F:	package/sqlcipher/
 F:	package/stress/
 
 N:	Asaf Kahlon <asafka7@gmail.com>
+F:	package/collectd/
 F:	package/libuv/
 F:	package/python*
+F:	package/spdlog/
 F:	package/uftp/
 F:	package/zeromq/
 
@@ -287,6 +293,7 @@ F:	package/bcg729/
 F:	package/bluez-tools/
 F:	package/boinc/
 F:	package/clamav/
+F:	package/dav1d/
 F:	package/dovecot/
 F:	package/dovecot-pigeonhole/
 F:	package/dtv-scan-tables/
@@ -294,13 +301,16 @@ F:	package/eudev/
 F:	package/exim/
 F:	package/fetchmail/
 F:	package/ffmpeg/
+F:	package/flac/
 F:	package/freeswitch/
 F:	package/freeswitch-mod-bcg729/
 F:	package/freetype/
+F:	package/fstrcmp/
 F:	package/ghostscript/
 F:	package/giflib/
 F:	package/gli/
 F:	package/glmark2/
+F:	package/gpsd/
 F:	package/hdparm/
 F:	package/jsoncpp/
 F:	package/kodi*
@@ -384,6 +394,7 @@ F:	package/perl-www-robotrules/
 F:	package/pixman/
 F:	package/pngquant/
 F:	package/pound/
+F:	package/pulseaudio/
 F:	package/pure-ftpd/
 F:	package/python-couchdb/
 F:	package/python-cssutils/
@@ -402,6 +413,7 @@ F:	package/samba4/
 F:	package/softether/
 F:	package/spandsp/
 F:	package/sqlite/
+F:	package/stellarium/
 F:	package/taglib/
 F:	package/tinyxml2/
 F:	package/tor/
@@ -416,6 +428,7 @@ F:	package/waylandpp/
 F:	package/x11r7/
 F:	package/x264/
 F:	package/x265/
+F:	package/ytree/
 F:	package/znc/
 
 N:	Biagio Montaruli <biagio.hkr@gmail.com>
@@ -483,7 +496,6 @@ F:	configs/olimex_a13_olinuxino_defconfig
 F:	configs/orangepi_plus_defconfig
 
 N:	Chris Packham <judge.packham@gmail.com>
-F:	package/eventlog/
 F:	package/gstreamer1/gst1-shark/
 F:	package/micropython/
 F:	package/micropython-lib/
@@ -507,6 +519,12 @@ F:	package/pkg-golang.mk
 F:	package/rtl8821au/
 F:	package/runc/
 F:	package/tini/
+
+N:	Christophe Priouzeau <christophe.priouzeau@st.com>
+F:	board/stmicroelectronics/stm32f429-disco/
+F:	board/stmicroelectronics/stm32f469-disco/
+F:	configs/stm32f429_disco_defconfig
+F:	configs/stm32f469_disco_defconfig
 
 N:	Christophe Vu-Brugier <cvubrugier@fastmail.fm>
 F:	package/drbd-utils/
@@ -559,7 +577,6 @@ F:	package/libselinux/
 F:	package/libsemanage/
 F:	package/libsepol/
 F:	package/policycoreutils/
-F:	package/ustr/
 
 N:	Corentin Guillevic <corentin.guillevic@smile.fr>
 F:	package/libloki/
@@ -567,13 +584,6 @@ F:	package/libloki/
 N:	Cyril Bur <cyrilbur@gmail.com>
 F:	arch/Config.in.powerpc
 F:	package/kvm-unit-tests
-
-N:	Dagg Stompler <daggs@gmx.com>
-F:	board/hardkernel/odroidc2
-F:	configs/odroidc2_defconfig
-F:	package/libamcodec/
-F:	package/odroid-mali/
-F:	package/odroid-scripts/
 
 N:	Daniel J. Leach <dleach@belcan.com>
 F:	package/dacapo/
@@ -656,9 +666,6 @@ F:	package/unscd/
 N:	Dushara Jayasinghe <nidujay@gmail.com>
 F:	package/prosody/
 
-N:	Ed Swierk <eswierk@skyportsystems.com>
-F:	package/xxhash/
-
 N:	Eloi Bail <eloi.bail@savoirfairelinux.com>
 F:	package/bayer2rgb-neon/
 F:	package/gstreamer1/gst1-plugins-bayer2rgb-neon/
@@ -716,6 +723,7 @@ F:	package/szip/
 
 N:	Esben Haabendal <esben@haabendal.dk>
 F:	boot/gummiboot/
+F:	package/python-kiwisolver/
 
 N:	Etienne Carriere <etienne.carriere@linaro.org>
 F:	boot/optee-os/
@@ -744,6 +752,7 @@ F:	package/rtl8723bs/
 F:	package/supertuxkart/
 
 N:	Fabio Estevam <festevam@gmail.com>
+F:	board/freescale/warpboard/
 F:	board/warp7/
 F:	configs/freescale_imx*
 F:	configs/imx23evk_defconfig
@@ -762,11 +771,15 @@ F:	configs/mx6sx_udoo_neo_defconfig
 F:	configs/mx6udoo_defconfig
 F:	configs/wandboard_defconfig
 F:	configs/warp7_defconfig
+F:	configs/warpboard_defconfig
 F:	package/atest/
 F:	package/kmscube/
 
 N:	Fabio Porcedda <fabio.porcedda@gmail.com>
 F:	package/netsurf-buildsystem/
+
+N:	Fabio Urquiza <fabiorush@gmail.com>
+F:	package/bitcoin/
 
 N:	Fabrice Fontaine <fabrice.fontaine@orange.com>
 F:	package/domoticz/
@@ -864,8 +877,12 @@ N:	Francois Perrad <francois.perrad@gadz.org>
 F:	board/olimex/a20_olinuxino
 F:	configs/olimex_a20_olinuxino_*
 F:	package/4th/
+F:	package/cgilua/
 F:	package/chipmunk/
 F:	package/cog/
+F:	package/collectl/
+F:	package/copas/
+F:	package/coxpcall/
 F:	package/dado/
 F:	package/ficl/
 F:	package/libtomcrypt/
@@ -884,11 +901,14 @@ F:	package/netsurf/
 F:	package/perl*
 F:	package/pkg-perl.mk
 F:	package/pkg-luarocks.mk
+F:	package/rings/
 F:	package/tekui/
 F:	package/wpebackend-fdo/
 F:	package/wpewebkit/
+F:	package/wsapi/
 F:	package/wsapi-fcgi/
 F:	package/wsapi-xavante/
+F:	package/xavante/
 F:	utils/scancpan
 
 N:	Frank Hunleth <fhunleth@troodon-software.com>
@@ -927,6 +947,10 @@ N:	Geoffrey Ragot <geoffreyragot@gmail.com>
 F:	package/python-pycli/
 F:	package/python-pyyaml/
 
+N:	Gerome Burlats <gerome.burlats@smile.fr>
+F:	board/qemu/
+F:	configs/qemu_*
+
 N:	Gilles Talis <gilles.talis@gmail.com>
 F:	board/freescale/imx8mmevk/
 F:	configs/freescale_imx8mmevk_defconfig
@@ -935,11 +959,15 @@ F:	package/httping/
 F:	package/iozone/
 F:	package/leptonica/
 F:	package/ocrad/
+F:	package/restclient-cpp/
 F:	package/tesseract-ocr/
 F:	package/webp/
 F:	package/xapian/
 
-N:	Giulio Benetti <giulio.benetti@micronovasrl.com>
+N:	Giulio Benetti <giulio.benetti@benettiengineering.com>
+F:	package/at/
+F:	package/libnspr/
+F:	package/libnss/
 F:	package/minicom/
 F:	package/sunxi-mali-mainline/
 F:	package/sunxi-mali-mainline-driver/
@@ -960,9 +988,13 @@ F:	package/f2fs-tools/
 F:	package/pigpio/
 F:	package/python-aioblescan/
 F:	package/python-falcon/
+F:	package/python-ifaddr/
+F:	package/python-hiredis/
 F:	package/python-mimeparse/
 F:	package/python-pigpio/
 F:	package/python-pyjwt/
+F:	package/python-redis/
+F:	package/python-rpi-ws281x/
 F:	package/python-wtforms/
 
 N:	Guillaume Gardet <guillaume.gardet@oliseo.fr>
@@ -978,7 +1010,9 @@ F:	package/reaver/
 N:	Guo Ren <ren_guo@c-sky.com>
 F:	arch/Config.in.csky
 F:	board/csky/
+F:	board/qemu/csky
 F:	configs/csky_*
+F:	configs/qemu_csky*
 
 N:	Gustavo Pimentel <gustavo.pimentel@synopsys.com>
 F:	configs/arm_juno_defconfig
@@ -1070,6 +1104,7 @@ F:	package/python-aiomonitor/
 F:	package/python-aiojobs/
 F:	package/python-aiorwlock/
 F:	package/python-async-timeout/
+F:	package/python-brotli/
 F:	package/python-cchardet/
 F:	package/python-multidict/
 F:	package/python-pycares/
@@ -1139,6 +1174,7 @@ F:	package/x11r7/xdriver_xf86-video-imx/
 F:	package/x11r7/xdriver_xf86-video-imx-viv/
 
 N:	Joel Carlson <JoelsonCarl@gmail.com>
+F:	package/c-capnproto/
 F:	package/capnproto/
 F:	package/cmocka/
 F:	package/flatcc/
@@ -1148,6 +1184,8 @@ N:	Joel Stanley <joel@jms.id.au>
 F:	package/pdbg/
 F:	board/qemu/ppc64le-pseries/
 F:	configs/qemu_ppc64le_pseries_defconfig
+F:	board/qemu/ppc-mac99/
+F:	configs/qemu_ppc_mac99_defconfig
 
 N:	Johan Derycke <johanderycke@gmail.com>
 F:	package/python-libconfig/
@@ -1190,6 +1228,10 @@ F:	package/sphinxbase/
 N:	Jonathan Liu <net147@gmail.com>
 F:	package/python-meld3/
 F:	package/supervisor/
+
+N:	Joris Offouga <offougajoris@gmail.com>
+F:	package/python-colorlog/
+F:	package/python-simplelogging/
 
 N:	Jörg Krause <joerg.krause@embedded.rocks>
 F:	board/lemaker/bananapro/
@@ -1289,9 +1331,6 @@ F:	package/cpuload/
 F:	package/bwm-ng/
 F:	package/ramsmp/
 
-N:	Kevin Joly <kevin.joly@sensefly.com>
-F:	package/libgphoto2/
-
 N:	Kieran Bingham <kieran.bingham@ideasonboard.com>
 F:	package/libcamera/
 
@@ -1344,7 +1383,9 @@ F:	board/olimex/a20_olinuxino/
 F:	board/zynq/
 F:	board/zynqmp/
 F:	configs/olimex_a20_olinuxino_*
+F:	configs/zynq_microzed_defconfig
 F:	configs/zynq_zed_defconfig
+F:	configs/zynq_zc706_defconfig
 F:	configs/zynqmp_zcu106_defconfig
 F:	package/agentpp/
 F:	package/exim/
@@ -1401,9 +1442,6 @@ F:	package/murata-cyw-fw/
 F:	package/rs485conf/
 F:	package/turbolua/
 
-N:	Marcin Nowakowski <marcin.nowakowski@imgtec.com>
-F:	package/libkcapi/
-
 N:	Marcus Folkesson <marcus.folkesson@gmail.com>
 F:	package/libostree/
 F:	package/libselinux/
@@ -1455,7 +1493,7 @@ F:	package/tslib/
 F:	package/x11r7/xdriver_xf86-input-tslib/
 F:	package/x11vnc/
 
-N:	Mathieu Audat <mathieu.audat@savoirfairelinux.com>
+N:	Mathieu Audat <mathieuaudat@gmail.com>
 F:	board/technologic/ts4900/
 F:	configs/ts4900_defconfig
 F:	package/ts4900-fpga/
@@ -1478,7 +1516,6 @@ F:	package/cgroupfs-mount/
 F:	package/crda/
 F:	package/cunit/
 F:	package/dacapo/
-F:	package/devmem2/
 F:	package/dnsmasq/
 F:	package/dosfstools/
 F:	package/eigen/
@@ -1742,12 +1779,14 @@ F:	package/libunistring/
 
 N:	Peter Korsgaard <peter@korsgaard.com>
 F:	board/minnowboard/
+F:	board/librecomputer/lafrite/
 F:	board/nexbox/a95x/
 F:	board/openblocks/a6/
 F:	board/orangepi/
 F:	board/pandaboard/
 F:	board/roseapplepi/
 F:	boot/shim/
+F:	configs/lafrite_defconfig
 F:	configs/minnowboard_max-graphical_defconfig
 F:	configs/minnowboard_max_defconfig
 F:	configs/nexbox_a95x_defconfig
@@ -1795,7 +1834,7 @@ F:	package/triggerhappy/
 
 N:	Peter Seiderer <ps.report@gmx.net>
 F:	board/raspberrypi/
-F:	configs/raspberrypi3_defconfig
+F:	configs/raspberrypi*_defconfig
 F:	package/assimp/
 F:	package/bcm2835/
 F:	package/ddrescue/
@@ -1859,9 +1898,17 @@ N:	Pierre Floury <pierre.floury@gmail.com>
 F:	package/trace-cmd/
 
 N:	Pierre-Jean Texier <pjtexier@koncepto.io>
+F:	package/fping/
+F:	package/genimage/
+F:	package/haveged/
+F:	package/libarchive/
+F:	package/libevent/
 F:	package/libubootenv/
+F:	package/libxml2/
+F:	package/mxml/
 F:	package/python-periphery/
 F:	package/stunnel/
+F:	package/tree/
 
 N:	Pieter De Gendt <pieter.degendt@gmail.com>
 F:	package/libvips/
@@ -1871,11 +1918,9 @@ F:	package/libdvbpsi/
 F:	package/mraa/
 F:	package/synergy/
 
-N:	Pranit Sirsat <Pranit.Sirsat@imgtec.com>
-F:	package/paho-mqtt-c/
-
-N:	Qais Yousef <Qais.Yousef@imgtec.com>
-F:	package/bellagio/
+N:	Rafal Susz <rafal.susz@gmail.com>
+F:	board/avnet/s6lx9_microboard/
+F:	configs/s6lx9_microboard_defconfig
 
 N:	Rahul Bedarkar <rahulbedarkar89@gmail.com>
 F:	package/cxxtest/
@@ -1891,7 +1936,7 @@ N:	Rahul Jain <rahul.jain@imgtec.com>
 F:	package/uhttpd/
 F:	package/ustream-ssl/
 
-N:	Refik Tuzakli <refik.tuzakli@savronik.com.tr>
+N:	Refik Tuzakli <tuzakli.refik@gmail.com>
 F:	package/paho-mqtt-cpp/
 
 N:	Rémi Rérolle <remi.rerolle@gmail.com>
@@ -1907,7 +1952,14 @@ N:	Ricardo Martincoski <ricardo.martincoski@datacom.com.br>
 F:	package/atop/
 
 N:	Ricardo Martincoski <ricardo.martincoski@gmail.com>
-F:	support/testing/
+F:	support/testing/infra/
+F:	support/testing/run-tests
+F:	support/testing/tests/core/test_file_capabilities.py
+F:	support/testing/tests/download/
+F:	support/testing/tests/package/*_python*.py
+F:	support/testing/tests/package/test_atop.py
+F:	support/testing/tests/package/test_syslog_ng.py
+F:	support/testing/tests/utils/test_check_package.py
 F:	utils/check-package
 F:	utils/checkpackagelib/
 
@@ -1932,12 +1984,15 @@ F:	package/vnstat/
 
 N:	Romain Naour <romain.naour@gmail.com>
 F:	package/aubio/
+F:	package/binutils/
 F:	package/bullet/
 F:	package/efl/
 F:	package/enet/
 F:	package/enlightenment/
 F:	package/flare-engine/
 F:	package/flare-game/
+F:	package/gcc/
+F:	package/glibc/
 F:	package/irrlicht/
 F:	package/liblinear/
 F:	package/lensfun/
@@ -1951,6 +2006,7 @@ F:	package/minetest/
 F:	package/minetest-game/
 F:	package/openpowerlink/
 F:	package/physfs/
+F:	package/piglit/
 F:	package/solarus/
 F:	package/stress-ng/
 F:	package/supertux/
@@ -1990,6 +2046,9 @@ F:	package/biosdevname/
 N:	Sam Bobroff <sam.bobroff@au1.ibm.com>
 F:	arch/Config.in.powerpc
 F:	package/librtas/
+
+N:	Sam Lancia <sam@gpsm.co.uk>
+F:	package/lrzip/
 
 N:	Samuel Martin <s.martin49@gmail.com>
 F:	package/armadillo/
@@ -2047,6 +2106,8 @@ F:	package/rtl8189fs/
 F:	package/xr819-xradio/
 
 N:	Sergio Prado <sergio.prado@e-labworks.com>
+F:	board/toradex/apalis-imx6/
+F:	configs/toradex_apalis_imx6_defconfig
 F:	package/aoetools/
 F:	package/curlpp/
 F:	package/daq/
@@ -2058,6 +2119,10 @@ F:	package/traceroute/
 F:	package/tunctl/
 F:	package/ubus/
 F:	package/wolfssl/
+
+N:	Shyam Saini <shyam.saini@amarulasolutions.com>
+F:	board/olimex/a33_olinuxino/
+F:	configs/olimex_a33_olinuxino_defconfig
 
 N:	Simon Dawson <spdawson@gmail.com>
 F:	boot/at91bootstrap3/
@@ -2130,9 +2195,6 @@ F:	package/tovid/
 F:	package/udftools/
 F:	package/xorriso/
 
-N:	Steve Thomas <scjthm@live.com>
-F:	package/isl/
-
 N:	Steven Noonan <steven@uplinklabs.net>
 F:	package/hwloc/
 F:	package/powertop/
@@ -2186,11 +2248,16 @@ F:	support/scripts/size-stats
 F:	utils/size-stats-compare
 F:	toolchain/
 
+N:	Thomas Huth <huth@tuxfamily.org>
+F:	package/ascii-invaders/
+
 N:	Thomas Petazzoni <thomas.petazzoni@bootlin.com>
 F:	arch/Config.in.arm
+F:	board/stmicroelectronics/stm32mp157-dk/
 F:	boot/boot-wrapper-aarch64/
 F:	boot/grub2/
 F:	boot/gummiboot/
+F:	configs/stm32mp157_dk_defconfig
 F:	package/android-tools/
 F:	package/b43-firmware/
 F:	package/b43-fwcutter/
@@ -2246,6 +2313,7 @@ N:	Timo Ketola <timo.ketola@exertus.fi>
 F:	package/fbgrab/
 
 N:	Titouan Christophe <titouan.christophe@railnova.eu>
+F:	package/mosquitto/
 F:	package/redis/
 
 N:	Trent Piepho <tpiepho@impinj.com>
@@ -2268,6 +2336,9 @@ F:	package/llvm/
 N:	Vanya Sergeev <vsergeev@gmail.com>
 F:	package/lua-periphery/
 
+N:	Victor Huesca <victor.huesca@bootlin.com>
+F:	support/testing/tests/core/test_root_password.py
+
 N:	Vincent Prince <vincent.prince.fr@gmail.com>
 F:	package/nss-myhostname/
 F:	package/utp_com/
@@ -2280,7 +2351,7 @@ F:	package/pixz/
 N:	Vinicius Tinti <viniciustinti@gmail.com>
 F:	package/python-thrift/
 
-N:	Vivien Didelot <vivien.didelot@savoirfairelinux.com>
+N:	Vivien Didelot <vivien.didelot@gmail.com>
 F:	board/technologic/ts5500/
 F:	configs/ts5500_defconfig
 
@@ -2315,6 +2386,8 @@ N:	Wojciech Niziński <niziak@spox.org>
 F:	package/fwup/
 
 N:	Yann E. MORIN <yann.morin.1998@free.fr>
+F:	board/friendlyarm/nanopi-neo/
+F:	configs/nanopi_neo_defconfig
 F:	fs/squashfs/
 F:	package/asterisk/
 F:	package/cegui06/
@@ -2370,6 +2443,7 @@ F:	package/bootstrap/
 F:	package/cannelloni/
 F:	package/can-utils/
 F:	package/circus/
+F:	package/dhcpcd/
 F:	package/feh/
 F:	package/giblib/
 F:	package/imlib2/
@@ -2386,6 +2460,7 @@ F:	package/libubox/
 F:	package/libuci/
 F:	package/linux-firmware/
 F:	package/modem-manager/
+F:	package/nftables/
 F:	package/nuttcp/
 F:	package/parted/
 F:	package/phytool/
@@ -2404,6 +2479,8 @@ F:	utils/scanpypi
 N:	Zoltan Gyarmati <zgyarmati@zgyarmati.de>
 F:	package/crudini/
 F:	package/grantlee/
+F:	package/libusb/
+F:	package/libusb-compat/
 F:	package/proj/
 F:	package/python-configobj/
 F:	package/python-iniparse/

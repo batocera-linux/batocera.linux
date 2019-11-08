@@ -144,7 +144,123 @@ endif
 
 ###############################################################################
 
+comment "Legacy options removed in 2019.11"
+
+config BR2_PACKAGE_DEVMEM2
+	bool "devmem2 package was removed"
+	select BR2_LEGACY
+	help
+	  Use the the Busybox devmem utility, instead, which provides
+	  the same functionality.
+
+config BR2_PACKAGE_USTR
+	bool "ustr package removed"
+	select BR2_LEGACY
+	help
+	  The 'ustr' package was only used by SELinux libsemanage, but
+	  since SELinux 2.7, ustr is no longer used. Therefore, we
+	  removed this package from Buildroot.
+
+config BR2_PACKAGE_KODI_SCREENSAVER_PLANESTATE
+	bool "kodi-screensaver-planestate package was removed"
+	select BR2_LEGACY
+	help
+	  This package is incompatible with Kodi 18.x.
+
+config BR2_PACKAGE_KODI_VISUALISATION_WAVEFORHUE
+	bool "kodi-visualisation-waveforhue package was removed"
+	select BR2_LEGACY
+	help
+	  This package is incompatible with Kodi 18.x.
+
+config BR2_PACKAGE_KODI_AUDIODECODER_OPUS
+	bool "kodi-audiodecoder-opus package was removed"
+	select BR2_LEGACY
+	help
+	  This package is incompatible with Kodi 18.x.
+
+config BR2_PACKAGE_MESA3D_OSMESA
+	bool "mesa OSMesa option renamed"
+	select BR2_PACKAGE_MESA3D_OSMESA_CLASSIC if BR2_PACKAGE_MESA3D_DRI_DRIVER_SWRAST
+	select BR2_LEGACY
+	help
+	  The option was renamed in order to match the naming used
+	  by the meson buildsystem.
+
+config BR2_PACKAGE_HOSTAPD_DRIVER_RTW
+	bool "hostapd rtl871xdrv driver removed"
+	select BR2_LEGACY
+	help
+	  Since the update of hostapd to 2.9, the patch provided for
+	  the rtl871xdrv no longer works, although it
+	  applies. Moreover, AP support for Realtek chips is broken
+	  anyway in kernels > 4.9. Therefore, this option has been
+	  removed.
+
+config BR2_PACKAGE_WPA_SUPPLICANT_DBUS_NEW
+	bool "new dbus support option in wpa_supplicant was renamed"
+	select BR2_PACKAGE_WPA_SUPPLICANT_DBUS if BR2_TOOLCHAIN_HAS_THREADS
+	select BR2_LEGACY
+	help
+	  The new dbus support option was renamed.
+
+config BR2_PACKAGE_WPA_SUPPLICANT_DBUS_OLD
+	bool "old dbus support in wpa_supplicant was removed"
+	select BR2_LEGACY
+	help
+	  The old dbus support was removed.
+
 comment "Legacy options removed in 2019.08"
+
+config BR2_TARGET_TS4800_MBRBOOT
+	bool "ts4800-mbrboot package was removed"
+	select BR2_LEGACY
+	help
+	  The defconfig for the TS4800 platform has been removed, so
+	  the ts4800-mbrboot package, containing the boot code for
+	  this specific platform has been removed as welL.
+
+config BR2_PACKAGE_LIBAMCODEC
+	bool "liamcodec package was removed"
+	select BR2_LEGACY
+	help
+	  Support for odroidc2 based systems was removed, making the
+	  libamcodec package useless.
+
+config BR2_PACKAGE_ODROID_SCRIPTS
+	bool "odroid-scripts package was removed"
+	select BR2_LEGACY
+	help
+	  Support for odroidc2 based systems was removed, making the
+	  odroid-scripts package useless.
+
+config BR2_PACKAGE_ODROID_MALI
+	bool "odroid-mali package was removed"
+	select BR2_LEGACY
+	help
+	  Support for odroidc2 based systems was removed, making the
+	  odroid-mali package useless.
+
+config BR2_GCC_VERSION_6_X
+	bool "gcc 6.x support removed"
+	select BR2_LEGACY
+	help
+	  Support for gcc version 6.x has been removed. The current
+	  default version (8.x or later) has been selected instead.
+
+config BR2_GCC_VERSION_4_9_X
+	bool "gcc 4.9.x support removed"
+	select BR2_LEGACY
+	help
+	  Support for gcc version 4.9.x has been removed. The current
+	  default version (8.x or later) has been selected instead.
+
+config BR2_GDB_VERSION_7_12
+	bool "gdb 7.12.x has been removed"
+	select BR2_LEGACY
+	help
+	  The 7.12.x version of gdb has been removed. Use a newer
+	  version instead.
 
 config BR2_PACKAGE_XAPP_MKFONTDIR
 	bool "mkfontdir is now included in xapp_mkfontscale"

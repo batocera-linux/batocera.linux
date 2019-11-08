@@ -54,10 +54,14 @@ if ! test -e "${INTERNALDEVICE}"
 then
     # but the system partition exists
     INTERNALPREVIOUSDEVICE=$(batocera-part previous "${INTERNALDEVICE}")
-    
+
     if test -e "${INTERNALPREVIOUSDEVICE}" # the partition n-1 must exist (just in case the parameter given is not wrong)
     then
 	PARTPREFIX=$(batocera-part prefix "${INTERNALDEVICE}")
+
+    # workaround to allocate all disk space in GPT
+    # no effect in MBR
+    parted "${PARTPREFIX}" print free ---pretend-input-tty Fix > /dev/null
 
 	# create the internal partition
 	PSTART=$(parted -s "${PARTPREFIX}" -m unit b print free | tail -1 | grep -E 'free;$' | cut -d: -f 2)
@@ -118,7 +122,7 @@ mountDeviceOrFallback() {
     then
 	if ! batocera-mount "${INTERNALDEVICETYPE}" 1 "${INTERNALDEVICE}" /userdata
 	then
-	    mount -t tmpfs -o size=128M tmpfs /userdata
+	    mount -t tmpfs -o size=256M tmpfs /userdata
 	fi
     fi
 }
@@ -284,7 +288,7 @@ mountNetwork() {
     return 0
 }
 
-RMODE="$SHAREDEVICE" 
+RMODE="$SHAREDEVICE"
 
 if echo "${RMODE}" | grep -qE '^DEV '
 then
@@ -325,7 +329,7 @@ case "${MODE}" in
 	rb_wifi_configure_all& # configure the wifi at the end
 	;;
     "RAM")
-	mount -t tmpfs -o size=128M tmpfs /userdata
+	mount -t tmpfs -o size=256M tmpfs /userdata
 	;;
     "NETWORK")
 	# first, INTERNAL mount, then, network mount over the NETWORK mounts
@@ -339,7 +343,7 @@ case "${MODE}" in
 	    rb_wifi_configure_all
 	else
 	    # fallback
-	    mount -t tmpfs -o size=128M tmpfs /userdata
+	    mount -t tmpfs -o size=256M tmpfs /userdata
 	fi
 
 	# Network mounts
@@ -351,7 +355,7 @@ case "${MODE}" in
 	then
 	    # fallback
 	    # the internal partition is no more required in fact
-	    mount -t tmpfs -o size=128M tmpfs /userdata
+	    mount -t tmpfs -o size=256M tmpfs /userdata
 	fi
 	fixbatoceraconfname
 	rb_wifi_configure_all& # configure the wifi at the end

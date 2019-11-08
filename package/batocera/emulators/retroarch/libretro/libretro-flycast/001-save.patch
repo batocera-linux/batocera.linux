@@ -1,21 +1,21 @@
 diff --git a/core/nullDC.cpp b/core/nullDC.cpp
-index 424c6cd..62f3c84 100644
+index 5e911f7..f8e5d8f 100644
 --- a/core/nullDC.cpp
 +++ b/core/nullDC.cpp
-@@ -431,7 +431,7 @@ void dc_term(void)
- 	plugins_Term();
- 	_vmem_release();
+@@ -494,7 +494,7 @@ void dc_run(void)
  
+ void dc_term(void)
+ {
 -	SaveRomFiles(get_writable_data_path(""));
 +	SaveRomFiles(get_writable_data_save(""));
- }
- 
- void dc_stop()
+ 	sh4_cpu.Term();
+ 	naomi_cart_Close();
+ 	plugins_Term();
 diff --git a/core/stdclass.cpp b/core/stdclass.cpp
-index 8f95dd8..a6e79ea 100644
+index 8f95dd8..f5eebc3 100644
 --- a/core/stdclass.cpp
 +++ b/core/stdclass.cpp
-@@ -42,6 +42,16 @@ string get_writable_data_path(const string& filename)
+@@ -42,6 +42,17 @@ string get_writable_data_path(const string& filename)
           + filename);
  }
  
@@ -29,18 +29,19 @@ index 8f95dd8..a6e79ea 100644
 +#endif
 +         + filename);
 +}
++
  string get_writable_vmu_path(const char *logical_port)
  {
     extern char vmu_dir_no_slash[PATH_MAX];
 diff --git a/core/stdclass.h b/core/stdclass.h
-index dce22a0..a831f57 100644
+index 4fc3205..a998887 100644
 --- a/core/stdclass.h
 +++ b/core/stdclass.h
-@@ -242,6 +242,7 @@ void add_system_data_dir(const string& dir);
+@@ -244,6 +244,7 @@ void add_system_data_dir(const string& dir);
  
  //subpath format: /data/fsca-table.bit
  string get_writable_data_path(const string& filename);
 +string get_writable_data_save(const string& filename);
  string get_writable_vmu_path(const char *logical_port);
  
- class VArray2
+ bool mem_region_lock(void *start, size_t len);
