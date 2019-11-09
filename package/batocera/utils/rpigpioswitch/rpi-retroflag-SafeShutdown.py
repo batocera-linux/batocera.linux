@@ -8,9 +8,9 @@ from multiprocessing import Process
 
 #initialize pins
 powerPin = 3 #pin 5
-ledPin = 14 #TXD
-resetPin = 2 #pin 13
-powerenPin = 4 #pin 5
+ledPin = 14 #TXD - pin 8
+resetPin = 2 #pin 3
+powerenPin = 4 #pin 7
 
 #initialize GPIO settings
 def init():
@@ -33,7 +33,6 @@ def ledBlink():
 	while True:
 		GPIO.output(ledPin, GPIO.HIGH)
 		GPIO.wait_for_edge(powerPin, GPIO.FALLING)
-		start = time.time()
 		while GPIO.input(powerPin) == GPIO.LOW:
 			GPIO.output(ledPin, GPIO.LOW)
 			time.sleep(0.2)
@@ -61,5 +60,3 @@ if __name__ == "__main__":
 	powerProcess.join()
 	ledProcess.join()
 	resetProcess.join()
-
-	GPIO.cleanup()
