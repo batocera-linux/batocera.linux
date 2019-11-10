@@ -1,5 +1,18 @@
 #!/bin/bash
 
+#Activating Safe Shutdown feature
+batocera-settings --command write --key system.power.switch --value RETROFLAG_GPI
+
+#Enable SRM,metadata saves, even if you powerdown during a game session
+cat > /userdata/system/custom.sh <<_EOF_
+#!/bin/bash
+[[ "\$1" == "stop" ]] && batocera-es-swissknife --emukill && sleep 1
+_EOF_
+
+#Make file executable
+chmod +x /userdata/system/custom.sh
+
+#Prepare /boot/config.txt
 CONFIGFILE=/boot/config.txt
 
 (cat <<EOF
