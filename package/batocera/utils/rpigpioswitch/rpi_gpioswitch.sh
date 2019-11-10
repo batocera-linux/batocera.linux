@@ -8,9 +8,10 @@
 #     - cleaned off scripts
 #     - $2 argument is parsed by S92switch script now /etc/init.d
 #     - added help section, type 'rpi_gpioswitch help'
-#     - some other small improvements .... cyperghost 30.09.2019
-
+#     - some other small improvements
 #v1.2 - add RETROFLAG power devices (means NESPi+, MegaPi, SuperPi+)
+#v1.3 - add RETROFLAG_GPI power device, the GameBoy look-a-like-device for Pi0/W
+#by cyperghost 11.11.2019
 
 #dialog for selecting your switch or power device
 function powerdevice_dialog()
@@ -24,6 +25,7 @@ function powerdevice_dialog()
 
     powerdevices=(
                   RETROFLAG "Including NESPi+ SuperPi and MegaPi cases" \
+                  RETROFLAG_GPI "Retroflag GPi case for Raspberry 0" \
                   MAUSBERRY "A neat power device from Mausberry circuits" \
                   ONOFFSHIM "The cheapest power device from Pimoroni" \
                   REMOTEPIBOARD_2003 "Any remote control as pswitch v2013" \
@@ -322,15 +324,16 @@ function pin56_stop()
 #https://www.retroflag.com
 function retroflag_start()
 {
-    rpi-retroflag-SafeShutdown &
+    #$1 = rpi-retroflag-SafeShutdown/rpi-retroflag-GPiCase
+    "$1" &
     pid=$!
-    echo "$pid" > /tmp/rpi-retroflag-SafeShutdown.pid
+    echo "$pid" > "/tmp/$1.pid"
     wait "$pid"
 }
 
 function retroflag_stop()
 {
-    pid_file="/tmp/rpi-retroflag-SafeShutdown.pid"
+    pid_file="/tmp/$1.pid"
     if [[ -e $pid_file ]]; then
         pid=$(cat $pid_file)
         kill $(pgrep -P $pid)
@@ -388,8 +391,11 @@ case "$CONFVALUE" in
         echo "will start pin356_$1"
         pin356_$1 noparam
     ;;
-     "RETROFLAG")
-         retroflag_$1
+    "RETROFLAG")
+        retroflag_$1 rpi-retroflag-SafeShutdown
+    ;;
+    "RETROFLAG_GPI")
+        retroflag_$1 rpi-retroflag-GPiCase
     ;;
     "DIALOG")
         # Go to selection dialog
