@@ -4,9 +4,9 @@
 #
 ################################################################################
 LINUX_VERSION_PROBED = `$(MAKE) $(LINUX_MAKE_FLAGS) -C $(LINUX_DIR) --no-print-directory -s kernelrelease 2>/dev/null`
-GPU_AML_VERSION = 2016-08-18-fe6d7b1d1b
-GPU_AML_SITE    = http://openlinux.amlogic.com:8000/download/ARM/gpu
-GPU_AML_SOURCE  = gpu-$(GPU_AML_VERSION).tar.gz
+GPU_AML_VERSION = fe6d7b1d1b09bd81658f375e699c6b2cad252b31
+GPU_AML_SITE = https://github.com/openwetek/gpu-aml.git
+GPU_AML_SITE_METHOD = git
 GPU_AML_MODULE_DIR = kernel/amlogic/gpu
 GPU_AML_INSTALL_DIR = $(TARGET_DIR)/lib/modules/$(LINUX_VERSION_PROBED)/$(GPU_AML_MODULE_DIR)
 ifeq ($(BR2_PACKAGE_GPU_AML_STANDALONE),y)
