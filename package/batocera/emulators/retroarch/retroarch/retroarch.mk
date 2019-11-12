@@ -3,8 +3,7 @@
 # retroarch
 #
 ################################################################################
-# Version: 1.7.9.2
-RETROARCH_VERSION = v1.7.9.2
+RETROARCH_VERSION = v1.8.1
 RETROARCH_SITE = $(call github,libretro,RetroArch,$(RETROARCH_VERSION))
 RETROARCH_LICENSE = GPLv3+
 RETROARCH_DEPENDENCIES = host-pkgconf dejavu retroarch-assets
