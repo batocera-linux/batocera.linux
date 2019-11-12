@@ -1,28 +1,26 @@
 diff --git a/qb/qb.comp.sh b/qb/qb.comp.sh
-index 902afac..c99d126 100644
+index 0468f28..3fe0608 100644
 --- a/qb/qb.comp.sh
 +++ b/qb/qb.comp.sh
-@@ -107,16 +107,15 @@ if [ "$HAVE_QT" != "no" ]; then
- 	fi
+@@ -92,12 +92,15 @@ if [ "$OS" = "Win32" ]; then
+ 	printf %s\\n "$echobuf ... $WINDRES"
  fi
  
 -if [ -z "$PKG_CONF_PATH" ]; then
-+[ -n "$PKG_CONF_PATH" ] || {
- 	PKG_CONF_PATH="none"
--	for pkgconf in pkgconf pkg-config; do
--		PKGCONF="$(exists "${CROSS_COMPILE}${pkgconf}")" || PKGCONF=""
--		[ "$PKGCONF" ] && {
--			PKG_CONF_PATH="$PKGCONF"
--			break
--		}
-+	for p in $(exists "${CROSS_COMPILE}pkg-config") ''; do
-+		[ -n "$p" ] && {
-+			PKG_CONF_PATH=$p;
-+			break;
-+ 		}
- 	done
+-	PKGCONF="$(exists "${CROSS_COMPILE}pkgconf" ||
+-			exists "${CROSS_COMPILE}pkg-config" || :)"
+-
+-	PKG_CONF_PATH="${PKGCONF:-none}"
 -fi
++[ -n "$PKG_CONF_PATH" ] || {
++ 	PKG_CONF_PATH="none"
++	for p in $(exists "${CROSS_COMPILE}pkg-config") ''; do
++	[ -n "$p" ] && {
++		PKG_CONF_PATH=$p;
++		break;
++ 	}
++ 	done
 +}
  
- echo "Checking for pkg-config ... $PKG_CONF_PATH"
+ printf %s\\n "Checking for pkg-config ... $PKG_CONF_PATH"
  
