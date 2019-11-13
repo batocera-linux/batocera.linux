@@ -61,7 +61,7 @@ then
 
     # workaround to allocate all disk space in GPT
     # no effect in MBR
-    parted "${PARTPREFIX}" print free ---pretend-input-tty Fix > /dev/null
+    sgdisk -e "${PARTPREFIX}" &>/dev/null
 
 	# create the internal partition
 	PSTART=$(parted -s "${PARTPREFIX}" -m unit b print free | tail -1 | grep -E 'free;$' | cut -d: -f 2)
