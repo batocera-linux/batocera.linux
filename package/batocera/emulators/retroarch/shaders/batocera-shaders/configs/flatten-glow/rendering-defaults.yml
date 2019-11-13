@@ -1,0 +1,108 @@
+## FLATTEN-GLOW
+default:
+  # shader affects retroarch shaders
+  shader: blurs/kawase_glow
+  # scanline affect fba2x
+  scanline: false
+snes:
+  shader: blurs/kawase_glow
+nes:
+  shader: blurs/kawase_glow
+n64:
+  shader: blurs/kawase_glow
+gba:
+  shader: handheld/simpletex_lcd+gba-color
+gb:
+  shader: handheld/simpletex_lcd
+gbc:
+  shader: handheld/simpletex_lcd+gbc-color
+fds:
+  shader: blurs/kawase_glow
+virtualboy:
+  shader: blurs/kawase_glow
+# Sega
+sg1000:
+  shader: blurs/kawase_glow
+mastersystem:
+  shader: blurs/kawase_glow
+megadrive:
+  shader: blurs/kawase_glow
+gamegear:
+  shader: handheld/simpletex_lcd+gbc-color
+sega32x:
+  shader: blurs/kawase_glow
+segacd:
+  shader: blurs/kawase_glow
+# Arcade
+neogeo:
+  shader: blurs/kawase_glow
+neogeocd:
+  shader: blurs/kawase_glow
+mame:
+  shader: blurs/kawase_glow
+fba:
+  shader: blurs/kawase_glow
+naomi:
+  shader: blurs/kawase_glow
+atomiswave:
+  shader: blurs/kawase_glow
+#
+ngp:
+  shader: handheld/simpletex_lcd
+ngpc:
+  shader: handheld/simpletex_lcd
+gw:
+  shader: blurs/kawase_glow
+vectrex:
+  shader: blurs/kawase_glow
+lynx:
+  shader: handheld/simpletex_lcd+gbc-color
+lutro:
+  shader: blurs/kawase_glow
+wswan:
+  shader: handheld/simpletex_lcd
+wswanc:
+  shader: handheld/simpletex_lcd+gbc-color
+pcengine:
+  shader: blurs/kawase_glow
+pcenginecd:
+  shader: blurs/kawase_glow
+supergrafx:
+  shader: blurs/kawase_glow
+atari800:
+  shader: blurs/kawase_glow
+atari2600:
+  shader: blurs/kawase_glow
+atari5200:
+  shader: blurs/kawase_glow
+atari7800:
+  shader: blurs/kawase_glow
+prboom:
+  shader: blurs/kawase_glow
+psx:
+  shader: blurs/kawase_glow
+colecovision:
+  shader: blurs/kawase_glow
+# Computers
+msx:
+  shader: blurs/kawase_glow
+msx1:
+  shader: blurs/kawase_glow
+msx2:
+  shader: blurs/kawase_glow
+amiga:
+  shader: blurs/kawase_glow
+amstradcpc:
+  shader: blurs/kawase_glow
+atarist:
+  shader: blurs/kawase_glow
+zxspectrum:
+  shader: blurs/kawase_glow
+odyssey2:
+  shader: blurs/kawase_glow
+zx81:
+  shader: blurs/kawase_glow
+pcfx:
+  shader: blurs/kawase_glow
+x68000:
+  shader: blurs/kawase_glow
