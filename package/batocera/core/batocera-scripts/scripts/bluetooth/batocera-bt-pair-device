@@ -13,11 +13,18 @@ from optparse import OptionParser, make_option
 import bluezutils
 import time
 import glib
+import getopt
+import sys
 
 devices = {}
 
 gadapter = None
 gExit = 1
+
+# default parameters
+args_timeout = 60
+args_first = False
+#####
 
 def stopDiscovering():
         global gadapter
@@ -29,41 +36,77 @@ def stopDiscovering():
                         pass
                 mainloop.quit()
 
-def doConnect(address):
+def doConnect(address, devName):
         global gExit
 
         device = bluezutils.find_device(address)
-        ntry=5
+        ntry=15
 
         while ntry > 0:
                 ntry = ntry -1
                 try:
-		        device.Connect()
-                        gExit = 0
-                        print("Connected successfully")
-                        return
-                except:
-                        print("Connection failed.")
-                        time.sleep(1)
+                  device.Connect()
+                  gExit = 0
+                  print("Connected successfully (" + devName + ")")
+                  return
+                except dbus.exceptions.DBusException as err:
+                  print("dbus: " + err.get_dbus_message())
+                  time.sleep(1)
+                except Exception as err:
+                  print("Connection failed (" + devName + ")")
+                  time.sleep(1)
+        print("Connection failed. Give up. (" + devName + ")")
         raise Exception("connexion failed")
+
+def getDevName(properties):
+  #devName = properties["Name"] + " (" + properties["Address"] + ", " + properties["Icon"] + ")"
+  #devStatus = "Trusted=" + str(properties["Trusted"]) + ", paired=" + str(properties["Paired"]) + ", connected=" + str(properties["Connected"]), ", blocked=" + str(properties["Blocked"])
+  #devTech = "legacyPairing: " + str(properties["LegacyPairing"]) # + ", RSSI: " + unicode(properties["RSSI"])
+
+  if "Name" in properties and "Address" in properties and "Icon" in properties:
+    return properties["Name"] + " (" + properties["Address"] + ", " + properties["Icon"] + ")"
+
+  if "Name" in properties and "Address" in properties:
+    return properties["Name"] + " (" + properties["Address"] + ")"
+
+  if "Name" in properties and "Icon" in properties:
+    return properties["Name"] + " (" + properties["Icon"] + ")"
+
+  if "Name" in properties:
+    return properties["Name"]
+
+  if "Address" in properties and "Icon" in properties:
+    return properties["Address"] + " (" + properties["Icon"] + ")"
+
+  if "Address" in properties:
+    return properties["Address"]
+
+  if "Icon" in properties:
+    return properties["Icon"]
+
+  return "unknown"
 
 def doAction(path, properties):
         bluezProps = dbus.Interface(bus.get_object("org.bluez", path), "org.freedesktop.DBus.Properties")
 
+        devName   = getDevName(properties)
+
         # trust any device
         if "Trusted" in properties:
                 if properties["Trusted"] == False:
-                        print("Trusting...")
+                        print("Trusting (" + devName + ")...")
                         bluezProps.Set("org.bluez.Device1", "Trusted", True)
 
         # connect
         if "Connected" in properties and "Address" in properties:
                 if properties["Connected"] == False:
                         try:
-                                doConnect(properties["Address"])
+                                print("Connecting " + devName + "...")
+                                doConnect(properties["Address"], devName)
 
-                                # exit after a device is connected
-                                stopDiscovering()
+                                if args_first:
+                                  # exit after a device is connected
+                                  stopDiscovering()
                         except:
                                 pass
 
@@ -109,7 +152,29 @@ def property_changed(name, value):
 	if (name == "Discovering" and not value):
 		mainloop.quit()
 
+def usage(prog):
+        print(prog + " [h, --help] [-t X, --timeout=X] [-f, --first]")
+
 if __name__ == '__main__':
+        ### parse arguments
+        try:
+          opts, args = getopt.getopt(sys.argv[1:], "ht:f", ["help", "timeout=", "first"])
+        except getopt.GetoptError:
+          usage(sys.argv[0])
+          sys.exit(2)
+
+        for opt, arg in opts:
+          if opt in ("-h", "--help"):
+            usage(sys.argv[0])
+            sys.exit()
+          elif opt in ("-f", "--first"):
+            args_first = True
+          elif opt in ("-t", "--timeout"):
+            args_timeout = int(arg)
+          else:
+            assert False, "invalid option"
+        #####
+
 	dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
 
 	bus = dbus.SystemBus()
@@ -138,7 +203,7 @@ if __name__ == '__main__':
 
 	adapter.StartDiscovery()
         gadapter = adapter
-        glib.timeout_add_seconds(30, stopDiscovering)
+        glib.timeout_add_seconds(args_timeout, stopDiscovering)
 	mainloop = GObject.MainLoop()
 	mainloop.run()
         exit(gExit)

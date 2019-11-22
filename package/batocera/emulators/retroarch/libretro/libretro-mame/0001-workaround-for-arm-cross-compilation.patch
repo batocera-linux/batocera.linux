@@ -1,17 +1,194 @@
-From 8f37983793d6c94ce8e19b18bdcf1f176d539ed4 Mon Sep 17 00:00:00 2001
+From 7649e406e7dfadcdf2b23a486344a2b5230e7e36 Mon Sep 17 00:00:00 2001
 From: Tiago Pierezan Camargo <camargo@discworld.com.br>
-Date: Wed, 31 Jul 2019 21:48:52 -0300
-Subject: [PATCH 1/3] workaround for arm cross-compilation
+Date: Tue, 19 Nov 2019 10:34:36 -0300
+Subject: [PATCH] workaround for arm cross-compilation
 
+arm devices, usually, only offer GLES
+BX_PLATFORM_LINUX_NO_GL should behave like || BX_PLATFORM_LINUX
 ---
- makefile | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ 3rdparty/bgfx/src/renderer_gl.h   |  2 ++
+ 3rdparty/bx/include/bx/platform.h | 12 ++++++++++++
+ 3rdparty/bx/src/mutex.cpp         |  3 ++-
+ 3rdparty/bx/src/os.cpp            | 15 ++++++++++-----
+ 3rdparty/bx/src/thread.cpp        |  9 ++++++---
+ makefile                          |  2 +-
+ 6 files changed, 33 insertions(+), 10 deletions(-)
 
+diff --git a/3rdparty/bgfx/src/renderer_gl.h b/3rdparty/bgfx/src/renderer_gl.h
+index e8d653c93c..0681f831fa 100644
+--- a/3rdparty/bgfx/src/renderer_gl.h
++++ b/3rdparty/bgfx/src/renderer_gl.h
+@@ -14,6 +14,7 @@
+ 			|| BX_PLATFORM_RPI                            \
+ 			|| BX_PLATFORM_STEAMLINK                      \
+ 			|| BX_PLATFORM_WINDOWS                        \
++			|| BX_PLATFORM_LINUX_NO_GL                    \
+ 			) )
+ 
+ #define BGFX_USE_HTML5 (BGFX_CONFIG_RENDERER_OPENGLES && (0 \
+@@ -31,6 +32,7 @@
+ 			|| BX_PLATFORM_LINUX   \
+ 			|| BX_PLATFORM_OSX     \
+ 			|| BX_PLATFORM_WINDOWS \
++			|| BX_PLATFORM_LINUX_NO_GL \
+ 			)
+ 
+ #define BGFX_GL_PROFILER_BEGIN(_view, _abgr)                                               \
+diff --git a/3rdparty/bx/include/bx/platform.h b/3rdparty/bx/include/bx/platform.h
+index 8195cfe36c..a20550dce2 100644
+--- a/3rdparty/bx/include/bx/platform.h
++++ b/3rdparty/bx/include/bx/platform.h
+@@ -60,6 +60,7 @@
+ #define BX_PLATFORM_WINDOWS    0
+ #define BX_PLATFORM_WINRT      0
+ #define BX_PLATFORM_XBOXONE    0
++#define BX_PLATFORM_LINUX_NO_GL 0
+ 
+ // http://sourceforge.net/apps/mediawiki/predef/index.php?title=Compilers
+ #if defined(__clang__)
+@@ -225,6 +226,13 @@
+ #	define BX_PLATFORM_HAIKU 1
+ #endif //
+ 
++#if BX_CPU_ARM
++#   undef  BX_PLATFORM_LINUX
++#   define BX_PLATFORM_LINUX 0
++#   undef  BX_PLATFORM_LINUX_NO_GL
++#   define BX_PLATFORM_LINUX_NO_GL 1
++#endif
++
+ #if !BX_CRT_NONE
+ // https://sourceforge.net/p/predef/wiki/Libraries/
+ #	if defined(__BIONIC__)
+@@ -270,6 +278,7 @@
+ 	||  BX_PLATFORM_PS4        \
+ 	||  BX_PLATFORM_RPI        \
+ 	||  BX_PLATFORM_STEAMLINK  \
++    ||  BX_PLATFORM_LINUX_NO_GL \
+ 	)
+ 
+ ///
+@@ -289,6 +298,7 @@
+ 	||  BX_PLATFORM_WINDOWS    \
+ 	||  BX_PLATFORM_WINRT      \
+ 	||  BX_PLATFORM_XBOXONE    \
++    ||  BX_PLATFORM_LINUX_NO_GL \
+ 	)
+ 
+ ///
+@@ -393,6 +403,8 @@
+ #	define BX_PLATFORM_NAME "WinRT"
+ #elif BX_PLATFORM_XBOXONE
+ #	define BX_PLATFORM_NAME "Xbox One"
++#elif BX_PLATFORM_LINUX_NO_GL
++#	define BX_PLATFORM_NAME "Linux (GLES)"
+ #else
+ #	error "Unknown BX_PLATFORM!"
+ #endif // BX_PLATFORM_
+diff --git a/3rdparty/bx/src/mutex.cpp b/3rdparty/bx/src/mutex.cpp
+index 48f09d0be3..a6e601b92e 100644
+--- a/3rdparty/bx/src/mutex.cpp
++++ b/3rdparty/bx/src/mutex.cpp
+@@ -17,7 +17,8 @@
+ 	|| BX_PLATFORM_IOS     \
+ 	|| BX_PLATFORM_OSX     \
+ 	|| BX_PLATFORM_PS4     \
+-	|| BX_PLATFORM_RPI
++	|| BX_PLATFORM_RPI     \
++	|| BX_PLATFORM_LINUX_NO_GL
+ #	include <pthread.h>
+ #elif  BX_PLATFORM_WINDOWS \
+ 	|| BX_PLATFORM_WINRT   \
+diff --git a/3rdparty/bx/src/os.cpp b/3rdparty/bx/src/os.cpp
+index ab5d6bd093..b0c53a68a9 100644
+--- a/3rdparty/bx/src/os.cpp
++++ b/3rdparty/bx/src/os.cpp
+@@ -28,7 +28,8 @@
+ 	|| BX_PLATFORM_OSX        \
+ 	|| BX_PLATFORM_PS4        \
+ 	|| BX_PLATFORM_RPI        \
+-	|| BX_PLATFORM_STEAMLINK
++	|| BX_PLATFORM_STEAMLINK  \
++	|| BX_PLATFORM_LINUX_NO_GL
+ #	include <sched.h> // sched_yield
+ #	if BX_PLATFORM_BSD       \
+ 	|| BX_PLATFORM_HAIKU     \
+@@ -48,7 +49,8 @@
+ #		include <malloc.h> // mallinfo
+ #	elif   BX_PLATFORM_LINUX     \
+ 		|| BX_PLATFORM_RPI       \
+-		|| BX_PLATFORM_STEAMLINK
++		|| BX_PLATFORM_STEAMLINK \
++		|| BX_PLATFORM_LINUX_NO_GL
+ #		include <stdio.h>  // fopen
+ #		include <unistd.h> // syscall
+ #		include <sys/syscall.h>
+@@ -102,7 +104,8 @@ namespace bx
+ 		return ::GetCurrentThreadId();
+ #elif  BX_PLATFORM_LINUX \
+ 	|| BX_PLATFORM_RPI   \
+-	|| BX_PLATFORM_STEAMLINK
++	|| BX_PLATFORM_STEAMLINK \
++	|| BX_PLATFORM_LINUX_NO_GL
+ 		return (pid_t)::syscall(SYS_gettid);
+ #elif  BX_PLATFORM_IOS \
+ 	|| BX_PLATFORM_OSX
+@@ -123,7 +126,8 @@ namespace bx
+ 		struct mallinfo mi = mallinfo();
+ 		return mi.uordblks;
+ #elif  BX_PLATFORM_LINUX \
+-	|| BX_PLATFORM_HURD
++	|| BX_PLATFORM_HURD \
++	|| BX_PLATFORM_LINUX_NO_GL
+ 		FILE* file = fopen("/proc/self/statm", "r");
+ 		if (NULL == file)
+ 		{
+@@ -316,7 +320,8 @@ namespace bx
+ 	void* exec(const char* const* _argv)
+ 	{
+ #if BX_PLATFORM_LINUX \
+- || BX_PLATFORM_HURD
++ || BX_PLATFORM_HURD \
++ || BX_PLATFORM_LINUX_NO_GL
+ 		pid_t pid = fork();
+ 
+ 		if (0 == pid)
+diff --git a/3rdparty/bx/src/thread.cpp b/3rdparty/bx/src/thread.cpp
+index 7969d7852a..41212bcb6a 100644
+--- a/3rdparty/bx/src/thread.cpp
++++ b/3rdparty/bx/src/thread.cpp
+@@ -20,12 +20,14 @@
+ 	|| BX_PLATFORM_IOS     \
+ 	|| BX_PLATFORM_OSX     \
+ 	|| BX_PLATFORM_PS4     \
+-	|| BX_PLATFORM_RPI
++	|| BX_PLATFORM_RPI     \
++	|| BX_PLATFORM_LINUX_NO_GL
+ #	include <pthread.h>
+ #	if defined(__FreeBSD__)
+ #		include <pthread_np.h>
+ #	endif
+-#	if BX_PLATFORM_LINUX && (BX_CRT_GLIBC < 21200)
++#	if BX_PLATFORM_LINUX \
++	|| BX_PLATFORM_LINUX_NO_GL && (BX_CRT_GLIBC < 21200)
+ #		include <sys/prctl.h>
+ #	endif // BX_PLATFORM_
+ #elif  BX_PLATFORM_WINDOWS \
+@@ -237,7 +239,8 @@ namespace bx
+ 		pthread_setname_np(_name);
+ #elif (BX_CRT_GLIBC >= 21200) && ! BX_PLATFORM_HURD
+ 		pthread_setname_np(ti->m_handle, _name);
+-#elif BX_PLATFORM_LINUX
++#elif BX_PLATFORM_LINUX \
++	|| BX_PLATFORM_LINUX_NO_GL
+ 		prctl(PR_SET_NAME,_name, 0, 0, 0);
+ #elif BX_PLATFORM_BSD
+ #	if defined(__NetBSD__)
 diff --git a/makefile b/makefile
-index 6813564a22..4e9f5053e8 100644
+index c30a159844..86e13567a6 100644
 --- a/makefile
 +++ b/makefile
-@@ -340,7 +340,7 @@ WINDRES  := $(word 1,$(TOOLCHAIN) i686-w64-mingw32-)windres
+@@ -341,7 +341,7 @@ WINDRES  := $(word 1,$(TOOLCHAIN) i686-w64-mingw32-)windres
  endif
  endif
  
