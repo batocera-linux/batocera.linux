@@ -12,6 +12,7 @@ except ImportError:
 import bluezutils
 
 compact = False
+adapters = {}
 devices = {}
 
 def connect_device(address, properties):
@@ -167,6 +168,17 @@ if __name__ == '__main__':
 	for path, interfaces in objects.iteritems():
 		if "org.bluez.Device1" in interfaces:
 			devices[path] = interfaces["org.bluez.Device1"]
+                if "org.bluez.Adapter1" in interfaces:
+                        adapters[path] = interfaces["org.bluez.Adapter1"]
+
+        adapter_props = adapters[adapter.object_path]
+        print(adapter_props["Name"] + "(" + adapter_props["Address"] + "), powered=" + str(adapter_props["Powered"]))
+
+        # power on adapter if needed
+        if adapter_props["Powered"] == 0:
+          print("powering on adapter ("+ adapter_props["Address"] +")")
+          adapterSetter = dbus.Interface(bus.get_object("org.bluez", adapter.object_path), "org.freedesktop.DBus.Properties")
+          adapterSetter.Set("org.bluez.Adapter1", "Powered", True)
 
 	mainloop = GObject.MainLoop()
 	mainloop.run()
