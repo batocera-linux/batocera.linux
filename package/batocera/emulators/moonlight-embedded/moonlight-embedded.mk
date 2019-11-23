@@ -5,7 +5,8 @@
 ################################################################################
 # Version.: Commits on May 27, 2019
 MOONLIGHT_EMBEDDED_VERSION = v2.4.10
-MOONLIGHT_EMBEDDED_SITE = git://github.com/irtimmer/moonlight-embedded.git
+MOONLIGHT_EMBEDDED_SITE = https://github.com/irtimmer/moonlight-embedded.git
+MOONLIGHT_EMBEDDED_SITE_METHOD = git
 MOONLIGHT_EMBEDDED_GIT_SUBMODULES=y
 MOONLIGHT_EMBEDDED_LICENSE = GPLv3
 MOONLIGHT_EMBEDDED_DEPENDENCIES = opus expat libevdev avahi alsa-lib udev libcurl libcec ffmpeg sdl2 libenet
