@@ -3,8 +3,8 @@
 # PX68K
 #
 ################################################################################
-# Version.: Commits on Aug 23, 2019
-LIBRETRO_PX68K_VERSION = 85d59f0be31d0ce9249df89a9b8416241fa55deb
+# Version.: Commits on Sep 14, 2019
+LIBRETRO_PX68K_VERSION = 3cb3cc562a8da671f39b45078a672165d80e4e74
 LIBRETRO_PX68K_SITE = $(call github,libretro,px68k-libretro,$(LIBRETRO_PX68K_VERSION))
 LIBRETRO_PX68K_LICENSE = Unknown
 
