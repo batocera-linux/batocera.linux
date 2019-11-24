@@ -16,7 +16,7 @@ def generateControllerConfig(system, playersControllers, rom):
             generateControllerConfig_realwiimotes("WiimoteNew.ini", "Wiimote")
             generateControllerConfig_gamecube(playersControllers) # you can use the gamecube pads on the wii together with wiimotes
     elif system.name == "gamecube":
-        generateControllerConfig_gamecube(playersControllers)
+        generateControllerConfig_gamecube(playersControllers, system)
     else:
         raise ValueError("Invalid system name : '" + system.name + "'")
 
@@ -93,16 +93,27 @@ def generateControllerConfig_emulatedwiimotes(playersControllers, rom):
 
     generateControllerConfig_any(playersControllers, "WiimoteNew.ini", "Wiimote", wiiMapping, wiiReverseAxes, extraOptions)
 
-def generateControllerConfig_gamecube(playersControllers):
-    gamecubeMapping = {
-        'y':      'Buttons/X',  'b':        'Buttons/A',
-        'x':      'Buttons/Y',  'a':        'Buttons/B',
-        'r2':     'Buttons/Z',  'start':    'Buttons/Start',
-        'pageup': 'Triggers/L', 'pagedown': 'Triggers/R',
-        'up': 'D-Pad/Up', 'down': 'D-Pad/Down', 'left': 'D-Pad/Left', 'right': 'D-Pad/Right',
-        'joystick1up': 'Main Stick/Up', 'joystick1left': 'Main Stick/Left',
-        'joystick2up': 'C-Stick/Up',    'joystick2left': 'C-Stick/Left'
-    }
+def generateControllerConfig_gamecube(playersControllers, system):
+    if system.isOptSet('gc_noanalogstick') and system.getOptBoolean('gc_noanalogstick') == True:
+        gamecubeMapping = {
+            'y':      'Buttons/X',  'b':        'Buttons/A',
+            'x':      'Buttons/Y',  'a':        'Buttons/B',
+            'r2':     'Buttons/Z',  'start':    'Buttons/Start',
+            'pageup': 'Triggers/L', 'pagedown': 'Triggers/R',
+            'up': 'Main Stick/Up', 'down': 'Main Stick/Down', 'left': 'Main Stick/Left', 'right': 'Main Stick/Right',
+            'joystick1up': 'Main Stick/Up', 'joystick1left': 'Main Stick/Left',
+            'joystick2up': 'C-Stick/Up',    'joystick2left': 'C-Stick/Left'
+            }
+    else:
+        gamecubeMapping = {
+            'y':      'Buttons/X',  'b':        'Buttons/A',
+            'x':      'Buttons/Y',  'a':        'Buttons/B',
+            'r2':     'Buttons/Z',  'start':    'Buttons/Start',
+            'pageup': 'Triggers/L', 'pagedown': 'Triggers/R',
+            'up': 'D-Pad/Up', 'down': 'D-Pad/Down', 'left': 'D-Pad/Left', 'right': 'D-Pad/Right',
+            'joystick1up': 'Main Stick/Up', 'joystick1left': 'Main Stick/Left',
+            'joystick2up': 'C-Stick/Up',    'joystick2left': 'C-Stick/Left'
+            }
     gamecubeReverseAxes = {
         'D-Pad/Up':        'D-Pad/Down',
         'D-Pad/Left':      'D-Pad/Right',
