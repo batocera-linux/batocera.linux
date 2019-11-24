@@ -264,7 +264,9 @@ scummvm:
   platform:   pc
   emulators:
     scummvm:
-      scummvm: { requireAnyOf: [BR2_PACKAGE_SCUMMVM] }
+      scummvm: { requireAnyOf: [BR2_PACKAGE_SCUMMVM]          }
+    libretro:
+      scummvm: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_SCUMMVM] }
   comment_en: |
     Put scummvm games foders in this folder.
 
