@@ -1,0 +1,12 @@
+config BR2_PACKAGE_LIBRETRO_PC98
+    bool "libretro-pc98"
+	depends on BR2_PACKAGE_RETROARCH
+	depends on BR2_INSTALL_LIBSTDCPP
+        
+		help
+          Libretro core for NEC - PC-98 (Neko Project II Kai).
+
+	  http://www.libretro.com
+
+comment "LIBRETRO_PC98 needs a toolchain w/ C++"
+	depends on !BR2_INSTALL_LIBSTDCPP
