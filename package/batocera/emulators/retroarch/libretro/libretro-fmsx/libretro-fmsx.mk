@@ -3,8 +3,8 @@
 # FMSX
 #
 ################################################################################
-# Version.: Commits on Jan 4, 2019
-LIBRETRO_FMSX_VERSION = 6b241974ffb4d2a3fc681b65a8ff6b717501cb67
+# Version.: Commits on Sep 5, 2019
+LIBRETRO_FMSX_VERSION = c76e1dc09b567ce620c09fc5adde1fc7033d30b6
 LIBRETRO_FMSX_SITE = $(call github,libretro,fmsx-libretro,$(LIBRETRO_FMSX_VERSION))
 LIBRETRO_FMSX_LICENSE = Non-commercial
 
