@@ -816,6 +816,13 @@ daphne:
     libretro:
       daphne: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_DAPHNE] }
 
+thomson:
+  name:       Thomson - MO/TO (Theodore)
+  extensions: [fd, sap, k7, m7, m5, rom]
+  emulators:
+    libretro:
+      theodore:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_THEODORE] }
+
 lightgun:
   name:       Light Gun
   extensions: [zip, 7z]
