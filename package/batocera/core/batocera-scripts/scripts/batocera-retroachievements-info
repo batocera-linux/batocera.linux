@@ -4,6 +4,8 @@
 #
 # @lbrpdx on Batocera Forums and Discord
 #
+# 20191124 - v2 with now outputs in XML format (for Batocera 5.25+)
+#
 # Usage:
 # batocera-retroachievements-info
 #
@@ -26,21 +28,48 @@ function process() {
 	tmpfile=/tmp/ra_$fn
 	curl -m "$TIMEOUT" -o $tmpfile https://retroachievements.org/user/$USER 2>/dev/null
 	if [ x"$?" != x0 ]; then
-		echo "RetroAchievements website is too slow to respond, please check your Internet connection."
+		echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+		echo "<retroachievements>"
+		echo "  <lastrefresh>$fn</lastrefresh>"
+		echo "  <error>RetroAchievements website is too slow to respond</error>"
+		echo "</retroachievements>"
 		exit 1;
 	fi
-	cat $tmpfile |  awk -v FS="(<div class='username'><span class='username'>|</div><div class='userpage recentlyplayed' >)" '{print $2}' | uniq > "$tmpfile"_2
-	points=$(cat "$tmpfile"_2 | sed -e "/^[[:blank:]]*$/d" | awk -v FS="(</strong></a>&nbsp;|<span class='TrueRatio'>)" '{print $2}')
-	rank=$(cat "$tmpfile"_2  | sed -e "/^[[:blank:]]*$/d" | awk -v FS="(userList.php|<br/><br/>)" '{print $3}' | sed -e "s/\?s=2'>//" -e "s;<.*a>;;" )
-	if  [ x"$rank" != x ]; then
-		## For future use: UserPic is RetroAchievements' user avatar
+	cat "$tmpfile" |  awk -v FS="(<div class='username'><span class='username'>|</div><div class='userpage recentlyplayed' >)" '{print $2}' | uniq > "$tmpfile"_2
+	idcard=$(cat "$tmpfile" | sed -e "/^[[:blank:]]*$/d" | awk -v FS="(</span></div><br/>Member Since: |<br>Account Type:)" '{print $2}' | uniq)
+	parsedid=$(echo "$idcard" | sed -e "/^[[:blank:]]*$/d" | sed -e "s;\(.*\)<br>Last Activity: \(.*\);\1@\2;")
+	avcompletion=$(cat "$tmpfile" | sed -e "/^[[:blank:]]*$/d" | awk -v FS="(</span><br/>Average Completion: <b>|</b><br/>Site Rank:)" '{print $2}' | sed -e "/^[[:blank:]]*$/d" | uniq)
+	points=$(cat "$tmpfile"_2 | sed -e "/^[[:blank:]]*$/d" | awk -v FS="(</strong></a>&nbsp;|<span class='TrueRatio'>)" '{print $2}' |  sed -e "s;(\([0-9]*\) points);\1;")
+	if [ x"$points" != x ] && [ "$points" -ge 1 ]; then
+		rank=$(cat "$tmpfile"_2  | sed -e "/^[[:blank:]]*$/d" | awk -v FS="(userList.php|<br/><br/>)" '{print $3}' | sed -e "s/\?s=2'>//" -e "s;<.*a>;;" )
+		## For future use: UserPic is RetroAchievements' user avatar - however the S3 bucket is protected.
 		# UserPic=$(cat $tmpfile | grep 'meta property=.og:image. content=' | cut -d= -f3 | awk -F\' '{print $2}')
-		echo "Player $USER $points is $rank"
-		echo "Last RetroAchievements games played:"
-		cat $tmpfile | awk '{match($0,/Game.*points.<br\/>/); s=substr($0, RSTART, RLENGTH); printf "%s",s }' | sed -e "/^[[:blank:]]*$/d" | sed -e 's/points.<br\/>/points\@\\\n/g;' > "$tmpfile"_2
-		cat "$tmpfile"_2 | awk -v FS="(Game/[0-9]*'>|@)" '{print $2}' | sed -e "s;</a><br/>\(Last played[ 0-9:-]*\)<br/>\(.*\);@\2@\1;" | sed -e "s;achievements, ;achievements@;" | sed -e "s;Earned ;;"
+		# Workaround: use the line below
+		UserPic="https://retroachievements.org/UserPic/$USER".png
+		pic=""
+		curl -m "$TIMEOUT" -f -s "$UserPic" >/dev/null 2>/dev/null
+		if [ x"$?" == x0 ]; then
+			pic="  <userpic>$UserPic</userpic>\n"
+		fi
+		echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+		echo "<retroachievements>"
+		echo "  <lastrefresh>$fn</lastrefresh>"
+		echo "  <username>$USER</username>"
+		echo "  <totalpoints>$points</totalpoints>"
+	        echo "  <rank>$rank</rank>"
+	        echo "  <averagecompletion>$avcompletion</averagecompletion>"
+		echo -ne "$pic"
+		echo "$parsedid" | sed -e "s;\(.*\)@\(.*\);  <registered>\1</registered>\n  <lastactivity>\2</lastactivity>;"
+		cat $tmpfile | sed -e "s;.*userpage recentlyplayed;;" | awk '{match($0,/Game.*points.<br\/>/); s=substr($0, RSTART, RLENGTH); printf "%s",s }' | sed -e "/^[[:blank:]]*$/d" | sed -e 's/points.<br\/>/points\@\\\n/g;' > "$tmpfile"_2
+		res=$(cat "$tmpfile"_2 | awk -v FS="(Game/[0-9]*'>|@)" '{print $2}' | sed -e "s;</a><br/>\(Last played[ 0-9:-]*\)<br/>\(.*\);@\2@\1;" | sed -e "s;achievements, ;achievements@;" | sed -e "s;Earned ;;")
+		echo "$res" | sed -e "s;\(.*\)@\(.*\) achievements@\(.*\) points@Last played \(.*\);  <game>\n    <name>\1</name>\n    <achievements>\2</achievements>\n    <points>\3</points>\n    <lastplayed>\4</lastplayed>\n  </game>;"
+		echo "</retroachievements>"
 	else
-		echo "Player $USER not found on https://retroachievements.org"
+		echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+		echo "<retroachievements>"
+		echo "  <lastrefresh>$fn</lastrefresh>"
+		echo "  <error>Player $USER hasn't unlocked any RetroAchievement yet</error>"
+		echo "</retroachievements>"
 	fi
 	rm "$tmpfile" "$tmpfile"_2
 }
