@@ -1,5 +1,5 @@
 diff --git a/Makefile.libretro b/Makefile.libretro
-index e46f3a2..17f86bc 100755
+index 1ec1c98..b9f63aa 100755
 --- a/Makefile.libretro
 +++ b/Makefile.libretro
 @@ -4,6 +4,13 @@ ZLIB_DIR = $(LIBRETRO_DIR)/utils/zlib
@@ -45,7 +45,7 @@ index e46f3a2..17f86bc 100755
  # iOS
  else ifneq (,$(findstring ios,$(platform)))
  
-@@ -155,6 +184,10 @@ else
+@@ -165,6 +194,10 @@ else
  endif
  CFLAGS := -fsigned-char -D__LIBRETRO__ -fno-builtin $(CFLAGS)
  
@@ -56,7 +56,7 @@ index e46f3a2..17f86bc 100755
  CFLAGS := $(fpic) $(CFLAGS) $(PLATFLAGS)
  CXXFLAGS := $(CFLAGS)
  CPPFLAGS := $(CFLAGS)
-@@ -176,12 +209,16 @@ OBJECTS := $(SOURCES_C:.c=.o)
+@@ -186,11 +219,15 @@ OBJECTS := $(SOURCES_C:.c=.o)
  
  all: $(TARGET)
  
@@ -65,12 +65,11 @@ index e46f3a2..17f86bc 100755
 +endif
 +
  $(TARGET): $(OBJECTS)
- 	@echo "** BUILDING $(TARGET) FOR PLATFORM $(platform) **"
  ifeq ($(STATIC_LINKING_LINK),1)
  	$(AR) rcs $@ $(OBJECTS) 
  else
 -	$(CC) $(CFLAGS) $(INCFLAGS) $(LDFLAGS) $(OBJECTS) -o $@ -lm -lz $(SHARED)
 +	$(CC) $(CFLAGS) $(INCFLAGS) $(LDFLAGS) $(OBJECTS) -o $@ -lm -lz $(SHARED) -lpthread $(CAPS_LIB)
  endif
- 	@echo "** BUILD SUCCESSFUL! GG NO RE **"
  
+ %.o: %.c
