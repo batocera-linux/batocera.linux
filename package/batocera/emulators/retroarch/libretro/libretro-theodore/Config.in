@@ -1,0 +1,12 @@
+config BR2_PACKAGE_LIBRETRO_THEODORE
+    bool "libretro-theodore"
+	depends on BR2_PACKAGE_RETROARCH
+	depends on BR2_INSTALL_LIBSTDCPP
+        
+		help
+          Libretro core for Thomson MO/TO emulation.
+
+	  http://www.libretro.com
+
+comment "LIBRETRO_THEODORE needs a toolchain w/ C++"
+	depends on !BR2_INSTALL_LIBSTDCPP

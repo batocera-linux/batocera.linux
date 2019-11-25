@@ -220,6 +220,8 @@ psp:
   emulators:
     ppsspp:
       ppsspp: { requireAnyOf: [BR2_PACKAGE_PPSSPP, BR2_PACKAGE_PPSSPP15]  }
+    libretro:
+      ppsspp:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PPSSPP]              }
 
 psx:
   name:       Sony Playstation 1
@@ -264,7 +266,9 @@ scummvm:
   platform:   pc
   emulators:
     scummvm:
-      scummvm: { requireAnyOf: [BR2_PACKAGE_SCUMMVM] }
+      scummvm: { requireAnyOf: [BR2_PACKAGE_SCUMMVM]          }
+    libretro:
+      scummvm: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_SCUMMVM] }
   comment_en: |
     Put scummvm games foders in this folder.
 
@@ -287,7 +291,9 @@ dos:
   platform:   pc
   emulators:
     dosbox:
-      dosbox:    { requireAnyOf: [BR2_PACKAGE_DOSBOX]  }
+      dosbox:   { requireAnyOf: [BR2_PACKAGE_DOSBOX]          }
+    libretro:
+      dosbox:   { requireAnyOf: [BR2_PACKAGE_LIBRETRO_DOSBOX] }
   comment_en: |
     Each game (files) must be placed its own directory having the ".pc .dos" extension.
     In each directory, a dosbox.bat file must contain the command line for launching the game.
@@ -811,6 +817,20 @@ daphne:
   emulators:
     libretro:
       daphne: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_DAPHNE] }
+
+thomson:
+  name:       Thomson - MO/TO (Theodore)
+  extensions: [fd, sap, k7, m7, m5, rom]
+  emulators:
+    libretro:
+      theodore:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_THEODORE] }
+
+pc-98:
+  name:       NEC - PC-98 (Neko Project II Kai)
+  extensions: [d98, zip, 98d, fdi, fdd, 2hd, tfd, d88, 88d, hdm, xdf, dup, cmd, hdi, thd, nhd, hdd, hdn]
+  emulators:
+    libretro:
+      np2kai:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PC98] }
 
 lightgun:
   name:       Light Gun

@@ -1,0 +1,12 @@
+config BR2_PACKAGE_LIBRETRO_PPSSPP
+        bool "libretro-ppsspp"
+	depends on BR2_PACKAGE_RETROARCH
+	depends on BR2_INSTALL_LIBSTDCPP
+        help
+          A libretro PSP core .
+
+	  http://www.libretro.com
+
+comment "LIBRETRO_PPSSPP needs a toolchain w/ C++"
+	depends on !BR2_INSTALL_LIBSTDCPP
+
