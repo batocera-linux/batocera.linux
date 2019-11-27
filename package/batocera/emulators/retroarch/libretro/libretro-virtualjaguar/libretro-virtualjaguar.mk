@@ -3,8 +3,8 @@
 # VIRTUALJAGUAR
 #
 ################################################################################
-# Version.: Commits on Jun 25, 2019
-LIBRETRO_VIRTUALJAGUAR_VERSION = 7bdd8658880b53bf2bcbae0741323fe18f9041f5
+# Version.: Commits on Nov 3, 2019
+LIBRETRO_VIRTUALJAGUAR_VERSION = c95606aeb52c71456fac3c19312cf4705a27d1a4
 LIBRETRO_VIRTUALJAGUAR_SITE = $(call github,libretro,virtualjaguar-libretro,$(LIBRETRO_VIRTUALJAGUAR_VERSION))
 LIBRETRO_VIRTUALJAGUAR_LICENSE = GPLv3
 

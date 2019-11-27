@@ -94,6 +94,15 @@ def generateControllerConfig_emulatedwiimotes(playersControllers, rom):
     generateControllerConfig_any(playersControllers, "WiimoteNew.ini", "Wiimote", wiiMapping, wiiReverseAxes, extraOptions)
 
 def generateControllerConfig_gamecube(playersControllers):
+    gamecubeMapping_noanalog = {
+        'y':      'Buttons/X',  'b':        'Buttons/A',
+        'x':      'Buttons/Y',  'a':        'Buttons/B',
+        'r2':     'Buttons/Z',  'start':    'Buttons/Start',
+        'pageup': 'Triggers/L', 'pagedown': 'Triggers/R',
+        'up': 'Main Stick/Up', 'down': 'Main Stick/Down', 'left': 'Main Stick/Left', 'right': 'Main Stick/Right',
+        'joystick1up': 'Main Stick/Up', 'joystick1left': 'Main Stick/Left',
+        'joystick2up': 'C-Stick/Up',    'joystick2left': 'C-Stick/Left'
+    }
     gamecubeMapping = {
         'y':      'Buttons/X',  'b':        'Buttons/A',
         'x':      'Buttons/Y',  'a':        'Buttons/B',
@@ -111,7 +120,7 @@ def generateControllerConfig_gamecube(playersControllers):
         'C-Stick/Up':      'C-Stick/Down',
         'C-Stick/Left':    'C-Stick/Right'
     }
-    generateControllerConfig_any(playersControllers, "GCPadNew.ini", "GCPad", gamecubeMapping, gamecubeReverseAxes)
+    generateControllerConfig_any(playersControllers, "GCPadNew.ini", "GCPad", gamecubeMapping, gamecubeReverseAxes, {}, gamecubeMapping_noanalog)
 
 def removeControllerConfig_gamecube():
     configFileName = "{}/{}".format(batoceraFiles.dolphinConfig, "GCPadNew.ini")
@@ -175,7 +184,7 @@ def generateHotkeys(playersControllers):
     f.write
     f.close()
 
-def generateControllerConfig_any(playersControllers, filename, anyDefKey, anyMapping, anyReverseAxes, extraOptions = {}):
+def generateControllerConfig_any(playersControllers, filename, anyDefKey, anyMapping, anyReverseAxes, extraOptions = {}, gamecubeAltMapping = {}):
     configFileName = "{}/{}".format(batoceraFiles.dolphinConfig, filename)
     f = open(configFileName, "w")
     nplayer = 1
@@ -198,10 +207,17 @@ def generateControllerConfig_any(playersControllers, filename, anyDefKey, anyMap
             f.write(opt + " = " + extraOptions[opt] + "\n")
         for x in pad.inputs:
             input = pad.inputs[x]
+            if anyDefKey == "GCPad":
+                if "joystick1up" in input.name:
+                    realMapping = anyMapping
+                else:
+                    realMapping = gamecubeAltMapping
+            else:
+                realMapping = anyMapping
 
             keyname = None
-            if input.name in anyMapping:
-                keyname = anyMapping[input.name]
+            if input.name in realMapping:
+                keyname = realMapping[input.name]
             #else:
             #    f.write("# undefined key: name="+input.name+", type="+input.type+", id="+str(input.id)+", value="+str(input.value)+"\n")
 

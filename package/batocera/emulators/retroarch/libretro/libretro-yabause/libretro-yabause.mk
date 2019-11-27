@@ -3,8 +3,8 @@
 # YABAUSE
 #
 ################################################################################
-# Version.: Commits on Sep 1, 2019
-LIBRETRO_YABAUSE_VERSION = f1ef68bab4bbe4e0c7991c0cc35c059cd40618f2
+# Version.: Commits on Oct 24, 2019
+LIBRETRO_YABAUSE_VERSION = 4c71875b85e4dfe0e90e59e91cd01766d2f09b89
 LIBRETRO_YABAUSE_SITE = $(call github,libretro,yabause,$(LIBRETRO_YABAUSE_VERSION))
 LIBRETRO_YABAUSE_LICENSE = GPLv2
 

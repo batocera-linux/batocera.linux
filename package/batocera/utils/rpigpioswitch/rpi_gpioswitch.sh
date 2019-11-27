@@ -9,8 +9,9 @@
 #     - $2 argument is parsed by S92switch script now /etc/init.d
 #     - added help section, type 'rpi_gpioswitch help'
 #     - some other small improvements
-#v1.2 - add RETROFLAG power devices (means NESPi+, MegaPi, SuperPi+)
+#v1.2 - add RETROFLAG power devices (means NESPi+, MegaPi, SuperPi)
 #v1.3 - add RETROFLAG_GPI power device, the GameBoy look-a-like-device for Pi0/W
+#v1.4 - add RETROFLAG_ADV advanced reset script for NESPi+, MegaPi and SuperPi
 #by cyperghost 11.11.2019
 
 #dialog for selecting your switch or power device
@@ -324,7 +325,7 @@ function pin56_stop()
 #https://www.retroflag.com
 function retroflag_start()
 {
-    #$1 = rpi-retroflag-SafeShutdown/rpi-retroflag-GPiCase
+    #$1 = rpi-retroflag-SafeShutdown/rpi-retroflag-GPiCase/rpi-retroflag-AdvancedSafeShutdown
     "$1" &
     pid=$!
     echo "$pid" > "/tmp/$1.pid"
@@ -397,6 +398,9 @@ case "$CONFVALUE" in
     "RETROFLAG_GPI")
         retroflag_$1 rpi-retroflag-GPiCase
     ;;
+    "RETROFLAG_ADV")
+        retroflag_$1 rpi-retroflag-AdvancedSafeShutdown
+    ;;
     "DIALOG")
         # Go to selection dialog
         switch="$(powerdevice_dialog)"
@@ -414,8 +418,8 @@ case "$CONFVALUE" in
         echo
         echo "Try: rpi_gpioswitch.sh [start|stop] [value]"
         echo
-        echo "Vaild values are: REMOTEPIBOARD_2003, REMOTEPIBOARD_2005, WITTYPI 
-                  ATX_RASPI_R2_6, MAUSBERRY, ONOFFSHIM, RETROFLAG 
+        echo "Valid values are: REMOTEPIBOARD_2003, REMOTEPIBOARD_2005, WITTYPI 
+                  ATX_RASPI_R2_6, MAUSBERRY, ONOFFSHIM, RETROFLAG, RETROFLAG_GPI
                   PIN56ONOFF, PIN56PUSH, PIN356ONOFFRESET"
         exit 1
     ;;
