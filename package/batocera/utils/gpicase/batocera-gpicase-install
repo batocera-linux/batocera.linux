@@ -1,39 +1,43 @@
 #!/bin/bash
 
 CONFIGFILE=/boot/config.txt
+CONFIG="$(batocera-settings "$CONFIGFILE" --command load --key force_gpi_defaults)"
+[[ $? -eq  12 || $CONFIG -eq 1 ]] || exit 0
 
-(cat <<EOF
-# enable UART
-# affect rpi performances
-# enable_uart=1
-display_rotate=1
-dtoverlay=dpi24_gpicase
-overscan_left=0
-overscan_right=0
-overscan_top=0
-overscan_bottom=0
-framebuffer_width=320
-framebuffer_height=240
-enable_dpi_lcd=1
-display_default_lcd=1
-dpi_group=2
-dpi_mode=87
-dpi_output_format=0x6016
-#hdmi_timings=320 0 28 18 28 480 0 2 2 4 0 0 0 60 0 32000000 6
-hdmi_timings=240 1 38 10 20 320 1 20 4 4 0 0 0 60 0 6400000 1
-dtoverlay=pwm-2chan_gpicase,pin=18,func=2,pin2=19,func2=2
-disable_pvt=1
-disable_audio_dither=1
-dtoverlay=pwm-audio-pi-zero_gpicase
-EOF
-) | (
+setup=(
+       "# ====== GPi Case setup section ====="
+       "dtoverlay=dpi24_gpicase"
+       "dtoverlay=pwm-audio-pi-zero_gpicase"
+       "display_rotate=1"
+       "overscan_left=0"
+       "overscan_right=0"
+       "overscan_top=0"
+       "overscan_bottom=0"
+       "framebuffer_width=320"
+       "framebuffer_height=240"
+       "enable_dpi_lcd=1"
+       "display_default_lcd=1"
+       "dpi_group=2"
+       "dpi_mode=87"
+       "dpi_output_format=0x6016"
+       "#hdmi_timings=320 0 28 18 28 480 0 2 2 4 0 0 0 60 0 32000000 6"
+       "hdmi_timings=240 1 38 10 20 320 1 20 4 4 0 0 0 60 0 6400000 1"
+       "dtoverlay=pwm-2chan_gpicase,pin=18,func=2,pin2=19,func2=2"
+       "disable_pvt=1"
+       "disable_audio_dither=1"
+       "# ====== GPi Case toggle section ====="
+       "# This will preserve always the default GPi settings if enabled, needed if some values were wrong setted by user"
+       "#force_gpi_defaults=1"
+)
+
+
     CONFIGMODIFIED=0
 
-    while read LINE
-    do
+
+    for LINE in "${setup[@]}"; do
 	if ! grep -qE "^${LINE}$" "${CONFIGFILE}"
 	then
-	    test "${CONFIGMODIFIED}" = 0 && mount -o remount,rw /boot
+	    #test "${CONFIGMODIFIED}" = 0 && mount -o remount,rw /boot
 	    echo "${LINE}" >> "${CONFIGFILE}"
 	    CONFIGMODIFIED=1
 	fi
@@ -41,9 +45,11 @@ EOF
 
     if test "${CONFIGMODIFIED}" = 1
     then
-	echo rebooting...
-	shutdown -r now
+	echo "Activate Retroflag Safe Shutdown feature..."
+        batocera-settings --command write --key system.power.switch --value RETROFLAG_GPI
+        sleep 2
+        echo "Rebooting now..."
+        shutdown -r now
     fi
-)
 
 exit 0
