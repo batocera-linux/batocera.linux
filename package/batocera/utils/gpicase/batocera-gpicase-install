@@ -41,8 +41,10 @@ setup=(
 	    echo "${LINE}" >> "${CONFIGFILE}"
 	    CONFIGMODIFIED=1
 	fi
-	[[ $CONFIGERR -eq 12 ]] && echo "#force_gpi_defaults=1" >> "${CONFIGFILE}"
     done
+    
+    #Write force_gpi_defaults it it wasn't already in config
+    [[ $CONFIGERR -eq 12 ]] && echo "#force_gpi_defaults=1" >> "${CONFIGFILE}"
 
     if test "${CONFIGMODIFIED}" = 1
     then
