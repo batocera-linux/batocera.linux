@@ -37,7 +37,7 @@ setup=(
     for LINE in "${setup[@]}"; do
 	if ! grep -qE "^${LINE}$" "${CONFIGFILE}"
 	then
-	    #test "${CONFIGMODIFIED}" = 0 && mount -o remount,rw /boot
+	    test "${CONFIGMODIFIED}" = 0 && mount -o remount,rw /boot
 	    echo "${LINE}" >> "${CONFIGFILE}"
 	    CONFIGMODIFIED=1
 	fi
