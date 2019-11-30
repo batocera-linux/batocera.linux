@@ -2,7 +2,8 @@
 
 CONFIGFILE=/boot/config.txt
 CONFIG="$(batocera-settings "$CONFIGFILE" --command load --key force_gpi_defaults)"
-[[ $? -eq  12 || $CONFIG -eq 1 ]] || exit 0
+CONFIGERR=$?
+[[ $CONFIGERR -eq  12 || $CONFIG -eq 1 ]] || exit 0
 
 setup=(
        "# ====== GPi Case setup section ====="
@@ -27,7 +28,6 @@ setup=(
        "disable_audio_dither=1"
        "# ====== GPi Case toggle section ====="
        "# This will preserve always the default GPi settings if enabled, needed if some values were wrong setted by user"
-       "#force_gpi_defaults=1"
 )
 
 
@@ -41,6 +41,7 @@ setup=(
 	    echo "${LINE}" >> "${CONFIGFILE}"
 	    CONFIGMODIFIED=1
 	fi
+	[[ $CONFIGERR -eq 12 ]] && echo "#force_gpi_defaults=1" >> "${CONFIGFILE}"
     done
 
     if test "${CONFIGMODIFIED}" = 1
