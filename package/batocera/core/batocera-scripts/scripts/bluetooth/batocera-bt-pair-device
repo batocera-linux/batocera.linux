@@ -98,9 +98,9 @@ def doAction(path, properties):
                         print("Trusting (" + devName + ")")
                         bluezProps.Set("org.bluez.Device1", "Trusted", True)
 
-        # exit after a device is connected, else,
-        if args_first:
-          stopDiscoveringAndEnd()
+                        # exit after a device is connected, else,
+                        if args_first:
+                          stopDiscoveringAndEnd()
 
 def interfaces_added(path, interfaces):
         if "org.bluez.Device1" not in interfaces:
