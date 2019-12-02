@@ -189,7 +189,7 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
         retroarchConfig['aspect_ratio_index'] = str(ratioIndexes.index("core")) # reset each time in this function
         
     # Netplay management
-    if 'netplaymode' in system.config and system.config['netplaymode'] in systemNetplayModes:
+    if 'netplay.mode' in system.config and system.config['netplay.mode'] in systemNetplayModes:
         # Security : hardcore mode disables save states, which would kill netplay
         retroarchConfig['cheevos_hardcore_mode_enable'] = 'false'
         # Quite strangely, host mode requires netplay_mode to be set to false when launched from command line
@@ -198,7 +198,7 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
         retroarchConfig['netplay_delay_frames']      = systemConfig.get('netplay.frames', "")
         retroarchConfig['netplay_nickname']          = systemConfig.get('netplay.nick', "")
         retroarchConfig['netplay_client_swap_input'] = "false"
-        if system.config['netplaymode'] == 'client':
+        if system.config['netplay.mode'] == 'client':
             # But client needs netplay_mode = true ... bug ?
             retroarchConfig['netplay_mode']              = "true"
             retroarchConfig['netplay_ip_address']        = systemConfig.get('netplay.server.ip', "")

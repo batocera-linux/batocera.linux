@@ -95,6 +95,14 @@ def main(args):
         if args.rom is not None:
             effectiveRom = args.rom
 
+        # network options
+        if args.netplaymode is not None:
+            system.config["netplay.mode"] = args.netplaymode
+        if args.netplayip is not None:
+            system.config["netplay.server.ip"] = args.netplayip
+        if args.netplayport is not None:
+            system.config["netplay.server.port"] = args.netplayport
+
         # run a script before emulator starts
         callExternalScripts("/userdata/system/scripts", "gameStart", [systemName, system.config['emulator'], effectiveCore, effectiveRom])
 
@@ -184,10 +192,9 @@ if __name__ == '__main__':
     parser.add_argument("-p5nbaxes", help="player5 controller number of axes", type=str, required=False)
     parser.add_argument("-system", help="select the system to launch", type=str, required=True)
     parser.add_argument("-rom", help="rom absolute path", type=str, required=True)
-    parser.add_argument("-emulator", help="force emulator", type=str, required=False)
-    parser.add_argument("-core", help="force emulator core", type=str, required=False)
-    parser.add_argument("-ratio", help="force game ratio", type=str, required=False)
-    parser.add_argument("-netplay", help="host/client", type=str, required=False)
+    parser.add_argument("-netplaymode", help="host/client", type=str, required=False)
+    parser.add_argument("-netplayip", help="remote ip", type=str, required=False)
+    parser.add_argument("-netplayport", help="remote port", type=str, required=False)
 
     args = parser.parse_args()
     try:
