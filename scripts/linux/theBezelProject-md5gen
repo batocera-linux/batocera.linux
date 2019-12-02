@@ -8,8 +8,7 @@
 # tbp-md5gen 'list', 'generate' all or <system>'
 #
 #
-###############################
-readonly VERSION="1.00_20191104"
+readonly VERSION="1.10_20191129"
 readonly TITLE="index generator for the BezelProject"
 # Paths for LOGS_DIR, SYSTEMS_LIST and INDEX_DIR
 # are for a local Batocera machine. Please change them
@@ -23,14 +22,14 @@ readonly TMP_DOWNLOAD_DIR=`mktemp -d`
 ###############################
 #
 function usage() {
-	record "Showing usage for '$TITLE'"
-	record "$(basename $0) - $TITLE" "2"
-	record " " "2"
-	record "It accepts two modes: 'list', 'generate' all or <system>'" "2"
-	record "- 'list' to list systems which are available within TheBezelProject" "2"
-	record "- 'generate <system>' to create index for this <system>." "2"
-	record "- 'generate all' to create index for all systems." "2"
-	return 1
+		record "Showing usage for '$TITLE'"
+		record "$(basename $0) - $TITLE" "2"
+		record " " "2"
+		record "It accepts two modes: 'list', 'generate' all or <system>'" "2"
+		record "- 'list' to list systems which are available within TheBezelProject" "2"
+		record "- 'generate <system>' to create index for this <system>." "2"
+		record "- 'generate all' to create index for all systems." "2"
+		return 1
 }
 
 ###############################
@@ -52,201 +51,185 @@ function record() {
 ###############################
 # Cleanup process for exiting
 function do_clean() {
-	record "* Cleanup and exiting"
-	# remove temporary directory
-	if [ -d "$TMP_DOWNLOAD_DIR" ]; then
-		record "Removing download directory: $TMP_DOWNLOAD_DIR"
-		rm -rf "$TMP_DOWNLOAD_DIR"
-	fi
+		record "* Cleanup and exiting"
+
+		# remove temporary directory
+		if [ -d "$TMP_DOWNLOAD_DIR" ]; then
+			record "Removing download directory: $TMP_DOWNLOAD_DIR"
+			rm -rf "$TMP_DOWNLOAD_DIR"
+		fi
 }
 
 ###############################
 # check if url format is valid
 function check_url() {
-	[[ "$1" =~ ^(https?|ftp)://.*$ ]] && echo "[A]" || echo "[?]"
+		[[ "$1" =~ ^(https?|ftp)://.*$ ]] && echo "[A]" || echo "[?]"
 }
 
 ###############################
 # return the git name
 function git_name() {
-	echo "$1" | sed "s,.*/\(.*\),\1,"
+		echo "$1" | sed "s,.*/\(.*\),\1,"
 }
 
 ###############################
 #
 function list() {
-	local systems_count=0
-	local systems_available=0
-	local system_name
-	local url
-	record "* List"
-	record "Path to systems list $SYSTEMS_LIST"
-	# read systems list from configuration file
-	while IFS=$'  \t' read system_name url ; do
-		[ -z "$system_name" ] && continue
-		let systems_count+=1
-		record "System #$systems_count $system_name"
-		# check if a system is affected to a ROMs directory
-		if [ "$system_name" = "?" ]; then continue; fi
-		let systems_available+=1
-		# check if url is valid and returns [A] or [?]
-		ia=$(check_url "$url")
-		if [ "$ia" != "[A]" ]; then continue; fi
-		record "$systems_available $system_name - $url" "1"
-	done < "$SYSTEMS_LIST"
-	record "There are $systems_count systems ($systems_available availables)"
+		local systems_count=0
+		local systems_available=0
+		local system_name
+		local url
+		local path
+
+		record "* List"
+		record "Path to systems list $SYSTEMS_LIST"
+
+		# read systems list from configuration file
+		while IFS=$'  \t' read system_name url path ; do
+				[ -z "$system_name" ] && continue
+				let systems_count+=1
+				record "System #$systems_count $system_name"
+				# check if a system is affected to a ROMs director
+				[ "$system_name" = "?" ] && continue
+				let systems_available+=1
+				# check if url is valid and returns [A] or [?]
+				ia=$(check_url "$url")
+				[ "$ia" != "[A]" ] && continue
+				record "$systems_available $system_name - $url" "1"
+		done < "$SYSTEMS_LIST"
+		record "There are $systems_count systems ($systems_available availables)"
 }
 
 ###############################
 #
 function gen_index {
-	local bezels_installed=0
-	local system_to_install="$1"
-	local url="$2"
-	local OS
-				
-	local file_zip
-	local git_name
-	local git_system
-	local file_name
-	local cd_path
+		local bezels_installed=0
+		local system_to_install="$1"
+		local url="$2"
+		local path="$3"
+		local OS
+		local file_zip
+		local git_name
+		local file_name
 
-	local index_bezel_name
-	local index_bezel_md5
-		
-	# check if running on a Mac or on Web Server
-	# (Mac for debug purposes, Web Server runs on Linux)
-	OS=`uname`
-	git_name=$(git_name "$url")
-	record "Git name : $git_name"
-	# keep only the final word for searching sub-folders of /retroarch/overlay/GameBezels/<git_system>
-	git_system=${git_name#bezelproject-}
-	record "Git system : $git_system"
-	record "Download dir : $TMP_DOWNLOAD_DIR"
-	cd "$TMP_DOWNLOAD_DIR"
-	record "Installing system for $system_to_install" "1"
+		local index_bezel_name
+		local index_bezel_md5
+		# check if running on a Mac or on Web Server
+		# (Mac for debug purposes, Web Server runs on Linux)
+		OS=`uname`
 
-	file_zip="${url}/archive/master.zip"
-	record "File zip : $file_zip"
-	record "Downloading file. Please wait..." "1"
-	curl -fL "$file_zip" -o "$git_name.zip"
-	if [ "$?" -ne 0 ]; then
-		record "Error : file $(basename $file_zip) could not be downloaded from $(dirname $url)" "1"
-		return 1
-	fi
-	if [ -f "$git_name.zip" ]; then
-		record "Unzipping file..." "1"
-		if [ -d "$git_name" ]; then
-			rm -rf "$git_name"
+		git_name=$(git_name "$url")
+		record "Git name : $git_name"
+		record "Git path : $path"
+		record "Download dir : $TMP_DOWNLOAD_DIR"
+		cd "$TMP_DOWNLOAD_DIR"
+		record "Installing system for $system_to_install" "1"
+		file_zip="${url}/archive/master.zip"
+		record "File zip : $file_zip"
+		record "Downloading file. Please wait..." "1"
+		curl -sfL "$file_zip" -o "$git_name.zip"
+		if [ "$?" -ne 0 ]; then
+				record "Error : file $(basename $file_zip) could not be downloaded from $(dirname $url)" "1"
+				return 1
 		fi
-		unzip "$git_name.zip" >/dev/null
-		mv "$git_name-master" "$git_name"
-		rm "$git_name.zip"
-				
-		# Arcade
-		if [ "$system_to_install" == "mame" ] ||
-			[ "$system_to_install" == "fba" ] ||
-			[ "$system_to_install" == "neogeo" ]; then
-				cd_path="$git_name"/retroarch/overlay/ArcadeBezels
+		if [ -f "$git_name.zip" ]; then
+				record "Unzipping file..." "1"
+				if [ -d "$git_name" ]; then
+						rm -rf "$git_name"
+				fi
+				unzip "$git_name.zip" >/dev/null
+				mv "$git_name-master" "$git_name"
+				rm "$git_name.zip"
+				# loop for generate the MD5 and store filename of bezels
+				record "Generating md5 and index files..." "1"
+
+				# erase old index file for this system
+				if [ -f "$INDEX_DIR"/tbp_"$system_to_install".txt ]; then
+						rm "$INDEX_DIR"/tbp_"$system_to_install".txt
+				fi
+				# parse all png files in the target directory
+				while read file_name; do
+						let bezels_installed+=1
+						# Check MD5
+						if [ $OS = "Darwin" ]; then
+								# MacOS X Version
+								index_bezel_md5=$(md5 -q "$file_name");
+						else
+								# Linux version
+								index_bezel_md5=$(md5sum "$file_name" | cut -d ' ' -f 1)
+						fi
+						index_bezel_name=$(basename "$file_name");
+						echo "$index_bezel_md5 $index_bezel_name" >> "$INDEX_DIR"/tbp_"$system_to_install".txt
+				done < <(find "$git_name"/"$path" -maxdepth 1 -type f -iname "*.png")
+				record "$bezels_installed bezels for system $system_to_install were generated" "1"
+				rm -rf "$git_name"
+				# sync disk
+				sync
+				return 0
 		else
-				# Consoles
-				cd_path="$git_name"/retroarch/overlay/GameBezels/"$git_system"
+				record "Error : file $(basename $file_zip) could not be downloaded from $(dirname $url)" "1"
+				return 1
 		fi
-			
-		# loop for generate the MD5 and store filename of bezels
-		record "Generating md5 and index files..." "1"
 
-		# erase old index file for this system
-		if [ -f "$INDEX_DIR"/tbp_"$system_to_install".txt ]; then
-			rm "$INDEX_DIR"/tbp_"$system_to_install".txt
-		fi
-	
-		# parse all png files in the target directory
-		while read file_name; do
-			let bezels_installed+=1
-			# Check MD5
-			if [ $OS = "Darwin" ]; then
-				# MacOS X Version
-				index_bezel_md5=$(md5 -q "$file_name");
-			else
-				# Linux version
-				index_bezel_md5=$(md5sum "$file_name" | cut -d ' ' -f 1)
-			fi
-			index_bezel_name=$(basename "$file_name");
-			echo "$index_bezel_md5 $index_bezel_name" >> "$INDEX_DIR"/tbp_"$system_to_install".txt
-		done < <(find "$cd_path" -maxdepth 1 -type f -iname "*.png")
-				
-		record "$bezels_installed bezels for system $system_to_install were processed" "1"
-				
-		# sync disk
-		rm -rf "$git_name"
-		sync
-		return 0
-	else
-		record "Error : file $(basename $file_zip) could not be downloaded from $(dirname $url)" "1"
 		return 1
-	fi
-	return 1
 }
 
 ###############################
 #
 function generate() {
-	local systems_count=0
-	local system_found=0
-	local system_name
-	local url
-	local system_to_install="$1"
-
-	record "* Generate"
-	record "Path to systems list $SYSTEMS_LIST"
-	
-	# read systems list from configuration file
-	while IFS=$'  \t' read system_name url ; do
-		[ -z "$system_name" ] && continue
-		let systems_count+=1
-		# we want system specific ?
-		if [ "$system_to_install" != "all" ]; then
-			[ "$system_name" != "$system_to_install" ] && continue
-			# check if url is valid and return [A] else [?]
-			ia=$(check_url "$url")
-			if [ "$ia" != "[A]" ]; then
-				record "Error : invalid bezels URL $url" "1"
-				return 1
-			else
-				record "Found system #$systems_count $system_name"
-				gen_index $system_to_install $url
-				if [ "$?" -ne 0 ]; then
-					return 1
+		local systems_count=0
+		local system_found=0
+		local system_name
+		local url
+		local path
+		local system_to_install="$1"
+		record "* Generate"
+		record "Path to systems list $SYSTEMS_LIST"
+		# read systems list from configuration file
+		while IFS=$'  \t' read system_name url path ; do
+				[ -z "$system_name" ] && continue
+				let systems_count+=1
+				# we want system specific ?
+				if [ "$system_to_install" != "all" ]; then
+						[ "$system_name" != "$system_to_install" ] && continue
+						# check if url is valid and return [A] else [?]
+						ia=$(check_url "$url")
+						if [ "$ia" != "[A]" ]; then
+								record "Error : invalid bezels URL $url" "1"
+								return 1
+						else
+								record "Found system #$systems_count $system_name"
+								gen_index "$system_to_install" "$url" "$path"
+								if [ "$?" -ne 0 ]; then
+										return 1
+								fi
+								system_found=1
+								break
+						fi
+				else
+						# all systems
+						# check if a system is affected to a ROMs directory
+						[ "$system_name" = "?" ] && continue
+						# check if url is valid and returns [A] or [?]
+						ia=$(check_url "$url")
+						if [ "$ia" != "[A]" ]; then
+								record "Error : invalid bezels URL $url" "1"
+								return 1
+						else
+								record "Current system #$systems_count $system_name"
+								gen_index "$system_name" "$url" "$path"
+								if [ "$?" -ne 0 ]; then
+										return 1
+								fi
+						fi
 				fi
-				system_found=1
-				break
-			fi
-		else
-			# all systems
-			# check if system is affected to a ROMs directory
-			[ $system_name = "?" ] && continue
-			# check if url is valid and returns [A] or [?]
-			ia=$(check_url "$url")
-			if [ "$ia" != "[A]" ]; then
-				record "Error : invalid bezels URL $url" "1"
+		done < "$SYSTEMS_LIST"
+		# In case TheBezelProject doesn't provide the system we want to install
+		if [[ "$system_to_install" != "all" && "$system_found" -eq 0 ]]; then
+				record  "Error : system $system_to_install could not be found" "1"
 				return 1
-			else
-				record "Current system #$systems_count $system_name"
-				gen_index $system_name $url
-				if [ "$?" -ne 0 ]; then
-					return 1
-				fi
-			fi
 		fi
-	done < "$SYSTEMS_LIST"
-		
-	# In case TheBezelProject doesn't provide the system we want to install
-	if [[ "$system_to_install" != "all" && "$system_found" -eq 0 ]]; then
-		record  "Error : system $system_to_install could not be found" "1"
-		return 1
-	fi
-	rm -rf "$TMP_DOWNLOAD_DIR"
+		rm -rf "$TMP_DOWNLOAD_DIR"
 }
 
 ###############################
@@ -258,22 +241,10 @@ system="$2"
 trap do_clean EXIT
 record "Starting script v$VERSION"
 
-if ! [ -f "$SYSTEMS_LIST" ]; then 
-	record "Please copy $SYSTEMS_LIST from https://batocera.org/upgrades/bezels.txt. Exiting." "1"
-	exit 1
-fi
-if ! [ -d "$INDEX_DIR" ]; then 
-	record "Directory $INDEX_DIR does not exist. Exiting." "1"
-	exit 1
-fi
-if ! [ -d "$LOGS_DIR" ]; then 
-	record "Directory $LOGS_DIR does not exist. Exiting." "1"
-	exit 1
-fi
 if [[ "$command" = "list" ]]; then
-	list
+		list
 elif [[ "$command" = "generate" && -n "$system" ]]; then
-	generate "$system"
+		generate "$system"
 else
-	usage
+		usage
 fi
