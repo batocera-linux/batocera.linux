@@ -25,7 +25,6 @@ RUN dpkg --add-architecture i386 && \
 		u-boot-tools \
 		flex \
 		wget \
-		lzop \
 		cpio \
 		dosfstools \
 		libtool \
