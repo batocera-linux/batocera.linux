@@ -1,0 +1,72 @@
+diff --git a/src/joystick/SDL_joystick.c b/src/joystick/SDL_joystick.c
+index 8058947..e41a746 100644
+--- a/src/joystick/SDL_joystick.c
++++ b/src/joystick/SDL_joystick.c
+@@ -323,6 +323,8 @@ SDL_JoystickOpen(int device_index)
+     joystick->instance_id = instance_id;
+     joystick->attached = SDL_TRUE;
+     joystick->player_index = -1;
++    joystick->initial_state_is_valid = SDL_FALSE;
++    joystick->initial_state_initialized = SDL_FALSE;
+ 
+     if (driver->Open(joystick, device_index) < 0) {
+         SDL_free(joystick);
+@@ -849,6 +851,11 @@ SDL_PrivateJoystickAxis(SDL_Joystick * joystick, Uint8 axis, Sint16 value)
+ {
+     int posted;
+ 
++    // ignore axis events until a button is released
++    if (joystick->initial_state_is_valid == SDL_FALSE) {
++      return;
++    }
++
+     /* Make sure we're not getting garbage or duplicate events */
+     if (axis >= joystick->naxes) {
+         return 0;
+@@ -862,6 +869,7 @@ SDL_PrivateJoystickAxis(SDL_Joystick * joystick, Uint8 axis, Sint16 value)
+     if (value == joystick->axes[axis].value) {
+         return 0;
+     }
++
+     if (!joystick->axes[axis].sent_initial_value) {
+         /* Make sure we don't send motion until there's real activity on this axis */
+         const int MAX_ALLOWED_JITTER = SDL_JOYSTICK_AXIS_MAX / 80;  /* ShanWan PS3 controller needed 96 */
+@@ -989,6 +997,11 @@ SDL_PrivateJoystickButton(SDL_Joystick * joystick, Uint8 button, Uint8 state)
+         event.type = SDL_JOYBUTTONDOWN;
+         break;
+     case SDL_RELEASED:
++        if(joystick->initial_state_is_valid == SDL_FALSE) {
++	  joystick->initial_state_is_valid = SDL_TRUE;
++	  joystick->driver->Update(joystick);
++	  joystick->initial_state_initialized = SDL_TRUE;
++	}
+         event.type = SDL_JOYBUTTONUP;
+         break;
+     default:
+diff --git a/src/joystick/SDL_sysjoystick.h b/src/joystick/SDL_sysjoystick.h
+index 89b33f7..bd47d50 100644
+--- a/src/joystick/SDL_sysjoystick.h
++++ b/src/joystick/SDL_sysjoystick.h
+@@ -71,6 +71,9 @@ struct _SDL_Joystick
+ 
+     int ref_count;              /* Reference count for multiple opens */
+ 
++    SDL_bool initial_state_is_valid; // true once a first button is released (axis initial values are incorrect on some pad until this happen (ie 8bitdo nes)
++    SDL_bool initial_state_initialized; // true once the initialisation is done
++
+     struct _SDL_Joystick *next; /* pointer to next joystick we have allocated */
+ };
+ 
+diff --git a/src/joystick/linux/SDL_sysjoystick.c b/src/joystick/linux/SDL_sysjoystick.c
+index 36d580b..e0e2bb7 100644
+--- a/src/joystick/linux/SDL_sysjoystick.c
++++ b/src/joystick/linux/SDL_sysjoystick.c
+@@ -979,7 +979,7 @@ HandleInputEvents(SDL_Joystick * joystick)
+     int i, len;
+     int code;
+ 
+-    if (joystick->hwdata->fresh) {
++    if (joystick->hwdata->fresh || (joystick->initial_state_is_valid == SDL_TRUE && joystick->initial_state_initialized == SDL_FALSE)) {
+         PollAllValues(joystick);
+         joystick->hwdata->fresh = 0;
+     }
