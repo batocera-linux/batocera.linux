@@ -29,6 +29,10 @@ class ReicastGenerator(Generator):
         if not Config.has_section("input"):
             Config.add_section("input")
         # For each pad detected
+        for index in range(len(playersControllers), 4):
+            Config.set("input", 'evdev_device_id_' + str(index+1), -1)
+            Config.set("input", 'evdev_mapping_' + str(index+1), "")
+
         for index in playersControllers:
             controller = playersControllers[index]
         
