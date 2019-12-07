@@ -56,7 +56,7 @@ def generateControllerConfig(controller):
 
     # Add controller name
     Config.set("emulator", "mapping_name", controller.realName)
-    
+
     # Parse controller inputs
     for index in controller.inputs:
 		input = controller.inputs[index]
@@ -69,7 +69,7 @@ def generateControllerConfig(controller):
 			if var in sections[i]:
 				section = i
 				break
-		
+
 		# Sadly, we don't get the right axis code for Y hats. So, dirty hack time
                 if input.code is not None:
 		    code = input.code
@@ -79,6 +79,8 @@ def generateControllerConfig(controller):
 		        else:
     			    code = input.code
 		    Config.set(section, var, code)
+                else:
+                    print("code not found for key " + input.name + " on pad " + controller.realName + " (please reconfigure your pad)")
 
     Config.write(cfgfile)
     cfgfile.close()
