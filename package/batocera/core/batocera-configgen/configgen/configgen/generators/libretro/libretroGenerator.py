@@ -81,11 +81,11 @@ class LibretroGenerator(Generator):
             commandArray.extend(["--appendconfig", "|".join(configToAppend)])
 
          # Netplay mode
-        if 'netplaymode' in system.config:
-            if system.config['netplaymode'] == 'host':
+        if 'netplay.mode' in system.config:
+            if system.config['netplay.mode'] == 'host':
                 commandArray.append("--host")
-            elif system.config['netplaymode'] == 'client':
-                commandArray.extend(["--connect", system.config['netplay.server.address']])
+            elif system.config['netplay.mode'] == 'client':
+                commandArray.extend(["--connect", system.config['netplay.server.ip']])
 
         # Verbose logs
         commandArray.extend(['--verbose'])
