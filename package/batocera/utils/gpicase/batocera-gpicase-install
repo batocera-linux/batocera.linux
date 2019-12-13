@@ -3,7 +3,7 @@
 CONFIGFILE=/boot/config.txt
 CONFIG="$(batocera-settings "$CONFIGFILE" --command load --key force_gpi_defaults)"
 CONFIGERR=$?
-[[ $CONFIGERR -eq  12 || $CONFIG -eq 1 ]] || exit 0
+[[ $CONFIGERR -eq  12 || $CONFIGERR -eq 11 || $CONFIG -eq 1 ]] || exit 0
 
 setup=(
        "# ====== GPi Case setup section ====="
@@ -44,15 +44,31 @@ setup=(
     done
     
     #Write force_gpi_defaults if it wasn't already in config
-    [[ $CONFIGERR -eq 12 ]] && echo "#force_gpi_defaults=1" >> "${CONFIGFILE}"
+    if [[ $CONFIGERR -eq 12 ]]; then
+        echo "#force_gpi_defaults=0" >> "${CONFIGFILE}"
+    fi
 
+    #Reboot if there was a change in line
     if test "${CONFIGMODIFIED}" = 1
     then
-	echo "Activate Retroflag Safe Shutdown feature..."
-        batocera-settings --command write --key system.power.switch --value RETROFLAG_GPI
-        sleep 2
         echo "Rebooting now..."
         shutdown -r now
+    fi
+
+    # Create Subshell and wait till batocera.cfg is available
+    # Then write values and uncomment force_gpi_defaults, to decide between boot 1st and 2nd boot ;)
+    if [[ $CONFIGERR -eq 11 ]]; then
+        (
+            until [[ -w /userdata/system/batocera.conf ]]; do
+                sleep 1
+            done
+            
+            # Set correct power switch device
+            batocera-settings --command write --key system.power.switch --value RETROFLAG_GPI
+            # Avoid second run of script by removing # from force_gpi_defaults (Errcode 11)
+            mount -o remount,rw /boot
+            batocera-settings $CONFIGFILE uncomment force_gpi_defaults
+         ) &
     fi
 
 exit 0
