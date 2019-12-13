@@ -61,6 +61,12 @@ def main(args):
     systemName = args.system
     eslog.log("Running system: {}".format(systemName))
     system = Emulator(systemName, args.rom)
+
+    if args.emulator is not None:
+        system.config["emulator"] = args.emulator
+    if args.core is not None:
+        system.config["core"] = args.core
+
     eslog.debug("Settings: {}".format(system.config))
     if "emulator" in system.config and "core" in system.config:
         eslog.log("emulator: {}, core: {}".format(system.config["emulator"], system.config["core"]))
@@ -192,6 +198,8 @@ if __name__ == '__main__':
     parser.add_argument("-p5nbaxes", help="player5 controller number of axes", type=str, required=False)
     parser.add_argument("-system", help="select the system to launch", type=str, required=True)
     parser.add_argument("-rom", help="rom absolute path", type=str, required=True)
+    parser.add_argument("-emulator", help="force emulator", type=str, required=False)
+    parser.add_argument("-core", help="force emulator core", type=str, required=False)
     parser.add_argument("-netplaymode", help="host/client", type=str, required=False)
     parser.add_argument("-netplayip", help="remote ip", type=str, required=False)
     parser.add_argument("-netplayport", help="remote port", type=str, required=False)
