@@ -63,13 +63,13 @@ setup=(
                 sleep 1
             done
             
-	    # Set correct power switch device
-	    batocera-settings --command write --key system.power.switch --value RETROFLAG_GPI
+            # Set correct power switch device
+            batocera-settings --command write --key system.power.switch --value RETROFLAG_GPI
             # Avoid second run of script by removing # from force_gpi_defaults (Errcode 11)
-	    mount -o remount,rw /boot
+            mount -o remount,rw /boot
             batocera-settings $CONFIGFILE uncomment force_gpi_defaults
             
-	    # Some fine tuning
+            # Some fine tuning
             RA_CUSTOM="/userdata/system/configs/retroarch/retroarchcustom.cfg"
             echo "video_fullscreen_x = 640" >> "$RA_CUSTOM"
             echo "video_fullscreen_y = 480" >> "$RA_CUSTOM"
