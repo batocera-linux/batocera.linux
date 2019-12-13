@@ -86,6 +86,10 @@ class LibretroGenerator(Generator):
                 commandArray.append("--host")
             elif system.config['netplay.mode'] == 'client':
                 commandArray.extend(["--connect", system.config['netplay.server.ip']])
+            if 'netplay.server.port' in system.config:
+                commandArray.extend(["--port", system.config['netplay.server.port']])
+            if 'netplay.nickname' in system.config:
+                commandArray.extend(["--nick", system.config['netplay.nickname']])
 
         # Verbose logs
         commandArray.extend(['--verbose'])
