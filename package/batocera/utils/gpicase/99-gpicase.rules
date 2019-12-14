@@ -1,1 +1,1 @@
-SUBSYSTEM=="usb", ATTR{manufacturer}=="RetroFlag", ATTR{product}=="GPi Case", RUN+="/usr/bin/batocera-gpicase-install"
+SUBSYSTEM=="usb", ATTR{manufacturer}=="RetroFlag", ATTR{product}=="GPi Case", RUN+="/usr/bin/batocera-gpicase-install", RUN+="/bin/echo RETROFLAG_GPI > /var/run/powerswitch-detected"
