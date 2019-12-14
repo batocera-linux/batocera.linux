@@ -20,16 +20,16 @@ devices=(
          PIN356ONOFFRESET
         )
 
+# Read current config, if no key is set in batocera.conf then try to use
+# default value setted by udev-rule
+powerswitch="$(batocera-settings --command load --key system.power.switch)"
+if [ $? -ne 0 ] && [ -f /var/run/powerswitch-by-udevrule ]; then
+    powerswitch="$(cat /var/run/powerswitch-by-udevrule)"
+fi
+
 # Carry out specific functions when asked to by the system
 case "$1" in
     start)
-        if [[ -f /var/run/powerswitch-detected ]]; then
-            powerswitch=$(cat /var/run/powerswitch-detected)
-        else
-            systemsetting="python /usr/lib/python2.7/site-packages/configgen/settings/batoceraSettings.py"
-            powerswitch="`$systemsetting  -command load -key system.power.switch`"
-        fi
-
         for i in ${devices[@]}; do
             [ "$i" == "$powerswitch" ] && break
         done
@@ -39,13 +39,6 @@ case "$1" in
     ;;
 
     stop)
-        if [[ -f /var/run/powerswitch-detected ]]; then
-            powerswitch=$(cat /var/run/powerswitch-detected)
-        else
-            systemsetting="python /usr/lib/python2.7/site-packages/configgen/settings/batoceraSettings.py"
-            powerswitch="`$systemsetting  -command load -key system.power.switch`"
-        fi
-
         if [ ! -z "$BTD_PID" ]; then
             kill $BTD_PID
             $RUN stop $powerswitch
