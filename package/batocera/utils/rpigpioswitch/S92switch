@@ -23,8 +23,13 @@ devices=(
 # Carry out specific functions when asked to by the system
 case "$1" in
     start)
-        systemsetting="python /usr/lib/python2.7/site-packages/configgen/settings/batoceraSettings.py"
-        powerswitch="`$systemsetting  -command load -key system.power.switch`"
+        if [[ -f /var/run/powerswitch-detected ]]; then
+            powerswitch=$(cat /var/run/powerswitch-detected)
+        else
+            systemsetting="python /usr/lib/python2.7/site-packages/configgen/settings/batoceraSettings.py"
+            powerswitch="`$systemsetting  -command load -key system.power.switch`"
+        fi
+
         for i in ${devices[@]}; do
             [ "$i" == "$powerswitch" ] && break
         done
@@ -32,9 +37,15 @@ case "$1" in
             nice -n 19 $RUN start $powerswitch &
         fi
     ;;
+
     stop)
-        systemsetting="python /usr/lib/python2.7/site-packages/configgen/settings/batoceraSettings.py"
-        powerswitch="`$systemsetting  -command load -key system.power.switch`"
+        if [[ -f /var/run/powerswitch-detected ]]; then
+            powerswitch=$(cat /var/run/powerswitch-detected)
+        else
+            systemsetting="python /usr/lib/python2.7/site-packages/configgen/settings/batoceraSettings.py"
+            powerswitch="`$systemsetting  -command load -key system.power.switch`"
+        fi
+
         if [ ! -z "$BTD_PID" ]; then
             kill $BTD_PID
             $RUN stop $powerswitch
@@ -42,6 +53,7 @@ case "$1" in
             $RUN stop $powerswitch
         fi
     ;;
+
     status)
         if [ ! -z "$BTD_PID" ]; then
             echo "Service rpi_gpioswitch ["$BTD_PID"] [ OK ]"
@@ -49,9 +61,11 @@ case "$1" in
             echo "Service rpi_gpioswitch [ KO ]"
         fi
     ;;
+
     setup)
         rpi_gpioswitch
     ;;
+
     *)
         echo "Usage: /etc/init.d/S92switch {start | stop | status | setup}"
         exit 1
