@@ -211,14 +211,18 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
         retroarchConfig['fps_show'] = 'false'
 
     # adaptation for small resolution
-    if gameResolution["width"] < 400 and gameResolution["height"] < 400:
+    if isLowResolution(gameResolution):
         retroarchConfig['video_font_size'] = '12'
         retroarchConfig['menu_driver'] = 'rgui'
+        retroarchConfig['width']  = gameResolution["width"]  *2 # on low resolution, higher values for width and height makes a nicer image (640x480 on the gpi case)
+        retroarchConfig['height'] = gameResolution["height"] *2 # default value
     else:
         retroarchConfig['video_font_size'] = '32'
         retroarchConfig['menu_driver'] = 'ozone'
         # force the assets directory while it was wrong in some beta versions
         retroarchConfig['assets_directory'] = '/usr/share/libretro/assets'
+        retroarchConfig['width']  = gameResolution["width"]  # default value
+        retroarchConfig['height'] = gameResolution["height"] # default value
 
     # AI service for game translations
     if system.isOptSet('ai_service_enabled') and system.getOptBoolean('ai_service_enabled') == True:
@@ -359,6 +363,9 @@ def writeBezelConfig(bezel, retroarchConfig, systemName, rom, gameResolution):
         retroarchConfig['video_message_pos_y']    = infos["messagey"]
 
     writeBezelCfgConfig(overlay_cfg_file, overlay_png_file)
+
+def isLowResolution(gameResolution):
+    return gameResolution["width"] < 400 and gameResolution["height"] < 400
 
 def writeBezelCfgConfig(cfgFile, overlay_png_file):
     fd = open(cfgFile, "w")
