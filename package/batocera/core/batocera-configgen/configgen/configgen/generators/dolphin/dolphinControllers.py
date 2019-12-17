@@ -91,7 +91,7 @@ def generateControllerConfig_emulatedwiimotes(playersControllers, rom):
         wiiMapping['joystick2up']   = 'Nunchuk/Stick/Up'
         wiiMapping['joystick2left'] = 'Nunchuk/Stick/Left'
 
-    generateControllerConfig_any(playersControllers, "WiimoteNew.ini", "Wiimote", wiiMapping, wiiReverseAxes, extraOptions)
+    generateControllerConfig_any(playersControllers, "WiimoteNew.ini", "Wiimote", wiiMapping, wiiReverseAxes, None, extraOptions)
 
 def generateControllerConfig_gamecube(playersControllers):
     gamecubeMapping = {
@@ -111,7 +111,14 @@ def generateControllerConfig_gamecube(playersControllers):
         'C-Stick/Up':      'C-Stick/Down',
         'C-Stick/Left':    'C-Stick/Right'
     }
-    generateControllerConfig_any(playersControllers, "GCPadNew.ini", "GCPad", gamecubeMapping, gamecubeReverseAxes)
+    # if joystick1up is missing on the pad, use up instead
+    gamecubeReplacements = {
+        'joystick1up': 'up',
+        'joystick1left': 'left',
+        'joystick1down': 'down',
+        'joystick1right': 'right'
+    }
+    generateControllerConfig_any(playersControllers, "GCPadNew.ini", "GCPad", gamecubeMapping, gamecubeReverseAxes, gamecubeReplacements)
 
 def removeControllerConfig_gamecube():
     configFileName = "{}/{}".format(batoceraFiles.dolphinConfig, "GCPadNew.ini")
@@ -175,7 +182,7 @@ def generateHotkeys(playersControllers):
     f.write
     f.close()
 
-def generateControllerConfig_any(playersControllers, filename, anyDefKey, anyMapping, anyReverseAxes, extraOptions = {}):
+def generateControllerConfig_any(playersControllers, filename, anyDefKey, anyMapping, anyReverseAxes, anyReplacements, extraOptions = {}):
     configFileName = "{}/{}".format(batoceraFiles.dolphinConfig, filename)
     f = open(configFileName, "w")
     nplayer = 1
@@ -196,12 +203,28 @@ def generateControllerConfig_any(playersControllers, filename, anyDefKey, anyMap
         f.write("Device = evdev/" + str(nsamepad) + "/" + pad.realName + "\n")
         for opt in extraOptions:
             f.write(opt + " = " + extraOptions[opt] + "\n")
+
+        # recompute the mapping according to available buttons on the pads and the available replacements
+        currentMapping = anyMapping
+        # apply replacements
+        for x in anyReplacements:
+            if x not in pad.inputs and x in currentMapping:
+                currentMapping[anyReplacements[x]] = currentMapping[x]
+            if x == "joystick1up":
+                currentMapping[anyReplacements["joystick1down"]] = anyReverseAxes[currentMapping["joystick1up"]]
+            if x == "joystick1left":
+                currentMapping[anyReplacements["joystick1right"]] = anyReverseAxes[currentMapping["joystick1left"]]
+            if x == "joystick2up":
+                currentMapping[anyReplacements["joystick2down"]] = anyReverseAxes[currentMapping["joystick2up"]]
+            if x == "joystick2left":
+                currentMapping[anyReplacements["joystick2right"]] = anyReverseAxes[currentMapping["joystick2left"]]
+
         for x in pad.inputs:
             input = pad.inputs[x]
 
             keyname = None
-            if input.name in anyMapping:
-                keyname = anyMapping[input.name]
+            if input.name in currentMapping:
+                keyname = currentMapping[input.name]
             #else:
             #    f.write("# undefined key: name="+input.name+", type="+input.type+", id="+str(input.id)+", value="+str(input.value)+"\n")
 
