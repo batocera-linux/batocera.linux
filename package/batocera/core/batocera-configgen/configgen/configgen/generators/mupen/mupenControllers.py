@@ -57,9 +57,20 @@ def defineControllerKeys(controller, systemconfig):
         if 'analogpeak' in systemconfig:
             config['AnalogPeak']     = systemconfig['analogpeak']
 
-	# Dirty hack : the input.xml adds 2 directions per joystick, ES handles just 1
-	fakeSticks = { 'joystick2up' : 'joystick2down'
-			, 'joystick2left' : 'joystick2right'}
+        # z is important, in case l2 is not available for this pad, use l1
+        # assume that l2 is for "Z Trig" in the mapping
+        if 'l2' not in controller.inputs:
+            controller.inputs['l1'] = controller.inputs['l2']
+
+        # if joystick1up is not available, use up/left while these keys are more used
+        if 'joystick1up' not in controller.inputs:
+            controller.inputs['up']    = controller.inputs['joystick1up']
+            controller.inputs['down']  = controller.inputs['joystick1down']
+            controller.inputs['left']  = controller.inputs['joystick1left']
+            controller.inputs['right'] = controller.inputs['joystick1right']
+
+	# the input.xml adds 2 directions per joystick, ES handles just 1
+	fakeSticks = { 'joystick2up' : 'joystick2down', 'joystick2left' : 'joystick2right'}
 	# Cheat on the controller
 	for realStick, fakeStick in fakeSticks.iteritems():
 		if realStick in controller.inputs:
@@ -80,29 +91,6 @@ def defineControllerKeys(controller, systemconfig):
                                 config[mupenmapping[input.name]] = value
                         else:
                                 config[mupenmapping[input.name]] += " " + value
-
-	# Big dirty hack : handle when the pad has no analog sticks. Only Start A, B L and R survive from the previous configuration
-	if "X Axis" not in config and "Y Axis" not in config:
-		# remap Z Trig
-		config['Z Trig'] = setControllerLine(mupenmapping, controller.inputs['x'], "Z Trig")
-		# remove C Button U and R
-		if 'C Button U' in config: del config['C Button U']
-		if 'C Button R' in config: del config['C Button R']
-		# remove DPad
-		if 'DPad U' in config:del config['DPad U']
-		if 'DPad D' in config:del config['DPad D']
-		if 'DPad L' in config:del config['DPad L']
-		if 'DPad R' in config:del config['DPad R']
-		# Remap up/down/left/right to  X and Y Axis
-		if controller.inputs['left'].type == 'hat':
-			config['X Axis'] = "hat({} {} {})".format(controller.inputs['left'].id, mupenHatToAxis[controller.inputs['left'].value], mupenHatToAxis[controller.inputs['right'].value])
-			config['Y Axis'] = "hat({} {} {})".format(controller.inputs['up'].id, mupenHatToAxis[controller.inputs['up'].value], mupenHatToAxis[controller.inputs['down'].value])
-		elif controller.inputs['left'].type == 'axis':
-			config['X Axis'] = setControllerLine(mupenmapping, controller.inputs['left'], "X Axis")
-			config['Y Axis'] = setControllerLine(mupenmapping, controller.inputs['up'], "Y Axis")
-		elif controller.inputs['left'].type == 'button':
-			config['X Axis'] = "button({},{})".format(controller.inputs['left'].id, controller.inputs['right'].id)
-			config['Y Axis'] = "button({},{})".format(controller.inputs['up'].id, controller.inputs['down'].id)
 	return config
 
 
