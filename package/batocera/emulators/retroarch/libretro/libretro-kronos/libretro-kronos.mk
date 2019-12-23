@@ -3,8 +3,8 @@
 # LIBRETRO-KRONOS
 #
 ################################################################################
-# Version.: Commits on Nov 17, 2019
-LIBRETRO_KRONOS_VERSION = 99199a8628dd50b30c356c73e80e0f9426e5e768
+# Version.: Commits on Dec 18, 2019
+LIBRETRO_KRONOS_VERSION = 2c50d6b3a4c91b90c1f0b1301034a100dc59b1a7
 LIBRETRO_KRONOS_SITE = $(call github,libretro,yabause,$(LIBRETRO_KRONOS_VERSION))
 LIBRETRO_KRONOS_LICENSE = BSD-3-Clause
 
