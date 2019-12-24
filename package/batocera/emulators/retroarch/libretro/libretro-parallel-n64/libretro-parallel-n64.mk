@@ -3,10 +3,8 @@
 # PARALLEL_N64
 #
 ################################################################################
-
-# for rpi2, rpi3 and odroid because the next commit breaks and has lost performance.
-# Version.: Commits on Aug 8, 2018 
-LIBRETRO_PARALLEL_N64_VERSION = ab155da18068f638e5ace2e5e6f7387bddc3511b
+# Version.: Commits on Dec 10, 2018 
+LIBRETRO_PARALLEL_N64_VERSION = 6822bdc5ca89e701adb37bb31716142af19daa97
 LIBRETRO_PARALLEL_N64_SITE = $(call github,libretro,parallel-n64,$(LIBRETRO_PARALLEL_N64_VERSION))
 LIBRETRO_PARALLEL_N64_LICENSE = GPLv2
 
@@ -47,8 +45,8 @@ else
 endif
 
 define LIBRETRO_PARALLEL_N64_BUILD_CMDS
-       CFLAGS="$(TARGET_CFLAGS)" CXXFLAGS="$(TARGET_CXXFLAGS)" \
-              $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" LD="$(TARGET_CXX)" RANLIB="$(TARGET_RANLIB)" AR="$(TARGET_AR)" -C $(@D)/ -f Makefile platform="$(LIBRETRO_PARALLEL_N64_PLATFORM)" $(LIBRETRO_PARALLEL_N64_SUPP_OPT)
+       CFLAGS="$(TARGET_CFLAGS)" CXXFLAGS="$(TARGET_CXXFLAGS)" $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" LD="$(TARGET_CXX)" \
+              RANLIB="$(TARGET_RANLIB)" AR="$(TARGET_AR)" -C $(@D)/ -f Makefile platform="$(LIBRETRO_PARALLEL_N64_PLATFORM)" $(LIBRETRO_PARALLEL_N64_SUPP_OPT)
 endef
 
 define LIBRETRO_PARALLEL_N64_INSTALL_TARGET_CMDS

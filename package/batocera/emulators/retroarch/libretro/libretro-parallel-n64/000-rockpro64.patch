@@ -1,5 +1,5 @@
 diff --git a/Makefile b/Makefile
-index ad2c722..ce6ffa3 100644
+index 14124d5..14e2910 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -56,6 +56,8 @@ else ifneq (,$(findstring rpi,$(platform)))
@@ -11,7 +11,7 @@ index ad2c722..ce6ffa3 100644
  endif
  
  # system platform
-@@ -185,6 +187,17 @@ ifneq (,$(findstring unix,$(platform)))
+@@ -155,6 +157,17 @@ ifneq (,$(findstring unix,$(platform)))
        endif
     endif
  
@@ -26,6 +26,6 @@ index ad2c722..ce6ffa3 100644
 +      CPUFLAGS += -march=armv7ve -mcpu=cortex-a72 -mtune=cortex-a72.cortex-a53
 +   endif
 +
-    # Generic ARM
-    ifneq (,$(findstring armv,$(platform)))
-       CPUFLAGS += -DNO_ASM -DARM -D__arm__ -DARM_ASM -DNOSSE
+    # ODROIDs
+    ifneq (,$(findstring odroid,$(platform)))
+       BOARD := $(shell cat /proc/cpuinfo | grep -i odroid | awk '{print $$3}')
