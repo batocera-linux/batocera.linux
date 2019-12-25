@@ -52,7 +52,7 @@ define AMIBERRY_BUILD_CMDS
 endef
 
 define AMIBERRY_INSTALL_TARGET_CMDS
-	$(INSTALL) -D $(@D)/amiberry-$(AMIBERRY_BATOCERA_SYSTEM) $(TARGET_DIR)/usr/bin/amiberry
+	$(INSTALL) -D $(@D)/amiberry $(TARGET_DIR)/usr/bin/amiberry
         mkdir -p $(TARGET_DIR)/usr/share/amiberry
 
 	ln -sf /userdata/system/configs/amiberry/whdboot $(TARGET_DIR)/usr/share/amiberry/whdboot
