@@ -1,40 +1,40 @@
 diff --git a/src/main.cpp b/src/main.cpp
-index b0bde38..b4e60a6 100644
+index 12aeb90..81d3c93 100644
 --- a/src/main.cpp
 +++ b/src/main.cpp
-@@ -60,6 +60,7 @@ bool kickstart_rom = true;
+@@ -56,6 +56,7 @@ bool kickstart_rom = true;
  struct gui_info gui_data;
  
- TCHAR optionsfile[256];
+ static TCHAR optionsfile[MAX_DPATH];
 +TCHAR core[32];
  
- void my_trim(TCHAR *s)
+ void my_trim(TCHAR* s)
  {
-@@ -529,6 +530,11 @@ static void parse_cmdline(int argc, TCHAR **argv)
+@@ -587,6 +588,12 @@ static void parse_cmdline(int argc, TCHAR** argv)
  			firstconfig = false;
  			loaded = true;
  		}
-+        else if (_tcsncmp(argv[i], _T("-core="), 6) == 0) {
-+            TCHAR *txt = parsetextpath(argv[i] + 6);
-+            _tcscpy(core, txt);
-+            xfree(txt);
-+        }
- 		else if (_tcsncmp(argv[i], _T("-statefile="), 11) == 0) {
++		else if (_tcsncmp(argv[i], _T("-core="), 6) == 0) 
++		{
++      TCHAR *txt = parsetextpath(argv[i] + 6);
++      _tcscpy(core, txt);
++      xfree(txt);
++    }
+ 		else if (_tcsncmp(argv[i], _T("-statefile="), 11) == 0)
+ 		{
  			const auto txt = parsetextpath(argv[i] + 11);
- 			savestate_state = STATE_DORESTORE;
-@@ -742,6 +748,7 @@ static int real_main2 (int argc, TCHAR **argv)
+@@ -822,6 +829,7 @@ static int real_main2(int argc, TCHAR** argv)
+ 		abort();
  	}
- #endif
  
-+    _tcscpy(core, _T(""));
++	_tcscpy(core, _T(""));
  	keyboard_settrans();
  	set_config_changed();
- 	if (restart_config[0]) {
-@@ -770,6 +777,21 @@ static int real_main2 (int argc, TCHAR **argv)
- 	inputdevice_init();
+ 	if (restart_config[0])
+@@ -855,6 +863,20 @@ static int real_main2(int argc, TCHAR** argv)
  
- 	changed_prefs = currprefs;
-+
+ 	copy_prefs(&currprefs, &changed_prefs);
+ 
 +	if(_tcsncmp(core, _T("A500"), 4) == 0) {
 +	  bip_a500(&currprefs, -1);
 +	} else if(_tcsncmp(core, _T("A500P"), 5) == 0) {
