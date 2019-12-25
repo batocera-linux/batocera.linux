@@ -3,8 +3,8 @@
 # Vice Emulation
 #
 ################################################################################
-# Version.: Dec 20, 2018
-VICE_VERSION = 3.3
+# Version.: Dec 24, 2019
+VICE_VERSION = 3.4
 VICE_SOURCE = vice-$(VICE_VERSION).tar.gz
 VICE_SITE = https://freefr.dl.sourceforge.net/project/vice-emu/releases
 VICE_LICENSE = GPLv2
