@@ -1,65 +1,56 @@
 diff --git a/src/convert.h b/src/convert.h
-index 62320f6..c508e10 100644
+index 8a66893..f6dfb60 100644
 --- a/src/convert.h
 +++ b/src/convert.h
 @@ -5,7 +5,7 @@
  
  #include "Types.h"
  
--const volatile unsigned char Five2Eight[32] =
-+const volatile static unsigned char Five2Eight[32] =
+-const unsigned char Five2Eight[32] =
++const static unsigned char Five2Eight[32] =
  {
        0, // 00000 = 00000000
        8, // 00001 = 00001000
-@@ -41,7 +41,7 @@ const volatile unsigned char Five2Eight[32] =
+@@ -41,7 +41,7 @@ const unsigned char Five2Eight[32] =
      255  // 11111 = 11111111
  };
  
--const volatile unsigned char Four2Eight[16] =
-+const volatile static unsigned char Four2Eight[16] =
+-const unsigned char Four2Eight[16] =
++const static unsigned char Four2Eight[16] =
  {
        0, // 0000 = 00000000
       17, // 0001 = 00010001
-@@ -61,7 +61,7 @@ const volatile unsigned char Four2Eight[16] =
+@@ -61,7 +61,7 @@ const unsigned char Four2Eight[16] =
      255  // 1111 = 11111111
  };
  
--const volatile unsigned char Three2Four[8] =
-+const volatile static unsigned char Three2Four[8] =
+-const unsigned char Three2Four[8] =
++const static unsigned char Three2Four[8] =
  {
       0, // 000 = 0000
       2, // 001 = 0010
-@@ -73,7 +73,7 @@ const volatile unsigned char Three2Four[8] =
+@@ -73,7 +73,7 @@ const unsigned char Three2Four[8] =
      15, // 111 = 1111
  };
  
--const volatile unsigned char Three2Eight[8] =
-+const volatile static unsigned char Three2Eight[8] =
+-const unsigned char Three2Eight[8] =
++const static unsigned char Three2Eight[8] =
  {
        0, // 000 = 00000000
       36, // 001 = 00100100
-@@ -84,7 +84,7 @@ const volatile unsigned char Three2Eight[8] =
-     219, // 110 = 11011011
+@@ -85,13 +85,13 @@ const unsigned char Three2Eight[8] =
      255, // 111 = 11111111
  };
--const volatile unsigned char Two2Eight[4] =
-+const volatile static unsigned char Two2Eight[4] =
- {
-       0, // 00 = 00000000
-      85, // 01 = 01010101
-@@ -92,13 +92,13 @@ const volatile unsigned char Two2Eight[4] =
-     255  // 11 = 11111111
- };
  
--const volatile unsigned char One2Four[2] =
-+const volatile static unsigned char One2Four[2] =
+-const unsigned char One2Four[2] =
++const static unsigned char One2Four[2] =
  {
       0, // 0 = 0000
      15, // 1 = 1111
  };
  
--const volatile unsigned char One2Eight[2] =
-+const volatile static unsigned char One2Eight[2] =
+-const unsigned char One2Eight[2] =
++const static unsigned char One2Eight[2] =
  {
        0, // 0 = 00000000
      255, // 1 = 11111111
