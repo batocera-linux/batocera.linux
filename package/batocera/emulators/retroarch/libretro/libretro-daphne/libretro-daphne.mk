@@ -14,6 +14,15 @@ endef
 define LIBRETRO_DAPHNE_INSTALL_TARGET_CMDS
 	$(INSTALL) -D $(@D)/daphne_libretro.so \
 		$(TARGET_DIR)/usr/lib/libretro/daphne_libretro.so
+
+	# Folder Structure Required for libretro-daphne
+	mkdir -p $(TARGET_DIR)/usr/share/batocera/datainit/roms/daphne/cdrom
+	mkdir -p $(TARGET_DIR)/usr/share/batocera/datainit/roms/daphne/framefile
+	mkdir -p $(TARGET_DIR)/usr/share/batocera/datainit/roms/daphne/ram
+	mkdir -p $(TARGET_DIR)/usr/share/batocera/datainit/roms/daphne/roms
+
+	cp -pr $(@D)/assets/pics $(TARGET_DIR)/usr/share/batocera/datainit/roms/daphne
+	cp -pr $(@D)/assets/sound $(TARGET_DIR)/usr/share/batocera/datainit/roms/daphne
 endef
 
 $(eval $(generic-package))
