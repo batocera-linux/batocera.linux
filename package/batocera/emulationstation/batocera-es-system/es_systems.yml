@@ -815,8 +815,10 @@ daphne:
   name:       Arcade (Daphne)
   extensions: [zip]
   emulators:
+    daphne:
+      hypseus:  { requireAnyOf: [BR2_PACKAGE_DAPHNE]          }
     libretro:
-      daphne: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_DAPHNE] }
+      daphne:   { requireAnyOf: [BR2_PACKAGE_LIBRETRO_DAPHNE] }
 
 thomson:
   name:       Thomson - MO/TO (Theodore)

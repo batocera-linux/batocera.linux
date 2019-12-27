@@ -1,0 +1,73 @@
+diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
+index 438451d..d05cfd7 100644
+--- a/src/CMakeLists.txt
++++ b/src/CMakeLists.txt
+@@ -36,15 +36,13 @@ include(GNUInstallDirs)
+ include(GetGitRevisionDescription)
+ include(InstallRequiredSystemLibraries)
+ include(FindPkgConfig)
+-include(ExternalProject)
+-include(BuildLibMPEG2)
+ 
+ use_cxx11( )
+ 
+ PKG_SEARCH_MODULE(SDL2 REQUIRED sdl2)
+ PKG_SEARCH_MODULE(SDL2_TTF REQUIRED SDL2_ttf)
+ PKG_SEARCH_MODULE(SDL2_IMAGE REQUIRED SDL2_image)
+-build_libmpeg2( )
++PKG_SEARCH_MODULE(MPEG2 REQUIRED libmpeg2)
+ 
+ message(STATUS "Target: ${CMAKE_SYSTEM_NAME} ${CMAKE_TARGET_ARCHITECTURES}")
+ 
+@@ -72,6 +70,7 @@ message(STATUS "Version: ${VER_TAG}")
+ include_directories(
+     ${PROJECT_BINARY_DIR} # config.h
+     ${SDL2_INCLUDE_DIRS}
++    ${MPEG2_INCLUDE_DIRS}
+ )
+ 
+ if( "${CMAKE_TARGET_ARCHITECTURES}" MATCHES "i386" )
+@@ -97,11 +96,6 @@ add_subdirectory(timer)
+ add_subdirectory(video)
+ add_subdirectory(vldp)
+ 
+-add_dependencies( vldp libmpeg2 )
+-add_dependencies( ldp-out vldp )
+-add_dependencies( game vldp )
+-add_dependencies( sound vldp )
+-
+ add_executable( hypseus hypseus.cpp globals.h )
+ target_link_libraries( hypseus plog io timer sound video cpu game ${SDL2_LIBRARIES} ${SDL2_TTF_LIBRARIES} )
+ 
+@@ -129,3 +123,4 @@ set(CPACK_PACKAGE_VERSION_MINOR "${VER_MINOR}")
+ set(CPACK_PACKAGE_VERSION_PATCH "${VER_PATCH}")
+ 
+ include(CPack)
++install(TARGETS hypseus DESTINATION bin)
+\ No newline at end of file
+diff --git a/src/vldp/vldp.h b/src/vldp/vldp.h
+index 021c30d..0da6378 100644
+--- a/src/vldp/vldp.h
++++ b/src/vldp/vldp.h
+@@ -34,6 +34,8 @@ extern "C" {
+ // Ubuntu Linux complains with plain <SDL.h>
+ #include <SDL.h> // only used for threading
+ 
++#include <mpeg2.h>
++
+ struct yuv_buf {
+     uint8_t *Y;     // Y channel
+     uint8_t *U;     // U channel
+diff --git a/src/vldp/vldp_internal.cpp b/src/vldp/vldp_internal.cpp
+index a08ebd0..3057534 100644
+--- a/src/vldp/vldp_internal.cpp
++++ b/src/vldp/vldp_internal.cpp
+@@ -37,8 +37,6 @@
+ 
+ #include <inttypes.h>
+ 
+-#include <mpeg2.h>
+-
+ // NOTICE : these variables should only be used by the private thread
+ // !!!!!!!!!!!!
+ 
