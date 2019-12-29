@@ -14,43 +14,50 @@ BATOCERA_DESKTOPAPPS_ICONS =
 ifneq ($(BR2_PACKAGE_PCSX2_X86)$(BR2_PACKAGE_PCSX2)$(BR2_PACKAGE_PCSX2_AVX2),)
   BATOCERA_DESKTOPAPPS_SCRIPTS += batocera-config-pcsx2
   BATOCERA_DESKTOPAPPS_APPS    += pcsx2-config.desktop
-	BATOCERA_DESKTOPAPPS_ICONS   += pcsx2.png
+  BATOCERA_DESKTOPAPPS_ICONS   += pcsx2.png
 endif
 
 # dolphin
 ifeq ($(BR2_PACKAGE_DOLPHIN_EMU),y)
   BATOCERA_DESKTOPAPPS_SCRIPTS += batocera-config-dolphin
   BATOCERA_DESKTOPAPPS_APPS    += dolphin-config.desktop
-	BATOCERA_DESKTOPAPPS_ICONS   += dolphin.png
+  BATOCERA_DESKTOPAPPS_ICONS   += dolphin.png
 endif
 
 # retroarch
 ifeq ($(BR2_PACKAGE_RETROARCH),y)
   BATOCERA_DESKTOPAPPS_SCRIPTS += batocera-config-retroarch
   BATOCERA_DESKTOPAPPS_APPS    += retroarch-config.desktop
-	BATOCERA_DESKTOPAPPS_ICONS   += retroarch.png
+  BATOCERA_DESKTOPAPPS_ICONS   += retroarch.png
 endif
 
 # ppsspp
 ifeq ($(BR2_PACKAGE_PPSSPP),y)
   BATOCERA_DESKTOPAPPS_SCRIPTS += batocera-config-ppsspp
   BATOCERA_DESKTOPAPPS_APPS    += ppsspp-config.desktop
-	BATOCERA_DESKTOPAPPS_ICONS   += ppsspp.png
+  BATOCERA_DESKTOPAPPS_ICONS   += ppsspp.png
 endif
 
 # reicast
 ifeq ($(BR2_PACKAGE_REICAST),y)
   BATOCERA_DESKTOPAPPS_SCRIPTS += batocera-config-reicast
   BATOCERA_DESKTOPAPPS_APPS    += reicast-config.desktop
-	BATOCERA_DESKTOPAPPS_ICONS   += reicast.png
+  BATOCERA_DESKTOPAPPS_ICONS   += reicast.png
 endif
 
 # scummvm
 ifeq ($(BR2_PACKAGE_SCUMMVM),y)
   BATOCERA_DESKTOPAPPS_SCRIPTS += batocera-config-scummvm
   BATOCERA_DESKTOPAPPS_APPS    += scummvm-config.desktop
-	BATOCERA_DESKTOPAPPS_ICONS   += scummvm.png
+  BATOCERA_DESKTOPAPPS_ICONS   += scummvm.png
 endif
+
+# citra
+#ifeq ($(BR2_PACKAGE_CITRA),y)
+#  BATOCERA_DESKTOPAPPS_SCRIPTS += batocera-config-citra
+#  BATOCERA_DESKTOPAPPS_APPS    += citra-config.desktop
+#  BATOCERA_DESKTOPAPPS_ICONS   += citra.png
+#endif
 
 define BATOCERA_DESKTOPAPPS_INSTALL_TARGET_CMDS
 	# scripts
