@@ -28,7 +28,7 @@
 # 'batocera-settings disable wifi.enabled' will set key wifi.enabled=0
 # 'botocera-settings /myown/config.file --command status --key my.key' will output status of own config.file and my.key 
 
-# by cyperghost - 2019/07/07
+# by cyperghost - 2019/12/30
 
 ##### INITS #####
 BATOCERA_CONFIGFILE="/userdata/system/batocera.conf"
@@ -44,10 +44,12 @@ function get_config() {
     #Otherwise strip till the equal-char to obtain value
     local val
     local ret
-    val="$(grep -E -m1 "^$COMMENT_CHAR_SEARCH?\s*$1\s*=" $BATOCERA_CONFIGFILE)"
+    val="$(grep -E -m1 "^\s*$1\s*=" $BATOCERA_CONFIGFILE)"
     ret=$?
-    if [[ "$val" =~ ^$COMMENT_CHAR_SEARCH ]]; then
-         val="$COMMENT_CHAR"
+    if [[ $ret -eq 1 ]]; then 
+        val="$(grep -E -m1 "^$COMMENT_CHAR_SEARCH\s*$1\s*=" $BATOCERA_CONFIGFILE)"
+        ret=$?
+        [[ $ret -eq 0 ]] && val=$COMMENT_CHAR
     else
          #Maybe here some finetuning to catch key.value = ENTRY without blanks
          val="${val#*=}"
@@ -165,7 +167,7 @@ function main() {
         "read"|"get"|"load")
             val="$(get_config $keyvalue)"
             ret=$?
-            [[ "$val" == "$COMMENT_CHAR" ]] && echo "$val" >&2 && exit 11
+            [[ "$val" == "$COMMENT_CHAR" ]] && exit 11
             [[ -z "$val" && $ret -eq 0 ]] && exit 10
             [[ -z "$val" && $ret -eq 1 ]] && exit 12
             [[ -n "$val" ]] && echo "$val" && exit 0
