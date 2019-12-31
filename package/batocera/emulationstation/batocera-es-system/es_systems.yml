@@ -498,6 +498,7 @@ wswanc:
 prboom:
   name:       PrBoom
   extensions: [wad, iwad, pwad]
+  group: ports
   emulators:
     libretro:
       prboom: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PRBOOM] }
@@ -521,7 +522,8 @@ vectrex:
 
 lutro:
   name:       Lutro
-  extensions: [lua, lutro, zip, 7z]
+  extensions: [lutro, zip, 7z]
+  group: ports
   emulators:
     libretro:
       lutro: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_LUTRO] }
@@ -540,6 +542,7 @@ lutro:
 cavestory:
   name:       Cave Story
   extensions: [exe]
+  group: ports
   emulators:
     libretro:
       nxengine: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_NXENGINE] }
