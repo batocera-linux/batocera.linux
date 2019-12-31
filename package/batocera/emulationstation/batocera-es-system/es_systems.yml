@@ -225,7 +225,7 @@ psp:
 
 psx:
   name:       Sony Playstation 1
-  extensions: [bin, cue, img, mdf, pbp, toc, cbn, m3u, ccd, chd, zip, 7z, iso]
+  extensions: [cue, img, mdf, pbp, toc, cbn, m3u, ccd, chd, zip, 7z, iso]
   emulators:
     libretro:
       pcsx_rearmed: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PCSX]       }
