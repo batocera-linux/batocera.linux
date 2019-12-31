@@ -85,6 +85,7 @@ class EsSystemConf:
         pathValue      = EsSystemConf.systemPath(system, data)
         platformValue  = EsSystemConf.systemPlatform(system, data)
         listExtensions = EsSystemConf.listExtension(data, True)
+        groupValue     = EsSystemConf.systemGroup(system, data)
 
         systemTxt =  "  <system>\n"
         systemTxt += "        <fullname>%s</fullname>\n" % (data["name"])
@@ -97,6 +98,8 @@ class EsSystemConf:
         if platformValue != "":
             systemTxt += "        <platform>%s</platform>\n"   % (platformValue)
         systemTxt += "        <theme>%s</theme>\n"         % (EsSystemConf.themeName(system, data))
+        if groupValue != "":
+            systemTxt += "        <group>%s</group>\n" % (groupValue)        
         if not("includeEmulators" in data and data["includeEmulators"] is False):
             systemTxt += listEmulatorsTxt
         systemTxt += "  </system>\n"
@@ -206,6 +209,15 @@ class EsSystemConf:
                 if uppercase == True:
                     extension += " ." + item.upper()
         return extension
+
+    # Returns group to emulator rom folder
+    @staticmethod
+    def systemGroup(system, data):
+        if "group" in data:
+            if data["group"] is None:
+                return ""
+            return data["group"]
+        return ""
 
     # Returns the validity of prerequisites
     @staticmethod
