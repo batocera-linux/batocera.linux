@@ -10,7 +10,6 @@ config BR2_PACKAGE_PROVIDES_LIBEGL
 	default "libmali"
 config BR2_PACKAGE_PROVIDES_LIBGLES
 	default "libmali"
-endif
 
 choice
         prompt "libmali target"
@@ -22,5 +21,7 @@ config BR2_PACKAGE_LIBMALI_T620_WAYLAND
         bool "libmali_t620_wayland"
 
 endchoice
+
+endif
 
 comment "libmali"
