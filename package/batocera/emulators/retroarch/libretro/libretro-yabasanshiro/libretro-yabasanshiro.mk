@@ -3,8 +3,8 @@
 # YABASANSHIRO
 #
 ################################################################################
-# Version.: Commits on Aug 23, 2018
-LIBRETRO_YABASANSHIRO_VERSION = c3e82598e35d0dbf442439cbf9549c1ff6a270a8
+# Version.: Commits on Dec 17, 2018
+LIBRETRO_YABASANSHIRO_VERSION = 8406a5c11d7b6186a44c7fe48f493e6de5f8cb18
 LIBRETRO_YABASANSHIRO_SITE = $(call github,libretro,yabause,$(LIBRETRO_YABASANSHIRO_VERSION))
 LIBRETRO_YABASANSHIRO_LICENSE = GPLv2
 
