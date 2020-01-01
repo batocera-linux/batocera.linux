@@ -1,0 +1,26 @@
+From 332f6f656b24936184f2f13198ed85186f489236 Mon Sep 17 00:00:00 2001
+From: Sam Spilsbury <smspillaz@gmail.com>
+Date: Mon, 24 Apr 2017 14:38:08 +0200
+Subject: [PATCH 41/62] wayland: Make a note that initial pointer position is
+ undefined
+
+Signed-off-by: memeka <mihailescu2m@gmail.com>
+---
+ xbmc/windowing/wayland/PointerProcessor.cpp | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/xbmc/windowing/wayland/PointerProcessor.cpp b/xbmc/windowing/wayland/PointerProcessor.cpp
+index ea8c744..b64e9b2 100644
+--- a/xbmc/windowing/wayland/PointerProcessor.cpp
++++ b/xbmc/windowing/wayland/PointerProcessor.cpp
+@@ -34,6 +34,7 @@ xbmc::PointerProcessor::PointerProcessor(IEventListener &listener,
+   m_listener(listener),
+   m_cursorManager(manager)
+ {
++    /* XXX: Need to set m_lastPointerX and m_lastPointerY */
+ }
+ 
+ void xbmc::PointerProcessor::Motion(uint32_t time,
+-- 
+2.7.4
+

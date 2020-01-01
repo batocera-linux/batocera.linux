@@ -1,0 +1,5 @@
+config BR2_PACKAGE_UBOOT_ODROID_GOA
+        bool "uboot files for odroidgoa"
+	select BR2_TOOLCHAIN_OPTIONAL_LINARO_AARCH64
+        help
+          uboot files for odroidgoa
