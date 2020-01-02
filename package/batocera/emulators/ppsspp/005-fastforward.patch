@@ -1,0 +1,38 @@
+diff --git a/UI/EmuScreen.cpp b/UI/EmuScreen.cpp
+index 16c0cc6..bf90e06 100644
+--- a/UI/EmuScreen.cpp
++++ b/UI/EmuScreen.cpp
+@@ -94,6 +94,7 @@ static bool startDumping;
+ extern bool g_TakeScreenshot;
+ 
+ static int batocera_hotkey = 0;
++static int batocera_unthrottle = 0;
+ 
+ static void __EmuScreenVblank()
+ {
+@@ -685,6 +686,10 @@ void EmuScreen::onVKeyUp(int virtualKeyCode) {
+ 	
+ 	case VIRTKEY_PAUSE:
+ 	  batocera_hotkey = 0;
++	  if(batocera_unthrottle == 1) {
++	    batocera_unthrottle = 0;
++	    PSP_CoreParameter().unthrottle = false;
++	  }
+ 
+ 	default:
+ 		break;
+@@ -836,6 +841,14 @@ void EmuScreen::pspKey(int pspKeyCode, int flags) {
+ 		    }
+ 		  }
+ 
++		  if((buttons & CTRL_RIGHT) == CTRL_RIGHT) {
++		    batocera_unthrottle = 1;
++		    if (coreState == CORE_STEPPING) {
++		      Core_EnableStepping(false);
++		    }
++		    PSP_CoreParameter().unthrottle = true;
++		  }
++
+ 		  if((buttons & CTRL_SQUARE) == CTRL_SQUARE) {
+ 		    SaveState::SaveSlot(gamePath_, g_Config.iCurrentStateSlot, &AfterSaveStateAction);
+ 		  }
