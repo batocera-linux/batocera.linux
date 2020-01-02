@@ -94,6 +94,9 @@ def generateCoreSettings(retroarchCore, system):
         coreSettings.save('vice_Controller',    '"joystick"')
         coreSettings.save('vice_JoyPort',       '"port_1"')
 
+    if (system.config['core'] == 'theodore'):
+        coreSettings.save('theodore_autorun',   '"enabled"')
+
 def generateHatariConf(hatariConf):
     hatariConfig = ConfigParser.ConfigParser()
     # To prevent ConfigParser from converting to lower case
