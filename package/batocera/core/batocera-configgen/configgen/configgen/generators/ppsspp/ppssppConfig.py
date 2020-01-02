@@ -29,6 +29,8 @@ def writePPSSPPConfig(system):
 def createPPSSPPConfig(iniConfig, system):
     if not iniConfig.has_section("Graphics"):
         iniConfig.add_section("Graphics")
+    if not iniConfig.has_section("General"):
+        iniConfig.add_section("General")
 
     # Display FPS
     if system.isOptSet('showFPS') and system.getOptBoolean('showFPS') == True:
@@ -51,3 +53,9 @@ def createPPSSPPConfig(iniConfig, system):
         iniConfig.set("Graphics", "InternalResolution", system.config["internalresolution"])
     else:
         iniConfig.set("Graphics", "InternalResolution", "1")
+
+    # rewinding
+    if system.isOptSet('rewind') and system.getOptBoolean('rewind') == True:
+        iniConfig.set("General", "RewindFlipFrequency", "300") # 300 = every 5 seconds
+    else:
+        iniConfig.set("General", "RewindFlipFrequency",  "0")
