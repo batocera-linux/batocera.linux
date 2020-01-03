@@ -28,8 +28,6 @@ BR2_LINUX_KERNEL_LATEST_VERSION=y
 BR2_LINUX_KERNEL_PATCH="board/batocera/x86/linux_patches"
 BR2_LINUX_KERNEL_USE_CUSTOM_CONFIG=y
 BR2_LINUX_KERNEL_CUSTOM_CONFIG_FILE="board/batocera/x86/linux_x86-defconfig.config"
-# to be removed once fixed (5.3 required for odroidn2 but not yet out in buildroot)
-BR2_KERNEL_HEADERS_5_2=y
 BR2_PACKAGE_BATOCERA_SYSTEM=y
 BR2_PACKAGE_BATOCERA_TARGET_X86=y
 BR2_PACKAGE_BATOCERA_EXTRAS=y
