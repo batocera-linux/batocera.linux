@@ -1,0 +1,13 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 19fa901..f5c0503 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -1,7 +1,7 @@
+ ########################################
+ # General setup
+ #
+-cmake_minimum_required(VERSION 3.10)
++cmake_minimum_required(VERSION 3.8)
+ set(CMAKE_OSX_ARCHITECTURES "x86_64")
+ # Minimum OS X version.
+ # This is inserted into the Info.plist as well.
