@@ -73,27 +73,11 @@ define NFS_UTILS_INSTALL_INIT_SYSV
 		$(TARGET_DIR)/etc/init.d/S60nfs
 endef
 
-define NFS_UTILS_INSTALL_INIT_SYSTEMD_NFSD
-	ln -fs ../../../../usr/lib/systemd/system/nfs-server.service \
-		$(TARGET_DIR)/etc/systemd/system/multi-user.target.wants/nfs-server.service
-endef
 endif
 
 define NFS_UTILS_INSTALL_INIT_SYSTEMD
-	mkdir -p $(TARGET_DIR)/etc/systemd/system/multi-user.target.wants
-
-	$(NFS_UTILS_INSTALL_INIT_SYSTEMD_NFSD)
-
-	ln -fs ../../../../usr/lib/systemd/system/nfs-client.target \
-		$(TARGET_DIR)/etc/systemd/system/multi-user.target.wants/nfs-client.target
-
-	mkdir -p $(TARGET_DIR)/etc/systemd/system/remote-fs.target.wants
-
-	ln -fs ../../../../usr/lib/systemd/system/nfs-client.target \
-		$(TARGET_DIR)/etc/systemd/system/remote-fs.target.wants/nfs-client.target
-
 	$(INSTALL) -D -m 0755 package/nfs-utils/nfs-utils_env.sh \
-		$(TARGET_DIR)/usr/lib/systemd/scripts/nfs-utils_env.sh
+		$(TARGET_DIR)/usr/libexec/nfs-utils/nfs-utils_env.sh
 
 	$(INSTALL) -D -m 0644 package/nfs-utils/nfs-utils_tmpfiles.conf \
 		$(TARGET_DIR)/usr/lib/tmpfiles.d/nfs-utils.conf

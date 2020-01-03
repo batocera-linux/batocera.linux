@@ -6,7 +6,7 @@
 
 # When updating the version, please check at runtime if the version in
 # syslog-ng.conf header needs to be updated
-SYSLOG_NG_VERSION = 3.23.1
+SYSLOG_NG_VERSION = 3.24.1
 SYSLOG_NG_SITE = https://github.com/balabit/syslog-ng/releases/download/syslog-ng-$(SYSLOG_NG_VERSION)
 SYSLOG_NG_LICENSE = LGPL-2.1+ (syslog-ng core), GPL-2.0+ (modules)
 SYSLOG_NG_LICENSE_FILES = COPYING GPL.txt LGPL.txt
@@ -105,11 +105,9 @@ endef
 # By default syslog-ng installs a .service that requires a config file at
 # /etc/default, so provide one with the default values.
 define SYSLOG_NG_INSTALL_INIT_SYSTEMD
-	$(INSTALL) -m 0644 -D package/syslog-ng/syslog-ng@default \
-		$(TARGET_DIR)/etc/default/syslog-ng@default
-	mkdir -p $(TARGET_DIR)/etc/systemd/system/multi-user.target.wants
-	ln -sf ../../../../usr/lib/systemd/system/syslog-ng@.service \
-		$(TARGET_DIR)/etc/systemd/system/multi-user.target.wants/syslog-ng@default.service
+	mkdir $(TARGET_DIR)/usr/lib/systemd/system/syslog-ng@.service.d
+	printf '[Install]\nDefaultInstance=default\n' \
+		>$(TARGET_DIR)/usr/lib/systemd/system/syslog-ng@.service.d/buildroot-default-instance.conf
 endef
 
 # By default syslog-ng installs a number of sample configuration

@@ -45,16 +45,8 @@ config BR2_PACKAGE_LIBCURL_EXTRA_PROTOCOLS_FEATURES
 	  - DICT
 	  - Gopher
 
-config BR2_PACKAGE_LIBCURL_TLS_SUPPORT
-	bool
-	default y if BR2_PACKAGE_OPENSSL
-	default y if BR2_PACKAGE_GNUTLS
-	default y if BR2_PACKAGE_LIBNSS
-	default y if BR2_PACKAGE_MBEDTLS
-
 choice
 	prompt "SSL/TLS library to use"
-	depends on BR2_PACKAGE_LIBCURL_TLS_SUPPORT
 
 config BR2_PACKAGE_LIBCURL_OPENSSL
 	bool "OpenSSL"
@@ -72,9 +64,13 @@ config BR2_PACKAGE_LIBCURL_MBEDTLS
 	bool "mbed TLS"
 	depends on BR2_PACKAGE_MBEDTLS
 
-endchoice
+config BR2_PACKAGE_LIBCURL_WOLFSSL
+	bool "WolfSSL"
+	depends on BR2_PACKAGE_WOLFSSL
 
-comment "A TLS library is needed for SSL/TLS support"
-	depends on !BR2_PACKAGE_LIBCURL_TLS_SUPPORT
+config BR2_PACKAGE_LIBCURL_TLS_NONE
+	bool "None"
+
+endchoice
 
 endif

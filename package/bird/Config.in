@@ -1,5 +1,6 @@
 config BR2_PACKAGE_BIRD
 	bool "bird"
+	depends on !BR2_nios2 # relocations don't fit
 	depends on BR2_USE_MMU # fork()
 	help
 	  BIRD Internet Routing Daemon
@@ -66,6 +67,11 @@ config BR2_PACKAGE_BIRD_RADV
 	bool "radv"
 	help
 	  Enable RAdv protocol.
+
+config BR2_PACKAGE_BIRD_RIP
+	bool "rip"
+	help
+	  Enable RIP protocol.
 
 config BR2_PACKAGE_BIRD_STATIC
 	bool "static"

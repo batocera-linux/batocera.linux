@@ -14,11 +14,6 @@ config BR2_LINUX_AARCH64_KERNEL_IN_ARM_USER
 
 if BR2_LINUX_KERNEL
 
-# https://sourceware.org/bugzilla/show_bug.cgi?id=21458
-comment "Linux kernel in thumb mode may be broken with binutils 2.30"
-	depends on BR2_arm || BR2_armeb
-	depends on BR2_BINUTILS_VERSION_2_30_X
-
 # Packages that need to have a kernel with support for loadable modules,
 # but do not use the kernel-modules infrastructure, should select that
 # option.
@@ -37,10 +32,10 @@ choice
 	prompt "Kernel version"
 
 config BR2_LINUX_KERNEL_LATEST_VERSION
-	bool "Latest version (5.2)"
+	bool "Latest version (5.4)"
 
 config BR2_LINUX_KERNEL_LATEST_CIP_VERSION
-	bool "Latest CIP SLTS version (v4.19.65-cip8)"
+	bool "Latest CIP SLTS version (4.19.88-cip16)"
 	help
 	  CIP launched in the spring of 2016 to address the needs of
 	  organizations in industries such as power generation and
@@ -54,6 +49,17 @@ config BR2_LINUX_KERNEL_LATEST_CIP_VERSION
 	  these requirements.
 
 	  The CIP community plans to maintain 4.4 for security and
+	  bug fixes for more than 10 years.
+
+	  https://www.cip-project.org
+
+config BR2_LINUX_KERNEL_LATEST_CIP_RT_VERSION
+	bool "Latest CIP RT SLTS version (4.19.82-cip14-rt5)"
+	help
+	  Same as the CIP version, but this is the PREEMPT_RT realtime
+	  variant.
+
+	  The CIP community plans to maintain 4.19 for security and
 	  bug fixes for more than 10 years.
 
 	  https://www.cip-project.org
@@ -127,8 +133,9 @@ endif
 
 config BR2_LINUX_KERNEL_VERSION
 	string
-	default "5.2.16" if BR2_LINUX_KERNEL_LATEST_VERSION
-	default "v4.19.65-cip8" if BR2_LINUX_KERNEL_LATEST_CIP_VERSION
+	default "5.4.5" if BR2_LINUX_KERNEL_LATEST_VERSION
+	default "4.19.88-cip16" if BR2_LINUX_KERNEL_LATEST_CIP_VERSION
+	default "4.19.82-cip14-rt5" if BR2_LINUX_KERNEL_LATEST_CIP_RT_VERSION
 	default BR2_LINUX_KERNEL_CUSTOM_VERSION_VALUE \
 		if BR2_LINUX_KERNEL_CUSTOM_VERSION
 	default "custom" if BR2_LINUX_KERNEL_CUSTOM_TARBALL

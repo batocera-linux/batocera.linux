@@ -4,13 +4,11 @@
 #
 ################################################################################
 
-LTP_TESTSUITE_VERSION = 20190517
+LTP_TESTSUITE_VERSION = 20190930
 LTP_TESTSUITE_SOURCE = ltp-full-$(LTP_TESTSUITE_VERSION).tar.xz
 LTP_TESTSUITE_SITE = https://github.com/linux-test-project/ltp/releases/download/$(LTP_TESTSUITE_VERSION)
 LTP_TESTSUITE_LICENSE = GPL-2.0, GPL-2.0+
 LTP_TESTSUITE_LICENSE_FILES = COPYING
-# We're patching configure.ac
-LTP_TESTSUITE_AUTORECONF = YES
 
 LTP_TESTSUITE_CONF_OPTS += \
 	--with-realtime-testsuite --with-open-posix-testsuite
@@ -53,20 +51,63 @@ LTP_TESTSUITE_CFLAGS += "`$(PKG_CONFIG_HOST_BINARY) --cflags libtirpc`"
 LTP_TESTSUITE_LIBS += "`$(PKG_CONFIG_HOST_BINARY) --libs libtirpc`"
 endif
 
+ifeq ($(BR2_TOOLCHAIN_USES_GLIBC),)
+LTP_TESTSUITE_DEPENDENCIES += musl-fts
+LTP_TESTSUITE_LIBS += -lfts
+endif
+
 LTP_TESTSUITE_CONF_ENV += \
 	CFLAGS="$(LTP_TESTSUITE_CFLAGS)" \
 	CPPFLAGS="$(LTP_TESTSUITE_CPPFLAGS)" \
 	LIBS="$(LTP_TESTSUITE_LIBS)" \
 	SYSROOT="$(STAGING_DIR)"
 
-# Requires uClibc fts and bessel support, normally not enabled
+# uclibc: bessel support normally not enabled
 ifeq ($(BR2_TOOLCHAIN_USES_UCLIBC),y)
-define LTP_TESTSUITE_REMOVE_UNSUPPORTED
-	rm -rf $(@D)/testcases/misc/math/float/bessel/
-	rm -f $(@D)/testcases/misc/math/float/float_bessel.c
-endef
-LTP_TESTSUITE_POST_PATCH_HOOKS += LTP_TESTSUITE_REMOVE_UNSUPPORTED
+LTP_TESTSUITE_UNSUPPORTED_TEST_CASES = \
+	testcases/misc/math/float/bessel/ \
+	testcases/misc/math/float/float_bessel.c
+else ifeq ($(BR2_TOOLCHAIN_USES_MUSL),y)
+LTP_TESTSUITE_UNSUPPORTED_TEST_CASES = \
+	testcases/kernel/pty/pty01.c \
+	testcases/kernel/pty/pty02.c \
+	testcases/kernel/pty/ptem01.c \
+	testcases/kernel/sched/process_stress/process.c \
+	testcases/kernel/syscalls/accept4/accept4_01.c \
+	testcases/kernel/syscalls/confstr/confstr01.c \
+	testcases/kernel/syscalls/fmtmsg/fmtmsg01.c \
+	testcases/kernel/syscalls/getcontext/getcontext01.c \
+	testcases/kernel/syscalls/getdents/getdents01.c \
+	testcases/kernel/syscalls/getdents/getdents02.c \
+	testcases/kernel/syscalls/ioctl/ioctl01.c \
+	testcases/kernel/syscalls/ioctl/ioctl02.c \
+	testcases/kernel/syscalls/rt_tgsigqueueinfo/rt_tgsigqueueinfo01.c \
+	testcases/kernel/syscalls/sched_getaffinity/sched_getaffinity01.c \
+	testcases/kernel/syscalls/timer_create/timer_create01.c \
+	testcases/kernel/syscalls/timer_create/timer_create03.c \
+	testcases/misc/crash/crash01.c \
+	testcases/network/rpc/rpc-tirpc/tests_pack/rpc_suite/rpc/rpc_createdestroy_svcraw_create/ \
+	testcases/network/rpc/rpc-tirpc/tests_pack/rpc_suite/rpc/rpc_createdestroy_svctcp_create/ \
+	testcases/network/rpc/rpc-tirpc/tests_pack/rpc_suite/rpc/rpc_createdestroy_svctcp_create/ \
+	testcases/network/rpc/rpc-tirpc/tests_pack/rpc_suite/rpc/rpc_createdestroy_svcudp_bufcreate/ \
+	testcases/network/rpc/rpc-tirpc/tests_pack/rpc_suite/rpc/rpc_createdestroy_svcudp_create/ \
+	testcases/network/rpc/rpc-tirpc/tests_pack/rpc_suite/rpc/rpc_createdestroy_svcudp_create/ \
+	testcases/network/rpc/rpc-tirpc/tests_pack/rpc_suite/rpc/rpc_regunreg_registerrpc/ \
+	testcases/network/rpc/rpc-tirpc/tests_pack/rpc_suite/rpc/rpc_regunreg_svc_register/ \
+	testcases/network/rpc/rpc-tirpc/tests_pack/rpc_suite/rpc/rpc_regunreg_svc_unregister/ \
+	testcases/network/rpc/rpc-tirpc/tests_pack/rpc_suite/rpc/rpc_regunreg_xprt_register/ \
+	testcases/network/rpc/rpc-tirpc/tests_pack/rpc_suite/rpc/rpc_regunreg_xprt_unregister/ \
+	testcases/network/rpc/rpc-tirpc/tests_pack/rpc_suite/tirpc/tirpc_auth_authdes_seccreate/ \
+	utils/benchmark/ebizzy-0.3
 endif
+
+define LTP_TESTSUITE_REMOVE_UNSUPPORTED_TESTCASES
+	$(foreach f,$(LTP_TESTSUITE_UNSUPPORTED_TEST_CASES),
+		rm -rf $(@D)/$(f)
+	)
+endef
+
+LTP_TESTSUITE_POST_PATCH_HOOKS += LTP_TESTSUITE_REMOVE_UNSUPPORTED_TESTCASES
 
 # ldd command build system tries to build a shared library unconditionally.
 ifeq ($(BR2_STATIC_LIBS),y)
@@ -75,5 +116,9 @@ define LTP_TESTSUITE_REMOVE_LDD
 endef
 LTP_TESTSUITE_POST_PATCH_HOOKS += LTP_TESTSUITE_REMOVE_LDD
 endif
+
+# 0005-fanotify-Rework-checks-for-fallback-definitions.patch
+# 0006-fanotify-Detect-val-vs.-__val-fanotify_event_info_fi.patch
+LTP_TESTSUITE_AUTORECONF = YES
 
 $(eval $(autotools-package))

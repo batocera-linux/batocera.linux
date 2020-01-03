@@ -289,6 +289,19 @@ config BR2_PACKAGE_COLLECTD_LOAD
 	help
 	  Collects the system load.
 
+config BR2_PACKAGE_COLLECTD_LVM
+	bool "lvm"
+	depends on !BR2_TOOLCHAIN_USES_MUSL # lvm2 app library
+	select BR2_PACKAGE_LVM2
+	select BR2_PACKAGE_LVM2_APP_LIBRARY
+	help
+	  Collects the size of logical volumes (LV) and free space
+	  inside a volume group (VG) from Linux' Logical Volume Manager
+	  (LVM).
+
+comment "lvm needs a glibc or uClibc toolchain"
+	depends on BR2_TOOLCHAIN_USES_MUSL
+
 config BR2_PACKAGE_COLLECTD_MD
 	bool "md"
 	help
@@ -358,6 +371,13 @@ config BR2_PACKAGE_COLLECTD_OLSRD
 	bool "olsrd"
 	help
 	  Reads information about meshed networks from olsrd.
+
+config BR2_PACKAGE_COLLECTD_ONEWIRE
+	bool "onewire"
+	select BR2_PACKAGE_OWFS
+	help
+	  Collects temperature information from sensors connected over
+	  the OneWire bus.
 
 config BR2_PACKAGE_COLLECTD_OPENLDAP
 	bool "openldap"
@@ -549,6 +569,21 @@ config BR2_PACKAGE_COLLECTD_GRAPHITE
 	  Writes data collected to Carbon (Graphite's) storage API.
 	  http://graphite.wikidot.com/start
 
+config BR2_PACKAGE_COLLECTD_GRPC
+	bool "grpc"
+	depends on BR2_TOOLCHAIN_HAS_SYNC_4 || BR2_TOOLCHAIN_HAS_ATOMIC # grpc
+	depends on BR2_INSTALL_LIBSTDCPP # grpc -> protobuf
+	depends on BR2_PACKAGE_PROTOBUF_ARCH_SUPPORTS # grpc -> protobuf
+	depends on BR2_TOOLCHAIN_GCC_AT_LEAST_4_8 # grpc -> protobuf
+	select BR2_PACKAGE_GRPC
+	help
+	  Send/receive values using the gRPC protocol.
+
+comment "grpc needs a toolchain w/ C++, gcc >= 4.8"
+	depends on BR2_TOOLCHAIN_HAS_SYNC_4 || BR2_TOOLCHAIN_HAS_ATOMIC
+	depends on !BR2_INSTALL_LIBSTDCPP || !BR2_TOOLCHAIN_GCC_AT_LEAST_4_8
+	depends on BR2_PACKAGE_PROTOBUF_ARCH_SUPPORTS
+
 config BR2_PACKAGE_COLLECTD_MQTT
 	bool "mqtt"
 	depends on BR2_TOOLCHAIN_HAS_SYNC_4 # mosquitto
@@ -576,7 +611,6 @@ config BR2_PACKAGE_COLLECTD_RIEMANN
 	# riemann-c-client -> protobuf-c
 	depends on BR2_INSTALL_LIBSTDCPP
 	depends on BR2_HOSTARCH = "x86_64" || BR2_HOSTARCH = "x86"
-	depends on BR2_HOST_GCC_AT_LEAST_4_8
 	select BR2_PACKAGE_RIEMANN_C_CLIENT
 	select BR2_PACKAGE_LIBTOOL
 	help
@@ -605,15 +639,14 @@ config BR2_PACKAGE_COLLECTD_WRITEPROMETHEUS
 	bool "write_prometheus"
 	depends on BR2_INSTALL_LIBSTDCPP # protobuf-c
 	depends on BR2_HOSTARCH = "x86_64" || BR2_HOSTARCH = "x86" # protobuf-c
-	depends on BR2_HOST_GCC_AT_LEAST_4_8 # protobuf-c
 	select BR2_PACKAGE_LIBMICROHTTPD
 	select BR2_PACKAGE_PROTOBUF_C
 	help
 	  Publishes values using an embedded HTTP server, in a format
 	  compatible with Prometheus' collectd_exporter.
 
-comment "write_prometheus needs a toolchain w/ C++, host gcc >= 4.8"
-	depends on !BR2_INSTALL_LIBSTDCPP || !BR2_HOST_GCC_AT_LEAST_4_8
+comment "write_prometheus needs a toolchain w/ C++"
+	depends on !BR2_INSTALL_LIBSTDCPP
 	depends on BR2_HOSTARCH = "x86_64" || BR2_HOSTARCH = "x86"
 
 config BR2_PACKAGE_COLLECTD_WRITEREDIS

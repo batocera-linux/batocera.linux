@@ -144,7 +144,127 @@ endif
 
 ###############################################################################
 
+comment "Legacy options removed in 2020.02"
+
+config BR2_PACKAGE_PYTHON_SCAPY3K
+	bool "python-scapy3k is replaced by python-scapy"
+	select BR2_LEGACY
+	select BR2_PACKAGE_PYTHON_SCAPY
+	help
+	  python-scapy3k has been deprecated, since python-scapy has
+	  gained Python 3 support. Use BR2_PACKAGE_PYTHON_SCAPY
+	  instead.
+
+config BR2_BINUTILS_VERSION_2_30_X
+	bool "binutils version 2.30 support removed"
+	select BR2_LEGACY
+	help
+	  Support for binutils version 2.30 has been removed. The
+	  current default version (2.31 or later) has been selected
+	  instead.
+
+config BR2_PACKAGE_RPI_USERLAND_START_VCFILED
+	bool "rpi-userland start vcfiled was removed"
+	select BR2_LEGACY
+	help
+	  The vcfiled support was removed upstream.
+
 comment "Legacy options removed in 2019.11"
+
+config BR2_PACKAGE_OPENVMTOOLS_PROCPS
+	bool "openvmtools' procps support was removed"
+	select BR2_LEGACY
+	help
+	  Upstream stopped supporting this option a while ago.
+
+config BR2_PACKAGE_ALLJOYN
+	bool "alljoyn was removed"
+	select BR2_LEGACY
+	help
+	  The alljoyn framework is dead
+
+config BR2_PACKAGE_ALLJOYN_BASE
+	bool "alljoyn-base was removed"
+	select BR2_LEGACY
+	help
+	  The alljoyn framework is dead
+
+config BR2_PACKAGE_ALLJOYN_BASE_CONTROLPANEL
+	bool "alljoyn-base control panel was removed"
+	select BR2_LEGACY
+	help
+	  The alljoyn framework is dead
+
+config BR2_PACKAGE_ALLJOYN_BASE_NOTIFICATION
+	bool "alljoyn-base notification was removed"
+	select BR2_LEGACY
+	help
+	  The alljoyn framework is dead
+
+config BR2_PACKAGE_ALLJOYN_BASE_ONBOARDING
+	bool "alljoyn-base onboarding was removed"
+	select BR2_LEGACY
+	help
+	  The alljoyn framework is dead
+
+config BR2_PACKAGE_ALLJOYN_TCL_BASE
+	bool "alljoyn-tcl-base was removed"
+	select BR2_LEGACY
+	help
+	  The alljoyn framework is dead
+
+config BR2_PACKAGE_ALLJOYN_TCL
+	bool "alljoyn-tcl was removed"
+	select BR2_LEGACY
+	help
+	  The alljoyn framework is dead
+
+config BR2_TOOLCHAIN_EXTRA_EXTERNAL_LIBS
+	string "toolchain-external extra libs option has been renamed"
+	help
+	  The option BR2_TOOLCHAIN_EXTRA_EXTERNAL_LIBS has
+	  been renamed to BR2_TOOLCHAIN_EXTRA_LIBS.
+
+config BR2_TOOLCHAIN_EXTRA_EXTERNAL_LIBS_WRAP
+	bool
+	default y if BR2_TOOLCHAIN_EXTRA_EXTERNAL_LIBS != ""
+	select BR2_LEGACY
+
+config BR2_PACKAGE_PYTHON_PYSNMP_APPS
+	bool "python-pysnmp-apps was removed"
+	select BR2_LEGACY
+	select BR2_PACKAGE_SNMPCLITOOLS
+	help
+	  Following upstream changes, the python-pysnmp-apps package
+	  has been removed, and snmpclitools should be used as a
+	  replacement.
+
+config BR2_KERNEL_HEADERS_5_2
+	bool "kernel headers version 5.2.x are no longer supported"
+	select BR2_LEGACY
+	help
+	  Version 5.2.x of the Linux kernel headers are no longer
+	  maintained upstream and are now removed.
+
+config BR2_TARGET_RISCV_PK
+	bool "riscv-pk was removed"
+	select BR2_LEGACY
+	help
+	  The RISC-V Proxy Kernel (pk) and Berkley Boot Loader (BBL)
+	  have been replaced with OpenSBI.
+
+config BR2_PACKAGE_SQLITE_STAT3
+	bool "sqlite stat3 support was removed"
+	select BR2_LEGACY
+	help
+	  Upstream removed the support for stat3.
+
+config BR2_KERNEL_HEADERS_5_1
+	bool "kernel headers version 5.1.x are no longer supported"
+	select BR2_LEGACY
+	help
+	  Version 5.1.x of the Linux kernel headers are no longer
+	  maintained upstream and are now removed.
 
 config BR2_PACKAGE_DEVMEM2
 	bool "devmem2 package was removed"

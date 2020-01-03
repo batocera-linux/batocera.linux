@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-EXIM_VERSION = 4.92.2
+EXIM_VERSION = 4.92.3
 EXIM_SOURCE = exim-$(EXIM_VERSION).tar.xz
 EXIM_SITE = https://ftp.exim.org/pub/exim/exim4
 EXIM_LICENSE = GPL-2.0+
@@ -145,9 +145,6 @@ endef
 define EXIM_INSTALL_INIT_SYSTEMD
 	$(INSTALL) -D -m 644 package/exim/exim.service \
 		$(TARGET_DIR)/usr/lib/systemd/system/exim.service
-	mkdir -p $(TARGET_DIR)/etc/systemd/system/multi-user.target.wants
-	ln -sf ../../../../usr/lib/systemd/system/exim.service \
-		$(TARGET_DIR)/etc/systemd/system/multi-user.target.wants/exim.service
 endef
 
 $(eval $(generic-package))

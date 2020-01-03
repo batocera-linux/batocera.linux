@@ -19,6 +19,7 @@ KODI_DEPENDENCIES = \
 	freetype \
 	gnutls \
 	host-gawk \
+	host-gettext \
 	host-gperf \
 	host-kodi-jsonschemabuilder \
 	host-kodi-texturepacker \
@@ -38,7 +39,6 @@ KODI_DEPENDENCIES = \
 	openssl \
 	pcre \
 	python \
-	readline \
 	sqlite \
 	taglib \
 	tinyxml \
@@ -195,7 +195,7 @@ endif
 
 ifeq ($(BR2_PACKAGE_KODI_NONFREE),y)
 KODI_CONF_OPTS += -DENABLE_NONFREE=ON
-KODI_LICENSE := $(KODI_LICENSE), unrar
+KODI_LICENSE += , unrar
 KODI_LICENSE_FILES += lib/UnrarXLib/license.txt
 else
 KODI_CONF_OPTS += -DENABLE_NONFREE=OFF
@@ -408,11 +408,6 @@ endef
 define KODI_INSTALL_INIT_SYSTEMD
 	$(INSTALL) -D -m 644 package/kodi/kodi.service \
 		$(TARGET_DIR)/usr/lib/systemd/system/kodi.service
-
-	mkdir -p $(TARGET_DIR)/etc/systemd/system/multi-user.target.wants
-
-	ln -fs ../../../../usr/lib/systemd/system/kodi.service \
-		$(TARGET_DIR)/etc/systemd/system/multi-user.target.wants/kodi.service
 endef
 
 # batocera - kodi segfaults when not with -O0 on arm

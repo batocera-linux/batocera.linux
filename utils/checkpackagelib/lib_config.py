@@ -61,50 +61,62 @@ class AttributesOrder(_CheckFunction):
 
 
 class CommentsMenusPackagesOrder(_CheckFunction):
-    menu_of_packages = [""]
-    package = [""]
-    print_package_warning = [True]
-
     def before(self):
+        self.level = 0
+        self.menu_of_packages = ["The top level menu"]
+        self.new_package = ""
+        self.package = [""]
+        self.print_package_warning = [True]
         self.state = ""
 
     def get_level(self):
         return len(self.state.split('-')) - 1
 
+    def initialize_package_level_elements(self, text):
+        try:
+            self.menu_of_packages[self.level] = text[:-1]
+            self.package[self.level] = ""
+            self.print_package_warning[self.level] = True
+        except IndexError:
+            self.menu_of_packages.append(text[:-1])
+            self.package.append("")
+            self.print_package_warning.append(True)
+
+    def initialize_level_elements(self, text):
+        self.level = self.get_level()
+        self.initialize_package_level_elements(text)
+
     def check_line(self, lineno, text):
         # We only want to force sorting for the top-level menus
-        if self.filename not in ["package/Config.in",
-                                 "package/Config.in.host"]:
+        if self.filename not in ["fs/Config.in",
+                                 "package/Config.in",
+                                 "package/Config.in.host",
+                                 "package/kodi/Config.in"]:
             return
 
-        m = re.match(r'^\s*source ".*/([^/]*)/Config.in(.host)?"', text)
-        if text.startswith("comment ") or text.startswith("if ") or \
-           text.startswith("menu "):
+        source_line = re.match(r'^\s*source ".*/([^/]*)/Config.in(.host)?"', text)
 
-            if text.startswith("comment"):
-                if not self.state.endswith("-comment"):
-                    self.state += "-comment"
+        if text.startswith("comment "):
+            if not self.state.endswith("-comment"):
+                self.state += "-comment"
 
-            elif text.startswith("if") or text.startswith("menu"):
-                if text.startswith("if"):
-                    self.state += "-if"
+            self.initialize_level_elements(text)
 
-                elif text.startswith("menu"):
-                    self.state += "-menu"
+        elif text.startswith("if "):
+            self.state += "-if"
 
-            level = self.get_level()
+            self.initialize_level_elements(text)
 
-            try:
-                self.menu_of_packages[level] = text[:-1]
-                self.package[level] = ""
-                self.print_package_warning[level] = True
-            except IndexError:
-                self.menu_of_packages.append(text[:-1])
-                self.package.append("")
-                self.print_package_warning.append(True)
+        elif text.startswith("menu "):
+            if self.state.endswith("-comment"):
+                self.state = self.state[:-8]
+
+            self.state += "-menu"
+
+            self.initialize_level_elements(text)
 
         elif text.startswith("endif") or text.startswith("endmenu"):
-            if self.state.endswith("comment"):
+            if self.state.endswith("-comment"):
                 self.state = self.state[:-8]
 
             if text.startswith("endif"):
@@ -113,17 +125,18 @@ class CommentsMenusPackagesOrder(_CheckFunction):
             elif text.startswith("endmenu"):
                 self.state = self.state[:-5]
 
-        elif m:
-            level = self.get_level()
-            new_package = m.group(1)
+            self.level = self.get_level()
+
+        elif source_line:
+            self.new_package = source_line.group(1)
 
             # We order _ before A, so replace it with .
-            new_package_ord = new_package.replace('_', '.')
+            new_package_ord = self.new_package.replace('_', '.')
 
-            if self.package[level] != "" and \
-               self.print_package_warning[level] and \
-               new_package_ord < self.package[level]:
-                self.print_package_warning[level] = False
+            if self.package[self.level] != "" and \
+               self.print_package_warning[self.level] and \
+               new_package_ord < self.package[self.level]:
+                self.print_package_warning[self.level] = False
                 prefix = "{}:{}: ".format(self.filename, lineno)
                 spaces = " " * len(prefix)
                 return ["{prefix}Packages in: {menu},\n"
@@ -131,11 +144,11 @@ class CommentsMenusPackagesOrder(_CheckFunction):
                         "{spaces}correct order: '-', '_', digits, capitals, lowercase;\n"
                         "{spaces}first incorrect package: {package}"
                         .format(prefix=prefix, spaces=spaces,
-                                menu=self.menu_of_packages[level],
-                                package=new_package),
+                                menu=self.menu_of_packages[self.level],
+                                package=self.new_package),
                         text]
 
-            self.package[level] = new_package_ord
+            self.package[self.level] = new_package_ord
 
 
 class HelpText(_CheckFunction):

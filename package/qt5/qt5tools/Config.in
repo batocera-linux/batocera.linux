@@ -17,6 +17,11 @@ config BR2_PACKAGE_QT5TOOLS_LINGUIST_TOOLS
 	  This option enables the linguist host tools
 	  lconvert, lrelease and lupdate.
 
+config BR2_PACKAGE_QT5TOOLS_QDOC_TOOL
+	bool "qdoc host tool"
+	help
+	  This option enables the qdoc host tool.
+
 config BR2_PACKAGE_QT5TOOLS_PIXELTOOL
 	bool "pixeltool"
 	select BR2_PACKAGE_QT5BASE_GUI

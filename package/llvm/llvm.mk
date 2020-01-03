@@ -4,18 +4,17 @@
 #
 ################################################################################
 
-# LLVM and Clang should be version bumped together
-LLVM_VERSION = 8.0.1
-LLVM_SITE = https://github.com/llvm/llvm-project/releases/download/llvmorg-$(LLVM_VERSION)
+# LLVM, Clang and lld should be version bumped together
+LLVM_VERSION = 9.0.0
+LLVM_SITE = http://llvm.org/releases/$(LLVM_VERSION)
 LLVM_SOURCE = llvm-$(LLVM_VERSION).src.tar.xz
-LLVM_LICENSE = NCSA
+LLVM_LICENSE = Apache-2.0 with exceptions
 LLVM_LICENSE_FILES = LICENSE.TXT
 LLVM_SUPPORTS_IN_SOURCE_BUILD = NO
 LLVM_INSTALL_STAGING = YES
 
-# http://llvm.org/docs/GettingStarted.html#software
-# host-python: Python interpreter 2.7 or newer is required for builds and testing.
-HOST_LLVM_DEPENDENCIES = host-python
+# LLVM >= 9.0 can use python3 to build.
+HOST_LLVM_DEPENDENCIES = host-python3
 LLVM_DEPENDENCIES = host-llvm
 
 # batocera - requirement for nouveau
@@ -142,6 +141,10 @@ LLVM_CONF_OPTS += -DLLVM_ENABLE_ZLIB=OFF
 HOST_LLVM_CONF_OPTS += -DLLVM_ENABLE_LIBXML2=OFF
 LLVM_CONF_OPTS += -DLLVM_ENABLE_LIBXML2=OFF
 
+# Disable optional Z3Prover since there is no such package in Buildroot.
+HOST_LLVM_CONF_OPTS += -DLLVM_ENABLE_Z3_SOLVER=OFF
+LLVM_CONF_OPTS += -DLLVM_ENABLE_Z3_SOLVER=OFF
+
 # We don't use llvm for static only build, so enable PIC
 HOST_LLVM_CONF_OPTS += -DLLVM_ENABLE_PIC=ON
 LLVM_CONF_OPTS += -DLLVM_ENABLE_PIC=ON
@@ -219,6 +222,14 @@ HOST_LLVM_CONF_OPTS += \
 LLVM_CONF_OPTS += \
 	-DLLVM_INCLUDE_TOOLS=ON \
 	-DLLVM_BUILD_TOOLS=OFF
+
+ifeq ($(BR2_PACKAGE_LLVM_RTTI),y)
+HOST_LLVM_CONF_OPTS += -DLLVM_ENABLE_RTTI=ON
+LLVM_CONF_OPTS += -DLLVM_ENABLE_RTTI=ON
+else
+HOST_LLVM_CONF_OPTS += -DLLVM_ENABLE_RTTI=OFF
+LLVM_CONF_OPTS += -DLLVM_ENABLE_RTTI=OFF
+endif
 
 # Compiler-rt not in the source tree.
 # llvm runtime libraries are not in the source tree.

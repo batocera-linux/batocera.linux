@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-MINICOM_VERSION = 1e84585e8e7710677b6ff9a70dce5f3ad3e23540
+MINICOM_VERSION = a6a507dcb8bd4cb5da7af9e2dc75b8e495fedbb6
 MINICOM_SITE = https://salsa.debian.org/minicom-team/minicom.git
 MINICOM_SITE_METHOD = git
 MINICOM_LICENSE = GPL-2.0+
@@ -21,5 +21,9 @@ define MINICOM_MKDIR_M4
 	mkdir -p $(@D)/m4
 endef
 MINICOM_POST_PATCH_HOOKS += MINICOM_MKDIR_M4
+
+MINICOM_CONF_OPTS = \
+	--enable-dfl-port=/dev/ttyS1 \
+	--enable-lock-dir=/var/lock
 
 $(eval $(autotools-package))

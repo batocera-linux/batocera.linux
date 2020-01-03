@@ -17,8 +17,6 @@ RYGEL_DEPENDENCIES = \
 	sqlite \
 	$(TARGET_NLS_DEPENDENCIES)
 RYGEL_INSTALL_STAGING = YES
-# We're patching configure.ac
-RYGEL_AUTORECONF = YES
 
 RYGEL_CONF_ENV = LIBS=$(TARGET_NLS_LIBS)
 RYGEL_CONF_OPTS += \
@@ -68,9 +66,6 @@ endef
 define RYGEL_INSTALL_INIT_SYSTEMD
 	$(INSTALL) -D -m 644 package/rygel/rygel.service \
 		$(TARGET_DIR)/usr/lib/systemd/system/rygel.service
-	mkdir -p $(TARGET_DIR)/etc/systemd/system/multi-user.target.wants
-	ln -sf ../../../../usr/lib/systemd/system/rygel.service \
-		$(TARGET_DIR)/etc/systemd/system/multi-user.target.wants/rygel.service
 endef
 
 $(eval $(autotools-package))
