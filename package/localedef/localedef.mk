@@ -7,8 +7,7 @@
 # Use the same VERSION and SITE as target glibc
 # As in glibc.mk, generate version string using:
 #   git describe --match 'glibc-*' --abbrev=40 origin/release/MAJOR.MINOR/master | cut -d '-' -f 2-
-# batocera force to use glibc-2.28
-LOCALEDEF_VERSION = 2.28-69-g1e5c5303a522764d7e9d2302a60e4a32cdb902f1
+LOCALEDEF_VERSION = 2.29-11-ge28ad442e73b00ae2047d89c8cc7f9b2a0de5436
 LOCALEDEF_SOURCE = glibc-$(LOCALEDEF_VERSION).tar.gz
 LOCALEDEF_SITE = $(call github,bminor,glibc,$(LOCALEDEF_VERSION))
 LOCALEDEF_DEPENDENCIES = $(BR2_MAKE_HOST_DEPENDENCY)
