@@ -1,12 +1,12 @@
 diff --git a/host_applications/linux/apps/tvservice/tvservice.c b/host_applications/linux/apps/tvservice/tvservice.c
-index 7d37d0e..2e51267 100644
+index cb2410a..0eb9d22 100644
 --- a/host_applications/linux/apps/tvservice/tvservice.c
 +++ b/host_applications/linux/apps/tvservice/tvservice.c
 @@ -75,8 +75,11 @@ enum
     OPT_OFF       = 'o',
     OPT_SDTVON    = 'c',
     OPT_MODES     = 'm',
-+   OPT_LISTMODES = 'l',
++   OPT_LISTMODES = 'L',
     OPT_MONITOR   = 'M',
     OPT_STATUS    = 's',
 +   OPT_CURRENTRESOLUTION = 'r',
@@ -14,7 +14,7 @@ index 7d37d0e..2e51267 100644
     OPT_DUMPEDID  = 'd',
     OPT_AUDIOSUP  = 'a',
     OPT_SHOWINFO  = 'i',
-@@ -97,8 +100,11 @@ static struct option long_opts[] =
+@@ -99,8 +102,11 @@ static struct option long_opts[] =
     { "off",                no_argument,         NULL,    OPT_OFF },
     { "sdtvon",             required_argument,   NULL,    OPT_SDTVON },
     { "modes",              required_argument,   NULL,    OPT_MODES },
@@ -26,12 +26,12 @@ index 7d37d0e..2e51267 100644
     { "dumpedid",           required_argument,   NULL,    OPT_DUMPEDID},
     { "audio",              no_argument,         NULL,    OPT_AUDIOSUP},
     { "json",               no_argument,         NULL,    OPT_JSON },
-@@ -314,6 +320,46 @@ static int get_modes( HDMI_RES_GROUP_T group, int json_output)
+@@ -329,6 +335,46 @@ static int get_modes( uint32_t display_id, HDMI_RES_GROUP_T group, int json_outp
     return 0;
  }
  
 +static int list_modes_item(HDMI_RES_GROUP_T group)
-+{  
++{
 +   static TV_SUPPORTED_MODE_T supported_modes[MAX_MODE_ID];
 +   HDMI_RES_GROUP_T preferred_group;
 +   uint32_t preferred_mode;
@@ -51,15 +51,15 @@ index 7d37d0e..2e51267 100644
 +   for ( i = 0; i < num_modes; i++ )
 +   {
 +      LOG_STD( "%ux%u:%s %u HDMI:%s %ux%u %s%uHz %s",
-+	       supported_modes[i].width, supported_modes[i].height,
-+	       group == HDMI_RES_GROUP_CEA ? "CEA" : "DMT",
-+	       supported_modes[i].code,
-+	       group == HDMI_RES_GROUP_CEA ? "TV" : "MONITOR",
-+	       supported_modes[i].width, supported_modes[i].height,
-+	       supported_modes[i].scan_mode ? "i" : "p",
-+	       supported_modes[i].frame_rate,
-+	       aspect_ratio_str(supported_modes[i].aspect_ratio)
-+	       );
++              supported_modes[i].width, supported_modes[i].height,
++              group == HDMI_RES_GROUP_CEA ? "CEA" : "DMT",
++              supported_modes[i].code,
++              group == HDMI_RES_GROUP_CEA ? "TV" : "MONITOR",
++              supported_modes[i].width, supported_modes[i].height,
++              supported_modes[i].scan_mode ? "i" : "p",
++              supported_modes[i].frame_rate,
++              aspect_ratio_str(supported_modes[i].aspect_ratio)
++              );
 +   }
 +   return 0;
 +}
@@ -73,7 +73,7 @@ index 7d37d0e..2e51267 100644
  static const char *status_mode( TV_DISPLAY_STATE_T *tvstate ) {
     static char mode_str[MAX_STATUS_STR_LENGTH] = {0};
     int tmp = 0;
-@@ -456,6 +501,35 @@ static int get_status( void )
+@@ -482,6 +528,35 @@ static int get_status(int display_id)
    return 0;
  }
  
@@ -106,10 +106,10 @@ index 7d37d0e..2e51267 100644
 +  return 0;
 +}
 +
- static int get_audiosup( void )
+ static int get_audiosup(int display_id)
  {
    uint8_t sample_rates[] = {32, 44, 48, 88, 96, 176, 192};
-@@ -713,8 +787,11 @@ int main( int argc, char **argv )
+@@ -783,8 +858,11 @@ int main( int argc, char **argv )
     int  opt_sdtvon = 0;
     int  opt_off = 0;
     int  opt_modes = 0;
@@ -121,36 +121,36 @@ index 7d37d0e..2e51267 100644
     int  opt_audiosup = 0;
     int  opt_dumpedid = 0;
     int  opt_showinfo = 0;
-@@ -910,6 +987,11 @@ int main( int argc, char **argv )
+@@ -983,6 +1061,11 @@ int main( int argc, char **argv )
              opt_modes = 1;
              break;
           }
-+      case OPT_LISTMODES:
-+	{
-+	  opt_listmodes = 1;
-+	  break;
-+	}
++         case OPT_LISTMODES:
++         {
++           opt_listmodes = 1;
++           break;
++         }
           case OPT_MONITOR:
           {
              opt_monitor = 1;
-@@ -920,6 +1002,16 @@ int main( int argc, char **argv )
+@@ -993,6 +1076,16 @@ int main( int argc, char **argv )
              opt_status = 1;
              break;
           }
-+      case OPT_CURRENTSTATUS:
-+	{
-+	  opt_currentstatus = 1;
-+	  break;
-+	}
-+      case OPT_CURRENTRESOLUTION:
-+	{
-+	  opt_currentresolution = 1;
-+	  break;
-+	}
++         case OPT_CURRENTSTATUS:
++         {
++           opt_currentstatus = 1;
++           break;
++         }
++         case OPT_CURRENTRESOLUTION:
++         {
++           opt_currentresolution = 1;
++           break;
++         }
           case OPT_AUDIOSUP:
           {
              opt_audiosup = 1;
-@@ -1022,6 +1114,14 @@ int main( int argc, char **argv )
+@@ -1133,6 +1226,14 @@ int main( int argc, char **argv )
        }
     }
  
@@ -158,17 +158,18 @@ index 7d37d0e..2e51267 100644
 +   {
 +     if ( list_modes() != 0 )
 +       {
-+	 goto err_stop_service;
++        goto err_stop_service;
 +       }
 +   }
 +
     if ( opt_preferred == 1 )
     {
-       if(set_property( HDMI_PROPERTY_3D_STRUCTURE, HDMI_3D_FORMAT_NONE, 0) != 0)
-@@ -1089,6 +1189,22 @@ int main( int argc, char **argv )
+       if(set_property( opt_device, HDMI_PROPERTY_3D_STRUCTURE, HDMI_3D_FORMAT_NONE, 0) != 0)
+@@ -1201,7 +1302,23 @@ int main( int argc, char **argv )
           goto err_stop_service;
        }
     }
+-   
 +
 +   if ( opt_currentstatus == 1 )
 +   {
@@ -185,6 +186,7 @@ index 7d37d0e..2e51267 100644
 +         goto err_stop_service;
 +      }
 +   }
-    
++
     if ( opt_audiosup == 1 )
     {
+       if ( get_audiosup(opt_device) != 0 )
