@@ -6,6 +6,7 @@
 # Batocera versions // 04.06.2019
 # Added /bin/usr script // 22.09.2019
 # Added sigterm level, added second parameter to activate sigterm during smart_wait function
+# Added architecture and version information // 05.01.2020
 
 # Get all childpids from calling process
 function getcpid() {
@@ -79,11 +80,10 @@ case ${1,,} in
     ;;
 
     --emukill|--shutdown)
-        RC_PID=$(check_emurun)
-        [[ -n $RC_PID ]] && emu_kill && sleep 2
-
+        emu_kill && sleep 2
         ES_PID=$(check_esrun)
-        if [[ "${1,,}" == "--shutdown" && -n $ES_PID ]]; then
+        if [[ "$1" == "--shutdown" && -n $ES_PID ]]; then
+            [[ -z $RC_PID ]] || smart_wait 1 $RC_PID && sleep 3
             kill $ES_PID         
             smart_wait 0 $ES_PID
             shutdown -h now
@@ -91,9 +91,7 @@ case ${1,,} in
     ;;
 
     --kodi)
-        RC_PID=$(check_emurun)
-        [[ -n $RC_PID ]] && emu_kill && sleep 2
-        
+        emu_kill && sleep 2
         /etc/init.d/S31emulationstation stop
         batocera-kodilauncher &
         wait $!
@@ -101,6 +99,24 @@ case ${1,,} in
         [[ $exitcode -eq 0 ]] && /etc/init.d/S31emulationstation start
         [[ $exitcode -eq 10 ]] && shutdown -r now
         [[ $exitcode -eq 11 ]] && shutdown -h now
+    ;;
+
+    --version)
+        if [[ -f /usr/share/batocera/batocera.version ]]; then
+            read ver < /usr/share/batocera/batocera.version
+            echo "$ver"
+        else
+            echo "UNKNOWN VERSI0N!"
+        fi
+    ;;
+
+    --architecture|--arch)
+        if [[ -f /usr/share/batocera/batocera.arch ]]; then
+            read arch < /usr/share/batocera/batocera.arch
+            echo "$arch"
+        else
+            echo "UNKNOWN BOARD ARCHITECTURE!"
+        fi
     ;;
 
     *)
@@ -116,7 +132,9 @@ case ${1,,} in
                           If the ouput is 0, then ES isn't active \n
                   --emupid to check if an Emulator is running
                            This number is just the PID of emulatorlauncher.py
-                           if the output is 0 then there is no emulator active!"
+                           if the output is 0 then there is no emulator active!\n
+                  --architecture Shows current architecture running\n
+                  --version Shows current version of BATOCERA running"
     ;;
 
 esac
