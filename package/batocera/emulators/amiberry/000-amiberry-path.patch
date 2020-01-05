@@ -1,5 +1,5 @@
 diff --git a/src/osdep/amiberry.cpp b/src/osdep/amiberry.cpp
-index bf50c6b..306212b 100644
+index 1c6a8a4..3e9eb20 100644
 --- a/src/osdep/amiberry.cpp
 +++ b/src/osdep/amiberry.cpp
 @@ -609,7 +609,7 @@ void fetch_datapath(char* out, int size)
@@ -53,25 +53,23 @@ index bf50c6b..306212b 100644
  	fputs(buffer, f);
  
  	snprintf(buffer, MAX_DPATH, "rom_path=%s\n", rom_path);
-@@ -950,10 +950,13 @@ void load_amiberry_settings(void)
- 	char path[MAX_DPATH];
- 	int i;
+@@ -954,9 +954,12 @@ void load_amiberry_settings(void)
+ #else
  	strncpy(currentDir, start_path_data, MAX_DPATH - 1);
+ #endif
 -	snprintf(config_path, MAX_DPATH, "%s/conf/", start_path_data);
 -	snprintf(controllers_path, MAX_DPATH, "%s/controllers/", start_path_data);
 -	snprintf(retroarch_file, MAX_DPATH, "%s/conf/retroarch.cfg", start_path_data);
--
 +	
 +	/* snprintf(config_path, MAX_DPATH, "%s/conf/", start_path_data);  */
 +	snprintf(config_path, MAX_DPATH, "/userdata/system/configs/amiberry/conf");
 +	
 +	snprintf(controllers_path, MAX_DPATH, "/userdata/system/configs/amiberry/conf/retroarch/inputs");
 +	snprintf(retroarch_file, MAX_DPATH, "/userdata/system/configs/amiberry/conf/retroarch/retroarchcustom.cfg");
-+ 	
+ 
  #ifdef ANDROID
  	char afepath[MAX_DPATH];
- 	snprintf(afepath, MAX_DPATH, "%s/Android/data/com.cloanto.amigaforever.essentials/files/rom/", getenv("SDCARD"));
-@@ -963,12 +966,12 @@ void load_amiberry_settings(void)
+@@ -967,12 +970,12 @@ void load_amiberry_settings(void)
  		closedir(afedir);
  	}
  	else
