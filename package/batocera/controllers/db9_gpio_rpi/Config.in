@@ -1,8 +1,4 @@
 config BR2_PACKAGE_DB9_GPIO_RPI
 	bool "db9 gpio driver"
-	depends on BR2_LINUX_KERNEL
 	help
 	  Kernel module to support db9 joysticks on gpios
-
-comment "db9 needs a kernel and headers"
-	depends on !BR2_LINUX_KERNEL
