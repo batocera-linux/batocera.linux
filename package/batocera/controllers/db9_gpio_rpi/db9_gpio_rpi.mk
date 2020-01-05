@@ -3,20 +3,13 @@
 # DB9_GPIO_RPI
 #
 ################################################################################
-DB9_GPIO_RPI_VERSION = 1.0
-DB9_GPIO_RPI_SOURCE = db9-gpio-rpi-dkms_$(DB9_GPIO_RPI_VERSION)_all.deb
-DB9_GPIO_RPI_SITE = http://www.niksula.hut.fi/~mhiienka/Rpi
-
+DB9_GPIO_RPI_VERSION = c21faee29e42696722a953a8eee9093a223f1408
+DB9_GPIO_RPI_SITE = $(call github,marqs85,db9_gpio_rpi,$(DB9_GPIO_RPI_VERSION))
 DB9_GPIO_RPI_DEPENDENCIES = linux
-
-define DB9_GPIO_RPI_EXTRACT_CMDS
-	cp package/batocera/controllers/db9_gpio_rpi/db9_gpio_rpi.c $(@D)
-	cp package/batocera/controllers/db9_gpio_rpi/Makefile $(@D)
-endef
 
 # Needed because can't pass cflags to cc
 define DB9_GPIO_RPI_RPI2_HOOK
-        $(SED) "s/#define BCM2708_PERI_BASE 0x20000000/#define BCM2708_PERI_BASE 0x3F000000/g" $(@D)/db9_gpio_rpi.c
+        $(SED) "s/#define BCM2708_PERI_BASE 0x20000000/#define BCM2708_PERI_BASE 0x3F000000/g" $(@D)/db9_gpio_rpi-1.2/db9_gpio_rpi.c
 endef
 
 ifeq ($(BR2_cortex_a7),y)
@@ -26,13 +19,12 @@ ifeq ($(BR2_cortex_a53),y)
         DB9_GPIO_RPI_PRE_CONFIGURE_HOOKS += DB9_GPIO_RPI_RPI2_HOOK
 endif
 
-
 define DB9_GPIO_RPI_BUILD_CMDS
-        $(MAKE) -C $(@D) $(LINUX_MAKE_FLAGS) KERNELDIR=$(LINUX_DIR)
+        $(MAKE) -C $(@D)/db9_gpio_rpi-1.2 $(LINUX_MAKE_FLAGS) KERNELDIR=$(LINUX_DIR)
 endef
 
 define DB9_GPIO_RPI_INSTALL_TARGET_CMDS
-        $(MAKE) -C $(@D) $(LINUX_MAKE_FLAGS) KERNELDIR=$(LINUX_DIR) modules_install
+        $(MAKE) -C $(@D)/db9_gpio_rpi-1.2 $(LINUX_MAKE_FLAGS) KERNELDIR=$(LINUX_DIR) modules_install
 endef
 
 $(eval $(generic-package))
