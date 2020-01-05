@@ -7,7 +7,7 @@ BR2_GLOBAL_PATCH_DIR="board/batocera/patches board/batocera/rpi/patches"
 BR2_TOOLCHAIN_BUILDROOT_GLIBC=y
 # required for utf-8
 BR2_TOOLCHAIN_GLIBC_GCONV_LIBS_COPY=y
-BR2_PACKAGE_HOST_LINUX_HEADERS_CUSTOM_4_14=y
+BR2_PACKAGE_HOST_LINUX_HEADERS_CUSTOM_4_19=y
 BR2_TOOLCHAIN_BUILDROOT_CXX=y
 BR2_TARGET_OPTIMIZATION="-pipe -fsigned-char"
 BR2_TARGET_GENERIC_HOSTNAME="batocera"
@@ -28,7 +28,7 @@ BR2_ROOTFS_POST_BUILD_SCRIPT="board/batocera/post-build-script.sh"
 BR2_ROOTFS_POST_IMAGE_SCRIPT="board/batocera/post-image-script.sh"
 BR2_LINUX_KERNEL=y
 BR2_LINUX_KERNEL_CUSTOM_TARBALL=y
-BR2_LINUX_KERNEL_CUSTOM_TARBALL_LOCATION="$(call github,raspberrypi,linux,6d27aa156c26977dfd079a7107e31670127d17d3)/linux-6d27aa156c26977dfd079a7107e31670127d17d3.tar.gz"
+BR2_LINUX_KERNEL_CUSTOM_TARBALL_LOCATION="$(call github,raspberrypi,linux,raspberrypi-kernel_1.20190925-1)/linux-raspberrypi-kernel_1.20190925-1.tar.gz"
 BR2_LINUX_KERNEL_PATCH="board/batocera/rpi/linux_patches"
 BR2_LINUX_KERNEL_DEFCONFIG="bcm2709"
 BR2_LINUX_KERNEL_CONFIG_FRAGMENT_FILES="board/batocera/rpi/linux-defconfig-fragment.config"
