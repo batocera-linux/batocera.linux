@@ -1,8 +1,4 @@
 config BR2_PACKAGE_GAMECON_GPIO_RPI
 	bool "gamecon gpio driver"
-	depends on BR2_LINUX_KERNEL
 	help
 	  Kernel module to support snes,nes,psx joysticks on gpios
-
-comment "gamecon needs a kernel and headers"
-	depends on !BR2_LINUX_KERNEL
