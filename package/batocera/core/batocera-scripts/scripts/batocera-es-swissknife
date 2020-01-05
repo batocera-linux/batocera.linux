@@ -6,6 +6,7 @@
 # Batocera versions // 04.06.2019
 # Added /bin/usr script // 22.09.2019
 # Added sigterm level, added second parameter to activate sigterm during smart_wait function
+# Added architecture and version information // 05.01.2020
 
 # Get all childpids from calling process
 function getcpid() {
@@ -103,6 +104,24 @@ case ${1,,} in
         [[ $exitcode -eq 11 ]] && shutdown -h now
     ;;
 
+    --version)
+        if [[ -f /usr/share/batocera/batocera.version ]]; then
+            read ver < /usr/share/batocera/batocera.version
+            echo "$ver"
+        else
+            echo "0-UNKNOWN"
+        fi
+    ;;
+
+    --architecture|--arch)
+        if [[ -f /usr/share/batocera/batocera.arch ]]; then
+            read arch < /usr/share/batocera/batocera.arch
+            echo "$arch"
+        else
+            echo "0-UNKNOWN"
+        fi
+    ;;
+
     *)
         echo -e "\n\t\t BATOCERA SWISS KNIFE FOR EmulationStation
                  Please parse parameters to this script! \n
@@ -116,7 +135,9 @@ case ${1,,} in
                           If the ouput is 0, then ES isn't active \n
                   --emupid to check if an Emulator is running
                            This number is just the PID of emulatorlauncher.py
-                           if the output is 0 then there is no emulator active!"
+                           if the output is 0 then there is no emulator active!\n
+                  --architecture Shows current architecture running\n
+                  --version Shows current version of BATOCERA running"
     ;;
 
 esac
