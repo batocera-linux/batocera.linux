@@ -190,8 +190,15 @@ menu "Emulators"
 endmenu
 
 menu "Kodi"
+if !BR2_PACKAGE_BATOCERA_KODI18
   source "package/batocera/kodi/kodi-joystick/Config.in"
   source "package/batocera/kodi/kodi-plugin-video-filmon/Config.in"
+endif
+if BR2_PACKAGE_BATOCERA_KODI18
+  source "package/batocera/kodi18/kodi18/Config.in"
+  source "package/batocera/kodi18/kodi18-peripheral-joystick/Config.in"
+endif
+
   source "package/batocera/kodi/kodi-superrepo-all/Config.in"
   source "package/batocera/kodi/kodi-superrepo-repositories/Config.in"
   source "package/batocera/kodi/kodi-resource-language-de_de/Config.in"
