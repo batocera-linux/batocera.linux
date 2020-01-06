@@ -1,0 +1,65 @@
+diff --git a/meson.build b/meson.build
+index 27a7b19..3c15282 100644
+--- a/meson.build
++++ b/meson.build
+@@ -239,7 +239,7 @@ harfbuzz_dep = dependency('harfbuzz', version: harfbuzz_req_version, required: f
+ if harfbuzz_dep.found()
+   harfbuzz_pc = 'harfbuzz'
+ else
+-  if cc.get_id() == 'msvc' and cc.has_header('hb.h')
++  if cc.get_id() == 'msvc' and cc.has_header('harfbuzz/hb.h')
+     # The CMake build files for HarfBuzz (which is used for MSVC builds) do not
+     # generate pkg-config files, so look for harfbuzz.lib.  Ensure that we
+     # we look for HarfBuzz 2.0.0 or later.
+diff --git a/pango/pango-coverage.h b/pango/pango-coverage.h
+index 7467dbd..57c9659 100644
+--- a/pango/pango-coverage.h
++++ b/pango/pango-coverage.h
+@@ -25,7 +25,7 @@
+ #include <glib-object.h>
+ 
+ #include <pango/pango-version-macros.h>
+-#include <hb.h>
++#include <harfbuzz/hb.h>
+ 
+ G_BEGIN_DECLS
+ 
+diff --git a/pango/pango-font.h b/pango/pango-font.h
+index 70c24d2..a704d19 100644
+--- a/pango/pango-font.h
++++ b/pango/pango-font.h
+@@ -26,7 +26,7 @@
+ #include <pango/pango-types.h>
+ 
+ #include <glib-object.h>
+-#include <hb.h>
++#include <harfbuzz/hb.h>
+ 
+ G_BEGIN_DECLS
+ 
+diff --git a/pango/pangofc-fontmap.h b/pango/pangofc-fontmap.h
+index ae11ec3..b4c220e 100644
+--- a/pango/pangofc-fontmap.h
++++ b/pango/pangofc-fontmap.h
+@@ -26,7 +26,7 @@
+ #include <fontconfig/fontconfig.h>
+ #include <pango/pangofc-decoder.h>
+ #include <pango/pangofc-font.h>
+-#include <hb.h>
++#include <harfbuzz/hb.h>
+ 
+ G_BEGIN_DECLS
+ 
+diff --git a/pango/pangowin32.c b/pango/pangowin32.c
+index c08ae24..68723c2 100644
+--- a/pango/pangowin32.c
++++ b/pango/pangowin32.c
+@@ -35,7 +35,7 @@
+ #include <string.h>
+ #include <stdlib.h>
+ #include <glib.h>
+-#include <hb.h>
++#include <harfbuzz/hb.h>
+ 
+ #include "pango-impl-utils.h"
+ #include "pangowin32.h"
