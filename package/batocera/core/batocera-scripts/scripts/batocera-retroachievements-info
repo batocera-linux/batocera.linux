@@ -36,12 +36,12 @@ function process() {
 		exit 1;
 	fi
 	cat "$tmpfile" |  awk -v FS="(<div class='username'><span class='username'>|</div><div class='userpage recentlyplayed' >)" '{print $2}' | uniq > "$tmpfile"_2
-	idcard=$(cat "$tmpfile" | sed -e "/^[[:blank:]]*$/d" | awk -v FS="(</span></div><br/>Member Since: |<br>Account Type:)" '{print $2}' | uniq)
+	idcard=$(cat "$tmpfile" | sed -e "/^[[:blank:]]*$/d" | awk -v FS="(</span></div><br/?>Member Since: |<br/?>Account Type:)" '{print $2}' | uniq)
 	parsedid=$(echo "$idcard" | sed -e "/^[[:blank:]]*$/d" | sed -e "s;\(.*\)<br>Last Activity: \(.*\);\1@\2;")
-	avcompletion=$(cat "$tmpfile" | sed -e "/^[[:blank:]]*$/d" | awk -v FS="(</span><br/>Average Completion: <b>|</b><br/>Site Rank:)" '{print $2}' | sed -e "/^[[:blank:]]*$/d" | uniq)
+	avcompletion=$(cat "$tmpfile" | sed -e "/^[[:blank:]]*$/d" | awk -v FS="(</span><br/?>Average Completion: <b>|</b><br/?>Site Rank:)" '{print $2}' | sed -e "/^[[:blank:]]*$/d" | uniq)
 	points=$(cat "$tmpfile"_2 | sed -e "/^[[:blank:]]*$/d" | awk -v FS="(</strong></a>&nbsp;|<span class='TrueRatio'>)" '{print $2}' |  sed -e "s;(\([0-9]*\) points);\1;")
 	if [ x"$points" != x ] && [ "$points" -ge 1 ]; then
-		rank=$(cat "$tmpfile"_2  | sed -e "/^[[:blank:]]*$/d" | awk -v FS="(userList.php|<br/><br/>)" '{print $3}' | sed -e "s/\?s=2'>//" -e "s;<.*a>;;" )
+		rank=$(cat "$tmpfile"_2  | sed -e "/^[[:blank:]]*$/d" | awk -v FS="(userList.php|<br/?><br/?>)" '{print $3}' | sed -e "s/\?s=2'>//" -e "s;<.*a>;;" )
 		## For future use: UserPic is RetroAchievements' user avatar - however the S3 bucket is protected.
 		# UserPic=$(cat $tmpfile | grep 'meta property=.og:image. content=' | cut -d= -f3 | awk -F\' '{print $2}')
 		# Workaround: use the line below
