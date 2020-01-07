@@ -8,15 +8,35 @@ do_start ()
 {
     if test -f "/boot/splash.mp4"
     then
-	video="/boot/splash.mp4"
+        do_videostart "/boot/splash.mp4"
+    elif test -f "/boot/splash.png"
+    then
+        do_imagestart "/boot/splash.png"
     else
-	video="/usr/share/batocera/splash/splash.mp4"
+        do_videostart "/usr/share/batocera/splash/splash.mp4"
     fi
+}
 
+do_imagestart()
+{
+    image="$1"
+    # on some sytems, fb0 is not immediatly loaded, so, keep a chance by waiting a bit
+    N=0
+    while ! test -e /dev/fb0 -o $N -gt 15
+    do
+        sleep 1
+        let N++
+    done
+    test -e /dev/fb0 && fbv -f -i "${image}"
+}
+
+do_videostart ()
+{
+    video="$1"
     ffplay_opt=
     if soundDisabled
     then
-	ffplay_opt=-an
+        ffplay_opt=-an
     fi
     /usr/bin/ffplay $ffplay_opt -autoexit -loglevel 0 "$video" &
     PID=$!
@@ -34,9 +54,9 @@ case "$1" in
         do_start &
         ;;
     stop)
-	   ;;
+        ;;
     restart|reload)
-	   ;;
+        ;;
     *)
 esac
 
