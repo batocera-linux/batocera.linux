@@ -3,8 +3,8 @@
 # MAME
 #
 ################################################################################
-# Version: 0.215
-LIBRETRO_MAME_VERSION = 7cf10a3a9d8f3ee15ed7110d710fd73f2b402303
+# Version: 0.217
+LIBRETRO_MAME_VERSION = aedbec9df0d0a4e41e38b744a56826fa7898c417
 # LIBRETRO_MAME_SITE = $(call github,tcamargo,mame,$(LIBRETRO_MAME_VERSION))
 LIBRETRO_MAME_SITE = $(call github,libretro,mame,$(LIBRETRO_MAME_VERSION))
 # LIBRETRO_MAME_OVERRIDE_SRCDIR = /sources/mame
