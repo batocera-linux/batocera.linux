@@ -2,19 +2,19 @@
 
 do_start ()
 {
-    if test -f "/boot/splash.png"
+    if ls /boot/*.png >/dev/null 2>/dev/null
     then
-	image="/boot/splash.png"
+        image="$(ls /boot/*.png | sed -e "$((RANDOM%$(ls -1 /boot/*.png | wc -l)+1))!d")"
     else
-	image="/usr/share/batocera/splash/logo-version.png"
+        image="/usr/share/batocera/splash/logo-version.png"
     fi
 
     # on some sytems, fb0 is not immediatly loaded, so, keep a chance by waiting a bit
     N=0
     while ! test -e /dev/fb0 -o $N -gt 15
     do
-	sleep 1
-	let N++
+        sleep 1
+        let N++
     done
     test -e /dev/fb0 && fbv -f -i "${image}"
 }
@@ -24,9 +24,9 @@ case "$1" in
         do_start &
         ;;
     stop)
-	   ;;
+        ;;
     restart|reload)
-	   ;;
+        ;;
     *)
 esac
 
