@@ -6,12 +6,12 @@ soundDisabled() {
 
 do_start ()
 {
-    if test -f "/boot/splash.mp4"
+    if ls /boot/*.mp4 >/dev/null 2>/dev/null
     then
-        do_videostart "/boot/splash.mp4"
-    elif test -f "/boot/splash.png"
+        do_videostart "$(ls /boot/*.mp4 | sed -e "$((RANDOM%$(ls -1 /boot/*.mp4 | wc -l)+1))!d")"
+    elif ls /boot/*.png >/dev/null 2>/dev/null
     then
-        do_imagestart "/boot/splash.png"
+        do_imagestart "$(ls /boot/*.png | sed -e "$((RANDOM%$(ls -1 /boot/*.png | wc -l)+1))!d")"
     else
         do_videostart "/usr/share/batocera/splash/splash.mp4"
     fi
