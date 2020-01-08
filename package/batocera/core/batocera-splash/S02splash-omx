@@ -6,11 +6,11 @@ soundDisabled() {
 
 do_start ()
 {
-    if test -f "/boot/splash.mp4"
+    if ls /boot/*.mp4 >/dev/null 2>/dev/null
     then
-	video="/boot/splash.mp4"
+        video="$(ls /boot/*.mp4 | sed -e "$((RANDOM%$(ls -1 /boot/*.mp4 | wc -l)+1))!d")"
     else
-	video="/usr/share/batocera/splash/splash.mp4"
+        video="/usr/share/batocera/splash/splash.mp4"
     fi
 
     # Initialize dbus session
