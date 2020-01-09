@@ -3,7 +3,7 @@
 ### short version (for osd)
 if test "$1" = "--short"
 then
-    BATT=$(grep -E "^POWER_SUPPLY_CAPACITY=" /sys/class/power_supply/BAT*/uevent | sed -e s+'^POWER_SUPPLY_CAPACITY='++ | sort -rn | head -1)
+    BATT=$(cat /sys/class/power_supply/{BAT,bat}*/uevent 2>/dev/null | grep -E "^POWER_SUPPLY_CAPACITY=" | sed -e s+'^POWER_SUPPLY_CAPACITY='++ | sort -rn | head -1)
     DT=$(date +%H:%M)
     if test -n "${BATT}"
     then
@@ -21,7 +21,7 @@ V_CPUMODEL1=$(grep -E $'^model name\t:' /proc/cpuinfo | head -1 | sed -e s+'^mod
 V_SYSTEM=$(uname -rs)
 
 # battery
-BATT=$(grep -E "^POWER_SUPPLY_CAPACITY=" /sys/class/power_supply/BAT*/uevent | sed -e s+'^POWER_SUPPLY_CAPACITY='++ | sort -rn | head -1)
+BATT=$(cat /sys/class/power_supply/{BAT,bat}*/uevent 2>/dev/null | grep -E "^POWER_SUPPLY_CAPACITY=" | sed -e s+'^POWER_SUPPLY_CAPACITY='++ | sort -rn | head -1)
 if test -n "${BATT}"
 then
     echo "Battery: ${BATT}%"

@@ -161,6 +161,10 @@ if [ "$command" == "lsaudio" ];then
 	echo "auto"
 	echo "custom"
 	LANG=C aplay -l | grep -E '^card [0-9]*:' | sed -e s+'^card \([0-9]*\): [^,]*, device \([0-9]*\): [^\[]* \[\([^]]*\)].*$'+'\1,\2 \3'+
+    elif [[ "${arch}" =~ "odroidgoa" ]];then
+	echo "auto"
+	echo "speakers"
+	echo "headphone"
     else
 	echo "auto"
     fi
@@ -204,6 +208,17 @@ if [ "$command" == "audio" ];then
 EOF
 		aplay "/usr/share/sounds/Mallet.wav"
 	    fi
+	fi
+    elif [[ "${arch}" =~ "odroidgoa" ]]
+    then
+	case "${mode}" in
+	    "auto"|"speakers")
+		amixer cset name='Playback Path' SPK
+		;;
+	    "headphone")
+		amixer cset name='Playback Path' HP
+		;;
+	esac
 	fi
     fi
     exit 0

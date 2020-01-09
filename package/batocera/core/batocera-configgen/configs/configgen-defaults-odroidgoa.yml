@@ -1,10 +1,16 @@
 default:
   options:
     video_threaded: true
+    # rotation
+    retroarch.aspect_ratio_index: 21
+    retroarch.video_rotation: 1
 
 n64:
   emulator: mupen64plus
   core: glide64mk2
+megadrive:
+  emulator: libretro
+  core:     picodrive
 psp:
   options:
     frameskip: true
