@@ -50,16 +50,14 @@ class CitraGenerator(Generator):
         # layout section
         if not citraConfig.has_section("Layout"):
             citraConfig.add_section("Layout")
-        citraConfig.set("Layout", "custom_layout", "1")
-        citraConfig.set("Layout", "custom_top_left", "100")
-        citraConfig.set("Layout", "custom_top_top", "10")
-        citraConfig.set("Layout", "custom_top_right", "540")
-        citraConfig.set("Layout", "custom_top_bottom", "300")
-        citraConfig.set("Layout", "custom_bottom_left", "190")
-        citraConfig.set("Layout", "custom_bottom_top", "300")
-        citraConfig.set("Layout", "custom_bottom_right", "450")
-        citraConfig.set("Layout", "custom_bottom_bottom", "470")
 
+        if system.isOptSet('layout_option'):
+            citraConfig.set("Layout", "custom_layout", "0")
+            citraConfig.set("Layout", "layout_option", system.config['layout_option'])
+        else:
+            citraConfig.set("Layout", "custom_layout", "0")
+            citraConfig.set("Layout", "layout_option", "4")
+        
         # controls section
         if not citraConfig.has_section("Controls"):
             citraConfig.add_section("Controls")
