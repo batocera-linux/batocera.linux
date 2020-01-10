@@ -66,7 +66,7 @@ KODI18_EXTRA_DOWNLOADS += \
 	https://github.com/xbmc/libdvdread/archive/$(KODI18_LIBDVDREAD_VERSION).tar.gz
 
 define KODI18_CPLUFF_AUTOCONF
-	cd $(KODI18_SRCDIR)/lib/cpluff && ./autogen.sh
+	cd $(KODI18_SRCDIR)/lib/cpluff && PATH=$(HOST_DIR)/bin:$$PATH ./autogen.sh
 endef
 KODI18_PRE_CONFIGURE_HOOKS += KODI18_CPLUFF_AUTOCONF
 KODI18_DEPENDENCIES += host-automake host-autoconf host-libtool
