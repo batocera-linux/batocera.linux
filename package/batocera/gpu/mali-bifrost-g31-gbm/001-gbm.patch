@@ -1,0 +1,12 @@
+diff --git a/include/EGL/eglplatform.h b/include/EGL/eglplatform.h
+index 184e204..746a7ec 100644
+--- a/include/EGL/eglplatform.h
++++ b/include/EGL/eglplatform.h
+@@ -1,6 +1,7 @@
+ #ifndef __eglplatform_h_
+ #define __eglplatform_h_
+ 
++#include <gbm.h>
+ /*
+ ** Copyright (c) 2007-2016 The Khronos Group Inc.
+ **

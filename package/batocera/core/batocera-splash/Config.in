@@ -17,6 +17,9 @@ choice
 config BR2_PACKAGE_BATOCERA_SPLASH_IMAGE
         bool "image"
 
+config BR2_PACKAGE_BATOCERA_SPLASH_ROTATE_IMAGE
+        bool "rotate_image"
+
 config BR2_PACKAGE_BATOCERA_SPLASH_OMXPLAYER
         bool "omxplayer"
 

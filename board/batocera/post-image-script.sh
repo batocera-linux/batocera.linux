@@ -411,6 +411,40 @@ case "${BATOCERA_TARGET}" in
         rm -f "${BATOCERA_BINARIES_DIR}/boot.vfat" || exit 1
         sync || exit 1
         ;;
+    ODROIDGOA)
+        # /boot
+        rm -rf "${BINARIES_DIR}/boot"            || exit 1
+        mkdir -p "${BINARIES_DIR}/boot/boot"     || exit 1
+	"${HOST_DIR}/bin/mkimage" -A arm64 -O linux -T kernel -C none -a 0x1080000 -e 0x1080000 -n 5.x -d "${BINARIES_DIR}/Image" "${BINARIES_DIR}/uImage" || exit 1
+        cp "${BINARIES_DIR}/uImage"                "${BINARIES_DIR}/boot/boot/linux"                || exit 1
+        cp "${BINARIES_DIR}/uInitrd"             "${BINARIES_DIR}/boot/boot/uInitrd"                || exit 1
+        cp "${BINARIES_DIR}/rootfs.squashfs"       "${BINARIES_DIR}/boot/boot/batocera.update"      || exit 1
+        cp "${BINARIES_DIR}/rk3326-odroidgo2-linux.dtb"  "${BINARIES_DIR}/boot/boot/rk3326-odroidgo2-linux.dtb" || exit 1
+        cp "${BINARIES_DIR}/batocera-boot.conf"    "${BINARIES_DIR}/boot/batocera-boot.conf"        || exit 1
+	cp "board/batocera/odroidgoa/boot/boot.ini"      "${BINARIES_DIR}/boot/boot.ini"                  || exit 1
+
+        # boot.tar.xz
+        echo "creating boot.tar.xz"
+        (cd "${BINARIES_DIR}/boot" && tar -cJf "${BATOCERA_BINARIES_DIR}/boot.tar.xz" boot.ini boot batocera-boot.conf) || exit 1
+
+	# blobs
+	for F in idbloader.img uboot.img trust.img 
+	do
+	    cp "${BINARIES_DIR}/${F}" "${BINARIES_DIR}/boot/${F}" || exit 1
+	done
+
+        # batocera.img
+        # rename the squashfs : the .update is the version that will be renamed at boot to replace the old version
+        mv "${BINARIES_DIR}/boot/boot/batocera.update" "${BINARIES_DIR}/boot/boot/batocera" || exit 1
+        GENIMAGE_TMP="${BUILD_DIR}/genimage.tmp"
+        BATOCERAIMG="${BATOCERA_BINARIES_DIR}/batocera.img"
+        rm -rf "${GENIMAGE_TMP}" || exit 1
+        cp "board/batocera/odroidgoa/genimage.cfg" "${BINARIES_DIR}" || exit 1
+        echo "generating image"
+        genimage --rootpath="${TARGET_DIR}" --inputpath="${BINARIES_DIR}/boot" --outputpath="${BATOCERA_BINARIES_DIR}" --config="${BINARIES_DIR}/genimage.cfg" --tmppath="${GENIMAGE_TMP}" || exit 1
+        rm -f "${BATOCERA_BINARIES_DIR}/boot.vfat" || exit 1
+        sync || exit 1
+        ;;
     TINKERBOARD)
         # /boot
         rm -rf "${BINARIES_DIR}/boot"            || exit 1
