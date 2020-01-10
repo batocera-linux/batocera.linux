@@ -3,7 +3,7 @@
 # retroarch
 #
 ################################################################################
-RETROARCH_VERSION = v1.8.2
+RETROARCH_VERSION = v1.8.3
 RETROARCH_SITE = $(call github,libretro,RetroArch,$(RETROARCH_VERSION))
 RETROARCH_LICENSE = GPLv3+
 RETROARCH_DEPENDENCIES = host-pkgconf dejavu retroarch-assets flac
