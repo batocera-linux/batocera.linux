@@ -1,0 +1,27 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 41d55f3..172597b 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -135,7 +135,7 @@ if (NOT Boost_FOUND)
+ endif()
+ 
+ # Prefer the -pthread flag on Linux.
+-set(THREADS_PREFER_PTHREAD_FLAG ON)
++set(THREADS_PTHREAD_ARG "0" CACHE STRING "Result from TRY_RUN" FORCE)
+ find_package(Threads REQUIRED)
+ 
+ if (ENABLE_SDL2)
+diff --git a/src/citra_qt/main.cpp b/src/citra_qt/main.cpp
+index dd56f4b..1e5d999 100644
+--- a/src/citra_qt/main.cpp
++++ b/src/citra_qt/main.cpp
+@@ -186,9 +186,6 @@ GMainWindow::GMainWindow() : config(new Config()), emu_thread(nullptr) {
+     game_list->LoadCompatibilityList();
+     game_list->PopulateAsync(UISettings::values.game_dirs);
+ 
+-    // Show one-time "callout" messages to the user
+-    ShowTelemetryCallout();
+-
+     if (UISettings::values.check_for_update_on_start) {
+         CheckForUpdates();
+     }

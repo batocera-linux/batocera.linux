@@ -30,7 +30,7 @@ batoceraBins = {'dosbox'      : '/usr/bin/dosbox'
               , 'dolphin'     : '/usr/bin/dolphin-emu'
               , 'pcsx2'       : '/usr/PCSX/bin/PCSX2'
               , 'pcsx2_avx2'  : '/usr/PCSX_AVX2/bin/PCSX2'
-              , 'citra'       : '/usr/bin/citra'
+              , 'citra'       : '/usr/bin/citra-qt'
 }
 
 
@@ -87,7 +87,7 @@ ppssppControls = CONF + '/ppsspp/gamecontrollerdb.txt'
 ppssppControlsInit = HOME_INIT + 'configs/ppsspp/PSP/SYSTEM/controls.ini'
 ppssppConfig = ppssppConf + '/ppsspp.ini'
 
-citraConfig = CONF + '/citra-emu/sdl2-config.ini'
+citraConfig = CONF + '/citra-emu/qt-config.ini'
 citraSaves = SAVES + '/3ds'
 
 dosboxCustom = CONF + '/dosbox'
