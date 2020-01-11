@@ -1,5 +1,5 @@
 diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
-index 438451d..d05cfd7 100644
+index 438451d..a316f88 100644
 --- a/src/CMakeLists.txt
 +++ b/src/CMakeLists.txt
 @@ -36,15 +36,13 @@ include(GNUInstallDirs)
@@ -44,20 +44,40 @@ index 438451d..d05cfd7 100644
  
  include(CPack)
 +install(TARGETS hypseus DESTINATION bin)
-\ No newline at end of file
+diff --git a/src/cmake/modules/BuildLibMPEG2.cmake b/src/cmake/modules/BuildLibMPEG2.cmake
+index f95d29f..80c204c 100644
+--- a/src/cmake/modules/BuildLibMPEG2.cmake
++++ b/src/cmake/modules/BuildLibMPEG2.cmake
+@@ -1,6 +1,6 @@
+ macro( build_libmpeg2 )
+ 
+-if( CMAKE_CROSS_COMPILING )
++if( CMAKE_CROSSCOMPILING )
+     string( REGEX MATCH "([-A-Za-z0-9\\._]+)-(gcc|cc)$" RESULT ${CMAKE_C_COMPILER} )
+     string( REGEX REPLACE "-(gcc|cc)$" "" RESULT ${RESULT} )
+     set( CONFIGURE_ARGS "--host=${RESULT}" )
+@@ -8,7 +8,8 @@ endif()
+ 
+ externalproject_add( libmpeg2
+ 	PREFIX ${CMAKE_CURRENT_BINARY_DIR}/3rdparty
+-	URL https://github.com/btolab/libmpeg2/archive/master.zip
++	GIT_REPOSITORY https://github.com/btolab/libmpeg2.git
++	GIT_TAG master
+ 	CONFIGURE_COMMAND autoreconf -f -i && <SOURCE_DIR>/configure ${CONFIGURE_ARGS} --prefix=${CMAKE_CURRENT_BINARY_DIR}/3rdparty --disable-shared --enable-static --disable-sdl
+ 	BUILD_IN_SOURCE 1
+ 	BUILD_COMMAND make V=0
 diff --git a/src/vldp/vldp.h b/src/vldp/vldp.h
-index 021c30d..0da6378 100644
+index 021c30d..f589ff1 100644
 --- a/src/vldp/vldp.h
 +++ b/src/vldp/vldp.h
-@@ -34,6 +34,8 @@ extern "C" {
+@@ -33,6 +33,7 @@ extern "C" {
+ // by RDG2010
  // Ubuntu Linux complains with plain <SDL.h>
  #include <SDL.h> // only used for threading
- 
 +#include <mpeg2.h>
-+
+ 
  struct yuv_buf {
      uint8_t *Y;     // Y channel
-     uint8_t *U;     // U channel
 diff --git a/src/vldp/vldp_internal.cpp b/src/vldp/vldp_internal.cpp
 index a08ebd0..3057534 100644
 --- a/src/vldp/vldp_internal.cpp
