@@ -60,6 +60,17 @@ def setMupenConfig(iniConfig, system, controllers, gameResolution):
 	else:
                 iniConfig.set("Video-Rice",       "ShowFPS",  "False")
                 iniConfig.set("Video-Glide64mk2", "show_fps", "8")
+
+        # custom : allow the user to configure directly mupen64plus.cfg via batocera.conf via lines like : n64.mupen64plus.section.option=value
+        for user_config in system.config:
+                if user_config[:12] == "mupen64plus.":
+                        section_option = user_config[12:]
+                        section_option_splitter = section_option.find(".")
+                        custom_section = section_option[:section_option_splitter]
+                        custom_option = section_option[section_option_splitter+1:]
+                        if not iniConfig.has_section(custom_section):
+                                iniConfig.add_section(custom_section)
+                        iniConfig.set(custom_section, custom_option, system.config[user_config])
 	
 def setHotKeyConfig(iniConfig, controllers):
         if not iniConfig.has_section("CoreEvents"):

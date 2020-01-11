@@ -73,7 +73,7 @@ class UnixSettings():
 
     @staticmethod
     def protectString(str):
-        return re.sub('[^A-Za-z0-9\.]+', '_', str)
+        return re.sub('[^A-Za-z0-9-\.]+', '_', str)
 
     def loadAll(self, name):
         eslog.debug("Looking for {0}.* in {1}".format(name, self.settingsFile))
