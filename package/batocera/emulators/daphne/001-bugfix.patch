@@ -1,0 +1,89 @@
+diff --git a/src/cpu/cpu.h b/src/cpu/cpu.h
+index 573d01e..45fea57 100644
+--- a/src/cpu/cpu.h
++++ b/src/cpu/cpu.h
+@@ -35,7 +35,7 @@ namespace type
+ // 1 meg for I86
+ static const int MEM_SIZE =	0x100000;
+ /* max # of bytes that a cpu context can have */
+-static const int MAX_CONTEXT_SIZE = 100;
++static const int MAX_CONTEXT_SIZE = 128;
+ /* how many IRQs we will support per CPU */
+ static const int MAX_IRQS = 4;
+ 
+diff --git a/src/game/lair2.cpp b/src/game/lair2.cpp
+index 7822e78..43c8cfc 100644
+--- a/src/game/lair2.cpp
++++ b/src/game/lair2.cpp
+@@ -633,6 +633,7 @@ void lair2::do_irq(unsigned int which_irq)
+     if (which_irq == 0) {
+         g_dl2_irq_val = 0x1C; // the value of the TIMER_INT
+         i86_set_irq_line(0, ASSERT_LINE);
++        m_video_overlay_needs_update = true;
+     }
+ 
+     // serial port IRQ (COM 2)
+diff --git a/src/video/palette.cpp b/src/video/palette.cpp
+index a6d8c37..0747814 100644
+--- a/src/video/palette.cpp
++++ b/src/video/palette.cpp
+@@ -71,6 +71,7 @@ bool initialize(unsigned int num_colors)
+         for (unsigned int x = 0; x < g_size; x++) {
+             // set RGB values to black
+             g_rgb[x].r = g_rgb[x].g = g_rgb[x].b = 0;
++            g_rgb[x].a = 0xFF;
+ 
+             g_uRGBAPalette[x] = 0xFF000000; // initialize to opaque black
+ 
+@@ -98,8 +99,10 @@ void set_transparency(unsigned int uColorIndex, bool transparent)
+     g_yuv[uColorIndex].transparent = transparent;
+ 
+     if (transparent) {
++        g_rgb[uColorIndex].a = 0x00;
+         g_uRGBAPalette[uColorIndex] &= 0x00FFFFFF; // set alpha channel to 0
+     } else {
++        g_rgb[uColorIndex].a = 0xFF;
+         g_uRGBAPalette[uColorIndex] |= 0xFF000000; // set alpha channel to FF
+     }
+ }
+@@ -117,7 +120,9 @@ void set_color(unsigned int color_num, SDL_Color color_value)
+     if ((g_rgb[color_num].r != color_value.r) ||
+         (g_rgb[color_num].g != color_value.g) ||
+         (g_rgb[color_num].b != color_value.b)) {
+-        g_rgb[color_num] = color_value;
++        g_rgb[color_num].r = color_value.r;
++        g_rgb[color_num].g = color_value.g;
++        g_rgb[color_num].b = color_value.b;
+         g_modified       = true;
+ 
+         // change R,G,B, values, but don't change A
+diff --git a/src/video/video.cpp b/src/video/video.cpp
+index 69b0c29..16c2d7a 100644
+--- a/src/video/video.cpp
++++ b/src/video/video.cpp
+@@ -707,7 +707,7 @@ int vid_update_yuv_overlay ( uint8_t *Yplane, uint8_t *Uplane, uint8_t *Vplane,
+     if (g_yuv_video_needs_update) {
+         // We still have a surface update that has not been transferred to texture,
+         // so we get to wait until it's done and we are told so.
+-        SDL_CondWait(g_yuv_surface->pending_update_cond, g_yuv_surface->mutex);
++        SDL_CondWaitTimeout(g_yuv_surface->pending_update_cond, g_yuv_surface->mutex, 100);
+     }
+ 
+     memcpy (g_yuv_surface->Yplane, Yplane, g_yuv_surface->Ysize);	
+@@ -740,14 +740,11 @@ void vid_update_overlay_surface (SDL_Surface *tx, int x, int y) {
+ 
+     // MAC: 8bpp to RGBA8888 conversion. Black pixels are considered totally transparent so they become 0x00000000;
+     for (int i = 0; i < (tx->w * tx->h); i++){
+-        if (     *(  ((uint8_t*)tx->pixels)+i ) != 0x00   ) {
+-	    *((uint32_t*)(g_screen_blitter->pixels)+i) = //0xff0000ff;
++        *((uint32_t*)(g_screen_blitter->pixels)+i) = //0xff0000ff;
+ 	    (0x00000000 | tx->format->palette->colors[*((uint8_t*)(tx->pixels)+i)].r) << 24|
+ 	    (0x00000000 | tx->format->palette->colors[*((uint8_t*)(tx->pixels)+i)].g) << 16|
+ 	    (0x00000000 | tx->format->palette->colors[*((uint8_t*)(tx->pixels)+i)].b) << 8|
+-	    0x000000ff;
+-        }
+-        else *((uint32_t*)(g_screen_blitter->pixels)+i) = 0x00000000;
++	    (0x00000000 | tx->format->palette->colors[*((uint8_t*)(tx->pixels)+i)].a);
+     }
+     g_overlay_needs_update = true;
+     // MAC: We update the overlay texture later, just when we are going to SDL_RenderCopy() it to the renderer.
