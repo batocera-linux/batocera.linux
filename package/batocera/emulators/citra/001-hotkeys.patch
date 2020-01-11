@@ -1,25 +1,54 @@
-diff --git a/src/citra/citra.cpp b/src/citra/citra.cpp
-index a71aa7d..de6c5da 100644
---- a/src/citra/citra.cpp
-+++ b/src/citra/citra.cpp
-@@ -52,6 +52,8 @@ __declspec(dllexport) unsigned long NvOptimusEnablement = 0x00000001;
- }
- #endif
+diff --git a/src/citra_qt/bootmanager.cpp b/src/citra_qt/bootmanager.cpp
+index 719059d..0c1bcfc 100644
+--- a/src/citra_qt/bootmanager.cpp
++++ b/src/citra_qt/bootmanager.cpp
+@@ -29,6 +29,8 @@
+ #include "video_core/renderer_base.h"
+ #include "video_core/video_core.h"
  
-+int batocera_hotkey_exit = 0;
++extern int batocera_hotkey_exit;
 +
- static void PrintHelp(const char* argv0) {
-     std::cout << "Usage: " << argv0
-               << " [options] <filename>\n"
-@@ -399,7 +401,7 @@ int main(int argc, char** argv) {
-         Core::Movie::GetInstance().StartRecording(movie_record);
-     }
+ EmuThread::EmuThread(Frontend::GraphicsContext& core_context) : core_context(core_context) {}
  
--    while (emu_window->IsOpen()) {
-+    while (emu_window->IsOpen() && batocera_hotkey_exit == 0) {
-         system.RunLoop();
+ EmuThread::~EmuThread() = default;
+@@ -83,8 +85,11 @@ void EmuThread::run() {
+             std::unique_lock lock{running_mutex};
+             running_cv.wait(lock, [this] { return IsRunning() || exec_step || stop_run; });
+         }
++        if(batocera_hotkey_exit == 1){
++            GMainWindow().closeWindow();
++        }
      }
+-
++    
+     // Shutdown the core emulation
+     Core::System::GetInstance().Shutdown();
  
+diff --git a/src/citra_qt/main.cpp b/src/citra_qt/main.cpp
+index dd56f4b..e5d795e 100644
+--- a/src/citra_qt/main.cpp
++++ b/src/citra_qt/main.cpp
+@@ -2119,3 +2119,8 @@ int main(int argc, char* argv[]) {
+     detached_tasks.WaitForAllTasks();
+     return result;
+ }
++
++void GMainWindow::closeWindow() {
++    ShutdownGame();
++    close();
++}
+diff --git a/src/citra_qt/main.h b/src/citra_qt/main.h
+index 0fa04f5..b6c4456 100644
+--- a/src/citra_qt/main.h
++++ b/src/citra_qt/main.h
+@@ -72,6 +72,7 @@ public:
+ 
+     bool DropAction(QDropEvent* event);
+     void AcceptDropEvent(QDropEvent* event);
++    void closeWindow();
+ 
+ public slots:
+     void OnAppFocusStateChanged(Qt::ApplicationState state);
 diff --git a/src/core/frontend/input.h b/src/core/frontend/input.h
 index d7cb94b..5aea45e 100644
 --- a/src/core/frontend/input.h
@@ -35,7 +64,7 @@ index d7cb94b..5aea45e 100644
  
  /// An abstract class template for a factory that can create input devices.
 diff --git a/src/input_common/sdl/sdl_impl.cpp b/src/input_common/sdl/sdl_impl.cpp
-index a474d27..0e4bf25 100644
+index 0b69bfe..94ec519 100644
 --- a/src/input_common/sdl/sdl_impl.cpp
 +++ b/src/input_common/sdl/sdl_impl.cpp
 @@ -22,6 +22,13 @@
@@ -44,7 +73,7 @@ index a474d27..0e4bf25 100644
  #include "input_common/sdl/sdl_impl.h"
 +#include "core/settings.h"
 +
-+extern int batocera_hotkey_exit;
++int batocera_hotkey_exit = 0;
 +int batocera_hotkey_start_number = -1;
 +int batocera_hotkey_start_state  = 0;
 +int batocera_hotkey_home_number  = -1;
@@ -57,10 +86,10 @@ index a474d27..0e4bf25 100644
          if (auto joystick = GetSDLJoystickBySDLID(event.jbutton.which)) {
              joystick->SetButton(event.jbutton.button, false);
 +            if(batocera_hotkey_start_number == event.jbutton.button) {
-+      	      batocera_hotkey_start_state = 0;
++      	        batocera_hotkey_start_state = 0;
 +      	    }
 +      	    if(batocera_hotkey_home_number == event.jbutton.button) {
-+      	      batocera_hotkey_home_state = 0;
++      	        batocera_hotkey_home_state = 0;
 +      	    }
          }
          break;
@@ -69,13 +98,13 @@ index a474d27..0e4bf25 100644
          if (auto joystick = GetSDLJoystickBySDLID(event.jbutton.which)) {
              joystick->SetButton(event.jbutton.button, true);
 +            if(batocera_hotkey_start_number == event.jbutton.button) {
-+      	      batocera_hotkey_start_state = 1;
++      	        batocera_hotkey_start_state = 1;
 +      	    }
 +      	    if(batocera_hotkey_home_number == event.jbutton.button) {
-+      	      batocera_hotkey_home_state = 1;
++      	        batocera_hotkey_home_state = 1;
 +      	    }
 +      	    if(batocera_hotkey_start_state == 1 && batocera_hotkey_home_state == 1) {
-+      	      batocera_hotkey_exit = 1;
++      	        batocera_hotkey_exit = 1;
 +      	    }
          }
          break;
@@ -85,7 +114,7 @@ index a474d27..0e4bf25 100644
      }
  
 +    int GetValue() const override {
-+      return button;
++        return button;
 +    }
 +
  private:

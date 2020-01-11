@@ -13,7 +13,7 @@ class CitraGenerator(Generator):
     def generate(self, system, rom, playersControllers, gameResolution):
         CitraGenerator.writeCITRAConfig(batoceraFiles.citraConfig, system, playersControllers)
 
-        commandArray = [batoceraFiles.batoceraBins[system.config['emulator']], "-f", rom]
+        commandArray = [batoceraFiles.batoceraBins[system.config['emulator']], "-platform", "xcb", rom]
         return Command.Command(array=commandArray, env={"XDG_CONFIG_HOME":batoceraFiles.CONF, "XDG_DATA_HOME":batoceraFiles.citraSaves, "XDG_CACHE_HOME":batoceraFiles.CACHE})
 
     @staticmethod
@@ -58,6 +58,12 @@ class CitraGenerator(Generator):
             citraConfig.set("Layout", "custom_layout", "0")
             citraConfig.set("Layout", "layout_option", "4")
         
+        # UI section
+        if not citraConfig.has_section("UI"):
+            citraConfig.add_section("UI")
+        
+        citraConfig.set("UI", "fullscreen", "true")
+        
         # controls section
         if not citraConfig.has_section("Controls"):
             citraConfig.add_section("Controls")
@@ -68,9 +74,9 @@ class CitraGenerator(Generator):
             if controller.player != "1":
                 continue
             for x in citraButtons:
-                citraConfig.set("Controls", x, CitraGenerator.setButton(citraButtons[x], controller.guid, controller.inputs))
+                citraConfig.set("Controls", "profiles\\1\\" + x, '"{}"'.format(CitraGenerator.setButton(citraButtons[x], controller.guid, controller.inputs)))
             for x in citraAxis:
-                citraConfig.set("Controls", x, CitraGenerator.setAxis(citraAxis[x], controller.guid, controller.inputs))
+                citraConfig.set("Controls", "profiles\\1\\" + x, '"{}"'.format(CitraGenerator.setAxis(citraAxis[x], controller.guid, controller.inputs)))
             break
 
         ### update the configuration file
@@ -86,7 +92,7 @@ class CitraGenerator(Generator):
             input = padInputs[key]
 
             if input.type == "button":
-                return ("engine:sdl,guid:{},button:{}").format(padGuid, input.id)
+                return ("button:{},guid:{},engine:sdl").format(input.id, padGuid)
             elif input.type == "hat":
                 return ("engine:sdl,guid:{},hat:{},direction:{}").format(padGuid, input.id, CitraGenerator.hatdirectionvalue(input.value))
             elif input.type == "axis":
@@ -108,7 +114,7 @@ class CitraGenerator(Generator):
         elif key == "joystick2":
             inputy = padInputs["joystick2up"]
 
-        return ("engine:sdl,guid:{},axis_x:{},axis_y:{}").format(padGuid, inputx.id, inputy.id)
+        return ("axis_x:{},guid:{},axis_y:{},engine:sdl").format(inputx.id, padGuid, inputy.id)
 
     @staticmethod
     def hatdirectionvalue(value):
