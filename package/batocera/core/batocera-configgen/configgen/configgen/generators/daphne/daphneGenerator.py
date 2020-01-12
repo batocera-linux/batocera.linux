@@ -3,14 +3,19 @@
 import Command
 import batoceraFiles
 from generators.Generator import Generator
+import daphneControllers
 import shutil
 import os
-import ConfigParser
 
 class DaphneGenerator(Generator):
 
     # Main entry of the module
     def generate(self, system, rom, playersControllers, gameResolution):
+        if not os.path.exists(os.path.dirname(batoceraFiles.daphneConfig)):
+            os.makedirs(os.path.dirname(batoceraFiles.daphneConfig))
+
+        # controllers
+        daphneControllers.generateControllerConfig(batoceraFiles.daphneConfig, playersControllers)
 
         # extension used .daphne and the file to start the game is in the folder .daphne with the extension .txt
         romName = os.path.splitext(os.path.basename(rom))[0]
@@ -25,5 +30,5 @@ class DaphneGenerator(Generator):
         if os.path.isfile(commandsFile):
             commandArray.extend(open(commandsFile,'r').read().split())
         
-        return Command.Command(array=commandArray, env={"SDL_VIDEO_GL_DRIVER": "/usr/lib/libGLESv2.so"})
+        return Command.Command(array=commandArray)
  
