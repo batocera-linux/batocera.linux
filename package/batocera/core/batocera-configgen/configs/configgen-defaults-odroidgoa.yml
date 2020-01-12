@@ -8,12 +8,17 @@ default:
 n64:
   emulator: mupen64plus
   core: glide64mk2
+  options:
+    # rotation
+    mupen64plus.Video-General.Rotate: 1
+    mupen64plus.Video-Glide64mk2.aspect: 2
 megadrive:
   emulator: libretro
   core:     picodrive
 psp:
   options:
     frameskip: true
+    ppsspp.General.InternalScreenRotation: 2
 neogeocd:
   emulator: libretro
   core:     fbneo
