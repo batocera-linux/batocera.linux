@@ -21,6 +21,7 @@ setup(name='batocera-configgen',
         'configgen.generators.dolphin',
         'configgen.generators.pcsx2',
         'configgen.generators.citra',
+        'configgen.generators.daphne',
         'configgen.settings',
         'configgen.utils']
       )

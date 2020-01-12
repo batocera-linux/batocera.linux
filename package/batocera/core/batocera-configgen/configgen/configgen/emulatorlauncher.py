@@ -21,6 +21,7 @@ from generators.vice.viceGenerator import ViceGenerator
 from generators.fsuae.fsuaeGenerator import FsuaeGenerator
 from generators.amiberry.amiberryGenerator import AmiberryGenerator
 from generators.citra.citraGenerator import CitraGenerator
+from generators.daphne.daphneGenerator import DaphneGenerator
 import controllersConfig as controllers
 import signal
 import batoceraFiles
@@ -46,7 +47,8 @@ generators = {
     'dolphin': DolphinGenerator(),
     'pcsx2': Pcsx2Generator(),
     'ppsspp': PPSSPPGenerator(),
-    'citra' : CitraGenerator()
+    'citra' : CitraGenerator(),
+    'daphne' : DaphneGenerator()
 }
 
 def main(args):

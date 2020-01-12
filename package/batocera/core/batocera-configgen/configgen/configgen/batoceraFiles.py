@@ -8,6 +8,7 @@ SCREENSHOTS = '/userdata/screenshots'
 BIOS = '/userdata/bios'
 OVERLAYS = '/userdata/overlays'
 CACHE = '/userdata/system/cache'
+ROMS = '/userdata/roms'
 
 esInputs = CONF + '/emulationstation/es_input.cfg'
 esSettings = CONF + '/emulationstation/es_settings.cfg'
@@ -31,6 +32,7 @@ batoceraBins = {'dosbox'      : '/usr/bin/dosbox'
               , 'pcsx2'       : '/usr/PCSX/bin/PCSX2'
               , 'pcsx2_avx2'  : '/usr/PCSX_AVX2/bin/PCSX2'
               , 'citra'       : '/usr/bin/citra-qt'
+              , 'daphne'       : '/usr/bin/hypseus'
 }
 
 
@@ -110,3 +112,8 @@ amiberryRetroarchInputsDir = amiberryRoot + '/conf/retroarch/inputs'
 amiberryRetroarchCustom = amiberryRoot + '/conf/retroarch/retroarchcustom.cfg'
 
 hatariConf = CONF + '/hatari/hatari.cfg'
+
+daphneConfig = CONF + '/hypseus/dapinput.ini'
+daphneHomedir = CONF + '/hypseus'
+daphneDatadir = ROMS + '/daphne'
+daphneSaves = SAVES + '/daphne'
