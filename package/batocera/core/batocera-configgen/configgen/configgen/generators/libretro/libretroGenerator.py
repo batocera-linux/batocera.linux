@@ -97,7 +97,7 @@ class LibretroGenerator(Generator):
         # Extension used by hypseus .daphne but lr-daphne starts with .zip
         if system.name == 'daphne':
             romName = os.path.splitext(os.path.basename(rom))[0]
-            rom = '/userdata/roms/daphne/roms/' + romName +'.zip'
+            rom = batoceraFiles.daphneDatadir + '/roms/' + romName +'.zip'
         
         commandArray.append(rom)
         return Command.Command(array=commandArray)
