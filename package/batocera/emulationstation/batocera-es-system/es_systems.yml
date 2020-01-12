@@ -816,7 +816,7 @@ gx4000:
 
 daphne:
   name:       Arcade (Daphne)
-  extensions: [zip]
+  extensions: [daphne]
   emulators:
     daphne:
       hypseus:  { requireAnyOf: [BR2_PACKAGE_DAPHNE]          }
