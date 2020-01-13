@@ -185,7 +185,11 @@ ifeq ($(BR2_PACKAGE_KODI18_PLATFORM_GBM_GLES),y)
 KODI18_CONF_OPTS += \
 	-DCORE_PLATFORM_NAME=gbm \
 	-DGBM_RENDER_SYSTEM=gles
-KODI18_DEPENDENCIES += libgles libinput libxkbcommon mesa3d
+
+KODI18_DEPENDENCIES += libgles libinput libxkbcommon
+ifeq ($(BR2_PACKAGE_MESA3D),y)
+	KODI18_DEPENDENCIES += mesa3d
+endif
 endif
 
 ifeq ($(BR2_PACKAGE_KODI18_PLATFORM_RBPI),y)
