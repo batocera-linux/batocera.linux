@@ -31,6 +31,31 @@ daphneKeyboard = {
                     "KEY_TILT":         "116 0"
                 }
 
+daphneJoystick = {
+                    "KEY_UP":           "up",
+                    "KEY_DOWN":         "down",
+                    "KEY_LEFT":         "left",
+                    "KEY_RIGHT":        "right",
+                    "KEY_BUTTON1":      "a",
+                    "KEY_BUTTON2":      "b",
+                    "KEY_BUTTON3":      "x",
+                    "KEY_START1":       "start",
+                    "KEY_START2":       "",
+                    "KEY_COIN1":        "select",
+                    "KEY_COIN2":        "",
+                    "KEY_SKILL1":       "",
+                    "KEY_SKILL2":       "",
+                    "KEY_SKILL3":       "",
+                    "KEY_SERVICE":      "",
+                    "KEY_TEST":         "",
+                    "KEY_RESET":        "",
+                    "KEY_SCREENSHOT":   "l2",
+                    "KEY_QUIT":         "hotkey",
+                    "KEY_PAUSE":        "r2",
+                    "KEY_CONSOLE":      "",
+                    "KEY_TILT":         ""
+                }
+
 # Create the controller configuration file
 def generateControllerConfig(daphneConfigFile, playersControllers):
     # ini file
@@ -42,15 +67,20 @@ def generateControllerConfig(daphneConfigFile, playersControllers):
     if not daphneConfig.has_section("KEYBOARD"):
         daphneConfig.add_section("KEYBOARD")
 
+    for indexController in playersControllers:
+        controller = playersControllers[indexController]
+       
+        for indexName, indexValue in daphneKeyboard.items():
+            buttonValue = str(0)
+            if(daphneJoystick[indexName] != ""):
+                buttonName = daphneJoystick[indexName]
+                if buttonName in controller.inputs:
+                    inputInst = controller.inputs[buttonName]
+                    if inputInst.type == 'button':
+                        buttonValue = str(int(inputInst.id) + 1)
 
-
-
-
-
-
+            daphneConfig.set("KEYBOARD", indexName, indexValue +" "+ buttonValue)
 
     # update the configuration file
-    if not os.path.exists(os.path.dirname(daphneConfigFile)):
-        os.makedirs(os.path.dirname(daphneConfigFile))
     with open(daphneConfigFile, 'w') as configfile:
         daphneConfig.write(configfile)
