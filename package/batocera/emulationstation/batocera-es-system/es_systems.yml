@@ -830,9 +830,10 @@ thomson:
     libretro:
       theodore:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_THEODORE] }
 
-pc-98:
-  name:       NEC - PC-98 (Neko Project II Kai)
+pc98:
+  name:       NEC PC-98
   extensions: [d98, zip, 98d, fdi, fdd, 2hd, tfd, d88, 88d, hdm, xdf, dup, cmd, hdi, thd, nhd, hdd, hdn]
+  platform:   pc98
   emulators:
     libretro:
       np2kai:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PC98] }
