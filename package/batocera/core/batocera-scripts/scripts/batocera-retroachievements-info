@@ -5,6 +5,7 @@
 # @lbrpdx on Batocera Forums and Discord
 #
 # 20191124 - v2 with now outputs in XML format (for Batocera 5.25+)
+# 20200113 - updated for retroachievements.org HTML changes
 #
 # Usage:
 # batocera-retroachievements-info
@@ -60,8 +61,8 @@ function process() {
 	        echo "  <averagecompletion>$avcompletion</averagecompletion>"
 		echo -ne "$pic"
 		echo "$parsedid" | sed -e "s;\(.*\)@\(.*\);  <registered>\1</registered>\n  <lastactivity>\2</lastactivity>;"
-		cat $tmpfile | sed -e "s;.*userpage recentlyplayed;;" | awk '{match($0,/Game.*points.<br\/>/); s=substr($0, RSTART, RLENGTH); printf "%s",s }' | sed -e "/^[[:blank:]]*$/d" | sed -e 's/points.<br\/>/points\@\\\n/g;' > "$tmpfile"_2
-		res=$(cat "$tmpfile"_2 | awk -v FS="(Game/[0-9]*'>|@)" '{print $2}' | sed -e "s;</a><br/>\(Last played[ 0-9:-]*\)<br/>\(.*\);@\2@\1;" | sed -e "s;achievements, ;achievements@;" | sed -e "s;Earned ;;")
+		xmllint --html "$tmpfile" 2>/dev/null | grep '<a href="/Game/[0-9]*\">.*points.<br\?>' | sed -e "/^[[:blank:]]*$/d" | sed -e 's:\(<a href=\"/Game/[0-9]*\">.*\)points\.<br>:\1points\@\\\n:g;' > "$tmpfile"_2
+		res=$(cat "$tmpfile"_2 | awk -v FS="(href=\"/Game/[0-9]*\">|@)" '{print $2}' | sed -e "s;</a><br/*>\(Last played[ 0-9:-]*\)<br/*>\(.*\);@\2@\1;" | sed -e "s;achievements, ;achievements@;" | sed -e "s;Earned ;;" | sed -e "/^[[:blank:]]*$/d" )
 		echo "$res" | sed -e "s;\(.*\)@\(.*\) achievements@\(.*\) points@Last played \(.*\);  <game>\n    <name>\1</name>\n    <achievements>\2</achievements>\n    <points>\3</points>\n    <lastplayed>\4</lastplayed>\n  </game>;"
 		echo "</retroachievements>"
 	else
