@@ -1,0 +1,11 @@
+diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
+index 438451d..4e7a1db 100644
+--- a/src/CMakeLists.txt
++++ b/src/CMakeLists.txt
+@@ -129,3 +129,6 @@ set(CPACK_PACKAGE_VERSION_MINOR "${VER_MINOR}")
+ set(CPACK_PACKAGE_VERSION_PATCH "${VER_PATCH}")
+ 
+ include(CPack)
++install(TARGETS hypseus DESTINATION bin)
++execute_process(COMMAND svn export https://github.com/mirror/daphne-emu/trunk/sound ../sound)
++install(DIRECTORY ../pics ../fonts ../sound DESTINATION /usr/share/batocera/datainit/system/configs/daphne)

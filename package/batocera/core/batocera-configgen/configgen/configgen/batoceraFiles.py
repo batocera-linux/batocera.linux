@@ -113,7 +113,7 @@ amiberryRetroarchCustom = amiberryRoot + '/conf/retroarch/retroarchcustom.cfg'
 
 hatariConf = CONF + '/hatari/hatari.cfg'
 
-daphneConfig = CONF + '/hypseus/hypinput.ini'
-daphneHomedir = CONF + '/hypseus'
-daphneDatadir = ROMS + '/daphne'
+daphneConfig = CONF + '/daphne/hypinput.ini'
+daphneHomedir = ROMS + '/daphne'
+daphneDatadir = CONF + '/daphne'
 daphneSaves = SAVES + '/daphne'
