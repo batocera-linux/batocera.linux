@@ -1,0 +1,26 @@
+diff --git a/libswirl/libswirl.cpp b/libswirl/libswirl.cpp
+index e473305..0dbf1d3 100644
+--- a/libswirl/libswirl.cpp
++++ b/libswirl/libswirl.cpp
+@@ -733,7 +733,7 @@ struct Dreamcast_impl : VirtualDreamcast {
+ #if DC_PLATFORM == DC_PLATFORM_DREAMCAST
+             if (!settings.bios.UseReios)
+ #endif
+-                if (!LoadRomFiles(get_readonly_data_path(DATA_PATH)))
++                if (!LoadRomFiles("/userdata/bios/"))
+                     return -5;
+ 
+ #if DC_PLATFORM == DC_PLATFORM_DREAMCAST
+@@ -766,10 +766,10 @@ struct Dreamcast_impl : VirtualDreamcast {
+             return 0;
+         }
+ 
+-        if (settings.bios.UseReios || !LoadRomFiles(get_readonly_data_path(DATA_PATH)))
++        if (settings.bios.UseReios || !LoadRomFiles("/userdata/bios/"))
+         {
+ #ifdef USE_REIOS
+-            if (!LoadHle(get_readonly_data_path(DATA_PATH)))
++            if (!LoadHle("/userdata/bios/"))
+             {
+                 return -5;
+             }
