@@ -399,13 +399,14 @@ config BR2_PACKAGE_BATOCERA_RETROARCH
         select BR2_PACKAGE_LIBRETRO_PC98              # ALL
 
         ### Experimental Emulators ###
-        select BR2_PACKAGE_DAPHNE                     if BR2_PACKAGE_BATOCERA_CORES_EXPERIMENTAL # Under development
-        select BR2_PACKAGE_LIBRETRO_DAPHNE            if BR2_PACKAGE_BATOCERA_CORES_EXPERIMENTAL # Under development
+        select BR2_PACKAGE_DAPHNE                     if BR2_PACKAGE_BATOCERA_CORES_EXPERIMENTAL # Mode: Test
         select BR2_PACKAGE_LIBRETRO_DOSBOX            if BR2_PACKAGE_BATOCERA_CORES_EXPERIMENTAL # Under development
         select BR2_PACKAGE_LIBRETRO_SCUMMVM           if BR2_PACKAGE_BATOCERA_CORES_EXPERIMENTAL # Under development
+        
         # select BR2_PACKAGE_LIBRETRO_FLYCAST         if BR2_PACKAGE_BATOCERA_CORES_EXPERIMENTAL # Compilation Error in RPI3
         # select BR2_PACKAGE_LIBRETRO_PPSSPP          if BR2_PACKAGE_BATOCERA_CORES_EXPERIMENTAL # Compilation Error 
-
+        # select BR2_PACKAGE_LIBRETRO_DAPHNE          if BR2_PACKAGE_BATOCERA_CORES_EXPERIMENTAL # Works fine but no sound, emulator bug
+        
         help
           Retroarch
 
