@@ -1,5 +1,5 @@
 diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
-index 438451d..a316f88 100644
+index 438451d..f153740 100644
 --- a/src/CMakeLists.txt
 +++ b/src/CMakeLists.txt
 @@ -36,15 +36,13 @@ include(GNUInstallDirs)
@@ -39,11 +39,6 @@ index 438451d..a316f88 100644
  add_executable( hypseus hypseus.cpp globals.h )
  target_link_libraries( hypseus plog io timer sound video cpu game ${SDL2_LIBRARIES} ${SDL2_TTF_LIBRARIES} )
  
-@@ -129,3 +123,4 @@ set(CPACK_PACKAGE_VERSION_MINOR "${VER_MINOR}")
- set(CPACK_PACKAGE_VERSION_PATCH "${VER_PATCH}")
- 
- include(CPack)
-+install(TARGETS hypseus DESTINATION bin)
 diff --git a/src/cmake/modules/BuildLibMPEG2.cmake b/src/cmake/modules/BuildLibMPEG2.cmake
 index f95d29f..80c204c 100644
 --- a/src/cmake/modules/BuildLibMPEG2.cmake
