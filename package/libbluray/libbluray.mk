@@ -4,7 +4,13 @@
 #
 ################################################################################
 
+# batocera
+ifeq ($(BR2_PACKAGE_KODI18_PLATFORM_RBPI),y)
 LIBBLURAY_VERSION = 1.0.2
+else
+LIBBLURAY_VERSION = 1.1.2
+endif
+
 LIBBLURAY_SITE = http://get.videolan.org/libbluray/$(LIBBLURAY_VERSION)
 LIBBLURAY_SOURCE = libbluray-$(LIBBLURAY_VERSION).tar.bz2
 LIBBLURAY_INSTALL_STAGING = YES
