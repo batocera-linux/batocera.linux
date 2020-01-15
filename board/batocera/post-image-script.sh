@@ -310,6 +310,8 @@ case "${BATOCERA_TARGET}" in
 	;;
 
 	X86|X86_64)
+	touch ${TARGET_DIR}/userdata/.please_resize_me
+
 	# /boot
 	rm -rf ${BINARIES_DIR}/boot || exit 1
 	mkdir -p ${BINARIES_DIR}/boot || exit 1
@@ -340,8 +342,9 @@ case "${BATOCERA_TARGET}" in
 	cp "board/batocera/x86/genimage.cfg" "${BINARIES_DIR}" || exit 1
 	echo "creating ${BATOCERA_BINARIES_DIR}/batocera.img"
 	genimage --rootpath="${TARGET_DIR}" --inputpath="${BINARIES_DIR}" --outputpath="${BATOCERA_BINARIES_DIR}" --config="${BINARIES_DIR}/genimage.cfg" --tmppath="${GENIMAGE_TMP}" || exit 1
-	rm -f "${BINARIES_DIR}/batocera-boot.img" || exit 1
 	sync || exit 1
+	rm -f "${BINARIES_DIR}/batocera-boot.img" || exit 1
+	rm -f "${BINARIES_DIR}/userdata.ext4" || exit 1
 	;;
 
     ROCKPRO64)
