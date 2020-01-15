@@ -1,0 +1,42 @@
+From 316310d889d0bcffa299ef6a7fb5726847f2dd3a Mon Sep 17 00:00:00 2001
+From: MilhouseVH <milhouseVH.github@nmacleod.com>
+Date: Wed, 20 Jun 2018 15:01:32 +0100
+Subject: [PATCH] add missing 3D MVC headers
+
+---
+ Makefile.am | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
+
+diff --git a/Makefile.am b/Makefile.am
+index ff15527..00db9af 100644
+--- a/Makefile.am
++++ b/Makefile.am
+@@ -219,6 +219,14 @@ noinst_HEADERS = \
+ 	jni/win32/jni_md.h \
+ 	jni/darwin/jni_md.h
+ 
++bdnavdir=$(pkgincludedir)/bdnav
++bdnav_HEADERS = \
++        src/libbluray/bdnav/clpi_data.h
++
++utildir=$(pkgincludedir)/util
++util_HEADERS = \
++        src/util/attributes.h
++
+ pkginclude_HEADERS = \
+ 	src/file/filesystem.h \
+ 	src/libbluray/bluray.h \
+@@ -226,6 +234,10 @@ pkginclude_HEADERS = \
+ 	src/libbluray/keys.h \
+ 	src/libbluray/player_settings.h \
+ 	src/libbluray/bdnav/clpi_data.h \
++	src/libbluray/bdnav/clpi_parse.h \
++	src/libbluray/bdnav/mpls_parse.h \
++	src/libbluray/bdnav/mpls_data.h \
++	src/libbluray/bdnav/uo_mask_table.h \
+ 	src/libbluray/bdnav/meta_data.h \
+ 	src/libbluray/decoders/overlay.h \
+ 	src/util/log_control.h
+-- 
+2.14.1
+
