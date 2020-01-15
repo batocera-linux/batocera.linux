@@ -3,8 +3,8 @@
 # STELLA
 #
 ################################################################################
-# Version.: Commits on Nov 29, 2019
-LIBRETRO_STELLA_VERSION = 722744c11b36c1614740b6060d0bdb187660ffac
+# Version.: Commits on Jan 06, 2020
+LIBRETRO_STELLA_VERSION = fc87f2c78d3b177f4b9b19698557dce452ac3ce7
 LIBRETRO_STELLA_SITE = $(call github,libretro,stella2014-libretro,$(LIBRETRO_STELLA_VERSION))
 LIBRETRO_STELLA_LICENSE = GPLv2
 
