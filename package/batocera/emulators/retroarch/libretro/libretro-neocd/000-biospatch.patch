@@ -1,0 +1,12 @@
+diff --git a/src/path.cpp b/src/path.cpp
+index 1964aaf..83a47ea 100644
+--- a/src/path.cpp
++++ b/src/path.cpp
+@@ -20,7 +20,6 @@ static void system_path_internal(char* buffer, size_t len)
+     if (!path_ends_with_slash(buffer))
+         strlcat(buffer, path_default_slash(), len);
+ 
+-    strlcat(buffer, NEOCD_SYSTEM_SUBDIR, len);
+ }
+ 
+ static void save_path_internal(char* buffer, size_t len)
