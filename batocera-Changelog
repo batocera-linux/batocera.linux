@@ -3,6 +3,10 @@
 	* rpi: Activation of safe shutdown feature for GPi case added (read the GPi manual how to toggle hardware switch)
 	* rpi: Full support of several Retroflag cases (GPi, NesPi+, SuperPi, MegaPi)
 	* bluetooth: fix some pairing issues
+	* pads: adapt mapping when no l2 or not joystick2 is found (n64, gamecube)
+	* pads: fixes pad having non centered axis (triggers) (xbox pads). As a drawback, axes are not available until a button is pressed.
+	* ppsspp: fast forward
+	* ppsspp: rewind
 	* add: new "flatten-glow" and "zfast" shader sets
 	* add: run-ahead option for optimized latency on libretro systems (/!\ may impact performance)
 	* gamecube: automatically use d-pad if no analog stick is available (for bartop and arcade cabinets)
@@ -24,6 +28,9 @@
 	* bump: scummmvm
 	* bump: vice
 	* bump: citra with QT interface
+	* bump: kodi to 18.5 (not yet all boards)
+	* bump: buildroot and linux to 5.4.11
+	* odroid go advance support
 	* 3ds: menu to change screen layout (Dafault, large screen and side by syde)
 
 2019/11/09 - batocera.linux 5.24
