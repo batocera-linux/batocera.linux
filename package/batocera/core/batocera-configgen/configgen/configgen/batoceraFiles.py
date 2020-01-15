@@ -115,5 +115,5 @@ hatariConf = CONF + '/hatari/hatari.cfg'
 
 daphneConfig = CONF + '/daphne/hypinput.ini'
 daphneHomedir = ROMS + '/daphne'
-daphneDatadir = CONF + '/daphne'
+daphneDatadir = '/usr/share/daphne'
 daphneSaves = SAVES + '/daphne'

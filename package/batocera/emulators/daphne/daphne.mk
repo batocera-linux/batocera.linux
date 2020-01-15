@@ -14,4 +14,10 @@ DAPHNE_DEPENDENCIES = sdl2 sdl2_image sdl2_ttf zlib libogg libvorbis libmpeg2
 DAPHNE_SUBDIR = build
 DAPHNE_CONF_OPTS = ../src -DBUILD_SHARED_LIBS=OFF
 
+define DAPHNE_HYPINPUT_LINK
+	ln -fs /userdata/system/configs/daphne/hypinput.ini $(TARGET_DIR)/usr/share/daphne/hypinput.ini
+endef
+
+DAPHNE_POST_INSTALL_TARGET_HOOKS = DAPHNE_HYPINPUT_LINK
+
 $(eval $(cmake-package))
