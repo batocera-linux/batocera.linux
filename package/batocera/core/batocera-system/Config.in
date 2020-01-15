@@ -265,6 +265,10 @@ config BR2_PACKAGE_BATOCERA_ALL_SYSTEMS
                                                    BR2_PACKAGE_BATOCERA_TARGET_ODROIDN2
 						   # amiga
 
+        select BR2_PACKAGE_DAPHNE               if !BR2_PACKAGE_BATOCERA_TARGET_RPI1 && \
+                                                   !BR2_PACKAGE_BATOCERA_TARGET_RPI2 
+                                                   # daphne
+
         select BR2_PACKAGE_FSUAE                if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
 
         select BR2_PACKAGE_DOLPHIN_EMU          if BR2_PACKAGE_BATOCERA_TARGET_X86_64
@@ -399,7 +403,6 @@ config BR2_PACKAGE_BATOCERA_RETROARCH
         select BR2_PACKAGE_LIBRETRO_PC98              # ALL
 
         ### Experimental Emulators ###
-        select BR2_PACKAGE_DAPHNE                     if BR2_PACKAGE_BATOCERA_CORES_EXPERIMENTAL # Mode: Test
         select BR2_PACKAGE_LIBRETRO_DOSBOX            if BR2_PACKAGE_BATOCERA_CORES_EXPERIMENTAL # Under development
         select BR2_PACKAGE_LIBRETRO_SCUMMVM           if BR2_PACKAGE_BATOCERA_CORES_EXPERIMENTAL # Under development
         

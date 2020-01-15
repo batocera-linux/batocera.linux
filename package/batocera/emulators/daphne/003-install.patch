@@ -8,4 +8,4 @@ index 438451d..4e7a1db 100644
  include(CPack)
 +install(TARGETS hypseus DESTINATION bin)
 +execute_process(COMMAND svn export https://github.com/mirror/daphne-emu/trunk/sound ../sound)
-+install(DIRECTORY ../pics ../fonts ../sound DESTINATION /usr/share/batocera/datainit/system/configs/daphne)
++install(DIRECTORY ../pics ../fonts ../sound DESTINATION /usr/share/daphne)
