@@ -3,8 +3,8 @@
 # MRBOOM
 #
 ################################################################################
-# Version.: Commits on Sep 14, 2019
-LIBRETRO_MRBOOM_VERSION = 008dc4f8703f224413a03d9eabb31be7cd4d0e1b
+# Version.: Commits on Jan 09, 2020
+LIBRETRO_MRBOOM_VERSION = c777f1059c9a4b3fcefe6e2a19cfe9f81a13740b
 LIBRETRO_MRBOOM_SITE = $(call github,libretro,libretro-mrboom,$(LIBRETRO_MRBOOM_VERSION))
 LIBRETRO_MRBOOM_LICENSE="GPLv2"
 
