@@ -347,6 +347,7 @@ case "${BATOCERA_TARGET}" in
 	;;
 
 	ROCKPRO64)
+	touch ${TARGET_DIR}/userdata/.please_resize_me
 	# /boot
 	rm -rf "${BINARIES_DIR}/boot"            || exit 1
 	mkdir -p "${BINARIES_DIR}/boot/boot"     || exit 1
@@ -377,8 +378,10 @@ case "${BATOCERA_TARGET}" in
 	echo "generating image"
 	genimage --rootpath="${TARGET_DIR}" --inputpath="${BINARIES_DIR}/boot" --outputpath="${BATOCERA_BINARIES_DIR}" --config="${BINARIES_DIR}/genimage.cfg" --tmppath="${GENIMAGE_TMP}" || exit 1
 	rm -f "${BATOCERA_BINARIES_DIR}/boot.vfat" || exit 1
+	rm -f "${BATOCERA_BINARIES_DIR}/userdata.ext4" || exit 1
 	sync || exit 1
 	;;
+
 	ODROIDN2)
 	# /boot
 	rm -rf "${BINARIES_DIR}/boot"            || exit 1
@@ -413,6 +416,7 @@ case "${BATOCERA_TARGET}" in
 	rm -f "${BATOCERA_BINARIES_DIR}/boot.vfat" || exit 1
 	sync || exit 1
 	;;
+
 	ODROIDGOA)
 	# /boot
 	rm -rf "${BINARIES_DIR}/boot"            || exit 1
@@ -447,6 +451,7 @@ case "${BATOCERA_TARGET}" in
 	rm -f "${BATOCERA_BINARIES_DIR}/boot.vfat" || exit 1
 	sync || exit 1
 	;;
+
 	TINKERBOARD)
 	# /boot
 	rm -rf "${BINARIES_DIR}/boot"            || exit 1
@@ -523,6 +528,7 @@ case "${BATOCERA_TARGET}" in
 	rm -f "${BATOCERA_BINARIES_DIR}/boot.vfat" || exit 1
 	sync || exit 1
 	;;
+	
 	*)
 	echo "Outch. Unknown target ${BATOCERA_TARGET} (see copy-batocera-archives.sh)" >&2
 	bash
