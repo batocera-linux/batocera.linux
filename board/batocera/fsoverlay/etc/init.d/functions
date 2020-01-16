@@ -1,0 +1,171 @@
+################################################################################
+#      This file is part of LibreELEC - https://libreelec.tv
+#      Copyright (C) 2016 Neil MacLeod (milhouse@kodi.tv)
+#
+#  LibreELEC is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 2 of the License, or
+#  (at your option) any later version.
+#
+#  LibreELEC is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with LibreELEC.  If not, see <http://www.gnu.org/licenses/>.
+################################################################################
+
+# Need a read/write location, as tmp may not always be available
+mkdir -p /dev/.progress
+rm -f /dev/.progress/*
+
+# Show frame-buffer cursor
+showcursor() {
+  echo -en "\033[?25h"
+
+  # show cursor
+  if [ -f /sys/devices/virtual/graphics/fbcon/cursor_blink ] ; then
+    echo 1 > /sys/devices/virtual/graphics/fbcon/cursor_blink
+  fi
+}
+
+# Hide frame-buffer cursor
+hidecursor() {
+  echo -en "\033[?25l"
+
+  if [ -f /sys/devices/virtual/graphics/fbcon/cursor_blink ] ; then
+    echo 0 > /sys/devices/virtual/graphics/fbcon/cursor_blink
+  fi
+}
+
+# Start a progress meter
+# $1: spinner, percent, countdown
+# $2: message to display
+# [spinner]
+#   $3: optional command to execute
+#   $4: optional success completion message (nothing if not specified)
+#   $5: optional failure completion message ($4 if not specified)
+# [percent]
+#   $3: name of filename to be progress monitored
+#   $4: terminal size (in bytes) of $3 when progress is complete
+#   $5: optional command to execute
+#   $6: optional success message (100% if not specified)
+#   $7: optional failure message ($6 if not specified)
+# [countdown]
+#   $3: number of seconds to start counting down from
+#   $4: optional completion message, default is nothing
+StartProgress() {
+  local cmdresult=0
+
+  # Use files for inter-process communication.
+  # This file is used to indicate a metter is running/active
+
+  echo > /dev/.progress/run
+
+  case "$1" in
+    spinner)
+      ProgressTask_Spinner "$2" &
+      if [ -n "$3" ]; then
+        eval "$3"
+        cmdresult=$?
+        [ $cmdresult -eq 0 ] && StopProgress "${4}" || StopProgress "${5:-$4}"
+      fi
+      ;;
+    percent)
+      ProgressTask_Percent "$2" "$3" $4 &
+      if [ -n "$5" ]; then
+        eval "$5"
+        cmdresult=$?
+        [ $cmdresult -eq 0 ] && StopProgress "${6}" || StopProgress "${7:-$6}"
+      fi
+      ;;
+    countdown)
+      ProgressTask_Countdown "$2" $3 "$4"
+      ;;
+    *)
+      echo "Unknown spinner type: $1"
+      return 1
+      ;;
+  esac
+
+  return $cmdresult
+}
+
+# Stop a progress meter, displaying optional completion message
+# $1: optional completion message (appropriate default used if not specified)
+StopProgress() {
+  # Instruct running progress meter to end, showing specified completion message
+  echo "${1}" > /dev/.progress/stop
+
+  # Wait for progress meter to stop running
+  while [ -f /dev/.progress/run ]; do
+    usleep 250000
+  done
+
+  # Clean up
+  rm -f /dev/.progress/stop
+  return 0
+}
+
+# Use this task for processes of indeterminate duration
+ProgressTask_Spinner() {
+  local msg="$1"
+  local spinner="|/-\\|/-\\"
+  local count=0 donemsg
+
+  echo -n "${msg} "
+
+  while [ ! -f /dev/.progress/stop ]; do
+    echo -en "\b${spinner:$count:1}"
+    usleep 500000
+    count=$(((count + 1) % 8))
+  done
+
+  donemsg="$(cat /dev/.progress/stop)"
+  echo -e "\b${donemsg:-done}"
+
+  rm -f /dev/.progress/run
+
+  exit 0
+}
+
+# Use this task when transferring a file of known size
+ProgressTask_Percent() {
+  local msg="$1" filename="$2" fsize=$3 csize donemsg
+
+  echo -n "${msg}    "
+
+  while [ ! -f /dev/.progress/stop ]; do
+    [ -f ${filename} ] && csize=$(stat -t "${filename}" | awk '{print $2}') || csize=0
+    echo $csize $fsize | awk '{ printf "\b\b\b\b%3d%%", ($1 * 100 / $2) }'
+    usleep 250000
+  done
+
+  donemsg="$(cat /dev/.progress/stop)"
+  echo -e "\b\b\b\b${donemsg:-100%}"
+
+  rm -f /dev/.progress/run
+
+  exit 0
+}
+
+# Use this task to countdown a number of seconds
+# (needs more work for durations > 99 seconds)
+ProgressTask_Countdown() {
+  local msg="$1" countfrom=$2 donemsg="$3"
+
+  echo -n "${msg}  "
+
+  while [ ${countfrom} -gt 0 ]; do
+    echo ${countfrom} | awk '{ printf "\b\b%2d", $1 }'
+    sleep 1
+    countfrom=$((countfrom - 1))
+  done
+
+  echo -e "\b\b${donemsg:-  }"
+
+  rm -f /dev/.progress/run
+
+  return 0
+}
