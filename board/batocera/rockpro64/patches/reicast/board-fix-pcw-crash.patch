@@ -1,5 +1,5 @@
 diff --git a/core/hw/pvr/ta.cpp b/core/hw/pvr/ta.cpp
-index db9fb3f9..a0c72cd 100644
+index 3829c1a..f6b0dd1 100644
 --- a/core/hw/pvr/ta.cpp
 +++ b/core/hw/pvr/ta.cpp
 @@ -22,20 +22,14 @@ extern u32 SQW,DMAW;
@@ -27,10 +27,10 @@ index db9fb3f9..a0c72cd 100644
  };
  #endif
  
-@@ -294,18 +288,16 @@ void ta_vtx_SoftReset()
- INLINE
- void DYNACALL ta_thd_data32_i(void* data)
- {
+@@ -301,18 +295,16 @@ void DYNACALL ta_thd_data32_i(void* data)
+ 		ta_vtx_ListInit();
+ 	}
+ 
 -	simd256_t* dst = (simd256_t*)ta_tad.thd_data;
 -	simd256_t* src = (simd256_t*)data;
 +	simd128_t* dst = (simd128_t*)ta_tad.thd_data;
@@ -51,7 +51,7 @@ index db9fb3f9..a0c72cd 100644
  	u32 state_in = (ta_cur_state << 8) | (pcw.ParaType << 5) | ((pcw.obj_ctrl >> 2) & 31);
  
  	u32 trans = ta_fsm[state_in];
-@@ -313,7 +305,7 @@ void DYNACALL ta_thd_data32_i(void* data)
+@@ -320,7 +312,7 @@ void DYNACALL ta_thd_data32_i(void* data)
  	bool must_handle = trans & 0xF0;
  
  
