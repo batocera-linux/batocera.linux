@@ -131,11 +131,12 @@ def generateControllerConfig(controller):
 			continue
 		
 		var = ppssppMapping[input.name][input.type]
+                padnum = controller.index
 		
 		code = input.code
 		if input.type == 'button':
 			pspcode = sdlNameToNKCode[input.name]
-			val = "{}-{}".format( DEVICE_ID_PAD_0, pspcode )
+			val = "{}-{}".format( DEVICE_ID_PAD_0 + padnum, pspcode )
 			val = optionValue(Config, section, var, val)
 			Config.set(section, var, val)
 			
@@ -144,7 +145,7 @@ def generateControllerConfig(controller):
 			nkAxisId = SDLJoyAxisMap[input.id]
 			# Apply the magic axis formula
 			pspcode = axisToCode(nkAxisId, int(input.value))
-			val = "{}-{}".format( DEVICE_ID_PAD_0, pspcode )
+			val = "{}-{}".format( DEVICE_ID_PAD_0 + padnum, pspcode )
 			val = optionValue(Config, section, var, val)
 			print "Adding {} to {}".format(var, val)
 			Config.set(section, var, val)
@@ -162,14 +163,14 @@ def generateControllerConfig(controller):
 				var = ppssppMapping['joystick2right'][input.type]
 				
 			pspcode = axisToCode(nkAxisId, -int(input.value))
-			val = "{}-{}".format( DEVICE_ID_PAD_0, pspcode )
+			val = "{}-{}".format( DEVICE_ID_PAD_0 + padnum, pspcode )
 			val = optionValue(Config, section, var, val)
 			Config.set(section, var, val)
 		
 		elif input.type == 'hat' and input.name in SDLHatMap:
 			var = ppssppMapping[input.name][input.type]
 			pspcode = SDLHatMap[input.name]
-			val = "{}-{}".format( DEVICE_ID_PAD_0, pspcode )
+			val = "{}-{}".format( DEVICE_ID_PAD_0 + padnum, pspcode )
 			val = optionValue(Config, section, var, val)
 			Config.set(section, var, val)
 
