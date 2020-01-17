@@ -1,0 +1,35 @@
+diff --git a/core/input/gamepad_device.cpp b/core/input/gamepad_device.cpp
+index 8ccea5e..43cf6d3 100644
+--- a/core/input/gamepad_device.cpp
++++ b/core/input/gamepad_device.cpp
+@@ -31,6 +31,8 @@ extern u16 kcode[4];
+ extern u8 rt[4], lt[4];
+ extern s8 joyx[4], joyy[4];
+ 
++static int batocera_hotkey = 0;
++
+ std::vector<std::shared_ptr<GamepadDevice>> GamepadDevice::_gamepads;
+ cMutex GamepadDevice::_gamepads_mutex;
+ 
+@@ -80,6 +82,10 @@ bool GamepadDevice::gamepad_btn_input(u32 code, bool pressed)
+ 			case DC_DPAD2_RIGHT:
+ 				kcode[_maple_port] |= (u16)DC_DPAD2_LEFT;
+ 				break;
++			case DC_BTN_START:
++				if ((pressed) && (batocera_hotkey == 1))
++						dc_exit();
++ 			break;
+ 			default:
+ 				break;
+ 			}
+@@ -93,7 +99,9 @@ bool GamepadDevice::gamepad_btn_input(u32 code, bool pressed)
+ 		{
+ 		case EMU_BTN_ESCAPE:
+ 			if (pressed)
+-				dc_exit();
++				batocera_hotkey = 1;
++			else
++				batocera_hotkey = 0;
+ 			break;
+ 		case EMU_BTN_MENU:
+ 			if (pressed)

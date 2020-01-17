@@ -1,0 +1,48 @@
+diff --git a/shell/linux/Makefile b/shell/linux/Makefile
+index 96c2e58..4a97867 100644
+--- a/shell/linux/Makefile
++++ b/shell/linux/Makefile
+@@ -116,7 +116,7 @@ ifneq (,$(findstring x86,$(platform)))
+     NOT_ARM := 1
+     USE_X11 := 1
+     MFLAGS += -m32
+-    ASFLAGS += --32
++    ASFLAGS += -c
+     LDFLAGS += -m32
+     CFLAGS += -m32 -D TARGET_LINUX_x86 -D TARGET_NO_AREC -fno-builtin-sqrtf
+     CXXFLAGS += -fexceptions
+@@ -210,9 +210,10 @@ else ifneq (,$(findstring rpi,$(platform)))
+         INCS += -I/opt/vc/include/ -I/opt/vc/include/interface/vmcs_host/linux -I/opt/vc/include/interface/vcos/pthreads
+         LIBS += -L/opt/vc/lib/ -lbcm_host -ldl
+         LIBS += -lbrcmEGL -lbrcmGLESv2
++        INCS +=  -I../linux-deps/include
+         CFLAGS += -D TARGET_VIDEOCORE -DGLES
+         USE_OMX := 1
+-        USE_DISPMANX := 1
++        USE_GLES := 1
+     endif
+     undefine USE_X11
+ 
+@@ -240,6 +241,7 @@ else ifneq (,$(findstring odroid,$(platform)))
+     MFLAGS += -marm -mfpu=neon -mfloat-abi=hard -funroll-loops
+     ASFLAGS += -mfpu=neon -mfloat-abi=hard
+     CFLAGS += -D TARGET_BEAGLE -D TARGET_LINUX_ARMELv7 -DARM_HARDFP -fsingle-precision-constant
++    INCS +=  -I../linux-deps/include
+     USE_GLES := 1
+ 
+     # ODROID-XU3, -XU3 Lite & -XU4
+@@ -263,6 +265,14 @@ else ifneq (,$(findstring odroid,$(platform)))
+         endif
+     endif
+ 
++# ROCKPRO64
++else ifneq (,$(findstring rockpro64,$(platform)))
++    MFLAGS += -marm -mfpu=neon -mfloat-abi=hard -funroll-loops -march=armv7-a
++    ASFLAGS += -mfpu=neon -mfloat-abi=hard -march=armv7-a
++    CFLAGS += -D TARGET_BEAGLE -D TARGET_LINUX_ARMELv7 -DARM_HARDFP -fsingle-precision-constant
++    INCS +=  -I../linux-deps/include
++    USE_GLES := 1
++
+ # GCW Zero
+ else ifneq (,$(findstring gcwz,$(platform)))
+     NOT_ARM := 1
