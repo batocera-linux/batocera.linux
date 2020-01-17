@@ -2,6 +2,7 @@
 import Command
 import batoceraFiles
 from generators.Generator import Generator
+import viceConfig
 import os.path
 import glob
 
@@ -14,6 +15,11 @@ class ViceGenerator(Generator):
     # Main entry of the module
     # Return command
     def generate(self, system, rom, playersControllers, gameResolution):
+
+        if not os.path.exists(os.path.dirname(batoceraFiles.viceConfig)):
+            os.makedirs(os.path.dirname(batoceraFiles.viceConfig))
+
+        viceConfig.setViceConfig(batoceraFiles.viceConfig, system)
 
         commandArray = [batoceraFiles.batoceraBins[system.config['emulator']] + system.config['core'], "-autostart", rom]
 
