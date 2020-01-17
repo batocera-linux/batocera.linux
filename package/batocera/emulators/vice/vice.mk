@@ -36,10 +36,19 @@ define VICE_SDL_CONFIG
 	# Commodore 64		
 	cp -pr $(@D)/data/C64/sdl_hotkeys.vkm \
 		$(TARGET_DIR)/usr/share/batocera/datainit/system/configs/vice/sdl-hotkey-C64.vkm
+	
+	cp -pr $(@D)/data/C64/sdl_hotkeys.vkm \
+		$(TARGET_DIR)/usr/share/batocera/datainit/system/configs/vice/sdl-hotkey-C64DTV.vkm
+	
+	cp -pr $(@D)/data/C64/sdl_hotkeys.vkm \
+		$(TARGET_DIR)/usr/share/batocera/datainit/system/configs/vice/sdl-hotkey-PLUS4.vkm
+
+	cp -pr $(@D)/data/C64/sdl_hotkeys.vkm \
+		$(TARGET_DIR)/usr/share/batocera/datainit/system/configs/vice/sdl-hotkey-SCPU64.vkm
 
 	# Commodore 128		
 	cp -pr $(@D)/data/C128/sdl_hotkeys.vkm \
-		$(TARGET_DIR)/usr/share/batocera/datainit/system/configs/vice/sdl_hotkeys-C128.vkm
+		$(TARGET_DIR)/usr/share/batocera/datainit/system/configs/vice/sdl-hotkey-C128.vkm
 
 	# Commodore VIC-20		
 	cp -pr $(@D)/data/VIC20/sdl_hotkeys.vkm \

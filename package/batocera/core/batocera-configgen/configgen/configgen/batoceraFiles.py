@@ -102,8 +102,8 @@ fsuaeSaves = SAVES + "/amiga"
 
 scummvmSaves = SAVES + '/scummvm'
 
-viceConfig = CONF + "/vice/sdl-vicerc"
-
+viceConfigFile = CONF + "/vice/sdl-vicerc"
+viceConfig = CONF + "/vice"
 overlaySystem = "/usr/share/batocera/datainit/decorations"
 overlayUser = "/userdata/decorations"
 overlayConfigFile = "/userdata/system/configs/retroarch/overlay.cfg"
