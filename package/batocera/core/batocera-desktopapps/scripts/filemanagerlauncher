@@ -3,6 +3,9 @@
 export XDG_MENU_PREFIX=batocera-
 export XDG_CONFIG_DIRS=/etc/xdg
 
+# fix for exfat on HOME + pcmanfm
+export XDG_CACHE_HOME=/tmp/xdg_cache
+
 unclutter-remote -s
 
 DISPLAY=:0.0 pcmanfm /userdata
