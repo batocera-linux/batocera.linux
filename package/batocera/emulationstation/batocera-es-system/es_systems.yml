@@ -28,6 +28,13 @@ c128:
     vice:
       x128:     { requireAnyOf: [BR2_PACKAGE_VICE]          }
 
+c20:
+  name:       Commodore VIC-20
+  extensions: [a0, b0, zip]
+  emulators:
+    vice:
+      xvic:     { requireAnyOf: [BR2_PACKAGE_VICE]          }
+
 amiga:
   name:       Commodore Amiga
   extensions: [zip, adf, uae, ipf, dms, adz, lha]
