@@ -25,7 +25,7 @@ batoceraBins = {'dosbox'      : '/usr/bin/dosbox'
               , 'ppsspp'      : '/usr/bin/PPSSPPSDL'
               , 'reicast'     : '/usr/bin/reicast.elf'
               , 'scummvm'     : '/usr/bin/scummvm'
-              , 'vice'        : '/usr/bin/x64'
+              , 'vice'        : '/usr/bin/'
               , 'fsuae'       : '/usr/bin/fs-uae'
               , 'amiberry'    : '/usr/bin/amiberry'
               , 'dolphin'     : '/usr/bin/dolphin-emu'
@@ -101,7 +101,7 @@ fsuaeSaves = SAVES + "/amiga"
 
 scummvmSaves = SAVES + '/scummvm'
 
-viceConfig = CONF + "/vice/vice.conf"
+viceConfig = CONF + "/vice/sdl-vicerc"
 
 overlaySystem = "/usr/share/batocera/datainit/decorations"
 overlayUser = "/userdata/decorations"
