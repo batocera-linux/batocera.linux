@@ -15,7 +15,6 @@ class ViceGenerator(Generator):
     # Return command
     def generate(self, system, rom, playersControllers, gameResolution):
 
-        commandArray = [batoceraFiles.batoceraBins[system.config['emulator']] + system.config['core'], 
-                        "-config", batoceraFiles.viceConfig, "-autostart", rom]
+        commandArray = [batoceraFiles.batoceraBins[system.config['emulator']] + system.config['core'], "-autostart", rom]
 
-        return Command.Command(array=commandArray)
+        return Command.Command(array=commandArray, env={"XDG_CONFIG_HOME":batoceraFiles.CONF})

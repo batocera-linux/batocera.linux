@@ -101,7 +101,7 @@ fsuaeSaves = SAVES + "/amiga"
 
 scummvmSaves = SAVES + '/scummvm'
 
-viceConfig = CONF + "/vice/vice.conf"
+viceConfig = CONF + "/vice/sdl-vicerc"
 
 overlaySystem = "/usr/share/batocera/datainit/decorations"
 overlayUser = "/userdata/decorations"
