@@ -21,6 +21,13 @@ c64:
     libretro:
       vice:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_VICE] }
 
+c128:
+  name:       Commodore 128
+  extensions: [d64, d81, prg, lnx, zip]
+  emulators:
+    vice:
+      x128:     { requireAnyOf: [BR2_PACKAGE_VICE]          }
+
 amiga:
   name:       Commodore Amiga
   extensions: [zip, adf, uae, ipf, dms, adz, lha]
