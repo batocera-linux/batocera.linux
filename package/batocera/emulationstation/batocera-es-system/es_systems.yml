@@ -30,7 +30,7 @@ c128:
 
 c20:
   name:       Commodore VIC-20
-  extensions: [a0, b0, zip]
+  extensions: [a0, b0, crt, d64, prg, tap, zip]
   emulators:
     vice:
       xvic:     { requireAnyOf: [BR2_PACKAGE_VICE]          }
