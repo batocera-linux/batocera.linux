@@ -14,11 +14,8 @@ class ViceGenerator(Generator):
     # Main entry of the module
     # Return command
     def generate(self, system, rom, playersControllers, gameResolution):
-        romPath = os.path.dirname(rom)
-        romName = os.path.splitext(os.path.basename(rom))[0]
 
-        commandArray = [batoceraFiles.batoceraBins[system.config['emulator']], 
-                        "-config", batoceraFiles.viceConfig,
-                        "-autostart", rom]
+        commandArray = [batoceraFiles.batoceraBins[system.config['emulator']] + system.config['core'], 
+                        "-config", batoceraFiles.viceConfig, "-autostart", rom]
 
-        return Command.Command(array=commandArray,  env={"SDL_VIDEO_GL_DRIVER": "/usr/lib/libGLESv2.so"})
+        return Command.Command(array=commandArray)

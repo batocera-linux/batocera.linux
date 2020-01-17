@@ -14,9 +14,12 @@ c64:
   extensions: [d64, zip, 7z]
   emulators:
     vice:
-      x64:  { requireAnyOf: [BR2_PACKAGE_VICE]          }
+      x64:      { requireAnyOf: [BR2_PACKAGE_VICE]          }
+      x64dtv:   { requireAnyOf: [BR2_PACKAGE_VICE]          }
+      xscpu64:  { requireAnyOf: [BR2_PACKAGE_VICE]          }
+      xplus4:   { requireAnyOf: [BR2_PACKAGE_VICE]          }
     libretro:
-      vice: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_VICE] }
+      vice:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_VICE] }
 
 amiga:
   name:       Commodore Amiga
