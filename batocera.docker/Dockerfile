@@ -31,7 +31,7 @@ RUN dpkg --add-architecture i386 && \
 		rsync \
 		device-tree-compiler \
 		gettext \
-		locales
+		locales \
 	&& apt clean
 
 # Set locale
