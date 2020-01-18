@@ -64,6 +64,17 @@ class ReicastGenerator(Generator):
         else:
             Config.set("config", "rend.WideScreen", "0")
 
+        # custom : allow the user to configure directly emu.cfg via batocera.conf via lines like : dreamcast.reicast.section.option=value
+        for user_config in system.config:
+            if user_config[:8] == "reicast.":
+                section_option = user_config[8:]
+                section_option_splitter = section_option.find(".")
+                custom_section = section_option[:section_option_splitter]
+                custom_option = section_option[section_option_splitter+1:]
+                if not Config.has_section(custom_section):
+                    Config.add_section(custom_section)
+                Config.set(custom_section, custom_option, system.config[user_config])
+
         ### update the configuration file
         if not os.path.exists(os.path.dirname(batoceraFiles.reicastConfig)):
             os.makedirs(os.path.dirname(batoceraFiles.reicastConfig))
