@@ -11,11 +11,6 @@ LIBRETRO_NEOCD_SITE_METHOD=git
 LIBRETRO_NEOCD_GIT_SUBMODULES=YES
 LIBRETRO_NEOCD_LICENSE = GPLv3
 
-define LIBRETRO_NEOCD_INSTALL_TARGET_CMDS
-	$(INSTALL) -D $(@D)/libneocd_libretro.so \
-		$(TARGET_DIR)/usr/lib/libretro/neocd_libretro.so
-endef
-
 define LIBRETRO_NEOCD_DISABLE_ARM_FLAGS
 	$(SED) 's|^set(CMAKE_CXX_FLAGS_RELEASE|#set(CMAKE_CXX_FLAGS_RELEASE|g' $(@D)/CMakeLists.txt
 endef
@@ -24,5 +19,15 @@ ifeq ($(BR2_arm),y)
 else
   LIBRETRO_NEOCD_PRE_CONFIGURE_HOOKS += LIBRETRO_NEOCD_DISABLE_ARM_FLAGS
 endif
+
+define LIBRETRO_NEOCD_BUILD_CMDS
+	CFLAGS="$(TARGET_CFLAGS)" CXXFLAGS="$(TARGET_CXXFLAGS)" $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" \
+		LD="$(TARGET_CXX)" RANLIB="$(TARGET_RANLIB)" AR="$(TARGET_AR)" -C $(@D) -f Makefile
+endef
+
+define LIBRETRO_NEOCD_INSTALL_TARGET_CMDS
+	$(INSTALL) -D $(@D)/libneocd_libretro.so \
+		$(TARGET_DIR)/usr/lib/libretro/neocd_libretro.so
+endef
 
 $(eval $(cmake-package))
