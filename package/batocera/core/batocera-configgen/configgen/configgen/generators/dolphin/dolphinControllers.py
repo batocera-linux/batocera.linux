@@ -207,17 +207,18 @@ def generateControllerConfig_any(playersControllers, filename, anyDefKey, anyMap
         # recompute the mapping according to available buttons on the pads and the available replacements
         currentMapping = anyMapping
         # apply replacements
-        for x in anyReplacements:
-            if x not in pad.inputs and x in currentMapping:
-                currentMapping[anyReplacements[x]] = currentMapping[x]
-            if x == "joystick1up":
-                currentMapping[anyReplacements["joystick1down"]] = anyReverseAxes[currentMapping["joystick1up"]]
-            if x == "joystick1left":
-                currentMapping[anyReplacements["joystick1right"]] = anyReverseAxes[currentMapping["joystick1left"]]
-            if x == "joystick2up":
-                currentMapping[anyReplacements["joystick2down"]] = anyReverseAxes[currentMapping["joystick2up"]]
-            if x == "joystick2left":
-                currentMapping[anyReplacements["joystick2right"]] = anyReverseAxes[currentMapping["joystick2left"]]
+        if anyReplacements is not None:
+            for x in anyReplacements:
+            	if x not in pad.inputs and x in currentMapping:
+            	    currentMapping[anyReplacements[x]] = currentMapping[x]
+            	if x == "joystick1up":
+            	    currentMapping[anyReplacements["joystick1down"]] = anyReverseAxes[currentMapping["joystick1up"]]
+            	if x == "joystick1left":
+            	    currentMapping[anyReplacements["joystick1right"]] = anyReverseAxes[currentMapping["joystick1left"]]
+            	if x == "joystick2up":
+            	    currentMapping[anyReplacements["joystick2down"]] = anyReverseAxes[currentMapping["joystick2up"]]
+            	if x == "joystick2left":
+            	    currentMapping[anyReplacements["joystick2right"]] = anyReverseAxes[currentMapping["joystick2left"]]
 
         for x in pad.inputs:
             input = pad.inputs[x]
