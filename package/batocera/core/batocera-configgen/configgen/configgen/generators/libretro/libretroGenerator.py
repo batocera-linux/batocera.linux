@@ -43,6 +43,8 @@ class LibretroGenerator(Generator):
         # For the NeoGeo CD (lr-fbneo) it is necessary to add the parameter: --subsystem neocd
         if system.name == 'neogeocd' and system.config['core'] == "fbneo":
             commandArray = [batoceraFiles.batoceraBins[system.config['emulator']], "-L", retroarchCore, "--subsystem", "neocd", "--config", system.config['configfile']]
+        elif system.name == 'dos':
+            commandArray = [batoceraFiles.batoceraBins[system.config['emulator']], "-L", retroarchCore, "--config", system.config['configfile'], rom + "/dosbox.bat"]
         else:
             commandArray = [batoceraFiles.batoceraBins[system.config['emulator']], "-L", retroarchCore, "--config", system.config['configfile']]
 
@@ -98,6 +100,9 @@ class LibretroGenerator(Generator):
         if system.name == 'daphne':
             romName = os.path.splitext(os.path.basename(rom))[0]
             rom = batoceraFiles.daphneDatadir + '/roms/' + romName +'.zip'
+        
+        if system.name == 'dos':
+            rom = 'set ROOT=' + rom
         
         commandArray.append(rom)
         return Command.Command(array=commandArray)
