@@ -91,7 +91,7 @@ def generateControllerConfig_emulatedwiimotes(playersControllers, rom):
         wiiMapping['joystick2up']   = 'Nunchuk/Stick/Up'
         wiiMapping['joystick2left'] = 'Nunchuk/Stick/Left'
 
-    generateControllerConfig_any(playersControllers, "WiimoteNew.ini", "Wiimote", wiiMapping, wiiReverseAxes, None, extraOptions)
+    generateControllerConfig_any(playersControllers, "WiimoteNew.ini", "Wiimote", wiiMapping, wiiReverseAxes, "", extraOptions)
 
 def generateControllerConfig_gamecube(playersControllers):
     gamecubeMapping = {
