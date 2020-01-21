@@ -1,11 +1,38 @@
-#!/bin/sh
+#!/bin/bash
+
+# Spinner Animation
+# Inspired from LibreELEC - https://libreelec.tv
+function textoutput()
+{
+    local msg="$1"
+    local cmd="$2"
+    local pid count spinner
+    $cmd &>/dev/null &
+    pid=$!
+    echo -e -n "[$pid]\t${msg}\t" &>/dev/tty1
+    spinner='|/-\'
+    while kill -0 $pid 2>/dev/null; do
+        echo -n "[${spinner:$count:1}]" &>/dev/tty1
+        sleep 0.1
+        echo -e -n "\b\b\b" &>/dev/tty1
+        count=$(((count + 1) % 4))
+    done
+    echo "Done!" &>/dev/tty1
+}
+
+# Hide frame-buffer cursor // from LibreELEC - https://libreelec.tv
+function hidecursor()
+{
+    echo -en "\033[?25l"
+    if [ -f /sys/devices/virtual/graphics/fbcon/cursor_blink ] ; then
+        echo 0 > /sys/devices/virtual/graphics/fbcon/cursor_blink
+    fi
+}
 
 if test "$1" != "start"
 then
-	exit 0
+    exit 0
 fi
-
-. /etc/init.d/functions
 
 # /userdata partition
 PART=$(batocera-part "share_internal")
@@ -14,28 +41,22 @@ DISK=$(batocera-part prefix "${PART}")
 # mount /userdata
 batocera-mount "ext4" 1 ${PART} /userdata
 
-if [ -e /userdata/.please_resize_me ] ; then
-	rm -f /userdata/.please_resize_me
-	sync
+if [ -e /userdata/.please_resize_me ]; then
+    hidecursor
 
-	hidecursor
+    echo -e "\nPARTITION RESIZING IN PROGRESS\n" &>/dev/tty1
+    echo -e "Please do not reboot or turn off your device!\n\n" &>/dev/tty1
+    echo -e "[PID]\tSubprocess" &>/dev/tty1
 
-	umount /userdata
-
-	echo "PARTITION RESIZING IN PROGRESS" &>/dev/tty1
-	echo "" &>/dev/tty1
-	echo "Please do not reboot or turn off your device!" &>/dev/tty1
-	echo "" &>/dev/tty1
-
-	# fix any minor issues, such as gpt header not at end of disk
-	StartProgress spinner "Checking disk layout... " "sgdisk -e ${DISK} &>/dev/null" &>/dev/tty1
-	StartProgress spinner "Resizing partition...   " "parted -s -m ${DISK} resizepart 2 100% &>/dev/null" &>/dev/tty1
-	StartProgress spinner "Checking /userdata...   " "e2fsck -f -p ${PART} &>/dev/null" &>/dev/tty1
-	StartProgress spinner "Resizing /userdata...   " "resize2fs ${PART} &>/dev/null" &>/dev/tty1
-
-	# StartProgress countdown "Rebooting in 5s... " 5 "NOW" &>/dev/tty1
-	# reboot -f &>/dev/null
-	exit 0
+    # fix any minor issues, such as gpt header not at end of disk
+    # textoutput "Message" "command call"
+    textoutput "Removing trigger.........." "rm -f /userdata/.please_resize_me"
+    textoutput "Syncing disk data........." "sync"
+    textoutput "Unmount /userdata........." "umount /userdata"
+    textoutput "Checking disk table......." "sgdisk -e ${DISK}"
+    textoutput "Resizing partition........" "parted -s -m ${DISK} resizepart 2 100%"
+    textoutput "Checking /userdata........" "e2fsck -f -p ${PART}"
+    textoutput "Resizing /userdata........" "resize2fs ${PART}"
+    exit 0
 fi
-
 umount /userdata
