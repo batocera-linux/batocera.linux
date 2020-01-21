@@ -1,11 +1,38 @@
-#!/bin/sh
+#!/bin/bash
+
+# UI Output, dialog valid terminals: linux, vt100, vt102, vt220, xterm, xterm-color
+function dialogoutput()
+{
+    local percent="$1"
+    local text="Do not switch off your device!"
+
+    dialog --backtitle "batocera.linux" --title " Resizing Partition " \
+           --mixedgauge "$text" 18 50 "$percent" "${arr[@]}" &>/dev/tty1
+}
+
+# Executing parameters and watch background pid
+# Changes text messages parsed to dialog --mixedgauge
+function textoutput()
+{
+    local cmd="$3"
+    local percent="$2"
+    local pid ret
+    $cmd &>/dev/null &
+    ret=$?
+    pid=$!
+    arr[$1]=7 #msg: In Progress
+    dialogoutput "$percent"
+    wait $pid
+    arr[$1]=$ret #msg: Depends from return value
+}
+
+
+#-------- MAIN --------
 
 if test "$1" != "start"
 then
 	exit 0
 fi
-
-. /etc/init.d/functions
 
 # /userdata partition
 PART=$(batocera-part "share_internal")
@@ -15,27 +42,44 @@ DISK=$(batocera-part prefix "${PART}")
 batocera-mount "ext4" 1 ${PART} /userdata
 
 if [ -e /userdata/.please_resize_me ] ; then
-	rm -f /userdata/.please_resize_me
-	sync
+    #Colorizing Terminal output
+    oldTERM="$TERM"
+    TERM=linux
 
-	hidecursor
+    # Preparing text arrays
+    arr=(
+         "Removing trigger....." "Pending"
+         "Syncing disk data...." "Pending"
+         "Unmount /userdata...." "Pending"
+         "Checking disk table.." "Pending"
+         "Resizing partition..." "Pending"
+         "Checking /userdata..." "Pending"
+         "Resizing /userdata..." "Pending"
+         "Finishing up........." 8
+        )
 
-	umount /userdata
+    # fix any minor issues, such as gpt header not at end of disk
+    # Function layout:
+    # textoutput "arayindex" "start%" "command call"
+    for i in 1 3 5 7 9 11 13 15; do
+        case $i in
+           1) textoutput $i 01 "rm -f /userdata/.please_resize_me";;
+           3) textoutput $i 10 "sync";;
+           5) textoutput $i 20 "umount /userdata";;
+           7) textoutput $i 30 "sgdisk -e ${DISK}";;
+           9) textoutput $i 45 "parted -s -m ${DISK} resizepart 2 100%";;
+          11) textoutput $i 85 "e2fsck -f -p ${PART}";;
+          13) textoutput $i 95 "resize2fs ${PART}";;
+          15) textoutpur $i 99 "sleep 1";;
+        esac
+    done
 
-	echo "PARTITION RESIZING IN PROGRESS" &>/dev/tty1
-	echo "" &>/dev/tty1
-	echo "Please do not reboot or turn off your device!" &>/dev/tty1
-	echo "" &>/dev/tty1
-
-	# fix any minor issues, such as gpt header not at end of disk
-	StartProgress spinner "Checking disk layout... " "sgdisk -e ${DISK} &>/dev/null" &>/dev/tty1
-	StartProgress spinner "Resizing partition...   " "parted -s -m ${DISK} resizepart 2 100% &>/dev/null" &>/dev/tty1
-	StartProgress spinner "Checking /userdata...   " "e2fsck -f -p ${PART} &>/dev/null" &>/dev/tty1
-	StartProgress spinner "Resizing /userdata...   " "resize2fs ${PART} &>/dev/null" &>/dev/tty1
-
-	# StartProgress countdown "Rebooting in 5s... " 5 "NOW" &>/dev/tty1
-	# reboot -f &>/dev/null
-	exit 0
+    #Cleanup, restore terminal back, set progress of last item to completed and progress to 100%
+    arr[-1]=0
+    dialogoutput 100
+    sleep 1
+    TERM="$oldTERM"
+    clear /dev/tty1
 fi
 
 umount /userdata
