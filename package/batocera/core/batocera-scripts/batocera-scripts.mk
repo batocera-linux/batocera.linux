@@ -6,6 +6,7 @@
 
 BATOCERA_SCRIPTS_VERSION = 1.0
 BATOCERA_SCRIPTS_LICENSE = GPL
+BATOCERA_SCRIPTS_DEPENDENCIES = pciutils
 BATOCERA_SCRIPTS_SOURCE=
 
 define BATOCERA_SCRIPTS_INSTALL_TARGET_CMDS
@@ -21,6 +22,7 @@ define BATOCERA_SCRIPTS_INSTALL_TARGET_CMDS
 	cp package/batocera/core/batocera-scripts/scripts/batocera-settings               $(TARGET_DIR)/usr/bin/
 	cp package/batocera/core/batocera-scripts/scripts/batocera-save-overlay           $(TARGET_DIR)/usr/bin/
 	cp package/batocera/core/batocera-scripts/scripts/batocera-es-theme               $(TARGET_DIR)/usr/bin/
+	cp package/batocera/core/batocera-scripts/scripts/batocera-hybrid-nvidia          $(TARGET_DIR)/usr/bin/
 	cp package/batocera/core/batocera-scripts/scripts/batocera-retroachievements-info $(TARGET_DIR)/usr/bin/
 	cp package/batocera/core/batocera-scripts/scripts/batocera-kodilauncher           $(TARGET_DIR)/usr/bin/
 	cp package/batocera/core/batocera-scripts/scripts/batocera-usbmount               $(TARGET_DIR)/usr/bin/
