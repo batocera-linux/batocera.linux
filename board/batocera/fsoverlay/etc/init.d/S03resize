@@ -70,14 +70,13 @@ if [ -e /userdata/.please_resize_me ] ; then
            9) textoutput $i 45 "parted -s -m ${DISK} resizepart 2 100%";;
           11) textoutput $i 55 "e2fsck -f -p ${PART}";;
           13) textoutput $i 65 "resize2fs ${PART}";;
-          15) textoutput $i 95 "sleep 1";;
+          15) textoutput $i 95 "sleep 0.1";;
         esac
     done
 
     #Cleanup, restore terminal back, set progress of last item to completed and progress to 100%
     arr[-1]=0
     dialogoutput 100
-    sleep 1
     TERM="$oldTERM"
     clear /dev/tty1
 fi
