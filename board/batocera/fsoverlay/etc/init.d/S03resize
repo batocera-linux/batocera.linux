@@ -78,7 +78,6 @@ if [ -e /userdata/.please_resize_me ] ; then
     arr[-1]=0
     dialogoutput 100
     TERM="$oldTERM"
-    clear /dev/tty1
 fi
 
 umount /userdata
