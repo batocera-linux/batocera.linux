@@ -68,9 +68,9 @@ if [ -e /userdata/.please_resize_me ] ; then
            5) textoutput $i 20 "umount /userdata";;
            7) textoutput $i 30 "sgdisk -e ${DISK}";;
            9) textoutput $i 45 "parted -s -m ${DISK} resizepart 2 100%";;
-          11) textoutput $i 85 "e2fsck -f -p ${PART}";;
-          13) textoutput $i 95 "resize2fs ${PART}";;
-          15) textoutpur $i 99 "sleep 1";;
+          11) textoutput $i 55 "e2fsck -f -p ${PART}";;
+          13) textoutput $i 65 "resize2fs ${PART}";;
+          15) textoutput $i 95 "sleep 1";;
         esac
     done
 
