@@ -9,7 +9,7 @@ function textoutput()
     local pid count spinner
     $cmd &>/dev/null &
     pid=$!
-    echo -e -n "[$pid]\t${msg}\t" &>/dev/tty1
+    echo -e -n "${msg}\t" &>/dev/tty1
     spinner='|/-\'
     while kill -0 $pid 2>/dev/null; do
         echo -n "[${spinner:$count:1}]" &>/dev/tty1
@@ -46,7 +46,6 @@ if [ -e /userdata/.please_resize_me ]; then
 
     echo -e "\nPARTITION RESIZING IN PROGRESS\n" &>/dev/tty1
     echo -e "Please do not reboot or turn off your device!\n\n" &>/dev/tty1
-    echo -e "[PID]\tSubprocess" &>/dev/tty1
 
     # fix any minor issues, such as gpt header not at end of disk
     # textoutput "Message" "command call"
