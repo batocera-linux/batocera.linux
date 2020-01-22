@@ -26,7 +26,7 @@ c64:
       xplus4:   { requireAnyOf: [BR2_PACKAGE_VICE]          }
     libretro:
       vice:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_VICE] }
-	  netplay: false
+      netplay: false
 
 c128:
   name:       Commodore 128
@@ -281,7 +281,7 @@ psp:
       ppsspp: { requireAnyOf: [BR2_PACKAGE_PPSSPP, BR2_PACKAGE_PPSSPP15]  }
     libretro:
       ppsspp:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PPSSPP]              }
-	  netplay: false
+      netplay: false
 
 psx:
   name:       Sony Playstation 1
@@ -335,7 +335,7 @@ scummvm:
       scummvm: { requireAnyOf: [BR2_PACKAGE_SCUMMVM]          }
     libretro:
       scummvm: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_SCUMMVM] }
-	  netplay: false
+      netplay: false
   comment_en: |
     Put scummvm games foders in this folder.
 
@@ -361,7 +361,7 @@ dos:
       dosbox:   { requireAnyOf: [BR2_PACKAGE_DOSBOX]          }
     libretro:
       dosbox:   { requireAnyOf: [BR2_PACKAGE_LIBRETRO_DOSBOX] }
-	  netplay: false
+      netplay: false
   comment_en: |
     Each game (files) must be placed its own directory having the ".pc .dos" extension.
     In each directory, a dosbox.bat file must contain the command line for launching the game.
