@@ -1,1 +1,1 @@
-include $(sort $(wildcard package/batocera/*/*.mk package/batocera/*/*/*.mk package/batocera/*/*/*/*.mk package/batocera/*/*/*/*/*.mk))
+include $(sort $(wildcard $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/*/*.mk $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/*/*/*.mk $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/*/*/*/*.mk $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/*/*/*/*/*.mk))
