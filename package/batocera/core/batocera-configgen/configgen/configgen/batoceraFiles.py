@@ -97,7 +97,7 @@ dosboxCustom = CONF + '/dosbox'
 dosboxConfig = dosboxCustom + '/dosbox.conf'
 
 fsuaeBios = BIOS
-fsuaeConfig = CONF + "/FS-UAE"
+fsuaeConfig = CONF + "/fs-uae"
 fsuaeSaves = SAVES + "/amiga"
 
 scummvmSaves = SAVES + '/scummvm'

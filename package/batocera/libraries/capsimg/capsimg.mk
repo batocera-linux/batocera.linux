@@ -3,8 +3,8 @@
 # CAPSIMG
 #
 ################################################################################
-# Version.: Commits on May 3, 2019
-CAPSIMG_VERSION = 5d306bb19bc4382367a1e489fb36768fd224b5e6
+# Version.: Commits on Dec 02, 2019
+CAPSIMG_VERSION = 264973530f131f1de586dcf4346871ac633824a3
 CAPSIMG_SITE = $(call github,FrodeSolheim,capsimg,$(CAPSIMG_VERSION))
 CAPSIMG_LICENSE = Non-commercial
 
@@ -25,8 +25,8 @@ endef
 
 define CAPSIMG_INSTALL_TARGET_CMDS
 	$(INSTALL) -D $(@D)/capsimg.so \
-		$(TARGET_DIR)/usr/share/FS-UAE/Plugins/capsimg.so
-        echo "$(CAPSIMG_VERSION)" > $(TARGET_DIR)/usr/share/FS-UAE/Plugins/Version.txt
+		$(TARGET_DIR)/usr/share/fs-uae/Plugins/capsimg.so
+        echo "$(CAPSIMG_VERSION)" > $(TARGET_DIR)/usr/share/fs-uae/Plugins/Version.txt
 endef
 
 $(eval $(autotools-package))
