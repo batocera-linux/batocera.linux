@@ -36,11 +36,7 @@ function hidecursor()
     fi
 }
 
-if test "$1" != "start"
-then
-    exit 0
-fi
-
+# --- BEGIN RESIZE ---
 # /userdata partition
 PART=$(batocera-part "share_internal")
 # boot disk
