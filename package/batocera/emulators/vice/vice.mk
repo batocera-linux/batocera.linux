@@ -26,36 +26,4 @@ VICE_CONF_OPTS += --enable-x64
 
 VICE_CONF_ENV += LDFLAGS=-lSDL2
 
-define VICE_SDL_CONFIG
-	
-	mkdir -p $(TARGET_DIR)/usr/share/batocera/datainit/system/configs/vice
-
-	cp -pr $(@D)/data/C64/sdl_hotkeys.vkm \
-		$(TARGET_DIR)/usr/share/batocera/datainit/system/configs/vice
-
-	# Commodore 64		
-	cp -pr $(@D)/data/C64/sdl_hotkeys.vkm \
-		$(TARGET_DIR)/usr/share/batocera/datainit/system/configs/vice/sdl-hotkey-C64.vkm
-	
-	cp -pr $(@D)/data/C64/sdl_hotkeys.vkm \
-		$(TARGET_DIR)/usr/share/batocera/datainit/system/configs/vice/sdl-hotkey-C64DTV.vkm
-	
-	cp -pr $(@D)/data/C64/sdl_hotkeys.vkm \
-		$(TARGET_DIR)/usr/share/batocera/datainit/system/configs/vice/sdl-hotkey-PLUS4.vkm
-
-	cp -pr $(@D)/data/C64/sdl_hotkeys.vkm \
-		$(TARGET_DIR)/usr/share/batocera/datainit/system/configs/vice/sdl-hotkey-SCPU64.vkm
-
-	# Commodore 128		
-	cp -pr $(@D)/data/C128/sdl_hotkeys.vkm \
-		$(TARGET_DIR)/usr/share/batocera/datainit/system/configs/vice/sdl-hotkey-C128.vkm
-
-	# Commodore VIC-20		
-	cp -pr $(@D)/data/VIC20/sdl_hotkeys.vkm \
-		$(TARGET_DIR)/usr/share/batocera/datainit/system/configs/vice/sdl-hotkey-VIC20.vkm	
-
-endef
-
-VICE_POST_INSTALL_TARGET_HOOKS = VICE_SDL_CONFIG
-
 $(eval $(autotools-package))
