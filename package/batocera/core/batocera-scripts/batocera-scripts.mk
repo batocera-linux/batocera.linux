@@ -46,6 +46,7 @@ define BATOCERA_SCRIPTS_INSTALL_TARGET_CMDS
 endef
 
 define BATOCERA_SCRIPTS_INSTALL_XORG
+	mkdir -p $(TARGET_DIR)/etc/X11/xorg.conf.d
 	ln -fs /userdata/system/99-nvidia.conf $(TARGET_DIR)/etc/X11/xorg.conf.d/99-nvidia.conf
 endef
 
