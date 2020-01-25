@@ -6,6 +6,7 @@
 #
 # 20191124 - v2 with now outputs in XML format (for Batocera 5.25+)
 # 20200113 - updated for retroachievements.org HTML changes
+# 20200124 - added badges for each game played
 #
 # Usage:
 # batocera-retroachievements-info
@@ -62,8 +63,19 @@ function process() {
 		echo -ne "$pic"
 		echo "$parsedid" | sed -e "s;\(.*\)@\(.*\);  <registered>\1</registered>\n  <lastactivity>\2</lastactivity>;"
 		xmllint --html "$tmpfile" 2>/dev/null | grep '<a href="/Game/[0-9]*\">.*points.<br\?>' | sed -e "/^[[:blank:]]*$/d" | sed -e 's:\(<a href=\"/Game/[0-9]*\">.*\)points\.<br>:\1points\@\\\n:g;' > "$tmpfile"_2
-		res=$(cat "$tmpfile"_2 | awk -v FS="(href=\"/Game/[0-9]*\">|@)" '{print $2}' | sed -e "s;</a><br/*>\(Last played[ 0-9:-]*\)<br/*>\(.*\);@\2@\1;" | sed -e "s;achievements, ;achievements@;" | sed -e "s;Earned ;;" | sed -e "/^[[:blank:]]*$/d" )
-		echo "$res" | sed -e "s;\(.*\)@\(.*\) achievements@\(.*\) points@Last played \(.*\);  <game>\n    <name>\1</name>\n    <achievements>\2</achievements>\n    <points>\3</points>\n    <lastplayed>\4</lastplayed>\n  </game>;"
+		cat "$tmpfile"_2 | awk -v FS="(href=\"/Game/[0-9]*\">|@)" '{print $2}' | sed -e "s;</a><br/*>\(Last played[ 0-9:-]*\)<br/*>\(.*\);@\2@\1;" | sed -e "s;achievements, ;achievements@;" | sed -e "s;Earned ;;" | sed -e "/^[[:blank:]]*$/d" > "$tmpfile"_st
+		cat "$tmpfile"_2  | grep 'div class="bb_inline" onmouseover' | sed "s:.*src=\"\(.*/Badge/.*\.png\)\".*:\1:" > "$tmpfile"_ba
+		i=0
+		if [ $(cat "$tmpfile"_ba | wc -l) -eq $(cat "$tmpfile"_st | wc -l) ]; then
+			while IFS= read -r line || [[ -n "$line" ]]; do
+				i=$((i+1))
+				echo "$line" | sed -e "s;\(.*\)@\(.*\) achievements@\(.*\) points@Last played \(.*\);  <game>\n    <name>\1</name>\n    <achievements>\2</achievements>\n    <points>\3</points>\n    <lastplayed>\4</lastplayed>;"
+				cat "$tmpfile"_ba | head -n "$i" | tail -n 1 | sed "s:^:    <badge>:;s:$:</badge>:"
+				echo "  </game>"
+			done < "$tmpfile"_st 
+		else
+			echo "$res" | sed -e "s;\(.*\)@\(.*\) achievements@\(.*\) points@Last played \(.*\);  <game>\n    <name>\1</name>\n    <achievements>\2</achievements>\n    <points>\3</points>\n    <lastplayed>\4</lastplayed>\n  </game>;"
+		fi
 		echo "</retroachievements>"
 	else
 		echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
@@ -72,7 +84,7 @@ function process() {
 		echo "  <error>Player $USER hasn't unlocked any RetroAchievement yet</error>"
 		echo "</retroachievements>"
 	fi
-	rm "$tmpfile" "$tmpfile"_2
+	rm "$tmpfile" "$tmpfile"_2 "$tmpfile"_st "$tmpfile"_ba 2>/dev/null
 }
 
 #### Main loop
