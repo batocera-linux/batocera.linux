@@ -1,0 +1,52 @@
+#!/bin/bash
+
+if test ! -e /sys/class/backlight/backlight/brightness
+then
+    echo "no brightness found" >&2
+    exit 1
+fi
+
+setValue() {
+    NEWVAL=$1
+    XMAX=$2
+
+    test "${NEWVAL}" -lt 0         && NEWVAL=0
+    test "${NEWVAL}" -gt "${XMAX}" && NEWVAL="${XMAX}"
+    
+    echo "${NEWVAL}" > /sys/class/backlight/backlight/brightness
+}
+
+# get
+if test $# = 0
+then
+    X=$(cat /sys/class/backlight/backlight/brightness)
+    XMAX=$(cat /sys/class/backlight/backlight/max_brightness)
+    echo $(expr "${X}" "*" "100" / "${XMAX}")
+    exit 0
+fi
+
+# set
+if test $# = 1
+then
+    XMAX=$(cat /sys/class/backlight/backlight/max_brightness)
+    NEWVAL=$(expr "${1}" "*" "${XMAX}" / 100)
+    setValue "${NEWVAL}" "${XMAX}"
+    exit 0
+fi
+
+# set +
+if test $# = 2
+then
+    X=$(cat /sys/class/backlight/backlight/brightness)
+    XMAX=$(cat /sys/class/backlight/backlight/max_brightness)
+    DELTA=$(expr "${2}" '*' ${XMAX} / 100)
+    NEWVAL=$(expr "${X}" "${1}" "${DELTA}")
+    setValue "${NEWVAL}" "${XMAX}"
+    exit 0
+fi
+
+# help
+echo "${0}"      >&2
+echo "${0} + 10" >&2
+echo "${0} - 20" >&2
+exit 1

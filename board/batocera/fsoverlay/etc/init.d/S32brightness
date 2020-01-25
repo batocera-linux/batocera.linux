@@ -1,0 +1,23 @@
+#!/bin/bash
+
+# no brightness
+test ! -e /sys/class/backlight/backlight/brightness && exit 0
+
+if test "${1}" = "start"
+then
+    if test -e /userdata/system/brightness.save
+    then
+	VAL=$(cat /userdata/system/brightness.save)
+	if test "${VAL}" -ge 10
+	   then
+	       batocera-brightness "${VAL}"
+	else
+	    batocera-brightness 10
+	fi
+    fi
+fi
+
+if test "${1}" = "stop"
+then
+    batocera-brightness > /userdata/system/brightness.save
+fi
