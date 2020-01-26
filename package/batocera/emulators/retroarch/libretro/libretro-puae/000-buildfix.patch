@@ -1,0 +1,37 @@
+diff --git a/Makefile b/Makefile
+index 2f224c5..24afd20 100644
+--- a/Makefile
++++ b/Makefile
+@@ -1,5 +1,5 @@
+ 
+-PLATFLAGS :=
++PLATFLAGS := $(platflags)
+ 
+ ifeq ($(platform),)
+ platform = unix
+diff --git a/sources/src/machdep/m68kops.h b/sources/src/machdep/m68kops.h
+index 672d1fa..0b3f0e2 100644
+--- a/sources/src/machdep/m68kops.h
++++ b/sources/src/machdep/m68kops.h
+@@ -11,7 +11,7 @@
+ 
+ #ifndef ANDROID
+ 
+-#if defined(__CELLOS_LV2__) || defined(_WIN32) || defined(__x86_64__) || defined(ARM) || defined(WIIU)
++#if defined(__CELLOS_LV2__) || defined(_WIN32) || defined(__x86_64__) || defined(ARM) || defined(WIIU) || defined(AARCH64)
+ 
+ #ifdef WIIU
+ #define FLAGBIT_N	31
+diff --git a/sources/src/machdep/maccess.h b/sources/src/machdep/maccess.h
+index 2916cbf..4459cd0 100644
+--- a/sources/src/machdep/maccess.h
++++ b/sources/src/machdep/maccess.h
+@@ -6,7 +6,7 @@
+   * Copyright 1996 Bernd Schmidt
+   */
+ 
+-#if defined(__CELLOS_LV2__) || defined(WIIU)
++#if defined(__CELLOS_LV2__) || defined(WIIU) || defined(AARCH64)
+ 
+ STATIC_INLINE uae_u32 do_get_mem_long (uae_u32 *a)
+ {
