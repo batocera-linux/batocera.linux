@@ -90,7 +90,10 @@ class EsSystemConf:
         command        = EsSystemConf.default_command
         if "emulators" in data:
             if "libretro" in data["emulators"]:
-                command = EsSystemConf.netplay_command
+                for libretro_core in data["emulators"]["libretro"]:
+                    if "netplay" in data["emulators"]["libretro"][libretro_core] and \
+                        data["emulators"]["libretro"][libretro_core]["netplay"] == True :
+                            command = EsSystemConf.netplay_command
 
         systemTxt =  "  <system>\n"
         systemTxt += "        <fullname>%s</fullname>\n" % (data["name"])
