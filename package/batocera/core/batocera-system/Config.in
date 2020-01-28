@@ -403,10 +403,9 @@ config BR2_PACKAGE_BATOCERA_RETROARCH
         select BR2_PACKAGE_LIBRETRO_THEODORE          # ALL
         select BR2_PACKAGE_LIBRETRO_PC98              # ALL
         select BR2_PACKAGE_LIBRETRO_DOSBOX            # ALL
+        select BR2_PACKAGE_LIBRETRO_PUAE              # ALL
 
         ### Experimental Emulators ###
-        select BR2_PACKAGE_LIBRETRO_PUAE              if BR2_PACKAGE_BATOCERA_CORES_EXPERIMENTAL # In test
-
         # select BR2_PACKAGE_LIBRETRO_SCUMMVM         if BR2_PACKAGE_BATOCERA_CORES_EXPERIMENTAL # Error starting        
         # select BR2_PACKAGE_LIBRETRO_FLYCAST         if BR2_PACKAGE_BATOCERA_CORES_EXPERIMENTAL # Compilation Error in RPI3
         # select BR2_PACKAGE_LIBRETRO_PPSSPP          if BR2_PACKAGE_BATOCERA_CORES_EXPERIMENTAL # Compilation Error 
