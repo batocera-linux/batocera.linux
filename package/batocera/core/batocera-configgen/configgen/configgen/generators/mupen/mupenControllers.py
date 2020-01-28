@@ -63,12 +63,14 @@ def defineControllerKeys(controller, systemconfig):
         if 'l2' not in controller.inputs:
             mupenmapping['pageup'] = mupenmapping['l2']
 
+        emulatedStick = False
         # if joystick1up is not available, use up/left while these keys are more used
         if 'joystick1up' not in controller.inputs:
             mupenmapping['up']    = mupenmapping['joystick1up']
             mupenmapping['down']  = mupenmapping['joystick1down']
             mupenmapping['left']  = mupenmapping['joystick1left']
             mupenmapping['right'] = mupenmapping['joystick1right']
+            emulatedStick = True
 
         # the input.xml adds 2 directions per joystick, ES handles just 1
         fakeSticks = { 'joystick2up' : 'joystick2down', 'joystick2left' : 'joystick2right'}
@@ -86,7 +88,7 @@ def defineControllerKeys(controller, systemconfig):
         for inputIdx in controller.inputs:
                 input = controller.inputs[inputIdx]
                 if input.name in mupenmapping and mupenmapping[input.name] != "":
-                        value=setControllerLine(mupenmapping, input, mupenmapping[input.name])
+                        value=setControllerLine(mupenmapping, input, mupenmapping[input.name], emulatedStick)
                         # Handle multiple inputs for a single N64 Pad input
                         if value != "":
                             if mupenmapping[input.name] not in config :
@@ -96,7 +98,7 @@ def defineControllerKeys(controller, systemconfig):
         return config
 
 
-def setControllerLine(mupenmapping, input, mupenSettingName):
+def setControllerLine(mupenmapping, input, mupenSettingName, emulatedStick):
         value = ''
         inputType = input.type
         if inputType == 'button':
@@ -113,9 +115,21 @@ def setControllerLine(mupenmapping, input, mupenSettingName):
                         # X axis : value = -1 for left, +1 for right
                         # Y axis : value = -1 for up, +1 for down
                         if input.value == "-1":
+                            if not emulatedStick:
                                 value = "axis({}-,{}+)".format(input.id, input.id)
+                            else:
+                                if mupenSettingName == "X Axis":
+                                    value = "axis({}+,{}-)".format(input.id, input.id)
+                                else:
+                                    value = "axis({}-,{}+)".format(input.id, input.id)
                         else:
+                            if not emulatedStick:
                                 value = "axis({}+,{}-)".format(input.id, input.id)
+                            else:
+                                if mupenSettingName == "X Axis":
+                                    value = "axis({}-,{}+)".format(input.id, input.id)
+                                else:
+                                    value = "axis({}+,{}-)".format(input.id, input.id)
                 else:
                         if input.value == "1":
                                 value = "axis({}+)".format(input.id)
