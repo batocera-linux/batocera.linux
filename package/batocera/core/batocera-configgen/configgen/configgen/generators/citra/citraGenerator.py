@@ -68,6 +68,14 @@ class CitraGenerator(Generator):
         if not citraConfig.has_section("Controls"):
             citraConfig.add_section("Controls")
 
+        # Options required to load the functions when the configuration file is created
+        if not citraConfig.has_option("Controls", "profiles\\size"):
+            citraConfig.set("Controls", "profile", 0)
+            citraConfig.set("Controls", "profile\\default", "true")    
+            citraConfig.set("Controls", "profiles\\1\\name", "default")
+            citraConfig.set("Controls", "profiles\\1\\name\\default", "true")
+            citraConfig.set("Controls", "profiles\\size", 1)
+
         for index in playersControllers :
             controller = playersControllers[index]
             # we only care about player 1
