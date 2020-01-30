@@ -66,8 +66,9 @@ rm -rf "${TARGET_DIR}/"{var,run,sys,tmp} || exit 1
 mkdir "${TARGET_DIR}/"{var,run,sys,tmp}  || exit 1
 
 # make /etc/shadow a file generated from /boot/batocera-boot.conf for security
-rm -f "${TARGET_DIR}/etc/shadow"                         || exit 1
-ln -sf "/run/batocera.shadow" "${TARGET_DIR}/etc/shadow" || exit 1
+rm -f "${TARGET_DIR}/etc/shadow" || exit 1
+touch "${TARGET_DIR}/run/batocera.shadow"
+ln -sf "${TARGET_DIR}/run/batocera.shadow" "${TARGET_DIR}/etc/shadow" || exit 1
 
 # fix the vt100 terminal ; can probably removed in the future
 if ! grep -qE "^TERM=vt100$" "${TARGET_DIR}/etc/profile"
@@ -102,4 +103,4 @@ AUDIOGROUP=$(grep -E "^audio:" "${TARGET_DIR}/etc/group" | cut -d : -f 3)
 sed -i -e s+'defaults.pcm.ipc_gid .*$'+'defaults.pcm.ipc_gid '"${AUDIOGROUP}"+ "${TARGET_DIR}/usr/share/alsa/alsa.conf" || exit 1
 
 # bios file
-python "package/batocera/core/batocera-scripts/scripts/batocera-systems" --createReadme > "${TARGET_DIR}/usr/share/batocera/datainit/bios/readme.txt" || exit 1
+python "${BR2_EXTERNAL_BATOCERA_PATH}/package/batocera/core/batocera-scripts/scripts/batocera-systems" --createReadme > "${TARGET_DIR}/usr/share/batocera/datainit/bios/readme.txt" || exit 1
