@@ -1,0 +1,13 @@
+diff --git a/Makefile.libretro b/Makefile.libretro
+index 26ee1c1..d5341f2 100644
+--- a/Makefile.libretro
++++ b/Makefile.libretro
+@@ -52,7 +52,7 @@ ifeq ($(platform), unix)
+ 	SHARED := -shared
+ 	DONT_COMPILE_IN_ZLIB = 1
+ 	CFLAGS += -DFAMEC_NO_GOTOS
+-	use_sh2drc = 1
++	#use_sh2drc = 1
+ ifneq ($(findstring SunOS,$(shell uname -a)),)
+ 	CC=gcc
+ endif

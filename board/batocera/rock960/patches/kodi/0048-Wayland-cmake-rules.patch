@@ -1,0 +1,165 @@
+From 0e00ffb2ae03e65b813e16f45ddfaac60557383b Mon Sep 17 00:00:00 2001
+From: memeka <mihailescu2m@gmail.com>
+Date: Mon, 9 Oct 2017 13:29:51 +1030
+Subject: [PATCH 48/62] Wayland: cmake rules
+
+Signed-off-by: memeka <mihailescu2m@gmail.com>
+---
+ project/cmake/CMakeLists.txt                       | 10 +++-
+ project/cmake/modules/FindWayland.cmake            | 44 +++++++++++++++++
+ project/cmake/treedata/optional/common/wayland.txt |  1 +
+ xbmc/windowing/wayland/CMakeLists.txt              | 55 ++++++++++++++++++++++
+ 4 files changed, 108 insertions(+), 2 deletions(-)
+ create mode 100644 project/cmake/modules/FindWayland.cmake
+ create mode 100644 project/cmake/treedata/optional/common/wayland.txt
+ create mode 100644 xbmc/windowing/wayland/CMakeLists.txt
+
+diff --git a/project/cmake/CMakeLists.txt b/project/cmake/CMakeLists.txt
+index aeb1ff4..562a8ce 100644
+--- a/project/cmake/CMakeLists.txt
++++ b/project/cmake/CMakeLists.txt
+@@ -52,6 +52,7 @@ if(UNIX)
+   option(ENABLE_INTERNAL_CROSSGUID "Enable internal crossguid?" ON)
+   option(ENABLE_OPENSSL     "Enable OpenSSL?" ON)
+   option(ENABLE_SDL         "Enable SDL?" OFF)
++  option(ENABLE_WAYLAND     "Enable Wayland?" OFF)
+   if(CORE_SYSTEM_NAME STREQUAL linux OR CORE_SYSTEM_NAME STREQUAL freebsd)
+     option(ENABLE_X11         "Enable X11 support?" ON)
+     option(ENABLE_AML         "Enable AML?" OFF)
+@@ -200,8 +201,13 @@ if(NOT WIN32)
+   else()
+     core_optional_dep(OpenGLES)
+     if(OPENGLES_FOUND)
+-      core_optional_dep(X ENABLE_X11)
+-      core_optional_dep(LibDRM ENABLE_X11)
++      if (ENABLE_WAYLAND)
++        core_require_dep(Wayland ENABLE_WAYLAND)
++        core_optional_dep(LibDRM ENABLE_WAYLAND)
++      else()
++        core_optional_dep(X ENABLE_X11)
++        core_optional_dep(LibDRM ENABLE_X11)
++      endif()
+     endif()
+   endif()
+   if(NOT APPLE)
+diff --git a/project/cmake/modules/FindWayland.cmake b/project/cmake/modules/FindWayland.cmake
+new file mode 100644
+index 0000000..27bd08f
+--- /dev/null
++++ b/project/cmake/modules/FindWayland.cmake
+@@ -0,0 +1,44 @@
++#.rst:
++# FindWayland
++# -----------
++# Finds the Wayland library
++#
++# This will will define the following variables::
++#
++# WAYLAND_FOUND        - the system has Wayland
++# WAYLAND_INCLUDE_DIRS - the Wayland include directory
++# WAYLAND_LIBRARIES    - the Wayland libraries
++# WAYLAND_DEFINITIONS  - the Wayland definitions
++
++
++if(PKG_CONFIG_FOUND)
++  pkg_check_modules (PC_WAYLAND wayland-client wayland-egl xkbcommon QUIET)
++endif()
++
++find_path(WAYLAND_INCLUDE_DIR NAMES wayland-client.h
++                          PATHS ${PC_WAYLAND_INCLUDE_DIRS})
++
++find_library(WAYLAND_CLIENT_LIBRARY NAMES wayland-client
++                         PATHS ${PC_WAYLAND_LIBRARIES} ${PC_WAYLAND_LIBRARY_DIRS})
++
++find_library(WAYLAND_EGL_LIBRARY NAMES wayland-egl
++                         PATHS ${PC_WAYLAND_LIBRARIES} ${PC_WAYLAND_LIBRARY_DIRS})
++
++find_library(XKBCOMMON_LIBRARY NAMES xkbcommon
++                         PATHS ${PC_WAYLAND_LIBRARIES} ${PC_WAYLAND_LIBRARY_DIRS})
++
++include (FindPackageHandleStandardArgs)
++find_package_handle_standard_args (WAYLAND
++  REQUIRED_VARS
++  WAYLAND_INCLUDE_DIR
++  WAYLAND_CLIENT_LIBRARY
++  WAYLAND_EGL_LIBRARY
++  XKBCOMMON_LIBRARY)
++
++if (WAYLAND_FOUND)
++  set(WAYLAND_LIBRARIES ${WAYLAND_CLIENT_LIBRARY} ${WAYLAND_EGL_LIBRARY} ${XKBCOMMON_LIBRARY})
++  set(WAYLAND_INCLUDE_DIRS ${PC_WAYLAND_INCLUDE_DIRS})
++  set(WAYLAND_DEFINITIONS -DHAVE_WAYLAND=1)
++endif()
++
++mark_as_advanced (WAYLAND_LIBRARY WAYLAND_INCLUDE_DIR)
+diff --git a/project/cmake/treedata/optional/common/wayland.txt b/project/cmake/treedata/optional/common/wayland.txt
+new file mode 100644
+index 0000000..61451db
+--- /dev/null
++++ b/project/cmake/treedata/optional/common/wayland.txt
+@@ -0,0 +1 @@
++xbmc/windowing/wayland windowing/wayland # WAYLAND
+diff --git a/xbmc/windowing/wayland/CMakeLists.txt b/xbmc/windowing/wayland/CMakeLists.txt
+new file mode 100644
+index 0000000..c8526b8
+--- /dev/null
++++ b/xbmc/windowing/wayland/CMakeLists.txt
+@@ -0,0 +1,55 @@
++set(SOURCES Callback.cpp
++            Compositor.cpp
++            Display.cpp
++            EGLNativeTypeWayland.cpp
++            EventLoop.cpp
++            InputFactory.cpp
++            Keyboard.cpp
++            KeyboardProcessor.cpp
++            OpenGLSurface.cpp
++            Output.cpp
++            Pointer.cpp
++            PointerProcessor.cpp
++            PollThread.cpp
++            Region.cpp
++            Registry.cpp
++            Seat.cpp
++            Shell.cpp
++            ShellSurface.cpp
++            Surface.cpp
++            Wayland12EventQueueStrategy.cpp
++            WinEventsWayland.cpp
++            XBMCConnection.cpp
++            XBMCSurface.cpp
++            ../../input/linux/XKBCommonKeymap.cpp
++            )
++
++set(HEADERS Callback.h
++            Compositor.h
++            CursorManager.h
++            Display.h
++            EGLNativeTypeWayland.h
++            EventListener.h
++            EventLoop.h
++            EventQueueStrategy.h
++            InputFactory.h
++            Keyboard.h
++            KeyboardProcessor.h
++            OpenGLSurface.h
++            Output.h
++            Pointer.h
++            PointerProcessor.h
++            PollThread.h
++            Region.h
++            Registry.h
++            Seat.h
++            Shell.h
++            ShellSurface.h
++            Surface.h
++            TimeoutManager.h
++            Wayland12EventQueueStrategy.h
++            WinEventsWayland.h
++            XBMCConnection.h
++            XBMCSurface.h)
++
++core_add_library(windowing_WAYLAND)
+-- 
+2.7.4
+

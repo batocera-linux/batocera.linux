@@ -1,0 +1,95 @@
+From 3d5d4d23ec86ca5c5cae72262a5aa10aba3a7836 Mon Sep 17 00:00:00 2001
+From: Max Kellermann <max@duempel.org>
+Date: Mon, 24 Apr 2017 14:38:07 +0200
+Subject: [PATCH 26/62] Windowing/EGL: add method GetWaylandDisplay()
+
+Signed-off-by: memeka <mihailescu2m@gmail.com>
+---
+ xbmc/windowing/egl/EGLWrapper.cpp   | 17 +++++++++++++++++
+ xbmc/windowing/egl/EGLWrapper.h     |  4 ++++
+ xbmc/windowing/egl/WinSystemEGL.cpp |  9 +++++++++
+ xbmc/windowing/egl/WinSystemEGL.h   |  5 +++++
+ 4 files changed, 35 insertions(+)
+
+diff --git a/xbmc/windowing/egl/EGLWrapper.cpp b/xbmc/windowing/egl/EGLWrapper.cpp
+index 60d52a3..3200577 100644
+--- a/xbmc/windowing/egl/EGLWrapper.cpp
++++ b/xbmc/windowing/egl/EGLWrapper.cpp
+@@ -165,6 +165,23 @@ void CEGLWrapper::DestroyNativeWindow()
+     m_nativeTypes->DestroyNativeWindow();
+ }
+ 
++#ifdef HAVE_WAYLAND
++
++struct wl_display *CEGLWrapper::GetWaylandDisplay()
++{
++  auto *wl = dynamic_cast<CEGLNativeTypeWayland *>(m_nativeTypes);
++  if (!wl)
++    return NULL;
++
++  EGLNativeDisplayType *nativeDisplay = NULL;
++  if (!m_nativeTypes->GetNativeDisplay((XBNativeDisplayType**)&nativeDisplay))
++    return NULL;
++
++  return *nativeDisplay;
++}
++
++#endif
++
+ bool CEGLWrapper::SetNativeResolution(RESOLUTION_INFO& res)
+ {
+   if (!m_nativeTypes)
+diff --git a/xbmc/windowing/egl/EGLWrapper.h b/xbmc/windowing/egl/EGLWrapper.h
+index 1686969..d3e7cae 100644
+--- a/xbmc/windowing/egl/EGLWrapper.h
++++ b/xbmc/windowing/egl/EGLWrapper.h
+@@ -41,6 +41,10 @@ public:
+   void DestroyNativeDisplay();
+   void DestroyNativeWindow();
+ 
++#ifdef HAVE_WAYLAND
++  struct wl_display *GetWaylandDisplay();
++#endif
++
+   bool SetNativeResolution(RESOLUTION_INFO& res);
+   bool ProbeResolutions(std::vector<RESOLUTION_INFO> &resolutions);
+   bool ShowWindow(bool show);
+diff --git a/xbmc/windowing/egl/WinSystemEGL.cpp b/xbmc/windowing/egl/WinSystemEGL.cpp
+index 60a1a8d..933dc9b 100644
+--- a/xbmc/windowing/egl/WinSystemEGL.cpp
++++ b/xbmc/windowing/egl/WinSystemEGL.cpp
+@@ -555,6 +555,15 @@ EGLConfig CWinSystemEGL::GetEGLConfig()
+   return m_config;
+ }
+ 
++#ifdef HAVE_WAYLAND
++
++struct wl_display *CWinSystemEGL::GetWaylandDisplay()
++{
++  return m_egl->GetWaylandDisplay();
++}
++
++#endif
++
+ bool CWinSystemEGL::ClampToGUIDisplayLimits(int &width, int &height)
+ {
+   width = width > m_nWidth ? m_nWidth : width;
+diff --git a/xbmc/windowing/egl/WinSystemEGL.h b/xbmc/windowing/egl/WinSystemEGL.h
+index 50416b5..f98487b 100644
+--- a/xbmc/windowing/egl/WinSystemEGL.h
++++ b/xbmc/windowing/egl/WinSystemEGL.h
+@@ -69,6 +69,11 @@ public:
+ 
+   EGLDisplay    GetEGLDisplay();
+   EGLContext    GetEGLContext();
++
++#ifdef HAVE_WAYLAND
++  struct wl_display *GetWaylandDisplay();
++#endif
++
+ protected:
+   virtual void  PresentRenderImpl(bool rendered);
+   virtual void  SetVSyncImpl(bool enable);
+-- 
+2.7.4
+
