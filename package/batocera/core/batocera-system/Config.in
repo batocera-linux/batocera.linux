@@ -395,8 +395,8 @@ config BR2_PACKAGE_BATOCERA_RETROARCH
         select BR2_PACKAGE_LIBRETRO_MGBA              # ALL
         select BR2_PACKAGE_LIBRETRO_VBA_M             # ALL
         select BR2_PACKAGE_LIBRETRO_MAME2003_PLUS     # ALL
-        select BR2_PACKAGE_LIBRETRO_MESEN             # ALL
-        select BR2_PACKAGE_LIBRETRO_MESEN_S           # ALL
+        select BR2_PACKAGE_LIBRETRO_MESEN             if !BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA
+        select BR2_PACKAGE_LIBRETRO_MESEN_S           if !BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA
         select BR2_PACKAGE_LIBRETRO_FREEINTV          # ALL
         select BR2_PACKAGE_LIBRETRO_FCEUMM            # ALL
         select BR2_PACKAGE_LIBRETRO_NESTOPIA          # ALL
