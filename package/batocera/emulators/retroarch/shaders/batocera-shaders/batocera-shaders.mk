@@ -30,7 +30,7 @@ else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_ODROIDN2),y)
 	BATOCERA_SHADERS_SYSTEM=odroidn2
 endif
 
-BATOCERA_SHADERS_DIRIN=package/batocera/emulators/retroarch/shaders/batocera-shaders/configs
+BATOCERA_SHADERS_DIRIN=$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/retroarch/shaders/batocera-shaders/configs
 
 define BATOCERA_SHADERS_INSTALL_TARGET_CMDS
         mkdir -p $(TARGET_DIR)/usr/share/batocera/shaders/configs

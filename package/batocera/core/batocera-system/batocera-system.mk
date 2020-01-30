@@ -7,7 +7,7 @@
 BATOCERA_SYSTEM_SOURCE=
 
 BATOCERA_SYSTEM_VERSION = 5.25-dev
-BATOCERA_SYSTEM_DATE_TIME = $(shell date "+%Y/%m/%d %H:%M") 
+BATOCERA_SYSTEM_DATE_TIME = $(shell date "+%Y/%m/%d %H:%M")
 BATOCERA_SYSTEM_DEPENDENCIES = tzdata
 
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI3),y)
@@ -82,10 +82,10 @@ define BATOCERA_SYSTEM_INSTALL_TARGET_CMDS
 
 	# datainit
 	mkdir -p $(TARGET_DIR)/usr/share/batocera/datainit/system
-	cp package/batocera/core/batocera-system/$(BATOCERA_SYSTEM_BATOCERA_CONF)/batocera.conf $(TARGET_DIR)/usr/share/batocera/datainit/system
+	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-system/$(BATOCERA_SYSTEM_BATOCERA_CONF)/batocera.conf $(TARGET_DIR)/usr/share/batocera/datainit/system
 
 	# batocera-boot.conf
-        $(INSTALL) -D -m 0644 package/batocera/core/batocera-system/batocera-boot.conf $(BINARIES_DIR)/$(BATOCERA_SYSTEM_SUBDIR)/batocera-boot.conf
+        $(INSTALL) -D -m 0644 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-system/batocera-boot.conf $(BINARIES_DIR)/$(BATOCERA_SYSTEM_SUBDIR)/batocera-boot.conf
 
 	# mounts
 	mkdir -p $(TARGET_DIR)/boot $(TARGET_DIR)/overlay $(TARGET_DIR)/userdata
