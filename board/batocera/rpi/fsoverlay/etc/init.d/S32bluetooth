@@ -4,25 +4,31 @@
 #
 
 systemsetting="python /usr/lib/python2.7/site-packages/configgen/settings/batoceraSettings.py"
-btTar=/userdata/system/bluetooth/bluetooth.tar
 
 case "$1" in
   start)
+        batocera-bluetooth restore
         enabled="`$systemsetting  -command load -key controllers.bluetooth.enabled`"
         if [ "$enabled" == "1" ];then
+         	btaddr="`$systemsetting  -command load -key bluetooth.adapter`"
         	settings_version="`$systemsetting -command load -key controllers.ps3.driver`"
         	if [ "$settings_version" != "bluez" ]; then BLUETOOTHD_ARGS="--noplugin=sixaxis"; else  BLUETOOTHD_ARGS="--noplugin=sixaxispair"; fi
 		rfkill unblock bluetooth # soft unblock bluetooth
-		start-stop-daemon -S -q -m -p /var/run/bluetoothd.pid  --exec /usr/libexec/bluetooth/bluetoothd -- $BLUETOOTHD_ARGS &	
+		start-stop-daemon -S -q -m -p /var/run/bluetoothd.pid      --exec /usr/libexec/bluetooth/bluetoothd -- $BLUETOOTHD_ARGS &	
 		/usr/bin/hciattach /dev/ttyAMA0 bcm43xx 921600 # specific rpi0 and rpi3
                 /usr/bin/hciconfig hci0 up piscan              # specific rpi
-		start-stop-daemon -S -q -m -p /var/run/btDaemon.pid    --exec /usr/bin/batocera-btDaemon > /dev/null 2>&1 &
+		if test -n "${btaddr}"
+		then
+		    start-stop-daemon -S -q -m -p /var/run/bluetooth-agent.pid --exec /usr/bin/batocera-bluetooth-agent -- --device "${btaddr}" &
+		else
+		    start-stop-daemon -S -q -m -p /var/run/bluetooth-agent.pid --exec /usr/bin/batocera-bluetooth-agent &
+		fi
         fi
         ;;
   stop)
-	start-stop-daemon -K -q -p /var/run/btDaemon.pid
+	start-stop-daemon -K -q -p /var/run/bluetooth-agent.pid
 	start-stop-daemon -K -q -p /var/run/bluetoothd.pid
-	rm "$btTar" ; tar cvf "$btTar" /var/lib/bluetooth/ > /dev/null
+	batocera-bluetooth save
 	;;
   restart|reload)
         "$0" stop
