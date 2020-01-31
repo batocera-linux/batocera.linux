@@ -12,9 +12,6 @@ n64:
     # rotation
     mupen64plus.Video-General.Rotate: 1
     mupen64plus.Video-Glide64mk2.aspect: 2
-megadrive:
-  emulator: libretro
-  core:     picodrive
 psp:
   options:
     frameskip: true
@@ -22,12 +19,12 @@ psp:
 dreamcast:
   options:
     reicast.config.rend.Rotate90: yes
-neogeocd:
-  emulator: libretro
-  core:     fbneo
 amiga:
   emulator: amiberry
   core:     A1200
 amigacd32:
   emulator: amiberry
   core:     CD32
+lynx:
+  emulator: libretro
+  core:     handy
