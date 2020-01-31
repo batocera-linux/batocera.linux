@@ -40,7 +40,11 @@ def generateControllerConfig_emulatedwiimotes(playersControllers, rom):
         'Tilt/Left':  'Tilt/Right',
         'Tilt/Forward': 'Tilt/Backward',
         'Nunchuk/Stick/Up' :  'Nunchuk/Stick/Down',
-        'Nunchuk/Stick/Left': 'Nunchuk/Stick/Right'
+        'Nunchuk/Stick/Left': 'Nunchuk/Stick/Right',
+        'Classic/Right Stick/Up' : 'Classic/Right Stick/Down',
+        'Classic/Right Stick/Left' : 'Classic/Right Stick/Right',
+        'Classic/Left Stick/Up' : 'Classic/Left Stick/Down',
+        'Classic/Left Stick/Left' : 'Classic/Left Stick/Right'
     }
 
     extraOptions = {}
@@ -109,12 +113,8 @@ def generateControllerConfig_emulatedwiimotes(playersControllers, rom):
         wiiMapping['right'] = 'Classic/D-Pad/Right'
         wiiMapping['joystick1up'] = 'Classic/Left Stick/Up'
         wiiMapping['joystick1left'] = 'Classic/Left Stick/Left'
-        wiiMapping['joystick1down'] = 'Classic/Left Stick/Down'
-        wiiMapping['joystick1right'] = 'Classic/Left Stick/Right'
         wiiMapping['joystick2up'] = 'Classic/Right Stick/Up'
         wiiMapping['joystick2left'] = 'Classic/Right Stick/Left'
-        wiiMapping['joystick2down'] = 'Classic/Right Stick/Down'
-        wiiMapping['joystick2right'] = 'Classic/Right Stick/Right'
 
     generateControllerConfig_any(playersControllers, "WiimoteNew.ini", "Wiimote", wiiMapping, wiiReverseAxes, None, extraOptions)
 
