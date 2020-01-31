@@ -16,7 +16,6 @@ define BATOCERA_SCRIPTS_INSTALL_TARGET_CMDS
 	install -m 0755 package/batocera/core/batocera-scripts/scripts/bluetooth/bluezutils.py            $(TARGET_DIR)/usr/lib/python2.7/ # any variable ?
 	install -m 0755 package/batocera/core/batocera-scripts/scripts/bluetooth/batocera-bluetooth-agent $(TARGET_DIR)/usr/bin/
 	install -m 0755 package/batocera/core/batocera-scripts/scripts/bluetooth/batocera-bt-list-devices $(TARGET_DIR)/usr/bin/
-	install -m 0755 package/batocera/core/batocera-scripts/scripts/bluetooth/batocera-bt-pair-device  $(TARGET_DIR)/usr/bin/
 	install -m 0755 package/batocera/core/batocera-scripts/scripts/bluetooth/batocera-bt-test-device  $(TARGET_DIR)/usr/bin/
 
 	install -m 0755 package/batocera/core/batocera-scripts/scripts/batocera-settings               $(TARGET_DIR)/usr/bin/
