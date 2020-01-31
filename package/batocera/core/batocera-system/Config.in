@@ -244,7 +244,7 @@ config BR2_PACKAGE_BATOCERA_ALL_SYSTEMS
         select BR2_PACKAGE_BATOCERA_RETROARCH   # ALL # retroarch (multiple systems)
         select BR2_PACKAGE_MOONLIGHT_EMBEDDED   if !BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA # moonlight
         select BR2_PACKAGE_SCUMMVM              # ALL # scummvm
-        select BR2_PACKAGE_DOSBOX               # ALL # dos
+        select BR2_PACKAGE_DOSBOX               if !BR2_PACKAGE_BATOCERA_TARGET_ROCK960 # ALL # dos
         select BR2_PACKAGE_VICE                 # ALL # c64
         select BR2_PACKAGE_LINAPPLE_PIE         # ALL # apple II
 
@@ -412,7 +412,7 @@ config BR2_PACKAGE_BATOCERA_RETROARCH
         select BR2_PACKAGE_LIBRETRO_SNES9X_NEXT       # ALL
         select BR2_PACKAGE_LIBRETRO_THEODORE          # ALL
         select BR2_PACKAGE_LIBRETRO_PC98              # ALL
-        select BR2_PACKAGE_LIBRETRO_DOSBOX            # ALL
+        select BR2_PACKAGE_LIBRETRO_DOSBOX            if !BR2_PACKAGE_BATOCERA_TARGET_ROCK960 # ALL
         select BR2_PACKAGE_LIBRETRO_PUAE              # ALL
 
         ### Experimental Emulators ###
