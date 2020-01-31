@@ -16,7 +16,7 @@ index 8058947..e41a746 100644
      int posted;
  
 +    // ignore axis events until a button is released
-+    if (joystick->initial_state_is_valid == SDL_FALSE) {
++    if (joystick->initial_state_is_valid == SDL_FALSE && joystick->naxes >2) {
 +      return;
 +    }
 +
