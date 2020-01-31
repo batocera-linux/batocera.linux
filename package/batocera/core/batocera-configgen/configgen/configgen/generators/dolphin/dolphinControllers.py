@@ -40,7 +40,11 @@ def generateControllerConfig_emulatedwiimotes(playersControllers, rom):
         'Tilt/Left':  'Tilt/Right',
         'Tilt/Forward': 'Tilt/Backward',
         'Nunchuk/Stick/Up' :  'Nunchuk/Stick/Down',
-        'Nunchuk/Stick/Left': 'Nunchuk/Stick/Right'
+        'Nunchuk/Stick/Left': 'Nunchuk/Stick/Right',
+        'Classic/Right Stick/Up' : 'Classic/Right Stick/Down',
+        'Classic/Right Stick/Left' : 'Classic/Right Stick/Right',
+        'Classic/Left Stick/Up' : 'Classic/Left Stick/Down',
+        'Classic/Left Stick/Left' : 'Classic/Left Stick/Right'
     }
 
     extraOptions = {}
@@ -90,6 +94,27 @@ def generateControllerConfig_emulatedwiimotes(playersControllers, rom):
         wiiMapping['r2'] = 'Nunchuk/Buttons/Z'
         wiiMapping['joystick2up']   = 'Nunchuk/Stick/Up'
         wiiMapping['joystick2left'] = 'Nunchuk/Stick/Left'
+
+    if ".cc." in rom:  #Classic Controller Settings
+        extraOptions['Extension']   = 'Classic'
+        wiiMapping['x'] = 'Classic/Buttons/X'
+        wiiMapping['y'] = 'Classic/Buttons/Y'
+        wiiMapping['b'] = 'Classic/Buttons/B'
+        wiiMapping['a'] = 'Classic/Buttons/A'
+        wiiMapping['select'] = 'Classic/Buttons/-'
+        wiiMapping['start'] = 'Classic/Buttons/+'
+        wiiMapping['pageup'] = 'Classic/Triggers/L'
+        wiiMapping['pagedown'] = 'Classic/Triggers/R'
+        wiiMapping['l2'] = 'Classic/Buttons/ZL'
+        wiiMapping['r2'] = 'Classic/Buttons/ZR'
+        wiiMapping['up'] = 'Classic/D-Pad/Up'
+        wiiMapping['down'] = 'Classic/D-Pad/Down'
+        wiiMapping['left'] = 'Classic/D-Pad/Left'
+        wiiMapping['right'] = 'Classic/D-Pad/Right'
+        wiiMapping['joystick1up'] = 'Classic/Left Stick/Up'
+        wiiMapping['joystick1left'] = 'Classic/Left Stick/Left'
+        wiiMapping['joystick2up'] = 'Classic/Right Stick/Up'
+        wiiMapping['joystick2left'] = 'Classic/Right Stick/Left'
 
     generateControllerConfig_any(playersControllers, "WiimoteNew.ini", "Wiimote", wiiMapping, wiiReverseAxes, None, extraOptions)
 
