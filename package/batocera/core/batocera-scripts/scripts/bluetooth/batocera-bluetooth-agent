@@ -23,16 +23,22 @@ def connect_device(path, address, properties):
   trusted = False
   connected = False
 
+  rproperties = {}
   # Get the adapter name and bt mac
   for key, value in properties.iteritems():
     if type(value) is dbus.String:
       value = unicode(value).encode('ascii', 'replace')
-    if (key == "Trusted"):
-      trusted = value
-    if (key == "Name"):
-      devName = value
-    elif (key == "Connected"):
-      connected = value
+    rproperties[key] = value
+
+      
+  trusted   = rproperties["Trusted"]
+  devName   = rproperties["Name"]
+  connected = rproperties["Connected"]
+
+  # skip some devices
+  if properties["Icon"] in [ "audio-card" , "phone" ]:
+    logging.info("Skipping device {}".format(getDevName(rproperties)));
+    return
 
   if not trusted:
     # trust only when this file is present
@@ -43,7 +49,7 @@ def connect_device(path, address, properties):
 
   # Connect if Trusted
   if not connected:
-    devName = getDevName(properties)
+    devName = getDevName(rproperties)
     if trusted:
       logging.info("Connecting {} ...".format(devName))
       doConnect(address, devName)
