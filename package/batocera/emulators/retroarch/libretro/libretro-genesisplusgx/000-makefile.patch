@@ -1,8 +1,8 @@
 diff --git a/Makefile.libretro b/Makefile.libretro
-index 1f8a890..da1b081 100644
+index 1f8a890..c585f4f 100644
 --- a/Makefile.libretro
 +++ b/Makefile.libretro
-@@ -56,6 +56,20 @@ ifneq (,$(findstring unix,$(platform)))
+@@ -56,6 +56,27 @@ ifneq (,$(findstring unix,$(platform)))
     ENDIANNESS_DEFINES := -DLSB_FIRST -DBYTE_ORDER=LITTLE_ENDIAN
     PLATFORM_DEFINES := -DHAVE_ZLIB
  
@@ -18,6 +18,13 @@ index 1f8a890..da1b081 100644
 +      ENDIANNESS_DEFINES += -DALIGN_LONG
 +      CFLAGS += -fomit-frame-pointer -ffast-math
 +      PLATFORM_DEFINES += -DARM -marm -mcpu=cortex-a35 -mtune=cortex-a35 -mfloat-abi=hard
++   endif
++
++   # Odroid-N2
++   ifneq (,$(findstring odroidn2,$(platform)))
++      ENDIANNESS_DEFINES += -DALIGN_LONG
++      CFLAGS += -fomit-frame-pointer -ffast-math
++      PLATFORM_DEFINES += -DARM -marm -mcpu=cortex-a53 -mtune=cortex-a53 -mfloat-abi=hard
 +   endif
 +
     # Raspberry Pi
