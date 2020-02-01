@@ -48,8 +48,9 @@ do_remove() {
 
 do_trust() {
     touch /var/run/bluetoothd.trusting
-    trap "rm /var/run/bluetoothd.trusting" 2 3
+    trap "rm -f /var/run/bluetoothd.trusting" 2 3
     sleep 60
+    rm -f "/var/run/bluetoothd.trusting"
 }
 
 case "${ACTION}" in
