@@ -43,6 +43,7 @@ do_remove() {
 	return 1
     fi
 
+    do_save # save
     return 0
 }
 
@@ -51,6 +52,7 @@ do_trust() {
     trap "rm -f /var/run/bluetoothd.trusting" 2 3
     sleep 60
     rm -f "/var/run/bluetoothd.trusting"
+    do_save # save
 }
 
 case "${ACTION}" in
