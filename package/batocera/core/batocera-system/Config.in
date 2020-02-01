@@ -412,8 +412,8 @@ config BR2_PACKAGE_BATOCERA_RETROARCH
         select BR2_PACKAGE_LIBRETRO_SNES9X_NEXT       # ALL
         select BR2_PACKAGE_LIBRETRO_THEODORE          # ALL
         select BR2_PACKAGE_LIBRETRO_PC98              # ALL
-        select BR2_PACKAGE_LIBRETRO_DOSBOX            if !BR2_PACKAGE_BATOCERA_TARGET_ROCK960 # ALL
-        select BR2_PACKAGE_LIBRETRO_PUAE              # ALL
+        select BR2_PACKAGE_LIBRETRO_DOSBOX            if !BR2_PACKAGE_BATOCERA_TARGET_ROCK960
+        select BR2_PACKAGE_LIBRETRO_PUAE              if !BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA 
 
         ### Experimental Emulators ###
         # select BR2_PACKAGE_LIBRETRO_SCUMMVM         if BR2_PACKAGE_BATOCERA_CORES_EXPERIMENTAL # Error starting        
