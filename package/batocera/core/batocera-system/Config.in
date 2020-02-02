@@ -307,10 +307,7 @@ config BR2_PACKAGE_BATOCERA_RETROARCH
 							 !BR2_PACKAGE_BATOCERA_TARGET_MIQI
 							 # PARALLEL_N64
 
-        select BR2_PACKAGE_LIBRETRO_POCKETSNES        if BR2_PACKAGE_BATOCERA_TARGET_RPI_ANY || \
-	                                                 BR2_PACKAGE_BATOCERA_TARGET_XU4     || \
-							 BR2_PACKAGE_BATOCERA_TARGET_LEGACYXU4
-							 # POCKETSNES
+        select BR2_PACKAGE_LIBRETRO_POCKETSNES        if BR2_PACKAGE_BATOCERA_TARGET_RPI_ANY # POCKETSNES
 
         select BR2_PACKAGE_LIBRETRO_PCSX              if !BR2_PACKAGE_BATOCERA_TARGET_RPI1 # PCSX
                
@@ -405,8 +402,6 @@ config BR2_PACKAGE_BATOCERA_RETROARCH
         select BR2_PACKAGE_LIBRETRO_MGBA              # ALL
         select BR2_PACKAGE_LIBRETRO_VBA_M             # ALL
         select BR2_PACKAGE_LIBRETRO_MAME2003_PLUS     # ALL
-        select BR2_PACKAGE_LIBRETRO_MESEN             if !BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA && !BR2_PACKAGE_BATOCERA_TARGET_ODROIDN2
-        select BR2_PACKAGE_LIBRETRO_MESEN_S           if !BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA && !BR2_PACKAGE_BATOCERA_TARGET_ODROIDN2
         select BR2_PACKAGE_LIBRETRO_FREEINTV          # ALL
         select BR2_PACKAGE_LIBRETRO_FCEUMM            # ALL
         select BR2_PACKAGE_LIBRETRO_NESTOPIA          # ALL
@@ -415,7 +410,19 @@ config BR2_PACKAGE_BATOCERA_RETROARCH
         select BR2_PACKAGE_LIBRETRO_THEODORE          # ALL
         select BR2_PACKAGE_LIBRETRO_PC98              # ALL
         select BR2_PACKAGE_LIBRETRO_DOSBOX            if !BR2_PACKAGE_BATOCERA_TARGET_ROCK960
-        select BR2_PACKAGE_LIBRETRO_PUAE              if !BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA 
+        select BR2_PACKAGE_LIBRETRO_PUAE              if !BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA
+        select BR2_PACKAGE_LIBRETRO_MESEN             if !BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA && \
+                                                         !BR2_PACKAGE_BATOCERA_TARGET_ODROIDN2  && \
+                                                         !BR2_PACKAGE_BATOCERA_TARGET_LEGACYXU4 && \
+                                                         !BR2_PACKAGE_BATOCERA_TARGET_XU4       && \
+                                                         !BR2_PACKAGE_BATOCERA_TARGET_ROCKPRO64
+                                                         # MESEN
+        select BR2_PACKAGE_LIBRETRO_MESEN_S           if !BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA && \
+                                                         !BR2_PACKAGE_BATOCERA_TARGET_ODROIDN2  && \
+                                                         !BR2_PACKAGE_BATOCERA_TARGET_LEGACYXU4 && \
+                                                         !BR2_PACKAGE_BATOCERA_TARGET_XU4       && \
+                                                         !BR2_PACKAGE_BATOCERA_TARGET_ROCKPRO64
+                                                         # MESEN-S
 
         ### Experimental Emulators ###
         # select BR2_PACKAGE_LIBRETRO_SCUMMVM         if BR2_PACKAGE_BATOCERA_CORES_EXPERIMENTAL # Error starting        
