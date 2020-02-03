@@ -140,6 +140,7 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
     # tools
     select BR2_PACKAGE_OPENVPN
     select BR2_PACKAGE_I2C_TOOLS
+    select BR2_PACKAGE_MDADM # RAID
 
     # gpio controllers
     select BR2_PACKAGE_DB9_GPIO_RPI     if BR2_PACKAGE_BATOCERA_TARGET_RPI_ANY
