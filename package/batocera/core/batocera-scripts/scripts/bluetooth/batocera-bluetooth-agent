@@ -24,9 +24,9 @@ def connect_device(path, address, properties):
   connected = False
 
   # avoid devices without interesting information
-  if "Trusted" not in rproperties:
+  if "Trusted" not in properties:
     return
-  if "Connected" not in rproperties:
+  if "Connected" not in properties:
     return
 
   rproperties = {}
