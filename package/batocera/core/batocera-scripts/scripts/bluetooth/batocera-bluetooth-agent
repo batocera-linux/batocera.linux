@@ -23,6 +23,12 @@ def connect_device(path, address, properties):
   trusted = False
   connected = False
 
+  # avoid devices without interesting information
+  if "Trusted" not in rproperties:
+    return
+  if "Connected" not in rproperties:
+    return
+
   rproperties = {}
   # Get the adapter name and bt mac
   for key, value in properties.iteritems():
@@ -30,9 +36,8 @@ def connect_device(path, address, properties):
       value = unicode(value).encode('ascii', 'replace')
     rproperties[key] = value
 
-      
   trusted   = rproperties["Trusted"]
-  devName   = rproperties["Name"]
+  devName = getDevName(rproperties)
   connected = rproperties["Connected"]
 
   # skip some devices
@@ -49,7 +54,6 @@ def connect_device(path, address, properties):
 
   # Connect if Trusted
   if not connected:
-    devName = getDevName(rproperties)
     if trusted:
       logging.info("Connecting {} ...".format(devName))
       doConnect(address, devName)
