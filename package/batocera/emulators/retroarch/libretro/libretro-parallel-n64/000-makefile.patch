@@ -1,0 +1,59 @@
+diff --git a/Makefile b/Makefile
+index 972392d..f4e523b 100644
+--- a/Makefile
++++ b/Makefile
+@@ -57,6 +57,8 @@ else ifneq (,$(findstring rpi,$(platform)))
+    override platform += unix
+ else ifneq (,$(findstring odroid,$(platform)))
+    override platform += unix
++else ifneq (,$(findstring rockpro64,$(platform)))
++   override platform += unix
+ endif
+ 
+ # system platform
+@@ -134,6 +136,7 @@ ifneq (,$(findstring unix,$(platform)))
+ 
+    # Raspberry Pi
+    ifneq (,$(findstring rpi,$(platform)))
++      CPUFLAGS += -DARM_FIX
+       GLES = 1
+ 
+       ifneq (,$(findstring mesa,$(platform)))
+@@ -157,12 +160,23 @@ ifneq (,$(findstring unix,$(platform)))
+       endif
+    endif
+ 
++   # RockPro64
++   ifneq (,$(findstring rockpro64,$(platform)))
++      GLES = 1
++      GL_LIB := -lGLESv2
++      CPUFLAGS += -DNO_ASM -DARM -D__arm__ -DARM_ASM -D__NEON_OPT -DNOSSE -DARM_FIX
++      CPUFLAGS += -marm -mfloat-abi=hard -mfpu=neon
++      HAVE_NEON = 1
++      WITH_DYNAREC=arm
++      CPUFLAGS += -march=armv7ve -mcpu=cortex-a72 -mtune=cortex-a72.cortex-a53
++   endif
++
+    # ODROIDs
+    ifneq (,$(findstring odroid,$(platform)))
+       BOARD := $(shell cat /proc/cpuinfo | grep -i odroid | awk '{print $$3}')
+       GLES = 1
+       GL_LIB := -lGLESv2
+-      CPUFLAGS += -DNO_ASM -DARM -D__arm__ -DARM_ASM -D__NEON_OPT -DNOSSE
++      CPUFLAGS += -DNO_ASM -DARM -D__arm__ -DARM_ASM -D__NEON_OPT -DNOSSE -DARM_FIX
+       CPUFLAGS += -marm -mfloat-abi=hard
+       HAVE_NEON = 1
+       WITH_DYNAREC=arm
+@@ -183,6 +197,12 @@ ifneq (,$(findstring unix,$(platform)))
+          else
+             CPUFLAGS += -mcpu=cortex-a9 -mfpu=neon
+          endif
++      # ODROIDN2
++      else ifneq (,$(findstring ODROIDN2,$(BOARD)))
++         CPUFLAGS += -mcpu=cortex-a73 -mtune=cortex-a73.cortex-a53
++      # ODROIDGOA
++      else ifneq (,$(findstring ODROIDGOA,$(BOARD)))
++      CPUFLAGS += -mcpu=cortex-a35 -mtune=cortex-a35         
+       else
+          # ODROID-U3, U2, X2 & X
+          CPUFLAGS += -mcpu=cortex-a9 -mfpu=neon
