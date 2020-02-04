@@ -4,6 +4,7 @@
 import batoceraFiles
 import os
 from Emulator import Emulator
+from utils.logger import eslog
 
 # Create the controller configuration file
 def generateControllerConfig(system, playersControllers, rom):
@@ -14,9 +15,9 @@ def generateControllerConfig(system, playersControllers, rom):
             removeControllerConfig_gamecube() # because pads will already be used as emulated wiimotes
         else:
             generateControllerConfig_realwiimotes("WiimoteNew.ini", "Wiimote")
-            generateControllerConfig_gamecube(playersControllers) # you can use the gamecube pads on the wii together with wiimotes
+            generateControllerConfig_gamecube(playersControllers,rom) # you can use the gamecube pads on the wii together with wiimotes
     elif system.name == "gamecube":
-        generateControllerConfig_gamecube(playersControllers)
+        generateControllerConfig_gamecube(playersControllers,rom) #pass ROM name to allow for per ROM configuration
     else:
         raise ValueError("Invalid system name : '" + system.name + "'")
 
@@ -52,7 +53,12 @@ def generateControllerConfig_emulatedwiimotes(playersControllers, rom):
 
     # side wiimote
     if ".side." in rom:
-      extraOptions["Options/Sideways Wiimote"] = "1,000000"
+        extraOptions["Options/Sideways Wiimote"] = "1"
+        wiiMapping['x']   = 'Buttons/B'
+        wiiMapping['y'] = 'Buttons/A'
+        wiiMapping['a']   = 'Buttons/2'
+        wiiMapping['b'] = 'Buttons/1'
+        
 
     # i: infrared, s: swing, t: tilt, n: nunchuk
     # 12 possible combinations : is si / it ti / in ni / st ts / sn ns / tn nt
@@ -116,9 +122,25 @@ def generateControllerConfig_emulatedwiimotes(playersControllers, rom):
         wiiMapping['joystick2up'] = 'Classic/Right Stick/Up'
         wiiMapping['joystick2left'] = 'Classic/Right Stick/Left'
 
+    #This section allows a per ROM override of the default key options.  
+    configname = rom + ".cfg"  #Define ROM configuration name
+    if os.path.isfile(configname): #file exists
+        import ast
+        with open(configname) as cconfig:
+            line = cconfig.readline()
+            while line:
+                entry = "{" + line + "}"
+                res = ast.literal_eval(entry)
+                wiiMapping.update(res)
+                line = cconfig.readline()
+
+
+    eslog.log("Extra Options: {}".format(extraOptions))
+    eslog.log("Wii Mappings: {}".format(wiiMapping))
+
     generateControllerConfig_any(playersControllers, "WiimoteNew.ini", "Wiimote", wiiMapping, wiiReverseAxes, None, extraOptions)
 
-def generateControllerConfig_gamecube(playersControllers):
+def generateControllerConfig_gamecube(playersControllers,rom):
     gamecubeMapping = {
         'y':      'Buttons/X',  'b':        'Buttons/A',
         'x':      'Buttons/Y',  'a':        'Buttons/B',
@@ -143,6 +165,20 @@ def generateControllerConfig_gamecube(playersControllers):
         'joystick1down': 'down',
         'joystick1right': 'right'
     }
+    
+    #This section allows a per ROM override of the default key options.
+    configname = rom + ".cfg"  #Define ROM configuration name
+    if os.path.isfile(configname): #file exists
+        import ast
+        with open(configname) as cconfig:
+            line = cconfig.readline()
+            while line:
+                entry = "{" + line + "}"
+                res = ast.literal_eval(entry)
+                gamecubeMapping.update(res)
+                line = cconfig.readline()
+
+
     generateControllerConfig_any(playersControllers, "GCPadNew.ini", "GCPad", gamecubeMapping, gamecubeReverseAxes, gamecubeReplacements)
 
 def removeControllerConfig_gamecube():
