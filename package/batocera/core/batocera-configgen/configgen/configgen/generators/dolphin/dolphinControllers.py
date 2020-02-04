@@ -4,6 +4,7 @@
 import batoceraFiles
 import os
 from Emulator import Emulator
+from utils.logger import eslog
 
 # Create the controller configuration file
 def generateControllerConfig(system, playersControllers, rom):
@@ -52,7 +53,12 @@ def generateControllerConfig_emulatedwiimotes(playersControllers, rom):
 
     # side wiimote
     if ".side." in rom:
-      extraOptions["Options/Sideways Wiimote"] = "1,000000"
+        extraOptions["Options/Sideways Wiimote"] = "1"
+        wiiMapping['x']   = 'Buttons/B'
+        wiiMapping['y'] = 'Buttons/A'
+        wiiMapping['a']   = 'Buttons/2'
+        wiiMapping['b'] = 'Buttons/1'
+        
 
     # i: infrared, s: swing, t: tilt, n: nunchuk
     # 12 possible combinations : is si / it ti / in ni / st ts / sn ns / tn nt
@@ -129,7 +135,8 @@ def generateControllerConfig_emulatedwiimotes(playersControllers, rom):
                 line = cconfig.readline()
 
 
-
+    eslog.log("Extra Options: {}".format(extraOptions))
+    eslog.log("Wii Mappings: {}".format(wiiMapping))
 
     generateControllerConfig_any(playersControllers, "WiimoteNew.ini", "Wiimote", wiiMapping, wiiReverseAxes, None, extraOptions)
 
