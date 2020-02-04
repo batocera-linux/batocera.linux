@@ -55,6 +55,8 @@ amiga:
       A500+:  { requireAnyOf: [BR2_PACKAGE_AMIBERRY]  }
       A1200:  { requireAnyOf: [BR2_PACKAGE_AMIBERRY]  }
       A4000:  { requireAnyOf: [BR2_PACKAGE_AMIBERRY]  }
+    libretro:
+      puae:   { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PUAE] }
 
 amigacd32:
   name:       Amiga CD32
@@ -64,6 +66,8 @@ amigacd32:
       CD32: { requireAnyOf: [BR2_PACKAGE_FSUAE]    }
     amiberry:
       CD32: { requireAnyOf: [BR2_PACKAGE_AMIBERRY] }
+    libretro:
+      puae:   { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PUAE] }
 
 amigacdtv:
   name:       Amiga CDTV
@@ -71,6 +75,8 @@ amigacdtv:
   emulators:
     fsuae:
       CDTV: { requireAnyOf: [BR2_PACKAGE_FSUAE] }
+    libretro:
+      puae:   { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PUAE] }
 
 nes:
   name:       Nintendo Entertainment System
@@ -604,7 +610,6 @@ msx:
   extensions: [dsk, mx1, mx2, rom, zip, 7z]
   emulators:
     libretro:
-      fmsx:    { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FMSX], 'netplay':true }
       bluemsx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BLUEMSX], 'netplay':false }
   comment_en: |
     ## BIOS ##
@@ -845,7 +850,7 @@ daphne:
 
 thomson:
   name:       Thomson - MO/TO (Theodore)
-  extensions: [fd, sap, k7, m7, m5, rom]
+  extensions: [fd, sap, k7, m7, m5, rom, zip]
   emulators:
     libretro:
       theodore:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_THEODORE], 'netplay':true }
@@ -877,7 +882,7 @@ lightgun:
 
 imageviewer:
   name:       Screenshots
-  extensions: [jpg, jpeg, png, bmp, psd, tga, gif, hdr, pic, ppm, pgm]
+  extensions: [jpg, jpeg, png, bmp, psd, tga, gif, hdr, pic, ppm, pgm, mkv]
   path:       /userdata/screenshots
   platform:   ignore
   emulators:

@@ -35,10 +35,6 @@ def generateCoreSettings(retroarchCore, system):
         coreSettings.save('bluemsx_msxtype', '"Auto"')
         coreSettings.save('bluemsx_overscan', '"enabled"')
 
-    if (system.config['core'] == 'fmsx'):
-        coreSettings.save('fmsx_mode',              '"MSX2"')
-        coreSettings.save('fmsx_mapper_type_mode',  '"Guess Mapper Type A"')
-
     if (system.config['core'] == 'tgbdual'):
         coreSettings.save('tgbdual_audio_output',       '"Game Boy #1"')
         coreSettings.save('tgbdual_gblink_enable',      '"enabled"')

@@ -81,11 +81,6 @@ then
     test -e /userdata/system/ssh/dropbear_dss_host_key   || dropbearkey -t dss   -f /userdata/system/ssh/dropbear_dss_host_key
 fi
 
-# bluetooth : now gotta tar/untar, the directory structure for bluez5 is more complex
-# once untar, delete the cache folder. The exclude tar option of busybox is dreadful
-btTar=/userdata/system/bluetooth/bluetooth.tar
-tar xvf "$btTar" -C / 2>/dev/null 
-
 # udev : create a link for rules persistance
 mkdir -p /userdata/system/udev/rules.d
 rm -rf /run/udev/rules.d

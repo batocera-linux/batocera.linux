@@ -3,8 +3,8 @@
 # AMIBERRY
 #
 ################################################################################
-# Version.: Amiberry v3.0.11
-AMIBERRY_VERSION = v3.0.11
+# Version.: Amiberry v3.0.11 + rotation
+AMIBERRY_VERSION = 8314acd695ef2f33d65f699eaf8e33ed14d7a692
 AMIBERRY_SITE = $(call github,midwan,amiberry,$(AMIBERRY_VERSION))
 AMIBERRY_LICENSE = GPLv3
 AMIBERRY_DEPENDENCIES = sdl2 sdl2_image sdl2_ttf mpg123 libxml2 libmpeg2 flac
@@ -26,6 +26,8 @@ else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_ODROIDN2),y)
 else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA),y)
 	AMIBERRY_BATOCERA_SYSTEM=RK3326
 else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_ROCKPRO64),y)
+	AMIBERRY_BATOCERA_SYSTEM=RK3399
+else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_ROCK960),y)
 	AMIBERRY_BATOCERA_SYSTEM=RK3399
 else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_TINKERBOARD),y)
 	AMIBERRY_BATOCERA_SYSTEM=RK3288

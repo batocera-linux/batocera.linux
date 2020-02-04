@@ -1,0 +1,40 @@
+From 003a39d84dbab46c14fb71569e00515528738ca2 Mon Sep 17 00:00:00 2001
+From: Sam Spilsbury <smspillaz@gmail.com>
+Date: Mon, 24 Apr 2017 14:38:08 +0200
+Subject: [PATCH 44/62] wayland: Go through the view first, then to the surface
+
+This was an ABI break that happened earlier.
+
+Signed-off-by: memeka <mihailescu2m@gmail.com>
+---
+ xbmc/windowing/tests/wayland/XBMCWaylandTestExtension.cpp | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/xbmc/windowing/tests/wayland/XBMCWaylandTestExtension.cpp b/xbmc/windowing/tests/wayland/XBMCWaylandTestExtension.cpp
+index bfefb55..25310dd 100644
+--- a/xbmc/windowing/tests/wayland/XBMCWaylandTestExtension.cpp
++++ b/xbmc/windowing/tests/wayland/XBMCWaylandTestExtension.cpp
+@@ -679,15 +679,15 @@ xtwc::Compositor::Seat()
+ struct weston_surface *
+ xtwc::Compositor::TopSurface()
+ {
+-  struct weston_surface *surface;
++  struct weston_view *view;
+ 
+   /* The strange semantics of wl_container_of means that we can't
+    * return its result directly because it needs to have an
+    * instantiation of the type */
+-  surface = wl_container_of(m_compositor->surface_list.prev,
+-                            surface,
+-                            link);
+-  return surface;
++  view = wl_container_of(m_compositor->view_list.prev,
++                         view,
++                         link);
++  return view->surface;
+ }
+ 
+ void
+-- 
+2.7.4
+

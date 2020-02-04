@@ -1,0 +1,140 @@
+From c3d040fa8e1e2bb1eca1925c130ec420662d9c5f Mon Sep 17 00:00:00 2001
+From: Max Kellermann <max@duempel.org>
+Date: Mon, 24 Apr 2017 14:38:07 +0200
+Subject: [PATCH 25/62] system_egl.h: new header wrapping EGL/egl.h
+
+It is important to define WL_EGL_PLATFORM prior to including EGL/egl.h
+if Wayland is used, because the headers default to X11.
+
+Signed-off-by: memeka <mihailescu2m@gmail.com>
+---
+ .../VideoPlayer/DVDCodecs/Video/OpenMaxVideo.h     |  2 +-
+ xbmc/cores/VideoPlayer/DVDCodecs/Video/VAAPI.h     |  2 +-
+ xbmc/cores/omxplayer/OMXImage.h                    |  2 +-
+ xbmc/system_egl.h                                  | 33 ++++++++++++++++++++++
+ xbmc/windowing/egl/EGLNativeTypeWayland.h          |  2 +-
+ xbmc/windowing/egl/EGLWrapper.h                    |  2 +-
+ xbmc/windowing/egl/WinSystemEGL.h                  |  2 +-
+ 7 files changed, 39 insertions(+), 6 deletions(-)
+ create mode 100644 xbmc/system_egl.h
+
+diff --git a/xbmc/cores/VideoPlayer/DVDCodecs/Video/OpenMaxVideo.h b/xbmc/cores/VideoPlayer/DVDCodecs/Video/OpenMaxVideo.h
+index cf569c0..5ca7a1c 100644
+--- a/xbmc/cores/VideoPlayer/DVDCodecs/Video/OpenMaxVideo.h
++++ b/xbmc/cores/VideoPlayer/DVDCodecs/Video/OpenMaxVideo.h
+@@ -24,7 +24,7 @@
+ #include <vector>
+ 
+ #include "OpenMax.h"
+-#include <EGL/egl.h>
++#include "system_egl.h"
+ #include <EGL/eglext.h>
+ #include <GLES2/gl2.h>
+ #include <GLES2/gl2ext.h>
+diff --git a/xbmc/cores/VideoPlayer/DVDCodecs/Video/VAAPI.h b/xbmc/cores/VideoPlayer/DVDCodecs/Video/VAAPI.h
+index 7f62cfe..cf483d4 100644
+--- a/xbmc/cores/VideoPlayer/DVDCodecs/Video/VAAPI.h
++++ b/xbmc/cores/VideoPlayer/DVDCodecs/Video/VAAPI.h
+@@ -20,7 +20,7 @@
+ #pragma once
+ 
+ #include "system_gl.h"
+-#include <EGL/egl.h>
++#include "system_egl.h"
+ #include <EGL/eglext.h>
+ 
+ #include "DVDVideoCodec.h"
+diff --git a/xbmc/cores/omxplayer/OMXImage.h b/xbmc/cores/omxplayer/OMXImage.h
+index a93aa82..06039f5 100644
+--- a/xbmc/cores/omxplayer/OMXImage.h
++++ b/xbmc/cores/omxplayer/OMXImage.h
+@@ -35,7 +35,7 @@
+ #endif
+ 
+ #include "system_gl.h"
+-#include <EGL/egl.h>
++#include "system_egl.h"
+ #include <EGL/eglext.h>
+ #include "threads/Thread.h"
+ 
+diff --git a/xbmc/system_egl.h b/xbmc/system_egl.h
+new file mode 100644
+index 0000000..68adf30
+--- /dev/null
++++ b/xbmc/system_egl.h
+@@ -0,0 +1,33 @@
++#pragma once
++
++/*
++ *      Copyright (C) 2005-2016 Team XBMC
++ *      http://xbmc.org
++ *
++ *  This Program is free software; you can redistribute it and/or modify
++ *  it under the terms of the GNU General Public License as published by
++ *  the Free Software Foundation; either version 2, or (at your option)
++ *  any later version.
++ *
++ *  This Program is distributed in the hope that it will be useful,
++ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
++ *  GNU General Public License for more details.
++ *
++ *  You should have received a copy of the GNU General Public License
++ *  along with XBMC; see the file COPYING.  If not, see
++ *  <http://www.gnu.org/licenses/>.
++ *
++ */
++
++#include "system.h"
++
++#ifndef HAS_EGL
++#error EGL is disabled
++#endif
++
++#ifdef HAVE_WAYLAND
++#define WL_EGL_PLATFORM
++#endif
++
++#include <EGL/egl.h>
+diff --git a/xbmc/windowing/egl/EGLNativeTypeWayland.h b/xbmc/windowing/egl/EGLNativeTypeWayland.h
+index 301c16c..344d4be 100644
+--- a/xbmc/windowing/egl/EGLNativeTypeWayland.h
++++ b/xbmc/windowing/egl/EGLNativeTypeWayland.h
+@@ -22,7 +22,7 @@
+ 
+ #include <boost/scoped_ptr.hpp>
+ 
+-#include <EGL/egl.h>
++#include "system_egl.h"
+ #include "EGLNativeType.h"
+ 
+ class CEGLNativeTypeWayland : public CEGLNativeType
+diff --git a/xbmc/windowing/egl/EGLWrapper.h b/xbmc/windowing/egl/EGLWrapper.h
+index 9fec9d4..1686969 100644
+--- a/xbmc/windowing/egl/EGLWrapper.h
++++ b/xbmc/windowing/egl/EGLWrapper.h
+@@ -24,7 +24,7 @@
+ #include <vector>
+ 
+ #include "guilib/Resolution.h"
+-#include <EGL/egl.h>
++#include "system_egl.h"
+ class CEGLNativeType;
+ class CEGLWrapper
+ {
+diff --git a/xbmc/windowing/egl/WinSystemEGL.h b/xbmc/windowing/egl/WinSystemEGL.h
+index c24bb35..50416b5 100644
+--- a/xbmc/windowing/egl/WinSystemEGL.h
++++ b/xbmc/windowing/egl/WinSystemEGL.h
+@@ -28,7 +28,7 @@
+ 
+ #include "rendering/gles/RenderSystemGLES.h"
+ #include "utils/GlobalsHandling.h"
+-#include <EGL/egl.h>
++#include "system_egl.h"
+ #include "windowing/WinSystem.h"
+ #include "threads/SystemClock.h"
+ 
+-- 
+2.7.4
+

@@ -97,13 +97,13 @@ dosboxCustom = CONF + '/dosbox'
 dosboxConfig = dosboxCustom + '/dosbox.conf'
 
 fsuaeBios = BIOS
-fsuaeConfig = CONF + "/FS-UAE"
+fsuaeConfig = CONF + "/fs-uae"
 fsuaeSaves = SAVES + "/amiga"
 
 scummvmSaves = SAVES + '/scummvm'
 
-viceConfigFile = CONF + "/vice/sdl-vicerc"
 viceConfig = CONF + "/vice"
+
 overlaySystem = "/usr/share/batocera/datainit/decorations"
 overlayUser = "/userdata/decorations"
 overlayConfigFile = "/userdata/system/configs/retroarch/overlay.cfg"

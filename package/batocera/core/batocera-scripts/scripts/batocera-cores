@@ -1,0 +1,13 @@
+#!/bin/bash
+
+CACHEFILE="/userdata/system/batocera-cores.info.cache"
+VERSIONFILE="/usr/share/batocera/batocera.version"
+VERSION=$(cat "${VERSIONFILE}")
+CACHEVERSION=$(head -1 "${CACHEFILE}" 2>/dev/null)
+
+if test "${VERSION}" != "${CACHEVERSION}"
+then
+    (cat "${VERSIONFILE}" ; retroarch -x /usr/lib/libretro/*_libretro.so) > "${CACHEFILE}" || exit 1	
+fi
+
+tail -n +2 "${CACHEFILE}"

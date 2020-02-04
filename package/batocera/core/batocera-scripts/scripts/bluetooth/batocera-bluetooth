@@ -1,0 +1,85 @@
+#!/bin/bash
+
+ACTION=$1
+shift
+
+do_help() {
+    echo "${1} list" >&2
+    echo "${1} trust" >&2
+    echo "${1} remove <device address>" >&2
+    echo "${1} save" >&2
+    echo "${1} restore" >&2
+}
+
+do_save() {
+    BCK=/userdata/system/bluetooth/bluetooth.tar
+    (cd /var/lib && tar cf "${BCK}" bluetooth)
+}
+
+do_restore() {
+    BCK=/userdata/system/bluetooth/bluetooth.tar
+    (cd /var/lib && tar xf "${BCK}")
+}
+
+do_list() {
+    find /var/lib/bluetooth/ -type f -name info |
+	while read FILE
+	do
+	    if grep -qE '^Trusted=true$' "${FILE}"
+	    then
+		DEVNAME=$(grep -E '^Name=' "${FILE}" | sed -e s+"^Name="++)
+		DEVADDR=$(basename $(dirname "${FILE}"))
+		echo "${DEVADDR} ${DEVNAME}"
+	    fi
+	done
+}
+
+do_remove() {
+    DEV="${1}"
+
+    # output is never nice
+    if ! (echo "untrust ${DEV}" ; echo "remove ${DEV}") | bluetoothctl >/dev/null 2>/dev/null
+    then
+	return 1
+    fi
+
+    do_save # save
+    return 0
+}
+
+do_trust() {
+    touch /var/run/bluetoothd.trusting
+    trap "rm -f /var/run/bluetoothd.trusting" 2 3
+    sleep 60
+    rm -f "/var/run/bluetoothd.trusting"
+    do_save # save
+}
+
+case "${ACTION}" in
+    "list")
+	do_list
+	;;
+    "trust")
+	do_trust
+	;;
+    "remove")
+	if test $# = 1
+	then
+	    do_remove "${1}" || exit 1
+	else
+	    do_help "${0}"
+	    exit 1
+	fi
+	;;
+    "save")
+	do_save
+	;;
+    "restore")
+	do_restore
+	;;
+    *)
+	do_help "${0}"
+	exit 1
+esac
+
+exit 0

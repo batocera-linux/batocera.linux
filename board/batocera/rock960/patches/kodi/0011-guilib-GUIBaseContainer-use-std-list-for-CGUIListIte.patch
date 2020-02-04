@@ -1,0 +1,42 @@
+From f10aaba85736c89eac4a1514c650a157c7019922 Mon Sep 17 00:00:00 2001
+From: Max Kellermann <max@duempel.org>
+Date: Mon, 24 Apr 2017 14:38:06 +0200
+Subject: [PATCH 11/62] guilib/GUIBaseContainer: use std::list for
+ CGUIListItemLayout
+
+This reduces the overhead, because resizing the std::vector will
+create lots of temporary CGUIListItemLayout copies.  A std::list never
+needs to move its items.
+
+Signed-off-by: memeka <mihailescu2m@gmail.com>
+---
+ xbmc/guilib/GUIBaseContainer.h | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/xbmc/guilib/GUIBaseContainer.h b/xbmc/guilib/GUIBaseContainer.h
+index 96d0565..4ee2afc 100644
+--- a/xbmc/guilib/GUIBaseContainer.h
++++ b/xbmc/guilib/GUIBaseContainer.h
+@@ -32,6 +32,8 @@
+ #include "IGUIContainer.h"
+ #include "utils/Stopwatch.h"
+ 
++#include <list>
++
+ /*!
+  \ingroup controls
+  \brief
+@@ -153,8 +155,8 @@ protected:
+ 
+   int m_pageControl;
+ 
+-  std::vector<CGUIListItemLayout> m_layouts;
+-  std::vector<CGUIListItemLayout> m_focusedLayouts;
++  std::list<CGUIListItemLayout> m_layouts;
++  std::list<CGUIListItemLayout> m_focusedLayouts;
+ 
+   CGUIListItemLayout *m_layout;
+   CGUIListItemLayout *m_focusedLayout;
+-- 
+2.7.4
+

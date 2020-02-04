@@ -1,8 +1,8 @@
 diff --git a/src/osdep/amiberry.cpp b/src/osdep/amiberry.cpp
-index 1c6a8a4..3e9eb20 100644
+index 6c66bf2..c747aca 100644
 --- a/src/osdep/amiberry.cpp
 +++ b/src/osdep/amiberry.cpp
-@@ -609,7 +609,7 @@ void fetch_datapath(char* out, int size)
+@@ -623,7 +623,7 @@ void fetch_datapath(char* out, int size)
  
  void fetch_saveimagepath(char* out, int size, int dir)
  {
@@ -11,7 +11,7 @@ index 1c6a8a4..3e9eb20 100644
  	strncat(out, "/savestates/", size - 1);
  }
  
-@@ -664,13 +664,13 @@ void fetch_rp9path(char* out, int size)
+@@ -678,13 +678,13 @@ void fetch_rp9path(char* out, int size)
  
  void fetch_savestatepath(char* out, int size)
  {
@@ -27,7 +27,7 @@ index 1c6a8a4..3e9eb20 100644
  	strncat(out, "/screenshots/", size - 1);
  }
  
-@@ -816,7 +816,7 @@ void save_amiberry_settings(void)
+@@ -830,7 +830,7 @@ void save_amiberry_settings(void)
  {
  	char path[MAX_DPATH];
  
@@ -36,7 +36,7 @@ index 1c6a8a4..3e9eb20 100644
  	const auto f = fopen(path, "we");
  	if (!f)
  		return;
-@@ -878,13 +878,13 @@ void save_amiberry_settings(void)
+@@ -904,13 +904,13 @@ void save_amiberry_settings(void)
  	snprintf(buffer, MAX_DPATH, "path=%s\n", currentDir);
  	fputs(buffer, f);
  
@@ -53,28 +53,28 @@ index 1c6a8a4..3e9eb20 100644
  	fputs(buffer, f);
  
  	snprintf(buffer, MAX_DPATH, "rom_path=%s\n", rom_path);
-@@ -954,9 +954,12 @@ void load_amiberry_settings(void)
- #else
+@@ -976,9 +976,11 @@ void load_amiberry_settings(void)
+ 	char path[MAX_DPATH];
+ 	int i;
  	strncpy(currentDir, start_path_data, MAX_DPATH - 1);
- #endif
 -	snprintf(config_path, MAX_DPATH, "%s/conf/", start_path_data);
 -	snprintf(controllers_path, MAX_DPATH, "%s/controllers/", start_path_data);
 -	snprintf(retroarch_file, MAX_DPATH, "%s/conf/retroarch.cfg", start_path_data);
-+	
++
 +	/* snprintf(config_path, MAX_DPATH, "%s/conf/", start_path_data);  */
 +	snprintf(config_path, MAX_DPATH, "/userdata/system/configs/amiberry/conf");
-+	
 +	snprintf(controllers_path, MAX_DPATH, "/userdata/system/configs/amiberry/conf/retroarch/inputs");
 +	snprintf(retroarch_file, MAX_DPATH, "/userdata/system/configs/amiberry/conf/retroarch/retroarchcustom.cfg");
  
  #ifdef ANDROID
  	char afepath[MAX_DPATH];
-@@ -967,12 +970,12 @@ void load_amiberry_settings(void)
+@@ -989,12 +991,14 @@ void load_amiberry_settings(void)
  		closedir(afedir);
  	}
  	else
 -		snprintf(rom_path, MAX_DPATH, "%s/kickstarts/", start_path_data);
 +		snprintf(rom_path, MAX_DPATH, "/userdata/bios/");
++
  #else
 -	snprintf(rom_path, MAX_DPATH, "%s/kickstarts/", start_path_data);
 +	snprintf(rom_path, MAX_DPATH, "/userdata/bios/");
@@ -82,15 +82,17 @@ index 1c6a8a4..3e9eb20 100644
  	snprintf(rp9_path, MAX_DPATH, "%s/rp9/", start_path_data);
 -	snprintf(path, MAX_DPATH, "%s/conf/amiberry.conf", start_path_data);
 +	snprintf(path, MAX_DPATH, "%s/conf/adfdir.conf", "/userdata/system/configs/amiberry");
++
  
  	const auto fh = zfile_fopen(path, _T("r"), ZFD_NORMAL);
  	if (fh)
-@@ -1138,7 +1141,7 @@ int main(int argc, char* argv[])
+@@ -1167,7 +1171,8 @@ int main(int argc, char* argv[])
  	load_amiberry_settings();
  	rp9_init();
  
 -	snprintf(savestate_fname, sizeof savestate_fname, "%s/savestates/default.ads", start_path_data);
 +	snprintf(savestate_fname, sizeof savestate_fname, "%s/savestates/default.ads", "/userdata/saves/amiga");
++
  	logging_init();
  
  	memset(&action, 0, sizeof action);

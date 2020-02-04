@@ -1,0 +1,15 @@
+diff --git a/board/rockchip/odroidgo2/odroidgo2.c b/board/rockchip/odroidgo2/odroidgo2.c
+index 96e54e4..d88d634 100644
+--- a/board/rockchip/odroidgo2/odroidgo2.c
++++ b/board/rockchip/odroidgo2/odroidgo2.c
+@@ -159,8 +159,8 @@ int rk_board_late_init(void)
+ 	/* show boot logo and version : drivers/video/drm/rockchip_display_cmds.c */
+ 	lcd_show_logo();
+ 	lcd_setfg_color("white");
+-	lcd_printf(0, 18, 1, "%s", U_BOOT_VERSION);
+-	lcd_printf(0, 19, 1, "%s %s", U_BOOT_DATE, U_BOOT_TIME);
++	lcd_printf(0, 18, 1, "%s", "batocera.linux");
++	lcd_printf(0, 19, 1, "%s", "only cores that matter");
+ 
+ 	if (!board_check_autotest()) {
+ 		board_run_autotest();

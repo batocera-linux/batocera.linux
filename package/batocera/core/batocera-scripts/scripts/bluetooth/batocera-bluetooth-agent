@@ -1,0 +1,200 @@
+#!/usr/bin/python
+
+from __future__ import absolute_import, print_function, unicode_literals
+
+from optparse import OptionParser, make_option
+import dbus
+import dbus.mainloop.glib
+try:
+  from gi.repository import GObject
+except ImportError:
+  import gobject as GObject
+import bluezutils
+import time
+import os
+import logging
+
+gadapter = None
+gdevices = {}
+logging.basicConfig(filename='/var/log/bluetooth-agent.log', level=logging.DEBUG, format='%(asctime)s %(message)s')
+
+def connect_device(path, address, properties):
+  devName = ""
+  trusted = False
+  connected = False
+
+  # avoid devices without interesting information
+  if "Trusted" not in properties:
+    return
+  if "Connected" not in properties:
+    return
+
+  rproperties = {}
+  # Get the adapter name and bt mac
+  for key, value in properties.iteritems():
+    if type(value) is dbus.String:
+      value = unicode(value).encode('ascii', 'replace')
+    rproperties[key] = value
+
+  trusted   = rproperties["Trusted"]
+  devName = getDevName(rproperties)
+  connected = rproperties["Connected"]
+
+  # skip some devices
+  if properties["Icon"] in [ "audio-card" , "phone" ]:
+    logging.info("Skipping device {}".format(getDevName(rproperties)));
+    return
+
+  if not trusted:
+    # trust only when this file is present
+    if os.path.isfile("/var/run/bluetoothd.trusting"):
+      logging.info("Trusting (" + devName + ")")
+      bluezProps = dbus.Interface(bus.get_object("org.bluez", path), "org.freedesktop.DBus.Properties")
+      bluezProps.Set("org.bluez.Device1", "Trusted", True)
+
+  # Connect if Trusted
+  if not connected:
+    if trusted:
+      logging.info("Connecting {} ...".format(devName))
+      doConnect(address, devName)
+    else:
+      logging.info("{} is not trusted".format(devName))
+
+def doConnect(address, devName):
+  global gadapter
+  
+  try:
+    # discovery stopped during connection to help some devices
+    logging.info("Stop discovery")
+    gadapter.StopDiscovery()
+
+    device = bluezutils.find_device(address)
+    ntry=8
+    while ntry > 0:
+      ntry = ntry -1
+      try:
+        device.Connect()
+        logging.info("Connected successfully (" + devName + ")")
+        logging.info("Start discovery")
+        gadapter.StartDiscovery()
+        return
+      except dbus.exceptions.DBusException as err:
+        logging.info("dbus: " + err.get_dbus_message())
+        time.sleep(1)
+      except Exception as err:
+        logging.info("Connection failed (" + devName + ")")
+        time.sleep(1)
+    
+    logging.info("Connection failed. Give up. (" + devName + ")")
+    logging.info("Start discovery")
+    gadapter.StartDiscovery()
+  except Exception as e:
+    logging.info("Start discovery")
+    gadapter.StartDiscovery()
+    # don't raise, while startdiscovery doesn't like it
+    #raise e
+
+def getDevName(properties):
+  #devName = properties["Name"] + " (" + properties["Address"] + ", " + properties["Icon"] + ")"
+  #devStatus = "Trusted=" + str(properties["Trusted"]) + ", paired=" + str(properties["Paired"]) + ", connected=" + str(properties["Connected"]), ", blocked=" + str(properties["Blocked"])
+  #devTech = "legacyPairing: " + str(properties["LegacyPairing"]) # + ", RSSI: " + unicode(properties["RSSI"])
+
+  if "Name" in properties and "Address" in properties and "Icon" in properties:
+    return properties["Name"] + " (" + properties["Address"] + ", " + properties["Icon"] + ")"
+
+  if "Name" in properties and "Address" in properties:
+    return properties["Name"] + " (" + properties["Address"] + ")"
+
+  if "Name" in properties and "Icon" in properties:
+    return properties["Name"] + " (" + properties["Icon"] + ")"
+
+  if "Name" in properties:
+    return properties["Name"]
+
+  if "Address" in properties and "Icon" in properties:
+    return properties["Address"] + " (" + properties["Icon"] + ")"
+
+  if "Address" in properties:
+    return properties["Address"]
+
+  if "Icon" in properties:
+    return properties["Icon"]
+
+  return "unknown"
+
+def interfaces_added(path, interfaces):
+  global gdevices
+
+  if "org.bluez.Device1" not in interfaces:
+    return
+  if not interfaces["org.bluez.Device1"]:
+    return
+
+  properties = interfaces["org.bluez.Device1"]
+ 
+  if path in gdevices:
+    gdevices[path] = dict(gdevices[path].items() + properties.items())
+  else:
+    gdevices[path] = properties
+  
+  if "Address" in gdevices[path]:
+    connect_device(path, properties["Address"], gdevices[path])
+
+def properties_changed(interface, changed, invalidated, path):
+  global gdevices
+
+  if interface != "org.bluez.Device1":
+    return
+
+  if path in gdevices:
+    gdevices[path] = dict(gdevices[path].items() + changed.items())
+  else:
+    gdevices[path] = changed
+
+  if "Address" in gdevices[path]:
+    connect_device(path, gdevices[path]["Address"], gdevices[path])
+
+if __name__ == '__main__':
+  dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
+  bus = dbus.SystemBus()
+
+  # options
+  option_list = [ make_option("-i", "--device", action="store", type="string", dest="dev_id") ]
+  parser = OptionParser(option_list=option_list)
+  (options, args) = parser.parse_args()
+
+  # adapter
+  try:
+    adapter = bluezutils.find_adapter(options.dev_id)
+  except:
+    # try to find any adapter
+    adapter = bluezutils.find_adapter(None)
+  gadapter = adapter
+  adapters = {}
+
+  # signals
+  bus.add_signal_receiver(interfaces_added,   dbus_interface = "org.freedesktop.DBus.ObjectManager", signal_name = "InterfacesAdded")
+  bus.add_signal_receiver(properties_changed, dbus_interface = "org.freedesktop.DBus.Properties",    signal_name = "PropertiesChanged", arg0 = "org.bluez.Device1", path_keyword = "path")
+  
+  om = dbus.Interface(bus.get_object("org.bluez", "/"), "org.freedesktop.DBus.ObjectManager")
+  objects = om.GetManagedObjects()
+  for path, interfaces in objects.iteritems():
+    if "org.bluez.Device1" in interfaces:
+      gdevices[path] = interfaces["org.bluez.Device1"]
+    if "org.bluez.Adapter1" in interfaces:
+      adapters[path] = interfaces["org.bluez.Adapter1"]
+  
+  adapter_props = adapters[adapter.object_path]
+  logging.info(adapter_props["Name"] + "(" + adapter_props["Address"] + "), powered=" + str(adapter_props["Powered"]))
+  
+  # power on adapter if needed
+  if adapter_props["Powered"] == 0:
+    logging.info("powering on adapter ("+ adapter_props["Address"] +")")
+    adapterSetter = dbus.Interface(bus.get_object("org.bluez", adapter.object_path), "org.freedesktop.DBus.Properties")
+    adapterSetter.Set("org.bluez.Adapter1", "Powered", True)
+
+  logging.info("Start discovery")
+  adapter.StartDiscovery()
+    
+  mainloop = GObject.MainLoop()
+  mainloop.run()

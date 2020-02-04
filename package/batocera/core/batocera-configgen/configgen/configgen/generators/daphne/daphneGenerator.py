@@ -25,7 +25,7 @@ class DaphneGenerator(Generator):
         commandArray = [batoceraFiles.batoceraBins[system.config['emulator']],
                         romName, "vldp", "-framefile", frameFile, "-useoverlaysb", "2", "-ignore_aspect_ratio",
                         "-x", str(gameResolution["width"]), "-y", str(gameResolution["height"]), "-fullscreen",
-                        "-datadir", batoceraFiles.daphneDatadir, "-homedir", batoceraFiles.daphneHomedir]
+                        "-fastboot", "-datadir", batoceraFiles.daphneDatadir, "-homedir", batoceraFiles.daphneHomedir]
 
         # The folder may have a file with the game name and .commands with extra arguments to run the game.
         if os.path.isfile(commandsFile):

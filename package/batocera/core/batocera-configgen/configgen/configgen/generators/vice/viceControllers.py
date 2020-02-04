@@ -65,28 +65,13 @@ viceJoystick = [
 # Create the controller configuration file
 def generateControllerConfig(viceConfigFile, system):
     # vjm file
-    if(system.config['core'] == 'x64'):
-        viceFile = viceConfigFile + "/sdl-joymap-C64.vjm"
-    
-    if(system.config['core'] == 'x64dtv'):
-        viceFile = viceConfigFile + "/sdl-joymap-C64DTV.vjm"
-    
-    if(system.config['core'] == 'xplus4'):
-        viceFile = viceConfigFile + "/sdl-joymap-PLUS4.vjm"
-    
-    if(system.config['core'] == 'xscpu64'):
-        viceFile = viceConfigFile + "/sdl-joymap-SCPU64.vjm"
-    
-    if(system.config['core'] == 'xvic'):
-        viceFile = viceConfigFile + "/sdl-joymap-VIC20.vjm"
-    
-    if(system.config['core'] != 'x128'):
+    viceFile = viceConfigFile + "/sdl-joymap.vjm"
                 
-        if not os.path.exists(os.path.dirname(viceFile)):
-            os.makedirs(os.path.dirname(viceFile))
+    if not os.path.exists(os.path.dirname(viceFile)):
+        os.makedirs(os.path.dirname(viceFile))
 
-        f = open(viceFile, 'w')
-        for i in range(len(viceJoystick)):
-            f.write(str(viceJoystick[i]) + "\n")
-        f.write
-        f.close()
+    f = open(viceFile, 'w')
+    for i in range(len(viceJoystick)):
+        f.write(str(viceJoystick[i]) + "\n")
+    f.write
+    f.close()
