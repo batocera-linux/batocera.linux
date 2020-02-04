@@ -610,7 +610,6 @@ msx:
   extensions: [dsk, mx1, mx2, rom, zip, 7z]
   emulators:
     libretro:
-      fmsx:    { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FMSX]    }
       bluemsx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BLUEMSX] }
   comment_en: |
     ## BIOS ##

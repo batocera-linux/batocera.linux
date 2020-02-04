@@ -383,7 +383,6 @@ config BR2_PACKAGE_BATOCERA_RETROARCH
         select BR2_PACKAGE_LIBRETRO_HATARI            # ALL
         select BR2_PACKAGE_LIBRETRO_PX68K             # ALL
         select BR2_PACKAGE_LIBRETRO_BEETLE_PCE        # ALL
-        select BR2_PACKAGE_LIBRETRO_FMSX              # ALL
         select BR2_PACKAGE_LIBRETRO_BLUEMSX           # ALL
         select BR2_PACKAGE_LIBRETRO_GPSP              if BR2_PACKAGE_BATOCERA_TARGET_RPI1 # for slow machines
         select BR2_PACKAGE_LIBRETRO_FBNEO             # ALL
