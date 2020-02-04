@@ -1,0 +1,17 @@
+diff --git a/Makefile b/Makefile
+index 4902885..23b7aa4 100644
+--- a/Makefile
++++ b/Makefile
+@@ -220,6 +220,12 @@ else ifneq (,$(findstring odroid,$(platform)))
+       else
+          CPUFLAGS += -mcpu=cortex-a9 -mfpu=neon
+       endif
++   # ODROIDN2
++   else ifneq (,$(findstring ODROIDN2,$(BOARD)))
++      CPUFLAGS += -mcpu=cortex-a73 -mtune=cortex-a73.cortex-a53
++   # ODROIDGOA
++   else ifneq (,$(findstring ODROIDGOA,$(BOARD)))
++      CPUFLAGS += -mcpu=cortex-a35 -mtune=cortex-a35
+    else
+       # ODROID-U2, -U3, -X & -X2
+       CPUFLAGS += -mcpu=cortex-a9 -mfpu=neon
