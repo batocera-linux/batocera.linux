@@ -13,7 +13,7 @@ MUPEN64PLUS_CORE_INSTALL_STAGING = YES
 MUPEN64PLUS_GL_CFLAGS = -I$(STAGING_DIR)/usr/include -L$(STAGING_DIR)/usr/lib
 
 ifeq ($(BR2_PACKAGE_LIBGLU),y)
-        MUPEN64PLUS_CORE_DEPENDENCIES += libglu
+    MUPEN64PLUS_CORE_DEPENDENCIES += libglu
 	MUPEN64PLUS_GL_LDLIBS = -lGL
 else
 	MUPEN64PLUS_GL_LDLIBS = -lGLESv2 -lEGL
@@ -32,12 +32,12 @@ endif
 
 ifeq ($(BR2_aarch64),y)
 	MUPEN64PLUS_HOST_CPU = aarch64
-        MUPEN64PLUS_PARAMS += NEON=1
-        MUPEN64PLUS_PARAMS += NO_ASM=1
+	MUPEN64PLUS_PARAMS += NEON=1
+	MUPEN64PLUS_PARAMS += NO_ASM=1
 endif
 
 ifeq ($(BR2_ARM_CPU_HAS_NEON),y)
-        MUPEN64PLUS_PARAMS += NEON=1
+	MUPEN64PLUS_PARAMS += NEON=1
 endif
 
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86),y)
@@ -49,24 +49,24 @@ ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86_64),y)
 endif
 
 define MUPEN64PLUS_CORE_BUILD_CMDS
-        CFLAGS="$(TARGET_CFLAGS)" CXXFLAGS="$(TARGET_CXXFLAGS)" \
+	CFLAGS="$(TARGET_CFLAGS)" CXXFLAGS="$(TARGET_CXXFLAGS)" \
         $(MAKE)  CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" LD="$(TARGET_LD)" RANLIB="$(TARGET_RANLIB)" AR="$(TARGET_AR)" CROSS_COMPILE="$(STAGING_DIR)/usr/bin/" \
         AS="$(HOST_DIR)/bin/nasm" \
-	PREFIX="$(STAGING_DIR)/usr" \
-	PKG_CONFIG="$(HOST_DIR)/usr/bin/pkg-config" \
-	HOST_CPU="$(MUPEN64PLUS_HOST_CPU)" \
-	-C $(@D)/projects/unix all $(MUPEN64PLUS_PARAMS) OPTFLAGS="$(TARGET_CXXFLAGS)"
+		PREFIX="$(STAGING_DIR)/usr" \
+		PKG_CONFIG="$(HOST_DIR)/usr/bin/pkg-config" \
+		HOST_CPU="$(MUPEN64PLUS_HOST_CPU)" \
+		-C $(@D)/projects/unix all $(MUPEN64PLUS_PARAMS) OPTFLAGS="$(TARGET_CXXFLAGS)"
 endef
 
 define MUPEN64PLUS_CORE_INSTALL_STAGING_CMDS
-        CFLAGS="$(TARGET_CFLAGS)" CXXFLAGS="$(TARGET_CXXFLAGS)" \
+	CFLAGS="$(TARGET_CFLAGS)" CXXFLAGS="$(TARGET_CXXFLAGS)" \
         $(MAKE)  CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" LD="$(TARGET_LD)" RANLIB="$(TARGET_RANLIB)" AR="$(TARGET_AR)" CROSS_COMPILE="$(STAGING_DIR)/usr/bin/" \
-	PREFIX="$(STAGING_DIR)/usr" \
-	PKG_CONFIG="$(HOST_DIR)/usr/bin/pkg-config" \
-	HOST_CPU="$(MUPEN64PLUS_HOST_CPU)" \
-	INSTALL="/usr/bin/install" \
-	INSTALL_STRIP_FLAG="" \
-	-C $(@D)/projects/unix all $(MUPEN64PLUS_PARAMS) OPTFLAGS="$(TARGET_CXXFLAGS)" install
+		PREFIX="$(STAGING_DIR)/usr" \
+		PKG_CONFIG="$(HOST_DIR)/usr/bin/pkg-config" \
+		HOST_CPU="$(MUPEN64PLUS_HOST_CPU)" \
+		INSTALL="/usr/bin/install" \
+		INSTALL_STRIP_FLAG="" \
+		-C $(@D)/projects/unix all $(MUPEN64PLUS_PARAMS) OPTFLAGS="$(TARGET_CXXFLAGS)" install
 endef
 
 define MUPEN64PLUS_CORE_INSTALL_TARGET_CMDS
@@ -78,8 +78,8 @@ define MUPEN64PLUS_CORE_INSTALL_TARGET_CMDS
 endef
 
 define MUPEN64PLUS_CORE_CROSS_FIXUP
-        $(SED) 's|/opt/vc/include|$(STAGING_DIR)/usr/include|g' $(@D)/projects/unix/Makefile
-        $(SED) 's|/opt/vc/lib|$(STAGING_DIR)/usr/lib|g' $(@D)/projects/unix/Makefile
+	$(SED) 's|/opt/vc/include|$(STAGING_DIR)/usr/include|g' $(@D)/projects/unix/Makefile
+	$(SED) 's|/opt/vc/lib|$(STAGING_DIR)/usr/lib|g' $(@D)/projects/unix/Makefile
 endef
 
 MUPEN64PLUS_CORE_PRE_CONFIGURE_HOOKS += MUPEN64PLUS_CORE_CROSS_FIXUP
