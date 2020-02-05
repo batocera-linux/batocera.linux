@@ -41,6 +41,9 @@ define BATOCERA_SCRIPTS_INSTALL_TARGET_CMDS
 	install -m 0755 package/batocera/core/batocera-scripts/scripts/batocera-brightness             $(TARGET_DIR)/usr/bin/
 	install -m 0755 package/batocera/core/batocera-scripts/scripts/batocera-es-swissknife          $(TARGET_DIR)/usr/bin/
 
+	# hooks
+        mkdir -p $(TARGET_DIR)/usr/share/batocera/configgen/scripts
+        install -m 0755 package/batocera/core/batocera-scripts/hooks/bluetooth-discovery-hook $(TARGET_DIR)/usr/share/batocera/configgen/scripts/
 endef
 
 define BATOCERA_SCRIPTS_INSTALL_XORG
