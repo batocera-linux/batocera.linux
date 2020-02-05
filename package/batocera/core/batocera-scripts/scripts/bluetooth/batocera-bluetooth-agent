@@ -13,6 +13,7 @@ import bluezutils
 import time
 import os
 import logging
+import signal
 
 gadapter = None
 gdevices = {}
@@ -154,6 +155,20 @@ def properties_changed(interface, changed, invalidated, path):
   if "Address" in gdevices[path]:
     connect_device(path, gdevices[path]["Address"], gdevices[path])
 
+def user_signal_start_discovery(signum, frame):
+  try:
+    logging.info("Start discovery (signal)")
+    gadapter.StartDiscovery()
+  except:
+    pass
+
+def user_signal_stop_discovery(signum, frame):
+  try:
+    logging.info("Stop discovery (signal)")
+    gadapter.StopDiscovery()
+  except:
+    pass
+
 if __name__ == '__main__':
   dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
   bus = dbus.SystemBus()
@@ -186,7 +201,7 @@ if __name__ == '__main__':
   
   adapter_props = adapters[adapter.object_path]
   logging.info(adapter_props["Name"] + "(" + adapter_props["Address"] + "), powered=" + str(adapter_props["Powered"]))
-  
+
   # power on adapter if needed
   if adapter_props["Powered"] == 0:
     logging.info("powering on adapter ("+ adapter_props["Address"] +")")
@@ -195,6 +210,11 @@ if __name__ == '__main__':
 
   logging.info("Start discovery")
   adapter.StartDiscovery()
-    
+
+  # events
+  # use events while i manage to stop discovery only from the process having started it
+  signal.signal(signal.SIGUSR1, user_signal_start_discovery)
+  signal.signal(signal.SIGUSR2, user_signal_stop_discovery)
+  
   mainloop = GObject.MainLoop()
   mainloop.run()

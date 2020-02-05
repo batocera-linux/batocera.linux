@@ -1,0 +1,13 @@
+#!/bin/bash
+
+NPID=$(cat /var/run/bluetooth-agent.pid)
+test -z "${NPID}" && exit 0
+
+case "${1}" in
+    "gameStart")
+	kill -12 "${NPID}"
+	;;
+    "gameStop")
+	kill -10 "${NPID}"
+	;;
+esac
