@@ -112,9 +112,11 @@ def setControllerLine(mupenmapping, input, mupenSettingName):
                 if mupenSettingName in mupenDoubleAxis.values():
                         # X axis : value = -1 for left, +1 for right
                         # Y axis : value = -1 for up, +1 for down
-                        if input.value == "-1":
+                        # we configure only left and down to not configure 2 times each axis
+                        if input.name in [ "left", "up", "joystick1left", "joystick1up", "joystick2left", "joystick2up" ]:
+                            if input.value == "-1":
                                 value = "axis({}-,{}+)".format(input.id, input.id)
-                        else:
+                            else:
                                 value = "axis({}+,{}-)".format(input.id, input.id)
                 else:
                         if input.value == "1":
