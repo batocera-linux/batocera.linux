@@ -10,7 +10,8 @@ LIBRETRO_MAME2003_PLUS_LICENSE = MAME
 
 define LIBRETRO_MAME2003_PLUS_BUILD_CMDS
 	mkdir -p $(@D)/obj/mame/cpu/ccpu
-	CFLAGS="$(TARGET_CFLAGS)" CXXFLAGS="$(TARGET_CXXFLAGS)" $(MAKE) CC="$(TARGET_CC)" LD="$(TARGET_CC)" RANLIB="$(TARGET_RANLIB)" AR="$(TARGET_AR)" -C $(@D)/ -f Makefile platform="$(LIBRETRO_PLATFORM)"
+	CFLAGS="$(TARGET_CFLAGS)" CXXFLAGS="$(TARGET_CXXFLAGS)" $(MAKE) CC="$(TARGET_CC)" LD="$(TARGET_CC)" \
+		RANLIB="$(TARGET_RANLIB)" AR="$(TARGET_AR)" -C $(@D)/ -f Makefile platform="$(LIBRETRO_PLATFORM)"
 endef
 
 define LIBRETRO_MAME2003_PLUS_INSTALL_TARGET_CMDS
@@ -26,8 +27,8 @@ define LIBRETRO_MAME2003_PLUS_INSTALL_TARGET_CMDS
 endef
 
 define LIBRETRO_MAME2003_PLUS_NAMCO_QUICK_FIX
-        $(SED) 's|O3|O2|g' $(@D)/Makefile
-        $(SED) 's|to continue|on Keyboard, or Left, Right on Joystick to continue|g' $(@D)/src/ui_text.c 
+	$(SED) 's|O3|O2|g' $(@D)/Makefile
+	$(SED) 's|to continue|on Keyboard, or Left, Right on Joystick to continue|g' $(@D)/src/ui_text.c 
 endef
 
 LIBRETRO_MAME2003_PLUS_PRE_BUILD_HOOKS += LIBRETRO_MAME2003_PLUS_NAMCO_QUICK_FIX
