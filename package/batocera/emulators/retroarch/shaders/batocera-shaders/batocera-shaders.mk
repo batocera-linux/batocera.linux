@@ -33,7 +33,7 @@ endif
 BATOCERA_SHADERS_DIRIN=package/batocera/emulators/retroarch/shaders/batocera-shaders/configs
 
 define BATOCERA_SHADERS_INSTALL_TARGET_CMDS
-        mkdir -p $(TARGET_DIR)/usr/share/batocera/shaders/configs
+	mkdir -p $(TARGET_DIR)/usr/share/batocera/shaders/configs
 
 	# general
 	cp $(BATOCERA_SHADERS_DIRIN)/rendering-defaults.yml           $(TARGET_DIR)/usr/share/batocera/shaders/configs/
@@ -43,7 +43,7 @@ define BATOCERA_SHADERS_INSTALL_TARGET_CMDS
 
 	# sets
 	for set in retro scanlines enhanced curvature zfast flatten-glow; do \
-                mkdir -p $(TARGET_DIR)/usr/share/batocera/shaders/configs/$$set; \
+		mkdir -p $(TARGET_DIR)/usr/share/batocera/shaders/configs/$$set; \
 		cp $(BATOCERA_SHADERS_DIRIN)/$$set/rendering-defaults.yml     $(TARGET_DIR)/usr/share/batocera/shaders/configs/$$set/; \
 		if test -e $(BATOCERA_SHADERS_DIRIN)/$$set/rendering-defaults-$(BATOCERA_SHADERS_SYSTEM).yml; then \
 			cp $(BATOCERA_SHADERS_DIRIN)/$$set/rendering-defaults-$(BATOCERA_SHADERS_SYSTEM).yml $(TARGET_DIR)/usr/share/batocera/shaders/configs/$$set/rendering-defaults-arch.yml; \
