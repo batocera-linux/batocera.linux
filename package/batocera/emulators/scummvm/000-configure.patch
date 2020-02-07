@@ -1,37 +1,32 @@
 diff --git a/configure b/configure
-index fe6a3c1..0680dad 100755
+index aa2e278..3456d66 100755
 --- a/configure
 +++ b/configure
-@@ -1385,7 +1385,7 @@ for ac_option in $@; do
+@@ -1517,7 +1517,6 @@ for ac_option in $@; do
  		done
  		;;
  	*)
 -		option_error
-+
  		;;
  	esac;
  done;
-@@ -2905,18 +2905,18 @@ if test -n "$_host"; then
- 			# but Raspbian does.
- 			# Be careful as it's the linker (LDFLAGS) which must know about sysroot.
- 			# These are needed to build against Raspbian's libSDL.
+@@ -3122,21 +3121,10 @@ if test -n "$_host"; then
+ 			_port_mk="backends/platform/dingux/dingux.mk"
+ 			;;
+ 		raspberrypi)
+-			# This is needed because the official cross compiler doesn't have multiarch enabled
+-			# but Raspbian does.
+-			# Be careful as it's the linker (LDFLAGS) which must know about sysroot.
+-			# These are needed to build against Raspbian's libSDL.
 -			append_var LDFLAGS "--sysroot=$RPI_ROOT"
 -			append_var LDFLAGS "-B$RPI_ROOT/usr/lib/arm-linux-gnueabihf"
 -			append_var LDFLAGS "-Xlinker --rpath-link=$RPI_ROOT/usr/lib/arm-linux-gnueabihf"
 -			append_var LDFLAGS "-Xlinker --rpath-link=$RPI_ROOT/lib/arm-linux-gnueabihf"
 -			append_var LDFLAGS "-Xlinker --rpath-link=$RPI_ROOT/opt/vc/lib"
 -			append_var LDFLAGS "-L$RPI_ROOT/opt/vc/lib"
-+			#append_var LDFLAGS "--sysroot=$RPI_ROOT"
-+			#append_var LDFLAGS "-B$RPI_ROOT/usr/lib/arm-linux-gnueabihf"
-+			#append_var LDFLAGS "-Xlinker --rpath-link=$RPI_ROOT/usr/lib/arm-linux-gnueabihf"
-+			#append_var LDFLAGS "-Xlinker --rpath-link=$RPI_ROOT/lib/arm-linux-gnueabihf"
-+			#append_var LDFLAGS "-Xlinker --rpath-link=$RPI_ROOT/opt/vc/lib"
-+			#append_var LDFLAGS "-L$RPI_ROOT/opt/vc/lib"
  			# This is so optional OpenGL ES includes are found.
 -			append_var CXXFLAGS "-I$RPI_ROOT/opt/vc/include"
-+			#append_var CXXFLAGS "-I$RPI_ROOT/opt/vc/include"
  			_savegame_timestamp=no
- 			_eventrec=no
 -			_build_scalers=no
 -			_build_hq_scalers=no
 +			_build_scalers=yes
