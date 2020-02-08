@@ -6,10 +6,10 @@ index b0b1c66..802263d 100644
  extern DECLSPEC Sint16 SDLCALL SDL_JoystickGetAxis(SDL_Joystick * joystick,
                                                     int axis);
  
-+extern DECLSPEC const char *SDLCALL SDL_JoystickDevicePathById(int device_index);
-+extern DECLSPEC int SDLCALL SDL_JoystickButtonEventCodeById(int device_index, int button);
-+extern DECLSPEC int SDLCALL SDL_JoystickAxisEventCodeById(int device_index, int axis);
-+extern DECLSPEC int SDLCALL SDL_JoystickHatEventCodeById(int device_index, int hat);
++extern DECLSPEC const char *SDLCALL SDL_JoystickDevicePathById(int device_instance_id);
++extern DECLSPEC int SDLCALL SDL_JoystickButtonEventCodeById(int device_instance_id, int button);
++extern DECLSPEC int SDLCALL SDL_JoystickAxisEventCodeById(int device_instance_id, int axis);
++extern DECLSPEC int SDLCALL SDL_JoystickHatEventCodeById(int device_instance_id, int hat);
 +
  /**
   *  \name Hat positions
@@ -57,24 +57,24 @@ index 062ece3..747123d 100644
  }
  
 +const char *
-+SDL_JoystickDevicePathById(int device_index)
++SDL_JoystickDevicePathById(int device_instance_id)
 +{
-+  return SDL_SYS_JoystickDevicePathById( device_index );
++  return SDL_SYS_JoystickDevicePathById( device_instance_id );
 +}
 +
-+int SDL_JoystickButtonEventCodeById(int device_index, int button)
++int SDL_JoystickButtonEventCodeById(int device_instance_id, int button)
 +{
-+  return SDL_SYS_JoystickButtonEventCodeById( device_index, button );
++  return SDL_SYS_JoystickButtonEventCodeById( device_instance_id, button );
 +}
 +
-+int SDL_JoystickAxisEventCodeById(int device_index, int axis)
++int SDL_JoystickAxisEventCodeById(int device_instance_id, int axis)
 +{
-+  return SDL_SYS_JoystickAxisEventCodeById( device_index, axis );
++  return SDL_SYS_JoystickAxisEventCodeById( device_instance_id, axis );
 +}
 +
-+int SDL_JoystickHatEventCodeById(int device_index, int hat)
++int SDL_JoystickHatEventCodeById(int device_instance_id, int hat)
 +{
-+  return SDL_SYS_JoystickHatEventCodeById( device_index, hat );
++  return SDL_SYS_JoystickHatEventCodeById( device_instance_id, hat );
 +}
  
  /* vi: set ts=4 sw=4 expandtab: */
@@ -86,10 +86,10 @@ index 818509d..4812d11 100644
  extern SDL_bool SDL_SYS_IsXInputJoystick(SDL_Joystick * joystick);
  #endif
  
-+extern const char *SDL_SYS_JoystickDevicePathById(int device_index);
-+extern int SDL_SYS_JoystickButtonEventCodeById(int device_index, int button);
-+extern int SDL_SYS_JoystickAxisEventCodeById(int device_index, int axis);
-+extern int SDL_SYS_JoystickHatEventCodeById(int device_index, int hat);
++extern const char *SDL_SYS_JoystickDevicePathById(int device_instance_id);
++extern int SDL_SYS_JoystickButtonEventCodeById(int device_instance_id, int button);
++extern int SDL_SYS_JoystickAxisEventCodeById(int device_instance_id, int axis);
++extern int SDL_SYS_JoystickHatEventCodeById(int device_instance_id, int hat);
 +
  /* vi: set ts=4 sw=4 expandtab: */
 diff --git a/src/joystick/linux/SDL_sysjoystick.c b/src/joystick/linux/SDL_sysjoystick.c
@@ -118,17 +118,17 @@ index 9cbddda..86c99c1 100644
  }
  
 +const char *
-+SDL_SYS_JoystickDevicePathById(int device_index)
++SDL_SYS_JoystickDevicePathById(int device_instance_id)
 +{
-+  SDL_joylist_item* joystick = JoystickByDevIndex(device_index);
++  SDL_joylist_item* joystick = JoystickByDevIndex(SDL_JoystickGetDeviceIndexFromInstanceID(device_instance_id));
 +  if(joystick == NULL) return "";
 +  return joystick->hwdata->fname;
 +}
 +
-+int SDL_SYS_JoystickButtonEventCodeById(int device_index, int button)
++int SDL_SYS_JoystickButtonEventCodeById(int device_instance_id, int button)
 +{
 +  int i;
-+  SDL_joylist_item* joystick = JoystickByDevIndex(device_index);
++  SDL_joylist_item* joystick = JoystickByDevIndex(SDL_JoystickGetDeviceIndexFromInstanceID(device_instance_id));
 +  if(joystick == NULL) return -1;
 +
 +  for(i=0; i<KEY_MAX; i++) {
@@ -139,10 +139,10 @@ index 9cbddda..86c99c1 100644
 +  return -1;
 +}
 +
-+int SDL_SYS_JoystickAxisEventCodeById(int device_index, int axis)
++int SDL_SYS_JoystickAxisEventCodeById(int device_instance_id, int axis)
 +{
 +  int i;
-+  SDL_joylist_item* joystick = JoystickByDevIndex(device_index);
++  SDL_joylist_item* joystick = JoystickByDevIndex(SDL_JoystickGetDeviceIndexFromInstanceID(device_instance_id));
 +  if(joystick == NULL) return -1;
 +
 +  for(i=0; i<ABS_MAX; i++) {
@@ -153,10 +153,10 @@ index 9cbddda..86c99c1 100644
 +  return -1;
 +}
 +
-+int SDL_SYS_JoystickHatEventCodeById(int device_index, int hat)
++int SDL_SYS_JoystickHatEventCodeById(int device_instance_id, int hat)
 +{
 +  int i;
-+  SDL_joylist_item* joystick = JoystickByDevIndex(device_index);
++  SDL_joylist_item* joystick = JoystickByDevIndex(SDL_JoystickGetDeviceIndexFromInstanceID(device_instance_id));
 +  if(joystick == NULL) return -1;
 +
 +  for(i=0; i<ABS_MAX; i++) {
