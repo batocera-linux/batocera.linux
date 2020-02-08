@@ -1,40 +1,26 @@
 diff --git a/Makefile b/Makefile
-index e93af98..82af5ed 100644
+index 17fc640..119c9dc 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -198,6 +198,35 @@ else ifeq ($(platform), sncps3)
-    LUA_MYCFLAGS := $(DEFINES) $(CFLAGS)
- 	STATIC_LINKING = 1
-    MMD :=
-+
-+#RaspberryPi
-+else ifneq (,$(findstring armv,$(platform)))
-+   TARGET := $(TARGET_NAME)_libretro.so
-+   SHARED := -shared -Wl,--no-undefined
-+   fpic := -fPIC
-+   CFLAGS += -D_GNU_SOURCE=1
-+   CC = gcc
-+ifneq (,$(findstring cortexa8,$(platform)))
-+   CFLAGS += -marm -mcpu=cortex-a8
-+   ASFLAGS += -mcpu=cortex-a8
-+else ifneq (,$(findstring cortexa9,$(platform)))
-+   CFLAGS += -marm -mcpu=cortex-a9
-+   ASFLAGS += -mcpu=cortex-a9
-+endif
-+   CFLAGS += -marm
-+ifneq (,$(findstring neon,$(platform)))
-+   CFLAGS += -mfpu=neon
-+   ASFLAGS += -mfpu=neon
-+   HAVE_NEON = 1
-+endif
-+ifneq (,$(findstring softfloat,$(platform)))
-+   CFLAGS += -mfloat-abi=softfp
-+   ASFLAGS += -mfloat-abi=softfp
-+else ifneq (,$(findstring hardfloat,$(platform)))
-+   CFLAGS += -mfloat-abi=hard
-+   ASFLAGS += -mfloat-abi=hard
-+endif
-+   CFLAGS += -DARM
- else
-    CC = gcc
-    TARGET := $(TARGET_NAME)_libretro.dll
+@@ -61,7 +61,7 @@ ifeq ($(platform), unix)
+    LDFLAGS += -Wl,-E
+ 
+ ifeq ($(ARCH), $(filter $(ARCH), intel))
+-	WANT_JIT = 1
++	WANT_JIT = 0
+ endif
+ else ifeq ($(platform), linux-portable)
+    TARGET := $(TARGET_NAME)_libretro.so
+diff --git a/deps/lua/src/Makefile b/deps/lua/src/Makefile
+index e9167cc..753b6ad 100644
+--- a/deps/lua/src/Makefile
++++ b/deps/lua/src/Makefile
+@@ -8,7 +8,7 @@
+ PLAT= none
+ 
+ CC= gcc
+-CFLAGS= -O2 -Wall -fPIC $(MYCFLAGS)
++CFLAGS= -O2 -Wall $(MYCFLAGS) -fPIC
+ AR= ar rcu
+ RANLIB= ranlib
+ RM= rm -f
