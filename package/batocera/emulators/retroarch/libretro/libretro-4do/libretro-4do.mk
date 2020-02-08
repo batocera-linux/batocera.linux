@@ -3,8 +3,8 @@
 # 4DO
 #
 ################################################################################
-# Version.: Commits on Jan 06, 2020
-LIBRETRO_4DO_VERSION = da814a868c41fb47f265e04e5f95756cda62e5c2
+# Version.: Commits on Feb 03, 2020
+LIBRETRO_4DO_VERSION = 6e2762dfea4fb7cfe9cd2fef50a34bd65ea770d1
 LIBRETRO_4DO_SITE = $(call github,libretro,4do-libretro,$(LIBRETRO_4DO_VERSION))
 LIBRETRO_4DO_LICENSE = LGPL with additional notes
 
