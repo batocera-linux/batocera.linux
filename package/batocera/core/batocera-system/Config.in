@@ -305,6 +305,7 @@ config BR2_PACKAGE_BATOCERA_RETROARCH
 
         select BR2_PACKAGE_LIBRETRO_PARALLEL_N64      if !BR2_PACKAGE_BATOCERA_TARGET_RPI_ANY     && \
                                                          !BR2_PACKAGE_BATOCERA_TARGET_C2      	  && \
+							 !BR2_PACKAGE_BATOCERA_TARGET_S905     	  && \
 	                                                 !BR2_PACKAGE_BATOCERA_TARGET_TINKERBOARD && \
 							 !BR2_PACKAGE_BATOCERA_TARGET_MIQI
 							 # PARALLEL_N64
