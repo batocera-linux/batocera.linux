@@ -1,3 +1,5 @@
 #!/bin/bash
 
-test -e "/userdata/system/custom.sh" && /userdata/system/custom.sh $1 &
+if test -e "/userdata/system/custom.sh"; then
+    bash /userdata/system/custom.sh $1 &
+fi
