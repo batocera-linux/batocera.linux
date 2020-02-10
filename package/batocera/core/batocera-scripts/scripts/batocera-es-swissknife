@@ -8,7 +8,8 @@
 # Added /bin/usr script // 22.09.2019
 # Added sigterm level, added second parameter to activate sigterm during smart_wait function
 # Added architecture and version information // 05.01.2020
-# Added update information // 09.02.2020
+# Added update information + beta branch // 10.02.2020
+
 
 # Get all childpids from calling process
 function getcpid() {
@@ -107,6 +108,7 @@ case ${1,,} in
     ;;
 
     --version|--arch|--update)
+        [[ ${2,,} == "beta" ]] && BRANCH=beta || BRANCH=stable
         if [[ -f /usr/share/batocera/batocera.version ]]; then
             VER=$(cat /usr/share/batocera/batocera.version)
             ret=$?
@@ -124,18 +126,15 @@ case ${1,,} in
         fi
 
         if [[ "${1,,}" == "--update" && $ret -eq 0 ]]; then
-            URL="https://batocera.org/upgrades/$ARCH/stable/last/index.html"
+            URL="https://batocera.org/upgrades/$ARCH/$BRANCH/last/index.html"
             NET_VERSION=$(wget -q -O - "$URL" | grep -m1 "<h1>")
-            [[ $? -eq 1 ]] && NET_VERSION="   Connection failed!"
-            NEW_VERSION="${NET_VERSION%% *}" #strip till last space
-            NEW_VERSION=${NEW_VERSION:4}     #remove html tag
-            NEW_VERSION=${NEW_VERSION//[^[:digit:]]/}
-
-            CUR_VERSION=${VER%% *}
-            CUR_VERSION=${CUR_VERSION//[^[:digit:]]/}
+            [[ $? -eq 1 ]] && NET_VERSION="0000Connection failed!"
+            NEW_VERSION=${NET_VERSION//[^[:digit:]]/}
+            CUR_VERSION=1${VER//[^[:digit:]]/} #add 1 from <h1> tag
 
             echo "Webversion:  ${NET_VERSION:4}"
             echo "Update URL:  $URL"
+            echo "Branch:      ${BRANCH^^}-branch searched"
             echo "Used arch:   $ARCH"
             echo "Installed:   $VER" 
             if [[ $CUR_VERSION -lt $NEW_VERSION ]]; then
@@ -168,7 +167,8 @@ case ${1,,} in
                              If output is 0 then there is no emulator active!
                   --arch     Shows current architecture running\n
                   --version  Shows current version of BATOCERA running
-                  --update   Shows possible update for your install"
+                  --update   Shows possible update for your install
+                             default: stable, you can type --update beta"
     ;;
 
 esac
