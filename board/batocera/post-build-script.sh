@@ -88,7 +88,7 @@ fi
 if test "${BATOCERA_TARGET}" = "S905"
 then
     mkdir -p "${TARGET_DIR}/lib/modules/3.14.29/kernel/gpu"
-    cp "board/batocera/s905/linux_patches/mali.ko" "${TARGET_DIR}/lib/modules/3.14.29/kernel/gpu/mali.ko"
+    cp "${BR2_EXTERNAL_BATOCERA_PATH}/board/batocera/s905/linux_patches/mali.ko" "${TARGET_DIR}/lib/modules/3.14.29/kernel/gpu/mali.ko"
     ln -sf "/usr/lib/gdk-pixbuf-2.0" "${TARGET_DIR}/lib/gdk-pixbuf-2.0" || exit 1
 fi
 
