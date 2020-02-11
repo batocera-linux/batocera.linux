@@ -80,6 +80,28 @@ then
     echo "TERM=vt100" >> "${TARGET_DIR}/etc/profile"
 fi
 
+# add BATOCERA logo and some alias, sourcing of $HOME/.bashrc can be added to $HOME/.profile
+cat >> "${TARGET_DIR}/etc/profile" << _EOF_
+# ---- Introduce BATOCERA logo ----
+echo '
+      ____    __   ____  _____  ___  ____  ____    __   
+     (  _ \  /__\ (_  _)(  _  )/ __)( ___)(  _ \  /__\  
+      ) _ < /(__)\  )(   )(_)(( (__  )__)  )   / /(__)\ 
+     (____/(__)(__)(__) (_____)\___)(____)(_)\_)(__)(__)
+                   ONLY CORES THAT MATTER
+'
+echo
+echo "-- type 'batocera-check-updates' to check for stable branch --"
+echo "-- add 'beta' switch to check for latest arch developments  --"
+echo
+
+# ---- ALIAS VALUES ----
+alias mc='mc -x'
+alias ls='ls -a'
+alias batocera-check-updates='batocera-es-swissknife --update'
+# ---- ALIAS VALUES ----
+_EOF_
+
 # fix pixbuf : Unable to load image-loading module: /lib/gdk-pixbuf-2.0/2.10.0/loaders/libpixbufloader-png.so
 # this fix is to be removed once fixed. i've not found the exact source in buildroot. it prevents to display icons in filemanager and some others
 if test "${BATOCERA_TARGET}" = "X86" -o "${BATOCERA_TARGET}" = X86_64
@@ -107,3 +129,4 @@ sed -i -e s+'defaults.pcm.ipc_gid .*$'+'defaults.pcm.ipc_gid '"${AUDIOGROUP}"+ "
 
 # bios file
 python "package/batocera/core/batocera-scripts/scripts/batocera-systems" --createReadme > "${TARGET_DIR}/usr/share/batocera/datainit/bios/readme.txt" || exit 1
+
