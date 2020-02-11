@@ -87,7 +87,6 @@ echo -e "\n----- Generating images/batocera files -----\n"
 
 case "${BATOCERA_TARGET}" in
 	RPI0|RPI1|RPI2|RPI3)
-	touch ${TARGET_DIR}/userdata/.please_resize_me
 	# boot.tar.xz
 	cp -f "${BINARIES_DIR}/"*.dtb "${BINARIES_DIR}/rpi-firmware"
 	rm -rf "${BINARIES_DIR}/rpi-firmware/boot"   || exit 1
@@ -121,7 +120,6 @@ case "${BATOCERA_TARGET}" in
 	;;
 
 	XU4)
-	touch ${TARGET_DIR}/userdata/.please_resize_me
 	# dirty boot binary files
 	for F in bl1.bin.hardkernel bl2.bin.hardkernel tzsw.bin.hardkernel u-boot.bin.hardkernel
 	do
@@ -167,7 +165,6 @@ case "${BATOCERA_TARGET}" in
 	;;
 
 	LEGACYXU4)
-	touch ${TARGET_DIR}/userdata/.please_resize_me
 	# dirty boot binary files
 	for F in bl1.bin.hardkernel bl2.bin.hardkernel tzsw.bin.hardkernel u-boot.bin.hardkernel
 	do
@@ -213,7 +210,6 @@ case "${BATOCERA_TARGET}" in
 	;;
 
 	C2)
-	touch ${TARGET_DIR}/userdata/.please_resize_me
 	# boot
 	rm -rf ${BINARIES_DIR}/boot        || exit 1
 	mkdir -p ${BINARIES_DIR}/boot/boot || exit 1
@@ -245,7 +241,6 @@ case "${BATOCERA_TARGET}" in
 	;;
 
 	S905)
-	touch ${TARGET_DIR}/userdata/.please_resize_me
 	MKIMAGE=${HOST_DIR}/bin/mkimage
 	BOARD_DIR="board/batocera/s905"
 	# boot
@@ -285,7 +280,6 @@ case "${BATOCERA_TARGET}" in
 	;;
 
 	S912)
-	touch ${TARGET_DIR}/userdata/.please_resize_me
 	MKIMAGE=${HOST_DIR}/bin/mkimage
 	MKBOOTIMAGE=${HOST_DIR}/bin/mkbootimg
 	BOARD_DIR="board/batocera/s912"
@@ -322,7 +316,6 @@ case "${BATOCERA_TARGET}" in
 	;;
 
 	X86|X86_64)
-	touch ${TARGET_DIR}/userdata/.please_resize_me
 	# /boot
 	rm -rf ${BINARIES_DIR}/boot || exit 1
 	mkdir -p ${BINARIES_DIR}/boot || exit 1
@@ -359,7 +352,6 @@ case "${BATOCERA_TARGET}" in
 	;;
 
 	ROCKPRO64)
-	touch ${TARGET_DIR}/userdata/.please_resize_me
 	# /boot
 	rm -rf "${BINARIES_DIR}/boot"            || exit 1
 	mkdir -p "${BINARIES_DIR}/boot/boot"     || exit 1
@@ -429,7 +421,6 @@ case "${BATOCERA_TARGET}" in
     ;;
 
 	ODROIDN2)
-	touch ${TARGET_DIR}/userdata/.please_resize_me
 	# /boot
 	rm -rf "${BINARIES_DIR}/boot"            || exit 1
 	mkdir -p "${BINARIES_DIR}/boot/boot"     || exit 1
@@ -466,7 +457,6 @@ case "${BATOCERA_TARGET}" in
 	;;
 
 	ODROIDGOA)
-	touch ${TARGET_DIR}/userdata/.please_resize_me
 	# /boot
 	rm -rf "${BINARIES_DIR}/boot"            || exit 1
 	mkdir -p "${BINARIES_DIR}/boot/boot"     || exit 1
@@ -503,7 +493,6 @@ case "${BATOCERA_TARGET}" in
 	;;
 
 	TINKERBOARD)
-	touch ${TARGET_DIR}/userdata/.please_resize_me
 	# /boot
 	rm -rf "${BINARIES_DIR}/boot"            || exit 1
 	mkdir -p "${BINARIES_DIR}/boot/boot"     || exit 1
@@ -544,7 +533,6 @@ case "${BATOCERA_TARGET}" in
 	;;
 
 	MIQI)
-	touch ${TARGET_DIR}/userdata/.please_resize_me
 	# /boot
 	rm -rf "${BINARIES_DIR}/boot"            || exit 1
 	mkdir -p "${BINARIES_DIR}/boot/boot"     || exit 1
