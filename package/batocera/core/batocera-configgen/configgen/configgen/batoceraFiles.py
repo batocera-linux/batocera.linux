@@ -39,7 +39,6 @@ batoceraBins = {'dosbox'      : '/usr/bin/dosbox'
 retroarchRoot = CONF + '/retroarch'
 retroarchRootInit = CONF_INIT + '/retroarch'
 retroarchCustom = retroarchRoot + '/retroarchcustom.cfg'
-retroarchCustomOrigin = retroarchRootInit + "/retroarchcustom.cfg"
 retroarchCoreCustom = retroarchRoot + "/cores/retroarch-core-options.cfg"
 
 retroarchCores = "/usr/lib/libretro/"
