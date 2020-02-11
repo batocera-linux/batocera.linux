@@ -10,7 +10,6 @@
 # Added architecture and version information // 05.01.2020
 # Added update information + beta branch // 10.02.2020
 
-
 # Get all childpids from calling process
 function getcpid() {
 local cpids="$(pgrep -P $1)"
@@ -126,18 +125,15 @@ case ${1,,} in
         fi
 
         if [[ "${1,,}" == "--update" && $ret -eq 0 ]]; then
-            URL="https://batocera.org/upgrades/$ARCH/$BRANCH/last/index.html"
-            NET_VERSION=$(wget -q -O - "$URL" | grep -m1 "<h1>")
-            [[ $? -eq 1 ]] && NET_VERSION="0000Connection failed!"
-            NEW_VERSION=${NET_VERSION//[^[:digit:]]/}
-            CUR_VERSION=1${VER//[^[:digit:]]/} #add 1 from <h1> tag
-
-            echo "Webversion:  ${NET_VERSION:4}"
-            echo "Update URL:  $URL"
+            URL="https://batocera.org/upgrades/$ARCH/$BRANCH/last/batocera.version"
+            NET_VERSION=$(wget -q -O - "$URL")
+            [[ $? -eq 0 ]] || NET_VERSION="Connection failed!"         
+            echo "Webversion:  $NET_VERSION"
+            echo "Update URL:  $(dirname $URL)"
             echo "Branch:      ${BRANCH^^}-branch searched"
             echo "Used arch:   $ARCH"
             echo "Installed:   $VER" 
-            if [[ $CUR_VERSION -lt $NEW_VERSION ]]; then
+            if [[ ${VER//[^[:digit:]]/} -lt ${NET_VERSION//[^[:digit:]]/} ]]; then
                 echo "Status:      Possible Update found!"
                 ret=0
             else
