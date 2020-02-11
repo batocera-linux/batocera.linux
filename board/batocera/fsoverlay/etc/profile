@@ -1,0 +1,41 @@
+export PATH=@PATH@
+
+if [ "$PS1" ]; then
+	if [ "`id -u`" -eq 0 ]; then
+		export PS1='# '
+	else
+		export PS1='$ '
+	fi
+fi
+
+export EDITOR='/bin/vi'
+
+# Source configuration files from /etc/profile.d
+for i in /etc/profile.d/*.sh ; do
+	if [ -r "$i" ]; then
+		. $i
+	fi
+done
+unset i
+
+# Use vt100 terminal
+TERM=vt100
+fi
+
+# Add BATOCERA logo and some alias, sourcing of $HOME/.bashrc can be added to $HOME/.profile
+echo '
+      ____    __   ____  _____  ___  ____  ____    __   
+     (  _ \  /__\ (_  _)(  _  )/ __)( ___)(  _ \  /__\  
+      ) _ < /(__)\  )(   )(_)(( (__  )__)  )   / /(__)\ 
+     (____/(__)(__)(__) (_____)\___)(____)(_)\_)(__)(__)
+                   ONLY CORES THAT MATTER
+'
+echo
+echo "-- type 'batocera-check-updates' to check for stable branch --"
+echo "-- add 'beta' switch to check for latest arch developments  --"
+echo
+
+# ---- ALIAS VALUES ----
+alias mc='mc -x'
+alias ls='ls -a'
+alias batocera-check-updates='batocera-es-swissknife --update'
