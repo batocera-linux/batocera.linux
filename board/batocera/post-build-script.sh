@@ -100,13 +100,6 @@ alias mc='mc -x'
 alias ls='ls -a'
 alias batocera-check-stable='batocera-es-swissknife --update'
 alias batocera-check-beta='batocera-es-swissknife --update beta'
-
-# ---- Include .bashrc ----
-if [ -n "\$BASH_VERSION" ]; then
-	if [ -f "\$HOME/.bashrc" ]; then
-		. "\$HOME/.bashrc"
-	fi
-fi
 _EOF_
 
 # fix pixbuf : Unable to load image-loading module: /lib/gdk-pixbuf-2.0/2.10.0/loaders/libpixbufloader-png.so
