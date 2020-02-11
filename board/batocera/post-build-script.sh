@@ -54,6 +54,10 @@ if test -e "${TARGET_DIR}/etc/init.d/S45connman"
 then
     mv "${TARGET_DIR}/etc/init.d/S45connman" "${TARGET_DIR}/etc/init.d/S08connman" || exit 1 # move to make before share
 fi
+if test -e "${TARGET_DIR}/etc/init.d/S21rngd"
+then
+    mv "${TARGET_DIR}/etc/init.d/S21rngd"    "${TARGET_DIR}/etc/init.d/S33rngd"    || exit 1 # move because it takes several seconds (on odroidgoa for example)
+fi
 
 # remove kodi default joystick configuration files
 # while as a minimum, the file joystick.Sony.PLAYSTATION(R)3.Controller.xml makes references to PS4 controllers with axes which doesn't exist (making kodi crashing)
@@ -75,6 +79,35 @@ then
     echo              >> "${TARGET_DIR}/etc/profile"
     echo "TERM=vt100" >> "${TARGET_DIR}/etc/profile"
 fi
+
+# add BATOCERA logo and some alias, add sourcing of $HOME/.bashrc
+cat >> "${TARGET_DIR}/etc/profile" << _EOF_
+# ---- Introduce BATOCERA logo ----
+echo '
+ ____    __   ____  _____  ___  ____  ____    __   
+(  _ \  /__\ (_  _)(  _  )/ __)( ___)(  _ \  /__\  
+ ) _ < /(__)\  )(   )(_)(( (__  )__)  )   / /(__)\ 
+(____/(__)(__)(__) (_____)\___)(____)(_)\_)(__)(__)
+              ONLY CORES THAT MATTER
+'
+echo
+echo "-- type 'batocera-check-stable' or 'batocera-check-beta' --"
+echo "-- to check for updates for your platform (stable/beta)  --"
+echo
+
+# ---- ALIAS VALUES ----
+alias mc='mc -x'
+alias ls='ls -a'
+alias batocera-check-stable='batocera-es-swissknife --update'
+alias batocera-check-beta='batocera-es-swissknife --update beta'
+
+# ---- Include .bashrc ----
+if [ -n "\$BASH_VERSION" ]; then
+	if [ -f "\$HOME/.bashrc" ]; then
+		. "\$HOME/.bashrc"
+	fi
+fi
+_EOF_
 
 # fix pixbuf : Unable to load image-loading module: /lib/gdk-pixbuf-2.0/2.10.0/loaders/libpixbufloader-png.so
 # this fix is to be removed once fixed. i've not found the exact source in buildroot. it prevents to display icons in filemanager and some others
