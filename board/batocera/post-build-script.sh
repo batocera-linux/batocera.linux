@@ -68,7 +68,8 @@ mkdir "${TARGET_DIR}/"{var,run,sys,tmp}  || exit 1
 # make /etc/shadow a file generated from /boot/batocera-boot.conf for security
 rm -f "${TARGET_DIR}/etc/shadow" || exit 1
 touch "${TARGET_DIR}/run/batocera.shadow"
-ln -sf "${TARGET_DIR}/run/batocera.shadow" "${TARGET_DIR}/etc/shadow" || exit 1
+(cd "${TARGET_DIR}/etc" && ln -sf "../run/batocera.shadow" "shadow") || exit 1
+# ln -sf "/run/batocera.shadow" "${TARGET_DIR}/etc/shadow" || exit 1
 
 # fix the vt100 terminal ; can probably removed in the future
 if ! grep -qE "^TERM=vt100$" "${TARGET_DIR}/etc/profile"
