@@ -1,0 +1,75 @@
+diff --git a/es-core/src/InputConfig.h b/es-core/src/InputConfig.h
+index f1acf9b..6fb21d2 100644
+--- a/es-core/src/InputConfig.h
++++ b/es-core/src/InputConfig.h
+@@ -136,6 +136,7 @@ public:
+ 	inline int getDeviceId() const { return mDeviceId; };
+         
+ 	inline int getDeviceIndex() const { return mDeviceIndex; }; // batocera
++	inline void setDeviceIndex(int index) { mDeviceIndex = index; }; // batocera
+ 	inline const std::string& getDeviceName() { return mDeviceName; }
+ 	inline const std::string& getDeviceGUIDString() { return mDeviceGUID; }
+ 	inline int getDeviceNbAxes() const { return mDeviceNbAxes; }; // batocera
+@@ -159,7 +160,7 @@ public:
+ private:
+ 	std::map<std::string, Input> mNameMap;
+ 	const int mDeviceId;
+-	const int mDeviceIndex; // batocera
++	int mDeviceIndex; // batocera
+ 	const std::string mDeviceName;
+ 	const std::string mDeviceGUID;
+ 	const int mDeviceNbAxes; // number of axes of the device // batocera
+diff --git a/es-core/src/InputManager.cpp b/es-core/src/InputManager.cpp
+index ddaace8..12fd128 100644
+--- a/es-core/src/InputManager.cpp
++++ b/es-core/src/InputManager.cpp
+@@ -11,6 +11,7 @@
+ #include <iostream>
+ #include <assert.h>
+ #include "Settings.h"
++#include <algorithm>
+ 
+ #define KEYBOARD_GUID_STRING "-1"
+ #define CEC_GUID_STRING      "-2"
+@@ -102,6 +103,8 @@ void InputManager::addJoystickByDeviceIndex(int id)
+ 	int numAxes = SDL_JoystickNumAxes(joy);
+ 	mPrevAxisValues[joyId] = new int[numAxes];
+ 	std::fill(mPrevAxisValues[joyId], mPrevAxisValues[joyId] + numAxes, 0); //initialize array to 0
++
++	recomputeJoysticksIndexes();
+ }
+ 
+ void InputManager::removeJoystickByJoystickID(SDL_JoystickID joyId)
+@@ -127,6 +130,20 @@ void InputManager::removeJoystickByJoystickID(SDL_JoystickID joyId)
+ 	}else{
+ 		LOG(LogError) << "Could not find joystick to close (instance ID: " << joyId << ")";
+ 	}
++
++	recomputeJoysticksIndexes();
++}
++
++void InputManager::recomputeJoysticksIndexes() {
++  std::vector<std::pair<std::string, InputConfig*>> devicesByPath;
++
++  for (auto config : mInputConfigs)
++    devicesByPath.push_back(std::pair<std::string, InputConfig*>(SDL_JoystickDevicePathById(config.first), config.second));
++
++  std::sort(devicesByPath.begin(), devicesByPath.end(), [](std::pair<std::string, InputConfig*> a, std::pair<std::string, InputConfig*> b) -> bool { return a.first < b.first; });
++
++  for (int i = 0; i < devicesByPath.size(); i++)
++    devicesByPath[i].second->setDeviceIndex(i);
+ }
+ 
+ // batocera
+diff --git a/es-core/src/InputManager.h b/es-core/src/InputManager.h
+index edc5033..cf4c066 100644
+--- a/es-core/src/InputManager.h
++++ b/es-core/src/InputManager.h
+@@ -37,6 +37,7 @@ private:
+ 
+ 	void addJoystickByDeviceIndex(int id);
+ 	void removeJoystickByJoystickID(SDL_JoystickID id);
++	void recomputeJoysticksIndexes();
+ 	bool loadInputConfig(InputConfig* config); // returns true if successfully loaded, false if not (or didn't exist)
+ 
+         // batocera
