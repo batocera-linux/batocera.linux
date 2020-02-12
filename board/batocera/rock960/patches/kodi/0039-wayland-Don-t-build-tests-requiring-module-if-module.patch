@@ -1,0 +1,33 @@
+From cbee8eb7b207944f134a1c9fef8200e8319694e2 Mon Sep 17 00:00:00 2001
+From: Sam Spilsbury <smspillaz@gmail.com>
+Date: Mon, 24 Apr 2017 14:38:08 +0200
+Subject: [PATCH 39/62] wayland: Don't build tests requiring module if module
+ is not built
+
+Signed-off-by: memeka <mihailescu2m@gmail.com>
+---
+ xbmc/windowing/tests/wayland/TestXBMCWaylandInputAcceptance.cpp | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/xbmc/windowing/tests/wayland/TestXBMCWaylandInputAcceptance.cpp b/xbmc/windowing/tests/wayland/TestXBMCWaylandInputAcceptance.cpp
+index 7e5a988..e771159 100644
+--- a/xbmc/windowing/tests/wayland/TestXBMCWaylandInputAcceptance.cpp
++++ b/xbmc/windowing/tests/wayland/TestXBMCWaylandInputAcceptance.cpp
+@@ -62,6 +62,8 @@
+ #define WAYLAND_VERSION_NUMBER ((WAYLAND_VERSION_MAJOR << 16) | (WAYLAND_VERSION_MINOR << 8) | (WAYLAND_VERSION_MICRO))
+ #define WAYLAND_VERSION_CHECK(major, minor, micro) ((major << 16) | (minor << 8) | (micro))
+ 
++#if defined(HAVE_WAYLAND_XBMC_PROTO)
++
+ namespace xw = xbmc::wayland;
+ namespace xtw = xbmc::test::wayland;
+ namespace xwe = xbmc::wayland::events;
+@@ -577,3 +579,5 @@ typedef ::testing::Types<SingleThreadedEventQueue,
+ INSTANTIATE_TYPED_TEST_CASE_P(EventQueues,
+                               InputEventQueueWestonTest,
+                               EventQueueTypes);
++
++#endif
+-- 
+2.7.4
+

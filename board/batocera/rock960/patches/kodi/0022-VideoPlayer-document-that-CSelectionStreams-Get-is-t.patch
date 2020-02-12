@@ -1,0 +1,38 @@
+From e75ee630e0b13decd5ee61d39d45e313d31dcb66 Mon Sep 17 00:00:00 2001
+From: Max Kellermann <max@duempel.org>
+Date: Mon, 24 Apr 2017 14:38:06 +0200
+Subject: [PATCH 22/62] VideoPlayer: document that CSelectionStreams::Get() is
+ thread-unsafe
+
+In https://github.com/xbmc/xbmc/pull/9442#discussion_r57427727,
+FernetMenta mandated that "this particular method does not require
+locking".  It is important to document semantic API restrictions like
+this one.
+
+Signed-off-by: memeka <mihailescu2m@gmail.com>
+---
+ xbmc/cores/VideoPlayer/VideoPlayer.h | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/xbmc/cores/VideoPlayer/VideoPlayer.h b/xbmc/cores/VideoPlayer/VideoPlayer.h
+index d18fe3d..3695d9a 100644
+--- a/xbmc/cores/VideoPlayer/VideoPlayer.h
++++ b/xbmc/cores/VideoPlayer/VideoPlayer.h
+@@ -271,7 +271,14 @@ public:
+   SelectionStream& Get     (StreamType type, int index);
+   bool             Get     (StreamType type, CDemuxStream::EFlags flag, SelectionStream& out);
+ 
++  /**
++   * Note: calling this method makes the whole instance thread-unsafe.
++   */
+   SelectionStreams Get(StreamType type);
++
++  /**
++   * Note: calling this method makes the whole instance thread-unsafe.
++   */
+   template<typename Compare> SelectionStreams Get(StreamType type, Compare compare)
+   {
+     SelectionStreams streams = Get(type);
+-- 
+2.7.4
+

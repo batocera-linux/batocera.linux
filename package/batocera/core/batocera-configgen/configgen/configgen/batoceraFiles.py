@@ -39,7 +39,6 @@ batoceraBins = {'dosbox'      : '/usr/bin/dosbox'
 retroarchRoot = CONF + '/retroarch'
 retroarchRootInit = CONF_INIT + '/retroarch'
 retroarchCustom = retroarchRoot + '/retroarchcustom.cfg'
-retroarchCustomOrigin = retroarchRootInit + "/retroarchcustom.cfg"
 retroarchCoreCustom = retroarchRoot + "/cores/retroarch-core-options.cfg"
 
 retroarchCores = "/usr/lib/libretro/"
@@ -97,13 +96,13 @@ dosboxCustom = CONF + '/dosbox'
 dosboxConfig = dosboxCustom + '/dosbox.conf'
 
 fsuaeBios = BIOS
-fsuaeConfig = CONF + "/FS-UAE"
+fsuaeConfig = CONF + "/fs-uae"
 fsuaeSaves = SAVES + "/amiga"
 
 scummvmSaves = SAVES + '/scummvm'
 
-viceConfigFile = CONF + "/vice/sdl-vicerc"
 viceConfig = CONF + "/vice"
+
 overlaySystem = "/usr/share/batocera/datainit/decorations"
 overlayUser = "/userdata/decorations"
 overlayConfigFile = "/userdata/system/configs/retroarch/overlay.cfg"

@@ -3,8 +3,8 @@
 # Scummvm
 #
 ################################################################################
-# Version.: Commits on Dec 25, 2019
-SCUMMVM_VERSION = 3e296bc31bc89568178cfd084ea2d4631da43449
+# Version.: Commits on Feb 07, 2020
+SCUMMVM_VERSION = 35e0b72c21f01ccf246ddb7672f1b84045b5f5b5
 SCUMMVM_SITE = $(call github,scummvm,scummvm,$(SCUMMVM_VERSION))
 SCUMMVM_LICENSE = GPLv2
 SCUMMVM_DEPENDENCIES = sdl2 zlib jpeg libmpeg2 libogg libvorbis flac libmad libpng libtheora faad2 fluidsynth freetype
@@ -18,8 +18,8 @@ endif
 
 SCUMMVM_CONF_ENV += RANLIB="$(TARGET_RANLIB)" STRIP="$(TARGET_STRIP)" AR="$(TARGET_AR) cru" AS="$(TARGET_AS)"
 SCUMMVM_CONF_OPTS += --enable-opengl --disable-debug --enable-optimizations --disable-mt32emu --enable-flac --enable-mad --enable-vorbis --disable-tremor \
-		--disable-fluidsynth --disable-taskbar --disable-timidity --disable-alsa --enable-vkeybd --enable-keymapper --disable-eventrecorder \
-                --prefix=/usr --with-sdl-prefix="$(STAGING_DIR)/usr/bin/" --enable-release \
+					 --disable-fluidsynth --disable-taskbar --disable-timidity --disable-alsa --enable-vkeybd --enable-keymapper --disable-eventrecorder \
+                	 --prefix=/usr --with-sdl-prefix="$(STAGING_DIR)/usr/bin/" --enable-release \
 
 SCUMMVM_MAKE_OPTS += RANLIB="$(TARGET_RANLIB)" STRIP="$(TARGET_STRIP)" AR="$(TARGET_AR) cru" AS="$(TARGET_AS)" LD="$(TARGET_CXX)"
 
@@ -30,11 +30,4 @@ endef
 
 SCUMMVM_POST_INSTALL_TARGET_HOOKS += SCUMMVM_ADD_VIRTUAL_KEYBOARD
 
-#define SCUMMVM_ADD_EXECUTABLE
-#	$(SED) "s|RANLIB := ranlib|RANLIB 
-#STRIP := strip
-#AR := ar cru
-#AS := as
-
-#SCUMMVM_POST_CONFIGURE_HOOKS += SCUMMVM_ADD_EXECUTABLES
 $(eval $(autotools-package))

@@ -66,7 +66,7 @@ index d18eeac..50d22e7 100644
      InputConfig * playerInputConfig = playerJoysticks[player];
      if(playerInputConfig != NULL){
        command << "-p" << player+1 << "index " <<  playerInputConfig->getDeviceIndex() << " -p" << player+1 << "guid " << playerInputConfig->getDeviceGUIDString() << " -p" << player+1 << "name \"" <<  playerInputConfig->getDeviceName() << "\" -p" << player+1 << "nbaxes " << playerInputConfig->getDeviceNbAxes() << " ";
-+      command << "-p" << player+1 << "devicepath " <<  SDL_JoystickDevicePathById(playerInputConfig->getDeviceIndex()) << " ";
++      command << "-p" << player+1 << "devicepath " <<  SDL_JoystickDevicePathById(playerInputConfig->getDeviceId()) << " ";
      }
    }
    LOG(LogInfo) << "Configure emulators command : " << command.str().c_str();

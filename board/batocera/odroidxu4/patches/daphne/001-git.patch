@@ -1,0 +1,13 @@
+diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
+index 486ee9d..451618a 100644
+--- a/src/CMakeLists.txt
++++ b/src/CMakeLists.txt
+@@ -57,7 +57,7 @@ string(REGEX REPLACE "^v" "" RESULT ${VER_TAG})
+ string(REGEX REPLACE "[-\\.]" ";" RESULT ${RESULT})
+ list(GET RESULT 0 VER_MAJOR)
+ list(GET RESULT 1 VER_MINOR)
+-list(GET RESULT 2 VER_PATCH)
++#list(GET RESULT 2 VER_PATCH)
+ if(NOT "${VER_GIT_COUNT}" EQUAL "0")
+     set(VER_TAG "${VER_TAG}-${VER_GIT_COUNT}")
+ endif()

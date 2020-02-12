@@ -1,0 +1,31 @@
+#!/bin/bash
+
+ACTION=$1
+shift
+
+do_help() {
+    echo "${1} scanlist" >&2
+    echo "${1} list" >&2
+}
+
+do_list() {
+    connmanctl services |
+	grep -E "^... [^ ]* [ ]* wifi_.*$" |
+	sed -e s+"^... \([^ ]*\) [ ]* wifi_.*$"+"\1"+
+}
+
+do_scanlist() {
+    connmanctl scan wifi >/dev/null 2>/dev/null
+    do_list
+}
+
+case "${ACTION}" in
+    "list")
+	do_list
+	;;
+    "scanlist")
+	do_scanlist
+	;;
+    *)
+	do_help "${0}"
+esac

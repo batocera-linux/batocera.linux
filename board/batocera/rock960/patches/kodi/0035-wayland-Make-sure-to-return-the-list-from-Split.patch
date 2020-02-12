@@ -1,0 +1,28 @@
+From 7ba0d5f4142c0007263aeb9cf82b96741ff3d17f Mon Sep 17 00:00:00 2001
+From: Sam Spilsbury <smspillaz@gmail.com>
+Date: Mon, 24 Apr 2017 14:38:07 +0200
+Subject: [PATCH 35/62] wayland: Make sure to return the list from Split
+
+Signed-off-by: memeka <mihailescu2m@gmail.com>
+---
+ xbmc/windowing/tests/wayland/WestonProcess.cpp | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/xbmc/windowing/tests/wayland/WestonProcess.cpp b/xbmc/windowing/tests/wayland/WestonProcess.cpp
+index e40527a..1fba0cd 100644
+--- a/xbmc/windowing/tests/wayland/WestonProcess.cpp
++++ b/xbmc/windowing/tests/wayland/WestonProcess.cpp
+@@ -60,7 +60,9 @@ Split(const char *p, char separator)
+ 
+   SplitForEach(p, separator, [&list](const char *token){
+       list.push_back(token);
+-    });
++  });
++
++  return list;
+ }
+ 
+ namespace
+-- 
+2.7.4
+

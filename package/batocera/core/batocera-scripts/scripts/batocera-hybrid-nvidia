@@ -1,0 +1,29 @@
+#!/bin/bash
+
+echo "Stopping ES..."
+/etc/init.d/S31emulationstation stop
+mount -o remount,rw /boot
+
+echo "Activating Nvidia driver"
+batocera-settings /boot/batocera-boot.conf --command uncomment --key nvidia-driver
+
+echo "Writing NVidia Xconf..."
+cat > /userdata/system/99-nvidia.conf <<_EOF_
+Section "Module"
+    Load "modesetting"
+EndSection
+Section "Device"
+    Identifier "nvidia"
+    Driver "nvidia"
+    BusID "$(lspci | grep -E "controller: NVIDIA" | cut -d" " -f1 | sed s/[.]/:/g)"
+    Option "AllowEmptyInitialConfiguration"
+EndSection
+_EOF_
+
+echo "Configuring xinit overlay..."
+cp /etc/X11/xinit/xinitrc /userdata/system/.xinitrc
+sed -i -e "s/## CUSTOMISATIONS ###/## CUSTOMISATIONS ###\n## FORCE NVIDIA - HYBRID PATCH ###\nxrandr --setprovideroutputsource modesetting NVIDIA-0\nxrandr --auto/g" /userdata/system/.xinitrc
+
+echo "Reboot now" 
+mount -o remount,r /boot
+reboot

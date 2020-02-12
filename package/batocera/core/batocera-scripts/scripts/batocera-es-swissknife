@@ -1,12 +1,14 @@
 #!/bin/bash
 #
-# Script for BATOCERA  to terminate every emulator instance
+# Script for BATOCERA to terminate every emulator instance
 # or to give feedback about state of EmulationStation and active EMULATORS
+# or to give some basic info about your build
 # by cyperghost aka crcerror // 18.03.2019
 # Batocera versions // 04.06.2019
 # Added /bin/usr script // 22.09.2019
 # Added sigterm level, added second parameter to activate sigterm during smart_wait function
 # Added architecture and version information // 05.01.2020
+# Added update information + beta branch // 10.02.2020
 
 # Get all childpids from calling process
 function getcpid() {
@@ -104,40 +106,65 @@ case ${1,,} in
         [[ $exitcode -eq 11 ]] && shutdown -h now
     ;;
 
-    --version)
+    --version|--arch|--update)
+        [[ ${2,,} == "beta" ]] && BRANCH=beta || BRANCH=stable
         if [[ -f /usr/share/batocera/batocera.version ]]; then
-            read ver < /usr/share/batocera/batocera.version
-            echo "$ver"
+            VER=$(cat /usr/share/batocera/batocera.version)
+            ret=$?
         else
-            echo "0-UNKNOWN"
+            VER="UNKNOWN"
+            ret=1
         fi
-    ;;
 
-    --architecture|--arch)
         if [[ -f /usr/share/batocera/batocera.arch ]]; then
-            read arch < /usr/share/batocera/batocera.arch
-            echo "$arch"
+            ARCH=$(cat /usr/share/batocera/batocera.arch)
+            ret=$?
         else
-            echo "0-UNKNOWN"
+            ARCH="UNKNOWN"
+            ret=1
         fi
+
+        if [[ "${1,,}" == "--update" && $ret -eq 0 ]]; then
+            URL="https://batocera.org/upgrades/$ARCH/$BRANCH/last/batocera.version"
+            NET_VERSION=$(wget -q -O - "$URL")
+            [[ $? -eq 0 ]] || NET_VERSION="Connection failed!"         
+            echo "Webversion:  $NET_VERSION"
+            echo "Update URL:  $(dirname $URL)"
+            echo "Branch:      ${BRANCH^^}-branch searched"
+            echo "Used arch:   $ARCH"
+            echo "Installed:   $VER" 
+            if [[ ${VER//[^[:digit:]]/} -lt ${NET_VERSION//[^[:digit:]]/} ]]; then
+                echo "Status:      Possible Update found!"
+                ret=0
+            else
+                echo "Status:      No Update found!"
+                ret=1
+            fi
+        else
+            [[ ${1,,} == "--version" ]] && echo "$VER"
+            [[ ${1,,} == "--arch" ]] && echo "$ARCH"
+        fi
+        exit $ret
     ;;
 
     *)
         echo -e "\n\t\t BATOCERA SWISS KNIFE FOR EmulationStation
                  Please parse parameters to this script! \n
-                  --restart will RESTART EmulationStation only
-                            this may be usefull for refreshing gameslists \n
-                  --kodi will startup KODI Media Center stopping ES \n
-                  --shutdown will SHUTDOWN whole system \n
-                  --emukill to exit any running EMULATORS \n
-                  --espid to check if EmulationStation is currently active
-                          This number is the real PID of the binary!
-                          If the ouput is 0, then ES isn't active \n
-                  --emupid to check if an Emulator is running
-                           This number is just the PID of emulatorlauncher.py
-                           if the output is 0 then there is no emulator active!\n
-                  --architecture Shows current architecture running\n
-                  --version Shows current version of BATOCERA running"
+                  --restart  will RESTART EmulationStation only
+                             this may be usefull for refreshing gameslists
+                  --kodi     will startup KODI Media Center stopping ES
+                  --shutdown will SHUTDOWN whole system
+                  --emukill  will exit any running EMULATORS
+                  --espid    checks if EmulationStation is currently active
+                             This number is the real PID of the binary!
+                             If the ouput is 0, then ES isn't active
+                  --emupid   to check if an Emulator is running
+                             This number is just the PID of emulatorlauncher.py
+                             If output is 0 then there is no emulator active!
+                  --arch     Shows current architecture running\n
+                  --version  Shows current version of BATOCERA running
+                  --update   Shows possible update for your install
+                             default: stable, you can type --update beta"
     ;;
 
 esac

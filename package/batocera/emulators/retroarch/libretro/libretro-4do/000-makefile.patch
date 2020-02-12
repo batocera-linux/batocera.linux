@@ -1,19 +1,34 @@
 diff --git a/Makefile b/Makefile
-index 73cc132..7383495 100644
+index ef4e1d1..1795e99 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -87,6 +87,14 @@ ifneq (,$(findstring unix,$(platform)))
+@@ -83,11 +83,29 @@ ifneq (,$(findstring unix,$(platform)))
+         # ODROID-XU3 & ODROID-XU4
+         else ifneq (,$(findstring odroidxu,$(platform)))
+             CFLAGS += -march=armv7ve -mtune=cortex-a15.cortex-a7
++        # ODROID-N2
++        else ifneq (,$(findstring odroidn2,$(platform)))
++            CFLAGS += -mcpu=cortex-a73 -mtune=cortex-a73.cortex-a53
+         # ODROID-U2, -U3, -X & -X2
+         else
+             CFLAGS += -mtune=cortex-a9
          endif
      endif
- 
++    
 +    # RockPro64
-+    else ifneq (,$(findstring rockpro64,$(platform)))
-+            CFLAGS += -fomit-frame-pointer -ffast-math -DARM -marm -mfloat-abi=hard -march=armv7ve -mtune=cortex-a72.cortex-a53
-+
++    ifneq (,$(findstring rockpro64,$(platform)))
++         CFLAGS += -fomit-frame-pointer -ffast-math -DARM -marm -mfloat-abi=hard -march=armv7ve -mtune=cortex-a72.cortex-a53
++    endif
++         
 +    # Amlogic S905
-+    else ifneq (,$(findstring s905,$(platform)))
-+            CFLAGS = -mcpu=cortex-a53
-+
++    ifneq (,$(findstring s905,$(platform)))
++         CFLAGS = -mcpu=cortex-a53
++    endif
++    
++    # Amlogic S912
++    ifneq (,$(findstring s912,$(platform)))
++         CFLAGS = -mcpu=cortex-a53
++    endif    
+ 
  # Classic Platforms ####################
  # Platform affix = classic_<ISA>_<µARCH>
- # Help at https://modmyclassic.com/comp

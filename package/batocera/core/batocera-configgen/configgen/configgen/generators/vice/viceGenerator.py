@@ -21,7 +21,7 @@ class ViceGenerator(Generator):
             os.makedirs(os.path.dirname(batoceraFiles.viceConfig))
 
         # configuration file
-        viceConfig.setViceConfig(batoceraFiles.viceConfigFile, system)
+        viceConfig.setViceConfig(batoceraFiles.viceConfig, system)
 
         # controller configuration
         viceControllers.generateControllerConfig(batoceraFiles.viceConfig, system)

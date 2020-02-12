@@ -20,7 +20,7 @@ class AmiberryGenerator(Generator):
         romIsWhd = self.isWhdFile(rom)
         commandArray = [ batoceraFiles.batoceraBins[system.config['emulator']], "-G" ]
         if not romIsWhd:
-	    commandArray.append("-core=" + system.config['core'])
+	    commandArray.append("-model=" + system.config['core'])
 
         # floppies
         n = 0
@@ -32,10 +32,10 @@ class AmiberryGenerator(Generator):
 
         # floppy path
         if romIsWhd:
-            commandArray.append("-autowhdload="+rom)
+            commandArray.append("-autoload="+rom)
         else:
 	    commandArray.append("-s")
-	    commandArray.append("pandora.floppy_path=/userdata/roms/amiga/" + system.config['core'])
+	    commandArray.append("amiberry.floppy_path=/userdata/roms/amiga/" + system.config['core'])
 
         # controller
         libretroControllers.writeControllersConfig(retroconfig, system, playersControllers)

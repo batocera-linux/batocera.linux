@@ -1,0 +1,63 @@
+From 187a07714dc5a4ecea5437f2a0bf3e4364e6bc2f Mon Sep 17 00:00:00 2001
+From: Sam Spilsbury <smspillaz@gmail.com>
+Date: Mon, 24 Apr 2017 14:38:08 +0200
+Subject: [PATCH 43/62] wayland: Get user-data through container_of
+
+There is some dark magic that goes on here. Essentially, container_of
+uses offsetof in order to get the struct that contained the listener.
+
+However, it only works with structs, so we have to have an inner
+struct for the listener and the this pointer and then an outer
+class which contains the inner struct.
+
+Signed-off-by: memeka <mihailescu2m@gmail.com>
+---
+ xbmc/windowing/tests/wayland/XBMCWaylandTestExtension.cpp | 13 +++++++++----
+ 1 file changed, 9 insertions(+), 4 deletions(-)
+
+diff --git a/xbmc/windowing/tests/wayland/XBMCWaylandTestExtension.cpp b/xbmc/windowing/tests/wayland/XBMCWaylandTestExtension.cpp
+index a1007ee..bfefb55 100644
+--- a/xbmc/windowing/tests/wayland/XBMCWaylandTestExtension.cpp
++++ b/xbmc/windowing/tests/wayland/XBMCWaylandTestExtension.cpp
+@@ -63,7 +63,11 @@ private:
+ 
+   void Callback();
+ 
+-  struct wl_listener m_listener;
++  struct Internal {
++      struct wl_listener m_listener;
++      Listener *m_self_ptr;
++  } m_internal;
++
+   Delegate m_delegate;
+ };
+ }
+@@ -535,13 +539,14 @@ xtw::XBMCWayland::PingSurface(struct wl_client *client,
+ xtw::Listener::Listener(const Delegate &delegate) :
+   m_delegate(delegate)
+ {
+-  m_listener.notify = Listener::MainCallback;
++  m_internal.m_listener.notify = Listener::MainCallback;
++  m_internal.m_self_ptr = this;
+ }
+ 
+ void
+ xtw::Listener::MainCallback(struct wl_listener *listener, void *data)
+ {
+-  static_cast<Listener *>(data)->Callback();
++  container_of(listener, struct Listener::Internal, m_listener)->m_self_ptr->Callback();
+ }
+ 
+ void
+@@ -553,7 +558,7 @@ xtw::Listener::Callback()
+ void
+ xtw::Listener::BindTo(struct wl_signal *s)
+ {
+-  wl_signal_add(s, &m_listener);
++  wl_signal_add(s, &m_internal.m_listener);
+ }
+ 
+ xtwc::Compositor::Compositor(struct weston_compositor *c) :
+-- 
+2.7.4
+
