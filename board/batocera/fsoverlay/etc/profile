@@ -18,9 +18,8 @@ for i in /etc/profile.d/*.sh ; do
 done
 unset i
 
-# Use vt100 terminal
+# Set vt100 as terminal enviroment
 TERM=vt100
-fi
 
 # Add BATOCERA logo and some alias, sourcing of $HOME/.bashrc can be added to $HOME/.profile
 echo '
