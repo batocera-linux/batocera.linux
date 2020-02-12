@@ -1,26 +1,16 @@
 diff --git a/core/nullDC.cpp b/core/nullDC.cpp
-index fdf1028..605f76e 100755
+index 2e10c84..76bcf98 100755
 --- a/core/nullDC.cpp
 +++ b/core/nullDC.cpp
-@@ -316,7 +316,7 @@ int dc_start_game(const char *path)
- #if DC_PLATFORM == DC_PLATFORM_DREAMCAST
- 		if (!settings.bios.UseReios)
+@@ -185,9 +185,9 @@ int dc_init(int argc,wchar* argv[])
+     #define DATA_PATH "/"
  #endif
--			if (!LoadRomFiles(get_readonly_data_path(DATA_PATH)))
-+			if (!LoadRomFiles("/userdata/bios/"))
- 				return -5;
- 
- #if DC_PLATFORM == DC_PLATFORM_DREAMCAST
-@@ -350,10 +350,10 @@ int dc_start_game(const char *path)
- 		return 0;
- 	}
  
 -	if (settings.bios.UseReios || !LoadRomFiles(get_readonly_data_path(DATA_PATH)))
 +	if (settings.bios.UseReios || !LoadRomFiles("/userdata/bios/"))
  	{
- #ifdef USE_REIOS
 -		if (!LoadHle(get_readonly_data_path(DATA_PATH)))
 +		if (!LoadHle("/userdata/bios/"))
  		{
- 			return -5;
- 		}
+ #if defined(_ANDROID)
+ 			reios_init_value = -4;
