@@ -73,11 +73,10 @@ mkdir "${TARGET_DIR}/"{var,run,sys,tmp}  || exit 1
 rm -f "${TARGET_DIR}/etc/shadow"                         || exit 1
 ln -sf "/run/batocera.shadow" "${TARGET_DIR}/etc/shadow" || exit 1
 
-# fix the vt100 terminal ; can probably removed in the future
-if ! grep -qE "^TERM=vt100$" "${TARGET_DIR}/etc/profile"
+# make terminal_setup.sh sourceable 
+if test -f "${TARGET_DIR}/etc/terminal_setup.sh"
 then
-    echo              >> "${TARGET_DIR}/etc/profile"
-    echo "TERM=vt100" >> "${TARGET_DIR}/etc/profile"
+    mv "${TARGET_DIR}/etc/terminal_setup.sh" "${TARGET_DIR}/etc/profile.d"
 fi
 
 # fix pixbuf : Unable to load image-loading module: /lib/gdk-pixbuf-2.0/2.10.0/loaders/libpixbufloader-png.so
