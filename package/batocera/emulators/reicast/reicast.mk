@@ -3,8 +3,8 @@
 # REICAST
 #
 ################################################################################
-# Version.: Commits on Jul 5, 2019
-REICAST_VERSION = 201bf1543616356cb9fa316cfcde7b89dfc09428
+# Version.: Commits on Mar 06, 2019
+REICAST_VERSION = ad61f95dd6b4c6218846a25de6194550311a5d28
 REICAST_SITE = $(call github,reicast,reicast-emulator,$(REICAST_VERSION))
 REICAST_LICENSE = GPLv2
 REICAST_DEPENDENCIES = sdl2 libpng
@@ -63,8 +63,8 @@ endef
 REICAST_PRE_CONFIGURE_HOOKS += REICAST_UPDATE_INCLUDES
 
 define REICAST_BUILD_CMDS
-	$(TARGET_CONFIGURE_OPTS) $(MAKE) CPP="$(TARGET_CPP)" CXX="$(TARGET_CXX)" \
-		CC="$(TARGET_CC)" AS="$(TARGET_CC)" LD="$(TARGET_CC)" STRIP="$(TARGET_STRIP)" \
+	$(TARGET_CONFIGURE_OPTS) $(MAKE) CPP="$(TARGET_CPP)" CXX="$(TARGET_CXX) -D_GLIBCXX_USE_CXX11_ABI=0" \
+		CC="$(TARGET_CC) -DPNG_ARM_NEON_OPT=0" AS="$(TARGET_CC)" LD="$(TARGET_CC)" STRIP="$(TARGET_STRIP)" \
 		-C $(@D)/shell/linux -f Makefile platform=$(BATOCERA_SYSTEM) $(REICAST_EXTRA_ARGS)
 endef
 
