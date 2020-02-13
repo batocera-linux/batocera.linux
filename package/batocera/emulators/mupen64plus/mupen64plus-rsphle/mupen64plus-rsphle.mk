@@ -36,11 +36,4 @@ define MUPEN64PLUS_RSPHLE_INSTALL_TARGET_CMDS
 		-C $(@D)/projects/unix all $(MUPEN64PLUS_PARAMS) OPTFLAGS="$(TARGET_CXXFLAGS)" install
 endef
 
-define MUPEN64PLUS_RSPHLE_CROSS_FIXUP
-	$(SED) 's|/opt/vc/include|$(STAGING_DIR)/usr/include|g' $(@D)/projects/unix/Makefile
-	$(SED) 's|/opt/vc/lib|$(STAGING_DIR)/usr/lib|g' $(@D)/projects/unix/Makefile
-endef
-
-MUPEN64PLUS_RSPHLE_PRE_CONFIGURE_HOOKS += MUPEN64PLUS_RSPHLE_CROSS_FIXUP
-
 $(eval $(generic-package))
