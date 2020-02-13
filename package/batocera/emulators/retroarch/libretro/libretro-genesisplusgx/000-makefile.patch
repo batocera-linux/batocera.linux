@@ -1,17 +1,23 @@
 diff --git a/Makefile.libretro b/Makefile.libretro
-index 6efbeab..fa1443d 100644
+index 1f8a890..c585f4f 100644
 --- a/Makefile.libretro
 +++ b/Makefile.libretro
-@@ -95,6 +95,20 @@ ifneq (,$(findstring unix,$(platform)))
-          PLATFORM_DEFINES += -DARM -marm -mcpu=cortex-a53 -mfpu=neon-fp-armv8 -mfloat-abi=hard
-       endif
-    endif
-+
+@@ -56,6 +56,27 @@ ifneq (,$(findstring unix,$(platform)))
+    ENDIANNESS_DEFINES := -DLSB_FIRST -DBYTE_ORDER=LITTLE_ENDIAN
+    PLATFORM_DEFINES := -DHAVE_ZLIB
+ 
 +   # RockPro64
 +   ifneq (,$(findstring rockpro64,$(platform)))
 +      ENDIANNESS_DEFINES += -DALIGN_LONG
 +      CFLAGS += -fomit-frame-pointer -ffast-math
 +      PLATFORM_DEFINES += -DARM -marm -march=armv7ve -mcpu=cortex-a72 -mtune=cortex-a72.cortex-a53 -mfloat-abi=hard
++   endif
++
++   # Odroid-GOA
++   ifneq (,$(findstring odroidgoa,$(platform)))
++      ENDIANNESS_DEFINES += -DALIGN_LONG
++      CFLAGS += -fomit-frame-pointer -ffast-math
++      PLATFORM_DEFINES += -DARM -marm -mcpu=cortex-a35 -mtune=cortex-a35 -mfloat-abi=hard
 +   endif
 +
 +   # Odroid-N2
@@ -20,6 +26,7 @@ index 6efbeab..fa1443d 100644
 +      CFLAGS += -fomit-frame-pointer -ffast-math
 +      PLATFORM_DEFINES += -DARM -marm -mcpu=cortex-a73 -mtune=cortex-a73.cortex-a53 -mfloat-abi=hard
 +   endif
-    
- # (armv8 a35, hard point, neon based) ###
- # Playstation Classic
++
+    # Raspberry Pi
+    ifneq (,$(findstring rpi,$(platform)))
+       ENDIANNESS_DEFINES += -DALIGN_LONG
