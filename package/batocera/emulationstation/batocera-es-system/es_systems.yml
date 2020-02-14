@@ -129,6 +129,7 @@ gb:
 gbc2players:
   name:       Game Boy Color
   extensions: [gbc, zip, 7z]
+  platform:   gbc
   emulators:
     libretro:
       tgbdual:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_TGBDUAL], 'netplay':true }
@@ -136,6 +137,7 @@ gbc2players:
 gb2players:
   name:       Game Boy
   extensions: [gb, zip, 7z]
+  platform:   gb
   emulators:
     libretro:
       tgbdual:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_TGBDUAL], 'netplay':true }
