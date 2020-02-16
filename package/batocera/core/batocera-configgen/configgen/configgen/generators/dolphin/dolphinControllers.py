@@ -3,6 +3,7 @@
 
 import batoceraFiles
 import os
+import codecs
 from Emulator import Emulator
 from utils.logger import eslog
 
@@ -187,7 +188,7 @@ def removeControllerConfig_gamecube():
 
 def generateControllerConfig_realwiimotes(filename, anyDefKey):
     configFileName = "{}/{}".format(batoceraFiles.dolphinConfig, filename)
-    f = open(configFileName, "w")
+    f = codecs.open(configFileName, "w", encoding="utf_8_sig")
     nplayer = 1
     while nplayer <= 4:
         f.write("[" + anyDefKey + str(nplayer) + "]" + "\n")
@@ -198,7 +199,7 @@ def generateControllerConfig_realwiimotes(filename, anyDefKey):
 
 def generateHotkeys(playersControllers):
     configFileName = "{}/{}".format(batoceraFiles.dolphinConfig, "Hotkeys.ini")
-    f = open(configFileName, "w")
+    f = codecs.open(configFileName, "w", encoding="utf_8_sig")
 
     hotkeysMapping = {
         'a':  'Keys/Reset',                      'b': 'Keys/Toggle Pause',
@@ -245,7 +246,7 @@ def generateHotkeys(playersControllers):
 
 def generateControllerConfig_any(playersControllers, filename, anyDefKey, anyMapping, anyReverseAxes, anyReplacements, extraOptions = {}):
     configFileName = "{}/{}".format(batoceraFiles.dolphinConfig, filename)
-    f = open(configFileName, "w")
+    f = codecs.open(configFileName, "w", encoding="utf_8_sig")
     nplayer = 1
     nsamepad = 0
 
