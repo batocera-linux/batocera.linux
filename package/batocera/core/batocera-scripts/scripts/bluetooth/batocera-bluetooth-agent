@@ -42,7 +42,7 @@ def connect_device(path, address, properties):
   connected = rproperties["Connected"]
 
   # skip some devices
-  if properties["Icon"] in [ "audio-card" , "phone" ]:
+  if "Icon" not in properties or properties["Icon"] in [ "audio-card" , "phone" ]:
     logging.info("Skipping device {}".format(getDevName(rproperties)));
     return
 
