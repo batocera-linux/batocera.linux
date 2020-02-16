@@ -1,5 +1,5 @@
 diff --git a/arch/arm64/boot/dts/rockchip/rk3399-rock960-ab.dts b/arch/arm64/boot/dts/rockchip/rk3399-rock960-ab.dts
-index f2ad4d08c..9dfb02848 100644
+index f2ad4d08c..8c4dd6f91 100644
 --- a/arch/arm64/boot/dts/rockchip/rk3399-rock960-ab.dts
 +++ b/arch/arm64/boot/dts/rockchip/rk3399-rock960-ab.dts
 @@ -1,6 +1,43 @@
@@ -193,57 +193,38 @@ index f2ad4d08c..9dfb02848 100644
  		regulator-ramp-delay = <1000>;
  		fcs,suspend-voltage-selector = <1>;
  		regulator-always-on;
-@@ -493,9 +602,28 @@
+@@ -493,58 +602,30 @@
  	status = "okay";
  };
  
 -&i2c6 {
-+&i2c2 {
- 	status = "okay";
+-	status = "okay";
 -};
-+
-+	camera0: camera-module@10 {
-+		compatible = "ovti,ov13850";
-+		status = "disabled";
-+		reg = <0x10>;
-+		clocks = <&cru SCLK_CIF_OUT>;
-+		clock-names = "xvclk";
-+
-+		reset-gpios = <&gpio3 29 GPIO_ACTIVE_HIGH>;
-+		pwdn-gpios = <&gpio3 28 GPIO_ACTIVE_HIGH>;
-+		pinctrl-names = "rockchip,camera_default";
-+		pinctrl-0 = <&cif_clkout>;
-+
-+		port {
-+			ucam_out0: endpoint {
-+			remote-endpoint = <&mipi_in_ucam0>;
-+			data-lanes = <1 2>;
-+			};
-+		};
-+	};
- 
- &i2c4 {
- 	status = "okay";
-@@ -504,78 +632,18 @@
- 		reg = <0x22>;
- 		pinctrl-names = "default";
- 		pinctrl-0 = <&fusb0_int>;
+-
+-&i2c4 {
+-	status = "okay";
+-	fusb0: fusb30x@22 {
+-		compatible = "fairchild,fusb302";
+-		reg = <0x22>;
+-		pinctrl-names = "default";
+-		pinctrl-0 = <&fusb0_int>;
 -		vbus-5v-gpios = <&gpio1 3 GPIO_ACTIVE_HIGH>;
-+		vbus-5v-gpios = <&gpio1 3 GPIO_ACTIVE_LOW>;
- 		int-n-gpios = <&gpio1 2 GPIO_ACTIVE_HIGH>;
- 		status = "okay";
- 	};
- };
- 
--&i2c2 {
-+&i2c6 {
+-		int-n-gpios = <&gpio1 2 GPIO_ACTIVE_HIGH>;
+-		status = "okay";
+-	};
+-};
+-
+ &i2c2 {
  	status = "okay";
--	camera0: camera-module@10 {
--		status = "disabled";
++
+ 	camera0: camera-module@10 {
++		compatible = "ovti,ov13850";
+ 		status = "disabled";
 -		compatible = "omnivision,ov13850-v4l2-i2c-subdev";
 -		reg = < 0x10 >;
 -		device_type = "v4l2-i2c-subdev";
--		clocks = <&cru SCLK_CIF_OUT>;
++		reg = <0x10>;
+ 		clocks = <&cru SCLK_CIF_OUT>;
 -		clock-names = "clk_cif_out";
 -		pinctrl-names = "rockchip,camera_default",
 -				"rockchip,camera_sleep";
@@ -263,44 +244,71 @@ index f2ad4d08c..9dfb02848 100644
 -		rockchip,camera-module-iq-mirror = <0>;
 -		rockchip,camera-module-flip = <1>;
 -		rockchip,camera-module-mirror = <0>;
--
++		clock-names = "xvclk";
+ 
 -		rockchip,camera-module-defrect0 = <2112 1568 0 0 2112 1568>;
 -		rockchip,camera-module-defrect1 = <4224 3136 0 0 4224 3136>;
 -		rockchip,camera-module-defrect3 = <3264 2448 0 0 3264 2448>;
 -		rockchip,camera-module-flash-support = <1>;
 -		rockchip,camera-module-mipi-dphy-index = <0>;
--	};
--
--	camera1: camera-module@36 {
--		status = "disabled";
--		compatible = "omnivision,ov4690-v4l2-i2c-subdev";
--		reg = <0x36>;
--		device_type = "v4l2-i2c-subdev";
--		clocks = <&cru SCLK_CIF_OUT>;
--		clock-names = "clk_cif_out";
--		pinctrl-names = "rockchip,camera_default",
--				"rockchip,camera_sleep";
--		pinctrl-0 = <&cam0_default_pins>;
--		pinctrl-1 = <&cam0_sleep_pins>;
--		rockchip,pd-gpio = <&gpio3 4 GPIO_ACTIVE_LOW>;
--		//rockchip,pwr-gpio = <&gpio3 13 0>;
--		rockchip,rst-gpio = <&gpio2 10 GPIO_ACTIVE_LOW>;
--		rockchip,camera-module-mclk-name = "clk_cif_out";
--		rockchip,camera-module-facing = "back";
--		rockchip,camera-module-name = "LA6111PA";
--		rockchip,camera-module-len-name = "YM6011P";
--		rockchip,camera-module-fov-h = "116";
--		rockchip,camera-module-fov-v = "61";
--		rockchip,camera-module-orientation = <0>;
--		rockchip,camera-module-iq-flip = <0>;
--		rockchip,camera-module-iq-mirror = <0>;
--		rockchip,camera-module-flip = <0>;
--		rockchip,camera-module-mirror = <1>;
--
--		rockchip,camera-module-defrect0 = <2688 1520 0 0 2688 1520>;
--		rockchip,camera-module-flash-support = <0>;
--		rockchip,camera-module-mipi-dphy-index = <0>;
--	};
++		reset-gpios = <&gpio3 29 GPIO_ACTIVE_HIGH>;
++		pwdn-gpios = <&gpio3 28 GPIO_ACTIVE_HIGH>;
++		pinctrl-names = "rockchip,camera_default";
++		pinctrl-0 = <&cif_clkout>;
++
++		port {
++			ucam_out0: endpoint {
++			remote-endpoint = <&mipi_in_ucam0>;
++			data-lanes = <1 2>;
++			};
++		};
+ 	};
+ 
++
+ 	camera1: camera-module@36 {
+ 		status = "disabled";
+ 		compatible = "omnivision,ov4690-v4l2-i2c-subdev";
+@@ -575,7 +656,47 @@
+ 		rockchip,camera-module-flash-support = <0>;
+ 		rockchip,camera-module-mipi-dphy-index = <0>;
+ 	};
++	camera2: camera-module@3C {
++		status = "okay";
++		compatible = "ovti,ov5645";
++		reg = <0x3c>;
++		clocks = <&cru SCLK_CIF_OUT>;
++		clock-names = "xvclk";
++		
++		pinctrl-names = "rockchip,camera_default";
++		pinctrl-0 = <&cif_clkout>;
++		reset-gpios = <&gpio3 29 GPIO_ACTIVE_HIGH>;
++		pwdn-gpios = <&gpio3 28 GPIO_ACTIVE_HIGH>;
++
++		port {
++			ucam_out2: endpoint {
++				remote-endpoint = <&mipi_in_ucam0>;
++				data-lanes = <1 2>;
++			};
++		};
++	};
++
++};
++
++&i2c4 {
++	status = "okay";
++	fusb0: fusb30x@22 {
++		compatible = "fairchild,fusb302";
++		reg = <0x22>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&fusb0_int>;
++		vbus-5v-gpios = <&gpio1 3 GPIO_ACTIVE_LOW>;
++		int-n-gpios = <&gpio1 2 GPIO_ACTIVE_HIGH>;
++		status = "okay";
++	};
++};
++
++&i2c6 {
++	status = "okay";
 +};
  
 +&i2c7 {
@@ -308,7 +316,7 @@ index f2ad4d08c..9dfb02848 100644
  };
  
  &cpu_l0 {
-@@ -693,6 +761,19 @@
+@@ -693,6 +814,19 @@
  	dma-names = "tx", "rx";
  };
  
@@ -328,7 +336,7 @@ index f2ad4d08c..9dfb02848 100644
  &usb_host0_ehci {
  	status = "okay";
  };
-@@ -871,7 +952,7 @@
+@@ -871,7 +1005,7 @@
  };
  
  &pcie0 {
@@ -337,7 +345,7 @@ index f2ad4d08c..9dfb02848 100644
  	num-lanes = <4>;
  	pinctrl-names = "default";
  	pinctrl-0 = <&pcie_clkreqn_cpm>;
-@@ -954,7 +1035,7 @@
+@@ -954,7 +1088,7 @@
  	pcie {
  		pcie_drv: pcie-drv {
  			rockchip,pins =
@@ -346,7 +354,7 @@ index f2ad4d08c..9dfb02848 100644
  			};
  	};
  
-@@ -1048,22 +1129,72 @@
+@@ -1048,22 +1182,72 @@
  	status = "okay";
  };
  
