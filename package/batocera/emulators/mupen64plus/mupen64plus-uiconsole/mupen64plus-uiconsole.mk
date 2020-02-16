@@ -32,11 +32,4 @@ define MUPEN64PLUS_UICONSOLE_INSTALL_TARGET_CMDS
 		cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/mupen64plus/mupen64plus-uiconsole/mupencheat.txt "$(TARGET_DIR)/usr/share/mupen64plus/mupencheat.txt"
 endef
 
-define MUPEN64PLUS_UICONSOLE_CROSS_FIXUP
-	$(SED) 's|/opt/vc/include|$(STAGING_DIR)/usr/include|g' $(@D)/projects/unix/Makefile
-	$(SED) 's|/opt/vc/lib|$(STAGING_DIR)/usr/lib|g' $(@D)/projects/unix/Makefile
-endef
-
-MUPEN64PLUS_UICONSOLE_PRE_CONFIGURE_HOOKS += MUPEN64PLUS_UICONSOLE_CROSS_FIXUP
-
 $(eval $(generic-package))

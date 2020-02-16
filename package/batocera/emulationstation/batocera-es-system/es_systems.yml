@@ -129,6 +129,7 @@ gb:
 gbc2players:
   name:       Game Boy Color
   extensions: [gbc, zip, 7z]
+  platform:   gbc
   emulators:
     libretro:
       tgbdual:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_TGBDUAL], 'netplay':true }
@@ -136,6 +137,7 @@ gbc2players:
 gb2players:
   name:       Game Boy
   extensions: [gb, zip, 7z]
+  platform:   gb
   emulators:
     libretro:
       tgbdual:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_TGBDUAL], 'netplay':true }
@@ -375,10 +377,11 @@ mame:
   platform:   arcade
   emulators:
     libretro:
-      imame4all:    { requireAnyOf: [BR2_PACKAGE_LIBRETRO_IMAME], 'netplay':true }
-      mame078plus:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME2003_PLUS], 'netplay':true }
-      mame0139:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME2010], 'netplay':true }
-      mame:         { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME], 'netplay':true }
+      imame4all:    { requireAnyOf: [BR2_PACKAGE_LIBRETRO_IMAME], 'netplay':true          }
+      mame078plus:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME2003_PLUS], 'netplay':true  }
+      mame0139:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME2010], 'netplay':true       }
+      mame:         { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME], 'netplay':true           }
+      fbneo:        { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FBNEO], 'netplay':true          }
   comment_en: |
     The system uses libretro mame2003 as default core: compatible ROMs must come from set 0.78
     The libretro core imame4all, based on MAME v0.37b5, is also included.
@@ -397,7 +400,11 @@ neogeo:
   extensions: [7z, zip]
   emulators:
     libretro:
-      fbneo:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FBNEO], 'netplay':true }
+      fbneo:        { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FBNEO], 'netplay':true          }
+      imame4all:    { requireAnyOf: [BR2_PACKAGE_LIBRETRO_IMAME], 'netplay':true          }
+      mame078plus:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME2003_PLUS], 'netplay':true  }
+      mame0139:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME2010], 'netplay':true       }
+      mame:         { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME], 'netplay':true           }
 
 neogeocd:
   name:       Neo-Geo CD

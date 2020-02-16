@@ -75,13 +75,6 @@ touch "${TARGET_DIR}/run/batocera.shadow"
 (cd "${TARGET_DIR}/etc" && ln -sf "../run/batocera.shadow" "shadow") || exit 1
 # ln -sf "/run/batocera.shadow" "${TARGET_DIR}/etc/shadow" || exit 1
 
-# fix the vt100 terminal ; can probably removed in the future
-if ! grep -qE "^TERM=vt100$" "${TARGET_DIR}/etc/profile"
-then
-    echo              >> "${TARGET_DIR}/etc/profile"
-    echo "TERM=vt100" >> "${TARGET_DIR}/etc/profile"
-fi
-
 # fix pixbuf : Unable to load image-loading module: /lib/gdk-pixbuf-2.0/2.10.0/loaders/libpixbufloader-png.so
 # this fix is to be removed once fixed. i've not found the exact source in buildroot. it prevents to display icons in filemanager and some others
 if test "${BATOCERA_TARGET}" = "X86" -o "${BATOCERA_TARGET}" = X86_64

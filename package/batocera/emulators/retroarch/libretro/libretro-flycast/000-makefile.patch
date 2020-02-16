@@ -1,8 +1,8 @@
 diff --git a/Makefile b/Makefile
-index 36aacd6..d1f6d3e 100644
+index 36aacd6..36b93b9 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -417,10 +417,30 @@ else ifeq ($(platform), odroid-n2)
+@@ -417,7 +417,7 @@ else ifeq ($(platform), odroid-n2)
  	CXXFLAGS += -mcpu=cortex-a73 -mtune=cortex-a73.cortex-a53 $(CPUFLAGS)
  	ASFLAGS += $(CFLAGS) -c -frename-registers -fno-strict-aliasing -ffast-math -ftree-vectorize
  	PLATFORM_EXT := unix
@@ -11,30 +11,7 @@ index 36aacd6..d1f6d3e 100644
  	HAVE_GENERIC_JIT = 0
  	HAVE_LTCG = 0
  
-+# Odroid-GO
-+else ifeq ($(platform), odroid-go)
-+	EXT ?= so
-+	TARGET := $(TARGET_NAME)_libretro.$(EXT)
-+	SHARED += -shared -Wl,--version-script=link.T
-+	LDFLAGS +=  -Wl,--no-undefined
-+	fpic = -fPIC
-+	LIBS += -lrt
-+	ARM_FLOAT_ABI_HARD = 0
-+	FORCE_GLES = 1
-+	SINGLE_PREC_FLAGS = 1
-+	CPUFLAGS += -DHOST_CPU=0x20000006 -DTARGET_LINUX_ARMv8 -frename-registers
-+	CFLAGS += -mcpu=cortex-a35 -mtune=cortex-a35 $(CPUFLAGS)
-+	CXXFLAGS += -mcpu=cortex-a35 -mtune=cortex-a35 $(CPUFLAGS)
-+	ASFLAGS += $(CFLAGS) -c -frename-registers -fno-strict-aliasing -ffast-math -ftree-vectorize
-+	PLATFORM_EXT := unix
-+	WITH_DYNAREC=arm
-+	HAVE_GENERIC_JIT = 0
-+	HAVE_LTCG = 0
-+	
- # Amlogic S905/S905X/S912 (AMLGXBB/AMLGXL/AMLGXM) e.g. Khadas VIM1/2 / S905X2 (AMLG12A) & S922X/A311D (AMLG12B) e.g. Khadas VIM3 - 32-bit userspace
- else ifneq (,$(findstring AMLG,$(platform)))
-   EXT ?= so
-@@ -1044,7 +1064,7 @@ LIBS     += -lm
+@@ -1044,7 +1044,7 @@ LIBS     += -lm
  PREFIX        ?= /usr/local
  
  ifneq (,$(findstring arm, $(ARCH)))

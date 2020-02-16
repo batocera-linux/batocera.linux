@@ -59,21 +59,30 @@ def generateRetroarchCustom():
     retroarchSettings.save('input_exit_emulator',               '"escape"')
 
     # Video
-    retroarchSettings.save('video_threaded',                    '"false"')
     retroarchSettings.save('video_aspect_ratio_auto',           '"true"')
     retroarchSettings.save('video_gpu_screenshot',              '"true"')
     retroarchSettings.save('video_shader_enable',               '"false"')
-    retroarchSettings.save('video_smooth',                      '"true"')
-
+    
     # Settings
     retroarchSettings.save('config_save_on_exit',               '"false"')
     retroarchSettings.save('savestate_auto_save',               '"false"')
     retroarchSettings.save('savestate_auto_load',               '"false"')
     retroarchSettings.save('menu_swap_ok_cancel_buttons',       '"true"')
-    retroarchSettings.save('pause_nonactive',                   '"false"')
     
     # Accentuation
     retroarchSettings.save('rgui_extended_ascii',               '"true"')
 
     # Hide the welcome message in Retroarch
     retroarchSettings.save('rgui_show_start_screen',            '"false"')
+
+    # Enable usage of OSD messages (Text messages not in badge)
+    retroarchSettings.save('video_font_enable',                 '"false"')
+
+    # Take a screenshot of the savestate
+    retroarchSettings.save('savestate_thumbnail_enable',        '"true"')
+
+    # Allow any RetroPad to control the menu (Only the player 1)
+    retroarchSettings.save('all_users_control_menu',            '"false"')
+
+    # Show badges in Retroarch cheevos list
+    retroarchSettings.save('cheevos_badges_enable',             '"true"')

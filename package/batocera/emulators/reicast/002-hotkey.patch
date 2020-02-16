@@ -1,35 +1,52 @@
-diff --git a/core/input/gamepad_device.cpp b/core/input/gamepad_device.cpp
-index 8ccea5e..43cf6d3 100644
---- a/core/input/gamepad_device.cpp
-+++ b/core/input/gamepad_device.cpp
-@@ -31,6 +31,8 @@ extern u16 kcode[4];
- extern u8 rt[4], lt[4];
- extern s8 joyx[4], joyy[4];
+diff --git a/core/linux-dist/evdev.cpp b/core/linux-dist/evdev.cpp
+index 6eb6062..b89d3a7 100644
+--- a/core/linux-dist/evdev.cpp
++++ b/core/linux-dist/evdev.cpp
+@@ -501,6 +501,8 @@
+ 		}
+ 	}
  
-+static int batocera_hotkey = 0;
++	void dc_term();
 +
- std::vector<std::shared_ptr<GamepadDevice>> GamepadDevice::_gamepads;
- cMutex GamepadDevice::_gamepads_mutex;
+ 	bool input_evdev_handle(u32 port)
+ 	{
+ 		EvdevController* controller = &evdev_controllers[port];
+@@ -512,12 +514,14 @@
+ 		}
  
-@@ -80,6 +82,10 @@ bool GamepadDevice::gamepad_btn_input(u32 code, bool pressed)
- 			case DC_DPAD2_RIGHT:
- 				kcode[_maple_port] |= (u16)DC_DPAD2_LEFT;
- 				break;
-+			case DC_BTN_START:
-+				if ((pressed) && (batocera_hotkey == 1))
-+						dc_exit();
-+ 			break;
- 			default:
- 				break;
- 			}
-@@ -93,7 +99,9 @@ bool GamepadDevice::gamepad_btn_input(u32 code, bool pressed)
+ 		input_event ie;
++		static int batocera_hotkey = 0;
+ 
+ 		while(read(controller->fd, &ie, sizeof(ie)) == sizeof(ie))
  		{
- 		case EMU_BTN_ESCAPE:
- 			if (pressed)
--				dc_exit();
-+				batocera_hotkey = 1;
-+			else
-+				batocera_hotkey = 0;
- 			break;
- 		case EMU_BTN_MENU:
- 			if (pressed)
+ 			switch(ie.type)
+ 			{
+ 				case EV_KEY:
++				  if(batocera_hotkey == 0) {
+ 					if (ie.code == controller->mapping->Btn_A) {
+ 						SET_FLAG(kcode[port], DC_BTN_A, ie.value);
+ 					} else if (ie.code == controller->mapping->Btn_B) {
+@@ -535,7 +539,7 @@
+ 					} else if (ie.code == controller->mapping->Btn_Start) {
+ 						SET_FLAG(kcode[port], DC_BTN_START, ie.value);
+ 					} else if (ie.code == controller->mapping->Btn_Escape) {
+-						dc_stop();
++						batocera_hotkey = ie.value;
+ 					} else if (ie.code == controller->mapping->Btn_DPad_Left) {
+ 						SET_FLAG(kcode[port], DC_DPAD_LEFT, ie.value);
+ 					} else if (ie.code == controller->mapping->Btn_DPad_Right) {
+@@ -557,6 +561,14 @@
+ 					} else if (ie.code == controller->mapping->Btn_Trigger_Right) {
+ 						rt[port] = (ie.value ? 255 : 0);
+ 					}
++				     	 } else {
++					if (ie.code == controller->mapping->Btn_Escape) {
++					   batocera_hotkey = ie.value;
++					} else if (ie.code == controller->mapping->Btn_Start) {
++					   dc_term();
++					   die("death by escape key");
++					}
++				     	 }
+ 					break;
+ 				case EV_ABS:
+ 					if (ie.code == controller->mapping->Axis_DPad_X)

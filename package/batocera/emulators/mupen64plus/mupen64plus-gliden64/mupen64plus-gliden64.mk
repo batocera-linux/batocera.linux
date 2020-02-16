@@ -3,12 +3,12 @@
 # mupen64plus video GLIDEN64
 #
 ################################################################################
-# Version.: Commits on Jan 12, 2020
-MUPEN64PLUS_GLIDEN64_VERSION = 495d9f959ef9c6443f45277c85049322faca5028
+# Version.: Commits on Feb 12, 2020
+MUPEN64PLUS_GLIDEN64_VERSION = 0a5216f8e1e8dad7e73b9eaf32082b2313d2c501
 MUPEN64PLUS_GLIDEN64_SITE = $(call github,gonetz,GLideN64,$(MUPEN64PLUS_GLIDEN64_VERSION))
 MUPEN64PLUS_GLIDEN64_LICENSE = GPLv2
 MUPEN64PLUS_GLIDEN64_DEPENDENCIES = sdl2 alsa-lib mupen64plus-core
-MUPEN64PLUS_GLIDEN64_CONF_OPTS = -DMUPENPLUSAPI=ON -DUSE_SYSTEM_LIBS=ON
+MUPEN64PLUS_GLIDEN64_CONF_OPTS = -DMUPENPLUSAPI=ON -DUSE_SYSTEM_LIBS=ON -DUNIX=ON
 MUPEN64PLUS_GLIDEN64_SUBDIR = /src/
 
 ifeq ($(BR2_arm)$(BR2_aarch64),y)
@@ -19,10 +19,16 @@ ifeq ($(BR2_ARM_CPU_HAS_NEON),y)
 	MUPEN64PLUS_GLIDEN64_CONF_OPTS += -DNEON_OPT=ON
 endif
 
+ifeq ($(BR2_PACKAGE_SDL2_KMSDRM),y)
+	MUPEN64PLUS_GLIDEN64_CONF_OPTS += -DSDL=ON
+endif
+
 ifeq ($(BR2_ENABLE_DEBUG),y)
 	MUPEN64PLUS_GLIDEN64_RELTYPE= Debug
+	MUPEN64PLUS_GLIDEN64_CONF_OPTS += -DCMAKE_BUILD_TYPE=Debug
 else
 	MUPEN64PLUS_GLIDEN64_RELTYPE = Release
+	MUPEN64PLUS_GLIDEN64_CONF_OPTS += -DCMAKE_BUILD_TYPE=Release
 endif
 
 define MUPEN64PLUS_GLIDEN64_INSTALL_TARGET_CMDS
@@ -36,8 +42,8 @@ endef
 define MUPEN64PLUS_GLIDEN64_PRE_CONFIGURE_FIXUP
 	chmod +x $(@D)/src/getRevision.sh
 	sh $(@D)/src/getRevision.sh
-	$(SED) 's|/opt/vc/include|$(STAGING_DIR)/usr/include|g' $(@D)/src/CMakeLists.txt
-	$(SED) 's|/opt/vc/lib|$(STAGING_DIR)/usr/lib|g' $(@D)/src/CMakeLists.txt
+	$(SED) 's|.{CMAKE_FIND_ROOT_PATH}/opt/vc/include|$(STAGING_DIR)/usr/include|g' $(@D)/src/CMakeLists.txt
+	$(SED) 's|.{CMAKE_FIND_ROOT_PATH}/opt/vc/lib|$(STAGING_DIR)/usr/lib|g' $(@D)/src/CMakeLists.txt
 endef
 
 MUPEN64PLUS_GLIDEN64_PRE_CONFIGURE_HOOKS += MUPEN64PLUS_GLIDEN64_PRE_CONFIGURE_FIXUP
