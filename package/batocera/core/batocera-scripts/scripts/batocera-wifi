@@ -19,6 +19,43 @@ do_scanlist() {
     do_list
 }
 
+do_enable() {
+    SSID=$1
+    PSK=$2
+
+    mkdir -p "/var/lib/connman" || return 1
+    cat > "/var/lib/connman/batocera_wifi.config" <<EOF
+[global]
+Name=batocera
+
+[service_batocera_default]
+Type=wifi
+Name=${SSID}
+EOF
+    if test "${PSK}" != ""
+    then
+	echo "Passphrase=${PSK}" >> "/var/lib/connman/batocera_wifi.config"
+    fi
+
+    connmanctl enable wifi || return 1
+    connmanctl scan   wifi || return 1
+    return 0
+}
+
+do_disable() {
+    connmanctl disable wifi
+}
+
+do_start() {
+    systemsetting="python /usr/lib/python2.7/site-packages/configgen/settings/batoceraSettings.py"
+    settingsWlan="`$systemsetting -command load -key wifi.enabled`"
+    if [ "$settingsWlan" != "1" ];then
+        return 0
+    fi
+    connmanctl enable wifi || return 1
+    connmanctl scan   wifi || return 1
+}
+
 case "${ACTION}" in
     "list")
 	do_list
@@ -26,6 +63,18 @@ case "${ACTION}" in
     "scanlist")
 	do_scanlist
 	;;
+    "start")
+	do_start
+	;;
+    "enable")
+	SSID=$1
+	PSK=$2
+	do_enable "${SSID}" "${PSK}" || exit 1
+	;;
+    "disable")
+	do_disable || exit 1
+	;;
     *)
 	do_help "${0}"
 esac
+exit 0

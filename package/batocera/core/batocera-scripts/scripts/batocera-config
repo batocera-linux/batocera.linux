@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [ ! "$1" ];then
-	echo -e "usage : batocera-config [command] [args]\nWith command in\n\toverscan [enable|disable]\n\tlsaudio\n\tgetaudio\n\taudio [hdmi|jack|auto|custom|x,y]\n\tcanupdate\n\tupdate\n\twifi [enable|disable] ssid key\n\tstorage [current|list|INTERNAL|ANYEXTERNAL|RAM|DEV UUID]\n\tsetRootPassword [password]\n\tgetRootPassword\n\ttz [|tz]"
+	echo -e "usage : batocera-config [command] [args]\nWith command in\n\toverscan [enable|disable]\n\tlsaudio\n\tgetaudio\n\taudio [hdmi|jack|auto|custom|x,y]\n\tcanupdate\n\tupdate\n\tstorage [current|list|INTERNAL|ANYEXTERNAL|RAM|DEV UUID]\n\tsetRootPassword [password]\n\tgetRootPassword\n\ttz [|tz]"
 	exit 1
 fi
 configFile="/boot/config.txt"
@@ -295,56 +295,6 @@ fi
 if [ "$command" == "update" ];then
 	batocera-upgrade
 	exit $?
-fi
-
-if [[ "$command" == "wifi" ]]; then
-        ssid="$3"
-        psk="$4"
-
-        if [[ "$mode" == "enable" ]]; then
-            echo "configure wifi" >> $log
-	    mkdir -p "/var/lib/connman" || exit 1
-	    cat > "/var/lib/connman/batocera_wifi.config" <<EOF
-[global]
-Name=batocera
-
-[service_batocera_default]
-Type=wifi
-Name=${ssid}
-EOF
-	    if test "${psk}" != ""
-	    then
-		echo "Passphrase=${psk}" >> "/var/lib/connman/batocera_wifi.config"
-	    fi
-
-	    connmanctl enable wifi || exit 1
-	    connmanctl scan   wifi || exit 1
-            exit 0
-        fi
-  	if [[ "$mode" =~ "start" ]]; then
-            if [[ "$mode" != "forcestart" ]]; then
-                settingsWlan="`$systemsetting -command load -key wifi.enabled`"
-                if [ "$settingsWlan" != "1" ];then
-                    exit 1
-                fi
-            fi
-	    connmanctl enable wifi || exit 1
-	    connmanctl scan   wifi || exit 1
-	    exit 0
-        fi
-        if [[ "$mode" == "disable" ]]; then
-	    connmanctl disable wifi
-            exit $?
-        fi
-	if [[ "$mode" == "list" ]]; then
-	    WAVAILABLE=$(connmanctl services | cut -b 5- | sed -e s+'^\([^ ]*\).*$'+'\1'+ | grep -vE '^Wired$|^<hidden>$')
-	    if test -n "${ssid}"
-	    then
-		echo "${WAVAILABLE}" | grep -qE '^'"${ssid}"'$' || echo "${ssid}"
-	    fi
-	    echo "${WAVAILABLE}"
-            exit 0
-	fi
 fi
 
 if [[ "$command" == "storage" ]]; then
