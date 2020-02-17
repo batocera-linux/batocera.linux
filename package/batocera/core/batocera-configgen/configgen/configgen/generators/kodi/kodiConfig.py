@@ -53,19 +53,11 @@ def writeKodiConfigs(currentControllers):
         else:
             controllersDone[cur.configName] = True
 
-        nbuttons = 0
-        naxis    = int(cur.nbaxes)
-        for x in cur.inputs:
-            if cur.inputs[x].type == 'button':
-                if int(cur.inputs[x].id) + 1 > nbuttons:
-                    nbuttons = int(cur.inputs[x].id) + 1
-            if cur.inputs[x].type == 'hat' and (cur.inputs[x].value == "1" or cur.inputs[x].value == "8"):
-                naxis += 1
         xmldevice = config.createElement('device')
         xmldevice.attributes["name"] = cur.configName
         xmldevice.attributes["provider"] = "linux"
-        xmldevice.attributes["buttoncount"] = str(nbuttons)
-        xmldevice.attributes["axiscount"] = str(naxis)
+        xmldevice.attributes["buttoncount"] = cur.nbbuttons
+        xmldevice.attributes["axiscount"] = str(2*int(cur.nbhats) + int(cur.nbaxes))
         xmlbuttonmap.appendChild(xmldevice)
         xmlcontroller = config.createElement('controller')
         xmlcontroller.attributes["id"] = "game.controller.default"
