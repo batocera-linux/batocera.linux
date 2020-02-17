@@ -48,6 +48,7 @@ menu "System"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/gpu/mali-bifrost-module/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/gpu/mali-bifrost-g31-gbm/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/gpu/opengl-meson-t82x/Config.in"
+    source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/gpu/batocera-nvidia-driver/Config.in"
   endmenu
 
   menu "Device trees"
