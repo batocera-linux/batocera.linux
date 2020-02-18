@@ -92,6 +92,12 @@ else
 BLUEZ5_UTILS_CONF_OPTS += --disable-deprecated
 endif
 
+# batocera : install btmgmt to change ssp
+define BLUEZ5_UTILS_INSTALL_BTMGMT
+	$(INSTALL) -D -m 0755 $(@D)/tools/btmgmt $(TARGET_DIR)/usr/bin/btmgmt
+endef
+BLUEZ5_UTILS_POST_INSTALL_TARGET_HOOKS += BLUEZ5_UTILS_INSTALL_BTMGMT
+
 # enable test
 ifeq ($(BR2_PACKAGE_BLUEZ5_UTILS_TEST),y)
 BLUEZ5_UTILS_CONF_OPTS += --enable-test
