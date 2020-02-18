@@ -157,16 +157,14 @@ if [ "$command" == "lsaudio" ];then
 	echo "hdmi"
 	echo "jack"
 	echo "auto"
-    elif [[ "${arch}" =~ "x86" ]];then
-	echo "auto"
-	echo "custom"
-	LANG=C aplay -l | grep -E '^card [0-9]*:' | sed -e s+'^card \([0-9]*\): \([^,]*\), device \([0-9]*\): [^\[]* \[\([^]]*\)].*$'+'\1,\3 \4 \2'+
     elif [[ "${arch}" =~ "odroidgoa" ]];then
 	echo "auto"
 	echo "speakers"
 	echo "headphone"
     else
 	echo "auto"
+	echo "custom"
+	LANG=C aplay -l | grep -E '^card [0-9]*:' | sed -e s+'^card \([0-9]*\): \(.*\), device \([0-9]*\): [^\[]* \[\([^]]*\)].*$'+'\1,\3 \4 \2'+
     fi
 fi
 
@@ -190,8 +188,17 @@ if [ "$command" == "audio" ];then
 	fi
         echo "setting audio output mode : $mode" >> $log
 	amixer cset numid=3 $cmdVal || exit 1
-    elif [[ "${arch}" =~ "x86" ]]
+    elif [[ "${arch}" =~ "odroidgoa" ]]
     then
+	case "${mode}" in
+	    "auto"|"speakers")
+		amixer cset name='Playback Path' SPK
+		;;
+	    "headphone")
+		amixer cset name='Playback Path' HP
+		;;
+	esac
+    else
 	# auto: no .asoundrc file
 	# custom: don't touch the .asoundrc file
 	# any other, create the .asoundrd file
@@ -209,16 +216,7 @@ EOF
 		aplay "/usr/share/sounds/Mallet.wav"
 	    fi
 	fi
-    elif [[ "${arch}" =~ "odroidgoa" ]]
-    then
-	case "${mode}" in
-	    "auto"|"speakers")
-		amixer cset name='Playback Path' SPK
-		;;
-	    "headphone")
-		amixer cset name='Playback Path' HP
-		;;
-	esac
+
     fi
     exit 0
 fi
