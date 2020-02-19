@@ -32,8 +32,16 @@ def generateCoreSettings(retroarchCore, system):
 
     # Colecovision and MSX
     if (system.config['core'] == 'bluemsx'):
-        coreSettings.save('bluemsx_msxtype', '"Auto"')
         coreSettings.save('bluemsx_overscan', '"enabled"')
+        if (system.name == 'colecovision'):
+            coreSettings.save('bluemsx_msxtype', '"ColecoVision"')
+        elif (system.name == 'msx1'):
+            coreSettings.save('bluemsx_msxtype', '"MSX"')
+        elif (system.name == 'msx2'):
+            coreSettings.save('bluemsx_msxtype', '"MSX2"')
+        else:
+            coreSettings.save('bluemsx_msxtype', '"Auto"')
+        
 
     if (system.config['core'] == 'tgbdual'):
         coreSettings.save('tgbdual_audio_output',       '"Game Boy #1"')
