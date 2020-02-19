@@ -7,36 +7,35 @@ import json
 
 def setMupenConfig(iniConfig, system, controllers, gameResolution):
 
-        # hotkeys
+	# hotkeys
 	setHotKeyConfig(iniConfig, controllers)
 
-        # paths
-        if not iniConfig.has_section("Core"):
-            iniConfig.add_section("Core")
-        iniConfig.set("Core", "Version", "1.01") # version is important for the .ini creation otherwise, mupen remove the section
-        iniConfig.set("Core", "ScreenshotPath", batoceraFiles.SCREENSHOTS)
+	# paths
+	if not iniConfig.has_section("Core"):
+		iniConfig.add_section("Core")
+	iniConfig.set("Core", "Version", "1.01") # version is important for the .ini creation otherwise, mupen remove the section
+	iniConfig.set("Core", "ScreenshotPath", batoceraFiles.SCREENSHOTS)
 	iniConfig.set("Core", "SaveStatePath",  batoceraFiles.mupenSaves)
 	iniConfig.set("Core", "SaveSRAMPath",   batoceraFiles.mupenSaves)
-        iniConfig.set("Core", "SharedDataPath", batoceraFiles.mupenConf)
+	iniConfig.set("Core", "SharedDataPath", batoceraFiles.mupenConf)
 
 	# resolution
-        if not iniConfig.has_section("Video-General"):
-            iniConfig.add_section("Video-General")
-        iniConfig.set("Video-General", "Version", "1")
-        iniConfig.set("Video-General", "ScreenWidth",  gameResolution["width"])
-        iniConfig.set("Video-General", "ScreenHeight", gameResolution["height"])
-        # i don't know which value of VerticalSync should be set (it was False in original configgen)
-        iniConfig.set("Video-General", "VerticalSync", "False")
+	if not iniConfig.has_section("Video-General"):
+		iniConfig.add_section("Video-General")
+	iniConfig.set("Video-General", "Version", "1")
+	iniConfig.set("Video-General", "ScreenWidth",  gameResolution["width"])
+	iniConfig.set("Video-General", "ScreenHeight", gameResolution["height"])
+	# i don't know which value of VerticalSync should be set (it was False in original configgen)
+	iniConfig.set("Video-General", "VerticalSync", "False")
 	
 	# wide screen mode
 	# Glide64mk2.: Adjust screen aspect for wide screen mode: -1=Game default, 0=disable. 1=enable
 	# Glide64mk2.: Aspect ratio: -1=Game default, 0=Force 4:3, 1=Force 16:9, 2=Stretch, 3=Original	
 	if not iniConfig.has_section("Video-Glide64mk2"):
             iniConfig.add_section("Video-Glide64mk2")
-        if system.config["ratio"] == "16/9":
-        	iniConfig.set("Video-Glide64mk2", "adjust_aspect", "1")
-		iniConfig.set("Video-Glide64mk2", "aspect", "1")
-        	
+	if system.config["ratio"] == "16/9":
+		iniConfig.set("Video-Glide64mk2", "adjust_aspect", "1")
+		iniConfig.set("Video-Glide64mk2", "aspect", "1")        	
 	else:
 		iniConfig.set("Video-Glide64mk2", "adjust_aspect", "-1")
 		iniConfig.set("Video-Glide64mk2", "aspect", "-1")
@@ -44,22 +43,24 @@ def setMupenConfig(iniConfig, system, controllers, gameResolution):
 	# GLideN64.: Screen aspect ratio (0=stretch, 1=force 4:3, 2=force 16:9, 3=adjust)
 	if not iniConfig.has_section("Video-GLideN64"):
             iniConfig.add_section("Video-GLideN64")
-        if system.config["ratio"] == "16/9":
+	if system.config["ratio"] == "16/9":
 		iniConfig.set("Video-GLideN64", "AspectRatio", "2")
 	else:
 		iniConfig.set("Video-GLideN64", "AspectRatio", "1")
 
-        # fps
-        if not iniConfig.has_section("Video-Rice"):
-                iniConfig.add_section("Video-Rice")
-        iniConfig.set("Video-Rice", "Version", "1")
-        iniConfig.set("Video-Glide64mk2", "Version", "1")
+    # Rice
+	if not iniConfig.has_section("Video-Rice"):
+			iniConfig.add_section("Video-Rice")
+
+	# fps
+	iniConfig.set("Video-Rice", "Version", "1")
+	iniConfig.set("Video-Glide64mk2", "Version", "1")	
 	if system.config['showFPS'] == 'true':
 		iniConfig.set("Video-Rice",      "ShowFPS",  "True")
-                iniConfig.set("Video-Glide64mk2", "show_fps", "4")
+		iniConfig.set("Video-Glide64mk2", "show_fps", "4")
 	else:
-                iniConfig.set("Video-Rice",       "ShowFPS",  "False")
-                iniConfig.set("Video-Glide64mk2", "show_fps", "8")
+		iniConfig.set("Video-Rice",       "ShowFPS",  "False")
+		iniConfig.set("Video-Glide64mk2", "show_fps", "8")
 
         # custom : allow the user to configure directly mupen64plus.cfg via batocera.conf via lines like : n64.mupen64plus.section.option=value
         for user_config in system.config:
@@ -73,9 +74,9 @@ def setMupenConfig(iniConfig, system, controllers, gameResolution):
                         iniConfig.set(custom_section, custom_option, system.config[user_config])
 	
 def setHotKeyConfig(iniConfig, controllers):
-        if not iniConfig.has_section("CoreEvents"):
-                iniConfig.add_section("CoreEvents")
-        iniConfig.set("CoreEvents", "Version", "1")
+	if not iniConfig.has_section("CoreEvents"):
+			iniConfig.add_section("CoreEvents")
+	iniConfig.set("CoreEvents", "Version", "1")
         
 	if '1' in controllers:
 		if 'hotkey' in controllers['1'].inputs:
