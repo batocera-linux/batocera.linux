@@ -3,8 +3,8 @@
 # AMIBERRY
 #
 ################################################################################
-# Version.: Amiberry v3.0.11 + rotation
-AMIBERRY_VERSION = 8314acd695ef2f33d65f699eaf8e33ed14d7a692
+# Version.: Commits on Feb 18, 2020
+AMIBERRY_VERSION = v3.1.2
 AMIBERRY_SITE = $(call github,midwan,amiberry,$(AMIBERRY_VERSION))
 AMIBERRY_LICENSE = GPLv3
 AMIBERRY_DEPENDENCIES = sdl2 sdl2_image sdl2_ttf mpg123 libxml2 libmpeg2 flac

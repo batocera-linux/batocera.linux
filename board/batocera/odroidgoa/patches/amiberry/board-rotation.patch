@@ -1,5 +1,5 @@
 diff --git a/src/osdep/amiberry.cpp b/src/osdep/amiberry.cpp
-index c747aca..9109fec 100644
+index 21312e8..faf5610 100644
 --- a/src/osdep/amiberry.cpp
 +++ b/src/osdep/amiberry.cpp
 @@ -58,7 +58,7 @@ int input_default_mouse_speed = 100;
@@ -8,6 +8,6 @@ index c747aca..9109fec 100644
  static char default_quit_key[128];
 -int rotation_angle = 0;
 +int rotation_angle = -90;
- 
- // Default Enter GUI key is F12
- int enter_gui_key = 0;
+ bool default_horizontal_centering = false;
+ bool default_vertical_centering = false;
+ int default_scaling_method = -1;
