@@ -34,8 +34,8 @@ define MUPEN64PLUS_GLES2_INSTALL_TARGET_CMDS
 		INSTALL="/usr/bin/install" \
 		INSTALL_STRIP_FLAG="" \
 		-C $(@D)/projects/unix all $(MUPEN64PLUS_PARAMS) OPTFLAGS="$(TARGET_CXXFLAGS)" install		
-		cp package/batocera/emulators/mupen64plus/mupen64plus-gles2/gles2n64.conf    "$(TARGET_DIR)/usr/share/mupen64plus/"
-		cp package/batocera/emulators/mupen64plus/mupen64plus-gles2/gles2n64rom.conf "$(TARGET_DIR)/usr/share/mupen64plus/"
+		cp $(@D)/data/gles2n64.conf    "$(TARGET_DIR)/usr/share/mupen64plus/"
+		cp $(@D)/data/gles2n64rom.conf "$(TARGET_DIR)/usr/share/mupen64plus/"
 endef
 
 define MUPEN64PLUS_GLES2_CROSS_FIXUP
