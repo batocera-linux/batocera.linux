@@ -196,13 +196,18 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
         retroarchConfig['netplay_mode']              = "false"
         retroarchConfig['netplay_ip_port']           = systemConfig.get('netplay.server.port', "")
         retroarchConfig['netplay_delay_frames']      = systemConfig.get('netplay.frames', "")
-        retroarchConfig['netplay_nickname']          = systemConfig.get('netplay.nick', "")
+        retroarchConfig['netplay_nickname']          = systemConfig.get('netplay.nickname', "")
         retroarchConfig['netplay_client_swap_input'] = "false"
         if system.config['netplay.mode'] == 'client':
             # But client needs netplay_mode = true ... bug ?
             retroarchConfig['netplay_mode']              = "true"
             retroarchConfig['netplay_ip_address']        = systemConfig.get('netplay.server.ip', "")
             retroarchConfig['netplay_client_swap_input'] = "true"
+        if 'netplay.relay' in system.config and system.config['netplay.relay'] != "" :
+            retroarchConfig['netplay_use_mitm_server'] = "true"
+            retroarchConfig['netplay_mitm_server'] = systemConfig.get('netplay.relay', "")
+        else:
+            retroarchConfig['netplay_use_mitm_server'] = "false"
 
     # Display FPS
     if system.isOptSet('showFPS') and system.getOptBoolean('showFPS') == True:
