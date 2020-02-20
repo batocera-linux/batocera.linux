@@ -1,8 +1,8 @@
 diff --git a/input/drivers_joypad/udev_joypad.c b/input/drivers_joypad/udev_joypad.c
-index 8fb55b3..4062735 100644
+index 03ba777..8add984 100644
 --- a/input/drivers_joypad/udev_joypad.c
 +++ b/input/drivers_joypad/udev_joypad.c
-@@ -190,10 +190,11 @@ static int udev_add_pad(struct udev_device *dev, unsigned p, int fd, const char
+@@ -190,21 +190,22 @@ static int udev_add_pad(struct udev_device *dev, unsigned p, int fd, const char
     /* Go through all possible keycodes, check if they are used,
      * and map them to button/axes/hat indices.
      */
@@ -18,3 +18,20 @@ index 8fb55b3..4062735 100644
        if (test_bit(i, keybit))
           pad->button_bind[i] = buttons++;
     /* The following two ranges are scanned and added after the above
+     * ranges to maintain compatibility with existing key maps.
+     */
+-   for (i = 0; i < KEY_UP && buttons < UDEV_NUM_BUTTONS; i++)
+-      if (test_bit(i, keybit))
+-         pad->button_bind[i] = buttons++;
+-   for (i = KEY_DOWN + 1; i < BTN_MISC && buttons < UDEV_NUM_BUTTONS; i++)
+-      if (test_bit(i, keybit))
+-         pad->button_bind[i] = buttons++;
++   //for (i = 0; i < KEY_UP && buttons < UDEV_NUM_BUTTONS; i++)
++   //   if (test_bit(i, keybit))
++   //      pad->button_bind[i] = buttons++;
++   //for (i = KEY_DOWN + 1; i < BTN_MISC && buttons < UDEV_NUM_BUTTONS; i++)
++   //   if (test_bit(i, keybit))
++   //      pad->button_bind[i] = buttons++;
+    for (i = 0; i < ABS_MISC && axes < NUM_AXES; i++)
+    {
+       /* Skip hats for now. */
