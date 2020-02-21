@@ -39,8 +39,10 @@ def generateCoreSettings(retroarchCore, system):
             coreSettings.save('bluemsx_msxtype', '"MSX"')
         elif (system.name == 'msx2'):
             coreSettings.save('bluemsx_msxtype', '"MSX2"')
-        else:
-            coreSettings.save('bluemsx_msxtype', '"Auto"')
+        elif (system.name == 'msx2+'):
+            coreSettings.save('bluemsx_msxtype', '"MSX2+"')
+        elif (system.name == 'msxturbor'):
+            coreSettings.save('bluemsx_msxtype', '"MSXturboR"')
         
 
     if (system.config['core'] == 'tgbdual'):
