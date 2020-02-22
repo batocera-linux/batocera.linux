@@ -203,6 +203,12 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
             retroarchConfig['netplay_mode']              = "true"
             retroarchConfig['netplay_ip_address']        = systemConfig.get('netplay.server.ip', "")
             retroarchConfig['netplay_client_swap_input'] = "true"
+        # mode spectator
+        if system.isOptSet('netplay.spectator') and system.getOptBoolean('netplay.spectator') == True:
+            retroarchConfig['netplay_spectator_mode_enable'] = 'true'
+        else:
+            retroarchConfig['netplay_spectator_mode_enable'] = 'false'
+        # relay
         if 'netplay.relay' in system.config and system.config['netplay.relay'] != "" :
             retroarchConfig['netplay_use_mitm_server'] = "true"
             retroarchConfig['netplay_mitm_server'] = systemConfig.get('netplay.relay', "")
