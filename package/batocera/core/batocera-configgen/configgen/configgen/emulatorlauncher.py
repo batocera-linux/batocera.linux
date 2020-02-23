@@ -106,6 +106,8 @@ def main(args):
         # network options
         if args.netplaymode is not None:
             system.config["netplay.mode"] = args.netplaymode
+        if args.netplayspectator is not None:
+            system.config["netplay.spectator"] = args.netplayspectator
         if args.netplayip is not None:
             system.config["netplay.server.ip"] = args.netplayip
         if args.netplayport is not None:
@@ -215,6 +217,7 @@ if __name__ == '__main__':
     parser.add_argument("-emulator", help="force emulator", type=str, required=False)
     parser.add_argument("-core", help="force emulator core", type=str, required=False)
     parser.add_argument("-netplaymode", help="host/client", type=str, required=False)
+    parser.add_argument("-netplayspectator", help="enable spectator mode", default=False, action='store_true', required=False)
     parser.add_argument("-netplayip", help="remote ip", type=str, required=False)
     parser.add_argument("-netplayport", help="remote port", type=str, required=False)
 
