@@ -46,19 +46,30 @@ class AmiberryGenerator(Generator):
         for playercontroller, pad in sorted(playersControllers.items()):
             replacements = {'_player' + str(nplayer) + '_':'_'}
             # amiberry remove / included in pads names like "USB Downlo01.80 PS3/USB Corded Gamepad"
-            playerInputFilename = batoceraFiles.amiberryRetroarchInputsDir + "/" + pad.realName.replace("/", "") + ".cfg"
+            padfilename = pad.realName.replace("/", "")
+            playerInputFilename = batoceraFiles.amiberryRetroarchInputsDir + "/" + padfilename + ".cfg"
             with open(batoceraFiles.amiberryRetroarchCustom) as infile, open(playerInputFilename, 'w') as outfile:
 	        for line in infile:
                     for src, target in replacements.iteritems():
 		        newline = line.replace(src, target)
 		        if not newline.isspace():
 		            outfile.write(newline)
+            if nplayer == 1: # 1 = joystick port
+                commandArray.append("-s")
+                commandArray.append("joyport1_friendlyname=" + padfilename)
+            if nplayer == 2: # 0 = mouse for the player 2
+                commandArray.append("-s")
+                commandArray.append("joyport0_friendlyname=" + padfilename)
             nplayer += 1
 
         # fps
 	if system.config['showFPS'] == 'true':
             commandArray.append("-s")
             commandArray.append("show_leds=true")
+
+        # disable port 2 (otherwise, the joystick goes on it)
+        commandArray.append("-s")
+        commandArray.append("joyport2=")
         
         os.chdir("/usr/share/amiberry")
         return Command.Command(array=commandArray)
