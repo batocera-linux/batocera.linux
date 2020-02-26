@@ -9,6 +9,7 @@
 # Added sigterm level, added second parameter to activate sigterm during smart_wait function
 # Added architecture and version information // 05.01.2020
 # Added update information + beta branch // 10.02.2020
+# Added --reboot // 26.02.2020
 
 # Get all childpids from calling process
 function getcpid() {
@@ -65,7 +66,7 @@ case ${1,,} in
     --restart)
         /etc/init.d/S31emulationstation stop
         ES_PID=$(check_esrun)
-        [[ -z $ES_PID ]] || smart_wait 0 $ES_PID 
+        [[ -z $ES_PID ]] || smart_wait 0 $ES_PID
         /etc/init.d/S31emulationstation start
     ;;
 
@@ -81,22 +82,27 @@ case ${1,,} in
         [[ -n $RC_PID ]] && echo $RC_PID || echo 0
     ;;
 
-    --emukill|--shutdown)
+    --emukill|--shutdown|--reboot)
         RC_PID=$(check_emurun)
         [[ -n $RC_PID ]] && emu_kill && sleep 2
 
         ES_PID=$(check_esrun)
-        if [[ "${1,,}" == "--shutdown" && -n $ES_PID ]]; then
-            kill $ES_PID         
+		if [[ "${1,,}" == "--shutdown" && -n $ES_PID ]]; then
+            kill $ES_PID
             smart_wait 0 $ES_PID
             shutdown -h now
+        fi
+        if [[ "${1,,}" == "--reboot" && -n $ES_PID ]]; then
+            kill $ES_PID
+            smart_wait 0 $ES_PID
+            reboot
         fi
     ;;
 
     --kodi)
         RC_PID=$(check_emurun)
         [[ -n $RC_PID ]] && emu_kill && sleep 2
-        
+
         /etc/init.d/S31emulationstation stop
         batocera-kodilauncher &
         wait $!
@@ -127,12 +133,12 @@ case ${1,,} in
         if [[ "${1,,}" == "--update" && $ret -eq 0 ]]; then
             URL="https://batocera.org/upgrades/$ARCH/$BRANCH/last/batocera.version"
             NET_VERSION=$(wget -q -O - "$URL")
-            [[ $? -eq 0 ]] || NET_VERSION="Connection failed!"         
+            [[ $? -eq 0 ]] || NET_VERSION="Connection failed!"
             echo "Webversion:  $NET_VERSION"
             echo "Update URL:  $(dirname $URL)"
             echo "Branch:      ${BRANCH^^}-branch searched"
             echo "Used arch:   $ARCH"
-            echo "Installed:   $VER" 
+            echo "Installed:   $VER"
             if [[ ${VER//[^[:digit:]]/} -lt ${NET_VERSION//[^[:digit:]]/} ]]; then
                 echo "Status:      Possible Update found!"
                 ret=0
@@ -153,6 +159,7 @@ case ${1,,} in
                   --restart  will RESTART EmulationStation only
                              this may be usefull for refreshing gameslists
                   --kodi     will startup KODI Media Center stopping ES
+                  --reboot   will REBOOT whole system
                   --shutdown will SHUTDOWN whole system
                   --emukill  will exit any running EMULATORS
                   --espid    checks if EmulationStation is currently active
