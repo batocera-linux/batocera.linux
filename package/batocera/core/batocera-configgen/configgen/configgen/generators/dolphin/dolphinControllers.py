@@ -59,7 +59,7 @@ def generateControllerConfig_emulatedwiimotes(playersControllers, rom):
         wiiMapping['y'] = 'Buttons/A'
         wiiMapping['a']   = 'Buttons/2'
         wiiMapping['b'] = 'Buttons/1'
-        
+
 
     # i: infrared, s: swing, t: tilt, n: nunchuk
     # 12 possible combinations : is si / it ti / in ni / st ts / sn ns / tn nt
@@ -123,7 +123,7 @@ def generateControllerConfig_emulatedwiimotes(playersControllers, rom):
         wiiMapping['joystick2up'] = 'Classic/Right Stick/Up'
         wiiMapping['joystick2left'] = 'Classic/Right Stick/Left'
 
-    #This section allows a per ROM override of the default key options.  
+    #This section allows a per ROM override of the default key options.
     configname = rom + ".cfg"  #Define ROM configuration name
     if os.path.isfile(configname): #file exists
         import ast
@@ -166,7 +166,7 @@ def generateControllerConfig_gamecube(playersControllers,rom):
         'joystick1down': 'down',
         'joystick1right': 'right'
     }
-    
+
     #This section allows a per ROM override of the default key options.
     configname = rom + ".cfg"  #Define ROM configuration name
     if os.path.isfile(configname): #file exists
@@ -215,7 +215,7 @@ def generateHotkeys(playersControllers):
     for playercontroller, pad in sorted(playersControllers.items()):
         if nplayer == 1:
             f.write("[Hotkeys1]" + "\n")
-            f.write("Device = evdev/0/" + pad.realName + "\n")
+            f.write("Device = evdev/0/" + pad.realName.strip() + "\n")
 
             # search the hotkey button
             hotkey = None
@@ -262,7 +262,7 @@ def generateControllerConfig_any(playersControllers, filename, anyDefKey, anyMap
         double_pads[pad.configName] = nsamepad+1
 
         f.write("[" + anyDefKey + str(nplayer) + "]" + "\n")
-        f.write("Device = evdev/" + str(nsamepad) + "/" + pad.realName + "\n")
+        f.write("Device = evdev/" + str(nsamepad).strip() + "/" + pad.realName.strip() + "\n")
         for opt in extraOptions:
             f.write(opt + " = " + extraOptions[opt] + "\n")
 
