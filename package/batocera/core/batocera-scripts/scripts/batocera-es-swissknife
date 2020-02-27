@@ -87,12 +87,11 @@ case ${1,,} in
         [[ -n $RC_PID ]] && emu_kill && sleep 2
 
         ES_PID=$(check_esrun)
-		if [[ "${1,,}" == "--shutdown" && -n $ES_PID ]]; then
+        if [[ "${1,,}" == "--shutdown" && -n $ES_PID ]]; then
             kill $ES_PID
             smart_wait 0 $ES_PID
             shutdown -h now
-        fi
-        if [[ "${1,,}" == "--reboot" && -n $ES_PID ]]; then
+        elif [[ "${1,,}" == "--reboot" && -n $ES_PID ]]; then
             kill $ES_PID
             smart_wait 0 $ES_PID
             reboot
