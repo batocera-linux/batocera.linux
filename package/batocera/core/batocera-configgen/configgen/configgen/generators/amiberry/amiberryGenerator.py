@@ -70,7 +70,11 @@ class AmiberryGenerator(Generator):
         # disable port 2 (otherwise, the joystick goes on it)
         commandArray.append("-s")
         commandArray.append("joyport2=")
-        
+
+        # display vertical centering
+        commandArray.append("-s")
+        commandArray.append("gfx_center_vertical=smart")
+
         os.chdir("/usr/share/amiberry")
         return Command.Command(array=commandArray)
 
