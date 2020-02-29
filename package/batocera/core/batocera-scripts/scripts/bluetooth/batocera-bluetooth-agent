@@ -16,10 +16,13 @@ import logging
 import signal
 
 gadapter = None
+gdiscovering = False
 gdevices = {}
 logging.basicConfig(filename='/var/log/bluetooth-agent.log', level=logging.DEBUG, format='%(asctime)s %(message)s')
 
 def connect_device(path, address, properties):
+  global gdiscovering
+
   devName = ""
   trusted = False
   connected = False
@@ -42,13 +45,13 @@ def connect_device(path, address, properties):
   connected = rproperties["Connected"]
 
   # skip some devices
-  if "Icon" not in properties or properties["Icon"] in [ "audio-card" , "phone" ]:
+  if "Icon" not in properties or not properties["Icon"].startswith("input"):
     logging.info("Skipping device {}".format(getDevName(rproperties)));
     return
 
   if not trusted:
-    # trust only when this file is present
-    if os.path.isfile("/var/run/bluetoothd.trusting"):
+    # if trusting
+    if gdiscovering:
       logging.info("Trusting (" + devName + ")")
       bluezProps = dbus.Interface(bus.get_object("org.bluez", path), "org.freedesktop.DBus.Properties")
       bluezProps.Set("org.bluez.Device1", "Trusted", True)
@@ -63,11 +66,13 @@ def connect_device(path, address, properties):
 
 def doConnect(address, devName):
   global gadapter
+  global gdiscovering
   
   try:
     # discovery stopped during connection to help some devices
-    logging.info("Stop discovery")
-    gadapter.StopDiscovery()
+    if gdiscovering:
+      logging.info("Stop discovery")
+      gadapter.StopDiscovery()
 
     device = bluezutils.find_device(address)
     ntry=8
@@ -76,9 +81,11 @@ def doConnect(address, devName):
       try:
         device.Connect()
         logging.info("Connected successfully (" + devName + ")")
-        logging.info("Start discovery")
-        gadapter.StartDiscovery()
-        return
+
+        if gdiscovering:
+          logging.info("Start discovery")
+          gadapter.StartDiscovery()
+          return
       except dbus.exceptions.DBusException as err:
         logging.info("dbus: " + err.get_dbus_message())
         time.sleep(1)
@@ -87,11 +94,13 @@ def doConnect(address, devName):
         time.sleep(1)
     
     logging.info("Connection failed. Give up. (" + devName + ")")
-    logging.info("Start discovery")
-    gadapter.StartDiscovery()
+    if gdiscovering:
+      logging.info("Start discovery")
+      gadapter.StartDiscovery()
   except Exception as e:
-    logging.info("Start discovery")
-    gadapter.StartDiscovery()
+    if gdiscovering:
+      logging.info("Start discovery")
+      gadapter.StartDiscovery()
     # don't raise, while startdiscovery doesn't like it
     #raise e
 
@@ -156,16 +165,22 @@ def properties_changed(interface, changed, invalidated, path):
     connect_device(path, gdevices[path]["Address"], gdevices[path])
 
 def user_signal_start_discovery(signum, frame):
+  global gdiscovering
   try:
-    logging.info("Start discovery (signal)")
-    gadapter.StartDiscovery()
+    if gdiscovering == False:
+      gdiscovering = True
+      logging.info("Start discovery (signal)")
+      gadapter.StartDiscovery()
   except:
     pass
 
 def user_signal_stop_discovery(signum, frame):
+  global gdiscovering
   try:
-    logging.info("Stop discovery (signal)")
-    gadapter.StopDiscovery()
+    if gdiscovering:
+      gdiscovering = False
+      logging.info("Stop discovery (signal)")
+      gadapter.StopDiscovery()
   except:
     pass
 
@@ -208,8 +223,7 @@ if __name__ == '__main__':
     adapterSetter = dbus.Interface(bus.get_object("org.bluez", adapter.object_path), "org.freedesktop.DBus.Properties")
     adapterSetter.Set("org.bluez.Adapter1", "Powered", True)
 
-  logging.info("Start discovery")
-  adapter.StartDiscovery()
+  gdiscovering = False
 
   # events
   # use events while i manage to stop discovery only from the process having started it
