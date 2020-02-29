@@ -127,6 +127,9 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
     select BR2_PACKAGE_ALSA_UTILS_AMIXER
     select BR2_PACKAGE_ALSA_UTILS_APLAY
 
+    # irq balancing
+    select BR2_PACKAGE_IRQBALANCE
+
     # xorg
     select BR2_PACKAGE_BATOCERA_XORG                     if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
 
