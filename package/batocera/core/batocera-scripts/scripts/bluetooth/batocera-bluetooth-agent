@@ -141,12 +141,12 @@ def interfaces_added(path, interfaces):
     return
 
   properties = interfaces["org.bluez.Device1"]
- 
+
   if path in gdevices:
     gdevices[path] = dict(gdevices[path].items() + properties.items())
   else:
     gdevices[path] = properties
-  
+
   if "Address" in gdevices[path]:
     connect_device(path, properties["Address"], gdevices[path])
 
@@ -160,6 +160,10 @@ def properties_changed(interface, changed, invalidated, path):
     gdevices[path] = dict(gdevices[path].items() + changed.items())
   else:
     gdevices[path] = changed
+
+  if "Connected" in changed and changed["Connected"] == False:
+    logging.info("Skipping (property Connected changed to False)");
+    return
 
   if "Address" in gdevices[path]:
     connect_device(path, gdevices[path]["Address"], gdevices[path])
