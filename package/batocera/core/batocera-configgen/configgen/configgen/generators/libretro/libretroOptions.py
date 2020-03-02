@@ -103,6 +103,9 @@ def generateCoreSettings(retroarchCore, system):
     if (system.config['core'] == 'theodore'):
         coreSettings.save('theodore_autorun',   '"enabled"')
 
+    if (system.config['core'] == 'flycast'):
+        coreSettings.save('reicast_threaded_rendering',   '"enabled"')
+
 def generateHatariConf(hatariConf):
     hatariConfig = ConfigParser.ConfigParser()
     # To prevent ConfigParser from converting to lower case
