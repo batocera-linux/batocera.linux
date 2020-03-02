@@ -78,7 +78,6 @@ if mkdir -p /userdata/system/ssh
 then
     test -e /userdata/system/ssh/dropbear_ecdsa_host_key || dropbearkey -t ecdsa -f /userdata/system/ssh/dropbear_ecdsa_host_key
     test -e /userdata/system/ssh/dropbear_rsa_host_key   || dropbearkey -t rsa   -f /userdata/system/ssh/dropbear_rsa_host_key
-    test -e /userdata/system/ssh/dropbear_dss_host_key   || dropbearkey -t dss   -f /userdata/system/ssh/dropbear_dss_host_key
 fi
 
 # udev : create a link for rules persistance
