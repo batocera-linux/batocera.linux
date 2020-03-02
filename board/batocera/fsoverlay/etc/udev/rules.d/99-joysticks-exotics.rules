@@ -14,3 +14,6 @@ SUBSYSTEM=="input", ATTRS{name}=="SteelSeries Stratus XL", MODE="0666", ENV{ID_I
 # X-Arcade Tankstick
 SUBSYSTEM=="input", ATTRS{name}=="Xarcade-to-Gamepad Device 1", MODE="0666", ENV{ID_INPUT_JOYSTICK}="1"
 SUBSYSTEM=="input", ATTRS{name}=="Xarcade-to-Gamepad Device 2", MODE="0666", ENV{ID_INPUT_JOYSTICK}="1"
+# Keyboards are not joysticks
+SUBSYSTEM=="input", ATTRS{name}=="*Keyboard*", ENV{ID_INPUT_JOYSTICK}="0"
+SUBSYSTEM=="input", ATTRS{name}=="*keyboard*", ENV{ID_INPUT_JOYSTICK}="0"
