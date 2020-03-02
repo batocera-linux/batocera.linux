@@ -251,7 +251,7 @@ config BR2_PACKAGE_BATOCERA_ALL_SYSTEMS
         select BR2_PACKAGE_SCUMMVM              # ALL # scummvm
         select BR2_PACKAGE_DOSBOX               if !BR2_PACKAGE_BATOCERA_TARGET_ROCK960 # ALL # dos
         select BR2_PACKAGE_VICE                 # ALL # c64
-        select BR2_PACKAGE_LINAPPLE_PIE         # ALL # apple II
+        select BR2_PACKAGE_LINAPPLE             # ALL # apple II
 
         select BR2_PACKAGE_BATOCERA_MUPEN64     if !BR2_PACKAGE_BATOCERA_TARGET_RPI1 # mupen64 (n64)
 

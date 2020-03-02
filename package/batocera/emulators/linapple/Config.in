@@ -1,5 +1,5 @@
-config BR2_PACKAGE_LINAPPLE_PIE
-	bool "LinApple-Pie"
+config BR2_PACKAGE_LINAPPLE
+	bool "linapple"
 	depends on BR2_INSTALL_LIBSTDCPP
 	select BR2_PACKAGE_SDL
 	select BR2_PACKAGE_SDL_IMAGE
@@ -9,11 +9,9 @@ config BR2_PACKAGE_LINAPPLE_PIE
 	select BR2_PACKAGE_ZLIB
 	select BR2_PACKAGE_LIBZIP
 	help
-	  Linapple on Raspberry Pi
-	  Great thanks to Mark Ormond for fine tuning LinApple and 
-	  publishing his work on GitHub
+	  LinApple is an emulator for Apple II, Apple II+, Apple //e, and Enhanced Apple //e computers.
 
-	  https://github.com/dabonetn/linapple-pie
+	  https://github.com/linappleii/linapple
 
-comment "LinApple-pie needs a toolchain w/ C++, and following librarie : sdl, sdl_image (bmp, xpm), curl, zlib and libzip"
+comment "LinApple needs a toolchain w/ C++, and following librarie : sdl, sdl_image (bmp, xpm), curl, zlib and libzip"
 	depends on !BR2_INSTALL_LIBSTDCPP || !BR2_PACKAGE_SDL || !BR2_PACKAGE_SDL_IMAGE || !BR2_PACKAGE_SDL_IMAGE_BMP || !BR2_PACKAGE_SDL_IMAGE_XPM || !BR2_PACKAGE_CURL || !BR2_PACKAGE_ZLIB || !BR2_PACKAGE_LIBZIP
