@@ -1,0 +1,5 @@
+config BR2_PACKAGE_ROSHAMBO_CASE
+	bool "roshambo-case"
+	depends on BR2_PACKAGE_PYTHON
+	help
+	  Scripts to enable the LED, Fan, and Buttons on the Kintaro SNES and Roshambo Super Famicom Cases.
