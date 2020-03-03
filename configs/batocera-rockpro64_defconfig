@@ -77,6 +77,7 @@ BR2_PACKAGE_E2FSPROGS_RESIZE2FS=y
 BR2_PACKAGE_HOST_GENEXT2FS=y
 
 # choices can be put in _defconfig files only
-BR2_PACKAGE_BATOCERA_SPLASH_FFPLAY=y
+# workaround for 5.25 until we figure out what is going on with ffplay
+# BR2_PACKAGE_BATOCERA_SPLASH_FFPLAY=y
 
 #BR2_PACKAGE_BATOCERA_CORES_EXPERIMENTAL=y
