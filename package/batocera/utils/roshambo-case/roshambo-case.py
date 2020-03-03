@@ -9,6 +9,7 @@ import R64.GPIO as GPIO
 # NOTE: the R64GPIO package doesn't support "add_event_detect", so we can't use callbacks
 
 # Initialize
+GPIO.setwarnings(False)
 GPIO.cleanup()
 GPIO.setmode(GPIO.BOARD)
 PCB = 10
@@ -89,6 +90,7 @@ while True:
 				os.system("batocera-es-swissknife --shutdown")
 				break
 	else:
+		print("Roshambo Case not found")
 		break
 	time.sleep(0.3)
 
