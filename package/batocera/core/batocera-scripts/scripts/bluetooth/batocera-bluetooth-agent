@@ -4,6 +4,7 @@ from __future__ import absolute_import, print_function, unicode_literals
 
 from optparse import OptionParser, make_option
 import dbus
+import dbus.service
 import dbus.mainloop.glib
 try:
   from gi.repository import GObject
@@ -15,12 +16,21 @@ import os
 import logging
 import signal
 
+AGENT_INTERFACE = 'org.bluez.Agent1'
+
 gadapter = None
 gdiscovering = False
 gdevices = {}
+
 logging.basicConfig(filename='/var/log/bluetooth-agent.log', level=logging.DEBUG, format='%(asctime)s %(message)s')
 
-def connect_device(path, address, properties):
+def bool2str(val, valiftrue, valiffalse):
+  if val:
+    return valiftrue
+  else:
+    return valiffalse
+
+def connect_device(path, address, properties, forceConnect):
   global gdiscovering
 
   devName = ""
@@ -41,28 +51,45 @@ def connect_device(path, address, properties):
     rproperties[key] = value
 
   trusted   = rproperties["Trusted"]
+  paired    = rproperties["Paired"]
   devName = getDevName(rproperties)
   connected = rproperties["Connected"]
 
-  # skip some devices
+  # skip non input devices
   if "Icon" not in properties or not properties["Icon"].startswith("input"):
     logging.info("Skipping device {}".format(getDevName(rproperties)));
     return
 
-  if not trusted:
-    # if trusting
-    if gdiscovering:
-      logging.info("Trusting (" + devName + ")")
-      bluezProps = dbus.Interface(bus.get_object("org.bluez", path), "org.freedesktop.DBus.Properties")
-      bluezProps.Set("org.bluez.Device1", "Trusted", True)
+  logging.info("event for " + devName + "(paired=" + bool2str(paired, "paired", "not paired") + ", trusted=" + bool2str(trusted, "trusted", "untrusted") + ", connected=" + bool2str(connected, "connected", "disconnected") + ")")
 
-  # Connect if Trusted
-  if not connected:
-    if trusted:
-      logging.info("Connecting {} ...".format(devName))
-      doConnect(address, devName)
-    else:
-      logging.info("{} is not trusted".format(devName))
+  # skipping connected devices
+  if paired and trusted and connected:
+    logging.info("Skipping already connected device {}".format(getDevName(rproperties)));
+    return
+  
+  if not paired:
+    if connected == False and gdiscovering:
+      doParing(address, devName)
+    return
+
+  # now it is paired
+  if not trusted and (gdiscovering or forceConnect):
+    logging.info("Trusting (" + devName + ")")
+    bluezProps = dbus.Interface(bus.get_object("org.bluez", path), "org.freedesktop.DBus.Properties")
+    bluezProps.Set("org.bluez.Device1", "Trusted", True)
+
+  # now it is paired and trusted
+  # Connect if Trusted and paired
+  if not connected or forceConnect:
+    doConnect(address, devName)
+
+def doParing(address, devName):
+  logging.info("Pairing... (" + devName + ")")
+  device = bluezutils.find_device(address)
+  try:
+    device.Pair()
+  except Exception as e:
+    logging.info("Pairing failed (" + devName + ")")
 
 def doConnect(address, devName):
   global gadapter
@@ -75,10 +102,11 @@ def doConnect(address, devName):
       gadapter.StopDiscovery()
 
     device = bluezutils.find_device(address)
-    ntry=8
+    ntry=5
     while ntry > 0:
       ntry = ntry -1
       try:
+        logging.info("Connecting... (" + devName + ")")
         device.Connect()
         logging.info("Connected successfully (" + devName + ")")
 
@@ -148,7 +176,7 @@ def interfaces_added(path, interfaces):
     gdevices[path] = properties
 
   if "Address" in gdevices[path]:
-    connect_device(path, properties["Address"], gdevices[path])
+    connect_device(path, properties["Address"], gdevices[path], False)
 
 def properties_changed(interface, changed, invalidated, path):
   global gdevices
@@ -161,12 +189,25 @@ def properties_changed(interface, changed, invalidated, path):
   else:
     gdevices[path] = changed
 
+  #logging.info("Properties changed:")
+  #logging.info(changed)
+  #logging.info(invalidated)
+
+  if "Paired" in changed and changed["Paired"] == True:
+    # ok, do as in simple-agent, trust and connect
+    connect_device(path, gdevices[path]["Address"], gdevices[path], True)
+    return
+  
+  # ok, it is now connected, what else ?
+  if "Connected" in changed and changed["Connected"] == True:
+    return
+
   if "Connected" in changed and changed["Connected"] == False:
     logging.info("Skipping (property Connected changed to False)");
     return
 
   if "Address" in gdevices[path]:
-    connect_device(path, gdevices[path]["Address"], gdevices[path])
+    connect_device(path, gdevices[path]["Address"], gdevices[path], False)
 
 def user_signal_start_discovery(signum, frame):
   global gdiscovering
@@ -187,6 +228,55 @@ def user_signal_stop_discovery(signum, frame):
       gadapter.StopDiscovery()
   except:
     pass
+
+class Agent(dbus.service.Object):
+  exit_on_release = True
+
+  def set_exit_on_release(self, exit_on_release):
+    self.exit_on_release = exit_on_release
+
+  @dbus.service.method(AGENT_INTERFACE, in_signature="", out_signature="")
+  def Release(self):
+    logging.info("agent: Release")
+    if self.exit_on_release:
+      mainloop.quit()
+  
+  @dbus.service.method(AGENT_INTERFACE, in_signature="os", out_signature="")
+  def AuthorizeService(self, device, uuid):
+    logging.info("agent: AuthorizeService")
+    return
+  
+  @dbus.service.method(AGENT_INTERFACE, in_signature="o", out_signature="s")
+  def RequestPinCode(self, device):
+    logging.info("RequestPinCode (%s)" % (device))
+    return "0000"
+
+  @dbus.service.method(AGENT_INTERFACE, in_signature="o", out_signature="u")
+  def RequestPasskey(self, device):
+    logging.info("RequestPasskey (%s)" % (device))
+    return 0
+  
+  @dbus.service.method(AGENT_INTERFACE, in_signature="ouq", out_signature="")
+  def DisplayPasskey(self, device, passkey, entered):
+    logging.info("agent: DisplayPasskey (%s, %06u entered %u)" % (device, passkey, entered))
+  
+  @dbus.service.method(AGENT_INTERFACE, in_signature="os", out_signature="")
+  def DisplayPinCode(self, device, pincode):
+    logging.info("agent: DisplayPinCode (%s, %s)" % (device, pincode))
+  
+  @dbus.service.method(AGENT_INTERFACE, in_signature="ou", out_signature="")
+  def RequestConfirmation(self, device, passkey):
+    logging.info("agent: RequestConfirmation")
+    return
+  
+  @dbus.service.method(AGENT_INTERFACE, in_signature="o", out_signature="")
+  def RequestAuthorization(self, device):
+    logging.info("agent: RequestAuthorization")
+    return
+  
+  @dbus.service.method(AGENT_INTERFACE, in_signature="", out_signature="")
+  def Cancel(self):
+    logging.info("agent: Cancel")
 
 if __name__ == '__main__':
   dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
@@ -209,6 +299,16 @@ if __name__ == '__main__':
   # signals
   bus.add_signal_receiver(interfaces_added,   dbus_interface = "org.freedesktop.DBus.ObjectManager", signal_name = "InterfacesAdded")
   bus.add_signal_receiver(properties_changed, dbus_interface = "org.freedesktop.DBus.Properties",    signal_name = "PropertiesChanged", arg0 = "org.bluez.Device1", path_keyword = "path")
+
+  # register the agent
+  bus = dbus.SystemBus()
+  agentpath = "/batocera/agent"
+  obj = bus.get_object("org.bluez", "/org/bluez");
+  manager = dbus.Interface(obj, "org.bluez.AgentManager1")
+  manager.RegisterAgent(agentpath, "NoInputNoOutput")
+  manager.RequestDefaultAgent(agentpath)
+  agent = Agent(bus, agentpath)
+  logging.info("agent registered")
   
   om = dbus.Interface(bus.get_object("org.bluez", "/"), "org.freedesktop.DBus.ObjectManager")
   objects = om.GetManagedObjects()
