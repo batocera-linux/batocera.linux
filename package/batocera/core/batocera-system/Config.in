@@ -121,6 +121,7 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
     select BR2_PACKAGE_RSYNC
     select BR2_PACKAGE_SAMBA4                            # samba
     select BR2_PACKAGE_LIBOPENSSL_BIN                    # required to encode the wifi password
+	select BR2_PACKAGE_KBD                               # loadkeys
 
     # alsa utils
     select BR2_PACKAGE_ALSA_UTILS
