@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-ROCKPRO64_BLOBS_VERSION = 1.0
+ROCKPRO64_BLOBS_VERSION = 2.0
 ROCKPRO64_BLOBS_SITE = https://github.com/batocera-linux/rockpro64-blobs.git
 ROCKPRO64_BLOBS_SITE_METHOD=git
 
