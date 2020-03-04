@@ -19,8 +19,6 @@ LED = 7
 FAN = 8
 
 arch = subprocess.check_output(["batocera-es-swissknife", "--arch"]).strip().upper()
-fan_mode = subprocess.check_output(["batocera-settings", "--command", "load", "--key", "roshambo.fan"]).strip()
-fan_speed = 100
 
 # Tell the script if this is running on a ROCK64 or ROCKPRO64
 GPIO.setrock(arch)
@@ -36,25 +34,9 @@ if(GPIO.input(POWER) == "0"):
 	# System was started with power switch off
 	IGNORE_PWR_OFF = True
 
-def turnon_fan(mode, speed):
-	if mode == "gpio":
-		GPIO.output(FAN, GPIO.HIGH)
-	else:
-		f = open("/sys/class/hwmon/hwmon0/pwm1", "a")
-		f.write(str(speed))
-		f.close()
-
-def turnoff_fan(mode):
-	if mode == "gpio":
-		GPIO.output(FAN, GPIO.LOW)
-	else:
-		f = open("/sys/class/hwmon/hwmon0/pwm1", "a")
-		f.write(str(0))
-		f.close()
-
 # Turn on LED AND FAN
 GPIO.output(LED, GPIO.HIGH)
-turnon_fan(fan_mode, fan_speed)
+GPIO.output(FAN, GPIO.HIGH)
 
 # Function that blinks LED once when button press is detected
 def Blink_LED():
@@ -76,17 +58,17 @@ while True:
 			if(''.join(filter(lambda c: c in string.printable, subprocess.check_output("cat /sys/firmware/devicetree/base/rockchip-suspend/status", shell=True).strip())).lower() == "okay"):
 				print("Suspending...")
 				GPIO.output(LED, GPIO.LOW)
-				turnoff_fan(fan_mode)
+				GPIO.output(FAN, GPIO.LOW)
 				os.system("ifconfig eth0 down")
 				os.system("echo mem > /sys/power/state")
 				time.sleep(1)
 				os.system("ifconfig eth0 up")
 				GPIO.output(LED, GPIO.HIGH)
-				turnon_fan(fan_mode, fan_speed)
+				GPIO.output(FAN, GPIO.HIGH)
 			else:
 				print("Shutting down...")
 				Blink_LED()
-				turnoff_fan(fan_mode)
+				GPIO.output(FAN, GPIO.LOW)
 				os.system("batocera-es-swissknife --shutdown")
 				break
 	else:
@@ -94,5 +76,5 @@ while True:
 		break
 	time.sleep(0.3)
 
-turnoff_fan(fan_mode)
+GPIO.output(FAN, GPIO.LOW)
 GPIO.cleanup()
