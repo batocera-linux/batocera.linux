@@ -2,16 +2,27 @@
 
 if test $1 = start
 then
-  # at 60 degrees, put the fan at 40%
-  # at 70 degrees, put the fan at 50%
-  # at 80 degrees, put the fan at 95%
-  # the default noisy value is to do nothing until 68 degrees, and start at 50%
-  # the current temperature : /sys/devices/virtual/thermal/thermal_zone0/temp
-  # http://forum.odroid.com/viewtopic.php?f=52&t=16308
-  echo "1 40 50 95" > /sys/devices/odroid_fan.14/fan_speeds
-  echo   "60 70 80" > /sys/devices/odroid_fan.14/temp_levels
 
-  # default values :
-  # 1 51 71 91
-  #   68 73 85
+    # Target fan speed (PWM): 0, 102 (40%), 127 (50%), 242 (95%)
+    echo "0 102 127 242" > /sys/devices/platform/pwm-fan/hwmon/hwmon0/fan_speed
+
+    # Target temperature: 60°C, 70°C, 80°C
+    TRIP_POINT_0=60000
+    TRIP_POINT_1=70000
+    TRIP_POINT_2=80000
+     
+    echo $TRIP_POINT_0 > /sys/devices/virtual/thermal/thermal_zone0/trip_point_0_temp
+    echo $TRIP_POINT_0 > /sys/devices/virtual/thermal/thermal_zone1/trip_point_0_temp
+    echo $TRIP_POINT_0 > /sys/devices/virtual/thermal/thermal_zone2/trip_point_0_temp
+    echo $TRIP_POINT_0 > /sys/devices/virtual/thermal/thermal_zone3/trip_point_0_temp
+     
+    echo $TRIP_POINT_1 > /sys/devices/virtual/thermal/thermal_zone0/trip_point_1_temp
+    echo $TRIP_POINT_1 > /sys/devices/virtual/thermal/thermal_zone1/trip_point_1_temp
+    echo $TRIP_POINT_1 > /sys/devices/virtual/thermal/thermal_zone2/trip_point_1_temp
+    echo $TRIP_POINT_1 > /sys/devices/virtual/thermal/thermal_zone3/trip_point_1_temp
+     
+    echo $TRIP_POINT_2 > /sys/devices/virtual/thermal/thermal_zone0/trip_point_2_temp
+    echo $TRIP_POINT_2 > /sys/devices/virtual/thermal/thermal_zone1/trip_point_2_temp
+    echo $TRIP_POINT_2 > /sys/devices/virtual/thermal/thermal_zone2/trip_point_2_temp
+    echo $TRIP_POINT_2 > /sys/devices/virtual/thermal/thermal_zone3/trip_point_2_temp
 fi
