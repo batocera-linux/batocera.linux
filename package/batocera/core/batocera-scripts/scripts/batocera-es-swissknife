@@ -130,7 +130,7 @@ case ${1,,} in
         fi
 
         if [[ "${1,,}" == "--update" && $ret -eq 0 ]]; then
-            URL="https://batocera.org/upgrades/$ARCH/$BRANCH/last/batocera.version"
+            URL="https://updates.batocera.org/$ARCH/$BRANCH/last/batocera.version"
             NET_VERSION=$(wget -q -O - "$URL")
             [[ $? -eq 0 ]] || NET_VERSION="Connection failed!"
             echo "Webversion:  $NET_VERSION"
