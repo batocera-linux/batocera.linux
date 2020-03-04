@@ -24,7 +24,7 @@ class ViceGenerator(Generator):
         viceConfig.setViceConfig(batoceraFiles.viceConfig, system)
 
         # controller configuration
-        viceControllers.generateControllerConfig(batoceraFiles.viceConfig, system)
+        viceControllers.generateControllerConfig(batoceraFiles.viceConfig, playersControllers)
 
         commandArray = [batoceraFiles.batoceraBins[system.config['emulator']] + system.config['core'], "-autostart", rom]
 
