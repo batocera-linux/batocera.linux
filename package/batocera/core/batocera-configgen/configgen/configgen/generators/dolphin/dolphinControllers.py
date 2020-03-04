@@ -184,7 +184,8 @@ def generateControllerConfig_gamecube(playersControllers,rom):
 
 def removeControllerConfig_gamecube():
     configFileName = "{}/{}".format(batoceraFiles.dolphinConfig, "GCPadNew.ini")
-    os.remove(configFileName)
+    if os.path.isfile(configFileName):
+        os.remove(configFileName)
 
 def generateControllerConfig_realwiimotes(filename, anyDefKey):
     configFileName = "{}/{}".format(batoceraFiles.dolphinConfig, filename)
