@@ -11,17 +11,15 @@ ROSHAMBO_CASE_DEPENDENCIES = python
 
 define ROSHAMBO_CASE_BUILD_CMDS
 	(cd $(@D) && python -m compileall R64)
-	# fix me for br2-external support
-	(cd package/batocera/utils/roshambo-case && python -m compileall roshambo-case.py)
+	(cd $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/utils/roshambo-case && python -m compileall roshambo-case.py)
 endef
 
 define ROSHAMBO_CASE_INSTALL_TARGET_CMDS
 	install -d -m 755      $(TARGET_DIR)/usr/lib/python2.7/site-packages/R64
 	cp -r $(@D)/R64/*      $(TARGET_DIR)/usr/lib/python2.7/site-packages/R64
 
-	# fix me for br2-external support
-	$(INSTALL) -Dm755 package/batocera/utils/roshambo-case/S14roshambo       $(TARGET_DIR)/etc/init.d/
-	$(INSTALL) -Dm755 package/batocera/utils/roshambo-case/roshambo-case.py* $(TARGET_DIR)/usr/bin/
+	$(INSTALL) -Dm755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/utils/roshambo-case/S14roshambo       $(TARGET_DIR)/etc/init.d/
+	$(INSTALL) -Dm755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/utils/roshambo-case/roshambo-case.py* $(TARGET_DIR)/usr/bin/
 endef
 
 $(eval $(generic-package))

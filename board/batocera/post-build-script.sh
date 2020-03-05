@@ -70,8 +70,10 @@ rm -rf "${TARGET_DIR}/"{var,run,sys,tmp} || exit 1
 mkdir "${TARGET_DIR}/"{var,run,sys,tmp}  || exit 1
 
 # make /etc/shadow a file generated from /boot/batocera-boot.conf for security
-rm -f "${TARGET_DIR}/etc/shadow"                         || exit 1
-ln -sf "/run/batocera.shadow" "${TARGET_DIR}/etc/shadow" || exit 1
+rm -f "${TARGET_DIR}/etc/shadow" || exit 1
+touch "${TARGET_DIR}/run/batocera.shadow"
+(cd "${TARGET_DIR}/etc" && ln -sf "../run/batocera.shadow" "shadow") || exit 1
+# ln -sf "/run/batocera.shadow" "${TARGET_DIR}/etc/shadow" || exit 1
 
 # fix pixbuf : Unable to load image-loading module: /lib/gdk-pixbuf-2.0/2.10.0/loaders/libpixbufloader-png.so
 # this fix is to be removed once fixed. i've not found the exact source in buildroot. it prevents to display icons in filemanager and some others
@@ -84,7 +86,7 @@ fi
 if test "${BATOCERA_TARGET}" = "S905"
 then
     mkdir -p "${TARGET_DIR}/lib/modules/3.14.29/kernel/gpu"
-    cp "board/batocera/s905/linux_patches/mali.ko" "${TARGET_DIR}/lib/modules/3.14.29/kernel/gpu/mali.ko"
+    cp "${BR2_EXTERNAL_BATOCERA_PATH}/board/batocera/s905/linux_patches/mali.ko" "${TARGET_DIR}/lib/modules/3.14.29/kernel/gpu/mali.ko"
     ln -sf "/usr/lib/gdk-pixbuf-2.0" "${TARGET_DIR}/lib/gdk-pixbuf-2.0" || exit 1
 fi
 
@@ -99,4 +101,4 @@ AUDIOGROUP=$(grep -E "^audio:" "${TARGET_DIR}/etc/group" | cut -d : -f 3)
 sed -i -e s+'defaults.pcm.ipc_gid .*$'+'defaults.pcm.ipc_gid '"${AUDIOGROUP}"+ "${TARGET_DIR}/usr/share/alsa/alsa.conf" || exit 1
 
 # bios file
-python "package/batocera/core/batocera-scripts/scripts/batocera-systems" --createReadme > "${TARGET_DIR}/usr/share/batocera/datainit/bios/readme.txt" || exit 1
+python "${BR2_EXTERNAL_BATOCERA_PATH}/package/batocera/core/batocera-scripts/scripts/batocera-systems" --createReadme > "${TARGET_DIR}/usr/share/batocera/datainit/bios/readme.txt" || exit 1

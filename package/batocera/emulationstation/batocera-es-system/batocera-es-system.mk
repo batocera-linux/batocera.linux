@@ -10,11 +10,11 @@ BATOCERA_ES_SYSTEM_VERSION=1.0
 
 define BATOCERA_ES_SYSTEM_BUILD_CMDS
 	$(HOST_DIR)/bin/python \
-		package/batocera/emulationstation/batocera-es-system/batocera-es-system.py \
-		package/batocera/emulationstation/batocera-es-system/es_systems.yml        \
+		$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulationstation/batocera-es-system/batocera-es-system.py \
+		$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulationstation/batocera-es-system/es_systems.yml        \
 		$(CONFIG_DIR)/.config \
 		$(@D)/es_systems.cfg \
-		package/batocera/emulationstation/batocera-es-system/roms \
+		$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulationstation/batocera-es-system/roms \
 		$(@D)/roms
 endef
 

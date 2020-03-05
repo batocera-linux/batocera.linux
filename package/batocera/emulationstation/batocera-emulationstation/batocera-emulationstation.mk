@@ -84,7 +84,7 @@ endif
 ### ### ###
 
 define BATOCERA_EMULATIONSTATION_BOOT
-	cp package/batocera/emulationstation/batocera-emulationstation/$(BATOCERA_EMULATIONSTATION_BOOT_SCRIPT) $(TARGET_DIR)/etc/init.d/S31emulationstation
+	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulationstation/batocera-emulationstation/$(BATOCERA_EMULATIONSTATION_BOOT_SCRIPT) $(TARGET_DIR)/etc/init.d/S31emulationstation
 endef
 
 BATOCERA_EMULATIONSTATION_PRE_CONFIGURE_HOOKS += BATOCERA_EMULATIONSTATION_RPI_FIXUP

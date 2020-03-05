@@ -13,7 +13,7 @@ BATOCERA_INITRAMFS_LICENSE_FILES = LICENSE
 BATOCERA_INITRAMFS_CFLAGS = $(TARGET_CFLAGS)
 BATOCERA_INITRAMFS_LDFLAGS = $(TARGET_LDFLAGS)
 
-BATOCERA_INITRAMFS_KCONFIG_FILE = "package/batocera/boot/batocera-initramfs/busybox.config"
+BATOCERA_INITRAMFS_KCONFIG_FILE = "$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/boot/batocera-initramfs/busybox.config"
 
 INITRAMFS_DIR=$(BINARIES_DIR)/initramfs
 
@@ -46,7 +46,7 @@ endif
 
 define BATOCERA_INITRAMFS_INSTALL_TARGET_CMDS
 	mkdir -p $(INITRAMFS_DIR)
-	cp package/batocera/boot/batocera-initramfs/init $(INITRAMFS_DIR)/init
+	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/boot/batocera-initramfs/init $(INITRAMFS_DIR)/init
 	$(BATOCERA_INITRAMFS_MAKE_ENV) $(MAKE) $(BATOCERA_INITRAMFS_MAKE_OPTS) -C $(@D) install
 	(cd $(INITRAMFS_DIR) && find . | cpio -H newc -o > $(BINARIES_DIR)/initrd)
 	(cd $(BINARIES_DIR) && mkimage -A $(BATOCERA_INITRAMFS_INITRDA) -O linux -T ramdisk -C none -a 0 -e 0 -n initrd -d ./initrd ./uInitrd)
@@ -54,7 +54,7 @@ endef
 else
 define BATOCERA_INITRAMFS_INSTALL_TARGET_CMDS
 	mkdir -p $(INITRAMFS_DIR)
-	cp package/batocera/boot/batocera-initramfs/init $(INITRAMFS_DIR)/init
+	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/boot/batocera-initramfs/init $(INITRAMFS_DIR)/init
 	$(BATOCERA_INITRAMFS_MAKE_ENV) $(MAKE) $(BATOCERA_INITRAMFS_MAKE_OPTS) -C $(@D) install
 	(cd $(INITRAMFS_DIR) && find . | cpio -H newc -o | gzip -9 > $(BINARIES_DIR)/initrd.gz)
 endef
