@@ -22,6 +22,22 @@ c64:
     libretro:
       vice:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_VICE], 'netplay':false }
 
+c128:
+  name:       Commodore 128
+  extensions: [d64, d81, prg, lnx, zip]
+  platform:   c64
+  emulators:
+    vice:
+      x128:     { requireAnyOf: [BR2_PACKAGE_BATOCERA_CORES_EXPERIMENTAL] }
+
+c20:
+  name:       Commodore VIC-20
+  extensions: [a0, b0, crt, d64, d81, prg, tap, t64, zip]
+  platform:   c64
+  emulators:
+    vice:
+      xvic:     { requireAnyOf: [BR2_PACKAGE_BATOCERA_CORES_EXPERIMENTAL] }
+
 amiga500:
   name:       Amiga OCS/ECS
   extensions: [zip, adf, uae, ipf, dms, dmz, adz, lha, hdf, exe]
@@ -47,7 +63,7 @@ amiga1200:
   group:      amiga
   emulators:
     fsuae:
-      A1200:  { requireAnyOf: [BR2_PACKAGE_FSUAE]         }      
+      A1200:  { requireAnyOf: [BR2_PACKAGE_FSUAE]         }
       A4000:  { requireAnyOf: [BR2_PACKAGE_FSUAE]         }
     amiberry:
       A1200:  { requireAnyOf: [BR2_PACKAGE_AMIBERRY]      }
@@ -723,7 +739,7 @@ msx2:
     MSXDOS2.ROM
     PAINTER.ROM
     RS232.ROM
-    
+
 msx2+:
   name:       MSX2+
   extensions: [dsk, mx2, om, zip, 7z]
@@ -847,7 +863,7 @@ apple2:
   includeEmulators: no
   emulators:
     linapple:
-      linapple: { requireAnyOf: [BR2_PACKAGE_LINAPPLE_PIE] }
+      linapple: { requireAnyOf: [BR2_PACKAGE_LINAPPLE] }
 
 saturn:
   name:       Sega Saturn

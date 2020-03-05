@@ -8,7 +8,7 @@ index ef4e1d1..1795e99 100644
              CFLAGS += -march=armv7ve -mtune=cortex-a15.cortex-a7
 +        # ODROID-N2
 +        else ifneq (,$(findstring odroidn2,$(platform)))
-+            CFLAGS += -mcpu=cortex-a73 -mtune=cortex-a73.cortex-a53
++            CFLAGS += -march=armv8-a+crc -mfpu=neon-fp-armv8 -mcpu=cortex-a73 -mtune=cortex-a73.cortex-a53
          # ODROID-U2, -U3, -X & -X2
          else
              CFLAGS += -mtune=cortex-a9

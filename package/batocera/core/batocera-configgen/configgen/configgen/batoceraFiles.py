@@ -117,3 +117,8 @@ daphneConfig = CONF + '/daphne/hypinput.ini'
 daphneHomedir = ROMS + '/daphne'
 daphneDatadir = '/usr/share/daphne'
 daphneSaves = SAVES + '/daphne'
+
+linappleConfigFile = CONF + '/linapple/linapple.conf'
+linappleMasterDSKFile = CONF + '/linapple/Master.dsk'
+linapplaSaves = SAVES + '/apple2'
+linappleMasterDSK = '/usr/lib/python2.7/site-packages/configgen/datainit/linapple/Master.dsk'
