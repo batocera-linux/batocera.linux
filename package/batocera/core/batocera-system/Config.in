@@ -170,6 +170,17 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
     help
       Install the batocera.linux system files
 
+config BR2_PACKAGE_BATOCERA_DEV
+    bool "add dev options"
+
+    select BR2_CCACHE                   if BR2_PACKAGE_BATOCERA_DEV
+    select BR2_PACKAGE_STRACE           if BR2_PACKAGE_BATOCERA_DEV
+    select BR2_PACKAGE_GDB              if BR2_PACKAGE_BATOCERA_DEV
+    select BR2_PACKAGE_GDB_DEBUGGER     if BR2_PACKAGE_BATOCERA_DEV
+
+    help
+      Install dev packages for batocera.linux
+
 choice
         prompt "batocera.linux target"
         default BR2_PACKAGE_BATOCERA_TARGET_RPI2
