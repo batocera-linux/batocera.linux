@@ -17,14 +17,14 @@ index 1f8a890..c585f4f 100644
 +   ifneq (,$(findstring odroidgoa,$(platform)))
 +      ENDIANNESS_DEFINES += -DALIGN_LONG
 +      CFLAGS += -fomit-frame-pointer -ffast-math
-+      PLATFORM_DEFINES += -DARM -marm -mcpu=cortex-a35 -mtune=cortex-a35 -mfloat-abi=hard
++      PLATFORM_DEFINES += -DARM -marm -march=armv8-a+crc -mfpu=neon-fp-armv8 -mcpu=cortex-a35 -mtune=cortex-a35 -mfloat-abi=hard
 +   endif
 +
 +   # Odroid-N2
 +   ifneq (,$(findstring odroidn2,$(platform)))
 +      ENDIANNESS_DEFINES += -DALIGN_LONG
 +      CFLAGS += -fomit-frame-pointer -ffast-math
-+      PLATFORM_DEFINES += -DARM -marm -mcpu=cortex-a73 -mtune=cortex-a73.cortex-a53 -mfloat-abi=hard
++      PLATFORM_DEFINES += -DARM -marm -march=armv8-a+crc -mfpu=neon-fp-armv8 -mcpu=cortex-a73 -mtune=cortex-a73.cortex-a53 -mfloat-abi=hard
 +   endif
 +
     # Raspberry Pi
