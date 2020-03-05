@@ -98,4 +98,8 @@ BR2_PACKAGE_HOST_UBOOT_TOOLS=y
 # workaround for 5.25 until we figure out what is going on with ffplay
 # BR2_PACKAGE_BATOCERA_SPLASH_FFPLAY=y
 
+# Enables ccache, strace and gdb
+#BR2_PACKAGE_BATOCERA_DEV=y
+
+# Enable experimental packages
 #BR2_PACKAGE_BATOCERA_CORES_EXPERIMENTAL=y
