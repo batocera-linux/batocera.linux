@@ -3,8 +3,8 @@
 # LIBRETRO-FLYCAST
 #
 ################################################################################
-# Version.: Commits on Feb 07, 2020
-LIBRETRO_FLYCAST_VERSION = fb7d27704bfef725638dd55bc8481456b47aa671
+# Version.: Commits on Feb 27, 2020
+LIBRETRO_FLYCAST_VERSION = 11c400842fcfc46aeca4086109c11512e44af604
 LIBRETRO_FLYCAST_SITE = $(call github,libretro,flycast,$(LIBRETRO_FLYCAST_VERSION))
 LIBRETRO_FLYCAST_LICENSE = GPLv2
 
@@ -44,7 +44,7 @@ endif
 
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA),y)
 	LIBRETRO_FLYCAST_PLATFORM = classic_armv8_a35
-	LIBRETRO_FLYCAST_EXTRA_ARGS += ARCH=arm
+	LIBRETRO_FLYCAST_EXTRA_ARGS += ARCH=arm FORCE_GLES=1 LDFLAGS=-lrt
 endif
 
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_TINKERBOARD),y)

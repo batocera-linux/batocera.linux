@@ -75,6 +75,7 @@ define MUPEN64PLUS_CORE_INSTALL_TARGET_CMDS
 	mkdir -p $(TARGET_DIR)/usr/share/mupen64plus
 	ln -sf /usr/share/fonts/dejavu/DejaVuSans.ttf $(TARGET_DIR)/usr/share/mupen64plus/font.ttf
 	cp $(@D)/data/mupen64plus.ini $(TARGET_DIR)/usr/share/mupen64plus/mupen64plus.ini
+	cp $(@D)/data/mupencheat.txt "$(TARGET_DIR)/usr/share/mupen64plus/mupencheat.txt"
 endef
 
 define MUPEN64PLUS_CORE_CROSS_FIXUP

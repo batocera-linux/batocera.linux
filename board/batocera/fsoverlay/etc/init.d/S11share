@@ -136,7 +136,7 @@ rb_wifi_configure_all() {
 
     # wait a bit, otherwise, connman is not really started
     sleep 2
-    batocera-config wifi start
+    batocera-wifi start
 }
 
 fixbatoceraconfname() {

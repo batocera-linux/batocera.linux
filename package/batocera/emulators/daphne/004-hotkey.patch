@@ -1,0 +1,43 @@
+diff --git a/src/io/input.cpp b/src/io/input.cpp
+index c1b9d41..dc8fddc 100644
+--- a/src/io/input.cpp
++++ b/src/io/input.cpp
+@@ -51,6 +51,8 @@ using namespace std;
+ #define strcasecmp stricmp
+ #endif
+ 
++static int batocera_hotkey = 0;
++
+ const int JOY_AXIS_MID = (int)(32768 * (0.75)); // how far they have to move the
+                                                 // joystick before it 'grabs'
+ 
+@@ -495,6 +497,7 @@ void process_event(SDL_Event *event)
+         // loop through map and find corresponding action
+         for (i = 0; i < SWITCH_COUNT; i++) {
+             if (event->jbutton.which == g_joy_btn_defs[i][0] && event->jbutton.button == g_joy_btn_defs[i][1]-1) {
++                if (i == SWITCH_QUIT || i == SWITCH_COIN1) batocera_hotkey = 1;
+                 input_enable(i);
+                 break;
+             }
+@@ -503,6 +506,7 @@ void process_event(SDL_Event *event)
+         break;
+     case SDL_JOYBUTTONUP:
+         reset_idle(); // added by JFA for -idleexit
++        batocera_hotkey = 0;
+ 
+         // loop through map and find corresponding action
+         for (i = 0; i < SWITCH_COUNT; i++) {
+@@ -687,8 +691,11 @@ void input_enable(Uint8 move)
+     case SWITCH_PAUSE:
+         g_game->toggle_game_pause();
+         break;
+-    case SWITCH_QUIT:
+-        set_quitflag();
++    case SWITCH_START1:
++        if(batocera_hotkey == 1)
++            set_quitflag();
++        else
++            g_game->input_enable(move);
+         break;
+     case SWITCH_COIN1:
+     case SWITCH_COIN2:

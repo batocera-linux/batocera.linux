@@ -1,0 +1,13 @@
+config BR2_PACKAGE_MUPEN64PLUS_VIDEO_RICE
+        bool "mupen 64 plus video-rice"
+	depends on BR2_INSTALL_LIBSTDCPP
+	select BR2_PACKAGE_SDL2
+	select BR2_PACKAGE_ALSA_LIB
+	select BR2_PACKAGE_BOOST
+	select BR2_PACKAGE_BOOST_FILESYSTEM
+        help
+          mupen 64 plus video-rice module
+	  https://github.com/mupen64plus/
+
+comment "MUPEN64PLUS VIDEO_RICE needs a toolchain w/ C++, ALSA and SDL2"
+	depends on !BR2_INSTALL_LIBSTDCPP || !BR2_PACKAGE_SDL2 || !BR2_PACKAGE_ALSA_LIB

@@ -28,10 +28,10 @@ coreToP1Device = {'cap32': '513', '81': '257', 'fuse': '513'};
 coreToP2Device = {'fuse': '513'};
 
 # Define systems compatible with retroachievements
-systemToRetroachievements = {'atari2600', 'atari7800', 'atarijaguar', 'colecovision', 'nes', 'snes', 'virtualboy', 'n64', 'sg1000', 'mastersystem', 'segacd', 'sega32x', 'saturn', 'pcengine', 'pcenginecd', 'supergrafx', 'psx', 'mame', 'fba', 'lightgun', 'apple2', 'lynx', 'wswan', 'wswanc', 'gb', 'gbc', 'gba', 'nds', 'pokemini', 'gamegear', 'ngp', 'ngpc'}; 
+systemToRetroachievements = {'atari2600', 'atari7800', 'atarijaguar', 'colecovision', 'nes', 'snes', 'virtualboy', 'n64', 'sg1000', 'mastersystem', 'megadrive', 'segacd', 'sega32x', 'saturn', 'pcengine', 'pcenginecd', 'supergrafx', 'psx', 'mame', 'fba', 'neogeo', 'lightgun', 'apple2', 'lynx', 'wswan', 'wswanc', 'gb', 'gbc', 'gba', 'nds', 'pokemini', 'gamegear', 'ngp', 'ngpc'}; 
 
 # Define systems not compatible with rewind option
-systemNoRewind = {'sega32x', 'psx', 'zxspectrum', 'odyssey2', 'mame', 'n64', 'dreamcast', 'atomiswave', 'naomi', 'neogeocd', 'saturn'};
+systemNoRewind = {'sega32x', 'psx', 'zxspectrum', 'odyssey2', 'mame', 'n64', 'dreamcast', 'atomiswave', 'naomi', 'neogeocd', 'saturn', 'fba'};
 
 # Define system emulated by bluemsx core
 systemToBluemsx = {'msx': '"MSX2"', 'msx1': '"MSX2"', 'msx2': '"MSX2"', 'colecovision': '"COL - ColecoVision"' };
@@ -196,13 +196,24 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
         retroarchConfig['netplay_mode']              = "false"
         retroarchConfig['netplay_ip_port']           = systemConfig.get('netplay.server.port', "")
         retroarchConfig['netplay_delay_frames']      = systemConfig.get('netplay.frames', "")
-        retroarchConfig['netplay_nickname']          = systemConfig.get('netplay.nick', "")
+        retroarchConfig['netplay_nickname']          = systemConfig.get('netplay.nickname', "")
         retroarchConfig['netplay_client_swap_input'] = "false"
         if system.config['netplay.mode'] == 'client':
             # But client needs netplay_mode = true ... bug ?
             retroarchConfig['netplay_mode']              = "true"
             retroarchConfig['netplay_ip_address']        = systemConfig.get('netplay.server.ip', "")
             retroarchConfig['netplay_client_swap_input'] = "true"
+        # mode spectator
+        if system.isOptSet('netplay.spectator') and system.getOptBoolean('netplay.spectator') == True:
+            retroarchConfig['netplay_spectator_mode_enable'] = 'true'
+        else:
+            retroarchConfig['netplay_spectator_mode_enable'] = 'false'
+        # relay
+        if 'netplay.relay' in system.config and system.config['netplay.relay'] != "" :
+            retroarchConfig['netplay_use_mitm_server'] = "true"
+            retroarchConfig['netplay_mitm_server'] = systemConfig.get('netplay.relay', "")
+        else:
+            retroarchConfig['netplay_use_mitm_server'] = "false"
 
     # Display FPS
     if system.isOptSet('showFPS') and system.getOptBoolean('showFPS') == True:

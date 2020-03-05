@@ -101,10 +101,19 @@ mame:
 fba:
   emulator: libretro
   core:     fbneo
-msx:
+msx1:
   emulator: libretro
   core:     bluemsx
-amiga:
+msx2:
+  emulator: libretro
+  core:     bluemsx
+msx2+:
+  emulator: libretro
+  core:     bluemsx
+amiga500:
+  emulator: fsuae
+  core:     A500
+amiga1200:
   emulator: fsuae
   core:     A1200
 amigacd32:

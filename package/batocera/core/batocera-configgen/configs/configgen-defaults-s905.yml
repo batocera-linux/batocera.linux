@@ -8,7 +8,10 @@ n64:
 psp:
   options:
     frameskip: true
-amiga:
+amiga500:
+  emulator: libretro
+  core:     puae
+amiga1200:
   emulator: libretro
   core:     puae
 amigacd32:

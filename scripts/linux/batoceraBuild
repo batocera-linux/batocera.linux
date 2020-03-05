@@ -15,13 +15,18 @@ do_push() {
     ftptarget=$1
     arch=$2
 
-    echo_msg "${arch}" "pusing ${ftptarget}..."
     case "${ftptarget}" in
 	"beta")
-	    lftp ftp://"${FTPBATOCERA}" -e "set ssl:verify-certificate false; mirror -R -e ${BUILDDIR}/${arch}/output/images/batocera /upgrades/${arch}/beta/last ; quit"
+	    echo_msg "${arch}" "pusing ${ftptarget}..."
+	    lftp ftp://"${FTPBATOCERA}" -e "set ssl:verify-certificate false; mirror -R -e ${BUILDDIR}/${arch}/output/images/batocera /public_html/upgrades/${arch}/beta/last ; quit"
 	    ;;
-	"next")
-	    lftp ftp://"${FTPBATOCERA}" -e "set ssl:verify-certificate false; mirror -R -e ${BUILDDIR}/${arch}/output/images/batocera /upgrades/${arch}/stable/last/next ; quit"
+	"rc")
+	    # pushing beta
+	    echo_msg "${arch}" "pusing beta*..."
+	    lftp ftp://"${FTPBATOCERA}" -e "set ssl:verify-certificate false; mirror -R -e ${BUILDDIR}/${arch}/output/images/batocera /public_html/upgrades/${arch}/beta/last ; quit"
+	    # pushing rc
+	    echo_msg "${arch}" "pusing ${ftptarget}..."
+	    lftp ftp://"${FTPBATOCERA}" -e "set ssl:verify-certificate false; mirror -R -e ${BUILDDIR}/${arch}/output/images/batocera /public_html/upgrades/${arch}/stable/last/rc ; quit"
 	    ;;
 	*)
 	    echo_msg "${arch}" "invalid ftp target" >&2
@@ -42,7 +47,7 @@ do_suspend() {
 
 checkFtpTarget() {
     ftptarget=$1
-    if test "${ftptarget}" != "beta" -a "${ftptarget}" != "next"
+    if test "${ftptarget}" != "beta" -a "${ftptarget}" != "rc"
     then
 	echo_msg "-" "invalid ftp target ${ftptarget}" >&2
 	return 1
@@ -181,7 +186,7 @@ case "${1}" in
     *)
 	PROGNAME=$(basename "${0}")
 	echo "${PROGNAME} build beta"
-	echo "${PROGNAME} build next"
+	echo "${PROGNAME} build rc"
 	echo "${PROGNAME} enter x86"
 	echo "${PROGNAME} add x86"
 	echo "${PROGNAME} list"
@@ -189,7 +194,7 @@ case "${1}" in
 	echo "${PROGNAME} log x86"
 	echo "${PROGNAME} logpkg x86"
 	echo "${PROGNAME} push beta x86 rpi3 rpi1"
-	echo "${PROGNAME} push next x86 rpi3 rpi1"
+	echo "${PROGNAME} push rc x86 rpi3 rpi1"
 	echo "${PROGNAME} suspend"
 	echo "${PROGNAME} gitlog"
 	echo "${PROGNAME} gitpull"

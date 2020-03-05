@@ -12,7 +12,12 @@ LIBRETRO_PICODRIVE_DEPENDENCIES = libpng sdl
 LIBRETRO_PICODRIVE_LICENSE = MAME
 
 ifeq ($(BR2_arm)$(BR2_aarch64),y)
+  ifeq ($(BR2_arm),y)
     PICOPLATFORM=$(LIBRETRO_PLATFORM) armasm
+  else
+    # equality required here
+    PICOPLATFORM=aarch64
+  endif
 else
     PICOPLATFORM=$(LIBRETRO_PLATFORM)
 endif

@@ -22,39 +22,36 @@ c64:
     libretro:
       vice:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_VICE], 'netplay':false }
 
-c128:
-  name:       Commodore 128
-  extensions: [d64, d81, prg, lnx, zip]
-  platform:   c64
-  emulators:
-    vice:
-      x128:     { requireAnyOf: [BR2_PACKAGE_VICE]          }
-
-c20:
-  name:       Commodore VIC-20
-  extensions: [a0, b0, crt, d64, d81, prg, tap, t64, zip]
-  platform:   c64
-  emulators:
-    vice:
-      xvic:     { requireAnyOf: [BR2_PACKAGE_VICE]          }
-
-amiga:
-  name:       Commodore Amiga
-  extensions: [zip, adf, uae, ipf, dms, adz, lha]
+amiga500:
+  name:       Amiga OCS/ECS
+  extensions: [zip, adf, uae, ipf, dms, dmz, adz, lha, hdf, exe]
+  platform:   amiga
+  group:      amiga
   emulators:
     fsuae:
-      A500:   { requireAnyOf: [BR2_PACKAGE_FSUAE] }
-      A500+:  { requireAnyOf: [BR2_PACKAGE_FSUAE] }
-      A600:   { requireAnyOf: [BR2_PACKAGE_FSUAE] }
-      A1000:  { requireAnyOf: [BR2_PACKAGE_FSUAE] }
-      A1200:  { requireAnyOf: [BR2_PACKAGE_FSUAE] }
-      A3000:  { requireAnyOf: [BR2_PACKAGE_FSUAE] }
-      A4000:  { requireAnyOf: [BR2_PACKAGE_FSUAE] }
+      A500:   { requireAnyOf: [BR2_PACKAGE_FSUAE]         }
+      A500+:  { requireAnyOf: [BR2_PACKAGE_FSUAE]         }
+      A600:   { requireAnyOf: [BR2_PACKAGE_FSUAE]         }
+      A1000:  { requireAnyOf: [BR2_PACKAGE_FSUAE]         }
+      A3000:  { requireAnyOf: [BR2_PACKAGE_FSUAE]         }
     amiberry:
-      A500:   { requireAnyOf: [BR2_PACKAGE_AMIBERRY]  }
-      A500+:  { requireAnyOf: [BR2_PACKAGE_AMIBERRY]  }
-      A1200:  { requireAnyOf: [BR2_PACKAGE_AMIBERRY]  }
-      A4000:  { requireAnyOf: [BR2_PACKAGE_AMIBERRY]  }
+      A500:   { requireAnyOf: [BR2_PACKAGE_AMIBERRY]      }
+      A500+:  { requireAnyOf: [BR2_PACKAGE_AMIBERRY]      }
+    libretro:
+      puae:   { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PUAE] }
+
+amiga1200:
+  name:       Amiga AGA
+  extensions: [zip, adf, uae, ipf, dms, dmz, adz, lha, hdf, exe]
+  platform:   amiga
+  group:      amiga
+  emulators:
+    fsuae:
+      A1200:  { requireAnyOf: [BR2_PACKAGE_FSUAE]         }      
+      A4000:  { requireAnyOf: [BR2_PACKAGE_FSUAE]         }
+    amiberry:
+      A1200:  { requireAnyOf: [BR2_PACKAGE_AMIBERRY]      }
+      A4000:  { requireAnyOf: [BR2_PACKAGE_AMIBERRY]      }
     libretro:
       puae:   { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PUAE] }
 
@@ -63,9 +60,9 @@ amigacd32:
   extensions: [iso, cue, zip, lha]
   emulators:
     fsuae:
-      CD32: { requireAnyOf: [BR2_PACKAGE_FSUAE]    }
+      CD32:   { requireAnyOf: [BR2_PACKAGE_FSUAE]         }
     amiberry:
-      CD32: { requireAnyOf: [BR2_PACKAGE_AMIBERRY] }
+      CD32:   { requireAnyOf: [BR2_PACKAGE_AMIBERRY]      }
     libretro:
       puae:   { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PUAE] }
 
@@ -74,7 +71,7 @@ amigacdtv:
   extensions: [bin, cue, iso]
   emulators:
     fsuae:
-      CDTV: { requireAnyOf: [BR2_PACKAGE_FSUAE] }
+      CDTV:   { requireAnyOf: [BR2_PACKAGE_FSUAE]         }
     libretro:
       puae:   { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PUAE] }
 
@@ -94,6 +91,7 @@ n64:
     mupen64plus:
       gliden64:   { requireAnyOf: [BR2_PACKAGE_MUPEN64PLUS_GLIDEN64, BR2_PACKAGE_MUPEN64PLUS_V20_GLIDEN64] }
       glide64mk2: { requireAnyOf: [BR2_PACKAGE_MUPEN64PLUS_VIDEO_GLIDE64MK2]  }
+      rice:       { requireAnyOf: [BR2_PACKAGE_MUPEN64PLUS_VIDEO_RICE]        }
       n64:        { requireAnyOf: [BR2_PACKAGE_MUPEN64PLUS_GLES2]             }
     libretro:
       mupen64plus-next: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MUPEN64PLUS_NEXT], 'netplay':false }
@@ -176,7 +174,7 @@ dreamcast:
   extensions: [cdi, gdi, chd, zip, 7z]
   emulators:
     libretro:
-      flycast:        { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FLYCAST], 'netplay':true }
+      flycast:        { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FLYCAST], 'netplay':false }
     reicast:
       reicast:        { requireAnyOf: [BR2_PACKAGE_REICAST]                 }
 
@@ -612,9 +610,125 @@ amstradcpc:
     Pour activer le gamepad, entrer dans le menu Retroarch avec "Hotkey+B", puis modifiez l'option:
     "Quick Menu/Core Input Options/User 1 Device type : Retropad" en "Amstrad Joystick"
 
-msx:
-  name:       MSX
-  extensions: [dsk, mx1, mx2, rom, zip, 7z]
+msx1:
+  name:       MSX1
+  extensions: [dsk, mx1, rom, zip, 7z]
+  platform:   msx
+  group:      msx
+  emulators:
+    libretro:
+      bluemsx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BLUEMSX], 'netplay':false }
+  comment_en: |
+    ## BIOS ##
+
+    - BlueMSX (DEFAULT) :
+    You must download the BlueMSX standalone version, available to this adresse: http://bluemsx.msxblue.com/rel_download/blueMSXv282full.zip
+    Then extract the "Databases" and "Machines" folders and add them to the bios folder.
+
+    - FMSX :
+    You must have these following files, available with fmsx distribution, in the bios folder:
+    CARTS.SHA
+    CYRILLIC.FNT
+    DISK.ROM
+    FMPAC.ROM
+    FMPAC16.ROM
+    ITALIC.FNT
+    KANJI.ROM
+    MSX.ROM
+    MSX2.ROM
+    MSX2EXT.ROM
+    MSX2P.ROM
+    MSX2PEXT.ROM
+    MSXDOS2.ROM
+    PAINTER.ROM
+    RS232.ROM
+  comment_fr: |
+    ## BIOS ##
+
+    - Emulateur BlueMSX (choix initial) :
+    Vous devez télécharger la version standalone de l'émulateur BlueMSX disponible à l'adresse suivante: http://bluemsx.msxblue.com/rel_download/blueMSXv282full.zip
+    Puis extraire de ce dernier, les répertoire "Databases" et "Machines" et les ajouter dans le répertoire bios.
+
+    - Emulateur FMSX :
+    Vous devez avoir les fichiers fournis avec la distribution de fmsx suivant dans le dossier bios:
+    CARTS.SHA
+    CYRILLIC.FNT
+    DISK.ROM
+    FMPAC.ROM
+    FMPAC16.ROM
+    ITALIC.FNT
+    KANJI.ROM
+    MSX.ROM
+    MSX2.ROM
+    MSX2EXT.ROM
+    MSX2P.ROM
+    MSX2PEXT.ROM
+    MSXDOS2.ROM
+    PAINTER.ROM
+    RS232.ROM
+
+msx2:
+  name:       MSX2
+  extensions: [dsk, mx2, om, zip, 7z]
+  platform:   msx
+  group:      msx
+  emulators:
+    libretro:
+      bluemsx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BLUEMSX], 'netplay':false }
+  comment_en: |
+    ## BIOS ##
+
+    - BlueMSX (DEFAULT) :
+    You must download the BlueMSX standalone version, available to this adresse: http://bluemsx.msxblue.com/rel_download/blueMSXv282full.zip
+    Then extract the "Databases" and "Machines" folders and add them to the bios folder.
+
+    - FMSX :
+    You must have these following files, available with fmsx distribution, in the bios folder:
+    CARTS.SHA
+    CYRILLIC.FNT
+    DISK.ROM
+    FMPAC.ROM
+    FMPAC16.ROM
+    ITALIC.FNT
+    KANJI.ROM
+    MSX.ROM
+    MSX2.ROM
+    MSX2EXT.ROM
+    MSX2P.ROM
+    MSX2PEXT.ROM
+    MSXDOS2.ROM
+    PAINTER.ROM
+    RS232.ROM
+  comment_fr: |
+    ## BIOS ##
+
+    - Emulateur BlueMSX (choix initial) :
+    Vous devez télécharger la version standalone de l'émulateur BlueMSX disponible à l'adresse suivante: http://bluemsx.msxblue.com/rel_download/blueMSXv282full.zip
+    Puis extraire de ce dernier, les répertoire "Databases" et "Machines" et les ajouter dans le répertoire bios.
+
+    - Emulateur FMSX :
+    Vous devez avoir les fichiers fournis avec la distribution de fmsx suivant dans le dossier bios:
+    CARTS.SHA
+    CYRILLIC.FNT
+    DISK.ROM
+    FMPAC.ROM
+    FMPAC16.ROM
+    ITALIC.FNT
+    KANJI.ROM
+    MSX.ROM
+    MSX2.ROM
+    MSX2EXT.ROM
+    MSX2P.ROM
+    MSX2PEXT.ROM
+    MSXDOS2.ROM
+    PAINTER.ROM
+    RS232.ROM
+    
+msx2+:
+  name:       MSX2+
+  extensions: [dsk, mx2, om, zip, 7z]
+  platform:   msx
+  group:      msx
   emulators:
     libretro:
       bluemsx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BLUEMSX], 'netplay':false }
