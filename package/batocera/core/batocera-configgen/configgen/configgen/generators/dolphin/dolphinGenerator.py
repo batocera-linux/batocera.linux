@@ -35,7 +35,7 @@ class DolphinGenerator(Generator):
             dolphinSettings.add_section("Analytics")
 
         # draw or not FPS
-	if system.config['showFPS'] == 'true':
+        if system.isOptSet('showFPS') and system.getOptBoolean('showFPS'):
             dolphinSettings.set("General", "ShowLag", "True")
             dolphinSettings.set("General", "ShowFrameCount", "True")
         else:
@@ -74,6 +74,12 @@ class DolphinGenerator(Generator):
         if not dolphinGFXSettings.has_section("Settings"):
             dolphinGFXSettings.add_section("Settings")
         dolphinGFXSettings.set("Settings", "AspectRatio", getGfxRatioFromConfig(system.config, gameResolution))
+
+        # show fps
+        if system.isOptSet('showFPS') and system.getOptBoolean('showFPS'):
+            dolphinGFXSettings.set("Settings", "ShowFPS", "True")
+        else:
+            dolphinGFXSettings.set("Settings", "ShowFPS", "False")
 
         # for to search for custom textures
         dolphinGFXSettings.set("Settings", "HiresTextures", "True")
