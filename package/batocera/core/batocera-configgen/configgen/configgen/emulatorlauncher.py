@@ -33,8 +33,7 @@ from utils.logger import eslog
 
 generators = {
     'kodi': KodiGenerator(),
-    'linapple': LinappleGenerator(os.path.join(batoceraFiles.HOME_INIT, '.linapple'),
-                                  os.path.join(batoceraFiles.HOME, '.linapple')),
+    'linapple': LinappleGenerator(),
     'libretro': LibretroGenerator(),
     'moonlight': MoonlightGenerator(),
     'scummvm': ScummVMGenerator(),
