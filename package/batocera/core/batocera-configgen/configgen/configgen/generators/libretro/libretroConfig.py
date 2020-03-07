@@ -28,10 +28,10 @@ coreToP1Device = {'cap32': '513', '81': '257', 'fuse': '513'};
 coreToP2Device = {'fuse': '513'};
 
 # Define systems compatible with retroachievements
-systemToRetroachievements = {'atari2600', 'atari7800', 'atarijaguar', 'colecovision', 'nes', 'snes', 'virtualboy', 'n64', 'sg1000', 'mastersystem', 'megadrive', 'segacd', 'sega32x', 'saturn', 'pcengine', 'pcenginecd', 'supergrafx', 'psx', 'mame', 'fba', 'neogeo', 'lightgun', 'apple2', 'lynx', 'wswan', 'wswanc', 'gb', 'gbc', 'gba', 'nds', 'pokemini', 'gamegear', 'ngp', 'ngpc'}; 
+systemToRetroachievements = {'atari2600', 'atari7800', 'atarijaguar', 'colecovision', 'nes', 'snes', 'virtualboy', 'n64', 'sg1000', 'mastersystem', 'megadrive', 'segacd', 'sega32x', 'saturn', 'pcengine', 'pcenginecd', 'supergrafx', 'psx', 'mame', 'fbneo', 'neogeo', 'lightgun', 'apple2', 'lynx', 'wswan', 'wswanc', 'gb', 'gbc', 'gba', 'nds', 'pokemini', 'gamegear', 'ngp', 'ngpc'}; 
 
 # Define systems not compatible with rewind option
-systemNoRewind = {'sega32x', 'psx', 'zxspectrum', 'odyssey2', 'mame', 'n64', 'dreamcast', 'atomiswave', 'naomi', 'neogeocd', 'saturn', 'fba'};
+systemNoRewind = {'sega32x', 'psx', 'zxspectrum', 'odyssey2', 'mame', 'n64', 'dreamcast', 'atomiswave', 'naomi', 'neogeocd', 'saturn', 'fbneo'};
 
 # Define system emulated by bluemsx core
 systemToBluemsx = {'msx': '"MSX2"', 'msx1': '"MSX2"', 'msx2': '"MSX2"', 'colecovision': '"COL - ColecoVision"' };
