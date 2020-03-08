@@ -78,6 +78,7 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
     select BR2_PACKAGE_WGET                              # download tools
     select BR2_PACKAGE_CURL                              # download tools
     select BR2_PACKAGE_CA_CERTIFICATES                   # ssl certificates
+    select BR2_PACKAGE_LIBRGA                            if BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA # Used in screen rotation (SDL and Retroarch)
     select BR2_PACKAGE_SDL2_OPENGLES                     if BR2_PACKAGE_BATOCERA_TARGET_RPI_ANY     || \
                                                             BR2_PACKAGE_BATOCERA_TARGET_XU4         || \
 							    BR2_PACKAGE_BATOCERA_TARGET_LEGACYXU4   || \
