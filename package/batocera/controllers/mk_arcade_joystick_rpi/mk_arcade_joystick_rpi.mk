@@ -3,11 +3,7 @@
 # MK_ARCADE_JOYSTICK_RPI
 #
 ################################################################################
-ifeq ($(BR2_PACKAGE_MK_ARCADE_JOYSTICK_RPI_HOTKEY),y)
-	MK_ARCADE_JOYSTICK_RPI_VERSION = v0.1.5-hotkey
-else
-	MK_ARCADE_JOYSTICK_RPI_VERSION = v0.1.5
-endif	
+MK_ARCADE_JOYSTICK_RPI_VERSION = 1144736560426e845a48a45a479ff8a8971fc4d3
 MK_ARCADE_JOYSTICK_RPI_SITE = $(call github,batocera-linux,mk_arcade_joystick_rpi,$(MK_ARCADE_JOYSTICK_RPI_VERSION))
 MK_ARCADE_JOYSTICK_RPI_DEPENDENCIES = linux
 
