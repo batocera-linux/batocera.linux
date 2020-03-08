@@ -1,9 +1,7 @@
 default:
   options:
     video_threaded: true
-    # rotation
-    retroarch.aspect_ratio_index: 8
-    retroarch.video_rotation: 1
+    retroarch.aspect_ratio_index: 7
     # menu retroarch
     retroarch.menu_driver: rgui
 
@@ -11,13 +9,12 @@ n64:
   emulator: mupen64plus
   core: glide64mk2
   options:
-    # rotation
-    mupen64plus.Video-General.Rotate: 1
+    mupen64plus.Video-General.ScreenWidth: 480
+    mupen64plus.Video-General.ScreenHeight: 320
     mupen64plus.Video-Glide64mk2.aspect: 2
 psp:
   options:
     frameskip: true
-    ppsspp.General.InternalScreenRotation: 2
 dreamcast:
   emulator: libretro
   core: flycast
