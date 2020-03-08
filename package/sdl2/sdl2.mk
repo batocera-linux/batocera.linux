@@ -29,6 +29,12 @@ ifeq ($(BR2_PACKAGE_RPI_USERLAND),y)
 SDL2_CONF_OPTS += --host=arm-raspberry-linux-gnueabihf
 endif
 
+# batocera
+# Used in screen rotation (SDL and Retroarch)
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA),y)
+SDL2_DEPENDENCIES += librga
+endif
+
 ifeq ($(BR2_PACKAGE_HAS_UDEV),y)
 SDL2_DEPENDENCIES += udev
 SDL2_CONF_OPTS += --enable-libudev

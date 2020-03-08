@@ -1,0 +1,197 @@
+diff --git a/Makefile.in b/Makefile.in
+index 4eb6e63..809c71d 100644
+--- a/Makefile.in
++++ b/Makefile.in
+@@ -22,7 +22,7 @@ CC      = @CC@
+ INCLUDE = @INCLUDE@
+ CFLAGS  = @BUILD_CFLAGS@
+ EXTRA_CFLAGS = @EXTRA_CFLAGS@
+-LDFLAGS = @BUILD_LDFLAGS@
++LDFLAGS = @BUILD_LDFLAGS@ -lrga
+ EXTRA_LDFLAGS = @EXTRA_LDFLAGS@
+ LIBTOOL = @LIBTOOL@
+ INSTALL = @INSTALL@
+diff --git a/src/video/kmsdrm/SDL_kmsdrmopengles.c b/src/video/kmsdrm/SDL_kmsdrmopengles.c
+index fc6304d..e88a2e6 100644
+--- a/src/video/kmsdrm/SDL_kmsdrmopengles.c
++++ b/src/video/kmsdrm/SDL_kmsdrmopengles.c
+@@ -33,6 +33,9 @@
+ #define EGL_PLATFORM_GBM_MESA 0x31D7
+ #endif
+ 
++extern rga_info_t src_info;
++extern rga_info_t dst_info;
++
+ /* EGL implementation of SDL OpenGL support */
+ 
+ int
+@@ -116,6 +119,19 @@ KMSDRM_GLES_SwapWindow(_THIS, SDL_Window * window) {
+         wdata->next_bo = NULL;
+     }
+ 
++    if (wdata->current_bo != NULL) {
++        if (src_info.fd > 0) {
++            close(src_info.fd);
++            src_info.fd = -1;
++        }
++        src_info.fd = KMSDRM_gbm_bo_get_fd(wdata->current_bo);
++
++        if (c_RkRgaBlit(&src_info, &dst_info, NULL) < 0) {
++            SDL_LogError(SDL_LOG_CATEGORY_VIDEO,
++                          "Failed to rga blit\n");
++        }
++    }
++
+     if (!(_this->egl_data->eglSwapBuffers(_this->egl_data->egl_display, wdata->egl_surface))) {
+         SDL_LogError(SDL_LOG_CATEGORY_VIDEO, "eglSwapBuffers failed.");
+         return 0;
+diff --git a/src/video/kmsdrm/SDL_kmsdrmsym.h b/src/video/kmsdrm/SDL_kmsdrmsym.h
+index 3ab2318..a41b4a6 100644
+--- a/src/video/kmsdrm/SDL_kmsdrmsym.h
++++ b/src/video/kmsdrm/SDL_kmsdrmsym.h
+@@ -88,7 +88,7 @@ SDL_KMSDRM_SYM(struct gbm_surface *,gbm_surface_create,(struct gbm_device *gbm,
+ SDL_KMSDRM_SYM(void,gbm_surface_destroy,(struct gbm_surface *surf))
+ SDL_KMSDRM_SYM(struct gbm_bo *,gbm_surface_lock_front_buffer,(struct gbm_surface *surf))
+ SDL_KMSDRM_SYM(void,gbm_surface_release_buffer,(struct gbm_surface *surf, struct gbm_bo *bo))
+-
++SDL_KMSDRM_SYM(int,gbm_bo_get_fd,(struct gbm_bo *bo))
+ 
+ #undef SDL_KMSDRM_MODULE
+ #undef SDL_KMSDRM_SYM
+diff --git a/src/video/kmsdrm/SDL_kmsdrmvideo.c b/src/video/kmsdrm/SDL_kmsdrmvideo.c
+index bacbe0c..1803eb7 100644
+--- a/src/video/kmsdrm/SDL_kmsdrmvideo.c
++++ b/src/video/kmsdrm/SDL_kmsdrmvideo.c
+@@ -41,12 +41,16 @@
+ #include "SDL_kmsdrmopengles.h"
+ #include "SDL_kmsdrmmouse.h"
+ #include "SDL_kmsdrmdyn.h"
++#include <sys/ioctl.h>
+ #include <sys/stat.h>
+ #include <dirent.h>
+ #include <errno.h>
+ 
+ #define KMSDRM_DRI_PATH "/dev/dri/"
+ 
++rga_info_t src_info = {0};
++rga_info_t dst_info = {0};
++
+ static int
+ check_modestting(int devindex)
+ {
+@@ -252,6 +256,46 @@ KMSDRM_FBDestroyCallback(struct gbm_bo *bo, void *data)
+     free(fb_info);
+ }
+ 
++static void
++KMSDRM_InitRotateBuffer(_THIS, int frameWidth, int frameHeight)
++{
++    // acquire new DRM PRIME buffer for rotate screen
++    int ret;
++    SDL_VideoData *vdata = ((SDL_VideoData *)_this->driverdata);
++    struct drm_mode_create_dumb dmcd = {};
++    struct drm_prime_handle dph = {};
++    dmcd.bpp = 32;
++    dmcd.width = frameWidth;
++    dmcd.height = frameHeight;
++
++    do {
++        ret = ioctl(vdata->drm_fd, DRM_IOCTL_MODE_CREATE_DUMB, &dmcd);
++    } while (ret == -1 && (errno == EINTR || errno == EAGAIN));
++
++    vdata->rotHandle = dph.handle = dmcd.handle;
++    dph.fd = -1;
++
++    do {
++        ret = ioctl(vdata->drm_fd, DRM_IOCTL_PRIME_HANDLE_TO_FD, &dph);
++    } while (ret == -1 && (errno == EINTR || errno == EAGAIN));
++
++    assert(!ret);
++    vdata->rotPrime_fd = dph.fd;
++
++    // setup rotation
++    c_RkRgaInit();
++    src_info.mmuFlag = 1;
++    src_info.rotation = HAL_TRANSFORM_ROT_270;
++
++    // swap width and height here because our source buffer is 480x320
++    rga_set_rect(&src_info.rect, 0, 0, frameHeight, frameWidth, frameHeight, frameWidth, RK_FORMAT_BGRA_8888);
++
++    dst_info.fd = vdata->rotPrime_fd;
++    dst_info.mmuFlag = 1;
++
++    rga_set_rect(&dst_info.rect, 0, 0, frameWidth, frameHeight, frameWidth, frameHeight, RK_FORMAT_BGRA_8888);
++}
++
+ KMSDRM_FBInfo *
+ KMSDRM_FBFromBO(_THIS, struct gbm_bo *bo)
+ {
+@@ -279,7 +323,7 @@ KMSDRM_FBFromBO(_THIS, struct gbm_bo *bo)
+     stride = KMSDRM_gbm_bo_get_stride(bo);
+     handle = KMSDRM_gbm_bo_get_handle(bo).u32;
+ 
+-    ret = KMSDRM_drmModeAddFB(vdata->drm_fd, w, h, 24, 32, stride, handle, &fb_info->fb_id);
++    ret = KMSDRM_drmModeAddFB(vdata->drm_fd, h, w, 24, 32, 1280, vdata->rotHandle, &fb_info->fb_id);
+     if (ret < 0) {
+        free(fb_info);
+        return NULL;
+@@ -437,8 +481,8 @@ KMSDRM_VideoInit(_THIS)
+ 
+     SDL_zero(current_mode);
+ 
+-    current_mode.w = vdata->saved_crtc->mode.hdisplay;
+-    current_mode.h = vdata->saved_crtc->mode.vdisplay;
++    current_mode.w = data->cur_mode.vdisplay;
++    current_mode.h = data->cur_mode.hdisplay;
+     current_mode.refresh_rate = vdata->saved_crtc->mode.vrefresh;
+ 
+     /* FIXME ?
+@@ -553,6 +597,7 @@ KMSDRM_CreateWindow(_THIS, SDL_Window * window)
+ {
+     SDL_WindowData *wdata;
+     SDL_VideoDisplay *display;
++    SDL_DisplayData *data;
+     SDL_VideoData *vdata = ((SDL_VideoData *)_this->driverdata);
+     Uint32 surface_fmt, surface_flags;
+ 
+@@ -615,6 +660,10 @@ KMSDRM_CreateWindow(_THIS, SDL_Window * window)
+     SDL_SetKeyboardFocus(window);
+ 
+     /* Window has been successfully created */
++
++    data = display->driverdata;
++    KMSDRM_InitRotateBuffer(_this, data->cur_mode.hdisplay, data->cur_mode.vdisplay);
++
+     return 0;
+ 
+ error:
+@@ -661,6 +710,7 @@ KMSDRM_DestroyWindow(_THIS, SDL_Window * window)
+         }
+         SDL_free(data);
+         window->driverdata = NULL;
++        c_RkRgaDeInit();
+     }
+ }
+ 
+diff --git a/src/video/kmsdrm/SDL_kmsdrmvideo.h b/src/video/kmsdrm/SDL_kmsdrmvideo.h
+index 34f0b10..62e7850 100644
+--- a/src/video/kmsdrm/SDL_kmsdrmvideo.h
++++ b/src/video/kmsdrm/SDL_kmsdrmvideo.h
+@@ -35,6 +35,8 @@
+ #if SDL_VIDEO_OPENGL_EGL
+ #include <EGL/egl.h>
+ #endif
++#include <rga/RgaApi.h>
++#include <assert.h>
+ 
+ typedef struct SDL_VideoData
+ {
+@@ -46,6 +48,8 @@ typedef struct SDL_VideoData
+     drmModeCrtc *saved_crtc;    /* Saved CRTC to restore on quit */
+     uint32_t saved_conn_id;     /* Saved DRM connector ID */
+     uint32_t crtc_id;           /* CRTC in use */
++    int rotPrime_fd;            /* dest rotate prime file descriptor */
++    uint32_t rotHandle;         /* dest rotate handle */
+ } SDL_VideoData;
+ 
+ 
