@@ -3,7 +3,8 @@
 # retroarch
 #
 ################################################################################
-RETROARCH_VERSION = v1.8.4
+# Version.: Commits on Mar 6, 2020 (v1.8.5)
+RETROARCH_VERSION = 8b43e1b4ef76e021dfc3b984675b9dec00b72d84
 RETROARCH_SITE = $(call github,libretro,RetroArch,$(RETROARCH_VERSION))
 RETROARCH_LICENSE = GPLv3+
 RETROARCH_DEPENDENCIES = host-pkgconf dejavu retroarch-assets flac
@@ -112,6 +113,11 @@ endef
 ifeq ($(BR2_PACKAGE_MALI_OPENGLES_SDK)$(BR2_PACKAGE_LIBHYBRIS),y)
 	RETROARCH_PRE_CONFIGURE_HOOKS += RETROARCH_MALI_FIXUP
 	RETROARCH_CONF_OPTS += --enable-opengles --enable-mali_fbdev
+endif
+
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA),y)
+	RETROARCH_CONF_OPTS += --enable-odroidgo2
+	RETROARCH_DEPENDENCIES += librga
 endif
 
 define RETROARCH_CONFIGURE_CMDS
