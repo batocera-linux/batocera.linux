@@ -3,33 +3,20 @@
 # DosBox
 #
 ################################################################################
-# Version.: Commits on Dec 17, 2018
-DOSBOX_VERSION_TAG = 0.74
-DOSBOX_VERSION = r4178
-DOSBOX_SITE =  https://svn.code.sf.net/p/dosbox/code-0/dosbox/trunk
-DOSBOX_SITE_METHOD = svn
+# Version.: Commits on Jan 08, 2020
+DOSBOX_VERSION = 411481d3c760a7f25bc530c97da7ae008e63e0ad
+DOSBOX_SITE = $(call github,duganchen,dosbox,$(DOSBOX_VERSION))
+DOSBOX_DEPENDENCIES = sdl2 sdl2_net sdl_sound zlib libpng libogg libvorbis
 DOSBOX_LICENSE = GPLv2
-DOSBOX_DEPENDENCIES = sdl2 zlib libpng libogg libvorbis sdl_sound
-
-DOSBOX_LDFLAGS = -L$(STAGING_DIR)/usr/lib
-DOSBOX_CFLAGS = -I$(STAGING_DIR)/usr/include -I$(STAGING_DIR)/usr/include/SDL2 -I$(STAGING_DIR)/usr/include/SDL
 
 define DOSBOX_CONFIGURE_CMDS
-        (cd $(@D); ./autogen.sh; \
-        $(TARGET_CONFIGURE_ARGS) \
-                $(TARGET_CONFIGURE_OPTS) \
-                CFLAGS="$(TARGET_CFLAGS) $(DOSBOX_CFLAGS)" \
-                CXXFLAGS="$(TARGET_CXXFLAGS) $(DOSBOX_CFLAGS)" \
-                CPPFLAGS="$(TARGET_CPPFLAGS) $(DOSBOX_CFLAGS)" \
-                LDFLAGS="$(TARGET_LDFLAGS) $(DOSBOX_LDFLAGS)" \
-                CROSS_COMPILE="$(HOST_DIR)/usr/bin/" \
-		LIBS="-lvorbisfile -lvorbis -logg" \
-                ./configure --host="$(GNU_TARGET_NAME)" \
-                --enable-core-inline --prefix=/usr \
-                --enable-dynrec --enable-unaligned_memory \
-                --disable-opengl --with-sdl=sdl2 \
-                --with-sdl-prefix="$(STAGING_DIR)/usr"; \
-        )
+    cd $(@D); ./autogen.sh; $(TARGET_CONFIGURE_OPTS) CROSS_COMPILE="$(HOST_DIR)/usr/bin/" LIBS="-lvorbisfile -lvorbis -logg" \
+        ./configure --host="$(GNU_TARGET_NAME)" \
+                    --enable-core-inline \
+                    --enable-dynrec \
+                    --enable-unaligned_memory \
+                    --prefix=/usr \
+                    --with-sdl-prefix="$(STAGING_DIR)/usr";
 endef
 
 $(eval $(autotools-package))
