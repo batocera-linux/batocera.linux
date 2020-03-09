@@ -3,8 +3,8 @@
 # MK_ARCADE_JOYSTICK_RPI
 #
 ################################################################################
-MK_ARCADE_JOYSTICK_RPI_VERSION = 1144736560426e845a48a45a479ff8a8971fc4d3
-MK_ARCADE_JOYSTICK_RPI_SITE = $(call github,batocera-linux,mk_arcade_joystick_rpi,$(MK_ARCADE_JOYSTICK_RPI_VERSION))
+MK_ARCADE_JOYSTICK_RPI_VERSION = f2c8bd1b6c7ff90d391251df83b92c27b67942f0
+MK_ARCADE_JOYSTICK_RPI_SITE = $(call github,genetik57,mk_arcade_joystick_rpi,$(MK_ARCADE_JOYSTICK_RPI_VERSION))
 MK_ARCADE_JOYSTICK_RPI_DEPENDENCIES = linux
 
 
