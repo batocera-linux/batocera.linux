@@ -38,7 +38,7 @@ index 3e1b322..19aa874 100644
 +
  static void __EmuScreenVblank()
  {
- 	I18NCategory *sy = GetI18NCategory("System");
+ 	auto sy = GetI18NCategory("System");
 @@ -479,7 +481,8 @@ void EmuScreen::onVKeyDown(int virtualKeyCode) {
  		break;
  
@@ -86,7 +86,7 @@ index 3e1b322..19aa874 100644
 +		    if (SaveState::CanRewind()) {
 +		      SaveState::Rewind(&AfterSaveStateAction);
 +		    } else {
-+		      I18NCategory *sc = GetI18NCategory("Screen");
++		      auto sc = GetI18NCategory("Screen");
 +		      osm.Show(sc->T("norewind", "No rewind save states available"), 2.0);
 +		    }
 +		  }
