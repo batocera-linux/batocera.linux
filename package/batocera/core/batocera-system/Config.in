@@ -124,6 +124,7 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
     select BR2_PACKAGE_LIBOPENSSL_BIN                    # required to encode the wifi password
     select BR2_PACKAGE_KBD                               # loadkeys
     select BR2_PACKAGE_XKEYBOARD_CONFIG                  # requirement for xkb to work, xkb is used by kodi, even without x for the keyboard
+    select BR2_PACKAGE_GESFTPSERVER                      # required to access folders via sftp and should be replaced by openssh
 
     # alsa utils
     select BR2_PACKAGE_ALSA_UTILS
