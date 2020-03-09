@@ -11,6 +11,8 @@ PACKAGES_MISC="virtualgamepads qtsixa qtsixa-shanwan raspi2png jstest2 mk_arcade
 
 PACKAGES_TEST="retroarch ppsspp"
 
+PACKAGES_PATH="../../package/batocera"
+
 # FIXED COMMITS
 # PKGVER_6fc6bfbb243de4da05a86d1edc3950815a964f1e=v1.7.1 # retroarch
 
@@ -42,7 +44,7 @@ tput_bold="$(tput smso)"
 # HELPERS ##
 
 base_GETCUR() {
-    X=$(grep '_VERSION = ' $(find package/batocera -name "${1}.mk") 2>/dev/null | grep -vE '^#' | head -1 | sed -e s+'.* = '+''+ | sed -e s+' '++g)
+    X=$(grep '_VERSION = ' $(find ${PACKAGES_PATH} -name "${1}.mk") 2>/dev/null | grep -vE '^#' | head -1 | sed -e s+'.* = '+''+ | sed -e s+' '++g)
     if test -z "$X"
     then
 	echo "unknown (you should run from the top buildroot directory)"
@@ -102,9 +104,9 @@ github_base() {
     GH_SIZE=$(echo "${GH_VERS}" | wc -c)
     if test "${GH_SIZE}" = 41 # git full checksum
     then
-	grep '_SITE = \$(call github,' $(find package/batocera -name "${1}.mk") 2>/dev/null | grep -vE '^#' | head -1 | sed -e s+'^.*call github,\([^,]*\),\([^,]*\),.*$'+'\1/\2:lastcommit'+
+	grep '_SITE = \$(call github,' $(find ${PACKAGES_PATH} -name "${1}.mk") 2>/dev/null | grep -vE '^#' | head -1 | sed -e s+'^.*call github,\([^,]*\),\([^,]*\),.*$'+'\1/\2:lastcommit'+
     else
-	grep '_SITE = \$(call github,' $(find package/batocera -name "${1}.mk") 2>/dev/null | grep -vE '^#' | head -1 | sed -e s+'^.*call github,\([^,]*\),\([^,]*\),.*$'+'\1/\2:'"${GH_VERS}"+
+	grep '_SITE = \$(call github,' $(find ${PACKAGES_PATH} -name "${1}.mk") 2>/dev/null | grep -vE '^#' | head -1 | sed -e s+'^.*call github,\([^,]*\),\([^,]*\),.*$'+'\1/\2:'"${GH_VERS}"+
     fi
 }
 
@@ -164,7 +166,7 @@ setPGroups() {
     if test -z "${PGROUPS}" -o "${PGROUPS}" = "ALL"
     then
 	PGROUPS=${PACKAGES_GROUPS}
-	PACKAGES=$(find package/batocera -name "*.mk" | grep -vE '/batocera\.mk$' | sed -e s+"^.*/\([^/]*\).mk$"+"\1"+ | tr '\n' ' ')
+	PACKAGES=$(find ${PACKAGES_PATH} -name "*.mk" | grep -vE '/batocera\.mk$' | sed -e s+"^.*/\([^/]*\).mk$"+"\1"+ | tr '\n' ' ')
 	return
     fi
 
@@ -236,13 +238,13 @@ run() {
 }
 
 base_UPDATE() {
-    sed -i -e s+"^\([ ]*[a-zA-Z0-9_]*_VERSION[ ]*=[ ]*\).*$"+"\1${2}"+ $(find package/batocera -name "${1}.mk")
+    sed -i -e s+"^\([ ]*[a-zA-Z0-9_]*_VERSION[ ]*=[ ]*\).*$"+"\1${2}"+ $(find ${PACKAGES_PATH} -name "${1}.mk")
 }
 
 run_update() {
     updpkg=${1}
 
-    if test ! -f $(find package/batocera -name "${1}.mk")
+    if test ! -f $(find ${PACKAGES_PATH} -name "${1}.mk")
     then
 	echo "invalid package name \"${updpkg}\"" >&2
 	return 1
