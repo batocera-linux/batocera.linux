@@ -4,7 +4,7 @@ default:
     # menu retroarch
     retroarch.menu_driver: rgui
     retroarch.aspect_ratio_index: 7
-    retroarch.video_rotation: 0
+    retroarch.video_rotation: 0 # for people upgrading
 n64:
   emulator: mupen64plus
   core: glide64mk2
@@ -12,9 +12,11 @@ n64:
     mupen64plus.Video-General.ScreenWidth: 480
     mupen64plus.Video-General.ScreenHeight: 320
     mupen64plus.Video-Glide64mk2.aspect: 2
+    mupen64plus.Video-General.Rotate: 0 # for people upgrading
 psp:
   options:
     frameskip: true
+    ppsspp.General.InternalScreenRotation: 0 # for people upgrading
 dreamcast:
   emulator: libretro
   core: flycast
