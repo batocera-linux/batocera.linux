@@ -29,3 +29,8 @@ amiga1200:
 amigacd32:
   emulator: amiberry
   core:     CD32
+c64:
+  options:
+    vice.C64.SidEngine: 0
+    vice.C64.VICIIFilter: 0
+    vice.C64.DriveTrueEmulation: 0
