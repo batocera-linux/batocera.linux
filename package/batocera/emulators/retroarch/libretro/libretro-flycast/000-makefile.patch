@@ -1,7 +1,27 @@
 diff --git a/Makefile b/Makefile
-index 36aacd6..36b93b9 100644
+index 9239424..f85eac4 100644
 --- a/Makefile
 +++ b/Makefile
+@@ -191,8 +191,8 @@ else ifneq (,$(findstring rpi,$(platform)))
+ 			CFLAGS += -mcpu=cortex-a7 -mfpu=neon-vfpv4 -mfloat-abi=hard
+ 			CXXFLAGS += -mcpu=cortex-a7 -mfpu=neon-vfpv4 -mfloat-abi=hard
+ 		else ifneq (,$(findstring rpi3,$(platform)))
+-			CFLAGS += -march=armv8-a+crc -mtune=cortex-a53 -mfpu=neon-fp-armv8 -mfloat-abi=hard
+-			CXXFLAGS += -march=armv8-a+crc -mtune=cortex-a53 -mfpu=neon-fp-armv8 -mfloat-abi=hard
++			CFLAGS += -mtune=cortex-a53 -mfpu=neon-fp-armv8 -mfloat-abi=hard
++			CXXFLAGS += -mtune=cortex-a53 -mfpu=neon-fp-armv8 -mfloat-abi=hard
+ 		endif
+ 		CORE_DEFINES += -DLOW_END
+ 	endif
+@@ -256,7 +256,7 @@ else ifeq ($(platform), classic_armv8_a35)
+ 	FORCE_GLES = 1
+ 	SINGLE_PREC_FLAGS = 1
+ 	HAVE_LTCG = 0
+-	HAVE_OPENMP = 0
++	HAVE_OPENMP = 1
+ 	THREADED_RENDERING_DEFAULT = 1
+ 	CFLAGS += -Ofast \
+ 	-flto -fuse-linker-plugin \
 @@ -417,7 +417,7 @@ else ifeq ($(platform), odroid-n2)
  	CXXFLAGS += -mcpu=cortex-a73 -mtune=cortex-a73.cortex-a53 $(CPUFLAGS)
  	ASFLAGS += $(CFLAGS) -c -frename-registers -fno-strict-aliasing -ffast-math -ftree-vectorize
@@ -11,7 +31,7 @@ index 36aacd6..36b93b9 100644
  	HAVE_GENERIC_JIT = 0
  	HAVE_LTCG = 0
  
-@@ -1044,7 +1044,7 @@ LIBS     += -lm
+@@ -1042,7 +1042,7 @@ LIBS     += -lm
  PREFIX        ?= /usr/local
  
  ifneq (,$(findstring arm, $(ARCH)))
