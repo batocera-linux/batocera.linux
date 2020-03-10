@@ -49,6 +49,17 @@ def setViceConfig(viceConfigFile, system):
     viceConfig.set(systemCore, "JoyDevice2",             "4")
     viceConfig.set(systemCore, "JoyMapFile",  viceController)
 
+    # custom : allow the user to configure directly sdl-vicerc via batocera.conf via lines like : vice.section.option=value
+    for user_config in system.config:
+        if user_config[:5] == "vice.":
+            section_option = user_config[5:]
+            section_option_splitter = section_option.find(".")
+            custom_section = section_option[:section_option_splitter]
+            custom_option = section_option[section_option_splitter+1:]
+            if not viceConfig.has_section(custom_section):
+                viceConfig.add_section(custom_section)
+            viceConfig.set(custom_section, custom_option, system.config[user_config])
+
     # update the configuration file
     with open(viceConfigRC, 'w') as configfile:
         viceConfig.write(EqualsSpaceRemover(configfile))
