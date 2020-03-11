@@ -3,8 +3,8 @@
 # mupen64plus rsp-hle
 #
 ################################################################################
-# Version.: Commits on Feb 03, 2020
-MUPEN64PLUS_RSPHLE_VERSION = fa00bf82fdf590f58df08a781af3696df37f80e5
+# Version.: Commits on Mar 02, 2020
+MUPEN64PLUS_RSPHLE_VERSION = 2df8038d5f8fb722326c98d717b2d571a6d716ed
 MUPEN64PLUS_RSPHLE_SITE = $(call github,mupen64plus,mupen64plus-rsp-hle,$(MUPEN64PLUS_RSPHLE_VERSION))
 MUPEN64PLUS_RSPHLE_LICENSE = GPLv2
 MUPEN64PLUS_RSPHLE_DEPENDENCIES = sdl2 alsa-lib mupen64plus-core
