@@ -90,9 +90,6 @@ def generateCoreSettings(retroarchCore, system):
     if (system.config['core'] == 'fuse'):
         coreSettings.save('fuse_machine',   '"Spectrum 128K"')
 
-    if (system.config['core'] == '4do'):
-        coreSettings.save('4do_dsp_threaded',   '"enabled"')
-
     if (system.config['core'] == 'opera'):
         coreSettings.save('opera_dsp_threaded',   '"enabled"')
 

@@ -923,7 +923,6 @@ ps2:
   extensions: [iso, bin, chd, cue, zip, 7z]
   emulators:
     libretro:
-      4do:    { requireAnyOf: [BR2_PACKAGE_LIBRETRO_4DO], 'netplay':true    }
       opera:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_OPERA], 'netplay':true  }
 
 intellivision:
