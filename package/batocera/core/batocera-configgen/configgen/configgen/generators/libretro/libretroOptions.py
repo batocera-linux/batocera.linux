@@ -93,6 +93,9 @@ def generateCoreSettings(retroarchCore, system):
     if (system.config['core'] == '4do'):
         coreSettings.save('4do_dsp_threaded',   '"enabled"')
 
+    if (system.config['core'] == 'opera'):
+        coreSettings.save('opera_dsp_threaded',   '"enabled"')
+
     if (system.config['core'] == 'virtualjaguar'):
         coreSettings.save('virtualjaguar_usefastblitter',   '"enabled"')
 
