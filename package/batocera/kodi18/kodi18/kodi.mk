@@ -6,11 +6,11 @@
 
 # When updating the version, please also update kodi-jsonschemabuilder
 # and kodi-texturepacker
-KODI18_VERSION = 18.5-Leia
+KODI18_VERSION = 18.6-Leia
 KODI18_SITE = $(call github,xbmc,xbmc,$(KODI18_VERSION))
 
 ifeq ($(BR2_PACKAGE_KODI18_PLATFORM_RBPI),y)
-KODI18_VERSION = newclock5_18.5-Leia
+KODI18_VERSION = newclock5_18.6-Leia
 KODI18_SITE = $(call github,popcornmix,xbmc,$(KODI18_VERSION))
 endif
 
@@ -58,19 +58,15 @@ KODI18_DEPENDENCIES = \
 
 # taken from tools/depends/target/ffmpeg/FFMPEG-VERSION
 KODI18_FFMPEG_VERSION = 4.0.4-Leia-18.4
+KODI18_LIBDVDCSS_VERSION = 1.4.2-Leia-Beta-5
+KODI18_LIBDVDNAV_VERSION = 6.0.0-Leia-Alpha-3
+KODI18_LIBDVDREAD_VERSION = 6.0.0-Leia-Alpha-3
 KODI18_EXTRA_DOWNLOADS += \
-	https://github.com/xbmc/FFmpeg/archive/$(KODI18_FFMPEG_VERSION).tar.gz
+	$(call github,xbmc,FFmpeg,$(KODI18_FFMPEG_VERSION))/kodi-ffmpeg-$(KODI18_FFMPEG_VERSION).tar.gz \
+	$(call github,xbmc,libdvdcss,$(KODI18_LIBDVDCSS_VERSION))/kodi-libdvdcss-$(KODI18_LIBDVDCSS_VERSION).tar.gz \
+	$(call github,xbmc,libdvdnav,$(KODI18_LIBDVDNAV_VERSION))/kodi-libdvdnav-$(KODI18_LIBDVDNAV_VERSION).tar.gz \
+	$(call github,xbmc,libdvdread,$(KODI18_LIBDVDREAD_VERSION))/kodi-libdvdread-$(KODI18_LIBDVDREAD_VERSION).tar.gz
 
-# 1.4.2-Leia-Beta-5
-KODI18_LIBDVDCSS_VERSION = e646b950095589e74a2c08cf0c34b758c669aa75
-# 6.0.0-Leia-Alpha-3
-KODI18_LIBDVDNAV_VERSION = 9277007ce2263b908e9ce3091cc31b3dd87c351c
-# 6.0.0-Leia-Alpha-3
-KODI18_LIBDVDREAD_VERSION = bd6b329f0137ab6a9f779a28dd96f04713735e17
-KODI18_EXTRA_DOWNLOADS += \
-	https://github.com/xbmc/libdvdcss/archive/$(KODI18_LIBDVDCSS_VERSION).tar.gz \
-	https://github.com/xbmc/libdvdnav/archive/$(KODI18_LIBDVDNAV_VERSION).tar.gz \
-	https://github.com/xbmc/libdvdread/archive/$(KODI18_LIBDVDREAD_VERSION).tar.gz
 
 define KODI18_CPLUFF_AUTOCONF
 	cd $(KODI18_SRCDIR)/lib/cpluff && PATH=$(HOST_DIR)/bin:$$PATH ./autogen.sh
@@ -87,16 +83,16 @@ KODI18_CONF_OPTS += \
 	-DENABLE_INTERNAL_CROSSGUID=OFF \
 	-DENABLE_INTERNAL_FFMPEG=ON \
 	-DENABLE_INTERNAL_FLATBUFFERS=OFF \
-	-DFFMPEG_URL=$(KODI18_DL_DIR)/$(KODI18_FFMPEG_VERSION).tar.gz \
+	-DFFMPEG_URL=$(KODI18_DL_DIR)/kodi-ffmpeg-$(KODI18_FFMPEG_VERSION).tar.gz \
 	-DKODI18_DEPENDSBUILD=OFF \
 	-DENABLE_LDGOLD=OFF \
 	-DNATIVEPREFIX=$(HOST_DIR) \
 	-DDEPENDS_PATH=$(STAGING_DIR)/usr \
 	-DWITH_JSONSCHEMABUILDER=$(HOST_DIR)/bin/JsonSchemaBuilder \
 	-DWITH_TEXTUREPACKER=$(HOST_DIR)/bin/TexturePacker \
-	-DLIBDVDCSS_URL=$(KODI18_DL_DIR)/$(KODI18_LIBDVDCSS_VERSION).tar.gz \
-	-DLIBDVDNAV_URL=$(KODI18_DL_DIR)/$(KODI18_LIBDVDNAV_VERSION).tar.gz \
-	-DLIBDVDREAD_URL=$(KODI18_DL_DIR)/$(KODI18_LIBDVDREAD_VERSION).tar.gz
+	-DLIBDVDCSS_URL=$(KODI18_DL_DIR)/kodi-libdvdcss-$(KODI18_LIBDVDCSS_VERSION).tar.gz \
+	-DLIBDVDNAV_URL=$(KODI18_DL_DIR)/kodi-libdvdnav-$(KODI18_LIBDVDNAV_VERSION).tar.gz \
+	-DLIBDVDREAD_URL=$(KODI18_DL_DIR)/kodi-libdvdread-$(KODI18_LIBDVDREAD_VERSION).tar.gz
 
 ifeq ($(BR2_ENABLE_LOCALE),)
 KODI18_DEPENDENCIES += libiconv
