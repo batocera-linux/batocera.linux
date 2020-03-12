@@ -3,9 +3,9 @@
 # BSNES
 #
 ################################################################################
-# Version.: Commits on Jan 18, 2020 (v114.3)
-LIBRETRO_BSNES_VERSION = 7053a0b60513f51984a5bc8b551fc8592dc0bb1d
-LIBRETRO_BSNES_SITE = $(call github,libretro,bsnes,$(LIBRETRO_BSNES_VERSION))
+# Version.: Commits on Mar 04, 2020
+LIBRETRO_BSNES_VERSION = v115
+LIBRETRO_BSNES_SITE = $(call github,byuu,bsnes,$(LIBRETRO_BSNES_VERSION))
 LIBRETRO_BSNES_LICENSE = GPLv3
 
 define LIBRETRO_BSNES_BUILD_CMDS
