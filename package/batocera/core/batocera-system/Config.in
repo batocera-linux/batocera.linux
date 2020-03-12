@@ -241,7 +241,7 @@ endchoice
 
 config BR2_PACKAGE_BATOCERA_EXTRAS
        bool "batocera.linux tools packages selection"
-       #select BR2_PACKAGE_VIRTUALGAMEPADS # web virtual gamepads
+       
        help
         Tools to extends the batocera system (but not required)
 
