@@ -5,6 +5,8 @@ default:
     retroarch.video_rotation: 0 # for people upgrading
     # menu retroarch
     retroarch.menu_driver: rgui
+    retroarch.menu_widget_scale_auto: "false"
+    retroarch.menu_widget_scale_factor: 1.5
 
 n64:
   emulator: mupen64plus
