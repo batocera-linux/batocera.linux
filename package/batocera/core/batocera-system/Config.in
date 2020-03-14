@@ -179,6 +179,7 @@ config BR2_PACKAGE_BATOCERA_DEV
     select BR2_PACKAGE_STRACE           if BR2_PACKAGE_BATOCERA_DEV
     select BR2_PACKAGE_GDB              if BR2_PACKAGE_BATOCERA_DEV
     select BR2_PACKAGE_GDB_DEBUGGER     if BR2_PACKAGE_BATOCERA_DEV
+    select BR2_PACKAGE_TMUX             if BR2_PACKAGE_BATOCERA_DEV
 
     help
       Install dev packages for batocera.linux
@@ -241,7 +242,7 @@ endchoice
 
 config BR2_PACKAGE_BATOCERA_EXTRAS
        bool "batocera.linux tools packages selection"
-       
+
        help
         Tools to extends the batocera system (but not required)
 
