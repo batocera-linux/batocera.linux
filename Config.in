@@ -196,14 +196,6 @@ menu "Kodi"
 if !BR2_PACKAGE_BATOCERA_KODI18
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi/kodi-joystick/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi/kodi-plugin-video-filmon/Config.in"
-endif
-if BR2_PACKAGE_BATOCERA_KODI18
-  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi18/kodi18/Config.in"
-  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi18/kodi18-peripheral-joystick/Config.in"
-endif
-
-  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi/kodi-superrepo-all/Config.in"
-  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi/kodi-superrepo-repositories/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi/kodi-resource-language-de_de/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi/kodi-resource-language-es_es/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi/kodi-resource-language-eu_es/Config.in"
@@ -213,6 +205,23 @@ endif
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi/kodi-resource-language-sv_se/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi/kodi-resource-language-tr_tr/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi/kodi-resource-language-zh_cn/Config.in"
+endif
+if BR2_PACKAGE_BATOCERA_KODI18
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi18/kodi18/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi18/kodi18-peripheral-joystick/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi18/kodi18-resource-language-de_de/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi18/kodi18-resource-language-es_es/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi18/kodi18-resource-language-eu_es/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi18/kodi18-resource-language-fr_fr/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi18/kodi18-resource-language-it_it/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi18/kodi18-resource-language-pt_br/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi18/kodi18-resource-language-sv_se/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi18/kodi18-resource-language-tr_tr/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi18/kodi18-resource-language-zh_cn/Config.in"
+endif
+
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi/kodi-superrepo-all/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi/kodi-superrepo-repositories/Config.in"
 endmenu
 
 menu "Utils"
