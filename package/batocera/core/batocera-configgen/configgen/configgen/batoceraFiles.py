@@ -56,7 +56,7 @@ mupenMappingSystem  = '/usr/share/batocera/datainit/system/configs/mupen64/input
 kodiJoystick = HOME + '/.kodi/userdata/addon_data/peripheral.joystick/resources/buttonmaps/xml/linux/batocera_{}.xml'
 
 moonlightCustom = CONF+'/moonlight'
-moonlightConfig = moonlightCustom + '/moonlight.conf'
+moonlightConfigFile = moonlightCustom + '/moonlight.conf'
 moonlightGamelist = moonlightCustom + '/gamelist.txt'
 moonlightMapping = dict()
 moonlightMapping[1] = moonlightCustom + '/mappingP1.conf'
