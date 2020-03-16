@@ -31,7 +31,7 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
     select BR2_PACKAGE_TRIGGERHAPPY                      # multimedia/power buttons
     select BR2_PACKAGE_XOSD                              if BR2_PACKAGE_XSERVER_XORG_SERVER # osd information displaying
     select BR2_PACKAGE_CIFS_UTILS                        # required for boot mounts
-    select BR2_PACKAGE_HOST_GENIMAGE                     # tool to generate the target image
+    select BR2_PACKAGE_BATOCERA_IMAGE                    # tools to generate batocera image
     select BR2_TARGET_ROOTFS_SQUASHFS                    # tool to generate the target image
     select BR2_PACKAGE_DOSFSTOOLS                        # required for fat
     select BR2_PACKAGE_DOSFSTOOLS_FSCK_FAT               # required for fat
@@ -130,7 +130,6 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
     select BR2_PACKAGE_GPTFDISK_SGDISK                   # fs resize
     select BR2_PACKAGE_E2FSPROGS                         # fs resize
     select BR2_PACKAGE_E2FSPROGS_RESIZE2FS               # fs resize
-    select BR2_PACKAGE_HOST_GENEXT2FS                    # fs resize
 
     # alsa utils
     select BR2_PACKAGE_ALSA_UTILS
