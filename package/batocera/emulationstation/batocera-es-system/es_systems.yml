@@ -867,7 +867,7 @@ apple2:
 
 saturn:
   name:       Sega Saturn
-  extensions: [cue, ccd, chd, iso, zip, 7z]
+  extensions: [cue, ccd, m3u, chd, iso, zip, 7z]
   emulators:
     libretro:
       yabause:       { requireAnyOf: [BR2_PACKAGE_LIBRETRO_YABAUSE], 'netplay':false }
