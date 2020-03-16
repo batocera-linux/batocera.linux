@@ -396,7 +396,7 @@ case "${BATOCERA_TARGET}" in
     cp "${BINARIES_DIR}/rootfs.squashfs"       "${BINARIES_DIR}/boot/boot/batocera.update"      || exit 1
     cp "${BINARIES_DIR}/rk3399-rock960-ab.dtb"  "${BINARIES_DIR}/boot/boot/rk3399-rock960-ab.dtb" || exit 1
     cp "${BINARIES_DIR}/batocera-boot.conf"    "${BINARIES_DIR}/boot/batocera-boot.conf"        || exit 1
-	cp "board/batocera/rock960/boot/extlinux.conf" ${BINARIES_DIR}/boot/extlinux                   || exit 1
+    cp "${BR2_EXTERNAL_BATOCERA_PATH}/board/batocera/rock960/boot/extlinux.conf" ${BINARIES_DIR}/boot/extlinux                   || exit 1
     # boot.tar.xz
     echo "creating boot.tar.xz"
     (cd "${BINARIES_DIR}/boot" && tar -cJf "${BATOCERA_BINARIES_DIR}/boot.tar.xz" extlinux boot batocera-boot.conf) || exit 1
@@ -413,7 +413,7 @@ case "${BATOCERA_TARGET}" in
     GENIMAGE_TMP="${BUILD_DIR}/genimage.tmp"
     BATOCERAIMG="${BATOCERA_BINARIES_DIR}/batocera.img"
     rm -rf "${GENIMAGE_TMP}" || exit 1
-    cp "board/batocera/rock960/genimage.cfg" "${BINARIES_DIR}" || exit 1
+    cp "${BR2_EXTERNAL_BATOCERA_PATH}/board/batocera/rock960/genimage.cfg" "${BINARIES_DIR}" || exit 1
     echo "generating image"
     genimage --rootpath="${TARGET_DIR}" --inputpath="${BINARIES_DIR}/boot" --outputpath="${BATOCERA_BINARIES_DIR}" --config="${BINARIES_DIR}/genimage.cfg" --tmppath="${GENIMAGE_TMP}" || exit 1
     rm -f "${BATOCERA_BINARIES_DIR}/boot.vfat" || exit 1
