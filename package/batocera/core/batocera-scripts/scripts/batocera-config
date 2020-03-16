@@ -210,8 +210,29 @@ if [ "$command" == "audio" ];then
 		cardnb=$(echo "${mode}" | sed -e s+'^\([0-9]*\),.*$'+'\1'+)
 		devicenb=$(echo "${mode}" | sed -e s+'^[0-9]*,\([0-9]*\) .*$'+'\1'+)
 		cat > /userdata/system/.asoundrc <<EOF
-	    pcm.!default { type plug slave { pcm "hw:${cardnb},${devicenb}" } }
-	    ctl.!default { type hw card ${cardnb} }
+pcm.!default {
+	type plug
+	slave.pcm "dmixer"
+}
+
+# configuration de Dmix
+pcm.dmixer  {
+	type dmix
+	ipc_key 1024
+	slave {
+	    pcm "hw:${cardnb},${devicenb}"
+	    period_time 0
+	    period_size 1024
+	    buffer_size 4096
+	    rate 44100
+	}
+	bindings {
+	    0 0
+	    1 1
+	}
+}
+
+ctl.!default { type hw card ${cardnb} }
 EOF
 		aplay "/usr/share/sounds/Mallet.wav"
 	    fi

@@ -11,7 +11,7 @@ rb_volume_configure() {
     fi
 }
 
-rb_audio_configure() {
+batocera_audio_configure() {
     settingsAudio="`$systemsetting -command load -key audio.device`"
     if [[ "$settingsAudio" == "" ]];then
         settingsAudio="auto"
@@ -127,7 +127,7 @@ case "$1" in
 	rb_gpio_configure&    # 0.9 start by the gpio while it's the longer
 	rb_keyboad_lang&      # 0.7
 	rb_xbox&              # 0.6
-	( rb_volume_configure ; rb_audio_configure ; rb_alsa_load) &  # 1.0
+	( rb_volume_configure ; batocera_audio_configure ; rb_alsa_load) &  # 1.0
 	rb_timezone&          # 0.4
 	rb_hostname&          # 0.4
 	rb_xarcade2jstick&    # 0.1
@@ -138,6 +138,7 @@ case "$1" in
         rb_alsa_save
 	;;
   restart|reload)
+	batocera_audio_configure
 	;;
   *)
 esac
