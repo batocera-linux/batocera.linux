@@ -15,10 +15,6 @@ batocera_audio_configure() {
     settingsAudio="`$systemsetting -command load -key audio.device`"
     if [[ "$settingsAudio" == "" ]];then
         settingsAudio="auto"
-    else
-        hw=$(echo $settingsAudio | cut -d' ' -f1)
-        sed 's/"hw:.*"/"hw:'$hw'"/' /etc/asound.conf > /tmp/asound_tmp
-        mv /tmp/asound_tmp /etc/asound.conf
     fi
     eval $config_script "audio" "$settingsAudio" >> $log
 }
