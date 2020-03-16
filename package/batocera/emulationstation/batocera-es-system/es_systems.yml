@@ -474,7 +474,7 @@ colecovision:
 
 atari800:
   name:       Atari 800
-  extensions: [rom, xfd, atr, atx, cdm, cas, bin, a52, xex, zip, 7z]
+  extensions: [rom, xfd, atr, atx, cdm, cas, car, bin, a52, xex, zip, 7z]
   emulators:
     libretro:
       atari800: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_ATARI800], 'netplay':false }
@@ -488,7 +488,7 @@ atari2600:
 
 atari5200:
   name:       Atari 5200
-  extensions: [rom, xfd, atr, atx, cdm, cas, bin, a52, xex, zip, 7z]
+  extensions: [rom, xfd, atr, atx, cdm, cas, car, bin, a52, xex, zip, 7z]
   emulators:
     libretro:
       atari800: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_ATARI800], 'netplay':false }
