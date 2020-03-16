@@ -187,7 +187,7 @@ gameandwatch:
 
 dreamcast:
   name:       Sega Dreamcast
-  extensions: [cdi, gdi, chd, zip, 7z]
+  extensions: [cdi, cue, gdi, chd, zip, 7z]
   emulators:
     libretro:
       flycast:        { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FLYCAST], 'netplay':false }
@@ -282,7 +282,7 @@ pcengine:
 
 pcenginecd:
   name:       PC Engine CD
-  extensions: [pce, cue, ccd, iso, img, bin, chd, zip, 7z]
+  extensions: [pce, cue, ccd, iso, img, chd, zip, 7z]
   theme:      pce-cd
   emulators:
     libretro:
@@ -867,7 +867,7 @@ apple2:
 
 saturn:
   name:       Sega Saturn
-  extensions: [bin, cue, ccd, chd, iso, zip, 7z]
+  extensions: [cue, ccd, chd, iso, zip, 7z]
   emulators:
     libretro:
       yabause:       { requireAnyOf: [BR2_PACKAGE_LIBRETRO_YABAUSE], 'netplay':false }
@@ -920,7 +920,7 @@ ps2:
 
 3do:
   name:       3DO Interactive Multiplayer
-  extensions: [iso, bin, chd, cue, zip, 7z]
+  extensions: [iso, chd, cue, zip, 7z]
   emulators:
     libretro:
       opera:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_OPERA], 'netplay':true  }
