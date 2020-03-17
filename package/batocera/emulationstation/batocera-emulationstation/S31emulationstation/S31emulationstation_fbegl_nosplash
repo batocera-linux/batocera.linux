@@ -2,7 +2,7 @@
 
 case "$1" in
     start)
-	systemsetting="python /usr/lib/python2.7/site-packages/configgen/settings/batoceraSettings.py"
+	systemsetting="batocera-settings"
 	enabled="`$systemsetting  -command load -key system.es.atstartup`"
         if [ "$enabled" != "0" ];then
                 batocera-resolution minTomaxResolution
