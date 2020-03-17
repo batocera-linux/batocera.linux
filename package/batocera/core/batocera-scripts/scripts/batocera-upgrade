@@ -29,7 +29,7 @@ fi
 echo "starting the upgrade..."
 
 updateurl="https://updates.batocera.org"
-systemsetting="batocera-settings"
+systemsetting="/usr/bin/batocera-settings"
 
 arch=$(cat /usr/share/batocera/batocera.arch)
 updatetype=$($systemsetting -command load -key updates.type)
