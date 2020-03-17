@@ -3,8 +3,8 @@
 # CITRA
 #
 ################################################################################
-# Version.: Commits on Feb 08, 2020
-CITRA_VERSION = 03cde53cb69b752e596e7749a0e043d627d5bac1
+# Version.: Commits on Mar 16, 2020
+CITRA_VERSION = 3410b96400f1aaaa5d20937279f98833c5e65f09
 CITRA_SITE = https://github.com/citra-emu/citra.git
 CITRA_SITE_METHOD=git
 CITRA_GIT_SUBMODULES=YES
