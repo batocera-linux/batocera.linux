@@ -20,16 +20,21 @@ getPer() {
     done
 }
 
+# ---- MAIN ----
+
 CUSTOM_URLDIR=
 if test $# -eq 1
 then
     CUSTOM_URLDIR=$1
 fi
 
+#Started from Terminal/SSH or from Emulationstation?
+[ -t 1 ] && TERMINAL=1 || TERMINAL=0
+
 echo "starting the upgrade..."
 
 updateurl="https://updates.batocera.org"
-systemsetting="python /usr/lib/python2.7/site-packages/configgen/settings/batoceraSettings.py"
+systemsetting="/usr/bin/batocera-settings"
 
 arch=$(cat /usr/share/batocera/batocera.arch)
 updatetype=$($systemsetting -command load -key updates.type)
@@ -74,16 +79,22 @@ do
     fi
 done
 
-# downlaod
+# download
 url="${DWD_HTTP_DIR}/boot.tar.xz"
 
-touch "/userdata/system/upgrade/boot.tar.xz"
-getPer "${size}" &
-GETPERPID=$!
-mkdir -p "/userdata/system/upgrade" || exit 1
-curl -sfL "${url}" -o "/userdata/system/upgrade/boot.tar.xz" || exit 1
-kill -9 "${GETPERPID}"
-GETPERPID=
+if [ $TERMINAL = 0 ]; then
+    # Download by EMULATIONSTATION
+    touch "/userdata/system/upgrade/boot.tar.xz"
+    getPer "${size}" &
+    GETPERPID=$!
+    mkdir -p "/userdata/system/upgrade" || exit 1
+    curl -sfL "${url}" -o "/userdata/system/upgrade/boot.tar.xz" || exit 1
+    kill -9 "${GETPERPID}"
+    GETPERPID=
+else
+    # Download inside SSH/TERMINAL
+    wget -q --show-progress "${url}" -O "/userdata/system/upgrade/boot.tar.xz" || exit 1
+fi
 
 # try to download an md5 checksum
 curl -sfL "${url}.md5" -o "/userdata/system/upgrade/boot.tar.xz.md5"
