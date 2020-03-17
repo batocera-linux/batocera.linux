@@ -47,7 +47,7 @@ do_disable() {
 }
 
 do_start() {
-    systemsetting="python /usr/lib/python2.7/site-packages/configgen/settings/batoceraSettings.py"
+    systemsetting="batocera-settings"
     settingsWlan="`$systemsetting -command load -key wifi.enabled`"
     if [ "$settingsWlan" != "1" ];then
         return 0
