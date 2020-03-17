@@ -3,7 +3,7 @@
 # Stolen from RedHat FC5.
 #
 
-systemsetting="python /usr/lib/python2.7/site-packages/configgen/settings/batoceraSettings.py"
+systemsetting="batocera-settings"
 securityenabled="`$systemsetting  -command load -key system.security.enabled`"
 
 if [ "$securityenabled" == "1" ];then
