@@ -7,20 +7,109 @@ import sys
 
 systems = {
 
-    # Atari
-    "atari5200": { "name": "Atari 5200", "biosFiles": [ { "md5": "281f20ea4320404ec820fb7ec0693b38", "file": "bios/5200.rom"          },
-                                                        { "md5": "06daac977823773a3eea3422fd26a703", "file": "bios/ATARIXL.ROM"       },
-										                { "md5": "0bac0c6a50104045d902df4503a4c30b", "file": "bios/ATARIBAS.ROM"      },
-                                                        { "md5": "eb1f32f5d9f382db1bbfb8d7f9cb343a", "file": "bios/ATARIOSA.ROM"      },
-                                                        { "md5": "a3e8d617c95d08031fe1b20d541434b2", "file": "bios/ATARIOSB.ROM"      } ] },
-	"atari7800": { "name": "Atari 7800", "biosFiles": [ { "md5": "397bb566584be7b9764e7a68974c4263", "file": "bios/7800 BIOS (E).rom" },
-														{ "md5": "0763f1ffb006ddbe32e52d497ee848ae", "file": "bios/7800 BIOS (U).rom" },
-														{ "md5": "ce6a86574d0c9de9075705f14e99d090", "file": "bios/ProSystem.dat"     } ] },
-    "atarist":   { "name": "Atari ST", "biosFiles":   [ { "md5": "b2a8570de2e850c5acf81cb80512d9f6", "file": "bios/tos.img"           } ] },
-    "lynx":      { "name": "Lynx", "biosFiles":       [ { "md5": "fcd403db69f54290b51035d82f835e7b", "file": "bios/lynxboot.img"	  } ] },
+    # ---------- Atari ---------- #
+    # https://docs.libretro.com/library/atari800/#bios
+    "atari5200": { "name": "Atari 5200 / Atari 800", "biosFiles": [ { "md5": "281f20ea4320404ec820fb7ec0693b38", "file": "bios/5200.rom"    },
+                                                                    { "md5": "06daac977823773a3eea3422fd26a703", "file": "bios/ATARIXL.ROM" },
+                                                                    { "md5": "0bac0c6a50104045d902df4503a4c30b", "file": "bios/ATARIBAS.ROM"},
+                                                                    { "md5": "eb1f32f5d9f382db1bbfb8d7f9cb343a", "file": "bios/ATARIOSA.ROM"},
+                                                                    { "md5": "a3e8d617c95d08031fe1b20d541434b2", "file": "bios/ATARIOSB.ROM"} ] },
 
+    # https://github.com/libretro/libretro-super/blob/master/dist/info/hatari_libretro.info
+    "atarist": { "name": "Atari ST", "biosFiles":   [ { "md5": "c1c57ce48e8ee4135885cee9e63a68a2", "file": "bios/tos.img"} ] },
 
-    # Commodore
+    # https://docs.libretro.com/library/beetle_handy/#bios
+    "lynx": { "name": "Lynx", "biosFiles":       [ { "md5": "fcd403db69f54290b51035d82f835e7b", "file": "bios/lynxboot.img"} ] },
+
+    # ---------- Magnavox and Philips ---------- #
+    # https://docs.libretro.com/library/o2em/#bios
+	"o2em": { "name": "Odyssey 2", "biosFiles": [ { "md5": "562d5ebf9e030a40d6fabfc2f33139fd", "file": "bios/o2rom.bin" },
+												  { "md5": "f1071cdb0b6b10dde94d3bc8a6146387", "file": "bios/c52.bin"   },
+												  { "md5": "c500ff71236068e0dc0d0603d265ae76", "file": "bios/g7400.bin" },
+												  { "md5": "279008e4a0db2dc5f1c048853b033828", "file": "bios/jopac.bin" } ] },
+
+    # ---------- Mattel ---------- #
+    # https://docs.libretro.com/library/freeintv/#bios
+    "intellivision": { "name": "Mattel Intellivision", "biosFiles": [ { "md5": "62e761035cb657903761800f4437b8af", "file": "bios/exec.bin"   },
+																	  { "md5": "0cd5946c6473e42e8e4c2137785e427f", "file": "bios/grom.bin"   } ] },
+
+    # ---------- NEC ---------- #
+    # https://docs.libretro.com/library/beetle_pce_fast/#bios
+	"pcengine":   { "name": "PC Engine", "biosFiles":  [ { "md5": "38179df8f4ac870017db21ebcbf53114", "file": "bios/syscard3.pce" } ] },
+
+    # https://docs.libretro.com/library/beetle_pc_fx/#bios
+    "pcfx":       { "name": "PC-FX", "biosFiles":      [ { "md5": "08e36edbea28a017f79f8d4f7ff9b6d7", "file": "bios/pcfx.rom"     } ] },
+
+    # https://docs.libretro.com/library/beetle_pce_fast/#bios
+    "supergrafx": { "name": "Supergrafx", "biosFiles": [ { "md5": "38179df8f4ac870017db21ebcbf53114", "file": "bios/syscard3.pce" } ] },
+
+    # ---------- SNK ----------#
+	"neogeo":   { "name": "NeoGeo", "biosFiles":    [  { "md5": "77c72e3ae084a66476344cedc154d73a", "file": "bios/neogeo.zip" } ] },
+    "neogeocd": { "name": "NeoGeo CD", "biosFiles": [  { "md5": "a7cca75f3d5af6acc85efcce589ab04f", "file": "bios/neocdz.zip" } ] },
+
+    # ---------- Sharp ---------- #
+    "x68000": { "name": "Sharp x68000", "biosFiles": [ { "md5": "7fd4caabac1d9169e289f0f7bbf71d8e", "file": "bios/keropi/iplrom.dat" },
+													   { "md5": "cb0a5cfcf7247a7eab74bb2716260269", "file": "bios/keropi/cgrom.dat"	   } ] },
+
+     # ---------- Panasonic, Sanyo and Goldstar ---------- #
+    "3do":	{ "name": "3DO", "biosFiles": [ { "md5": "f47264dd47fe30f73ab3c010015c155b", "file": "bios/panafz1.bin"	},
+											{ "md5": "51f2f43ae2f3508a14d9f56597e2d3ce", "file": "bios/panafz10.bin"},
+											{ "md5": "8639fd5e549bd6238cfee79e3e749114", "file": "bios/goldstar.bin"} ] },
+
+     # ---------- Sega ---------- #
+     # https://docs.libretro.com/library/flycast/#bios
+    "dreamcast":    { "name": "Dreamcast", "biosFiles":    [ { "md5": "e10c53c2f8b90bab96ead2d368858623", "file": "bios/dc_boot.bin"   	  },
+													         { "md5": "0a93f7940c455905bea6e392dfde92a4", "file": "bios/dc_flash.bin"  	  } ] },
+
+    # https://github.com/libretro/libretro-super/blob/master/dist/info/flycast_libretro.info
+    "naomi":        { "name": "Naomi", "biosFiles":        [ { "md5": "eb4099aeb42ef089cfe94f8fe95e51f6", "file": "bios/naomi.zip"        } ] },
+
+    "atomiswave":   { "name": "Atomiswave", "biosFiles":   [ { "md5": "0ec5ae5b5a5c4959fa8b43fcf8687f7c", "file": "bios/awbios.zip"       } ] },
+
+    "segacd":       { "name": "Sega CD", "biosFiles":      [ { "md5": "e66fa1dc5820d254611fdcdba0662372", "file": "bios/bios_CD_E.bin" 	  },
+												             { "md5": "854b9150240a198070150e4566ae1290", "file": "bios/bios_CD_U.bin" 	  },
+												             { "md5": "278a9397d192149e84e820ac621a8edd", "file": "bios/bios_CD_J.bin" 	  } ] },
+    
+    # https://docs.libretro.com/library/beetle_saturn/#bios
+    "saturn":       { "name": "Sega Saturn", "biosFiles":  [ { "md5": "85ec9ca47d8f6807718151cbcca8b964", "file": "bios/sega_101.bin"	  },
+													         { "md5": "3240872c70984b6cbfda1586cab68dbe", "file": "bios/mpr-17933.bin"	  },
+													         { "md5": "255113ba943c92a54facd25a10fd780c", "file": "bios/mpr-18811-mx.ic1" },
+													         { "md5": "1cd19988d1d72a3e7caa0b73234c96b4", "file": "bios/mpr-19367-mx.ic1" } ] },
+
+    # ---------- Sony Computer Entertainment ---------- #
+    # https://docs.libretro.com/library/pcsx_rearmed/#bios
+    "psx": { "name": "PSX", "biosFiles": [ { "md5": "6e3735ff4c7dc899ee98981385f6f3d0", "file": "bios/scph101.bin"    },
+                                           { "md5": "dc2b9bf8da62ec93e868cfd29f0d067d", "file": "bios/scph1001.bin"   },
+                                           { "md5": "490f666e1afb15b7362b406ed1cea246", "file": "bios/scph5501.bin"   },
+										   { "md5": "1e68c231d0896b7eadcad1d7d8e76129", "file": "bios/scph7001.bin"   } ] },
+
+    # https://pcsx2.net/config-guide/official-english-pcsx2-configuration-guide.html#Bios
+    "ps2": { "name": "PS2", "biosFiles": [ { "md5": "28922c703cc7d2cf856f177f2985b3a9", "file": "bios/SCPH30004R.bin" },
+										   { "md5": "3faf7c064a4984f53e2ef5e80ed543bc", "file": "bios/SCPH30004R.MEC" },
+										   { "md5": "d5ce2c7d119f563ce04bc04dbc3a323e", "file": "bios/scph39001.bin"  },
+										   { "md5": "3faf7c064a4984f53e2ef5e80ed543bc", "file": "bios/scph39001.MEC"  },
+										   { "md5": "9a9e8ed7668e6adfc8f7766c08ab9cd0", "file": "bios/EROM.BIN" 	  },
+										   { "md5": "44552702b05697a14ccbe2ca22ee7139", "file": "bios/rom1.bin" 	  },
+										   { "md5": "b406d05922dac2eaf3c2e68157b1b468", "file": "bios/ROM2.BIN" 	  } ] },
+
+     # ---------- Nintendo ---------- #
+     # https://docs.libretro.com/library/fceumm/#bios
+	"fds":         { "name": "Nintendo Family Computer Disk System", "biosFiles": [ { "md5": "ca30b50f880eb660a320674ed365ef7a", "file": "bios/disksys.rom"     } ] },
+
+    # https://docs.libretro.com/library/snes9x/#bios
+    "satellaview": { "name": "Satellaview", "biosFiles": [ { "md5": "fed4d8242cfbed61343d53d48432aced", "file": "bios/BS-X.bin"   } ] },
+    "sufami":      { "name": "Sufami", "biosFiles":      [ { "md5": "d3a44ba7d42a74d3ac58cb9c14c6a5ca", "file": "bios/STBIOS.bin" } ] },
+    
+    # ---------- Microsoft ---------- #
+    # https://docs.libretro.com/library/fmsx/#bios
+    "msx": { "name": "MSX", "biosFiles": [ { "md5": "364a1a579fe5cb8dba54519bcfcdac0d", "file": "bios/MSX.ROM"      },
+										   { "md5": "ec3a01c91f24fbddcbcab0ad301bc9ef", "file": "bios/MSX2.ROM"     },
+										   { "md5": "2183c2aff17cf4297bdb496de78c2e8a", "file": "bios/MSX2EXT.ROM"  },
+										   { "md5": "847cc025ffae665487940ff2639540e5", "file": "bios/MSX2P.ROM"    },
+										   { "md5": "7c8243c71d8f143b2531f01afa6a05dc", "file": "bios/MSX2PEXT.ROM" } ] },    
+
+    # ---------- Commodore ---------- #
+    # https://github.com/midwan/amiberry/wiki/Kickstart-ROMs-(BIOS)
 	"amiga":  { "name": "Amiga",	"biosFiles":  [ { "md5": "bb72565701b1b6faece07d68ea5da639", "file": "bios/CD32 Extended-ROM r40.60 (1993)(Commodore)(CD32).rom"                 },
                                                     { "md5": "89da1838a24460e4b93f4f0c5d92d48d", "file": "bios/CDTV Extended-ROM v1.0 (1991)(Commodore)(CDTV)[!].rom"                },
                                                     { "md5": "85ad74194e87c08904327de1a9443b7a", "file": "bios/Kickstart v1.2 r33.180 (1986)(Commodore)(A500-A1000-A2000)[!].rom"    },
@@ -34,136 +123,12 @@ systems = {
                                                     { "md5": "413590e50098a056cfec418d3df0212d", "file": "bios/Kickstart v3.1 r40.68 (1993)(Commodore)(A3000).rom"                   },
                                                     { "md5": "9bdedde6a4f33555b4a270c8ca53297d", "file": "bios/Kickstart v3.1 r40.68 (1993)(Commodore)(A4000).rom"                   },
                                                     { "md5": "5f8924d013dd57a89cf349f4cdedc6b1", "file": "bios/kick40060.CD32"                                                       },
-                                                    { "md5": "bb72565701b1b6faece07d68ea5da639", "file": "bios/kick40060.CD32.ext"                                                   } ] },
-
-
-    # Magnavox and Philips
-	"o2em": { "name": "Odyssey 2", "biosFiles": [ { "md5": "562d5ebf9e030a40d6fabfc2f33139fd", "file": "bios/o2rom.bin" },
-												  { "md5": "f1071cdb0b6b10dde94d3bc8a6146387", "file": "bios/c52.bin"   },
-												  { "md5": "c500ff71236068e0dc0d0603d265ae76", "file": "bios/g7400.bin" },
-												  { "md5": "279008e4a0db2dc5f1c048853b033828", "file": "bios/jopac.bin" } ] },
-
-
-    # Mattel
-    "intellivision": { "name": "Mattel Intellivision", "biosFiles": [ { "md5": "62e761035cb657903761800f4437b8af", "file": "bios/exec.bin"   },
-																	  { "md5": "0cd5946c6473e42e8e4c2137785e427f", "file": "bios/grom.bin"   },
-																	  { "md5": "2e72a9a2b897d330a35c8b07a6146c52", "file": "bios/ECS.bin"    },
-																	  { "md5": "d5530f74681ec6e0f282dab42e6b1c5f", "file": "bios/IVOICE.bin" } ] },
-
-
-    # Microsoft
-    "msx": { "name": "MSX", "biosFiles": [ { "md5": "364a1a579fe5cb8dba54519bcfcdac0d", "file": "bios/MSX.ROM"      },
-										   { "md5": "ec3a01c91f24fbddcbcab0ad301bc9ef", "file": "bios/MSX2.ROM"     },
-										   { "md5": "2183c2aff17cf4297bdb496de78c2e8a", "file": "bios/MSX2EXT.ROM"  },
-										   { "md5": "847cc025ffae665487940ff2639540e5", "file": "bios/MSX2P.ROM"    },
-										   { "md5": "7c8243c71d8f143b2531f01afa6a05dc", "file": "bios/MSX2PEXT.ROM" },
-										   { "md5": "80dcd1ad1a4cf65d64b7ba10504e8190", "file": "bios/DISK.ROM"	    },
-										   { "md5": "6f69cc8b5ed761b03afd78000dfb0e19", "file": "bios/FMPAC.ROM"    },
-										   { "md5": "6418d091cd6907bbcf940324339e43bb", "file": "bios/MSXDOS2.ROM"  },
-										   { "md5": "403cdea1cbd2bb24fae506941f8f655e", "file": "bios/PAINTER.ROM"  },
-										   { "md5": "febe8782b466d7c3b16de6d104826b34", "file": "bios/KANJI.ROM"    } ] },
-
-
-    # NEC
-	"pcengine":   { "name": "PC Engine", "biosFiles":  [ { "md5": "ff1a674273fe3540ccef576376407d1d", "file": "bios/syscard3.pce" } ] },
-    "pcfx":       { "name": "PC-FX", "biosFiles":      [ { "md5": "08e36edbea28a017f79f8d4f7ff9b6d7", "file": "bios/pcfx.rom"     } ] },
-    "supergrafx": { "name": "Supergrafx", "biosFiles": [ { "md5": "ff1a674273fe3540ccef576376407d1d", "file": "bios/syscard3.pce" },
-														 { "md5": "", "file": "bios/syscard2.pce"								  },
-														 { "md5": "", "file": "bios/syscard1.pce"								  },
-														 { "md5": "", "file": "bios/gexpress.pce"								  } ] },
-
-
-    # Nintendo
-	"fds":         { "name": "Nintendo Family Computer Disk System", "biosFiles": [ { "md5": "7bfe8c0540ed4bd6a0f1e2a0f0118ced", "file": "bios/NstDatabase.xml" },
-																		            { "md5": "ca30b50f880eb660a320674ed365ef7a", "file": "bios/disksys.rom"     } ] },
-    "gb":          { "name": "Game Boy", "biosFiles":                             [ { "md5": "32fbbd84168d3482956eb3c5051637f5", "file": "bios/gb_bios.bin"  	},
-											                                        { "md5": "dbfce9db9deaa2567f6a84fde55f9680", "file": "bios/gbc_bios.bin" 	} ] },
-	"gbc":         { "name": "Game Boy Color", "biosFiles":                       [ { "md5": "32fbbd84168d3482956eb3c5051637f5", "file": "bios/gb_bios.bin"  	},
-													                                { "md5": "dbfce9db9deaa2567f6a84fde55f9680", "file": "bios/gbc_bios.bin" 	} ] },
-    "gba":         { "name": "Game Boy Advance", "biosFiles":                     [ { "md5": "a860e8c0b6d573d191e4ec7db1b1e4f6", "file": "bios/gba_bios.bin" 	},
-														                            { "md5": "32fbbd84168d3482956eb3c5051637f5", "file": "bios/gb_bios.bin"  	},
-														                            { "md5": "dbfce9db9deaa2567f6a84fde55f9680", "file": "bios/gbc_bios.bin" 	},
-														                            { "md5": "d574d4f9c12f305074798f54c091a8b4", "file": "bios/sgb_bios.bin" 	} ] },
-    "n64":         { "name": "Nintendo 64", "biosFiles":                          [ { "md5": "8d3d9f294b6e174bc7b1d2fd1c727530", "file": "bios/64DD_IPL.bin"    } ] },
-    "nds":         { "name": "Nintendo DS", "biosFiles":                          [ { "md5": "145eaef5bd3037cbc247c213bb3da1b3", "file": "bios/firmware.bin" 	},
-												                                    { "md5": "df692a80a5b1bc90728bc3dfc76cd948", "file": "bios/bios7.bin"    	},
-												                                    { "md5": "a392174eb3e572fed6447e956bde4b25", "file": "bios/bios9.bin"    	} ] },
-    "pokemini":    { "name": "Nintendo Pokemon Mini", "biosFiles":                [ { "md5": "1e4fb124a3a886865acb574f388c803d", "file": "bios/bios.min"        } ] },
-    "satellaview": { "name": "Satellaview", "biosFiles":                          [ { "md5": "fed4d8242cfbed61343d53d48432aced", "file": "bios/BS-X.bin"        } ] },
-    "sufami":      { "name": "Sufami", "biosFiles":                               [ { "md5": "d3a44ba7d42a74d3ac58cb9c14c6a5ca", "file": "bios/STBIOS.bin"      } ] },
-
-
-    # Panasonic, Sanyo and Goldstar
-    "3do":	{ "name": "3DO", "biosFiles": [ { "md5": "f47264dd47fe30f73ab3c010015c155b", "file": "bios/panafz1.bin"			},
-											{ "md5": "51f2f43ae2f3508a14d9f56597e2d3ce", "file": "bios/panafz10.bin"		},
-											{ "md5": "8639fd5e549bd6238cfee79e3e749114", "file": "bios/goldstar.bin"		},
-											{ "md5": "35fa1a1ebaaeea286dc5cd15487c13ea", "file": "bios/sanyotry.bin"		},
-											{ "md5": "8970fc987ab89a7f64da9f8a8c4333ff", "file": "bios/3do_arcade_saot.bin" } ] },
-
-
-    # PrBoom Team
-    "prboom": { "name": "Doom (PrBoom)", "biosFiles": [ { "md5": "", "file": "roms/prboom/prboom.wad" } ] },
-
-
-    # Sega
-    "dreamcast":    { "name": "Dreamcast", "biosFiles":    [ { "md5": "e10c53c2f8b90bab96ead2d368858623", "file": "bios/dc_boot.bin"   	  },
-													         { "md5": "0a93f7940c455905bea6e392dfde92a4", "file": "bios/dc_flash.bin"  	  } ] },
-    "gamegear":     { "name": "Game Gear", "biosFiles":    [ { "md5": "672e104c3be3a238301aceffc3b23fd6", "file": "bios/bios.gg" 	   	  } ] },
-    "mastersystem": { "name": "MasterSystem", "biosFiles": [ { "md5": "840481177270d5642a14ca71ee72844c", "file": "bios/bios_E.sms"    	  },
-															 { "md5": "840481177270d5642a14ca71ee72844c", "file": "bios/bios_U.sms"    	  },
-															 { "md5": "24a519c53f67b00640d0048ef7089105", "file": "bios/bios_J.sms"    	  } ] },
-    "sega32x":      { "name": "Sega 32x", "biosFiles":     [ { "md5": "e66fa1dc5820d254611fdcdba0662372", "file": "bios/bios_CD_E.bin" 	  },
-													         { "md5": "854b9150240a198070150e4566ae1290", "file": "bios/bios_CD_U.bin" 	  },
-													         { "md5": "278a9397d192149e84e820ac621a8edd", "file": "bios/bios_CD_J.bin"	  } ] },
-    "saturn":       { "name": "Sega Saturn", "biosFiles":  [ { "md5": "af5828fdff51384f99b3c4926be27762", "file": "bios/saturn_bios.bin"  },
-													         { "md5": "85ec9ca47d8f6807718151cbcca8b964", "file": "bios/sega_101.bin"	  },
-													         { "md5": "3240872c70984b6cbfda1586cab68dbe", "file": "bios/mpr-17933.bin"	  },
-													         { "md5": "255113ba943c92a54facd25a10fd780c", "file": "bios/mpr-18811-mx.ic1" },
-													         { "md5": "1cd19988d1d72a3e7caa0b73234c96b4", "file": "bios/mpr-19367-mx.ic1" },
-													         { "md5": "",                                 "file": "bios/stvbios.zip"	  } ] },
-    "segacd":       { "name": "Sega CD", "biosFiles":      [ { "md5": "e66fa1dc5820d254611fdcdba0662372", "file": "bios/bios_CD_E.bin" 	  },
-												             { "md5": "854b9150240a198070150e4566ae1290", "file": "bios/bios_CD_U.bin" 	  },
-												             { "md5": "278a9397d192149e84e820ac621a8edd", "file": "bios/bios_CD_J.bin" 	  } ] },
-    "naomi":        { "name": "Naomi", "biosFiles":        [ { "md5": "3bffafac42a7767d8dcecf771f5552ba", "file": "bios/naomi.bin"        },
-                                                             { "md5": "eb4099aeb42ef089cfe94f8fe95e51f6", "file": "bios/naomi.zip"        } ] },
-    "atomiswave":   { "name": "Atomiswave", "biosFiles":   [ { "md5": "0ec5ae5b5a5c4959fa8b43fcf8687f7c", "file": "bios/awbios.zip"       } ] },
-
-
-    # Sharp
-    "x68000": { "name": "Sharp x68000", "biosFiles": [ { "md5": "", "file": "bios/keropi/iplrom.dat"   },
-													   { "md5": "", "file": "bios/keropi/iplrom30.dat" },
-													   { "md5": "", "file": "bios/keropi/iplromco.dat" },
-													   { "md5": "", "file": "bios/keropi/iplromxv.dat" },
-													   { "md5": "", "file": "bios/keropi/cgrom.dat"	   } ] },
-
-
-    # SNK
-	"neogeo":   { "name": "NeoGeo", "biosFiles":    [ { "md5": "", "file": "roms/neogeo/neogeo.zip" } ] },
-	"neogeocd": { "name": "NeoGeo CD", "biosFiles": [ { "md5": "", "file": "bios/neogeo.zip" },
-													  { "md5": "", "file": "bios/neocdz.zip" },
-                                                      { "md5": "", "file": "bios/ng-lo.rom"  },
-                                                      { "md5": "", "file": "bios/neocd_z.rom"} ] },
-
-
-    # Sony Computer Entertainment
-    "psx": { "name": "PSX", "biosFiles": [ { "md5": "6e3735ff4c7dc899ee98981385f6f3d0", "file": "bios/scph101.bin"    },
-                                           { "md5": "dc2b9bf8da62ec93e868cfd29f0d067d", "file": "bios/scph1001.bin"   },
-                                           { "md5": "8dd7d5296a650fac7319bce665a6a53c", "file": "bios/scph5500.bin"   },
-										   { "md5": "490f666e1afb15b7362b406ed1cea246", "file": "bios/scph5501.bin"   },
-										   { "md5": "32736f17079d0b2b7024407c39bd3050", "file": "bios/scph5502.bin"   },
-                                           { "md5": "1e68c231d0896b7eadcad1d7d8e76129", "file": "bios/scph7001.bin"   } ] },
-    "ps2": { "name": "PS2", "biosFiles": [ { "md5": "28922c703cc7d2cf856f177f2985b3a9", "file": "bios/SCPH30004R.bin" },
-										   { "md5": "3faf7c064a4984f53e2ef5e80ed543bc", "file": "bios/SCPH30004R.MEC" },
-										   { "md5": "d5ce2c7d119f563ce04bc04dbc3a323e", "file": "bios/scph39001.bin"  },
-										   { "md5": "3faf7c064a4984f53e2ef5e80ed543bc", "file": "bios/scph39001.MEC"  },
-										   { "md5": "9a9e8ed7668e6adfc8f7766c08ab9cd0", "file": "bios/EROM.BIN" 	  },
-										   { "md5": "44552702b05697a14ccbe2ca22ee7139", "file": "bios/rom1.bin" 	  },
-										   { "md5": "b406d05922dac2eaf3c2e68157b1b468", "file": "bios/ROM2.BIN" 	  } ] },
+                                                    { "md5": "bb72565701b1b6faece07d68ea5da639", "file": "bios/kick40060.CD32.ext"                                                   }] },
 }
 
 class BiosStatus:
     MISSING = "MISSING"
-    INVALID = "INVALID"
+    UNTESTED = "UNTESTED"
 
 def md5sum(filename, blocksize=65536):
     hash = md5()
@@ -182,7 +147,7 @@ def checkBios(systems, prefix):
                 if md5 != file["md5"] and file["md5"] != "":
                     if system not in missingBios:
                         missingBios[system] = {}
-                    missingBios[system][file["file"]] = { "status": BiosStatus.INVALID, "md5": file["md5"], "file": file["file"] }
+                    missingBios[system][file["file"]] = { "status": BiosStatus.UNTESTED, "md5": file["md5"], "file": file["file"] }
             else:
                 if system not in missingBios:
                     missingBios[system] = {}
