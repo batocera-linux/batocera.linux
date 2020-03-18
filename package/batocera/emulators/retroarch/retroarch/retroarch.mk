@@ -4,7 +4,13 @@
 #
 ################################################################################
 # Version.: Commits on Mar 6, 2020 (v1.8.5)
-RETROARCH_VERSION = f9fa57bf801703e2ade04d23bf21105160875599
+
+ifeq($(BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA),y)
+	RETROARCH_VERSION = f9fa57bf801703e2ade04d23bf21105160875599
+else
+	RETROARCH_VERSION = v1.8.4
+endif
+
 RETROARCH_SITE = $(call github,libretro,RetroArch,$(RETROARCH_VERSION))
 RETROARCH_LICENSE = GPLv3+
 RETROARCH_DEPENDENCIES = host-pkgconf dejavu retroarch-assets flac
