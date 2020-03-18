@@ -109,21 +109,28 @@ systems = {
 										   { "md5": "7c8243c71d8f143b2531f01afa6a05dc", "file": "bios/MSX2PEXT.ROM" } ] },    
 
     # ---------- Commodore ---------- #
+    # https://github.com/libretro/libretro-super/blob/master/dist/info/puae_libretro.info
     # https://github.com/midwan/amiberry/wiki/Kickstart-ROMs-(BIOS)
-	"amiga":  { "name": "Amiga",	"biosFiles":  [ { "md5": "bb72565701b1b6faece07d68ea5da639", "file": "bios/CD32 Extended-ROM r40.60 (1993)(Commodore)(CD32).rom"                 },
-                                                    { "md5": "89da1838a24460e4b93f4f0c5d92d48d", "file": "bios/CDTV Extended-ROM v1.0 (1991)(Commodore)(CDTV)[!].rom"                },
-                                                    { "md5": "85ad74194e87c08904327de1a9443b7a", "file": "bios/Kickstart v1.2 r33.180 (1986)(Commodore)(A500-A1000-A2000)[!].rom"    },
-                                                    { "md5": "68c9c0826f6c0ca20546d588ee77391c", "file": "bios/Kickstart v1.2 rev 33.166 (1986)(Commodore)(A1000).rom"               },
-                                                    { "md5": "192d6d950d0ed3df8040b788502831c2", "file": "bios/Kickstart v1.3 r34.5 (1987)(Commodore)(A500-A1000-A2000-CDTV)[o].rom" },
-                                                    { "md5": "82a21c1890cae844b3df741f2762d48d", "file": "bios/Kickstart v1.3 r34.5 (1987)(Commodore)(A500-A1000-A2000-CDTV)[!].rom" },
-                                                    { "md5": "dc10d7bdd1b6f450773dfb558477c230", "file": "bios/Kickstart v2.04 r37.175 (1991)(Commodore)(A500+)[!].rom"              },
-                                                    { "md5": "465646c9b6729f77eea5314d1f057951", "file": "bios/Kickstart v2.05 r37.350 (1992)(Commodore)(A600HD)[!].rom"             },
-                                                    { "md5": "5f8924d013dd57a89cf349f4cdedc6b1", "file": "bios/Kickstart v3.1 r40.60 (1993)(Commodore)(CD32).rom"                    },
-                                                    { "md5": "646773759326fbac3b2311fd8c8793ee", "file": "bios/Kickstart v3.1 r40.68 (1993)(Commodore)(A1200)[!].rom"                },
-                                                    { "md5": "413590e50098a056cfec418d3df0212d", "file": "bios/Kickstart v3.1 r40.68 (1993)(Commodore)(A3000).rom"                   },
-                                                    { "md5": "9bdedde6a4f33555b4a270c8ca53297d", "file": "bios/Kickstart v3.1 r40.68 (1993)(Commodore)(A4000).rom"                   },
-                                                    { "md5": "5f8924d013dd57a89cf349f4cdedc6b1", "file": "bios/kick40060.CD32"                                                       },
-                                                    { "md5": "bb72565701b1b6faece07d68ea5da639", "file": "bios/kick40060.CD32.ext"                                                   }] },
+	"amiga":  { "name": "Amiga",	"biosFiles":  [ { "md5": "85ad74194e87c08904327de1a9443b7a", "file": "bios/kick33180.A500"      },
+                                                    { "md5": "82a21c1890cae844b3df741f2762d48d", "file": "bios/kick34005.A500"      },
+                                                    { "md5": "dc10d7bdd1b6f450773dfb558477c230", "file": "bios/kick37175.A500"      },
+                                                    { "md5": "e40a5dfb3d017ba8779faba30cbd1c8e", "file": "bios/kick40063.A600"      },
+                                                    { "md5": "b7cc148386aa631136f510cd29e42fc3", "file": "bios/kick39106.A1200"     },
+                                                    { "md5": "646773759326fbac3b2311fd8c8793ee", "file": "bios/kick40068.A1200"     },
+                                                    { "md5": "9bdedde6a4f33555b4a270c8ca53297d", "file": "bios/kick40068.A4000"     },
+                                                    { "md5": "5f8924d013dd57a89cf349f4cdedc6b1", "file": "bios/kick40060.CD32"      },
+                                                    { "md5": "bb72565701b1b6faece07d68ea5da639", "file": "bios/kick40060.CD32.ext"  },
+                                                    # https://fs-uae.net/docs/kickstarts
+                                                    { "md5": "82a21c1890cae844b3df741f2762d48d", "file": "bios/amiga-os-130.rom"        },
+                                                    { "md5": "646773759326fbac3b2311fd8c8793ee", "file": "bios/amiga-os-310-a1200.rom"  },
+                                                    { "md5": "dc10d7bdd1b6f450773dfb558477c230", "file": "bios/amiga-os-204.rom"        },
+                                                    { "md5": "465646c9b6729f77eea5314d1f057951", "file": "bios/amiga-os-205.rom"        },
+                                                    { "md5": "413590e50098a056cfec418d3df0212d", "file": "bios/amiga-os-310-a3000.rom"  },
+                                                    { "md5": "730888fb1bd9a3606d51f772ed136528", "file": "bios/amiga-os-310.rom"        },
+                                                    { "md5": "85ad74194e87c08904327de1a9443b7a", "file": "bios/amiga-os-120.rom"        },
+                                                    { "md5": "5f8924d013dd57a89cf349f4cdedc6b1", "file": "bios/amiga-os-310-cd32.rom"   },
+                                                    { "md5": "bb72565701b1b6faece07d68ea5da639", "file": "bios/amiga-ext-310-cd32.rom"  },
+                                                    { "md5": "89da1838a24460e4b93f4f0c5d92d48d", "file": "bios/amiga-ext-130-cdtv.rom"  }] },
 }
 
 class BiosStatus:
