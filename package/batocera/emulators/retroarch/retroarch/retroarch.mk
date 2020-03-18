@@ -5,7 +5,7 @@
 ################################################################################
 # Version.: Commits on Mar 6, 2020 (v1.8.5)
 
-ifeq($(BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA),y)
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA),y)
 	RETROARCH_VERSION = f9fa57bf801703e2ade04d23bf21105160875599
 else
 	RETROARCH_VERSION = v1.8.4
