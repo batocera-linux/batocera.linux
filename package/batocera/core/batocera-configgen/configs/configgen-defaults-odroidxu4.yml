@@ -17,3 +17,12 @@ amiga1200:
 amigacd32:
   emulator: amiberry
   core:     CD32
+psx:
+  options:
+    # menu retroarch
+    # settings to fix sound issue only on Odroid XU4
+    retroarch.audio_latency:      128
+    retroarch.audio_out_rate:     44100
+    retroarch.audio_rate_control: 1
+    retroarch.audio_sync:         1
+    retroarch.video_hard_sync:    1
