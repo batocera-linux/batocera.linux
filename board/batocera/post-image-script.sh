@@ -470,7 +470,7 @@ case "${BATOCERA_TARGET}" in
 
 	# boot.tar.xz
 	echo "creating boot.tar.xz"
-	(cd "${BINARIES_DIR}/boot" && tar -I "xz -T0" -cJf "${BATOCERA_BINARIES_DIR}/boot.tar.xz" boot.ini boot batocera-boot.conf) || exit 1
+	(cd "${BINARIES_DIR}/boot" && tar -I "xz -T0" -cf "${BATOCERA_BINARIES_DIR}/boot.tar.xz" boot.ini boot batocera-boot.conf) || exit 1
 
 	# blobs
 	for F in idbloader.img uboot.img trust.img
