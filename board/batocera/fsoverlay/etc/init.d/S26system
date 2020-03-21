@@ -5,10 +5,7 @@ config_script=batocera-config
 log="/userdata/system/logs/batocera.log"
 
 rb_volume_configure() {
-    settingsVolume="`$systemsetting -command load -key audio.volume`"
-    if [ "$settingsVolume" != "" ];then
-        eval $config_script "volume" "$settingsVolume" >> $log
-    fi
+    batocera-audio "unlock-volume" >> $log
 }
 
 batocera_audio_configure() {
