@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [ ! "$1" ];then
-	echo -e "usage : batocera-config [command] [args]\nWith command in\n\toverscan [enable|disable]\n\tlsaudio\n\tgetaudio\n\taudio [hdmi|jack|auto|custom|x,y]\n\tcanupdate\n\tupdate\n\tstorage [current|list|INTERNAL|ANYEXTERNAL|RAM|DEV UUID]\n\tsetRootPassword [password]\n\tgetRootPassword\n\ttz [|tz]"
+	echo -e "usage : batocera-config [command] [args]\nWith command in\n\toverscan [enable|disable]\n\tcanupdate\n\tupdate\n\tstorage [current|list|INTERNAL|ANYEXTERNAL|RAM|DEV UUID]\n\tsetRootPassword [password]\n\tgetRootPassword\n\ttz [|tz]"
 	exit 1
 fi
 configFile="/boot/config.txt"
@@ -149,114 +149,6 @@ if [ "$command" == "lsoutputs" ]
 then
     echo "auto"
     batocera-resolution listOutputs
-fi
-
-if [ "$command" == "lsaudio" ];then
-    if [[ "${arch}" =~ "rpi" ]]
-    then
-	echo "hdmi"
-	echo "jack"
-	echo "auto"
-    elif [[ "${arch}" =~ "odroidgoa" ]];then
-	echo "auto"
-	echo "speakers"
-	echo "headphone"
-    else
-	echo "auto"
-	echo "custom"
-	LANG=C aplay -l | grep -E '^card [0-9]*:' | sed -e s+'^card \([0-9]*\): \(.*\), device \([0-9]*\): [^\[]* \[\([^]]*\)].*$'+'\1,\3 \4 \2'+
-    fi
-fi
-
-if [ "$command" == "getaudio" ];then
-    $systemsetting -command load -key audio.device
-    exit 0
-fi
-
-if [ "$command" == "audio" ];then
-    # this code is specific to the rpi
-    # don't set it on other boards
-    # find a more generic way would be nice
-    if [[ "${arch}" =~ "rpi" ]]
-    then
-	# this is specific to the rpi
-	cmdVal="0"
-	if [ "$mode" == "hdmi" ];then
-	    cmdVal="2"
-	elif [ "$mode" == "jack" ];then
-	    cmdVal="1"
-	fi
-        echo "setting audio output mode : $mode" >> $log
-	amixer cset numid=3 $cmdVal || exit 1
-    elif [[ "${arch}" =~ "odroidgoa" ]]
-    then
-	case "${mode}" in
-	    "auto"|"speakers")
-		amixer cset name='Playback Path' SPK
-		;;
-	    "headphone")
-		amixer cset name='Playback Path' HP
-		;;
-	esac
-    else
-	# auto: no .asoundrc file
-	# custom: don't touch the .asoundrc file
-	# any other, create the .asoundrd file
-	if [ "$mode" == "auto" ];then
-	    rm -rf /userdata/system/.asoundrc || exit 1
-	elif [ "$mode" != "custom" ];then
-	    if echo "${mode}" | grep -qE '^[0-9]*,[0-9]* '
-	    then
-		cardnb=$(echo "${mode}" | sed -e s+'^\([0-9]*\),.*$'+'\1'+)
-		devicenb=$(echo "${mode}" | sed -e s+'^[0-9]*,\([0-9]*\) .*$'+'\1'+)
-		cat > /userdata/system/.asoundrc <<EOF
-pcm.!default {
-	type plug
-	slave.pcm "dmixer"
-}
-
-# configuration de Dmix
-pcm.dmixer  {
-	type dmix
-	ipc_key 1024
-	slave {
-	    pcm "hw:${cardnb},${devicenb}"
-	    period_time 0
-	    period_size 1024
-	    buffer_size 4096
-	    rate 44100
-	}
-	bindings {
-	    0 0
-	    1 1
-	}
-}
-
-ctl.!default { type hw card ${cardnb} }
-EOF
-		aplay "/usr/share/sounds/Mallet.wav"
-	    fi
-	fi
-
-    fi
-    exit 0
-fi
-
-if [ "$command" == "volume" ];then
-	if [ "$mode" != "" ];then
-        	echo "setting audio volume : $mode" >> $log
-
-		# on my pc, the master is turned off at boot
-		# i don't know what are the rules to set here.
-		amixer set Master unmute      || exit 1
-                amixer set Master    -- ${mode}% || exit 1
-
-		# maximize the sound to be sure it's not 0, allow errors
-		amixer set PCM       -- 100% #|| exit 1
-		amixer set Headphone -- 100% #|| exit 1
-		exit 0
-	fi
-	exit 12
 fi
 
 if [ "$command" == "gpiocontrollers" ];then

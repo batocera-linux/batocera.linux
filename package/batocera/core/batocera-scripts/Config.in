@@ -5,3 +5,23 @@ config BR2_PACKAGE_BATOCERA_SCRIPTS
 
         help
          Batocera scripts
+
+choice
+        prompt "audio type"
+        default BR2_PACKAGE_BATOCERA_AUDIO_NONE
+        help
+          Select batocera.linux audio type
+
+config BR2_PACKAGE_BATOCERA_AUDIO_NONE
+        bool "pure alsa"
+
+config BR2_PACKAGE_BATOCERA_AUDIO_DMIX
+        bool "alsa + dmix"
+
+config BR2_PACKAGE_BATOCERA_AUDIO_RPI
+        bool "alsa for rpi"
+
+config BR2_PACKAGE_BATOCERA_AUDIO_ODROIDGO
+        bool "alsa for odroidgoa"
+
+endchoice
