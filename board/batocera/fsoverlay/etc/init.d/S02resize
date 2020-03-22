@@ -7,34 +7,42 @@ test "$1" != "start" && exit 0
 # only when resizing is wanted
 grep -qE '^[ ]*autoresize[ ]*=[ ]*true[ ]*$' "${BOOTCONF}" || exit 0
 
-# Spinner Animation
-# Inspired from LibreELEC - https://libreelec.tv
-function textoutput()
+# UI Output with dialog, default colorset
+function dialogoutput()
 {
-    local msg="$1"
-    local cmd="$2"
-    local pid count spinner
-    $cmd &>/dev/null &
-    pid=$!
-    echo -e -n "${msg}\t" &>/dev/tty1
-    spinner='|/-\'
-    while kill -0 $pid 2>/dev/null; do
-        echo -n "[${spinner:$count:1}]" &>/dev/tty1
-        sleep 0.1
-        echo -e -n "\b\b\b" &>/dev/tty1
-        count=$(((count + 1) % 4))
-    done
-    echo "Done!" &>/dev/tty1
+    local percent="$1"
+    local text="Do not switch off your device!"
+
+    dialog --backtitle "batocera.linux" --title " Resizing Partition " \
+           --mixedgauge "$text" 18 50 "$percent" "${arr[@]}" &>/dev/tty1
 }
 
-# Hide frame-buffer cursor // from LibreELEC - https://libreelec.tv
-function hidecursor()
+# Executing parameters and watch background pid
+# Changes text messages parsed to dialog --mixedgauge
+function textoutput()
 {
-    echo -en "\033[?25l"
-    if [ -f /sys/devices/virtual/graphics/fbcon/cursor_blink ] ; then
-        echo 0 > /sys/devices/virtual/graphics/fbcon/cursor_blink
-    fi
+    local cmd="$3"
+    local percent="$2"
+    local pid ret
+    $cmd &>/dev/null &
+    ret=$?
+    pid=$!
+    arr[$1]=7 #msg: In Progress
+    dialogoutput "$percent"
+    wait $pid
+    arr[$1]=$ret #msg: Depends from return value
 }
+
+# Preparing text arrays
+arr=(
+     "Removing trigger....." "Pending"
+     "Syncing disk data...." "Pending"
+     "Checking disk table.." "Pending"
+     "Resizing partition..." "Pending"
+     "Checking /userdata..." "Pending"
+     "Resizing /userdata..." "Pending"
+     "Finishing up........." 8
+    )
 
 # --- BEGIN RESIZE ---
 # /userdata partition
@@ -42,19 +50,24 @@ PART=$(batocera-part "share_internal")
 # boot disk
 DISK=$(batocera-part prefix "${PART}")
 
-hidecursor
-
-echo -e "\nPARTITION RESIZING IN PROGRESS\n" &>/dev/tty1
-echo -e "Please do not reboot or turn off your device!\n\n" &>/dev/tty1
-
 # fix any minor issues, such as gpt header not at end of disk
-# textoutput "Message" "command call"
 # remove the trigger
 mount -o remount,rw /boot && sed -i -e s+'^[ ]*autoresize'+'#autoresize'+ "${BOOTCONF}" && mount -o remount,ro /boot
-textoutput "Syncing disk data........." "sync"
-textoutput "Checking disk table......." "sgdisk -e ${DISK}"
-textoutput "Resizing partition........" "parted -s -m ${DISK} resizepart 2 100%"
-textoutput "Checking /userdata........" "e2fsck -f -p ${PART}"
-textoutput "Resizing /userdata........" "resize2fs ${PART}"
+
+# textoutput "Message" "percentage" "command call" 
+for i in 1 3 5 7 9 11 13; do
+    case $i in
+       1) textoutput $i 01 "sleep 0.1";;
+       3) textoutput $i 10 "sync";;
+       5) textoutput $i 30 "sgdisk -e ${DISK}";;
+       7) textoutput $i 45 "parted -s -m ${DISK} resizepart 2 100%";;
+       9) textoutput $i 85 "e2fsck -f -p ${PART}";;
+      11) textoutput $i 95 "resize2fs ${PART}";;
+      13) textoutput $i 99 "sleep 1";;
+    esac
+done
+
+#Cleanup, restore screen, set progress of last item to 100%
+dialogoutput 100
 clear > /dev/tty1
 exit 0
