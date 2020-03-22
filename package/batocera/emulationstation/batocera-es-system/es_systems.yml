@@ -1017,6 +1017,24 @@ lightgun:
           Un exemple de setup qui fonctionne est si vous utilisez une DolphinBar en 'mode 2' (mode jeu clavier/souris) avec une Wiimote comme flingue.
           Si vous avez plus d'une souris installee, assurez-vous que la DolphinBar / Wiimote soit reconnue comme une des deux premieres.
 
+windows:
+  name:       Windows
+  extensions: [exe, iso, wine, squashfs]
+  platform:   pc
+  theme:      pc
+  emulators:
+    wine:
+      wine:  { requireAnyOf: [BR2_PACKAGE_WINE] }
+
+windows_installers:
+  name:       Windows installers
+  extensions: [exe, iso, wine]
+  platform:   pc
+  theme:      pc
+  emulators:
+    wine:
+      wine:  { requireAnyOf: [BR2_PACKAGE_WINE] }
+
 imageviewer:
   name:       Screenshots
   extensions: [jpg, jpeg, png, bmp, psd, tga, gif, hdr, pic, ppm, pgm, mkv]
