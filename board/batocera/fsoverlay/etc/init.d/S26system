@@ -13,7 +13,7 @@ batocera_audio_configure() {
     if [[ "$settingsAudio" == "" ]];then
         settingsAudio="auto"
     fi
-    eval $config_script "audio" "$settingsAudio" >> $log
+    batocera-audio set "$settingsAudio" >> $log
 }
 
 rb_gpio_configure() {
