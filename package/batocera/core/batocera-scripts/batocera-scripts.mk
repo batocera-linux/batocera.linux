@@ -57,7 +57,7 @@ define BATOCERA_SCRIPTS_INSTALL_TARGET_CMDS
 endef
 
 define BATOCERA_SCRIPTS_INSTALL_AUDIO_DMIX
-	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-scripts/alsa/asound.conf.dmix /etc/asound.conf
+	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-scripts/alsa/asound.conf.dmix $(TARGET_DIR)/etc/asound.conf
 endef
 
 define BATOCERA_SCRIPTS_INSTALL_XORG
