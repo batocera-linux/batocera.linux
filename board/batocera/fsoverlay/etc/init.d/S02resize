@@ -15,7 +15,7 @@ function textoutput()
     local cmd="$2"
     local showme="$3"
     local pid count spinner
-    if [ "$showme" == "hide"]; then
+    if [[ "$showme" == "hide"]]; then
         $cmd &>/dev/null &
     else
         $cmd &>/dev/tty1 &
