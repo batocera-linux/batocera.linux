@@ -13,13 +13,8 @@ function textoutput()
 {
     local msg="$1"
     local cmd="$2"
-    local showme="$3"
     local pid count spinner
-    if [[ "$showme" == "hide"]]; then
-        $cmd &>/dev/null &
-    else
-        $cmd &>/dev/tty1 &
-    fi
+    $cmd &>$3 &
     pid=$!
     echo -e -n "${msg}\t" &>/dev/tty1
     spinner='|/-\'
@@ -57,9 +52,9 @@ echo -e "Please do not reboot or turn off your device!\n\n" &>/dev/tty1
 # remove the trigger
 mount -o remount,rw /boot && sed -i -e s+'^[ ]*autoresize'+'#autoresize'+ "${BOOTCONF}" && mount -o remount,ro /boot
 textoutput "Syncing disk data........." "sync" "hide"
-textoutput "Checking disk table......." "sgdisk -e ${DISK}" "hide"
-textoutput "Resizing partition........" "parted -s -m ${DISK} resizepart 2 100%" "hide"
-textoutput "Checking /userdata........" "e2fsck -f -p ${PART}" "hide"
-textoutput "Resizing /userdata........" "resize2fs -p ${PART}" "show"
+textoutput "Checking disk table......." "sgdisk -e ${DISK}" "/dev/null"
+textoutput "Resizing partition........" "parted -s -m ${DISK} resizepart 2 100%" "/dev/null"
+textoutput "Checking /userdata........" "e2fsck -f -p ${PART}" "/dev/null"
+textoutput "Resizing /userdata........" "resize2fs -p ${PART}" "/dev/tty1"
 clear > /dev/tty1
 exit 0
