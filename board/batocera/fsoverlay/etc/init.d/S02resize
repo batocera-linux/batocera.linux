@@ -51,7 +51,7 @@ echo -e "Please do not reboot or turn off your device!\n\n" &>/dev/tty1
 # textoutput "Message" "command call"
 # remove the trigger
 mount -o remount,rw /boot && sed -i -e s+'^[ ]*autoresize'+'#autoresize'+ "${BOOTCONF}" && mount -o remount,ro /boot
-textoutput "Syncing disk data........." "sync" "hide"
+textoutput "Syncing disk data........." "sync" "/dev/null"
 textoutput "Checking disk table......." "sgdisk -e ${DISK}" "/dev/null"
 textoutput "Resizing partition........" "parted -s -m ${DISK} resizepart 2 100%" "/dev/null"
 textoutput "Checking /userdata........" "e2fsck -f -p ${PART}" "/dev/null"
