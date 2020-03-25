@@ -17,7 +17,7 @@ case "${ACTION}" in
 	;;
 
     "set")
-	MODE=$1
+	MODE=$2
 	case "${MODE}" in
 	    "auto"|"speakers")
 		amixer cset name='Playback Path' SPK
