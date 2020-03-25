@@ -20,7 +20,7 @@ case "${ACTION}" in
 	;;
 
     "set")
-	MODE=$1
+	MODE=$2
 	# this is specific to the rpi
 	cmdVal="0"
 	if [ "${MODE}" == "hdmi" ];then

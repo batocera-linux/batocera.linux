@@ -20,7 +20,7 @@ case "${ACTION}" in
 	;;
 
     "set")
-	MODE=$1
+	MODE=$2
 	# auto: no .asoundrc file
 	# custom: don't touch the .asoundrc file
 	# any other, create the .asoundrd file
