@@ -21,6 +21,7 @@ case "${ACTION}" in
 
     "set")
 	MODE=$1
+	DEVICE=$2
 
 	# auto: no .asoundrc file
 	# custom: don't touch the .asoundrc file
@@ -28,10 +29,8 @@ case "${ACTION}" in
 	if [ "${MODE}" == "auto" ];then
 	    rm -rf /userdata/system/.asoundrc || exit 1
 	elif [ "${MODE}" != "custom" ];then
-	    if echo "${MODE}" | grep -qE '^[0-9]*,[0-9]* '
-	    then
-		cardnb=$(echo "${MODE}" | sed -e s+'^\([0-9]*\),.*$'+'\1'+)
-		devicenb=$(echo "${MODE}" | sed -e s+'^[0-9]*,\([0-9]*\) .*$'+'\1'+)
+	    cardnb=$(echo "${DEVICE}" | sed -e s+'^\([0-9]*\),.*$'+'\1'+)
+		devicenb=$(echo "${DEVICE}" | sed -e s+'^[0-9]*,\([0-9]*\).*$'+'\1'+)
 
 		cat > /userdata/system/.asoundrc <<EOF
 pcm.!default {
@@ -59,7 +58,6 @@ pcm.dmixer  {
 ctl.!default { type hw card ${cardnb} }
 EOF
 		aplay "/usr/share/sounds/Mallet.wav"
-	    fi
 	fi
 	;;
 esac
