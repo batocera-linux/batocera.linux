@@ -164,51 +164,6 @@ case "${BATOCERA_TARGET}" in
 	sync || exit 1
 	;;
 
-	LEGACYXU4)
-	# dirty boot binary files
-	for F in bl1.bin.hardkernel bl2.bin.hardkernel tzsw.bin.hardkernel u-boot.bin.hardkernel
-	do
-		cp "${BUILD_DIR}/uboot-odroid-xu4-odroidxu3-v2012.07/sd_fuse/hardkernel/${F}" "${BINARIES_DIR}" || exit 1
-	done
-
-	# /boot
-	rm -rf "${BINARIES_DIR}/boot"         || exit 1
-	mkdir -p "${BINARIES_DIR}/boot/boot"  || exit 1
-	cp "${BR2_EXTERNAL_BATOCERA_PATH}/board/batocera/legacyodroidxu4/boot/boot.ini" "${BINARIES_DIR}/boot/boot.ini"        	 || exit 1
-	cp "${BINARIES_DIR}/zImage"            "${BINARIES_DIR}/boot/boot/linux"      	 || exit 1
-	cp "${BINARIES_DIR}/uInitrd"           "${BINARIES_DIR}/boot/boot/uInitrd"    	 || exit 1
-
-	# develop mode : use ext2 instead of squashfs
-	ROOTFSEXT2=0
-	grep -qE "^BR2_TARGET_ROOTFS_EXT2=y$" "${BR2_CONFIG}" && ROOTFSEXT2=1
-	if test "${ROOTFSEXT2}" = 1
-	then
-		cp "${BINARIES_DIR}/rootfs.ext2" "${BINARIES_DIR}/boot/boot/batocera.update" || exit 1
-	else
-		cp "${BINARIES_DIR}/rootfs.squashfs" "${BINARIES_DIR}/boot/boot/batocera.update" || exit 1
-	fi
-	cp "${BINARIES_DIR}/exynos5422-odroidxu3.dtb" "${BINARIES_DIR}/boot/boot/exynos5422-odroidxu3.dtb" || exit 1
-	cp "${BINARIES_DIR}/batocera-boot.conf" "${BINARIES_DIR}/boot/batocera-boot.conf"                  || exit 1
-
-	# boot.tar.xz
-	echo "creating boot.tar.xz"
-	(cd "${BINARIES_DIR}/boot" && tar -I "xz -T0" -cf "${BATOCERA_BINARIES_DIR}/boot.tar.xz" boot.ini boot batocera-boot.conf) || exit 1
-
-	# batocera.img
-	# rename the squashfs : the .update is the version that will be renamed at boot to replace the old version
-	mv "${BINARIES_DIR}/boot/boot/batocera.update" "${BINARIES_DIR}/boot/boot/batocera" || exit 1
-	GENIMAGE_TMP="${BUILD_DIR}/genimage.tmp"
-	BATOCERAIMG="${BATOCERA_BINARIES_DIR}/batocera.img"
-	rm -rf "${GENIMAGE_TMP}" || exit 1
-	cp "${BR2_EXTERNAL_BATOCERA_PATH}/board/batocera/legacyodroidxu4/genimage.cfg" "${BINARIES_DIR}" || exit 1
-	echo "generating image"
-	genimage --rootpath="${TARGET_DIR}" --inputpath="${BINARIES_DIR}/boot" --outputpath="${BATOCERA_BINARIES_DIR}" --config="${BINARIES_DIR}/genimage.cfg" --tmppath="${GENIMAGE_TMP}" || exit 1
-	rm -f "${BATOCERA_BINARIES_DIR}/boot.vfat" || exit 1
-	rm -f "${BATOCERA_BINARIES_DIR}/userdata.ext4" || exit 1
-	xu4_fusing "${BINARIES_DIR}" "${BATOCERAIMG}" || exit 1
-	sync || exit 1
-	;;
-
 	C2)
 	# boot
 	rm -rf ${BINARIES_DIR}/boot        || exit 1
