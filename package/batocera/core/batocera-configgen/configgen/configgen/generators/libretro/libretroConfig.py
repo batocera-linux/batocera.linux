@@ -240,10 +240,14 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
         retroarchConfig['ai_service_enable'] = 'true'
         retroarchConfig['ai_service_mode'] = '0'
         retroarchConfig['ai_service_source_lang'] = '0'
-        if system.isOptSet('ai_service_url') and system.config['ai_service_url']:
-            retroarchConfig['ai_service_url'] = system.config['ai_service_url']+'&mode=Fast&output=png&target_lang='+system.config['ai_target_lang']
+        if system.isOptSet('ai_target_lang'):
+            chosen_lang=system.config['ai_target_lang']
         else:
-            retroarchConfig['ai_service_url'] = 'http://ztranslate.net/service?api_key=BATOCERA&mode=Fast&output=png&target_lang='+system.config['ai_target_lang']
+            chosen_lang='En'
+        if system.isOptSet('ai_service_url') and system.config['ai_service_url']:
+            retroarchConfig['ai_service_url'] = system.config['ai_service_url']+'&mode=Fast&output=png&target_lang='+chosen_lang
+        else:
+            retroarchConfig['ai_service_url'] = 'http://ztranslate.net/service?api_key=BATOCERA&mode=Fast&output=png&target_lang='+chosen_lang
         if system.isOptSet('ai_service_pause') and system.getOptBoolean('ai_service_pause') == True:
             retroarchConfig['ai_service_pause'] = 'true'
         else:
