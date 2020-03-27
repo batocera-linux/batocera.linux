@@ -108,3 +108,8 @@ ccache-dir:
 %-pkg:
 	$(if $(PKG),,$(error "PKG not specified!"))
 	@$(MAKE) $*-build CMD=$(PKG)
+
+%-webserver: output-dir-%
+	$(if $(wildcard $(OUTPUT_DIR)/$*/images/batocera/*),,$(error "$* not built!"))
+	$(if $(shell which python 2>/dev/null),,$(error "python not found!"))
+	python -m http.server --directory $(OUTPUT_DIR)/$*/images/batocera
