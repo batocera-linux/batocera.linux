@@ -96,6 +96,7 @@ ccache-dir:
 		-v $(PROJECT_DIR):/build \
 		-v $(DL_DIR):/build/buildroot/dl \
 		-v $(OUTPUT_DIR)/$*:/$* -w /$* \
+		-v $(CCACHE_DIR):/home/$(USER)/.buildroot-ccache \
 		-u $(UID):$(GID) \
 		-v /etc/passwd:/etc/passwd:ro \
 		-v /etc/group:/etc/group:ro \
