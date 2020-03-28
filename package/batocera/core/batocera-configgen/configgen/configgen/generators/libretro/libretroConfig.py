@@ -322,7 +322,10 @@ def writeBezelConfig(bezel, retroarchConfig, systemName, rom, gameResolution):
 
     # only the png file is mandatory
     if os.path.exists(overlay_info_file):
-        infos = json.load(open(overlay_info_file))
+        try:
+            infos = json.load(open(overlay_info_file))
+        except:
+            infos = {}
     else:
         infos = {}
 
