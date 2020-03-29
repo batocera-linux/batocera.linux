@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# rbmount [FSTYPE] [RWREQUIRED] [MOUNTDEVICE] [MOUNTPOINT]
+# batocera-mount [FSTYPE] [RWREQUIRED] [MOUNTDEVICE] [MOUNTPOINT]
 
 print_usage() {
     echo "${0} [FSTYPE] [RWREQUIRED] [MOUNTDEVICE] [MOUNTPOINT]" >&2
@@ -19,17 +19,27 @@ MOUNTPOINT="$4"
 FSMOUNTOPT="noatime"
 TESTFILE="${MOUNTPOINT}/batocera.fsrw.test"
 
-# for non vfat and ntfs systems, it's easy
-if test "${FSTYPE}" != "vfat" -a "${FSTYPE}" != "ntfs" -a "${FSTYPE}" != "exfat"
-then
-    if mount "${MOUNTDEVICE}" "${MOUNTPOINT}" -o "${FSMOUNTOPT}"
-    then
-	exit 0
-    fi
-    exit 1
-fi
+case "${FSTYPE}" in
+    vfat|ntfs|exfat)
+	# ok, continue
+    ;;
+    btrfs)
+	if mount -t btrfs "${MOUNTDEVICE}" "${MOUNTPOINT}" -o "${FSMOUNTOPT}"
+	then
+	    exit 0
+	fi
+	exit 1
+    ;;
+    *)
+	# for non vfat and ntfs systems, it's easy
+	if mount "${MOUNTDEVICE}" "${MOUNTPOINT}" -o "${FSMOUNTOPT}"
+	then
+	    exit 0
+	fi
+	exit 1
+esac
 
-# vfat and ntfs
+### end of script is only for : vfat, exfat and ntfs
 
 # change options
 case "${FSTYPE}" in
