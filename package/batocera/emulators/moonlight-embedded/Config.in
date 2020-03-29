@@ -1,19 +1,20 @@
 config BR2_PACKAGE_MOONLIGHT_EMBEDDED
-    bool "moonlight-embedded"
-    select BR2_PACKAGE_OPUS
-    select BR2_PACKAGE_OPUS_FIXED_POINT
-    select BR2_PACKAGE_EXPAT
-    select BR2_PACKAGE_LIBEVDEV
-    select BR2_PACKAGE_AVAHI
-    select BR2_PACKAGE_ALSA_LIB
-    select BR2_PACKAGE_HAS_UDEV
-    select BR2_PACKAGE_LIBCURL
-    select BR2_PACKAGE_LIBCEC
-    select BR2_PACKAGE_FFMPEG
-    select BR2_PACKAGE_FFMPEG_SWSCALE
-    select BR2_PACKAGE_SDL2
-    select BR2_PACKAGE_LIBENET
-    help
-		Gamestream client for embedded systems.
+	bool "moonlight-embedded"
+	select BR2_PACKAGE_OPUS
+	select BR2_PACKAGE_OPUS_FIXED_POINT
+	select BR2_PACKAGE_EXPAT
+	select BR2_PACKAGE_LIBEVDEV
+	select BR2_PACKAGE_AVAHI
+	select BR2_PACKAGE_ALSA_LIB
+	select BR2_PACKAGE_HAS_UDEV
+	select BR2_PACKAGE_LIBCURL
+	select BR2_PACKAGE_LIBCEC
+	select BR2_PACKAGE_FFMPEG
+	select BR2_PACKAGE_FFMPEG_SWSCALE
+	select BR2_PACKAGE_SDL2
+	select BR2_PACKAGE_LIBENET
+	select BR2_PACKAGE_ROCKCHIP_MPP if BR2_PACKAGE_BATOCERA_TARGET_ROCKPRO64
+	help
+	  Gamestream client for embedded systems.
 
-		https://github.com/irtimmer/moonlight-embedded/wiki
+	  https://github.com/irtimmer/moonlight-embedded/wiki

@@ -17,4 +17,8 @@ ifeq ($(BR2_PACKAGE_RPI_USERLAND),y)
 	MOONLIGHT_EMBEDDED_DEPENDENCIES += rpi-userland
 endif
 
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_ROCKPRO64),y)
+	MOONLIGHT_EMBEDDED_DEPENDENCIES += rockchip-mpp
+endif
+
 $(eval $(cmake-package))
