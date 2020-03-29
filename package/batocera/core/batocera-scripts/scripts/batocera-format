@@ -1,0 +1,177 @@
+#!/bin/bash
+
+do_help() {
+    PROG=$1
+    echo "${PROG} listDisks" >&2
+    echo "${PROG} listFstypes" >&2
+    echo "${PROG} format <disk> <fstype>" >&2
+}
+
+determine_part_prefix() {
+    # /dev/mmcblk0p3 => /dev/mmcblk0
+    # /dev/sda1      => /dev/sda
+
+    # sometimes, it's pX, sometimes just an X : http://www.tldp.org/HOWTO/Partition-Mass-Storage-Definitions-Naming-HOWTO/x160.html
+    if echo "${1}" | grep -qE 'p[0-9]$'
+    then
+	echo "$1" | sed -e s+'p[0-9]$'+''+
+	return 0
+    fi
+    echo "$1" | sed -e s+'[0-9]$'++
+}
+
+disks_to_keep() {
+    grep -E '^[^ ]* /boot |^[^ ]* /userdata' /proc/mounts | sed -e s+"^\([^ ]*\) .*$"+'\1'+ |
+	while read X
+	do
+	    determine_part_prefix "${X}"
+	done |
+	sed -e s+'^/dev/'++ |
+	sort -u
+}
+
+do_listDisks() {
+    lsblk -n -P -o TYPE,NAME,SIZE,MODEL |
+	grep -E '^TYPE=\"disk\" ' |
+	sed -e s+' [ ]*"$'+'"'+ | # remove trailing spaces
+	sed -e s+'^TYPE="[^"]*" NAME=\"\([^"]*\)\" SIZE=\"\([^"]*\)\" MODEL=\"\([^"]*\)\"$'+'\1 \3 (\2)'+ |
+	while read XDRIVE XTEXT
+	do
+	    for XKEEP in $(disks_to_keep)
+	    do
+		if test "${XKEEP}" != "${XDRIVE}"
+		then
+		    echo "${XDRIVE} ${XTEXT}"
+		fi
+	    done
+	done
+}
+
+do_listFstypes() {
+    echo "ext4"
+    echo "brfs"
+    echo "exfat"
+}
+
+
+do_unmount_disk() {
+    UDSK=$1
+
+    grep "/dev/${UDSK}" /proc/mounts | cut -d ' ' -f 2 |
+	while read X
+	do
+	    umount "${X}"
+	done
+
+    grep -qE "^/dev/${UDSK}" /proc/mounts && return 1
+    return 0
+}
+
+do_format() {
+    FORMATDISK=$1
+    FORMATTYPE=$2
+
+    if ! test -e "/dev/${FORMATDISK}"
+    then
+	echo "invalid disk ${FORMATDISK}" >&2
+	return 1
+    fi
+
+    # unmount mounts associated with the disk
+    if ! do_unmount_disk "${FORMATDISK}"
+    then
+	echo "unable to free the disk ${FORMATDISK}" >&2
+	return 1
+    fi
+
+    # erasing the current position headers of the coming partition
+    # because if there was already a partition at the same place (ie reformating)
+    # 1. automount will mount it
+    # 2. mkfs will complain that there is already some data and start to ask questions
+    echo "erasing disk headers for ${FORMATDISK}..."
+    dd if=/dev/zero of="/dev/${FORMATDISK}" count=1 bs=3M || return 1
+
+    # formatting
+    echo "creating GPT partiton table on ${FORMATDISK}..."
+    parted -s "/dev/${FORMATDISK}" mklabel GPT || return 1
+    
+    echo "creating 1 partition on ${FORMATDISK}..."
+    parted -s "/dev/${FORMATDISK}" -m unit b mkpart primary 2M 100% || return 1
+
+    # sometimes, it's pX, sometimes just an X : http://www.tldp.org/HOWTO/Partition-Mass-Storage-Definitions-Naming-HOWTO/x160.html
+    # sometimes, the partition takes time to appear
+    FORMATPARTNAME=
+    DO_CONTINUE=10
+    while test "${DO_CONTINUE}" -ge 1
+    do
+	TESTEDPARTNAME="/dev/${FORMATDISK}p1"
+	if test -e "${TESTEDPARTNAME}"
+	then
+	    FORMATPARTNAME=${TESTEDPARTNAME}
+	    DO_CONTINUE=0
+	else
+	    TESTEDPARTNAME="/dev/${FORMATDISK}1"
+	    if test -e "${TESTEDPARTNAME}"
+	    then
+		FORMATPARTNAME=${TESTEDPARTNAME}
+		DO_CONTINUE=0
+	    else
+		# wait a bit
+		let DO_CONTINUE--
+		sleep 1
+	    fi
+	fi
+    done
+
+    if test -z "${FORMATPARTNAME}"
+    then
+	echo "created partition not found for ${FORMATDISK}" >&2
+	return 1
+    fi
+
+    echo "formatting partition ${FORMATPARTNAME} in ${FORMATTYPE}"
+    case "${FORMATTYPE}" in
+	"btrfs")
+	    mkfs.btrfs "${FORMATPARTNAME}" || return 1
+	;;
+	"ext4")
+	    mkfs.ext4 "${FORMATPARTNAME}" || return 1
+	;;
+	"exfat")
+	    mkfs.vfat "${FORMATPARTNAME}" || return 1
+	;;
+	*)
+	    echo "unknown partition type ${FORMATTYPE}" >&2
+	    return 1
+    esac
+
+    echo "synchronizing..."
+    sync
+    return 0
+}
+
+ACTION=$1
+shift
+
+case "${ACTION}" in
+    listDisks)
+	do_listDisks
+	;;
+    listFstypes)
+	do_listFstypes
+	;;
+    format)
+	if test $# -ne 2
+	then
+	    do_help
+	    exit 1
+	fi
+	if ! do_format "${1}" "${2}"
+	then
+	    exit 1
+	fi
+	;;
+    *)
+	do_help "${0}"
+esac
+exit 0
