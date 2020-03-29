@@ -162,7 +162,7 @@ def generateSDLGameDBAllControllers(controllers, outputFile = "/tmp/gamecontroll
     finalData = []
     for idx, controller in controllers.iteritems():
         finalData.append(controller.generateSDLGameDBLine())
-    sdlData = "\n".join(finalData)
+    sdlData = "\n".join(finalData).encode("utf-8")
     with open(outputFile, "w") as text_file:
         text_file.write(sdlData)
     return outputFile
