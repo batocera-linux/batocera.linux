@@ -15,9 +15,9 @@ UID  := $(shell id -u)
 GID  := $(shell id -g)
 USER := $(shell whoami)
 
-ifeq (, $(shell which docker 2>/dev/null))
-$(error "docker not found!")
-endif
+$(if $(shell which docker 2>/dev/null),, $(error "docker not found!"))
+
+UC = $(shell echo '$1' | tr '[:lower:]' '[:upper:]')
 
 vars:
 	@echo "Supported targets:     $(TARGETS)"
@@ -103,7 +103,7 @@ ccache-dir:
 		batocera/batocera.linux-build
 
 %-cleanbuild: %-clean %-build
-	
+
 
 %-pkg:
 	$(if $(PKG),,$(error "PKG not specified!"))
@@ -113,3 +113,9 @@ ccache-dir:
 	$(if $(wildcard $(OUTPUT_DIR)/$*/images/batocera/*),,$(error "$* not built!"))
 	$(if $(shell which python 2>/dev/null),,$(error "python not found!"))
 	python -m http.server --directory $(OUTPUT_DIR)/$*/images/batocera
+
+%-rsync: output-dir-%
+	$(eval TMP := $(call UC, $*)_IP)
+	$(if $(shell which rsync 2>/dev/null),, $(error "rsync not found!"))
+	$(if $($(TMP)),,$(error "$(TMP) not set!"))
+	rsync -e "ssh -o 'UserKnownHostsFile /dev/null' -o StrictHostKeyChecking=no" -av $(OUTPUT_DIR)/$*/target/ root@$($(TMP)):/
