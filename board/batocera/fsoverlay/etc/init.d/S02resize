@@ -49,6 +49,10 @@ PART=$(batocera-part "share_internal")
 # boot disk
 DISK=$(batocera-part prefix "${PART}")
 
+# only for ext4
+PARTTYPE=$(blkid "${PART}" | sed -e s+'^.* TYPE="\([^"]*\)\".*'+'\1'+)
+test "${PARTTYPE}" != "ext4" && exit 0
+
 # fix any minor issues, such as gpt header not at end of disk
 # remove the trigger
 mount -o remount,rw /boot && sed -i -e s+'^[ ]*autoresize'+'#autoresize'+ "${BOOTCONF}" && mount -o remount,ro /boot
