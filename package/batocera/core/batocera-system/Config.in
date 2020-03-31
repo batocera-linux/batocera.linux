@@ -54,6 +54,7 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
     select BR2_PACKAGE_WPA_SUPPLICANT                    # wifi
     select BR2_PACKAGE_WPA_SUPPLICANT_CLI                # wifi
     select BR2_PACKAGE_WPA_SUPPLICANT_DBUS_INTROSPECTION # wifi
+    select BR2_PACKAGE_CLAMAV                            # antivirus
     select BR2_PACKAGE_RPI_FIRMWARE                      if BR2_PACKAGE_BATOCERA_TARGET_RPI_ANY # rpi firmwares
     select BR2_PACKAGE_RPI_WIFI_FIRMWARE                 if BR2_PACKAGE_BATOCERA_TARGET_RPI_ANY # rpi wifi firmware
     select BR2_PACKAGE_RPI_BT_FIRMWARE                   if BR2_PACKAGE_BATOCERA_TARGET_RPI_ANY # rpi bluetooth firmware

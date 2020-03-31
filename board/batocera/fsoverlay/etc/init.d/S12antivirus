@@ -1,0 +1,14 @@
+#!/bin/bash
+
+test $1 = "start" || exit 0
+
+# this action can take time depending on the number of roms of the user
+# this action is done at each boot
+# we may think to add a cache to make the scan faster (but we must do it in a secured crypted partition for security reason)
+
+if ! clamscan -r --bell --triple-pass --extended-checks /userdata
+then
+	echo "virus detected !" >/dev/tty1
+	sleep 10
+	shutdown -h now
+fi
