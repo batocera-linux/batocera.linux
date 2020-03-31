@@ -6,7 +6,6 @@ case "$1" in
 	enabled="`$systemsetting  -command load -key system.es.atstartup`"
         if [ "$enabled" != "0" ];then
 		settings_lang="`$systemsetting -command load -key system.language`"
-		export XAUTHORITY=/var/lib/.Xauthority # needed because $HOME/.Xauthority can't be used on fat
 		# HOME is important to be able to call ~/.xinitrc
                 HOME=/userdata/system startx &
 	fi
