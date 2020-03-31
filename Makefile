@@ -103,7 +103,7 @@ ccache-dir:
 		batocera/batocera.linux-build
 
 %-cleanbuild: %-clean %-build
-
+	@echo
 
 %-pkg:
 	$(if $(PKG),,$(error "PKG not specified!"))
