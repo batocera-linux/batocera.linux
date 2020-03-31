@@ -1,0 +1,22 @@
+config BR2_PACKAGE_MALI_T620_WAYLAND
+	bool "mali-t620-wayland"
+	depends on BR2_arm
+	select BR2_PACKAGE_HAS_LIBEGL
+	select BR2_PACKAGE_HAS_LIBGLES
+	select BR2_PACKAGE_WAYLAND
+	help
+	  Install the binary user-space components for the ARM Mali Midgard
+	  T620 GPU. This package requires a kernel with the ARM Mali Midgard
+	  GPU Kernel Drivers enabled.
+
+if BR2_PACKAGE_MALI_T620_WAYLAND
+
+config BR2_PACKAGE_PROVIDES_LIBEGL
+	default "mali-t620-wayland"
+
+config BR2_PACKAGE_PROVIDES_LIBGLES
+	default "mali-t620-wayland"
+
+endif
+
+comment "mali-t620-wayland"

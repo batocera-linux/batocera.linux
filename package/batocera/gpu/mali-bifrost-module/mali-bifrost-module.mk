@@ -3,8 +3,8 @@
 # mali-bifrost-module
 #
 ################################################################################
-
-MALI_BIFROST_MODULE_VERSION = 61bf5319dfd266b72a96c9c2d518dbbde8514d66
+# Version.: Commits on Feb 26, 2020
+MALI_BIFROST_MODULE_VERSION = af7c8d8bcdedd792a8d101d3a11876bb8bcbe3da
 MALI_BIFROST_MODULE_SITE = $(call github,LibreELEC,mali-bifrost,$(MALI_BIFROST_MODULE_VERSION))
 
 MALI_BIFROST_MODULE_MODULE_MAKE_OPTS = \

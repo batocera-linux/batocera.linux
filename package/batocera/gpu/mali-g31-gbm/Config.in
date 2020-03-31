@@ -1,0 +1,17 @@
+config BR2_PACKAGE_MALI_G31_GBM
+	bool "mali-g31-gbm"
+	depends on BR2_arm
+	select BR2_PACKAGE_HAS_LIBEGL
+	select BR2_PACKAGE_HAS_LIBGLES
+
+if BR2_PACKAGE_MALI_G31_GBM
+
+config BR2_PACKAGE_PROVIDES_LIBEGL
+	default "mali-g31-gbm"
+
+config BR2_PACKAGE_PROVIDES_LIBGLES
+	default "mali-g31-gbm"
+
+endif
+
+comment "mali-g31-gbm"

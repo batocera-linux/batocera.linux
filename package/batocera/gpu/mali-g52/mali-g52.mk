@@ -1,31 +1,21 @@
 ################################################################################
 #
-# libmali
+# mali g52
 #
 ################################################################################
 # Version.: Commits on Nov 13, 2019
-LIBMALI_VERSION = d4000def121b818ae0f583d8372d57643f723fdc
-LIBMALI_SITE = $(call github,LibreELEC,libmali,$(LIBMALI_VERSION))
+MALI_G52_VERSION = 4cbf211cfd9b07854aab4978e50b1151052c6d4c
+MALI_G52_SITE = $(call github,LibreELEC,libmali,$(MALI_G52_VERSION))
 
-LIBMALI_INSTALL_STAGING = YES
-LIBMALI_PROVIDES = libegl libgles
+MALI_G52_INSTALL_STAGING = YES
+MALI_G52_PROVIDES = libegl libgles
+MALI_G52_DEPENDENCIES = wayland mali-bifrost-module
 
-ifeq ($(BR2_PACKAGE_LIBMALI_T620_WAYLAND)$(BR2_PACKAGE_LIBMALI_BIFROST_WAYLAND),y)
-	LIBMALI_DEPENDENCIES = wayland
-endif
-
-ifeq ($(BR2_PACKAGE_LIBMALI_BIFROST_WAYLAND),y)
-	BR2_PACKAGE_LIBMALI_SRCLIB=libmali-bifrost-g52-r16p0-gbm.so
-endif
-
-ifeq ($(BR2_PACKAGE_LIBMALI_T620_WAYLAND),y)
-	BR2_PACKAGE_LIBMALI_SRCLIB=libmali-midgard-t620-r12p0-wayland-gbm.so
-endif
-
-define LIBMALI_INSTALL_STAGING_CMDS
+define MALI_G52_INSTALL_STAGING_CMDS
 	mkdir -p $(STAGING_DIR)/usr/lib/pkgconfig
 
-	cp $(@D)/lib/arm-linux-gnueabihf/$(BR2_PACKAGE_LIBMALI_SRCLIB) $(STAGING_DIR)/usr/lib/libmali.so
+	cp $(@D)/lib/arm-linux-gnueabihf/libmali-bifrost-g52-r16p0-gbm.so \
+		$(STAGING_DIR)/usr/lib/libmali.so
 
 	(cd $(STAGING_DIR)/usr/lib && ln -sf libmali.so libMali.so)
 	(cd $(STAGING_DIR)/usr/lib && ln -sf libmali.so libEGL.so)
@@ -36,7 +26,7 @@ define LIBMALI_INSTALL_STAGING_CMDS
 	(cd $(STAGING_DIR)/usr/lib && ln -sf libmali.so libGLESv2.so.2)
 	(cd $(STAGING_DIR)/usr/lib && ln -sf libmali.so libgbm.so)
 
-	cp -pr $(@D)/include	$(STAGING_DIR)/usr
+	cp -pr $(@D)/include    $(STAGING_DIR)/usr
 	cp $(@D)/include/gbm.h 	$(STAGING_DIR)/usr/include/gbm.h
 
 	for X in gbm egl glesv1_cm glesv2; \
@@ -47,9 +37,11 @@ define LIBMALI_INSTALL_STAGING_CMDS
 	done
 endef
 
-define LIBMALI_INSTALL_TARGET_CMDS
+define MALI_G52_INSTALL_TARGET_CMDS
 	mkdir -p $(TARGET_DIR)/usr/lib
-	cp $(@D)/lib/arm-linux-gnueabihf/$(BR2_PACKAGE_LIBMALI_SRCLIB) $(TARGET_DIR)/usr/lib/libmali.so
+
+	cp $(@D)/lib/arm-linux-gnueabihf/libmali-bifrost-g52-r16p0-gbm.so \
+		$(TARGET_DIR)/usr/lib/libmali.so
 
 	(cd $(TARGET_DIR)/usr/lib && ln -sf libmali.so libMali.so)
 	(cd $(TARGET_DIR)/usr/lib && ln -sf libmali.so libEGL.so)
