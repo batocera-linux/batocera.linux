@@ -30,6 +30,10 @@ def bool2str(val, valiftrue, valiffalse):
   else:
     return valiffalse
 
+def logging_status(msg):
+  with open("/var/run/bt_status", "w") as file:
+    file.write(msg + "\n")
+
 def connect_device(path, address, properties, forceConnect):
   global gdiscovering
 
@@ -53,6 +57,7 @@ def connect_device(path, address, properties, forceConnect):
   trusted   = rproperties["Trusted"]
   paired    = rproperties["Paired"]
   devName = getDevName(rproperties)
+  shortDevName = getShortDevName(rproperties)
   connected = rproperties["Connected"]
 
   # skip non input devices
@@ -69,29 +74,32 @@ def connect_device(path, address, properties, forceConnect):
   
   if not paired:
     if connected == False and gdiscovering:
-      doParing(address, devName)
+      doParing(address, devName, shortDevName)
     return
 
   # now it is paired
   if not trusted and (gdiscovering or forceConnect):
     logging.info("Trusting (" + devName + ")")
+    logging_status("Trusting " + shortDevName + "...")
     bluezProps = dbus.Interface(bus.get_object("org.bluez", path), "org.freedesktop.DBus.Properties")
     bluezProps.Set("org.bluez.Device1", "Trusted", True)
 
   # now it is paired and trusted
   # Connect if Trusted and paired
   if not connected or forceConnect:
-    doConnect(address, devName)
+    doConnect(address, devName, shortDevName)
 
-def doParing(address, devName):
+def doParing(address, devName, shortDevName):
   logging.info("Pairing... (" + devName + ")")
+  logging_status("Pairing " + shortDevName + "...")
   device = bluezutils.find_device(address)
   try:
     device.Pair()
   except Exception as e:
     logging.info("Pairing failed (" + devName + ")")
+    logging_status("Pairing failed (" + shortDevName + ")")
 
-def doConnect(address, devName):
+def doConnect(address, devName, shortDevName):
   global gadapter
   global gdiscovering
   
@@ -107,8 +115,10 @@ def doConnect(address, devName):
       ntry = ntry -1
       try:
         logging.info("Connecting... (" + devName + ")")
+        logging_status("Connecting " + shortDevName + "...")
         device.Connect()
         logging.info("Connected successfully (" + devName + ")")
+        logging_status("Connected successfully (" + shortDevName + ")")
 
         if gdiscovering:
           logging.info("Start discovery")
@@ -122,6 +132,7 @@ def doConnect(address, devName):
         time.sleep(1)
     
     logging.info("Connection failed. Give up. (" + devName + ")")
+    logging_status("Connection failed. Give up. (" + shortDevName + ")")
     if gdiscovering:
       logging.info("Start discovery")
       gadapter.StartDiscovery()
@@ -151,6 +162,18 @@ def getDevName(properties):
 
   if "Address" in properties and "Icon" in properties:
     return properties["Address"] + " (" + properties["Icon"] + ")"
+
+  if "Address" in properties:
+    return properties["Address"]
+
+  if "Icon" in properties:
+    return properties["Icon"]
+
+  return "unknown"
+
+def getShortDevName(properties):
+  if "Name" in properties:
+    return properties["Name"]
 
   if "Address" in properties:
     return properties["Address"]

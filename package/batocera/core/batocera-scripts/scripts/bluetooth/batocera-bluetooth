@@ -49,13 +49,28 @@ do_remove() {
 
 do_trust() {
     NPID=$(cat /var/run/bluetooth-agent.pid)
-    test -z "${NPID}" && exit 0
+    test -z "${NPID}" && return 0
 
+    touch "/var/run/bt_status" || retrun 1
+    LAST_MSG=$(cat "/var/run/bt_status")
+    
     # start discovering
     kill -10 "${NPID}"
 
     trap "kill -12 ${NPID}" 2 3
-    sleep 60
+
+    N=60
+    while test $N -gt 0
+    do
+	NEW_MSG=$(cat "/var/run/bt_status")
+	if test "${LAST_MSG}" != "${NEW_MSG}"
+	then
+	    LAST_MSG="${NEW_MSG}"
+	    echo "${NEW_MSG}"
+	fi
+	sleep 1
+	let N--
+    done
 
     # stop discovering
     kill -12 "${NPID}"
