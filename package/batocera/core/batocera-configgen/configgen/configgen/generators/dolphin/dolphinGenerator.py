@@ -84,14 +84,7 @@ class DolphinGenerator(Generator):
         # for to search for custom textures
         dolphinGFXSettings.set("Settings", "HiresTextures", "True")
         dolphinGFXSettings.set("Settings", "CacheHiresTextures", "True")
-
-        if system.isOptSet('internalresolution'):
-            try:
-                dolphinGFXSettings.set("Settings", "InternalResolution", system.config["internalresolution"])
-            except:
-                dolphinGFXSettings.set("Settings", "InternalResolution", "1")
-        else:
-            dolphinGFXSettings.set("Settings", "InternalResolution", "0")
+        dolphinGFXSettings.set("Settings", "InternalResolution", "0")
 
         # save gfx.ini
         with open(batoceraFiles.dolphinGfxIni, 'w') as configfile:
