@@ -88,6 +88,7 @@ ccache-dir:
 		-u $(UID):$(GID) \
 		-v /etc/passwd:/etc/passwd:ro \
 		-v /etc/group:/etc/group:ro \
+		$(DOCKER_OPTS) \
 		batocera/batocera.linux-build \
 		make O=/$* BR2_EXTERNAL=/build -C /build/buildroot $(CMD)
 
@@ -98,6 +99,7 @@ ccache-dir:
 		-v $(OUTPUT_DIR)/$*:/$* -w /$* \
 		-v $(CCACHE_DIR):/home/$(USER)/.buildroot-ccache \
 		-u $(UID):$(GID) \
+		$(DOCKER_OPTS) \
 		-v /etc/passwd:/etc/passwd:ro \
 		-v /etc/group:/etc/group:ro \
 		batocera/batocera.linux-build
