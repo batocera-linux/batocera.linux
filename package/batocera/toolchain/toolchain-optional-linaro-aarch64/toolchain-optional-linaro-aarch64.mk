@@ -4,14 +4,9 @@
 #
 ################################################################################
 
-TOOLCHAIN_OPTIONAL_LINARO_AARCH64_VERSION = 7.5-2019.12
-TOOLCHAIN_OPTIONAL_LINARO_AARCH64_SITE = https://releases.linaro.org/components/toolchain/binaries/7.5-2019.12/aarch64-linux-gnu
-
-ifeq ($(HOSTARCH),x86)
-	TOOLCHAIN_OPTIONAL_LINARO_AARCH64_SOURCE = gcc-linaro-7.5.0-2019.12-I686_aarch64-linux-gnu.tar.xz
-else
-	TOOLCHAIN_OPTIONAL_LINARO_AARCH64_SOURCE = gcc-linaro-7.5.0-2019.12-x86_64_aarch64-linux-gnu.tar.xz
-endif
+TOOLCHAIN_OPTIONAL_LINARO_AARCH64_VERSION = 8.3-2019.03
+TOOLCHAIN_OPTIONAL_LINARO_AARCH64_SOURCE = gcc-arm-$(TOOLCHAIN_OPTIONAL_LINARO_AARCH64_VERSION)-x86_64-aarch64-linux-gnu.tar.xz
+TOOLCHAIN_OPTIONAL_LINARO_AARCH64_SITE = https://developer.arm.com/-/media/Files/downloads/gnu-a/$(TOOLCHAIN_OPTIONAL_LINARO_AARCH64_VERSION)/binrel/
 
 # wrap gcc and g++ with ccache like in gcc package.mk
 PKG_GCC_PREFIX="$(HOST_DIR)/lib/gcc-linaro-aarch64-linux-gnu/bin/aarch64-linux-gnu-"
