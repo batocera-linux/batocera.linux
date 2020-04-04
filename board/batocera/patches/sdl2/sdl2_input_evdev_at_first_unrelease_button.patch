@@ -25,7 +25,7 @@ index 8058947..df73a12 100644
 +
 +  // open
 +  SDL_JoystickGetGUIDString(joystick->guid, strguid, 64);
-+  sprintf(filename, "/var/run/SDL2/%s_%s.cache", strguid, joystick->name);
++  sprintf(filename, "/userdata/system/.sdl2/%s_%s.cache", strguid, joystick->name);
 +  if( (fd = fopen(filename, "r")) == NULL) {
 +    return;
 +  }
@@ -60,11 +60,11 @@ index 8058947..df73a12 100644
 +  int i;
 +
 +  // dir
-+  if(mkdir("/var/run/SDL2", 0700) != 0) { /* ok, maybe already exists, anyway */ }
++  if(mkdir("/userdata/system/.sdl2", 0700) != 0) { /* ok, maybe already exists, anyway */ }
 +
 +  // open
 +  SDL_JoystickGetGUIDString(joystick->guid, strguid, 64);
-+  sprintf(filename, "/var/run/SDL2/%s_%s.cache", strguid, joystick->name);
++  sprintf(filename, "/userdata/system/.sdl2/%s_%s.cache", strguid, joystick->name);
 +  if( (fd = fopen(filename, "w")) == NULL) {
 +    return;
 +  }
