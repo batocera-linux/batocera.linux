@@ -33,6 +33,9 @@ systemToRetroachievements = {'atari2600', 'atari7800', 'atarijaguar', 'colecovis
 # Define systems not compatible with rewind option
 systemNoRewind = {'sega32x', 'psx', 'zxspectrum', 'odyssey2', 'mame', 'n64', 'dreamcast', 'atomiswave', 'naomi', 'neogeocd', 'saturn', 'fbneo'};
 
+# Define systems not compatible with run-ahead option (warning: this option is CPU intensive!)
+systemNoRunahead = {'sega32x', 'n64', 'dreamcast', 'atomiswave', 'naomi', 'neogeocd', 'saturn'};
+
 # Define system emulated by bluemsx core
 systemToBluemsx = {'msx': '"MSX2"', 'msx1': '"MSX2"', 'msx2': '"MSX2"', 'colecovision': '"COL - ColecoVision"' };
 
@@ -104,6 +107,17 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
             retroarchConfig['rewind_enable'] = 'true'
     else:
         retroarchConfig['rewind_enable'] = 'false'
+
+    retroarchConfig['run_ahead_enabled'] = 'false'
+    retroarchConfig['run_ahead_frames'] = '0'
+    retroarchConfig['run_ahead_secondary_instance'] = 'false'
+
+    if system.isOptSet('runahead') and int(system.config['runahead']) >0:
+       if (not system.name in systemNoRunahead):
+          retroarchConfig['run_ahead_enabled'] = 'true'
+          retroarchConfig['run_ahead_frames'] = system.config['runahead']
+          if system.isOptSet('secondinstance') and system.getOptBoolean('secondinstance') == True:
+              retroarchConfig['run_ahead_secondary_instance'] = 'true'
 
     if system.isOptSet('autosave') and system.getOptBoolean('autosave') == True:
         retroarchConfig['savestate_auto_save'] = 'true'
