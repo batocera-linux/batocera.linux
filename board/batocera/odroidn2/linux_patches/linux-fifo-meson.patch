@@ -1,0 +1,26 @@
+diff --git a/sound/soc/meson/aiu-i2s-fifo.c b/sound/soc/meson/aiu-i2s-fifo.c
+index efb6bbd750b8..9be38fcd72b9 100644
+--- a/sound/soc/meson/aiu-i2s-fifo.c
++++ b/sound/soc/meson/aiu-i2s-fifo.c
+@@ -113,8 +113,6 @@ static struct snd_soc_dai_driver i2s_fifo_dai_drv = {
+ 
+ static const struct snd_soc_component_driver i2s_fifo_component_drv = {
+ 	.probe		= aiu_fifo_component_probe,
+-	.pointer	= aiu_fifo_pointer,
+-	.ioctl		= snd_soc_pcm_lib_ioctl,
+ };
+ 
+ static struct snd_pcm_hardware i2s_fifo_pcm = {
+diff --git a/sound/soc/meson/aiu-spdif-fifo.c b/sound/soc/meson/aiu-spdif-fifo.c
+index 1ef20b2b1ef9..15aa1609853c 100644
+--- a/sound/soc/meson/aiu-spdif-fifo.c
++++ b/sound/soc/meson/aiu-spdif-fifo.c
+@@ -170,8 +170,6 @@ static struct snd_soc_dai_driver spdif_fifo_dai_drv = {
+ 
+ static const struct snd_soc_component_driver spdif_fifo_component_drv = {
+ 	.probe		= aiu_fifo_component_probe,
+-	.pointer	= aiu_fifo_pointer,
+-	.ioctl		= snd_soc_pcm_lib_ioctl,
+ };
+ 
+ static struct snd_pcm_hardware spdif_fifo_pcm = {
