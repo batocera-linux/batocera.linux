@@ -563,7 +563,8 @@ for FILE in "${BATOCERA_BINARIES_DIR}/boot.tar.xz" "${BATOCERA_BINARIES_DIR}/bat
 do
 	echo "creating ${FILE}.md5"
 	CKS=$(md5sum "${FILE}" | sed -e s+'^\([^ ]*\) .*$'+'\1'+)
-	echo "${CKS}  $(basename ${FILE})" > "${FILE}.md5"
+	echo "${CKS}" > "${FILE}.md5"
+	echo "${CKS}  $(basename ${FILE})" >> "${BATOCERA_BINARIES_DIR}/MD5SUMS"
 done
 
 # pcsx2 package
