@@ -63,6 +63,9 @@ def generateRetroarchCustom():
     retroarchSettings.save('video_gpu_screenshot',              '"true"')
     retroarchSettings.save('video_shader_enable',               '"false"')
     
+    # Audio
+    retroarchSettings.save('audio_volume',                       '"8.0"')
+    
     # Settings
     retroarchSettings.save('config_save_on_exit',               '"false"')
     retroarchSettings.save('savestate_auto_save',               '"false"')
