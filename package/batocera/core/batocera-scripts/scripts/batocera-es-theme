@@ -3,6 +3,7 @@
 # Download and install EmulationStation themes for Batocera
 #
 # @lbrpdx on Batocera Forums and Discord
+# @lala aka cyperghost on Discord
 #
 # Usage:
 # batocera-es-theme 'list' or 'install <theme>' 
@@ -111,10 +112,19 @@ function install_theme() {
 			filezip="${url}/archive/master.zip"
 
 			if [ $TERMINAL = 0 ]; then
-				# get size to download (hack to get it from github)
-				size=$(curl -sfL https://api.github.com/repos/"$reponame"/"$gitname" | grep size | head -1 | tr -dc '[:digit:]')
-				size=$((size / 1024 ))
-				test $? -eq 0 || exit 1
+				# First attempt to get size to download
+                        	# you need 2-3 times to get correct filesize
+                        	# if after 10 attempts nothing happens we use old method
+                        	for i in {0..9}; do
+			    		size=$(curl -Is "https://codeload.github.com/${reponame}/${gitname}/zip/master" | grep Content-Length | cut -d ' ' -f2 | tr -d '\r')
+                            		[[ -z $size ]] && sleep 0.2 || { size=$((size / 1024 / 1024 )); break; }
+                        	done
+				# Second attempt (old format), JSON hack
+                        	if [[ -z $size ]]; then
+                            	size=$(curl -sfL "https://api.github.com/repos/${reponame}/${gitname}" | grep size | head -1 | tr -dc '[:digit:]')
+                            	size=$((size / 1024 ))
+			    	test $? -eq 0 || exit 1
+                        	fi
 				touch "$gitname.zip"
 				getPer "$CONFIGDIR"/"$gitname.zip" "${size}" &
 				GETPERPID=$!
