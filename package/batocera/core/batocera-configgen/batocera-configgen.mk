@@ -8,6 +8,7 @@ BATOCERA_CONFIGGEN_VERSION = 1.1
 BATOCERA_CONFIGGEN_LICENSE = GPL
 BATOCERA_CONFIGGEN_SOURCE=
 BATOCERA_CONFIGGEN_DEPENDENCIES = python python-pyyaml
+BATOCERA_CONFIGGEN_INSTALL_STAGING = YES
 
 define BATOCERA_CONFIGGEN_EXTRACT_CMDS
 	cp -R $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-configgen/configgen/* $(@D)
@@ -44,6 +45,12 @@ else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_ODROIDN2),y)
 else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA),y)
 	BATOCERA_CONFIGGEN_SYSTEM=odroidgoa
 endif
+
+define BATOCERA_CONFIGGEN_INSTALL_STAGING_CMDS
+	mkdir -p $(STAGING_DIR)/usr/share/batocera/configgen
+	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-configgen/configs/configgen-defaults.yml $(STAGING_DIR)/usr/share/batocera/configgen/configgen-defaults.yml
+	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-configgen/configs/configgen-defaults-$(BATOCERA_CONFIGGEN_SYSTEM).yml $(STAGING_DIR)/usr/share/batocera/configgen/configgen-defaults-arch.yml
+endef
 
 define BATOCERA_CONFIGGEN_CONFIGS
 	mkdir -p $(TARGET_DIR)/usr/share/batocera/configgen

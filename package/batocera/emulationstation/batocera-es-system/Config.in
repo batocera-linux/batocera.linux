@@ -1,4 +1,5 @@
 config BR2_PACKAGE_BATOCERA_ES_SYSTEM
         bool "batocera-es-system"
+	select BR2_PACKAGE_BATOCERA_CONFIGGEN
         help
           Generates the es_system.cfg file and the roms folder
