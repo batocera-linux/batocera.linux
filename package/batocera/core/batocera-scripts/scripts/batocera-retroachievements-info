@@ -8,6 +8,7 @@
 # 20200113 - updated for retroachievements.org HTML changes
 # 20200124 - added badges for each game played
 # 20200304 - fixed a bug in rare cases where a RA game has no success icons
+# 20200410 - updated for retroachievements.org HTML changes, again
 #
 # Usage:
 # batocera-retroachievements-info
@@ -44,7 +45,7 @@ function process() {
 	avcompletion=$(cat "$tmpfile" | sed -e "/^[[:blank:]]*$/d" | awk -v FS="(</span><br/?>Average Completion: <b>|</b><br/?>Site Rank:)" '{print $2}' | sed -e "/^[[:blank:]]*$/d" | uniq)
 	points=$(cat "$tmpfile"_2 | sed -e "/^[[:blank:]]*$/d" | awk -v FS="(</strong></a>&nbsp;|<span class='TrueRatio'>)" '{print $2}' |  sed -e "s;(\([0-9]*\) points);\1;")
 	if [ x"$points" != x ] && [ "$points" -ge 1 ]; then
-		rank=$(cat "$tmpfile"_2  | sed -e "/^[[:blank:]]*$/d" | awk -v FS="(userList.php|<br/?><br/?>)" '{print $3}' | sed -e "s/\?s=2'>//" -e "s;<.*a>;;" )
+		rank=$(cat "$tmpfile"_2  | sed -e "/^[[:blank:]]*$/d" | awk -v FS="(globalRanking.php|<br/?><br/?>)" '{print $3}' | sed -e "s/\?[a-zA-Z0-9=&;']*>//" -e "s;<.*a>;;" )
 		## For future use: UserPic is RetroAchievements' user avatar - however the S3 bucket is protected.
 		# UserPic=$(cat $tmpfile | grep 'meta property=.og:image. content=' | cut -d= -f3 | awk -F\' '{print $2}')
 		# Workaround: use the line below
