@@ -1,8 +1,8 @@
 diff --git a/Core/Config.cpp b/Core/Config.cpp
-index 9a4e547..7f7858a 100644
+index 4096e3c..31d2fd2 100644
 --- a/Core/Config.cpp
 +++ b/Core/Config.cpp
-@@ -1122,10 +1122,10 @@ void Config::Reload() {
+@@ -1127,10 +1127,10 @@ void Config::Reload() {
  
  void Config::Load(const char *iniFileName, const char *controllerIniFilename) {
  	const bool useIniFilename = iniFileName != nullptr && strlen(iniFileName) > 0;
@@ -16,10 +16,10 @@ index 9a4e547..7f7858a 100644
  	INFO_LOG(LOADER, "Loading config: %s", iniFilename_.c_str());
  	bSaveSettings = true;
 diff --git a/Core/System.cpp b/Core/System.cpp
-index e4a07d4..4f8e778 100644
+index eff04fb..a3d2c7a 100644
 --- a/Core/System.cpp
 +++ b/Core/System.cpp
-@@ -510,15 +510,16 @@ CoreParameter &PSP_CoreParameter() {
+@@ -516,15 +516,16 @@ CoreParameter &PSP_CoreParameter() {
  }
  
  std::string GetSysDirectory(PSPDirectories directoryType) {
@@ -27,23 +27,23 @@ index e4a07d4..4f8e778 100644
  	switch (directoryType) {
  	case DIRECTORY_CHEATS:
 -		return g_Config.memStickDirectory + "PSP/Cheats/";
-+		return                (std::string) "/userdata/cheats/";
++		return (std::string) "/userdata/cheats/";
  	case DIRECTORY_GAME:
  		return g_Config.memStickDirectory + "PSP/GAME/";
  	case DIRECTORY_SAVEDATA:
  		return g_Config.memStickDirectory + "PSP/SAVEDATA/";
  	case DIRECTORY_SCREENSHOT:
 -		return g_Config.memStickDirectory + "PSP/SCREENSHOT/";
-+		return                (std::string) "/userdata/screenshots/";
++		return (std::string) "/userdata/screenshots/";
  	case DIRECTORY_SYSTEM:
  		return g_Config.memStickDirectory + "PSP/SYSTEM/";
  	case DIRECTORY_PAUTH:
-@@ -539,7 +540,7 @@ std::string GetSysDirectory(PSPDirectories directoryType) {
+@@ -545,7 +546,7 @@ std::string GetSysDirectory(PSPDirectories directoryType) {
  	case DIRECTORY_VIDEO:
  		return g_Config.memStickDirectory + "PSP/VIDEO/";
  	case DIRECTORY_AUDIO:
 -		return g_Config.memStickDirectory + "PSP/AUDIO/";
-+		return                (std::string) "/userdata/music/";
++		return (std::string) "/userdata/music/";
  	// Just return the memory stick root if we run into some sort of problem.
  	default:
  		ERROR_LOG(FILESYS, "Unknown directory type.");
@@ -70,15 +70,15 @@ index 72254a1..2f6c1b4 100644
  	cout << "SUCCESS!" << endl;
  	setUpControllers();
 diff --git a/UI/NativeApp.cpp b/UI/NativeApp.cpp
-index 3334120..7286955 100644
+index b71f30a..e5473ea 100644
 --- a/UI/NativeApp.cpp
 +++ b/UI/NativeApp.cpp
-@@ -457,7 +457,7 @@ void NativeInit(int argc, const char *argv[], const char *savegame_dir, const ch
- #if !defined(MOBILE_DEVICE) && !defined(_WIN32) && !PPSSPP_PLATFORM(SWITCH)
- 	VFSRegister("", new DirectoryAssetReader((File::GetExeDirectory() + "assets/").c_str()));
+@@ -469,7 +469,7 @@ void NativeInit(int argc, const char *argv[], const char *savegame_dir, const ch
  	VFSRegister("", new DirectoryAssetReader((File::GetExeDirectory()).c_str()));
+ 	VFSRegister("", new DirectoryAssetReader("/usr/local/share/ppsspp/assets/"));
+ 	VFSRegister("", new DirectoryAssetReader("/usr/local/share/games/ppsspp/assets/"));
 -	VFSRegister("", new DirectoryAssetReader("/usr/share/ppsspp/assets/"));
 +	VFSRegister("", new DirectoryAssetReader("/usr/share/ppsspp/PPSSPP/"));
+ 	VFSRegister("", new DirectoryAssetReader("/usr/share/games/ppsspp/assets/"));
  #endif
  #if PPSSPP_PLATFORM(SWITCH)
- 	std::string assetPath = user_data_path + "assets/";
