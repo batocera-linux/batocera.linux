@@ -16,7 +16,7 @@ case "${ACTION}" in
 	xrandr --listModes | grep -E '\*$' | sed -e s+'\*$'++ | sed -e s+'\*$'++ -e s+'^[^ ]* '++
 	;;
     "currentResolution")
-	xrandr --currentResolution
+	xrandr --currentResolution | tail -n1
 	;;
     "listOutputs")
 	xrandr --listConnectedOutputs | sed -e s+"*$"++
