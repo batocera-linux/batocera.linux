@@ -149,7 +149,10 @@ daphne:
   features: [ratio, rewind]
 
 dolphin:
-  features: [ratio, rewind, emulated_wiimotes]
+  features: [ratio, rewind]
+  systems:
+    wii:
+      features: [emulated_wiimotes]
 
 dosbox:
   features: [ratio, rewind]

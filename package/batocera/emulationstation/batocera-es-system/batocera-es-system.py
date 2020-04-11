@@ -237,16 +237,30 @@ class EsSystemConf:
             else:
                 featuresTxt += "  <emulator name=\"{}\"".format(emulator)
 
-            if "cores" in features[emulator]:
+            if "cores" in features[emulator] or "systems" in features[emulator]:
                 featuresTxt += ">\n"
-                for core in features[emulator]["cores"]:
-                    core_featuresTxt = ""
-                    if "features" in features[emulator]["cores"][core]:
-                        for feature in features[emulator]["cores"][core]["features"]:
-                            if core_featuresTxt != "":
-                                core_featuresTxt += ", "
-                            core_featuresTxt += feature
-                    featuresTxt += "    <core name=\"{}\" features=\"{}\" />\n".format(core, core_featuresTxt)
+                if "cores" in features[emulator]:
+                    featuresTxt += "    <cores>\n"
+                    for core in features[emulator]["cores"]:
+                        core_featuresTxt = ""
+                        if "features" in features[emulator]["cores"][core]:
+                            for feature in features[emulator]["cores"][core]["features"]:
+                                if core_featuresTxt != "":
+                                    core_featuresTxt += ", "
+                                core_featuresTxt += feature
+                        featuresTxt += "      <core name=\"{}\" features=\"{}\" />\n".format(core, core_featuresTxt)
+                    featuresTxt += "    </cores>\n"
+                if "systems" in features[emulator]:
+                    featuresTxt += "    <systems>\n"
+                    for system in features[emulator]["systems"]:
+                        system_featuresTxt = ""
+                        if "features" in features[emulator]["systems"][system]:
+                            for feature in features[emulator]["systems"][system]["features"]:
+                                if system_featuresTxt != "":
+                                    system_featuresTxt += ", "
+                                system_featuresTxt += feature
+                        featuresTxt += "      <system name=\"{}\" features=\"{}\" />\n".format(system, system_featuresTxt)
+                    featuresTxt += "    </systems>\n"
                 featuresTxt += "  </emulator>\n"
             else:
                 featuresTxt += " />\n"
