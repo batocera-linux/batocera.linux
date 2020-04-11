@@ -227,7 +227,7 @@ class EsSystemConf:
         featuresTxt = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n"
         featuresTxt += "<features>\n"
         for emulator in features:
-            emulator_featuresTxt = ""
+            emulator_featuresTxt = "videomode" # on batocera, the videomode is supported for any board allowing to change resolution via configgen. It is not related to the emulator
             if "features" in features[emulator]:
                 for feature in features[emulator]["features"]:
                     if emulator_featuresTxt != "":
