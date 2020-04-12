@@ -560,6 +560,14 @@ prboom:
 
     NE PAS EFFACER "prboom.wad"
 
+mrboom:
+  name:       MrBoom
+  extensions: [libretro]
+  group: ports
+  emulators:
+    libretro:
+      mrboom: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MRBOOM], 'netplay':true }
+
 vectrex:
   name:       Vectrex
   extensions: [bin, gam, vec, zip, 7z]
