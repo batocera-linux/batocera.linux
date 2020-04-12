@@ -25,6 +25,8 @@ vars:
 	@echo "Download directory:    $(DL_DIR)"
 	@echo "Build directory:       $(OUTPUT_DIR)"
 	@echo "ccache directory:      $(CCACHE_DIR)"
+	@echo "Extra options:         $(EXTRA_OPTS)"
+	@echo "Docker options:        $(DOCKER_OPTS)"
 
 build-docker-image:
 	docker build . -t $(DOCKER_REPO)/$(IMAGE_NAME)
@@ -121,3 +123,6 @@ ccache-dir:
 	$(if $(shell which rsync 2>/dev/null),, $(error "rsync not found!"))
 	$(if $($(TMP)),,$(error "$(TMP) not set!"))
 	rsync -e "ssh -o 'UserKnownHostsFile /dev/null' -o StrictHostKeyChecking=no" -av $(OUTPUT_DIR)/$*/target/ root@$($(TMP)):/
+
+%-tail: output-dir-%
+	@tail -F $(OUTPUT_DIR)/$*/build/build-time.log
