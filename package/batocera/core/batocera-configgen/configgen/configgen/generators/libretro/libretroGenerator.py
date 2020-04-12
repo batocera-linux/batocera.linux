@@ -105,5 +105,7 @@ class LibretroGenerator(Generator):
         if system.name == 'dos':
             rom = 'set ROOT=' + rom
         
-        commandArray.append(rom)
+        if system.name != 'mrboom':
+            commandArray.append(rom)
+        
         return Command.Command(array=commandArray)
