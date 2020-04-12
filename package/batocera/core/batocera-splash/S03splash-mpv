@@ -38,7 +38,7 @@ do_videostart ()
     then
         mpv_opt=--no-audio
     fi
-    /usr/bin/mpv $mpv_opt "$video" &
+    /usr/bin/mpv --no-config $mpv_opt "$video" &
     PID=$!
     # Wait for emulationstation or Kodi, but not more than 20 seconds
     count=0
