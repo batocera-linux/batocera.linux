@@ -14,7 +14,6 @@ class EsSystemConf:
 
     default_parentpath = "/userdata/roms"
     default_command    = "python /usr/lib/python2.7/site-packages/configgen/emulatorlauncher.py %CONTROLLERSCONFIG% -system %SYSTEM% -rom %ROM%"
-    netplay_command    = "python /usr/lib/python2.7/site-packages/configgen/emulatorlauncher.py %CONTROLLERSCONFIG% %NETPLAY% -system %SYSTEM% -rom %ROM%"
 
     # Generate the es_systems.cfg file by searching the information in the es_system.yml file
     @staticmethod
@@ -105,12 +104,6 @@ class EsSystemConf:
         listExtensions = EsSystemConf.listExtension(data, True)
         groupValue     = EsSystemConf.systemGroup(system, data)
         command        = EsSystemConf.default_command
-        if "emulators" in data:
-            if "libretro" in data["emulators"]:
-                for libretro_core in data["emulators"]["libretro"]:
-                    if "netplay" in data["emulators"]["libretro"][libretro_core] and \
-                        data["emulators"]["libretro"][libretro_core]["netplay"] == True :
-                            command = EsSystemConf.netplay_command
 
         systemTxt =  "  <system>\n"
         systemTxt += "        <fullname>%s</fullname>\n" % (data["name"])
