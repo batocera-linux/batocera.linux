@@ -1,10 +1,10 @@
-diff --git a/drivers/hid/hid-quirks.c b/drivers/hid/hid-quirks.c
-index fa58a7c..1f48ef2 100644
---- a/drivers/hid/hid-quirks.c
-+++ b/drivers/hid/hid-quirks.c
-@@ -176,6 +176,53 @@ static const struct hid_device_id hid_quirks[] = {
- 	{ HID_USB_DEVICE(USB_VENDOR_ID_WISEGROUP, USB_DEVICE_ID_QUAD_USB_JOYPAD), HID_QUIRK_NOGET | HID_QUIRK_MULTI_INPUT },
- 	{ HID_USB_DEVICE(USB_VENDOR_ID_XIN_MO, USB_DEVICE_ID_XIN_MO_DUAL_ARCADE), HID_QUIRK_MULTI_INPUT },
+diff --git a/drivers/hid/usbhid/hid-quirks.c b/drivers/hid/usbhid/hid-quirks.c
+index e6cfd32..7aa0ff0 100644
+--- a/drivers/hid/usbhid/hid-quirks.c
++++ b/drivers/hid/usbhid/hid-quirks.c
+@@ -163,6 +163,53 @@ static const struct hid_blacklist {
+ 	{ USB_VENDOR_ID_DRACAL_RAPHNET, USB_DEVICE_ID_RAPHNET_2NES2SNES, HID_QUIRK_MULTI_INPUT },
+ 	{ USB_VENDOR_ID_DRACAL_RAPHNET, USB_DEVICE_ID_RAPHNET_4NES4SNES, HID_QUIRK_MULTI_INPUT },
  
 +	// Juyao
 +	{ 0x0314,0x0326,0x040 },
@@ -53,6 +53,6 @@ index fa58a7c..1f48ef2 100644
 +	// 3H Dual Arcade 2Players
 +	{ 0x16c0,0x05e0,0x040 },
 +
- 	{ 0 }
+ 	{ 0, 0 }
  };
  
