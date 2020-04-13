@@ -10,6 +10,7 @@
 # Added architecture and version information // 05.01.2020
 # Added update information + beta branch // 10.02.2020
 # Added --reboot // 26.02.2020
+# Added --overlay and --remount // 13.04.2020
 
 # Get all childpids from calling process
 function getcpid() {
@@ -152,11 +153,37 @@ case ${1,,} in
         exit $ret
     ;;
 
+    --remount)
+        mount_dir="$2"
+        [[ -z "$mount_dir" ]] && mount_dir="/boot"
+        ! [[ -d "$mount_dir" ]] && echo "Error: directory '$mount_dir' not found!" && exit 1
+        if ! [[ -w "$mount_dir" ]]; then
+            echo "Directory '$mount_dir' is locked... Set it as writeable now!"
+            mount -o remount,rw "$mount_dir" || echo "Error! Directory state not changed!"
+        else
+            echo "Directory '$mount_dir' is writeable... Set it to lock!"
+            mount -o remount,ro "$mount_dir" || echo "Error! Directory state not changed!"
+        fi
+    ;;
+    --overlay)
+        [[ -f /boot/boot/overlay ]] && echo "Overlay available in /boot/boot/overlay" || { echo "Overlay file not found!"; exit 1; }
+        read -p "Do you want to backup overlay file (y/n)? " yn
+        case ${yn:0:1} in
+            y|Y)
+                BA_OVERLAY="$HOME/$(date +%y%m%d-%s)-overlay.zip"
+                zip -j "$BA_OVERLAY" /boot/boot/overlay || exit 1
+                echo "Created backup to: $BA_OVERLAY"
+                echo "To restore: 'unzip $BA_OVERLAY -d /boot/boot'"
+            ;;
+            *)
+               echo "Nothing done!"
+            ;;
+        esac
+    ;;
     *)
         echo -e "\n\t\t BATOCERA SWISS KNIFE FOR EmulationStation
                  Please parse parameters to this script! \n
                   --restart  will RESTART EmulationStation only
-                             this may be usefull for refreshing gameslists
                   --kodi     will startup KODI Media Center stopping ES
                   --reboot   will REBOOT whole system
                   --shutdown will SHUTDOWN whole system
@@ -170,7 +197,10 @@ case ${1,,} in
                   --arch     Shows current architecture running\n
                   --version  Shows current version of BATOCERA running
                   --update   Shows possible update for your install
-                             default: stable, you can type --update beta"
+                             default: stable, you can type --update beta
+                  --overlay  will try to backup your overlay file
+                  --remount  toggle write access to <dir>, default /boot
+                             This switch can have serious effects for your setup!"
     ;;
 
 esac

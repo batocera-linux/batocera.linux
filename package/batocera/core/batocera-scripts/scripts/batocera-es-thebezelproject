@@ -7,8 +7,11 @@
 # Usage:
 # batocera-es-thebezelproject 'list', 'install or remove <system>'
 #
-#
-readonly VERSION="2.10_20191129"
+# 20190801 Initial release
+# 20191120 Rewite all script for incremential runtime
+# 20200410 Fix : Support for daphne did not work
+
+readonly VERSION="20200410"
 readonly TITLE="the BezelProject for BATOCERA"
 readonly LOGS_DIR="/userdata/system/logs"
 readonly DECORATION_DIR="/userdata/decorations"
@@ -35,7 +38,7 @@ NB_WARNING=0
 # tbp_<system_name>.txt is a plain text file with the format
 # 'md5 rom_name' for each rom_name.png (spaces or tabs)
 # An external script generates this file for each Batocera system
-# available in the BezelProject (with weekly update)
+# available in the BezelProject (with monthly update)
 # Example of tbp_snes.txt file:
 # 29aa1cf6a91c472fd0e2db50ebf38 2020 Super Baseball (USA).png
 
@@ -132,7 +135,8 @@ function git_name() {
 # return the number of files in a directory
 function files_count() {
 		# we want only files and not those starting with '.' or '_' or "gamelist*"
-		echo `find "$1" -maxdepth 1 -type f -iname "[!._]*" -and ! -iname "gamelist*" | wc -l`
+		# support for daphne : there is a sub-folder called roms we want to parse
+		[[ $(grep "daphne" <<< "$1") && -d "$1"/roms ]] && echo `find "$1"/roms -maxdepth 1 -type f -iname "[!._]*" -and ! -iname "gamelist*" | wc -l` || echo `find "$1" -maxdepth 1 -type f -iname "[!._]*" -and ! -iname "gamelist*" | wc -l`
 }
 
 ###############################
@@ -194,6 +198,7 @@ function install() {
 		local bezels_installed=0
 		local matching_rom
 		local system_to_install="$1"
+		local daphne=""
 		local OS
 
 		local git_name
@@ -301,6 +306,9 @@ function install() {
 		record "Git path : $path"
 		record "Installing games bezels for $roms_filescount ROMs..." "1"
 
+		# support for daphne : there is a sub-folder called roms we want to parse
+		[[ $(grep "daphne" <<< "$system_to_install") && -d "$ROMS_DIR"/"$system_to_install"/roms ]] && daphne="/roms"
+
 		# start job process (for background refresh)
 		echo "0" > "$TMP_PROGRESS_COUNT"
 		PID=
@@ -311,7 +319,7 @@ function install() {
 		# (Mac for debug purposes, Batocera runs on Linux)
 		OS=`uname`
 
-		# *****************************************
+		# *******************************************
 		# parse ROMs files in system_to_install
 		while read file_name; do
 				rom_name=$(basename "$file_name")
@@ -323,7 +331,7 @@ function install() {
 				echo $roms_count > "$TMP_PROGRESS_COUNT"
 				record "ROM: #$roms_count $rom_name"
 
-				# ********************************************************
+				# *********************************************
 				# parse index file for maching rom_name
 				matching_rom=0
 				while IFS=$'  \t' read index_bezel_md5 index_bezel_name ; do
@@ -333,16 +341,16 @@ function install() {
 						index_no_brkts="${index_no_ext%% [*}"
 						index_no_brkts="${index_no_brkts%% (*}"
 
-						# ************************
-						# is there a match?
+						# *********************
+						# is there a match ?
 						if [ "$rom_no_brkts" = "$index_no_brkts" ]; then
 								matching_rom=1
 
-								# *******************************************
-								# does the bezel for this game already exist?
+								# *************************************************
+								# does the bezel for this game already exist ?
 								if [ -f "$DECORATION_DIR"/"$BEZELPROJECT_GAMES_DIR"/"$system_to_install"/"$rom_no_ext.$index_ext" ]; then
 
-										# ********************************************************
+										# ********************************************************************
 										# Check MD5, in case the bezel has been modified/updated ?
 										if [ $OS = "Darwin" ]; then
 												# MacOS X Version
@@ -351,6 +359,7 @@ function install() {
 												# Busybox version
 												bezel_md5=$(md5sum "$DECORATION_DIR"/"$BEZELPROJECT_GAMES_DIR"/"$system_to_install"/"$rom_no_ext.$index_ext" | cut -d ' ' -f 1)
 										fi
+
 										if [ "$bezel_md5" != "$index_bezel_md5" ]; then
 												# MODIFIED (updated)
 												record "MODIFIED : $index_bezel_name"
@@ -393,7 +402,7 @@ function install() {
 						record "Error : too many warning ("$MAX_NB_WARNING") while downloading files, exiting..." "1"
 						break
 				fi
-		done < <(find "$ROMS_DIR"/"$system_to_install" -maxdepth 1 -type f -iname "[!._]*" -and ! -iname "gamelist*")
+		done < <(find "$ROMS_DIR"/"$system_to_install$daphne" -maxdepth 1 -type f -iname "[!._]*" -and ! -iname "gamelist*")
 		rm "$TMP_INDEX_LIST"
 
 		# kill job process
@@ -411,13 +420,17 @@ function install() {
 		record "Installing default bezel" "1"
 		if [ -d "$DECORATION_DIR"/"$BEZELPROJECT_DIR" ]; then
 				url="$DEFAULT_BEZEL_URL"/default.png
-				curl -sfL "$url" -o "$DECORATION_DIR"/"$BEZELPROJECT_DIR"/default.png
-				if [ "$?" -ne 0 ]; then
+				# check header only for HTTP 200 (OK)
+				if [ $(curl -sIL "$url" | head -n 1 | grep "200") ]; then
+						curl -sfL "$url" -o "$DECORATION_DIR"/"$BEZELPROJECT_DIR"/default.png
+				else
 						record "Warning : file $(basename $url) could not be downloaded from $(dirname $url)"
 				fi
 				url="$DEFAULT_BEZEL_URL"/default.info
-				curl -sfL "$url" -o "$DECORATION_DIR"/"$BEZELPROJECT_DIR"/default.info
-				if [ "$?" -ne 0 ]; then
+				# check header only for HTTP 200 (OK)
+				if [ $(curl -sIL "$url" | head -n 1 | grep "200") ]; then
+						curl -sfL "$url" -o "$DECORATION_DIR"/"$BEZELPROJECT_DIR"/default.info
+				else
 						record "Warning : file $(basename $url) could not be downloaded from $(dirname $url)"
 				fi
 		fi
@@ -432,8 +445,8 @@ function install() {
 function remove() {
 		local system_name="$1"
 
-		record "* Remove"
 		#  do you want to remove all bezels from TheBezelProject ?
+		record "* Remove"
 		if [ "$system_name" = "all" ]; then
 				if [ -d "$DECORATION_DIR"/"$BEZELPROJECT_DIR" ]; then
 						read -p "Do you wish to remove all bezels from TheBezelProject ? " yn
@@ -453,8 +466,8 @@ function remove() {
 				else
 						rm -rf "$DECORATION_DIR"/"$BEZELPROJECT_GAMES_DIR"/"$system_name"
 						record "Deleting : $DECORATION_DIR"/"$BEZELPROJECT_GAMES_DIR"/"$system_name"
-# 						rm -f "$DECORATION_DIR"/"$BEZELPROJECT_DIR"/default.*
-# 						record "Deleting : $DECORATION_DIR"/"$BEZELPROJECT_DIR"/default.*
+						rm -f "$DECORATION_DIR"/"$BEZELPROJECT_DIR"/default.*
+						record "Deleting : $DECORATION_DIR"/"$BEZELPROJECT_DIR"/default.*
 				fi
 		fi
 		# sync disk
@@ -485,4 +498,3 @@ elif [[ "$command" = "remove" && -n "$system" ]]; then
 else
 		usage
 fi
-
