@@ -156,7 +156,7 @@ case ${1,,} in
     --remount)
         mount_dir="$2"
         [[ -z "$mount_dir" ]] && mount_dir="/boot"
-        ! [[ -d "$mount_dir" ]] && echo "Error: directory '$mount_dir' not found!"
+        ! [[ -d "$mount_dir" ]] && echo "Error: directory '$mount_dir' not found!" && exit 1
         if ! [[ -w "$mount_dir" ]]; then
             echo "Directory '$mount_dir' is locked... Set it as writeable now!"
             mount -o remount,rw "$mount_dir" || echo "Error! Directory state not changed!"
@@ -173,7 +173,7 @@ case ${1,,} in
                 BA_OVERLAY="$HOME/$(date +%y%m%d-%s)-overlay.zip"
                 zip -j "$BA_OVERLAY" /boot/boot/overlay || exit 1
                 echo "Created backup to: $BA_OVERLAY"
-                echo "To restore: 'unzip $BA_OVERLAY' -d /boot/boot"
+                echo "To restore: 'unzip $BA_OVERLAY -d /boot/boot'"
             ;;
             *)
                echo "Nothing done!"
