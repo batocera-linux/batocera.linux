@@ -53,12 +53,16 @@ def generateControllerConfig_emulatedwiimotes(playersControllers, rom):
     extraOptions["Source"] = "1"
 
     # side wiimote
+    # l2 for shaking actions
     if ".side." in rom:
         extraOptions["Options/Sideways Wiimote"] = "1"
         wiiMapping['x']   = 'Buttons/B'
         wiiMapping['y'] = 'Buttons/A'
         wiiMapping['a']   = 'Buttons/2'
         wiiMapping['b'] = 'Buttons/1'
+        wiiMapping['l2'] = 'Shake/X'
+        wiiMapping['l2'] = 'Shake/Y'
+        wiiMapping['l2'] = 'Shake/Z'
 
 
     # i: infrared, s: swing, t: tilt, n: nunchuk
