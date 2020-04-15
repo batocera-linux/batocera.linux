@@ -33,8 +33,6 @@ def generateControllerConfig_emulatedwiimotes(playersControllers, rom):
         'joystick2up': 'Tilt/Forward', 'joystick2left': 'Tilt/Left'
     }
     wiiReverseAxes = {
-        'D-Pad/Up':   'D-Pad/Down',
-        'D-Pad/Left': 'D-Pad/Right',
         'IR/Up':      'IR/Down',
         'IR/Left':    'IR/Right',
         'Swing/Up':   'Swing/Down',
@@ -156,8 +154,6 @@ def generateControllerConfig_gamecube(playersControllers,rom):
         'joystick2up': 'C-Stick/Up',    'joystick2left': 'C-Stick/Left'
     }
     gamecubeReverseAxes = {
-        'D-Pad/Up':        'D-Pad/Down',
-        'D-Pad/Left':      'D-Pad/Right',
         'Main Stick/Up':   'Main Stick/Down',
         'Main Stick/Left': 'Main Stick/Right',
         'C-Stick/Up':      'C-Stick/Down',
@@ -278,14 +274,14 @@ def generateControllerConfig_any(playersControllers, filename, anyDefKey, anyMap
             for x in anyReplacements:
             	if x not in pad.inputs and x in currentMapping:
             	    currentMapping[anyReplacements[x]] = currentMapping[x]
-            	if x == "joystick1up":
-            	    currentMapping[anyReplacements["joystick1down"]] = anyReverseAxes[currentMapping["joystick1up"]]
-            	if x == "joystick1left":
-            	    currentMapping[anyReplacements["joystick1right"]] = anyReverseAxes[currentMapping["joystick1left"]]
-            	if x == "joystick2up":
-            	    currentMapping[anyReplacements["joystick2down"]] = anyReverseAxes[currentMapping["joystick2up"]]
-            	if x == "joystick2left":
-            	    currentMapping[anyReplacements["joystick2right"]] = anyReverseAxes[currentMapping["joystick2left"]]
+                    if x == "joystick1up":
+                        currentMapping[anyReplacements["joystick1down"]] = anyReverseAxes[currentMapping["joystick1up"]]
+                    if x == "joystick1left":
+                        currentMapping[anyReplacements["joystick1right"]] = anyReverseAxes[currentMapping["joystick1left"]]
+                    if x == "joystick2up":
+                        currentMapping[anyReplacements["joystick2down"]] = anyReverseAxes[currentMapping["joystick2up"]]
+                    if x == "joystick2left":
+                        currentMapping[anyReplacements["joystick2right"]] = anyReverseAxes[currentMapping["joystick2left"]]
 
         for x in pad.inputs:
             input = pad.inputs[x]
