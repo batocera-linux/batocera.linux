@@ -1,0 +1,13 @@
+diff --git a/configure.ac b/configure.ac
+index 1171d97..d679b08 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -2218,7 +2218,7 @@ AS_IF([test "x$with_python" != xno], [
+ 	[pymajor="$withval"; PYTHON=python${pymajor}], [pymajor="2"])
+ 
+   # check for python interpreter
+-  AM_PATH_PYTHON([$pymajor], [have_python=yes], [have_python=no])
++  AM_PATH_PYTHON([2], [have_python=yes], [have_python=no])
+   AS_CASE([$with_python:$have_python],
+     [yes:no],
+       [AC_MSG_ERROR([python selected but python interpreter not found])],

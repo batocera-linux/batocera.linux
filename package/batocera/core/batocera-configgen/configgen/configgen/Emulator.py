@@ -39,6 +39,9 @@ class Emulator():
         if "shaderset" not in self.config: # auto
             self.renderconfig = Emulator.get_generic_config(self.name, "/usr/share/batocera/shaders/configs/rendering-defaults.yml", "/usr/share/batocera/shaders/configs/rendering-defaults-arch.yml")
 
+        # for compatibility with earlier Batocera versions, let's keep -renderer
+        # but it should be reviewed when we refactor configgen (to Python3?)
+        # so that we can fetch them from system.shader without -renderer
         systemSettings = recalSettings.loadAll(self.name + "-renderer")
         gameSettings = recalSettings.loadAll(self.name + "[\"" + os.path.basename(rom) + "\"]" + "-renderer")
 

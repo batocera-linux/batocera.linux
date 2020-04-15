@@ -59,17 +59,17 @@ index de750d4..dc76c8e 100644
  
  class InputConfig
 diff --git a/es-core/src/InputManager.cpp b/es-core/src/InputManager.cpp
-index d18eeac..50d22e7 100644
+index 6e06800..89bf514 100644
 --- a/es-core/src/InputManager.cpp
 +++ b/es-core/src/InputManager.cpp
-@@ -668,6 +668,7 @@ std::string InputManager::configureEmulators() {
-     InputConfig * playerInputConfig = playerJoysticks[player];
-     if(playerInputConfig != NULL){
-       command << "-p" << player+1 << "index " <<  playerInputConfig->getDeviceIndex() << " -p" << player+1 << "guid " << playerInputConfig->getDeviceGUIDString() << " -p" << player+1 << "name \"" <<  playerInputConfig->getDeviceName() << "\" -p" << player+1 << "nbaxes " << playerInputConfig->getDeviceNbAxes() << " ";
-+      command << "-p" << player+1 << "devicepath " <<  SDL_JoystickDevicePathById(playerInputConfig->getDeviceIndex()) << " ";
+@@ -721,6 +721,7 @@ std::string InputManager::configureEmulators() {
+       command << " -p" << player+1 << "nbbuttons "  << playerInputConfig->getDeviceNbButtons();
+       command << " -p" << player+1 << "nbhats "     << playerInputConfig->getDeviceNbHats();
+       command << " -p" << player+1 << "nbaxes "     << playerInputConfig->getDeviceNbAxes();
++      command << " -p" << player+1 << "devicepath " <<  SDL_JoystickDevicePathById(playerInputConfig->getDeviceId());
+       command << " ";
      }
    }
-   LOG(LogInfo) << "Configure emulators command : " << command.str().c_str();
 diff --git a/es-core/src/guis/GuiInputConfig.cpp b/es-core/src/guis/GuiInputConfig.cpp
 index 3249162..dd01a72 100644
 --- a/es-core/src/guis/GuiInputConfig.cpp

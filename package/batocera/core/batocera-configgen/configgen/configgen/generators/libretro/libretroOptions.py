@@ -32,8 +32,18 @@ def generateCoreSettings(retroarchCore, system):
 
     # Colecovision and MSX
     if (system.config['core'] == 'bluemsx'):
-        coreSettings.save('bluemsx_msxtype', '"Auto"')
         coreSettings.save('bluemsx_overscan', '"enabled"')
+        if (system.name == 'colecovision'):
+            coreSettings.save('bluemsx_msxtype', '"ColecoVision"')
+        elif (system.name == 'msx1'):
+            coreSettings.save('bluemsx_msxtype', '"MSX"')
+        elif (system.name == 'msx2'):
+            coreSettings.save('bluemsx_msxtype', '"MSX2"')
+        elif (system.name == 'msx2+'):
+            coreSettings.save('bluemsx_msxtype', '"MSX2+"')
+        elif (system.name == 'msxturbor'):
+            coreSettings.save('bluemsx_msxtype', '"MSXturboR"')
+        
 
     if (system.config['core'] == 'tgbdual'):
         coreSettings.save('tgbdual_audio_output',       '"Game Boy #1"')
@@ -80,8 +90,8 @@ def generateCoreSettings(retroarchCore, system):
     if (system.config['core'] == 'fuse'):
         coreSettings.save('fuse_machine',   '"Spectrum 128K"')
 
-    if (system.config['core'] == '4do'):
-        coreSettings.save('4do_dsp_threaded',   '"enabled"')
+    if (system.config['core'] == 'opera'):
+        coreSettings.save('opera_dsp_threaded',   '"enabled"')
 
     if (system.config['core'] == 'virtualjaguar'):
         coreSettings.save('virtualjaguar_usefastblitter',   '"enabled"')
@@ -92,6 +102,9 @@ def generateCoreSettings(retroarchCore, system):
 
     if (system.config['core'] == 'theodore'):
         coreSettings.save('theodore_autorun',   '"enabled"')
+
+    if (system.config['core'] == 'flycast'):
+        coreSettings.save('reicast_threaded_rendering',   '"enabled"')
 
 def generateHatariConf(hatariConf):
     hatariConfig = ConfigParser.ConfigParser()

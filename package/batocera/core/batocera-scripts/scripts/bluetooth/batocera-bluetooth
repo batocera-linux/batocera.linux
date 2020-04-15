@@ -48,10 +48,51 @@ do_remove() {
 }
 
 do_trust() {
-    touch /var/run/bluetoothd.trusting
-    trap "rm -f /var/run/bluetoothd.trusting" 2 3
-    sleep 60
-    rm -f "/var/run/bluetoothd.trusting"
+    NPID=$(cat /var/run/bluetooth-agent.pid)
+    test -z "${NPID}" && return 0
+
+    touch "/var/run/bt_status" || retrun 1
+    LAST_MSG=$(cat "/var/run/bt_status")
+    
+    # start discovering
+    kill -10 "${NPID}"
+
+    trap "kill -12 ${NPID}" 2 3
+
+    N=60
+    while test $N -gt 0
+    do
+	NEW_MSG=$(cat "/var/run/bt_status")
+	if test "${LAST_MSG}" != "${NEW_MSG}"
+	then
+	    LAST_MSG="${NEW_MSG}"
+	    echo "${NEW_MSG}"
+	fi
+	sleep 1
+	let N--
+    done
+
+    # stop discovering
+    kill -12 "${NPID}"
+
+    do_save # save
+}
+
+do_starttrust() {
+    NPID=$(cat /var/run/bluetooth-agent.pid)
+    test -z "${NPID}" && exit 0
+
+    # start discovering
+    kill -10 "${NPID}"
+}
+
+do_stoptrust() {
+    NPID=$(cat /var/run/bluetooth-agent.pid)
+    test -z "${NPID}" && exit 0
+
+    # stop discovering
+    kill -12 "${NPID}"
+
     do_save # save
 }
 
@@ -61,6 +102,12 @@ case "${ACTION}" in
 	;;
     "trust")
 	do_trust
+	;;
+    "starttrust")
+	do_starttrust
+	;;
+    "stoptrust")
+	do_stoptrust
 	;;
     "remove")
 	if test $# = 1

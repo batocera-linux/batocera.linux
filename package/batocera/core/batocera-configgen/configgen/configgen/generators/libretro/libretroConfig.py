@@ -28,10 +28,13 @@ coreToP1Device = {'cap32': '513', '81': '257', 'fuse': '513'};
 coreToP2Device = {'fuse': '513'};
 
 # Define systems compatible with retroachievements
-systemToRetroachievements = {'snes', 'nes', 'gba', 'gb', 'gbc', 'megadrive', 'mastersystem', 'pcengine', 'lynx', 'ngp', 'atari2600', 'atari7800', 'lynx', 'virtualboy', 'neogeo', 'neogeocd', 'colecovision', 'mame', 'fba', 'lightgun', 'apple2', 'psx'};
+systemToRetroachievements = {'atari2600', 'atari7800', 'atarijaguar', 'colecovision', 'nes', 'snes', 'virtualboy', 'n64', 'sg1000', 'mastersystem', 'megadrive', 'segacd', 'sega32x', 'saturn', 'pcengine', 'pcenginecd', 'supergrafx', 'psx', 'mame', 'fbneo', 'neogeo', 'lightgun', 'apple2', 'lynx', 'wswan', 'wswanc', 'gb', 'gbc', 'gba', 'nds', 'pokemini', 'gamegear', 'ngp', 'ngpc'}; 
 
 # Define systems not compatible with rewind option
-systemNoRewind = {'sega32x', 'psx', 'zxspectrum', 'odyssey2', 'mame', 'n64', 'dreamcast', 'atomiswave', 'naomi', 'neogeocd', 'saturn'};
+systemNoRewind = {'sega32x', 'psx', 'zxspectrum', 'odyssey2', 'mame', 'n64', 'dreamcast', 'atomiswave', 'naomi', 'neogeocd', 'saturn', 'fbneo'};
+
+# Define systems not compatible with run-ahead option (warning: this option is CPU intensive!)
+systemNoRunahead = {'sega32x', 'n64', 'dreamcast', 'atomiswave', 'naomi', 'neogeocd', 'saturn'};
 
 # Define system emulated by bluemsx core
 systemToBluemsx = {'msx': '"MSX2"', 'msx1': '"MSX2"', 'msx2': '"MSX2"', 'colecovision': '"COL - ColecoVision"' };
@@ -104,6 +107,17 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
             retroarchConfig['rewind_enable'] = 'true'
     else:
         retroarchConfig['rewind_enable'] = 'false'
+
+    retroarchConfig['run_ahead_enabled'] = 'false'
+    retroarchConfig['run_ahead_frames'] = '0'
+    retroarchConfig['run_ahead_secondary_instance'] = 'false'
+
+    if system.isOptSet('runahead') and int(system.config['runahead']) >0:
+       if (not system.name in systemNoRunahead):
+          retroarchConfig['run_ahead_enabled'] = 'true'
+          retroarchConfig['run_ahead_frames'] = system.config['runahead']
+          if system.isOptSet('secondinstance') and system.getOptBoolean('secondinstance') == True:
+              retroarchConfig['run_ahead_secondary_instance'] = 'true'
 
     if system.isOptSet('autosave') and system.getOptBoolean('autosave') == True:
         retroarchConfig['savestate_auto_save'] = 'true'
@@ -196,13 +210,24 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
         retroarchConfig['netplay_mode']              = "false"
         retroarchConfig['netplay_ip_port']           = systemConfig.get('netplay.server.port', "")
         retroarchConfig['netplay_delay_frames']      = systemConfig.get('netplay.frames', "")
-        retroarchConfig['netplay_nickname']          = systemConfig.get('netplay.nick', "")
+        retroarchConfig['netplay_nickname']          = systemConfig.get('netplay.nickname', "")
         retroarchConfig['netplay_client_swap_input'] = "false"
         if system.config['netplay.mode'] == 'client':
             # But client needs netplay_mode = true ... bug ?
             retroarchConfig['netplay_mode']              = "true"
             retroarchConfig['netplay_ip_address']        = systemConfig.get('netplay.server.ip', "")
             retroarchConfig['netplay_client_swap_input'] = "true"
+        # mode spectator
+        if system.isOptSet('netplay.spectator') and system.getOptBoolean('netplay.spectator') == True:
+            retroarchConfig['netplay_spectator_mode_enable'] = 'true'
+        else:
+            retroarchConfig['netplay_spectator_mode_enable'] = 'false'
+        # relay
+        if 'netplay.relay' in system.config and system.config['netplay.relay'] != "" :
+            retroarchConfig['netplay_use_mitm_server'] = "true"
+            retroarchConfig['netplay_mitm_server'] = systemConfig.get('netplay.relay', "")
+        else:
+            retroarchConfig['netplay_use_mitm_server'] = "false"
 
     # Display FPS
     if system.isOptSet('showFPS') and system.getOptBoolean('showFPS') == True:
@@ -229,10 +254,14 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
         retroarchConfig['ai_service_enable'] = 'true'
         retroarchConfig['ai_service_mode'] = '0'
         retroarchConfig['ai_service_source_lang'] = '0'
-        if system.isOptSet('ai_service_url') and system.config['ai_service_url']:
-            retroarchConfig['ai_service_url'] = system.config['ai_service_url']+'&mode=Fast&output=png&target_lang='+system.config['ai_target_lang']
+        if system.isOptSet('ai_target_lang'):
+            chosen_lang=system.config['ai_target_lang']
         else:
-            retroarchConfig['ai_service_url'] = 'http://ztranslate.net/service?api_key=BATOCERA&mode=Fast&output=png&target_lang='+system.config['ai_target_lang']
+            chosen_lang='En'
+        if system.isOptSet('ai_service_url') and system.config['ai_service_url']:
+            retroarchConfig['ai_service_url'] = system.config['ai_service_url']+'&mode=Fast&output=png&target_lang='+chosen_lang
+        else:
+            retroarchConfig['ai_service_url'] = 'http://ztranslate.net/service?api_key=BATOCERA&mode=Fast&output=png&target_lang='+chosen_lang
         if system.isOptSet('ai_service_pause') and system.getOptBoolean('ai_service_pause') == True:
             retroarchConfig['ai_service_pause'] = 'true'
         else:
@@ -307,7 +336,10 @@ def writeBezelConfig(bezel, retroarchConfig, systemName, rom, gameResolution):
 
     # only the png file is mandatory
     if os.path.exists(overlay_info_file):
-        infos = json.load(open(overlay_info_file))
+        try:
+            infos = json.load(open(overlay_info_file))
+        except:
+            infos = {}
     else:
         infos = {}
 

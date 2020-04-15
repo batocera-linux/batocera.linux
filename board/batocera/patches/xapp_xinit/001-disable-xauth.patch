@@ -1,0 +1,13 @@
+diff --git a/startx.cpp b/startx.cpp
+index dbc4cae..8a0282e 100644
+--- a/startx.cpp
++++ b/startx.cpp
+@@ -126,7 +126,7 @@ if defaults read $X11_PREFS_DOMAIN 2> /dev/null | grep -q 'dpi' && defaults read
+ fi
+ 
+ #else
+-enable_xauth=1
++enable_xauth=0
+ #endif
+ 
+ XCOMM Automatically determine an unused $DISPLAY

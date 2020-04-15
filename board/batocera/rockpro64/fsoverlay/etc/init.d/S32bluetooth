@@ -3,7 +3,7 @@
 # Auto connect bluetooth controllers
 #
 
-systemsetting="python /usr/lib/python2.7/site-packages/configgen/settings/batoceraSettings.py"
+systemsetting="batocera-settings"
 
 case "$1" in
   start)
@@ -14,7 +14,14 @@ case "$1" in
                 btaddr="`$systemsetting  -command load -key bluetooth.adapter`"
         	if [ "$settings_version" != "bluez" ]; then BLUETOOTHD_ARGS="--noplugin=sixaxis"; else  BLUETOOTHD_ARGS="--noplugin=sixaxispair"; fi
 		rfkill unblock bluetooth # soft unblock bluetooth
-		start-stop-daemon -S -q -m -p /var/run/bluetoothd.pid      --exec /usr/libexec/bluetooth/bluetoothd -- $BLUETOOTHD_ARGS &	
+		start-stop-daemon -S -q -m -p /var/run/bluetoothd.pid      --exec /usr/libexec/bluetooth/bluetoothd -- $BLUETOOTHD_ARGS &
+
+		# hack to fix the bt issues
+		echo 0 > /sys/class/rfkill/rfkill0/state
+		sleep 1
+		echo 1 > /sys/class/rfkill/rfkill0/state
+		sleep 1
+		###
 		/usr/bin/hciattach /dev/ttyS0 bcm43xx 1500000 flow nosleep # rockpro64 specific
 		if test -n "${btaddr}"
 		then

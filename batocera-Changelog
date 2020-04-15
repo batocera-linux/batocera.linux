@@ -1,32 +1,46 @@
-20XX/XX/XX - batocera.linux 5.25
+2020/XX/XX - batocera.linux 5.26
+	* fix missing audio for video snaps on some platforms
+	* bump: moonlight-embedded to 2.4.11
+	* bump: nvidia-driver (440.82)
+	* bump: libretro-bsnes to v115
+	* bump: libretro-stella to 6.1.1
+	* bump: libretro-kronos to 2.1.1
+	* bump: fsuae to 3.0.2
+	* bump: dosbox to r4250
+	* bump: dolphin to 5.0-11770
+	* bump: citra-emu
+	* bump: scummvm to v2.1.2
+	* bump: amiberry to v3.1.3
+	* bump: odroid-n2 kernel to 5.4
+	* add: libretro-mrboom
+  * bump: libretro-mame to 0.220
+
+2020/03/15 - batocera.linux 5.25
+	* add: Odroid Go Advance support (Retroarch GUI rotation issues thanks to Lakka Team efforts)
+	* add: netplay
 	* add: if you have more than one .mp4 or .png file in /boot/, a random one is selected as intro (video only if supported!)
-	* rpi: Activation of safe shutdown feature for GPi case added (read the GPi manual how to toggle hardware switch)
-	* rpi: Full support of several Retroflag cases (GPi, NesPi+, SuperPi, MegaPi)
-	* bluetooth: fix some pairing issues
-	* pads: adapt mapping when no l2 or not joystick2 is found (n64, gamecube)
-	* pads: fixes pad having non centered axis (triggers) (xbox pads). As a drawback, axes are not available until a button is pressed.
-	* ppsspp: fast forward
-	* ppsspp: rewind
-	* add: new "flatten-glow" and "zfast" shader sets
-	* add: run-ahead option for optimized latency on libretro systems (/!\ may impact performance)
-	* gamecube: automatically use d-pad if no analog stick is available (for bartop and arcade cabinets)
-	* updated BIOS MD5 checks for some systems
-	* es: new RetroAchievements screen
-	* es: (Decoration bezels) New option named "Default_unglazed" same bezels as "Default" ones, but without any glazed old cathodic TV effect.
 	* add: new <gametime> tag in gamelist.xml keeping track of playing time in a game
 	* add: Ports section on EmulationStation (Cave Story, Lutro and Doom)
 	* add: Thomson - MO/TO (libretro-theodore)
 	* add: NEC PC-98 (libretro-pc98)
 	* add: Daphne (hypseus)
-	* add: commodore VIC20
-	* add: commodore 128
 	* add: libretro-puae (Commodore Amiga)
-	* bump: nvidia-driver (440.44)
-	* bump: lr-mame 0.217
+	* add: new "flatten-glow" and "zfast" shader sets
+	* add: run-ahead option for optimized latency on libretro systems (/!\ may impact performance)
+	* add: all RetroAchievements platforms
+	* es: new RetroAchievements screen
+	* es: scan and detect wifi networks
+	* es: screen brightness support
+	* es: display volume in OSD
+	* es: support for static video background effects on systems view
+	* es: (Decoration bezels) New option named "Default_unglazed" same bezels as "Default" ones, but without any glazed old cathodic TV effect.
+	* es: support for group/ungroup (Amiga, MSX and Port)
+	* bump: nvidia-driver (440.59)
+	* bump: lr-mame 0.219
 	* bump: retroarch v1.8.4
 	* bump: libretro core
-	* bump: amiberry to v3.0.11
-	* bump: dolphin-emu to 5.0-11422
+	* bump: amiberry to v3.1.2
+	* bump: dolphin-emu to 5.0-11632
 	* bump: fs-uae to 3.0.0
 	* bump: mupen64plus core
 	* bump: scummmvm
@@ -34,9 +48,19 @@
 	* bump: citra with QT interface
 	* bump: reicast
 	* bump: kodi to 18.5 (not yet all boards)
-	* bump: buildroot and linux to 5.4.11
-	* odroid go advance support
+	* bump: buildroot and linux kernel
+	* bluetooth: fix some pairing issues
+	* pads: adapt mapping when no l2 or not joystick2 is found (n64, gamecube)
+	* pads: fixes pad having non centered axis (triggers) (xbox pads). As a drawback, axes are not available until a button is pressed
+	* pads: lots of new controllers added like PS3, PS4, 8bitdo (all controllers), Xbox Adaptive, Retro City and CSL Gamepad
+	* rpi: activation of safe shutdown feature for GPi case added (read the GPi manual how to toggle hardware switch)
+	* rpi: full support of several Retroflag cases (GPi, NesPi+, SuperPi, MegaPi)
 	* 3ds: menu to change screen layout (Default, large screen and side by syde)
+	* ppsspp: rewind and fast forward
+	* gamecube: automatically use d-pad if no analog stick is available (for bartop and arcade cabinets)
+	* updated BIOS MD5 checks for some systems
+	* rockpro64: support for Roshambo Retro Gaming Case
+	* rewind disabled by default8
 
 2019/11/09 - batocera.linux 5.24
 	* x86/x86_64: fix support for +2TB disks

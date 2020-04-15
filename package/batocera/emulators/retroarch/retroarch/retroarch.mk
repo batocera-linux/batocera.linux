@@ -3,7 +3,8 @@
 # retroarch
 #
 ################################################################################
-RETROARCH_VERSION = v1.8.4
+# Version.: Commits on Mar 20, 2020
+RETROARCH_VERSION = v1.8.5
 RETROARCH_SITE = $(call github,libretro,RetroArch,$(RETROARCH_VERSION))
 RETROARCH_LICENSE = GPLv3+
 RETROARCH_DEPENDENCIES = host-pkgconf dejavu retroarch-assets flac
@@ -114,6 +115,11 @@ ifeq ($(BR2_PACKAGE_MALI_OPENGLES_SDK)$(BR2_PACKAGE_LIBHYBRIS),y)
 	RETROARCH_CONF_OPTS += --enable-opengles --enable-mali_fbdev
 endif
 
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA),y)
+	RETROARCH_CONF_OPTS += --enable-odroidgo2
+	RETROARCH_DEPENDENCIES += librga
+endif
+
 define RETROARCH_CONFIGURE_CMDS
 	(cd $(@D); rm -rf config.cache; \
 		$(TARGET_CONFIGURE_ARGS) \
@@ -179,7 +185,7 @@ ifeq ($(BR2_arm)$(BR2_cortex_a72_a53),yy)
 endif
 
 ifeq ($(BR2_arm)$(BR2_cortex_a35),yy)
-    LIBRETRO_PLATFORM += armv7
+    LIBRETRO_PLATFORM += classic_armv8_a35
 endif
 
 ifeq ($(BR2_arm)$(BR2_cortex_a73_a53),yy)

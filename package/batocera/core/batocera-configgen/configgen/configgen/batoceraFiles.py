@@ -39,7 +39,6 @@ batoceraBins = {'dosbox'      : '/usr/bin/dosbox'
 retroarchRoot = CONF + '/retroarch'
 retroarchRootInit = CONF_INIT + '/retroarch'
 retroarchCustom = retroarchRoot + '/retroarchcustom.cfg'
-retroarchCustomOrigin = retroarchRootInit + "/retroarchcustom.cfg"
 retroarchCoreCustom = retroarchRoot + "/cores/retroarch-core-options.cfg"
 
 retroarchCores = "/usr/lib/libretro/"
@@ -57,7 +56,7 @@ mupenMappingSystem  = '/usr/share/batocera/datainit/system/configs/mupen64/input
 kodiJoystick = HOME + '/.kodi/userdata/addon_data/peripheral.joystick/resources/buttonmaps/xml/linux/batocera_{}.xml'
 
 moonlightCustom = CONF+'/moonlight'
-moonlightConfig = moonlightCustom + '/moonlight.conf'
+moonlightConfigFile = moonlightCustom + '/moonlight.conf'
 moonlightGamelist = moonlightCustom + '/gamelist.txt'
 moonlightMapping = dict()
 moonlightMapping[1] = moonlightCustom + '/mappingP1.conf'
@@ -118,3 +117,8 @@ daphneConfig = CONF + '/daphne/hypinput.ini'
 daphneHomedir = ROMS + '/daphne'
 daphneDatadir = '/usr/share/daphne'
 daphneSaves = SAVES + '/daphne'
+
+linappleConfigFile = CONF + '/linapple/linapple.conf'
+linappleMasterDSKFile = CONF + '/linapple/Master.dsk'
+linapplaSaves = SAVES + '/apple2'
+linappleMasterDSK = '/usr/lib/python2.7/site-packages/configgen/datainit/linapple/Master.dsk'

@@ -2,6 +2,7 @@
 import Command
 import controllersConfig
 import batoceraFiles
+import moonlightConfig
 from generators.Generator import Generator
 import shutil
 import os.path
@@ -15,6 +16,7 @@ class MoonlightGenerator(Generator):
     # Main entry of the module
     # Configure fba and return a command
     def generate(self, system, rom, playersControllers, gameResolution):
+        moonlightConfig.generateMoonlightConfig()
         outputFile = batoceraFiles.moonlightCustom + '/gamecontrollerdb.txt'
         configFile = controllersConfig.generateSDLGameDBAllControllers(playersControllers, outputFile)
         gameName,confFile = self.getRealGameNameAndConfigFile(rom)
@@ -34,11 +36,11 @@ class MoonlightGenerator(Generator):
                 #confFile = confFile.rstrip()
             except:
                 gfeRom, gfeGame = line.rstrip().split(';')
-                confFile = batoceraFiles.moonlightConfig
+                confFile = batoceraFiles.moonlightConfigFile
             #If found
             if gfeRom == romName:
                 # return it
                 f.close()
                 return [gfeGame, confFile]
         # If nothing is found (old gamelist file format ?)
-        return [gfeGame, batoceraFiles.moonlightConfig]
+        return [gfeGame, batoceraFiles.moonlightConfigFile]

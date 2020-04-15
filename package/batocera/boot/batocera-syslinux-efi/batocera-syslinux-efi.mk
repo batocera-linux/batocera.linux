@@ -9,7 +9,7 @@ BATOCERA_SYSLINUX_EFI_SOURCE =
 BATOCERA_SYSLINUX_EFI_SITE = binaries
 
 define BATOCERA_SYSLINUX_EFI_EXTRACT_CMDS
-	cp -R package/batocera/boot/batocera-syslinux-efi/binaries/* $(@D)
+	cp -R $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/boot/batocera-syslinux-efi/binaries/* $(@D)
 endef
 
 define BATOCERA_SYSLINUX_EFI_INSTALL_TARGET_CMDS

@@ -6,7 +6,7 @@ default:
     ratio:          auto
     video_threaded: false
     smooth:         true
-    rewind:         true
+    rewind:         false
     bezel:          default
     forceNoBezel:   false
 
@@ -98,13 +98,22 @@ neogeocd:
 mame:
   emulator: libretro
   core:     mame078plus
-fba:
+fbneo:
   emulator: libretro
   core:     fbneo
-msx:
+msx1:
   emulator: libretro
   core:     bluemsx
-amiga:
+msx2:
+  emulator: libretro
+  core:     bluemsx
+msx2+:
+  emulator: libretro
+  core:     bluemsx
+amiga500:
+  emulator: fsuae
+  core:     A500
+amiga1200:
   emulator: fsuae
   core:     A1200
 amigacd32:
@@ -210,6 +219,9 @@ atari800:
 prboom:
   emulator: libretro
   core:     prboom
+mrboom:
+  emulator: libretro
+  core:     mrboom
 psx:
   emulator: libretro
   core:     pcsx_rearmed
@@ -232,7 +244,7 @@ jaguar:
   core:     virtualjaguar
 3do:
   emulator: libretro
-  core:     4do
+  core:     opera
 kodi:
   emulator: kodi
   options:

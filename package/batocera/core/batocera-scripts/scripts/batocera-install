@@ -1,7 +1,7 @@
 #!/bin/bash
 
-updateurl="https://batocera.org/upgrades"
-systemsetting="python /usr/lib/python2.7/site-packages/configgen/settings/batoceraSettings.py"
+updateurl="https://updates.batocera.org"
+systemsetting="batocera-settings"
 
 # customizable upgrade url website
 settingsupdateurl=$($systemsetting -command load -key updates.url)

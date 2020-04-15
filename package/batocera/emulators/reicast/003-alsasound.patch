@@ -1,13 +1,13 @@
 diff --git a/core/oslib/audiobackend_alsa.cpp b/core/oslib/audiobackend_alsa.cpp
-index 93b581b..032fdde 100644
+index 25fa113..319ca1c 100644
 --- a/core/oslib/audiobackend_alsa.cpp
 +++ b/core/oslib/audiobackend_alsa.cpp
-@@ -13,7 +13,7 @@ static void alsa_init(audio_backend_pull_callback_t pull_callback)
+@@ -10,7 +10,7 @@ static void alsa_init()
  {
  	snd_pcm_hw_params_t *params;
  	unsigned int val;
 -	int dir=-1;
 +	int dir;
+ 	snd_pcm_uframes_t frames;
  
  	string device = cfgLoadStr("alsa", "device", "");
- 

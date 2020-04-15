@@ -3,6 +3,7 @@ import Command
 import libretroControllers
 import batoceraFiles
 import libretroConfig
+import libretroRetroarchCustom
 import shutil
 from generators.Generator import Generator
 import os.path
@@ -20,7 +21,7 @@ class LibretroGenerator(Generator):
             system.config['configfile'] = batoceraFiles.retroarchCustom
             # Create retroarchcustom.cfg if does not exists
             if not os.path.isfile(batoceraFiles.retroarchCustom):
-                shutil.copyfile(batoceraFiles.retroarchCustomOrigin, batoceraFiles.retroarchCustom)
+                libretroRetroarchCustom.generateRetroarchCustom()
             #  Write controllers configuration files
             retroconfig = UnixSettings(batoceraFiles.retroarchCustom, separator=' ')
             libretroControllers.writeControllersConfig(retroconfig, system, playersControllers)

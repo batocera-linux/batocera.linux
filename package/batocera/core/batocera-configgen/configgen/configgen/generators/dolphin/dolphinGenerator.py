@@ -35,7 +35,7 @@ class DolphinGenerator(Generator):
             dolphinSettings.add_section("Analytics")
 
         # draw or not FPS
-	if system.config['showFPS'] == 'true':
+        if system.isOptSet('showFPS') and system.getOptBoolean('showFPS'):
             dolphinSettings.set("General", "ShowLag", "True")
             dolphinSettings.set("General", "ShowFrameCount", "True")
         else:
@@ -75,6 +75,12 @@ class DolphinGenerator(Generator):
             dolphinGFXSettings.add_section("Settings")
         dolphinGFXSettings.set("Settings", "AspectRatio", getGfxRatioFromConfig(system.config, gameResolution))
 
+        # show fps
+        if system.isOptSet('showFPS') and system.getOptBoolean('showFPS'):
+            dolphinGFXSettings.set("Settings", "ShowFPS", "True")
+        else:
+            dolphinGFXSettings.set("Settings", "ShowFPS", "False")
+
         # for to search for custom textures
         dolphinGFXSettings.set("Settings", "HiresTextures", "True")
         dolphinGFXSettings.set("Settings", "CacheHiresTextures", "True")
@@ -82,7 +88,7 @@ class DolphinGenerator(Generator):
         if system.isOptSet('internalresolution'):
             dolphinGFXSettings.set("Settings", "InternalResolution", system.config["internalresolution"])
         else:
-            dolphinGFXSettings.set("Settings", "InternalResolution", "1")
+            dolphinGFXSettings.set("Settings", "InternalResolution", "0")
 
         # save gfx.ini
         with open(batoceraFiles.dolphinGfxIni, 'w') as configfile:

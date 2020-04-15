@@ -3,6 +3,7 @@
 # Download and install EmulationStation themes for Batocera
 #
 # @lbrpdx on Batocera Forums and Discord
+# @lala aka cyperghost on Discord
 #
 # Usage:
 # batocera-es-theme 'list' or 'install <theme>' 
@@ -10,7 +11,7 @@
 # If you don't provide a <theme>, the list of themes available online will be returned back to you
 #
 CONFIGDIR="/userdata/themes"
-THEMESLIST="https://batocera.org/upgrades/themes.txt"
+THEMESLIST="https://updates.batocera.org/themes.txt"
 LOCALTHEMESLIST="/userdata/system/themes.txt"
 # themes.txt must be a plain file with the format 'theme_name https://githubURL' (spaces or tabs)
 # Example of a themes.txt file: 
@@ -109,18 +110,35 @@ function install_theme() {
 			gitname=$(git_name "$url")
 			cd "$CONFIGDIR"
 			filezip="${url}/archive/master.zip"
-			# get size to download (hack to get it from github)
-			size=$(curl -sfL https://api.github.com/repos/"$reponame"/"$gitname" | grep size | head -1 | tr -dc '[:digit:]')
-			size=$((size / 1024 ))
-			test $? -eq 0 || exit 1
-			touch "$gitname.zip"
-			getPer "$CONFIGDIR"/"$gitname.zip" "${size}" &
-			GETPERPID=$!
-			curl -sfL "${filezip}" -o "$gitname.zip" || exit 1
-			kill -9 "${GETPERPID}" >/dev/null 2>/dev/null
-			GETPERPID=
-			if [ -f "$gitname.zip" ]; then 
-				echo "Unzipping $gitname theme files >>> 99%"
+
+			if [ $TERMINAL = 0 ]; then
+				# First attempt to get size to download
+                        	# you need 2-3 times to get correct filesize
+                        	# if after 10 attempts nothing happens we use old method
+                        	for i in {0..9}; do
+			    		size=$(curl -Is "https://codeload.github.com/${reponame}/${gitname}/zip/master" | grep Content-Length | cut -d ' ' -f2 | tr -d '\r')
+                            		[[ -z $size ]] && sleep 0.2 || { size=$((size / 1024 / 1024 )); break; }
+                        	done
+				# Second attempt (old format), JSON hack
+                        	if [[ -z $size ]]; then
+                            	size=$(curl -sfL "https://api.github.com/repos/${reponame}/${gitname}" | grep size | head -1 | tr -dc '[:digit:]')
+                            	size=$((size / 1024 ))
+			    	test $? -eq 0 || exit 1
+                        	fi
+				touch "$gitname.zip"
+				getPer "$CONFIGDIR"/"$gitname.zip" "${size}" &
+				GETPERPID=$!
+				curl -sfL "${filezip}" -o "$gitname.zip" || exit 1
+				kill -9 "${GETPERPID}" >/dev/null 2>/dev/null
+				GETPERPID=
+			else
+				wget -q --show-progress "$filezip" -O "$gitname.zip" || exit 1
+				GETPERPID=
+			fi
+
+			if [ -f "$gitname.zip" ]; then
+				[ $TERMINAL = 1 ] && echo -e "Unzipping $gitname to:\t\t$PWD"
+				[ $TERMINAL = 0 ] && echo "Unzipping $gitname theme files >>> 99%"
 				[ -d "$CONFIGDIR"/"$gitname" ] && rm -rf "$CONFIGDIR"/"$gitname" 
 				unzip "$gitname.zip" >/dev/null
 				mv "$gitname-master" "$gitname"
@@ -134,7 +152,8 @@ function install_theme() {
 	done < "$tmp"
 	rm "$tmp"
 	if [ "$success_installed" == 1 ]; then
-		echo "Theme $theme is now installed >>> 100%"
+		[ $TERMINAL = 1 ] && echo -e "Theme $theme installed to:\t\t$PWD/$gitname"
+		[ $TERMINAL = 0 ] && echo "Theme $theme is now installed >>> 100%"
 		exit 0
 	else
 		echo "Error - theme $theme could not be found"
@@ -147,6 +166,9 @@ function install_theme() {
 command="$1"
 theme="$2"
 
+#Started from Terminal/SSH or from Emulationstation?
+[ -t 1 ] && TERMINAL=1 || TERMINAL=0
+
 if ! [ -d "$CONFIGDIR" ]; then
 	echo "Error - theme directory $CONFIGDIR is not valid."
 	exit 1
@@ -158,4 +180,3 @@ elif [ x"$command" == "xinstall" ]; then
 else 
 	usage	
 fi
-

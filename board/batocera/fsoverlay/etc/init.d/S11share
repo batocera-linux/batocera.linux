@@ -25,6 +25,8 @@ fi
 
 SHARECONFFILE="/boot/batocera-boot.conf"
 INTERNALDEVICE=$(batocera-part "share_internal")
+INTERNALDEVICETYPE=$(blkid "${INTERNALDEVICE}" | sed -e s+'^.* TYPE="\([^"]*\)\".*'+'\1'+)
+
 SHAREDEVICE=$(cat "${SHARECONFFILE}" | grep -E '^[ ]*sharedevice=' | head -n1 | cut -d'=' -f2)
 [[ "$?" -ne "0" || "$SHAREDEVICE" == "" ]] && SHAREDEVICE=INTERNAL
 
@@ -40,7 +42,6 @@ getMaxTryConfig() {
     echo 7 # default value
 }
 
-INTERNALDEVICETYPE="ext4" # faster than waiting udev to initialize to get the type
 MAXTRY=$(getMaxTryConfig "${SHARECONFFILE}")
 NTRY=0
 
@@ -80,7 +81,7 @@ mountDeviceOrFallback() {
     fi
 }
 
-systemsetting="python /usr/lib/python2.7/site-packages/configgen/settings/batoceraSettings.py"
+systemsetting="batocera-settings"
 rb_wifi_configure() {
     X=$1
 
@@ -136,7 +137,7 @@ rb_wifi_configure_all() {
 
     # wait a bit, otherwise, connman is not really started
     sleep 2
-    batocera-config wifi start
+    batocera-wifi start
 }
 
 fixbatoceraconfname() {

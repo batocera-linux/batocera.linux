@@ -2,10 +2,8 @@ default:
   options:
     videomode:      CEA 4 HDMI
     video_threaded: true
-    rewind:         false
     smooth:         false
-    rewind:         false
-
+    
 snes:
   emulator: libretro
   core:     pocketsnes
@@ -15,7 +13,10 @@ gba:
 mame:
   emulator: libretro
   core:     imame4all
-amiga:
+amiga500:
+  emulator: amiberry
+  core:     A500
+amiga1200:
   emulator: amiberry
   core:     A1200
 amigacd32:

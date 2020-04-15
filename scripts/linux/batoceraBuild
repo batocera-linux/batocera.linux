@@ -6,6 +6,8 @@ BUILDDIR="/batocera/archs"
 DLDIR="/batocera/DL"
 ACTIONSDIR="/batocera/actions"
 
+ALLARCHS="miqi odroidc2 odroidgoa odroidn2 odroidxu4 rockpro64 rpi1 rpi2 rpi3 s905 tinkerboard x86 x86_64"
+
 echo_msg() {
     arch=$1
     echo $(date "+%Y/%m/%d %H:%M:%S") "[${arch}]" $2
@@ -15,13 +17,18 @@ do_push() {
     ftptarget=$1
     arch=$2
 
-    echo_msg "${arch}" "pusing ${ftptarget}..."
     case "${ftptarget}" in
 	"beta")
-	    lftp ftp://"${FTPBATOCERA}" -e "set ssl:verify-certificate false; mirror -R -e ${BUILDDIR}/${arch}/output/images/batocera /upgrades/${arch}/beta/last ; quit"
+	    echo_msg "${arch}" "pusing ${ftptarget}..."
+	    lftp ftp://"${FTPBATOCERA}" -e "set ssl:verify-certificate false; mirror -R -e ${BUILDDIR}/${arch}/output/images/batocera /public_html/upgrades/${arch}/beta/last ; quit"
 	    ;;
-	"next")
-	    lftp ftp://"${FTPBATOCERA}" -e "set ssl:verify-certificate false; mirror -R -e ${BUILDDIR}/${arch}/output/images/batocera /upgrades/${arch}/stable/last/next ; quit"
+	"rc")
+	    # pushing beta
+	    echo_msg "${arch}" "pusing beta*..."
+	    lftp ftp://"${FTPBATOCERA}" -e "set ssl:verify-certificate false; mirror -R -e ${BUILDDIR}/${arch}/output/images/batocera /public_html/upgrades/${arch}/beta/last ; quit"
+	    # pushing rc
+	    echo_msg "${arch}" "pusing ${ftptarget}..."
+	    lftp ftp://"${FTPBATOCERA}" -e "set ssl:verify-certificate false; mirror -R -e ${BUILDDIR}/${arch}/output/images/batocera /public_html/upgrades/${arch}/stable/last/rc ; quit"
 	    ;;
 	*)
 	    echo_msg "${arch}" "invalid ftp target" >&2
@@ -42,7 +49,7 @@ do_suspend() {
 
 checkFtpTarget() {
     ftptarget=$1
-    if test "${ftptarget}" != "beta" -a "${ftptarget}" != "next"
+    if test "${ftptarget}" != "beta" -a "${ftptarget}" != "rc"
     then
 	echo_msg "-" "invalid ftp target ${ftptarget}" >&2
 	return 1
@@ -70,7 +77,7 @@ buildAll() {
 	rm -f "${SEARCHDIR}/${NEXTITEM}"
 
 	echo_msg "${NEXTITEM}" "building..."
-	if (cd "${BUILDDIR}/${NEXTITEM}" && sudo docker run -t --rm --name "${arch}_build_"$(date "+%Y%m%d_%H%M%S") -v $PWD:/build -v /batocera/DL:/build/dl batocera/batocera.linux-build make) > "${LOGDIR}/build-${NEXTITEM}.log" 2> "${LOGDIR}/build-${NEXTITEM}.err"
+	if (cd "${BUILDDIR}/${NEXTITEM}" && sudo docker run -t --rm --name "${arch}_build_"$(date "+%Y%m%d_%H%M%S") -v $PWD:/build -v /batocera/DL:/build/buildroot/dl -w "/build/output" batocera/batocera.linux-build make) > "${LOGDIR}/build-${NEXTITEM}.log" 2> "${LOGDIR}/build-${NEXTITEM}.err"
 	then
 	    do_html "${NEXTITEM}"
 
@@ -108,7 +115,13 @@ case "${1}" in
     "enter")
 	arch="${2}"
 	cd "${BUILDDIR}/${arch}" || exit 1
-	sudo docker run -it --rm --name "${arch}_enter_"$(date "+%Y%m%d_%H%M%S") -v "${PWD}:/build" -v "${DLDIR}:/build/dl" "batocera/batocera.linux-build"
+	sudo docker run -it --rm --name "${arch}_enter_"$(date "+%Y%m%d_%H%M%S") -v "${PWD}:/build" -v "${DLDIR}:/build/buildroot/dl" -w "/build/output" "batocera/batocera.linux-build"
+	;;
+    "defconfig")
+	arch="${2}"
+	cd "${BUILDDIR}/${arch}" || exit 1
+	sudo docker run -it --rm --name "${arch}_defconfig_"$(date "+%Y%m%d_%H%M%S") -v "${PWD}:/build" -v "${DLDIR}:/build/buildroot/dl" "batocera/batocera.linux-build" \
+	     make O=/build/output BR2_EXTERNAL=/build -C /build/buildroot "batocera-${arch}_defconfig"
 	;;
     "add")
 	while test -n "${2}"
@@ -122,9 +135,9 @@ case "${1}" in
 	ls -1t "${SEARCHDIR}"
 	;;
     "gitlog")
-	for arch in "${BUILDDIR}/"*
+	for arch in ${ALLARCHS}
 	do
-	    (cd "${arch}" && (basename "${arch}" ; git log --oneline -1))
+	    (cd "${BUILDDIR}/${arch}" && (VAL=$(git log --oneline -1); printf "%12s: %s\n" "${arch}" "${VAL}"))
 	done
 	;;
     "gitpull")
@@ -180,8 +193,9 @@ case "${1}" in
 
     *)
 	PROGNAME=$(basename "${0}")
+	echo "${PROGNAME} defconfig x86"
 	echo "${PROGNAME} build beta"
-	echo "${PROGNAME} build next"
+	echo "${PROGNAME} build rc"
 	echo "${PROGNAME} enter x86"
 	echo "${PROGNAME} add x86"
 	echo "${PROGNAME} list"
@@ -189,7 +203,7 @@ case "${1}" in
 	echo "${PROGNAME} log x86"
 	echo "${PROGNAME} logpkg x86"
 	echo "${PROGNAME} push beta x86 rpi3 rpi1"
-	echo "${PROGNAME} push next x86 rpi3 rpi1"
+	echo "${PROGNAME} push rc x86 rpi3 rpi1"
 	echo "${PROGNAME} suspend"
 	echo "${PROGNAME} gitlog"
 	echo "${PROGNAME} gitpull"

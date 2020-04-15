@@ -3,8 +3,8 @@
 # moonlight-embedded
 #
 ################################################################################
-# Version.: Commits on May 27, 2019
-MOONLIGHT_EMBEDDED_VERSION = v2.4.10
+# Version.: Commits on March 10, 2020
+MOONLIGHT_EMBEDDED_VERSION = v2.4.11
 MOONLIGHT_EMBEDDED_SITE = https://github.com/irtimmer/moonlight-embedded.git
 MOONLIGHT_EMBEDDED_SITE_METHOD = git
 MOONLIGHT_EMBEDDED_GIT_SUBMODULES=y
@@ -15,6 +15,10 @@ MOONLIGHT_EMBEDDED_CONF_OPTS = "-DCMAKE_INSTALL_SYSCONFDIR=/etc"
 
 ifeq ($(BR2_PACKAGE_RPI_USERLAND),y)
 	MOONLIGHT_EMBEDDED_DEPENDENCIES += rpi-userland
+endif
+
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_ROCKPRO64),y)
+	MOONLIGHT_EMBEDDED_DEPENDENCIES += rockchip-mpp
 endif
 
 $(eval $(cmake-package))

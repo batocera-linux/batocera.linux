@@ -4,8 +4,7 @@
 #
 ################################################################################
 
-# Version: Commits on Jan 23, 2020
-BATOCERA_EMULATIONSTATION_VERSION = acdd43b3e0a72a03df65ccdeb196119dfaa661d8
+BATOCERA_EMULATIONSTATION_VERSION = 869ea409c806d8dee947be0d231efab8ee600f31
 BATOCERA_EMULATIONSTATION_SITE = https://github.com/batocera-linux/batocera-emulationstation
 BATOCERA_EMULATIONSTATION_SITE_METHOD = git
 BATOCERA_EMULATIONSTATION_LICENSE = MIT
@@ -56,6 +55,11 @@ define BATOCERA_EMULATIONSTATION_RESOURCES
 	$(INSTALL) -m 0755 -d $(TARGET_DIR)/usr/share/emulationstation/resources/help
 	$(INSTALL) -m 0644 -D $(@D)/resources/*.* $(TARGET_DIR)/usr/share/emulationstation/resources
 	$(INSTALL) -m 0644 -D $(@D)/resources/help/*.* $(TARGET_DIR)/usr/share/emulationstation/resources/help
+
+	# es_input.cfg
+	mkdir -p $(TARGET_DIR)/usr/share/batocera/datainit/system/configs/emulationstation
+	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulationstation/batocera-emulationstation/controllers/es_input.cfg \
+		$(TARGET_DIR)/usr/share/batocera/datainit/system/configs/emulationstation
 endef
 
 
@@ -85,7 +89,8 @@ endif
 ### ### ###
 
 define BATOCERA_EMULATIONSTATION_BOOT
-	cp package/batocera/emulationstation/batocera-emulationstation/$(BATOCERA_EMULATIONSTATION_BOOT_SCRIPT) $(TARGET_DIR)/etc/init.d/S31emulationstation
+	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulationstation/batocera-emulationstation/S31emulationstation/$(BATOCERA_EMULATIONSTATION_BOOT_SCRIPT) \
+		$(TARGET_DIR)/etc/init.d/S31emulationstation
 endef
 
 BATOCERA_EMULATIONSTATION_PRE_CONFIGURE_HOOKS += BATOCERA_EMULATIONSTATION_RPI_FIXUP

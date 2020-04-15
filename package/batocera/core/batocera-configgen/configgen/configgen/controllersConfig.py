@@ -15,7 +15,7 @@ class Input:
 
 
 class Controller:
-    def __init__(self, configName, type, guid, player, index="-1", realName="", inputs=None, dev=None, nbaxes=None):
+    def __init__(self, configName, type, guid, player, index="-1", realName="", inputs=None, dev=None, nbbuttons=None, nbhats=None, nbaxes=None):
         self.type = type
         self.configName = configName
         self.index = index
@@ -23,6 +23,8 @@ class Controller:
         self.guid = guid
         self.player = player
         self.dev = dev
+        self.nbbuttons = nbbuttons
+        self.nbhats = nbhats
         self.nbaxes = nbaxes
         if inputs == None:
             self.inputs = dict()
@@ -109,29 +111,32 @@ def loadAllControllersByNameConfig():
 
 
 # Create a controller array with the player id as a key
-def loadControllerConfig(p1index, p1guid, p1name, p1dev, p1nbaxes, p2index, p2guid, p2name, p2dev, p2nbaxes, p3index, p3guid, p3name, p3dev, p3nbaxes,
-                         p4index, p4guid, p4name, p4dev, p4nbaxes, p5index, p5guid, p5name, p5dev, p5nbaxes):
+def loadControllerConfig(p1index, p1guid, p1name, p1dev, p1nbbuttons, p1nbhats, p1nbaxes,
+                         p2index, p2guid, p2name, p2dev, p2nbbuttons, p2nbhats, p2nbaxes,
+                         p3index, p3guid, p3name, p3dev, p3nbbuttons, p3nbhats, p3nbaxes,
+                         p4index, p4guid, p4name, p4dev, p4nbbuttons, p4nbhats, p4nbaxes,
+                         p5index, p5guid, p5name, p5dev, p5nbbuttons, p5nbhats, p5nbaxes):
     playerControllers = dict()
     controllers = loadAllControllersConfig()
 
-    newController = findBestControllerConfig(controllers, '1', p1guid, p1index, p1name, p1dev, p1nbaxes)
+    newController = findBestControllerConfig(controllers, '1', p1guid, p1index, p1name, p1dev, p1nbbuttons, p1nbhats, p1nbaxes)
     if newController:
         playerControllers["1"] = newController
-    newController = findBestControllerConfig(controllers, '2', p2guid, p2index, p2name, p2dev, p2nbaxes)
+    newController = findBestControllerConfig(controllers, '2', p2guid, p2index, p2name, p2dev, p2nbbuttons, p2nbhats, p2nbaxes)
     if newController:
         playerControllers["2"] = newController
-    newController = findBestControllerConfig(controllers, '3', p3guid, p3index, p3name, p3dev, p3nbaxes)
+    newController = findBestControllerConfig(controllers, '3', p3guid, p3index, p3name, p3dev, p3nbbuttons, p3nbhats, p3nbaxes)
     if newController:
         playerControllers["3"] = newController
-    newController = findBestControllerConfig(controllers, '4', p4guid, p4index, p4name, p4dev, p4nbaxes)
+    newController = findBestControllerConfig(controllers, '4', p4guid, p4index, p4name, p4dev, p4nbbuttons, p4nbhats, p4nbaxes)
     if newController:
         playerControllers["4"] = newController
-    newController = findBestControllerConfig(controllers, '5', p5guid, p5index, p5name, p5dev, p5nbaxes)
+    newController = findBestControllerConfig(controllers, '5', p5guid, p5index, p5name, p5dev, p5nbbuttons, p5nbhats, p5nbaxes)
     if newController:
         playerControllers["5"] = newController
     return playerControllers
 
-def findBestControllerConfig(controllers, x, pxguid, pxindex, pxname, pxdev, pxnbaxes):
+def findBestControllerConfig(controllers, x, pxguid, pxindex, pxname, pxdev, pxnbbuttons, pxnbhats, pxnbaxes):
     # when there will have more joysticks, use hash tables
     # TODO: python3 - workawround for names with utf-8 chars
     if (pxname != None):
@@ -140,24 +145,24 @@ def findBestControllerConfig(controllers, x, pxguid, pxindex, pxname, pxdev, pxn
         controller = controllers[controllerGUID]
         if controller.guid == pxguid and controller.configName == pxname:
             return Controller(controller.configName, controller.type, pxguid, x, pxindex, pxname,
-                              controller.inputs, pxdev, pxnbaxes)
+                              controller.inputs, pxdev, pxnbbuttons, pxnbhats, pxnbaxes)
     for controllerGUID in controllers:
         controller = controllers[controllerGUID]
         if controller.guid == pxguid:
             return Controller(controller.configName, controller.type, pxguid, x, pxindex, pxname,
-                              controller.inputs, pxdev, pxnbaxes)
+                              controller.inputs, pxdev, pxnbbuttons, pxnbhats, pxnbaxes)
     for controllerGUID in controllers:
         controller = controllers[controllerGUID]
         if controller.configName == pxname:
             return Controller(controller.configName, controller.type, pxguid, x, pxindex, pxname,
-                              controller.inputs, pxdev, pxnbaxes)
+                              controller.inputs, pxdev, pxnbbuttons, pxnbhats, pxnbaxes)
     return None
 
 def generateSDLGameDBAllControllers(controllers, outputFile = "/tmp/gamecontrollerdb.txt"):
     finalData = []
     for idx, controller in controllers.iteritems():
         finalData.append(controller.generateSDLGameDBLine())
-    sdlData = "\n".join(finalData)
+    sdlData = "\n".join(finalData).encode("utf-8")
     with open(outputFile, "w") as text_file:
         text_file.write(sdlData)
     return outputFile

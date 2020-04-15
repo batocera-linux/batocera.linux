@@ -1,0 +1,185 @@
+# this file describes which features each emulator/core supports
+# the aim is to display in es only the available options
+
+libretro:
+  features: [ratio, smooth, shaders, pixel_perfect, decoration, latency_reduction, game_translation]
+  cores:
+    '81':
+      features: [netplay, rewind, autosave]
+    atari800:
+      features: [         rewind, autosave]
+    beetle-saturn:
+      features: [netplay, rewind, autosave]
+    bluemsx:
+      features: [         rewind, autosave]
+    bsnes:
+      features: [netplay, rewind, autosave]
+    cap32:
+      features: [netplay, rewind, autosave]
+    citra:
+      features: [         rewind, autosave]
+    daphne:
+      features: [         rewind, autosave]
+    desmume:
+      features: [netplay, rewind, autosave]
+    dosbox:
+      features: [         rewind, autosave]
+    fbneo:
+      features: [netplay, rewind, autosave]
+    fceumm:
+      features: [netplay, rewind, autosave]
+    flycast:
+      features: [         rewind, autosave]
+    freeintv:
+      features: [         rewind, autosave]
+    fuse:
+      features: [         rewind, autosave]
+    gambatte:
+      features: [         rewind, autosave, colorization]
+    genesisplusgx:
+      features: [netplay, rewind, autosave]
+    gpsp:
+      features: [         rewind, autosave]
+    gw:
+      features: [         rewind, autosave]
+    handy:
+      features: [netplay, rewind, autosave]
+    hatari:
+      features: [         rewind, autosave]
+    imame4all:
+      features: [netplay, rewind, autosave]
+    kronos:
+      features: [         rewind, autosave]
+    lutro:
+      features: [         rewind, autosave]
+    mame:
+      features: [netplay, rewind, autosave]
+    mame0139:
+      features: [netplay, rewind, autosave]
+    mame078plus:
+      features: [netplay, rewind, autosave]
+    mednafen_lynx:
+      features: [netplay, rewind, autosave]
+    mednafen_ngp:
+      features: [netplay, rewind, autosave]
+    mednafen_psx:
+      features: [         rewind, autosave]
+    mednafen_supergrafx:
+      features: [netplay, rewind, autosave]
+    mednafen_wswan:
+      features: [netplay, rewind, autosave]
+    mesen:
+      features: [netplay, rewind, autosave]
+    mesen-s:
+      features: [netplay, rewind, autosave]
+    mgba:
+      features: [         rewind, autosave]
+    mupen64plus-next:
+      features: [         rewind, autosave]
+    neocd:
+      features: [         rewind, autosave]
+    nestopia:
+      features: [netplay, rewind, autosave]
+    np2kai:
+      features: [netplay, rewind, autosave]
+    nxengine:
+      features: [         rewind, autosave]
+    o2em:
+      features: [         rewind, autosave]
+    opera:
+      features: [netplay, rewind, autosave]
+    parallel_n64:
+      features: [         rewind, autosave]
+    pce:
+      features: [netplay, rewind, autosave]
+    pcfx:
+      features: [netplay, rewind, autosave]
+    pcsx_rearmed:
+      features: [         rewind, autosave]
+    picodrive:
+      features: [netplay, rewind, autosave]
+    pocketsnes:
+      features: [netplay, rewind, autosave]
+    pokemini:
+      features: [         rewind, autosave]
+    ppsspp:
+      features: [         rewind, autosave]
+    prboom:
+      features: [         rewind, autosave]
+    prosystem:
+      features: [         rewind, autosave]
+    puae:
+      features: [         rewind, autosave]
+    px68k:
+      features: [         rewind, autosave]
+    scummvm:
+      features: [         rewind, autosave]
+    snes9x:
+      features: [netplay, rewind, autosave]
+    snes9x_next:
+      features: [netplay, rewind, autosave]
+    stella:
+      features: [netplay, rewind, autosave]
+    tgbdual:
+      features: [netplay, rewind, autosave]
+    theodore:
+      features: [netplay, rewind, autosave]
+    vb:
+      features: [netplay, rewind, autosave]
+    vba-m:
+      features: [         rewind, autosave]
+    vecx:
+      features: [         rewind, autosave]
+    vice:
+      features: [         rewind, autosave]
+    virtualjaguar:
+      features: [         rewind, autosave]
+    yabasanshiro:
+      features: [         rewind, autosave]
+    yabause:
+      features: [         rewind, autosave]
+
+amiberry:
+  features: [ratio, rewind]
+
+citra:
+  features: [ratio, rewind, screen_layout]
+
+daphne:
+  features: [ratio, rewind]
+
+dolphin:
+  features: [ratio, rewind]
+  systems:
+    wii:
+      features: [emulated_wiimotes]
+
+dosbox:
+  features: [ratio, rewind]
+
+fsuae:
+  features: [ratio, rewind]
+
+linapple:
+  features: [ratio, rewind]
+
+moonlight:
+  features: [ratio, rewind]
+
+mupen64plus:
+  features: [ratio, rewind]
+
+pcsx2:
+  features: [ratio, rewind, fullboot]
+
+ppsspp:
+  features: [ratio, rewind, internal_resolution]
+
+reicast:
+  features: [ratio, rewind]
+
+scummvm:
+  features: [ratio, rewind]
+
+vice:
+  features: [ratio, rewind]

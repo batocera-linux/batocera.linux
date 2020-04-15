@@ -32,9 +32,9 @@ define MALI_T760_INSTALL_STAGING_CMDS
 	(cd $(MALI_T760_STAGING_DIR)/usr/lib && ln -sf libmali.so libMali.so)
 
 	cp -pr $(@D)/include $(MALI_T760_STAGING_DIR)/usr
-	cp package/batocera/gpu/mali-T760/gbm.pc $(MALI_T760_STAGING_DIR)/usr/lib/pkgconfig/gbm.pc
-	cp package/batocera/gpu/mali-T760/egl.pc $(MALI_T760_STAGING_DIR)/usr/lib/pkgconfig/egl.pc
-	cp package/batocera/gpu/mali-T760/glesv2.pc $(MALI_T760_STAGING_DIR)/usr/lib/pkgconfig/glesv2.pc
+	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/gpu/mali-T760/gbm.pc $(MALI_T760_STAGING_DIR)/usr/lib/pkgconfig/gbm.pc
+	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/gpu/mali-T760/egl.pc $(MALI_T760_STAGING_DIR)/usr/lib/pkgconfig/egl.pc
+	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/gpu/mali-T760/glesv2.pc $(MALI_T760_STAGING_DIR)/usr/lib/pkgconfig/glesv2.pc
 endef
 
 define MALI_T760_INSTALL_TARGET_CMDS

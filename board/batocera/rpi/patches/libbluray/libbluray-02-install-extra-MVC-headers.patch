@@ -8,12 +8,12 @@ Subject: [PATCH] add missing 3D MVC headers
  1 file changed, 12 insertions(+)
 
 diff --git a/Makefile.am b/Makefile.am
-index ff15527..00db9af 100644
+index 9c0b4c4a..103c6201 100644
 --- a/Makefile.am
 +++ b/Makefile.am
-@@ -219,6 +219,14 @@ noinst_HEADERS = \
- 	jni/win32/jni_md.h \
- 	jni/darwin/jni_md.h
+@@ -215,6 +215,14 @@ noinst_HEADERS = \
+ 	jni/darwin/jni_md.h \
+ 	jni/netbsd/jni_md.h
  
 +bdnavdir=$(pkgincludedir)/bdnav
 +bdnav_HEADERS = \
@@ -26,7 +26,7 @@ index ff15527..00db9af 100644
  pkginclude_HEADERS = \
  	src/file/filesystem.h \
  	src/libbluray/bluray.h \
-@@ -226,6 +234,10 @@ pkginclude_HEADERS = \
+@@ -222,6 +230,10 @@ pkginclude_HEADERS = \
  	src/libbluray/keys.h \
  	src/libbluray/player_settings.h \
  	src/libbluray/bdnav/clpi_data.h \
@@ -38,5 +38,4 @@ index ff15527..00db9af 100644
  	src/libbluray/decoders/overlay.h \
  	src/util/log_control.h
 -- 
-2.14.1
-
+2.17.1

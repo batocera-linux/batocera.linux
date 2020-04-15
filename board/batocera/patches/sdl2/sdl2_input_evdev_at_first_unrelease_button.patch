@@ -1,8 +1,88 @@
 diff --git a/src/joystick/SDL_joystick.c b/src/joystick/SDL_joystick.c
-index 8058947..e41a746 100644
+index 8058947..df73a12 100644
 --- a/src/joystick/SDL_joystick.c
 +++ b/src/joystick/SDL_joystick.c
-@@ -323,6 +323,8 @@ SDL_JoystickOpen(int device_index)
+@@ -28,6 +28,8 @@
+ #include "SDL_sysjoystick.h"
+ #include "SDL_assert.h"
+ #include "SDL_hints.h"
++#include <sys/stat.h>
++#include <sys/types.h>
+ 
+ #if !SDL_EVENTS_DISABLED
+ #include "../events/SDL_events_c.h"
+@@ -83,6 +85,70 @@ static SDL_bool SDL_updating_joystick = SDL_FALSE;
+ static SDL_mutex *SDL_joystick_lock = NULL; /* This needs to support recursive locks */
+ static SDL_atomic_t SDL_next_joystick_instance_id;
+ 
++void custom_restore_initial_state(SDL_Joystick * joystick) {
++  char filename[256];
++  char strguid[64];
++  char buf[64];
++  FILE* fd;
++  int i, n;
++  int val;
++
++  // open
++  SDL_JoystickGetGUIDString(joystick->guid, strguid, 64);
++  sprintf(filename, "/userdata/system/.sdl2/%s_%s.cache", strguid, joystick->name);
++  if( (fd = fopen(filename, "r")) == NULL) {
++    return;
++  }
++
++  // read number of axes
++  if(fgets(buf, 64, fd) == NULL) { return; /* ooops */ }
++  n = atoi(buf);
++  if(n != joystick->naxes) {
++    return; // invalid number of axes found
++  }
++
++  // read axes values
++  for (i = 0; i < n; ++i) {
++    if(fgets(buf, 64, fd) == NULL) { return; /* ooops */ }
++    val = atoi(buf);
++    joystick->axes[i].initial_value = val;
++    joystick->axes[i].value         = val;
++    joystick->axes[i].zero          = val;
++    joystick->axes[i].has_initial_value  = SDL_TRUE;
++  }
++  joystick->initial_state_is_valid    = SDL_TRUE;
++  joystick->initial_state_initialized = SDL_TRUE;
++
++  // close
++  fclose(fd);
++}
++
++void custom_save_initial_state(SDL_Joystick * joystick) {
++  char filename[256];
++  char strguid[64];
++  FILE* fd;
++  int i;
++
++  // dir
++  if(mkdir("/userdata/system/.sdl2", 0700) != 0) { /* ok, maybe already exists, anyway */ }
++
++  // open
++  SDL_JoystickGetGUIDString(joystick->guid, strguid, 64);
++  sprintf(filename, "/userdata/system/.sdl2/%s_%s.cache", strguid, joystick->name);
++  if( (fd = fopen(filename, "w")) == NULL) {
++    return;
++  }
++
++  // writting axes initial values
++  fprintf(fd, "%i\n", joystick->naxes);
++  for (i = 0; i < joystick->naxes; ++i) {
++    fprintf(fd, "%i\n", (int) joystick->axes[i].zero);
++  }
++
++  // close
++  fclose(fd);
++}
++
+ void
+ SDL_LockJoysticks(void)
+ {
+@@ -323,6 +389,8 @@ SDL_JoystickOpen(int device_index)
      joystick->instance_id = instance_id;
      joystick->attached = SDL_TRUE;
      joystick->player_index = -1;
@@ -11,19 +91,27 @@ index 8058947..e41a746 100644
  
      if (driver->Open(joystick, device_index) < 0) {
          SDL_free(joystick);
-@@ -849,6 +851,11 @@ SDL_PrivateJoystickAxis(SDL_Joystick * joystick, Uint8 axis, Sint16 value)
+@@ -370,6 +438,7 @@ SDL_JoystickOpen(int device_index)
+             joystick->axes[i].has_initial_value = SDL_TRUE;
+         }
+     }
++    custom_restore_initial_state(joystick);
+ 
+     joystick->is_game_controller = SDL_IsGameController(device_index);
+ 
+@@ -849,6 +918,11 @@ SDL_PrivateJoystickAxis(SDL_Joystick * joystick, Uint8 axis, Sint16 value)
  {
      int posted;
  
 +    // ignore axis events until a button is released
 +    if (joystick->initial_state_is_valid == SDL_FALSE) {
-+      return;
++      return 0;
 +    }
 +
      /* Make sure we're not getting garbage or duplicate events */
      if (axis >= joystick->naxes) {
          return 0;
-@@ -862,6 +869,7 @@ SDL_PrivateJoystickAxis(SDL_Joystick * joystick, Uint8 axis, Sint16 value)
+@@ -862,6 +936,7 @@ SDL_PrivateJoystickAxis(SDL_Joystick * joystick, Uint8 axis, Sint16 value)
      if (value == joystick->axes[axis].value) {
          return 0;
      }
@@ -31,13 +119,28 @@ index 8058947..e41a746 100644
      if (!joystick->axes[axis].sent_initial_value) {
          /* Make sure we don't send motion until there's real activity on this axis */
          const int MAX_ALLOWED_JITTER = SDL_JOYSTICK_AXIS_MAX / 80;  /* ShanWan PS3 controller needed 96 */
-@@ -989,6 +997,11 @@ SDL_PrivateJoystickButton(SDL_Joystick * joystick, Uint8 button, Uint8 state)
+@@ -935,6 +1010,13 @@ SDL_PrivateJoystickHat(SDL_Joystick * joystick, Uint8 hat, Uint8 value)
+         event.jhat.which = joystick->instance_id;
+         event.jhat.hat = hat;
+         event.jhat.value = value;
++
++	if(joystick->initial_state_is_valid == SDL_FALSE) {
++	  joystick->initial_state_is_valid = SDL_TRUE;
++	  joystick->driver->Update(joystick);
++	  custom_save_initial_state(joystick);
++	  joystick->initial_state_initialized = SDL_TRUE;
++	}
+         posted = SDL_PushEvent(&event) == 1;
+     }
+ #endif /* !SDL_EVENTS_DISABLED */
+@@ -989,6 +1071,12 @@ SDL_PrivateJoystickButton(SDL_Joystick * joystick, Uint8 button, Uint8 state)
          event.type = SDL_JOYBUTTONDOWN;
          break;
      case SDL_RELEASED:
 +        if(joystick->initial_state_is_valid == SDL_FALSE) {
 +	  joystick->initial_state_is_valid = SDL_TRUE;
 +	  joystick->driver->Update(joystick);
++	  custom_save_initial_state(joystick);
 +	  joystick->initial_state_initialized = SDL_TRUE;
 +	}
          event.type = SDL_JOYBUTTONUP;

@@ -17,9 +17,9 @@ define MALI_OPENGLES_SDK_INSTALL_STAGING_CMDS
 	@mkdir -p $(MALI_OPENGLES_SDK_STAGING_DIR)
 	@cp -r $(@D)/inc/* $(MALI_OPENGLES_SDK_STAGING_DIR)
 	@cp -r $(@D)/simple_framework/inc/mali/* $(MALI_OPENGLES_SDK_STAGING_DIR)
-	$(INSTALL) -D -m 0644 package/batocera/gpu/mali-opengles-sdk/egl.pc \
+	$(INSTALL) -D -m 0644 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/gpu/mali-opengles-sdk/egl.pc \
 		$(STAGING_DIR)/usr/lib/pkgconfig/egl.pc
-	$(INSTALL) -D -m 0644 package/batocera/gpu/mali-opengles-sdk/glesv2.pc \
+	$(INSTALL) -D -m 0644 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/gpu/mali-opengles-sdk/glesv2.pc \
 		$(STAGING_DIR)/usr/lib/pkgconfig/glesv2.pc
 
 endef

@@ -3,7 +3,7 @@
 # Auto connect bluetooth controllers
 #
 
-systemsetting="python /usr/lib/python2.7/site-packages/configgen/settings/batoceraSettings.py"
+systemsetting="batocera-settings"
 
 case "$1" in
   start)
@@ -26,6 +26,7 @@ case "$1" in
   stop)
 	start-stop-daemon -K -q -p /var/run/bluetooth-agent.pid
 	start-stop-daemon -K -q -p /var/run/bluetoothd.pid
+	killall hciattach
 	batocera-bluetooth save
 	;;
   restart|reload)

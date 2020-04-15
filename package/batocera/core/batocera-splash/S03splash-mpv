@@ -1,0 +1,64 @@
+#!/bin/bash
+
+soundDisabled() {
+    grep -qE "^[ ]*splashsound[ ]*=[ ]*false[ ]*$" /boot/batocera-boot.conf
+}
+
+do_start ()
+{
+    if ls /boot/*.mp4 >/dev/null 2>/dev/null
+    then
+        do_videostart "$(ls /boot/*.mp4 | sed -e "$((RANDOM%$(ls -1 /boot/*.mp4 | wc -l)+1))!d")"
+    elif ls /boot/*.png >/dev/null 2>/dev/null
+    then
+        do_imagestart "$(ls /boot/*.png | sed -e "$((RANDOM%$(ls -1 /boot/*.png | wc -l)+1))!d")"
+    else
+        do_videostart "/usr/share/batocera/splash/splash.mp4"
+    fi
+}
+
+do_imagestart()
+{
+    image="$1"
+    # on some sytems, fb0 is not immediatly loaded, so, keep a chance by waiting a bit
+    N=0
+    while ! test -e /dev/fb0 -o $N -gt 15
+    do
+        sleep 1
+        let N++
+    done
+    test -e /dev/fb0 && fbv -f -i "${image}"
+}
+
+do_videostart ()
+{
+    video="$1"
+    mpv_opt=
+    if soundDisabled
+    then
+        mpv_opt=--no-audio
+    fi
+    /usr/bin/mpv --no-config $mpv_opt "$video" &
+    PID=$!
+    # Wait for emulationstation or Kodi, but not more than 20 seconds
+    count=0
+    while [[ ! -f "/tmp/emulationstation.ready" && ! -e "/var/run/kodi.msg" && $count -lt 400 ]]; do
+        sleep 0.1
+        ((count++))
+    done
+    kill -9 "${PID}"
+}
+
+case "$1" in
+    start)
+	grep -qE '^[ ]*autoresize[ ]*=[ ]*true[ ]*$' "/boot/batocera-boot.conf" && exit 0
+        do_start &
+        ;;
+    stop)
+        ;;
+    restart|reload)
+        ;;
+    *)
+esac
+
+exit $?

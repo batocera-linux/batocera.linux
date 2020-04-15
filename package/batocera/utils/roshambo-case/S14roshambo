@@ -1,0 +1,25 @@
+#! /bin/sh
+
+enabled=`batocera-settings --command load --key roshambo.enabled`
+
+case "$1" in
+	start)
+		if [ "$enabled" == "1" ];then
+			echo "Starting Roshambo Case"
+			# run application you want to start
+			python /usr/bin/roshambo-case.py &
+		fi
+		;;
+	stop)
+		echo "Stopping Roshambo case"
+		if [ "$enabled" == "1" ];then
+			kill $(ps aux | grep roshambo-case.py | awk '{ print $1 }')
+		fi
+		;;
+	*)
+		echo "Usage: /etc/init.d/S14roshambo {start|stop}"
+		exit 1
+	;;
+esac
+
+exit 0

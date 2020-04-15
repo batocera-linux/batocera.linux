@@ -54,6 +54,10 @@ if test -e "${TARGET_DIR}/etc/init.d/S45connman"
 then
     mv "${TARGET_DIR}/etc/init.d/S45connman" "${TARGET_DIR}/etc/init.d/S08connman" || exit 1 # move to make before share
 fi
+if test -e "${TARGET_DIR}/etc/init.d/S21rngd"
+then
+    mv "${TARGET_DIR}/etc/init.d/S21rngd"    "${TARGET_DIR}/etc/init.d/S33rngd"    || exit 1 # move because it takes several seconds (on odroidgoa for example)
+fi
 
 # remove kodi default joystick configuration files
 # while as a minimum, the file joystick.Sony.PLAYSTATION(R)3.Controller.xml makes references to PS4 controllers with axes which doesn't exist (making kodi crashing)
@@ -66,15 +70,10 @@ rm -rf "${TARGET_DIR}/"{var,run,sys,tmp} || exit 1
 mkdir "${TARGET_DIR}/"{var,run,sys,tmp}  || exit 1
 
 # make /etc/shadow a file generated from /boot/batocera-boot.conf for security
-rm -f "${TARGET_DIR}/etc/shadow"                         || exit 1
-ln -sf "/run/batocera.shadow" "${TARGET_DIR}/etc/shadow" || exit 1
-
-# fix the vt100 terminal ; can probably removed in the future
-if ! grep -qE "^TERM=vt100$" "${TARGET_DIR}/etc/profile"
-then
-    echo              >> "${TARGET_DIR}/etc/profile"
-    echo "TERM=vt100" >> "${TARGET_DIR}/etc/profile"
-fi
+rm -f "${TARGET_DIR}/etc/shadow" || exit 1
+touch "${TARGET_DIR}/run/batocera.shadow"
+(cd "${TARGET_DIR}/etc" && ln -sf "../run/batocera.shadow" "shadow") || exit 1
+# ln -sf "/run/batocera.shadow" "${TARGET_DIR}/etc/shadow" || exit 1
 
 # fix pixbuf : Unable to load image-loading module: /lib/gdk-pixbuf-2.0/2.10.0/loaders/libpixbufloader-png.so
 # this fix is to be removed once fixed. i've not found the exact source in buildroot. it prevents to display icons in filemanager and some others
@@ -87,7 +86,7 @@ fi
 if test "${BATOCERA_TARGET}" = "S905"
 then
     mkdir -p "${TARGET_DIR}/lib/modules/3.14.29/kernel/gpu"
-    cp "board/batocera/s905/linux_patches/mali.ko" "${TARGET_DIR}/lib/modules/3.14.29/kernel/gpu/mali.ko"
+    cp "${BR2_EXTERNAL_BATOCERA_PATH}/board/batocera/s905/linux_patches/mali.ko" "${TARGET_DIR}/lib/modules/3.14.29/kernel/gpu/mali.ko"
     ln -sf "/usr/lib/gdk-pixbuf-2.0" "${TARGET_DIR}/lib/gdk-pixbuf-2.0" || exit 1
 fi
 
@@ -102,4 +101,4 @@ AUDIOGROUP=$(grep -E "^audio:" "${TARGET_DIR}/etc/group" | cut -d : -f 3)
 sed -i -e s+'defaults.pcm.ipc_gid .*$'+'defaults.pcm.ipc_gid '"${AUDIOGROUP}"+ "${TARGET_DIR}/usr/share/alsa/alsa.conf" || exit 1
 
 # bios file
-python "package/batocera/core/batocera-scripts/scripts/batocera-systems" --createReadme > "${TARGET_DIR}/usr/share/batocera/datainit/bios/readme.txt" || exit 1
+python "${BR2_EXTERNAL_BATOCERA_PATH}/package/batocera/core/batocera-scripts/scripts/batocera-systems" --createReadme > "${TARGET_DIR}/usr/share/batocera/datainit/bios/readme.txt" || exit 1

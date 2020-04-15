@@ -7,7 +7,7 @@ RETROGAME_VERSION = 1.0
 RETROGAME_SOURCE=
 
 define RETROGAME_EXTRACT_CMDS
-	cp package/batocera/controllers/retrogame/RetroGame/* $(@D)
+	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/controllers/retrogame/RetroGame/* $(@D)
 endef
 
 define RETROGAME_BUILD_CMDS

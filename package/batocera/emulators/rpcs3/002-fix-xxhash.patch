@@ -1,0 +1,13 @@
+diff --git a/3rdparty/CMakeLists.txt b/3rdparty/CMakeLists.txt
+index 66769f8..d3a3703 100644
+--- a/3rdparty/CMakeLists.txt
++++ b/3rdparty/CMakeLists.txt
+@@ -116,7 +116,7 @@ set(CMAKE_INSTALL_PREFIX ${CMAKE_INSTALL_PREFIX_OLD})
+ 
+ 
+ # xxHash
+-set(XXHASH_BUNDLED_MODE ON)
++set(XXHASH_BUNDLED_MODE OFF)
+ set(BUILD_SHARED_LIBS OFF CACHE BOOL "Make xxHash build static libs")
+ add_subdirectory(xxHash/cmake_unofficial EXCLUDE_FROM_ALL)
+ target_include_directories(xxhash INTERFACE xxHash)

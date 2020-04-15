@@ -3,8 +3,8 @@
 # LIBRETRO_BEETLE_PSX
 #
 ################################################################################
-# Version.: Commits on Dez 26, 2019
-LIBRETRO_BEETLE_PSX_VERSION = 18a9de19f3f079408eb8181aa4c5144e9434c5f7
+# Version.: Commits on Mar 12, 2020
+LIBRETRO_BEETLE_PSX_VERSION = d2d9a90c2b05a7dfea103001cd65dfd320ac7a66
 LIBRETRO_BEETLE_PSX_SITE = $(call github,libretro,beetle-psx-libretro,$(LIBRETRO_BEETLE_PSX_VERSION))
 LIBRETRO_BEETLE_PSX_LICENSE = GPLv2
 
@@ -17,8 +17,7 @@ ifeq ($(BR2_PACKAGE_XORG7),y)
 endif
 
 define LIBRETRO_BEETLE_PSX_BUILD_CMDS
-    CFLAGS="$(TARGET_CFLAGS)" CXXFLAGS="$(TARGET_CXXFLAGS)" \
-		$(MAKE) LD="$(TARGET_CXX)" CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" AR="$(TARGET_AR)" -C $(@D) -f Makefile $(LIBRETRO_BEETLE_PSX_EXTRAOPT) platform="$(LIBRETRO_PLATFORM)"
+    $(TARGET_CONFIGURE_OPTS) $(MAKE) -C $(@D) -f Makefile $(LIBRETRO_BEETLE_PSX_EXTRAOPT) platform="$(LIBRETRO_PLATFORM)"
 endef
 
 define LIBRETRO_BEETLE_PSX_INSTALL_TARGET_CMDS

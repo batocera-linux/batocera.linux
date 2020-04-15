@@ -135,7 +135,7 @@ menuconfig BR2_PACKAGE_KODI18
 
 if BR2_PACKAGE_KODI18
 
-source "package/batocera/kodi18/kodi18-platform/Config.in"
+source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi18/kodi18-platform/Config.in"
 
 config BR2_PACKAGE_KODI18_ALSA_LIB
 	bool "alsa"
@@ -351,65 +351,65 @@ config BR2_PACKAGE_KODI18_OPTICALDRIVE
 	  Add support for optical drives, to read e.g. DVDs...
 
 menu "Audio decoder addons"
-	source "package/batocera/kodi18/kodi18-audiodecoder-modplug/Config.in"
-	source "package/batocera/kodi18/kodi18-audiodecoder-nosefart/Config.in"
-	source "package/batocera/kodi18/kodi18-audiodecoder-sidplay/Config.in"
-	source "package/batocera/kodi18/kodi18-audiodecoder-snesapu/Config.in"
-	source "package/batocera/kodi18/kodi18-audiodecoder-stsound/Config.in"
-	source "package/batocera/kodi18/kodi18-audiodecoder-timidity/Config.in"
-	source "package/batocera/kodi18/kodi18-audiodecoder-vgmstream/Config.in"
+	source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi18/kodi18-audiodecoder-modplug/Config.in"
+	source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi18/kodi18-audiodecoder-nosefart/Config.in"
+	source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi18/kodi18-audiodecoder-sidplay/Config.in"
+	source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi18/kodi18-audiodecoder-snesapu/Config.in"
+	source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi18/kodi18-audiodecoder-stsound/Config.in"
+	source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi18/kodi18-audiodecoder-timidity/Config.in"
+	source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi18/kodi18-audiodecoder-vgmstream/Config.in"
 endmenu
 
 menu "Audio encoder addons"
-	source "package/batocera/kodi18/kodi18-audioencoder-flac/Config.in"
-	source "package/batocera/kodi18/kodi18-audioencoder-lame/Config.in"
-	source "package/batocera/kodi18/kodi18-audioencoder-vorbis/Config.in"
-	source "package/batocera/kodi18/kodi18-audioencoder-wav/Config.in"
+	source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi18/kodi18-audioencoder-flac/Config.in"
+	source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi18/kodi18-audioencoder-lame/Config.in"
+	source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi18/kodi18-audioencoder-vorbis/Config.in"
+	source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi18/kodi18-audioencoder-wav/Config.in"
 endmenu
 
 menu "Peripheral addons"
-	source "package/batocera/kodi18/kodi18-peripheral-joystick/Config.in"
-	source "package/batocera/kodi18/kodi18-peripheral-steamcontroller/Config.in"
-	source "package/batocera/kodi18/kodi18-peripheral-xarcade/Config.in"
+	source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi18/kodi18-peripheral-joystick/Config.in"
+	source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi18/kodi18-peripheral-steamcontroller/Config.in"
+	source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi18/kodi18-peripheral-xarcade/Config.in"
 endmenu
 
 menu "Inputstream addons"
-	source "package/batocera/kodi18/kodi18-inputstream-adaptive/Config.in"
-	source "package/batocera/kodi18/kodi18-inputstream-rtmp/Config.in"
+	source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi18/kodi18-inputstream-adaptive/Config.in"
+	source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi18/kodi18-inputstream-rtmp/Config.in"
 endmenu
 
 menu "PVR addons"
-	source "package/batocera/kodi18/kodi18-pvr-argustv/Config.in"
-	source "package/batocera/kodi18/kodi18-pvr-dvblink/Config.in"
-	source "package/batocera/kodi18/kodi18-pvr-dvbviewer/Config.in"
-	source "package/batocera/kodi18/kodi18-pvr-filmon/Config.in"
-	source "package/batocera/kodi18/kodi18-pvr-hdhomerun/Config.in"
-	source "package/batocera/kodi18/kodi18-pvr-hts/Config.in"
-	source "package/batocera/kodi18/kodi18-pvr-iptvsimple/Config.in"
-	source "package/batocera/kodi18/kodi18-pvr-mediaportal-tvserver/Config.in"
-	source "package/batocera/kodi18/kodi18-pvr-mythtv/Config.in"
-	source "package/batocera/kodi18/kodi18-pvr-nextpvr/Config.in"
-	source "package/batocera/kodi18/kodi18-pvr-njoy/Config.in"
-	source "package/batocera/kodi18/kodi18-pvr-pctv/Config.in"
-	source "package/batocera/kodi18/kodi18-pvr-stalker/Config.in"
-	source "package/batocera/kodi18/kodi18-pvr-vbox/Config.in"
-	source "package/batocera/kodi18/kodi18-pvr-vdr-vnsi/Config.in"
-	source "package/batocera/kodi18/kodi18-pvr-vuplus/Config.in"
-	source "package/batocera/kodi18/kodi18-pvr-wmc/Config.in"
+	source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi18/kodi18-pvr-argustv/Config.in"
+	source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi18/kodi18-pvr-dvblink/Config.in"
+	source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi18/kodi18-pvr-dvbviewer/Config.in"
+	source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi18/kodi18-pvr-filmon/Config.in"
+	source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi18/kodi18-pvr-hdhomerun/Config.in"
+	source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi18/kodi18-pvr-hts/Config.in"
+	source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi18/kodi18-pvr-iptvsimple/Config.in"
+	source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi18/kodi18-pvr-mediaportal-tvserver/Config.in"
+	source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi18/kodi18-pvr-mythtv/Config.in"
+	source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi18/kodi18-pvr-nextpvr/Config.in"
+	source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi18/kodi18-pvr-njoy/Config.in"
+	source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi18/kodi18-pvr-pctv/Config.in"
+	source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi18/kodi18-pvr-stalker/Config.in"
+	source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi18/kodi18-pvr-vbox/Config.in"
+	source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi18/kodi18-pvr-vdr-vnsi/Config.in"
+	source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi18/kodi18-pvr-vuplus/Config.in"
+	source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi18/kodi18-pvr-wmc/Config.in"
 endmenu
 
 menu "Screensavers"
-	source "package/batocera/kodi18/kodi18-screensaver-asteroids/Config.in"
-	source "package/batocera/kodi18/kodi18-screensaver-asterwave/Config.in"
-	source "package/batocera/kodi18/kodi18-screensaver-biogenesis/Config.in"
-	source "package/batocera/kodi18/kodi18-screensaver-cpblobs/Config.in"
-	source "package/batocera/kodi18/kodi18-screensaver-crystalmorph/Config.in"
-	source "package/batocera/kodi18/kodi18-screensaver-greynetic/Config.in"
-	source "package/batocera/kodi18/kodi18-screensaver-matrixtrails/Config.in"
-	source "package/batocera/kodi18/kodi18-screensaver-pingpong/Config.in"
-	source "package/batocera/kodi18/kodi18-screensaver-pyro/Config.in"
-	source "package/batocera/kodi18/kodi18-screensaver-rsxs/Config.in"
-	source "package/batocera/kodi18/kodi18-screensaver-stars/Config.in"
+	source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi18/kodi18-screensaver-asteroids/Config.in"
+	source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi18/kodi18-screensaver-asterwave/Config.in"
+	source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi18/kodi18-screensaver-biogenesis/Config.in"
+	source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi18/kodi18-screensaver-cpblobs/Config.in"
+	source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi18/kodi18-screensaver-crystalmorph/Config.in"
+	source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi18/kodi18-screensaver-greynetic/Config.in"
+	source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi18/kodi18-screensaver-matrixtrails/Config.in"
+	source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi18/kodi18-screensaver-pingpong/Config.in"
+	source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi18/kodi18-screensaver-pyro/Config.in"
+	source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi18/kodi18-screensaver-rsxs/Config.in"
+	source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi18/kodi18-screensaver-stars/Config.in"
 endmenu
 
 menu "Skins"
@@ -447,20 +447,20 @@ config BR2_PACKAGE_KODI18_SKIN_ESTOUCHY
 	help
 	  Default skin Estouchy
 
-	source "package/batocera/kodi18/kodi18-skin-confluence/Config.in"
+	source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi18/kodi18-skin-confluence/Config.in"
 endmenu
 
 menu "Virtual file systems"
-	source "package/batocera/kodi18/kodi18-vfs-rar/Config.in"
-	source "package/batocera/kodi18/kodi18-vfs-sftp/Config.in"
+	source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi18/kodi18-vfs-rar/Config.in"
+	source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi18/kodi18-vfs-sftp/Config.in"
 endmenu
 
 menu "Visualisations"
-	source "package/batocera/kodi18/kodi18-visualisation-fishbmc/Config.in"
-	source "package/batocera/kodi18/kodi18-visualisation-goom/Config.in"
-	source "package/batocera/kodi18/kodi18-visualisation-shadertoy/Config.in"
-	source "package/batocera/kodi18/kodi18-visualisation-spectrum/Config.in"
-	source "package/batocera/kodi18/kodi18-visualisation-waveform/Config.in"
+	source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi18/kodi18-visualisation-fishbmc/Config.in"
+	source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi18/kodi18-visualisation-goom/Config.in"
+	source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi18/kodi18-visualisation-shadertoy/Config.in"
+	source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi18/kodi18-visualisation-spectrum/Config.in"
+	source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi18/kodi18-visualisation-waveform/Config.in"
 endmenu
 
 endif # BR2_PACKAGE_KODI18

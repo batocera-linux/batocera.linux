@@ -2,13 +2,13 @@
 
 case "$1" in
     start)
-	systemsetting="python /usr/lib/python2.7/site-packages/configgen/settings/batoceraSettings.py"
+	systemsetting="batocera-settings"
 	enabled="`$systemsetting  -command load -key system.es.atstartup`"
         if [ "$enabled" != "0" ];then
                 batocera-resolution minTomaxResolution
 		settings_lang="`$systemsetting -command load -key system.language`"
 		cd /userdata # es need a PWD
-                HOME=/userdata/system LANG="${settings_lang}.UTF-8" SDL_VIDEO_GL_DRIVER=/usr/lib/libGLESv2.so SDL_VIDEO_EGL_DRIVER=/usr/lib/libGLESv2.so SDL_NOMOUSE=1 /usr/bin/emulationstation --no-splash --screenrotate 3 --resolution 480 320 &
+                HOME=/userdata/system LANG="${settings_lang}.UTF-8" SDL_VIDEO_GL_DRIVER=/usr/lib/libGLESv2.so SDL_VIDEO_EGL_DRIVER=/usr/lib/libGLESv2.so SDL_NOMOUSE=1 /usr/bin/emulationstation --no-splash --resolution 480 320 &
 	fi
 	;;
   stop)

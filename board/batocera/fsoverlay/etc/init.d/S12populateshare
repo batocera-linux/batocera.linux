@@ -31,8 +31,8 @@ done
 for FILE in music bios extractions kodi saves screenshots \
             system/.config/lirc/lircd.conf \
             system/configs/emulationstation/{es_input.cfg,es_settings.cfg} \
-            system/{.hatari,.kodi} \
-            system/configs/{moonlight,reicast,retroarch,shadersets,xarcade2jstick,dosbox,vice,amiberry} \
+            system/.kodi \
+            system/configs/{shadersets,xarcade2jstick,amiberry} \
             system/batocera.conf \
             bios/mame2003
 do
@@ -78,7 +78,6 @@ if mkdir -p /userdata/system/ssh
 then
     test -e /userdata/system/ssh/dropbear_ecdsa_host_key || dropbearkey -t ecdsa -f /userdata/system/ssh/dropbear_ecdsa_host_key
     test -e /userdata/system/ssh/dropbear_rsa_host_key   || dropbearkey -t rsa   -f /userdata/system/ssh/dropbear_rsa_host_key
-    test -e /userdata/system/ssh/dropbear_dss_host_key   || dropbearkey -t dss   -f /userdata/system/ssh/dropbear_dss_host_key
 fi
 
 # udev : create a link for rules persistance

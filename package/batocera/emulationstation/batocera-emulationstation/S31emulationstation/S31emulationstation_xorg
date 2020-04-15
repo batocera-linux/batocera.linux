@@ -1,0 +1,36 @@
+#!/bin/sh
+
+case "$1" in
+    start)
+	systemsetting="batocera-settings"
+	enabled="`$systemsetting  -command load -key system.es.atstartup`"
+        if [ "$enabled" != "0" ];then
+		settings_lang="`$systemsetting -command load -key system.language`"
+		# HOME is important to be able to call ~/.xinitrc
+                HOME=/userdata/system startx &
+	fi
+	;;
+  stop)
+        killall emulationstation
+        if [[ $? -eq 0 ]]; then
+            sleep 20 &
+            watchdog=$!
+            while [[ -n $(pidof emulationstation) ]]; do
+                sleep 0.25
+                $(kill -0 $watchdog) || exit
+            done
+            kill -9 $watchdog
+        fi
+        ;;
+  restart|reload)
+        "$0" stop
+        "$0" start
+	;;
+  *)
+	echo "Usage: $0 {start|stop|restart}"
+	exit 1
+esac
+
+exit $?
+
+

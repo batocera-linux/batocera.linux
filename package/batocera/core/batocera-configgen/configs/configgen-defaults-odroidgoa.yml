@@ -1,25 +1,32 @@
 default:
   options:
     video_threaded: true
-    # rotation
-    retroarch.aspect_ratio_index: 21
-    retroarch.video_rotation: 1
+    ratio: "3/2"
+    retroarch.video_rotation: 0 # for people upgrading
+    # menu retroarch
+    retroarch.menu_driver: rgui
+    retroarch.menu_widget_scale_auto: "false"
+    retroarch.menu_widget_scale_factor: 1.5
 
 n64:
   emulator: mupen64plus
   core: glide64mk2
   options:
-    # rotation
-    mupen64plus.Video-General.Rotate: 1
+    mupen64plus.Video-General.ScreenWidth: 480
+    mupen64plus.Video-General.ScreenHeight: 320
     mupen64plus.Video-Glide64mk2.aspect: 2
+    mupen64plus.Video-General.Rotate: 0 # for people upgrading
 psp:
   options:
     frameskip: true
-    ppsspp.General.InternalScreenRotation: 2
+    ppsspp.General.InternalScreenRotation: 0 # for people upgrading
 dreamcast:
-  options:
-    reicast.config.rend.Rotate90: yes
-amiga:
+  emulator: libretro
+  core: flycast
+amiga500:
+  emulator: amiberry
+  core:     A500
+amiga1200:
   emulator: amiberry
   core:     A1200
 amigacd32:
