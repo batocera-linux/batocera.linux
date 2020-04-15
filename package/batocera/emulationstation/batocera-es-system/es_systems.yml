@@ -560,6 +560,18 @@ prboom:
 
     NE PAS EFFACER "prboom.wad"
 
+tyrquake:
+  name:       TyrQuake
+  extensions: [pak]
+  group: ports
+  emulators:
+    libretro:
+      tyrquake: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_TYRQUAKE], 'netplay':false }
+  comment_en: |
+    Put your Quake 1 .PAK games in this directory.
+  comment_fr: |
+    Placez ici vos fichiers .PAK pour Quake 1.
+
 mrboom:
   name:       MrBoom
   extensions: [libretro]
