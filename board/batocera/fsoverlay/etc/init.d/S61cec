@@ -1,10 +1,10 @@
 #!/bin/sh
 
-systemsetting="batocera-settings"
-
 case "$1" in
+        start)
+                ;;
         stop)
-                enabled="`$systemsetting  -command load -key system.cec.standby`"
+                enabled="`batocera-settings -command load -key system.cec.standby`"
                 if [ "$enabled" == "1" ];then
                         echo standby 0 | cec-client -s -d 1 &
                 fi
