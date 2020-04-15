@@ -138,12 +138,13 @@ def generateControllerConfig_emulatedwiimotes(playersControllers, rom):
                 line = cconfig.readline()
 
 
-    eslog.log("Extra Options: {}".format(extraOptions))
-    eslog.log("Wii Mappings: {}".format(wiiMapping))
+    #eslog.log("Extra Options: {}".format(extraOptions))
+    #eslog.log("Wii Mappings: {}".format(wiiMapping))
 
     generateControllerConfig_any(playersControllers, "WiimoteNew.ini", "Wiimote", wiiMapping, wiiReverseAxes, None, extraOptions)
 
 def generateControllerConfig_gamecube(playersControllers,rom):
+
     gamecubeMapping = {
         'y':      'Buttons/X',  'b':        'Buttons/A',
         'x':      'Buttons/Y',  'a':        'Buttons/B',
@@ -213,7 +214,12 @@ def generateHotkeys(playersControllers):
     }
 
     nplayer = 1
+    #eslog.log("HK Controllers: {}".format(playersControllers.items()))
     for playercontroller, pad in sorted(playersControllers.items()):
+        #eslog.log("HK playercontroller: {}".format(playercontroller))
+        #eslog.log("HK pad: {}".format(pad))       
+        #eslog.log("HK pad Real Name: {}".format(pad.realName))
+        #eslog.log("HK pad Inputs: {}".format(pad.inputs))
         if nplayer == 1:
             f.write("[Hotkeys1]" + "\n")
             f.write("Device = evdev/0/" + pad.realName.strip() + "\n")
@@ -227,6 +233,8 @@ def generateHotkeys(playersControllers):
                 return
 
             for x in pad.inputs:
+                #eslog.log("input: {}".format(x))
+                #eslog.log("input: {}".format(pad.inputs[x]))
                 print
                 input = pad.inputs[x]
 
@@ -253,8 +261,12 @@ def generateControllerConfig_any(playersControllers, filename, anyDefKey, anyMap
 
     # in case of two pads having the same name, dolphin wants a number to handle this
     double_pads = dict()
-
+    #eslog.log("playercontroller: {}".format(playersControllers.items()))
     for playercontroller, pad in sorted(playersControllers.items()):
+        #eslog.log("playercontroller: {}".format(playercontroller))
+        #eslog.log("pad: {}".format(pad.realName))
+        #eslog.log("pad: {}".format(pad.inputs))
+        #eslog.log("keyname : {}".format(double_pads))
         # handle x pads having the same name
         if pad.configName in double_pads:
             nsamepad = double_pads[pad.configName]
@@ -285,9 +297,12 @@ def generateControllerConfig_any(playersControllers, filename, anyDefKey, anyMap
 
         for x in pad.inputs:
             input = pad.inputs[x]
+            #eslog.log("input: {}".format(x))
+            #eslog.log("input: {}".format(pad.inputs[x]))
 
             keyname = None
             if input.name in currentMapping:
+                #eslog.log("keyname : {}".format(currentMapping[input.name]))
                 keyname = currentMapping[input.name]
             #else:
             #    f.write("# undefined key: name="+input.name+", type="+input.type+", id="+str(input.id)+", value="+str(input.value)+"\n")
