@@ -133,6 +133,14 @@ systems = {
                                                     { "md5": "5f8924d013dd57a89cf349f4cdedc6b1", "file": "bios/amiga-os-310-cd32.rom"   },
                                                     { "md5": "bb72565701b1b6faece07d68ea5da639", "file": "bios/amiga-ext-310-cd32.rom"  },
                                                     { "md5": "89da1838a24460e4b93f4f0c5d92d48d", "file": "bios/amiga-ext-130-cdtv.rom"  }] },
+
+    # ---------- NEC PC-9800 ---------- #
+    # https://github.com/RetroPie/RetroPie-Setup/wiki/PC-9800#bios
+    "pc98":       { "name": "NEC PC-9800", "biosFiles": [   { "md5": "e246140dec5124c5e404869a84caefce", "file": "bios/np2kai/BIOS.ROM" },
+                                                            { "md5": "2af6179d7de4893ea0b705c00e9a98d6", "file": "bios/np2kai/FONT.ROM" },
+                                                            { "md5": "caf90f22197aed6f14c471c21e64658d", "file": "bios/np2kai/SOUND.ROM"},
+                                                            { "md5": "e9fc3890963b12cf15d0a2eea5815b72", "file": "bios/np2kai/ITF.ROM"  },
+                                                            { "md5": "7da1e5b7c482d4108d22a5b09631d967", "file": "bios/np2kai/font.bmp" } ] },
 }
 
 class BiosStatus:
