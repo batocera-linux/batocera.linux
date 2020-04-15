@@ -1,0 +1,51 @@
+# uncomment if you get no picture on HDMI for a default "safe" mode
+#hdmi_safe=1
+
+disable_overscan=1
+
+# uncomment to force a specific HDMI mode (this will force VGA)
+#hdmi_group=1
+#hdmi_mode=1
+
+# comment to get jack audio
+hdmi_drive=2
+
+# Using /etc/modules is deprecated and no longer supported on 4.4 kernel
+# So manually enable audio
+dtparam=audio=on
+
+config_hdmi_boost=0
+
+# force hdmi while the tv can take time before sending the signal on the hdmi output
+hdmi_force_hotplug=1
+
+# uncomment for composite PAL
+#sdtv_mode=2
+
+# uncomment if you have slow sound issues on composite output
+#audio_pwm_mode=0
+
+# uncomment for lirc-rpi
+#dtoverlay=lirc-rpi
+
+# if you plug your tv at the same time as your rpi and that the rpi switches from the hdmi or give a low resolution because tv had no enough time to initialize it
+boot_delay=3
+
+# uncomment if you don't want the rainbow at startup
+disable_splash=1
+
+# Overclock
+gpu_mem_256=128
+gpu_mem_512=256
+gpu_mem_1024=384
+
+avoid_safe_mode=1
+
+kernel=boot/linux
+initramfs boot/initrd.gz
+
+# enable UART (required for for retroflag)
+# affect rpi performances
+# enable_uart=1
+
+dtoverlay=vc4-fkms-v3d

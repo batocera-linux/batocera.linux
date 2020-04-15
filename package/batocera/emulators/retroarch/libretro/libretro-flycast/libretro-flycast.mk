@@ -17,6 +17,11 @@ LIBRETRO_FLYCAST_PLATFORM = $(LIBRETRO_PLATFORM)
 # an other proper way may be to redo the Makefile to do "if rpi elif unix ..." (from specific to general)
 # the Makefile imposes that the platform has gles (or force FORCE_GLES is set) to not link with lGL
 
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI4),y)
+	LIBRETRO_FLYCAST_PLATFORM = rpi-rpi4
+	LIBRETRO_FLYCAST_EXTRA_ARGS += ARCH=arm FORCE_GLES=1 LDFLAGS=-lrt
+endif
+
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI3),y)
 	LIBRETRO_FLYCAST_PLATFORM = rpi-rpi3
 	LIBRETRO_FLYCAST_EXTRA_ARGS += ARCH=arm FORCE_GLES=1 LDFLAGS=-lrt

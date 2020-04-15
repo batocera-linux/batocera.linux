@@ -1,0 +1,12 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index b5d256c..dbea660 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -184,6 +184,7 @@ if(USING_EGL)
+ 	endif()
+ 	set(OPENGL_LIBRARIES ${OPENGL_LIBRARIES} ${EGL_LIBRARIES})
+ endif()
++add_definitions(-DEGL_NO_X11)
+ 
+ if(NOT LIBRETRO)
+ 	find_package(SDL2)
