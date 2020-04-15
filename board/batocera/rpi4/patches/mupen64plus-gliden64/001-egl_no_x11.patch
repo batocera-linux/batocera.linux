@@ -1,0 +1,12 @@
+diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
+index bb209aa..23df07c 100644
+--- a/src/CMakeLists.txt
++++ b/src/CMakeLists.txt
+@@ -402,6 +402,7 @@ if(GL_PROFILE)
+     )
+ endif(GL_PROFILE)
+ 
++add_definitions(-DEGL_NO_X11)
+ if(EGL)
+   add_definitions(
+     -DEGL

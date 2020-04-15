@@ -120,6 +120,12 @@ ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA),y)
 	RETROARCH_DEPENDENCIES += librga
 endif
 
+ifeq ($(BR2_PACKAGE_XSERVER_XORG_SERVER),)
+	ifeq ($(BR2_PACKAGE_MESA3D_OPENGL_EGL),y)
+		TARGET_CFLAGS += "-DMESA_EGL_NO_X11_HEADERS"
+	endif
+endif
+
 define RETROARCH_CONFIGURE_CMDS
 	(cd $(@D); rm -rf config.cache; \
 		$(TARGET_CONFIGURE_ARGS) \
@@ -184,6 +190,10 @@ ifeq ($(BR2_arm)$(BR2_cortex_a72_a53),yy)
     LIBRETRO_PLATFORM += armv7
 endif
 
+ifeq ($(BR2_arm)$(BR2_cortex_a72),yy)
+    LIBRETRO_PLATFORM += armv7
+endif
+
 ifeq ($(BR2_arm)$(BR2_cortex_a35),yy)
     LIBRETRO_PLATFORM += classic_armv8_a35
 endif
@@ -206,4 +216,8 @@ endif
 
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI3),y)
 	LIBRETRO_PLATFORM += rpi3
+endif
+
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI4),y)
+	LIBRETRO_PLATFORM += rpi4
 endif
