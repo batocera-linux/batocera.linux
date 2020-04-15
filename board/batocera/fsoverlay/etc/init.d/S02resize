@@ -24,7 +24,7 @@ function textoutput()
     local cmd="$3"
     local percent="$2"
     local pid ret
-    $cmd &>/dev/null &
+    $cmd >> /tmp/resize.log 2>&1 &
     ret=$?
     pid=$!
     arr[$1]=7 #msg: In Progress
