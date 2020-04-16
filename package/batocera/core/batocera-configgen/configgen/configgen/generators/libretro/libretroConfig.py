@@ -201,7 +201,11 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
     # forced values (so that if the config is not correct, fix it)
     if system.config['core'] == 'tgbdual':
         retroarchConfig['aspect_ratio_index'] = str(ratioIndexes.index("core")) # reset each time in this function
-        
+
+    # Virtual keyboard for Amstrad CPC (select+start)
+    if system.config['core'] == 'cap32':
+        retroarchConfig['cap32_combokey'] = 'y'
+
     # Netplay management
     if 'netplay.mode' in system.config and system.config['netplay.mode'] in systemNetplayModes:
         # Security : hardcore mode disables save states, which would kill netplay
