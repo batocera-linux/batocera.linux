@@ -1,0 +1,16 @@
+#!/bin/sh
+
+case "$1" in
+        start)
+                ;;
+        stop)
+                enabled="`batocera-settings -command load -key system.cec.standby`"
+                if [ "$enabled" == "1" ];then
+                        echo standby 0 | cec-client -s -d 1 &
+                fi
+                ;;
+        *)
+                echo "Usage: $0 {stop} - turns off first monitor device"
+esac
+
+exit $?
