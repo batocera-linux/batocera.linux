@@ -24,7 +24,7 @@ endef
 
 define BATOCERA_ES_SYSTEM_INSTALL_TARGET_CMDS
 	$(INSTALL) -m 0644 -D $(@D)/es_systems.cfg $(TARGET_DIR)/usr/share/emulationstation/es_systems.cfg
-	$(INSTALL) -m 0644 -D $(@D)/es_systems.cfg $(TARGET_DIR)/usr/share/emulationstation/es_features.cfg
+	$(INSTALL) -m 0644 -D $(@D)/es_features.cfg $(TARGET_DIR)/usr/share/emulationstation/es_features.cfg
         mkdir -p $(@D)/roms # in case there is no rom
 	cp -pr $(@D)/roms $(TARGET_DIR)/usr/share/batocera/datainit/
 endef
