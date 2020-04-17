@@ -111,29 +111,14 @@ def loadAllControllersByNameConfig():
 
 
 # Create a controller array with the player id as a key
-def loadControllerConfig(p1index, p1guid, p1name, p1dev, p1nbbuttons, p1nbhats, p1nbaxes,
-                         p2index, p2guid, p2name, p2dev, p2nbbuttons, p2nbhats, p2nbaxes,
-                         p3index, p3guid, p3name, p3dev, p3nbbuttons, p3nbhats, p3nbaxes,
-                         p4index, p4guid, p4name, p4dev, p4nbbuttons, p4nbhats, p4nbaxes,
-                         p5index, p5guid, p5name, p5dev, p5nbbuttons, p5nbhats, p5nbaxes):
+def loadControllerConfig(controllersInput):
     playerControllers = dict()
     controllers = loadAllControllersConfig()
 
-    newController = findBestControllerConfig(controllers, '1', p1guid, p1index, p1name, p1dev, p1nbbuttons, p1nbhats, p1nbaxes)
-    if newController:
-        playerControllers["1"] = newController
-    newController = findBestControllerConfig(controllers, '2', p2guid, p2index, p2name, p2dev, p2nbbuttons, p2nbhats, p2nbaxes)
-    if newController:
-        playerControllers["2"] = newController
-    newController = findBestControllerConfig(controllers, '3', p3guid, p3index, p3name, p3dev, p3nbbuttons, p3nbhats, p3nbaxes)
-    if newController:
-        playerControllers["3"] = newController
-    newController = findBestControllerConfig(controllers, '4', p4guid, p4index, p4name, p4dev, p4nbbuttons, p4nbhats, p4nbaxes)
-    if newController:
-        playerControllers["4"] = newController
-    newController = findBestControllerConfig(controllers, '5', p5guid, p5index, p5name, p5dev, p5nbbuttons, p5nbhats, p5nbaxes)
-    if newController:
-        playerControllers["5"] = newController
+    for i, ci in enumerate(controllersInput):
+        newController = findBestControllerConfig(controllers, str(i+1), ci["guid"], ci["index"], ci["name"], ci["devicepath"], ci["nbbuttons"], ci["nbhats"], ci["nbaxes"])
+        if newController:
+            playerControllers[str(i+1)] = newController
     return playerControllers
 
 def findBestControllerConfig(controllers, x, pxguid, pxindex, pxname, pxdev, pxnbbuttons, pxnbhats, pxnbaxes):
