@@ -127,6 +127,7 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
         retroarchConfig['savestate_auto_load'] = 'false'
 
     retroarchConfig['input_joypad_driver'] = 'udev'
+    retroarchConfig['input_max_users'] = "16" # allow up to 16 players
 
     retroarchConfig['savestate_directory'] = batoceraFiles.savesDir + system.name
     retroarchConfig['savefile_directory'] = batoceraFiles.savesDir + system.name
