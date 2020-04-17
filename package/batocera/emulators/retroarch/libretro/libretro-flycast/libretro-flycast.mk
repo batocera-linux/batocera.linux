@@ -3,8 +3,8 @@
 # LIBRETRO-FLYCAST
 #
 ################################################################################
-# Version.: Commits on Feb 27, 2020
-LIBRETRO_FLYCAST_VERSION = 11c400842fcfc46aeca4086109c11512e44af604
+# Version.: Commits on Apr 15, 2020
+LIBRETRO_FLYCAST_VERSION = 51661bb384e7cbdea9d67dbb1fdf18639eec0859
 LIBRETRO_FLYCAST_SITE = $(call github,libretro,flycast,$(LIBRETRO_FLYCAST_VERSION))
 LIBRETRO_FLYCAST_LICENSE = GPLv2
 
