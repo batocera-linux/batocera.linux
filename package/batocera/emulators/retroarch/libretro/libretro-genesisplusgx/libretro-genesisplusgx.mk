@@ -3,8 +3,8 @@
 # GENESISPLUSGX
 #
 ################################################################################
-# Version.: Commits on Feb 05, 2020
-LIBRETRO_GENESISPLUSGX_VERSION = 8359664e5837f50bfbfd9cfa62bb85af5dd8ed45
+# Version.: Commits on Apr 14, 2020
+LIBRETRO_GENESISPLUSGX_VERSION = e66b7bc83d2ef98feeb5f40b2ebebd55f727406e
 LIBRETRO_GENESISPLUSGX_SITE = $(call github,ekeeke,Genesis-Plus-GX,$(LIBRETRO_GENESISPLUSGX_VERSION))
 LIBRETRO_GENESISPLUSGX_LICENSE = Non-commercial
 
@@ -23,8 +23,7 @@ ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_ODROIDN2),y)
 endif
 
 define LIBRETRO_GENESISPLUSGX_BUILD_CMDS
-	CFLAGS="$(TARGET_CFLAGS)" CXXFLAGS="$(TARGET_CXXFLAGS)" $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" \
-		-C $(@D) -f Makefile.libretro platform="$(LIBRETRO_GENESISPLUSGX_PLATFORM)"
+	$(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" -C $(@D) -f Makefile.libretro platform="$(LIBRETRO_GENESISPLUSGX_PLATFORM)"
 endef
 
 define LIBRETRO_GENESISPLUSGX_INSTALL_TARGET_CMDS
