@@ -289,6 +289,7 @@ pcenginecd:
   emulators:
     libretro:
       pce:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BEETLE_PCE], 'netplay':true }
+      pce_fast:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BEETLE_PCE_FAST], 'netplay':true }
 
 supergrafx:
   name:       Supergrafx
