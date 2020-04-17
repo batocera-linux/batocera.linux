@@ -51,7 +51,19 @@ then
 fi
 
 echo "Architecture: ${V_ARCH}"
+if test -e /sys/firmware/devicetree/base/model
+then
+    DTMODEL=$(cat /sys/firmware/devicetree/base/model)
+    echo "Model: ${DTMODEL}"
+fi
+
+if echo "${V_ARCH}" | grep -qE "^rpi[0-9]$"
+then
+    REVISION=$(grep -E $'^Revision\t:' /proc/cpuinfo | head -1 | sed -e s+'^Revision\t: '++)
+    test -n "${REVISION}" && echo "Revision: ${REVISION}"
+fi
 echo "System: ${V_SYSTEM}"
+
 if test "${V_ARCH}" = "x86" -o "${V_ARCH}" = "x86_64"
 then
     V_OPENGLVERSION=$(DISPLAY=:0.0 glxinfo | grep -E '^OpenGL core profile version string:' | sed -e s+'^OpenGL core profile version string:[ ]*'++)
