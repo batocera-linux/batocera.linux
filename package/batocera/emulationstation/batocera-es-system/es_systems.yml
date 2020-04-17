@@ -216,6 +216,7 @@ megadrive:
     libretro:
       genesisplusgx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GENESISPLUSGX], 'netplay':true }
       picodrive:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PICODRIVE], 'netplay':true }
+      blastem:       { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BLASTEM], 'netplay':true }
 
 segacd:
   name:       Sega CD
