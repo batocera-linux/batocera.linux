@@ -74,10 +74,8 @@ def generateCoreSettings(retroarchCore, system):
     if (system.config['core'] == 'pce'):
         coreSettings.save('pce_keepaspect', '"enabled"')
     
-    
     if (system.config['core'] == 'pce_fast'):
         coreSettings.save('pce_keepaspect', '"enabled"')
- 
 
     if (system.config['core'] == 'picodrive'):
         coreSettings.save('picodrive_input1',   '"6 button pad"')
