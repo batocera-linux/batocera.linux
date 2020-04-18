@@ -26,8 +26,7 @@ ifeq ($(BR2_arm),y)
 endif
 
 define LIBRETRO_DOSBOX_BUILD_CMDS
-	CFLAGS="$(TARGET_CFLAGS)" CXXFLAGS="$(TARGET_CXXFLAGS)" $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" \
-		-C $(@D)/libretro -f Makefile.libretro platform=$(BATOCERA_SYSTEM) $(LIBRETRO_DOSBOX_EXTRA_ARGS)
+	$(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" -C $(@D)/libretro -f Makefile.libretro platform=$(BATOCERA_SYSTEM) $(LIBRETRO_DOSBOX_EXTRA_ARGS)
 endef
 
 define LIBRETRO_DOSBOX_INSTALL_TARGET_CMDS

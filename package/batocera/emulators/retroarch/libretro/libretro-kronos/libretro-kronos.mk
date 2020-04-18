@@ -9,7 +9,7 @@ LIBRETRO_KRONOS_SITE = $(call github,libretro,yabause,$(LIBRETRO_KRONOS_VERSION)
 LIBRETRO_KRONOS_LICENSE = BSD-3-Clause
 
 define LIBRETRO_KRONOS_BUILD_CMDS
-	$(TARGET_CONFIGURE_OPTS) $(MAKE) -C $(@D)/yabause/src/libretro -f Makefile platform="$(LIBRETRO_PLATFORM)"
+	$(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" -C $(@D)/yabause/src/libretro -f Makefile platform="$(LIBRETRO_PLATFORM)"
 endef
 
 define LIBRETRO_KRONOS_INSTALL_TARGET_CMDS
