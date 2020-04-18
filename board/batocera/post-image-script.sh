@@ -97,7 +97,7 @@ case "${BATOCERA_TARGET}" in
 	"${BUILD_DIR}/linux-${KERNEL_VERSION}/scripts/mkknlimg" "${BINARIES_DIR}/zImage" "${BINARIES_DIR}/rpi-firmware/boot/linux" || exit 1
 	cp "${BINARIES_DIR}/initrd.gz" "${BINARIES_DIR}/rpi-firmware/boot" || exit 1
 	cp "${BINARIES_DIR}/rootfs.squashfs" "${BINARIES_DIR}/rpi-firmware/boot/batocera.update" || exit 1
-	cp -pr "${BINARIES_DIR}/tools"       "${BINARIES_DIR}/rpi-firmware/tools"                || exit 1
+	cp -pr "${BINARIES_DIR}/tools"       "${BINARIES_DIR}/rpi-firmware/"                || exit 1
 
 	echo "creating boot.tar.xz"
 	tar -I "xz -T0" -cf "${BATOCERA_BINARIES_DIR}/boot.tar.xz" -C "${BINARIES_DIR}/rpi-firmware" "." ||
@@ -132,7 +132,7 @@ case "${BATOCERA_TARGET}" in
 	cp "${BINARIES_DIR}/zImage" "${BINARIES_DIR}/rpi-firmware/boot/linux" || exit 1
 	cp "${BINARIES_DIR}/initrd.gz" "${BINARIES_DIR}/rpi-firmware/boot" || exit 1
 	cp "${BINARIES_DIR}/rootfs.squashfs" "${BINARIES_DIR}/rpi-firmware/boot/batocera.update" || exit 1
-	cp -pr "${BINARIES_DIR}/tools"       "${BINARIES_DIR}/rpi-firmware/tools"                || exit 1
+	cp -pr "${BINARIES_DIR}/tools"       "${BINARIES_DIR}/rpi-firmware/"                     || exit 1
 
 	echo "creating boot.tar.xz"
 	tar -I "xz -T0" -cf "${BATOCERA_BINARIES_DIR}/boot.tar.xz" -C "${BINARIES_DIR}/rpi-firmware" "." ||
@@ -173,7 +173,7 @@ case "${BATOCERA_TARGET}" in
 	cp "${BINARIES_DIR}/rootfs.squashfs" "${BINARIES_DIR}/boot/boot/batocera.update" || exit 1
 	cp "${BINARIES_DIR}/exynos5422-odroidxu4.dtb" "${BINARIES_DIR}/boot/boot/exynos5422-odroidxu4.dtb" || exit 1
 	cp "${BINARIES_DIR}/batocera-boot.conf" "${BINARIES_DIR}/boot/batocera-boot.conf"                  || exit 1
-	cp -pr "${BINARIES_DIR}/tools"       "${BINARIES_DIR}/boot/tools"                || exit 1
+	cp -pr "${BINARIES_DIR}/tools"       "${BINARIES_DIR}/boot/"                || exit 1
 
 	# boot.tar.xz
 	echo "creating boot.tar.xz"
@@ -205,7 +205,7 @@ case "${BATOCERA_TARGET}" in
 	cp "${BINARIES_DIR}/meson64_odroidc2.dtb" "${BINARIES_DIR}/boot/boot" || exit 1
 	cp "${BINARIES_DIR}/uInitrd"              "${BINARIES_DIR}/boot/boot" || exit 1
 	cp "${BINARIES_DIR}/rootfs.squashfs" "${BINARIES_DIR}/boot/boot/batocera.update" || exit 1
-	cp -pr "${BINARIES_DIR}/tools"       "${BINARIES_DIR}/boot/tools"                || exit 1
+	cp -pr "${BINARIES_DIR}/tools"       "${BINARIES_DIR}/boot/"                || exit 1
 
 	# boot.tar.xz
 	echo "creating boot.tar.xz"
@@ -246,7 +246,7 @@ case "${BATOCERA_TARGET}" in
 	cp "${BINARIES_DIR}/Image"           "${BINARIES_DIR}/boot/boot/linux"           || exit 1
 	cp "${BINARIES_DIR}/uInitrd"         "${BINARIES_DIR}/boot/boot/uInitrd"    	 || exit 1
 	cp "${BINARIES_DIR}/rootfs.squashfs" "${BINARIES_DIR}/boot/boot/batocera.update" || exit 1
-	cp -pr "${BINARIES_DIR}/tools"       "${BINARIES_DIR}/boot/tools"                || exit 1
+	cp -pr "${BINARIES_DIR}/tools"       "${BINARIES_DIR}/boot/"                || exit 1
 
 	# boot.tar.xz
 	echo "creating boot.tar.xz"
@@ -283,7 +283,7 @@ case "${BATOCERA_TARGET}" in
 	cp "${BINARIES_DIR}/Image" "${BINARIES_DIR}/boot/boot/linux" || exit 1
 
 	cp "${BINARIES_DIR}/rootfs.squashfs" "${BINARIES_DIR}/boot/boot/batocera.update" || exit 1
-	cp -pr "${BINARIES_DIR}/tools"       "${BINARIES_DIR}/boot/tools"                || exit 1
+	cp -pr "${BINARIES_DIR}/tools"       "${BINARIES_DIR}/boot/"                || exit 1
 
 	# boot.tar.xz
 	echo "creating boot.tar.xz"
@@ -311,7 +311,7 @@ case "${BATOCERA_TARGET}" in
 	cp "${BINARIES_DIR}/bzImage" "${BINARIES_DIR}/boot/linux" || exit 1
 	cp "${BINARIES_DIR}/initrd.gz" "${BINARIES_DIR}/boot" || exit 1
 	cp "${BINARIES_DIR}/rootfs.squashfs" "${BINARIES_DIR}/boot/batocera.update" || exit 1
-	cp -pr "${BINARIES_DIR}/tools"       "${BINARIES_DIR}/boot/tools"                || exit 1
+	cp -pr "${BINARIES_DIR}/tools"       "${BINARIES_DIR}/boot/"                || exit 1
 
 	# get UEFI files
 	mkdir -p "${BINARIES_DIR}/EFI/syslinux" || exit 1
@@ -351,7 +351,7 @@ case "${BATOCERA_TARGET}" in
 	cp "${BINARIES_DIR}/rk3399-rockpro64.dtb"  "${BINARIES_DIR}/boot/boot/rk3399-rockpro64.dtb" || exit 1
 	cp "${BINARIES_DIR}/batocera-boot.conf"    "${BINARIES_DIR}/boot/batocera-boot.conf"        || exit 1
 	cp "${BR2_EXTERNAL_BATOCERA_PATH}/board/batocera/rockpro64/boot/extlinux.conf" ${BINARIES_DIR}/boot/extlinux                   || exit 1
-	cp -pr "${BINARIES_DIR}/tools"       "${BINARIES_DIR}/boot/tools"                || exit 1
+	cp -pr "${BINARIES_DIR}/tools"       "${BINARIES_DIR}/boot/"                || exit 1
 
 	# boot.tar.xz
 	echo "creating boot.tar.xz"
@@ -388,7 +388,7 @@ case "${BATOCERA_TARGET}" in
     cp "${BINARIES_DIR}/rk3399-rock960-ab.dtb"  "${BINARIES_DIR}/boot/boot/rk3399-rock960-ab.dtb" || exit 1
     cp "${BINARIES_DIR}/batocera-boot.conf"    "${BINARIES_DIR}/boot/batocera-boot.conf"        || exit 1
     cp "${BR2_EXTERNAL_BATOCERA_PATH}/board/batocera/rock960/boot/extlinux.conf" ${BINARIES_DIR}/boot/extlinux                   || exit 1
-    cp -pr "${BINARIES_DIR}/tools"       "${BINARIES_DIR}/boot/tools"                || exit 1
+    cp -pr "${BINARIES_DIR}/tools"       "${BINARIES_DIR}/boot/"                || exit 1
 
     # boot.tar.xz
     echo "creating boot.tar.xz"
@@ -424,7 +424,7 @@ case "${BATOCERA_TARGET}" in
 	cp "${BINARIES_DIR}/meson-g12b-odroid-n2.dtb"  "${BINARIES_DIR}/boot/boot/meson-g12b-odroid-n2.dtb" || exit 1
 	cp "${BINARIES_DIR}/batocera-boot.conf"    "${BINARIES_DIR}/boot/batocera-boot.conf"        || exit 1
 	cp "${BR2_EXTERNAL_BATOCERA_PATH}/board/batocera/odroidn2/boot/boot.ini"      "${BINARIES_DIR}/boot/boot.ini"                  || exit 1
-	cp -pr "${BINARIES_DIR}/tools"       "${BINARIES_DIR}/boot/tools"                || exit 1
+	cp -pr "${BINARIES_DIR}/tools"       "${BINARIES_DIR}/boot/"                || exit 1
 
 	# boot.tar.xz
 	echo "creating boot.tar.xz"
@@ -461,7 +461,7 @@ case "${BATOCERA_TARGET}" in
 	cp "${BINARIES_DIR}/rk3326-odroidgo2-linux.dtb"  "${BINARIES_DIR}/boot/boot/rk3326-odroidgo2-linux.dtb" || exit 1
 	cp "${BINARIES_DIR}/batocera-boot.conf"    "${BINARIES_DIR}/boot/batocera-boot.conf"        || exit 1
 	cp "${BR2_EXTERNAL_BATOCERA_PATH}/board/batocera/odroidgoa/boot/boot.ini"      "${BINARIES_DIR}/boot/boot.ini"                  || exit 1
-	cp -pr "${BINARIES_DIR}/tools"             "${BINARIES_DIR}/boot/tools"                     || exit 1
+	cp -pr "${BINARIES_DIR}/tools"             "${BINARIES_DIR}/boot/"                     || exit 1
 
 	# boot.tar.xz
 	echo "creating boot.tar.xz"
@@ -498,7 +498,7 @@ case "${BATOCERA_TARGET}" in
 	cp "${BINARIES_DIR}/rk3288-miniarm.dtb"  "${BINARIES_DIR}/boot/boot/rk3288-miniarm.dtb" || exit 1
 	cp "${BINARIES_DIR}/batocera-boot.conf"    "${BINARIES_DIR}/boot/batocera-boot.conf"        || exit 1
 	cp "${BR2_EXTERNAL_BATOCERA_PATH}/board/batocera/tinkerboard/boot/extlinux.conf" ${BINARIES_DIR}/boot/extlinux                   || exit 1
-	cp -pr "${BINARIES_DIR}/tools"       "${BINARIES_DIR}/boot/tools"                || exit 1
+	cp -pr "${BINARIES_DIR}/tools"       "${BINARIES_DIR}/boot/"                || exit 1
 
 	# boot.tar.xz
 	echo "creating boot.tar.xz"
@@ -540,7 +540,7 @@ case "${BATOCERA_TARGET}" in
 	cp "${BINARIES_DIR}/rk3288-miqi.dtb"  "${BINARIES_DIR}/boot/boot/rk3288-miqi.dtb" || exit 1
 	cp "${BINARIES_DIR}/batocera-boot.conf"    "${BINARIES_DIR}/boot/batocera-boot.conf"        || exit 1
 	cp "${BR2_EXTERNAL_BATOCERA_PATH}/board/batocera/miqi/boot/extlinux.conf" ${BINARIES_DIR}/boot/extlinux                   || exit 1
-	cp -pr "${BINARIES_DIR}/tools"       "${BINARIES_DIR}/boot/tools"                || exit 1
+	cp -pr "${BINARIES_DIR}/tools"       "${BINARIES_DIR}/boot/"                || exit 1
 
 	# boot.tar.xz
 	echo "creating boot.tar.xz"
