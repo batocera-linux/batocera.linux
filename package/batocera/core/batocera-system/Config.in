@@ -354,7 +354,6 @@ config BR2_PACKAGE_BATOCERA_RETROARCH
 							 # YABAUSE
 
         select BR2_PACKAGE_LIBRETRO_OPERA             if !BR2_PACKAGE_BATOCERA_TARGET_RPI_ANY && \
-                                                         !BR2_PACKAGE_BATOCERA_TARGET_RPI4    && \
 	                                                 !BR2_PACKAGE_BATOCERA_TARGET_C2      && \
 					                 !BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA
 							 # 4DO
