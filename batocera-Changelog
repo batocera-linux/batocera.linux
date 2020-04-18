@@ -1,9 +1,21 @@
 2020/XX/XX - batocera.linux 5.26
+	* add: support for Raspberry Pi4
+	* es: now up to 8 players
+	* es: background music now supports .flac, .wav and popular popular chiptune formats (.mod, .xm., .s3m, .far, .mtm, .669...)
+	* es: simplified UI for custom features selection
+	* es: fix missing audio for video snaps on some platforms
+	* es: new UI to remove paired bluetooth controllers
+	* es: customizable ES splash screen 
 	* es: menu to format an external disk in ext4, btrfs, exfat
-	* windows: the btrfs driver for windows is available on the BATOCERA partition
-	* fix missing audio for video snaps on some platforms
-	* add: libretro-mrboom (Port)
-	* add: libretro-tyrquake (Port)
+	* windows: the btrfs driver for Windows is available on the BATOCERA partition
+	* add: libretro-mrboom (Ports)
+	* add: libretro-tyrquake (Ports)
+	* add: 'batocera-create-collection' command-line to help create custom collections
+	* add: on Raspberry Pi3, turn off CEC-compatible TV when shutting down Batocera 
+	* netplay: several enhancements to simplify game matching
+	* fix: Dolphin (Gamecube/Wii) - fixed upscaled resolutions
+	* fix: Amstrad CPC - virtual keyboard
+	* fix: Apple II on x86_64 when using vFAT/FAT32 to store ROMs
 	* bump: moonlight-embedded to 2.4.11
 	* bump: nvidia-driver (440.82)
 	* bump: libretro-bsnes to v115
