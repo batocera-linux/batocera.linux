@@ -1,0 +1,11 @@
+--- a/CAPSImage/Makefile.in	2011-07-08 21:37:16.000000000 +0200
++++ b/CAPSImage/Makefile.in	2016-08-23 17:37:51.574874297 +0200
+@@ -14,7 +14,7 @@
+ LIBRARY		= @LIBRARY@
+ OBJECTS		= @EXTRA_OBJECTS@ afxgen.o CapsAPI.o CapsEFDC.o CapsEMFM.o CapsFile.o CapsImgS.o CapsLdr.o Crc.o DiskEnc.o DiskImg.o
+ 
+-SUBDIRS		= include examples
++#SUBDIRS		= include examples
+ 
+ .PHONY: all clean distclean dist
+ 
