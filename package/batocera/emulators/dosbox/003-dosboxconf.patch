@@ -1,39 +1,42 @@
 diff --git a/src/gui/sdlmain.cpp b/src/gui/sdlmain.cpp
-index 7a0563a..e133afa 100755
+index ec6ba7b..f689b3c 100644
 --- a/src/gui/sdlmain.cpp
 +++ b/src/gui/sdlmain.cpp
-@@ -52,7 +52,7 @@
- #include "cross.h"
- #include "control.h"
+@@ -635,9 +635,9 @@ void UpdateWindowDimensions(void)
+ }
  
--#define MAPPERFILE "mapper-sdl2-" VERSION ".map"
-+#define MAPPERFILE "mapper-sdl2.map"
- //#define DISABLE_JOYSTICK
+ #if defined(C_SDL2)
+-# define MAPPERFILE             "mapper-" VERSION ".sdl2.map"
++# define MAPPERFILE             "mapper-sdl2.map"
+ #else
+-# define MAPPERFILE             "mapper-" VERSION ".map"
++# define MAPPERFILE             "mapper-sdl2.map"
+ #endif
  
- #if C_OPENGL
-@@ -83,7 +83,7 @@ struct private_hwdata {
- #elif defined(MACOSX)
- #define DEFAULT_CONFIG_FILE "/Library/Preferences/DOSBox Preferences"
+ void                        GUI_ResetResize(bool);
+@@ -677,7 +677,7 @@ extern "C" void SDL1_hax_SetMenu(HMENU menu);
+ #elif defined(HAIKU)
+ #define DEFAULT_CONFIG_FILE "~/config/settings/dosbox/dosbox.conf"
  #else /*linux freebsd*/
--#define DEFAULT_CONFIG_FILE "/.dosboxrc"
-+#define DEFAULT_CONFIG_FILE "/dosbox.conf"
+-# define DEFAULT_CONFIG_FILE            "/.dosboxrc"
++# define DEFAULT_CONFIG_FILE            "/dosbox.conf"
  #endif
  
  #if C_SET_PRIORITY
 diff --git a/src/misc/cross.cpp b/src/misc/cross.cpp
-index de726e1..e90e179 100644
+index 05a5893..74daf41 100644
 --- a/src/misc/cross.cpp
 +++ b/src/misc/cross.cpp
-@@ -63,7 +63,7 @@ void Cross::GetPlatformConfigDir(std::string& in) {
- 	in = "~/Library/Preferences";
- 	ResolveHomedir(in);
- #else
+@@ -89,7 +89,7 @@ void Cross::GetPlatformConfigDir(std::string& in) {
+ #elif defined(RISCOS)
+ 	in = "/<Choices$Write>/DosBox-X";
+ #elif !defined(HX_DOS)
 -	in = "~/.dosbox";
 +	in = "/userdata/system/configs/dosbox";
  	ResolveHomedir(in);
  #endif
  	in += CROSS_FILESPLIT;
-@@ -75,7 +75,7 @@ void Cross::GetPlatformConfigName(std::string& in) {
+@@ -101,7 +101,7 @@ void Cross::GetPlatformConfigName(std::string& in) {
  #elif defined(MACOSX)
  #define DEFAULT_CONFIG_FILE "DOSBox " VERSION " Preferences"
  #else /*linux freebsd*/
@@ -42,10 +45,10 @@ index de726e1..e90e179 100644
  #endif
  	in = DEFAULT_CONFIG_FILE;
  }
-@@ -90,7 +90,7 @@ void Cross::CreatePlatformConfigDir(std::string& in) {
- 	ResolveHomedir(in);
- #else
- 	//Don't create it. Assume it exists
+@@ -123,7 +123,7 @@ void Cross::CreatePlatformConfigDir(std::string& in) {
+ 	in = "/<Choices$Write>/DosBox-X";
+ 	mkdir(in.c_str(),0700);
+ #elif !defined(HX_DOS)
 -	in = "~/.dosbox";
 +	in = "/userdata/system/configs/dosbox";
  	ResolveHomedir(in);

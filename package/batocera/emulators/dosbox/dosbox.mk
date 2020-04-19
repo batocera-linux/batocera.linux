@@ -3,9 +3,9 @@
 # DosBox
 #
 ################################################################################
-# Version.: Commits on Jan 08, 2020
-DOSBOX_VERSION = 411481d3c760a7f25bc530c97da7ae008e63e0ad
-DOSBOX_SITE = $(call github,duganchen,dosbox,$(DOSBOX_VERSION))
+# Version.: Commits on Apr 18, 2020
+DOSBOX_VERSION = 63011a14d1ad979d3106cc77a6ac94a2a5df2a68
+DOSBOX_SITE = $(call github,joncampbell123,dosbox-x,$(DOSBOX_VERSION))
 DOSBOX_DEPENDENCIES = sdl2 sdl2_net sdl_sound zlib libpng libogg libvorbis
 DOSBOX_LICENSE = GPLv2
 
@@ -16,7 +16,9 @@ define DOSBOX_CONFIGURE_CMDS
                     --enable-dynrec \
                     --enable-unaligned_memory \
                     --prefix=/usr \
-                    --with-sdl-prefix="$(STAGING_DIR)/usr";
+                    --disable-sdl \
+                    --enable-sdl2 \
+                    --with-sdl2-prefix="$(STAGING_DIR)/usr";
 endef
 
 $(eval $(autotools-package))
