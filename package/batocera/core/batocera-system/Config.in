@@ -373,8 +373,7 @@ config BR2_PACKAGE_BATOCERA_RETROARCH
 
         select BR2_PACKAGE_LIBRETRO_FLYCAST           if !BR2_PACKAGE_BATOCERA_TARGET_RPI1    && \
  	                                                 !BR2_PACKAGE_BATOCERA_TARGET_RPI2    && \
-	                                                 !BR2_PACKAGE_BATOCERA_TARGET_X86     && \
- 	                                                 !BR2_PACKAGE_BATOCERA_TARGET_C2      && \
+	                                                 !BR2_PACKAGE_BATOCERA_TARGET_C2      && \
  	                                                 !BR2_PACKAGE_BATOCERA_TARGET_S905    && \
 	                                                 !BR2_PACKAGE_BATOCERA_TARGET_S912
 							 # FLYCAST
