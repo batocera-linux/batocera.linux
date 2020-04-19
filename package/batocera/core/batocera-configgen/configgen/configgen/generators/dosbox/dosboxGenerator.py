@@ -31,4 +31,4 @@ class DosBoxGenerator(Generator):
             commandArray.append("-conf")
             commandArray.append("""{}""".format(batoceraFiles.dosboxConfig))
 
-        return Command.Command(array=commandArray, env={"SDL_VIDEO_GL_DRIVER":"/usr/lib/libGLESv2.so"})
+        return Command.Command(array=commandArray)
