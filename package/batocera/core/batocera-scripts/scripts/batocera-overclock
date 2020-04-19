@@ -42,6 +42,11 @@ doList() {
 	    echo "high HIGH (1425Mhz)"
 	    echo "turbo TURBO (1450Mhz)"
 	    echo "extrem EXTREM (1500Mhz)"
+	    ;;
+	"rpi4")
+	    echo "none NONE (1500Mhz)"
+	    echo "high HIGH (1700Mhz)"
+	    echo "turbo TURBO (1750Mhz)"
 	;;
 	*)
 	    echo "none NONE"
@@ -51,6 +56,15 @@ doList() {
 setValue_rpiNone() {
     preBootRPIConfig || return 1
     for entry in arm_freq core_freq sdram_freq force_turbo over_voltage over_voltage_sdram gpu_freq
+    do
+	sed -i "/^${entry}/d" "${GRPICONFFILE}"
+    done
+    postBootRPIConfig || return 1
+}
+
+setValue_rpi4None() {
+    preBootRPIConfig || return 1
+    for entry in over_voltage arm_freq gpu_freq
     do
 	sed -i "/^${entry}/d" "${GRPICONFFILE}"
     done
@@ -88,6 +102,33 @@ setValue_rpiPutVars() {
     sed -i "s/#\?over_voltage=.*/over_voltage=${over_voltage}/g"                   "${GRPICONFFILE}" || return 1
     sed -i "s/#\?over_voltage_sdram=.*/over_voltage_sdram=${over_voltage_sdram}/g" "${GRPICONFFILE}" || return 1
     sed -i "s/#\?gpu_freq=.*/gpu_freq=${gpu_freq}/g"                               "${GRPICONFFILE}" || return 1
+
+    postBootRPIConfig || return 1
+}
+
+setValue_rpi4PutVars() {
+    over_voltage=$1
+    arm_freq=$2
+    gpu_freq=$3
+
+    preBootRPIConfig || return 1
+
+    # put variable lines if not existing
+    for entry in over_voltage arm_freq gpu_freq
+    do
+	if ! grep -q "${entry}" "${GRPICONFFILE}"
+	then
+	    if ! echo "${entry}=" >> "${GRPICONFFILE}"
+	    then
+		return 1
+	    fi
+	fi
+    done
+
+    # put values
+    sed -i "s/#\?over_voltage=.*/over_voltage=${over_voltage}/g" "${GRPICONFFILE}" || return 1
+    sed -i "s/#\?arm_freq=.*/arm_freq=${arm_freq}/g"       "${GRPICONFFILE}" || return 1
+    sed -i "s/#\?gpu_freq=.*/gpu_freq=${gpu_freq}/g"       "${GRPICONFFILE}" || return 1
 
     postBootRPIConfig || return 1
 }
@@ -152,6 +193,19 @@ setValue() {
 		    ;;
 		"extrem")
 		    setValue_rpiPutVars 1500 550 550 1 4 5 525
+		    ;;
+	    esac
+	    ;;
+	"rpi4")
+	    case "${VALUE}" in
+		"none")
+		    setValue_rpi4None
+		    ;;
+		"high")
+		    setValue_rpi4PutVars 2 1700 500
+		    ;;
+		"turbo")
+		    setValue_rpi4PutVars 4 1750 600
 		    ;;
 	    esac
 	    ;;
