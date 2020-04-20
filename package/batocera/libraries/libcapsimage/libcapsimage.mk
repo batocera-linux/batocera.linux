@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-LIBCAPSIMAGE_VERSION = 549b195
+LIBCAPSIMAGE_VERSION = 549b1955d52a70b9f7egie88a419f6ecfb6ee61142
 LIBCAPSIMAGE_SITE = https://github.com/simonowen/capsimage
 LIBCAPSIMAGE_SITE_METHOD = git
 
