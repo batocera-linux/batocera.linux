@@ -1,5 +1,5 @@
 diff --git a/Makefile.libretro b/Makefile.libretro
-index 1ec1c98..b9f63aa 100755
+index 0127d63..00915ef 100755
 --- a/Makefile.libretro
 +++ b/Makefile.libretro
 @@ -4,6 +4,13 @@ ZLIB_DIR = $(LIBRETRO_DIR)/utils/zlib
@@ -16,36 +16,7 @@ index 1ec1c98..b9f63aa 100755
  ifeq ($(platform),)
  platform = unix
  ifeq ($(shell uname -a),)
-@@ -79,6 +86,28 @@ else ifeq ($(platform), osx)
-    SHARED := -dynamiclib
-    PLATFLAGS := -DLSB_FIRST -DALIGN_DWORD
- 
-+# ARM
-+else ifneq (,$(findstring armv,$(platform)))
-+   CC = gcc
-+   TARGET := $(TARGET_NAME)_libretro.so
-+   fpic := -fPIC -fsigned-char
-+   SHARED :=  -lz -lpthread -shared -Wl,--version-script=$(LIBRETRO_DIR)/link.T -Wl,--no-undefined
-+   PLATFLAGS := -DLSB_FIRST -DALIGN_DWORD
-+   CFLAGS += -marm
-+ifneq (,$(findstring neon,$(platform)))
-+   CFLAGS += -mfpu=neon
-+   ASFLAGS += -mfpu=neon
-+   HAVE_NEON = 1
-+endif
-+ifneq (,$(findstring softfloat,$(platform)))
-+   CFLAGS += -mfloat-abi=softfp
-+   ASFLAGS += -mfloat-abi=softfp
-+else ifneq (,$(findstring hardfloat,$(platform)))
-+   CFLAGS += -mfloat-abi=hard
-+   ASFLAGS += -mfloat-abi=hard
-+endif
-+   CFLAGS += -DARM
-+
- # iOS
- else ifneq (,$(findstring ios,$(platform)))
- 
-@@ -165,6 +194,10 @@ else
+@@ -196,6 +203,10 @@ else
  endif
  CFLAGS := -fsigned-char -D__LIBRETRO__ -fno-builtin $(CFLAGS)
  
@@ -56,7 +27,7 @@ index 1ec1c98..b9f63aa 100755
  CFLAGS := $(fpic) $(CFLAGS) $(PLATFLAGS)
  CXXFLAGS := $(CFLAGS)
  CPPFLAGS := $(CFLAGS)
-@@ -186,11 +219,15 @@ OBJECTS := $(SOURCES_C:.c=.o)
+@@ -216,11 +227,15 @@ OBJECTS := $(SOURCES_C:.c=.o)
  
  all: $(TARGET)
  
