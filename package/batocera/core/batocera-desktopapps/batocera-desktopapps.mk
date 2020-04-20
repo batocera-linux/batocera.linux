@@ -59,6 +59,13 @@ ifeq ($(BR2_PACKAGE_CITRA),y)
   BATOCERA_DESKTOPAPPS_ICONS   += citra.png
 endif
 
+# rpcs3
+ifeq ($(BR2_PACKAGE_RPCS3),y)
+  BATOCERA_DESKTOPAPPS_SCRIPTS += batocera-config-rpcs3
+  BATOCERA_DESKTOPAPPS_APPS    += rpcs3-config.desktop
+  BATOCERA_DESKTOPAPPS_ICONS   += rpcs3.png
+endif
+
 define BATOCERA_DESKTOPAPPS_INSTALL_TARGET_CMDS
 	# scripts
 	mkdir -p $(TARGET_DIR)/usr/bin
