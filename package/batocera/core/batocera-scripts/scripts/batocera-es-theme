@@ -82,8 +82,8 @@ function getPer() {
 		CURVAL=$(stat "$TARFILE" | grep -E '^[ ]*Size:' | sed -e s+'^[ ]*Size: \([0-9][0-9]*\) .*$'+'\1'+)
 		CURVAL=$((CURVAL / 1024 / 1024))
 		PER=$(expr ${CURVAL} '*' 100 / ${TARVAL})
-		echo "Downloading $(basename $TARFILE) (${TARVAL}MB) >>> ${PER}%"
-		sleep 2
+		echo "[${TARVAL}MB] - $theme >>>${PER}"
+                sleep 2
 	done
 }
 
@@ -115,15 +115,16 @@ function install_theme() {
 				# First hook to check theme and get a filsize (this works relieable but filesize is wrong)
 	                        size_json=$(curl -sfL "https://api.github.com/repos/${reponame}/${gitname}" | grep size | head -1 | tr -dc '[:digit:]')
         	                test $? -eq 0 || exit 1
-
-				# Attempt to get real filesize to download
-                        	# if after 100 attempts nothing happens we use old method
-                        	for i in {0..99}; do
+				echo "Retrieving data download..."
+				# Attempt to get real filesize to download, we love github
+                        	# if after 10 attempts nothing happens we use old method
+                        	for i in {0..9}; do
 			    		size=$(curl -Is "https://codeload.github.com/${reponame}/${gitname}/zip/master" | grep Content-Length | cut -d ' ' -f2 | tr -d '\r')
-                            		[[ -z $size ]] || { size=$((size / 1024 / 1024 )); break; }
+                            		[[ -z $size ]] && sleep 5 || { size=$((size / 1024 / 1024 )); break; }
                         	done
 				# Fallback Option (old format), JSON hack
                         	[[ -z $size ]] && size=$((size_json / 1024 ))
+				[[ -f "gitname.zip" ]] && rm -f "$gitname.zip"
 				touch "$gitname.zip"
 				getPer "$CONFIGDIR"/"$gitname.zip" "${size}" &
 				GETPERPID=$!
