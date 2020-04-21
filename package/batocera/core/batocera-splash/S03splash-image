@@ -2,9 +2,9 @@
 
 do_start ()
 {
-    if ls /boot/*.png /boot/*.jpg >/dev/null 2>/dev/null
+    if [[ $(ls /boot/*.{jpg,png}  2>/dev/null) ]]
     then
-        image="$(ls /boot/*.png /boot/*.jpg | sed -e "$((RANDOM%$(ls -1 /boot/*.png /boot/*.jpg | wc -l)+1))!d")"
+        image="$(ls /boot/*.{jpg,png} | sed -e "$((RANDOM%$(ls -1 /boot/*.{jpg,png} | wc -l)+1))!d")"
     else
         image="/usr/share/batocera/splash/logo-version.png"
     fi
