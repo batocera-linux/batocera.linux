@@ -1,0 +1,12 @@
+diff --git a/3rdparty/libusb/libusb/CMakeLists.txt b/3rdparty/libusb/libusb/CMakeLists.txt
+index 56e89ac..3c4fc46 100644
+--- a/3rdparty/libusb/libusb/CMakeLists.txt
++++ b/3rdparty/libusb/libusb/CMakeLists.txt
+@@ -3,6 +3,7 @@ add_subdirectory(os)
+ include(config.cmake)
+ include(FindThreads)
+ 
++set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+ set (LIBUSB_COMMON
+ 	core.c
+ 	descriptor.c
