@@ -40,6 +40,7 @@ define RPCS3_INSTALL_LIBS
 	cp $(@D)/3rdparty/yaml-cpp/libyaml-cpp.so.0.6 $(TARGET_DIR)/usr/lib/
 	cp $(@D)/3rdparty/xxHash/cmake_unofficial/libxxhash.so.0.6.5 $(TARGET_DIR)/usr/lib/
 	cp $(@D)/3rdparty/llvm_build/lib/libLLVM*.so.10svn $(TARGET_DIR)/usr/lib/
+	cp $(@D)/3rdparty/FAudio/libFAudio.* $(TARGET_DIR)/usr/lib/
 endef
 
 RPCS3_POST_INSTALL_TARGET_HOOKS += RPCS3_INSTALL_LIBS
