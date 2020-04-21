@@ -191,6 +191,31 @@ config BR2_PACKAGE_BATOCERA_DEV
     help
       Install dev packages for batocera.linux
 
+config BR2_PACKAGE_BATOCERA_QT5
+    bool "batocera-qt5"
+
+   select BR2_PACKAGE_QT5
+   select BR2_PACKAGE_QT5_VERSION_LATEST
+   select BR2_PACKAGE_QT5MULTIMEDIA
+   select BR2_PACKAGE_QT5DECLARATIVE
+   select BR2_PACKAGE_QT5TOOLS
+   select BR2_PACKAGE_QT5TOOLS_LINGUIST_TOOLS
+   select BR2_PACKAGE_QT5BASE
+   select BR2_PACKAGE_QT5BASE_OPENGL
+   select BR2_PACKAGE_QT5BASE_XCB
+   select BR2_PACKAGE_QT5BASE_EGLFS
+   select BR2_PACKAGE_QT5BASE_FONTCONFIG
+   select BR2_PACKAGE_QT5BASE_GUI
+   select BR2_PACKAGE_QT5BASE_WIDGETS
+   select BR2_PACKAGE_QT5BASE_GIF
+   select BR2_PACKAGE_QT5BASE_JPEG
+   select BR2_PACKAGE_QT5BASE_PNG
+   select BR2_PACKAGE_QT5BASE_DBUS
+   select BR2_PACKAGE_QT5BASE_CONCURRENT
+   
+    help
+      Install QT5 packages for batocera.linux
+
 choice
         prompt "batocera.linux target"
         default BR2_PACKAGE_BATOCERA_TARGET_RPI2

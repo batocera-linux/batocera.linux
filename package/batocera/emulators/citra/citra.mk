@@ -9,7 +9,7 @@ CITRA_SITE = https://github.com/citra-emu/citra.git
 CITRA_SITE_METHOD=git
 CITRA_GIT_SUBMODULES=YES
 CITRA_LICENSE = GPLv2
-CITRA_DEPENDENCIES = qt5base qt5tools qt5multimedia fmt boost ffmpeg
+CITRA_DEPENDENCIES = fmt boost ffmpeg
 
 # Should be set when the package cannot be built inside the source tree but needs a separate build directory.
 CITRA_SUPPORTS_IN_SOURCE_BUILD = NO
