@@ -82,8 +82,8 @@ function getPer() {
 		CURVAL=$(stat "$TARFILE" | grep -E '^[ ]*Size:' | sed -e s+'^[ ]*Size: \([0-9][0-9]*\) .*$'+'\1'+)
 		CURVAL=$((CURVAL / 1024 / 1024))
 		PER=$(expr ${CURVAL} '*' 100 / ${TARVAL})
-		echo "[${TARVAL}MB] - $theme >>>${PER}"
-                sleep 2
+		echo "[${TARVAL}MB] - ${theme^^} >>>${PER}"
+		sleep 2
 	done
 }
 
@@ -111,10 +111,11 @@ function install_theme() {
 			cd "$CONFIGDIR"
 			filezip="${url}/archive/master.zip"
 
+			# Download Process
 			if [ $TERMINAL = 0 ]; then
 				# First hook to check theme and get a filsize (this works relieable but filesize is wrong)
 	                        size_json=$(curl -sfL "https://api.github.com/repos/${reponame}/${gitname}" | grep size | head -1 | tr -dc '[:digit:]')
-        	                test $? -eq 0 || exit 1
+        	                test $? -eq 0 || { echo "Server error..."; sleep 5; exit 1; }
 				echo "Retrieving data download..."
 				# Attempt to get real filesize to download, we love github
                         	# if after 10 attempts nothing happens we use old method
@@ -135,11 +136,18 @@ function install_theme() {
 				wget -q --show-progress "$filezip" -O "$gitname.zip" || exit 1
 			fi
 
+			# Extraction Process
 			if [ -f "$gitname.zip" ]; then
-				[ $TERMINAL = 1 ] && echo -e "Unzipping $gitname to:\t\t$PWD"
-				[ $TERMINAL = 0 ] && echo "Unzipping $gitname theme files >>> 99%"
-				[ -d "$CONFIGDIR"/"$gitname" ] && rm -rf "$CONFIGDIR"/"$gitname" 
-				unzip "$gitname.zip" >/dev/null
+				[ -d "$CONFIGDIR"/"$gitname" ] && rm -rf "$CONFIGDIR"/"$gitname"
+				if [ $TERMINAL = 0 ]; then
+					files_inzip=$(unzip -l "$gitname.zip" | tail -1 | awk '{print $2}')
+					# This is needed for equal if files, you may alter if output is 100%+
+					files_inzip=$((files_inzip+1))
+					unzip "$gitname.zip" | awk '{perc=NR/'$files_inzip'*100} {printf "Unzipping '${theme^^}' >>>%0.f\n", perc}'
+				else
+					echo -e "Unzipping $gitname to:\t$PWD"
+					unzip -q "$gitname.zip"
+				fi 
 				mv "$gitname-master" "$gitname"
 				rm "$gitname.zip"
 				success_installed=1
@@ -151,8 +159,8 @@ function install_theme() {
 	done < "$tmp"
 	rm "$tmp"
 	if [ "$success_installed" == 1 ]; then
-		[ $TERMINAL = 1 ] && echo -e "Theme $theme installed to:\t\t$PWD/$gitname"
-		[ $TERMINAL = 0 ] && echo "Theme $theme is now installed >>> 100%"
+		[ $TERMINAL = 1 ] && echo -e "Theme $theme installed to:\t$PWD/$gitname"
+		[ $TERMINAL = 0 ] && echo "Theme ${theme^^} is now installed >>>100"
 		exit 0
 	else
 		echo "Error - theme $theme could not be found"
