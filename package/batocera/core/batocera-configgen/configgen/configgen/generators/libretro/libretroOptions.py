@@ -117,10 +117,10 @@ def generateCoreSettings(retroarchCore, system):
         # force multitap no value / auto to disable
         # only let enabled when it is forced while previous values enable it
         val = coreSettings.load('pcsx_rearmed_multitap1')
-        if val == '"none"' or val == "" or val is None:
+        if val == '"auto"' or val == "" or val is None:
             coreSettings.save('pcsx_rearmed_multitap1', '"disabled"')
         val = coreSettings.load('pcsx_rearmed_multitap2')
-        if val == '"none"' or val == "" or val is None:
+        if val == '"auto"' or val == "" or val is None:
             coreSettings.save('pcsx_rearmed_multitap2', '"disabled"')
 
     # custom : allow the user to configure directly retroarchcore.cfg via batocera.conf via lines like : snes.retroarchcore.opt=val
