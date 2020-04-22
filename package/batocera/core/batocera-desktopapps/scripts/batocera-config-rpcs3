@@ -8,4 +8,4 @@ then
     export DISPLAY=:0.0
 fi
 
-/usr/bin/rpcs3
+XDG_RUNTIME_DIR=/userdata /usr/bin/rpcs3 -platform xcb
