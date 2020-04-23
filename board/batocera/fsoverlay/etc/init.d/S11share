@@ -25,10 +25,35 @@ fi
 
 SHARECONFFILE="/boot/batocera-boot.conf"
 INTERNALDEVICE=$(batocera-part "share_internal")
-INTERNALDEVICETYPE=$(blkid "${INTERNALDEVICE}" | sed -e s+'^.* TYPE="\([^"]*\)\".*'+'\1'+)
 
 SHAREDEVICE=$(cat "${SHARECONFFILE}" | grep -E '^[ ]*sharedevice=' | head -n1 | cut -d'=' -f2)
 [[ "$?" -ne "0" || "$SHAREDEVICE" == "" ]] && SHAREDEVICE=INTERNAL
+
+###### format internal share #####
+# only when formating is wanted
+FORMAT_INTERNAL_TYPE=$(grep -E '^[ ]*format-internal[ ]*=.*$' "${SHARECONFFILE}" | head -1 | sed -e s+"^[ ]*format-internal[ ]*=[ ]*\(.*\)[ ]*$"+"\1"+)
+if test -n "${FORMAT_INTERNAL_TYPE}"
+then
+    case "${FORMAT_INTERNAL_TYPE}" in
+	"btrfs")
+	    mkfs.btrfs -f "${INTERNALDEVICE}" # what to do in case of error ? nothing.
+	    ;;
+	"ext4")
+	    mkfs.ext4 -q -F -F "${INTERNALDEVICE}" # what to do in case of error ? nothing.
+	    ;;
+# disabled because not recommanded for corruptions
+#	"exfat")
+#	    mkfs.exfat "${INTERNALDEVICE}" # what to do in case of error ? nothing.
+#	    ;;
+	*)
+	    # do nothing
+    esac
+    # remove the trigger
+    mount -o remount,rw /boot && sed -i -e s+'^[ ]*format-internal'+'#format-internal'+ "${SHARECONFFILE}" && mount -o remount,ro /boot
+fi
+##### ##### #####
+
+INTERNALDEVICETYPE=$(blkid "${INTERNALDEVICE}" | sed -e s+'^.* TYPE="\([^"]*\)\".*'+'\1'+)
 
 getMaxTryConfig() {
     SHARECONFFILE=${1}
