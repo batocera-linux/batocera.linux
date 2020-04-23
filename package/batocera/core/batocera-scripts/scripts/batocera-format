@@ -138,7 +138,7 @@ do_format() {
 	    mkfs.ext4 "${FORMATPARTNAME}" || return 1
 	;;
 	"exfat")
-	    mkfs.vfat "${FORMATPARTNAME}" || return 1
+	    mkfs.exfat "${FORMATPARTNAME}" || return 1
 	;;
 	*)
 	    echo "unknown partition type ${FORMATTYPE}" >&2
