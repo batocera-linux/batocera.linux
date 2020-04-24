@@ -3,8 +3,8 @@
 # mupen64plus core
 #
 ################################################################################
-# Version.: Commits on Feb 28, 2020
-MUPEN64PLUS_CORE_VERSION = f799c5165b1248e6299097399633d733809b8098
+# Version.: Commits on Apr 22, 2020
+MUPEN64PLUS_CORE_VERSION = 4edc53c2d5aee33605b3a151d405882030ba94f3
 MUPEN64PLUS_CORE_SITE = $(call github,mupen64plus,mupen64plus-core,$(MUPEN64PLUS_CORE_VERSION))
 MUPEN64PLUS_CORE_LICENSE = GPLv2
 MUPEN64PLUS_CORE_DEPENDENCIES = sdl2 alsa-lib freetype dejavu
@@ -28,6 +28,7 @@ endif
 
 ifeq ($(BR2_arm),y)
 	MUPEN64PLUS_HOST_CPU = armv7
+	MUPEN64PLUS_PARAMS += VFP_HARD=1
 endif
 
 ifeq ($(BR2_aarch64),y)
@@ -49,8 +50,8 @@ ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86_64),y)
 endif
 
 define MUPEN64PLUS_CORE_BUILD_CMDS
-	CFLAGS="$(TARGET_CFLAGS)" CXXFLAGS="$(TARGET_CXXFLAGS)" \
-        $(MAKE)  CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" LD="$(TARGET_LD)" RANLIB="$(TARGET_RANLIB)" AR="$(TARGET_AR)" CROSS_COMPILE="$(STAGING_DIR)/usr/bin/" \
+	$(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" \
+		CROSS_COMPILE="$(STAGING_DIR)/usr/bin/" \
         AS="$(HOST_DIR)/bin/nasm" \
 		PREFIX="$(STAGING_DIR)/usr" \
 		PKG_CONFIG="$(HOST_DIR)/usr/bin/pkg-config" \
@@ -59,8 +60,8 @@ define MUPEN64PLUS_CORE_BUILD_CMDS
 endef
 
 define MUPEN64PLUS_CORE_INSTALL_STAGING_CMDS
-	CFLAGS="$(TARGET_CFLAGS)" CXXFLAGS="$(TARGET_CXXFLAGS)" \
-        $(MAKE)  CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" LD="$(TARGET_LD)" RANLIB="$(TARGET_RANLIB)" AR="$(TARGET_AR)" CROSS_COMPILE="$(STAGING_DIR)/usr/bin/" \
+	$(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" \
+		CROSS_COMPILE="$(STAGING_DIR)/usr/bin/" \
 		PREFIX="$(STAGING_DIR)/usr" \
 		PKG_CONFIG="$(HOST_DIR)/usr/bin/pkg-config" \
 		HOST_CPU="$(MUPEN64PLUS_HOST_CPU)" \
