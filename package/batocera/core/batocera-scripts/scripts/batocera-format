@@ -5,6 +5,7 @@ do_help() {
     echo "${PROG} listDisks" >&2
     echo "${PROG} listFstypes" >&2
     echo "${PROG} format <disk> <fstype>" >&2
+    echo "${PROG} format INTERNAL <fstype>" >&2
 }
 
 determine_part_prefix() {
@@ -31,6 +32,7 @@ disks_to_keep() {
 }
 
 do_listDisks() {
+    echo "INTERNAL INTERNAL"
     lsblk -n -P -o TYPE,NAME,SIZE,MODEL |
 	grep -E '^TYPE=\"disk\" ' |
 	sed -e s+' [ ]*"$'+'"'+ | # remove trailing spaces
@@ -150,6 +152,29 @@ do_format() {
     return 0
 }
 
+do_format_internal() {
+    PARTTYPE=$1
+    CONFIGBOOT="/boot/batocera-boot.conf"
+
+    if test "${PARTTYPE}" != "btrfs" -a "${PARTTYPE}" != "ext4"
+    then
+	echo "brtfs or ext4 expected" >&2
+	return 1
+    fi
+
+    if mount -o remount,rw /boot
+    then
+	if grep -qE "^[ #]*format-internal[ ]*=.*$" "${CONFIGBOOT}"
+	then
+            sed -i "s|^[ #]*format-internal[ ]*=.*$|format-internal=${PARTTYPE}|g" "${CONFIGBOOT}"
+        else
+            echo "format-internal=${PARTTYPE}" >> "${CONFIGBOOT}"
+        fi
+	mount -o remount,ro /boot
+    fi
+    return 0
+}
+
 ACTION=$1
 shift
 
@@ -166,9 +191,17 @@ case "${ACTION}" in
 	    do_help
 	    exit 1
 	fi
-	if ! do_format "${1}" "${2}"
+	if test "${1}" = "INTERNAL"
 	then
-	    exit 1
+	    if ! do_format_internal "${2}"
+	    then
+		exit 1
+	    fi
+	else
+	    if ! do_format "${1}" "${2}"
+	    then
+		exit 1
+	    fi
 	fi
 	;;
     *)

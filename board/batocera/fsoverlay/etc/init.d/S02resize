@@ -4,8 +4,6 @@ BOOTCONF="/boot/batocera-boot.conf"
 
 # only at start
 test "$1" != "start" && exit 0
-# only when resizing is wanted
-grep -qE '^[ ]*autoresize[ ]*=[ ]*true[ ]*$' "${BOOTCONF}" || exit 0
 
 # UI Output with dialog, default colorset
 function dialogoutput()
@@ -33,41 +31,74 @@ function textoutput()
     arr[$1]=$ret #msg: Depends from return value
 }
 
-# Preparing text arrays
-arr=(
-     "Removing trigger............" "Pending"
-     "Syncing disk data..........." "Pending"
-     "Checking disk table........." "Pending"
-     "Resizing partition.........." "Pending"
-     "Checking /userdata.........." "Pending"
-     "Resizing /userdata.........." "Pending"
+# only when resizing is wanted
+if grep -qE '^[ ]*autoresize[ ]*=[ ]*true[ ]*$' "${BOOTCONF}"
+then
+
+    # Preparing text arrays
+    arr=(
+	"Removing trigger............" "Pending"
+	"Syncing disk data..........." "Pending"
+	"Checking disk table........." "Pending"
+	"Resizing partition.........." "Pending"
+	"Checking /userdata.........." "Pending"
+	"Resizing /userdata.........." "Pending"
     )
 
-# --- BEGIN RESIZE ---
-# /userdata partition
-PART=$(batocera-part "share_internal")
-# boot disk
-DISK=$(batocera-part prefix "${PART}")
+    # --- BEGIN RESIZE ---
+    # /userdata partition
+    PART=$(batocera-part "share_internal")
+    # boot disk
+    DISK=$(batocera-part prefix "${PART}")
 
-# only for ext4
-PARTTYPE=$(blkid "${PART}" | sed -e s+'^.* TYPE="\([^"]*\)\".*'+'\1'+)
-test "${PARTTYPE}" != "ext4" && exit 0
+    # only for ext4
+    PARTTYPE=$(blkid "${PART}" | sed -e s+'^.* TYPE="\([^"]*\)\".*'+'\1'+)
+    test "${PARTTYPE}" != "ext4" && exit 0
 
-# fix any minor issues, such as gpt header not at end of disk
-# remove the trigger
-mount -o remount,rw /boot && sed -i -e s+'^[ ]*autoresize'+'#autoresize'+ "${BOOTCONF}" && mount -o remount,ro /boot
+    # fix any minor issues, such as gpt header not at end of disk
+    # remove the trigger
+    mount -o remount,rw /boot && sed -i -e s+'^[ ]*autoresize'+'#autoresize'+ "${BOOTCONF}" && mount -o remount,ro /boot
 
-# textoutput "Message" "percentage" "command call" 
-for i in 1 3 5 7 9 11; do
-    case $i in
-       1) textoutput $i 01 "sleep 0.1";;
-       3) textoutput $i 10 "sync";;
-       5) textoutput $i 30 "sgdisk -e ${DISK}";;
-       7) textoutput $i 40 "parted -s -m ${DISK} resizepart 2 100%";;
-       9) textoutput $i 55 "e2fsck -f -p ${PART}";;
-      11) textoutput $i 75 "resize2fs ${PART}";;
-    esac
-done
+    # textoutput "Message" "percentage" "command call" 
+    for i in 1 3 5 7 9 11; do
+	case $i in
+	    1) textoutput $i 01 "sleep 0.1";;
+	    3) textoutput $i 10 "sync";;
+	    5) textoutput $i 30 "sgdisk -e ${DISK}";;
+	    7) textoutput $i 40 "parted -s -m ${DISK} resizepart 2 100%";;
+	    9) textoutput $i 55 "e2fsck -f -p ${PART}";;
+	    11) textoutput $i 75 "resize2fs ${PART}";;
+	esac
+    done
+
+else
+    ###### format internal share #####
+    FORMAT_INTERNAL_TYPE=$(grep -E '^[ ]*format-internal[ ]*=.*$' "${BOOTCONF}" | head -1 | sed -e s+"^[ ]*format-internal[ ]*=[ ]*\(.*\)[ ]*$"+"\1"+)
+    if test -n "${FORMAT_INTERNAL_TYPE}"
+    then
+	# Preparing text arrays
+	arr=(
+	    "Formatting /userdata.........." "Pending"
+	)
+	PART=$(batocera-part "share_internal")
+
+	# remove the trigger
+	mount -o remount,rw /boot && sed -i -e s+'^[ ]*format-internal'+'#format-internal'+ "${BOOTCONF}" && mount -o remount,ro /boot
+
+	case "${FORMAT_INTERNAL_TYPE}" in
+	    "btrfs")
+		textoutput 1 10 "mkfs.btrfs -f ${PART}" # what to do in case of error ? nothing.
+		;;
+	    "ext4")
+		textoutput 1 10 "mkfs.ext4 -q -F -F ${PART}" # what to do in case of error ? nothing.
+		;;
+	    # disabled because not recommanded for corruptions
+	    #	"exfat") mkfs.exfat "${INTERNALDEVICE}" # what to do in case of error ? nothing.
+	    *)
+		# do nothing
+	esac
+    fi
+fi
 
 #Cleanup, restore screen, set progress of last item to 100%
 dialogoutput 100
