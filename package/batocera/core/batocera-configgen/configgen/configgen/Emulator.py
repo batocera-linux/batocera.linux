@@ -68,11 +68,11 @@ class Emulator():
 
     @staticmethod
     def get_generic_config(system, defaultyml, defaultarchyml):
-        systems_default      = yaml.load(file(defaultyml,     "r"))
+        systems_default = yaml.load(file(defaultyml, "r"), Loader=yaml.FullLoader)
 
         systems_default_arch = {}
         if os.path.exists(defaultarchyml):
-            systems_default_arch = yaml.load(file(defaultarchyml, "r"))
+            systems_default_arch = yaml.load(file(defaultarchyml, "r"), Loader=yaml.FullLoader)
         dict_all = {}
 
         if "default" in systems_default:
