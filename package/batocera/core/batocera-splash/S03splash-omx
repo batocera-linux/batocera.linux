@@ -1,4 +1,20 @@
 #!/bin/bash
+FM_PICTURE=".*\.\(jpg\|jpeg\|png\)"
+FM_VIDEO=".*\.\(mp4\)"
+SPLASH_DIR="/boot/splash"
+DEFAULT="/usr/share/batocera/splash/splash.mp4"
+
+do_filerandomize ()
+{
+    [ -d "$SPLASH_DIR" ] || return 1
+    readarray -t array < <(find $SPLASH_DIR -regex "$1" -maxdepth 1 -type f)
+    if [[ ${#array[@]} -gt 0 ]]; then
+        echo "${array[$RANDOM % ${#array[@]}]}"
+        return 0
+    else
+        return 1
+    fi
+}
 
 soundDisabled() {
     grep -qE "^[ ]*splashsound[ ]*=[ ]*false[ ]*$" /boot/batocera-boot.conf
@@ -6,14 +22,13 @@ soundDisabled() {
 
 do_start ()
 {
-    if ls /boot/*.mp4 >/dev/null 2>/dev/null
-    then
-        do_videostart "$(ls /boot/*.mp4 | sed -e "$((RANDOM%$(ls -1 /boot/*.mp4 | wc -l)+1))!d")"
-    elif ls /boot/*.png >/dev/null 2>/dev/null
-    then
-        do_imagestart "$(ls /boot/*.png | sed -e "$((RANDOM%$(ls -1 /boot/*.png | wc -l)+1))!d")"
+    file=$(do_filerandomize "$FM_PICTURE")
+    if [[ $? -eq 0 ]]; then
+        do_imagestart "$file"
     else
-        do_videostart "/usr/share/batocera/splash/splash.mp4"
+        file=$(do_filerandomize "$FM_VIDEO")
+        [[ $? -eq 0 ]] || file="$DEFAULT"
+	do_videostart "$file"
     fi
 }
 
@@ -91,7 +106,7 @@ do_videostart ()
 case "$1" in
     start)
 	grep -qE '^[ ]*autoresize[ ]*=[ ]*true[ ]*$' "/boot/batocera-boot.conf" && exit 0
-        do_start &
+	do_start &
         ;;
     stop)
         ;;
