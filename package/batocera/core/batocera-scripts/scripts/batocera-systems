@@ -1,199 +1,370 @@
-#!/usr/bin/env python
+#!/bin/bash
+##
+## This script check all bios files
+## Alexandre Freire dos Santos
+## alexxandre.freire@gmail.com
+##
+declare -A BIOS
 
-from hashlib import md5
-from os.path import isfile
-from collections import OrderedDict
-import sys
+# ---------- Atari ---------- #
 
-systems = {
+BIOS[atari5200]="atari5200,           Atari 5200
+    281f20ea4320404ec820fb7ec0693b38, bios/5200.rom
+    06daac977823773a3eea3422fd26a703, bios/ATARIXL.ROM
+    0bac0c6a50104045d902df4503a4c30b, bios/ATARIBAS.ROM
+    eb1f32f5d9f382db1bbfb8d7f9cb343a, bios/ATARIOSA.ROM
+    a3e8d617c95d08031fe1b20d541434b2, bios/ATARIOSB.ROM"
 
-    # ---------- Atari ---------- #
-    # https://docs.libretro.com/library/atari800/#bios
-    "atari5200": { "name": "Atari 5200 / Atari 800", "biosFiles": [ { "md5": "281f20ea4320404ec820fb7ec0693b38", "file": "bios/5200.rom"    },
-                                                                    { "md5": "06daac977823773a3eea3422fd26a703", "file": "bios/ATARIXL.ROM" },
-                                                                    { "md5": "0bac0c6a50104045d902df4503a4c30b", "file": "bios/ATARIBAS.ROM"},
-                                                                    { "md5": "eb1f32f5d9f382db1bbfb8d7f9cb343a", "file": "bios/ATARIOSA.ROM"},
-                                                                    { "md5": "a3e8d617c95d08031fe1b20d541434b2", "file": "bios/ATARIOSB.ROM"} ] },
+BIOS[atarist]="atarist,               Atari ST
+    c1c57ce48e8ee4135885cee9e63a68a2, bios/tos.img"
 
-    # https://github.com/libretro/libretro-super/blob/master/dist/info/hatari_libretro.info
-    "atarist": { "name": "Atari ST", "biosFiles": [ { "md5": "c1c57ce48e8ee4135885cee9e63a68a2", "file": "bios/tos.img"} ] },
+BIOS[lynx]="lynx,                     Lynx
+    fcd403db69f54290b51035d82f835e7b, bios/lynxboot.img"
 
-    # https://docs.libretro.com/library/beetle_handy/#bios
-    "lynx": { "name": "Lynx", "biosFiles": [ { "md5": "fcd403db69f54290b51035d82f835e7b", "file": "bios/lynxboot.img"} ] },
+# ---------- Magnavox and Philips ---------- #
 
-    # ---------- Magnavox and Philips ---------- #
-    # https://docs.libretro.com/library/o2em/#bios
-    "o2em": { "name": "Odyssey 2", "biosFiles": [ { "md5": "562d5ebf9e030a40d6fabfc2f33139fd", "file": "bios/o2rom.bin" },
-                                                  { "md5": "f1071cdb0b6b10dde94d3bc8a6146387", "file": "bios/c52.bin"   },
-                                                  { "md5": "c500ff71236068e0dc0d0603d265ae76", "file": "bios/g7400.bin" },
-                                                  { "md5": "279008e4a0db2dc5f1c048853b033828", "file": "bios/jopac.bin" } ] },
+BIOS[o2em]="o2em,                     Odyssey 2
+    562d5ebf9e030a40d6fabfc2f33139fd, bios/o2rom.bin
+    f1071cdb0b6b10dde94d3bc8a6146387, bios/c52.bin
+    c500ff71236068e0dc0d0603d265ae76, bios/g7400.bin
+    279008e4a0db2dc5f1c048853b033828, bios/jopac.bin"
 
-    # ---------- Mattel ---------- #
-    # https://docs.libretro.com/library/freeintv/#bios
-    "intellivision": { "name": "Mattel Intellivision", "biosFiles": [   { "md5": "62e761035cb657903761800f4437b8af", "file": "bios/exec.bin"   },
-                                                                        { "md5": "0cd5946c6473e42e8e4c2137785e427f", "file": "bios/grom.bin"   } ] },
+# ---------- Mattel ---------- #
 
-    # ---------- NEC ---------- #
-    # https://docs.libretro.com/library/beetle_pce_fast/#bios
-    "pcengine":   { "name": "PC Engine", "biosFiles":  [ { "md5": "38179df8f4ac870017db21ebcbf53114", "file": "bios/syscard3.pce" } ] },
+BIOS[intellivision]="intellivision,   Mattel Intellivision
+    62e761035cb657903761800f4437b8af, bios/exec.bin
+    0cd5946c6473e42e8e4c2137785e427f, bios/grom.bin"
 
-    # https://docs.libretro.com/library/beetle_pc_fx/#bios
-    "pcfx":       { "name": "PC-FX", "biosFiles":      [ { "md5": "08e36edbea28a017f79f8d4f7ff9b6d7", "file": "bios/pcfx.rom"     } ] },
+# ---------- NEC ---------- #
 
-    # https://docs.libretro.com/library/beetle_pce_fast/#bios
-    "supergrafx": { "name": "Supergrafx", "biosFiles": [ { "md5": "38179df8f4ac870017db21ebcbf53114", "file": "bios/syscard3.pce" } ] },
+BIOS[pcengine]="pcengine,             PC Engine
+    38179df8f4ac870017db21ebcbf53114, bios/syscard3.pce"
 
-    # ---------- SNK ----------#
-    "neogeo":   { "name": "NeoGeo", "biosFiles":    [  { "md5": "77c72e3ae084a66476344cedc154d73a", "file": "bios/neogeo.zip" } ] },
-    "neogeocd": { "name": "NeoGeo CD", "biosFiles": [  { "md5": "a7cca75f3d5af6acc85efcce589ab04f", "file": "bios/neocdz.zip" } ] },
+BIOS[pcfx]="pcfx,                     PC-FX
+    08e36edbea28a017f79f8d4f7ff9b6d7, bios/pcfx.rom"
 
-    # ---------- Sharp ---------- #
-    # https://github.com/libretro/libretro-super/blob/master/dist/info/px68k_libretro.info
-    "x68000": { "name": "Sharp x68000", "biosFiles": [  { "md5": "7fd4caabac1d9169e289f0f7bbf71d8e", "file": "bios/keropi/iplrom.dat" },
-                                                        { "md5": "cb0a5cfcf7247a7eab74bb2716260269", "file": "bios/keropi/cgrom.dat"  } ] },
+BIOS[supergrafx]="supergrafx,         Supergrafx
+    38179df8f4ac870017db21ebcbf53114, bios/syscard3.pce"
 
-    # ---------- Panasonic, Sanyo and Goldstar ---------- #
-    # https://github.com/libretro/libretro-super/blob/master/dist/info/opera_libretro.info
-    "3do":	{ "name": "3DO", "biosFiles": [ { "md5": "f47264dd47fe30f73ab3c010015c155b", "file": "bios/panafz1.bin"	},
-                                            { "md5": "51f2f43ae2f3508a14d9f56597e2d3ce", "file": "bios/panafz10.bin"},
-                                            { "md5": "8639fd5e549bd6238cfee79e3e749114", "file": "bios/goldstar.bin"} ] },
+# ---------- SNK ----------#
 
-    # ---------- Sega ---------- #
-    # https://docs.libretro.com/library/flycast/#bios
-    "dreamcast":    { "name": "Dreamcast", "biosFiles":   [ { "md5": "e10c53c2f8b90bab96ead2d368858623", "file": "bios/dc_boot.bin"  },
-                                                            { "md5": "0a93f7940c455905bea6e392dfde92a4", "file": "bios/dc_flash.bin" } ] },
+BIOS[neogeo]="neogeo,                 NeoGeo
+    c2ea0cfd,                         bios/neogeo.zip/sfix.sfix
+    5a86cff2,                         bios/neogeo.zip/000-lo.lo
+    9036d879,                         bios/neogeo.zip/sp-s2.sp1
+    2723a5b5,                         bios/neogeo.zip/sp-e.sp1
+    acede59c,                         bios/neogeo.zip/sp-j2.sp1
+    c7f2fa45,                         bios/neogeo.zip/sp-s.sp1
+    f0e8f27d,                         bios/neogeo.zip/vs-bios.rom
+    91b64be3,                         bios/neogeo.zip/asia-s3.rom
+    e72943de,                         bios/neogeo.zip/sp-u2.sp1
+    9fb0abe4,                         bios/neogeo.zip/sp1.jipan.1024
+    94416d67,                         bios/neogeo.zip/sm1.sm1
+    601720ae,                         bios/neogeo.zip/uni-bios_2_3o.rom
+    27664eb5,                         bios/neogeo.zip/uni-bios_2_3.rom
+    2d50996a,                         bios/neogeo.zip/uni-bios_2_2.rom
+    8dabf76b,                         bios/neogeo.zip/uni-bios_2_1.rom
+    0c12c2ad,                         bios/neogeo.zip/uni-bios_2_0.rom
+    b24b44a0,                         bios/neogeo.zip/uni-bios_1_3.rom
+    e19d3ce9,                         bios/neogeo.zip/uni-bios_1_2o.rom
+    4fa698e9,                         bios/neogeo.zip/uni-bios_1_2.rom
+    5dda0d84,                         bios/neogeo.zip/uni-bios_1_1.rom
+    0ce453a0,                         bios/neogeo.zip/uni-bios_1_0.rom
+    03cc9f6a,                         bios/neogeo.zip/sp-45.sp1
+    162f0ebe,                         bios/neogeo.zip/sp-1v1_3db8c.bin
+    dff6d41f,                         bios/neogeo.zip/japan-j3.bin
+    a97c89a9,                         bios/neogeo.zip/uni-bios_3_0.rom
+    cb915e76,                         bios/neogeo.zip/neopen.sp1
+    698ebb7d,                         bios/neogeo.zip/neodebug.bin
+    16d0c132,                         bios/neogeo.zip/neo-po.bin
+    d27a71f1,                         bios/neogeo.zip/neo-epo.bin
+    0c58093f,                         bios/neogeo.zip/uni-bios_3_1.rom
+    62f021f4,                         bios/neogeo.zip/v2.bin
+    a4e8b9b3,                         bios/neogeo.zip/uni-bios_3_2.rom
+    24858466,                         bios/neogeo.zip/uni-bios_3_3.rom"
 
-    # https://github.com/libretro/libretro-super/blob/master/dist/info/flycast_libretro.info
-    "naomi":        { "name": "Naomi", "biosFiles":       [ { "md5": "eb4099aeb42ef089cfe94f8fe95e51f6", "file": "bios/naomi.zip"   } ] },
+BIOS[neogeocd]="neogeocd,             NeoGeo CD
+    5a86cff2,                         bios/neocdz.zip/000-lo.lo
+    df9de490,                         bios/neocdz.zip/neocd.bin"
 
-    "atomiswave":   { "name": "Atomiswave", "biosFiles":  [ { "md5": "0ec5ae5b5a5c4959fa8b43fcf8687f7c", "file": "bios/awbios.zip"  } ] },
+# ---------- Sharp ---------- #
 
-    "segacd":       { "name": "Sega CD", "biosFiles":     [ { "md5": "e66fa1dc5820d254611fdcdba0662372", "file": "bios/bios_CD_E.bin"   },
-                                                            { "md5": "854b9150240a198070150e4566ae1290", "file": "bios/bios_CD_U.bin" 	},
-                                                            { "md5": "278a9397d192149e84e820ac621a8edd", "file": "bios/bios_CD_J.bin" 	} ] },
+BIOS[x68000]="x68000,                 Sharp x68000
+    7fd4caabac1d9169e289f0f7bbf71d8e, bios/keropi/iplrom.dat
+    cb0a5cfcf7247a7eab74bb2716260269, bios/keropi/cgrom.dat"
+
+# ---------- Panasonic, Sanyo and Goldstar ---------- #
+
+BIOS[3do]="3do,                       3DO
+    f47264dd47fe30f73ab3c010015c155b, bios/panafz1.bin
+    51f2f43ae2f3508a14d9f56597e2d3ce, bios/panafz10.bin
+    8639fd5e549bd6238cfee79e3e749114, bios/goldstar.bin"
+
+# ---------- Sega ---------- #
+
+BIOS[dreamcast]="dreamcast,           Dreamcast
+    e10c53c2f8b90bab96ead2d368858623, bios/dc_boot.bin
+    0a93f7940c455905bea6e392dfde92a4, bios/dc_flash.bin"
+
+BIOS[naomi]="naomi,                   Naomi
+    7c9fea46,                         bios/naomi.zip/315-6188.ic31
+    7a50fab9,                         bios/naomi.zip/boot_rom_64b8.ic606
+    309a196a,                         bios/naomi.zip/develop.ic27
+    de7cfdb0,                         bios/naomi.zip/develop110.ic27
+    9dad3495,                         bios/naomi.zip/epr-21576.ic27
+    cedfe439,                         bios/naomi.zip/epr-21576a.ic27
+    755a6e07,                         bios/naomi.zip/epr-21576b.ic27
+    4599ad13,                         bios/naomi.zip/epr-21576c.ic27
+    3b2afa7b,                         bios/naomi.zip/epr-21576d.ic27
+    08c0add7,                         bios/naomi.zip/epr-21576e.ic27
+    d2a1c6bf,                         bios/naomi.zip/epr-21576g.ic27
+    d4895685,                         bios/naomi.zip/epr-21576h.ic27
+    cce01f1f,                         bios/naomi.zip/epr-21576h_multi.ic27
+    969dc491,                         bios/naomi.zip/epr-21577a.ic27
+    60ddcbbe,                         bios/naomi.zip/epr-21577d.ic27
+    cf36e97b,                         bios/naomi.zip/epr-21577e.ic27
+    25f64af7,                         bios/naomi.zip/epr-21577g.ic27
+    fdf17452,                         bios/naomi.zip/epr-21577h.ic27
+    6c9aad83,                         bios/naomi.zip/epr-21578a.ic27
+    dfd5f42a,                         bios/naomi.zip/epr-21578d.ic27
+    087f09a3,                         bios/naomi.zip/epr-21578e.ic27
+    628a27fd,                         bios/naomi.zip/epr-21578f.ic27
+    55413214,                         bios/naomi.zip/epr-21578g.ic27
+    7b452946,                         bios/naomi.zip/epr-21578h.ic27
+    71f9c918,                         bios/naomi.zip/epr-21579.ic27
+    33513691,                         bios/naomi.zip/epr-21579d.ic27
+    fea29cbb,                         bios/naomi.zip/main_eeprom.bin
+    3ea24b6a,                         bios/naomi.zip/x76f100_eeprom.bin
+    58e17c23,                         bios/naomi.zip/zukinver0930.ic25"
+
+BIOS[atomiswave]="atomiswave,         Atomiswave
+    719b2b0b,                         bios/awbios.zip/bios0.ic23
+    d3e80a9f,                         bios/awbios.zip/bios1.ic23"
+
+BIOS[segacd]="segacd,                 Sega CD
+    e66fa1dc5820d254611fdcdba0662372, bios/bios_CD_E.bin
+    854b9150240a198070150e4566ae1290, bios/bios_CD_U.bin
+    278a9397d192149e84e820ac621a8edd, bios/bios_CD_J.bin"
     
-    # https://docs.libretro.com/library/beetle_saturn/#bios
-    "saturn":       { "name": "Sega Saturn", "biosFiles": [ { "md5": "85ec9ca47d8f6807718151cbcca8b964", "file": "bios/sega_101.bin"	 },
-                                                            { "md5": "3240872c70984b6cbfda1586cab68dbe", "file": "bios/mpr-17933.bin"	 },
-                                                            { "md5": "255113ba943c92a54facd25a10fd780c", "file": "bios/mpr-18811-mx.ic1" },
-                                                            { "md5": "1cd19988d1d72a3e7caa0b73234c96b4", "file": "bios/mpr-19367-mx.ic1" } ] },
+BIOS[saturn]="saturn,                 Sega Saturn
+    85ec9ca47d8f6807718151cbcca8b964, bios/sega_101.bin
+    3240872c70984b6cbfda1586cab68dbe, bios/mpr-17933.bin
+    255113ba943c92a54facd25a10fd780c, bios/mpr-18811-mx.ic1
+    1cd19988d1d72a3e7caa0b73234c96b4, bios/mpr-19367-mx.ic1"
 
-    # ---------- Sony Computer Entertainment ---------- #
-    # https://docs.libretro.com/library/pcsx_rearmed/#bios
-    "psx": { "name": "PSX", "biosFiles": [  { "md5": "6e3735ff4c7dc899ee98981385f6f3d0", "file": "bios/scph101.bin"    },
-                                            { "md5": "dc2b9bf8da62ec93e868cfd29f0d067d", "file": "bios/scph1001.bin"   },
-                                            { "md5": "490f666e1afb15b7362b406ed1cea246", "file": "bios/scph5501.bin"   },
-                                            { "md5": "1e68c231d0896b7eadcad1d7d8e76129", "file": "bios/scph7001.bin"   } ] },
+# ---------- Sony Computer Entertainment ---------- #
 
-    # https://pcsx2.net/config-guide/official-english-pcsx2-configuration-guide.html#Bios
-    "ps2": { "name": "PS2", "biosFiles": [  { "md5": "28922c703cc7d2cf856f177f2985b3a9", "file": "bios/SCPH30004R.bin" },
-                                            { "md5": "3faf7c064a4984f53e2ef5e80ed543bc", "file": "bios/SCPH30004R.MEC" },
-                                            { "md5": "d5ce2c7d119f563ce04bc04dbc3a323e", "file": "bios/scph39001.bin"  },
-                                            { "md5": "3faf7c064a4984f53e2ef5e80ed543bc", "file": "bios/scph39001.MEC"  },
-                                            { "md5": "9a9e8ed7668e6adfc8f7766c08ab9cd0", "file": "bios/EROM.BIN" 	  },
-                                            { "md5": "44552702b05697a14ccbe2ca22ee7139", "file": "bios/rom1.bin" 	  },
-                                            { "md5": "b406d05922dac2eaf3c2e68157b1b468", "file": "bios/ROM2.BIN" 	  } ] },
+BIOS[psx]="psx,                       PSX
+    6e3735ff4c7dc899ee98981385f6f3d0, bios/scph101.bin
+    dc2b9bf8da62ec93e868cfd29f0d067d, bios/scph1001.bin
+    490f666e1afb15b7362b406ed1cea246, bios/scph5501.bin
+    1e68c231d0896b7eadcad1d7d8e76129, bios/scph7001.bin"
 
-    # ---------- Nintendo ---------- #
-    # https://docs.libretro.com/library/fceumm/#bios
-	"fds":         { "name": "Nintendo Family Computer Disk System", "biosFiles": [ { "md5": "ca30b50f880eb660a320674ed365ef7a", "file": "bios/disksys.rom" } ] },
+BIOS[ps2]="ps2,                       PS2
+    28922c703cc7d2cf856f177f2985b3a9, bios/SCPH30004R.bin
+    3faf7c064a4984f53e2ef5e80ed543bc, bios/SCPH30004R.MEC
+    d5ce2c7d119f563ce04bc04dbc3a323e, bios/scph39001.bin
+    3faf7c064a4984f53e2ef5e80ed543bc, bios/scph39001.MEC
+    9a9e8ed7668e6adfc8f7766c08ab9cd0, bios/EROM.BIN
+    44552702b05697a14ccbe2ca22ee7139, bios/rom1.bin
+    b406d05922dac2eaf3c2e68157b1b468, bios/ROM2.BIN"
 
-    # https://docs.libretro.com/library/snes9x/#bios
-    "satellaview": { "name": "Satellaview", "biosFiles": [ { "md5": "fed4d8242cfbed61343d53d48432aced", "file": "bios/BS-X.bin"   } ] },
-    "sufami":      { "name": "Sufami", "biosFiles":      [ { "md5": "d3a44ba7d42a74d3ac58cb9c14c6a5ca", "file": "bios/STBIOS.bin" } ] },
+# ---------- Nintendo ---------- #
+
+BIOS[fds]="fds,                       Nintendo Family Computer Disk System
+    ca30b50f880eb660a320674ed365ef7a, bios/disksys.rom"
+
+BIOS[satellaview]="satellaview,       Satellaview
+    fed4d8242cfbed61343d53d48432aced, bios/BS-X.bin"
+
+BIOS[sufami]="sufami,                 Sufami
+    d3a44ba7d42a74d3ac58cb9c14c6a5ca, bios/STBIOS.bin"
     
-    # ---------- Microsoft ---------- #
-    # https://docs.libretro.com/library/fmsx/#bios
-    "msx": { "name": "MSX", "biosFiles": [  { "md5": "364a1a579fe5cb8dba54519bcfcdac0d", "file": "bios/MSX.ROM"      },
-                                            { "md5": "ec3a01c91f24fbddcbcab0ad301bc9ef", "file": "bios/MSX2.ROM"     },
-                                            { "md5": "2183c2aff17cf4297bdb496de78c2e8a", "file": "bios/MSX2EXT.ROM"  },
-                                            { "md5": "847cc025ffae665487940ff2639540e5", "file": "bios/MSX2P.ROM"    },
-                                            { "md5": "7c8243c71d8f143b2531f01afa6a05dc", "file": "bios/MSX2PEXT.ROM" } ] },
+# ---------- Microsoft ---------- #
 
-    # ---------- Commodore ---------- #
-    # https://github.com/libretro/libretro-super/blob/master/dist/info/puae_libretro.info
-    # https://github.com/midwan/amiberry/wiki/Kickstart-ROMs-(BIOS)
-    "amiga":  { "name": "Amiga",	"biosFiles":  [ { "md5": "85ad74194e87c08904327de1a9443b7a", "file": "bios/kick33180.A500"      },
-                                                    { "md5": "82a21c1890cae844b3df741f2762d48d", "file": "bios/kick34005.A500"      },
-                                                    { "md5": "dc10d7bdd1b6f450773dfb558477c230", "file": "bios/kick37175.A500"      },
-                                                    { "md5": "e40a5dfb3d017ba8779faba30cbd1c8e", "file": "bios/kick40063.A600"      },
-                                                    { "md5": "b7cc148386aa631136f510cd29e42fc3", "file": "bios/kick39106.A1200"     },
-                                                    { "md5": "646773759326fbac3b2311fd8c8793ee", "file": "bios/kick40068.A1200"     },
-                                                    { "md5": "9bdedde6a4f33555b4a270c8ca53297d", "file": "bios/kick40068.A4000"     },
-                                                    { "md5": "5f8924d013dd57a89cf349f4cdedc6b1", "file": "bios/kick40060.CD32"      },
-                                                    { "md5": "bb72565701b1b6faece07d68ea5da639", "file": "bios/kick40060.CD32.ext"  },
-                                                    # https://fs-uae.net/docs/kickstarts
-                                                    { "md5": "82a21c1890cae844b3df741f2762d48d", "file": "bios/amiga-os-130.rom"        },
-                                                    { "md5": "646773759326fbac3b2311fd8c8793ee", "file": "bios/amiga-os-310-a1200.rom"  },
-                                                    { "md5": "dc10d7bdd1b6f450773dfb558477c230", "file": "bios/amiga-os-204.rom"        },
-                                                    { "md5": "465646c9b6729f77eea5314d1f057951", "file": "bios/amiga-os-205.rom"        },
-                                                    { "md5": "413590e50098a056cfec418d3df0212d", "file": "bios/amiga-os-310-a3000.rom"  },
-                                                    { "md5": "730888fb1bd9a3606d51f772ed136528", "file": "bios/amiga-os-310.rom"        },
-                                                    { "md5": "85ad74194e87c08904327de1a9443b7a", "file": "bios/amiga-os-120.rom"        },
-                                                    { "md5": "5f8924d013dd57a89cf349f4cdedc6b1", "file": "bios/amiga-os-310-cd32.rom"   },
-                                                    { "md5": "bb72565701b1b6faece07d68ea5da639", "file": "bios/amiga-ext-310-cd32.rom"  },
-                                                    { "md5": "89da1838a24460e4b93f4f0c5d92d48d", "file": "bios/amiga-ext-130-cdtv.rom"  }] },
+BIOS[msx]="msx,                       MSX
+    364a1a579fe5cb8dba54519bcfcdac0d, bios/MSX.ROM
+    ec3a01c91f24fbddcbcab0ad301bc9ef, bios/MSX2.ROM
+    2183c2aff17cf4297bdb496de78c2e8a, bios/MSX2EXT.ROM
+    847cc025ffae665487940ff2639540e5, bios/MSX2P.ROM
+    7c8243c71d8f143b2531f01afa6a05dc, bios/MSX2PEXT.ROM"
 
-    # ---------- NEC PC-9800 ---------- #
-    # https://github.com/RetroPie/RetroPie-Setup/wiki/PC-9800#bios
-    "pc98":       { "name": "NEC PC-9800", "biosFiles": [   { "md5": "e246140dec5124c5e404869a84caefce", "file": "bios/np2kai/BIOS.ROM" },
-                                                            { "md5": "2af6179d7de4893ea0b705c00e9a98d6", "file": "bios/np2kai/FONT.ROM" },
-                                                            { "md5": "caf90f22197aed6f14c471c21e64658d", "file": "bios/np2kai/SOUND.ROM"},
-                                                            { "md5": "e9fc3890963b12cf15d0a2eea5815b72", "file": "bios/np2kai/ITF.ROM"  },
-                                                            { "md5": "7da1e5b7c482d4108d22a5b09631d967", "file": "bios/np2kai/font.bmp" } ] },
+# ---------- Commodore ---------- #
+
+BIOS[amiga]="amiga,                   Amiga
+    85ad74194e87c08904327de1a9443b7a, bios/kick33180.A500
+    82a21c1890cae844b3df741f2762d48d, bios/kick34005.A500
+    dc10d7bdd1b6f450773dfb558477c230, bios/kick37175.A500
+    e40a5dfb3d017ba8779faba30cbd1c8e, bios/kick40063.A600
+    b7cc148386aa631136f510cd29e42fc3, bios/kick39106.A1200
+    646773759326fbac3b2311fd8c8793ee, bios/kick40068.A1200
+    9bdedde6a4f33555b4a270c8ca53297d, bios/kick40068.A4000
+    5f8924d013dd57a89cf349f4cdedc6b1, bios/kick40060.CD32
+    bb72565701b1b6faece07d68ea5da639, bios/kick40060.CD32.ext
+    82a21c1890cae844b3df741f2762d48d, bios/amiga-os-130.rom
+    646773759326fbac3b2311fd8c8793ee, bios/amiga-os-310-a1200.rom
+    dc10d7bdd1b6f450773dfb558477c230, bios/amiga-os-204.rom
+    465646c9b6729f77eea5314d1f057951, bios/amiga-os-205.rom
+    413590e50098a056cfec418d3df0212d, bios/amiga-os-310-a3000.rom
+    730888fb1bd9a3606d51f772ed136528, bios/amiga-os-310.rom
+    85ad74194e87c08904327de1a9443b7a, bios/amiga-os-120.rom
+    5f8924d013dd57a89cf349f4cdedc6b1, bios/amiga-os-310-cd32.rom
+    bb72565701b1b6faece07d68ea5da639, bios/amiga-ext-310-cd32.rom
+    89da1838a24460e4b93f4f0c5d92d48d, bios/amiga-ext-130-cdtv.rom"
+
+#------------------------------------------------------------------------------#
+
+DB_SYSTEM=''
+DB_SYSTEMS=''
+DB_NAME=''
+DB_FILE=''
+DB_HASH=''
+LOG_DB_NAME='NONE'
+
+#------------------------------------------------------------------------------#
+
+##
+ # Concatenates all system names that use bios in the DB_SYSTEMS variable.
+ ##
+function makeDbSystems() {
+    DB_SYSTEMS=''
+
+    for i in "${BIOS[@]}"; do
+        DB_SYSTEM="$(echo "#,${i}" | grep '^#,' | cut -d ',' -f 2 | awk '{$1=$1;print}')"
+        DB_SYSTEMS="$(printf "%s\n" ${DB_SYSTEMS} ${DB_SYSTEM})"
+    done
+
+    DB_SYSTEMS="$(printf "%s\n" ${DB_SYSTEMS} | sort)"
 }
 
-class BiosStatus:
-    MISSING = "MISSING"
-    UNTESTED = "UNTESTED"
+#------------------------------------------------------------------------------#
 
-def md5sum(filename, blocksize=65536):
-    hash = md5()
-    with open(filename, "rb") as f:
-        for block in iter(lambda: f.read(blocksize), b""):
-            hash.update(block)
-    return hash.hexdigest()
+##
+ # Displays the status of all scanned bios.
+ ##
+function log() {
+    if [ "${1}" == 'COMPLETE' ]; then
+        if [ "${LOG_DB_NAME}" == 'NONE' ]; then
+            echo 'No missing bios'
+        fi
+        return 0
+    fi
 
-def checkBios(systems, prefix):
-    missingBios = {}
-    for system in systems.keys():
-        for file in systems[system]["biosFiles"]:
-            filepath = prefix + "/" + file["file"]
-            if isfile(filepath):
-                md5 = md5sum(filepath)
-                if md5 != file["md5"] and file["md5"] != "":
-                    if system not in missingBios:
-                        missingBios[system] = {}
-                    missingBios[system][file["file"]] = { "status": BiosStatus.UNTESTED, "md5": file["md5"], "file": file["file"] }
-            else:
-                if system not in missingBios:
-                    missingBios[system] = {}
-                missingBios[system][file["file"]] = { "status": BiosStatus.MISSING, "md5": file["md5"], "file": file["file"] }
-    return missingBios
+    if [ "${LOG_DB_NAME}" != "${DB_NAME}" ]; then
+        LOG_DB_NAME="${DB_NAME}"
+        echo "> ${DB_NAME}"
+    fi
 
-def displayMissingBios(systems, missingBios):
-    sortedMissingBios = OrderedDict(sorted(missingBios.items()))
-    if sortedMissingBios:
-        for system in sortedMissingBios:
-            print "> {}".format(systems[system]["name"])
-            for file in sortedMissingBios[system].keys():
-                md5str = "-"
-                if sortedMissingBios[system][file]["md5"] != "":
-                    md5str = sortedMissingBios[system][file]["md5"]
-                print "{} {} {}".format(sortedMissingBios[system][file]["status"], md5str, sortedMissingBios[system][file]["file"])
-    else:
-        print "No missing bios"
+    echo "${1} ${DB_HASH} ${DB_FILE#/userdata/}"
+}
 
-def createReadme(systems):
-    for system in sorted(systems):
-        print "{}:".format(systems[system]["name"])
-        for bios in systems[system]["biosFiles"]:
-            print "{} {}".format(bios["md5"], bios["file"])
-        print ""
+#------------------------------------------------------------------------------#
 
-if __name__ == '__main__':
-    if len(sys.argv) == 1:
-        prefix = "/userdata"
-        displayMissingBios(systems, checkBios(systems, prefix))
-    elif sys.argv[1] == "--createReadme":
-        createReadme(systems)
+##
+ # Checks the status of all bios supported by Batocera.PLUS
+ ##
+function checkBios() {
+    makeDbSystems
+
+    for DB_SYSTEM in ${DB_SYSTEMS}; do
+        DB_NAME="$(echo "#,${BIOS[${DB_SYSTEM}]}" | grep '^#,' | cut -d ',' -f 3 | awk '{$1=$1;print}')"
+        HASH_NAME=$(echo "${BIOS[${DB_SYSTEM}]}" | tail -n +2 | awk '{$1=$1;print}' | sed 's/ /#/g')
+
+        for j in ${HASH_NAME}; do
+            DB_FILE="/userdata/$(echo ${j} | cut -d ',' -f 2 | sed 's/#/ /g' | awk '{$1=$1;print}')"
+            DB_HASH="$(echo ${j} | cut -d ',' -f 1)"
+
+            ## Check zip files
+            if [ "$(echo "${DB_FILE}" | grep '.zip/')" ]; then
+                FILE_ZIP="$(dirname "${DB_FILE}")"
+
+                if [ -f "${FILE_ZIP}" ]; then
+                    FILE_COMP="$(basename "${DB_FILE}")"
+                    FILE_HASH="$(unzip -Z -v ${FILE_ZIP} 2> /dev/null)"
+
+                    # Checks if the zipped file is corrupted
+                    if [ "$?" != '0' ]; then
+                        if [ "${FILE_HASH}" ==  "${FILE_HASH_OLD}" ]; then
+                            continue
+                        fi
+                        FILE_HASH_OLD="${FILE_HASH}"
+                        DB_FILE="${FILE_ZIP}"
+                        DB_HASH='-'
+                        log 'CORRUPTED'
+                        continue
+                    fi
+
+                    FILE_HASH="$(echo "${FILE_HASH}" 2> /dev/null | grep -A 21 "${FILE_COMP}" | grep 'CRC' | cut -d ':' -f 2 | sed 's/ //g')"
+
+                    if [ "${DB_HASH}" != "${FILE_HASH}" ]; then
+                        DB_HASH="${FILE_HASH}"
+                        log 'INCORRECT'
+                    fi
+                else
+                    if [ "${FILE_ZIP}" ==  "${FILE_ZIP_OLD}" ]; then
+                        continue
+                    fi
+                    FILE_ZIP_OLD="${FILE_ZIP}"
+                    DB_FILE="${FILE_ZIP}"
+                    DB_HASH='-'
+                    log 'MISSING'
+                fi
+                continue
+            fi
+
+            ## Check normal files
+            if [ -f "${DB_FILE}" ]; then
+                if [ "${DB_HASH}" == '00000000000000000000000000000000' ]; then
+                    continue
+                fi
+
+                FILE_HASH="$(md5sum "${DB_FILE}" | awk '{print $1}')"
+
+                if [ "${DB_HASH}" != "${FILE_HASH}" ]; then
+                    DB_HASH="${FILE_HASH}"
+                    log 'INCORRECT'
+                fi
+            else
+                log 'MISSING'
+            fi
+        done
+    done
+
+    log 'COMPLETE'
+}
+
+#------------------------------------------------------------------------------#
+
+##
+ # Displays the list of bios used by the Batocera.PLUS
+ ##
+function createReadme() {
+    makeDbSystems
+    for DB_SYSTEM in ${DB_SYSTEMS}; do
+        echo -e "${DB_SYSTEM}:"
+        echo -e "${BIOS[${DB_SYSTEM}]}\n" | sed 's/^    //g' | tail -n +2
+    done
+}
+
+#------------------------------------------------------------------------------#
+
+##
+ # Main
+ ##
+if [ $1 ]; then
+    case $1 in
+        --createReadme)
+            createReadme
+            ;;
+        --help)
+            echo -e "Check for bios missing\n" \
+                    '--createReadme Show all bios suported\n' \
+                    '--help         this help'
+            ;;
+        *) echo -e "type $(basename "$0") --help"
+    esac
+else
+    checkBios
+fi
+
+exit 0
