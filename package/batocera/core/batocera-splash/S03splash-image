@@ -19,7 +19,9 @@ do_start ()
 {
     file=$(file_array "$FM_PICTURE")
     if [[ $? -eq 0 ]]; then
-        do_imagestart "$file" || do_imagestart "$DEFAULT"
+        do_imagestart "$file"
+    else
+        do_imagestart "$DEFAULT"
     fi
 }
 
