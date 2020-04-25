@@ -1,14 +1,31 @@
 #!/bin/bash
+FM_PICTURE=".*\.\(jpg\|jpeg\|png\)"
+DEFAULT="/usr/share/batocera/splash/logo-version.png"
+SPLASH_DIR="/boot/splash"
+
+do_filerandomize ()
+{
+    [ -d "$SPLASH_DIR ] || return 1
+    readarray -t array < <(find $SPLASH_DIR -regex "$1" -maxdepth 1 -type f)
+    if [[ ${#array[@]} -gt 0 ]]; then
+        echo "${array[$RANDOM % ${#array[@]}]}"
+        return 0
+    else
+        return 1
+    fi
+}
 
 do_start ()
 {
-    if ls /boot/*.png /boot/*.jpg >/dev/null 2>/dev/null
-    then
-        image="$(ls /boot/*.png /boot/*.jpg | sed -e "$((RANDOM%$(ls -1 /boot/*.png /boot/*.jpg | wc -l)+1))!d")"
-    else
-        image="/usr/share/batocera/splash/logo-version.png"
+    file=$(file_array "$FM_PICTURE")
+    if [[ $? -eq 0 ]]; then
+        do_imagestart "$file" || do_imagestart "$DEFAULT"
     fi
+}
 
+do_imagestart ()
+{
+    image="$1"
     # on some sytems, fb0 is not immediatly loaded, so, keep a chance by waiting a bit
     N=0
     while ! test -e /dev/fb0 -o $N -gt 15
@@ -16,13 +33,13 @@ do_start ()
         sleep 1
         let N++
     done
-    test -e /dev/fb0 && fbv -f -i "${image}"
+    test -e /dev/fb0 && fbv -f -i "$image"
 }
 
 case "$1" in
     start)
 	grep -qE '^[ ]*autoresize[ ]*=[ ]*true[ ]*$' "/boot/batocera-boot.conf" && exit 0
-        do_start &
+	do_start &
         ;;
     stop)
         ;;
@@ -30,5 +47,4 @@ case "$1" in
         ;;
     *)
 esac
-
 exit $?
