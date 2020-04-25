@@ -355,21 +355,21 @@ def writeBezelConfig(bezel, retroarchConfig, systemName, rom, gameResolution):
         viewPortUsed = False
 
     if viewPortUsed:
-        if gameResolution["width"] != infos["width"] and gameResolution["height"] != infos["height"]:
+        if gameResolution["width"] != infos["width"] or gameResolution["height"] != infos["height"]:
             infosRatio = float(infos["width"]) / float(infos["height"])
             gameRatio  = float(gameResolution["width"]) / float(gameResolution["height"])
             if gameRatio < infosRatio - 0.1: # keep a marge
                 return
             else:
                 bezelNeedAdaptation = True
-        retroarchConfig['aspect_ratio_index']     = str(ratioIndexes.index("custom")) # overwritted from the beginning of this file
+        retroarchConfig['aspect_ratio_index']     = str(ratioIndexes.index("custom")) # overwritten from the beginning of this file
     else:
         # when there is no information about width and height in the .info, assume that the tv is 16/9 and infos are core provided
         infosRatio = 1920.0 / 1080.0
         gameRatio  = float(gameResolution["width"]) / float(gameResolution["height"])
         if gameRatio < infosRatio - 0.1: # keep a marge
             return
-        retroarchConfig['aspect_ratio_index']     = str(ratioIndexes.index("core")) # overwritted from the beginning of this file
+        retroarchConfig['aspect_ratio_index']     = str(ratioIndexes.index("core")) # overwritten from the beginning of this file
 
     retroarchConfig['input_overlay_enable']       = "true"
     retroarchConfig['input_overlay_scale']        = "1.0"
