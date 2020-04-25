@@ -28,7 +28,7 @@ do_start ()
     else
         file=$(do_filerandomize "$FM_VIDEO")
         [[ $? -eq 0 ]] || file="$DEFAULT"
-	do_videostart "$file"
+	 do_videostart "$file"
     fi
 }
 
@@ -77,7 +77,7 @@ do_videostart ()
     # -911 = Volume set to 35% (On omxplayer)
     # 1/(10^(911/2000)) = 0.35034828830157
 
-    /usr/bin/omxplayer -o both --vol -2500 $omx_opt $omx_srt $omx_nosound $video &
+    /usr/bin/omxplayer -o both --vol -2500 $omx_opt $omx_srt $omx_nosound "$video" &
     PID=$!
 
     # Stop the video when ready
@@ -106,7 +106,7 @@ do_videostart ()
 case "$1" in
     start)
 	grep -qE '^[ ]*autoresize[ ]*=[ ]*true[ ]*$' "/boot/batocera-boot.conf" && exit 0
-	do_start &
+	(sleep 0.5; do_start) &
         ;;
     stop)
         ;;
