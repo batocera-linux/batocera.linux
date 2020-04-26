@@ -87,13 +87,14 @@ else
 
 	case "${FORMAT_INTERNAL_TYPE}" in
 	    "btrfs")
-		textoutput 1 10 "mkfs.btrfs -f ${PART}" # what to do in case of error ? nothing.
+		textoutput 1 10 "mkfs.btrfs -L SHARE -f ${PART}" # what to do in case of error ? nothing.
 		;;
 	    "ext4")
-		textoutput 1 10 "mkfs.ext4 -q -F -F ${PART}" # what to do in case of error ? nothing.
+		textoutput 1 10 "mkfs.ext4 -L SHARE -q -F -F ${PART}" # what to do in case of error ? nothing.
 		;;
-	    # disabled because not recommanded for corruptions
-	    #	"exfat") mkfs.exfat "${INTERNALDEVICE}" # what to do in case of error ? nothing.
+	    "exfat")
+		textoutput 1 10 "mkfs.exfat -n SHARE ${PART}" # what to do in case of error ? nothing.
+		;;
 	    *)
 		# do nothing
 	esac
