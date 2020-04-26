@@ -134,13 +134,13 @@ do_format() {
     echo "formatting partition ${FORMATPARTNAME} in ${FORMATTYPE}"
     case "${FORMATTYPE}" in
 	"btrfs")
-	    mkfs.btrfs "${FORMATPARTNAME}" || return 1
+	    mkfs.btrfs -L SHARE "${FORMATPARTNAME}" || return 1
 	;;
 	"ext4")
-	    mkfs.ext4 "${FORMATPARTNAME}" || return 1
+	    mkfs.ext4 -L SHARE "${FORMATPARTNAME}" || return 1
 	;;
 	"exfat")
-	    mkfs.exfat "${FORMATPARTNAME}" || return 1
+	    mkfs.exfat -n SHARE "${FORMATPARTNAME}" || return 1
 	;;
 	*)
 	    echo "unknown partition type ${FORMATTYPE}" >&2
@@ -156,9 +156,9 @@ do_format_internal() {
     PARTTYPE=$1
     CONFIGBOOT="/boot/batocera-boot.conf"
 
-    if test "${PARTTYPE}" != "btrfs" -a "${PARTTYPE}" != "ext4"
+    if test "${PARTTYPE}" != "btrfs" -a "${PARTTYPE}" != "ext4" -a "${PARTTYPE}" != "exfat"
     then
-	echo "brtfs or ext4 expected" >&2
+	echo "brtfs, ext4 or exfat expected" >&2
 	return 1
     fi
 
