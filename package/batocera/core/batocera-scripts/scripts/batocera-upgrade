@@ -20,6 +20,17 @@ getPer() {
     done
 }
 
+reboot_os() {
+while true; do
+    read -r -p "Do you want to reboot (y/n): " yn
+    case $yn in
+        [Yy]* ) reboot; break;;
+        [Nn]* ) exit 0; break;;
+        * ) echo "Please answer yes or no.";;
+    esac
+done
+}
+
 # ---- MAIN ----
 
 CUSTOM_URLDIR=
@@ -170,4 +181,9 @@ sync
 
 echo "done."
 
-exit 0
+if [ $TERMINAL = 0 ]; then
+    exit 0
+else
+    # Ask inside SSH/TERMINAL
+    reboot_os
+fi
