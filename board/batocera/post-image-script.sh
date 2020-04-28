@@ -80,6 +80,13 @@ fi
 
 mkdir -p "${BATOCERA_BINARIES_DIR}"
 
+if [ -d "$BINARIES_DIR" ]; then
+	echo "OK ${BINARIES_DIR}..."
+else
+	echo "Error: ${BINARIES_DIR} not found. Can not continue."
+	exit 1
+fi
+
 BATOCERA_TARGET=$(grep -E "^BR2_PACKAGE_BATOCERA_TARGET_[A-Z_0-9]*=y$" "${BR2_CONFIG}" | grep -vE "_ANY=" | sed -e s+'^BR2_PACKAGE_BATOCERA_TARGET_\([A-Z_0-9]*\)=y$'+'\1'+)
 
 echo -e "\n----- Generating images/batocera files -----\n"
@@ -163,7 +170,7 @@ case "${BATOCERA_TARGET}" in
 	done
 
 	# /boot
-	rm -rf "${BINARIES_DIR}/boot"         || exit 1
+	rm -rf "${BINARIES_DIR:?}/boot"
 	mkdir -p "${BINARIES_DIR}/boot/boot"  || exit 1
 	cp "${BR2_EXTERNAL_BATOCERA_PATH}/board/batocera/odroidxu4/boot/boot.ini"     "${BINARIES_DIR}/boot/boot.ini"        	 || exit 1
 	cp "${BINARIES_DIR}/zImage"          "${BINARIES_DIR}/boot/boot/linux"      	 || exit 1
@@ -196,7 +203,7 @@ case "${BATOCERA_TARGET}" in
 
 	C2)
 	# boot
-	rm -rf ${BINARIES_DIR}/boot        || exit 1
+	rm -rf "${BINARIES_DIR:?}/boot"
 	mkdir -p ${BINARIES_DIR}/boot/boot || exit 1
 	cp "${BR2_EXTERNAL_BATOCERA_PATH}/board/batocera/odroidc2/boot/boot-logo.bmp.gz" ${BINARIES_DIR}/boot   || exit 1
 	cp "${BR2_EXTERNAL_BATOCERA_PATH}/board/batocera/odroidc2/boot/boot.ini"       ${BINARIES_DIR}/boot   || exit 1
@@ -230,7 +237,7 @@ case "${BATOCERA_TARGET}" in
 	MKIMAGE=${HOST_DIR}/bin/mkimage
 	BOARD_DIR="${BR2_EXTERNAL_BATOCERA_PATH}/board/batocera/s905"
 	# boot
-	rm -rf ${BINARIES_DIR}/boot        || exit 1
+	rm -rf "${BINARIES_DIR:?}/boot"
 	mkdir -p ${BINARIES_DIR}/boot/boot || exit 1
 	cp ${BOARD_DIR}/boot/boot-logo.bmp.gz ${BINARIES_DIR}/boot   || exit 1
 	$MKIMAGE -C none -A arm64 -T script -d ${BOARD_DIR}/boot/s905_autoscript.txt ${BINARIES_DIR}/boot/s905_autoscript
@@ -271,8 +278,8 @@ case "${BATOCERA_TARGET}" in
 	MKBOOTIMAGE=${HOST_DIR}/bin/mkbootimg
 	BOARD_DIR="${BR2_EXTERNAL_BATOCERA_PATH}/board/batocera/s912"
 	# boot
-	rm -rf ${BINARIES_DIR}/boot        || exit 1
-	mkdir -p ${BINARIES_DIR}/boot/boot || exit 1
+	rm -rf "${BINARIES_DIR:?}/boot"
+	mkdir -p "${BINARIES_DIR}/boot/boot" || exit 1
 	cp ${BOARD_DIR}/boot/boot-logo.bmp.gz ${BINARIES_DIR}/boot   || exit 1
 	$MKIMAGE -C none -A arm64 -T script -d ${BOARD_DIR}/boot/s905_autoscript.txt ${BINARIES_DIR}/boot/s905_autoscript
 	$MKIMAGE -C none -A arm64 -T script -d ${BOARD_DIR}/boot/aml_autoscript.txt ${BINARIES_DIR}/boot/aml_autoscript
@@ -305,8 +312,8 @@ case "${BATOCERA_TARGET}" in
 
 	X86|X86_64)
 	# /boot
-	rm -rf ${BINARIES_DIR}/boot || exit 1
-	mkdir -p ${BINARIES_DIR}/boot || exit 1
+	rm -rf "${BINARIES_DIR:?}/boot"
+	mkdir -p "${BINARIES_DIR}/boot" || exit 1
 	cp "${BR2_EXTERNAL_BATOCERA_PATH}/board/batocera/x86/boot/syslinux.cfg" ${BINARIES_DIR/}/boot/syslinux.cfg || exit 1
 	cp "${BINARIES_DIR}/bzImage" "${BINARIES_DIR}/boot/linux" || exit 1
 	cp "${BINARIES_DIR}/initrd.gz" "${BINARIES_DIR}/boot" || exit 1
@@ -342,7 +349,7 @@ case "${BATOCERA_TARGET}" in
 
 	ROCKPRO64)
 	# /boot
-	rm -rf "${BINARIES_DIR}/boot"            || exit 1
+	rm -rf "${BINARIES_DIR:?}/boot"
 	mkdir -p "${BINARIES_DIR}/boot/boot"     || exit 1
 	mkdir -p "${BINARIES_DIR}/boot/extlinux" || exit 1
 	cp "${BINARIES_DIR}/Image"                 "${BINARIES_DIR}/boot/boot/linux"                || exit 1
@@ -379,7 +386,7 @@ case "${BATOCERA_TARGET}" in
 
     ROCK960)
     # /boot
-    rm -rf "${BINARIES_DIR}/boot"            || exit 1
+    rm -rf "${BINARIES_DIR:?}/boot"
     mkdir -p "${BINARIES_DIR}/boot/boot"     || exit 1
 	mkdir -p "${BINARIES_DIR}/boot/extlinux" || exit 1
     cp "${BINARIES_DIR}/Image"                 "${BINARIES_DIR}/boot/boot/linux"                || exit 1
@@ -415,7 +422,7 @@ case "${BATOCERA_TARGET}" in
 
 	ODROIDN2)
 	# /boot
-	rm -rf "${BINARIES_DIR}/boot"            || exit 1
+	rm -rf "${BINARIES_DIR:?}/boot"
 	mkdir -p "${BINARIES_DIR}/boot/boot"     || exit 1
 	"${HOST_DIR}/bin/mkimage" -A arm64 -O linux -T kernel -C none -a 0x1080000 -e 0x1080000 -n 5.x -d "${BINARIES_DIR}/Image" "${BINARIES_DIR}/uImage" || exit 1
 	cp "${BINARIES_DIR}/uImage"                "${BINARIES_DIR}/boot/boot/linux"                || exit 1
@@ -452,7 +459,7 @@ case "${BATOCERA_TARGET}" in
 
 	ODROIDGOA)
 	# /boot
-	rm -rf "${BINARIES_DIR}/boot"            || exit 1
+	rm -rf "${BINARIES_DIR:?}/boot"
 	mkdir -p "${BINARIES_DIR}/boot/boot"     || exit 1
 	"${HOST_DIR}/bin/mkimage" -A arm64 -O linux -T kernel -C none -a 0x1080000 -e 0x1080000 -n 5.x -d "${BINARIES_DIR}/Image" "${BINARIES_DIR}/uImage" || exit 1
 	cp "${BINARIES_DIR}/uImage"                "${BINARIES_DIR}/boot/boot/linux"                || exit 1
@@ -489,7 +496,7 @@ case "${BATOCERA_TARGET}" in
 
 	TINKERBOARD)
 	# /boot
-	rm -rf "${BINARIES_DIR}/boot"            || exit 1
+	rm -rf "${BINARIES_DIR:?}/boot"
 	mkdir -p "${BINARIES_DIR}/boot/boot"     || exit 1
 	mkdir -p "${BINARIES_DIR}/boot/extlinux" || exit 1
 	cp "${BINARIES_DIR}/zImage"                 "${BINARIES_DIR}/boot/boot/linux"                || exit 1
@@ -531,7 +538,7 @@ case "${BATOCERA_TARGET}" in
 
 	MIQI)
 	# /boot
-	rm -rf "${BINARIES_DIR}/boot"            || exit 1
+	rm -rf "${BINARIES_DIR:?}/boot"
 	mkdir -p "${BINARIES_DIR}/boot/boot"     || exit 1
 	mkdir -p "${BINARIES_DIR}/boot/extlinux" || exit 1
 	cp "${BINARIES_DIR}/zImage"                 "${BINARIES_DIR}/boot/boot/linux"                || exit 1
