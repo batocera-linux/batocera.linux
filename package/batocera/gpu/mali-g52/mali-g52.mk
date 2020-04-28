@@ -11,11 +11,18 @@ MALI_G52_INSTALL_STAGING = YES
 MALI_G52_PROVIDES = libegl libgles
 MALI_G52_DEPENDENCIES = wayland mali-bifrost-module
 
+MALI_BLOB_FILENAME = libmali-bifrost-g52-r16p0-gbm.so
+
+ifeq ($(BR2_arm),y)
+MALI_BLOB = $(@D)/lib/arm-linux-gnueabihf/$(MALI_BLOB_FILENAME)
+else
+MALI_BLOB = $(@D)/lib/aarch64-linux-gnu/$(MALI_BLOB_FILENAME)
+endif
+
 define MALI_G52_INSTALL_STAGING_CMDS
 	mkdir -p $(STAGING_DIR)/usr/lib/pkgconfig
 
-	cp $(@D)/lib/arm-linux-gnueabihf/libmali-bifrost-g52-r16p0-gbm.so \
-		$(STAGING_DIR)/usr/lib/libmali.so
+	cp $(MALI_BLOB) $(STAGING_DIR)/usr/lib/libmali.so
 
 	(cd $(STAGING_DIR)/usr/lib && ln -sf libmali.so libMali.so)
 	(cd $(STAGING_DIR)/usr/lib && ln -sf libmali.so libEGL.so)
