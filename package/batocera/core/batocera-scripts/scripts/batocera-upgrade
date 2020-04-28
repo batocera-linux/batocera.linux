@@ -14,7 +14,7 @@ getPer() {
     do
 	CURVAL=$(stat "/userdata/system/upgrade/boot.tar.xz" | grep -E '^[ ]*Size:' | sed -e s+'^[ ]*Size: \([0-9][0-9]*\) .*$'+'\1'+)
 	CURVAL=$((CURVAL / 1024 / 1024))
-	PER=$(expr ${CURVAL} '*' 100 / "${TARVAL}")
+	PER=$((CURVAL * 100 / TARVAL))
 	echo "downloading >>> ${PER}%"
 	sleep 5
     done
