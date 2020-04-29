@@ -78,14 +78,7 @@ if [ -d "${BATOCERA_BINARIES_DIR}" ]; then
 	rm -rf "${BATOCERA_BINARIES_DIR}"
 fi
 
-mkdir -p "${BATOCERA_BINARIES_DIR}"
-
-if [ -d "$BINARIES_DIR" ]; then
-	echo "OK ${BINARIES_DIR}..."
-else
-	echo "Error: ${BINARIES_DIR} not found. Can not continue."
-	exit 1
-fi
+mkdir -p "${BATOCERA_BINARIES_DIR}" || { echo "Error in creating '${BATOCERA_BINARIES_DIR}'"; exit 1; }
 
 BATOCERA_TARGET=$(grep -E "^BR2_PACKAGE_BATOCERA_TARGET_[A-Z_0-9]*=y$" "${BR2_CONFIG}" | grep -vE "_ANY=" | sed -e s+'^BR2_PACKAGE_BATOCERA_TARGET_\([A-Z_0-9]*\)=y$'+'\1'+)
 
