@@ -6,7 +6,6 @@
 # Version.: Commits on Nov 13, 2019
 MALI_G52_VERSION = 4cbf211cfd9b07854aab4978e50b1151052c6d4c
 MALI_G52_SITE = $(call github,LibreELEC,libmali,$(MALI_G52_VERSION))
-
 MALI_G52_INSTALL_STAGING = YES
 MALI_G52_PROVIDES = libegl libgles
 MALI_G52_DEPENDENCIES = wayland mali-bifrost-module
@@ -47,8 +46,7 @@ endef
 define MALI_G52_INSTALL_TARGET_CMDS
 	mkdir -p $(TARGET_DIR)/usr/lib
 
-	cp $(@D)/lib/arm-linux-gnueabihf/libmali-bifrost-g52-r16p0-gbm.so \
-		$(TARGET_DIR)/usr/lib/libmali.so
+	cp $(MALI_BLOB) $(TARGET_DIR)/usr/lib/libmali.so
 
 	(cd $(TARGET_DIR)/usr/lib && ln -sf libmali.so libMali.so)
 	(cd $(TARGET_DIR)/usr/lib && ln -sf libmali.so libEGL.so)
