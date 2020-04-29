@@ -275,7 +275,11 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
         retroarchConfig['ai_service_enable'] = 'false'
 
     # bezel
-    writeBezelConfig(bezel, retroarchConfig, system.name, rom, gameResolution)
+    if system.isOptSet('bezel_stretch') and system.getOptBoolean('bezel_stretch') == True:
+        bezel_stretch = True
+    else:
+        bezel_stretch = False
+    writeBezelConfig(bezel, retroarchConfig, system.name, rom, gameResolution, bezel_stretch)
 
     # custom : allow the user to configure directly retroarch.cfg via batocera.conf via lines like : snes.retroarch.menu_driver=rgui
     for user_config in systemConfig:
@@ -288,7 +292,7 @@ def writeLibretroConfigToFile(retroconfig, config):
     for setting in config:
         retroconfig.save(setting, config[setting])
 
-def writeBezelConfig(bezel, retroarchConfig, systemName, rom, gameResolution):
+def writeBezelConfig(bezel, retroarchConfig, systemName, rom, gameResolution, bezel_stretch):
     # disable the overlay
     # if all steps are passed, enable them
     retroarchConfig['input_overlay_hide_in_menu'] = "false"
@@ -355,21 +359,21 @@ def writeBezelConfig(bezel, retroarchConfig, systemName, rom, gameResolution):
         viewPortUsed = False
 
     if viewPortUsed:
-        if gameResolution["width"] != infos["width"] and gameResolution["height"] != infos["height"]:
+        if gameResolution["width"] != infos["width"] or gameResolution["height"] != infos["height"]:
             infosRatio = float(infos["width"]) / float(infos["height"])
             gameRatio  = float(gameResolution["width"]) / float(gameResolution["height"])
-            if gameRatio < infosRatio - 0.1: # keep a marge
+            if gameRatio < infosRatio - 0.1: # keep a margin
                 return
             else:
                 bezelNeedAdaptation = True
-        retroarchConfig['aspect_ratio_index']     = str(ratioIndexes.index("custom")) # overwritted from the beginning of this file
+        retroarchConfig['aspect_ratio_index']     = str(ratioIndexes.index("custom")) # overwritten from the beginning of this file
     else:
-        # when there is no information about width and height in the .info, assume that the tv is 16/9 and infos are core provided
+        # when there is no information about width and height in the .info, assume that the tv is HD 16/9 and infos are core provided
         infosRatio = 1920.0 / 1080.0
         gameRatio  = float(gameResolution["width"]) / float(gameResolution["height"])
-        if gameRatio < infosRatio - 0.1: # keep a marge
+        if gameRatio < infosRatio - 0.1: # keep a margin
             return
-        retroarchConfig['aspect_ratio_index']     = str(ratioIndexes.index("core")) # overwritted from the beginning of this file
+        retroarchConfig['aspect_ratio_index']     = str(ratioIndexes.index("core")) # overwritten from the beginning of this file
 
     retroarchConfig['input_overlay_enable']       = "true"
     retroarchConfig['input_overlay_scale']        = "1.0"
@@ -384,16 +388,36 @@ def writeBezelConfig(bezel, retroarchConfig, systemName, rom, gameResolution):
         infos["messagey"] = 0.0
 
     retroarchConfig['input_overlay_opacity'] = infos["opacity"]
+    # smaller screen: don't pad the bezel overlay, just resize the HD 1920x1080 to the (smaller) right resolution
+    if gameResolution["width"] < 1920 or gameResolution["height"] < 1080:
+        bezel_stretch = True
 
     if bezelNeedAdaptation:
-        wratio = gameResolution["width"]  / float(infos["width"])
-        hratio = gameResolution["height"] / float(infos["height"])
-        retroarchConfig['custom_viewport_x']      = infos["left"] * wratio
-        retroarchConfig['custom_viewport_y']      = infos["top"] * hratio
-        retroarchConfig['custom_viewport_width']  = (infos["width"]  - infos["left"] - infos["right"])  * wratio
-        retroarchConfig['custom_viewport_height'] = (infos["height"] - infos["top"]  - infos["bottom"]) * hratio
-        retroarchConfig['video_message_pos_x']    = infos["messagex"] * wratio
-        retroarchConfig['video_message_pos_y']    = infos["messagey"] * hratio
+        if bezel_stretch:
+            wratio = gameResolution["width"]  / float(infos["width"])
+            hratio = gameResolution["height"] / float(infos["height"])
+            retroarchConfig['custom_viewport_x']      = infos["left"] * wratio
+            retroarchConfig['custom_viewport_y']      = infos["top"] * hratio
+            retroarchConfig['custom_viewport_width']  = (infos["width"]  - infos["left"] - infos["right"])  * wratio
+            retroarchConfig['custom_viewport_height'] = (infos["height"] - infos["top"]  - infos["bottom"]) * hratio
+            retroarchConfig['video_message_pos_x']    = infos["messagex"] * wratio
+            retroarchConfig['video_message_pos_y']    = infos["messagey"] * hratio
+        else:
+            # Padding left and right borders for ultrawide screens (larger than 16:9 aspect ratio)
+            xoffset = gameResolution["width"]  - infos["width"]
+            yoffset = gameResolution["height"] - infos["height"]
+            retroarchConfig['custom_viewport_x']      = infos["left"] + xoffset/2
+            retroarchConfig['custom_viewport_y']      = infos["top"] + yoffset/2
+            retroarchConfig['custom_viewport_width']  = infos["width"]  - infos["left"] - infos["right"]
+            retroarchConfig['custom_viewport_height'] = infos["height"] - infos["top"]  - infos["bottom"]
+            retroarchConfig['video_message_pos_x']    = infos["messagex"] + xoffset/2
+            retroarchConfig['video_message_pos_y']    = infos["messagey"] + yoffset/2
+            resize_resolution = "{}x{}".format(gameResolution["width"], gameResolution["height"])
+            output_png_file = "/tmp/libretro_overlay_centered.png"
+            resize_cmd = "convert -define png:size={} -extent {} -background transparent -gravity center {} {}".format(resize_resolution, resize_resolution, overlay_png_file, output_png_file)
+            ret_resize = os.system(resize_cmd)
+            if ret_resize == 0:
+                overlay_png_file = output_png_file
     else:
         if viewPortUsed:
             retroarchConfig['custom_viewport_x']      = infos["left"]
