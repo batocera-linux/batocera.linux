@@ -139,6 +139,7 @@ function install_theme() {
 			# Extraction Process
 			if [ -f "$gitname.zip" ]; then
 				[ -d "$CONFIGDIR"/"$gitname" ] && rm -rf "$CONFIGDIR"/"$gitname"
+				zipdir=$(unzip -Z1 "$gitname.zip" | sed "s:\([a-zA-Z0-9\._-]*\)/.*:\1:g" | uniq | head -n1)
 				if [ $TERMINAL = 0 ]; then
 					files_inzip=$(unzip -l "$gitname.zip" | tail -1 | awk '{print $2}')
 					# This is needed for equal if files, you may alter if output is 100%+
@@ -148,7 +149,7 @@ function install_theme() {
 					echo -e "Unzipping $gitname to:\t$PWD"
 					unzip -q "$gitname.zip"
 				fi 
-				mv "$gitname-master" "$gitname"
+				mv "$zipdir" "$gitname"
 				rm "$gitname.zip"
 				success_installed=1
 			else
