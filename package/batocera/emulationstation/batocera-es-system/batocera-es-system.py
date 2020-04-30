@@ -103,7 +103,7 @@ class EsSystemConf:
         platformValue  = EsSystemConf.systemPlatform(system, data)
         listExtensions = EsSystemConf.listExtension(data, True)
         groupValue     = EsSystemConf.systemGroup(system, data)
-        command        = EsSystemConf.default_command
+        command        = EsSystemConf.commandName(data)
 
         systemTxt =  "  <system>\n"
         systemTxt += "        <fullname>%s</fullname>\n" % (data["name"])
@@ -163,6 +163,13 @@ class EsSystemConf:
         if "theme" in data:
           return data["theme"]
         return system
+
+    # In case you need to specify a different command line 
+    @staticmethod
+    def commandName(data):
+        if "command" in data:
+          return data["command"]
+        return EsSystemConf.default_command
 
     # Create the folders of the consoles in the roms folder
     @staticmethod
