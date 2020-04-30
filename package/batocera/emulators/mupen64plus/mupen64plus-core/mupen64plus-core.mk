@@ -33,7 +33,6 @@ endif
 
 ifeq ($(BR2_aarch64),y)
 	MUPEN64PLUS_HOST_CPU = aarch64
-	MUPEN64PLUS_PARAMS += NEON=1
 	MUPEN64PLUS_PARAMS += NO_ASM=1
 endif
 
