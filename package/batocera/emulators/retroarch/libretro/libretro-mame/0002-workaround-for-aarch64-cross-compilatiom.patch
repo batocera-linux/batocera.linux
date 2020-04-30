@@ -1,0 +1,24 @@
+From f75d81e5260896f39fcb7c0235db39e9d2ab3d76 Mon Sep 17 00:00:00 2001
+From: Tiago Pierezan Camargo <camargo@discworld.com.br>
+Date: Thu, 30 Apr 2020 08:19:44 -0300
+Subject: [PATCH] workaround for aarch64 cross-compilatiom
+
+---
+ makefile | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/makefile b/makefile
+index 86e13567a6a..9670ef09a5f 100644
+--- a/makefile
++++ b/makefile
+@@ -348,7 +348,7 @@ ifndef NOASM
+ endif
+ endif
+
+-ifeq ($(findstring aarch64,$(UNAME)),aarch64)
++ifeq ($(findstring aarch64,$(PLATFORM)),aarch64)
+ ARCHITECTURE :=
+ ifndef NOASM
+ 	NOASM := 1
+--
+2.25.0
