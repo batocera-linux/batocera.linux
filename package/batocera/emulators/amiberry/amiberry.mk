@@ -4,7 +4,7 @@
 #
 ################################################################################
 # Version.: Commits on Feb 18, 2020
-AMIBERRY_VERSION = v3.1.3
+AMIBERRY_VERSION = v3.1.3.1
 AMIBERRY_SITE = $(call github,midwan,amiberry,$(AMIBERRY_VERSION))
 AMIBERRY_LICENSE = GPLv3
 AMIBERRY_DEPENDENCIES = sdl2 sdl2_image sdl2_ttf mpg123 libxml2 libmpeg2 flac
@@ -24,7 +24,7 @@ else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI1),y)
 else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_XU4),y)
 	AMIBERRY_BATOCERA_SYSTEM=xu4
 else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_ODROIDN2),y)
-	AMIBERRY_BATOCERA_SYSTEM=AMLG12B
+	AMIBERRY_BATOCERA_SYSTEM=n2
 else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA),y)
 	AMIBERRY_BATOCERA_SYSTEM=RK3326
 else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_ROCKPRO64),y)
