@@ -67,8 +67,6 @@ class UnixSettings():
                 self.config.remove_option('DEFAULT', key)
 
     def remove(self, name):
-        # unused?
-        raise Exception
         self.config.remove_option('DEFAULT', name)
 
     @staticmethod

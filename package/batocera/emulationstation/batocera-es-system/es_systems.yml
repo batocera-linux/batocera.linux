@@ -971,6 +971,13 @@ x68000:
     libretro:
       citra: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_CITRA] }
 
+openbor:
+  name:       OpenBOR
+  extensions: [pak]
+  emulators:
+    citra:
+      citra: { requireAnyOf: [BR2_PACKAGE_OPENBOR] }
+
 satellaview:
   name:       Satellaview
   extensions: [bs, smc, sfc, zip, 7z]
