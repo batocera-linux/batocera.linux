@@ -1,0 +1,13 @@
+diff --git a/Makefile b/Makefile
+index ed4bff6..07fe1a4 100644
+--- a/Makefile
++++ b/Makefile
+@@ -715,7 +715,7 @@ ifdef BUILD_SDL
+ ifeq ($(findstring DGE, $(SDKPATH)), DGE)
+ LIBS           += -lSDL -lSDL_gfx -lts
+ else
+-LIBS           += -Wl,-rpath,$(LIBRARIES) -lSDL2 -lSDL2 -lGL
++LIBS           += -Wl,-rpath,$(LIBRARIES) -lSDL2 -lSDL2 -lGL -lSDL2_gfx
+ endif
+ endif
+ 
