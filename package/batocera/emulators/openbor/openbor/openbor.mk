@@ -18,7 +18,7 @@ endif
 ifeq ($(BR2_x86),y)
 	OPENBOR_EXTRAOPTS=BUILD_LINUX=1
 endif
-ifeq ($(BR2_arm),y)
+ifeq ($(BR2_arm)$(BR2_aarch64),y)
 	OPENBOR_EXTRAOPTS=BUILD_ARM=1
 endif
 
