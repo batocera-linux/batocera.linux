@@ -975,8 +975,8 @@ openbor:
   name:       OpenBOR
   extensions: [pak]
   emulators:
-    citra:
-      citra: { requireAnyOf: [BR2_PACKAGE_OPENBOR] }
+    openbor:
+      openbor: { requireAnyOf: [BR2_PACKAGE_OPENBOR] }
 
 satellaview:
   name:       Satellaview
