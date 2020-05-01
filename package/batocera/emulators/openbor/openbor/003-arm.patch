@@ -1,8 +1,8 @@
 diff --git a/engine/Makefile b/engine/Makefile
-index 8d6a559..dda58aa 100644
+index 8d6a559..85ab4fe 100644
 --- a/engine/Makefile
 +++ b/engine/Makefile
-@@ -156,6 +156,24 @@ BUILD_DEBUG     = 1
+@@ -156,6 +156,22 @@ BUILD_DEBUG     = 1
  endif
  endif
  
@@ -15,19 +15,17 @@ index 8d6a559..dda58aa 100644
 +BUILD_GFX       = 1
 +BUILD_PTHREAD   = 1
 +BUILD_SDL_IO    = 1
-+BUILD_TREMOR    = 1
++BUILD_VORBIS    = 1
++BUILD_WEBM      = 1
 +BUILDING        = 1
-+CC  	        = $(PNDDEV)/bin/arm-none-linux-gnueabi-gcc
-+INCLUDES        = $(PNDDEV)/include \
-+                  $(PNDDEV)/include/SDL
++INCLUDES        = $(SDKPATH)/include
 +OBJTYPE         = elf
-+LIBRARIES       = $(PNDDEV)/lib
 +endif
 +
  ifdef BUILD_WII
  TARGET 	        = $(VERSION_NAME).elf
  TARGET_MAP      = $(TARGET).map
-@@ -485,6 +503,9 @@ ifdef BUILD_PANDORA
+@@ -485,6 +501,9 @@ ifdef BUILD_PANDORA
  CFLAGS         += -DLINUX
  endif
  
