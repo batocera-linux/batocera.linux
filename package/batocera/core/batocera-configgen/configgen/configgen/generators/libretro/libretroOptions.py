@@ -20,7 +20,7 @@ def generateCoreSettings(retroarchCore, system):
     # Atari 800 and 5200
     if (system.config['core'] == 'atari800'):
         if (system.name == 'atari800'):
-            coreSettings.save('atari800_system',    '"800XL (64K)"')
+            coreSettings.save('atari800_system',    '"130XE (128K)"')
             coreSettings.save('RAM_SIZE',           '"64"')
             coreSettings.save('STEREO_POKEY',       '"1"')
             coreSettings.save('BUILTIN_BASIC',      '"1"')
