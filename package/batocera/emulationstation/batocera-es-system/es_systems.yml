@@ -1047,6 +1047,18 @@ lightgun:
           Un exemple de setup qui fonctionne est si vous utilisez une DolphinBar en 'mode 2' (mode jeu clavier/souris) avec une Wiimote comme flingue.
           Si vous avez plus d'une souris installee, assurez-vous que la DolphinBar / Wiimote soit reconnue comme une des deux premieres.
 
+ports:
+  name:       Ports
+  extensions: [sh]
+  group: ports
+  path:       /userdata/roms/ports
+  command:    "/bin/sh %ROM%"
+  force:      True
+  comment_en: |
+          Third party Linux games and apps that can be run from a .sh script.
+  comment_fr: |
+          Jeux et applications Linux additionnels qui peuvent etre lancés depuis un script .sh.
+
 imageviewer:
   name:       Screenshots
   extensions: [jpg, jpeg, png, bmp, psd, tga, gif, hdr, pic, ppm, pgm, mkv]
