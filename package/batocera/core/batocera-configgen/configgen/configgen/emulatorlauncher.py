@@ -22,6 +22,7 @@ from generators.fsuae.fsuaeGenerator import FsuaeGenerator
 from generators.amiberry.amiberryGenerator import AmiberryGenerator
 from generators.citra.citraGenerator import CitraGenerator
 from generators.daphne.daphneGenerator import DaphneGenerator
+from generators.openbor.openborGenerator import OpenborGenerator
 import controllersConfig as controllers
 import signal
 import batoceraFiles
@@ -47,7 +48,8 @@ generators = {
     'pcsx2': Pcsx2Generator(),
     'ppsspp': PPSSPPGenerator(),
     'citra' : CitraGenerator(),
-    'daphne' : DaphneGenerator()
+    'daphne' : DaphneGenerator(),
+    'openbor' : OpenborGenerator()
 }
 
 def main(args, maxnbplayers):
