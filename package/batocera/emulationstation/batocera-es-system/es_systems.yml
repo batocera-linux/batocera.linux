@@ -893,7 +893,6 @@ saturn:
   extensions: [cue, ccd, m3u, chd, iso, zip, 7z]
   emulators:
     libretro:
-      yabause:       { requireAnyOf: [BR2_PACKAGE_LIBRETRO_YABAUSE] }
       beetle-saturn: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BEETLE_SATURN] }
       kronos:        { requireAnyOf: [BR2_PACKAGE_LIBRETRO_KRONOS] }
       yabasanshiro:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_YABASANSHIRO] }
