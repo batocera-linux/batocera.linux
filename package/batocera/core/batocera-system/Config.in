@@ -316,6 +316,7 @@ config BR2_PACKAGE_BATOCERA_ALL_SYSTEMS
 	select BR2_PACKAGE_CITRA                if BR2_PACKAGE_BATOCERA_TARGET_X86_64
 
         select BR2_PACKAGE_OPENBOR
+        select BR2_PACKAGE_OPENBOR4432
 
         help
           All avaible systems for the selected architecture

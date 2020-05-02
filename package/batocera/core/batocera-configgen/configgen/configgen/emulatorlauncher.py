@@ -74,10 +74,14 @@ def main(args, maxnbplayers):
     eslog.log("Running system: {}".format(systemName))
     system = Emulator(systemName, args.rom)
 
+    system.config["emulator-forced"] = False
+    system.config["core-forced"]     = False
     if args.emulator is not None:
         system.config["emulator"] = args.emulator
+        system.config["emulator-forced"] = True # tip to indicated that the emulator was forced
     if args.core is not None:
         system.config["core"] = args.core
+        system.config["core-forced"] = True
 
     eslog.debug("Settings: {}".format(system.config))
     if "emulator" in system.config and "core" in system.config:

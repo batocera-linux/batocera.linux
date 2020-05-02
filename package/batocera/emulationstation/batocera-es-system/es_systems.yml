@@ -976,6 +976,7 @@ openbor:
   emulators:
     openbor:
       openbor: { requireAnyOf: [BR2_PACKAGE_OPENBOR] }
+      openbor4432: { requireAnyOf: [BR2_PACKAGE_OPENBOR4432] }
 
 satellaview:
   name:       Satellaview

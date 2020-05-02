@@ -1,0 +1,39 @@
+diff --git a/Makefile b/Makefile
+index 8d6a559..dda58aa 100644
+--- a/Makefile
++++ b/Makefile
+@@ -156,6 +156,24 @@ BUILD_DEBUG     = 1
+ endif
+ endif
+ 
++ifdef BUILD_ARM
++TARGET 	        = $(VERSION_NAME).elf
++TARGET_FINAL    = $(VERSION_NAME)
++TARGET_PLATFORM = ARM
++BUILD_LINUX     = 1
++BUILD_SDL       = 1
++BUILD_GFX       = 1
++BUILD_PTHREAD   = 1
++BUILD_SDL_IO    = 1
++BUILD_TREMOR    = 1
++BUILDING        = 1
++CC  	        = $(PNDDEV)/bin/arm-none-linux-gnueabi-gcc
++INCLUDES        = $(PNDDEV)/include \
++                  $(PNDDEV)/include/SDL
++OBJTYPE         = elf
++LIBRARIES       = $(PNDDEV)/lib
++endif
++
+ ifdef BUILD_WII
+ TARGET 	        = $(VERSION_NAME).elf
+ TARGET_MAP      = $(TARGET).map
+@@ -485,6 +503,9 @@ ifdef BUILD_PANDORA
+ CFLAGS         += -DLINUX
+ endif
+ 
++ifdef BUILD_ARM
++CFLAGS         += -DLINUX
++endif
+ 
+ ifdef BUILD_WII
+ CFLAGS 	       += -DCACHE_BACKGROUNDS -DREVERSE_COLOR -D__ppc__ $(MACHDEP) -Wl,-Map,$(TARGET_MAP),-wrap,wiiuse_register

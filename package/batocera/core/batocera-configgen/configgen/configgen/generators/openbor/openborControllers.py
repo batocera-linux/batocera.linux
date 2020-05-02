@@ -53,10 +53,10 @@ def setupControllers(config, playersControllers):
         config.save("keys." + str(idx) + ".2" , JoystickValue("left",     pad)) # MOVELEFT
         config.save("keys." + str(idx) + ".3" , JoystickValue("right",    pad)) # MOVERIGHT
         config.save("keys." + str(idx) + ".4" , JoystickValue("a",        pad)) # ATTACK
-        config.save("keys." + str(idx) + ".5" , JoystickValue("b",        pad)) # ATTACK2
+        config.save("keys." + str(idx) + ".5" , JoystickValue("x",        pad)) # ATTACK2
         config.save("keys." + str(idx) + ".6" , JoystickValue("y",        pad)) # ATTACK3
         config.save("keys." + str(idx) + ".7" , JoystickValue("pagedown", pad)) # ATTACK4
-        config.save("keys." + str(idx) + ".8" , JoystickValue("x",        pad)) # JUMP
+        config.save("keys." + str(idx) + ".8" , JoystickValue("b",        pad)) # JUMP
         config.save("keys." + str(idx) + ".9" , JoystickValue("select",   pad)) # SPECIAL
         config.save("keys." + str(idx) + ".10", JoystickValue("start",    pad)) # START
         config.save("keys." + str(idx) + ".11", JoystickValue("l2",       pad)) # SCREENSHOT
