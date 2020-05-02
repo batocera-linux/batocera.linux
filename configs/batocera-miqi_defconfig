@@ -88,9 +88,8 @@ BR2_PACKAGE_HOST_DOSFSTOOLS=y
 BR2_PACKAGE_HOST_MTOOLS=y
 BR2_PACKAGE_HOST_UBOOT_TOOLS=y
 
-# choices can be put in _defconfig files only
-# workaround for 5.25 until we figure out what is going on with ffplay
-# BR2_PACKAGE_BATOCERA_SPLASH_FFPLAY=y
+# Batocera Splash Video
+BR2_PACKAGE_BATOCERA_SPLASH_MPV=y
 
 # Enables ccache, strace and gdb
 #BR2_PACKAGE_BATOCERA_DEV=y
