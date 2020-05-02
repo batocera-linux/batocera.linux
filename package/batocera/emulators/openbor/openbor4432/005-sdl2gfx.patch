@@ -7,7 +7,7 @@ index ed4bff6..07fe1a4 100644
  LIBS           += -lSDL -lSDL_gfx -lts
  else
 -LIBS           += -Wl,-rpath,$(LIBRARIES) -lSDL2 -lSDL2 -lGL
-+LIBS           += -Wl,-rpath,$(LIBRARIES) -lSDL2 -lSDL2 -lGL -lSDL2_gfx
++LIBS           += -Wl,-rpath,$(LIBRARIES) -lSDL2 -lSDL2 -lSDL2_gfx
  endif
  endif
  
