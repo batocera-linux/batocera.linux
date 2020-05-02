@@ -645,3 +645,187 @@ index 8bbe335e650c..66e1c50b38fc 100644
  #define RC_MAP_WETEK_HUB                 "rc-wetek-hub"
  #define RC_MAP_WETEK_PLAY_2              "rc-wetek-play-2"
  #define RC_MAP_VIDEOMATE_K100            "rc-videomate-k100"
+
+From 312b78202feca8f3966343b0362466e9c6ff2297 Mon Sep 17 00:00:00 2001
+From: Jonas Karlman <jonas@kwiboo.se>
+Date: Mon, 17 Dec 2018 07:41:16 +0100
+Subject: [PATCH] [media] rc/keymaps: add keytable for Khadas IR Remote
+ Controller
+
+---
+ drivers/media/rc/keymaps/Makefile    |  1 +
+ drivers/media/rc/keymaps/rc-khadas.c | 52 ++++++++++++++++++++++++++++++++++++
+ include/media/rc-map.h               |  1 +
+ 3 files changed, 54 insertions(+)
+ create mode 100644 drivers/media/rc/keymaps/rc-khadas.c
+
+diff --git a/drivers/media/rc/keymaps/Makefile b/drivers/media/rc/keymaps/Makefile
+index 2aaa1b33ddca..fc0207d322a0 100644
+--- a/drivers/media/rc/keymaps/Makefile
++++ b/drivers/media/rc/keymaps/Makefile
+@@ -47,6 +47,7 @@ obj-$(CONFIG_RC_MAP) += rc-adstech-dvb-t-pci.o \
+ 			rc-it913x-v1.o \
+ 			rc-it913x-v2.o \
+ 			rc-kaiomy.o \
++			rc-khadas.o \
+ 			rc-kworld-315u.o \
+ 			rc-kworld-pc150u.o \
+ 			rc-kworld-plus-tv-analog.o \
+diff --git a/drivers/media/rc/keymaps/rc-khadas.c b/drivers/media/rc/keymaps/rc-khadas.c
+new file mode 100644
+index 000000000000..492368db75d9
+--- /dev/null
++++ b/drivers/media/rc/keymaps/rc-khadas.c
+@@ -0,0 +1,52 @@
++/* Keytable for Khadas IR Remote Controller
++ *
++ * Copyright (c) 2018 Shenzhen Wesion Technology Co., Ltd
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License as published by
++ * the Free Software Foundation; either version 2 of the License, or
++ * (at your option) any later version.
++ */
++
++#include <media/rc-map.h>
++#include <linux/module.h>
++
++static struct rc_map_table khadas[] = {
++	{ 0x14, KEY_POWER },
++	{ 0x07, KEY_OK },
++	{ 0x03, KEY_UP },
++	{ 0x02, KEY_DOWN },
++	{ 0x0e, KEY_LEFT },
++	{ 0x1a, KEY_RIGHT },
++	{ 0x13, KEY_MENU },
++	{ 0x01, KEY_BACK },
++	{ 0x0b, KEY_VOLUMEUP },
++	{ 0x58, KEY_VOLUMEDOWN },
++	{ 0x48, KEY_HOME },
++	{ 0x5b, KEY_CONTEXT_MENU },
++};
++
++static struct rc_map_list khadas_map = {
++	.map = {
++		.scan    = khadas,
++		.size    = ARRAY_SIZE(khadas),
++		.rc_type = RC_TYPE_NEC,
++		.name    = RC_MAP_KHADAS,
++	}
++};
++
++static int __init init_rc_map_khadas(void)
++{
++	return rc_map_register(&khadas_map);
++}
++
++static void __exit exit_rc_map_khadas(void)
++{
++	rc_map_unregister(&khadas_map);
++}
++
++module_init(init_rc_map_khadas)
++module_exit(exit_rc_map_khadas)
++
++MODULE_LICENSE("GPL");
++MODULE_AUTHOR("Khadas");
+diff --git a/include/media/rc-map.h b/include/media/rc-map.h
+index 66e1c50b38fc..6b2db526fac0 100644
+--- a/include/media/rc-map.h
++++ b/include/media/rc-map.h
+@@ -154,6 +154,7 @@ void rc_map_init(void);
+ #define RC_MAP_IT913X_V1                 "rc-it913x-v1"
+ #define RC_MAP_IT913X_V2                 "rc-it913x-v2"
+ #define RC_MAP_KAIOMY                    "rc-kaiomy"
++#define RC_MAP_KHADAS                    "rc-khadas"
+ #define RC_MAP_KWORLD_315U               "rc-kworld-315u"
+ #define RC_MAP_KWORLD_PC150U             "rc-kworld-pc150u"
+ #define RC_MAP_KWORLD_PLUS_TV_ANALOG     "rc-kworld-plus-tv-analog"
+--- a/drivers/media/rc/keymaps/rc-rktvbox.c
++++ b/drivers/media/rc/keymaps/rc-rktvbox.c
+@@ -0,0 +1,65 @@
++/* Keytable for Rockchip TV Box IR Remote Controller
++ *
++ * Copyright (c) 2018 knaerzche
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License as published by
++ * the Free Software Foundation; either version 2 of the License, or
++ * (at your option) any later version.
++ */
++
++#include <media/rc-map.h>
++#include <linux/module.h>
++
++static struct rc_map_table rktvbox[] = {
++	{ 0xcc1d49, KEY_NUMERIC_0 },
++	{ 0xcc1d41, KEY_NUMERIC_1 },
++	{ 0xcc1d45, KEY_NUMERIC_2 },
++	{ 0xcc1d4d, KEY_NUMERIC_3 },
++	{ 0xcc1d42, KEY_NUMERIC_4 },
++	{ 0xcc1d46, KEY_NUMERIC_5 },
++	{ 0xcc1d4e, KEY_NUMERIC_6 },
++	{ 0xcc1d43, KEY_NUMERIC_7 },
++	{ 0xcc1d47, KEY_NUMERIC_8 },
++	{ 0xcc1d4f, KEY_NUMERIC_9 },
++	{ 0xcc1d0c, KEY_MUTE },
++	{ 0xcc1d07, KEY_UP },
++	{ 0xcc1d4a, KEY_BACKSPACE },
++	{ 0xcc1d11, KEY_OK },
++	{ 0xcc1d44, KEY_DOWN },
++	{ 0xcc1d10, KEY_LEFT },
++	{ 0xcc1d12, KEY_RIGHT },
++	{ 0xcc1d02, KEY_VOLUMEDOWN },
++	{ 0xcc1d0e, KEY_VOLUMEUP },
++	{ 0xcc1d03, KEY_HOME },
++	{ 0xcc1d40, KEY_MENU },
++	{ 0xcc1d09, KEY_WWW },
++	{ 0xcc1d0f, KEY_BACK },
++	{ 0xcc1d4c, KEY_INFO },
++	{ 0xcc1d00, KEY_POWER },
++};
++
++static struct rc_map_list rktvbox_map = {
++	.map = {
++		.scan     = rktvbox,
++		.size     = ARRAY_SIZE(rktvbox),
++               .rc_proto = RC_PROTO_NEC,
++		.name     = RC_MAP_RKTVBOX,
++	}
++};
++
++static int __init init_rc_map_rktvbox(void)
++{
++	return rc_map_register(&rktvbox_map);
++}
++
++static void __exit exit_rc_map_rktvbox(void)
++{
++	rc_map_unregister(&rktvbox_map);
++}
++
++module_init(init_rc_map_rktvbox)
++module_exit(exit_rc_map_rktvbox)
++
++MODULE_LICENSE("GPL");
++MODULE_AUTHOR("knaerzche");
+--- a/drivers/media/rc/keymaps/Makefile
++++ b/drivers/media/rc/keymaps/Makefile
+@@ -69,6 +69,7 @@
+ 			rc-odroid.o \
+ 			rc-pctv-sedna.o \
+ 			rc-pine64.o \
++			rc-rktvbox.o \
+ 			rc-pinnacle-color.o \
+ 			rc-pinnacle-grey.o \
+ 			rc-pinnacle-pctv-hd.o \
+--- a/include/media/rc-map.h
++++ b/include/media/rc-map.h
+@@ -178,6 +178,7 @@
+ #define RC_MAP_ODROID                    "rc-odroid"
+ #define RC_MAP_PCTV_SEDNA                "rc-pctv-sedna"
+ #define RC_MAP_PINE64                    "rc-pine64"
++#define RC_MAP_RKTVBOX                   "rc-rktvbox"
+ #define RC_MAP_PINNACLE_COLOR            "rc-pinnacle-color"
+ #define RC_MAP_PINNACLE_GREY             "rc-pinnacle-grey"
+ #define RC_MAP_PINNACLE_PCTV_HD          "rc-pinnacle-pctv-hd"
