@@ -1051,7 +1051,7 @@ ports:
   extensions: [sh]
   group: ports
   path:       /userdata/roms/ports
-  command:    "/bin/sh %ROM%"
+  command:    "/bin/sh %ROM% %CONTROLLERSCONFIG%"
   force:      True
   comment_en: |
           Third party Linux games and apps that can be run from a .sh script.
