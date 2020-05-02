@@ -6,7 +6,7 @@ BOOTCONF="/boot/batocera-boot.conf"
 test "$1" != "start" && exit 0
 
 # true if triggers are not available or not set to do so
-if ! grep -qE '^[ ]*autoresize[ ]*=[ ]*true[ ]*$' "${BOOTCONF}" || ! grep -qE '^[ ]*format-internal[ ]*=' "${BOOTCONF}"
+if ! grep -qE '^[ ]*autoresize[ ]*=[ ]*true[ ]*$' "${BOOTCONF}" && ! grep -qE '^[ ]*format-internal[ ]*=' "${BOOTCONF}"
 then
     exit 0
 fi
