@@ -49,6 +49,7 @@ then
 	"Resizing partition.........." "Pending"
 	"Checking /userdata.........." "Pending"
 	"Resizing /userdata.........." "Pending"
+	"Formatting /userdata........" "Pending
     )
 
     # --- BEGIN RESIZE ---
@@ -66,7 +67,7 @@ then
     mount -o remount,rw /boot && sed -i -e s+'^[ ]*autoresize'+'#autoresize'+ "${BOOTCONF}" && mount -o remount,ro /boot
 
     # textoutput "Message" "percentage" "command call" 
-    for i in 1 3 5 7 9 11; do
+    for i in 1 3 5 7 9 11 13; do
 	case $i in
 	    1) textoutput $i 01 "sleep 0.1";;
 	    3) textoutput $i 10 "sync";;
@@ -74,6 +75,7 @@ then
 	    7) textoutput $i 40 "parted -s -m ${DISK} resizepart 2 100%";;
 	    9) textoutput $i 55 "e2fsck -f -p ${PART}";;
 	    11) textoutput $i 75 "resize2fs ${PART}";;
+	    13) textoutput $i 90 "mkfs.ext4 -L SHARE -q -F -F ${PART}";; # what to do in case of error ? nothing.
 	esac
     done
 
