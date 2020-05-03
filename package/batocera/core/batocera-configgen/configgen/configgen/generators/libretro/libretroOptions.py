@@ -109,6 +109,9 @@ def generateCoreSettings(retroarchCore, system):
     if (system.config['core'] == 'flycast'):
         coreSettings.save('reicast_threaded_rendering',   '"enabled"')
 
+    if (system.config['core'] == 'dosbox'):
+        coreSettings.save('dosbox_svn_pcspeaker', '"true"')
+
     if (system.config['core'] == 'pcsx_rearmed'):
         for n in range(1, 8+1):
             val = coreSettings.load('pcsx_rearmed_pad{}type'.format(n))
