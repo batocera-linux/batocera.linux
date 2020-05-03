@@ -25,6 +25,11 @@ define MALI_T620_WAYLAND_INSTALL_STAGING_CMDS
 	(cd $(STAGING_DIR)/usr/lib && ln -sf libmali.so libGLESv2.so)
 	(cd $(STAGING_DIR)/usr/lib && ln -sf libmali.so libGLESv2.so.2)
 	(cd $(STAGING_DIR)/usr/lib && ln -sf libmali.so libgbm.so)
+	(cd $(STAGING_DIR)/usr/lib && ln -sf libmali.so libgbm.so.1)
+	(cd $(STAGING_DIR)/usr/lib && ln -sf libmali.so libOpenCL.so)
+	(cd $(STAGING_DIR)/usr/lib && ln -sf libmali.so libOpenCL.so.1)
+	(cd $(STAGING_DIR)/usr/lib && ln -sf libmali.so libwayland-egl.so)
+	(cd $(STAGING_DIR)/usr/lib && ln -sf libmali.so libwayland-egl.so.1)
 
 	cp -pr $(@D)/include	$(STAGING_DIR)/usr
 	cp $(@D)/include/gbm.h 	$(STAGING_DIR)/usr/include/gbm.h
@@ -51,6 +56,11 @@ define MALI_T620_WAYLAND_INSTALL_TARGET_CMDS
 	(cd $(TARGET_DIR)/usr/lib && ln -sf libmali.so libGLESv2.so)
 	(cd $(TARGET_DIR)/usr/lib && ln -sf libmali.so libGLESv2.so.2)
 	(cd $(TARGET_DIR)/usr/lib && ln -sf libmali.so libgbm.so)
+	(cd $(TARGET_DIR)/usr/lib && ln -sf libmali.so libgbm.so.1)
+	(cd $(TARGET_DIR)/usr/lib && ln -sf libmali.so libOpenCL.so)
+	(cd $(TARGET_DIR)/usr/lib && ln -sf libmali.so libOpenCL.so.1)
+	(cd $(TARGET_DIR)/usr/lib && ln -sf libmali.so libwayland-egl.so)
+	(cd $(TARGET_DIR)/usr/lib && ln -sf libmali.so libwayland-egl.so.1)
 endef
 
 $(eval $(generic-package))
