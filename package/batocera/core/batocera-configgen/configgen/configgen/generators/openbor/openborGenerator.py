@@ -19,14 +19,18 @@ class OpenborGenerator(Generator):
         if not os.path.exists(savesDir):
             os.makedirs(savesDir)
 
-        # controllers
-        openborControllers.generateControllerConfig(configDir + "/config.ini", playersControllers)
-
-        core = system.config['core']
-        if system.config["core-forced"]:
-            return OpenborGenerator.executeCore(system.config['core'], rom)
         # guess the version to run
-        return OpenborGenerator.executeCore(OpenborGenerator.guessCore(rom), rom)
+        core = system.config['core']
+        if system.config["core-forced"] == False:
+            core = OpenborGenerator.guessCore(rom)
+
+        # controllers
+        configfilename = "config.ini"
+        if core == "openbor4432":
+            configfilename = "config4432.ini"
+        openborControllers.generateControllerConfig(configDir + "/" + configfilename, playersControllers, core)
+
+        return OpenborGenerator.executeCore(core, rom)
 
     @staticmethod
     def executeCore(core, rom):
