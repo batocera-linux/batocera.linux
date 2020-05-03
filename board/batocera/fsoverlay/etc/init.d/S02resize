@@ -5,7 +5,7 @@ BOOTCONF="/boot/batocera-boot.conf"
 # only at start
 test "$1" != "start" && exit 0
 
-# true if triggers are not available or not set to do so
+# Action begins if triggers in batocera-boot are available or set to do so, otherwise exit
 if ! grep -qE '^[ ]*autoresize[ ]*=[ ]*true[ ]*$' "${BOOTCONF}" && ! grep -qE '^[ ]*format-internal[ ]*=' "${BOOTCONF}"
 then
     exit 0
@@ -49,7 +49,7 @@ then
 	"Resizing partition.........." "Pending"
 	"Checking /userdata.........." "Pending"
 	"Resizing /userdata.........." "Pending"
-	"Formatting /userdata........" "Pending
+	"Formatting /userdata........" "Pending"
     )
 
     # --- BEGIN RESIZE ---
@@ -74,8 +74,8 @@ then
 	    5) textoutput $i 30 "sgdisk -e ${DISK}";;
 	    7) textoutput $i 40 "parted -s -m ${DISK} resizepart 2 100%";;
 	    9) textoutput $i 55 "e2fsck -f -p ${PART}";;
-	    11) textoutput $i 75 "resize2fs ${PART}";;
-	    13) textoutput $i 90 "mkfs.ext4 -L SHARE -q -F -F ${PART}";; # what to do in case of error ? nothing.
+	   11) textoutput $i 75 "resize2fs ${PART}";;
+	   13) textoutput $i 90 "mkfs.ext4 -L SHARE -q -F -F ${PART}";; # what to do in case of error ? nothing.
 	esac
     done
 
