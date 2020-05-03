@@ -4,8 +4,8 @@
 #
 ################################################################################
 
-MALI_T760_VERSION = 8867101e509ec9e99c2330b1dbd9830ec9350ffe
-MALI_T760_SITE = $(call github,rockchip-linux,libmali,$(MALI_T760_VERSION))
+MALI_T760_VERSION = 9abaef63196bf7c0624b2c9b6e4dfa1f0c8df44f
+MALI_T760_SITE = $(call github,Ntemis,libmali,$(MALI_T760_VERSION))
 
 MALI_T760_INSTALL_STAGING = YES
 MALI_T760_PROVIDES = libegl libgles
