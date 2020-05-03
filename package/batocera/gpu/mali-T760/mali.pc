@@ -3,10 +3,8 @@ exec_prefix=${prefix}
 libdir=${prefix}/lib
 includedir=${prefix}/include
 
-Name: egl
+Name: mali
 Description: Mali EGL library
 Requires.private:
-Version: 7.10
-Libs: -L${libdir} -lEGL
-Libs.private: -lm -lpthread
+Libs: -L${libdir} -lMali
 Cflags: -I${includedir}
