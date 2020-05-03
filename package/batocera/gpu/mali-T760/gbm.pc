@@ -5,8 +5,8 @@ includedir=${prefix}/include
 
 Name: gbm
 Description: Mali GBM library
-Requires.private: 
+Requires.private:
 Version: 10.4.0
 Libs: -L${libdir} -lgbm
-Libs.private: 
-Cflags: -I${includedir} 
+Libs.private:
+Cflags: -I${includedir}
