@@ -2,21 +2,24 @@
 from settings.unixSettings import UnixSettings
 from utils.logger import eslog
 
-def generateControllerConfig(configFile, playersControllers):
+def generateControllerConfig(configFile, playersControllers, core):
 
     config = UnixSettings(configFile, separator='')
-    setupControllers(config, playersControllers)
+
+    if core == "openbor4432":
+        setupControllers(config, playersControllers, 32)
+    else:
+        setupControllers(config, playersControllers, 64)
 
     config.save("fullscreen", "1")
     config.save("vsync", "1")
     config.save("usegl", "1")
     config.save("usejoy", "1")
 
-def JoystickValue(key, pad):
+def JoystickValue(key, pad, joy_max_inputs):
     if key not in pad.inputs:
         return 0
 
-    joy_max_inputs = 64
     value = 0
     input = pad.inputs[key]
 
@@ -34,7 +37,7 @@ def JoystickValue(key, pad):
         value = hatfirst
 
     elif input.type == "axis":
-        axisfirst = 1 + (int(pad.index)) * joy_max_inputs + int(pad.nbbuttons) + 2 * input.id
+        axisfirst = 1 + (int(pad.index)) * joy_max_inputs + int(pad.nbbuttons) + 2 * int(input.id)
         if (input.value > 0):
             axisfirst += 1
         value = axisfirst
@@ -45,25 +48,25 @@ def JoystickValue(key, pad):
     #eslog.log("input.type={} input.id={} input.value={} => result={}".format(input.type, input.id, input.value, value))
     return value
 
-def setupControllers(config, playersControllers):
+def setupControllers(config, playersControllers, joy_max_inputs):
     idx = 0
     for playercontroller, pad in sorted(playersControllers.items()):
-        config.save("keys." + str(idx) + ".0" , JoystickValue("up",       pad)) # MOVEUP
-        config.save("keys." + str(idx) + ".1" , JoystickValue("down",     pad)) # MOVEDOWN
-        config.save("keys." + str(idx) + ".2" , JoystickValue("left",     pad)) # MOVELEFT
-        config.save("keys." + str(idx) + ".3" , JoystickValue("right",    pad)) # MOVERIGHT
-        config.save("keys." + str(idx) + ".4" , JoystickValue("a",        pad)) # ATTACK
-        config.save("keys." + str(idx) + ".5" , JoystickValue("x",        pad)) # ATTACK2
-        config.save("keys." + str(idx) + ".6" , JoystickValue("y",        pad)) # ATTACK3
-        config.save("keys." + str(idx) + ".7" , JoystickValue("pagedown", pad)) # ATTACK4
-        config.save("keys." + str(idx) + ".8" , JoystickValue("b",        pad)) # JUMP
-        config.save("keys." + str(idx) + ".9" , JoystickValue("select",   pad)) # SPECIAL
-        config.save("keys." + str(idx) + ".10", JoystickValue("start",    pad)) # START
-        config.save("keys." + str(idx) + ".11", JoystickValue("l2",       pad)) # SCREENSHOT
+        config.save("keys." + str(idx) + ".0" , JoystickValue("up",       pad, joy_max_inputs)) # MOVEUP
+        config.save("keys." + str(idx) + ".1" , JoystickValue("down",     pad, joy_max_inputs)) # MOVEDOWN
+        config.save("keys." + str(idx) + ".2" , JoystickValue("left",     pad, joy_max_inputs)) # MOVELEFT
+        config.save("keys." + str(idx) + ".3" , JoystickValue("right",    pad, joy_max_inputs)) # MOVERIGHT
+        config.save("keys." + str(idx) + ".4" , JoystickValue("a",        pad, joy_max_inputs)) # ATTACK
+        config.save("keys." + str(idx) + ".5" , JoystickValue("x",        pad, joy_max_inputs)) # ATTACK2
+        config.save("keys." + str(idx) + ".6" , JoystickValue("y",        pad, joy_max_inputs)) # ATTACK3
+        config.save("keys." + str(idx) + ".7" , JoystickValue("pagedown", pad, joy_max_inputs)) # ATTACK4
+        config.save("keys." + str(idx) + ".8" , JoystickValue("b",        pad, joy_max_inputs)) # JUMP
+        config.save("keys." + str(idx) + ".9" , JoystickValue("select",   pad, joy_max_inputs)) # SPECIAL
+        config.save("keys." + str(idx) + ".10", JoystickValue("start",    pad, joy_max_inputs)) # START
+        config.save("keys." + str(idx) + ".11", JoystickValue("l2",       pad, joy_max_inputs)) # SCREENSHOT
 
         # hotkey
         if idx == 0:
-            config.save("keys." + str(idx) + ".12", JoystickValue("hotkey", pad)) # ESC
+            config.save("keys." + str(idx) + ".12", JoystickValue("hotkey", pad, joy_max_inputs)) # ESC
         else:
             config.save("keys." + str(idx) + ".12", "0") # ESC
 
