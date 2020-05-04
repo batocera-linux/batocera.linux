@@ -171,8 +171,10 @@ do_format_internal() {
             echo "format-internal=${PARTTYPE}" >> "${CONFIGBOOT}"
         fi
 	mount -o remount,ro /boot
+	echo "the formatting will be done at next boot"
+	return 69 # 69 is the reboot code to es
     fi
-    return 0
+    return 1
 }
 
 ACTION=$1
@@ -193,15 +195,11 @@ case "${ACTION}" in
 	fi
 	if test "${1}" = "INTERNAL"
 	then
-	    if ! do_format_internal "${2}"
-	    then
-		exit 1
-	    fi
+	    do_format_internal "${2}"
+	    exit $?
 	else
-	    if ! do_format "${1}" "${2}"
-	    then
-		exit 1
-	    fi
+	    do_format "${1}" "${2}"
+	    exit $?
 	fi
 	;;
     *)
