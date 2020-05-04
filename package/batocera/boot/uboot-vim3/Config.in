@@ -1,0 +1,6 @@
+config BR2_PACKAGE_UBOOT_VIM3
+	bool "uboot-vim3"
+	depends on BR2_TARGET_UBOOT
+	help
+	  U-Boot files for Khadas VIM3
+	  based on https://github.com/LibreELEC/LibreELEC.tv/blob/9f00cd296d3988995551a1f765d06f67c02eda88/projects/Amlogic/bootloader/install
