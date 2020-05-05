@@ -20,17 +20,6 @@ getPer() {
     done
 }
 
-reboot_os() {
-while true; do
-    read -r -p "Do you want to reboot (y/n): " yn
-    case $yn in
-        [Yy]* ) reboot; break;;
-        [Nn]* ) exit 0; break;;
-        * ) echo "Please answer yes or no.";;
-    esac
-done
-}
-
 # ---- MAIN ----
 
 CUSTOM_URLDIR=
@@ -179,11 +168,4 @@ rm -f "/userdata/system/upgrade/boot.tar.xz"
 rm -f "/userdata/system/upgrade/boot.tar.xz.md5"
 sync
 
-echo "done."
-
-if [ $TERMINAL = 0 ]; then
-    exit 0
-else
-    # Ask inside SSH/TERMINAL
-    reboot_os
-fi
+echo "done. this is not the responsibility of the batocera-upgrade script to reboot"
