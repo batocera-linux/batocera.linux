@@ -25,7 +25,7 @@ endif
 
 # odroid c2 / S905 and variants
 ifeq ($(BR2_aarch64),y)
-	PPSSPP_CONF_OPTS += -DARM_NEON=ON -DUSING_X11_VULKAN=OFF 
+	PPSSPP_CONF_OPTS += -DARM64=ON -DARM_NEON=ON -DUSING_X11_VULKAN=OFF 
 endif
 
 # odroid / rpi / rockpro64
