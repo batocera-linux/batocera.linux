@@ -1,0 +1,29 @@
+From 6873f13e5afcc27ba3642227eacf90ea19d68ed4 Mon Sep 17 00:00:00 2001
+From: chewitt <github@chrishewitt.net>
+Date: Sun, 11 Aug 2019 09:45:04 +0000
+Subject: [PATCH 136/146] WIP: arm64: dts: meson-g12b-odroid-n2: disable LED
+ heartbeat
+
+The constantly flashing blue LED heartbeat is annoying for an HTPC device
+so remove the heartbeat line.
+
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+---
+ arch/arm64/boot/dts/amlogic/meson-g12b-odroid-n2.dts | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-n2.dts b/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-n2.dts
+index 8830d3844885..72d4ef775ac4 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-n2.dts
++++ b/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-n2.dts
+@@ -40,7 +40,6 @@
+ 		blue {
+ 			label = "n2:blue";
+ 			gpios = <&gpio_ao GPIOAO_11 GPIO_ACTIVE_HIGH>;
+-			linux,default-trigger = "heartbeat";
+ 		};
+ 	};
+ 
+-- 
+2.17.1
+
