@@ -454,7 +454,7 @@ case "${BATOCERA_TARGET}" in
 	# /boot
 	rm -rf "${BINARIES_DIR}/boot"            || exit 1
 	mkdir -p "${BINARIES_DIR}/boot/boot"     || exit 1
-	# "${HOST_DIR}/bin/mkimage" -A arm64 -O linux -T kernel -C none -a 0x1080000 -e 0x1080000 -n 5.x -d "${BINARIES_DIR}/Image" "${BINARIES_DIR}/uImage" || exit 1
+	"${HOST_DIR}/bin/mkimage" -A arm64 -O linux -T kernel -C none -a 0x1080000 -e 0x1080000 -n 5.x -d "${BINARIES_DIR}/Image" "${BINARIES_DIR}/uImage" || exit 1
 	cp "${BINARIES_DIR}/uImage"                "${BINARIES_DIR}/boot/boot/linux"                || exit 1
 	cp "${BINARIES_DIR}/uInitrd"             "${BINARIES_DIR}/boot/boot/uInitrd"                || exit 1
 	cp "${BINARIES_DIR}/rootfs.squashfs"       "${BINARIES_DIR}/boot/boot/batocera.update"      || exit 1
@@ -575,7 +575,7 @@ case "${BATOCERA_TARGET}" in
 	# /boot
 	rm -rf "${BINARIES_DIR}/boot"            || exit 1
 	mkdir -p "${BINARIES_DIR}/boot/boot"     || exit 1
-	# "${HOST_DIR}/bin/mkimage" -A arm64 -O linux -T kernel -C none -a 0x1080000 -e 0x1080000  -n batocera.linux -d "${BINARIES_DIR}/Image" "${BINARIES_DIR}/uImage" || exit 1
+	"${HOST_DIR}/bin/mkimage" -A arm64 -O linux -T kernel -C none -a 0x1080000 -e 0x1080000  -n batocera.linux -d "${BINARIES_DIR}/Image" "${BINARIES_DIR}/uImage" || exit 1
 	cp "${BINARIES_DIR}/uImage"                "${BINARIES_DIR}/boot/boot/linux"                || exit 1
 	cp "${BINARIES_DIR}/uInitrd"             "${BINARIES_DIR}/boot/boot/uInitrd"                || exit 1
 	cp "${BINARIES_DIR}/rootfs.squashfs"       "${BINARIES_DIR}/boot/boot/batocera.update"      || exit 1
