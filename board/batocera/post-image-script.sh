@@ -232,10 +232,10 @@ case "${BATOCERA_TARGET}" in
 	# boot
 	rm -rf "${BINARIES_DIR:?}/boot"      || exit 1
 	mkdir -p "${BINARIES_DIR}/boot/boot" || exit 1
-	cp "${BOARD_DIR}"/boot/boot-logo.bmp.gz "${BINARIES_DIR}/boot"   || exit 1
+	cp "${BOARD_DIR}/boot/boot-logo.bmp.gz" "${BINARIES_DIR}/boot"   || exit 1
 	$MKIMAGE -C none -A arm64 -T script -d "${BOARD_DIR}/boot/s905_autoscript.txt" "${BINARIES_DIR}/boot/s905_autoscript"
 	$MKIMAGE -C none -A arm64 -T script -d "${BOARD_DIR}/boot/aml_autoscript.txt" "${BINARIES_DIR}/boot/aml_autoscript"
-	cp "${BOARD_DIR}"/boot/aml_autoscript.zip "${BINARIES_DIR}/boot"     || exit 1
+	cp "${BOARD_DIR}/boot/aml_autoscript.zip" "${BINARIES_DIR}/boot"     || exit 1
 	cp "${BINARIES_DIR}/batocera-boot.conf" "${BINARIES_DIR}/boot/batocera-boot.conf" || exit 1
 	cp "${BOARD_DIR}/boot/README.txt" "${BINARIES_DIR}/boot/README.txt" || exit 1
 	for DTB in gxbb_p200_2G.dtb  gxbb_p200.dtb  gxl_p212_1g.dtb  gxl_p212_2g.dtb all_merged.dtb
@@ -273,10 +273,10 @@ case "${BATOCERA_TARGET}" in
 	# boot
 	rm -rf "${BINARIES_DIR:?}/boot"      || exit 1
 	mkdir -p "${BINARIES_DIR}/boot/boot" || exit 1
-	cp "${BOARD_DIR}"/boot/boot-logo.bmp.gz "${BINARIES_DIR}/boot"   || exit 1
+	cp "${BOARD_DIR}/boot/boot-logo.bmp.gz" "${BINARIES_DIR}/boot"   || exit 1
 	$MKIMAGE -C none -A arm64 -T script -d "${BOARD_DIR}/boot/s905_autoscript.txt" "${BINARIES_DIR}/boot/s905_autoscript"
 	$MKIMAGE -C none -A arm64 -T script -d "${BOARD_DIR}/boot/aml_autoscript.txt" "${BINARIES_DIR}/boot/aml_autoscript"
-	cp "${BOARD_DIR}"/boot/aml_autoscript.zip "${BINARIES_DIR}/boot"     || exit 1
+	cp "${BOARD_DIR}/boot/aml_autoscript.zip" "${BINARIES_DIR}/boot"     || exit 1
 	cp "${BINARIES_DIR}/batocera-boot.conf" "${BINARIES_DIR}/boot/batocera-boot.conf" || exit 1
 	cp "${BINARIES_DIR}/all_merged.dtb" "${BINARIES_DIR}/dtb.img" || exit 1
 	$MKBOOTIMAGE --kernel "${BINARIES_DIR}/Image" --ramdisk "${BINARIES_DIR}/initrd" --second "${BINARIES_DIR}/dtb.img" --output "${BINARIES_DIR}/linux" || exit 1
