@@ -25,8 +25,13 @@ ifeq ($(BR2_arm),y)
 	LIBRETRO_DOSBOX_EXTRA_ARGS = target=arm WITH_EMBEDDED_SDL=0
 endif
 
+ifeq ($(BR2_aarch64),y)
+	LIBRETRO_DOSBOX_EXTRA_ARGS = target=arm64 WITH_EMBEDDED_SDL=0
+endif
+
 define LIBRETRO_DOSBOX_BUILD_CMDS
-	$(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" -C $(@D)/libretro -f Makefile.libretro platform=$(BATOCERA_SYSTEM) $(LIBRETRO_DOSBOX_EXTRA_ARGS)
+	$(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" -C $(@D)/libretro -f Makefile.libretro \
+		platform=$(BATOCERA_SYSTEM) $(LIBRETRO_DOSBOX_EXTRA_ARGS)
 endef
 
 define LIBRETRO_DOSBOX_INSTALL_TARGET_CMDS
