@@ -307,7 +307,7 @@ case "${BATOCERA_TARGET}" in
 	# /boot
 	rm -rf "${BINARIES_DIR:?}/boot"     || exit 1
 	mkdir -p "${BINARIES_DIR}/boot"     || exit 1
-	cp "${BR2_EXTERNAL_BATOCERA_PATH}/board/batocera/x86/boot/syslinux.cfg" "${BINARIES_DIR/}"/boot/syslinux.cfg || exit 1
+	cp "${BR2_EXTERNAL_BATOCERA_PATH}/board/batocera/x86/boot/syslinux.cfg" "${BINARIES_DIR/}/boot/syslinux.cfg" || exit 1
 	cp "${BINARIES_DIR}/bzImage" "${BINARIES_DIR}/boot/linux" || exit 1
 	cp "${BINARIES_DIR}/initrd.gz" "${BINARIES_DIR}/boot" || exit 1
 	cp "${BINARIES_DIR}/rootfs.squashfs" "${BINARIES_DIR}/boot/batocera.update" || exit 1
@@ -315,7 +315,7 @@ case "${BATOCERA_TARGET}" in
 
 	# get UEFI files
 	mkdir -p "${BINARIES_DIR}/EFI/syslinux" || exit 1
-	cp "${BR2_EXTERNAL_BATOCERA_PATH}/board/batocera/x86/boot/syslinux.cfg" "${BINARIES_DIR/}"/EFI/syslinux/syslinux.cfg || exit 1
+	cp "${BR2_EXTERNAL_BATOCERA_PATH}/board/batocera/x86/boot/syslinux.cfg" "${BINARIES_DIR/}/EFI/syslinux/syslinux.cfg" || exit 1
 
 	# boot.tar.xz
 	# it must include the squashfs version with .update to not erase the current squashfs while running
@@ -350,7 +350,7 @@ case "${BATOCERA_TARGET}" in
 	cp "${BINARIES_DIR}/rootfs.squashfs"       "${BINARIES_DIR}/boot/boot/batocera.update"      || exit 1
 	cp "${BINARIES_DIR}/rk3399-rockpro64.dtb"  "${BINARIES_DIR}/boot/boot/rk3399-rockpro64.dtb" || exit 1
 	cp "${BINARIES_DIR}/batocera-boot.conf"    "${BINARIES_DIR}/boot/batocera-boot.conf"        || exit 1
-	cp "${BR2_EXTERNAL_BATOCERA_PATH}/board/batocera/rockpro64/boot/extlinux.conf" "${BINARIES_DIR}/boot"/extlinux                   || exit 1
+	cp "${BR2_EXTERNAL_BATOCERA_PATH}/board/batocera/rockpro64/boot/extlinux.conf" "${BINARIES_DIR}/boot/extlinux"                   || exit 1
 	cp -pr "${BINARIES_DIR}/tools"       "${BINARIES_DIR}/boot/"                || exit 1
 
 	# boot.tar.xz
@@ -387,7 +387,7 @@ case "${BATOCERA_TARGET}" in
     cp "${BINARIES_DIR}/rootfs.squashfs"       "${BINARIES_DIR}/boot/boot/batocera.update"      || exit 1
     cp "${BINARIES_DIR}/rk3399-rock960-ab.dtb"  "${BINARIES_DIR}/boot/boot/rk3399-rock960-ab.dtb" || exit 1
     cp "${BINARIES_DIR}/batocera-boot.conf"    "${BINARIES_DIR}/boot/batocera-boot.conf"        || exit 1
-    cp "${BR2_EXTERNAL_BATOCERA_PATH}/board/batocera/rock960/boot/extlinux.conf" "${BINARIES_DIR}/boot"/extlinux                   || exit 1
+    cp "${BR2_EXTERNAL_BATOCERA_PATH}/board/batocera/rock960/boot/extlinux.conf" "${BINARIES_DIR}/boot/extlinux"                   || exit 1
     cp -pr "${BINARIES_DIR}/tools"       "${BINARIES_DIR}/boot/"                || exit 1
 
     # boot.tar.xz
@@ -497,7 +497,7 @@ case "${BATOCERA_TARGET}" in
 	cp "${BINARIES_DIR}/rootfs.squashfs"       "${BINARIES_DIR}/boot/boot/batocera.update"      || exit 1
 	cp "${BINARIES_DIR}/rk3288-miniarm.dtb"  "${BINARIES_DIR}/boot/boot/rk3288-miniarm.dtb" || exit 1
 	cp "${BINARIES_DIR}/batocera-boot.conf"    "${BINARIES_DIR}/boot/batocera-boot.conf"        || exit 1
-	cp "${BR2_EXTERNAL_BATOCERA_PATH}/board/batocera/tinkerboard/boot/extlinux.conf" "${BINARIES_DIR}/boot"/extlinux                   || exit 1
+	cp "${BR2_EXTERNAL_BATOCERA_PATH}/board/batocera/tinkerboard/boot/extlinux.conf" "${BINARIES_DIR}/boot/extlinux"                   || exit 1
 	cp -pr "${BINARIES_DIR}/tools"       "${BINARIES_DIR}/boot/"                || exit 1
 
 	# boot.tar.xz
@@ -508,8 +508,8 @@ case "${BATOCERA_TARGET}" in
 	MKIMAGE=$HOST_DIR/bin/mkimage
 	BOARD_DIR="${BR2_EXTERNAL_BATOCERA_PATH}/board/batocera/tinkerboard"
 
-	$MKIMAGE -n rk3288 -T rksd -d "$BINARIES_DIR"/u-boot-spl-dtb.bin "$BINARIES_DIR"/u-boot-spl-dtb.img
-	cat "$BINARIES_DIR"/u-boot-dtb.bin >> "$BINARIES_DIR"/u-boot-spl-dtb.img
+	$MKIMAGE -n rk3288 -T rksd -d "$BINARIES_DIR"/u-boot-spl-dtb.bin "$BINARIES_DIR/u-boot-spl-dtb.img"
+	cat "$BINARIES_DIR/u-boot-dtb.bin" >> "$BINARIES_DIR/u-boot-spl-dtb.img"
 	for F in u-boot-spl-dtb.img
 	do
 		cp "${BINARIES_DIR}/${F}" "${BINARIES_DIR}/boot/${F}" || exit 1
@@ -539,7 +539,7 @@ case "${BATOCERA_TARGET}" in
 	cp "${BINARIES_DIR}/rootfs.squashfs"       "${BINARIES_DIR}/boot/boot/batocera.update"      || exit 1
 	cp "${BINARIES_DIR}/rk3288-miqi.dtb"  "${BINARIES_DIR}/boot/boot/rk3288-miqi.dtb" || exit 1
 	cp "${BINARIES_DIR}/batocera-boot.conf"    "${BINARIES_DIR}/boot/batocera-boot.conf"        || exit 1
-	cp "${BR2_EXTERNAL_BATOCERA_PATH}/board/batocera/miqi/boot/extlinux.conf" "${BINARIES_DIR}/boot"/extlinux                   || exit 1
+	cp "${BR2_EXTERNAL_BATOCERA_PATH}/board/batocera/miqi/boot/extlinux.conf" "${BINARIES_DIR}/boot/extlinux"                   || exit 1
 	cp -pr "${BINARIES_DIR}/tools"       "${BINARIES_DIR}/boot/"                || exit 1
 
 	# boot.tar.xz
@@ -550,8 +550,8 @@ case "${BATOCERA_TARGET}" in
 	MKIMAGE=$HOST_DIR/bin/mkimage
 	BOARD_DIR="${BR2_EXTERNAL_BATOCERA_PATH}/board/batocera/miqi"
 
-	$MKIMAGE -n rk3288 -T rksd -d "$BINARIES_DIR"/u-boot-spl-dtb.bin "$BINARIES_DIR"/u-boot-spl-dtb.img
-	cat "$BINARIES_DIR"/u-boot-dtb.bin >> "$BINARIES_DIR"/u-boot-spl-dtb.img
+	$MKIMAGE -n rk3288 -T rksd -d "$BINARIES_DIR"/u-boot-spl-dtb.bin "$BINARIES_DIR/u-boot-spl-dtb.img"
+	cat "$BINARIES_DIR/u-boot-dtb.bin" >> "$BINARIES_DIR/u-boot-spl-dtb.img"
 	for F in u-boot-spl-dtb.img
 	do
 		cp "${BINARIES_DIR}/${F}" "${BINARIES_DIR}/boot/${F}" || exit 1
