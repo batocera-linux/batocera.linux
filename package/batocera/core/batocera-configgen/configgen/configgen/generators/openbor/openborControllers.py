@@ -1,20 +1,10 @@
-
-from settings.unixSettings import UnixSettings
 from utils.logger import eslog
 
-def generateControllerConfig(configFile, playersControllers, core):
-
-    config = UnixSettings(configFile, separator='')
-
+def generateControllerConfig(config, playersControllers, core):
     if core == "openbor4432":
         setupControllers(config, playersControllers, 32)
     else:
         setupControllers(config, playersControllers, 64)
-
-    config.save("fullscreen", "1")
-    config.save("vsync", "1")
-    config.save("usegl", "1")
-    config.save("usejoy", "1")
 
 def JoystickValue(key, pad, joy_max_inputs):
     if key not in pad.inputs:
