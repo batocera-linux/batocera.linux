@@ -6,6 +6,7 @@ from generators.Generator import Generator
 import openborControllers
 import os
 import re
+from settings.unixSettings import UnixSettings
 
 class OpenborGenerator(Generator):
 
@@ -24,11 +25,32 @@ class OpenborGenerator(Generator):
         if system.config["core-forced"] == False:
             core = OpenborGenerator.guessCore(rom)
 
-        # controllers
+        # config file
         configfilename = "config.ini"
         if core == "openbor4432":
             configfilename = "config4432.ini"
-        openborControllers.generateControllerConfig(configDir + "/" + configfilename, playersControllers, core)
+
+        config = UnixSettings(configDir + "/" + configfilename, separator='')
+
+        # general
+        config.save("fullscreen", "1")
+        config.save("vsync", "1")
+        config.save("usegl", "1")
+        config.save("usejoy", "1")
+
+        # options
+        if system.isOptSet("ratio"):
+            config.save("stretch", system.config["ratio"])
+        else:
+            config.remove("stretch")
+
+        if system.isOptSet("filter"):
+            config.save("swfilter", system.config["filter"])
+        else:
+            config.remove("swfilter")
+
+        # controllers
+        openborControllers.generateControllerConfig(config, playersControllers, core)
 
         return OpenborGenerator.executeCore(core, rom)
 
