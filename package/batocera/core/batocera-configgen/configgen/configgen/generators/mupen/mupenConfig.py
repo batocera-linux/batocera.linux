@@ -25,8 +25,7 @@ def setMupenConfig(iniConfig, system, controllers, gameResolution):
 	iniConfig.set("Video-General", "Version", "1")
 	iniConfig.set("Video-General", "ScreenWidth",  gameResolution["width"])
 	iniConfig.set("Video-General", "ScreenHeight", gameResolution["height"])
-	# i don't know which value of VerticalSync should be set (it was False in original configgen)
-	iniConfig.set("Video-General", "VerticalSync", "False")
+	iniConfig.set("Video-General", "VerticalSync", "True")
 	
 	# wide screen mode
 	# Glide64mk2.: Adjust screen aspect for wide screen mode: -1=Game default, 0=disable. 1=enable
