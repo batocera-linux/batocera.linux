@@ -1,0 +1,3 @@
+config BR2_PACKAGE_MALI_MIDGARD_MODULE
+	bool "mali-midgard-module"
+	depends on BR2_LINUX_KERNEL
