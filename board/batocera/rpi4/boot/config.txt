@@ -49,3 +49,7 @@ initramfs boot/initrd.gz
 # enable_uart=1
 
 dtoverlay=vc4-fkms-v3d
+
+# Argon One case for RPi4
+dtparam=i2c_arm=on
+dtparam=i2c-1=on
