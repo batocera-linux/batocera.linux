@@ -3,7 +3,7 @@
 # MK_ARCADE_JOYSTICK_RPI
 #
 ################################################################################
-# Version: 1.7.0 Commits on May 08, 2020
+# Version: 0.1.7 Commits on May 08, 2020
 MK_ARCADE_JOYSTICK_RPI_VERSION = 910dd090459b14d7d1cf186a3dadfd4ff3ec877b
 MK_ARCADE_JOYSTICK_RPI_SITE = $(call github,batocera-linux,mk_arcade_joystick_rpi,$(MK_ARCADE_JOYSTICK_RPI_VERSION))
 MK_ARCADE_JOYSTICK_RPI_DEPENDENCIES = linux
