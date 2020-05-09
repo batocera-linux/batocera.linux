@@ -1,0 +1,42 @@
+#!/bin/bash
+# launch daemon to manage fan on Argon One Rpi4 case
+# @lbrpdx on Batocera Discord 
+
+systemsetting="batocera-settings"
+
+case "$1" in
+  start)
+    argonone_enabled="`$systemsetting -command load -key system.argonone`"
+    if [ "$argonone_enabled" == "1" ];then
+        modprobe i2c-dev
+        modprobe i2c-bcm2708
+        /usr/bin/batocera-argonone start &
+    fi
+  ;;
+  stop)
+    pid=$(ps auxw | grep batocera-argonone | grep -v grep | head -n 1 | awk '{print $1}')
+    if ! [ -z ${pid} ]; then
+        kill -9 ${pid}
+    fi
+    argonone_enabled="`$systemsetting -command load -key system.argonone`"
+    if [ "$argonone_enabled" == "1" ];then
+        if [ -f /tmp/shutdown.please ]; then
+             # force a power shutdown from GPIO block
+             /usr/bin/batocera-argonone halt &
+        else
+             # only stop fan (keep power block on)
+             /usr/bin/batocera-argonone stop &
+        fi
+    fi
+    ;;
+  reload|restart)
+    pid=$(ps auxw | grep batocera-argonone | grep -v grep | head -n 1 | awk '{print $1}')
+    if ! [ -z ${pid} ]; then
+        kill -9 ${pid}
+    fi
+    "$0" start& 
+    ;;
+  *)
+esac
+
+exit $?
