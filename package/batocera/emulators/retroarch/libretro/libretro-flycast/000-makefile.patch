@@ -13,15 +13,15 @@ index 9239424..5193a05 100644
  		endif
  		CORE_DEFINES += -DLOW_END
  	endif
-@@ -255,7 +255,7 @@ else ifeq ($(platform), classic_armv8_a35)
+@@ -256,7 +256,7 @@ else ifeq ($(platform), classic_armv8_a35)
  	FORCE_GLES = 1
  	SINGLE_PREC_FLAGS = 1
  	HAVE_LTCG = 0
 -	HAVE_OPENMP = 0
 +	HAVE_OPENMP = 1
+ 	THREADED_RENDERING_DEFAULT = 1
  	CFLAGS += -Ofast \
  	-flto -fuse-linker-plugin \
- 	-fno-stack-protector -fno-ident -fomit-frame-pointer \
 @@ -1042,7 +1042,7 @@ LIBS     += -lm
  PREFIX        ?= /usr/local
  
