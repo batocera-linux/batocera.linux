@@ -5,7 +5,7 @@
 ################################################################################
 
 
-XA_VERSION = 2.3.10
+XA_VERSION = 2.3.11
 XA_SOURCE=xa-$(XA_VERSION).tar.gz
 XA_SITE = https://www.floodgap.com/retrotech/xa/dists
 
