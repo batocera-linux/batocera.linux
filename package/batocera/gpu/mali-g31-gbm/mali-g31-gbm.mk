@@ -3,8 +3,8 @@
 # mali-g31-gbm
 #
 ################################################################################
-# Version.: Commits on Jan 6, 2020
-MALI_G31_GBM_VERSION = f226e982386287a4df669e2832d9ddd613d4153b
+# Version.: Commits on Apr 2, 2020
+MALI_G31_GBM_VERSION = 8867101e509ec9e99c2330b1dbd9830ec9350ffe
 MALI_G31_GBM_SITE = $(call github,rockchip-linux,libmali,$(MALI_G31_GBM_VERSION))
 
 MALI_G31_GBM_INSTALL_STAGING = YES
