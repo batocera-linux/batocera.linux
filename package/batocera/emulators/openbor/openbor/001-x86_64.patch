@@ -1,8 +1,8 @@
 diff --git a/engine/Makefile b/engine/Makefile
-index 8b0f9a6..8d6a559 100644
+index 6f66b32..7167952 100644
 --- a/engine/Makefile
 +++ b/engine/Makefile
-@@ -86,11 +86,11 @@ YASM 	        = yasm
+@@ -86,16 +86,16 @@ YASM 	        = yasm
  CC  	        = $(LNXDEV)/$(PREFIX)gcc
  OBJTYPE         = elf
  INCLUDES        = $(SDKPATH)/include
@@ -16,7 +16,13 @@ index 8b0f9a6..8d6a559 100644
  CFLAGS          += -DAMD64
  else
  TARGET_ARCH     = x86
-@@ -194,9 +194,6 @@ ifndef NO_STRIP
+ ARCHFLAGS       = -m32
+-LIBRARIES       = $(SDKPATH)/lib32
++#LIBRARIES       = $(SDKPATH)/lib32
+ BUILD_MMX       = 1
+ endif
+ ifeq ($(BUILD_LINUX), 0)
+@@ -210,9 +210,6 @@ ifndef NO_STRIP
  ifdef BUILD_WIN
  STRIP 	        = $(WINDEV)/$(PREFIX)strip$(EXTENSION) $(TARGET) -o $(TARGET_FINAL)
  endif
