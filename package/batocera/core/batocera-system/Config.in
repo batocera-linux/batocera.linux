@@ -425,7 +425,9 @@ config BR2_PACKAGE_BATOCERA_RETROARCH
         select BR2_PACKAGE_LIBRETRO_HANDY             # ALL
         select BR2_PACKAGE_LIBRETRO_LUTRO             # ALL
         select BR2_PACKAGE_LIBRETRO_BEETLE_WSWAN      # ALL
-        select BR2_PACKAGE_LIBRETRO_BEETLE_SUPERGRAFX # ALL
+        select BR2_PACKAGE_LIBRETRO_BEETLE_SUPERGRAFX if !BR2_PACKAGE_BATOCERA_TARGET_ROCK960 && \
+                                                         !BR2_PACKAGE_BATOCERA_TARGET_TINKERBOARD && \
+                                                         !BR2_PACKAGE_BATOCERA_TARGET_MIQI
         select BR2_PACKAGE_LIBRETRO_NXENGINE          # ALL
         select BR2_PACKAGE_LIBRETRO_PROSYSTEM         # ALL
         select BR2_PACKAGE_LIBRETRO_TGBDUAL           # ALL
