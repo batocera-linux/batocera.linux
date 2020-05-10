@@ -1,0 +1,473 @@
+From 91004e30822b271e4783d795f4057529e3d1bf49 Mon Sep 17 00:00:00 2001
+From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Date: Sat, 18 Apr 2020 03:16:06 +0000
+Subject: [PATCH 034/105] FROMLIST: dt-bindings: power: meson-ee-pwrc: add
+ support for Meson8/8b/8m2
+
+The power domains on the 32-bit Meson8/Meson8b/Meson8m2 SoCs are very
+similar to what G12A still uses. The (known) differences are:
+- Meson8 doesn't use any reset lines at all
+- Meson8b and Meson8m2 use the same reset lines, which are different
+  from what the 64-bit SoCs use
+- there is no "vapb" clock on the older SoCs
+- amlogic,ao-sysctrl cannot point to the whole AO sysctrl region but
+  only the power management related registers
+
+Add a new compatible string and adjust clock and reset line expectations
+for each SoC.
+
+Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+---
+ .../bindings/power/amlogic,meson-ee-pwrc.yaml |  75 ++++-
+ .../boot/dts/amlogic/meson-g12a-u200.dtsi     | 308 ++++++++++++++++++
+ include/dt-bindings/power/meson8-power.h      |  13 +
+ 3 files changed, 379 insertions(+), 17 deletions(-)
+ create mode 100644 arch/arm64/boot/dts/amlogic/meson-g12a-u200.dtsi
+ create mode 100644 include/dt-bindings/power/meson8-power.h
+
+diff --git a/Documentation/devicetree/bindings/power/amlogic,meson-ee-pwrc.yaml b/Documentation/devicetree/bindings/power/amlogic,meson-ee-pwrc.yaml
+index 6c6079fe1351..a0e4cf143b9c 100644
+--- a/Documentation/devicetree/bindings/power/amlogic,meson-ee-pwrc.yaml
++++ b/Documentation/devicetree/bindings/power/amlogic,meson-ee-pwrc.yaml
+@@ -23,13 +23,19 @@ description: |+
+ properties:
+   compatible:
+     enum:
++      - amlogic,meson8-pwrc
++      - amlogic,meson8b-pwrc
++      - amlogic,meson8m2-pwrc
+       - amlogic,meson-g12a-pwrc
+       - amlogic,meson-sm1-pwrc
+ 
+   clocks:
+-    minItems: 2
++    minItems: 1
++    maxItems: 2
+ 
+   clock-names:
++    minItems: 1
++    maxItems: 2
+     items:
+       - const: vpu
+       - const: vapb
+@@ -37,20 +43,6 @@ properties:
+   resets:
+     minItems: 11
+ 
+-  reset-names:
+-    items:
+-      - const: viu
+-      - const: venc
+-      - const: vcbus
+-      - const: bt656
+-      - const: rdma
+-      - const: venci
+-      - const: vencp
+-      - const: vdac
+-      - const: vdi6
+-      - const: vencl
+-      - const: vid_lock
+-
+   "#power-domain-cells":
+     const: 1
+ 
+@@ -59,12 +51,61 @@ properties:
+     allOf:
+       - $ref: /schemas/types.yaml#/definitions/phandle
+ 
++allOf:
++  - if:
++      properties:
++        compatible:
++          enum:
++            - amlogic,meson8b-pwrc
++            - amlogic,meson8m2-pwrc
++    then:
++      properties:
++        reset-names:
++          items:
++            - const: dblk
++            - const: pic_dc
++            - const: hdmi_apb
++            - const: hdmi_system
++            - const: venci
++            - const: vencp
++            - const: vdac
++            - const: vencl
++            - const: viu
++            - const: venc
++            - const: rdma
++      required:
++        - resets
++        - reset-names
++
++  - if:
++      properties:
++        compatible:
++          enum:
++            - amlogic,meson-g12a-pwrc
++            - amlogic,meson-sm1-pwrc
++    then:
++      properties:
++        reset-names:
++          items:
++            - const: viu
++            - const: venc
++            - const: vcbus
++            - const: bt656
++            - const: rdma
++            - const: venci
++            - const: vencp
++            - const: vdac
++            - const: vdi6
++            - const: vencl
++            - const: vid_lock
++      required:
++        - resets
++        - reset-names
++
+ required:
+   - compatible
+   - clocks
+   - clock-names
+-  - resets
+-  - reset-names
+   - "#power-domain-cells"
+   - amlogic,ao-sysctrl
+ 
+diff --git a/arch/arm64/boot/dts/amlogic/meson-g12a-u200.dtsi b/arch/arm64/boot/dts/amlogic/meson-g12a-u200.dtsi
+new file mode 100644
+index 000000000000..a26bfe72550f
+--- /dev/null
++++ b/arch/arm64/boot/dts/amlogic/meson-g12a-u200.dtsi
+@@ -0,0 +1,308 @@
++// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
++/*
++ * Copyright (c) 2018 Amlogic, Inc. All rights reserved.
++ */
++
++/dts-v1/;
++
++#include "meson-g12a.dtsi"
++#include <dt-bindings/gpio/gpio.h>
++#include <dt-bindings/gpio/meson-g12a-gpio.h>
++
++/ {
++	compatible = "amlogic,u200", "amlogic,g12a";
++	model = "Amlogic Meson G12A U200 Development Board";
++
++	aliases {
++		serial0 = &uart_AO;
++		ethernet0 = &ethmac;
++	};
++
++	chosen {
++		stdout-path = "serial0:115200n8";
++	};
++
++	cvbs-connector {
++		compatible = "composite-video-connector";
++
++		port {
++			cvbs_connector_in: endpoint {
++				remote-endpoint = <&cvbs_vdac_out>;
++			};
++		};
++	};
++
++	emmc_pwrseq: emmc-pwrseq {
++		compatible = "mmc-pwrseq-emmc";
++		reset-gpios = <&gpio BOOT_12 GPIO_ACTIVE_LOW>;
++	};
++
++	hdmi-connector {
++		compatible = "hdmi-connector";
++		type = "a";
++
++		port {
++			hdmi_connector_in: endpoint {
++				remote-endpoint = <&hdmi_tx_tmds_out>;
++			};
++		};
++	};
++
++	memory@0 {
++		device_type = "memory";
++		reg = <0x0 0x0 0x0 0x40000000>;
++	};
++
++	flash_1v8: regulator-flash_1v8 {
++		compatible = "regulator-fixed";
++		regulator-name = "FLASH_1V8";
++		regulator-min-microvolt = <1800000>;
++		regulator-max-microvolt = <1800000>;
++		vin-supply = <&vcc_3v3>;
++		regulator-always-on;
++	};
++
++	main_12v: regulator-main_12v {
++		compatible = "regulator-fixed";
++		regulator-name = "12V";
++		regulator-min-microvolt = <12000000>;
++		regulator-max-microvolt = <12000000>;
++		regulator-always-on;
++	};
++
++	usb_pwr_en: regulator-usb_pwr_en {
++		compatible = "regulator-fixed";
++		regulator-name = "USB_PWR_EN";
++		regulator-min-microvolt = <5000000>;
++		regulator-max-microvolt = <5000000>;
++		vin-supply = <&vcc_5v>;
++
++		gpio = <&gpio GPIOH_6 GPIO_ACTIVE_HIGH>;
++		enable-active-high;
++	};
++
++	vcc_1v8: regulator-vcc_1v8 {
++		compatible = "regulator-fixed";
++		regulator-name = "VCC_1V8";
++		regulator-min-microvolt = <1800000>;
++		regulator-max-microvolt = <1800000>;
++		vin-supply = <&vcc_3v3>;
++		regulator-always-on;
++	};
++
++	vcc_3v3: regulator-vcc_3v3 {
++		compatible = "regulator-fixed";
++		regulator-name = "VCC_3V3";
++		regulator-min-microvolt = <3300000>;
++		regulator-max-microvolt = <3300000>;
++		vin-supply = <&vddao_3v3>;
++		regulator-always-on;
++		/* FIXME: actually controlled by VDDCPU_B_EN */
++	};
++
++	vcc_5v: regulator-vcc_5v {
++		compatible = "regulator-fixed";
++		regulator-name = "VCC_5V";
++		regulator-min-microvolt = <5000000>;
++		regulator-max-microvolt = <5000000>;
++		vin-supply = <&main_12v>;
++
++		gpio = <&gpio GPIOH_8 GPIO_OPEN_DRAIN>;
++		enable-active-high;
++	};
++
++	vddao_1v8: regulator-vddao_1v8 {
++		compatible = "regulator-fixed";
++		regulator-name = "VDDAO_1V8";
++		regulator-min-microvolt = <1800000>;
++		regulator-max-microvolt = <1800000>;
++		vin-supply = <&vddao_3v3>;
++		regulator-always-on;
++	};
++
++	vddao_3v3: regulator-vddao_3v3 {
++		compatible = "regulator-fixed";
++		regulator-name = "VDDAO_3V3";
++		regulator-min-microvolt = <3300000>;
++		regulator-max-microvolt = <3300000>;
++		vin-supply = <&main_12v>;
++		regulator-always-on;
++	};
++
++	vddcpu: regulator-vddcpu {
++		/*
++		 * MP8756GD Regulator.
++		 */
++		compatible = "pwm-regulator";
++
++		regulator-name = "VDDCPU";
++		regulator-min-microvolt = <721000>;
++		regulator-max-microvolt = <1022000>;
++
++		vin-supply = <&main_12v>;
++
++		pwms = <&pwm_AO_cd 1 1250 0>;
++		pwm-dutycycle-range = <100 0>;
++
++		regulator-boot-on;
++		regulator-always-on;
++	};
++};
++
++&cec_AO {
++	pinctrl-0 = <&cec_ao_a_h_pins>;
++	pinctrl-names = "default";
++	status = "disabled";
++	hdmi-phandle = <&hdmi_tx>;
++};
++
++&cecb_AO {
++	pinctrl-0 = <&cec_ao_b_h_pins>;
++	pinctrl-names = "default";
++	status = "okay";
++	hdmi-phandle = <&hdmi_tx>;
++};
++
++&cpu0 {
++	cpu-supply = <&vddcpu>;
++	operating-points-v2 = <&cpu_opp_table>;
++	clocks = <&clkc CLKID_CPU_CLK>;
++	clock-latency = <50000>;
++};
++
++&cpu1 {
++	cpu-supply = <&vddcpu>;
++	operating-points-v2 = <&cpu_opp_table>;
++	clocks = <&clkc CLKID_CPU_CLK>;
++	clock-latency = <50000>;
++};
++
++&cpu2 {
++	cpu-supply = <&vddcpu>;
++	operating-points-v2 = <&cpu_opp_table>;
++	clocks = <&clkc CLKID_CPU_CLK>;
++	clock-latency = <50000>;
++};
++
++&cpu3 {
++	cpu-supply = <&vddcpu>;
++	operating-points-v2 = <&cpu_opp_table>;
++	clocks = <&clkc CLKID_CPU_CLK>;
++	clock-latency = <50000>;
++};
++
++&cvbs_vdac_port {
++	cvbs_vdac_out: endpoint {
++		remote-endpoint = <&cvbs_connector_in>;
++	};
++};
++
++&ethmac {
++	status = "okay";
++	phy-handle = <&internal_ephy>;
++	phy-mode = "rmii";
++};
++
++&hdmi_tx {
++	status = "okay";
++	pinctrl-0 = <&hdmitx_hpd_pins>, <&hdmitx_ddc_pins>;
++	pinctrl-names = "default";
++	hdmi-supply = <&vcc_5v>;
++};
++
++&hdmi_tx_tmds_port {
++	hdmi_tx_tmds_out: endpoint {
++		remote-endpoint = <&hdmi_connector_in>;
++	};
++};
++
++&ir {
++	status = "okay";
++	pinctrl-0 = <&remote_input_ao_pins>;
++	pinctrl-names = "default";
++};
++
++/* i2c Touch */
++&i2c0 {
++	status = "okay";
++	pinctrl-0 = <&i2c0_sda_z0_pins>, <&i2c0_sck_z1_pins>;
++	pinctrl-names = "default";
++};
++
++/* i2c CM */
++&i2c2 {
++	status = "okay";
++	pinctrl-0 = <&i2c2_sda_z_pins>, <&i2c2_sck_z_pins>;
++	pinctrl-names = "default";
++};
++
++/* i2c Audio */
++&i2c3 {
++	status = "okay";
++	pinctrl-0 = <&i2c3_sda_a_pins>, <&i2c3_sck_a_pins>;
++	pinctrl-names = "default";
++};
++
++&pwm_AO_cd {
++	pinctrl-0 = <&pwm_ao_d_e_pins>;
++	pinctrl-names = "default";
++	clocks = <&xtal>;
++	clock-names = "clkin1";
++	status = "okay";
++};
++
++/* SD card */
++&sd_emmc_b {
++	status = "okay";
++	pinctrl-0 = <&sdcard_c_pins>;
++	pinctrl-1 = <&sdcard_clk_gate_c_pins>;
++	pinctrl-names = "default", "clk-gate";
++
++	bus-width = <4>;
++	cap-sd-highspeed;
++	max-frequency = <50000000>;
++	disable-wp;
++
++	cd-gpios = <&gpio GPIOC_6 GPIO_ACTIVE_LOW>;
++	vmmc-supply = <&vddao_3v3>;
++	vqmmc-supply = <&vddao_3v3>;
++};
++
++/* eMMC */
++&sd_emmc_c {
++	status = "okay";
++	pinctrl-0 = <&emmc_ctrl_pins>, <&emmc_data_8b_pins>, <&emmc_ds_pins>;
++	pinctrl-1 = <&emmc_clk_gate_pins>;
++	pinctrl-names = "default", "clk-gate";
++
++	bus-width = <8>;
++	cap-mmc-highspeed;
++	mmc-ddr-1_8v;
++	mmc-hs200-1_8v;
++	max-frequency = <200000000>;
++	non-removable;
++	disable-wp;
++
++	mmc-pwrseq = <&emmc_pwrseq>;
++	vmmc-supply = <&vcc_3v3>;
++	vqmmc-supply = <&flash_1v8>;
++};
++
++&uart_AO {
++	status = "okay";
++	pinctrl-0 = <&uart_ao_a_pins>;
++	pinctrl-names = "default";
++};
++
++&usb {
++	status = "okay";
++	vbus-supply = <&usb_pwr_en>;
++};
++
++&usb2_phy0 {
++	phy-supply = <&vcc_5v>;
++};
++
++&usb2_phy1 {
++	phy-supply = <&vcc_5v>;
++};
+diff --git a/include/dt-bindings/power/meson8-power.h b/include/dt-bindings/power/meson8-power.h
+new file mode 100644
+index 000000000000..dd8b2ddb82a7
+--- /dev/null
++++ b/include/dt-bindings/power/meson8-power.h
+@@ -0,0 +1,13 @@
++/* SPDX-License-Identifier: (GPL-2.0+ or MIT) */
++/*
++ * Copyright (c) 2019 Martin Blumenstingl <martin.blumenstingl@googlemail.com>
++ */
++
++#ifndef _DT_BINDINGS_MESON8_POWER_H
++#define _DT_BINDINGS_MESON8_POWER_H
++
++#define PWRC_MESON8_VPU_ID			0
++#define PWRC_MESON8_ETHERNET_MEM_ID		1
++#define PWRC_MESON8_AUDIO_DSP_MEM_ID		2
++
++#endif /* _DT_BINDINGS_MESON8_POWER_H */
+-- 
+2.25.0
+

@@ -1,0 +1,182 @@
+From 45e0080384b547a8fb59edc9e7df41525df5be28 Mon Sep 17 00:00:00 2001
+From: Neil Armstrong <narmstrong@baylibre.com>
+Date: Sat, 2 May 2020 21:13:37 +0000
+Subject: [PATCH 059/105] FROMLIST(v2): drm/meson: add mode selection limits
+ against specific SoC revisions
+
+The Amlogic S805X/Y uses the same die as the S905X, but with more
+limited graphics capabilities.
+
+This adds a soc version detection adding specific limitations on the HDMI
+mode selections.
+
+Here, we limit to HDMI 1.2a max HDMI PHY clock frequency.
+
+Changes sinces v1:
+- Moved frequency check in the vclk code, and also checks DMT modes
+
+Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
+---
+ drivers/gpu/drm/meson/meson_drv.c     | 29 ++++++++++++++++++++++++++-
+ drivers/gpu/drm/meson/meson_drv.h     |  6 ++++++
+ drivers/gpu/drm/meson/meson_dw_hdmi.c |  2 +-
+ drivers/gpu/drm/meson/meson_vclk.c    | 16 ++++++++++++++-
+ drivers/gpu/drm/meson/meson_vclk.h    |  3 ++-
+ 5 files changed, 52 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/gpu/drm/meson/meson_drv.c b/drivers/gpu/drm/meson/meson_drv.c
+index b5f5eb7b4bb9..6c7a81983a0e 100644
+--- a/drivers/gpu/drm/meson/meson_drv.c
++++ b/drivers/gpu/drm/meson/meson_drv.c
+@@ -11,6 +11,7 @@
+ #include <linux/component.h>
+ #include <linux/module.h>
+ #include <linux/of_graph.h>
++#include <linux/sys_soc.h>
+ #include <linux/platform_device.h>
+ #include <linux/soc/amlogic/meson-canvas.h>
+ 
+@@ -183,6 +184,24 @@ static void meson_remove_framebuffers(void)
+ 	kfree(ap);
+ }
+ 
++struct meson_drm_soc_attr {
++	struct meson_drm_soc_limits limits;
++	const struct soc_device_attribute *attrs;
++};
++
++static const struct meson_drm_soc_attr meson_drm_soc_attrs[] = {
++	/* S805X/S805Y HDMI PLL won't lock for HDMI PHY freq > 1,65GHz */
++	{
++		.limits = {
++			.max_hdmi_phy_freq = 1650000,
++		},
++		.attrs = (const struct soc_device_attribute []) {
++			{ .soc_id = "GXL (S805*)", },
++			{ /* sentinel */ },
++		}
++	},
++};
++
+ static int meson_drv_bind_master(struct device *dev, bool has_components)
+ {
+ 	struct platform_device *pdev = to_platform_device(dev);
+@@ -191,7 +210,7 @@ static int meson_drv_bind_master(struct device *dev, bool has_components)
+ 	struct drm_device *drm;
+ 	struct resource *res;
+ 	void __iomem *regs;
+-	int ret;
++	int ret, i;
+ 
+ 	/* Checks if an output connector is available */
+ 	if (!meson_vpu_has_available_connectors(dev)) {
+@@ -281,6 +300,14 @@ static int meson_drv_bind_master(struct device *dev, bool has_components)
+ 	if (ret)
+ 		goto free_drm;
+ 
++	/* Assign limits per soc revision/package */
++	for (i = 0 ; i < ARRAY_SIZE(meson_drm_soc_attrs) ; ++i) {
++		if (soc_device_match(meson_drm_soc_attrs[i].attrs)) {
++			priv->limits = &meson_drm_soc_attrs[i].limits;
++			break;
++		}
++	}
++
+ 	/* Remove early framebuffers (ie. simplefb) */
+ 	meson_remove_framebuffers();
+ 
+diff --git a/drivers/gpu/drm/meson/meson_drv.h b/drivers/gpu/drm/meson/meson_drv.h
+index da951964e988..177dac3ca3be 100644
+--- a/drivers/gpu/drm/meson/meson_drv.h
++++ b/drivers/gpu/drm/meson/meson_drv.h
+@@ -30,6 +30,10 @@ struct meson_drm_match_data {
+ 	struct meson_afbcd_ops *afbcd_ops;
+ };
+ 
++struct meson_drm_soc_limits {
++	unsigned int max_hdmi_phy_freq;
++};
++
+ struct meson_drm {
+ 	struct device *dev;
+ 	enum vpu_compatible compat;
+@@ -48,6 +52,8 @@ struct meson_drm {
+ 	struct drm_plane *primary_plane;
+ 	struct drm_plane *overlay_plane;
+ 
++	const struct meson_drm_soc_limits *limits;
++
+ 	/* Components Data */
+ 	struct {
+ 		bool osd1_enabled;
+diff --git a/drivers/gpu/drm/meson/meson_dw_hdmi.c b/drivers/gpu/drm/meson/meson_dw_hdmi.c
+index 64cb6ba4bc42..24a12c453095 100644
+--- a/drivers/gpu/drm/meson/meson_dw_hdmi.c
++++ b/drivers/gpu/drm/meson/meson_dw_hdmi.c
+@@ -695,7 +695,7 @@ dw_hdmi_mode_valid(struct drm_connector *connector,
+ 	dev_dbg(connector->dev->dev, "%s: vclk:%d phy=%d venc=%d hdmi=%d\n",
+ 		__func__, phy_freq, vclk_freq, venc_freq, hdmi_freq);
+ 
+-	return meson_vclk_vic_supported_freq(phy_freq, vclk_freq);
++	return meson_vclk_vic_supported_freq(priv, phy_freq, vclk_freq);
+ }
+ 
+ /* Encoder */
+diff --git a/drivers/gpu/drm/meson/meson_vclk.c b/drivers/gpu/drm/meson/meson_vclk.c
+index fdf26dac9fa8..0eb86943a358 100644
+--- a/drivers/gpu/drm/meson/meson_vclk.c
++++ b/drivers/gpu/drm/meson/meson_vclk.c
+@@ -725,6 +725,13 @@ meson_vclk_dmt_supported_freq(struct meson_drm *priv, unsigned int freq)
+ 	/* In DMT mode, path after PLL is always /10 */
+ 	freq *= 10;
+ 
++	/* Check against soc revision/package limits */
++	if (priv->limits) {
++		if (priv->limits->max_hdmi_phy_freq &&
++		    freq > priv->limits->max_hdmi_phy_freq)
++			return MODE_CLOCK_HIGH;
++	}
++
+ 	if (meson_hdmi_pll_find_params(priv, freq, &m, &frac, &od))
+ 		return MODE_OK;
+ 
+@@ -762,7 +769,7 @@ static void meson_hdmi_pll_generic_set(struct meson_drm *priv,
+ }
+ 
+ enum drm_mode_status
+-meson_vclk_vic_supported_freq(unsigned int phy_freq,
++meson_vclk_vic_supported_freq(struct meson_drm *priv, unsigned int phy_freq,
+ 			      unsigned int vclk_freq)
+ {
+ 	int i;
+@@ -770,6 +777,13 @@ meson_vclk_vic_supported_freq(unsigned int phy_freq,
+ 	DRM_DEBUG_DRIVER("phy_freq = %d vclk_freq = %d\n",
+ 			 phy_freq, vclk_freq);
+ 
++	/* Check against soc revision/package limits */
++	if (priv->limits) {
++		if (priv->limits->max_hdmi_phy_freq &&
++		    phy_freq > priv->limits->max_hdmi_phy_freq)
++			return MODE_CLOCK_HIGH;
++	}
++
+ 	for (i = 0 ; params[i].pixel_freq ; ++i) {
+ 		DRM_DEBUG_DRIVER("i = %d pixel_freq = %d alt = %d\n",
+ 				 i, params[i].pixel_freq,
+diff --git a/drivers/gpu/drm/meson/meson_vclk.h b/drivers/gpu/drm/meson/meson_vclk.h
+index aed0ab2efa71..60617aaf18dd 100644
+--- a/drivers/gpu/drm/meson/meson_vclk.h
++++ b/drivers/gpu/drm/meson/meson_vclk.h
+@@ -25,7 +25,8 @@ enum {
+ enum drm_mode_status
+ meson_vclk_dmt_supported_freq(struct meson_drm *priv, unsigned int freq);
+ enum drm_mode_status
+-meson_vclk_vic_supported_freq(unsigned int phy_freq, unsigned int vclk_freq);
++meson_vclk_vic_supported_freq(struct meson_drm *priv, unsigned int phy_freq,
++			      unsigned int vclk_freq);
+ 
+ void meson_vclk_setup(struct meson_drm *priv, unsigned int target,
+ 		      unsigned int phy_freq, unsigned int vclk_freq,
+-- 
+2.25.0
+

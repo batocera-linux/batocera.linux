@@ -1,0 +1,39 @@
+From 317bdc307ac39d92de2c40cae871ca44d426bd47 Mon Sep 17 00:00:00 2001
+From: Christian Hewitt <christianshewitt@gmail.com>
+Date: Tue, 21 Apr 2020 06:21:10 +0000
+Subject: [PATCH 050/105] FROMLIST: dt-bindings: net: bluetooth: Add device
+ tree bindings for QCA9377
+
+QCA9377 is a QCA ROME device frequently found in Android TV boxes.
+
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+---
+ Documentation/devicetree/bindings/net/qualcomm-bluetooth.txt | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/Documentation/devicetree/bindings/net/qualcomm-bluetooth.txt b/Documentation/devicetree/bindings/net/qualcomm-bluetooth.txt
+index d2202791c1d4..2fec6912e160 100644
+--- a/Documentation/devicetree/bindings/net/qualcomm-bluetooth.txt
++++ b/Documentation/devicetree/bindings/net/qualcomm-bluetooth.txt
+@@ -10,6 +10,7 @@ device the slave device is attached to.
+ Required properties:
+  - compatible: should contain one of the following:
+    * "qcom,qca6174-bt"
++   * "qcom,qca9377-bt"
+    * "qcom,wcn3990-bt"
+    * "qcom,wcn3991-bt"
+    * "qcom,wcn3998-bt"
+@@ -20,6 +21,10 @@ Optional properties for compatible string qcom,qca6174-bt:
+  - clocks: clock provided to the controller (SUSCLK_32KHZ)
+  - firmware-name: specify the name of nvm firmware to load
+ 
++Optional properties for compatible string qcom,qca9377-bt:
++
++ - max-speed: see Documentation/devicetree/bindings/serial/serial.yaml
++
+ Required properties for compatible string qcom,wcn399x-bt:
+ 
+  - vddio-supply: VDD_IO supply regulator handle.
+-- 
+2.25.0
+

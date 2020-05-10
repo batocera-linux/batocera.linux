@@ -1,0 +1,62 @@
+From d081a047e67833a7f2ea290c00822e3ac5314043 Mon Sep 17 00:00:00 2001
+From: Neil Armstrong <narmstrong@baylibre.com>
+Date: Tue, 24 Mar 2020 14:36:16 +0100
+Subject: [PATCH 024/105] FROMLIST: drm/fourcc: amlogic: Add modifier
+ definitions for the Scatter layout
+
+Amlogic uses a proprietary lossless image compression protocol and format
+for their hardware video codec accelerators, either video decoders or
+video input encoders.
+
+This introduces the Scatter Memory layout, means the header contains IOMMU
+references to the compressed frames content to optimize memory access
+and layout.
+
+In this mode, only the header memory address is needed, thus the content
+memory organization is tied to the current producer execution and cannot
+be saved/dumped neither transferrable between Amlogic SoCs supporting this
+modifier.
+
+Tested-by: Kevin Hilman <khilman@baylibre.com>
+Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
+---
+ include/uapi/drm/drm_fourcc.h | 16 +++++++++++++++-
+ 1 file changed, 15 insertions(+), 1 deletion(-)
+
+diff --git a/include/uapi/drm/drm_fourcc.h b/include/uapi/drm/drm_fourcc.h
+index 84edc5d69613..b49f1d45e1b4 100644
+--- a/include/uapi/drm/drm_fourcc.h
++++ b/include/uapi/drm/drm_fourcc.h
+@@ -840,6 +840,19 @@ extern "C" {
+  */
+ #define DRM_FORMAT_MOD_AMLOGIC_FBC_LAYOUT_BASIC		(1ULL << 0)
+ 
++/*
++ * Amlogic FBC Scatter Memory layout
++ *
++ * Indicates the header contains IOMMU references to the compressed
++ * frames content to optimize memory access and layout.
++ *
++ * In this mode, only the header memory address is needed, thus the
++ * content memory organization is tied to the current producer
++ * execution and cannot be saved/dumped neither transferrable between
++ * Amlogic SoCs supporting this modifier.
++ */
++#define DRM_FORMAT_MOD_AMLOGIC_FBC_LAYOUT_SCATTER	(2ULL << 0)
++
+ /*
+  * Amlogic FBC Layout Options
+  */
+@@ -852,7 +865,8 @@ extern "C" {
+  * memory.
+  *
+  * This mode reduces body layout to 3072 bytes per 64x32 superblock with
+- * the basic layout.
++ * the basic layout and 3200 bytes per 64x32 superblock combined with
++ * the scatter layout.
+  */
+ #define DRM_FORMAT_MOD_AMLOGIC_FBC_MEM_SAVING	(1ULL << 8)
+ 
+-- 
+2.25.0
+
