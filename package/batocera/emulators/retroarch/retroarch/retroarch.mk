@@ -166,40 +166,36 @@ $(eval $(generic-package))
 # DEFINITION OF LIBRETRO PLATFORM
 LIBRETRO_PLATFORM = unix
 
-ifeq ($(BR2_ARM_CPU_ARMV6),y)
-    LIBRETRO_PLATFORM += armv6
+ifeq ($(BR2_arm),y)
+	ifeq ($(BR2_cortex_a7),y)
+		LIBRETRO_PLATFORM += armv7
+	endif
+
+	ifeq ($(BR2_cortex_a15),y)
+		LIBRETRO_PLATFORM += armv7
+	endif
+
+	ifeq ($(BR2_cortex_a17),y)
+		LIBRETRO_PLATFORM += armv7
+	endif
+
+	ifeq ((BR2_cortex_a72_a53),y)
+		LIBRETRO_PLATFORM += armv7
+	endif
+
+	ifeq ($(BR2_cortex_a72),y)
+		LIBRETRO_PLATFORM += armv7
+	endif
+
+	ifeq ($(BR2_cortex_a35),y)
+		LIBRETRO_PLATFORM += armv8 classic_armv8_a35
+	endif
 endif
 
-ifeq ($(BR2_cortex_a7),y)
-    LIBRETRO_PLATFORM += armv7
-endif
-
-ifeq ($(BR2_cortex_a53)$(BR2_arm),yy)
-    LIBRETRO_PLATFORM += armv8
-endif
-
-ifeq ($(BR2_cortex_a15),y)
-    LIBRETRO_PLATFORM += armv7
-endif
-
-ifeq ($(BR2_cortex_a17),y)
-    LIBRETRO_PLATFORM += armv7
-endif
-
-ifeq ($(BR2_arm)$(BR2_cortex_a72_a53),yy)
-    LIBRETRO_PLATFORM += armv7
-endif
-
-ifeq ($(BR2_arm)$(BR2_cortex_a72),yy)
-    LIBRETRO_PLATFORM += armv7
-endif
-
-ifeq ($(BR2_arm)$(BR2_cortex_a35),yy)
-    LIBRETRO_PLATFORM += classic_armv8_a35
-endif
-
-ifeq ($(BR2_arm)$(BR2_cortex_a73_a53),yy)
-    LIBRETRO_PLATFORM += armv7
+ifeq ($(BR2_aarch64),y)
+	ifeq ($(BR2_cortex_a73_a53),y)
+		LIBRETRO_PLATFORM += armv8 CortexA73_G12B
+	endif
 endif
 
 ifeq ($(BR2_ARM_CPU_HAS_NEON),y)
