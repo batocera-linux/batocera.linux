@@ -23,7 +23,7 @@ else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI1),y)
 	AMIBERRY_BATOCERA_SYSTEM=rpi1-sdl2
 else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_XU4),y)
 	AMIBERRY_BATOCERA_SYSTEM=xu4
-else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_ODROIDN2),y)
+else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_ODROIDN2)$(BR2_PACKAGE_BATOCERA_TARGET_VIM3),y)
 	AMIBERRY_BATOCERA_SYSTEM=n2
 else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA),y)
 	AMIBERRY_BATOCERA_SYSTEM=RK3326
@@ -63,7 +63,7 @@ define AMIBERRY_INSTALL_TARGET_CMDS
 
 	ln -sf /userdata/system/configs/amiberry/whdboot $(TARGET_DIR)/usr/share/amiberry/whdboot
         mkdir -p $(TARGET_DIR)/usr/share/batocera/datainit/system/configs/amiberry
-		
+
 	cp -pr $(@D)/whdboot $(TARGET_DIR)/usr/share/batocera/datainit/system/configs/amiberry/
 	cp -rf $(@D)/data $(TARGET_DIR)/usr/share/amiberry
 endef
