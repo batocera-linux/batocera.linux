@@ -3,8 +3,8 @@
 # retroarch
 #
 ################################################################################
-# Version.: Commits on May 05, 2020
-RETROARCH_VERSION = v1.8.6
+# Version.: Commits on May 09, 2020
+RETROARCH_VERSION = df3af35ee46fdd91dec7ef51d9b4493802b9ea56
 RETROARCH_SITE = $(call github,libretro,RetroArch,$(RETROARCH_VERSION))
 RETROARCH_LICENSE = GPLv3+
 RETROARCH_DEPENDENCIES = host-pkgconf dejavu retroarch-assets flac
@@ -189,12 +189,6 @@ ifeq ($(BR2_arm),y)
 
 	ifeq ($(BR2_cortex_a35),y)
 		LIBRETRO_PLATFORM += armv8 classic_armv8_a35
-	endif
-endif
-
-ifeq ($(BR2_aarch64),y)
-	ifeq ($(BR2_cortex_a73_a53),y)
-		LIBRETRO_PLATFORM += armv8 CortexA73_G12B
 	endif
 endif
 

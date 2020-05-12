@@ -1,13 +1,13 @@
 diff --git a/sdl2/Makefile.libretro b/sdl2/Makefile.libretro
-index 3174232..3ad5283 100755
+index 3174232..d875921 100755
 --- a/sdl2/Makefile.libretro
 +++ b/sdl2/Makefile.libretro
 @@ -92,6 +92,16 @@ else ifneq (,$(findstring rpi,$(platform)))
  		CFLAGS += -mcpu=cortex-a72 -fdata-sections -ffunction-sections -Wl,--gc-sections -fmerge-all-constants
  	endif
  
-+# ODROIDN2
-+else ifneq (,$(findstring odroidn2,$(platform)))
++# ODROIDN2 / VIM3
++else ifneq (,$(findstring CortexA73_G12B,$(platform)))
 +	TARGET := $(TARGET_NAME)_libretro.so
 +	fpic := -fPIC
 +	SHARED := -shared -Wl,-version-script=link.T
