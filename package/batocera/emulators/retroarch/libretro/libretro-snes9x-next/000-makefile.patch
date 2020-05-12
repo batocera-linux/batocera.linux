@@ -7,7 +7,7 @@ index 7c15d32..177b75d 100644
          HAVE_NEON = 1
  
 +# ODROIDN2
-+else ifneq (,$(findstring odroidn2,$(platform)))
++else ifneq (,$(findstring CortexA73_G12B,$(platform)))
 +	TARGET := $(TARGET_NAME)_libretro.so
 +	fpic := -fPIC
 +	SHARED := -shared -Wl,--version-script=libretro/link.T -Wl,--no-undefined

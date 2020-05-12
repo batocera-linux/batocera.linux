@@ -192,12 +192,6 @@ ifeq ($(BR2_arm),y)
 	endif
 endif
 
-ifeq ($(BR2_aarch64),y)
-	ifeq ($(BR2_cortex_a73_a53),y)
-		LIBRETRO_PLATFORM += armv8 CortexA73_G12B
-	endif
-endif
-
 ifeq ($(BR2_ARM_CPU_HAS_NEON),y)
     LIBRETRO_PLATFORM += neon
 endif
