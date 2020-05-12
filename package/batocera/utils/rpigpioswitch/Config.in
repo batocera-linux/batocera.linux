@@ -1,6 +1,4 @@
 config BR2_PACKAGE_RPIGPIOSWITCH
         bool "rpigpioswitch"
-	depends on BR2_PACKAGE_RPI_USERLAND
 
-comment "retroflag"
-	depends on BR2_PACKAGE_RPI_USERLAND
+comment "RPi cases like Retroflag"
