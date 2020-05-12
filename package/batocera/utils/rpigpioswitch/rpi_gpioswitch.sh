@@ -12,7 +12,8 @@
 #v1.2 - add RETROFLAG power devices (means NESPi+, MegaPi, SuperPi)
 #v1.3 - add RETROFLAG_GPI power device, the GameBoy look-a-like-device for Pi0/W
 #v1.4 - add RETROFLAG_ADV advanced reset script for NESPi+, MegaPi and SuperPi
-#v1.5 - add ARGONONE for Rpi4 Argon One case fan control - @lbrpdx
+#v1.5 - add KINTARO for Kintaro/Roshambo cases
+#v1.6 - add ARGONONE for Rpi4 Argon One case fan control - @lbrpdx
 #by cyperghost 11.11.2019
 
 #dialog for selecting your switch or power device
@@ -28,6 +29,7 @@ function powerdevice_dialog()
     powerdevices=(
                   RETROFLAG "Including NESPi+ SuperPi and MegaPi cases" \
                   RETROFLAG_GPI "Retroflag GPi case for Raspberry 0" \
+                  KINTARO "SNES style case from SuperKuma aka ROSHAMBO" \
                   MAUSBERRY "A neat power device from Mausberry circuits" \
                   ONOFFSHIM "The cheapest power device from Pimoroni" \
                   REMOTEPIBOARD_2003 "Any remote control as pswitch v2013" \
@@ -372,6 +374,22 @@ function argonone_stop()
     else
         # only stop fan (keep power block on)
         /usr/bin/rpi-argonone stop &
+
+#https://www.kintaro.co
+function kintaro_start()
+{
+    rpi-kintaro-SafeShutdown &
+    pid=$!
+    echo "$pid" > "/tmp/rpi-kintaro-SafeShutdown.pid"
+    wait "$pid"
+}
+
+function kintaro_stop()
+{
+    pid_file="/tmp/rpi-kintaro-SafeShutdown.pid"
+    if [[ -e $pid_file ]]; then
+        kill $(cat $pid_file)
+
     fi
 }
 
@@ -437,6 +455,9 @@ case "$CONFVALUE" in
     "ARGONONE")
         argonone_$1
     ;;
+    "KINTARO")
+        kintaro_$1
+    ;;
     "DIALOG")
         # Go to selection dialog
         switch="$(powerdevice_dialog)"
@@ -456,7 +477,7 @@ case "$CONFVALUE" in
         echo
         echo "Valid values are: REMOTEPIBOARD_2003, REMOTEPIBOARD_2005, WITTYPI 
                   ATX_RASPI_R2_6, MAUSBERRY, ONOFFSHIM, RETROFLAG, RETROFLAG_GPI
-                  PIN56ONOFF, PIN56PUSH, PIN356ONOFFRESET, ARGONONE"
+                  PIN56ONOFF, PIN56PUSH, PIN356ONOFFRESET, KINTARO, ARGONONE"
         exit 1
     ;;
 esac

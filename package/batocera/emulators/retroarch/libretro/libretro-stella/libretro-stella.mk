@@ -3,8 +3,8 @@
 # STELLA
 #
 ################################################################################
-# Version.: Commits on Apr 04, 2020
-LIBRETRO_STELLA_VERSION = 6.1.1
+# Version.: Commits on Apr 25, 2020
+LIBRETRO_STELLA_VERSION = 6.1.2
 LIBRETRO_STELLA_SITE = $(call github,stella-emu,stella,$(LIBRETRO_STELLA_VERSION))
 LIBRETRO_STELLA_LICENSE = GPLv2
 

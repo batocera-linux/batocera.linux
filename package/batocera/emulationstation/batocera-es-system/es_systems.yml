@@ -141,7 +141,7 @@ gb:
       vba-m:    { requireAnyOf: [BR2_PACKAGE_LIBRETRO_VBA_M] }
 
 gbc2players:
-  name:       Game Boy Color
+  name:       Game Boy Color (2 players)
   extensions: [gbc, zip, 7z]
   platform:   gbc
   emulators:
@@ -1022,7 +1022,7 @@ thomson:
       theodore:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_THEODORE] }
 
 pc98:
-  name:       NEC PC-98
+  name:       NEC PC-9800
   extensions: [d98, zip, 98d, fdi, fdd, 2hd, tfd, d88, 88d, hdm, xdf, dup, cmd, hdi, thd, nhd, hdd, hdn]
   platform:   pc98
   emulators:

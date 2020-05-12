@@ -4,7 +4,7 @@
 #
 ################################################################################
 # Version.: Commits on Nov 13, 2019
-MALI_G52_VERSION = 4cbf211cfd9b07854aab4978e50b1151052c6d4c
+MALI_G52_VERSION = d4000def121b818ae0f583d8372d57643f723fdc
 MALI_G52_SITE = $(call github,LibreELEC,libmali,$(MALI_G52_VERSION))
 MALI_G52_INSTALL_STAGING = YES
 MALI_G52_PROVIDES = libegl libgles

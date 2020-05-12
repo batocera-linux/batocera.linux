@@ -8,14 +8,14 @@ OPENBOR_VERSION = 7a45a2215a0cc12c1085d92e7b210a827ea552c2
 OPENBOR_SITE = $(call github,DCurrent,openbor,$(OPENBOR_VERSION))
 OPENBOR_LICENSE = BSD
 
-OPENBOR_DEPENDENCIES = libvpx sdl2 libpng libogg libvorbis
+OPENBOR_DEPENDENCIES = libvpx sdl2 libpng libogg libvorbis host-yasm
 
 OPENBOR_EXTRAOPTS=""
 
 ifeq ($(BR2_x86_64),y)
 	OPENBOR_EXTRAOPTS=BUILD_LINUX=1 BUILD_PLATFORM=x86_64
 endif
-ifeq ($(BR2_x86),y)
+ifeq ($(BR2_x86_i586),y)
 	OPENBOR_EXTRAOPTS=BUILD_LINUX=1
 endif
 ifeq ($(BR2_arm)$(BR2_aarch64),y)
