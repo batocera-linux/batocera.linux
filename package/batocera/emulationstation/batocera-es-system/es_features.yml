@@ -142,8 +142,6 @@ libretro:
       features: [         rewind, autosave]
     yabasanshiro:
       features: [         rewind, autosave]
-    yabause:
-      features: [         rewind, autosave]
 
 amiberry:
   features: [ratio, rewind]
@@ -189,3 +187,25 @@ scummvm:
 
 vice:
   features: [ratio, rewind]
+openbor:
+  cfeatures:
+    ratio:
+      prompt: RATIO
+      choices:
+        Normal:  0
+        Stretch: 1
+    filter:
+      prompt: FILTER
+      choices:
+        Simple 2x:      0
+        Bilinear:       1
+        2xSaI:          2
+        Super 2xSaI:    3
+        Super Eagle:    4
+        Advance Mame2x: 5
+        Lq2x:           6
+        Hq2x:           7
+        ScanLines:      8
+        ScanLines TV:   9
+        TV 2x:         10
+        Dot Matrix:    11

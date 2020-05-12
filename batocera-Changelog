@@ -1,6 +1,5 @@
 2020/XX/XX - batocera.linux 5.26
 	* add: support for Raspberry Pi4
-	* es: now up to 8 players
 	* es: background music now supports .flac, .wav and popular popular chiptune formats (.mod, .xm., .s3m, .far, .mtm, .669...)
 	* es: simplified UI for custom features selection
 	* es: fix missing audio for video snaps on some platforms
@@ -11,6 +10,7 @@
 	* windows: the btrfs driver for Windows is available on the BATOCERA partition
 	* add: libretro-mrboom (Ports)
 	* add: libretro-tyrquake (Ports)
+	* add: openbor
 	* add: 'batocera-create-collection' command-line to help create custom collections
 	* add: on Raspberry Pi3, turn off CEC-compatible TV when shutting down Batocera
 	* netplay: several enhancements to simplify game matching
@@ -20,16 +20,17 @@
 	* bump: moonlight-embedded to 2.4.11
 	* bump: nvidia-driver (440.82)
 	* bump: libretro-bsnes to v115
-	* bump: libretro-stella to 6.1.1
+	* bump: libretro-stella to 6.1.2
 	* bump: libretro-kronos to 2.1.1
 	* bump: fsuae to 3.0.3
-	* bump: dosbox to r4250
+	* bump: dosbox to r4336
 	* bump: dolphin to 5.0-11770
 	* bump: citra-emu
 	* bump: scummvm to v2.1.2
 	* bump: amiberry to v3.1.3
 	* bump: odroid-n2 kernel to 5.4
 	* bump: libretro-mame to 0.220
+	* bump: libretro-cap32 to 4.5
 
 2020/03/15 - batocera.linux 5.25
 	* add: Odroid Go Advance support (Retroarch GUI rotation issues thanks to Lakka Team efforts)

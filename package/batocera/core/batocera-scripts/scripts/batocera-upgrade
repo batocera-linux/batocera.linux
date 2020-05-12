@@ -14,7 +14,7 @@ getPer() {
     do
 	CURVAL=$(stat "/userdata/system/upgrade/boot.tar.xz" | grep -E '^[ ]*Size:' | sed -e s+'^[ ]*Size: \([0-9][0-9]*\) .*$'+'\1'+)
 	CURVAL=$((CURVAL / 1024 / 1024))
-	PER=$(expr ${CURVAL} '*' 100 / ${TARVAL})
+	PER=$((CURVAL * 100 / TARVAL))
 	echo "downloading >>> ${PER}%"
 	sleep 5
     done
@@ -60,7 +60,7 @@ fi
 # get size to download
 url="${DWD_HTTP_DIR}/boot.tar.xz"
 echo "url: ${url}"
-headers=$(curl -sfIL ${url})
+headers=$(curl -sfIL "${url}")
 test $? -eq 0 || exit 1
 size=$(echo "$headers" | grep "Content-Length: " | sed -e s+'^Content-Length: \([0-9]*\).*$'+'\1'+)
 size=$((size / 1024 / 1024))

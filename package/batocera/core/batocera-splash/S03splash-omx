@@ -9,9 +9,9 @@ do_start ()
     if ls /boot/*.mp4 >/dev/null 2>/dev/null
     then
         do_videostart "$(ls /boot/*.mp4 | sed -e "$((RANDOM%$(ls -1 /boot/*.mp4 | wc -l)+1))!d")"
-    elif ls /boot/*.png >/dev/null 2>/dev/null
+    elif [[ $(ls /boot/*.{jpg,png}  2>/dev/null) ]]
     then
-        do_imagestart "$(ls /boot/*.png | sed -e "$((RANDOM%$(ls -1 /boot/*.png | wc -l)+1))!d")"
+        do_imagestart "$(ls /boot/*.{jpg,png} | sed -e "$((RANDOM%$(ls -1 /boot/*.{jpg,png} | wc -l)+1))!d")"
     else
         do_videostart "/usr/share/batocera/splash/splash.mp4"
     fi
@@ -62,7 +62,7 @@ do_videostart ()
     # -911 = Volume set to 35% (On omxplayer)
     # 1/(10^(911/2000)) = 0.35034828830157
 
-    /usr/bin/omxplayer -o both --vol -2500 $omx_opt $omx_srt $omx_nosound $video &
+    /usr/bin/omxplayer -o both --vol -2500 $omx_opt $omx_srt $omx_nosound "$video" &
     PID=$!
 
     # Stop the video when ready

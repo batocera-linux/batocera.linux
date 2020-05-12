@@ -5,6 +5,7 @@ do_help() {
     echo "${PROG} listDisks" >&2
     echo "${PROG} listFstypes" >&2
     echo "${PROG} format <disk> <fstype>" >&2
+    echo "${PROG} format INTERNAL <fstype>" >&2
 }
 
 determine_part_prefix() {
@@ -31,6 +32,7 @@ disks_to_keep() {
 }
 
 do_listDisks() {
+    echo "INTERNAL INTERNAL"
     lsblk -n -P -o TYPE,NAME,SIZE,MODEL |
 	grep -E '^TYPE=\"disk\" ' |
 	sed -e s+' [ ]*"$'+'"'+ | # remove trailing spaces
@@ -49,7 +51,7 @@ do_listDisks() {
 
 do_listFstypes() {
     echo "ext4"
-    echo "brfs"
+    echo "btrfs"
     echo "exfat"
 }
 
@@ -132,13 +134,13 @@ do_format() {
     echo "formatting partition ${FORMATPARTNAME} in ${FORMATTYPE}"
     case "${FORMATTYPE}" in
 	"btrfs")
-	    mkfs.btrfs "${FORMATPARTNAME}" || return 1
+	    mkfs.btrfs -L SHARE "${FORMATPARTNAME}" || return 1
 	;;
 	"ext4")
-	    mkfs.ext4 "${FORMATPARTNAME}" || return 1
+	    mkfs.ext4 -L SHARE "${FORMATPARTNAME}" || return 1
 	;;
 	"exfat")
-	    mkfs.exfat "${FORMATPARTNAME}" || return 1
+	    mkfs.exfat -n SHARE "${FORMATPARTNAME}" || return 1
 	;;
 	*)
 	    echo "unknown partition type ${FORMATTYPE}" >&2
@@ -148,6 +150,31 @@ do_format() {
     echo "synchronizing..."
     sync
     return 0
+}
+
+do_format_internal() {
+    PARTTYPE=$1
+    CONFIGBOOT="/boot/batocera-boot.conf"
+
+    if test "${PARTTYPE}" != "btrfs" -a "${PARTTYPE}" != "ext4" -a "${PARTTYPE}" != "exfat"
+    then
+	echo "brtfs, ext4 or exfat expected" >&2
+	return 1
+    fi
+
+    if mount -o remount,rw /boot
+    then
+	if grep -qE "^[ #]*format-internal[ ]*=.*$" "${CONFIGBOOT}"
+	then
+            sed -i "s|^[ #]*format-internal[ ]*=.*$|format-internal=${PARTTYPE}|g" "${CONFIGBOOT}"
+        else
+            echo "format-internal=${PARTTYPE}" >> "${CONFIGBOOT}"
+        fi
+	mount -o remount,ro /boot
+	echo "the formatting will be done at next boot"
+	return 69 # 69 is the reboot code to es
+    fi
+    return 1
 }
 
 ACTION=$1
@@ -166,9 +193,13 @@ case "${ACTION}" in
 	    do_help
 	    exit 1
 	fi
-	if ! do_format "${1}" "${2}"
+	if test "${1}" = "INTERNAL"
 	then
-	    exit 1
+	    do_format_internal "${2}"
+	    exit $?
+	else
+	    do_format "${1}" "${2}"
+	    exit $?
 	fi
 	;;
     *)

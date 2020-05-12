@@ -1,0 +1,7 @@
+config BR2_PACKAGE_OPENBOR
+        bool "openbor"
+	select BR2_PACKAGE_LIBVPX
+	select BR2_PACKAGE_SDL2
+	select BR2_PACKAGE_LIBPNG
+	select BR2_PACKAGE_LIBOGG
+	select BR2_PACKAGE_LIBVORBIS

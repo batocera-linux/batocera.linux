@@ -26,29 +26,6 @@ index 69bf5cf1e91e..00672a818145 100644
 +
  #undef USB_DEVICE_VENDOR_SPEC
 
-From 61382c4e328df487f69b2095865c2e9e2c9e4121 Mon Sep 17 00:00:00 2001
-From: Jonas Karlman <jonas@kwiboo.se>
-Date: Sun, 28 May 2017 09:08:50 +0200
-Subject: [PATCH] gpu/arm/mali400: default to performance gpu governor
-
----
- drivers/gpu/arm/mali400/mali/linux/mali_devfreq.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/gpu/arm/mali400/mali/linux/mali_devfreq.c b/drivers/gpu/arm/mali400/mali/linux/mali_devfreq.c
-index c9b8652f100d..6c97c530a2ae 100644
---- a/drivers/gpu/arm/mali400/mali/linux/mali_devfreq.c
-+++ b/drivers/gpu/arm/mali400/mali/linux/mali_devfreq.c
-@@ -259,7 +259,7 @@ int mali_devfreq_init(struct mali_device *mdev)
- 		return -EFAULT;
- 
- 	mdev->devfreq = devfreq_add_device(mdev->dev, dp,
--					   "simple_ondemand", NULL);
-+					   "performance", NULL);
- 	if (IS_ERR(mdev->devfreq)) {
- 		mali_devfreq_term_freq_table(mdev);
- 		return PTR_ERR(mdev->devfreq);
-
 From 0fcd82216c0161c9dd6b54ee505988c539df91fb Mon Sep 17 00:00:00 2001
 From: LongChair <LongChair@hotmail.com>
 Date: Fri, 21 Apr 2017 13:39:12 +0200
@@ -194,15 +171,6 @@ index 1495f06cd9b9..a6d2e0121015 100644
  	dp->target = kbase_devfreq_target;
  	dp->get_dev_status = kbase_devfreq_status;
  	dp->get_cur_freq = kbase_devfreq_cur_freq;
-@@ -363,7 +362,7 @@ int kbase_devfreq_init(struct kbase_device *kbdev)
- 		return err;
- 
- 	kbdev->devfreq = devfreq_add_device(kbdev->dev, dp,
--				"simple_ondemand", NULL);
-+				"performance", NULL);
- 	if (IS_ERR(kbdev->devfreq)) {
- 		kbase_devfreq_term_freq_table(kbdev);
- 		return PTR_ERR(kbdev->devfreq);
 diff --git a/drivers/gpu/arm/midgard/mali_kbase_config_defaults.h b/drivers/gpu/arm/midgard/mali_kbase_config_defaults.h
 index 1cf44b3500cf..a6a1a52f0463 100644
 --- a/drivers/gpu/arm/midgard/mali_kbase_config_defaults.h
@@ -404,38 +372,6 @@ index bfe671071d9f..e3a0f561e8f0 100644
  	for (i = 0; i < 3; i++) {
  		frame->display_primaries_x[i] =
 
-From 939878193c4447665bb3b1249e322a5840fbc2d2 Mon Sep 17 00:00:00 2001
-From: Jonas Karlman <jonas@kwiboo.se>
-Date: Sat, 27 Jan 2018 09:39:09 +0100
-Subject: [PATCH] drm: add edid detection for Hybrid Log-Gamma EOTF
-
----
- drivers/gpu/drm/drm_edid.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/gpu/drm/drm_edid.c b/drivers/gpu/drm/drm_edid.c
-index e3a0f561e8f0..f7d41950614e 100644
---- a/drivers/gpu/drm/drm_edid.c
-+++ b/drivers/gpu/drm/drm_edid.c
-@@ -2740,7 +2740,7 @@ add_detailed_modes(struct drm_connector *connector, struct edid *edid,
- #define TRADITIONAL_GAMMA_SDR          (0x1 << 0)
- #define TRADITIONAL_GAMMA_HDR          (0x1 << 1)
- #define SMPTE_ST2084                   (0x1 << 2)
--#define FUTURE_EOTF                    (0x1 << 3)
-+#define HYBRID_LOG_GAMMA               (0x1 << 3)
- #define RESERVED_EOTF                  (0x3 << 4)
- 
- #define STATIC_METADATA_TYPE1          (0x1 << 0)
-@@ -3710,6 +3710,8 @@ static uint16_t eotf_supported(const u8 *edid_ext)
- 		val |= TRADITIONAL_GAMMA_HDR;
- 	if (edid_ext[2] & SMPTE_ST2084)
- 		val |= SMPTE_ST2084;
-+	if (edid_ext[2] & HYBRID_LOG_GAMMA)
-+		val |= HYBRID_LOG_GAMMA;
- 
- 	return val;
- }
-
 From 19e9d690fe47e5e4b47760d060b11707bb44194b Mon Sep 17 00:00:00 2001
 From: Jonas Karlman <jonas@kwiboo.se>
 Date: Sun, 11 Feb 2018 19:21:41 +0100
@@ -587,7 +523,7 @@ index 8864582b1706..b5a388cc3cbe 100755
  	},
  };
 
-From 088790f59f74dc73cde328bb1751c75b1cdbd7a0 Mon Sep 17 00:00:00 2001
+From 922cc477bd191cbfddae005b27a2c89cb9c9623a Mon Sep 17 00:00:00 2001
 From: Jonas Karlman <jonas@kwiboo.se>
 Date: Sun, 1 Jul 2018 23:17:47 +0200
 Subject: [PATCH] drm/rockchip: clip yuv
@@ -599,14 +535,14 @@ Subject: [PATCH] drm/rockchip: clip yuv
  3 files changed, 7 insertions(+)
 
 diff --git a/drivers/gpu/drm/rockchip/rockchip_drm_vop.c b/drivers/gpu/drm/rockchip/rockchip_drm_vop.c
-index 1418402c2668..50d7d4c983a1 100644
+index 1418402c2668..0916b4284f88 100644
 --- a/drivers/gpu/drm/rockchip/rockchip_drm_vop.c
 +++ b/drivers/gpu/drm/rockchip/rockchip_drm_vop.c
 @@ -1731,6 +1731,7 @@ static void vop_plane_atomic_update(struct drm_plane *plane,
  	s = to_rockchip_crtc_state(crtc->state);
  
  	spin_lock(&vop->reg_lock);
-+	VOP_WIN_SET(vop, win, yuv_clip, 1);
++	VOP_WIN_SET(vop, win, yuv_clip, 0);
  	VOP_WIN_SET(vop, win, xmirror, xmirror);
  	VOP_WIN_SET(vop, win, ymirror, ymirror);
  	VOP_WIN_SET(vop, win, format, vop_plane_state->format);
@@ -614,7 +550,7 @@ index 1418402c2668..50d7d4c983a1 100644
  		VOP_CTRL_SET(vop, dsp_data_swap, 0);
  
  	VOP_CTRL_SET(vop, out_mode, s->output_mode);
-+	VOP_CTRL_SET(vop, yuv_clip, 1);
++	VOP_CTRL_SET(vop, yuv_clip, 0);
  
  	switch (s->bus_format) {
  	case MEDIA_BUS_FMT_RGB565_1X16:
@@ -667,7 +603,7 @@ index 9c96d5614e54..aeb1c7644bc9 100644
  	.ymirror = VOP_REG(RK3328_DSP_CTRL0, 0x1, 23),
  
 
-From 34af37e51e11b9a48d7ca4a77d4430697e4c775d Mon Sep 17 00:00:00 2001
+From 991811443d72d7915afdee23c30843669a347d7c Mon Sep 17 00:00:00 2001
 From: Jonas Karlman <jonas@kwiboo.se>
 Date: Sun, 8 Jul 2018 12:38:00 +0200
 Subject: [PATCH] drm/atomic: use active_only flag for connector atomic
@@ -724,7 +660,7 @@ index f77d4aa1e58b..4da489b54dc5 100644
  
  		DRM_DEBUG_ATOMIC("flushing [CONNECTOR:%d:%s]\n",
 
-From 103d19f54aa345a9a80ed386f750482a9f905ec2 Mon Sep 17 00:00:00 2001
+From 8d514d5127fbb4d49247f893ac6b803cbdd3304d Mon Sep 17 00:00:00 2001
 From: Jonas Karlman <jonas@kwiboo.se>
 Date: Sun, 22 Jul 2018 14:51:58 +0200
 Subject: [PATCH] drm: rockchip: dw-hdmi: only force YCbCr422 when max tmds is
@@ -749,8 +685,29 @@ index 7273561fe6b1..e2aad6e2149b 100644
  			*color_format = DRM_HDMI_OUTPUT_YCBCR422;
  	}
  
-
-From 5e6283e0832bf7ef0c8b02cc0576276b1d08b03f Mon Sep 17 00:00:00 2001
+--- a/drivers/gpu/drm/rockchip/dw_hdmi-rockchip.c
++++ b/drivers/gpu/drm/rockchip/dw_hdmi-rockchip.c
+@@ -510,11 +510,18 @@
+ 		return MODE_BAD;
+ 
+ 	hdmi = to_rockchip_hdmi(encoder);
+-	if ((hdmi->dev_type == RK3368_HDMI || hdmi->dev_type == RK3328_HDMI) &&
++	if ((hdmi->dev_type == RK3368_HDMI || hdmi->dev_type == RK3328_HDMI ||
++	     hdmi->dev_type == RK3228_HDMI) &&
+ 	    mode->clock > 340000 &&
+ 	    !drm_mode_is_420(&connector->display_info, mode))
+ 		return MODE_BAD;
+ 
++	/* Skip (detectable) fractional rates for RK3228 */
++	if (hdmi->dev_type == RK3228_HDMI &&
++		(mode->clock == 59341 || mode->clock == 74176 || mode->clock == 148352 ||
++		 mode->clock == 296703 || mode->clock == 593407))
++			return MODE_BAD;
++
+ 	/* Skip bad clocks for RK3288 */
+ 	if (hdmi->dev_type == RK3288_HDMI && (mode->clock < 27500 || mode->clock > 340000))
+ 		return MODE_CLOCK_RANGE;
+From 9d6de32c2e992b71e6634a284dc99ab1b3bd43e2 Mon Sep 17 00:00:00 2001
 From: Jonas Karlman <jonas@kwiboo.se>
 Date: Sun, 22 Jul 2018 15:09:16 +0200
 Subject: [PATCH] drm: bridge: dw-hdmi: signal full range for rgb output
@@ -779,7 +736,7 @@ index 393bd5b28f07..91c5b8fc8fa0 100644
  	 * The Designware IP uses a different byte format from standard
  	 * AVI info frames, though generally the bits are in the correct
 
-From d6543095fd910b2108e8f823aa4bdc5e90f39965 Mon Sep 17 00:00:00 2001
+From 35c0ac957d5fcec21d807e801efed57a37c41d9d Mon Sep 17 00:00:00 2001
 From: Jonas Karlman <jonas@kwiboo.se>
 Date: Sat, 28 Jul 2018 10:41:40 +0200
 Subject: [PATCH] WIP: mm: dma-mapping: increase dma pool size
@@ -816,7 +773,7 @@ index 2b05653e8156..2ad8515cd4da 100644
  
  static int __init early_coherent_pool(char *p)
 
-From a6d53734dc1bf083a8b8d77eb03747cbf834e204 Mon Sep 17 00:00:00 2001
+From 24a070f21767a8d381b81ab5fc5f39c2b9729b24 Mon Sep 17 00:00:00 2001
 From: Jonas Karlman <jonas@kwiboo.se>
 Date: Sat, 4 Aug 2018 15:19:39 +0200
 Subject: [PATCH] drm: add picture_aspect_ratio to hdmi 1.4 4k modes
@@ -860,7 +817,7 @@ index f7d41950614e..69a1eb4ee382 100644
  
  /*** DDC fetch and block validation ***/
 
-From b6c4fe8035c6ceb21b2420532d95489bf4dbc25c Mon Sep 17 00:00:00 2001
+From daadd2b2e1bf5419694ebae5243e61e462885b03 Mon Sep 17 00:00:00 2001
 From: Jonas Karlman <jonas@kwiboo.se>
 Date: Sat, 4 Aug 2018 16:26:47 +0200
 Subject: [PATCH] drm: bridge: dw-hdmi: signal none colorimetry for rgb output
@@ -883,7 +840,7 @@ index 91c5b8fc8fa0..8261ba15f98e 100644
  		frame.ycc_quantization_range = HDMI_YCC_QUANTIZATION_RANGE_FULL;
  	} else {
 
-From 52fd44fe708ada3fb673c0b8b093e49beabfd62e Mon Sep 17 00:00:00 2001
+From 88c6dbd7a37b01d4029102c6fdad2b1fc24098e0 Mon Sep 17 00:00:00 2001
 From: Jonas Karlman <jonas@kwiboo.se>
 Date: Sat, 4 Aug 2018 16:27:08 +0200
 Subject: [PATCH] drm: bridge: dw-hdmi: signal it content and content type
@@ -906,7 +863,7 @@ index 8261ba15f98e..cdfa295fc323 100644
  	if (hdmi_bus_fmt_is_rgb(hdmi->hdmi_data.enc_out_bus_format)) {
  		frame.colorimetry = HDMI_COLORIMETRY_NONE;
 
-From 6e57feede98bc6134077215139211d51f0fb7b97 Mon Sep 17 00:00:00 2001
+From 5d069752d8885584beaac3905a21c34a0bfa5f22 Mon Sep 17 00:00:00 2001
 From: Jonas Karlman <jonas@kwiboo.se>
 Date: Sat, 4 Aug 2018 16:27:40 +0200
 Subject: [PATCH] drm: bridge: dw-hdmi: log infoframes
@@ -937,15 +894,6 @@ index cdfa295fc323..25546a4471fb 100644
  	/* Set the length of HDMI vendor specific InfoFrame payload */
  	hdmi_writeb(hdmi, buffer[2], HDMI_FC_VSDSIZE);
  
-@@ -1838,7 +1842,7 @@ static void hdmi_config_hdr_infoframe(struct dw_hdmi *hdmi)
- 
- 	/* Dynamic Range and Mastering Infoframe is introduced in v2.11a. */
- 	if (hdmi->version < 0x211a) {
--		DRM_ERROR("Not support DRM Infoframe\n");
-+		DRM_DEBUG("Not support DRM Infoframe\n");
- 		return;
- 	}
- 
 @@ -1869,6 +1873,8 @@ static void hdmi_config_hdr_infoframe(struct dw_hdmi *hdmi)
  		return;
  	}
@@ -956,7 +904,7 @@ index cdfa295fc323..25546a4471fb 100644
  	hdmi_writeb(hdmi, frame.length, HDMI_FC_DRM_HB1);
  	hdmi_writeb(hdmi, frame.eotf, HDMI_FC_DRM_PB0);
 
-From dcdbd37723553a9ede3754a1e15c9a1e9d566cf1 Mon Sep 17 00:00:00 2001
+From 3f61791c437d217b760d9f64d38f69e7c2ac6987 Mon Sep 17 00:00:00 2001
 From: Nickey Yang <nickey.yang@rock-chips.com>
 Date: Mon, 17 Jul 2017 16:35:34 +0800
 Subject: [PATCH] MINIARM: set npll be used for hdmi only
@@ -1004,7 +952,7 @@ index ca6c2ad3de96..415df387a5d6 100644
  			RK3288_CLKGATE_CON(3), 1, GFLAGS),
  	COMPOSITE(DCLK_VOP1, "dclk_vop1", mux_pll_src_cpll_gpll_npll_p, 0,
 
-From bd89275c319915fc48f830637d9594d5ae9d657d Mon Sep 17 00:00:00 2001
+From 23a9cfafd5b8c641c2e9d2fdd1c299f19947c548 Mon Sep 17 00:00:00 2001
 From: Jonas Karlman <jonas@kwiboo.se>
 Date: Sat, 4 Aug 2018 14:51:14 +0200
 Subject: [PATCH] clk: rockchip: rk3288: use npll table to to improve HDMI
@@ -1057,7 +1005,7 @@ index 415df387a5d6..f748a292b7f4 100644
  
  static struct clk_div_table div_hclk_cpu_t[] = {
 
-From e5b26e2385f2792fce564d4ab8901f170ac0ba41 Mon Sep 17 00:00:00 2001
+From ba1e5834eef028ca22c2089a2bff453c9bee38af Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Kamil=20Trzci=C5=84ski?= <ayufan@ayufan.eu>
 Date: Wed, 30 May 2018 13:06:14 +0200
 Subject: [PATCH] ayufan: fan53555: support syr83x found in rockpro64
@@ -1088,24 +1036,15 @@ index 74e5ae2bc0d2..6b0854a3cae3 100644
  		di->vsel_step = 12500;
  		break;
 
-From 8d6f3424a0d486913f6ab2bebc3cd82e4017be10 Mon Sep 17 00:00:00 2001
+From 99674f3279042bd694019c26309e4f2a44b6fe81 Mon Sep 17 00:00:00 2001
 From: Jonas Karlman <jonas@kwiboo.se>
 Date: Sun, 9 Sep 2018 12:33:23 +0200
 Subject: [PATCH] WIP: video: rockchip: iep: fix compile issue
 
 ---
- drivers/video/rockchip/iep/Makefile | 2 +-
  include/linux/rockchip-iovmm.h      | 1 +
  2 files changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/video/rockchip/iep/Makefile b/drivers/video/rockchip/iep/Makefile
-index 37760fbf42b7..c6f7ae87a544 100644
---- a/drivers/video/rockchip/iep/Makefile
-+++ b/drivers/video/rockchip/iep/Makefile
-@@ -1,2 +1,2 @@
- # SPDX-License-Identifier: GPL-2.0
--obj-$(CONFIG_IEP) += hw_iep_reg.o iep_drv.o iep_iommu_drm.o iep_iommu_ion.o iep_iommu_ops.o
-+obj-$(CONFIG_IEP) += hw_iep_reg.o iep_drv.o iep_iommu_drm.o iep_iommu_ops.o
 diff --git a/include/linux/rockchip-iovmm.h b/include/linux/rockchip-iovmm.h
 index 73e2ff159e86..d87b8d2c9904 100644
 --- a/include/linux/rockchip-iovmm.h
@@ -1119,205 +1058,176 @@ index 73e2ff159e86..d87b8d2c9904 100644
  #define IEP_IOMMU_COMPATIBLE_NAME "rockchip,iep_mmu"
  #define VIP_IOMMU_COMPATIBLE_NAME "rockchip,vip_mmu"
 
-From 1e888a00891c2ded5cd802d987884ad564b8f97f Mon Sep 17 00:00:00 2001
-From: Randy Li <randy.li@rock-chips.com>
-Date: Thu, 20 Sep 2018 10:59:11 +0800
-Subject: [PATCH] Mali: midgard: fix the memory translation for aarch32
+From 6de4ce0e92be7b66429efe88c406e30703639661 Mon Sep 17 00:00:00 2001
+From: Jonas Karlman <jonas@kwiboo.se>
+Date: Sun, 28 Oct 2018 21:43:01 +0100
+Subject: [PATCH] clk: rockchip: rk3288: add more npll clocks
 
-When the clients are 32 bits while the kernel is 64 bits,
-we need to translate the memory address before accessing.
-
-Change-Id: I7f47ab94da258e9d170613252aae9b396623cf48
-Signed-off-by: Randy Li <randy.li@rock-chips.com>
+Fixes 2560x1440@60Hz, 1600x1200@60Hz, 1920x1200@60Hz, 1680x1050@60Hz and 1440x900@60Hz modes on my monitor
 ---
- drivers/gpu/arm/midgard/mali_kbase_core_linux.c | 88 +++++++++++++++++++------
- 1 file changed, 69 insertions(+), 19 deletions(-)
+ drivers/clk/rockchip/clk-rk3288.c | 16 ++++++++++++++++
+ 1 file changed, 16 insertions(+)
 
-diff --git a/drivers/gpu/arm/midgard/mali_kbase_core_linux.c b/drivers/gpu/arm/midgard/mali_kbase_core_linux.c
-index 24bafe2bf32c..65bc5ad2a7c2 100644
---- a/drivers/gpu/arm/midgard/mali_kbase_core_linux.c
-+++ b/drivers/gpu/arm/midgard/mali_kbase_core_linux.c
-@@ -515,14 +515,20 @@ copy_failed:
- 	case KBASE_FUNC_JOB_SUBMIT:
- 		{
- 			struct kbase_uk_job_submit *job = args;
-+			void __user *user_addr = NULL;
+diff --git a/drivers/clk/rockchip/clk-rk3288.c b/drivers/clk/rockchip/clk-rk3288.c
+index f748a292b7f4..d72c02afeb76 100644
+--- a/drivers/clk/rockchip/clk-rk3288.c
++++ b/drivers/clk/rockchip/clk-rk3288.c
+@@ -111,18 +111,34 @@ static struct rockchip_pll_rate_table rk3288_npll_rates[] = {
+ 	RK3066_PLL_RATE_NB(432000000, 3, 216, 4, 32),
+ 	RK3066_PLL_RATE_NB(426000000, 3, 213, 4, 32),
+ 	RK3066_PLL_RATE_NB(400000000, 1, 100, 6, 32),
++	RK3066_PLL_RATE(348500000, 8, 697, 6),
+ 	RK3066_PLL_RATE_NB(342000000, 3, 171, 4, 32),
+ 	RK3066_PLL_RATE_NB(297000000, 2, 198, 8, 16),
+ 	RK3066_PLL_RATE_NB(270000000, 1, 135, 12, 32),
+ 	RK3066_PLL_RATE_NB(260000000, 1, 130, 12, 32),
++	RK3066_PLL_RATE(241500000, 2, 161, 8),
++	RK3066_PLL_RATE(162000000, 1, 81, 12),
++	RK3066_PLL_RATE(154000000, 6, 539, 14),
+ 	RK3066_PLL_RATE_NB(148500000, 1, 99, 16, 32),
+ 	RK3066_PLL_RATE(148352000, 13, 1125, 14),
+ 	RK3066_PLL_RATE_NB(146250000, 6, 585, 16, 32),
++	RK3066_PLL_RATE(121750000, 6, 487, 16),
++	RK3066_PLL_RATE(119000000, 3, 238, 16),
+ 	RK3066_PLL_RATE_NB(108000000, 1, 54, 12, 32),
+ 	RK3066_PLL_RATE_NB(106500000, 4, 213, 12, 32),
++	RK3066_PLL_RATE(101000000, 3, 202, 16),
++	RK3066_PLL_RATE(88750000, 6, 355, 16),
+ 	RK3066_PLL_RATE_NB(85500000, 4, 171, 12, 32),
++	RK3066_PLL_RATE(83500000, 3, 167, 16),
++	RK3066_PLL_RATE(79500000, 1, 53, 16),
+ 	RK3066_PLL_RATE_NB(74250000, 4, 198, 16, 32),
+ 	RK3066_PLL_RATE(74176000, 26, 1125, 14),
++	RK3066_PLL_RATE(72000000, 1, 48, 16),
++	RK3066_PLL_RATE(71000000, 3, 142, 16),
++	RK3066_PLL_RATE(68250000, 2, 91, 16),
++	RK3066_PLL_RATE(65000000, 3, 130, 16),
++	RK3066_PLL_RATE(40000000, 3, 80, 16),
++	RK3066_PLL_RATE(33750000, 2, 45, 16),
+ 	{ /* sentinel */ },
+ };
  
- 			if (sizeof(*job) != args_size)
- 				goto bad_size;
+
+From 06d1099d7f4cece7af7793ff68fabc08eb55935d Mon Sep 17 00:00:00 2001
+From: Jonas Karlman <jonas@kwiboo.se>
+Date: Wed, 14 Nov 2018 06:08:01 +0100
+Subject: [PATCH] drm: workaround for crash when trying to open render node
+
+---
+ drivers/gpu/drm/drm_ioctl.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/drivers/gpu/drm/drm_ioctl.c b/drivers/gpu/drm/drm_ioctl.c
+index 34757168ffaa..0914c886277f 100644
+--- a/drivers/gpu/drm/drm_ioctl.c
++++ b/drivers/gpu/drm/drm_ioctl.c
+@@ -57,6 +57,9 @@ static int drm_getunique(struct drm_device *dev, void *data,
+ 	struct drm_unique *u = data;
+ 	struct drm_master *master = file_priv->master;
  
--			if (kbase_jd_submit(kctx, job->addr.value,
--						job->nr_atoms,
--						job->stride,
--						false) != 0)
-+#ifdef CONFIG_COMPAT
-+			if (kbase_ctx_flag(kctx, KCTX_COMPAT))
-+				user_addr = compat_ptr(job->addr.compat_value);
-+			else
-+#endif
-+				user_addr = job->addr.value;
++	if (!master)
++		return -EINVAL;
 +
-+			if (kbase_jd_submit(kctx, user_addr, job->nr_atoms,
-+					    job->stride, false) != 0)
- 				ukh->ret = MALI_ERROR_FUNCTION_FAILED;
- 			break;
- 		}
-@@ -531,14 +537,20 @@ copy_failed:
- 	case KBASE_FUNC_JOB_SUBMIT_UK6:
- 		{
- 			struct kbase_uk_job_submit *job = args;
-+			void __user *user_addr = NULL;
- 
- 			if (sizeof(*job) != args_size)
- 				goto bad_size;
- 
--			if (kbase_jd_submit(kctx, job->addr.value,
--						job->nr_atoms,
--						job->stride,
--						true) != 0)
-+#ifdef CONFIG_COMPAT
-+			if (kbase_ctx_flag(kctx, KCTX_COMPAT))
-+				user_addr = compat_ptr(job->addr.compat_value);
-+			else
-+#endif
-+				user_addr = job->addr.value;
+ 	if (u->unique_len >= master->unique_len) {
+ 		if (copy_to_user(u->unique, master->unique, master->unique_len))
+ 			return -EFAULT;
+
+From 309a27eaf2f4e429ef102e3eef70a2f908360c44 Mon Sep 17 00:00:00 2001
+From: Nick <nick@khadas.com>
+Date: Wed, 19 Sep 2018 22:14:58 +0800
+Subject: [PATCH] bump PD voltage & current for board without charge IC
+
+---
+ drivers/mfd/fusb302.c | 28 ++++++++++++++++++++++++++--
+ 1 file changed, 26 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/mfd/fusb302.c b/drivers/mfd/fusb302.c
+index 240cecac65b5..8fe4163214e0 100644
+--- a/drivers/mfd/fusb302.c
++++ b/drivers/mfd/fusb302.c
+@@ -217,8 +217,32 @@ static int fusb302_set_pos_power_by_charge_ic(struct fusb30x_chip *chip)
+ 	max_vol = 0;
+ 	max_cur = 0;
+ 	psy = power_supply_get_by_phandle(chip->dev->of_node, "charge-dev");
+-	if (!psy || IS_ERR(psy))
+-		return -1;
++	if (!psy || IS_ERR(psy)) {
++		int ret;
++		u32 value;
 +
-+			if (kbase_jd_submit(kctx, user_addr, job->nr_atoms,
-+					    job->stride, true) != 0)
- 				ukh->ret = MALI_ERROR_FUNCTION_FAILED;
- 			break;
- 		}
-@@ -646,7 +658,8 @@ copy_failed:
- 				goto bad_size;
++		ret = of_property_read_u32(chip->dev->of_node, "max-input-voltage", &value);
++		if (ret) {
++			dev_err(chip->dev, "'max-input-voltage' not found!\n");
++			return -1;
++		}
++
++		max_vol = value / 1000;
++
++		ret = of_property_read_u32(chip->dev->of_node, "max-input-current", &value);
++
++		if (ret) {
++			dev_err(chip->dev, "'max-input-current' not found!\n");
++			return -1;
++		}
++
++		max_cur = value / 1000;
++
++		if (max_vol > 0 && max_cur > 0)
++			fusb_set_pos_power(chip, max_vol, max_cur);
++
++		return 0;
++	}
  
- 			if (find->gpu_addr & ~PAGE_MASK) {
--				dev_warn(kbdev->dev, "kbase_legacy_dispatch case KBASE_FUNC_FIND_CPU_OFFSET: find->gpu_addr: passed parameter is invalid");
-+				dev_warn(kbdev->dev,
-+					"kbase_legacy_dispatch case KBASE_FUNC_FIND_CPU_OFFSET: find->gpu_addr: passed parameter is invalid");
- 				goto out_bad;
- 			}
+ 	psp = POWER_SUPPLY_PROP_CHARGE_CONTROL_LIMIT_MAX;
+ 	if (power_supply_get_property(psy, psp, &val) == 0)
+--- a/drivers/gpu/drm/rockchip/rockchip_vop_reg.c
++++ b/drivers/gpu/drm/rockchip/rockchip_vop_reg.c
+@@ -646,7 +646,7 @@
+ 	{ .base = 0x00, .phy = &rk3288_win01_data,
+ 	  .type = DRM_PLANE_TYPE_PRIMARY },
+ 	{ .base = 0x40, .phy = &rk3288_win01_data,
+-	  .type = DRM_PLANE_TYPE_CURSOR },
++	  .type = DRM_PLANE_TYPE_OVERLAY },
+ };
  
-@@ -674,8 +687,11 @@ copy_failed:
- 				goto bad_size;
+ static const struct vop_data rk322x_vop = {
+diff --git a/drivers/net/wireless/rockchip_wlan/rkwifi/bcmdhd/dhd_linux.c b/drivers/net/wireless/rockchip_wlan/rkwifi/bcmdhd/dhd_linux.c
+index f3ad402..d8112c9 100644
+--- a/drivers/net/wireless/rockchip_wlan/rkwifi/bcmdhd/dhd_linux.c
++++ b/drivers/net/wireless/rockchip_wlan/rkwifi/bcmdhd/dhd_linux.c
+@@ -6962,7 +6962,7 @@ dhd_ethtool(dhd_info_t *dhd, void *uaddr)
+ 		/* Copy out any request driver name */
+ 		if (copy_from_user(&info, uaddr, sizeof(info)))
+ 			return -EFAULT;
+-		strncpy(drvname, info.driver, sizeof(info.driver));
++		strncpy(drvname, info.driver, sizeof(drvname));
+ 		drvname[sizeof(info.driver)-1] = '\0';
  
- 			/* version buffer size check is made in compile time assert */
--			memcpy(get_version->version_buffer, KERNEL_SIDE_DDK_VERSION_STRING, sizeof(KERNEL_SIDE_DDK_VERSION_STRING));
--			get_version->version_string_size = sizeof(KERNEL_SIDE_DDK_VERSION_STRING);
-+			memcpy(get_version->version_buffer,
-+			       KERNEL_SIDE_DDK_VERSION_STRING,
-+			       sizeof(KERNEL_SIDE_DDK_VERSION_STRING));
-+			get_version->version_string_size =
-+				sizeof(KERNEL_SIDE_DDK_VERSION_STRING);
- 			get_version->rk_version = ROCKCHIP_VERSION;
- 			break;
- 		}
-@@ -828,7 +844,8 @@ copy_failed:
- 
- #ifdef CONFIG_COMPAT
- 			if (kbase_ctx_flag(kctx, KCTX_COMPAT))
--				user_buf = compat_ptr(add_data->buf.compat_value);
-+				user_buf =
-+					compat_ptr(add_data->buf.compat_value);
- 			else
- #endif
- 				user_buf = add_data->buf.value;
-@@ -977,9 +994,9 @@ copy_failed:
- 
- 	return ret;
- 
-- bad_size:
-+bad_size:
- 	dev_err(kbdev->dev, "Wrong syscall size (%d) for %08x\n", args_size, id);
-- out_bad:
-+out_bad:
- 	return -EINVAL;
+ 		/* clear struct for return */
+--- b/drivers/gpu/drm/rockchip/rockchip_drm_fbdev.c
++++ a/drivers/gpu/drm/rockchip/rockchip_drm_fbdev.c
+@@ -50,15 +50,6 @@
+ 	return buf;
  }
  
-@@ -1317,7 +1334,16 @@ static int kbase_api_set_flags(struct kbase_context *kctx,
- static int kbase_api_job_submit(struct kbase_context *kctx,
- 		struct kbase_ioctl_job_submit *submit)
- {
--	return kbase_jd_submit(kctx, submit->addr.value, submit->nr_atoms,
-+	void __user *user_addr = NULL;
-+
-+#ifdef CONFIG_COMPAT
-+	if (kbase_ctx_flag(kctx, KCTX_COMPAT))
-+		user_addr = compat_ptr(submit->addr.compat_value);
-+	else
-+#endif
-+		user_addr = submit->addr.value;
-+
-+	return kbase_jd_submit(kctx, user_addr, submit->nr_atoms,
- 			submit->stride, false);
- }
- 
-@@ -1548,6 +1574,7 @@ static int kbase_api_mem_alias(struct kbase_context *kctx,
- 		union kbase_ioctl_mem_alias *alias)
- {
- 	struct base_mem_aliasing_info *ai;
-+	void __user *user_addr = NULL;
- 	u64 flags;
- 	int err;
- 
-@@ -1558,8 +1585,15 @@ static int kbase_api_mem_alias(struct kbase_context *kctx,
- 	if (!ai)
- 		return -ENOMEM;
- 
--	err = copy_from_user(ai, alias->in.aliasing_info.value,
--			sizeof(*ai) * alias->in.nents);
-+#ifdef CONFIG_COMPAT
-+	if (kbase_ctx_flag(kctx, KCTX_COMPAT))
-+		user_addr =
-+			compat_ptr(alias->in.aliasing_info.compat_value);
-+	else
-+#endif
-+		user_addr = alias->in.aliasing_info.value;
-+
-+	err = copy_from_user(ai, user_addr, sizeof(*ai) * alias->in.nents);
- 	if (err) {
- 		vfree(ai);
- 		return err;
-@@ -1586,10 +1620,18 @@ static int kbase_api_mem_import(struct kbase_context *kctx,
- {
- 	int ret;
- 	u64 flags = import->in.flags;
-+	void __user *phandle;
-+
-+#ifdef CONFIG_COMPAT
-+	if (kbase_ctx_flag(kctx, KCTX_COMPAT))
-+		phandle = compat_ptr(import->in.phandle.compat_value);
-+	else
-+#endif
-+		phandle = import->in.phandle.value;
- 
- 	ret = kbase_mem_import(kctx,
- 			import->in.type,
--			import->in.phandle.value,
-+			phandle,
- 			import->in.padding,
- 			&import->out.gpu_va,
- 			&import->out.va_pages,
-@@ -1654,6 +1696,7 @@ static int kbase_api_get_profiling_controls(struct kbase_context *kctx,
- static int kbase_api_mem_profile_add(struct kbase_context *kctx,
- 		struct kbase_ioctl_mem_profile_add *data)
- {
-+	char __user *user_buf;
- 	char *buf;
- 	int err;
- 
-@@ -1666,7 +1709,14 @@ static int kbase_api_mem_profile_add(struct kbase_context *kctx,
- 	if (ZERO_OR_NULL_PTR(buf))
- 		return -ENOMEM;
- 
--	err = copy_from_user(buf, data->buffer.value, data->len);
-+#ifdef CONFIG_COMPAT
-+	if (kbase_ctx_flag(kctx, KCTX_COMPAT))
-+		user_buf = compat_ptr(data->buffer.compat_value);
-+	else
-+#endif
-+		user_buf = data->buffer.value;
-+
-+	err = copy_from_user(buf, user_buf, data->len);
- 	if (err) {
- 		kfree(buf);
- 		return err;
+-static int rockchip_fbdev_blank(int blank, struct fb_info *info)
+-{
+-	struct drm_fb_helper *helper = info->par;
+-
+-	drm_fb_helper_restore_fbdev_mode_unlocked(helper);
+-
+-	return drm_fb_helper_blank(blank, info);
+-}
+-
+ static struct fb_ops rockchip_drm_fbdev_ops = {
+ 	.owner		= THIS_MODULE,
+ 	.fb_mmap	= rockchip_fbdev_mmap,
+@@ -67,7 +58,7 @@
+ 	.fb_imageblit	= drm_fb_helper_cfb_imageblit,
+ 	.fb_check_var	= drm_fb_helper_check_var,
+ 	.fb_set_par	= drm_fb_helper_set_par,
++	.fb_blank	= drm_fb_helper_blank,
+-	.fb_blank	= rockchip_fbdev_blank,
+ 	.fb_pan_display	= drm_fb_helper_pan_display,
+ 	.fb_read	= drm_fb_helper_sys_read,
+ 	.fb_write	= drm_fb_helper_sys_write,

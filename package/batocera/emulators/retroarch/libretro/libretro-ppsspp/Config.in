@@ -2,6 +2,7 @@ config BR2_PACKAGE_LIBRETRO_PPSSPP
         bool "libretro-ppsspp"
 	depends on BR2_PACKAGE_RETROARCH
 	depends on BR2_INSTALL_LIBSTDCPP
+	select BR2_PACKAGE_FFMPEG
         help
           A libretro PSP core .
 

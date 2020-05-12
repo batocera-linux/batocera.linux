@@ -1,58 +1,3 @@
-From fa2bd9cdc869b32ba00f0bba79b63e1fd53f8cdb Mon Sep 17 00:00:00 2001
-From: Chris Zhong <zyw@rock-chips.com>
-Date: Mon, 18 Jul 2016 22:34:34 +0800
-Subject: [PATCH] UPSTREAM: ASoC: rockchip: correct the spdif clk
-
-The spdif mclk should be 128 times of sample rate, and there is a
-internal divider, the real rate of spdif mclk is mclk / (div + 1).
-Hence, the original driver always get the good frequency for
-48000/96000/44100/192000. But for 32000, the mclk is incorrect,
-it should be 32000*128, but get 48000*128. Do not use the internal
-divider here, just set all mclk to 128 * sample rate directly.
-
-Signed-off-by: Chris Zhong <zyw@rock-chips.com>
-Signed-off-by: Mark Brown <broonie@kernel.org>
-(cherry picked from commit 46dd2e28a90e48fbf1b7e253933fa3b7242e9b1b)
----
- sound/soc/rockchip/rockchip_spdif.c | 17 +----------------
- 1 file changed, 1 insertion(+), 16 deletions(-)
-
-diff --git a/sound/soc/rockchip/rockchip_spdif.c b/sound/soc/rockchip/rockchip_spdif.c
-index c211750b54ee..784941ca2408 100644
---- a/sound/soc/rockchip/rockchip_spdif.c
-+++ b/sound/soc/rockchip/rockchip_spdif.c
-@@ -105,21 +105,7 @@ static int rk_spdif_hw_params(struct snd_pcm_substream *substream,
- 	int ret;
- 
- 	srate = params_rate(params);
--	switch (srate) {
--	case 32000:
--	case 48000:
--	case 96000:
--		mclk = 96000 * 128; /* 12288000 hz */
--		break;
--	case 44100:
--		mclk = 44100 * 256; /* 11289600 hz */
--		break;
--	case 192000:
--		mclk = 192000 * 128; /* 24576000 hz */
--		break;
--	default:
--		return -EINVAL;
--	}
-+	mclk = srate * 128;
- 
- 	switch (params_format(params)) {
- 	case SNDRV_PCM_FORMAT_S16_LE:
-@@ -143,7 +129,6 @@ static int rk_spdif_hw_params(struct snd_pcm_substream *substream,
- 		return ret;
- 	}
- 
--	val |= SPDIF_CFGR_CLK_DIV(mclk/(srate * 256));
- 	ret = regmap_update_bits(spdif->regmap, SPDIF_CFGR,
- 		SPDIF_CFGR_CLK_DIV_MASK | SPDIF_CFGR_HALFWORD_ENABLE |
- 		SDPIF_CFGR_VDW_MASK,
-
 From 46e3e82a547b78ca5db11a8444f787fd15f8e8ce Mon Sep 17 00:00:00 2001
 From: Sugar Zhang <sugar.zhang@rock-chips.com>
 Date: Wed, 7 Sep 2016 14:30:21 +0800
@@ -820,173 +765,6 @@ index 16ff8d5e0033..986ad2efc8e9 100644
  
  	return 0;
 
-From 9cca8ff3584aedce10d3099b504e66737c9c9e44 Mon Sep 17 00:00:00 2001
-From: John Keeping <john@metanate.com>
-Date: Mon, 8 Jan 2018 16:01:04 +0000
-Subject: [PATCH] UPSTREAM: ASoC: rockchip: i2s: fix playback after runtime
- resume
-
-When restoring registers during runtime resume, we must not write to
-I2S_TXDR which is the transmit FIFO as this queues up a sample to be
-output and pushes all of the output channels down by one.
-
-This can be demonstrated with the speaker-test utility:
-
-	for i in a b c; do speaker-test -c 2 -s 1; done
-
-which should play a test through the left speaker three times but if the
-I2S hardware starts runtime suspended the first sample will be played
-through the right speaker.
-
-Fix this by marking I2S_TXDR as volatile (which also requires marking it
-as readble, even though it technically isn't).  This seems to be the
-most robust fix, the alternative of giving I2S_TXDR a default value is
-more fragile since it does not prevent regcache writing to the register
-in all circumstances.
-
-While here, also fix the configuration of I2S_RXDR and I2S_FIFOLR; these
-are not writable so they do not suffer from the same problem as I2S_TXDR
-but reading from I2S_RXDR does suffer from a similar problem.
-
-Fixes: f0447f6cbb20 ("ASoC: rockchip: i2s: restore register during runtime_suspend/resume cycle", 2016-09-07)
-Signed-off-by: John Keeping <john@metanate.com>
-(cherry picked from commit c66234cfedfc3e6e3b62563a5f2c1562be09a35d)
----
- sound/soc/rockchip/rockchip_i2s.c | 6 ++++++
- 1 file changed, 6 insertions(+)
-
-diff --git a/sound/soc/rockchip/rockchip_i2s.c b/sound/soc/rockchip/rockchip_i2s.c
-index 986ad2efc8e9..5297373fe6c4 100644
---- a/sound/soc/rockchip/rockchip_i2s.c
-+++ b/sound/soc/rockchip/rockchip_i2s.c
-@@ -514,6 +514,7 @@ static bool rockchip_i2s_rd_reg(struct device *dev, unsigned int reg)
- 	case I2S_INTCR:
- 	case I2S_XFER:
- 	case I2S_CLR:
-+	case I2S_TXDR:
- 	case I2S_RXDR:
- 	case I2S_FIFOLR:
- 	case I2S_INTSR:
-@@ -528,6 +529,9 @@ static bool rockchip_i2s_volatile_reg(struct device *dev, unsigned int reg)
- 	switch (reg) {
- 	case I2S_INTSR:
- 	case I2S_CLR:
-+	case I2S_FIFOLR:
-+	case I2S_TXDR:
-+	case I2S_RXDR:
- 		return true;
- 	default:
- 		return false;
-@@ -537,6 +541,8 @@ static bool rockchip_i2s_volatile_reg(struct device *dev, unsigned int reg)
- static bool rockchip_i2s_precious_reg(struct device *dev, unsigned int reg)
- {
- 	switch (reg) {
-+	case I2S_RXDR:
-+		return true;
- 	default:
- 		return false;
- 	}
-
-From 7c877ceaa52d81023ebda69e3d90f54ab8403798 Mon Sep 17 00:00:00 2001
-From: Romain Perier <romain.perier@collabora.com>
-Date: Fri, 14 Apr 2017 10:31:12 +0200
-Subject: [PATCH] UPSTREAM: drm: dw-hdmi: add specific I2S and AHB functions
- for stream handling
-
-Currently, CTS+N is forced to zero as a workaround of the IP block for
-i.MX platforms. This is requested in the datasheet of the corresponding
-IP for AHB mode only. However, we have seen that it introduces glitches
-or delays when playing a sound on HDMI for I2S mode. This proves that we
-cannot keep the current functions for handling audio stream as-is if
-these contain workaround that are specific to a mode.
-
-This commit introduces two callbacks, one for each variant.
-dw_hdmi_setup defines the right function depending on the detected
-variant. Then, the exported functions dw_hdmi_audio_enable and
-dw_hdmi_audio_disable calls the corresponding callbacks
-
-Reviewed-by: Neil Armstrong <narmstrong@baylibre.com>
-Signed-off-by: Romain Perier <romain.perier@collabora.com>
-Signed-off-by: Archit Taneja <architt@codeaurora.org>
-Link: http://patchwork.freedesktop.org/patch/msgid/20170414083113.4255-2-romain.perier@collabora.com
-(cherry picked from commit a7d555d2f2bd675d641e742a202a5e4b37d4d019)
----
- drivers/gpu/drm/bridge/synopsys/dw-hdmi.c | 27 +++++++++++++++++++++++++--
- 1 file changed, 25 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c b/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
-index 8cb2cb4e61a6..8726498e9f73 100644
---- a/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
-+++ b/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
-@@ -263,6 +263,9 @@ struct dw_hdmi {
- 	u8 (*read)(struct dw_hdmi *hdmi, int offset);
- 
- 	bool initialized;		/* hdmi is enabled before bind */
-+
-+	void (*enable_audio)(struct dw_hdmi *hdmi);
-+	void (*disable_audio)(struct dw_hdmi *hdmi);
- };
- 
- #define HDMI_IH_PHY_STAT0_RX_SENSE \
-@@ -821,13 +824,29 @@ void dw_hdmi_set_sample_rate(struct dw_hdmi *hdmi, unsigned int rate)
- }
- EXPORT_SYMBOL_GPL(dw_hdmi_set_sample_rate);
- 
-+static void dw_hdmi_ahb_audio_enable(struct dw_hdmi *hdmi)
-+{
-+	hdmi_set_cts_n(hdmi, hdmi->audio_cts, hdmi->audio_n);
-+}
-+
-+static void dw_hdmi_ahb_audio_disable(struct dw_hdmi *hdmi)
-+{
-+	hdmi_set_cts_n(hdmi, hdmi->audio_cts, 0);
-+}
-+
-+static void dw_hdmi_i2s_audio_enable(struct dw_hdmi *hdmi)
-+{
-+	hdmi_set_cts_n(hdmi, hdmi->audio_cts, hdmi->audio_n);
-+}
-+
- void dw_hdmi_audio_enable(struct dw_hdmi *hdmi)
- {
- 	unsigned long flags;
- 
- 	spin_lock_irqsave(&hdmi->audio_lock, flags);
- 	hdmi->audio_enable = true;
--	hdmi_set_cts_n(hdmi, hdmi->audio_cts, hdmi->audio_n);
-+	if (hdmi->enable_audio)
-+		hdmi->enable_audio(hdmi);
- 	spin_unlock_irqrestore(&hdmi->audio_lock, flags);
- }
- EXPORT_SYMBOL_GPL(dw_hdmi_audio_enable);
-@@ -838,7 +857,8 @@ void dw_hdmi_audio_disable(struct dw_hdmi *hdmi)
- 
- 	spin_lock_irqsave(&hdmi->audio_lock, flags);
- 	hdmi->audio_enable = false;
--	hdmi_set_cts_n(hdmi, hdmi->audio_cts, 0);
-+	if (hdmi->disable_audio)
-+		hdmi->disable_audio(hdmi);
- 	spin_unlock_irqrestore(&hdmi->audio_lock, flags);
- }
- EXPORT_SYMBOL_GPL(dw_hdmi_audio_disable);
-@@ -3706,6 +3726,8 @@ int dw_hdmi_bind(struct device *dev, struct device *master,
- 		audio.irq = irq;
- 		audio.hdmi = hdmi;
- 		audio.eld = hdmi->connector.eld;
-+		hdmi->enable_audio = dw_hdmi_ahb_audio_enable;
-+		hdmi->disable_audio = dw_hdmi_ahb_audio_disable;
- 
- 		pdevinfo.name = "dw-hdmi-ahb-audio";
- 		pdevinfo.data = &audio;
-@@ -3719,6 +3741,7 @@ int dw_hdmi_bind(struct device *dev, struct device *master,
- 		audio.write	= hdmi_writeb;
- 		audio.read	= hdmi_readb;
- 		audio.mod	= hdmi_modb;
-+		hdmi->enable_audio = dw_hdmi_i2s_audio_enable;
- 
- 		pdevinfo.name = "dw-hdmi-i2s-audio";
- 		pdevinfo.data = &audio;
-
 From 8b1551df18617eba99d59f89724191954a7213a4 Mon Sep 17 00:00:00 2001
 From: Romain Perier <romain.perier@collabora.com>
 Date: Thu, 20 Apr 2017 14:34:34 +0530
@@ -1421,7 +1199,22 @@ index af1b7429b6d4..d0b4578ffa0e 100644
  			.formats = (SNDRV_PCM_FMTBIT_S16_LE |
  				    SNDRV_PCM_FMTBIT_S20_3LE |
  				    SNDRV_PCM_FMTBIT_S24_LE |
-
+--- a/sound/soc/codecs/rk3228_codec.c
++++ b/sound/soc/codecs/rk3228_codec.c
+@@ -352,7 +352,12 @@
+ 			.stream_name = "HIFI Playback",
+ 			.channels_min = 1,
+ 			.channels_max = 2,
+-			.rates = SNDRV_PCM_RATE_8000_96000,
++			.rates = (SNDRV_PCM_RATE_8000 |
++				  SNDRV_PCM_RATE_16000 |
++				  SNDRV_PCM_RATE_32000 |
++				  SNDRV_PCM_RATE_48000 |
++				  SNDRV_PCM_RATE_64000 |
++				  SNDRV_PCM_RATE_96000),
+ 			.formats = (SNDRV_PCM_FMTBIT_S16_LE |
+ 				    SNDRV_PCM_FMTBIT_S20_3LE |
+ 				    SNDRV_PCM_FMTBIT_S24_LE |
 From 878d789ff5faa02f0da5e68126e2276124611eeb Mon Sep 17 00:00:00 2001
 From: Jonas Karlman <jonas@kwiboo.se>
 Date: Sun, 8 Jul 2018 12:34:43 +0200
@@ -1458,14 +1251,6 @@ index 1d4570e3fbed..d0904f6b7a82 100644
  	dw_hdmi_audio_enable(hdmi);
  
  	return 0;
-@@ -211,6 +205,7 @@ static void dw_hdmi_i2s_audio_shutdown(struct device *dev, void *data)
- 	dw_hdmi_audio_disable(hdmi);
- 
- 	hdmi_write(audio, HDMI_AUD_CONF0_SW_RESET, HDMI_AUD_CONF0);
-+	hdmi_write(audio, (u8)~HDMI_MC_SWRSTZ_I2S_RESET_MSK, HDMI_MC_SWRSTZ);
- }
- 
- static int dw_hdmi_i2s_get_eld(struct device *dev, void *data, u8 *buf, size_t len)
 diff --git a/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c b/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
 index df1ea752ac3d..4bf4ff0fd741 100644
 --- a/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
@@ -1595,3 +1380,4 @@ index 4bf4ff0fd741..2583320f3289 100644
  
  	spin_lock_irq(&hdmi->audio_lock);
  	hdmi->audio_n = n;
+

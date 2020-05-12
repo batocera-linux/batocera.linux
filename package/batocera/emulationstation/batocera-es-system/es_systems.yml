@@ -141,7 +141,7 @@ gb:
       vba-m:    { requireAnyOf: [BR2_PACKAGE_LIBRETRO_VBA_M] }
 
 gbc2players:
-  name:       Game Boy Color
+  name:       Game Boy Color (2 players)
   extensions: [gbc, zip, 7z]
   platform:   gbc
   emulators:
@@ -216,7 +216,6 @@ megadrive:
     libretro:
       genesisplusgx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GENESISPLUSGX] }
       picodrive:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PICODRIVE] }
-      blastem:       { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BLASTEM] }
 
 segacd:
   name:       Sega CD
@@ -893,7 +892,6 @@ saturn:
   extensions: [cue, ccd, m3u, chd, iso, zip, 7z]
   emulators:
     libretro:
-      yabause:       { requireAnyOf: [BR2_PACKAGE_LIBRETRO_YABAUSE] }
       beetle-saturn: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BEETLE_SATURN] }
       kronos:        { requireAnyOf: [BR2_PACKAGE_LIBRETRO_KRONOS] }
       yabasanshiro:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_YABASANSHIRO] }
@@ -971,6 +969,14 @@ x68000:
     libretro:
       citra: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_CITRA] }
 
+openbor:
+  name:       OpenBOR
+  extensions: [pak]
+  emulators:
+    openbor:
+      openbor: { requireAnyOf: [BR2_PACKAGE_OPENBOR] }
+      openbor4432: { requireAnyOf: [BR2_PACKAGE_OPENBOR4432] }
+
 satellaview:
   name:       Satellaview
   extensions: [bs, smc, sfc, zip, 7z]
@@ -1016,7 +1022,7 @@ thomson:
       theodore:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_THEODORE] }
 
 pc98:
-  name:       NEC PC-98
+  name:       NEC PC-9800
   extensions: [d98, zip, 98d, fdi, fdd, 2hd, tfd, d88, 88d, hdm, xdf, dup, cmd, hdi, thd, nhd, hdd, hdn]
   platform:   pc98
   emulators:
@@ -1039,6 +1045,18 @@ lightgun:
           Placez ici les jeux MAME qui peuvent se jouer au lightgun, reconnu comme une souris sous MAME.
           Un exemple de setup qui fonctionne est si vous utilisez une DolphinBar en 'mode 2' (mode jeu clavier/souris) avec une Wiimote comme flingue.
           Si vous avez plus d'une souris installee, assurez-vous que la DolphinBar / Wiimote soit reconnue comme une des deux premieres.
+
+ports:
+  name:       Ports
+  extensions: [sh]
+  group: ports
+  path:       /userdata/roms/ports
+  command:    "/bin/sh %ROM% %CONTROLLERSCONFIG%"
+  force:      True
+  comment_en: |
+          Third party Linux games and apps that can be run from a .sh script.
+  comment_fr: |
+          Jeux et applications Linux additionnels qui peuvent etre lancés depuis un script .sh.
 
 imageviewer:
   name:       Screenshots

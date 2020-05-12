@@ -30,15 +30,18 @@ fi
 # PAD Battery
 for PADBAT in /sys/class/power_supply/*/device/uevent
 do
-    # HID devices only
-    PADNAME=$(grep -E '^HID_NAME=' "${PADBAT}" | sed -e s+'^HID_NAME='++)
-    if test -n "${PADNAME}"
+    if test -e "${PADBAT}" # when nothing is found, the expression is return
     then
-	# parent of parent / uevent
-	BATTUEVENT=$(dirname "${PADBAT}")
-	BATTUEVENT=$(dirname "${BATTUEVENT}")/uevent
-	BATT=$(grep -E "^POWER_SUPPLY_CAPACITY=" "${BATTUEVENT}" | sed -e s+'^POWER_SUPPLY_CAPACITY='++ | sort -rn | head -1)
-	echo "${PADNAME}: ${BATT}%"
+	# HID devices only
+	PADNAME=$(grep -E '^HID_NAME=' "${PADBAT}" | sed -e s+'^HID_NAME='++)
+	if test -n "${PADNAME}"
+	then
+	    # parent of parent / uevent
+	    BATTUEVENT=$(dirname "${PADBAT}")
+	    BATTUEVENT=$(dirname "${BATTUEVENT}")/uevent
+	    BATT=$(grep -E "^POWER_SUPPLY_CAPACITY=" "${BATTUEVENT}" | sed -e s+'^POWER_SUPPLY_CAPACITY='++ | sort -rn | head -1)
+	    echo "${PADNAME}: ${BATT}%"
+	fi
     fi
 done
 
@@ -63,6 +66,12 @@ then
     test -n "${REVISION}" && echo "Revision: ${REVISION}"
 fi
 echo "System: ${V_SYSTEM}"
+
+MEM_TOTAL_KB=$(head /proc/meminfo | grep -E "^MemTotal:" | sed -e s+"^MemTotal:[ ]*\([0-9]*\) kB$"+"\\1"+)
+MEM_AVAILABLE_KB=$(head /proc/meminfo | grep -E "^MemAvailable:" | sed -e s+"^MemAvailable:[ ]*\([0-9]*\) kB$"+"\\1"+)
+MEM_TOTAL_MB=$(expr "${MEM_TOTAL_KB}" / 1024)
+MEM_AVAILABLE_MB=$(expr "${MEM_AVAILABLE_KB}" / 1024)
+echo "Available memory: ${MEM_AVAILABLE_MB}/${MEM_TOTAL_MB} MB"
 
 if test "${V_ARCH}" = "x86" -o "${V_ARCH}" = "x86_64"
 then

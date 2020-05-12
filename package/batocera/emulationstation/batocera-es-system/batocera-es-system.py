@@ -103,7 +103,7 @@ class EsSystemConf:
         platformValue  = EsSystemConf.systemPlatform(system, data)
         listExtensions = EsSystemConf.listExtension(data, True)
         groupValue     = EsSystemConf.systemGroup(system, data)
-        command        = EsSystemConf.default_command
+        command        = EsSystemConf.commandName(data)
 
         systemTxt =  "  <system>\n"
         systemTxt += "        <fullname>%s</fullname>\n" % (data["name"])
@@ -163,6 +163,13 @@ class EsSystemConf:
         if "theme" in data:
           return data["theme"]
         return system
+
+    # In case you need to specify a different command line 
+    @staticmethod
+    def commandName(data):
+        if "command" in data:
+          return data["command"]
+        return EsSystemConf.default_command
 
     # Create the folders of the consoles in the roms folder
     @staticmethod
@@ -230,7 +237,7 @@ class EsSystemConf:
             else:
                 featuresTxt += "  <emulator name=\"{}\"".format(emulator)
 
-            if "cores" in features[emulator] or "systems" in features[emulator]:
+            if "cores" in features[emulator] or "systems" in features[emulator] or "cfeatures" in features[emulator]:
                 featuresTxt += ">\n"
                 if "cores" in features[emulator]:
                     featuresTxt += "    <cores>\n"
@@ -254,6 +261,13 @@ class EsSystemConf:
                                 system_featuresTxt += feature
                         featuresTxt += "      <system name=\"{}\" features=\"{}\" />\n".format(system, system_featuresTxt)
                     featuresTxt += "    </systems>\n"
+                if "cfeatures" in features[emulator]:
+                    for cfeature in features[emulator]["cfeatures"]:
+                        featuresTxt += "    <feature name=\"{}\" value=\"{}\">\n".format(features[emulator]["cfeatures"][cfeature]["prompt"], cfeature)
+                        for choice in features[emulator]["cfeatures"][cfeature]["choices"]:
+                            featuresTxt += "      <choice name=\"{}\" value=\"{}\" />\n".format(choice, features[emulator]["cfeatures"][cfeature]["choices"][choice])
+                        featuresTxt += "    </feature>\n"
+
                 featuresTxt += "  </emulator>\n"
             else:
                 featuresTxt += " />\n"

@@ -3,13 +3,19 @@
 # LIBRETRO PC98
 #
 ################################################################################
-# Version.: Commits on Apr 14, 2019
-LIBRETRO_PC98_VERSION = 63c51ce80fabdcebf1325e926225d6462c797ffd
+# Version.: Commits on May 03, 2020
+LIBRETRO_PC98_VERSION = 12c23166cc912b01c6db5905b51566ce60b80b01
 LIBRETRO_PC98_SITE = $(call github,AZO234,NP2kai,$(LIBRETRO_PC98_VERSION))
 LIBRETRO_PC98_LICENSE = GPLv3
 
+LIBRETRO_PC98_PLATFORM = $(LIBRETRO_PLATFORM)
+
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_ODROIDN2),y)
+	LIBRETRO_PC98_PLATFORM = odroidn2
+endif
+
 define LIBRETRO_PC98_BUILD_CMDS
-	$(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" -C $(@D)/sdl2/ -f Makefile.libretro platform="$(LIBRETRO_PLATFORM)"
+	$(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" -C $(@D)/sdl2/ -f Makefile.libretro platform="$(LIBRETRO_PC98_PLATFORM)"
 endef
 
 define LIBRETRO_PC98_INSTALL_TARGET_CMDS

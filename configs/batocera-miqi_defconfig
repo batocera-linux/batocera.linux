@@ -9,8 +9,8 @@ BR2_PACKAGE_HOST_LINUX_HEADERS_CUSTOM_4_4=y
 # required for utf-8
 BR2_TOOLCHAIN_GLIBC_GCONV_LIBS_COPY=y
 BR2_TOOLCHAIN_BUILDROOT_CXX=y
-BR2_ENABLE_LOCALE_WHITELIST="C ar ca de el es eu_ES fr hu it ja_JP ko nb_NO nl nn_NO pl pt_PT pt_BR ru_RU sv_SE tr zh_CN zh_TW"
-BR2_GENERATE_LOCALE="en_US.UTF-8 ar_YE.UTF-8 ca_ES.UTF-8 de_DE.UTF-8 el_GR.UTF-8 es_ES.UTF-8 eu_ES.UTF-8 fr_FR.UTF-8 hu_HU.UTF-8 it_IT.UTF-8 ja_JP.UTF-8 ko_KR.UTF-8 nb_NO.UTF-8 nl_NL.UTF-8 nn_NO.UTF-8 pl_PL.UTF-8 pt_BR.UTF-8 pt_PT.UTF-8 ru_RU.UTF-8 sv_SE.UTF-8 tr_TR.UTF-8 zh_CN.UTF-8 zh_TW.UTF-8"
+BR2_ENABLE_LOCALE_WHITELIST="C ar ca de el es es_MX eu_ES fr hu it ja_JP ko nb_NO nl nn_NO pl pt_PT pt_BR ru_RU uk_UK sv_SE tr zh_CN zh_TW"
+BR2_GENERATE_LOCALE="en_US.UTF-8 ar_YE.UTF-8 ca_ES.UTF-8 de_DE.UTF-8 el_GR.UTF-8 es_ES.UTF-8 es_MX.UTF-8 eu_ES.UTF-8 fr_FR.UTF-8 hu_HU.UTF-8 it_IT.UTF-8 ja_JP.UTF-8 ko_KR.UTF-8 nb_NO.UTF-8 nl_NL.UTF-8 nn_NO.UTF-8 pl_PL.UTF-8 pt_BR.UTF-8 pt_PT.UTF-8 ru_RU.UTF-8 uk_UK.UTF-8 sv_SE.UTF-8 tr_TR.UTF-8 zh_CN.UTF-8 zh_TW.UTF-8"
 BR2_TARGET_OPTIMIZATION="-pipe -fsigned-char"
 BR2_TARGET_GENERIC_HOSTNAME="batocera"
 BR2_TARGET_GENERIC_ISSUE="PLAY AGAIN"
@@ -28,7 +28,7 @@ BR2_ROOTFS_POST_BUILD_SCRIPT="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/post-
 BR2_ROOTFS_POST_IMAGE_SCRIPT="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/post-image-script.sh"
 BR2_LINUX_KERNEL=y
 BR2_LINUX_KERNEL_CUSTOM_TARBALL=y
-BR2_LINUX_KERNEL_CUSTOM_TARBALL_LOCATION="https://github.com/rockchip-linux/kernel/archive/aa8bacf821e5c8ae6dd8cae8d64011c741659945.tar.gz"
+BR2_LINUX_KERNEL_CUSTOM_TARBALL_LOCATION="https://github.com/rockchip-linux/kernel/archive/c4af28d0af7a78e89c37ecfc37ed44c8cc59ee05.tar.gz"
 BR2_LINUX_KERNEL_PATCH="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/miqi/linux_patches"
 BR2_LINUX_KERNEL_USE_CUSTOM_CONFIG=y
 BR2_LINUX_KERNEL_CUSTOM_CONFIG_FILE="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/miqi/linux-defconfig.config"
@@ -88,9 +88,8 @@ BR2_PACKAGE_HOST_DOSFSTOOLS=y
 BR2_PACKAGE_HOST_MTOOLS=y
 BR2_PACKAGE_HOST_UBOOT_TOOLS=y
 
-# choices can be put in _defconfig files only
-# workaround for 5.25 until we figure out what is going on with ffplay
-# BR2_PACKAGE_BATOCERA_SPLASH_FFPLAY=y
+# Batocera Splash Video
+BR2_PACKAGE_BATOCERA_SPLASH_MPV=y
 
 # Enables ccache, strace and gdb
 #BR2_PACKAGE_BATOCERA_DEV=y

@@ -31,7 +31,7 @@ Skipped changes:
  drivers/media/rc/rc-main.c                         |   1 +
  fs/compat_ioctl.c                                  |  12 +
  include/media/cec-notifier.h                       |  22 ++
- include/media/cec.h                                |  32 +-
+ include/media/cec.h                                |   9 +-
  include/media/rc-map.h                             |   5 +-
  include/uapi/linux/cec-funcs.h                     |   1 +
  include/uapi/linux/cec.h                           |   2 +-
@@ -2545,7 +2545,7 @@ index 969f770acf77..65d763be4385 100644
  	adap->rc->allowed_protocols = RC_BIT_CEC;
  	adap->rc->priv = adap;
  	adap->rc->map_name = RC_MAP_CEC;
- 	adap->rc->timeout = MS_TO_NS(100);
+ 	adap->rc->timeout = MS_TO_NS(550);
 +	adap->rc_last_scancode = -1;
  #endif
  	return adap;
@@ -2768,18 +2768,6 @@ index 000000000000..354c8e724b8e
 +
 +MODULE_LICENSE("GPL");
 +MODULE_AUTHOR("Kamil Debski");
-diff --git a/drivers/media/rc/rc-main.c b/drivers/media/rc/rc-main.c
-index 3f0f71adabb4..a639ea653c7e 100644
---- a/drivers/media/rc/rc-main.c
-+++ b/drivers/media/rc/rc-main.c
-@@ -801,6 +801,7 @@ static struct {
- 	{ RC_BIT_SHARP,		"sharp"		},
- 	{ RC_BIT_MCE_KBD,	"mce_kbd"	},
- 	{ RC_BIT_XMP,		"xmp"		},
-+	{ RC_BIT_CEC,		"cec"		},
- };
- 
- /**
 diff --git a/fs/compat_ioctl.c b/fs/compat_ioctl.c
 index a52ca5cba015..b0b96fc01da3 100644
 --- a/fs/compat_ioctl.c
@@ -2854,17 +2842,7 @@ diff --git a/include/media/cec.h b/include/media/cec.h
 index df3c94f05aa5..f64807a78064 100644
 --- a/include/media/cec.h
 +++ b/include/media/cec.h
-@@ -31,6 +31,9 @@
- #include <media/rc-core.h>
- #include <media/cec-notifier.h>
- 
-+#define CEC_CAP_DEFAULTS (CEC_CAP_LOG_ADDRS | CEC_CAP_TRANSMIT | \
-+			  CEC_CAP_PASSTHROUGH | CEC_CAP_RC)
-+
- /**
-  * struct cec_devnode - cec device node
-  * @dev:	cec device
-@@ -188,6 +191,11 @@ struct cec_adapter {
+@@ -191,6 +191,11 @@ struct cec_adapter {
  
  	u32 tx_timeouts;
  
@@ -2876,7 +2854,7 @@ index df3c94f05aa5..f64807a78064 100644
  #ifdef CONFIG_CEC_NOTIFIER
  	struct cec_notifier *notifier;
  #endif
-@@ -226,7 +234,7 @@ static inline bool cec_is_sink(const struct cec_adapter *adap)
+@@ -229,7 +234,7 @@ static inline bool cec_is_sink(const struct cec_adapter *adap)
  
  struct edid;
  
@@ -2885,19 +2863,7 @@ index df3c94f05aa5..f64807a78064 100644
  struct cec_adapter *cec_allocate_adapter(const struct cec_adap_ops *ops,
  		void *priv, const char *name, u32 caps, u8 available_las);
  int cec_register_adapter(struct cec_adapter *adap, struct device *parent);
-@@ -373,11 +381,6 @@ u16 cec_phys_addr_for_input(u16 phys_addr, u8 input);
-  */
- int cec_phys_addr_validate(u16 phys_addr, u16 *parent, u16 *port);
- 
--#ifdef CONFIG_CEC_NOTIFIER
--void cec_register_cec_notifier(struct cec_adapter *adap,
--			       struct cec_notifier *notifier);
--#endif
--
- #else
- 
- static inline int cec_register_adapter(struct cec_adapter *adap,
-@@ -424,9 +427,26 @@ static inline u16 cec_phys_addr_for_input(u16 phys_addr, u8 input)
+@@ -427,6 +427,10 @@ static inline u16 cec_phys_addr_for_input(u16 phys_addr, u8 input)
  
  static inline int cec_phys_addr_validate(u16 phys_addr, u16 *parent, u16 *port)
  {
@@ -2908,59 +2874,6 @@ index df3c94f05aa5..f64807a78064 100644
  	return 0;
  }
  
- #endif
- 
-+/**
-+ * cec_phys_addr_invalidate() - set the physical address to INVALID
-+ *
-+ * @adap:	the CEC adapter
-+ *
-+ * This is a simple helper function to invalidate the physical
-+ * address.
-+ */
-+static inline void cec_phys_addr_invalidate(struct cec_adapter *adap)
-+{
-+	cec_s_phys_addr(adap, CEC_PHYS_ADDR_INVALID, false);
-+}
-+
- #endif /* _MEDIA_CEC_H */
-diff --git a/include/media/rc-map.h b/include/media/rc-map.h
-index 7c4bbc4dfab4..d9f87d5b4468 100644
---- a/include/media/rc-map.h
-+++ b/include/media/rc-map.h
-@@ -31,6 +31,7 @@ enum rc_type {
- 	RC_TYPE_RC6_MCE		= 16,	/* MCE (Philips RC6-6A-32 subtype) protocol */
- 	RC_TYPE_SHARP		= 17,	/* Sharp protocol */
- 	RC_TYPE_XMP		= 18,	/* XMP protocol */
-+	RC_TYPE_CEC		= 19,	/* CEC protocol */
- };
- 
- #define RC_BIT_NONE		0
-@@ -53,6 +54,7 @@ enum rc_type {
- #define RC_BIT_RC6_MCE		(1 << RC_TYPE_RC6_MCE)
- #define RC_BIT_SHARP		(1 << RC_TYPE_SHARP)
- #define RC_BIT_XMP		(1 << RC_TYPE_XMP)
-+#define RC_BIT_CEC		(1 << RC_TYPE_CEC)
- 
- #define RC_BIT_ALL	(RC_BIT_UNKNOWN | RC_BIT_OTHER | \
- 			 RC_BIT_RC5 | RC_BIT_RC5X | RC_BIT_RC5_SZ | \
-@@ -61,7 +63,7 @@ enum rc_type {
- 			 RC_BIT_NEC | RC_BIT_SANYO | RC_BIT_MCE_KBD | \
- 			 RC_BIT_RC6_0 | RC_BIT_RC6_6A_20 | RC_BIT_RC6_6A_24 | \
- 			 RC_BIT_RC6_6A_32 | RC_BIT_RC6_MCE | RC_BIT_SHARP | \
--			 RC_BIT_XMP)
-+			 RC_BIT_XMP | RC_BIT_CEC)
- 
- 
- #define RC_SCANCODE_UNKNOWN(x)			(x)
-@@ -123,6 +125,7 @@ void rc_map_init(void);
- #define RC_MAP_BEHOLD_COLUMBUS           "rc-behold-columbus"
- #define RC_MAP_BEHOLD                    "rc-behold"
- #define RC_MAP_BUDGET_CI_OLD             "rc-budget-ci-old"
-+#define RC_MAP_CEC                       "rc-cec"
- #define RC_MAP_CINERGY_1400              "rc-cinergy-1400"
- #define RC_MAP_CINERGY                   "rc-cinergy"
- #define RC_MAP_DELOCK_61959              "rc-delock-61959"
 diff --git a/include/uapi/linux/cec-funcs.h b/include/uapi/linux/cec-funcs.h
 index c451eec42a83..270b251a3d9b 100644
 --- a/include/uapi/linux/cec-funcs.h

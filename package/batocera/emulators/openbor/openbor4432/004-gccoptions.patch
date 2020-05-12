@@ -1,0 +1,14 @@
+diff --git a/Makefile b/Makefile
+index f35e8a4..ed4bff6 100644
+--- a/Makefile
++++ b/Makefile
+@@ -571,8 +571,7 @@ OBJS            = $(MAIN)
+ #----------------------------------------------------------------------------------------------------
+ 
+ CFLAGS 	       += $(addprefix -I", $(addsuffix ", $(INCS))) $(ARCHFLAGS) -D$(TARGET_PLATFORM)
+-CFLAGS 	       += -g -Wall -Werror -fsigned-char -std=gnu99
+-CFLAGS         += -marm -mcpu=cortex-a9 -mfpu=neon -mfloat-abi=hard -fomit-frame-pointer -ffast-math -O2
++CFLAGS 	       += -fsigned-char -std=gnu99
+ 
+ ifndef BUILD_GP2X
+ ifndef BUILD_DARWIN

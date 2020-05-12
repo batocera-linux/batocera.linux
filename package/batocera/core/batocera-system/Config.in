@@ -78,7 +78,7 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
     # choices: select BR2_PACKAGE_BATOCERA_SPLASH_OMXPLAYER if BR2_PACKAGE_BATOCERA_TARGET_RPI2      || BR2_PACKAGE_BATOCERA_TARGET_RPI3
     # choices: select BR2_PACKAGE_BATOCERA_SPLASH_FFPLAY    if BR2_PACKAGE_BATOCERA_TARGET_XU4  || BR2_PACKAGE_BATOCERA_TARGET_ROCKPRO64 || BR2_PACKAGE_BATOCERA_TARGET_ODROIDN2 || BR2_PACKAGE_BATOCERA_TARGET_TINKERBOARD || BR2_PACKAGE_BATOCERA_TARGET_MIQI || BR2_PACKAGE_BATOCERA_TARGET_ROCK960
     select BR2_PACKAGE_WGET                              # download tools
-    select BR2_PACKAGE_CURL                              # download tools
+    select BR2_PACKAGE_LIBCURL_CURL                      # download tools
     select BR2_PACKAGE_CA_CERTIFICATES                   # ssl certificates
     select BR2_PACKAGE_LIBRGA                            if BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA # Used in screen rotation (SDL and Retroarch)
     select BR2_PACKAGE_SDL2_OPENGLES                     if BR2_PACKAGE_BATOCERA_TARGET_RPI_ANY     || \
@@ -287,12 +287,13 @@ config BR2_PACKAGE_BATOCERA_ALL_SYSTEMS
         select BR2_PACKAGE_BATOCERA_MUPEN64     if !BR2_PACKAGE_BATOCERA_TARGET_RPI1 # mupen64 (n64)
 
         select BR2_PACKAGE_REICAST              if !BR2_PACKAGE_BATOCERA_TARGET_RPI1 && \
-	                                           !BR2_PACKAGE_BATOCERA_TARGET_RPI2 && \
-	       					   !BR2_PACKAGE_BATOCERA_TARGET_S912 && \
-						   !BR2_PACKAGE_BATOCERA_TARGET_C2   && \
-						   !BR2_PACKAGE_BATOCERA_TARGET_S905 && \
-						   !BR2_PACKAGE_BATOCERA_TARGET_VIM3
-						   # dreamcast
+                                                   !BR2_PACKAGE_BATOCERA_TARGET_RPI2 && \
+                                                   !BR2_PACKAGE_BATOCERA_TARGET_S912 && \
+                                                   !BR2_PACKAGE_BATOCERA_TARGET_C2   && \
+                                                   !BR2_PACKAGE_BATOCERA_TARGET_ODROIDN2 && \
+                                                   !BR2_PACKAGE_BATOCERA_TARGET_S905 && \
+												   !BR2_PACKAGE_BATOCERA_TARGET_VIM3
+                                                   # dreamcast
 
         select BR2_PACKAGE_PPSSPP               if !BR2_PACKAGE_BATOCERA_TARGET_RPI1 && \
                                                    !BR2_PACKAGE_BATOCERA_TARGET_RPI2 && \
@@ -321,6 +322,9 @@ config BR2_PACKAGE_BATOCERA_ALL_SYSTEMS
         select BR2_PACKAGE_PCSX2_X86            if BR2_PACKAGE_BATOCERA_TARGET_X86_64
         select BR2_PACKAGE_CITRA                if BR2_PACKAGE_BATOCERA_TARGET_X86_64
 
+        select BR2_PACKAGE_OPENBOR
+        select BR2_PACKAGE_OPENBOR4432
+
         help
           All avaible systems for the selected architecture
 
@@ -331,20 +335,18 @@ config BR2_PACKAGE_BATOCERA_RETROARCH
         select BR2_PACKAGE_BATOCERA_BEZEL
 	select BR2_PACKAGE_BATOCERA_SHADERS
 
-        select BR2_PACKAGE_LIBRETRO_MUPEN64PLUS_NEXT  if !BR2_PACKAGE_BATOCERA_TARGET_RPI_ANY && \
-                                                         !BR2_PACKAGE_BATOCERA_TARGET_C2      	  && \
-                                                         !BR2_PACKAGE_BATOCERA_TARGET_S905    	  && \
-                                                         !BR2_PACKAGE_BATOCERA_TARGET_S912        && \
-                                                         !BR2_PACKAGE_BATOCERA_TARGET_VIM3
+        select BR2_PACKAGE_LIBRETRO_MUPEN64PLUS_NEXT  if !BR2_PACKAGE_BATOCERA_TARGET_RPI_ANY 	  && \
+	                                                     !BR2_PACKAGE_BATOCERA_TARGET_C2      	  && \
+ 	                                                     !BR2_PACKAGE_BATOCERA_TARGET_S905    	  && \
+ 	                                                     !BR2_PACKAGE_BATOCERA_TARGET_S912
 							 # MUPEN64PLUS_NEXT
 
         select BR2_PACKAGE_LIBRETRO_PARALLEL_N64      if !BR2_PACKAGE_BATOCERA_TARGET_RPI_ANY     && \
                                                          !BR2_PACKAGE_BATOCERA_TARGET_C2      	  && \
-                                                         !BR2_PACKAGE_BATOCERA_TARGET_S905     	  && \
-                                                         !BR2_PACKAGE_BATOCERA_TARGET_TINKERBOARD && \
-                                                         !BR2_PACKAGE_BATOCERA_TARGET_MIQI        && \
-                                                         !BR2_PACKAGE_BATOCERA_TARGET_VIM3
-                                                         # PARALLEL_N64
+							                             !BR2_PACKAGE_BATOCERA_TARGET_S905     	  && \
+	                                                     !BR2_PACKAGE_BATOCERA_TARGET_TINKERBOARD && \
+							                             !BR2_PACKAGE_BATOCERA_TARGET_MIQI
+							 # PARALLEL_N64
 
         select BR2_PACKAGE_LIBRETRO_POCKETSNES        if BR2_PACKAGE_BATOCERA_TARGET_RPI_ANY # POCKETSNES
 
@@ -354,40 +356,31 @@ config BR2_PACKAGE_BATOCERA_RETROARCH
 
         select BR2_PACKAGE_LIBRETRO_MAME2010          if !BR2_PACKAGE_BATOCERA_TARGET_RPI1 # MAME2010
 
-        select BR2_PACKAGE_LIBRETRO_YABAUSE           if !BR2_PACKAGE_BATOCERA_TARGET_RPI_ANY && \
-	                                                 !BR2_PACKAGE_BATOCERA_TARGET_RPI4    && \
-	                                                 !BR2_PACKAGE_BATOCERA_TARGET_C2      && \
-							 !BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA && \
-							 !BR2_PACKAGE_BATOCERA_TARGET_S905    && \
- 							 !BR2_PACKAGE_BATOCERA_TARGET_S912 && \
-							 !BR2_PACKAGE_BATOCERA_TARGET_VIM3
-							 # YABAUSE
-
         select BR2_PACKAGE_LIBRETRO_OPERA             if !BR2_PACKAGE_BATOCERA_TARGET_RPI_ANY && \
-	                                                 !BR2_PACKAGE_BATOCERA_TARGET_C2      && \
-					                 !BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA
+	                                                     !BR2_PACKAGE_BATOCERA_TARGET_C2      && \
+					                                     !BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA
 							 # 4DO
 
         select BR2_PACKAGE_LIBRETRO_VIRTUALJAGUAR     if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY # VIRTUALJAGUAR
 
         select BR2_PACKAGE_LIBRETRO_BEETLE_PCFX       if !BR2_PACKAGE_BATOCERA_TARGET_RPI_ANY   && \
-	                                                 !BR2_PACKAGE_BATOCERA_TARGET_C2        && \
-							 !BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA && \
-	                                                 !BR2_PACKAGE_BATOCERA_TARGET_S905      && \
-	                                                 !BR2_PACKAGE_BATOCERA_TARGET_VIM3      && \
-	                                                 !BR2_PACKAGE_BATOCERA_TARGET_S912
-							 # PCFX
+	                                                     !BR2_PACKAGE_BATOCERA_TARGET_C2        && \
+	                                                     !BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA && \
+	                                                     !BR2_PACKAGE_BATOCERA_TARGET_S905      && \
+	                                                     !BR2_PACKAGE_BATOCERA_TARGET_ODROIDN2  && \
+														 !BR2_PACKAGE_BATOCERA_TARGET_VIM3      && \
+	                                                     !BR2_PACKAGE_BATOCERA_TARGET_S912
+	                                                 # PCFX
 
         select BR2_PACKAGE_LIBRETRO_BEETLE_PSX        if !BR2_PACKAGE_BATOCERA_TARGET_RPI_ANY && \
                                                          !BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA
                                                          # PSX
 
         select BR2_PACKAGE_LIBRETRO_FLYCAST           if !BR2_PACKAGE_BATOCERA_TARGET_RPI1    && \
-                                                     !BR2_PACKAGE_BATOCERA_TARGET_RPI2    && \
-                                                     !BR2_PACKAGE_BATOCERA_TARGET_C2      && \
-                                                     !BR2_PACKAGE_BATOCERA_TARGET_S905    && \
-                                                     !BR2_PACKAGE_BATOCERA_TARGET_VIM3    && \
-                                                     !BR2_PACKAGE_BATOCERA_TARGET_S912
+ 	                                                     !BR2_PACKAGE_BATOCERA_TARGET_RPI2    && \
+	                                                     !BR2_PACKAGE_BATOCERA_TARGET_C2      && \
+ 	                                                     !BR2_PACKAGE_BATOCERA_TARGET_S905    && \
+	                                                     !BR2_PACKAGE_BATOCERA_TARGET_S912
 							 # FLYCAST
 
         select BR2_PACKAGE_LIBRETRO_BSNES             if BR2_PACKAGE_BATOCERA_TARGET_X86_64 # BSNES
@@ -399,12 +392,10 @@ config BR2_PACKAGE_BATOCERA_RETROARCH
         select BR2_PACKAGE_LIBRETRO_KRONOS            if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
 
         select BR2_PACKAGE_LIBRETRO_YABASANSHIRO      if !BR2_PACKAGE_BATOCERA_TARGET_RPI_ANY && \
- 	                                                 !BR2_PACKAGE_BATOCERA_TARGET_X86_ANY && \
- 	                                                 !BR2_PACKAGE_BATOCERA_TARGET_C2      && \
-							 !BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA && \
- 	                                                 !BR2_PACKAGE_BATOCERA_TARGET_S905    && \
- 	                                                 !BR2_PACKAGE_BATOCERA_TARGET_S912    && \
-													 !BR2_PACKAGE_BATOCERA_TARGET_VIM3
+ 	                                                     !BR2_PACKAGE_BATOCERA_TARGET_C2      && \
+							                             !BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA && \
+ 	                                                     !BR2_PACKAGE_BATOCERA_TARGET_S905    && \
+ 	                                                     !BR2_PACKAGE_BATOCERA_TARGET_S912
 
         select BR2_PACKAGE_LIBRETRO_DESMUME           if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
         select BR2_PACKAGE_LIBRETRO_IMAGEVIEWER       # ALL
@@ -452,7 +443,9 @@ config BR2_PACKAGE_BATOCERA_RETROARCH
         select BR2_PACKAGE_LIBRETRO_THEODORE          # ALL
         select BR2_PACKAGE_LIBRETRO_PC98              # ALL
         select BR2_PACKAGE_LIBRETRO_MRBOOM            # ALL
-        select BR2_PACKAGE_LIBRETRO_DOSBOX            if !BR2_PACKAGE_BATOCERA_TARGET_ROCK960
+        select BR2_PACKAGE_LIBRETRO_DOSBOX            if !BR2_PACKAGE_BATOCERA_TARGET_ROCK960 && \
+                                                         !BR2_PACKAGE_BATOCERA_TARGET_TINKERBOARD && \
+                                                         !BR2_PACKAGE_BATOCERA_TARGET_MIQI
         select BR2_PACKAGE_LIBRETRO_PUAE              if !BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA
         select BR2_PACKAGE_LIBRETRO_MESEN             if !BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA && \
                                                          !BR2_PACKAGE_BATOCERA_TARGET_ODROIDN2  && \
@@ -470,10 +463,9 @@ config BR2_PACKAGE_BATOCERA_RETROARCH
 
         ### Experimental Emulators ###
         select BR2_PACKAGE_RPCS3                      if BR2_PACKAGE_BATOCERA_CORES_EXPERIMENTAL && BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
-        # select BR2_PACKAGE_MUPEN64PLUS_VIDEO_RICE   if BR2_PACKAGE_BATOCERA_CORES_EXPERIMENTAL
-        # select BR2_PACKAGE_LIBRETRO_BLASTEM         if BR2_PACKAGE_BATOCERA_CORES_EXPERIMENTAL && BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
+        select BR2_PACKAGE_LIBRETRO_PPSSPP            if BR2_PACKAGE_BATOCERA_CORES_EXPERIMENTAL && BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
+        select BR2_PACKAGE_MUPEN64PLUS_VIDEO_RICE     if BR2_PACKAGE_BATOCERA_CORES_EXPERIMENTAL && BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
         # select BR2_PACKAGE_LIBRETRO_SCUMMVM         if BR2_PACKAGE_BATOCERA_CORES_EXPERIMENTAL # Error starting
-        # select BR2_PACKAGE_LIBRETRO_PPSSPP          if BR2_PACKAGE_BATOCERA_CORES_EXPERIMENTAL # Compilation Error
         # select BR2_PACKAGE_LIBRETRO_DAPHNE          if BR2_PACKAGE_BATOCERA_CORES_EXPERIMENTAL # Works fine but no sound, emulator bug
 
         help

@@ -37,6 +37,9 @@ else
     exit 1
 fi
 
+# in case xorg is in use
+export DISPLAY=:0.0
+
 # SYSTEM
 DSYSTEM="${TMPDIR}/system"
 dmesg 	         	> "${DSYSTEM}/dmesg.txt"
@@ -45,14 +48,14 @@ ps    	         	> "${DSYSTEM}/ps.txt"
 df -h 	         	> "${DSYSTEM}/df.txt"
 netstat -tuan    	> "${DSYSTEM}/netstat.txt"
 lsusb -v         	> "${DSYSTEM}/lsusb.txt" 2>/dev/null
-tvservice -m CEA 	> "${DSYSTEM}/tvservice-CEA.txt"
-tvservice -m DMT 	> "${DSYSTEM}/tvservice-DMT.txt"
+which tvservice >/dev/null && tvservice -m CEA 	> "${DSYSTEM}/tvservice-CEA.txt"
+which tvservice >/dev/null && tvservice -m DMT 	> "${DSYSTEM}/tvservice-DMT.txt"
 ifconfig -a             > "${DSYSTEM}/ifconfig.txt"
 lspci                   > "${DSYSTEM}/lspci.txt"
 amixer                  > "${DSYSTEM}/amixer.txt"
 aplay -l                > "${DSYSTEM}/aplay-l.txt"
-DISPLAY=:0.0 glxinfo    > "${DSYSTEM}/glxinfo.txt"
-DISPLAY=:0.0 xrandr     > "${DSYSTEM}/xrandr.txt"
+which glxinfo >/dev/null && glxinfo    > "${DSYSTEM}/glxinfo.txt"
+which xrandr  >/dev/null && xrandr     > "${DSYSTEM}/xrandr.txt"
 blkid                   > "${DSYSTEM}/disks.txt"
 connmanctl technologies > "${DSYSTEM}/connman-technologies.txt"
 connmanctl services     > "${DSYSTEM}/connman-services.txt"
@@ -83,7 +86,7 @@ do
     evtest --info "${J}"          > "${DJOYS}/evtest.${N}.txt"
     udevadm info -q all -n "${J}" > "${DJOYS}/udevadm.${N}.txt"
 done
-DISPLAY=:0.0 sdl2-jstest -l > "${DJOYS}/sdl2-jstest.txt"
+sdl2-jstest -l > "${DJOYS}/sdl2-jstest.txt"
 
 # lirc
 DLIRC="${TMPDIR}/lirc"

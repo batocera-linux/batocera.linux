@@ -22,6 +22,7 @@ from generators.fsuae.fsuaeGenerator import FsuaeGenerator
 from generators.amiberry.amiberryGenerator import AmiberryGenerator
 from generators.citra.citraGenerator import CitraGenerator
 from generators.daphne.daphneGenerator import DaphneGenerator
+from generators.openbor.openborGenerator import OpenborGenerator
 import controllersConfig as controllers
 import signal
 import batoceraFiles
@@ -47,7 +48,8 @@ generators = {
     'pcsx2': Pcsx2Generator(),
     'ppsspp': PPSSPPGenerator(),
     'citra' : CitraGenerator(),
-    'daphne' : DaphneGenerator()
+    'daphne' : DaphneGenerator(),
+    'openbor' : OpenborGenerator()
 }
 
 def main(args, maxnbplayers):
@@ -72,10 +74,14 @@ def main(args, maxnbplayers):
     eslog.log("Running system: {}".format(systemName))
     system = Emulator(systemName, args.rom)
 
+    system.config["emulator-forced"] = False
+    system.config["core-forced"]     = False
     if args.emulator is not None:
         system.config["emulator"] = args.emulator
+        system.config["emulator-forced"] = True # tip to indicated that the emulator was forced
     if args.core is not None:
         system.config["core"] = args.core
+        system.config["core-forced"] = True
 
     eslog.debug("Settings: {}".format(system.config))
     if "emulator" in system.config and "core" in system.config:
