@@ -14,14 +14,14 @@ index 1f8a890..c585f4f 100644
 +   endif
 +
 +   # Odroid-GOA
-+   ifneq (,$(findstring odroidgoa,$(platform)))
++   ifneq (,$(findstring classic_armv8_a35,$(platform)))
 +      ENDIANNESS_DEFINES += -DALIGN_LONG
 +      CFLAGS += -fomit-frame-pointer -ffast-math
 +      PLATFORM_DEFINES += -DARM -marm -march=armv8-a+crc -mfpu=neon-fp-armv8 -mcpu=cortex-a35 -mtune=cortex-a35 -mfloat-abi=hard
 +   endif
 +
 +   # Odroid-N2
-+   ifneq (,$(findstring odroidn2,$(platform)))
++   ifneq (,$(findstring CortexA73_G12B,$(platform)))
 +      ENDIANNESS_DEFINES += -DALIGN_LONG
 +      CFLAGS += -fomit-frame-pointer -ffast-math
 +      PLATFORM_DEFINES += -DARM -march=armv8-a+crc -mcpu=cortex-a73 -mtune=cortex-a73.cortex-a53
