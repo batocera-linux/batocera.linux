@@ -292,7 +292,7 @@ config BR2_PACKAGE_BATOCERA_ALL_SYSTEMS
                                                    !BR2_PACKAGE_BATOCERA_TARGET_C2   && \
                                                    !BR2_PACKAGE_BATOCERA_TARGET_ODROIDN2 && \
                                                    !BR2_PACKAGE_BATOCERA_TARGET_S905 && \
-												   !BR2_PACKAGE_BATOCERA_TARGET_VIM3
+                                                   !BR2_PACKAGE_BATOCERA_TARGET_VIM3
                                                    # dreamcast
 
         select BR2_PACKAGE_PPSSPP               if !BR2_PACKAGE_BATOCERA_TARGET_RPI1 && \
@@ -308,7 +308,9 @@ config BR2_PACKAGE_BATOCERA_ALL_SYSTEMS
                                                    BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA   || \
                                                    BR2_PACKAGE_BATOCERA_TARGET_TINKERBOARD || \
                                                    BR2_PACKAGE_BATOCERA_TARGET_MIQI        || \
-                                                   BR2_PACKAGE_BATOCERA_TARGET_ODROIDN2 # amiga
+                                                   BR2_PACKAGE_BATOCERA_TARGET_ODROIDN2    || \
+												   BR2_PACKAGE_BATOCERA_TARGET_VIM3
+												   # amiga
 
         select BR2_PACKAGE_DAPHNE               if !BR2_PACKAGE_BATOCERA_TARGET_RPI1 && \
                                                    !BR2_PACKAGE_BATOCERA_TARGET_RPI2
@@ -368,7 +370,7 @@ config BR2_PACKAGE_BATOCERA_RETROARCH
 	                                                     !BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA && \
 	                                                     !BR2_PACKAGE_BATOCERA_TARGET_S905      && \
 	                                                     !BR2_PACKAGE_BATOCERA_TARGET_ODROIDN2  && \
-														 !BR2_PACKAGE_BATOCERA_TARGET_VIM3      && \
+	                                                     !BR2_PACKAGE_BATOCERA_TARGET_VIM3      && \
 	                                                     !BR2_PACKAGE_BATOCERA_TARGET_S912
 	                                                 # PCFX
 
@@ -404,7 +406,7 @@ config BR2_PACKAGE_BATOCERA_RETROARCH
         select BR2_PACKAGE_LIBRETRO_POKEMINI          # ALL
         select BR2_PACKAGE_LIBRETRO_ATARI800          # ALL
         select BR2_PACKAGE_LIBRETRO_BEETLE_VB         # ALL
-        select BR2_PACKAGE_LIBRETRO_PICODRIVE         if !BR2_PACKAGE_BATOCERA_TARGET_VIM3 # ALL
+        select BR2_PACKAGE_LIBRETRO_PICODRIVE         # ALL
         select BR2_PACKAGE_LIBRETRO_GENESISPLUSGX     # ALL
         select BR2_PACKAGE_LIBRETRO_GAMBATTE          # ALL
         select BR2_PACKAGE_LIBRETRO_STELLA            # ALL
