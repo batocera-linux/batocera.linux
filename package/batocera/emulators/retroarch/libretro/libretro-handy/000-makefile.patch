@@ -1,0 +1,13 @@
+diff --git a/Makefile b/Makefile
+index 658e833..2d9dbe1 100644
+--- a/Makefile
++++ b/Makefile
+@@ -46,7 +46,7 @@ unixpath = $(subst \,/,$1)
+ unixcygpath = /$(subst :,,$(call unixpath,$1))
+ 
+ # Unix
+-ifeq ($(platform), unix)
++ifneq (,$(findstring unix,$(platform)))
+ 	fpic := -fPIC
+ 	TARGET := $(TARGET_NAME)_libretro.so
+ 	SHARED := -shared -Wl,-version-script=$(LIBRETRO_DIR)/link.T -Wl,-no-undefined
