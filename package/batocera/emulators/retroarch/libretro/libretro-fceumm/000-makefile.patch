@@ -1,0 +1,20 @@
+diff --git a/Makefile.libretro b/Makefile.libretro
+index b71d0a4..f9a5746 100644
+--- a/Makefile.libretro
++++ b/Makefile.libretro
+@@ -245,6 +245,15 @@ else ifeq ($(platform), rpi2)
+ 	CFLAGS += -marm -mcpu=cortex-a7 -mfpu=neon-vfpv4 -mfloat-abi=hard -funsafe-math-optimizations
+ 	CFLAGS += -fomit-frame-pointer -fstrict-aliasing -ffast-math
+ 
++# Raspberry Pi 3
++else ifeq ($(platform), rpi3)
++	TARGET := $(TARGET_NAME)_libretro.so
++	fpic := -fPIC
++	SHARED := -shared -Wl,--version-script=src/drivers/libretro/link.T -Wl,-no-undefined
++	CFLAGS += -DARM
++	CFLAGS += -marm -mcpu=cortex-a53 -mfpu=neon-fp-armv8 -mfloat-abi=hard -funsafe-math-optimizations
++	CFLAGS += -fomit-frame-pointer -fstrict-aliasing -ffast-math
++
+ # Lightweight PS3 Homebrew SDK
+ else ifeq ($(platform), psl1ght)
+ 	TARGET := $(TARGET_NAME)_libretro_$(platform).a
