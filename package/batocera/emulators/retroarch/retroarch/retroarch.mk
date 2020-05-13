@@ -211,11 +211,3 @@ endif
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI4),y)
 	LIBRETRO_PLATFORM += rpi4
 endif
-
-ifeq ($(BR2_x86_i586),y)
-	LIBRETRO_PLATFORM += x86
-endif
-
-ifeq ($(BR2_x86_64),y)
-	LIBRETRO_PLATFORM += x86_64
-endif
