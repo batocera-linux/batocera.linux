@@ -1,0 +1,60 @@
+#!/bin/sh
+#
+# Stolen from RedHat FC5.
+#
+
+systemsetting="batocera-settings"
+securityenabled="`$systemsetting  -command load -key system.security.enabled`"
+
+if [ "$securityenabled" == "1" ];then
+    CONFIGFILE="/etc/inetd-secure.conf"
+else
+    CONFIGFILE="/etc/inetd.conf"
+fi
+
+RETVAL=0
+
+start() {
+	enabled="`$systemsetting  -command load -key system.inetd.enabled`"
+    	if [ "$enabled" == "0" ];then
+	  echo "INETD service: disabled"
+	  exit 0
+        fi
+
+	echo -n "Starting INETD service: "
+	inetd "${CONFIGFILE}"
+	RETVAL=$?
+	echo "done"
+	return $RETVAL
+}	
+
+stop() {
+	echo -n "Shutting down INETD service: "
+	INETDPID=`pidof inetd`
+	kill -9 $INETDPID `pgrep -P $INETDPID` 2>/dev/null
+	RETVAL=$?
+	echo "done"
+	return $RETVAL
+}	
+
+restart() {
+	stop
+	start
+}	
+
+case "$1" in
+  start)
+  	start
+	;;
+  stop)
+  	stop
+	;;
+  restart)
+  	restart
+	;;
+  *)
+	echo "Usage: $0 {start|stop|restart}"
+	exit 1
+esac
+
+exit $?
