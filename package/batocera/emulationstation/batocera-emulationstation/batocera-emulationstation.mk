@@ -49,8 +49,8 @@ else
 	BATOCERA_EMULATIONSTATION_CONF_OPTS += -DENABLE_FILEMANAGER=0
 endif
 
-# cec is causing issues with es on xu4
-ifeq ($(BR2_PACKAGE_LIBCEC_EXYNOS_API),y)
+# cec is causing issues with es on xu4 and vim3
+ifeq ($(BR2_PACKAGE_LIBCEC_EXYNOS_API)$(BR2_PACKAGE_BATOCERA_TARGET_VIM3),y)
 	BATOCERA_EMULATIONSTATION_CONF_OPTS += -DCEC=OFF
 endif
 
