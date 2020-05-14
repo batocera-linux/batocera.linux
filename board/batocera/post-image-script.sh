@@ -576,7 +576,7 @@ case "${BATOCERA_TARGET}" in
 	rm -rf "${BINARIES_DIR}/boot"            || exit 1
 	mkdir -p "${BINARIES_DIR}/boot/boot"     || exit 1
 	cp "${BINARIES_DIR}/Image"                "${BINARIES_DIR}/boot/boot/linux"                || exit 1
-	cp "${BINARIES_DIR}/uInitrd"              "${BINARIES_DIR}/boot/boot/uInitrd"                || exit 1
+	cp "${BINARIES_DIR}/initrd.gz"              "${BINARIES_DIR}/boot/boot/initrd.gz"          || exit 1
 	cp "${BINARIES_DIR}/rootfs.squashfs"      "${BINARIES_DIR}/boot/boot/batocera.update"      || exit 1
 	cp "${BINARIES_DIR}/meson-g12b-a311d-khadas-vim3.dtb"  "${BINARIES_DIR}/boot/boot/meson-g12b-a311d-khadas-vim3.dtb" || exit 1
 	cp "${BINARIES_DIR}/batocera-boot.conf"    "${BINARIES_DIR}/boot/batocera-boot.conf"        || exit 1
