@@ -28,7 +28,7 @@ BR2_ROOTFS_POST_BUILD_SCRIPT="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/post-
 BR2_ROOTFS_POST_IMAGE_SCRIPT="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/post-image-script.sh"
 BR2_LINUX_KERNEL=y
 BR2_LINUX_KERNEL_CUSTOM_TARBALL=y
-BR2_LINUX_KERNEL_CUSTOM_TARBALL_LOCATION="https://github.com/rockchip-linux/kernel/archive/c4af28d0af7a78e89c37ecfc37ed44c8cc59ee05.tar.gz"
+BR2_LINUX_KERNEL_CUSTOM_TARBALL_LOCATION="https://github.com/mrfixit2001/rockchip-kernel/archive/0a4c47cc208989a4eb5779e2ee9a94859a63234c.tar.gz"
 BR2_LINUX_KERNEL_PATCH="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/miqi/linux_patches"
 BR2_LINUX_KERNEL_USE_CUSTOM_CONFIG=y
 BR2_LINUX_KERNEL_CUSTOM_CONFIG_FILE="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/miqi/linux-defconfig.config"
@@ -89,7 +89,7 @@ BR2_PACKAGE_HOST_MTOOLS=y
 BR2_PACKAGE_HOST_UBOOT_TOOLS=y
 
 # Batocera Splash Video
-BR2_PACKAGE_BATOCERA_SPLASH_MPV=y
+# BR2_PACKAGE_BATOCERA_SPLASH_MP is not set
 
 # Enables ccache, strace and gdb
 #BR2_PACKAGE_BATOCERA_DEV=y
