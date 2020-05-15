@@ -52,7 +52,7 @@ def setupControllers(config, playersControllers, joy_max_inputs):
         config.save("keys." + str(idx) + ".8" , JoystickValue("a",        pad, joy_max_inputs)) # JUMP
         config.save("keys." + str(idx) + ".9" , JoystickValue("y",        pad, joy_max_inputs)) # SPECIAL
         config.save("keys." + str(idx) + ".10", JoystickValue("start",    pad, joy_max_inputs)) # START
-        config.save("keys." + str(idx) + ".11", JoystickValue("select",   pad, joy_max_inputs)) # SCREENSHOT
+        config.save("keys." + str(idx) + ".11", JoystickValue("l2",       pad, joy_max_inputs)) # SCREENSHOT
 
         # hotkey
         if idx == 0:
