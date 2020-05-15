@@ -13,6 +13,7 @@
 #v1.3 - add RETROFLAG_GPI power device, the GameBoy look-a-like-device for Pi0/W
 #v1.4 - add RETROFLAG_ADV advanced reset script for NESPi+, MegaPi and SuperPi
 #v1.5 - add KINTARO for Kintaro/Roshambo cases
+#v1.6 - add ARGONONE for Rpi4 Argon One case fan control - @lbrpdx
 #by cyperghost 11.11.2019
 
 #dialog for selecting your switch or power device
@@ -38,6 +39,7 @@ function powerdevice_dialog()
                   PIN56ONOFF "py: Sliding switch for proper shutdown" \
                   PIN56PUSH "py: Momentary push button for shutdown" \
                   PIN356ONOFFRESET "py: Power button and reset button" \
+                  ARGONONE "Fan control for RPi4 Argon One case" \
                  )
 
     cmd=(dialog --backtitle "BATOCERA Power Switch Selection Toolset" \
@@ -343,6 +345,36 @@ function retroflag_stop()
     fi
 }
 
+#https://www.argon40.com/argon-one-raspberry-pi-4-case.html
+function argonone_start()
+{
+    if ! grep -q "^dtparam=i2c_arm=on" "/boot/config.txt"; then
+         mount -o remount, rw /boot
+         echo "dtparam=i2c_arm=on" >> "/boot/config.txt"
+    fi
+    if ! grep -q "^dtparam=i2c-1=on" "/boot/config.txt"; then
+         mount -o remount, rw /boot
+         echo "dtparam=i2c-1=on" >> "/boot/config.txt"
+    fi
+    modprobe i2c-dev
+    modprobe i2c-bcm2708
+    /usr/bin/rpi-argonone start &
+}
+
+function argonone_stop()
+{
+    pid=$(pgrep -f rpi-argonone | head -n 1)
+    if ! [ -z "${pid}" ]; then
+         kill -9 "${pid}"
+    fi
+
+    if [ -f /tmp/shutdown.please ]; then
+        # force a power shutdown from GPIO block
+        /usr/bin/rpi-argonone halt &
+    else
+        # only stop fan (keep power block on)
+        /usr/bin/rpi-argonone stop &
+
 #https://www.kintaro.co
 function kintaro_start()
 {
@@ -357,6 +389,7 @@ function kintaro_stop()
     pid_file="/tmp/rpi-kintaro-SafeShutdown.pid"
     if [[ -e $pid_file ]]; then
         kill $(cat $pid_file)
+
     fi
 }
 
@@ -419,6 +452,9 @@ case "$CONFVALUE" in
     "RETROFLAG_ADV")
         retroflag_$1 rpi-retroflag-AdvancedSafeShutdown
     ;;
+    "ARGONONE")
+        argonone_$1
+    ;;
     "KINTARO")
         kintaro_$1
     ;;
@@ -441,7 +477,7 @@ case "$CONFVALUE" in
         echo
         echo "Valid values are: REMOTEPIBOARD_2003, REMOTEPIBOARD_2005, WITTYPI 
                   ATX_RASPI_R2_6, MAUSBERRY, ONOFFSHIM, RETROFLAG, RETROFLAG_GPI
-                  PIN56ONOFF, PIN56PUSH, PIN356ONOFFRESET, KINTARO"
+                  PIN56ONOFF, PIN56PUSH, PIN356ONOFFRESET, KINTARO, ARGONONE"
         exit 1
     ;;
 esac

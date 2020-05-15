@@ -14,6 +14,7 @@ define RPIGPIOSWITCH_INSTALL_TARGET_CMDS
 	$(INSTALL) -D -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/utils/rpigpioswitch/rpi-retroflag-SafeShutdown.py         $(TARGET_DIR)/usr/bin/rpi-retroflag-SafeShutdown
 	$(INSTALL) -D -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/utils/rpigpioswitch/rpi-retroflag-GPiCase.py              $(TARGET_DIR)/usr/bin/rpi-retroflag-GPiCase
 	$(INSTALL) -D -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/utils/rpigpioswitch/rpi-retroflag-AdvancedSafeShutdown.py $(TARGET_DIR)/usr/bin/rpi-retroflag-AdvancedSafeShutdown
+	$(INSTALL) -D -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/utils/rpigpioswitch/rpi-argonone.py                       $(TARGET_DIR)/usr/bin/rpi-argonone
 	$(INSTALL) -D -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/utils/rpigpioswitch/rpi-kintaro-SafeShutdown.py           $(TARGET_DIR)/usr/bin/rpi-kintaro-SafeShutdown
 endef
 
