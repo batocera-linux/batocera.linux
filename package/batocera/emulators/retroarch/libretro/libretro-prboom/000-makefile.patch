@@ -1,0 +1,30 @@
+diff --git a/Makefile b/Makefile
+index e2f9c85..bff506b 100644
+--- a/Makefile
++++ b/Makefile
+@@ -172,6 +172,25 @@ else ifeq ($(platform), classic_armv7_a7)
+ 	endif
+ #######################################
+ 
++# (armv8 a35, hard point, neon based) ###
++# PlayStation Classic 
++else ifeq ($(platform), classic_armv8_a35)
++	TARGET := $(TARGET_NAME)_libretro.so
++	fpic := -fPIC
++	SHARED := -shared -Wl,--version-script=libretro/link.T -Wl,-no-undefined
++	CFLAGS += -Ofast \
++	-fuse-linker-plugin \
++	-fno-stack-protector -fno-ident -fomit-frame-pointer \
++	-fmerge-all-constants -ffast-math -funroll-all-loops \
++	-marm -mcpu=cortex-a35 -mfpu=neon-fp-armv8 -mfloat-abi=hard
++	CXXFLAGS += $(CFLAGS)
++	CPPFLAGS += $(CFLAGS)
++	ASFLAGS += $(CFLAGS)
++	HAVE_NEON = 1
++	ARCH = arm
++	LDFLAGS += -marm -mcpu=cortex-a35 -mfpu=neon-fp-armv8 -mfloat-abi=hard -Ofast -flto -fuse-linker-plugin
++#######################################
++
+ else ifeq ($(platform), qnx)
+ 	EXT    ?= so
+    TARGET := $(TARGET_NAME)_libretro_qnx.$(EXT)

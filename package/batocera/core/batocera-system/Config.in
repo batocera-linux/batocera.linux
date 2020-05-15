@@ -46,7 +46,7 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
     select BR2_PACKAGE_RASPI2PNG                         if BR2_PACKAGE_BATOCERA_TARGET_RPI_ANY # screenshots
     select BR2_PACKAGE_GPICASE                           if BR2_PACKAGE_BATOCERA_TARGET_RPI1 # retroflag gpicase
     select BR2_PACKAGE_ROSHAMBO_CASE                     if BR2_PACKAGE_BATOCERA_TARGET_ROCKPRO64 # roshambo case
-    select BR2_PACKAGE_RPIGPIOSWITCH                     if BR2_PACKAGE_BATOCERA_TARGET_RPI_ANY # gpio switchs
+    select BR2_PACKAGE_RPIGPIOSWITCH                     if BR2_PACKAGE_BATOCERA_TARGET_RPI_ANY || BR2_PACKAGE_BATOCERA_TARGET_RPI4 # gpio switchs
     select BR2_PACKAGE_RETROGAME                         if BR2_PACKAGE_BATOCERA_TARGET_RPI_ANY || BR2_PACKAGE_BATOCERA_TARGET_RPI4 # gpio pads
     select BR2_PACKAGE_CONNMAN                           # network manager
     select BR2_PACKAGE_CONNMAN_WIFI                      # network manager

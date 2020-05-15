@@ -186,10 +186,6 @@ ifeq ($(BR2_arm),y)
 	ifeq ($(BR2_cortex_a72),y)
 		LIBRETRO_PLATFORM += armv7
 	endif
-
-	ifeq ($(BR2_cortex_a35),y)
-		LIBRETRO_PLATFORM += armv8 classic_armv8_a35
-	endif
 endif
 
 ifeq ($(BR2_ARM_CPU_HAS_NEON),y)
@@ -210,4 +206,8 @@ endif
 
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI4),y)
 	LIBRETRO_PLATFORM += rpi4
+endif
+
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA),y)
+	LIBRETRO_PLATFORM += classic_armv8_a35
 endif
