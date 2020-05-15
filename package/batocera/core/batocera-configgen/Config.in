@@ -2,6 +2,7 @@ config BR2_PACKAGE_BATOCERA_CONFIGGEN
         bool "batocera configgen"
 	select BR2_PACKAGE_PYTHON
 	select BR2_PACKAGE_PYTHON_PYYAML
+	select BR2_PACKAGE_PYTHON_PILLOW
         help
           The configuration utility for batocera
 	  The purpose of the lib is to automatically configure emulators, using the environment variables available in Batocera.
