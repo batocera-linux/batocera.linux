@@ -320,27 +320,35 @@ def writeBezelConfig(bezel, retroarchConfig, systemName, rom, gameResolution, be
     romBase = os.path.splitext(os.path.basename(rom))[0] # filename without extension
     overlay_info_file = batoceraFiles.overlayUser + "/" + bezel + "/games/" + systemName + "/" + romBase + ".info"
     overlay_png_file  = batoceraFiles.overlayUser + "/" + bezel + "/games/" + systemName + "/" + romBase + ".png"
+    bezel_game = True
     if not os.path.exists(overlay_png_file):
         overlay_info_file = batoceraFiles.overlaySystem + "/" + bezel + "/games/" + systemName + "/" + romBase + ".info"
         overlay_png_file  = batoceraFiles.overlaySystem + "/" + bezel + "/games/" + systemName + "/" + romBase + ".png"
+        bezel_game = True
         if not os.path.exists(overlay_png_file):
             overlay_info_file = batoceraFiles.overlayUser + "/" + bezel + "/games/" + romBase + ".info"
             overlay_png_file  = batoceraFiles.overlayUser + "/" + bezel + "/games/" + romBase + ".png"
+            bezel_game = True
             if not os.path.exists(overlay_png_file):
                 overlay_info_file = batoceraFiles.overlaySystem + "/" + bezel + "/games/" + romBase + ".info"
                 overlay_png_file  = batoceraFiles.overlaySystem + "/" + bezel + "/games/" + romBase + ".png"
+                bezel_game = True
                 if not os.path.exists(overlay_png_file):
                     overlay_info_file = batoceraFiles.overlayUser + "/" + bezel + "/systems/" + systemName + ".info"
                     overlay_png_file  = batoceraFiles.overlayUser + "/" + bezel + "/systems/" + systemName + ".png"
+                    bezel_game = False
                     if not os.path.exists(overlay_png_file):
                         overlay_info_file = batoceraFiles.overlaySystem + "/" + bezel + "/systems/" + systemName + ".info"
                         overlay_png_file  = batoceraFiles.overlaySystem + "/" + bezel + "/systems/" + systemName + ".png"
+                        bezel_game = False
                         if not os.path.exists(overlay_png_file):
                             overlay_info_file = batoceraFiles.overlayUser + "/" + bezel + "/default.info"
                             overlay_png_file  = batoceraFiles.overlayUser + "/" + bezel + "/default.png"
+                            bezel_game = True
                             if not os.path.exists(overlay_png_file):
                                 overlay_info_file = batoceraFiles.overlaySystem + "/" + bezel + "/default.info"
                                 overlay_png_file  = batoceraFiles.overlaySystem + "/" + bezel + "/default.png"
+                                bezel_game = True
                                 if not os.path.exists(overlay_png_file):
                                     return
 
@@ -368,13 +376,22 @@ def writeBezelConfig(bezel, retroarchConfig, systemName, rom, gameResolution, be
                 return
             else:
                 bezelNeedAdaptation = True
-        retroarchConfig['aspect_ratio_index']     = str(ratioIndexes.index("custom")) # overwritten from the beginning of this file
+        retroarchConfig['aspect_ratio_index'] = str(ratioIndexes.index("custom")) # overwritten from the beginning of this file
     else:
         # when there is no information about width and height in the .info, assume that the tv is HD 16/9 and infos are core provided
         infosRatio = 1920.0 / 1080.0
         if gameRatio < infosRatio - 0.1: # keep a margin
             return
-        retroarchConfig['aspect_ratio_index']     = str(ratioIndexes.index("core")) # overwritten from the beginning of this file
+        else:
+            # No info on the bezel, let's get the bezel image width and height and apply the
+            # ratios from usual 4:3 1920x1080 bezels (example: theBezelProject)
+            infos["width"], infos["height"] = Image.open(overlay_png_file).size
+            infos["top"]    = int(infos["height"] * 2 / 1080)
+            infos["left"]   = int(infos["width"] * 241 / 1920) # 241 = (1920 - (1920 / (4:3))) / 2 + 1 pixel = where viewport start
+            infos["bottom"] = int(infos["height"] * 2 / 1080)
+            infos["right"]  = int(infos["width"] * 241 / 1920)
+            bezelNeedAdaptation = True
+        retroarchConfig['aspect_ratio_index'] = str(ratioIndexes.index("core")) # overwritten from the beginning of this file
 
     retroarchConfig['input_overlay_enable']       = "true"
     retroarchConfig['input_overlay_scale']        = "1.0"
@@ -391,8 +408,12 @@ def writeBezelConfig(bezel, retroarchConfig, systemName, rom, gameResolution, be
     retroarchConfig['input_overlay_opacity'] = infos["opacity"]
 
     if bezelNeedAdaptation:
-        wratio = gameResolution["width"]  / float(infos["width"])
+        wratio = gameResolution["width"] / float(infos["width"])
         hratio = gameResolution["height"] / float(infos["height"])
+
+        # If width or height < original, can't add black borders, need to stretch
+        if gameResolution["width"] < infos["width"] or gameResolution["height"] < infos["height"]:
+            bezel_stretch = True
 
         if bezel_stretch:
             retroarchConfig['custom_viewport_x']      = infos["left"] * wratio
@@ -402,9 +423,21 @@ def writeBezelConfig(bezel, retroarchConfig, systemName, rom, gameResolution, be
             retroarchConfig['video_message_pos_x']    = infos["messagex"] * wratio
             retroarchConfig['video_message_pos_y']    = infos["messagey"] * hratio
         else:
-            output_png_file = "/tmp/" + os.path.basename(overlay_png_file) + "_adapted.png"
-            if os.path.exists(output_png_file) is False:
+            if bezel_game is True:
+                output_png_file = "/tmp/bezel_game_adapted.png"
+                create_new_bezel_file = True
+            else:
+                create_new_bezel_file = False
+                output_png_file = "/tmp/" + os.path.splitext(os.path.basename(overlay_png_file))[0] + "_adapted.png"
+                if os.path.exists(output_png_file) is False:
+                    create_new_bezel_file = True
+                else:
+                    if os.path.getmtime(output_png_file) < os.path.getmtime(overlay_png_file):
+                        create_new_bezel_file = True
+
+            if create_new_bezel_file is True:
                 # Padding left and right borders for ultrawide screens (larger than 16:9 aspect ratio)
+                fillcolor = 'black'
                 xoffset = gameResolution["width"]  - infos["width"]
                 yoffset = gameResolution["height"] - infos["height"]
                 retroarchConfig['custom_viewport_x']      = infos["left"] + xoffset/2
@@ -416,13 +449,27 @@ def writeBezelConfig(bezel, retroarchConfig, systemName, rom, gameResolution, be
 
                 borderw = 0
                 borderh = 0
-                if wratio > hratio:
-                    borderh = ((infos["height"] * gameResolution["width"] / infos["width"]) - gameResolution["height"]) / 2
+                if wratio > 1:
+                    borderw = xoffset / 2
+                if hratio > 1:
+                    borderh = yoffset / 2
+                imgin = Image.open(overlay_png_file)
+                if imgin.mode != "RGBA":
+                    # TheBezelProject have Palette + alpha, not RGBA. PIL can't convert from P+A to RGBA.
+                    # Even if it can load P+A, it can't save P+A as PNG. So we have to recreate a new image to adapt it.
+                    if not 'transparency' in imgin.info:
+                        return # no transparent layer for the viewport, abort
+                    alpha = imgin.split()[-1]  # alpha from original palette + alpha
+                    ix,iy = imgin.size
+                    imgnew = Image.new("RGBA", (ix,iy), (0,0,0,255))
+                    imgnew.paste(alpha, (0,0,ix,iy))
+                    imgout = ImageOps.expand(imgnew, border=(borderw, borderh, xoffset-borderw, yoffset-borderh), fill=fillcolor)
+                    imgout.save(output_png_file, mode="RGBA", format="PNG")
                 else:
-                    borderw = ((infos["width"] * gameResolution["height"] / infos["height"]) - gameResolution["width"]) / 2
+                    imgout = ImageOps.expand(imgin, border=(borderw, borderh, xoffset-borderw, yoffset-borderh), fill=fillcolor)
+                    imgout.save(output_png_file, mode="RGBA", format="PNG")
 
-                ImageOps.expand(Image.open(overlay_png_file), border=(borderw, borderh), fill='black').save(output_png_file)
-                overlay_png_file = output_png_file # replace by the new file
+            overlay_png_file = output_png_file # replace by the new file (recreated or cached in /tmp)
     else:
         if viewPortUsed:
             retroarchConfig['custom_viewport_x']      = infos["left"]
