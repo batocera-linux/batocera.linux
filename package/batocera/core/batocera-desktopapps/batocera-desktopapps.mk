@@ -45,6 +45,13 @@ ifeq ($(BR2_PACKAGE_REICAST),y)
   BATOCERA_DESKTOPAPPS_ICONS   += reicast.png
 endif
 
+# flycast
+ifeq ($(BR2_PACKAGE_FLYCAST),y)
+  BATOCERA_DESKTOPAPPS_SCRIPTS += batocera-config-flycast
+  BATOCERA_DESKTOPAPPS_APPS    += flycast-config.desktop
+  BATOCERA_DESKTOPAPPS_ICONS   += flycast.png
+endif
+
 # scummvm
 ifeq ($(BR2_PACKAGE_SCUMMVM),y)
   BATOCERA_DESKTOPAPPS_SCRIPTS += batocera-config-scummvm
