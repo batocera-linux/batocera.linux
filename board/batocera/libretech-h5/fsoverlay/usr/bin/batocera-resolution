@@ -1,0 +1,18 @@
+#!/bin/bash
+
+ACTION=$1
+shift
+
+FILEMODES="/sys/class/graphics/fb0/modes"
+
+case "${ACTION}" in
+    "listModes")
+    ;;
+    "setMode")
+    ;;
+    "currentMode"|"currentResolution")
+        # mode can be different from resolution (ie on rpi)
+	test -e "${FILEMODES}" && head -1 "${FILEMODES}" | sed -e s+'^[^:]:\([0-9]*\)x\([0-9]*\)[a-z]*.*$'+'\1x\2'+
+	;;
+esac
+exit 0
