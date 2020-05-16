@@ -1,5 +1,5 @@
 diff --git a/core/input/gamepad_device.cpp b/core/input/gamepad_device.cpp
-index e1bf9ea..a2894bc 100644
+index e1bf9ea..d623ff8 100644
 --- a/core/input/gamepad_device.cpp
 +++ b/core/input/gamepad_device.cpp
 @@ -37,6 +37,8 @@ s8 joyry[4];
@@ -22,14 +22,16 @@ index e1bf9ea..a2894bc 100644
  			default:
  				break;
  			}
-@@ -110,7 +116,9 @@ bool GamepadDevice::gamepad_btn_input(u32 code, bool pressed)
+@@ -110,7 +116,11 @@ bool GamepadDevice::gamepad_btn_input(u32 code, bool pressed)
  		{
  		case EMU_BTN_ESCAPE:
  			if (pressed)
 -				dc_exit();
 +				batocera_hotkey = 1;
-+			else
++			else{
 +				batocera_hotkey = 0;
++				gui_open_settings();
++			}
  			break;
  		case EMU_BTN_MENU:
  			if (pressed)
