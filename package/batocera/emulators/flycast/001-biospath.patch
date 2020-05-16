@@ -1,0 +1,13 @@
+diff --git a/core/nullDC.cpp b/core/nullDC.cpp
+index 0ff8ed6..5a32d23 100755
+--- a/core/nullDC.cpp
++++ b/core/nullDC.cpp
+@@ -593,7 +593,7 @@ static void dc_start_game(const char *path)
+ 	dc_reset(true);
+ 	LoadSettings(false);
+ 	
+-	std::string data_path = get_readonly_data_path(DATA_PATH);
++	std::string data_path = "/userdata/bios/";
+ 	if (settings.platform.system == DC_PLATFORM_DREAMCAST)
+ 	{
+ 		if ((settings.bios.UseReios && !forced_bios_file) || !LoadRomFiles(data_path))
