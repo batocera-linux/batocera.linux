@@ -1,5 +1,23 @@
 #!/bin/bash
 
+function convert() {
+	a=$(echo "$1" | cut -d: -f1)
+	b=$(echo "$1" | cut -d: -f2)
+	c=$(echo "$1" | cut -d: -f3)
+	oa=$(printf "%d" "0x"$a)
+	ob=$(printf "%d" "0x"$b)
+	oc=$(printf "%d" "0x"$c)
+	echo -n "$oa:$ob:$oc"
+}
+
+BUSID=$(lspci | grep -E "controller: NVIDIA" | cut -d" " -f1 | sed s/[.]/:/g)
+if [ -z "$BUSID" ]; then
+	echo "No Nvidia GPU card found on this system. Exiting."
+	exit 1
+fi
+BID=$(convert "$BUSID")
+PCIID=PCI:"$BID"
+
 echo "Stopping ES..."
 /etc/init.d/S31emulationstation stop
 mount -o remount,rw /boot
@@ -15,7 +33,7 @@ EndSection
 Section "Device"
     Identifier "nvidia"
     Driver "nvidia"
-    BusID "$(lspci | grep -E "controller: NVIDIA" | cut -d" " -f1 | sed s/[.]/:/g)"
+    BusID "$PCIID"
     Option "AllowEmptyInitialConfiguration"
 EndSection
 _EOF_
