@@ -1,0 +1,726 @@
+From e7b2f400507263f12872db06f4cd69bc80f62c2f Mon Sep 17 00:00:00 2001
+From: Jonas Karlman <jonas@kwiboo.se>
+Date: Sun, 25 Mar 2018 22:17:06 +0200
+Subject: [PATCH 10/15] ASoC: hdmi-codec: fix channel allocation
+
+---
+ sound/soc/codecs/hdmi-codec.c | 113 +++++++++++++++++++-----------------------
+ 1 file changed, 52 insertions(+), 61 deletions(-)
+
+diff --git a/sound/soc/codecs/hdmi-codec.c b/sound/soc/codecs/hdmi-codec.c
+index bfb1519..47632a3 100644
+--- a/sound/soc/codecs/hdmi-codec.c
++++ b/sound/soc/codecs/hdmi-codec.c
+@@ -202,78 +202,69 @@ static const struct snd_pcm_chmap_elem hdmi_codec_8ch_chmaps[] = {
+  */
+ static const struct hdmi_codec_cea_spk_alloc hdmi_codec_channel_alloc[] = {
+ 	{ .ca_id = 0x00, .n_ch = 2,
+-	  .mask = FL | FR},
+-	/* 2.1 */
+-	{ .ca_id = 0x01, .n_ch = 4,
+-	  .mask = FL | FR | LFE},
+-	/* Dolby Surround */
++	  .mask = FL | FR },
++	{ .ca_id = 0x03, .n_ch = 4,
++	  .mask = FL | FR | LFE | FC },
+ 	{ .ca_id = 0x02, .n_ch = 4,
+ 	  .mask = FL | FR | FC },
+-	/* surround51 */
++	{ .ca_id = 0x01, .n_ch = 4,
++	  .mask = FL | FR | LFE },
+ 	{ .ca_id = 0x0b, .n_ch = 6,
+-	  .mask = FL | FR | LFE | FC | RL | RR},
+-	/* surround40 */
+-	{ .ca_id = 0x08, .n_ch = 6,
+-	  .mask = FL | FR | RL | RR },
+-	/* surround41 */
+-	{ .ca_id = 0x09, .n_ch = 6,
+-	  .mask = FL | FR | LFE | RL | RR },
+-	/* surround50 */
++	  .mask = FL | FR | LFE | FC | RL | RR },
+ 	{ .ca_id = 0x0a, .n_ch = 6,
+ 	  .mask = FL | FR | FC | RL | RR },
+-	/* 6.1 */
+-	{ .ca_id = 0x0f, .n_ch = 8,
+-	  .mask = FL | FR | LFE | FC | RL | RR | RC },
+-	/* surround71 */
++	{ .ca_id = 0x09, .n_ch = 6,
++	  .mask = FL | FR | LFE | RL | RR },
++	{ .ca_id = 0x08, .n_ch = 6,
++	  .mask = FL | FR | RL | RR },
++	{ .ca_id = 0x07, .n_ch = 6,
++	  .mask = FL | FR | LFE | FC | RC },
++	{ .ca_id = 0x06, .n_ch = 6,
++	  .mask = FL | FR | FC | RC },
++	{ .ca_id = 0x05, .n_ch = 6,
++	  .mask = FL | FR | LFE | RC },
++	{ .ca_id = 0x04, .n_ch = 6,
++	  .mask = FL | FR | RC },
+ 	{ .ca_id = 0x13, .n_ch = 8,
+ 	  .mask = FL | FR | LFE | FC | RL | RR | RLC | RRC },
+-	/* others */
+-	{ .ca_id = 0x03, .n_ch = 8,
+-	  .mask = FL | FR | LFE | FC },
+-	{ .ca_id = 0x04, .n_ch = 8,
+-	  .mask = FL | FR | RC},
+-	{ .ca_id = 0x05, .n_ch = 8,
+-	  .mask = FL | FR | LFE | RC },
+-	{ .ca_id = 0x06, .n_ch = 8,
+-	  .mask = FL | FR | FC | RC },
+-	{ .ca_id = 0x07, .n_ch = 8,
+-	  .mask = FL | FR | LFE | FC | RC },
+-	{ .ca_id = 0x0c, .n_ch = 8,
+-	  .mask = FL | FR | RC | RL | RR },
+-	{ .ca_id = 0x0d, .n_ch = 8,
+-	  .mask = FL | FR | LFE | RL | RR | RC },
+-	{ .ca_id = 0x0e, .n_ch = 8,
+-	  .mask = FL | FR | FC | RL | RR | RC },
+-	{ .ca_id = 0x10, .n_ch = 8,
+-	  .mask = FL | FR | RL | RR | RLC | RRC },
+-	{ .ca_id = 0x11, .n_ch = 8,
+-	  .mask = FL | FR | LFE | RL | RR | RLC | RRC },
++	{ .ca_id = 0x1f, .n_ch = 8,
++	  .mask = FL | FR | LFE | FC | RL | RR | FLC | FRC },
+ 	{ .ca_id = 0x12, .n_ch = 8,
+ 	  .mask = FL | FR | FC | RL | RR | RLC | RRC },
+-	{ .ca_id = 0x14, .n_ch = 8,
+-	  .mask = FL | FR | FLC | FRC },
+-	{ .ca_id = 0x15, .n_ch = 8,
+-	  .mask = FL | FR | LFE | FLC | FRC },
+-	{ .ca_id = 0x16, .n_ch = 8,
+-	  .mask = FL | FR | FC | FLC | FRC },
+-	{ .ca_id = 0x17, .n_ch = 8,
+-	  .mask = FL | FR | LFE | FC | FLC | FRC },
+-	{ .ca_id = 0x18, .n_ch = 8,
+-	  .mask = FL | FR | RC | FLC | FRC },
+-	{ .ca_id = 0x19, .n_ch = 8,
+-	  .mask = FL | FR | LFE | RC | FLC | FRC },
+-	{ .ca_id = 0x1a, .n_ch = 8,
+-	  .mask = FL | FR | RC | FC | FLC | FRC },
+-	{ .ca_id = 0x1b, .n_ch = 8,
+-	  .mask = FL | FR | LFE | RC | FC | FLC | FRC },
+-	{ .ca_id = 0x1c, .n_ch = 8,
+-	  .mask = FL | FR | RL | RR | FLC | FRC },
+-	{ .ca_id = 0x1d, .n_ch = 8,
+-	  .mask = FL | FR | LFE | RL | RR | FLC | FRC },
+ 	{ .ca_id = 0x1e, .n_ch = 8,
+ 	  .mask = FL | FR | FC | RL | RR | FLC | FRC },
+-	{ .ca_id = 0x1f, .n_ch = 8,
+-	  .mask = FL | FR | LFE | FC | RL | RR | FLC | FRC },
++	{ .ca_id = 0x11, .n_ch = 8,
++	  .mask = FL | FR | LFE | RL | RR | RLC | RRC },
++	{ .ca_id = 0x1d, .n_ch = 8,
++	  .mask = FL | FR | LFE | RL | RR | FLC | FRC },
++	{ .ca_id = 0x10, .n_ch = 8,
++	  .mask = FL | FR | RL | RR | RLC | RRC },
++	{ .ca_id = 0x1c, .n_ch = 8,
++	  .mask = FL | FR | RL | RR | FLC | FRC },
++	{ .ca_id = 0x0f, .n_ch = 8,
++	  .mask = FL | FR | LFE | FC | RL | RR | RC },
++	{ .ca_id = 0x1b, .n_ch = 8,
++	  .mask = FL | FR | LFE | RC | FC | FLC | FRC },
++	{ .ca_id = 0x0e, .n_ch = 8,
++	  .mask = FL | FR | FC | RL | RR | RC },
++	{ .ca_id = 0x1a, .n_ch = 8,
++	  .mask = FL | FR | RC | FC | FLC | FRC },
++	{ .ca_id = 0x0d, .n_ch = 8,
++	  .mask = FL | FR | LFE | RL | RR | RC },
++	{ .ca_id = 0x19, .n_ch = 8,
++	  .mask = FL | FR | LFE | RC | FLC | FRC },
++	{ .ca_id = 0x0c, .n_ch = 8,
++	  .mask = FL | FR | RC | RL | RR },
++	{ .ca_id = 0x18, .n_ch = 8,
++	  .mask = FL | FR | RC | FLC | FRC },
++	{ .ca_id = 0x17, .n_ch = 8,
++	  .mask = FL | FR | LFE | FC | FLC | FRC },
++	{ .ca_id = 0x16, .n_ch = 8,
++	  .mask = FL | FR | FC | FLC | FRC },
++	{ .ca_id = 0x15, .n_ch = 8,
++	  .mask = FL | FR | LFE | FLC | FRC },
++	{ .ca_id = 0x14, .n_ch = 8,
++	  .mask = FL | FR | FLC | FRC },
+ };
+ 
+ struct hdmi_codec_priv {
+-- 
+2.14.1
+
+From 759c992d38d1a02560687247dec7ac05f4e8b3ce Mon Sep 17 00:00:00 2001
+From: Jonas Karlman <jonas@kwiboo.se>
+Date: Sun, 8 Dec 2019 13:13:46 +0000
+Subject: [PATCH] drm: dw-hdmi: rename last_connector_result
+
+Signed-off-by: Jonas Karlman <jonas@kwiboo.se>
+---
+ drivers/gpu/drm/bridge/synopsys/dw-hdmi.c | 20 ++++++++++----------
+ 1 file changed, 10 insertions(+), 10 deletions(-)
+
+diff --git a/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c b/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
+index 0e716c40c42c..2dad989e7b4f 100644
+--- a/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
++++ b/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
+@@ -197,7 +197,7 @@ struct dw_hdmi {
+ 
+ 	hdmi_codec_plugged_cb plugged_cb;
+ 	struct device *codec_dev;
+-	enum drm_connector_status last_connector_result;
++	enum drm_connector_status last_connector_status;
+ };
+ 
+ #define HDMI_IH_PHY_STAT0_RX_SENSE \
+@@ -236,7 +236,7 @@ int dw_hdmi_set_plugged_cb(struct dw_hdmi *hdmi, hdmi_codec_plugged_cb fn,
+ 	mutex_lock(&hdmi->mutex);
+ 	hdmi->plugged_cb = fn;
+ 	hdmi->codec_dev = codec_dev;
+-	plugged = hdmi->last_connector_result == connector_status_connected;
++	plugged = hdmi->last_connector_status == connector_status_connected;
+ 	handle_plugged_change(hdmi, plugged);
+ 	mutex_unlock(&hdmi->mutex);
+ 
+@@ -2271,7 +2271,7 @@ dw_hdmi_connector_detect(struct drm_connector *connector, bool force)
+ {
+ 	struct dw_hdmi *hdmi = container_of(connector, struct dw_hdmi,
+ 					     connector);
+-	enum drm_connector_status result;
++	enum drm_connector_status status;
+ 
+ 	mutex_lock(&hdmi->mutex);
+ 	hdmi->force = DRM_FORCE_UNSPECIFIED;
+@@ -2279,18 +2279,18 @@ dw_hdmi_connector_detect(struct drm_connector *connector, bool force)
+ 	dw_hdmi_update_phy_mask(hdmi);
+ 	mutex_unlock(&hdmi->mutex);
+ 
+-	result = hdmi->phy.ops->read_hpd(hdmi, hdmi->phy.data);
++	status = hdmi->phy.ops->read_hpd(hdmi, hdmi->phy.data);
+ 
+ 	mutex_lock(&hdmi->mutex);
+-	if (result != hdmi->last_connector_result) {
+-		dev_dbg(hdmi->dev, "read_hpd result: %d", result);
++	if (status != hdmi->last_connector_status) {
++		dev_dbg(hdmi->dev, "connector status: %d", status);
+ 		handle_plugged_change(hdmi,
+-				      result == connector_status_connected);
+-		hdmi->last_connector_result = result;
++				      status == connector_status_connected);
++		hdmi->last_connector_status = status;
+ 	}
+ 	mutex_unlock(&hdmi->mutex);
+ 
+-	return result;
++	return status;
+ }
+ 
+ static int dw_hdmi_connector_get_modes(struct drm_connector *connector)
+@@ -3053,7 +3053,7 @@ __dw_hdmi_probe(struct platform_device *pdev,
+ 	hdmi->rxsense = true;
+ 	hdmi->phy_mask = (u8)~(HDMI_PHY_HPD | HDMI_PHY_RX_SENSE);
+ 	hdmi->mc_clkdis = 0x7f;
+-	hdmi->last_connector_result = connector_status_disconnected;
++	hdmi->last_connector_status = connector_status_disconnected;
+ 
+ 	mutex_init(&hdmi->mutex);
+ 	mutex_init(&hdmi->audio_mutex);
+
+From 753bd0f066fd26f253f45ca652bb8a532c6dad90 Mon Sep 17 00:00:00 2001
+From: Jonas Karlman <jonas@kwiboo.se>
+Date: Sun, 1 Dec 2019 20:51:22 +0000
+Subject: [PATCH] drm: dw-hdmi: extract handle_plugged_change call
+
+Signed-off-by: Jonas Karlman <jonas@kwiboo.se>
+---
+ drivers/gpu/drm/bridge/synopsys/dw-hdmi.c | 22 ++++++++++++++--------
+ 1 file changed, 14 insertions(+), 8 deletions(-)
+
+diff --git a/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c b/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
+index 2dad989e7b4f..ac198fcaba8b 100644
+--- a/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
++++ b/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
+@@ -228,6 +228,19 @@ static void handle_plugged_change(struct dw_hdmi *hdmi, bool plugged)
+ 		hdmi->plugged_cb(hdmi->codec_dev, plugged);
+ }
+ 
++static void dw_hdmi_update_connector_status(struct dw_hdmi *hdmi,
++                                            enum drm_connector_status status)
++{
++	mutex_lock(&hdmi->mutex);
++	if (status != hdmi->last_connector_status) {
++		dev_dbg(hdmi->dev, "connector status: %d", status);
++		handle_plugged_change(hdmi,
++				      status == connector_status_connected);
++		hdmi->last_connector_status = status;
++	}
++	mutex_unlock(&hdmi->mutex);
++}
++
+ int dw_hdmi_set_plugged_cb(struct dw_hdmi *hdmi, hdmi_codec_plugged_cb fn,
+ 			   struct device *codec_dev)
+ {
+@@ -2281,14 +2294,7 @@ dw_hdmi_connector_detect(struct drm_connector *connector, bool force)
+ 
+ 	status = hdmi->phy.ops->read_hpd(hdmi, hdmi->phy.data);
+ 
+-	mutex_lock(&hdmi->mutex);
+-	if (status != hdmi->last_connector_status) {
+-		dev_dbg(hdmi->dev, "connector status: %d", status);
+-		handle_plugged_change(hdmi,
+-				      status == connector_status_connected);
+-		hdmi->last_connector_status = status;
+-	}
+-	mutex_unlock(&hdmi->mutex);
++	dw_hdmi_update_connector_status(hdmi, status);
+ 
+ 	return status;
+ }
+
+From fdd68a4db03fba2017a4aa65830adf3b8d5a585c Mon Sep 17 00:00:00 2001
+From: Jonas Karlman <jonas@kwiboo.se>
+Date: Sat, 28 Sep 2019 13:34:46 +0000
+Subject: [PATCH] drm: dw-hdmi: remove unused struct member
+
+Signed-off-by: Jonas Karlman <jonas@kwiboo.se>
+---
+ drivers/gpu/drm/bridge/synopsys/dw-hdmi.c | 4 ----
+ 1 file changed, 4 deletions(-)
+
+diff --git a/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c b/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
+index ac198fcaba8b..7a0eb443cec6 100644
+--- a/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
++++ b/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
+@@ -41,8 +41,6 @@
+ #define DDC_CI_ADDR		0x37
+ #define DDC_SEGMENT_ADDR	0x30
+ 
+-#define HDMI_EDID_LEN		512
+-
+ /* DW-HDMI Controller >= 0x200a are at least compliant with SCDC version 1 */
+ #define SCDC_MIN_SOURCE_VERSION	0x1
+ 
+@@ -152,8 +150,6 @@ struct dw_hdmi {
+ 
+ 	int vic;
+ 
+-	u8 edid[HDMI_EDID_LEN];
+-
+ 	struct {
+ 		const struct dw_hdmi_phy_ops *ops;
+ 		const char *name;
+
+From 1b52bf5366035687e7e028f1320c9e2d37dd01a3 Mon Sep 17 00:00:00 2001
+From: Jonas Karlman <jonas@kwiboo.se>
+Date: Sat, 28 Sep 2019 13:34:46 +0000
+Subject: [PATCH] drm: dw-hdmi: read edid in detect callback
+
+Signed-off-by: Jonas Karlman <jonas@kwiboo.se>
+---
+ drivers/gpu/drm/bridge/synopsys/dw-hdmi.c | 79 +++++++++++++++++++++++--------
+ 1 file changed, 58 insertions(+), 21 deletions(-)
+
+diff --git a/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c b/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
+index 7a0eb443cec6..363f7c5a8016 100644
+--- a/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
++++ b/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
+@@ -150,6 +150,8 @@ struct dw_hdmi {
+ 
+ 	int vic;
+ 
++	struct edid *cached_edid;
++
+ 	struct {
+ 		const struct dw_hdmi_phy_ops *ops;
+ 		const char *name;
+@@ -2217,9 +2219,55 @@ static void initialize_hdmi_ih_mutes(struct dw_hdmi *hdmi)
+ 	hdmi_writeb(hdmi, ih_mute, HDMI_IH_MUTE);
+ }
+ 
++static void dw_hdmi_clear_edid(struct drm_connector *connector)
++{
++	struct dw_hdmi *hdmi = container_of(connector, struct dw_hdmi,
++					     connector);
++
++	if (!hdmi->cached_edid)
++		return;
++
++	hdmi->sink_is_hdmi = false;
++	hdmi->sink_has_audio = false;
++
++	kfree(hdmi->cached_edid);
++	hdmi->cached_edid = NULL;
++}
++
++static void dw_hdmi_get_edid(struct drm_connector *connector)
++{
++	struct dw_hdmi *hdmi = container_of(connector, struct dw_hdmi,
++					     connector);
++	struct edid *edid;
++
++	if (!hdmi->ddc || hdmi->cached_edid)
++		return;
++
++	edid = drm_get_edid(connector, hdmi->ddc);
++
++	if (edid && edid->input & DRM_EDID_INPUT_DIGITAL) {
++		dev_dbg(hdmi->dev, "got edid: width[%d] x height[%d]\n",
++			edid->width_cm, edid->height_cm);
++
++		hdmi->sink_is_hdmi = drm_detect_hdmi_monitor(edid);
++		hdmi->sink_has_audio = drm_detect_monitor_audio(edid);
++
++		hdmi->cached_edid = edid;
++	} else {
++		dev_dbg(hdmi->dev, "failed to get edid\n");
++
++		kfree(edid);
++		edid = NULL;
++	}
++
++	drm_connector_update_edid_property(connector, edid);
++	cec_notifier_set_phys_addr_from_edid(hdmi->cec_notifier, edid);
++}
++
+ static void dw_hdmi_poweron(struct dw_hdmi *hdmi)
+ {
+ 	hdmi->bridge_is_on = true;
++	dw_hdmi_get_edid(&hdmi->connector);
+ 	dw_hdmi_setup(hdmi, &hdmi->previous_mode);
+ }
+ 
+@@ -2290,6 +2338,11 @@ dw_hdmi_connector_detect(struct drm_connector *connector, bool force)
+ 
+ 	status = hdmi->phy.ops->read_hpd(hdmi, hdmi->phy.data);
+ 
++	if (status == connector_status_disconnected)
++		dw_hdmi_clear_edid(connector);
++	else
++		dw_hdmi_get_edid(connector);
++
+ 	dw_hdmi_update_connector_status(hdmi, status);
+ 
+ 	return status;
+@@ -2299,28 +2352,8 @@ static int dw_hdmi_connector_get_modes(struct drm_connector *connector)
+ {
+ 	struct dw_hdmi *hdmi = container_of(connector, struct dw_hdmi,
+ 					     connector);
+-	struct edid *edid;
+-	int ret = 0;
+-
+-	if (!hdmi->ddc)
+-		return 0;
+ 
+-	edid = drm_get_edid(connector, hdmi->ddc);
+-	if (edid) {
+-		dev_dbg(hdmi->dev, "got edid: width[%d] x height[%d]\n",
+-			edid->width_cm, edid->height_cm);
+-
+-		hdmi->sink_is_hdmi = drm_detect_hdmi_monitor(edid);
+-		hdmi->sink_has_audio = drm_detect_monitor_audio(edid);
+-		drm_connector_update_edid_property(connector, edid);
+-		cec_notifier_set_phys_addr_from_edid(hdmi->cec_notifier, edid);
+-		ret = drm_add_edid_modes(connector, edid);
+-		kfree(edid);
+-	} else {
+-		dev_dbg(hdmi->dev, "failed to get edid\n");
+-	}
+-
+-	return ret;
++	return drm_add_edid_modes(connector, hdmi->cached_edid);
+ }
+ 
+ static bool hdr_metadata_equal(const struct drm_connector_state *old_state,
+@@ -2699,6 +2732,9 @@ static void dw_hdmi_bridge_detach(struct drm_bridge *bridge)
+ 	cec_notifier_conn_unregister(hdmi->cec_notifier);
+ 	hdmi->cec_notifier = NULL;
+ 	mutex_unlock(&hdmi->cec_notifier_mutex);
++
++	kfree(hdmi->cached_edid);
++	hdmi->cached_edid = NULL;
+ }
+ 
+ static enum drm_mode_status
+@@ -3388,6 +3424,7 @@ EXPORT_SYMBOL_GPL(dw_hdmi_unbind);
+ 
+ void dw_hdmi_resume(struct dw_hdmi *hdmi)
+ {
++	dw_hdmi_clear_edid(&hdmi->connector);
+ 	dw_hdmi_init_hw(hdmi);
+ }
+ EXPORT_SYMBOL_GPL(dw_hdmi_resume);
+
+From 94b8204bf9165575ee51d9e18c4a2df16e2199ed Mon Sep 17 00:00:00 2001
+From: Jonas Karlman <jonas@kwiboo.se>
+Date: Sat, 28 Sep 2019 13:34:47 +0000
+Subject: [PATCH] drm: dw-hdmi: read edid in force callback
+
+Signed-off-by: Jonas Karlman <jonas@kwiboo.se>
+---
+ drivers/gpu/drm/bridge/synopsys/dw-hdmi.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c b/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
+index 363f7c5a8016..dff27934287c 100644
+--- a/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
++++ b/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
+@@ -2405,6 +2405,13 @@ static void dw_hdmi_connector_force(struct drm_connector *connector)
+ 	dw_hdmi_update_power(hdmi);
+ 	dw_hdmi_update_phy_mask(hdmi);
+ 	mutex_unlock(&hdmi->mutex);
++
++	dw_hdmi_clear_edid(connector);
++
++	if (connector->status != connector_status_connected)
++		return;
++
++	dw_hdmi_get_edid(connector);
+ }
+ 
+ static const struct drm_connector_funcs dw_hdmi_connector_funcs = {
+
+From d2ba7dbdb7d87a1240aac2652bddb49ce147b790 Mon Sep 17 00:00:00 2001
+From: Jonas Karlman <jonas@kwiboo.se>
+Date: Sat, 28 Sep 2019 13:34:47 +0000
+Subject: [PATCH] drm: dw-hdmi: invalidate cec phys addr in detect callback
+
+Signed-off-by: Jonas Karlman <jonas@kwiboo.se>
+---
+ drivers/gpu/drm/bridge/synopsys/dw-hdmi.c | 17 +++--------------
+ 1 file changed, 3 insertions(+), 14 deletions(-)
+
+diff --git a/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c b/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
+index dff27934287c..c922639e25eb 100644
+--- a/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
++++ b/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
+@@ -190,7 +190,6 @@ struct dw_hdmi {
+ 	void (*enable_audio)(struct dw_hdmi *hdmi);
+ 	void (*disable_audio)(struct dw_hdmi *hdmi);
+ 
+-	struct mutex cec_notifier_mutex;
+ 	struct cec_notifier *cec_notifier;
+ 
+ 	hdmi_codec_plugged_cb plugged_cb;
+@@ -2232,6 +2231,8 @@ static void dw_hdmi_clear_edid(struct drm_connector *connector)
+ 
+ 	kfree(hdmi->cached_edid);
+ 	hdmi->cached_edid = NULL;
++
++	cec_notifier_phys_addr_invalidate(hdmi->cec_notifier);
+ }
+ 
+ static void dw_hdmi_get_edid(struct drm_connector *connector)
+@@ -2724,9 +2725,7 @@ static int dw_hdmi_bridge_attach(struct drm_bridge *bridge)
+ 	if (!notifier)
+ 		return -ENOMEM;
+ 
+-	mutex_lock(&hdmi->cec_notifier_mutex);
+ 	hdmi->cec_notifier = notifier;
+-	mutex_unlock(&hdmi->cec_notifier_mutex);
+ 
+ 	return 0;
+ }
+@@ -2735,10 +2734,8 @@ static void dw_hdmi_bridge_detach(struct drm_bridge *bridge)
+ {
+ 	struct dw_hdmi *hdmi = bridge->driver_private;
+ 
+-	mutex_lock(&hdmi->cec_notifier_mutex);
+ 	cec_notifier_conn_unregister(hdmi->cec_notifier);
+ 	hdmi->cec_notifier = NULL;
+-	mutex_unlock(&hdmi->cec_notifier_mutex);
+ 
+ 	kfree(hdmi->cached_edid);
+ 	hdmi->cached_edid = NULL;
+@@ -2906,18 +2903,11 @@ static irqreturn_t dw_hdmi_irq(int irq, void *dev_id)
+ 	 * ask the source to re-read the EDID.
+ 	 */
+ 	if (intr_stat &
+-	    (HDMI_IH_PHY_STAT0_RX_SENSE | HDMI_IH_PHY_STAT0_HPD)) {
++	    (HDMI_IH_PHY_STAT0_RX_SENSE | HDMI_IH_PHY_STAT0_HPD))
+ 		dw_hdmi_setup_rx_sense(hdmi,
+ 				       phy_stat & HDMI_PHY_HPD,
+ 				       phy_stat & HDMI_PHY_RX_SENSE);
+ 
+-		if ((phy_stat & (HDMI_PHY_RX_SENSE | HDMI_PHY_HPD)) == 0) {
+-			mutex_lock(&hdmi->cec_notifier_mutex);
+-			cec_notifier_phys_addr_invalidate(hdmi->cec_notifier);
+-			mutex_unlock(&hdmi->cec_notifier_mutex);
+-		}
+-	}
+-
+ 	if (intr_stat & HDMI_IH_PHY_STAT0_HPD) {
+ 		dev_dbg(hdmi->dev, "EVENT=%s\n",
+ 			phy_int_pol & HDMI_PHY_HPD ? "plugin" : "plugout");
+@@ -3102,7 +3092,6 @@ __dw_hdmi_probe(struct platform_device *pdev,
+ 
+ 	mutex_init(&hdmi->mutex);
+ 	mutex_init(&hdmi->audio_mutex);
+-	mutex_init(&hdmi->cec_notifier_mutex);
+ 	spin_lock_init(&hdmi->audio_lock);
+ 
+ 	ddc_node = of_parse_phandle(np, "ddc-i2c-bus", 0);
+
+From cb6130315f4ae856051725b2de4e208ed90eb740 Mon Sep 17 00:00:00 2001
+From: Jonas Karlman <jonas@kwiboo.se>
+Date: Sun, 8 Dec 2019 23:41:44 +0000
+Subject: [PATCH v2 2/4] drm/bridge: dw-hdmi: do not force "none" scan mode
+
+Setting scan mode to "none" confuses some TVs like LG B8, which randomly
+change overscan percentage over time. Digital outputs like HDMI and DVI,
+handled by this controller, don't really need overscan, so we can always
+set scan mode to underscan. Actually, this is exactly what
+drm_hdmi_avi_infoframe_from_display_mode() already does, so we can just
+remove offending line.
+
+Reviewed-by: Neil Armstrong <narmstrong@baylibre.com>
+Acked-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Signed-off-by: Jonas Karlman <jonas@kwiboo.se>
+[updated commit message]
+Signed-off-by: Jernej Skrabec <jernej.skrabec@siol.net>
+---
+ drivers/gpu/drm/bridge/synopsys/dw-hdmi.c | 2 --
+ 1 file changed, 2 deletions(-)
+
+diff --git a/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c b/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
+index 24965e53d351..de2c7ec887c8 100644
+--- a/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
++++ b/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
+@@ -1654,8 +1654,6 @@ static void hdmi_config_AVI(struct dw_hdmi *hdmi, struct drm_display_mode *mode)
+ 			HDMI_EXTENDED_COLORIMETRY_XV_YCC_601;
+ 	}
+ 
+-	frame.scan_mode = HDMI_SCAN_MODE_NONE;
+-
+ 	/*
+ 	 * The Designware IP uses a different byte format from standard
+ 	 * AVI info frames, though generally the bits are in the correct
+-- 
+2.25.1
+
+From 3043a1caa3f6d26128c746b991d086bbb85d50c2 Mon Sep 17 00:00:00 2001
+From: Jernej Skrabec <jernej.skrabec@siol.net>
+Date: Sat, 29 Feb 2020 16:23:38 +0100
+Subject: [PATCH v2 3/4] drm/bridge: dw-hdmi: Add support for RGB limited range
+
+CEA 861 standard requestis that RGB quantization range is "limited" for
+CEA modes. Support that by adding CSC matrix which downscales values.
+
+This allows proper color reproduction on TV and PC monitor at the same
+time. In future, override property can be added, like "Broadcast RGB"
+in i915 driver.
+
+Signed-off-by: Jernej Skrabec <jernej.skrabec@siol.net>
+---
+ drivers/gpu/drm/bridge/synopsys/dw-hdmi.c | 63 +++++++++++++++++------
+ 1 file changed, 46 insertions(+), 17 deletions(-)
+
+diff --git a/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c b/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
+index de2c7ec887c8..c8a02e5b5e1b 100644
+--- a/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
++++ b/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
+@@ -92,6 +92,12 @@ static const u16 csc_coeff_rgb_in_eitu709[3][4] = {
+ 	{ 0x6756, 0x78ab, 0x2000, 0x0200 }
+ };
+ 
++static const u16 csc_coeff_rgb_full_to_rgb_limited[3][4] = {
++	{ 0x1b7c, 0x0000, 0x0000, 0x0020 },
++	{ 0x0000, 0x1b7c, 0x0000, 0x0020 },
++	{ 0x0000, 0x0000, 0x1b7c, 0x0020 }
++};
++
+ struct hdmi_vmode {
+ 	bool mdataenablepolarity;
+ 
+@@ -109,6 +115,7 @@ struct hdmi_data_info {
+ 	unsigned int pix_repet_factor;
+ 	unsigned int hdcp_enable;
+ 	struct hdmi_vmode video_mode;
++	bool rgb_limited_range;
+ };
+ 
+ struct dw_hdmi_i2c {
+@@ -956,7 +963,11 @@ static void hdmi_video_sample(struct dw_hdmi *hdmi)
+ 
+ static int is_color_space_conversion(struct dw_hdmi *hdmi)
+ {
+-	return hdmi->hdmi_data.enc_in_bus_format != hdmi->hdmi_data.enc_out_bus_format;
++	return (hdmi->hdmi_data.enc_in_bus_format !=
++			hdmi->hdmi_data.enc_out_bus_format) ||
++	       (hdmi_bus_fmt_is_rgb(hdmi->hdmi_data.enc_in_bus_format) &&
++		hdmi_bus_fmt_is_rgb(hdmi->hdmi_data.enc_out_bus_format) &&
++		hdmi->hdmi_data.rgb_limited_range);
+ }
+ 
+ static int is_color_space_decimation(struct dw_hdmi *hdmi)
+@@ -986,25 +997,27 @@ static int is_color_space_interpolation(struct dw_hdmi *hdmi)
+ static void dw_hdmi_update_csc_coeffs(struct dw_hdmi *hdmi)
+ {
+ 	const u16 (*csc_coeff)[3][4] = &csc_coeff_default;
++	bool is_input_rgb, is_output_rgb;
+ 	unsigned i;
+ 	u32 csc_scale = 1;
+ 
+-	if (is_color_space_conversion(hdmi)) {
+-		if (hdmi_bus_fmt_is_rgb(hdmi->hdmi_data.enc_out_bus_format)) {
+-			if (hdmi->hdmi_data.enc_out_encoding ==
+-						V4L2_YCBCR_ENC_601)
+-				csc_coeff = &csc_coeff_rgb_out_eitu601;
+-			else
+-				csc_coeff = &csc_coeff_rgb_out_eitu709;
+-		} else if (hdmi_bus_fmt_is_rgb(
+-					hdmi->hdmi_data.enc_in_bus_format)) {
+-			if (hdmi->hdmi_data.enc_out_encoding ==
+-						V4L2_YCBCR_ENC_601)
+-				csc_coeff = &csc_coeff_rgb_in_eitu601;
+-			else
+-				csc_coeff = &csc_coeff_rgb_in_eitu709;
+-			csc_scale = 0;
+-		}
++	is_input_rgb = hdmi_bus_fmt_is_rgb(hdmi->hdmi_data.enc_in_bus_format);
++	is_output_rgb = hdmi_bus_fmt_is_rgb(hdmi->hdmi_data.enc_out_bus_format);
++
++	if (!is_input_rgb && is_output_rgb) {
++		if (hdmi->hdmi_data.enc_out_encoding == V4L2_YCBCR_ENC_601)
++			csc_coeff = &csc_coeff_rgb_out_eitu601;
++		else
++			csc_coeff = &csc_coeff_rgb_out_eitu709;
++	} else if (is_input_rgb && !is_output_rgb) {
++		if (hdmi->hdmi_data.enc_out_encoding == V4L2_YCBCR_ENC_601)
++			csc_coeff = &csc_coeff_rgb_in_eitu601;
++		else
++			csc_coeff = &csc_coeff_rgb_in_eitu709;
++		csc_scale = 0;
++	} else if (is_input_rgb && is_output_rgb &&
++		   hdmi->hdmi_data.rgb_limited_range) {
++		csc_coeff = &csc_coeff_rgb_full_to_rgb_limited;
+ 	}
+ 
+ 	/* The CSC registers are sequential, alternating MSB then LSB */
+@@ -1614,6 +1627,18 @@ static void hdmi_config_AVI(struct dw_hdmi *hdmi, struct drm_display_mode *mode)
+ 	drm_hdmi_avi_infoframe_from_display_mode(&frame,
+ 						 &hdmi->connector, mode);
+ 
++	if (hdmi_bus_fmt_is_rgb(hdmi->hdmi_data.enc_out_bus_format)) {
++		drm_hdmi_avi_infoframe_quant_range(&frame, &hdmi->connector,
++						   mode,
++						   hdmi->hdmi_data.rgb_limited_range ?
++						   HDMI_QUANTIZATION_RANGE_LIMITED :
++						   HDMI_QUANTIZATION_RANGE_FULL);
++	} else {
++		frame.quantization_range = HDMI_QUANTIZATION_RANGE_DEFAULT;
++		frame.ycc_quantization_range =
++			HDMI_YCC_QUANTIZATION_RANGE_LIMITED;
++	}
++
+ 	if (hdmi_bus_fmt_is_yuv444(hdmi->hdmi_data.enc_out_bus_format))
+ 		frame.colorspace = HDMI_COLORSPACE_YUV444;
+ 	else if (hdmi_bus_fmt_is_yuv422(hdmi->hdmi_data.enc_out_bus_format))
+@@ -2099,6 +2124,10 @@ static int dw_hdmi_setup(struct dw_hdmi *hdmi, struct drm_display_mode *mode)
+ 	/* TOFIX: Default to RGB888 output format */
+ 	hdmi->hdmi_data.enc_out_bus_format = MEDIA_BUS_FMT_RGB888_1X24;
+ 
++	hdmi->hdmi_data.rgb_limited_range = hdmi->sink_is_hdmi &&
++		drm_default_rgb_quant_range(mode) ==
++		HDMI_QUANTIZATION_RANGE_LIMITED;
++
+ 	hdmi->hdmi_data.pix_repet_factor = 0;
+ 	hdmi->hdmi_data.hdcp_enable = 0;
+ 	hdmi->hdmi_data.video_mode.mdataenablepolarity = true;
+-- 
+2.25.1
+

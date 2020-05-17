@@ -77,7 +77,7 @@ if [ -d "${BATOCERA_BINARIES_DIR}" ]; then
 	rm -rf "${BATOCERA_BINARIES_DIR}"
 fi
 
-mkdir -p "${BATOCERA_BINARIES_DIR}"
+mkdir -p "${BATOCERA_BINARIES_DIR}" || { echo "Error in creating '${BATOCERA_BINARIES_DIR}'"; exit 1; }
 
 BATOCERA_TARGET=$(grep -E "^BR2_PACKAGE_BATOCERA_TARGET_[A-Z_0-9]*=y$" "${BR2_CONFIG}" | grep -vE "_ANY=" | sed -e s+'^BR2_PACKAGE_BATOCERA_TARGET_\([A-Z_0-9]*\)=y$'+'\1'+)
 
@@ -162,7 +162,7 @@ case "${BATOCERA_TARGET}" in
 	done
 
 	# /boot
-	rm -rf "${BINARIES_DIR}/boot"         || exit 1
+	rm -rf "${BINARIES_DIR:?}/boot"       || exit 1
 	mkdir -p "${BINARIES_DIR}/boot/boot"  || exit 1
 	cp "${BR2_EXTERNAL_BATOCERA_PATH}/board/batocera/odroidxu4/boot/boot.ini"     "${BINARIES_DIR}/boot/boot.ini"        	 || exit 1
 	cp "${BINARIES_DIR}/zImage"          "${BINARIES_DIR}/boot/boot/linux"      	 || exit 1
@@ -195,10 +195,10 @@ case "${BATOCERA_TARGET}" in
 
 	C2)
 	# boot
-	rm -rf ${BINARIES_DIR}/boot        || exit 1
-	mkdir -p ${BINARIES_DIR}/boot/boot || exit 1
-	cp "${BR2_EXTERNAL_BATOCERA_PATH}/board/batocera/odroidc2/boot/boot-logo.bmp.gz" ${BINARIES_DIR}/boot   || exit 1
-	cp "${BR2_EXTERNAL_BATOCERA_PATH}/board/batocera/odroidc2/boot/boot.ini"       ${BINARIES_DIR}/boot   || exit 1
+	rm -rf "${BINARIES_DIR:?}/boot"      || exit 1
+	mkdir -p "${BINARIES_DIR}/boot/boot" || exit 1
+	cp "${BR2_EXTERNAL_BATOCERA_PATH}/board/batocera/odroidc2/boot/boot-logo.bmp.gz" "${BINARIES_DIR}/boot"   || exit 1
+	cp "${BR2_EXTERNAL_BATOCERA_PATH}/board/batocera/odroidc2/boot/boot.ini"       "${BINARIES_DIR}/boot"   || exit 1
 	cp "${BINARIES_DIR}/batocera-boot.conf" "${BINARIES_DIR}/boot/batocera-boot.conf" || exit 1
 	cp "${BINARIES_DIR}/Image" "${BINARIES_DIR}/boot/boot/linux" || exit 1
 	cp "${BINARIES_DIR}/meson64_odroidc2.dtb" "${BINARIES_DIR}/boot/boot" || exit 1
@@ -229,12 +229,12 @@ case "${BATOCERA_TARGET}" in
 	MKIMAGE=${HOST_DIR}/bin/mkimage
 	BOARD_DIR="${BR2_EXTERNAL_BATOCERA_PATH}/board/batocera/s905"
 	# boot
-	rm -rf ${BINARIES_DIR}/boot        || exit 1
-	mkdir -p ${BINARIES_DIR}/boot/boot || exit 1
-	cp ${BOARD_DIR}/boot/boot-logo.bmp.gz ${BINARIES_DIR}/boot   || exit 1
-	$MKIMAGE -C none -A arm64 -T script -d ${BOARD_DIR}/boot/s905_autoscript.txt ${BINARIES_DIR}/boot/s905_autoscript
-	$MKIMAGE -C none -A arm64 -T script -d ${BOARD_DIR}/boot/aml_autoscript.txt ${BINARIES_DIR}/boot/aml_autoscript
-	cp ${BOARD_DIR}/boot/aml_autoscript.zip ${BINARIES_DIR}/boot     || exit 1
+	rm -rf "${BINARIES_DIR:?}/boot"      || exit 1
+	mkdir -p "${BINARIES_DIR}/boot/boot" || exit 1
+	cp "${BOARD_DIR}/boot/boot-logo.bmp.gz" "${BINARIES_DIR}/boot"   || exit 1
+	$MKIMAGE -C none -A arm64 -T script -d "${BOARD_DIR}/boot/s905_autoscript.txt" "${BINARIES_DIR}/boot/s905_autoscript"
+	$MKIMAGE -C none -A arm64 -T script -d "${BOARD_DIR}/boot/aml_autoscript.txt" "${BINARIES_DIR}/boot/aml_autoscript"
+	cp "${BOARD_DIR}/boot/aml_autoscript.zip" "${BINARIES_DIR}/boot"     || exit 1
 	cp "${BINARIES_DIR}/batocera-boot.conf" "${BINARIES_DIR}/boot/batocera-boot.conf" || exit 1
 	cp "${BOARD_DIR}/boot/README.txt" "${BINARIES_DIR}/boot/README.txt" || exit 1
 	for DTB in gxbb_p200_2G.dtb  gxbb_p200.dtb  gxl_p212_1g.dtb  gxl_p212_2g.dtb all_merged.dtb
@@ -270,12 +270,12 @@ case "${BATOCERA_TARGET}" in
 	MKBOOTIMAGE=${HOST_DIR}/bin/mkbootimg
 	BOARD_DIR="${BR2_EXTERNAL_BATOCERA_PATH}/board/batocera/s912"
 	# boot
-	rm -rf ${BINARIES_DIR}/boot        || exit 1
-	mkdir -p ${BINARIES_DIR}/boot/boot || exit 1
-	cp ${BOARD_DIR}/boot/boot-logo.bmp.gz ${BINARIES_DIR}/boot   || exit 1
-	$MKIMAGE -C none -A arm64 -T script -d ${BOARD_DIR}/boot/s905_autoscript.txt ${BINARIES_DIR}/boot/s905_autoscript
-	$MKIMAGE -C none -A arm64 -T script -d ${BOARD_DIR}/boot/aml_autoscript.txt ${BINARIES_DIR}/boot/aml_autoscript
-	cp ${BOARD_DIR}/boot/aml_autoscript.zip ${BINARIES_DIR}/boot     || exit 1
+	rm -rf "${BINARIES_DIR:?}/boot"      || exit 1
+	mkdir -p "${BINARIES_DIR}/boot/boot" || exit 1
+	cp "${BOARD_DIR}/boot/boot-logo.bmp.gz" "${BINARIES_DIR}/boot"   || exit 1
+	$MKIMAGE -C none -A arm64 -T script -d "${BOARD_DIR}/boot/s905_autoscript.txt" "${BINARIES_DIR}/boot/s905_autoscript"
+	$MKIMAGE -C none -A arm64 -T script -d "${BOARD_DIR}/boot/aml_autoscript.txt" "${BINARIES_DIR}/boot/aml_autoscript"
+	cp "${BOARD_DIR}/boot/aml_autoscript.zip" "${BINARIES_DIR}/boot"     || exit 1
 	cp "${BINARIES_DIR}/batocera-boot.conf" "${BINARIES_DIR}/boot/batocera-boot.conf" || exit 1
 	cp "${BINARIES_DIR}/all_merged.dtb" "${BINARIES_DIR}/dtb.img" || exit 1
 	$MKBOOTIMAGE --kernel "${BINARIES_DIR}/Image" --ramdisk "${BINARIES_DIR}/initrd" --second "${BINARIES_DIR}/dtb.img" --output "${BINARIES_DIR}/linux" || exit 1
@@ -304,9 +304,9 @@ case "${BATOCERA_TARGET}" in
 
 	X86|X86_64)
 	# /boot
-	rm -rf ${BINARIES_DIR}/boot || exit 1
-	mkdir -p ${BINARIES_DIR}/boot || exit 1
-	cp "${BR2_EXTERNAL_BATOCERA_PATH}/board/batocera/x86/boot/syslinux.cfg" ${BINARIES_DIR/}/boot/syslinux.cfg || exit 1
+	rm -rf "${BINARIES_DIR:?}/boot"     || exit 1
+	mkdir -p "${BINARIES_DIR}/boot"     || exit 1
+	cp "${BR2_EXTERNAL_BATOCERA_PATH}/board/batocera/x86/boot/syslinux.cfg" "${BINARIES_DIR/}/boot/syslinux.cfg" || exit 1
 	cp "${BINARIES_DIR}/bzImage" "${BINARIES_DIR}/boot/linux" || exit 1
 	cp "${BINARIES_DIR}/initrd.gz" "${BINARIES_DIR}/boot" || exit 1
 	cp "${BINARIES_DIR}/rootfs.squashfs" "${BINARIES_DIR}/boot/batocera.update" || exit 1
@@ -314,7 +314,7 @@ case "${BATOCERA_TARGET}" in
 
 	# get UEFI files
 	mkdir -p "${BINARIES_DIR}/EFI/syslinux" || exit 1
-	cp "${BR2_EXTERNAL_BATOCERA_PATH}/board/batocera/x86/boot/syslinux.cfg" ${BINARIES_DIR/}/EFI/syslinux/syslinux.cfg || exit 1
+	cp "${BR2_EXTERNAL_BATOCERA_PATH}/board/batocera/x86/boot/syslinux.cfg" "${BINARIES_DIR/}/EFI/syslinux/syslinux.cfg" || exit 1
 
 	# boot.tar.xz
 	# it must include the squashfs version with .update to not erase the current squashfs while running
@@ -341,7 +341,7 @@ case "${BATOCERA_TARGET}" in
 
 	ROCKPRO64)
 	# /boot
-	rm -rf "${BINARIES_DIR}/boot"            || exit 1
+	rm -rf "${BINARIES_DIR:?}/boot"          || exit 1
 	mkdir -p "${BINARIES_DIR}/boot/boot"     || exit 1
 	mkdir -p "${BINARIES_DIR}/boot/extlinux" || exit 1
 	cp "${BINARIES_DIR}/Image"                 "${BINARIES_DIR}/boot/boot/linux"                || exit 1
@@ -349,7 +349,7 @@ case "${BATOCERA_TARGET}" in
 	cp "${BINARIES_DIR}/rootfs.squashfs"       "${BINARIES_DIR}/boot/boot/batocera.update"      || exit 1
 	cp "${BINARIES_DIR}/rk3399-rockpro64.dtb"  "${BINARIES_DIR}/boot/boot/rk3399-rockpro64.dtb" || exit 1
 	cp "${BINARIES_DIR}/batocera-boot.conf"    "${BINARIES_DIR}/boot/batocera-boot.conf"        || exit 1
-	cp "${BR2_EXTERNAL_BATOCERA_PATH}/board/batocera/rockpro64/boot/extlinux.conf" ${BINARIES_DIR}/boot/extlinux                   || exit 1
+	cp "${BR2_EXTERNAL_BATOCERA_PATH}/board/batocera/rockpro64/boot/extlinux.conf" "${BINARIES_DIR}/boot/extlinux"                   || exit 1
 	cp -pr "${BINARIES_DIR}/tools"       "${BINARIES_DIR}/boot/"                || exit 1
 
 	# boot.tar.xz
@@ -378,7 +378,7 @@ case "${BATOCERA_TARGET}" in
 
     ROCK960)
     # /boot
-    rm -rf "${BINARIES_DIR}/boot"            || exit 1
+    rm -rf "${BINARIES_DIR:?}/boot"          || exit 1
     mkdir -p "${BINARIES_DIR}/boot/boot"     || exit 1
 	mkdir -p "${BINARIES_DIR}/boot/extlinux" || exit 1
     cp "${BINARIES_DIR}/Image"                 "${BINARIES_DIR}/boot/boot/linux"                || exit 1
@@ -386,7 +386,7 @@ case "${BATOCERA_TARGET}" in
     cp "${BINARIES_DIR}/rootfs.squashfs"       "${BINARIES_DIR}/boot/boot/batocera.update"      || exit 1
     cp "${BINARIES_DIR}/rk3399-rock960-ab.dtb"  "${BINARIES_DIR}/boot/boot/rk3399-rock960-ab.dtb" || exit 1
     cp "${BINARIES_DIR}/batocera-boot.conf"    "${BINARIES_DIR}/boot/batocera-boot.conf"        || exit 1
-    cp "${BR2_EXTERNAL_BATOCERA_PATH}/board/batocera/rock960/boot/extlinux.conf" ${BINARIES_DIR}/boot/extlinux                   || exit 1
+    cp "${BR2_EXTERNAL_BATOCERA_PATH}/board/batocera/rock960/boot/extlinux.conf" "${BINARIES_DIR}/boot/extlinux"                   || exit 1
     cp -pr "${BINARIES_DIR}/tools"       "${BINARIES_DIR}/boot/"                || exit 1
 
     # boot.tar.xz
@@ -414,7 +414,7 @@ case "${BATOCERA_TARGET}" in
 
 	ODROIDN2)
 	# /boot
-	rm -rf "${BINARIES_DIR}/boot"            || exit 1
+	rm -rf "${BINARIES_DIR:?}/boot"          || exit 1
 	mkdir -p "${BINARIES_DIR}/boot/boot"     || exit 1
 	"${HOST_DIR}/bin/mkimage" -A arm64 -O linux -T kernel -C none -a 0x1080000 -e 0x1080000 -n 5.x -d "${BINARIES_DIR}/Image" "${BINARIES_DIR}/uImage" || exit 1
 	cp "${BINARIES_DIR}/uImage"                "${BINARIES_DIR}/boot/boot/linux"                || exit 1
@@ -451,7 +451,7 @@ case "${BATOCERA_TARGET}" in
 
 	ODROIDGOA)
 	# /boot
-	rm -rf "${BINARIES_DIR}/boot"            || exit 1
+	rm -rf "${BINARIES_DIR:?}/boot"     || exit 1
 	mkdir -p "${BINARIES_DIR}/boot/boot"     || exit 1
 	"${HOST_DIR}/bin/mkimage" -A arm64 -O linux -T kernel -C none -a 0x1080000 -e 0x1080000 -n 5.x -d "${BINARIES_DIR}/Image" "${BINARIES_DIR}/uImage" || exit 1
 	cp "${BINARIES_DIR}/uImage"                "${BINARIES_DIR}/boot/boot/linux"                || exit 1
@@ -488,7 +488,7 @@ case "${BATOCERA_TARGET}" in
 
 	TINKERBOARD)
 	# /boot
-	rm -rf "${BINARIES_DIR}/boot"            || exit 1
+	rm -rf "${BINARIES_DIR:?}/boot"     || exit 1
 	mkdir -p "${BINARIES_DIR}/boot/boot"     || exit 1
 	mkdir -p "${BINARIES_DIR}/boot/extlinux" || exit 1
 	cp "${BINARIES_DIR}/zImage"                 "${BINARIES_DIR}/boot/boot/linux"                || exit 1
@@ -496,7 +496,7 @@ case "${BATOCERA_TARGET}" in
 	cp "${BINARIES_DIR}/rootfs.squashfs"       "${BINARIES_DIR}/boot/boot/batocera.update"      || exit 1
 	cp "${BINARIES_DIR}/rk3288-miniarm.dtb"  "${BINARIES_DIR}/boot/boot/rk3288-miniarm.dtb" || exit 1
 	cp "${BINARIES_DIR}/batocera-boot.conf"    "${BINARIES_DIR}/boot/batocera-boot.conf"        || exit 1
-	cp "${BR2_EXTERNAL_BATOCERA_PATH}/board/batocera/tinkerboard/boot/extlinux.conf" ${BINARIES_DIR}/boot/extlinux                   || exit 1
+	cp "${BR2_EXTERNAL_BATOCERA_PATH}/board/batocera/tinkerboard/boot/extlinux.conf" "${BINARIES_DIR}/boot/extlinux"                   || exit 1
 	cp -pr "${BINARIES_DIR}/tools"       "${BINARIES_DIR}/boot/"                || exit 1
 
 	# boot.tar.xz
@@ -507,8 +507,8 @@ case "${BATOCERA_TARGET}" in
 	MKIMAGE=$HOST_DIR/bin/mkimage
 	BOARD_DIR="${BR2_EXTERNAL_BATOCERA_PATH}/board/batocera/tinkerboard"
 
-	$MKIMAGE -n rk3288 -T rksd -d $BINARIES_DIR/u-boot-spl-dtb.bin $BINARIES_DIR/u-boot-spl-dtb.img
-	cat $BINARIES_DIR/u-boot-dtb.bin >> $BINARIES_DIR/u-boot-spl-dtb.img
+	$MKIMAGE -n rk3288 -T rksd -d "$BINARIES_DIR"/u-boot-spl-dtb.bin "$BINARIES_DIR/u-boot-spl-dtb.img"
+	cat "$BINARIES_DIR/u-boot-dtb.bin" >> "$BINARIES_DIR/u-boot-spl-dtb.img"
 	for F in u-boot-spl-dtb.img
 	do
 		cp "${BINARIES_DIR}/${F}" "${BINARIES_DIR}/boot/${F}" || exit 1
@@ -530,7 +530,7 @@ case "${BATOCERA_TARGET}" in
 
 	MIQI)
 	# /boot
-	rm -rf "${BINARIES_DIR}/boot"            || exit 1
+	rm -rf "${BINARIES_DIR:?}/boot"     || exit 1
 	mkdir -p "${BINARIES_DIR}/boot/boot"     || exit 1
 	mkdir -p "${BINARIES_DIR}/boot/extlinux" || exit 1
 	cp "${BINARIES_DIR}/zImage"                 "${BINARIES_DIR}/boot/boot/linux"                || exit 1
@@ -538,7 +538,7 @@ case "${BATOCERA_TARGET}" in
 	cp "${BINARIES_DIR}/rootfs.squashfs"       "${BINARIES_DIR}/boot/boot/batocera.update"      || exit 1
 	cp "${BINARIES_DIR}/rk3288-miqi.dtb"  "${BINARIES_DIR}/boot/boot/rk3288-miqi.dtb" || exit 1
 	cp "${BINARIES_DIR}/batocera-boot.conf"    "${BINARIES_DIR}/boot/batocera-boot.conf"        || exit 1
-	cp "${BR2_EXTERNAL_BATOCERA_PATH}/board/batocera/miqi/boot/extlinux.conf" ${BINARIES_DIR}/boot/extlinux                   || exit 1
+	cp "${BR2_EXTERNAL_BATOCERA_PATH}/board/batocera/miqi/boot/extlinux.conf" "${BINARIES_DIR}/boot/extlinux"                   || exit 1
 	cp -pr "${BINARIES_DIR}/tools"       "${BINARIES_DIR}/boot/"                || exit 1
 
 	# boot.tar.xz
@@ -549,8 +549,8 @@ case "${BATOCERA_TARGET}" in
 	MKIMAGE=$HOST_DIR/bin/mkimage
 	BOARD_DIR="${BR2_EXTERNAL_BATOCERA_PATH}/board/batocera/miqi"
 
-	$MKIMAGE -n rk3288 -T rksd -d $BINARIES_DIR/u-boot-spl-dtb.bin $BINARIES_DIR/u-boot-spl-dtb.img
-	cat $BINARIES_DIR/u-boot-dtb.bin >> $BINARIES_DIR/u-boot-spl-dtb.img
+	$MKIMAGE -n rk3288 -T rksd -d "$BINARIES_DIR"/u-boot-spl-dtb.bin "$BINARIES_DIR/u-boot-spl-dtb.img"
+	cat "$BINARIES_DIR/u-boot-dtb.bin" >> "$BINARIES_DIR/u-boot-spl-dtb.img"
 	for F in u-boot-spl-dtb.img
 	do
 		cp "${BINARIES_DIR}/${F}" "${BINARIES_DIR}/boot/${F}" || exit 1
@@ -597,16 +597,16 @@ do
 	echo "creating ${FILE}.md5"
 	CKS=$(md5sum "${FILE}" | sed -e s+'^\([^ ]*\) .*$'+'\1'+)
 	echo "${CKS}" > "${FILE}.md5"
-	echo "${CKS}  $(basename ${FILE})" >> "${BATOCERA_BINARIES_DIR}/MD5SUMS"
+	echo "${CKS}  $(basename "${FILE}")" >> "${BATOCERA_BINARIES_DIR}/MD5SUMS"
 done
 
 # pcsx2 package
 if grep -qE "^BR2_PACKAGE_PCSX2=y$" "${BR2_CONFIG}"
 then
 	echo "building the pcsx2 package..."
-	${BR2_EXTERNAL_BATOCERA_PATH}/board/batocera/doPcsx2package.sh "${TARGET_DIR}" "${BINARIES_DIR}/pcsx2" "${BATOCERA_BINARIES_DIR}" || exit 1
+	"${BR2_EXTERNAL_BATOCERA_PATH}"/board/batocera/doPcsx2package.sh "${TARGET_DIR}" "${BINARIES_DIR}/pcsx2" "${BATOCERA_BINARIES_DIR}" || exit 1
 fi
 
-${BR2_EXTERNAL_BATOCERA_PATH}/scripts/linux/systemsReport.sh "${PWD}" "${BATOCERA_BINARIES_DIR}"
+"${BR2_EXTERNAL_BATOCERA_PATH}"/scripts/linux/systemsReport.sh "${PWD}" "${BATOCERA_BINARIES_DIR}"
 
 exit 0
