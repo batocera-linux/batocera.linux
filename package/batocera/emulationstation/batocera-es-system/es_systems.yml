@@ -201,7 +201,9 @@ naomi:
   extensions: [lst, bin, dat, zip, 7z]
   emulators:
     libretro:
-      flycast: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FLYCAST] }
+      flycast:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FLYCAST]  }
+    flycast:
+      flycast:  { requireAnyOf: [BR2_PACKAGE_FLYCAST]           }
 
 atomiswave:
   name:       Atomiswave
@@ -209,6 +211,8 @@ atomiswave:
   emulators:
     libretro:
       flycast: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FLYCAST] }
+    flycast:
+      flycast: { requireAnyOf: [BR2_PACKAGE_FLYCAST]          }
 
 megadrive:
   name:       Sega Megadrive
