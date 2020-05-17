@@ -1,0 +1,48 @@
+diff --git a/core/hw/naomi/naomi_cart.cpp b/core/hw/naomi/naomi_cart.cpp
+index 5e27bf7..4ee60eb 100644
+--- a/core/hw/naomi/naomi_cart.cpp
++++ b/core/hw/naomi/naomi_cart.cpp
+@@ -76,7 +76,7 @@ static bool naomi_LoadBios(const char *filename, Archive *child_archive, Archive
+ 
+ 	struct BIOS_t *bios = &BIOS[biosid];
+ 
+-	std::string basepath = get_readonly_data_path(DATA_PATH);
++	std::string basepath = "/userdata/bios/";
+ 	std::unique_ptr<Archive> bios_archive(OpenArchive((basepath + filename).c_str()));
+ 
+ 	bool found_region = false;
+@@ -232,7 +232,7 @@ static void naomi_cart_LoadZip(const char *filename)
+ 		{
+ 			// If a specific BIOS is needed for this game, fail.
+ 			if (game->bios != NULL || !bios_loaded)
+-				throw NaomiCartException(std::string("Error: cannot load BIOS ") + (game->bios != NULL ? game->bios : "naomi.zip") + " in " + get_readonly_data_path(DATA_PATH));
++				throw NaomiCartException(std::string("Error: cannot load BIOS ") + (game->bios != NULL ? game->bios : "naomi.zip") + " in " + "/userdata/bios/");
+ 
+ 			// otherwise use the default BIOS
+ 		}
+diff --git a/core/nullDC.cpp b/core/nullDC.cpp
+index 0ff8ed6..5a32d23 100755
+--- a/core/nullDC.cpp
++++ b/core/nullDC.cpp
+@@ -593,7 +593,7 @@ static void dc_start_game(const char *path)
+ 	dc_reset(true);
+ 	LoadSettings(false);
+ 	
+-	std::string data_path = get_readonly_data_path(DATA_PATH);
++	std::string data_path = "/userdata/bios/";
+ 	if (settings.platform.system == DC_PLATFORM_DREAMCAST)
+ 	{
+ 		if ((settings.bios.UseReios && !forced_bios_file) || !LoadRomFiles(data_path))
+diff --git a/core/stdclass.h b/core/stdclass.h
+index ed56873..47ff75c 100644
+--- a/core/stdclass.h
++++ b/core/stdclass.h
+@@ -50,7 +50,7 @@ public :
+ };
+ 
+ #if !defined(TARGET_IPHONE)
+-#define DATA_PATH "/data/"
++#define DATA_PATH "/"
+ #else
+ #define DATA_PATH "/"
+ #endif
