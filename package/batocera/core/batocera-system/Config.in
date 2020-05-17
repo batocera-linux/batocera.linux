@@ -83,31 +83,34 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
     select BR2_PACKAGE_LIBRGA                            if BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA # Used in screen rotation (SDL and Retroarch)
     select BR2_PACKAGE_SDL2_OPENGLES                     if BR2_PACKAGE_BATOCERA_TARGET_RPI_ANY     || \
                                                             BR2_PACKAGE_BATOCERA_TARGET_RPI4        || \
+                                                            BR2_PACKAGE_BATOCERA_TARGET_LIBRETECH_H5 || \
                                                             BR2_PACKAGE_BATOCERA_TARGET_XU4         || \
-							    BR2_PACKAGE_BATOCERA_TARGET_ROCKPRO64   || \
-							    BR2_PACKAGE_BATOCERA_TARGET_ROCK960     || \
+							                                BR2_PACKAGE_BATOCERA_TARGET_ROCKPRO64   || \
+							                                BR2_PACKAGE_BATOCERA_TARGET_ROCK960     || \
                                                             BR2_PACKAGE_BATOCERA_TARGET_ODROIDN2    || \
                                                             BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA   || \
-							    BR2_PACKAGE_BATOCERA_TARGET_S905        || \
-							    BR2_PACKAGE_BATOCERA_TARGET_S912        || \
-							    BR2_PACKAGE_BATOCERA_TARGET_C2          || \
-							    BR2_PACKAGE_BATOCERA_TARGET_TINKERBOARD || \
-							    BR2_PACKAGE_BATOCERA_TARGET_MIQI # opengles for sdl2
+							                                BR2_PACKAGE_BATOCERA_TARGET_S905        || \
+							                                BR2_PACKAGE_BATOCERA_TARGET_S912        || \
+							                                BR2_PACKAGE_BATOCERA_TARGET_C2          || \
+							                                BR2_PACKAGE_BATOCERA_TARGET_TINKERBOARD || \
+							                                BR2_PACKAGE_BATOCERA_TARGET_MIQI # opengles for sdl2
     select BR2_PACKAGE_SDL2_KMSDRM                       if BR2_PACKAGE_BATOCERA_TARGET_ROCKPRO64   || \
                                                             BR2_PACKAGE_BATOCERA_TARGET_ROCK960     || \
                                                             BR2_PACKAGE_BATOCERA_TARGET_ODROIDN2    || \
                                                             BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA   || \
     	                                                    BR2_PACKAGE_BATOCERA_TARGET_XU4         || \
-							    BR2_PACKAGE_BATOCERA_TARGET_TINKERBOARD || \
-							    BR2_PACKAGE_BATOCERA_TARGET_MIQI        || \
-    							    BR2_PACKAGE_BATOCERA_TARGET_RPI4
+							                                BR2_PACKAGE_BATOCERA_TARGET_TINKERBOARD || \
+							                                BR2_PACKAGE_BATOCERA_TARGET_MIQI        || \
+    							                            BR2_PACKAGE_BATOCERA_TARGET_RPI4        || \
+                                                            BR2_PACKAGE_BATOCERA_TARGET_LIBRETECH_H5
     select BR2_PACKAGE_LIBDRM                            if BR2_PACKAGE_BATOCERA_TARGET_ROCKPRO64   || \
                                                             BR2_PACKAGE_BATOCERA_TARGET_ROCK960     || \
                                                             BR2_PACKAGE_BATOCERA_TARGET_ODROIDN2    || \
                                                             BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA   || \
                                                             BR2_PACKAGE_BATOCERA_TARGET_XU4         || \
-							    BR2_PACKAGE_BATOCERA_TARGET_TINKERBOARD || \
-							    BR2_PACKAGE_BATOCERA_TARGET_MIQI
+							                                BR2_PACKAGE_BATOCERA_TARGET_TINKERBOARD || \
+                                                            BR2_PACKAGE_BATOCERA_TARGET_LIBRETECH_H5 || \
+							                                BR2_PACKAGE_BATOCERA_TARGET_MIQI
     select BR2_PACKAGE_LIRC_TOOLS                        # lirc (remote control)
     select BR2_PACKAGE_LIBCEC				 # libcec
     select BR2_SYSTEM_ENABLE_NLS                         # locales
@@ -245,6 +248,8 @@ config BR2_PACKAGE_BATOCERA_TARGET_TINKERBOARD
 config BR2_PACKAGE_BATOCERA_TARGET_MIQI
         bool "miqi"
 
+config BR2_PACKAGE_BATOCERA_TARGET_LIBRETECH_H5
+        bool "libretech_h5" 
 endchoice
 
 config BR2_PACKAGE_BATOCERA_EXTRAS
@@ -295,11 +300,12 @@ config BR2_PACKAGE_BATOCERA_ALL_SYSTEMS
         select BR2_PACKAGE_AMIBERRY             if BR2_PACKAGE_BATOCERA_TARGET_RPI_ANY     || \
                                                    BR2_PACKAGE_BATOCERA_TARGET_RPI4        || \
                                                    BR2_PACKAGE_BATOCERA_TARGET_XU4         || \
-						   BR2_PACKAGE_BATOCERA_TARGET_ROCKPRO64   || \
-						   BR2_PACKAGE_BATOCERA_TARGET_ROCK960     || \
-						   BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA   || \
+						                           BR2_PACKAGE_BATOCERA_TARGET_ROCKPRO64   || \
+						                           BR2_PACKAGE_BATOCERA_TARGET_ROCK960     || \
+						                           BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA   || \
                                                    BR2_PACKAGE_BATOCERA_TARGET_TINKERBOARD || \
-						   BR2_PACKAGE_BATOCERA_TARGET_MIQI        || \
+						                           BR2_PACKAGE_BATOCERA_TARGET_MIQI        || \
+                                                   BR2_PACKAGE_BATOCERA_TARGET_LIBRETECH_H5 || \
                                                    BR2_PACKAGE_BATOCERA_TARGET_ODROIDN2
 						   # amiga
 
@@ -473,9 +479,11 @@ config BR2_PACKAGE_BATOCERA_MUPEN64
         select BR2_PACKAGE_MUPEN64PLUS_GLIDEN64         if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY  || \
                                                            BR2_PACKAGE_BATOCERA_TARGET_ODROIDN2 || \
                                                            BR2_PACKAGE_BATOCERA_TARGET_RPI4     || \
+                                                           BR2_PACKAGE_BATOCERA_TARGET_LIBRETECH_H5 || \
                                                            BR2_PACKAGE_BATOCERA_TARGET_ROCKPRO64 # GLIDEN64
         select BR2_PACKAGE_MUPEN64PLUS_GLES2            if BR2_PACKAGE_BATOCERA_TARGET_RPI_ANY  || \
-	                                                   BR2_PACKAGE_BATOCERA_TARGET_RPI4 # GLES2
+                                                           BR2_PACKAGE_BATOCERA_TARGET_LIBRETECH_H5 || \
+	                                                       BR2_PACKAGE_BATOCERA_TARGET_RPI4 # GLES2
         select BR2_PACKAGE_MUPEN64PLUS_V20_GLIDEN64     if BR2_PACKAGE_BATOCERA_TARGET_RPI_ANY  || \
                                                            BR2_PACKAGE_BATOCERA_TARGET_ROCK960  || \
                                                            BR2_PACKAGE_BATOCERA_TARGET_XU4      # GLIDEN64-V20
