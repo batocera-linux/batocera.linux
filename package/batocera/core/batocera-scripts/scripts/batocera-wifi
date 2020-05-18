@@ -9,7 +9,7 @@ do_help() {
 }
 
 do_list() {
-    connmanctl services | awk -F 'wifi_' '{print $1}' | sed 's/^...\s//;s/ *$//'
+    connmanctl services | awk -F 'wifi_' '{print $1}' | sed 's/^...\s*//;s/\s*$//'
 }
 
 do_scanlist() {
