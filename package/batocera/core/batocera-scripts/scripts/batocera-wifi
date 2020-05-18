@@ -9,9 +9,7 @@ do_help() {
 }
 
 do_list() {
-    connmanctl services |
-	grep -E "^... [^ ]* [ ]* wifi_.*$" |
-	sed -e s+"^... \([^ ]*\) [ ]* wifi_.*$"+"\1"+
+    connmanctl services | awk -F\wifi_ '{print $1}' | sed 's/^....//;s/ *$//'
 }
 
 do_scanlist() {
