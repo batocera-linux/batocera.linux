@@ -23,15 +23,17 @@ endif
 define MALI_T760_INSTALL_STAGING_CMDS
 	mkdir -p $(MALI_T760_STAGING_DIR)
 	cp -r $(@D)/lib/$(MALI_T760_LIBDIR)/$(MALI_T760_LIBFILE) $(MALI_T760_STAGING_DIR)/usr/lib
-	(cd $(MALI_T760_STAGING_DIR)/usr/lib && ln -sf $(MALI_T760_LIBFILE) libmali.so)
-	(cd $(MALI_T760_STAGING_DIR)/usr/lib && ln -sf libmali.so libMali.so)
+    (cd $(MALI_T760_STAGING_DIR)/usr/lib && ln -sf $(MALI_T760_LIBFILE) libmali.so)
 	(cd $(MALI_T760_STAGING_DIR)/usr/lib && ln -sf libmali.so libEGL.so)
 	(cd $(MALI_T760_STAGING_DIR)/usr/lib && ln -sf libmali.so libEGL.so.1)
-	(cd $(MALI_T760_STAGING_DIR)/usr/lib && ln -sf libmali.so libGLESv1_CM.so)
-	(cd $(MALI_T760_STAGING_DIR)/usr/lib && ln -sf libmali.so libGLESv1_CM.so.1)
+	(cd $(MALI_T760_STAGING_DIR)/usr/lib && ln -sf libmali.so libgbm.so)
 	(cd $(MALI_T760_STAGING_DIR)/usr/lib && ln -sf libmali.so libGLESv2.so)
 	(cd $(MALI_T760_STAGING_DIR)/usr/lib && ln -sf libmali.so libGLESv2.so.2)
-	(cd $(MALI_T760_STAGING_DIR)/usr/lib && ln -sf libmali.so libgbm.so)
+	(cd $(MALI_T760_STAGING_DIR)/usr/lib && ln -sf libmali.so libMali.so)
+	(cd $(MALI_T760_STAGING_DIR)/usr/lib && ln -sf libmali.so libGLESv1.so)
+	(cd $(MALI_T760_STAGING_DIR)/usr/lib && ln -sf libmali.so libGLESv1_CM.so)
+	(cd $(MALI_T760_STAGING_DIR)/usr/lib && ln -sf libmali.so libGLESv1_CM.so.1)
+	(cd $(MALI_T760_STAGING_DIR)/usr/lib && ln -sf libmali.so libbrcmGLESv2.so)
 
 	cp -pr $(@D)/include $(MALI_T760_STAGING_DIR)/usr
 	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/gpu/mali-T760/gbm.pc $(MALI_T760_STAGING_DIR)/usr/lib/pkgconfig/gbm.pc
@@ -43,15 +45,17 @@ endef
 define MALI_T760_INSTALL_TARGET_CMDS
 	mkdir -p $(MALI_T760_TARGET_DIR)
 	cp -r $(@D)/lib/$(MALI_T760_LIBDIR)/$(MALI_T760_LIBFILE) $(MALI_T760_TARGET_DIR)/usr/lib
-	(cd $(MALI_T760_TARGET_DIR)/usr/lib && ln -sf $(MALI_T760_LIBFILE) libmali.so)
-	(cd $(MALI_T760_TARGET_DIR)/usr/lib && ln -sf libmali.so libMali.so)
+    (cd $(MALI_T760_TARGET_DIR)/usr/lib && ln -sf $(MALI_T760_LIBFILE) libmali.so)
 	(cd $(MALI_T760_TARGET_DIR)/usr/lib && ln -sf libmali.so libEGL.so)
 	(cd $(MALI_T760_TARGET_DIR)/usr/lib && ln -sf libmali.so libEGL.so.1)
+	(cd $(MALI_T760_TARGET_DIR)/usr/lib && ln -sf libmali.so libGLESv1.so)
 	(cd $(MALI_T760_TARGET_DIR)/usr/lib && ln -sf libmali.so libGLESv1_CM.so)
-	(cd $(MALI_T760_STAGING_DIR)/usr/lib && ln -sf libmali.so libGLESv1_CM.so.1)
+	(cd $(MALI_T760_TARGET_DIR)/usr/lib && ln -sf libmali.so libGLESv1_CM.so.1)
+	(cd $(MALI_T760_TARGET_DIR)/usr/lib && ln -sf libmali.so libbrcmGLESv2.so)
+	(cd $(MALI_T760_TARGET_DIR)/usr/lib && ln -sf libmali.so libgbm.so)
 	(cd $(MALI_T760_TARGET_DIR)/usr/lib && ln -sf libmali.so libGLESv2.so)
 	(cd $(MALI_T760_TARGET_DIR)/usr/lib && ln -sf libmali.so libGLESv2.so.2)
-	(cd $(MALI_T760_TARGET_DIR)/usr/lib && ln -sf libmali.so libgbm.so)
+	(cd $(MALI_T760_TARGET_DIR)/usr/lib && ln -sf libmali.so libMali.so)
 endef
 
 $(eval $(generic-package))

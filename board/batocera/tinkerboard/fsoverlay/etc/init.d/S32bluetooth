@@ -1,0 +1,50 @@
+#!/bin/sh
+#
+# Auto connect bluetooth controllers
+#
+
+systemsetting="batocera-settings"
+
+case "$1" in
+  start)
+	batocera-bluetooth restore
+        enabled="`$systemsetting  -command load -key controllers.bluetooth.enabled`"
+        if [ "$enabled" == "1" ];then
+                settings_version="`$systemsetting -command load -key controllers.ps3.driver`"
+                btaddr="`$systemsetting  -command load -key bluetooth.adapter`"
+        	if [ "$settings_version" != "bluez" ]; then BLUETOOTHD_ARGS="--noplugin=sixaxis"; else  BLUETOOTHD_ARGS="--noplugin=sixaxispair"; fi
+		rfkill unblock bluetooth # soft unblock bluetooth
+		start-stop-daemon -S -q -m -p /var/run/bluetoothd.pid      --exec /usr/libexec/bluetooth/bluetoothd -- $BLUETOOTHD_ARGS &
+
+		# hack to fix the bt issues
+		echo 0 > /sys/class/rfkill/rfkill0/state
+		sleep 1
+		echo 1 > /sys/class/rfkill/rfkill0/state
+		sleep 1
+		###
+		/usr/bin/hciattach /dev/ttyS0 any 1500000 flow nosleep # tinkerboard specific
+		if test -n "${btaddr}"
+		then
+		    start-stop-daemon -S -q -m -p /var/run/bluetooth-agent.pid --exec /usr/bin/batocera-bluetooth-agent -- --device "${btaddr}" &
+		else
+		    start-stop-daemon -S -q -m -p /var/run/bluetooth-agent.pid --exec /usr/bin/batocera-bluetooth-agent &
+		fi
+        fi
+        ;;
+  stop)
+	start-stop-daemon -K -q -p /var/run/bluetooth-agent.pid
+	start-stop-daemon -K -q -p /var/run/bluetoothd.pid
+	batocera-bluetooth save
+	;;
+  restart|reload)
+        "$0" stop
+        "$0" start
+	;;
+  *)
+	echo "Usage: $0 {start|stop|restart}"
+	exit 1
+esac
+
+exit $?
+
+
