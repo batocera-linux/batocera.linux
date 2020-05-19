@@ -112,6 +112,9 @@ def generateCoreSettings(retroarchCore, system):
     if (system.config['core'] == 'dosbox'):
         coreSettings.save('dosbox_svn_pcspeaker', '"true"')
 
+    if (system.config['core'] == 'px68k'):
+        coreSettings.save('px68k_disk_path', '"disabled"')
+
     if (system.config['core'] == 'pcsx_rearmed'):
         for n in range(1, 8+1):
             val = coreSettings.load('pcsx_rearmed_pad{}type'.format(n))
