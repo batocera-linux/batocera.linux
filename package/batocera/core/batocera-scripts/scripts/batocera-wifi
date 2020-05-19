@@ -9,7 +9,7 @@ do_help() {
 }
 
 do_list() {
-    connmanctl services | sed 's/^...[ ]*//' | awk -F '[ ]*.wifi_' '{if (NF==2) print $1}'
+    connmanctl services | sed 's/^...[ ]*//' | awk -F '[ ]wifi_' '{if (NF==2) print $1}'
 }
 
 do_scanlist() {
