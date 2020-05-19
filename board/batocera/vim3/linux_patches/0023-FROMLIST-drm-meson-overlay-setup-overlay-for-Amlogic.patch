@@ -1,0 +1,61 @@
+From 57b1075dc73951f3fc17bd47920d2af96d185bab Mon Sep 17 00:00:00 2001
+From: Neil Armstrong <narmstrong@baylibre.com>
+Date: Tue, 24 Mar 2020 14:33:13 +0100
+Subject: [PATCH 023/105] FROMLIST: drm/meson: overlay: setup overlay for
+ Amlogic FBC Memory Saving mode
+
+Setup the Amlogic FBC decoder for the VD1 video overlay plane to use
+a different superblock size for the Memory Saving mode.
+
+Tested-by: Kevin Hilman <khilman@baylibre.com>
+Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
+---
+ drivers/gpu/drm/meson/meson_overlay.c | 14 ++++++++++++--
+ 1 file changed, 12 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/gpu/drm/meson/meson_overlay.c b/drivers/gpu/drm/meson/meson_overlay.c
+index 51fa038ad5d7..8b9d4984b2a7 100644
+--- a/drivers/gpu/drm/meson/meson_overlay.c
++++ b/drivers/gpu/drm/meson/meson_overlay.c
+@@ -487,6 +487,9 @@ static void meson_overlay_atomic_update(struct drm_plane *plane,
+ 					  AFBC_HOLD_LINE_NUM(8) |
+ 					  AFBC_BURST_LEN(2);
+ 
++		if (fb->modifier & DRM_FORMAT_MOD_AMLOGIC_FBC_MEM_SAVING)
++			priv->viu.vd1_afbc_mode |= AFBC_BLK_MEM_MODE;
++
+ 		priv->viu.vd1_afbc_en = 0x1600 | AFBC_DEC_ENABLE;
+ 
+ 		priv->viu.vd1_afbc_conv_ctrl = AFBC_CONV_LBUF_LEN(256);
+@@ -672,12 +675,17 @@ static void meson_overlay_atomic_update(struct drm_plane *plane,
+ 	}
+ 
+ 	if (priv->viu.vd1_afbc) {
++		/* Default mode is 4k per superblock */
++		unsigned long block_size = 4096;
+ 		unsigned long body_size;
+ 
+-		/* Default mode is 4k per superblock */
++		/* 8bit mem saving mode is 3072bytes per superblock */
++		if (priv->viu.vd1_afbc_mode & AFBC_BLK_MEM_MODE)
++			block_size = 3072;
++
+ 		body_size = (ALIGN(priv->viu.vd1_stride0, 64) / 64) *
+ 			    (ALIGN(priv->viu.vd1_height0, 32) / 32) *
+-			    4096;
++			    block_size;
+ 
+ 		priv->viu.vd1_afbc_body_addr = priv->viu.vd1_addr0 >> 4;
+ 
+@@ -763,6 +771,8 @@ static const uint32_t supported_drm_formats[] = {
+ };
+ 
+ static const uint64_t format_modifiers[] = {
++	DRM_FORMAT_MOD_AMLOGIC_FBC(DRM_FORMAT_MOD_AMLOGIC_FBC_LAYOUT_BASIC |
++				   DRM_FORMAT_MOD_AMLOGIC_FBC_MEM_SAVING),
+ 	DRM_FORMAT_MOD_AMLOGIC_FBC(DRM_FORMAT_MOD_AMLOGIC_FBC_LAYOUT_BASIC),
+ 	DRM_FORMAT_MOD_LINEAR,
+ 	DRM_FORMAT_MOD_INVALID,
+-- 
+2.25.0
+

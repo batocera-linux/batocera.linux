@@ -1,0 +1,51 @@
+From 901ffcf266f681ca634ea41758785925ed60c704 Mon Sep 17 00:00:00 2001
+From: chewitt <christianshewitt@gmail.com>
+Date: Sun, 19 Apr 2020 12:56:38 +0000
+Subject: [PATCH 094/105] WIP: arm64: dts: meson: add audio playback to
+ rbox-pro
+
+---
+ .../boot/dts/amlogic/meson-gxm-rbox-pro.dts   | 20 +++++++++++++++++++
+ 1 file changed, 20 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/amlogic/meson-gxm-rbox-pro.dts b/arch/arm64/boot/dts/amlogic/meson-gxm-rbox-pro.dts
+index c89c9f846fb1..998465ae808c 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-gxm-rbox-pro.dts
++++ b/arch/arm64/boot/dts/amlogic/meson-gxm-rbox-pro.dts
+@@ -14,6 +14,7 @@
+ /dts-v1/;
+ 
+ #include "meson-gxm.dtsi"
++#include "meson-gxl-audio-hdmi-spdif.dtsi"
+ 
+ / {
+ 	compatible = "kingnovel,r-box-pro", "amlogic,s912", "amlogic,meson-gxm";
+@@ -51,6 +52,25 @@ led-red {
+ 		};
+ 	};
+ 
++	vddio_ao18: regulator-vddio_ao18 {
++		compatible = "regulator-fixed";
++		regulator-name = "VDDIO_AO18";
++		regulator-min-microvolt = <1800000>;
++		regulator-max-microvolt = <1800000>;
++	};
++
++	hdmi_5v: regulator-hdmi-5v {
++		compatible = "regulator-fixed";
++
++		regulator-name = "HDMI_5V";
++		regulator-min-microvolt = <5000000>;
++		regulator-max-microvolt = <5000000>;
++
++		gpio = <&gpio GPIOH_3 GPIO_ACTIVE_HIGH>;
++		enable-active-high;
++		regulator-always-on;
++	};
++
+ 	vddio_boot: regulator-vddio-boot {
+ 		compatible = "regulator-fixed";
+ 		regulator-name = "VDDIO_BOOT";
+-- 
+2.25.0
+

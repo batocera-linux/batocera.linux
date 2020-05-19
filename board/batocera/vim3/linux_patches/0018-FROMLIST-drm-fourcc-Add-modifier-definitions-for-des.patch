@@ -1,0 +1,85 @@
+From 1f5de2091104a9f0f28a682be2b11164ca155d3e Mon Sep 17 00:00:00 2001
+From: Neil Armstrong <narmstrong@baylibre.com>
+Date: Fri, 7 Feb 2020 15:44:09 +0100
+Subject: [PATCH 018/105] FROMLIST: drm/fourcc: Add modifier definitions for
+ describing Amlogic Video Framebuffer Compression
+
+Amlogic uses a proprietary lossless image compression protocol and format
+for their hardware video codec accelerators, either video decoders or
+video input encoders.
+
+It considerably reduces memory bandwidth while writing and reading
+frames in memory.
+
+The underlying storage is considered to be 3 components, 8bit or 10-bit
+per component, YCbCr 420, single plane :
+- DRM_FORMAT_YUV420_8BIT
+- DRM_FORMAT_YUV420_10BIT
+
+This modifier will be notably added to DMA-BUF frames imported from the V4L2
+Amlogic VDEC decoder.
+
+This introduces the basic layout composed of:
+- a body content organized in 64x32 superblocks with 4096 bytes per
+  superblock in default mode.
+- a 32 bytes per 128x64 header block
+
+This layout is tranferrable between Amlogic SoCs supporting this modifier.
+
+Tested-by: Kevin Hilman <khilman@baylibre.com>
+Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
+---
+ include/uapi/drm/drm_fourcc.h | 30 ++++++++++++++++++++++++++++++
+ 1 file changed, 30 insertions(+)
+
+diff --git a/include/uapi/drm/drm_fourcc.h b/include/uapi/drm/drm_fourcc.h
+index 8bc0b31597d8..6564813d2f7a 100644
+--- a/include/uapi/drm/drm_fourcc.h
++++ b/include/uapi/drm/drm_fourcc.h
+@@ -309,6 +309,7 @@ extern "C" {
+ #define DRM_FORMAT_MOD_VENDOR_BROADCOM 0x07
+ #define DRM_FORMAT_MOD_VENDOR_ARM     0x08
+ #define DRM_FORMAT_MOD_VENDOR_ALLWINNER 0x09
++#define DRM_FORMAT_MOD_VENDOR_AMLOGIC 0x0a
+ 
+ /* add more to the end as needed */
+ 
+@@ -804,6 +805,35 @@ extern "C" {
+  */
+ #define DRM_FORMAT_MOD_ALLWINNER_TILED fourcc_mod_code(ALLWINNER, 1)
+ 
++/*
++ * Amlogic Video Framebuffer Compression modifiers
++ *
++ * Amlogic uses a proprietary lossless image compression protocol and format
++ * for their hardware video codec accelerators, either video decoders or
++ * video input encoders.
++ *
++ * It considerably reduces memory bandwidth while writing and reading
++ * frames in memory.
++ *
++ * The underlying storage is considered to be 3 components, 8bit or 10-bit
++ * per component YCbCr 420, single plane :
++ * - DRM_FORMAT_YUV420_8BIT
++ * - DRM_FORMAT_YUV420_10BIT
++ */
++#define DRM_FORMAT_MOD_AMLOGIC_FBC(__modes) fourcc_mod_code(AMLOGIC, __modes)
++
++/*
++ * Amlogic FBC Basic Layout
++ *
++ * The basic layout is composed of:
++ * - a body content organized in 64x32 superblocks with 4096 bytes per
++ *   superblock in default mode.
++ * - a 32 bytes per 128x64 header block
++ *
++ * This layout is transferrable between Amlogic SoCs supporting this modifier.
++ */
++#define DRM_FORMAT_MOD_AMLOGIC_FBC_LAYOUT_BASIC		(1ULL << 0)
++
+ #if defined(__cplusplus)
+ }
+ #endif
+-- 
+2.25.0
+

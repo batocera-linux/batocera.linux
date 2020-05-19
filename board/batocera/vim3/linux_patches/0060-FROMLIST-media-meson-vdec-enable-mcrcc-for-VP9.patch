@@ -1,0 +1,67 @@
+From 4ac9622d770d9470c8615a90b72e6488e4e3bee7 Mon Sep 17 00:00:00 2001
+From: Maxime Jourdan <mjourdan@baylibre.com>
+Date: Sat, 2 May 2020 21:15:13 +0000
+Subject: [PATCH 060/105] FROMLIST: media: meson: vdec: enable mcrcc for VP9
+
+The motion compensation reference cache controller allows caching
+parts of reference frames for faster decoding.
+
+Fixes: 00c43088aa68 ("media: meson: vdec: add VP9 decoder support")
+Signed-off-by: Maxime Jourdan <mjourdan@baylibre.com>
+Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
+---
+ drivers/staging/media/meson/vdec/codec_vp9.c | 31 ++++++++++++++++++++
+ 1 file changed, 31 insertions(+)
+
+diff --git a/drivers/staging/media/meson/vdec/codec_vp9.c b/drivers/staging/media/meson/vdec/codec_vp9.c
+index 60e4fc0052b3..897f5d7a6aad 100644
+--- a/drivers/staging/media/meson/vdec/codec_vp9.c
++++ b/drivers/staging/media/meson/vdec/codec_vp9.c
+@@ -854,6 +854,36 @@ static int codec_vp9_stop(struct amvdec_session *sess)
+ 	return 0;
+ }
+ 
++/*
++ * Program LAST & GOLDEN frames into the motion compensation reference cache
++ * controller
++ */
++static void codec_vp9_set_mcrcc(struct amvdec_session *sess)
++{
++	struct amvdec_core *core = sess->core;
++	struct codec_vp9 *vp9 = sess->priv;
++	u32 val;
++
++	/* Reset mcrcc */
++	amvdec_write_dos(core, HEVCD_MCRCC_CTL1, 0x2);
++	/* Disable on I-frame */
++	if (vp9->cur_frame->type == KEY_FRAME || vp9->cur_frame->intra_only) {
++		amvdec_write_dos(core, HEVCD_MCRCC_CTL1, 0x0);
++		return;
++	}
++
++	amvdec_write_dos(core, HEVCD_MPP_ANC_CANVAS_ACCCONFIG_ADDR, BIT(1));
++	val = amvdec_read_dos(core, HEVCD_MPP_ANC_CANVAS_DATA_ADDR) & 0xffff;
++	val |= (val << 16);
++	amvdec_write_dos(core, HEVCD_MCRCC_CTL2, val);
++	val = amvdec_read_dos(core, HEVCD_MPP_ANC_CANVAS_DATA_ADDR) & 0xffff;
++	val |= (val << 16);
++	amvdec_write_dos(core, HEVCD_MCRCC_CTL3, val);
++
++	/* Enable mcrcc progressive-mode */
++	amvdec_write_dos(core, HEVCD_MCRCC_CTL1, 0xff0);
++}
++
+ static void codec_vp9_set_sao(struct amvdec_session *sess,
+ 			      struct vb2_buffer *vb)
+ {
+@@ -1267,6 +1297,7 @@ static void codec_vp9_process_frame(struct amvdec_session *sess)
+ 
+ 	amvdec_write_dos(core, HEVC_PARSER_PICTURE_SIZE,
+ 			 (vp9->height << 16) | vp9->width);
++	codec_vp9_set_mcrcc(sess);
+ 	codec_vp9_set_sao(sess, &vp9->cur_frame->vbuf->vb2_buf);
+ 
+ 	vp9_loop_filter_frame_init(core, &vp9->seg_4lf,
+-- 
+2.25.0
+

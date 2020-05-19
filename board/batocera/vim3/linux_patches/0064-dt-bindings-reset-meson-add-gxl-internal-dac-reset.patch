@@ -1,0 +1,28 @@
+From bcecb3d0136ee66e7a0d08d02576fc338f7fb32e Mon Sep 17 00:00:00 2001
+From: Jerome Brunet <jbrunet@baylibre.com>
+Date: Tue, 31 Oct 2017 16:29:19 +0100
+Subject: [PATCH 064/105] dt-bindings: reset: meson: add gxl internal dac reset
+
+Add the reset line of the internal DAC found on the amlogic gxl SoC family
+
+Signed-off-by: Jerome Brunet <jbrunet@baylibre.com>
+---
+ include/dt-bindings/reset/amlogic,meson-gxbb-reset.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/include/dt-bindings/reset/amlogic,meson-gxbb-reset.h b/include/dt-bindings/reset/amlogic,meson-gxbb-reset.h
+index ea5058618863..883bfd3bcbad 100644
+--- a/include/dt-bindings/reset/amlogic,meson-gxbb-reset.h
++++ b/include/dt-bindings/reset/amlogic,meson-gxbb-reset.h
+@@ -69,7 +69,7 @@
+ #define RESET_SYS_CPU_L2		58
+ #define RESET_SYS_CPU_P			59
+ #define RESET_SYS_CPU_MBIST		60
+-/*					61	*/
++#define RESET_ACODEC			61
+ /*					62	*/
+ /*					63	*/
+ /*	RESET2					*/
+-- 
+2.25.0
+

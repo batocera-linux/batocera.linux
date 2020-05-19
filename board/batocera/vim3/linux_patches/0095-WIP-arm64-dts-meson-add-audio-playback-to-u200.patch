@@ -1,0 +1,24 @@
+From 7d5bb10091effa69594b9c4285209106ab6ec847 Mon Sep 17 00:00:00 2001
+From: chewitt <christianshewitt@gmail.com>
+Date: Fri, 17 Apr 2020 06:31:56 +0000
+Subject: [PATCH 095/105] WIP: arm64: dts: meson: add audio playback to u200
+
+---
+ arch/arm64/boot/dts/amlogic/meson-g12a-u200.dts | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/arch/arm64/boot/dts/amlogic/meson-g12a-u200.dts b/arch/arm64/boot/dts/amlogic/meson-g12a-u200.dts
+index a26bfe72550f..158c8142bb93 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-g12a-u200.dts
++++ b/arch/arm64/boot/dts/amlogic/meson-g12a-u200.dts
+@@ -6,6 +6,7 @@
+ /dts-v1/;
+ 
+ #include "meson-g12a.dtsi"
++#include "meson-g12-audio-hdmi-spdif.dtsi"
+ #include <dt-bindings/gpio/gpio.h>
+ #include <dt-bindings/gpio/meson-g12a-gpio.h>
+ 
+-- 
+2.25.0
+

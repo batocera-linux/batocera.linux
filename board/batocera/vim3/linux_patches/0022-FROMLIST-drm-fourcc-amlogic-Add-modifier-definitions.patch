@@ -1,0 +1,65 @@
+From 12868786ed0cc44c8a8496df29645ef0d1d5f83a Mon Sep 17 00:00:00 2001
+From: Neil Armstrong <narmstrong@baylibre.com>
+Date: Tue, 24 Mar 2020 14:29:35 +0100
+Subject: [PATCH 022/105] FROMLIST: drm/fourcc: amlogic: Add modifier
+ definitions for Memory Saving option
+
+Amlogic uses a proprietary lossless image compression protocol and format
+for their hardware video codec accelerators, either video decoders or
+video input encoders.
+
+An option exist changing the layout superblock size to save memory when
+using 8bit components pixels size.
+
+The layout options starts at the 8th bit, keeping the first 8bits of the
+modifiers bits to define the layout.
+
+Tested-by: Kevin Hilman <khilman@baylibre.com>
+Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
+---
+ include/uapi/drm/drm_fourcc.h | 22 ++++++++++++++++++++++
+ 1 file changed, 22 insertions(+)
+
+diff --git a/include/uapi/drm/drm_fourcc.h b/include/uapi/drm/drm_fourcc.h
+index 6564813d2f7a..84edc5d69613 100644
+--- a/include/uapi/drm/drm_fourcc.h
++++ b/include/uapi/drm/drm_fourcc.h
+@@ -819,6 +819,12 @@ extern "C" {
+  * per component YCbCr 420, single plane :
+  * - DRM_FORMAT_YUV420_8BIT
+  * - DRM_FORMAT_YUV420_10BIT
++ *
++ * The first 8 bits of the mode defines the layout, then the following 8 bits
++ * defined the options changing the layout.
++ *
++ * Not all combinations are valid, and different SoCs may support different
++ * combinations of layout and options.
+  */
+ #define DRM_FORMAT_MOD_AMLOGIC_FBC(__modes) fourcc_mod_code(AMLOGIC, __modes)
+ 
+@@ -834,6 +840,22 @@ extern "C" {
+  */
+ #define DRM_FORMAT_MOD_AMLOGIC_FBC_LAYOUT_BASIC		(1ULL << 0)
+ 
++/*
++ * Amlogic FBC Layout Options
++ */
++
++/*
++ * Amlogic FBC Memory Saving mode
++ *
++ * Indicates the storage is packed when pixel size is multiple of word
++ * boudaries, i.e. 8bit should be stored in this mode to save allocation
++ * memory.
++ *
++ * This mode reduces body layout to 3072 bytes per 64x32 superblock with
++ * the basic layout.
++ */
++#define DRM_FORMAT_MOD_AMLOGIC_FBC_MEM_SAVING	(1ULL << 8)
++
+ #if defined(__cplusplus)
+ }
+ #endif
+-- 
+2.25.0
+

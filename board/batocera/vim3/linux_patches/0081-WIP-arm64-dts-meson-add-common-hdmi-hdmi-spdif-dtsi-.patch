@@ -1,0 +1,206 @@
+From 525641b7dce5a290ea66c61552dd08f38734068d Mon Sep 17 00:00:00 2001
+From: chewitt <christianshewitt@gmail.com>
+Date: Sun, 19 Apr 2020 08:40:21 +0000
+Subject: [PATCH 081/105] WIP: arm64: dts: meson: add common hdmi/hdmi-spdif
+ dtsi for GXL/GXM
+
+---
+ .../amlogic/meson-gxl-audio-hdmi-spdif.dtsi   | 101 ++++++++++++++++++
+ .../dts/amlogic/meson-gxl-audio-hdmi.dtsi     |  77 +++++++++++++
+ 2 files changed, 178 insertions(+)
+ create mode 100644 arch/arm64/boot/dts/amlogic/meson-gxl-audio-hdmi-spdif.dtsi
+ create mode 100644 arch/arm64/boot/dts/amlogic/meson-gxl-audio-hdmi.dtsi
+
+diff --git a/arch/arm64/boot/dts/amlogic/meson-gxl-audio-hdmi-spdif.dtsi b/arch/arm64/boot/dts/amlogic/meson-gxl-audio-hdmi-spdif.dtsi
+new file mode 100644
+index 000000000000..8292b5402c92
+--- /dev/null
++++ b/arch/arm64/boot/dts/amlogic/meson-gxl-audio-hdmi-spdif.dtsi
+@@ -0,0 +1,101 @@
++// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
++/*
++ * Copyright (c) 2019 Christian Hewitt <christianshewitt@gmail.com>
++ */
++
++#include <dt-bindings/sound/meson-aiu.h>
++
++/ {
++	dio2133: analog-amplifier {
++		compatible = "simple-audio-amplifier";
++		sound-name-prefix = "AU2";
++		VCC-supply = <&hdmi_5v>;
++		enable-gpios = <&gpio GPIOH_5 GPIO_ACTIVE_HIGH>;
++	};
++
++	spdif_dit: audio-codec-0 {
++		#sound-dai-cells = <0>;
++		compatible = "linux,spdif-dit";
++		status = "okay";
++		sound-name-prefix = "DIT";
++	};
++
++	sound {
++		compatible = "amlogic,gx-sound-card";
++		model = "GX-HDMI-SPDIF";
++		audio-aux-devs = <&dio2133>;
++		audio-widgets = "Line", "Lineout";
++		audio-routing = "AU2 INL", "ACODEC LOLP",
++				"AU2 INR", "ACODEC LORP",
++				"AU2 INL", "ACODEC LOLN",
++				"AU2 INR", "ACODEC LORN",
++				"Lineout", "AU2 OUTL",
++				"Lineout", "AU2 OUTR";
++		assigned-clocks = <&clkc CLKID_MPLL2>,
++				  <&clkc CLKID_MPLL0>,
++				  <&clkc CLKID_MPLL1>;
++		assigned-clock-parents = <0>, <0>, <0>;
++		assigned-clock-rates = <294912000>,
++				       <270950400>,
++				       <393216000>;
++		status = "okay";
++
++		dai-link-0 {
++			sound-dai = <&aiu AIU_CPU CPU_I2S_FIFO>;
++		};
++
++		dai-link-1 {
++			sound-dai = <&aiu AIU_CPU CPU_SPDIF_FIFO>;
++		};
++
++		dai-link-2 {
++			sound-dai = <&aiu AIU_CPU CPU_I2S_ENCODER>;
++			dai-format = "i2s";
++			mclk-fs = <256>;
++
++			codec-0 {
++				sound-dai = <&aiu AIU_HDMI CTRL_I2S>;
++			};
++
++			codec-1 {
++				sound-dai = <&aiu AIU_ACODEC CTRL_I2S>;
++			};
++		};
++
++		dai-link-3 {
++			sound-dai = <&aiu AIU_CPU CPU_SPDIF_ENCODER>;
++
++			codec-0 {
++				sound-dai = <&spdif_dit>;
++			};
++		};
++
++		dai-link-4 {
++			sound-dai = <&aiu AIU_HDMI CTRL_OUT>;
++
++			codec-0 {
++				sound-dai = <&hdmi_tx>;
++			};
++		};
++
++		dai-link-5 {
++			sound-dai = <&aiu AIU_ACODEC CTRL_OUT>;
++
++			codec-0 {
++				sound-dai = <&acodec>;
++			};
++		};
++	};
++};
++
++&acodec {
++	AVDD-supply = <&vddio_ao18>;
++	status = "okay";
++};
++
++&aiu {
++	status = "okay";
++	pinctrl-0 = <&spdif_out_h_pins>;
++	pinctrl-names = "default";
++
++};
+diff --git a/arch/arm64/boot/dts/amlogic/meson-gxl-audio-hdmi.dtsi b/arch/arm64/boot/dts/amlogic/meson-gxl-audio-hdmi.dtsi
+new file mode 100644
+index 000000000000..20a73ee81bdb
+--- /dev/null
++++ b/arch/arm64/boot/dts/amlogic/meson-gxl-audio-hdmi.dtsi
+@@ -0,0 +1,77 @@
++// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
++/*
++ * Copyright (c) 2019 Christian Hewitt <christianshewitt@gmail.com>
++ */
++
++#include <dt-bindings/sound/meson-aiu.h>
++
++/ {
++	dio2133: analog-amplifier {
++		compatible = "simple-audio-amplifier";
++		sound-name-prefix = "AU2";
++		VCC-supply = <&hdmi_5v>;
++		enable-gpios = <&gpio GPIOH_5 GPIO_ACTIVE_HIGH>;
++	};
++
++	sound {
++		compatible = "amlogic,gx-sound-card";
++		model = "GX-HDMI";
++		audio-aux-devs = <&dio2133>;
++		audio-widgets = "Line", "Lineout";
++		audio-routing = "AU2 INL", "ACODEC LOLN",
++				"AU2 INR", "ACODEC LORN",
++				"Lineout", "AU2 OUTL",
++				"Lineout", "AU2 OUTR";
++		assigned-clocks = <&clkc CLKID_MPLL2>,
++				  <&clkc CLKID_MPLL0>,
++				  <&clkc CLKID_MPLL1>;
++		assigned-clock-parents = <0>, <0>, <0>;
++		assigned-clock-rates = <294912000>,
++				       <270950400>,
++				       <393216000>;
++		status = "okay";
++
++		dai-link-0 {
++			sound-dai = <&aiu AIU_CPU CPU_I2S_FIFO>;
++		};
++
++		dai-link-1 {
++			sound-dai = <&aiu AIU_CPU CPU_I2S_ENCODER>;
++			dai-format = "i2s";
++			mclk-fs = <512>;
++
++			codec-0 {
++				sound-dai = <&aiu AIU_HDMI CTRL_I2S>;
++			};
++
++			codec-1 {
++				sound-dai = <&aiu AIU_ACODEC CTRL_I2S>;
++			};
++		};
++
++		dai-link-2 {
++			sound-dai = <&aiu AIU_HDMI CTRL_OUT>;
++
++			codec-0 {
++				sound-dai = <&hdmi_tx>;
++			};
++		};
++
++		dai-link-3 {
++			sound-dai = <&aiu AIU_ACODEC CTRL_OUT>;
++
++			codec-0 {
++				sound-dai = <&acodec>;
++			};
++		};
++	};
++};
++
++&acodec {
++	AVDD-supply = <&vddio_ao18>;
++	status = "okay";
++};
++
++&aiu {
++	status = "okay";
++};
+-- 
+2.25.0
+
