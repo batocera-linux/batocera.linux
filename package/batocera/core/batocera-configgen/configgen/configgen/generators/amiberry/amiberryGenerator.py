@@ -68,6 +68,9 @@ class AmiberryGenerator(Generator):
                 if nplayer == 1: # 1 = joystick port
                     commandArray.append("-s")
                     commandArray.append("joyport1_friendlyname=" + padfilename)
+                    if romType == 'CD' :
+                        commandArray.append("-s")
+                        commandArray.append("joyport1_mode=cd32joy")
                 if nplayer == 2: # 0 = mouse for the player 2
                     commandArray.append("-s")
                     commandArray.append("joyport0_friendlyname=" + padfilename)
