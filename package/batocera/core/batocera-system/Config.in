@@ -504,7 +504,7 @@ config BR2_PACKAGE_BATOCERA_MUPEN64
 		select BR2_PACKAGE_MUPEN64PLUS_GLES2            if BR2_PACKAGE_BATOCERA_TARGET_RPI_ANY  || \
 	                                                    BR2_PACKAGE_BATOCERA_TARGET_RPI4        || \
 	                                                    BR2_PACKAGE_BATOCERA_TARGET_VIM3        || \
-	                                                    BR2_PACKAGE_BATOCERA_TARGET_LIBRETECH_H5|| \
+	                                                    BR2_PACKAGE_BATOCERA_TARGET_LIBRETECH_H5
 	                                                    # GLES2
 
 		select BR2_PACKAGE_MUPEN64PLUS_V20_GLIDEN64     if BR2_PACKAGE_BATOCERA_TARGET_RPI_ANY  || \
