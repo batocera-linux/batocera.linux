@@ -1,25 +1,35 @@
-diff --git a/src/gui/sdl_mapper.cpp b/src/gui/sdl_mapper.cpp
-index 3a72015..e98ec9a 100644
---- a/src/gui/sdl_mapper.cpp
-+++ b/src/gui/sdl_mapper.cpp
-@@ -31,6 +31,7 @@
+Allow to emulate a mouse (movements + buttons) from any key or joystick.
+
+Signed-off-by: Laurent Merckx <laurent-merckx@skynet.be>
+
+--- dosbox/src/gui/sdl_mapper.cpp	2016-06-20 18:06:48.234667370 +0200
++++ dosbox.n/src/gui/sdl_mapper.cpp	2016-06-20 18:26:24.546661381 +0200
+@@ -32,6 +32,7 @@
  #include "dosbox.h"
  #include "video.h"
  #include "keyboard.h"
 +#include "mouse.h"
- #include "pic.h"
- #include "control.h"
  #include "joystick.h"
-@@ -57,6 +58,7 @@
- #define BFLG_Hold               0x0001
- #define BFLG_Repeat             0x0004
+ #include "support.h"
+ #include "mapper.h"
+@@ -65,6 +66,7 @@ enum BC_Types {
+ #define BFLG_Hold 0x0001
+ #define BFLG_Repeat 0x0004
  
-+#define MOUSE_OFFSET            8
++#define MOUSE_OFFSET 8
  
- #define MAXSTICKS               8
- #define MAXACTIVE               16
-@@ -2237,6 +2239,35 @@ public:
-     KBD_KEYS key;
+ #define MAXSTICKS 8
+ #define MAXACTIVE 16
+@@ -98,7 +100,6 @@ typedef std::vector<CBindGroup *>::itera
+ 
+ static CBindList holdlist;
+ 
+-
+ class CEvent {
+ public:
+ 	CEvent(char const * const _entry) {
+@@ -1566,6 +1567,35 @@ public:
+ 	KBD_KEYS key;
  };
  
 +class CMouseButtonEvent : public CTriggeredEvent {
@@ -50,12 +60,12 @@ index 3a72015..e98ec9a 100644
 +	}
 +	float xrel, yrel;
 +};
-+
- //! \brief Joystick axis event handling for the mapper
++	
  class CJAxisEvent : public CContinuousEvent {
  public:
-@@ -2846,6 +2877,24 @@ static CKeyEvent * AddKeyButtonEvent(Bitu x,Bitu y,Bitu dx,Bitu dy,char const *
-     return event;
+ 	CJAxisEvent(char const * const _entry,Bitu _stick,Bitu _axis,bool _positive,CJAxisEvent * _opposite_axis) : CContinuousEvent(_entry) {
+@@ -1818,6 +1848,24 @@ static CKeyEvent * AddKeyButtonEvent(Bit
+ 	return event;
  }
  
 +static CMouseButtonEvent * AddMouseButtonEvent(Bitu x,Bitu y,Bitu dx,Bitu dy,char const * const title,char const * const entry,Bit8u button) {
@@ -77,10 +87,10 @@ index 3a72015..e98ec9a 100644
 +}
 +
  static CJAxisEvent * AddJAxisButton(Bitu x,Bitu y,Bitu dx,Bitu dy,char const * const title,Bitu stick,Bitu axis,bool positive,CJAxisEvent * opposite_axis) {
-     char buf[64];
-     sprintf(buf,"jaxis_%d_%d%s",(int)stick,(int)axis,positive ? "+" : "-");
-@@ -3046,6 +3095,19 @@ static void CreateLayout(void) {
-     AddKeyButtonEvent(PX(XO+3),PY(YO+2),BW*3,BH,"HANYONG", "kor_hanyong",KBD_kor_hanyong);
+ 	char buf[64];
+ 	sprintf(buf,"jaxis_%d_%d%s",stick,axis,positive ? "+" : "-");
+@@ -1976,6 +2024,19 @@ static void CreateLayout(void) {
+ 	AddKeyButtonEvent(PX(XO+2),PY(YO+4),BW,BH,".","kp_period",KBD_kpperiod);
  #undef XO
  #undef YO
 +#define XO 6
@@ -98,4 +108,4 @@ index 3a72015..e98ec9a 100644
 +#undef YO
  #define XO 10
  #define YO 8
-     /* Joystick Buttons/Texts */
+ 	/* Joystick Buttons/Texts */
