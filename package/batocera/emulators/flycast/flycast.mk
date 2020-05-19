@@ -1,0 +1,38 @@
+################################################################################
+#
+# FLYCAST
+#
+################################################################################
+# Version.: Commits on May 15, 2020
+FLYCAST_VERSION = df97c42e4ee3f75988041d2badac2b18249e888e
+FLYCAST_SITE = $(call github,flyinghead,flycast,$(FLYCAST_VERSION))
+FLYCAST_LICENSE = GPLv2
+FLYCAST_DEPENDENCIES = sdl2 libpng
+
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86_64),y)
+	FLYCAST_PLATFORM = x64
+endif
+
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86),y)
+	FLYCAST_PLATFORM = x86
+endif
+
+define FLYCAST_UPDATE_INCLUDES
+	sed -i "s+/opt/vc+$(STAGING_DIR)/usr+g" $(@D)/shell/linux/Makefile
+	sed -i "s+sdl2-config+$(STAGING_DIR)/usr/bin/sdl2-config+g" $(@D)/shell/linux/Makefile
+endef
+
+FLYCAST_PRE_CONFIGURE_HOOKS += FLYCAST_UPDATE_INCLUDES
+
+define FLYCAST_BUILD_CMDS
+	$(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" -C $(@D)/shell/linux -f Makefile \
+		platform="$(FLYCAST_PLATFORM)"
+endef
+
+define FLYCAST_INSTALL_TARGET_CMDS
+	$(INSTALL) -D -m 0755 $(@D)/shell/linux/reicast.elf \
+		$(TARGET_DIR)/usr/bin/flycast.elf
+endef
+
+$(eval $(generic-package))
+
