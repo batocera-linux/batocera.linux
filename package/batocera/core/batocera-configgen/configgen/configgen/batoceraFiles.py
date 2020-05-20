@@ -16,7 +16,9 @@ batoceraConf = HOME + '/batocera.conf'
 logdir = HOME + '/logs/'
 
 # This dict is indexed on the emulator name, not on the system
-batoceraBins = {'kodi'        : '/usr/bin/batocera-kodilauncher'
+batoceraBins = {'dosbox'      : '/usr/bin/dosbox'
+              , 'dosboxx'     : '/usr/bin/dosbox-x'
+              , 'kodi'        : '/usr/bin/batocera-kodilauncher'
               , 'libretro'    : '/usr/bin/retroarch'
               , 'linapple'    : '/usr/bin/linapple'
               , 'moonlight'   : '/usr/bin/moonlight'
@@ -93,6 +95,9 @@ citraSaves = SAVES + '/3ds'
 
 dosboxCustom = CONF + '/dosbox'
 dosboxConfig = dosboxCustom + '/dosbox.conf'
+
+dosboxxCustom = CONF + '/dosbox'
+dosboxxConfig = dosboxxCustom + '/dosboxx.conf'
 
 fsuaeBios = BIOS
 fsuaeConfig = CONF + "/fs-uae"
