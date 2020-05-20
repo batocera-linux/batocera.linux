@@ -342,6 +342,8 @@ dos:
   emulators:
     dosbox:
       dosbox:   { requireAnyOf: [BR2_PACKAGE_DOSBOX]          }
+    dosboxx:
+      dosbox-x: { requireAnyOf: [BR2_PACKAGE_DOSBOX_X]        }
     libretro:
       dosbox:   { requireAnyOf: [BR2_PACKAGE_LIBRETRO_DOSBOX] }
   comment_en: |

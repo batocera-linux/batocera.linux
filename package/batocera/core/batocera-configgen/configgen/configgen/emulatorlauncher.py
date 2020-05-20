@@ -18,6 +18,7 @@ from generators.dolphin.dolphinGenerator import DolphinGenerator
 from generators.pcsx2.pcsx2Generator import Pcsx2Generator
 from generators.scummvm.scummvmGenerator import ScummVMGenerator
 from generators.dosbox.dosboxGenerator import DosBoxGenerator
+from generators.dosboxx.dosboxxGenerator import DosBoxxGenerator
 from generators.vice.viceGenerator import ViceGenerator
 from generators.fsuae.fsuaeGenerator import FsuaeGenerator
 from generators.amiberry.amiberryGenerator import AmiberryGenerator
@@ -40,6 +41,7 @@ generators = {
     'moonlight': MoonlightGenerator(),
     'scummvm': ScummVMGenerator(),
     'dosbox': DosBoxGenerator(),
+    'dosboxx': DosBoxxGenerator(),
     'mupen64plus': MupenGenerator(),
     'vice': ViceGenerator(),
     'fsuae': FsuaeGenerator(),
