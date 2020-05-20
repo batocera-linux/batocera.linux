@@ -1,0 +1,112 @@
+diff --git a/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-n2.dts b/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-n2.dts
+index 7e0d2ce..0638848 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-n2.dts
++++ b/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-n2.dts
+@@ -25,20 +25,6 @@
+ 		spi0 = &spicc0;
+ 	};
+ 
+-	dio2133: audio-amplifier-0 {
+-		compatible = "simple-audio-amplifier";
+-		enable-gpios = <&gpio_ao GPIOAO_2 GPIO_ACTIVE_HIGH>;
+-		VCC-supply = <&vcc_5v>;
+-		sound-name-prefix = "AMP";
+-	};
+-
+-	spdif_dit: audio-codec-1 {
+-		#sound-dai-cells = <0>;
+-		compatible = "linux,spdif-dit";
+-		status = "okay";
+-		sound-name-prefix = "DIT";
+-	};
+-
+ 	chosen {
+ 		stdout-path = "serial0:115200n8";
+ 	};
+@@ -228,20 +214,11 @@
+ 	sound {
+ 		compatible = "amlogic,axg-sound-card";
+ 		model = "G12A-ODROIDN2";
+-		audio-aux-devs = <&tdmout_b>, <&tdmout_c>, <&dio2133>;
++		audio-aux-devs = <&tdmout_b>;
+ 		audio-routing = "TDMOUT_B IN 0", "FRDDR_A OUT 1",
+ 				"TDMOUT_B IN 1", "FRDDR_B OUT 1",
+ 				"TDMOUT_B IN 2", "FRDDR_C OUT 1",
+-				"TDM_B Playback", "TDMOUT_B OUT",
+-				"TDMOUT_C IN 0", "FRDDR_A OUT 2",
+-				"TDMOUT_C IN 1", "FRDDR_B OUT 2",
+-				"TDMOUT_C IN 2", "FRDDR_C OUT 2",
+-				"TDM_C Playback", "TDMOUT_C OUT",
+-				"SPDIFOUT IN 0", "FRDDR_A OUT 3",
+-				"SPDIFOUT IN 1", "FRDDR_B OUT 3",
+-				"SPDIFOUT IN 2", "FRDDR_C OUT 3",
+-				"AMP INL", "ACODEC LOLP",
+-				"AMP INR", "ACODEC LORP";
++				"TDM_B Playback", "TDMOUT_B OUT";
+ 
+ 		assigned-clocks = <&clkc CLKID_HIFI_PLL>,
+ 				  <&clkc CLKID_MPLL0>,
+@@ -269,47 +246,23 @@
+ 			sound-dai = <&tdmif_b>;
+ 			dai-format = "i2s";
+ 			dai-tdm-slot-tx-mask-0 = <1 1>;
++			dai-tdm-slot-tx-mask-1 = <1 1>;
++			dai-tdm-slot-tx-mask-2 = <1 1>;
++			dai-tdm-slot-tx-mask-3 = <1 1>;
+ 			mclk-fs = <256>;
+ 
+-			codec@0 {
++			codec {
+ 				sound-dai = <&tohdmitx TOHDMITX_I2S_IN_B>;
+ 			};
+ 		};
+ 
+ 		dai-link-4 {
+-			sound-dai = <&tdmif_c>;
+-			dai-format = "i2s";
+-			dai-tdm-slot-tx-mask-0 = <1 1>;
+-			mclk-fs = <256>;
+-
+-			codec@0 {
+-				sound-dai = <&toacodec TOACODEC_IN_C>;
+-			};
+-		};
+-
+-		dai-link-5 {
+-			sound-dai = <&spdifout>;
+-
+-			codec@0 {
+-				sound-dai = <&spdif_dit>;
+-			};
+-		};
+-
+-		dai-link-6 {
+ 			sound-dai = <&tohdmitx TOHDMITX_I2S_OUT>;
+ 
+-			codec@0 {
++			codec {
+ 				sound-dai = <&hdmi_tx>;
+ 			};
+ 		};
+-
+-		dai-link-7 {
+-			sound-dai = <&toacodec TOACODEC_OUT>;
+-
+-			codec@0 {
+-				sound-dai = <&acodec>;
+-			};
+-		};
+ 	};
+ };
+ 
+@@ -717,10 +670,6 @@
+ 	status = "okay";
+ };
+ 
+-&tdmout_c {
+-	status = "okay";
+-};
+-
+ &tohdmitx {
+ 	status = "okay";
+ };
