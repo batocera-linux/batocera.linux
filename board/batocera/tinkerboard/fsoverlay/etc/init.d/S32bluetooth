@@ -22,7 +22,7 @@ case "$1" in
 		echo 1 > /sys/class/rfkill/rfkill0/state
 		sleep 1
 		###
-		/usr/bin/hciattach /dev/ttyS0 bt_default 1500000 flow nosleep # tinkerboard specific
+		/usr/bin/hciattach /dev/ttyS0 any 1500000 flow nosleep # tinkerboard specific
 		if test -n "${btaddr}"
 		then
 		    start-stop-daemon -S -q -m -p /var/run/bluetooth-agent.pid --exec /usr/bin/batocera-bluetooth-agent -- --device "${btaddr}" &
