@@ -45,14 +45,14 @@ def setupControllers(config, playersControllers, joy_max_inputs):
         config.save("keys." + str(idx) + ".1" , JoystickValue("down",     pad, joy_max_inputs)) # MOVEDOWN
         config.save("keys." + str(idx) + ".2" , JoystickValue("left",     pad, joy_max_inputs)) # MOVELEFT
         config.save("keys." + str(idx) + ".3" , JoystickValue("right",    pad, joy_max_inputs)) # MOVERIGHT
-        config.save("keys." + str(idx) + ".4" , JoystickValue("a",        pad, joy_max_inputs)) # ATTACK
+        config.save("keys." + str(idx) + ".4" , JoystickValue("b",        pad, joy_max_inputs)) # ATTACK
         config.save("keys." + str(idx) + ".5" , JoystickValue("x",        pad, joy_max_inputs)) # ATTACK2
-        config.save("keys." + str(idx) + ".6" , JoystickValue("y",        pad, joy_max_inputs)) # ATTACK3
+        config.save("keys." + str(idx) + ".6" , JoystickValue("pageup",   pad, joy_max_inputs)) # ATTACK3
         config.save("keys." + str(idx) + ".7" , JoystickValue("pagedown", pad, joy_max_inputs)) # ATTACK4
-        config.save("keys." + str(idx) + ".8" , JoystickValue("b",        pad, joy_max_inputs)) # JUMP
-        config.save("keys." + str(idx) + ".9" , JoystickValue("select",   pad, joy_max_inputs)) # SPECIAL
+        config.save("keys." + str(idx) + ".8" , JoystickValue("a",        pad, joy_max_inputs)) # JUMP
+        config.save("keys." + str(idx) + ".9" , JoystickValue("y",        pad, joy_max_inputs)) # SPECIAL
         config.save("keys." + str(idx) + ".10", JoystickValue("start",    pad, joy_max_inputs)) # START
-        config.save("keys." + str(idx) + ".11", JoystickValue("l2",       pad, joy_max_inputs)) # SCREENSHOT
+        config.save("keys." + str(idx) + ".11", JoystickValue("select",   pad, joy_max_inputs)) # SCREENSHOT
 
         # hotkey
         if idx == 0:

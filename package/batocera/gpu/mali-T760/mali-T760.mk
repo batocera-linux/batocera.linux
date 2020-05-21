@@ -34,7 +34,7 @@ define MALI_T760_INSTALL_STAGING_CMDS
 	(cd $(MALI_T760_STAGING_DIR)/usr/lib && ln -sf libmali.so libGLESv1_CM.so)
 	(cd $(MALI_T760_STAGING_DIR)/usr/lib && ln -sf libmali.so libGLESv1_CM.so.1)
 	(cd $(MALI_T760_STAGING_DIR)/usr/lib && ln -sf libmali.so libbrcmGLESv2.so)
-
+  
 	cp -pr $(@D)/include $(MALI_T760_STAGING_DIR)/usr
 	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/gpu/mali-T760/gbm.pc $(MALI_T760_STAGING_DIR)/usr/lib/pkgconfig/gbm.pc
 	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/gpu/mali-T760/egl.pc $(MALI_T760_STAGING_DIR)/usr/lib/pkgconfig/egl.pc

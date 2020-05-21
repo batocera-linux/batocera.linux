@@ -21,16 +21,18 @@ endif
 
 define MALI_RK450_INSTALL_STAGING_CMDS
 	mkdir -p $(MALI_RK450_STAGING_DIR)
-        cp -r $(@D)/lib/$(MALI_RK450_LIBDIR)/libmali-midgard-t86x-r14p0-gbm.so $(MALI_RK450_STAGING_DIR)/usr/lib
+		cp -r $(@D)/lib/$(MALI_RK450_LIBDIR)/libmali-midgard-t86x-r14p0-gbm.so $(MALI_RK450_STAGING_DIR)/usr/lib
 
 	(cd $(MALI_RK450_STAGING_DIR)/usr/lib && ln -sf libmali-midgard-t86x-r14p0-gbm.so libmali.so)
 
+	(cd $(MALI_RK450_STAGING_DIR)/usr/lib && ln -sf libmali.so libMali.so)
 	(cd $(MALI_RK450_STAGING_DIR)/usr/lib && ln -sf libmali.so libEGL.so)
 	(cd $(MALI_RK450_STAGING_DIR)/usr/lib && ln -sf libmali.so libEGL.so.1)
-	(cd $(MALI_RK450_STAGING_DIR)/usr/lib && ln -sf libmali.so libgbm.so)
+	(cd $(MALI_RK450_STAGING_DIR)/usr/lib && ln -sf libmali.so libGLESv1_CM.so)
+	(cd $(MALI_RK450_STAGING_DIR)/usr/lib && ln -sf libmali.so libGLESv1_CM.so.1)
 	(cd $(MALI_RK450_STAGING_DIR)/usr/lib && ln -sf libmali.so libGLESv2.so)
 	(cd $(MALI_RK450_STAGING_DIR)/usr/lib && ln -sf libmali.so libGLESv2.so.2)
-	(cd $(MALI_RK450_STAGING_DIR)/usr/lib && ln -sf libmali.so libMali.so)
+	(cd $(MALI_RK450_STAGING_DIR)/usr/lib && ln -sf libmali.so libgbm.so)
 
 	cp -pr $(@D)/include $(MALI_RK450_STAGING_DIR)/usr
 	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/gpu/mali-rk450/gbm.pc $(MALI_RK450_STAGING_DIR)/usr/lib/pkgconfig/gbm.pc
@@ -40,16 +42,18 @@ endef
 
 define MALI_RK450_INSTALL_TARGET_CMDS
 	mkdir -p $(MALI_RK450_TARGET_DIR)
-        cp -r $(@D)/lib/$(MALI_RK450_LIBDIR)/libmali-midgard-t86x-r14p0-gbm.so $(MALI_RK450_TARGET_DIR)/usr/lib
+	cp -r $(@D)/lib/$(MALI_RK450_LIBDIR)/libmali-midgard-t86x-r14p0-gbm.so $(MALI_RK450_TARGET_DIR)/usr/lib
 
-        (cd $(MALI_RK450_TARGET_DIR)/usr/lib && ln -sf libmali-midgard-t86x-r14p0-gbm.so libmali.so)
+	(cd $(MALI_RK450_TARGET_DIR)/usr/lib && ln -sf libmali-midgard-t86x-r14p0-gbm.so libmali.so)
 
+	(cd $(MALI_RK450_TARGET_DIR)/usr/lib && ln -sf libmali.so libMali.so)
 	(cd $(MALI_RK450_TARGET_DIR)/usr/lib && ln -sf libmali.so libEGL.so)
 	(cd $(MALI_RK450_TARGET_DIR)/usr/lib && ln -sf libmali.so libEGL.so.1)
-	(cd $(MALI_RK450_TARGET_DIR)/usr/lib && ln -sf libmali.so libgbm.so)
+	(cd $(MALI_RK450_TARGET_DIR)/usr/lib && ln -sf libmali.so libGLESv1_CM.so)
+	(cd $(MALI_RK450_TARGET_DIR)/usr/lib && ln -sf libmali.so libGLESv1_CM.so.1)
 	(cd $(MALI_RK450_TARGET_DIR)/usr/lib && ln -sf libmali.so libGLESv2.so)
 	(cd $(MALI_RK450_TARGET_DIR)/usr/lib && ln -sf libmali.so libGLESv2.so.2)
-	(cd $(MALI_RK450_TARGET_DIR)/usr/lib && ln -sf libmali.so libMali.so)
+	(cd $(MALI_RK450_TARGET_DIR)/usr/lib && ln -sf libmali.so libgbm.so)
 endef
 
 $(eval $(generic-package))
