@@ -490,7 +490,7 @@ dos:
 fbneo:
   name:       Final Burn Neo
   manufacturer: Misc. Arcade
-  release: 3000
+  release:
   hardware: arcade
   extensions: [zip, 7z]
   platform:   arcade
@@ -509,7 +509,7 @@ fbneo:
 mame:
   name:       Mame
   manufacturer: Misc. Arcade
-  release: 3000
+  release:
   hardware: arcade
   extensions: [zip, 7z]
   platform:   arcade
@@ -705,7 +705,7 @@ wswanc:
 prboom:
   name:       PrBoom
   manufacturer: Misc. Port
-  release: 3000
+  release:
   hardware: port
   extensions: [wad, iwad, pwad]
   group: ports
@@ -726,7 +726,7 @@ prboom:
 tyrquake:
   name:       TyrQuake
   manufacturer: Misc. Port
-  release: 3000
+  release:
   hardware: port
   extensions: [pak]
   group: ports
@@ -741,7 +741,7 @@ tyrquake:
 mrboom:
   name:       MrBoom
   manufacturer: Misc. Port
-  release: 3000
+  release:
   hardware: port
   extensions: [libretro]
   group: ports
@@ -762,7 +762,7 @@ vectrex:
 lutro:
   name:       Lutro
   manufacturer: Misc. Port
-  release: 3000
+  release:
   hardware: port
   extensions: [lutro, zip, 7z]
   group: ports
@@ -1075,7 +1075,7 @@ zxspectrum:
 moonlight:
   name:       Moonlight Embedded
   manufacturer: Misc. System
-  release: 3000
+  release:
   hardware: system
   extensions: [moonlight]
   emulators:
@@ -1205,7 +1205,7 @@ x68000:
 openbor:
   name:       OpenBOR
   manufacturer: Misc. Port
-  release: 3000
+  release:
   hardware: port
   extensions: [pak]
   emulators:
@@ -1256,7 +1256,7 @@ gx4000:
 daphne:
   name:       Arcade (Daphne)
   manufacturer: Misc. Arcade
-  release: 3000
+  release:
   hardware: arcade
   extensions: [daphne]
   emulators:
@@ -1289,7 +1289,7 @@ pc98:
 lightgun:
   name:       Light Gun
   manufacturer: Misc. System
-  release: 3000
+  release:
   hardware: system
   extensions: [zip, 7z]
   platform:   arcade
@@ -1309,7 +1309,7 @@ lightgun:
 ports:
   name:       Ports
   manufacturer: Misc. Port
-  release: 3000
+  release:
   hardware: port
   extensions: [sh]
   group: ports
@@ -1324,7 +1324,7 @@ ports:
 imageviewer:
   name:       Screenshots
   manufacturer: Misc. System
-  release: 3000
+  release:
   hardware: system
   extensions: [jpg, jpeg, png, bmp, psd, tga, gif, hdr, pic, ppm, pgm, mkv]
   path:       /userdata/screenshots
