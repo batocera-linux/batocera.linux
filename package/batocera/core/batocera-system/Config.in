@@ -123,6 +123,7 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
     select BR2_PACKAGE_PCMANFM                           if BR2_PACKAGE_XSERVER_XORG_SERVER # file manager
     select BR2_PACKAGE_ADWAITA_ICON_THEME                if BR2_PACKAGE_PCMANFM             # theme for file manager
     select BR2_PACKAGE_XTERM                             if BR2_PACKAGE_XSERVER_XORG_SERVER # terminal
+    select BR2_PACKAGE_X11VNC                            if BR2_PACKAGE_XSERVER_XORG_SERVER # vnc server
     select BR2_PACKAGE_MATCHBOX                          if BR2_PACKAGE_XSERVER_XORG_SERVER # window manager
     select BR2_PACKAGE_OPENBOX                           if BR2_PACKAGE_XSERVER_XORG_SERVER # window manager
     select BR2_PACKAGE_UNCLUTTER                         if BR2_PACKAGE_XSERVER_XORG_SERVER # hide mouse
