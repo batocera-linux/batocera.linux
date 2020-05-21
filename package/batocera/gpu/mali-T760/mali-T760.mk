@@ -23,6 +23,7 @@ endif
 define MALI_T760_INSTALL_STAGING_CMDS
 	mkdir -p $(MALI_T760_STAGING_DIR)
 	cp -r $(@D)/lib/$(MALI_T760_LIBDIR)/$(MALI_T760_LIBFILE) $(MALI_T760_STAGING_DIR)/usr/lib
+	(cd $(MALI_T760_STAGING_DIR)/usr/lib && ln -sf $(MALI_T760_LIBFILE) libmali.so)
 	(cd $(MALI_T760_STAGING_DIR)/usr/lib && ln -sf libmali.so libMali.so)
 	(cd $(MALI_T760_STAGING_DIR)/usr/lib && ln -sf libmali.so libEGL.so)
 	(cd $(MALI_T760_STAGING_DIR)/usr/lib && ln -sf libmali.so libEGL.so.1)
@@ -42,6 +43,7 @@ endef
 define MALI_T760_INSTALL_TARGET_CMDS
 	mkdir -p $(MALI_T760_TARGET_DIR)
 	cp -r $(@D)/lib/$(MALI_T760_LIBDIR)/$(MALI_T760_LIBFILE) $(MALI_T760_TARGET_DIR)/usr/lib
+	(cd $(MALI_T760_TARGET_DIR)/usr/lib && ln -sf $(MALI_T760_LIBFILE) libmali.so)
 	(cd $(MALI_T760_TARGET_DIR)/usr/lib && ln -sf libmali.so libMali.so)
 	(cd $(MALI_T760_TARGET_DIR)/usr/lib && ln -sf libmali.so libEGL.so)
 	(cd $(MALI_T760_TARGET_DIR)/usr/lib && ln -sf libmali.so libEGL.so.1)
