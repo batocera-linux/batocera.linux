@@ -502,7 +502,6 @@ config BR2_PACKAGE_BATOCERA_MUPEN64
         select BR2_PACKAGE_MUPEN64PLUS_RSPHLE
         select BR2_PACKAGE_MUPEN64PLUS_OMX              if BR2_PACKAGE_BATOCERA_TARGET_RPI_ANY # rpi audio
         select BR2_PACKAGE_MUPEN64PLUS_GLIDEN64         if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY   || \
-                                                           BR2_PACKAGE_BATOCERA_TARGET_ODROIDN2  || \
                                                            BR2_PACKAGE_BATOCERA_TARGET_RPI4      || \
                                                            BR2_PACKAGE_BATOCERA_TARGET_ROCKPRO64 || \
                                                            BR2_PACKAGE_BATOCERA_TARGET_VIM3      || \
