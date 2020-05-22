@@ -108,6 +108,9 @@ class EsSystemConf:
         systemTxt =  "  <system>\n"
         systemTxt += "        <fullname>%s</fullname>\n" % (data["name"])
         systemTxt += "        <name>%s</name>\n"           % (system)
+        systemTxt += "        <manufacturer>%s</manufacturer>\n" % (data["manufacturer"])
+        systemTxt += "        <release>%s</release>\n" % (data["release"])
+        systemTxt += "        <hardware>%s</hardware>\n" % (data["hardware"])
         if pathValue != "":
             systemTxt += "        <path>%s</path>\n"           % (pathValue)
         if listExtensions != "":

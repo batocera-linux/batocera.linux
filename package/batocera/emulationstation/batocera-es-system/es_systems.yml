@@ -1,5 +1,8 @@
 snes:
   name:       Super Nintendo Entertainment System
+  manufacturer: Nintendo
+  release: 1990
+  hardware: console
   extensions: [smc, fig, sfc, gd3, gd7, dx2, bsx, swc, zip, 7z]
   emulators:
     libretro:
@@ -11,6 +14,9 @@ snes:
 
 c64:
   name:       Commodore 64
+  manufacturer: Commodore
+  release: 1982
+  hardware: computer
   extensions: [d64, zip, 7z]
   platform:   c64
   emulators:
@@ -24,6 +30,9 @@ c64:
 
 c128:
   name:       Commodore 128
+  manufacturer: Commodore
+  release: 1985
+  hardware: computer
   extensions: [d64, d81, prg, lnx, zip]
   platform:   c64
   emulators:
@@ -32,6 +41,9 @@ c128:
 
 c20:
   name:       Commodore VIC-20
+  manufacturer: Commodore
+  release: 1980
+  hardware: computer
   extensions: [a0, b0, crt, d64, d81, prg, tap, t64, zip]
   platform:   c64
   emulators:
@@ -40,6 +52,9 @@ c20:
 
 amiga500:
   name:       Amiga OCS/ECS
+  manufacturer: Commodore
+  release: 1987
+  hardware: computer
   extensions: [zip, adf, uae, ipf, dms, dmz, adz, lha, hdf, exe]
   platform:   amiga
   group:      amiga
@@ -58,6 +73,9 @@ amiga500:
 
 amiga1200:
   name:       Amiga AGA
+  manufacturer: Commodore
+  release: 1992
+  hardware: computer
   extensions: [zip, adf, uae, ipf, dms, dmz, adz, lha, hdf, exe]
   platform:   amiga
   group:      amiga
@@ -73,6 +91,9 @@ amiga1200:
 
 amigacd32:
   name:       Amiga CD32
+  manufacturer: Commodore
+  release: 1994
+  hardware: console
   extensions: [iso, cue, zip, lha]
   emulators:
     fsuae:
@@ -84,6 +105,9 @@ amigacd32:
 
 amigacdtv:
   name:       Amiga CDTV
+  manufacturer: Commodore
+  release: 1991
+  hardware: console
   extensions: [bin, cue, iso]
   emulators:
     fsuae:
@@ -93,6 +117,9 @@ amigacdtv:
 
 nes:
   name:       Nintendo Entertainment System
+  manufacturer: Nintendo
+  release: 1983
+  hardware: console
   extensions: [nes, unif, unf, zip, 7z]
   emulators:
     libretro:
@@ -102,6 +129,9 @@ nes:
 
 n64:
   name:       Nintendo 64
+  manufacturer: Nintendo
+  release: 1996
+  hardware: console
   extensions: [z64, n64, v64, zip, 7z]
   emulators:
     mupen64plus:
@@ -115,6 +145,9 @@ n64:
 
 gba:
   name:       Game Boy Advance
+  manufacturer: Nintendo
+  release: 2001
+  hardware: portable
   extensions: [gba, zip, 7z]
   emulators:
     libretro:
@@ -124,6 +157,9 @@ gba:
 
 gbc:
   name:       Game Boy Color
+  manufacturer: Nintendo
+  release: 1998
+  hardware: portable
   extensions: [gbc, zip, 7z]
   emulators:
     libretro:
@@ -133,6 +169,9 @@ gbc:
 
 gb:
   name:       Game Boy
+  manufacturer: Nintendo
+  release: 1989
+  hardware: portable
   extensions: [gb, zip, 7z]
   emulators:
     libretro:
@@ -142,6 +181,9 @@ gb:
 
 gbc2players:
   name:       Game Boy Color (2 players)
+  manufacturer: Nintendo
+  release: 1998
+  hardware: portable
   extensions: [gbc, zip, 7z]
   platform:   gbc
   emulators:
@@ -150,6 +192,9 @@ gbc2players:
 
 gb2players:
   name:       Game Boy (2 players)
+  manufacturer: Nintendo
+  release: 1989
+  hardware: portable
   extensions: [gb, zip, 7z]
   platform:   gb
   emulators:
@@ -158,6 +203,9 @@ gb2players:
 
 nds:
   name:       Nintendo DS
+  manufacturer: Nintendo
+  release: 2004
+  hardware: portable
   extensions: [nds, bin, zip, 7z]
   emulators:
     libretro:
@@ -165,6 +213,9 @@ nds:
 
 fds:
   name:       Family Computer Disk System
+  manufacturer: Nintendo
+  release: 1986
+  hardware: console
   extensions: [fds, zip, 7z]
   emulators:
     libretro:
@@ -173,6 +224,9 @@ fds:
 
 virtualboy:
   name:       Virtual Boy
+  manufacturer: Nintendo
+  release: 1995
+  hardware: console
   extensions: [vb, zip, 7z]
   emulators:
     libretro:
@@ -180,6 +234,9 @@ virtualboy:
 
 gameandwatch:
   name:       Game and Watch
+  manufacturer: Nintendo
+  release: 1980
+  hardware: portable
   extensions: [mgw, zip, 7z]
   emulators:
     libretro:
@@ -187,6 +244,9 @@ gameandwatch:
 
 dreamcast:
   name:       Sega Dreamcast
+  manufacturer: Sega
+  release: 1998
+  hardware: console
   extensions: [cdi, cue, gdi, chd, zip, 7z]
   emulators:
     libretro:
@@ -198,6 +258,9 @@ dreamcast:
 
 naomi:
   name:       Sega Naomi
+  manufacturer: Sega
+  release: 1998
+  hardware: arcade
   extensions: [lst, bin, dat, zip, 7z]
   emulators:
     libretro:
@@ -207,6 +270,9 @@ naomi:
 
 atomiswave:
   name:       Atomiswave
+  manufacturer: Sammy
+  release: 2003
+  hardware: arcade
   extensions: [lst, bin, dat, zip, 7z]
   emulators:
     libretro:
@@ -216,6 +282,9 @@ atomiswave:
 
 megadrive:
   name:       Sega Megadrive
+  manufacturer: Sega
+  release: 1988
+  hardware: console
   extensions: [bin, gen, md, sg, smd, zip, 7z]
   platform:   genesis, megadrive
   emulators:
@@ -225,6 +294,9 @@ megadrive:
 
 segacd:
   name:       Sega CD
+  manufacturer: Sega
+  release: 1991
+  hardware: console
   extensions: [chd, cue, iso, zip, 7z]
   emulators:
     libretro:
@@ -233,6 +305,9 @@ segacd:
 
 sega32x:
   name:       Sega 32x
+  manufacturer: Sega
+  release: 1994
+  hardware: console
   extensions: [32x, smd, bin, md, zip, 7z]
   emulators:
     libretro:
@@ -240,6 +315,9 @@ sega32x:
 
 mastersystem:
   name:       Sega Master System
+  manufacturer: Sega
+  release: 1985
+  hardware: console
   extensions: [bin, sms, zip, 7z]
   emulators:
     libretro:
@@ -248,6 +326,9 @@ mastersystem:
 
 gamegear:
   name:       Sega Game Gear
+  manufacturer: Sega
+  release: 1990
+  hardware: portable
   extensions: [bin, gg, zip, 7z]
   emulators:
     libretro:
@@ -255,6 +336,9 @@ gamegear:
 
 sg1000:
   name:       Sega SG1000
+  manufacturer: Sega
+  release: 1983
+  hardware: console
   extensions: [bin, sg, zip, 7z]
   platform:   sg-1000
   theme:      sg-1000
@@ -264,6 +348,9 @@ sg1000:
 
 psp:
   name:       Sony Playstation Portable
+  manufacturer: Sony
+  release: 2004
+  hardware: portable
   extensions: [iso, cso, pbp]
   emulators:
     ppsspp:
@@ -273,6 +360,9 @@ psp:
 
 psx:
   name:       Sony Playstation 1
+  manufacturer: Sony
+  release: 1994
+  hardware: console
   extensions: [cue, img, mdf, pbp, toc, cbn, m3u, ccd, chd, zip, 7z, iso]
   emulators:
     libretro:
@@ -281,6 +371,9 @@ psx:
 
 pcengine:
   name:       PC Engine
+  manufacturer: NEC
+  release: 1987
+  hardware: console
   extensions: [pce, bin, zip, 7z]
   emulators:
     libretro:
@@ -289,6 +382,9 @@ pcengine:
 
 pcenginecd:
   name:       PC Engine CD
+  manufacturer: NEC
+  release: 1988
+  hardware: console
   extensions: [pce, cue, ccd, iso, img, chd, zip, 7z]
   theme:      pce-cd
   emulators:
@@ -298,6 +394,9 @@ pcenginecd:
 
 supergrafx:
   name:       Supergrafx
+  manufacturer: NEC
+  release: 1989
+  hardware: console
   extensions: [pce, sgx, cue, ccd, chd, zip, 7z]
   emulators:
     libretro:
@@ -305,6 +404,9 @@ supergrafx:
 
 pcfx:
   name:       PC-FX
+  manufacturer: NEC
+  release: 1994
+  hardware: console
   extensions: [cue, ccd, toc, chd, zip, 7z]
   emulators:
     libretro:
@@ -312,6 +414,9 @@ pcfx:
 
 scummvm:
   name:       ScummVM
+  manufacturer: LucasArts
+  release: 1987
+  hardware: computer
   extensions: [scummvm]
   platform:   pc
   emulators:
@@ -336,6 +441,9 @@ scummvm:
 
 dos:
   name:       Dos (x86)
+  manufacturer: Microsoft
+  release: 1981
+  hardware: computer
   extensions: [pc, dos]
   theme:      pc
   platform:   pc
@@ -381,6 +489,9 @@ dos:
 
 fbneo:
   name:       Final Burn Neo
+  manufacturer: Misc. Arcade
+  release:
+  hardware: arcade
   extensions: [zip, 7z]
   platform:   arcade
   emulators:
@@ -397,6 +508,9 @@ fbneo:
 
 mame:
   name:       Mame
+  manufacturer: Misc. Arcade
+  release:
+  hardware: arcade
   extensions: [zip, 7z]
   platform:   arcade
   emulators:
@@ -421,6 +535,9 @@ mame:
 
 neogeo:
   name:       Neo-Geo
+  manufacturer: SNK
+  release: 1990
+  hardware: console
   extensions: [7z, zip]
   emulators:
     libretro:
@@ -432,6 +549,9 @@ neogeo:
 
 neogeocd:
   name:       Neo-Geo CD
+  manufacturer: SNK
+  release: 1994
+  hardware: console
   extensions: [cue, iso, chd, zip, 7z]
   emulators:
     libretro:
@@ -440,6 +560,9 @@ neogeocd:
 
 colecovision:
   name:       ColecoVision
+  manufacturer: Coleco
+  release: 1982
+  hardware: console
   extensions: [bin, col, rom, zip, 7z]
   emulators:
     libretro:
@@ -484,6 +607,9 @@ colecovision:
 
 atari800:
   name:       Atari 800
+  manufacturer: Atari
+  release: 1979
+  hardware: computer
   extensions: [rom, xfd, atr, atx, cdm, cas, car, bin, a52, xex, zip, 7z]
   emulators:
     libretro:
@@ -491,6 +617,9 @@ atari800:
 
 atari2600:
   name:       Atari 2600
+  manufacturer: Atari
+  release: 1977
+  hardware: console
   extensions: [a26, bin, zip, 7z]
   emulators:
     libretro:
@@ -498,6 +627,9 @@ atari2600:
 
 atari5200:
   name:       Atari 5200
+  manufacturer: Atari
+  release: 1982
+  hardware: console
   extensions: [rom, xfd, atr, atx, cdm, cas, car, bin, a52, xex, zip, 7z]
   emulators:
     libretro:
@@ -505,6 +637,9 @@ atari5200:
 
 atari7800:
   name:       Atari 7800
+  manufacturer: Atari
+  release: 1986
+  hardware: console
   extensions: [a78, bin, zip, 7z]
   emulators:
     libretro:
@@ -512,6 +647,9 @@ atari7800:
 
 lynx:
   name:       Atari Lynx
+  manufacturer: Atari
+  release: 1989
+  hardware: portable
   extensions: [lnx, zip, 7z]
   theme:      atarilynx
   platform:   atarilynx
@@ -522,6 +660,9 @@ lynx:
 
 ngp:
   name:       Neo-Geo Pocket
+  manufacturer: SNK
+  release: 1998
+  hardware: portable
   extensions: [ngp, zip, 7z]
   emulators:
     libretro:
@@ -529,6 +670,9 @@ ngp:
 
 ngpc:
   name:       Neo-Geo Pocket Color
+  manufacturer: SNK
+  release: 1999
+  hardware: portable
   extensions: [ngc, zip, 7z]
   emulators:
     libretro:
@@ -536,6 +680,9 @@ ngpc:
 
 wswan:
   name:       WonderSwan
+  manufacturer: Bandai
+  release: 1999
+  hardware: portable
   extensions: [ws, zip, 7z]
   theme:      wonderswan
   platform:   wonderswan
@@ -545,6 +692,9 @@ wswan:
 
 wswanc:
   name:       WonderSwan Color
+  manufacturer: Bandai
+  release: 2000
+  hardware: portable
   extensions: [wsc, zip, 7z]
   theme:      wonderswancolor
   platform:   wonderswancolor
@@ -554,6 +704,9 @@ wswanc:
 
 prboom:
   name:       PrBoom
+  manufacturer: Misc. Port
+  release:
+  hardware: port
   extensions: [wad, iwad, pwad]
   group: ports
   emulators:
@@ -572,6 +725,9 @@ prboom:
 
 tyrquake:
   name:       TyrQuake
+  manufacturer: Misc. Port
+  release:
+  hardware: port
   extensions: [pak]
   group: ports
   emulators:
@@ -584,6 +740,9 @@ tyrquake:
 
 mrboom:
   name:       MrBoom
+  manufacturer: Misc. Port
+  release:
+  hardware: port
   extensions: [libretro]
   group: ports
   emulators:
@@ -592,6 +751,9 @@ mrboom:
 
 vectrex:
   name:       Vectrex
+  manufacturer: MB
+  release: 1982
+  hardware: console
   extensions: [bin, gam, vec, zip, 7z]
   emulators:
     libretro:
@@ -599,6 +761,9 @@ vectrex:
 
 lutro:
   name:       Lutro
+  manufacturer: Misc. Port
+  release:
+  hardware: port
   extensions: [lutro, zip, 7z]
   group: ports
   emulators:
@@ -618,6 +783,9 @@ lutro:
 
 cavestory:
   name:       Cave Story
+  manufacturer: Daisuke "Pixel" Amaya
+  release: 2004
+  hardware: port
   extensions: [exe]
   group: ports
   emulators:
@@ -638,6 +806,9 @@ cavestory:
 
 atarist:
   name:       Atari ST
+  manufacturer: Atari
+  release: 1985
+  hardware: computer
   extensions: [st, msa, stx, dim, ipf, m3u, zip, 7z]
   emulators:
     libretro:
@@ -645,6 +816,9 @@ atarist:
 
 amstradcpc:
   name:       Amstrad CPC
+  manufacturer: Amstrad
+  release: 1984
+  hardware: computer
   extensions: [dsk, sna, tap, cdt, voc, m3u, zip, 7z]
   emulators:
     libretro:
@@ -658,6 +832,9 @@ amstradcpc:
 
 msx1:
   name:       MSX1
+  manufacturer: Microsoft
+  release: 1983
+  hardware: computer
   extensions: [dsk, mx1, rom, zip, 7z]
   platform:   msx
   group:      msx
@@ -715,6 +892,9 @@ msx1:
 
 msx2:
   name:       MSX2
+  manufacturer: Microsoft
+  release: 1985
+  hardware: computer
   extensions: [dsk, mx2, om, zip, 7z]
   platform:   msx
   group:      msx
@@ -772,6 +952,9 @@ msx2:
 
 msx2+:
   name:       MSX2+
+  manufacturer: Microsoft
+  release: 1988
+  hardware: computer
   extensions: [dsk, mx2, om, zip, 7z]
   platform:   msx
   group:      msx
@@ -829,6 +1012,9 @@ msx2+:
 
 odyssey2:
   name:       Odyssey2
+  manufacturer: Magnavox - Philips
+  release: 1978
+  hardware: console
   extensions: [bin, zip, 7z]
   path:       o2em
   emulators:
@@ -837,6 +1023,9 @@ odyssey2:
 
 zx81:
   name:       ZX81
+  manufacturer: Sinclair
+  release: 1981
+  hardware: computer
   extensions: [tzx, p, zip, 7z]
   emulators:
     libretro:
@@ -850,6 +1039,9 @@ zx81:
 
 zxspectrum:
   name:       ZXSpectrum
+  manufacturer: Sinclair
+  release: 1982
+  hardware: computer
   extensions: [tzx, tap, z80, rzx, scl, trd, zip, 7z]
   emulators:
     libretro:
@@ -882,6 +1074,9 @@ zxspectrum:
 
 moonlight:
   name:       Moonlight Embedded
+  manufacturer: Misc. System
+  release:
+  hardware: system
   extensions: [moonlight]
   emulators:
     moonlight:
@@ -889,6 +1084,9 @@ moonlight:
 
 apple2:
   name:       Apple II
+  manufacturer: Apple
+  release: 1977
+  hardware: computer
   extensions: [nib, do, po, dsk]
   includeEmulators: no
   emulators:
@@ -897,6 +1095,9 @@ apple2:
 
 saturn:
   name:       Sega Saturn
+  manufacturer: Sega
+  release: 1994
+  hardware: console
   extensions: [cue, ccd, m3u, chd, iso, zip, 7z]
   emulators:
     libretro:
@@ -906,6 +1107,9 @@ saturn:
 
 jaguar:
   name:       Atari Jaguar
+  manufacturer: Atari
+  release: 1993
+  hardware: console
   extensions: [j64, jag, zip, 7z]
   theme:      atarijaguar
   emulators:
@@ -914,6 +1118,9 @@ jaguar:
 
 gamecube:
   name:       Nintendo GameCube
+  manufacturer: Nintendo
+  release: 2001
+  hardware: console
   extensions: [gcm, iso, gcz, ciso, wbfs]
   platform:   gc
   theme:      gc
@@ -923,6 +1130,9 @@ gamecube:
 
 wii:
   name:       Nintendo Wii
+  manufacturer: Nintendo
+  release: 2006
+  hardware: console
   extensions: [gcm, iso, gcz, ciso, wbfs, wad]
   emulators:
     dolphin:
@@ -941,6 +1151,9 @@ wii:
     Mettez les textures personnalisées dans /userdata/saves/dolphin-emu/Load/Textures/<game id>.
 ps2:
   name:       Sony Playstation 2
+  manufacturer: Sony
+  release: 2000
+  hardware: console
   extensions: [iso, mdf, nrg, bin, img, dump, gz, cso]
   includeEmulators: no
   emulators:
@@ -949,6 +1162,9 @@ ps2:
 
 3do:
   name:       3DO Interactive Multiplayer
+  manufacturer: Panasonic - Sanyo - Goldstar
+  release: 1993
+  hardware: console
   extensions: [iso, chd, cue, zip, 7z]
   emulators:
     libretro:
@@ -956,6 +1172,9 @@ ps2:
 
 intellivision:
   name:       Mattel Intellivision
+  manufacturer: Mattel
+  release: 1979
+  hardware: console
   extensions: [int, bin, rom, zip, 7z]
   emulators:
     libretro:
@@ -963,6 +1182,9 @@ intellivision:
 
 x68000:
   name:       Sharp X68000
+  manufacturer: Sharp
+  release: 1987
+  hardware: computer
   extensions: [dim, img, d88, 88d, hdm, dup, 2hd, xdf, hdf, cmd, m3u, zip, 7z]
   emulators:
     libretro:
@@ -970,6 +1192,9 @@ x68000:
 
 3ds:
   name:       Nintendo 3DS
+  manufacturer: Nintendo
+  release: 2011
+  hardware: portable
   extensions: [3ds, 3dsx, cxi, axf, elf]
   emulators:
     citra:
@@ -979,6 +1204,9 @@ x68000:
 
 openbor:
   name:       OpenBOR
+  manufacturer: Misc. Port
+  release:
+  hardware: port
   extensions: [pak]
   emulators:
     openbor:
@@ -987,6 +1215,9 @@ openbor:
 
 satellaview:
   name:       Satellaview
+  manufacturer: Nintendo
+  release: 1995
+  hardware: console
   extensions: [bs, smc, sfc, zip, 7z]
   emulators:
     libretro:
@@ -994,6 +1225,9 @@ satellaview:
 
 sufami:
   name:       SuFami Turbo
+  manufacturer: Bandai
+  release: 1996
+  hardware: console
   extensions: [st, fig, bs, smc, sfc, zip, 7z]
   emulators:
     libretro:
@@ -1001,6 +1235,9 @@ sufami:
 
 pokemini:
   name:       Pokemon-Mini
+  manufacturer: Nintendo
+  release: 2001
+  hardware: portable
   extensions: [min, zip, 7z]
   emulators:
     libretro:
@@ -1008,6 +1245,9 @@ pokemini:
 
 gx4000:
   name:       Amstrad GX4000
+  manufacturer: Amstrad
+  release: 1991
+  hardware: console
   extensions: [dsk, m3u, cpr, zip, 7z]
   emulators:
     libretro:
@@ -1015,6 +1255,9 @@ gx4000:
 
 daphne:
   name:       Arcade (Daphne)
+  manufacturer: Misc. Arcade
+  release:
+  hardware: arcade
   extensions: [daphne]
   emulators:
     daphne:
@@ -1024,6 +1267,9 @@ daphne:
 
 thomson:
   name:       Thomson - MO/TO (Theodore)
+  manufacturer: Thomson
+  release: 1984
+  hardware: computer
   extensions: [fd, sap, k7, m7, m5, rom, zip]
   emulators:
     libretro:
@@ -1031,6 +1277,9 @@ thomson:
 
 pc98:
   name:       NEC PC-9800
+  manufacturer: NEC
+  release: 1982
+  hardware: computer
   extensions: [d98, zip, 98d, fdi, fdd, 2hd, tfd, d88, 88d, hdm, xdf, dup, cmd, hdi, thd, nhd, hdd, hdn]
   platform:   pc98
   emulators:
@@ -1039,6 +1288,9 @@ pc98:
 
 lightgun:
   name:       Light Gun
+  manufacturer: Misc. System
+  release:
+  hardware: system
   extensions: [zip, 7z]
   platform:   arcade
   emulators:
@@ -1056,6 +1308,9 @@ lightgun:
 
 ports:
   name:       Ports
+  manufacturer: Misc. Port
+  release:
+  hardware: port
   extensions: [sh]
   group: ports
   path:       /userdata/roms/ports
@@ -1068,6 +1323,9 @@ ports:
 
 imageviewer:
   name:       Screenshots
+  manufacturer: Misc. System
+  release:
+  hardware: system
   extensions: [jpg, jpeg, png, bmp, psd, tga, gif, hdr, pic, ppm, pgm, mkv]
   path:       /userdata/screenshots
   platform:   ignore
