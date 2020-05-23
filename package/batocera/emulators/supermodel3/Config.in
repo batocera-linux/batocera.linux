@@ -1,0 +1,12 @@
+config BR2_PACKAGE_SUPERMODEL3
+        bool "supermodel3 emulator"
+	depends on BR2_INSTALL_LIBSTDCPP
+        select BR2_PACKAGE_SDL2
+
+        help
+          A SEGA Model 3 emulator.
+
+	  http://www.supermodel3.com
+
+comment "SUPERMODEL3 needs a toolchain w/ C++"
+	depends on !BR2_INSTALL_LIBSTDCPP
