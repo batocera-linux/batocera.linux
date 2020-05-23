@@ -115,3 +115,24 @@ diff -ur ./CAPSImage/DiskImg.cpp /home/romain/Desktop/libcapsimage-4.2-gcc9/CAPS
  		val<<=8;
  		val|=*buf++;
  	}
+--- a/CAPSImage/CapsEFDC.cpp	2020-05-23 20:54:25.974985710 +0200
++++ b/CAPSImage/CapsEFDC.cpp	2020-05-23 21:00:53.206432980 +0200
+@@ -412,7 +412,8 @@
+ void FdcSetTiming(PCAPSFDC pc)
+ {
+ 	// drive specific values
+-	for (int drv=0; drv < pc->drivecnt; drv++) {
++	int drv;
++	for (drv=0; drv < pc->drivecnt; drv++) {
+ 		PCAPSDRIVE pd=pc->drive+drv;
+ 
+ 		// clock cycles per revolution
+@@ -423,7 +424,7 @@
+ 	}
+ 
+ 	// clock cycles for stepping rates
+-	for (int drv=0; drv < 4; drv++)
++	for (drv=0; drv < 4; drv++)
+ 		pc->clockstep[drv]=UDWORD(((UQUAD)pc->clockfrq*pc->steptime[drv])/1000000);
+ 
+ 	// clock cycles for head settling
