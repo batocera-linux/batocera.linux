@@ -25,6 +25,7 @@ setup(name='batocera-configgen',
         'configgen.generators.citra',
         'configgen.generators.daphne',
         'configgen.generators.openbor',
+        'configgen.generators.wine',
         'configgen.settings',
         'configgen.utils']
       )

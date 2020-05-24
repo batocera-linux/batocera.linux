@@ -180,6 +180,12 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
                                   BR2_PACKAGE_BATOCERA_TARGET_ODROIDN2  || \
                                   BR2_PACKAGE_BATOCERA_TARGET_VIM3
 
+    # wine tools
+    select BR2_PACKAGE_WINETRICKS if BR2_PACKAGE_WINE
+    select BR2_PACKAGE_CABEXTRACT if BR2_PACKAGE_WINE
+    select BR2_PACKAGE_SQUASHFS   if BR2_PACKAGE_WINE
+    select BR2_PACKAGE_YAD        if BR2_PACKAGE_WINE
+
     # required gcc flags
     # required for different emulators, i suggest to enable it always to not have different behavior depending on boards
     select BR2_GCC_ENABLE_OPENMP
@@ -337,6 +343,7 @@ config BR2_PACKAGE_BATOCERA_ALL_SYSTEMS
         select BR2_PACKAGE_FSUAE                if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
 
         select BR2_PACKAGE_DOLPHIN_EMU          if BR2_PACKAGE_BATOCERA_TARGET_X86_64
+
         select BR2_PACKAGE_PCSX2                if BR2_PACKAGE_BATOCERA_TARGET_X86
         select BR2_PACKAGE_PCSX2_AVX2           if BR2_PACKAGE_BATOCERA_TARGET_X86
         select BR2_PACKAGE_PCSX2_X86            if BR2_PACKAGE_BATOCERA_TARGET_X86_64
@@ -344,6 +351,9 @@ config BR2_PACKAGE_BATOCERA_ALL_SYSTEMS
 
         select BR2_PACKAGE_OPENBOR
         select BR2_PACKAGE_OPENBOR4432
+
+	select BR2_PACKAGE_WINE                 if BR2_PACKAGE_BATOCERA_TARGET_X86
+	select BR2_PACKAGE_WINE_X86             if BR2_PACKAGE_BATOCERA_TARGET_X86_64
 
         help
           All avaible systems for the selected architecture
