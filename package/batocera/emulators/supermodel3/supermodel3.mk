@@ -13,6 +13,7 @@ define SUPERMODEL3_BUILD_CMDS
 	$(SED) "s+CC =+CC ?=+g" $(@D)/Makefiles/Makefile.UNIX
 	$(SED) "s+CXX =+CXX ?=+g" $(@D)/Makefiles/Makefile.UNIX
 	$(SED) "s+LD =+LD ?=+g" $(@D)/Makefiles/Makefile.UNIX
+	$(SED) "s+-march=native+-msse+g" $(@D)/Makefiles/Makefile.inc
 	CXX="$(TARGET_CXX)" \
 	CC="$(TARGET_CC)" \
 	LD="$(TARGET_CC)" \
