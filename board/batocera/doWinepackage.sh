@@ -74,6 +74,10 @@ if ! mkdir -p "${TMPOUT}/lib32/wine"
 then
     exit 1
 fi
+if ! mkdir -p "${TMPOUT}/usr/share/wine"
+then
+    exit 1
+fi
 
 # libs32
 echo "libs..."
@@ -87,6 +91,7 @@ do
 done
 cp -p "${G_TARGETDIR}/usr/lib/libwine"* "${TMPOUT}/lib32"
 cp -pr "${G_TARGETDIR}/usr/lib/wine/"* "${TMPOUT}/lib32/wine"
+cp -pr "${G_TARGETDIR}/usr/share/wine/"* "${TMPOUT}/usr/share/wine"
 cp "${G_TARGETDIR}/usr/lib/libEGL_mesa"* "${TMPOUT}/lib32"
 cp "${G_TARGETDIR}/usr/lib/libGLX_mesa"* "${TMPOUT}/lib32"
 
