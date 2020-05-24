@@ -1,0 +1,27 @@
+From 1a4b362115b5e1bb4f5b888919ffd11736adbf0c Mon Sep 17 00:00:00 2001
+From: Jaroslav Kysela <perex@perex.cz>
+Date: Sat, 23 Nov 2019 15:38:35 +0100
+Subject: [PATCH] ucm: use-case.h - add <alsa/asoundlib.h> include
+
+It is required for snd_ctl_elem_id_t and snd_mixer_selem_id_t.
+
+Signed-off-by: Jaroslav Kysela <perex@perex.cz>
+---
+ include/use-case.h | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/include/use-case.h b/include/use-case.h
+index 8a37121..80073ef 100644
+--- a/include/use-case.h
++++ b/include/use-case.h
+@@ -42,6 +42,8 @@
+ extern "C" {
+ #endif
+
++#include <alsa/asoundlib.h>
++
+ /**
+  *  \defgroup ucm Use Case Interface
+  *  The ALSA Use Case manager interface.
+--
+1.8.3.1
