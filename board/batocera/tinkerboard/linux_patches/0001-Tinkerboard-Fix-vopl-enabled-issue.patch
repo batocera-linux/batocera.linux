@@ -1,0 +1,76 @@
+From 8af28927ea299601923b51c278d25bb63ade1449 Mon Sep 17 00:00:00 2001
+From: Ntemis <ierokipides.dem@gmail.com>
+Date: Sun, 24 May 2020 17:49:15 +0300
+Subject: [PATCH] Tinkerboard: Fix vopl enabled issue
+
+---
+ arch/arm/boot/dts/rk3288-miniarm.dts | 32 ++++++++--------------------
+ 1 file changed, 9 insertions(+), 23 deletions(-)
+
+diff --git a/arch/arm/boot/dts/rk3288-miniarm.dts b/arch/arm/boot/dts/rk3288-miniarm.dts
+index 491a31944..34376295a 100644
+--- a/arch/arm/boot/dts/rk3288-miniarm.dts
++++ b/arch/arm/boot/dts/rk3288-miniarm.dts
+@@ -341,17 +341,14 @@
+ 	#size-cells = <0>;
+ 	#sound-dai-cells = <0>;
+ 	status = "okay";
++	/* Don't use vopl for HDMI */
++	ports {
++		hdmi_in: port {
++			/delete-node/ endpoint@1;
++		};
++	};
+ };
+ 
+-&hdmi_in_vopb {
+-	status = "disabled";
+-};
+-
+-&hdmi_in_vopl {
+-	status = "okay";
+-};
+-
+-
+ &hevc_service {
+ 	status = "okay";
+ };
+@@ -393,7 +390,7 @@
+ 				regulator-always-on;
+ 				regulator-boot-on;
+ 				regulator-min-microvolt = <750000>;
+-				regulator-max-microvolt = <1500000>;
++				regulator-max-microvolt = <1450000>;
+ 				regulator-name = "vdd_arm";
+ 				regulator-ramp-delay = <6000>;
+ 				regulator-state-mem {
+@@ -769,24 +766,13 @@
+ 
+ &vopb {
+ 	status = "okay";
+-		vopb_out: port {
+-			vopb_out_edp: endpoint@1 {
+-				reg = <1>;
+-				remote-endpoint = <&edp_in_vopb>;
+-			};
+-		};
+ };
+ 
+ &vopl {
+ 	status = "okay";
++	/* Don't use vopl for HDMI */
+ 	vopl_out: port {
+-		#address-cells = <1>;
+-		#size-cells = <0>;
+-
+-		vopl_out_hdmi: endpoint@0 {
+-			reg = <0>;
+-			remote-endpoint = <&hdmi_in_vopl>;
+-		};
++		/delete-node/ endpoint@0;
+ 	};
+ };
+ 
+-- 
+2.17.1
+
