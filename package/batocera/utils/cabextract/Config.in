@@ -1,4 +1,5 @@
 config BR2_PACKAGE_CABEXTRACT
 	bool "CABEXTRACT"
+	depends on BR2_PACKAGE_LIBMSPACK
 	help
 	  cab extractor
