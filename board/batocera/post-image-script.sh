@@ -640,6 +640,12 @@ if grep -qE "^BR2_PACKAGE_PCSX2=y$" "${BR2_CONFIG}"
 then
 	echo "building the pcsx2 package..."
 	"${BR2_EXTERNAL_BATOCERA_PATH}"/board/batocera/doPcsx2package.sh "${TARGET_DIR}" "${BINARIES_DIR}/pcsx2" "${BATOCERA_BINARIES_DIR}" || exit 1
+fi
+
+# wine package
+if grep -qE "^BR2_PACKAGE_WINE=y$" "${BR2_CONFIG}"
+then
+	echo "building the wine package..."
 	"${BR2_EXTERNAL_BATOCERA_PATH}"/board/batocera/doWinepackage.sh "${TARGET_DIR}" "${BINARIES_DIR}/wine" "${BATOCERA_BINARIES_DIR}" || exit 1
 fi
 
