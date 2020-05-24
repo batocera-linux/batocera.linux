@@ -1,0 +1,23 @@
+diff --git a/Makefile b/Makefile
+index 35f4975..1848c99 100644
+--- a/Makefile
++++ b/Makefile
+@@ -94,6 +94,18 @@ endif
+    OSX_LT_MAVERICKS = `(( $(OSXVER) <= 9)) && echo "YES"`
+    fpic += -mmacosx-version-min=10.1
+ 
++# Odroid-N2 / VIM3
++else ifneq (,$(findstring CortexA73_G12B,$(platform)))
++   TARGET := $(TARGET_NAME)_libretro.so
++   fpic := -fPIC
++   SHARED := -shared -Wl,--no-undefined -Wl,--version-script=link.T
++   CC = gcc
++   LDFLAGS += $(PTHREAD_FLAGS)
++   FLAGS += $(PTHREAD_FLAGS)
++   IS_X86 = 0
++   FLAGS += -mcpu=cortex-a73
++   ASFLAGS += -mcpu=cortex-a73
++
+ # iOS
+ else ifneq (,$(findstring ios,$(platform)))
+ 
