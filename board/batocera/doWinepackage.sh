@@ -99,16 +99,7 @@ cp "${G_TARGETDIR}/usr/lib/libGLX_mesa"* "${TMPOUT}/lib32"
 echo "binaries..."
 mkdir -p "${TMPOUT}/usr/bin"                           || exit 1
 echo " wine binaries"
-cp -pr "${G_TARGETDIR}/usr/bin/wine"           "${TMPOUT}/usr/bin" || exit 1
-cp -pr "${G_TARGETDIR}/usr/bin/wineboot"       "${TMPOUT}/usr/bin" || exit 1
-cp -pr "${G_TARGETDIR}/usr/bin/winecfg"        "${TMPOUT}/usr/bin" || exit 1
-cp -pr "${G_TARGETDIR}/usr/bin/wineconsole"    "${TMPOUT}/usr/bin" || exit 1
-cp -pr "${G_TARGETDIR}/usr/bin/winedbg"        "${TMPOUT}/usr/bin" || exit 1
-cp -pr "${G_TARGETDIR}/usr/bin/winefile"       "${TMPOUT}/usr/bin" || exit 1
-cp -pr "${G_TARGETDIR}/usr/bin/winemine"       "${TMPOUT}/usr/bin" || exit 1
-cp -pr "${G_TARGETDIR}/usr/bin/winepath"       "${TMPOUT}/usr/bin" || exit 1
-cp -pr "${G_TARGETDIR}/usr/bin/wine-preloader" "${TMPOUT}/usr/bin" || exit 1
-cp -pr "${G_TARGETDIR}/usr/bin/wineserver"     "${TMPOUT}/usr/bin" || exit 1
+cp -p "${G_TARGETDIR}/usr/bin/wine"*          "${TMPOUT}/usr/bin/" || exit 1
 
 # dri
 echo "dri..."
