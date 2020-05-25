@@ -149,6 +149,7 @@ cp "${G_TARGETDIR}/usr/lib/libGLX_mesa"* "${TMPOUT}/lib32"
 echo "binaries..."
 mkdir -p "${TMPOUT}/usr/bin"                           || exit 1
 echo " wine binaries"
+cp -p "${G_TARGETDIR}/usr/bin/cabextract"          "${TMPOUT}/usr/bin/" || exit 1
 cp -p "${G_TARGETDIR}/usr/bin/wine"*          "${TMPOUT}/usr/bin/" || exit 1
 cp -p "${G_TARGETDIR}/usr/bin/mono"*          "${TMPOUT}/usr/bin/" || exit 1
 cp -p "${G_TARGETDIR}/usr/bin/gst"*          "${TMPOUT}/usr/bin/" || exit 1
