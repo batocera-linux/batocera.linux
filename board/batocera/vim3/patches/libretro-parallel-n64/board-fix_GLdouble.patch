@@ -1,0 +1,13 @@
+diff --git a/libretro-common/include/glsm/glsm.h b/libretro-common/include/glsm/glsm.h
+index d422267..4ac4d54 100644
+--- a/libretro-common/include/glsm/glsm.h
++++ b/libretro-common/include/glsm/glsm.h
+@@ -32,7 +32,7 @@
+ RETRO_BEGIN_DECLS
+ 
+ #ifdef HAVE_OPENGLES2
+-typedef GLfloat GLdouble;
++//typedef GLfloat GLdouble;
+ typedef GLclampf GLclampd;
+ #endif
+ 
