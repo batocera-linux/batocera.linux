@@ -69,8 +69,16 @@ define BATOCERA_SCRIPTS_INSTALL_XORG
 	ln -fs /userdata/system/99-nvidia.conf $(TARGET_DIR)/etc/X11/xorg.conf.d/99-nvidia.conf
 endef
 
+define BATOCERA_SCRIPTS_INSTALL_WINE
+	ln -fs /userdata/system/99-nvidia.conf $(TARGET_DIR)/etc/X11/xorg.conf.d/99-nvidia.conf
+endef
+
 ifeq ($(BR2_PACKAGE_XSERVER_XORG_SERVER),y)
   BATOCERA_SCRIPTS_POST_INSTALL_TARGET_HOOKS += BATOCERA_SCRIPTS_INSTALL_XORG
+endif
+
+ifeq ($(BR2_PACKAGE_WINE),y)
+	install -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-scripts/scripts/batocera-wine          $(TARGET_DIR)/usr/bin/
 endif
 
 $(eval $(generic-package))

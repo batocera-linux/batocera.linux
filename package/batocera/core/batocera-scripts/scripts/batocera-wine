@@ -1,0 +1,410 @@
+#!/bin/bash
+
+set -x
+
+ACTION=$1
+shift
+
+G_WINE_VERSION=$(wine --version)
+G_SAVES_DIR="/userdata/saves/windows"
+G_ROMS_DIR="/userdata/roms/windows"
+G_LAST_BASE_IMAGE="${G_ROMS_DIR}/bases/${G_WINE_VERSION}.base"
+
+usage() {
+    echo "${1} play    <game>.iso"             >&2
+    echo "${1} play    <game>.exe"             >&2
+    echo "${1} play    <game>.wine"            >&2
+    echo "${1} play    <game>.autonomous"      >&2
+    echo "${1} play    <game>.wine.squashfs"   >&2
+    echo "${1} install <game>.iso"             >&2
+    echo "${1} install <game>.exe"             >&2
+    echo "${1} install <game>.wine"            >&2
+    echo "${1} tricks  <game>.wine directplay" >&2
+    echo "${1} wine2squashfs     <game.wine>"  >&2
+    echo "${1} wine2fullsquashfs <game.wine>"  >&2
+}
+
+createLastBaseImage() {
+    # already created
+    test -e "${G_LAST_BASE_IMAGE}" && return 0
+
+    # TODO : LOGO, later
+    echo "creating base image ${G_LAST_BASE_IMAGE}..." >&2
+    
+    TMPBASE="/tmp/base.wine.$$"
+    mkdir -p "${TMPBASE}"          || return 1
+    mkdir -p "${G_ROMS_DIR}/bases" || return 1
+
+    export WINEPREFIX=${TMPBASE}
+    if ! wine hostname
+    then
+	rm -rf "${TMPBASE}"
+	return 1
+    fi
+
+    if ! mksquashfs "${TMPBASE}" "${G_LAST_BASE_IMAGE}".part
+    then
+	rm -rf "${TMPBASE}"
+	return 1
+    fi
+
+    # in case the user kills the procedure
+    if ! mv "${G_LAST_BASE_IMAGE}".part "${G_LAST_BASE_IMAGE}"
+    then
+	rm -rf "${TMPBASE}"
+	return 1
+    fi
+
+    rm -rf "${TMPBASE}"
+    return 0
+}
+
+mount_wine() {
+    GAMENAME=$1
+    GAMEEXT=$2
+    MODE=$3
+   
+    BASEWINEMOUNT="/var/run/wine/base_${GAMENAME}"
+    ENDWINEMOUNT="/var/run/wine/${GAMENAME}"
+    if test "${MODE}" = "play"
+    then
+	GAMEDIR="/userdata/roms/windows/${GAMENAME}"
+    else
+	GAMEDIR="/userdata/roms/windows_installers/${GAMENAME}"
+    fi
+    INSTALLDIR="/userdata/roms/windows_installers/${GAMENAME}"
+    WORKDIRMOUNT="${GAMEDIR}.work"
+    SAVEDIR="${G_SAVES_DIR}/${GAMENAME}"
+
+    # case for squashfs
+    SQUASHFSWINEMOUNT="/var/run/wine/squash_${GAMENAME}"
+    if test "${MODE}" = "play" -a "${GAMEEXT}" = "squashfs"
+    then
+	mkdir -p "${SQUASHFSWINEMOUNT}"
+	mount "${GAMEDIR}" "${SQUASHFSWINEMOUNT}" || return 1
+    fi
+    
+    mkdir -p "${BASEWINEMOUNT}" "${ENDWINEMOUNT}" "${WORKDIRMOUNT}" || return 1
+
+    LOWERDIR="${BASEWINEMOUNT}"
+    BASESEARCH=
+    if test "${MODE}" = "play"
+    then
+	case "${GAMEEXT}" in
+	    "wine")
+		LOWERDIR="${BASEWINEMOUNT}":"${GAMEDIR}"
+		BASESEARCH="${GAMEDIR}"
+		;;
+	    "squashfs")
+		LOWERDIR="${BASEWINEMOUNT}":"${SQUASHFSWINEMOUNT}"
+		BASESEARCH="${SQUASHFSWINEMOUNT}"
+		;;
+	esac
+    fi
+
+    case "${MODE}" in
+	"play")
+	    UPPERDIR=${SAVEDIR}
+	    ;;
+	"install")
+	    UPPERDIR=$(echo "${INSTALLDIR}" | sed -e s+"\.[eE][xX][eE]"+"\.wine"+ -e s+"\.[iI][sS][oO]"+"\.wine"+)
+	    BASESEARCH="${UPPERDIR}"
+	    ;;
+	"squashfs")
+	    UPPERDIR=${GAMEDIR}
+	    BASESEARCH="${UPPERDIR}"
+	    ;;
+    esac
+    mkdir -p "${UPPERDIR}" || return 1
+
+    # choose the good base image
+    BASE_IMAGE="${G_LAST_BASE_IMAGE}"
+    BASE_IMAGE_VERSION="${G_WINE_VERSION}"
+    if test -n "${BASESEARCH}" -a -e "${BASESEARCH}/wine.base"
+    then
+	BASE_IMAGE_VERSION=$(cat "${BASESEARCH}/wine.base")
+	BASE_IMAGE="${G_ROMS_DIR}/bases/${BASE_IMAGE_VERSION}.base"
+    fi
+    mount "${BASE_IMAGE}" "${BASEWINEMOUNT}" || return 1
+    mount -t overlay overlay -o rw,lowerdir=${LOWERDIR},upperdir="${UPPERDIR}",workdir="${WORKDIRMOUNT}" "${ENDWINEMOUNT}" || return 1
+
+    # save the base image
+    if test "${MODE}" = "install"
+    then
+	if ! test -e "${UPPERDIR}/wine.base"
+	then
+	    if ! echo "${BASE_IMAGE_VERSION}" > "${UPPERDIR}/wine.base"
+	    then
+		# try to umount
+		umount "${ENDWINEMOUNT}"
+		umount "${BASEWINEMOUNT}"
+		rmdir "${ENDWINEMOUNT}" "${WORKDIRMOUNT}"
+		return 1
+	    fi
+	fi
+    fi
+    
+    return 0
+}
+
+unmount_wine() {
+    GAMENAME=$1
+    GAMEEXT=$2
+    MODE=$3
+
+    BASEWINEMOUNT="/var/run/wine/base_${GAMENAME}"
+    ENDWINEMOUNT="/var/run/wine/${GAMENAME}"
+
+    if test "${MODE}" = "play"
+    then
+	GAMEDIR="/userdata/roms/windows/${GAMENAME}"
+    else
+	GAMEDIR="/userdata/roms/windows_installers/${GAMENAME}"
+    fi
+    WORKDIRMOUNT="${GAMEDIR}.work"
+
+    if test "${MODE}" = "play" -a "${GAMEEXT}" = "squashfs"
+    then
+	SQUASHFSWINEMOUNT="/var/run/wine/squash_${GAMENAME}"
+	umount "${SQUASHFSWINEMOUNT}" || return 1
+	rmdir "${SQUASHFSWINEMOUNT}" || return 1
+    fi
+
+    while pgrep /usr/bin/wineserver
+    do
+	echo "waiting wineserver" >&2
+	sleep 1
+    done
+
+    umount "${ENDWINEMOUNT}" || return 1
+    umount "${BASEWINEMOUNT}" || return 1
+    rmdir "${BASEWINEMOUNT}" "${ENDWINEMOUNT}" "${WORKDIRMOUNT}/work" "${WORKDIRMOUNT}" || return 1
+
+    return 0
+}
+
+getWine_var() {
+    ENDWINEMOUNT=$1
+    WINEVAR=$2
+    WINEVALUE=$3
+
+    if test -e "${ENDWINEMOUNT}/autorun.cmd"
+    then
+	grep "^${WINEVAR}=" "${ENDWINEMOUNT}/autorun.cmd" | sed -e s+"^${WINEVAR}="+""+ | head -1
+    else
+	echo "${WINEVALUE}"
+    fi
+}
+
+play_wine() {
+    GAMENAME=$1
+    ENDWINEMOUNT="/var/run/wine/${GAMENAME}"
+
+    mount_wine   "${GAMENAME}" "wine" play || return 1
+    WINE_CMD=$(getWine_var "${ENDWINEMOUNT}" "CMD" "explorer")
+    WINE_DIR=$(getWine_var "${ENDWINEMOUNT}" "DIR" "")
+    (cd "${ENDWINEMOUNT}/${WINE_DIR}" && WINEPREFIX=${ENDWINEMOUNT} wine ${WINE_CMD})
+    unmount_wine "${GAMENAME}" "wine" play || return 1
+}
+
+trick_wine() {
+    GAMENAME=$1
+    TRICK=$2
+    ENDWINEMOUNT="/var/run/wine/${GAMENAME}"
+
+    mount_wine   "${GAMENAME}" "wine" install || return 1
+    WINEPREFIX=${ENDWINEMOUNT} winetricks "${TRICK}"
+    unmount_wine "${GAMENAME}" "wine" install || return 1
+}
+
+play_autonomous() {
+    GAMENAME=$1
+    # TODO
+}
+
+play_iso() {
+    GAMENAME=$1
+    # TODO
+}
+
+play_exe() {
+    GAMENAME=$1
+    ENDWINEMOUNT="/var/run/wine/${GAMENAME}"
+    GAMEDIR="/userdata/roms/windows/${GAMENAME}"
+
+    mount_wine   "${GAMENAME}" "exe" play || return 1
+    WINEPREFIX=${ENDWINEMOUNT} wine "${GAMEDIR}"
+    unmount_wine "${GAMENAME}" "exe" play || return 1
+}
+
+play_squashfs() {
+    GAMENAME=$1
+    ENDWINEMOUNT="/var/run/wine/${GAMENAME}"
+    GAMEDIR="/userdata/roms/windows/${GAMENAME}"
+
+    mount_wine   "${GAMENAME}" "squashfs" play || return 1
+    WINE_CMD=$(getWine_var "${ENDWINEMOUNT}" "CMD" "explorer")
+    WINE_DIR=$(getWine_var "${ENDWINEMOUNT}" "DIR" "")
+    (cd "${ENDWINEMOUNT}/${WINE_DIR}" && WINEPREFIX=${ENDWINEMOUNT} wine ${WINE_CMD})
+    unmount_wine "${GAMENAME}" "squashfs" play || return 1
+}
+
+install_exe() {
+    GAMENAME=$1
+    ENDWINEMOUNT="/var/run/wine/${GAMENAME}"
+    INSTALLERFILE="/userdata/roms/windows_installers/${GAMENAME}"
+
+    mount_wine   "${GAMENAME}" "exe" install || return 1
+    WINEPREFIX=${ENDWINEMOUNT} wine "${INSTALLERFILE}"
+    unmount_wine "${GAMENAME}" "exe" install || return 1
+}
+
+install_wine() {
+    GAMENAME=$1
+    ENDWINEMOUNT="/var/run/wine/${GAMENAME}"
+
+    mount_wine   "${GAMENAME}" "wine" install || return 1
+    WINEPREFIX=${ENDWINEMOUNT} wine explorer
+    unmount_wine "${GAMENAME}" "wine" install || return 1
+}
+
+install_iso() {
+    GAMENAME=$1
+    GAMEISOMOUNT="/var/run/wine/${GAMENAME}.cdrom"
+    INSTALLERISO="/userdata/roms/windows_installers/${GAMENAME}"
+    ENDWINEMOUNT="/var/run/wine/${GAMENAME}"
+
+    mkdir -p "${GAMEISOMOUNT}" || return 1
+    if ! mount -t iso9660 "${INSTALLERISO}" "${GAMEISOMOUNT}"
+    then
+	rmdir "${GAMEISOMOUNT}"
+	return 1
+    fi
+
+    if ! mount_wine   "${GAMENAME}" "iso" install
+    then
+	umount "${GAMEISOMOUNT}"
+	return 1
+    fi
+    if ln -sf "${GAMEISOMOUNT}" "${ENDWINEMOUNT}/dosdevices/d:"
+    then
+	WINEPREFIX=${ENDWINEMOUNT} wine explorer "d:"
+	rm "${ENDWINEMOUNT}/dosdevices/d:"
+    fi
+
+    # try to clean the cdrom
+    umount "${GAMEISOMOUNT}"
+    rmdir "${GAMEISOMOUNT}"
+
+    unmount_wine "${GAMENAME}" "iso" install || return 1
+}
+
+wine2squashfs() {
+    GAMENAME=$1
+    SQUASHFULL=$2
+
+    GAMEDIR="/userdata/roms/windows/${GAMENAME}"
+    SQUASHFSFILE="/userdata/roms/windows/${GAMENAME}.squashfs"
+    
+    # not full
+    if test "${SQUASHFULL}" = 0
+    then
+	mksquashfs "${GAMEDIR}" "${SQUASHFSFILE}" || return 1
+	return 0
+    fi
+
+    # full
+    ENDWINEMOUNT="/var/run/wine/${GAMENAME}"
+    mount_wine "${GAMENAME}" "wine" squashfs || return 1
+    if ! mksquashfs "${ENDWINEMOUNT}" "${SQUASHFSFILE}"
+    then
+	unmount_wine "${GAMENAME}" "wine" play
+	return 1
+    fi
+    unmount_wine "${GAMENAME}" "wine" play || return 1
+}
+
+clean() {
+    unclutter-remote -h
+    # TODO : unmount always, trap, later
+}
+
+# show the mouse
+unclutter-remote -s
+trap "unclutter-remote -h" INT QUIT TERM
+
+# create the base image if it doesn't exit
+createLastBaseImage || (clean; exit 1)
+
+case "${ACTION}" in
+    "play")
+	GAMENAME=$1
+	GAMEEXT=$(echo "${GAMENAME}" | sed -e s+"^.*\.\([^\.]*\)$"+"\1"+)
+	case "${GAMEEXT}" in
+	    "wine")
+		play_wine "${GAMENAME}" || (clean; exit 1)
+		;;
+	    "autonomous")
+		play_autonomous "${GAMENAME}" || (clean; exit 1)
+		;;
+	    "exe")
+		play_exe "${GAMENAME}" || (clean; exit 1)
+		;;
+	    "iso")
+		play_iso "${GAMENAME}" || (clean; exit 1)
+		;;
+	    "squashfs")
+		play_squashfs "${GAMENAME}" || (clean; exit 1)
+		;;
+	    *)
+		echo "unknown extension ${GAMEEXT}" >&2
+		(clean; exit 1)
+	esac
+	;;
+    "install")
+	GAMENAME=$1
+	GAMEEXT=$(echo "${GAMENAME}" | sed -e s+"^.*\.\([^\.]*\)$"+"\1"+)
+	case "${GAMEEXT}" in
+	    "exe")
+		install_exe "${GAMENAME}" || (clean; exit 1)
+		;;
+	    "iso")
+		install_iso "${GAMENAME}" || (clean; exit 1)
+		;;
+	    "wine")
+		install_wine "${GAMENAME}" || (clean; exit 1)
+		;;
+
+	    *)
+		echo "unknown extension ${GAMEEXT}" >&2
+		(clean; exit 1)
+	esac
+	;;
+    "tricks")
+	GAMENAME=$1
+	TRICK=$2
+	GAMEEXT=$(echo "${GAMENAME}" | sed -e s+"^.*\.\([^\.]*\)$"+"\1"+)
+	case "${GAMEEXT}" in
+	    "wine")
+		trick_wine "${GAMENAME}" "${TRICK}" || (clean; exit 1)
+		;;
+	esac
+	;;
+    "wine2squashfs")
+	GAMENAME=$1
+	wine2squashfs "${GAMENAME}" 0 || exit 1
+	;;
+    "wine2fullsquashfs")
+	GAMENAME=$1
+	wine2squashfs "${GAMENAME}" 1 || exit 1
+	;;
+    *)
+	echo "unknown action ${ACTION}" >&2
+	usage "${0}"
+	(clean; exit 1)
+esac
+exit 0
+
+# TODO : winetricks HS, later
+# TODO : baseimage HS, later, to be confirmed
+# TODO : .cache for wget files
