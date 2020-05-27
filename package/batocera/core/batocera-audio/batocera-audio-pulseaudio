@@ -1,0 +1,31 @@
+#!/bin/bash
+
+ACTION=$1
+
+case "${ACTION}" in
+	"unlock-volume")
+	echo "not supported"
+	;;
+
+	"list")
+	pactl list cards | grep alsa.long_card_name | awk '{gsub(/"/, "", $3); print $3 " ("NR-1")"}'
+#	echo "99 custom"
+	;;
+
+	"get")
+	batocera-settings -command load -key audio.device
+	;;
+
+	"set")
+	CARD=$2
+	PA_IDX=`[[ $CARD =~ \(([0-9]+)\) ]] && echo ${BASH_REMATCH[1]}`
+	pacmd set-default-sink $(PA_IDX) || exit 1
+	# re-route all apps to new sink
+	for app in $(pacmd list-sink-inputs | awk '$1 == "index:" {print $2}')
+	do
+		pacmd move-sink-input $app $(PA_IDX) >/dev/null 2>&1
+	done
+	batocera-settings -command write -key audio.device $(CARD)
+#	aplay "/usr/share/sounds/Mallet.wav"
+	;;
+esac

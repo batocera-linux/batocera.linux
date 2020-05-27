@@ -1,0 +1,33 @@
+config BR2_PACKAGE_BATOCERA_AUDIO
+	bool "alsa-plugins"
+	depends on BR2_PACKAGE_ALSA_LIB
+	select BR2_PACKAGE_PULSEAUDIO
+	select BR2_PACKAGE_ALSA_PLUGINS
+	help
+	  Audio support and scripts for batocera.linux
+
+choice
+	prompt "audio type"
+	default BR2_PACKAGE_BATOCERA_AUDIO_PULSEAUDIO
+	help
+	  Select batocera.linux audio backend
+
+config BR2_PACKAGE_BATOCERA_AUDIO_PULSEAUDIO
+	bool "batocera-audio-pulseaudio"
+
+config BR2_PACKAGE_BATOCERA_AUDIO_NONE
+	bool "pure alsa"
+
+config BR2_PACKAGE_BATOCERA_AUDIO_DMIX
+	bool "alsa + dmix"
+
+config BR2_PACKAGE_BATOCERA_AUDIO_RPI
+	bool "alsa for rpi"
+
+config BR2_PACKAGE_BATOCERA_AUDIO_ODROIDGOA
+	bool "alsa for odroidgoa"
+
+config BR2_PACKAGE_BATOCERA_AUDIO_VIM3
+	bool "alsa for vim3"
+
+endchoice

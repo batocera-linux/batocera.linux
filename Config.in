@@ -8,6 +8,7 @@ menu "System"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/core/batocera-splash/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/core/batocera-scripts/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/core/batocera-image/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/core/batocera-audio/Config.in"
 
   menu "Boot"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/boot/batocera-initramfs/Config.in"
@@ -258,6 +259,7 @@ menu "Libraries"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/python-evdev/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/libglvnd/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/librga/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/alsa-plugins/Config.in"
 endmenu
 
 endmenu
