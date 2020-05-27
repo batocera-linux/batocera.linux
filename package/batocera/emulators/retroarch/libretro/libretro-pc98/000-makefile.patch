@@ -1,18 +1,25 @@
 diff --git a/sdl2/Makefile.libretro b/sdl2/Makefile.libretro
-index 3174232..d875921 100755
+index 3174232..5895023 100755
 --- a/sdl2/Makefile.libretro
 +++ b/sdl2/Makefile.libretro
-@@ -92,6 +92,16 @@ else ifneq (,$(findstring rpi,$(platform)))
+@@ -92,6 +92,23 @@ else ifneq (,$(findstring rpi,$(platform)))
  		CFLAGS += -mcpu=cortex-a72 -fdata-sections -ffunction-sections -Wl,--gc-sections -fmerge-all-constants
  	endif
  
++# ROCKPRO64
++else ifneq (,$(findstring RK3399,$(platform)))
++	TARGET := $(TARGET_NAME)_libretro.so
++	fpic := -fPIC
++	SHARED := -shared -Wl,-version-script=link.T
++	CFLAGS += -fomit-frame-pointer -ffast-math -DARM -mtune=cortex-a72.cortex-a53
++	CPUFLAGS += -march=armv8-a+crc -mfloat-abi=hard -mfpu=neon-fp-armv8 -mtune=cortex-a72.cortex-a53
++
 +# ODROIDN2 / VIM3
 +else ifneq (,$(findstring CortexA73_G12B,$(platform)))
 +	TARGET := $(TARGET_NAME)_libretro.so
 +	fpic := -fPIC
 +	SHARED := -shared -Wl,-version-script=link.T
 +	ARCHS = arm64
-+
 +	CFLAGS += -fomit-frame-pointer -ffast-math -DARM
 +	CPUFLAGS += -march=armv8-a+crc -mfpu=neon-fp-armv8 -mcpu=cortex-a73 -mtune=cortex-a73.cortex-a53
 +
