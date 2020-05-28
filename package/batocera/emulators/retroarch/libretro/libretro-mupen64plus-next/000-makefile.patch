@@ -1,7 +1,16 @@
 diff --git a/Makefile b/Makefile
-index 70db857..e3f9413 100644
+index 70db857..840d4fe 100644
 --- a/Makefile
 +++ b/Makefile
+@@ -185,7 +185,7 @@ else ifneq (,$(findstring odroid64,$(platform)))
+    TARGET := $(TARGET_NAME)_libretro.so
+    LDFLAGS += -shared -Wl,--version-script=$(LIBRETRO_DIR)/link.T -Wl,--no-undefined
+    BOARD ?= $(shell cat /proc/cpuinfo | grep -i odroid | awk '{print $$3}')
+-   GLES = 1
++   GLES3 = 1
+    GL_LIB := -lGLESv2
+    WITH_DYNAREC := aarch64
+    ifneq (,$(findstring C2,$(BOARD)))
 @@ -222,6 +222,9 @@ else ifneq (,$(findstring odroid,$(platform)))
        else
           CPUFLAGS += -mcpu=cortex-a9 -mfpu=neon

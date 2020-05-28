@@ -32,10 +32,10 @@ index bfc5a47..f986efe 100644
 +   ifneq (,$(findstring n2,$(platform)))
 +      GLES = 1
 +      GL_LIB := -lGLESv2
-+      CPUFLAGS += -DNO_ASM -DARM -D__arm__ -DARM_ASM -D__NEON_OPT -DNOSSE -DARM_FIX
++      CPUFLAGS += -DNO_ASM -DARM -DARM_ASM -DDONT_WANT_ARM_OPTIMIZATIONS -DARM_FIX -DCLASSIC -DARM64
 +      HAVE_NEON = 1
 +      WITH_DYNAREC=aarch64
-+      CPUFLAGS += -march=armv8-a+crc -mcpu=cortex-a73 -mtune=cortex-a73.cortex-a53
++      CPUFLAGS += -D__NEON_OPT -march=armv8-a+crc -mcpu=cortex-a73 -mtune=cortex-a73.cortex-a53
 +   endif
 +   
     # ODROIDs
