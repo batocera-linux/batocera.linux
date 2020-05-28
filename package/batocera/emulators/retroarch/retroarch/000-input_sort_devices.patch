@@ -1,8 +1,8 @@
 diff --git a/input/drivers_joypad/udev_joypad.c b/input/drivers_joypad/udev_joypad.c
-index 182fc034a0..415b3b7599 100644
+index e60a8b2..03ba777 100644
 --- a/input/drivers_joypad/udev_joypad.c
 +++ b/input/drivers_joypad/udev_joypad.c
-@@ -540,6 +540,14 @@ static void udev_joypad_poll(void)
+@@ -542,6 +542,14 @@ static void udev_joypad_poll(void)
     }
  }
  
@@ -17,7 +17,7 @@ index 182fc034a0..415b3b7599 100644
  static bool udev_joypad_init(void *data)
  {
     unsigned i;
-@@ -574,13 +582,33 @@ static bool udev_joypad_init(void *data)
+@@ -576,12 +584,32 @@ static bool udev_joypad_init(void *data)
     udev_enumerate_scan_devices(enumerate);
     devs = udev_enumerate_get_list_entry(enumerate);
  
@@ -28,7 +28,6 @@ index 182fc034a0..415b3b7599 100644
        struct udev_device  *dev = udev_device_new_from_syspath(udev_joypad_fd, name);
        const char      *devnode = udev_device_get_devnode(dev);
  
--      if (devnode != NULL)
 +      if (devnode != NULL) {
 +         sorted[sorted_count].devnode = devnode;
 +         sorted[sorted_count].item = item;
@@ -49,7 +48,6 @@ index 182fc034a0..415b3b7599 100644
 +      struct udev_device  *dev = udev_device_new_from_syspath(udev_joypad_fd, name);
 +      const char      *devnode = udev_device_get_devnode(dev);
 +
-+      if (devnode)
+       if (devnode)
           udev_check_device(dev, devnode);
        udev_device_unref(dev);
-    }
