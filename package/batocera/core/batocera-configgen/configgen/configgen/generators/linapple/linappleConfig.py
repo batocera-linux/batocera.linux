@@ -5,7 +5,7 @@ import os
 from Emulator import Emulator
 from settings.unixSettings import UnixSettings
 
-def generateLinappleConfig(rom, playersControllers):
+def generateLinappleConfig(rom, playersControllers, gameResolution):
     # conf file
     try:
         linappleConfig = UnixSettings(batoceraFiles.linappleConfigFile, separator=' ')
@@ -199,5 +199,5 @@ def generateLinappleConfig(rom, playersControllers):
     # using scanline video effects.
     #
     # Default is 384.
-    linappleConfig.save('Screen Width',  '560')
-    linappleConfig.save('Screen Height', '384')
+    linappleConfig.save('Screen Width',  gameResolution["width"])
+    linappleConfig.save('Screen Height', gameResolution["height"])
