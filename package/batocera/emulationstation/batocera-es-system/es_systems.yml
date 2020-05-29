@@ -37,7 +37,7 @@ c128:
   platform:   c64
   emulators:
     vice:
-      x128:     { requireAnyOf: [BR2_PACKAGE_BATOCERA_CORES_EXPERIMENTAL] }
+      x128:     { requireAnyOf: [BR2_PACKAGE_VICE] }
 
 c20:
   name:       Commodore VIC-20
@@ -48,7 +48,7 @@ c20:
   platform:   c64
   emulators:
     vice:
-      xvic:     { requireAnyOf: [BR2_PACKAGE_BATOCERA_CORES_EXPERIMENTAL] }
+      xvic:     { requireAnyOf: [BR2_PACKAGE_VICE] }
 
 amiga500:
   name:       Amiga OCS/ECS
