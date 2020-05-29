@@ -1,14 +1,18 @@
 config BR2_PACKAGE_BATOCERA_AUDIO
 	bool "alsa-plugins"
 	depends on BR2_PACKAGE_ALSA_LIB
-	select BR2_PACKAGE_PULSEAUDIO
-	select BR2_PACKAGE_ALSA_PLUGINS
+	select BR2_PACKAGE_BLUEZ_ALSA
+	select BR2_PACKAGE_ALSA_UTILS
+	select BR2_PACKAGE_ALSA_UTILS_AMIXER
+	select BR2_PACKAGE_ALSA_UTILS_APLAY
+	select BR2_PACKAGE_PULSEAUDIO   if BR2_PACKAGE_BATOCERA_AUDIO_PULSEAUDIO
+	select BR2_PACKAGE_ALSA_PLUGINS if BR2_PACKAGE_BATOCERA_AUDIO_PULSEAUDIO
 	help
 	  Audio support and scripts for batocera.linux
 
 choice
 	prompt "audio type"
-	default BR2_PACKAGE_BATOCERA_AUDIO_PULSEAUDIO
+	default BR2_PACKAGE_BATOCERA_AUDIO_NONE
 	help
 	  Select batocera.linux audio backend
 

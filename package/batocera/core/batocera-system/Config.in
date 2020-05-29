@@ -67,7 +67,6 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
     select BR2_PACKAGE_XARCADE2JSTICK                    # keyboard events of the Xarcade Tankstick
     select BR2_PACKAGE_UTIL_LINUX_RFKILL                 # bluetooth
     select BR2_PACKAGE_UTIL_LINUX_LIBMOUNT               # for util-linux compilation to work (so, may be removed in the future)
-    select BR2_PACKAGE_BLUEZ_ALSA                        # bluetooth audio devices
     select BR2_PACKAGE_DBUS_PYTHON                       # required for bluetooth scripts
     select BR2_PACKAGE_WIRINGPI                          if BR2_PACKAGE_BATOCERA_TARGET_RPI_ANY || BR2_PACKAGE_BATOCERA_TARGET_RPI4 # gpio
     select BR2_PACKAGE_PARTED                            # partition management (for the first boot)
@@ -141,11 +140,6 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
     select BR2_PACKAGE_GPTFDISK_SGDISK                   # fs resize
     select BR2_PACKAGE_E2FSPROGS                         # fs resize
     select BR2_PACKAGE_E2FSPROGS_RESIZE2FS               # fs resize
-
-    # alsa utils
-    select BR2_PACKAGE_ALSA_UTILS
-    select BR2_PACKAGE_ALSA_UTILS_AMIXER
-    select BR2_PACKAGE_ALSA_UTILS_APLAY
 
     # irq balancing
     select BR2_PACKAGE_IRQBALANCE
