@@ -25,7 +25,7 @@ class LinappleGenerator(Generator):
             copyfile(batoceraFiles.linappleMasterDSK, batoceraFiles.linappleMasterDSKFile)
 
         # Configuration
-        linappleConfig.generateLinappleConfig(rom, playersControllers)
+        linappleConfig.generateLinappleConfig(rom, playersControllers, gameResolution)
 
         commandArray = [ batoceraFiles.batoceraBins[system.config['emulator']], "-f", "--autoboot" ]
 

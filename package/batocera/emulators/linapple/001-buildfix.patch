@@ -1,0 +1,54 @@
+diff --git a/Makefile b/Makefile
+index a4712b7..3f0fb33 100644
+--- a/Makefile
++++ b/Makefile
+@@ -37,6 +37,7 @@ OBJEXT      := o
+ IMGEXT      := png
+ XPMEXT      := xpm
+ SYMEXT      := SYM
++HAVE_X11	 := 0
+ 
+ BUILDDIR    := build/$(OBJDIR)
+ TARGETDIR   := build/$(BINDIR)
+@@ -70,10 +71,13 @@ CFLAGS += $(CURL_CFLAGS)
+ # Do not complain about XPMs
+ CFLAGS += -Wno-write-strings
+ 
+-LIB    := $(SDL_LIBS) $(CURL_LIBS) -lz -lzip -pthread -lX11
++LIB    := $(SDL_LIBS) $(CURL_LIBS) -lz -lzip -pthread
+ INC    := -I$(INCDIR) -I/usr/local/include
+ INCDEP := -I$(INCDIR)
+ 
++ifeq ($(HAVE_X11), 1)
++	LIB += -lX11
++endif
+ #------------------------------------------------------------------------------
+ #DO NOT EDIT BELOW THIS LINE
+ #------------------------------------------------------------------------------
+diff --git a/src/Applewin.cpp b/src/Applewin.cpp
+index 71a3fa0..48165ae 100644
+--- a/src/Applewin.cpp
++++ b/src/Applewin.cpp
+@@ -38,7 +38,9 @@ By Mark Ormond.
+ #include <cassert>
+ #include <string>
+ #include <vector>
++#ifdef HAVE_X11
+ #include <X11/Xlib.h>
++#endif
+ #include "Log.h"
+ #include "MouseInterface.h"
+ 
+@@ -1012,9 +1014,10 @@ int main(int argc, char *argv[])
+                                      {"help",     0,                 0, 0},
+                                      {"state",    required_argument, 0, 0},
+                                      {0,          0,                 0, 0}};
+-
++  #ifdef HAVE_X11
+   XInitThreads();
+-
++  #endif
++  
+   while ((opt = getopt_long(argc, argv, "1:2:abfhlr:", longopts, &optind)) != -1) {
+     switch (opt) {
+       case '1':
