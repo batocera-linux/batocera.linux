@@ -1,0 +1,125 @@
+#!/bin/bash
+# Batocera poor man's makepkg
+# lightweight pacman package creations
+# @lbrpdx on Batocera forum and Discord
+# 
+# 20200528 - Initial revision
+# 
+INFO=.PKGINFO
+BATOEXEC=.BATOEXEC
+BATOEXEC_PATH=./userdata/system/pacman/batoexec/
+COMMENT_CHAR_SEARCH="[#|;]"
+COMMENT_CHAR="#"
+
+### These parameters need to be fulfilled:
+# pkgname = bezels-default-glazed
+# pkgver = 1.0.0-1
+# pkgdesc = Batocera bezels with a CRT effect 
+# arch = any
+### These will be added automaically
+# packager = batocera-makepkg
+# size = 165123000 # size of the package
+# builddate = 1590539371 # epoch of creation
+# url = http://batocera.org
+
+##### Function Calls #####
+
+function get_config() {
+	# Search for key.value and #key.value for only one occurrence
+	# If the character is the COMMENT CHAR then set value to it
+	# Otherwise strip till the equal-char to obtain value
+	local val
+	local ret
+	val="$(grep -E -m1 "^\s*$1\s*=" $INFO)"
+	ret=$?
+	if [[ $ret -eq 1 ]]; then 
+		val="$(grep -E -m1 "^$COMMENT_CHAR_SEARCH\s*$1\s*=" $INFO)"
+		ret=$?
+		[[ $ret -eq 0 ]] && val=$COMMENT_CHAR
+	else
+		# Maybe here some finetuning to catch key.value = ENTRY without blanks
+		val="${val#*=}"
+	fi
+	echo "$val" | tr -d [[:blank:]]
+	return $ret
+}
+
+function check_argument() {
+	vinput="$1"
+	val="$(get_config $vinput)"
+	ret=$?
+	[[ -z "$val" && $ret -eq 1 ]] && echo "ERROR: '$vinput' not found - you need to manually fill it" >&2 && exit 1
+	[[ -z "$val" && $ret -eq 0 ]] && echo "ERROR: '$vinput' is empty - you need to manually fill it" >&2 && exit 1
+	[[ "$val" == "$COMMENT_CHAR" ]] && echo "ERROR: '$vinput' is commented with $COMMENT_CHAR!" >&2 && exit 1
+}
+
+function set_config() {
+	# search for first key.name at beginning of line and write value to it
+	sed -i "1,/^\(\s*$1\s*=\).*/s//\1 $2/" "$INFO"
+}
+
+function uncomment_config() {
+	# search for first Comment Char at beginning of line and remove it
+	sed -i "1,/^$COMMENT_CHAR_SEARCH\(\s*$1\)/s//\1/" "$INFO"
+}
+
+function write_argument() {
+	keyvalue="$1"
+	newvalue="$2"
+	val="$(get_config $keyvalue)"
+	ret=$?
+	if [[ "$val" == "$COMMENT_CHAR" ]]; then
+		uncomment_config "$keyvalue"
+		set_config "$keyvalue" "$newvalue"
+	elif [[ -z "$val" && $ret -eq 1 ]]; then
+		# add this new parameter
+		echo "$keyvalue = $newvalue" >> "$INFO"
+	elif [[ "$val" != "$newvalue" ]]; then
+		set_config "$keyvalue" "$newvalue"
+	fi
+}
+
+function sanitize_info() {
+	TMPFILE=$(mktemp)
+	sed -e 's/[[:blank:]]*$//' "$INFO" > "$TMPFILE"
+	mv -f "$TMPFILE" "$INFO"
+}
+
+function make_pkg() {
+	pk=../"$1".pkg.tar.xz
+	[[ -f "$pk" ]] && echo "ERROR: file $pk already exists. Aborting." && exit 1
+	echo "Creating package $pk ..."
+	tar -cf - .PKGINFO * | xz -c -z - > "$pk"
+	ret=$?
+	[[ $ret -eq 0 ]] && echo "SUCCESS: package $pk correctly generated" && exit 0
+}
+
+function main() {
+	    # New PKGINFO file passed as an argument
+	    CONFIGFILE="$1"
+	    [[ -f "$CONFIGFILE" ]] && cp "$CONFIGFILE" "$INFO"
+	    [[ -f "$INFO" ]] || { echo "ERROR: File not found: $INFO or no argument given." >&2; exit 1; }
+
+	    for mandatory in pkgname pkgver pkgdesc arch ; do
+		    check_argument "$mandatory"
+	    done
+	    # Now the parameters to add 
+	    write_argument packager batocera-makepkg
+	    write_argument url http://batocera.org
+	    sz=$(du -s . | cut -f1)
+	    write_argument size $(expr $sz \* 1024)
+	    write_argument builddate $(date +%s)
+	    # Finally, create the actual package
+	    sanitize_info
+	    if [[ -f "$BATOEXEC" ]]; then
+		    mkdir -p "$BATOEXEC_PATH"
+		    cp -f "$BATOEXEC" "$BATOEXEC_PATH"/"$(get_config pkgname)"
+	    fi
+	    make_pkg "$(get_config pkgname)-$(get_config pkgver)-$(get_config arch)"
+
+}
+
+# calling main function
+main "${@}"
+
+
