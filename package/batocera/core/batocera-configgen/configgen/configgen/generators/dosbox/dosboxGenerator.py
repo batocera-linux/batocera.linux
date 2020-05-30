@@ -19,7 +19,8 @@ class DosBoxGenerator(Generator):
         batFile = gameDir + "/dosbox.bat"
         gameConfFile = gameDir + "/dosbox.cfg"
            
-        commandArray = [batoceraFiles.batoceraBins[system.config['emulator']], 
+        commandArray = [batoceraFiles.batoceraBins[system.config['emulator']],
+			"-fullscreen",
 			"-userconf", 
 			"-exit", 
 			"""{}""".format(batFile),
