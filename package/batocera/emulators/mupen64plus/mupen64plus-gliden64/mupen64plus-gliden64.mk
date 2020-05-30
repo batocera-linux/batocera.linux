@@ -17,8 +17,6 @@ endif
 
 ifeq ($(BR2_arm)$(BR2_aarch64),y)
 	MUPEN64PLUS_GLIDEN64_CONF_OPTS += -DEGL=ON
-else
-	MUPEN64PLUS_GLIDEN64_CONF_OPTS += -DX86_OPT=ON
 endif
 
 ifeq ($(BR2_ARM_CPU_HAS_NEON),y)
