@@ -78,7 +78,7 @@ ifeq ($(BR2_PACKAGE_XSERVER_XORG_SERVER),y)
 endif
 
 ifeq ($(BR2_PACKAGE_WINE),y)
-	install -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-scripts/scripts/batocera-wine          $(TARGET_DIR)/usr/bin/
+#	install -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-scripts/scripts/batocera-wine          $(TARGET_DIR)/usr/bin/
 endif
 
 $(eval $(generic-package))
