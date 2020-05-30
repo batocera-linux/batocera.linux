@@ -1324,6 +1324,9 @@ ports:
 
 windows:
   name:       Windows
+  manufacturer: Microsoft
+  release: 1992
+  hardware: pc
   extensions: [exe, iso, wine, squashfs]
   platform:   pc
   theme:      pc
@@ -1333,6 +1336,9 @@ windows:
 
 windows_installers:
   name:       Windows installers
+  manufacturer: Microsoft
+  release: 1992
+  hardware: pc
   extensions: [exe, iso, wine]
   platform:   pc
   theme:      pc
