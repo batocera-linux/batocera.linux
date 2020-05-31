@@ -74,8 +74,6 @@ BR2_TARGET_UBOOT_CUSTOM_VERSION=y
 BR2_TARGET_UBOOT_CUSTOM_VERSION_VALUE="2020.07-rc2"
 BR2_TARGET_UBOOT_BOARDNAME="odroid-n2"
 BR2_PACKAGE_UBOOT_AMLOGIC=y
-BR2_TARGET_UBOOT_BOOT_SCRIPT=y
-BR2_TARGET_UBOOT_BOOT_SCRIPT_SOURCE="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/odroidn2/boot/boot.cmd"
 
 # choices can be put in _defconfig files only
 # BR2_PACKAGE_BATOCERA_SPLASH_FFPLAY : splash must not be running while es is trying to start otherwise graphics won't initialize
