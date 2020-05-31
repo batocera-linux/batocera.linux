@@ -322,10 +322,10 @@ config BR2_PACKAGE_BATOCERA_ALL_SYSTEMS
                                                    !BR2_PACKAGE_BATOCERA_TARGET_VIM3
                                                    # dreamcast
 
-        select BR2_PACKAGE_PPSSPP               if !BR2_PACKAGE_BATOCERA_TARGET_RPI1 && \
-                                                   !BR2_PACKAGE_BATOCERA_TARGET_RPI2 && \
-                                                   !BR2_PACKAGE_BATOCERA_TARGET_S912
-                                                   # psp
+        select BR2_PACKAGE_PPSSPP               if !BR2_PACKAGE_BATOCERA_TARGET_RPI_ANY && \
+	                                           !BR2_PACKAGE_BATOCERA_TARGET_S912
+        select BR2_PACKAGE_PPSSPP15             if BR2_PACKAGE_BATOCERA_TARGET_RPI3
+						# psp
 
         select BR2_PACKAGE_AMIBERRY             if BR2_PACKAGE_BATOCERA_TARGET_RPI_ANY     || \
                                                    BR2_PACKAGE_BATOCERA_TARGET_RPI4        || \
