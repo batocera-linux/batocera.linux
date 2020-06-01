@@ -17,6 +17,7 @@ config BR2_PACKAGE_BATOCERA_EMULATIONSTATION
 	select BR2_PACKAGE_VLC
 	select BR2_PACKAGE_OMXPLAYER if BR2_PACKAGE_RPI_USERLAND
 	select BR2_PACKAGE_RAPIDJSON
+	select BR2_PACKAGE_POPPLER
         help
           A multi emulator frontend.
 
