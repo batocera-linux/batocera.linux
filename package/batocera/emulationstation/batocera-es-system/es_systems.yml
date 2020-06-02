@@ -1276,6 +1276,17 @@ thomson:
     libretro:
       theodore:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_THEODORE] }
 
+pc88:
+  name:       NEC PC-8800
+  manufacturer: NEC
+  release: 1981
+  hardware: computer
+  extensions: [d88, u88, m3u]
+  platform:   pc88
+  emulators:
+    libretro:
+      quasi88:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PC88] }
+
 pc98:
   name:       NEC PC-9800
   manufacturer: NEC

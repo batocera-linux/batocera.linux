@@ -473,6 +473,7 @@ config BR2_PACKAGE_BATOCERA_RETROARCH
         select BR2_PACKAGE_LIBRETRO_SNES9X            # ALL
         select BR2_PACKAGE_LIBRETRO_SNES9X_NEXT       # ALL
         select BR2_PACKAGE_LIBRETRO_THEODORE          # ALL
+        select BR2_PACKAGE_LIBRETRO_PC88              # ALL
         select BR2_PACKAGE_LIBRETRO_PC98              # ALL
         select BR2_PACKAGE_LIBRETRO_MRBOOM            # ALL
         select BR2_PACKAGE_LIBRETRO_DOSBOX            if !BR2_PACKAGE_BATOCERA_TARGET_ROCK960 && \
