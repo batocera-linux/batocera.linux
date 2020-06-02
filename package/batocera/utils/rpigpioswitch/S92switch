@@ -44,7 +44,7 @@ case "$1" in
         if [ ! -z "$BTD_PID" ]; then
             kill $BTD_PID
             $RUN stop $powerswitch
-        elif test -e "/tmp/poweroff.please"; then
+        elif [ -e "/tmp/shutdown.please" -o -e "/tmp/poweroff.please" ]; then
             $RUN stop $powerswitch
         fi
     ;;
