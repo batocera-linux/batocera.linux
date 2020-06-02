@@ -13,6 +13,10 @@ for DIR in cheats \
            system/.config/lirc \
            system/bluetooth \
            system/configs \
+           system/pacman \
+           system/pacman/db \
+           system/pacman/pkg \
+           system/pacman/hooks \
            system/logs
 do
     if test ! -e "$OUT""/""$DIR"
@@ -34,6 +38,8 @@ for FILE in music bios extractions kodi saves screenshots \
             system/.kodi \
             system/configs/{shadersets,xarcade2jstick,amiberry,dosbox} \
             system/batocera.conf \
+            system/pacman/hooks/batocera-{install,uninstall}.hook \
+            system/pacman/pacman.conf \
             bios/mame2003
 do
     # not wanted for kodi

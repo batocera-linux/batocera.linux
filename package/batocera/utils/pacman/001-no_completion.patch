@@ -1,0 +1,38 @@
+--- pacman-5.2.1/scripts/Makefile.in	2019-11-01 00:57:41.000000000 +0000
++++ pacman-5.2.1_WIP/scripts/Makefile.in	2020-05-27 22:45:05.103938505 +0000
+@@ -914,6 +914,7 @@
+ install-exec-am: install-binSCRIPTS
+ 	@$(NORMAL_INSTALL)
+ 	$(MAKE) $(AM_MAKEFLAGS) install-exec-hook
++
+ install-html: install-html-recursive
+ 
+ install-html-am:
+@@ -1030,19 +1031,19 @@
+ 	$(AM_V_at)$(LN_S) $@ $(subst -wrapper,,$@)
+ 
+ install-data-local:
+-	$(MKDIR_P) $(DESTDIR)$(bashcompdir)
+-	$(INSTALL_DATA) completion/bash_completion $(DESTDIR)/$(bashcompdir)/pacman
+-	for completion in makepkg pacman-key; do \
+-	    $(LN_S) pacman $(DESTDIR)/$(bashcompdir)/$$completion; \
+-	done
+-	$(MKDIR_P) $(DESTDIR)$(datarootdir)/zsh/site-functions/
+-	$(INSTALL_DATA) completion/zsh_completion $(DESTDIR)$(datarootdir)/zsh/site-functions/_pacman
++#	$(MKDIR_P) $(DESTDIR)$(bashcompdir)
++#	$(INSTALL_DATA) completion/bash_completion $(DESTDIR)/$(bashcompdir)/pacman
++#	for completion in makepkg pacman-key; do \
++#	    $(LN_S) pacman $(DESTDIR)/$(bashcompdir)/$$completion; \
++#	done
++#	$(MKDIR_P) $(DESTDIR)$(datarootdir)/zsh/site-functions/
++#	$(INSTALL_DATA) completion/zsh_completion $(DESTDIR)$(datarootdir)/zsh/site-functions/_pacman
+ 
+ uninstall-local:
+ 	$(RM) $(DESTDIR)$(bashcompdir)/makepkg
+ 	$(RM) $(DESTDIR)$(bashcompdir)/pacman
+ 	$(RM) $(DESTDIR)$(bashcompdir)/pacman-key
+-	$(RM) $(DESTDIR)$(datarootdir)/zsh/site-functions/_pacman
++#	$(RM) $(DESTDIR)$(datarootdir)/zsh/site-functions/_pacman
+ 
+ install-exec-hook:
+ 	for wrapper in $(WRAPPER); do \

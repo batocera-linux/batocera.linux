@@ -1,0 +1,149 @@
+#!/usr/bin/env python
+# 
+# Parser for .BATOEXEC pacman packages 
+# @lbrpdx on Batocera Discord
+#
+# 20200528 - Initial revision (support for 'gamelist' and 'exec')
+#
+import os
+import sys
+import re
+import xml.etree.ElementTree as ET
+
+########
+# Parse the command file BATOEXEC
+# First line is "command = path_file_to_modify"
+# Rest of the file is depending on "command"
+def parse_batoexec(): 
+    if not os.path.isfile(BATOEXEC):
+        return ('noop', '' , '')
+    with open (BATOEXEC, 'r') as infile:
+        data=infile.readlines()
+    key, val = data[0].partition('=')[::2]
+    datastr = ''.join([str(el) for el in data[1:]])
+    return (key.strip(), val.strip(), datastr)
+
+#######
+# Add / Remove a <game> XML subtree
+# to a gamelist.xml file
+def gamelist_xml(gamelist, data, mode):
+    if (mode not in [ 'install',  'uninstall' ]):
+        print ("ERROR: BATOEXEC gamelist can only be call with 'install' or 'uninstall'")
+        return (1)
+    try:
+        tree = ET.ElementTree(ET.fromstring(data))
+    except:
+        print ("ERROR: bad XML format in " + BATOEXEC)
+        return (1)
+    if not os.path.isfile(gamelist):
+        freshgl = ET.Element("gameList")
+        freshtree = ET.ElementTree(freshgl)
+        freshtree.write(gamelist)
+    try:
+        gamelisttree = ET.parse(gamelist, ET.XMLParser(encoding='utf-8'))
+    except:
+        print ("ERROR: unable to parse gamelist file " + gamelist)
+        return (1)
+    # check new tree syntax (to avoid adding garbage)
+    newroot = tree.getroot()
+    if newroot.tag != 'game':
+        print ("ERROR: " + BATOEXEC + " gamefile expects a <game> root")
+        return (1)
+    cpath=''
+    for npath in newroot.findall('path'):
+        cpath=os.path.basename(npath.text)
+
+    # is the new ROM already in gamelist.xml?
+    gfound = False
+    gamelistroot=gamelisttree.getroot()
+    for ggame in gamelistroot.findall('game'):
+        for gpath in ggame.findall('path'):
+            if os.path.basename(gpath.text) == cpath:
+                gfound = True
+
+    if (mode in 'install'):
+        if (not gfound):
+            cursor = gamelisttree.getroot()
+            cursor.append(newroot)
+            print ('Adding ' + cpath + ' to ' + gamelist)
+            gamelisttree.write(open(gamelist, 'w'))
+        else:
+            print ('Entry for ' + cpath + ' already found in ' + gamelist)
+        return (0)
+    elif (mode in 'uninstall'):
+        if (gfound):
+            cursor=gamelisttree.getroot()
+            for ggame in cursor.findall('game'):
+                for gpath in ggame.findall('path'):
+                    if os.path.basename(gpath.text) == cpath:
+                        cursor.remove(ggame)
+                        print ('Removing ' + cpath + ' from ' + gamelist)
+            gamelisttree.write(open(gamelist, 'w'))
+        else:
+            print ('Entry for ' + cpath + ' already removed from ' + gamelist)
+        return (0)
+
+#######
+# Execute a command (shell, python... things that can
+# be called with a -c argument)
+def exec_cmd(base_cmd, data, mode):
+    if (mode not in [ 'install',  'uninstall' ]):
+        print ("ERROR: BATOEXEC exec can only be call with 'install' or 'uninstall'")
+        return (1)
+    if data:
+        if (mode in 'install'):
+            data = re.sub("\.UNINSTALL_START.*\.UNINSTALL_END", "", data, flags=re.S)
+            data = re.sub("\.INSTALL_START", "", data)
+            data = re.sub("\.INSTALL_END", "", data)
+        elif (mode in 'uninstall'):
+            data = re.sub("\.INSTALL_START.*\.INSTALL_END", "", data, flags=re.S)
+            data = re.sub("\.UNINSTALL_START", "", data)
+            data = re.sub("\.UNINSTALL_END", "", data)
+        clist = data.split('\n')
+        datastr = ';'.join([str(el) for el in clist])
+        datastr = re.sub(";{2,}", ';', datastr)
+        cmd_line = [ base_cmd + ' -c "' + datastr + '"' ]
+    else:
+        cmd_line = [ base_cmd ]
+    try:
+        os.system(cmd_line[0])
+    except:
+        print ("ERROR: " + BATOEXEC + " could not fork "+base_cmd)
+        return (1)
+    # Not sure if we want to return the return code of the script
+    # This might lead to unwanted error cases from Batoexec
+    return (0)
+
+########
+## main
+if __name__ == "__main__":
+    try:
+        mode = sys.argv[1]
+        BATOEXEC = '/'+sys.argv[2]
+    except:
+        print ("ERROR: batocera-pacman-batoexec [install | uninstall] [batoexec_file]")
+        exit (1)
+    
+    key, val, data=parse_batoexec()
+
+    if key == 'gamelist':
+        ret = gamelist_xml(val, data, mode)
+        if ret == 0:
+            exit (0)
+        else:
+            print ("ERROR while processing " + mode + " " + BATOEXEC)
+            exit (1)
+    elif key == 'exec':
+        ret = exec_cmd(val, data, mode)
+        if ret == 0:
+            exit (0)
+        else:
+            print ("ERROR while processing " + mode + " " + BATOEXEC)
+            exit (1)
+    elif key == 'noop':
+        # alright, nothing to do!
+        exit (0)
+    else:
+        print ("ERROR: function '" + key +"' not implemented yet")
+        exit (1)
+
