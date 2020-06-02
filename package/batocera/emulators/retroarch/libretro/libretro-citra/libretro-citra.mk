@@ -30,6 +30,9 @@ define LIBRETRO_CITRA_INSTALL_TARGET_CMDS
 
 	$(INSTALL) -D $(@D)/buildroot-build/externals/fmt/libfmt.so.5 \
 		$(TARGET_DIR)/usr/lib/
+
+	$(INSTALL) -D $(@D)/buildroot-build/externals/dynarmic/src/libdynarmic.so \
+		$(TARGET_DIR)/usr/lib/
 endef
 
 $(eval $(cmake-package))
