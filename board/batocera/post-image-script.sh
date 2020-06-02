@@ -193,6 +193,43 @@ case "${BATOCERA_TARGET}" in
 	sync || exit 1
 	;;
 
+	ODROIDN2)
+	# /boot
+	rm -rf "${BINARIES_DIR:?}/boot"          || exit 1
+	mkdir -p "${BINARIES_DIR}/boot/boot"     || exit 1
+	"${HOST_DIR}/bin/mkimage" -A arm64 -O linux -T kernel -C none -a 0x1080000 -e 0x1080000 -n 5.x -d "${BINARIES_DIR}/Image" "${BINARIES_DIR}/uImage" || exit 1
+	cp "${BINARIES_DIR}/uImage"                "${BINARIES_DIR}/boot/boot/linux"                || exit 1
+	cp "${BINARIES_DIR}/uInitrd"             "${BINARIES_DIR}/boot/boot/uInitrd"                || exit 1
+	cp "${BINARIES_DIR}/rootfs.squashfs"       "${BINARIES_DIR}/boot/boot/batocera.update"      || exit 1
+	cp "${BINARIES_DIR}/meson-g12b-odroid-n2.dtb"  "${BINARIES_DIR}/boot/boot/meson-g12b-odroid-n2.dtb" || exit 1
+	cp "${BINARIES_DIR}/batocera-boot.conf"    "${BINARIES_DIR}/boot/batocera-boot.conf"        || exit 1
+	cp "${BR2_EXTERNAL_BATOCERA_PATH}/board/batocera/odroidn2/boot/boot.ini"      "${BINARIES_DIR}/boot/boot.ini"                  || exit 1
+	cp -pr "${BINARIES_DIR}/tools"       "${BINARIES_DIR}/boot/"                || exit 1
+
+	# boot.tar.xz
+	echo "creating boot.tar.xz"
+	(cd "${BINARIES_DIR}/boot" && tar -I "xz -T0" -cf "${BATOCERA_BINARIES_DIR}/boot.tar.xz" boot.ini tools boot batocera-boot.conf) || exit 1
+
+	# blobs
+	for F in u-boot.bin
+	do
+		cp "${BINARIES_DIR}/${F}" "${BINARIES_DIR}/boot/${F}" || exit 1
+	done
+
+	# batocera.img
+	# rename the squashfs : the .update is the version that will be renamed at boot to replace the old version
+	mv "${BINARIES_DIR}/boot/boot/batocera.update" "${BINARIES_DIR}/boot/boot/batocera" || exit 1
+	GENIMAGE_TMP="${BUILD_DIR}/genimage.tmp"
+	BATOCERAIMG="${BATOCERA_BINARIES_DIR}/batocera.img"
+	rm -rf "${GENIMAGE_TMP}" || exit 1
+	cp "${BR2_EXTERNAL_BATOCERA_PATH}/board/batocera/odroidn2/genimage.cfg" "${BINARIES_DIR}" || exit 1
+	echo "generating image"
+	genimage --rootpath="${TARGET_DIR}" --inputpath="${BINARIES_DIR}/boot" --outputpath="${BATOCERA_BINARIES_DIR}" --config="${BINARIES_DIR}/genimage.cfg" --tmppath="${GENIMAGE_TMP}" || exit 1
+	rm -f "${BATOCERA_BINARIES_DIR}/boot.vfat" || exit 1
+	rm -f "${BATOCERA_BINARIES_DIR}/userdata.ext4" || exit 1
+	sync || exit 1
+	;;
+
 	C2)
 	# boot
 	rm -rf "${BINARIES_DIR:?}/boot"      || exit 1
@@ -341,6 +378,7 @@ case "${BATOCERA_TARGET}" in
 
 	ROCKPRO64)
 	# /boot
+	BOARD_DIR="${BR2_EXTERNAL_BATOCERA_PATH}/board/batocera/rockchip/rk3399/rockpro64"
 	rm -rf "${BINARIES_DIR:?}/boot"          || exit 1
 	mkdir -p "${BINARIES_DIR}/boot/boot"     || exit 1
 	mkdir -p "${BINARIES_DIR}/boot/extlinux" || exit 1
@@ -349,7 +387,7 @@ case "${BATOCERA_TARGET}" in
 	cp "${BINARIES_DIR}/rootfs.squashfs"       "${BINARIES_DIR}/boot/boot/batocera.update"      || exit 1
 	cp "${BINARIES_DIR}/rk3399-rockpro64.dtb"  "${BINARIES_DIR}/boot/boot/rk3399-rockpro64.dtb" || exit 1
 	cp "${BINARIES_DIR}/batocera-boot.conf"    "${BINARIES_DIR}/boot/batocera-boot.conf"        || exit 1
-	cp "${BR2_EXTERNAL_BATOCERA_PATH}/board/batocera/rockpro64/boot/extlinux.conf" "${BINARIES_DIR}/boot/extlinux"                   || exit 1
+	cp "${BOARD_DIR}/boot/extlinux.conf" "${BINARIES_DIR}/boot/extlinux"                   || exit 1
 	cp -pr "${BINARIES_DIR}/tools"       "${BINARIES_DIR}/boot/"                || exit 1
 
 	# boot.tar.xz
@@ -368,7 +406,7 @@ case "${BATOCERA_TARGET}" in
 	GENIMAGE_TMP="${BUILD_DIR}/genimage.tmp"
 	BATOCERAIMG="${BATOCERA_BINARIES_DIR}/batocera.img"
 	rm -rf "${GENIMAGE_TMP}" || exit 1
-	cp "${BR2_EXTERNAL_BATOCERA_PATH}/board/batocera/rockpro64/genimage.cfg" "${BINARIES_DIR}" || exit 1
+	cp "${BOARD_DIR}/genimage.cfg" "${BINARIES_DIR}" || exit 1
 	echo "generating image"
 	genimage --rootpath="${TARGET_DIR}" --inputpath="${BINARIES_DIR}/boot" --outputpath="${BATOCERA_BINARIES_DIR}" --config="${BINARIES_DIR}/genimage.cfg" --tmppath="${GENIMAGE_TMP}" || exit 1
 	rm -f "${BATOCERA_BINARIES_DIR}/boot.vfat" || exit 1
@@ -376,63 +414,28 @@ case "${BATOCERA_TARGET}" in
 	sync || exit 1
 	;;
 
-    ROCK960)
-    # /boot
-    rm -rf "${BINARIES_DIR:?}/boot"          || exit 1
-    mkdir -p "${BINARIES_DIR}/boot/boot"     || exit 1
-	mkdir -p "${BINARIES_DIR}/boot/extlinux" || exit 1
-    cp "${BINARIES_DIR}/Image"                 "${BINARIES_DIR}/boot/boot/linux"                || exit 1
-    cp "${BINARIES_DIR}/initrd.gz"             "${BINARIES_DIR}/boot/boot/initrd.gz"            || exit 1
-    cp "${BINARIES_DIR}/rootfs.squashfs"       "${BINARIES_DIR}/boot/boot/batocera.update"      || exit 1
-    cp "${BINARIES_DIR}/rk3399-rock960-ab.dtb"  "${BINARIES_DIR}/boot/boot/rk3399-rock960-ab.dtb" || exit 1
-    cp "${BINARIES_DIR}/batocera-boot.conf"    "${BINARIES_DIR}/boot/batocera-boot.conf"        || exit 1
-    cp "${BR2_EXTERNAL_BATOCERA_PATH}/board/batocera/rock960/boot/extlinux.conf" "${BINARIES_DIR}/boot/extlinux"                   || exit 1
-    cp -pr "${BINARIES_DIR}/tools"       "${BINARIES_DIR}/boot/"                || exit 1
-
-    # boot.tar.xz
-    echo "creating boot.tar.xz"
-    (cd "${BINARIES_DIR}/boot" && tar -I "xz -T0" -cf "${BATOCERA_BINARIES_DIR}/boot.tar.xz" extlinux tools boot batocera-boot.conf) || exit 1
-
-    # blobs
-    for F in idbloader.img trust.img uboot.img
-    do
-    cp "${BINARIES_DIR}/${F}" "${BINARIES_DIR}/boot/${F}" || exit 1
-    done
-
-    # batocera.img
-    # rename the squashfs : the .update is the version that will be renamed at boot to replace the old version
-    mv "${BINARIES_DIR}/boot/boot/batocera.update" "${BINARIES_DIR}/boot/boot/batocera" || exit 1
-    GENIMAGE_TMP="${BUILD_DIR}/genimage.tmp"
-    BATOCERAIMG="${BATOCERA_BINARIES_DIR}/batocera.img"
-    rm -rf "${GENIMAGE_TMP}" || exit 1
-    cp "${BR2_EXTERNAL_BATOCERA_PATH}/board/batocera/rock960/genimage.cfg" "${BINARIES_DIR}" || exit 1
-    echo "generating image"
-    genimage --rootpath="${TARGET_DIR}" --inputpath="${BINARIES_DIR}/boot" --outputpath="${BATOCERA_BINARIES_DIR}" --config="${BINARIES_DIR}/genimage.cfg" --tmppath="${GENIMAGE_TMP}" || exit 1
-    rm -f "${BATOCERA_BINARIES_DIR}/boot.vfat" || exit 1
-    sync || exit 1
-    ;;
-
-	ODROIDN2)
+	ROCK960)
 	# /boot
+	BOARD_DIR="${BR2_EXTERNAL_BATOCERA_PATH}/board/batocera/rockchip/rk3399/rock960"
 	rm -rf "${BINARIES_DIR:?}/boot"          || exit 1
 	mkdir -p "${BINARIES_DIR}/boot/boot"     || exit 1
-	"${HOST_DIR}/bin/mkimage" -A arm64 -O linux -T kernel -C none -a 0x1080000 -e 0x1080000 -n 5.x -d "${BINARIES_DIR}/Image" "${BINARIES_DIR}/uImage" || exit 1
-	cp "${BINARIES_DIR}/uImage"                "${BINARIES_DIR}/boot/boot/linux"                || exit 1
-	cp "${BINARIES_DIR}/uInitrd"             "${BINARIES_DIR}/boot/boot/uInitrd"                || exit 1
+	mkdir -p "${BINARIES_DIR}/boot/extlinux" || exit 1
+	cp "${BINARIES_DIR}/Image"                 "${BINARIES_DIR}/boot/boot/linux"                || exit 1
+	cp "${BINARIES_DIR}/initrd.gz"             "${BINARIES_DIR}/boot/boot/initrd.gz"            || exit 1
 	cp "${BINARIES_DIR}/rootfs.squashfs"       "${BINARIES_DIR}/boot/boot/batocera.update"      || exit 1
-	cp "${BINARIES_DIR}/meson-g12b-odroid-n2.dtb"  "${BINARIES_DIR}/boot/boot/meson-g12b-odroid-n2.dtb" || exit 1
+	cp "${BINARIES_DIR}/rk3399-rock960-ab.dtb"  "${BINARIES_DIR}/boot/boot/rk3399-rock960-ab.dtb" || exit 1
 	cp "${BINARIES_DIR}/batocera-boot.conf"    "${BINARIES_DIR}/boot/batocera-boot.conf"        || exit 1
-	cp "${BR2_EXTERNAL_BATOCERA_PATH}/board/batocera/odroidn2/boot/boot.ini"      "${BINARIES_DIR}/boot/boot.ini"                  || exit 1
+	cp "${BOARD_DIR}/boot/extlinux.conf" "${BINARIES_DIR}/boot/extlinux"                   || exit 1
 	cp -pr "${BINARIES_DIR}/tools"       "${BINARIES_DIR}/boot/"                || exit 1
 
 	# boot.tar.xz
 	echo "creating boot.tar.xz"
-	(cd "${BINARIES_DIR}/boot" && tar -I "xz -T0" -cf "${BATOCERA_BINARIES_DIR}/boot.tar.xz" boot.ini tools boot batocera-boot.conf) || exit 1
+	(cd "${BINARIES_DIR}/boot" && tar -I "xz -T0" -cf "${BATOCERA_BINARIES_DIR}/boot.tar.xz" extlinux tools boot batocera-boot.conf) || exit 1
 
 	# blobs
-	for F in u-boot.bin
+	for F in idbloader.img trust.img uboot.img
 	do
-		cp "${BINARIES_DIR}/${F}" "${BINARIES_DIR}/boot/${F}" || exit 1
+	cp "${BINARIES_DIR}/${F}" "${BINARIES_DIR}/boot/${F}" || exit 1
 	done
 
 	# batocera.img
@@ -441,16 +444,16 @@ case "${BATOCERA_TARGET}" in
 	GENIMAGE_TMP="${BUILD_DIR}/genimage.tmp"
 	BATOCERAIMG="${BATOCERA_BINARIES_DIR}/batocera.img"
 	rm -rf "${GENIMAGE_TMP}" || exit 1
-	cp "${BR2_EXTERNAL_BATOCERA_PATH}/board/batocera/odroidn2/genimage.cfg" "${BINARIES_DIR}" || exit 1
+	cp "${BOARD_DIR}/genimage.cfg" "${BINARIES_DIR}" || exit 1
 	echo "generating image"
 	genimage --rootpath="${TARGET_DIR}" --inputpath="${BINARIES_DIR}/boot" --outputpath="${BATOCERA_BINARIES_DIR}" --config="${BINARIES_DIR}/genimage.cfg" --tmppath="${GENIMAGE_TMP}" || exit 1
 	rm -f "${BATOCERA_BINARIES_DIR}/boot.vfat" || exit 1
-	rm -f "${BATOCERA_BINARIES_DIR}/userdata.ext4" || exit 1
 	sync || exit 1
 	;;
 
 	ODROIDGOA)
 	# /boot
+	BOARD_DIR="${BR2_EXTERNAL_BATOCERA_PATH}/board/batocera/rockchip/odroidgoa"
 	rm -rf "${BINARIES_DIR:?}/boot"     || exit 1
 	mkdir -p "${BINARIES_DIR}/boot/boot"     || exit 1
 	"${HOST_DIR}/bin/mkimage" -A arm64 -O linux -T kernel -C none -a 0x1080000 -e 0x1080000 -n 5.x -d "${BINARIES_DIR}/Image" "${BINARIES_DIR}/uImage" || exit 1
@@ -460,7 +463,7 @@ case "${BATOCERA_TARGET}" in
 	cp "${BINARIES_DIR}/rk3326-odroidgo2-linux.dtb"  "${BINARIES_DIR}/boot/boot/rk3326-odroidgo2-linux.dtb" || exit 1
 	cp "${BINARIES_DIR}/rk3326-odroidgo2-linux-v11.dtb"  "${BINARIES_DIR}/boot/boot/rk3326-odroidgo2-linux-v11.dtb" || exit 1
 	cp "${BINARIES_DIR}/batocera-boot.conf"    "${BINARIES_DIR}/boot/batocera-boot.conf"        || exit 1
-	cp "${BR2_EXTERNAL_BATOCERA_PATH}/board/batocera/odroidgoa/boot/boot.ini"      "${BINARIES_DIR}/boot/boot.ini"                  || exit 1
+	cp "${BOARD_DIR}/boot/boot.ini"      "${BINARIES_DIR}/boot/boot.ini"                  || exit 1
 	cp -pr "${BINARIES_DIR}/tools"             "${BINARIES_DIR}/boot/"                     || exit 1
 
 	# boot.tar.xz
@@ -479,7 +482,7 @@ case "${BATOCERA_TARGET}" in
 	GENIMAGE_TMP="${BUILD_DIR}/genimage.tmp"
 	BATOCERAIMG="${BATOCERA_BINARIES_DIR}/batocera.img"
 	rm -rf "${GENIMAGE_TMP}" || exit 1
-	cp "${BR2_EXTERNAL_BATOCERA_PATH}/board/batocera/odroidgoa/genimage.cfg" "${BINARIES_DIR}" || exit 1
+	cp "${BOARD_DIR}//genimage.cfg" "${BINARIES_DIR}" || exit 1
 	echo "generating image"
 	genimage --rootpath="${TARGET_DIR}" --inputpath="${BINARIES_DIR}/boot" --outputpath="${BATOCERA_BINARIES_DIR}" --config="${BINARIES_DIR}/genimage.cfg" --tmppath="${GENIMAGE_TMP}" || exit 1
 	rm -f "${BATOCERA_BINARIES_DIR}/boot.vfat" || exit 1
@@ -489,6 +492,7 @@ case "${BATOCERA_TARGET}" in
 
 	TINKERBOARD)
 	# /boot
+	BOARD_DIR="${BR2_EXTERNAL_BATOCERA_PATH}/board/batocera/rockchip/rk3288/tinkerboard"
 	rm -rf "${BINARIES_DIR:?}/boot"     || exit 1
 	mkdir -p "${BINARIES_DIR}/boot/boot"     || exit 1
 	mkdir -p "${BINARIES_DIR}/boot/extlinux" || exit 1
@@ -497,7 +501,7 @@ case "${BATOCERA_TARGET}" in
 	cp "${BINARIES_DIR}/rootfs.squashfs"       "${BINARIES_DIR}/boot/boot/batocera.update"      || exit 1
 	cp "${BINARIES_DIR}/rk3288-miniarm.dtb"  "${BINARIES_DIR}/boot/boot/rk3288-miniarm.dtb" || exit 1
 	cp "${BINARIES_DIR}/batocera-boot.conf"    "${BINARIES_DIR}/boot/batocera-boot.conf"        || exit 1
-	cp "${BR2_EXTERNAL_BATOCERA_PATH}/board/batocera/tinkerboard/boot/extlinux.conf" "${BINARIES_DIR}/boot/extlinux"                   || exit 1
+	cp "${BOARD_DIR}/boot/extlinux.conf" "${BINARIES_DIR}/boot/extlinux"                   || exit 1
 	cp -pr "${BINARIES_DIR}/tools"       "${BINARIES_DIR}/boot/"                || exit 1
 
 	# boot.tar.xz
@@ -506,7 +510,6 @@ case "${BATOCERA_TARGET}" in
 
 	# blobs
 	MKIMAGE=$HOST_DIR/bin/mkimage
-	BOARD_DIR="${BR2_EXTERNAL_BATOCERA_PATH}/board/batocera/tinkerboard"
 
 	$MKIMAGE -n rk3288 -T rksd -d "$BINARIES_DIR"/u-boot-spl-dtb.bin "$BINARIES_DIR/u-boot-spl-dtb.img"
 	cat "$BINARIES_DIR/u-boot-dtb.bin" >> "$BINARIES_DIR/u-boot-spl-dtb.img"
@@ -521,7 +524,7 @@ case "${BATOCERA_TARGET}" in
 	GENIMAGE_TMP="${BUILD_DIR}/genimage.tmp"
 	BATOCERAIMG="${BATOCERA_BINARIES_DIR}/batocera.img"
 	rm -rf "${GENIMAGE_TMP}" || exit 1
-	cp "${BR2_EXTERNAL_BATOCERA_PATH}/board/batocera/tinkerboard/genimage.cfg" "${BINARIES_DIR}" || exit 1
+	cp "${BOARD_DIR}/genimage.cfg" "${BINARIES_DIR}" || exit 1
 	echo "generating image"
 	genimage --rootpath="${TARGET_DIR}" --inputpath="${BINARIES_DIR}/boot" --outputpath="${BATOCERA_BINARIES_DIR}" --config="${BINARIES_DIR}/genimage.cfg" --tmppath="${GENIMAGE_TMP}" || exit 1
 	rm -f "${BATOCERA_BINARIES_DIR}/boot.vfat" || exit 1
@@ -531,6 +534,7 @@ case "${BATOCERA_TARGET}" in
 
 	MIQI)
 	# /boot
+	BOARD_DIR="${BR2_EXTERNAL_BATOCERA_PATH}/board/batocera/rockchip/rk3288/miqi"
 	rm -rf "${BINARIES_DIR:?}/boot"     || exit 1
 	mkdir -p "${BINARIES_DIR}/boot/boot"     || exit 1
 	mkdir -p "${BINARIES_DIR}/boot/extlinux" || exit 1
@@ -539,7 +543,7 @@ case "${BATOCERA_TARGET}" in
 	cp "${BINARIES_DIR}/rootfs.squashfs"       "${BINARIES_DIR}/boot/boot/batocera.update"      || exit 1
 	cp "${BINARIES_DIR}/rk3288-miqi.dtb"  "${BINARIES_DIR}/boot/boot/rk3288-miqi.dtb" || exit 1
 	cp "${BINARIES_DIR}/batocera-boot.conf"    "${BINARIES_DIR}/boot/batocera-boot.conf"        || exit 1
-	cp "${BR2_EXTERNAL_BATOCERA_PATH}/board/batocera/miqi/boot/extlinux.conf" "${BINARIES_DIR}/boot/extlinux"                   || exit 1
+	cp "${BOARD_DIR}/boot/extlinux.conf" "${BINARIES_DIR}/boot/extlinux"                   || exit 1
 	cp -pr "${BINARIES_DIR}/tools"       "${BINARIES_DIR}/boot/"                || exit 1
 
 	# boot.tar.xz
@@ -548,7 +552,6 @@ case "${BATOCERA_TARGET}" in
 
 	# blobs
 	MKIMAGE=$HOST_DIR/bin/mkimage
-	BOARD_DIR="${BR2_EXTERNAL_BATOCERA_PATH}/board/batocera/miqi"
 
 	$MKIMAGE -n rk3288 -T rksd -d "$BINARIES_DIR"/u-boot-spl-dtb.bin "$BINARIES_DIR/u-boot-spl-dtb.img"
 	cat "$BINARIES_DIR/u-boot-dtb.bin" >> "$BINARIES_DIR/u-boot-spl-dtb.img"
@@ -563,7 +566,7 @@ case "${BATOCERA_TARGET}" in
 	GENIMAGE_TMP="${BUILD_DIR}/genimage.tmp"
 	BATOCERAIMG="${BATOCERA_BINARIES_DIR}/batocera.img"
 	rm -rf "${GENIMAGE_TMP}" || exit 1
-	cp "${BR2_EXTERNAL_BATOCERA_PATH}/board/batocera/miqi/genimage.cfg" "${BINARIES_DIR}" || exit 1
+	cp "${BOARD_DIR}/genimage.cfg" "${BINARIES_DIR}" || exit 1
 	echo "generating image"
 	genimage --rootpath="${TARGET_DIR}" --inputpath="${BINARIES_DIR}/boot" --outputpath="${BATOCERA_BINARIES_DIR}" --config="${BINARIES_DIR}/genimage.cfg" --tmppath="${GENIMAGE_TMP}" || exit 1
 	rm -f "${BATOCERA_BINARIES_DIR}/boot.vfat" || exit 1
