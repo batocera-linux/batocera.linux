@@ -1,5 +1,5 @@
 diff --git a/Makefile b/Makefile
-index 9239424..f85eac4 100644
+index 9239424..5193a05 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -191,8 +191,8 @@ else ifneq (,$(findstring rpi,$(platform)))
@@ -13,24 +13,15 @@ index 9239424..f85eac4 100644
  		endif
  		CORE_DEFINES += -DLOW_END
  	endif
-@@ -256,7 +256,7 @@ else ifeq ($(platform), classic_armv8_a35)
+@@ -255,7 +255,7 @@ else ifeq ($(platform), classic_armv8_a35)
  	FORCE_GLES = 1
  	SINGLE_PREC_FLAGS = 1
  	HAVE_LTCG = 0
 -	HAVE_OPENMP = 0
 +	HAVE_OPENMP = 1
- 	THREADED_RENDERING_DEFAULT = 1
  	CFLAGS += -Ofast \
  	-flto -fuse-linker-plugin \
-@@ -417,7 +417,7 @@ else ifeq ($(platform), odroid-n2)
- 	CXXFLAGS += -mcpu=cortex-a73 -mtune=cortex-a73.cortex-a53 $(CPUFLAGS)
- 	ASFLAGS += $(CFLAGS) -c -frename-registers -fno-strict-aliasing -ffast-math -ftree-vectorize
- 	PLATFORM_EXT := unix
--	WITH_DYNAREC=arm64
-+	WITH_DYNAREC=arm
- 	HAVE_GENERIC_JIT = 0
- 	HAVE_LTCG = 0
- 
+ 	-fno-stack-protector -fno-ident -fomit-frame-pointer \
 @@ -1042,7 +1042,7 @@ LIBS     += -lm
  PREFIX        ?= /usr/local
  

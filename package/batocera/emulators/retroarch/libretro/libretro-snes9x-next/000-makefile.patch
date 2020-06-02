@@ -1,10 +1,29 @@
+diff --git a/Makefile.libretro b/Makefile.libretro
+index 7c15d32..177b75d 100644
 --- a/Makefile.libretro
 +++ b/Makefile.libretro
-@@ -344,6 +344,29 @@
+@@ -308,6 +308,17 @@ else ifeq ($(platform), rpi4)
+         CFLAGS += -fomit-frame-pointer -ffast-math
+         HAVE_NEON = 1
+ 
++# ODROIDN2
++else ifneq (,$(findstring CortexA73_G12B,$(platform)))
++	TARGET := $(TARGET_NAME)_libretro.so
++	fpic := -fPIC
++	SHARED := -shared -Wl,--version-script=libretro/link.T -Wl,--no-undefined
++	ARCH = arm64
++   HAVE_NEON = 1
++	CFLAGS += -fomit-frame-pointer -ffast-math -DARM -funsafe-math-optimizations
++	CFLAGS += -march=armv8-a+crc -mcpu=cortex-a73 -mtune=cortex-a73.cortex-a53
++
++
+ # Classic Platforms ####################
+ # Platform affix = classic_<ISA>_<µARCH>
+ # Help at https://modmyclassic.com/comp
+@@ -344,6 +355,29 @@ else ifeq ($(platform), classic_armv7_a7)
  	endif
  #######################################
  
-+
 +#########################################
 +# (armv8 a35, hard point, neon based) ###
 +# Odroid Go Advance
@@ -27,7 +46,7 @@
 +	ARCH = arm
 +	BUILTIN_GPU = neon
 +	USE_DYNAREC = 1
++
  # Xbox 360
  else ifeq ($(platform), xenon)
  	EXT=a
-© 2020 GitHub, Inc.

@@ -1,19 +1,39 @@
+2020/XX/XX - batocera.linux 5.27
+	* add: Khadas VIM3 support (see https://wiki.batocera.org/devices#khadas_vim3 for details)
+
 2020/XX/XX - batocera.linux 5.26
-	* fix missing audio for video snaps on some platforms
+	* add: support for Raspberry Pi4
+	* add: support for Odroid Go Advanced Black Edition (wifi/l2/r2)
+	* es: background music now supports .flac, .wav and popular popular chiptune formats (.mod, .xm., .s3m, .far, .mtm, .669...)
+	* es: simplified UI for custom features selection
+	* es: new UI to remove paired bluetooth controllers
+	* es: customizable ES splash screen
+	* es: up to 8 players
+	* es: menu to format an external disk in ext4, btrfs, exfat
+	* windows: the btrfs driver for Windows is available on the BATOCERA partition
+	* add: libretro-mrboom (Ports)
+	* add: libretro-tyrquake (Ports)
+	* add: openbor
+	* add: 'batocera-create-collection' command-line to help create custom collections
+	* add: on Raspberry Pi, turn off CEC-compatible TV when shutting down Batocera
+	* netplay: several enhancements to simplify game matching
+	* fix: Dolphin (Gamecube/Wii) - fixed upscaled resolutions
+	* fix: Amstrad CPC - virtual keyboard
+	* fix: Apple II on x86_64 when using vFAT/FAT32 to store ROMs
 	* bump: moonlight-embedded to 2.4.11
 	* bump: nvidia-driver (440.82)
 	* bump: libretro-bsnes to v115
-	* bump: libretro-stella to 6.1.1
+	* bump: libretro-stella to 6.1.2
 	* bump: libretro-kronos to 2.1.1
-	* bump: fsuae to 3.0.2
-	* bump: dosbox to r4250
+	* bump: fsuae to 3.0.3
+	* bump: dosbox to r4336
 	* bump: dolphin to 5.0-11770
 	* bump: citra-emu
 	* bump: scummvm to v2.1.2
 	* bump: amiberry to v3.1.3
 	* bump: odroid-n2 kernel to 5.4
-	* add: libretro-mrboom
-  * bump: libretro-mame to 0.220
+	* bump: libretro-mame to 0.220
+	* bump: libretro-cap32 to 4.5
 
 2020/03/15 - batocera.linux 5.25
 	* add: Odroid Go Advance support (Retroarch GUI rotation issues thanks to Lakka Team efforts)

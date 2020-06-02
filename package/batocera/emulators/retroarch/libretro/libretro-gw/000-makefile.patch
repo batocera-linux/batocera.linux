@@ -1,0 +1,28 @@
+diff --git a/Makefile.libretro b/Makefile.libretro
+index 827f930..1d6a654 100644
+--- a/Makefile.libretro
++++ b/Makefile.libretro
+@@ -124,6 +124,23 @@ else ifeq ($(platform), classic_armv7_a7)
+ 	endif
+ #######################################
+ 
++# (armv8 a35, hard point, neon based) ###
++# PlayStation Classic 
++else ifeq ($(platform), classic_armv8_a35)
++   TARGET := $(TARGET_NAME)_libretro.so
++	fpic := -fPIC
++	SHARED := -shared -Wl,--no-undefined,-Bsymbolic
++	CFLAGS += -Ofast \
++	-fuse-linker-plugin \
++	-fno-stack-protector -fno-ident -fomit-frame-pointer \
++	-fmerge-all-constants -ffast-math -funroll-all-loops \
++	-marm -mcpu=cortex-a35 -mfpu=neon-fp-armv8 -mfloat-abi=hard
++	CXXFLAGS += $(CFLAGS)
++	CPPFLAGS += $(CFLAGS)
++	ARCH = arm
++	LDFLAGS += -marm -mcpu=cortex-a35 -mfpu=neon-fp-armv8 -mfloat-abi=hard -Ofast -flto -fuse-linker-plugin
++#######################################
++
+ # OS X
+ else ifeq ($(platform), osx)
+    TARGET := $(TARGET_NAME)_libretro.dylib

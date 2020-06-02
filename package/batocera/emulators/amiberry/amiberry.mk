@@ -4,7 +4,7 @@
 #
 ################################################################################
 # Version.: Commits on Feb 18, 2020
-AMIBERRY_VERSION = v3.1.3
+AMIBERRY_VERSION = v3.1.3.1
 AMIBERRY_SITE = $(call github,midwan,amiberry,$(AMIBERRY_VERSION))
 AMIBERRY_LICENSE = GPLv3
 AMIBERRY_DEPENDENCIES = sdl2 sdl2_image sdl2_ttf mpg123 libxml2 libmpeg2 flac
@@ -13,7 +13,9 @@ ifeq ($(BR2_PACKAGE_RPI_USERLAND),y)
 	AMIBERRY_DEPENDENCIES += rpi-userland
 endif
 
-ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI3),y)
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI4),y)
+	AMIBERRY_BATOCERA_SYSTEM=rpi4-sdl2
+else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI3),y)
 	AMIBERRY_BATOCERA_SYSTEM=rpi3-sdl2
 else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI2),y)
 	AMIBERRY_BATOCERA_SYSTEM=rpi2-sdl2
@@ -21,8 +23,8 @@ else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI1),y)
 	AMIBERRY_BATOCERA_SYSTEM=rpi1-sdl2
 else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_XU4),y)
 	AMIBERRY_BATOCERA_SYSTEM=xu4
-else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_ODROIDN2),y)
-	AMIBERRY_BATOCERA_SYSTEM=AMLG12B
+else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_ODROIDN2)$(BR2_PACKAGE_BATOCERA_TARGET_VIM3),y)
+	AMIBERRY_BATOCERA_SYSTEM=n2
 else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA),y)
 	AMIBERRY_BATOCERA_SYSTEM=RK3326
 else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_ROCKPRO64),y)
@@ -61,7 +63,7 @@ define AMIBERRY_INSTALL_TARGET_CMDS
 
 	ln -sf /userdata/system/configs/amiberry/whdboot $(TARGET_DIR)/usr/share/amiberry/whdboot
         mkdir -p $(TARGET_DIR)/usr/share/batocera/datainit/system/configs/amiberry
-		
+
 	cp -pr $(@D)/whdboot $(TARGET_DIR)/usr/share/batocera/datainit/system/configs/amiberry/
 	cp -rf $(@D)/data $(TARGET_DIR)/usr/share/amiberry
 endef

@@ -24,4 +24,7 @@ config BR2_PACKAGE_BATOCERA_AUDIO_RPI
 config BR2_PACKAGE_BATOCERA_AUDIO_ODROIDGOA
         bool "alsa for odroidgoa"
 
+config BR2_PACKAGE_BATOCERA_AUDIO_VIM3
+        bool "alsa for vim3"
+
 endchoice

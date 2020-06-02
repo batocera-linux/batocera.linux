@@ -1,0 +1,24 @@
+diff --git a/src/joystick/linux/SDL_sysjoystick.c b/src/joystick/linux/SDL_sysjoystick.c
+index 3d27dce..2ad7aa5 100644
+--- a/src/joystick/linux/SDL_sysjoystick.c
++++ b/src/joystick/linux/SDL_sysjoystick.c
+@@ -125,6 +125,7 @@ IsJoystick(int fd, char *namebuf, const size_t namebuflen, SDL_JoystickGUID *gui
+     struct input_id inpid;
+     Uint16 *guid16 = (Uint16 *)guid->data;
+     const char *name;
++    char product_string[128];
+     const char *spot;
+ 
+ #if !SDL_USE_LIBUDEV
+@@ -149,7 +150,10 @@ IsJoystick(int fd, char *namebuf, const size_t namebuflen, SDL_JoystickGUID *gui
+         return 0;
+     }
+ 
+-    name = SDL_GetCustomJoystickName(inpid.vendor, inpid.product);
++    if (ioctl(fd, EVIOCGNAME(sizeof(product_string)), product_string) < 0) {
++      return 0;
++    }
++    name = product_string;
+     if (name) {
+         SDL_strlcpy(namebuf, name, namebuflen);
+     } else {

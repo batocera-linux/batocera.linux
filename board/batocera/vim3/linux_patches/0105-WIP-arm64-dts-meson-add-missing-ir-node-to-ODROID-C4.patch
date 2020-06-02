@@ -1,0 +1,34 @@
+From c0a90d6357cdb7ed78e70699499eb27414bfebba Mon Sep 17 00:00:00 2001
+From: Christian Hewitt <christianshewitt@gmail.com>
+Date: Sun, 26 Apr 2020 12:06:48 +0000
+Subject: [PATCH 105/105] WIP: arm64: dts: meson: add missing ir node to
+ ODROID-C4"
+
+Hardkernel ODROID-C4 is sold with the same IR remote as the C2/N2.
+
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+---
+ arch/arm64/boot/dts/amlogic/meson-sm1-odroid-c4.dts | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/amlogic/meson-sm1-odroid-c4.dts b/arch/arm64/boot/dts/amlogic/meson-sm1-odroid-c4.dts
+index 682cafd00f2b..9779b139cf3f 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-sm1-odroid-c4.dts
++++ b/arch/arm64/boot/dts/amlogic/meson-sm1-odroid-c4.dts
+@@ -327,6 +327,13 @@ hdmi_tx_tmds_out: endpoint {
+ 	};
+ };
+ 
++&ir {
++	status = "okay";
++	pinctrl-0 = <&remote_input_ao_pins>;
++	pinctrl-names = "default";
++	linux,rc-map-name = "rc-odroid";
++};
++
+ &pwm_AO_cd {
+ 	pinctrl-0 = <&pwm_ao_d_e_pins>;
+ 	pinctrl-names = "default";
+-- 
+2.25.0
+

@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-BATOCERA_EMULATIONSTATION_VERSION = 869ea409c806d8dee947be0d231efab8ee600f31
+BATOCERA_EMULATIONSTATION_VERSION = e86972cd77965b1e9f57e955c09b8db2b6b4ebdf
 BATOCERA_EMULATIONSTATION_SITE = https://github.com/batocera-linux/batocera-emulationstation
 BATOCERA_EMULATIONSTATION_SITE_METHOD = git
 BATOCERA_EMULATIONSTATION_LICENSE = MIT
@@ -24,6 +24,14 @@ endif
 
 BATOCERA_EMULATIONSTATION_CONF_OPTS += -D_$(call UPPERCASE,$(BATOCERA_SYSTEM_ARCH))=1
 
+ifeq ($(BR2_PACKAGE_HAS_LIBGLES),y)
+	BATOCERA_EMULATIONSTATION_CONF_OPTS += -DGLES=ON
+endif
+
+ifeq ($(BR2_PACKAGE_RPI_USERLAND),y)
+	BATOCERA_EMULATIONSTATION_CONF_OPTS += -DBCM=ON
+endif
+
 ifeq ($(BR2_PACKAGE_KODI),y)
 	BATOCERA_EMULATIONSTATION_CONF_OPTS += -DDISABLE_KODI=0
 else
@@ -41,8 +49,8 @@ else
 	BATOCERA_EMULATIONSTATION_CONF_OPTS += -DENABLE_FILEMANAGER=0
 endif
 
-# cec is causing issues with es on xu4
-ifeq ($(BR2_PACKAGE_LIBCEC_EXYNOS_API),y)
+# cec is causing issues with es on xu4 and vim3
+ifeq ($(BR2_PACKAGE_LIBCEC_EXYNOS_API)$(BR2_PACKAGE_BATOCERA_TARGET_VIM3),y)
 	BATOCERA_EMULATIONSTATION_CONF_OPTS += -DCEC=OFF
 endif
 
@@ -53,8 +61,10 @@ endef
 
 define BATOCERA_EMULATIONSTATION_RESOURCES
 	$(INSTALL) -m 0755 -d $(TARGET_DIR)/usr/share/emulationstation/resources/help
+	$(INSTALL) -m 0755 -d $(TARGET_DIR)/usr/share/emulationstation/resources/flags
 	$(INSTALL) -m 0644 -D $(@D)/resources/*.* $(TARGET_DIR)/usr/share/emulationstation/resources
 	$(INSTALL) -m 0644 -D $(@D)/resources/help/*.* $(TARGET_DIR)/usr/share/emulationstation/resources/help
+	$(INSTALL) -m 0644 -D $(@D)/resources/flags/*.* $(TARGET_DIR)/usr/share/emulationstation/resources/flags
 
 	# es_input.cfg
 	mkdir -p $(TARGET_DIR)/usr/share/batocera/datainit/system/configs/emulationstation

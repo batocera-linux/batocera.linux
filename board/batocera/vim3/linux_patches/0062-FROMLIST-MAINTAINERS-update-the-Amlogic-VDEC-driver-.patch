@@ -1,0 +1,34 @@
+From f85adc6e3f97abfface0af4d1fba1f64f8843823 Mon Sep 17 00:00:00 2001
+From: Neil Armstrong <narmstrong@baylibre.com>
+Date: Sat, 2 May 2020 21:17:45 +0000
+Subject: [PATCH 062/105] FROMLIST: MAINTAINERS: update the Amlogic VDEC driver
+ maintainer entry
+
+Add myself as co-maintainer of the Amlogic VDEC driver, and add the
+missing vdec DT yaml bindings.
+
+Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
+---
+ MAINTAINERS | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 26f281d9f32a..38fe051694bd 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -11012,10 +11012,12 @@ F:	drivers/mtd/nand/raw/meson_*
+ 
+ MESON VIDEO DECODER DRIVER FOR AMLOGIC SOCS
+ M:	Maxime Jourdan <mjourdan@baylibre.com>
++M:	Neil Armstrong <narmstrong@baylibre.com>
+ L:	linux-media@vger.kernel.org
+ L:	linux-amlogic@lists.infradead.org
+ S:	Supported
+ T:	git git://linuxtv.org/media_tree.git
++F:	Documentation/devicetree/bindings/media/amlogic,gx-vdec.yaml
+ F:	drivers/staging/media/meson/vdec/
+ 
+ METHODE UDPU SUPPORT
+-- 
+2.25.0
+

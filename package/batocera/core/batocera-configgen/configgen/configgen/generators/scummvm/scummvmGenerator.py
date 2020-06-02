@@ -34,4 +34,4 @@ class ScummVMGenerator(Generator):
                         "--path=""{}""".format(romPath)]
         commandArray.append("""{}""".format(romName))
 
-        return Command.Command(array=commandArray, env={"SDL_VIDEO_GL_DRIVER":"/usr/lib/libGLESv2.so"})
+        return Command.Command(array=commandArray)

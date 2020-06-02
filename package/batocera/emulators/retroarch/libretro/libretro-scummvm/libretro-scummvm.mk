@@ -9,8 +9,7 @@ LIBRETRO_SCUMMVM_SITE = $(call github,libretro,scummvm,$(LIBRETRO_SCUMMVM_VERSIO
 LIBRETRO_SCUMMVM_LICENSE = GPLv2
 
 define LIBRETRO_SCUMMVM_BUILD_CMDS
-	CFLAGS="$(TARGET_CFLAGS)" CXXFLAGS="$(TARGET_CXXFLAGS)" LDFLAGS="-shared -Wl,--no-undefined" $(MAKE) \
-		TOOLSET="$(TARGET_CROSS)" -C $(@D)/backends/platform/libretro/build platform="$(LIBRETRO_PLATFORM)"
+	$(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" -C $(@D)/backends/platform/libretro/build platform="$(LIBRETRO_PLATFORM)"
 endef
 
 define LIBRETRO_SCUMMVM_INSTALL_TARGET_CMDS

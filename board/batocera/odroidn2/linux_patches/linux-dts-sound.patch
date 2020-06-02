@@ -1,0 +1,263 @@
+diff --git a/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-n2.dts b/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-n2.dts
+index 7e0d2ce..f16e7ca 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-n2.dts
++++ b/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-n2.dts
+@@ -10,7 +10,6 @@
+ #include <dt-bindings/input/input.h>
+ #include <dt-bindings/gpio/meson-g12a-gpio.h>
+ #include <dt-bindings/sound/meson-g12a-tohdmitx.h>
+-#include <dt-bindings/sound/meson-g12a-toacodec.h>
+ 
+ / {
+ 	compatible = "hardkernel,odroid-n2", "amlogic,g12b";
+@@ -25,20 +24,6 @@
+ 		spi0 = &spicc0;
+ 	};
+ 
+-	dio2133: audio-amplifier-0 {
+-		compatible = "simple-audio-amplifier";
+-		enable-gpios = <&gpio_ao GPIOAO_2 GPIO_ACTIVE_HIGH>;
+-		VCC-supply = <&vcc_5v>;
+-		sound-name-prefix = "AMP";
+-	};
+-
+-	spdif_dit: audio-codec-1 {
+-		#sound-dai-cells = <0>;
+-		compatible = "linux,spdif-dit";
+-		status = "okay";
+-		sound-name-prefix = "DIT";
+-	};
+-
+ 	chosen {
+ 		stdout-path = "serial0:115200n8";
+ 	};
+@@ -227,30 +212,20 @@
+ 
+ 	sound {
+ 		compatible = "amlogic,axg-sound-card";
+-		model = "G12A-ODROIDN2";
+-		audio-aux-devs = <&tdmout_b>, <&tdmout_c>, <&dio2133>;
++		model = "G12B-ODROIDN2";
++		audio-aux-devs = <&tdmout_b>;
+ 		audio-routing = "TDMOUT_B IN 0", "FRDDR_A OUT 1",
+ 				"TDMOUT_B IN 1", "FRDDR_B OUT 1",
+ 				"TDMOUT_B IN 2", "FRDDR_C OUT 1",
+-				"TDM_B Playback", "TDMOUT_B OUT",
+-				"TDMOUT_C IN 0", "FRDDR_A OUT 2",
+-				"TDMOUT_C IN 1", "FRDDR_B OUT 2",
+-				"TDMOUT_C IN 2", "FRDDR_C OUT 2",
+-				"TDM_C Playback", "TDMOUT_C OUT",
+-				"SPDIFOUT IN 0", "FRDDR_A OUT 3",
+-				"SPDIFOUT IN 1", "FRDDR_B OUT 3",
+-				"SPDIFOUT IN 2", "FRDDR_C OUT 3",
+-				"AMP INL", "ACODEC LOLP",
+-				"AMP INR", "ACODEC LORP";
+-
+-		assigned-clocks = <&clkc CLKID_HIFI_PLL>,
++				"TDM_B Playback", "TDMOUT_B OUT";
++
++		assigned-clocks = <&clkc CLKID_MPLL2>,
+ 				  <&clkc CLKID_MPLL0>,
+ 				  <&clkc CLKID_MPLL1>;
+ 		assigned-clock-parents = <0>, <0>, <0>;
+-		assigned-clock-rates = <589824000>,
++		assigned-clock-rates = <294912000>,
+ 				       <270950400>,
+ 				       <393216000>;
+-
+ 		status = "okay";
+ 
+ 		dai-link-0 {
+@@ -265,51 +240,29 @@
+ 			sound-dai = <&frddr_c>;
+ 		};
+ 
++		/* 8ch hdmi interface */
+ 		dai-link-3 {
+ 			sound-dai = <&tdmif_b>;
+ 			dai-format = "i2s";
+ 			dai-tdm-slot-tx-mask-0 = <1 1>;
++			dai-tdm-slot-tx-mask-1 = <1 1>;
++			dai-tdm-slot-tx-mask-2 = <1 1>;
++			dai-tdm-slot-tx-mask-3 = <1 1>;
+ 			mclk-fs = <256>;
+ 
+-			codec@0 {
++			codec {
+ 				sound-dai = <&tohdmitx TOHDMITX_I2S_IN_B>;
+ 			};
+ 		};
+ 
++		/* hdmi glue */
+ 		dai-link-4 {
+-			sound-dai = <&tdmif_c>;
+-			dai-format = "i2s";
+-			dai-tdm-slot-tx-mask-0 = <1 1>;
+-			mclk-fs = <256>;
+-
+-			codec@0 {
+-				sound-dai = <&toacodec TOACODEC_IN_C>;
+-			};
+-		};
+-
+-		dai-link-5 {
+-			sound-dai = <&spdifout>;
+-
+-			codec@0 {
+-				sound-dai = <&spdif_dit>;
+-			};
+-		};
+-
+-		dai-link-6 {
+ 			sound-dai = <&tohdmitx TOHDMITX_I2S_OUT>;
+ 
+-			codec@0 {
++			codec {
+ 				sound-dai = <&hdmi_tx>;
+ 			};
+ 		};
+-
+-		dai-link-7 {
+-			sound-dai = <&toacodec TOACODEC_OUT>;
+-
+-			codec@0 {
+-				sound-dai = <&acodec>;
+-			};
+-		};
+ 	};
+ };
+ 
+@@ -340,7 +293,6 @@
+ 	operating-points-v2 = <&cpu_opp_table_0>;
+ 	clocks = <&clkc CLKID_CPU_CLK>;
+ 	clock-latency = <50000>;
+-	#cooling-cells = <2>;
+ };
+ 
+ &cpu1 {
+@@ -355,7 +307,6 @@
+ 	operating-points-v2 = <&cpub_opp_table_1>;
+ 	clocks = <&clkc CLKID_CPUB_CLK>;
+ 	clock-latency = <50000>;
+-	#cooling-cells = <2>;
+ };
+ 
+ &cpu101 {
+@@ -379,52 +330,6 @@
+ 	clock-latency = <50000>;
+ };
+ 
+-&cpu_opp_table_0 {
+-	opp-1992000000 {
+-		opp-hz = /bits/ 64 <1992000000>;
+-		opp-microvolt = <1001000>;
+-	};
+-};
+-
+-&cpub_opp_table_1 {
+-	opp-1800000000 {
+-		opp-hz = /bits/ 64 <1800000000>;
+-		opp-microvolt = <981000>;
+-	};
+-
+-        opp-1908000000 {
+-                opp-hz = /bits/ 64 <1908000000>;
+-                opp-microvolt = <1022000>;
+-        };
+-
+-        opp-2016000000 {
+-                opp-hz = /bits/ 64 <2016000000>;
+-                opp-microvolt = <1022000>;
+-        };
+-};
+-
+-&cpu_thermal {
+-	trips {
+-		cpu_warm: cpu-warm {
+-			temperature = <70000>; /* millicelsius */
+-			hysteresis = <2000>; /* millicelsius */
+-			type = "passive";
+-		};
+-	};
+-	cooling-maps {
+-		cpufreq_map0 {
+-			trip = <&cpu_warm>;
+-			contribution = <1024>;
+-			cooling-device = <&cpu0 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>;
+-		};
+-		cpufreq_map1 {
+-			trip = <&cpu_warm>;
+-			contribution = <1024>;
+-			cooling-device = <&cpu100 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>;
+-		};
+-	};
+-};
+-
+ &ext_mdio {
+ 	external_phy: ethernet-phy@0 {
+ 		/* Realtek RTL8211F (0x001cc916) */
+@@ -654,12 +559,6 @@
+ 	vqmmc-supply = <&flash_1v8>;
+ };
+ 
+-&spdifout {
+-	pinctrl-0 = <&spdif_out_a13_pins>;
+-	pinctrl-names = "default";
+-	status = "okay";
+-};
+-
+ &spicc0 {
+ 	status = "okay";
+ 
+@@ -688,51 +587,17 @@
+ };
+ 
+ &tdmif_b {
+-	pinctrl-0 = <&mclk0_a_pins>, <&tdm_b_fs_pins>, <&tdm_b_sclk_pins>,
+-		    <&tdm_b_dout0_pins>;
+-	pinctrl-names = "default";
+ 	status = "okay";
+-
+-	assigned-clocks = <&clkc_audio AUD_CLKID_TDM_MCLK_PAD0>,
+-			  <&clkc_audio AUD_CLKID_TDM_SCLK_PAD1>,
+-			  <&clkc_audio AUD_CLKID_TDM_LRCLK_PAD1>;
+-	assigned-clock-parents = <&clkc_audio AUD_CLKID_MST_B_MCLK>,
+-				 <&clkc_audio AUD_CLKID_MST_B_SCLK>,
+-				 <&clkc_audio AUD_CLKID_MST_B_LRCLK>;
+-	assigned-clock-rates = <0>, <0>, <0>;
+-};
+-
+-&tdmif_c {
+-	status = "okay";
+-	assigned-clocks = <&clkc_audio AUD_CLKID_TDM_MCLK_PAD1>,
+-			  <&clkc_audio AUD_CLKID_TDM_SCLK_PAD2>,
+-			  <&clkc_audio AUD_CLKID_TDM_LRCLK_PAD2>;
+-	assigned-clock-parents = <&clkc_audio AUD_CLKID_MST_C_MCLK>,
+-				 <&clkc_audio AUD_CLKID_MST_C_SCLK>,
+-				 <&clkc_audio AUD_CLKID_MST_C_LRCLK>;
+-	assigned-clock-rates = <0>, <0>, <0>;
+ };
+ 
+ &tdmout_b {
+ 	status = "okay";
+ };
+ 
+-&tdmout_c {
+-	status = "okay";
+-};
+-
+ &tohdmitx {
+ 	status = "okay";
+ };
+ 
+-&toacodec {
+-	status = "okay";
+-};
+-
+-&acodec {
+-	status = "okay";
+-};
+-
+ &uart_A {
+ 	status = "okay";
+ 	pinctrl-names = "default";

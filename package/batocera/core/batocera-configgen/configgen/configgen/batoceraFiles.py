@@ -17,6 +17,7 @@ logdir = HOME + '/logs/'
 
 # This dict is indexed on the emulator name, not on the system
 batoceraBins = {'dosbox'      : '/usr/bin/dosbox'
+              , 'dosboxx'     : '/usr/bin/dosbox-x'
               , 'kodi'        : '/usr/bin/batocera-kodilauncher'
               , 'libretro'    : '/usr/bin/retroarch'
               , 'linapple'    : '/usr/bin/linapple'
@@ -24,6 +25,7 @@ batoceraBins = {'dosbox'      : '/usr/bin/dosbox'
               , 'mupen64plus' : '/usr/bin/mupen64plus'
               , 'ppsspp'      : '/usr/bin/PPSSPPSDL'
               , 'reicast'     : '/usr/bin/reicast.elf'
+              , 'flycast'     : '/usr/bin/flycast.elf'
               , 'scummvm'     : '/usr/bin/scummvm'
               , 'vice'        : '/usr/bin/'
               , 'fsuae'       : '/usr/bin/fs-uae'
@@ -69,7 +71,7 @@ reicastMapping = reicastCustom + '/mappings'
 reicastConfig = reicastCustom + '/emu.cfg'
 reicastSaves = SAVES + '/dreamcast'
 reicastBios = BIOS
-reicastVMUBlank = '/usr/lib/python2.7/site-packages/configgen/datainit/reicast/vmu_save_blank.bin'
+reicastVMUBlank = '/usr/lib/python2.7/site-packages/configgen/datainit/dreamcast/vmu_save_blank.bin'
 reicastVMUA1 = reicastSaves + '/reicast/vmu_save_A1.bin'
 reicastVMUA2 = reicastSaves + '/reicast/vmu_save_A2.bin'
 
@@ -94,6 +96,9 @@ citraSaves = SAVES + '/3ds'
 
 dosboxCustom = CONF + '/dosbox'
 dosboxConfig = dosboxCustom + '/dosbox.conf'
+
+dosboxxCustom = CONF + '/dosbox'
+dosboxxConfig = dosboxxCustom + '/dosboxx.conf'
 
 fsuaeBios = BIOS
 fsuaeConfig = CONF + "/fs-uae"
@@ -122,3 +127,12 @@ linappleConfigFile = CONF + '/linapple/linapple.conf'
 linappleMasterDSKFile = CONF + '/linapple/Master.dsk'
 linapplaSaves = SAVES + '/apple2'
 linappleMasterDSK = '/usr/lib/python2.7/site-packages/configgen/datainit/linapple/Master.dsk'
+
+flycastCustom = CONF + '/flycast'
+flycastMapping = flycastCustom + '/mappings'
+flycastConfig = flycastCustom + '/emu.cfg'
+flycastSaves = SAVES + '/dreamcast'
+flycastBios = BIOS
+flycastVMUBlank = '/usr/lib/python2.7/site-packages/configgen/datainit/dreamcast/vmu_save_blank.bin'
+flycastVMUA1 = flycastSaves + '/flycast/vmu_save_A1.bin'
+flycastVMUA2 = flycastSaves + '/flycast/vmu_save_A2.bin'

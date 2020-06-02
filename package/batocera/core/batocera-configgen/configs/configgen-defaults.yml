@@ -81,8 +81,8 @@ saturn:
   emulator: libretro
   core:     yabasanshiro
 dreamcast:
-  emulator: reicast
-  core: reicast
+  emulator: libretro
+  core: flycast
 atomiswave:
   emulator: libretro
   core:     flycast
@@ -143,7 +143,7 @@ zx81:
   emulator: libretro
   core:     '81'
 dos:
-  emulator: dosbox
+  emulator: libretro
   core: dosbox
   options:
     videomode: default
@@ -191,10 +191,10 @@ wswanc:
     ratio: 16/10
 pcengine:
   emulator: libretro
-  core:     pce
+  core:     pce_fast
 pcenginecd:
   emulator: libretro
-  core:     pce
+  core:     pce_fast
 supergrafx:
   emulator: libretro
   core:     mednafen_supergrafx
@@ -279,3 +279,19 @@ lightgun:
 daphne:
   emulator: daphne
   core:     hypseus
+tyrquake:
+  emulator: libretro
+  core:     tyrquake
+openbor:
+  emulator: openbor
+  core:     openbor
+  options:
+    ratio: 0
+    filter: 0
+windows:
+  emulator: wine
+  core:     wine
+windows_installers:
+  emulator: wine
+  core:     wine
+

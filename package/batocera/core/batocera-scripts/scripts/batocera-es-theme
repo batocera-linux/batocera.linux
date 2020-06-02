@@ -3,7 +3,7 @@
 # Download and install EmulationStation themes for Batocera
 #
 # @lbrpdx on Batocera Forums and Discord
-# @lala aka cyperghost on Discord
+# @cyperghost aka lala on Discord
 #
 # Usage:
 # batocera-es-theme 'list' or 'install <theme>' 
@@ -82,7 +82,7 @@ function getPer() {
 		CURVAL=$(stat "$TARFILE" | grep -E '^[ ]*Size:' | sed -e s+'^[ ]*Size: \([0-9][0-9]*\) .*$'+'\1'+)
 		CURVAL=$((CURVAL / 1024 / 1024))
 		PER=$(expr ${CURVAL} '*' 100 / ${TARVAL})
-		echo "Downloading $(basename $TARFILE) (${TARVAL}MB) >>> ${PER}%"
+		echo "[${TARVAL}MB] - ${theme^^} >>>${PER}"
 		sleep 2
 	done
 }
@@ -111,20 +111,21 @@ function install_theme() {
 			cd "$CONFIGDIR"
 			filezip="${url}/archive/master.zip"
 
+			# Download Process
 			if [ $TERMINAL = 0 ]; then
-				# First attempt to get size to download
-                        	# you need 2-3 times to get correct filesize
+				# First hook to check theme and get a filsize (this works relieable but filesize is wrong)
+	                        size_json=$(curl -sfL "https://api.github.com/repos/${reponame}/${gitname}" | grep size | head -1 | tr -dc '[:digit:]')
+        	                test $? -eq 0 || { echo "Server error..."; sleep 5; exit 1; }
+				echo "Retrieving data download..."
+				# Attempt to get real filesize to download, we love github
                         	# if after 10 attempts nothing happens we use old method
                         	for i in {0..9}; do
 			    		size=$(curl -Is "https://codeload.github.com/${reponame}/${gitname}/zip/master" | grep Content-Length | cut -d ' ' -f2 | tr -d '\r')
-                            		[[ -z $size ]] && sleep 0.2 || { size=$((size / 1024 / 1024 )); break; }
+                            		[[ -z $size ]] && sleep 5 || { size=$((size / 1024 / 1024 )); break; }
                         	done
-				# Second attempt (old format), JSON hack
-                        	if [[ -z $size ]]; then
-                            	size=$(curl -sfL "https://api.github.com/repos/${reponame}/${gitname}" | grep size | head -1 | tr -dc '[:digit:]')
-                            	size=$((size / 1024 ))
-			    	test $? -eq 0 || exit 1
-                        	fi
+				# Fallback Option (old format), JSON hack
+                        	[[ -z $size ]] && size=$((size_json / 1024 ))
+				[[ -f "gitname.zip" ]] && rm -f "$gitname.zip"
 				touch "$gitname.zip"
 				getPer "$CONFIGDIR"/"$gitname.zip" "${size}" &
 				GETPERPID=$!
@@ -133,15 +134,22 @@ function install_theme() {
 				GETPERPID=
 			else
 				wget -q --show-progress "$filezip" -O "$gitname.zip" || exit 1
-				GETPERPID=
 			fi
 
+			# Extraction Process
 			if [ -f "$gitname.zip" ]; then
-				[ $TERMINAL = 1 ] && echo -e "Unzipping $gitname to:\t\t$PWD"
-				[ $TERMINAL = 0 ] && echo "Unzipping $gitname theme files >>> 99%"
-				[ -d "$CONFIGDIR"/"$gitname" ] && rm -rf "$CONFIGDIR"/"$gitname" 
-				unzip "$gitname.zip" >/dev/null
-				mv "$gitname-master" "$gitname"
+				[ -d "$CONFIGDIR"/"$gitname" ] && rm -rf "$CONFIGDIR"/"$gitname"
+				zipdir=$(unzip -Z1 "$gitname.zip" | sed "s:\([a-zA-Z0-9\._-]*\)/.*:\1:g" | uniq | head -n1)
+				if [ $TERMINAL = 0 ]; then
+					files_inzip=$(unzip -l "$gitname.zip" | tail -1 | awk '{print $2}')
+					# This is needed for equal if files, you may alter if output is 100%+
+					files_inzip=$((files_inzip+1))
+					unzip "$gitname.zip" | awk '{perc=NR/'$files_inzip'*100} {printf "Unzipping '${theme^^}' >>>%0.f\n", perc}'
+				else
+					echo -e "Unzipping $gitname to:\t$PWD"
+					unzip -q "$gitname.zip"
+				fi 
+				mv "$zipdir" "$gitname"
 				rm "$gitname.zip"
 				success_installed=1
 			else
@@ -152,8 +160,8 @@ function install_theme() {
 	done < "$tmp"
 	rm "$tmp"
 	if [ "$success_installed" == 1 ]; then
-		[ $TERMINAL = 1 ] && echo -e "Theme $theme installed to:\t\t$PWD/$gitname"
-		[ $TERMINAL = 0 ] && echo "Theme $theme is now installed >>> 100%"
+		[ $TERMINAL = 1 ] && echo -e "Theme $theme installed to:\t$PWD/$gitname"
+		[ $TERMINAL = 0 ] && echo "Theme ${theme^^} is now installed >>>100"
 		exit 0
 	else
 		echo "Error - theme $theme could not be found"

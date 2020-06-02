@@ -1,30 +1,30 @@
 diff --git a/Makefile b/Makefile
-index aadfdf5..9475da1 100644
+index 075dcab..c9309fb 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -277,6 +277,25 @@ PSS_STYLE :=2
- LDFLAGS += -DLL
- CFLAGS += -D_CRT_SECURE_NO_DEPRECATE
+@@ -247,6 +247,25 @@ else ifeq ($(platform), classic_armv7_a7)
+ 	endif
+ #######################################
  
-+# ARM
-+else ifneq (,$(findstring armv,$(platform)))
-+       TARGET := $(TARGET_NAME)_libretro.so
-+       fpic := -fPIC
-+       SHARED := -shared -Wl,--no-undefined -Wl,--version-script=link.T
-+       CC = gcc
-+       CXX = g++
-+       FLAGS += -marm
-+       ifneq (,$(findstring softfloat,$(platform)))
-+               FLAGS += -mfloat-abi=softfp
-+       else ifneq (,$(findstring hardfloat,$(platform)))
-+               FLAGS += -mfloat-abi=hard
-+       endif
-+       ifneq (,$(findstring neon,$(platform)))
-+              FLAGS += -mfpu=neon
-+               HAVE_NEON = 1
-+       endif
-+       FLAGS += -DARM
++# (armv8 a35, hard point, neon based) ###
++# PlayStation Classic 
++else ifeq ($(platform), classic_armv8_a35)
++	TARGET := $(TARGET_NAME)_libretro.so
++	fpic := -fPIC
++	SHARED := -shared -Wl,--no-undefined -Wl,--version-script=link.T
++	CFLAGS += -Ofast \
++	-fuse-linker-plugin \
++	-fno-stack-protector -fno-ident -fomit-frame-pointer \
++	-fmerge-all-constants -ffast-math -funroll-all-loops \
++	-marm -mcpu=cortex-a35 -mfpu=neon-fp-armv8 -mfloat-abi=hard
++	CXXFLAGS += $(CFLAGS)
++	CPPFLAGS += $(CFLAGS)
++	ASFLAGS += $(CFLAGS)
++	HAVE_NEON = 1
++	ARCH = arm
++	LDFLAGS += -marm -mcpu=cortex-a35 -mfpu=neon-fp-armv8 -mfloat-abi=hard -Ofast -flto -fuse-linker-plugin
++#######################################
 +
- # Windows
- else
-    TARGET := $(TARGET_NAME)_libretro.dll
+ # Windows MSVC 2003 Xbox 1
+ else ifeq ($(platform), xbox1_msvc2003)
+ TARGET := $(TARGET_NAME)_libretro_xdk1.lib

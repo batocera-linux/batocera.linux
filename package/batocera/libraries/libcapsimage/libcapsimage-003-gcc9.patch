@@ -1,0 +1,138 @@
+Only in ./CAPSImage: afxgen.o
+diff -ur ./CAPSImage/CapsAPI.cpp /home/romain/Desktop/libcapsimage-4.2-gcc9/CAPSImage/CapsAPI.cpp
+--- ./CAPSImage/CapsAPI.cpp	2011-06-21 05:54:00.000000000 -0700
++++ /home/romain/Desktop/libcapsimage-4.2-gcc9/CAPSImage/CapsAPI.cpp	2020-05-20 13:37:20.280664101 -0700
+@@ -1,5 +1,5 @@
+ #include "stdafx.h"
+-
++
+ #ifdef _DEBUG
+ #undef THIS_FILE
+ static char THIS_FILE[]=__FILE__;
+@@ -46,7 +46,8 @@
+ // add image container
+ SDWORD __cdecl CAPSAddImage()
+ {
+-	for (int pos=0; pos < img.GetSize(); pos++)
++	int pos;
++	for (pos=0; pos < img.GetSize(); pos++)
+ 		if (!img[pos])
+ 			break;
+ 
+diff -ur ./CAPSImage/CapsEFDC.cpp /home/romain/Desktop/libcapsimage-4.2-gcc9/CAPSImage/CapsEFDC.cpp
+--- ./CAPSImage/CapsEFDC.cpp	2020-05-20 13:47:03.813310648 -0700
++++ /home/romain/Desktop/libcapsimage-4.2-gcc9/CAPSImage/CapsEFDC.cpp	2020-05-20 13:37:20.300663847 -0700
+@@ -423,7 +423,7 @@
+ 	}
+ 
+ 	// clock cycles for stepping rates
+-	for (drv=0; drv < 4; drv++)
++	for (int drv=0; drv < 4; drv++)
+ 		pc->clockstep[drv]=UDWORD(((UQUAD)pc->clockfrq*pc->steptime[drv])/1000000);
+ 
+ 	// clock cycles for head settling
+@@ -2228,7 +2228,8 @@
+ 				}
+ 
+ 				// select data bits for CRC source byte value; needed without separate clock and data shifters
+-				for (int value=0, mask=0x4000; mask; mask>>=2) {
++				int value, mask;
++				for (value=0, mask=0x4000; mask; mask>>=2) {
+ 					value<<=1;
+ 					if (amdecode & mask)
+ 						value|=1;
+Only in ./CAPSImage: CapsEMFM.o
+Only in ./CAPSImage: CapsFile.o
+diff -ur ./CAPSImage/CapsImgS.cpp /home/romain/Desktop/libcapsimage-4.2-gcc9/CAPSImage/CapsImgS.cpp
+--- ./CAPSImage/CapsImgS.cpp	2011-06-21 05:55:42.000000000 -0700
++++ /home/romain/Desktop/libcapsimage-4.2-gcc9/CAPSImage/CapsImgS.cpp	2020-05-20 13:37:20.288663997 -0700
+@@ -706,7 +706,8 @@
+ 
+ 	pti->timebuf=new UDWORD[pti->timecnt+1];
+ 
+-	for (int pos=0; pos < pti->timecnt; pos++) {
++	int pos;
++	for (pos=0; pos < pti->timecnt; pos++) {
+ 		UDWORD val=1000;
+ 
+ 		if (pos & 512)
+@@ -734,7 +735,8 @@
+ 
+ 	pti->timebuf=new UDWORD[pti->timecnt+1];
+ 
+-	for (int pos=0; pos < pti->timecnt; pos++) {
++	int pos;
++	for (pos=0; pos < pti->timecnt; pos++) {
+ 		pti->timebuf[pos]=1000;
+ 	}
+ 
+@@ -1371,7 +1373,8 @@
+ 		return imgeShort;
+ 
+ 	// find the next gap stream stored
+-	for (int bls=pstr->actblock+1; bls < di.blockcount; bls++) {
++	int bls;
++	for (bls=pstr->actblock+1; bls < di.blockcount; bls++) {
+ 		if (di.block[bls].flag & (CAPS_BF_GP0 | CAPS_BF_GP1))
+ 			break;
+ 	}
+@@ -1401,10 +1404,11 @@
+ // parse current gap stream until gap end reached and next stream starts
+ int CCapsImageStd::FindGapStreamEnd(PIMAGESTREAMINFO pstr, int next)
+ {
++	uint32_t ofs;
+ 	uint8_t *buf=di.data;
+ 	int end=0;
+ 
+-	for (uint32_t ofs=pstr->strstart; !end && ofs < pstr->strend; ) {
++	for (ofs=pstr->strstart; !end && ofs < pstr->strend; ) {
+ 		int code=buf[ofs++];
+ 
+ 		// read code, sizeof(count), count
+diff -ur ./CAPSImage/CapsLdr.cpp /home/romain/Desktop/libcapsimage-4.2-gcc9/CAPSImage/CapsLdr.cpp
+--- ./CAPSImage/CapsLdr.cpp	2010-06-08 06:08:00.000000000 -0700
++++ /home/romain/Desktop/libcapsimage-4.2-gcc9/CAPSImage/CapsLdr.cpp	2020-05-20 13:37:20.288663997 -0700
+@@ -262,7 +262,8 @@
+ // find chunk type
+ int CCapsLoader::GetChunkType(PCAPSCHUNK pc)
+ {
+-	for (int pos=0; chunklist[pos].name; pos++)
++	int pos;
++	for (pos=0; chunklist[pos].name; pos++)
+ 		if (!memcmp(chunklist[pos].name, pc->cg.file.name, sizeof(pc->cg.file.name)))
+ 			break;
+ 
+diff -ur ./CAPSImage/DiskImg.cpp /home/romain/Desktop/libcapsimage-4.2-gcc9/CAPSImage/DiskImg.cpp
+--- ./CAPSImage/DiskImg.cpp	2011-06-16 10:19:12.000000000 -0700
++++ /home/romain/Desktop/libcapsimage-4.2-gcc9/CAPSImage/DiskImg.cpp	2020-05-20 13:37:20.292663948 -0700
+@@ -533,7 +533,8 @@
+ // read network ordered value
+ UDWORD CDiskImage::ReadValue(PUBYTE buf, int cnt)
+ {
+-	for (UDWORD val=0; cnt > 0; cnt--) {
++	UDWORD val;
++	for (val=0; cnt > 0; cnt--) {
+ 		val<<=8;
+ 		val|=*buf++;
+ 	}
+--- a/CAPSImage/CapsEFDC.cpp	2020-05-23 20:54:25.974985710 +0200
++++ b/CAPSImage/CapsEFDC.cpp	2020-05-23 21:00:53.206432980 +0200
+@@ -412,7 +412,8 @@
+ void FdcSetTiming(PCAPSFDC pc)
+ {
+ 	// drive specific values
+-	for (int drv=0; drv < pc->drivecnt; drv++) {
++	int drv;
++	for (drv=0; drv < pc->drivecnt; drv++) {
+ 		PCAPSDRIVE pd=pc->drive+drv;
+ 
+ 		// clock cycles per revolution
+@@ -423,7 +424,7 @@
+ 	}
+ 
+ 	// clock cycles for stepping rates
+-	for (int drv=0; drv < 4; drv++)
++	for (drv=0; drv < 4; drv++)
+ 		pc->clockstep[drv]=UDWORD(((UQUAD)pc->clockfrq*pc->steptime[drv])/1000000);
+ 
+ 	// clock cycles for head settling

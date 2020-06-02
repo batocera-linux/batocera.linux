@@ -1,15 +1,13 @@
 diff --git a/projects/unix/Makefile b/projects/unix/Makefile
-index 2875a04..e56c239 100755
+index 27a58b4..c80ade8 100755
 --- a/projects/unix/Makefile
 +++ b/projects/unix/Makefile
-@@ -116,6 +116,10 @@ ifneq ("$(filter mips,$(HOST_CPU))","")
-   PIC ?= 1
+@@ -124,7 +124,7 @@ ifneq ("$(filter mips,$(HOST_CPU))","")
    $(warning Architecture "$(HOST_CPU)" not officially supported.')
  endif
-+ifneq ("$(filter aarch64%,$(HOST_CPU))","")
+ ifneq ("$(filter aarch64,$(HOST_CPU))","")
+-    CPU := AARCH
 +    CPU := AARCH64
-+    PIC ?= 1
-+endif
- ifeq ("$(CPU)","NONE")
-   $(error CPU type "$(HOST_CPU)" not supported.  Please file bug report at 'http://code.google.com/p/mupen64plus/issues')
- endif
+     ARCH_DETECTED := 64BITS
+     PIC ?= 1
+     NEW_DYNAREC := 1

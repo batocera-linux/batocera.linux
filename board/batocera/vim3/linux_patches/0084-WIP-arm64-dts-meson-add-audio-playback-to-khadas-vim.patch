@@ -1,0 +1,31 @@
+From 118447467e5794de2d21977b73c2848918844863 Mon Sep 17 00:00:00 2001
+From: Christian Hewitt <christianshewitt@gmail.com>
+Date: Wed, 19 Feb 2020 04:27:30 +0000
+Subject: [PATCH 084/105] WIP: arm64: dts: meson: add audio playback to khadas
+ vim2
+
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+---
+ arch/arm64/boot/dts/amlogic/meson-gxm-khadas-vim2.dts | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/arch/arm64/boot/dts/amlogic/meson-gxm-khadas-vim2.dts b/arch/arm64/boot/dts/amlogic/meson-gxm-khadas-vim2.dts
+index 27eeab71ec77..9f19bbf6b064 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-gxm-khadas-vim2.dts
++++ b/arch/arm64/boot/dts/amlogic/meson-gxm-khadas-vim2.dts
+@@ -7,9 +7,10 @@
+ 
+ /dts-v1/;
+ 
+-#include <dt-bindings/input/input.h>
+-
+ #include "meson-gxm.dtsi"
++#include "meson-gxl-audio-hdmi.dtsi"
++
++#include <dt-bindings/input/input.h>
+ 
+ / {
+ 	compatible = "khadas,vim2", "amlogic,s912", "amlogic,meson-gxm";
+-- 
+2.25.0
+

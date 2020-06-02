@@ -20,7 +20,7 @@ def generateCoreSettings(retroarchCore, system):
     # Atari 800 and 5200
     if (system.config['core'] == 'atari800'):
         if (system.name == 'atari800'):
-            coreSettings.save('atari800_system',    '"800XL (64K)"')
+            coreSettings.save('atari800_system',    '"130XE (128K)"')
             coreSettings.save('RAM_SIZE',           '"64"')
             coreSettings.save('STEREO_POKEY',       '"1"')
             coreSettings.save('BUILTIN_BASIC',      '"1"')
@@ -73,6 +73,9 @@ def generateCoreSettings(retroarchCore, system):
 
     if (system.config['core'] == 'pce'):
         coreSettings.save('pce_keepaspect', '"enabled"')
+    
+    if (system.config['core'] == 'pce_fast'):
+        coreSettings.save('pce_keepaspect', '"enabled"')
 
     if (system.config['core'] == 'picodrive'):
         coreSettings.save('picodrive_input1',   '"6 button pad"')
@@ -105,6 +108,32 @@ def generateCoreSettings(retroarchCore, system):
 
     if (system.config['core'] == 'flycast'):
         coreSettings.save('reicast_threaded_rendering',   '"enabled"')
+
+    if (system.config['core'] == 'dosbox'):
+        coreSettings.save('dosbox_svn_pcspeaker', '"true"')
+
+    if (system.config['core'] == 'px68k'):
+        coreSettings.save('px68k_disk_path', '"disabled"')
+
+    if (system.config['core'] == 'pcsx_rearmed'):
+        for n in range(1, 8+1):
+            val = coreSettings.load('pcsx_rearmed_pad{}type'.format(n))
+            if val == '"none"' or val == "" or val is None:
+                coreSettings.save('pcsx_rearmed_pad{}type'.format(n), '"standard"')
+        # force multitap no value / auto to disable
+        # only let enabled when it is forced while previous values enable it
+        val = coreSettings.load('pcsx_rearmed_multitap1')
+        if val == '"auto"' or val == "" or val is None:
+            coreSettings.save('pcsx_rearmed_multitap1', '"disabled"')
+        val = coreSettings.load('pcsx_rearmed_multitap2')
+        if val == '"auto"' or val == "" or val is None:
+            coreSettings.save('pcsx_rearmed_multitap2', '"disabled"')
+
+    # custom : allow the user to configure directly retroarchcore.cfg via batocera.conf via lines like : snes.retroarchcore.opt=val
+    for user_config in system.config:
+        if user_config[:14] == "retroarchcore.":
+            coreSettings.save(user_config[14:], system.config[user_config])
+
 
 def generateHatariConf(hatariConf):
     hatariConfig = ConfigParser.ConfigParser()

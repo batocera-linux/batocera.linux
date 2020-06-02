@@ -1,16 +1,22 @@
 snes:
   name:       Super Nintendo Entertainment System
+  manufacturer: Nintendo
+  release: 1990
+  hardware: console
   extensions: [smc, fig, sfc, gd3, gd7, dx2, bsx, swc, zip, 7z]
   emulators:
     libretro:
-      pocketsnes:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_POCKETSNES], 'netplay': true }
-      snes9x_next: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_SNES9X_NEXT], 'netplay': true }
-      snes9x:      { requireAnyOf: [BR2_PACKAGE_LIBRETRO_SNES9X], 'netplay': true }
-      mesen-s:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MESEN_S], 'netplay': true }
-      bsnes:       { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BSNES], 'netplay': true }
+      pocketsnes:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_POCKETSNES] }
+      snes9x_next: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_SNES9X_NEXT] }
+      snes9x:      { requireAnyOf: [BR2_PACKAGE_LIBRETRO_SNES9X] }
+      mesen-s:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MESEN_S] }
+      bsnes:       { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BSNES] }
 
 c64:
   name:       Commodore 64
+  manufacturer: Commodore
+  release: 1982
+  hardware: computer
   extensions: [d64, zip, 7z]
   platform:   c64
   emulators:
@@ -20,26 +26,35 @@ c64:
       xscpu64:  { requireAnyOf: [BR2_PACKAGE_VICE]          }
       xplus4:   { requireAnyOf: [BR2_PACKAGE_VICE]          }
     libretro:
-      vice:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_VICE], 'netplay':false }
+      vice:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_VICE] }
 
 c128:
   name:       Commodore 128
+  manufacturer: Commodore
+  release: 1985
+  hardware: computer
   extensions: [d64, d81, prg, lnx, zip]
   platform:   c64
   emulators:
     vice:
-      x128:     { requireAnyOf: [BR2_PACKAGE_BATOCERA_CORES_EXPERIMENTAL] }
+      x128:     { requireAnyOf: [BR2_PACKAGE_VICE] }
 
 c20:
   name:       Commodore VIC-20
+  manufacturer: Commodore
+  release: 1980
+  hardware: computer
   extensions: [a0, b0, crt, d64, d81, prg, tap, t64, zip]
   platform:   c64
   emulators:
     vice:
-      xvic:     { requireAnyOf: [BR2_PACKAGE_BATOCERA_CORES_EXPERIMENTAL] }
+      xvic:     { requireAnyOf: [BR2_PACKAGE_VICE] }
 
 amiga500:
   name:       Amiga OCS/ECS
+  manufacturer: Commodore
+  release: 1987
+  hardware: computer
   extensions: [zip, adf, uae, ipf, dms, dmz, adz, lha, hdf, exe]
   platform:   amiga
   group:      amiga
@@ -58,6 +73,9 @@ amiga500:
 
 amiga1200:
   name:       Amiga AGA
+  manufacturer: Commodore
+  release: 1992
+  hardware: computer
   extensions: [zip, adf, uae, ipf, dms, dmz, adz, lha, hdf, exe]
   platform:   amiga
   group:      amiga
@@ -73,6 +91,9 @@ amiga1200:
 
 amigacd32:
   name:       Amiga CD32
+  manufacturer: Commodore
+  release: 1994
+  hardware: console
   extensions: [iso, cue, zip, lha]
   emulators:
     fsuae:
@@ -84,6 +105,9 @@ amigacd32:
 
 amigacdtv:
   name:       Amiga CDTV
+  manufacturer: Commodore
+  release: 1991
+  hardware: console
   extensions: [bin, cue, iso]
   emulators:
     fsuae:
@@ -93,15 +117,21 @@ amigacdtv:
 
 nes:
   name:       Nintendo Entertainment System
+  manufacturer: Nintendo
+  release: 1983
+  hardware: console
   extensions: [nes, unif, unf, zip, 7z]
   emulators:
     libretro:
-      fceumm:   { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FCEUMM], 'netplay':true }
-      nestopia: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_NESTOPIA], 'netplay':true }
-      mesen:   { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MESEN], 'netplay':true }
+      fceumm:   { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FCEUMM] }
+      nestopia: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_NESTOPIA] }
+      mesen:   { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MESEN] }
 
 n64:
   name:       Nintendo 64
+  manufacturer: Nintendo
+  release: 1996
+  hardware: console
   extensions: [z64, n64, v64, zip, 7z]
   emulators:
     mupen64plus:
@@ -110,207 +140,291 @@ n64:
       rice:       { requireAnyOf: [BR2_PACKAGE_MUPEN64PLUS_VIDEO_RICE]        }
       n64:        { requireAnyOf: [BR2_PACKAGE_MUPEN64PLUS_GLES2]             }
     libretro:
-      mupen64plus-next: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MUPEN64PLUS_NEXT], 'netplay':false }
-      parallel_n64:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PARALLEL_N64], 'netplay':false }
+      mupen64plus-next: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MUPEN64PLUS_NEXT] }
+      parallel_n64:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PARALLEL_N64] }
 
 gba:
   name:       Game Boy Advance
+  manufacturer: Nintendo
+  release: 2001
+  hardware: portable
   extensions: [gba, zip, 7z]
   emulators:
     libretro:
-      mgba:   { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MGBA], 'netplay':false }
-      vba-m:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_VBA_M], 'netplay':false }
-      gpsp:   { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GPSP], 'netplay':false }
+      mgba:   { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MGBA] }
+      vba-m:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_VBA_M] }
+      gpsp:   { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GPSP] }
 
 gbc:
   name:       Game Boy Color
+  manufacturer: Nintendo
+  release: 1998
+  hardware: portable
   extensions: [gbc, zip, 7z]
   emulators:
     libretro:
-      gambatte: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GAMBATTE], 'netplay':false }
-      mgba:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MGBA], 'netplay':false }
-      vba-m:    { requireAnyOf: [BR2_PACKAGE_LIBRETRO_VBA_M], 'netplay':false }
+      gambatte: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GAMBATTE] }
+      mgba:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MGBA] }
+      vba-m:    { requireAnyOf: [BR2_PACKAGE_LIBRETRO_VBA_M] }
 
 gb:
   name:       Game Boy
+  manufacturer: Nintendo
+  release: 1989
+  hardware: portable
   extensions: [gb, zip, 7z]
   emulators:
     libretro:
-      gambatte: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GAMBATTE], 'netplay':false }
-      mgba:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MGBA], 'netplay':false }
-      vba-m:    { requireAnyOf: [BR2_PACKAGE_LIBRETRO_VBA_M], 'netplay':false }
+      gambatte: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GAMBATTE] }
+      mgba:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MGBA] }
+      vba-m:    { requireAnyOf: [BR2_PACKAGE_LIBRETRO_VBA_M] }
 
 gbc2players:
-  name:       Game Boy Color
+  name:       Game Boy Color (2 players)
+  manufacturer: Nintendo
+  release: 1998
+  hardware: portable
   extensions: [gbc, zip, 7z]
   platform:   gbc
   emulators:
     libretro:
-      tgbdual:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_TGBDUAL], 'netplay':true }
+      tgbdual:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_TGBDUAL] }
 
 gb2players:
   name:       Game Boy (2 players)
+  manufacturer: Nintendo
+  release: 1989
+  hardware: portable
   extensions: [gb, zip, 7z]
   platform:   gb
   emulators:
     libretro:
-      tgbdual:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_TGBDUAL], 'netplay':true }
+      tgbdual:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_TGBDUAL] }
 
 nds:
   name:       Nintendo DS
+  manufacturer: Nintendo
+  release: 2004
+  hardware: portable
   extensions: [nds, bin, zip, 7z]
   emulators:
     libretro:
-      desmume: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_DESMUME], 'netplay':true }
+      desmume: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_DESMUME] }
 
 fds:
   name:       Family Computer Disk System
+  manufacturer: Nintendo
+  release: 1986
+  hardware: console
   extensions: [fds, zip, 7z]
   emulators:
     libretro:
-      fceumm:   { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FCEUMM], 'netplay':true }
-      nestopia: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_NESTOPIA], 'netplay':true }
+      fceumm:   { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FCEUMM] }
+      nestopia: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_NESTOPIA] }
 
 virtualboy:
   name:       Virtual Boy
+  manufacturer: Nintendo
+  release: 1995
+  hardware: console
   extensions: [vb, zip, 7z]
   emulators:
     libretro:
-      vb: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BEETLE_VB], 'netplay':true }
+      vb: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BEETLE_VB] }
 
 gameandwatch:
   name:       Game and Watch
+  manufacturer: Nintendo
+  release: 1980
+  hardware: portable
   extensions: [mgw, zip, 7z]
   emulators:
     libretro:
-      gw: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GW], 'netplay':false }
+      gw: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GW] }
 
 dreamcast:
   name:       Sega Dreamcast
+  manufacturer: Sega
+  release: 1998
+  hardware: console
   extensions: [cdi, cue, gdi, chd, zip, 7z]
   emulators:
     libretro:
-      flycast:        { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FLYCAST], 'netplay':false }
+      flycast:        { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FLYCAST] }
     reicast:
-      reicast:        { requireAnyOf: [BR2_PACKAGE_REICAST]                 }
+      reicast:        { requireAnyOf: [BR2_PACKAGE_REICAST]          }
+    flycast:
+      flycast:        { requireAnyOf: [BR2_PACKAGE_FLYCAST]          }
 
 naomi:
   name:       Sega Naomi
+  manufacturer: Sega
+  release: 1998
+  hardware: arcade
   extensions: [lst, bin, dat, zip, 7z]
   emulators:
     libretro:
-      flycast: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FLYCAST], 'netplay':true }
+      flycast:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FLYCAST]  }
+    flycast:
+      flycast:  { requireAnyOf: [BR2_PACKAGE_FLYCAST]           }
 
 atomiswave:
   name:       Atomiswave
+  manufacturer: Sammy
+  release: 2003
+  hardware: arcade
   extensions: [lst, bin, dat, zip, 7z]
   emulators:
     libretro:
-      flycast: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FLYCAST], 'netplay':true }
+      flycast: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FLYCAST] }
+    flycast:
+      flycast: { requireAnyOf: [BR2_PACKAGE_FLYCAST]          }
 
 megadrive:
   name:       Sega Megadrive
+  manufacturer: Sega
+  release: 1988
+  hardware: console
   extensions: [bin, gen, md, sg, smd, zip, 7z]
   platform:   genesis, megadrive
   emulators:
     libretro:
-      genesisplusgx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GENESISPLUSGX], 'netplay':true }
-      picodrive:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PICODRIVE], 'netplay':true }
+      genesisplusgx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GENESISPLUSGX] }
+      picodrive:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PICODRIVE] }
+      blastem:       { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BLASTEM] }
 
 segacd:
   name:       Sega CD
+  manufacturer: Sega
+  release: 1991
+  hardware: console
   extensions: [chd, cue, iso, zip, 7z]
   emulators:
     libretro:
-      genesisplusgx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GENESISPLUSGX], 'netplay':true }
-      picodrive:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PICODRIVE], 'netplay':true }
+      genesisplusgx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GENESISPLUSGX] }
+      picodrive:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PICODRIVE] }
 
 sega32x:
   name:       Sega 32x
+  manufacturer: Sega
+  release: 1994
+  hardware: console
   extensions: [32x, smd, bin, md, zip, 7z]
   emulators:
     libretro:
-      picodrive: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PICODRIVE], 'netplay':true }
+      picodrive: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PICODRIVE] }
 
 mastersystem:
   name:       Sega Master System
+  manufacturer: Sega
+  release: 1985
+  hardware: console
   extensions: [bin, sms, zip, 7z]
   emulators:
     libretro:
-      genesisplusgx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GENESISPLUSGX], 'netplay':true }
-      picodrive:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PICODRIVE], 'netplay':true }
+      genesisplusgx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GENESISPLUSGX] }
+      picodrive:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PICODRIVE] }
 
 gamegear:
   name:       Sega Game Gear
+  manufacturer: Sega
+  release: 1990
+  hardware: portable
   extensions: [bin, gg, zip, 7z]
   emulators:
     libretro:
-      genesisplusgx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GENESISPLUSGX], 'netplay':true }
+      genesisplusgx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GENESISPLUSGX] }
 
 sg1000:
   name:       Sega SG1000
+  manufacturer: Sega
+  release: 1983
+  hardware: console
   extensions: [bin, sg, zip, 7z]
   platform:   sg-1000
   theme:      sg-1000
   emulators:
     libretro:
-      genesisplusgx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GENESISPLUSGX], 'netplay':true }
+      genesisplusgx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GENESISPLUSGX] }
 
 psp:
   name:       Sony Playstation Portable
+  manufacturer: Sony
+  release: 2004
+  hardware: portable
   extensions: [iso, cso, pbp]
   emulators:
     ppsspp:
       ppsspp: { requireAnyOf: [BR2_PACKAGE_PPSSPP, BR2_PACKAGE_PPSSPP15]  }
     libretro:
-      ppsspp:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PPSSPP], 'netplay':false }
+      ppsspp:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PPSSPP] }
 
 psx:
   name:       Sony Playstation 1
+  manufacturer: Sony
+  release: 1994
+  hardware: console
   extensions: [cue, img, mdf, pbp, toc, cbn, m3u, ccd, chd, zip, 7z, iso]
   emulators:
     libretro:
-      pcsx_rearmed: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PCSX], 'netplay':false }
-      mednafen_psx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BEETLE_PSX], 'netplay':false }
+      pcsx_rearmed: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PCSX] }
+      mednafen_psx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BEETLE_PSX] }
 
 pcengine:
   name:       PC Engine
+  manufacturer: NEC
+  release: 1987
+  hardware: console
   extensions: [pce, bin, zip, 7z]
   emulators:
     libretro:
-      pce:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BEETLE_PCE], 'netplay':true }
+      pce:      { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BEETLE_PCE] }
+      pce_fast: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BEETLE_PCE_FAST] }
 
 pcenginecd:
   name:       PC Engine CD
+  manufacturer: NEC
+  release: 1988
+  hardware: console
   extensions: [pce, cue, ccd, iso, img, chd, zip, 7z]
   theme:      pce-cd
   emulators:
     libretro:
-      pce:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BEETLE_PCE], 'netplay':true }
+      pce:      { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BEETLE_PCE] }
+      pce_fast: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BEETLE_PCE_FAST] }
 
 supergrafx:
   name:       Supergrafx
+  manufacturer: NEC
+  release: 1989
+  hardware: console
   extensions: [pce, sgx, cue, ccd, chd, zip, 7z]
   emulators:
     libretro:
-      mednafen_supergrafx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BEETLE_SUPERGRAFX], 'netplay':true }
+      mednafen_supergrafx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BEETLE_SUPERGRAFX] }
 
 pcfx:
   name:       PC-FX
+  manufacturer: NEC
+  release: 1994
+  hardware: console
   extensions: [cue, ccd, toc, chd, zip, 7z]
   emulators:
     libretro:
-      pcfx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BEETLE_PCFX], 'netplay':true }
+      pcfx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BEETLE_PCFX] }
 
 scummvm:
   name:       ScummVM
+  manufacturer: LucasArts
+  release: 1987
+  hardware: computer
   extensions: [scummvm]
   platform:   pc
   emulators:
     scummvm:
       scummvm: { requireAnyOf: [BR2_PACKAGE_SCUMMVM]          }
     libretro:
-      scummvm: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_SCUMMVM], 'netplay':false }
+      scummvm: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_SCUMMVM] }
   comment_en: |
     Put scummvm games foders in this folder.
 
@@ -328,14 +442,19 @@ scummvm:
 
 dos:
   name:       Dos (x86)
+  manufacturer: Microsoft
+  release: 1981
+  hardware: computer
   extensions: [pc, dos]
   theme:      pc
   platform:   pc
   emulators:
     dosbox:
       dosbox:   { requireAnyOf: [BR2_PACKAGE_DOSBOX]          }
+    dosboxx:
+      dosbox-x: { requireAnyOf: [BR2_PACKAGE_DOSBOX_X]        }
     libretro:
-      dosbox:   { requireAnyOf: [BR2_PACKAGE_LIBRETRO_DOSBOX], 'netplay':false }
+      dosbox:   { requireAnyOf: [BR2_PACKAGE_LIBRETRO_DOSBOX] }
   comment_en: |
     Each game (files) must be placed its own directory having the ".pc .dos" extension.
     In each directory, a dosbox.bat file must contain the command line for launching the game.
@@ -371,11 +490,14 @@ dos:
 
 fbneo:
   name:       Final Burn Neo
+  manufacturer: Misc. Arcade
+  release:
+  hardware: arcade
   extensions: [zip, 7z]
   platform:   arcade
   emulators:
     libretro:
-      fbneo:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FBNEO], 'netplay':true }
+      fbneo:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FBNEO] }
   comment_en: |
     ROMs version must be 0.2.97.44
 
@@ -387,15 +509,18 @@ fbneo:
 
 mame:
   name:       Mame
+  manufacturer: Misc. Arcade
+  release:
+  hardware: arcade
   extensions: [zip, 7z]
   platform:   arcade
   emulators:
     libretro:
-      imame4all:    { requireAnyOf: [BR2_PACKAGE_LIBRETRO_IMAME], 'netplay':true          }
-      mame078plus:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME2003_PLUS], 'netplay':true  }
-      mame0139:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME2010], 'netplay':true       }
-      mame:         { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME], 'netplay':true           }
-      fbneo:        { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FBNEO], 'netplay':true          }
+      imame4all:    { requireAnyOf: [BR2_PACKAGE_LIBRETRO_IMAME]          }
+      mame078plus:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME2003_PLUS]  }
+      mame0139:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME2010]       }
+      mame:         { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME]           }
+      fbneo:        { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FBNEO]          }
   comment_en: |
     The system uses libretro mame2003 as default core: compatible ROMs must come from set 0.78
     The libretro core imame4all, based on MAME v0.37b5, is also included.
@@ -411,29 +536,38 @@ mame:
 
 neogeo:
   name:       Neo-Geo
+  manufacturer: SNK
+  release: 1990
+  hardware: console
   extensions: [7z, zip]
   emulators:
     libretro:
-      fbneo:        { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FBNEO], 'netplay':true          }
-      imame4all:    { requireAnyOf: [BR2_PACKAGE_LIBRETRO_IMAME], 'netplay':true          }
-      mame078plus:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME2003_PLUS], 'netplay':true  }
-      mame0139:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME2010], 'netplay':true       }
-      mame:         { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME], 'netplay':true           }
+      fbneo:        { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FBNEO]          }
+      imame4all:    { requireAnyOf: [BR2_PACKAGE_LIBRETRO_IMAME]          }
+      mame078plus:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME2003_PLUS]  }
+      mame0139:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME2010]       }
+      mame:         { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME]           }
 
 neogeocd:
   name:       Neo-Geo CD
+  manufacturer: SNK
+  release: 1994
+  hardware: console
   extensions: [cue, iso, chd, zip, 7z]
   emulators:
     libretro:
-      neocd:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_NEOCD], 'netplay':false }
-      fbneo:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FBNEO], 'netplay':true }
+      neocd:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_NEOCD] }
+      fbneo:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FBNEO] }
 
 colecovision:
   name:       ColecoVision
+  manufacturer: Coleco
+  release: 1982
+  hardware: console
   extensions: [bin, col, rom, zip, 7z]
   emulators:
     libretro:
-      bluemsx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BLUEMSX], 'netplay':false }
+      bluemsx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BLUEMSX] }
   comment_en: |
     ## BIOS ##
 
@@ -474,81 +608,111 @@ colecovision:
 
 atari800:
   name:       Atari 800
+  manufacturer: Atari
+  release: 1979
+  hardware: computer
   extensions: [rom, xfd, atr, atx, cdm, cas, car, bin, a52, xex, zip, 7z]
   emulators:
     libretro:
-      atari800: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_ATARI800], 'netplay':false }
+      atari800: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_ATARI800] }
 
 atari2600:
   name:       Atari 2600
+  manufacturer: Atari
+  release: 1977
+  hardware: console
   extensions: [a26, bin, zip, 7z]
   emulators:
     libretro:
-      stella: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_STELLA], 'netplay':true }
+      stella: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_STELLA] }
 
 atari5200:
   name:       Atari 5200
+  manufacturer: Atari
+  release: 1982
+  hardware: console
   extensions: [rom, xfd, atr, atx, cdm, cas, car, bin, a52, xex, zip, 7z]
   emulators:
     libretro:
-      atari800: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_ATARI800], 'netplay':false }
+      atari800: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_ATARI800] }
 
 atari7800:
   name:       Atari 7800
+  manufacturer: Atari
+  release: 1986
+  hardware: console
   extensions: [a78, bin, zip, 7z]
   emulators:
     libretro:
-      prosystem: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PROSYSTEM], 'netplay':false }
+      prosystem: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PROSYSTEM] }
 
 lynx:
   name:       Atari Lynx
+  manufacturer: Atari
+  release: 1989
+  hardware: portable
   extensions: [lnx, zip, 7z]
   theme:      atarilynx
   platform:   atarilynx
   emulators:
     libretro:
-      mednafen_lynx:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BEETLE_LYNX], 'netplay':true }
-      handy:          { requireAnyOf: [BR2_PACKAGE_LIBRETRO_HANDY], 'netplay':true }
+      mednafen_lynx:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BEETLE_LYNX] }
+      handy:          { requireAnyOf: [BR2_PACKAGE_LIBRETRO_HANDY] }
 
 ngp:
   name:       Neo-Geo Pocket
+  manufacturer: SNK
+  release: 1998
+  hardware: portable
   extensions: [ngp, zip, 7z]
   emulators:
     libretro:
-      mednafen_ngp: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BEETLE_NGP], 'netplay':true }
+      mednafen_ngp: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BEETLE_NGP] }
 
 ngpc:
   name:       Neo-Geo Pocket Color
+  manufacturer: SNK
+  release: 1999
+  hardware: portable
   extensions: [ngc, zip, 7z]
   emulators:
     libretro:
-      mednafen_ngp: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BEETLE_NGP], 'netplay':true }
+      mednafen_ngp: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BEETLE_NGP] }
 
 wswan:
   name:       WonderSwan
+  manufacturer: Bandai
+  release: 1999
+  hardware: portable
   extensions: [ws, zip, 7z]
   theme:      wonderswan
   platform:   wonderswan
   emulators:
     libretro:
-      mednafen_wswan: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BEETLE_WSWAN], 'netplay':true }
+      mednafen_wswan: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BEETLE_WSWAN] }
 
 wswanc:
   name:       WonderSwan Color
+  manufacturer: Bandai
+  release: 2000
+  hardware: portable
   extensions: [wsc, zip, 7z]
   theme:      wonderswancolor
   platform:   wonderswancolor
   emulators:
     libretro:
-      mednafen_wswan: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BEETLE_WSWAN], 'netplay':true }
+      mednafen_wswan: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BEETLE_WSWAN] }
 
 prboom:
   name:       PrBoom
+  manufacturer: Misc. Port
+  release:
+  hardware: port
   extensions: [wad, iwad, pwad]
   group: ports
   emulators:
     libretro:
-      prboom: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PRBOOM], 'netplay':false }
+      prboom: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PRBOOM] }
   comment_en: |
     Put DOOM 1 and 2 games (and their associated mods) in this directory.
     Put your soundtrack in the directory ./game-musics
@@ -560,28 +724,52 @@ prboom:
 
     NE PAS EFFACER "prboom.wad"
 
+tyrquake:
+  name:       TyrQuake
+  manufacturer: Misc. Port
+  release:
+  hardware: port
+  extensions: [pak]
+  group: ports
+  emulators:
+    libretro:
+      tyrquake: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_TYRQUAKE] }
+  comment_en: |
+    Put your Quake 1 .PAK games in this directory.
+  comment_fr: |
+    Placez ici vos fichiers .PAK pour Quake 1.
+
 mrboom:
   name:       MrBoom
+  manufacturer: Misc. Port
+  release:
+  hardware: port
   extensions: [libretro]
   group: ports
   emulators:
     libretro:
-      mrboom: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MRBOOM], 'netplay':true }
+      mrboom: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MRBOOM] }
 
 vectrex:
   name:       Vectrex
+  manufacturer: MB
+  release: 1982
+  hardware: console
   extensions: [bin, gam, vec, zip, 7z]
   emulators:
     libretro:
-      vecx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_VECX], 'netplay':false }
+      vecx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_VECX] }
 
 lutro:
   name:       Lutro
+  manufacturer: Misc. Port
+  release:
+  hardware: port
   extensions: [lutro, zip, 7z]
   group: ports
   emulators:
     libretro:
-      lutro: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_LUTRO], 'netplay':false }
+      lutro: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_LUTRO] }
   comment_en: |
     LUA demo games on github:
     https://github.com/libretro/lutro-platformer
@@ -596,11 +784,14 @@ lutro:
 
 cavestory:
   name:       Cave Story
+  manufacturer: Daisuke "Pixel" Amaya
+  release: 2004
+  hardware: port
   extensions: [exe]
   group: ports
   emulators:
     libretro:
-      nxengine: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_NXENGINE], 'netplay':false }
+      nxengine: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_NXENGINE] }
   comment_en: |
     Download the game from the following URL and uncompress it in this folder.
     http://www.cavestory.org/downloads/cavestoryen.zip
@@ -616,17 +807,23 @@ cavestory:
 
 atarist:
   name:       Atari ST
+  manufacturer: Atari
+  release: 1985
+  hardware: computer
   extensions: [st, msa, stx, dim, ipf, m3u, zip, 7z]
   emulators:
     libretro:
-      hatari: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_HATARI], 'netplay':false }
+      hatari: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_HATARI] }
 
 amstradcpc:
   name:       Amstrad CPC
+  manufacturer: Amstrad
+  release: 1984
+  hardware: computer
   extensions: [dsk, sna, tap, cdt, voc, m3u, zip, 7z]
   emulators:
     libretro:
-      cap32: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_CAP32], 'netplay':true }
+      cap32: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_CAP32] }
   comment_en: |
     To enable gamepad support, go in RetroArch menu with "Hotkey + B", then switch this option:
     "Quick Menu/Core Input Options/User 1 Device type: Retropad" with "Amstrad Joystick"
@@ -636,12 +833,15 @@ amstradcpc:
 
 msx1:
   name:       MSX1
+  manufacturer: Microsoft
+  release: 1983
+  hardware: computer
   extensions: [dsk, mx1, rom, zip, 7z]
   platform:   msx
   group:      msx
   emulators:
     libretro:
-      bluemsx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BLUEMSX], 'netplay':false }
+      bluemsx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BLUEMSX] }
   comment_en: |
     ## BIOS ##
 
@@ -693,12 +893,15 @@ msx1:
 
 msx2:
   name:       MSX2
+  manufacturer: Microsoft
+  release: 1985
+  hardware: computer
   extensions: [dsk, mx2, om, zip, 7z]
   platform:   msx
   group:      msx
   emulators:
     libretro:
-      bluemsx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BLUEMSX], 'netplay':false }
+      bluemsx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BLUEMSX] }
   comment_en: |
     ## BIOS ##
 
@@ -750,12 +953,15 @@ msx2:
 
 msx2+:
   name:       MSX2+
+  manufacturer: Microsoft
+  release: 1988
+  hardware: computer
   extensions: [dsk, mx2, om, zip, 7z]
   platform:   msx
   group:      msx
   emulators:
     libretro:
-      bluemsx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BLUEMSX], 'netplay':false }
+      bluemsx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BLUEMSX] }
   comment_en: |
     ## BIOS ##
 
@@ -807,18 +1013,24 @@ msx2+:
 
 odyssey2:
   name:       Odyssey2
+  manufacturer: Magnavox - Philips
+  release: 1978
+  hardware: console
   extensions: [bin, zip, 7z]
   path:       o2em
   emulators:
     libretro:
-      o2em: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_O2EM], 'netplay':false }
+      o2em: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_O2EM] }
 
 zx81:
   name:       ZX81
+  manufacturer: Sinclair
+  release: 1981
+  hardware: computer
   extensions: [tzx, p, zip, 7z]
   emulators:
     libretro:
-      '81': { requireAnyOf: [BR2_PACKAGE_LIBRETRO_81], 'netplay':true }
+      '81': { requireAnyOf: [BR2_PACKAGE_LIBRETRO_81] }
   comment_en: |
     To enable your gamepad support, go in retroarch menu with "Hotkey+B", then switch this option:
     "Settings/Input/Input User 1 Binds/User 1 Device type: Retropad" with "Cursor Joystick"
@@ -828,10 +1040,13 @@ zx81:
 
 zxspectrum:
   name:       ZXSpectrum
+  manufacturer: Sinclair
+  release: 1982
+  hardware: computer
   extensions: [tzx, tap, z80, rzx, scl, trd, zip, 7z]
   emulators:
     libretro:
-      fuse: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FUSE], 'netplay':false }
+      fuse: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FUSE] }
   comment_en: |
     ## Input Devices ##
 
@@ -860,6 +1075,9 @@ zxspectrum:
 
 moonlight:
   name:       Moonlight Embedded
+  manufacturer: Misc. System
+  release:
+  hardware: system
   extensions: [moonlight]
   emulators:
     moonlight:
@@ -867,6 +1085,9 @@ moonlight:
 
 apple2:
   name:       Apple II
+  manufacturer: Apple
+  release: 1977
+  hardware: computer
   extensions: [nib, do, po, dsk]
   includeEmulators: no
   emulators:
@@ -875,24 +1096,32 @@ apple2:
 
 saturn:
   name:       Sega Saturn
+  manufacturer: Sega
+  release: 1994
+  hardware: console
   extensions: [cue, ccd, m3u, chd, iso, zip, 7z]
   emulators:
     libretro:
-      yabause:       { requireAnyOf: [BR2_PACKAGE_LIBRETRO_YABAUSE], 'netplay':false }
-      beetle-saturn: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BEETLE_SATURN], 'netplay':true }
-      kronos:        { requireAnyOf: [BR2_PACKAGE_LIBRETRO_KRONOS], 'netplay':false }
-      yabasanshiro:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_YABASANSHIRO], 'netplay':false }
+      beetle-saturn: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BEETLE_SATURN] }
+      kronos:        { requireAnyOf: [BR2_PACKAGE_LIBRETRO_KRONOS] }
+      yabasanshiro:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_YABASANSHIRO] }
 
 jaguar:
   name:       Atari Jaguar
+  manufacturer: Atari
+  release: 1993
+  hardware: console
   extensions: [j64, jag, zip, 7z]
   theme:      atarijaguar
   emulators:
     libretro:
-      virtualjaguar: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_VIRTUALJAGUAR], 'netplay':false }
+      virtualjaguar: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_VIRTUALJAGUAR] }
 
 gamecube:
   name:       Nintendo GameCube
+  manufacturer: Nintendo
+  release: 2001
+  hardware: console
   extensions: [gcm, iso, gcz, ciso, wbfs]
   platform:   gc
   theme:      gc
@@ -902,6 +1131,9 @@ gamecube:
 
 wii:
   name:       Nintendo Wii
+  manufacturer: Nintendo
+  release: 2006
+  hardware: console
   extensions: [gcm, iso, gcz, ciso, wbfs, wad]
   emulators:
     dolphin:
@@ -920,6 +1152,9 @@ wii:
     Mettez les textures personnalisées dans /userdata/saves/dolphin-emu/Load/Textures/<game id>.
 ps2:
   name:       Sony Playstation 2
+  manufacturer: Sony
+  release: 2000
+  hardware: console
   extensions: [iso, mdf, nrg, bin, img, dump, gz, cso]
   includeEmulators: no
   emulators:
@@ -928,94 +1163,141 @@ ps2:
 
 3do:
   name:       3DO Interactive Multiplayer
+  manufacturer: Panasonic - Sanyo - Goldstar
+  release: 1993
+  hardware: console
   extensions: [iso, chd, cue, zip, 7z]
   emulators:
     libretro:
-      opera:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_OPERA], 'netplay':true  }
+      opera:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_OPERA]  }
 
 intellivision:
   name:       Mattel Intellivision
+  manufacturer: Mattel
+  release: 1979
+  hardware: console
   extensions: [int, bin, rom, zip, 7z]
   emulators:
     libretro:
-      freeintv: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FREEINTV], 'netplay':false }
+      freeintv: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FREEINTV] }
 
 x68000:
   name:       Sharp X68000
+  manufacturer: Sharp
+  release: 1987
+  hardware: computer
   extensions: [dim, img, d88, 88d, hdm, dup, 2hd, xdf, hdf, cmd, m3u, zip, 7z]
   emulators:
     libretro:
-      px68k: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PX68K], 'netplay':false }
+      px68k: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PX68K] }
 
 3ds:
   name:       Nintendo 3DS
+  manufacturer: Nintendo
+  release: 2011
+  hardware: portable
   extensions: [3ds, 3dsx, cxi, axf, elf]
   emulators:
     citra:
       citra: { requireAnyOf: [BR2_PACKAGE_CITRA]          }
     libretro:
-      citra: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_CITRA], 'netplay':false }
+      citra: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_CITRA] }
+
+openbor:
+  name:       OpenBOR
+  manufacturer: Misc. Port
+  release:
+  hardware: port
+  extensions: [pak]
+  emulators:
+    openbor:
+      openbor: { requireAnyOf: [BR2_PACKAGE_OPENBOR] }
+      openbor4432: { requireAnyOf: [BR2_PACKAGE_OPENBOR4432] }
 
 satellaview:
   name:       Satellaview
+  manufacturer: Nintendo
+  release: 1995
+  hardware: console
   extensions: [bs, smc, sfc, zip, 7z]
   emulators:
     libretro:
-      snes9x: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_SNES9X], 'netplay':true }
+      snes9x: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_SNES9X] }
 
 sufami:
   name:       SuFami Turbo
+  manufacturer: Bandai
+  release: 1996
+  hardware: console
   extensions: [st, fig, bs, smc, sfc, zip, 7z]
   emulators:
     libretro:
-      snes9x: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_SNES9X], 'netplay':true }
+      snes9x: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_SNES9X] }
 
 pokemini:
   name:       Pokemon-Mini
+  manufacturer: Nintendo
+  release: 2001
+  hardware: portable
   extensions: [min, zip, 7z]
   emulators:
     libretro:
-      pokemini: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_POKEMINI], 'netplay':false }
+      pokemini: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_POKEMINI] }
 
 gx4000:
   name:       Amstrad GX4000
+  manufacturer: Amstrad
+  release: 1991
+  hardware: console
   extensions: [dsk, m3u, cpr, zip, 7z]
   emulators:
     libretro:
-      cap32: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_CAP32], 'netplay':true }
+      cap32: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_CAP32] }
 
 daphne:
   name:       Arcade (Daphne)
+  manufacturer: Misc. Arcade
+  release:
+  hardware: arcade
   extensions: [daphne]
   emulators:
     daphne:
       hypseus:  { requireAnyOf: [BR2_PACKAGE_DAPHNE]          }
     libretro:
-      daphne:   { requireAnyOf: [BR2_PACKAGE_LIBRETRO_DAPHNE], 'netplay':false }
+      daphne:   { requireAnyOf: [BR2_PACKAGE_LIBRETRO_DAPHNE] }
 
 thomson:
   name:       Thomson - MO/TO (Theodore)
+  manufacturer: Thomson
+  release: 1984
+  hardware: computer
   extensions: [fd, sap, k7, m7, m5, rom, zip]
   emulators:
     libretro:
-      theodore:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_THEODORE], 'netplay':true }
+      theodore:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_THEODORE] }
 
 pc98:
-  name:       NEC PC-98
+  name:       NEC PC-9800
+  manufacturer: NEC
+  release: 1982
+  hardware: computer
   extensions: [d98, zip, 98d, fdi, fdd, 2hd, tfd, d88, 88d, hdm, xdf, dup, cmd, hdi, thd, nhd, hdd, hdn]
   platform:   pc98
   emulators:
     libretro:
-      np2kai:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PC98], 'netplay':true }
+      np2kai:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PC98] }
 
 lightgun:
   name:       Light Gun
+  manufacturer: Misc. System
+  release:
+  hardware: system
   extensions: [zip, 7z]
   platform:   arcade
   emulators:
     libretro:
-      mame078plus:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME2003_PLUS], 'netplay':true }
-      mame0139:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME2010], 'netplay':true }
+      mame078plus:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME2003_PLUS] }
+      mame0139:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME2010] }
   comment_en: |
           Here are MAME games that can be played with a light gun, recognised as a mouse in MAME.
           An example of a working setup is to use a DolphinBar in 'mode 2' (keyboard and mouse game) with a Wiimote as the gun.
@@ -1025,8 +1307,50 @@ lightgun:
           Un exemple de setup qui fonctionne est si vous utilisez une DolphinBar en 'mode 2' (mode jeu clavier/souris) avec une Wiimote comme flingue.
           Si vous avez plus d'une souris installee, assurez-vous que la DolphinBar / Wiimote soit reconnue comme une des deux premieres.
 
+ports:
+  name:       Ports
+  manufacturer: Misc. Port
+  release:
+  hardware: port
+  extensions: [sh]
+  group: ports
+  path:       /userdata/roms/ports
+  command:    "/bin/sh %ROM% %CONTROLLERSCONFIG%"
+  force:      True
+  comment_en: |
+          Third party Linux games and apps that can be run from a .sh script.
+  comment_fr: |
+          Jeux et applications Linux additionnels qui peuvent etre lancés depuis un script .sh.
+
+windows:
+  name:       Windows
+  manufacturer: Microsoft
+  release: 1992
+  hardware: pc
+  extensions: [exe, iso, wine, squashfs]
+  platform:   pc
+  theme:      pc
+  emulators:
+    wine:
+      wine:  { requireAnyOf: [BR2_PACKAGE_WINE] }
+
+windows_installers:
+  name:       Windows installers
+  manufacturer: Microsoft
+  release: 1992
+  hardware: pc
+  extensions: [exe, iso, wine]
+  platform:   pc
+  theme:      pc
+  emulators:
+    wine:
+      wine:  { requireAnyOf: [BR2_PACKAGE_WINE] }
+
 imageviewer:
   name:       Screenshots
+  manufacturer: Misc. System
+  release:
+  hardware: system
   extensions: [jpg, jpeg, png, bmp, psd, tga, gif, hdr, pic, ppm, pgm, mkv]
   path:       /userdata/screenshots
   platform:   ignore

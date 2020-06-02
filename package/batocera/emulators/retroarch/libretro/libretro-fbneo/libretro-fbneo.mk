@@ -3,8 +3,8 @@
 # FBNEO
 #
 ################################################################################
-# Version.: Commits on Mar 25, 2020
-LIBRETRO_FBNEO_VERSION = 71cf627f2cb5f4c003cbfa535e8cf5950b561f10
+# Version.: Commits on May 27, 2020
+LIBRETRO_FBNEO_VERSION = 1573fcd6d7d2ff9be781f8107f146cb6233c81b5
 LIBRETRO_FBNEO_SITE = $(call github,libretro,FBNeo,$(LIBRETRO_FBNEO_VERSION))
 LIBRETRO_FBNEO_LICENSE = Non-commercial
 
@@ -19,14 +19,12 @@ ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86) $(BR2_PACKAGE_BATOCERA_TARGET_X86_64),y
 endif
 
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA),y)
-	LIBRETRO_FBNEO_PLATFORM = classic_armv8_a35
 	LIBRETRO_FBNEO_EXTRA_ARGS = USE_EXPERIMENTAL_FLAGS=0
-else
-	LIBRETRO_FBNEO_PLATFORM = $(LIBRETRO_PLATFORM)
 endif
 
 define LIBRETRO_FBNEO_BUILD_CMDS
-	$(TARGET_CONFIGURE_OPTS) $(MAKE) -C $(@D)/src/burner/libretro -f Makefile platform="$(LIBRETRO_FBNEO_PLATFORM)" $(LIBRETRO_FBNEO_EXTRA_ARGS)
+	$(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" -C $(@D)/src/burner/libretro -f Makefile \
+		platform="$(LIBRETRO_PLATFORM)" $(LIBRETRO_FBNEO_EXTRA_ARGS)
 endef
 
 define LIBRETRO_FBNEO_INSTALL_TARGET_CMDS

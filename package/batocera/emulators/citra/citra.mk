@@ -18,6 +18,7 @@ CITRA_CONF_OPTS += -DCMAKE_BUILD_TYPE=Release
 CITRA_CONF_OPTS += -DENABLE_WEB_SERVICE=OFF
 CITRA_CONF_OPTS += -DENABLE_QT_TRANSLATION=ON
 CITRA_CONF_OPTS += -DENABLE_FFMPEG=ON
+CITRA_CONF_OPTS += -DARCHITECTURE=x86_64
 
 CITRA_CONF_ENV += LDFLAGS=-lpthread
 
@@ -34,9 +35,6 @@ define CITRA_INSTALL_TARGET_CMDS
 	cp -pr $(@D)/buildroot-build/externals/cubeb/*.so \
 		$(TARGET_DIR)/usr/lib/
 
-	cp -pr $(@D)/buildroot-build/externals/dynarmic/src/*.so \
-		$(TARGET_DIR)/usr/lib/
-	
 	cp -pr $(@D)/buildroot-build/externals/teakra/src/*.so \
 		$(TARGET_DIR)/usr/lib/
 

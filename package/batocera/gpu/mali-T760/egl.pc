@@ -5,7 +5,7 @@ includedir=${prefix}/include
 
 Name: egl
 Description: Mali EGL library
-Requires.private: 
+Requires.private:
 Version: 7.10
 Libs: -L${libdir} -lEGL
 Libs.private: -lm -lpthread

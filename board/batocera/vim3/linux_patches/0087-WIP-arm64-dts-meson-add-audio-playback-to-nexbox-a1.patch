@@ -1,0 +1,52 @@
+From 6c27dc5bc0dc58eced73f98741e8ea515f34c7d1 Mon Sep 17 00:00:00 2001
+From: Christian Hewitt <christianshewitt@gmail.com>
+Date: Wed, 19 Feb 2020 04:33:58 +0000
+Subject: [PATCH 087/105] WIP: arm64: dts: meson: add audio playback to nexbox
+ a1
+
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+---
+ .../boot/dts/amlogic/meson-gxm-nexbox-a1.dts  | 20 +++++++++++++++++++
+ 1 file changed, 20 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/amlogic/meson-gxm-nexbox-a1.dts b/arch/arm64/boot/dts/amlogic/meson-gxm-nexbox-a1.dts
+index c2bd4dbbf38c..bb03abef1923 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-gxm-nexbox-a1.dts
++++ b/arch/arm64/boot/dts/amlogic/meson-gxm-nexbox-a1.dts
+@@ -10,6 +10,7 @@
+ /dts-v1/;
+ 
+ #include "meson-gxm.dtsi"
++#include "meson-gxl-audio-hdmi-spdif.dtsi"
+ 
+ / {
+ 	compatible = "nexbox,a1", "amlogic,s912", "amlogic,meson-gxm";
+@@ -29,6 +30,25 @@ memory@0 {
+ 		reg = <0x0 0x0 0x0 0x80000000>;
+ 	};
+ 
++	vddio_ao18: regulator-vddio_ao18 {
++		compatible = "regulator-fixed";
++		regulator-name = "VDDIO_AO18";
++		regulator-min-microvolt = <1800000>;
++		regulator-max-microvolt = <1800000>;
++	};
++
++	hdmi_5v: regulator-hdmi-5v {
++		compatible = "regulator-fixed";
++
++		regulator-name = "HDMI_5V";
++		regulator-min-microvolt = <5000000>;
++		regulator-max-microvolt = <5000000>;
++
++		gpio = <&gpio GPIOH_3 GPIO_ACTIVE_HIGH>;
++		enable-active-high;
++		regulator-always-on;
++	};
++
+ 	vddio_boot: regulator-vddio-boot {
+ 		compatible = "regulator-fixed";
+ 		regulator-name = "VDDIO_BOOT";
+-- 
+2.25.0
+

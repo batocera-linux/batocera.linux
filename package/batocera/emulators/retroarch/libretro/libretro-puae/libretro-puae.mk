@@ -3,26 +3,19 @@
 # PUAE
 #
 ################################################################################
-# Version.: Commits on Feb 04, 2020
-LIBRETRO_PUAE_VERSION = 167f4fdb079ed41f7be1874b90d9c2ec6adc9ccb
+# Version.: Commits on May 22, 2020
+LIBRETRO_PUAE_VERSION = 638bf3421b6ab0ff534afe57fe1d55c45d643807
 LIBRETRO_PUAE_SITE = $(call github,libretro,libretro-uae,$(LIBRETRO_PUAE_VERSION))
 LIBRETRO_PUAE__LICENSE = GPLv2
 
+PUAEPLATFORM=$(LIBRETRO_PLATFORM)
+
 ifeq ($(BR2_PACKAGE_RPI_USERLAND),y)
 	PUAEPLATFORM=rpi
-else
-	PUAEPLATFORM=unix
-	ifeq ($(BR2_ARM_CPU_HAS_ARM),y)
-		PUAEPLATFLAGS=-DARM  -marm
-	endif
-	ifeq ($(BR2_aarch64),y)
-		PUAEPLATFLAGS=-DAARCH64
-	endif
 endif
 
 define LIBRETRO_PUAE_BUILD_CMDS
-	CFLAGS="$(TARGET_CFLAGS)" CXXFLAGS="$(TARGET_CXXFLAGS)" LDFLAGS="$(TARGET_LDFLAGS)" $(MAKE) \
-		CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" -C $(@D)/ -f Makefile platform="$(PUAEPLATFORM)" platflags="$(PUAEPLATFLAGS)"
+	$(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" -C $(@D)/ -f Makefile platform="$(PUAEPLATFORM)"
 endef
 
 define LIBRETRO_PUAE_INSTALL_TARGET_CMDS

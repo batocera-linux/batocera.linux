@@ -13,15 +13,19 @@ from generators.moonlight.moonlightGenerator import MoonlightGenerator
 from generators.mupen.mupenGenerator import MupenGenerator
 from generators.ppsspp.ppssppGenerator import PPSSPPGenerator
 from generators.reicast.reicastGenerator import ReicastGenerator
+from generators.flycast.flycastGenerator import FlycastGenerator
 from generators.dolphin.dolphinGenerator import DolphinGenerator
 from generators.pcsx2.pcsx2Generator import Pcsx2Generator
 from generators.scummvm.scummvmGenerator import ScummVMGenerator
 from generators.dosbox.dosboxGenerator import DosBoxGenerator
+from generators.dosboxx.dosboxxGenerator import DosBoxxGenerator
 from generators.vice.viceGenerator import ViceGenerator
 from generators.fsuae.fsuaeGenerator import FsuaeGenerator
 from generators.amiberry.amiberryGenerator import AmiberryGenerator
 from generators.citra.citraGenerator import CitraGenerator
 from generators.daphne.daphneGenerator import DaphneGenerator
+from generators.openbor.openborGenerator import OpenborGenerator
+from generators.wine.wineGenerator import WineGenerator
 import controllersConfig as controllers
 import signal
 import batoceraFiles
@@ -38,35 +42,52 @@ generators = {
     'moonlight': MoonlightGenerator(),
     'scummvm': ScummVMGenerator(),
     'dosbox': DosBoxGenerator(),
+    'dosboxx': DosBoxxGenerator(),
     'mupen64plus': MupenGenerator(),
     'vice': ViceGenerator(),
     'fsuae': FsuaeGenerator(),
     'amiberry': AmiberryGenerator(),
     'reicast': ReicastGenerator(),
+    'flycast': FlycastGenerator(),
     'dolphin': DolphinGenerator(),
     'pcsx2': Pcsx2Generator(),
     'ppsspp': PPSSPPGenerator(),
     'citra' : CitraGenerator(),
-    'daphne' : DaphneGenerator()
+    'daphne' : DaphneGenerator(),
+    'openbor' : OpenborGenerator(),
+    'wine' : WineGenerator()
 }
 
-def main(args):
+def main(args, maxnbplayers):
     playersControllers = dict()
+
+    controllersInput = []
+    for p in range(1, maxnbplayers+1):
+        ci = {}
+        ci["index"]      = getattr(args, "p{}index"     .format(p))
+        ci["guid"]       = getattr(args, "p{}guid"      .format(p))
+        ci["name"]       = getattr(args, "p{}name"      .format(p))
+        ci["devicepath"] = getattr(args, "p{}devicepath".format(p))
+        ci["nbbuttons"]  = getattr(args, "p{}nbbuttons" .format(p))
+        ci["nbhats"]     = getattr(args, "p{}nbhats"    .format(p))
+        ci["nbaxes"]     = getattr(args, "p{}nbaxes"    .format(p))
+        controllersInput.append(ci)
+
     # Read the controller configuration
-    playersControllers = controllers.loadControllerConfig(args.p1index, args.p1guid, args.p1name, args.p1devicepath, args.p1nbbuttons, args.p1nbhats, args.p1nbaxes,
-                                                          args.p2index, args.p2guid, args.p2name, args.p2devicepath, args.p2nbbuttons, args.p2nbhats, args.p2nbaxes,
-                                                          args.p3index, args.p3guid, args.p3name, args.p3devicepath, args.p3nbbuttons, args.p3nbhats, args.p3nbaxes,
-                                                          args.p4index, args.p4guid, args.p4name, args.p4devicepath, args.p4nbbuttons, args.p4nbhats, args.p4nbaxes,
-                                                          args.p5index, args.p5guid, args.p5name, args.p5devicepath, args.p5nbbuttons, args.p5nbhats, args.p5nbaxes)
+    playersControllers = controllers.loadControllerConfig(controllersInput)
     # find the system to run
     systemName = args.system
     eslog.log("Running system: {}".format(systemName))
     system = Emulator(systemName, args.rom)
 
+    system.config["emulator-forced"] = False
+    system.config["core-forced"]     = False
     if args.emulator is not None:
         system.config["emulator"] = args.emulator
+        system.config["emulator-forced"] = True # tip to indicated that the emulator was forced
     if args.core is not None:
         system.config["core"] = args.core
+        system.config["core-forced"] = True
 
     eslog.debug("Settings: {}".format(system.config))
     if "emulator" in system.config and "core" in system.config:
@@ -176,41 +197,17 @@ if __name__ == '__main__':
     signal.signal(signal.SIGINT, signal_handler)
 
     parser = argparse.ArgumentParser(description='emulator-launcher script')
-    parser.add_argument("-p1index", help="player1 controller index", type=int, required=False)
-    parser.add_argument("-p1guid", help="player1 controller SDL2 guid", type=str, required=False)
-    parser.add_argument("-p1name", help="player1 controller name", type=str, required=False)
-    parser.add_argument("-p1devicepath", help="player1 controller device", type=str, required=False)
-    parser.add_argument("-p1nbbuttons", help="player1 controller number of buttons", type=str, required=False)
-    parser.add_argument("-p1nbhats", help="player1 controller number of hats", type=str, required=False)
-    parser.add_argument("-p1nbaxes", help="player1 controller number of axes", type=str, required=False)
-    parser.add_argument("-p2index", help="player2 controller index", type=int, required=False)
-    parser.add_argument("-p2guid", help="player2 controller SDL2 guid", type=str, required=False)
-    parser.add_argument("-p2name", help="player2 controller name", type=str, required=False)
-    parser.add_argument("-p2devicepath", help="player2 controller device", type=str, required=False)
-    parser.add_argument("-p2nbbuttons", help="player2 controller number of buttons", type=str, required=False)
-    parser.add_argument("-p2nbhats", help="player2 controller number of hats", type=str, required=False)
-    parser.add_argument("-p2nbaxes", help="player2 controller number of axes", type=str, required=False)
-    parser.add_argument("-p3index", help="player3 controller index", type=int, required=False)
-    parser.add_argument("-p3guid", help="player3 controller SDL2 guid", type=str, required=False)
-    parser.add_argument("-p3name", help="player3 controller name", type=str, required=False)
-    parser.add_argument("-p3devicepath", help="player3 controller device", type=str, required=False)
-    parser.add_argument("-p3nbbuttons", help="player3 controller number of buttons", type=str, required=False)
-    parser.add_argument("-p3nbhats", help="player3 controller number of hats", type=str, required=False)
-    parser.add_argument("-p3nbaxes", help="player3 controller number of axes", type=str, required=False)
-    parser.add_argument("-p4index", help="player4 controller index", type=int, required=False)
-    parser.add_argument("-p4guid", help="player4 controller SDL2 guid", type=str, required=False)
-    parser.add_argument("-p4name", help="player4 controller name", type=str, required=False)
-    parser.add_argument("-p4devicepath", help="player4 controller device", type=str, required=False)
-    parser.add_argument("-p4nbbuttons", help="player4 controller number of buttons", type=str, required=False)
-    parser.add_argument("-p4nbhats", help="player4 controller number of hats", type=str, required=False)
-    parser.add_argument("-p4nbaxes", help="player4 controller number of axes", type=str, required=False)
-    parser.add_argument("-p5index", help="player5 controller index", type=int, required=False)
-    parser.add_argument("-p5guid", help="player5 controller SDL2 guid", type=str, required=False)
-    parser.add_argument("-p5name", help="player5 controller name", type=str, required=False)
-    parser.add_argument("-p5devicepath", help="player5 controller device", type=str, required=False)
-    parser.add_argument("-p5nbbuttons", help="player5 controller number of buttons", type=str, required=False)
-    parser.add_argument("-p5nbhats", help="player5 controller number of hats", type=str, required=False)
-    parser.add_argument("-p5nbaxes", help="player5 controller number of axes", type=str, required=False)
+
+    maxnbplayers = 8
+    for p in range(1, maxnbplayers+1):
+        parser.add_argument("-p{}index"     .format(p), help="player{} controller index"            .format(p), type=int, required=False)
+        parser.add_argument("-p{}guid"      .format(p), help="player{} controller SDL2 guid"        .format(p), type=str, required=False)
+        parser.add_argument("-p{}name"      .format(p), help="player{} controller name"             .format(p), type=str, required=False)
+        parser.add_argument("-p{}devicepath".format(p), help="player{} controller device"           .format(p), type=str, required=False)
+        parser.add_argument("-p{}nbbuttons" .format(p), help="player{} controller number of buttons".format(p), type=str, required=False)
+        parser.add_argument("-p{}nbhats"    .format(p), help="player{} controller number of hats"   .format(p), type=str, required=False)
+        parser.add_argument("-p{}nbaxes"    .format(p), help="player{} controller number of axes"   .format(p), type=str, required=False)
+    
     parser.add_argument("-system", help="select the system to launch", type=str, required=True)
     parser.add_argument("-rom", help="rom absolute path", type=str, required=True)
     parser.add_argument("-emulator", help="force emulator", type=str, required=False)
@@ -223,7 +220,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
     try:
         exitcode = -1
-        exitcode = main(args)
+        exitcode = main(args, maxnbplayers)
     except Exception as e:
         eslog.error("configgen exception: ", exc_info=True)
     time.sleep(1) # this seems to be required so that the gpu memory is restituated and available for es

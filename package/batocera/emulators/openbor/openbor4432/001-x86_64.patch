@@ -1,0 +1,34 @@
+diff --git a/Makefile b/Makefile
+index 10d7a23..6ac1625 100644
+--- a/Makefile
++++ b/Makefile
+@@ -84,16 +84,16 @@ YASM 	        = yasm
+ CC  	        = $(LNXDEV)/$(PREFIX)gcc
+ OBJTYPE         = elf
+ INCLUDES        = $(SDKPATH)/include
+-ifeq ($(findstring 64, $(GCC_TARGET)), 64)
++ifeq ($(findstring 64, $(BUILD_PLATFORM)), 64)
+ TARGET_ARCH     = amd64
+ BUILD_AMD64     = 1
+ ARCHFLAGS       = -m64
+-LIBRARIES       = $(SDKPATH)/lib/$(GCC_TARGET)
++#LIBRARIES       = $(SDKPATH)/lib/$(GCC_TARGET)
+ CFLAGS          += -DAMD64
+ else
+ TARGET_ARCH     = x86
+ ARCHFLAGS       = -m32
+-LIBRARIES       = $(SDKPATH)/lib32
++#LIBRARIES       = $(SDKPATH)/lib32
+ BUILD_MMX       = 1
+ endif
+ ifeq ($(BUILD_LINUX), 0)
+@@ -289,9 +289,6 @@ ifndef NO_STRIP
+ ifdef BUILD_WIN
+ STRIP 	        = $(WINDEV)/$(PREFIX)strip$(EXTENSION) $(TARGET) -o $(TARGET_FINAL)
+ endif
+-ifdef BUILD_LINUX
+-STRIP 	        = $(LNXDEV)/$(PREFIX)strip $(TARGET) -o $(TARGET_FINAL)
+-endif
+ ifdef BUILD_DARWIN
+ STRIP           = $(PREFIX)strip $(TARGET) -o $(TARGET_FINAL)
+ endif

@@ -9,9 +9,7 @@ do_help() {
 }
 
 do_list() {
-    connmanctl services |
-	grep -E "^... [^ ]* [ ]* wifi_.*$" |
-	sed -e s+"^... \([^ ]*\) [ ]* wifi_.*$"+"\1"+
+    connmanctl services | sed 's/^...[ ]*//' | awk -F '[ ]*[ ]wifi_[[:alnum:]]*_' '{if (NF==2) print $1}'
 }
 
 do_scanlist() {
@@ -47,8 +45,7 @@ do_disable() {
 }
 
 do_start() {
-    systemsetting="batocera-settings"
-    settingsWlan="`$systemsetting -command load -key wifi.enabled`"
+    settingsWlan="$(batocera-settings -command load -key wifi.enabled)"
     if [ "$settingsWlan" != "1" ];then
         return 0
     fi

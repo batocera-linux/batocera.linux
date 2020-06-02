@@ -3,15 +3,14 @@
 # DESMUME
 #
 ################################################################################
-# Version.: Commits on Sep 1, 2019
-LIBRETRO_DESMUME_VERSION = e8cf461f83eebb195f09e70090f57b07d1bcdd9f
+# Version.: Commits on May 25, 2020
+LIBRETRO_DESMUME_VERSION = 6f520c816303a00a777817dc6a1a8d04ced336ea
 LIBRETRO_DESMUME_SITE = $(call github,libretro,desmume,$(LIBRETRO_DESMUME_VERSION))
 LIBRETRO_DESMUME_LICENSE = GPLv2
 LIBRETRO_DESMUME_DEPENDENCIES = libpcap
 
 define LIBRETRO_DESMUME_BUILD_CMDS
-	CFLAGS="$(TARGET_CFLAGS)" CXXFLAGS="$(TARGET_CXXFLAGS)" $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" LD="$(TARGET_CXX)" \
-		RANLIB="$(TARGET_RANLIB)" AR="$(TARGET_AR)" -C $(@D)/desmume/src/frontend/libretro -f Makefile platform="$(LIBRETRO_PLATFORM)"
+	$(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" -C $(@D)/desmume/src/frontend/libretro -f Makefile platform="$(LIBRETRO_PLATFORM)"
 endef
 
 define LIBRETRO_DESMUME_INSTALL_TARGET_CMDS

@@ -1,8 +1,8 @@
 diff --git a/menu/menu_driver.c b/menu/menu_driver.c
-index d0661c9..c3a6113 100644
+index f342977..d5b73cf 100644
 --- a/menu/menu_driver.c
 +++ b/menu/menu_driver.c
-@@ -415,7 +415,7 @@ int generic_menu_entry_action(
+@@ -499,7 +499,7 @@ int generic_menu_entry_action(
                    entry->label, entry->type, i, entry->entry_idx);
           break;
        case MENU_ACTION_SEARCH:
@@ -11,11 +11,11 @@ index d0661c9..c3a6113 100644
           break;
        case MENU_ACTION_SCAN:
           if (cbs && cbs->action_scan)
-diff --git a/retroarch.c b/retroarch.c
-index 2322439..b4e837f 100644
---- a/retroarch.c
-+++ b/retroarch.c
-@@ -4763,7 +4763,7 @@ static void netplay_announce(void)
+diff --git a/network/netplay/netplay_frontend.c b/network/netplay/netplay_frontend.c
+index 9ece3fb..c9b6f76 100644
+--- a/network/netplay/netplay_frontend.c
++++ b/network/netplay/netplay_frontend.c
+@@ -852,7 +852,7 @@ static void netplay_announce(void)
     frontend_drv =  
        (const frontend_ctx_driver_t*)frontend_driver_get_cpu_architecture_str(
              frontend_architecture_tmp, sizeof(frontend_architecture_tmp));

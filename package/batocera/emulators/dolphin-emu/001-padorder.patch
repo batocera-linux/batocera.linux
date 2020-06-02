@@ -1,0 +1,62 @@
+diff --git a/Source/Core/InputCommon/ControllerInterface/evdev/evdev.cpp b/Source/Core/InputCommon/ControllerInterface/evdev/evdev.cpp
+index 029ea22..cd0d230 100644
+--- a/Source/Core/InputCommon/ControllerInterface/evdev/evdev.cpp
++++ b/Source/Core/InputCommon/ControllerInterface/evdev/evdev.cpp
+@@ -369,11 +369,28 @@ void Init()
+   StartHotplugThread();
+ }
+ 
++struct joypad_udev_entry
++{
++   const char *devnode;
++   struct udev_device *dev;
++};
++
++/* Used for sorting devnodes to appear in the correct order */
++static int sort_devnodes(const void *a, const void *b)
++{
++  const struct joypad_udev_entry *aa = (const struct joypad_udev_entry *) a;
++  const struct joypad_udev_entry *bb = (const struct joypad_udev_entry *) b;
++   return strcmp(aa->devnode, bb->devnode);
++}
++
+ void PopulateDevices()
+ {
+   // We use udev to iterate over all /dev/input/event* devices.
+   // Note: the Linux kernel is currently limited to just 32 event devices. If
+   // this ever changes, hopefully udev will take care of this.
++  unsigned sorted_count = 0;
++  struct joypad_udev_entry sorted[64];
++  int i;
+ 
+   udev* const udev = udev_new();
+   ASSERT_MSG(PAD, udev != nullptr, "Couldn't initialize libudev.");
+@@ -392,11 +409,24 @@ void PopulateDevices()
+ 
+     udev_device* dev = udev_device_new_from_syspath(udev, path);
+ 
+-    if (const char* devnode = udev_device_get_devnode(dev))
+-      AddDeviceNode(devnode);
+-
+-    udev_device_unref(dev);
++    if (const char* devnode = udev_device_get_devnode(dev)) {
++      sorted[sorted_count].devnode = devnode;
++      sorted[sorted_count].dev     = dev;
++      sorted_count++;
++    } else {
++      udev_device_unref(dev);
++    }
+   }
++
++  /* Sort the udev entries by devnode name so that they are
++   * created in the proper order */
++   qsort(sorted, sorted_count, sizeof(struct joypad_udev_entry), sort_devnodes);
++
++   for (i = 0; i < sorted_count; i++) {
++     AddDeviceNode(sorted[i].devnode);
++     udev_device_unref(sorted[i].dev);
++   }
++
+   udev_enumerate_unref(enumerate);
+   udev_unref(udev);
+ }

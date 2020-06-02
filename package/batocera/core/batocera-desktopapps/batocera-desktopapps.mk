@@ -45,6 +45,13 @@ ifeq ($(BR2_PACKAGE_REICAST),y)
   BATOCERA_DESKTOPAPPS_ICONS   += reicast.png
 endif
 
+# flycast
+ifeq ($(BR2_PACKAGE_FLYCAST),y)
+  BATOCERA_DESKTOPAPPS_SCRIPTS += batocera-config-flycast
+  BATOCERA_DESKTOPAPPS_APPS    += flycast-config.desktop
+  BATOCERA_DESKTOPAPPS_ICONS   += flycast.png
+endif
+
 # scummvm
 ifeq ($(BR2_PACKAGE_SCUMMVM),y)
   BATOCERA_DESKTOPAPPS_SCRIPTS += batocera-config-scummvm
@@ -57,6 +64,13 @@ ifeq ($(BR2_PACKAGE_CITRA),y)
   BATOCERA_DESKTOPAPPS_SCRIPTS += batocera-config-citra
   BATOCERA_DESKTOPAPPS_APPS    += citra-config.desktop
   BATOCERA_DESKTOPAPPS_ICONS   += citra.png
+endif
+
+# rpcs3
+ifeq ($(BR2_PACKAGE_RPCS3),y)
+  BATOCERA_DESKTOPAPPS_SCRIPTS += batocera-config-rpcs3
+  BATOCERA_DESKTOPAPPS_APPS    += rpcs3-config.desktop
+  BATOCERA_DESKTOPAPPS_ICONS   += rpcs3.png
 endif
 
 define BATOCERA_DESKTOPAPPS_INSTALL_TARGET_CMDS
