@@ -30,6 +30,10 @@ do_push() {
 	    echo_msg "${arch}" "pusing ${ftptarget}..."
 	    lftp ftp://"${FTPBATOCERA}" -e "set ssl:verify-certificate false; mirror -R -e ${BUILDDIR}/${arch}/output/images/batocera /public_html/upgrades/${arch}/stable/last/rc ; quit"
 	    ;;
+	"unstable")
+	    echo_msg "${arch}" "pusing ${ftptarget}..."
+	    lftp ftp://"${FTPBATOCERA}" -e "set ssl:verify-certificate false; mirror -R -e ${BUILDDIR}/${arch}/output/images/batocera /public_html/upgrades/${arch}/unstable/last ; quit"
+	    ;;
 	*)
 	    echo_msg "${arch}" "invalid ftp target" >&2
 	    return 1
@@ -49,7 +53,7 @@ do_suspend() {
 
 checkFtpTarget() {
     ftptarget=$1
-    if test "${ftptarget}" != "beta" -a "${ftptarget}" != "rc"
+    if test "${ftptarget}" != "beta" -a "${ftptarget}" != "rc" -a "${ftptarget}" != "unstable"
     then
 	echo_msg "-" "invalid ftp target ${ftptarget}" >&2
 	return 1
@@ -196,6 +200,7 @@ case "${1}" in
 	echo "${PROGNAME} defconfig x86"
 	echo "${PROGNAME} build beta"
 	echo "${PROGNAME} build rc"
+	echo "${PROGNAME} build unstable"
 	echo "${PROGNAME} enter x86"
 	echo "${PROGNAME} add x86"
 	echo "${PROGNAME} list"
