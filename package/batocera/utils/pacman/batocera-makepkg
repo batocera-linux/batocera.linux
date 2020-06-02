@@ -16,11 +16,11 @@ COMMENT_CHAR="#"
 # pkgver = 1.0.0-1
 # pkgdesc = Batocera bezels with a CRT effect 
 # arch = any
-### These will be added automaically
-# packager = batocera-makepkg
+### And these will be added automatically
+# packager = https://batocera.org (unless previously filled with your name or email)
+# url = http://batocera.org (unless previously filled with the the ROM URL)
 # size = 165123000 # size of the package
 # builddate = 1590539371 # epoch of creation
-# url = http://batocera.org
 
 ##### Function Calls #####
 
@@ -52,6 +52,16 @@ function check_argument() {
 	[[ -z "$val" && $ret -eq 0 ]] && echo "ERROR: '$vinput' is empty - you need to manually fill it" >&2 && exit 1
 	[[ "$val" == "$COMMENT_CHAR" ]] && echo "ERROR: '$vinput' is commented with $COMMENT_CHAR!" >&2 && exit 1
 }
+
+function check_optional_argument() {
+	vinput="$1"
+	default="$2"
+	val="$(get_config $vinput)"
+	ret=$?
+	[[ -z "$val" ]] && write_argument "$vinput" "$default"
+	[[ "$val" == "$COMMENT_CHAR" ]] && write_argument "$vinput" "$default"
+}
+
 
 function set_config() {
 	# search for first key.name at beginning of line and write value to it
@@ -103,14 +113,16 @@ function main() {
 	    for mandatory in pkgname pkgver pkgdesc arch ; do
 		    check_argument "$mandatory"
 	    done
-	    # Now the parameters to add 
-	    write_argument packager batocera-makepkg
-	    write_argument url http://batocera.org
+	    for optional in url packager ; do
+		    check_optional_argument "$optional" http://batocera.org
+	    done
+	    # Now the parameters to add / refresh
 	    sz=$(du -s . | cut -f1)
 	    write_argument size $(expr $sz \* 1024)
 	    write_argument builddate $(date +%s)
 	    # Finally, create the actual package
 	    sanitize_info
+	    rm -rf "$BATOEXEC_PATH" # avoid copy/paste from previous packages
 	    if [[ -f "$BATOEXEC" ]]; then
 		    mkdir -p "$BATOEXEC_PATH"
 		    cp -f "$BATOEXEC" "$BATOEXEC_PATH"/"$(get_config pkgname)"

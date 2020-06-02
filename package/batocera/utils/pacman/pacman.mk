@@ -21,6 +21,7 @@ define BATOCERA_PACMAN_INSTALL_CONF
 	$(INSTALL) -D -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/utils/pacman/batocera-pacman-batoexec $(TARGET_DIR)/usr/bin/batocera-pacman-batoexec
 	$(INSTALL) -D -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/utils/pacman/batocera-install.hook $(TARGET_DIR)/usr/share/batocera/datainit/system/pacman/hooks/batocera-install.hook
 	$(INSTALL) -D -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/utils/pacman/batocera-uninstall.hook $(TARGET_DIR)/usr/share/batocera/datainit/system/pacman/hooks/batocera-uninstall.hook
+	$(INSTALL) -D -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/utils/pacman/userdata_pacman.conf $(TARGET_DIR)/usr/share/batocera/datainit/system/pacman/pacman.conf
 endef
 
 PACMAN_POST_INSTALL_TARGET_HOOKS = BATOCERA_PACMAN_INSTALL_CONF

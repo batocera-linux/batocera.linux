@@ -140,6 +140,7 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
     select BR2_PACKAGE_GPTFDISK_SGDISK                   # fs resize
     select BR2_PACKAGE_E2FSPROGS                         # fs resize
     select BR2_PACKAGE_E2FSPROGS_RESIZE2FS               # fs resize
+    select BR2_PACKAGE_PACMAN                            # pacman package manager
 
     # alsa utils
     select BR2_PACKAGE_ALSA_UTILS
