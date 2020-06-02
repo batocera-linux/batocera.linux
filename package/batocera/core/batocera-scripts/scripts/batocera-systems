@@ -136,6 +136,16 @@ systems = {
                                                     { "md5": "bb72565701b1b6faece07d68ea5da639", "file": "bios/amiga-ext-310-cd32.rom"  },
                                                     { "md5": "89da1838a24460e4b93f4f0c5d92d48d", "file": "bios/amiga-ext-130-cdtv.rom"  }] },
 
+    # ---------- NEC PC-8800 ---------- #
+    # https://github.com/RetroPie/RetroPie-Setup/wiki/PC-8800
+    "pc88":       { "name": "NEC PC-8800", "biosFiles": [   { "md5": "4f984e04a99d56c4cfe36115415d6eb8", "file": "bios/quasi88/N88.ROM"     },
+                                                            { "md5": "793f86784e5608352a5d7f03f03e0858", "file": "bios/quasi88/N88SUB.ROM"  },
+                                                            { "md5": "2ff07b8769367321128e03924af668a0", "file": "bios/quasi88/N88N.ROM"    },
+                                                            { "md5": "d675a2ca186c6efcd6277b835de4c7e5", "file": "bios/quasi88/N88EXT0.ROM" },
+                                                            { "md5": "e844534dfe5744b381444dbe61ef1b66", "file": "bios/quasi88/N88EXT1.ROM" },
+                                                            { "md5": "6548fa45061274dee1ea8ae1e9e93910", "file": "bios/quasi88/N88EXT2.ROM" },
+                                                            { "md5": "fc4b76a402ba501e6ba6de4b3e8b4273", "file": "bios/quasi88/N88EXT3.ROM" } ] },
+
     # ---------- NEC PC-9800 ---------- #
     # https://github.com/RetroPie/RetroPie-Setup/wiki/PC-9800#bios
     "pc98":       { "name": "NEC PC-9800", "biosFiles": [   { "md5": "e246140dec5124c5e404869a84caefce", "file": "bios/np2kai/BIOS.ROM" },
