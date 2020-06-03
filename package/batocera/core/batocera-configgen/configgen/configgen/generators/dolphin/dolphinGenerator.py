@@ -82,9 +82,43 @@ class DolphinGenerator(Generator):
             dolphinGFXSettings.set("Settings", "ShowFPS", "False")
 
         # for to search for custom textures
-        dolphinGFXSettings.set("Settings", "HiresTextures", "True")
-        dolphinGFXSettings.set("Settings", "CacheHiresTextures", "True")
-
+        if (system.isOptSet('hires_textures') and (system.config['hires_textures'] == '1')):
+            dolphinGFXSettings.set("Settings", "HiresTextures", "True")
+            dolphinGFXSettings.set("Settings", "CacheHiresTextures", "True")
+        else:
+            dolphinGFXSettings.set("Settings", "HiresTextures", "False")
+            dolphinGFXSettings.set("Settings", "CacheHiresTextures", "False")
+  
+        if (system.isOptSet('perf_hacks') and (system.config['perf_hacks'] == '1')):
+            if not dolphinGFXSettings.has_section("Hacks"):
+                dolphinGFXSettings.add_section("Hacks")
+            if not dolphinGFXSettings.has_section("Enhancements"):
+                dolphinGFXSettings.add_section("Enhancements")        
+            dolphinGFXSettings.set("Hacks", "BBoxEnable", "False")
+            dolphinGFXSettings.set("Hacks", "DeferEFBCopies", "True")
+            dolphinGFXSettings.set("Hacks", "EFBEmulateFormatChanges", "False")
+            dolphinGFXSettings.set("Hacks", "EFBScaledCopy", "True")
+            dolphinGFXSettings.set("Hacks", "EFBToTextureEnable", "True")
+            dolphinGFXSettings.set("Hacks", "SkipDuplicateXFBs", "True")
+            dolphinGFXSettings.set("Hacks", "XFBToTextureEnable", "True")
+            dolphinGFXSettings.set("Enhancements", "ForceFiltering", "True")
+            dolphinGFXSettings.set("Enhancements", "ArbitraryMipmapDetection", "True")
+            dolphinGFXSettings.set("Enhancements", "DisableCopyFilter", "True")
+            dolphinGFXSettings.set("Enhancements", "ForceTrueColor", "True")            
+        else:
+            dolphinGFXSettings.remove_option("Hacks", "BBoxEnable")
+            dolphinGFXSettings.remove_option("Hacks", "DeferEFBCopies")
+            dolphinGFXSettings.remove_option("Hacks", "EFBEmulateFormatChanges")
+            dolphinGFXSettings.remove_option("Hacks", "EFBScaledCopy")
+            dolphinGFXSettings.remove_option("Hacks", "EFBToTextureEnable")
+            dolphinGFXSettings.remove_option("Hacks", "SkipDuplicateXFBs")
+            dolphinGFXSettings.remove_option("Hacks", "XFBToTextureEnable")
+            dolphinGFXSettings.remove_option("Enhancements", "ForceFiltering")
+            dolphinGFXSettings.remove_option("Enhancements", "ArbitraryMipmapDetection")
+            dolphinGFXSettings.remove_option("Enhancements", "DisableCopyFilter")
+            dolphinGFXSettings.remove_option("Enhancements", "ForceTrueColor")  
+  
+ 
         if system.isOptSet('internalresolution'):
             dolphinGFXSettings.set("Settings", "InternalResolution", system.config["internalresolution"])
         else:
