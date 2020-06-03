@@ -2,7 +2,7 @@
 
 NAME="S92switch"
 RUN="/usr/bin/rpi_gpioswitch"
-BTD_PID=$(ps -eo pid,args | grep "/bin/bash $RUN" | grep -v grep | awk '{print $1}')
+BTD_PID=$(pgrep -f "/bin/bash $RUN")
 
 #Add new devices here and modify /usr/bin/rpi_gpioswitch, too
 devices=(
@@ -25,33 +25,33 @@ devices=(
 # Read current config, if no key is set in batocera.conf then try to use
 # default value setted by udev-rule
 powerswitch="$(batocera-settings --command load --key system.power.switch)"
-if [ $? -ne 0 ] && [ -f /var/run/powerswitch-by-udevrule ]; then
+if ! "$powerswitch" && [ -f /var/run/powerswitch-by-udevrule ]; then
     powerswitch="$(cat /var/run/powerswitch-by-udevrule)"
 fi
 
 # Carry out specific functions when asked to by the system
 case "$1" in
     start)
-        for i in ${devices[@]}; do
+        for i in "${devices[@]}"; do
             [ "$i" == "$powerswitch" ] && break
         done
         if [ $? -eq 0 ]; then
-            nice -n 19 $RUN start $powerswitch &
+            nice -n 19 $RUN start "$powerswitch" &
         fi
     ;;
 
     stop)
-        if [ ! -z "$BTD_PID" ]; then
-            kill $BTD_PID
-            $RUN stop $powerswitch
-        elif test -e "/tmp/poweroff.please"; then
-            $RUN stop $powerswitch
+        if [ -n "$BTD_PID" ]; then
+            kill "$BTD_PID"
+            $RUN stop "$powerswitch"
+        elif [ -e "/tmp/shutdown.please" ] || [ -e "/tmp/poweroff.please" ]; then
+            $RUN stop "$powerswitch"
         fi
     ;;
 
     status)
-        if [ ! -z "$BTD_PID" ]; then
-            echo "Service rpi_gpioswitch ["$BTD_PID"] [ OK ]"
+        if [ -n "$BTD_PID" ]; then
+            echo "Service rpi_gpioswitch [""$BTD_PID""] [ OK ]"
         else
             echo "Service rpi_gpioswitch [ KO ]"
         fi
