@@ -14,6 +14,7 @@ define SUPERMODEL3_BUILD_CMDS
 	$(SED) "s+CXX =+CXX ?=+g" $(@D)/Makefiles/Makefile.UNIX
 	$(SED) "s+LD =+LD ?=+g" $(@D)/Makefiles/Makefile.UNIX
 	$(SED) "s+-march=native+-msse+g" $(@D)/Makefiles/Makefile.inc
+	$(SED) "s+OUTFILE = supermodel+OUTFILE = supermodel3+g" $(@D)/Makefiles/Makefile.inc
 	CXX="$(TARGET_CXX)" \
 	CC="$(TARGET_CC)" \
 	LD="$(TARGET_CC)" \
@@ -21,13 +22,13 @@ define SUPERMODEL3_BUILD_CMDS
 endef
 
 define SUPERMODEL3_INSTALL_TARGET_CMDS
-	$(INSTALL) -D $(@D)/bin/supermodel \
-	$(TARGET_DIR)/usr/bin/supermodel
+	$(INSTALL) -D $(@D)/bin/supermodel3 \
+	$(TARGET_DIR)/usr/bin/supermodel3
 endef
 
 define SUPERMODEL3_INSTALL_STAGING_CMDS
-	$(INSTALL) -D $(@D)/bin/supermodel \
-	$(STAGING_DIR)/usr/bin/supermodel
+	$(INSTALL) -D $(@D)/bin/supermodel3 \
+	$(STAGING_DIR)/usr/bin/supermodel3
 endef
 
 $(eval $(generic-package))
