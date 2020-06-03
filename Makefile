@@ -126,3 +126,7 @@ ccache-dir:
 
 %-tail: output-dir-%
 	@tail -F $(OUTPUT_DIR)/$*/build/build-time.log
+
+%-toolchain: %-config
+	@$(MAKE) $*-build CMD=toolchain
+	@$(MAKE) $*-build CMD=llvm
