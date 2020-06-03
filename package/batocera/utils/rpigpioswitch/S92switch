@@ -4,22 +4,18 @@ NAME="S92switch"
 RUN="/usr/bin/rpi_gpioswitch"
 BTD_PID=$(pgrep -f "/bin/bash $RUN")
 
-device_detect(){
 #Add new devices here and modify /usr/bin/rpi_gpioswitch, too
 devices="ATX_RASPI_R2_6 REMOTEPIBOARD_2003 REMOTEPIBOARD_2005 MAUSBERRY WITTYPI ONOFFSHIM RETROFLAG \
          RETROFLAG_ADV RETROFLAG_GPI KINTARO PIN56ONOFF PIN56PUSH PIN356ONOFFRESET ARGONONE"
-}
 
-powerswitch_detect(){
 # Read current config, if no key is set in batocera.conf then try to use
 # default value setted by udev-rule
 powerswitch="$(batocera-settings --command load --key system.power.switch)"
 if [ $? -ne 0 ] && [ -f /var/run/powerswitch-by-udevrule ]; then
     powerswitch="$(cat /var/run/powerswitch-by-udevrule)"
 fi
-}
-options () 
-{# Carry out specific functions when asked to by the system
+
+# Carry out specific functions when asked to by the system
 case "$1" in
     start)
         for i in $devices; do
@@ -56,10 +52,5 @@ case "$1" in
         exit 1
     ;;
 esac
-}
-
-devices_detect
-powerswitch_detect
-options "$@"
 
 exit 0
