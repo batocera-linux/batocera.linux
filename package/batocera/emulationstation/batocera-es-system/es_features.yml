@@ -153,11 +153,9 @@ daphne:
   features: [ratio, rewind]
 
 dolphin:
-  features: [ratio, rewind,internal_resolution]
+  features: [ratio, rewind]
   systems:
-    wii:
-      features: [emulated_wiimotes]
-      cfeatures:
+    cfeatures:
         internalresolution:
           prompt: INTERNAL RESOLUTION
             choices:
@@ -166,7 +164,10 @@ dolphin:
                 3x Native: 3
                 4x Native: 4
                 5x Native: 5 
-                6x Native: 6    
+                6x Native: 6 
+    wii:
+      features: [emulated_wiimotes]
+      cfeatures:
         perf_hacks:
           prompt: PERFORMANCE HACKS
             choices:
