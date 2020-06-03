@@ -3,7 +3,7 @@
 # SUPERMODEL3
 #
 ################################################################################
-SUPERMODEL3_VERSION = 11dfa544b8b0bf79d3952f955128cec0041482cf
+SUPERMODEL3_VERSION = 4b871b960252dbc8319b8ca9afcdc361eabc0823
 SUPERMODEL3_SITE = $(call github,rtissera,model3emu,$(SUPERMODEL3_VERSION))
 # install in staging for debugging (gdb)
 SUPERMODEL3_INSTALL_STAGING=YES
