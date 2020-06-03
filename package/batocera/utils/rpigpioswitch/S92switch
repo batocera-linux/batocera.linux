@@ -25,7 +25,7 @@ devices=(
 # Read current config, if no key is set in batocera.conf then try to use
 # default value setted by udev-rule
 powerswitch="$(batocera-settings --command load --key system.power.switch)"
-if [ $? -eq 0 ] && [ -f /var/run/powerswitch-by-udevrule ]; then
+if [ $? -ne 0 ] && [ -f /var/run/powerswitch-by-udevrule ]; then
     powerswitch="$(cat /var/run/powerswitch-by-udevrule)"
 fi
 
