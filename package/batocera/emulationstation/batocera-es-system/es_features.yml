@@ -157,9 +157,34 @@ daphne:
 dolphin:
   features: [ratio, rewind]
   systems:
+    cfeatures:
+        internalresolution:
+          prompt: INTERNAL RESOLUTION
+            choices:
+                1x Native: 1
+                2x Native: 2
+                3x Native: 3
+                4x Native: 4
+                5x Native: 5 
+                6x Native: 6 
     wii:
       features: [emulated_wiimotes]
-
+      cfeatures:
+        perf_hacks:
+          prompt: PERFORMANCE HACKS
+            choices:
+                OFF: 0
+                ON: 1
+        hires_textures:
+          prompt: HIRES TEXTURES
+            choices:
+                OFF: 0
+                ON: 1                
+        widescreen_hack:
+          prompt: WIDESCREEN HACK
+            choices:
+                OFF: 0
+                ON: 1                  
 dosbox:
   features: [ratio, rewind]
 
