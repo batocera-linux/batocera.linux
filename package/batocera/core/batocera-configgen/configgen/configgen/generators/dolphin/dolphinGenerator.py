@@ -113,17 +113,19 @@ class DolphinGenerator(Generator):
             dolphinGFXSettings.set("Enhancements", "DisableCopyFilter", "True")
             dolphinGFXSettings.set("Enhancements", "ForceTrueColor", "True")            
         else:
-            dolphinGFXSettings.remove_option("Hacks", "BBoxEnable")
-            dolphinGFXSettings.remove_option("Hacks", "DeferEFBCopies")
-            dolphinGFXSettings.remove_option("Hacks", "EFBEmulateFormatChanges")
-            dolphinGFXSettings.remove_option("Hacks", "EFBScaledCopy")
-            dolphinGFXSettings.remove_option("Hacks", "EFBToTextureEnable")
-            dolphinGFXSettings.remove_option("Hacks", "SkipDuplicateXFBs")
-            dolphinGFXSettings.remove_option("Hacks", "XFBToTextureEnable")
-            dolphinGFXSettings.remove_option("Enhancements", "ForceFiltering")
-            dolphinGFXSettings.remove_option("Enhancements", "ArbitraryMipmapDetection")
-            dolphinGFXSettings.remove_option("Enhancements", "DisableCopyFilter")
-            dolphinGFXSettings.remove_option("Enhancements", "ForceTrueColor")  
+            if dolphinGFXSettings.has_section("Hacks"):
+                dolphinGFXSettings.remove_option("Hacks", "BBoxEnable")
+                dolphinGFXSettings.remove_option("Hacks", "DeferEFBCopies")
+                dolphinGFXSettings.remove_option("Hacks", "EFBEmulateFormatChanges")
+                dolphinGFXSettings.remove_option("Hacks", "EFBScaledCopy")
+                dolphinGFXSettings.remove_option("Hacks", "EFBToTextureEnable")
+                dolphinGFXSettings.remove_option("Hacks", "SkipDuplicateXFBs")
+                dolphinGFXSettings.remove_option("Hacks", "XFBToTextureEnable")
+            if dolphinGFXSettings.has_section("Enhancements"):
+                dolphinGFXSettings.remove_option("Enhancements", "ForceFiltering")
+                dolphinGFXSettings.remove_option("Enhancements", "ArbitraryMipmapDetection")
+                dolphinGFXSettings.remove_option("Enhancements", "DisableCopyFilter")
+                dolphinGFXSettings.remove_option("Enhancements", "ForceTrueColor")  
   
         # internal resolution settings
         if system.isOptSet('internalresolution'):
