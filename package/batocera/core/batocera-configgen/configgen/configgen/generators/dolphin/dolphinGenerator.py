@@ -88,7 +88,14 @@ class DolphinGenerator(Generator):
         else:
             dolphinGFXSettings.set("Settings", "HiresTextures", "False")
             dolphinGFXSettings.set("Settings", "CacheHiresTextures", "False")
-  
+            
+        # widescreen hack
+        if (system.isOptSet('widescreen_hack') and (system.config['widescreen_hack'] == '1')):
+            dolphinGFXSettings.set("Settings", "wideScreenHack", "True")
+        else:
+            dolphinGFXSettings.remove_option("Settings", "wideScreenHack")
+
+        # various performance hacks
         if (system.isOptSet('perf_hacks') and (system.config['perf_hacks'] == '1')):
             if not dolphinGFXSettings.has_section("Hacks"):
                 dolphinGFXSettings.add_section("Hacks")
@@ -118,7 +125,7 @@ class DolphinGenerator(Generator):
             dolphinGFXSettings.remove_option("Enhancements", "DisableCopyFilter")
             dolphinGFXSettings.remove_option("Enhancements", "ForceTrueColor")  
   
- 
+        # internal resolution settings
         if system.isOptSet('internalresolution'):
             dolphinGFXSettings.set("Settings", "InternalResolution", system.config["internalresolution"])
         else:
