@@ -34,7 +34,8 @@ batoceraBins = {'dosbox'      : '/usr/bin/dosbox'
               , 'pcsx2'       : '/usr/PCSX/bin/PCSX2'
               , 'pcsx2_avx2'  : '/usr/PCSX_AVX2/bin/PCSX2'
               , 'citra'       : '/usr/bin/citra-qt'
-              , 'daphne'       : '/usr/bin/hypseus'
+              , 'daphne'      : '/usr/bin/hypseus'
+              , 'supermodel3'  : '/usr/bin/supermodel'
 }
 
 
@@ -136,3 +137,7 @@ flycastBios = BIOS
 flycastVMUBlank = '/usr/lib/python2.7/site-packages/configgen/datainit/dreamcast/vmu_save_blank.bin'
 flycastVMUA1 = flycastSaves + '/flycast/vmu_save_A1.bin'
 flycastVMUA2 = flycastSaves + '/flycast/vmu_save_A2.bin'
+
+supermodel3Custom = CONF + '/supermodel3'
+supermodel3Config = supermodel3Custom + '/Config'
+supermodel3Ini = supermodel3Config + '/Supermodel.ini'

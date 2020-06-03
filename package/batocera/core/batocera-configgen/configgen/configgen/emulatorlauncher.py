@@ -25,7 +25,7 @@ from generators.amiberry.amiberryGenerator import AmiberryGenerator
 from generators.citra.citraGenerator import CitraGenerator
 from generators.daphne.daphneGenerator import DaphneGenerator
 from generators.openbor.openborGenerator import OpenborGenerator
-from generators.wine.wineGenerator import WineGenerator
+from generators.supermodel3.supermodel3Generator import Supermodel3Generator
 import controllersConfig as controllers
 import signal
 import batoceraFiles
@@ -55,7 +55,7 @@ generators = {
     'citra' : CitraGenerator(),
     'daphne' : DaphneGenerator(),
     'openbor' : OpenborGenerator(),
-    'wine' : WineGenerator()
+    'supermodel3': Supermodel3Generator()
 }
 
 def main(args, maxnbplayers):
