@@ -35,7 +35,7 @@ batoceraBins = {'dosbox'      : '/usr/bin/dosbox'
               , 'pcsx2_avx2'  : '/usr/PCSX_AVX2/bin/PCSX2'
               , 'citra'       : '/usr/bin/citra-qt'
               , 'daphne'      : '/usr/bin/hypseus'
-              , 'supermodel3'  : '/usr/bin/supermodel'
+              , 'supermodel3'  : '/usr/bin/supermodel3'
 }
 
 
