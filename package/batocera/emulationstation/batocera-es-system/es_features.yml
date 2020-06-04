@@ -156,10 +156,9 @@ daphne:
 
 dolphin:
   features: [ratio]
-  systems:
-    cfeatures:
+  cfeatures:
         internalresolution:
-          prompt: INTERNAL RESOLUTION
+            prompt: INTERNAL RESOLUTION
             choices:
                 1x Native: 1
                 2x Native: 2
@@ -168,43 +167,44 @@ dolphin:
                 5x Native: 5 
                 6x Native: 6 
         perf_hacks:
-          prompt: PERFORMANCE HACKS
+            prompt: PERFORMANCE HACKS
             choices:
                 OFF: 0
                 ON: 1
         hires_textures:
-          prompt: HIRES TEXTURES
+            prompt: HIRES TEXTURES
             choices:
                 OFF: 0
                 ON: 1                
         widescreen_hack:
-          prompt: WIDESCREEN HACK
+            prompt: WIDESCREEN HACK
             choices:
                 OFF: 0
                 ON: 1  
         enable_cheats:
-          prompt: ENABLE CHEATS
+            prompt: ENABLE CHEATS
             choices:
                 OFF: 0
                 ON: 1
+  systems:
     wii:
-      features: [emulated_wiimotes]
-      cfeatures:
-          controller_orientation:
-            prompt: CONTROLLER ORIENTATION
+        features: [emulated_wiimotes]
+        cfeatures:
+            controller_orientation:
+                prompt: CONTROLLER ORIENTATION
                 choices:
                     Sideways: side
                     Vertical: vert
                     Classic Controller: classic
-           left_joystick:
-            prompt: LEFT JOYSTICK
+            left_joystick:
+                prompt: LEFT JOYSTICK
                 choices:
                     Infrared: ir
                     Nunchuk: nc
                     Tilt: ti                  
                     Swing: sw                
-           right_joystick:
-            prompt: RIGHT JOYSTICK
+            right_joystick:
+                prompt: RIGHT JOYSTICK
                 choices:
                     Infrared: ir
                     Nunchuk: nc

@@ -264,9 +264,9 @@ class EsSystemConf:
                                 system_featuresTxt += feature
                         if "cfeatures" in features[emulator]["systems"][system]:
                             for cfeature in features[emulator]["systems"][system]["cfeatures"]:
-                                featuresTxt += "    <feature name=\"{}\" value=\"{}\">\n".format(features[emulator]["cfeatures"][cfeature]["prompt"], cfeature)
+                                featuresTxt += "    <feature name=\"{}\" value=\"{}\">\n".format(features[emulator]["systems"][system]["cfeatures"][cfeature]["prompt"], cfeature)
                                 for choice in features[emulator]["systems"][system]["cfeatures"][cfeature]["choices"]:
-                                    featuresTxt += "      <choice name=\"{}\" value=\"{}\" />\n".format(choice, features[emulator]["cfeatures"][cfeature]["choices"][choice])
+                                    featuresTxt += "      <choice name=\"{}\" value=\"{}\" />\n".format(choice, features[emulator]["systems"][system]["cfeatures"][cfeature]["choices"][choice])
                                 featuresTxt += "    </feature>\n"                        
                         featuresTxt += "      <system name=\"{}\" features=\"{}\" />\n".format(system, system_featuresTxt)
                     featuresTxt += "    </systems>\n"
