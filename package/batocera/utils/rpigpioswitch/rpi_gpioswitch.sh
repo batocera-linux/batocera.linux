@@ -364,7 +364,7 @@ function argonone_start()
 function argonone_stop()
 {
     pid=$(pgrep -f rpi-argonone | head -n 1)
-    if ! [ -z "${pid}" ]; then
+    if [ -n "${pid}" ]; then
          kill -9 "${pid}"
     fi
     if [ -f /tmp/shutdown.please ]; then
