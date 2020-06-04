@@ -95,7 +95,7 @@ class DolphinGenerator(Generator):
             dolphinGFXSettings.set("Settings", "CacheHiresTextures", "False")
             
         # widescreen hack but only if enable cheats is not enabled
-        if (system.isOptSet('widescreen_hack') and system.getOptBoolean('widescreen_hack') and system.isOptSet('enable_cheats') and not system.getOptBoolean('enable_cheats'):
+        if (system.isOptSet('widescreen_hack') and system.getOptBoolean('widescreen_hack') and system.isOptSet('enable_cheats') and not system.getOptBoolean('enable_cheats')):
             dolphinGFXSettings.set("Settings", "wideScreenHack", "True")
         else:
             dolphinGFXSettings.remove_option("Settings", "wideScreenHack")
