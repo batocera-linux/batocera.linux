@@ -1,0 +1,5 @@
+#!/bin/bash
+
+export DISPLAY=:0.0
+RESOLUTION=$(batocera-resolution currentResolution)
+ffmpeg -video_size "${RESOLUTION}" -framerate 25 -f x11grab -i :0.0+0,0 /userdata/screenshots/capture$(date +%Y.%m.%d-%Hh%M.%S).mkv
