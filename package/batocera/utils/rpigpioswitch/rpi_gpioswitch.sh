@@ -207,8 +207,8 @@ function msldigital_start()
 
 function msldigital_stop()
 {
-    if [ -f "/tmp/shutdown.please" -o -f "/tmp/poweroff.please" ]; then
-        if [ -f "/tmp/shutdown.please" -a "$CONFVALUE" = "REMOTEPIBOARD_2005" ]; then
+    if [ -f "/tmp/shutdown.please" ] || [ -f "/tmp/poweroff.please" ]; then
+        if [ -f "/tmp/shutdown.please" ] && [ "$CONFVALUE" = "REMOTEPIBOARD_2005" ]; then
             # Init GPIO
             GPIOpin=15
             echo "$GPIOpin" > /sys/class/gpio/export
@@ -285,7 +285,7 @@ function wittyPi_stop()
     halt_pin=$2
 
     # light the white LED
-    if [ -f "/tmp/shutdown.please" -o -f "/tmp/poweroff.please" ]; then
+    if [ -f "/tmp/shutdown.please" ] || [ -f "/tmp/poweroff.please" ]; then
         gpio mode $led_pin out
         gpio write $led_pin 1
     fi
