@@ -155,7 +155,7 @@ daphne:
   features: [ratio, rewind]
 
 dolphin:
-  features: [ratio, rewind]
+  features: [ratio]
   systems:
     cfeatures:
         internalresolution:
@@ -167,9 +167,6 @@ dolphin:
                 4x Native: 4
                 5x Native: 5 
                 6x Native: 6 
-    wii:
-      features: [emulated_wiimotes]
-      cfeatures:
         perf_hacks:
           prompt: PERFORMANCE HACKS
             choices:
@@ -184,7 +181,35 @@ dolphin:
           prompt: WIDESCREEN HACK
             choices:
                 OFF: 0
-                ON: 1                  
+                ON: 1  
+        enable_cheats:
+          prompt: ENABLE CHEATS
+            choices:
+                OFF: 0
+                ON: 1
+    wii:
+      features: [emulated_wiimotes]
+      cfeatures:
+          controller_orientation:
+            prompt: CONTROLLER ORIENTATION
+                choices:
+                    Sideways: side
+                    Vertical: vert
+                    Classic Controller: classic
+           left_joystick:
+            prompt: LEFT JOYSTICK
+                choices:
+                    Infrared: ir
+                    Nunchuk: nc
+                    Tilt: ti                  
+                    Swing: sw                
+           right_joystick:
+            prompt: RIGHT JOYSTICK
+                choices:
+                    Infrared: ir
+                    Nunchuk: nc
+                    Tilt: ti   
+                    Swing: sw                     
 dosbox:
   features: [ratio, rewind]
 

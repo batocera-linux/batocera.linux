@@ -49,6 +49,7 @@ def generateControllerConfig_emulatedwiimotes(playersControllers, rom):
 
     extraOptions = {}
     extraOptions["Source"] = "1"
+        
 
     # side wiimote
     # l2 for shaking actions
@@ -65,6 +66,10 @@ def generateControllerConfig_emulatedwiimotes(playersControllers, rom):
 
     # i: infrared, s: swing, t: tilt, n: nunchuk
     # 12 possible combinations : is si / it ti / in ni / st ts / sn ns / tn nt
+    
+
+    
+    
 
     # i
     if ".is." in rom or ".it." in rom or ".in." in rom:
