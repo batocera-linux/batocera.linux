@@ -67,6 +67,7 @@ endef
 define BATOCERA_SCRIPTS_INSTALL_XORG
 	mkdir -p $(TARGET_DIR)/etc/X11/xorg.conf.d
 	ln -fs /userdata/system/99-nvidia.conf $(TARGET_DIR)/etc/X11/xorg.conf.d/99-nvidia.conf
+	install -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-scripts/scripts/batocera-record $(TARGET_DIR)/usr/bin/
 endef
 
 define BATOCERA_SCRIPTS_INSTALL_WINE
