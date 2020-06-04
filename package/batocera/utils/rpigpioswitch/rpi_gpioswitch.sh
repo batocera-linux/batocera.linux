@@ -60,7 +60,7 @@ function atx_raspi_start()
     REBOOTPULSEMINIMUM=200        #reboot pulse signal should be at least this long
     REBOOTPULSEMAXIMUM=600        #reboot pulse signal should be at most this long
     echo "$SHUTDOWN" > /sys/class/gpio/export
-    echo "in" > /sys/class/gpio/gpio"$SHUTDOWN"/direction
+    echo "in" > /sys/class/gpio/gpio$SHUTDOWN/direction
 
     # Added reboot feature (with ATXRaspi R2.6 (or ATXRaspi 2.5 with blue dot on chip)
     # Hold ATXRaspi button for at least 500ms but no more than 2000ms and a reboot HIGH pulse of 500ms length will be issued
@@ -70,20 +70,20 @@ function atx_raspi_start()
     # This pin is asserted HIGH as soon as this script runs (by writing "1" to /sys/class/gpio/gpio8/value)
     BOOT=$2
     echo "$BOOT" > /sys/class/gpio/export
-    echo "out" > /sys/class/gpio/gpio"$BOOT"/direction
-    echo "1" > /sys/class/gpio/gpio"$BOOT"/value
+    echo "out" > /sys/class/gpio/gpio$BOOT/direction
+    echo "1" > /sys/class/gpio/gpio$BOOT/value
 
     echo "ATXRaspi shutdown script started: asserted pins ($SHUTDOWN=input,LOW; $BOOT=output,HIGH). Waiting for GPIO$SHUTDOWN to become HIGH..."
 
     #This loop continuously checks if the shutdown button was pressed on ATXRaspi (GPIO7 to become HIGH), and issues a shutdown when that happens.
     #It sleeps as long as that has not happened.
     while true; do
-        shutdownSignal=$(cat /sys/class/gpio/gpio"$SHUTDOWN"/value)
-        if [ "$shutdownSignal" = 0 ]; then
+        shutdownSignal=$(cat /sys/class/gpio/gpio$SHUTDOWN/value)
+        if [ $shutdownSignal = 0 ]; then
             /bin/sleep 0.2
         else
             pulseStart=$(date +%s%N | cut -b1-13) # mark the time when Shutoff signal went HIGH (milliseconds since epoch)
-            while [ "$shutdownSignal" = 1 ]; do
+            while [ $shutdownSignal = 1 ]; do
                 /bin/sleep 0.02
                 if [ $(($(date +%s%N | cut -b1-13)-$pulseStart)) -gt $REBOOTPULSEMAXIMUM ]; then
                     echo "ATXRaspi triggered a shutdown signal, halting Rpi ... "
@@ -91,7 +91,7 @@ function atx_raspi_start()
                     poweroff
                     exit
                 fi
-                shutdownSignal=$(cat /sys/class/gpio/gpio"$SHUTDOWN"/value)
+                shutdownSignal=$(cat /sys/class/gpio/gpio$SHUTDOWN/value)
             done
             #pulse went LOW, check if it was long enough, and trigger reboot
             if [ $(($(date +%s%N | cut -b1-13)-$pulseStart)) -gt $REBOOTPULSEMINIMUM ]; then
@@ -118,17 +118,17 @@ function mausberry_start()
     # $1 is the GPIO pin connected to the lead on switch labeled OUT
     # $2 is the GPIO pin connected to the lead on switch labeled IN
     echo "$1" > /sys/class/gpio/export
-    echo "in" > /sys/class/gpio/gpio"$1"/direction
+    echo "in" > /sys/class/gpio/gpio$1/direction
 
     echo "$2" > /sys/class/gpio/export
-    echo "out" > /sys/class/gpio/gpio"$2"/direction
-    echo "1" > /sys/class/gpio/gpio"$2"/value
+    echo "out" > /sys/class/gpio/gpio$2/direction
+    echo "1" > /sys/class/gpio/gpio$2/value
 
     # Wait for switch off signal
     power=0
     while [ "$power" = "0" ]; do
         sleep 1
-        power=$(cat /sys/class/gpio/gpio"$1"/value)
+        power=$(cat /sys/class/gpio/gpio$1/value)
     done
 
     # Switch off
@@ -157,15 +157,15 @@ function onoffshim_start()
     fi
 
     # This is Button command (GPIO17 default)
-    echo "$1" > /sys/class/gpio/export
-    echo in > /sys/class/gpio/gpio"$1"/direction
+    echo $1 > /sys/class/gpio/export
+    echo in > /sys/class/gpio/gpio$1/direction
 
-    power=$(cat /sys/class/gpio/gpio"$1"/value)
-    [ "$power" -eq 0 ] && switchtype=1 #Sliding Switch
-    [ "$power" -eq 1 ] && switchtype=0 #Momentary push button
+    power=$(cat /sys/class/gpio/gpio$1/value)
+    [ $power -eq 0 ] && switchtype=1 #Sliding Switch
+    [ $power -eq 1 ] && switchtype=0 #Momentary push button
 
-    until [ "$power" -eq $switchtype ]; do
-        power=$(cat /sys/class/gpio/gpio"$1"/value)
+    until [ $power -eq $switchtype ]; do
+        power=$(cat /sys/class/gpio/gpio$1/value)
         sleep 1
     done
 
@@ -189,13 +189,13 @@ function msldigital_start()
     # Init GPIO :
     # $1 is the GPIO pin receiving the shut-down signal
     echo "$1" > /sys/class/gpio/export
-    echo "in" > /sys/class/gpio/gpio"$1"/direction
+    echo "in" > /sys/class/gpio/gpio$1/direction
 
     # Wait for switch off signal
     power=0
     while [ "$power" = "0" ]; do
         sleep 1
-        power=$(cat /sys/class/gpio/gpio"$1"/value)
+        power=$(cat /sys/class/gpio/gpio$1/value)
     done
 
     # Switch off
@@ -207,7 +207,7 @@ function msldigital_start()
 
 function msldigital_stop()
 {
-    if [ -f "/tmp/shutdown.please" ] || [ -f "/tmp/poweroff.please" ]; then
+    if [ -f "/tmp/shutdown.please" -o -f "/tmp/poweroff.please" ]; then
         if [ -f "/tmp/shutdown.please" -a "$CONFVALUE" = "REMOTEPIBOARD_2005" ]; then
             # Init GPIO
             GPIOpin=15
@@ -227,8 +227,8 @@ function msldigital_stop()
             # Uninit GPIO
             echo "$GPIOpin" > /sys/class/gpio/unexport
         fi
-        echo "out" > /sys/class/gpio/gpio"$1"/direction
-        echo "1" > /sys/class/gpio/gpio"$1"/value
+        echo "out" > /sys/class/gpio/gpio$1/direction
+        echo "1" > /sys/class/gpio/gpio$1/value
         sleep 3
     fi
     # Cleanup GPIO init
@@ -248,14 +248,14 @@ function wittyPi_start()
     halt_pin=$2
 
     # make sure the halt pin is input with internal pull up
-    gpio mode "$halt_pin" up
-    gpio mode "$halt_pin" in
+    gpio mode $halt_pin up
+    gpio mode $halt_pin in
 
     # delay until GPIO pin state gets stable
     counter=0
     while [ $counter -lt 10 ]; do  # increase this value if it needs more time
-        if [ $(gpio read "$halt_pin") == '1' ] ; then
-            counter=$($counter+1)
+        if [ $(gpio read $halt_pin) == '1' ] ; then
+            counter=$(($counter+1))
         else
             counter=0
         fi
@@ -264,9 +264,9 @@ function wittyPi_start()
 
     # wait for GPIO-4 (wiringPi pin 7) falling, or alarm B
     while true; do
-        gpio wfi "$halt_pin" falling
+        gpio wfi $halt_pin falling
         sleep 0.05  # ignore short pull down (increase this value to ignore longer pull down)
-        if [ $(gpio read "$halt_pin") == '0' ] ; then
+        if [ $(gpio read $halt_pin) == '0' ] ; then
             break
         fi
     done
@@ -285,14 +285,14 @@ function wittyPi_stop()
     halt_pin=$2
 
     # light the white LED
-    if [ -f "/tmp/shutdown.please" ] || [ -f "/tmp/poweroff.please" ]; then
-        gpio mode "$led_pin" out
-        gpio write "$led_pin" 1
+    if [ -f "/tmp/shutdown.please" -o -f "/tmp/poweroff.please" ]; then
+        gpio mode $led_pin out
+        gpio write $led_pin 1
     fi
 
     # restore GPIO-4
-    gpio mode "$halt_pin" in
-    gpio mode "$halt_pin" up
+    gpio mode $halt_pin in
+    gpio mode $halt_pin up
 }
 
 function pin356_start()
@@ -306,7 +306,7 @@ function pin356_start()
 function pin356_stop()
 {
     if [[ -f /tmp/rpi-pin356-power.pid ]]; then
-        kill $(cat /tmp/rpi-pin356-power.pid)
+        kill `cat /tmp/rpi-pin356-power.pid`
     fi
 }
 
@@ -322,7 +322,7 @@ function pin56_start()
 function pin56_stop()
 {
     if [[ -f /tmp/rpi-pin56-power.pid ]]; then
-        kill $(cat /tmp/rpi-pin56-power.pid)
+        kill `cat /tmp/rpi-pin56-power.pid`
     fi
 }
 
@@ -340,8 +340,8 @@ function retroflag_stop()
 {
     pid_file="/tmp/$1.pid"
     if [[ -e $pid_file ]]; then
-        pid=$(cat "$pid_file")
-        kill $(pgrep -P "$pid")
+        pid=$(cat $pid_file)
+        kill $(pgrep -P $pid)
     fi
 }
 
@@ -359,14 +359,16 @@ function argonone_start()
     modprobe i2c-dev
     modprobe i2c-bcm2708
     /usr/bin/rpi-argonone start &
+    wait $!
 }
 
 function argonone_stop()
 {
     pid=$(pgrep -f rpi-argonone | head -n 1)
-    if [ -n "${pid}" ]; then
+    if ! [ -z "${pid}" ]; then
          kill -9 "${pid}"
     fi
+
     if [ -f /tmp/shutdown.please ]; then
         # force a power shutdown from GPIO block
         /usr/bin/rpi-argonone halt &
@@ -416,48 +418,48 @@ fi
 case "$CONFVALUE" in
 
     "ATX_RASPI_R2_6")
-        atx_raspi_"$1" 7 8
+        atx_raspi_$1 7 8
     ;;
     "MAUSBERRY")
-        mausberry_"$1" 23 24
+        mausberry_$1 23 24
     ;;
     "ONOFFSHIM")
-        onoffshim_"$1" 17 4
+        onoffshim_$1 17 4
     ;;
     "REMOTEPIBOARD_2003")
-        msldigital_"$1" 22
+        msldigital_$1 22
     ;;
     "REMOTEPIBOARD_2005")
-        msldigital_"$1" 14
+        msldigital_$1 14
     ;;
     "WITTYPI")
-        wittyPi_"$1" 0 7
+        wittyPi_$1 0 7
     ;;
     "PIN56ONOFF")
-        pin56_"$1" onoff
+        pin56_$1 onoff
     ;;
     "PIN56PUSH")
         echo "will start pin56_$1"
-        pin56_"$1" push
+        pin56_$1 push
     ;;
     "PIN356ONOFFRESET")
         echo "will start pin356_$1"
-        pin356_"$1" noparam
+        pin356_$1 noparam
     ;;
     "RETROFLAG")
-        retroflag_"$1" rpi-retroflag-SafeShutdown
+        retroflag_$1 rpi-retroflag-SafeShutdown
     ;;
     "RETROFLAG_GPI")
-        retroflag_"$1" rpi-retroflag-GPiCase
+        retroflag_$1 rpi-retroflag-GPiCase
     ;;
     "RETROFLAG_ADV")
-        retroflag_"$1" rpi-retroflag-AdvancedSafeShutdown
+        retroflag_$1 rpi-retroflag-AdvancedSafeShutdown
     ;;
     "ARGONONE")
-        argonone_"$1"
+        argonone_$1
     ;;
     "KINTARO")
-        kintaro_"$1"
+        kintaro_$1
     ;;
     "DIALOG")
         # Go to selection dialog
