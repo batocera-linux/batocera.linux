@@ -208,7 +208,7 @@ function msldigital_start()
 function msldigital_stop()
 {
     if [ -f "/tmp/shutdown.please" ] || [ -f "/tmp/poweroff.please" ]; then
-        if [ -f "/tmp/shutdown.please" -a "$CONFVALUE" = "REMOTEPIBOARD_2005" ]; then
+        if [ -f "/tmp/shutdown.please" ] && [ "$CONFVALUE" = "REMOTEPIBOARD_2005" ]; then
             # Init GPIO
             GPIOpin=15
             echo "$GPIOpin" > /sys/class/gpio/export
@@ -255,7 +255,7 @@ function wittyPi_start()
     counter=0
     while [ $counter -lt 10 ]; do  # increase this value if it needs more time
         if [ $(gpio read "$halt_pin") == '1' ] ; then
-            counter=$($counter+1)
+            counter=$(($counter+1))
         else
             counter=0
         fi
@@ -359,6 +359,7 @@ function argonone_start()
     modprobe i2c-dev
     modprobe i2c-bcm2708
     /usr/bin/rpi-argonone start &
+    wait $!
 }
 
 function argonone_stop()
@@ -367,6 +368,7 @@ function argonone_stop()
     if [ -n "${pid}" ]; then
          kill -9 "${pid}"
     fi
+
     if [ -f /tmp/shutdown.please ]; then
         # force a power shutdown from GPIO block
         /usr/bin/rpi-argonone halt &
