@@ -2,6 +2,8 @@ config BR2_PACKAGE_BATOCERA_SCRIPTS
         bool "batocera-scripts"
 
         select BR2_PACKAGE_PCIUTILS
+	select BR2_PACKAGE_PYTHON2_GOBJECT
+	select BR2_PACKAGE_PYTHON
 
         help
          Batocera scripts
