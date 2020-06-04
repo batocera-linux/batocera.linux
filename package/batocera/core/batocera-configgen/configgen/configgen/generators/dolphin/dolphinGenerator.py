@@ -80,23 +80,28 @@ class DolphinGenerator(Generator):
             dolphinGFXSettings.set("Settings", "ShowFPS", "True")
         else:
             dolphinGFXSettings.set("Settings", "ShowFPS", "False")
+            
+        if system.isOptSet('enable_cheats') and system.getOptBoolean('enable_cheats'):
+            dolphinGFXSettings.set("Core", "EnableCheats", "True")
+        else:
+            dolphinGFXSettings.set("Core", "EnableCheats", "False")
 
         # for to search for custom textures
-        if (system.isOptSet('hires_textures') and (system.config['hires_textures'] == '1')):
+        if system.isOptSet('hires_textures') and system.getOptBoolean('hires_textures'):
             dolphinGFXSettings.set("Settings", "HiresTextures", "True")
             dolphinGFXSettings.set("Settings", "CacheHiresTextures", "True")
         else:
             dolphinGFXSettings.set("Settings", "HiresTextures", "False")
             dolphinGFXSettings.set("Settings", "CacheHiresTextures", "False")
             
-        # widescreen hack
-        if (system.isOptSet('widescreen_hack') and (system.config['widescreen_hack'] == '1')):
+        # widescreen hack but only if enable cheats is not enabled
+        if (system.isOptSet('widescreen_hack') and system.getOptBoolean('widescreen_hack') and system.isOptSet('enable_cheats') and not system.getOptBoolean('enable_cheats'):
             dolphinGFXSettings.set("Settings", "wideScreenHack", "True")
         else:
             dolphinGFXSettings.remove_option("Settings", "wideScreenHack")
 
         # various performance hacks
-        if (system.isOptSet('perf_hacks') and (system.config['perf_hacks'] == '1')):
+        if system.isOptSet('perf_hacks') and system.getOptBoolean('perf_hacks'):
             if not dolphinGFXSettings.has_section("Hacks"):
                 dolphinGFXSettings.add_section("Hacks")
             if not dolphinGFXSettings.has_section("Enhancements"):
