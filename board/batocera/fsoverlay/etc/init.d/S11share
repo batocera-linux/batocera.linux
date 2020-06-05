@@ -81,19 +81,18 @@ mountDeviceOrFallback() {
     fi
 }
 
-systemsetting="batocera-settings"
 batocera_wifi_configure() {
     X=$1
 
     if test "$X" = 1
     then
-	settings_ssid="$($systemsetting -command load -key wifi.ssid)"
-	settings_key="$($systemsetting -command load -key wifi.key)"
+	settings_ssid="$(batocera-settings -command load -key wifi.ssid)"
+	settings_key="$(batocera-settings -command load -key wifi.key)"
 	settings_file="/var/lib/connman/batocera_wifi.config"
 	settings_name="default"
     else
-	settings_ssid="$($systemsetting -command load -key wifi"${X}".ssid)"
-	settings_key="$($systemsetting -command load -key wifi"${X}".key)"
+	settings_ssid="$(batocera-settings -command load -key wifi"${X}".ssid)"
+	settings_key="$(batocera-settings -command load -key wifi"${X}".key)"
 	settings_file="/var/lib/connman/batocera_wifi${X}.config"
 	settings_name="${X}"
     fi
