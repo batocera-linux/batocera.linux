@@ -85,7 +85,7 @@ BATO_DIR="${BR2_EXTERNAL_BATOCERA_PATH}/board/batocera"
 echo -e "\n----- Generating images/batocera files -----\n"
 
 case "${BATOCERA_TARGET}" in
-	RPI0|RPI1|RPI2|RPI3)
+	RPI0|RPI1|RPI2)
 	BOARD_DIR="${BATO_DIR}/rpi"
 	# boot.tar.xz
 	cp -f "${BINARIES_DIR}/"*.dtb "${BINARIES_DIR}/rpi-firmware"
@@ -121,7 +121,7 @@ case "${BATOCERA_TARGET}" in
 	sync || exit 1
 	;;
 
-	RPI4)
+	RPI3|RPI4)
 	BOARD_DIR="${BATO_DIR}/rpi4"
 	# boot.tar.xz
 	cp -f "${BINARIES_DIR}/"*.dtb "${BINARIES_DIR}/rpi-firmware"
