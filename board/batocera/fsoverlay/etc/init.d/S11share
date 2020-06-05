@@ -133,7 +133,6 @@ batocera_wifi_configure_all() {
     batocera_wifi_configure 1&  # 0.6
     batocera_wifi_configure 2&  # 0.6
     batocera_wifi_configure 3&  # 0.6
-    wait
 
     # wait a bit, otherwise, connman is not really started
     sleep 2
@@ -178,7 +177,7 @@ mountNetwork() {
 		do
 		    (( XTRY-- ))
 
-		    CMD_EXEC=$(echo)
+		    CMD_EXEC=echo
 		    if test "${CTYPE}" = "cmd"
 		    then
 			CMD_EXEC="${CMD}"
