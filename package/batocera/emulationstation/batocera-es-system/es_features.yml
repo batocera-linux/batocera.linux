@@ -186,6 +186,26 @@ dolphin:
             choices:
                 "Off": 0
                 "On": 1
+        vsync:
+            prompt: VSYNC
+            choices:
+                "Off": False
+                "On":  True
+        anisotropic_filtering:
+            prompt: ANISOTROPIC FILTERING
+            choices:
+                "Off": 0
+                2x:  1
+                4x:  2
+                8x:  3
+                16x: 4
+        antialiasing:
+            prompt: ANTIALIASING
+            choices:
+                "Off": 0
+                2x:  2
+                4x:  4
+                8x:  8
   systems:
     wii:
         features: [emulated_wiimotes]
