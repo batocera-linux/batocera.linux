@@ -95,7 +95,7 @@ class DolphinGenerator(Generator):
             dolphinGFXSettings.set("Settings", "CacheHiresTextures", "False")
             
         # widescreen hack but only if enable cheats is not enabled
-        if (system.isOptSet('widescreen_hack') and system.getOptBoolean('widescreen_hack') and system.isOptSet('enable_cheats') and not system.getOptBoolean('enable_cheats'):
+        if (system.isOptSet('widescreen_hack') and system.getOptBoolean('widescreen_hack') and system.isOptSet('enable_cheats') and not system.getOptBoolean('enable_cheats')):
             dolphinGFXSettings.set("Settings", "wideScreenHack", "True")
         else:
             dolphinGFXSettings.remove_option("Settings", "wideScreenHack")
@@ -138,7 +138,25 @@ class DolphinGenerator(Generator):
         else:
             dolphinGFXSettings.set("Settings", "InternalResolution", "0")
 
-        # save gfx.ini
+        # vsync
+        if system.isOptSet('vsync'):
+            dolphinGFXSettings.set("Hardware", "VSync", system.config["vsync"])
+        else:
+            dolphinGFXSettings.set("Hardware", "VSync", "False")
+  
+        # anisotropic filtering
+        if system.isOptSet('anisotropic_filtering'):
+            dolphinGFXSettings.set("Enhancements", "MaxAnisotropy", system.config["anisotropic_filtering"])
+        else:
+            dolphinGFXSettings.set("Enhancements", "MaxAnisotropy", "0")
+			
+		# anti aliasing
+        if system.isOptSet('antialiasing'):
+            dolphinGFXSettings.set("Settings", "MSAA", system.config["antialiasing"])
+        else:
+            dolphinGFXSettings.set("Settings", "MSAA", "0")
+			
+		# save gfx.ini
         with open(batoceraFiles.dolphinGfxIni, 'w') as configfile:
             dolphinGFXSettings.write(configfile)
 

@@ -65,7 +65,7 @@ function check_optional_argument() {
 
 function set_config() {
 	# search for first key.name at beginning of line and write value to it
-	sed -i "1,/^\(\s*$1\s*=\).*/s//\1 $2/" "$INFO"
+	sed -i "1,/^\(\s*$1\s*=\).*/s^^\1 $2^" "$INFO"
 }
 
 function uncomment_config() {

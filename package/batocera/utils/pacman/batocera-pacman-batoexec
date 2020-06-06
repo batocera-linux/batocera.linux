@@ -8,11 +8,15 @@
 import os
 import sys
 import re
+import subprocess
+import httplib
 import xml.etree.ElementTree as ET
+ES_SERVER="127.0.0.1:1234"
 
 ########
 # Parse the command file BATOEXEC
-# First line is "command = path_file_to_modify"
+# First line is "command = argument"
+# as described on https://wiki.batocera.org/pacman_package_manager
 # Rest of the file is depending on "command"
 def parse_batoexec(): 
     if not os.path.isfile(BATOEXEC):
@@ -24,9 +28,9 @@ def parse_batoexec():
     return (key.strip(), val.strip(), datastr)
 
 #######
-# Add / Remove a <game> XML subtree
-# to a gamelist.xml file
-def gamelist_xml(gamelist, data, mode):
+# Add / Remove a <game> XML subtree through ES webservice
+# this is the recommended method
+def gamelist_xml_es(system, data, mode):
     if (mode not in [ 'install',  'uninstall' ]):
         print ("ERROR: BATOEXEC gamelist can only be call with 'install' or 'uninstall'")
         return (1)
@@ -35,56 +39,39 @@ def gamelist_xml(gamelist, data, mode):
     except:
         print ("ERROR: bad XML format in " + BATOEXEC)
         return (1)
-    if not os.path.isfile(gamelist):
-        freshgl = ET.Element("gameList")
-        freshtree = ET.ElementTree(freshgl)
-        freshtree.write(gamelist)
-    try:
-        gamelisttree = ET.parse(gamelist, ET.XMLParser(encoding='utf-8'))
-    except:
-        print ("ERROR: unable to parse gamelist file " + gamelist)
-        return (1)
     # check new tree syntax (to avoid adding garbage)
     newroot = tree.getroot()
     if newroot.tag != 'game':
         print ("ERROR: " + BATOEXEC + " gamefile expects a <game> root")
         return (1)
-    cpath=''
-    for npath in newroot.findall('path'):
-        cpath=os.path.basename(npath.text)
-
-    # is the new ROM already in gamelist.xml?
-    gfound = False
-    gamelistroot=gamelisttree.getroot()
-    for ggame in gamelistroot.findall('game'):
-        for gpath in ggame.findall('path'):
-            if os.path.basename(gpath.text) == cpath:
-                gfound = True
-
-    if (mode in 'install'):
-        if (not gfound):
-            cursor = gamelisttree.getroot()
-            cursor.append(newroot)
-            print ('Adding ' + cpath + ' to ' + gamelist)
-            gamelisttree.write(open(gamelist, 'w'))
-        else:
-            print ('Entry for ' + cpath + ' already found in ' + gamelist)
-        return (0)
-    elif (mode in 'uninstall'):
-        if (gfound):
-            cursor=gamelisttree.getroot()
-            for ggame in cursor.findall('game'):
-                for gpath in ggame.findall('path'):
-                    if os.path.basename(gpath.text) == cpath:
-                        cursor.remove(ggame)
-                        print ('Removing ' + cpath + ' from ' + gamelist)
-            gamelisttree.write(open(gamelist, 'w'))
-        else:
-            print ('Entry for ' + cpath + ' already removed from ' + gamelist)
-        return (0)
+    freshgl = ET.Element("gameList")
+    freshgl.append(newroot)
+    bodytree = ET.ElementTree(freshgl)
+    body = ET.tostring(bodytree.getroot()).decode()
+    headers = {"Content-type": "application/x-www-form-urlencoded",\
+               "Accept": "text/plain"}
+    try:
+        cnx=httplib.HTTPConnection(ES_SERVER)
+    except:
+        print ("ERROR: Is EmulationStation running? Impossible to connect to " + ES_SERVER)
+        return (1)
+    try:
+        if (mode in 'install'):
+            cnx.request("POST", "/addgames/" + str(system).strip(), body=body, headers=headers)
+        elif (mode in 'uninstall'):
+            cnx.request("POST", "/removegames/" + str(system).strip(), body=body, headers=headers)
+        res=cnx.getresponse()
+        rout=res.read()
+        if (res.status != 200):
+            print ("WARNING: ES responded with #{} [{}] {}".format( \
+                    res.status, res.reason, rout))
+    except:
+        print ("ERROR: Impossible to access ES service endpoints through " + ES_SERVER)
+        return (1)
+    return (0)
 
 #######
-# Execute a command (shell, python... things that can
+# Execute a command (shell, python... scripts that can
 # be called with a -c argument)
 def exec_cmd(base_cmd, data, mode):
     if (mode not in [ 'install',  'uninstall' ]):
@@ -100,13 +87,17 @@ def exec_cmd(base_cmd, data, mode):
             data = re.sub("\.UNINSTALL_START", "", data)
             data = re.sub("\.UNINSTALL_END", "", data)
         clist = data.split('\n')
+        for el in clist:
+            if str(el).strip() == '':
+                clist.remove(el)
+            el = re.sub('"', '\"', el)
         datastr = ';'.join([str(el) for el in clist])
         datastr = re.sub(";{2,}", ';', datastr)
         cmd_line = [ base_cmd + ' -c "' + datastr + '"' ]
     else:
         cmd_line = [ base_cmd ]
     try:
-        os.system(cmd_line[0])
+        subprocess.check_output(cmd_line[0], shell=True)
     except:
         print ("ERROR: " + BATOEXEC + " could not fork "+base_cmd)
         return (1)
@@ -123,11 +114,10 @@ if __name__ == "__main__":
     except:
         print ("ERROR: batocera-pacman-batoexec [install | uninstall] [batoexec_file]")
         exit (1)
-    
     key, val, data=parse_batoexec()
 
     if key == 'gamelist':
-        ret = gamelist_xml(val, data, mode)
+        ret = gamelist_xml_es(val, data, mode)
         if ret == 0:
             exit (0)
         else:
@@ -146,4 +136,3 @@ if __name__ == "__main__":
     else:
         print ("ERROR: function '" + key +"' not implemented yet")
         exit (1)
-
