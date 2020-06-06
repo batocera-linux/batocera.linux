@@ -7,9 +7,9 @@ libretro:
     '81':
       features: [netplay, rewind, autosave]
     atari800:
-      features: [         rewind, autosave]
+      features: [ ]
     beetle-saturn:
-      features: [netplay, rewind, autosave]
+      features: [netplay,         autosave]
     bluemsx:
       features: [         rewind, autosave]
     bsnes:
@@ -19,11 +19,11 @@ libretro:
     citra:
       features: [         rewind, autosave]
     daphne:
-      features: [         rewind, autosave]
+      features: [ ]
     desmume:
       features: [netplay, rewind, autosave]
     dosbox:
-      features: [         rewind, autosave]
+      features: [ ]
     fbneo:
       features: [netplay, rewind, autosave]
     fceumm:
@@ -31,7 +31,7 @@ libretro:
     flycast:
       features: [         rewind, autosave]
     freeintv:
-      features: [         rewind, autosave]
+      features: [ ]
     fuse:
       features: [         rewind, autosave]
     gambatte:
@@ -41,17 +41,17 @@ libretro:
     gpsp:
       features: [         rewind, autosave]
     gw:
-      features: [         rewind, autosave]
+      features: [ ]
     handy:
       features: [netplay, rewind, autosave]
     hatari:
-      features: [         rewind, autosave]
+      features: [                 autosave]
     imame4all:
       features: [netplay, rewind, autosave]
     kronos:
-      features: [         rewind, autosave]
+      features: [                 autosave]
     lutro:
-      features: [         rewind, autosave]
+      features: [ ]
     mame:
       features: [netplay, rewind, autosave]
     mame0139:
@@ -79,7 +79,7 @@ libretro:
     mupen64plus-next:
       features: [         rewind, autosave]
     neocd:
-      features: [         rewind, autosave]
+      features: [                 autosave]
     nestopia:
       features: [netplay, rewind, autosave]
     quasi88:
@@ -87,9 +87,9 @@ libretro:
     np2kai:
       features: [netplay, rewind, autosave]
     nxengine:
-      features: [         rewind, autosave]
+      features: [ ]
     o2em:
-      features: [         rewind, autosave]
+      features: [                 autosave]
     opera:
       features: [netplay, rewind, autosave]
     parallel_n64:
@@ -117,9 +117,9 @@ libretro:
     puae:
       features: [         rewind, autosave]
     px68k:
-      features: [         rewind, autosave]
+      features: [ ]
     scummvm:
-      features: [         rewind, autosave]
+      features: [ ]
     snes9x:
       features: [netplay, rewind, autosave]
     snes9x_next:
@@ -131,7 +131,7 @@ libretro:
     theodore:
       features: [netplay, rewind, autosave]
     tyrquake:
-      features: [         rewind, autosave]
+      features: [ ]
     vb:
       features: [netplay, rewind, autosave]
     vba-m:
@@ -141,18 +141,18 @@ libretro:
     vice:
       features: [         rewind, autosave]
     virtualjaguar:
-      features: [         rewind, autosave]
+      features: [ ]
     yabasanshiro:
-      features: [         rewind, autosave]
+      features: [                 autosave]
 
 amiberry:
-  features: [ratio, rewind]
+  features: [ratio]
 
 citra:
   features: [ratio, rewind, screen_layout]
 
 daphne:
-  features: [ratio, rewind]
+  features: [ratio]
 
 dolphin:
   features: [ratio]
@@ -160,32 +160,32 @@ dolphin:
         internalresolution:
             prompt: INTERNAL RESOLUTION
             choices:
-                "1x Native": 1
-                "2x Native": 2
-                "3x Native": 3
-                "4x Native": 4
-                "5x Native": 5 
-                "6x Native": 6 
+                1x Native: 1
+                2x Native: 2
+                3x Native: 3
+                4x Native: 4
+                5x Native: 5
+                6x Native: 6
         perf_hacks:
             prompt: PERFORMANCE HACKS
             choices:
                 "Off": 0
-                "On": 1
+                "On":  1
         hires_textures:
             prompt: HIRES TEXTURES
             choices:
                 "Off": 0
-                "On": 1                
+                "On":  1                
         widescreen_hack:
             prompt: WIDESCREEN HACK
             choices:
                 "Off": 0
-                "On": 1  
+                "On":  1  
         enable_cheats:
             prompt: ENABLE CHEATS
             choices:
                 "Off": 0
-                "On": 1
+                "On":  1
         vsync:
             prompt: VSYNC
             choices:
@@ -210,7 +210,7 @@ dolphin:
     wii:
         features: [emulated_wiimotes]
         cfeatures:
-            controller_orientation:
+            controller_orientati"On":
                 prompt: CONTROLLER ORIENTATION
                 choices:
                     Sideways: side
@@ -231,40 +231,40 @@ dolphin:
                     Tilt: ti   
                     Swing: sw                     
 dosbox:
-  features: [ratio, rewind]
+  features: [ratio]
 
 dosbox-x:
-  features: [ratio, rewind]
+  features: [ratio]
 
 fsuae:
-  features: [ratio, rewind]
+  features: [ratio]
 
 linapple:
-  features: [ratio, rewind]
+  features: [ratio]
 
 moonlight:
-  features: [ratio, rewind]
+  features: [ratio]
 
 mupen64plus:
-  features: [ratio, rewind]
+  features: [ratio]
 
 pcsx2:
-  features: [ratio, rewind, fullboot]
+  features: [ratio, fullboot]
 
 ppsspp:
-  features: [ratio, rewind, internal_resolution]
+  features: [ratio, internal_resolution]
 
 reicast:
-  features: [ratio, rewind]
+  features: [ratio]
 
 flycast:
-  features: [ratio, rewind]
+  features: [ratio]
 
 scummvm:
-  features: [ratio, rewind]
+  features: [ratio]
 
 vice:
-  features: [ratio, rewind]
+  features: [ratio]
 openbor:
   cfeatures:
     ratio:
