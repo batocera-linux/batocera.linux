@@ -16,23 +16,6 @@ def generateRetroarchCustom():
         os.remove(batoceraFiles.retroarchCustom)
         retroarchSettings = UnixSettings(batoceraFiles.retroarchCustom, separator=' ')
 
-    # Path Retroarch
-    retroarchSettings.save('core_options_path',             '"/userdata/system/configs/retroarch/cores/retroarch-core-options.cfg"')
-    retroarchSettings.save('assets_directory',              '"/usr/share/libretro/assets"')
-    retroarchSettings.save('screenshot_directory',          '"/userdata/screenshots/"')
-    retroarchSettings.save('recording_output_directory',    '"/userdata/screenshots/"')
-    retroarchSettings.save('savestate_directory',           '"/userdata/saves/"')
-    retroarchSettings.save('savefile_directory',            '"/userdata/saves/"')
-    retroarchSettings.save('extraction_directory',          '"/userdata/extractions/"')
-    retroarchSettings.save('cheat_database_path',           '"/usr/share/batocera/datainit/cheats/cht/"')
-    retroarchSettings.save('cheat_settings_path',           '"/userdata/cheats/saves/"')
-    retroarchSettings.save('system_directory',              '"/userdata/bios/"')
-    retroarchSettings.save('joypad_autoconfig_dir',         '"/userdata/system/configs/retroarch/inputs/"')
-    retroarchSettings.save('video_shader_dir',              '"/usr/share/batocera/shaders/"')
-    retroarchSettings.save('video_font_path',               '"/usr/share/fonts/dejavu/DejaVuSansMono.ttf"')
-    retroarchSettings.save('video_filter_dir',              '"/usr/share/video_filters"')
-    retroarchSettings.save('audio_filter_dir',              '"/usr/share/audio_filters"')
-
     # Use Interface
     retroarchSettings.save('menu_driver',                       '"ozone"')
     retroarchSettings.save('content_show_favorites',            '"false"')
@@ -90,3 +73,20 @@ def generateRetroarchCustom():
     # Show badges in Retroarch cheevos list
     retroarchSettings.save('cheevos_badges_enable',             '"true"')
 
+def generateRetroarchCustomPathes(retroarchSettings):
+    # Path Retroarch
+    retroarchSettings.save('core_options_path',             '"/userdata/system/configs/retroarch/cores/retroarch-core-options.cfg"')
+    retroarchSettings.save('assets_directory',              '"/usr/share/libretro/assets"')
+    retroarchSettings.save('screenshot_directory',          '"/userdata/screenshots/"')
+    retroarchSettings.save('recording_output_directory',    '"/userdata/screenshots/"')
+    retroarchSettings.save('savestate_directory',           '"/userdata/saves/"')
+    retroarchSettings.save('savefile_directory',            '"/userdata/saves/"')
+    retroarchSettings.save('extraction_directory',          '"/userdata/extractions/"')
+    retroarchSettings.save('cheat_database_path',           '"/usr/share/batocera/datainit/cheats/cht/"')
+    retroarchSettings.save('cheat_settings_path',           '"/userdata/cheats/saves/"')
+    retroarchSettings.save('system_directory',              '"/userdata/bios/"')
+    retroarchSettings.save('joypad_autoconfig_dir',         '"/userdata/system/configs/retroarch/inputs/"')
+    retroarchSettings.save('video_shader_dir',              '"/usr/share/batocera/shaders/"')
+    retroarchSettings.save('video_font_path',               '"/usr/share/fonts/dejavu/DejaVuSansMono.ttf"')
+    retroarchSettings.save('video_filter_dir',              '"/usr/share/video_filters"')
+    retroarchSettings.save('audio_filter_dir',              '"/usr/share/audio_filters"')
