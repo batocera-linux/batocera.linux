@@ -1,0 +1,20 @@
+diff --git a/src/pacman/conf.c b/src/pacman/conf.c
+index 468a3e0..0b56895 100644
+--- a/src/pacman/conf.c
++++ b/src/pacman/conf.c
+@@ -1004,12 +1004,15 @@ static int process_include(const char *value, void *data,
+ 			break;
+ 		default:
+ 			for(gindex = 0; gindex < globbuf.gl_pathc; gindex++) {
++			  // ignore unexiting files
++			  if(access(globbuf.gl_pathv[gindex], F_OK ) != -1) {
+ 				pm_printf(ALPM_LOG_DEBUG, "config file %s, line %d: including %s\n",
+ 						file, linenum, globbuf.gl_pathv[gindex]);
+ 				ret = parse_ini(globbuf.gl_pathv[gindex], _parse_directive, data);
+ 				if(ret) {
+ 					goto cleanup;
+ 				}
++			  }
+ 			}
+ 			break;
+ 	}
