@@ -157,6 +157,31 @@ daphne:
 dolphin:
   features: [ratio]
   cfeatures:
+        enable_cheats:
+            prompt: ENABLE CHEATS
+            choices:
+                OFF: 0
+                ON:  1
+        perf_hacks:
+            prompt: PERFORMANCE HACKS
+            choices:
+                OFF: 0
+                ON:  1
+        fastDiscSpeed:
+            prompt: SPEED UP DISC TRANSFER RATE
+            choices:
+                OFF: False
+                ON:  True
+        dual_core:
+            prompt: DUAL CORE
+            choices:
+                OFF: False
+                ON:  True
+        mmu:
+            prompt: MEMORY MANAGEMENT UNIT (MMU)
+            choices:
+                OFF: False
+                ON:  True
         internalresolution:
             prompt: INTERNAL RESOLUTION
             choices:
@@ -166,31 +191,23 @@ dolphin:
                 4x Native: 4
                 5x Native: 5
                 6x Native: 6
-        perf_hacks:
-            prompt: PERFORMANCE HACKS
-            choices:
-                OFF: 0
-                ON:  1
-        hires_textures:
-            prompt: HIRES TEXTURES
-            choices:
-                OFF: 0
-                ON:  1                
         widescreen_hack:
             prompt: WIDESCREEN HACK
             choices:
                 OFF: 0
                 ON:  1  
-        enable_cheats:
-            prompt: ENABLE CHEATS
+        antialiasing:
+            prompt: ANTI-ALIASING
             choices:
                 OFF: 0
-                ON:  1
-        vsync:
-            prompt: VSYNC
+                2x:  2
+                4x:  4
+                8x:  8
+        hires_textures:
+            prompt: HIRES TEXTURES
             choices:
-                OFF: False
-                ON:  True
+                OFF: 0
+                ON:  1                
         anisotropic_filtering:
             prompt: ANISOTROPIC FILTERING
             choices:
@@ -199,13 +216,11 @@ dolphin:
                 4x:  2
                 8x:  3
                 16x: 4
-        antialiasing:
-            prompt: ANTIALIASING
+        vsync:
+            prompt: V-SYNC
             choices:
-                OFF: 0
-                2x:  2
-                4x:  4
-                8x:  8
+                OFF: False
+                ON:  True
   systems:
     wii:
         features: [emulated_wiimotes]

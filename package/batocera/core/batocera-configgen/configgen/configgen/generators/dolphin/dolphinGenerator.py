@@ -42,6 +42,24 @@ class DolphinGenerator(Generator):
             dolphinSettings.set("General", "ShowLag", "False")
             dolphinSettings.set("General", "ShowFrameCount", "False")
 
+        # dual core
+        if system.isOptSet('dual_core'):
+            dolphinSettings.set("Core", "CPUThread", system.config["dual_core"])
+        else:
+            dolphinSettings.set("Core", "CPUThread", "False")
+        
+        # memory management unit
+        if system.isOptSet('mmu'):
+            dolphinSettings.set("Core", "MMU", system.config["mmu"])
+        else:
+            dolphinSettings.set("Core", "MMU", "False")
+        
+        # speed up disc transfert rate
+        if system.isOptSet('fastDiscSpeed'):
+            dolphinSettings.set("Core", "FastDiscSpeed", system.config["fastDiscSpeed"])
+        else:
+            dolphinSettings.set("Core", "FastDiscSpeed", "False")	
+        
         # don't ask about statistics
         dolphinSettings.set("Analytics", "PermissionAsked", "True")
 
@@ -80,7 +98,8 @@ class DolphinGenerator(Generator):
             dolphinGFXSettings.set("Settings", "ShowFPS", "True")
         else:
             dolphinGFXSettings.set("Settings", "ShowFPS", "False")
-            
+        
+        # enable cheats
         if system.isOptSet('enable_cheats') and system.getOptBoolean('enable_cheats'):
             dolphinGFXSettings.set("Core", "EnableCheats", "True")
         else:
@@ -131,7 +150,7 @@ class DolphinGenerator(Generator):
                 dolphinGFXSettings.remove_option("Enhancements", "ArbitraryMipmapDetection")
                 dolphinGFXSettings.remove_option("Enhancements", "DisableCopyFilter")
                 dolphinGFXSettings.remove_option("Enhancements", "ForceTrueColor")  
-  
+
         # internal resolution settings
         if system.isOptSet('internalresolution'):
             dolphinGFXSettings.set("Settings", "InternalResolution", system.config["internalresolution"])
@@ -143,20 +162,20 @@ class DolphinGenerator(Generator):
             dolphinGFXSettings.set("Hardware", "VSync", system.config["vsync"])
         else:
             dolphinGFXSettings.set("Hardware", "VSync", "False")
-  
+
         # anisotropic filtering
         if system.isOptSet('anisotropic_filtering'):
             dolphinGFXSettings.set("Enhancements", "MaxAnisotropy", system.config["anisotropic_filtering"])
         else:
             dolphinGFXSettings.set("Enhancements", "MaxAnisotropy", "0")
-			
-		# anti aliasing
+        
+        # anti aliasing
         if system.isOptSet('antialiasing'):
             dolphinGFXSettings.set("Settings", "MSAA", system.config["antialiasing"])
         else:
             dolphinGFXSettings.set("Settings", "MSAA", "0")
-			
-		# save gfx.ini
+        
+        # save gfx.ini
         with open(batoceraFiles.dolphinGfxIni, 'w') as configfile:
             dolphinGFXSettings.write(configfile)
 
