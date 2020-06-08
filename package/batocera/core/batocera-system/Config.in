@@ -303,7 +303,7 @@ config BR2_PACKAGE_BATOCERA_ALL_SYSTEMS
                                                    # dos
 
         select BR2_PACKAGE_VICE                 # ALL # c64
-        select BR2_PACKAGE_LINAPPLE             # ALL # apple II
+        select BR2_PACKAGE_LINAPPLE             if !BR2_PACKAGE_BATOCERA_TARGET_ROCK960 # apple II
 
         select BR2_PACKAGE_BATOCERA_MUPEN64     if !BR2_PACKAGE_BATOCERA_TARGET_RPI1 # mupen64 (n64)
 
@@ -370,9 +370,10 @@ config BR2_PACKAGE_BATOCERA_RETROARCH
 
         select BR2_PACKAGE_LIBRETRO_PARALLEL_N64      if !BR2_PACKAGE_BATOCERA_TARGET_RPI_ANY     && \
                                                          !BR2_PACKAGE_BATOCERA_TARGET_C2      	  && \
-							                             !BR2_PACKAGE_BATOCERA_TARGET_S905     	  && \
-	                                                     !BR2_PACKAGE_BATOCERA_TARGET_TINKERBOARD && \
-							                             !BR2_PACKAGE_BATOCERA_TARGET_MIQI
+							 !BR2_PACKAGE_BATOCERA_TARGET_S905     	  && \
+	                                                 !BR2_PACKAGE_BATOCERA_TARGET_TINKERBOARD && \
+							 !BR2_PACKAGE_BATOCERA_TARGET_MIQI &&\
+                                                         !BR2_PACKAGE_BATOCERA_TARGET_ROCK960
 							 # PARALLEL_N64
 
         select BR2_PACKAGE_LIBRETRO_POCKETSNES        if BR2_PACKAGE_BATOCERA_TARGET_RPI_ANY # POCKETSNES
