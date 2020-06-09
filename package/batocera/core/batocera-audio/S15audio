@@ -59,8 +59,8 @@ start_pulseaudio() {
 		--disallow-exit \
 		--exit-idle-time=-1 \
 		--use-pid-file \
-		--realtime &>/dev/null \
-		-D
+		--realtime \
+		-D &>/dev/null
 	echo "OK"
 	configure_pulseaudio
 }
