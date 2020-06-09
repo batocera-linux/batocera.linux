@@ -46,7 +46,6 @@ case "${ACTION}" in
 	ALSA_ID=$(echo ${ALSA_DEV} | awk '{print $2}')
 	PA_IDX=0
 	for SINK in $(pactl list sinks | grep alsa.id | awk '$1 == "alsa.id" {gsub(/"/, "", $3); print $3}'); do
-		echo ${SINK}
 		if [ "${ALSA_ID}" = "${SINK}" ]; then
 			pacmd set-default-sink ${PA_IDX}
 			# re-route all apps to new sink
@@ -55,7 +54,7 @@ case "${ACTION}" in
 			done
 			# TODO move to config/
 			cat > /userdata/system/.config/pulse/default.pa <<EOF
-.include /etc/pulse/default.pa
+.include /etc/pulse/system.pa
 
 set-default-sink ${PA_IDX}
 EOF
