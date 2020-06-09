@@ -6,6 +6,39 @@ shift
 do_help() {
     echo "${1} scanlist" >&2
     echo "${1} list" >&2
+    echo "${1} wps" >&2
+}
+
+do_wps() {
+    do_start
+    [ $? -eq 0 ] || exit 1
+
+    #use grep -v *AO to filter network already in usage!
+    #head will filter to n-evetns
+    for z in 1 2 3; do
+    for i in $(connmanctl services | grep -v *AO | grep -o "wifi_[[:xdigit:]]*_[[:xdigit:]]*_managed_psk" | head -n 3)
+    do
+        connmanctl connect "$i" &>/tmp/wps.log
+        sleep 2
+
+        if grep -q "^Connected" /tmp/wps.log; then
+            echo "WPS connected!"
+            conn_cred="/var/lib/connman/$i/settings"
+            ssid="$(batocera-settings "$conn_cred" get Name)"
+            psk="$(batocera-settings "$conn_cred" get Passphrase)"
+            echo "SSID is: $ssid"
+            echo "PKEY is: $psk"
+            #batocera-settings set wifi.ssid "$ssid"
+            #batocera-settings set wifi.key "$psk"
+            break 2
+        elif grep -q "Already connected" /tmp/wps.log; then
+            echo "Connections already established to network"
+            break 2
+        else
+            echo "Failed: WPS connection"
+        fi
+    done
+    done
 }
 
 do_list() {
@@ -58,7 +91,7 @@ case "${ACTION}" in
 	do_list
 	;;
     "scanlist")
-	do_scanlist
+	do_wps
 	;;
     "start")
 	do_start
@@ -71,6 +104,9 @@ case "${ACTION}" in
     "disable")
 	do_disable || exit 1
 	;;
+    "wps")
+        do_wps || exit 1
+        ;;
     *)
 	do_help "${0}"
 esac
