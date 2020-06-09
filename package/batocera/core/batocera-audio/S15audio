@@ -1,0 +1,94 @@
+#!/bin/sh
+#
+# Starts audio services
+#
+log="/userdata/system/logs/batocera.log"
+
+# get configured audio device from batocera.conf
+AUDIO_DEV=$(batocera-audio get)
+if [[ "${AUDIO_DEV}" == "" ]];then
+	AUDIO_DEV="auto"
+fi
+
+ARCH=$(cat /usr/share/batocera/batocera.arch)
+
+case ${ARCH} in
+	rockpro64 | vim3)
+		AUDIO_BACKEND="pulseaudio"
+	;;
+	*)
+		AUDIO_BACKEND="alsa"
+	;;
+esac
+
+configure_pulseaudio() {
+	# TODOD move to config/
+	if [[ -f /userdata/system/.config/pulse/default.pa ]]; then
+		# already using pulseaudio
+		return
+	fi
+	printf "Configuring pulseaudio: "
+	# remove alsa conf
+	rm /userdata/system/.asoundrc &>/dev/null
+	rm /userdata/system/asound.state &>/dev/null
+	# auto: get default card per arch
+	# custom: do nothing. default to first sink
+	# other: try to find sink for card
+	batocera-audio set "${AUDIO_DEV}"
+	echo "OK"
+}
+
+start_alsa() {
+	batocera-audio "unlock-volume" >> $log
+	batocera-audio set "${AUDIO_DEV}"
+	alsactl restore -f /userdata/system/asound.state
+}
+
+stop_alsa() {
+	alsactl store -f /userdata/system/asound.state
+}
+
+restart_alsa() {
+	batocera-audio set "${AUDIO_DEV}"
+}
+
+start_pulseaudio() {
+	printf "Starting pulseaudio: "
+	umask 077
+	HOME=/userdata/system /usr/bin/pulseaudio \
+		--disallow-exit \
+		--exit-idle-time=-1 \
+		--use-pid-file \
+		--realtime &>/dev/null \
+		-D
+	echo "OK"
+	configure_pulseaudio
+}
+
+stop_pulseaudio() {
+	printf "Stopping pulseaudio: "
+	/usr/bin/pulseaudio --kill
+	echo "OK"
+}
+
+restart_pulseaudio () {
+	stop_pulseaudio
+	start_pulseaudio
+}
+
+case "$1" in
+ 	start)
+		start_${AUDIO_BACKEND}
+	;;
+ 	stop)
+		stop_${AUDIO_BACKEND}
+	;;
+ 	restart|reload)
+		restart_${AUDIO_BACKEND}
+	;;
+	*)
+		echo "Usage: $0 {start|stop|restart}"
+	exit 1
+esac
+
+exit $?
