@@ -4,9 +4,9 @@
 #
 ################################################################################
 
-# Not possible to directly refer to kodi18 variables, because of
+# Not possible to directly refer to kodi variables, because of
 # first/second expansion trickery...
-KODI18_TEXTUREPACKER_VERSION = 18.6-Leia
+KODI18_TEXTUREPACKER_VERSION = 18.7.1-Leia
 KODI18_TEXTUREPACKER_SITE = $(call github,xbmc,xbmc,$(KODI18_TEXTUREPACKER_VERSION))
 KODI18_TEXTUREPACKER_SOURCE = kodi18-$(KODI18_TEXTUREPACKER_VERSION).tar.gz
 KODI18_TEXTUREPACKER_DL_SUBDIR = kodi18
