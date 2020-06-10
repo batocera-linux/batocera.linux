@@ -6,7 +6,7 @@ log="/userdata/system/logs/batocera.log"
 
 # get configured audio device from batocera.conf
 AUDIO_DEV=$(batocera-audio get)
-if [[ "${AUDIO_DEV}" == "" ]];then
+if [ "${AUDIO_DEV}" == "" ];then
 	AUDIO_DEV="auto"
 fi
 
@@ -20,23 +20,6 @@ case ${ARCH} in
 		AUDIO_BACKEND="alsa"
 	;;
 esac
-
-configure_pulseaudio() {
-	# TODOD move to config/
-	if [[ -f /userdata/system/.config/pulse/default.pa ]]; then
-		# already using pulseaudio
-		return
-	fi
-	printf "Configuring pulseaudio: "
-	# remove alsa conf
-	rm /userdata/system/.asoundrc &>/dev/null
-	rm /userdata/system/asound.state &>/dev/null
-	# auto: get default card per arch
-	# custom: do nothing. default to first sink
-	# other: try to find sink for card
-	batocera-audio set "${AUDIO_DEV}"
-	echo "OK"
-}
 
 start_alsa() {
 	batocera-audio "unlock-volume" >> $log
@@ -53,21 +36,28 @@ restart_alsa() {
 }
 
 start_pulseaudio() {
+	if [ ! -f /userdata/system/.config/pulse/default.pa ]; then
+		# remove alsa conf
+		rm /userdata/system/.asoundrc &>/dev/null
+		rm /userdata/system/asound.state &>/dev/null
+		# custom pulseadio config. if needed
+		mkdir -p /userdata/system/.config/pulse
+		cat > /userdata/system/.config/pulse/default.pa <<EOF
+.include /etc/pulse/default.pa
+EOF
+	fi
 	printf "Starting pulseaudio: "
 	umask 077
-	HOME=/userdata/system /usr/bin/pulseaudio \
-		--disallow-exit \
-		--exit-idle-time=-1 \
-		--use-pid-file \
-		--realtime \
-		-D &>/dev/null
+	# PULSE_RUNTIME_PATH=/tmp/pulse HOME=/userdata/system /usr/bin/pulseaudio -D &> /dev/null
+	PULSE_RUNTIME_PATH=/tmp/pulse HOME=/userdata/system strace -f /usr/bin/pulseaudio -D 2>&1 | tee -a /tmp/pa.log
+	# PULSE_RUNTIME_PATH=/tmp/pulse HOME=/userdata/system batocera-audio set "${AUDIO_DEV}"
+	PULSE_RUNTIME_PATH=/tmp/pulse HOME=/userdata/system strace -f batocera-audio set "${AUDIO_DEV}" 2>&1 | tee -a /tmp/pa.log
 	echo "OK"
-	configure_pulseaudio
 }
 
 stop_pulseaudio() {
 	printf "Stopping pulseaudio: "
-	/usr/bin/pulseaudio --kill
+	PULSE_RUNTIME_PATH=/tmp/pulse HOME=/userdata/system /usr/bin/pulseaudio --kill
 	echo "OK"
 }
 

@@ -37,10 +37,10 @@ case "${ACTION}" in
 	# custom: do nothing
 	# any other: set default sink in pulseadio user file
 	ALSA_DEV=$2
-	if [[ "${ALSA_DEV}" = "custom" ]]; then
+	if [ "${ALSA_DEV}" = "custom" ]; then
 		exit 0
 	fi
-	if [[ "${ALSA_DEV}" = "auto" ]]; then
+	if [ "${ALSA_DEV}" = "auto" ]; then
 		ALSA_DEV=$(get_default_card)
 	fi
 	ALSA_ID=$(echo ${ALSA_DEV} | awk '{print $2}')
@@ -52,12 +52,6 @@ case "${ACTION}" in
 			for APP in $(pacmd list-sink-inputs | awk '$1 == "index:" {print $2}'); do
 				pacmd move-sink-input ${APP} ${PA_IDX} &>/dev/null
 			done
-			# TODO move to config/
-			cat > /userdata/system/.config/pulse/default.pa <<EOF
-.include /etc/pulse/system.pa
-
-set-default-sink ${PA_IDX}
-EOF
 			exit 0
 		fi
 		PA_IDX=$((PA_IDX+1))
