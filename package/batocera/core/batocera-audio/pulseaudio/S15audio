@@ -48,10 +48,8 @@ EOF
 	fi
 	printf "Starting pulseaudio: "
 	umask 077
-	# PULSE_RUNTIME_PATH=/tmp/pulse HOME=/userdata/system /usr/bin/pulseaudio -D &> /dev/null
-	PULSE_RUNTIME_PATH=/tmp/pulse HOME=/userdata/system strace -f /usr/bin/pulseaudio -D 2>&1 | tee -a /tmp/pa.log
-	# PULSE_RUNTIME_PATH=/tmp/pulse HOME=/userdata/system batocera-audio set "${AUDIO_DEV}"
-	PULSE_RUNTIME_PATH=/tmp/pulse HOME=/userdata/system strace -f batocera-audio set "${AUDIO_DEV}" 2>&1 | tee -a /tmp/pa.log
+	PULSE_RUNTIME_PATH=/tmp/pulse HOME=/userdata/system /usr/bin/pulseaudio -D &> /dev/null
+	PULSE_RUNTIME_PATH=/tmp/pulse HOME=/userdata/system batocera-audio set "${AUDIO_DEV}"
 	echo "OK"
 }
 
