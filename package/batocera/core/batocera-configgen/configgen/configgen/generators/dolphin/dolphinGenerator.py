@@ -80,17 +80,83 @@ class DolphinGenerator(Generator):
             dolphinGFXSettings.set("Settings", "ShowFPS", "True")
         else:
             dolphinGFXSettings.set("Settings", "ShowFPS", "False")
+            
+        if system.isOptSet('enable_cheats') and system.getOptBoolean('enable_cheats'):
+            dolphinGFXSettings.set("Core", "EnableCheats", "True")
+        else:
+            dolphinGFXSettings.set("Core", "EnableCheats", "False")
 
         # for to search for custom textures
-        dolphinGFXSettings.set("Settings", "HiresTextures", "True")
-        dolphinGFXSettings.set("Settings", "CacheHiresTextures", "True")
+        if system.isOptSet('hires_textures') and system.getOptBoolean('hires_textures'):
+            dolphinGFXSettings.set("Settings", "HiresTextures", "True")
+            dolphinGFXSettings.set("Settings", "CacheHiresTextures", "True")
+        else:
+            dolphinGFXSettings.set("Settings", "HiresTextures", "False")
+            dolphinGFXSettings.set("Settings", "CacheHiresTextures", "False")
+            
+        # widescreen hack but only if enable cheats is not enabled
+        if (system.isOptSet('widescreen_hack') and system.getOptBoolean('widescreen_hack') and system.isOptSet('enable_cheats') and not system.getOptBoolean('enable_cheats')):
+            dolphinGFXSettings.set("Settings", "wideScreenHack", "True")
+        else:
+            dolphinGFXSettings.remove_option("Settings", "wideScreenHack")
 
+        # various performance hacks
+        if system.isOptSet('perf_hacks') and system.getOptBoolean('perf_hacks'):
+            if not dolphinGFXSettings.has_section("Hacks"):
+                dolphinGFXSettings.add_section("Hacks")
+            if not dolphinGFXSettings.has_section("Enhancements"):
+                dolphinGFXSettings.add_section("Enhancements")        
+            dolphinGFXSettings.set("Hacks", "BBoxEnable", "False")
+            dolphinGFXSettings.set("Hacks", "DeferEFBCopies", "True")
+            dolphinGFXSettings.set("Hacks", "EFBEmulateFormatChanges", "False")
+            dolphinGFXSettings.set("Hacks", "EFBScaledCopy", "True")
+            dolphinGFXSettings.set("Hacks", "EFBToTextureEnable", "True")
+            dolphinGFXSettings.set("Hacks", "SkipDuplicateXFBs", "True")
+            dolphinGFXSettings.set("Hacks", "XFBToTextureEnable", "True")
+            dolphinGFXSettings.set("Enhancements", "ForceFiltering", "True")
+            dolphinGFXSettings.set("Enhancements", "ArbitraryMipmapDetection", "True")
+            dolphinGFXSettings.set("Enhancements", "DisableCopyFilter", "True")
+            dolphinGFXSettings.set("Enhancements", "ForceTrueColor", "True")            
+        else:
+            if dolphinGFXSettings.has_section("Hacks"):
+                dolphinGFXSettings.remove_option("Hacks", "BBoxEnable")
+                dolphinGFXSettings.remove_option("Hacks", "DeferEFBCopies")
+                dolphinGFXSettings.remove_option("Hacks", "EFBEmulateFormatChanges")
+                dolphinGFXSettings.remove_option("Hacks", "EFBScaledCopy")
+                dolphinGFXSettings.remove_option("Hacks", "EFBToTextureEnable")
+                dolphinGFXSettings.remove_option("Hacks", "SkipDuplicateXFBs")
+                dolphinGFXSettings.remove_option("Hacks", "XFBToTextureEnable")
+            if dolphinGFXSettings.has_section("Enhancements"):
+                dolphinGFXSettings.remove_option("Enhancements", "ForceFiltering")
+                dolphinGFXSettings.remove_option("Enhancements", "ArbitraryMipmapDetection")
+                dolphinGFXSettings.remove_option("Enhancements", "DisableCopyFilter")
+                dolphinGFXSettings.remove_option("Enhancements", "ForceTrueColor")  
+  
+        # internal resolution settings
         if system.isOptSet('internalresolution'):
             dolphinGFXSettings.set("Settings", "InternalResolution", system.config["internalresolution"])
         else:
             dolphinGFXSettings.set("Settings", "InternalResolution", "0")
 
-        # save gfx.ini
+        # vsync
+        if system.isOptSet('vsync'):
+            dolphinGFXSettings.set("Hardware", "VSync", system.config["vsync"])
+        else:
+            dolphinGFXSettings.set("Hardware", "VSync", "False")
+  
+        # anisotropic filtering
+        if system.isOptSet('anisotropic_filtering'):
+            dolphinGFXSettings.set("Enhancements", "MaxAnisotropy", system.config["anisotropic_filtering"])
+        else:
+            dolphinGFXSettings.set("Enhancements", "MaxAnisotropy", "0")
+			
+		# anti aliasing
+        if system.isOptSet('antialiasing'):
+            dolphinGFXSettings.set("Settings", "MSAA", system.config["antialiasing"])
+        else:
+            dolphinGFXSettings.set("Settings", "MSAA", "0")
+			
+		# save gfx.ini
         with open(batoceraFiles.dolphinGfxIni, 'w') as configfile:
             dolphinGFXSettings.write(configfile)
 

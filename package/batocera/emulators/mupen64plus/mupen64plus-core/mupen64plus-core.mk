@@ -3,8 +3,8 @@
 # mupen64plus core
 #
 ################################################################################
-# Version.: Commits on Apr 22, 2020
-MUPEN64PLUS_CORE_VERSION = 4edc53c2d5aee33605b3a151d405882030ba94f3
+# Version.: Commits on May 25, 2020
+MUPEN64PLUS_CORE_VERSION = b7b56fea513e8734b982347d5b965c4a8e6f2074
 MUPEN64PLUS_CORE_SITE = $(call github,mupen64plus,mupen64plus-core,$(MUPEN64PLUS_CORE_VERSION))
 MUPEN64PLUS_CORE_LICENSE = GPLv2
 MUPEN64PLUS_CORE_DEPENDENCIES = sdl2 alsa-lib freetype dejavu
@@ -33,7 +33,7 @@ endif
 
 ifeq ($(BR2_aarch64),y)
 	MUPEN64PLUS_HOST_CPU = aarch64
-	MUPEN64PLUS_PARAMS += NO_ASM=1
+	MUPEN64PLUS_PARAMS += VFP_HARD=1
 endif
 
 ifeq ($(BR2_ARM_CPU_HAS_NEON),y)

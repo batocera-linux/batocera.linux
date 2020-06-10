@@ -1,0 +1,10 @@
+[Trigger]
+Operation = Remove
+Type = Path 
+Target = userdata/system/pacman/batoexec/*
+
+[Action]
+When = PreTransaction
+Exec = bin/sh -c 'while read -r tin; do /usr/bin/batocera-pacman-batoexec uninstall "$tin"; done'
+NeedsTargets
+

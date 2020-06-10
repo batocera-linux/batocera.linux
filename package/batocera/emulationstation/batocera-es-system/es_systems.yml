@@ -37,7 +37,7 @@ c128:
   platform:   c64
   emulators:
     vice:
-      x128:     { requireAnyOf: [BR2_PACKAGE_BATOCERA_CORES_EXPERIMENTAL] }
+      x128:     { requireAnyOf: [BR2_PACKAGE_VICE] }
 
 c20:
   name:       Commodore VIC-20
@@ -48,7 +48,7 @@ c20:
   platform:   c64
   emulators:
     vice:
-      xvic:     { requireAnyOf: [BR2_PACKAGE_BATOCERA_CORES_EXPERIMENTAL] }
+      xvic:     { requireAnyOf: [BR2_PACKAGE_VICE] }
 
 amiga500:
   name:       Amiga OCS/ECS
@@ -291,6 +291,7 @@ megadrive:
     libretro:
       genesisplusgx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GENESISPLUSGX] }
       picodrive:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PICODRIVE] }
+      blastem:       { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BLASTEM] }
 
 segacd:
   name:       Sega CD
@@ -1275,6 +1276,17 @@ thomson:
     libretro:
       theodore:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_THEODORE] }
 
+pc88:
+  name:       NEC PC-8800
+  manufacturer: NEC
+  release: 1981
+  hardware: computer
+  extensions: [d88, u88, m3u]
+  platform:   pc88
+  emulators:
+    libretro:
+      quasi88:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PC88] }
+
 pc98:
   name:       NEC PC-9800
   manufacturer: NEC
@@ -1323,6 +1335,9 @@ ports:
 
 windows:
   name:       Windows
+  manufacturer: Microsoft
+  release: 1992
+  hardware: pc
   extensions: [exe, iso, wine, squashfs]
   platform:   pc
   theme:      pc
@@ -1332,6 +1347,9 @@ windows:
 
 windows_installers:
   name:       Windows installers
+  manufacturer: Microsoft
+  release: 1992
+  hardware: pc
   extensions: [exe, iso, wine]
   platform:   pc
   theme:      pc

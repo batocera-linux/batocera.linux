@@ -3,8 +3,8 @@
 # DOSBOX
 #
 ################################################################################
-# Version.: Commits on May 2, 2020
-LIBRETRO_DOSBOX_VERSION = e45cafa9060916574b193b670032240f6948b84e
+# Version.: Commits on May 24, 2020
+LIBRETRO_DOSBOX_VERSION = 10e05343c044e7a1bd389a05be4a0b1d24480e5e
 LIBRETRO_DOSBOX_SITE = https://github.com/libretro/dosbox-svn.git
 LIBRETRO_DOSBOX_SITE_METHOD=git
 LIBRETRO_DOSBOX_GIT_SUBMODULES=YES

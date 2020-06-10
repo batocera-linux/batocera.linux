@@ -1,13 +1,13 @@
 diff --git a/src/Applewin.cpp b/src/Applewin.cpp
-index 7082f3e..3568a0f 100644
+index 71a3fa0..069e330 100644
 --- a/src/Applewin.cpp
 +++ b/src/Applewin.cpp
-@@ -885,7 +885,7 @@ void LoadAllConfigurations(const char *userSpecifiedFilename)
+@@ -922,7 +922,7 @@ void LoadAllConfigurations(const char *userSpecifiedFilename)
    if (home) {
      // Suppport old locations under HOME.
-     configDir.push_back(std::string(home) + "/linapple/linapple.conf");
--    configDir.push_back(std::string(home) + "/.linapple/linapple.conf");
-+    configDir.push_back(std::string(home) + "/configs/linapple/linapple.conf");
+     configFiles.push_back(std::string(home) + "/linapple/linapple.conf");
+-    configFiles.push_back(std::string(home) + "/.linapple/linapple.conf");
++    configFiles.push_back(std::string(home) + "/configs/linapple/linapple.conf");
    }
+   configFiles.push_back(xdgConfigHome + "/linapple/linapple.conf");
  
-   std::string lastSuccessfulUserConfig;

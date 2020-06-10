@@ -1,0 +1,10 @@
+[Trigger]
+Operation = Install
+Operation = Upgrade
+Type = Path 
+Target = userdata/system/pacman/batoexec/*
+
+[Action]
+When = PostTransaction
+Exec = bin/sh -c 'while read -r tin; do /usr/bin/batocera-pacman-batoexec install "$tin"; done'
+NeedsTargets
