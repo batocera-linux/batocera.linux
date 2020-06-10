@@ -23,7 +23,6 @@ case "${ACTION}" in
 	list)
 	# use alsa names for backward compatibility
 	LANG=C aplay -l | grep -E '^card [0-9]*:' | sed -e s+'^card \([0-9]*\): \(.*\), device \([0-9]*\): [^\[]* \[\([^]]*\)].*$'+'\1,\3 \4 \2'+
-#	pactl list sinks | grep alsa.long_card_name | awk '{gsub(/"/, "", $3); print $3 " ("NR-1")"}'
 	echo "auto"
 	echo "custom"
 	;;
