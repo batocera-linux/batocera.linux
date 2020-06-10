@@ -160,76 +160,76 @@ dolphin:
         internalresolution:
             prompt: INTERNAL RESOLUTION
             choices:
-                1x Native: 1
-                2x Native: 2
-                3x Native: 3
-                4x Native: 4
-                5x Native: 5
-                6x Native: 6
+                "1x Native": 1
+                "2x Native": 2
+                "3x Native": 3
+                "4x Native": 4
+                "5x Native": 5
+                "6x Native": 6
         perf_hacks:
             prompt: PERFORMANCE HACKS
             choices:
-                OFF: 0
-                ON:  1
+                "Off": 0
+                "On":  1
         hires_textures:
             prompt: HIRES TEXTURES
             choices:
-                OFF: 0
-                ON:  1                
+                "Off": 0
+                "On":  1                
         widescreen_hack:
             prompt: WIDESCREEN HACK
             choices:
-                OFF: 0
-                ON:  1  
+                "Off": 0
+                "On":  1  
         enable_cheats:
             prompt: ENABLE CHEATS
             choices:
-                OFF: 0
-                ON:  1
+                "Off": 0
+                "On":  1
         vsync:
             prompt: VSYNC
             choices:
-                OFF: False
-                ON:  True
+                "Off": False
+                "On":  True
         anisotropic_filtering:
             prompt: ANISOTROPIC FILTERING
             choices:
-                OFF: 0
-                2x:  1
-                4x:  2
-                8x:  3
-                16x: 4
+                "Off": 0
+                "2x":  1
+                "4x":  2
+                "8x":  3
+                "16x": 4
         antialiasing:
             prompt: ANTIALIASING
             choices:
-                OFF: 0
-                2x:  2
-                4x:  4
-                8x:  8
+                "Off": 0
+                "2x":  2
+                "4x":  4
+                "8x":  8
   systems:
     wii:
         features: [emulated_wiimotes]
-        cfeatures:
-            controller_orientation:
-                prompt: CONTROLLER ORIENTATION
-                choices:
-                    Sideways: side
-                    Vertical: vert
-                    Classic Controller: classic
-            left_joystick:
-                prompt: LEFT JOYSTICK
-                choices:
-                    Infrared: ir
-                    Nunchuk: nc
-                    Tilt: ti                  
-                    Swing: sw                
-            right_joystick:
-                prompt: RIGHT JOYSTICK
-                choices:
-                    Infrared: ir
-                    Nunchuk: nc
-                    Tilt: ti   
-                    Swing: sw                     
+#        cfeatures:
+#            controller_orientation:
+#                prompt: CONTROLLER ORIENTATION
+#                choices:
+#                    Sideways: side
+#                    Vertical: vert
+#                    Classic Controller: classic
+#            left_joystick:
+#                prompt: LEFT JOYSTICK
+#                choices:
+#                    Infrared: ir
+#                    Nunchuk: nc
+#                    Tilt: ti                  
+#                    Swing: sw                
+#            right_joystick:
+#                prompt: RIGHT JOYSTICK
+#                choices:
+#                    Infrared: ir
+#                    Nunchuk: nc
+#                    Tilt: ti   
+#                    Swing: sw                     
 dosbox:
   features: [ratio]
 
