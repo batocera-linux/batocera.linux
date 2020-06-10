@@ -1,5 +1,5 @@
 config BR2_PACKAGE_BATOCERA_AUDIO
-	bool "alsa-plugins"
+	bool "batocera-audio"
 	select BR2_PACKAGE_BLUEZ_ALSA
 	select BR2_PACKAGE_ALSA_UTILS
 	select BR2_PACKAGE_ALSA_UTILS_AMIXER
