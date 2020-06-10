@@ -3,9 +3,9 @@
 # libretro-picodrive
 #
 ################################################################################
-# Version.: Commits on Mar 14, 2020
-LIBRETRO_PICODRIVE_VERSION = 93589da1b97373c9dc747d29eba81ed9158a5209
-LIBRETRO_PICODRIVE_SITE = https://github.com/notaz/picodrive.git
+# Version.: Commits on Jun 9, 2020
+LIBRETRO_PICODRIVE_VERSION = beb62fb8e88a83009ace14d1342867faf28f8c9c
+LIBRETRO_PICODRIVE_SITE = https://github.com/rtissera/picodrive.git
 LIBRETRO_PICODRIVE_SITE_METHOD=git
 LIBRETRO_PICODRIVE_GIT_SUBMODULES=YES
 LIBRETRO_PICODRIVE_DEPENDENCIES = libpng sdl
