@@ -73,6 +73,13 @@ class DolphinGenerator(Generator):
 
         if not dolphinGFXSettings.has_section("Settings"):
             dolphinGFXSettings.add_section("Settings")
+        if not dolphinGFXSettings.has_section("Hacks"):
+            dolphinGFXSettings.add_section("Hacks")
+        if not dolphinGFXSettings.has_section("Enhancements"):
+            dolphinGFXSettings.add_section("Enhancements")             
+        if not dolphinGFXSettings.has_section("Hardware"):
+            dolphinGFXSettings.add_section("Hardware")  
+            
         dolphinGFXSettings.set("Settings", "AspectRatio", getGfxRatioFromConfig(system.config, gameResolution))
 
         # show fps
@@ -80,11 +87,13 @@ class DolphinGenerator(Generator):
             dolphinGFXSettings.set("Settings", "ShowFPS", "True")
         else:
             dolphinGFXSettings.set("Settings", "ShowFPS", "False")
-            
+        
+
+        
         if system.isOptSet('enable_cheats') and system.getOptBoolean('enable_cheats'):
-            dolphinGFXSettings.set("Core", "EnableCheats", "True")
+            dolphinSettings.set("Core", "EnableCheats", "True")
         else:
-            dolphinGFXSettings.set("Core", "EnableCheats", "False")
+            dolphinSettings.set("Core", "EnableCheats", "False")
 
         # for to search for custom textures
         if system.isOptSet('hires_textures') and system.getOptBoolean('hires_textures'):
@@ -102,10 +111,7 @@ class DolphinGenerator(Generator):
 
         # various performance hacks
         if system.isOptSet('perf_hacks') and system.getOptBoolean('perf_hacks'):
-            if not dolphinGFXSettings.has_section("Hacks"):
-                dolphinGFXSettings.add_section("Hacks")
-            if not dolphinGFXSettings.has_section("Enhancements"):
-                dolphinGFXSettings.add_section("Enhancements")        
+       
             dolphinGFXSettings.set("Hacks", "BBoxEnable", "False")
             dolphinGFXSettings.set("Hacks", "DeferEFBCopies", "True")
             dolphinGFXSettings.set("Hacks", "EFBEmulateFormatChanges", "False")
