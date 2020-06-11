@@ -1,0 +1,26 @@
+#!/bin/bash
+
+ACTION=$1
+shift
+
+case "${ACTION}" in
+    "install")
+	PKG=$1
+	pacman --noconfirm -S "${PKG}"
+	;;
+    "remove")
+	PKG=$1
+	pacman --noconfirm -R "${PKG}"
+	;;
+    "list")
+	pacman --noconfirm -Ss --xml
+	;;
+    "update")
+	pacman --noconfirm -Syu
+	;;
+    *)
+	echo "${0} install <package>" >&2
+	echo "${0} remove  <package>" >&2
+	echo "${0} list" >&2
+	echo "${0} update" >&2
+esac
