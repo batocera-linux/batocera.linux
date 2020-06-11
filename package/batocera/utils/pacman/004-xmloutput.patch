@@ -1,0 +1,193 @@
+diff --git a/src/pacman/conf.h b/src/pacman/conf.h
+index 03a15a4..8fb4c6d 100644
+--- a/src/pacman/conf.h
++++ b/src/pacman/conf.h
+@@ -138,6 +138,8 @@ typedef struct __config_t {
+ 	colstr_t colstr;
+ 
+ 	alpm_list_t *repos;
++
++    	unsigned short xml;
+ } config_t;
+ 
+ /* Operations */
+@@ -210,7 +212,8 @@ enum {
+ 	OP_DOWNLOADONLY,
+ 	OP_REFRESH,
+ 	OP_ASSUMEINSTALLED,
+-	OP_DISABLEDLTIMEOUT
++	OP_DISABLEDLTIMEOUT,
++	OP_XML
+ };
+ 
+ /* clean method */
+diff --git a/src/pacman/package.c b/src/pacman/package.c
+index 35cfcd9..2026194 100644
+--- a/src/pacman/package.c
++++ b/src/pacman/package.c
+@@ -27,6 +27,9 @@
+ #include <time.h>
+ #include <wchar.h>
+ 
++#include <search.h>
++#include <argz.h>
++
+ #include <alpm.h>
+ #include <alpm_list.h>
+ 
+@@ -522,12 +525,16 @@ void print_groups(alpm_pkg_t *pkg)
+ int dump_pkg_search(alpm_db_t *db, alpm_list_t *targets, int show_status)
+ {
+ 	int freelist = 0;
+-	alpm_db_t *db_local;
++	alpm_db_t *db_local = NULL;
+ 	alpm_list_t *i, *searchlist;
+ 	unsigned short cols;
+ 	const colstr_t *colstr = &config->colstr;
++	ENTRY item;
++	ENTRY *found_item;
++	char *protected_string;
++	size_t n = 2048;
+ 
+-	if(show_status) {
++	if(show_status || config->xml) {
+ 		db_local = alpm_get_localdb(config->handle);
+ 	}
+ 
+@@ -543,10 +550,91 @@ int dump_pkg_search(alpm_db_t *db, alpm_list_t *targets, int show_status)
+ 		return 1;
+ 	}
+ 
++	if(config->xml) {
++	  printf("<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n");
++	  printf("<packages>\n");
++	}
++
++	if(config->xml) {
++	  (void) hcreate(1000);
++	  if((protected_string = (char*) malloc(2048 * sizeof(char))) == NULL) {
++	    return 1;
++	  }
++
++	  // get installed packages
++	  alpm_pkg_t *pkg = NULL;
++	  for(i = alpm_db_get_pkgcache(db_local); i; i = alpm_list_next(i)) {
++	    pkg = i->data;
++	    item.key = strdup(alpm_pkg_get_name(pkg));
++	    item.data = pkg;
++	    (void) hsearch(item, ENTER);
++	  }
++	}
++
+ 	cols = getcols();
+ 	for(i = searchlist; i; i = alpm_list_next(i)) {
+ 		alpm_pkg_t *pkg = i->data;
+-
++		alpm_pkg_t *installed_pkg;
++
++		if(config->xml) {
++		  alpm_list_t *lst;
++		  alpm_list_t *k;
++
++		  item.key = alpm_pkg_get_name(pkg);
++		  found_item = hsearch(item, FIND);
++		  installed_pkg = NULL;
++		  if(found_item != NULL) {
++		    installed_pkg = (alpm_pkg_t*)(found_item->data);
++		  }
++
++		  printf("  <package>\n");
++		  strncpy(protected_string, alpm_pkg_get_name(pkg), 2048);
++		  argz_replace(&protected_string, &n, "<", "&lt;", NULL);
++		  argz_replace(&protected_string, &n, ">", "&gt;", NULL);
++		  printf("    <name>%s</name>\n",               protected_string);
++		  printf("    <repository>%s</repository>\n",   alpm_db_get_name(db));
++		  printf("    <available_version>%s</available_version>\n",         alpm_pkg_get_version(pkg));
++		  strncpy(protected_string, alpm_pkg_get_desc(pkg), 2048);
++		  argz_replace(&protected_string, &n, "<", "&lt;", NULL);
++		  argz_replace(&protected_string, &n, ">", "&gt;", NULL);
++		  printf("    <description>%s</description>\n", protected_string);
++		  printf("    <url>%s</url>\n",                 alpm_pkg_get_url(pkg));
++		  strncpy(protected_string, alpm_pkg_get_packager(pkg), 2048);
++		  argz_replace(&protected_string, &n, "<", "&lt;", NULL);
++		  argz_replace(&protected_string, &n, ">", "&gt;", NULL);
++		  printf("    <packager>%s</packager>\n",  protected_string);
++		  printf("    <download_size>%ld</download_size>\n",   alpm_pkg_get_size(pkg));
++		  printf("    <installed_size>%ld</installed_size>\n", alpm_pkg_get_isize(pkg));
++
++		  if(installed_pkg == NULL) {
++		    printf("    <status>none</status>\n");
++		  } else {
++		    alpm_pkg_t *newpkg = alpm_sync_get_new_version(installed_pkg, alpm_get_syncdbs(config->handle));
++		    if(newpkg == NULL) {
++		      printf("    <status version=\"%s\" need_update=\"false\">installed</status>\n", alpm_pkg_get_version(installed_pkg));
++		    } else {
++		      printf("    <status version=\"%s\" need_update=\"true\">installed</status>\n", alpm_pkg_get_version(installed_pkg));
++		    }
++		  }
++
++		  printf("    <groups>\n");
++		  if((lst = alpm_pkg_get_groups(pkg)) != NULL) {
++		    for(k = lst; k; k = alpm_list_next(k)) {
++		      const char *elt = k->data;
++		      printf("    <group>%s</group>\n", elt);
++		    }
++		  }
++		  printf("    </groups>\n");
++		  printf("    <licenses>\n");
++		  if((lst = alpm_pkg_get_groups(pkg)) != NULL) {
++		    for(k = lst; k; k = alpm_list_next(k)) {
++		      const char *elt = k->data;
++		      printf("    <license>%s</license>\n", elt);
++		    }
++		  }
++		  printf("    </licenses>\n");
++		  printf("  </package>\n");
++		} else {
+ 		if(config->quiet) {
+ 			fputs(alpm_pkg_get_name(pkg), stdout);
+ 		} else {
+@@ -564,6 +652,13 @@ int dump_pkg_search(alpm_db_t *db, alpm_list_t *targets, int show_status)
+ 			indentprint(alpm_pkg_get_desc(pkg), 4, cols);
+ 		}
+ 		fputc('\n', stdout);
++		}
++	}
++
++	if(config->xml) {
++	  printf("</packages>\n");
++	  hdestroy();
++	  free(protected_string);
+ 	}
+ 
+ 	/* we only want to free if the list was a search list */
+diff --git a/src/pacman/pacman.c b/src/pacman/pacman.c
+index a9b6437..d4f96f5 100644
+--- a/src/pacman/pacman.c
++++ b/src/pacman/pacman.c
+@@ -222,6 +222,7 @@ static void usage(int op, const char * const myname)
+ 		addlist(_("      --logfile <path> set an alternate log file\n"));
+ 		addlist(_("      --noconfirm      do not ask for any confirmation\n"));
+ 		addlist(_("      --confirm        always ask for confirmation\n"));
++		addlist(_("      --xml            xml output\n"));
+ 		addlist(_("      --disable-download-timeout\n"
+ 		          "                       use relaxed timeouts for download\n"));
+ 	}
+@@ -441,6 +442,9 @@ static int parsearg_global(int opt)
+ 		case OP_CONFIRM:
+ 			config->noconfirm = 0;
+ 			break;
++		case OP_XML:
++			config->xml = 1;
++			break;
+ 		case OP_DBPATH:
+ 		case 'b':
+ 			free(config->dbpath);
+@@ -921,6 +925,7 @@ static int parseargs(int argc, char *argv[])
+ 		{"refresh",    no_argument,       0, OP_REFRESH},
+ 		{"noconfirm",  no_argument,       0, OP_NOCONFIRM},
+ 		{"confirm",    no_argument,       0, OP_CONFIRM},
++		{"xml",        no_argument,       0, OP_XML},
+ 		{"config",     required_argument, 0, OP_CONFIG},
+ 		{"ignore",     required_argument, 0, OP_IGNORE},
+ 		{"assume-installed",     required_argument, 0, OP_ASSUMEINSTALLED},
