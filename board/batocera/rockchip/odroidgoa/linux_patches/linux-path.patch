@@ -6,7 +6,7 @@ index f90fa50..b335ffa 100755
  # same as the kernel source tree, except when the kernel was compiled in
  # a separate directory.
  KBUILD ?= $(PWD)
-+KBUILD = /build/output/build/linux-597b7316fd30b7721afc9be7930931af97c13452
++KBUILD = /build/output/odroidgoa/build/linux-597b7316fd30b7721afc9be7930931af97c13452
  
  ifeq (,$(KBUILD))
  $(error Kernel build tree not found - please set KBUILD to configured kernel)
