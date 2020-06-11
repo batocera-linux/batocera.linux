@@ -22,7 +22,7 @@ index 03a15a4..8fb4c6d 100644
  
  /* clean method */
 diff --git a/src/pacman/package.c b/src/pacman/package.c
-index 35cfcd9..2026194 100644
+index 35cfcd9..235f53b 100644
 --- a/src/pacman/package.c
 +++ b/src/pacman/package.c
 @@ -27,6 +27,9 @@
@@ -54,7 +54,7 @@ index 35cfcd9..2026194 100644
  		db_local = alpm_get_localdb(config->handle);
  	}
  
-@@ -543,10 +550,91 @@ int dump_pkg_search(alpm_db_t *db, alpm_list_t *targets, int show_status)
+@@ -543,10 +550,87 @@ int dump_pkg_search(alpm_db_t *db, alpm_list_t *targets, int show_status)
  		return 1;
  	}
  
@@ -126,28 +126,24 @@ index 35cfcd9..2026194 100644
 +		    }
 +		  }
 +
-+		  printf("    <groups>\n");
 +		  if((lst = alpm_pkg_get_groups(pkg)) != NULL) {
 +		    for(k = lst; k; k = alpm_list_next(k)) {
 +		      const char *elt = k->data;
 +		      printf("    <group>%s</group>\n", elt);
 +		    }
 +		  }
-+		  printf("    </groups>\n");
-+		  printf("    <licenses>\n");
 +		  if((lst = alpm_pkg_get_groups(pkg)) != NULL) {
 +		    for(k = lst; k; k = alpm_list_next(k)) {
 +		      const char *elt = k->data;
 +		      printf("    <license>%s</license>\n", elt);
 +		    }
 +		  }
-+		  printf("    </licenses>\n");
 +		  printf("  </package>\n");
 +		} else {
  		if(config->quiet) {
  			fputs(alpm_pkg_get_name(pkg), stdout);
  		} else {
-@@ -564,6 +652,13 @@ int dump_pkg_search(alpm_db_t *db, alpm_list_t *targets, int show_status)
+@@ -564,6 +648,13 @@ int dump_pkg_search(alpm_db_t *db, alpm_list_t *targets, int show_status)
  			indentprint(alpm_pkg_get_desc(pkg), 4, cols);
  		}
  		fputc('\n', stdout);
