@@ -155,17 +155,8 @@ daphne:
   features: [ratio]
 
 dolphin:
-  features: [ratio]
+  features: [ratio, internal_resolution]
   cfeatures:
-        internalresolution:
-            prompt: INTERNAL RESOLUTION
-            choices:
-                "1x Native": 1
-                "2x Native": 2
-                "3x Native": 3
-                "4x Native": 4
-                "5x Native": 5
-                "6x Native": 6
         perf_hacks:
             prompt: PERFORMANCE HACKS
             choices:
@@ -208,28 +199,7 @@ dolphin:
                 "8x":  8
   systems:
     wii:
-        features: [emulated_wiimotes]
-#        cfeatures:
-#            controller_orientation:
-#                prompt: CONTROLLER ORIENTATION
-#                choices:
-#                    Sideways: side
-#                    Vertical: vert
-#                    Classic Controller: classic
-#            left_joystick:
-#                prompt: LEFT JOYSTICK
-#                choices:
-#                    Infrared: ir
-#                    Nunchuk: nc
-#                    Tilt: ti                  
-#                    Swing: sw                
-#            right_joystick:
-#                prompt: RIGHT JOYSTICK
-#                choices:
-#                    Infrared: ir
-#                    Nunchuk: nc
-#                    Tilt: ti   
-#                    Swing: sw                     
+        features: [emulated_wiimotes]                  
 dosbox:
   features: [ratio]
 
