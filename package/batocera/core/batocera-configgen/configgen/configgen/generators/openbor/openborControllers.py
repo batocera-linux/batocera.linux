@@ -28,7 +28,7 @@ def JoystickValue(key, pad, joy_max_inputs, invertAxis = False):
 
     elif input.type == "axis":
         axisfirst = 1 + (int(pad.index)) * joy_max_inputs + int(pad.nbbuttons) + 2 * int(input.id)
-        if ((invertAxis and input.value < 0) or (not invertAxis and input.value > 0)):
+        if ((invertAxis and int(input.value) < 0) or (not invertAxis and int(input.value) > 0)):
             axisfirst += 1
         value = axisfirst
 
@@ -62,9 +62,9 @@ def setupControllers(config, playersControllers, joy_max_inputs):
 
         # axis
         config.save("keys." + str(idx) + ".13", JoystickValue("joystick1up",       pad, joy_max_inputs))        # axis up
-        config.save("keys." + str(idx) + ".14", JoystickValue("joystick1up",       pad, joy_max_inputs, true))  # axis down
+        config.save("keys." + str(idx) + ".14", JoystickValue("joystick1up",       pad, joy_max_inputs, True))  # axis down
         config.save("keys." + str(idx) + ".15", JoystickValue("joystick1left",     pad, joy_max_inputs))        # axis left
-        config.save("keys." + str(idx) + ".16", JoystickValue("joystick1left",     pad, joy_max_inputs, true))  # axis right
+        config.save("keys." + str(idx) + ".16", JoystickValue("joystick1left",     pad, joy_max_inputs, True))  # axis right
 
         # next one
         idx += 1
