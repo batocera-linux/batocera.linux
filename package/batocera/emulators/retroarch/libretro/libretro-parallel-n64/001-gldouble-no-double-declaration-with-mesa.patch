@@ -1,12 +1,15 @@
---- libretro-parallel-n64-a4962b5cc6e552add3b18efe9e35eafeb8f716df/libretro-common/include/glsm/glsm.h.orig	2020-05-28 10:52:39.063544428 +0200
-+++ libretro-parallel-n64-a4962b5cc6e552add3b18efe9e35eafeb8f716df/libretro-common/include/glsm/glsm.h	2020-05-28 10:58:14.482831599 +0200
-@@ -32,7 +32,9 @@
+diff --git a/libretro-common/include/glsm/glsm.h b/libretro-common/include/glsm/glsm.h
+index 9113bdc9..b95e2177 100644
+--- a/libretro-common/include/glsm/glsm.h
++++ b/libretro-common/include/glsm/glsm.h
+@@ -32,8 +32,8 @@
  RETRO_BEGIN_DECLS
- 
+
  #ifdef HAVE_OPENGLES2
-+#ifndef GL_NV_path_rendering
- typedef GLfloat GLdouble;
-+#endif
- typedef GLclampf GLclampd;
+-typedef GLfloat GLdouble;
+-typedef GLclampf GLclampd;
++typedef double GLdouble;
++typedef double GLclampd;
  #endif
  
+ #if defined(HAVE_OPENGLES2)

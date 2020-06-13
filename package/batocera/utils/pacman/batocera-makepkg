@@ -16,11 +16,15 @@ COMMENT_CHAR="#"
 # pkgver = 1.0.0-1
 # pkgdesc = Batocera bezels with a CRT effect 
 # arch = any
+# group = bezel
 ### And these will be added automatically
 # packager = https://batocera.org (unless previously filled with your name or email)
 # url = http://batocera.org (unless previously filled with the the ROM URL)
 # size = 165123000 # size of the package
 # builddate = 1590539371 # epoch of creation
+
+##### Valid "groups" for Batocera packages #####
+GRP_ARRAY=(game music theme bezel misc)
 
 ##### Function Calls #####
 
@@ -48,9 +52,13 @@ function check_argument() {
 	vinput="$1"
 	val="$(get_config $vinput)"
 	ret=$?
-	[[ -z "$val" && $ret -eq 1 ]] && echo "ERROR: '$vinput' not found - you need to manually fill it" >&2 && exit 1
-	[[ -z "$val" && $ret -eq 0 ]] && echo "ERROR: '$vinput' is empty - you need to manually fill it" >&2 && exit 1
-	[[ "$val" == "$COMMENT_CHAR" ]] && echo "ERROR: '$vinput' is commented with $COMMENT_CHAR!" >&2 && exit 1
+	[[ -z "$val" && $ret -eq 1 ]] && echo "ERROR: '$vinput' not found - you need to manually fill it in your .PKGINFO" >&2 && exit 1
+	[[ -z "$val" && $ret -eq 0 ]] && echo "ERROR: '$vinput' is empty - you need to manually fill it in your .PKGINFO" >&2 && exit 1
+	[[ "$val" == "$COMMENT_CHAR" ]] && echo "ERROR: '$vinput' is commented with $COMMENT_CHAR in your .PKGINFO" >&2 && exit 1
+	if [[ "$vinput" == "group" ]]; then
+		# optionally accept sub-groups like game-nes, game-megadrive...
+		! (printf "%s\n" "${GRP_ARRAY[@]}" | grep -q ${val//-*/}) && echo "WARNING: Unknown group '$val' in your .PKGINFO" >&2
+	fi
 }
 
 function check_optional_argument() {
@@ -110,7 +118,7 @@ function main() {
 	    [[ -f "$CONFIGFILE" ]] && cp "$CONFIGFILE" "$INFO"
 	    [[ -f "$INFO" ]] || { echo "ERROR: File not found: $INFO or no argument given." >&2; exit 1; }
 
-	    for mandatory in pkgname pkgver pkgdesc arch ; do
+	    for mandatory in pkgname pkgver pkgdesc arch group ; do
 		    check_argument "$mandatory"
 	    done
 	    for optional in url packager ; do

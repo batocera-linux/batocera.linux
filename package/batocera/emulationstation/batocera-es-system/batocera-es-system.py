@@ -9,6 +9,8 @@ import re
 import argparse
 import os
 import shutil
+from collections import OrderedDict
+from operator import itemgetter
 
 class EsSystemConf:
 
@@ -266,7 +268,8 @@ class EsSystemConf:
                         if "cfeatures" in features[emulator]["systems"][system]:
                             for cfeature in features[emulator]["systems"][system]["cfeatures"]:
                                 featuresTxt += "        <feature name=\"{}\" value=\"{}\">\n".format(features[emulator]["systems"][system]["cfeatures"][cfeature]["prompt"], cfeature)
-                                for choice in features[emulator]["systems"][system]["cfeatures"][cfeature]["choices"]:
+                                choices = OrderedDict(sorted(features[emulator]["systems"][system]["cfeatures"][cfeature]["choices"].items(), key=itemgetter(1)))
+                                for choice in choices:
                                     featuresTxt += "        <choice name=\"{}\" value=\"{}\" />\n".format(choice, features[emulator]["systems"][system]["cfeatures"][cfeature]["choices"][choice])
                                 featuresTxt += "        </feature>\n"                        
                         featuresTxt += "      </system>\n"
@@ -274,7 +277,8 @@ class EsSystemConf:
                 if "cfeatures" in features[emulator]:
                     for cfeature in features[emulator]["cfeatures"]:
                         featuresTxt += "    <feature name=\"{}\" value=\"{}\">\n".format(features[emulator]["cfeatures"][cfeature]["prompt"], cfeature)
-                        for choice in features[emulator]["cfeatures"][cfeature]["choices"]:
+                        choices = OrderedDict(sorted(features[emulator]["cfeatures"][cfeature]["choices"].items(), key=itemgetter(1)))
+                        for choice in choices:
                             featuresTxt += "      <choice name=\"{}\" value=\"{}\" />\n".format(choice, features[emulator]["cfeatures"][cfeature]["choices"][choice])
                         featuresTxt += "    </feature>\n"
 

@@ -67,7 +67,6 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
     select BR2_PACKAGE_XARCADE2JSTICK                    # keyboard events of the Xarcade Tankstick
     select BR2_PACKAGE_UTIL_LINUX_RFKILL                 # bluetooth
     select BR2_PACKAGE_UTIL_LINUX_LIBMOUNT               # for util-linux compilation to work (so, may be removed in the future)
-    select BR2_PACKAGE_BLUEZ_ALSA                        # bluetooth audio devices
     select BR2_PACKAGE_DBUS_PYTHON                       # required for bluetooth scripts
     select BR2_PACKAGE_WIRINGPI                          if BR2_PACKAGE_BATOCERA_TARGET_RPI_ANY || BR2_PACKAGE_BATOCERA_TARGET_RPI4 # gpio
     select BR2_PACKAGE_PARTED                            # partition management (for the first boot)
@@ -75,6 +74,7 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
     select BR2_PACKAGE_USBUTILS                          # usb key/sd card tools
     select BR2_PACKAGE_BATOCERA_SPLASH                   # boot splash
     select BR2_PACKAGE_BATOCERA_SCRIPTS                  # batocera scripts
+    select BR2_PACKAGE_BATOCERA_AUDIO                    # batocera audio
     # choices: select BR2_PACKAGE_BATOCERA_SPLASH_OMXPLAYER if BR2_PACKAGE_BATOCERA_TARGET_RPI2      || BR2_PACKAGE_BATOCERA_TARGET_RPI3
     # choices: select BR2_PACKAGE_BATOCERA_SPLASH_FFPLAY    if BR2_PACKAGE_BATOCERA_TARGET_XU4  || BR2_PACKAGE_BATOCERA_TARGET_ROCKPRO64 || BR2_PACKAGE_BATOCERA_TARGET_ODROIDN2 || BR2_PACKAGE_BATOCERA_TARGET_TINKERBOARD || BR2_PACKAGE_BATOCERA_TARGET_MIQI || BR2_PACKAGE_BATOCERA_TARGET_ROCK960
     select BR2_PACKAGE_WGET                              # download tools
@@ -116,7 +116,7 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
                                                             BR2_PACKAGE_BATOCERA_TARGET_LIBRETECH_H5
     select BR2_PACKAGE_LIRC_TOOLS                        # lirc (remote control)
     select BR2_PACKAGE_LIBCEC				 # libcec
-    select BR2_PACKAGE_XOW                               # xbox receiver
+    select BR2_PACKAGE_XOW                               if !BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA # xbox receiver (require linux >= 4.5)
     select BR2_SYSTEM_ENABLE_NLS                         # locales
     select BR2_PACKAGE_ACPID                             if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
     select BR2_PACKAGE_BATOCERA_DESKTOPAPPS              if BR2_PACKAGE_XSERVER_XORG_SERVER # batocera applications config and scripts
@@ -143,11 +143,6 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
     select BR2_PACKAGE_E2FSPROGS_RESIZE2FS               # fs resize
     select BR2_PACKAGE_PACMAN                            # pacman package manager
 
-    # alsa utils
-    select BR2_PACKAGE_ALSA_UTILS
-    select BR2_PACKAGE_ALSA_UTILS_AMIXER
-    select BR2_PACKAGE_ALSA_UTILS_APLAY
-
     # irq balancing
     select BR2_PACKAGE_IRQBALANCE
 
@@ -173,7 +168,7 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
     select BR2_PACKAGE_GAMECON_GPIO_RPI if BR2_PACKAGE_BATOCERA_TARGET_RPI1 || BR2_PACKAGE_BATOCERA_TARGET_RPI2
 
     # xbox controllers (for linux older than ~4.16)
-    select BR2_PACKAGE_XBOXDRV if BR2_PACKAGE_BATOCERA_TARGET_905 || BR2_PACKAGE_BATOCERA_TARGET_912 
+    select BR2_PACKAGE_XBOXDRV if BR2_PACKAGE_BATOCERA_TARGET_905 || BR2_PACKAGE_BATOCERA_TARGET_912
 
     # wine tools
     select BR2_PACKAGE_WINETRICKS if BR2_PACKAGE_WINE

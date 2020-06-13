@@ -1,0 +1,135 @@
+diff --git a/openbor.c b/openbor.c
+index 5437d72..b737243 100644
+--- a/openbor.c
++++ b/openbor.c
+@@ -2986,6 +2986,9 @@ void clearsettings()
+     savedata.overscan[3] = 0;
+ #endif
+ 
++	for(int i = 0 ; i < MAX_PLAYERS ; i++)
++		savedata.keys[i][SDID_AXISUP] = savedata.keys[i][SDID_AXISDOWN] = savedata.keys[i][SDID_AXISLEFT] = savedata.keys[i][SDID_AXISRIGHT] = 0; // FCANEW
++	
+     savedata.keys[0][SDID_MOVEUP]    = CONTROL_DEFAULT1_UP;
+     savedata.keys[0][SDID_MOVEDOWN]  = CONTROL_DEFAULT1_DOWN;
+     savedata.keys[0][SDID_MOVELEFT]  = CONTROL_DEFAULT1_LEFT;
+@@ -32228,10 +32231,10 @@ void apply_controls()
+     {
+         //control_setkey(playercontrolpointers[p], FLAG_ESC,        CONTROL_ESC); // FCA
+ 	control_setkey(playercontrolpointers[p], FLAG_ESC,	      savedata.keys[p][SDID_ESC]); // FCA
+-        control_setkey(playercontrolpointers[p], FLAG_MOVEUP,     savedata.keys[p][SDID_MOVEUP]);
+-        control_setkey(playercontrolpointers[p], FLAG_MOVEDOWN,   savedata.keys[p][SDID_MOVEDOWN]);
+-        control_setkey(playercontrolpointers[p], FLAG_MOVELEFT,   savedata.keys[p][SDID_MOVELEFT]);
+-        control_setkey(playercontrolpointers[p], FLAG_MOVERIGHT,  savedata.keys[p][SDID_MOVERIGHT]);
++	control_setkey(playercontrolpointers[p], FLAG_PADUP, savedata.keys[p][SDID_MOVEUP]); // FCANEW
++	control_setkey(playercontrolpointers[p], FLAG_PADDOWN, savedata.keys[p][SDID_MOVEDOWN]); // FCANEW
++	control_setkey(playercontrolpointers[p], FLAG_PADLEFT, savedata.keys[p][SDID_MOVELEFT]); // FCANEW
++	control_setkey(playercontrolpointers[p], FLAG_PADRIGHT, savedata.keys[p][SDID_MOVERIGHT]); // FCANEW
+         control_setkey(playercontrolpointers[p], FLAG_ATTACK,     savedata.keys[p][SDID_ATTACK]);
+         control_setkey(playercontrolpointers[p], FLAG_ATTACK2,    savedata.keys[p][SDID_ATTACK2]);
+         control_setkey(playercontrolpointers[p], FLAG_ATTACK3,    savedata.keys[p][SDID_ATTACK3]);
+@@ -32240,7 +32243,11 @@ void apply_controls()
+         control_setkey(playercontrolpointers[p], FLAG_SPECIAL,    savedata.keys[p][SDID_SPECIAL]);
+         control_setkey(playercontrolpointers[p], FLAG_START,      savedata.keys[p][SDID_START]);
+         control_setkey(playercontrolpointers[p], FLAG_SCREENSHOT, savedata.keys[p][SDID_SCREENSHOT]);
+-    }
++		control_setkey(playercontrolpointers[p], FLAG_AXISUP, savedata.keys[p][SDID_AXISUP]); // FCANEW
++		control_setkey(playercontrolpointers[p], FLAG_AXISDOWN, savedata.keys[p][SDID_AXISDOWN]); // FCANEW
++		control_setkey(playercontrolpointers[p], FLAG_AXISLEFT, savedata.keys[p][SDID_AXISLEFT]); // FCANEW
++		control_setkey(playercontrolpointers[p], FLAG_AXISRIGHT, savedata.keys[p][SDID_AXISRIGHT]); // FCANEW
++	}
+ }
+ 
+ 
+@@ -34801,7 +34808,7 @@ void keyboard_setup(int player)
+         selector = 0,
+         setting = -1,
+         i, k, ok = 0,
+-              disabledkey[MAX_BTN_NUM] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
++              disabledkey[MAX_BTN_NUM] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0 }, // FCANEW {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+                                 col1 = -8, col2 = 6;
+     ptrdiff_t pos, voffset;
+     size_t size;
+@@ -34825,6 +34832,10 @@ void keyboard_setup(int player)
+     strncpy(buttonnames[SDID_START], "Start", 16);
+     strncpy(buttonnames[SDID_SCREENSHOT], "Screenshot", 16);
+     strncpy(buttonnames[SDID_ESC], "Exit", 16);
++	strncpy(buttonnames[SDID_AXISUP], "Axis Up", 16); // FCANEW
++	strncpy(buttonnames[SDID_AXISDOWN], "Axis Down", 16); // FCANEW
++	strncpy(buttonnames[SDID_AXISLEFT], "Axis Left", 16); // FCANEW
++	strncpy(buttonnames[SDID_AXISRIGHT], "Axis Right", 16); // FCANEW
+ 
+     savesettings();
+     bothnewkeys = 0;
+diff --git a/openbor.h b/openbor.h
+index 7b68993..f13233d 100644
+--- a/openbor.h
++++ b/openbor.h
+@@ -186,10 +186,10 @@ typedef enum
+ 
+     FLAG_ESC			= 0x00000001,
+     FLAG_START			= 0x00000002,
+-    FLAG_MOVELEFT		= 0x00000004,
+-    FLAG_MOVERIGHT		= 0x00000008,
+-    FLAG_MOVEUP		    = 0x00000010,
+-    FLAG_MOVEDOWN		= 0x00000020,
++    FLAG_PADLEFT		= 0x00000004, // FCANEW
++    FLAG_PADRIGHT		= 0x00000008, // FCANEW
++    FLAG_PADUP		    = 0x00000010, // FCANEW
++    FLAG_PADDOWN		= 0x00000020, // FCANEW
+     FLAG_ATTACK		    = 0x00000040,
+     FLAG_JUMP			= 0x00000080,
+     FLAG_SPECIAL		= 0x00000100,
+@@ -197,10 +197,20 @@ typedef enum
+     FLAG_ATTACK2		= 0x00000400,
+     FLAG_ATTACK3		= 0x00000800,
+     FLAG_ATTACK4		= 0x00001000,
+-    FLAG_ANYBUTTON		= (FLAG_START|FLAG_SPECIAL|FLAG_ATTACK|FLAG_ATTACK2|FLAG_ATTACK3|FLAG_ATTACK4|FLAG_JUMP),
+-    FLAG_CONTROLKEYS    = (FLAG_SPECIAL|FLAG_ATTACK|FLAG_ATTACK2|FLAG_ATTACK3|FLAG_ATTACK4|FLAG_JUMP|FLAG_MOVEUP|FLAG_MOVEDOWN|FLAG_MOVELEFT|FLAG_MOVERIGHT),
+-    FLAG_FORWARD		= 0x40000000,
+-    FLAG_BACKWARD		= 0x80000000
++	FLAG_ANYBUTTON		= (FLAG_START|FLAG_SPECIAL|FLAG_ATTACK|FLAG_ATTACK2|FLAG_ATTACK3|FLAG_ATTACK4|FLAG_JUMP),
++	FLAG_CONTROLKEYS    = (FLAG_SPECIAL|FLAG_ATTACK|FLAG_ATTACK2|FLAG_ATTACK3|FLAG_ATTACK4|FLAG_JUMP|FLAG_PADUP|FLAG_PADDOWN|FLAG_PADLEFT|FLAG_PADRIGHT), // FCANEW
++	FLAG_FORWARD		= 0x40000000,
++    FLAG_BACKWARD		= 0x80000000,
++
++	FLAG_AXISLEFT = (1 << 15), // FCANEW
++	FLAG_AXISRIGHT = (1 << 16), // FCANEW
++	FLAG_AXISUP = (1 << 17), // FCANEW
++	FLAG_AXISDOWN = (1 << 18), // FCANEW
++	FLAG_MOVEDOWN = FLAG_PADDOWN | FLAG_AXISDOWN, // FCANEW
++	FLAG_MOVEUP = FLAG_PADUP | FLAG_AXISUP, // FCANEW
++	FLAG_MOVELEFT = FLAG_PADLEFT | FLAG_AXISLEFT, // FCANEW
++	FLAG_MOVERIGHT = FLAG_PADRIGHT | FLAG_AXISRIGHT, // FCANEW
++
+ } e_key_def;
+ 
+ typedef enum
+@@ -223,7 +233,11 @@ typedef enum
+     SDID_SPECIAL,
+     SDID_START,
+     SDID_SCREENSHOT,
+-    SDID_ESC
++    SDID_ESC,
++	SDID_AXISUP, // FCANEW 
++	SDID_AXISDOWN,
++	SDID_AXISLEFT,
++	SDID_AXISRIGHT
+ } e_key_id;
+ 
+ typedef enum
+diff --git a/source/savedata.h b/source/savedata.h
+index 5368b50..8bc7c00 100644
+--- a/source/savedata.h
++++ b/source/savedata.h
+@@ -10,7 +10,7 @@
+ #define SAVEDATA_H
+ 
+ #define     MAX_PLAYERS         4
+-#define     MAX_BTN_NUM         13
++#define     MAX_BTN_NUM         17 
+ 
+ typedef struct
+ {
+-- 
+2.21.0.windows.1
+
