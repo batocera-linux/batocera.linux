@@ -10,6 +10,10 @@ disable_overscan=1
 # comment to get jack audio
 hdmi_drive=2
 
+# Using /etc/modules is deprecated and no longer supported on 4.4 kernel
+# So manually enable audio
+dtparam=audio=on
+
 config_hdmi_boost=0
 
 # force hdmi while the tv can take time before sending the signal on the hdmi output
@@ -44,4 +48,4 @@ initramfs boot/initrd.gz
 # affect rpi performances
 # enable_uart=1
 
-dtoverlay=vc4-kms-v3d-pi4
+dtoverlay=vc4-kms-v3d-pi4,noaudio
