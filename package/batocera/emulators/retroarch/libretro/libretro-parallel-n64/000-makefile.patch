@@ -1,8 +1,8 @@
 diff --git a/Makefile b/Makefile
-index bfc5a47..e6a7148 100644
+index bfc5a477..647caf6d 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -58,6 +58,10 @@ else ifneq (,$(findstring rpi,$(platform)))
+@@ -58,6 +58,12 @@ else ifneq (,$(findstring rpi,$(platform)))
     override platform += unix
  else ifneq (,$(findstring odroid,$(platform)))
     override platform += unix
@@ -10,10 +10,12 @@ index bfc5a47..e6a7148 100644
 +   override platform += unix
 +else ifneq (,$(findstring n2,$(platform)))
 +   override platform += unix
++   else ifneq (,$(findstring h5,$(platform)))
++   override platform += unix
  endif
  
  # system platform
-@@ -153,12 +157,37 @@ ifneq (,$(findstring unix,$(platform)))
+@@ -153,12 +159,47 @@ ifneq (,$(findstring unix,$(platform)))
           CPUFLAGS += -DNO_ASM -DARM -D__arm__ -DARM_ASM -D__NEON_OPT -DNOSSE
           CPUFLAGS += -mcpu=cortex-a53 -mfpu=neon-fp-armv8 -mfloat-abi=hard
           HAVE_NEON = 1
@@ -47,11 +49,21 @@ index bfc5a47..e6a7148 100644
 +      WITH_DYNAREC=aarch64
 +      CPUFLAGS += -D__NEON_OPT -march=armv8-a+crc -mcpu=cortex-a73 -mtune=cortex-a73.cortex-a53
 +   endif
++   
++      # Allwinner H5
++   ifneq (,$(findstring h5,$(platform)))
++      GLES = 1
++      GL_LIB := -lGLESv2
++      CPUFLAGS += -DNO_ASM -DARM -DARM_ASM -DDONT_WANT_ARM_OPTIMIZATIONS -DARM_FIX -DCLASSIC -DARM64
++      HAVE_NEON = 1
++      WITH_DYNAREC=aarch64
++      CPUFLAGS += -D__NEON_OPT -march=armv8-a+crc -mcpu=cortex-a53 -mtune=cortex-a53
++   endif
 +
     # ODROIDs
     ifneq (,$(findstring odroid,$(platform)))
        BOARD ?= $(shell cat /proc/cpuinfo | grep -i odroid | awk '{print $$3}')
-@@ -174,6 +203,9 @@ ifneq (,$(findstring unix,$(platform)))
+@@ -174,6 +215,9 @@ ifneq (,$(findstring unix,$(platform)))
        else ifneq (,$(findstring ODROID-XU,$(BOARD)))
           # ODROID-XU3 XU4 and XU3-Lite
           CPUFLAGS += -mcpu=cortex-a15 -mtune=cortex-a15.cortex-a7 -mfpu=neon-vfpv4
