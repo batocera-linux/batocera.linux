@@ -94,7 +94,7 @@ amigacd32:
   manufacturer: Commodore
   release: 1994
   hardware: console
-  extensions: [iso, cue, zip, lha]
+  extensions: [iso, cue, lha]
   emulators:
     fsuae:
       CD32:   { requireAnyOf: [BR2_PACKAGE_FSUAE]         }
@@ -247,7 +247,7 @@ dreamcast:
   manufacturer: Sega
   release: 1998
   hardware: console
-  extensions: [cdi, cue, gdi, chd, zip, 7z]
+  extensions: [cdi, cue, gdi, chd]
   emulators:
     libretro:
       flycast:        { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FLYCAST] }
@@ -298,7 +298,7 @@ segacd:
   manufacturer: Sega
   release: 1991
   hardware: console
-  extensions: [chd, cue, iso, zip, 7z]
+  extensions: [chd, cue, iso]
   emulators:
     libretro:
       genesisplusgx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GENESISPLUSGX] }
@@ -364,7 +364,7 @@ psx:
   manufacturer: Sony
   release: 1994
   hardware: console
-  extensions: [cue, img, mdf, pbp, toc, cbn, m3u, ccd, chd, zip, 7z, iso]
+  extensions: [cue, img, mdf, pbp, toc, cbn, m3u, ccd, chd, iso]
   emulators:
     libretro:
       pcsx_rearmed: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PCSX] }
@@ -386,7 +386,7 @@ pcenginecd:
   manufacturer: NEC
   release: 1988
   hardware: console
-  extensions: [pce, cue, ccd, iso, img, chd, zip, 7z]
+  extensions: [pce, cue, ccd, iso, img, chd]
   theme:      pce-cd
   emulators:
     libretro:
@@ -553,7 +553,7 @@ neogeocd:
   manufacturer: SNK
   release: 1994
   hardware: console
-  extensions: [cue, iso, chd, zip, 7z]
+  extensions: [cue, iso, chd]
   emulators:
     libretro:
       neocd:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_NEOCD] }
@@ -1099,7 +1099,7 @@ saturn:
   manufacturer: Sega
   release: 1994
   hardware: console
-  extensions: [cue, ccd, m3u, chd, iso, zip, 7z]
+  extensions: [cue, ccd, m3u, chd, iso]
   emulators:
     libretro:
       beetle-saturn: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BEETLE_SATURN] }
@@ -1166,7 +1166,7 @@ ps2:
   manufacturer: Panasonic - Sanyo - Goldstar
   release: 1993
   hardware: console
-  extensions: [iso, chd, cue, zip, 7z]
+  extensions: [iso, chd, cue]
   emulators:
     libretro:
       opera:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_OPERA]  }
