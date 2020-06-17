@@ -1260,6 +1260,7 @@ daphne:
   release:
   hardware: arcade
   extensions: [daphne]
+  platform:   daphne, arcade
   emulators:
     daphne:
       hypseus:  { requireAnyOf: [BR2_PACKAGE_DAPHNE]          }
