@@ -1,11 +1,18 @@
-diff --git a/Makefile.libretro b/Makefile.libretro
-index 1e07d50..a664b4a 100644
---- a/Makefile.libretro
-+++ b/Makefile.libretro
-@@ -54,6 +54,15 @@ ifeq ($(platform), unix)
+--- a/Makefile.libretro		2020-06-15 18:38:21.640704933 +0200
++++ b/Makefile.libretro		2020-06-15 18:40:01.094048398 +0200
+@@ -54,6 +54,24 @@
  	CFLAGS += -DFAMEC_NO_GOTOS
  	use_sh2drc = 1
  
++# x86/x86_64 generic
++else ifneq (,$(findstring x86,$(platform)))
++	TARGET := $(TARGET_NAME)_libretro.so
++	ARCH := 86
++        fpic := -fPIC
++	SHARED := -shared
++	DONT_COMPILE_IN_ZLIB = 1
++	CFLAGS += -DFAMEC_NO_GOTOS
++
 +# AARCH64 generic
 +else ifeq ($(platform), aarch64)
 +	TARGET := $(TARGET_NAME)_libretro.so

@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-BATOCERA_CONFIGGEN_VERSION = 1.1
+BATOCERA_CONFIGGEN_VERSION = 1.2
 BATOCERA_CONFIGGEN_LICENSE = GPL
 BATOCERA_CONFIGGEN_SOURCE=
 BATOCERA_CONFIGGEN_DEPENDENCIES = python python-pyyaml

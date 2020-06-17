@@ -1,0 +1,34 @@
+diff --git a/src/pacman/conf.c b/src/pacman/conf.c
+index 0b56895..4f60d4a 100644
+--- a/src/pacman/conf.c
++++ b/src/pacman/conf.c
+@@ -754,6 +754,20 @@ static int register_repo(config_repo_t *repo)
+  * of our paths to live under the rootdir that was specified. Safe to call
+  * multiple times (will only do anything the first time).
+  */
++int mkpath(char* file_path, mode_t mode) {
++     for (char* p = strchr(file_path + 1, '/'); p; p = strchr(p + 1, '/')) {
++        *p = '\0';
++        if (mkdir(file_path, mode) == -1) {
++            if (errno != EEXIST) {
++                *p = '/';
++                return -1;
++            }
++        }
++        *p = '/';
++    }
++    return 0;
++}
++
+ static int setup_libalpm(void)
+ {
+ 	int ret = 0;
+@@ -764,6 +778,8 @@ static int setup_libalpm(void)
+ 	pm_printf(ALPM_LOG_DEBUG, "setup_libalpm called\n");
+ 
+ 	/* initialize library */
++	if(mkpath(config->dbpath, 0755) != 0) { /* ignore, just create the directory in case it is missing */ }
++
+ 	handle = alpm_initialize(config->rootdir, config->dbpath, &err);
+ 	if(!handle) {
+ 		pm_printf(ALPM_LOG_ERROR, _("failed to initialize alpm library\n(%s: %s)\n"),

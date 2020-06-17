@@ -25,6 +25,8 @@ class LibretroGenerator(Generator):
             #  Write controllers configuration files
             retroconfig = UnixSettings(batoceraFiles.retroarchCustom, separator=' ')
             libretroControllers.writeControllersConfig(retroconfig, system, playersControllers)
+            # force pathes
+            libretroRetroarchCustom.generateRetroarchCustomPathes(retroconfig)
             # Write configuration to retroarchcustom.cfg
             if 'bezel' not in system.config or system.config['bezel'] == '':
                 bezel = None
