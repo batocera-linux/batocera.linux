@@ -34,16 +34,6 @@ endef
 
 CANNONBALL_PRE_CONFIGURE_HOOKS += CANNONBALL_SETUP_CMAKE
 
-#define CANNONBALL_BUILD_CMDS
-	#cd $(@D)
-	#cp cmake/* .
-	#$(TARGET_CONFIGURE_OPTS) $(MAKE) -G "Unix Makefiles" $(CANNONBALL_CONF_OPTS)
-	#$(TARGET_CONFIGURE_OPTS) $(MAKE) CC="$(TARGET_CXX)" -C $(@D) \
-	#	SDL_CONFIG=$(STAGING_DIR)/usr/bin/sdl-config \
-	#	CURL_CONFIG=$(STAGING_DIR)/usr/bin/curl-config \
-	#	$(CANNONBALL_EXTRA_ARGS)
-#endef
-
 define CANNONBALL_INSTALL_TARGET_CMDS
 	$(INSTALL) -D $(@D)/buildroot-build/cannonball $(TARGET_DIR)/usr/bin/
 	mkdir -p $(TARGET_DIR)/usr/share/cannonball/res/
