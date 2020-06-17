@@ -9,7 +9,17 @@ CANNONBALL_SITE = $(call github,djyt,cannonball,$(CANNONBALL_VERSION))
 CANNONBALL_LICENSE = GPLv2
 CANNONBALL_DEPENDENCIES = sdl2 boost
 
-CANNONBALL_TARGET = sdl2
+CANNONBALL_TARGET = sdl2gles
+
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI4),y)
+        CANNONBALL_TARGET = sdl2gles_rpi
+else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI3),y)
+        CANNONBALL_TARGET = sdl2gles_rpi
+else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86),y)
+        CANNONBALL_TARGET = sdl2gl
+else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86_64),y)
+        CANNONBALL_TARGET = sdl2gl
+endif
 
 CANNONBALL_CONF_OPTS += -DCMAKE_BUILD_TYPE=Release -DTARGET=$(CANNONBALL_TARGET)
 
@@ -30,6 +40,7 @@ define CANNONBALL_SETUP_CMAKE
         $(SED) "s+/usr+$(STAGING_DIR)/usr+g" $(@D)/sdl2.cmake
         $(SED) "s+/usr+$(STAGING_DIR)/usr+g" $(@D)/sdl2gl.cmake
         $(SED) "s+/usr+$(STAGING_DIR)/usr+g" $(@D)/sdl2gles.cmake
+        $(SED) "s+/usr+$(STAGING_DIR)/usr+g" $(@D)/sdl2gles_rpi.cmake
 endef
 
 CANNONBALL_PRE_CONFIGURE_HOOKS += CANNONBALL_SETUP_CMAKE
