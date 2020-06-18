@@ -11,6 +11,7 @@ case "$1" in
         enabled="`$systemsetting  -command load -key controllers.bluetooth.enabled`"
         if [ "$enabled" == "1" ];then
 		# Start hciattach for applicable boards
+		rfkill unblock bluetooth # soft unblock bluetooth
 		if [ $(cat /proc/device-tree/compatible | grep -c "rockchip") -ne 0 ]; then
 			echo 0 > /sys/class/rfkill/rfkill0/state
 			sleep 1
@@ -24,14 +25,13 @@ case "$1" in
 			fi
 		fi
 		if [ $(cat /proc/device-tree/compatible | grep -c "brcm") -ne 0 ]; then
-			rfkill unblock bluetooth
 			/usr/bin/hciattach /dev/ttyAMA0 bcm43xx 921600 & # specific rpi0 and rpi3
-	                /usr/bin/hciconfig hci0 up piscan &              # specific rpi
+	                /usr/bin/hciconfig hci0 up piscan &		 # specific rpi
 		fi
+		sleep 2 # Give hciattach a few seconds to finish attaching firmware
 	        btaddr="`$systemsetting  -command load -key bluetooth.adapter`"
         	settings_version="`$systemsetting -command load -key controllers.ps3.driver`"
         	if [ "$settings_version" != "bluez" ]; then BLUETOOTHD_ARGS="--noplugin=sixaxis"; else  BLUETOOTHD_ARGS="--noplugin=sixaxispair"; fi
-		rfkill unblock bluetooth # soft unblock bluetooth
 		start-stop-daemon -S -q -m -p /var/run/bluetoothd.pid      --exec /usr/libexec/bluetooth/bluetoothd -- $BLUETOOTHD_ARGS &
 		if test -n "${btaddr}"
 		then
