@@ -1,0 +1,284 @@
+From 20af7af23a9f366476e67669f14957dfaf58f141 Mon Sep 17 00:00:00 2001
+From: Hendrik Leppkes <h.leppkes@gmail.com>
+Date: Sat, 9 Jan 2016 16:34:09 +0100
+Subject: [PATCH 1/4] avcodec: add h264_mvc codec id and profiles
+
+---
+ libavcodec/avcodec.h    | 3 +++
+ libavcodec/codec_desc.c | 7 +++++++
+ libavcodec/profiles.c   | 1 +
+ libavformat/mpegts.c    | 2 +-
+ 4 files changed, 12 insertions(+), 1 deletion(-)
+
+diff --git a/libavcodec/avcodec.h b/libavcodec/avcodec.h
+index d962b9cf0a..4c4581c895 100644
+--- a/libavcodec/avcodec.h
++++ b/libavcodec/avcodec.h
+@@ -447,6 +447,8 @@ enum AVCodecID {
+     AV_CODEC_ID_GDV,
+     AV_CODEC_ID_FITS,
+ 
++    AV_CODEC_ID_H264_MVC,
++
+     /* various PCM "codecs" */
+     AV_CODEC_ID_FIRST_AUDIO = 0x10000,     ///< A dummy id pointing at the start of audio codecs
+     AV_CODEC_ID_PCM_S16LE = 0x10000,
+@@ -2895,6 +2897,7 @@ typedef struct AVCodecContext {
+ #define FF_PROFILE_H264_HIGH_444_PREDICTIVE  244
+ #define FF_PROFILE_H264_HIGH_444_INTRA       (244|FF_PROFILE_H264_INTRA)
+ #define FF_PROFILE_H264_CAVLC_444            44
++#define FF_PROFILE_H264_MULTIVIEW_HIGH_DEPTH 138
+ 
+ #define FF_PROFILE_VC1_SIMPLE   0
+ #define FF_PROFILE_VC1_MAIN     1
+diff --git a/libavcodec/codec_desc.c b/libavcodec/codec_desc.c
+index 79552a910d..b55955476c 100644
+--- a/libavcodec/codec_desc.c
++++ b/libavcodec/codec_desc.c
+@@ -1647,6 +1647,13 @@ static const AVCodecDescriptor codec_descriptors[] = {
+         .long_name = NULL_IF_CONFIG_SMALL("FITS (Flexible Image Transport System)"),
+         .props     = AV_CODEC_PROP_INTRA_ONLY | AV_CODEC_PROP_LOSSLESS,
+     },
++    {
++        .id        = AV_CODEC_ID_H264_MVC,
++        .type      = AVMEDIA_TYPE_VIDEO,
++        .name      = "h264_mvc",
++        .long_name = NULL_IF_CONFIG_SMALL("H264 MVC"),
++        .props     = AV_CODEC_PROP_LOSSY,
++    },
+ 
+     /* various PCM "codecs" */
+     {
+diff --git a/libavcodec/profiles.c b/libavcodec/profiles.c
+index d7dc960f36..e4651f12f9 100644
+--- a/libavcodec/profiles.c
++++ b/libavcodec/profiles.c
+@@ -72,6 +72,7 @@ const AVProfile ff_h264_profiles[] = {
+     { FF_PROFILE_H264_CAVLC_444,            "CAVLC 4:4:4"           },
+     { FF_PROFILE_H264_MULTIVIEW_HIGH,       "Multiview High"        },
+     { FF_PROFILE_H264_STEREO_HIGH,          "Stereo High"           },
++    { FF_PROFILE_H264_MULTIVIEW_HIGH_DEPTH, "Multiview High Depth"  },
+     { FF_PROFILE_UNKNOWN },
+ };
+ 
+diff --git a/libavformat/mpegts.c b/libavformat/mpegts.c
+index 37a6aa8bff..52c5b659c4 100644
+--- a/libavformat/mpegts.c
++++ b/libavformat/mpegts.c
+@@ -701,7 +701,7 @@ static const StreamType ISO_types[] = {
+ #endif
+     { 0x1b, AVMEDIA_TYPE_VIDEO, AV_CODEC_ID_H264       },
+     { 0x1c, AVMEDIA_TYPE_AUDIO, AV_CODEC_ID_AAC        },
+-    { 0x20, AVMEDIA_TYPE_VIDEO, AV_CODEC_ID_H264       },
++    { 0x20, AVMEDIA_TYPE_VIDEO, AV_CODEC_ID_H264_MVC   },
+     { 0x21, AVMEDIA_TYPE_VIDEO, AV_CODEC_ID_JPEG2000   },
+     { 0x24, AVMEDIA_TYPE_VIDEO, AV_CODEC_ID_HEVC       },
+     { 0x42, AVMEDIA_TYPE_VIDEO, AV_CODEC_ID_CAVS       },
+-- 
+2.17.0
+
+
+From 0f3fda4e348e6b12570f5d279713f6da46511846 Mon Sep 17 00:00:00 2001
+From: Hendrik Leppkes <h.leppkes@gmail.com>
+Date: Sat, 9 Jan 2016 16:34:40 +0100
+Subject: [PATCH 2/4] h264_parser: add support for parsing h264 mvc NALUs
+
+---
+ libavcodec/h264.h        |  2 ++
+ libavcodec/h264_parser.c | 34 ++++++++++++++++++++++++++++++----
+ libavcodec/parser.c      |  1 +
+ 3 files changed, 33 insertions(+), 4 deletions(-)
+
+diff --git a/libavcodec/h264.h b/libavcodec/h264.h
+index 650580bf3a..c44a0cbedd 100644
+--- a/libavcodec/h264.h
++++ b/libavcodec/h264.h
+@@ -41,7 +41,9 @@ enum {
+     H264_NAL_END_STREAM      = 11,
+     H264_NAL_FILLER_DATA     = 12,
+     H264_NAL_SPS_EXT         = 13,
++    H264_NAL_SPS_SUBSET      = 15,
+     H264_NAL_AUXILIARY_SLICE = 19,
++    H264_NAL_SLICE_EXT       = 20,
+ };
+ 
+ 
+diff --git a/libavcodec/h264_parser.c b/libavcodec/h264_parser.c
+index 1a9840a62c..be8b9db9b0 100644
+--- a/libavcodec/h264_parser.c
++++ b/libavcodec/h264_parser.c
+@@ -62,6 +62,7 @@ typedef struct H264ParseContext {
+     int parse_last_mb;
+     int64_t reference_dts;
+     int last_frame_num, last_picture_structure;
++    int is_mvc;
+ } H264ParseContext;
+ 
+ 
+@@ -109,14 +110,18 @@ static int h264_find_frame_end(H264ParseContext *p, const uint8_t *buf,
+         } else if (state <= 5) {
+             int nalu_type = buf[i] & 0x1F;
+             if (nalu_type == H264_NAL_SEI || nalu_type == H264_NAL_SPS ||
+-                nalu_type == H264_NAL_PPS || nalu_type == H264_NAL_AUD) {
++                nalu_type == H264_NAL_PPS || nalu_type == H264_NAL_AUD ||
++                nalu_type == H264_NAL_SPS_SUBSET) {
+                 if (pc->frame_start_found) {
+                     i++;
+                     goto found;
+                 }
+             } else if (nalu_type == H264_NAL_SLICE || nalu_type == H264_NAL_DPA ||
+-                       nalu_type == H264_NAL_IDR_SLICE) {
++                       nalu_type == H264_NAL_IDR_SLICE || (p->is_mvc && nalu_type == H264_NAL_SLICE_EXT)) {
+                 state += 8;
++
++                if (nalu_type == H264_NAL_SLICE_EXT)
++                    i += 3; // skip mvc extension
+                 continue;
+             }
+             state = 7;
+@@ -601,7 +606,8 @@ static int h264_parse(AVCodecParserContext *s,
+         }
+     }
+ 
+-    parse_nal_units(s, avctx, buf, buf_size);
++    if (!p->is_mvc)
++        parse_nal_units(s, avctx, buf, buf_size);
+ 
+     if (avctx->framerate.num)
+         avctx->time_base = av_inv_q(av_mul_q(avctx->framerate, (AVRational){avctx->ticks_per_frame, 1}));
+@@ -658,7 +664,7 @@ static int h264_split(AVCodecContext *avctx,
+         if ((state & 0xFFFFFF00) != 0x100)
+             break;
+         nalu_type = state & 0x1F;
+-        if (nalu_type == H264_NAL_SPS) {
++        if (nalu_type == H264_NAL_SPS || nalu_type == H264_NAL_SPS_SUBSET) {
+             has_sps = 1;
+         } else if (nalu_type == H264_NAL_PPS)
+             has_pps = 1;
+@@ -710,3 +716,23 @@ AVCodecParser ff_h264_parser = {
+     .parser_close   = h264_close,
+     .split          = h264_split,
+ };
++
++static av_cold int init_mvc(AVCodecParserContext *s)
++{
++    H264ParseContext *p = s->priv_data;
++    int ret = init(s);
++    if (ret < 0)
++        return ret;
++
++    p->is_mvc = 1;
++    return 0;
++}
++
++AVCodecParser ff_h264_mvc_parser = {
++    .codec_ids      = { AV_CODEC_ID_H264_MVC },
++    .priv_data_size = sizeof(H264ParseContext),
++    .parser_init    = init_mvc,
++    .parser_parse   = h264_parse,
++    .parser_close   = h264_close,
++    .split          = h264_split,
++};
+diff --git a/libavcodec/parser.c b/libavcodec/parser.c
+index f43b197d5e..f96e005ef3 100644
+--- a/libavcodec/parser.c
++++ b/libavcodec/parser.c
+@@ -54,6 +54,7 @@ extern AVCodecParser ff_gsm_parser;
+ extern AVCodecParser ff_h261_parser;
+ extern AVCodecParser ff_h263_parser;
+ extern AVCodecParser ff_h264_parser;
++extern AVCodecParser ff_h264_mvc_parser;
+ extern AVCodecParser ff_hevc_parser;
+ extern AVCodecParser ff_mjpeg_parser;
+ extern AVCodecParser ff_mlp_parser;
+-- 
+2.17.0
+
+
+From cdd668dc436b9c78dcb31df477e329492356e7ec Mon Sep 17 00:00:00 2001
+From: Hendrik Leppkes <h.leppkes@gmail.com>
+Date: Tue, 28 Nov 2017 16:12:12 +0000
+Subject: [PATCH 3/4] h264_parser: force grabing a new timestamp until a frame
+ start was found
+
+---
+ libavcodec/h264_parser.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/libavcodec/h264_parser.c b/libavcodec/h264_parser.c
+index be8b9db9b0..81c9a1bbae 100644
+--- a/libavcodec/h264_parser.c
++++ b/libavcodec/h264_parser.c
+@@ -594,6 +594,9 @@ static int h264_parse(AVCodecParserContext *s,
+     } else {
+         next = h264_find_frame_end(p, buf, buf_size, avctx);
+ 
++        if (next == END_NOT_FOUND && pc->frame_start_found == 0)
++            s->fetch_timestamp = 1;
++
+         if (ff_combine_frame(pc, next, &buf, &buf_size) < 0) {
+             *poutbuf      = NULL;
+             *poutbuf_size = 0;
+-- 
+2.17.0
+
+
+From fb0ec9a132d6eb8fd74348ef87b1176c7ca34a00 Mon Sep 17 00:00:00 2001
+From: popcornmix <popcornmix@gmail.com>
+Date: Mon, 28 May 2018 13:35:36 +0100
+Subject: [PATCH 4/4] fixup
+
+---
+ libavcodec/extract_extradata_bsf.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
+
+diff --git a/libavcodec/extract_extradata_bsf.c b/libavcodec/extract_extradata_bsf.c
+index 082b3e749b..7612749efc 100644
+--- a/libavcodec/extract_extradata_bsf.c
++++ b/libavcodec/extract_extradata_bsf.c
+@@ -59,7 +59,7 @@ static int extract_extradata_h2645(AVBSFContext *ctx, AVPacket *pkt,
+         HEVC_NAL_VPS, HEVC_NAL_SPS, HEVC_NAL_PPS,
+     };
+     static const int extradata_nal_types_h264[] = {
+-        H264_NAL_SPS, H264_NAL_PPS,
++        H264_NAL_SPS, H264_NAL_SPS_SUBSET, H264_NAL_PPS,
+     };
+ 
+     ExtractExtradataContext *s = ctx->priv_data;
+@@ -90,7 +90,7 @@ static int extract_extradata_h2645(AVBSFContext *ctx, AVPacket *pkt,
+                 if (nal->type == HEVC_NAL_SPS) has_sps = 1;
+                 if (nal->type == HEVC_NAL_VPS) has_vps = 1;
+             } else {
+-                if (nal->type == H264_NAL_SPS) has_sps = 1;
++                if (nal->type == H264_NAL_SPS || nal->type == H264_NAL_SPS_SUBSET) has_sps = 1;
+             }
+         } else if (s->remove) {
+             filtered_size += nal->raw_size + 3;
+@@ -99,7 +99,7 @@ static int extract_extradata_h2645(AVBSFContext *ctx, AVPacket *pkt,
+ 
+     if (extradata_size &&
+         ((ctx->par_in->codec_id == AV_CODEC_ID_HEVC && has_sps && has_vps) ||
+-         (ctx->par_in->codec_id == AV_CODEC_ID_H264 && has_sps))) {
++         ((ctx->par_in->codec_id == AV_CODEC_ID_H264 || ctx->par_in->codec_id == AV_CODEC_ID_H264_MVC) && has_sps))) {
+         AVBufferRef *filtered_buf;
+         uint8_t *extradata, *filtered_data;
+ 
+@@ -253,6 +253,7 @@ static const struct {
+ } extract_tab[] = {
+     { AV_CODEC_ID_CAVS,       extract_extradata_mpeg4   },
+     { AV_CODEC_ID_H264,       extract_extradata_h2645   },
++    { AV_CODEC_ID_H264_MVC,   extract_extradata_h2645   },
+     { AV_CODEC_ID_HEVC,       extract_extradata_h2645   },
+     { AV_CODEC_ID_MPEG1VIDEO, extract_extradata_mpeg12  },
+     { AV_CODEC_ID_MPEG2VIDEO, extract_extradata_mpeg12  },
+@@ -317,6 +318,7 @@ static void extract_extradata_close(AVBSFContext *ctx)
+ static const enum AVCodecID codec_ids[] = {
+     AV_CODEC_ID_CAVS,
+     AV_CODEC_ID_H264,
++    AV_CODEC_ID_H264_MVC,
+     AV_CODEC_ID_HEVC,
+     AV_CODEC_ID_MPEG1VIDEO,
+     AV_CODEC_ID_MPEG2VIDEO,
+-- 
+2.17.0
+

@@ -1,0 +1,930 @@
+MRFIXIT: This patch will allow Kodi 18.5+ to compile and work with newer versions of PVR packages. For example:
+KODI_PVR_ARGUSTV_VERSION = 4.1.0-Matrix
+The current version is "3.5.6-Leia"
+
+I'll leave this patch disabled so that we don't need to update all the PVR packages. But when buildroot updates them - this patch can be enabled to support them. I have already tested this with the newer versions and confirmed everything compiles.
+
+From 44003e5e35f764cf0588d8316ac44525a47f10c7 Mon Sep 17 00:00:00 2001
+From: Kai Sommerfeld <kai.sommerfeld@gmx.com>
+Date: Wed, 17 Apr 2019 15:14:00 +0200
+Subject: [PATCH] [pvr][addons] PVR Addon API 6.0.0: Change signature for API
+ function 'GetEPGForChannel'.
+
+---
+ xbmc/addons/PVRClient.cpp                      | 18 +++---------------
+ xbmc/addons/PVRClient.h                        |  4 ++--
+ .../include/kodi/xbmc_pvr_dll.h                |  4 ++--
+ .../include/kodi/xbmc_pvr_types.h              |  2 +-
+ xbmc/pvr/epg/Epg.cpp                           |  2 +-
+ 5 files changed, 9 insertions(+), 21 deletions(-)
+
+diff --git a/xbmc/addons/PVRClient.cpp b/xbmc/addons/PVRClient.cpp
+index e9c0b4b837d6..035f8ea85fef 100644
+--- a/xbmc/addons/PVRClient.cpp
++++ b/xbmc/addons/PVRClient.cpp
+@@ -610,24 +610,13 @@
+   }, m_clientCapabilities.SupportsChannelSettings());
+ }
+ 
+-PVR_ERROR CPVRClient::GetEPGForChannel(const std::shared_ptr<CPVREpgChannelData>& channelData,
++PVR_ERROR CPVRClient::GetEPGForChannel(int iChannelUid,
+                                        CPVREpg* epg,
+                                        time_t start,
+-                                       time_t end)
++                                       time_t end,
++                                       bool bSaveInDb)
+ {
+-  return DoAddonCall(__FUNCTION__, [this, channelData, epg, start, end](const AddonInstance* addon) {
+-
+-    //! @todo PVR Addon API Change: Change GetEPGForChannel param from 'PVR_CHANNEL channel' to 'int iUniqueId'.
+-    PVR_CHANNEL addonChannel = {0};
+-
+-    // mandatory
+-    addonChannel.iUniqueId = channelData->UniqueClientChannelId();
+-    addonChannel.bIsRadio = channelData->IsRadio();
+-
+-    // optional
+-    strncpy(addonChannel.strChannelName, channelData->ChannelName().c_str(), sizeof(addonChannel.strChannelName) - 1);
+-    strncpy(addonChannel.strIconPath, channelData->IconPath().c_str(), sizeof(addonChannel.strIconPath) - 1);
+-    addonChannel.bIsHidden = channelData->IsHidden();
++    return DoAddonCall(__FUNCTION__, [this, iChannelUid, epg, start, end, bSaveInDb](const AddonInstance* addon) {
+ 
+     ADDON_HANDLE_STRUCT handle = {0};
+     handle.callerAddress  = this;
+@@ -636,7 +624,7 @@
+     int iPVRTimeCorrection = CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_iPVRTimeCorrection;
+ 
+     return addon->GetEPGForChannel(&handle,
+-                                   addonChannel,
++                                   iChannelUid,
+                                    start ? start - iPVRTimeCorrection : 0,
+                                    end ? end - iPVRTimeCorrection : 0);
+   }, m_clientCapabilities.SupportsEPG());
+
+diff --git a/xbmc/addons/PVRClient.h b/xbmc/addons/PVRClient.h
+index 0c76811e2ef3..8bf7b0183985 100644
+--- a/xbmc/addons/PVRClient.h
++++ b/xbmc/addons/PVRClient.h
+@@ -401,13 +401,13 @@
+ 
+     /*!
+      * @brief Request an EPG table for a channel from the client.
+-     * @param channelData The data for the channel to get the EPG table for.
++     * @param iChannelUid The UID of the channel to get the EPG table for.
+      * @param epg The table to write the data to.
+      * @param start The start time to use.
+      * @param end The end time to use.
+      * @return PVR_ERROR_NO_ERROR if the table has been fetched successfully.
+      */
+-    PVR_ERROR GetEPGForChannel(const std::shared_ptr<CPVREpgChannelData>& channelData, CPVREpg* epg, time_t start, time_t end);
++    PVR_ERROR GetEPGForChannel(int iChannelUid, CPVREpg* epg, time_t start = 0, time_t end = 0, bool bSaveInDb = false);
+ 
+     /*!
+      * Tell the client the time frame to use when notifying epg events back to Kodi. The client might push epg events asynchronously
+diff --git a/xbmc/addons/kodi-addon-dev-kit/include/kodi/xbmc_pvr_dll.h b/xbmc/addons/kodi-addon-dev-kit/include/kodi/xbmc_pvr_dll.h
+index 3ebeedf07257..26e9099a7157 100644
+--- a/xbmc/addons/kodi-addon-dev-kit/include/kodi/xbmc_pvr_dll.h
++++ b/xbmc/addons/kodi-addon-dev-kit/include/kodi/xbmc_pvr_dll.h
+@@ -78,14 +78,14 @@ extern "C"
+    * Request the EPG for a channel from the backend.
+    * EPG entries are added to Kodi by calling TransferEpgEntry() on the callback.
+    * @param handle Handle to pass to the callback method.
+-   * @param channel The channel to get the EPG table for.
++   * @param iChannelUid The UID of the channel to get the EPG table for.
+    * @param iStart Get events after this time (UTC).
+    * @param iEnd Get events before this time (UTC).
+    * @return PVR_ERROR_NO_ERROR if the table has been fetched successfully.
+    * @remarks Required if bSupportsEPG is set to true.
+    *          Return PVR_ERROR_NOT_IMPLEMENTED if this add-on won't provide this function.
+    */
+-  PVR_ERROR GetEPGForChannel(ADDON_HANDLE handle, const PVR_CHANNEL& channel, time_t iStart, time_t iEnd);
++  PVR_ERROR GetEPGForChannel(ADDON_HANDLE handle, int iChannelUid, time_t iStart, time_t iEnd);
+ 
+   /*
+    * Check if the given EPG tag can be recorded.
+diff --git a/xbmc/addons/kodi-addon-dev-kit/include/kodi/xbmc_pvr_types.h b/xbmc/addons/kodi-addon-dev-kit/include/kodi/xbmc_pvr_types.h
+index 465010d2ed32..ef90c91dc581 100644
+--- a/xbmc/addons/kodi-addon-dev-kit/include/kodi/xbmc_pvr_types.h
++++ b/xbmc/addons/kodi-addon-dev-kit/include/kodi/xbmc_pvr_types.h
+@@ -635,7 +635,7 @@ extern "C" {
+     const char* (__cdecl* GetConnectionString)(void);
+     PVR_ERROR (__cdecl* GetDriveSpace)(long long*, long long*);
+     PVR_ERROR (__cdecl* MenuHook)(const PVR_MENUHOOK&, const PVR_MENUHOOK_DATA&);
+-    PVR_ERROR (__cdecl* GetEPGForChannel)(ADDON_HANDLE, const PVR_CHANNEL&, time_t, time_t);
++    PVR_ERROR (__cdecl* GetEPGForChannel)(ADDON_HANDLE, int, time_t, time_t);
+     PVR_ERROR (__cdecl* IsEPGTagRecordable)(const EPG_TAG*, bool*);
+     PVR_ERROR (__cdecl* IsEPGTagPlayable)(const EPG_TAG*, bool*);
+     PVR_ERROR (__cdecl* GetEPGTagEdl)(const EPG_TAG*, PVR_EDL_ENTRY[], int*);
+diff --git a/xbmc/pvr/epg/Epg.cpp b/xbmc/pvr/epg/Epg.cpp
+index 42ec788c2027..e2a747c37f8f 100644
+--- a/xbmc/pvr/epg/Epg.cpp
++++ b/xbmc/pvr/epg/Epg.cpp
+@@ -627,7 +627,7 @@ bool CPVREpg::UpdateFromScraper(time_t start, time_t end, bool bForceUpdate)
+       {
+         CLog::LogFC(LOGDEBUG, LOGEPG, "Updating EPG for channel '%s' from client '%i'",
+                     m_channelData->ChannelName().c_str(), m_channelData->ClientId());
+-        return (client->GetEPGForChannel(m_channelData, this, start, end) == PVR_ERROR_NO_ERROR);
++        return (client->GetEPGForChannel(m_channelData->UniqueClientChannelId(), this, start, end) == PVR_ERROR_NO_ERROR);
+       }
+     }
+     else
+
+
+From b2a124ca3d8e754c51faeb30131f4d114312e7af Mon Sep 17 00:00:00 2001
+From: phunkyfish <phunkyfish@gmail.com>
+Date: Sun, 10 Nov 2019 22:48:02 +0000
+Subject: [PATCH] [videoplayer] add inputstreamclass property for selecting
+ inputstream addon or ffmpeg
+
+---
+ .../include/kodi/xbmc_pvr_types.h                   |  2 ++
+ xbmc/cores/VideoPlayer/CMakeLists.txt               |  1 +
+ .../VideoPlayer/DVDDemuxers/DVDDemuxFFmpeg.cpp      |  4 ++++
+ .../DVDInputStreams/DVDFactoryInputStream.cpp       |  9 ++++++++-
+ .../VideoPlayer/DVDInputStreams/DVDInputStream.cpp  |  3 ++-
+ .../DVDInputStreams/InputStreamAddon.cpp            |  8 +++++++-
+ .../Interface/Addon/InputStreamConstants.h          | 13 +++++++++++++
+ 7 files changed, 37 insertions(+), 3 deletions(-)
+ create mode 100644 xbmc/cores/VideoPlayer/Interface/Addon/InputStreamConstants.h
+
+diff --git a/xbmc/addons/kodi-addon-dev-kit/include/kodi/xbmc_pvr_types.h b/xbmc/addons/kodi-addon-dev-kit/include/kodi/xbmc_pvr_types.h
+index a20695cc3bcc..6588dc3e5eed 100644
+--- a/xbmc/addons/kodi-addon-dev-kit/include/kodi/xbmc_pvr_types.h
++++ b/xbmc/addons/kodi-addon-dev-kit/include/kodi/xbmc_pvr_types.h
+@@ -67,8 +67,10 @@ struct DemuxPacket;
+ #define PVR_STREAM_MAX_PROPERTIES     20
+ #define PVR_STREAM_PROPERTY_STREAMURL "streamurl" /*!< @brief the URL of the stream that should be played. */
+ #define PVR_STREAM_PROPERTY_INPUTSTREAMADDON  "inputstreamaddon" /*!< @brief the name of the inputstream add-on that should be used by Kodi to play the stream denoted by PVR_STREAM_PROPERTY_STREAMURL. Leave blank to use Kodi's built-in playing capabilities. */
++#define PVR_STREAM_PROPERTY_INPUTSTREAMCLASS  "inputstreamclass" /*!< @brief the name of the inputstream add-on that should be used by Kodi to play the stream denoted by PVR_STREAM_PROPERTY_STREAMURL. Leave blank to use Kodi's built-in playing capabilities or to allow ffmpeg to handle directly set to `inputstream.ffmpeg`. */
+ #define PVR_STREAM_PROPERTY_MIMETYPE "mimetype" /*!< @brief the MIME type of the stream that should be played. */
+ #define PVR_STREAM_PROPERTY_ISREALTIMESTREAM "isrealtimestream" /*!< @brief "true" to denote that the stream that should be played is a realtime stream. Any other value indicates that this is no realtime stream.*/
++#define PVR_STREAM_PROPERTY_VALUE_INPUTSTREAMFFMPEG  "inputstream.ffmpeg" /*!< @brief special value for PVR_STREAM_PROPERTY_INPUTSTREAMCLASS to use ffmpeg to directly play a stream URL. */
+ 
+ /* using the default avformat's MAX_STREAMS value to be safe */
+ #define PVR_STREAM_MAX_STREAMS 20
+diff --git a/xbmc/cores/VideoPlayer/CMakeLists.txt b/xbmc/cores/VideoPlayer/CMakeLists.txt
+index 7fd69cad2f49..b2bffbd665e2 100644
+--- a/xbmc/cores/VideoPlayer/CMakeLists.txt
++++ b/xbmc/cores/VideoPlayer/CMakeLists.txt
+@@ -38,6 +38,7 @@ set(HEADERS AudioSinkAE.h
+             Interface/StreamInfo.h
+             Interface/Addon/DemuxPacket.h
+             Interface/Addon/DemuxCrypto.h
++            Interface/Addon/InputStreamConstants.h
+             Interface/Addon/TimingConstants.h)
+ 
+ core_add_library(VideoPlayer)
+diff --git a/xbmc/cores/VideoPlayer/DVDDemuxers/DVDDemuxFFmpeg.cpp b/xbmc/cores/VideoPlayer/DVDDemuxers/DVDDemuxFFmpeg.cpp
+index 244c6b9374a8..c67b5d0c9ce6 100644
+--- a/xbmc/cores/VideoPlayer/DVDDemuxers/DVDDemuxFFmpeg.cpp
++++ b/xbmc/cores/VideoPlayer/DVDDemuxers/DVDDemuxFFmpeg.cpp
+@@ -725,6 +725,10 @@ AVDictionary* CDVDDemuxFFmpeg::GetFFMpegOptionsFromInput()
+   CURL url = m_pInput->GetURL();
+   AVDictionary* options = nullptr;
+ 
++  // For a local file we need the following protocol whitelist
++  if (url.GetProtocol().empty() || url.IsProtocol("file"))
++    av_dict_set(&options, "protocol_whitelist", "file,http,https,tcp,tls,crypto", 0);
++
+   if (url.IsProtocol("http") || url.IsProtocol("https"))
+   {
+     std::map<std::string, std::string> protocolOptions;
+diff --git a/xbmc/cores/VideoPlayer/DVDInputStreams/DVDFactoryInputStream.cpp b/xbmc/cores/VideoPlayer/DVDInputStreams/DVDFactoryInputStream.cpp
+index 53ae88bfa9bc..2d4265cdd8c3 100644
+--- a/xbmc/cores/VideoPlayer/DVDInputStreams/DVDFactoryInputStream.cpp
++++ b/xbmc/cores/VideoPlayer/DVDInputStreams/DVDFactoryInputStream.cpp
+@@ -22,6 +22,7 @@
+ #include "FileItem.h"
+ #include "storage/MediaManager.h"
+ #include "URL.h"
++#include "cores/VideoPlayer/Interface/Addon/InputStreamConstants.h"
+ #include "filesystem/CurlFile.h"
+ #include "filesystem/File.h"
+ #include "filesystem/IFileTypes.h"
+@@ -57,6 +58,10 @@ std::shared_ptr<CDVDInputStream> CDVDFactoryInputStream::CreateInputStream(IVide
+       return std::shared_ptr<CInputStreamAddon>(new CInputStreamAddon(addonInfo, pPlayer, fileitem));
+   }
+ 
++  if (fileitem.GetProperty(STREAM_PROPERTY_INPUTSTREAMCLASS).asString() ==
++      STREAM_PROPERTY_VALUE_INPUTSTREAMFFMPEG)
++    return std::shared_ptr<CDVDInputStreamFFmpeg>(new CDVDInputStreamFFmpeg(fileitem));
++
+   if (fileitem.IsDiscImage())
+   {
+ #ifdef HAVE_LIBBLURAY
+@@ -153,7 +158,9 @@ std::shared_ptr<CDVDInputStream> CDVDFactoryInputStream::CreateInputStream(IVide
+     if (finalFileitem.IsType(".m3u8"))
+       return std::shared_ptr<CDVDInputStreamFFmpeg>(new CDVDInputStreamFFmpeg(finalFileitem));
+ 
+-    if (finalFileitem.GetMimeType() == "application/vnd.apple.mpegurl")
++    // mime type for m3u8/hls streams
++    if (finalFileitem.GetMimeType() == "application/vnd.apple.mpegurl" ||
++        finalFileitem.GetMimeType() == "application/x-mpegURL")
+       return std::shared_ptr<CDVDInputStreamFFmpeg>(new CDVDInputStreamFFmpeg(finalFileitem));
+ 
+     if (URIUtils::IsProtocol(finalFileitem.GetPath(), "udp"))
+diff --git a/xbmc/cores/VideoPlayer/DVDInputStreams/DVDInputStream.cpp b/xbmc/cores/VideoPlayer/DVDInputStreams/DVDInputStream.cpp
+index d0da4fa7771c..e06456f73dd7 100644
+--- a/xbmc/cores/VideoPlayer/DVDInputStreams/DVDInputStream.cpp
++++ b/xbmc/cores/VideoPlayer/DVDInputStreams/DVDInputStream.cpp
+@@ -9,12 +9,13 @@
+ #include "DVDInputStream.h"
+ 
+ #include "URL.h"
++#include "cores/VideoPlayer/Interface/Addon/InputStreamConstants.h"
+ 
+ CDVDInputStream::CDVDInputStream(DVDStreamType streamType, const CFileItem& fileitem)
+ {
+   m_streamType = streamType;
+   m_contentLookup = true;
+-  m_realtime = fileitem.GetProperty("isrealtimestream").asBoolean(false);
++  m_realtime = fileitem.GetProperty(STREAM_PROPERTY_ISREALTIMESTREAM).asBoolean(false);
+   m_item = fileitem;
+ }
+ 
+diff --git a/xbmc/cores/VideoPlayer/DVDInputStreams/InputStreamAddon.cpp b/xbmc/cores/VideoPlayer/DVDInputStreams/InputStreamAddon.cpp
+index 1ec1904f142b..6eb1de964f36 100644
+--- a/xbmc/cores/VideoPlayer/DVDInputStreams/InputStreamAddon.cpp
++++ b/xbmc/cores/VideoPlayer/DVDInputStreams/InputStreamAddon.cpp
+@@ -14,6 +14,7 @@
+ #include "cores/VideoPlayer/DVDDemuxers/DVDDemux.h"
+ #include "cores/VideoPlayer/DVDDemuxers/DVDDemuxUtils.h"
+ #include "cores/VideoPlayer/Interface/Addon/DemuxCrypto.h"
++#include "cores/VideoPlayer/Interface/Addon/InputStreamConstants.h"
+ #include "filesystem/SpecialProtocol.h"
+ #include "utils/StringUtils.h"
+ #include "utils/URIUtils.h"
+@@ -64,7 +65,12 @@
+ bool CInputStreamAddon::Supports(BinaryAddonBasePtr& addonBase, const CFileItem &fileitem)
+ {
+   // check if a specific inputstream addon is requested
+-  CVariant addon = fileitem.GetProperty("inputstreamaddon");
++  CVariant addon = fileitem.GetProperty(STREAM_PROPERTY_INPUTSTREAMCLASS);
++  if (!addon.isNull())
++    return (addon.asString() == addonBase->ID());
++
++  // TODO: to be deprecated for the above - all addons must change
++  addon = fileitem.GetProperty("inputstreamaddon");
+   if (!addon.isNull())
+     return (addon.asString() == addonBase->ID());
+ 
+diff --git a/xbmc/cores/VideoPlayer/Interface/Addon/InputStreamConstants.h b/xbmc/cores/VideoPlayer/Interface/Addon/InputStreamConstants.h
+new file mode 100644
+index 000000000000..33798ae78596
+--- /dev/null
++++ b/xbmc/cores/VideoPlayer/Interface/Addon/InputStreamConstants.h
+@@ -0,0 +1,13 @@
++/*
++ *  Copyright (C) 2017-2019 Team Kodi
++ *  This file is part of Kodi - https://kodi.tv
++ *
++ *  SPDX-License-Identifier: GPL-2.0-or-later
++ *  See LICENSES/README.md for more information.
++ */
++
++#pragma once
++
++#define STREAM_PROPERTY_INPUTSTREAMCLASS  "inputstreamclass" /*!< @brief the name of the inputstream add-on that should be used by Kodi to play the stream denoted by STREAM_PROPERTY_STREAMURL. Leave blank to use Kodi's built-in playing capabilities or to allow ffmpeg to handle directly set to STREAM_PROPERTY_VALUE_INPUTSTREAMFFMPEG. */
++#define STREAM_PROPERTY_ISREALTIMESTREAM "isrealtimestream" /*!< @brief "true" to denote that the stream that should be played is a realtime stream. Any other value indicates that this is not a realtime stream.*/
++#define STREAM_PROPERTY_VALUE_INPUTSTREAMFFMPEG  "inputstream.ffmpeg" /*!< @brief special value for STREAM_PROPERTY_INPUTSTREAMCLASS to use ffmpeg to directly play a stream URL. */
+
+
+
+
+
+
+
+
+
+
+From 2e3562f0485e1f77223a258917d728de2536a31f Mon Sep 17 00:00:00 2001
+From: phunkyfish <phunkyfish@gmail.com>
+Date: Mon, 2 Sep 2019 21:35:39 +0100
+Subject: [PATCH] [pvr] ability to sort channels and epg by the backend order
+ of channels
+
+---
+ .../resources/strings.po                      |  9 ++++++-
+ xbmc/SortFileItem.h                           |  1 +
+ xbmc/addons/PVRClient.cpp                     |  4 +--
+ .../include/kodi/versions.h                   |  4 +--
+ .../include/kodi/xbmc_pvr_types.h             |  7 ++++++
+ xbmc/pvr/PVRDatabase.cpp                      | 25 ++++++++++++-------
+ xbmc/pvr/PVRDatabase.h                        |  2 +-
+ xbmc/pvr/channels/PVRChannel.cpp              | 22 ++++++++++++++++
+ xbmc/pvr/channels/PVRChannel.h                | 13 ++++++++++
+ xbmc/pvr/channels/PVRChannelGroup.cpp         | 12 ++++++++-
+ xbmc/pvr/channels/PVRChannelGroup.h           | 13 +++++++---
+ xbmc/pvr/channels/PVRChannelGroupInternal.cpp |  8 +++---
+ xbmc/pvr/channels/PVRChannelGroupInternal.h   |  5 ++--
+ xbmc/pvr/channels/PVRChannelGroups.cpp        |  1 +
+ xbmc/pvr/dialogs/GUIDialogPVRGroupManager.cpp |  2 +-
+ xbmc/pvr/epg/EpgChannelData.cpp               | 24 +++++++++++++++++-
+ xbmc/pvr/epg/EpgChannelData.h                 |  8 ++++++
+ xbmc/pvr/epg/EpgInfoTag.cpp                   |  6 +++++
+ xbmc/pvr/windows/GUIViewStatePVR.cpp          | 14 ++++++-----
+ xbmc/utils/DatabaseUtils.h                    |  1 +
+ xbmc/utils/SortUtils.cpp                      |  9 +++++++
+ xbmc/utils/SortUtils.h                        |  2 ++
+ 22 files changed, 159 insertions(+), 33 deletions(-)
+
+diff --git a/xbmc/SortFileItem.h b/xbmc/SortFileItem.h
+index 863e64fecdda..66ce0e24ea82 100644
+--- a/xbmc/SortFileItem.h
++++ b/xbmc/SortFileItem.h
+@@ -54,5 +54,6 @@ typedef enum {
+   SORT_METHOD_CHANNEL_NUMBER,
+   SORT_METHOD_BITRATE,
+   SORT_METHOD_DATE_TAKEN,
++  SORT_METHOD_CLIENT_CHANNEL_ORDER,
+   SORT_METHOD_MAX
+ } SORT_METHOD;
+diff --git a/xbmc/addons/PVRClient.cpp b/xbmc/addons/PVRClient.cpp
+index 7f121720552c..600b2dd7d4e2 100644
+--- a/xbmc/addons/PVRClient.cpp
++++ b/xbmc/addons/PVRClient.cpp
+@@ -1494,7 +1494,7 @@ void CPVRClient::cb_transfer_channel_group_member(void *kodiInstance, const ADDO
+   else if (group->IsRadio() == channel->IsRadio())
+   {
+     /* transfer this entry to the group */
+-    group->AddToGroup(channel, CPVRChannelNumber(member->iChannelNumber, member->iSubChannelNumber), true);
++    group->AddToGroup(channel, CPVRChannelNumber(member->iChannelNumber, member->iSubChannelNumber), member->iOrder, true);
+   }
+ }
+ 
+@@ -1536,7 +1536,7 @@ void CPVRClient::cb_transfer_channel_entry(void *kodiInstance, const ADDON_HANDL
+ 
+   /* transfer this entry to the internal channels group */
+   CPVRChannelPtr transferChannel(new CPVRChannel(*channel, client->GetID()));
+-  kodiChannels->UpdateFromClient(transferChannel, CPVRChannelNumber());
++  kodiChannels->UpdateFromClient(transferChannel, CPVRChannelNumber(), channel->iOrder);
+ }
+ 
+ void CPVRClient::cb_transfer_recording_entry(void *kodiInstance, const ADDON_HANDLE handle, const PVR_RECORDING *recording)
+diff --git a/xbmc/addons/kodi-addon-dev-kit/include/kodi/xbmc_pvr_types.h b/xbmc/addons/kodi-addon-dev-kit/include/kodi/xbmc_pvr_types.h
+index 61760ff3ea9b..a20695cc3bcc 100644
+--- a/xbmc/addons/kodi-addon-dev-kit/include/kodi/xbmc_pvr_types.h
++++ b/xbmc/addons/kodi-addon-dev-kit/include/kodi/xbmc_pvr_types.h
+@@ -386,6 +386,11 @@ extern "C" {
+     PVR_MENUHOOK_CAT category;             /*!< @brief (required) category of menu hook */
+   } ATTRIBUTE_PACKED PVR_MENUHOOK;
+ 
++  /*!
++   * @brief special PVR_CHANNEL.iOrder and PVR_CHANNEL_GROUP_MEMBER.iOrder value to indicate this channel has an unknown order
++   */
++  const int PVR_CHANNEL_UNKNOWN_ORDER = 0; /*!< @brief channel has an unknown order. */
++
+   /*!
+    * @brief Representation of a TV or radio channel.
+    */
+@@ -402,6 +409,7 @@
+     unsigned int iEncryptionSystem;                                    /*!< @brief (optional) the encryption ID or CaID of this channel */
+     char         strIconPath[PVR_ADDON_URL_STRING_LENGTH];             /*!< @brief (optional) path to the channel icon (if present) */
+     bool         bIsHidden;                                            /*!< @brief (optional) true if this channel is marked as hidden */
++    int          iOrder;                                               /*!< @brief (optional) The value denoting the order of this channel in the 'All channels' group */
+   } ATTRIBUTE_PACKED PVR_CHANNEL;
+ 
+   typedef struct PVR_CHANNEL_GROUP
+@@ -417,6 +423,7 @@ extern "C" {
+     unsigned int iChannelUniqueId;                           /*!< @brief (required) unique id of the member */
+     unsigned int iChannelNumber;                             /*!< @brief (optional) channel number within the group */
+     unsigned int iSubChannelNumber;                          /*!< @brief (optional) sub channel number within the group (ATSC) */
++    int          iOrder;                                     /*!< @brief (optional) The value denoting the order of this channel in this group */
+   } ATTRIBUTE_PACKED PVR_CHANNEL_GROUP_MEMBER;
+ 
+   /*!
+diff --git a/xbmc/pvr/PVRDatabase.cpp b/xbmc/pvr/PVRDatabase.cpp
+index 3404ca020520..e82b17cf3954 100644
+--- a/xbmc/pvr/PVRDatabase.cpp
++++ b/xbmc/pvr/PVRDatabase.cpp
+@@ -123,7 +123,8 @@ void CPVRDatabase::CreateTables()
+         "idChannel         integer, "
+         "idGroup           integer, "
+         "iChannelNumber    integer, "
+-        "iSubChannelNumber integer"
++        "iSubChannelNumber integer, "
++        "iOrder            integer"
+       ")"
+   );
+ 
+@@ -150,6 +151,12 @@
+ 
+   if (iVersion < 32)
+     m_pDS->exec("CREATE TABLE clients (idClient integer primary key, iPriority integer)");
++
++  if (iVersion < 35)
++  {
++    m_pDS->exec("ALTER TABLE map_channelgroups_channels ADD iOrder integer");
++    m_pDS->exec("UPDATE map_channelgroups_channels SET iOrder = 0");
++  }
+ }
+ 
+ /********** Client methods **********/
+@@ -242,7 +249,7 @@
+ 
+   std::string strQuery = PrepareSQL("SELECT channels.idChannel, channels.iUniqueId, channels.bIsRadio, channels.bIsHidden, channels.bIsUserSetIcon, channels.bIsUserSetName, "
+       "channels.sIconPath, channels.sChannelName, channels.bIsVirtual, channels.bEPGEnabled, channels.sEPGScraper, channels.iLastWatched, channels.iClientId, channels.bIsLocked, "
+-      "map_channelgroups_channels.iChannelNumber, map_channelgroups_channels.iSubChannelNumber, channels.idEpg "
++      "map_channelgroups_channels.iChannelNumber, map_channelgroups_channels.iSubChannelNumber, map_channelgroups_channels.iOrder, channels.idEpg "
+       "FROM map_channelgroups_channels "
+       "LEFT JOIN channels ON channels.idChannel = map_channelgroups_channels.idChannel "
+       "WHERE map_channelgroups_channels.idGroup = %u", results.GroupID());
+@@ -327,7 +334,7 @@ int CPVRDatabase::Get(CPVRChannelGroup &results, bool bCompressDB)
+         PVRChannelGroupMember newMember(channel,
+                                         CPVRChannelNumber(static_cast<unsigned int>(m_pDS->fv("iChannelNumber").get_asInt()),
+                                                           static_cast<unsigned int>(m_pDS->fv("iSubChannelNumber").get_asInt())),
+-                                        0);
++                                        0, static_cast<int>(m_pDS->fv("iOrder").get_asInt()));
+         results.m_sortedMembers.emplace_back(newMember);
+         results.m_members.insert(std::make_pair(channel->StorageId(), newMember));
+ 
+@@ -610,7 +617,7 @@ int CPVRDatabase::Get(CPVRChannelGroup &group, const CPVRChannelGroup &allGroup)
+ 
+   CSingleLock lock(m_critSection);
+ 
+-  const std::string strQuery = PrepareSQL("SELECT idChannel, iChannelNumber, iSubChannelNumber FROM map_channelgroups_channels "
++  const std::string strQuery = PrepareSQL("SELECT idChannel, iChannelNumber, iSubChannelNumber, iOrder FROM map_channelgroups_channels "
+                                           "WHERE idGroup = %u ORDER BY iChannelNumber", group.GroupID());
+   if (ResultQuery(strQuery))
+   {
+@@ -635,7 +642,7 @@ int CPVRDatabase::Get(CPVRChannelGroup &group, const CPVRChannelGroup &allGroup)
+           PVRChannelGroupMember newMember(channel->second,
+                                           CPVRChannelNumber(static_cast<unsigned int>(m_pDS->fv("iChannelNumber").get_asInt()),
+                                                             static_cast<unsigned int>(m_pDS->fv("iSubChannelNumber").get_asInt())),
+-                                          0);
++                                          0, static_cast<int>(m_pDS->fv("iOrder").get_asInt()));
+           group.m_sortedMembers.emplace_back(newMember);
+           group.m_members.insert(std::make_pair(channel->second->StorageId(), newMember));
+           ++iReturn;
+@@ -717,16 +724,16 @@ bool CPVRDatabase::PersistGroupMembers(const CPVRChannelGroup &group)
+   {
+     for (const auto& groupMember : group.m_sortedMembers)
+     {
+-      const std::string strWhereClause = PrepareSQL("idChannel = %u AND idGroup = %u AND iChannelNumber = %u AND iSubChannelNumber = %u",
++      const std::string strWhereClause = PrepareSQL("idChannel = %u AND idGroup = %u AND iChannelNumber = %u AND iSubChannelNumber = %u AND iOrder = %u",
+           groupMember.channel->ChannelID(), group.GroupID(), groupMember.channelNumber.GetChannelNumber(), groupMember.channelNumber.GetSubChannelNumber());
+ 
+       const std::string strValue = GetSingleValue("map_channelgroups_channels", "idChannel", strWhereClause);
+       if (strValue.empty())
+       {
+         strQuery = PrepareSQL("REPLACE INTO map_channelgroups_channels ("
+-            "idGroup, idChannel, iChannelNumber, iSubChannelNumber) "
+-            "VALUES (%i, %i, %i, %i);",
+-            group.GroupID(), groupMember.channel->ChannelID(), groupMember.channelNumber.GetChannelNumber(), groupMember.channelNumber.GetSubChannelNumber());
++            "idGroup, idChannel, iChannelNumber, iSubChannelNumber, iOrder) "
++            "VALUES (%i, %i, %i, %i, %i);",
++            group.GroupID(), groupMember.channel->ChannelID(), groupMember.channelNumber.GetChannelNumber(), groupMember.channelNumber.GetSubChannelNumber(), groupMember.iOrder);
+         QueueInsertQuery(strQuery);
+       }
+     }
+diff --git a/xbmc/pvr/channels/PVRChannel.cpp b/xbmc/pvr/channels/PVRChannel.cpp
+index f906b6a7de8e..490b55b705f1 100644
+--- a/xbmc/pvr/channels/PVRChannel.cpp
++++ b/xbmc/pvr/channels/PVRChannel.cpp
+@@ -60,6 +60,8 @@ CPVRChannel::CPVRChannel(bool bRadio /* = false */)
+   m_iUniqueId               = -1;
+   m_iClientId               = -1;
+   m_iClientEncryptionSystem = -1;
++  m_iOrder = 0;
++
+   UpdateEncryptionName();
+ }
+ 
+@@ -660,6 +662,13 @@ void CPVRChannel::ToSortable(SortItem& sortable, Field field) const
+     sortable[FieldChannelName] = m_strChannelName;
+   else if (field == FieldChannelNumber)
+     sortable[FieldChannelNumber] = m_channelNumber.SortableChannelNumber();
++  else if (field == FieldClientChannelOrder)
++  {
++    if (m_iOrder)
++      sortable[FieldClientChannelOrder] = m_iOrder;
++    else
++      sortable[FieldClientChannelOrder] = m_clientChannelNumber.SortableChannelNumber();
++  }
+   else if (field == FieldLastPlayed)
+   {
+     const CDateTime lastWatched(m_iLastWatched);
+@@ -821,3 +830,16 @@ bool CPVRChannel::CanRecord(void) const
+   const CPVRClientPtr client = CServiceBroker::GetPVRManager().GetClient(m_iClientId);
+   return client && client->GetClientCapabilities().SupportsRecordings();
+ }
++
++void CPVRChannel::SetClientOrder(int iOrder)
++{
++  CSingleLock lock(m_critSection);
++  if (m_iOrder != iOrder)
++  {
++    m_iOrder = iOrder;
++
++    const std::shared_ptr<CPVREpg> epg = GetEPG();
++    if (epg)
++      epg->GetChannelData()->SetClientOrder(iOrder);
++  }
++}
+diff --git a/xbmc/pvr/channels/PVRChannel.h b/xbmc/pvr/channels/PVRChannel.h
+index 22f2adc39ddb..aa0f9ac75176 100644
+--- a/xbmc/pvr/channels/PVRChannel.h
++++ b/xbmc/pvr/channels/PVRChannel.h
+@@ -416,6 +416,18 @@ namespace PVR
+ 
+     static std::string GetEncryptionName(int iCaid);
+ 
++    /*!
++     * @brief Get the client order for this channel
++     * @return iOrder The order for this channel
++     */
++    int ClientOrder() const { return m_iOrder; }
++
++    /*!
++     * @brief Change the client order for this channel
++     * @param iOrder The new order for this channel
++     */
++    void SetClientOrder(int iOrder);
++
+     //@}
+   private:
+     /*!
+@@ -461,6 +473,7 @@ namespace PVR
+     std::string      m_strFileNameAndPath;      /*!< the filename to be used by PVRManager to open and read the stream */
+     int              m_iClientEncryptionSystem; /*!< the encryption system used by this channel. 0 for FreeToAir, -1 for unknown */
+     std::string      m_strClientEncryptionName; /*!< the name of the encryption system used by this channel */
++    int              m_iOrder;                  /*!< the order from this channels currently selected group memeber */
+     //@}
+ 
+     mutable CCriticalSection m_critSection;
+diff --git a/xbmc/pvr/channels/PVRChannelGroup.cpp b/xbmc/pvr/channels/PVRChannelGroup.cpp
+index 29cd2eb9c8b5..bf283f4441a8 100644
+--- a/xbmc/pvr/channels/PVRChannelGroup.cpp
++++ b/xbmc/pvr/channels/PVRChannelGroup.cpp
+@@ -476,6 +476,7 @@ bool CPVRChannelGroup::AddAndUpdateChannels(const CPVRChannelGroup &channels, bo
+     {
+       AddToGroup(existingChannel.channel,
+                  bUseBackendChannelNumbers ? it->second.channel->ClientChannelNumber() : CPVRChannelNumber(),
++                 it->second.iOrder,
+                  bUseBackendChannelNumbers);
+ 
+       bReturn = true;
+@@ -503,6 +504,14 @@ bool CPVRChannelGroup::IsMissingChannelGroupMembersFromClient(int iClientId) con
+                    iClientId) != m_failedClientsForChannelGroupMembers.end();
+ }
+ 
++void CPVRChannelGroup::UpdateClientOrder()
++{
++  CSingleLock lock(m_critSection);
++
++  for (const auto& member : GetMembers())
++    member.channel->SetClientOrder(member.iOrder);
++}
++
+ std::vector<CPVRChannelPtr> CPVRChannelGroup::RemoveDeletedChannels(const CPVRChannelGroup &channels)
+ {
+   std::vector<CPVRChannelPtr> removedChannels;
+@@ -601,7 +610,7 @@ bool CPVRChannelGroup::RemoveFromGroup(const CPVRChannelPtr &channel)
+   return bReturn;
+ }
+ 
+-bool CPVRChannelGroup::AddToGroup(const CPVRChannelPtr &channel, const CPVRChannelNumber &channelNumber, bool bUseBackendChannelNumbers)
++bool CPVRChannelGroup::AddToGroup(const CPVRChannelPtr& channel, const CPVRChannelNumber& channelNumber, int iOrder, bool bUseBackendChannelNumbers)
+ {
+   bool bReturn(false);
+   CSingleLock lock(m_critSection);
+@@ -621,6 +630,7 @@ bool CPVRChannelGroup::AddToGroup(const CPVRChannelPtr &channel, const CPVRChann
+ 
+       PVRChannelGroupMember newMember(realChannel);
+       newMember.channelNumber = CPVRChannelNumber(iChannelNumber, channelNumber.GetSubChannelNumber());
++      newMember.iOrder = iOrder;
+       m_sortedMembers.push_back(newMember);
+       m_members.insert(std::make_pair(realChannel.channel->StorageId(), newMember));
+       m_bChanged = true;
+diff --git a/xbmc/pvr/channels/PVRChannelGroup.h b/xbmc/pvr/channels/PVRChannelGroup.h
+index b454c73d1ead..d127184824f3 100644
+--- a/xbmc/pvr/channels/PVRChannelGroup.h
++++ b/xbmc/pvr/channels/PVRChannelGroup.h
+@@ -33,12 +33,13 @@ namespace PVR
+   {
+     PVRChannelGroupMember() = default;
+ 
+-    PVRChannelGroupMember(const CPVRChannelPtr _channel, const CPVRChannelNumber &_channelNumber, int _iClientPriority)
+-    : channel(_channel), channelNumber(_channelNumber), iClientPriority(_iClientPriority) {}
++    PVRChannelGroupMember(const CPVRChannelPtr _channel, const CPVRChannelNumber& _channelNumber, int _iClientPriority, int _iOrder)
++    : channel(_channel), channelNumber(_channelNumber), iClientPriority(_iClientPriority), iOrder(_iOrder) {}
+ 
+     CPVRChannelPtr channel;
+     CPVRChannelNumber channelNumber; // the number this channel has in the group
+     int iClientPriority = 0;
++    int iOrder = 0; // The value denoting the order of this member in the group
+   };
+ 
+   typedef std::vector<PVRChannelGroupMember> PVR_CHANNEL_GROUP_SORTED_MEMBERS;
+@@ -135,10 +136,11 @@ namespace PVR
+      * @brief Add a channel to this container.
+      * @param channel The channel to add.
+      * @param channelNumber The channel number of the channel to add. Use empty channel number to add it at the end.
++     * @param iOrder The value denoting the order of this member in the group, 0 if unknown and needs to be generated
+      * @param bUseBackendChannelNumbers True, if channelNumber contains a backend channel number.
+      * @return True if the channel was added, false otherwise.
+      */
+-    virtual bool AddToGroup(const CPVRChannelPtr &channel, const CPVRChannelNumber &channelNumber, bool bUseBackendChannelNumbers);
++    virtual bool AddToGroup(const CPVRChannelPtr& channel, const CPVRChannelNumber& channelNumber, int iOrder, bool bUseBackendChannelNumbers);
+ 
+     /*!
+      * @brief Change the name of this group.
+@@ -432,6 +434,11 @@ namespace PVR
+      */
+     bool IsMissingChannelsFromClient(int iClientId) const;
+ 
++    /*!
++     * @brief For each channel and its corresponding epg channel data update the order from the group members
++     */
++    void UpdateClientOrder();
++
+   protected:
+     /*!
+      * @brief Init class
+diff --git a/xbmc/pvr/channels/PVRChannelGroupInternal.cpp b/xbmc/pvr/channels/PVRChannelGroupInternal.cpp
+index f7c4150c7662..77e1f022ec0c 100644
+--- a/xbmc/pvr/channels/PVRChannelGroupInternal.cpp
++++ b/xbmc/pvr/channels/PVRChannelGroupInternal.cpp
+@@ -78,7 +78,7 @@ void CPVRChannelGroupInternal::UpdateChannelPaths(void)
+   }
+ }
+ 
+-CPVRChannelPtr CPVRChannelGroupInternal::UpdateFromClient(const CPVRChannelPtr &channel, const CPVRChannelNumber &channelNumber)
++CPVRChannelPtr CPVRChannelGroupInternal::UpdateFromClient(const CPVRChannelPtr& channel, const CPVRChannelNumber& channelNumber, int iOrder)
+ {
+   CSingleLock lock(m_critSection);
+   const PVRChannelGroupMember& realChannel(GetByUniqueID(channel->StorageId()));
+@@ -101,7 +101,7 @@
+     if (iChannelNumber == 0)
+       iChannelNumber = static_cast<int>(m_sortedMembers.size()) + 1;
+ 
+-    PVRChannelGroupMember newMember(channel, CPVRChannelNumber(iChannelNumber, channelNumber.GetSubChannelNumber()), 0);
++    PVRChannelGroupMember newMember(channel, CPVRChannelNumber(iChannelNumber, channelNumber.GetSubChannelNumber()), 0, iOrder);
+     channel->UpdatePath(GetPath());
+     m_sortedMembers.push_back(newMember);
+     m_members.insert(std::make_pair(channel->StorageId(), newMember));
+@@ -113,7 +113,7 @@ bool CPVRChannelGroupInternal::Update(std::vector<std::shared_ptr<CPVRChannel>>&
+   return UpdateGroupEntries(PVRChannels_tmp, channelsToRemove);
+ }
+ 
+-bool CPVRChannelGroupInternal::AddToGroup(const CPVRChannelPtr &channel, const CPVRChannelNumber &channelNumber, bool bUseBackendChannelNumbers)
++bool CPVRChannelGroupInternal::AddToGroup(const CPVRChannelPtr& channel, const CPVRChannelNumber& channelNumber, int iOrder, bool bUseBackendChannelNumbers)
+ {
+   bool bReturn(false);
+   CSingleLock lock(m_critSection);
+@@ -242,7 +242,7 @@ bool CPVRChannelGroupInternal::AddAndUpdateChannels(const CPVRChannelGroup &chan
+     else
+     {
+       /* new channel */
+-      UpdateFromClient(it->second.channel, bUseBackendChannelNumbers ? it->second.channel->ClientChannelNumber() : CPVRChannelNumber());
++      UpdateFromClient(it->second.channel, bUseBackendChannelNumbers ? it->second.channel->ClientChannelNumber() : CPVRChannelNumber(), it->second.iOrder);
+       if (it->second.channel->CreateEPG())
+       {
+          CLog::LogFC(LOGDEBUG, LOGPVR, "Created EPG for {} channel '{}' from PVR client", IsRadio() ? "radio" : "TV", it->second.channel->ChannelName());
+diff --git a/xbmc/pvr/channels/PVRChannelGroupInternal.h b/xbmc/pvr/channels/PVRChannelGroupInternal.h
+index 8f9ec6fdd59b..21dbe65f2fa7 100644
+--- a/xbmc/pvr/channels/PVRChannelGroupInternal.h
++++ b/xbmc/pvr/channels/PVRChannelGroupInternal.h
+@@ -42,9 +42,10 @@ namespace PVR
+      * @brief Callback for add-ons to update a channel.
+      * @param channel The updated channel.
+      * @param channelNumber A new channel number for the channel.
++     * @param iOrder The value denoting the order of this member in the group, 0 if unknown and needs to be generated
+      * @return The new/updated channel.
+      */
+-    CPVRChannelPtr UpdateFromClient(const CPVRChannelPtr &channel, const CPVRChannelNumber &channelNumber);
++    CPVRChannelPtr UpdateFromClient(const CPVRChannelPtr& channel, const CPVRChannelNumber& channelNumber, int iOrder);
+ 
+     /*!
+      * @see CPVRChannelGroup::IsGroupMember
+@@ -54,7 +55,7 @@ namespace PVR
+     /*!
+      * @see CPVRChannelGroup::AddToGroup
+      */
+-    bool AddToGroup(const CPVRChannelPtr &channel, const CPVRChannelNumber &channelNumber, bool bUseBackendChannelNumbers) override;
++    bool AddToGroup(const CPVRChannelPtr& channel, const CPVRChannelNumber& channelNumber, int iOrder, bool bUseBackendChannelNumbers) override;
+ 
+     /*!
+      * @see CPVRChannelGroup::RemoveFromGroup
+diff --git a/xbmc/pvr/channels/PVRChannelGroups.cpp b/xbmc/pvr/channels/PVRChannelGroups.cpp
+index 4a3030521d55..3fda13beb02b 100644
+--- a/xbmc/pvr/channels/PVRChannelGroups.cpp
++++ b/xbmc/pvr/channels/PVRChannelGroups.cpp
+@@ -472,6 +472,7 @@ void CPVRChannelGroups::SetSelectedGroup(const CPVRChannelGroupPtr &group)
+ {
+   CSingleLock lock(m_critSection);
+   m_selectedGroup = group;
++  m_selectedGroup->UpdateClientOrder();
+ }
+ 
+ bool CPVRChannelGroups::AddGroup(const std::string &strName)
+diff --git a/xbmc/pvr/dialogs/GUIDialogPVRGroupManager.cpp b/xbmc/pvr/dialogs/GUIDialogPVRGroupManager.cpp
+index d6aa404e148c..a5e7c72b93c5 100644
+--- a/xbmc/pvr/dialogs/GUIDialogPVRGroupManager.cpp
++++ b/xbmc/pvr/dialogs/GUIDialogPVRGroupManager.cpp
+@@ -198,7 +198,7 @@
+       else if (m_ungroupedChannels->GetFileCount() > 0)
+       {
+         CFileItemPtr pItemChannel = m_ungroupedChannels->Get(m_iSelectedUngroupedChannel);
+-        if (m_selectedGroup->AddToGroup(pItemChannel->GetPVRChannelInfoTag(), CPVRChannelNumber(), false))
++        if (m_selectedGroup->AddToGroup(pItemChannel->GetPVRChannelInfoTag(), CPVRChannelNumber(), 0, false))
+           Update();
+       }
+     }
+diff --git a/xbmc/pvr/epg/EpgChannelData.cpp b/xbmc/pvr/epg/EpgChannelData.cpp
+index 090e303ff81c..37f4a4f2ff25 100644
+--- a/xbmc/pvr/epg/EpgChannelData.cpp
++++ b/xbmc/pvr/epg/EpgChannelData.cpp
+@@ -29,7 +29,9 @@ CPVREpgChannelData::CPVREpgChannelData(const CPVRChannel& channel)
+   m_iChannelId(channel.ChannelID()),
+   m_strIconPath(channel.IconPath()),
+   m_strChannelName(channel.ChannelName()),
+-  m_strSortableChannelNumber(channel.ChannelNumber().SortableChannelNumber())
++  m_strSortableChannelNumber(channel.ChannelNumber().SortableChannelNumber()),
++  m_strSortableClientChannelNumber(channel.ClientChannelNumber().SortableChannelNumber()),
++  m_iOrder(channel.ClientOrder())
+ {
+   SetLastWatched(channel.LastWatched());
+ }
+@@ -119,6 +121,16 @@ void CPVREpgChannelData::SetSortableChannelNumber(const std::string& strSortable
+   m_strSortableChannelNumber = strSortableChannelNumber;
+ }
+ 
++const std::string& CPVREpgChannelData::SortableClientChannelNumber() const
++{
++  return m_strSortableClientChannelNumber;
++}
++
++void CPVREpgChannelData::SetSortableClientChannelNumber(const std::string& strSortableClientChannelNumber)
++{
++  m_strSortableClientChannelNumber = strSortableClientChannelNumber;
++}
++
+ const std::string& CPVREpgChannelData::LastWatched() const
+ {
+   return m_strLastWatched;
+@@ -132,3 +144,13 @@ void CPVREpgChannelData::SetLastWatched(time_t iLastWatched)
+   else
+     m_strLastWatched.clear();
+ }
++
++int CPVREpgChannelData::ClientOrder() const
++{
++  return m_iOrder;
++}
++
++void CPVREpgChannelData::SetClientOrder(int iOrder)
++{
++  m_iOrder = iOrder;
++}
+diff --git a/xbmc/pvr/epg/EpgChannelData.h b/xbmc/pvr/epg/EpgChannelData.h
+index 45bd1dafb809..76493c09350e 100644
+--- a/xbmc/pvr/epg/EpgChannelData.h
++++ b/xbmc/pvr/epg/EpgChannelData.h
+@@ -47,9 +47,15 @@ namespace PVR
+     const std::string& SortableChannelNumber() const;
+     void SetSortableChannelNumber(const std::string& strSortableChannelNumber);
+ 
++    const std::string& SortableClientChannelNumber() const;
++    void SetSortableClientChannelNumber(const std::string& strSortableClientChannelNumber);
++
+     const std::string& LastWatched() const;
+     void SetLastWatched(time_t iLastWatched);
+ 
++    int ClientOrder() const;
++    void SetClientOrder(int iOrder);
++
+   private:
+     const bool m_bIsRadio = false;
+     const int m_iClientId = -1;
+@@ -62,6 +68,8 @@ namespace PVR
+     std::string m_strIconPath;
+     std::string m_strChannelName;
+     std::string m_strSortableChannelNumber;
++    std::string m_strSortableClientChannelNumber;
+     std::string m_strLastWatched;
++    int m_iOrder = 0;
+   };
+ }
+diff --git a/xbmc/pvr/epg/EpgInfoTag.cpp b/xbmc/pvr/epg/EpgInfoTag.cpp
+index 22c7d87e7ad2..656a662d8c47 100644
+--- a/xbmc/pvr/epg/EpgInfoTag.cpp
++++ b/xbmc/pvr/epg/EpgInfoTag.cpp
+@@ -218,6 +218,12 @@ void CPVREpgInfoTag::ToSortable(SortItem& sortable, Field field) const
+     case FieldChannelNumber:
+       sortable[FieldChannelNumber] = m_channelData->SortableChannelNumber();
+       break;
++    case FieldClientChannelOrder:
++      if (m_channelData->ClientOrder())
++        sortable[FieldClientChannelOrder] = m_channelData->ClientOrder();
++      else
++        sortable[FieldClientChannelOrder] = m_channelData->SortableClientChannelNumber();
++      break;
+     case FieldLastPlayed:
+       sortable[FieldLastPlayed] = m_channelData->LastWatched();
+       break;
+diff --git a/xbmc/pvr/windows/GUIViewStatePVR.cpp b/xbmc/pvr/windows/GUIViewStatePVR.cpp
+index a2d60694690c..10a5bf48d5fd 100644
+--- a/xbmc/pvr/windows/GUIViewStatePVR.cpp
++++ b/xbmc/pvr/windows/GUIViewStatePVR.cpp
+@@ -20,9 +20,10 @@ using namespace PVR;
+ 
+ CGUIViewStateWindowPVRChannels::CGUIViewStateWindowPVRChannels(const int windowId, const CFileItemList& items) : CGUIViewStatePVR(windowId, items)
+ {
+-  AddSortMethod(SortByChannelNumber, 549, LABEL_MASKS("%L", "", "%L", ""));      // "Number"      : Filename, empty | Foldername, empty
+-  AddSortMethod(SortByChannel,       551, LABEL_MASKS("%L", "", "%L", ""));      // "Name"        : Filename, empty | Foldername, empty
+-  AddSortMethod(SortByLastPlayed,    568, LABEL_MASKS("%L", "%p", "%L", "%p"));  // "Last played" : Filename, LastPlayed | Foldername, LastPlayed
++  AddSortMethod(SortByChannelNumber,       549,   LABEL_MASKS("%L", "", "%L", ""));      // "Number"         : Filename, empty | Foldername, empty
++  AddSortMethod(SortByChannel,             551,   LABEL_MASKS("%L", "", "%L", ""));      // "Name"           : Filename, empty | Foldername, empty
++  AddSortMethod(SortByLastPlayed,          568,   LABEL_MASKS("%L", "%p", "%L", "%p"));  // "Last played"    : Filename, LastPlayed | Foldername, LastPlayed
++  AddSortMethod(SortByClientChannelOrder,  19315, LABEL_MASKS("%L", "", "%L", ""));      // "Backend number" : Filename, empty | Foldername, empty
+ 
+   // Default sorting
+   SetSortMethod(SortByChannelNumber);
+@@ -63,9 +64,10 @@ bool CGUIViewStateWindowPVRRecordings::HideParentDirItems(void)
+ 
+ CGUIViewStateWindowPVRGuide::CGUIViewStateWindowPVRGuide(const int windowId, const CFileItemList& items) : CGUIViewStatePVR(windowId, items)
+ {
+-  AddSortMethod(SortByChannelNumber,                           549, LABEL_MASKS("%L", "", "%L", ""));     // "Number"      : Filename, empty | Foldername, empty
+-  AddSortMethod(SortByChannel,                                 551, LABEL_MASKS("%L", "", "%L", ""));     // "Name"        : Filename, empty | Foldername, empty
+-  AddSortMethod(SortByLastPlayed,    SortAttributeIgnoreLabel, 568, LABEL_MASKS("%L", "%p", "%L", "%p")); // "Last played" : Filename, LastPlayed | Foldername, LastPlayed
++  AddSortMethod(SortByChannelNumber,                           549,   LABEL_MASKS("%L", "", "%L", ""));     // "Number"         : Filename, empty | Foldername, empty
++  AddSortMethod(SortByChannel,                                 551,   LABEL_MASKS("%L", "", "%L", ""));     // "Name"           : Filename, empty | Foldername, empty
++  AddSortMethod(SortByLastPlayed,    SortAttributeIgnoreLabel, 568,   LABEL_MASKS("%L", "%p", "%L", "%p")); // "Last played"    : Filename, LastPlayed | Foldername, LastPlayed
++  AddSortMethod(SortByClientChannelOrder,                      19315, LABEL_MASKS("%L", "", "%L", ""));     // "Backend number" : Filename, empty | Foldername, empty
+ 
+   // Default sorting
+   SetSortMethod(SortByChannelNumber);
+diff --git a/xbmc/utils/DatabaseUtils.h b/xbmc/utils/DatabaseUtils.h
+index f18d2dd494aa..21f5a19cbf2a 100644
+--- a/xbmc/utils/DatabaseUtils.h
++++ b/xbmc/utils/DatabaseUtils.h
+@@ -131,6 +131,7 @@ typedef enum {
+   FieldStereoMode,
+   FieldUserRating,
+   FieldRelevance, // Used for actors' appearances
++  FieldClientChannelOrder,
+   FieldMax
+ } Field;
+ 
+diff --git a/xbmc/utils/SortUtils.cpp b/xbmc/utils/SortUtils.cpp
+index a5c2d1c015a5..6c74f0b8462c 100644
+--- a/xbmc/utils/SortUtils.cpp
++++ b/xbmc/utils/SortUtils.cpp
+@@ -398,6 +398,11 @@ std::string ByChannelNumber(SortAttribute attributes, const SortItem &values)
+   return values.at(FieldChannelNumber).asString();
+ }
+ 
++std::string ByClientChannelOrder(SortAttribute attributes, const SortItem& values)
++{
++  return values.at(FieldClientChannelOrder).asString();
++}
++
+ std::string ByDateTaken(SortAttribute attributes, const SortItem &values)
+ {
+   return values.at(FieldDateTaken).asString();
+@@ -601,6 +606,7 @@ std::map<SortBy, SortUtils::SortPreparator> fillPreparators()
+   preparators[SortByRandom]                   = ByRandom;
+   preparators[SortByChannel]                  = ByChannel;
+   preparators[SortByChannelNumber]            = ByChannelNumber;
++  preparators[SortByClientChannelOrder]       = ByClientChannelOrder;
+   preparators[SortByDateTaken]                = ByDateTaken;
+   preparators[SortByRelevance]                = ByRelevance;
+   preparators[SortByInstallDate]              = ByInstallDate;
+@@ -686,6 +692,7 @@ std::map<SortBy, Fields> fillSortingFields()
+   sortingFields[SortByBitrate].insert(FieldBitrate);
+   sortingFields[SortByChannel].insert(FieldChannelName);
+   sortingFields[SortByChannelNumber].insert(FieldChannelNumber);
++  sortingFields[SortByClientChannelOrder].insert(FieldClientChannelOrder);
+   sortingFields[SortByDateTaken].insert(FieldDateTaken);
+   sortingFields[SortByRelevance].insert(FieldRelevance);
+   sortingFields[SortByInstallDate].insert(FieldInstallDate);
+@@ -905,6 +912,7 @@ const sort_map table[] = {
+   { SortByListeners,                SORT_METHOD_LISTENERS,                    SortAttributeNone,          20455 },
+   { SortByChannel,                  SORT_METHOD_CHANNEL,                      SortAttributeNone,          19029 },
+   { SortByChannel,                  SORT_METHOD_CHANNEL_NUMBER,               SortAttributeNone,          549 },
++  { SortByChannel,                  SORT_METHOD_CLIENT_CHANNEL_ORDER,         SortAttributeNone,          19315 },
+   { SortByDateTaken,                SORT_METHOD_DATE_TAKEN,                   SortAttributeIgnoreFolders, 577 },
+   { SortByNone,                     SORT_METHOD_NONE,                         SortAttributeNone,          16018 },
+   // the following have no corresponding SORT_METHOD_*
+@@ -1049,6 +1057,7 @@ const std::map<std::string, SortBy> sortMethods = {
+   { "random",           SortByRandom },
+   { "channel",          SortByChannel },
+   { "channelnumber",    SortByChannelNumber },
++  { "clientchannelorder", SortByClientChannelOrder },
+   { "datetaken",        SortByDateTaken },
+   { "userrating",       SortByUserRating },
+   { "installdate",      SortByInstallDate },
+diff --git a/xbmc/utils/SortUtils.h b/xbmc/utils/SortUtils.h
+index 5811ca709622..2f2c0ab3d2ea 100644
+--- a/xbmc/utils/SortUtils.h
++++ b/xbmc/utils/SortUtils.h
+@@ -153,6 +153,8 @@ typedef enum {
+   SortByLastUpdated,
+   /// __52__ : Sort by last used                  <em>(String: <b><c>lastused</c></b>)</em>
+   SortByLastUsed,
++  /// __53__ : Sort by client channel order       <em>(String: <b><c>ClientChannelOrder</c></b>)</em>
++  SortByClientChannelOrder,
+ } SortBy;
+ ///@}
+ 

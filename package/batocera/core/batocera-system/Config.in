@@ -12,6 +12,14 @@ if BR2_PACKAGE_BATOCERA_TARGET_X86 || BR2_PACKAGE_BATOCERA_TARGET_X86_64
         default y
 endif
 
+if BR2_PACKAGE_BATOCERA_TARGET_ROCKPRO64 || BR2_PACKAGE_BATOCERA_TARGET_ROCK960 || BR2_PACKAGE_BATOCERA_TARGET_TINKERBOARD || BR2_PACKAGE_BATOCERA_TARGET_MIQI || BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA
+   config BR2_PACKAGE_BATOCERA_TARGET_ROCKCHIP_ANY
+        bool "rockchip_targets"
+        default y
+        help
+           Selected when a Rockchip platform is being built
+endif
+
 config BR2_PACKAGE_BATOCERA_CORES_EXPERIMENTAL
 bool "add experimental cores"
 
@@ -554,6 +562,9 @@ config BR2_PACKAGE_BATOCERA_KODI
        select BR2_PACKAGE_LIBAACS           # decoder
        select BR2_PACKAGE_LIBDVDCSS         # decoder
        select BR2_PACKAGE_GNUTLS            # https streams
+
+       # Rockchip ffmpeg playback package
+       select BR2_PACKAGE_RKMPP             if BR2_PACKAGE_BATOCERA_TARGET_ROCKCHIP_ANY
 
        # ffmpeg enabler that i'm not sure it has an impact on kodi
        select BR2_PACKAGE_FFMPEG_GPL        # video recording

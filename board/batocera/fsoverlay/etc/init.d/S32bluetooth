@@ -10,6 +10,24 @@ case "$1" in
         batocera-bluetooth restore
         enabled="`$systemsetting  -command load -key controllers.bluetooth.enabled`"
         if [ "$enabled" == "1" ];then
+		# Start hciattach for applicable boards
+		if [ $(cat /proc/device-tree/compatible | grep -c "rockchip") -ne 0 ]; then
+			echo 0 > /sys/class/rfkill/rfkill0/state
+			sleep 1
+			echo 1 > /sys/class/rfkill/rfkill0/state
+			sleep 1
+			if [ $(cat /proc/device-tree/compatible | grep -c "rk3399") -ne 0 ]; then
+			    /usr/bin/hciattach /dev/ttyS0 bcm43xx 1500000 flow nosleep &
+			fi
+			if [ $(cat /proc/device-tree/compatible | grep -c "rk3288") -ne 0 ]; then
+			    /usr/bin/hciattach -n /dev/ttyS0 rtk_h5 115200 &
+			fi
+		fi
+		if [ $(cat /proc/device-tree/compatible | grep -c "brcm") -ne 0 ]; then
+			rfkill unblock bluetooth
+			/usr/bin/hciattach /dev/ttyAMA0 bcm43xx 921600 & # specific rpi0 and rpi3
+	                /usr/bin/hciconfig hci0 up piscan &              # specific rpi
+		fi
 	        btaddr="`$systemsetting  -command load -key bluetooth.adapter`"
         	settings_version="`$systemsetting -command load -key controllers.ps3.driver`"
         	if [ "$settings_version" != "bluez" ]; then BLUETOOTHD_ARGS="--noplugin=sixaxis"; else  BLUETOOTHD_ARGS="--noplugin=sixaxispair"; fi

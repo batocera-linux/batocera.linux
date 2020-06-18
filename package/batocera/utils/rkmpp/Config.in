@@ -1,0 +1,8 @@
+config BR2_PACKAGE_RKMPP
+	bool "rkmpp"
+	depends on BR2_PACKAGE_LIBDRM
+	help
+	  rkmpp: Rockchip Media Process Platform (MPP) module
+	  https://github.com/rockchip-linux/mpp
+
+comment "rkmpp"
