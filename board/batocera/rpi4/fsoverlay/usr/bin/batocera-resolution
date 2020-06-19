@@ -7,12 +7,49 @@ FILEMODES="/sys/class/graphics/fb0/modes"
 
 case "${ACTION}" in
     "listModes")
-    ;;
+	tvservice -l | sed -e s+'^[^ ]*:\(.*\)$'+'\1'+
+	;;
     "setMode")
-    ;;
+	MODE=$1
+	tvservice -e "${MODE}"
+	sleep 0.5 # let time for the video to change the resolution (the commands returns before it's really done, at least, on rpi ;-(
+	;;
     "currentMode"|"currentResolution")
-        # mode can be different from resolution (ie on rpi)
+    # mode can be different from resolution (ie on rpi)
 	test -e "${FILEMODES}" && head -1 "${FILEMODES}" | sed -e s+'^[^:]:\([0-9]*\)x\([0-9]*\)[a-z]*.*$'+'\1x\2'+
+	;;
+    "listOutputs")
+	;;
+    "setOutput")
+	;;
+    "minTomaxResolution")
+	# minimize resolution because of 4K tv
+	MAXWIDTH=1920
+	MAXHEIGHT=1080
+	CURRENT_RESOLUTION=$(test -e "${FILEMODES}" && head -1 "${FILEMODES}" | sed -e s+'^[^:]:\([0-9]*\)x\([0-9]*\)[a-z]*.*$'+'\1x\2'+)
+	CURRENTWIDTH=$(echo "${CURRENT_RESOLUTION}" | cut -d x -f 1)
+	CURRENTHEIGHT=$(echo "${CURRENT_RESOLUTION}" | cut -d x -f 2)
+
+	if test "${CURRENTWIDTH}" -le "${MAXWIDTH}" -a "${CURRENTHEIGHT}" -le "${MAXHEIGHT}"
+	then
+	    exit 0
+	fi
+
+	# select a new one
+	# select the first one valid
+	# is it the best ? or should we loop to search the first with the same ratio ?
+	tvservice -l | sort -rn | # highest resolution first
+	    while IFS=':\n' read SUGGRESOLUTION SUGGMODE SUGGDESCRIPTION
+	    do
+		SUGGWIDTH=$(echo "${SUGGRESOLUTION}" | cut -d x -f 1)
+		SUGGHEIGHT=$(echo "${SUGGRESOLUTION}" | cut -d x -f 2)
+		if test "${SUGGWIDTH}" -le "${MAXWIDTH}" -a "${SUGGHEIGHT}" -le "${MAXHEIGHT}"
+		then
+		    tvservice -e "${SUGGMODE}"
+		    sleep 0.5 # let time for the video to change the resolution (the commands returns before it's really done, at least, on rpi ;-(
+		    exit 0
+		fi
+	    done
 	;;
 esac
 exit 0
