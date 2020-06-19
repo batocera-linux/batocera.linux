@@ -13,7 +13,7 @@ case "$1" in
         rfkill unblock bluetooth
 
         #Start hciattach for applicable boards
-        bluetoothstack="$(batocera-settings -command load -key internal.bluetooth.stack)"
+        bluetoothstack=@INTERNAL_BLUETOOTH_STACK@
         for i in $bluetoothstack
         do
             case $i in
