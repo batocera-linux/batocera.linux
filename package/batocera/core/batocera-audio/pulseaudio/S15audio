@@ -10,17 +10,6 @@ if [ "${AUDIO_DEV}" == "" ];then
 	AUDIO_DEV="auto"
 fi
 
-ARCH=$(cat /usr/share/batocera/batocera.arch)
-
-case ${ARCH} in
-	rockpro64 | vim3)
-		AUDIO_BACKEND="pulseaudio"
-	;;
-	*)
-		AUDIO_BACKEND="alsa"
-	;;
-esac
-
 start_alsa() {
 	batocera-audio "unlock-volume" >> $log
 	batocera-audio set "${AUDIO_DEV}"
@@ -66,13 +55,13 @@ restart_pulseaudio () {
 
 case "$1" in
  	start)
-		start_${AUDIO_BACKEND}
+		start_pulseaudio
 	;;
  	stop)
-		stop_${AUDIO_BACKEND}
+		stop_pulseaudio
 	;;
  	restart|reload)
-		restart_${AUDIO_BACKEND}
+		restart_pulseaudio
 	;;
 	*)
 		echo "Usage: $0 {start|stop|restart}"
