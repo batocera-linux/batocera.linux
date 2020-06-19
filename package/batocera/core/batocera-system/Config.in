@@ -657,6 +657,9 @@ config BR2_PACKAGE_BATOCERA_KODI18
        select BR2_PACKAGE_LIBDVDCSS         # decoder
        select BR2_PACKAGE_GNUTLS            # https streams
 
+       # Rockchip ffmpeg playback package
+       select BR2_PACKAGE_RKMPP             if BR2_PACKAGE_BATOCERA_TARGET_ROCKCHIP_ANY
+
        # ffmpeg enabler that i'm not sure it has an impact on kodi
        select BR2_PACKAGE_FFMPEG_GPL        # video recording
        select BR2_PACKAGE_FFMPEG_AVRESAMPLE # audio resampler
