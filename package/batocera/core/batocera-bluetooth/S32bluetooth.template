@@ -1,0 +1,81 @@
+#!/bin/sh
+#
+# Auto connect bluetooth controllers
+#
+
+case "$1" in
+    start)
+        # Restores old settings saved in userdata
+        batocera-bluetooth restore
+        enabled="$(batocera-settings -command load -key controllers.bluetooth.enabled)"
+        [ "$enabled" == "1" ] || exit 0
+        # soft unblock bluetooth
+        rfkill unblock bluetooth
+
+        #Start hciattach for applicable boards
+        bluetoothstack=@INTERNAL_BLUETOOTH_STACK@
+        for i in $bluetoothstack
+        do
+            case $i in
+                rfkreset)
+                    echo 0 > /sys/class/rfkill/rfkill0/state
+                    sleep 1
+                    echo 1 > /sys/class/rfkill/rfkill0/state
+                    sleep 1
+                ;;
+                bcm150)
+                    /usr/bin/hciattach /dev/ttyS0 bcm43xx 1500000 flow nosleep &
+                    sleep 2 # Give hciattach a few seconds to finish attaching firmware
+                ;;
+                rtk115)
+                    /usr/bin/hciattach -n /dev/ttyS0 rtk_h5 115200 & # specific to Tinkerboard
+                    sleep 2 # Give hciattach a few seconds to finish attaching firmware
+                ;;
+                bcm921)
+                    /usr/bin/hciattach /dev/ttyAMA0 bcm43xx 921600 & # specific rpi0 and rpi3
+                    sleep 2 # Give hciattach a few seconds to finish attaching firmware
+                ;;
+                piscan)
+                    /usr/bin/hciconfig hci0 up piscan & # specific rpi
+                ;;
+            esac
+        done
+
+        btaddr="$(batocera-settings -command load -key bluetooth.adapter)"
+        settings_version="$(batocera-settings -command load -key controllers.ps3.driver)"
+        if [ "$settings_version" != "bluez" ]
+	then
+            BLUETOOTHD_ARGS="--noplugin=sixaxis"
+        else
+            BLUETOOTHD_ARGS="--noplugin=sixaxispair"
+        fi
+        start-stop-daemon -S -q -m -p /var/run/bluetoothd.pid --exec /usr/libexec/bluetooth/bluetoothd -- $BLUETOOTHD_ARGS &
+
+        if [ -n "${btaddr}" ]
+        then
+            start-stop-daemon -S -q -m -p /var/run/bluetooth-agent.pid --exec /usr/bin/batocera-bluetooth-agent -- --device "${btaddr}" &
+        else
+            start-stop-daemon -S -q -m -p /var/run/bluetooth-agent.pid --exec /usr/bin/batocera-bluetooth-agent &
+        fi
+    ;;
+
+    stop)
+        start-stop-daemon -K -q -p /var/run/bluetooth-agent.pid
+        start-stop-daemon -K -q -p /var/run/bluetoothd.pid
+        killall hciattach
+        batocera-bluetooth save
+    ;;
+
+    restart|reload)
+        "$0" stop
+        "$0" start
+    ;;
+
+    *)
+        echo "Usage: $0 {start|stop|restart}"
+        exit 1
+esac
+
+exit $?
+
+

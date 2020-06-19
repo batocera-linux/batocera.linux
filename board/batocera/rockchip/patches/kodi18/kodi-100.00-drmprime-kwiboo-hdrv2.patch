@@ -1,0 +1,1252 @@
+MRFIXIT: All of kwiboo's patches:
+https://github.com/xbmc/xbmc/compare/Leia...Kwiboo:rockchip-hdr-v2
+
+From 992a6e42f5098049cbdbe40de0feba2e9f46c130 Mon Sep 17 00:00:00 2001
+From: Jonas Karlman <jonas@kwiboo.se>
+Date: Tue, 23 Oct 2018 20:09:41 +0200
+Subject: [PATCH 1/8] windowing/gbm: add GetConnector method
+
+---
+ xbmc/windowing/gbm/DRMUtils.h | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/xbmc/windowing/gbm/DRMUtils.h b/xbmc/windowing/gbm/DRMUtils.h
+index 6d6275d31bf9..2aa27e224e7e 100644
+--- a/xbmc/windowing/gbm/DRMUtils.h
++++ b/xbmc/windowing/gbm/DRMUtils.h
+@@ -109,6 +109,7 @@ class CDRMUtils
+   std::vector<uint64_t> *GetVideoPlaneModifiersForFormat(uint32_t format) { return &m_video_plane->modifiers_map[format]; }
+   std::vector<uint64_t> *GetGuiPlaneModifiersForFormat(uint32_t format) { return &m_gui_plane->modifiers_map[format]; }
+   struct crtc* GetCrtc() const { return m_crtc; }
++  struct connector* GetConnector() const { return m_connector; }
+ 
+   virtual RESOLUTION_INFO GetCurrentMode();
+   virtual std::vector<RESOLUTION_INFO> GetModes();
+
+From 922919ba6dd968e7a9cabfa8f145a96bad1ba211 Mon Sep 17 00:00:00 2001
+From: Jonas Karlman <jonas@kwiboo.se>
+Date: Tue, 23 Oct 2018 20:09:41 +0200
+Subject: [PATCH 2/8] windowing/gbm: set HDMI connector content type property
+
+---
+ .../resources/strings.po                      | 56 ++++++++++++++++++-
+ system/settings/gbm.xml                       | 36 ++++++++++++
+ .../HwDecRender/RendererDRMPRIME.cpp          | 15 +++--
+ xbmc/windowing/gbm/DRMAtomic.cpp              | 35 ++++++++++++
+ xbmc/windowing/gbm/DRMAtomic.h                |  5 +-
+ xbmc/windowing/gbm/DRMUtils.cpp               | 15 +++++
+ xbmc/windowing/gbm/DRMUtils.h                 |  5 ++
+ 7 files changed, 161 insertions(+), 6 deletions(-)
+
+diff --git a/addons/resource.language.en_gb/resources/strings.po b/addons/resource.language.en_gb/resources/strings.po
+index 07a66466143e..d4e4ea6a4f61 100644
+--- a/addons/resource.language.en_gb/resources/strings.po
++++ b/addons/resource.language.en_gb/resources/strings.po
+@@ -7266,7 +7266,61 @@ msgctxt "#13465"
+ msgid "EGL"
+ msgstr ""
+ 
+-#empty strings from id 13466 to 13504
++#. Option for setting HDMI Content Type
++#: system/settings/gbm.xml
++msgctxt "#13466"
++msgid "HDMI Content Type"
++msgstr ""
++
++#. Description of videoscreen setting with label #13466 "HDMI Content Type"
++#: system/settings/gbm.xml
++msgctxt "#13467"
++msgid "This option sets content type to use in HDMI infoframes."
++msgstr ""
++
++#. Description of videoplayer setting with label #13466 "HDMI Content Type"
++#: system/settings/gbm.xml
++msgctxt "#13468"
++msgid "This option sets content type to use in HDMI infoframes when video is playing using the Direct To Plane render method."
++msgstr ""
++
++#. String for options 1 of setting with label #13466 "HDMI Content Type"
++#: system/settings/gbm.xml
++msgctxt "#13469"
++msgid "Default"
++msgstr ""
++
++#. String for options 2 of setting with label #13466 "HDMI Content Type"
++#: system/settings/gbm.xml
++msgctxt "#13470"
++msgid "No Data"
++msgstr ""
++
++#. String for options 3 of setting with label #13466 "HDMI Content Type"
++#: system/settings/gbm.xml
++msgctxt "#13471"
++msgid "Graphics"
++msgstr ""
++
++#. String for options 4 of setting with label #13466 "HDMI Content Type"
++#: system/settings/gbm.xml
++msgctxt "#13472"
++msgid "Photo"
++msgstr ""
++
++#. String for options 5 of setting with label #13466 "HDMI Content Type"
++#: system/settings/gbm.xml
++msgctxt "#13473"
++msgid "Cinema"
++msgstr ""
++
++#. String for options 6 of setting with label #13466 "HDMI Content Type"
++#: system/settings/gbm.xml
++msgctxt "#13474"
++msgid "Game"
++msgstr ""
++
++#empty strings from id 13475 to 13504
+ 
+ #: system/settings/settings.xml
+ msgctxt "#13505"
+diff --git a/system/settings/gbm.xml b/system/settings/gbm.xml
+index c5e4d98e0bef..20f2bfa06725 100644
+--- a/system/settings/gbm.xml
++++ b/system/settings/gbm.xml
+@@ -32,6 +32,27 @@
+           </constraints>
+           <control type="spinner" format="string" />
+         </setting>
++        <setting id="videoplayer.hdmicontenttype" type="integer" label="13466" help="13468">
++          <visible>false</visible>
++          <dependencies>
++            <dependency type="enable">
++              <condition setting="videoplayer.useprimedecoder" operator="is">true</condition>
++              <condition setting="videoplayer.useprimerenderer" operator="is">0</condition>
++            </dependency>
++          </dependencies>
++          <level>3</level>
++          <default>0</default>
++          <constraints>
++            <options>
++              <option label="13469">0</option> <!-- Default -->
++              <option label="13470">1</option> <!-- Graphics -->
++              <option label="13472">2</option> <!-- Photo -->
++              <option label="13473">3</option> <!-- Cinema -->
++              <option label="13474">4</option> <!-- Game -->
++            </options>
++          </constraints>
++          <control type="list" format="string" />
++        </setting>
+       </group>
+     </category>
+   </section>
+@@ -46,6 +67,21 @@
+           <default>false</default>
+           <control type="toggle" />
+         </setting>
++        <setting id="videoscreen.hdmicontenttype" type="integer" label="13466" help="13467">
++          <visible>false</visible>
++          <level>3</level>
++          <default>0</default>
++          <constraints>
++            <options>
++              <option label="13469">0</option> <!-- No Data -->
++              <option label="13471">1</option> <!-- Graphics -->
++              <option label="13472">2</option> <!-- Photo -->
++              <option label="13473">3</option> <!-- Cinema -->
++              <option label="13474">4</option> <!-- Game -->
++            </options>
++          </constraints>
++          <control type="list" format="string" />
++        </setting>
+       </group>
+     </category>
+     <category id="input">
+diff --git a/xbmc/cores/VideoPlayer/VideoRenderers/HwDecRender/RendererDRMPRIME.cpp b/xbmc/cores/VideoPlayer/VideoRenderers/HwDecRender/RendererDRMPRIME.cpp
+index df0fb6fd9c87..f8bca57c9256 100644
+--- a/xbmc/cores/VideoPlayer/VideoRenderers/HwDecRender/RendererDRMPRIME.cpp
++++ b/xbmc/cores/VideoPlayer/VideoRenderers/HwDecRender/RendererDRMPRIME.cpp
+@@ -50,12 +50,19 @@ CBaseRenderer* CRendererDRMPRIME::Create(CVideoBuffer* buffer)
+ void CRendererDRMPRIME::Register()
+ {
+   CWinSystemGbm* winSystem = dynamic_cast<CWinSystemGbm*>(CServiceBroker::GetWinSystem());
+-  if (winSystem && winSystem->GetDrm()->GetVideoPlane()->plane &&
+-      std::dynamic_pointer_cast<CDRMAtomic>(winSystem->GetDrm()))
++  if (!winSystem)
++    return;
++
++  std::shared_ptr<CDRMAtomic> drm = std::dynamic_pointer_cast<CDRMAtomic>(winSystem->GetDrm());
++  if (drm && drm->GetVideoPlane()->plane)
+   {
+-    CServiceBroker::GetSettingsComponent()->GetSettings()->GetSetting(SETTING_VIDEOPLAYER_USEPRIMERENDERER)->SetVisible(true);
++    const std::shared_ptr<CSettings> settings = CServiceBroker::GetSettingsComponent()->GetSettings();
++
++    settings->GetSetting(SETTING_VIDEOPLAYER_USEPRIMERENDERER)->SetVisible(true);
+     VIDEOPLAYER::CRendererFactory::RegisterRenderer("drm_prime", CRendererDRMPRIME::Create);
+-    return;
++
++    if (drm->SupportsProperty(drm->GetConnector(), "content type"))
++      settings->GetSetting(CDRMUtils::SETTING_VIDEOPLAYER_HDMICONTENTTYPE)->SetVisible(true);
+   }
+ }
+ 
+diff --git a/xbmc/windowing/gbm/DRMAtomic.cpp b/xbmc/windowing/gbm/DRMAtomic.cpp
+index 0299fc9caa16..ca0aaec639dc 100644
+--- a/xbmc/windowing/gbm/DRMAtomic.cpp
++++ b/xbmc/windowing/gbm/DRMAtomic.cpp
+@@ -14,7 +14,9 @@
+ #include "guilib/GUIComponent.h"
+ #include "guilib/GUIWindowManager.h"
+ #include "ServiceBroker.h"
++#include "settings/lib/SettingsManager.h"
+ #include "settings/Settings.h"
++#include "settings/SettingsComponent.h"
+ #include "utils/log.h"
+ 
+ #include "DRMAtomic.h"
+@@ -48,6 +50,11 @@ void CDRMAtomic::DrmAtomicCommit(int fb_id, int flags, bool rendered, bool video
+     {
+       return;
+     }
++
++    if (SupportsProperty(m_connector, "content type"))
++    {
++      AddProperty(m_connector, "content type", GetHdmiContentType(videoLayer));
++    }
+   }
+ 
+   if (rendered)
+@@ -150,12 +157,35 @@ bool CDRMAtomic::InitDrm()
+     CLog::Log(LOGDEBUG, "CDRMAtomic::%s - failed to reset planes", __FUNCTION__);
+   }
+ 
++  const std::shared_ptr<CSettings> settings = CServiceBroker::GetSettingsComponent()->GetSettings();
++  std::set<std::string> settingSet;
++
++  if (SupportsProperty(m_connector, "content type"))
++  {
++    settings->GetSetting(SETTING_VIDEOSCREEN_HDMICONTENTTYPE)->SetVisible(true);
++    settingSet.insert(SETTING_VIDEOSCREEN_HDMICONTENTTYPE);
++    settingSet.insert(SETTING_VIDEOPLAYER_HDMICONTENTTYPE);
++  }
++
++  if (!settingSet.empty())
++  {
++    settings->GetSettingsManager()->RegisterCallback(this, settingSet);
++  }
++
+   CLog::Log(LOGDEBUG, "CDRMAtomic::%s - initialized atomic DRM", __FUNCTION__);
+   return true;
+ }
+ 
+ void CDRMAtomic::DestroyDrm()
+ {
++  CSettingsComponent *settingsComponent = CServiceBroker::GetSettingsComponent();
++  if (settingsComponent)
++  {
++    const std::shared_ptr<CSettings> settings = settingsComponent->GetSettings();
++    if (settings)
++      settings->GetSettingsManager()->UnregisterCallback(this);
++  }
++
+   CDRMUtils::DestroyDrm();
+ 
+   drmModeAtomicFree(m_req);
+@@ -227,3 +257,8 @@ bool CDRMAtomic::ResetPlanes()
+ 
+   return true;
+ }
++
++void CDRMAtomic::OnSettingChanged(std::shared_ptr<const CSetting> setting)
++{
++  m_need_modeset = true;
++}
+diff --git a/xbmc/windowing/gbm/DRMAtomic.h b/xbmc/windowing/gbm/DRMAtomic.h
+index 1aa96127f45c..5cea6e51bf94 100644
+--- a/xbmc/windowing/gbm/DRMAtomic.h
++++ b/xbmc/windowing/gbm/DRMAtomic.h
+@@ -9,6 +9,7 @@
+ #pragma once
+ 
+ #include "DRMUtils.h"
++#include "settings/lib/ISettingCallback.h"
+ 
+ namespace KODI
+ {
+@@ -17,7 +18,7 @@ namespace WINDOWING
+ namespace GBM
+ {
+ 
+-class CDRMAtomic : public CDRMUtils
++class CDRMAtomic : public CDRMUtils, public ISettingCallback
+ {
+ public:
+   CDRMAtomic() = default;
+@@ -29,6 +30,8 @@ class CDRMAtomic : public CDRMUtils
+   virtual void DestroyDrm() override;
+   virtual bool AddProperty(struct drm_object *object, const char *name, uint64_t value) override;
+ 
++  void OnSettingChanged(std::shared_ptr<const CSetting> setting) override;
++
+ private:
+   void DrmAtomicCommit(int fb_id, int flags, bool rendered, bool videoLayer);
+   bool ResetPlanes();
+diff --git a/xbmc/windowing/gbm/DRMUtils.cpp b/xbmc/windowing/gbm/DRMUtils.cpp
+index 48f0bc40bcf9..c7887fc0d49d 100644
+--- a/xbmc/windowing/gbm/DRMUtils.cpp
++++ b/xbmc/windowing/gbm/DRMUtils.cpp
+@@ -17,6 +17,8 @@
+ #include <unistd.h>
+ 
+ #include "platform/linux/XTimeUtils.h"
++#include "settings/Settings.h"
++#include "settings/SettingsComponent.h"
+ #include "utils/log.h"
+ #include "utils/StringUtils.h"
+ #include "windowing/GraphicContext.h"
+@@ -25,6 +27,9 @@
+ 
+ using namespace KODI::WINDOWING::GBM;
+ 
++const std::string CDRMUtils::SETTING_VIDEOSCREEN_HDMICONTENTTYPE = "videoscreen.hdmicontenttype";
++const std::string CDRMUtils::SETTING_VIDEOPLAYER_HDMICONTENTTYPE = "videoplayer.hdmicontenttype";
++
+ CDRMUtils::CDRMUtils()
+   : m_connector(new connector)
+   , m_encoder(new encoder)
+@@ -837,3 +842,13 @@ bool CDRMUtils::CheckConnector(int connector_id)
+ 
+   return finalConnectionState == DRM_MODE_CONNECTED;
+ }
++
++int CDRMUtils::GetHdmiContentType(bool videoLayer)
++{
++  int contentType = 0;
++  if (videoLayer)
++    contentType = CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt(SETTING_VIDEOPLAYER_HDMICONTENTTYPE);
++  if (contentType == 0)
++    contentType = CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt(SETTING_VIDEOSCREEN_HDMICONTENTTYPE);
++  return contentType;
++}
+diff --git a/xbmc/windowing/gbm/DRMUtils.h b/xbmc/windowing/gbm/DRMUtils.h
+index 2aa27e224e7e..9046c414876f 100644
+--- a/xbmc/windowing/gbm/DRMUtils.h
++++ b/xbmc/windowing/gbm/DRMUtils.h
+@@ -122,6 +122,11 @@ class CDRMUtils
+   static uint32_t FourCCWithAlpha(uint32_t fourcc);
+   static uint32_t FourCCWithoutAlpha(uint32_t fourcc);
+ 
++  static const std::string SETTING_VIDEOSCREEN_HDMICONTENTTYPE;
++  static const std::string SETTING_VIDEOPLAYER_HDMICONTENTTYPE;
++
++  int GetHdmiContentType(bool videoLayer);
++
+ protected:
+   bool OpenDrm(bool needConnector);
+   uint32_t GetPropertyId(struct drm_object *object, const char *name);
+
+From 5aab53f4e36fa9eaf10b326c68f608329294123e Mon Sep 17 00:00:00 2001
+From: Jonas Karlman <jonas@kwiboo.se>
+Date: Tue, 23 Oct 2018 20:09:41 +0200
+Subject: [PATCH 3/8] windowing/gbm: add setting for HDMI Output Format
+
+---
+ .../resources/strings.po                      | 44 ++++++++++++++++++-
+ system/settings/gbm.xml                       | 33 ++++++++++++++
+ xbmc/windowing/gbm/DRMUtils.cpp               | 12 +++++
+ xbmc/windowing/gbm/DRMUtils.h                 |  3 ++
+ 4 files changed, 91 insertions(+), 1 deletion(-)
+
+diff --git a/addons/resource.language.en_gb/resources/strings.po b/addons/resource.language.en_gb/resources/strings.po
+index d4e4ea6a4f61..2c324745fc25 100644
+--- a/addons/resource.language.en_gb/resources/strings.po
++++ b/addons/resource.language.en_gb/resources/strings.po
+@@ -7320,7 +7320,49 @@ msgctxt "#13474"
+ msgid "Game"
+ msgstr ""
+ 
+-#empty strings from id 13475 to 13504
++#. Option for setting HDMI Output Format
++#: system/settings/gbm.xml
++msgctxt "#13475"
++msgid "HDMI Output Format"
++msgstr ""
++
++#. Description of videoscreen setting with label #13475 "HDMI Output Format"
++#: system/settings/gbm.xml
++msgctxt "#13476"
++msgid "This option sets HDMI output format to use."
++msgstr ""
++
++#. Description of videoplayer setting with label #13475 "HDMI Output Format"
++#: system/settings/gbm.xml
++msgctxt "#13477"
++msgid "This option sets HDMI output format to use when video is playing."
++msgstr ""
++
++#. String for options 1 of setting with label #13475 "HDMI Output Format"
++#: system/settings/gbm.xml
++msgctxt "#13478"
++msgid "Default"
++msgstr ""
++
++#. String for options 2 of setting with label #13475 "HDMI Output Format"
++#: system/settings/gbm.xml
++msgctxt "#13479"
++msgid "RGB"
++msgstr ""
++
++#. String for options 3 of setting with label #13475 "HDMI Output Format"
++#: system/settings/gbm.xml
++msgctxt "#13480"
++msgid "YCbCr 4:2:2"
++msgstr ""
++
++#. String for options 3 of setting with label #13475 "HDMI Output Format"
++#: system/settings/gbm.xml
++msgctxt "#13481"
++msgid "YCbCr 4:4:4"
++msgstr ""
++
++#empty strings from id 13482 to 13504
+ 
+ #: system/settings/settings.xml
+ msgctxt "#13505"
+diff --git a/system/settings/gbm.xml b/system/settings/gbm.xml
+index 20f2bfa06725..87befe9e40fe 100644
+--- a/system/settings/gbm.xml
++++ b/system/settings/gbm.xml
+@@ -32,6 +32,26 @@
+           </constraints>
+           <control type="spinner" format="string" />
+         </setting>
++        <setting id="videoplayer.hdmioutputformat" type="integer" label="13475" help="13477">
++          <visible>false</visible>
++          <dependencies>
++            <dependency type="enable">
++              <condition setting="videoplayer.useprimedecoder" operator="is">true</condition>
++              <condition setting="videoplayer.useprimerenderer" operator="is">0</condition>
++            </dependency>
++          </dependencies>
++          <level>3</level>
++          <default>0</default>
++          <constraints>
++            <options>
++              <option label="13478">0</option> <!-- Default -->
++              <option label="13479">1</option> <!-- RGB -->
++              <option label="13480">2</option> <!-- YCbCr 4:2:2 -->
++              <option label="13481">3</option> <!-- YCbCr 4:4:4 -->
++            </options>
++          </constraints>
++          <control type="list" format="string" />
++        </setting>
+         <setting id="videoplayer.hdmicontenttype" type="integer" label="13466" help="13468">
+           <visible>false</visible>
+           <dependencies>
+@@ -67,6 +87,19 @@
+           <default>false</default>
+           <control type="toggle" />
+         </setting>
++        <setting id="videoscreen.hdmioutputformat" type="integer" label="13475" help="13476">
++          <visible>false</visible>
++          <level>3</level>
++          <default>1</default>
++          <constraints>
++            <options>
++              <option label="13479">1</option> <!-- RGB -->
++              <option label="13480">2</option> <!-- YCbCr 4:2:2 -->
++              <option label="13481">3</option> <!-- YCbCr 4:4:4 -->
++            </options>
++          </constraints>
++          <control type="list" format="string" />
++        </setting>
+         <setting id="videoscreen.hdmicontenttype" type="integer" label="13466" help="13467">
+           <visible>false</visible>
+           <level>3</level>
+diff --git a/xbmc/windowing/gbm/DRMUtils.cpp b/xbmc/windowing/gbm/DRMUtils.cpp
+index c7887fc0d49d..9ac83443ca76 100644
+--- a/xbmc/windowing/gbm/DRMUtils.cpp
++++ b/xbmc/windowing/gbm/DRMUtils.cpp
+@@ -27,6 +27,8 @@
+ 
+ using namespace KODI::WINDOWING::GBM;
+ 
++const std::string CDRMUtils::SETTING_VIDEOSCREEN_HDMIOUTPUTFORMAT = "videoscreen.hdmioutputformat";
++const std::string CDRMUtils::SETTING_VIDEOPLAYER_HDMIOUTPUTFORMAT = "videoplayer.hdmioutputformat";
+ const std::string CDRMUtils::SETTING_VIDEOSCREEN_HDMICONTENTTYPE = "videoscreen.hdmicontenttype";
+ const std::string CDRMUtils::SETTING_VIDEOPLAYER_HDMICONTENTTYPE = "videoplayer.hdmicontenttype";
+ 
+@@ -843,6 +845,16 @@ bool CDRMUtils::CheckConnector(int connector_id)
+   return finalConnectionState == DRM_MODE_CONNECTED;
+ }
+ 
++int CDRMUtils::GetHdmiOutputFormat(bool videoLayer)
++{
++  int outputFormat = 0;
++  if (videoLayer)
++    outputFormat = CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt(SETTING_VIDEOPLAYER_HDMIOUTPUTFORMAT);
++  if (outputFormat == 0)
++    outputFormat = CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt(SETTING_VIDEOSCREEN_HDMIOUTPUTFORMAT);
++  return outputFormat;
++}
++
+ int CDRMUtils::GetHdmiContentType(bool videoLayer)
+ {
+   int contentType = 0;
+diff --git a/xbmc/windowing/gbm/DRMUtils.h b/xbmc/windowing/gbm/DRMUtils.h
+index 9046c414876f..948162778a9d 100644
+--- a/xbmc/windowing/gbm/DRMUtils.h
++++ b/xbmc/windowing/gbm/DRMUtils.h
+@@ -122,9 +122,12 @@ class CDRMUtils
+   static uint32_t FourCCWithAlpha(uint32_t fourcc);
+   static uint32_t FourCCWithoutAlpha(uint32_t fourcc);
+ 
++  static const std::string SETTING_VIDEOSCREEN_HDMIOUTPUTFORMAT;
++  static const std::string SETTING_VIDEOPLAYER_HDMIOUTPUTFORMAT;
+   static const std::string SETTING_VIDEOSCREEN_HDMICONTENTTYPE;
+   static const std::string SETTING_VIDEOPLAYER_HDMICONTENTTYPE;
+ 
++  int GetHdmiOutputFormat(bool videoLayer);
+   int GetHdmiContentType(bool videoLayer);
+ 
+ protected:
+
+From 4b41cddb8ab88c7948a025e4e744ac64c856bd9c Mon Sep 17 00:00:00 2001
+From: Jonas Karlman <jonas@kwiboo.se>
+Date: Tue, 23 Oct 2018 20:09:41 +0200
+Subject: [PATCH 4/8] windowing/gbm: add setting for HDMI Quantization Range
+
+---
+ .../resources/strings.po                      | 32 ++++++++++++++++++-
+ system/settings/gbm.xml                       | 13 ++++++++
+ xbmc/windowing/gbm/DRMUtils.cpp               |  6 ++++
+ xbmc/windowing/gbm/DRMUtils.h                 |  2 ++
+ 4 files changed, 52 insertions(+), 1 deletion(-)
+
+diff --git a/addons/resource.language.en_gb/resources/strings.po b/addons/resource.language.en_gb/resources/strings.po
+index 2c324745fc25..7a358614be1c 100644
+--- a/addons/resource.language.en_gb/resources/strings.po
++++ b/addons/resource.language.en_gb/resources/strings.po
+@@ -7362,7 +7362,37 @@ msgctxt "#13481"
+ msgid "YCbCr 4:4:4"
+ msgstr ""
+ 
+-#empty strings from id 13482 to 13504
++#. Option for setting HDMI Output Format
++#: system/settings/gbm.xml
++msgctxt "#13482"
++msgid "HDMI Quantization Range"
++msgstr ""
++
++#. Description of videoscreen setting with label #13482 "HDMI Quantization Range"
++#: system/settings/gbm.xml
++msgctxt "#13483"
++msgid "This option sets HDMI quantization range to use."
++msgstr ""
++
++#. String for options 1 of setting with label #13482 "HDMI Quantization Range"
++#: system/settings/gbm.xml
++msgctxt "#13484"
++msgid "Default"
++msgstr ""
++
++#. String for options 2 of setting with label #13482 "HDMI Quantization Range"
++#: system/settings/gbm.xml
++msgctxt "#13485"
++msgid "Full"
++msgstr ""
++
++#. String for options 3 of setting with label #13482 "HDMI Quantization Range"
++#: system/settings/gbm.xml
++msgctxt "#13486"
++msgid "Limited"
++msgstr ""
++
++#empty strings from id 13487 to 13504
+ 
+ #: system/settings/settings.xml
+ msgctxt "#13505"
+diff --git a/system/settings/gbm.xml b/system/settings/gbm.xml
+index 87befe9e40fe..69b78ccbc43f 100644
+--- a/system/settings/gbm.xml
++++ b/system/settings/gbm.xml
+@@ -100,6 +100,19 @@
+           </constraints>
+           <control type="list" format="string" />
+         </setting>
++        <setting id="videoscreen.hdmiquantizationrange" type="integer" label="13482" help="13483">
++          <visible>false</visible>
++          <level>3</level>
++          <default>0</default>
++          <constraints>
++            <options>
++              <option label="13484">0</option> <!-- Default -->
++              <option label="13485">1</option> <!-- Full -->
++              <option label="13486">2</option> <!-- Limited -->
++            </options>
++          </constraints>
++          <control type="list" format="string" />
++        </setting>
+         <setting id="videoscreen.hdmicontenttype" type="integer" label="13466" help="13467">
+           <visible>false</visible>
+           <level>3</level>
+diff --git a/xbmc/windowing/gbm/DRMUtils.cpp b/xbmc/windowing/gbm/DRMUtils.cpp
+index 9ac83443ca76..d71fb1b7f5aa 100644
+--- a/xbmc/windowing/gbm/DRMUtils.cpp
++++ b/xbmc/windowing/gbm/DRMUtils.cpp
+@@ -29,6 +29,7 @@ using namespace KODI::WINDOWING::GBM;
+ 
+ const std::string CDRMUtils::SETTING_VIDEOSCREEN_HDMIOUTPUTFORMAT = "videoscreen.hdmioutputformat";
+ const std::string CDRMUtils::SETTING_VIDEOPLAYER_HDMIOUTPUTFORMAT = "videoplayer.hdmioutputformat";
++const std::string CDRMUtils::SETTING_VIDEOSCREEN_HDMIQUANTIZATIONRANGE = "videoscreen.hdmiquantizationrange";
+ const std::string CDRMUtils::SETTING_VIDEOSCREEN_HDMICONTENTTYPE = "videoscreen.hdmicontenttype";
+ const std::string CDRMUtils::SETTING_VIDEOPLAYER_HDMICONTENTTYPE = "videoplayer.hdmicontenttype";
+ 
+@@ -855,6 +856,11 @@ int CDRMUtils::GetHdmiOutputFormat(bool videoLayer)
+   return outputFormat;
+ }
+ 
++int CDRMUtils::GetHdmiQuantizationRange()
++{
++  return CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt(SETTING_VIDEOSCREEN_HDMIQUANTIZATIONRANGE);
++}
++
+ int CDRMUtils::GetHdmiContentType(bool videoLayer)
+ {
+   int contentType = 0;
+diff --git a/xbmc/windowing/gbm/DRMUtils.h b/xbmc/windowing/gbm/DRMUtils.h
+index 948162778a9d..1920d2a4dfcc 100644
+--- a/xbmc/windowing/gbm/DRMUtils.h
++++ b/xbmc/windowing/gbm/DRMUtils.h
+@@ -124,10 +124,12 @@ class CDRMUtils
+ 
+   static const std::string SETTING_VIDEOSCREEN_HDMIOUTPUTFORMAT;
+   static const std::string SETTING_VIDEOPLAYER_HDMIOUTPUTFORMAT;
++  static const std::string SETTING_VIDEOSCREEN_HDMIQUANTIZATIONRANGE;
+   static const std::string SETTING_VIDEOSCREEN_HDMICONTENTTYPE;
+   static const std::string SETTING_VIDEOPLAYER_HDMICONTENTTYPE;
+ 
+   int GetHdmiOutputFormat(bool videoLayer);
++  int GetHdmiQuantizationRange();
+   int GetHdmiContentType(bool videoLayer);
+ 
+ protected:
+
+From ff6681064c3c79a1e1fbf2b1fef60a1ad87d544a Mon Sep 17 00:00:00 2001
+From: Jonas Karlman <jonas@kwiboo.se>
+Date: Tue, 23 Oct 2018 20:09:41 +0200
+Subject: [PATCH 5/8] windowing/gbm: set Intel Broadcast RGB connector property
+
+---
+ xbmc/windowing/gbm/DRMAtomic.cpp | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
+
+diff --git a/xbmc/windowing/gbm/DRMAtomic.cpp b/xbmc/windowing/gbm/DRMAtomic.cpp
+index ca0aaec639dc..85bd19a3d8be 100644
+--- a/xbmc/windowing/gbm/DRMAtomic.cpp
++++ b/xbmc/windowing/gbm/DRMAtomic.cpp
+@@ -51,6 +51,12 @@ void CDRMAtomic::DrmAtomicCommit(int fb_id, int flags, bool rendered, bool video
+       return;
+     }
+ 
++    // Broadcast RGB is an Intel specific drm property
++    if (SupportsProperty(m_connector, "Broadcast RGB"))
++    {
++      AddProperty(m_connector, "Broadcast RGB", GetHdmiQuantizationRange());
++    }
++
+     if (SupportsProperty(m_connector, "content type"))
+     {
+       AddProperty(m_connector, "content type", GetHdmiContentType(videoLayer));
+@@ -160,6 +166,13 @@ bool CDRMAtomic::InitDrm()
+   const std::shared_ptr<CSettings> settings = CServiceBroker::GetSettingsComponent()->GetSettings();
+   std::set<std::string> settingSet;
+ 
++  // Broadcast RGB is an Intel specific drm property
++  if (SupportsProperty(m_connector, "Broadcast RGB"))
++  {
++    settings->GetSetting(SETTING_VIDEOSCREEN_HDMIQUANTIZATIONRANGE)->SetVisible(true);
++    settingSet.insert(SETTING_VIDEOSCREEN_HDMIQUANTIZATIONRANGE);
++  }
++
+   if (SupportsProperty(m_connector, "content type"))
+   {
+     settings->GetSetting(SETTING_VIDEOSCREEN_HDMICONTENTTYPE)->SetVisible(true);
+
+From 71801260eec79b7b68193e4ad8e6b19157a223eb Mon Sep 17 00:00:00 2001
+From: Jonas Karlman <jonas@kwiboo.se>
+Date: Sun, 14 Oct 2018 14:20:03 +0200
+Subject: [PATCH 6/8] WIP: windowing/gbm: add option to limit gui size
+
+---
+ .../resources/strings.po                      | 44 ++++++++++++++++++-
+ system/settings/gbm.xml                       | 15 +++++++
+ xbmc/windowing/gbm/DRMUtils.cpp               | 26 +++++++++++
+ 3 files changed, 84 insertions(+), 1 deletion(-)
+
+diff --git a/addons/resource.language.en_gb/resources/strings.po b/addons/resource.language.en_gb/resources/strings.po
+index 7a358614be1c..2d6a11cf1bfc 100644
+--- a/addons/resource.language.en_gb/resources/strings.po
++++ b/addons/resource.language.en_gb/resources/strings.po
+@@ -7392,7 +7392,49 @@ msgctxt "#13486"
+ msgid "Limited"
+ msgstr ""
+ 
+-#empty strings from id 13487 to 13504
++#. Option for setting Limit GUI Size
++#: system/settings/gbm.xml
++msgctxt "#13487"
++msgid "Limit GUI Size"
++msgstr ""
++
++#. Description of setting with label #13487 "Limit GUI Size"
++#: system/settings/gbm.xml
++msgctxt "#13488"
++msgid "This option limits GUI size for screen resolutions above 1080p. Requires restart."
++msgstr ""
++
++#. String for options 1 of setting with label #13487 "Limit GUI Size"
++#: system/settings/gbm.xml
++msgctxt "#13489"
++msgid "No limit"
++msgstr ""
++
++#. String for options 2 of setting with label #13487 "Limit GUI Size"
++#: system/settings/gbm.xml
++msgctxt "#13490"
++msgid "720p"
++msgstr ""
++
++#. String for options 3 of setting with label #13487 "Limit GUI Size"
++#: system/settings/gbm.xml
++msgctxt "#13491"
++msgid "1080p / 720p (>30hz)"
++msgstr ""
++
++#. String for options 4 of setting with label #13487 "Limit GUI Size"
++#: system/settings/gbm.xml
++msgctxt "#13492"
++msgid "1080p"
++msgstr ""
++
++#. String for options 5 of setting with label #13487 "Limit GUI Size"
++#: system/settings/gbm.xml
++msgctxt "#13493"
++msgid "No limit / 1080p (>30hz)"
++msgstr ""
++
++#empty strings from id 13494 to 13504
+ 
+ #: system/settings/settings.xml
+ msgctxt "#13505"
+diff --git a/system/settings/gbm.xml b/system/settings/gbm.xml
+index 69b78ccbc43f..2c28727b449f 100644
+--- a/system/settings/gbm.xml
++++ b/system/settings/gbm.xml
+@@ -82,6 +82,21 @@
+         <setting id="videoscreen.screen">
+           <visible>false</visible>
+         </setting>
++        <setting id="videoscreen.limitguisize" type="integer" label="13487" help="13488">
++          <visible>false</visible>
++          <level>3</level>
++          <default>0</default>
++          <constraints>
++            <options>
++              <option label="13489">0</option> <!-- No limit -->
++              <option label="13490">1</option> <!-- 720p -->
++              <option label="13491">2</option> <!-- 1080p / 720p (>30hz) -->
++              <option label="13492">3</option> <!-- 1080p -->
++              <option label="13493">4</option> <!-- No limit / 1080p (>30hz) -->
++            </options>
++          </constraints>
++          <control type="list" format="string" />
++        </setting>
+         <setting id="videoscreen.limitedrange" type="boolean" label="36042" help="36359">
+           <level>3</level>
+           <default>false</default>
+diff --git a/xbmc/windowing/gbm/DRMUtils.cpp b/xbmc/windowing/gbm/DRMUtils.cpp
+index d71fb1b7f5aa..8a00e55d0c94 100644
+--- a/xbmc/windowing/gbm/DRMUtils.cpp
++++ b/xbmc/windowing/gbm/DRMUtils.cpp
+@@ -33,6 +33,8 @@ const std::string CDRMUtils::SETTING_VIDEOSCREEN_HDMIQUANTIZATIONRANGE = "videos
+ const std::string CDRMUtils::SETTING_VIDEOSCREEN_HDMICONTENTTYPE = "videoscreen.hdmicontenttype";
+ const std::string CDRMUtils::SETTING_VIDEOPLAYER_HDMICONTENTTYPE = "videoplayer.hdmicontenttype";
+ 
++const std::string SETTING_VIDEOSCREEN_LIMITGUISIZE = "videoscreen.limitguisize";
++
+ CDRMUtils::CDRMUtils()
+   : m_connector(new connector)
+   , m_encoder(new encoder)
+@@ -770,6 +772,30 @@ RESOLUTION_INFO CDRMUtils::GetResolutionInfo(drmModeModeInfoPtr mode)
+   res.iWidth = res.iScreenWidth;
+   res.iHeight = res.iScreenHeight;
+ 
++  int limit = CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt(SETTING_VIDEOSCREEN_LIMITGUISIZE);
++  if (limit > 0 && res.iScreenWidth > 1920 && res.iScreenHeight > 1080)
++  {
++    switch (limit)
++    {
++    case 1:
++      res.iWidth = 1280;
++      res.iHeight = 720;
++      break;
++    case 2:
++      res.iWidth = mode->vrefresh > 30 ? 1280 : 1920;
++      res.iHeight = mode->vrefresh > 30 ? 720 : 1080;
++      break;
++    case 3:
++      res.iWidth = 1920;
++      res.iHeight = 1080;
++      break;
++    case 4:
++      res.iWidth = mode->vrefresh > 30 ? 1920 : res.iScreenWidth;
++      res.iHeight = mode->vrefresh > 30 ? 1080 : res.iScreenHeight;
++      break;
++    }
++  }
++
+   if (mode->clock % 5 != 0)
+     res.fRefreshRate = static_cast<float>(mode->vrefresh) * (1000.0f/1001.0f);
+   else
+
+From acd7fa5926e61e97e21b601097131c86c561f470 Mon Sep 17 00:00:00 2001
+From: Jonas Karlman <jonas@kwiboo.se>
+Date: Sun, 14 Oct 2018 14:20:03 +0200
+Subject: [PATCH 7/8] VideoBufferDRMPRIME: add GetFrame method
+
+---
+ xbmc/cores/VideoPlayer/Process/gbm/VideoBufferDRMPRIME.h | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/xbmc/cores/VideoPlayer/Process/gbm/VideoBufferDRMPRIME.h b/xbmc/cores/VideoPlayer/Process/gbm/VideoBufferDRMPRIME.h
+index 643395a6818a..eaa20a42e045 100644
+--- a/xbmc/cores/VideoPlayer/Process/gbm/VideoBufferDRMPRIME.h
++++ b/xbmc/cores/VideoPlayer/Process/gbm/VideoBufferDRMPRIME.h
+@@ -86,6 +86,10 @@ class CVideoBufferDRMPRIME : public IVideoBufferDRMPRIME
+   }
+   int GetColorEncoding() const override;
+   int GetColorRange() const override;
++  AVFrame* GetFrame() const
++  {
++    return m_pFrame;
++  }
+ 
+   bool IsValid() const override;
+ 
+
+From ae173f14285d0f083b9bc31770ab92af71953edf Mon Sep 17 00:00:00 2001
+From: Jonas Karlman <jonas@kwiboo.se>
+Date: Sun, 14 Oct 2018 14:20:03 +0200
+Subject: [PATCH 8/8] WIP: VideoLayerBridgeRockchip: set HDR and HDMI output
+ properties
+
+---
+ .../Process/gbm/VideoBufferDRMPRIME.cpp       |  26 ++++
+ .../Process/gbm/VideoBufferDRMPRIME.h         |  28 ++++
+ .../VideoRenderers/HwDecRender/CMakeLists.txt |   6 +-
+ .../HwDecRender/RendererDRMPRIME.cpp          |  11 +-
+ .../HwDecRender/VideoLayerBridgeRockchip.cpp  | 136 ++++++++++++++++++
+ .../HwDecRender/VideoLayerBridgeRockchip.h    |  37 +++++
+ xbmc/windowing/gbm/DRMAtomic.cpp              |  12 ++
+ xbmc/windowing/gbm/DRMUtils.cpp               |  15 +-
+ 8 files changed, 267 insertions(+), 4 deletions(-)
+ create mode 100644 xbmc/cores/VideoPlayer/VideoRenderers/HwDecRender/VideoLayerBridgeRockchip.cpp
+ create mode 100644 xbmc/cores/VideoPlayer/VideoRenderers/HwDecRender/VideoLayerBridgeRockchip.h
+
+diff --git a/xbmc/cores/VideoPlayer/Process/gbm/VideoBufferDRMPRIME.cpp b/xbmc/cores/VideoPlayer/Process/gbm/VideoBufferDRMPRIME.cpp
+index 719f0185bc04..4232251858ec 100644
+--- a/xbmc/cores/VideoPlayer/Process/gbm/VideoBufferDRMPRIME.cpp
++++ b/xbmc/cores/VideoPlayer/Process/gbm/VideoBufferDRMPRIME.cpp
+@@ -78,6 +78,32 @@ int CVideoBufferDRMPRIME::GetColorRange() const
+   }
+ }
+ 
++uint8_t CVideoBufferDRMPRIME::GetEOTF() const
++{
++  switch (m_pFrame->color_trc)
++  {
++  case AVCOL_TRC_SMPTE2084:
++    return HDMI_EOTF_SMPTE_ST2084;
++  case AVCOL_TRC_ARIB_STD_B67:
++  case AVCOL_TRC_BT2020_10:
++    return HDMI_EOTF_BT_2100_HLG;
++  default:
++    return HDMI_EOTF_TRADITIONAL_GAMMA_SDR;
++  }
++}
++
++AVMasteringDisplayMetadata* CVideoBufferDRMPRIME::GetMasteringDisplayMetadata() const
++{
++  AVFrameSideData* sd = av_frame_get_side_data(m_pFrame, AV_FRAME_DATA_MASTERING_DISPLAY_METADATA);
++  return (sd && sd->data) ? reinterpret_cast<AVMasteringDisplayMetadata*>(sd->data) : nullptr;
++}
++
++AVContentLightMetadata* CVideoBufferDRMPRIME::GetContentLightMetadata() const
++{
++  AVFrameSideData* sd = av_frame_get_side_data(m_pFrame, AV_FRAME_DATA_CONTENT_LIGHT_LEVEL);
++  return (sd && sd->data) ? reinterpret_cast<AVContentLightMetadata*>(sd->data) : nullptr;
++}
++
+ bool CVideoBufferDRMPRIME::IsValid() const
+ {
+   AVDRMFrameDescriptor* descriptor = GetDescriptor();
+diff --git a/xbmc/cores/VideoPlayer/Process/gbm/VideoBufferDRMPRIME.h b/xbmc/cores/VideoPlayer/Process/gbm/VideoBufferDRMPRIME.h
+index eaa20a42e045..a796cd341e8d 100644
+--- a/xbmc/cores/VideoPlayer/Process/gbm/VideoBufferDRMPRIME.h
++++ b/xbmc/cores/VideoPlayer/Process/gbm/VideoBufferDRMPRIME.h
+@@ -14,6 +14,7 @@ extern "C"
+ {
+ #include <libavutil/frame.h>
+ #include <libavutil/hwcontext_drm.h>
++#include <libavutil/mastering_display_metadata.h>
+ }
+ 
+ // Color enums is copied from linux include/drm/drm_color_mgmt.h (strangely not part of uapi)
+@@ -28,6 +29,18 @@ enum drm_color_range
+   DRM_COLOR_YCBCR_LIMITED_RANGE,
+   DRM_COLOR_YCBCR_FULL_RANGE,
+ };
++// HDR enums is copied from linux include/linux/hdmi.h (strangely not part of uapi)
++enum hdmi_metadata_type
++{
++  HDMI_STATIC_METADATA_TYPE1 = 1,
++};
++enum hdmi_eotf
++{
++  HDMI_EOTF_TRADITIONAL_GAMMA_SDR,
++  HDMI_EOTF_TRADITIONAL_GAMMA_HDR,
++  HDMI_EOTF_SMPTE_ST2084,
++  HDMI_EOTF_BT_2100_HLG,
++};
+ 
+ class IVideoBufferDRMPRIME : public CVideoBuffer
+ {
+@@ -46,6 +59,18 @@ class IVideoBufferDRMPRIME : public CVideoBuffer
+   {
+     return DRM_COLOR_YCBCR_LIMITED_RANGE;
+   };
++  virtual uint8_t GetEOTF() const
++  {
++    return HDMI_EOTF_TRADITIONAL_GAMMA_SDR;
++  };
++  virtual AVMasteringDisplayMetadata* GetMasteringDisplayMetadata() const
++  {
++    return nullptr;
++  };
++  virtual AVContentLightMetadata* GetContentLightMetadata() const
++  {
++    return nullptr;
++  };
+ 
+   virtual bool IsValid() const
+   {
+@@ -86,6 +111,9 @@ class CVideoBufferDRMPRIME : public IVideoBufferDRMPRIME
+   }
+   int GetColorEncoding() const override;
+   int GetColorRange() const override;
++  uint8_t GetEOTF() const override;
++  AVMasteringDisplayMetadata* GetMasteringDisplayMetadata() const override;
++  AVContentLightMetadata* GetContentLightMetadata() const override;
+   AVFrame* GetFrame() const
+   {
+     return m_pFrame;
+diff --git a/xbmc/cores/VideoPlayer/VideoRenderers/HwDecRender/CMakeLists.txt b/xbmc/cores/VideoPlayer/VideoRenderers/HwDecRender/CMakeLists.txt
+index 382eda9d0094..f700ef5b27a9 100644
+--- a/xbmc/cores/VideoPlayer/VideoRenderers/HwDecRender/CMakeLists.txt
++++ b/xbmc/cores/VideoPlayer/VideoRenderers/HwDecRender/CMakeLists.txt
+@@ -51,9 +51,11 @@ endif()
+ 
+ if(CORE_PLATFORM_NAME_LC STREQUAL gbm)
+   list(APPEND SOURCES RendererDRMPRIME.cpp
+-                      VideoLayerBridgeDRMPRIME.cpp)
++                      VideoLayerBridgeDRMPRIME.cpp
++                      VideoLayerBridgeRockchip.cpp)
+   list(APPEND HEADERS RendererDRMPRIME.h
+-                      VideoLayerBridgeDRMPRIME.h)
++                      VideoLayerBridgeDRMPRIME.h
++                      VideoLayerBridgeRockchip.h)
+   if(OPENGLES_FOUND)
+     list(APPEND SOURCES RendererDRMPRIMEGLES.cpp
+                         DRMPRIMEEGL.cpp)
+diff --git a/xbmc/cores/VideoPlayer/VideoRenderers/HwDecRender/RendererDRMPRIME.cpp b/xbmc/cores/VideoPlayer/VideoRenderers/HwDecRender/RendererDRMPRIME.cpp
+index f8bca57c9256..d7aba858a4a4 100644
+--- a/xbmc/cores/VideoPlayer/VideoRenderers/HwDecRender/RendererDRMPRIME.cpp
++++ b/xbmc/cores/VideoPlayer/VideoRenderers/HwDecRender/RendererDRMPRIME.cpp
+@@ -12,6 +12,7 @@
+ #include "cores/VideoPlayer/DVDCodecs/Video/DVDVideoCodec.h"
+ #include "cores/VideoPlayer/Process/gbm/VideoBufferDRMPRIME.h"
+ #include "cores/VideoPlayer/VideoRenderers/HwDecRender/VideoLayerBridgeDRMPRIME.h"
++#include "cores/VideoPlayer/VideoRenderers/HwDecRender/VideoLayerBridgeRockchip.h"
+ #include "cores/VideoPlayer/VideoRenderers/RenderCapture.h"
+ #include "cores/VideoPlayer/VideoRenderers/RenderFactory.h"
+ #include "cores/VideoPlayer/VideoRenderers/RenderFlags.h"
+@@ -61,6 +62,9 @@ void CRendererDRMPRIME::Register()
+     settings->GetSetting(SETTING_VIDEOPLAYER_USEPRIMERENDERER)->SetVisible(true);
+     VIDEOPLAYER::CRendererFactory::RegisterRenderer("drm_prime", CRendererDRMPRIME::Create);
+ 
++    if (drm->SupportsProperty(drm->GetConnector(), "hdmi_output_format"))
++      settings->GetSetting(CDRMUtils::SETTING_VIDEOPLAYER_HDMIOUTPUTFORMAT)->SetVisible(true);
++
+     if (drm->SupportsProperty(drm->GetConnector(), "content type"))
+       settings->GetSetting(CDRMUtils::SETTING_VIDEOPLAYER_HDMICONTENTTYPE)->SetVisible(true);
+   }
+@@ -179,7 +183,12 @@ void CRendererDRMPRIME::RenderUpdate(int index, int index2, bool clear, unsigned
+     CWinSystemGbm* winSystem = static_cast<CWinSystemGbm*>(CServiceBroker::GetWinSystem());
+     m_videoLayerBridge = std::dynamic_pointer_cast<CVideoLayerBridgeDRMPRIME>(winSystem->GetVideoLayerBridge());
+     if (!m_videoLayerBridge)
+-      m_videoLayerBridge = std::make_shared<CVideoLayerBridgeDRMPRIME>(winSystem->GetDrm());
++    {
++      if (winSystem->GetDrm()->GetModule() == "rockchip")
++        m_videoLayerBridge = std::make_shared<CVideoLayerBridgeRockchip>(winSystem->GetDrm());
++      else
++        m_videoLayerBridge = std::make_shared<CVideoLayerBridgeDRMPRIME>(winSystem->GetDrm());
++    }
+     winSystem->RegisterVideoLayerBridge(m_videoLayerBridge);
+   }
+ 
+diff --git a/xbmc/cores/VideoPlayer/VideoRenderers/HwDecRender/VideoLayerBridgeRockchip.cpp b/xbmc/cores/VideoPlayer/VideoRenderers/HwDecRender/VideoLayerBridgeRockchip.cpp
+new file mode 100644
+index 000000000000..0c7ad8aefd32
+--- /dev/null
++++ b/xbmc/cores/VideoPlayer/VideoRenderers/HwDecRender/VideoLayerBridgeRockchip.cpp
+@@ -0,0 +1,136 @@
++/*
++ *  Copyright (C) 2018 Team Kodi
++ *  This file is part of Kodi - https://kodi.tv
++ *
++ *  SPDX-License-Identifier: GPL-2.0-or-later
++ *  See LICENSES/README.md for more information.
++ */
++
++#include "VideoLayerBridgeRockchip.h"
++
++#include "cores/VideoPlayer/Process/gbm/VideoBufferDRMPRIME.h"
++#include "utils/log.h"
++#include "windowing/gbm/DRMUtils.h"
++
++#include <linux/videodev2.h>
++
++using namespace KODI::WINDOWING::GBM;
++
++enum hdmi_colorimetry {
++	HDMI_COLORIMETRY_NONE,
++	HDMI_COLORIMETRY_ITU_601,
++	HDMI_COLORIMETRY_ITU_709,
++	HDMI_COLORIMETRY_EXTENDED,
++};
++
++enum hdmi_extended_colorimetry {
++	HDMI_EXTENDED_COLORIMETRY_XV_YCC_601,
++	HDMI_EXTENDED_COLORIMETRY_XV_YCC_709,
++	HDMI_EXTENDED_COLORIMETRY_S_YCC_601,
++	HDMI_EXTENDED_COLORIMETRY_ADOBE_YCC_601,
++	HDMI_EXTENDED_COLORIMETRY_ADOBE_RGB,
++
++	/* The following EC values are only defined in CEA-861-F. */
++	HDMI_EXTENDED_COLORIMETRY_BT2020_CONST_LUM,
++	HDMI_EXTENDED_COLORIMETRY_BT2020,
++	HDMI_EXTENDED_COLORIMETRY_RESERVED,
++};
++
++#define RK_HDMI_COLORIMETRY_BT2020 (HDMI_COLORIMETRY_EXTENDED + HDMI_EXTENDED_COLORIMETRY_BT2020)
++
++static int GetColorSpace(bool is10bit, AVFrame* frame)
++{
++  if (is10bit && frame->color_primaries != AVCOL_PRI_BT709)
++    return V4L2_COLORSPACE_BT2020;
++  if (frame->color_primaries == AVCOL_PRI_SMPTE170M)
++    return V4L2_COLORSPACE_SMPTE170M;
++  return V4L2_COLORSPACE_REC709;
++}
++
++void CVideoLayerBridgeRockchip::Configure(IVideoBufferDRMPRIME* buffer)
++{
++  AVDRMFrameDescriptor* descriptor = buffer->GetDescriptor();
++  AVDRMLayerDescriptor* layer = &descriptor->layers[0];
++  bool is10bit = layer->format == DRM_FORMAT_NV12_10;
++  AVFrame* frame = dynamic_cast<CVideoBufferDRMPRIME*>(buffer)->GetFrame();
++
++  m_hdr_metadata.type = HDMI_STATIC_METADATA_TYPE1;
++  m_hdr_metadata.eotf = buffer->GetEOTF();
++
++  if (m_hdr_blob_id)
++    drmModeDestroyPropertyBlob(m_DRM->GetFileDescriptor(), m_hdr_blob_id);
++  m_hdr_blob_id = 0;
++
++  if (m_hdr_metadata.eotf)
++  {
++    AVMasteringDisplayMetadata* mdmd = buffer->GetMasteringDisplayMetadata();
++    if (mdmd && mdmd->has_primaries)
++    {
++      for (int i = 0; i < 3; i++)
++      {
++        m_hdr_metadata.display_primaries_x[i] = std::round(av_q2d(mdmd->display_primaries[i][0]) * 50000.0);
++        m_hdr_metadata.display_primaries_y[i] = std::round(av_q2d(mdmd->display_primaries[i][1]) * 50000.0);
++      }
++      m_hdr_metadata.white_point_x = std::round(av_q2d(mdmd->white_point[0]) * 50000.0);
++      m_hdr_metadata.white_point_y = std::round(av_q2d(mdmd->white_point[1]) * 50000.0);
++
++      CLog::Log(LOGNOTICE, "CVideoLayerBridgeRockchip::{} - r({},{}) g({},{}) b({},{}) wp({},{})", __FUNCTION__,
++                av_q2d(mdmd->display_primaries[0][0]), av_q2d(mdmd->display_primaries[0][1]),
++                av_q2d(mdmd->display_primaries[1][0]), av_q2d(mdmd->display_primaries[1][1]),
++                av_q2d(mdmd->display_primaries[2][0]), av_q2d(mdmd->display_primaries[2][1]),
++                av_q2d(mdmd->white_point[0]), av_q2d(mdmd->white_point[1]));
++    }
++    if (mdmd && mdmd->has_luminance)
++    {
++      m_hdr_metadata.max_mastering_display_luminance = std::round(av_q2d(mdmd->max_luminance));
++      m_hdr_metadata.min_mastering_display_luminance = std::round(av_q2d(mdmd->min_luminance) * 10000.0);
++
++      CLog::Log(LOGNOTICE, "CVideoLayerBridgeRockchip::{} - min_luminance={}, max_luminance={}", __FUNCTION__, av_q2d(mdmd->min_luminance), av_q2d(mdmd->max_luminance));
++    }
++
++    AVContentLightMetadata* clmd = buffer->GetContentLightMetadata();
++    if (clmd)
++    {
++      m_hdr_metadata.max_cll = clmd->MaxCLL;
++      m_hdr_metadata.max_fall = clmd->MaxFALL;
++
++      CLog::Log(LOGNOTICE, "CVideoLayerBridgeRockchip::{} - MaxCLL={}, MaxFALL={}", __FUNCTION__, clmd->MaxCLL, clmd->MaxFALL);
++    }
++
++    drmModeCreatePropertyBlob(m_DRM->GetFileDescriptor(), &m_hdr_metadata, sizeof(m_hdr_metadata), &m_hdr_blob_id);
++  }
++
++  CLog::Log(LOGNOTICE, "CVideoLayerBridgeRockchip::{} - format={} is10bit={} width={} height={} colorspace={} color_primaries={} color_trc={} color_range={} eotf={} blob_id={}",
++            __FUNCTION__, layer->format, is10bit, frame->width, frame->height, frame->colorspace, frame->color_primaries, frame->color_trc, frame->color_range, m_hdr_metadata.eotf, m_hdr_blob_id);
++
++  struct plane* plane = m_DRM->GetVideoPlane();
++  m_DRM->AddProperty(plane, "COLOR_SPACE", GetColorSpace(is10bit, frame));
++  m_DRM->AddProperty(plane, "EOTF", m_hdr_metadata.eotf);
++
++  struct connector* connector = m_DRM->GetConnector();
++  if (m_DRM->SupportsProperty(connector, "HDR_SOURCE_METADATA"))
++    m_DRM->AddProperty(connector, "HDR_SOURCE_METADATA", m_hdr_blob_id);
++  m_DRM->AddProperty(connector, "hdmi_output_depth", is10bit ? 10 : 8);
++  m_DRM->AddProperty(connector, "hdmi_output_colorimetry", is10bit ? RK_HDMI_COLORIMETRY_BT2020 : 0);
++  m_DRM->SetActive(true);
++}
++
++void CVideoLayerBridgeRockchip::Disable()
++{
++  CVideoLayerBridgeDRMPRIME::Disable();
++
++  struct plane* plane = m_DRM->GetVideoPlane();
++  m_DRM->AddProperty(plane, "COLOR_SPACE", V4L2_COLORSPACE_DEFAULT);
++  m_DRM->AddProperty(plane, "EOTF", HDMI_EOTF_TRADITIONAL_GAMMA_SDR);
++
++  struct connector* connector = m_DRM->GetConnector();
++  if (m_DRM->SupportsProperty(connector, "HDR_SOURCE_METADATA"))
++    m_DRM->AddProperty(connector, "HDR_SOURCE_METADATA", 0);
++  m_DRM->AddProperty(connector, "hdmi_output_depth", 8);
++  m_DRM->AddProperty(connector, "hdmi_output_colorimetry", 0);
++  m_DRM->SetActive(true);
++
++  if (m_hdr_blob_id)
++    drmModeDestroyPropertyBlob(m_DRM->GetFileDescriptor(), m_hdr_blob_id);
++  m_hdr_blob_id = 0;
++}
+diff --git a/xbmc/cores/VideoPlayer/VideoRenderers/HwDecRender/VideoLayerBridgeRockchip.h b/xbmc/cores/VideoPlayer/VideoRenderers/HwDecRender/VideoLayerBridgeRockchip.h
+new file mode 100644
+index 000000000000..0b21d1f24e40
+--- /dev/null
++++ b/xbmc/cores/VideoPlayer/VideoRenderers/HwDecRender/VideoLayerBridgeRockchip.h
+@@ -0,0 +1,37 @@
++/*
++ *  Copyright (C) 2018 Team Kodi
++ *  This file is part of Kodi - https://kodi.tv
++ *
++ *  SPDX-License-Identifier: GPL-2.0-or-later
++ *  See LICENSES/README.md for more information.
++ */
++
++#pragma once
++
++#include "cores/VideoPlayer/VideoRenderers/HwDecRender/VideoLayerBridgeDRMPRIME.h"
++
++struct hdr_static_metadata {
++  uint16_t eotf;
++  uint16_t type;
++  uint16_t display_primaries_x[3];
++  uint16_t display_primaries_y[3];
++  uint16_t white_point_x;
++  uint16_t white_point_y;
++  uint16_t max_mastering_display_luminance;
++  uint16_t min_mastering_display_luminance;
++  uint16_t max_fall;
++  uint16_t max_cll;
++  uint16_t min_cll;
++};
++
++class CVideoLayerBridgeRockchip
++  : public CVideoLayerBridgeDRMPRIME
++{
++public:
++  CVideoLayerBridgeRockchip(std::shared_ptr<KODI::WINDOWING::GBM::CDRMUtils> drm) : CVideoLayerBridgeDRMPRIME(drm) {};
++  void Disable() override;
++  void Configure(IVideoBufferDRMPRIME* buffer) override;
++private:
++  uint32_t m_hdr_blob_id = 0;
++  struct hdr_static_metadata m_hdr_metadata = {0};
++};
+diff --git a/xbmc/windowing/gbm/DRMAtomic.cpp b/xbmc/windowing/gbm/DRMAtomic.cpp
+index 85bd19a3d8be..60bdcdbe2d17 100644
+--- a/xbmc/windowing/gbm/DRMAtomic.cpp
++++ b/xbmc/windowing/gbm/DRMAtomic.cpp
+@@ -51,6 +51,11 @@ void CDRMAtomic::DrmAtomicCommit(int fb_id, int flags, bool rendered, bool video
+       return;
+     }
+ 
++    if (SupportsProperty(m_connector, "hdmi_output_format"))
++    {
++      AddProperty(m_connector, "hdmi_output_format", GetHdmiOutputFormat(videoLayer));
++    }
++
+     // Broadcast RGB is an Intel specific drm property
+     if (SupportsProperty(m_connector, "Broadcast RGB"))
+     {
+@@ -166,6 +171,13 @@ bool CDRMAtomic::InitDrm()
+   const std::shared_ptr<CSettings> settings = CServiceBroker::GetSettingsComponent()->GetSettings();
+   std::set<std::string> settingSet;
+ 
++  if (SupportsProperty(m_connector, "hdmi_output_format"))
++  {
++    settings->GetSetting(SETTING_VIDEOSCREEN_HDMIOUTPUTFORMAT)->SetVisible(true);
++    settingSet.insert(SETTING_VIDEOSCREEN_HDMIOUTPUTFORMAT);
++    settingSet.insert(SETTING_VIDEOPLAYER_HDMIOUTPUTFORMAT);
++  }
++
+   // Broadcast RGB is an Intel specific drm property
+   if (SupportsProperty(m_connector, "Broadcast RGB"))
+   {
+diff --git a/xbmc/windowing/gbm/DRMUtils.cpp b/xbmc/windowing/gbm/DRMUtils.cpp
+index 8a00e55d0c94..9446d67bc319 100644
+--- a/xbmc/windowing/gbm/DRMUtils.cpp
++++ b/xbmc/windowing/gbm/DRMUtils.cpp
+@@ -872,6 +872,15 @@ bool CDRMUtils::CheckConnector(int connector_id)
+   return finalConnectionState == DRM_MODE_CONNECTED;
+ }
+ 
++enum hdmi_output_format {
++  HDMI_OUTPUT_DEFAULT_RGB,
++  HDMI_OUTPUT_YCBCR444,
++  HDMI_OUTPUT_YCBCR422,
++  HDMI_OUTPUT_YCBCR420,
++  HDMI_OUTPUT_YCBCR_HQ,
++  HDMI_OUTPUT_YCBCR_LQ,
++};
++
+ int CDRMUtils::GetHdmiOutputFormat(bool videoLayer)
+ {
+   int outputFormat = 0;
+@@ -879,7 +888,11 @@ int CDRMUtils::GetHdmiOutputFormat(bool videoLayer)
+     outputFormat = CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt(SETTING_VIDEOPLAYER_HDMIOUTPUTFORMAT);
+   if (outputFormat == 0)
+     outputFormat = CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt(SETTING_VIDEOSCREEN_HDMIOUTPUTFORMAT);
+-  return outputFormat;
++  if (outputFormat == 2)
++    return HDMI_OUTPUT_YCBCR_LQ;
++  if (outputFormat == 3)
++    return HDMI_OUTPUT_YCBCR_HQ;
++  return HDMI_OUTPUT_DEFAULT_RGB;
+ }
+ 
+ int CDRMUtils::GetHdmiQuantizationRange()

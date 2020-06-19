@@ -1,0 +1,16 @@
+MRFIXIT: Fix 4k@60
+In the ALPHA build, the patch that fixes 4k@60 is "allow 5 picture references", which changes "GetAllowedReferences" from 4 to 5 in xbmc/cores/VideoPlayer/DVDCodecs/Video/DVDVideoCodecDRMPRIME.h
+For some reason 5 no longer is enough. Changing it to 6 fixes it. Kwiboo suggested a setting of 0 is "best" - which also fixes it.
+--- a/xbmc/cores/VideoPlayer/DVDCodecs/Video/DVDVideoCodecDRMPRIME.h
++++ b/xbmc/cores/VideoPlayer/DVDCodecs/Video/DVDVideoCodecDRMPRIME.h
+@@ -28,7 +28,7 @@
+   void Reset() override;
+   CDVDVideoCodec::VCReturn GetPicture(VideoPicture* pVideoPicture) override;
+   const char* GetName() override { return m_name.c_str(); };
+-  unsigned GetAllowedReferences() override { return 5; };
++  unsigned GetAllowedReferences() override { return 0; };
+   void SetCodecControl(int flags) override { m_codecControlFlags = flags; };
+ 
+ protected:
+
+

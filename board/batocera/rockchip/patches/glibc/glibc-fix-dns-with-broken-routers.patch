@@ -1,0 +1,106 @@
+commit 45918e237cd32bb3d9a5fde83f81f83b52584771
+Author: Stefan Saraev <stefan@saraev.ca>
+Date:   Tue Oct 1 12:09:07 2013 +0300
+
+    fix dns with broken routers
+    
+    ref: https://fedoraproject.org/wiki/Networking/NameResolution/ADDRCONFIG
+
+diff --git a/sysdeps/posix/getaddrinfo.c b/sysdeps/posix/getaddrinfo.c
+index 7bb3ded..2085ee5 100644
+--- a/sysdeps/posix/getaddrinfo.c
++++ b/sysdeps/posix/getaddrinfo.c
+@@ -830,6 +830,38 @@ gaih_inet (const char *name, const struct gaih_service *service,
+ 		}
+ 	    }
+ 
++	  /* AI_ADDRCONFIG determines whether or not we should suppress any
++	   * hostname lookups. If the local host has only IPv4 interfaces,
++	   * then suppress lookups for IPv6 addresses, and vice versa; if
++	   * the local host has only IPv6 interfaces, suppress any lookups
++	   * for IPv4 addresses..
++	   * 
++	   * Link-local IPv6 addresses and loopback addresses of either
++	   * family are ignored when determining whether or not the host has
++	   * an interface of the given address family, cf. __check_pf().
++	   *
++	   * This logic is only applied for AF_UNSPEC. If the caller
++	   * explicitly requested an address family, give him what he asked
++	   * for.
++	   *
++	   * If we didn't find any interfaces of either address family,
++	   * we ignore AI_ADDRCONFIG and return all available resutlts.  */
++	  int suppress_af = 0;
++	  if (req->ai_family == AF_UNSPEC)
++	    {
++	      struct in6addrinfo *in6ai = NULL;
++	      size_t in6ailen = 0;
++	      bool seen_ipv4 = false;
++	      bool seen_ipv6 = false;
++	      __check_pf (&seen_ipv4, &seen_ipv6, &in6ai, &in6ailen);
++	      __free_in6ai (in6ai);
++
++	      if(seen_ipv4 && !seen_ipv6)
++		  suppress_af = AF_INET6;
++	      else if(seen_ipv6 && !seen_ipv4)
++		  suppress_af = AF_INET;
++	    }
++
+ 	  while (!no_more)
+ 	    {
+ 	      no_data = 0;
+@@ -837,7 +869,7 @@ gaih_inet (const char *name, const struct gaih_service *service,
+ 
+ 	      /* gethostbyname4_r sends out parallel A and AAAA queries and
+ 		 is thus only suitable for PF_UNSPEC.  */
+-	      if (req->ai_family == PF_UNSPEC)
++	      if (req->ai_family == PF_UNSPEC && !suppress_af)
+ 		fct4 = __nss_lookup_function (nip, "gethostbyname4_r");
+ 
+ 	      if (fct4 != NULL)
+@@ -942,20 +974,22 @@ gaih_inet (const char *name, const struct gaih_service *service,
+ 
+ 		  if (fct != NULL)
+ 		    {
+-		      if (req->ai_family == AF_INET6
+-			  || req->ai_family == AF_UNSPEC)
++		      if ((req->ai_family == AF_INET6
++			   || req->ai_family == AF_UNSPEC)
++			  && suppress_af != AF_INET6)
+ 			{
+ 			  gethosts (AF_INET6, struct in6_addr);
+ 			  no_inet6_data = no_data;
+ 			  inet6_status = status;
+ 			}
+-		      if (req->ai_family == AF_INET
+-			  || req->ai_family == AF_UNSPEC
+-			  || (req->ai_family == AF_INET6
+-			      && (req->ai_flags & AI_V4MAPPED)
+-			      /* Avoid generating the mapped addresses if we
+-				 know we are not going to need them.  */
+-			      && ((req->ai_flags & AI_ALL) || !got_ipv6)))
++		      if ((req->ai_family == AF_INET
++			   || req->ai_family == AF_UNSPEC
++			   || (req->ai_family == AF_INET6
++			       && (req->ai_flags & AI_V4MAPPED)
++			       /* Avoid generating the mapped addresses if we
++				  know we are not going to need them.  */
++			       && ((req->ai_flags & AI_ALL) || !got_ipv6)))
++			  && suppress_af != AF_INET)
+ 			{
+ 			  gethosts (AF_INET, struct in_addr);
+ 
+diff --git a/sysdeps/unix/sysv/linux/check_pf.c b/sysdeps/unix/sysv/linux/check_pf.c
+index 34c2146..be7de0d 100644
+--- a/sysdeps/unix/sysv/linux/check_pf.c
++++ b/sysdeps/unix/sysv/linux/check_pf.c
+@@ -234,7 +234,8 @@ make_request (int fd, pid_t pid)
+ 		    }
+ 		  else
+ 		    {
+-		      if (!IN6_IS_ADDR_LOOPBACK (address))
++		      if (!IN6_IS_ADDR_LOOPBACK (address) &&
++			  !IN6_IS_ADDR_LINKLOCAL (address))
+ 			seen_ipv6 = true;
+ 		    }
+ 		}

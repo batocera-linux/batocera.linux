@@ -1,0 +1,22 @@
+From 39f9392e40cc6fb1492f51d2f2b4c87d1503ca39 Mon Sep 17 00:00:00 2001
+From: Jonas Karlman <jonas@kwiboo.se>
+Date: Fri, 31 Aug 2018 21:17:27 +0200
+Subject: [PATCH] rkmppdec: Kodi need more buffers
+
+---
+ libavcodec/rkmppdec.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/libavcodec/rkmppdec.c b/libavcodec/rkmppdec.c
+index 143d05bd51..c00f08c70b 100644
+--- a/libavcodec/rkmppdec.c
++++ b/libavcodec/rkmppdec.c
+@@ -39,7 +39,7 @@
+ #include "libavutil/log.h"
+ 
+ #define RECEIVE_FRAME_TIMEOUT   100
+-#define FRAMEGROUP_MAX_FRAMES   16
++#define FRAMEGROUP_MAX_FRAMES   24
+ #define INPUT_MAX_PACKETS       4
+ 
+ typedef struct {

@@ -1,0 +1,13 @@
+--- a/libswscale/yuv2rgb.c	2018-07-22 10:00:00.000000000 +0100
++++ b/libswscale/yuv2rgb.c	2018-08-20 11:55:46.391543992 +0100
+@@ -687,10 +687,6 @@ SwsFunc ff_yuv2rgb_get_func_ptr(SwsConte
+     if (t)
+         return t;
+ 
+-    av_log(c, AV_LOG_WARNING,
+-           "No accelerated colorspace conversion found from %s to %s.\n",
+-           av_get_pix_fmt_name(c->srcFormat), av_get_pix_fmt_name(c->dstFormat));
+-
+     switch (c->dstFormat) {
+     case AV_PIX_FMT_BGR48BE:
+     case AV_PIX_FMT_BGR48LE:

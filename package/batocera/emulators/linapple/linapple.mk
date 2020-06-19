@@ -18,8 +18,9 @@ ifeq ($(BR2_PACKAGE_XSERVER_XORG_SERVER),y)
 endif
 
 define LINAPPLE_BUILD_CMDS
-	$(SED) "s+/usr/local+$(STAGING_DIR)/usr+g" $(@D)/Makefile	
-	$(TARGET_CONFIGURE_OPTS) $(MAKE) CC="$(TARGET_CXX)" -C $(@D) \
+	$(SED) "s+/usr/local+$(STAGING_DIR)/usr+g" $(@D)/Makefile
+	# force -j 1 to avoid parallel issues in the makefile
+	$(TARGET_CONFIGURE_OPTS) $(MAKE) -j 1 CC="$(TARGET_CXX)" -C $(@D) \
 		SDL_CONFIG=$(STAGING_DIR)/usr/bin/sdl-config \
 		CURL_CONFIG=$(STAGING_DIR)/usr/bin/curl-config \
 		$(LINAPPLE_EXTRA_ARGS)

@@ -1,0 +1,30 @@
+From dded8152c718456fc35e4ba8ae42aca9b92509f0 Mon Sep 17 00:00:00 2001
+From: Jakob Unterwurzacher <jakob.unterwurzacher@theobroma-systems.com>
+Date: Mon, 29 May 2017 14:08:43 +0200
+Subject: [PATCH] fix 32-bit mmap issue on 64-bit kernels
+
+Running 32-bit userland on a 64-bit kernel resulted in the error:
+
+    mpp_drm: mmap failed: Invalid argument
+
+Both the pagesize_mask and the mmap call truncated the offset
+value to 32 bit. This patch fixes both issues.
+
+For details see https://github.com/rockchip-linux/kernel/issues/17
+---
+ osal/allocator/allocator_drm.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/osal/allocator/allocator_drm.c b/osal/allocator/allocator_drm.c
+index b1dc277f..c2572716 100644
+--- a/osal/allocator/allocator_drm.c
++++ b/osal/allocator/allocator_drm.c
+@@ -15,6 +15,8 @@
+  */
+ 
+ #define MODULE_TAG "mpp_drm"
++/* Enable 64-bit mmap also when compiling for 32 bit */
++#define _FILE_OFFSET_BITS 64
+ 
+ #include <unistd.h>
+ #include <string.h>
