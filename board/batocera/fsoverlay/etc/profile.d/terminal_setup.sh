@@ -13,8 +13,10 @@ echo
 echo "-- type 'batocera-check-updates' to check for stable branch --"
 echo "-- add 'beta' switch to check for latest arch developments  --"
 echo
+batocera-info 2>/dev/null
+echo "OS version: $(cat /usr/share/batocera/batocera.version)"
+echo
 
 # ---- ALIAS VALUES ----
 alias mc='mc -x'
-alias ls='ls -a'
 alias batocera-check-updates='batocera-es-swissknife --update'
