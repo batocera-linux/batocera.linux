@@ -67,7 +67,7 @@ Also add code to reinit the CEC connection after the resume to try and fix rk339
 +  g_application.CloseNetworkShares();
 +
 +  // Tell Rockchip to Suspend
-+  CUtil::RunCommandLine("/recalbox/scripts/rockchip_suspend.sh", true);
++  CUtil::RunCommandLine("/usr/bin/rockchip_suspend.sh", true);
 +
 +  CServiceBroker::GetNetwork().WaitForNet();
 +
@@ -117,7 +117,7 @@ Also add code to reinit the CEC connection after the resume to try and fix rk339
  						<label>$LOCALIZE[13011]</label>
  						<onclick>Suspend()</onclick>
 -						<visible>System.CanSuspend</visible>
-+						<visible>True</visible>
++						<visible>False</visible>
  					</item>
  					<item>
  						<label>$LOCALIZE[13010]</label>
