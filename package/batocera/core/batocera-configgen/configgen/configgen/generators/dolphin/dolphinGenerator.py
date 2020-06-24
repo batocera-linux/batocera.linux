@@ -142,7 +142,7 @@ class DolphinGenerator(Generator):
         if system.isOptSet('internalresolution'):
             dolphinGFXSettings.set("Settings", "InternalResolution", system.config["internalresolution"])
         else:
-            dolphinGFXSettings.set("Settings", "InternalResolution", "0")
+            dolphinGFXSettings.set("Settings", "InternalResolution", "1")
 
         # vsync
         if system.isOptSet('vsync'):

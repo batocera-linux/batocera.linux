@@ -123,8 +123,10 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
                                                             BR2_PACKAGE_BATOCERA_TARGET_LIBRETECH_H5
 
     select BR2_PACKAGE_LIRC_TOOLS                        # lirc (remote control)
-    select BR2_PACKAGE_LIBCEC				 # libcec
-    select BR2_PACKAGE_XOW                               if !BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA # xbox receiver (require linux >= 4.5)
+    select BR2_PACKAGE_LIBCEC                            # libcec
+    select BR2_PACKAGE_XOW                               if !BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA && \
+                                                            !BR2_PACKAGE_BATOCERA_TARGET_ROCKPRO64
+                                                         # xbox receiver (require linux >= 4.5)
     select BR2_SYSTEM_ENABLE_NLS                         # locales
     select BR2_PACKAGE_ACPID                             if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
     select BR2_PACKAGE_BATOCERA_DESKTOPAPPS              if BR2_PACKAGE_XSERVER_XORG_SERVER # batocera applications config and scripts

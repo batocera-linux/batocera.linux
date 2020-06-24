@@ -10,32 +10,7 @@ if [ "${AUDIO_DEV}" == "" ];then
 	AUDIO_DEV="auto"
 fi
 
-ARCH=$(cat /usr/share/batocera/batocera.arch)
-
-case ${ARCH} in
-	rockpro64 | vim3)
-		AUDIO_BACKEND="pulseaudio"
-	;;
-	*)
-		AUDIO_BACKEND="alsa"
-	;;
-esac
-
-start_alsa() {
-	batocera-audio "unlock-volume" >> $log
-	batocera-audio set "${AUDIO_DEV}"
-	alsactl restore -f /userdata/system/asound.state
-}
-
-stop_alsa() {
-	alsactl store -f /userdata/system/asound.state
-}
-
-restart_alsa() {
-	batocera-audio set "${AUDIO_DEV}"
-}
-
-start_pulseaudio() {
+start() {
 	if [ ! -f /userdata/system/.config/pulse/default.pa ]; then
 		# remove alsa conf
 		rm /userdata/system/.asoundrc &>/dev/null
@@ -53,26 +28,26 @@ EOF
 	echo "OK"
 }
 
-stop_pulseaudio() {
+stop() {
 	printf "Stopping pulseaudio: "
 	PULSE_RUNTIME_PATH=/tmp/pulse HOME=/userdata/system /usr/bin/pulseaudio --kill
 	echo "OK"
 }
 
-restart_pulseaudio () {
-	stop_pulseaudio
-	start_pulseaudio
+restart() {
+	stop
+	start
 }
 
 case "$1" in
  	start)
-		start_${AUDIO_BACKEND}
+		start
 	;;
  	stop)
-		stop_${AUDIO_BACKEND}
+		stop
 	;;
  	restart|reload)
-		restart_${AUDIO_BACKEND}
+		restart
 	;;
 	*)
 		echo "Usage: $0 {start|stop|restart}"
