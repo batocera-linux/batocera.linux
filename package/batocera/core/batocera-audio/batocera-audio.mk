@@ -25,7 +25,7 @@ define BATOCERA_AUDIO_INSTALL_PULSEAUDIO_CONF
 	install -m 0644 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-audio/pulseaudio/default.pa  $(TARGET_DIR)/etc/pulse/default.pa
 	# udev script to unmute audio devices
 	install -m 0644 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-audio/90-alsa-setup.rules    $(TARGET_DIR)/etc/udev/rules.d/90-alsa-setup.rules
-	install -m 0644 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-audio/soundconfig            $(TARGET_DIR)/usr/bin/soundconfig
+	install -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-audio/soundconfig            $(TARGET_DIR)/usr/bin/soundconfig
 endef
 
 $(eval $(generic-package))
