@@ -11,7 +11,7 @@ from utils.logger import eslog
 def generateControllerConfig(system, playersControllers, rom):
     generateHotkeys(playersControllers)
     if system.name == "wii":
-        if system.isOptSet('emulatedwiimotes') and system.getOptBoolean('emulatedwiimotes') == True:
+        if ((system.isOptSet('emulatedwiimotes') and system.getOptBoolean('emulatedwiimotes') == True) or (".cc." in rom or ".side." in rom or ".is." in rom or ".it." in rom or ".in." in rom or ".ti." in rom or ".ts." in rom or ".tn." in rom or ".ni." in rom or ".ns." in rom or ".nt." in rom)):
             generateControllerConfig_emulatedwiimotes(playersControllers, rom)
             removeControllerConfig_gamecube() # because pads will already be used as emulated wiimotes
         else:
