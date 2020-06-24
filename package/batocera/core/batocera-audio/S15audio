@@ -34,7 +34,7 @@ stop() {
 	echo "OK"
 }
 
-restart_pulseaudio () {
+restart() {
 	stop
 	start
 }
