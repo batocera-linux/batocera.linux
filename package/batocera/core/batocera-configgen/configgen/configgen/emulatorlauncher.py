@@ -55,7 +55,7 @@ generators = {
     'ppsspp': PPSSPPGenerator(),
     'citra' : CitraGenerator(),
     'daphne' : DaphneGenerator(),
-    'cannonball' : CanonballGenerator(),
+    'cannonball' : CannonballGenerator(),
     'openbor' : OpenborGenerator(),
     'wine' : WineGenerator()
 }
