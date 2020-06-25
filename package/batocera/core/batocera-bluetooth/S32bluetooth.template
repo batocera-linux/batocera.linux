@@ -13,7 +13,7 @@ case "$1" in
         rfkill unblock bluetooth
 
         #Start hciattach for applicable boards
-        bluetoothstack=@INTERNAL_BLUETOOTH_STACK@
+        bluetoothstack="@INTERNAL_BLUETOOTH_STACK@"
         for i in $bluetoothstack
         do
             case $i in
