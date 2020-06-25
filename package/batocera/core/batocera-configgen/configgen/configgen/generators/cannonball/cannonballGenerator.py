@@ -15,7 +15,7 @@ class CannonballGenerator(Generator):
             os.makedirs(os.path.dirname(batoceraFiles.cannonballConfig))
 
         # controllers
-        cannonballControllers.generateControllerConfig(batoceraFiles.cannonballConfig, playersControllers)
+        #TODO cannonballControllers.generateControllerConfig(batoceraFiles.cannonballConfig, playersControllers)
 
         # extension used .daphne and the file to start the game is in the folder .daphne with the extension .txt
 #       romName = os.path.splitext(os.path.basename(rom))[0]
