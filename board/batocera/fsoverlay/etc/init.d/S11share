@@ -316,6 +316,17 @@ case "${MODE}" in
 	;;
 esac
 
+# fs compression
+compressenabled="`batocera-settings -command load -key system.fscompression.enabled`"
+if test "$compressenabled" == "1"
+then
+    if grep -qE "^/dev/[^ ]* /userdata btrfs.*$" /proc/mounts
+    then
+	mount -o remount,compress /userdata || exit 1
+    fi
+fi
+
+
 # share upgrade, just unzip share.zip from upgrade, no need to reboot
 if test -e "/userdata/system/upgrade/share.zip"
 then
