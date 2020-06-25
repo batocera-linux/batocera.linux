@@ -50,13 +50,13 @@ done
 TEMPE=$(cat /sys/devices/virtual/thermal/thermal_zone*/temp 2>/dev/null | sort -rn | head -1 | sed -e s+"[0-9][0-9][0-9]$"++)
 if test -n "${TEMPE}"
 then
-    echo "Temperature: ${TEMPE}°"
+    echo "Temperature: ${TEMPE}°C"
 fi
 
 echo "Architecture: ${V_ARCH}"
 if test -e /sys/firmware/devicetree/base/model
 then
-    DTMODEL=$(cat /sys/firmware/devicetree/base/model)
+    DTMODEL=$(tr -d '\0' </sys/firmware/devicetree/base/model)
     echo "Model: ${DTMODEL}"
 fi
 
@@ -75,14 +75,14 @@ echo "Available memory: ${MEM_AVAILABLE_MB}/${MEM_TOTAL_MB} MB"
 
 if test "${V_ARCH}" = "x86" -o "${V_ARCH}" = "x86_64"
 then
-    V_OPENGLVERSION=$(DISPLAY=:0.0 glxinfo | grep -E '^OpenGL core profile version string:' | sed -e s+'^OpenGL core profile version string:[ ]*'++)
+    V_OPENGLVERSION=$(DISPLAY=:0.0 glxinfo 2>/dev/null | grep -E '^OpenGL core profile version string:' | sed -e s+'^OpenGL core profile version string:[ ]*'++)
     if test -z "${V_OPENGLVERSION}"
     then
-	V_OPENGLVERSION=$(DISPLAY=:0.0 glxinfo | grep -E '^OpenGL version string:' | sed -e s+'^OpenGL version string:[ ]*'++)
+	V_OPENGLVERSION=$(DISPLAY=:0.0 glxinfo 2>/dev/null | grep -E '^OpenGL version string:' | sed -e s+'^OpenGL version string:[ ]*'++)
     fi
     echo "OpenGL: ${V_OPENGLVERSION}"
 fi
-echo "Cpu model: ${V_CPUMODEL1}"
+[[ -z ${V_CPUMODEL1} ]] || echo "Cpu model: ${V_CPUMODEL1}"
 echo "Cpu number: ${V_CPUNB}"
 if grep -q " avx2" /proc/cpuinfo
 then
