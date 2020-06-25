@@ -24,6 +24,7 @@ from generators.fsuae.fsuaeGenerator import FsuaeGenerator
 from generators.amiberry.amiberryGenerator import AmiberryGenerator
 from generators.citra.citraGenerator import CitraGenerator
 from generators.daphne.daphneGenerator import DaphneGenerator
+from generators.cannonball.cannonballGenerator import CannonballGenerator
 from generators.openbor.openborGenerator import OpenborGenerator
 from generators.wine.wineGenerator import WineGenerator
 import controllersConfig as controllers
@@ -54,6 +55,7 @@ generators = {
     'ppsspp': PPSSPPGenerator(),
     'citra' : CitraGenerator(),
     'daphne' : DaphneGenerator(),
+    'cannonball' : CanonballGenerator(),
     'openbor' : OpenborGenerator(),
     'wine' : WineGenerator()
 }
