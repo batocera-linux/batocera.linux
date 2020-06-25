@@ -34,7 +34,8 @@ batoceraBins = {'dosbox'      : '/usr/bin/dosbox'
               , 'pcsx2'       : '/usr/PCSX/bin/PCSX2'
               , 'pcsx2_avx2'  : '/usr/PCSX_AVX2/bin/PCSX2'
               , 'citra'       : '/usr/bin/citra-qt'
-              , 'daphne'       : '/usr/bin/hypseus'
+              , 'daphne'      : '/usr/bin/hypseus'
+              , 'cannonball'  : '/usr/bin/cannonball'
 }
 
 
@@ -122,6 +123,11 @@ daphneConfig = CONF + '/daphne/hypinput.ini'
 daphneHomedir = ROMS + '/daphne'
 daphneDatadir = '/usr/share/daphne'
 daphneSaves = SAVES + '/daphne'
+
+cannonballConfig = CONF + '/cannonball/config.xml'
+cannonballHomedir = ROMS + '/cannonball'
+cannonballDatadir = '/usr/share/cannonball'
+cannonballSaves = SAVES + '/cannonball'
 
 linappleConfigFile = CONF + '/linapple/linapple.conf'
 linappleMasterDSKFile = CONF + '/linapple/Master.dsk'
