@@ -1,0 +1,152 @@
+Mrfixit: This patch will make retroarch search for the custom resolution as it's preferred mode, rather than always using the first (and highest) mode... which on the Rockchip is often 4k, depending on the connected monitor/tv.
+If this mode isn't found, then it's likely that the currently connected display doesn't support it. In which case, the first listed mode will still be selected, as it's the highest available and is probably less anyways.
+--- a/gfx/drivers_context/drm_ctx.c
++++ b/gfx/drivers_context/drm_ctx.c
+@@ -82,6 +82,8 @@
+ static bool waiting_for_flip              = false;
+ #endif
+ 
++int resX = 0, resY = 0;
++
+ typedef struct gfx_ctx_drm_data
+ {
+ #ifdef HAVE_EGL
+@@ -389,6 +391,33 @@
+ }
+ #endif
+ 
++static void getResFromConfig() {
++   if ( resX != 0 || resY != 0 )
++      return NULL;
++
++   char *x, *y, res[12], *value;
++   char * resArray;
++   FILE *fp;
++   int respart = 1;
++   fp = popen("/usr/bin/batocera-settings -command load -key retroarch.resolution", "r");
++   if (fp != NULL) {
++      fgets(res, sizeof(res)-1, fp);
++      pclose(fp);
++      if (res != NULL) {
++         value = strdup(res);
++         x = strtok(value,"x");
++         y = strtok(NULL, "x");
++      }
++   }
++   if ( x == NULL || y == NULL ) {
++      x = "0";
++      y = "0";
++   }
++   resX = atoi(x);
++   resY = atoi(y);
++   printf("REQUESTING RESOLUTION: %dx%d\n", resX, resY);
++}
++
+ static void *gfx_ctx_drm_init(void *video_driver)
+ {
+ #ifndef HAVE_ODROIDGO2
+@@ -451,8 +480,25 @@
+    }
+    else
+    {
+-      drm->fb_width  = g_drm_connector->modes[0].hdisplay;
+-      drm->fb_height = g_drm_connector->modes[0].vdisplay;
++      /* Stock Retroarch assumes the first mode [0]
++       * to be "optimal", but it's just the "highest".
++       * For rockchip, the "optimal" emulation can be set inside the conf,
++       * so let's search for that setting. */
++      int modenum = 0;
++      getResFromConfig();
++      if (resX > 0 && resY > 0)
++      {
++         for (i = 0; i < g_drm_connector->count_modes; i++)
++         {
++            if (g_drm_connector->modes[i].hdisplay <= resX && g_drm_connector->modes[i].vdisplay <= resY && g_drm_connector->modes[i].vrefresh <= 61)
++            {
++	       modenum = i;
++	       break;
++	    }
++         }
++      }
++      drm->fb_width  = g_drm_connector->modes[modenum].hdisplay;
++      drm->fb_height = g_drm_connector->modes[modenum].vdisplay;
+    }
+ 
+    drmSetMaster(g_drm_fd);
+@@ -731,7 +777,22 @@
+     * If not fullscreen, we get desired windowed size,
+     * which is not appropriate. */
+    if ((width == 0 && height == 0) || !fullscreen)
+-      g_drm_mode = &g_drm_connector->modes[0];
++   {
++      getResFromConfig();
++      int modenum = 0;
++      if (resX > 0 && resY > 0)
++      {
++         for (i = 0; i < g_drm_connector->count_modes; i++)
++         {
++            if (g_drm_connector->modes[i].hdisplay <= resX && g_drm_connector->modes[i].vdisplay <= resY && g_drm_connector->modes[i].vrefresh <= 61)
++            {
++               modenum = i;
++               break;
++            }
++         }
++      }
++      g_drm_mode = &g_drm_connector->modes[modenum];
++   }
+    else
+    {
+       /* Try to match refresh_rate as closely as possible.
+
+MRFIXIT: Adjust the above patch - on batocera retroarch actually has a preferred mode, so we need to first check for an existing user-defined value, and if it's not there (or not found) use the preferred mode
+--- a/gfx/drivers_context/drm_ctx.c
++++ b/gfx/drivers_context/drm_ctx.c
+@@ -420,33 +420,27 @@
+ 
+    drm_setup(fd);
+ 
+-   /* Choose the optimal video mode for get_video_size():
+-     - the current video mode from the CRTC
+-     - otherwise pick first connector mode */
+-   if (g_orig_crtc->mode_valid)
++   /* Choose the optimal video mode for get_video_size() */
++   int modenum = 0;
++   getResFromConfig();
++   if (resX > 0 && resY > 0)
++   {
++      for (i = 0; i < g_drm_connector->count_modes; i++)
++      {
++         if (g_drm_connector->modes[i].hdisplay <= resX && g_drm_connector->modes[i].vdisplay <= resY && g_drm_connector->modes[i].vrefresh <= 61)
++         {
++            modenum = i;
++            break;
++         }
++      }
++   }
++   if (modenum == 0 && g_orig_crtc->mode_valid)
+    {
+       drm->fb_width  = g_orig_crtc->mode.hdisplay;
+       drm->fb_height = g_orig_crtc->mode.vdisplay;
+    }
+    else
+    {
+-      /* Stock Retroarch assumes the first mode [0]
+-       * to be "optimal", but it's just the "highest".
+-       * For rockchip, the "optimal" emulation can be set inside the conf,
+-       * so let's search for that setting. */
+-      int modenum = 0;
+-      getResFromConfig();
+-      if (resX > 0 && resY > 0)
+-      {
+-         for (i = 0; i < g_drm_connector->count_modes; i++)
+-         {
+-            if (g_drm_connector->modes[i].hdisplay <= resX && g_drm_connector->modes[i].vdisplay <= resY && g_drm_connector->modes[i].vrefresh <= 61)
+-            {
+-	       modenum = i;
+-	       break;
+-	    }
+-         }
+-      }
+       drm->fb_width  = g_drm_connector->modes[modenum].hdisplay;
+       drm->fb_height = g_drm_connector->modes[modenum].vdisplay;
+    }

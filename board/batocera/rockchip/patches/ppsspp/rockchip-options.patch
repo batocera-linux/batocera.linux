@@ -1,0 +1,37 @@
+MRFIXIT: Force EGL and Vulkan to always be off
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index e26ebe2227..d4384f8a94 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -71,7 +71,7 @@ endif()
+ 
+ if(NOT ANDROID AND NOT IOS)
+ 	if(ARM_DEVICE OR SIMULATOR)
+-		set(USING_EGL ON)
++		set(USING_EGL OFF)
+ 	endif()
+ endif()
+ 
+@@ -86,7 +86,7 @@
+ 
+ # We only support Vulkan on Unix, macOS (by MoltenVK), Android and Windows.
+ if(ANDROID OR WIN32 OR (UNIX AND NOT ARM_NO_VULKAN))
+-	set(VULKAN ON)
++	set(VULKAN OFF)
+ endif()
+ 
+ if(GOLD)
+
+
+MRFIXIT2001: This patch reverts changes made to the media engine in order to fix a stuttering issue in the video scenes
+--- a/Core/HW/MediaEngine.cpp	2018-10-26 20:12:11.573955557 +0000
++++ b/Core/HW/MediaEngine.cpp	2018-10-26 20:12:18.855023903 +0000
+@@ -304,7 +304,7 @@
+ 	av_dict_free(&open_opt);
+ 
+-	if (!SetupStreams()) {
++	if (true) {
+ 		// Fallback to old behavior.
+ 		if (avformat_find_stream_info(m_pFormatCtx, NULL) < 0) {
+ 			closeContext();
+ 			return false;

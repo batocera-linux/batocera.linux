@@ -1,0 +1,512 @@
+MRFIXIT: A collection of updates to the mupen rice core that I put together and updated to work properly.
+
+From f19a6223d7555bdd14ed525d15dcd69fa406cbfb Mon Sep 17 00:00:00 2001
+From: CornN64 <corn_n64@hotmail.com>
+Date: Sat, 12 Sep 2015 11:09:52 +0200
+Subject: [PATCH 2/9] Fix texture seams (see California Speed)
+
+---
+ src/RDP_Texture.h    | 8 +++++++-
+ src/RSP_GBI_Others.h | 3 +++
+ 2 files changed, 10 insertions(+), 1 deletion(-)
+
+diff --git a/src/RDP_Texture.h b/src/RDP_Texture.h
+index 0ae9a99..7dd9fab 100644
+--- a/src/RDP_Texture.h
++++ b/src/RDP_Texture.h
+@@ -1875,7 +1875,10 @@ void DLParser_TexRect(Gfx *gfx)
+     float fS0 = s16S / 32.0f;
+     float fT0 = s16T / 32.0f;
+ 
+-    float fDSDX = s16DSDX / 1024.0f;
++	if(s16DSDX<0) fS0 += 1.0f;	//Fix texture seams (California Speed)
++	if(s16DTDY<0) fT0 += 1.0f;	//Fix texture seams (California Speed)
++	
++	float fDSDX = s16DSDX / 1024.0f;
+     float fDTDY = s16DTDY / 1024.0f;
+ 
+     uint32 cycletype = gRDP.otherMode.cycle_type;
+@@ -2003,6 +2006,9 @@ void DLParser_TexRectFlip(Gfx *gfx)
+     float fS0 = (float)dwS / 32.0f;
+     float fT0 = (float)dwT / 32.0f;
+ 
++	if(nDSDX<0) fS0 += 1.0f;	//Fix texture seams (California Speed)
++	if(nDTDY<0) fT0 += 1.0f;	//Fix texture seams (California Speed)
++
+     float fDSDX = (float)nDSDX / 1024.0f;
+     float fDTDY = (float)nDTDY / 1024.0f;
+ 
+diff --git a/src/RSP_GBI_Others.h b/src/RSP_GBI_Others.h
+index c8649d6..e9dd167 100644
+--- a/src/RSP_GBI_Others.h
++++ b/src/RSP_GBI_Others.h
+@@ -1642,6 +1642,9 @@ void DLParser_TexRect_Last_Legion(Gfx *gfx)
+     float fS0 = s16S / 32.0f;
+     float fT0 = s16T / 32.0f;
+ 
++	if(s16DSDX<0) fS0 += 1.0f;	//Fix texture seams (California Speed)
++	if(s16DTDY<0) fT0 += 1.0f;	//Fix texture seams (California Speed)
++
+     float fDSDX = s16DSDX / 1024.0f;
+     float fDTDY = s16DTDY / 1024.0f;
+ 
+
+From db4134f6733313c536b499407f0f6754e890326e Mon Sep 17 00:00:00 2001
+From: CornN64 <corn_n64@hotmail.com>
+Date: Sat, 12 Sep 2015 11:14:23 +0200
+Subject: [PATCH 3/9] Fix menu in 40 Winks ROM
+
+---
+ src/Video.cpp | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/src/Video.cpp b/src/Video.cpp
+index 8bf8518..1d7cb5d 100644
+--- a/src/Video.cpp
++++ b/src/Video.cpp
+@@ -419,6 +419,7 @@ void SetVIScales()
+         uint32 end = *g_GraphicsInfo.VI_H_START_REG&0xFFFF;
+         uint32 width = *g_GraphicsInfo.VI_WIDTH_REG;
+         windowSetting.fViWidth = (end-start)*xscale;
++		
+         if( abs((int)(windowSetting.fViWidth - width) ) < 8 ) 
+         {
+             windowSetting.fViWidth = (float)width;
+@@ -441,8 +442,8 @@ void SetVIScales()
+         }
+         else
+         {
+-            if( *g_GraphicsInfo.VI_WIDTH_REG > 0x300 ) 
+-                windowSetting.fViHeight *= 2;
++            if( width > 0x300 || width >= ((uint32)windowSetting.fViWidth << 1) )	//Fix menu in 40 winks 
++                windowSetting.fViHeight += windowSetting.fViHeight;
+ 
+             if( windowSetting.fViWidth*status.fRatio > windowSetting.fViHeight && (*g_GraphicsInfo.VI_X_SCALE_REG & 0xFF) != 0 )
+             {
+
+From 24dde0ff46d147df2601a4c4a885de703ee0904d Mon Sep 17 00:00:00 2001
+From: CornN64 <corn_n64@hotmail.com>
+Date: Sat, 12 Sep 2015 11:23:48 +0200
+Subject: [PATCH 4/9] Make sure to use single floats and not double floats in
+ constants
+
+---
+ projects/unix/Makefile |   2 +-
+ src/RenderBase.cpp     | 135 ++++++++++++++++++++---------------------
+ 2 files changed, 68 insertions(+), 69 deletions(-)
+
+diff --git a/projects/unix/Makefile b/projects/unix/Makefile
+index fbedc77..d89a7de 100644
+--- a/projects/unix/Makefile
++++ b/projects/unix/Makefile
+@@ -128,7 +128,7 @@
+ # base CFLAGS, LDLIBS, and LDFLAGS
+ OPTFLAGS ?= -O3 -flto
+ WARNFLAGS ?= -Wall
+-CFLAGS += $(OPTFLAGS) $(WARNFLAGS) -ffast-math -fno-strict-aliasing -fvisibility=hidden -I../../src
++CFLAGS += $(OPTFLAGS) $(WARNFLAGS) -ffast-math -fsingle-precision-constant -fno-strict-aliasing -fvisibility=hidden -I../../src
+ CXXFLAGS += -fvisibility-inlines-hidden
+ LDFLAGS += $(SHARED)
+ 
+
+diff --git a/src/RenderBase.cpp b/src/RenderBase.cpp
+index b90f156..ec8bed0 100644
+--- a/src/RenderBase.cpp
++++ b/src/RenderBase.cpp
+@@ -57,7 +57,7 @@
+ {
+     g_clipFlag[i] = 0;
+     g_clipFlag2[i] = 0;
+-    if( g_vecProjected[i].w > 0 )
++    if( g_vecProjected[i].w > 0.0f )
+     {
+         /*
+         if( gRSP.bRejectVtx )
+@@ -105,10 +105,10 @@
+         else
+         */
+         {
+-            if( g_vecProjected[i].x > 1 )   g_clipFlag2[i] |= X_CLIP_MAX;
+-            if( g_vecProjected[i].x < -1 )  g_clipFlag2[i] |= X_CLIP_MIN;
+-            if( g_vecProjected[i].y > 1 )   g_clipFlag2[i] |= Y_CLIP_MAX;
+-            if( g_vecProjected[i].y < -1 )  g_clipFlag2[i] |= Y_CLIP_MIN;
++            if( g_vecProjected[i].x > 1.0f )   g_clipFlag2[i] |= X_CLIP_MAX;
++            if( g_vecProjected[i].x < -1.0f )  g_clipFlag2[i] |= X_CLIP_MIN;
++            if( g_vecProjected[i].y > 1.0f )   g_clipFlag2[i] |= Y_CLIP_MAX;
++            if( g_vecProjected[i].y < -1.0f )  g_clipFlag2[i] |= Y_CLIP_MIN;
+             //if( g_vecProjected[i].z > 1.0f )  g_clipFlag2[i] |= Z_CLIP_MAX;
+             //if( gRSP.bNearClip && g_vecProjected[i].z < -1.0f )   g_clipFlag2[i] |= Z_CLIP_MIN;
+         }
+@@ -634,7 +633,7 @@
+ 
+ void NormalizeNormalVec()
+ {
+-    float w = 1/sqrtf(g_normal.x*g_normal.x + g_normal.y*g_normal.y + g_normal.z*g_normal.z);
++    float w = 1.0f / sqrtf(g_normal.x*g_normal.x + g_normal.y*g_normal.y + g_normal.z*g_normal.z);
+     g_normal.x *= w;
+     g_normal.y *= w;
+     g_normal.z *= w;
+@@ -756,11 +755,11 @@
+     }
+ 
+     {
+-        gRSPfFogMin = std::max(0.f,fMin/500-1);
+-        gRSPfFogMax = fMax/500-1;
++        gRSPfFogMin = std::max(0.0f,fMin/500.0f-1.0f);
++        gRSPfFogMax = fMax/500.0f-1.0f;
+     }
+ 
+-    gRSPfFogDivider = 255/(gRSPfFogMax-gRSPfFogMin);
++    gRSPfFogDivider = 255.0f/(gRSPfFogMax-gRSPfFogMin);
+ }
+ 
+ void InitVertexTextureConstants()
+@@ -823,8 +822,8 @@
+     float x = g_vtxProjected5[0][0] / g_vtxProjected5[0][4] - g_vtxProjected5[1][0] / g_vtxProjected5[1][4];
+     float y = g_vtxProjected5[0][1] / g_vtxProjected5[0][4] - g_vtxProjected5[1][1] / g_vtxProjected5[1][4];
+ 
+-    x = windowSetting.vpWidthW*x/windowSetting.fMultX/2;
+-    y = windowSetting.vpHeightW*y/windowSetting.fMultY/2;
++    x = windowSetting.vpWidthW*x/windowSetting.fMultX/2.0f;
++    y = windowSetting.vpHeightW*y/windowSetting.fMultY/2.0f;
+     d = sqrtf(x*x+y*y);
+ 
+     float s0 = v0.tcord[0].u * tex0.m_fTexWidth;
+@@ -840,7 +839,7 @@
+     frac = (lod / powf(2.0f,floorf(frac)));
+     frac = frac - floorf(frac);
+     //DEBUGGER_IF_DUMP(pauseAtNext,{DebuggerAppendMsg("LOD = %f, frac = %f", lod, frac);});
+-    gRDP.LODFrac = (uint32)(frac*255);
++    gRDP.LODFrac = (uint32)(frac*255.0f);
+     CRender::g_pRender->SetCombinerAndBlender();
+ }
+ 
+@@ -860,6 +859,9 @@
+     g_vtxProjected5[vtxIndex][3] = g_vtxTransformed[dwV].w;
+     g_vtxProjected5[vtxIndex][4] = g_fFogCoord[dwV];
+ 
++    if( g_vtxTransformed[dwV].w < 0.0f )
++        g_vtxProjected5[vtxIndex][4] = 0.0f;
++
+     g_vtxIndex[vtxIndex] = vtxIndex;
+ 
+     if( options.bOGLVertexClipper == TRUE )
+@@ -903,16 +905,16 @@
+             // Correction for texGen result
+             float u0,u1,v0,v1;
+             RenderTexture &tex0 = g_textures[gRSP.curTile];
+-            u0 = g_fVtxTxtCoords[dwV].x * 32 * 1024 * gRSP.fTexScaleX / tex0.m_fTexWidth;
+-            v0 = g_fVtxTxtCoords[dwV].y * 32 * 1024 * gRSP.fTexScaleY / tex0.m_fTexHeight;
++            u0 = g_fVtxTxtCoords[dwV].x * 32.f * 1024.f * gRSP.fTexScaleX / tex0.m_fTexWidth;
++            v0 = g_fVtxTxtCoords[dwV].y * 32.f * 1024.f * gRSP.fTexScaleY / tex0.m_fTexHeight;
+             u0 *= (gRDP.tiles[gRSP.curTile].fShiftScaleS);
+             v0 *= (gRDP.tiles[gRSP.curTile].fShiftScaleT);
+ 
+             if( CRender::g_pRender->IsTexel1Enable() )
+             {
+                 RenderTexture &tex1 = g_textures[(gRSP.curTile+1)&7];
+-                u1 = g_fVtxTxtCoords[dwV].x * 32 * 1024 * gRSP.fTexScaleX / tex1.m_fTexWidth;
+-                v1 = g_fVtxTxtCoords[dwV].y * 32 * 1024 * gRSP.fTexScaleY / tex1.m_fTexHeight;
++                u1 = g_fVtxTxtCoords[dwV].x * 32.f * 1024.f * gRSP.fTexScaleX / tex1.m_fTexWidth;
++                v1 = g_fVtxTxtCoords[dwV].y * 32.f * 1024.f * gRSP.fTexScaleY / tex1.m_fTexHeight;
+                 u1 *= gRDP.tiles[(gRSP.curTile+1)&7].fShiftScaleS;
+                 v1 *= gRDP.tiles[(gRSP.curTile+1)&7].fShiftScaleT;
+                 CRender::g_pRender->SetVertexTextureUVCoord(v, u0, v0, u1, v1);
+@@ -987,7 +989,7 @@
+         {
+             fCosT = norm.x*gRSPlights[l].x + norm.y*gRSPlights[l].y + norm.z*gRSPlights[l].z; 
+ 
+-            if (fCosT > 0 )
++            if (fCosT > 0.0f )
+             {
+                 r += gRSPlights[l].fr * fCosT;
+                 g += gRSPlights[l].fg * fCosT;
+@@ -1002,12 +1004,12 @@
+ 
+         for (unsigned int l=0; l < gRSPnumLights; l++)
+         {
+-            if( gRSPlights[l].range == 0 )
++            if( gRSPlights[l].range == 0.0f )
+             {
+                 // Regular directional light
+                 fCosT = norm.x*gRSPlights[l].x + norm.y*gRSPlights[l].y + norm.z*gRSPlights[l].z; 
+ 
+-                if (fCosT > 0 )
++                if (fCosT > 0.0f )
+                 {
+                     r += gRSPlights[l].fr * fCosT;
+                     g += gRSPlights[l].fg * fCosT;
+@@ -1032,10 +1034,10 @@
+ 
+                 fCosT = norm.x*dir.x + norm.y*dir.y + norm.z*dir.z; 
+ 
+-                if (fCosT > 0 )
++                if (fCosT > 0.0f )
+                 {
+                     //float f = d2/gRSPlights[l].range*50;
+-                    float f = d2/15000*50;
++                    float f = d2 * 50.0f / 15000.0f;
+                     f = 1 - std::min(f,1.f);
+                     fCosT *= f*f;
+ 
+@@ -1047,9 +1049,9 @@
+         }
+     }
+ 
+-    if (r > 255) r = 255;
+-    if (g > 255) g = 255;
+-    if (b > 255) b = 255;
++    if (r > 255.0f) r = 255.0f;
++    if (g > 255.0f) g = 255.0f;
++    if (b > 255.0f) b = 255.0f;
+     return ((0xff000000)|(((uint32)r)<<16)|(((uint32)g)<<8)|((uint32)b));
+ }
+ 
+@@ -1067,7 +1069,7 @@
+     {
+         fCosT = norm.x*gRSPlights[l].tx + norm.y*gRSPlights[l].ty + norm.z*gRSPlights[l].tz; 
+ 
+-        if (fCosT > 0 )
++        if (fCosT > 0.0f )
+         {
+             r += gRSPlights[l].fr * fCosT;
+             g += gRSPlights[l].fg * fCosT;
+@@ -1075,16 +1077,16 @@
+         }
+     }
+ 
+-    if (r > 255) r = 255;
+-    if (g > 255) g = 255;
+-    if (b > 255) b = 255;
++    if (r > 255.0f) r = 255.0f;
++    if (g > 255.0f) g = 255.0f;
++    if (b > 255.0f) b = 255.0f;
+     return ((0xff000000)|(((uint32)r)<<16)|(((uint32)g)<<8)|((uint32)b));
+ }
+ 
+ 
+-float zero = 0.0f;
+-float onef = 1.0f;
+-float fcosT;
++static float zero = 0.0f;
++static float onef = 1.0f;
++static float fcosT;
+ 
+ #if !defined(__GNUC__) && !defined(NO_ASM)
+ __declspec( naked ) uint32  __fastcall SSELightVert()
+@@ -1143,7 +1145,7 @@
+ uint32 SSELightVert(void)
+ {
+   uint32 rval;
+-  float f255 = 255.0, fZero = 0.0;
++  float f255 = 255.0f, fZero = 0.0f;
+   
+   asm volatile(" movaps        %1,  %%xmm3    \n" // xmm3 == gRSP.fAmbientLight{RGBA}
+            " movaps            %2,  %%xmm4    \n" // xmm4 == g_normal.{xyz}
+@@ -1192,7 +1194,7 @@
+ uint32 SSELightVert(void)
+ {
+   uint32 rval;
+-  float f255 = 255.0, fZero = 0.0;
++  float f255 = 255.0f, fZero = 0.0f;
+ 
+   asm volatile(" movaps            %1,  %%xmm3    \n"
+                " movaps            %2,  %%xmm4    \n"
+@@ -1302,7 +1304,7 @@
+         if( gRSP.bFogEnabled )
+         {
+             g_fFogCoord[i] = g_vecProjected[i].z;
+-            if( g_vecProjected[i].w < 0 || g_vecProjected[i].z < 0 || g_fFogCoord[i] < gRSPfFogMin )
++            if( g_vecProjected[i].w < 0.0f || g_vecProjected[i].z < 0.0f || g_fFogCoord[i] < gRSPfFogMin )
+                 g_fFogCoord[i] = gRSPfFogMin;
+         }
+ 
+@@ -1420,7 +1422,7 @@
+         if( gRSP.bFogEnabled )
+         {
+             g_fFogCoord[i] = g_vecProjected[i].z;
+-            if( g_vecProjected[i].w < 0 || g_vecProjected[i].z < 0 || g_fFogCoord[i] < gRSPfFogMin )
++            if( g_vecProjected[i].w < 0.0f || g_vecProjected[i].z < 0.0f || g_fFogCoord[i] < gRSPfFogMin )
+                 g_fFogCoord[i] = gRSPfFogMin;
+         }
+ 
+@@ -1537,16 +1539,16 @@
+             float W1 = v2.x - v1.x;
+             float W2 = v2.y - v1.y;
+ 
+-            float fDirection = (V1 * W2) - (V2 * W1);
+-            fDirection = fDirection * v1.w * v2.w * v0.w;
+-            //float fDirection = v0.x*v1.y-v1.x*v0.y+v1.x*v2.y-v2.x*v1.y+v2.x*v0.y-v0.x*v2.y;
++            float fDirection = ((V1 * W2) - (V2 * W1)) * v0.w * v1.w * v2.w;
++
++			//float fDirection = v0.x*v1.y-v1.x*v0.y+v1.x*v2.y-v2.x*v1.y+v2.x*v0.y-v0.x*v2.y;
+ 
+-            if (fDirection < 0 && gRSP.bCullBack)
++            if (fDirection < 0.0f && gRSP.bCullBack)
+             {
+                 status.dwNumTrisClipped++;
+                 return false;
+             }
+-            else if (fDirection > 0 && gRSP.bCullFront)
++            else if (fDirection > 0.0f && gRSP.bCullFront)
+             {
+                 status.dwNumTrisClipped++;
+                 return false;
+@@ -1736,7 +1738,7 @@
+         if( gRSP.bFogEnabled )
+         {
+             g_fFogCoord[i] = g_vecProjected[i].z;
+-            if( g_vecProjected[i].w < 0 || g_vecProjected[i].z < 0 || g_fFogCoord[i] < gRSPfFogMin )
++            if( g_vecProjected[i].w < 0.0f || g_vecProjected[i].z < 0.0f || g_fFogCoord[i] < gRSPfFogMin )
+                 g_fFogCoord[i] = gRSPfFogMin;
+         }
+ 
+@@ -1778,7 +1780,7 @@
+ 
+         ReplaceAlphaWithFogFactor(i);
+ 
+-        g_fVtxTxtCoords[i].x = g_fVtxTxtCoords[i].y = 1;
++        g_fVtxTxtCoords[i].x = g_fVtxTxtCoords[i].y = 1.0f;
+ 
+         nOff += 10;
+     }
+@@ -1818,7 +1820,7 @@
+         }
+ 
+         g_fFogCoord[i] = g_vecProjected[i].z;
+-        if( g_vecProjected[i].w < 0 || g_vecProjected[i].z < 0 || g_fFogCoord[i] < gRSPfFogMin )
++        if( g_vecProjected[i].w < 0.0f || g_vecProjected[i].z < 0.0f || g_fFogCoord[i] < gRSPfFogMin )
+             g_fFogCoord[i] = gRSPfFogMin;
+ 
+         RSP_Vtx_Clipping(i);
+@@ -1930,7 +1932,7 @@
+         }
+ 
+         g_fFogCoord[i] = g_vecProjected[i].z;
+-        if( g_vecProjected[i].w < 0 || g_vecProjected[i].z < 0 || g_fFogCoord[i] < gRSPfFogMin )
++        if( g_vecProjected[i].w < 0.0f || g_vecProjected[i].z < 0.0f || g_fFogCoord[i] < gRSPfFogMin )
+             g_fFogCoord[i] = gRSPfFogMin;
+ 
+         VTX_DUMP( 
+@@ -2084,7 +2086,7 @@
+         });
+ 
+         g_fFogCoord[i] = g_vecProjected[i].z;
+-        if( g_vecProjected[i].w < 0 || g_vecProjected[i].z < 0 || g_fFogCoord[i] < gRSPfFogMin )
++        if( g_vecProjected[i].w < 0.0f || g_vecProjected[i].z < 0.0f || g_fFogCoord[i] < gRSPfFogMin )
+             g_fFogCoord[i] = gRSPfFogMin;
+ 
+         RSP_Vtx_Clipping(i);
+@@ -2159,7 +2161,7 @@
+     gRSPlights[dwLight].fr = (float)gRSPlights[dwLight].r;
+     gRSPlights[dwLight].fg = (float)gRSPlights[dwLight].g;
+     gRSPlights[dwLight].fb = (float)gRSPlights[dwLight].b;
+-    gRSPlights[dwLight].fa = 255;   // Ignore light alpha
++    gRSPlights[dwLight].fa = 255.0f;   // Ignore light alpha
+ 
+     //TRACE1("Set light %d color", dwLight);
+     LIGHT_DUMP(TRACE2("Set Light %d color: %08X", dwLight, dwCol));
+@@ -2173,11 +2175,11 @@
+     //gRSPlights[dwLight].oy = y;
+     //gRSPlights[dwLight].oz = z;
+ 
+-    float w = range == 0 ? (float)sqrt(x*x+y*y+z*z) : 1;
++    float w = range == 0.0f ? (float)sqrt(x*x+y*y+z*z) : 1.0f;
+ 
+-    gRSPlights[dwLight].x = x/w;
+-    gRSPlights[dwLight].y = y/w;
+-    gRSPlights[dwLight].z = z/w;
++    gRSPlights[dwLight].x = x/w;
++    gRSPlights[dwLight].y = y/w;
++    gRSPlights[dwLight].z = z/w;
+     gRSPlights[dwLight].range = range;
+     DEBUGGER_PAUSE_AND_DUMP(NEXT_SET_LIGHT,TRACE5("Set Light %d dir: %.4f, %.4f, %.4f, %.4f", dwLight, x, y, z, range));
+ }
+@@ -2191,19 +2193,19 @@
+ {
+     if( validS0 )
+     {
+-        if( fTex0S<0 || fTex0S>maxS0 )  validS0 = false;
++        if( fTex0S<0.0f || fTex0S>maxS0 )  validS0 = false;
+     }
+     if( validT0 )
+     {
+-        if( fTex0T<0 || fTex0T>maxT0 )  validT0 = false;
++        if( fTex0T<0.0f || fTex0T>maxT0 )  validT0 = false;
+     }
+     if( validS1 )
+     {
+-        if( fTex1S<0 || fTex1S>maxS1 )  validS1 = false;
++        if( fTex1S<0.0f || fTex1S>maxS1 )  validS1 = false;
+     }
+     if( validT1 )
+     {
+-        if( fTex1T<0 || fTex1T>maxT1 )  validT1 = false;
++        if( fTex1T<0.0f || fTex1T>maxT1 )  validT1 = false;
+     }
+ }
+ 
+@@ -2244,7 +2246,7 @@
+ 
+ float HackZ2(float z)
+ {
+-    z = (z+9)/10;
++    z = (z+9.0f)/10.0f;
+     return z;
+ }
+ 
+@@ -2252,11 +2254,11 @@
+ {
+     return HackZ2(z);
+ 
+-    if( z < 0.1 && z >= 0 )
+-        z = (.1f+z)/2;
+-    else if( z < 0 )
++    if( z < 0.1f && z >= 0.0f )
++        z = (0.1f+z)/2.0f;
++    else if( z < 0.0f )
+         //return (10+z)/100;
+-        z = (expf(z)/20);
++        z = (expf(z)/20.0f);
+     return z;
+ }
+ 
+
+From 3850f256747fea42877293aca4c27074b1795005 Mon Sep 17 00:00:00 2001
+From: CornN64 <corn_n64@hotmail.com>
+Date: Sat, 12 Sep 2015 12:16:45 +0200
+Subject: [PATCH 5/9] Add optimation option for ARM Cortex-A53 + NEON
+
+---
+ projects/unix/Makefile | 9 +++++++++
+ 1 file changed, 9 insertions(+)
+
+diff --git a/projects/unix/Makefile b/projects/unix/Makefile
+index d89a7de..93a2e2d 100644
+--- a/projects/unix/Makefile
++++ b/projects/unix/Makefile
+@@ -118,6 +118,14 @@
+     ARCH_DETECTED := 32BITS
+     PIC ?= 1
+     NO_ASM := 1
++    ifeq ($(NEON), 1)
++      ifeq ("$(filter -mfpu=neon%,$(OPTFLAGS))","")
++		CFLAGS += -mcpu=cortex-a53	  
++		CFLAGS += -mfpu=neon
++		CFLAGS += -funsafe-math-optimizations
++    $(warning Use default -mfpu=neon.')
++      endif
++    endif
+     $(warning Architecture "$(HOST_CPU)" not officially supported.')
+   endif
+ endif
+@@ -380,6 +388,7 @@
+ 	@echo "    NO_ASM=1      == build without inline assembly code (x86 MMX/SSE)"
+ 	@echo "    USE_GLES=1    == build against GLESv2 instead of OpenGL"
+ 	@echo "    VC=1          == build against Broadcom Videocore GLESv2"
++	@echo "    NEON=1 	 == Use ARM Cortex-A53 & NEON optimations"
+ 	@echo "    APIDIR=path   == path to find Mupen64Plus Core headers"
+ 	@echo "    OPTFLAGS=flag == compiler optimization (default: -O3 -flto)"
+ 	@echo "    WARNFLAGS=flag == compiler warning levels (default: -Wall)"
+
+

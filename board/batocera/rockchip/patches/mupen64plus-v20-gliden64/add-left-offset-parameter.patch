@@ -1,0 +1,217 @@
+MRFIXIT: Add a new parameter to the settings to control left offset since SDL2 center doesn't work
+--- a/src/mupenplus/Config_mupenplus.cpp
++++ b/src/mupenplus/Config_mupenplus.cpp
+@@ -35,12 +35,14 @@
+ 	// Set default values for "Video-General" section, if they are not set yet. Taken from RiceVideo
+ 	m64p_error res = ConfigSetDefaultBool(g_configVideoGeneral, "Fullscreen", config.video.fullscreen, "Use fullscreen mode if True, or windowed mode if False ");
+ 	assert(res == M64ERR_SUCCESS);
+ 	res = ConfigSetDefaultInt(g_configVideoGeneral, "ScreenWidth", config.video.windowedWidth, "Width of output window or fullscreen width");
+ 	assert(res == M64ERR_SUCCESS);
+ 	res = ConfigSetDefaultInt(g_configVideoGeneral, "ScreenHeight", config.video.windowedHeight, "Height of output window or fullscreen height");
+ 	assert(res == M64ERR_SUCCESS);
++	res = ConfigSetDefaultInt(g_configVideoGliden64, "ScreenLeftOffset", config.video.screenLeftOffset, "Position of the left of the screen");
++	assert(res == M64ERR_SUCCESS);
+ 	res = ConfigSetDefaultBool(g_configVideoGeneral, "VerticalSync", config.video.verticalSync, "If true, activate the SDL_GL_SWAP_CONTROL attribute");
+ 	assert(res == M64ERR_SUCCESS);
+ 
+ 	res = ConfigSetDefaultInt(g_configVideoGliden64, "configVersion", CONFIG_VERSION_CURRENT, "Settings version. Don't touch it.");
+ 	assert(res == M64ERR_SUCCESS);
+@@ -213,6 +213,7 @@
+ 	config.video.fullscreen = ConfigGetParamBool(g_configVideoGeneral, "Fullscreen");
+ 	config.video.windowedWidth = ConfigGetParamInt(g_configVideoGeneral, "ScreenWidth");
+ 	config.video.windowedHeight = ConfigGetParamInt(g_configVideoGeneral, "ScreenHeight");
++	config.video.screenLeftOffset = ConfigGetParamInt(g_configVideoGliden64, "ScreenLeftOffset");
+ 	config.video.verticalSync = ConfigGetParamBool(g_configVideoGeneral, "VerticalSync");
+ 
+ 	config.video.cropMode = ConfigGetParamInt(g_configVideoGliden64, "CropMode");
+--- a/src/Config.h
++++ b/src/Config.h
+@@ -27,6 +27,7 @@
+ 	{
+ 		u32 fullscreen;
+ 		u32 windowedWidth, windowedHeight;
++		u32 screenLeftOffset;
+ 		u32 fullscreenWidth, fullscreenHeight, fullscreenRefresh;
+ 		u32 multisampling;
+ 		u32 verticalSync;
+
+--- a/src/OpenGL.cpp
++++ b/src/OpenGL.cpp
+@@ -30,6 +30,16 @@
+ 
+ using namespace std;
+ 
++bool zeroAdjust = false;
++int adjust = 0;
++void setAdjust() {
++	if (zeroAdjust) {
++		adjust = 0; 
++	} else {
++		adjust = config.video.screenLeftOffset;
++	}
++}
++
+ bool checkFBO() {
+ 	GLenum e = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+ 	switch (e) {
+@@ -505,11 +505,11 @@
+ 		glDisable(GL_BLEND);
+ 
+ 		if (m_pBuffer == nullptr)
+-			glViewport(0, 0, VI.width, VI.height);
++			glViewport(0 + adjust, 0, VI.width, VI.height);
+ 		else
+-			glViewport(0, 0, m_pBuffer->m_width, m_pBuffer->m_height);
++			glViewport(0 + adjust, 0, m_pBuffer->m_width, m_pBuffer->m_height);
+ 
+-		glScissor(gDP.scissor.ulx, gDP.scissor.uly, gDP.scissor.lrx - gDP.scissor.ulx, gDP.scissor.lry - gDP.scissor.uly);
++		glScissor(gDP.scissor.ulx + adjust, gDP.scissor.uly, gDP.scissor.lrx - gDP.scissor.ulx, gDP.scissor.lry - gDP.scissor.uly);
+ 
+ 		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_FBO);
+ 	}
+@@ -584,9 +584,9 @@
+ 	const float W = 1.0f;
+ 
+ 	if (m_pBuffer == nullptr)
+-		glViewport(0, ogl.getHeightOffset(), ogl.getScreenWidth(), ogl.getScreenHeight());
++		glViewport(0 + adjust, ogl.getHeightOffset(), ogl.getScreenWidth(), ogl.getScreenHeight());
+ 	else
+-		glViewport(0, 0, m_pBuffer->m_width*m_pBuffer->m_scaleX, m_pBuffer->m_height*m_pBuffer->m_scaleY);
++		glViewport(0 + adjust, 0, m_pBuffer->m_width*m_pBuffer->m_scaleX, m_pBuffer->m_height*m_pBuffer->m_scaleY);
+ 
+ 	textureCache().activateTexture(0, m_pTexture);
+ 	// Disable filtering to avoid black outlines
+@@ -637,9 +637,9 @@
+ 	rect[3].y = m_lry;
+ 
+ 	if (m_pBuffer == nullptr)
+-		glViewport(0, 0, VI.width, VI.height);
++		glViewport(0 + adjust, 0, VI.width, VI.height);
+ 	else
+-		glViewport(0, 0, m_pBuffer->m_width, m_pBuffer->m_height);
++		glViewport(0 + adjust, 0, m_pBuffer->m_width, m_pBuffer->m_height);
+ 
+ 	glDisable(GL_BLEND);
+ 	glDisable(GL_SCISSOR_TEST);
+@@ -1012,7 +1012,7 @@
+ 			Xf = _adjustViewportX(Xf);
+ 		const GLint X = (GLint)(Xf * scaleX);
+ 		const GLint Y = gSP.viewport.vscale[1] < 0 ? (GLint)((gSP.viewport.y + gSP.viewport.vscale[1] * 2.0f) * scaleY) : (GLint)((VI.height - (gSP.viewport.y + gSP.viewport.height)) * scaleY);
+-		glViewport(X, Y + ogl.getHeightOffset(),
++		glViewport(X + adjust, Y + ogl.getHeightOffset(),
+ 			max((GLint)(gSP.viewport.width * scaleX), 0), max((GLint)(gSP.viewport.height * scaleY), 0));
+ 	} else {
+ 		const f32 scaleX = pCurrentBuffer->m_scaleX;
+@@ -1022,7 +1022,7 @@
+ 			Xf = _adjustViewportX(Xf);
+ 		const GLint X = (GLint)(Xf * scaleX);
+ 		const GLint Y = gSP.viewport.vscale[1] < 0 ? (GLint)((gSP.viewport.y + gSP.viewport.vscale[1] * 2.0f) * scaleY) : (GLint)((pCurrentBuffer->m_height - (gSP.viewport.y + gSP.viewport.height)) * scaleY);
+-		glViewport(X, Y,
++		glViewport(X + adjust, Y,
+ 			max((GLint)(gSP.viewport.width * scaleX), 0), max((GLint)(gSP.viewport.height * scaleY), 0));
+ 	}
+ 	gSP.changed &= ~CHANGED_VIEWPORT;
+@@ -1033,9 +1033,9 @@
+ 	OGLVideo & ogl = video();
+ 	FrameBuffer * pCurrentBuffer = frameBufferList().getCurrent();
+ 	if (pCurrentBuffer == nullptr)
+-		glViewport(0, ogl.getHeightOffset(), ogl.getScreenWidth(), ogl.getScreenHeight());
++		glViewport(0 + adjust, ogl.getHeightOffset(), ogl.getScreenWidth(), ogl.getScreenHeight());
+ 	else
+-		glViewport(0, 0, pCurrentBuffer->m_width*pCurrentBuffer->m_scaleX, pCurrentBuffer->m_height*pCurrentBuffer->m_scaleY);
++		glViewport(0 + adjust, 0, pCurrentBuffer->m_width*pCurrentBuffer->m_scaleX, pCurrentBuffer->m_height*pCurrentBuffer->m_scaleY);
+ 	gSP.changed |= CHANGED_VIEWPORT;
+ }
+ 
+@@ -1070,7 +1070,7 @@
+ 	if (_needAdjustCoordinate(ogl))
+ 		_adjustScissorX(SX0, SX1, ogl.getAdjustScale());
+ 
+-	glScissor((GLint)(SX0 * scaleX), (GLint)((screenHeight - gDP.scissor.lry) * scaleY + heightOffset),
++	glScissor((GLint)(SX0 * scaleX) + adjust, (GLint)((screenHeight - gDP.scissor.lry) * scaleY + heightOffset),
+ 		max((GLint)((SX1 - SX0) * scaleX), 0), max((GLint)((gDP.scissor.lry - gDP.scissor.uly) * scaleY), 0));
+ 	gDP.changed &= ~CHANGED_SCISSOR;
+ }
+@@ -1525,9 +1525,9 @@
+ 	FrameBuffer * pCurrentBuffer = frameBufferList().getCurrent();
+ 	OGLVideo & ogl = video();
+ 	if (pCurrentBuffer == nullptr)
+-		glViewport( 0, ogl.getHeightOffset(), ogl.getScreenWidth(), ogl.getScreenHeight());
++		glViewport(0 + adjust, ogl.getHeightOffset(), ogl.getScreenWidth(), ogl.getScreenHeight());
+ 	else {
+-		glViewport(0, 0, pCurrentBuffer->m_width*pCurrentBuffer->m_scaleX, pCurrentBuffer->m_height*pCurrentBuffer->m_scaleY);
++		glViewport(0 + adjust, 0, pCurrentBuffer->m_width*pCurrentBuffer->m_scaleX, pCurrentBuffer->m_height*pCurrentBuffer->m_scaleY);
+ 	}
+ 	glDisable(GL_CULL_FACE);
+ 
+@@ -1726,6 +1736,7 @@
+ 
+ void OGLRender::drawTexturedRect(const TexturedRectParams & _params)
+ {
++	setAdjust();
+ 	gSP.changed &= ~CHANGED_GEOMETRYMODE; // Don't update cull mode
+ 	if (!m_texrectDrawer.isEmpty()) {
+ 		CombinerInfo & cmbInfo = CombinerInfo::get();
+@@ -1928,9 +1928,9 @@
+ 		m_texrectDrawer.add();
+ 	else {
+ 		if (pCurrentBuffer == nullptr)
+-			glViewport(0, ogl.getHeightOffset(), ogl.getScreenWidth(), ogl.getScreenHeight());
++			glViewport(0 + adjust, ogl.getHeightOffset(), ogl.getScreenWidth(), ogl.getScreenHeight());
+ 		else
+-			glViewport(0, 0, pCurrentBuffer->m_width*pCurrentBuffer->m_scaleX, pCurrentBuffer->m_height*pCurrentBuffer->m_scaleY);
++			glViewport(0 + adjust, 0, pCurrentBuffer->m_width*pCurrentBuffer->m_scaleX, pCurrentBuffer->m_height*pCurrentBuffer->m_scaleY);
+ 		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+ 		gSP.changed |= CHANGED_GEOMETRYMODE | CHANGED_VIEWPORT;
+ 	}
+@@ -2006,8 +2006,8 @@
+ 	const GLint Y = ogl.getHeightOffset();
+ 	const GLint W = ogl.getWidth();
+ 	const GLint H = ogl.getHeight();
+-	glViewport(X, Y, W, H);
+-	glScissor(X, Y, W, H);
++	glViewport(X + adjust, Y, W, H);
++	glScissor(X + adjust, Y, W, H);
+ 	gSP.changed |= CHANGED_VIEWPORT;
+ 	gDP.changed |= CHANGED_SCISSOR;
+ 
+@@ -2163,7 +2163,7 @@
+ 	}
+ 
+ 	OGLVideo & ogl = video();
+-	glViewport(0, ogl.getHeightOffset(), ogl.getScreenWidth(), ogl.getScreenHeight());
++	glViewport(0 + adjust, ogl.getHeightOffset(), ogl.getScreenWidth(), ogl.getScreenHeight());
+ 
+ 	glClearColor( 0.0f, 0.0f, 0.0f, 0.0f );
+ 	glClear( GL_COLOR_BUFFER_BIT );
+@@ -2204,6 +2204,8 @@
+ 	m_renderState = rsNone;
+ 	m_bDmaVertices = false;
+ 
++	adjust = config.video.screenLeftOffset;
++
+ 	gSP.changed = gDP.changed = 0xFFFFFFFF;
+ 
+ 	memset(triangles.vertices, 0, VERTBUFF_SIZE * sizeof(SPVertex));
+@@ -2256,6 +2267,8 @@
+ 								 GLint _dstX0, GLint _dstY0, GLint _dstX1, GLint _dstY1,
+ 								 GLuint _dstWidth, GLuint _dstHeight, GLenum _filter)
+ {
++	zeroAdjust = true;
++	setAdjust();
+ 	glDisableVertexAttribArray(SC_COLOR);
+ 	glDisableVertexAttribArray(SC_TEXCOORD1);
+ 	glDisableVertexAttribArray(SC_NUMLIGHTS);
+@@ -2315,7 +2328,11 @@
+ 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+ 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+ 
+-	glViewport(0, 0, _dstWidth, _dstHeight);
++	if (adjust == 0 && config.video.screenLeftOffset > 0)
++		glViewport(0 + config.video.screenLeftOffset, 0, _dstWidth, _dstHeight);
++	else
++		glViewport(0 + adjust, 0, _dstWidth, _dstHeight);
++
+ 	glDisable(GL_CULL_FACE);
+ 	glDisable(GL_BLEND);
+ 	glDisable(GL_DEPTH_TEST);

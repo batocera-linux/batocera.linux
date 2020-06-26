@@ -1,0 +1,129 @@
+MRFIXIT: Add a new parameter to the settings to control left offset since SDL2 center doesn't work
+--- a/src/Glide64/Config.cpp	2018-11-09 16:39:42.608159241 +0000
++++ b/src/Glide64/Config.cpp	2018-11-09 16:52:27.401663331 +0000
+@@ -38,6 +38,7 @@
+     ConfigSetDefaultBool(video_general_section, "VerticalSync", true, "If true, prevent frame tearing by waiting for vsync before swapping");
+     ConfigSetDefaultInt(video_general_section, "ScreenWidth", 640, "Width of output window or fullscreen width");
+     ConfigSetDefaultInt(video_general_section, "ScreenHeight", 480, "Height of output window or fullscreen height");
++    ConfigSetDefaultInt(video_glide64_section, "ScreenLeftOffset", 0, "Position of the left of the screen");
+     ConfigSetDefaultInt(video_glide64_section, "wrpAntiAliasing", 0, "Enable full-scene anti-aliasing by setting this to a value greater than 1");
+     ConfigSetDefaultInt(video_general_section, "Rotate", 0, "Rotate screen contents: 0=0 degree, 1=90 degree, 2 = 180 degree, 3=270 degree");
+ 
+--- a/src/Glitch64/OGLESglitchmain.cpp
++++ b/src/Glitch64/OGLESglitchmain.cpp
+@@ -49,6 +49,7 @@
+ 
+ wrapper_config config = {0, 0, 0, 0};
+ int screen_width, screen_height;
++int adjust = 0;
+ 
+ /*
+ static inline void opt_glCopyTexImage2D( GLenum target,
+@@ -327,7 +328,7 @@
+     if (int(miny) < 0) miny = 0;
+     if (maxx < minx) maxx = minx;
+     if (maxy < miny) maxy = miny;
+-    glScissor(minx, miny, maxx - minx, maxy - miny);
++    glScissor(minx + adjust, miny, maxx - minx, maxy - miny);
+     glEnable(GL_SCISSOR_TEST);
+     return;
+   }
+@@ -345,10 +346,10 @@
+     if (int(miny) < 0) miny = 0;
+     if (maxx < minx) maxx = minx;
+     if (maxy < miny) maxy = miny;
+-    glScissor(minx, miny+viewport_offset, maxx - minx, maxy - miny);
++    glScissor(minx + adjust, miny+viewport_offset, maxx - minx, maxy - miny);
+     //printf("gl scissor %d %d %d %d\n", minx, miny, maxx, maxy);
+   } else {
+-    glScissor(minx, (viewport_offset)+height-maxy, maxx - minx, maxy - miny);
++    glScissor(minx + adjust, (viewport_offset)+height-maxy, maxx - minx, maxy - miny);
+   }
+   glEnable(GL_SCISSOR_TEST);
+ }
+@@ -496,6 +496,13 @@
+     printf("Could not open video settings");
+     return false;
+   }
++  m64p_handle video_glide64_section;
++  if (ConfigOpenSection("Video-Glide64mk2", &video_glide64_section) != M64ERR_SUCCESS)
++  {
++    printf("Could not open video settings");
++    return false;
++  }
++  adjust = ConfigGetParamInt(video_glide64_section, "ScreenLeftOffset");
+   width = ConfigGetParamInt(video_general_section, "ScreenWidth");
+   height = ConfigGetParamInt(video_general_section, "ScreenHeight");
+   fullscreen = ConfigGetParamBool(video_general_section, "Fullscreen");
+@@ -538,7 +541,7 @@
+ # endif // _DEBUG
+   CoreVideo_SetCaption(caption);
+ 
+-  glViewport(0, viewport_offset, width, height);
++  glViewport(0 + adjust, viewport_offset, width, height);
+   lfb_color_fmt = color_format;
+   if (origin_location != GR_ORIGIN_UPPER_LEFT) display_warning("origin must be in upper left corner");
+   if (nColBuffers != 2) display_warning("number of color buffer is not 2");
+@@ -668,12 +671,12 @@
+ 
+ 
+ #ifdef _WIN32
+-  glViewport(0, viewport_offset, width, height);
++  glViewport(0 + adjust, viewport_offset, width, height);
+   viewport_width = width;
+   viewport_height = height;
+   nvidia_viewport_hack = 1;
+ #else
+-  glViewport(0, viewport_offset, width, height);
++  glViewport(0 + adjust, viewport_offset, width, height);
+   viewport_width = width;
+   viewport_height = height;
+ #endif // _WIN32
+@@ -948,11 +951,11 @@
+ 
+     //printf("viewport %dx%d\n", width, height);
+     if (height > screen_height) {
+-      glViewport( 0, viewport_offset + screen_height - height, width, height);
++      glViewport(0 + adjust, viewport_offset + screen_height - height, width, height);
+     } else
+-      glViewport( 0, viewport_offset, width, height);
++      glViewport(0 + adjust, viewport_offset, width, height);
+ 
+-    glScissor(0, viewport_offset, width, height);
++    glScissor(0 + adjust, viewport_offset, width, height);
+ 
+ 
+   } else {
+@@ -998,8 +1001,8 @@
+           glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, fbs[i].texid, 0 );
+           glBindRenderbuffer( GL_RENDERBUFFER, fbs[i].zbid );
+           glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, fbs[i].zbid );
+-          glViewport( 0, 0, width, height);
+-          glScissor( 0, 0, width, height);
++          glViewport(0 + adjust, 0, width, height);
++          glScissor(0 + adjust, 0, width, height);
+           if (fbs[i].buff_clear)
+           {
+             glDepthMask(1);
+@@ -1044,8 +1047,8 @@
+     glFramebufferTexture2D(GL_FRAMEBUFFER,
+       GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, fbs[nb_fb].texid, 0);
+     glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, fbs[nb_fb].zbid );
+-    glViewport(0,0,width,height);
+-    glScissor(0,0,width,height);
++    glViewport(0 + adjust,0,width,height);
++    glScissor(0 + adjust,0,width,height);
+     glClearColor( 0.0f, 0.0f, 0.0f, 1.0f );
+     glDepthMask(1);
+     glClear( GL_DEPTH_BUFFER_BIT );
+@@ -1585,8 +1588,8 @@
+       }
+       curBufferAddr = 0;
+ 
+-      glViewport(0, viewport_offset, width, viewport_height);
+-      glScissor(0, viewport_offset, width, height);
++      glViewport(0 + adjust, viewport_offset, width, viewport_height);
++      glScissor(0 + adjust, viewport_offset, width, height);
+ 
+ #ifdef SAVE_CBUFFER
+       if (!use_fbo && render_to_texture == 2) {
