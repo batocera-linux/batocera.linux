@@ -1211,8 +1211,8 @@ openbor:
   extensions: [pak]
   emulators:
     openbor:
-      openbor: { requireAnyOf: [BR2_PACKAGE_OPENBOR] }
-      openbor4432: { requireAnyOf: [BR2_PACKAGE_OPENBOR4432] }
+      openbor3b6412: { requireAnyOf: [BR2_PACKAGE_OPENBOR] }
+      openbor3b4432: { requireAnyOf: [BR2_PACKAGE_OPENBOR4432] }
 
 satellaview:
   name:       Satellaview

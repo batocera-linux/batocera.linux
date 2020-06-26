@@ -20,9 +20,9 @@ class OpenborGenerator(Generator):
         if not os.path.exists(savesDir):
             os.makedirs(savesDir)
 
-        # guess the version to run
+        # guess the build version to run if nothing forced
         core = system.config['core']
-        if system.config["core-forced"] == False:
+        if core == "openbor":
             core = OpenborGenerator.guessCore(rom)
 
         # config file
@@ -56,7 +56,7 @@ class OpenborGenerator(Generator):
 
     @staticmethod
     def executeCore(core, rom):
-        if core == "openbor4432":
+        if core == "openbor3b4432":
             commandArray = ["OpenBOR4432", rom]
         else:
             commandArray = ["OpenBOR", rom]
@@ -67,8 +67,8 @@ class OpenborGenerator(Generator):
         versionstr = re.search(r'\[.*([0-9]{4})\]+', os.path.basename(rom))
         if versionstr == None:
             return "openbor"
-        version = int(versionstr.group(1))
 
+        version = int(versionstr.group(1))
         if version < 6000:
-            return "openbor4432"
-        return "openbor"
+            return "openbor3b4432"
+        return "openbor3b6412"
