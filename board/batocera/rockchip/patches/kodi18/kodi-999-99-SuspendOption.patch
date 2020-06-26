@@ -1,5 +1,5 @@
 MRFIXIT: Customize and enable the suspend function for rockchip boards
-Also add code to reinit the CEC connection after the resume to try and fix rk3399 cec issue
+Also add code to reinit the CEC connection after the resume
 --- a/xbmc/peripherals/devices/PeripheralCecAdapter.h
 +++ b/xbmc/peripherals/devices/PeripheralCecAdapter.h
 @@ -80,6 +80,7 @@
@@ -67,7 +67,7 @@ Also add code to reinit the CEC connection after the resume to try and fix rk339
 +  g_application.CloseNetworkShares();
 +
 +  // Tell Rockchip to Suspend
-+  CUtil::RunCommandLine("/usr/bin/rockchip_suspend.sh", true);
++  CUtil::RunCommandLine("/usr/bin/batocera-rockchip-suspend", true);
 +
 +  CServiceBroker::GetNetwork().WaitForNet();
 +
@@ -117,7 +117,7 @@ Also add code to reinit the CEC connection after the resume to try and fix rk339
  						<label>$LOCALIZE[13011]</label>
  						<onclick>Suspend()</onclick>
 -						<visible>System.CanSuspend</visible>
-+						<visible>False</visible>
++						<visible>True</visible>
  					</item>
  					<item>
  						<label>$LOCALIZE[13010]</label>
