@@ -1,0 +1,10 @@
+#!/bin/bash
+
+# Down the network, suspend, then bring the network back up
+ifconfig eth0 down
+ifconfig wlan0 down
+echo mem > /sys/power/state
+sleep 1
+ifconfig eth0 up
+ifconfig wlan0 up
+

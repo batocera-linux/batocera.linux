@@ -1,0 +1,182 @@
+From d526427e7803518cc7d3a6810894efbbf1dcd59f Mon Sep 17 00:00:00 2001
+From: Jonas Karlman <jonas@kwiboo.se>
+Date: Thu, 9 May 2019 19:41:13 +0000
+Subject: [PATCH] rkmppdec: Set AVDRMFrameDescriptor.format
+
+Signed-off-by: Jonas Karlman <jonas@kwiboo.se>
+---
+ libavcodec/rkmppdec.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/libavcodec/rkmppdec.c b/libavcodec/rkmppdec.c
+index 248020d5d61..dd89f42eed0 100644
+--- a/libavcodec/rkmppdec.c
++++ b/libavcodec/rkmppdec.c
+@@ -419,6 +419,7 @@ static int rkmpp_retrieve_frame(AVCodecContext *avctx, AVFrame *frame)
+                 goto fail;
+             }
+ 
++            desc->format = drmformat;
+             desc->nb_objects = 1;
+             desc->objects[0].fd = mpp_buffer_get_fd(buffer);
+             desc->objects[0].size = mpp_buffer_get_size(buffer);
+
+From ca1684c510afe1b58a53c786c41f087cc5d3719f Mon Sep 17 00:00:00 2001
+From: Jonas Karlman <jonas@kwiboo.se>
+Date: Thu, 9 May 2019 19:41:29 +0000
+Subject: [PATCH] kmsgrab: Set AVDRMFrameDescriptor.format
+
+Signed-off-by: Jonas Karlman <jonas@kwiboo.se>
+---
+ libavdevice/kmsgrab.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/libavdevice/kmsgrab.c b/libavdevice/kmsgrab.c
+index d0de774871c..1ebc30ea924 100644
+--- a/libavdevice/kmsgrab.c
++++ b/libavdevice/kmsgrab.c
+@@ -162,6 +162,7 @@ static int kmsgrab_read_packet(AVFormatContext *avctx, AVPacket *pkt)
+                 .pitch        = fb->pitch,
+             },
+         },
++        .format = ctx->drm_format,
+     };
+ 
+     frame = av_frame_alloc();
+
+From 574a3f05e70f27be812f9132258d39461adc1fad Mon Sep 17 00:00:00 2001
+From: Jonas Karlman <jonas@kwiboo.se>
+Date: Thu, 9 May 2019 19:40:47 +0000
+Subject: [PATCH] hwcontext_vaapi: Set AVDRMFrameDescriptor.format in map_from
+
+Signed-off-by: Jonas Karlman <jonas@kwiboo.se>
+---
+ libavutil/hwcontext_vaapi.c | 38 +++++++++++++++++++++++++++++++++++++
+ 1 file changed, 38 insertions(+)
+
+diff --git a/libavutil/hwcontext_vaapi.c b/libavutil/hwcontext_vaapi.c
+index 5c4f5de04ec..952df4f6291 100644
+--- a/libavutil/hwcontext_vaapi.c
++++ b/libavutil/hwcontext_vaapi.c
+@@ -1125,6 +1125,43 @@ static void vaapi_unmap_to_drm_esh(AVHWFramesContext *hwfc,
+     av_freep(&drm_desc);
+ }
+ 
++static uint32_t vaapi_va_fourcc_to_drm_format(uint32_t fourcc)
++{
++    switch (fourcc) {
++    case VA_FOURCC_NV12:
++        return DRM_FORMAT_NV12;
++    case VA_FOURCC_I420:
++        return DRM_FORMAT_YUV420;
++    case VA_FOURCC_YV12:
++        return DRM_FORMAT_YVU420;
++    case VA_FOURCC_YV16:
++        return DRM_FORMAT_YVU422;
++    case VA_FOURCC_YUY2:
++        return DRM_FORMAT_YUYV;
++    case VA_FOURCC_UYVY:
++        return DRM_FORMAT_UYVY;
++    case VA_FOURCC_Y800:
++        return DRM_FORMAT_R8;
++#ifdef DRM_FORMAT_P010
++    case VA_FOURCC_P010:
++        return DRM_FORMAT_P010;
++#endif
++    case VA_FOURCC_RGBA:
++        return DRM_FORMAT_ABGR8888;
++    case VA_FOURCC_RGBX:
++        return DRM_FORMAT_XBGR8888;
++    case VA_FOURCC_BGRA:
++        return DRM_FORMAT_ARGB8888;
++    case VA_FOURCC_BGRX:
++        return DRM_FORMAT_XRGB8888;
++    case VA_FOURCC_ARGB:
++        return DRM_FORMAT_BGRA8888;
++    case VA_FOURCC_ABGR:
++        return DRM_FORMAT_RGBA8888;
++    }
++    return 0;
++}
++
+ static int vaapi_map_to_drm_esh(AVHWFramesContext *hwfc, AVFrame *dst,
+                                 const AVFrame *src, int flags)
+ {
+@@ -1182,6 +1219,7 @@ static int vaapi_map_to_drm_esh(AVHWFramesContext *hwfc, AVFrame *dst,
+                 va_desc.layers[i].pitch[j];
+         }
+     }
++    drm_desc->format = vaapi_va_fourcc_to_drm_format(va_desc.fourcc);
+ 
+     err = ff_hwframe_map_create(src->hw_frames_ctx, dst, src,
+                                 &vaapi_unmap_to_drm_esh, drm_desc);
+
+From 8d77805e4fc082d2d1fa1be549ecdd49890b428a Mon Sep 17 00:00:00 2001
+From: Jonas Karlman <jonas@kwiboo.se>
+Date: Thu, 9 May 2019 19:40:22 +0000
+Subject: [PATCH] hwcontext_drm: Add AVDRMFrameDescriptor.format field
+
+A AVDRMFrameDescriptor for a NV12 frame may be described in
+a single layer descriptor with multiple planes,
+
+(AVDRMFrameDescriptor) {
+    .nb_layers = 1,
+    .layers[0] = {
+        .format           = DRM_FORMAT_NV12,
+        .nb_planes        = 2,
+        .planes[0] = {
+            .object_index = 0,
+        },
+        .planes[1] = {
+            .object_index = 0,
+        },
+    },
+}
+
+or a multi-layer descriptor with one plane in each layer.
+
+(AVDRMFrameDescriptor) {
+    .nb_layers = 2,
+    .layers[0] = {
+        .format           = DRM_FORMAT_R8,
+        .nb_planes        = 1,
+        .planes[0] = {
+            .object_index = 0,
+        },
+    },
+    .layers[1] = {
+        .format           = DRM_FORMAT_RG88,
+        .nb_planes        = 1,
+        .planes[0] = {
+            .object_index = 1,
+        },
+    },
+}
+
+With a multi-layer descriptor, the frame format is missing.
+
+Add a AVDRMFrameDescriptor.format field to remove any ambiguity of
+what frame format a multi-layer descriptor may have.
+
+Signed-off-by: Jonas Karlman <jonas@kwiboo.se>
+---
+ libavutil/hwcontext_drm.h | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/libavutil/hwcontext_drm.h b/libavutil/hwcontext_drm.h
+index 42709f215ef..0ccbd19acca 100644
+--- a/libavutil/hwcontext_drm.h
++++ b/libavutil/hwcontext_drm.h
+@@ -147,6 +147,10 @@ typedef struct AVDRMFrameDescriptor {
+      * Array of layers in the frame.
+      */
+     AVDRMLayerDescriptor layers[AV_DRM_MAX_PLANES];
++    /**
++     * Format of the frame (DRM_FORMAT_*).
++     */
++    uint32_t format;
+ } AVDRMFrameDescriptor;
+ 
+ /**
+
+

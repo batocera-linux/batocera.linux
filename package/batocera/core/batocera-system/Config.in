@@ -322,6 +322,7 @@ config BR2_PACKAGE_BATOCERA_ALL_SYSTEMS
                                                    !BR2_PACKAGE_BATOCERA_TARGET_C2   && \
                                                    !BR2_PACKAGE_BATOCERA_TARGET_ODROIDN2 && \
                                                    !BR2_PACKAGE_BATOCERA_TARGET_S905 && \
+                                                   !BR2_PACKAGE_BATOCERA_TARGET_LIBRETECH_H5 && \
                                                    !BR2_PACKAGE_BATOCERA_TARGET_VIM3
                                                    # dreamcast
 
@@ -403,6 +404,7 @@ config BR2_PACKAGE_BATOCERA_RETROARCH
                                                          !BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA && \
                                                          !BR2_PACKAGE_BATOCERA_TARGET_S905      && \
                                                          !BR2_PACKAGE_BATOCERA_TARGET_VIM3      && \
+                                                         !BR2_PACKAGE_BATOCERA_TARGET_LIBRETECH_H5 && \
                                                          !BR2_PACKAGE_BATOCERA_TARGET_S912
                                                          # PCFX
 
@@ -482,6 +484,7 @@ config BR2_PACKAGE_BATOCERA_RETROARCH
 
         select BR2_PACKAGE_LIBRETRO_DOSBOX            if !BR2_PACKAGE_BATOCERA_TARGET_ROCK960     && \
                                                          !BR2_PACKAGE_BATOCERA_TARGET_TINKERBOARD && \
+                                                         !BR2_PACKAGE_BATOCERA_TARGET_LIBRETECH_H5 && \
                                                          !BR2_PACKAGE_BATOCERA_TARGET_MIQI
 
         select BR2_PACKAGE_LIBRETRO_PUAE              if !BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA
@@ -539,7 +542,6 @@ config BR2_PACKAGE_BATOCERA_MUPEN64
 
         select BR2_PACKAGE_MUPEN64PLUS_GLES2            if BR2_PACKAGE_BATOCERA_TARGET_RPI_ANY      || \
                                                             BR2_PACKAGE_BATOCERA_TARGET_RPI4        || \
-                                                            BR2_PACKAGE_BATOCERA_TARGET_LIBRETECH_H5 || \
                                                             BR2_PACKAGE_BATOCERA_TARGET_MIQI || \
                                                             BR2_PACKAGE_BATOCERA_TARGET_TINKERBOARD
 
@@ -569,7 +571,7 @@ config BR2_PACKAGE_BATOCERA_KODI
        select BR2_PACKAGE_GNUTLS            # https streams
 
        # Rockchip ffmpeg playback package
-       select BR2_PACKAGE_RKMPP             if BR2_PACKAGE_BATOCERA_TARGET_ROCKCHIP_ANY
+       select BR2_PACKAGE_ROCKCHIP_MPP      if BR2_PACKAGE_BATOCERA_TARGET_ROCKCHIP_ANY
 
        # ffmpeg enabler that i'm not sure it has an impact on kodi
        select BR2_PACKAGE_FFMPEG_GPL        # video recording
@@ -663,7 +665,7 @@ config BR2_PACKAGE_BATOCERA_KODI18
        select BR2_PACKAGE_GNUTLS            # https streams
 
        # Rockchip ffmpeg playback package
-       select BR2_PACKAGE_RKMPP             if BR2_PACKAGE_BATOCERA_TARGET_ROCKCHIP_ANY
+       select BR2_PACKAGE_ROCKCHIP_MPP      if BR2_PACKAGE_BATOCERA_TARGET_ROCKCHIP_ANY
 
        # ffmpeg enabler that i'm not sure it has an impact on kodi
        select BR2_PACKAGE_FFMPEG_GPL        # video recording
