@@ -155,48 +155,72 @@ daphne:
   features: [ratio]
 
 dolphin:
-  features: [ratio, internal_resolution]
+  features: [ratio]
   cfeatures:
-        perf_hacks:
-            prompt: PERFORMANCE HACKS
-            choices:
-                "Off": 0
-                "On":  1
-        hires_textures:
-            prompt: HIRES TEXTURES
-            choices:
-                "Off": 0
-                "On":  1                
-        widescreen_hack:
-            prompt: WIDESCREEN HACK
-            choices:
-                "Off": 0
-                "On":  1  
         enable_cheats:
             prompt: ENABLE CHEATS
             choices:
-                "Off": 0
-                "On":  1
-        vsync:
-            prompt: VSYNC
+                OFF: 0
+                ON:  1
+        perf_hacks:
+            prompt: PERFORMANCE HACKS
             choices:
-                "Off": False
-                "On":  True
+                OFF: 0
+                ON:  1
+        fastDiscSpeed:
+            prompt: SPEED UP DISC TRANSFER RATE
+            choices:
+                OFF: False
+                ON:  True
+        dual_core:
+            prompt: DUAL CORE
+            choices:
+                OFF: False
+                ON:  True
+        mmu:
+            prompt: MEMORY MANAGEMENT UNIT (MMU)
+            choices:
+                OFF: False
+                ON:  True
+        internalresolution:
+            prompt: INTERNAL RESOLUTION
+            choices:
+                1x Native: 1
+                2x Native: 2
+                3x Native: 3
+                4x Native: 4
+                5x Native: 5
+                6x Native: 6
+        widescreen_hack:
+            prompt: WIDESCREEN HACK
+            choices:
+                OFF: 0
+                ON:  1  
+        antialiasing:
+            prompt: ANTI-ALIASING
+            choices:
+                OFF: 0
+                2x:  2
+                4x:  4
+                8x:  8
+        hires_textures:
+            prompt: HIRES TEXTURES
+            choices:
+                OFF: 0
+                ON:  1                
         anisotropic_filtering:
             prompt: ANISOTROPIC FILTERING
             choices:
-                "Off": 0
-                "2x":  1
-                "4x":  2
-                "8x":  3
-                "16x": 4
-        antialiasing:
-            prompt: ANTIALIASING
+                OFF: 0
+                2x:  1
+                4x:  2
+                8x:  3
+                16x: 4
+        vsync:
+            prompt: V-SYNC
             choices:
-                "Off": 0
-                "2x":  2
-                "4x":  4
-                "8x":  8
+                OFF: False
+                ON:  True
   systems:
     wii:
         features: [emulated_wiimotes]                  

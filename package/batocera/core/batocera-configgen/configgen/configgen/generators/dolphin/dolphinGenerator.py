@@ -42,6 +42,24 @@ class DolphinGenerator(Generator):
             dolphinSettings.set("General", "ShowLag", "False")
             dolphinSettings.set("General", "ShowFrameCount", "False")
 
+        # dual core
+        if system.isOptSet('dual_core'):
+            dolphinSettings.set("Core", "CPUThread", system.config["dual_core"])
+        else:
+            dolphinSettings.set("Core", "CPUThread", "False")
+        
+        # memory management unit
+        if system.isOptSet('mmu'):
+            dolphinSettings.set("Core", "MMU", system.config["mmu"])
+        else:
+            dolphinSettings.set("Core", "MMU", "False")
+        
+        # speed up disc transfert rate
+        if system.isOptSet('fastDiscSpeed'):
+            dolphinSettings.set("Core", "FastDiscSpeed", system.config["fastDiscSpeed"])
+        else:
+            dolphinSettings.set("Core", "FastDiscSpeed", "False")	
+        
         # don't ask about statistics
         dolphinSettings.set("Analytics", "PermissionAsked", "True")
 
@@ -88,8 +106,7 @@ class DolphinGenerator(Generator):
         else:
             dolphinGFXSettings.set("Settings", "ShowFPS", "False")
         
-
-        
+         # enable cheats
         if system.isOptSet('enable_cheats') and system.getOptBoolean('enable_cheats'):
             dolphinSettings.set("Core", "EnableCheats", "True")
         else:
