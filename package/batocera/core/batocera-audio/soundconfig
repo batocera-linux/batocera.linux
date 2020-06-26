@@ -136,6 +136,9 @@ else
 			mixer $card 'TOHDMITX' on
 			mixer $card 'TOHDMITX I2S SRC' 'I2S A'
 			;;
+		odroidgoa)
+			amixer -c 0 sset 'Playback Path' 'SPK'
+			;;
 		*)
 			mixer $card 'FRDDR_A SINK 1 SEL' 'OUT 1'
 			mixer $card 'FRDDR_A SRC 1 EN' on
