@@ -1,0 +1,51 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 341513c..de89a97 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -1,5 +1,5 @@
+ # vim:noexpandtab:
+-cmake_minimum_required(VERSION 3.6)
++cmake_minimum_required(VERSION 3.5)
+ project(PPSSPP)
+ enable_language(ASM)
+ list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/Modules)
+@@ -107,6 +107,9 @@ endif()
+ # Needed for Globals.h
+ include_directories("${CMAKE_SOURCE_DIR}")
+ 
++include_directories(/opt/vc/include /opt/vc/lib/libzip/include)
++link_directories(/opt/vc/lib)
++
+ if(USING_EGL)
+ 	add_definitions(-DUSING_EGL)
+ endif()
+@@ -234,6 +234,7 @@ set(CommonARM
+ 	Common/ColorConvNEON.cpp)
+ source_group(ARM FILES ${CommonARM})
+ 
++if(NOT ARMV7)
+ set(CommonARM64
+ 	Common/Arm64Emitter.h
+ 	Common/Arm64Emitter.cpp
+@@ -241,6 +242,7 @@ set(CommonARM64
+ 	Common/ArmEmitter.cpp
+ 	Core/Util/DisArm64.cpp)
+ source_group(ARM64 FILES ${CommonARM64})
++endif()
+ 
+ set(CommonMIPS
+ 	Common/MipsCPUDetect.cpp
+@@ -660,12 +665,7 @@
+ 	set(LIBZIP_LIBRARY libzip)
+ endif()
+ 
+-# Arm platforms require at least libpng17.
+-if(ANDROID OR ARMV7 OR ARM64 OR ARM OR IOS)
+-	set(PNG_REQUIRED_VERSION 1.7)
+-else()
+-	set(PNG_REQUIRED_VERSION 1.6)
+-endif()
++set(PNG_REQUIRED_VERSION 1.6)
+ 
+ find_package(PNG ${PNG_REQUIRED_VERSION})
+ if(PNG_FOUND)

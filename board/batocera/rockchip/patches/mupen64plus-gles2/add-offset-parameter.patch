@@ -1,0 +1,113 @@
+MRFIXIT: Add a new parameter to the settings to control left offset since SDL2 center doesn't work
+--- a/src/Config.h
++++ b/src/Config.h
+@@ -12,7 +12,7 @@
+ 
+     struct
+     {
+-        int xpos, ypos, width, height, refwidth, refheight;
++        int xpos, ypos, width, height, refwidth, refheight, leftOffset;
+     } window;
+ 
+     struct
+--- a/src/Config.cpp
++++ b/src/Config.cpp
+@@ -58,6 +58,7 @@
+     {"#Window Settings:", NULL, 0},
+ //    {"window xpos", &config.window.xpos, 0},
+ //    {"window ypos", &config.window.ypos, 0},
++    {"window left offset", &config.window.leftOffset, 0},
+     {"window width", &config.window.width, 400},
+     {"window height", &config.window.height, 240},
+ //    {"window refwidth", &config.window.refwidth, 400},
+--- a/src/OpenGL.cpp
++++ b/src/OpenGL.cpp
+@@ -34,6 +34,8 @@
+ #define DEBUG_PRINT(...)
+ #endif
+ 
++int adjust = 0;
++
+ //// paulscode, function prototype missing from Yongzh's code
+ void OGL_UpdateDepthUpdate();
+ ////
+@@ -141,6 +143,7 @@
+ void OGL_InitStates()
+ {
+     GLint   success;
++    adjust = config.window.leftOffset;
+ 
+     glEnable( GL_CULL_FACE );
+ 	OPENGL_CHECK_ERRORS;
+@@ -187,7 +190,7 @@
+ 	glPolygonOffset(-3.0f, -3.0f);
+     
+ 	DEBUG_PRINT("Video: OpenGL.cpp:%d glViewport(%d,%d,%d,%d)\n", __LINE__, config.framebuffer.xpos, config.framebuffer.ypos, config.framebuffer.width, config.framebuffer.height);
+-    glViewport(config.framebuffer.xpos, config.framebuffer.ypos, config.framebuffer.width, config.framebuffer.height);
++    glViewport(config.framebuffer.xpos + adjust, config.framebuffer.ypos, config.framebuffer.width, config.framebuffer.height);
+ 	OPENGL_CHECK_ERRORS;
+     //create default shader program
+     LOG( LOG_VERBOSE, "Generate Default Shader Program.\n" );
+@@ -280,7 +283,7 @@
+     OGL_UpdateScale();
+ 
+ 	DEBUG_PRINT("Video: OpenGL.cpp:%d glViewport(%d,%d,%d,%d)\n", __LINE__, config.framebuffer.xpos, config.framebuffer.ypos, config.framebuffer.width, config.framebuffer.height);
+-    glViewport(config.framebuffer.xpos, config.framebuffer.ypos,
++    glViewport(config.framebuffer.xpos + adjust, config.framebuffer.ypos,
+             config.framebuffer.width, config.framebuffer.height);
+ 	OPENGL_CHECK_ERRORS;
+ }
+@@ -703,7 +706,7 @@
+     h = (int)(gSP.viewport.height * OGL.scaleY);
+ 
+ 	DEBUG_PRINT("Video: OpenGL.cpp:%d glViewport(%d,%d,%d,%d)\n", __LINE__, x, y, w, h);
+-    glViewport(x, y, w, h);
++    glViewport(x + adjust, y, w, h);
+ 	OPENGL_CHECK_ERRORS;
+ }
+ 
+@@ -728,7 +731,7 @@
+     y = config.framebuffer.ypos + (int)((VI.height - gDP.scissor.lry) * OGL.scaleY);
+     w = (int)((gDP.scissor.lrx - gDP.scissor.ulx) * OGL.scaleX);
+     h = (int)((gDP.scissor.lry - gDP.scissor.uly) * OGL.scaleY);
+-    glScissor(x, y, w, h);
++    glScissor(x + adjust, y, w, h);
+ 	OPENGL_CHECK_ERRORS;
+ }
+ 
+@@ -1294,7 +1297,7 @@
+     }
+ 
+ 	DEBUG_PRINT("Video: OpenGL.cpp:%d glViewport(%d,%d,%d,%d)\n", __LINE__, config.framebuffer.xpos, config.framebuffer.ypos, config.framebuffer.width, config.framebuffer.height);
+-    glViewport(config.framebuffer.xpos, config.framebuffer.ypos, config.framebuffer.width, config.framebuffer.height );
++    glViewport(config.framebuffer.xpos + adjust, config.framebuffer.ypos, config.framebuffer.width, config.framebuffer.height );
+ 	OPENGL_CHECK_ERRORS;
+ 
+     glDisable(GL_SCISSOR_TEST);
+@@ -1377,7 +1380,7 @@
+     }
+ 
+ 	DEBUG_PRINT("Video: OpenGL.cpp:%d glViewport(%d,%d,%d,%d)\n", __LINE__, config.framebuffer.xpos, config.framebuffer.ypos, config.framebuffer.width, config.framebuffer.height);
+-    glViewport(config.framebuffer.xpos, config.framebuffer.ypos, config.framebuffer.width, config.framebuffer.height);
++    glViewport(config.framebuffer.xpos + adjust, config.framebuffer.ypos, config.framebuffer.width, config.framebuffer.height);
+ 	OPENGL_CHECK_ERRORS;
+ 
+     glDisable(GL_CULL_FACE);
+@@ -1545,7 +1548,7 @@
+     if ((config.updateMode == SCREEN_UPDATE_AT_1ST_PRIMITIVE) && OGL.screenUpdate)
+         OGL_SwapBuffers();
+ 
+-    glScissor(config.framebuffer.xpos, config.framebuffer.ypos, config.framebuffer.width, config.framebuffer.height);
++    glScissor(config.framebuffer.xpos + adjust, config.framebuffer.ypos, config.framebuffer.width, config.framebuffer.height);
+ 	OPENGL_CHECK_ERRORS;
+ 
+     glClearColor( color[0], color[1], color[2], color[3] );
+@@ -1668,7 +1671,7 @@
+ 		OPENGL_CHECK_ERRORS;
+ 
+ 		DEBUG_PRINT("Video: OpenGL.cpp:%d glViewport(%d,%d,%d,%d)\n", __LINE__, config.window.xpos, config.window.ypos, config.window.width, config.window.height);
+-        glViewport(config.window.xpos, config.window.ypos, config.window.width, config.window.height);
++        glViewport(config.window.xpos + adjust, config.window.ypos, config.window.width, config.window.height);
+ 		OPENGL_CHECK_ERRORS;
+ 
+         static const float vert[] =
