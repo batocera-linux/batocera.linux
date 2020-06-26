@@ -53,12 +53,20 @@ define BATOCERA_SCRIPTS_INSTALL_WINE
 	install -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-scripts/scripts/batocera-wine $(TARGET_DIR)/usr/bin/
 endef
 
+define BATOCERA_SCRIPTS_INSTALL_ROCKCHIP
+	install -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-scripts/scripts/batocera-rockchip-suspend $(TARGET_DIR)/usr/bin/
+endef
+
 ifeq ($(BR2_PACKAGE_XSERVER_XORG_SERVER),y)
   BATOCERA_SCRIPTS_POST_INSTALL_TARGET_HOOKS += BATOCERA_SCRIPTS_INSTALL_XORG
 endif
 
 ifeq ($(BR2_PACKAGE_WINE),y)
   BATOCERA_SCRIPTS_POST_INSTALL_TARGET_HOOKS += BATOCERA_SCRIPTS_INSTALL_WINE
+endif
+
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_ROCKCHIP_ANY),y)
+  BATOCERA_SCRIPTS_POST_INSTALL_TARGET_HOOKS += BATOCERA_SCRIPTS_INSTALL_ROCKCHIP
 endif
 
 $(eval $(generic-package))
