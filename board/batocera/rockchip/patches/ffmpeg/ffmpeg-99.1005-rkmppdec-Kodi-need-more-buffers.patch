@@ -3,6 +3,8 @@ From: Jonas Karlman <jonas@kwiboo.se>
 Date: Fri, 31 Aug 2018 21:17:27 +0200
 Subject: [PATCH] rkmppdec: Kodi need more buffers
 
+MRFIXIT updated FRAMEGROUP_MAX_FRAMES from kwiboo's defined 24 to 40 to improve 4k 10bit playback
+
 ---
  libavcodec/rkmppdec.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
@@ -16,7 +18,7 @@ index 143d05bd51..c00f08c70b 100644
  
  #define RECEIVE_FRAME_TIMEOUT   100
 -#define FRAMEGROUP_MAX_FRAMES   16
-+#define FRAMEGROUP_MAX_FRAMES   24
++#define FRAMEGROUP_MAX_FRAMES   40
  #define INPUT_MAX_PACKETS       4
  
  typedef struct {

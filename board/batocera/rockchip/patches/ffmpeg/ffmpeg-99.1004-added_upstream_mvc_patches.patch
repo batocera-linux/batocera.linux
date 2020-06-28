@@ -3,6 +3,8 @@ From: Hendrik Leppkes <h.leppkes@gmail.com>
 Date: Sat, 9 Jan 2016 16:34:09 +0100
 Subject: [PATCH 1/4] avcodec: add h264_mvc codec id and profiles
 
+MRFIXIT updated to apply to 4.3
+
 ---
  libavcodec/avcodec.h    | 3 +++
  libavcodec/codec_desc.c | 7 +++++++
@@ -10,19 +12,20 @@ Subject: [PATCH 1/4] avcodec: add h264_mvc codec id and profiles
  libavformat/mpegts.c    | 2 +-
  4 files changed, 12 insertions(+), 1 deletion(-)
 
+--- a/libavcodec/codec_id.h
++++ b/libavcodec/codec_id.h
+@@ -278,6 +278,7 @@
+     AV_CODEC_ID_SVG,
+     AV_CODEC_ID_GDV,
+     AV_CODEC_ID_FITS,
++    AV_CODEC_ID_H264_MVC,
+     AV_CODEC_ID_IMM4,
+     AV_CODEC_ID_PROSUMER,
+     AV_CODEC_ID_MWSC,
 diff --git a/libavcodec/avcodec.h b/libavcodec/avcodec.h
 index d962b9cf0a..4c4581c895 100644
 --- a/libavcodec/avcodec.h
 +++ b/libavcodec/avcodec.h
-@@ -447,6 +447,8 @@ enum AVCodecID {
-     AV_CODEC_ID_GDV,
-     AV_CODEC_ID_FITS,
- 
-+    AV_CODEC_ID_H264_MVC,
-+
-     /* various PCM "codecs" */
-     AV_CODEC_ID_FIRST_AUDIO = 0x10000,     ///< A dummy id pointing at the start of audio codecs
-     AV_CODEC_ID_PCM_S16LE = 0x10000,
 @@ -2895,6 +2897,7 @@ typedef struct AVCodecContext {
  #define FF_PROFILE_H264_HIGH_444_PREDICTIVE  244
  #define FF_PROFILE_H264_HIGH_444_INTRA       (244|FF_PROFILE_H264_INTRA)
@@ -83,26 +86,13 @@ From: Hendrik Leppkes <h.leppkes@gmail.com>
 Date: Sat, 9 Jan 2016 16:34:40 +0100
 Subject: [PATCH 2/4] h264_parser: add support for parsing h264 mvc NALUs
 
+MRFIXIT updated for 4.3
+
 ---
- libavcodec/h264.h        |  2 ++
  libavcodec/h264_parser.c | 34 ++++++++++++++++++++++++++++++----
- libavcodec/parser.c      |  1 +
+ libavcodec/parsers.c      |  1 +
  3 files changed, 33 insertions(+), 4 deletions(-)
 
-diff --git a/libavcodec/h264.h b/libavcodec/h264.h
-index 650580bf3a..c44a0cbedd 100644
---- a/libavcodec/h264.h
-+++ b/libavcodec/h264.h
-@@ -41,7 +41,9 @@ enum {
-     H264_NAL_END_STREAM      = 11,
-     H264_NAL_FILLER_DATA     = 12,
-     H264_NAL_SPS_EXT         = 13,
-+    H264_NAL_SPS_SUBSET      = 15,
-     H264_NAL_AUXILIARY_SLICE = 19,
-+    H264_NAL_SLICE_EXT       = 20,
- };
- 
- 
 diff --git a/libavcodec/h264_parser.c b/libavcodec/h264_parser.c
 index 1a9840a62c..be8b9db9b0 100644
 --- a/libavcodec/h264_parser.c
@@ -121,17 +111,17 @@ index 1a9840a62c..be8b9db9b0 100644
              if (nalu_type == H264_NAL_SEI || nalu_type == H264_NAL_SPS ||
 -                nalu_type == H264_NAL_PPS || nalu_type == H264_NAL_AUD) {
 +                nalu_type == H264_NAL_PPS || nalu_type == H264_NAL_AUD ||
-+                nalu_type == H264_NAL_SPS_SUBSET) {
++                nalu_type == H264_NAL_SUB_SPS) {
                  if (pc->frame_start_found) {
                      i++;
                      goto found;
                  }
              } else if (nalu_type == H264_NAL_SLICE || nalu_type == H264_NAL_DPA ||
 -                       nalu_type == H264_NAL_IDR_SLICE) {
-+                       nalu_type == H264_NAL_IDR_SLICE || (p->is_mvc && nalu_type == H264_NAL_SLICE_EXT)) {
++                       nalu_type == H264_NAL_IDR_SLICE || (p->is_mvc && nalu_type == H264_NAL_EXTEN_SLICE)) {
                  state += 8;
 +
-+                if (nalu_type == H264_NAL_SLICE_EXT)
++                if (nalu_type == H264_NAL_EXTEN_SLICE)
 +                    i += 3; // skip mvc extension
                  continue;
              }
@@ -151,7 +141,7 @@ index 1a9840a62c..be8b9db9b0 100644
              break;
          nalu_type = state & 0x1F;
 -        if (nalu_type == H264_NAL_SPS) {
-+        if (nalu_type == H264_NAL_SPS || nalu_type == H264_NAL_SPS_SUBSET) {
++        if (nalu_type == H264_NAL_SPS || nalu_type == H264_NAL_SUB_SPS) {
              has_sps = 1;
          } else if (nalu_type == H264_NAL_PPS)
              has_pps = 1;
@@ -179,18 +169,18 @@ index 1a9840a62c..be8b9db9b0 100644
 +    .parser_close   = h264_close,
 +    .split          = h264_split,
 +};
-diff --git a/libavcodec/parser.c b/libavcodec/parser.c
+diff --git a/libavcodec/parsers.c b/libavcodec/parsers.c
 index f43b197d5e..f96e005ef3 100644
---- a/libavcodec/parser.c
-+++ b/libavcodec/parser.c
-@@ -54,6 +54,7 @@ extern AVCodecParser ff_gsm_parser;
+--- a/libavcodec/parsers.c
++++ b/libavcodec/parsers.c
+@@ -47,6 +47,7 @@ extern AVCodecParser ff_gsm_parser;
  extern AVCodecParser ff_h261_parser;
  extern AVCodecParser ff_h263_parser;
  extern AVCodecParser ff_h264_parser;
 +extern AVCodecParser ff_h264_mvc_parser;
  extern AVCodecParser ff_hevc_parser;
+ extern AVCodecParser ff_jpeg2000_parser;
  extern AVCodecParser ff_mjpeg_parser;
- extern AVCodecParser ff_mlp_parser;
 -- 
 2.17.0
 
@@ -228,6 +218,8 @@ From: popcornmix <popcornmix@gmail.com>
 Date: Mon, 28 May 2018 13:35:36 +0100
 Subject: [PATCH 4/4] fixup
 
+MRFIXIT updated for 4.3
+
 ---
  libavcodec/extract_extradata_bsf.c | 8 +++++---
  1 file changed, 5 insertions(+), 3 deletions(-)
@@ -241,7 +233,7 @@ index 082b3e749b..7612749efc 100644
      };
      static const int extradata_nal_types_h264[] = {
 -        H264_NAL_SPS, H264_NAL_PPS,
-+        H264_NAL_SPS, H264_NAL_SPS_SUBSET, H264_NAL_PPS,
++        H264_NAL_SPS, H264_NAL_SUB_SPS, H264_NAL_PPS,
      };
  
      ExtractExtradataContext *s = ctx->priv_data;
@@ -250,7 +242,7 @@ index 082b3e749b..7612749efc 100644
                  if (nal->type == HEVC_NAL_VPS) has_vps = 1;
              } else {
 -                if (nal->type == H264_NAL_SPS) has_sps = 1;
-+                if (nal->type == H264_NAL_SPS || nal->type == H264_NAL_SPS_SUBSET) has_sps = 1;
++                if (nal->type == H264_NAL_SPS || nal->type == H264_NAL_SUB_SPS) has_sps = 1;
              }
          } else if (s->remove) {
              filtered_size += nal->raw_size + 3;
@@ -260,9 +252,9 @@ index 082b3e749b..7612749efc 100644
          ((ctx->par_in->codec_id == AV_CODEC_ID_HEVC && has_sps && has_vps) ||
 -         (ctx->par_in->codec_id == AV_CODEC_ID_H264 && has_sps))) {
 +         ((ctx->par_in->codec_id == AV_CODEC_ID_H264 || ctx->par_in->codec_id == AV_CODEC_ID_H264_MVC) && has_sps))) {
-         AVBufferRef *filtered_buf;
-         uint8_t *extradata, *filtered_data;
- 
+         AVBufferRef *filtered_buf = NULL;
+         PutByteContext pb_filtered_data, pb_extradata;
+         uint8_t *extradata;
 @@ -253,6 +253,7 @@ static const struct {
  } extract_tab[] = {
      { AV_CODEC_ID_CAVS,       extract_extradata_mpeg4   },

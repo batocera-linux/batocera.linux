@@ -21,6 +21,8 @@ Date: Wed, 10 Apr 2019 13:39:21 -0700
 Subject: [PATCH 1/1] libavcodec/libdav1d: add libdav1d_get_format method in
  order to call ff_get_format
 
+MRFIXIT fixed to apply to 4.3
+
 ---
  libavcodec/libdav1d.c | 12 +++++++++++-
  1 file changed, 11 insertions(+), 1 deletion(-)
@@ -47,14 +49,12 @@ index 30c6eccfef..fa71834543 100644
  {
      AVCodecContext *c = opaque;
 @@ -214,7 +224,7 @@ static int libdav1d_receive_frame(AVCodecContext *c, AVFrame *frame)
-     frame->linesize[2] = p->stride[1];
+         p->seq_hdr->trc  == DAV1D_TRC_SRGB)
+         frame->format = c->pix_fmt = pix_fmt_rgb[p->seq_hdr->hbd];
+     else
+-        frame->format = c->pix_fmt = pix_fmt[p->p.layout][p->seq_hdr->hbd];
++        frame->format = c->pix_fmt = libdav1d_get_format(c, p);
  
-     c->profile = p->seq_hdr->profile;
--    frame->format = c->pix_fmt = pix_fmt[p->p.layout][p->seq_hdr->hbd];
-+    frame->format = c->pix_fmt = libdav1d_get_format(c, p);
-     frame->width = p->p.w;
-     frame->height = p->p.h;
-     if (c->width != p->p.w || c->height != p->p.h) {
--- 
-2.20.1
+     if (p->m.user_data.data)
+         memcpy(&frame->reordered_opaque, p->m.user_data.data, sizeof(frame->reordered_opaque));
 

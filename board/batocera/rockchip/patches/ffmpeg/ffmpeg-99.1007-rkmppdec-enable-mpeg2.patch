@@ -3,6 +3,8 @@ From: Jonas Karlman <jonas@kwiboo.se>
 Date: Wed, 12 Sep 2018 22:29:22 +0200
 Subject: [PATCH] rkmppdec: enable mpeg2
 
+MRFIXIT fixed to apply to 4.3
+
 ---
  configure              | 1 +
  libavcodec/Makefile    | 1 +
@@ -19,9 +21,9 @@ index 15e6c321b1..c17252f883 100755
  mpeg2_mmal_decoder_deps="mmal"
  mpeg2_mediacodec_decoder_deps="mediacodec"
 +mpeg2_rkmpp_decoder_deps="rkmpp"
- mpeg2_qsv_decoder_select="qsvdec mpegvideo_parser"
+ mpeg2_qsv_decoder_select="qsvdec"
  mpeg2_qsv_encoder_select="qsvenc"
- mpeg2_vaapi_encoder_deps="VAEncPictureParameterBufferMPEG2"
+ mpeg2_vaapi_encoder_select="cbs_mpeg2 vaapi_encode"
 diff --git a/libavcodec/Makefile b/libavcodec/Makefile
 index 4b8ad121db..f1580bb10b 100644
 --- a/libavcodec/Makefile
