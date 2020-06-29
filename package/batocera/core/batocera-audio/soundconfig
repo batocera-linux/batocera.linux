@@ -15,9 +15,9 @@ mixer() {
 (
 . /etc/profile
 
-if [ -f $HOME/.config/sound.conf ]; then
+if [ -f $HOME/configs/mixer.conf ]; then
 
-	alsactl restore -f $HOME/.config/sound.conf
+	alsactl restore -f $HOME/configs/mixer.conf
 
 else
 
@@ -157,6 +157,8 @@ else
 	# Amlogic GX HDMI and S/PDIF
 	mixer $card 'AIU HDMI CTRL SRC' 'I2S'
 	mixer $card 'AIU SPDIF SRC SEL' 'SPDIF'
+
+	alsactl store $HOME/configs/mixer.conf
 fi
 
 exit 0
