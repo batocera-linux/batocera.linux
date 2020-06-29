@@ -23,7 +23,10 @@ EOF
 	fi
 	printf "Starting pulseaudio: "
 	umask 077
-	PULSE_RUNTIME_PATH=/tmp/pulse HOME=/userdata/system /usr/bin/pulseaudio -D &> /dev/null
+	PULSE_RUNTIME_PATH=/tmp/pulse HOME=/userdata/system \
+		/usr/bin/pulseaudio -D \
+			--disallow-exit \
+			--exit-idle-time=-1 &> /dev/null
 	PULSE_RUNTIME_PATH=/tmp/pulse HOME=/userdata/system batocera-audio set "${AUDIO_DEV}"
 	echo "OK"
 }
