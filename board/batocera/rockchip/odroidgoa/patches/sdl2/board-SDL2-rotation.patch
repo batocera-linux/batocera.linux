@@ -171,12 +171,12 @@ index 216c45d..a6fe7f8 100644
          mode.driverdata = modedata;
 @@ -750,6 +788,7 @@ KMSDRM_CreateWindow(_THIS, SDL_Window * window)
      SDL_VideoData *viddata = (SDL_VideoData *)_this->driverdata;
-     SDL_WindowData *windata;
-     SDL_VideoDisplay *display;
+     SDL_DisplayData *dispdata = (SDL_DisplayData *)display->driverdata;
+     SDL_DisplayModeData *modedata = (SDL_DisplayModeData *)mode->driverdata;
 +    SDL_DisplayData *data;
+     drmModeConnector *conn = dispdata->conn;
  
- #if SDL_VIDEO_OPENGL_EGL
-     if (!_this->egl_data) {
+     if (!modedata) {
 @@ -812,6 +851,9 @@ KMSDRM_CreateWindow(_THIS, SDL_Window * window)
      SDL_SetMouseFocus(window);
      SDL_SetKeyboardFocus(window);
