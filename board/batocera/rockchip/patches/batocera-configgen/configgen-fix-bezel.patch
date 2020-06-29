@@ -13,14 +13,14 @@ MRFIXIT: rockchip adds the feature of defining a custom resolution in batocera.c
      else:
          infos = {}
  
-+    ra_width = 0
-+    ra_height = 0
++    ra_width = infos["width"]
++    ra_height = infos["height"]
 +    ra_res = subprocess.Popen(['/usr/bin/batocera-settings', '-command', 'load', '-key','retroarch.resolution'], stdout=subprocess.PIPE).communicate()[0].split("x")
 +    if unicode(ra_res[0]).isnumeric():
-+      ra_width = infos["width"] - int(ra_res[0].replace("\n",""))
++      ra_width = int(ra_res[0].replace("\n",""))
 +      if len(ra_res) > 1:
 +        if unicode(ra_res[1].replace("\n","")).isnumeric():
-+          ra_height = infos["height"] - int(ra_res[1].replace("\n",""))
++          ra_height = int(ra_res[1].replace("\n",""))
 +
      # if image is not at the correct size, find the correct size
      bezelNeedAdaptation = False
@@ -31,8 +31,8 @@ MRFIXIT: rockchip adds the feature of defining a custom resolution in batocera.c
              retroarchConfig['custom_viewport_y']      = infos["top"] * hratio
 -            retroarchConfig['custom_viewport_width']  = (infos["width"]  - infos["left"] - infos["right"])  * wratio
 -            retroarchConfig['custom_viewport_height'] = (infos["height"] - infos["top"]  - infos["bottom"]) * hratio
-+            retroarchConfig['custom_viewport_width']  = (infos["width"] - ra_width  - infos["left"] - infos["right"])  * wratio
-+            retroarchConfig['custom_viewport_height'] = (infos["height"] - ra_height - infos["top"]  - infos["bottom"]) * hratio
++            retroarchConfig['custom_viewport_width']  = (ra_width  - infos["left"] - infos["right"])  * wratio
++            retroarchConfig['custom_viewport_height'] = (ra_height - infos["top"]  - infos["bottom"]) * hratio
              retroarchConfig['video_message_pos_x']    = infos["messagex"] * wratio
              retroarchConfig['video_message_pos_y']    = infos["messagey"] * hratio
          else:
@@ -42,8 +42,8 @@ MRFIXIT: rockchip adds the feature of defining a custom resolution in batocera.c
                  retroarchConfig['custom_viewport_y']      = infos["top"] + yoffset/2
 -                retroarchConfig['custom_viewport_width']  = infos["width"]  - infos["left"] - infos["right"]
 -                retroarchConfig['custom_viewport_height'] = infos["height"] - infos["top"]  - infos["bottom"]
-+                retroarchConfig['custom_viewport_width']  = infos["width"] - ra_width - infos["left"] - infos["right"]
-+                retroarchConfig['custom_viewport_height'] = infos["height"] - ra_height - infos["top"]  - infos["bottom"]
++                retroarchConfig['custom_viewport_width']  = ra_width - infos["left"] - infos["right"]
++                retroarchConfig['custom_viewport_height'] = ra_height - infos["top"]  - infos["bottom"]
                  retroarchConfig['video_message_pos_x']    = infos["messagex"] + xoffset/2
                  retroarchConfig['video_message_pos_y']    = infos["messagey"] + yoffset/2
  
@@ -53,8 +53,8 @@ MRFIXIT: rockchip adds the feature of defining a custom resolution in batocera.c
              retroarchConfig['custom_viewport_y']      = infos["top"]
 -            retroarchConfig['custom_viewport_width']  = infos["width"]  - infos["left"] - infos["right"]
 -            retroarchConfig['custom_viewport_height'] = infos["height"] - infos["top"]  - infos["bottom"]
-+            retroarchConfig['custom_viewport_width']  = infos["width"] - ra_width  - infos["left"] - infos["right"]
-+            retroarchConfig['custom_viewport_height'] = infos["height"] - ra_height - infos["top"]  - infos["bottom"]
++            retroarchConfig['custom_viewport_width']  = ra_width  - infos["left"] - infos["right"]
++            retroarchConfig['custom_viewport_height'] = ra_height - infos["top"]  - infos["bottom"]
          retroarchConfig['video_message_pos_x']    = infos["messagex"]
          retroarchConfig['video_message_pos_y']    = infos["messagey"]
  
