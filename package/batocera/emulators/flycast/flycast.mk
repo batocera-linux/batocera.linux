@@ -17,6 +17,10 @@ ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86),y)
 	FLYCAST_PLATFORM = x86
 endif
 
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_ROCKCHIP_ANY),y)
+	FLYCAST_PLATFORM = rockchip
+endif
+
 define FLYCAST_UPDATE_INCLUDES
 	sed -i "s+/opt/vc+$(STAGING_DIR)/usr+g" $(@D)/shell/linux/Makefile
 	sed -i "s+sdl2-config+$(STAGING_DIR)/usr/bin/sdl2-config+g" $(@D)/shell/linux/Makefile
