@@ -44,10 +44,10 @@ case "${ACTION}" in
 		fi
 		# get sink_id
 		SINK_ID=${ALSA_DEV:0:1}
-		pacmd set-default-sink ${SINK_ID}
+		PULSE_RUNTIME_PATH=/tmp/pulse pacmd set-default-sink ${SINK_ID}
 		# re-route all apps to new sink
-		for APP in $(pacmd list-sink-inputs | awk '$1 == "index:" {print $2}'); do
-			pacmd move-sink-input ${APP} ${SINK_ID} &>/dev/null
+		for APP in $(PULSE_RUNTIME_PATH=/tmp/pulse pacmd list-sink-inputs | awk '$1 == "index:" {print $2}'); do
+			PULSE_RUNTIME_PATH=/tmp/pulse pacmd move-sink-input ${APP} ${SINK_ID} &>/dev/null
 		done
 	;;
 
