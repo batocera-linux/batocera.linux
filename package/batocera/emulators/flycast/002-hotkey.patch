@@ -11,7 +11,7 @@ index e1bf9ea..d623ff8 100644
  std::vector<std::shared_ptr<GamepadDevice>> GamepadDevice::_gamepads;
  std::mutex GamepadDevice::_gamepads_mutex;
  bool fast_forward_mode;
-@@ -93,6 +95,14 @@ bool GamepadDevice::gamepad_btn_input(u32 code, bool pressed)
+@@ -93,6 +95,17 @@ bool GamepadDevice::gamepad_btn_input(u32 code, bool pressed)
  			case DC_DPAD2_RIGHT:
  				kcode[_maple_port] |= (u16)DC_DPAD2_LEFT;
  				break;
@@ -23,18 +23,21 @@ index e1bf9ea..d623ff8 100644
 +				if (hotkey_pressed == 1)
 +					gui_open_settings();
 +				break;
++			case DC_BTN_D:
++				hotkey_pressed = 1;
++				break;
  			default:
  				break;
  			}
-@@ -110,7 +116,10 @@ bool GamepadDevice::gamepad_btn_input(u32 code, bool pressed)
- 		{
- 		case EMU_BTN_ESCAPE:
- 			if (pressed)
--				dc_exit();
-+				hotkey_pressed = 1;
-+			else{
-+				hotkey_pressed = 0;
-+			}
- 			break;
- 		case EMU_BTN_MENU:
- 			if (pressed)
+@@ -112,7 +112,9 @@
+ 			}
+ 		}
+-		else
++		else {
++			hotkey_pressed = 0;
+ 			kcode[_maple_port] |= (u16)key;
++		}
+ #ifdef TEST_AUTOMATION
+ 		if (record_input != NULL)
+ 			fprintf(record_input, "%ld button %x %04x\n", sh4_sched_now64(), _maple_port, kcode
+
