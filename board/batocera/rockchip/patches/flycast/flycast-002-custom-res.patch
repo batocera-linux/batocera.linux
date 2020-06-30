@@ -107,7 +107,7 @@ diff -Naur reicast_orig/core/linux-dist/drm_setres.cpp reicast_cust/core/linux-d
 +	FILE *fp;
 +
 +	/* Get preferred X and Y from config */
-+	fp = popen("/usr/bin/batocera-settings -command load -key reicast.resolution", "r");
++	fp = popen("/usr/bin/batocera-settings -command load -key flycast.resolution", "r");
 +	if (fp != NULL) {
 +		fgets(res, sizeof(res)-1, fp);
 +		pclose(fp);
