@@ -11,7 +11,7 @@ MRFIXIT: rockchip adds the feature of defining a custom resolution in batocera.c
 +	ra_width = gameResolution["width"]
 +	ra_height = gameResolution["height"]
 +	leftoffset = 0
-+	ra_res = subprocess.Popen(['/usr/bin/batocera-settings', '-command', 'load', '-key','retroarch.resolution'], stdout=subprocess.PIPE).communicate()[0].split("x")
++	ra_res = subprocess.Popen(['/usr/bin/batocera-settings', '-command', 'load', '-key','n64.resolution'], stdout=subprocess.PIPE).communicate()[0].split("x")
 +	if unicode(ra_res[0]).isnumeric():
 +		_width = int(ra_res[0].replace("\n",""))
 +		if len(ra_res) > 1:
