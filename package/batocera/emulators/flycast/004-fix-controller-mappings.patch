@@ -1,6 +1,4 @@
 MRFIXIT: controller mapping file needs to be reliable, player number specific, and allow for same controller guid to be used for two diff controllers. Also tell reicast not to add any evdevice unless it's been defined in the cfg, making configgen the master for controller mappings.
-This patch must match a mrfixit configgen patch.
-NOTE: This patch and my reicast stand alone patch match with the configgen patch to use the same emu.cfg settings.
 --- a/core/linux-dist/evdev.cpp
 +++ b/core/linux-dist/evdev.cpp
 @@ -1,6 +1,7 @@
@@ -59,7 +57,7 @@ NOTE: This patch and my reicast stand alone patch match with the configgen patch
 -	mapping_file += ".cfg";
 -
 -	return mapping_file;
-+	return "controllerP" + std::to_string(maple_port()+1) + ".cfg";
++	return "controller_P" + std::to_string(maple_port()+1) + ".cfg";
  }
  
  bool GamepadDevice::find_mapping(const char *custom_mapping /* = nullptr */)
@@ -71,7 +69,7 @@ NOTE: This patch and my reicast stand alone patch match with the configgen patch
  		_name = SDL_JoystickName(sdl_joystick);
  		sdl_joystick_instance = SDL_JoystickInstanceID(sdl_joystick);
 -		_unique_id = "sdl_joystick_" + std::to_string(sdl_joystick_instance);
-+		_unique_id = _name + std::to_string(maple_port);
++		_unique_id = _name + "_" + std::to_string(maple_port);
  		INFO_LOG(INPUT, "SDL: Opened joystick %d on port %d: '%s' unique_id=%s", sdl_joystick_instance, maple_port, _name.c_str(), _unique_id.c_str());
  
  		if (!find_mapping())

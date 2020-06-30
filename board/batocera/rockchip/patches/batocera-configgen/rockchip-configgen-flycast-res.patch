@@ -1,0 +1,22 @@
+MRFIXIT: rockchip adds the feature of defining a custom resolution in batocera.conf for flycast. Pull this resolution and use it in the config. 
+--- a/configgen/generators/flycast/flycastGenerator.py
++++ b/configgen/generators/flycast/flycastGenerator.py
+@@ -69,8 +69,16 @@
+         # resolution
+         if not Config.has_section("window"):
+             Config.add_section("window")
+-        Config.set("window", "height", gameResolution["height"])
+-        Config.set("window", "width", gameResolution["width"])
++        ra_width = gameResolution["width"]
++        ra_height = gameResolution["height"]
++        ra_res = subprocess.Popen(['/usr/bin/batocera-settings', '-command', 'load', '-key','flycast.resolution'], stdout=subprocess.PIPE).communicate()[0].split("x")
++        if unicode(ra_res[0]).isnumeric():
++                ra_width = int(ra_res[0].replace("\n",""))
++                if len(ra_res) > 1:
++                        if unicode(ra_res[1].replace("\n","")).isnumeric():
++                                ra_height = int(ra_res[1].replace("\n",""))
++        Config.set("window", "height", ra_height)
++        Config.set("window", "width", ra_width)
+ 
+         # custom : allow the user to configure directly emu.cfg via batocera.conf via lines like : dreamcast.flycast.section.option=value
+         for user_config in system.config:

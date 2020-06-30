@@ -7,6 +7,7 @@ import flycastControllers
 import shutil
 import os.path
 import ConfigParser
+import subprocess
 from shutil import copyfile
 from os.path import dirname
 from os.path import isdir
@@ -15,7 +16,7 @@ from os.path import isfile
 class FlycastGenerator(Generator):
 
     # Main entry of the module
-    # Configure fba and return a command
+    # Configure flycast and return a command
     def generate(self, system, rom, playersControllers, gameResolution):
         # Write emu.cfg to map joysticks, init with the default emu.cfg
         Config = ConfigParser.ConfigParser()
@@ -28,25 +29,26 @@ class FlycastGenerator(Generator):
         
         if not Config.has_section("input"):
             Config.add_section("input")
-        # For each pad detected
-        for index in range(len(playersControllers), 4):
-            Config.set("input", 'evdev_device_id_' + str(index+1), -1)
-            Config.set("input", 'evdev_mapping_' + str(index+1), "")
 
+        # Clear setting for pads NOT detected
+        for index in range(len(playersControllers), 5):
+            Config.set("input", 'device' + str(index), "10")
+            Config.set("input", 'device' + str(index) + ".1", "10")
+            Config.set("input", 'device' + str(index) + ".2", "10")
+
+	# Setup detected pads
         for index in playersControllers:
             controller = playersControllers[index]
         
-            # Get the event number
-            eventNum = controller.dev.replace('/dev/input/event', '')
-            
             # Write its mapping file
             controllerConfigFile = flycastControllers.generateControllerConfig(controller)
             
-            # set the evdev_device_id_X
-            Config.set("input", 'evdev_device_id_' + controller.player, eventNum)
-            
-            # Set the evdev_mapping_X
-            Config.set("input", 'evdev_mapping_' + controller.player, controllerConfigFile)
+            # Set the device events
+            Config.set("input", 'maple_' + controller.dev, int(controller.player) - 1)
+            # setup the device types
+            Config.set("input", 'device' + controller.player, "0")
+            Config.set("input", 'device' + controller.player + ".1", "1")
+            Config.set("input", 'device' + controller.player + ".2", "1")
         
         if not Config.has_section("players"):
             Config.add_section("players")
@@ -63,6 +65,12 @@ class FlycastGenerator(Generator):
         #    Config.set("config", "WideScreen", "1")
         else:
             Config.set("config", "rend.WideScreen", "0")
+
+        # resolution
+        if not Config.has_section("window"):
+            Config.add_section("window")
+        Config.set("window", "height", gameResolution["height"])
+        Config.set("window", "width", gameResolution["width"])
 
         # custom : allow the user to configure directly emu.cfg via batocera.conf via lines like : dreamcast.flycast.section.option=value
         for user_config in system.config:

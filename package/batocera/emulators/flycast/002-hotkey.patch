@@ -6,31 +6,34 @@ index e1bf9ea..d623ff8 100644
  u8 rt[4];
  u8 lt[4];
  
-+static int batocera_hotkey = 0;
++static int hotkey_pressed = 0;
 +
  std::vector<std::shared_ptr<GamepadDevice>> GamepadDevice::_gamepads;
  std::mutex GamepadDevice::_gamepads_mutex;
  bool fast_forward_mode;
-@@ -93,6 +95,10 @@ bool GamepadDevice::gamepad_btn_input(u32 code, bool pressed)
+@@ -93,6 +95,14 @@ bool GamepadDevice::gamepad_btn_input(u32 code, bool pressed)
  			case DC_DPAD2_RIGHT:
  				kcode[_maple_port] |= (u16)DC_DPAD2_LEFT;
  				break;
 +			case DC_BTN_START:
-+				if ((pressed) && (batocera_hotkey == 1))
++				if (hotkey_pressed == 1)
 +					dc_exit();
-+ 				break;
++				break;
++			case DC_BTN_A:
++				if (hotkey_pressed == 1)
++					gui_open_settings();
++				break;
  			default:
  				break;
  			}
-@@ -110,7 +116,11 @@ bool GamepadDevice::gamepad_btn_input(u32 code, bool pressed)
+@@ -110,7 +116,10 @@ bool GamepadDevice::gamepad_btn_input(u32 code, bool pressed)
  		{
  		case EMU_BTN_ESCAPE:
  			if (pressed)
 -				dc_exit();
-+				batocera_hotkey = 1;
++				hotkey_pressed = 1;
 +			else{
-+				batocera_hotkey = 0;
-+				gui_open_settings();
++				hotkey_pressed = 0;
 +			}
  			break;
  		case EMU_BTN_MENU:

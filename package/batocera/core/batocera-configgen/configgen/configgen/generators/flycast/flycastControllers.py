@@ -42,8 +42,8 @@ sections = { 'emulator' : ['mapping_name', 'btn_escape'],
 # Create the controller configuration file
 # returns its name
 def generateControllerConfig(controller):
-	# Set config file name
-    configFileName = "{}/evdev_{}.cfg".format(batoceraFiles.flycastMapping,controller.realName)
+    # Set config file name
+    configFileName = "{}/controller_P{}.cfg".format(batoceraFiles.flycastMapping,controller.player)
     Config = ConfigParser.ConfigParser()
 
     if not os.path.exists(os.path.dirname(configFileName)):
@@ -60,30 +60,29 @@ def generateControllerConfig(controller):
 
     # Parse controller inputs
     for index in controller.inputs:
-		input = controller.inputs[index]
-		if input.name not in flycastMapping:
-			continue
-		if input.type not in flycastMapping[input.name]:
-			continue
-		var = flycastMapping[input.name][input.type]
-		for i in sections:
-			if var in sections[i]:
-				section = i
-				break
+        input = controller.inputs[index]
+        if input.name not in flycastMapping:
+            continue
+        if input.type not in flycastMapping[input.name]:
+            continue
+        var = flycastMapping[input.name][input.type]
+        for i in sections:
+            if var in sections[i]:
+                section = i
+                break
 
-		# Sadly, we don't get the right axis code for Y hats. So, dirty hack time
-                if input.code is not None:
-		    code = input.code
-		    if input.type == 'hat':
-		        if input.name == 'up':
-    			    code = int(input.code) + 1
-		        else:
-    			    code = input.code
-		    Config.set(section, var, code)
+        # Sadly, we don't get the right axis code for Y hats. So, dirty hack time
+        if input.code is not None:
+            code = input.code
+            if input.type == 'hat':
+                if input.name == 'up':
+                    code = int(input.code) + 1
                 else:
-                    print("code not found for key " + input.name + " on pad " + controller.realName + " (please reconfigure your pad)")
+                    code = input.code
+            Config.set(section, var, code)
+        else:
+            print("code not found for key " + input.name + " on pad " + controller.realName + " (please reconfigure your pad)")
 
     Config.write(cfgfile)
     cfgfile.close()
     return configFileName
-
