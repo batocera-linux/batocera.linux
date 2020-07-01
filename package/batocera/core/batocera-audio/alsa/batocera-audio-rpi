@@ -26,7 +26,6 @@ case "${ACTION}" in
 		elif [ "${MODE}" == "jack" ];then	
 			cmdVal="1"	
 		fi	
-        echo "setting audio output mode : ${MODE}" >> $log	
 		amixer cset numid=3 $cmdVal || exit 1	
 	;;
 
