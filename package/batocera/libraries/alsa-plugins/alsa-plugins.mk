@@ -16,9 +16,9 @@ ALSA_PLUGINS_CONF_OPTS += --with-plugindir=/usr/lib/alsa-lib \
 	--disable-avcodec \
 	--with-speex=builtin
 
-define ALSA_PLUGINS_PULSEAUDIO_CONF
-	mv $(TARGET_DIR)/etc/alsa/conf.d/99-pulseaudio-default.conf.example \
-		$(TARGET_DIR)/etc/alsa/conf.d/99-pulseaudio-default.conf
-endef
+# define ALSA_PLUGINS_PULSEAUDIO_CONF
+# 	mv $(TARGET_DIR)/etc/alsa/conf.d/99-pulseaudio-default.conf.example \
+# 		$(TARGET_DIR)/etc/alsa/conf.d/99-pulseaudio-default.conf
+# endef
 
 $(eval $(autotools-package))

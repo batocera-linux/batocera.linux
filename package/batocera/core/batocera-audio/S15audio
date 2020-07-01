@@ -2,7 +2,6 @@
 #
 # Starts audio services
 #
-log="/userdata/system/logs/batocera.log"
 
 # get configured audio device from batocera.conf
 AUDIO_DEV=$(batocera-audio get)
@@ -10,11 +9,36 @@ if [ "${AUDIO_DEV}" == "" ];then
 	AUDIO_DEV="auto"
 fi
 
-start() {
+BACKEND=$(batocera-settings -command load -key audio.backend)
+if [ "${BACKEND}" == "" ];then
+	BACKEND="pulseaudio"
+fi
+
+start_alsa() {
+	printf "Starting alsa: "
+	batocera-audio set "${AUDIO_DEV}"
+	# batocera-audio
+	ln -sf /usr/bin/batocera-audio-alsa /usr/bin/batocera-audio
+	# remove pulseaudio conf
+	rm /etc/alsa/conf.d/99-pulseaudio-default.conf 2>/dev/null
+	echo "OK"
+}
+
+stop_alsa() {
+	printf "Stopping alsa: "
+	alsactl store -f /userdata/system/asound.state
+	echo "OK"
+}
+
+start_pulseaudio() {
+	# batocera-audio
+	ln -sf /usr/bin/batocera-audio-pulseaudio /usr/bin/batocera-audio
+	# default to pulseaudio
+	ln -sf /etc/alsa/conf.d/99-pulseaudio-default.conf.example \
+		/etc/alsa/conf.d/99-pulseaudio-default.conf
 	if [ ! -f /userdata/system/.config/pulse/default.pa ]; then
 		# remove alsa conf
 		rm /userdata/system/.asoundrc &>/dev/null
-		rm /userdata/system/asound.state &>/dev/null
 		# custom pulseadio config. if needed
 		mkdir -p /userdata/system/.config/pulse
 		cat > /userdata/system/.config/pulse/default.pa <<EOF
@@ -31,23 +55,23 @@ EOF
 	echo "OK"
 }
 
-stop() {
+stop_pulseaudio() {
 	printf "Stopping pulseaudio: "
 	PULSE_RUNTIME_PATH=/tmp/pulse HOME=/userdata/system /usr/bin/pulseaudio --kill
 	echo "OK"
 }
 
 restart() {
-	stop
-	start
+	stop_$BACKEND
+	start_$BACKEND
 }
 
 case "$1" in
  	start)
-		start
+		start_$BACKEND
 	;;
  	stop)
-		stop
+		start_$BACKEND
 	;;
  	restart|reload)
 		restart
