@@ -22,9 +22,9 @@ get_default_card() {
 
 case "${ACTION}" in
 	list)
-		pactl list sinks | grep alsa.long_card_name | awk '$1 == "alsa.long_card_name" {gsub(/"/, "", $3); print NR-1 " " $3}'
 		echo "auto"
-		echo "custom"
+		echo "custom"	
+		pactl list sinks | grep alsa.long_card_name | awk '$1 == "alsa.long_card_name" {gsub(/"/, "", $3); print NR-1 " " $3}'
 	;;
 
 	get)
@@ -53,4 +53,5 @@ case "${ACTION}" in
 
 	test)
 		aplay "/usr/share/sounds/Mallet.wav"
+	;;
 esac

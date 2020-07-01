@@ -1,0 +1,35 @@
+#!/bin/bash	
+
+ACTION=$1	
+
+case "${ACTION}" in	
+	"unlock-volume")	
+		echo "obsolete"
+	;;	
+
+	"list")	
+		echo "hdmi"	
+		echo "jack"	
+		echo "auto"	
+	;;	
+
+	"get")	
+		batocera-settings -command load -key audio.device	
+	;;	
+
+	"set")	
+		MODE=$2	
+		# this is specific to the rpi	
+		cmdVal="0"	
+		if [ "${MODE}" == "hdmi" ];then	
+			cmdVal="2"	
+		elif [ "${MODE}" == "jack" ];then	
+			cmdVal="1"	
+		fi	
+		amixer cset numid=3 $cmdVal || exit 1	
+	;;
+
+	test)
+		aplay "/usr/share/sounds/Mallet.wav"
+	;;
+esac

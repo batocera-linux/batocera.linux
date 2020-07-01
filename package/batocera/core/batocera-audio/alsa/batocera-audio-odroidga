@@ -1,0 +1,36 @@
+#!/bin/bash	
+
+ACTION=$1	
+
+case "${ACTION}" in	
+	"unlock-volume")
+		echo "obsolete"
+	;;	
+
+	"list")	
+		echo "auto"	
+		echo "speakers"
+		echo "headphone"	
+	;;	
+
+	"get")	
+		batocera-settings -command load -key audio.device	
+	;;	
+
+	"set")	
+		MODE=$2	
+		case "${MODE}" in	
+			"auto"|"speakers")	
+				amixer cset name='Playback Path' SPK	
+			;;
+
+			"headphone")	
+				amixer cset name='Playback Path' HP	
+			;;	
+		esac	
+	;;
+
+	test)
+		aplay "/usr/share/sounds/Mallet.wav"
+	;;
+esac
