@@ -16,11 +16,12 @@ fi
 
 start_alsa() {
 	printf "Starting alsa: "
-	batocera-audio set "${AUDIO_DEV}"
-	# batocera-audio
-	ln -sf /usr/bin/batocera-audio-alsa /usr/bin/batocera-audio
 	# remove pulseaudio conf
 	rm /etc/alsa/conf.d/99-pulseaudio-default.conf 2>/dev/null
+	# batocera-audio
+	ln -sf /usr/bin/batocera-audio-alsa /usr/bin/batocera-audio
+	batocera-audio set "${AUDIO_DEV}"
+	alsactl restore -f /userdata/system/asound.state
 	echo "OK"
 }
 
