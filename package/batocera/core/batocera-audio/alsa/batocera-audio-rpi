@@ -26,10 +26,10 @@ case "${ACTION}" in
 		elif [ "${MODE}" == "jack" ];then	
 			cmdVal="1"	
 		fi	
-		amixer cset numid=3 $cmdVal || exit 1	
+		amixer cset numid=3 $cmdVal || exit 1
 	;;
 
-	test)
+	"test")
 		aplay "/usr/share/sounds/Mallet.wav"
 	;;
 esac

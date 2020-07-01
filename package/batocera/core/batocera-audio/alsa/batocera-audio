@@ -17,7 +17,7 @@ case "${ACTION}" in
 		batocera-settings -command load -key audio.device	
 	;;	
 
-    "set")	
+	"set")	
 		MODE=$2	
 		# auto: no .asoundrc file	
 		# custom: don't touch the .asoundrc file	
@@ -25,19 +25,18 @@ case "${ACTION}" in
 		if [ "${MODE}" == "auto" ];then	
 			rm -rf /userdata/system/.asoundrc || exit 1	
 		elif [ "${MODE}" != "custom" ];then	
-			if echo "${MODE}" | grep -qE '^[0-9]*,[0-9]* '	
-	    	then	
+			if echo "${MODE}" | grep -qE '^[0-9]*,[0-9]* ';then	
 				cardnb=$(echo "${MODE}" | sed -e s+'^\([0-9]*\),.*$'+'\1'+)	
 				devicenb=$(echo "${MODE}" | sed -e s+'^[0-9]*,\([0-9]*\) .*$'+'\1'+)	
-				cat > /userdata/system/.asoundrc <<EOF	
+				cat > /userdata/system/.asoundrc <<EOF
 pcm.!default { type plug slave { pcm "hw:${cardnb},${devicenb}" } }	
 ctl.!default { type hw card ${cardnb} }	
-EOF	
+EOF
 			fi	
 		fi	
 	;;
 
-	test)
+	"test")
 		aplay "/usr/share/sounds/Mallet.wav"
 	;;
 esac
