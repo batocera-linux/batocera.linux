@@ -13,6 +13,7 @@ BATOCERA_EMULATIONSTATION_LICENSE = MIT, Apache-2.0
 BATOCERA_EMULATIONSTATION_DEPENDENCIES = sdl2 sdl2_mixer libfreeimage freetype alsa-lib libcurl vlc rapidjson
 # install in staging for debugging (gdb)
 BATOCERA_EMULATIONSTATION_INSTALL_STAGING = YES
+# BATOCERA_EMULATIONSTATION_OVERRIDE_SRCDIR = /sources/batocera-emulationstation
 
 ifeq ($(BR2_PACKAGE_HAS_LIBGL),y)
 BATOCERA_EMULATIONSTATION_DEPENDENCIES += libgl
