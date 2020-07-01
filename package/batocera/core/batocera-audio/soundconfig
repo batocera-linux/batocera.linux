@@ -15,9 +15,9 @@ mixer() {
 (
 . /etc/profile
 
-if [ -f $HOME/configs/mixer.conf ]; then
+if [ -f /userdata/system/asound.state ]; then
 
-	alsactl restore -f $HOME/configs/mixer.conf
+	alsactl restore -f /userdata/system/asound.state
 
 else
 
@@ -158,7 +158,7 @@ else
 	mixer $card 'AIU HDMI CTRL SRC' 'I2S'
 	mixer $card 'AIU SPDIF SRC SEL' 'SPDIF'
 
-	alsactl store $HOME/configs/mixer.conf
+	alsactl store /userdata/system/asound.state
 fi
 
 exit 0
