@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-BATOCERA_AUDIO_VERSION = 3.0
+BATOCERA_AUDIO_VERSION = 3.1
 BATOCERA_AUDIO_LICENSE = GPL
 BATOCERA_AUDIO_DEPENDENCIES = alsa-lib
 BATOCERA_AUDIO_SOURCE=
@@ -23,7 +23,8 @@ define BATOCERA_AUDIO_INSTALL_TARGET_CMDS
 	# default alsa configurations
 	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-audio/alsa/asoundrc-* \
 		$(TARGET_DIR)/usr/share/batocera/alsa/
-	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-audio/Mallet.wav $(TARGET_DIR)/usr/share/sounds
+	# sample audio files
+	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-audio/*.wav $(TARGET_DIR)/usr/share/sounds
 	# init script
 	install -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-audio/S15audio \
 		$(TARGET_DIR)/etc/init.d/S15audio
