@@ -1,4 +1,10 @@
 # default config for rockpro64
+#
+# default device: card 2: HDMI [HDMI], device 0: ff8a0000.i2s-i2s-hifi i2s-hifi-0 [ff8a0000.i2s-i2s-hifi i2s-hifi-0]
+# master volume control: softvol
+# mixer: dmix
+#
+
 pcm.!default {
 	type            plug
 	slave.pcm       "softvol"
