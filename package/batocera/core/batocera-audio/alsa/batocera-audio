@@ -21,9 +21,9 @@ case "${ACTION}" in
 
 	"set")	
 		MODE=$2	
-		# auto: no .asoundrc file	
+		# auto: no .asoundrc file or arch default config
 		# custom: don't touch the .asoundrc file	
-		# any other, create the .asoundrd file
+		# any other, create .asoundrc
 		if [ "${MODE}" == "auto" ];then	
 			if [ -f /usr/share/batocera/alsa/asoundrc-${ARCH} ]; then
 				cp /usr/share/batocera/alsa/asoundrc-${ARCH} /userdata/system/.asoundrc 
@@ -39,7 +39,9 @@ pcm.!default { type plug slave { pcm "hw:${cardnb},${devicenb}" } }
 ctl.!default { type hw card ${cardnb} }	
 EOF
 			fi	
-		fi	
+		fi
+		# make sure we use the default device once to create the necessary controls
+		aplay "/usr/share/sounds/500ms-of-silence.wav" > /dev/null
 	;;
 
 	"test")
