@@ -21,7 +21,9 @@ start_alsa() {
 	# batocera-audio
 	ln -sf /usr/bin/batocera-audio-alsa /usr/bin/batocera-audio
 	batocera-audio set "${AUDIO_DEV}"
-	alsactl restore -f /userdata/system/asound.state
+	if [ -f userdata/system/asound.state ]; then
+		alsactl restore -f /userdata/system/asound.state
+	fi
 	echo "OK"
 }
 
@@ -72,7 +74,7 @@ case "$1" in
 		start_$BACKEND
 	;;
  	stop)
-		start_$BACKEND
+		stop_$BACKEND
 	;;
  	restart|reload)
 		restart
