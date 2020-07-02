@@ -11,13 +11,13 @@ fi
 
 BACKEND=$(batocera-settings -command load -key audio.backend)
 if [ "${BACKEND}" == "" ];then
-	BACKEND="pulseaudio"
+	BACKEND="alsa"
 fi
 
 start_alsa() {
 	printf "Starting alsa: "
 	# remove pulseaudio conf
-	rm /etc/alsa/conf.d/99-pulseaudio-default.conf 2>/dev/null
+	rm -f /etc/alsa/conf.d/99-pulseaudio-default.conf
 	# batocera-audio
 	ln -sf /usr/bin/batocera-audio-alsa /usr/bin/batocera-audio
 	batocera-audio set "${AUDIO_DEV}"
