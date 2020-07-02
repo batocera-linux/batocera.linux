@@ -1,0 +1,17 @@
+# default config for rockpro64
+pcm.!default {
+	type            plug
+	slave.pcm       "softvol"
+}
+
+pcm.softvol {
+	type            softvol
+	slave {
+		pcm         "dmix"
+	}
+	control {
+		name        "Master"
+		card        2
+		device      0
+	}
+}

@@ -19,7 +19,10 @@ ALSA_SUFFIX =
 endif
 
 define BATOCERA_AUDIO_INSTALL_TARGET_CMDS
-	mkdir -p $(TARGET_DIR)/usr/lib/python2.7 $(TARGET_DIR)/usr/bin $(TARGET_DIR)/usr/share/sounds
+	mkdir -p $(TARGET_DIR)/usr/lib/python2.7 $(TARGET_DIR)/usr/bin $(TARGET_DIR)/usr/share/sounds $(TARGET_DIR)/usr/share/batocera/alsa
+	# default alsa configurations
+	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-audio/alsa/asoundrc-* \
+		$(TARGET_DIR)/usr/share/batocera/alsa/
 	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-audio/Mallet.wav $(TARGET_DIR)/usr/share/sounds
 	# init script
 	install -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-audio/S15audio \
