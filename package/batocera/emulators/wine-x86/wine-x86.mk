@@ -26,7 +26,7 @@ define WINE_X86_EXTRACT_CMDS
 endef
 
 define WINE_X86_INSTALL_TARGET_CMDS
-	cp -pr $(@D)/target/* $(TARGET_DIR)
+	cp -prn $(@D)/target/* $(TARGET_DIR)
 endef
 
 $(eval $(generic-package))
