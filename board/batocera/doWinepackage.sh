@@ -52,7 +52,7 @@ findDeps() {
 }
 
 findLibDir() {
-    for XDIR in "${G_TARGETDIR}/lib" "${G_TARGETDIR}/usr/lib"
+    for XDIR in "${G_TARGETDIR}/lib" "${G_TARGETDIR}/usr/lib" "${G_TARGETDIR}/usr/lib/pulseaudio" "${G_TARGETDIR}/usr/lib/wine" "${G_TARGETDIR}/usr/lib/gstreamer-1.0"
     do
         test -e "${XDIR}/${1}" && echo "${XDIR}" && return
     done
@@ -89,23 +89,15 @@ if ! mkdir -p "${TMPOUT}/lib32/wine"
 then
     exit 1
 fi
-if ! mkdir -p "${TMPOUT}/lib32/mono"
-then
-    exit 1
-fi
 if ! mkdir -p "${TMPOUT}/lib32/gstreamer-1.0"
 then
     exit 1
 fi
+if ! mkdir -p "${TMPOUT}/lib32/pulseaudio"
+then
+    exit 1
+fi
 if ! mkdir -p "${TMPOUT}/usr/share/wine"
-then
-    exit 1
-fi
-if ! mkdir -p "${TMPOUT}/usr/share/mono-2.0"
-then
-    exit 1
-fi
-if ! mkdir -p "${TMPOUT}/usr/share/libgc-mono"
 then
     exit 1
 fi
@@ -120,30 +112,29 @@ fi
 
 # libs32
 echo "libs..."
+cp -p  "${G_TARGETDIR}/usr/lib/"* "${TMPOUT}/lib32" 2>/dev/null
+cp -pr "${G_TARGETDIR}/usr/lib/wine/"* "${TMPOUT}/lib32/wine"
+cp -pr "${G_TARGETDIR}/usr/lib/gstreamer-1.0/"* "${TMPOUT}/lib32/gstreamer-1.0"
+cp -pr "${G_TARGETDIR}/usr/lib/pulseaudio/"* "${TMPOUT}/lib32/pulseaudio"
+cp -pr "${G_TARGETDIR}/usr/share/wine/"* "${TMPOUT}/usr/share/wine"
+cp -pr "${G_TARGETDIR}/usr/share/gst-plugins-base/"* "${TMPOUT}/usr/share/gst-plugins-base"
+cp -pr "${G_TARGETDIR}/usr/share/gstreamer-1.0/"* "${TMPOUT}/usr/share/gstreamer-1.0"
+ln -s /lib32/wine "${TMPOUT}/usr/lib/wine"
+ln -s /lib32/gstreamer-1.0 "${TMPOUT}/usr/lib/gstreamer-1.0"
+ln -s /lib32/pulseaudio "${TMPOUT}/usr/lib/pulseaudio"
+cp "${G_TARGETDIR}/usr/lib/libEGL_mesa"* "${TMPOUT}/lib32"
+cp "${G_TARGETDIR}/usr/lib/libGLX_mesa"* "${TMPOUT}/lib32"
 for BIN in "${G_TARGETDIR}/usr/bin/wine" \
 "${G_TARGETDIR}/usr/bin/wineserver" \
 "${G_TARGETDIR}/usr/lib/"*.so \
 "${G_TARGETDIR}/usr/lib/wine/"*.so \
 "${G_TARGETDIR}/usr/lib/gstreamer-1.0/"*.so \
+"${G_TARGETDIR}/usr/lib/pulseaudio/"*.so \
 "${G_TARGETDIR}/usr/lib/libEGL_mesa"* \
 "${G_TARGETDIR}/usr/lib/libGLX_mesa"*
 do
     findDeps "${BIN}" "${TMPOUT}/lib32" || exit 1
 done
-cp -p "${G_TARGETDIR}/usr/lib/"* "${TMPOUT}/lib32" 2>/dev/null
-cp -pr "${G_TARGETDIR}/usr/lib/wine/"* "${TMPOUT}/lib32/wine"
-cp -pr "${G_TARGETDIR}/usr/lib/mono/"* "${TMPOUT}/lib32/mono"
-cp -pr "${G_TARGETDIR}/usr/lib/gstreamer-1.0/"* "${TMPOUT}/lib32/gstreamer-1.0"
-cp -pr "${G_TARGETDIR}/usr/share/wine/"* "${TMPOUT}/usr/share/wine"
-cp -pr "${G_TARGETDIR}/usr/share/mono-2.0/"* "${TMPOUT}/usr/share/mono-2.0"
-cp -pr "${G_TARGETDIR}/usr/share/libgc-mono/"* "${TMPOUT}/usr/share/libgc-mono"
-cp -pr "${G_TARGETDIR}/usr/share/gst-plugins-base/"* "${TMPOUT}/usr/share/gst-plugins-base"
-cp -pr "${G_TARGETDIR}/usr/share/gstreamer-1.0/"* "${TMPOUT}/usr/share/gstreamer-1.0"
-ln -s /lib32/wine "${TMPOUT}/usr/lib/wine"
-ln -s /lib32/mono "${TMPOUT}/usr/lib/mono"
-ln -s /lib32/gstreamer-1.0 "${TMPOUT}/usr/lib/gstreamer-1.0"
-cp "${G_TARGETDIR}/usr/lib/libEGL_mesa"* "${TMPOUT}/lib32"
-cp "${G_TARGETDIR}/usr/lib/libGLX_mesa"* "${TMPOUT}/lib32"
 
 # binaries
 echo "binaries..."
@@ -151,7 +142,6 @@ mkdir -p "${TMPOUT}/usr/bin"                           || exit 1
 echo " wine binaries"
 cp -p "${G_TARGETDIR}/usr/bin/cabextract"          "${TMPOUT}/usr/bin/" || exit 1
 cp -p "${G_TARGETDIR}/usr/bin/wine"*          "${TMPOUT}/usr/bin/" || exit 1
-cp -p "${G_TARGETDIR}/usr/bin/mono"*          "${TMPOUT}/usr/bin/" || exit 1
 cp -p "${G_TARGETDIR}/usr/bin/gst"*          "${TMPOUT}/usr/bin/" || exit 1
 
 # dri
