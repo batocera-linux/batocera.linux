@@ -690,8 +690,11 @@ fi
 # wine package
 if grep -qE "^BR2_PACKAGE_WINE=y$" "${BR2_CONFIG}"
 then
-	echo "building the wine package..."
-	"${BR2_EXTERNAL_BATOCERA_PATH}"/board/batocera/doWinepackage.sh "${TARGET_DIR}" "${BINARIES_DIR}/wine" "${BATOCERA_BINARIES_DIR}" || exit 1
+	if grep -qE "^BR2_x86_i586=y$" "${BR2_CONFIG}"
+	then
+		echo "building the wine package..."
+		"${BR2_EXTERNAL_BATOCERA_PATH}"/board/batocera/doWinepackage.sh "${TARGET_DIR}" "${BINARIES_DIR}/wine" "${BATOCERA_BINARIES_DIR}" || exit 1
+	fi
 fi
 
 "${BR2_EXTERNAL_BATOCERA_PATH}"/scripts/linux/systemsReport.sh "${PWD}" "${BATOCERA_BINARIES_DIR}"
