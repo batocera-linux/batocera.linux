@@ -189,7 +189,6 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
     select BR2_PACKAGE_YAD        if BR2_PACKAGE_WINE
     select BR2_PACKAGE_GSTREAMER1 if BR2_PACKAGE_WINE
     select BR2_PACKAGE_GST1_LIBAV if BR2_PACKAGE_WINE
-    select BR2_PACKAGE_MONO       if BR2_PACKAGE_WINE
 
     # required gcc flags
     # required for different emulators, i suggest to enable it always to not have different behavior depending on boards
