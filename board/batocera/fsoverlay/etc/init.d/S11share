@@ -109,16 +109,16 @@ Name=${settings_ssid}
 EOF
 	if test "${settings_key}" != ""
 	then
-	    settings_key_dec=$(batocera-encode decode "${settings_key}")
+	    settings_key_dec=$( "${settings_key}")
 	    echo "Passphrase=${settings_key_dec}" >> "${settings_file}"
 
-	    # saved the value encoded
-	    if test "${settings_key}" = "${settings_key_dec}"
-	    then
-		# sed the replace by the secure value in batocera.conf
-		#settings_key=$(batocera-encode encode "${settings_key}")
-		sed -i -e s@'^[ \t]*wifi.key[ \t]*=.*$'@"wifi.key=${settings_key}"@ "/userdata/system/batocera.conf"
-	    fi
+	    # # saved the value encoded
+	    # if test "${settings_key}" = "${settings_key_dec}"
+	    # then
+		# # sed the replace by the secure value in batocera.conf
+		# #settings_key=$(batocera-encode encode "${settings_key}")
+		# sed -i -e s@'^[ \t]*wifi.key[ \t]*=.*$'@"wifi.key=${settings_key}"@ "/userdata/system/batocera.conf"
+	    # fi
 	fi
     fi
 }
