@@ -1,0 +1,59 @@
+From 10bfbd94a9228b4a3e92e72a35b98d47de26a7d6 Mon Sep 17 00:00:00 2001
+From: chewitt <christianshewitt@gmail.com>
+Date: Thu, 14 May 2020 13:32:26 +0000
+Subject: [PATCH 3/3] add Amlogic cards to aliases.conf
+
+---
+ src/conf/cards/aliases.conf | 36 ++++++++++++++++++++++++++++++++++++
+ 1 file changed, 36 insertions(+)
+
+diff --git a/src/conf/cards/aliases.conf b/src/conf/cards/aliases.conf
+index 18a920f4..d157a296 100644
+--- a/src/conf/cards/aliases.conf
++++ b/src/conf/cards/aliases.conf
+@@ -58,6 +58,42 @@ CMI8787 cards.CMI8788
+ pistachio cards.pistachio-card
+ VC4-HDMI cards.vc4-hdmi
+ 
++# Amlogic HDMI
++GXBB-NANOPI-K2 cards.AMLOGIC-HDMI
++GXBB-ODROID-C2 cards.AMLOGIC-HDMI
++GXBB-NEXBOX-A95X cards.AMLOGIC-HDMI
++GXBB-P201 cards.AMLOGIC-HDMI
++GXBB-WETEK-HUB cards.AMLOGIC-HDMI
++GXL-LIBRETECH-S805X-AC cards.AMLOGIC-HDMI
++GXL-LIBRETECH-S905X-CC cards.AMLOGIC-HDMI
++GXL-LIBRETECH-S9XX-PC cards.AMLOGIC-HDMI
++GXL-S905X-P212 cards.AMLOGIC-HDMI
++GXM-KHADAS-VIM2 cards.AMLOGIC-HDMI
++G12A-SEI510 cards.AMLOGIC-HDMI
++G12B-GTKING-PRO cards.AMLOGIC-HDMI
++G12B-KHADAS-VIM3 cards.AMLOGIC-HDMI
++G12B-ODROID-N2 cards.AMLOGIC-HDMI
++SM1-A95XF3-AIR cards.AMLOGIC-HDMI
++SM1-KHADAS-VIM3L cards.AMLOGIC-HDMI
++SM1-ODROID-C4 cards.AMLOGIC-HDMI
++SM1-SEI610 cards.AMLOGIC-HDMI
++SM1-X96-AIR cards.AMLOGIC-HDMI
++
++# Amlogic HDMI-SPDIF
++GXBB-P200 cards.AMLOGIC-HDMI-SPDIF
++GXBB-VEGA-S95 cards.AMLOGIC-HDMI-SPDIF
++GXBB-WETEK-PLAY2 cards.AMLOGIC-HDMI-SPDIF
++GX-P230-Q200 cards.AMLOGIC-HDMI-SPDIF
++GXM-NEXBOX-A1 cards.AMLOGIC-HDMI-SPDIF
++GXM-RBOX-PRO cards.AMLOGIC-HDMI-SPDIF
++GXM-WETEK-CORE2 cards.AMLOGIC-HDMI-SPDIF
++G12A-TANIX-TX5MAX cards.AMLOGIC-HDMI-SPDIF
++G12A-U200 cards.AMLOGIC-HDMI-SPDIF
++G12A-X96-MAX cards.AMLOGIC-HDMI-SPDIF
++G12B-GSKING-X cards.AMLOGIC-HDMI-SPDIF
++G12B-GTKING cards.AMLOGIC-HDMI-SPDIF
++G12B-UGOOS-AM6 cards.AMLOGIC-HDMI-SPDIF
++
+ <confdir:pcm/default.conf>
+ <confdir:pcm/dmix.conf>
+ <confdir:pcm/dsnoop.conf>
+-- 
+2.17.1
+
