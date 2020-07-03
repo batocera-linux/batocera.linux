@@ -123,15 +123,22 @@ mixer $card 'AIF1 Slot 0 Digital DAC' on
 ARCH=$(cat /usr/share/batocera/batocera.arch)
 # Amlogic G12 HDMI
 case ${ARCH} in
+	azw,gsking-x)
+		mixer $card 'FRDDR_A SINK 1 SEL' 'OUT 0'
+		mixer $card 'FRDDR_A SRC 1 EN' on
+		mixer $card 'TDMOUT_A SRC SEL' 'IN 0'
+		mixer $card 'FRDDR_B SINK 1 SEL' 'OUT 0'
+		mixer $card 'FRDDR_B SRC 1 EN' on
+		mixer $card 'TDMOUT_B SRC SEL' 'IN 0'
+		mixer $card 'TOHDMITX' on
+		mixer $card 'TOHDMITX I2S SRC' 'I2S A'
+		;;
 	khadas,vim3)
 		mixer $card 'FRDDR_A SINK 1 SEL' 'OUT 0'
 		mixer $card 'FRDDR_A SRC 1 EN' on
 		mixer $card 'TDMOUT_A SRC SEL' 'IN 0'
 		mixer $card 'TOHDMITX' on
 		mixer $card 'TOHDMITX I2S SRC' 'I2S A'
-		;;
-	odroidgoa)
-		mixer $card 'Playback Path' 'SPK'
 		;;
 	*)
 		mixer $card 'FRDDR_A SINK 1 SEL' 'OUT 1'
@@ -151,6 +158,9 @@ mixer $card 'SPDIFOUT Playback' on
 # Amlogic GX HDMI and S/PDIF
 mixer $card 'AIU HDMI CTRL SRC' 'I2S'
 mixer $card 'AIU SPDIF SRC SEL' 'SPDIF'
+
+# Odroid Go Advance Speaker
+mixer $card 'Playback Path' 'SPK'
 
 exit 0
 )&
