@@ -1,0 +1,213 @@
+From 0655dc777e609120507d26c0821e9009b31accaa Mon Sep 17 00:00:00 2001
+From: Maxime Jourdan <mjourdan@baylibre.com>
+Date: Fri, 5 Jun 2020 07:25:37 +0000
+Subject: [PATCH 093/152] FROMLIST(v1): media: meson: vdec: handle compressed
+ output pixel format negociation with consumer
+
+Add the necessary to add support for negociating the compressed buffer
+pixel format with the V4L2 M2M consumer, and allocating the right
+buffers in this case.
+
+Until a proper mechanism exists to pass a modifier along the pixel format,
+only the generic V4L2_PIX_FMT_YUV420_8BIT and V4L2_PIX_FMT_YUV420_10BIT
+format are passed in v4l2_pix_format_mplane struct for consumer.
+
+Signed-off-by: Maxime Jourdan <mjourdan@baylibre.com>
+Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
+---
+ .../media/meson/vdec/codec_hevc_common.c      |  1 -
+ drivers/staging/media/meson/vdec/vdec.c       | 46 +++++++++++++++++++
+ drivers/staging/media/meson/vdec/vdec.h       |  3 ++
+ .../staging/media/meson/vdec/vdec_helpers.c   | 23 ++++++++++
+ .../staging/media/meson/vdec/vdec_platform.c  |  9 ++--
+ 5 files changed, 78 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/staging/media/meson/vdec/codec_hevc_common.c b/drivers/staging/media/meson/vdec/codec_hevc_common.c
+index 73dae40b3319..78fada7b8fa9 100644
+--- a/drivers/staging/media/meson/vdec/codec_hevc_common.c
++++ b/drivers/staging/media/meson/vdec/codec_hevc_common.c
+@@ -10,7 +10,6 @@
+ #include "vdec_helpers.h"
+ #include "hevc_regs.h"
+ 
+-#define MMU_COMPRESS_HEADER_SIZE 0x48000
+ #define MMU_MAP_SIZE 0x4800
+ 
+ const u16 vdec_hevc_parser_cmd[] = {
+diff --git a/drivers/staging/media/meson/vdec/vdec.c b/drivers/staging/media/meson/vdec/vdec.c
+index 3040136ceb77..9fb075f69cb9 100644
+--- a/drivers/staging/media/meson/vdec/vdec.c
++++ b/drivers/staging/media/meson/vdec/vdec.c
+@@ -192,6 +192,7 @@ static int vdec_queue_setup(struct vb2_queue *q, unsigned int *num_buffers,
+ {
+ 	struct amvdec_session *sess = vb2_get_drv_priv(q);
+ 	u32 output_size = amvdec_get_output_size(sess);
++	u32 revision = sess->core->platform->revision;
+ 
+ 	if (*num_planes) {
+ 		switch (q->type) {
+@@ -215,6 +216,12 @@ static int vdec_queue_setup(struct vb2_queue *q, unsigned int *num_buffers,
+ 				    sizes[2] < output_size / 4)
+ 					return -EINVAL;
+ 				break;
++			case V4L2_PIX_FMT_YUV420_8BIT:
++			case V4L2_PIX_FMT_YUV420_10BIT:
++				if (*num_planes != 1 ||
++				    sizes[0] < MMU_COMPRESS_HEADER_SIZE)
++					return -EINVAL;
++				break;
+ 			default:
+ 				return -EINVAL;
+ 			}
+@@ -244,6 +251,24 @@ static int vdec_queue_setup(struct vb2_queue *q, unsigned int *num_buffers,
+ 			sizes[2] = output_size / 4;
+ 			*num_planes = 3;
+ 			break;
++		case V4L2_PIX_FMT_YUV420_8BIT:
++			if (revision >= VDEC_REVISION_G12A)
++				sizes[0] = MMU_COMPRESS_HEADER_SIZE;
++			else
++				sizes[0] = amvdec_amfbc_size(sess->width,
++							     sess->height,
++							     0, 0);
++			*num_planes = 1;
++			break;
++		case V4L2_PIX_FMT_YUV420_10BIT:
++			if (revision >= VDEC_REVISION_G12A)
++				sizes[0] = MMU_COMPRESS_HEADER_SIZE;
++			else
++				sizes[0] = amvdec_amfbc_size(sess->width,
++							     sess->height,
++							     1, 0);
++			*num_planes = 1;
++			break;
+ 		default:
+ 			return -EINVAL;
+ 		}
+@@ -496,6 +521,7 @@ vdec_try_fmt_common(struct amvdec_session *sess, u32 size,
+ 	struct v4l2_plane_pix_format *pfmt = pixmp->plane_fmt;
+ 	const struct amvdec_format *fmts = sess->core->platform->formats;
+ 	const struct amvdec_format *fmt_out = NULL;
++	u32 revision = sess->core->platform->revision;
+ 	u32 output_size = 0;
+ 
+ 	memset(pfmt[0].reserved, 0, sizeof(pfmt[0].reserved));
+@@ -548,6 +574,26 @@ vdec_try_fmt_common(struct amvdec_session *sess, u32 size,
+ 			pfmt[2].sizeimage = output_size / 2;
+ 			pfmt[2].bytesperline = ALIGN(pixmp->width, 32) / 2;
+ 			pixmp->num_planes = 3;
++		} else if (pixmp->pixelformat == V4L2_PIX_FMT_YUV420_8BIT) {
++			if (revision >= VDEC_REVISION_G12A) {
++				pfmt[0].sizeimage = MMU_COMPRESS_HEADER_SIZE;
++			} else {
++				pfmt[0].sizeimage =
++					amvdec_amfbc_size(pixmp->width,
++							  pixmp->height, 0, 0);
++				pfmt[0].bytesperline = pixmp->width;
++			}
++			pixmp->num_planes = 1;
++		} else if (pixmp->pixelformat == V4L2_PIX_FMT_YUV420_10BIT) {
++			if (revision >= VDEC_REVISION_G12A) {
++				pfmt[0].sizeimage = MMU_COMPRESS_HEADER_SIZE;
++			} else {
++				pfmt[0].sizeimage =
++					amvdec_amfbc_size(pixmp->width,
++							  pixmp->height, 1, 0);
++				pfmt[0].bytesperline = pixmp->width;
++			}
++			pixmp->num_planes = 1;
+ 		}
+ 	}
+ 
+diff --git a/drivers/staging/media/meson/vdec/vdec.h b/drivers/staging/media/meson/vdec/vdec.h
+index e3e4af73447a..1412054a70c4 100644
+--- a/drivers/staging/media/meson/vdec/vdec.h
++++ b/drivers/staging/media/meson/vdec/vdec.h
+@@ -17,6 +17,9 @@
+ 
+ #include "vdec_platform.h"
+ 
++/* MMU header size for codecs using the IOMMU + FBC */
++#define MMU_COMPRESS_HEADER_SIZE 0x48000
++
+ /* 32 buffers in 3-plane YUV420 */
+ #define MAX_CANVAS (32 * 3)
+ 
+diff --git a/drivers/staging/media/meson/vdec/vdec_helpers.c b/drivers/staging/media/meson/vdec/vdec_helpers.c
+index 320cac1ed03e..7166605b89ae 100644
+--- a/drivers/staging/media/meson/vdec/vdec_helpers.c
++++ b/drivers/staging/media/meson/vdec/vdec_helpers.c
+@@ -299,6 +299,22 @@ static void dst_buf_done(struct amvdec_session *sess,
+ 		vbuf->vb2_buf.planes[1].bytesused = output_size / 4;
+ 		vbuf->vb2_buf.planes[2].bytesused = output_size / 4;
+ 		break;
++	case V4L2_PIX_FMT_YUV420_8BIT:
++		if (sess->core->platform->revision >= VDEC_REVISION_G12A)
++			vbuf->vb2_buf.planes[0].bytesused =
++				MMU_COMPRESS_HEADER_SIZE;
++		else
++			vbuf->vb2_buf.planes[0].bytesused =
++			   amvdec_amfbc_size(sess->width, sess->height, 0, 0);
++		break;
++	case V4L2_PIX_FMT_YUV420_10BIT:
++		if (sess->core->platform->revision >= VDEC_REVISION_G12A)
++			vbuf->vb2_buf.planes[0].bytesused =
++				MMU_COMPRESS_HEADER_SIZE;
++		else
++			vbuf->vb2_buf.planes[0].bytesused =
++			   amvdec_amfbc_size(sess->width, sess->height, 1, 0);
++		break;
+ 	}
+ 
+ 	vbuf->vb2_buf.timestamp = timestamp;
+@@ -478,6 +494,13 @@ void amvdec_src_change(struct amvdec_session *sess, u32 width,
+ 	sess->status = STATUS_NEEDS_RESUME;
+ 	sess->bitdepth = bitdepth;
+ 
++	if (sess->pixfmt_cap == V4L2_PIX_FMT_YUV420_8BIT &&
++	    bitdepth == 10)
++		sess->pixfmt_cap = V4L2_PIX_FMT_YUV420_10BIT;
++	else if (sess->pixfmt_cap == V4L2_PIX_FMT_YUV420_10BIT &&
++		 bitdepth == 8)
++		sess->pixfmt_cap = V4L2_PIX_FMT_YUV420_8BIT;
++
+ 	dev_dbg(sess->core->dev, "Res. changed (%ux%u), DPB %u, bitdepth %u\n",
+ 		width, height, dpb_size, bitdepth);
+ 	v4l2_event_queue_fh(&sess->fh, &ev);
+diff --git a/drivers/staging/media/meson/vdec/vdec_platform.c b/drivers/staging/media/meson/vdec/vdec_platform.c
+index eabbebab2da2..efc090d2a3bb 100644
+--- a/drivers/staging/media/meson/vdec/vdec_platform.c
++++ b/drivers/staging/media/meson/vdec/vdec_platform.c
+@@ -61,7 +61,8 @@ static const struct amvdec_format vdec_formats_gxl[] = {
+ 		.vdec_ops = &vdec_hevc_ops,
+ 		.codec_ops = &codec_vp9_ops,
+ 		.firmware_path = "meson/vdec/gxl_vp9.bin",
+-		.pixfmts_cap = { V4L2_PIX_FMT_NV12M, 0 },
++		.pixfmts_cap = { V4L2_PIX_FMT_NV12M, V4L2_PIX_FMT_YUV420_8BIT,
++				 V4L2_PIX_FMT_YUV420_10BIT, 0 },
+ 		.flags = V4L2_FMT_FLAG_COMPRESSED |
+ 			 V4L2_FMT_FLAG_DYN_RESOLUTION,
+ 	}, {
+@@ -149,7 +150,8 @@ static const struct amvdec_format vdec_formats_g12a[] = {
+ 		.vdec_ops = &vdec_hevc_ops,
+ 		.codec_ops = &codec_vp9_ops,
+ 		.firmware_path = "meson/vdec/g12a_vp9.bin",
+-		.pixfmts_cap = { V4L2_PIX_FMT_NV12M, 0 },
++		.pixfmts_cap = { V4L2_PIX_FMT_NV12M, V4L2_PIX_FMT_YUV420_8BIT,
++				 V4L2_PIX_FMT_YUV420_10BIT, 0 },
+ 		.flags = V4L2_FMT_FLAG_COMPRESSED |
+ 			 V4L2_FMT_FLAG_DYN_RESOLUTION,
+ 	}, {
+@@ -199,7 +201,8 @@ static const struct amvdec_format vdec_formats_sm1[] = {
+ 		.vdec_ops = &vdec_hevc_ops,
+ 		.codec_ops = &codec_vp9_ops,
+ 		.firmware_path = "meson/vdec/sm1_vp9_mmu.bin",
+-		.pixfmts_cap = { V4L2_PIX_FMT_NV12M, 0 },
++		.pixfmts_cap = { V4L2_PIX_FMT_NV12M, V4L2_PIX_FMT_YUV420_8BIT,
++				 V4L2_PIX_FMT_YUV420_10BIT, 0 },
+ 		.flags = V4L2_FMT_FLAG_COMPRESSED |
+ 			 V4L2_FMT_FLAG_DYN_RESOLUTION,
+ 	}, {
+-- 
+2.17.1
+

@@ -1,0 +1,85 @@
+From 268e19c0f927b6dc83b549f0458b3e2f0d6127f4 Mon Sep 17 00:00:00 2001
+From: Jerome Brunet <jbrunet@baylibre.com>
+Date: Wed, 13 May 2020 07:18:27 +0000
+Subject: [PATCH 027/152] FROMGIT: arm64: dts: meson: p230-q200: add internal
+ DAC support
+
+Add the necessary bits to support the internal audio DAC the p230/q200
+reference design derivated boards. The output of this DAC is provided
+on the 3.5mm jack connector
+
+Signed-off-by: Jerome Brunet <jbrunet@baylibre.com>
+---
+ .../boot/dts/amlogic/meson-gx-p23x-q20x.dtsi  | 32 +++++++++++++++++++
+ 1 file changed, 32 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/amlogic/meson-gx-p23x-q20x.dtsi b/arch/arm64/boot/dts/amlogic/meson-gx-p23x-q20x.dtsi
+index 99c1f7f9d37e..358728f1ee93 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-gx-p23x-q20x.dtsi
++++ b/arch/arm64/boot/dts/amlogic/meson-gx-p23x-q20x.dtsi
+@@ -16,6 +16,13 @@
+ 		ethernet0 = &ethmac;
+ 	};
+ 
++	dio2133: analog-amplifier {
++		compatible = "simple-audio-amplifier";
++		sound-name-prefix = "AU2";
++		VCC-supply = <&hdmi_5v>;
++		enable-gpios = <&gpio GPIOH_5 GPIO_ACTIVE_HIGH>;
++	};
++
+ 	spdif_dit: audio-codec-0 {
+ 		#sound-dai-cells = <0>;
+ 		compatible = "linux,spdif-dit";
+@@ -115,6 +122,14 @@
+ 	sound {
+ 		compatible = "amlogic,gx-sound-card";
+ 		model = "GX-P230-Q200";
++		audio-aux-devs = <&dio2133>;
++		audio-widgets = "Line", "Lineout";
++		audio-routing = "AU2 INL", "ACODEC LOLP",
++				"AU2 INR", "ACODEC LORP",
++				"AU2 INL", "ACODEC LOLN",
++				"AU2 INR", "ACODEC LORN",
++				"Lineout", "AU2 OUTL",
++				"Lineout", "AU2 OUTR";
+ 		assigned-clocks = <&clkc CLKID_MPLL0>,
+ 				  <&clkc CLKID_MPLL1>,
+ 				  <&clkc CLKID_MPLL2>;
+@@ -140,6 +155,10 @@
+ 			codec-0 {
+ 				sound-dai = <&aiu AIU_HDMI CTRL_I2S>;
+ 			};
++
++			codec-1 {
++				sound-dai = <&aiu AIU_ACODEC CTRL_I2S>;
++			};
+ 		};
+ 
+ 		dai-link-3 {
+@@ -157,9 +176,22 @@
+ 				sound-dai = <&hdmi_tx>;
+ 			};
+ 		};
++
++		dai-link-5 {
++			sound-dai = <&aiu AIU_ACODEC CTRL_OUT>;
++
++			codec-0 {
++				sound-dai = <&acodec>;
++			};
++		};
+ 	};
+ };
+ 
++&acodec {
++	AVDD-supply = <&vddio_ao18>;
++	status = "okay";
++};
++
+ &aiu {
+ 	status = "okay";
+ 	pinctrl-0 = <&spdif_out_h_pins>;
+-- 
+2.17.1
+

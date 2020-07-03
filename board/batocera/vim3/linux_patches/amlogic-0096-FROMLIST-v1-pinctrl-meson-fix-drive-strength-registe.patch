@@ -1,0 +1,40 @@
+From 4c48fcf5e06f9b09a9813473542c1e596b7b5b09 Mon Sep 17 00:00:00 2001
+From: Hyeonki Hong <hhk7734@gmail.com>
+Date: Wed, 10 Jun 2020 10:44:22 +0000
+Subject: [PATCH 096/152] FROMLIST(v1): pinctrl: meson: fix drive strength
+ register and bit calculation
+
+If a GPIO bank has greater than 16 pins, PAD_DS_REG is split into two
+registers. However, when register and bit were calculated, the first
+register defined in the bank was used, and the bit was calculated based
+on the first pin. This causes problems in setting the driving strength.
+
+Solved the problem by changing the bit using a mask and selecting the
+next register when the bit exceeds 15.
+
+Signed-off-by: Hyeonki Hong <hhk7734@gmail.com>
+---
+ drivers/pinctrl/meson/pinctrl-meson.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/drivers/pinctrl/meson/pinctrl-meson.c b/drivers/pinctrl/meson/pinctrl-meson.c
+index bbc919bef2bf..ef66239b7df5 100644
+--- a/drivers/pinctrl/meson/pinctrl-meson.c
++++ b/drivers/pinctrl/meson/pinctrl-meson.c
+@@ -98,6 +98,13 @@ static void meson_calc_reg_and_bit(struct meson_bank *bank, unsigned int pin,
+ 
+ 	*reg = desc->reg * 4;
+ 	*bit = desc->bit + pin - bank->first;
++
++	if (reg_type == REG_DS) {
++		if (*bit > 15) {
++			*bit &= 0xf;
++			*reg += 4;
++		}
++	}
+ }
+ 
+ static int meson_get_groups_count(struct pinctrl_dev *pcdev)
+-- 
+2.17.1
+

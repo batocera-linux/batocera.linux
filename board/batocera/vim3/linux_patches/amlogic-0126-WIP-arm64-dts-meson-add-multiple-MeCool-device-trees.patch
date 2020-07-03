@@ -1,0 +1,266 @@
+From aa850d87ecd92444698a3937e5d609d9d3d6d3f8 Mon Sep 17 00:00:00 2001
+From: Christian Hewitt <christianshewitt@gmail.com>
+Date: Mon, 21 Oct 2019 03:58:06 +0000
+Subject: [PATCH 126/152] WIP: arm64: dts: meson: add multiple MeCool device
+ trees
+
+This adds initial device trees for a range of MeCool devices based on various
+Amlogic GXBB, GXL and GXM reference designs. The current purpose is to allow
+devices to be associated with their respective IR remote keymaps. It also
+prepares for the addition of DVB support in the future.
+
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+---
+ arch/arm64/boot/dts/amlogic/Makefile          |  7 ++++
+ .../dts/amlogic/meson-gxbb-mecool-ki-plus.dts | 34 +++++++++++++++++++
+ .../dts/amlogic/meson-gxbb-mecool-kii-pro.dts | 34 +++++++++++++++++++
+ .../meson-gxl-s905d-mecool-ki-plus.dts        | 21 ++++++++++++
+ .../amlogic/meson-gxl-s905d-mecool-ki-pro.dts | 16 +++++++++
+ .../meson-gxl-s905d-mecool-kii-pro.dts        | 16 +++++++++
+ .../meson-gxl-s905d-mecool-m8s-plus.dts       | 16 +++++++++
+ .../dts/amlogic/meson-gxm-mecool-kiii-pro.dts | 22 ++++++++++++
+ 8 files changed, 166 insertions(+)
+ create mode 100644 arch/arm64/boot/dts/amlogic/meson-gxbb-mecool-ki-plus.dts
+ create mode 100644 arch/arm64/boot/dts/amlogic/meson-gxbb-mecool-kii-pro.dts
+ create mode 100644 arch/arm64/boot/dts/amlogic/meson-gxl-s905d-mecool-ki-plus.dts
+ create mode 100644 arch/arm64/boot/dts/amlogic/meson-gxl-s905d-mecool-ki-pro.dts
+ create mode 100644 arch/arm64/boot/dts/amlogic/meson-gxl-s905d-mecool-kii-pro.dts
+ create mode 100644 arch/arm64/boot/dts/amlogic/meson-gxl-s905d-mecool-m8s-plus.dts
+ create mode 100644 arch/arm64/boot/dts/amlogic/meson-gxm-mecool-kiii-pro.dts
+
+diff --git a/arch/arm64/boot/dts/amlogic/Makefile b/arch/arm64/boot/dts/amlogic/Makefile
+index 662cd22f7e8a..1a67aebea855 100644
+--- a/arch/arm64/boot/dts/amlogic/Makefile
++++ b/arch/arm64/boot/dts/amlogic/Makefile
+@@ -12,6 +12,8 @@ dtb-$(CONFIG_ARCH_MESON) += meson-g12b-s922x-khadas-vim3.dtb
+ dtb-$(CONFIG_ARCH_MESON) += meson-g12b-odroid-n2.dtb
+ dtb-$(CONFIG_ARCH_MESON) += meson-g12b-ugoos-am6.dtb
+ dtb-$(CONFIG_ARCH_MESON) += meson-gxbb-kii-pro.dtb
++dtb-$(CONFIG_ARCH_MESON) += meson-gxbb-mecool-ki-plus.dtb
++dtb-$(CONFIG_ARCH_MESON) += meson-gxbb-mecool-kii-pro.dtb
+ dtb-$(CONFIG_ARCH_MESON) += meson-gxbb-nanopi-k2.dtb
+ dtb-$(CONFIG_ARCH_MESON) += meson-gxbb-nexbox-a95x.dtb
+ dtb-$(CONFIG_ARCH_MESON) += meson-gxbb-odroidc2.dtb
+@@ -28,6 +30,10 @@ dtb-$(CONFIG_ARCH_MESON) += meson-gxl-s905x-khadas-vim.dtb
+ dtb-$(CONFIG_ARCH_MESON) += meson-gxl-s905x-libretech-cc.dtb
+ dtb-$(CONFIG_ARCH_MESON) += meson-gxl-s905x-nexbox-a95x.dtb
+ dtb-$(CONFIG_ARCH_MESON) += meson-gxl-s905x-p212.dtb
++dtb-$(CONFIG_ARCH_MESON) += meson-gxl-s905d-mecool-ki-plus.dtb
++dtb-$(CONFIG_ARCH_MESON) += meson-gxl-s905d-mecool-ki-pro.dtb
++dtb-$(CONFIG_ARCH_MESON) += meson-gxl-s905d-mecool-kii-pro.dtb
++dtb-$(CONFIG_ARCH_MESON) += meson-gxl-s905d-mecool-m8s-plus.dtb
+ dtb-$(CONFIG_ARCH_MESON) += meson-gxl-s905d-p230.dtb
+ dtb-$(CONFIG_ARCH_MESON) += meson-gxl-s905d-p231.dtb
+ dtb-$(CONFIG_ARCH_MESON) += meson-gxl-s905d-phicomm-n1.dtb
+@@ -37,6 +43,7 @@ dtb-$(CONFIG_ARCH_MESON) += meson-gxl-s905w-p281.dtb
+ dtb-$(CONFIG_ARCH_MESON) += meson-gxl-s905w-tx3-mini.dtb
+ dtb-$(CONFIG_ARCH_MESON) += meson-gxl-s905d-libretech-pc.dtb
+ dtb-$(CONFIG_ARCH_MESON) += meson-gxm-khadas-vim2.dtb
++dtb-$(CONFIG_ARCH_MESON) += meson-gxm-mecool-kiii-pro.dtb
+ dtb-$(CONFIG_ARCH_MESON) += meson-gxm-nexbox-a1.dtb
+ dtb-$(CONFIG_ARCH_MESON) += meson-gxm-q200.dtb
+ dtb-$(CONFIG_ARCH_MESON) += meson-gxm-q201.dtb
+diff --git a/arch/arm64/boot/dts/amlogic/meson-gxbb-mecool-ki-plus.dts b/arch/arm64/boot/dts/amlogic/meson-gxbb-mecool-ki-plus.dts
+new file mode 100644
+index 000000000000..f08e2a7178c5
+--- /dev/null
++++ b/arch/arm64/boot/dts/amlogic/meson-gxbb-mecool-ki-plus.dts
+@@ -0,0 +1,34 @@
++// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
++
++/*
++ * Author: Christian Hewitt <christianshewitt@gmail.com>
++ */
++
++#include "meson-gxbb-p201.dts"
++
++/ {
++        compatible = "mecool,gxbb-ki-plus", "amlogic,meson-gxbb";
++	model = "MeCool KI Plus";
++
++	clock: meson_clock {
++		compatible = "amlogic, gxbb-clock";
++		reg = <0x0 0xc883c000 0x0 0x1000>,
++			<0x0 0xc8100000 0x0 0x1000>;
++		#clock-cells = <1>;
++		#reset-cells = <1>;
++		sys_max = <1536000000>;
++	};
++
++	memory@0 {
++		device_type = "memory";
++		reg = <0x0 0x0 0x0 0x40000000>;
++	};
++};
++
++&ir {
++        linux,rc-map-name = "rc-mecool-ki-plus";
++};
++
++&usb_pwr {
++	gpio = <>;
++};
+diff --git a/arch/arm64/boot/dts/amlogic/meson-gxbb-mecool-kii-pro.dts b/arch/arm64/boot/dts/amlogic/meson-gxbb-mecool-kii-pro.dts
+new file mode 100644
+index 000000000000..4f43aff680c3
+--- /dev/null
++++ b/arch/arm64/boot/dts/amlogic/meson-gxbb-mecool-kii-pro.dts
+@@ -0,0 +1,34 @@
++// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
++
++/*
++ * Author: Christian Hewitt <christianshewitt@gmail.com>
++ */
++
++#include "meson-gxbb-p201.dts"
++
++/ {
++        compatible = "mecool,gxbb-kii-pro", "amlogic,meson-gxbb";
++	model = "MeCool KII Pro";
++
++	clock: meson_clock {
++		compatible = "amlogic, gxbb-clock";
++		reg = <0x0 0xc883c000 0x0 0x1000>,
++			<0x0 0xc8100000 0x0 0x1000>;
++		#clock-cells = <1>;
++		#reset-cells = <1>;
++		sys_max = <1536000000>;
++	};
++
++	memory@0 {
++		device_type = "memory";
++		reg = <0x0 0x0 0x0 0x40000000>;
++	};
++};
++
++&ir {
++        linux,rc-map-name = "rc-mecool-kii-pro";
++};
++
++&usb_pwr {
++	gpio = <>;
++};
+diff --git a/arch/arm64/boot/dts/amlogic/meson-gxl-s905d-mecool-ki-plus.dts b/arch/arm64/boot/dts/amlogic/meson-gxl-s905d-mecool-ki-plus.dts
+new file mode 100644
+index 000000000000..c034225b9d9c
+--- /dev/null
++++ b/arch/arm64/boot/dts/amlogic/meson-gxl-s905d-mecool-ki-plus.dts
+@@ -0,0 +1,21 @@
++// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
++
++/*
++ * Author: Christian Hewitt <christianshewitt@gmail.com>
++ */
++
++#include "meson-gxl-s905d-p231.dts"
++
++/ {
++        compatible = "mecool,ki-plus", "amlogic,s905d", "amlogic,meson-gxl";
++	model = "MeCool KI Plus";
++
++	memory@0 {
++		device_type = "memory";
++		reg = <0x0 0x0 0x0 0x40000000>;
++	};
++};
++
++&ir {
++        linux,rc-map-name = "rc-mecool-ki-plus";
++};
+diff --git a/arch/arm64/boot/dts/amlogic/meson-gxl-s905d-mecool-ki-pro.dts b/arch/arm64/boot/dts/amlogic/meson-gxl-s905d-mecool-ki-pro.dts
+new file mode 100644
+index 000000000000..606c5dc2efb2
+--- /dev/null
++++ b/arch/arm64/boot/dts/amlogic/meson-gxl-s905d-mecool-ki-pro.dts
+@@ -0,0 +1,16 @@
++// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
++
++/*
++ * Author: Christian Hewitt <christianshewitt@gmail.com>
++ */
++
++#include "meson-gxl-s905d-p230.dts"
++
++/ {
++        compatible = "mecool,ki-pro", "amlogic,s905d", "amlogic,meson-gxl";
++	model = "MeCool KI Pro";
++};
++
++&ir {
++        linux,rc-map-name = "rc-mecool-ki-pro";
++};
+diff --git a/arch/arm64/boot/dts/amlogic/meson-gxl-s905d-mecool-kii-pro.dts b/arch/arm64/boot/dts/amlogic/meson-gxl-s905d-mecool-kii-pro.dts
+new file mode 100644
+index 000000000000..8db4d097f667
+--- /dev/null
++++ b/arch/arm64/boot/dts/amlogic/meson-gxl-s905d-mecool-kii-pro.dts
+@@ -0,0 +1,16 @@
++// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
++
++/*
++ * Author: Christian Hewitt <christianshewitt@gmail.com>
++ */
++
++#include "meson-gxl-s905d-p231.dts"
++
++/ {
++        compatible = "mecool,kii-pro", "amlogic,s905d", "amlogic,meson-gxl";
++	model = "MeCool KII Pro";
++};
++
++&ir {
++        linux,rc-map-name = "rc-mecool-kii-pro";
++};
+diff --git a/arch/arm64/boot/dts/amlogic/meson-gxl-s905d-mecool-m8s-plus.dts b/arch/arm64/boot/dts/amlogic/meson-gxl-s905d-mecool-m8s-plus.dts
+new file mode 100644
+index 000000000000..2da13c9f69b6
+--- /dev/null
++++ b/arch/arm64/boot/dts/amlogic/meson-gxl-s905d-mecool-m8s-plus.dts
+@@ -0,0 +1,16 @@
++// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
++
++/*
++ * Author: Christian Hewitt <christianshewitt@gmail.com>
++ */
++
++#include "meson-gxl-s905d-p231.dts"
++
++/ {
++        compatible = "mecool,kii-pro", "amlogic,s905d", "amlogic,meson-gxl";
++	model = "MeCool M8S Plus";
++};
++
++&ir {
++        linux,rc-map-name = "rc-mecool-m8s-plus";
++};
+diff --git a/arch/arm64/boot/dts/amlogic/meson-gxm-mecool-kiii-pro.dts b/arch/arm64/boot/dts/amlogic/meson-gxm-mecool-kiii-pro.dts
+new file mode 100644
+index 000000000000..453779ac1d14
+--- /dev/null
++++ b/arch/arm64/boot/dts/amlogic/meson-gxm-mecool-kiii-pro.dts
+@@ -0,0 +1,22 @@
++// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
++
++/*
++ * Author: Christian Hewitt <christianshewitt@gmail.com>
++ */
++
++#include "meson-gxm-q200.dts"
++
++/ {
++        compatible = "mecool,gxm-kiii-pro", "amlogic,s912",
++		"amlogic,meson-gxm";
++	model = "MeCool KIII Pro";
++
++	memory@0 {
++		device_type = "memory";
++		reg = <0x0 0x0 0x0 0xC0000000>;
++	};
++};
++
++&ir {
++        linux,rc-map-name = "rc-mecool-kiii-pro";
++};
+-- 
+2.17.1
+

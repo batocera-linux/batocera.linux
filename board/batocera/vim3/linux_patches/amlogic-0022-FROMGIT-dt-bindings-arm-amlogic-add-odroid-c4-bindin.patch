@@ -1,0 +1,28 @@
+From e31983aff5f3e77ac4ef9c67df06b0327a941ff9 Mon Sep 17 00:00:00 2001
+From: Neil Armstrong <narmstrong@baylibre.com>
+Date: Wed, 13 May 2020 04:02:47 +0000
+Subject: [PATCH 022/152] FROMGIT: dt-bindings: arm: amlogic: add odroid-c4
+ bindings
+
+Add the board bindings for the Hardkernel Odroid-C4 single board computer.
+
+Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
+---
+ Documentation/devicetree/bindings/arm/amlogic.yaml | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/Documentation/devicetree/bindings/arm/amlogic.yaml b/Documentation/devicetree/bindings/arm/amlogic.yaml
+index f74aba48cec1..11908b151e0a 100644
+--- a/Documentation/devicetree/bindings/arm/amlogic.yaml
++++ b/Documentation/devicetree/bindings/arm/amlogic.yaml
+@@ -159,6 +159,7 @@ properties:
+           - enum:
+               - seirobotics,sei610
+               - khadas,vim3l
++              - hardkernel,odroid-c4
+           - const: amlogic,sm1
+ 
+       - description: Boards with the Amlogic Meson A1 A113L SoC
+-- 
+2.17.1
+

@@ -1,0 +1,37 @@
+From 358f6d732c3032cc33991d39c3d9c69723ae9383 Mon Sep 17 00:00:00 2001
+From: Jerome Brunet <jbrunet@baylibre.com>
+Date: Wed, 13 May 2020 07:17:31 +0000
+Subject: [PATCH 026/152] FROMGIT: arm64: dts: meson: gxl: add acodec support
+
+Add the internal audio DAC to the gxl SoC DT
+
+Signed-off-by: Jerome Brunet <jbrunet@baylibre.com>
+---
+ arch/arm64/boot/dts/amlogic/meson-gxl.dtsi | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/amlogic/meson-gxl.dtsi b/arch/arm64/boot/dts/amlogic/meson-gxl.dtsi
+index d9f00c5a9a5c..4e0d8ef97f99 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-gxl.dtsi
++++ b/arch/arm64/boot/dts/amlogic/meson-gxl.dtsi
+@@ -37,6 +37,17 @@
+ 			};
+ 		};
+ 
++		acodec: audio-controller@c8832000 {
++			compatible = "amlogic,t9015";
++			reg = <0x0 0xc8832000 0x0 0x14>;
++			#sound-dai-cells = <0>;
++			sound-name-prefix = "ACODEC";
++			clocks = <&clkc CLKID_ACODEC>;
++			clock-names = "pclk";
++			resets = <&reset RESET_ACODEC>;
++			status = "disabled";
++		};
++
+ 		crypto: crypto@c883e000 {
+ 			compatible = "amlogic,gxl-crypto";
+ 			reg = <0x0 0xc883e000 0x0 0x36>;
+-- 
+2.17.1
+

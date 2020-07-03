@@ -1,0 +1,49 @@
+From a2278fbac0d217cb4d3ffa332d50d292f2b1c449 Mon Sep 17 00:00:00 2001
+From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Date: Mon, 1 Jun 2020 08:58:55 +0000
+Subject: [PATCH 047/152] FROMGIT: net: stmmac: dwmac-meson8b: use FIELD_PREP
+ instead of open-coding it
+
+Use FIELD_PREP() to shift a value to the correct offset based on a
+bitmask instead of open-coding the logic.
+No functional changes.
+
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+---
+ drivers/net/ethernet/stmicro/stmmac/dwmac-meson8b.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-meson8b.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-meson8b.c
+index a3934ca6a043..c9ec0cb68082 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac-meson8b.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-meson8b.c
+@@ -5,6 +5,7 @@
+  * Copyright (C) 2016 Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+  */
+ 
++#include <linux/bitfield.h>
+ #include <linux/clk.h>
+ #include <linux/clk-provider.h>
+ #include <linux/device.h>
+@@ -32,7 +33,6 @@
+ #define PRG_ETH0_CLK_M250_SEL_SHIFT	4
+ #define PRG_ETH0_CLK_M250_SEL_MASK	GENMASK(4, 4)
+ 
+-#define PRG_ETH0_TXDLY_SHIFT		5
+ #define PRG_ETH0_TXDLY_MASK		GENMASK(6, 5)
+ 
+ /* divider for the result of m250_sel */
+@@ -262,7 +262,8 @@ static int meson8b_init_prg_eth(struct meson8b_dwmac *dwmac)
+ 					PRG_ETH0_INVERTED_RMII_CLK, 0);
+ 
+ 		meson8b_dwmac_mask_bits(dwmac, PRG_ETH0, PRG_ETH0_TXDLY_MASK,
+-					tx_dly_val << PRG_ETH0_TXDLY_SHIFT);
++					FIELD_PREP(PRG_ETH0_TXDLY_MASK,
++						   tx_dly_val));
+ 
+ 		/* Configure the 125MHz RGMII TX clock, the IP block changes
+ 		 * the output automatically (= without us having to configure
+-- 
+2.17.1
+

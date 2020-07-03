@@ -1,0 +1,76 @@
+From 68b4683a553a622e585715061327b82939b0792b Mon Sep 17 00:00:00 2001
+From: Jerome Brunet <jbrunet@baylibre.com>
+Date: Tue, 21 Apr 2020 16:18:14 +0200
+Subject: [PATCH 012/152] FROMGIT: arm64: dts: meson: kvim3: move hdmi to tdm a
+
+The tdmout b is physically routed to the 40 pin header and the tdmout c
+is routed to the m2 connector. It makes these interfaces poor
+candidates to handle the HDMI 8ch i2s link (2ch i2s * 4 lanes) as it would
+force the same link format on the related connectors.
+
+Instead use the TDM A interface. This one is not routed to the outside
+world on the vim3, so it can only be used for HDMI.
+
+Signed-off-by: Jerome Brunet <jbrunet@baylibre.com>
+Signed-off-by: Kevin Hilman <khilman@baylibre.com>
+Link: https://lore.kernel.org/r/20200421141814.639480-1-jbrunet@baylibre.com
+---
+ .../dts/amlogic/meson-g12b-khadas-vim3.dtsi    | 18 +++++++++---------
+ 1 file changed, 9 insertions(+), 9 deletions(-)
+
+diff --git a/arch/arm64/boot/dts/amlogic/meson-g12b-khadas-vim3.dtsi b/arch/arm64/boot/dts/amlogic/meson-g12b-khadas-vim3.dtsi
+index c6c8caed8327..224c890d32d3 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-g12b-khadas-vim3.dtsi
++++ b/arch/arm64/boot/dts/amlogic/meson-g12b-khadas-vim3.dtsi
+@@ -51,11 +51,11 @@
+ 	sound {
+ 		compatible = "amlogic,axg-sound-card";
+ 		model = "G12B-KHADAS-VIM3";
+-		audio-aux-devs = <&tdmout_b>;
+-		audio-routing = "TDMOUT_B IN 0", "FRDDR_A OUT 1",
+-				"TDMOUT_B IN 1", "FRDDR_B OUT 1",
+-				"TDMOUT_B IN 2", "FRDDR_C OUT 1",
+-				"TDM_B Playback", "TDMOUT_B OUT";
++		audio-aux-devs = <&tdmout_a>;
++		audio-routing = "TDMOUT_A IN 0", "FRDDR_A OUT 0",
++				"TDMOUT_A IN 1", "FRDDR_B OUT 0",
++				"TDMOUT_A IN 2", "FRDDR_C OUT 0",
++				"TDM_A Playback", "TDMOUT_A OUT";
+ 
+ 		assigned-clocks = <&clkc CLKID_MPLL2>,
+ 				  <&clkc CLKID_MPLL0>,
+@@ -80,7 +80,7 @@
+ 
+ 		/* 8ch hdmi interface */
+ 		dai-link-3 {
+-			sound-dai = <&tdmif_b>;
++			sound-dai = <&tdmif_a>;
+ 			dai-format = "i2s";
+ 			dai-tdm-slot-tx-mask-0 = <1 1>;
+ 			dai-tdm-slot-tx-mask-1 = <1 1>;
+@@ -89,7 +89,7 @@
+ 			mclk-fs = <256>;
+ 
+ 			codec {
+-				sound-dai = <&tohdmitx TOHDMITX_I2S_IN_B>;
++				sound-dai = <&tohdmitx TOHDMITX_I2S_IN_A>;
+ 			};
+ 		};
+ 
+@@ -182,11 +182,11 @@
+ 	status = "okay";
+ };
+ 
+-&tdmif_b {
++&tdmif_a {
+ 	status = "okay";
+ };
+ 
+-&tdmout_b {
++&tdmout_a {
+ 	status = "okay";
+ };
+ 
+-- 
+2.17.1
+

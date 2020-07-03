@@ -1,0 +1,27 @@
+From af96f988cd28bddedf6538548fae92c3121df2e4 Mon Sep 17 00:00:00 2001
+From: chewitt <christianshewitt@gmail.com>
+Date: Wed, 24 Jun 2020 11:21:22 +0000
+Subject: [PATCH 152/152] WIP: arm64: dts: meson: switch ODROID-C4 to rgmii-id
+
+---
+ arch/arm64/boot/dts/amlogic/meson-sm1-odroid-c4.dts | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/arch/arm64/boot/dts/amlogic/meson-sm1-odroid-c4.dts b/arch/arm64/boot/dts/amlogic/meson-sm1-odroid-c4.dts
+index cf5a98f0e47c..581629585dc5 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-sm1-odroid-c4.dts
++++ b/arch/arm64/boot/dts/amlogic/meson-sm1-odroid-c4.dts
+@@ -296,9 +296,8 @@
+ 	pinctrl-0 = <&eth_pins>, <&eth_rgmii_pins>;
+ 	pinctrl-names = "default";
+ 	status = "okay";
+-	phy-mode = "rgmii";
++	phy-mode = "rgmii-id";
+ 	phy-handle = <&external_phy>;
+-	amlogic,tx-delay-ns = <2>;
+ };
+ 
+ &frddr_a {
+-- 
+2.17.1
+

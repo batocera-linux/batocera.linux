@@ -1,0 +1,45 @@
+From 3d0df107cb7394fde7a66042afc34d171f5c7312 Mon Sep 17 00:00:00 2001
+From: Christian Hewitt <christianshewitt@gmail.com>
+Date: Thu, 14 May 2020 04:05:10 +0000
+Subject: [PATCH 115/152] WIP: dt-bindings: arm: amlogic: add support for the
+ WeTek Core 2
+
+The WeTek Core 2 is a commercial Android device based on the Amlogic Q200
+reference design using the S912-H chipset. Specs:
+
+3GB DDR3 RAM
+32GB eMMC storage
+10/100 Ethernet using Realtex RTL8152
+802.11 a/b/g/n/ac + BT 4.1 HS sdio wireless module (AP6356S)
+2x single colour LEDs to indicate power
+1x power button
+1x reset button on the underside of the box
+HDMI 2.0 (4k@60p) video
+Composite video + 2-channel audio output on 3.5mm jack
+S/PDIF audio output
+2x USB 2.0 ports
+1x USB OTG port (internal)
+1x micro SD card slot
+UART pins (internal)
+IR Sensor
+
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+---
+ Documentation/devicetree/bindings/arm/amlogic.yaml | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/Documentation/devicetree/bindings/arm/amlogic.yaml b/Documentation/devicetree/bindings/arm/amlogic.yaml
+index db35e0d0134c..d06c77233e4d 100644
+--- a/Documentation/devicetree/bindings/arm/amlogic.yaml
++++ b/Documentation/devicetree/bindings/arm/amlogic.yaml
+@@ -121,6 +121,7 @@ properties:
+               - libretech,aml-s912-pc
+               - nexbox,a1
+               - tronsmart,vega-s96
++              - wetek,core2
+           - const: amlogic,s912
+           - const: amlogic,meson-gxm
+ 
+-- 
+2.17.1
+

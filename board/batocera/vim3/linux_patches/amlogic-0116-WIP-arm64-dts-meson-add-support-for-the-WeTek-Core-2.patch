@@ -1,0 +1,132 @@
+From c4e33d5deee4961893a15ed84f7f0496b0608a4c Mon Sep 17 00:00:00 2001
+From: Christian Hewitt <christianshewitt@gmail.com>
+Date: Thu, 14 May 2020 03:57:23 +0000
+Subject: [PATCH 116/152] WIP: arm64: dts: meson: add support for the WeTek
+ Core 2
+
+The WeTek Core2 is a commercial device based on the Amlogic Q200 reference
+design but with the following differences:
+
+- 3GB RAM, 32GB eMMC
+- Blue and Red LEDs used to signal on/off status
+- uart_AO can be accessed after opening the case; soldering required
+- USB OTG is not accessible (inside the case)
+
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+---
+ arch/arm64/boot/dts/amlogic/Makefile          |  1 +
+ .../dts/amlogic/meson-gxm-wetek-core2.dts     | 90 +++++++++++++++++++
+ 2 files changed, 91 insertions(+)
+ create mode 100644 arch/arm64/boot/dts/amlogic/meson-gxm-wetek-core2.dts
+
+diff --git a/arch/arm64/boot/dts/amlogic/Makefile b/arch/arm64/boot/dts/amlogic/Makefile
+index 5cac4d1d487d..4e2239ffcaa5 100644
+--- a/arch/arm64/boot/dts/amlogic/Makefile
++++ b/arch/arm64/boot/dts/amlogic/Makefile
+@@ -41,6 +41,7 @@ dtb-$(CONFIG_ARCH_MESON) += meson-gxm-q201.dtb
+ dtb-$(CONFIG_ARCH_MESON) += meson-gxm-rbox-pro.dtb
+ dtb-$(CONFIG_ARCH_MESON) += meson-gxm-s912-libretech-pc.dtb
+ dtb-$(CONFIG_ARCH_MESON) += meson-gxm-vega-s96.dtb
++dtb-$(CONFIG_ARCH_MESON) += meson-gxm-wetek-core2.dtb
+ dtb-$(CONFIG_ARCH_MESON) += meson-sm1-sei610.dtb
+ dtb-$(CONFIG_ARCH_MESON) += meson-sm1-khadas-vim3l.dtb
+ dtb-$(CONFIG_ARCH_MESON) += meson-sm1-odroid-c4.dtb
+diff --git a/arch/arm64/boot/dts/amlogic/meson-gxm-wetek-core2.dts b/arch/arm64/boot/dts/amlogic/meson-gxm-wetek-core2.dts
+new file mode 100644
+index 000000000000..4b973dc1e559
+--- /dev/null
++++ b/arch/arm64/boot/dts/amlogic/meson-gxm-wetek-core2.dts
+@@ -0,0 +1,90 @@
++// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
++/*
++ * Copyright (c) 2020 Christian Hewitt <christianshewitt@gmail.com>
++ */
++
++/dts-v1/;
++
++#include "meson-gxm.dtsi"
++#include "meson-gx-p23x-q20x.dtsi"
++#include <dt-bindings/input/input.h>
++#include <dt-bindings/leds/common.h>
++
++/ {
++	compatible = "wetek,core2", "amlogic,s912", "amlogic,meson-gxm";
++	model = "WeTek Core 2";
++
++        memory@0 {
++                device_type = "memory";
++                reg = <0x0 0x0 0x0 0x80000000>; /* 2 GiB or 3 GiB */
++        };
++
++        leds {
++                compatible = "gpio-leds";
++
++                blue {
++                        color = <LED_COLOR_ID_BLUE>;
++                        function = LED_FUNCTION_STATUS;
++                        gpios = <&gpio GPIODV_24 GPIO_ACTIVE_HIGH>;
++                        default-state = "on";
++                };
++        };
++
++	adc-keys {
++		compatible = "adc-keys";
++		io-channels = <&saradc 0>;
++		io-channel-names = "buttons";
++		keyup-threshold-microvolt = <1710000>;
++
++		button-update {
++			label = "update";
++			linux,code = <KEY_VENDOR>;
++			press-threshold-microvolt = <10000>;
++		};
++	};
++
++	gpio-keys-polled {
++		compatible = "gpio-keys-polled";
++		#address-cells = <1>;
++		#size-cells = <0>;
++		poll-interval = <100>;
++
++		button-power {
++			label = "power";
++			linux,code = <KEY_POWER>;
++			gpios = <&gpio_ao GPIOAO_2 GPIO_ACTIVE_LOW>;
++                };
++        };
++};
++
++/* This is disabled as Realtek RTL8152 USB provides Ethernet */
++&ethmac {
++	status = "disabled";
++	phy-mode = "rmii";
++	phy-handle = <&internal_phy>;
++};
++
++&internal_phy {
++	pinctrl-0 = <&eth_link_led_pins>, <&eth_act_led_pins>;
++	pinctrl-names = "default";
++};
++
++&ir {
++	linux,rc-map-name = "rc-wetek-play2";
++};
++
++/* This is connected to the Bluetooth module: */
++&uart_A {
++        status = "okay";
++        pinctrl-0 = <&uart_a_pins>, <&uart_a_cts_rts_pins>;
++        pinctrl-names = "default";
++        uart-has-rtscts;
++
++        bluetooth {
++                compatible = "brcm,bcm43438-bt";
++                enable-gpios = <&gpio GPIOX_17 GPIO_ACTIVE_HIGH>;
++                max-speed = <2000000>;
++                clocks = <&wifi32k>;
++                clock-names = "lpo";
++        };
++};
+-- 
+2.17.1
+

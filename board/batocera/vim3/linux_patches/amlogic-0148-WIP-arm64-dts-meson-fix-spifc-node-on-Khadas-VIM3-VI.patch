@@ -1,0 +1,31 @@
+From e5359bcdb449e5ad728ab11a4545e48622ba7216 Mon Sep 17 00:00:00 2001
+From: Christian Hewitt <christianshewitt@gmail.com>
+Date: Fri, 12 Jun 2020 11:09:43 +0000
+Subject: [PATCH 148/152] WIP: arm64: dts: meson: fix spifc node on Khadas
+ VIM3/VIM3L
+
+The VIM3/VIM3L Boards use w25q128 not w25q32.
+
+Fixes: 0e1610e726d3 ("arm64: dts: khadas-vim3: add SPIFC controller node")
+Suggested-by: Art Nikpal <art@khadas.com>
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+---
+ arch/arm64/boot/dts/amlogic/meson-khadas-vim3.dtsi | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/arm64/boot/dts/amlogic/meson-khadas-vim3.dtsi b/arch/arm64/boot/dts/amlogic/meson-khadas-vim3.dtsi
+index 27408c10a811..6b75157265e1 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-khadas-vim3.dtsi
++++ b/arch/arm64/boot/dts/amlogic/meson-khadas-vim3.dtsi
+@@ -360,7 +360,7 @@
+ 	pinctrl-0 = <&nor_pins>;
+ 	pinctrl-names = "default";
+ 
+-	w25q32: spi-flash@0 {
++	w25q128: spi-flash@0 {
+ 		#address-cells = <1>;
+ 		#size-cells = <1>;
+ 		compatible = "winbond,w25q128fw", "jedec,spi-nor";
+-- 
+2.17.1
+

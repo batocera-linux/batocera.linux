@@ -1,0 +1,51 @@
+From 1621acb09a49c3ad804a0f555021cee1f82016f1 Mon Sep 17 00:00:00 2001
+From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Date: Mon, 29 Jun 2020 15:36:46 +0000
+Subject: [PATCH 108/152] FROMLIST(v1): dt-bindings: net: dwmac-meson: Add a
+ compatible string for G12A onwards
+
+Amlogic Meson G12A, G12B and SM1 have the same (at least as far as we
+know at the time of writing) PRG_ETHERNET glue register implementation.
+This implementation however is slightly different from AXG as it now has
+an undocument "auto cali idx val" register in PRG_ETH1[17:16] which
+seems to be related to RGMII Ethernet.
+
+Add a compatible string for G12A and newer so the new registers can be
+used.
+
+Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+---
+ Documentation/devicetree/bindings/net/amlogic,meson-dwmac.yaml | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/Documentation/devicetree/bindings/net/amlogic,meson-dwmac.yaml b/Documentation/devicetree/bindings/net/amlogic,meson-dwmac.yaml
+index 64c20c92c07d..85fefe3a0444 100644
+--- a/Documentation/devicetree/bindings/net/amlogic,meson-dwmac.yaml
++++ b/Documentation/devicetree/bindings/net/amlogic,meson-dwmac.yaml
+@@ -22,6 +22,7 @@ select:
+           - amlogic,meson8m2-dwmac
+           - amlogic,meson-gxbb-dwmac
+           - amlogic,meson-axg-dwmac
++          - amlogic,meson-g12a-dwmac
+   required:
+     - compatible
+ 
+@@ -36,6 +37,7 @@ allOf:
+               - amlogic,meson8m2-dwmac
+               - amlogic,meson-gxbb-dwmac
+               - amlogic,meson-axg-dwmac
++              - amlogic,meson-g12a-dwmac
+ 
+     then:
+       properties:
+@@ -95,6 +97,7 @@ properties:
+           - amlogic,meson8m2-dwmac
+           - amlogic,meson-gxbb-dwmac
+           - amlogic,meson-axg-dwmac
++          - amlogic,meson-g12a-dwmac
+     contains:
+       enum:
+         - snps,dwmac-3.70a
+-- 
+2.17.1
+
