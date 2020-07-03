@@ -1,0 +1,30 @@
+From 0ad9ee94642b54d1e4b0e35ff4f2749fd2dc056c Mon Sep 17 00:00:00 2001
+From: Christian Hewitt <christianshewitt@gmail.com>
+Date: Sun, 1 Mar 2020 05:33:19 +0000
+Subject: [PATCH 041/152] FROMGIT: dt-bindings: arm: amlogic: add support for
+ the Beelink GT-King Pro
+
+The Shenzen AZW (Beelink) GT-King Pro is based on the Amlogic W400 reference
+board with an S922X chip.
+
+Acked-by: Rob Herring <robh@kernel.org>
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+---
+ Documentation/devicetree/bindings/arm/amlogic.yaml | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/Documentation/devicetree/bindings/arm/amlogic.yaml b/Documentation/devicetree/bindings/arm/amlogic.yaml
+index cd7a081a4f17..db35e0d0134c 100644
+--- a/Documentation/devicetree/bindings/arm/amlogic.yaml
++++ b/Documentation/devicetree/bindings/arm/amlogic.yaml
+@@ -150,6 +150,7 @@ properties:
+         items:
+           - enum:
+               - azw,gtking
++              - azw,gtking-pro
+               - hardkernel,odroid-n2
+               - khadas,vim3
+               - ugoos,am6
+-- 
+2.17.1
+

@@ -1,0 +1,77 @@
+From 45baf9b9d199f17bf4e5eb3ad0da6968e30bde9e Mon Sep 17 00:00:00 2001
+From: Jerome Brunet <jbrunet@baylibre.com>
+Date: Tue, 21 Apr 2020 18:39:35 +0200
+Subject: [PATCH 019/152] FROMGIT: arm64: dts: meson: libretech-pc: add initial
+ audio playback support
+
+Add initial audio support limited to HDMI i2s.
+
+Signed-off-by: Jerome Brunet <jbrunet@baylibre.com>
+Signed-off-by: Kevin Hilman <khilman@baylibre.com>
+Tested-by: Christian Hewitt <christianshewitt@gmail.com>
+Link: https://lore.kernel.org/r/20200421163935.775935-7-jbrunet@baylibre.com
+---
+ .../dts/amlogic/meson-gx-libretech-pc.dtsi    | 40 +++++++++++++++++++
+ 1 file changed, 40 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/amlogic/meson-gx-libretech-pc.dtsi b/arch/arm64/boot/dts/amlogic/meson-gx-libretech-pc.dtsi
+index b1da36fdeac6..4cc5f3df5677 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-gx-libretech-pc.dtsi
++++ b/arch/arm64/boot/dts/amlogic/meson-gx-libretech-pc.dtsi
+@@ -8,6 +8,7 @@
+ 
+ #include <dt-bindings/input/input.h>
+ #include <dt-bindings/leds/common.h>
++#include <dt-bindings/sound/meson-aiu.h>
+ 
+ / {
+ 	adc-keys {
+@@ -175,6 +176,45 @@
+ 		regulator-settling-time-up-us = <200>;
+ 		regulator-settling-time-down-us = <50000>;
+ 	};
++
++	sound {
++		compatible = "amlogic,gx-sound-card";
++		model = "GXL-LIBRETECH-S9XX-PC";
++		assigned-clocks = <&clkc CLKID_MPLL0>,
++				  <&clkc CLKID_MPLL1>,
++				  <&clkc CLKID_MPLL2>;
++		assigned-clock-parents = <0>, <0>, <0>;
++		assigned-clock-rates = <294912000>,
++				       <270950400>,
++				       <393216000>;
++		status = "okay";
++
++		dai-link-0 {
++			sound-dai = <&aiu AIU_CPU CPU_I2S_FIFO>;
++		};
++
++		dai-link-1 {
++			sound-dai = <&aiu AIU_CPU CPU_I2S_ENCODER>;
++			dai-format = "i2s";
++			mclk-fs = <256>;
++
++			codec-0 {
++				sound-dai = <&aiu AIU_HDMI CTRL_I2S>;
++			};
++		};
++
++		dai-link-2 {
++			sound-dai = <&aiu AIU_HDMI CTRL_OUT>;
++
++			codec-0 {
++				sound-dai = <&hdmi_tx>;
++			};
++		};
++	};
++};
++
++&aiu {
++	status = "okay";
+ };
+ 
+ &cec_AO {
+-- 
+2.17.1
+

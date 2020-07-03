@@ -1,0 +1,33 @@
+From e51f17d89039d484e3ef901d18443da6dfdc3883 Mon Sep 17 00:00:00 2001
+From: Jerome Brunet <jbrunet@baylibre.com>
+Date: Wed, 17 Jun 2020 16:30:53 +0000
+Subject: [PATCH 114/152] WIP: clk: meson: g12a: fix hifi pll lock
+
+The HIFI pll of the g12a sometimes takes a long time to report the lock in
+HIFI_PLL_CNTL0 bit 31. The would eventually be reported but the delay may
+be so long that the driver consider it a lock failure.
+
+Bit 30 seems to do the same job but more quickly, let's try this instead.
+
+Fixes: 085a4ea93d54 ("clk: meson: g12a: add peripheral clock controller")
+Signed-off-by: Jerome Brunet <jbrunet@baylibre.com>
+---
+ drivers/clk/meson/g12a.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/clk/meson/g12a.c b/drivers/clk/meson/g12a.c
+index 7fe99b36a53b..e672e9f015f0 100644
+--- a/drivers/clk/meson/g12a.c
++++ b/drivers/clk/meson/g12a.c
+@@ -1771,7 +1771,7 @@ static struct clk_regmap g12a_hifi_pll_dco = {
+ 		},
+ 		.l = {
+ 			.reg_off = HHI_HIFI_PLL_CNTL0,
+-			.shift   = 31,
++			.shift   = 30,
+ 			.width   = 1,
+ 		},
+ 		.rst = {
+-- 
+2.17.1
+

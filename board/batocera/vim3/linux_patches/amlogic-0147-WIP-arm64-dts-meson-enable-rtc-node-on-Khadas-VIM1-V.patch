@@ -1,0 +1,48 @@
+From 34a97ad6482e55b346320f248fdf6cef2317607d Mon Sep 17 00:00:00 2001
+From: Christian Hewitt <christianshewitt@gmail.com>
+Date: Fri, 12 Jun 2020 10:14:36 +0000
+Subject: [PATCH 147/152] WIP: arm64: dts: meson: enable rtc node on Khadas
+ VIM1/VIM2 boards
+
+Enable the rtc node on VIM1/VIM2 boards (as with VIM3/VIM3L) so users can
+attach a power cell and use it without recompiling the device-tree. If no
+cell is attached the kernel reports a harmless error.
+
+Suggested-by: Nick Xie <nick@khadas.com>
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+---
+ arch/arm64/boot/dts/amlogic/meson-gxl-s905x-khadas-vim.dts | 3 +--
+ arch/arm64/boot/dts/amlogic/meson-gxm-khadas-vim2.dts      | 3 +--
+ 2 files changed, 2 insertions(+), 4 deletions(-)
+
+diff --git a/arch/arm64/boot/dts/amlogic/meson-gxl-s905x-khadas-vim.dts b/arch/arm64/boot/dts/amlogic/meson-gxl-s905x-khadas-vim.dts
+index 440bc23c7342..e398e3e65ceb 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-gxl-s905x-khadas-vim.dts
++++ b/arch/arm64/boot/dts/amlogic/meson-gxl-s905x-khadas-vim.dts
+@@ -97,8 +97,7 @@
+ 	pinctrl-names = "default";
+ 
+ 	rtc: rtc@51 {
+-		/* has to be enabled manually when a battery is connected: */
+-		status = "disabled";
++		status = "okay";
+ 		compatible = "haoyu,hym8563";
+ 		reg = <0x51>;
+ 		#clock-cells = <0>;
+diff --git a/arch/arm64/boot/dts/amlogic/meson-gxm-khadas-vim2.dts b/arch/arm64/boot/dts/amlogic/meson-gxm-khadas-vim2.dts
+index a884417515b4..ffbe02807b04 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-gxm-khadas-vim2.dts
++++ b/arch/arm64/boot/dts/amlogic/meson-gxm-khadas-vim2.dts
+@@ -266,8 +266,7 @@
+ 	pinctrl-names = "default";
+ 
+ 	rtc: rtc@51 {
+-		/* has to be enabled manually when a battery is connected: */
+-		status = "disabled";
++		status = "okay";
+ 		compatible = "haoyu,hym8563";
+ 		reg = <0x51>;
+ 		#clock-cells = <0>;
+-- 
+2.17.1
+

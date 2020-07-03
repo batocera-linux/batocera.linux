@@ -1,0 +1,38 @@
+From 76b9a338e5d1c0be6d21dc51b309fcbdb95b245c Mon Sep 17 00:00:00 2001
+From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Date: Mon, 29 Jun 2020 15:37:37 +0000
+Subject: [PATCH 109/152] FROMLIST(v1): net: stmmac: dwmac-meson8b: add a
+ compatible string for G12A SoCs
+
+Amlogic Meson G12A, G12B and SM1 have the same (at least as far as we
+know at the time of writing) PRG_ETHERNET glue register implementation.
+This implementation however is slightly different from AXG as it now has
+an undocument "auto cali idx val" register in PRG_ETH1[17:16] which
+seems to be related to RGMII Ethernet.
+
+Add a new compatible string for G12A SoCs so the logic for this new
+register can be implemented in the future.
+
+Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+---
+ drivers/net/ethernet/stmicro/stmmac/dwmac-meson8b.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-meson8b.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-meson8b.c
+index 234e8b6816ce..544bc621146c 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac-meson8b.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-meson8b.c
+@@ -491,6 +491,10 @@ static const struct of_device_id meson8b_dwmac_match[] = {
+ 		.compatible = "amlogic,meson-axg-dwmac",
+ 		.data = &meson_axg_dwmac_data,
+ 	},
++	{
++		.compatible = "amlogic,meson-g12a-dwmac",
++		.data = &meson_axg_dwmac_data,
++	},
+ 	{ }
+ };
+ MODULE_DEVICE_TABLE(of, meson8b_dwmac_match);
+-- 
+2.17.1
+

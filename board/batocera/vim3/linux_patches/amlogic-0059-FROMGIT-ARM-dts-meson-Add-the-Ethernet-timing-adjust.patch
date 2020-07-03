@@ -1,0 +1,51 @@
+From 33fd227a0f99d3b068e18fb5338a2e748ca7600c Mon Sep 17 00:00:00 2001
+From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Date: Mon, 1 Jun 2020 09:17:35 +0000
+Subject: [PATCH 059/152] FROMGIT: ARM: dts: meson: Add the Ethernet
+ "timing-adjustment" clock
+
+Add the "timing-adjusment" clock now that we now that this is connected
+to the PRG_ETHERNET registers. It is used internally to generate the
+RGMII RX delay no the MAC side (if needed).
+
+Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+---
+ arch/arm/boot/dts/meson8b.dtsi  | 5 +++--
+ arch/arm/boot/dts/meson8m2.dtsi | 5 +++--
+ 2 files changed, 6 insertions(+), 4 deletions(-)
+
+diff --git a/arch/arm/boot/dts/meson8b.dtsi b/arch/arm/boot/dts/meson8b.dtsi
+index e34b039b9357..ba36168b9c1b 100644
+--- a/arch/arm/boot/dts/meson8b.dtsi
++++ b/arch/arm/boot/dts/meson8b.dtsi
+@@ -425,8 +425,9 @@
+ 
+ 	clocks = <&clkc CLKID_ETH>,
+ 		 <&clkc CLKID_MPLL2>,
+-		 <&clkc CLKID_MPLL2>;
+-	clock-names = "stmmaceth", "clkin0", "clkin1";
++		 <&clkc CLKID_MPLL2>,
++		 <&clkc CLKID_FCLK_DIV2>;
++	clock-names = "stmmaceth", "clkin0", "clkin1", "timing-adjustment";
+ 	rx-fifo-depth = <4096>;
+ 	tx-fifo-depth = <2048>;
+ 
+diff --git a/arch/arm/boot/dts/meson8m2.dtsi b/arch/arm/boot/dts/meson8m2.dtsi
+index 5bde7f502007..96b37d5e9afd 100644
+--- a/arch/arm/boot/dts/meson8m2.dtsi
++++ b/arch/arm/boot/dts/meson8m2.dtsi
+@@ -30,8 +30,9 @@
+ 		0xc1108140 0x8>;
+ 	clocks = <&clkc CLKID_ETH>,
+ 		 <&clkc CLKID_MPLL2>,
+-		 <&clkc CLKID_MPLL2>;
+-	clock-names = "stmmaceth", "clkin0", "clkin1";
++		 <&clkc CLKID_MPLL2>,
++		 <&clkc CLKID_FCLK_DIV2>;
++	clock-names = "stmmaceth", "clkin0", "clkin1", "timing-adjustment";
+ 	resets = <&reset RESET_ETHERNET>;
+ 	reset-names = "stmmaceth";
+ };
+-- 
+2.17.1
+

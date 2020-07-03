@@ -1,0 +1,29 @@
+From 83854057688ddd7927fd3d31f1cbd8cdefb73dd1 Mon Sep 17 00:00:00 2001
+From: Christian Hewitt <christianshewitt@gmail.com>
+Date: Fri, 12 Jun 2020 08:04:00 +0000
+Subject: [PATCH 124/152] WIP: dt-bindings: arm: amlogic: add support for the
+ Beelink GS-King-X
+
+The Shenzen AZW (Beelink) GS-King-X is based on the Amlogic W400 reference
+board with an S922X-H chip.
+
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+---
+ Documentation/devicetree/bindings/arm/amlogic.yaml | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/Documentation/devicetree/bindings/arm/amlogic.yaml b/Documentation/devicetree/bindings/arm/amlogic.yaml
+index 55605571e182..52440e38436a 100644
+--- a/Documentation/devicetree/bindings/arm/amlogic.yaml
++++ b/Documentation/devicetree/bindings/arm/amlogic.yaml
+@@ -151,6 +151,7 @@ properties:
+       - description: Boards with the Amlogic Meson G12B S922X SoC
+         items:
+           - enum:
++              - awz,gsking-x
+               - azw,gtking
+               - azw,gtking-pro
+               - hardkernel,odroid-n2
+-- 
+2.17.1
+

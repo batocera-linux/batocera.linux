@@ -1,0 +1,34 @@
+From 486f528652a716c18a7459f8d164de5f50fef26b Mon Sep 17 00:00:00 2001
+From: Jerome Brunet <jbrunet@baylibre.com>
+Date: Wed, 17 Jun 2020 14:33:26 +0000
+Subject: [PATCH 106/152] FROMLIST(v1): arm64: dts: meson: add missing gxl rng
+ clock
+
+The peripheral clock of the RNG is missing for gxl while it is present
+for gxbb.
+
+Fixes: 1b3f6d148692 ("ARM64: dts: meson-gx: add clock CLKID_RNG0 to hwrng node")
+Signed-off-by: Jerome Brunet <jbrunet@baylibre.com>
+---
+ arch/arm64/boot/dts/amlogic/meson-gxl.dtsi | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/amlogic/meson-gxl.dtsi b/arch/arm64/boot/dts/amlogic/meson-gxl.dtsi
+index 4e0d8ef97f99..1f7db598025d 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-gxl.dtsi
++++ b/arch/arm64/boot/dts/amlogic/meson-gxl.dtsi
+@@ -332,6 +332,11 @@
+ 	};
+ };
+ 
++&hwrng {
++	clocks = <&clkc CLKID_RNG0>;
++	clock-names = "core";
++};
++
+ &i2c_A {
+ 	clocks = <&clkc CLKID_I2C>;
+ };
+-- 
+2.17.1
+

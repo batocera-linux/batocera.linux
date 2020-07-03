@@ -1,0 +1,46 @@
+From 4a444578a62a65e4ac503903586e3dd2f96c277e Mon Sep 17 00:00:00 2001
+From: chewitt <christianshewitt@gmail.com>
+Date: Tue, 24 Dec 2019 05:50:45 +0000
+Subject: [PATCH 061/152] FROMGIT: mmc: meson-gx: limit segments to 1 when
+ dram-access-quirk is needed
+
+The actual max_segs computation leads to failure while using the broadcom
+sdio brcmfmac/bcmsdh driver, since the driver tries to make usage of scatter
+gather.
+
+But with the dram-access-quirk we use a 1,5K SRAM bounce buffer, and the
+max_segs current value of 3 leads to max transfers to 4,5k, which doesn't work.
+
+This patch sets max_segs to 1 to better describe the hardware limitation,
+and fix the SDIO functionnality with the brcmfmac/bcmsdh driver on Amlogic
+G12A/G12B SoCs on boards like SEI510 or Khadas VIM3.
+
+Reported-by: Art Nikpal <art@khadas.com>
+Reported-by: Christian Hewitt <christianshewitt@gmail.com>
+Fixes: acdc8e71d9bb ("mmc: meson-gx: add dram-access-quirk")
+Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
+---
+ drivers/mmc/host/meson-gx-mmc.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/mmc/host/meson-gx-mmc.c b/drivers/mmc/host/meson-gx-mmc.c
+index 35400cf2a2e4..cfaf8e7e22ec 100644
+--- a/drivers/mmc/host/meson-gx-mmc.c
++++ b/drivers/mmc/host/meson-gx-mmc.c
+@@ -1143,9 +1143,11 @@ static int meson_mmc_probe(struct platform_device *pdev)
+ 
+ 	mmc->caps |= MMC_CAP_CMD23;
+ 	if (host->dram_access_quirk) {
++		/* Limit segments to 1 due to low available sram memory */
++		mmc->max_segs = 1;
+ 		/* Limit to the available sram memory */
+-		mmc->max_segs = SD_EMMC_SRAM_DATA_BUF_LEN / mmc->max_blk_size;
+-		mmc->max_blk_count = mmc->max_segs;
++		mmc->max_blk_count = SD_EMMC_SRAM_DATA_BUF_LEN /
++				     mmc->max_blk_size;
+ 	} else {
+ 		mmc->max_blk_count = CMD_CFG_LENGTH_MASK;
+ 		mmc->max_segs = SD_EMMC_DESC_BUF_LEN /
+-- 
+2.17.1
+

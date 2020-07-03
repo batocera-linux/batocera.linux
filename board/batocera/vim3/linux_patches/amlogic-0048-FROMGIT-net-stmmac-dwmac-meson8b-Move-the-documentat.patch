@@ -1,0 +1,46 @@
+From e3c7eb63ec72c9bf036cdcd32f976a4eaa0c173b Mon Sep 17 00:00:00 2001
+From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Date: Mon, 1 Jun 2020 08:59:38 +0000
+Subject: [PATCH 048/152] FROMGIT: net: stmmac: dwmac-meson8b: Move the
+ documentation for the TX delay
+
+Move the documentation for the TX delay above the PRG_ETH0_TXDLY_MASK
+definition. Future commits will add more registers also with
+documentation above their register bit definitions. Move the existing
+comment so it will be consistent with the upcoming changes.
+
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+---
+ drivers/net/ethernet/stmicro/stmmac/dwmac-meson8b.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-meson8b.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-meson8b.c
+index c9ec0cb68082..1d7526ee09dd 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac-meson8b.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-meson8b.c
+@@ -33,6 +33,10 @@
+ #define PRG_ETH0_CLK_M250_SEL_SHIFT	4
+ #define PRG_ETH0_CLK_M250_SEL_MASK	GENMASK(4, 4)
+ 
++/* TX clock delay in ns = "8ns / 4 * tx_dly_val" (where 8ns are exactly one
++ * cycle of the 125MHz RGMII TX clock):
++ * 0ns = 0x0, 2ns = 0x1, 4ns = 0x2, 6ns = 0x3
++ */
+ #define PRG_ETH0_TXDLY_MASK		GENMASK(6, 5)
+ 
+ /* divider for the result of m250_sel */
+@@ -248,10 +252,6 @@ static int meson8b_init_prg_eth(struct meson8b_dwmac *dwmac)
+ 	switch (dwmac->phy_mode) {
+ 	case PHY_INTERFACE_MODE_RGMII:
+ 	case PHY_INTERFACE_MODE_RGMII_RXID:
+-		/* TX clock delay in ns = "8ns / 4 * tx_dly_val" (where
+-		 * 8ns are exactly one cycle of the 125MHz RGMII TX clock):
+-		 * 0ns = 0x0, 2ns = 0x1, 4ns = 0x2, 6ns = 0x3
+-		 */
+ 		tx_dly_val = dwmac->tx_delay_ns >> 1;
+ 		/* fall through */
+ 
+-- 
+2.17.1
+

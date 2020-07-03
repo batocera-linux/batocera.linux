@@ -1,0 +1,72 @@
+From d26d256820295d3be624ef05b407dad787794a85 Mon Sep 17 00:00:00 2001
+From: Neil Armstrong <narmstrong@baylibre.com>
+Date: Wed, 13 May 2020 12:52:30 +0000
+Subject: [PATCH 074/152] FROMLIST(v2): dt-bindings: mfd: add Khadas
+ Microcontroller bindings
+
+This Microcontroller is present on the Khadas VIM1, VIM2, VIM3 and Edge
+boards.
+
+It has multiple boot control features like password check, power-on
+options, power-off control and system FAN control on recent boards.
+
+Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
+Reviewed-by: Rob Herring <robh@kernel.org>
+---
+ .../devicetree/bindings/mfd/khadas,mcu.yaml   | 44 +++++++++++++++++++
+ 1 file changed, 44 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/mfd/khadas,mcu.yaml
+
+diff --git a/Documentation/devicetree/bindings/mfd/khadas,mcu.yaml b/Documentation/devicetree/bindings/mfd/khadas,mcu.yaml
+new file mode 100644
+index 000000000000..a3b976f101e8
+--- /dev/null
++++ b/Documentation/devicetree/bindings/mfd/khadas,mcu.yaml
+@@ -0,0 +1,44 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/mfd/khadas,mcu.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Khadas on-board Microcontroller Device Tree Bindings
++
++maintainers:
++  - Neil Armstrong <narmstrong@baylibre.com>
++
++description: |
++  Khadas embeds a microcontroller on their VIM and Edge boards adding some
++  system feature as PWM Fan control (for VIM2 rev14 or VIM3), User memory
++  storage, IR/Key resume control, system power LED control and more.
++
++properties:
++  compatible:
++    enum:
++      - khadas,mcu # MCU revision is discoverable
++
++  "#cooling-cells": # Only needed for boards having FAN control feature
++    const: 2
++
++  reg:
++    maxItems: 1
++
++required:
++  - compatible
++  - reg
++
++additionalProperties: false
++
++examples:
++  - |
++    i2c {
++      #address-cells = <1>;
++      #size-cells = <0>;
++      khadas_mcu: system-controller@18 {
++        compatible = "khadas,mcu";
++        reg = <0x18>;
++        #cooling-cells = <2>;
++      };
++    };
+-- 
+2.17.1
+

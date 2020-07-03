@@ -1,0 +1,49 @@
+From a39d70b1c98e01dd265b91d79067a65dfc5dbf7a Mon Sep 17 00:00:00 2001
+From: Christian Hewitt <christianshewitt@gmail.com>
+Date: Fri, 19 Jun 2020 11:30:55 +0000
+Subject: [PATCH 146/152] WIP: arm64: dts: meson: add i2c3/rtc nodes and vrtc
+ alias to ODROID-N2
+
+Add the i2c3 and rtc nodes to the ODROID-N2 device-tree. Also assign
+an alias to the meson-vrtc timer device to prevent it being assigned
+to /dev/rtc0 which disto userspace tools assume is a clock device.
+
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+---
+ .../arm64/boot/dts/amlogic/meson-g12b-odroid-n2.dts | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-n2.dts b/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-n2.dts
+index 169ea283d4ee..f3896c5a5283 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-n2.dts
++++ b/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-n2.dts
+@@ -18,6 +18,7 @@
+ 	aliases {
+ 		serial0 = &uart_AO;
+ 		ethernet0 = &ethmac;
++		rtc1 = &vrtc;
+ 	};
+ 
+ 	chosen {
+@@ -398,6 +399,18 @@
+ 	linux,rc-map-name = "rc-odroid";
+ };
+ 
++&i2c3 {
++	status = "okay";
++	pinctrl-0 = <&i2c3_sda_a_pins>, <&i2c3_sck_a_pins>;
++	pinctrl-names = "default";
++
++	rtc@51 {
++		compatible = "nxp,pcf8563";
++		reg = <0x51>;
++		#clock-cells = <0>;
++	};
++};
++
+ &pwm_ab {
+ 	pinctrl-0 = <&pwm_a_e_pins>;
+ 	pinctrl-names = "default";
+-- 
+2.17.1
+

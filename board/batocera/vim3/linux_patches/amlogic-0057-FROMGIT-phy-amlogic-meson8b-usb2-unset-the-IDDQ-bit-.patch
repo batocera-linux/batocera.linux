@@ -1,0 +1,92 @@
+From 8fc4830bbf8c5038559b9e25ffab217dbee9d592 Mon Sep 17 00:00:00 2001
+From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Date: Mon, 1 Jun 2020 09:10:00 +0000
+Subject: [PATCH 057/152] FROMGIT: phy: amlogic: meson8b-usb2: unset the IDDQ
+ bit during PHY power-on
+
+The vendor driver unsets the set_iddig bit during power-on as well and
+sets it when suspending the PHY. I did not notice this in the vendor
+driver first, because it's part of the dwc_otg driver there (instead of
+their PHY code). While here, also add all other REG_DBG_UART register
+bit definitions.
+
+Tested-by: Thomas Graichen <thomas.graichen@gmail.com>
+Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+---
+ drivers/phy/amlogic/phy-meson8b-usb2.c | 44 +++++++++++++++++++-------
+ 1 file changed, 32 insertions(+), 12 deletions(-)
+
+diff --git a/drivers/phy/amlogic/phy-meson8b-usb2.c b/drivers/phy/amlogic/phy-meson8b-usb2.c
+index 7236b8885f07..436dfa1a8a04 100644
+--- a/drivers/phy/amlogic/phy-meson8b-usb2.c
++++ b/drivers/phy/amlogic/phy-meson8b-usb2.c
+@@ -78,6 +78,17 @@
+ 	#define REG_ADP_BC_ACA_PIN_FLOAT		BIT(26)
+ 
+ #define REG_DBG_UART					0x10
++	#define REG_DBG_UART_BYPASS_SEL			BIT(0)
++	#define REG_DBG_UART_BYPASS_DM_EN		BIT(1)
++	#define REG_DBG_UART_BYPASS_DP_EN		BIT(2)
++	#define REG_DBG_UART_BYPASS_DM_DATA		BIT(3)
++	#define REG_DBG_UART_BYPASS_DP_DATA		BIT(4)
++	#define REG_DBG_UART_FSV_MINUS			BIT(5)
++	#define REG_DBG_UART_FSV_PLUS			BIT(6)
++	#define REG_DBG_UART_FSV_BURN_IN_TEST		BIT(7)
++	#define REG_DBG_UART_LOOPBACK_EN_B		BIT(8)
++	#define REG_DBG_UART_SET_IDDQ			BIT(9)
++	#define REG_DBG_UART_ATE_RESET			BIT(10)
+ 
+ #define REG_TEST					0x14
+ 	#define REG_TEST_DATA_IN_MASK			GENMASK(3, 0)
+@@ -172,20 +183,24 @@ static int phy_meson8b_usb2_power_on(struct phy *phy)
+ 	regmap_update_bits(priv->regmap, REG_CTRL, REG_CTRL_SOF_TOGGLE_OUT,
+ 			   REG_CTRL_SOF_TOGGLE_OUT);
+ 
+-	if (priv->dr_mode == USB_DR_MODE_HOST &&
+-	    priv->match->host_enable_aca) {
+-		regmap_update_bits(priv->regmap, REG_ADP_BC,
+-				   REG_ADP_BC_ACA_ENABLE,
+-				   REG_ADP_BC_ACA_ENABLE);
++	if (priv->dr_mode == USB_DR_MODE_HOST) {
++		regmap_update_bits(priv->regmap, REG_DBG_UART,
++				   REG_DBG_UART_SET_IDDQ, 0);
+ 
+-		udelay(ACA_ENABLE_COMPLETE_TIME);
++		if (priv->match->host_enable_aca) {
++			regmap_update_bits(priv->regmap, REG_ADP_BC,
++					   REG_ADP_BC_ACA_ENABLE,
++					   REG_ADP_BC_ACA_ENABLE);
+ 
+-		regmap_read(priv->regmap, REG_ADP_BC, &reg);
+-		if (reg & REG_ADP_BC_ACA_PIN_FLOAT) {
+-			dev_warn(&phy->dev, "USB ID detect failed!\n");
+-			clk_disable_unprepare(priv->clk_usb);
+-			clk_disable_unprepare(priv->clk_usb_general);
+-			return -EINVAL;
++			udelay(ACA_ENABLE_COMPLETE_TIME);
++
++			regmap_read(priv->regmap, REG_ADP_BC, &reg);
++			if (reg & REG_ADP_BC_ACA_PIN_FLOAT) {
++				dev_warn(&phy->dev, "USB ID detect failed!\n");
++				clk_disable_unprepare(priv->clk_usb);
++				clk_disable_unprepare(priv->clk_usb_general);
++				return -EINVAL;
++			}
+ 		}
+ 	}
+ 
+@@ -196,6 +211,11 @@ static int phy_meson8b_usb2_power_off(struct phy *phy)
+ {
+ 	struct phy_meson8b_usb2_priv *priv = phy_get_drvdata(phy);
+ 
++	if (priv->dr_mode == USB_DR_MODE_HOST)
++		regmap_update_bits(priv->regmap, REG_DBG_UART,
++				   REG_DBG_UART_SET_IDDQ,
++				   REG_DBG_UART_SET_IDDQ);
++
+ 	clk_disable_unprepare(priv->clk_usb);
+ 	clk_disable_unprepare(priv->clk_usb_general);
+ 
+-- 
+2.17.1
+

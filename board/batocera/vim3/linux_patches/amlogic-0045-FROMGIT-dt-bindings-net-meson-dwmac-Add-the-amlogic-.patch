@@ -1,0 +1,43 @@
+From 83b54115d89c0668d97c30e843b93de001530d0c Mon Sep 17 00:00:00 2001
+From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Date: Mon, 1 Jun 2020 08:56:41 +0000
+Subject: [PATCH 045/152] FROMGIT: dt-bindings: net: meson-dwmac: Add the
+ amlogic, rx-delay-ns property
+
+The PRG_ETHERNET registers on Meson8b and newer SoCs can add an RX
+delay. Add a property with the known supported values so it can be
+configured according to the board layout.
+
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+---
+ .../bindings/net/amlogic,meson-dwmac.yaml           | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
+
+diff --git a/Documentation/devicetree/bindings/net/amlogic,meson-dwmac.yaml b/Documentation/devicetree/bindings/net/amlogic,meson-dwmac.yaml
+index ae91aa9d8616..66074314e57a 100644
+--- a/Documentation/devicetree/bindings/net/amlogic,meson-dwmac.yaml
++++ b/Documentation/devicetree/bindings/net/amlogic,meson-dwmac.yaml
+@@ -67,6 +67,19 @@ allOf:
+             PHY and MAC are adding a delay).
+             Any configuration is ignored when the phy-mode is set to "rmii".
+ 
++        amlogic,rx-delay-ns:
++          enum:
++            - 0
++            - 2
++          default: 0
++          description:
++            The internal RGMII RX clock delay (provided by this IP block) in
++            nanoseconds. When phy-mode is set to "rgmii" then the RX delay
++            should be explicitly configured. When the phy-mode is set to
++            either "rgmii-id" or "rgmii-rxid" the RX clock delay is already
++            provided by the PHY. Any configuration is ignored when the
++            phy-mode is set to "rmii".
++
+ properties:
+   compatible:
+     additionalItems: true
+-- 
+2.17.1
+
