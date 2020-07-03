@@ -110,7 +110,7 @@ Name=${settings_ssid}
 EOF
 	if test "${settings_key}" != ""
 	then
-	    settings_key_dec=$( "${settings_key}")
+	    settings_key_dec=$(batocera-encode decode "${settings_key}")
 	    echo "Passphrase=${settings_key_dec}" >> "${settings_file}"
 
 	    # # saved the value encoded
