@@ -48,6 +48,11 @@ batocera_wifi_configure() {
 		Name=${settings_ssid}
 		Passphrase=${settings_key}
 	_EOF_
+
+    connmanctl enable wifi || return 1
+    connmanctl scan   wifi || return 1
+    return 0
+
     fi
 }
 
@@ -58,10 +63,6 @@ rfkill unblock wifi
 for i in 1 2 3
 do
     batocera_wifi_configure $i &
+    ret=$?
 done
-
-# Enable connman
-connmanctl enable wifi
-sleep 2
-connmanctl scan wifi
-exit $?
+exit $ret
