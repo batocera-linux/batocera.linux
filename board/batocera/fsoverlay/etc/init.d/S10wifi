@@ -15,6 +15,12 @@ if ! [ -f "$BATOCONF" ]; then
   BATOCONF="$BOOTCONF"
 fi
 
+# WLAN enabled?
+settingsWlan="$(batocera-settings "$BATOCONF" -command load -key wifi.enabled)"
+if [ "$settingsWlan" != "1" ];then
+    exit 0
+fi
+
 batocera_wifi_configure() {
     X=$1
 
