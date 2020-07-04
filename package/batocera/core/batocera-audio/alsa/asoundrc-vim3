@@ -1,0 +1,23 @@
+# default config for vim3
+#
+# default device: card 0: G12BKHADASVIM3 [G12B-KHADAS-VIM3], device 0: fe.dai-link-0 (*) []
+# master volume control: softvol
+# mixer: dmix
+#
+
+pcm.!default {
+	type            plug
+	slave.pcm       "softvol"
+}
+
+pcm.softvol {
+	type            softvol
+	slave {
+		pcm         "dmix"
+	}
+	control {
+		name        "Master"
+		card        0
+		device      0
+	}
+}
