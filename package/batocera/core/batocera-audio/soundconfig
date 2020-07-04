@@ -13,7 +13,7 @@ mixer() {
 }
 
 (
-. /etc/profile
+# . /etc/profile
 
 # get card num
 card=`echo $1 | sed 's/[^0-9]*//g'`
@@ -133,7 +133,7 @@ case ${ARCH} in
 		mixer $card 'TOHDMITX' on
 		mixer $card 'TOHDMITX I2S SRC' 'I2S A'
 		;;
-	khadas,vim3)
+	vim3)
 		mixer $card 'FRDDR_A SINK 1 SEL' 'OUT 0'
 		mixer $card 'FRDDR_A SRC 1 EN' on
 		mixer $card 'TDMOUT_A SRC SEL' 'IN 0'
