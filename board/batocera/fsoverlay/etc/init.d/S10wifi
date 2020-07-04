@@ -1,0 +1,68 @@
+#!/bin/sh
+#
+# Prepare wifi even if /userdata isn't mounted
+# This service relies on S65values4boot 
+
+# Only init wifi on start condition
+[ "$1" = "start" ] || exit 0
+
+BATOCONF="/userdata/system/batocera.conf"
+BOOTCONF="/boot/batocera-boot.conf"
+
+# if /userdata is not yet available
+if ! [ -f "$BATOCONF" ]; then
+  # use the boot version of the file
+  BATOCONF="$BOOTCONF"
+fi
+
+# WLAN enabled?
+settingsWlan="$(batocera-settings "$BATOCONF" -command load -key wifi.enabled)"
+if [ "$settingsWlan" != "1" ];then
+    exit 0
+fi
+
+batocera_wifi_configure() {
+    X=$1
+
+    if [[ $X -eq 1 ]]
+    then
+        settings_ssid="$(batocera-settings "$BATOCONF" -command load -key wifi.ssid)"
+        settings_key="$(batocera-settings "$BATOCONF" -command load -key wifi.key)"
+        settings_file="/var/lib/connman/batocera_wifi.config"
+        settings_name="default"
+    else
+        settings_ssid="$(batocera-settings "$BATOCONF" -command load -key wifi${X}.ssid)"
+        settings_key="$(batocera-settings "$BATOCONF" -command load -key wifi${X}.key)"
+        settings_file="/var/lib/connman/batocera_wifi${X}.config"
+        settings_name="${X}"
+    fi
+
+    if [[ -n "$settings_ssid" ]] ;then
+        mkdir -p "/var/lib/connman"
+        cat > "${settings_file}" <<-_EOF_
+		[global]
+		Name=batocera
+
+		[service_batocera_${settings_name}]
+		Type=wifi
+		Name=${settings_ssid}
+		Passphrase=${settings_key}
+	_EOF_
+
+    connmanctl enable wifi || return 1
+    connmanctl scan   wifi || return 1
+    return 0
+
+    fi
+}
+
+# Start wifi configuration
+# Soft unblock wifi
+rfkill unblock wifi
+
+for i in 1 2 3
+do
+    batocera_wifi_configure $i &
+    ret=$?
+done
+exit $ret
