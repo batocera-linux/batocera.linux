@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-BATOCERA_AUDIO_VERSION = 3.1
+BATOCERA_AUDIO_VERSION = 3.2
 BATOCERA_AUDIO_LICENSE = GPL
 BATOCERA_AUDIO_DEPENDENCIES = alsa-lib
 BATOCERA_AUDIO_SOURCE=
