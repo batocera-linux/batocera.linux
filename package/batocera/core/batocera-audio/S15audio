@@ -3,12 +3,6 @@
 # Starts audio services
 #
 
-# get configured audio device from batocera.conf
-AUDIO_DEV=$(batocera-audio get)
-if [ "${AUDIO_DEV}" == "" ];then
-	AUDIO_DEV="auto"
-fi
-
 BACKEND=$(batocera-settings -command load -key audio.backend)
 if [ "${BACKEND}" == "" ];then
 	BACKEND="alsa"
@@ -20,6 +14,11 @@ start_alsa() {
 	rm -f /etc/alsa/conf.d/99-pulseaudio-default.conf
 	# batocera-audio
 	ln -sf /usr/bin/batocera-audio-alsa /usr/bin/batocera-audio
+	# get configured audio device from batocera.conf
+	AUDIO_DEV=$(batocera-audio get)
+	if [ "${AUDIO_DEV}" == "" ];then
+		AUDIO_DEV="auto"
+	fi	
 	batocera-audio set "${AUDIO_DEV}"
 	if [ -f userdata/system/asound.state ]; then
 		alsactl restore -f /userdata/system/asound.state
@@ -36,6 +35,11 @@ stop_alsa() {
 start_pulseaudio() {
 	# batocera-audio
 	ln -sf /usr/bin/batocera-audio-pulseaudio /usr/bin/batocera-audio
+	# get configured audio device from batocera.conf
+	AUDIO_DEV=$(batocera-audio get)
+	if [ "${AUDIO_DEV}" == "" ];then
+		AUDIO_DEV="auto"
+	fi
 	# default to pulseaudio
 	ln -sf /etc/alsa/conf.d/99-pulseaudio-default.conf.example \
 		/etc/alsa/conf.d/99-pulseaudio-default.conf
