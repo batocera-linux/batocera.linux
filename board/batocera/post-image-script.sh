@@ -618,13 +618,12 @@ case "${BATOCERA_TARGET}" in
 	rm -rf "${BINARIES_DIR}/boot"            || exit 1
 	mkdir -p "${BINARIES_DIR}/boot/boot"     || exit 1
 	mkdir -p "${BINARIES_DIR}/boot/extlinux" || exit 1
-	#$MKIMAGE -C none -A arm64 -T script -d "${BOARD_DIR}/boot/boot.cmd" "${BINARIES_DIR}/boot/boot/boot.scr"
-    cp "${BINARIES_DIR}/Image"                 "${BINARIES_DIR}/boot/boot/linux"                || exit 1
-    cp "${BINARIES_DIR}/initrd.gz"             "${BINARIES_DIR}/boot/boot/initrd.gz"            || exit 1
-    cp "${BINARIES_DIR}/rootfs.squashfs"       "${BINARIES_DIR}/boot/boot/batocera.update"      || exit 1
-    cp "${BINARIES_DIR}/sun50i-h5-libretech-all-h5-cc.dtb"  "${BINARIES_DIR}/boot/boot/sun50i-h5-libretech-all-h5-cc.dtb" || exit 1
-    cp "${BINARIES_DIR}/batocera-boot.conf"    "${BINARIES_DIR}/boot/batocera-boot.conf"        || exit 1
-    cp "${BOARD_DIR}/boot/extlinux.conf" "${BINARIES_DIR}/boot/extlinux"                   || exit 1
+        cp "${BINARIES_DIR}/Image"                 "${BINARIES_DIR}/boot/boot/linux"                || exit 1
+        cp "${BINARIES_DIR}/initrd.gz"             "${BINARIES_DIR}/boot/boot/initrd.gz"            || exit 1
+        cp "${BINARIES_DIR}/rootfs.squashfs"       "${BINARIES_DIR}/boot/boot/batocera.update"      || exit 1
+        cp "${BINARIES_DIR}/sun50i-h5-libretech-all-h3-cc.dtb"  "${BINARIES_DIR}/boot/boot/sun50i-h5-libretech-all-h3-cc.dtb" || exit 1
+        cp "${BINARIES_DIR}/batocera-boot.conf"    "${BINARIES_DIR}/boot/batocera-boot.conf"        || exit 1
+        cp "${BOARD_DIR}/boot/extlinux.conf" "${BINARIES_DIR}/boot/extlinux"                   || exit 1
 	cp -pr "${BINARIES_DIR}/tools"       "${BINARIES_DIR}/boot/"                || exit 1
 
 	# boot.tar.xz
