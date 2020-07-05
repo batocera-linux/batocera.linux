@@ -3,8 +3,8 @@
 # MAME
 #
 ################################################################################
-# Version: Commits on Apr 13, 2020 (0.220)
-LIBRETRO_MAME_VERSION = abca8f7ac5fe24ba7c29a75d6ebda591a20f61cd
+# Version: Commits on Jul 5, 2020 (0.222)
+LIBRETRO_MAME_VERSION = a8b74519809db3c4686bf89d0693a8fabbd77401
 # LIBRETRO_MAME_SITE = $(call github,tcamargo,mame,$(LIBRETRO_MAME_VERSION))
 LIBRETRO_MAME_SITE = $(call github,libretro,mame,$(LIBRETRO_MAME_VERSION))
 # LIBRETRO_MAME_OVERRIDE_SRCDIR = /sources/mame
