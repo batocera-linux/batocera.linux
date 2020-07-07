@@ -3,20 +3,31 @@
 ACTION=$1
 shift
 
+f_listModes() {
+    for GPU in /dev/dri/card*
+    do
+	batocera-drminfo "${GPU}" 2>/dev/null
+    done
+}
+
+f_currentResolution() {
+    DRMMODE=$(cat /var/run/drmMode)
+    f_listModes| grep -E "^${DRMMODE}:" | head -1 | sed -e s+"^[0-9]*:\([0-9]*x[0-9]*\) .*$"+"\1"+
+}
+
 case "${ACTION}" in
     "listModes")
-	tvservice --list-modes | sed -e s+'^[^ ]*:\(.*\)$'+'\1'+
+	f_listModes
 	;;
     "setMode")
 	MODE=$1
-	tvservice -e "${MODE}"
-	sleep 0.5 # let time for the video to change the resolution (the commands returns before it's really done, at least, on rpi ;-(
+	echo "${MODE}" > /var/run/drmMode
 	;;
     "currentMode")
-	tvservice --current-mode
+	cat /var/run/drmMode
 	;;
     "currentResolution")
-	tvservice --current-resolution
+	f_currentResolution
 	;;
     "listOutputs")
 	;;
@@ -26,27 +37,19 @@ case "${ACTION}" in
 	# minimize resolution because of 4K tv
 	MAXWIDTH=1920
 	MAXHEIGHT=1080
-	CURRENT_RESOLUTION=$(tvservice --current-resolution)
-	CURRENTWIDTH=$(echo "${CURRENT_RESOLUTION}" | cut -d x -f 1)
-	CURRENTHEIGHT=$(echo "${CURRENT_RESOLUTION}" | cut -d x -f 2)
-
-	if test "${CURRENTWIDTH}" -le "${MAXWIDTH}" -a "${CURRENTHEIGHT}" -le "${MAXHEIGHT}"
-	then
-	    exit 0
-	fi
 
 	# select a new one
 	# select the first one valid
 	# is it the best ? or should we loop to search the first with the same ratio ?
-	tvservice --list-modes | sort -rn | # highest resolution first
-	    while IFS=':\n' read SUGGRESOLUTION SUGGMODE SUGGDESCRIPTION
+	f_listModes | sed -e s+"^\([0-9]*\):\([0-9]*x[0-9]*\) \([0-9]*\)\(.*\)$"+"\2_\3:\1:\2"+ | sort -rn | # highest resolution first
+	    while IFS=':\n' read SORTSTR SUGGMODE SUGGRESOLUTION
 	    do
 		SUGGWIDTH=$(echo "${SUGGRESOLUTION}" | cut -d x -f 1)
 		SUGGHEIGHT=$(echo "${SUGGRESOLUTION}" | cut -d x -f 2)
+
 		if test "${SUGGWIDTH}" -le "${MAXWIDTH}" -a "${SUGGHEIGHT}" -le "${MAXHEIGHT}"
 		then
-		    tvservice -e "${SUGGMODE}"
-		    sleep 0.5 # let time for the video to change the resolution (the commands returns before it's really done, at least, on rpi ;-(
+		    echo "${SUGGMODE}" > /var/run/drmMode
 		    exit 0
 		fi
 	    done

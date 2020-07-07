@@ -1,0 +1,27 @@
+diff --git a/gfx/common/drm_common.c b/gfx/common/drm_common.c
+index a1bede5..8bc674a 100644
+--- a/gfx/common/drm_common.c
++++ b/gfx/common/drm_common.c
+@@ -156,6 +156,22 @@ bool drm_get_encoder(int fd)
+             g_drm_connector->modes[i].vrefresh);
+    }
+ 
++   // batocera - set resolution
++   FILE* fdDrmMode;
++   int drmMode;
++   if((fdDrmMode = fopen("/var/run/drmMode", "r")) != NULL) {
++     if(fscanf(fdDrmMode, "%i", &drmMode) == 1) {
++       if(drmMode>=0 && drmMode<g_drm_connector->count_modes) {
++	 drmModeCrtc *pcrtc = drmModeGetCrtc(fd, g_drm_encoder->crtc_id);
++	 if(pcrtc != NULL) {
++	   drmModeSetCrtc(fd, pcrtc->crtc_id, pcrtc->buffer_id, 0, 0, &g_drm_connector->connector_id, 1, &g_drm_connector->modes[drmMode]);
++	 }
++       }
++     }
++     fclose(fdDrmMode);
++   }
++   //
++
+    return true;
+ }
+ 

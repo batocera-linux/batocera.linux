@@ -1,0 +1,3 @@
+config BR2_PACKAGE_BATOCERA_DRMINFO
+       depends on BR2_PACKAGE_LIBDRM
+       bool "batocera-drminfo"
