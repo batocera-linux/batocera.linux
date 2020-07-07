@@ -122,6 +122,7 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
                                                             BR2_PACKAGE_BATOCERA_TARGET_MIQI         || \
                                                             BR2_PACKAGE_BATOCERA_TARGET_VIM3         || \
                                                             BR2_PACKAGE_BATOCERA_TARGET_LIBRETECH_H5
+    select BR2_PACKAGE_BATOCERA_DRMINFO                  if BR2_PACKAGE_LIBDRM
 
     select BR2_PACKAGE_LIRC_TOOLS                        # lirc (remote control)
     select BR2_PACKAGE_LIBCEC                            # libcec
