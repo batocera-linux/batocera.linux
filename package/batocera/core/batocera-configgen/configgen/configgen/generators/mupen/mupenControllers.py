@@ -75,6 +75,7 @@ def defineControllerKeys(controller, systemconfig):
         # Cheat on the controller
         for realStick, fakeStick in fakeSticks.iteritems():
                 if realStick in controller.inputs:
+                    if controller.inputs[realStick].type == "axis":
                         print fakeStick + "-> " + realStick
                         inputVar =  Input(fakeStick
                                         , controller.inputs[realStick].type
