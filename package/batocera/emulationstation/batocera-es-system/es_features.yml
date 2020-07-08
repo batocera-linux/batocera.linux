@@ -162,26 +162,6 @@ dolphin:
             choices:
                 "Off": 0
                 "On":  1
-        hires_textures:
-            prompt: HIRES TEXTURES
-            choices:
-                "Off": 0
-                "On":  1                
-        widescreen_hack:
-            prompt: WIDESCREEN HACK
-            choices:
-                "Off": 0
-                "On":  1  
-        enable_cheats:
-            prompt: ENABLE CHEATS
-            choices:
-                "Off": 0
-                "On":  1
-        vsync:
-            prompt: VSYNC
-            choices:
-                "Off": False
-                "On":  True
         anisotropic_filtering:
             prompt: ANISOTROPIC FILTERING
             choices:
@@ -197,6 +177,32 @@ dolphin:
                 "2x":  2
                 "4x":  4
                 "8x":  8
+        hires_textures:
+            prompt: HIRES TEXTURES
+            choices:
+                "Off": 0
+                "On":  1                
+        widescreen_hack:
+            prompt: WIDESCREEN HACK
+            choices:
+                "Off": 0
+                "On":  1  
+        enable_cheats:
+            prompt: ENABLE CHEATS
+            choices:
+                "Off": 0
+                "On":  1
+        enable_mmu:
+            prompt: MEMORY MANAGEMENT UNIT
+            choices:
+                "Off": 0
+                "On":  1
+        enable_fastdisc:
+            prompt: FAST DISK SPEED
+            choices:
+                "Off": 0
+                "On":  1
+
   systems:
     wii:
         features: [emulated_wiimotes]                  
