@@ -107,12 +107,13 @@ class Emulator():
             return False
 
     def getOptBoolean(self, key):
-        if unicode(self.config[key]) == u'1':
-            return True
-        if unicode(self.config[key]) == u'true':
-            return True
-        if self.config[key] == True:
-            return True
+        if(isOptSet(self,key)):
+            if unicode(self.config[key]) == u'1':
+                return True
+            if unicode(self.config[key]) == u'true':
+                return True
+            if self.config[key] == True:
+                return True
         return False
 
     @staticmethod
