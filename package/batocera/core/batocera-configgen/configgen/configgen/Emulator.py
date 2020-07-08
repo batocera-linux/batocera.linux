@@ -101,15 +101,19 @@ class Emulator():
         return dict_result
 
     def isOptSet(self, key):
-        return key in self.config
+        if key in self.config:
+            return True
+        else:
+            return False
 
     def getOptBoolean(self, key):
-        if unicode(self.config[key]) == u'1':
-            return True
-        if unicode(self.config[key]) == u'true':
-            return True
-        if self.config[key] == True:
-            return True
+        if key in self.config:
+            if unicode(self.config[key]) == u'1':
+                return True
+            if unicode(self.config[key]) == u'true':
+                return True
+            if self.config[key] == True:
+                return True
         return False
 
     @staticmethod
