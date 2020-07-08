@@ -223,7 +223,12 @@ pcsx2:
 
 ppsspp:
   features: [ratio, internal_resolution]
-
+  cfeatures:
+        frameskip:
+            prompt: FRAME SKIP
+            choices:
+                "Off": 0
+                "On":  1
 reicast:
   features: [ratio]
 
