@@ -20,6 +20,11 @@ ifeq ($(BR2_PACKAGE_XORG7),y)
   BATOCERA_SCRIPT_RESOLUTION_TYPE=xorg
 endif
 
+# doesn't work on odroidgoa with mali g31_gbm
+ifeq ($(BR2_PACKAGE_MALI_G31_GBM),y)
+  BATOCERA_SCRIPT_RESOLUTION_TYPE=basic
+endif
+
 define BATOCERA_SCRIPTS_INSTALL_TARGET_CMDS
 	install -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-scripts/scripts/bluetooth/bluezutils.py            $(TARGET_DIR)/usr/lib/python2.7/ # any variable ?
 	install -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-scripts/scripts/bluetooth/batocera-bluetooth       $(TARGET_DIR)/usr/bin/
