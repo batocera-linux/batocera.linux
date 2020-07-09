@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+from __future__ import print_function
+
 from hashlib import md5
 from os.path import isfile
 from collections import OrderedDict
@@ -187,21 +189,21 @@ def displayMissingBios(systems, missingBios):
     sortedMissingBios = OrderedDict(sorted(missingBios.items()))
     if sortedMissingBios:
         for system in sortedMissingBios:
-            print "> {}".format(systems[system]["name"])
+            print("> {}".format(systems[system]["name"]))
             for file in sortedMissingBios[system].keys():
                 md5str = "-"
                 if sortedMissingBios[system][file]["md5"] != "":
                     md5str = sortedMissingBios[system][file]["md5"]
-                print "{} {} {}".format(sortedMissingBios[system][file]["status"], md5str, sortedMissingBios[system][file]["file"])
+                print("{} {} {}".format(sortedMissingBios[system][file]["status"], md5str, sortedMissingBios[system][file]["file"]))
     else:
-        print "No missing bios"
+        print("No missing bios")
 
 def createReadme(systems):
     for system in sorted(systems):
-        print "{}:".format(systems[system]["name"])
+        print("{}:".format(systems[system]["name"]))
         for bios in systems[system]["biosFiles"]:
-            print "{} {}".format(bios["md5"], bios["file"])
-        print ""
+            print("{} {}".format(bios["md5"], bios["file"]))
+        print("")
 
 if __name__ == '__main__':
     if len(sys.argv) == 1:
@@ -209,3 +211,17 @@ if __name__ == '__main__':
         displayMissingBios(systems, checkBios(systems, prefix))
     elif sys.argv[1] == "--createReadme":
         createReadme(systems)
+    elif len(sys.argv) == 3 and sys.argv[1] == "--filter":
+        prefix = "/userdata"
+        lowered_name = sys.argv[2].lower()
+
+        filtered_systems = {}
+        for system in systems:
+            if lowered_name in system.lower() or lowered_name in systems[system]['name'].lower():
+                filtered_systems[system] = systems[system]
+
+        if len(filtered_systems) == 0:
+            print("No system named {} found".format(sys.argv[2]))
+            exit(1)
+
+        displayMissingBios(filtered_systems, checkBios(filtered_systems, prefix))
