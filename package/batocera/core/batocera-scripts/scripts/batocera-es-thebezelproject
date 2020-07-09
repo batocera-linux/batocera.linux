@@ -10,6 +10,8 @@
 # 20190801 Initial release
 # 20191120 Rewite all script for incremential runtime
 # 20200410 Fix : Support for daphne did not work
+# 20200708 Fix : Default bezel was never copied
+# 20200709 Add : Progress count (started from Terminal/SSH vs ES)
 
 readonly VERSION="20200410"
 readonly TITLE="the BezelProject for BATOCERA"
@@ -200,6 +202,7 @@ function install() {
 		local system_to_install="$1"
 		local daphne=""
 		local OS
+		local TERMINAL
 
 		local git_name
 		local file_name
@@ -223,6 +226,9 @@ function install() {
 
 		record "* Install"
 		record "Path to games bezels $DECORATION_DIR"/"$BEZELPROJECT_GAMES_DIR"
+		
+		# started from Terminal/SSH or from ES ?
+		[ -t 1 ] && TERMINAL=1 || TERMINAL=0
 
 		# create temporary files for systems list
 		if [ -f $LOCAL_SYSTEMS_LIST ]; then
@@ -309,11 +315,13 @@ function install() {
 		# support for daphne : there is a sub-folder called roms we want to parse
 		[[ $(grep "daphne" <<< "$system_to_install") && -d "$ROMS_DIR"/"$system_to_install"/roms ]] && daphne="/roms"
 
-		# start job process (for background refresh)
-		echo "0" > "$TMP_PROGRESS_COUNT"
-		PID=
-		get_per "$system_to_install" "$roms_filescount" &
-		PID=$!
+		if [  "$TERMINAL" -eq 0 ]; then
+				# start job process (for background refresh)
+				echo "0" > "$TMP_PROGRESS_COUNT"
+				PID=
+				get_per "$system_to_install" "$roms_filescount" &
+				PID=$!
+		fi
 
 		# check if running on a Mac or on Busybox
 		# (Mac for debug purposes, Batocera runs on Linux)
@@ -397,17 +405,26 @@ function install() {
 				if [ "$matching_rom" -eq 0 ]; then
 						record "NOT MATCHING : $rom_name"
 				fi
+
 				# is there too many warning ?
 				if [ "$NB_WARNING" -gt "$MAX_NB_WARNING" ]; then
 						record "Error : too many warning ("$MAX_NB_WARNING") while downloading files, exiting..." "1"
 						break
 				fi
+				
+				# show one line progress count on Terminal/SSH only
+				if [  "$TERMINAL" -ne 0 ]; then
+ 						echo -ne  "Installing bezels for $system_to_install $roms_count / $roms_filescount\r"
+				fi
+				
 		done < <(find "$ROMS_DIR"/"$system_to_install$daphne" -maxdepth 1 -type f -iname "[!._]*" -and ! -iname "gamelist*")
 		rm "$TMP_INDEX_LIST"
 
-		# kill job process
-		kill -9 "$PID"
-		PID=
+		if [  "$TERMINAL" -eq 0 ]; then
+				# kill job process
+				kill -9 "$PID"
+				PID=
+		fi
 
 		if [ "$NB_WARNING" -gt "$MAX_NB_WARNING" ]; then
 				# sync disk
@@ -421,14 +438,14 @@ function install() {
 		if [ -d "$DECORATION_DIR"/"$BEZELPROJECT_DIR" ]; then
 				url="$DEFAULT_BEZEL_URL"/default.png
 				# check header only for HTTP 200 (OK)
-				if [ $(curl -sIL "$url" | head -n 1 | grep "200") ]; then
+				if [[ $(curl -sIL "$url" | head -n 1 | grep "200") ]]; then
 						curl -sfL "$url" -o "$DECORATION_DIR"/"$BEZELPROJECT_DIR"/default.png
 				else
 						record "Warning : file $(basename $url) could not be downloaded from $(dirname $url)"
 				fi
 				url="$DEFAULT_BEZEL_URL"/default.info
 				# check header only for HTTP 200 (OK)
-				if [ $(curl -sIL "$url" | head -n 1 | grep "200") ]; then
+				if [[ $(curl -sIL "$url" | head -n 1 | grep "200") ]]; then
 						curl -sfL "$url" -o "$DECORATION_DIR"/"$BEZELPROJECT_DIR"/default.info
 				else
 						record "Warning : file $(basename $url) could not be downloaded from $(dirname $url)"
@@ -466,8 +483,8 @@ function remove() {
 				else
 						rm -rf "$DECORATION_DIR"/"$BEZELPROJECT_GAMES_DIR"/"$system_name"
 						record "Deleting : $DECORATION_DIR"/"$BEZELPROJECT_GAMES_DIR"/"$system_name"
-						rm -f "$DECORATION_DIR"/"$BEZELPROJECT_DIR"/default.*
-						record "Deleting : $DECORATION_DIR"/"$BEZELPROJECT_DIR"/default.*
+ 						rm -f "$DECORATION_DIR"/"$BEZELPROJECT_DIR"/default.*
+ 						record "Deleting : $DECORATION_DIR"/"$BEZELPROJECT_DIR"/default.*
 				fi
 		fi
 		# sync disk
