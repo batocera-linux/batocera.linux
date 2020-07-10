@@ -161,6 +161,9 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
     # xorg
     select BR2_PACKAGE_BATOCERA_XORG                     if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
 
+    # vulkan
+    select BR2_PACKAGE_VULKAN_LOADER                     if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
+
     # compression tools
     select BR2_PACKAGE_UNZIP                             # for /userdata/system/upgrade/share.zip
     select BR2_PACKAGE_XZ                                # for updates
