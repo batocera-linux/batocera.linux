@@ -3,8 +3,8 @@
 # MRBOOM
 #
 ################################################################################
-# Version.: Commits on May 2, 2020
-LIBRETRO_MRBOOM_VERSION = 441ba41151f2a688c6d9a2c1a34ff2106d8c57f8
+# Version.: Commits on Jun 26, 2020
+LIBRETRO_MRBOOM_VERSION = 1bd7a1ab2c72c8e748728dccb8bd64a3ba26ce29
 LIBRETRO_MRBOOM_SITE = https://github.com/libretro/mrboom-libretro.git
 LIBRETRO_MRBOOM_SITE_METHOD=git
 LIBRETRO_MRBOOM_GIT_SUBMODULES=YES
