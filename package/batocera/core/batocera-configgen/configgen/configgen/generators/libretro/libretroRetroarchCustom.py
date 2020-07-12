@@ -50,6 +50,7 @@ def generateRetroarchCustom():
     retroarchSettings.save('audio_volume',                       '"8.0"')
     
     # Settings
+    retroarchSettings.save('global_core_options',               '"true"')
     retroarchSettings.save('config_save_on_exit',               '"false"')
     retroarchSettings.save('savestate_auto_save',               '"false"')
     retroarchSettings.save('savestate_auto_load',               '"false"')
