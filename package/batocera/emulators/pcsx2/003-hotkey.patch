@@ -1,35 +1,19 @@
-diff --git a/plugins/onepad_legacy/controller.h b/plugins/onepad_legacy/controller.h
-index ccf2716..e1b30e9 100644
---- a/plugins/onepad_legacy/controller.h
-+++ b/plugins/onepad_legacy/controller.h
-@@ -21,7 +21,7 @@
- 
- #pragma once
- #include <string.h> // for memset
--#define MAX_KEYS 24
-+#define MAX_KEYS 25
- 
- enum KeyType {
-     PAD_JOYBUTTONS = 0,
 diff --git a/pcsx2/gui/FrameForGS.cpp b/pcsx2/gui/FrameForGS.cpp
-index 01ac2a6..50ff29f 100644
+index fa625be..23aa586 100644
 --- a/pcsx2/gui/FrameForGS.cpp
 +++ b/pcsx2/gui/FrameForGS.cpp
-@@ -49,9 +49,9 @@ void GSPanel::InitDefaultAccelerators()
- 	m_Accels->Map( AAC( WXK_F3 ).Shift(),		"States_DefrostCurrentSlotBackup");
+@@ -55,8 +55,7 @@ void GSPanel::InitDefaultAccelerators()
  	m_Accels->Map( AAC( WXK_F2 ),				"States_CycleSlotForward" );
  	m_Accels->Map( AAC( WXK_F2 ).Shift(),		"States_CycleSlotBackward" );
--
+ 
 -	m_Accels->Map( AAC( WXK_F4 ),				"Framelimiter_MasterToggle");
 -	m_Accels->Map( AAC( WXK_F4 ).Shift(),		"Frameskip_Toggle");
 +	m_Accels->Map( AAC( WXK_F4 ),				"States_CycleSlotBackward" );
-+	//m_Accels->Map( AAC( WXK_F4 ),				"Framelimiter_MasterToggle");
-+	//m_Accels->Map( AAC( WXK_F4 ).Shift(),		"Frameskip_Toggle");
  	m_Accels->Map( AAC( WXK_TAB ),				"Framelimiter_TurboToggle" );
  	m_Accels->Map( AAC( WXK_TAB ).Shift(),		"Framelimiter_SlomoToggle" );
  
 diff --git a/plugins/onepad_legacy/Linux/linux.cpp b/plugins/onepad_legacy/Linux/linux.cpp
-index 43f6b27..4f022da 100644
+index 9221d9c..b63b6d3 100644
 --- a/plugins/onepad_legacy/Linux/linux.cpp
 +++ b/plugins/onepad_legacy/Linux/linux.cpp
 @@ -27,10 +27,13 @@
@@ -46,7 +30,7 @@ index 43f6b27..4f022da 100644
  void SysMessage(const char *fmt, ...)
  {
      va_list list;
-@@ -89,6 +92,69 @@ void _PADclose()
+@@ -88,6 +91,70 @@ void _PADclose()
      s_vgamePad.clear();
  }
  
@@ -113,18 +97,20 @@ index 43f6b27..4f022da 100644
 +    }
 +  }
 +}
++
  void PollForJoystickInput(int cpad)
  {
      int joyid = conf->get_joyid(cpad);
-@@ -108,6 +167,7 @@ void PollForJoystickInput(int cpad)
+@@ -109,7 +176,7 @@ void PollForJoystickInput(int cpad)
+                     key_status->press(cpad, i);
                  else
                      key_status->release(cpad, i);
- 
-+		handle_hotkey(cpad, i, value);
+-
++                    handle_hotkey(cpad, i, value);
                  break;
              }
-             case PAD_HAT: {
-@@ -116,11 +176,14 @@ void PollForJoystickInput(int cpad)
+             case PAD_HAT:
+@@ -119,11 +186,14 @@ void PollForJoystickInput(int cpad)
                  // key_to_hat_dir and SDL_JoystickGetHat are a 4 bits bitmap, one for each directions. Only 1 bit can be high for
                  // key_to_hat_dir. SDL_JoystickGetHat handles diagonal too (2 bits) so you must check the intersection
                  // '&' not only equality '=='. -- Gregory
@@ -132,84 +118,83 @@ index 43f6b27..4f022da 100644
 +                if (key_to_hat_dir(cpad, i) & value) {
                      key_status->press(cpad, i);
 -                else
--                    key_status->release(cpad, i);
--
-+		    handle_hotkey(cpad, i, 1);
-+		}
++                    handle_hotkey(cpad, i, 1);
++                }
 +                else {
-+		  key_status->release(cpad, i);
-+		  handle_hotkey(cpad, i, 0);
-+		}
+                     key_status->release(cpad, i);
+-
++                    handle_hotkey(cpad, i, 0);
++                }
                  break;
              }
-             case PAD_AXIS: {
-@@ -129,26 +192,40 @@ void PollForJoystickInput(int cpad)
-                 bool full_axis = key_to_axis_type(cpad, i);
- 
-                 if (IsAnalogKey(i)) {
+             case PAD_AXIS:
+@@ -134,29 +204,43 @@ void PollForJoystickInput(int cpad)
+                 float k=conf->get_sensibility()/100.0; // convert sensibility to float
+                 if (IsAnalogKey(i))
+                 {
 -                    if (abs(value) > gamePad->GetDeadzone())
--                        key_status->press(cpad, i, value);
+-                        key_status->press(cpad, i, (int)(value*k));
 -                    else
--                        key_status->release(cpad, i);
-+		  if (abs(value) > gamePad->GetDeadzone()) {
-+		    key_status->press(cpad, i, value);
-+		    handle_hotkey(cpad, i, 1);
-+		  }
-+		  else {
-+		    key_status->release(cpad, i);
-+		    handle_hotkey(cpad, i, 0);
-+		  }
- 
-                 } else {
-                     if (full_axis) {
++                    if (abs(value) > gamePad->GetDeadzone()) {
++                        key_status->press(cpad, i, value);
++                        handle_hotkey(cpad, i, 1);
++                    }
++                    else {
+                         key_status->release(cpad, i);
++                        handle_hotkey(cpad, i, 0);
++                    }
+                 }
+                 else
+                 {
+                     if (full_axis)
+                     {
                          value += 0x8000;
 -                        if (value > gamePad->GetDeadzone())
--                            key_status->press(cpad, i, min(value / 256, 0xFF));
--                        else
 +                        if (value > gamePad->GetDeadzone()) {
-+			  key_status->press(cpad, i, min(value / 256, 0xFF));
-+			  handle_hotkey(cpad, i, 1);
-+			}
+                             key_status->press(cpad, i, std::min(value / 256, 0xFF));
+-                        else
++                            handle_hotkey(cpad, i, 1);
++                        }
 +                        else {
                              key_status->release(cpad, i);
-+			    handle_hotkey(cpad, i, 0);
-+			}
- 
-                     } else {
++                            handle_hotkey(cpad, i, 0);
++                        }
+                     }
+                     else
+                     {
 -                        if (sign && (-value > gamePad->GetDeadzone()))
-+		      if (sign && (-value > gamePad->GetDeadzone())) {
-                             key_status->press(cpad, i, min(-value / 128, 0xFF));
++                        if (sign && (-value > gamePad->GetDeadzone())) {
+                             key_status->press(cpad, i, std::min((int)(-value*k) / 128, 0xFF));
 -                        else if (!sign && (value > gamePad->GetDeadzone()))
-+			    handle_hotkey(cpad, i, 1);
-+		      }
-+		      else if (!sign && (value > gamePad->GetDeadzone())) {
-                             key_status->press(cpad, i, min(value / 128, 0xFF));
++                            handle_hotkey(cpad, i, 1);
++                        }
++		                else if (!sign && (value > gamePad->GetDeadzone())) {    
+                             key_status->press(cpad, i, std::min((int)(value*k) / 128, 0xFF));
 -                        else
-+			    handle_hotkey(cpad, i, 1);
-+		      }
-+		      else {
++                            handle_hotkey(cpad, i, 1);                            
++                        }
++		                else {
                              key_status->release(cpad, i);
-+			    handle_hotkey(cpad, i, 0);
-+		      }
++                            handle_hotkey(cpad, i, 0);
++            		    }
                      }
                  }
              }
-diff --git a/plugins/onepad_legacy/onepad.h b/plugins/onepad_legacy/onepad.h
-index d4840e0..bac41c4 100644
---- a/plugins/onepad_legacy/onepad.h
-+++ b/plugins/onepad_legacy/onepad.h
-@@ -119,7 +119,8 @@ enum gamePadValues {
-     PAD_R_UP,     // Right joystick (Up) ↑
-     PAD_R_RIGHT,  // Right joystick (Right) →
-     PAD_R_DOWN,   // Right joystick (Down) ↓
--    PAD_R_LEFT    // Right joystick (Left) ←
-+    PAD_R_LEFT,    // Right joystick (Left) ←
-+    PAD_HOTKEY
- };
+diff --git a/plugins/onepad_legacy/controller.h b/plugins/onepad_legacy/controller.h
+index 79c7d28..704a654 100644
+--- a/plugins/onepad_legacy/controller.h
++++ b/plugins/onepad_legacy/controller.h
+@@ -21,7 +21,7 @@
  
- extern keyEvent event;
+ #pragma once
+ #include <string.h> // for memset
+-#define MAX_KEYS 24
++#define MAX_KEYS 25
+ 
+ enum KeyType {
+     PAD_JOYBUTTONS = 0,
 diff --git a/plugins/onepad_legacy/onepad.cpp b/plugins/onepad_legacy/onepad.cpp
-index add8c38..0e2530a 100644
+index 212bdf3..6038bd3 100644
 --- a/plugins/onepad_legacy/onepad.cpp
 +++ b/plugins/onepad_legacy/onepad.cpp
 @@ -40,6 +40,7 @@ PADconf *conf;
@@ -220,28 +205,39 @@ index add8c38..0e2530a 100644
  
  static keyEvent s_event;
  std::string s_strIniPath("inis/");
-@@ -204,6 +205,8 @@ PADopen(void *pDsp)
-     pthread_spin_init(&mutex_KeyEvent, PTHREAD_PROCESS_PRIVATE);
-     mutex_WasInit = true;
- 
+@@ -191,6 +192,7 @@ EXPORT_C_(s32) PADopen(void *pDsp)
+     memset(&event, 0, sizeof(event));
+     key_status->Init();
+     g_ev_fifo.reset();
 +    hot_keyevent.evt = 0;
-+
+ 
  #if defined(__unix__)
      GamePad::EnumerateGamePads(s_vgamePad);
- #endif
-@@ -346,6 +349,15 @@ PADkeyEvent()
+@@ -332,6 +334,13 @@ EXPORT_C_(keyEvent *) PADkeyEvent()
      s_event = event;
      event.evt = 0;
      event.key = 0;
 +
-+    if (mutex_WasInit) {
-+      if(hot_keyevent.evt != 0) {
-+       event.evt = hot_keyevent.evt;
-+       event.key = hot_keyevent.key;
-+       hot_keyevent.evt = 0;
-+      }
++    if(hot_keyevent.evt != 0) {
++        event.evt = hot_keyevent.evt;
++        event.key = hot_keyevent.key;
++        hot_keyevent.evt = 0;
 +    }
 +
      return &s_event;
  }
  
+diff --git a/plugins/onepad_legacy/onepad.h b/plugins/onepad_legacy/onepad.h
+index 02c75ca..59991ec 100644
+--- a/plugins/onepad_legacy/onepad.h
++++ b/plugins/onepad_legacy/onepad.h
+@@ -120,7 +120,8 @@ enum gamePadValues {
+     PAD_R_UP,     // Right joystick (Up) ↑
+     PAD_R_RIGHT,  // Right joystick (Right) →
+     PAD_R_DOWN,   // Right joystick (Down) ↓
+-    PAD_R_LEFT    // Right joystick (Left) ←
++    PAD_R_LEFT,   // Right joystick (Left) ←
++    PAD_HOTKEY
+ };
+ 
+ extern keyEvent event;
