@@ -22,34 +22,34 @@ YUZU_CONF_ENV += LDFLAGS=-lpthread ARCHITECTURE_x86_64=1
 
 define YUZU_INSTALL_TARGET_CMDS
         mkdir -p $(TARGET_DIR)/usr/bin
-        mkdir -p $(TARGET_DIR)/usr/lib
+        mkdir -p $(TARGET_DIR)/usr/lib/yuzu
 
 	$(INSTALL) -D $(@D)/buildroot-build/bin/yuzu \
 		$(TARGET_DIR)/usr/bin/
 
-	cp -pr $(@D)/buildroot-build/externals/sirit/src/*.so \
-		$(TARGET_DIR)/usr/lib/
+	cp -pr $(@D)/buildroot-build/externals/sirit/src/*.so* \
+		$(TARGET_DIR)/usr/lib/yuzu/
 
-	cp -pr $(@D)/buildroot-build/externals/lurlparser/*.so \
-		$(TARGET_DIR)/usr/lib/
+	cp -pr $(@D)/buildroot-build/externals/lurlparser/*.so* \
+		$(TARGET_DIR)/usr/lib/yuzu/
 
-	cp -pr $(@D)/buildroot-build/externals/dynarmic/src/*.so \
-		$(TARGET_DIR)/usr/lib/
+	cp -pr $(@D)/buildroot-build/externals/dynarmic/src/*.so* \
+		$(TARGET_DIR)/usr/lib/yuzu/
 
-	cp -pr $(@D)/buildroot-build/externals/libressl/ssl/*.so \
-		$(TARGET_DIR)/usr/lib/
+	cp -pr $(@D)/buildroot-build/externals/libressl/ssl/*.so* \
+		$(TARGET_DIR)/usr/lib/yuzu/
 
-	cp -pr $(@D)/buildroot-build/externals/libressl/crypto/*.so \
-		$(TARGET_DIR)/usr/lib/
+	cp -pr $(@D)/buildroot-build/externals/libressl/crypto/*.so* \
+		$(TARGET_DIR)/usr/lib/yuzu/
 
-	cp -pr $(@D)/buildroot-build/externals/libressl/tls/*.so \
-		$(TARGET_DIR)/usr/lib/
+	cp -pr $(@D)/buildroot-build/externals/libressl/tls/*.so* \
+		$(TARGET_DIR)/usr/lib/yuzu/
 
-	cp -pr $(@D)/buildroot-build/externals/cubeb/*.so \
-		$(TARGET_DIR)/usr/lib/
+	cp -pr $(@D)/buildroot-build/externals/cubeb/*.so* \
+		$(TARGET_DIR)/usr/lib/yuzu/
 
-	cp -pr $(@D)/buildroot-build/externals/inih/*.so \
-		$(TARGET_DIR)/usr/lib/
+	cp -pr $(@D)/buildroot-build/externals/inih/*.so* \
+		$(TARGET_DIR)/usr/lib/yuzu/
 endef
 
 $(eval $(cmake-package))
