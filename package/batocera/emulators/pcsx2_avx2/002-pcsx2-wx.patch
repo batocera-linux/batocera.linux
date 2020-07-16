@@ -1,8 +1,8 @@
 diff --git a/cmake/SearchForStuff.cmake b/cmake/SearchForStuff.cmake
-index 3bf2f21..cc06b3c 100644
+index a062d45..76ce26b 100644
 --- a/cmake/SearchForStuff.cmake
 +++ b/cmake/SearchForStuff.cmake
-@@ -23,19 +23,19 @@ find_package(Vtune)
+@@ -29,19 +29,6 @@ find_package(Vtune)
  # Fedora uses an extra non-standard option ... Arch must be the first option.
  # They do uname -m if missing so only fix for cross compilations.
  # http://pkgs.fedoraproject.org/cgit/wxGTK.git/plain/wx-config
@@ -11,29 +11,18 @@ index 3bf2f21..cc06b3c 100644
 -else()
 -    set(wxWidgets_CONFIG_OPTIONS --unicode=yes)
 -endif()
-+#if(Fedora AND CMAKE_CROSSCOMPILING)
-+#    set(wxWidgets_CONFIG_OPTIONS --arch ${PCSX2_TARGET_ARCHITECTURES} --unicode=yes)
-+#else()
-+#    set(wxWidgets_CONFIG_OPTIONS --unicode=yes)
-+#endif()
- 
+-
 -list(APPEND wxWidgets_CONFIG_OPTIONS --version=3.0)
-+#list(APPEND wxWidgets_CONFIG_OPTIONS --version=3.0)
- 
+-
 -if(GTK3_API AND NOT APPLE)
 -    list(APPEND wxWidgets_CONFIG_OPTIONS --toolkit=gtk3)
 -elseif(NOT APPLE)
 -    list(APPEND wxWidgets_CONFIG_OPTIONS --toolkit=gtk2)
 -endif()
-+#if(GTK3_API AND NOT APPLE)
-+#    list(APPEND wxWidgets_CONFIG_OPTIONS --toolkit=gtk3)
-+#elseif(NOT APPLE)
-+#    list(APPEND wxWidgets_CONFIG_OPTIONS --toolkit=gtk2)
-+#endif()
  
  # wx2.8 => /usr/bin/wx-config-2.8
  # lib32-wx2.8 => /usr/bin/wx-config32-2.8
-@@ -43,27 +43,27 @@ endif()
+@@ -49,27 +36,6 @@ endif()
  # I'm going to take a wild guess and predict this:
  # lib32-wx3.0 => /usr/bin/wx-config32-3.0
  # FindwxWidgets only searches for wx-config.
@@ -52,33 +41,12 @@ index 3bf2f21..cc06b3c 100644
 -    endif()
 -else()
 -    if (${CMAKE_SYSTEM_NAME} MATCHES "FreeBSD")
--        set(wxWidgets_CONFIG_EXECUTABLE "/usr/local/bin/wxgtk2u-3.0-config")
+-        set(wxWidgets_CONFIG_EXECUTABLE "/usr/local/bin/wxgtk3u-3.0-config")
 -    endif()
 -    if(EXISTS "/usr/bin/wx-config-3.0")
 -        set(wxWidgets_CONFIG_EXECUTABLE "/usr/bin/wx-config-3.0")
 -    endif()
 -endif()
-+#if(CMAKE_CROSSCOMPILING)
-+#    # May need to fix the filenames for lib32-wx3.0.
-+#    if(${PCSX2_TARGET_ARCHITECTURES} MATCHES "i386")
-+#        if (Fedora AND EXISTS "/usr/bin/wx-config-3.0")
-+#            set(wxWidgets_CONFIG_EXECUTABLE "/usr/bin/wx-config-3.0")
-+#        endif()
-+#        if (EXISTS "/usr/bin/wx-config32")
-+#            set(wxWidgets_CONFIG_EXECUTABLE "/usr/bin/wx-config32")
-+#        endif()
-+#        if (EXISTS "/usr/bin/wx-config32-3.0")
-+#            set(wxWidgets_CONFIG_EXECUTABLE "/usr/bin/wx-config32-3.0")
-+#        endif()
-+#    endif()
-+#else()
-+#    if (${CMAKE_SYSTEM_NAME} MATCHES "FreeBSD")
-+#        set(wxWidgets_CONFIG_EXECUTABLE "/usr/local/bin/wxgtk2u-3.0-config")
-+#    endif()
-+#    if(EXISTS "/usr/bin/wx-config-3.0")
-+#        set(wxWidgets_CONFIG_EXECUTABLE "/usr/bin/wx-config-3.0")
-+#    endif()
-+#endif()
  
  find_package(wxWidgets COMPONENTS base core adv)
  find_package(ZLIB)
