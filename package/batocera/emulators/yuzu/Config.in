@@ -14,6 +14,7 @@ config BR2_PACKAGE_YUZU
     select BR2_PACKAGE_FFMPEG  
     select BR2_PACKAGE_ZSTD
     select BR2_PACKAGE_CATCH2
+    select BR2_PACKAGE_BOOST_CONTEXT
     help
       A Emulator Yuzu core for Nintendo Switch.
 
