@@ -22,6 +22,27 @@ libretro:
       features: [ ]
     desmume:
       features: [netplay, rewind, autosave]
+      cfeatures:
+            texture_scaling:
+                prompt: TEXTURES UPSCALING (XBRZ)
+                choices:
+                    "Off": 1
+                    "2x":  2
+                    "4x":  4
+            texture_smoothing:
+                prompt: TEXTURES SMOOTHING
+                choices:
+                    "Off": disabled
+                    "On":  enabled
+            multisampling:
+                prompt: MULTISAMPLING AA
+                choices:
+                    "Off": disabled
+                    "2x":  2
+                    "4x":  4
+                    "8x":  8
+                    "16x": 16
+                    "32x": 32
     dosbox:
       features: [ ]
     fbneo:
@@ -30,6 +51,35 @@ libretro:
       features: [netplay, rewind, autosave]
     flycast:
       features: [         rewind, autosave]
+      cfeatures:
+            anisotropic_filtering:
+                prompt: ANISOTROPIC FILTERING
+                choices:
+                    "Off": off
+                    "2x":  2
+                    "4x":  4
+                    "8x":  8
+                    "16x": 16
+            texture_upscaling:
+                prompt: TEXTURES UPSCALING (XBRZ)
+                choices:
+                    "Off": off
+                    "2x":  2x
+                    "4x":  4x
+                    "6x":  6x
+            render_to_texture_upscaling:
+                prompt: RENDER TO TEXTURES UPSCALING
+                choices:
+                    "Off": 1x
+                    "2x":  2x
+                    "3x":  3x
+                    "4x":  4x
+                    "8x":  8x
+            widescreen_hack:
+                prompt: WIDESCREEN HACK
+                choices:
+                    "Off": disabled
+                    "On":  enabled
     freeintv:
       features: [ ]
     fuse:
