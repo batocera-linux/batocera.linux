@@ -61,6 +61,21 @@ def generateCoreSettings(retroarchCore, system):
 
     if (system.config['core'] == 'desmume'):
         coreSettings.save('desmume_pointer_device_r',   '"emulated"')
+        # multisampling aa
+        if system.isOptSet('multisampling'):
+            coreSettings.save("desmume_gfx_multisampling", system.config["multisampling"])
+        else:
+            coreSettings.save("desmume_gfx_multisampling", "disabled")
+        # texture smoothing
+        if system.isOptSet('texture_smoothing'):
+            coreSettings.save("desmume_gfx_texture_smoothing", system.config["texture_smoothing"])
+        else:
+            coreSettings.save("desmume_gfx_texture_smoothing", "disabled")
+        # texture scaling (xBrz)
+        if system.isOptSet('texture_scaling'):
+            coreSettings.save("desmume_gfx_texture_scaling", system.config["texture_scaling"])
+        else:
+            coreSettings.save("desmume_gfx_texture_scaling", "1")
 
     if (system.config['core'] == 'mame078'):
         coreSettings.save('mame2003_skip_disclaimer',   '"enabled"')
@@ -108,6 +123,26 @@ def generateCoreSettings(retroarchCore, system):
 
     if (system.config['core'] == 'flycast'):
         coreSettings.save('reicast_threaded_rendering',   '"enabled"')
+        # widescreen hack
+        if system.isOptSet('widescreen_hack'):
+            coreSettings.save("reicast_widescreen_hack", system.config["widescreen_hack"])
+        else:
+            coreSettings.save("reicast_widescreen_hack", "disabled")
+        # anisotropic filtering
+        if system.isOptSet('anisotropic_filtering'):
+            coreSettings.save("reicast_anisotropic_filtering", system.config["anisotropic_filtering"])
+        else:
+            coreSettings.save("reicast_anisotropic_filtering", "off")
+        # texture upscaling (xBRZ)
+        if system.isOptSet('texture_upscaling'):
+            coreSettings.save("reicast_texupscale", system.config["texture_upscaling"])
+        else:
+            coreSettings.save("reicast_texupscale", "off")
+        # render to texture upscaling
+        if system.isOptSet('render_to_texture_upscaling'):
+            coreSettings.save("reicast_render_to_texture_upscaling", system.config["render_to_texture_upscaling"])
+        else:
+            coreSettings.save("reicast_render_to_texture_upscaling", "1x")
 
     if (system.config['core'] == 'dosbox'):
         coreSettings.save('dosbox_svn_pcspeaker', '"true"')
