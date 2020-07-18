@@ -1,0 +1,8 @@
+config BR2_PACKAGE_RTL8821CE
+	bool "rtl8821ce"
+        depends on BR2_x86_64 || BR2_i586
+        depends on BR2_TOOLCHAIN_USES_GLIBC
+	help
+	  This package provides Realtek RTL8821CE family DKMS driver
+
+	  https://github.com/tomaspinho/rtl8821ce

@@ -158,6 +158,9 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
     # irq balancing
     select BR2_PACKAGE_IRQBALANCE
 
+    # network
+    select BR2_PACKAGE_RTL8821CE			 if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
+
     # xorg
     select BR2_PACKAGE_BATOCERA_XORG                     if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
 

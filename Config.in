@@ -56,6 +56,10 @@ menu "System"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/gpu/rockchip-mpp/Config.in"
   endmenu
 
+  menu "Network"
+    source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/network/rtl8821ce/Config.in"
+  endmenu
+
   menu "Device trees"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/device-trees/device-trees-aml-s9xx/Config.in"
   endmenu
