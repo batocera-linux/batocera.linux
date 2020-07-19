@@ -53,7 +53,7 @@ batocera_wifi_configure() {
 		[service_batocera_${settings_name}]
 		Type=wifi
 		Name=${settings_ssid}
-		Hide=${settings_hide}
+		Hidden=${settings_hide}
 		Passphrase=${settings_key}
 	_EOF_
 
