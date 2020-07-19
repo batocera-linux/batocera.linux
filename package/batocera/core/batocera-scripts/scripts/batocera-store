@@ -13,7 +13,17 @@ case "${ACTION}" in
 	pacman --noconfirm -R "${PKG}"
 	;;
     "list")
-	pacman --noconfirm -Ss --xml
+	if test -e /userdata/system/pacman/db/sync/batocera.db
+	   then
+	       pacman --noconfirm -Ss --xml
+	else
+	    # database is not yet initialized
+	    cat <<EOF
+<?xml version="1.0" encoding="UTF-8" ?>
+<packages>
+</packages>
+EOF
+	fi
 	;;
     "update")
 	pacman --noconfirm -Syu
