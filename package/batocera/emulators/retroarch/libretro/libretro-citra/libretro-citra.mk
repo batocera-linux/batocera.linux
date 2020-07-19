@@ -20,19 +20,12 @@ LIBRETRO_CITRA_CONF_OPTS += -DENABLE_SDL2=OFF
 LIBRETRO_CITRA_CONF_OPTS += -DENABLE_WEB_SERVICE=OFF
 LIBRETRO_CITRA_CONF_OPTS += -DCMAKE_BUILD_TYPE=Release
 LIBRETRO_CITRA_CONF_OPTS += -DTHREADS_PTHREAD_ARG=OFF
+LIBRETRO_CITRA_CONF_OPTS += -DBUILD_SHARED_LIBS=FALSE
 
 define LIBRETRO_CITRA_INSTALL_TARGET_CMDS
 	$(INSTALL) -D $(@D)/buildroot-build/src/citra_libretro/citra_libretro.so \
 		$(TARGET_DIR)/usr/lib/libretro/citra_libretro.so
-	
-	$(INSTALL) -D $(@D)/buildroot-build/externals/fmt/libfmt.so.5.1.0 \
-		$(TARGET_DIR)/usr/lib/
 
-	$(INSTALL) -D $(@D)/buildroot-build/externals/fmt/libfmt.so.5 \
-		$(TARGET_DIR)/usr/lib/
-
-	$(INSTALL) -D $(@D)/buildroot-build/externals/dynarmic/src/libdynarmic.so \
-		$(TARGET_DIR)/usr/lib/
 endef
 
 $(eval $(cmake-package))
