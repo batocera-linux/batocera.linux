@@ -19,6 +19,7 @@ CITRA_CONF_OPTS += -DENABLE_WEB_SERVICE=OFF
 CITRA_CONF_OPTS += -DENABLE_QT_TRANSLATION=ON
 CITRA_CONF_OPTS += -DENABLE_FFMPEG=ON
 CITRA_CONF_OPTS += -DARCHITECTURE=x86_64
+CITRA_CONF_OPTS += -DBUILD_SHARED_LIBS=FALSE
 
 CITRA_CONF_ENV += LDFLAGS=-lpthread
 
@@ -28,18 +29,6 @@ define CITRA_INSTALL_TARGET_CMDS
 
 	$(INSTALL) -D $(@D)/buildroot-build/bin/citra-qt \
 		$(TARGET_DIR)/usr/bin/
-
-	cp -pr $(@D)/buildroot-build/externals/inih/*.so \
-		$(TARGET_DIR)/usr/lib/
-
-	cp -pr $(@D)/buildroot-build/externals/cubeb/*.so \
-		$(TARGET_DIR)/usr/lib/
-
-	cp -pr $(@D)/buildroot-build/externals/teakra/src/*.so \
-		$(TARGET_DIR)/usr/lib/
-
-	cp -pr $(@D)/buildroot-build/externals/lodepng/*.so \
-		$(TARGET_DIR)/usr/lib/
 endef
 
 $(eval $(cmake-package))
