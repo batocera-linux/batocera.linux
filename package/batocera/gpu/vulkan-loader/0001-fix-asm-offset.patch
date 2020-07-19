@@ -1,0 +1,20 @@
+--- a/loader/CMakeLists.txt	2020-07-19 11:37:27.921899415 +0200
++++ b/loader/CMakeLists.txt	2020-07-19 11:40:45.953345356 +0200
+@@ -141,7 +141,7 @@
+ 
+         add_executable(asm_offset asm_offset.c)
+         target_link_libraries(asm_offset Vulkan::Headers)
+-        add_custom_command(OUTPUT gen_defines.asm DEPENDS asm_offset COMMAND asm_offset MASM)
++        add_custom_command(OUTPUT gen_defines.asm DEPENDS asm_offset COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/asm_offset MASM)
+         add_custom_target(loader_asm_gen_files DEPENDS gen_defines.asm)
+         set_target_properties(loader_asm_gen_files PROPERTIES FOLDER ${LOADER_HELPER_FOLDER})
+         add_library(loader-unknown-chain OBJECT unknown_ext_chain_masm.asm)
+@@ -172,7 +172,7 @@
+         set(OPT_LOADER_SRCS ${OPT_LOADER_SRCS} unknown_ext_chain_gas.S)
+         add_executable(asm_offset asm_offset.c)
+         target_link_libraries(asm_offset Vulkan::Headers)
+-        add_custom_command(OUTPUT gen_defines.asm DEPENDS asm_offset COMMAND asm_offset GAS)
++        add_custom_command(OUTPUT gen_defines.asm DEPENDS asm_offset COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/asm_offset GAS)
+         add_custom_target(loader_asm_gen_files DEPENDS gen_defines.asm)
+         target_compile_definitions(asm_offset PRIVATE _XOPEN_SOURCE=500) # hush compiler warnings for readlink
+     else()

@@ -1,0 +1,11 @@
+config BR2_PACKAGE_VULKAN_SAMPLES
+  bool "vulkan-loader"
+  depends on BR2_i386 || BR2_x86_64
+  depends on BR2_PACKAGE_MESA3D
+  depends on BR2_PACKAGE_VULKAN_HEADERS
+  depends on BR2_PACKAGE_VULKAN_LOADER
+  depends on BR2_PACKAGE_WAYLAND
+  help
+    Vulkan samples from Khronos
+
+    https://github.com/KhronosGroup/Vulkan-Samples
