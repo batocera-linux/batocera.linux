@@ -23,21 +23,38 @@ RPCS3_SITE = https://github.com/RPCS3/rpcs3.git
 RPCS3_SITE_METHOD=git
 RPCS3_GIT_SUBMODULES=YES
 RPCS3_LICENSE = GPLv2
-RPCS3_DEPENDENCIES = qt5declarative libxml2 mesa3d libglu openal alsa-lib libevdev libglew libusb ffmpeg
+RPCS3_DEPENDENCIES = qt5declarative libxml2 mesa3d libglu openal alsa-lib libevdev libglew libusb ffmpeg llvm
 
 RPCS3_CONF_OPTS += -DUSE_PULSE=OFF
 RPCS3_CONF_OPTS += -DUSE_SYSTEM_FFMPEG=ON
 RPCS3_CONF_OPTS += -DUSE_SYSTEM_LIBPNG=ON
 RPCS3_CONF_OPTS += -DUSE_DISCORD_RPC=OFF
 RPCS3_CONF_OPTS += -DUSE_VULKAN=OFF
-RPCS3_CONF_OPTS += -DCMAKE_CROSSCOMPILING=OFF
-RPCS3_CONF_OPTS += -DWITH_LLVM=OFF
-RPCS3_CONF_OPTS += -DBUILD_LLVM_SUBMODULE=OFF
+RPCS3_CONF_OPTS += -DCMAKE_CROSSCOMPILING=ON
+RPCS3_CONF_OPTS += -DWITH_LLVM=ON
+RPCS3_CONF_OPTS += -DBUILD_LLVM_SUBMODULE=ON
 RPCS3_CONF_OPTS += -DUSE_NATIVE_INSTRUCTIONS=OFF
 RPCS3_CONF_OPTS += -DBUILD_SHARED_LIBS=FALSE
+RPCS3_CONF_OPTS += -DCMAKE_BUILD_TYPE=Release
+
+RPCS3_CONF_ENV += LD_LIBRARY_PATH="$(TARGET_DIR)/usr/lib:$LD_LIBRARY_PATH"
+
+#RPCS3_CONF_OPTS += -DLLVM_USE_HOST_TOOLS=ON
+
+# It seems to support in-source tree build, but easier to track down issues
+#RPCS3_SUPPORTS_IN_SOURCE_BUILD = NO
+
+#RPCS3_CONF_OPTS += -DCMAKE_EXE_LINKER_FLAGS="-L$(STAGING_DIR)/usr/lib"
+
+# Use native llvm-tblgen from host-llvm (needed for cross-compilation)
+#RPCS3_CONF_OPTS += -DLLVM_TABLEGEN=/usr/bin/llvm-tblgen
+
+# Use native llvm-config from host-llvm (needed for cross-compilation)
+#RPCS3_CONF_OPTS += -DLLVM_CONFIG_PATH=/usr/bin/llvm-config
 
 define RPCS3_BUILD_CMDS
-	LD_LIBRARY_PATH=$(HOST_DIR)/lib $(TARGET_CONFIGURE_OPTS) $(MAKE) -C $(@D)
+	#LD_LIBRARY_PATH=$(HOST_DIR)/lib
+	$(TARGET_CONFIGURE_OPTS) $(MAKE) -C $(@D)
 endef
 
 $(eval $(cmake-package))
