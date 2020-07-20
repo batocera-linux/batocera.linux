@@ -24,28 +24,23 @@ fi
 batocera_wifi_configure() {
     X=$1
 
-    if [[ $X -eq 1 ]]
-    then
-        settings_ssid="$(batocera-settings "$BATOCONF" -command load -key wifi.ssid)"
-        settings_key="$(batocera-settings "$BATOCONF" -command load -key wifi.key)"
-        settings_file="/var/lib/connman/batocera_wifi.config"
-        settings_name="default"
-    else
-        settings_ssid="$(batocera-settings "$BATOCONF" -command load -key wifi${X}.ssid)"
-        settings_key="$(batocera-settings "$BATOCONF" -command load -key wifi${X}.key)"
-        settings_file="/var/lib/connman/batocera_wifi${X}.config"
-        settings_name="${X}"
-    fi
+    settings_hide=false; settings_name="${X}"
+    [ "$X" = "1" ] && { X=; settings_name=default; }
+    [ "$X" = ".hidden" ] && { settings_name=hidden_AP; settings_hide=true; }
+    
+    settings_ssid="$(batocera-settings "$BATOCONF" -command load -key wifi${X}.ssid)"
+    settings_key="$(batocera-settings "$BATOCONF" -command load -key wifi${X}.key)"
+    settings_file="/var/lib/connman/batocera_wifi${X}.config"
 
-    if [[ -n "$settings_ssid" ]] ;then
+    if [ -n "$settings_ssid" ];then
         mkdir -p "/var/lib/connman"
         cat > "${settings_file}" <<-_EOF_
 		[global]
 		Name=batocera
-
 		[service_batocera_${settings_name}]
 		Type=wifi
 		Name=${settings_ssid}
+		Hidden=${settings_hide}
 		Passphrase=${settings_key}
 	_EOF_
 
@@ -60,7 +55,7 @@ batocera_wifi_configure() {
 # Soft unblock wifi
 rfkill unblock wifi
 
-for i in 1 2 3
+for i in 1 2 3 .hidden
 do
     batocera_wifi_configure $i &
     ret=$?
