@@ -37,8 +37,14 @@ class UnixSettings():
 
     def write(self):
         fp = open(self.settingsFile, 'w')
-        for (key, value) in self.config.items('DEFAULT'):
-            fp.write("{0}{2}={2}{1}\n".format(key, str(value), self.separator))
+        try:
+            for (key, value) in self.config.items('DEFAULT'):
+                fp.write("{0}{2}={2}{1}\n".format(key, str(value), self.separator))
+        except:
+            # PSX Mednafen writes beetle_psx_hw_cpu_freq_scale = "100%(native)"
+            # Python 2.7 is EOL and ConfigParser 2.7 takes "%(" as a won't fix error
+            # TODO: clean that up when porting to Python 3
+            eslog.debug("Wrong value detected (after % char maybe?), ignoring.")
         fp.close()
 
     def load(self, name, default=None):
