@@ -1,4 +1,5 @@
 FROM ubuntu:20.04
+ARG DEBIAN_FRONTEND=noninteractive
 RUN dpkg --add-architecture i386 && \
 	apt update && \
 	apt install -y libc6:i386 \
@@ -6,6 +7,7 @@ RUN dpkg --add-architecture i386 && \
 		libstdc++6:i386 \
 		build-essential \
 		git \
+		libncurses6 \
 		libncurses-dev \
 		libssl-dev \
 		mercurial \
