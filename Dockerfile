@@ -1,13 +1,12 @@
-FROM ubuntu:18.04
-
+FROM ubuntu:20.04
 RUN dpkg --add-architecture i386 && \
 	apt update && \
 	apt install -y libc6:i386 \
-		libncurses5:i386 \
+		libncurses6:i386 \
 		libstdc++6:i386 \
 		build-essential \
 		git \
-		libncurses5-dev \
+		libncurses-dev \
 		libssl-dev \
 		mercurial \
 		texinfo \
@@ -40,6 +39,7 @@ RUN sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen && \
 ENV LANG en_US.UTF-8
 ENV LANGUAGE en_US:en
 ENV LC_ALL en_US.UTF-8
+ENV TZ Europe/Paris
 
 # Workaround host-tar configure error
 ENV FORCE_UNSAFE_CONFIGURE 1
