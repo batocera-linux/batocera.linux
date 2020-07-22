@@ -5,18 +5,9 @@ config BR2_PACKAGE_MELONDS
     select BR2_PACKAGE_QT5BASE
     select BR2_PACKAGE_QT5BASE_GUI
     select BR2_PACKAGE_QT5BASE_WIDGETS
+    select BR2_PACKAGE_QT5BASE_OPENGL
     bool "melonDS"
     help
       Ninteno DS emulator, sorta
 
 	    http://melonds.kuribo64.net/
-
-
-#        select BR2_PACKAGE_QT5BASE_OPENGL
-#        select BR2_PACKAGE_QT5BASE_XCB
-#        select BR2_PACKAGE_QT5BASE_EGLFS
-#        select BR2_PACKAGE_QT5BASE_FONTCONFIG
-#        select BR2_PACKAGE_HICOLOR_ICON_THEME
-#        select BR2_PACKAGE_QT5BASE_GIF
-#        select BR2_PACKAGE_QT5BASE_JPEG
-#        select BR2_PACKAGE_QT5BASE_PNG
