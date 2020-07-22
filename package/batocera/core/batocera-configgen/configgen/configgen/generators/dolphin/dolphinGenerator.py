@@ -167,7 +167,7 @@ class DolphinGenerator(Generator):
         if system.isOptSet('vsync') and system.getOptBoolean('vsync'):
             dolphinGFXSettings.set("Hardware", "VSync", system.config["vsync"])
         else:
-            dolphinGFXSettings.set("Hardware", "VSync", "False")
+            dolphinGFXSettings.set("Hardware", "VSync", "True")
   
         # anisotropic filtering - Auto 0
         if system.isOptSet('anisotropic_filtering'):
