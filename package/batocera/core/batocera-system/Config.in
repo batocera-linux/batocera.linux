@@ -511,6 +511,8 @@ config BR2_PACKAGE_BATOCERA_RETROARCH
                                                          !BR2_PACKAGE_BATOCERA_TARGET_VIM3
                                                          # MESEN-S
 
+        select BR2_PACKAGE_LIBRETRO_SCUMMVM           # ALL
+
         ### Experimental Emulators ###
         select BR2_PACKAGE_RPCS3                      if BR2_PACKAGE_BATOCERA_CORES_EXPERIMENTAL && BR2_PACKAGE_BATOCERA_TARGET_X86_64
         #select BR2_PACKAGE_LIBRETRO_PPSSPP           if BR2_PACKAGE_BATOCERA_CORES_EXPERIMENTAL && BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
@@ -518,7 +520,6 @@ config BR2_PACKAGE_BATOCERA_RETROARCH
         select BR2_PACKAGE_WINE                       if BR2_PACKAGE_BATOCERA_CORES_EXPERIMENTAL && BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
         select BR2_PACKAGE_WINE_X86                   if BR2_PACKAGE_BATOCERA_CORES_EXPERIMENTAL && BR2_PACKAGE_BATOCERA_TARGET_X86_64
         select BR2_PACKAGE_MELONDS                    if BR2_PACKAGE_BATOCERA_CORES_EXPERIMENTAL && BR2_PACKAGE_BATOCERA_TARGET_X86_64
-        # select BR2_PACKAGE_LIBRETRO_SCUMMVM         if BR2_PACKAGE_BATOCERA_CORES_EXPERIMENTAL # Error starting
         # select BR2_PACKAGE_LIBRETRO_DAPHNE          if BR2_PACKAGE_BATOCERA_CORES_EXPERIMENTAL # Works fine but no sound, emulator bug
 
         help
