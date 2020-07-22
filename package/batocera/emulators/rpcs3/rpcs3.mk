@@ -4,20 +4,12 @@
 #
 ################################################################################
 
-# last version without gcc-9 and qt bump
-#RPCS3_VERSION = 491526b42185c864883176f5000e144b9ac3c83e
-
-# original
-#RPCS3_VERSION = cb66d05693504f4e453999af489786d05d2a8e51
-
-# 1er january
-#RPCS3_VERSION = 4c20881f8f40f4dfd45ffb3eca94ac206a56e7f9
-
-# 1er december
-#RPCS3_VERSION = 1a6e8e20dca9fd259e03c607d4c9d93ae5375298
 
 # Jun, 30 2020 release
-RPCS3_VERSION = v0.0.11
+#RPCS3_VERSION = v0.0.11
+
+# Jul, 19 2020
+RPCS3_VERSION = f8d2d8ca11c7a10ad5185ebe761271e960e7cb5b
 
 RPCS3_SITE = https://github.com/RPCS3/rpcs3.git
 RPCS3_SITE_METHOD=git
@@ -36,7 +28,6 @@ RPCS3_CONF_OPTS += -DBUILD_LLVM_SUBMODULE=ON
 RPCS3_CONF_OPTS += -DUSE_NATIVE_INSTRUCTIONS=OFF
 RPCS3_CONF_OPTS += -DBUILD_SHARED_LIBS=OFF
 RPCS3_CONF_OPTS += -DCMAKE_BUILD_TYPE=Release
-#RPCS3_CONF_OPTS += -DLLVM_USE_HOST_TOOLS=ON
 
 RPCS3_CONF_ENV += PATH="/x86_64/host/x86_64-buildroot-linux-gnu/sysroot/usr/bin:$$PATH"
 
@@ -49,7 +40,5 @@ define RPCS3_BUILD_CMDS
                 PKG_CONFIG="/x86_64/host/x86_64-buildroot-linux-gnu/sysroot/usr/bin/pkg-config" \
 		$(MAKE) -C $(@D)
 endef
-
-#		LD_LIBRARY_PATH="/x86_64/host/x86_64-buildroot-linux-gnu/sysroot/usr/lib:/x86_64/host/x86_64-buildroot-linux-gnu/sysroot/lib:$LD_LIBRARY_PATH" \
 
 $(eval $(cmake-package))
