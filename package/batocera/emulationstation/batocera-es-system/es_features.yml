@@ -275,6 +275,11 @@ dolphin:
             choices:
                 "Off": 0
                 "On":  1
+        vsync:
+            prompt: VSYNC
+            choices:
+                "Off": 0
+                "On":  1
 
   systems:
     wii:
@@ -298,7 +303,21 @@ mupen64plus:
   features: [ratio]
 
 pcsx2:
-  features: [ratio, fullboot]
+  features: [ratio, fullboot, internal_resolution]
+  cfeatures:
+        anisotropic_filtering:
+            prompt: ANISOTROPIC FILTERING
+            choices:
+                "Off": 0
+                "2x":  2
+                "4x":  4
+                "8x":  8
+                "16x": 16
+        vsync:
+            prompt: VSYNC
+            choices:
+                "Off": 0
+                "On":  1
 
 ppsspp:
   features: [ratio, internal_resolution]
