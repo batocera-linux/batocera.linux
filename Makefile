@@ -129,8 +129,8 @@ ccache-dir:
 
 %-snapshot:
 	$(if $(shell which btrfs 2>/dev/null),, $(error "btrfs not found!"))
-	@sudo btrfs sub del $(OUTPUT_DIR)/snapshots/$*-toolchain
-		@btrfs subvolume snapshot -r $(OUTPUT_DIR)/$* $(OUTPUT_DIR)/snapshots/$*-toolchain
+	-@sudo btrfs sub del $(OUTPUT_DIR)/snapshots/$*-toolchain
+	@btrfs subvolume snapshot -r $(OUTPUT_DIR)/$* $(OUTPUT_DIR)/snapshots/$*-toolchain
 
 %-rollback:
 	$(if $(shell which btrfs 2>/dev/null),, $(error "btrfs not found!"))
