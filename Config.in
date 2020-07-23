@@ -176,6 +176,7 @@ menu "Emulators"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/moonlight-embedded/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/supermodel3/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/melonds/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/yuzu/Config.in"
 
   menu "mupen64plus"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/mupen64plus/mupen64plus-core/Config.in"
@@ -269,6 +270,7 @@ menu "Libraries"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/libglvnd/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/librga/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/alsa-plugins/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/catch2/Config.in"
 endmenu
 
 endmenu
