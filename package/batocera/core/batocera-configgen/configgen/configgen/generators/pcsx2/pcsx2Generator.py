@@ -21,7 +21,7 @@ class Pcsx2Generator(Generator):
         # config files
         configureReg(batoceraFiles.pcsx2ConfigDir)
         configureUI(batoceraFiles.pcsx2ConfigDir, batoceraFiles.BIOS, system.config, gameResolution)
-        configureGFX(batoceraFiles.pcsx2ConfigDir, system.config['showFPS'] == 'true')
+        configureGFX(batoceraFiles.pcsx2ConfigDir, system)
         configureAudio(batoceraFiles.pcsx2ConfigDir)
 
         if isAVX2:
@@ -83,29 +83,42 @@ def configureReg(config_directory):
     f.write("RunWizard=0\n")
     f.close()
 
-def configureGFX(config_directory, printFPS):
+def configureGFX(config_directory, system):
     configFileName = "{}/{}".format(config_directory + "/inis", "GSdx.ini")
     if not os.path.exists(config_directory):
         os.makedirs(config_directory + "/inis")
-
-    if os.path.exists(configFileName):
-        # existing configuration file
-        pcsx2GFXSettings = UnixSettings(configFileName, separator=' ')
-        pcsx2GFXSettings.save("osd_fontname", "/usr/share/fonts/dejavu/DejaVuSans.ttf")
-        pcsx2GFXSettings.save("osd_indicator_enabled", 1)
-        if printFPS:
-            pcsx2GFXSettings.save("osd_monitor_enabled", 1)
-        else:
-            pcsx2GFXSettings.save("osd_monitor_enabled", 0)
-    else:
+    
+    #create the config file if it doesn't exist
+    if not os.path.exists(configFileName):
         f = open(configFileName, "w")
         f.write("osd_fontname = /usr/share/fonts/dejavu/DejaVuSans.ttf\n")
-        f.write("osd_indicator_enabled = 1\n")
-        if printFPS:
-            f.write("osd_monitor_enabled = 1\n")
-        else:
-            f.write("osd_monitor_enabled = 0\n")
         f.close()
+        
+    
+    # Update settings
+    pcsx2GFXSettings = UnixSettings(configFileName, separator=' ')
+    pcsx2GFXSettings.save("osd_fontname", "/usr/share/fonts/dejavu/DejaVuSans.ttf")
+    pcsx2GFXSettings.save("osd_indicator_enabled", 1)
+    if system.isOptSet('showFPS') and system.getOptBoolean('showFPS'):
+        pcsx2GFXSettings.save("osd_monitor_enabled", 1)
+    else:
+        pcsx2GFXSettings.save("osd_monitor_enabled", 0)
+        
+    if system.isOptSet('internalresolution'):
+        pcsx2GFXSettings.save("upscale_multiplier", system.config["internalresolution"])
+    else:
+        pcsx2GFXSettings.save("upscale_multiplier", "1")
+        
+    if system.isOptSet('vsync'):
+        pcsx2GFXSettings.save("vsync", system.config["vsync"])
+    else:
+        pcsx2GFXSettings.save("vsync", "1")
+
+    if system.isOptSet('anisotropic_filtering'):
+        pcsx2GFXSettings.save("MaxAnisotropy", system.config["anisotropic_filtering"])
+    else:
+        pcsx2GFXSettings.save("MaxAnisotropy", "0")    
+        
 
 def configureUI(config_directory, bios_directory, system_config, gameResolution):
     configFileName = "{}/{}".format(config_directory + "/inis", "PCSX2_ui.ini")

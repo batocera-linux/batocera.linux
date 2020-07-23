@@ -164,8 +164,8 @@ class DolphinGenerator(Generator):
             dolphinGFXSettings.set("Settings", "InternalResolution", "1")
 
         # vsync - Default
-        if system.isOptSet('vsync') and system.getOptBoolean('vsync'):
-            dolphinGFXSettings.set("Hardware", "VSync", system.config["vsync"])
+        if system.isOptSet('vsync'):
+            dolphinGFXSettings.set("Hardware", "VSync", system.getOptBoolean('vsync'))
         else:
             dolphinGFXSettings.set("Hardware", "VSync", "True")
   
