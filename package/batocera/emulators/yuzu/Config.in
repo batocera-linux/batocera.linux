@@ -1,5 +1,7 @@
 config BR2_PACKAGE_YUZU
     bool "yuzu"
+    depends on BR2_x86_64
+    depends on BR2_PACKAGE_XORG7
     select BR2_PACKAGE_QT5
     select BR2_PACKAGE_QT5_VERSION_LATEST
     select BR2_PACKAGE_QT5BASE
@@ -11,10 +13,10 @@ config BR2_PACKAGE_YUZU
     select BR2_PACKAGE_QT5TOOLS_LINGUIST_TOOLS
     select BR2_PACKAGE_FMT
     select BR2_PACKAGE_BOOST
+    select BR2_PACKAGE_BOOST_CONTEXT
     select BR2_PACKAGE_FFMPEG  
     select BR2_PACKAGE_ZSTD
     select BR2_PACKAGE_CATCH2
-    select BR2_PACKAGE_BOOST_CONTEXT
     help
       A Emulator Yuzu core for Nintendo Switch.
 
