@@ -7,7 +7,7 @@ EXTRA_PKGS	?=
 
 -include $(LOCAL_MK)
 
-DOCKER_REPO := batocera
+DOCKER_REPO := batoceralinux
 IMAGE_NAME  := batocera.linux-build
 
 TARGETS := $(sort $(shell find $(PROJECT_DIR)/configs/ -name 'b*' | sed -n 's/.*\/batocera-\(.*\)_defconfig/\1/p'))
