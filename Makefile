@@ -62,7 +62,7 @@ ccache-dir:
 		-v /etc/passwd:/etc/passwd:ro \
 		-v /etc/group:/etc/group:ro \
 		-u $(UID):$(GID) \
-		batocera/batocera.linux-build \
+		$(DOCKER_REPO)/$(IMAGE_NAME) \
 		make O=/$* BR2_EXTERNAL=/build -C /build/buildroot clean
 
 %-config: batocera-docker-image %-supported output-dir-%
@@ -77,7 +77,7 @@ ccache-dir:
 		-v /etc/passwd:/etc/passwd:ro \
 		-v /etc/group:/etc/group:ro \
 		-u $(UID):$(GID) \
-		batocera/batocera.linux-build \
+		$(DOCKER_REPO)/$(IMAGE_NAME) \
 		make O=/$* BR2_EXTERNAL=/build -C /build/buildroot batocera-$*_defconfig
 	@mv -f $(PROJECT_DIR)/configs/batocera-$*_defconfig-tmp $(PROJECT_DIR)/configs/batocera-$*_defconfig
 
@@ -91,7 +91,7 @@ ccache-dir:
 		-v /etc/passwd:/etc/passwd:ro \
 		-v /etc/group:/etc/group:ro \
 		$(DOCKER_OPTS) \
-		batocera/batocera.linux-build \
+		$(DOCKER_REPO)/$(IMAGE_NAME) \
 		make O=/$* BR2_EXTERNAL=/build -C /build/buildroot $(CMD)
 
 %-shell: batocera-docker-image %-supported output-dir-%
@@ -104,7 +104,7 @@ ccache-dir:
 		$(DOCKER_OPTS) \
 		-v /etc/passwd:/etc/passwd:ro \
 		-v /etc/group:/etc/group:ro \
-		batocera/batocera.linux-build
+		$(DOCKER_REPO)/$(IMAGE_NAME)
 
 %-cleanbuild: %-clean %-build
 	@echo
