@@ -15,6 +15,7 @@ config BR2_PACKAGE_RPCS3
 	select BR2_PACKAGE_LIBUSB
 	select BR2_PACKAGE_LIBGLU
 	select BR2_PACKAGE_FFMPEG_SWSCALE
+	select BR2_PACKAGE_NCURSES
 
         help
           A  ps3 emulator
