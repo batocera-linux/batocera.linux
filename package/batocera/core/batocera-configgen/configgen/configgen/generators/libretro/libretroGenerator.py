@@ -106,6 +106,9 @@ class LibretroGenerator(Generator):
         
         if system.name == 'dos':
             rom = 'set ROOT=' + rom
+
+        if system.name == 'scummvm':
+            rom = os.path.dirname(rom) + '/' + romName[1:-8]
         
         commandArray.append(rom)
         return Command.Command(array=commandArray)
