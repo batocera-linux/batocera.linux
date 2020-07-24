@@ -5,6 +5,8 @@ config BR2_PACKAGE_VULKAN_TOOLS
   depends on BR2_PACKAGE_VULKAN_HEADERS
   depends on BR2_PACKAGE_VULKAN_LOADER
   depends on BR2_PACKAGE_WAYLAND
+  depends on BR2_PACKAGE_HOST_PYTHON3
+  depends on BR2_PACKAGE_HOST_PYTHON3_SSL
   help
     Vulkan tools from Khronos
 
