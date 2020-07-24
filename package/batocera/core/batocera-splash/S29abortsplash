@@ -55,24 +55,16 @@ case ${splash_setting,,} in
         kill -9 $PID
     ;;
 
-    k[0-90]*|[0-90]*)
-        # Stop loading process for x seconds, attention there will be no
-        # further steps so you can "lock" the system
+    i[0-90]*|k[0-90]*|[0-90]*)
+        # k-mode: Stop loading process for x seconds, attention there will be no
+        #         further steps so you can "lock" the system
+        # i-mode: This mode will not kill video in background this is a posible setup
+        #         for RPi system and you will smoothly boot into ES
         #
         sleeptimer=${splash_setting//[^[:digit:]]/}
         [[ $picture -eq 1 && $sleeptimer -gt 10 ]] && sleeptimer=10
         sleep $sleeptimer
-        kill -9 $PID
-    ;;
-
-    i[0-90]*)
-        # This mode will not kill video in background this is a posible setup
-        # for RPi system and you will smoothly boot into ES
-        #
-        sleeptimer=${splash_setting//[^[:digit:]]/}
-        [[ $picture -eq 1 && $sleeptimer -gt 10 ]] && sleeptimer=10
-        sleep $sleeptimer
-        [[ $picture -eq 1 ]] && kill -9 $PID
+        [[ $picture -eq 1 || ${splash_setting:0:1} == i ]] && kill -9 $PID
     ;;
 
     *)
