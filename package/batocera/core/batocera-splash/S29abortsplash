@@ -50,7 +50,7 @@ case ${splash_setting,,} in
     auto)
         # Play video as long as possible, if you are using png -> default
         #
-        [[ $picture -eq 1 ]] && splash_default &
+        # [[ $picture -eq 1 ]] && splash_default & (poke is right --> pointless line)
         [[ $video -eq 1 ]] && splash_autoplay && kill -9 $PID
     ;;
     k[0-90]*|[0-90]*)
