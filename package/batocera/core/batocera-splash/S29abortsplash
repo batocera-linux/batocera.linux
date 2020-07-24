@@ -1,0 +1,76 @@
+#!/bin/bash
+# Stop Splash Screen
+
+[[ $1 == start ]] || exit 0
+
+# We can set here an additional timer to extend videoplay
+# This value can be setted to batocera.conf
+splash_autoplay ()
+{
+    count=0
+    while [[ $count -lt 90 ]]
+    do
+        sleep 1
+        ((count++))
+        kill -0 $PID &>/dev/null  || { echo "Video finished"; break; }
+    done
+}
+
+splash_default ()
+{
+    # Stop the video when ready
+    # Wait for emulationstation or Kodi, but not more than 20 seconds
+    count=0
+    while [[ ! -f "/tmp/emulationstation.ready" && ! -e "/var/run/kodi.msg" && $count -lt 20 ]]; do
+        sleep 1
+        ((count++))
+    done
+}
+
+#### MAIN
+video=0; picture=0
+if [[ -f /tmp/videoplayer.pid ]]; then
+    video=1
+    PID=$(cat /tmp/videoplayer.pid)
+else
+    picture=1
+fi
+
+splash_setting=$(batocera-settings -command load -key splash.screen.length)
+case ${splash_setting,,} in
+
+    def*)
+        # Standard BATOCERA setting, fastest boot possible
+        # A video splash will be displayed ~16s on Pi3 platform
+        #
+        splash_default &
+        [[ $video -eq 1 ]] && kill -9 $PID
+    ;;
+
+    auto)
+        # Play video as long as possible, if you are using png -> default
+        #
+        [[ $picture -eq 1 ]] && splash_default &
+        [[ $video -eq 1 ]] && splash_autoplay && kill -9 $PID
+    ;;
+    k[0-90]*|[0-90]*)
+        # Stop loading process for x seconds, attention there will be no
+        # further steps so you can "lock" the system
+        #
+        sleep ${splash_setting//[^[:digit:]]/}
+        [[ $video -eq 1 ]] && kill -9 $PID
+    ;;
+    i[0-90]*)
+        # This mode will not kill video in background this is a posible setup
+        # for RPi system and you will smoothly boot into ES
+        #
+        sleep ${splash_setting//[^[:digit:]]/}
+    ;;
+    *)
+        # Other settings --> not valid
+        #
+        [[ $video -eq 1 ]] && kill -9 $PID
+        exit 1
+    ;;
+esac
+exit $?
