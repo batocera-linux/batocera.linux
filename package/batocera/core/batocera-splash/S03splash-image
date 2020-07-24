@@ -17,6 +17,8 @@ do_start ()
         let N++
     done
     test -e /dev/fb0 && fbv -f -i "${image}"
+    sleep infinity
+    wait $!
 }
 
 case "$1" in
