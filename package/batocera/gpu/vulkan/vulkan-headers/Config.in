@@ -1,0 +1,9 @@
+config BR2_PACKAGE_VULKAN_HEADERS
+  bool "vulkan-headers"
+  depends on BR2_i386 || BR2_x86_64
+  depends on BR2_PACKAGE_MESA3D
+  select BR2_PACKAGE_VULKAN_LOADER
+  help
+    Vulkan Headers from Khronos
+
+    https://github.com/KhronosGroup/Vulkan-Headers
