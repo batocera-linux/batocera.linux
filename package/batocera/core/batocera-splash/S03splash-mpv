@@ -39,14 +39,11 @@ do_videostart ()
         mpv_opt=--no-audio
     fi
     /usr/bin/mpv --no-config $mpv_opt "$video" &
-    PID=$!
-    # Wait for emulationstation or Kodi, but not more than 20 seconds
-    count=0
-    while [[ ! -f "/tmp/emulationstation.ready" && ! -e "/var/run/kodi.msg" && $count -lt 400 ]]; do
-        sleep 0.1
-        ((count++))
-    done
-    kill -9 "${PID}"
+    # Here we create the videoplay.pid --- we should do the same for picture (just to divide if a picture was loaded with success)
+    PID=$! 
+    echo $PID > /tmp/videoplayer.pid
+    wait $PID
+    rm -f /tmp/videoplayer.pid
 }
 
 case "$1" in
