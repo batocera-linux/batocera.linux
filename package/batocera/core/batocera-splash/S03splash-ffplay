@@ -28,6 +28,8 @@ do_imagestart()
         let N++
     done
     test -e /dev/fb0 && fbv -f -i "${image}"
+    sleep infinity
+    wait $!
 }
 
 do_videostart ()
@@ -39,11 +41,7 @@ do_videostart ()
         ffplay_opt=-an
     fi
     /usr/bin/ffplay $ffplay_opt -autoexit -loglevel 0 "$video" &
-    # Here we create the videoplay.pid --- we should do the same for picture (just to divide if a picture was loaded with success)
-    PID=$! 
-    echo $PID > /tmp/videoplayer.pid
-    wait $PID
-    rm -f /tmp/videoplayer.pid
+    wait $! 
 }
 
 case "$1" in
