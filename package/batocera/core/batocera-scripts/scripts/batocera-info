@@ -19,6 +19,8 @@ V_ARCH=$(cat /usr/share/batocera/batocera.arch)
 V_CPUNB=$(grep -E $'^processor\t:' /proc/cpuinfo | wc -l)
 V_CPUMODEL1=$(grep -E $'^model name\t:' /proc/cpuinfo | head -1 | sed -e s+'^model name\t: '++)
 V_SYSTEM=$(uname -rs)
+V_CPUMAXFREQ=$(cat /sys/devices/system/cpu/cpufreq/*/cpuinfo_max_freq | sort -rn | head -1)
+let V_CPUMAXFREQ=${V_CPUMAXFREQ}/1000
 
 # battery
 BATT=$(cat /sys/class/power_supply/{BAT,bat}*/uevent 2>/dev/null | grep -E "^POWER_SUPPLY_CAPACITY=" | sed -e s+'^POWER_SUPPLY_CAPACITY='++ | sort -rn | head -1)
@@ -84,6 +86,7 @@ then
 fi
 [[ -z ${V_CPUMODEL1} ]] || echo "Cpu model: ${V_CPUMODEL1}"
 echo "Cpu number: ${V_CPUNB}"
+echo "Cpu max frequence: ${V_CPUMAXFREQ} Mhz"
 if grep -q " avx2" /proc/cpuinfo
 then
     echo "Cpu feature: avx2"
