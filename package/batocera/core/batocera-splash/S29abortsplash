@@ -3,8 +3,6 @@
 
 [[ $1 == start ]] || exit 0
 
-# We can set here an additional timer to extend videoplay
-# This value can be setted to batocera.conf
 splash_autoplay ()
 {
     count=0
@@ -21,21 +19,24 @@ splash_default ()
     # Stop the video when ready
     # Wait for emulationstation or Kodi, but not more than 20 seconds
     count=0
-    while [[ ! -f "/tmp/emulationstation.ready" && ! -e "/var/run/kodi.msg" && $count -lt 20 ]]; do
+    while [[ ! -f "/tmp/emulationstation.ready" && ! -e "/var/run/kodi.msg" && $count -lt 20 ]]
+    do
         sleep 1
         ((count++))
     done
 }
 
 #### MAIN
-video=0; picture=0
-if [[ -f /tmp/videoplayer.pid ]]; then
-    video=1
-    PID=$(cat /tmp/videoplayer.pid)
-else
-    picture=1
-fi
 
+# Is service is active? PPID is videoplayer or pic sleep timer
+init_service=/etc/init.d/S03splash
+PID=$(pgrep -P $(pgrep -f $init_service)) || exit 0 # No service found!
+
+# If the timer for picture is active then kill this PID to avoid
+# unwanted behaviour in splash_autoplay
+[[ $PID == $(pgrep -f "sleep infinity") ]] && picture=1
+
+# Read Config and do action
 splash_setting=$(batocera-settings -command load -key splash.screen.length)
 case ${splash_setting,,} in
 
@@ -43,33 +44,41 @@ case ${splash_setting,,} in
         # Standard BATOCERA setting, fastest boot possible
         # A video splash will be displayed ~16s on Pi3 platform
         #
-        splash_default &
-        [[ $video -eq 1 ]] && kill -9 $PID
+        [[ $picture -eq 1 ]] || splash_default &
+        kill -9 $PID
     ;;
 
     auto)
-        # Play video as long as possible, if you are using png -> default
+        # Play video as long as possible
         #
-        # [[ $picture -eq 1 ]] && splash_default & (poke is right --> pointless line)
-        [[ $video -eq 1 ]] && splash_autoplay && kill -9 $PID
+        [[ $picture -eq 1 ]] || splash_autoplay
+        kill -9 $PID
     ;;
+
     k[0-90]*|[0-90]*)
         # Stop loading process for x seconds, attention there will be no
         # further steps so you can "lock" the system
         #
-        sleep ${splash_setting//[^[:digit:]]/}
-        [[ $video -eq 1 ]] && kill -9 $PID
+        sleeptimer=${splash_setting//[^[:digit:]]/}
+        [[ $picture -eq 1 && $sleeptimer -gt 10 ]] && sleeptimer=10
+        sleep $sleeptimer
+        kill -9 $PID
     ;;
+
     i[0-90]*)
         # This mode will not kill video in background this is a posible setup
         # for RPi system and you will smoothly boot into ES
         #
-        sleep ${splash_setting//[^[:digit:]]/}
+        sleeptimer=${splash_setting//[^[:digit:]]/}
+        [[ $picture -eq 1 && $sleeptimer -gt 10 ]] && sleeptimer=10
+        sleep $sleeptimer
+        [[ $picture -eq 1 ]] && kill -9 $PID
     ;;
+
     *)
         # Other settings --> not valid
         #
-        [[ $video -eq 1 ]] && kill -9 $PID
+        kill -9 $PID
         exit 1
     ;;
 esac
