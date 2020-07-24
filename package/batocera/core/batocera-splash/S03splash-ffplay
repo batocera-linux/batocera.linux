@@ -46,7 +46,6 @@ do_videostart ()
 
 case "$1" in
     start)
-	grep -qE '^[ ]*autoresize[ ]*=[ ]*true[ ]*$' "/boot/batocera-boot.conf" && exit 0
         do_start &
         ;;
     stop)
