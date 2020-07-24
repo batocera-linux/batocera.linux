@@ -53,14 +53,9 @@ do_videostart ()
 
 case "$1" in
     start)
-	grep -qE '^[ ]*autoresize[ ]*=[ ]*true[ ]*$' "/boot/batocera-boot.conf" && exit 0
-	#We use that later to disable splash at all
-        #grep -qE '^[ ]*bootsplash[ ]*=[ ]*true[ ]*$' "/boot/batocera-boot.conf" || exit 0
         do_start &
         ;;
     stop)
-        echo "Executing /etc/init/S29abortsplash"
-        /etc/init.d/S29abortsplash stop
         ;;
     restart|reload)
         ;;
