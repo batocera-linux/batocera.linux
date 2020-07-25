@@ -64,7 +64,7 @@ case ${splash_setting,,} in
         sleeptimer=${splash_setting//[^[:digit:]]/}
         [[ $picture -eq 1 && $sleeptimer -gt 10 ]] && sleeptimer=10
         sleep $sleeptimer
-        [[ $picture -eq 1 || ${splash_setting:0:1} == i ]] && kill -9 $PID
+        [[ $picture -eq 1 || ${splash_setting:0:1} != i ]] && kill -9 $PID
     ;;
 
     *)
