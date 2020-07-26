@@ -52,6 +52,12 @@ class DolphinGenerator(Generator):
         dolphinSettings.set("Core", "SelectedLanguage", getGameCubeLangFromEnvironment())
         dolphinSettings.set("Core", "GameCubeLanguage", getGameCubeLangFromEnvironment())
         
+        # backend - Default
+        if system.isOptSet('gfxbackend'):
+            dolphinGFXSettings.set("Core", "GFXBackend", system.getOptBoolean('gfxbackend'))
+        else:
+            dolphinGFXSettings.set("Core", "GFXBackend", "OGL")
+        
         # Standardize Dual Core
         dolphinSettings.set("Core", "CPUThread", "True")
         dolphinSettings.set("Core", "SyncGPU", "True")
@@ -168,6 +174,8 @@ class DolphinGenerator(Generator):
             dolphinGFXSettings.set("Hardware", "VSync", system.getOptBoolean('vsync'))
         else:
             dolphinGFXSettings.set("Hardware", "VSync", "True")
+            
+
   
         # anisotropic filtering - Auto 0
         if system.isOptSet('anisotropic_filtering'):
