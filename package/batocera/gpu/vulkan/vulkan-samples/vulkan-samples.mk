@@ -17,7 +17,7 @@ VULKAN_SAMPLES_CONF_OPTS += -DBUILD_SHARED_LIBS=OFF
 VULKAN_SAMPLES_CONF_ENV += LDFLAGS="--lpthread -ldl"
 
 define VULKAN_SAMPLES_INSTALL_TARGET_CMDS
-	$(INSTALL) -D -m 0755 $(@D)/buildroot-build/app/bin/Release/x86_64/vulkan_samples $(TARGET_DIR)/usr/bin/vulkan_samples
+	$(INSTALL) -D -m 0755 $(@D)/buildroot-build/app/bin/Release/$(BR2_ARCH)/vulkan_samples $(TARGET_DIR)/usr/bin/vulkan_samples
 endef
 
 $(eval $(cmake-package))
