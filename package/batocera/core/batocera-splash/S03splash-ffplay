@@ -1,7 +1,7 @@
 #!/bin/bash
 
 soundDisabled() {
-    grep -qE "^[ ]*splashsound[ ]*=[ ]*false[ ]*$" /boot/splash/batocera-boot.conf
+    grep -qE "^[ ]*splashsound[ ]*=[ ]*false[ ]*$" /boot/batocera-boot.conf
 }
 
 do_start ()
