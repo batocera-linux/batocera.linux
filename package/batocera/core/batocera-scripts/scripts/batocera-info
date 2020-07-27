@@ -86,7 +86,7 @@ then
 fi
 [[ -z ${V_CPUMODEL1} ]] || echo "Cpu model: ${V_CPUMODEL1}"
 echo "Cpu number: ${V_CPUNB}"
-echo "Cpu max frequence: ${V_CPUMAXFREQ} Mhz"
+echo "Cpu max frequency: ${V_CPUMAXFREQ} MHz"
 if grep -q " avx2" /proc/cpuinfo
 then
     echo "Cpu feature: avx2"
