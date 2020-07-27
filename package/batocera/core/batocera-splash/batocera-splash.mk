@@ -52,7 +52,7 @@ endif
 
 define BATOCERA_SPLASH_INSTALL_SCRIPT
 	mkdir -p $(TARGET_DIR)/etc/init.d
-	install -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/S29abortsplash		$(TARGET_DIR)/etc/init.d/ 
+	install -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/S29splashscreencontrol	$(TARGET_DIR)/etc/init.d/ 
 	install -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/$(BATOCERA_SPLASH_SCRIPT)	$(TARGET_DIR)/etc/init.d/S03splash
 endef
 
