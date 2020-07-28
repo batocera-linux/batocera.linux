@@ -1,0 +1,38 @@
+--- a/cube/CMakeLists.txt	2020-07-28 22:07:45.076645989 +0200
++++ b/cube/CMakeLists.txt	2020-07-28 22:08:30.369519768 +0200
+@@ -164,7 +164,7 @@
+ if(APPLE)
+     include(macOS/cube/cube.cmake)
+ elseif(NOT WIN32)
+-    if(${CMAKE_SYSTEM_PROCESSOR} STREQUAL ${CMAKE_HOST_SYSTEM_PROCESSOR})
++    #if(${CMAKE_SYSTEM_PROCESSOR} STREQUAL ${CMAKE_HOST_SYSTEM_PROCESSOR})
+         add_executable(vkcube
+                        cube.c
+                        ${PROJECT_SOURCE_DIR}/cube/cube.vert
+@@ -177,7 +177,7 @@
+         if (NEED_RT)
+             target_link_libraries(vkcube rt)
+         endif()
+-    endif()
++    #endif()
+ else()
+     if(CMAKE_CL_64)
+         set(LIB_DIR "Win64")
+@@ -214,7 +214,7 @@
+ if(APPLE)
+     include(macOS/cubepp/cubepp.cmake)
+ elseif(NOT WIN32)
+-    if(${CMAKE_SYSTEM_PROCESSOR} STREQUAL ${CMAKE_HOST_SYSTEM_PROCESSOR})
++    #if(${CMAKE_SYSTEM_PROCESSOR} STREQUAL ${CMAKE_HOST_SYSTEM_PROCESSOR})
+         add_executable(vkcubepp
+                        cube.cpp
+                        ${PROJECT_SOURCE_DIR}/cube/cube.vert
+@@ -222,7 +222,7 @@
+                        cube.vert.inc
+                        cube.frag.inc)
+         target_link_libraries(vkcubepp Vulkan::Vulkan)
+-    endif()
++    #endif()
+ else()
+     if(CMAKE_CL_64)
+         set(LIB_DIR "Win64")
