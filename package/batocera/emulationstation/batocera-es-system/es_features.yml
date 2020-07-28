@@ -280,6 +280,11 @@ dolphin:
             choices:
                 "Off": 0
                 "On":  1
+        gfxbackend:
+            prompt: GRAPHICS BACKEND
+            choices:
+                "OpenGL": OGL
+                "Vulkan":  Vulkan
 
   systems:
     wii:
