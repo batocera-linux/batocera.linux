@@ -2,6 +2,7 @@
 # Splash Screen Control
 # This service controls length of video/picture displayed during startup
 # Furthermore it copies content from /userdata/splash to /boot/splash
+# by cyperghost aka lala on discord
 
 splash_autoplay ()
 {
@@ -35,11 +36,11 @@ SPLASHUSER=/userdata/splash/
 case $1 in
     start)
         # Is service is active? PPID is videoplayer or pic sleep timer
-        PID=$(pgrep -P $(pgrep -f $INIT_SERVICE) 2>/dev/null ) || { echo "No service found!"; exit 0; }
+        PID=$(pgrep -P $(pgrep -f $INIT_SERVICE) 2>/dev/null ) || { echo "No service '$INIT_SERVICE' found!"; exit 0; }
 
         # If the timer for picture is active then kill this PID to avoid
         # unwanted behaviour in splash_autoplay
-        [[ $PID == $(pgrep -f "sleep infinity") ]] && picture=1
+        [[ $PID =~ $(pgrep -f "sleep infinity") ]] && picture=1
 
         # Read Config and do action
         splash_setting=$(batocera-settings -command load -key splash.screen.length)
@@ -78,6 +79,9 @@ case $1 in
         esac
     ;;
     stop)
+        #Check filesize of /userdata/splash and set a directory size limit
+        [[ $(du -s $SPLASHUSER | awk '{print $1}') -lt 76800 ]] || exit 1
+
         #DryRun -n to test if there is a change in /userdata/splash/ if there is output then do sync job
         RSYNC="rsync -tin --dirs --delete $SPLASHUSER $SPLASHBOOT"
         #File changes can be detected by -i switch output
