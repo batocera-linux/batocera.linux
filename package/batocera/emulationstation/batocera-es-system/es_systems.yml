@@ -1368,6 +1368,18 @@ windows_installers:
     wine:
       wine:  { requireAnyOf: [BR2_PACKAGE_WINE] }
 
+wiiu:
+  name:       Wii U
+  manufacturer: Nintendo
+  release: 2012
+  hardware: console
+  extensions: [wup]
+  platform:   wiiu
+  theme:      wiiu
+  emulators:
+    cemu:
+      cemu:  { requireAnyOf: [BR2_PACKAGE_BATOCERA_CEMU] }
+
 imageviewer:
   name:       Screenshots
   manufacturer: Misc. System
