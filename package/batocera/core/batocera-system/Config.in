@@ -164,6 +164,7 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
     # vulkan
     select BR2_PACKAGE_VULKAN_HEADERS			 if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
     select BR2_PACKAGE_VULKAN_LOADER			 if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
+    select BR2_PACKAGE_SPIRV_HEADERS			 if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
 
     # xorg
     select BR2_PACKAGE_BATOCERA_XORG                     if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
@@ -199,6 +200,7 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
     select BR2_PACKAGE_GST1_LIBAV        if BR2_PACKAGE_WINE
     select BR2_PACKAGE_GST1_PLUGINS_BASE if BR2_PACKAGE_WINE
     select BR2_PACKAGE_GST1_PLUGINS_GOOD if BR2_PACKAGE_WINE
+    select BR2_PACKAGE_VKD3D             if BR2_PACKAGE_WINE
 
     # required gcc flags
     # required for different emulators, i suggest to enable it always to not have different behavior depending on boards
