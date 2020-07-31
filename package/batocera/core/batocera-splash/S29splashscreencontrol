@@ -44,6 +44,7 @@ case $1 in
 
         # Read Config and do action
         splash_setting=$(batocera-settings -command load -key splash.screen.length)
+        [[ -z $splash_setting ]] && splash_setting=default
 
         case ${splash_setting,,} in
             def*)
