@@ -84,8 +84,8 @@ case $1 in
         #File changes can be detected by -i switch output
         [[ -n $($RSYNC | grep -e '^\*deleting' -e '^>f++++++') ]] || exit 0
 
-        #Check filesize of /userdata/splash and set a directory size limit
-        [[ $(du -s $SPLASHUSER | awk '{print $1}') -lt 76800 ]] || exit 1
+        #Check filesize of /userdata/splash and set a directory size limit (256MB*1024kB)
+        [[ $(du -s $SPLASHUSER | awk '{print $1}') -lt 262144 ]] || exit 1
 
         RSYNC="rsync -ti --dirs --delete $SPLASHUSER $SPLASHBOOT"
         mount -o remount,rw /boot
