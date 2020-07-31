@@ -142,3 +142,9 @@ flycastBios = BIOS
 flycastVMUBlank = '/usr/lib/python2.7/site-packages/configgen/datainit/dreamcast/vmu_save_blank.bin'
 flycastVMUA1 = flycastSaves + '/flycast/vmu_save_A1.bin'
 flycastVMUA2 = flycastSaves + '/flycast/vmu_save_A2.bin'
+
+cemuConfig = CONF + '/cemu/config.ini'
+cemuHomedir = ROMS + '/wiiu'
+cemuDatadir = '/usr/cemu'
+cemuSaves = SAVES + '/cemu'
+

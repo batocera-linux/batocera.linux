@@ -27,6 +27,7 @@ from generators.daphne.daphneGenerator import DaphneGenerator
 from generators.cannonball.cannonballGenerator import CannonballGenerator
 from generators.openbor.openborGenerator import OpenborGenerator
 from generators.wine.wineGenerator import WineGenerator
+from generators.cemu.cemuGenerator import CemuGenerator
 import controllersConfig as controllers
 import signal
 import batoceraFiles
@@ -57,7 +58,8 @@ generators = {
     'daphne' : DaphneGenerator(),
     'cannonball' : CannonballGenerator(),
     'openbor' : OpenborGenerator(),
-    'wine' : WineGenerator()
+    'wine' : WineGenerator(),
+    'cemu' : CemuGenerator()
 }
 
 def main(args, maxnbplayers):
