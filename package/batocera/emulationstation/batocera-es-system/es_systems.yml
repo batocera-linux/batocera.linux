@@ -210,6 +210,8 @@ nds:
   emulators:
     libretro:
       desmume: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_DESMUME] }
+    melonds:
+      melonds: { requireAnyOf: [BR2_PACKAGE_MELONDS] }
 
 fds:
   name:       Family Computer Disk System

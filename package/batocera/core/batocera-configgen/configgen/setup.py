@@ -28,6 +28,7 @@ setup(name='batocera-configgen',
         'configgen.generators.openbor',
         'configgen.generators.wine',
         'configgen.generators.cemu',
+        'configgen.generators.melonds',
         'configgen.settings',
         'configgen.utils']
       )

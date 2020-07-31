@@ -36,6 +36,7 @@ batoceraBins = {'dosbox'      : '/usr/bin/dosbox'
               , 'citra'       : '/usr/bin/citra-qt'
               , 'daphne'      : '/usr/bin/hypseus'
               , 'cannonball'  : '/usr/bin/cannonball'
+              , 'melonds'     : '/usr/bin/melonDS'
 }
 
 
