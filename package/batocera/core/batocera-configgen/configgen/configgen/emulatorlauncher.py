@@ -28,6 +28,7 @@ from generators.cannonball.cannonballGenerator import CannonballGenerator
 from generators.openbor.openborGenerator import OpenborGenerator
 from generators.wine.wineGenerator import WineGenerator
 from generators.cemu.cemuGenerator import CemuGenerator
+from generators.melonds.melondsGenerator import MelonDSGenerator
 import controllersConfig as controllers
 import signal
 import batoceraFiles
@@ -59,7 +60,8 @@ generators = {
     'cannonball' : CannonballGenerator(),
     'openbor' : OpenborGenerator(),
     'wine' : WineGenerator(),
-    'cemu' : CemuGenerator()
+    'cemu' : CemuGenerator(),
+    'melonds' : MelonDSGenerator()
 }
 
 def main(args, maxnbplayers):

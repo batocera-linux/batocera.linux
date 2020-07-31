@@ -1,0 +1,24 @@
+--- a/src/Config.cpp	2020-07-31 18:57:05.935807838 +0200
++++ b/src/Config.cpp	2020-07-31 18:59:22.454426449 +0200
+@@ -47,9 +47,9 @@
+ 
+ ConfigEntry ConfigFile[] =
+ {
+-    {"BIOS9Path", 1, BIOS9Path, 0, "", 1023},
+-    {"BIOS7Path", 1, BIOS7Path, 0, "", 1023},
+-    {"FirmwarePath", 1, FirmwarePath, 0, "", 1023},
++    {"BIOS9Path", 1, BIOS9Path, 0, "/userdata/bios/bios9.bin", 1023},
++    {"BIOS7Path", 1, BIOS7Path, 0, "/userdata/bios/bios7.bin", 1023},
++    {"FirmwarePath", 1, FirmwarePath, 0, "/userdata/bios/firmware.bin", 1023},
+ 
+     {"DSiBIOS9Path", 1, DSiBIOS9Path, 0, "", 1023},
+     {"DSiBIOS7Path", 1, DSiBIOS7Path, 0, "", 1023},
+@@ -57,7 +57,7 @@
+     {"DSiNANDPath", 1, DSiNANDPath, 0, "", 1023},
+ 
+ #ifdef JIT_ENABLED
+-    {"JIT_Enable", 0, &JIT_Enable, 0, NULL, 0},
++    {"JIT_Enable", 0, &JIT_Enable, 1, NULL, 0},
+     {"JIT_MaxBlockSize", 0, &JIT_MaxBlockSize, 32, NULL, 0},
+     {"JIT_BranchOptimisations", 0, &JIT_BranchOptimisations, 2, NULL, 0},
+     {"JIT_LiteralOptimisations", 0, &JIT_LiteralOptimisations, 1, NULL, 0},
