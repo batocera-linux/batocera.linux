@@ -4,6 +4,8 @@ config BR2_PACKAGE_VKD3D
 	# Wine unconditionally builds shared libraries
 	depends on !BR2_STATIC_LIBS
 	depends on BR2_PACKAGE_SPIRV_HEADERS
+	depends on BR2_PACKAGE_VULKAN_HEADERS
+	depends on BR2_PACKAGE_VULKAN_LOADER
 	help
 	  VkD3D Wine is a compatibility layer capable of running Windows
 	  applications on Linux. Instead of simulating internal
