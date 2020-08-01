@@ -25,6 +25,7 @@ splash_default ()
         sleep 1
         ((count++))
     done
+    kill -9 $PID
 }
 
 #### MAIN ####
@@ -40,7 +41,7 @@ case $1 in
 
         # If the timer for picture is active then kill this PID to avoid
         # unwanted behaviour in splash_autoplay
-        [[ $PID =~ $(pgrep -f "sleep infinity") ]] && picture=1
+        [[ $PID == $(pgrep -f "sleep infinity") ]] && picture=1 || picture=0
 
         # Read Config and do action
         splash_setting=$(batocera-settings -command load -key splash.screen.length)
@@ -51,13 +52,12 @@ case $1 in
                 # Standard BATOCERA setting, fastest boot possible
                 # A video splash will be displayed ~16s on Pi3 platform
                 #
-                [[ $picture -eq 1 ]] || splash_default &
-                kill -9 $PID
+                splash_default &
             ;;
             auto)
                 # Play video as long as possible
                 #
-                [[ $picture -eq 1 ]] || splash_autoplay
+                [[ $picture -eq 0 ]] && splash_autoplay
                 kill -9 $PID
             ;;
             i[0-90]*|k[0-90]*|[0-90]*)
@@ -98,4 +98,4 @@ case $1 in
         echo "Usage $0 {start|stop}"
     ;;
 esac
-exit $?
+exit 0
