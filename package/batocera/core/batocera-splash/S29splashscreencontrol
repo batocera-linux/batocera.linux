@@ -1,0 +1,101 @@
+#!/bin/bash
+# Splash Screen Control
+# This service controls length of video/picture displayed during startup
+# Furthermore it copies content from /userdata/splash to /boot/splash
+# by cyperghost aka lala on discord
+
+splash_autoplay ()
+{
+    count=0
+    while [[ $count -lt 90 ]]
+    do
+        sleep 1
+        ((count++))
+        kill -0 $PID &>/dev/null  || { echo "Video finished"; break; }
+    done
+}
+
+splash_default ()
+{
+    # Stop the video when ready
+    # Wait for emulationstation or Kodi, but not more than 20 seconds
+    count=0
+    while [[ ! -f "/tmp/emulationstation.ready" && ! -e "/var/run/kodi.msg" && $count -lt 20 ]]
+    do
+        sleep 1
+        ((count++))
+    done
+    kill -9 $PID
+}
+
+#### MAIN ####
+
+INIT_SERVICE=/etc/init.d/S03splash
+SPLASHBOOT=/boot/splash/
+SPLASHUSER=/userdata/splash/
+
+case $1 in
+    start)
+        # Is service is active? PPID is videoplayer or pic sleep timer
+        PID=$(pgrep -P $(pgrep -f $INIT_SERVICE) 2>/dev/null ) || { echo "No service '$INIT_SERVICE' found!"; exit 0; }
+
+        # If the timer for picture is active then kill this PID to avoid
+        # unwanted behaviour in splash_autoplay
+        [[ $PID == $(pgrep -f "sleep infinity") ]] && picture=1 || picture=0
+
+        # Read Config and do action
+        splash_setting=$(batocera-settings -command load -key splash.screen.length)
+        [[ -z $splash_setting ]] && splash_setting=default
+
+        case ${splash_setting,,} in
+            def*)
+                # Standard BATOCERA setting, fastest boot possible
+                # A video splash will be displayed ~16s on Pi3 platform
+                #
+                splash_default &
+            ;;
+            auto)
+                # Play video as long as possible
+                #
+                [[ $picture -eq 0 ]] && splash_autoplay
+                kill -9 $PID
+            ;;
+            i[0-90]*|k[0-90]*|[0-90]*)
+                # k-mode: Stop loading process for x seconds, attention there will be no
+                #         further steps so you can "lock" the system
+                # i-mode: This mode will not kill video in background this is a posible setup
+                #         for RPi system and you will smoothly boot into ES
+                #
+                sleeptimer=${splash_setting//[^[:digit:]]/}
+                [[ $picture -eq 1 && $sleeptimer -gt 10 ]] && sleeptimer=10
+                sleep $sleeptimer
+                [[ $picture -eq 1 || ${splash_setting:0:1} != i ]] && kill -9 $PID
+            ;;
+            *)
+                # Other settings --> not valid
+                #
+                kill -9 $PID
+                exit 1
+            ;;
+        esac
+    ;;
+    stop)
+        #DryRun -n to test if there is a change in /userdata/splash/ if there is output then do sync job
+        RSYNC="rsync -tin --dirs --delete $SPLASHUSER $SPLASHBOOT"
+        #File changes can be detected by -i switch output
+        [[ -n $($RSYNC | grep -e '^\*deleting' -e '^>f++++++') ]] || exit 0
+
+        #Check filesize of /userdata/splash and set a directory size limit (256MB*1024kB)
+        [[ $(du -s $SPLASHUSER | awk '{print $1}') -lt 262144 ]] || exit 1
+
+        RSYNC="rsync -ti --dirs --delete $SPLASHUSER $SPLASHBOOT"
+        mount -o remount,rw /boot
+        $RSYNC | dialog --backtitle "batocera.linux" --progressbox "Syncing Splashscreen data..." 20 75 &>/dev/tty1
+        mount -o remount,ro /boot
+        sleep 3
+    ;;
+    *)
+        echo "Usage $0 {start|stop}"
+    ;;
+esac
+exit 0
