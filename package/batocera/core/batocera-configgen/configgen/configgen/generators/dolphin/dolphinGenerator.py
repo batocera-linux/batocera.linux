@@ -54,9 +54,9 @@ class DolphinGenerator(Generator):
         
         # backend - Default
         if system.isOptSet('gfxbackend'):
-            dolphinGFXSettings.set("Core", "GFXBackend", system.getOptBoolean('gfxbackend'))
+            dolphinSettings.set("Core", "GFXBackend", system.getOptBoolean('gfxbackend'))
         else:
-            dolphinGFXSettings.set("Core", "GFXBackend", "OGL")
+            dolphinSettings.set("Core", "GFXBackend", "OGL")
         
         # Standardize Dual Core
         dolphinSettings.set("Core", "CPUThread", "True")
