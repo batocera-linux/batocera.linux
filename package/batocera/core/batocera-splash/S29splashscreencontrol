@@ -92,7 +92,6 @@ case $1 in
         mount -o remount,rw /boot
         $RSYNC | dialog --backtitle "batocera.linux" --progressbox "Syncing Splashscreen data..." 20 75 &>/dev/tty1
         mount -o remount,ro /boot
-        sleep 3
     ;;
     *)
         echo "Usage $0 {start|stop}"
