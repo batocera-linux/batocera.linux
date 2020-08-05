@@ -36,6 +36,7 @@ batoceraBins = {'dosbox'      : '/usr/bin/dosbox'
               , 'daphne'      : '/usr/bin/hypseus'
               , 'cannonball'  : '/usr/bin/cannonball'
               , 'melonds'     : '/usr/bin/melonDS'
+              , 'rpcs3'       : '/usr/bin/rpcs3'
 }
 
 
@@ -147,4 +148,9 @@ cemuConfig = CONF + '/cemu/config.ini'
 cemuHomedir = ROMS + '/wiiu'
 cemuDatadir = '/usr/cemu'
 cemuSaves = SAVES + '/cemu'
+
+rpcs3Config = CONF
+rpcs3Homedir = ROMS + '/ps3'
+rpcs3Saves = SAVES
+
 
