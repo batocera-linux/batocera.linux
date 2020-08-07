@@ -1,9 +1,0 @@
-config BR2_PACKAGE_SFML
-        bool "sfml"
-	select BR2_PACKAGE_XCB_UTIL_IMAGE
-	select BR2_PACKAGE_OPENAL
-	select BR2_PACKAGE_JPEG
-	select BR2_PACKAGE_FLAC
-	select BR2_PACKAGE_LIBVORBIS
-        help
-          Simple and Fast Multimedia Library
