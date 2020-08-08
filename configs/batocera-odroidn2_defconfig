@@ -70,7 +70,7 @@ BR2_PACKAGE_UBOOT_ODROID_N2=y
 # BR2_PACKAGE_BATOCERA_SPLASH_FFPLAY : splash must not be running while es is trying to start otherwise graphics won't initialize
 
 # Enables ccache, strace and gdb
-#BR2_PACKAGE_BATOCERA_DEV=y
+BR2_PACKAGE_BATOCERA_DEV=y
 
 # Enable experimental packages
-#BR2_PACKAGE_BATOCERA_CORES_EXPERIMENTAL=y
+BR2_PACKAGE_BATOCERA_CORES_EXPERIMENTAL=y
