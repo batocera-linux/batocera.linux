@@ -3,8 +3,8 @@
 # YUZU
 #
 ################################################################################
-# Version.: Commits on Jul 16, 2020
-YUZU_VERSION = 67db767dc1caa7ef4e6e4a3c9014d6cbb1e73274
+# Version.: Commits on Aug 9, 2020
+YUZU_VERSION = ca053621c1e9217b4a343df0a7bee3ff68faa344
 YUZU_SITE = https://github.com/yuzu-emu/yuzu-mainline.git
 YUZU_SITE_METHOD=git
 YUZU_GIT_SUBMODULES=YES
