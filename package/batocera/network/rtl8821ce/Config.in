@@ -1,8 +1,10 @@
+comment "rtl8821ce needs a Linux kernel to be built"
+	depends on !BR2_LINUX_KERNEL
+
 config BR2_PACKAGE_RTL8821CE
 	bool "rtl8821ce"
-        depends on BR2_x86_64 || BR2_i586
-        depends on BR2_TOOLCHAIN_USES_GLIBC
+	depends on BR2_LINUX_KERNEL
 	help
-	  This package provides Realtek RTL8821CE family DKMS driver
+	  rtl8821ce wifi driver
 
 	  https://github.com/tomaspinho/rtl8821ce

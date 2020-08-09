@@ -3,18 +3,23 @@
 # rtl8821ce
 #
 ################################################################################
-# Version from July, 02 2020
-RTL8821CE_VERSION = 18c1f607c10307a249be82cb398fb08eb7857a9f
-RTL8821CE_SITE = https://github.com/tomaspinho/rtl8821ce.git
-RTL8821CE_SITE_METHOD = git
-RTL8821CE_DEPENDENCIES = linux linux-headers
-RTL8821CE_INSTALL_STAGING = YES
 
-define RTL8821CE_INSTALL_TARGET_CMDS
+RTL8821CE_VERSION = 77ca48c7be892f92c22a2580086c001b725d9af0
+RTL8821CE_SITE = $(call github, tomaspinho, rtl8821ce, $(RTL8821CE_VERSION))
+RTL8821CE_LICENSE = GPL-2.0
+RTL8821CE_LICENSE_FILES = LICENSE
+
+RTL8821CE_MODULE_MAKE_OPTS = \
+	CONFIG_RTL8821CE=m \
+	KVER=$(LINUX_VERSION_PROBED) \
+	USER_EXTRA_CFLAGS="-DCONFIG_$(call qstrip,$(BR2_ENDIAN))_ENDIAN \
+		-Wno-error"
+
+define RTL8821CE_MAKE_SUBDIR
+        (cd $(@D); ln -s . rtl8821ce)
 endef
 
-RTL8821CE_MODULES += rtl8821ce
-$(RTL8821CE_INSTALL_KERNEL_MODULE)
-$(eval $(kernel-module))
+RTL8821CE_PRE_CONFIGURE_HOOKS += RTL8821CE_MAKE_SUBDIR
 
+$(eval $(kernel-module))
 $(eval $(generic-package))
