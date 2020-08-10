@@ -13,3 +13,13 @@ amiga1200:
 amigacd32:
   emulator: amiberry
   core:     CD32
+gamecube:
+  emulator: dolphin
+  core: dolphin
+  options:
+    platform: drm
+wii:
+  emulator: dolphin
+  core: dolphin
+  options:
+    platform: drm
