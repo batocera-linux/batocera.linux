@@ -14,7 +14,7 @@ index 159d482..3c9d169 100644
 +
 +       printf("{\n");
 +       for(int i=2; i<argc; i++) {
-+	 if(libretro_get_system_info(argv[i], &info, &load_no_content)) {
++	 if(libretro_get_system_info(p_rarch, argv[i], &info, &load_no_content)) {
 +	   if(strlen(argv[i]) >= 12) {
 +	     if(strcmp("_libretro.so", argv[i]+(strlen(argv[i]) - 12)) == 0) {
 +	       if(x > 0) {
