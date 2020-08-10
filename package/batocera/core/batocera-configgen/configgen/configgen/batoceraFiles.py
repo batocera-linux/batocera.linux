@@ -152,5 +152,7 @@ cemuSaves = SAVES + '/cemu'
 rpcs3Config = CONF
 rpcs3Homedir = ROMS + '/ps3'
 rpcs3Saves = SAVES
-
-
+rpcs3CurrentConfig = CONF + '/rpcs3/GuiConfigs/CurrentSettings.ini'
+rpcs3config = CONF + '/rpcs3/config.yml'
+rpcs3configInput = CONF + '/rpcs3/config_input.yml'
+rpcs3configevdev = CONF + '/rpcs3/InputConfigs/Evdev/Default Profile.yml'
