@@ -75,6 +75,7 @@ MEM_TOTAL_MB=$(expr "${MEM_TOTAL_KB}" / 1024)
 MEM_AVAILABLE_MB=$(expr "${MEM_AVAILABLE_KB}" / 1024)
 echo "Available memory: ${MEM_AVAILABLE_MB}/${MEM_TOTAL_MB} MB"
 
+# OPENGL
 if test "${V_ARCH}" = "x86" -o "${V_ARCH}" = "x86_64"
 then
     V_OPENGLVERSION=$(DISPLAY=:0.0 glxinfo 2>/dev/null | grep -E '^OpenGL core profile version string:' | sed -e s+'^OpenGL core profile version string:[ ]*'++)
@@ -84,6 +85,22 @@ then
     fi
     echo "OpenGL: ${V_OPENGLVERSION}"
 fi
+
+# VULKAN
+if test -e /usr/bin/vulkaninfo
+then
+    APIVERSION=$(vulkaninfo --json 2>/dev/null | jq -r ".VkPhysicalDeviceProperties.apiVersion" 2>/dev/null)
+    if test -n "${APIVERSION}"
+    then
+	let "APIVERSION_MAJOR=${APIVERSION} >> 22"
+	let "APIVERSION_MINOR=(${APIVERSION} >> 12) & 0x3ff"
+	let "APIVERSION_PATCH=${APIVERSION} & 0xfff"
+	echo "Vulkan: ${APIVERSION_MAJOR}.${APIVERSION_MINOR}.${APIVERSION_PATCH}"
+    else
+	echo "Vulkan: none"
+    fi
+fi
+
 [[ -z ${V_CPUMODEL1} ]] || echo "Cpu model: ${V_CPUMODEL1}"
 echo "Cpu number: ${V_CPUNB}"
 echo "Cpu max frequency: ${V_CPUMAXFREQ} MHz"
