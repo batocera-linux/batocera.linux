@@ -1135,7 +1135,7 @@ gamecube:
   manufacturer: Nintendo
   release: 2001
   hardware: console
-  extensions: [gcm, iso, gcz, ciso, wbfs]
+  extensions: [gcm, iso, gcz, ciso, wbfs, rvz]
   platform:   gc
   theme:      gc
   emulators:
@@ -1147,7 +1147,7 @@ wii:
   manufacturer: Nintendo
   release: 2006
   hardware: console
-  extensions: [gcm, iso, gcz, ciso, wbfs, wad]
+  extensions: [gcm, iso, gcz, ciso, wbfs, wad, rvz]
   emulators:
     dolphin:
       dolphin:  { requireAnyOf: [BR2_PACKAGE_DOLPHIN_EMU]       }
@@ -1163,6 +1163,7 @@ wii:
         par exemple, pour jouer à mariokart wii, renommer le jeu en mario_kart.side.ti.iso (vous aurez le tilt sur le 1er axe et l'infrarouge sur le 2e (ti))
         par exemple, pour jouer à mario galaxy, renommer le jeu en mario_galaxy.ni.iso (vous aurez le nunchuk sur le 1er axe et l'infrarouge sur le 2e (ni))
     Mettez les textures personnalisées dans /userdata/saves/dolphin-emu/Load/Textures/<game id>.
+
 ps2:
   name:       Sony Playstation 2
   manufacturer: Sony

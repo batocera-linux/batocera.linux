@@ -38,6 +38,7 @@ def setViceConfig(viceConfigFile, system):
         viceConfig.add_section(systemCore)
 
     viceConfig.set(systemCore, "SaveResourcesOnExit",    "1")
+    viceConfig.set(systemCore, "SoundDeviceName",        "alsa")
 
     viceConfig.set(systemCore, "SDLGLAspectMode",        "0")
     viceConfig.set(systemCore, "VICIIFullscreen",        "1")
