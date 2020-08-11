@@ -143,6 +143,16 @@ ccache-dir:
 	@gzip -dc $(OUTPUT_DIR)/$*/images/batocera/batocera-*.img.gz | sudo dd of=$(DEV) bs=5M status=progress
 	@sync
 
+%-upgrade:
+	$(if $(DEV),,$(error "DEV not specified!"))
+	-@sudo umount /tmp/mount
+	-@mkdir /tmp/mount
+	@sudo mount $(DEV)1 /tmp/mount
+	-@sudo rm /tmp/mount/boot/batocera
+	@sudo tar xvf $(OUTPUT_DIR)/$*/images/batocera/boot.tar.xz -C /tmp/mount --no-same-owner
+	@sudo umount /tmp/mount
+	-@rmdir /tmp/mount
+
 %-toolchain:
 	$(if $(shell which btrfs 2>/dev/null),, $(error "btrfs not found!"))
 	-@sudo btrfs sub del $(OUTPUT_DIR)/$*
