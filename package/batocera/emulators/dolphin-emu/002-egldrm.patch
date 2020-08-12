@@ -1028,7 +1028,7 @@ index 00000000000..3996178d045
 +static void gfx_ctx_drm_swap_buffers(void *data)
 +{
 +   gfx_ctx_drm_data_t        *drm = (gfx_ctx_drm_data_t*)data;
-+   unsigned max_swapchain_images  = 2; //settings->uints.video_max_swapchain_images;
++   unsigned max_swapchain_images  = 3; //settings->uints.video_max_swapchain_images;
 +
 +   egl_swap_buffers(&drm->egl);
 +
@@ -4668,9 +4668,9 @@ index d341d26f8bc..100e60d1c78 100644
 +static void gfx_ctx_drm_swap_buffers(void* data)
  {
 -   gfx_ctx_drm_data_t        *drm = (gfx_ctx_drm_data_t*)data;
--   unsigned max_swapchain_images  = 2; //settings->uints.video_max_swapchain_images;
+-   unsigned max_swapchain_images  = 3; //settings->uints.video_max_swapchain_images;
 +  gfx_ctx_drm_data_t* drm = (gfx_ctx_drm_data_t*)data;
-+  unsigned max_swapchain_images = 2;  // settings->uints.video_max_swapchain_images;
++  unsigned max_swapchain_images = 3;  // settings->uints.video_max_swapchain_images;
  
 -   egl_swap_buffers(&drm->egl);
 +  egl_swap_buffers(&drm->egl);
@@ -5726,7 +5726,7 @@ index ff1b13967cd..f252fb09170 100644
  {
 -  gfx_ctx_drm_data_t* drm = (gfx_ctx_drm_data_t*)data;
 +  GFXContextDRMData* drm = (GFXContextDRMData*)data;
-   unsigned max_swapchain_images = 2;  // settings->uints.video_max_swapchain_images;
+   unsigned max_swapchain_images = 3;  // settings->uints.video_max_swapchain_images;
  
    egl_swap_buffers(&drm->egl);
 @@ -744,7 +744,7 @@ static void gfx_ctx_drm_swap_buffers(void* data)
@@ -6255,7 +6255,7 @@ index 0414072170c..8bf87db2270 100644
 -static void gfx_ctx_drm_swap_buffers(void* data)
 -{
 -  GFXContextDRMData* drm = (GFXContextDRMData*)data;
--  unsigned max_swapchain_images = 2;  // settings->uints.video_max_swapchain_images;
+-  unsigned max_swapchain_images = 3;  // settings->uints.video_max_swapchain_images;
 -
 -  egl_swap_buffers(&drm->egl);
 -
@@ -6337,7 +6337,7 @@ index 0414072170c..8bf87db2270 100644
  void GLContextEGLDRM::Swap()
  {
 -  gfx_ctx_drm_swap_buffers(g_drm);
-+  unsigned max_swapchain_images = 2; // double-buffering
++  unsigned max_swapchain_images = 3; // double-buffering
 +
 +  egl_swap_buffers(&g_drm->egl);
 +
@@ -7226,8 +7226,8 @@ index a7ae0a6dbfb..367e875371f 100644
  
  void GLContextEGLDRM::Swap()
  {
--  unsigned max_swapchain_images = 2; // double-buffering
-+  unsigned max_swapchain_images = 2;  // double-buffering
+-  unsigned max_swapchain_images = 3; // double-buffering
++  unsigned max_swapchain_images = 3;  // double-buffering
  
    egl_swap_buffers(&g_drm->egl);
  

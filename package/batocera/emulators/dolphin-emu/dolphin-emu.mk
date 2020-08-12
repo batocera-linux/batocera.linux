@@ -18,6 +18,12 @@ endif
 
 DOLPHIN_EMU_SUPPORTS_IN_SOURCE_BUILD = NO
 
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_ODROIDN2)$(BR2_PACKAGE_BATOCERA_TARGET_VIM3),y)
+DOLPHIN_EMU_CONF_ENV += CFLAGS="-Ofast -march=armv8-a+crc+fp+simd+crypto -mcpu=cortex-a73.cortex-a53+crc+fp+simd+crypto -mtune=cortex-a73.cortex-a53 -ftree-vectorize -fwhole-program -flto=4 -mfloat-abi=hard -mfpu=crypto-neon-fp-armv8"
+DOLPHIN_EMU_CONF_ENV += CXXFLAGS="${CFLAGS}"
+DOLPHIN_EMU_CONF_ENV += LDFLAGS="${CXXFLAGS}"
+endif
+
 DOLPHIN_EMU_CONF_OPTS  = -DTHREADS_PTHREAD_ARG=OFF
 DOLPHIN_EMU_CONF_OPTS += -DUSE_DISCORD_PRESENCE=OFF
 DOLPHIN_EMU_CONF_OPTS += -DBUILD_SHARED_LIBS=OFF
