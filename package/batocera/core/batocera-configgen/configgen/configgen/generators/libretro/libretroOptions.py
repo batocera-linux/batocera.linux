@@ -3,6 +3,7 @@ import sys
 import os
 import ConfigParser
 from settings.unixSettings import UnixSettings
+import batoceraFiles
 
 def generateCoreSettings(retroarchCore, system):
     # retroarch-core-options.cfg
@@ -43,7 +44,12 @@ def generateCoreSettings(retroarchCore, system):
             coreSettings.save('bluemsx_msxtype', '"MSX2+"')
         elif (system.name == 'msxturbor'):
             coreSettings.save('bluemsx_msxtype', '"MSXturboR"')
-        
+
+    if (system.config['core'] == 'citra'):
+        if not os.path.exists(batoceraFiles.CONF + "/retroarch/3ds.cfg"):
+            f = open(batoceraFiles.CONF + "/retroarch/3ds.cfg", "w")
+            f.write("video_driver = \"glcore\"\n")
+            f.close()
 
     if (system.config['core'] == 'tgbdual'):
         coreSettings.save('tgbdual_audio_output',       '"Game Boy #1"')
