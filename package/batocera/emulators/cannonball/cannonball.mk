@@ -4,8 +4,8 @@
 #
 ################################################################################
 # Version.: Commits on Jun 24, 2020
-CANNONBALL_VERSION = 8aa7322c2a23d50def7613a2e55c683dc78418b9
-CANNONBALL_SITE = $(call github,rtissera,cannonball,$(CANNONBALL_VERSION))
+CANNONBALL_VERSION = b6aa525ddd552f96b43b3b3a6f69326a277206bd
+CANNONBALL_SITE = $(call github,djyt,cannonball,$(CANNONBALL_VERSION))
 CANNONBALL_LICENSE = GPLv2
 CANNONBALL_DEPENDENCIES = sdl2 boost
 
