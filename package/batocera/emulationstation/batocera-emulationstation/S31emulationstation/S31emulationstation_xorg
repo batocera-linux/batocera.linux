@@ -1,5 +1,9 @@
 #!/bin/sh
 
+# xorg driver preferences
+export MESA_LOADER_DRIVER_OVERRIDE=i965
+# ### #
+
 case "$1" in
     start)
 	systemsetting="batocera-settings"
