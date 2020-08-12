@@ -177,7 +177,7 @@ index 43643ad31730..d840bc07cba6 100644
  }
  
 +#ifdef CONFIG_DRM_SUN8I_DW_HDMI_CEC
-+static bool sun8i_hdmi_phy_cec_pin_read(struct cec_adapter *adap)
++static int sun8i_hdmi_phy_cec_pin_read(struct cec_adapter *adap)
 +{
 +	struct sun8i_hdmi_phy *phy = cec_get_drvdata(adap);
 +	unsigned int val;
