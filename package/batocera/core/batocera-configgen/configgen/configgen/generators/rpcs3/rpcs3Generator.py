@@ -103,5 +103,5 @@ class Rpcs3Generator(Generator):
             
         romBasename = path.basename(rom)
         romName = rom + '/PS3_GAME/USRDIR/EBOOT.BIN'
-        #commandArray = [batoceraFiles.batoceraBins[system.config['emulator']],romName]
-        #return Command.Command(array=commandArray, env={"XDG_CONFIG_HOME":batoceraFiles.CONF, "XDG_CACHE_HOME":batoceraFiles.SAVES, "QT_QPA_PLATFORM":"xcb"})
+        commandArray = [batoceraFiles.batoceraBins[system.config['emulator']],romName]
+        return Command.Command(array=commandArray, env={"XDG_CONFIG_HOME":batoceraFiles.CONF, "XDG_CACHE_HOME":batoceraFiles.SAVES, "QT_QPA_PLATFORM":"xcb"})
