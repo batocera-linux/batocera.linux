@@ -361,11 +361,12 @@ case "${BATOCERA_TARGET}" in
 	cp "${BOARD_DIR}/boot/extlinux.conf" "${BINARIES_DIR}/boot/boot/extlinux.conf" || exit 1
 	cp "${BOARD_DIR}/boot/boot.ini" "${BINARIES_DIR}/boot/boot.ini" || exit 1
 	cp "${BOARD_DIR}/boot/config.ini" "${BINARIES_DIR}/boot/config.ini" || exit 1
+	cp "${BOARD_DIR}/boot/boot-logo.bmp.gz" "${BINARIES_DIR}/boot"   || exit 1
 	cp -pr "${BINARIES_DIR}/tools"       "${BINARIES_DIR}/boot/"                || exit 1
 
 	# boot.tar.xz
 	echo "creating boot.tar.xz"
-	(cd "${BINARIES_DIR}/boot" && tar -I "xz -T0" -cf "${BATOCERA_BINARIES_DIR}/boot.tar.xz" tools boot batocera-boot.conf) || exit 1
+	(cd "${BINARIES_DIR}/boot" && tar -I "xz -T0" -cf "${BATOCERA_BINARIES_DIR}/boot.tar.xz" tools boot batocera-boot.conf boot-logo.bmp.gz) || exit 1
 
 	# batocera.img
 	mv "${BINARIES_DIR}/boot/boot/batocera.update" "${BINARIES_DIR}/boot/boot/batocera" || exit 1
