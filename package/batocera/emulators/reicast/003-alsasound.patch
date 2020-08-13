@@ -1,13 +1,28 @@
-diff --git a/core/oslib/audiobackend_alsa.cpp b/core/oslib/audiobackend_alsa.cpp
-index 25fa113..319ca1c 100644
---- a/core/oslib/audiobackend_alsa.cpp
-+++ b/core/oslib/audiobackend_alsa.cpp
-@@ -10,7 +10,7 @@ static void alsa_init()
+--- a/libswirl/oslib/audiobackend_alsa.cpp	2020-08-13 19:36:44.692860349 +0200
++++ b/libswirl/oslib/audiobackend_alsa.cpp	2020-08-13 19:37:01.273173960 +0200
+@@ -19,7 +19,6 @@
  {
  	snd_pcm_hw_params_t *params;
  	unsigned int val;
 -	int dir=-1;
-+	int dir;
- 	snd_pcm_uframes_t frames;
  
  	string device = cfgLoadStr("alsa", "device", "");
+ 
+@@ -113,7 +112,7 @@
+ 
+ 	/* 44100 bits/second sampling rate (CD quality) */
+ 	val = 44100;
+-	rc=snd_pcm_hw_params_set_rate_near(handle, params, &val, &dir);
++	rc=snd_pcm_hw_params_set_rate_near(handle, params, &val, 0);
+ 	if (rc < 0)
+ 	{
+ 		fprintf(stderr, "ALSA: Error:snd_pcm_hw_params_set_rate_near %s\n", snd_strerror(rc));
+@@ -122,7 +121,7 @@
+ 
+ 	/* Set period size to settings.aica.BufferSize frames. */
+ 	period_size = settings.aica.BufferSize;
+-	rc=snd_pcm_hw_params_set_period_size_near(handle, params, &period_size, &dir);
++	rc=snd_pcm_hw_params_set_period_size_near(handle, params, &period_size, 0);
+ 	if (rc < 0)
+ 	{
+ 		fprintf(stderr, "ALSA: Error:snd_pcm_hw_params_set_buffer_size_near %s\n", snd_strerror(rc));
