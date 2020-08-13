@@ -1,40 +1,100 @@
 #!/usr/bin/env python
 
-import Command
-import batoceraFiles
 from generators.Generator import Generator
+import batoceraFiles
 import cannonballControllers
-import shutil
 import os
+from xml.dom import minidom
+import codecs
+import Command
+from utils.logger import eslog
 
 class CannonballGenerator(Generator):
 
-    # Main entry of the module
     def generate(self, system, rom, playersControllers, gameResolution):
-        if not os.path.exists(os.path.dirname(batoceraFiles.cannonballConfig)):
-            os.makedirs(os.path.dirname(batoceraFiles.cannonballConfig))
+        configFile = batoceraFiles.CONF + '/cannonball/config.xml'
+        
+        if not os.path.exists(os.path.dirname(configFile)):
+            os.makedirs(os.path.dirname(configFile))
+
+        # config file
+        config = minidom.Document()
+        if os.path.exists(configFile):
+            try:
+                config = minidom.parse(configFile)
+            except:
+                pass # reinit the file
+
+        # root
+        xml_root = CannonballGenerator.getRoot(config, "config")
+
+        # video
+        xml_video = CannonballGenerator.getSection(config, xml_root, "video")
+
+        # fps
+        if system.isOptSet('showFPS') and system.getOptBoolean('showFPS'):
+            CannonballGenerator.setSectionConfig(config, xml_video, "fps_counter", "1")
+        else:
+            CannonballGenerator.setSectionConfig(config, xml_video, "fps_counter", "0")
+
+        # ratio
+        if system.isOptSet('showFPS') and system.config["ratio"] == "16/9":
+            CannonballGenerator.setSectionConfig(config, xml_video, "widescreen", "1")
+        else:
+            CannonballGenerator.setSectionConfig(config, xml_video, "widescreen", "0")
+
+        # high resolution
+        if system.isOptSet('highResolution') and system.config["highResolution"] == "1":
+            CannonballGenerator.setSectionConfig(config, xml_video, "hires", "1")
+        else:
+            CannonballGenerator.setSectionConfig(config, xml_video, "hires", "0")
 
         # controllers
-        #TODO cannonballControllers.generateControllerConfig(batoceraFiles.cannonballConfig, playersControllers)
+        cannonballControllers.generateControllerConfig(config, xml_root, playersControllers)
 
-        # extension used .daphne and the file to start the game is in the folder .daphne with the extension .txt
-#       romName = os.path.splitext(os.path.basename(rom))[0]
-#       frameFile = rom + "/" + romName + ".txt"
-#       commandsFile = rom + "/" + romName + ".commands"
+        # save the config file
+        cannonballXml = open(configFile, "w")
+        # TODO: python 3 - workawround to encode files in utf-8
+        cannonballXml = codecs.open(configFile, "w", "utf-8")
+        dom_string = os.linesep.join([s for s in config.toprettyxml().splitlines() if s.strip()]) # remove ugly empty lines while minicom adds them...
+        cannonballXml.write(dom_string)
         
-        if system.config["ratio"] == "16/9":
-            commandArray = [batoceraFiles.batoceraBins[system.config['emulator']]] #,
-#                           romName, "vldp", "-framefile", frameFile, "-useoverlaysb", "2", "-ignore_aspect_ratio",
-#                           "-x", str(gameResolution["width"]), "-y", str(gameResolution["height"]), "-fullscreen",
-#                           "-fastboot", "-datadir", batoceraFiles.cannonballDatadir, "-homedir", batoceraFiles.cannonballHomedir]
+        return Command.Command(array=["cannonball"])
+
+    @staticmethod
+    def getRoot(config, name):
+        xml_section = config.getElementsByTagName(name)
+
+        if len(xml_section) == 0:
+            xml_section = config.createElement(name)
+            config.appendChild(xml_section)
         else:
-            commandArray = [batoceraFiles.batoceraBins[system.config['emulator']]] #,
-#                           romName, "vldp", "-framefile", frameFile, "-useoverlaysb", "2", "-fullscreen",
-#                           "-fastboot", "-datadir", batoceraFiles.cannonballDatadir, "-homedir", batoceraFiles.cannonballHomedir]
+            xml_section = xml_section[0]
 
-        # The folder may have a file with the game name and .commands with extra arguments to run the game.
-#       if os.path.isfile(commandsFile):
-#           commandArray.extend(open(commandsFile,'r').read().split())
-        
-        return Command.Command(array=commandArray)
- 
+        return xml_section
+    
+    @staticmethod
+    def getSection(config, xml_root, name):
+        xml_section = xml_root.getElementsByTagName(name)
+
+        if len(xml_section) == 0:
+            xml_section = config.createElement(name)
+            xml_root.appendChild(xml_section)
+        else:
+            xml_section = xml_section[0]
+
+        return xml_section
+
+    @staticmethod
+    def setSectionConfig(config, xml_section, name, value):
+        xml_elt = xml_section.getElementsByTagName(name)
+        if len(xml_elt) == 0:
+            xml_elt = config.createElement(name)
+            xml_section.appendChild(xml_elt)
+        else:
+            xml_elt = xml_elt[0]
+
+        if xml_elt.hasChildNodes():
+            xml_elt.firstChild.data = value
+        else:
+            xml_elt.appendChild(config.createTextNode(value))
