@@ -1,8 +1,6 @@
-diff --git a/core/hw/pvr/ta.cpp b/core/hw/pvr/ta.cpp
-index 6ad849a..cd05f19 100644
---- a/core/hw/pvr/ta.cpp
-+++ b/core/hw/pvr/ta.cpp
-@@ -22,20 +22,14 @@ extern u32 SQW,DMAW;
+--- a/libswirl/hw/pvr/ta.cpp	2020-08-13 20:17:39.355060140 +0200
++++ b/libswirl/hw/pvr/ta.cpp	2020-08-13 20:31:17.666841648 +0200
+@@ -28,20 +28,13 @@
  
  #if HOST_CPU == CPU_X86
  #include <xmmintrin.h>
@@ -10,7 +8,6 @@ index 6ad849a..cd05f19 100644
 -{
 -	DECL_ALIGN(32) __m128 data[2];
 -};
-+typedef __m128 simd128_t;
  #elif HOST_CPU == CPU_ARM && defined(__ARM_NEON__)
  #include <arm_neon.h>
 -struct simd256_t
@@ -23,35 +20,33 @@ index 6ad849a..cd05f19 100644
 +struct simd128_t
  {
 -DECL_ALIGN(32) u64 data[4];
-+DECL_ALIGN(32) u64 data[2];
++ DECL_ALIGN(32) u64 data[2];
  };
  #endif
  
-@@ -300,18 +294,16 @@ void DYNACALL ta_thd_data32_i(void* data)
+@@ -307,14 +300,16 @@
  		ta_vtx_ListInit();
  	}
  
 -	simd256_t* dst = (simd256_t*)ta_tad.thd_data;
 -	simd256_t* src = (simd256_t*)data;
-+	simd128_t* dst = (simd128_t*)ta_tad.thd_data;
-+	simd128_t* src = (simd128_t*)data;
++	simd128_t* dst = (simd256_t*)ta_tad.thd_data;
++	simd128_t* src = (simd256_t*)data;
  
--	// First byte is PCW
+ 	// First byte is PCW
 -	PCW pcw = *(PCW*)data;
+-	
 +	PCW pcw = *(PCW*)src;
- 	
--	// Copy the TA data
++
+ 	// Copy the TA data
 -	*dst = *src;
 +	dst[0] = src[0];
 +	dst[1] = src[1];
++
  
  	ta_tad.thd_data += 32;
  
--	//process TA state
- 	u32 state_in = (ta_cur_state << 8) | (pcw.ParaType << 5) | ((pcw.obj_ctrl >> 2) & 31);
- 
- 	u32 trans = ta_fsm[state_in];
-@@ -319,7 +311,7 @@ void DYNACALL ta_thd_data32_i(void* data)
+@@ -326,7 +321,7 @@
  	bool must_handle = trans & 0xF0;
  
  
