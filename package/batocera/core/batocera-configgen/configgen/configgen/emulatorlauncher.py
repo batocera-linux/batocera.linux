@@ -29,6 +29,7 @@ from generators.openbor.openborGenerator import OpenborGenerator
 from generators.wine.wineGenerator import WineGenerator
 from generators.cemu.cemuGenerator import CemuGenerator
 from generators.melonds.melondsGenerator import MelonDSGenerator
+from generators.rpcs3.cemuGenerator import Rpcs3Generator
 import controllersConfig as controllers
 import signal
 import batoceraFiles
@@ -61,7 +62,8 @@ generators = {
     'openbor' : OpenborGenerator(),
     'wine' : WineGenerator(),
     'cemu' : CemuGenerator(),
-    'melonds' : MelonDSGenerator()
+    'melonds' : MelonDSGenerator(),
+    'rpcs3' : Rpcs3Generator()
 }
 
 def main(args, maxnbplayers):
