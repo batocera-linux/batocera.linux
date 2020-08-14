@@ -366,7 +366,7 @@ case "${BATOCERA_TARGET}" in
 
 	# boot.tar.xz
 	echo "creating boot.tar.xz"
-	(cd "${BINARIES_DIR}/boot" && tar -I "xz -T0" -cf "${BATOCERA_BINARIES_DIR}/boot.tar.xz" tools boot batocera-boot.conf boot-logo.bmp.gz) || exit 1
+	(cd "${BINARIES_DIR}/boot" && tar -I "xz -T0" -cf "${BATOCERA_BINARIES_DIR}/boot.tar.xz" tools boot batocera-boot.conf boot-logo.bmp.gz boot.ini config.ini) || exit 1
 
 	# batocera.img
 	mv "${BINARIES_DIR}/boot/boot/batocera.update" "${BINARIES_DIR}/boot/boot/batocera" || exit 1
