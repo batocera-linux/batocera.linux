@@ -1,12 +1,13 @@
 2020/XX/XX - batocera.linux 5.27
 	* add: Khadas VIM3 support (see https://wiki.batocera.org/devices#khadas_vim3 for details)
-	* add: odroid n2+ support
+	* add: odroid n2+ support (including overclocking up to 2400 and fan)
 	* add: libretro-quasi88 (NEC PC-8800)
 	* add: cannonball (outrun engine)
 	* add: libretro-scummvm core (working)
 	* add: batocera-record (on x86*) to record video of batocera from command line
 	* add: filesystem compression (btrfs option in batocera.conf)
 	* add: game manuals scrapping / rendering
+	* add: batocera manual
 	* add: Batocera content downloader (with 'pacman' package manager)
 	* add: New UI for installing/removing themes, bezels, free content
 	* add: new options for upscaling when emulators support it (PSX, Dreamcast, DS, Gamecube, Wii...)
@@ -16,6 +17,7 @@
 	* add: multi-thread support for ScreenScraper
 	* add: oc_FR language
 	* add: preliminary pulseaudio support (see batocera.conf: audio.backend)
+	* add: Vulkan support
 	* add: technical stats and info on SSH login
 	* add: resolution configuration by system/game for many boards
 	* fix: theBezelProject default bezel now correctly installed
@@ -25,7 +27,7 @@
 	* fix: wifi connection
 	* fix: RetroAchievements window (data scraping, fix for small screens)
 	* fix: remove .zip support for CD-based systems
-	* fix: odroid n2 owner should reburn completly the image to get better performances (overclocking)
+	* fix: odroid n2 owners should reburn completly the image to get better performances (overclocking)
 	* bump: Intel Iris driver
 	* bump: RPi3 and RPi4 kms video driver
 	* bump: RetroArch 1.8.9 along with libretro emulators
