@@ -477,7 +477,7 @@ case "${BATOCERA_TARGET}" in
 	(cd "${BINARIES_DIR}/boot" && tar -I "xz -T0" -cf "${BATOCERA_BINARIES_DIR}/boot.tar.xz" extlinux tools boot batocera-boot.conf) || exit 1
 
 	# blobs
-	for F in idbloader.img trust.img uboot.img
+	for F in idbspl.img u-boot.itb
 	do
 	cp "${BINARIES_DIR}/${F}" "${BINARIES_DIR}/boot/${F}" || exit 1
 	done
