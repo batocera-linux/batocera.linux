@@ -356,7 +356,7 @@ case "${BATOCERA_TARGET}" in
 	cp "${BINARIES_DIR}/uInitrd"                           "${BINARIES_DIR}/boot/boot/uInitrd"                          || exit 1
 	cp "${BINARIES_DIR}/rootfs.squashfs"                   "${BINARIES_DIR}/boot/boot/batocera.update"                  || exit 1
 	cp "${BINARIES_DIR}/meson64_odroidn2.dtb"              "${BINARIES_DIR}/boot/boot/meson64_odroid-n2.dtb"            || exit 1
-	cp "${BINARIES_DIR}/meson64_odroidn2plus.dtb"          "${BINARIES_DIR}/boot/boot/meson64_odroid-n2_plus.dtb"       || exit 1
+	cp "${BINARIES_DIR}/meson64_odroidn2_plus.dtb"         "${BINARIES_DIR}/boot/boot/meson64_odroid-n2_plus.dtb"       || exit 1
 	cp "${BINARIES_DIR}/batocera-boot.conf"                "${BINARIES_DIR}/boot/batocera-boot.conf"                    || exit 1
 	cp "${BOARD_DIR}/boot/extlinux.conf" "${BINARIES_DIR}/boot/boot/extlinux.conf" || exit 1
 	cp "${BOARD_DIR}/boot/boot.ini" "${BINARIES_DIR}/boot/boot.ini" || exit 1
