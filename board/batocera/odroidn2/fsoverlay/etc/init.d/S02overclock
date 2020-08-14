@@ -12,6 +12,10 @@ do_overclock_n2plus() {
     echo "$2" > /sys/devices/system/cpu/cpu3/cpufreq/scaling_max_freq
     echo "$2" > /sys/devices/system/cpu/cpu4/cpufreq/scaling_max_freq
     echo "$2" > /sys/devices/system/cpu/cpu5/cpufreq/scaling_max_freq
+
+    # disable low cores
+    echo "0" > /sys/devices/system/cpu/cpu0/online
+    echo "0" > /sys/devices/system/cpu/cpu1/online
 }
 
 MODEL=$(cat /sys/firmware/devicetree/base/model)
