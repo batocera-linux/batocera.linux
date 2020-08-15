@@ -1,0 +1,118 @@
+diff --git a/Source/Core/Core/HW/GCPadEmu.cpp b/Source/Core/Core/HW/GCPadEmu.cpp
+index c8e7016..fb089c4 100644
+--- a/Source/Core/Core/HW/GCPadEmu.cpp
++++ b/Source/Core/Core/HW/GCPadEmu.cpp
+@@ -26,6 +26,7 @@ static const u16 button_bitmasks[] = {
+     PAD_BUTTON_Y,
+     PAD_TRIGGER_Z,
+     PAD_BUTTON_START,
++    PAD_BUTTON_HOTKEY,
+     0  // MIC HAX
+ };
+ 
+@@ -37,7 +38,7 @@ static const u16 trigger_bitmasks[] = {
+ static const u16 dpad_bitmasks[] = {PAD_BUTTON_UP, PAD_BUTTON_DOWN, PAD_BUTTON_LEFT,
+                                     PAD_BUTTON_RIGHT};
+ 
+-static const char* const named_buttons[] = {"A", "B", "X", "Y", "Z", "Start"};
++static const char* const named_buttons[] = {"A", "B", "X", "Y", "Z", "Start", "Hotkey"};
+ 
+ static const char* const named_triggers[] = {
+     // i18n: The left trigger button (labeled L on real controllers)
+diff --git a/Source/Core/DolphinNoGUI/PlatformDRM.cpp b/Source/Core/DolphinNoGUI/PlatformDRM.cpp
+index b210cea..77d4e86 100644
+--- a/Source/Core/DolphinNoGUI/PlatformDRM.cpp
++++ b/Source/Core/DolphinNoGUI/PlatformDRM.cpp
+@@ -11,6 +11,12 @@
+ #include "Core/Core.h"
+ #include "Core/State.h"
+ 
++#include "Core/HW/GCPad.h"
++#include "InputCommon/GCPadStatus.h"
++#include <fmt/format.h>
++#include "Core/Config/GraphicsSettings.h"
++#include "VideoCommon/VideoConfig.h"
++
+ #include <climits>
+ #include <cstdio>
+ 
+@@ -54,9 +60,67 @@ void PlatformDRM::MainLoop()
+ {
+   while (IsRunning())
+   {
++    static int hotkey = 0;
++    static int slot = 0;
++    static int stereo = 0;
++
+     UpdateRunningFlag();
+     Core::HostDispatchJobs();
+ 
++    if(Pad::IsInitialized()) {
++      GCPadStatus x = Pad::GetStatus(0);
++
++      if( (x.button & PAD_BUTTON_HOTKEY) == PAD_BUTTON_HOTKEY) { // hotkey pressed
++	if(hotkey == 1) {
++	  hotkey = 2;
++	}
++      } else {
++	hotkey = 1; // assure hotkey is released between actions
++      }
++
++      if(hotkey == 2) { // hotkey pressed
++	if( (x.button & PAD_BUTTON_START) == PAD_BUTTON_START) {
++	  RequestShutdown();
++	  hotkey = 0;
++	}
++
++	if( (x.button & PAD_BUTTON_Y) == PAD_BUTTON_Y) {
++	  State::Load(slot);
++	  hotkey = 0;
++	}
++	if( (x.button & PAD_BUTTON_X) == PAD_BUTTON_X) {
++	  State::Save(slot);
++	  hotkey = 0;
++	}
++	if( (x.button & PAD_BUTTON_DOWN) == PAD_BUTTON_DOWN) {
++	  if(slot > 0) slot--;
++	  Core::DisplayMessage(fmt::format("Slot {} selected", slot), 4000);
++	  hotkey = 0;
++	}
++	if( (x.button & PAD_BUTTON_UP) == PAD_BUTTON_UP) {
++	  if(slot < 10) slot++;
++	  Core::DisplayMessage(fmt::format("Slot {} selected", slot), 4000);
++	  hotkey = 0;
++	}
++	if( (x.button & PAD_TRIGGER_L) == PAD_TRIGGER_L) {
++	  Core::SaveScreenShot();
++	  hotkey = 0;
++	}
++	if( (x.button & PAD_TRIGGER_R) == PAD_TRIGGER_R) {
++	  if(stereo == 0) {
++	    Config::SetCurrent(Config::GFX_STEREO_MODE, StereoMode::SBS);
++	    stereo = 1;
++	  } else {
++	    Config::SetCurrent(Config::GFX_STEREO_MODE, StereoMode::Off);
++	    stereo = 0;
++	  }
++	  hotkey = 0;
++	}
++      }
++
++    }
++    //
++
+     // TODO: Is this sleep appropriate?
+     std::this_thread::sleep_for(std::chrono::milliseconds(1));
+   }
+diff --git a/Source/Core/InputCommon/GCPadStatus.h b/Source/Core/InputCommon/GCPadStatus.h
+index 7da1bbd..57d294d 100644
+--- a/Source/Core/InputCommon/GCPadStatus.h
++++ b/Source/Core/InputCommon/GCPadStatus.h
+@@ -27,6 +27,7 @@ enum PadButton
+   PAD_BUTTON_X = 0x0400,
+   PAD_BUTTON_Y = 0x0800,
+   PAD_BUTTON_START = 0x1000,
++  PAD_BUTTON_HOTKEY = 0x2000,
+ };
+ 
+ struct GCPadStatus

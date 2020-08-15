@@ -165,7 +165,7 @@ def generateControllerConfig_gamecube(playersControllers,rom):
         'pageup': 'Triggers/L', 'pagedown': 'Triggers/R',
         'up': 'D-Pad/Up', 'down': 'D-Pad/Down', 'left': 'D-Pad/Left', 'right': 'D-Pad/Right',
         'joystick1up': 'Main Stick/Up', 'joystick1left': 'Main Stick/Left',
-        'joystick2up': 'C-Stick/Up',    'joystick2left': 'C-Stick/Left'
+        'joystick2up': 'C-Stick/Up',    'joystick2left': 'C-Stick/Left', 'hotkey': 'Buttons/Hotkey'
     }
     gamecubeReverseAxes = {
         'Main Stick/Up':   'Main Stick/Down',
