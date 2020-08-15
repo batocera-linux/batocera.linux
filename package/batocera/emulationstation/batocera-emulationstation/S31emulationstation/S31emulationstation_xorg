@@ -1,7 +1,11 @@
 #!/bin/sh
 
-# xorg driver preferences
-export MESA_LOADER_DRIVER_OVERRIDE=i965
+# intel-iris-driver
+if ! grep -qE "^[ ]*intel-iris-driver[ ]*=[ ]*true[ ]*$" /boot/batocera-boot.conf
+then
+    # Force use i965 driver through global environment variable
+    export MESA_LOADER_DRIVER_OVERRIDE=i965
+fi
 # ### #
 
 case "$1" in
