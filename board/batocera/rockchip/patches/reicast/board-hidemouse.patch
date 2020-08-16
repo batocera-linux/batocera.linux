@@ -1,12 +1,11 @@
-diff --git a/core/sdl/sdl.cpp b/core/sdl/sdl.cpp
-index 85bbbba..3961461 100644
---- a/core/sdl/sdl.cpp
-+++ b/core/sdl/sdl.cpp
-@@ -218,6 +218,7 @@ void sdl_window_create()
- 			die("error initializing SDL Joystick subsystem");
- 		}
+--- a/libswirl/sdl/sdl.cpp	2020-08-13 20:44:53.038369890 +0200
++++ b/libswirl/sdl/sdl.cpp	2020-08-13 20:44:49.614304811 +0200
+@@ -237,6 +237,8 @@
  	}
-+	SDL_ShowCursor(SDL_DISABLE);
  
+ 
++	SDL_ShowCursor(SDL_DISABLE);
++
  	int window_width  = cfgLoadInt("x11","width", WINDOW_WIDTH);
  	int window_height = cfgLoadInt("x11","height", WINDOW_HEIGHT);
+ 

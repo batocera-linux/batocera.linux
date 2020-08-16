@@ -1,27 +1,25 @@
-diff --git a/core/oslib/audiobackend_alsa.cpp b/core/oslib/audiobackend_alsa.cpp
-index 25fa113..37fa913 100644
---- a/core/oslib/audiobackend_alsa.cpp
-+++ b/core/oslib/audiobackend_alsa.cpp
-@@ -5,6 +5,18 @@
- 
- snd_pcm_t *handle;
+--- a/libswirl/oslib/audiobackend_alsa.cpp	2020-08-13 20:39:34.132305159 +0200
++++ b/libswirl/oslib/audiobackend_alsa.cpp	2020-08-13 20:41:03.017996223 +0200
+@@ -14,6 +14,18 @@
+ static snd_pcm_uframes_t buffer_size;
+ static snd_pcm_uframes_t period_size;
  
 +static bool find_float_format(snd_pcm_t *pcm, void *data)
 +{
-+   snd_pcm_hw_params_t *params = (snd_pcm_hw_params_t*)data;
++	snd_pcm_hw_params_t *params = (snd_pcm_hw_params_t*)data;
 +
-+   if (snd_pcm_hw_params_test_format(pcm, params, SND_PCM_FORMAT_FLOAT) == 0)
-+   {
-+      return true;
-+   }
-+
-+   return false;
++	if (snd_pcm_hw_params_test_format(pcm, params, SND_PCM_FORMAT_FLOAT) == 0)
++	{
++		return true;
++	}
++	return false;
 +}
 +
++
  // We're making these functions static - there's no need to pollute the global namespace
- static void alsa_init()
+ static void alsa_init(audio_backend_pull_callback_t pull_callback)
  {
-@@ -56,6 +68,8 @@ static void alsa_init()
+@@ -76,6 +88,8 @@
  	/* Allocate a hardware parameters object. */
  	snd_pcm_hw_params_alloca(&params);
  
@@ -30,7 +28,7 @@ index 25fa113..37fa913 100644
  	/* Fill it in with default values. */
  	rc=snd_pcm_hw_params_any(handle, params);
  	if (rc < 0)
-@@ -75,7 +89,7 @@ static void alsa_init()
+@@ -95,7 +109,7 @@
  	}
  
  	/* Signed 16-bit little-endian format */
@@ -38,4 +36,4 @@ index 25fa113..37fa913 100644
 +	rc=snd_pcm_hw_params_set_format(handle, params, format);
  	if (rc < 0)
  	{
- 		fprintf(stderr, "Error:snd_pcm_hw_params_set_format %s\n", snd_strerror(rc));
+ 		fprintf(stderr, "ALSA: Error:snd_pcm_hw_params_set_format %s\n", snd_strerror(rc));
