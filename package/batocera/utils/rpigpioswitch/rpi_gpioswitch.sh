@@ -14,6 +14,7 @@
 #v1.4 - add RETROFLAG_ADV advanced reset script for NESPi+, MegaPi and SuperPi
 #v1.5 - add KINTARO for Kintaro/Roshambo cases
 #v1.6 - add ARGONONE for Rpi4 Argon One case fan control - @lbrpdx
+#v1.7 - add NESPI4 support - @lala
 #by cyperghost 11.11.2019
 
 #dialog for selecting your switch or power device
@@ -152,8 +153,8 @@ function onoffshim_start()
     #Check if dtooverlay is setted in /boot/config
     #This is needed to do proper restarts/shutdowns
     if ! grep -q "^dtoverlay=gpio-poweroff,gpiopin=$2,active_low=1,input=1" "/boot/config.txt"; then
-         mount -o remount, rw /boot
-         echo "dtoverlay=gpio-poweroff,gpiopin=$2,active_low=1,input=1" >> "/boot/config.txt"
+        mount -o remount, rw /boot
+        echo "dtoverlay=gpio-poweroff,gpiopin=$2,active_low=1,input=1" >> "/boot/config.txt"
     fi
 
     # This is Button command (GPIO17 default)
@@ -329,6 +330,14 @@ function pin56_stop()
 #https://www.retroflag.com
 function retroflag_start()
 {
+    #Check if dtooverlay is setted in /boot/config
+    #This is needed to do proper restarts/shutdowns, GPIO 4 is PowerEN pin
+    if ! grep -q "^dtoverlay=gpio-poweroff,gpiopin=4,active_low=1,input=1" "/boot/config.txt"; then
+        mount -o remount, rw /boot
+        echo "# Overlay setup for proper powercut, needed for Retroflag cases" >> "/boot/config.txt"
+        echo "dtoverlay=gpio-poweroff,gpiopin=4,active_low=1,input=1" >> "/boot/config.txt"
+    fi
+
     #$1 = rpi-retroflag-SafeShutdown/rpi-retroflag-GPiCase/rpi-retroflag-AdvancedSafeShutdown
     "$1" &
     pid=$!
