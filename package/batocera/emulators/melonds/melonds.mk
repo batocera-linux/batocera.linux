@@ -4,12 +4,12 @@
 #
 ################################################################################
 # Version.: Commits on Jul 08, 2020
-MELONDS_VERSION = 3827fa562fc67ae25c152a8c861c4671a68a1ccb
+MELONDS_VERSION = 4cefff25282fa041dca4b66342ca169b50621959
 MELONDS_SITE = https://github.com/Arisotura/melonDS.git
 MELONDS_SITE_METHOD=git
 MELONDS_GIT_SUBMODULES=YES
 MELONDS_LICENSE = GPLv2
-MELONDS_DEPENDENCIES = sdl2 qt5base
+MELONDS_DEPENDENCIES = sdl2 qt5base slirp
 
 # Should be set when the package cannot be built inside the source tree but needs a separate build directory.
 MELONDS_SUPPORTS_IN_SOURCE_BUILD = NO
