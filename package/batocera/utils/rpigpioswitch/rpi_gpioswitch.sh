@@ -330,13 +330,16 @@ function pin56_stop()
 #https://www.retroflag.com
 function retroflag_start()
 {
-    #Check if dtooverlay is setted in /boot/config
-    #This is needed to do proper restarts/shutdowns, GPIO 4 is PowerEN pin
-    if ! grep -q "^dtoverlay=gpio-poweroff,gpiopin=4,active_low=1,input=1" "/boot/config.txt"; then
-        mount -o remount, rw /boot
-        echo "# Overlay setup for proper powercut, needed for Retroflag cases" >> "/boot/config.txt"
-        echo "dtoverlay=gpio-poweroff,gpiopin=4,active_low=1,input=1" >> "/boot/config.txt"
-    fi
+    #Check if dtooverlay is setted in /boot/config -- Do this arch related!
+    case $(cat /usr/share/batocera/batocera.arch) in
+        rpi4)
+            if ! grep -q "^dtoverlay=gpio-poweroff,gpiopin=4,active_low=1,input=1" "/boot/config.txt"; then
+                mount -o remount, rw /boot
+                echo "# Overlay setup for proper powercut, needed for Retroflag cases" >> "/boot/config.txt"
+                echo "dtoverlay=gpio-poweroff,gpiopin=4,active_low=1,input=1" >> "/boot/config.txt"
+            fi
+        ;;
+    esac
 
     #$1 = rpi-retroflag-SafeShutdown/rpi-retroflag-GPiCase/rpi-retroflag-AdvancedSafeShutdown
     "$1" &
