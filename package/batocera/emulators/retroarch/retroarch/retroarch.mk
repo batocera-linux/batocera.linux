@@ -196,7 +196,7 @@ ifeq ($(BR2_ARM_CPU_HAS_NEON),y)
 endif
 
 ifeq ($(BR2_PACKAGE_RPI_USERLAND),y)
-	LIBRETRO_PLATFORM += rpi
+	LIBRETRO_PLATFORM += rpi armv
 endif
 
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI2),y)
