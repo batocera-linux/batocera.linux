@@ -582,17 +582,17 @@ case "${BATOCERA_TARGET}" in
 	VIM3)
 	BOARD_DIR="${BATO_DIR}/vim3"
 	# /boot
-	rm -rf "${BINARIES_DIR}/boot"            || exit 1
-	mkdir -p "${BINARIES_DIR}/boot/boot"     || exit 1
+	rm -rf "${BINARIES_DIR}/boot"                 || exit 1
+	mkdir -p "${BINARIES_DIR}/boot/boot/extlinux" || exit 1
 	cp "${BINARIES_DIR}/Image"                             "${BINARIES_DIR}/boot/boot/linux"                            || exit 1
 	cp "${BINARIES_DIR}/initrd.gz"                         "${BINARIES_DIR}/boot/boot/initrd.gz"                        || exit 1
 	cp "${BINARIES_DIR}/rootfs.squashfs"                   "${BINARIES_DIR}/boot/boot/batocera.update"                  || exit 1
 	cp "${BINARIES_DIR}/meson-g12b-a311d-khadas-vim3.dtb"  "${BINARIES_DIR}/boot/boot/meson-g12b-a311d-khadas-vim3.dtb" || exit 1
 	cp "${BINARIES_DIR}/batocera-boot.conf"                "${BINARIES_DIR}/boot/batocera-boot.conf"                    || exit 1
 	cp "${BINARIES_DIR}/boot.scr"                          "${BINARIES_DIR}/boot/boot.scr"                              || exit 1
-	cp "${BOARD_DIR}/boot/logo.bmp"      "${BINARIES_DIR}/boot/boot/logo.bmp"      || exit 1
-	cp "${BOARD_DIR}/boot/extlinux.conf" "${BINARIES_DIR}/boot/boot/extlinux.conf" || exit 1
-	cp -pr "${BINARIES_DIR}/tools"       "${BINARIES_DIR}/boot/"                || exit 1
+	cp "${BOARD_DIR}/boot/logo.bmp"                        "${BINARIES_DIR}/boot/boot/logo.bmp"                         || exit 1
+	cp "${BOARD_DIR}/boot/extlinux.conf"                   "${BINARIES_DIR}/boot/boot/extlinux/extlinux.conf"           || exit 1
+	cp -pr "${BINARIES_DIR}/tools"                         "${BINARIES_DIR}/boot/"                                      || exit 1
 
 	# boot.tar.xz
 	echo "creating boot.tar.xz"
