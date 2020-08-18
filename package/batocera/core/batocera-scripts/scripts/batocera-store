@@ -3,17 +3,30 @@
 ACTION=$1
 shift
 
+#Started from Terminal/SSH or from Emulationstation?
+[ -t 1 ] && TERMINAL=1 || TERMINAL=0
+
 case "${ACTION}" in
     "install")
 	PKG=$1
 	pacman --noconfirm -S "${PKG}"
+	if [ $? -eq 1 ]; then
+            sleep 1
+            pgrep pacman >/dev/null || rm -f /userdata/system/pacman/db/db.lck
+        fi
 	;;
     "remove")
 	PKG=$1
 	pacman --noconfirm -R "${PKG}"
 	;;
     "list")
-	pacman --noconfirm -Ss --xml
+	if test ! -e /userdata/system/pacman/db/sync/batocera.db
+	then
+	    pacman --noconfirm -Syu
+	fi
+	[ $TERMINAL -eq 1 ] && pacman --noconfirm -Ss --xml | xmllint --xpath "//package/name/text()" -
+        [ $TERMINAL -eq 0 ] && pacman --noconfirm -Ss --xml
+
 	;;
     "update")
 	pacman --noconfirm -Syu
