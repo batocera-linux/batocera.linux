@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # intel-iris-driver
-if ! grep -qE "^[ ]*intel-iris-driver[ ]*=[ ]*true[ ]*$" /boot/batocera-boot.conf
+if grep -qE "^[ ]*intel-i965-driver[ ]*=[ ]*true[ ]*$" /boot/batocera-boot.conf
 then
     # Force use i965 driver through global environment variable
     export MESA_LOADER_DRIVER_OVERRIDE=i965
