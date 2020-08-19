@@ -19,6 +19,9 @@ def setMupenConfig(iniConfig, system, controllers, gameResolution):
 	iniConfig.set("Core", "SaveSRAMPath",   batoceraFiles.mupenSaves)
 	iniConfig.set("Core", "SharedDataPath", batoceraFiles.mupenConf)
 
+	# disable AUDIO_SYNC while it causes issues
+	iniConfig.set("Audio-SDL", "AUDIO_SYNC", "False")
+
 	# resolution
 	if not iniConfig.has_section("Video-General"):
 		iniConfig.add_section("Video-General")
@@ -47,7 +50,7 @@ def setMupenConfig(iniConfig, system, controllers, gameResolution):
 	else:
 		iniConfig.set("Video-GLideN64", "AspectRatio", "1")
 
-    # Rice
+	# Rice
 	if not iniConfig.has_section("Video-Rice"):
 			iniConfig.add_section("Video-Rice")
 
