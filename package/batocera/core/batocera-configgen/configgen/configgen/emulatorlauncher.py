@@ -24,8 +24,12 @@ from generators.fsuae.fsuaeGenerator import FsuaeGenerator
 from generators.amiberry.amiberryGenerator import AmiberryGenerator
 from generators.citra.citraGenerator import CitraGenerator
 from generators.daphne.daphneGenerator import DaphneGenerator
+from generators.cannonball.cannonballGenerator import CannonballGenerator
 from generators.openbor.openborGenerator import OpenborGenerator
 from generators.wine.wineGenerator import WineGenerator
+from generators.cemu.cemuGenerator import CemuGenerator
+from generators.melonds.melondsGenerator import MelonDSGenerator
+from generators.rpcs3.rpcs3Generator import Rpcs3Generator
 import controllersConfig as controllers
 import signal
 import batoceraFiles
@@ -54,8 +58,12 @@ generators = {
     'ppsspp': PPSSPPGenerator(),
     'citra' : CitraGenerator(),
     'daphne' : DaphneGenerator(),
+    'cannonball' : CannonballGenerator(),
     'openbor' : OpenborGenerator(),
-    'wine' : WineGenerator()
+    'wine' : WineGenerator(),
+    'cemu' : CemuGenerator(),
+    'melonds' : MelonDSGenerator(),
+    'rpcs3' : Rpcs3Generator()
 }
 
 def main(args, maxnbplayers):

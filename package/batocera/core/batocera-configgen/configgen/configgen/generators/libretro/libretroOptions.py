@@ -3,6 +3,7 @@ import sys
 import os
 import ConfigParser
 from settings.unixSettings import UnixSettings
+import batoceraFiles
 
 def generateCoreSettings(retroarchCore, system):
     # retroarch-core-options.cfg
@@ -43,7 +44,12 @@ def generateCoreSettings(retroarchCore, system):
             coreSettings.save('bluemsx_msxtype', '"MSX2+"')
         elif (system.name == 'msxturbor'):
             coreSettings.save('bluemsx_msxtype', '"MSXturboR"')
-        
+
+    if (system.config['core'] == 'citra'):
+        if not os.path.exists(batoceraFiles.CONF + "/retroarch/3ds.cfg"):
+            f = open(batoceraFiles.CONF + "/retroarch/3ds.cfg", "w")
+            f.write("video_driver = \"glcore\"\n")
+            f.close()
 
     if (system.config['core'] == 'tgbdual'):
         coreSettings.save('tgbdual_audio_output',       '"Game Boy #1"')
@@ -149,6 +155,23 @@ def generateCoreSettings(retroarchCore, system):
 
     if (system.config['core'] == 'px68k'):
         coreSettings.save('px68k_disk_path', '"disabled"')
+
+    if (system.config['core'] == 'mednafen_psx'):
+        # internal resolution
+        if system.isOptSet('internal_resolution'):
+            coreSettings.save("beetle_psx_hw_internal_resolution", system.config["internal_resolution"])
+        else:
+            coreSettings.save("beetle_psx_hw_internal_resolution", "1x(native)")
+        # texture filtering
+        if system.isOptSet('texture_filtering'):
+            coreSettings.save("beetle_psx_hw_filter", system.config["texture_filtering"])
+        else:
+            coreSettings.save("beetle_psx_hw_filter", "nearest")
+        # widescreen hack
+        if system.isOptSet('widescreen_hack'):
+            coreSettings.save("beetle_psx_hw_widescreen_hack", system.config["widescreen_hack"])
+        else:
+            coreSettings.save("beetle_psx_hw_widescreen_hack", "disabled")
 
     if (system.config['core'] == 'pcsx_rearmed'):
         for n in range(1, 8+1):

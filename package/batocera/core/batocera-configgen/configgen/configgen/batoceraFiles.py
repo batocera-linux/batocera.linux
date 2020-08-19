@@ -30,11 +30,12 @@ batoceraBins = {'dosbox'      : '/usr/bin/dosbox'
               , 'vice'        : '/usr/bin/'
               , 'fsuae'       : '/usr/bin/fs-uae'
               , 'amiberry'    : '/usr/bin/amiberry'
-              , 'dolphin'     : '/usr/bin/dolphin-emu'
               , 'pcsx2'       : '/usr/PCSX/bin/PCSX2'
               , 'pcsx2_avx2'  : '/usr/PCSX_AVX2/bin/PCSX2'
               , 'citra'       : '/usr/bin/citra-qt'
-              , 'daphne'       : '/usr/bin/hypseus'
+              , 'daphne'      : '/usr/bin/hypseus'
+              , 'melonds'     : '/usr/bin/melonDS'
+              , 'rpcs3'       : '/usr/bin/rpcs3'
 }
 
 
@@ -136,3 +137,16 @@ flycastBios = BIOS
 flycastVMUBlank = '/usr/lib/python2.7/site-packages/configgen/datainit/dreamcast/vmu_save_blank.bin'
 flycastVMUA1 = flycastSaves + '/flycast/vmu_save_A1.bin'
 flycastVMUA2 = flycastSaves + '/flycast/vmu_save_A2.bin'
+
+cemuConfig = CONF + '/cemu/config.ini'
+cemuHomedir = ROMS + '/wiiu'
+cemuDatadir = '/usr/cemu'
+cemuSaves = SAVES + '/cemu'
+
+rpcs3Config = CONF
+rpcs3Homedir = ROMS + '/ps3'
+rpcs3Saves = SAVES
+rpcs3CurrentConfig = CONF + '/rpcs3/GuiConfigs/CurrentSettings.ini'
+rpcs3config = CONF + '/rpcs3/config.yml'
+rpcs3configInput = CONF + '/rpcs3/config_input.yml'
+rpcs3configevdev = CONF + '/rpcs3/InputConfigs/Evdev/Default Profile.yml'

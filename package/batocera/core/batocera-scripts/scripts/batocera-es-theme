@@ -27,6 +27,7 @@ function usage() {
 	echo "- 'list' for the list of themes available online, and if they are"
 	echo "   [A]vailable to install, [I]nstalled or [?]unknown."
 	echo "- 'install <theme>' to install the theme, from its theme name."
+	echo "- 'remove <theme>' to delete an installed theme."
 	echo " "
 	echo "If you have a local $LOCALTHEMESLIST file,"
 	echo "it will override the one hosted on Batocera website."
@@ -169,6 +170,38 @@ function install_theme() {
 	fi
 }
 
+###############################
+#
+function remove_theme() {
+	theme="$1"
+	success_removed=0
+	fn=$(date +"%s")
+	tmp="/tmp/themes_$fn"
+	if [ -f $LOCALTHEMESLIST ]; then
+		cp -f "$LOCALTHEMESLIST" "$tmp"
+	else
+		curl -sfL "$THEMESLIST" -o "$tmp" || exit 1
+	fi
+	while IFS=$' \t' read name url ; do
+		[ x"$name" != x"$theme" ] && continue 
+		gitname=$(git_name "$url")
+		if [ -d "$CONFIGDIR"/"$gitname" ]; then
+		       	rm -rf "$CONFIGDIR"/"$gitname" && success_removed=1
+		else
+			echo "Theme $theme doesn't appear to be in $CONFIGDIR/$gitname"
+		fi
+	done < "$tmp"
+	rm "$tmp"
+	if [ "$success_removed" == 1 ]; then
+		[ $TERMINAL = 1 ] && echo -e "Theme $theme removed from:\t$CONFIGDIR/$gitname"
+		[ $TERMINAL = 0 ] && echo "Theme ${theme^^} is now removed >>>100"
+		exit 0
+	else
+		echo "Error - theme $theme could not be removed"
+		exit 1
+	fi
+}
+
 #### Main loop
 #
 command="$1"
@@ -185,6 +218,8 @@ if [ x"$command" == "xlist" ]; then
 	list_themes
 elif [ x"$command" == "xinstall" ]; then
 	[ x"$theme" != "x" ] && install_theme $theme || usage
+elif [ x"$command" == "xremove" ]; then
+	[ x"$theme" != "x" ] && remove_theme $theme || usage
 else 
 	usage	
 fi

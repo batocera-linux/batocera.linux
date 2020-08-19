@@ -19,7 +19,7 @@ index c6e75bd74..8da13d151 100644
 +	FORCE_GLES = 1
 +	USE_AARCH64_DRC = 1
 +	DYNAREC_DEVMIYAX = 1
-+	FLAGS += -march=armv8-a+crc -mtune=cortex-a53 -mfloat-abi=hard -mfpu=neon-fp-armv8 -mvectorize-with-neon-quad
++	FLAGS += -DAARCH64
  
  # Amlogic S922X Odroid-N2 / A311D Khadas VIM3 (AMLG12B) - 32-bit userspace
  else ifneq (,$(findstring AMLG12B,$(platform)))

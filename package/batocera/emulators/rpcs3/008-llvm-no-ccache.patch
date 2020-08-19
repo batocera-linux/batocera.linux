@@ -1,0 +1,10 @@
+--- a/3rdparty/llvm.cmake	2020-07-21 19:43:05.695354255 +0200
++++ b/3rdparty/llvm.cmake	2020-07-21 19:43:10.951430148 +0200
+@@ -12,7 +12,7 @@
+ 		option(LLVM_INCLUDE_TOOLS OFF)
+ 		option(LLVM_INCLUDE_UTILS OFF)
+ 		option(WITH_POLLY OFF)
+-		option(LLVM_CCACHE_BUILD ON)
++		option(LLVM_CCACHE_BUILD OFF)
+ 
+ 		set(CXX_FLAGS_OLD ${CMAKE_CXX_FLAGS})

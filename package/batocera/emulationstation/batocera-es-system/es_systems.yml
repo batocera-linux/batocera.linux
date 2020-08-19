@@ -210,6 +210,8 @@ nds:
   emulators:
     libretro:
       desmume: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_DESMUME] }
+    melonds:
+      melonds: { requireAnyOf: [BR2_PACKAGE_MELONDS] }
 
 fds:
   name:       Family Computer Disk System
@@ -428,14 +430,14 @@ scummvm:
   comment_en: |
     Put scummvm games foders in this folder.
 
-    For each game, you must create a file named from the short name of the game and with the extension ".7z .svm .scummvm .residualvm .zip"
+    For each game, you must create a file named from the short name of the game and with the extension ".scummvm"
 
     Short game names can be found at http://scummvm.org/compatibility/
     For example, for "Broken Sword" create the file "Broken Sword/sword1.scummvm"
   comment_fr: |
     Placez les dossiers de jeux scummvm dans ce dossier.
 
-    Pour chaque jeu, dans son repertoire, vous devez creer un fichier portant le nom court du jeu et finissant par ".7z .svm .scummvm .residualvm .zip"
+    Pour chaque jeu, dans son repertoire, vous devez creer un fichier portant le nom court du jeu et finissant par ".scummvm"
 
     Vous trouverez les noms courts a l'adresse : http://scummvm.org/compatibility/
     Par exemple pour "Les Chevaliers de Baphomet" creez le fichier "Les Chevaliers de Baphomet/sword1.scummvm"
@@ -749,6 +751,21 @@ mrboom:
   emulators:
     libretro:
       mrboom: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MRBOOM] }
+
+cannonball:
+  name:       Cannonball
+  manufacturer: Ports
+  release:
+  hardware: port
+  extensions: [cannonball]
+  group: ports
+  emulators:
+    cannonball:
+      cannonball: { requireAnyOf: [BR2_PACKAGE_CANNONBALL] }
+  comment_en: |
+    Add your bios and rename Cannonball.cannonball.disabled to Cannonball.cannonball.
+  comment_fr: |
+    Ajoutez vos bios et renommez Cannonball.cannonball.disabled en Cannonball.cannonball.
 
 vectrex:
   name:       Vectrex
@@ -1122,7 +1139,7 @@ gamecube:
   manufacturer: Nintendo
   release: 2001
   hardware: console
-  extensions: [gcm, iso, gcz, ciso, wbfs]
+  extensions: [gcm, iso, gcz, ciso, wbfs, rvz]
   platform:   gc
   theme:      gc
   emulators:
@@ -1134,7 +1151,7 @@ wii:
   manufacturer: Nintendo
   release: 2006
   hardware: console
-  extensions: [gcm, iso, gcz, ciso, wbfs, wad]
+  extensions: [gcm, iso, gcz, ciso, wbfs, wad, rvz]
   emulators:
     dolphin:
       dolphin:  { requireAnyOf: [BR2_PACKAGE_DOLPHIN_EMU]       }
@@ -1150,16 +1167,27 @@ wii:
         par exemple, pour jouer à mariokart wii, renommer le jeu en mario_kart.side.ti.iso (vous aurez le tilt sur le 1er axe et l'infrarouge sur le 2e (ti))
         par exemple, pour jouer à mario galaxy, renommer le jeu en mario_galaxy.ni.iso (vous aurez le nunchuk sur le 1er axe et l'infrarouge sur le 2e (ni))
     Mettez les textures personnalisées dans /userdata/saves/dolphin-emu/Load/Textures/<game id>.
+
 ps2:
   name:       Sony Playstation 2
   manufacturer: Sony
   release: 2000
   hardware: console
   extensions: [iso, mdf, nrg, bin, img, dump, gz, cso]
-  includeEmulators: no
   emulators:
     pcsx2:
       pcsx2: { requireAnyOf: [BR2_PACKAGE_PCSX2, BR2_PACKAGE_PCSX2_AVX2, BR2_PACKAGE_PCSX2_X86] }
+
+ps3:
+  name:       Sony Playstation 3
+  manufacturer: Sony
+  release: 2006
+  hardware: console
+  extensions: [ps3]
+  emulators:
+    rpcs3:
+      rpcs3: { requireAnyOf: [BR2_PACKAGE_RPCS3] }
+
 
 3do:
   name:       3DO Interactive Multiplayer
@@ -1357,6 +1385,18 @@ windows_installers:
   emulators:
     wine:
       wine:  { requireAnyOf: [BR2_PACKAGE_WINE] }
+
+wiiu:
+  name:       Wii U
+  manufacturer: Nintendo
+  release: 2012
+  hardware: console
+  extensions: [wup, wud, wux]
+  platform:   wiiu
+  theme:      wiiu
+  emulators:
+    cemu:
+      cemu:  { requireAnyOf: [BR2_PACKAGE_BATOCERA_CEMU] }
 
 imageviewer:
   name:       Screenshots

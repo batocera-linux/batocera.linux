@@ -1,0 +1,38 @@
+#!/bin/bash
+
+test "${1}" = "start" || exit 0
+
+OVALUE=$(grep -E '^[ ]*overclocking[ ]*=[ ]*.*[ ]*$' /boot/config.ini | sed -e s+"^[ ]*overclocking[ ]*=[ ]*\(.*\)[ ]*$"+"\1"+)
+
+do_overclock_n2plus() {
+    echo "$1" > /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq
+    echo "$1" > /sys/devices/system/cpu/cpu1/cpufreq/scaling_max_freq
+    
+    echo "$2" > /sys/devices/system/cpu/cpu2/cpufreq/scaling_max_freq
+    echo "$2" > /sys/devices/system/cpu/cpu3/cpufreq/scaling_max_freq
+    echo "$2" > /sys/devices/system/cpu/cpu4/cpufreq/scaling_max_freq
+    echo "$2" > /sys/devices/system/cpu/cpu5/cpufreq/scaling_max_freq
+
+    # disable low cores
+    echo "0" > /sys/devices/system/cpu/cpu0/online
+    echo "0" > /sys/devices/system/cpu/cpu1/online
+}
+
+MODEL=$(cat /sys/firmware/devicetree/base/model)
+
+case "${MODEL}" in
+    "Hardkernel ODROID-N2Plus")
+	case "${OVALUE}" in
+	    "extrem")
+		do_overclock_n2plus 2016000 2400000
+		;;
+	    "high")
+		do_overclock_n2plus 1908000 2304000
+		;;
+	    *)
+		# default
+		do_overclock_n2plus 1896000 2208000
+		;;
+	esac
+	;;
+esac

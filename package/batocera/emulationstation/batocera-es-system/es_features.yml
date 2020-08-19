@@ -114,6 +114,29 @@ libretro:
       features: [netplay, rewind, autosave]
     mednafen_psx:
       features: [         rewind, autosave]
+      cfeatures:
+            internal_resolution:
+                prompt: INTERNAL RESOLUTION
+                choices:
+                    "1x(native)": 1x(native)
+                    "2x":         2x
+                    "4x":         4x
+                    "8x":         8x
+                    "16x":        16x
+            texture_filtering:
+                prompt: TEXTURE FILTERING
+                choices:
+                    "Nearest":  nearest
+                    "SABR":     SABR
+                    "xBR":      xBR
+                    "Bilinear": bilinear
+                    "3-Point":  3-point
+                    "JINC2":    JINC2
+            widescreen_hack:
+                prompt: WIDESCREEN HACK
+                choices:
+                    "Off": disabled
+                    "On":  enabled
     mednafen_supergrafx:
       features: [netplay, rewind, autosave]
     mednafen_wswan:
@@ -252,6 +275,16 @@ dolphin:
             choices:
                 "Off": 0
                 "On":  1
+        vsync:
+            prompt: VSYNC
+            choices:
+                "Off": 0
+                "On":  1
+        gfxbackend:
+            prompt: GRAPHICS BACKEND
+            choices:
+                "OpenGL": OGL
+                "Vulkan":  Vulkan
 
   systems:
     wii:
@@ -275,7 +308,21 @@ mupen64plus:
   features: [ratio]
 
 pcsx2:
-  features: [ratio, fullboot]
+  features: [ratio, fullboot, internal_resolution]
+  cfeatures:
+        anisotropic_filtering:
+            prompt: ANISOTROPIC FILTERING
+            choices:
+                "Off": 0
+                "2x":  2
+                "4x":  4
+                "8x":  8
+                "16x": 16
+        vsync:
+            prompt: VSYNC
+            choices:
+                "Off": 0
+                "On":  1
 
 ppsspp:
   features: [ratio, internal_resolution]
@@ -318,3 +365,15 @@ openbor:
         ScanLines TV:   9
         TV 2x:         10
         Dot Matrix:    11
+
+cannonball:
+  features: [ratio]
+
+cemu:
+  features: []
+
+melonds:
+  features: []
+
+rpcs3:
+  features: []

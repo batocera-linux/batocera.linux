@@ -7,7 +7,7 @@ EXTRA_PKGS	?=
 
 -include $(LOCAL_MK)
 
-DOCKER_REPO := batocera
+DOCKER_REPO := batoceralinux
 IMAGE_NAME  := batocera.linux-build
 
 TARGETS := $(sort $(shell find $(PROJECT_DIR)/configs/ -name 'b*' | sed -n 's/.*\/batocera-\(.*\)_defconfig/\1/p'))
@@ -62,7 +62,7 @@ ccache-dir:
 		-v /etc/passwd:/etc/passwd:ro \
 		-v /etc/group:/etc/group:ro \
 		-u $(UID):$(GID) \
-		batocera/batocera.linux-build \
+		$(DOCKER_REPO)/$(IMAGE_NAME) \
 		make O=/$* BR2_EXTERNAL=/build -C /build/buildroot clean
 
 %-config: batocera-docker-image %-supported output-dir-%
@@ -77,7 +77,7 @@ ccache-dir:
 		-v /etc/passwd:/etc/passwd:ro \
 		-v /etc/group:/etc/group:ro \
 		-u $(UID):$(GID) \
-		batocera/batocera.linux-build \
+		$(DOCKER_REPO)/$(IMAGE_NAME) \
 		make O=/$* BR2_EXTERNAL=/build -C /build/buildroot batocera-$*_defconfig
 	@mv -f $(PROJECT_DIR)/configs/batocera-$*_defconfig-tmp $(PROJECT_DIR)/configs/batocera-$*_defconfig
 
@@ -91,7 +91,7 @@ ccache-dir:
 		-v /etc/passwd:/etc/passwd:ro \
 		-v /etc/group:/etc/group:ro \
 		$(DOCKER_OPTS) \
-		batocera/batocera.linux-build \
+		$(DOCKER_REPO)/$(IMAGE_NAME) \
 		make O=/$* BR2_EXTERNAL=/build -C /build/buildroot $(CMD)
 
 %-shell: batocera-docker-image %-supported output-dir-%
@@ -104,7 +104,7 @@ ccache-dir:
 		$(DOCKER_OPTS) \
 		-v /etc/passwd:/etc/passwd:ro \
 		-v /etc/group:/etc/group:ro \
-		batocera/batocera.linux-build
+		$(DOCKER_REPO)/$(IMAGE_NAME)
 
 %-cleanbuild: %-clean %-build
 	@echo
@@ -129,8 +129,9 @@ ccache-dir:
 
 %-snapshot:
 	$(if $(shell which btrfs 2>/dev/null),, $(error "btrfs not found!"))
-	@sudo btrfs sub del $(OUTPUT_DIR)/snapshots/$*-toolchain
-		@btrfs subvolume snapshot -r $(OUTPUT_DIR)/$* $(OUTPUT_DIR)/snapshots/$*-toolchain
+	@mkdir -p $(OUTPUT_DIR)/snapshots
+	-@sudo btrfs sub del $(OUTPUT_DIR)/snapshots/$*-toolchain
+	@btrfs subvolume snapshot -r $(OUTPUT_DIR)/$* $(OUTPUT_DIR)/snapshots/$*-toolchain
 
 %-rollback:
 	$(if $(shell which btrfs 2>/dev/null),, $(error "btrfs not found!"))
@@ -141,6 +142,16 @@ ccache-dir:
 	$(if $(DEV),,$(error "DEV not specified!"))
 	@gzip -dc $(OUTPUT_DIR)/$*/images/batocera/batocera-*.img.gz | sudo dd of=$(DEV) bs=5M status=progress
 	@sync
+
+%-upgrade:
+	$(if $(DEV),,$(error "DEV not specified!"))
+	-@sudo umount /tmp/mount
+	-@mkdir /tmp/mount
+	@sudo mount $(DEV)1 /tmp/mount
+	-@sudo rm /tmp/mount/boot/batocera
+	@sudo tar xvf $(OUTPUT_DIR)/$*/images/batocera/boot.tar.xz -C /tmp/mount --no-same-owner
+	@sudo umount /tmp/mount
+	-@rmdir /tmp/mount
 
 %-toolchain:
 	$(if $(shell which btrfs 2>/dev/null),, $(error "btrfs not found!"))

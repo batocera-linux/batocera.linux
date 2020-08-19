@@ -32,11 +32,11 @@ done
 # there are almost empty, it's just for the structure
 # the user can delete the directory, it will recreate the structure
 # the user can delete files, files will not be recreated
-for FILE in music bios extractions kodi saves screenshots \
+for FILE in music bios extractions kodi saves screenshots splash \
             system/.config/lirc/lircd.conf \
             system/configs/emulationstation/{es_input.cfg,es_settings.cfg} \
             system/.kodi \
-            system/configs/{shadersets,xarcade2jstick,amiberry,dosbox,mupen64,ppsspp} \
+            system/configs/{shadersets,xarcade2jstick,amiberry,dosbox,mupen64,ppsspp,cannonball} \
             system/batocera.conf \
             system/pacman/hooks/batocera-{install,uninstall}.hook \
             system/pacman/pacman.conf \

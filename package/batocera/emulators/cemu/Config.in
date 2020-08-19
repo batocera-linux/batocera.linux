@@ -1,0 +1,9 @@
+config BR2_PACKAGE_CEMU
+    bool "cemu"
+    depends on BR2_x86_64
+    depends on BR2_PACKAGE_WINE
+
+    help
+      Cemu precompiled for x86_64 running through Wine
+
+      https://cemu.info/

@@ -2,6 +2,7 @@
 
 ARCH=$(cat /usr/share/batocera/batocera.arch)
 GRPICONFFILE="/boot/config.txt"
+GODROIDCONFFILE="/boot/config.ini"
 
 if test "${ARCH}" = "rpi3"
 then
@@ -11,11 +12,11 @@ then
     fi
 fi
 
-preBootRPIConfig() {
+preBootRWConfig() {
     mount -o remount,rw /boot
 }
 
-postBootRPIConfig() {
+postBootRWConfig() {
     mount -o remount,ro /boot
 }
 
@@ -47,28 +48,37 @@ doList() {
 	    echo "none NONE (1500Mhz)"
 	    echo "high HIGH (1700Mhz)"
 	    echo "turbo TURBO (1750Mhz)"
-	;;
+	    ;;
+	"odroidn2")
+	    MODEL=$(cat /sys/firmware/devicetree/base/model)
+	    if test "${MODEL}" = "Hardkernel ODROID-N2Plus"
+	    then
+		echo "none NONE (2200Mhz)"
+		echo "high HIGH (2300Mhz)"
+		echo "extrem EXTREM (2400Mhz)"
+	    fi
+	    ;;
 	*)
 	    echo "none NONE"
     esac
 }
 
 setValue_rpiNone() {
-    preBootRPIConfig || return 1
+    preBootRWConfig || return 1
     for entry in arm_freq core_freq sdram_freq force_turbo over_voltage over_voltage_sdram gpu_freq
     do
 	sed -i "/^${entry}/d" "${GRPICONFFILE}"
     done
-    postBootRPIConfig || return 1
+    postBootRWConfig || return 1
 }
 
 setValue_rpi4None() {
-    preBootRPIConfig || return 1
+    preBootRWConfig || return 1
     for entry in over_voltage arm_freq gpu_freq
     do
 	sed -i "/^${entry}/d" "${GRPICONFFILE}"
     done
-    postBootRPIConfig || return 1
+    postBootRWConfig || return 1
 }
 
 setValue_rpiPutVars() {
@@ -80,7 +90,7 @@ setValue_rpiPutVars() {
     over_voltage_sdram=$6
     gpu_freq=$7
 
-    preBootRPIConfig || return 1
+    preBootRWConfig || return 1
 
     # put variable lines if not existing
     for entry in arm_freq core_freq sdram_freq force_turbo over_voltage over_voltage_sdram gpu_freq
@@ -103,7 +113,7 @@ setValue_rpiPutVars() {
     sed -i "s/#\?over_voltage_sdram=.*/over_voltage_sdram=${over_voltage_sdram}/g" "${GRPICONFFILE}" || return 1
     sed -i "s/#\?gpu_freq=.*/gpu_freq=${gpu_freq}/g"                               "${GRPICONFFILE}" || return 1
 
-    postBootRPIConfig || return 1
+    postBootRWConfig || return 1
 }
 
 setValue_rpi4PutVars() {
@@ -111,7 +121,7 @@ setValue_rpi4PutVars() {
     arm_freq=$2
     gpu_freq=$3
 
-    preBootRPIConfig || return 1
+    preBootRWConfig || return 1
 
     # put variable lines if not existing
     for entry in over_voltage arm_freq gpu_freq
@@ -130,7 +140,30 @@ setValue_rpi4PutVars() {
     sed -i "s/#\?arm_freq=.*/arm_freq=${arm_freq}/g"       "${GRPICONFFILE}" || return 1
     sed -i "s/#\?gpu_freq=.*/gpu_freq=${gpu_freq}/g"       "${GRPICONFFILE}" || return 1
 
-    postBootRPIConfig || return 1
+    postBootRWConfig || return 1
+}
+
+setValue_odroidn2() {
+    VALUE=$1
+
+    preBootRWConfig || return 1
+
+    # put variable lines if not existing
+    for entry in overclocking
+    do
+	if ! grep -q "${entry}" "${GODROIDCONFFILE}"
+	then
+	    if ! echo "${entry}=" >> "${GODROIDCONFFILE}"
+	    then
+		return 1
+	    fi
+	fi
+    done
+
+    # put values
+    sed -i "s/#\?overclocking=.*/overclocking=${VALUE}/g" "${GODROIDCONFFILE}" || return 1
+    
+    postBootRWConfig || return 1
 }
 
 setValue() {
@@ -208,6 +241,13 @@ setValue() {
 		    setValue_rpi4PutVars 4 1750 600
 		    ;;
 	    esac
+	    ;;
+	"odroidn2")
+	    MODEL=$(cat /sys/firmware/devicetree/base/model)
+	    if test "${MODEL}" = "Hardkernel ODROID-N2Plus"
+	    then
+		setValue_odroidn2 "${VALUE}"
+	    fi
 	    ;;
     esac
 }

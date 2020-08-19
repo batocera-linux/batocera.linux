@@ -4,6 +4,7 @@ config BR2_PACKAGE_BATOCERA_SCRIPTS
 	select BR2_PACKAGE_PCIUTILS
 	select BR2_PACKAGE_PYTHON2_GOBJECT
 	select BR2_PACKAGE_PYTHON
+	select BR2_PACKAGE_JQ # for vulkan parsing
 
 	help
 	  Batocera scripts
