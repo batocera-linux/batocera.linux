@@ -20,6 +20,8 @@ def setMupenConfig(iniConfig, system, controllers, gameResolution):
 	iniConfig.set("Core", "SharedDataPath", batoceraFiles.mupenConf)
 
 	# disable AUDIO_SYNC while it causes issues
+	if not iniConfig.has_section("Audio-SDL"):
+		iniConfig.add_section("Audio-SDL")
 	iniConfig.set("Audio-SDL", "AUDIO_SYNC", "False")
 
 	# resolution
