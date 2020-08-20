@@ -21,7 +21,8 @@ if test $# = 0
 then
     X=$(cat /sys/class/backlight/backlight/brightness)
     XMAX=$(cat /sys/class/backlight/backlight/max_brightness)
-    echo $(expr "${X}" "*" "100" / "${XMAX}")
+    FVALUE=$(echo "scale=3;${X}" "*" "100" / "${XMAX}" | bc)
+    LC_ALL=C printf '%.*f\n' 0 "${FVALUE}" # round
     exit 0
 fi
 
