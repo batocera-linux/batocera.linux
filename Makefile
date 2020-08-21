@@ -45,7 +45,7 @@ update-docker-image:
 publish-docker-image:
 	@docker push $(DOCKER_REPO)/$(IMAGE_NAME):latest
 
-output-dir-%:
+output-dir-%: %-supported
 	@mkdir -p $(OUTPUT_DIR)/$*
 
 ccache-dir:
@@ -54,7 +54,7 @@ ccache-dir:
 %-supported:
 	$(if $(findstring $*, $(TARGETS)),,$(error "$* not supported!"))
 
-%-clean: batocera-docker-image %-supported output-dir-%
+%-clean: batocera-docker-image output-dir-%
 	@docker run -it --init --rm \
 		-v $(PROJECT_DIR):/build \
 		-v $(DL_DIR):/build/buildroot/dl \
@@ -65,7 +65,7 @@ ccache-dir:
 		$(DOCKER_REPO)/$(IMAGE_NAME) \
 		make O=/$* BR2_EXTERNAL=/build -C /build/buildroot clean
 
-%-config: batocera-docker-image %-supported output-dir-%
+%-config: batocera-docker-image output-dir-%
 	@cp -f $(PROJECT_DIR)/configs/batocera-$*_defconfig $(PROJECT_DIR)/configs/batocera-$*_defconfig-tmp
 	@for opt in $(EXTRA_OPTS); do \
 		echo $$opt >> $(PROJECT_DIR)/configs/batocera-$*_defconfig ; \
@@ -81,7 +81,7 @@ ccache-dir:
 		make O=/$* BR2_EXTERNAL=/build -C /build/buildroot batocera-$*_defconfig
 	@mv -f $(PROJECT_DIR)/configs/batocera-$*_defconfig-tmp $(PROJECT_DIR)/configs/batocera-$*_defconfig
 
-%-build: batocera-docker-image %-supported %-config ccache-dir
+%-build: batocera-docker-image %-config ccache-dir
 	@docker run -it --rm \
 		-v $(PROJECT_DIR):/build \
 		-v $(DL_DIR):/build/buildroot/dl \
@@ -94,7 +94,7 @@ ccache-dir:
 		$(DOCKER_REPO)/$(IMAGE_NAME) \
 		make O=/$* BR2_EXTERNAL=/build -C /build/buildroot $(CMD)
 
-%-shell: batocera-docker-image %-supported output-dir-%
+%-shell: batocera-docker-image output-dir-%
 	@docker run -it --rm \
 		-v $(PROJECT_DIR):/build \
 		-v $(DL_DIR):/build/buildroot/dl \
@@ -127,23 +127,23 @@ ccache-dir:
 %-tail: output-dir-%
 	@tail -F $(OUTPUT_DIR)/$*/build/build-time.log
 
-%-snapshot:
+%-snapshot: %-supported
 	$(if $(shell which btrfs 2>/dev/null),, $(error "btrfs not found!"))
 	@mkdir -p $(OUTPUT_DIR)/snapshots
 	-@sudo btrfs sub del $(OUTPUT_DIR)/snapshots/$*-toolchain
 	@btrfs subvolume snapshot -r $(OUTPUT_DIR)/$* $(OUTPUT_DIR)/snapshots/$*-toolchain
 
-%-rollback:
+%-rollback: %-supported
 	$(if $(shell which btrfs 2>/dev/null),, $(error "btrfs not found!"))
 	-@sudo btrfs sub del $(OUTPUT_DIR)/$*
 	@btrfs subvolume snapshot $(OUTPUT_DIR)/snapshots/$*-toolchain $(OUTPUT_DIR)/$*
 
-%-flash:
+%-flash: %-supported
 	$(if $(DEV),,$(error "DEV not specified!"))
 	@gzip -dc $(OUTPUT_DIR)/$*/images/batocera/batocera-*.img.gz | sudo dd of=$(DEV) bs=5M status=progress
 	@sync
 
-%-upgrade:
+%-upgrade: %-supported
 	$(if $(DEV),,$(error "DEV not specified!"))
 	-@sudo umount /tmp/mount
 	-@mkdir /tmp/mount
@@ -153,7 +153,7 @@ ccache-dir:
 	@sudo umount /tmp/mount
 	-@rmdir /tmp/mount
 
-%-toolchain:
+%-toolchain: %-supported
 	$(if $(shell which btrfs 2>/dev/null),, $(error "btrfs not found!"))
 	-@sudo btrfs sub del $(OUTPUT_DIR)/$*
 	@btrfs subvolume create $(OUTPUT_DIR)/$*
