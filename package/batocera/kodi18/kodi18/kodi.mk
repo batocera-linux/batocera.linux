@@ -10,7 +10,7 @@ KODI18_VERSION = 18.8-Leia
 KODI18_SITE = $(call github,xbmc,xbmc,$(KODI18_VERSION))
 
 ifeq ($(BR2_PACKAGE_KODI18_PLATFORM_RBPI),y)
-KODI18_VERSION = newclock5_18.7.1-Leia
+KODI18_VERSION = newclock5_18.8-Leia
 KODI18_SITE = $(call github,popcornmix,xbmc,$(KODI18_VERSION))
 endif
 
