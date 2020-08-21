@@ -11,11 +11,11 @@ splash_autoplay ()
     do
         sleep 1
         ((count++))
-        kill -0 $PID &>/dev/null  || { echo "Video finished"; break; }
+        kill -0 $PID &>/dev/null  || break
     done
 }
 
-splash_default ()
+splash_default_rpi ()
 {
     # Stop the video when ready
     # Wait for emulationstation or Kodi, but not more than 20 seconds
@@ -33,6 +33,7 @@ splash_default ()
 INIT_SERVICE=/etc/init.d/S03splash
 SPLASHBOOT=/boot/splash/
 SPLASHUSER=/userdata/splash/
+ARCH=$(cat /usr/share/batocera/batocera.arch)
 
 case $1 in
     start)
@@ -43,19 +44,21 @@ case $1 in
         # unwanted behaviour in splash_autoplay
         [[ $PID == $(pgrep -f "sleep infinity") ]] && picture=1 || picture=0
 
-        # Read Config and do action
+        # Read Config and set some defaults
         splash_setting=$(batocera-settings -command load -key splash.screen.length)
         [[ -z $splash_setting ]] && splash_setting=default
+        [[ ${splash_setting,,} == default && $ARCH =~ rpi(1|2|3) ]] && splash_setting=$ARCH
+            
 
         case ${splash_setting,,} in
-            def*)
-                # Standard BATOCERA setting, fastest boot possible
-                # A video splash will be displayed ~16s on Pi3 platform
+            rpi*)
+                # Standard BATOCERA setting, for Pi platform
+                # A video splash will be displayed ~16s on Pi3 platform you'll smoothly boot into ES
                 #
-                splash_default &
+                splash_default_rpi &
             ;;
-            auto)
-                # Play video as long as possible
+            default|auto)
+                # Play video as long as possible, ideal for fast boards
                 #
                 [[ $picture -eq 0 ]] && splash_autoplay
                 kill -9 $PID
@@ -71,8 +74,8 @@ case $1 in
                 sleep $sleeptimer
                 [[ $picture -eq 1 || ${splash_setting:0:1} != i ]] && kill -9 $PID
             ;;
-            *)
-                # Other settings --> not valid
+            fastboot|*)
+                # fastboot or invalid settings
                 #
                 kill -9 $PID
                 exit 1
