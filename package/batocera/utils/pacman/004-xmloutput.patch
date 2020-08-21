@@ -112,8 +112,8 @@ index 35cfcd9..235f53b 100644
 +		  argz_replace(&protected_string, &n, "<", "&lt;", NULL);
 +		  argz_replace(&protected_string, &n, ">", "&gt;", NULL);
 +		  printf("    <packager>%s</packager>\n",  protected_string);
-+		  printf("    <download_size>%ld</download_size>\n",   alpm_pkg_get_size(pkg));
-+		  printf("    <installed_size>%ld</installed_size>\n", alpm_pkg_get_isize(pkg));
++		  printf("    <download_size>%lld</download_size>\n",   alpm_pkg_get_size(pkg)/1024);
++		  printf("    <installed_size>%lld</installed_size>\n", alpm_pkg_get_isize(pkg)/1024);
 +
 +		  if(installed_pkg == NULL) {
 +		    printf("    <status>none</status>\n");
