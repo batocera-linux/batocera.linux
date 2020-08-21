@@ -54,7 +54,7 @@ class DolphinGenerator(Generator):
         
         # backend - Default
         if system.isOptSet('gfxbackend'):
-            dolphinSettings.set("Core", "GFXBackend", system.getOptBoolean('gfxbackend'))
+            dolphinSettings.set("Core", "GFXBackend", system.config['gfxbackend']))
         else:
             dolphinSettings.set("Core", "GFXBackend", "OGL")
         
