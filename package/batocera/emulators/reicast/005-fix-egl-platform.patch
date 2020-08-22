@@ -1,0 +1,20 @@
+--- a/libswirl/deps/khronos/EGL/eglplatform.h	2020-08-21 22:18:38.019361359 +0200
++++ b/libswirl/deps/khronos/EGL/eglplatform.h	2020-08-21 22:18:53.311649852 +0200
+@@ -95,9 +95,7 @@
+ 
+ #elif defined(__unix__)
+ 
+-/* X11 (tentative)  */
+-#include <X11/Xlib.h>
+-#include <X11/Xutil.h>
++#include <EGL/eglplatform.h>
+ 
+ typedef Display *EGLNativeDisplayType;
+ typedef Pixmap   EGLNativePixmapType;
+@@ -122,4 +120,4 @@
+  */
+ typedef khronos_int32_t EGLint;
+ 
+-#endif /* __eglplatform_h */
+\ Pas de fin de ligne à la fin du fichier
++#endif /* __eglplatform_h */
