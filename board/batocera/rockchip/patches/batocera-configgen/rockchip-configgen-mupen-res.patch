@@ -29,15 +29,6 @@ MRFIXIT: rockchip adds the feature of defining a custom resolution in batocera.c
  	iniConfig.set("Video-General", "VerticalSync", "True")
  	
  	# wide screen mode
-@@ -47,7 +61,7 @@
- 	else:
- 		iniConfig.set("Video-GLideN64", "AspectRatio", "1")
- 
--    # Rice
-+	# Rice
- 	if not iniConfig.has_section("Video-Rice"):
- 			iniConfig.add_section("Video-Rice")
- 
 @@ -61,6 +75,10 @@
  		iniConfig.set("Video-Rice",       "ShowFPS",  "False")
  		iniConfig.set("Video-Glide64mk2", "show_fps", "8")
