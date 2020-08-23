@@ -317,6 +317,7 @@ case "${BATOCERA_TARGET}" in
 	# boot
 	rm -rf "${BINARIES_DIR:?}/boot"      || exit 1
 	mkdir -p "${BINARIES_DIR}/boot/boot" || exit 1
+	"${HOST_DIR}/bin/mkimage" -A arm64 -O linux -T kernel -C none -a 0x1080000 -e 0x1080000 -n linux -d "${BINARIES_DIR}/Image" "${BINARIES_DIR}/uImage" || exit 1
 	cp "${BOARD_DIR}/boot/boot-logo.bmp.gz" "${BINARIES_DIR}/boot"   || exit 1
 	cp "${BOARD_DIR}/boot/boot.ini"       "${BINARIES_DIR}/boot"   || exit 1
 	cp "${BINARIES_DIR}/batocera-boot.conf" "${BINARIES_DIR}/boot/batocera-boot.conf" || exit 1
