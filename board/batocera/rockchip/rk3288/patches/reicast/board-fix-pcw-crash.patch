@@ -30,8 +30,8 @@
  
 -	simd256_t* dst = (simd256_t*)ta_tad.thd_data;
 -	simd256_t* src = (simd256_t*)data;
-+	simd128_t* dst = (simd256_t*)ta_tad.thd_data;
-+	simd128_t* src = (simd256_t*)data;
++	simd128_t* dst = (simd128_t*)ta_tad.thd_data;
++	simd128_t* src = (simd128_t*)data;
  
  	// First byte is PCW
 -	PCW pcw = *(PCW*)data;

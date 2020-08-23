@@ -1,0 +1,62 @@
+--- a/reicast/linux/configure-platform.make	2020-08-21 22:01:14.667678149 +0200
++++ b/reicast/linux/configure-platform.make	2020-08-21 22:01:37.220103613 +0200
+@@ -85,10 +85,10 @@
+ else ifneq (,$(findstring rpi4,$(platform)))
+     PLATFORM_LINUX := 1
+     ARM32_REC := 1
+-    USE_X11 := 1
++    undefine USE_X11
+     SUPPORT_EGL := 1
+ 
+-    CFLAGS +=  -D TARGET_LINUX_ARMELv7 -DARM_HARDFP -fsingle-precision-constant
++    CFLAGS +=  -D TARGET_LINUX_ARMELv7 -DARM_HARDFP -fsingle-precision-constant -DEGL_NO_X11
+ 
+ 
+     MFLAGS += -march=armv8-a+crc -mtune=cortex-a72 -mfpu=neon-fp-armv8 -mfloat-abi=hard
+@@ -116,7 +116,8 @@
+         LIBS += -lbrcmEGL
+         CFLAGS += -D TARGET_VIDEOCORE
+         USE_OMX := 1
+-        USE_DISPMANX := 1
++        #USE_DISPMANX := 1
++        USE_GLES := 1
+     endif
+ 
+ # BeagleBone Black
+@@ -163,6 +164,21 @@
+             MFLAGS += -mtune=cortex-a9
+ 
+         endif
++
++	# ODROIDN2
++	ifneq (,$(findstring odroidn2,$(platform)))
++      	    MFLAGS += -march=armv8-a+crc -mtune=cortex-a53
++            ASFLAGS += -march=armv8-a+crc -mfpu=neon -mfloat-abi=hard
++            CFLAGS += -D TARGET_LINUX_ARMv8 -DGLES3 -DPNG_ARM_NEON=1 -DPNG_ARM_NEON_OPT=1 -DEGL_NO_X11
++            undefine USE_X11
++
++        # ODROIDGOA
++        else ifneq (,$(findstring odroidgoa,$(platform)))
++            MFLAGS += -march=armv8-a+crc -mtune=cortex-a35
++            ASFLAGS += -march=armv8-a+crc -mfpu=neon -mfloat-abi=hard
++            CFLAGS += -D TARGET_LINUX_ARMv8 -DGLES3 -DPNG_ARM_NEON=1 -DPNG_ARM_NEON_OPT=1 -DEGL_NO_X11
++            undefine USE_X11
++        endif
+     endif
+ 
+ # GCW Zero
+@@ -189,6 +205,14 @@
+     USE_GLES := 1
+     USE_SDL := 1
+ 
++# ROCKPRO64
++else ifneq (,$(findstring rockpro64,$(platform)))
++    MFLAGS += -marm -march=armv8-a+crc -mfpu=neon -mfloat-abi=hard -funroll-loops -mtune=cortex-a53
++    ASFLAGS += -march=armv8-a+crc -mfpu=neon -mfloat-abi=hard
++    CFLAGS += -D TARGET_LINUX_ARMELv7 -DARM_HARDFP -fsingle-precision-constant -DPNG_ARM_NEON=1 -DPNG_ARM_NEON_OPT=1 -DEGL_NO_X11
++    USE_GLES := 1
++    undefine USE_X11
++
+ # Windows
+ else ifneq (,$(findstring win32,$(platform)))
+     PLATFORM_WINDOWS := 1
