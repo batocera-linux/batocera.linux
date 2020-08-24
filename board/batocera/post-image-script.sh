@@ -325,6 +325,7 @@ case "${BATOCERA_TARGET}" in
 	cp "${BINARIES_DIR}/meson-gxbb-odroidc2.dtb" "${BINARIES_DIR}/boot/boot" || exit 1
 	cp "${BINARIES_DIR}/uImage"              "${BINARIES_DIR}/boot/boot" || exit 1
 	cp "${BINARIES_DIR}/rootfs.squashfs" "${BINARIES_DIR}/boot/boot/batocera.update" || exit 1
+        cp "${BOARD_DIR}/boot/extlinux.conf" "${BINARIES_DIR}/boot/extlinux"                   || exit 1
 	cp -pr "${BINARIES_DIR}/tools"       "${BINARIES_DIR}/boot/"                || exit 1
 
 	# boot.tar.xz
@@ -342,7 +343,7 @@ case "${BATOCERA_TARGET}" in
 	genimage --rootpath="${TARGET_DIR}" --inputpath="${BINARIES_DIR}/boot" --outputpath="${BATOCERA_BINARIES_DIR}" --config="${BINARIES_DIR}/genimage.cfg" --tmppath="${GENIMAGE_TMP}" || exit 1
 	rm -f "${BATOCERA_BINARIES_DIR}/boot.vfat" || exit 1
 	rm -f "${BATOCERA_BINARIES_DIR}/userdata.ext4" || exit 1
-	c2_fusing "${BINARIES_DIR}" "${BATOCERAIMG}" || exit 1
+	#c2_fusing "${BINARIES_DIR}" "${BATOCERAIMG}" || exit 1
 	sync || exit 1
 	;;
 
