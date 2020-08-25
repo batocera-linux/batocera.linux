@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-BATOCERA_AUDIO_VERSION = 4.0
+BATOCERA_AUDIO_VERSION = 4.1
 BATOCERA_AUDIO_LICENSE = GPL
 BATOCERA_AUDIO_DEPENDENCIES = alsa-lib
 BATOCERA_AUDIO_SOURCE=
@@ -33,7 +33,7 @@ define BATOCERA_AUDIO_INSTALL_TARGET_CMDS
 	install -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-audio/S15audio \
 		$(TARGET_DIR)/etc/init.d/S15audio
 	# udev script to unmute audio devices
-	install -m 0644 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-audio/pulseaudio/90-alsa-setup.rules \
+	install -m 0644 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-audio/90-alsa-setup.rules \
 		$(TARGET_DIR)/etc/udev/rules.d/90-alsa-setup.rules
 	install -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-audio/soundconfig \
 		$(TARGET_DIR)/usr/bin/soundconfig
