@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-BATOCERA_AUDIO_VERSION = 3.2
+BATOCERA_AUDIO_VERSION = 4.0
 BATOCERA_AUDIO_LICENSE = GPL
 BATOCERA_AUDIO_DEPENDENCIES = alsa-lib
 BATOCERA_AUDIO_SOURCE=
@@ -14,6 +14,10 @@ ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI_ANY),y)
 ALSA_SUFFIX = "-rpi"
 else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA),y)
 ALSA_SUFFIX = "-odroidga"
+else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_ROCKPRO64),y)
+ALSA_SUFFIX = "-rockpro64"
+else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_VIM3),y)
+ALSA_SUFFIX = "-vim3"
 else
 ALSA_SUFFIX = 
 endif
