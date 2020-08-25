@@ -4,6 +4,7 @@ import sys
 import os
 import ConfigParser
 import batoceraFiles
+from utils.logger import eslog
 
 sys.path.append(
     os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
@@ -41,12 +42,12 @@ sections = { 'emulator' : ['mapping_name', 'btn_escape'],
 # Create the controller configuration file
 # returns its name
 def generateControllerConfig(controller):
-	# Set config file name
+    # Set config file name
     configFileName = "{}/evdev_{}.cfg".format(batoceraFiles.reicastMapping,controller.realName)
     Config = ConfigParser.ConfigParser()
 
     if not os.path.exists(os.path.dirname(configFileName)):
-            os.makedirs(os.path.dirname(configFileName))
+        os.makedirs(os.path.dirname(configFileName))
          
     cfgfile = open(configFileName,'w+')
     
@@ -59,28 +60,29 @@ def generateControllerConfig(controller):
 
     # Parse controller inputs
     for index in controller.inputs:
-		input = controller.inputs[index]
-		if input.name not in reicastMapping:
-			continue
-		if input.type not in reicastMapping[input.name]:
-			continue
-		var = reicastMapping[input.name][input.type]
-		for i in sections:
-			if var in sections[i]:
-				section = i
-				break
+        input = controller.inputs[index]
+        if input.name not in reicastMapping:
+            continue
+        if input.type not in reicastMapping[input.name]:
+            continue
+        var = reicastMapping[input.name][input.type]
+        for i in sections:
+            if var in sections[i]:
+                section = i
+                break
 
 		# Sadly, we don't get the right axis code for Y hats. So, dirty hack time
-                if input.code is not None:
-		    code = input.code
-		    if input.type == 'hat':
-		        if input.name == 'up':
-    			    code = int(input.code) + 1
-		        else:
-    			    code = input.code
-		    Config.set(section, var, code)
-                else:
-                    print("code not found for key " + input.name + " on pad " + controller.realName + " (please reconfigure your pad)")
+        if input.code is not None:
+            code = input.code
+            Config.set(section, var, code)
+        elif input.type == 'hat':
+            if input.name == 'up':
+                code = 17
+            else:
+                code = 16
+            Config.set(section, var, code)
+        else:
+            eslog.log("code not found for key " + input.name + " on pad " + controller.realName + " (please reconfigure your pad)")
 
     Config.write(cfgfile)
     cfgfile.close()
