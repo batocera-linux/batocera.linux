@@ -1,7 +1,5 @@
 #!/bin/bash	
 
-ARCH=$(cat /usr/share/batocera/batocera.arch)
-
 ACTION=$1	
 
 case "${ACTION}" in	
@@ -21,15 +19,11 @@ case "${ACTION}" in
 
 	"set")	
 		MODE=$2	
-		# auto: no .asoundrc file or arch default config
-		# custom: don't touch the .asoundrc file	
+		# auto: no .asoundrc
+		# custom: don't touch .asoundrc	
 		# any other, create .asoundrc
 		if [ "${MODE}" == "auto" ];then	
-			if [ -f /usr/share/batocera/alsa/asoundrc-${ARCH} ]; then
-				cp /usr/share/batocera/alsa/asoundrc-${ARCH} /userdata/system/.asoundrc 
-			else 
-				rm -f /userdata/system/.asoundrc 
-			fi
+			rm -f /userdata/system/.asoundrc
 		elif [ "${MODE}" != "custom" ];then	
 			if echo "${MODE}" | grep -qE '^[0-9]*,[0-9]* ';then	
 				cardnb=$(echo "${MODE}" | sed -e s+'^\([0-9]*\),.*$'+'\1'+)	
