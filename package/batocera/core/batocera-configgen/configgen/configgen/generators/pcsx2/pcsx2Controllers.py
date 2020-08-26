@@ -3,6 +3,7 @@
 
 import batoceraFiles
 import os
+from utils.logger import eslog
 
 # Create the controller configuration file
 def generateControllerConfig(system, playersControllers, rom):
@@ -40,7 +41,7 @@ def generateControllerConfig(system, playersControllers, rom):
         os.makedirs(configDir)
     f = open(configFileName, "w")
     f.write("log = 0\n")
-    f.write("options = -1077554016\n")
+    f.write("options = 1919117645\n")
     f.write("mouse_sensibility = 500\n")
     f.write("joy_pad_map = 256\n")
     f.write("ff_intensity = 32767\n")
@@ -67,7 +68,7 @@ def generateControllerConfig(system, playersControllers, rom):
 
 def writeKey(f, nplayer, x, key, padInputs):
     configkey = key
-
+    
     # reversed keys
     reversedAxis = False
     if key == "joystick1down":
@@ -82,22 +83,32 @@ def writeKey(f, nplayer, x, key, padInputs):
     elif key == "joystick2right":
         reversedAxis = True
         configkey = "joystick2left"
+    eslog.log("Config Key: {}".format(configkey))
+    eslog.log("reversedAxis: {}".format(reversedAxis))
+    #define button 
 
     if configkey in padInputs:
         input = padInputs[configkey]
         #f.write("# key: name="+input.name+", type="+input.type+", id="+str(input.id)+", value="+str(input.value)+"\n")
+        
+        
         if input.type == "button":
             f.write("[{}][{}] = 0x{:02x}\n".format(nplayer, x, button_to_key(input.id)))
         elif input.type == "axis":
+            eslog.log("input.value: {}".format(input.value))
+            full_axis = 0
+            if int(input.value) > 0:
+                full_axis = 1
+            eslog.log("full_axis: {}".format(full_axis))
             sign = 0
-            if input.value < 0:
+            if int(input.value) < 0:
                 sign = 1
             if reversedAxis:
-                if sign == 0:
-                    sign = 1
-                else:
+                if int(input.value) < 0:
                     sign = 0
-            f.write("[{}][{}] = 0x{:02x}\n".format(nplayer, x, axis_to_key(0, sign, input.id)))
+                else:
+                    sign = 1
+            f.write("[{}][{}] = 0x{:02x}\n".format(nplayer, x, axis_to_key(full_axis, sign, input.id)))
         elif input.type == "hat":
             f.write("[{}][{}] = 0x{:02x}\n".format(nplayer, x, hat_to_key(input.value, input.id)))
     else:
