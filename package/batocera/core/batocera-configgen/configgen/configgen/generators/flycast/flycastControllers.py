@@ -64,11 +64,17 @@ def generateControllerConfig(controller):
     # Parse controller inputs
     for index in controller.inputs:
         input = controller.inputs[index]
+        eslog.log("Input Name: {}".format(input.name))
+        eslog.log("Input Type: {}".format(input.type))
+        eslog.log("Input Code: {}".format(input.code))
+        eslog.log("Input Value: {}".format(input.value))
+        #eslog.log("Input Mapping: {}".format(flycastMapping[input.name]))
         if input.name not in flycastMapping:
             continue
         if input.type not in flycastMapping[input.name]:
             continue
         var = flycastMapping[input.name][input.type]
+        eslog.log("Var: {}".format(var))
         for i in sections:
             if var in sections[i]:
                 section = i
@@ -79,10 +85,13 @@ def generateControllerConfig(controller):
             code = input.code
             Config.set(section, var, code)
         elif input.type == 'hat':
-            if input.name == 'up':
-                code = 17
+            if input.code is None:  #handles pads that don't have hat codes set
+                if input.name == 'up':
+                    code = 17
+                else:
+                    code = 16
             else:
-                code = 16
+                code = input.code
             Config.set(section, var, code)
         else:
             eslog.log("code not found for key " + input.name + " on pad " + controller.realName + " (please reconfigure your pad)")

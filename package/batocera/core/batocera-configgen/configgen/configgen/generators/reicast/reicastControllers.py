@@ -76,10 +76,13 @@ def generateControllerConfig(controller):
             code = input.code
             Config.set(section, var, code)
         elif input.type == 'hat':
-            if input.name == 'up':
-                code = 17
+            if input.code is None:  #handles pads that don't have hat codes set
+                if input.name == 'up':
+                    code = 17
+                else:
+                    code = 16
             else:
-                code = 16
+                code = input.code
             Config.set(section, var, code)
         else:
             eslog.log("code not found for key " + input.name + " on pad " + controller.realName + " (please reconfigure your pad)")
