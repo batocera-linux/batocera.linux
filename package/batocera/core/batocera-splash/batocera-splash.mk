@@ -3,7 +3,7 @@
 # Batocera splash
 #
 ################################################################################
-BATOCERA_SPLASH_VERSION = 1.3
+BATOCERA_SPLASH_VERSION = 1.4
 BATOCERA_SPLASH_SOURCE=
 
 BATOCERA_SPLASH_TGVERSION=$(BATOCERA_SYSTEM_VERSION) $(BATOCERA_SYSTEM_DATE_TIME)
@@ -49,7 +49,8 @@ endif
 
 define BATOCERA_SPLASH_INSTALL_SCRIPT
 	mkdir -p $(TARGET_DIR)/etc/init.d
-	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/$(BATOCERA_SPLASH_SCRIPT)  $(TARGET_DIR)/etc/init.d/S03splash
+	install -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/S29splashscreencontrol	$(TARGET_DIR)/etc/init.d/ 
+	install -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/$(BATOCERA_SPLASH_SCRIPT)	$(TARGET_DIR)/etc/init.d/S03splash
 endef
 
 define BATOCERA_SPLASH_INSTALL_VIDEO
