@@ -344,7 +344,7 @@ case "${BATOCERA_TARGET}" in
 	genimage --rootpath="${TARGET_DIR}" --inputpath="${BINARIES_DIR}/boot" --outputpath="${BATOCERA_BINARIES_DIR}" --config="${BINARIES_DIR}/genimage.cfg" --tmppath="${GENIMAGE_TMP}" || exit 1
 	rm -f "${BATOCERA_BINARIES_DIR}/boot.vfat" || exit 1
 	rm -f "${BATOCERA_BINARIES_DIR}/userdata.ext4" || exit 1
-	#c2_fusing "${BINARIES_DIR}" "${BATOCERAIMG}" || exit 1
+	c2_fusing "${BINARIES_DIR}" "${BATOCERAIMG}" || exit 1
 	sync || exit 1
 	;;
 
