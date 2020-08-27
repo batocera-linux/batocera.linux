@@ -13,7 +13,11 @@ mixer() {
 }
 
 (
-# . /etc/profile
+
+if [ -f /boot/asound.state ]; then
+	alsactl restore -f /boot/asound.state
+	exit 0
+fi
 
 # get card num
 card=`echo $1 | sed 's/[^0-9]*//g'`

@@ -1,0 +1,10 @@
+--- a/src/conf/alsa.conf	2020-08-27 09:34:00.087295983 -0300
++++ b/src/conf/alsa.conf	2020-08-27 09:34:31.417071189 -0300
+@@ -11,6 +11,7 @@
+ 			"/etc/alsa/conf.d"
+ 			"/etc/asound.conf"
+ 			"~/.asoundrc"
++			"/boot/asoundrc"
+ 		]
+ 		errors false
+ 	}

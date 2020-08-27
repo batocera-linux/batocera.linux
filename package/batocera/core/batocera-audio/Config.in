@@ -4,7 +4,6 @@ config BR2_PACKAGE_BATOCERA_AUDIO
 	select BR2_PACKAGE_ALSA_UTILS
 	select BR2_PACKAGE_ALSA_UTILS_AMIXER
 	select BR2_PACKAGE_ALSA_UTILS_APLAY
-	select BR2_PACKAGE_PULSEAUDIO
 	select BR2_PACKAGE_ALSA_PLUGINS
 	help
 	  Audio support and scripts for batocera.linux
