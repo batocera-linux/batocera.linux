@@ -32,11 +32,11 @@ case "$1" in
                     sleep 2 # Give hciattach a few seconds to finish attaching firmware
                 ;;
                 bcm921)
-                    /usr/bin/hciattach /dev/ttyAMA0 bcm43xx 921600 & # specific rpi0 and rpi3
-                    sleep 2 # Give hciattach a few seconds to finish attaching firmware
+                    /usr/bin/hciattach /dev/ttyAMA0 bcm43xx 921600 # specific rpi0, rpi3, rpi4
                 ;;
                 piscan)
-                    /usr/bin/hciconfig hci0 up piscan & # specific rpi
+                    /usr/bin/hciconfig hci0 up piscan # specific rpi
+                    sleep 2 # without the sleep, on rpi4, the agent fails on startup complaining the device is not here
                 ;;
             esac
         done
