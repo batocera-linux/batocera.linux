@@ -11,7 +11,7 @@ BATOCONF="/userdata/system/batocera.conf"
 BOOTCONF="/boot/batocera-boot.conf"
 BOOTLOCK=0
 
-for i in wifi.enabled wifi.ssid wifi.key wifi2.ssid wifi2.key wifi3.ssid wifi3.key wifi.hidden.ssid wifi.hidden.key audio.device audio.backend
+for i in wifi.enabled wifi.ssid wifi.key wifi2.ssid wifi2.key wifi3.ssid wifi3.key wifi.hidden.ssid wifi.hidden.key
 do
     userdata="$(grep -m1 ^[\ #]*$i\s*= "$BATOCONF")" || continue
     bootdata="$(grep -m1 ^[\ #]*$i\s*= "$BOOTCONF")"
