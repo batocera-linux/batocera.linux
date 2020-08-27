@@ -87,9 +87,9 @@ def generateControllerConfig(controller):
         elif input.type == 'hat':
             if input.code is None:  #handles pads that don't have hat codes set
                 if input.name == 'up':  #Default values for hat0.  Formula for calculation is 16+input.id*2 and 17+input.id*2
-                    code = 17
+                    code = 17 + 2*input.id # ABS_HAT0Y=17
                 else:
-                    code = 16
+                    code = 16 + 2*input.id # ABS_HAT0X=16
             else:
                 code = input.code
             Config.set(section, var, code)
