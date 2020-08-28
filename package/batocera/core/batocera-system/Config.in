@@ -333,7 +333,7 @@ config BR2_PACKAGE_BATOCERA_ALL_SYSTEMS
 
         select BR2_PACKAGE_VICE                 # ALL # c64
 
-        select BR2_PACKAGE_LINAPPLE             if !BR2_PACKAGE_BATOCERA_TARGET_ROCK960 # apple II
+        select BR2_PACKAGE_LINAPPLE             if !BR2_PACKAGE_SDL2_KMSDRM # apple II (sdl1 doesn't support kmsdrm)
 
         select BR2_PACKAGE_BATOCERA_MUPEN64     if !BR2_PACKAGE_BATOCERA_TARGET_RPI1 # mupen64 (n64)
 
