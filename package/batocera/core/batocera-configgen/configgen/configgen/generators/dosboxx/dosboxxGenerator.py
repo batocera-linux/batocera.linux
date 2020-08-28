@@ -42,13 +42,13 @@ class DosBoxxGenerator(Generator):
         with open(customConfFile, 'w') as config:
             iniSettings.write(config)
 
+        # -fullscreen removed as it crashes on N2
         commandArray = [batoceraFiles.batoceraBins[system.config['emulator']],
 			"-exit", 
 			"-c", """mount c {}""".format(gameDir),
                         "-c", "c:",
                         "-c", "dosbox.bat",
                         "-fastbioslogo",
-                        "-fullscreen",
                         "-conf {}".format(customConfFile)]
 
         return Command.Command(array=commandArray)
