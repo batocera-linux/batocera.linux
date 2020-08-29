@@ -2,6 +2,7 @@ BR2_arm=y
 BR2_cortex_a17=y
 BR2_ARM_FPU_NEON_VFPV4=y
 BR2_OPTIMIZE_3=y
+BR2_GCC_ENABLE_LTO=y
 BR2_SHARED_STATIC_LIBS=y
 BR2_GLOBAL_PATCH_DIR="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/patches $(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/patches $(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/rk3288/patches $(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/rk3288/miqi/patches"
 BR2_TOOLCHAIN_BUILDROOT_GLIBC=y
