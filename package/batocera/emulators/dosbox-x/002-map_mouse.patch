@@ -1,5 +1,5 @@
 --- a/src/gui/sdl_mapper.cpp	2020-08-03 06:33:31.000000000 +0200
-+++ b/src/gui/sdl_mapper.cpp	2020-08-28 12:51:25.594395091 +0200
++++ b/src/gui/sdl_mapper.cpp	2020-08-28 21:37:39.460659614 +0200
 @@ -73,6 +73,7 @@
  #define MAX_VJOY_HATS           16
  #define MAX_VJOY_AXES           8
@@ -47,23 +47,20 @@
  static CJAxisEvent * AddJAxisButton(Bitu x,Bitu y,Bitu dx,Bitu dy,char const * const title,Bitu stick,Bitu axis,bool positive,CJAxisEvent * opposite_axis) {
      char buf[64];
      sprintf(buf,"jaxis_%d_%d%s",(int)stick,(int)axis,positive ? "+" : "-");
-@@ -3262,6 +3288,19 @@
-     AddKeyButtonEvent(PX(XO+3),PY(YO+2),BW*3,BH,"HANYONG", "kor_hanyong",KBD_kor_hanyong);
+@@ -3179,6 +3205,16 @@
+ 	AddMouseButtonEvent(PX(XO+2),PY(YO),BW,BH,"R","right",1);
  #undef XO
  #undef YO
 +#define XO 6
 +#define YO 8
 +   /* Mouse Buttons and Axis */
-+   new CTextButton(PX(XO+0),PY(YO-1),2*BW,20,"Mouse");
-+   AddMouseButtonEvent(PX(XO+0),PY(YO),BW,BH,"L","left",0);
-+   AddMouseButtonEvent(PX(XO+2),PY(YO-1),BW,BH,"M","middle",2);
-+   AddMouseButtonEvent(PX(XO+2),PY(YO),BW,BH,"R","right",1);
++   new CTextButton(PX(XO+0),PY(YO-1),2*BW,20,"Mouse axis");
 +   AddMouseMoveEvent(PX(XO+1),PY(YO),BW,BH,"Y-","y-",0,-1);
 +   AddMouseMoveEvent(PX(XO+0),PY(YO+1),BW,BH,"X-","x-",-1,0);
 +   AddMouseMoveEvent(PX(XO+1),PY(YO+1),BW,BH,"Y+","y+",0,1);
 +   AddMouseMoveEvent(PX(XO+2),PY(YO+1),BW,BH,"X+","x+",1,0);
 +#undef XO
 +#undef YO
- #define XO 10
- #define YO 8
-     /* Joystick Buttons/Texts */
+ #define XO 0
+ #define YO 7
+     /* Numeric KeyPad */

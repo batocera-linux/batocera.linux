@@ -3,8 +3,8 @@
 # DosBox-X
 #
 ################################################################################
-# Version.: Commits on Aug 02, 2020
-DOSBOX_X_VERSION = dosbox-x-v0.83.4
+# Version.: Commits on Aug 25, 2020
+DOSBOX_X_VERSION = 9a6145bdb8c81308575aecf2f9ee2d2e94aea8b2
 DOSBOX_X_SITE = $(call github,joncampbell123,dosbox-x,$(DOSBOX_X_VERSION))
 DOSBOX_X_DEPENDENCIES = sdl2 sdl2_net sdl_sound zlib libpng libogg libvorbis
 DOSBOX_X_LICENSE = GPLv2
