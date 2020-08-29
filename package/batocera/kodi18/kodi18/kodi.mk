@@ -6,7 +6,7 @@
 
 # When updating the version, please also update kodi-jsonschemabuilder
 # and kodi-texturepacker
-KODI18_VERSION = 18.8-Leia
+KODI18_VERSION = 18.7.1-Leia
 KODI18_SITE = $(call github,xbmc,xbmc,$(KODI18_VERSION))
 
 ifeq ($(BR2_PACKAGE_KODI18_PLATFORM_RBPI),y)
