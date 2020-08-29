@@ -1,0 +1,19 @@
+config BR2_PACKAGE_PEGASUS
+        bool "Pegasus frontend"
+	depends on BR2_INSTALL_LIBSTDCPP
+	select BR2_PACKAGE_QT5
+	select BR2_PACKAGE_QT5_VERSION_LATEST
+	select BR2_PACKAGE_QT5BASE
+	select BR2_PACKAGE_QT5BASE_OPENGL
+	select BR2_PACKAGE_QT5MULTIMEDIA
+	select BR2_PACKAGE_QT5BASE_FONTCONFIG
+	select BR2_PACKAGE_QT5TOOLS
+	select BR2_PACKAGE_QT5TOOLS_LINGUIST_TOOLS
+	select BR2_PACKAGE_QT5SVG
+	select BR2_PACKAGE_SDL2
+        help
+          A cross platform, customizable graphical frontend for launching emulators and managing your game collection.
+
+	  https://pegasus-frontend.org/
+
+comment "Pegasus Frontend needs a toolchain w/ C++"
