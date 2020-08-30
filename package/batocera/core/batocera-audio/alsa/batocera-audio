@@ -34,8 +34,6 @@ ctl.!default { type hw card ${cardnb} }
 EOF
 			fi	
 		fi
-		# make sure we use the default device once to create the necessary controls
-		HOME=/userdata/system aplay "/usr/share/sounds/500ms-of-silence.wav" &> /dev/null
 	;;
 
 	"test")
