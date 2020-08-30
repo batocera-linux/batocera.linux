@@ -23,6 +23,7 @@ do_start ()
 
 case "$1" in
     start)
+        grep -qE '^[ ]*splash.screen.enabled[ ]*=[ ]*0[ ]*$' "/boot/batocera-boot.conf" && exit 0
         do_start &
         ;;
     stop)
