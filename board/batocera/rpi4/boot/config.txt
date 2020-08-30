@@ -84,4 +84,5 @@ initramfs boot/initrd.gz
 dtparam=audio=on
 
 # Enable DRM VC4 V3D driver on top of the dispmanx display stack
-dtoverlay=vc4-kms-v3d-pi4,noaudio,cma-size=402653184
+dtoverlay=vc4-kms-v3d-pi4,noaudio
+
