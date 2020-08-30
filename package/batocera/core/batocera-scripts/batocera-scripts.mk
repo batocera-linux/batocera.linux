@@ -20,8 +20,8 @@ ifeq ($(BR2_PACKAGE_XORG7),y)
   BATOCERA_SCRIPT_RESOLUTION_TYPE=xorg
 endif
 
-# doesn't work on odroidgoa with mali g31_gbm
-ifeq ($(BR2_PACKAGE_MALI_G31_GBM),y)
+# doesn't work on odroidgoa with mali g31_gbm and rockpro64 and mali rk450
+ifeq ($(BR2_PACKAGE_MALI_G31_GBM)$(BR2_PACKAGE_MALI_RK450),y)
   BATOCERA_SCRIPT_RESOLUTION_TYPE=basic
 endif
 

@@ -1,0 +1,37 @@
+#!/bin/bash	
+
+ACTION=$1	
+
+case "${ACTION}" in	
+	"unlock-volume")
+		echo "obsolete"
+	;;	
+
+	"list")	
+		echo "auto"	
+		echo "hdmi"
+		echo "custom"	
+	;;	
+
+	"get")	
+		batocera-settings -command load -key audio.device	
+	;;	
+
+	"set")	
+		MODE=$2	
+		case "${MODE}" in	
+			"auto" | "hdmi")
+				# card 0: G12BKHADASVIM3 [G12B-KHADAS-VIM3], device 0: fe.dai-link-0 (*) []
+				sed -e "s;%CARDNO%;0;g" -e "s;%DEVICENO%;0;g" /usr/share/batocera/alsa/asoundrc-dmix+softvol > /userdata/system/.asoundrc
+			;;
+
+			"custom")
+				# do nothing!
+			;;
+		esac	
+	;;
+
+	test)
+		aplay "/usr/share/sounds/Mallet.wav"
+	;;
+esac
