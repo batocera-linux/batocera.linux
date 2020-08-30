@@ -1,7 +1,7 @@
 #!/bin/bash
 
 soundDisabled() {
-    grep -qE "^[ ]*splashsound[ ]*=[ ]*false[ ]*$" /boot/batocera-boot.conf
+    grep -qE "^[ ]*splash.screen.sound[ ]*=[ ]*0[ ]*$" /boot/batocera-boot.conf
 }
 
 do_start ()
@@ -53,6 +53,7 @@ do_videostart ()
 
 case "$1" in
     start)
+        grep -qE '^[ ]*splash.screen.enabled[ ]*=[ ]*0[ ]*$' "/boot/batocera-boot.conf" && exit 0
         do_start &
         ;;
     stop)
