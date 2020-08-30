@@ -462,6 +462,7 @@ config BR2_PACKAGE_BATOCERA_RETROARCH
                                                          !BR2_PACKAGE_BATOCERA_TARGET_C2        && \
                                                          !BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA && \
                                                          !BR2_PACKAGE_BATOCERA_TARGET_S905      && \
+                                                         !BR2_PACKAGE_BATOCERA_TARGET_RPI4      && \
                                                          !BR2_PACKAGE_BATOCERA_TARGET_S912
 
         select BR2_PACKAGE_LIBRETRO_DESMUME           if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
