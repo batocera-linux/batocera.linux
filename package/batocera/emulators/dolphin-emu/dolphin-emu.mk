@@ -3,8 +3,8 @@
 # DOLPHIN EMU
 #
 ################################################################################
-# Version: Commits on Jul 5, 2020 (5.0-12257)
-DOLPHIN_EMU_VERSION = 905df6756b56ddfd7b4ead1f858c84f9e9608900
+# Version: Commits on Aug 29, 2020
+DOLPHIN_EMU_VERSION = 75b4f70e5eaf50e5c2a05633d2bf91d0b99c25a1
 DOLPHIN_EMU_SITE = $(call github,dolphin-emu,dolphin,$(DOLPHIN_EMU_VERSION))
 DOLPHIN_EMU_LICENSE = GPLv2+
 DOLPHIN_EMU_DEPENDENCIES = libevdev ffmpeg zlib libpng lzo libusb libcurl bluez5_utils qt5base hidapi
@@ -26,6 +26,7 @@ DOLPHIN_EMU_CONF_OPTS += -DDISTRIBUTOR='batocera.linux'
 
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_ODROIDN2)$(BR2_PACKAGE_BATOCERA_TARGET_VIM3),y)
 DOLPHIN_EMU_CONF_OPTS += -DENABLE_EGL=ON
+DOLPHIN_EMU_CONF_OPTS += -DENABLE_LTO=ON
 endif
 
 $(eval $(cmake-package))
