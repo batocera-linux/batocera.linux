@@ -51,6 +51,9 @@ output-dir-%:
 ccache-dir:
 	@mkdir -p $(CCACHE_DIR)
 
+dl-dir:
+	@mkdir -p $(DL_DIR)
+
 %-supported:
 	$(if $(findstring $*, $(TARGETS)),,$(error "$* not supported!"))
 
@@ -81,7 +84,7 @@ ccache-dir:
 		make O=/$* BR2_EXTERNAL=/build -C /build/buildroot batocera-$*_defconfig
 	@mv -f $(PROJECT_DIR)/configs/batocera-$*_defconfig-tmp $(PROJECT_DIR)/configs/batocera-$*_defconfig
 
-%-build: batocera-docker-image %-supported %-config ccache-dir
+%-build: batocera-docker-image %-supported %-config ccache-dir dl-dir
 	@docker run -it --rm \
 		-v $(PROJECT_DIR):/build \
 		-v $(DL_DIR):/build/buildroot/dl \
