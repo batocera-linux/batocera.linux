@@ -4,12 +4,11 @@
 #
 ################################################################################
 
-
 # Jun, 30 2020 release
 #RPCS3_VERSION = v0.0.11
 
-# Jul, 19 2020
-RPCS3_VERSION = f8d2d8ca11c7a10ad5185ebe761271e960e7cb5b
+# Aug, 31 2020
+RPCS3_VERSION = 21b535b5c5637224855404b459f6eb1a1aa7a3a1
 
 RPCS3_SITE = https://github.com/RPCS3/rpcs3.git
 RPCS3_SITE_METHOD=git
