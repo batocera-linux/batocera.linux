@@ -30,9 +30,8 @@ flycastMapping = { 'a' :             {'button': 'btn_b'},
                    'up' :            {'hat': 'axis_dpad1_y', 'axis': 'axis_y', 'button': 'btn_dpad1_up'},
                    'right' :         {'button': 'btn_dpad1_right'},
                    'down' :          {'button': 'btn_dpad1_down'},
-# We are only interested in L2/R2 if they are axis, to have real dreamcasttriggers
-                   'r2' :            {'axis':  'axis_trigger_right'},
-                   'l2' :            {'axis': 'axis_trigger_left'}
+                   'r2' :            {'axis':  'axis_trigger_right', 'button': 'btn_trigger_right'},
+                   'l2' :            {'axis': 'axis_trigger_left', 'button': 'btn_trigger_left'}
 }
 
 sections = { 'emulator' : ['mapping_name', 'btn_escape'],
@@ -60,15 +59,14 @@ def generateControllerConfig(controller):
 
     # Add controller name
     Config.set("emulator", "mapping_name", controller.realName)
-
+    
+    l2_r2_flag = False
+    if 'r2' in controller.inputs:
+        l2_r2_flag = True
     # Parse controller inputs
     for index in controller.inputs:
         input = controller.inputs[index]
-        eslog.log("Input Name: {}".format(input.name))
-        eslog.log("Input Type: {}".format(input.type))
-        eslog.log("Input Code: {}".format(input.code))
-        eslog.log("Input Value: {}".format(input.value))
-        #eslog.log("Input Mapping: {}".format(flycastMapping[input.name]))
+        
         if input.name not in flycastMapping:
             continue
         if input.type not in flycastMapping[input.name]:
@@ -81,22 +79,22 @@ def generateControllerConfig(controller):
                 break
 
         # Sadly, we don't get the right axis code for Y hats. So, dirty hack time
-        if input.code is not None:
-            code = input.code
-            Config.set(section, var, code)
-        elif input.type == 'hat':
-            if input.code is None:  #handles pads that don't have hat codes set
-                if input.name == 'up':  #Default values for hat0.  Formula for calculation is 16+input.id*2 and 17+input.id*2
-                    code = 17 + 2*input.id # ABS_HAT0Y=17
-                else:
-                    code = 16 + 2*input.id # ABS_HAT0X=16
-            else:
+        if not (l2_r2_flag and (input.name == 'pageup' or input.name == 'pagedown')):
+            if input.code is not None:
                 code = input.code
-            Config.set(section, var, code)
-        else:
-            eslog.log("code not found for key " + input.name + " on pad " + controller.realName + " (please reconfigure your pad)")
+                Config.set(section, var, code)
+            elif input.type == 'hat':
+                if input.code is None:  #handles pads that don't have hat codes set
+                    if input.name == 'up':  #Default values for hat0.  Formula for calculation is 16+input.id*2 and 17+input.id*2
+                        code = 17 + 2*int(input.id) # ABS_HAT0Y=17
+                    else:
+                        code = 16 + 2*int(input.id) # ABS_HAT0X=16
+                else:
+                    code = input.code
+                Config.set(section, var, code)
+            else:
+                eslog.log("code not found for key " + input.name + " on pad " + controller.realName + " (please reconfigure your pad)")
 
     Config.write(cfgfile)
     cfgfile.close()
     return configFileName
-
