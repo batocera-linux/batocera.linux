@@ -129,6 +129,10 @@ ifeq ($(BR2_PACKAGE_XSERVER_XORG_SERVER),)
 	endif
 endif
 
+ifeq ($(BR2_PACKAGE_VULKAN_LOADER)$(BR2_PACKAGE_VULKAN_HEADERS),yy)
+	RETROARCH_CONF_OPTS += --enable-vulkan
+endif
+
 define RETROARCH_CONFIGURE_CMDS
 	(cd $(@D); rm -rf config.cache; \
 		$(TARGET_CONFIGURE_ARGS) \
