@@ -1,0 +1,61 @@
+diff --git a/src/keybovl.c b/src/keybovl.c
+index 860f029..e16dc51 100644
+--- a/src/keybovl.c
++++ b/src/keybovl.c
+@@ -224,6 +224,8 @@ static void update( retro_input_state_t input_cb, unsigned* devices, int ms )
+ {
+   keybovl_key_t* k;
+   unsigned       p, i;
++
++  static int is_select_pressed[2] = {0, 0};
+   
+   // Show/hide the virtual keyboard
+   
+@@ -236,20 +238,24 @@ static void update( retro_input_state_t input_cb, unsigned* devices, int ms )
+     
+     if ( input_cb( p, devices[ p ], 0, RETRO_DEVICE_ID_JOYPAD_SELECT ) )
+     {
++      if(is_select_pressed[p] == 0) {
++      is_select_pressed[p] = 1;
+       if ( !select )
+       {
+         select = 1;
+         visible = !visible;
+       }
++      }
+     }
+     else
+     {
++      is_select_pressed[p] = 0;
+       select = 0;
+     }
+   }
+   
+   // Process the joypad
+-  
++  static int is_joy_pressed[2][16] = { {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0} };
+   for ( p = 0; p < 2; p++ )
+   {
+     if ( ( devices[ p ] & RETRO_DEVICE_MASK ) != RETRO_DEVICE_JOYPAD )
+@@ -302,6 +308,9 @@ static void update( retro_input_state_t input_cb, unsigned* devices, int ms )
+         
+         if ( is_down )
+         {
++	  if(is_joy_pressed[p][i] == 0) {
++	    is_joy_pressed[p][i] = 1;
++
+           if ( ( joystate & bit ) == 0 )
+           {
+             joystate |= bit;
+@@ -336,9 +345,11 @@ static void update( retro_input_state_t input_cb, unsigned* devices, int ms )
+               }
+             }
+           }
++	  }
+         }
+         else
+         {
++	  is_joy_pressed[p][i] = 0;
+           joystate &= ~bit;
+         }
+       }
