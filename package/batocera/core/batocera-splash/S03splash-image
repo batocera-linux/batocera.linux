@@ -2,9 +2,9 @@
 
 do_start ()
 {
-    if [[ $(ls /boot/*.{jpg,png}  2>/dev/null) ]]
+    if [[ $(ls /boot/splash/*.{jpg,png}  2>/dev/null) ]]
     then
-        image="$(ls /boot/*.{jpg,png} | sed -e "$((RANDOM%$(ls -1 /boot/*.{jpg,png} | wc -l)+1))!d")"
+        image="$(ls /boot/splash/*.{jpg,png} | sed -e "$((RANDOM%$(ls -1 /boot/splash/*.{jpg,png} | wc -l)+1))!d")"
     else
         image="/usr/share/batocera/splash/logo-version.png"
     fi
@@ -17,11 +17,13 @@ do_start ()
         let N++
     done
     test -e /dev/fb0 && fbv -f -i "${image}"
+    sleep infinity
+    wait $!
 }
 
 case "$1" in
     start)
-	grep -qE '^[ ]*autoresize[ ]*=[ ]*true[ ]*$' "/boot/batocera-boot.conf" && exit 0
+        grep -qE '^[ ]*splash.screen.enabled[ ]*=[ ]*0[ ]*$' "/boot/batocera-boot.conf" && exit 0
         do_start &
         ;;
     stop)
