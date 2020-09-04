@@ -387,12 +387,15 @@ def writeBezelConfig(bezel, retroarchConfig, systemName, rom, gameResolution, be
         else:
             # No info on the bezel, let's get the bezel image width and height and apply the
             # ratios from usual 4:3 1920x1080 bezels (example: theBezelProject)
-            infos["width"], infos["height"] = Image.open(overlay_png_file).size
-            infos["top"]    = int(infos["height"] * 2 / 1080)
-            infos["left"]   = int(infos["width"] * 241 / 1920) # 241 = (1920 - (1920 / (4:3))) / 2 + 1 pixel = where viewport start
-            infos["bottom"] = int(infos["height"] * 2 / 1080)
-            infos["right"]  = int(infos["width"] * 241 / 1920)
-            bezelNeedAdaptation = True
+            try:
+                infos["width"], infos["height"] = Image.open(overlay_png_file).size
+                infos["top"]    = int(infos["height"] * 2 / 1080)
+                infos["left"]   = int(infos["width"] * 241 / 1920) # 241 = (1920 - (1920 / (4:3))) / 2 + 1 pixel = where viewport start
+                infos["bottom"] = int(infos["height"] * 2 / 1080)
+                infos["right"]  = int(infos["width"] * 241 / 1920)
+                bezelNeedAdaptation = True
+            except:
+                pass # outch, no ratio will be applied.
         retroarchConfig['aspect_ratio_index'] = str(ratioIndexes.index("core")) # overwritten from the beginning of this file
 
     retroarchConfig['input_overlay_enable']       = "true"
