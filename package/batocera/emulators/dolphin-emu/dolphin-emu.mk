@@ -7,7 +7,7 @@
 DOLPHIN_EMU_VERSION = 75b4f70e5eaf50e5c2a05633d2bf91d0b99c25a1
 DOLPHIN_EMU_SITE = $(call github,dolphin-emu,dolphin,$(DOLPHIN_EMU_VERSION))
 DOLPHIN_EMU_LICENSE = GPLv2+
-DOLPHIN_EMU_DEPENDENCIES = libevdev ffmpeg zlib libpng lzo libusb libcurl bluez5_utils qt5base hidapi
+DOLPHIN_EMU_DEPENDENCIES = libevdev ffmpeg zlib libpng lzo libusb libcurl bluez5_utils qt5base hidapi xz host-xz
 
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86_64),y)
 DOLPHIN_EMU_DEPENDENCIES += xserver_xorg-server
