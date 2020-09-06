@@ -1,0 +1,23 @@
+--- a/yabause/src/sh2_dynarec_devmiyax/DynarecSh2CInterface.cpp	2020-09-06 13:06:58.426846422 +0200
++++ b/yabause/src/sh2_dynarec_devmiyax/DynarecSh2CInterface.cpp	2020-09-06 13:08:56.444841576 +0200
+@@ -388,6 +388,10 @@
+ //********************************************************************
+ // MemoyAcess from DynarecCPU
+ //********************************************************************
++#if defined(__arm__) || defined(__aarch64__)
++#pragma GCC push_options
++#pragma GCC optimize ("O1")
++#endif
+ void memSetByte(u32 addr , u8 data )
+ {
+   dynaLock();
+@@ -601,6 +605,9 @@
+   dynaFree();
+   return val;
+ }
++#if defined(__arm__) || defined(__aarch64__)
++#pragma GCC pop_options
++#endif
+ 
+ void SH2DynOnFrame(SH2_struct *context) {
+   DynarecSh2 *pctx = (DynarecSh2*)context->ext;
