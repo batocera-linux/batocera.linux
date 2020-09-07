@@ -1,9 +1,0 @@
-config BR2_PACKAGE_KODI18_VFS_SFTP
-	bool "kodi-vfs-sftp"
-	select BR2_PACKAGE_KODI18_PLATFORM
-	select BR2_PACKAGE_LIBPLATFORM
-	select BR2_PACKAGE_LIBSSH
-	help
-	  SFTP VFS addon for Kodi
-
-	  https://github.com/xbmc/vfs.sftp
