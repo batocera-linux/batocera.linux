@@ -18,7 +18,7 @@ CITRA_CONF_OPTS += -DENABLE_QT=OFF
 
 # Use citra for x86_64 and enable citra-qt
 else
-CITRA_VERSION = 96fa75fb93a3dea4a8fbe72bde23b16979057a43
+CITRA_VERSION = 03cde53cb69b752e596e7749a0e043d627d5bac1
 CITRA_SITE = https://github.com/citra-emu/citra.git
 CITRA_CONF_OPTS += -DENABLE_QT=ON
 CITRA_CONF_OPTS += -DENABLE_QT_TRANSLATION=ON
