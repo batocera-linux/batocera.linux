@@ -5,7 +5,7 @@ import cannonballGenerator
 
 cannonballJoystick = {
     "b": "acc",
-    "y": "break",
+    "y": "brake",
     "a": "gear1",
     "x": "gear2",
     "start":  "start",

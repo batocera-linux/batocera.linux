@@ -38,7 +38,7 @@ class CannonballGenerator(Generator):
             CannonballGenerator.setSectionConfig(config, xml_video, "fps_counter", "0")
 
         # ratio
-        if system.isOptSet('showFPS') and system.config["ratio"] == "16/9":
+        if system.isOptSet('ratio') and system.config["ratio"] == "16/9":
             CannonballGenerator.setSectionConfig(config, xml_video, "widescreen", "1")
         else:
             CannonballGenerator.setSectionConfig(config, xml_video, "widescreen", "0")
