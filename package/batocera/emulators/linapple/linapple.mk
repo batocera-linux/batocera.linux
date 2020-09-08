@@ -3,8 +3,8 @@
 # lineapple
 #
 ################################################################################
-# Version.: Commits on Jun 01, 2020
-LINAPPLE_VERSION = ae9fd93457469c260ba53a20246ad1669df1ba6e
+# Version.: Commits on May 26, 2020
+LINAPPLE_VERSION = c93579fc7e71d3bd339079338cd9b2f05916828c
 LINAPPLE_SITE = $(call github,linappleii,linapple,$(LINAPPLE_VERSION))
 LINAPPLE_LICENSE = GPLv2
 LINAPPLE_DEPENDENCIES = sdl sdl_image libcurl zlib libzip
