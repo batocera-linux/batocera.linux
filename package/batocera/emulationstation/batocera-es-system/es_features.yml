@@ -370,7 +370,12 @@ openbor:
 
 cannonball:
   features: [ratio]
-
+  cfeatures:
+    highResolution:
+      prompt: HIGH RESOLUTION
+      choices:
+        Off:  0
+        On: 1
 cemu:
   features: []
 
