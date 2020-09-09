@@ -1,0 +1,217 @@
+From e7cb197f61193d0c36ce2812306c566d15effe0e Mon Sep 17 00:00:00 2001
+From: Ecos-hj <jung@ecos.de>
+Date: Thu, 13 Aug 2020 10:13:23 +0200
+Subject: [PATCH] Kernel 5.8 compatibility
+
+---
+ core/rtw_security.c           |  9 ++++++++
+ include/drv_types.h           |  1 +
+ include/rtw_security.h        |  4 +++-
+ os_dep/linux/ioctl_cfg80211.c | 20 +++++++++++++++--
+ os_dep/linux/rtw_proc.c       | 41 ++++++++++++++++++++++++++++++-----
+ 5 files changed, 67 insertions(+), 8 deletions(-)
+
+diff --git a/core/rtw_security.c b/core/rtw_security.c
+index d54e6af..a2e7a4b 100644
+--- a/core/rtw_security.c
++++ b/core/rtw_security.c
+@@ -33,6 +33,15 @@ static const char *_security_type_str[] = {
+ 	"BIP",
+ };
+ 
++#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 8, 0))
++struct sha256_state {
++        u64 length;
++        u32 state[8], curlen;
++        u8 buf[64];
++};
++#endif
++
++
+ const char *security_type_str(u8 value)
+ {
+ #ifdef CONFIG_IEEE80211W
+diff --git a/include/drv_types.h b/include/drv_types.h
+index c8c8cec..d73100f 100644
+--- a/include/drv_types.h
++++ b/include/drv_types.h
+@@ -165,6 +165,7 @@ typedef struct _ADAPTER _adapter, ADAPTER,*PADAPTER;
+ #define SPEC_DEV_ID_RF_CONFIG_2T2R BIT(4)
+ #define SPEC_DEV_ID_ASSIGN_IFNAME BIT(5)
+ 
++
+ struct specific_device_id {
+ 
+ 	u32		flags;
+diff --git a/include/rtw_security.h b/include/rtw_security.h
+index d41014e..6fc0d9e 100644
+--- a/include/rtw_security.h
++++ b/include/rtw_security.h
+@@ -20,7 +20,7 @@
+ #ifndef __RTW_SECURITY_H_
+ #define __RTW_SECURITY_H_
+ 
+-
++#include <ip.h>
+ #define _NO_PRIVACY_		0x0
+ #define _WEP40_				0x1
+ #define _TKIP_				0x2
+@@ -233,11 +233,13 @@ struct security_priv {
+ #endif /* DBG_SW_SEC_CNT */
+ };
+ 
++#if (LINUX_VERSION_CODE < KERNEL_VERSION(5, 8, 0))
+ struct sha256_state {
+ 	u64 length;
+ 	u32 state[8], curlen;
+ 	u8 buf[64];
+ };
++#endif
+ 
+ #define GET_ENCRY_ALGO(psecuritypriv, psta, encry_algo, bmcst)\
+ do{\
+diff --git a/os_dep/linux/ioctl_cfg80211.c b/os_dep/linux/ioctl_cfg80211.c
+index 019daf9..18dae0d 100644
+--- a/os_dep/linux/ioctl_cfg80211.c
++++ b/os_dep/linux/ioctl_cfg80211.c
+@@ -5183,10 +5183,18 @@ static void cfg80211_rtw_mgmt_frame_register(struct wiphy *wiphy,
+ #else
+         struct net_device *ndev,
+ #endif
+-        u16 frame_type, bool reg)
++#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 8, 0))
++	struct mgmt_frame_regs *upd)
++#else
++￼	u16 frame_type, bool reg)
++#endif
+ {
+ #if (LINUX_VERSION_CODE >= KERNEL_VERSION(3,6,0))
+ 	struct net_device *ndev = wdev_to_ndev(wdev);
++#endif
++/* hardcoded always true, to make it pass compilation */
++#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 8, 0))
++//	bool reg = true;
+ #endif
+ 	_adapter *adapter;
+ 
+@@ -5199,9 +5207,13 @@ static void cfg80211_rtw_mgmt_frame_register(struct wiphy *wiphy,
+ 	DBG_871X(FUNC_ADPT_FMT" frame_type:%x, reg:%d\n", FUNC_ADPT_ARG(adapter),
+ 	         frame_type, reg);
+ #endif
+-
++#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 8, 0))
++        if (upd->interface_stypes != (IEEE80211_FTYPE_MGMT | IEEE80211_STYPE_PROBE_REQ))
++                return;
++#else
+ 	if (frame_type != (IEEE80211_FTYPE_MGMT | IEEE80211_STYPE_PROBE_REQ))
+ 		return;
++#endif
+ exit:
+ 	return;
+ }
+@@ -6021,7 +6033,11 @@ static struct cfg80211_ops rtw_cfg80211_ops = {
+ 
+ #if (LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,37)) || defined(COMPAT_KERNEL_RELEASE)
+ 	.mgmt_tx = cfg80211_rtw_mgmt_tx,
++#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 8, 0))
++	.update_mgmt_frame_registrations = cfg80211_rtw_mgmt_frame_register,
++#else
+ 	.mgmt_frame_register = cfg80211_rtw_mgmt_frame_register,
++#endif	
+ #elif  (LINUX_VERSION_CODE>=KERNEL_VERSION(2,6,34) && LINUX_VERSION_CODE<=KERNEL_VERSION(2,6,35))
+ 	.action = cfg80211_rtw_mgmt_tx,
+ #endif
+diff --git a/os_dep/linux/rtw_proc.c b/os_dep/linux/rtw_proc.c
+index 048080a..1ddc00e 100644
+--- a/os_dep/linux/rtw_proc.c
++++ b/os_dep/linux/rtw_proc.c
+@@ -65,7 +65,12 @@ inline struct proc_dir_entry *rtw_proc_create_dir(const char *name, struct proc_
+ }
+ 
+ inline struct proc_dir_entry *rtw_proc_create_entry(const char *name, struct proc_dir_entry *parent,
+-        const struct file_operations *fops, void * data)
++#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 6, 0)
++        const struct file_operations *fops,
++#else
++        const struct proc_ops *fops,
++#endif
++		void * data)
+ {
+ 	struct proc_dir_entry *entry;
+ 
+@@ -166,7 +171,7 @@ static ssize_t rtw_drv_proc_write(struct file *file, const char __user *buffer,
+ 
+ 	return -EROFS;
+ }
+-
++#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 6, 0)
+ static const struct file_operations rtw_drv_proc_fops = {
+ 	.owner = THIS_MODULE,
+ 	.open = rtw_drv_proc_open,
+@@ -175,7 +180,15 @@ static const struct file_operations rtw_drv_proc_fops = {
+ 	.release = single_release,
+ 	.write = rtw_drv_proc_write,
+ };
+-
++#else
++static const struct proc_ops rtw_drv_proc_fops = {
++	.proc_open = rtw_drv_proc_open,
++	.proc_read = seq_read,
++	.proc_lseek = seq_lseek,
++	.proc_release = single_release,
++	.proc_write = rtw_drv_proc_write,
++};
++#endif
+ int rtw_drv_proc_init(void)
+ {
+ 	int ret = _FAIL;
+@@ -775,7 +788,7 @@ static ssize_t rtw_adapter_proc_write(struct file *file, const char __user *buff
+ 
+ 	return -EROFS;
+ }
+-
++#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 6, 0)
+ static const struct file_operations rtw_adapter_proc_fops = {
+ 	.owner = THIS_MODULE,
+ 	.open = rtw_adapter_proc_open,
+@@ -784,6 +797,15 @@ static const struct file_operations rtw_adapter_proc_fops = {
+ 	.release = single_release,
+ 	.write = rtw_adapter_proc_write,
+ };
++#else
++static const struct proc_ops rtw_adapter_proc_fops = {
++	.proc_open = rtw_adapter_proc_open,
++	.proc_read = seq_read,
++	.proc_lseek = seq_lseek,
++	.proc_release = single_release,
++	.proc_write = rtw_adapter_proc_write,
++};
++#endif
+ 
+ int proc_get_odm_dbg_comp(struct seq_file *m, void *v)
+ {
+@@ -1029,7 +1051,7 @@ static ssize_t rtw_odm_proc_write(struct file *file, const char __user *buffer,
+ 
+ 	return -EROFS;
+ }
+-
++#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 6, 0)
+ static const struct file_operations rtw_odm_proc_fops = {
+ 	.owner = THIS_MODULE,
+ 	.open = rtw_odm_proc_open,
+@@ -1038,6 +1060,15 @@ static const struct file_operations rtw_odm_proc_fops = {
+ 	.release = single_release,
+ 	.write = rtw_odm_proc_write,
+ };
++#else
++static const struct proc_ops rtw_odm_proc_fops = {
++	.proc_open = rtw_odm_proc_open,
++	.proc_read = seq_read,
++	.proc_lseek = seq_lseek,
++	.proc_release = single_release,
++	.proc_write = rtw_odm_proc_write,
++};
++#endif
+ 
+ struct proc_dir_entry *rtw_odm_proc_init(struct net_device *dev)
+ {
