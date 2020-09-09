@@ -31,7 +31,7 @@ define LIBRETRO_HBMAME_BUILD_CMDS
         RETRO=1                                \
         OSD="retro"                            \
 
-		DEBUG=0                                \
+        DEBUG=0                                \
         VERBOSE=1                              \
         NOWERROR=1                             \
 
@@ -40,15 +40,15 @@ define LIBRETRO_HBMAME_BUILD_CMDS
         NO_USE_MIDI=0                          \
         NO_USE_PORTAUDIO=0                     \
 
-		OVERRIDE_CC="$(TARGET_CC)"             \
+        OVERRIDE_CC="$(TARGET_CC)"             \
         OVERRIDE_CXX="$(TARGET_CXX)"           \
-		OVERRIDE_LD="$(TARGET_LD)"             \
+        OVERRIDE_LD="$(TARGET_LD)"             \
         RANLIB="$(TARGET_RANLIB)"              \
         AR="$(TARGET_AR)"                      \
         PYTHON_EXECUTABLE=python2              \
 
-		ARCHOPTS="$(LIBRETRO_HBMAME_ARCHOPTS)" \
-		$(LIBRETRO_HBMAME_EXTRA_ARGS)
+        ARCHOPTS="$(LIBRETRO_HBMAME_ARCHOPTS)" \
+        $(LIBRETRO_HBMAME_EXTRA_ARGS)
 endef
 
 define LIBRETRO_HBMAME_INSTALL_TARGET_CMDS
