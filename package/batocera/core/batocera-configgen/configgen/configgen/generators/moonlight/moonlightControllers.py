@@ -52,6 +52,7 @@ def writeControllersConfig(system, rom, controllers):
         for input in playerConfig:
             mappingFile.save(input, playerConfig[input])
             config[confFile] = controllers[controller].dev
+        mappingFile.write()
     return config
 
 

@@ -88,3 +88,5 @@ def generateMoonlightConfig():
 
     ## Load additional configuration files
     #config = /path/to/config
+
+    moonlightConfig.write()
