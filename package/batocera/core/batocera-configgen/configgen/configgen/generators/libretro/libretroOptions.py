@@ -192,6 +192,8 @@ def generateCoreSettings(retroarchCore, system):
         if user_config[:14] == "retroarchcore.":
             coreSettings.save(user_config[14:], system.config[user_config])
 
+    coreSettings.write()
+
 
 def generateHatariConf(hatariConf):
     hatariConfig = ConfigParser.ConfigParser()

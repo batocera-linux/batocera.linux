@@ -201,3 +201,5 @@ def generateLinappleConfig(rom, playersControllers, gameResolution):
     # Default is 384.
     linappleConfig.save('Screen Width',  gameResolution["width"])
     linappleConfig.save('Screen Height', gameResolution["height"])
+
+    linappleConfig.write()

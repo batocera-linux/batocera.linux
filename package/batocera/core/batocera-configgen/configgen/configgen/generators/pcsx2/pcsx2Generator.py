@@ -162,7 +162,7 @@ def configureGFX(config_directory, system):
     else:
         pcsx2GFXSettings.save("MaxAnisotropy", "0")    
 
-       
+    pcsx2GFXSettings.write()
 
 def configureUI(config_directory, bios_directory, system_config, gameResolution):
     configFileName = "{}/{}".format(config_directory + "/inis", "PCSX2_ui.ini")
