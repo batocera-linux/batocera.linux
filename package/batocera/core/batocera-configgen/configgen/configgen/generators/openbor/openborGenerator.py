@@ -52,6 +52,8 @@ class OpenborGenerator(Generator):
         # controllers
         openborControllers.generateControllerConfig(config, playersControllers, core)
 
+        config.write()
+
         return OpenborGenerator.executeCore(core, rom)
 
     @staticmethod

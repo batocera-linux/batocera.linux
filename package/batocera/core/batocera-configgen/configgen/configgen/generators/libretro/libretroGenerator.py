@@ -37,6 +37,7 @@ class LibretroGenerator(Generator):
                 bezel = None
 
             libretroConfig.writeLibretroConfig(retroconfig, system, playersControllers, rom, bezel, gameResolution)
+            retroconfig.write()
 
         # Retroarch core on the filesystem
         retroarchCore = batoceraFiles.retroarchCores + system.config['core'] + batoceraFiles.libretroExt

@@ -74,6 +74,8 @@ def generateRetroarchCustom():
     # Show badges in Retroarch cheevos list
     retroarchSettings.save('cheevos_badges_enable',             '"true"')
 
+    retroarchSettings.write()
+
 def generateRetroarchCustomPathes(retroarchSettings):
     # Path Retroarch
     retroarchSettings.save('core_options_path',             '"/userdata/system/configs/retroarch/cores/retroarch-core-options.cfg"')

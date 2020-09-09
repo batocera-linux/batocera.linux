@@ -58,7 +58,6 @@ class UnixSettings():
         eslog.debug("Writing {0} = {1} to {2}".format(name, value, self.settingsFile))
         # TODO: do we need proper section support? PSP config is an ini file
         self.config.set('DEFAULT', name, str(value))
-        self.write()
 
     def disable(self, name):
         # unused?

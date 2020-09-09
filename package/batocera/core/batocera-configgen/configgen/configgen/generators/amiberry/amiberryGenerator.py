@@ -76,6 +76,8 @@ class AmiberryGenerator(Generator):
                     commandArray.append("joyport0_friendlyname=" + padfilename)
                 nplayer += 1
 
+            retroconfig.write()
+
             # fps
             if system.config['showFPS'] == 'true':
                 commandArray.append("-s")
