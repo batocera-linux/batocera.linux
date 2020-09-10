@@ -4,9 +4,10 @@
 #
 ################################################################################
 # Version: Commits on Jun 16, 2020
-MALI_BIFROST_MODULE_VERSION = ae1fccae88e70e267135b1a766b414f735110fae
+MALI_BIFROST_MODULE_VERSION = 5df04e17cca7485fad3254f5685ddbc428642f92
 # MALI_BIFROST_MODULE_SITE = $(call github,LibreELEC,mali-bifrost,$(MALI_BIFROST_MODULE_VERSION))
-MALI_BIFROST_MODULE_SITE = $(call github,batocera-linux,mali-bifrost,$(MALI_BIFROST_MODULE_VERSION))
+#MALI_BIFROST_MODULE_SITE = $(call github,batocera-linux,mali-bifrost,$(MALI_BIFROST_MODULE_VERSION))
+MALI_BIFROST_MODULE_SITE = $(call github,rtissera,mali-bifrost,$(MALI_BIFROST_MODULE_VERSION))
 # MALI_BIFROST_MODULE_OVERRIDE_SRCDIR = /sources/mali-bifrost
 
 MALI_BIFROST_MODULE_MODULE_MAKE_OPTS = \

@@ -159,7 +159,7 @@ case "${BATOCERA_TARGET}" in
 
 	S905)
 	MKIMAGE=${HOST_DIR}/bin/mkimage
-	BOARD_DIR="${BATO_DIR}/s905"
+	BOARD_DIR="${BATO_DIR}/amlogic/s905"
 	# boot
 	rm -rf "${BINARIES_DIR:?}/boot"      || exit 1
 	mkdir -p "${BINARIES_DIR}/boot/boot" || exit 1
@@ -200,7 +200,7 @@ case "${BATOCERA_TARGET}" in
 	S912)
 	MKIMAGE=${HOST_DIR}/bin/mkimage
 	MKBOOTIMAGE=${HOST_DIR}/bin/mkbootimg
-	BOARD_DIR="${BATO_DIR}/s912"
+	BOARD_DIR="${BATO_DIR}/amlogic/s912"
 	# boot
 	rm -rf "${BINARIES_DIR:?}/boot"      || exit 1
 	mkdir -p "${BINARIES_DIR}/boot/boot" || exit 1
@@ -313,7 +313,7 @@ case "${BATOCERA_TARGET}" in
 	;;
 
 	C2)
-	BOARD_DIR="${BATO_DIR}/odroidc2"
+	BOARD_DIR="${BATO_DIR}/amlogic/odroidc2"
 	# boot
 	rm -rf "${BINARIES_DIR:?}/boot"      || exit 1
 	mkdir -p "${BINARIES_DIR}/boot/boot" || exit 1
@@ -346,7 +346,7 @@ case "${BATOCERA_TARGET}" in
 	;;
 
 	ODROIDN2)
-	BOARD_DIR="${BATO_DIR}/odroidn2"
+	BOARD_DIR="${BATO_DIR}/amlogic/odroidn2"
 	# /boot
 	rm -rf "${BINARIES_DIR}/boot"            || exit 1
 	mkdir -p "${BINARIES_DIR}/boot/boot"     || exit 1
@@ -580,7 +580,7 @@ case "${BATOCERA_TARGET}" in
 	;;
 
 	VIM3)
-	BOARD_DIR="${BATO_DIR}/vim3"
+	BOARD_DIR="${BATO_DIR}/amlogic/vim3"
 	# /boot
 	rm -rf "${BINARIES_DIR}/boot"                 || exit 1
 	mkdir -p "${BINARIES_DIR}/boot/boot/extlinux" || exit 1
