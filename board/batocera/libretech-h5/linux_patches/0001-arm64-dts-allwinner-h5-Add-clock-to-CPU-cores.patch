@@ -1,4 +1,4 @@
-From e1330fc26478a6888d41ed59bc2dfc579a4a8954 Mon Sep 17 00:00:00 2001
+From d5e782802cc32a32f655a2f9458541677e1780f7 Mon Sep 17 00:00:00 2001
 From: Chen-Yu Tsai <wens@csie.org>
 Date: Sat, 18 Jul 2020 00:00:49 +0800
 Subject: [PATCH] arm64: dts: allwinner: h5: Add clock to CPU cores
@@ -67,8 +67,8 @@ H5:Overclock cpu&gpu
  .../sun50i-h5-bananapi-m2-plus-v1.2.dts       |  1 +
  .../boot/dts/allwinner/sun50i-h5-cpu-opp.dtsi | 62 +++++++++++++++++++
  .../sun50i-h5-libretech-all-h3-cc.dts         |  1 +
- arch/arm64/boot/dts/allwinner/sun50i-h5.dtsi  | 40 +++++++++++-
- 4 files changed, 103 insertions(+), 1 deletion(-)
+ arch/arm64/boot/dts/allwinner/sun50i-h5.dtsi  | 46 ++++++++++++--
+ 4 files changed, 105 insertions(+), 5 deletions(-)
  create mode 100644 arch/arm64/boot/dts/allwinner/sun50i-h5-cpu-opp.dtsi
 
 diff --git a/arch/arm64/boot/dts/allwinner/sun50i-h5-bananapi-m2-plus-v1.2.dts b/arch/arm64/boot/dts/allwinner/sun50i-h5-bananapi-m2-plus-v1.2.dts
@@ -85,7 +85,7 @@ index 2e2b14c0ae75..8857a3791593 100644
  / {
 diff --git a/arch/arm64/boot/dts/allwinner/sun50i-h5-cpu-opp.dtsi b/arch/arm64/boot/dts/allwinner/sun50i-h5-cpu-opp.dtsi
 new file mode 100644
-index 000000000000..87a1cff026b0
+index 000000000000..6426559a03cf
 --- /dev/null
 +++ b/arch/arm64/boot/dts/allwinner/sun50i-h5-cpu-opp.dtsi
 @@ -0,0 +1,62 @@
@@ -127,8 +127,8 @@ index 000000000000..87a1cff026b0
 +			clock-latency-ns = <244144>; /* 8 32k periods */
 +		};
 +
-+		opp-1104000000 {
-+			opp-hz = /bits/ 64 <1104000000>;
++		opp-1056000000 {
++			opp-hz = /bits/ 64 <1056000000>;
 +			opp-microvolt = <1200000 1200000 1310000>;
 +			clock-latency-ns = <244144>; /* 8 32k periods */
 +		};
@@ -164,7 +164,7 @@ index 64d35daf2023..d811df332824 100644
  
  / {
 diff --git a/arch/arm64/boot/dts/allwinner/sun50i-h5.dtsi b/arch/arm64/boot/dts/allwinner/sun50i-h5.dtsi
-index 4462a68c0681..10c81266eb8b 100644
+index 4462a68c0681..f5eb8120461d 100644
 --- a/arch/arm64/boot/dts/allwinner/sun50i-h5.dtsi
 +++ b/arch/arm64/boot/dts/allwinner/sun50i-h5.dtsi
 @@ -3,6 +3,8 @@
@@ -216,16 +216,34 @@ index 4462a68c0681..10c81266eb8b 100644
  		};
  	};
  
-@@ -144,7 +158,7 @@ mali: gpu@1e80000 {
+@@ -125,8 +139,7 @@ mali: gpu@1e80000 {
+ 				     <GIC_SPI 104 IRQ_TYPE_LEVEL_HIGH>,
+ 				     <GIC_SPI 105 IRQ_TYPE_LEVEL_HIGH>,
+ 				     <GIC_SPI 106 IRQ_TYPE_LEVEL_HIGH>,
+-				     <GIC_SPI 107 IRQ_TYPE_LEVEL_HIGH>,
+-				     <GIC_SPI 98 IRQ_TYPE_LEVEL_HIGH>;
++				     <GIC_SPI 107 IRQ_TYPE_LEVEL_HIGH>;
+ 			interrupt-names = "gp",
+ 					  "gpmmu",
+ 					  "pp",
+@@ -137,14 +150,13 @@ mali: gpu@1e80000 {
+ 					  "pp2",
+ 					  "ppmmu2",
+ 					  "pp3",
+-					  "ppmmu3",
+-					  "pmu";
++					  "ppmmu3";
+ 			clocks = <&ccu CLK_BUS_GPU>, <&ccu CLK_GPU>;
+ 			clock-names = "bus", "core";
  			resets = <&ccu RST_BUS_GPU>;
  
  			assigned-clocks = <&ccu CLK_GPU>;
 -			assigned-clock-rates = <384000000>;
-+			assigned-clock-rates = <416000000>;
++			assigned-clock-rates = <500000000>;
  		};
  
  		ths: thermal-sensor@1c25000 {
-@@ -165,6 +179,30 @@ cpu_thermal: cpu-thermal {
+@@ -165,6 +177,30 @@ cpu_thermal: cpu-thermal {
  			polling-delay-passive = <0>;
  			polling-delay = <0>;
  			thermal-sensors = <&ths 0>;
