@@ -536,6 +536,24 @@ mame:
     Fichiers spéciaux pour le core mame2003 :
     - Ajoutez vos fichiers samples dans le répertoire /userdata/bios/mame2003/samples/
 
+hbmame:
+  name:       HBMame
+  manufacturer: Arcade
+  release: 2013
+  hardware: arcade
+  extensions: [zip, 7z]
+  emulators:
+    libretro:
+      hbmame:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_HBMAME] }
+  comment_en: |
+    HBMAME (HomeBrew MAME) is a derivative of MAME, and contains various hacks and homebrews.
+    What's in it?
+        - Homebrew games meant for arcade hardware, or emulators of arcade hardware
+        - Hacks of arcade games
+        - Test roms and similar that do not generate revenue
+        - Selected bootlegs that are not in MAME
+        - Games that are enhanced or improved but not suitable for MAME 
+
 neogeo:
   name:       Neo-Geo
   manufacturer: SNK
