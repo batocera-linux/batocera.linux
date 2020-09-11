@@ -44,32 +44,6 @@ xu4_fusing() {
 	dd if=/dev/zero of="${BATOCERAIMG}" seek=$env_position count=32 bs=512 conv=notrunc || return 1
 }
 
-# C2 SD CARD
-#
-#       1       97         1281
-# +-----+-------+-----------+--------+--------------+
-# | MBR |  bl1  |   uboot   |  BOOT  |     FREE     |
-# +-----+-------+-----------+--------+--------------+
-#      512     48K         640K
-#
-# http://odroid.com/dokuwiki/doku.php?id=en:c2_building_u-boot
-
-c2_fusing() {
-	BINARIES_DIR=$1
-	BATOCERAIMG=$2
-
-	# fusing
-	signed_bl1_position=1
-	signed_bl1_skip=0
-	uboot_position=97
-
-	echo "BL1 fusing"
-	dd if="${BINARIES_DIR}/bl1.bin.hardkernel" of="${BATOCERAIMG}" seek=$signed_bl1_position skip=$signed_bl1_skip conv=notrunc || return 1
-
-	echo "u-boot fusing"
-	dd if="${BINARIES_DIR}/u-boot.bin"         of="${BATOCERAIMG}" seek=$uboot_position                            conv=notrunc || return 1
-}
-
 BATOCERA_BINARIES_DIR="${BINARIES_DIR}/batocera"
 BATOCERA_TARGET_DIR="${TARGET_DIR}/batocera"
 
@@ -315,6 +289,14 @@ case "${BATOCERA_TARGET}" in
 	C2)
 	BOARD_DIR="${BATO_DIR}/amlogic/odroidc2"
         MKIMAGE=${HOST_DIR}/bin/mkimage
+	# amlogic stuff
+	"${HOST_DIR}/bin/fip_create" --bl30 "${BINARIES_DIR}/bl30.bin" --bl301 "${BINARIES_DIR}/bl301.bin" --bl31 "${BINARIES_DIR}/bl31.bin" --bl33 "${BINARIES_DIR}/u-boot.bin" "${BINARIES_DIR}/fip.bin"
+	"${HOST_DIR}/bin/fip_create" --dump "${BINARIES_DIR}/fip.bin"
+	cat "${BINARIES_DIR}/bl2.package" "${BINARIES_DIR}/fip.bin" > "${BINARIES_DIR}/boot_new.bin"
+	"${HOST_DIR}/bin/amlbootsig" "${BINARIES_DIR}/boot_new.bin" "${BINARIES_DIR}/u-boot.img"
+	dd if="${BINARIES_DIR}/u-boot.img" of="${BINARIES_DIR}/uboot-odc2.img" bs=512 skip=96
+	#support/scripts/genimage.sh -c ${BOARD_DIR}/genimage.cfg
+
 	# boot
 	rm -rf "${BINARIES_DIR:?}/boot"      || exit 1
 	mkdir -p "${BINARIES_DIR}/boot/boot" || exit 1
@@ -328,6 +310,8 @@ case "${BATOCERA_TARGET}" in
 	cp "${BINARIES_DIR}/rootfs.squashfs" "${BINARIES_DIR}/boot/boot/batocera.update" || exit 1
         cp "${BOARD_DIR}/boot/extlinux.conf" "${BINARIES_DIR}/boot/extlinux"                   || exit 1
 	cp -pr "${BINARIES_DIR}/tools"       "${BINARIES_DIR}/boot/"                || exit 1
+	cp "${BINARIES_DIR}/bl1.bin.hardkernel" "${BINARIES_DIR}/boot/" || exit 1
+	cp "${BINARIES_DIR}/uboot-odc2.img" "${BINARIES_DIR}/boot/" || exit 1
 
 	# boot.tar.xz
 	echo "creating boot.tar.xz"
@@ -344,7 +328,6 @@ case "${BATOCERA_TARGET}" in
 	genimage --rootpath="${TARGET_DIR}" --inputpath="${BINARIES_DIR}/boot" --outputpath="${BATOCERA_BINARIES_DIR}" --config="${BINARIES_DIR}/genimage.cfg" --tmppath="${GENIMAGE_TMP}" || exit 1
 	rm -f "${BATOCERA_BINARIES_DIR}/boot.vfat" || exit 1
 	rm -f "${BATOCERA_BINARIES_DIR}/userdata.ext4" || exit 1
-	c2_fusing "${BINARIES_DIR}" "${BATOCERAIMG}" || exit 1
 	sync || exit 1
 	;;
 
