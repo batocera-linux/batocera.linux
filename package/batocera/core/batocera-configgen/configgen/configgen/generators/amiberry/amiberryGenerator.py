@@ -50,6 +50,7 @@ class AmiberryGenerator(Generator):
 
             # controller
             libretroControllers.writeControllersConfig(retroconfig, system, playersControllers)
+            retroconfig.write()
 
             if not os.path.exists(batoceraFiles.amiberryRetroarchInputsDir):
                 os.makedirs(batoceraFiles.amiberryRetroarchInputsDir)
@@ -75,8 +76,6 @@ class AmiberryGenerator(Generator):
                     commandArray.append("-s")
                     commandArray.append("joyport0_friendlyname=" + padfilename)
                 nplayer += 1
-
-            retroconfig.write()
 
             # fps
             if system.config['showFPS'] == 'true':
