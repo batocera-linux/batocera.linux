@@ -431,7 +431,6 @@ config BR2_PACKAGE_BATOCERA_RETROARCH
         select BR2_PACKAGE_LIBRETRO_VIRTUALJAGUAR     if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY # VIRTUALJAGUAR
 
         select BR2_PACKAGE_LIBRETRO_BEETLE_PCFX       if !BR2_PACKAGE_BATOCERA_TARGET_RPI_ANY   && \
-                                                         !BR2_PACKAGE_BATOCERA_TARGET_C2        && \
                                                          !BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA && \
                                                          !BR2_PACKAGE_BATOCERA_TARGET_S905      && \
                                                          !BR2_PACKAGE_BATOCERA_TARGET_VIM3      && \
@@ -444,7 +443,6 @@ config BR2_PACKAGE_BATOCERA_RETROARCH
 
         select BR2_PACKAGE_LIBRETRO_FLYCAST           if !BR2_PACKAGE_BATOCERA_TARGET_RPI1    && \
                                                          !BR2_PACKAGE_BATOCERA_TARGET_RPI2    && \
-                                                         !BR2_PACKAGE_BATOCERA_TARGET_C2      && \
                                                          !BR2_PACKAGE_BATOCERA_TARGET_S905    && \
                                                          !BR2_PACKAGE_BATOCERA_TARGET_S912
                                                                                      # FLYCAST
@@ -465,7 +463,7 @@ config BR2_PACKAGE_BATOCERA_RETROARCH
         select BR2_PACKAGE_LIBRETRO_DESMUME           if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
         select BR2_PACKAGE_LIBRETRO_IMAGEVIEWER       # ALL
 
-        select BR2_PACKAGE_LIBRETRO_NEOCD             if !BR2_PACKAGE_BATOCERA_TARGET_C2
+        select BR2_PACKAGE_LIBRETRO_NEOCD             # ALL 
         select BR2_PACKAGE_LIBRETRO_POKEMINI          # ALL
         select BR2_PACKAGE_LIBRETRO_ATARI800          # ALL
         select BR2_PACKAGE_LIBRETRO_BEETLE_VB         # ALL
