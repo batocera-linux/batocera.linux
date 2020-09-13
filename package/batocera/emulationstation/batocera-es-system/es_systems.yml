@@ -1157,7 +1157,7 @@ gamecube:
   manufacturer: Nintendo
   release: 2001
   hardware: console
-  extensions: [gcm, iso, gcz, ciso, wbfs, rvz]
+  extensions: [gcm, iso, gcz, ciso, wbfs, rvz, elf, dol]
   platform:   gc
   theme:      gc
   emulators:
@@ -1171,7 +1171,7 @@ wii:
   manufacturer: Nintendo
   release: 2006
   hardware: console
-  extensions: [gcm, iso, gcz, ciso, wbfs, wad, rvz]
+  extensions: [gcm, iso, gcz, ciso, wbfs, wad, rvz, elf, dol]
   emulators:
     dolphin:
       dolphin:  { requireAnyOf: [BR2_PACKAGE_DOLPHIN_EMU]       }
