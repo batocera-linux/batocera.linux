@@ -24,31 +24,28 @@ define LIBRETRO_HBMAME_BUILD_CMDS
 	mkdir -p $(@D)/build/libretro/obj/x64/libretro/src/osd/libretro/libretro-internal
 
 	$(MAKE) -C $(@D)/ -f Makefile.libretro     \
-        TARGET=hbmame                          \
-        CONFIG=libretro                        \
-        TARGETOS=linux                         \
-        OS=linux                               \
-        RETRO=1                                \
-        OSD="retro"                            \
-
-        DEBUG=0                                \
-        VERBOSE=1                              \
-        NOWERROR=1                             \
-
-        OPENMP=1                               \
-        REGENIE=0                              \
-        NO_USE_MIDI=0                          \
-        NO_USE_PORTAUDIO=0                     \
-
-        OVERRIDE_CC="$(TARGET_CC)"             \
-        OVERRIDE_CXX="$(TARGET_CXX)"           \
-        OVERRIDE_LD="$(TARGET_LD)"             \
-        RANLIB="$(TARGET_RANLIB)"              \
-        AR="$(TARGET_AR)"                      \
-        PYTHON_EXECUTABLE=python2              \
-
-        ARCHOPTS="$(LIBRETRO_HBMAME_ARCHOPTS)" \
-        $(LIBRETRO_HBMAME_EXTRA_ARGS)
+		TARGET=hbmame                          \
+		CONFIG=libretro                        \
+		TARGETOS=linux                         \
+		OS=linux                               \
+		RETRO=1                                \
+		OSD="retro"                            \
+		DEBUG=0                                \
+		VERBOSE=1                              \
+		NOWERROR=1                             \
+		CROSS_BUILD=1                          \
+		REGENIE=1                              \
+		OPENMP=1                               \
+		NO_USE_MIDI=1                          \
+		NO_USE_PORTAUDIO=1                     \
+		PYTHON_EXECUTABLE=python2              \
+		$(LIBRETRO_HBMAME_EXTRA_ARGS)          \
+		ARCHOPTS="$(LIBRETRO_HBMAME_ARCHOPTS)" \
+		OVERRIDE_CC="$(TARGET_CC)"             \
+		OVERRIDE_CXX="$(TARGET_CXX)"           \
+		OVERRIDE_LD="$(TARGET_LD)"             \
+		RANLIB="$(TARGET_RANLIB)"              \
+		AR="$(TARGET_AR)"
 endef
 
 define LIBRETRO_HBMAME_INSTALL_TARGET_CMDS
