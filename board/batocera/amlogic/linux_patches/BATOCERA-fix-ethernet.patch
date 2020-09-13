@@ -1,0 +1,17 @@
+--- a/arch/arm64/boot/dts/amlogic/meson-gxbb-odroidc2.dts	2020-09-13 18:55:16.064852048 +0200
++++ b/arch/arm64/boot/dts/amlogic/meson-gxbb-odroidc2.dts	2020-09-13 18:57:40.399824479 +0200
+@@ -183,12 +183,10 @@
+ 
+ &ethmac {
+ 	status = "okay";
+-	pinctrl-0 = <&eth_rgmii_pins>;
++	pinctrl-0 = <&eth_rgmii_pins>;
+ 	pinctrl-names = "default";
+ 	phy-handle = <&eth_phy0>;
+-	phy-mode = "rgmii";
+-
+-	amlogic,tx-delay-ns = <2>;
++	phy-mode = "rgmii-id";
+ 
+ 	mdio {
+ 		compatible = "snps,dwmac-mdio";
