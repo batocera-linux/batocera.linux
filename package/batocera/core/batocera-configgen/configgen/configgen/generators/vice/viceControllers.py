@@ -31,9 +31,9 @@ def generateControllerConfig(viceConfigFile, playersControllers):
         os.makedirs(os.path.dirname(viceFile))
 
     nplayer = 1
+    listVice = [];
     for playercontroller, pad in sorted(playersControllers.items()):
         if nplayer == 1:    
-            listVice = [];
             listVice.append("!CLEAR")
             # joystick1right
             listVice.append("0 0 0 1 1 8")
