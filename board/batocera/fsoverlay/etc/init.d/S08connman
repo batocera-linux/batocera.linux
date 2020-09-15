@@ -3,7 +3,7 @@
 case "$1" in
 	start)
 		printf "Starting connman ... "
-		start-stop-daemon -S -q -m -b -p /var/run/connmand.pid --exec /usr/sbin/connmand -- -n
+		start-stop-daemon -S -q -m -b -p /var/run/connmand.pid --exec /usr/sbin/connmand_reload -- -n
 
 		# wait connmann is started. otherwise, S10wifi is unable to execute connmanctl commands
 		N=0
