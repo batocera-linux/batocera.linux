@@ -9,7 +9,7 @@ grep -qE '^dtoverlay=vc4-kms-v3d-pi4,noaudio$' /boot/config.txt && exit 0
 # update the file
 mount -o remount,rw /boot || exit 1
 sed -i '/^[ ]*dtoverlay[ ]*=[ ]*vc4.*$/d'          /boot/config.txt || exit 0
-(echo;echo 'dtoverlay=vc4-kms-v3d-pi4,noaudio') >> /boot/config.txt || exit 0
+(echo;echo 'dtoverlay=vc4-kms-v3d-pi4') >> /boot/config.txt || exit 0
 mount -o remount,ro /boot || exit 1
 shutdown -r now
 
