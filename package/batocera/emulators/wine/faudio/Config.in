@@ -3,6 +3,7 @@ config BR2_PACKAGE_FAUDIO
         depends on BR2_i386 || BR2_x86_64
 	depends on BR2_PACKAGE_SDL2
 	depends on BR2_PACKAGE_GSTREAMER1
+	depends on BR2_PACKAGE_GST1_PLUGINS_BASE
 	# Wine unconditionally builds shared libraries
 	depends on !BR2_STATIC_LIBS
 	help
