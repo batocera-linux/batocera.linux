@@ -341,14 +341,14 @@ case "${BATOCERA_TARGET}" in
 	cp "${BINARIES_DIR}/u-boot.bin"                        "${BINARIES_DIR}/boot/u-boot.bin"                            || exit 1
 	cp "${BINARIES_DIR}/uInitrd"                           "${BINARIES_DIR}/boot/boot/uInitrd"                          || exit 1
 	cp "${BINARIES_DIR}/rootfs.squashfs"                   "${BINARIES_DIR}/boot/boot/batocera.update"                  || exit 1
-	cp "${BINARIES_DIR}/meson64_odroidn2.dtb"              "${BINARIES_DIR}/boot/boot/meson64_odroid-n2.dtb"            || exit 1
-	cp "${BINARIES_DIR}/meson64_odroidn2_plus.dtb"         "${BINARIES_DIR}/boot/boot/meson64_odroid-n2_plus.dtb"       || exit 1
+	cp "${BINARIES_DIR}/meson-g12b-odroid-n2.dtb"          "${BINARIES_DIR}/boot/boot/meson-g12b-odroid-n2.dtb"         || exit 1
+	cp "${BINARIES_DIR}/meson-g12b-odroid-n2-plus.dtb"     "${BINARIES_DIR}/boot/boot/meson-g12b-odroid-n2_plus.dtb"    || exit 1
 	cp "${BINARIES_DIR}/batocera-boot.conf"                "${BINARIES_DIR}/boot/batocera-boot.conf"                    || exit 1
-	cp "${BOARD_DIR}/boot/extlinux.conf" "${BINARIES_DIR}/boot/boot/extlinux.conf" || exit 1
-	cp "${BOARD_DIR}/boot/boot.ini" "${BINARIES_DIR}/boot/boot.ini" || exit 1
-	cp "${BOARD_DIR}/boot/config.ini" "${BINARIES_DIR}/boot/config.ini" || exit 1
-	cp "${BOARD_DIR}/boot/boot-logo.bmp.gz" "${BINARIES_DIR}/boot"   || exit 1
-	cp -pr "${BINARIES_DIR}/tools"       "${BINARIES_DIR}/boot/"                || exit 1
+	cp "${BOARD_DIR}/boot/extlinux.conf"                   "${BINARIES_DIR}/boot/boot/extlinux.conf"                    || exit 1
+	cp "${BOARD_DIR}/boot/boot.ini"                        "${BINARIES_DIR}/boot/boot.ini"                              || exit 1
+	cp "${BOARD_DIR}/boot/config.ini"                      "${BINARIES_DIR}/boot/config.ini"                            || exit 1
+	cp "${BOARD_DIR}/boot/boot-logo.bmp.gz"                "${BINARIES_DIR}/boot"                                       || exit 1
+	cp -pr "${BINARIES_DIR}/tools"                         "${BINARIES_DIR}/boot/" || exit 1
 
 	# boot.tar.xz
 	echo "creating boot.tar.xz"
