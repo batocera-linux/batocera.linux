@@ -239,7 +239,7 @@ static int modeset_setup_dev(int fd, drmModeRes *res, drmModeConnector *conn,
 	return 0;
 }
 
-static int modeset_prepare(int fd)
+static int modeset_prepare(int fd, int do_real_check)
 {
 	drmModeRes *res;
 	drmModeConnector *conn;
@@ -285,12 +285,30 @@ static int modeset_prepare(int fd)
 
 		// batocera
 		for (i = 0; (int)i < conn->count_modes; i++) {
-		  printf("%d:%dx%d %uHz\n",
-			 i,
-			 //conn->modes[i].name,
-			 conn->modes[i].hdisplay,
-			 conn->modes[i].vdisplay,
-			 conn->modes[i].vrefresh);
+		  if(do_real_check == 1) {
+		    ret = drmModeSetCrtc(fd, dev->crtc, dev->fb, 0, 0, conn, 1, &conn->modes[i]);
+		  } else {
+		    ret = 0;
+		  }
+
+		  if(ret == 0) {
+		    printf("%d:%dx%d %uHz (%s)\n",
+			   i,
+			   conn->modes[i].hdisplay,
+			   conn->modes[i].vdisplay,
+			   conn->modes[i].vrefresh,
+			   conn->modes[i].name);
+		  } else {
+		    fprintf(stderr,
+			    "%d:%dx%d %uHz (%s) : error(%i)\n",
+			    i,
+			    conn->modes[i].hdisplay,
+			    conn->modes[i].vdisplay,
+			    conn->modes[i].vrefresh,
+			    conn->modes[i].name,
+			    ret);
+
+		  }
 		}
 		//
 
@@ -366,12 +384,19 @@ int main(int argc, char **argv)
   int ret, fd, i;
 	const char *card;
 	struct modeset_dev *iter;
+	int do_real_check;
 
 	if (argc > 1)
 		card = argv[1];
 	else
 		card = "/dev/dri/card0";
 
+	if (argc > 2)
+	  do_real_check = strcmp(argv[2], "check") == 0 ? 1 : 0;
+	else
+	  do_real_check = 0;
+
+	
 	fprintf(stderr, "using card '%s'\n", card);
 
 	/* open the DRM device */
@@ -380,7 +405,7 @@ int main(int argc, char **argv)
 		goto out_return;
 
 	/* prepare all connectors and CRTCs */
-	ret = modeset_prepare(fd);
+	ret = modeset_prepare(fd, do_real_check);
 	if (ret)
 		goto out_close;
 
