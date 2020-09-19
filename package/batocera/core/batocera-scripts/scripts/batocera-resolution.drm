@@ -34,6 +34,7 @@ case "${ACTION}" in
     "setOutput")
 	;;
     "minTomaxResolution")
+	echo 0 > /var/run/drmMode
 	exit 0 # dont minimize for 4K tv, causing too many troubles while tv don't give the correct informations
 
 	# minimize resolution because of 4K tv
