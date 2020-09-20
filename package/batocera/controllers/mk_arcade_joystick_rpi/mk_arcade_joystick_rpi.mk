@@ -21,4 +21,5 @@ define MK_ARCADE_JOYSTICK_RPI_INSTALL_TARGET_CMDS
         $(MAKE) -C $(@D) $(LINUX_MAKE_FLAGS) KERNELDIR=$(LINUX_DIR) modules_install
 endef
 
+$(eval $(kernel-module))
 $(eval $(generic-package))
