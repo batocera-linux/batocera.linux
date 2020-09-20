@@ -3,7 +3,7 @@
 # GAMECON_GPIO_RPI
 #
 ################################################################################
-GAMECON_GPIO_RPI_VERSION = d70ac2459443f2bd96e8d99bf5dd5b84658ffe77
+GAMECON_GPIO_RPI_VERSION = 5fe34e2fb05d0480439553a9d287ceebce2fc9f9
 GAMECON_GPIO_RPI_SITE = $(call github,marqs85,gamecon_gpio_rpi,$(GAMECON_GPIO_RPI_VERSION))
 
 define GAMECON_GPIO_RPI_FIX_EXTRACT
