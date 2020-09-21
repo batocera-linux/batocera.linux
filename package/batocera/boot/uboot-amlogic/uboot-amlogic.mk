@@ -1,10 +1,10 @@
 ################################################################################
 #
-# U-Boot files for Amlogic Board (Khadas VIM3 and Odroid N2
+# U-Boot files for Amlogic Board (Khadas VIM3 and Odroid N2)
 #
 ################################################################################
-# Version: Commits on Dec 29, 2019
-UBOOT_AMLOGIC_VERSION = bfdad4cc520b254813536ebfba8b9749386cd57c
+# Version: Commits on Jul 19, 2020
+UBOOT_AMLOGIC_VERSION = 27c705a98e0131384ab3962a6a5ab7ce02aa1109
 UBOOT_AMLOGIC_SITE = $(call github,LibreELEC,amlogic-boot-fip,$(UBOOT_AMLOGIC_VERSION))
 UBOOT_AMLOGIC_DEPENDS = uboot
 
@@ -22,7 +22,7 @@ define UBOOT_AMLOGIC_BUILD_CMDS
 	mkdir -p $(UBOOT_AMLOGIC_BUILD_DIR)
 
 	cp $(UBOOT_AMLOGIC_FIPDIR)/bl301.bin  $(UBOOT_AMLOGIC_BUILD_DIR)/
-	cp $(UBOOT_AMLOGIC_FIPDIR)/acs.bin    $(UBOOT_AMLOGIC_BUILD_DIR)/	
+	cp $(UBOOT_AMLOGIC_FIPDIR)/acs.bin    $(UBOOT_AMLOGIC_BUILD_DIR)/
 	cp $(UBOOT_AMLOGIC_FIPDIR)/bl2.bin    $(UBOOT_AMLOGIC_BUILD_DIR)/
 	cp $(UBOOT_AMLOGIC_FIPDIR)/bl30.bin   $(UBOOT_AMLOGIC_BUILD_DIR)/
 	cp $(UBOOT_AMLOGIC_FIPDIR)/bl31.img   $(UBOOT_AMLOGIC_BUILD_DIR)/
