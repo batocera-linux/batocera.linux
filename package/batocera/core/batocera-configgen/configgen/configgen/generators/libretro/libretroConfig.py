@@ -453,21 +453,20 @@ def writeBezelConfig(bezel, retroarchConfig, systemName, rom, gameResolution, be
                             oldwidth, oldheight = struct.unpack('>ii', head[16:24])
                             if (oldwidth != gameResolution["width"] or oldheight != gameResolution["height"]):
                                create_new_bezel_file = True
+            xoffset = gameResolution["width"]  - infos["width"]
+            yoffset = gameResolution["height"] - infos["height"]
+            retroarchConfig['custom_viewport_x']      = infos["left"] + xoffset/2
+            retroarchConfig['custom_viewport_y']      = infos["top"] + yoffset/2
+            retroarchConfig['custom_viewport_width']  = infos["width"]  - infos["left"] - infos["right"]
+            retroarchConfig['custom_viewport_height'] = infos["height"] - infos["top"]  - infos["bottom"]
+            retroarchConfig['video_message_pos_x']    = infos["messagex"] + xoffset/2
+            retroarchConfig['video_message_pos_y']    = infos["messagey"] + yoffset/2
 
             if create_new_bezel_file is True:
                 # Padding left and right borders for ultrawide screens (larger than 16:9 aspect ratio)
                 # or up/down for 4K
                 eslog.log("Generating a new adapted bezel file {}".format(output_png_file))
                 fillcolor = 'black'
-                xoffset = gameResolution["width"]  - infos["width"]
-                yoffset = gameResolution["height"] - infos["height"]
-                retroarchConfig['custom_viewport_x']      = infos["left"] + xoffset/2
-                retroarchConfig['custom_viewport_y']      = infos["top"] + yoffset/2
-                retroarchConfig['custom_viewport_width']  = infos["width"]  - infos["left"] - infos["right"]
-                retroarchConfig['custom_viewport_height'] = infos["height"] - infos["top"]  - infos["bottom"]
-                retroarchConfig['video_message_pos_x']    = infos["messagex"] + xoffset/2
-                retroarchConfig['video_message_pos_y']    = infos["messagey"] + yoffset/2
-
                 borderw = 0
                 borderh = 0
                 if wratio > 1:
