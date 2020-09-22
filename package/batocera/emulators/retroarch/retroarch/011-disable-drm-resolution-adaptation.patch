@@ -1,0 +1,87 @@
+diff --git a/gfx/drivers_context/drm_ctx.c b/gfx/drivers_context/drm_ctx.c
+index ad65db7..ce68964 100644
+--- a/gfx/drivers_context/drm_ctx.c
++++ b/gfx/drivers_context/drm_ctx.c
+@@ -622,6 +622,8 @@ static bool gfx_ctx_drm_set_video_mode(void *data,
+    settings_t *settings        = config_get_ptr();
+    bool black_frame_insertion  = settings->bools.video_black_frame_insertion;
+    float video_refresh_rate    = settings->floats.video_refresh_rate;
++   FILE* fdDrmMode;
++   int drmMode;
+ 
+    if (!drm)
+       return false;
+@@ -637,35 +639,45 @@ static bool gfx_ctx_drm_set_video_mode(void *data,
+    /* Find desired video mode, and use that.
+     * If not fullscreen, we get desired windowed size,
+     * which is not appropriate. */
+-   if ((width == 0 && height == 0) || !fullscreen)
+-      g_drm_mode = &g_drm_connector->modes[0];
+-   else
+-   {
+-      /* Try to match refresh_rate as closely as possible.
+-       *
+-       * Lower resolutions tend to have multiple supported
+-       * refresh rates as well.
+-       */
+-      float minimum_fps_diff = 0.0f;
+-
+-      /* Find best match. */
+-      for (i = 0; i < g_drm_connector->count_modes; i++)
+-      {
+-         float diff;
+-         if (width != g_drm_connector->modes[i].hdisplay ||
+-               height != g_drm_connector->modes[i].vdisplay)
+-            continue;
+-
+-         diff = fabsf(refresh_mod * g_drm_connector->modes[i].vrefresh
+-               - video_refresh_rate);
+-
+-         if (!g_drm_mode || diff < minimum_fps_diff)
+-         {
+-            g_drm_mode = &g_drm_connector->modes[i];
+-            minimum_fps_diff = diff;
+-         }
+-      }
++   //if ((width == 0 && height == 0) || !fullscreen)
++   g_drm_mode = &g_drm_connector->modes[0];
++   // batocera - set resolution
++   if((fdDrmMode = fopen("/var/run/drmMode", "r")) != NULL) {
++     if(fscanf(fdDrmMode, "%i", &drmMode) == 1) {
++       if(drmMode>=0 && drmMode<g_drm_connector->count_modes) {
++	 g_drm_mode = &g_drm_connector->modes[drmMode];
++       }
++     }
++     fclose(fdDrmMode);
+    }
++   //   
++   //else
++   //{
++   //   /* Try to match refresh_rate as closely as possible.
++   //    *
++   //    * Lower resolutions tend to have multiple supported
++   //    * refresh rates as well.
++   //    */
++   //   float minimum_fps_diff = 0.0f;
++   //
++   //   /* Find best match. */
++   //   for (i = 0; i < g_drm_connector->count_modes; i++)
++   //   {
++   //      float diff;
++   //      if (width != g_drm_connector->modes[i].hdisplay ||
++   //            height != g_drm_connector->modes[i].vdisplay)
++   //         continue;
++   //
++   //      diff = fabsf(refresh_mod * g_drm_connector->modes[i].vrefresh
++   //            - video_refresh_rate);
++   //
++   //      if (!g_drm_mode || diff < minimum_fps_diff)
++   //      {
++   //         g_drm_mode = &g_drm_connector->modes[i];
++   //         minimum_fps_diff = diff;
++   //      }
++   //   }
++   //}
+ 
+    if (!g_drm_mode)
+    {
