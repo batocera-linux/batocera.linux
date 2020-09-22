@@ -9,6 +9,7 @@ from settings.unixSettings import UnixSettings
 import json
 from utils.logger import eslog
 from PIL import Image, ImageOps
+import struct
 
 sys.path.append(
     os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
@@ -22,7 +23,6 @@ def defined(key, dict):
 # https://github.com/libretro/RetroArch/blob/master/gfx/video_driver.c#L132
 ratioIndexes = ["4/3", "16/9", "16/10", "16/15", "21/9", "1/1", "2/1", "3/2", "3/4", "4/1", "4/4", "5/4", "6/5", "7/9", "8/3",
                 "8/7", "19/12", "19/14", "30/17", "32/9", "config", "squarepixel", "core", "custom"]
-
 
 # Define the libretro device type corresponding to the libretro cores, when needed.
 coreToP1Device = {'cap32': '513', '81': '257', 'fuse': '513'};
@@ -386,7 +386,7 @@ def writeBezelConfig(bezel, retroarchConfig, systemName, rom, gameResolution, be
             return
         else:
             # No info on the bezel, let's get the bezel image width and height and apply the
-            # ratios from usual 4:3 1920x1080 bezels (example: theBezelProject)
+            # ratios from usual 16:9 1920x1080 bezels (example: theBezelProject)
             try:
                 infos["width"], infos["height"] = Image.open(overlay_png_file).size
                 infos["top"]    = int(infos["height"] * 2 / 1080)
@@ -439,9 +439,25 @@ def writeBezelConfig(bezel, retroarchConfig, systemName, rom, gameResolution, be
                 else:
                     if os.path.getmtime(output_png_file) < os.path.getmtime(overlay_png_file):
                         create_new_bezel_file = True
+                    else:
+                        # fast way of checking the size of a png
+                        with open(output_png_file, 'rb') as fhandle:
+                            head = fhandle.read(32)
+                            if len(head) != 32:
+                               # corrupted header
+                               create_new_bezel_file = True
+                            check = struct.unpack('>i', head[4:8])[0]
+                            if check != 0x0d0a1a0a:
+                               # corrupted header (again)
+                               create_new_bezel_file = True
+                            oldwidth, oldheight = struct.unpack('>ii', head[16:24])
+                            if (oldwidth != gameResolution["width"] or oldheight != gameResolution["height"]):
+                               create_new_bezel_file = True
 
             if create_new_bezel_file is True:
                 # Padding left and right borders for ultrawide screens (larger than 16:9 aspect ratio)
+                # or up/down for 4K
+                eslog.log("Generating a new adapted bezel file {}".format(output_png_file))
                 fillcolor = 'black'
                 xoffset = gameResolution["width"]  - infos["width"]
                 yoffset = gameResolution["height"] - infos["height"]
@@ -473,7 +489,6 @@ def writeBezelConfig(bezel, retroarchConfig, systemName, rom, gameResolution, be
                 else:
                     imgout = ImageOps.expand(imgin, border=(borderw, borderh, xoffset-borderw, yoffset-borderh), fill=fillcolor)
                     imgout.save(output_png_file, mode="RGBA", format="PNG")
-
             overlay_png_file = output_png_file # replace by the new file (recreated or cached in /tmp)
     else:
         if viewPortUsed:
@@ -484,6 +499,7 @@ def writeBezelConfig(bezel, retroarchConfig, systemName, rom, gameResolution, be
         retroarchConfig['video_message_pos_x']    = infos["messagex"]
         retroarchConfig['video_message_pos_y']    = infos["messagey"]
 
+    eslog.log("Bezel file set to {}".format(overlay_png_file))
     writeBezelCfgConfig(overlay_cfg_file, overlay_png_file)
 
 def isLowResolution(gameResolution):
