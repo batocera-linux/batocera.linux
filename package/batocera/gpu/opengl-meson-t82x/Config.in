@@ -1,8 +1,0 @@
-config BR2_PACKAGE_OPENGL_MESON_T82X
-	bool "opengl-meson-t82x"
-	depends on BR2_arm || BR2_aarch64
-	select BR2_PACKAGE_LIBHYBRIS
-	help
-	  Install the binary user-space components for the ARM Mali Midgard
-
-comment "opengl-meson-tx82"

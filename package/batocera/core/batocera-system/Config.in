@@ -116,6 +116,7 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
                                                             BR2_PACKAGE_BATOCERA_TARGET_RPI4         || \
                                                             BR2_PACKAGE_BATOCERA_TARGET_VIM3         || \
                                                             BR2_PACKAGE_BATOCERA_TARGET_C2           || \
+                                                            BR2_PACKAGE_BATOCERA_TARGET_S912         || \
                                                             BR2_PACKAGE_BATOCERA_TARGET_LIBRETECH_H5
 
     select BR2_PACKAGE_LIBDRM                            if BR2_PACKAGE_BATOCERA_TARGET_ROCKPRO64    || \
@@ -127,7 +128,9 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
                                                             BR2_PACKAGE_BATOCERA_TARGET_MIQI         || \
                                                             BR2_PACKAGE_BATOCERA_TARGET_VIM3         || \
                                                             BR2_PACKAGE_BATOCERA_TARGET_C2           || \
+                                                            BR2_PACKAGE_BATOCERA_TARGET_S912         || \
                                                             BR2_PACKAGE_BATOCERA_TARGET_LIBRETECH_H5
+
     select BR2_PACKAGE_BATOCERA_DRMINFO                  if BR2_PACKAGE_LIBDRM
 
     select BR2_PACKAGE_LIRC_TOOLS                        # lirc (remote control)
@@ -410,6 +413,7 @@ config BR2_PACKAGE_BATOCERA_RETROARCH
         select BR2_PACKAGE_LIBRETRO_PARALLEL_N64      if !BR2_PACKAGE_BATOCERA_TARGET_RPI_ANY     && \
                                                          !BR2_PACKAGE_BATOCERA_TARGET_C2      	  && \
                                                          !BR2_PACKAGE_BATOCERA_TARGET_S905     	  && \
+                                                         !BR2_PACKAGE_BATOCERA_TARGET_S912     	  && \
                                                          !BR2_PACKAGE_BATOCERA_TARGET_TINKERBOARD && \
                                                          !BR2_PACKAGE_BATOCERA_TARGET_MIQI &&\
                                                          !BR2_PACKAGE_BATOCERA_TARGET_ROCK960
