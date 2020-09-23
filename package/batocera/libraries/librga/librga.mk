@@ -6,7 +6,7 @@
 
 # Version.: Commits on Oct 30, 2019
 LIBRGA_VERSION = 72e7764a9fe358e6ad50eb1b21176cc95802c7fb
-LIBRGA_SITE =  $(call github,rockchip-linux,linux-rga,$(LIBRGA_VERSION))
+LIBRGA_SITE =  $(call github,oiramario,linux-rga,$(LIBRGA_VERSION))
 LIBRGA_INSTALL_STAGING = YES
 
 define LIBRGA_BUILD_CMDS
