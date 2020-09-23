@@ -1,0 +1,14 @@
+diff --git a/Makefile b/Makefile
+index 0ee72599..2c477b4d 100644
+--- a/Makefile
++++ b/Makefile
+@@ -891,7 +891,9 @@ ifeq ($(DEBUG),1)
+ else
+        ifneq (,$(findstring msvc,$(platform)))
+                OPTFLAGS       := -O2
+-       else ifneq ($(platform), classic_armv7_a7)
++       else ifneq (,$(findstring classic_arm,$(platform)))
++               OPTFLAGS       := -O2
++       else ifeq (,$(findstring classic_arm,$(platform)))
+                OPTFLAGS       := -O3
+        endif
