@@ -50,6 +50,21 @@ systemNetplayModes = {'host', 'client'}
 def writeLibretroConfig(retroconfig, system, controllers, rom, bezel, gameResolution):
     writeLibretroConfigToFile(retroconfig, createLibretroConfig(system, controllers, rom, bezel, gameResolution))
 
+# Much faster than PIL Image.size
+def fast_image_size(image_file):
+    if not os.path.exists(image_file):
+        return -1, -1
+    with open(image_file, 'rb') as fhandle:
+        head = fhandle.read(32)
+        if len(head) != 32:
+           # corrupted header, or not a PNG
+           return -1, -1
+        check = struct.unpack('>i', head[4:8])[0]
+        if check != 0x0d0a1a0a:
+           # Not a PNG
+           return -1, -1
+        return struct.unpack('>ii', head[16:24]) #image width, height
+
 # take a system, and returns a dict of retroarch.cfg compatible parameters
 def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
     # Create/update retroarch-core-options.cfg
@@ -388,7 +403,7 @@ def writeBezelConfig(bezel, retroarchConfig, systemName, rom, gameResolution, be
             # No info on the bezel, let's get the bezel image width and height and apply the
             # ratios from usual 16:9 1920x1080 bezels (example: theBezelProject)
             try:
-                infos["width"], infos["height"] = Image.open(overlay_png_file).size
+                infos["width"], infos["height"] = fast_image_size(overlay_png_file)
                 infos["top"]    = int(infos["height"] * 2 / 1080)
                 infos["left"]   = int(infos["width"] * 241 / 1920) # 241 = (1920 - (1920 / (4:3))) / 2 + 1 pixel = where viewport start
                 infos["bottom"] = int(infos["height"] * 2 / 1080)
@@ -396,7 +411,7 @@ def writeBezelConfig(bezel, retroarchConfig, systemName, rom, gameResolution, be
                 bezelNeedAdaptation = True
             except:
                 pass # outch, no ratio will be applied.
-        retroarchConfig['aspect_ratio_index'] = str(ratioIndexes.index("core")) # overwritten from the beginning of this file
+        retroarchConfig['aspect_ratio_index'] = str(ratioIndexes.index("custom")) # overwritten from the beginning of this file
 
     retroarchConfig['input_overlay_enable']       = "true"
     retroarchConfig['input_overlay_scale']        = "1.0"
@@ -439,20 +454,11 @@ def writeBezelConfig(bezel, retroarchConfig, systemName, rom, gameResolution, be
                 else:
                     if os.path.getmtime(output_png_file) < os.path.getmtime(overlay_png_file):
                         create_new_bezel_file = True
-                    else:
-                        # fast way of checking the size of a png
-                        with open(output_png_file, 'rb') as fhandle:
-                            head = fhandle.read(32)
-                            if len(head) != 32:
-                               # corrupted header
-                               create_new_bezel_file = True
-                            check = struct.unpack('>i', head[4:8])[0]
-                            if check != 0x0d0a1a0a:
-                               # corrupted header (again)
-                               create_new_bezel_file = True
-                            oldwidth, oldheight = struct.unpack('>ii', head[16:24])
-                            if (oldwidth != gameResolution["width"] or oldheight != gameResolution["height"]):
-                               create_new_bezel_file = True
+            # fast way of checking the size of a png
+            oldwidth, oldheight = fast_image_size(output_png_file)
+            if (oldwidth != gameResolution["width"] or oldheight != gameResolution["height"]):
+                create_new_bezel_file = True
+
             xoffset = gameResolution["width"]  - infos["width"]
             yoffset = gameResolution["height"] - infos["height"]
             retroarchConfig['custom_viewport_x']      = infos["left"] + xoffset/2
@@ -467,6 +473,7 @@ def writeBezelConfig(bezel, retroarchConfig, systemName, rom, gameResolution, be
                 # or up/down for 4K
                 eslog.log("Generating a new adapted bezel file {}".format(output_png_file))
                 fillcolor = 'black'
+
                 borderw = 0
                 borderh = 0
                 if wratio > 1:
