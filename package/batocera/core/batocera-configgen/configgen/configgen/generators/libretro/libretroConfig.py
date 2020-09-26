@@ -297,7 +297,11 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
         bezel_stretch = True
     else:
         bezel_stretch = False
-    writeBezelConfig(bezel, retroarchConfig, system.name, rom, gameResolution, bezel_stretch)
+    try:
+        writeBezelConfig(bezel, retroarchConfig, system.name, rom, gameResolution, bezel_stretch)
+    except:
+        # error with bezels, disabling them
+        writeBezelConfig(None, retroarchConfig, system.name, rom, gameResolution, bezel_stretch)
 
     # custom : allow the user to configure directly retroarch.cfg via batocera.conf via lines like : snes.retroarch.menu_driver=rgui
     for user_config in systemConfig:
