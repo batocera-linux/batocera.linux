@@ -1,0 +1,15 @@
+--- a/driver/product/kernel/drivers/gpu/arm/midgard/mali_kbase_mem.c	2020-09-25 23:03:12.474787138 +0200
++++ b/driver/product/kernel/drivers/gpu/arm/midgard/mali_kbase_mem.c	2020-09-25 23:04:01.263813030 +0200
+@@ -3953,6 +3953,12 @@
+ 			alloc->imported.user_buf.nr_pages,
+ 			reg->flags & KBASE_REG_GPU_WR ? FOLL_WRITE : 0,
+ 			pages, NULL);
++#elif LINUX_VERSION_CODE >= KERNEL_VERSION(5, 9, 0)
++	pinned_pages = get_user_pages_remote(mm,
++			address,
++			alloc->imported.user_buf.nr_pages,
++			reg->flags & KBASE_REG_GPU_WR ? FOLL_WRITE : 0,
++			pages, NULL, NULL);
+ #else
+ 	pinned_pages = get_user_pages_remote(NULL, mm,
+ 			address,
