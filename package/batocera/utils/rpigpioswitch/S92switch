@@ -18,6 +18,11 @@ fi
 # Carry out specific functions when asked to by the system
 case "$1" in
     start)
+        case $(cat /usr/share/batocera/batocera.arch) in
+            rpi4)
+                /usr/bin/rpi-gpio-init
+            ;;
+        esac
         for i in $devices; do
             if [ "$i" == "$powerswitch" ]; then
                 $RUN start "$powerswitch" &
