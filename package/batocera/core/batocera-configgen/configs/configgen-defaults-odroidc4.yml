@@ -1,0 +1,15 @@
+default:
+  options:
+    video_threaded: true
+n64:
+  emulator: libretro
+  core: mupen64plus-next
+amiga500:
+  emulator: amiberry
+  core:     A500
+amiga1200:
+  emulator: amiberry
+  core:     A1200
+amigacd32:
+  emulator: amiberry
+  core:     CD32

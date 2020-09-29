@@ -101,6 +101,7 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
                                                             BR2_PACKAGE_BATOCERA_TARGET_S905         || \
                                                             BR2_PACKAGE_BATOCERA_TARGET_S912         || \
                                                             BR2_PACKAGE_BATOCERA_TARGET_C2           || \
+                                                            BR2_PACKAGE_BATOCERA_TARGET_C4           || \
                                                             BR2_PACKAGE_BATOCERA_TARGET_TINKERBOARD  || \
                                                             BR2_PACKAGE_BATOCERA_TARGET_MIQI         || \
                                                             BR2_PACKAGE_BATOCERA_TARGET_VIM3  
@@ -116,6 +117,7 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
                                                             BR2_PACKAGE_BATOCERA_TARGET_RPI4         || \
                                                             BR2_PACKAGE_BATOCERA_TARGET_VIM3         || \
                                                             BR2_PACKAGE_BATOCERA_TARGET_C2           || \
+                                                            BR2_PACKAGE_BATOCERA_TARGET_C4           || \
                                                             BR2_PACKAGE_BATOCERA_TARGET_S912         || \
                                                             BR2_PACKAGE_BATOCERA_TARGET_LIBRETECH_H5
 
@@ -128,6 +130,7 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
                                                             BR2_PACKAGE_BATOCERA_TARGET_MIQI         || \
                                                             BR2_PACKAGE_BATOCERA_TARGET_VIM3         || \
                                                             BR2_PACKAGE_BATOCERA_TARGET_C2           || \
+                                                            BR2_PACKAGE_BATOCERA_TARGET_C4           || \
                                                             BR2_PACKAGE_BATOCERA_TARGET_S912         || \
                                                             BR2_PACKAGE_BATOCERA_TARGET_LIBRETECH_H5
 
@@ -270,6 +273,9 @@ config BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA
 config BR2_PACKAGE_BATOCERA_TARGET_C2
         bool "c2"
 
+config BR2_PACKAGE_BATOCERA_TARGET_C4
+        bool "c4"
+
 config BR2_PACKAGE_BATOCERA_TARGET_S905
         bool "s905"
 
@@ -350,6 +356,7 @@ config BR2_PACKAGE_BATOCERA_ALL_SYSTEMS
                                                    !BR2_PACKAGE_BATOCERA_TARGET_RPI2 && \
                                                    !BR2_PACKAGE_BATOCERA_TARGET_S912 && \
                                                    !BR2_PACKAGE_BATOCERA_TARGET_C2   && \
+                                                   !BR2_PACKAGE_BATOCERA_TARGET_C4   && \
                                                    !BR2_PACKAGE_BATOCERA_TARGET_ODROIDN2 && \
                                                    !BR2_PACKAGE_BATOCERA_TARGET_S905 && \
                                                    !BR2_PACKAGE_BATOCERA_TARGET_LIBRETECH_H5 && \
@@ -406,12 +413,14 @@ config BR2_PACKAGE_BATOCERA_RETROARCH
 	select BR2_PACKAGE_SLANG_SHADERS	      if BR2_PACKAGE_VULKAN_HEADERS && BR2_PACKAGE_VULKAN_LOADER
         select BR2_PACKAGE_LIBRETRO_MUPEN64PLUS_NEXT  if !BR2_PACKAGE_BATOCERA_TARGET_RPI_ANY && \
                                                          !BR2_PACKAGE_BATOCERA_TARGET_C2      && \
+                                                         !BR2_PACKAGE_BATOCERA_TARGET_C4      && \
                                                          !BR2_PACKAGE_BATOCERA_TARGET_S905    && \
                                                          !BR2_PACKAGE_BATOCERA_TARGET_S912 
                                                          # MUPEN64PLUS_NEXT
 
         select BR2_PACKAGE_LIBRETRO_PARALLEL_N64      if !BR2_PACKAGE_BATOCERA_TARGET_RPI_ANY     && \
                                                          !BR2_PACKAGE_BATOCERA_TARGET_C2      	  && \
+                                                         !BR2_PACKAGE_BATOCERA_TARGET_C4      	  && \
                                                          !BR2_PACKAGE_BATOCERA_TARGET_S905     	  && \
                                                          !BR2_PACKAGE_BATOCERA_TARGET_S912     	  && \
                                                          !BR2_PACKAGE_BATOCERA_TARGET_TINKERBOARD && \
@@ -429,6 +438,7 @@ config BR2_PACKAGE_BATOCERA_RETROARCH
 
         select BR2_PACKAGE_LIBRETRO_OPERA             if !BR2_PACKAGE_BATOCERA_TARGET_RPI_ANY && \
                                                          !BR2_PACKAGE_BATOCERA_TARGET_C2      && \
+                                                         !BR2_PACKAGE_BATOCERA_TARGET_C4      && \
                                                          !BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA
                                                          # OPERA
 
@@ -678,7 +688,11 @@ config BR2_PACKAGE_BATOCERA_KODI18
        select BR2_PACKAGE_KODI18_PLUGIN_VIDEO_FILMON
 
        # GBM
-       select BR2_PACKAGE_KODI_GBM if BR2_PACKAGE_BATOCERA_TARGET_XU4 || BR2_PACKAGE_BATOCERA_TARGET_ODROIDN2 || BR2_PACKAGE_BATOCERA_TARGET_ROCKPRO64 || BR2_PACKAGE_BATOCERA_TARGET_ROCK960
+       select BR2_PACKAGE_KODI_GBM 					if BR2_PACKAGE_BATOCERA_TARGET_XU4       || \
+									   BR2_PACKAGE_BATOCERA_TARGET_ODROIDN2  || \
+									   BR2_PACKAGE_BATOCERA_TARGET_ROCKPRO64 || \
+									   BR2_PACKAGE_BATOCERA_TARGET_ROCK960   || \
+									   BR2_PACKAGE_BATOCERA_TARGET_C4
 
 config BR2_PACKAGE_BATOCERA_LINUX_FIRMWARES
        bool "batocera.linux Firmwares packages selection"
