@@ -14,6 +14,14 @@ then
     exit 0
 fi
 ###
+### full version (not on login, otherwise you can't log when OpenGL/Vulkan are out of order)
+if test "$1" = "--full"
+then
+	FULL_DISPLAY=1
+else
+	FULL_DISPLAY=0
+fi
+###
 
 V_ARCH=$(cat /usr/share/batocera/batocera.arch)
 V_CPUNB=$(grep -E $'^processor\t:' /proc/cpuinfo | wc -l)
@@ -75,30 +83,32 @@ MEM_TOTAL_MB=$(expr "${MEM_TOTAL_KB}" / 1024)
 MEM_AVAILABLE_MB=$(expr "${MEM_AVAILABLE_KB}" / 1024)
 echo "Available memory: ${MEM_AVAILABLE_MB}/${MEM_TOTAL_MB} MB"
 
-# OPENGL
-if test "${V_ARCH}" = "x86" -o "${V_ARCH}" = "x86_64"
-then
-    V_OPENGLVERSION=$(DISPLAY=:0.0 glxinfo 2>/dev/null | grep -E '^OpenGL core profile version string:' | sed -e s+'^OpenGL core profile version string:[ ]*'++)
-    if test -z "${V_OPENGLVERSION}"
-    then
-	V_OPENGLVERSION=$(DISPLAY=:0.0 glxinfo 2>/dev/null | grep -E '^OpenGL version string:' | sed -e s+'^OpenGL version string:[ ]*'++)
-    fi
-    echo "OpenGL: ${V_OPENGLVERSION}"
-fi
+if [[ "${FULL_DISPLAY}" != 0 ]]; then
+	# OPENGL
+	if test "${V_ARCH}" = "x86" -o "${V_ARCH}" = "x86_64"
+	then
+	    V_OPENGLVERSION=$(DISPLAY=:0.0 glxinfo 2>/dev/null | grep -E '^OpenGL core profile version string:' | sed -e s+'^OpenGL core profile version string:[ ]*'++)
+	    if test -z "${V_OPENGLVERSION}"
+	    then
+		V_OPENGLVERSION=$(DISPLAY=:0.0 glxinfo 2>/dev/null | grep -E '^OpenGL version string:' | sed -e s+'^OpenGL version string:[ ]*'++)
+	    fi
+	    echo "OpenGL: ${V_OPENGLVERSION}"
+	fi
 
-# VULKAN
-if test -e /usr/bin/vulkaninfo
-then
-    APIVERSION=$(vulkaninfo --json 2>/dev/null | jq -r ".VkPhysicalDeviceProperties.apiVersion" 2>/dev/null)
-    if test -n "${APIVERSION}"
-    then
-	let "APIVERSION_MAJOR=${APIVERSION} >> 22"
-	let "APIVERSION_MINOR=(${APIVERSION} >> 12) & 0x3ff"
-	let "APIVERSION_PATCH=${APIVERSION} & 0xfff"
-	echo "Vulkan: ${APIVERSION_MAJOR}.${APIVERSION_MINOR}.${APIVERSION_PATCH}"
-    else
-	echo "Vulkan: none"
-    fi
+	# VULKAN
+	if test -e /usr/bin/vulkaninfo
+	then
+	    APIVERSION=$(vulkaninfo --json 2>/dev/null | jq -r ".VkPhysicalDeviceProperties.apiVersion" 2>/dev/null)
+	    if test -n "${APIVERSION}"
+	    then
+		let "APIVERSION_MAJOR=${APIVERSION} >> 22"
+		let "APIVERSION_MINOR=(${APIVERSION} >> 12) & 0x3ff"
+		let "APIVERSION_PATCH=${APIVERSION} & 0xfff"
+		echo "Vulkan: ${APIVERSION_MAJOR}.${APIVERSION_MINOR}.${APIVERSION_PATCH}"
+	    else
+		echo "Vulkan: none"
+	    fi
+	fi
 fi
 
 [[ -z ${V_CPUMODEL1} ]] || echo "Cpu model: ${V_CPUMODEL1}"
