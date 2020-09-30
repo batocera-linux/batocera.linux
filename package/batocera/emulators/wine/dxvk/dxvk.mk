@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-DXVK_VERSION = v1.5.5
+DXVK_VERSION = v1.7.1
 DXVK_SITE = $(call github,doitsujin,dxvk,$(DXVK_VERSION))
 
 DXVK_LICENSE = ZLIB
