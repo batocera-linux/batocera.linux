@@ -14,15 +14,19 @@ powerswitch="$(batocera-settings --command load --key system.power.switch)"
 if [ $? -ne 0 ] && [ -f /var/run/powerswitch-by-udevrule ]; then
     powerswitch="$(cat /var/run/powerswitch-by-udevrule)"
 fi
+# Read if a GPIO joypad is needed (to init on selected archs)
+gpiopad="$(batocera-settings --command load --key controllers.gpio.enabled)"
 
 # Carry out specific functions when asked to by the system
 case "$1" in
     start)
-        case $(cat /usr/share/batocera/batocera.arch) in
-            rpi4)
-                /usr/bin/rpi-gpio-init
-            ;;
-        esac
+        if [ "$gpiopad" == 1 ]; then
+            case $(cat /usr/share/batocera/batocera.arch) in
+                rpi4)
+                    /usr/bin/rpi-gpio-init
+                ;;
+            esac
+	fi
         for i in $devices; do
             if [ "$i" == "$powerswitch" ]; then
                 $RUN start "$powerswitch" &
