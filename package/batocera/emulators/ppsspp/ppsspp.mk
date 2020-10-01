@@ -64,11 +64,6 @@ ifeq ($(BR2_PACKAGE_RPI_USERLAND),y)
 	PPSSPP_CONF_OPTS += -DPPSSPP_PLATFORM_RPI=1
 endif
 
-# s912 (libhybris)
-#ifeq ($(BR2_PACKAGE_LIBHYBRIS),y)
-#	PPSSPP_CONF_OPTS += -DUSING_GLES2=ON -DUSING_EGL=OFF
-#endif
-
 define PPSSPP_UPDATE_INCLUDES
 	sed -i 's/unknown/$(PPSSPP_VERSION)/g' $(@D)/git-version.cmake
 	sed -i "s+/opt/vc+$(STAGING_DIR)/usr+g" $(@D)/CMakeLists.txt
