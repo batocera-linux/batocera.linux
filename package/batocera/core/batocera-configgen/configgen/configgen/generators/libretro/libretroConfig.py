@@ -264,6 +264,9 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
         retroarchConfig['menu_driver'] = 'rgui'
         retroarchConfig['width']  = gameResolution["width"]  *2 # on low resolution, higher values for width and height makes a nicer image (640x480 on the gpi case)
         retroarchConfig['height'] = gameResolution["height"] *2 # default value
+        retroarchConfig['menu_linear_filter'] = 'true'
+        retroarchConfig['rgui_aspect_ratio'] = '0'
+        retroarchConfig['rgui_aspect_ratio_lock'] = '3'
     else:
         retroarchConfig['video_font_size'] = '32'
         retroarchConfig['menu_driver'] = 'ozone'
@@ -415,7 +418,11 @@ def writeBezelConfig(bezel, retroarchConfig, systemName, rom, gameResolution, be
                 bezelNeedAdaptation = True
             except:
                 pass # outch, no ratio will be applied.
-        retroarchConfig['aspect_ratio_index'] = str(ratioIndexes.index("custom")) # overwritten from the beginning of this file
+        if gameResolution["width"] == infos["width"] and gameResolution["height"] == infos["height"]:
+            bezelNeedAdaptation = False
+            retroarchConfig['aspect_ratio_index'] = str(ratioIndexes.index("core"))
+        else:
+            retroarchConfig['aspect_ratio_index'] = str(ratioIndexes.index("custom")) # overwritten from the beginning of this file
 
     retroarchConfig['input_overlay_enable']       = "true"
     retroarchConfig['input_overlay_scale']        = "1.0"
@@ -513,7 +520,7 @@ def writeBezelConfig(bezel, retroarchConfig, systemName, rom, gameResolution, be
     writeBezelCfgConfig(overlay_cfg_file, overlay_png_file)
 
 def isLowResolution(gameResolution):
-    return gameResolution["width"] < 400 and gameResolution["height"] < 400
+    return gameResolution["width"] < 400 or gameResolution["height"] < 400
 
 def writeBezelCfgConfig(cfgFile, overlay_png_file):
     fd = open(cfgFile, "w")
