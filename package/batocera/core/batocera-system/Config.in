@@ -367,24 +367,14 @@ config BR2_PACKAGE_BATOCERA_ALL_SYSTEMS
 
         select BR2_PACKAGE_PPSSPP15             if BR2_PACKAGE_BATOCERA_TARGET_RPI3 # psp
 
-        select BR2_PACKAGE_AMIBERRY             if BR2_PACKAGE_BATOCERA_TARGET_RPI_ANY     || \
-                                                   BR2_PACKAGE_BATOCERA_TARGET_RPI4        || \
-                                                   BR2_PACKAGE_BATOCERA_TARGET_XU4         || \
-                                                   BR2_PACKAGE_BATOCERA_TARGET_ROCKPRO64   || \
-                                                   BR2_PACKAGE_BATOCERA_TARGET_ROCK960     || \
-                                                   BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA   || \
-                                                   BR2_PACKAGE_BATOCERA_TARGET_TINKERBOARD || \
-                                                   BR2_PACKAGE_BATOCERA_TARGET_MIQI        || \
-                                                   BR2_PACKAGE_BATOCERA_TARGET_ODROIDN2    || \
-                                                   BR2_PACKAGE_BATOCERA_TARGET_VIM3        || \
-                                                   BR2_PACKAGE_BATOCERA_TARGET_LIBRETECH_H5
+        select BR2_PACKAGE_AMIBERRY             if !BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
                                                    # amiga
+
+        select BR2_PACKAGE_FSUAE                if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
 
         select BR2_PACKAGE_DAPHNE               if !BR2_PACKAGE_BATOCERA_TARGET_RPI1 && \
                                                    !BR2_PACKAGE_BATOCERA_TARGET_RPI2
                                                    # daphne
-
-        select BR2_PACKAGE_FSUAE                if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
 
         select BR2_PACKAGE_DOLPHIN_EMU          if BR2_PACKAGE_BATOCERA_TARGET_X86_64   || \
 						   BR2_PACKAGE_BATOCERA_TARGET_ODROIDN2 || \
