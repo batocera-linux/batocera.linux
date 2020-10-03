@@ -45,7 +45,6 @@ struct modeset_dev {
 	uint32_t fb;
 	uint32_t conn;
 	uint32_t crtc;
-	drmModeCrtc *saved_crtc;
 };
 
 static struct modeset_dev *modeset_list = NULL;
@@ -239,13 +238,39 @@ static int modeset_setup_dev(int fd, drmModeRes *res, drmModeConnector *conn,
 	return 0;
 }
 
-static int modeset_prepare(int fd, int do_real_check)
+static int crtc_cmp(drmModeModeInfo *a, drmModeModeInfo *b) {
+  if(a->clock       == b->clock       &&
+     a->hdisplay    == b->hdisplay    &&
+     a->hsync_start == b->hsync_start &&
+     a->hsync_end   == b->hsync_end   &&
+     a->htotal      == b->htotal      &&
+     a->hskew       == b->hskew       &&
+     a->vdisplay    == b->vdisplay    &&
+     a->vsync_start == b->vsync_start &&
+     a->vsync_end   == b->vsync_end   &&
+     a->vtotal      == b->vtotal      &&
+     a->vscan       == b->vscan       &&
+     a->vrefresh    == b->vrefresh    &&
+     a->flags 	    == b->flags       &&
+     a->type  	    == b->type) {
+
+    if(a->name == NULL && b == NULL) return  0;
+    if(a->name == NULL || b == NULL) return -1;
+    if(strcmp(a->name, b->name) == 0) {
+      return 0;
+    }
+  }
+  return -1;
+}
+
+static int modeset_prepare(int fd, int do_current)
 {
 	drmModeRes *res;
 	drmModeConnector *conn;
 	unsigned int i;
 	struct modeset_dev *dev;
 	int ret;
+	drmModeCrtc *live_crtc;
 
 	/* retrieve resources */
 	res = drmModeGetResources(fd);
@@ -284,30 +309,28 @@ static int modeset_prepare(int fd, int do_real_check)
 		}
 
 		// batocera
-		for (i = 0; (int)i < conn->count_modes; i++) {
-		  if(do_real_check == 1) {
-		    ret = drmModeSetCrtc(fd, dev->crtc, dev->fb, 0, 0, conn, 1, &conn->modes[i]);
-		  } else {
-		    ret = 0;
+		if(do_current == 1) {
+		  live_crtc = drmModeGetCrtc(fd, dev->crtc);
+		  for (i = 0; (int)i < conn->count_modes; i++) {
+		    if(crtc_cmp(&live_crtc->mode, conn->modes+i) == 0) {
+		      printf("%i:%dx%d %uHz (%s)\n",
+			     i,
+			     conn->modes[i].hdisplay,
+			     conn->modes[i].vdisplay,
+			     conn->modes[i].vrefresh,
+			     conn->modes[i].name);
+		    }
 		  }
+		}
 
-		  if(ret == 0) {
+		if(do_current == 0) {
+		  for (i = 0; (int)i < conn->count_modes; i++) {
 		    printf("%d:%dx%d %uHz (%s)\n",
 			   i,
 			   conn->modes[i].hdisplay,
 			   conn->modes[i].vdisplay,
 			   conn->modes[i].vrefresh,
 			   conn->modes[i].name);
-		  } else {
-		    fprintf(stderr,
-			    "%d:%dx%d %uHz (%s) : error(%i)\n",
-			    i,
-			    conn->modes[i].hdisplay,
-			    conn->modes[i].vdisplay,
-			    conn->modes[i].vrefresh,
-			    conn->modes[i].name,
-			    ret);
-
 		  }
 		}
 		//
@@ -357,17 +380,6 @@ static void modeset_cleanup(int fd)
 		iter = modeset_list;
 		modeset_list = iter->next;
 
-		/* restore saved CRTC configuration */
-		drmModeSetCrtc(fd,
-			       iter->saved_crtc->crtc_id,
-			       iter->saved_crtc->buffer_id,
-			       iter->saved_crtc->x,
-			       iter->saved_crtc->y,
-			       &iter->conn,
-			       1,
-			       &iter->saved_crtc->mode);
-		drmModeFreeCrtc(iter->saved_crtc);
-
 		munmap(iter->map, iter->size);
 		drmModeRmFB(fd, iter->fb);
 
@@ -382,9 +394,9 @@ static void modeset_cleanup(int fd)
 int main(int argc, char **argv)
 {
   int ret, fd, i;
-	const char *card;
-	struct modeset_dev *iter;
-	int do_real_check;
+  const char *card;
+  struct modeset_dev *iter;
+  int do_current = 0;
 
 	if (argc > 1)
 		card = argv[1];
@@ -392,11 +404,8 @@ int main(int argc, char **argv)
 		card = "/dev/dri/card0";
 
 	if (argc > 2)
-	  do_real_check = strcmp(argv[2], "check") == 0 ? 1 : 0;
-	else
-	  do_real_check = 0;
-
-	
+	  if(strcmp(argv[2], "current") == 0)
+	     do_current = 1;
 	fprintf(stderr, "using card '%s'\n", card);
 
 	/* open the DRM device */
@@ -405,19 +414,9 @@ int main(int argc, char **argv)
 		goto out_return;
 
 	/* prepare all connectors and CRTCs */
-	ret = modeset_prepare(fd, do_real_check);
+        ret = modeset_prepare(fd, do_current);
 	if (ret)
 		goto out_close;
-
-	/* perform actual modesetting on each found connector+CRTC */
-	for (iter = modeset_list; iter; iter = iter->next) {
-		iter->saved_crtc = drmModeGetCrtc(fd, iter->crtc);
-		ret = drmModeSetCrtc(fd, iter->crtc, iter->fb, 0, 0,
-				     &iter->conn, 1, &iter->mode);
-		if (ret)
-			fprintf(stderr, "cannot set CRTC for connector %u (%d): %m\n",
-				iter->conn, errno);
-	}
 
 	// main //
 

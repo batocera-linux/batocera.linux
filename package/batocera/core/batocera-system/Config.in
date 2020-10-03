@@ -546,6 +546,9 @@ config BR2_PACKAGE_BATOCERA_RETROARCH
 
         select BR2_PACKAGE_LIBRETRO_SCUMMVM           # ALL
 
+        # wine
+        select BR2_PACKAGE_WINE                       if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
+        select BR2_PACKAGE_WINE_X86                   if BR2_PACKAGE_BATOCERA_TARGET_X86_64
 
         ### Experimental Libretro Emulators ###
 	select BR2_PACKAGE_LIBRETRO_DUCKSTATION	      if BR2_PACKAGE_BATOCERA_CORES_EXPERIMENTAL && \
