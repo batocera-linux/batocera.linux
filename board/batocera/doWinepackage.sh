@@ -52,7 +52,8 @@ findDeps() {
 }
 
 findLibDir() {
-    for XDIR in "${G_TARGETDIR}/lib" "${G_TARGETDIR}/usr/lib" "${G_TARGETDIR}/usr/lib/pulseaudio" "${G_TARGETDIR}/usr/lib/wine" "${G_TARGETDIR}/usr/lib/gstreamer-1.0"
+    # "${G_TARGETDIR}/usr/lib/pulseaudio"
+    for XDIR in "${G_TARGETDIR}/lib" "${G_TARGETDIR}/usr/lib" "${G_TARGETDIR}/usr/lib/wine" "${G_TARGETDIR}/usr/lib/gstreamer-1.0"
     do
         test -e "${XDIR}/${1}" && echo "${XDIR}" && return
     done
@@ -60,7 +61,6 @@ findLibDir() {
 
 cpLib() {
     cp -P "${1}" "${2}" || return 1
-    echo "   "$(basename "${1}")
     if test -L "${1}"
     then
         LNK=$(readlink -f "${1}")
@@ -77,10 +77,6 @@ if ! rm -rf "${TMPOUT}"
 then
     exit 1
 fi
-if ! mkdir -p "${TMPOUT}/usr/lib"
-then
-    exit 1
-fi
 if ! mkdir -p "${TMPOUT}/lib32"
 then
     exit 1
@@ -93,10 +89,10 @@ if ! mkdir -p "${TMPOUT}/lib32/gstreamer-1.0"
 then
     exit 1
 fi
-if ! mkdir -p "${TMPOUT}/lib32/pulseaudio"
-then
-    exit 1
-fi
+#if ! mkdir -p "${TMPOUT}/lib32/pulseaudio"
+#then
+#    exit 1
+#fi
 if ! mkdir -p "${TMPOUT}/usr/share/wine"
 then
     exit 1
@@ -111,25 +107,23 @@ then
 fi
 
 # libs32
+# "${G_TARGETDIR}/usr/lib/"*.so \
 echo "libs..."
-cp -p  "${G_TARGETDIR}/usr/lib/"* "${TMPOUT}/lib32" 2>/dev/null
-cp -pr "${G_TARGETDIR}/usr/lib/wine/"* "${TMPOUT}/lib32/wine"
-cp -pr "${G_TARGETDIR}/usr/lib/gstreamer-1.0/"* "${TMPOUT}/lib32/gstreamer-1.0"
-cp -pr "${G_TARGETDIR}/usr/lib/pulseaudio/"* "${TMPOUT}/lib32/pulseaudio"
-cp -pr "${G_TARGETDIR}/usr/share/wine/"* "${TMPOUT}/usr/share/wine"
-cp -pr "${G_TARGETDIR}/usr/share/gst-plugins-base/"* "${TMPOUT}/usr/share/gst-plugins-base"
-cp -pr "${G_TARGETDIR}/usr/share/gstreamer-1.0/"* "${TMPOUT}/usr/share/gstreamer-1.0"
-ln -s /lib32/wine "${TMPOUT}/usr/lib/wine"
-ln -s /lib32/gstreamer-1.0 "${TMPOUT}/usr/lib/gstreamer-1.0"
-ln -s /lib32/pulseaudio "${TMPOUT}/usr/lib/pulseaudio"
-cp "${G_TARGETDIR}/usr/lib/libEGL_mesa"* "${TMPOUT}/lib32"
-cp "${G_TARGETDIR}/usr/lib/libGLX_mesa"* "${TMPOUT}/lib32"
+#cp -p  "${G_TARGETDIR}/usr/lib/"* "${TMPOUT}/lib32" 2>/dev/null
+cp -pr "${G_TARGETDIR}/usr/lib/wine/"* "${TMPOUT}/lib32/wine" || exit 1
+cp -pr "${G_TARGETDIR}/usr/lib/gstreamer-1.0/"* "${TMPOUT}/lib32/gstreamer-1.0" || exit 1
+#cp -pr "${G_TARGETDIR}/usr/lib/pulseaudio/"* "${TMPOUT}/lib32/pulseaudio" || exit 1
+cp -pr "${G_TARGETDIR}/usr/share/wine/"* "${TMPOUT}/usr/share/wine" || exit 1
+cp -pr "${G_TARGETDIR}/usr/share/gst-plugins-base/"* "${TMPOUT}/usr/share/gst-plugins-base" || exit 1
+cp -pr "${G_TARGETDIR}/usr/share/gstreamer-1.0/"* "${TMPOUT}/usr/share/gstreamer-1.0" || exit 1
+#ln -s /lib32/pulseaudio "${TMPOUT}/usr/lib/pulseaudio" || exit 1
+cp -p "${G_TARGETDIR}/usr/lib/libEGL_mesa"* "${TMPOUT}/lib32" || exit 1
+cp -p "${G_TARGETDIR}/usr/lib/libGLX_mesa"* "${TMPOUT}/lib32" || exit 1
+#"${G_TARGETDIR}/usr/lib/pulseaudio/"*.so
 for BIN in "${G_TARGETDIR}/usr/bin/wine" \
 "${G_TARGETDIR}/usr/bin/wineserver" \
-"${G_TARGETDIR}/usr/lib/"*.so \
 "${G_TARGETDIR}/usr/lib/wine/"*.so \
 "${G_TARGETDIR}/usr/lib/gstreamer-1.0/"*.so \
-"${G_TARGETDIR}/usr/lib/pulseaudio/"*.so \
 "${G_TARGETDIR}/usr/lib/libEGL_mesa"* \
 "${G_TARGETDIR}/usr/lib/libGLX_mesa"*
 do
@@ -138,11 +132,11 @@ done
 
 # binaries
 echo "binaries..."
-mkdir -p "${TMPOUT}/usr/bin"                           || exit 1
+mkdir -p "${TMPOUT}/usr/bin32"                           || exit 1
 echo " wine binaries"
-cp -p "${G_TARGETDIR}/usr/bin/cabextract"          "${TMPOUT}/usr/bin/" || exit 1
-cp -p "${G_TARGETDIR}/usr/bin/wine"*          "${TMPOUT}/usr/bin/" || exit 1
-cp -p "${G_TARGETDIR}/usr/bin/gst"*          "${TMPOUT}/usr/bin/" || exit 1
+cp -p "${G_TARGETDIR}/usr/bin/cabextract"          "${TMPOUT}/usr/bin32/" || exit 1
+cp -p "${G_TARGETDIR}/usr/bin/wine"*          "${TMPOUT}/usr/bin32/" || exit 1
+cp -p "${G_TARGETDIR}/usr/bin/gst"*          "${TMPOUT}/usr/bin32/" || exit 1
 
 # dri
 echo "dri..."
@@ -172,10 +166,11 @@ fi
 
 XTARGET_VERSION=$(cat "${G_TARGETDIR}/usr/share/batocera/batocera.version" | sed -e s+" .*$"++)
 XTARGET_ARCH=$(cat "${G_TARGETDIR}/usr/share/batocera/batocera.arch")
-XTARGET_FILE="wine-${XTARGET_ARCH}-${XTARGET_VERSION}.tar.gz"
+XTARGET_FILE="wine-${XTARGET_ARCH}-${XTARGET_VERSION}.tar.lzma"
 
-echo "tar.gz..."
-(cd "${TMPOUT}" && tar zcf "${XTARGET_IMAGE}/${XTARGET_FILE}" *) || exit 1
+echo "tar.lzma..."
+mkdir -p "${XTARGET_IMAGE}" || exit 1
+(cd "${TMPOUT}" && tar cf - * | lzma -c -9 > "${XTARGET_IMAGE}/${XTARGET_FILE}"
 
 echo "${XTARGET_IMAGE}/${XTARGET_FILE}"
 exit 0
