@@ -170,7 +170,7 @@ XTARGET_FILE="wine-${XTARGET_ARCH}-${XTARGET_VERSION}.tar.lzma"
 
 echo "tar.lzma..."
 mkdir -p "${XTARGET_IMAGE}" || exit 1
-(cd "${TMPOUT}" && tar cf - * | lzma -c -9 > "${XTARGET_IMAGE}/${XTARGET_FILE}"
+(cd "${TMPOUT}" && tar cf - * | lzma -c -9 > "${XTARGET_IMAGE}/${XTARGET_FILE}") || exit 1
 
 echo "${XTARGET_IMAGE}/${XTARGET_FILE}"
 exit 0
