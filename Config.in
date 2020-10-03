@@ -176,6 +176,7 @@ menu "Emulators"
       source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/retroarch/libretro/libretro-ppsspp/Config.in"
       source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/retroarch/libretro/libretro-opera/Config.in"
       source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/retroarch/libretro/libretro-dolphin/Config.in"
+      source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/retroarch/libretro/libretro-duckstation/Config.in"
      endmenu
   endmenu
 
@@ -219,6 +220,7 @@ menu "Emulators"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/vice/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/citra/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/daphne/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/duckstation/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/openbor/openbor/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/openbor/openbor4432/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/wine/faudio/Config.in"

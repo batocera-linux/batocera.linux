@@ -1,0 +1,21 @@
+config BR2_PACKAGE_LIBRETRO_DUCKSTATION
+    bool "libretro-duckstation"
+    select BR2_PACKAGE_QT5
+    select BR2_PACKAGE_QT5_VERSION_LATEST
+    select BR2_PACKAGE_QT5BASE
+    select BR2_PACKAGE_QT5BASE_OPENGL
+    select BR2_PACKAGE_QT5BASE_XCB if BR2_PACKAGE_TARGET_BATOCERA_X86_64
+    select BR2_PACKAGE_QT5MULTIMEDIA
+    select BR2_PACKAGE_QT5BASE_FONTCONFIG
+    select BR2_PACKAGE_QT5TOOLS
+    select BR2_PACKAGE_QT5TOOLS_LINGUIST_TOOLS
+    select BR2_PACKAGE_FMT
+    select BR2_PACKAGE_BOOST
+    select BR2_PACKAGE_FFMPEG  
+    select BR2_PACKAGE_SDL2
+    help
+      DuckStation - PlayStation 1, aka. PSX Emulator
+
+	    https://github.com/stenzek/duckstation
+
+
