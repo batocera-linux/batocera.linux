@@ -8,7 +8,7 @@ shift
 shift
 
 G_WINE_VERSION=$(wine --version)
-G_SAVES_DIR="/userdata/saves"
+G_SAVES_DIR="/userdata/saves/windows${ARCH}"
 G_ROMS_DIR="/userdata/roms/windows${ARCH}"
 G_INSROMS_DIR="/userdata/roms/windows${ARCH}_installers"
 
@@ -25,7 +25,7 @@ usage() {
     echo "${1} play    	     64 <game>.exe"             >&2
     echo "${1} play    	     32 <game>.wine"            >&2
     echo "${1} play    	     32 <game>.wine.squashfs"   >&2
-    echo "${1} play    	     32 <game>.wine.tgz"        >&2
+    echo "${1} play    	     32 <game>.wtgz"            >&2
     echo "${1} install 	     32 <game>.iso"             >&2
     echo "${1} install 	     32 <game>.exe"             >&2
     echo "${1} tricks  	     32 <game>.wine directplay" >&2
@@ -105,6 +105,7 @@ play_exe() {
     GAMEDIR="${G_ROMS_DIR}/"$(dirname "${GAMENAME}")
     GAMEEXE=$(basename "${GAMENAME}")
 
+    mkdir -p "${WINEPOINT}" || return 1
     createWineDirectory "${WINEPOINT}"
     (cd "${GAMEDIR}" && WINEPREFIX=${WINEPOINT} wine "${GAMEEXE}")
     waitWineServer
@@ -116,7 +117,8 @@ play_winetgz() {
 
     if ! test -e "${WINEPOINT}"
     then
-	(cd "${G_SAVES_DIR}" && tar xf "${G_ROMS_DIR}/${GAMENAME}") || return 1
+	mkdir -p "${WINEPOINT}" || return 1
+	(cd "${WINEPOINT}" && gunzip -c "${G_ROMS_DIR}/${GAMENAME}" | tar xf -) || return 1
     fi
 
     WINE_CMD=$(getWine_var "${WINEPOINT}" "CMD" "explorer")
@@ -231,9 +233,9 @@ wine2winetgz() {
     GAMENAME=$1
 
     GAMEDIR="${G_ROMS_DIR}/${GAMENAME}"
-    WINETGZFILE="${G_ROMS_DIR}/${GAMENAME}.wine.tgz"
+    WINETGZFILE="${G_ROMS_DIR}/${GAMENAME}.wtgz"
 
-    (cd "${G_ROMS_DIR}" && tar zcf "${WINETGZFILE}" "${GAMENAME}") || return 1
+    (cd "${GAMEDIR}" && tar cf - * | gzip -c > "${WINETGZFILE}") || return 1
     return 0
 }
 
@@ -268,7 +270,7 @@ case "${ACTION}" in
 	    "squashfs")
 		play_squashfs "${GAMENAME}" || cleanAndExit 1
 		;;
-	    "tgz")
+	    "wtgz")
 		play_winetgz "${GAMENAME}" || cleanAndExit 1
 		;;
 	    *)

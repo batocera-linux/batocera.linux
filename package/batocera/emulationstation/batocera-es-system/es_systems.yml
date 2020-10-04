@@ -1389,12 +1389,12 @@ windows32:
   manufacturer: Microsoft
   release: 1992
   hardware: pc
-  extensions: [exe, wine, squashfs, wine.tgz]
+  extensions: [exe, wine, squashfs, wtgz]
   platform:   pc
   theme:      pc
   emulators:
     wine:
-      wine:  { requireAnyOf: [BR2_PACKAGE_WINE] }
+      wine32:  { requireAnyOf: [BR2_PACKAGE_WINE] }
 
 windows32_installers:
   name:       Windows installers 32 bits
@@ -1403,22 +1403,20 @@ windows32_installers:
   hardware: pc
   extensions: [exe, iso]
   platform:   pc
-  theme:      pc
   emulators:
     wine:
-      wine:  { requireAnyOf: [BR2_PACKAGE_WINE] }
+      wine32:  { requireAnyOf: [BR2_PACKAGE_WINE] }
 
 windows64:
   name:       Windows 64 bits
   manufacturer: Microsoft
   release: 1992
   hardware: pc
-  extensions: [exe, wine, squashfs, wine.tgz]
+  extensions: [exe, wine, squashfs, wtgz]
   platform:   pc
-  theme:      pc
   emulators:
     wine:
-      wine:  { requireAnyOf: [BR2_PACKAGE_WINE] }
+      wine64:  { requireAnyOf: [BR2_PACKAGE_WINE] }
 
 windows64_installers:
   name:       Windows installers 64 bits
@@ -1427,10 +1425,9 @@ windows64_installers:
   hardware: pc
   extensions: [exe, iso]
   platform:   pc
-  theme:      pc
   emulators:
     wine:
-      wine:  { requireAnyOf: [BR2_PACKAGE_WINE] }
+      wine64:  { requireAnyOf: [BR2_PACKAGE_WINE] }
 
 wiiu:
   name:       Wii U
