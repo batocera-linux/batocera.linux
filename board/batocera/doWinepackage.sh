@@ -130,6 +130,10 @@ do
     findDeps "${BIN}" "${TMPOUT}/lib32" || exit 1
 done
 
+# dynanically loaded libs
+cp -pr "${G_TARGETDIR}/usr/lib/libncurses.so."* "${TMPOUT}/lib32/" || exit 1
+cp -pr "${G_TARGETDIR}/usr/lib/libmspack.so."*  "${TMPOUT}/lib32/" || exit 1
+
 # binaries
 echo "binaries..."
 mkdir -p "${TMPOUT}/usr/bin32"                           || exit 1
