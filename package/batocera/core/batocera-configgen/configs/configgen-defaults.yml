@@ -293,12 +293,18 @@ openbor:
   options:
     ratio: 0
     filter: 0
-windows:
+windows32:
   emulator: wine
   core:     wine
-windows_installers:
+windows32_installers:
   emulator: wine
   core:     wine
+windows64:
+  emulator: wine
+  core:     wine64
+windows64_installers:
+  emulator: wine
+  core:     wine64
 wiiu:
   emulator: cemu
   core:     cemu

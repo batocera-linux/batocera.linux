@@ -8,9 +8,9 @@ shift
 shift
 
 G_WINE_VERSION=$(wine --version)
-G_SAVES_DIR="/userdata/saves/windows"
-G_ROMS_DIR="/userdata/roms/windows"
-G_LAST_BASE_IMAGE="${G_ROMS_DIR}/bases/${G_WINE_VERSION}.base"
+G_SAVES_DIR="/userdata/saves"
+G_ROMS_DIR="/userdata/roms/windows${ARCH}"
+G_INSROMS_DIR="/userdata/roms/windows${ARCH}_installers"
 
 if test "${ARCH}" = 32
 then
@@ -25,10 +25,12 @@ usage() {
     echo "${1} play    	     64 <game>.exe"             >&2
     echo "${1} play    	     32 <game>.wine"            >&2
     echo "${1} play    	     32 <game>.wine.squashfs"   >&2
+    echo "${1} play    	     32 <game>.wine.tgz"        >&2
     echo "${1} install 	     32 <game>.iso"             >&2
     echo "${1} install 	     32 <game>.exe"             >&2
     echo "${1} tricks  	     32 <game>.wine directplay" >&2
     echo "${1} wine2squashfs 32 <game.wine>"            >&2
+    echo "${1} wine2winetgz  32 <game.wine>"            >&2
 }
 
 waitWineServer() {
@@ -77,7 +79,7 @@ getWine_var() {
 
 play_wine() {
     GAMENAME=$1
-    WINEPOINT="/userdata/roms/windows/${GAMENAME}"
+    WINEPOINT="${G_ROMS_DIR}/${GAMENAME}"
 
     WINE_CMD=$(getWine_var "${WINEPOINT}" "CMD" "explorer")
     WINE_DIR=$(getWine_var "${WINEPOINT}" "DIR" "")
@@ -88,7 +90,7 @@ play_wine() {
 trick_wine() {
     GAMENAME=$1
     TRICK=$2
-    WINEPOINT="/userdata/roms/windows/${GAMENAME}"
+    WINEPOINT="${G_ROMS_DIR}/${GAMENAME}"
     WINEPREFIX=${WINEPOINT} winetricks "${TRICK}"
 }
 
@@ -99,8 +101,8 @@ trick_wine() {
 
 play_exe() {
     GAMENAME=$1
-    WINEPOINT="/userdata/saves/${GAMENAME}.wine"
-    GAMEDIR="/userdata/roms/windows/"$(dirname "${GAMENAME}")
+    WINEPOINT="${G_SAVES_DIR}/${GAMENAME}.wine"
+    GAMEDIR="${G_ROMS_DIR}/"$(dirname "${GAMENAME}")
     GAMEEXE=$(basename "${GAMENAME}")
 
     createWineDirectory "${WINEPOINT}"
@@ -108,19 +110,34 @@ play_exe() {
     waitWineServer
 }
 
+play_winetgz() {
+    GAMENAME=$1
+    WINEPOINT="${G_SAVES_DIR}/${GAMENAME}"
+
+    if ! test -e "${WINEPOINT}"
+    then
+	(cd "${G_SAVES_DIR}" && tar xf "${G_ROMS_DIR}/${GAMENAME}") || return 1
+    fi
+
+    WINE_CMD=$(getWine_var "${WINEPOINT}" "CMD" "explorer")
+    WINE_DIR=$(getWine_var "${WINEPOINT}" "DIR" "")
+    (cd "${WINEPOINT}/${WINE_DIR}" && WINEPREFIX=${WINEPOINT} wine ${WINE_CMD})
+    waitWineServer
+}
+
 play_squashfs() {
     GAMENAME=$1
     WINEPOINT="/var/run/wine/${GAMENAME}"
     SQUASHFSPOINT="/var/run/wine/squashfs_${GAMENAME}"
-    SAVEPOINT="/userdata/saves/${GAMENAME}"
-    WORKPOINT="/userdata/saves/${GAMENAME}.work"
+    SAVEPOINT="${G_SAVES_DIR}/${GAMENAME}"
+    WORKPOINT="${G_SAVES_DIR}/${GAMENAME}.work"
 
     mkdir -p "${SAVEPOINT}" || return 1
     mkdir -p "${WORKPOINT}" || return 1
     mkdir -p "${WINEPOINT}" || return 1
 
     mkdir -p "${SQUASHFSPOINT}" || return 1
-    if ! mount "/userdata/roms/windows/${GAMENAME}" "${SQUASHFSPOINT}"
+    if ! mount "${G_ROMS_DIR}/${GAMENAME}" "${SQUASHFSPOINT}"
     then
 	rmdir "${SQUASHFSPOINT}"
 	rm -rf "${WORKPOINT}"
@@ -139,6 +156,7 @@ play_squashfs() {
     WINE_CMD=$(getWine_var "${WINEPOINT}" "CMD" "explorer")
     WINE_DIR=$(getWine_var "${WINEPOINT}" "DIR" "")
     (cd "${WINEPOINT}/${WINE_DIR}" && WINEPREFIX=${WINEPOINT} wine ${WINE_CMD})
+    waitWineServer
 
     # try to clean the cdrom
     umount "${WINEPOINT}"
@@ -148,20 +166,31 @@ play_squashfs() {
     rmdir "${WINEPOINT}"
 }
 
+init_cmd() {
+    WINEPOINT=$1
+
+    (
+	echo "#DIR=drive_c/Program Files/myprogram"
+	echo "#CMD=start.exe"
+    ) > "${WINEPOINT}/autorun.cmd"
+}
+
 install_exe() {
     GAMENAME=$1
-    WINEPOINT="/userdata/roms/windows/${GAMENAME}.wine"
-    INSTALLERFILE="/userdata/roms/windows_installers/${GAMENAME}"
+    WINEPOINT="${G_ROMS_DIR}/${GAMENAME}.wine"
+    INSTALLERFILE="${G_INSROMS_DIR}/${GAMENAME}"
 
     createWineDirectory "${WINEPOINT}"
+
     WINEPREFIX=${WINEPOINT} wine "${INSTALLERFILE}"
     waitWineServer
+    init_cmd "${WINEPOINT}"
 }
 
 install_iso() {
     GAMENAME=$1
     GAMEISOMOUNT="/var/run/wine/${GAMENAME}.cdrom"
-    INSTALLERISO="/userdata/roms/windows_installers/${GAMENAME}"
+    INSTALLERISO="${G_INSROMS_DIR}/${GAMENAME}"
 
     mkdir -p "${GAMEISOMOUNT}" || return 1
     if ! mount -t iso9660 "${INSTALLERISO}" "${GAMEISOMOUNT}"
@@ -170,7 +199,7 @@ install_iso() {
 	return 1
     fi
 
-    WINEPOINT="/userdata/roms/windows/${GAMENAME}.wine"
+    WINEPOINT="${G_ROMS_DIR}/${GAMENAME}.wine"
 
     createWineDirectory "${WINEPOINT}"
     
@@ -181,7 +210,8 @@ install_iso() {
     fi
 
     waitWineServer
-    
+    init_cmd "${WINEPOINT}"
+
     # try to clean the cdrom
     umount "${GAMEISOMOUNT}"
     rmdir "${GAMEISOMOUNT}"
@@ -190,10 +220,20 @@ install_iso() {
 wine2squashfs() {
     GAMENAME=$1
 
-    GAMEDIR="/userdata/roms/windows/${GAMENAME}"
-    SQUASHFSFILE="/userdata/roms/windows/${GAMENAME}.squashfs"
+    GAMEDIR="${G_ROMS_DIR}/${GAMENAME}"
+    SQUASHFSFILE="${G_ROMS_DIR}/${GAMENAME}.squashfs"
     
     mksquashfs "${GAMEDIR}" "${SQUASHFSFILE}" || return 1
+    return 0
+}
+
+wine2winetgz() {
+    GAMENAME=$1
+
+    GAMEDIR="${G_ROMS_DIR}/${GAMENAME}"
+    WINETGZFILE="${G_ROMS_DIR}/${GAMENAME}.wine.tgz"
+
+    (cd "${G_ROMS_DIR}" && tar zcf "${WINETGZFILE}" "${GAMENAME}") || return 1
     return 0
 }
 
@@ -228,6 +268,9 @@ case "${ACTION}" in
 	    "squashfs")
 		play_squashfs "${GAMENAME}" || cleanAndExit 1
 		;;
+	    "tgz")
+		play_winetgz "${GAMENAME}" || cleanAndExit 1
+		;;
 	    *)
 		echo "unknown extension ${GAMEEXT}" >&2
 		cleanAndExit 1
@@ -261,6 +304,10 @@ case "${ACTION}" in
     "wine2squashfs")
 	GAMENAME=$1
 	wine2squashfs "${GAMENAME}" || exit 1
+	;;
+    "wine2winetgz")
+	GAMENAME=$1
+	wine2winetgz "${GAMENAME}" || exit 1
 	;;
     *)
 	echo "unknown action ${ACTION}" >&2

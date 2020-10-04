@@ -1384,24 +1384,48 @@ ports:
   comment_fr: |
           Jeux et applications Linux additionnels qui peuvent etre lancés depuis un script .sh.
 
-windows:
-  name:       Windows
+windows32:
+  name:       Windows 32 bits
   manufacturer: Microsoft
   release: 1992
   hardware: pc
-  extensions: [exe, iso, wine, squashfs]
+  extensions: [exe, wine, squashfs, wine.tgz]
   platform:   pc
   theme:      pc
   emulators:
     wine:
       wine:  { requireAnyOf: [BR2_PACKAGE_WINE] }
 
-windows_installers:
-  name:       Windows installers
+windows32_installers:
+  name:       Windows installers 32 bits
   manufacturer: Microsoft
   release: 1992
   hardware: pc
-  extensions: [exe, iso, wine]
+  extensions: [exe, iso]
+  platform:   pc
+  theme:      pc
+  emulators:
+    wine:
+      wine:  { requireAnyOf: [BR2_PACKAGE_WINE] }
+
+windows64:
+  name:       Windows 64 bits
+  manufacturer: Microsoft
+  release: 1992
+  hardware: pc
+  extensions: [exe, wine, squashfs, wine.tgz]
+  platform:   pc
+  theme:      pc
+  emulators:
+    wine:
+      wine:  { requireAnyOf: [BR2_PACKAGE_WINE] }
+
+windows64_installers:
+  name:       Windows installers 64 bits
+  manufacturer: Microsoft
+  release: 1992
+  hardware: pc
+  extensions: [exe, iso]
   platform:   pc
   theme:      pc
   emulators:
