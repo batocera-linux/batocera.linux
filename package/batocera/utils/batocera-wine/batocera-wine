@@ -1,0 +1,270 @@
+#!/bin/bash
+
+#set -x
+
+ACTION=$1
+ARCH=$2
+shift
+shift
+
+G_WINE_VERSION=$(wine --version)
+G_SAVES_DIR="/userdata/saves/windows"
+G_ROMS_DIR="/userdata/roms/windows"
+G_LAST_BASE_IMAGE="${G_ROMS_DIR}/bases/${G_WINE_VERSION}.base"
+
+if test "${ARCH}" = 32
+then
+    PATH=/usr/bin32:$PATH
+    export LD_LIBRARY_PATH="/lib32:/lib32/wine"
+    export LIBGL_DRIVERS_PATH="/lib32/dri"
+    export WINEDLLPATH="/lib32/wine:/lib32/wine/fakedlls"
+fi
+
+usage() {
+    echo "${1} play    	     32 <game>.iso"             >&2
+    echo "${1} play    	     64 <game>.exe"             >&2
+    echo "${1} play    	     32 <game>.wine"            >&2
+    echo "${1} play    	     32 <game>.wine.squashfs"   >&2
+    echo "${1} install 	     32 <game>.iso"             >&2
+    echo "${1} install 	     32 <game>.exe"             >&2
+    echo "${1} tricks  	     32 <game>.wine directplay" >&2
+    echo "${1} wine2squashfs 32 <game.wine>"            >&2
+}
+
+waitWineServer() {
+    while pgrep /usr/bin/wineserver
+    do
+	echo "waiting wineserver" >&2
+	sleep 1
+    done
+}
+
+createWineDirectory() {
+    WINEPREFIX=$1
+
+    # already created
+    test -e "${WINEPREFIX}" && return 0
+
+    # please wait screen
+    bsod-wine&
+    BSODPID=$!
+  
+    mkdir -p "${WINEPREFIX}" || return 1
+
+    if ! WINEPREFIX=${WINEPREFIX} wine hostname
+    then
+	rm -rf "${WINEPREFIX}"
+	return 1
+    fi
+
+    kill -15 ${BSODPID}
+
+    return 0
+}
+
+getWine_var() {
+    WINEPOINT=$1
+    WINEVAR=$2
+    WINEVALUE=$3
+
+    if test -e "${WINEPOINT}/autorun.cmd"
+    then
+	grep "^${WINEVAR}=" "${WINEPOINT}/autorun.cmd" | sed -e s+"^${WINEVAR}="+""+ | head -1
+    else
+	echo "${WINEVALUE}"
+    fi
+}
+
+play_wine() {
+    GAMENAME=$1
+    WINEPOINT="/userdata/roms/windows/${GAMENAME}"
+
+    WINE_CMD=$(getWine_var "${WINEPOINT}" "CMD" "explorer")
+    WINE_DIR=$(getWine_var "${WINEPOINT}" "DIR" "")
+    (cd "${WINEPOINT}/${WINE_DIR}" && WINEPREFIX=${WINEPOINT} wine ${WINE_CMD})
+    waitWineServer
+}
+
+trick_wine() {
+    GAMENAME=$1
+    TRICK=$2
+    WINEPOINT="/userdata/roms/windows/${GAMENAME}"
+    WINEPREFIX=${WINEPOINT} winetricks "${TRICK}"
+}
+
+#play_iso() {
+#    GAMENAME=$1
+#    # TODO
+#}
+
+play_exe() {
+    GAMENAME=$1
+    WINEPOINT="/userdata/saves/${GAMENAME}.wine"
+    GAMEDIR="/userdata/roms/windows/"$(dirname "${GAMENAME}")
+    GAMEEXE=$(basename "${GAMENAME}")
+
+    createWineDirectory "${WINEPOINT}"
+    (cd "${GAMEDIR}" && WINEPREFIX=${WINEPOINT} wine "${GAMEEXE}")
+    waitWineServer
+}
+
+play_squashfs() {
+    GAMENAME=$1
+    WINEPOINT="/var/run/wine/${GAMENAME}"
+    SQUASHFSPOINT="/var/run/wine/squashfs_${GAMENAME}"
+    SAVEPOINT="/userdata/saves/${GAMENAME}"
+    WORKPOINT="/userdata/saves/${GAMENAME}.work"
+
+    mkdir -p "${SAVEPOINT}" || return 1
+    mkdir -p "${WORKPOINT}" || return 1
+    mkdir -p "${WINEPOINT}" || return 1
+
+    mkdir -p "${SQUASHFSPOINT}" || return 1
+    if ! mount "/userdata/roms/windows/${GAMENAME}" "${SQUASHFSPOINT}"
+    then
+	rmdir "${SQUASHFSPOINT}"
+	rm -rf "${WORKPOINT}"
+	rmdir "${WINEPOINT}"
+	return 1
+    fi
+
+    if ! mount -t overlay overlay -o rw,lowerdir="${SQUASHFSPOINT}",upperdir="${SAVEPOINT}",workdir="${WORKPOINT}",index=on,redirect_dir=on "${WINEPOINT}"
+    then
+	umount "${SQUASHFSPOINT}"
+	rmdir "${SQUASHFSPOINT}"
+	rm -rf "${WORKPOINT}"
+	rmdir "${WINEPOINT}"
+    fi
+
+    WINE_CMD=$(getWine_var "${WINEPOINT}" "CMD" "explorer")
+    WINE_DIR=$(getWine_var "${WINEPOINT}" "DIR" "")
+    (cd "${WINEPOINT}/${WINE_DIR}" && WINEPREFIX=${WINEPOINT} wine ${WINE_CMD})
+
+    # try to clean the cdrom
+    umount "${WINEPOINT}"
+    umount "${SQUASHFSPOINT}"
+    rmdir "${SQUASHFSPOINT}"
+    rm -rf "${WORKPOINT}"
+    rmdir "${WINEPOINT}"
+}
+
+install_exe() {
+    GAMENAME=$1
+    WINEPOINT="/userdata/roms/windows/${GAMENAME}.wine"
+    INSTALLERFILE="/userdata/roms/windows_installers/${GAMENAME}"
+
+    createWineDirectory "${WINEPOINT}"
+    WINEPREFIX=${WINEPOINT} wine "${INSTALLERFILE}"
+    waitWineServer
+}
+
+install_iso() {
+    GAMENAME=$1
+    GAMEISOMOUNT="/var/run/wine/${GAMENAME}.cdrom"
+    INSTALLERISO="/userdata/roms/windows_installers/${GAMENAME}"
+
+    mkdir -p "${GAMEISOMOUNT}" || return 1
+    if ! mount -t iso9660 "${INSTALLERISO}" "${GAMEISOMOUNT}"
+    then
+	rmdir "${GAMEISOMOUNT}"
+	return 1
+    fi
+
+    WINEPOINT="/userdata/roms/windows/${GAMENAME}.wine"
+
+    createWineDirectory "${WINEPOINT}"
+    
+    if mkdir -p "${WINEPOINT}/dosdevices" && rm -f "${WINEPOINT}/dosdevices/d:" && ln -sf "${GAMEISOMOUNT}" "${WINEPOINT}/dosdevices/d:"
+    then
+	WINEPREFIX=${WINEPOINT} wine explorer "d:"
+	rm -f "${WINEPOINT}/dosdevices/d:"
+    fi
+
+    waitWineServer
+    
+    # try to clean the cdrom
+    umount "${GAMEISOMOUNT}"
+    rmdir "${GAMEISOMOUNT}"
+}
+
+wine2squashfs() {
+    GAMENAME=$1
+
+    GAMEDIR="/userdata/roms/windows/${GAMENAME}"
+    SQUASHFSFILE="/userdata/roms/windows/${GAMENAME}.squashfs"
+    
+    mksquashfs "${GAMEDIR}" "${SQUASHFSFILE}" || return 1
+    return 0
+}
+
+gameext() {
+    echo "${1}" | sed -e s+"^.*\.\([^\.]*\)$"+"\1"+
+}
+
+cleanAndExit() {
+    unclutter-remote -h
+    exit "${1}"
+    # TODO : unmount always, trap, later
+}
+
+# show the mouse
+unclutter-remote -s
+trap "unclutter-remote -h" INT QUIT TERM
+
+case "${ACTION}" in
+    "play")
+	GAMENAME=$1
+	GAMEEXT=$(gameext "${GAMENAME}")
+	case "${GAMEEXT}" in
+	    "wine")
+		play_wine "${GAMENAME}" || cleanAndExit 1
+		;;
+	    "exe")
+		play_exe "${GAMENAME}" || cleanAndExit 1
+		;;
+#	    "iso")
+#		play_iso "${GAMENAME}" || cleanAndExit 1
+#		;;
+	    "squashfs")
+		play_squashfs "${GAMENAME}" || cleanAndExit 1
+		;;
+	    *)
+		echo "unknown extension ${GAMEEXT}" >&2
+		cleanAndExit 1
+	esac
+	;;
+    "install")
+	GAMENAME=$1
+    	GAMEEXT=$(gameext "${GAMENAME}")
+	case "${GAMEEXT}" in
+	    "exe")
+		install_exe "${GAMENAME}" || cleanAndExit 1
+		;;
+	    "iso")
+		install_iso "${GAMENAME}" || cleanAndExit 1
+		;;
+	    *)
+		echo "unknown extension ${GAMEEXT}" >&2
+		cleanAndExit 1
+	esac
+	;;
+    "tricks")
+	GAMENAME=$1
+	TRICK=$2
+    	GAMEEXT=$(gameext "${GAMENAME}")
+	case "${GAMEEXT}" in
+	    "wine")
+		trick_wine "${GAMENAME}" "${TRICK}" || cleanAndExit 1
+		;;
+	esac
+	;;
+    "wine2squashfs")
+	GAMENAME=$1
+	wine2squashfs "${GAMENAME}" || exit 1
+	;;
+    *)
+	echo "unknown action ${ACTION}" >&2
+	usage "${0}"
+	cleanAndExit 1
+esac
+cleanAndExit 0
