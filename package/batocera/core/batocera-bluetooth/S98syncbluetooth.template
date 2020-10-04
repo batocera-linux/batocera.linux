@@ -1,0 +1,9 @@
+#!/bin/bash
+#
+# Auto connect bluetooth controllers on boot
+#
+
+enabled="$(batocera-settings -command load -key controllers.bluetooth.enabled)"
+if [ "$enabled" == "1" ]; then
+batocera-bluetooth trust 
+fi
