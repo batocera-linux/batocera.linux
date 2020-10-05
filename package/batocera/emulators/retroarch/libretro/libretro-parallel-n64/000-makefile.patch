@@ -54,9 +54,9 @@ index bfc5a477..647caf6d 100644
 +   ifneq (,$(findstring h5,$(platform)))
 +      GLES = 1
 +      GL_LIB := -lGLESv2
-+      CPUFLAGS += -DNO_ASM -DARM -DARM_ASM -DDONT_WANT_ARM_OPTIMIZATIONS -DARM_FIX -DCLASSIC -DARM64
++      CPUFLAGS += -DNO_ASM -DARM -D__arm__ -DARM_ASM -D__NEON_OPT -DNOSSE -DARM_FIX -DCLASSIC
 +      HAVE_NEON = 1
-+      WITH_DYNAREC=aarch64
++      WITH_DYNAREC=arm
 +      CPUFLAGS += -D__NEON_OPT -march=armv8-a+crc -mcpu=cortex-a53 -mtune=cortex-a53
 +   endif
 +

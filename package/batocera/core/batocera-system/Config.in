@@ -416,7 +416,8 @@ config BR2_PACKAGE_BATOCERA_RETROARCH
 
         select BR2_PACKAGE_LIBRETRO_IMAME             if BR2_PACKAGE_BATOCERA_TARGET_RPI_ANY # IMAME
 
-        select BR2_PACKAGE_LIBRETRO_MAME2010          if !BR2_PACKAGE_BATOCERA_TARGET_RPI1 # MAME2010
+        select BR2_PACKAGE_LIBRETRO_MAME2010          if !BR2_PACKAGE_BATOCERA_TARGET_RPI1 && \
+                                                         !BR2_PACKAGE_BATOCERA_TARGET_LIBRETECH_H5 #MAME2010
 
         select BR2_PACKAGE_LIBRETRO_OPERA             if !BR2_PACKAGE_BATOCERA_TARGET_RPI_ANY && \
                                                          !BR2_PACKAGE_BATOCERA_TARGET_C2      && \
@@ -455,6 +456,7 @@ config BR2_PACKAGE_BATOCERA_RETROARCH
 
         select BR2_PACKAGE_LIBRETRO_YABASANSHIRO      if !BR2_PACKAGE_BATOCERA_TARGET_RPI_ANY   && \
                                                          !BR2_PACKAGE_BATOCERA_TARGET_S905      && \
+                                                         !BR2_PACKAGE_BATOCERA_TARGET_LIBRETECH_H5 && \
                                                          !BR2_PACKAGE_BATOCERA_TARGET_S912
 
         select BR2_PACKAGE_LIBRETRO_DESMUME           if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
