@@ -6,9 +6,6 @@ if [ "$enabled" == "1" ]; then
         if [ "$gamepad" == "0" ]; then
         curl --data "Running Bluetooth Connection" 127.0.0.1:1234/notify
         batocera-bluetooth trust $1 &
-        sleep 30
-        pid=$!
-        wait "$pid"
-        exit 1
+        wait $! && exit 1
         fi
 fi
