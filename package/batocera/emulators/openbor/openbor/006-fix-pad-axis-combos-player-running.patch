@@ -1,0 +1,17 @@
+diff --git a/engine/openbor.c b/engine/openbor.c
+index fde1b1af..46905d06 100644
+--- a/engine/openbor.c
++++ b/engine/openbor.c
+@@ -31410,7 +31410,8 @@ int match_combo(int a[], s_player *p, int l)
+         step = (step + MAX_SPECIAL_INPUTS) % MAX_SPECIAL_INPUTS;
+ 
+         // old: !(a[l - 1 - j]&p->combokey[step])
+-        if( ((a[l - 1 - j]&p->combokey[step]) ^ a[l - 1 - j]) ) // if input&combokey == 0 then not good btn
++        //if( ((a[l - 1 - j]&p->combokey[step]) ^ a[l - 1 - j]) ) // if input&combokey == 0 then not good btn
++		if ((a[l - 1 - j] & p->combokey[step]) == 0)
+         {
+             return 0;
+         }
+-- 
+2.25.1.windows.1
+
