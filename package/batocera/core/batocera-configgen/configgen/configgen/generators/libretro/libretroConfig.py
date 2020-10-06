@@ -45,7 +45,7 @@ systemToP1Device = {'msx': '257', 'msx1': '257', 'msx2': '257', 'colecovision': 
 systemToP2Device = {'msx': '257', 'msx1': '257', 'msx2': '257', 'colecovision': '1' };
 
 # Netplay modes
-systemNetplayModes = {'host', 'client'}
+systemNetplayModes = {'host', 'client', 'spectator'}
 
 def writeLibretroConfig(retroconfig, system, controllers, rom, bezel, gameResolution):
     writeLibretroConfigToFile(retroconfig, createLibretroConfig(system, controllers, rom, bezel, gameResolution))
@@ -235,19 +235,43 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
         retroarchConfig['netplay_delay_frames']      = systemConfig.get('netplay.frames', "")
         retroarchConfig['netplay_nickname']          = systemConfig.get('netplay.nickname', "")
         retroarchConfig['netplay_client_swap_input'] = "false"
-        if system.config['netplay.mode'] == 'client':
+        if system.config['netplay.mode'] == 'client' or system.config['netplay.mode'] == 'spectator':
             # But client needs netplay_mode = true ... bug ?
             retroarchConfig['netplay_mode']              = "true"
             retroarchConfig['netplay_ip_address']        = systemConfig.get('netplay.server.ip', "")
             retroarchConfig['netplay_ip_port']           = systemConfig.get('netplay.server.port', "")
             retroarchConfig['netplay_client_swap_input'] = "true"
-        # mode spectator
+
+        # connect as client
+        if system.config['netplay.mode'] == 'client':
+            if 'netplay.password' in system.config:
+                retroarchConfig['netplay_password', '"' + systemConfig.get["netplay.password"] + '"')
+            else:
+                retroarchConfig['netplay_password', "")
+
+        # connect as spectator
+        if system.config['netplay.mode'] == 'spectator':
+            retroarchConfig['netplay_start_as_spectator'] = "true"
+            if 'netplay.password' in system.config:
+                retroarchConfig['netplay_spectate_password', '"' + systemConfig.get["netplay.password"] + '"')
+            else:
+                retroarchConfig['netplay_spectate_password', "")
+        else:
+            retroarchConfig['netplay_start_as_spectator'] = "false"            
+
+         # Netplay host passwords
+        if system.config['netplay.mode'] == 'host':
+            retroarchConfig['netplay_password', '"' + systemConfig.get["netplay.password"] + '"')
+            retroarchConfig['netplay_spectate_password', '"' + systemConfig.get["netplay.spectatepassword"] + '"')
+
+        # enable or disable server spectator mode
         if system.isOptSet('netplay.spectator') and system.getOptBoolean('netplay.spectator') == True:
             retroarchConfig['netplay_spectator_mode_enable'] = 'true'
         else:
             retroarchConfig['netplay_spectator_mode_enable'] = 'false'
+
         # relay
-        if 'netplay.relay' in system.config and system.config['netplay.relay'] != "" :
+        if 'netplay.relay' in system.config and system.config['netplay.relay'] != "" and system.config['netplay.relay'] != "none" :
             retroarchConfig['netplay_use_mitm_server'] = "true"
             retroarchConfig['netplay_mitm_server'] = systemConfig.get('netplay.relay', "")
         else:
