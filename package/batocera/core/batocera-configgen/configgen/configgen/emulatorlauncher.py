@@ -221,7 +221,7 @@ if __name__ == '__main__':
     parser.add_argument("-emulator", help="force emulator", type=str, required=False)
     parser.add_argument("-core", help="force emulator core", type=str, required=False)
     parser.add_argument("-netplaymode", help="host/client", type=str, required=False)
-    parser.add_argument("-netplayspectator", help="enable spectator mode", default=False, action='store_true', required=False)
+    parser.add_argument("-netplaypass", help="enable spectator mode", type=str, required=False)
     parser.add_argument("-netplayip", help="remote ip", type=str, required=False)
     parser.add_argument("-netplayport", help="remote port", type=str, required=False)
 

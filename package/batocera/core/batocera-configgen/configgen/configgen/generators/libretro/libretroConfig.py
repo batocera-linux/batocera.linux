@@ -245,24 +245,24 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
         # connect as client
         if system.config['netplay.mode'] == 'client':
             if 'netplay.password' in system.config:
-                retroarchConfig['netplay_password', '"' + systemConfig.get["netplay.password"] + '"')
+                retroarchConfig['netplay_password'] = '"' + systemConfig.get("netplay.password", "") + '"'
             else:
-                retroarchConfig['netplay_password', "")
+                retroarchConfig['netplay_password'] = ""
 
         # connect as spectator
         if system.config['netplay.mode'] == 'spectator':
             retroarchConfig['netplay_start_as_spectator'] = "true"
             if 'netplay.password' in system.config:
-                retroarchConfig['netplay_spectate_password', '"' + systemConfig.get["netplay.password"] + '"')
+                retroarchConfig['netplay_spectate_password'] = '"' + systemConfig.get("netplay.password", "") + '"'
             else:
-                retroarchConfig['netplay_spectate_password', "")
+                retroarchConfig['netplay_spectate_password'] = ""
         else:
             retroarchConfig['netplay_start_as_spectator'] = "false"            
 
          # Netplay host passwords
         if system.config['netplay.mode'] == 'host':
-            retroarchConfig['netplay_password', '"' + systemConfig.get["netplay.password"] + '"')
-            retroarchConfig['netplay_spectate_password', '"' + systemConfig.get["netplay.spectatepassword"] + '"')
+            retroarchConfig['netplay_password'] = '"' + systemConfig.get("netplay.password", "") + '"'
+            retroarchConfig['netplay_spectate_password'] = '"' + systemConfig.get("netplay.spectatepassword", "") + '"'
 
         # enable or disable server spectator mode
         if system.isOptSet('netplay.spectator') and system.getOptBoolean('netplay.spectator') == True:
