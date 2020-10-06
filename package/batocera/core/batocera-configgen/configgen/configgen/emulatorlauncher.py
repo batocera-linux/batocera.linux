@@ -134,8 +134,8 @@ def main(args, maxnbplayers):
         # network options
         if args.netplaymode is not None:
             system.config["netplay.mode"] = args.netplaymode
-        if args.netplayspectator is not None:
-            system.config["netplay.spectator"] = args.netplayspectator
+        if args.netplaypass is not None:
+            system.config["netplay.password"] = args.netplaypass
         if args.netplayip is not None:
             system.config["netplay.server.ip"] = args.netplayip
         if args.netplayport is not None:
