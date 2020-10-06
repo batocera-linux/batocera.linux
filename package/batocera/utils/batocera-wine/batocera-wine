@@ -13,10 +13,13 @@ G_ROMS_DIR="/userdata/roms/windows${ARCH}"
 
 if test "${ARCH}" = 32
 then
-    PATH=/usr/bin32:$PATH
-    export LD_LIBRARY_PATH="/lib32:/lib32/wine"
-    export LIBGL_DRIVERS_PATH="/lib32/dri"
-    export WINEDLLPATH="/lib32/wine:/lib32/wine/fakedlls"
+    if test -e /usr/bin32
+    then
+	PATH=/usr/bin32:$PATH
+	export LD_LIBRARY_PATH="/lib32:/lib32/wine"
+	export LIBGL_DRIVERS_PATH="/lib32/dri"
+	export WINEDLLPATH="/lib32/wine:/lib32/wine/fakedlls"
+    fi
 fi
 
 usage() {
@@ -119,8 +122,8 @@ play_exe() {
 
 play_winetgz() {
     GAMENAME=$1
-    WINEPOINT="${GAMENAME}"
 
+    WINEPOINT="${G_SAVES_DIR}/"$(basename "${GAMENAME}")".wine"
     if ! test -e "${WINEPOINT}"
     then
 	mkdir -p "${WINEPOINT}" || return 1
@@ -264,7 +267,7 @@ wine2winetgz() {
 }
 
 gameext() {
-    echo "${1}" | sed -e s+"^.*\.\([^\.]*\)$"+"\1"+
+    echo "${1}" | sed -e s+"^.*\.\([^\.]*\)$"+"\1"+ | tr A-Z a-z
 }
 
 cleanAndExit() {
