@@ -1,11 +1,11 @@
-#!/bin/bash
-#
-# Auto connect bluetooth controllers on boot
-#
-
 enabled="$(batocera-settings -command load -key controllers.bluetooth.enabled)"
+gamepad="$(ls /dev/input/by-path/ | grep "joystick" 2>/dev/null | wc -l)"
+
 if [ "$enabled" == "1" ]; then
-curl --data "Running Bluetooth Connection" 127.0.0.1:1234/notify
-batocera-bluetooth trust $1 &
-wait 20 && exit 1
+
+        if [ "$gamepad" == "0" ]; then
+        curl --data "Running Bluetooth Connection" 127.0.0.1:1234/notify
+        batocera-bluetooth trust $1 &
+        wait 30 && exit 1
+        fi
 fi
