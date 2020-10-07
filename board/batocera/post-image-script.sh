@@ -44,32 +44,6 @@ xu4_fusing() {
 	dd if=/dev/zero of="${BATOCERAIMG}" seek=$env_position count=32 bs=512 conv=notrunc || return 1
 }
 
-# C2 SD CARD
-#
-#       1       97         1281
-# +-----+-------+-----------+--------+--------------+
-# | MBR |  bl1  |   uboot   |  BOOT  |     FREE     |
-# +-----+-------+-----------+--------+--------------+
-#      512     48K         640K
-#
-# http://odroid.com/dokuwiki/doku.php?id=en:c2_building_u-boot
-
-c2_fusing() {
-	BINARIES_DIR=$1
-	BATOCERAIMG=$2
-
-	# fusing
-	signed_bl1_position=1
-	signed_bl1_skip=0
-	uboot_position=97
-
-	echo "BL1 fusing"
-	dd if="${BINARIES_DIR}/bl1.bin.hardkernel" of="${BATOCERAIMG}" seek=$signed_bl1_position skip=$signed_bl1_skip conv=notrunc || return 1
-
-	echo "u-boot fusing"
-	dd if="${BINARIES_DIR}/u-boot.bin"         of="${BATOCERAIMG}" seek=$uboot_position                            conv=notrunc || return 1
-}
-
 BATOCERA_BINARIES_DIR="${BINARIES_DIR}/batocera"
 BATOCERA_TARGET_DIR="${TARGET_DIR}/batocera"
 
@@ -195,7 +169,7 @@ case "${BATOCERA_TARGET}" in
 
 	S905)
 	MKIMAGE=${HOST_DIR}/bin/mkimage
-	BOARD_DIR="${BATO_DIR}/s905"
+	BOARD_DIR="${BATO_DIR}/amlogic/s905"
 	# boot
 	rm -rf "${BINARIES_DIR:?}/boot"      || exit 1
 	mkdir -p "${BINARIES_DIR}/boot/boot" || exit 1
@@ -217,7 +191,7 @@ case "${BATOCERA_TARGET}" in
 
 	# boot.tar.xz
 	echo "creating boot.tar.xz"
-	(cd "${BINARIES_DIR}/boot" && tar -I "xz -T0" -cf "${BATOCERA_BINARIES_DIR}/boot.tar.xz" tools boot batocera-boot.conf boot-logo.bmp.gz aml_autoscript.zip aml_autoscript s905_autoscript) || exit 1
+	(cd "${BINARIES_DIR}/boot" && tar -I "xz -T0" -cf "${BATOCERA_BINARIES_DIR}/boot.tar.xz" tools boot batocera-boot.conf boot-logo.bmp.gz) || exit 1
 
 	# batocera.img
 	# rename the squashfs : the .update is the version that will be renamed at boot to replace the old version
@@ -235,26 +209,32 @@ case "${BATOCERA_TARGET}" in
 
 	S912)
 	MKIMAGE=${HOST_DIR}/bin/mkimage
-	MKBOOTIMAGE=${HOST_DIR}/bin/mkbootimg
-	BOARD_DIR="${BATO_DIR}/s912"
+	#MKBOOTIMAGE=${HOST_DIR}/bin/mkbootimg
+	BOARD_DIR="${BATO_DIR}/amlogic/s912"
 	# boot
 	rm -rf "${BINARIES_DIR:?}/boot"      || exit 1
 	mkdir -p "${BINARIES_DIR}/boot/boot" || exit 1
-	cp "${BOARD_DIR}/boot/boot-logo.bmp.gz" "${BINARIES_DIR}/boot"   || exit 1
-	$MKIMAGE -C none -A arm64 -T script -d "${BOARD_DIR}/boot/s905_autoscript.txt" "${BINARIES_DIR}/boot/s905_autoscript"
-	$MKIMAGE -C none -A arm64 -T script -d "${BOARD_DIR}/boot/aml_autoscript.txt" "${BINARIES_DIR}/boot/aml_autoscript"
-	cp "${BOARD_DIR}/boot/aml_autoscript.zip" "${BINARIES_DIR}/boot"     || exit 1
-	cp "${BINARIES_DIR}/batocera-boot.conf" "${BINARIES_DIR}/boot/batocera-boot.conf" || exit 1
-	cp "${BINARIES_DIR}/all_merged.dtb" "${BINARIES_DIR}/dtb.img" || exit 1
-	$MKBOOTIMAGE --kernel "${BINARIES_DIR}/Image" --ramdisk "${BINARIES_DIR}/initrd" --second "${BINARIES_DIR}/dtb.img" --output "${BINARIES_DIR}/linux" || exit 1
-	cp "${BINARIES_DIR}/Image" "${BINARIES_DIR}/boot/boot/linux" || exit 1
+        mkdir -p "${BINARIES_DIR}/boot/extlinux" || exit 1
+        "${HOST_DIR}/bin/mkimage" -A arm64 -O linux -T kernel -C none -a 0x1080000 -e 0x1080000 -n 5.x -d "${BINARIES_DIR}/Image" "${BINARIES_DIR}/uImage" || exit 1
+	cp "${BOARD_DIR}/boot/boot-logo.bmp.gz" "${BINARIES_DIR}/boot"                      || exit 1
+	cp "${BINARIES_DIR}/batocera-boot.conf" "${BINARIES_DIR}/boot/batocera-boot.conf"   || exit 1
+	cp "${BINARIES_DIR}/uImage"             "${BINARIES_DIR}/boot/boot/linux"           || exit 1
+	cp "${BINARIES_DIR}/rootfs.squashfs"    "${BINARIES_DIR}/boot/boot/batocera.update" || exit 1
+	cp "${BINARIES_DIR}/initrd.gz"          "${BINARIES_DIR}/boot/boot"                 || exit 1
+        cp "${BOARD_DIR}/boot/extlinux.conf"    "${BINARIES_DIR}/boot/extlinux"             || exit 1
+	cp "${BOARD_DIR}/boot/logo.bmp"         "${BINARIES_DIR}/boot/boot/logo.bmp"        || exit 1
+	cp "${BOARD_DIR}/boot/boot.cmd"         "${BINARIES_DIR}/boot/boot.cmd"             || exit 1
 
-	cp "${BINARIES_DIR}/rootfs.squashfs" "${BINARIES_DIR}/boot/boot/batocera.update" || exit 1
-	cp -pr "${BINARIES_DIR}/tools"       "${BINARIES_DIR}/boot/"                || exit 1
+	for DTB in meson-gxm-khadas-vim2 meson-gxm-nexbox-a1 meson-gxm-q200 meson-gxm-q201 meson-gxm-rbox-pro meson-gxm-vega-s96 meson-gxm-s912-libretech-pc
+        do
+                cp "${BINARIES_DIR}/${DTB}.dtb" "${BINARIES_DIR}/boot/boot" || exit 1
+        done
+	cp -pr "${BINARIES_DIR}/tools"          "${BINARIES_DIR}/boot/"                || exit 1
+        cp "${BINARIES_DIR}/u-boot.bin.sd.bin"  "${BINARIES_DIR}/boot/"                || exit 1
 
 	# boot.tar.xz
 	echo "creating boot.tar.xz"
-	(cd "${BINARIES_DIR}/boot" && tar -I "xz -T0" -cf "${BATOCERA_BINARIES_DIR}/boot.tar.xz" tools boot batocera-boot.conf boot-logo.bmp.gz aml_autoscript.zip aml_autoscript s905_autoscript) || exit 1
+	(cd "${BINARIES_DIR}/boot" && tar -I "xz -T0" -cf "${BATOCERA_BINARIES_DIR}/boot.tar.xz" extlinux tools boot batocera-boot.conf boot-logo.bmp.gz) || exit 1
 
 	# batocera.img
 	# rename the squashfs : the .update is the version that will be renamed at boot to replace the old version
@@ -349,22 +329,35 @@ case "${BATOCERA_TARGET}" in
 	;;
 
 	C2)
-	BOARD_DIR="${BATO_DIR}/odroidc2"
+	BOARD_DIR="${BATO_DIR}/amlogic/odroidc2"
+        MKIMAGE=${HOST_DIR}/bin/mkimage
+	# amlogic stuff
+	"${HOST_DIR}/bin/fip_create" --bl30 "${BINARIES_DIR}/bl30.bin" --bl301 "${BINARIES_DIR}/bl301.bin" --bl31 "${BINARIES_DIR}/bl31.bin" --bl33 "${BINARIES_DIR}/u-boot.bin" "${BINARIES_DIR}/fip.bin"
+	"${HOST_DIR}/bin/fip_create" --dump "${BINARIES_DIR}/fip.bin"
+	cat "${BINARIES_DIR}/bl2.package" "${BINARIES_DIR}/fip.bin" > "${BINARIES_DIR}/boot_new.bin"
+	"${HOST_DIR}/bin/amlbootsig" "${BINARIES_DIR}/boot_new.bin" "${BINARIES_DIR}/u-boot.img"
+	dd if="${BINARIES_DIR}/u-boot.img" of="${BINARIES_DIR}/uboot-odc2.img" bs=512 skip=96
+	#support/scripts/genimage.sh -c ${BOARD_DIR}/genimage.cfg
+
 	# boot
 	rm -rf "${BINARIES_DIR:?}/boot"      || exit 1
 	mkdir -p "${BINARIES_DIR}/boot/boot" || exit 1
+	mkdir -p "${BINARIES_DIR}/boot/extlinux" || exit 1
+	"${HOST_DIR}/bin/mkimage" -A arm64 -O linux -T kernel -C none -a 0x1080000 -e 0x1080000 -n linux -d "${BINARIES_DIR}/Image" "${BINARIES_DIR}/uImage" || exit 1
 	cp "${BOARD_DIR}/boot/boot-logo.bmp.gz" "${BINARIES_DIR}/boot"   || exit 1
-	cp "${BOARD_DIR}/boot/boot.ini"       "${BINARIES_DIR}/boot"   || exit 1
 	cp "${BINARIES_DIR}/batocera-boot.conf" "${BINARIES_DIR}/boot/batocera-boot.conf" || exit 1
-	cp "${BINARIES_DIR}/Image" "${BINARIES_DIR}/boot/boot/linux" || exit 1
-	cp "${BINARIES_DIR}/meson64_odroidc2.dtb" "${BINARIES_DIR}/boot/boot" || exit 1
-	cp "${BINARIES_DIR}/uInitrd"              "${BINARIES_DIR}/boot/boot" || exit 1
+	cp "${BINARIES_DIR}/uImage" "${BINARIES_DIR}/boot/boot/linux" || exit 1
+	cp "${BINARIES_DIR}/meson-gxbb-odroidc2.dtb" "${BINARIES_DIR}/boot/boot" || exit 1
+        cp "${BINARIES_DIR}/initrd.gz"             "${BINARIES_DIR}/boot/boot/initrd.gz"            || exit 1
 	cp "${BINARIES_DIR}/rootfs.squashfs" "${BINARIES_DIR}/boot/boot/batocera.update" || exit 1
+        cp "${BOARD_DIR}/boot/extlinux.conf" "${BINARIES_DIR}/boot/extlinux"                   || exit 1
 	cp -pr "${BINARIES_DIR}/tools"       "${BINARIES_DIR}/boot/"                || exit 1
+	cp "${BINARIES_DIR}/bl1.bin.hardkernel" "${BINARIES_DIR}/boot/" || exit 1
+	cp "${BINARIES_DIR}/uboot-odc2.img" "${BINARIES_DIR}/boot/" || exit 1
 
 	# boot.tar.xz
 	echo "creating boot.tar.xz"
-	(cd "${BINARIES_DIR}/boot" && tar -I "xz -T0" -cf "${BATOCERA_BINARIES_DIR}/boot.tar.xz" tools boot.ini boot batocera-boot.conf boot-logo.bmp.gz) || exit 1
+	(cd "${BINARIES_DIR}/boot" && tar -I "xz -T0" -cf "${BATOCERA_BINARIES_DIR}/boot.tar.xz" extlinux tools boot batocera-boot.conf boot-logo.bmp.gz) || exit 1
 
 	# batocera.img
 	# rename the squashfs : the .update is the version that will be renamed at boot to replace the old version
@@ -377,44 +370,90 @@ case "${BATOCERA_TARGET}" in
 	genimage --rootpath="${TARGET_DIR}" --inputpath="${BINARIES_DIR}/boot" --outputpath="${BATOCERA_BINARIES_DIR}" --config="${BINARIES_DIR}/genimage.cfg" --tmppath="${GENIMAGE_TMP}" || exit 1
 	rm -f "${BATOCERA_BINARIES_DIR}/boot.vfat" || exit 1
 	rm -f "${BATOCERA_BINARIES_DIR}/userdata.ext4" || exit 1
-	c2_fusing "${BINARIES_DIR}" "${BATOCERAIMG}" || exit 1
 	sync || exit 1
 	;;
 
-	ODROIDN2)
-	BOARD_DIR="${BATO_DIR}/odroidn2"
-	# /boot
-	rm -rf "${BINARIES_DIR}/boot"            || exit 1
-	mkdir -p "${BINARIES_DIR}/boot/boot"     || exit 1
-	"${HOST_DIR}/bin/mkimage" -A arm64 -O linux -T kernel -C none -a 0x1080000 -e 0x1080000 -n 5.x -d "${BINARIES_DIR}/Image" "${BINARIES_DIR}/uImage" || exit 1
-	cp "${BINARIES_DIR}/uImage"                            "${BINARIES_DIR}/boot/boot/linux"                            || exit 1
+	C4)
+        BOARD_DIR="${BATO_DIR}/amlogic/odroidc4"
+        MKIMAGE=${HOST_DIR}/bin/mkimage
+
+        # boot
+        rm -rf "${BINARIES_DIR:?}/boot"      || exit 1
+        mkdir -p "${BINARIES_DIR}/boot/boot" || exit 1
+        mkdir -p "${BINARIES_DIR}/boot/extlinux" || exit 1
+        "${HOST_DIR}/bin/mkimage" -A arm64 -O linux -T kernel -C none -a 0x1080000 -e 0x1080000 -n linux -d "${BINARIES_DIR}/Image" "${BINARIES_DIR}/uImage" || exit 1
+        cp "${BOARD_DIR}/boot/boot-logo.bmp.gz"                "${BINARIES_DIR}/boot"                                       || exit 1
+        cp "${BINARIES_DIR}/batocera-boot.conf"                "${BINARIES_DIR}/boot/batocera-boot.conf"                    || exit 1
+        cp "${BINARIES_DIR}/uImage"                            "${BINARIES_DIR}/boot/boot/linux"                            || exit 1
+	cp "${BINARIES_DIR}/meson-sm1-odroid-c4.dtb"           "${BINARIES_DIR}/boot/boot/meson-sm1-odroid-c4.dtb"          || exit 1
+        cp "${BINARIES_DIR}/initrd.gz"                         "${BINARIES_DIR}/boot/boot/initrd.gz"                        || exit 1
+        cp "${BINARIES_DIR}/rootfs.squashfs"                   "${BINARIES_DIR}/boot/boot/batocera.update"                  || exit 1
+        cp "${BOARD_DIR}/boot/extlinux.conf"                   "${BINARIES_DIR}/boot/extlinux"                              || exit 1
 	cp "${BINARIES_DIR}/u-boot.bin"                        "${BINARIES_DIR}/boot/u-boot.bin"                            || exit 1
-	cp "${BINARIES_DIR}/uInitrd"                           "${BINARIES_DIR}/boot/boot/uInitrd"                          || exit 1
-	cp "${BINARIES_DIR}/rootfs.squashfs"                   "${BINARIES_DIR}/boot/boot/batocera.update"                  || exit 1
-	cp "${BINARIES_DIR}/meson64_odroidn2.dtb"              "${BINARIES_DIR}/boot/boot/meson64_odroid-n2.dtb"            || exit 1
-	cp "${BINARIES_DIR}/meson64_odroidn2_plus.dtb"         "${BINARIES_DIR}/boot/boot/meson64_odroid-n2_plus.dtb"       || exit 1
-	cp "${BINARIES_DIR}/batocera-boot.conf"                "${BINARIES_DIR}/boot/batocera-boot.conf"                    || exit 1
-	cp "${BOARD_DIR}/boot/extlinux.conf" "${BINARIES_DIR}/boot/boot/extlinux.conf" || exit 1
-	cp "${BOARD_DIR}/boot/boot.ini" "${BINARIES_DIR}/boot/boot.ini" || exit 1
-	cp "${BOARD_DIR}/boot/config.ini" "${BINARIES_DIR}/boot/config.ini" || exit 1
-	cp "${BOARD_DIR}/boot/boot-logo.bmp.gz" "${BINARIES_DIR}/boot"   || exit 1
-	cp -pr "${BINARIES_DIR}/tools"       "${BINARIES_DIR}/boot/"                || exit 1
+	cp "${BOARD_DIR}/boot/extlinux.conf"                   "${BINARIES_DIR}/boot/boot/extlinux.conf"                    || exit 1
+	cp "${BOARD_DIR}/boot/boot.ini"                        "${BINARIES_DIR}/boot/boot.ini"                              || exit 1
+	cp "${BOARD_DIR}/boot/config.ini"                      "${BINARIES_DIR}/boot/config.ini"                            || exit 1
+        cp -pr "${BINARIES_DIR}/tools"                         "${BINARIES_DIR}/boot/" || exit 1
+        cp "${BINARIES_DIR}/u-boot.bin.sd.bin"                  "${BINARIES_DIR}/boot/" || exit 1
 
-	# boot.tar.xz
-	echo "creating boot.tar.xz"
-	(cd "${BINARIES_DIR}/boot" && tar -I "xz -T0" -cf "${BATOCERA_BINARIES_DIR}/boot.tar.xz" tools boot batocera-boot.conf boot-logo.bmp.gz boot.ini config.ini) || exit 1
+        # boot.tar.xz
+        echo "creating boot.tar.xz"
+        (cd "${BINARIES_DIR}/boot" && tar -I "xz -T0" -cf "${BATOCERA_BINARIES_DIR}/boot.tar.xz" extlinux tools boot batocera-boot.conf boot-logo.bmp.gz boot.ini config.ini) || exit 1
 
-	# batocera.img
-	mv "${BINARIES_DIR}/boot/boot/batocera.update" "${BINARIES_DIR}/boot/boot/batocera" || exit 1
-	GENIMAGE_TMP="${BUILD_DIR}/genimage.tmp"
-	BATOCERAIMG="${BATOCERA_BINARIES_DIR}/batocera.img"
-	rm -rf "${GENIMAGE_TMP}" || exit 1
-	cp "${BOARD_DIR}/genimage.cfg" "${BINARIES_DIR}" || exit 1
-	echo "generating image"
-	genimage --rootpath="${TARGET_DIR}" --inputpath="${BINARIES_DIR}/boot" --outputpath="${BATOCERA_BINARIES_DIR}" --config="${BINARIES_DIR}/genimage.cfg" --tmppath="${GENIMAGE_TMP}" || exit 1
-	rm -f "${BATOCERA_BINARIES_DIR}/boot.vfat" || exit 1
-	rm -f "${BATOCERA_BINARIES_DIR}/userdata.ext4" || exit 1
-	sync || exit 1
+        # batocera.img
+        # rename the squashfs : the .update is the version that will be renamed at boot to replace the old version
+        mv "${BINARIES_DIR}/boot/boot/batocera.update" "${BINARIES_DIR}/boot/boot/batocera" || exit 1
+        GENIMAGE_TMP="${BUILD_DIR}/genimage.tmp"
+        BATOCERAIMG="${BATOCERA_BINARIES_DIR}/batocera.img"
+        rm -rf "${GENIMAGE_TMP}" || exit 1
+        cp "${BOARD_DIR}/genimage.cfg" "${BINARIES_DIR}" || exit 1
+        echo "generating image"
+        genimage --rootpath="${TARGET_DIR}" --inputpath="${BINARIES_DIR}/boot" --outputpath="${BATOCERA_BINARIES_DIR}" --config="${BINARIES_DIR}/genimage.cfg" --tmppath="${GENIMAGE_TMP}" || exit 1
+        rm -f "${BATOCERA_BINARIES_DIR}/boot.vfat" || exit 1
+        rm -f "${BATOCERA_BINARIES_DIR}/userdata.ext4" || exit 1
+        sync || exit 1
+	;;
+
+	ODROIDN2)
+        BOARD_DIR="${BATO_DIR}/amlogic/odroidn2"
+        MKIMAGE=${HOST_DIR}/bin/mkimage
+
+        # boot
+        rm -rf "${BINARIES_DIR:?}/boot"      || exit 1
+        mkdir -p "${BINARIES_DIR}/boot/boot" || exit 1
+        mkdir -p "${BINARIES_DIR}/boot/extlinux" || exit 1
+        "${HOST_DIR}/bin/mkimage" -A arm64 -O linux -T kernel -C none -a 0x1080000 -e 0x1080000 -n linux -d "${BINARIES_DIR}/Image" "${BINARIES_DIR}/uImage" || exit 1
+        cp "${BOARD_DIR}/boot/boot-logo.bmp.gz"                "${BINARIES_DIR}/boot"                                       || exit 1
+        cp "${BINARIES_DIR}/batocera-boot.conf"                "${BINARIES_DIR}/boot/batocera-boot.conf"                    || exit 1
+        cp "${BINARIES_DIR}/uImage"                            "${BINARIES_DIR}/boot/boot/linux"                            || exit 1
+	cp "${BINARIES_DIR}/meson-g12b-odroid-n2.dtb"          "${BINARIES_DIR}/boot/boot/meson-g12b-odroid-n2.dtb"         || exit 1
+	cp "${BINARIES_DIR}/meson-g12b-odroid-n2-plus.dtb"     "${BINARIES_DIR}/boot/boot/meson-g12b-odroid-n2_plus.dtb"    || exit 1
+        cp "${BINARIES_DIR}/initrd.gz"                         "${BINARIES_DIR}/boot/boot/initrd.gz"                        || exit 1
+        cp "${BINARIES_DIR}/rootfs.squashfs"                   "${BINARIES_DIR}/boot/boot/batocera.update"                  || exit 1
+        cp "${BOARD_DIR}/boot/extlinux.conf"                   "${BINARIES_DIR}/boot/extlinux"                              || exit 1
+	cp "${BINARIES_DIR}/u-boot.bin"                        "${BINARIES_DIR}/boot/u-boot.bin"                            || exit 1
+	cp "${BOARD_DIR}/boot/extlinux.conf"                   "${BINARIES_DIR}/boot/boot/extlinux.conf"                    || exit 1
+	cp "${BOARD_DIR}/boot/boot.ini"                        "${BINARIES_DIR}/boot/boot.ini"                              || exit 1
+	cp "${BOARD_DIR}/boot/config.ini"                      "${BINARIES_DIR}/boot/config.ini"                            || exit 1
+        cp -pr "${BINARIES_DIR}/tools"                         "${BINARIES_DIR}/boot/" || exit 1
+        cp "${BINARIES_DIR}/u-boot.bin.sd.bin"                  "${BINARIES_DIR}/boot/" || exit 1
+
+        # boot.tar.xz
+        echo "creating boot.tar.xz"
+        (cd "${BINARIES_DIR}/boot" && tar -I "xz -T0" -cf "${BATOCERA_BINARIES_DIR}/boot.tar.xz" extlinux tools boot batocera-boot.conf boot-logo.bmp.gz boot.ini config.ini) || exit 1
+
+        # batocera.img
+        # rename the squashfs : the .update is the version that will be renamed at boot to replace the old version
+        mv "${BINARIES_DIR}/boot/boot/batocera.update" "${BINARIES_DIR}/boot/boot/batocera" || exit 1
+        GENIMAGE_TMP="${BUILD_DIR}/genimage.tmp"
+        BATOCERAIMG="${BATOCERA_BINARIES_DIR}/batocera.img"
+        rm -rf "${GENIMAGE_TMP}" || exit 1
+        cp "${BOARD_DIR}/genimage.cfg" "${BINARIES_DIR}" || exit 1
+        echo "generating image"
+        genimage --rootpath="${TARGET_DIR}" --inputpath="${BINARIES_DIR}/boot" --outputpath="${BATOCERA_BINARIES_DIR}" --config="${BINARIES_DIR}/genimage.cfg" --tmppath="${GENIMAGE_TMP}" || exit 1
+        rm -f "${BATOCERA_BINARIES_DIR}/boot.vfat" || exit 1
+        rm -f "${BATOCERA_BINARIES_DIR}/userdata.ext4" || exit 1
+        sync || exit 1
 	;;
 
 	ODROIDGOA)
@@ -616,7 +655,7 @@ case "${BATOCERA_TARGET}" in
 	;;
 
 	VIM3)
-	BOARD_DIR="${BATO_DIR}/vim3"
+	BOARD_DIR="${BATO_DIR}/amlogic/vim3"
 	# /boot
 	rm -rf "${BINARIES_DIR}/boot"                 || exit 1
 	mkdir -p "${BINARIES_DIR}/boot/boot/extlinux" || exit 1
