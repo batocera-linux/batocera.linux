@@ -14,6 +14,9 @@ ifeq ($(BR2_PACKAGE_BATOCERA_SPLASH_OMXPLAYER),y)
 else ifeq ($(BR2_PACKAGE_BATOCERA_SPLASH_FFPLAY),y)
 	BATOCERA_SPLASH_SCRIPT=S03splash-ffplay
 	BATOCERA_SPLASH_MEDIA=video
+else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA),y)
+	BATOCERA_SPLASH_SCRIPT=S03splash-image
+	BATOCERA_SPLASH_MEDIA=rotate-oga-image
 else ifeq ($(BR2_PACKAGE_BATOCERA_SPLASH_ROTATE_IMAGE),y)
 	BATOCERA_SPLASH_SCRIPT=S03splash-image
 	BATOCERA_SPLASH_MEDIA=rotate-image
@@ -29,6 +32,10 @@ BATOCERA_SPLASH_POST_INSTALL_TARGET_HOOKS += BATOCERA_SPLASH_INSTALL_SCRIPT
 
 ifeq ($(BATOCERA_SPLASH_MEDIA),image)
 	BATOCERA_SPLASH_POST_INSTALL_TARGET_HOOKS += BATOCERA_SPLASH_INSTALL_IMAGE
+endif
+
+ifeq ($(BATOCERA_SPLASH_MEDIA),rotate-oga-image)
+	BATOCERA_SPLASH_POST_INSTALL_TARGET_HOOKS += BATOCERA_SPLASH_INSTALL_ROTATE_OGA_IMAGE
 endif
 
 ifeq ($(BATOCERA_SPLASH_MEDIA),rotate-image)
@@ -54,6 +61,11 @@ endef
 define BATOCERA_SPLASH_INSTALL_IMAGE
 	mkdir -p $(TARGET_DIR)/usr/share/batocera/splash
 	convert "$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/logo.png" -fill white -pointsize 30 -annotate +50+1020 "$(BATOCERA_SPLASH_TGVERSION)" "${TARGET_DIR}/usr/share/batocera/splash/logo-version.png"
+endef
+
+define BATOCERA_SPLASH_INSTALL_ROTATE_OGA_IMAGE
+	mkdir -p $(TARGET_DIR)/usr/share/batocera/splash
+	convert "$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/logo.png" -shave 150x0 -resize 480x320 -fill white -pointsize 15 -annotate +40+300 "$(BATOCERA_SPLASH_TGVERSION)" -rotate -90 "${TARGET_DIR}/usr/share/batocera/splash/logo-version.png"
 endef
 
 define BATOCERA_SPLASH_INSTALL_ROTATE_IMAGE
