@@ -4,6 +4,7 @@ config BR2_PACKAGE_MALI_T620_WAYLAND
 	select BR2_PACKAGE_HAS_LIBEGL
 	select BR2_PACKAGE_HAS_LIBGLES
 	select BR2_PACKAGE_WAYLAND
+        select BR2_PACKAGE_MALI_MIDGARD_MODULE
 	help
 	  Install the binary user-space components for the ARM Mali Midgard
 	  T620 GPU. This package requires a kernel with the ARM Mali Midgard
