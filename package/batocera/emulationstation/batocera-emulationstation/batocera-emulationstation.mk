@@ -77,35 +77,39 @@ define BATOCERA_EMULATIONSTATION_RESOURCES
 		$(TARGET_DIR)/usr/share/batocera/datainit/system/configs/emulationstation
 endef
 
-
 ### S31emulationstation
+# default for most of architectures
+BATOCERA_EMULATIONSTATION_PREFIX = SDL_NOMOUSE=1
+BATOCERA_EMULATIONSTATION_CMD = /usr/bin/emulationstation
+BATOCERA_EMULATIONSTATION_ARGS = --no-splash
+BATOCERA_EMULATIONSTATION_BACKGROUND = "&"
 
-# default for most of architectures (framebuffer and no splash while it doest work nicely with the splash video)
-BATOCERA_EMULATIONSTATION_BOOT_SCRIPT=S31emulationstation_fb_nosplash
-
-# on rpi, it is not a problem to mix video and es splash
-ifeq ($(BR2_PACKAGE_RPI_USERLAND),y)
-	BATOCERA_EMULATIONSTATION_BOOT_SCRIPT=S31emulationstation_fb_splash
-endif
-
-# on rpi1, 1 cpu
+# on rpi1: dont load ES in background
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI1),y)
-	BATOCERA_EMULATIONSTATION_BOOT_SCRIPT=S31emulationstation_fb_1cpu
+	BATOCERA_EMULATIONSTATION_BACKGROUND =
 endif
 
-ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_S912),y)
-	BATOCERA_EMULATIONSTATION_BOOT_SCRIPT=S31emulationstation_fbegl_nosplash
-endif
-
+# on x86/x86_64: startx runs ES
 ifeq ($(BR2_PACKAGE_XSERVER_XORG_SERVER),y)
-	BATOCERA_EMULATIONSTATION_BOOT_SCRIPT=S31emulationstation_xorg
+	BATOCERA_EMULATIONSTATION_PREFIX =
+	BATOCERA_EMULATIONSTATION_CMD=startx
 endif
 
-### ### ###
+# on odroidga: set resolution and EGL/GL hack
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA),y)
+	BATOCERA_EMULATIONSTATION_PREFIX + = SDL_VIDEO_GL_DRIVER=/usr/lib/libGLESv2.so SDL_VIDEO_EGL_DRIVER=/usr/lib/libGLESv2.so
+	BATOCERA_EMULATIONSTATION_POSTFIX += "--resolution 480 320"
+endif
+###
 
 define BATOCERA_EMULATIONSTATION_BOOT
-	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulationstation/batocera-emulationstation/S31emulationstation/$(BATOCERA_EMULATIONSTATION_BOOT_SCRIPT) \
+	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulationstation/batocera-emulationstation/S31emulationstation \
 		$(TARGET_DIR)/etc/init.d/S31emulationstation
+	sed -e "s;%BATOCERA_EMULATIONSTATION_PREFIX%;${BATOCERA_EMULATIONSTATION_PREFIX};g"  \
+		-e "s;%BATOCERA_EMULATIONSTATION_CMD%;${BATOCERA_EMULATIONSTATION_CMD};g"  \
+		-e "s;%BATOCERA_EMULATIONSTATION_ARGS%;${BATOCERA_EMULATIONSTATION_ARGS};g"  \
+		-e "s;%BATOCERA_EMULATIONSTATION_BACKGROUND%;${BATOCERA_EMULATIONSTATION_BACKGROUND};g"  \
+		$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulationstation/batocera-emulationstation/S31emulationstation > $(TARGET_DIR)/etc/init.d/S31emulationstation
 endef
 
 BATOCERA_EMULATIONSTATION_PRE_CONFIGURE_HOOKS += BATOCERA_EMULATIONSTATION_RPI_FIXUP
