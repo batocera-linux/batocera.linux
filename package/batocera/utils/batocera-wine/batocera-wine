@@ -7,6 +7,9 @@ ARCH=$2
 shift
 shift
 
+DXVK_HUD=1
+export DXVK_HUD
+
 G_WINE_VERSION=$(wine --version)
 G_SAVES_DIR="/userdata/saves/windows${ARCH}"
 G_ROMS_DIR="/userdata/roms/windows${ARCH}"
