@@ -114,7 +114,6 @@ play_exe() {
     GAMEDIR=$(dirname "${GAMENAME}")
     GAMEEXE=$(basename "${GAMENAME}")
 
-    mkdir -p "${WINEPOINT}" || return 1
     createWineDirectory "${WINEPOINT}"
     (cd "${GAMEDIR}" && WINEPREFIX=${WINEPOINT} wine "${GAMEEXE}")
     waitWineServer
