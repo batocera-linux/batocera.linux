@@ -52,7 +52,7 @@ export WINEDLLOVERRIDES="winemenubuilder.exe="
 
     if [ "$DXVK" = 1 ]; then
 	if [ ! -f "/userdata/system/dxvk/x64/dxgi.dll" ] &>/dev/null; then
-		mkdir -p "/userdata/dxvk"
+		mkdir -p "/userdata/system/dxvk"
 
 		cp "$WINEPREFIX/drive_c/windows/system32/d3d11.dll" "/userdata/system/dxvk/x64"
         	cp "$WINEPREFIX/drive_c/windows/system32/d3d10core.dll" "/userdata/system/dxvk/x64"
