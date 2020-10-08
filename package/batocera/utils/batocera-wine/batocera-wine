@@ -118,11 +118,9 @@ createWineDirectory() {
 	return 1
     fi
 
-    DXVK_INSTALL "${WINEPREFIX}" || return 1
     kill -15 ${BSODPID}
 
     return 0
-
 }
 
 getWine_var() {
