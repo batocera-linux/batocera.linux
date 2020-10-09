@@ -2,8 +2,8 @@ default:
   options:
     video_threaded: true
 n64:
-  emulator: libretro
-  core: mupen64plus-next
+  emulator: mupen64plus
+  core: glide64mk2
 amiga500:
   emulator: amiberry
   core:     A500
@@ -13,3 +13,6 @@ amiga1200:
 amigacd32:
   emulator: amiberry
   core:     CD32
+dos:
+  emulator: dosbox
+  core: dosbox
