@@ -7,6 +7,9 @@ ARCH=$2
 shift
 shift
 
+source "/userdata/system/batocera.conf" &>/dev/null
+export DXVK_HUD
+
 G_WINE_VERSION=$(wine --version)
 G_SAVES_DIR="/userdata/saves/windows${ARCH}"
 G_ROMS_DIR="/userdata/roms/windows${ARCH}"
@@ -41,6 +44,54 @@ waitWineServer() {
 	echo "waiting wineserver" >&2
 	sleep 1
     done
+}
+
+dxvk_install() {
+export WINEDLLOVERRIDES="winemenubuilder.exe="
+WINEPREFIX=$1
+
+if [ "$DXVK" = 1 ]; then
+	if [ ! -f "/userdata/system/dxvk/x64/dxgi.dll" ] &>/dev/null; then
+		mkdir -p "/userdata/system/dxvk"
+
+		cp "$WINEPREFIX/drive_c/windows/system32/d3d11.dll" "/userdata/system/dxvk/x64"
+        	cp "$WINEPREFIX/drive_c/windows/system32/d3d10core.dll" "/userdata/system/dxvk/x64"
+        	cp "$WINEPREFIX/drive_c/windows/system32/d3d10.dll" "/userdata/system/dxvk/x64"
+        	cp "$WINEPREFIX/drive_c/windows/system32/d3d10_1.dll" "/userdata/system/dxvk/x64"
+		cp "$WINEPREFIX/drive_c/windows/system32/d3d9.dll" "/userdata/system/dxvk/x64"
+        	cp "$WINEPREFIX/drive_c/windows/system32/dxgi.dll" "/userdata/system/dxvk/x64"
+
+        	cp "$WINEPREFIX/drive_c/windows/syswow64/d3d11.dll" "/userdata/system/dxvk/x32"
+        	cp "$WINEPREFIX/drive_c/windows/syswow64/d3d10core.dll" "/userdata/system/dxvk/x32"
+        	cp "$WINEPREFIX/drive_c/windows/syswow64/d3d10.dll" "/userdata/system/dxvk/x32"
+        	cp "$WINEPREFIX/drive_c/windows/syswow64/d3d10_1.dll" "/userdata/system/dxvk/x32"
+		cp "$WINEPREFIX/drive_c/windows/syswow64/d3d9.dll" "/userdata/system/dxvk/x32"
+        	cp "$WINEPREFIX/drive_c/windows/syswow64/dxgi.dll" "/userdata/system/dxvk/x32"
+
+	else
+
+		cp "/userdata/system/dxvk/x64/d3d11.dll" "$WINEPREFIX/drive_c/windows/system32"
+		cp "/userdata/system/dxvk/x64/d3d10core.dll" "$WINEPREFIX/drive_c/windows/system32"
+		cp "/userdata/system/dxvk/x64/d3d10.dll" "$WINEPREFIX/drive_c/windows/system32"
+		cp "/userdata/system/dxvk/x64/d3d10_1.dll" "$WINEPREFIX/drive_c/windows/system32"
+		cp "/userdata/system/dxvk/x64/d3d9.dll" "$WINEPREFIX/drive_c/windows/system32"
+		cp "/userdata/system/dxvk/x64/dxgi.dll" "$WINEPREFIX/drive_c/windows/system32"
+
+		cp "/userdata/system/dxvk/x32/d3d11.dll" "$WINEPREFIX/drive_c/windows/syswow64"
+		cp "/userdata/system/dxvk/x32/d3d10core.dll" "$WINEPREFIX/drive_c/windows/syswow64"
+		cp "/userdata/system/dxvk/x32/d3d10.dll" "$WINEPREFIX/drive_c/windows/syswow64"
+		cp "/userdata/system/dxvk/x32/d3d10_1.dll" "$WINEPREFIX/drive_c/windows/syswow64"
+		cp "/userdata/system/dxvk/x32/d3d9.dll" "$WINEPREFIX/drive_c/windows/syswow64"
+		cp "/userdata/system/dxvk/x32/dxgi.dll" "$WINEPREFIX/drive_c/windows/syswow64"
+	fi
+fi
+
+if [ "$DXVK" = 0 ]; then
+    export WINEDLLOVERRIDES="$WINEDLLOVERRIDES;dxgi,d3d9,d3d10,d3d10_1,d3d10core,d3d11=b"
+elif [ "$DXVK" = 1 ] && [ -f "/userdata/system/dxvk/x64/dxgi.dll" ]; then
+    export WINEDLLOVERRIDES="$WINEDLLOVERRIDES;dxgi,d3d9,d3d10,d3d10_1,d3d10core,d3d11=n;nvapi64,nvapi="
+
+fi
 }
 
 createWineDirectory() {
@@ -113,8 +164,9 @@ play_exe() {
     WINEPOINT="${G_SAVES_DIR}/"$(basename "${GAMENAME}")".wine"
     GAMEDIR=$(dirname "${GAMENAME}")
     GAMEEXE=$(basename "${GAMENAME}")
-
+    
     createWineDirectory "${WINEPOINT}"
+    dxvk_install "${WINEPREFIX}" || return 1
     (cd "${GAMEDIR}" && WINEPREFIX=${WINEPOINT} wine "${GAMEEXE}")
     waitWineServer
 }
