@@ -5,7 +5,8 @@
 ################################################################################
 
 ROCKCHIP_MPP_VERSION = fefa75939d51f32a70684c5106bd2b28715b4756
-ROCKCHIP_MPP_SITE =  $(call github,rockchip-linux,mpp,$(ROCKCHIP_MPP_VERSION))
+#ROCKCHIP_MPP_SITE =  $(call github,rockchip-linux,mpp,$(ROCKCHIP_MPP_VERSION))
+ROCKCHIP_MPP_SITE =  $(call github,batocera-linux,mpp,$(ROCKCHIP_MPP_VERSION))
 ROCKCHIP_MPP_INSTALL_STAGING = YES
 ROCKCHIP_MPP_DEPENDENCIES = libdrm
 
