@@ -7,11 +7,6 @@ ARCH=$2
 shift
 shift
 
-DXVK="$(cat /userdata/system/batocera.conf | grep "^[ \t]*DXVK=" 2>/dev/null | wc -l)"
-DXVK_HUD="$(cat /userdata/system/batocera.conf | grep "^[ \t]*DXVK_HUD" 2>/dev/null | wc -l)"
-
-export DXVK_HUD
-
 G_WINE_VERSION=$(wine --version)
 G_SAVES_DIR="/userdata/saves/windows${ARCH}"
 G_ROMS_DIR="/userdata/roms/windows${ARCH}"
@@ -51,6 +46,13 @@ waitWineServer() {
 dxvk_install() {
 export WINEDLLOVERRIDES="winemenubuilder.exe="
 WINEPREFIX=$1
+
+DXVK="$(cat /userdata/system/batocera.conf | grep "^[ \t]*DXVK=" 2>/dev/null | cut -c6)"
+DXVK_HUD="$(cat /userdata/system/batocera.conf | grep "^[ \t]*DXVK_HUD" 2>/dev/null | cut -c10)"
+
+if [ "$DXVK_HUD" = 1 ]; then
+export DXVK_HUD=1
+fi
 
 if [ "$DXVK" = 1 ]; then
 
