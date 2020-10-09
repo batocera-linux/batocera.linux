@@ -51,7 +51,7 @@ waitWineServer() {
     done
 }
 
-DXVK_INSTALL() {
+dxvk_install() {
 export WINEDLLOVERRIDES="winemenubuilder.exe="
 WINEPREFIX=$1
 
@@ -171,7 +171,7 @@ play_exe() {
     GAMEEXE=$(basename "${GAMENAME}")
 
     createWineDirectory "${WINEPOINT}"
-    DXVK_INSTALL "${WINEPREFIX}" || return 1
+    dxvk_install "${WINEPREFIX}" || return 1
     (cd "${GAMEDIR}" && WINEPREFIX=${WINEPOINT} wine "${GAMEEXE}")
     waitWineServer
 }
