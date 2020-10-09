@@ -7,7 +7,9 @@ ARCH=$2
 shift
 shift
 
-source "/userdata/system/batocera.conf" &>/dev/null
+DXVK="$(cat /userdata/system/batocera.conf | grep "^[ \t]*DXVK=" 2>/dev/null | wc -l)"
+DXVK_HUD="$(cat /userdata/system/batocera.conf | grep "^[ \t]*DXVK_HUD" 2>/dev/null | wc -l)"
+
 export DXVK_HUD
 
 G_WINE_VERSION=$(wine --version)
@@ -51,8 +53,6 @@ export WINEDLLOVERRIDES="winemenubuilder.exe="
 WINEPREFIX=$1
 
 if [ "$DXVK" = 1 ]; then
-	if [ ! -f "/userdata/system/dxvk/x64/dxgi.dll" ] &>/dev/null; then
-		mkdir -p "/userdata/system/dxvk"
 
 		cp "$WINEPREFIX/drive_c/windows/system32/d3d11.dll" "/userdata/system/dxvk/x64"
         	cp "$WINEPREFIX/drive_c/windows/system32/d3d10core.dll" "/userdata/system/dxvk/x64"
@@ -83,7 +83,6 @@ if [ "$DXVK" = 1 ]; then
 		cp "/userdata/system/dxvk/x32/d3d10_1.dll" "$WINEPREFIX/drive_c/windows/syswow64"
 		cp "/userdata/system/dxvk/x32/d3d9.dll" "$WINEPREFIX/drive_c/windows/syswow64"
 		cp "/userdata/system/dxvk/x32/dxgi.dll" "$WINEPREFIX/drive_c/windows/syswow64"
-	fi
 fi
 
 if [ "$DXVK" = 0 ]; then
