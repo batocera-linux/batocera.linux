@@ -107,12 +107,24 @@ def main(args, maxnbplayers):
     # the resolution must be changed before configuration while the configuration may depend on it (ie bezels)
     wantedGameMode = generators[system.config['emulator']].getResolutionMode(system.config)
     systemMode = videoMode.getCurrentMode()
+
     resolutionChanged = False
     exitCode = -1
     try:
-        eslog.log("current video mode: {}".format(systemMode))
+        # lower the resolution if mode is auto
+        newsystemMode = systemMode # newsystemmode is the mode after minmax (ie in 1K if tv was in 4K), systemmode is the mode before (ie in es)
+        if system.config["videomode"] == "" or system.config["videomode"] == "default":
+            eslog.log("minTomaxResolution")
+            eslog.log("video mode before minmax: {}".format(systemMode))
+            videoMode.minTomaxResolution()
+            newsystemMode = videoMode.getCurrentMode()
+            if newsystemMode != systemMode:
+                resolutionChanged = True
+
+        eslog.log("current video mode: {}".format(newsystemMode))
         eslog.log("wanted video mode: {}".format(wantedGameMode))
-        if wantedGameMode != 'default' and wantedGameMode != systemMode:
+
+        if wantedGameMode != 'default' and wantedGameMode != newsystemMode:
             videoMode.changeMode(wantedGameMode)
             resolutionChanged = True
         gameResolution = videoMode.getCurrentResolution()
