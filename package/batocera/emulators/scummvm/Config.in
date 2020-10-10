@@ -2,6 +2,7 @@ config BR2_PACKAGE_SCUMMVM
         bool "Scummvm"
 	depends on BR2_INSTALL_LIBSTDCPP
 	select BR2_PACKAGE_SDL2
+	select BR2_PACKAGE_SDL
 	select BR2_PACKAGE_LIBMPEG2
 	select BR2_PACKAGE_JPEG
 	select BR2_PACKAGE_LIBOGG
