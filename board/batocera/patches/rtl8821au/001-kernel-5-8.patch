@@ -82,7 +82,7 @@ index 019daf9..18dae0d 100644
 +#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 8, 0))
 +	struct mgmt_frame_regs *upd)
 +#else
-+￼	u16 frame_type, bool reg)
++u16 frame_type, bool reg)
 +#endif
  {
  #if (LINUX_VERSION_CODE >= KERNEL_VERSION(3,6,0))

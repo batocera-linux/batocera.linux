@@ -8,7 +8,7 @@ MALI_G31_VERSION = d4000def121b818ae0f583d8372d57643f723fdc
 MALI_G31_SITE = $(call github,LibreELEC,libmali,$(MALI_G31_VERSION))
 MALI_G31_INSTALL_STAGING = YES
 MALI_G31_PROVIDES = libegl libgles
-MALI_G31_DEPENDENCIES = wayland mali-bifrost-module
+MALI_G31_DEPENDENCIES = mali-bifrost-module
 
 MALI_G31_BLOB_FILENAME = libmali-bifrost-g31-r16p0-gbm.so
 

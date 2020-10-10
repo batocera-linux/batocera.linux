@@ -1,6 +1,6 @@
 #!/bin/bash
 
-ARCHS="miqi odroidc2 odroidn2 odroidxu4 rockpro64 rpi1 rpi2 rpi3 rpi4 s905 tinkerboard x86_64 x86 odroidgoa vim3"
+ARCHS="odroidgoa odroidxu4 odroidc2 odroidc4 odroidn2 rpi1 rpi2 rpi3 rpi4 s905 s912 tinkerboard x86_64 x86 vim3 rockpro64 miqi libretech-h5"
 #ARCHS="rpi1 x86_64"
 # s912
 

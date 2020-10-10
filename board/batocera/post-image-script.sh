@@ -330,7 +330,7 @@ case "${BATOCERA_TARGET}" in
 	sync || exit 1
 	;;
 
-	C2)
+	ODROIDC2)
 	BOARD_DIR="${BATO_DIR}/amlogic/odroidc2"
         MKIMAGE=${HOST_DIR}/bin/mkimage
 	# amlogic stuff
@@ -375,7 +375,7 @@ case "${BATOCERA_TARGET}" in
 	sync || exit 1
 	;;
 
-	C4)
+	ODROIDC4)
         BOARD_DIR="${BATO_DIR}/amlogic/odroidc4"
         MKIMAGE=${HOST_DIR}/bin/mkimage
 
