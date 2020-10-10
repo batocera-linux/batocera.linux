@@ -1,7 +1,7 @@
-From c7f3cddf852d75a07df26f0997fc07b38f55d54d Mon Sep 17 00:00:00 2001
+From 452af1bb7e2d790c440a98473f797b991cfabe0c Mon Sep 17 00:00:00 2001
 From: Brian Kim <brian.kim@hardkernel.com>
 Date: Tue, 21 Nov 2017 18:44:03 +0900
-Subject: [PATCH 22/25] MEMEKA: ODROID-XU4: arm: Set the system revision
+Subject: [PATCH 21/24] MEMEKA: ODROID-XU4: arm: Set the system revision
  information
 
 wiringPi library refers to this information in '/proc/cpuinfo' file.
@@ -27,5 +27,5 @@ index d8e18cdd96d3..e302d6579c2a 100644
  
  const char *system_serial;
 -- 
-2.17.1
+2.20.1
 

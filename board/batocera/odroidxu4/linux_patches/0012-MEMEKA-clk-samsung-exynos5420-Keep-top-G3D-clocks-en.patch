@@ -1,7 +1,7 @@
-From 5e218f158f89780e48be29c11da270ff1f6f968d Mon Sep 17 00:00:00 2001
+From e3e981ecd038c1bb43a9902d90eb46019c816588 Mon Sep 17 00:00:00 2001
 From: Marek Szyprowski <m.szyprowski@samsung.com>
 Date: Thu, 21 Nov 2019 11:11:45 +0100
-Subject: [PATCH 13/25] MEMEKA: clk: samsung: exynos5420: Keep top G3D clocks
+Subject: [PATCH 12/24] MEMEKA: clk: samsung: exynos5420: Keep top G3D clocks
  enabled
 
 All top clocks on G3D path has to be enabled all the time to allow proper
@@ -66,7 +66,7 @@ Signed-off-by: Marian Mihailescu <mihailescu2m@gmail.com>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/clk/samsung/clk-exynos5420.c b/drivers/clk/samsung/clk-exynos5420.c
-index edb2363c735a..1a5289d81a9f 100644
+index c9e5a1fb6653..bba0fe205c4e 100644
 --- a/drivers/clk/samsung/clk-exynos5420.c
 +++ b/drivers/clk/samsung/clk-exynos5420.c
 @@ -713,7 +713,7 @@ static const struct samsung_mux_clock exynos5x_mux_clks[] __initconst = {
@@ -79,5 +79,5 @@ index edb2363c735a..1a5289d81a9f 100644
  			SRC_TOP12, 20, 1),
  	MUX(CLK_MOUT_SW_ACLK300, "mout_sw_aclk300_disp1",
 -- 
-2.17.1
+2.20.1
 

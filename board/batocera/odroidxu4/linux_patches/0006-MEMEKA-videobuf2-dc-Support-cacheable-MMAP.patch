@@ -1,7 +1,7 @@
-From a25f859386e35782c139861c6d1fe7821274d2d0 Mon Sep 17 00:00:00 2001
+From 89640ed25401f53b2d144a5d1bd762e98a4d1fe3 Mon Sep 17 00:00:00 2001
 From: Heng-Ruey Hsu <henryhsu@chromium.org>
 Date: Wed, 26 Oct 2016 10:52:06 +0200
-Subject: [PATCH 07/25] MEMEKA: videobuf2-dc: Support cacheable MMAP
+Subject: [PATCH 06/24] MEMEKA: videobuf2-dc: Support cacheable MMAP
 
 DMA allocations for MMAP type are uncached by default. But for
 some cases, CPU has to access the buffers. ie: memcpy for format
@@ -24,7 +24,7 @@ Signed-off-by: memeka <mihailescu2m@gmail.com>
  1 file changed, 16 insertions(+)
 
 diff --git a/drivers/media/common/videobuf2/videobuf2-dma-contig.c b/drivers/media/common/videobuf2/videobuf2-dma-contig.c
-index 8accf13fe439..cf65bded46a9 100644
+index 1150e83c9c8d..8c868c6309b6 100644
 --- a/drivers/media/common/videobuf2/videobuf2-dma-contig.c
 +++ b/drivers/media/common/videobuf2/videobuf2-dma-contig.c
 @@ -152,6 +152,10 @@ static void vb2_dc_put(void *buf_priv)
@@ -65,5 +65,5 @@ index 8accf13fe439..cf65bded46a9 100644
  		__func__, (unsigned long)buf->dma_addr, vma->vm_start,
  		buf->size);
 -- 
-2.17.1
+2.20.1
 

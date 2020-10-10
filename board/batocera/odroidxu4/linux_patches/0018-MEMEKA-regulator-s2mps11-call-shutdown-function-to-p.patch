@@ -1,7 +1,7 @@
-From 8ca78a11396a1d1f5d7aa49d3c3f2ecd89aa07bd Mon Sep 17 00:00:00 2001
+From 4e255483d743cd2d268fdb68601aa2a7a25d65c6 Mon Sep 17 00:00:00 2001
 From: Anand Moon <moon.linux@yahoo.com>
 Date: Sun, 12 Jul 2015 18:41:20 +0530
-Subject: [PATCH 19/25] MEMEKA: regulator: s2mps11: call shutdown function to
+Subject: [PATCH 18/24] MEMEKA: regulator: s2mps11: call shutdown function to
  poweroff
 
 Added .shutdown function to s2mps11 to help poweroff the board successfully.
@@ -71,5 +71,5 @@ index 23d288278957..b3ee46955986 100644
  };
  
 -- 
-2.17.1
+2.20.1
 

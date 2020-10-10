@@ -1,7 +1,7 @@
-From c7eed0d079bb5febcb1f6a460ec9cba83bf579ea Mon Sep 17 00:00:00 2001
+From 636a335a2705f8da4c73da01f63c696f16f5f8c2 Mon Sep 17 00:00:00 2001
 From: "k.konieczny@partner.samsung.com" <k.konieczny@partner.samsung.com>
 Date: Tue, 8 Oct 2019 15:49:23 +0200
-Subject: [PATCH 18/25] MEMEKA: devfreq: exynos-bus: workaround
+Subject: [PATCH 17/24] MEMEKA: devfreq: exynos-bus: workaround
  dev_pm_opp_set_rate() errors on Exynos5422/5800 SoCs
 
 Commit 4294a779bd8d ("PM / devfreq: exynos-bus: Convert to use
@@ -64,5 +64,5 @@ index 8fa8eb541373..5b167eadb21e 100644
  	dev_pm_opp_put(opp);
  
 -- 
-2.17.1
+2.20.1
 

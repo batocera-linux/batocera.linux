@@ -1,7 +1,7 @@
-From 20570c820357eb0cfee14342328a3e6920e8a320 Mon Sep 17 00:00:00 2001
+From 5babc111a40684d30905319f6e6a8688b948f5be Mon Sep 17 00:00:00 2001
 From: memeka <mihailescu2m@gmail.com>
 Date: Tue, 10 Jul 2018 22:13:03 +0930
-Subject: [PATCH 14/25] MEMEKA: thermal: exynos: add support for 8 trip points
+Subject: [PATCH 13/24] MEMEKA: thermal: exynos: add support for 8 trip points
  on Exynos5422 TMU
 
 Signed-off-by: memeka <mihailescu2m@gmail.com>
@@ -46,5 +46,5 @@ index e9a90bc23b11..b49df21fa0e7 100644
  		data->tmu_set_trip_temp = exynos5433_tmu_set_trip_temp;
  		data->tmu_set_trip_hyst = exynos5433_tmu_set_trip_hyst;
 -- 
-2.17.1
+2.20.1
 

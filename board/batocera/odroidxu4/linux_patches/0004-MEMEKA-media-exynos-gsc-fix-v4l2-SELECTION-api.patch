@@ -1,7 +1,7 @@
-From 8ffeeccf93279efefc2a76aae04766b7ad6c0634 Mon Sep 17 00:00:00 2001
+From e833028fc7a38ee2fac724a3bf267131926a62de Mon Sep 17 00:00:00 2001
 From: memeka <mihailescu2m@gmail.com>
 Date: Tue, 10 Jul 2018 11:24:56 +0930
-Subject: [PATCH 05/25] MEMEKA: media: exynos-gsc: fix v4l2 SELECTION api
+Subject: [PATCH 04/24] MEMEKA: media: exynos-gsc: fix v4l2 SELECTION api
 
 Signed-off-by: memeka <mihailescu2m@gmail.com>
 ---
@@ -25,5 +25,5 @@ index 8e5a9acb78aa..235d687614f0 100644
  	} else {
  		pr_err("Wrong buffer/video queue type (%d)", type);
 -- 
-2.17.1
+2.20.1
 
