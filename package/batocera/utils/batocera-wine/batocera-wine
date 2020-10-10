@@ -47,8 +47,8 @@ dxvk_install() {
 export WINEDLLOVERRIDES="winemenubuilder.exe="
 WINEPREFIX=$1
 
-DXVK="$(cat /userdata/system/batocera.conf | grep "^[ \t]*DXVK=" 2>/dev/null | cut -c6)"
-DXVK_HUD="$(cat /userdata/system/batocera.conf | grep "^[ \t]*DXVK_HUD" 2>/dev/null | cut -c10)"
+DXVK="$(batocera-settings -command load -key DXVK)"
+DXVK_HUD="$(batocera-settings -command load -key DXVK_HUD)"
 
 if [ "$DXVK_HUD" = 1 ]; then
 export DXVK_HUD=1
