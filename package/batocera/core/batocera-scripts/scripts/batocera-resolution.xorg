@@ -3,6 +3,19 @@
 ACTION=$1
 shift
 
+if test -z "${ACTION}"
+then
+    echo "${0} listModes" >&2
+    echo "${0} setMode <MODE>" >&2
+    echo "${0} currentMode" >&2
+    echo "${0} currentResolution" >&2
+    echo "${0} listOutputs" >&2
+    echo "${0} setOutput <output>" >&2
+    echo "${0} minTomaxResolution" >&2
+    echo "${0} minTomaxResolution-secure" >&2
+    exit 1
+fi
+
 case "${ACTION}" in
     "listModes")
 	xrandr --listModes | sed -e s+'\*$'++ | sed -e s+'^[^ ]* \(.*\)$'+'\1:\1'+
@@ -43,7 +56,7 @@ case "${ACTION}" in
 		)
 	fi
 	;;
-    "minTomaxResolution")
+    "minTomaxResolution" | "minTomaxResolution-secure")
 	# minimize resolution because of 4K tv
 	MAXWIDTH=1920
 	MAXHEIGHT=1080

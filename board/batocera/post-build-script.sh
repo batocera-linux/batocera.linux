@@ -87,14 +87,6 @@ then
     ln -sf "/usr/lib/gdk-pixbuf-2.0" "${TARGET_DIR}/lib/gdk-pixbuf-2.0" || exit 1
 fi
 
-# fix s905 mali driver
-if test "${BATOCERA_TARGET}" = "S905"
-then
-    mkdir -p "${TARGET_DIR}/lib/modules/3.14.29/kernel/gpu"
-    cp "${BR2_EXTERNAL_BATOCERA_PATH}/board/batocera/s905/linux_patches/mali.ko" "${TARGET_DIR}/lib/modules/3.14.29/kernel/gpu/mali.ko"
-    ln -sf "/usr/lib/gdk-pixbuf-2.0" "${TARGET_DIR}/lib/gdk-pixbuf-2.0" || exit 1
-fi
-
 # timezone
 # file generated from the output directory and compared to https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
 # because i don't know how to list correctly them

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#set -x
+set -x
 
 ACTION=$1
 ARCH=$2
@@ -10,14 +10,16 @@ shift
 G_WINE_VERSION=$(wine --version)
 G_SAVES_DIR="/userdata/saves/windows${ARCH}"
 G_ROMS_DIR="/userdata/roms/windows${ARCH}"
-G_INSROMS_DIR="/userdata/roms/windows${ARCH}_installers"
 
 if test "${ARCH}" = 32
 then
-    PATH=/usr/bin32:$PATH
-    export LD_LIBRARY_PATH="/lib32:/lib32/wine"
-    export LIBGL_DRIVERS_PATH="/lib32/dri"
-    export WINEDLLPATH="/lib32/wine:/lib32/wine/fakedlls"
+    if test -e /usr/bin32
+    then
+	PATH=/usr/bin32:$PATH
+	export LD_LIBRARY_PATH="/lib32:/lib32/wine"
+	export LIBGL_DRIVERS_PATH="/lib32/dri"
+	export WINEDLLPATH="/lib32/wine:/lib32/wine/fakedlls"
+    fi
 fi
 
 usage() {
@@ -56,6 +58,7 @@ createWineDirectory() {
     if ! WINEPREFIX=${WINEPREFIX} wine hostname
     then
 	rm -rf "${WINEPREFIX}"
+	kill -15 ${BSODPID}
 	return 1
     fi
 
@@ -71,7 +74,13 @@ getWine_var() {
 
     if test -e "${WINEPOINT}/autorun.cmd"
     then
-	grep "^${WINEVAR}=" "${WINEPOINT}/autorun.cmd" | sed -e s+"^${WINEVAR}="+""+ | head -1
+	VAL=$(grep "^${WINEVAR}=" "${WINEPOINT}/autorun.cmd" | sed -e s+"^${WINEVAR}="+""+ | head -1)
+	if test -n "${VAL}"
+	then
+	    echo "${VAL}"
+	else
+	    echo "${WINEVALUE}"
+	fi
     else
 	echo "${WINEVALUE}"
     fi
@@ -79,7 +88,7 @@ getWine_var() {
 
 play_wine() {
     GAMENAME=$1
-    WINEPOINT="${G_ROMS_DIR}/${GAMENAME}"
+    WINEPOINT="${GAMENAME}"
 
     WINE_CMD=$(getWine_var "${WINEPOINT}" "CMD" "explorer")
     WINE_DIR=$(getWine_var "${WINEPOINT}" "DIR" "")
@@ -90,7 +99,7 @@ play_wine() {
 trick_wine() {
     GAMENAME=$1
     TRICK=$2
-    WINEPOINT="${G_ROMS_DIR}/${GAMENAME}"
+    WINEPOINT="${GAMENAME}"
     WINEPREFIX=${WINEPOINT} winetricks "${TRICK}"
 }
 
@@ -101,11 +110,10 @@ trick_wine() {
 
 play_exe() {
     GAMENAME=$1
-    WINEPOINT="${G_SAVES_DIR}/${GAMENAME}.wine"
-    GAMEDIR="${G_ROMS_DIR}/"$(dirname "${GAMENAME}")
+    WINEPOINT="${G_SAVES_DIR}/"$(basename "${GAMENAME}")".wine"
+    GAMEDIR=$(dirname "${GAMENAME}")
     GAMEEXE=$(basename "${GAMENAME}")
 
-    mkdir -p "${WINEPOINT}" || return 1
     createWineDirectory "${WINEPOINT}"
     (cd "${GAMEDIR}" && WINEPREFIX=${WINEPOINT} wine "${GAMEEXE}")
     waitWineServer
@@ -113,12 +121,12 @@ play_exe() {
 
 play_winetgz() {
     GAMENAME=$1
-    WINEPOINT="${G_SAVES_DIR}/${GAMENAME}"
 
+    WINEPOINT="${G_SAVES_DIR}/"$(basename "${GAMENAME}")".wine"
     if ! test -e "${WINEPOINT}"
     then
 	mkdir -p "${WINEPOINT}" || return 1
-	(cd "${WINEPOINT}" && gunzip -c "${G_ROMS_DIR}/${GAMENAME}" | tar xf -) || return 1
+	(cd "${WINEPOINT}" && gunzip -c "${GAMENAME}" | tar xf -) || return 1
     fi
 
     WINE_CMD=$(getWine_var "${WINEPOINT}" "CMD" "explorer")
@@ -129,17 +137,18 @@ play_winetgz() {
 
 play_squashfs() {
     GAMENAME=$1
-    WINEPOINT="/var/run/wine/${GAMENAME}"
-    SQUASHFSPOINT="/var/run/wine/squashfs_${GAMENAME}"
-    SAVEPOINT="${G_SAVES_DIR}/${GAMENAME}"
-    WORKPOINT="${G_SAVES_DIR}/${GAMENAME}.work"
+    BASEGAMENAME=$(basename "${GAMENAME}")
+    WINEPOINT="/var/run/wine/${BASEGAMENAME}"
+    SQUASHFSPOINT="/var/run/wine/squashfs_${BASEGAMENAME}"
+    SAVEPOINT="${G_SAVES_DIR}/${BASEGAMENAME}"
+    WORKPOINT="${G_SAVES_DIR}/${BASEGAMENAME}.work"
 
     mkdir -p "${SAVEPOINT}" || return 1
     mkdir -p "${WORKPOINT}" || return 1
     mkdir -p "${WINEPOINT}" || return 1
 
     mkdir -p "${SQUASHFSPOINT}" || return 1
-    if ! mount "${G_ROMS_DIR}/${GAMENAME}" "${SQUASHFSPOINT}"
+    if ! mount "${GAMENAME}" "${SQUASHFSPOINT}"
     then
 	rmdir "${SQUASHFSPOINT}"
 	rm -rf "${WORKPOINT}"
@@ -179,20 +188,37 @@ init_cmd() {
 
 install_exe() {
     GAMENAME=$1
-    WINEPOINT="${G_ROMS_DIR}/${GAMENAME}.wine"
-    INSTALLERFILE="${G_INSROMS_DIR}/${GAMENAME}"
+    BASEGAMENAME=$(basename "${GAMENAME}")
+    GAMEDIR=$(dirname "${GAMENAME}")
+    WINEPOINT=$(echo "${G_ROMS_DIR}/${BASEGAMENAME}" | sed -e s+"\.exe$"++)".wine"
+    INSTALLERFILE="${BASEGAMENAME}"
 
     createWineDirectory "${WINEPOINT}"
 
-    WINEPREFIX=${WINEPOINT} wine "${INSTALLERFILE}"
+    (cd "${GAMEDIR}" && WINEPREFIX=${WINEPOINT} wine "${INSTALLERFILE}")
+    waitWineServer
+    init_cmd "${WINEPOINT}"
+}
+
+install_msi() {
+    GAMENAME=$1
+    BASEGAMENAME=$(basename "${GAMENAME}")
+    GAMEDIR=$(dirname "${GAMENAME}")
+    WINEPOINT=$(echo "${G_ROMS_DIR}/${BASEGAMENAME}" | sed -e s+"\.msi$"++)".wine"
+    INSTALLERFILE="${BASEGAMENAME}"
+
+    createWineDirectory "${WINEPOINT}"
+
+    (cd "${GAMEDIR}" && WINEPREFIX=${WINEPOINT} msiexec /i "${INSTALLERFILE}")
     waitWineServer
     init_cmd "${WINEPOINT}"
 }
 
 install_iso() {
     GAMENAME=$1
-    GAMEISOMOUNT="/var/run/wine/${GAMENAME}.cdrom"
-    INSTALLERISO="${G_INSROMS_DIR}/${GAMENAME}"
+    BASEGAMENAME=$(basename "${GAMENAME}")
+    GAMEISOMOUNT="/var/run/wine/${BASEGAMENAME}.cdrom"
+    INSTALLERISO="${GAMENAME}"
 
     mkdir -p "${GAMEISOMOUNT}" || return 1
     if ! mount -t iso9660 "${INSTALLERISO}" "${GAMEISOMOUNT}"
@@ -201,7 +227,7 @@ install_iso() {
 	return 1
     fi
 
-    WINEPOINT="${G_ROMS_DIR}/${GAMENAME}.wine"
+    WINEPOINT=$(echo "${G_ROMS_DIR}/${BASEGAMENAME}" | sed -e s+"\.iso$"++)".wine"
 
     createWineDirectory "${WINEPOINT}"
     
@@ -221,9 +247,9 @@ install_iso() {
 
 wine2squashfs() {
     GAMENAME=$1
-
-    GAMEDIR="${G_ROMS_DIR}/${GAMENAME}"
-    SQUASHFSFILE="${G_ROMS_DIR}/${GAMENAME}.squashfs"
+    BASEGAMENAME=$(basename "${GAMENAME}")
+    GAMEDIR="${GAMENAME}"
+    SQUASHFSFILE="${G_ROMS_DIR}/${BASEGAMENAME}.squashfs"
     
     mksquashfs "${GAMEDIR}" "${SQUASHFSFILE}" || return 1
     return 0
@@ -231,16 +257,16 @@ wine2squashfs() {
 
 wine2winetgz() {
     GAMENAME=$1
-
-    GAMEDIR="${G_ROMS_DIR}/${GAMENAME}"
-    WINETGZFILE="${G_ROMS_DIR}/${GAMENAME}.wtgz"
+    BASEGAMENAME=$(basename "${GAMENAME}")
+    GAMEDIR="${GAMENAME}"
+    WINETGZFILE="${G_ROMS_DIR}/${BASEGAMENAME}.wtgz"
 
     (cd "${GAMEDIR}" && tar cf - * | gzip -c > "${WINETGZFILE}") || return 1
     return 0
 }
 
 gameext() {
-    echo "${1}" | sed -e s+"^.*\.\([^\.]*\)$"+"\1"+
+    echo "${1}" | sed -e s+"^.*\.\([^\.]*\)$"+"\1"+ | tr A-Z a-z
 }
 
 cleanAndExit() {
@@ -284,6 +310,9 @@ case "${ACTION}" in
 	case "${GAMEEXT}" in
 	    "exe")
 		install_exe "${GAMENAME}" || cleanAndExit 1
+		;;
+	    "msi")
+		install_msi "${GAMENAME}" || cleanAndExit 1
 		;;
 	    "iso")
 		install_iso "${GAMENAME}" || cleanAndExit 1

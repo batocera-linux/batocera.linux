@@ -5,7 +5,7 @@ case "$1" in
 	systemsetting="batocera-settings"
 	enabled="`$systemsetting  -command load -key system.es.atstartup`"
         if [ "$enabled" != "0" ];then
-                batocera-resolution minTomaxResolution
+                batocera-resolution minTomaxResolution-secure
 		settings_lang="`$systemsetting -command load -key system.language`"
 		cd /userdata # es need a PWD
                 HOME=/userdata/system LANG="${settings_lang}.UTF-8" SDL_NOMOUSE=1 /usr/bin/emulationstation --no-splash &

@@ -107,12 +107,24 @@ def main(args, maxnbplayers):
     # the resolution must be changed before configuration while the configuration may depend on it (ie bezels)
     wantedGameMode = generators[system.config['emulator']].getResolutionMode(system.config)
     systemMode = videoMode.getCurrentMode()
+
     resolutionChanged = False
     exitCode = -1
     try:
-        eslog.log("current video mode: {}".format(systemMode))
+        # lower the resolution if mode is auto
+        newsystemMode = systemMode # newsystemmode is the mode after minmax (ie in 1K if tv was in 4K), systemmode is the mode before (ie in es)
+        if system.config["videomode"] == "" or system.config["videomode"] == "default":
+            eslog.log("minTomaxResolution")
+            eslog.log("video mode before minmax: {}".format(systemMode))
+            videoMode.minTomaxResolution()
+            newsystemMode = videoMode.getCurrentMode()
+            if newsystemMode != systemMode:
+                resolutionChanged = True
+
+        eslog.log("current video mode: {}".format(newsystemMode))
         eslog.log("wanted video mode: {}".format(wantedGameMode))
-        if wantedGameMode != 'default' and wantedGameMode != systemMode:
+
+        if wantedGameMode != 'default' and wantedGameMode != newsystemMode:
             videoMode.changeMode(wantedGameMode)
             resolutionChanged = True
         gameResolution = videoMode.getCurrentResolution()
@@ -134,8 +146,8 @@ def main(args, maxnbplayers):
         # network options
         if args.netplaymode is not None:
             system.config["netplay.mode"] = args.netplaymode
-        if args.netplayspectator is not None:
-            system.config["netplay.spectator"] = args.netplayspectator
+        if args.netplaypass is not None:
+            system.config["netplay.password"] = args.netplaypass
         if args.netplayip is not None:
             system.config["netplay.server.ip"] = args.netplayip
         if args.netplayport is not None:
@@ -221,7 +233,7 @@ if __name__ == '__main__':
     parser.add_argument("-emulator", help="force emulator", type=str, required=False)
     parser.add_argument("-core", help="force emulator core", type=str, required=False)
     parser.add_argument("-netplaymode", help="host/client", type=str, required=False)
-    parser.add_argument("-netplayspectator", help="enable spectator mode", default=False, action='store_true', required=False)
+    parser.add_argument("-netplaypass", help="enable spectator mode", type=str, required=False)
     parser.add_argument("-netplayip", help="remote ip", type=str, required=False)
     parser.add_argument("-netplayport", help="remote port", type=str, required=False)
 

@@ -3,6 +3,17 @@
 ACTION=$1
 shift
 
+if test -z "${ACTION}"
+then
+    echo "${0} listModes" >&2
+    echo "${0} setMode <MODE>" >&2
+    echo "${0} currentMode" >&2
+    echo "${0} currentResolution" >&2
+    echo "${0} minTomaxResolution" >&2
+    echo "${0} minTomaxResolution-secure" >&2
+    exit 1
+fi
+
 case "${ACTION}" in
     "listModes")
 	tvservice --list-modes | sed -e s+'^[^ ]*:\(.*\)$'+'\1'+
@@ -22,7 +33,7 @@ case "${ACTION}" in
 	;;
     "setOutput")
 	;;
-    "minTomaxResolution")
+    "minTomaxResolution" | "minTomaxResolution-secure")
 	# minimize resolution because of 4K tv
 	MAXWIDTH=1920
 	MAXHEIGHT=1080

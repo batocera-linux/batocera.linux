@@ -32,6 +32,7 @@ def generateControllerConfig(viceConfigFile, playersControllers):
 
     listVice = [];
     nplayer = 1
+    listVice = [];
     for playercontroller, pad in sorted(playersControllers.items()):
         if nplayer == 1:    
             listVice.append("!CLEAR")

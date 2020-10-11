@@ -264,6 +264,7 @@ naomi:
   release: 1998
   hardware: arcade
   extensions: [lst, bin, dat, zip, 7z]
+  platform:   naomi, arcade
   emulators:
     libretro:
       flycast:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FLYCAST]  }
@@ -276,6 +277,7 @@ atomiswave:
   release: 2003
   hardware: arcade
   extensions: [lst, bin, dat, zip, 7z]
+  platform:   atomiswave, arcade
   emulators:
     libretro:
       flycast: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FLYCAST] }
@@ -370,6 +372,7 @@ psx:
   emulators:
     libretro:
       pcsx_rearmed: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PCSX] }
+      duckstation:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_DUCKSTATION] }
       mednafen_psx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BEETLE_PSX] }
 
 pcengine:
@@ -552,7 +555,7 @@ hbmame:
         - Hacks of arcade games
         - Test roms and similar that do not generate revenue
         - Selected bootlegs that are not in MAME
-        - Games that are enhanced or improved but not suitable for MAME 
+        - Games that are enhanced or improved but not suitable for MAME
 
 neogeo:
   name:       Neo-Geo
@@ -560,6 +563,7 @@ neogeo:
   release: 1990
   hardware: console
   extensions: [7z, zip]
+  platform:   neogeo, arcade
   emulators:
     libretro:
       fbneo:        { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FBNEO]          }
@@ -1305,7 +1309,7 @@ gx4000:
       cap32: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_CAP32] }
 
 daphne:
-  name:       Arcade (Daphne)
+  name:       Daphne
   manufacturer: Arcade
   release:
   hardware: arcade
@@ -1439,7 +1443,7 @@ wiiu:
   theme:      wiiu
   emulators:
     cemu:
-      cemu:  { requireAnyOf: [BR2_PACKAGE_BATOCERA_CEMU] }
+      cemu:  { requireAnyOf: [BR2_PACKAGE_CEMU] }
 
 imageviewer:
   name:       Screenshots

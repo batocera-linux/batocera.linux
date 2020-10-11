@@ -5,6 +5,14 @@ shift
 
 FILEMODES="/sys/class/graphics/fb0/modes"
 
+if test -z "${ACTION}"
+then
+    echo "${0} currentMode" >&2
+    echo "${0} currentResolution" >&2
+    exit 1
+fi
+
+
 case "${ACTION}" in
     "listModes")
     ;;
