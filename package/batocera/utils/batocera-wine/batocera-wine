@@ -55,15 +55,12 @@ export DXVK_HUD=1
 fi
 
 if [ "$DXVK" = 1 ]; then
-		cp -a /userdata/system/dxvk/fix/* "$WINEPREFIX/drive_c/windows/"
-		echo "Apply DXVK Fix" >&2
-		sleep 1
-                
-                cp "$WINEPREFIX/drive_c/windows/system32/"{d3d11.dll,d3d10core.dll,d3d10.dll,d3d10_1.dll,d3d9.dll,dxgi.dll} "/userdata/system/dxvk/x64"
-                cp "$WINEPREFIX/drive_c/windows/syswow64/"{d3d11.dll,d3d10core.dll,d3d10.dll,d3d10_1.dll,d3d9.dll,dxgi.dll} "/userdata/system/dxvk/x32"
-    else
-                cp "/userdata/system/dxvk/x64/"{d3d11.dll,d3d10core.dll,d3d10.dll,d3d10_1.dll,d3d9.dll,dxgi.dll} "$WINEPREFIX/drive_c/windows/system32"
-                cp "/userdata/system/dxvk/x32/"{d3d11.dll,d3d10core.dll,d3d10.dll,d3d10_1.dll,d3d9.dll,dxgi.dll} "$WINEPREFIX/drive_c/windows/syswow64"
+
+		cp "/usr/share/dxvk/x64/"{d3d11.dll,d3d10core.dll,d3d10.dll,d3d10_1.dll,d3d9.dll,dxgi.dll} "$WINEPREFIX/drive_c/windows/system32"
+                cp "/usr/share/dxvk/x32/"{d3d11.dll,d3d10core.dll,d3d10.dll,d3d10_1.dll,d3d9.dll,dxgi.dll} "$WINEPREFIX/drive_c/windows/syswow64"
+       else    
+                cp "$WINEPREFIX/drive_c/windows/system32/"{d3d11.dll,d3d10core.dll,d3d10.dll,d3d10_1.dll,d3d9.dll,dxgi.dll} "/usr/share/dxvk/x64"
+                cp "$WINEPREFIX/drive_c/windows/syswow64/"{d3d11.dll,d3d10core.dll,d3d10.dll,d3d10_1.dll,d3d9.dll,dxgi.dll} "/usr/share/dxvk/x32"
 
 fi
 
