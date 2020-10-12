@@ -22,6 +22,10 @@ def getCurrentMode():
         for val in out.splitlines():
             return val # return the first line
 
+def minTomaxResolution():
+	proc = subprocess.Popen(["batocera-resolution minTomaxResolution"], stdout=subprocess.PIPE, shell=True)
+	(out, err) = proc.communicate()
+
 def getCurrentResolution():
 	proc = subprocess.Popen(["batocera-resolution currentResolution"], stdout=subprocess.PIPE, shell=True)
 	(out, err) = proc.communicate()
