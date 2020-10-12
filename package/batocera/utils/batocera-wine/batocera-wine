@@ -54,7 +54,7 @@ if [ "$DXVK_HUD" = 1 ]; then
 export DXVK_HUD=1
 fi
 
-if [ "$DXVK" = 1 && "$ARCH" = 64]; then
+if [ "$DXVK" = 1 ]; then
 		cp -a /userdata/system/dxvk/fix/* "$WINEPREFIX/drive_c/windows/"
 		echo "Apply DXVK Fix" >&2
 		sleep 1
@@ -147,7 +147,9 @@ play_exe() {
     GAMEEXE=$(basename "${GAMENAME}")
     
     createWineDirectory "${WINEPOINT}"
+    if [ "$ARCH" = 64 ]; then 
     dxvk_install "${WINEPREFIX}" || return 1
+    fi
     (cd "${GAMEDIR}" && WINEPREFIX=${WINEPOINT} wine "${GAMEEXE}")
     waitWineServer
 }
