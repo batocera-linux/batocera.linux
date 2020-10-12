@@ -4,7 +4,8 @@
 #
 ################################################################################
 
-WINETRICKS_VERSION = 9543b8ddee18690a6f0953b16b1a4138c89896fe
+# 20200412
+WINETRICKS_VERSION = f23083c2f1c2884c939e183dcee190ec319f6f79
 WINETRICKS_SITE = $(call github,Winetricks,winetricks,$(WINETRICKS_VERSION))
 
 define WINETRICKS_INSTALL_TARGET_CMDS
