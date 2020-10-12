@@ -54,15 +54,10 @@ index 35cfcd9..235f53b 100644
  		db_local = alpm_get_localdb(config->handle);
  	}
  
-@@ -543,10 +550,87 @@ int dump_pkg_search(alpm_db_t *db, alpm_list_t *targets, int show_status)
+@@ -543,10 +550,85 @@ int dump_pkg_search(alpm_db_t *db, alpm_list_t *targets, int show_status)
  		return 1;
  	}
  
-+	if(config->xml) {
-+	  printf("<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n");
-+	  printf("<packages>\n");
-+	}
-+
 +	if(config->xml) {
 +	  (void) hcreate(1000);
 +	  if((protected_string = (char*) malloc(2048 * sizeof(char))) == NULL) {
@@ -104,6 +99,9 @@ index 35cfcd9..235f53b 100644
 +		  printf("    <repository>%s</repository>\n",   alpm_db_get_name(db));
 +		  printf("    <available_version>%s</available_version>\n",         alpm_pkg_get_version(pkg));
 +		  strncpy(protected_string, alpm_pkg_get_desc(pkg), 2048);
++		  argz_replace(&protected_string, &n, "&", "&amp;", NULL);
++		  argz_replace(&protected_string, &n, "\"", "&quot;", NULL);
++		  argz_replace(&protected_string, &n, "'", "&apos;", NULL);
 +		  argz_replace(&protected_string, &n, "<", "&lt;", NULL);
 +		  argz_replace(&protected_string, &n, ">", "&gt;", NULL);
 +		  printf("    <description>%s</description>\n", protected_string);
@@ -143,7 +141,7 @@ index 35cfcd9..235f53b 100644
  		if(config->quiet) {
  			fputs(alpm_pkg_get_name(pkg), stdout);
  		} else {
-@@ -564,6 +648,13 @@ int dump_pkg_search(alpm_db_t *db, alpm_list_t *targets, int show_status)
+@@ -564,6 +648,12 @@ int dump_pkg_search(alpm_db_t *db, alpm_list_t *targets, int show_status)
  			indentprint(alpm_pkg_get_desc(pkg), 4, cols);
  		}
  		fputc('\n', stdout);
@@ -151,7 +149,6 @@ index 35cfcd9..235f53b 100644
 +	}
 +
 +	if(config->xml) {
-+	  printf("</packages>\n");
 +	  hdestroy();
 +	  free(protected_string);
  	}
@@ -187,3 +184,25 @@ index a9b6437..d4f96f5 100644
  		{"config",     required_argument, 0, OP_CONFIG},
  		{"ignore",     required_argument, 0, OP_IGNORE},
  		{"assume-installed",     required_argument, 0, OP_ASSUMEINSTALLED},
+--- a/src/pacman/sync.c
++++ b/src/pacman/sync.c
+@@ -309,11 +309,20 @@
+ 	alpm_list_t *i;
+ 	int found = 0;
+ 
++	 if(config->xml) {
++	   printf("<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n");
++	   printf("<packages>\n");
++	 }
++
+ 	for(i = syncs; i; i = alpm_list_next(i)) {
+ 		alpm_db_t *db = i->data;
+ 		found += !dump_pkg_search(db, targets, 1);
+ 	}
+ 
++	 if(config->xml) {
++	   printf("</packages>\n");
++	 }
++
+ 	return (found == 0);
+ }
