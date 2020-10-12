@@ -14,7 +14,7 @@ define DXVK_EXTRACT_CMDS
 endef
 
 define DXVK_INSTALL_TARGET_CMDS
-	mkdir -p $(TARGET_DIR)/usr/share/dvxk
+	mkdir -p $(TARGET_DIR)/usr/share/dxvk
 	cp -pr $(@D)/target/dxvk-$(DXVK_VERSION)/x32 $(TARGET_DIR)/usr/share/dxvk/
 	cp -pr $(@D)/target/dxvk-$(DXVK_VERSION)/x64 $(TARGET_DIR)/usr/share/dxvk/
 endef
