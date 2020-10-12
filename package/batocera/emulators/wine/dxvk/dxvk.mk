@@ -4,17 +4,19 @@
 #
 ################################################################################
 
-DXVK_VERSION = v1.7.2
-DXVK_SITE = $(call github,doitsujin,dxvk,$(DXVK_VERSION))
+DXVK_VERSION = 1.7.2
+DXVK_SOURCE = dxvk-$(DXVK_VERSION).tar.gz
+DXVK_SITE = https://github.com/doitsujin/dxvk/releases/download/v$(DXVK_VERSION)
+DXVK_LICENSE = zlib/libpng
 
-DXVK_LICENSE = ZLIB
-DXVK_LICENSE_FILES = LICENSE
-DXVK_DEPENDENCIES = host-bison host-flex host-wine spirv-headers host-libtool
+define DXVK_EXTRACT_CMDS
+	mkdir -p $(@D)/target && cd $(@D)/target && tar xf $(DL_DIR)/$(DXVK_DL_SUBDIR)/$(DXVK_SOURCE)
+endef
 
-#VKD3D_CONF_ENV += WIDL="$(BUILD_DIR)/host-wine-$(WINE_VERSION)/tools/widl/widl"
-#VKD3D_CONF_OPTS = --disable-tests --with-sysroot=$(STAGING_DIR)
+define DXVK_INSTALL_TARGET_CMDS
+	mkdir -p $(TARGET_DIR)/usr/share/dvxk
+	cp -pr $(@D)/target/dxvk-$(DXVK_VERSION)/x32 $(TARGET_DIR)/usr/share/dvxk/
+	cp -pr $(@D)/target/dxvk-$(DXVK_VERSION)/x64 $(TARGET_DIR)/usr/share/dvxk/
+endef
 
-#VKD3D_AUTORECONF = YES
-#VKD3D_INSTALL_STAGING = YES
-
-$(eval $(meson-package))
+$(eval $(generic-package))
