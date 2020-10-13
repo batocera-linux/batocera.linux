@@ -47,6 +47,7 @@ BATOCERA_NVIDIA_DRIVER_LIBS_MISC = \
 	libnvidia-tls.so.$(BATOCERA_NVIDIA_DRIVER_VERSION) \
 	libvdpau_nvidia.so.$(BATOCERA_NVIDIA_DRIVER_VERSION) \
 	libnvidia-ml.so.$(BATOCERA_NVIDIA_DRIVER_VERSION)
+	libnvidia-glvkspirv.so.$(BATOCERA_NVIDIA_DRIVER_VERSION)
 
 BATOCERA_NVIDIA_DRIVER_LIBS += \
 	$(BATOCERA_NVIDIA_DRIVER_LIBS_GL) \
@@ -65,6 +66,7 @@ BATOCERA_NVIDIA_DRIVER_32 = \
 	libnvidia-tls.so.$(BATOCERA_NVIDIA_DRIVER_VERSION) \
 	libvdpau_nvidia.so.$(BATOCERA_NVIDIA_DRIVER_VERSION) \
 	libnvidia-ml.so.$(BATOCERA_NVIDIA_DRIVER_VERSION)
+	libnvidia-glvkspirv.so.$(BATOCERA_NVIDIA_DRIVER_VERSION)
 
 # Install the gl.pc file
 define BATOCERA_NVIDIA_DRIVER_INSTALL_GL_DEV
@@ -208,6 +210,13 @@ define BATOCERA_NVIDIA_DRIVER_INSTALL_TARGET_CMDS
 			$(TARGET_DIR)/usr/bin/$(p)
 	)
 	$(BATOCERA_NVIDIA_DRIVER_INSTALL_KERNEL_MODULE)
+
+# batocera install files needed by Vulkan
+	$(INSTALL) -D -m 0644 $(@D)/nvidia_icd.json \
+		$(TARGET_DIR)/usr/share/vulkan/icd.d/nvidia_icd.json
+		
+	$(INSTALL) -D -m 0644 $(@D)/nvidia_layers.json \
+		$(TARGET_DIR)/usr/share/vulkan/implicit_layer.d/nvidia_layers.json
 
 # batocera install files needed by libglvnd
 	$(INSTALL) -D -m 0644 $(@D)/10_nvidia.json \
