@@ -9,7 +9,7 @@ FAUDIO_SITE = $(call github,FNA-XNA,FAudio,$(FAUDIO_VERSION))
 
 FAUDIO_LICENSE = ZLIB
 FAUDIO_LICENSE_FILES = LICENSE
-FAUDIO_DEPENDENCIES = host-bison host-flex host-wine host-libtool gstreamer1 gst1-plugins-base
+FAUDIO_DEPENDENCIES = host-bison host-flex host-wine-lutris host-libtool gstreamer1 gst1-plugins-base
 
 FAUDIO_CONF_OPTS += -DCMAKE_BUILD_TYPE=Release
 FAUDIO_CONF_OPTS += -DSDL2_INCLUDE_DIRS=$(STAGING_DIR)/usr/include/SDL2
