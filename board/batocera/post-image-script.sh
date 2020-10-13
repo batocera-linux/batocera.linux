@@ -766,7 +766,7 @@ then
 fi
 
 # wine package
-if grep -qE "^BR2_PACKAGE_WINE=y$" "${BR2_CONFIG}"
+if grep -qE "^BR2_PACKAGE_WINE_LUTRIS=y$" "${BR2_CONFIG}"
 then
 	if grep -qE "^BR2_x86_i586=y$" "${BR2_CONFIG}"
 	then

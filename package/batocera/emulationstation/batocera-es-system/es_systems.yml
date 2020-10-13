@@ -1398,7 +1398,7 @@ windows32:
   theme:      pc
   emulators:
     wine:
-      wine32:  { requireAnyOf: [BR2_PACKAGE_WINE] }
+      wine32:  { requireAnyOf: [BR2_PACKAGE_WINE_LUTRIS] }
 
 windows32_installers:
   name:       Windows installers 32 bits
@@ -1409,7 +1409,7 @@ windows32_installers:
   platform:   pc
   emulators:
     wine:
-      wine32:  { requireAnyOf: [BR2_PACKAGE_WINE] }
+      wine32:  { requireAnyOf: [BR2_PACKAGE_WINE_LUTRIS] }
 
 windows64:
   name:       Windows 64 bits
@@ -1420,7 +1420,7 @@ windows64:
   platform:   pc
   emulators:
     wine:
-      wine64:  { requireAnyOf: [BR2_PACKAGE_WINE] }
+      wine64:  { requireAnyOf: [BR2_PACKAGE_WINE_LUTRIS] }
 
 windows64_installers:
   name:       Windows installers 64 bits
@@ -1431,7 +1431,7 @@ windows64_installers:
   platform:   pc
   emulators:
     wine:
-      wine64:  { requireAnyOf: [BR2_PACKAGE_WINE] }
+      wine64:  { requireAnyOf: [BR2_PACKAGE_WINE_LUTRIS] }
 
 wiiu:
   name:       Wii U
