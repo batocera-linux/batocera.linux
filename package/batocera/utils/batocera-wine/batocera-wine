@@ -43,6 +43,42 @@ waitWineServer() {
     done
 }
 
+dxvk_install() {
+    WINEPREFIX=$1
+
+    DXVK="$(batocera-settings -command load -key windows${ARCH}.dxvk)"
+    DXVK_HUD="$(batocera-settings -command load -key windows${ARCH}.dxvk_hud)"
+
+    if test "${DXVK_HUD}" = 1
+    then
+	export DXVK_HUD=1
+    fi
+
+    if test "${DXVK}" = 1
+    then
+	if test -e "/userdata/system/dxvk"
+	then
+	    cp "/userdata/system/dxvk/x64/"{d3d11.dll,d3d10core.dll,d3d10.dll,d3d10_1.dll,d3d9.dll,dxgi.dll} "${WINEPREFIX}/drive_c/windows/system32" || return 1
+            cp "/userdata/system/dxvk/x32/"{d3d11.dll,d3d10core.dll,d3d10.dll,d3d10_1.dll,d3d9.dll,dxgi.dll} "${WINEPREFIX}/drive_c/windows/syswow64" || return 1
+	else
+	    cp "/usr/share/dxvk/x64/"{d3d11.dll,d3d10core.dll,d3d10.dll,d3d10_1.dll,d3d9.dll,dxgi.dll} "${WINEPREFIX}/drive_c/windows/system32" || return 1
+            cp "/usr/share/dxvk/x32/"{d3d11.dll,d3d10core.dll,d3d10.dll,d3d10_1.dll,d3d9.dll,dxgi.dll} "${WINEPREFIX}/drive_c/windows/syswow64" || return 1
+	fi
+    else
+	cp "/lib32/wine/fakedlls/"{d3d11.dll,d3d10core.dll,d3d10.dll,d3d10_1.dll,d3d9.dll,dxgi.dll}   "${WINEPREFIX}/drive_c/windows/system32" || return 1
+        cp "/usr/lib/wine/fakedlls/"{d3d11.dll,d3d10core.dll,d3d10.dll,d3d10_1.dll,d3d9.dll,dxgi.dll} "${WINEPREFIX}/drive_c/windows/syswow64" || return 1
+    fi
+
+    if test "${DXVK}" = 1
+    then
+	export WINEDLLOVERRIDES="$WINEDLLOVERRIDES;dxgi,d3d9,d3d10,d3d10_1,d3d10core,d3d11=n;nvapi64,nvapi="
+    else
+	export WINEDLLOVERRIDES="$WINEDLLOVERRIDES;dxgi,d3d9,d3d10,d3d10_1,d3d10core,d3d11=b"
+    fi
+
+    return 0
+}
+
 createWineDirectory() {
     WINEPREFIX=$1
 
@@ -115,6 +151,10 @@ play_exe() {
     GAMEEXE=$(basename "${GAMENAME}")
 
     createWineDirectory "${WINEPOINT}"
+    if test "$ARCH" = 64
+    then
+	dxvk_install "${WINEPREFIX}" || return 1
+    fi
     (cd "${GAMEDIR}" && WINEPREFIX=${WINEPOINT} wine "${GAMEEXE}")
     waitWineServer
 }
@@ -129,6 +169,10 @@ play_winetgz() {
 	(cd "${WINEPOINT}" && gunzip -c "${GAMENAME}" | tar xf -) || return 1
     fi
 
+    if test "$ARCH" = 64
+    then
+	dxvk_install "${WINEPREFIX}" || return 1
+    fi
     WINE_CMD=$(getWine_var "${WINEPOINT}" "CMD" "explorer")
     WINE_DIR=$(getWine_var "${WINEPOINT}" "DIR" "")
     (cd "${WINEPOINT}/${WINE_DIR}" && WINEPREFIX=${WINEPOINT} wine ${WINE_CMD})
@@ -162,6 +206,11 @@ play_squashfs() {
 	rmdir "${SQUASHFSPOINT}"
 	rm -rf "${WORKPOINT}"
 	rmdir "${WINEPOINT}"
+    fi
+
+    if test "$ARCH" = 64
+    then
+	dxvk_install "${WINEPREFIX}" || return 1
     fi
 
     WINE_CMD=$(getWine_var "${WINEPOINT}" "CMD" "explorer")
