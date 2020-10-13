@@ -41,7 +41,7 @@ BATOCERA_NVIDIA_DRIVER_LIBS_GLES = \
 #batocera libnvidia-egl-wayland soname bump
 BATOCERA_NVIDIA_DRIVER_LIBS_MISC = \
 	libnvidia-eglcore.so.$(BATOCERA_NVIDIA_DRIVER_VERSION) \
-	libnvidia-egl-wayland.so.1.1.5 \
+	libnvidia-egl-wayland.so.1.1.4 \
 	libnvidia-glcore.so.$(BATOCERA_NVIDIA_DRIVER_VERSION) \
 	libnvidia-glsi.so.$(BATOCERA_NVIDIA_DRIVER_VERSION) \
 	libnvidia-tls.so.$(BATOCERA_NVIDIA_DRIVER_VERSION) \
