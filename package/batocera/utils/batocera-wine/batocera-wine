@@ -61,10 +61,13 @@ dxvk_install() {
 	then
 	    cp "/userdata/system/dxvk/x64/"{d3d11.dll,d3d10core.dll,d3d10.dll,d3d10_1.dll,d3d9.dll,dxgi.dll} "${WINEPREFIX}/drive_c/windows/system32" || return 1
             cp "/userdata/system/dxvk/x32/"{d3d11.dll,d3d10core.dll,d3d10.dll,d3d10_1.dll,d3d9.dll,dxgi.dll} "${WINEPREFIX}/drive_c/windows/syswow64" || return 1
+	else
+	    cp "/usr/share/dxvk/x64/"{d3d11.dll,d3d10core.dll,d3d10.dll,d3d10_1.dll,d3d9.dll,dxgi.dll} "${WINEPREFIX}/drive_c/windows/system32" || return 1
+            cp "/usr/share/dxvk/x32/"{d3d11.dll,d3d10core.dll,d3d10.dll,d3d10_1.dll,d3d9.dll,dxgi.dll} "${WINEPREFIX}/drive_c/windows/syswow64" || return 1
 	fi
     else
-	cp "/lib32/wine/fakedlls/"{d3d11.dll,d3d10core.dll,d3d10.dll,d3d10_1.dll,d3d9.dll,dxgi.dll}   "${WINEPREFIX}/drive_c/windows/system32" || return 1
-        cp "/usr/lib/wine/fakedlls/"{d3d11.dll,d3d10core.dll,d3d10.dll,d3d10_1.dll,d3d9.dll,dxgi.dll} "${WINEPREFIX}/drive_c/windows/syswow64" || return 1
+	cp "/usr/lib/wine/fakedlls/"{d3d11.dll,d3d10core.dll,d3d10.dll,d3d10_1.dll,d3d9.dll,dxgi.dll}   "${WINEPREFIX}/drive_c/windows/system32" || return 1
+        cp "/lib32/wine/fakedlls/"{d3d11.dll,d3d10core.dll,d3d10.dll,d3d10_1.dll,d3d9.dll,dxgi.dll} "${WINEPREFIX}/drive_c/windows/syswow64" || return 1
     fi
 
     if test "${DXVK}" = 1
