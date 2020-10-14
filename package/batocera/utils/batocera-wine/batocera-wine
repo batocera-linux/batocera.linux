@@ -44,6 +44,7 @@ waitWineServer() {
 }
 
 dxvk_install() {
+    export WINEDLLOVERRIDES="winemenubuilder.exe="
     WINEPREFIX=$1
 
     DXVK="$(batocera-settings -command load -key windows${ARCH}.dxvk)"
@@ -65,15 +66,15 @@ dxvk_install() {
             cp "/usr/share/dxvk/x32/"{d3d11.dll,d3d10core.dll,d3d10.dll,d3d10_1.dll,d3d9.dll,dxgi.dll} "${WINEPREFIX}/drive_c/windows/syswow64" || return 1
 	fi
     else
-	cp "/lib32/wine/fakedlls/"{d3d11.dll,d3d10core.dll,d3d10.dll,d3d10_1.dll,d3d9.dll,dxgi.dll}   "${WINEPREFIX}/drive_c/windows/system32" || return 1
-        cp "/usr/lib/wine/fakedlls/"{d3d11.dll,d3d10core.dll,d3d10.dll,d3d10_1.dll,d3d9.dll,dxgi.dll} "${WINEPREFIX}/drive_c/windows/syswow64" || return 1
+	cp "/usr/lib/wine/fakedlls/"{d3d11.dll,d3d10core.dll,d3d10.dll,d3d10_1.dll,d3d9.dll,dxgi.dll}   "${WINEPREFIX}/drive_c/windows/system32" || return 1
+        cp "/lib32/wine/fakedlls/"{d3d11.dll,d3d10core.dll,d3d10.dll,d3d10_1.dll,d3d9.dll,dxgi.dll} "${WINEPREFIX}/drive_c/windows/syswow64" || return 1
     fi
 
     if test "${DXVK}" = 1
     then
-	export WINEDLLOVERRIDES="$WINEDLLOVERRIDES;dxgi,d3d9,d3d10,d3d10_1,d3d10core,d3d11=n;nvapi64,nvapi="
+	export WINEDLLOVERRIDES="${WINEDLLOVERRIDES};dxgi,d3d9,d3d10,d3d10_1,d3d10core,d3d11=n;nvapi64,nvapi="
     else
-	export WINEDLLOVERRIDES="$WINEDLLOVERRIDES;dxgi,d3d9,d3d10,d3d10_1,d3d10core,d3d11=b"
+	export WINEDLLOVERRIDES="${WINEDLLOVERRIDES};dxgi,d3d9,d3d10,d3d10_1,d3d10core,d3d11=b"
     fi
 
     return 0
