@@ -44,13 +44,13 @@ waitWineServer() {
 }
 
 dxvk_install() {
-export WINEDLLOVERRIDES="winemenubuilder.exe="
-WINEPREFIX=$1
+    export WINEDLLOVERRIDES="winemenubuilder.exe="
+    WINEPREFIX=$1
 
-DXVK="$(batocera-settings -command load -key DXVK)"
-DXVK_HUD="$(batocera-settings -command load -key DXVK_HUD)"
+    DXVK="$(batocera-settings -command load -key windows${ARCH}.dxvk)"
+    DXVK_HUD="$(batocera-settings -command load -key windows${ARCH}.dxvk)"
 
-if test "${DXVK_HUD}" = 1
+    if test "${DXVK_HUD}" = 1
     then
 	export DXVK_HUD=1
     fi
