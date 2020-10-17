@@ -105,7 +105,7 @@ case "${BATOCERA_TARGET}" in
 	;;
 
 	LIBRETECH_H5)
-	BOARD_DIR="${BR2_EXTERNAL_BATOCERA_PATH}/board/batocera/libretech-h5"
+	BOARD_DIR="${BATO_DIR}/libretech-h5"
 	BATOCERA_POST_IMAGE_SCRIPT="${BOARD_DIR}/post-image-script-libretech-h5.sh"
 	;;
 
