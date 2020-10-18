@@ -97,10 +97,13 @@ systems = {
                                             { "md5": "9a9e8ed7668e6adfc8f7766c08ab9cd0", "file": "bios/EROM.BIN" 	  },
                                             { "md5": "44552702b05697a14ccbe2ca22ee7139", "file": "bios/rom1.bin" 	  },
                                             { "md5": "b406d05922dac2eaf3c2e68157b1b468", "file": "bios/ROM2.BIN" 	  } ] },
+	
+    # https://www.playstation.com/en-us/support/system-updates/ps3/
+    "ps3": { "name": "PS3", "biosFiles": [  { "md5": "cf9cb4ba53a83ad557501417837c8de9", "file": "bios/PS3UPDAT.PUP" } ] },
 
     # ---------- Nintendo ---------- #
     # https://docs.libretro.com/library/fceumm/#bios
-	"fds":         { "name": "Nintendo Family Computer Disk System", "biosFiles": [ { "md5": "ca30b50f880eb660a320674ed365ef7a", "file": "bios/disksys.rom" } ] },
+    "fds":         { "name": "Nintendo Family Computer Disk System", "biosFiles": [ { "md5": "ca30b50f880eb660a320674ed365ef7a", "file": "bios/disksys.rom" } ] },
 
     # https://docs.libretro.com/library/snes9x/#bios
     "satellaview": { "name": "Satellaview", "biosFiles": [ { "md5": "fed4d8242cfbed61343d53d48432aced", "file": "bios/BS-X.bin"   } ] },
