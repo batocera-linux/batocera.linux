@@ -16,7 +16,6 @@ HOST_WINE_LUTRIS_DEPENDENCIES = host-bison host-flex
 WINE_LUTRIS_CONF_OPTS = \
 	--with-wine-tools=../host-wine-lutris-$(WINE_LUTRIS_VERSION) \
 	--disable-tests \
-	--disable-win64 \
 	--without-capi \
 	--without-coreaudio \
 	--without-faudio \
@@ -31,6 +30,12 @@ WINE_LUTRIS_CONF_OPTS = \
 	--without-vulkan
 
 # batocera
+ifeq ($(BR2_x86_64),y)
+	WINE_LUTRIS_CONF_OPTS += --enable-win64
+else
+	WINE_LUTRIS_CONF_OPTS += --disable-win64
+endif
+
 # Add FAudio if available
 ifeq ($(BR2_PACKAGE_FAUDIO),y)
 WINE_LUTRIS_CONF_OPTS += --with-faudio

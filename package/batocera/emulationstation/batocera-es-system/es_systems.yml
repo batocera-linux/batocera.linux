@@ -1388,8 +1388,8 @@ ports:
   comment_fr: |
           Jeux et applications Linux additionnels qui peuvent etre lancés depuis un script .sh.
 
-windows32:
-  name:       Windows 32 bits
+windows:
+  name:       Windows
   manufacturer: Microsoft
   release: 1992
   hardware: pc
@@ -1398,10 +1398,10 @@ windows32:
   theme:      pc
   emulators:
     wine:
-      wine32:  { requireAnyOf: [BR2_PACKAGE_WINE_LUTRIS] }
+      wine:  { requireAnyOf: [BR2_PACKAGE_WINE_LUTRIS] }
 
-windows32_installers:
-  name:       Windows installers 32 bits
+windows_installers:
+  name:       Windows installers
   manufacturer: Microsoft
   release: 1992
   hardware: pc
@@ -1409,29 +1409,7 @@ windows32_installers:
   platform:   pc
   emulators:
     wine:
-      wine32:  { requireAnyOf: [BR2_PACKAGE_WINE_LUTRIS] }
-
-windows64:
-  name:       Windows 64 bits
-  manufacturer: Microsoft
-  release: 1992
-  hardware: pc
-  extensions: [exe, wine, squashfs, wtgz]
-  platform:   pc
-  emulators:
-    wine:
-      wine64:  { requireAnyOf: [BR2_PACKAGE_WINE_LUTRIS] }
-
-windows64_installers:
-  name:       Windows installers 64 bits
-  manufacturer: Microsoft
-  release: 1992
-  hardware: pc
-  extensions: [exe, iso]
-  platform:   pc
-  emulators:
-    wine:
-      wine64:  { requireAnyOf: [BR2_PACKAGE_WINE_LUTRIS] }
+      wine:  { requireAnyOf: [BR2_PACKAGE_WINE_LUTRIS] }
 
 wiiu:
   name:       Wii U
