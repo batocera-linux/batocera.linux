@@ -1401,12 +1401,13 @@ windows:
       wine:  { requireAnyOf: [BR2_PACKAGE_WINE_LUTRIS] }
 
 windows_installers:
-  name:       Windows installers
+  name:       Install a new Windows game
   manufacturer: Microsoft
   release: 1992
   hardware: pc
   extensions: [exe, iso]
   platform:   pc
+  group:      windows
   emulators:
     wine:
       wine:  { requireAnyOf: [BR2_PACKAGE_WINE_LUTRIS] }
