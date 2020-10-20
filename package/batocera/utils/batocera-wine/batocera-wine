@@ -3,36 +3,28 @@
 set -x
 
 ACTION=$1
-ARCH=$2
-shift
 shift
 
 G_WINE_VERSION=$(wine --version)
-G_SAVES_DIR="/userdata/saves/windows${ARCH}"
-G_ROMS_DIR="/userdata/roms/windows${ARCH}"
+G_SAVES_DIR="/userdata/saves/windows"
+G_ROMS_DIR="/userdata/roms/windows"
 
-if test "${ARCH}" = 32
-then
-    if test -e /usr/bin32
-    then
-	PATH=/usr/bin32:$PATH
-	export LD_LIBRARY_PATH="/lib32:/lib32/wine"
-	export LIBGL_DRIVERS_PATH="/lib32/dri"
-	export WINEDLLPATH="/lib32/wine:/lib32/wine/fakedlls"
-    fi
-fi
+PATH=$PATH:/usr/bin32
+export LD_LIBRARY_PATH="/lib32:/lib32/wine:/lib:/usr/lib:/usr/lib/wine"
+export LIBGL_DRIVERS_PATH="/lib32/dri:/usr/lib/dri"
+export WINEDLLPATH="/lib32/wine/fakedlls:/usr/lib/wine/fakedlls"
 
 usage() {
-    echo "${1} play    	     32 <game>.iso"             >&2
-    echo "${1} play    	     64 <game>.exe"             >&2
-    echo "${1} play    	     32 <game>.wine"            >&2
-    echo "${1} play    	     32 <game>.wine.squashfs"   >&2
-    echo "${1} play    	     32 <game>.wtgz"            >&2
-    echo "${1} install 	     32 <game>.iso"             >&2
-    echo "${1} install 	     32 <game>.exe"             >&2
-    echo "${1} tricks  	     32 <game>.wine directplay" >&2
-    echo "${1} wine2squashfs 32 <game.wine>"            >&2
-    echo "${1} wine2winetgz  32 <game.wine>"            >&2
+    echo "${1} play    	     <game>.iso"             >&2
+    echo "${1} play    	     <game>.exe"             >&2
+    echo "${1} play    	     <game>.wine"            >&2
+    echo "${1} play    	     <game>.wine.squashfs"   >&2
+    echo "${1} play    	     <game>.wtgz"            >&2
+    echo "${1} install 	     <game>.iso"             >&2
+    echo "${1} install 	     <game>.exe"             >&2
+    echo "${1} tricks  	     <game>.wine directplay" >&2
+    echo "${1} wine2squashfs <game.wine>"            >&2
+    echo "${1} wine2winetgz  <game.wine>"            >&2
 }
 
 waitWineServer() {
@@ -47,8 +39,11 @@ dxvk_install() {
     export WINEDLLOVERRIDES="winemenubuilder.exe="
     WINEPREFIX=$1
 
-    DXVK="$(batocera-settings -command load -key windows${ARCH}.dxvk)"
-    DXVK_HUD="$(batocera-settings -command load -key windows${ARCH}.dxvk_hud)"
+    # install dxvk only on system where it is available (aka, not x86)
+    test -e "/userdata/system/dxvk" || return 0
+
+    DXVK="$(batocera-settings -command load -key windows.dxvk)"
+    DXVK_HUD="$(batocera-settings -command load -key windows.dxvk_hud)"
 
     if test "${DXVK_HUD}" = 1
     then
@@ -152,10 +147,8 @@ play_exe() {
     GAMEEXE=$(basename "${GAMENAME}")
 
     createWineDirectory "${WINEPOINT}"
-    if test "$ARCH" = 64
-    then
-	dxvk_install "${WINEPREFIX}" || return 1
-    fi
+    dxvk_install "${WINEPREFIX}" || return 1
+
     (cd "${GAMEDIR}" && WINEPREFIX=${WINEPOINT} wine "${GAMEEXE}")
     waitWineServer
 }
@@ -170,10 +163,8 @@ play_winetgz() {
 	(cd "${WINEPOINT}" && gunzip -c "${GAMENAME}" | tar xf -) || return 1
     fi
 
-    if test "$ARCH" = 64
-    then
-	dxvk_install "${WINEPREFIX}" || return 1
-    fi
+    dxvk_install "${WINEPREFIX}" || return 1
+
     WINE_CMD=$(getWine_var "${WINEPOINT}" "CMD" "explorer")
     WINE_DIR=$(getWine_var "${WINEPOINT}" "DIR" "")
     (cd "${WINEPOINT}/${WINE_DIR}" && WINEPREFIX=${WINEPOINT} wine ${WINE_CMD})
@@ -209,10 +200,7 @@ play_squashfs() {
 	rmdir "${WINEPOINT}"
     fi
 
-    if test "$ARCH" = 64
-    then
-	dxvk_install "${WINEPREFIX}" || return 1
-    fi
+    dxvk_install "${WINEPREFIX}" || return 1
 
     WINE_CMD=$(getWine_var "${WINEPOINT}" "CMD" "explorer")
     WINE_DIR=$(getWine_var "${WINEPOINT}" "DIR" "")
@@ -321,6 +309,13 @@ gameext() {
 
 cleanAndExit() {
     unclutter-remote -h
+
+    RESNEW=$(batocera-resolution currentMode)
+    if test "${RESNEW}" != "${G_RESCUR}"
+    then
+	batocera-resolution setMode "${G_RESCUR}"
+    fi
+    
     exit "${1}"
     # TODO : unmount always, trap, later
 }
@@ -328,6 +323,8 @@ cleanAndExit() {
 # show the mouse
 unclutter-remote -s
 trap "unclutter-remote -h" INT QUIT TERM
+
+G_RESCUR=$(batocera-resolution currentMode)
 
 case "${ACTION}" in
     "play")
@@ -391,6 +388,7 @@ case "${ACTION}" in
 	wine2winetgz "${GAMENAME}" || exit 1
 	;;
     *)
+	set +x
 	echo "unknown action ${ACTION}" >&2
 	usage "${0}"
 	cleanAndExit 1
