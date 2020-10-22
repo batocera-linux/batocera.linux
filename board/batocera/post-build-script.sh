@@ -103,5 +103,5 @@ python "${BR2_EXTERNAL_BATOCERA_PATH}/package/batocera/core/batocera-scripts/scr
 # enable serial console
 SYSTEM_GETTY_PORT=$(grep "BR2_TARGET_GENERIC_GETTY_PORT" "${BR2_CONFIG}" | sed 's/.*\"\(.*\)\"/\1/')
 SYSTEM_GETTY_BAUDRATE=$(grep -E "^BR2_TARGET_GENERIC_GETTY_BAUDRATE_[0-9]*=y$" "${BR2_CONFIG}" | sed -e s+'^BR2_TARGET_GENERIC_GETTY_BAUDRATE_\([0-9]*\)=y$'+'\1'+)
-sed -i -e '/# GENERIC_SERIAL$/s~^.*#~'${SYSTEM_GETTY_PORT}'::respawn:/sbin/getty -L '${SYSTEM_GETTY_PORT}' '${SYSTEM_GETTY_BAUDRATE}' vt100 #~' \
+sed -i -e '/# GENERIC_SERIAL$/s~^.*#~S0::respawn:/sbin/getty -L '${SYSTEM_GETTY_PORT}' '${SYSTEM_GETTY_BAUDRATE}' vt100 #~' \
     ${TARGET_DIR}/etc/inittab
