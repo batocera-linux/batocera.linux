@@ -164,3 +164,10 @@ dl-dir:
 	@$(MAKE) $*-build CMD=toolchain
 	@$(MAKE) $*-build CMD=llvm
 	@$(MAKE) $*-snapshot
+
+uart:
+	$(if $(shell which picocom 2>/dev/null),, $(error "picocom not found!"))
+	$(if $(SERIAL_DEV),,$(error "SERIAL_DEV not specified!"))
+	$(if $(SERIAL_BAUDRATE),,$(error "SERIAL_BAUDRATE not specified!"))
+	$(if $(wildcard $(SERIAL_DEV)),,$(error "$(SERIAL_DEV) not available!"))
+	@picocom $(SERIAL_DEV) -b $(SERIAL_BAUDRATE)
