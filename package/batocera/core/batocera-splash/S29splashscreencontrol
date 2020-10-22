@@ -61,7 +61,7 @@ case $1 in
                 # Play video as long as possible, ideal for fast boards
                 #
                 [[ $picture -eq 0 ]] && splash_autoplay
-                kill -9 $PID
+                kill -9 $PID &> /dev/null
             ;;
             i[0-90]*|k[0-90]*|[0-90]*)
                 # k-mode: Stop loading process for x seconds, attention there will be no

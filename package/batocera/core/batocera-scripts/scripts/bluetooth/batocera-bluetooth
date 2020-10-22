@@ -18,7 +18,7 @@ do_save() {
 
 do_restore() {
     BCK=/userdata/system/bluetooth/bluetooth.tar
-    (cd /var/lib && tar xf "${BCK}")
+    [[ -f ${BCK} ]] && (cd /var/lib && tar xf "${BCK}")
 }
 
 do_list() {
