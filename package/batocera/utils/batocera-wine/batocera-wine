@@ -40,7 +40,7 @@ dxvk_install() {
     WINEPREFIX=$1
 
     # install dxvk only on system where it is available (aka, not x86)
-    test -e "/userdata/system/dxvk" || return 0
+    test -e "/usr/share/dxvk" || return 0
 
     DXVK="$(batocera-settings -command load -key windows.dxvk)"
     DXVK_HUD="$(batocera-settings -command load -key windows.dxvk_hud)"
