@@ -3,36 +3,28 @@
 set -x
 
 ACTION=$1
-ARCH=$2
-shift
 shift
 
 G_WINE_VERSION=$(wine --version)
-G_SAVES_DIR="/userdata/saves/windows${ARCH}"
-G_ROMS_DIR="/userdata/roms/windows${ARCH}"
+G_SAVES_DIR="/userdata/saves/windows"
+G_ROMS_DIR="/userdata/roms/windows"
 
-if test "${ARCH}" = 32
-then
-    if test -e /usr/bin32
-    then
-	PATH=/usr/bin32:$PATH
-	export LD_LIBRARY_PATH="/lib32:/lib32/wine"
-	export LIBGL_DRIVERS_PATH="/lib32/dri"
-	export WINEDLLPATH="/lib32/wine:/lib32/wine/fakedlls"
-    fi
-fi
+PATH=$PATH:/usr/bin32
+export LD_LIBRARY_PATH="/lib32:/lib32/wine:/lib:/usr/lib:/usr/lib/wine"
+export LIBGL_DRIVERS_PATH="/lib32/dri:/usr/lib/dri"
+export WINEDLLPATH="/lib32/wine/fakedlls:/usr/lib/wine/fakedlls"
 
 usage() {
-    echo "${1} play    	     32 <game>.iso"             >&2
-    echo "${1} play    	     64 <game>.exe"             >&2
-    echo "${1} play    	     32 <game>.wine"            >&2
-    echo "${1} play    	     32 <game>.wine.squashfs"   >&2
-    echo "${1} play    	     32 <game>.wtgz"            >&2
-    echo "${1} install 	     32 <game>.iso"             >&2
-    echo "${1} install 	     32 <game>.exe"             >&2
-    echo "${1} tricks  	     32 <game>.wine directplay" >&2
-    echo "${1} wine2squashfs 32 <game.wine>"            >&2
-    echo "${1} wine2winetgz  32 <game.wine>"            >&2
+    echo "${1} play    	     <game>.iso"             >&2
+    echo "${1} play    	     <game>.exe"             >&2
+    echo "${1} play    	     <game>.wine"            >&2
+    echo "${1} play    	     <game>.wine.squashfs"   >&2
+    echo "${1} play    	     <game>.wtgz"            >&2
+    echo "${1} install 	     <game>.iso"             >&2
+    echo "${1} install 	     <game>.exe"             >&2
+    echo "${1} tricks  	     <game>.wine directplay" >&2
+    echo "${1} wine2squashfs <game.wine>"            >&2
+    echo "${1} wine2winetgz  <game.wine>"            >&2
 }
 
 waitWineServer() {
@@ -41,6 +33,46 @@ waitWineServer() {
 	echo "waiting wineserver" >&2
 	sleep 1
     done
+}
+
+dxvk_install() {
+    export WINEDLLOVERRIDES="winemenubuilder.exe="
+    WINEPREFIX=$1
+
+    # install dxvk only on system where it is available (aka, not x86)
+    test -e "/usr/share/dxvk" || return 0
+
+    DXVK="$(batocera-settings -command load -key windows.dxvk)"
+    DXVK_HUD="$(batocera-settings -command load -key windows.dxvk_hud)"
+
+    if test "${DXVK_HUD}" = 1
+    then
+	export DXVK_HUD=1
+    fi
+
+    if test "${DXVK}" = 1
+    then
+	if test -e "/userdata/system/dxvk"
+	then
+	    cp "/userdata/system/dxvk/x64/"{d3d11.dll,d3d10core.dll,d3d10.dll,d3d10_1.dll,d3d9.dll,dxgi.dll} "${WINEPREFIX}/drive_c/windows/system32" || return 1
+            cp "/userdata/system/dxvk/x32/"{d3d11.dll,d3d10core.dll,d3d10.dll,d3d10_1.dll,d3d9.dll,dxgi.dll} "${WINEPREFIX}/drive_c/windows/syswow64" || return 1
+	else
+	    cp "/usr/share/dxvk/x64/"{d3d11.dll,d3d10core.dll,d3d10.dll,d3d10_1.dll,d3d9.dll,dxgi.dll} "${WINEPREFIX}/drive_c/windows/system32" || return 1
+            cp "/usr/share/dxvk/x32/"{d3d11.dll,d3d10core.dll,d3d10.dll,d3d10_1.dll,d3d9.dll,dxgi.dll} "${WINEPREFIX}/drive_c/windows/syswow64" || return 1
+	fi
+    else
+	cp "/usr/lib/wine/fakedlls/"{d3d11.dll,d3d10core.dll,d3d10.dll,d3d10_1.dll,d3d9.dll,dxgi.dll}   "${WINEPREFIX}/drive_c/windows/system32" || return 1
+        cp "/lib32/wine/fakedlls/"{d3d11.dll,d3d10core.dll,d3d10.dll,d3d10_1.dll,d3d9.dll,dxgi.dll} "${WINEPREFIX}/drive_c/windows/syswow64" || return 1
+    fi
+
+    if test "${DXVK}" = 1
+    then
+	export WINEDLLOVERRIDES="${WINEDLLOVERRIDES};dxgi,d3d9,d3d10,d3d10_1,d3d10core,d3d11=n;nvapi64,nvapi="
+    else
+	export WINEDLLOVERRIDES="${WINEDLLOVERRIDES};dxgi,d3d9,d3d10,d3d10_1,d3d10core,d3d11=b"
+    fi
+
+    return 0
 }
 
 createWineDirectory() {
@@ -115,6 +147,8 @@ play_exe() {
     GAMEEXE=$(basename "${GAMENAME}")
 
     createWineDirectory "${WINEPOINT}"
+    dxvk_install "${WINEPREFIX}" || return 1
+
     (cd "${GAMEDIR}" && WINEPREFIX=${WINEPOINT} wine "${GAMEEXE}")
     waitWineServer
 }
@@ -128,6 +162,8 @@ play_winetgz() {
 	mkdir -p "${WINEPOINT}" || return 1
 	(cd "${WINEPOINT}" && gunzip -c "${GAMENAME}" | tar xf -) || return 1
     fi
+
+    dxvk_install "${WINEPREFIX}" || return 1
 
     WINE_CMD=$(getWine_var "${WINEPOINT}" "CMD" "explorer")
     WINE_DIR=$(getWine_var "${WINEPOINT}" "DIR" "")
@@ -163,6 +199,8 @@ play_squashfs() {
 	rm -rf "${WORKPOINT}"
 	rmdir "${WINEPOINT}"
     fi
+
+    dxvk_install "${WINEPREFIX}" || return 1
 
     WINE_CMD=$(getWine_var "${WINEPOINT}" "CMD" "explorer")
     WINE_DIR=$(getWine_var "${WINEPOINT}" "DIR" "")
@@ -271,6 +309,13 @@ gameext() {
 
 cleanAndExit() {
     unclutter-remote -h
+
+    RESNEW=$(batocera-resolution currentMode)
+    if test "${RESNEW}" != "${G_RESCUR}"
+    then
+	batocera-resolution setMode "${G_RESCUR}"
+    fi
+    
     exit "${1}"
     # TODO : unmount always, trap, later
 }
@@ -278,6 +323,8 @@ cleanAndExit() {
 # show the mouse
 unclutter-remote -s
 trap "unclutter-remote -h" INT QUIT TERM
+
+G_RESCUR=$(batocera-resolution currentMode)
 
 case "${ACTION}" in
     "play")
@@ -341,6 +388,7 @@ case "${ACTION}" in
 	wine2winetgz "${GAMENAME}" || exit 1
 	;;
     *)
+	set +x
 	echo "unknown action ${ACTION}" >&2
 	usage "${0}"
 	cleanAndExit 1

@@ -90,7 +90,7 @@ class LibretroGenerator(Generator):
         if 'netplay.mode' in system.config:
             if system.config['netplay.mode'] == 'host':
                 commandArray.append("--host")
-            elif system.config['netplay.mode'] == 'client':
+            elif system.config['netplay.mode'] == 'client' or system.config['netplay.mode'] == 'spectator':
                 commandArray.extend(["--connect", system.config['netplay.server.ip']])
             if 'netplay.server.port' in system.config:
                 commandArray.extend(["--port", system.config['netplay.server.port']])

@@ -420,16 +420,14 @@ def writeBezelConfig(bezel, retroarchConfig, systemName, rom, gameResolution, be
 
     if viewPortUsed:
         if gameResolution["width"] != infos["width"] or gameResolution["height"] != infos["height"]:
-            infosRatio = float(infos["width"]) / float(infos["height"])
-            if gameRatio < infosRatio - 0.1: # keep a margin
+            if gameRatio < 1.6: # let's use bezels only for 16:10, 5:3, 16:9 and wider aspect ratios
                 return
             else:
                 bezelNeedAdaptation = True
         retroarchConfig['aspect_ratio_index'] = str(ratioIndexes.index("custom")) # overwritten from the beginning of this file
     else:
         # when there is no information about width and height in the .info, assume that the tv is HD 16/9 and infos are core provided
-        infosRatio = 1920.0 / 1080.0
-        if gameRatio < infosRatio - 0.1: # keep a margin
+        if gameRatio < 1.6: # let's use bezels only for 16:10, 5:3, 16:9 and wider aspect ratios
             return
         else:
             # No info on the bezel, let's get the bezel image width and height and apply the

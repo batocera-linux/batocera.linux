@@ -1,0 +1,45 @@
+#!/bin/sh
+
+# intel-iris-driver
+if grep -qE "^[ ]*intel-i965-driver[ ]*=[ ]*true[ ]*$" /boot/batocera-boot.conf
+then
+	# Force use i965 driver through global environment variable
+	export MESA_LOADER_DRIVER_OVERRIDE=i965
+fi
+
+case "$1" in
+	start)
+		enabled="`batocera-settings -command load -key system.es.atstartup`"
+		if [ "$enabled" != "0" ];then
+			batocera-resolution minTomaxResolution-secure
+			settings_lang="`batocera-settings -command load -key system.language`"
+			cd /userdata # es need a PWD
+			HOME=/userdata/system LANG="${settings_lang}.UTF-8" %BATOCERA_EMULATIONSTATION_PREFIX% %BATOCERA_EMULATIONSTATION_CMD% %BATOCERA_EMULATIONSTATION_ARGS% %BATOCERA_EMULATIONSTATION_POSTFIX%
+		fi
+		;;
+
+	stop)
+		killall emulationstation
+		if [[ $? -eq 0 ]]; then
+			sleep 20 &
+			watchdog=$!
+			while [[ -n $(pidof emulationstation) ]]; do
+				sleep 0.25
+				$(kill -0 $watchdog) || exit
+			done
+			kill -9 $watchdog
+		fi
+		;;
+
+	restart|reload)
+		"$0" stop
+		"$0" start
+		;;
+	
+	*)
+		echo "Usage: $0 {start|stop|restart}"
+		exit 1
+esac
+
+exit $?
+

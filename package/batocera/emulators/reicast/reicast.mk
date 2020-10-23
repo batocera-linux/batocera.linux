@@ -3,8 +3,8 @@
 # REICAST
 #
 ################################################################################
-# Version.: Commits on May 31, 2020
-REICAST_VERSION = 971d6149a5bff446b35a97a2bfa977aa0d08ee3e
+# Version.: Commits on Oct 18, 2020
+REICAST_VERSION = 0bd6ea371e0293f3c8e02b5ac1344c89b1e60bee
 REICAST_SITE = $(call github,reicast,reicast-emulator,$(REICAST_VERSION))
 REICAST_LICENSE = GPLv2
 REICAST_DEPENDENCIES = sdl2 libpng

@@ -1,0 +1,30 @@
+From 4e109edd71cb99e6085031f160b5677e0f56bcff Mon Sep 17 00:00:00 2001
+From: Christian Hewitt <christianshewitt@gmail.com>
+Date: Tue, 6 Oct 2020 12:56:09 +0000
+Subject: [PATCH 1/2] HACK: prevent stdout/stderr on videoconsole
+
+Several devices have CONFIG_DM_VIDEO enabled which causes stdout/stderr
+to appear on videoconsole, so remove videoconsole from STDOUT so that
+early u-boot boot remains silent unless using the uart/serial console.
+
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+---
+ include/configs/meson64.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/include/configs/meson64.h b/include/configs/meson64.h
+index c895a24eca..6b0e991a3c 100644
+--- a/include/configs/meson64.h
++++ b/include/configs/meson64.h
+@@ -22,7 +22,7 @@
+ #define CONFIG_BMP_16BPP
+ #define CONFIG_BMP_24BPP
+ #define CONFIG_BMP_32BPP
+-#define STDOUT_CFG "vidconsole,serial"
++#define STDOUT_CFG "serial"
+ #else
+ #define STDOUT_CFG "serial"
+ #endif
+-- 
+2.17.1
+
