@@ -1,27 +1,15 @@
-From d41f7a56a0aa513e551460656a95c5cf04956ee3 Mon Sep 17 00:00:00 2001
-From: Romain TISSERAND <romain.tisserand@gmail.com>
-Date: Fri, 23 Oct 2020 18:08:38 +0200
-Subject: [PATCH] Add support for HardKernel ODroid C4 and Khadas VIM3L (AMLSM1
- SoC family)
-
----
- Makefile | 7 +++++++
- 1 file changed, 7 insertions(+)
-
-diff --git a/Makefile b/Makefile
-index 93666ebd..ba4bfb05 100644
---- a/Makefile
-+++ b/Makefile
-@@ -135,6 +135,13 @@ else ifneq (,$(findstring AMLG,$(PLATFORM)))
-       CPPFLAGS += -DUSE_RENDER_THREAD
+--- a/Makefile	2020-10-23 20:05:45.443191089 +0200
++++ b/Makefile	2020-10-23 20:06:06.451511089 +0200
+@@ -134,6 +134,13 @@
+     AARCH64 = 1
      endif
  
 +# Amlogic S905D3/S905X3/S905Y3 (AMLSM1) e.g. HardKernel ODroid C4 & Khadas VIM3L (SDL2 64-bit)
 +else ifneq (,$(findstring AMLSM1,$(PLATFORM)))
 +    CPUFLAGS += -mcpu=cortex-a55
-+    CPUFLAGS += -mfloat-abi=hard -mfpu=neon-fp-armv8
-+    CPPFLAGS += -DCPU_AARCH64 -D_FILE_OFFSET_BITS=64 -DUSE_RENDER_THREAD
++    CPPFLAGS += -DCPU_AARCH64 -D_FILE_OFFSET_BITS=64
 +    AARCH64 = 1
++
 +
  # Odroid Go Advance target (SDL2, 64-bit)
  else ifeq ($(PLATFORM),go-advance)
