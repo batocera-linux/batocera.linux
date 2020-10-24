@@ -36,6 +36,14 @@ else
 	WINE_LUTRIS_CONF_OPTS += --disable-win64
 endif
 
+# gcrypt
+ifeq ($(BR2_PACKAGE_LIBGCRYPT),y)
+WINE_LUTRIS_CONF_OPTS += --with-gcrypt
+WINE_LUTRIS_DEPENDENCIES += libgcrypt
+else
+WINE_LUTRIS_CONF_OPTS += --without-gcrypt
+endif
+
 # Add FAudio if available
 ifeq ($(BR2_PACKAGE_FAUDIO),y)
 WINE_LUTRIS_CONF_OPTS += --with-faudio

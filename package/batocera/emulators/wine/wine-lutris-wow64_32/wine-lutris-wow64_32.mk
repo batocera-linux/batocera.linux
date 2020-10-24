@@ -31,6 +31,14 @@ WINE_LUTRIS_WOW64_32_CONF_OPTS = \
 	--without-vulkan
 
 # batocera
+# gcrypt
+ifeq ($(BR2_PACKAGE_LIBGCRYPT),y)
+WINE_LUTRIS_CONF_OPTS += --with-gcrypt
+WINE_LUTRIS_DEPENDENCIES += libgcrypt
+else
+WINE_LUTRIS_CONF_OPTS += --without-gcrypt
+endif
+
 # Add FAudio if available
 ifeq ($(BR2_PACKAGE_FAUDIO),y)
 WINE_LUTRIS_WOW64_32_CONF_OPTS += --with-faudio
