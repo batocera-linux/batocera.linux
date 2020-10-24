@@ -19,16 +19,13 @@ WINE_LUTRIS_WOW64_32_CONF_OPTS = \
 	--with-wine64=/build/output/images/wow64_32_part64 \
 	--without-capi \
 	--without-coreaudio \
-	--without-faudio \
 	--without-gettext \
 	--without-gettextpo \
 	--without-gphoto \
 	--without-gsm \
 	--without-hal \
 	--without-opencl \
-	--without-oss \
-	--without-vkd3d \
-	--without-vulkan
+	--without-oss
 
 # batocera
 # gcrypt
@@ -44,7 +41,7 @@ ifeq ($(BR2_PACKAGE_FAUDIO),y)
 WINE_LUTRIS_WOW64_32_CONF_OPTS += --with-faudio
 WINE_LUTRIS_WOW64_32_DEPENDENCIES += faudio
 else
-WINE_LUTRIS_WOW64_32_CONF_OPTS += --without-vulkan
+WINE_LUTRIS_WOW64_32_CONF_OPTS += --without-faudio
 endif
 # Add Vulkan if available
 ifeq ($(BR2_PACKAGE_VULKAN_HEADERS)$(BR2_PACKAGE_VULKAN_LOADER),yy)
