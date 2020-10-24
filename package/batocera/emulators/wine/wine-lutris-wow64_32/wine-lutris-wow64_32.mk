@@ -30,10 +30,10 @@ WINE_LUTRIS_WOW64_32_CONF_OPTS = \
 # batocera
 # gcrypt
 ifeq ($(BR2_PACKAGE_LIBGCRYPT),y)
-WINE_LUTRIS_CONF_OPTS += --with-gcrypt
-WINE_LUTRIS_DEPENDENCIES += libgcrypt
+WINE_LUTRIS_WOW64_32_CONF_OPTS += --with-gcrypt
+WINE_LUTRIS_WOW64_32_DEPENDENCIES += libgcrypt
 else
-WINE_LUTRIS_CONF_OPTS += --without-gcrypt
+WINE_LUTRIS_WOW64_32_CONF_OPTS += --without-gcrypt
 endif
 
 # Add FAudio if available
