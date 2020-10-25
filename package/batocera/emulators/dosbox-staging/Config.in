@@ -1,0 +1,14 @@
+config BR2_PACKAGE_DOSBOX_STAGING
+	bool "dosbox-staging"
+        depends on BR2_INSTALL_LIBSTDCPP
+        select BR2_PACKAGE_SDL2
+	select BR2_PACKAGE_SDL2_NET
+	select BR2_PACKAGE_ZLIB
+        select BR2_PACKAGE_LIBPNG
+        select BR2_PACKAGE_LIBOGG
+        select BR2_PACKAGE_LIBVORBIS      
+	select BR2_PACKAGE_OPUS
+	select BR2_PACKAGE_OPUSFILE
+	help
+	  Modernized DOSBox soft-fork
+	  https://github.com/dosbox-staging/dosbox-staging

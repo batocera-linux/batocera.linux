@@ -118,6 +118,7 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
                                                             BR2_PACKAGE_BATOCERA_TARGET_VIM3         || \
                                                             BR2_PACKAGE_BATOCERA_TARGET_ODROIDC2     || \
                                                             BR2_PACKAGE_BATOCERA_TARGET_ODROIDC4     || \
+                                                            BR2_PACKAGE_BATOCERA_TARGET_S905         || \
                                                             BR2_PACKAGE_BATOCERA_TARGET_S912         || \
                                                             BR2_PACKAGE_BATOCERA_TARGET_LIBRETECH_H5
 
@@ -390,6 +391,7 @@ config BR2_PACKAGE_BATOCERA_ALL_SYSTEMS
         select BR2_PACKAGE_DUCKSTATION                if BR2_PACKAGE_BATOCERA_TARGET_X86_64
 
         ### Experimental Standalone Emulators ###
+        select BR2_PACKAGE_DOSBOX_STAGING             if BR2_PACKAGE_BATOCERA_CORES_EXPERIMENTAL # ALL # dos
         select BR2_PACKAGE_SUPERMODEL3                if BR2_PACKAGE_BATOCERA_CORES_EXPERIMENTAL && BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
         select BR2_PACKAGE_MELONDS                    if BR2_PACKAGE_BATOCERA_CORES_EXPERIMENTAL && BR2_PACKAGE_BATOCERA_TARGET_X86_64
         select BR2_PACKAGE_YUZU                       if BR2_PACKAGE_BATOCERA_CORES_EXPERIMENTAL && BR2_PACKAGE_BATOCERA_TARGET_X86_64 && BR2_PACKAGE_BATOCERA_CORES_STILL_COMMERCIALIZED
