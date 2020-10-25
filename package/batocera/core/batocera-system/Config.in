@@ -380,6 +380,8 @@ config BR2_PACKAGE_BATOCERA_ALL_SYSTEMS
         select BR2_PACKAGE_OPENBOR              # ALL
         select BR2_PACKAGE_OPENBOR4432          # ALL
 
+	select BR2_PACKAGE_BATOCERA_PYGAME
+
         # wine
 	select BR2_PACKAGE_BATOCERA_WINE              if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
         select BR2_PACKAGE_WINE_X86                   if BR2_PACKAGE_BATOCERA_TARGET_X86_64

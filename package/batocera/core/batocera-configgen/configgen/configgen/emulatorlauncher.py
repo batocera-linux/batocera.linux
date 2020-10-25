@@ -30,6 +30,7 @@ from generators.wine.wineGenerator import WineGenerator
 from generators.cemu.cemuGenerator import CemuGenerator
 from generators.melonds.melondsGenerator import MelonDSGenerator
 from generators.rpcs3.rpcs3Generator import Rpcs3Generator
+from generators.pygame.pygameGenerator import PygameGenerator
 import controllersConfig as controllers
 import signal
 import batoceraFiles
@@ -63,7 +64,8 @@ generators = {
     'wine' : WineGenerator(),
     'cemu' : CemuGenerator(),
     'melonds' : MelonDSGenerator(),
-    'rpcs3' : Rpcs3Generator()
+    'rpcs3' : Rpcs3Generator(),
+    'pygame': PygameGenerator()
 }
 
 def main(args, maxnbplayers):
