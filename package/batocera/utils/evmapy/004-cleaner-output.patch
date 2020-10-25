@@ -1,0 +1,14 @@
+diff --git a/evmapy/multiplexer.py b/evmapy/multiplexer.py
+index a9f0730..e327db8 100644
+--- a/evmapy/multiplexer.py
++++ b/evmapy/multiplexer.py
+@@ -528,8 +528,7 @@ class Multiplexer(object):
+             self._fds[source.device['fd']] = source
+             self._poll.register(source.device['fd'], select.POLLIN)
+         except evmapy.config.ConfigError as exc:
+-            if not exc.not_found:
+-                self._logger.error(str(exc))
++            pass
+ 
+     def _remove_device(self, source, quiet=False):
+         """

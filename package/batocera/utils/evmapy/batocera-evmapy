@@ -1,0 +1,18 @@
+#!/bin/bash
+
+case "${1}" in
+    start)
+	killall evmapy # in case one was remaining
+	nohup evmapy &
+	exit 0
+	;;
+    stop)
+	killall -9 evmapy # in case one was remaining
+	exit 0
+	;;
+    clear)
+	rm -rf /var/run/evmapy || exit 1
+	mkdir /var/run/evmapy  || exit 1
+	exit 0
+	;;
+esac
