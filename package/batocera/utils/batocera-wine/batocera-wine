@@ -5,7 +5,7 @@ set -x
 ACTION=$1
 shift
 
-G_WINE_VERSION=$(wine --version)
+G_WINE_VERSION=$(wine64 --version)
 G_SAVES_DIR="/userdata/saves/windows"
 G_ROMS_DIR="/userdata/roms/windows"
 
@@ -52,13 +52,13 @@ dxvk_install() {
 
     if test "${DXVK}" = 1
     then
-	if test -e "/userdata/system/dxvk"
+	if test -e "/userdata/system/wine_tweak/dxvk"
 	then
-	    cp "/userdata/system/dxvk/x64/"{d3d11.dll,d3d10core.dll,d3d10.dll,d3d10_1.dll,d3d9.dll,dxgi.dll} "${WINEPREFIX}/drive_c/windows/system32" || return 1
-            cp "/userdata/system/dxvk/x32/"{d3d11.dll,d3d10core.dll,d3d10.dll,d3d10_1.dll,d3d9.dll,dxgi.dll} "${WINEPREFIX}/drive_c/windows/syswow64" || return 1
+	    cp "/userdata/system/wine_tweak/dxvk/x64/"{d3d11.dll,d3d10core.dll,d3d10.dll,d3d10_1.dll,d3d9.dll,dxgi.dll} "${WINEPREFIX}/drive_c/windows/system32" || return 1
+        cp "/userdata/system/wine_tweak/dxvk/x32/"{d3d11.dll,d3d10core.dll,d3d10.dll,d3d10_1.dll,d3d9.dll,dxgi.dll} "${WINEPREFIX}/drive_c/windows/syswow64" || return 1
 	else
 	    cp "/usr/share/dxvk/x64/"{d3d11.dll,d3d10core.dll,d3d10.dll,d3d10_1.dll,d3d9.dll,dxgi.dll} "${WINEPREFIX}/drive_c/windows/system32" || return 1
-            cp "/usr/share/dxvk/x32/"{d3d11.dll,d3d10core.dll,d3d10.dll,d3d10_1.dll,d3d9.dll,dxgi.dll} "${WINEPREFIX}/drive_c/windows/syswow64" || return 1
+        cp "/usr/share/dxvk/x32/"{d3d11.dll,d3d10core.dll,d3d10.dll,d3d10_1.dll,d3d9.dll,dxgi.dll} "${WINEPREFIX}/drive_c/windows/syswow64" || return 1
 	fi
     else
 	cp "/usr/lib/wine/fakedlls/"{d3d11.dll,d3d10core.dll,d3d10.dll,d3d10_1.dll,d3d9.dll,dxgi.dll}   "${WINEPREFIX}/drive_c/windows/system32" || return 1
@@ -73,6 +73,20 @@ dxvk_install() {
     fi
 
     return 0
+}
+
+mf_install() {
+    test -e "/userdata/system/wine_tweak/mf/" || return 0
+
+    MF="$(batocera-settings -command load -key windows.mf)"
+
+    if test "${MF}" = 1
+    then
+   	pushd "/userdata/system/wine_tweak/mf/" &>/dev/null || exit
+	chmod +x mf-install.sh
+    WINEPREFIX=$1 ./mf-install.sh
+	popd &>/dev/null || exit
+    fi
 }
 
 createWineDirectory() {
@@ -148,6 +162,7 @@ play_exe() {
 
     createWineDirectory "${WINEPOINT}"
     dxvk_install "${WINEPREFIX}" || return 1
+    mf_install "${WINEPREFIX}" || return 1
 
     (cd "${GAMEDIR}" && WINEPREFIX=${WINEPOINT} wine "${GAMEEXE}")
     waitWineServer
