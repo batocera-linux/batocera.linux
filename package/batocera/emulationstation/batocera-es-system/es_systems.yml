@@ -456,8 +456,8 @@ dos:
   emulators:
     dosbox:
       dosbox:           { requireAnyOf: [BR2_PACKAGE_DOSBOX]          }
-    dosbox-staging:
-      dosbox-staging:   { requireAnyOf: [BR2_PACKAGE_DOSBOX_STAGING]  }
+    dosbox_staging:
+      dosbox_staging:   { requireAnyOf: [BR2_PACKAGE_DOSBOX_STAGING]  }
     dosboxx:
       dosbox-x:         { requireAnyOf: [BR2_PACKAGE_DOSBOX_X]        }
     libretro:
