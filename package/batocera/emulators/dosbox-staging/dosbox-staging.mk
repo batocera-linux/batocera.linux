@@ -19,4 +19,8 @@ define DOSBOX_STAGING_CONFIGURE_CMDS
                     --with-sdl-prefix="$(STAGING_DIR)/usr";
 endef
 
+define DOSBOX_STAGING_INSTALL_TARGET_CMDS
+        $(INSTALL) -D $(@D)/src/dosbox $(TARGET_DIR)/usr/bin/dosbox-staging
+endef
+
 $(eval $(autotools-package))
