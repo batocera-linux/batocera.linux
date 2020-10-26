@@ -4,7 +4,7 @@
 #
 ################################################################################
 # Version.: Commits on Oct 25, 2020
-DOSBOX_STAGING_VERSION = 3918ebed39dbc83b51cf76c251b799d62072279a
+DOSBOX_STAGING_VERSION = v0.75.2
 DOSBOX_STAGING_SITE = $(call github,dosbox-staging,dosbox-staging,$(DOSBOX_STAGING_VERSION))
 DOSBOX_STAGING_DEPENDENCIES = sdl2 sdl2_net zlib libpng libogg libvorbis opus opusfile
 DOSBOX_STAGING_LICENSE = GPLv2
