@@ -99,8 +99,8 @@ citraSaves = SAVES + '/3ds'
 dosboxCustom = CONF + '/dosbox'
 dosboxConfig = dosboxCustom + '/dosbox.conf'
 
-dosboxStagingCustom = CONF + '/dosbox-staging'
-dosboxStagingConfig = dosboxStagingCustom + '/dosbox-staging.conf'
+dosboxStagingCustom = CONF + '/dosbox'
+dosboxStagingConfig = dosboxStagingCustom + '/dosbox.conf'
 
 dosboxxCustom = CONF + '/dosbox'
 dosboxxConfig = dosboxxCustom + '/dosboxx.conf'
