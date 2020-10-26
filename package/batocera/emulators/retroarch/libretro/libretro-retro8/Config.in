@@ -1,0 +1,10 @@
+config BR2_PACKAGE_LIBRETRO_RETRO8
+        bool "libretro-retro8"
+	depends on BR2_PACKAGE_RETROARCH
+	depends on BR2_INSTALL_LIBSTDCPP
+        help
+          A libretro Pico-8 engine
+
+comment "LIBRETRO_RETRO8 needs a toolchain w/ C++"
+	depends on !BR2_INSTALL_LIBSTDCPP
+
