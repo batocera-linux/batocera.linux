@@ -212,6 +212,9 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
     # xbox controllers (for linux older than ~4.16)
     select BR2_PACKAGE_XBOXDRV if BR2_PACKAGE_BATOCERA_TARGET_905 || BR2_PACKAGE_BATOCERA_TARGET_912
 
+    # joy 2 pad
+    select BR2_PACKAGE_EVMAPY
+
     # required gcc flags
     # required for different emulators, i suggest to enable it always to not have different behavior depending on boards
     select BR2_GCC_ENABLE_OPENMP
@@ -379,6 +382,8 @@ config BR2_PACKAGE_BATOCERA_ALL_SYSTEMS
 
         select BR2_PACKAGE_OPENBOR              # ALL
         select BR2_PACKAGE_OPENBOR4432          # ALL
+
+	select BR2_PACKAGE_BATOCERA_PYGAME
 
         # wine
 	select BR2_PACKAGE_BATOCERA_WINE              if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY

@@ -27,7 +27,7 @@ class CemuGenerator(Generator):
         # TODO
         CemuGenerator.CemuConfig("/usr/cemu/settings.xml")
 
-        commandArray = ["wine", "/usr/cemu/Cemu.exe", "-g", "z:" + rom, "-m", "z:" + batoceraFiles.SAVES + "/cemu", "-f"]
+        commandArray = ["wine64", "/usr/cemu/Cemu.exe", "-g", "z:" + rom, "-m", "z:" + batoceraFiles.SAVES + "/cemu", "-f"]
         return Command.Command(array=commandArray, env={"WINEPREFIX":batoceraFiles.SAVES + "/cemu", "vblank_mode":"0", "mesa_glthread":"true"})
 
     @staticmethod

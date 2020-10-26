@@ -30,6 +30,7 @@ setup(name='batocera-configgen',
         'configgen.generators.wine',
         'configgen.generators.cemu',
         'configgen.generators.melonds',
+        'configgen.generators.pygame',
         'configgen.settings',
         'configgen.utils']
       )

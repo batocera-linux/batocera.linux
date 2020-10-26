@@ -255,9 +255,11 @@ menu "Utils"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/utils/fdupes/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/utils/winetricks/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/utils/batocera-wine/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/utils/batocera-pygame/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/utils/cabextract/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/utils/pacman/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/utils/xow/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/utils/evmapy/Config.in"
 endmenu
 
 menu "Libraries"
