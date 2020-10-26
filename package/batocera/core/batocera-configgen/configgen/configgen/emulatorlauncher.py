@@ -47,6 +47,7 @@ generators = {
     'moonlight': MoonlightGenerator(),
     'scummvm': ScummVMGenerator(),
     'dosbox': DosBoxGenerator(),
+    'dosboxstaging': DosBoxStagingGenerator(),
     'dosboxx': DosBoxxGenerator(),
     'mupen64plus': MupenGenerator(),
     'vice': ViceGenerator(),
