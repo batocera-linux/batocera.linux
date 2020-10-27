@@ -1,0 +1,17 @@
+diff --git a/configure.ac b/configure.ac
+index 407d553..e15473b 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -249,6 +249,12 @@ dnl The target cpu checks for dynamic cores
+ AH_TEMPLATE(C_TARGETCPU,[The type of cpu this target has])
+ AC_MSG_CHECKING(for target cpu type) 
+ case "$host_cpu" in
++  arm)
++    AC_DEFINE(C_TARGETCPU,ARMV7LE)
++    AC_MSG_RESULT(ARMv7 Little Endian)
++    c_targetcpu="arm"
++    c_unalignedmemory=yes
++    ;;
+   x86_64 | amd64)
+     AC_DEFINE(C_TARGETCPU,X86_64)
+     AC_MSG_RESULT(x86-64 bit compatible)
