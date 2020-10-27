@@ -26,9 +26,11 @@ class CemuGenerator(Generator):
         CemuGenerator.CemuConfig(batoceraFiles.CONF + "/cemu/settings.xml")
         # TODO
         CemuGenerator.CemuConfig("/usr/cemu/settings.xml")
-
+        
+        sdlstring = cemuControllers.generateControllerConfig(system, playersControllers, rom)
+        
         commandArray = ["wine64", "/usr/cemu/Cemu.exe", "-g", "z:" + rom, "-m", "z:" + batoceraFiles.SAVES + "/cemu", "-f"]
-        return Command.Command(array=commandArray, env={"WINEPREFIX":batoceraFiles.SAVES + "/cemu", "vblank_mode":"0", "mesa_glthread":"true"})
+        return Command.Command(array=commandArray, env={"WINEPREFIX":batoceraFiles.SAVES + "/cemu", "vblank_mode":"0", "mesa_glthread":"true", , "SDL_GAMECONTROLLERCONFIG":sdlstring})
 
     @staticmethod
     def CemuConfig(configFile):
