@@ -776,23 +776,12 @@ mrboom:
     libretro:
       mrboom: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MRBOOM] }
 
-pico8:
-  name:       Pico-8
-  manufacturer: Ports
-  release:
-  hardware: console
-  extensions: [libretro]
-  emulators:
-    libretro:
-      zepto8: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_ZEPTO8] }
-      retro8: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_RETRO8] }
-
 tic80:
   name:       TIC-80
   manufacturer: Ports
   release:
   hardware: console
-  extensions: [libretro]
+  extensions: [tic]
   emulators:
     libretro:
       tic80: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_TIC80] }
