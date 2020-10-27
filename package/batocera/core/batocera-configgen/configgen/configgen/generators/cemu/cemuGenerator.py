@@ -7,6 +7,7 @@ from os import path
 import batoceraFiles
 from xml.dom import minidom
 import codecs
+import cemuControllers
 
 class CemuGenerator(Generator):
 
@@ -25,12 +26,12 @@ class CemuGenerator(Generator):
 
         CemuGenerator.CemuConfig(batoceraFiles.CONF + "/cemu/settings.xml")
         # TODO
-        CemuGenerator.CemuConfig("/usr/cemu/settings.xml")
+        #CemuGenerator.CemuConfig("/usr/cemu/settings.xml")
         
         sdlstring = cemuControllers.generateControllerConfig(system, playersControllers, rom)
         
         commandArray = ["wine64", "/usr/cemu/Cemu.exe", "-g", "z:" + rom, "-m", "z:" + batoceraFiles.SAVES + "/cemu", "-f"]
-        return Command.Command(array=commandArray, env={"WINEPREFIX":batoceraFiles.SAVES + "/cemu", "vblank_mode":"0", "mesa_glthread":"true", , "SDL_GAMECONTROLLERCONFIG":sdlstring})
+        return Command.Command(array=commandArray, env={"WINEPREFIX":batoceraFiles.SAVES + "/cemu", "vblank_mode":"0", "mesa_glthread":"true", "SDL_GAMECONTROLLERCONFIG":sdlstring})
 
     @staticmethod
     def CemuConfig(configFile):
@@ -50,6 +51,28 @@ class CemuGenerator(Generator):
         # avoid the welcome window
         CemuGenerator.setSectionConfig(config, xml_root, "gp_download", "true")
         ###
+        CemuGenerator.setSectionConfig(config, xml_root, "logflag", "0")
+        CemuGenerator.setSectionConfig(config, xml_root, "advanced_ppc_logging", "false")
+        
+        CemuGenerator.setSectionConfig(config, xml_root, "use_discord_presence", "0")
+        CemuGenerator.setSectionConfig(config, xml_root, "fullscreen_menubar", "false")
+        CemuGenerator.setSectionConfig(config, xml_root, "true", "true")
+        CemuGenerator.setSectionConfig(config, xml_root, "fullscreen_menubar", "false")
+        CemuGenerator.setSectionConfig(config, xml_root, "cpu_mode", "1")
+        
+        ## Audio Settings - Turn audio on for TV
+        CemuGenerator.setSectionConfig(config, xml_root, "Audio", "")
+        audio_root = CemuGenerator.getRoot(config, "Audio")
+        CemuGenerator.setSectionConfig(config, audio_root, "TVDevice", "default")
+        
+        #Graphic Settings
+        
+        CemuGenerator.setSectionConfig(config, xml_root, "Graphic", "")
+        graphic_root = CemuGenerator.getRoot(config, "Graphic")
+        
+        graphic_root = CemuGenerator.getRoot(config, "Graphic")
+        
+        
 
         # save the config file
         xml = open(configFile, "w")

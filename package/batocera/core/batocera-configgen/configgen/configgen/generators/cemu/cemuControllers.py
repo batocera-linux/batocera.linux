@@ -18,37 +18,10 @@ def generateControllerConfig(system, playersControllers, rom):
         os.mkdir(batoceraFiles.CONF + "/cemu/controllerProfiles")
     
     #purge old controller files
-    configFileName = "{}/{}".format(batoceraFiles.CONF + "/cemu/controllerProfiles/", "controller0.txt")
-    if os.path.isfile(configFileName):
-        os.remove(configFileName)    
-        
-    configFileName = "{}/{}".format(batoceraFiles.CONF + "/cemu/controllerProfiles/", "controller1.txt")
-    if os.path.isfile(configFileName):
-        os.remove(configFileName)    
-    
-    configFileName = "{}/{}".format(batoceraFiles.CONF + "/cemu/controllerProfiles/", "controller2.txt")
-    if os.path.isfile(configFileName):
-        os.remove(configFileName)    
-
-    configFileName = "{}/{}".format(batoceraFiles.CONF + "/cemu/controllerProfiles/", "controller3.txt")
-    if os.path.isfile(configFileName):
-        os.remove(configFileName)    
-
-    configFileName = "{}/{}".format(batoceraFiles.CONF + "/cemu/controllerProfiles/", "controller4.txt")
-    if os.path.isfile(configFileName):
-        os.remove(configFileName)    
-        
-    configFileName = "{}/{}".format(batoceraFiles.CONF + "/cemu/controllerProfiles/", "controller5.txt")
-    if os.path.isfile(configFileName):
-        os.remove(configFileName)    
-
-    configFileName = "{}/{}".format(batoceraFiles.CONF + "/cemu/controllerProfiles/", "controller6.txt")
-    if os.path.isfile(configFileName):
-        os.remove(configFileName)    
-        
-    configFileName = "{}/{}".format(batoceraFiles.CONF + "/cemu/controllerProfiles/", "controller7.txt")
-    if os.path.isfile(configFileName):
-        os.remove(configFileName) 
+    for counter in range(0,8):
+        configFileName = "{}/{}".format(batoceraFiles.CONF + "/cemu/controllerProfiles/", "controller" + str(counter) +".txt")
+        if os.path.isfile(configFileName):
+            os.remove(configFileName)    
     
     #We are exporting SDL_GAMECONTROLLERCONFIG in cemuGenerator, so we can assume all controllers are now working with xInput
     nplayer = 0
