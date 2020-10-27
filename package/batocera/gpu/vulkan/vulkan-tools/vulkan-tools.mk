@@ -4,9 +4,9 @@
 #
 ################################################################################
 
-VULKAN_TOOLS_VERSION = 1abaced34b84831f60226ce67a702b2d841e1d87
-VULKAN_TOOLS_SITE =  https://github.com/KhronosGroup/Vulkan-Tools
-VULKAN_TOOLS_SITE_METHOD=git
+VULKAN_TOOLS_VERSION = v1.2.157
+
+VULKAN_TOOLS_SITE =  $(call github,KhronosGroup,Vulkan-Tools,$(VULKAN_TOOLS_VERSION))
 VULKAN_TOOLS_DEPENDENCIES = mesa3d vulkan-headers vulkan-loader host-python3 glslang
 VULKAN_TOOLS_INSTALL_STAGING = YES
 VULKAN_TOOLS_SUPPORTS_IN_SOURCE_BUILD = NO

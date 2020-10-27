@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-SPIRV_HEADERS_VERSION = 1.5.3
+SPIRV_HEADERS_VERSION = 1.5.4
 SPIRV_HEADERS_SOURCE = $(SPIRV_HEADERS_VERSION).tar.gz
 SPIRV_HEADERS_SITE = https://github.com/KhronosGroup/SPIRV-Headers/archive
 
