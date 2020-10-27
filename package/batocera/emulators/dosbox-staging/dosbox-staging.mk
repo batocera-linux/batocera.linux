@@ -11,7 +11,7 @@ DOSBOX_STAGING_LICENSE = GPLv2
 
 define DOSBOX_STAGING_CONFIGURE_CMDS
     cd $(@D); ./autogen.sh; $(TARGET_CONFIGURE_OPTS) CROSS_COMPILE="$(HOST_DIR)/usr/bin/" LIBS="-lvorbisfile -lvorbis -logg" \
-        ./configure --host="$(GNU_TARGET_NAME)" \
+        ./configure CPPFLAGS="-DNDEBUG" CFLAGS="-O3" CXXFLAGS="-O3" --host="$(GNU_TARGET_NAME)" \
                     --enable-core-inline \
                     --enable-dynrec \
                     --enable-unaligned_memory \
