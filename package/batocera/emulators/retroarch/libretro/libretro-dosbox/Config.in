@@ -2,8 +2,6 @@ config BR2_PACKAGE_LIBRETRO_DOSBOX
         bool "libretro-dosbox"
 	depends on BR2_PACKAGE_RETROARCH
 	depends on BR2_INSTALL_LIBSTDCPP
-	select BR2_PACKAGE_SDL
-	select BR2_PACKAGE_SDL_NET
         help
           A libretro DOS emulator core.
 
