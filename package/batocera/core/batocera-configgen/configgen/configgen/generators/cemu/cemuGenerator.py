@@ -64,7 +64,8 @@ class CemuGenerator(Generator):
         CemuGenerator.setSectionConfig(config, xml_root, "Audio", "")
         audio_root = CemuGenerator.getRoot(config, "Audio")
         CemuGenerator.setSectionConfig(config, audio_root, "TVDevice", "default")
-        
+        CemuGenerator.setSectionConfig(config, audio_root, "TVVolume", "50")
+        ##TVVolume
         #Graphic Settings
         
         CemuGenerator.setSectionConfig(config, xml_root, "Graphic", "")

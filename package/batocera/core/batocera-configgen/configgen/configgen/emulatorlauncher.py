@@ -233,7 +233,7 @@ def evmapy_prepare(system, emulator, core, rom, playersControllers):
             "{}.keys" .format (rom),
             #"/userdata/system/config/evmapy/{}.{}.{}.keys" .format (system, emulator, core),
             #"/userdata/system/config/evmapy/{}.{}.keys" .format (system, emulator),
-            "/userdata/system/config/evmapy/{}.keys" .format (system),
+            "/userdata/system/configs/evmapy/{}.keys" .format (system),
             #"/usr/share/evmapy/{}.{}.{}.keys" .format (system, emulator, core),
             #"/usr/share/evmapy/{}.{}.keys" .format (system, emulator),
             "/usr/share/evmapy/{}.keys" .format (system)

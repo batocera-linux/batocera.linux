@@ -8,6 +8,7 @@ import codecs
 from Emulator import Emulator
 from utils.logger import eslog
 import ConfigParser
+import json
 
 # Create the controller configuration file
 #first controller will ALWAYS BE A Gamepad
@@ -16,13 +17,16 @@ def generateControllerConfig(system, playersControllers, rom):
     #make controller directory if it doesn't exist
     if not path.isdir(batoceraFiles.CONF + "/cemu/controllerProfiles"):
         os.mkdir(batoceraFiles.CONF + "/cemu/controllerProfiles")
-    
+        
+    if not path.isdir(batoceraFiles.CONF + "/evmapy"):    
+        os.mkdir(batoceraFiles.CONF + "/evmapy")
+        
     #purge old controller files
     for counter in range(0,8):
         configFileName = "{}/{}".format(batoceraFiles.CONF + "/cemu/controllerProfiles/", "controller" + str(counter) +".txt")
         if os.path.isfile(configFileName):
-            os.remove(configFileName)    
-    
+            os.remove(configFileName)   
+
     #We are exporting SDL_GAMECONTROLLERCONFIG in cemuGenerator, so we can assume all controllers are now working with xInput
     nplayer = 0
     sdlstring = ''
