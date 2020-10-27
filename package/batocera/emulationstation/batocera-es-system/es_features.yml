@@ -132,23 +132,36 @@ libretro:
             texture_filtering:
                 prompt: TEXTURE FILTERING
                 choices:
-                    "Nearest":  nearest
-                    "SABR":     SABR
-                    "xBR":      xBR
-                    "Bilinear": bilinear
-                    "3-Point":  3-point
-                    "JINC2":    JINC2
+                    "Nearest":    nearest
+                    "SABR":       SABR
+                    "xBR":        xBR
+                    "Bilinear":   bilinear
+                    "3-Point":    3-point
+                    "JINC2":      JINC2
             widescreen_hack:
                 prompt: WIDESCREEN HACK
                 choices:
-                    "Off": disabled
-                    "On":  enabled
+                    "Off":        disabled
+                    "On":         enabled
     mednafen_supergrafx:
       features: [netplay, rewind, autosave]
     mednafen_wswan:
       features: [netplay, rewind, autosave]
     mesen:
       features: [netplay, rewind, autosave]
+      cfeatures:
+            overscan_h:
+                prompt: OVERSCAN HORIZONTAL
+                choices:
+                    "off":     None
+                    "8px":     8px
+                    "16px":    16px
+            overscan_v:
+                prompt: OVERSCAN VERTICAL
+                choices:
+                    "off":     None
+                    "8px":     8px
+                    "16px":    16px
     mesen-s:
       features: [netplay, rewind, autosave]
     mgba:
@@ -157,10 +170,67 @@ libretro:
       features: [netplay, rewind, autosave]
     mupen64plus-next:
       features: [         rewind, autosave]
+      cfeatures:
+            BilinearMode:
+                prompt: BILINEAR FILTERING
+                choices:
+                    "standard":   standard
+                    "3 point":    3point
+            MultiSampling:
+                prompt: MSAA LEVEL
+                choices:
+                    "off":        0
+                    "2x":         2
+                    "4x":         4
+                    "8x":         8
+                    "16x":        16
+            Texture_filter:
+                prompt: TEXTURE FILTER
+                choices:
+                    "off":        None
+                    "Smooth 1":   Smooth filtering 1
+                    "Smooth 2":   Smooth filtering 2
+                    "Smooth 3":   Smooth filtering 3
+                    "Smooth 4":   Smooth filtering 4
+                    "Sharp 1":    Sharp filtering 1
+                    "Sharp 2":    Sharp filtering 2
+            Texture_Enhancement:
+                prompt: Texture Enhancement
+                choices:
+                    "off":        None
+                    "As Is":      As Is
+                    "X2":         X2
+                    "X2SAI":      X2SAI
+                    "HQ2X":       HQ2X
+                    "HQ2XS":      HQ2XS
+                    "LQ2X":       LQ2X
+                    "LQ2XS":      LQ2XS
+                    "HQ4X":       HQ4X
+                    "2xBRZ":      2xBRZ
+                    "3xBRZ":      3xBRZ
+                    "4xBRZ":      4xBRZ
+                    "5xBRZ":      5xBRZ
+                    "6xBRZ":      6xBRZ
     neocd:
       features: [                 autosave]
     nestopia:
       features: [netplay, rewind, autosave]
+      cfeatures:
+            palette:
+                prompt: COLOR PALETTE
+                choices:
+                    "consumer":             consumer
+                    "cxa2025as":            cxa2025as
+                    "canonical":            canonical
+                    "alternative":          alternative
+                    "rgb":                  rgb
+                    "pal":                  pal
+                    "composite-direct-fbx": composite-direct-fbx
+                    "pvm-style-d93-fbx":    pvm-style-d93-fbx
+                    "ntsc-hardware-fbx":    ntsc-hardware-fbx
+                    "nes-classic-fbx-fs":   nes-classic-fbx-fs
+                    "raw":                  raw
+                    "custom":               custom
     tic80:
       features: [                 autosave]
     quasi88:
@@ -197,14 +267,74 @@ libretro:
       features: [         rewind, autosave]
     puae:
       features: [         rewind, autosave]
+      cfeatures:
+            video_resolution:
+                prompt: VIDEO RESOLUTION
+                choices:
+                    "360p":       lores
+                    "720p":       hires
+                    "1440p":      superhires
+            video_standard:
+                prompt: VIDEO STANDARD
+                choices:
+                    "pal":        PAL
+                    "ntsc":       NTSC
+            zoom_mode:
+                prompt: ZOOM MODE
+                choices:
+                    "deactivate": none
+                    "medium":     medium
+                    "large":      large
+                    "larger":     larger
+            keyrah_mapping:
+                prompt: KEYRAH 2P MAPPING
+                choices:
+                    "On":         enabled
+                    "Off":        disabled
+            mouse_speed:
+                prompt: MOUSE SPEED
+                choices:
+                    "original":   100
+                    "50%":        50
+                    "70%":        70
+                    "120%":       120
+                    "150%":       150
+                    "170%":       170
+                    "200%":       200
+            whdload:
+                prompt: WHDLOAD
+                choices:
+                    "On":         config
+                    "Off":        disabled
+            pad_options:
+                prompt: JUMP ON B
+                choices:
+                    "On":         jump
+                    "Off":        disabled
     px68k:
       features: [ ]
     scummvm:
       features: [ ]
     snes9x:
       features: [netplay, rewind, autosave]
+      cfeatures:
+            reduce_slowdown:
+                prompt: REDUCE SLOWDOWN
+                choices:
+                    "off":        disabled
+                    "light":      light
+                    "compatible": compatible
+                    "max":        max
     snes9x_next:
       features: [netplay, rewind, autosave]
+      cfeatures:
+            reduce_slowdown:
+                prompt: REDUCE SLOWDOWN
+                choices:
+                    "off":        disabled
+                    "light":      light
+                    "compatible": compatible
+                    "max":        max
     stella:
       features: [netplay, rewind, autosave]
     tgbdual:
@@ -215,16 +345,80 @@ libretro:
       features: [ ]
     vb:
       features: [netplay, rewind, autosave]
+      cfeatures:
+            2d_color_mode:
+                prompt: 2D COLOR MODE
+                choices:
+                    "original":            black & red
+                    "black/white":         black & white
+                    "black/blue":          black & blue
+                    "black/cyan":          black & cyan
+                    "black/electric cyan": black & electric cyan
+                    "black/green":         black & green
+                    "black/magenta":       black & magenta
+                    "black/yellow":        black & yellow
+            3d_color_mode:
+                prompt: 3D GLASSES COLOR MODE
+                choices:
+                    "off":                 disabled
+                    "red/blue":            red & blue
+                    "red/cyan":            red & cyan
+                    "red/electric cyan":   red & electric cyan
+                    "green/magenta":       green & magenta
+                    "yellow/blue":         yellow & blue
     vba-m:
       features: [         rewind, autosave]
     vecx:
       features: [         rewind, autosave]
     vice:
       features: [         rewind, autosave]
+      cfeatures:
+            external_palette:
+                prompt: EXTERNAL PALETTE
+                choices:
+                    "default":          default
+                    "colodore":         colodore
+                    "pepto-pal":        pepto-pal
+                    "pepto-ntsc":       pepto-ntsc
+                    "pepto-ntsc-sony":  pepto-ntsc-sony
+                    "cjam":             cjam
+                    "c64hq":            c64hq
+                    "c64s":             c64s
+                    "ccs64":            ccs64
+                    "community-colors": community-colors
+                    "deekay":           deekay
+                    "frodo":            frodo
+                    "godot":            godot
+                    "pc64":             pc64
+                    "ptoing":           ptoing
+                    "rgb":              rgb
+                    "vice":             vice
+            aspect_ratio:
+                prompt: ASPECT RATIO
+                choices:
+                    "pal":              pal
+                    "ntsc":             ntsc
+            zoom_mode:
+                prompt: ZOOM MODE
+                choices:
+                    "deactivate":       none
+                    "small":            small
+                    "medium":           medium
+                    "maximum":          maximum
     virtualjaguar:
       features: [ ]
     yabasanshiro:
-      features: [                 autosave]
+      features: [         rewind, autosave]
+      cfeatures:
+            resolution_mode:
+                prompt: RESOLUTION MODE
+                choices:
+                    "original": original
+                    "2x":       2x
+                    "4x":       4x
+                    "720p":     720p
+                    "1080p":    1080p
+                    "4k":       4k
 
 amiberry:
   features: [ratio]
@@ -251,6 +445,16 @@ dolphin:
                 "4x":  2
                 "8x":  3
                 "16x": 4
+        dual_core:
+            prompt: DUAL CORE
+            choices:
+                "Off": 0
+                "On":  1
+        gpu_sync:
+            prompt: GPU SYNC
+            choices:
+                "Off": 0
+                "On":  1
         antialiasing:
             prompt: ANTIALIASING
             choices:
@@ -292,7 +496,7 @@ dolphin:
             prompt: GRAPHICS BACKEND
             choices:
                 "OpenGL": OGL
-                "Vulkan":  Vulkan
+                "Vulkan": Vulkan
 
   systems:
     wii:
@@ -329,6 +533,20 @@ pcsx2:
                 "4x":  4
                 "8x":  8
                 "16x": 16
+        skipdraw:
+            prompt: SKIPDRAW
+            choices:
+                "Off": 0
+                "1":   1
+                "2":   2
+                "3":   3
+                "4":   4
+                "5":   5
+        align_sprite:
+            prompt: ALIGN SPRITE
+            choices:
+                "Off": 0
+                "On":  1
         vsync:
             prompt: VSYNC
             choices:
@@ -383,8 +601,8 @@ cannonball:
     highResolution:
       prompt: HIGH RESOLUTION
       choices:
-        Off:  0
-        On: 1
+        Off: 0
+        On:  1
 cemu:
   features: [emulated_wiimotes]
 

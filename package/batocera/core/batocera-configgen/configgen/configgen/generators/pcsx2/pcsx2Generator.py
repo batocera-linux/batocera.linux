@@ -142,15 +142,27 @@ def configureGFX(config_directory, system):
     pcsx2GFXSettings = UnixSettings(configFileName, separator=' ')
     pcsx2GFXSettings.save("osd_fontname", "/usr/share/fonts/dejavu/DejaVuSans.ttf")
     pcsx2GFXSettings.save("osd_indicator_enabled", 1)
+    pcsx2GFXSettings.save("UserHacks", 1)
+    #showFPS
     if system.isOptSet('showFPS') and system.getOptBoolean('showFPS'):
         pcsx2GFXSettings.save("osd_monitor_enabled", 1)
     else:
         pcsx2GFXSettings.save("osd_monitor_enabled", 0)
-        
+    #internal resolution
     if system.isOptSet('internalresolution'):
         pcsx2GFXSettings.save("upscale_multiplier", system.config["internalresolution"])
     else:
         pcsx2GFXSettings.save("upscale_multiplier", "1")
+    #skipdraw
+    if system.isOptSet('skipdraw'):
+        pcsx2GFXSettings.save('UserHacks_SkipDraw', system.config['skipdraw'])
+    else:
+        pcsx2GFXSettings.save('UserHacks_SkipDraw', '0')
+    #align sprite
+    if system.isOptSet('align_sprite'):
+        pcsx2GFXSettings.save('UserHacks_align_sprite_X', system.config['align_sprite'])
+    else:
+        pcsx2GFXSettings.save('UserHacks_align_sprite_X', '0')
         
     if system.isOptSet('vsync'):
         pcsx2GFXSettings.save("vsync", system.config["vsync"])
