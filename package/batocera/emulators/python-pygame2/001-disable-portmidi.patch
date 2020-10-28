@@ -1,0 +1,23 @@
+diff --git a/buildconfig/config_unix.py b/buildconfig/config_unix.py
+index f6a4ea4..c9df2f4 100644
+--- a/buildconfig/config_unix.py
++++ b/buildconfig/config_unix.py
+@@ -213,12 +213,12 @@ def main(sdl2=False):
+     ])
+     is_freebsd = 'FreeBSD' in platform.system()
+     is_hurd = platform.system() == 'GNU'
+-    if not is_freebsd and not is_hurd:
+-        porttime_dep = get_porttime_dep()
+-        DEPS.append(
+-            Dependency('PORTMIDI', 'portmidi.h', 'libportmidi.so', ['portmidi'])
+-        )
+-        DEPS.append(porttime_dep)
++    #if not is_freebsd and not is_hurd:
++    #    porttime_dep = get_porttime_dep()
++    #    DEPS.append(
++    #        Dependency('PORTMIDI', 'portmidi.h', 'libportmidi.so', ['portmidi'])
++    #    )
++    #    DEPS.append(porttime_dep)
+     DEPS.append(find_freetype())
+ 
+     if not DEPS[0].found:

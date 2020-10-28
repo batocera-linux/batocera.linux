@@ -188,7 +188,7 @@ def main():
 	while not quit:
 		# events
 		for event in pygame.event.get():
-			if event.type == QUIT:
+			if event.type == KEYDOWN and event.key == K_ESCAPE:
 				quit = True
 			elif event.type == KEYDOWN:
 				currentmovedir = snake.movedir
