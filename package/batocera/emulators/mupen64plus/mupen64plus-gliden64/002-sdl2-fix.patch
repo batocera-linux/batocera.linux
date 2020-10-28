@@ -1,0 +1,37 @@
+--- a/src/CMakeLists.txt	2020-10-28 11:44:47.249810032 +0100
++++ b/src/CMakeLists.txt	2020-10-28 11:45:28.470405708 +0100
+@@ -231,8 +231,8 @@
+ 
+ if(SDL)
+   include(FindPkgConfig)
+-  pkg_check_modules(SDL REQUIRED sdl)
+-  include_directories(${SDL_INCLUDE_DIRS})
++  pkg_check_modules(SDL REQUIRED sdl2)
++  include_directories(${SDL2_INCLUDE_DIRS})
+   add_definitions(
+ 	-DUSE_SDL
+   )
+@@ -449,9 +449,9 @@
+ 
+   if(SDL)
+         if (NOHQ)
+-	  target_link_libraries(${GLideN64_DLL_NAME} PRIVATE ${OPENGL_LIBRARIES} ${SDL_LIBRARIES} ${FREETYPE_LIBRARIES} ${LOG_LIB} osald )
++	  target_link_libraries(${GLideN64_DLL_NAME} PRIVATE ${OPENGL_LIBRARIES} ${SDL2_LIBRARIES} ${FREETYPE_LIBRARIES} ${LOG_LIB} osald )
+ 	else (NOHQ)
+-	  target_link_libraries(${GLideN64_DLL_NAME} PRIVATE ${OPENGL_LIBRARIES} ${SDL_LIBRARIES} ${FREETYPE_LIBRARIES} ${LOG_LIB} osald GLideNHQd )
++	  target_link_libraries(${GLideN64_DLL_NAME} PRIVATE ${OPENGL_LIBRARIES} ${SDL2_LIBRARIES} ${FREETYPE_LIBRARIES} ${LOG_LIB} osald GLideNHQd )
+ 	endif (NOHQ)
+   else(SDL)
+ 	if (NOHQ)
+@@ -481,9 +481,9 @@
+ 
+   if(SDL)
+ 	if (NOHQ)
+-	  target_link_libraries(${GLideN64_DLL_NAME} ${OPENGL_LIBRARIES} ${SDL_LIBRARIES} ${FREETYPE_LIBRARIES} ${LOG_LIB} osal )
++	  target_link_libraries(${GLideN64_DLL_NAME} ${OPENGL_LIBRARIES} ${SDL2_LIBRARIES} ${FREETYPE_LIBRARIES} ${LOG_LIB} osal )
+ 	else (NOHQ)
+-	  target_link_libraries(${GLideN64_DLL_NAME} ${OPENGL_LIBRARIES} ${SDL_LIBRARIES} ${FREETYPE_LIBRARIES} ${LOG_LIB} osal GLideNHQ )
++	  target_link_libraries(${GLideN64_DLL_NAME} ${OPENGL_LIBRARIES} ${SDL2_LIBRARIES} ${FREETYPE_LIBRARIES} ${LOG_LIB} osal GLideNHQ )
+ 	endif (NOHQ)
+   else(SDL)
+ 	if (NOHQ)
