@@ -74,6 +74,9 @@ def generateRetroarchCustom():
     # Show badges in Retroarch cheevos list
     retroarchSettings.save('cheevos_badges_enable',             '"true"')
 
+    # Disable builtin image viewer (done in ES, and prevents from loading pico-8 .png carts)
+    retroarchSettings.save('builtin_imageviewer_enable',        '"false"')
+
     retroarchSettings.write()
 
 def generateRetroarchCustomPathes(retroarchSettings):
