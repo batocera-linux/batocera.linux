@@ -519,6 +519,7 @@ config BR2_PACKAGE_BATOCERA_RETROARCH
         select BR2_PACKAGE_LIBRETRO_PC98              # ALL
         select BR2_PACKAGE_LIBRETRO_MRBOOM            # ALL
         select BR2_PACKAGE_LIBRETRO_TIC80             # ALL
+        select BR2_PACKAGE_LIBRETRO_RETRO8            # ALL
 
         select BR2_PACKAGE_LIBRETRO_DOSBOX            if !BR2_PACKAGE_BATOCERA_TARGET_ROCK960     && \
                                                          !BR2_PACKAGE_BATOCERA_TARGET_LIBRETECH_H5

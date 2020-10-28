@@ -786,6 +786,16 @@ tic80:
     libretro:
       tic80: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_TIC80] }
 
+pico8:
+  name:       Pico-8
+  manufacturer: Ports
+  release:
+  hardware: console
+  extensions: [p8 png]
+  emulators:
+    libretro:
+      retro8: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_RETRO8] }
+
 cannonball:
   name:       Cannonball
   manufacturer: Ports
