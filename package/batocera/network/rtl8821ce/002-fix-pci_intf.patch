@@ -1,0 +1,10 @@
+--- a/os_dep/linux/pci_intf.c	2020-10-23 10:52:09.649332582 +0200
++++ b/os_dep/linux/pci_intf.c	2020-10-23 10:52:20.509509444 +0200
+@@ -18,6 +18,7 @@
+ #include <hal_data.h>
+ 
+ #include <linux/pci_regs.h>
++#include <linux/pci.h>
+ 
+ #ifndef CONFIG_PCI_HCI
+ 
