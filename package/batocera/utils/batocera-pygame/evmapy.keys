@@ -109,8 +109,8 @@
 
 	{
             "trigger": ["hotkey", "start"],
-            "type": "key",
-            "target": [ "KEY_ESC" ]
+            "type": "exec",
+            "target": "killall -15 pygame"
 	}
     ]
 }

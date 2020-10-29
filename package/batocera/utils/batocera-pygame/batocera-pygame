@@ -6,7 +6,7 @@ unclutter-remote -s
 
 GAMEDIR=$(dirname "${ROM}")
 
-cd "${GAMEDIR}" && python "${ROM}"
+cd "${GAMEDIR}" && pygame "${ROM}"
 EXITCODE=$?
 
 unclutter-remote -h
