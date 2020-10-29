@@ -54,15 +54,22 @@ class Evmapy():
                         padConfig["grab"] = False
     
                         # define buttons / axes
-                        known_buttons = {}
+                        known_buttons_names = {}
+                        known_buttons_codes = {}
+                        known_buttons_alias = {}
                         for index in pad.inputs:
                             input = pad.inputs[index]
                             if input.type == "button":
-                                known_buttons[input.name] = True
-                                padConfig["buttons"].append({
-                                    "name": input.name,
-                                    "code": int(input.code)
-                                })
+                                # don't add 2 times the same button (ie select as hotkey)
+                                if input.code not in known_buttons_codes:
+                                    known_buttons_names[input.name] = True
+                                    known_buttons_codes[input.code] = input.name # keep the master name for aliases
+                                    padConfig["buttons"].append({
+                                        "name": input.name,
+                                        "code": int(input.code)
+                                    })
+                                else:
+                                    known_buttons_alias[input.name] = known_buttons_codes[input.code]
                             elif input.type == "hat":
                                 if int(input.value) in [1, 2]: # don't duplicate values
                                     if int(input.value) == 1:
@@ -71,8 +78,8 @@ class Evmapy():
                                     else:
                                         name = "Y"
                                         isYAsInt =  1 
-                                    known_buttons["HAT" + input.id + name + ":min"] = True
-                                    known_buttons["HAT" + input.id + name + ":max"] = True
+                                    known_buttons_names["HAT" + input.id + name + ":min"] = True
+                                    known_buttons_names["HAT" + input.id + name + ":max"] = True
                                     padConfig["axes"].append({
                                         "name": "HAT" + input.id + name,
                                         "code": int(input.id) + 16 + isYAsInt, # 16 = HAT0X in linux/input.h
@@ -87,17 +94,17 @@ class Evmapy():
                         padActionsFiltered = []
                         for action in padActionsDefined:
                             if "trigger" in action:
-                                trigger = Evmapy.__trigger_mapper(action["trigger"])
+                                trigger = Evmapy.__trigger_mapper(action["trigger"], known_buttons_alias)
                                 action["trigger"] = trigger
                                 if isinstance(trigger, list):
                                     allfound = True
                                     for x in trigger:
-                                        if x not in known_buttons:
+                                        if x not in known_buttons_names:
                                             allfound = False
                                     if allfound:
                                         padActionsFiltered.append(action)
                                 else:
-                                    if trigger in known_buttons:
+                                    if trigger in known_buttons_names:
                                         padActionsFiltered.append(action)
                                 padConfig["actions"] = padActionsFiltered
     
@@ -112,16 +119,16 @@ class Evmapy():
     
     # remap evmapy trigger (aka up become HAT0Y:max)
     @staticmethod
-    def __trigger_mapper(trigger):
+    def __trigger_mapper(trigger, known_buttons_alias):
         if isinstance(trigger, list):
             new_trigger = []
             for x in trigger:
-                new_trigger.append(Evmapy.__trigger_mapper_string(x))
+                new_trigger.append(Evmapy.__trigger_mapper_string(x, known_buttons_alias))
             return new_trigger
-        return Evmapy.__trigger_mapper_string(trigger)
+        return Evmapy.__trigger_mapper_string(trigger, known_buttons_alias)
 
     @staticmethod
-    def __trigger_mapper_string(trigger):
+    def __trigger_mapper_string(trigger, known_buttons_alias):
         # maybe this function is more complex if a pad has several hat. never see them.
         mapping = {
             "left": "HAT0X:min",
@@ -137,6 +144,8 @@ class Evmapy():
             "joystick2down": "ABS1Y:min",
             "joystick2up": "ABS1Y:max"
         }
+        if trigger in known_buttons_alias:
+            return known_buttons_alias[trigger]
         if trigger in mapping:
             return mapping[trigger]
         return trigger # no tranformation
