@@ -1,0 +1,25 @@
+From 786ec67197d42184be2fcdecc24112adbc0692b3 Mon Sep 17 00:00:00 2001
+From: Christian Hewitt <christianshewitt@gmail.com>
+Date: Mon, 6 Jul 2020 06:56:46 +0000
+Subject: [PATCH] use EGL_KHR_platform_gbm not EGL_MESA_platform_gbm
+
+---
+ xbmc/windowing/gbm/WinSystemGbmGLESContext.cpp | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/xbmc/windowing/gbm/WinSystemGbmGLESContext.cpp b/xbmc/windowing/gbm/WinSystemGbmGLESContext.cpp
+index cf293900ca..5b96ebaf21 100644
+--- a/xbmc/windowing/gbm/WinSystemGbmGLESContext.cpp
++++ b/xbmc/windowing/gbm/WinSystemGbmGLESContext.cpp
+@@ -35,7 +35,7 @@
+ using namespace KODI::WINDOWING::GBM;
+ 
+ CWinSystemGbmGLESContext::CWinSystemGbmGLESContext()
+-: CWinSystemGbmEGLContext(EGL_PLATFORM_GBM_MESA, "EGL_MESA_platform_gbm")
++: CWinSystemGbmEGLContext(EGL_PLATFORM_GBM_MESA, "EGL_KHR_platform_gbm")
+ {}
+ 
+ std::unique_ptr<CWinSystemBase> CWinSystemBase::CreateWinSystem()
+-- 
+2.17.1
+
