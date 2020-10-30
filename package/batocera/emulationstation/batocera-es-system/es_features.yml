@@ -5,7 +5,7 @@ libretro:
   features: [ratio, smooth, shaders, pixel_perfect, decoration, latency_reduction, game_translation]
   cores:
     '81':
-      features: [netplay, rewind, autosave]
+      features: [netplay, rewind, autosave, joystick2pad]
     atari800:
       features: [ ]
     beetle-saturn:
@@ -15,7 +15,7 @@ libretro:
     bsnes:
       features: [netplay, rewind, autosave]
     cap32:
-      features: [netplay, rewind, autosave]
+      features: [netplay, rewind, autosave, joystick2pad]
     citra:
       features: [         rewind, autosave]
     daphne:
@@ -87,7 +87,7 @@ libretro:
     freeintv:
       features: [ ]
     fuse:
-      features: [         rewind, autosave]
+      features: [         rewind, autosave, joystick2pad]
     gambatte:
       features: [         rewind, autosave, colorization]
     genesisplusgx:
@@ -504,19 +504,19 @@ dolphin:
     wii:
         features: [emulated_wiimotes]                  
 dosbox:
-  features: [ratio]
+  features: [ratio, joystick2pad]
 
 dosbox_staging:
-  features: [ratio]
+  features: [ratio, joystick2pad]
 
 dosbox-x:
-  features: [ratio]
+  features: [ratio, joystick2pad]
 
 fsuae:
   features: [ratio]
 
 linapple:
-  features: [ratio]
+  features: [ratio, joystick2pad]
 
 moonlight:
   features: [ratio]
