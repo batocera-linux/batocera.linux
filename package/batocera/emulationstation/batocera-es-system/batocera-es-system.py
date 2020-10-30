@@ -103,7 +103,7 @@ class EsSystemConf:
 
         pathValue      = EsSystemConf.systemPath(system, data)
         platformValue  = EsSystemConf.systemPlatform(system, data)
-        listExtensions = EsSystemConf.listExtension(data, True)
+        listExtensions = EsSystemConf.listExtension(data, False)
         groupValue     = EsSystemConf.systemGroup(system, data)
         command        = EsSystemConf.commandName(data)
 
@@ -352,10 +352,18 @@ class EsSystemConf:
             coresTxt = ""
             for core in sorted(emulatorData):
                 if EsSystemConf.isValidRequirements(config, emulatorData[core]["requireAnyOf"]):
+                    incompatible_extensionsTxt = ""
+                    if "incompatible_extensions" in emulatorData[core]:
+                        for ext in emulatorData[core]["incompatible_extensions"]:
+                            if incompatible_extensionsTxt != "":
+                                incompatible_extensionsTxt += " "
+                            incompatible_extensionsTxt += "." + ext.lower()
+                        incompatible_extensionsTxt = " incompatible_extensions=\"" + incompatible_extensionsTxt + "\""
+
                     if emulator == defaultEmulator and core == defaultCore:
-                        coresTxt += "                    <core default=\"true\">%s</core>\n" % (core)
+                        coresTxt += "                    <core default=\"true\"%s>%s</core>\n" % (incompatible_extensionsTxt, core)
                     else:
-                        coresTxt += "                    <core>%s</core>\n" % (core)
+                        coresTxt += "                    <core%s>%s</core>\n" % (incompatible_extensionsTxt, core)
 
             if coresTxt == "":
                 emulatorTxt = ""
