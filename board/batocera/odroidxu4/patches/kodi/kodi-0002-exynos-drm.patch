@@ -1,0 +1,12 @@
+--- a/xbmc/windowing/gbm/DRMUtils.cpp	2020-10-30 20:40:43.524607607 +0100
++++ b/xbmc/windowing/gbm/DRMUtils.cpp	2020-10-30 20:41:08.225042206 +0100
+@@ -540,7 +540,8 @@
+     "vc4",
+     "virtio_gpu",
+     "sun4i-drm",
+-    "meson"
++    "meson",
++    "exynos"
+   };
+ 
+   for (auto module : modules)
