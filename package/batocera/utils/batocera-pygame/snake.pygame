@@ -192,17 +192,17 @@ def main():
 				quit = True
 			elif event.type == KEYDOWN:
 				currentmovedir = snake.movedir
-                                if event.key in (K_UP, K_DOWN, K_LEFT, K_RIGHT):
-				        if event.key == K_UP:
+                                if event.key in (K_UP, K_DOWN, K_LEFT, K_RIGHT, K_KP2, K_KP4, K_KP6, K_KP8):
+				        if event.key == K_UP or event.key == K_KP8:
 					        tomove = 'up'
 					        dontmove = 'down'
-				        elif event.key == K_DOWN:
+				        elif event.key == K_DOWN or event.key == K_KP2:
 					        tomove = 'down'
 					        dontmove = 'up'
-				        elif event.key == K_LEFT:
+				        elif event.key == K_LEFT or event.key == K_KP4:
 					        tomove = 'left'
 					        dontmove = 'right'
-				        elif event.key == K_RIGHT:
+				        elif event.key == K_RIGHT or event.key == K_KP6:
 					        tomove = 'right'
 					        dontmove = 'left'
 				        if not currentmovedir == dontmove:
