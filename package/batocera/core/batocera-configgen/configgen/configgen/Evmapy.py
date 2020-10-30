@@ -5,6 +5,7 @@ import json
 import re
 import os
 from utils.logger import eslog
+import evdev
 
 class Evmapy():
     # evmapy is a process that map pads to keyboards (for pygame for example)
@@ -87,14 +88,32 @@ class Evmapy():
                                         "max": 1
                                     })
                             elif input.type == "axis":
-                                pass # to be implemented
-    
+                                axisId = 0
+                                axisName = ""
+                                if input.name == "joystick1up" or input.name == "joystick1left":
+                                    axisId = 0
+                                elif input.name == "joystick2up" or input.name == "joystick2left":
+                                    axisId = 1
+                                if input.name == "joystick1up" or input.name == "joystick2up":
+                                    axisName = "Y"
+                                elif input.name == "joystick1left" or input.name == "joystick2left":
+                                    axisName = "X"
+                                axisMin, axisMax = Evmapy.__getPadMinMaxAxis(pad.dev, int(input.code))
+                                known_buttons_names["ABS" + str(axisId) + axisName + ":min"] = True
+                                known_buttons_names["ABS" + str(axisId) + axisName + ":max"] = True
+                                padConfig["axes"].append({
+                                    "name": "ABS" + str(axisId) + axisName,
+                                    "code": int(input.code),
+                                    "min": axisMin,
+                                    "max": axisMax
+                                })
+
                         # only add actions for which buttons are defined (otherwise, evmapy doesn't like it)
                         padActionsDefined = padActionConfig["actions_player"+str(nplayer)]
                         padActionsFiltered = []
                         for action in padActionsDefined:
                             if "trigger" in action:
-                                trigger = Evmapy.__trigger_mapper(action["trigger"], known_buttons_alias)
+                                trigger = Evmapy.__trigger_mapper(action["trigger"], known_buttons_alias, known_buttons_names)
                                 action["trigger"] = trigger
                                 if isinstance(trigger, list):
                                     allfound = True
@@ -119,33 +138,48 @@ class Evmapy():
     
     # remap evmapy trigger (aka up become HAT0Y:max)
     @staticmethod
-    def __trigger_mapper(trigger, known_buttons_alias):
+    def __trigger_mapper(trigger, known_buttons_alias, known_buttons_names):
         if isinstance(trigger, list):
             new_trigger = []
             for x in trigger:
-                new_trigger.append(Evmapy.__trigger_mapper_string(x, known_buttons_alias))
+                new_trigger.append(Evmapy.__trigger_mapper_string(x, known_buttons_alias, known_buttons_names))
             return new_trigger
-        return Evmapy.__trigger_mapper_string(trigger, known_buttons_alias)
+        return Evmapy.__trigger_mapper_string(trigger, known_buttons_alias, known_buttons_names)
 
     @staticmethod
-    def __trigger_mapper_string(trigger, known_buttons_alias):
+    def __trigger_mapper_string(trigger, known_buttons_alias, known_buttons_names):
         # maybe this function is more complex if a pad has several hat. never see them.
         mapping = {
             "left": "HAT0X:min",
             "right": "HAT0X:max",
             "down": "HAT0Y:max",
             "up": "HAT0Y:min",
-            "joystick1right": "ABS0X:min",
-            "joystick1left": "ABS0X:max",
-            "joystick1down": "ABS0Y:min",
-            "joystick1up": "ABS0Y:max",
-            "joystick2right": "ABS1X:min",
-            "joystick2left": "ABS1X:max",
-            "joystick2down": "ABS1Y:min",
-            "joystick2up": "ABS1Y:max"
+            "joystick1right": "ABS0X:max",
+            "joystick1left": "ABS0X:min",
+            "joystick1down": "ABS0Y:max",
+            "joystick1up": "ABS0Y:min",
+            "joystick2right": "ABS1X:max",
+            "joystick2left": "ABS1X:min",
+            "joystick2down": "ABS1Y:max",
+            "joystick2up": "ABS1Y:min"
         }
         if trigger in known_buttons_alias:
             return known_buttons_alias[trigger]
-        if trigger in mapping:
+        if trigger in mapping and mapping[trigger] in known_buttons_names:
             return mapping[trigger]
         return trigger # no tranformation
+
+    @staticmethod
+    def __getPadMinMaxAxis(devicePath, axisCode):
+        device = evdev.InputDevice(devicePath)
+        capabilities = device.capabilities(False)
+
+        for event_type in capabilities:
+            if event_type == 3: # "EV_ABS"
+                for abs_code, val in capabilities[event_type]:
+                    if abs_code == axisCode:
+                        valrange = (val.max - val.min)/2 # for each side
+                        valmin   = val.min + valrange/2
+                        valmax   = val.max - valrange/2
+                        return valmin, valmax
+        return 0,0 # not found
