@@ -59,9 +59,6 @@ do
 	cp "${BUILD_DIR}/uboot-odroid-xu4-odroidxu4-v2017.05/sd_fuse/${F}" "${BINARIES_DIR}" || exit 1
 done
 
-MKIMAGE=${HOST_DIR}/bin/mkimage
-"${HOST_DIR}/bin/mkimage" -A arm -O linux -T kernel -C none -a 0x80008000 -e 0x80008000 -n linux -d "${BINARIES_DIR}/Image" "${BINARIES_DIR}/uImage" || exit 1
-
 # /boot
 rm -rf "${BINARIES_DIR:?}/boot"       || exit 1
 mkdir -p "${BINARIES_DIR}/boot/boot"  || exit 1
@@ -69,7 +66,7 @@ mkdir -p "${BINARIES_DIR}/boot/extlinux" || exit 1
 cp "${BOARD_DIR}/boot/boot-logo.bmp.gz" "${BINARIES_DIR}/boot"   || exit 1
 cp "${BOARD_DIR}/boot/extlinux.conf"     "${BINARIES_DIR}/boot/extlinux"              || exit 1
 cp "${BINARIES_DIR}/batocera-boot.conf" "${BINARIES_DIR}/boot/batocera-boot.conf"                  || exit 1
-cp "${BINARIES_DIR}/uImage"          "${BINARIES_DIR}/boot/boot/linux"           || exit 1
+cp "${BINARIES_DIR}/zImage"          "${BINARIES_DIR}/boot/boot/linux"           || exit 1
 cp "${BINARIES_DIR}/initrd.gz"         "${BINARIES_DIR}/boot/boot/initrd.gz"         || exit 1
 cp "${BINARIES_DIR}/rootfs.squashfs" "${BINARIES_DIR}/boot/boot/batocera.update" || exit 1
 cp "${BINARIES_DIR}/u-boot.bin"                "${BINARIES_DIR}/boot/u-boot.bin"           || exit 1
