@@ -15,7 +15,7 @@ LIBRETRO_BLASTEM_EXTRAOPTS=""
 ifeq ($(BR2_x86_64),y)
         LIBRETRO_BLASTEM_EXTRAOPTS=CPU=x86_64
 endif
-ifeq ($(BR2_x86_i586),y)
+ifeq ($(BR2_x86_i686),y)
         LIBRETRO_BLASTEM_EXTRAOPTS=CPU=i686
 endif
 
