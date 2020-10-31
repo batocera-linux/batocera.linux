@@ -132,8 +132,11 @@ do
 done
 
 # dynanically loaded libs
-cp -pr "${G_TARGETDIR}/usr/lib/libncurses.so."* "${TMPOUT}/lib32/" || exit 1
-cp -pr "${G_TARGETDIR}/usr/lib/libmspack.so."*  "${TMPOUT}/lib32/" || exit 1
+cp -pr "${G_TARGETDIR}/usr/lib/libncurses.so"* "${TMPOUT}/lib32/" || exit 1
+cp -pr "${G_TARGETDIR}/usr/lib/libmspack.so"*  "${TMPOUT}/lib32/" || exit 1
+cp -pr "${G_TARGETDIR}/usr/lib/libdbus"*"so"*  "${TMPOUT}/lib32/" || exit 1
+cp -pr "${G_TARGETDIR}/usr/lib/libopenal.so"*  "${TMPOUT}/lib32/" || exit 1
+cp -pr "${G_TARGETDIR}/usr/lib/libvulkan.so"*  "${TMPOUT}/lib32/" || exit 1
 
 # binaries
 echo "binaries..."
@@ -154,6 +157,10 @@ for BIN in "${G_TARGETDIR}/usr/lib/dri/"*.so
 do
     findDeps "${BIN}" "${TMPOUT}/lib32" || exit 1
 done
+
+# icd.d json files
+mkdir -p "${TMPOUT}/usr/share/vulkan" || exit 1
+cp -pr "${G_TARGETDIR}/usr/share/vulkan/icd.d" "${TMPOUT}/usr/share/vulkan/" || exit 1
 
 # fakedll
 echo "fakedll..."
