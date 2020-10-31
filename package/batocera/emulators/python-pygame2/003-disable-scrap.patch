@@ -1,0 +1,13 @@
+diff --git a/buildconfig/config_unix.py b/buildconfig/config_unix.py
+index 4fcc482..c78669f 100644
+--- a/buildconfig/config_unix.py
++++ b/buildconfig/config_unix.py
+@@ -208,7 +208,7 @@ def main(sdl2=False):
+     DEPS.extend([
+         Dependency('PNG', 'png.h', 'libpng', ['png']),
+         Dependency('JPEG', 'jpeglib.h', 'libjpeg', ['jpeg']),
+-        Dependency('SCRAP', '', 'libX11', ['X11']),
++        #Dependency('SCRAP', '', 'libX11', ['X11']),
+         #Dependency('GFX', 'SDL_gfxPrimitives.h', 'libSDL_gfx.so', ['SDL_gfx']),
+     ])
+     is_freebsd = 'FreeBSD' in platform.system()

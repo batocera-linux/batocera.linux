@@ -3,12 +3,12 @@
 # libretro-picodrive
 #
 ################################################################################
-# Version.: Commits on Aug 5, 2020
-LIBRETRO_PICODRIVE_VERSION = 352479001c82fc5c9abbcc1501c6e78ddc691a14
+# Version.: Commits on Oct 27, 2020
+LIBRETRO_PICODRIVE_VERSION = 8c54e0dd8ffc272c7e9cf34886e013c433c8d4b8
 LIBRETRO_PICODRIVE_SITE = https://github.com/irixxxx/picodrive.git
 LIBRETRO_PICODRIVE_SITE_METHOD=git
 LIBRETRO_PICODRIVE_GIT_SUBMODULES=YES
-LIBRETRO_PICODRIVE_DEPENDENCIES = libpng sdl
+LIBRETRO_PICODRIVE_DEPENDENCIES = libpng
 LIBRETRO_PICODRIVE_LICENSE = MAME
 
 LIBRETRO_PICODRIVE_PLATFORM = $(LIBRETRO_PLATFORM)

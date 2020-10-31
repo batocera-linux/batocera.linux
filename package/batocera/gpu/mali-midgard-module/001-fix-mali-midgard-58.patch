@@ -1,0 +1,196 @@
+From e2da27f336c25e81fb58b864bd4bf518ec959594 Mon Sep 17 00:00:00 2001
+From: Romain TISSERAND <romain.tisserand@gmail.com>
+Date: Thu, 8 Oct 2020 17:19:23 +0200
+Subject: [PATCH] Fix mali-midgard kernel module on 5.8.y series (mmap changes)
+
+---
+ .../drivers/gpu/arm/midgard/mali_kbase_jd.c   | 16 ++++++++
+ .../drivers/gpu/arm/midgard/mali_kbase_mem.c  |  4 ++
+ .../gpu/arm/midgard/mali_kbase_mem_linux.c    | 40 +++++++++++++++++++
+ 3 files changed, 60 insertions(+)
+
+diff --git a/driver/product/kernel/drivers/gpu/arm/midgard/mali_kbase_jd.c b/driver/product/kernel/drivers/gpu/arm/midgard/mali_kbase_jd.c
+index 7fe50ba..b6a8ab0 100644
+--- a/driver/product/kernel/drivers/gpu/arm/midgard/mali_kbase_jd.c
++++ b/driver/product/kernel/drivers/gpu/arm/midgard/mali_kbase_jd.c
+@@ -266,7 +266,11 @@ static int kbase_jd_pre_external_resources(struct kbase_jd_atom *katom, const st
+ #endif /* CONFIG_MALI_DMA_FENCE */
+ 
+ 	/* Take the processes mmap lock */
++#if (LINUX_VERSION_CODE < KERNEL_VERSION(5, 8, 0))
+ 	down_read(&current->mm->mmap_sem);
++#else
++	mmap_read_lock(current->mm);
++#endif
+ 
+ 	/* need to keep the GPU VM locked while we set up UMM buffers */
+ 	kbase_gpu_vm_lock(katom->kctx);
+@@ -326,7 +330,11 @@ static int kbase_jd_pre_external_resources(struct kbase_jd_atom *katom, const st
+ 	kbase_gpu_vm_unlock(katom->kctx);
+ 
+ 	/* Release the processes mmap lock */
++#if (LINUX_VERSION_CODE < KERNEL_VERSION(5, 8, 0))
+ 	up_read(&current->mm->mmap_sem);
++#else
++	mmap_read_unlock(current->mm);
++#endif
+ 
+ #ifdef CONFIG_MALI_DMA_FENCE
+ 	if (implicit_sync) {
+@@ -351,7 +359,11 @@ static int kbase_jd_pre_external_resources(struct kbase_jd_atom *katom, const st
+ #ifdef CONFIG_MALI_DMA_FENCE
+ failed_dma_fence_setup:
+ 	/* Lock the processes mmap lock */
++#if (LINUX_VERSION_CODE < KERNEL_VERSION(5, 8, 0))
+ 	down_read(&current->mm->mmap_sem);
++#else
++	mmap_read_lock(current->mm);
++#endif
+ 
+ 	/* lock before we unmap */
+ 	kbase_gpu_vm_lock(katom->kctx);
+@@ -367,7 +379,11 @@ static int kbase_jd_pre_external_resources(struct kbase_jd_atom *katom, const st
+ 	kbase_gpu_vm_unlock(katom->kctx);
+ 
+ 	/* Release the processes mmap lock */
++#if (LINUX_VERSION_CODE < KERNEL_VERSION(5, 8, 0))
+ 	up_read(&current->mm->mmap_sem);
++#else
++	mmap_read_unlock(current->mm);
++#endif
+ 
+  early_err_out:
+ 	kfree(katom->extres);
+diff --git a/driver/product/kernel/drivers/gpu/arm/midgard/mali_kbase_mem.c b/driver/product/kernel/drivers/gpu/arm/midgard/mali_kbase_mem.c
+index 3d0de90..1466153 100644
+--- a/driver/product/kernel/drivers/gpu/arm/midgard/mali_kbase_mem.c
++++ b/driver/product/kernel/drivers/gpu/arm/midgard/mali_kbase_mem.c
+@@ -1257,7 +1257,11 @@ static struct kbase_cpu_mapping *kbasep_find_enclosing_cpu_mapping(
+ 	unsigned long map_start;
+ 	size_t map_size;
+ 
++#if (LINUX_VERSION_CODE < KERNEL_VERSION(5, 8, 0))
+ 	lockdep_assert_held(&current->mm->mmap_sem);
++#else
++	mmap_assert_locked(current->mm);
++#endif
+ 
+ 	if ((uintptr_t) uaddr + size < (uintptr_t) uaddr) /* overflow check */
+ 		return NULL;
+diff --git a/driver/product/kernel/drivers/gpu/arm/midgard/mali_kbase_mem_linux.c b/driver/product/kernel/drivers/gpu/arm/midgard/mali_kbase_mem_linux.c
+index b3b5ffc..656f86e 100644
+--- a/driver/product/kernel/drivers/gpu/arm/midgard/mali_kbase_mem_linux.c
++++ b/driver/product/kernel/drivers/gpu/arm/midgard/mali_kbase_mem_linux.c
+@@ -799,7 +799,11 @@ int kbase_mem_flags_change(struct kbase_context *kctx, u64 gpu_addr, unsigned in
+ 		real_flags |= KBASE_REG_SHARE_IN;
+ 
+ 	/* now we can lock down the context, and find the region */
++#if (LINUX_VERSION_CODE < KERNEL_VERSION(5, 8, 0))
+ 	down_write(&current->mm->mmap_sem);
++#else
++	mmap_write_lock(current->mm);
++#endif
+ 	kbase_gpu_vm_lock(kctx);
+ 
+ 	/* Validate the region */
+@@ -867,7 +871,11 @@ int kbase_mem_flags_change(struct kbase_context *kctx, u64 gpu_addr, unsigned in
+ 
+ out_unlock:
+ 	kbase_gpu_vm_unlock(kctx);
++#if (LINUX_VERSION_CODE < KERNEL_VERSION(5, 8, 0))
+ 	up_write(&current->mm->mmap_sem);
++#else
++	mmap_write_unlock(current->mm);
++#endif
+ out:
+ 	return ret;
+ }
+@@ -1102,7 +1110,11 @@ static struct kbase_va_region *kbase_mem_from_user_buffer(
+ 		*flags |= KBASE_MEM_IMPORT_HAVE_PAGES;
+ 	}
+ 
++#if (LINUX_VERSION_CODE < KERNEL_VERSION(5, 8, 0))
+ 	down_read(&current->mm->mmap_sem);
++#else
++	mmap_read_lock(current->mm);
++#endif
+ 
+ #if LINUX_VERSION_CODE < KERNEL_VERSION(4, 6, 0)
+ 	faulted_pages = get_user_pages(current, current->mm, address, *va_pages,
+@@ -1116,7 +1128,11 @@ static struct kbase_va_region *kbase_mem_from_user_buffer(
+ 			pages, NULL);
+ #endif
+ 
++#if (LINUX_VERSION_CODE < KERNEL_VERSION(5, 8, 0))
+ 	up_read(&current->mm->mmap_sem);
++#else
++	mmap_read_unlock(current->mm);
++#endif
+ 
+ 	if (faulted_pages != *va_pages)
+ 		goto fault_mismatch;
+@@ -1575,7 +1591,11 @@ int kbase_mem_commit(struct kbase_context *kctx, u64 gpu_addr, u64 new_pages)
+ 		return -EINVAL;
+ 	}
+ 
++#if (LINUX_VERSION_CODE < KERNEL_VERSION(5, 8, 0))
+ 	down_write(&current->mm->mmap_sem);
++#else
++	mmap_write_lock(current->mm);
++#endif
+ 	kbase_gpu_vm_lock(kctx);
+ 
+ 	/* Validate the region */
+@@ -1617,7 +1637,11 @@ int kbase_mem_commit(struct kbase_context *kctx, u64 gpu_addr, u64 new_pages)
+ 		 * No update to the mm so downgrade the writer lock to a read
+ 		 * lock so other readers aren't blocked after this point.
+ 		 */
++#if (LINUX_VERSION_CODE < KERNEL_VERSION(5, 8, 0))
+ 		downgrade_write(&current->mm->mmap_sem);
++#else
++		mmap_write_downgrade(current->mm);
++#endif
+ 		read_locked = true;
+ 
+ 		/* Allocate some more pages */
+@@ -1673,9 +1697,17 @@ int kbase_mem_commit(struct kbase_context *kctx, u64 gpu_addr, u64 new_pages)
+ out_unlock:
+ 	kbase_gpu_vm_unlock(kctx);
+ 	if (read_locked)
++#if (LINUX_VERSION_CODE < KERNEL_VERSION(5, 8, 0))
+ 		up_read(&current->mm->mmap_sem);
++#else
++		mmap_read_unlock(current->mm);
++#endif
+ 	else
++#if (LINUX_VERSION_CODE < KERNEL_VERSION(5, 8, 0))
+ 		up_write(&current->mm->mmap_sem);
++#else
++		mmap_write_unlock(current->mm);
++#endif
+ 
+ 	return res;
+ }
+@@ -1987,14 +2019,22 @@ void kbase_os_mem_map_lock(struct kbase_context *kctx)
+ {
+ 	struct mm_struct *mm = current->mm;
+ 	(void)kctx;
++#if (LINUX_VERSION_CODE < KERNEL_VERSION(5, 8, 0))
+ 	down_read(&mm->mmap_sem);
++#else
++	mmap_read_lock(mm);
++#endif
+ }
+ 
+ void kbase_os_mem_map_unlock(struct kbase_context *kctx)
+ {
+ 	struct mm_struct *mm = current->mm;
+ 	(void)kctx;
++#if (LINUX_VERSION_CODE < KERNEL_VERSION(5, 8, 0))
+ 	up_read(&mm->mmap_sem);
++#else
++	mmap_read_unlock(mm);
++#endif
+ }
+ 
+ static int kbasep_reg_mmap(struct kbase_context *kctx,

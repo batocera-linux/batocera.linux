@@ -61,7 +61,7 @@ case $1 in
                 # Play video as long as possible, ideal for fast boards
                 #
                 [[ $picture -eq 0 ]] && splash_autoplay
-                kill -9 $PID
+                kill -9 $PID &> /dev/null
             ;;
             i[0-90]*|k[0-90]*|[0-90]*)
                 # k-mode: Stop loading process for x seconds, attention there will be no
@@ -84,14 +84,15 @@ case $1 in
     ;;
     stop)
         #DryRun -n to test if there is a change in /userdata/splash/ if there is output then do sync job
-        RSYNC="rsync -tin --dirs --delete $SPLASHUSER $SPLASHBOOT"
+	# --modify-window=2 for different fs
+        RSYNC="rsync --modify-window=2 -tin --dirs --delete $SPLASHUSER $SPLASHBOOT"
         #File changes can be detected by -i switch output
         [[ -n $($RSYNC | grep -e '^\*deleting' -e '^>f++++++') ]] || exit 0
 
         #Check filesize of /userdata/splash and set a directory size limit (256MB*1024kB)
         [[ $(du -s $SPLASHUSER | awk '{print $1}') -lt 262144 ]] || exit 1
 
-        RSYNC="rsync -ti --dirs --delete $SPLASHUSER $SPLASHBOOT"
+        RSYNC="rsync --modify-window=2 -ti --dirs --delete $SPLASHUSER $SPLASHBOOT"
         mount -o remount,rw /boot
         $RSYNC | dialog --backtitle "batocera.linux" --progressbox "Syncing Splashscreen data..." 20 75 &>/dev/tty1
         mount -o remount,ro /boot

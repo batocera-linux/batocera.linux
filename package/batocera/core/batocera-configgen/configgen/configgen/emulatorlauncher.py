@@ -5,6 +5,7 @@ import time
 import sys
 from sys import exit
 from Emulator import Emulator
+from Evmapy import Evmapy
 import generators
 from generators.kodi.kodiGenerator import KodiGenerator
 from generators.linapple.linappleGenerator import LinappleGenerator
@@ -18,6 +19,7 @@ from generators.dolphin.dolphinGenerator import DolphinGenerator
 from generators.pcsx2.pcsx2Generator import Pcsx2Generator
 from generators.scummvm.scummvmGenerator import ScummVMGenerator
 from generators.dosbox.dosboxGenerator import DosBoxGenerator
+from generators.dosboxstaging.dosboxstagingGenerator import DosBoxStagingGenerator
 from generators.dosboxx.dosboxxGenerator import DosBoxxGenerator
 from generators.vice.viceGenerator import ViceGenerator
 from generators.fsuae.fsuaeGenerator import FsuaeGenerator
@@ -30,12 +32,12 @@ from generators.wine.wineGenerator import WineGenerator
 from generators.cemu.cemuGenerator import CemuGenerator
 from generators.melonds.melondsGenerator import MelonDSGenerator
 from generators.rpcs3.rpcs3Generator import Rpcs3Generator
+from generators.pygame.pygameGenerator import PygameGenerator
 import controllersConfig as controllers
 import signal
 import batoceraFiles
 import os
 import subprocess
-import json
 import utils.videoMode as videoMode
 from utils.logger import eslog
 
@@ -46,6 +48,7 @@ generators = {
     'moonlight': MoonlightGenerator(),
     'scummvm': ScummVMGenerator(),
     'dosbox': DosBoxGenerator(),
+    'dosbox_staging': DosBoxStagingGenerator(),
     'dosboxx': DosBoxxGenerator(),
     'mupen64plus': MupenGenerator(),
     'vice': ViceGenerator(),
@@ -63,7 +66,8 @@ generators = {
     'wine' : WineGenerator(),
     'cemu' : CemuGenerator(),
     'melonds' : MelonDSGenerator(),
-    'rpcs3' : Rpcs3Generator()
+    'rpcs3' : Rpcs3Generator(),
+    'pygame': PygameGenerator()
 }
 
 def main(args, maxnbplayers):
@@ -158,7 +162,11 @@ def main(args, maxnbplayers):
         callExternalScripts("/userdata/system/scripts", "gameStart", [systemName, system.config['emulator'], effectiveCore, effectiveRom])
 
         # run the emulator
-        exitCode = runCommand(generators[system.config['emulator']].generate(system, args.rom, playersControllers, gameResolution))
+        try:
+            Evmapy.start(systemName, system.config['emulator'], effectiveCore, effectiveRom, playersControllers)
+            exitCode = runCommand(generators[system.config['emulator']].generate(system, args.rom, playersControllers, gameResolution))
+        finally:
+            Evmapy.stop()
 
         # run a script after emulator shuts down
         callExternalScripts("/userdata/system/scripts", "gameStop", [systemName, system.config['emulator'], effectiveCore, effectiveRom])
@@ -201,7 +209,7 @@ def runCommand(command):
         sys.stdout.write(out)
         sys.stderr.write(err)
     except:
-        eslog("emulator exited")
+        eslog.log("emulator exited")
 
     return exitcode
 

@@ -306,7 +306,7 @@ segacd:
   emulators:
     libretro:
       genesisplusgx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GENESISPLUSGX] }
-      picodrive:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PICODRIVE] }
+      picodrive:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PICODRIVE], incompatible_extensions: [chd] }
 
 sega32x:
   name:       Sega 32x
@@ -455,11 +455,13 @@ dos:
   platform:   pc
   emulators:
     dosbox:
-      dosbox:   { requireAnyOf: [BR2_PACKAGE_DOSBOX]          }
+      dosbox:           { requireAnyOf: [BR2_PACKAGE_DOSBOX]          }
+    dosbox_staging:
+      dosbox_staging:   { requireAnyOf: [BR2_PACKAGE_DOSBOX_STAGING]  }
     dosboxx:
-      dosbox-x: { requireAnyOf: [BR2_PACKAGE_DOSBOX_X]        }
+      dosbox-x:         { requireAnyOf: [BR2_PACKAGE_DOSBOX_X]        }
     libretro:
-      dosbox:   { requireAnyOf: [BR2_PACKAGE_LIBRETRO_DOSBOX] }
+      dosbox:           { requireAnyOf: [BR2_PACKAGE_LIBRETRO_DOSBOX] }
   comment_en: |
     Each game (files) must be placed its own directory having the ".pc .dos" extension.
     In each directory, a dosbox.bat file must contain the command line for launching the game.
@@ -773,6 +775,26 @@ mrboom:
   emulators:
     libretro:
       mrboom: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MRBOOM] }
+
+tic80:
+  name:       TIC-80
+  manufacturer: Ports
+  release:
+  hardware: console
+  extensions: [tic]
+  emulators:
+    libretro:
+      tic80: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_TIC80] }
+
+pico8:
+  name:       Pico-8
+  manufacturer: Ports
+  release:
+  hardware: console
+  extensions: [p8 png]
+  emulators:
+    libretro:
+      retro8: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_RETRO8] }
 
 cannonball:
   name:       Cannonball
@@ -1388,62 +1410,57 @@ ports:
   comment_fr: |
           Jeux et applications Linux additionnels qui peuvent etre lancés depuis un script .sh.
 
-windows32:
-  name:       Windows 32 bits
+windows:
+  name:       Windows
   manufacturer: Microsoft
   release: 1992
   hardware: pc
   extensions: [exe, wine, squashfs, wtgz]
   platform:   pc
-  theme:      pc
+  theme:      windows
   emulators:
     wine:
-      wine32:  { requireAnyOf: [BR2_PACKAGE_WINE] }
+      wine:  { requireAnyOf: [BR2_PACKAGE_WINE_LUTRIS] }
 
-windows32_installers:
-  name:       Windows installers 32 bits
+windows_installers:
+  name:       Install a new Windows game
   manufacturer: Microsoft
   release: 1992
   hardware: pc
   extensions: [exe, iso]
   platform:   pc
+  group:      windows
   emulators:
     wine:
-      wine32:  { requireAnyOf: [BR2_PACKAGE_WINE] }
-
-windows64:
-  name:       Windows 64 bits
-  manufacturer: Microsoft
-  release: 1992
-  hardware: pc
-  extensions: [exe, wine, squashfs, wtgz]
-  platform:   pc
-  emulators:
-    wine:
-      wine64:  { requireAnyOf: [BR2_PACKAGE_WINE] }
-
-windows64_installers:
-  name:       Windows installers 64 bits
-  manufacturer: Microsoft
-  release: 1992
-  hardware: pc
-  extensions: [exe, iso]
-  platform:   pc
-  emulators:
-    wine:
-      wine64:  { requireAnyOf: [BR2_PACKAGE_WINE] }
+      wine:  { requireAnyOf: [BR2_PACKAGE_WINE_LUTRIS] }
 
 wiiu:
   name:       Wii U
   manufacturer: Nintendo
   release: 2012
   hardware: console
-  extensions: [wup, wud, wux]
+  extensions: [wup, wud, wux, rpx]
   platform:   wiiu
   theme:      wiiu
   emulators:
     cemu:
       cemu:  { requireAnyOf: [BR2_PACKAGE_CEMU] }
+
+pygame:
+  name:       pygame
+  manufacturer: pygame
+  release: 2000
+  hardware: library
+  extensions: [pygame]
+  platform:   pygame
+  theme:      pygame
+  emulators:
+    pygame:
+      pygame:  { requireAnyOf: [BR2_PACKAGE_BATOCERA_PYGAME] }
+  comment_en: |
+          Create your game yourself ! Pygame helps you to create games in only some lines. Find a lot of example on internet.
+  comment_fr: |
+          Créez vos jeux vous-même ! Pygame vous aide à créer vos propres jeux en quelques lignes de code seulement. Vous trouvez sur internet plein d'exemples et de tutoriaux.
 
 imageviewer:
   name:       Screenshots

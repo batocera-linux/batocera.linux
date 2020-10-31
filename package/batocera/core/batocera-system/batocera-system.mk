@@ -97,7 +97,7 @@ define BATOCERA_SYSTEM_INSTALL_TARGET_CMDS
 
 	# datainit
 	mkdir -p $(TARGET_DIR)/usr/share/batocera/datainit/system
-	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-system/$(BATOCERA_SYSTEM_BATOCERA_CONF)/batocera.conf $(TARGET_DIR)/usr/share/batocera/datainit/system
+	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-system/batocera.conf $(TARGET_DIR)/usr/share/batocera/datainit/system
 
 	# batocera-boot.conf
 	$(INSTALL) -D -m 0644 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-system/batocera-boot.conf $(BINARIES_DIR)/$(BATOCERA_SYSTEM_SUBDIR)/batocera-boot.conf

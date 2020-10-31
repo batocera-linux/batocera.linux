@@ -28,7 +28,7 @@ case "${ACTION}" in
 	then
 		pacman --noconfirm -Syu
 	fi
-	[ $TERMINAL -eq 1 ] && pacman --noconfirm -Ss --xml | xmllint --xpath "//package/name/text()" -
+	[ $TERMINAL -eq 1 ] && pacman --noconfirm -Ss
 	[ $TERMINAL -eq 0 ] && pacman --noconfirm -Ss --xml
 
 	;;

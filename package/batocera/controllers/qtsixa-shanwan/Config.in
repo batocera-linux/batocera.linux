@@ -1,7 +1,6 @@
 config BR2_PACKAGE_QTSIXA_SHANWAN
 	depends on BR2_PACKAGE_BLUEZ5_UTILS
 	select BR2_PACKAGE_QTSIXA
-	select BR2_PACKAGE_SDL
 	select BR2_PACKAGE_LIBUSB
 	select BR2_PACKAGE_LIBUSB_COMPAT
         bool "qtsixashanwan"

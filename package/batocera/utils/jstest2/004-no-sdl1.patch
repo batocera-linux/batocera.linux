@@ -1,0 +1,48 @@
+--- a/CMakeLists.txt	2020-10-27 20:43:44.167885415 +0100
++++ b/CMakeLists.txt	2020-10-27 20:44:55.237145854 +0100
+@@ -20,7 +20,6 @@
+ include(GNUInstallDirs)
+ 
+ find_package(Curses REQUIRED)
+-find_package(SDL REQUIRED)
+ 
+ find_package(PkgConfig REQUIRED)
+ pkg_search_module(SDL2 REQUIRED sdl2)
+@@ -50,33 +49,23 @@
+ target_include_directories(sdl2-jstest PUBLIC ${SDL2_INCLUDE_DIRS} ${CURSES_INCLUDE_DIR})
+ target_compile_definitions(sdl2-jstest PUBLIC ${SDL2_CFLAGS_OTHER})
+ 
+-add_executable(sdl-jstest sdl-jstest.c)
+-target_link_libraries(sdl-jstest ${SDL_LIBRARY} ${CURSES_LIBRARIES})
+-target_include_directories(sdl-jstest PUBLIC ${SDL_INCLUDE_DIR} ${CURSES_INCLUDE_DIR})
+-
+ if(DOCBOOK2XMAN)
+   add_custom_command(
+-    OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/sdl-jstest.1
+-    COMMAND ${DOCBOOK2XMAN} ${CMAKE_CURRENT_SOURCE_DIR}/sdl-jstest.xml
+-    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/sdl-jstest.xml
+-    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
+-
+-  add_custom_command(
+     OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/sdl2-jstest.1
+     COMMAND ${DOCBOOK2XMAN} ${CMAKE_CURRENT_SOURCE_DIR}/sdl2-jstest.xml
+     DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/sdl2-jstest.xml
+     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
+ else()
+-  file(COPY sdl-jstest.1 sdl2-jstest.1
++  file(COPY sdl2-jstest.1
+     DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+ endif()
+ 
+-add_custom_target(doc ALL DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/sdl-jstest.1 ${CMAKE_CURRENT_BINARY_DIR}/sdl2-jstest.1)
++add_custom_target(doc ALL DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/sdl2-jstest.1)
+ 
+-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/sdl-jstest.1 ${CMAKE_CURRENT_BINARY_DIR}/sdl2-jstest.1
++install(FILES ${CMAKE_CURRENT_BINARY_DIR}/sdl2-jstest.1
+   DESTINATION ${CMAKE_INSTALL_MANDIR}/man1)
+ 
+-install(TARGETS sdl-jstest sdl2-jstest
++install(TARGETS sdl2-jstest
+   RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+ 
+ # EOF #

@@ -46,7 +46,8 @@ BATOCERA_NVIDIA_DRIVER_LIBS_MISC = \
 	libnvidia-glsi.so.$(BATOCERA_NVIDIA_DRIVER_VERSION) \
 	libnvidia-tls.so.$(BATOCERA_NVIDIA_DRIVER_VERSION) \
 	libvdpau_nvidia.so.$(BATOCERA_NVIDIA_DRIVER_VERSION) \
-	libnvidia-ml.so.$(BATOCERA_NVIDIA_DRIVER_VERSION)
+	libnvidia-ml.so.$(BATOCERA_NVIDIA_DRIVER_VERSION) \
+	libnvidia-glvkspirv.so.$(BATOCERA_NVIDIA_DRIVER_VERSION)
 
 BATOCERA_NVIDIA_DRIVER_LIBS += \
 	$(BATOCERA_NVIDIA_DRIVER_LIBS_GL) \
@@ -64,7 +65,8 @@ BATOCERA_NVIDIA_DRIVER_32 = \
 	libnvidia-glsi.so.$(BATOCERA_NVIDIA_DRIVER_VERSION) \
 	libnvidia-tls.so.$(BATOCERA_NVIDIA_DRIVER_VERSION) \
 	libvdpau_nvidia.so.$(BATOCERA_NVIDIA_DRIVER_VERSION) \
-	libnvidia-ml.so.$(BATOCERA_NVIDIA_DRIVER_VERSION)
+	libnvidia-ml.so.$(BATOCERA_NVIDIA_DRIVER_VERSION) \
+	libnvidia-glvkspirv.so.$(BATOCERA_NVIDIA_DRIVER_VERSION)
 
 # Install the gl.pc file
 define BATOCERA_NVIDIA_DRIVER_INSTALL_GL_DEV
@@ -209,6 +211,12 @@ define BATOCERA_NVIDIA_DRIVER_INSTALL_TARGET_CMDS
 	)
 	$(BATOCERA_NVIDIA_DRIVER_INSTALL_KERNEL_MODULE)
 
+# batocera install files needed by Vulkan
+	$(INSTALL) -D -m 0644 $(@D)/nvidia_icd.json \
+		$(TARGET_DIR)/usr/share/vulkan/icd.d/nvidia_icd.json
+	$(INSTALL) -D -m 0644 $(@D)/nvidia_layers.json \
+		$(TARGET_DIR)/usr/share/vulkan/implicit_layer.d/nvidia_layers.json
+
 # batocera install files needed by libglvnd
 	$(INSTALL) -D -m 0644 $(@D)/10_nvidia.json \
 		$(TARGET_DIR)/usr/share/glvnd/egl_vendor.d/10_nvidia.json
@@ -224,5 +232,20 @@ define BATOCERA_NVIDIA_DRIVER_INSTALL_TARGET_CMDS
 	 	$(TARGET_DIR)/usr/lib/xorg/modules/extensions/libglxserver_nvidia.so.1
 
 endef
+
+define BATOCERA_NVIDIA_DRIVER_VULKANJSON_X86_64
+	$(INSTALL) -D -m 0644 $(@D)/nvidia_icd.json $(TARGET_DIR)/usr/share/vulkan/icd.d/nvidia_icd.x86_64.json
+endef
+
+define BATOCERA_NVIDIA_DRIVER_VULKANJSON_X86
+	$(INSTALL) -D -m 0644 $(@D)/nvidia_icd.json $(TARGET_DIR)/usr/share/vulkan/icd.d/nvidia_icd.i686.json
+endef
+
+ifeq ($(BR2_x86_64),y)
+	BATOCERA_NVIDIA_DRIVER_POST_INSTALL_TARGET_HOOKS += BATOCERA_NVIDIA_DRIVER_VULKANJSON_X86_64
+endif
+ifeq ($(BR2_i686),y)
+	BATOCERA_NVIDIA_DRIVER_POST_INSTALL_TARGET_HOOKS += BATOCERA_NVIDIA_DRIVER_VULKANJSON_X86
+endif
 
 $(eval $(generic-package))

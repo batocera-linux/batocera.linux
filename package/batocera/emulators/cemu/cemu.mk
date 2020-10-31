@@ -4,8 +4,8 @@
 #
 ################################################################################
 
-# version 1.21.2
-CEMU_VERSION = 1.21.2
+# version 1.21.4
+CEMU_VERSION = 1.21.4
 CEMU_SOURCE = cemu_$(CEMU_VERSION).zip
 CEMU_SITE = https://cemu.info/releases
 
@@ -32,6 +32,10 @@ define CEMU_INSTALL_TARGET_CMDS
 	ln -sf /userdata/system/configs/cemu/shaderCache $(TARGET_DIR)/usr/cemu/shaderCache
 	ln -sf /userdata/system/configs/cemu/controllerProfiles $(TARGET_DIR)/usr/cemu/controllerProfiles
 	ln -sf /userdata/system/configs/cemu/graphicPacks $(TARGET_DIR)/usr/cemu/graphicPacks
+	
+	#evmap config
+	mkdir -p $(TARGET_DIR)/usr/share/evmapy
+	cp -prn $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/cemu/wiiu.keys $(TARGET_DIR)/usr/share/evmapy
 
 endef
 

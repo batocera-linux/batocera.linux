@@ -5,7 +5,7 @@
 ################################################################################
 QTSIXA_SHANWAN_VERSION = shanwan
 QTSIXA_SHANWAN_SITE = $(call github,batocera-linux,qtsixa,$(QTSIXA_SHANWAN_VERSION))
-QTSIXA_SHANWAN_DEPENDENCIES = sdl linux-headers qtsixa libusb-compat bluez5_utils
+QTSIXA_SHANWAN_DEPENDENCIES = linux-headers qtsixa libusb-compat bluez5_utils
 PKGCONFIG_CONFIG=$(STAGING_DIR)/usr/lib/pkgconfig
 
 QTSIXA_SHANWAN_INCLUDES =-I$(STAGING_DIR)/usr/include

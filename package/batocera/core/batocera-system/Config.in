@@ -118,6 +118,7 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
                                                             BR2_PACKAGE_BATOCERA_TARGET_VIM3         || \
                                                             BR2_PACKAGE_BATOCERA_TARGET_ODROIDC2     || \
                                                             BR2_PACKAGE_BATOCERA_TARGET_ODROIDC4     || \
+                                                            BR2_PACKAGE_BATOCERA_TARGET_S905         || \
                                                             BR2_PACKAGE_BATOCERA_TARGET_S912         || \
                                                             BR2_PACKAGE_BATOCERA_TARGET_LIBRETECH_H5
 
@@ -182,7 +183,10 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
 
     # wireless drivers
     select BR2_PACKAGE_RTL8821AU			 if !BR2_PACKAGE_BATOCERA_TARGET_RPI_ANY
-    select BR2_PACKAGE_RTL8821CE			 if !BR2_PACKAGE_BATOCERA_TARGET_RPI_ANY && !BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA && !BR2_PACKAGE_BATOCERA_TARGET_LIBRETECH_H5
+    select BR2_PACKAGE_RTL8821CE			 if !BR2_PACKAGE_BATOCERA_TARGET_RPI_ANY      && \
+							    !BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA    && \
+							    !BR2_PACKAGE_BATOCERA_TARGET_LIBRETECH_H5 && \
+							    !BR2_PACKAGE_BATOCERA_TARGET_TINKERBOARD
 
     # xorg
     select BR2_PACKAGE_BATOCERA_XORG                     if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
@@ -209,6 +213,9 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
     # xbox controllers (for linux older than ~4.16)
     select BR2_PACKAGE_XBOXDRV if BR2_PACKAGE_BATOCERA_TARGET_905 || BR2_PACKAGE_BATOCERA_TARGET_912
 
+    # joy 2 pad
+    select BR2_PACKAGE_EVMAPY
+
     # required gcc flags
     # required for different emulators, i suggest to enable it always to not have different behavior depending on boards
     select BR2_GCC_ENABLE_OPENMP
@@ -223,7 +230,6 @@ config BR2_PACKAGE_BATOCERA_DEV
     select BR2_PACKAGE_STRACE           if BR2_PACKAGE_BATOCERA_DEV
     select BR2_PACKAGE_GDB              if BR2_PACKAGE_BATOCERA_DEV
     select BR2_PACKAGE_GDB_DEBUGGER     if BR2_PACKAGE_BATOCERA_DEV
-    select BR2_PACKAGE_VALGRIND         if BR2_PACKAGE_BATOCERA_DEV
     select BR2_PACKAGE_TMUX             if BR2_PACKAGE_BATOCERA_DEV
     select BR2_PACKAGE_X11VNC           if BR2_PACKAGE_BATOCERA_DEV && BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
 
@@ -378,6 +384,8 @@ config BR2_PACKAGE_BATOCERA_ALL_SYSTEMS
         select BR2_PACKAGE_OPENBOR              # ALL
         select BR2_PACKAGE_OPENBOR4432          # ALL
 
+	select BR2_PACKAGE_BATOCERA_PYGAME
+
         # wine
 	select BR2_PACKAGE_BATOCERA_WINE              if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
         select BR2_PACKAGE_WINE_X86                   if BR2_PACKAGE_BATOCERA_TARGET_X86_64
@@ -385,8 +393,10 @@ config BR2_PACKAGE_BATOCERA_ALL_SYSTEMS
         select BR2_PACKAGE_RPCS3                      if BR2_PACKAGE_BATOCERA_TARGET_X86_64
         select BR2_PACKAGE_CEMU                       if BR2_PACKAGE_BATOCERA_TARGET_X86_64
 
+        select BR2_PACKAGE_DUCKSTATION                if BR2_PACKAGE_BATOCERA_TARGET_X86_64
+
         ### Experimental Standalone Emulators ###
-        select BR2_PACKAGE_DUCKSTATION                if BR2_PACKAGE_BATOCERA_CORES_EXPERIMENTAL && BR2_PACKAGE_BATOCERA_TARGET_X86_64 
+        select BR2_PACKAGE_DOSBOX_STAGING             if BR2_PACKAGE_BATOCERA_CORES_EXPERIMENTAL # ALL # dos
         select BR2_PACKAGE_SUPERMODEL3                if BR2_PACKAGE_BATOCERA_CORES_EXPERIMENTAL && BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
         select BR2_PACKAGE_MELONDS                    if BR2_PACKAGE_BATOCERA_CORES_EXPERIMENTAL && BR2_PACKAGE_BATOCERA_TARGET_X86_64
         select BR2_PACKAGE_YUZU                       if BR2_PACKAGE_BATOCERA_CORES_EXPERIMENTAL && BR2_PACKAGE_BATOCERA_TARGET_X86_64 && BR2_PACKAGE_BATOCERA_CORES_STILL_COMMERCIALIZED
@@ -508,11 +518,11 @@ config BR2_PACKAGE_BATOCERA_RETROARCH
         select BR2_PACKAGE_LIBRETRO_PC88              # ALL
         select BR2_PACKAGE_LIBRETRO_PC98              # ALL
         select BR2_PACKAGE_LIBRETRO_MRBOOM            # ALL
+        select BR2_PACKAGE_LIBRETRO_TIC80             # ALL
+        select BR2_PACKAGE_LIBRETRO_RETRO8            # ALL
 
         select BR2_PACKAGE_LIBRETRO_DOSBOX            if !BR2_PACKAGE_BATOCERA_TARGET_ROCK960     && \
-                                                         !BR2_PACKAGE_BATOCERA_TARGET_TINKERBOARD && \
-                                                         !BR2_PACKAGE_BATOCERA_TARGET_LIBRETECH_H5 && \
-                                                         !BR2_PACKAGE_BATOCERA_TARGET_MIQI
+                                                         !BR2_PACKAGE_BATOCERA_TARGET_LIBRETECH_H5
 
         select BR2_PACKAGE_LIBRETRO_PUAE              if !BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA
 

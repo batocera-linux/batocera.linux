@@ -1,0 +1,11 @@
+--- a/arch/arm64/boot/dts/amlogic/meson-g12-common.dtsi	2020-10-28 18:21:44.936983370 +0100
++++ b/arch/arm64/boot/dts/amlogic/meson-g12-common.dtsi	2020-10-28 18:22:24.409696522 +0100
+@@ -189,6 +189,8 @@
+ 			clock-names = "stmmaceth", "clkin0", "clkin1";
+ 			rx-fifo-depth = <4096>;
+ 			tx-fifo-depth = <2048>;
++			resets = <&reset RESET_ETHERNET>;
++			reset-names = "stmmaceth";
+ 			status = "disabled";
+ 
+ 			mdio0: mdio {

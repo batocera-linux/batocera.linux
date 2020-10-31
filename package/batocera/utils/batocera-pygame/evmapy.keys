@@ -1,0 +1,116 @@
+{
+    "actions_player1": [
+    	{
+	    "trigger": "start",
+	    "type": "key",
+	    "target": [ "KEY_ENTER" ]
+	},
+	{
+	    "trigger": "select",
+	    "type": "key",
+	    "target": [ "KEY_SPACE" ]
+	},
+	{
+	    "trigger": "hotkey",
+	    "type": "key",
+	    "target": [ "KEY_H" ]
+	},
+	{
+	    "trigger": "a",
+	    "type": "key",
+	    "target": [ "KEY_A" ]
+	},
+	{
+	    "trigger": "b",
+	    "type": "key",
+	    "target": [ "KEY_B" ]
+	},
+	{
+	    "trigger": "x",
+	    "type": "key",
+	    "target": [ "KEY_X" ]
+	},
+	{
+	    "trigger": "y",
+	    "type": "key",
+	    "target": [ "KEY_Y" ]
+	},
+	{
+	    "trigger": "pageup",
+	    "type": "key",
+	    "target": [ "KEY_L" ]
+	},
+	{
+	    "trigger": "pagedown",
+	    "type": "key",
+	    "target": [ "KEY_R" ]
+	},
+	{
+	    "trigger": "l2",
+	    "type": "key",
+	    "target": [ "KEY_M" ]
+	},
+	{
+	    "trigger": "r2",
+	    "type": "key",
+	    "target": [ "KEY_S" ]
+	},
+	{
+	    "trigger": "l3",
+	    "type": "key",
+	    "target": [ "KEY_N" ]
+	},
+	{
+	    "trigger": "r3",
+	    "type": "key",
+	    "target": [ "KEY_T" ]
+	},
+
+	{
+	    "trigger": "left",
+	    "type": "key",
+	    "target": [ "KEY_LEFT" ]
+	},
+	{
+            "trigger": "right",
+            "type": "key",
+            "target": [ "KEY_RIGHT" ]
+	},
+	{
+            "trigger": "up",
+            "type": "key",
+            "target": [ "KEY_UP" ]
+	},
+	{
+            "trigger": "down",
+            "type": "key",
+            "target": [ "KEY_DOWN" ]
+	},
+	{
+	    "trigger": "joystick1left",
+	    "type": "key",
+	    "target": [ "KEY_KP4" ]
+	},
+	{
+            "trigger": "joystick1right",
+            "type": "key",
+            "target": [ "KEY_KP6" ]
+	},
+	{
+            "trigger": "joystick1up",
+            "type": "key",
+            "target": [ "KEY_KP8" ]
+	},
+	{
+            "trigger": "joystick1down",
+            "type": "key",
+            "target": [ "KEY_KP2" ]
+	},
+
+	{
+            "trigger": ["hotkey", "start"],
+            "type": "exec",
+            "target": "killall -15 pygame"
+	}
+    ]
+}
