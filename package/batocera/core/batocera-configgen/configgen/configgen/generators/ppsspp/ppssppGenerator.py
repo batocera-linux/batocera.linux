@@ -34,6 +34,15 @@ class PPSSPPGenerator(Generator):
         commandArray = [batoceraFiles.batoceraBins[system.config['emulator']]]
         commandArray.append(rom)
         commandArray.append("--fullscreen")
+
+        # adapt the menu size
+        if PPSSPPGenerator.isLowResolution(gameResolution):
+            commandArray.extend(["--dpi", "0.5"])
+
         # The next line is a reminder on how to quit PPSSPP with just the HK
         #commandArray = [batoceraFiles.batoceraBins[system.config['emulator']], rom, "--escape-exit"]
         return Command.Command(array=commandArray, env={"XDG_CONFIG_HOME":batoceraFiles.CONF, "PPSSPP_GAME_CONTROLLER_DB_PATH": batoceraFiles.ppssppControls})
+
+    @staticmethod
+    def isLowResolution(gameResolution):
+        return gameResolution["width"] < 400 or gameResolution["height"] < 400
