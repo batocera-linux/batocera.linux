@@ -214,7 +214,6 @@ define BATOCERA_NVIDIA_DRIVER_INSTALL_TARGET_CMDS
 # batocera install files needed by Vulkan
 	$(INSTALL) -D -m 0644 $(@D)/nvidia_icd.json \
 		$(TARGET_DIR)/usr/share/vulkan/icd.d/nvidia_icd.json
-		
 	$(INSTALL) -D -m 0644 $(@D)/nvidia_layers.json \
 		$(TARGET_DIR)/usr/share/vulkan/implicit_layer.d/nvidia_layers.json
 
@@ -233,5 +232,20 @@ define BATOCERA_NVIDIA_DRIVER_INSTALL_TARGET_CMDS
 	 	$(TARGET_DIR)/usr/lib/xorg/modules/extensions/libglxserver_nvidia.so.1
 
 endef
+
+define BATOCERA_NVIDIA_DRIVER_VULKANJSON_X86_64
+	$(INSTALL) -D -m 0644 $(@D)/nvidia_icd.json $(TARGET_DIR)/usr/share/vulkan/icd.d/nvidia_icd.x86_64.json
+endef
+
+define BATOCERA_NVIDIA_DRIVER_VULKANJSON_X86
+	$(INSTALL) -D -m 0644 $(@D)/nvidia_icd.json $(TARGET_DIR)/usr/share/vulkan/icd.d/nvidia_icd.i686.json
+endef
+
+ifeq ($(BR2_x86_64),y)
+	BATOCERA_NVIDIA_DRIVER_POST_INSTALL_TARGET_HOOKS += BATOCERA_NVIDIA_DRIVER_VULKANJSON_X86_64
+endif
+ifeq ($(BR2_i686),y)
+	BATOCERA_NVIDIA_DRIVER_POST_INSTALL_TARGET_HOOKS += BATOCERA_NVIDIA_DRIVER_VULKANJSON_X86
+endif
 
 $(eval $(generic-package))
