@@ -3,6 +3,13 @@
 
 libretro:
   features: [ratio, smooth, shaders, pixel_perfect, decoration, latency_reduction, game_translation]
+  cfeatures:
+    gfxbackend:
+      prompt: GRAPHICS BACKEND
+      choices:
+        "OpenGL": opengl
+        "Vulkan": vulkan
+
   cores:
     '81':
       features: [netplay, rewind, autosave, padtokeyboard]
@@ -613,3 +620,6 @@ melonds:
 
 rpcs3:
   features: []
+
+wine:
+  features: [padtokeyboard]
