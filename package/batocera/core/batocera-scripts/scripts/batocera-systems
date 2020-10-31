@@ -192,7 +192,7 @@ def displayMissingBios(systems, missingBios):
     sortedMissingBios = OrderedDict(sorted(missingBios.items()))
     if sortedMissingBios:
         for system in sortedMissingBios:
-            print("> {}".format(systems[system]["name"]))
+            print("> {}".format(system))
             for file in sortedMissingBios[system].keys():
                 md5str = "-"
                 if sortedMissingBios[system][file]["md5"] != "":
