@@ -123,8 +123,7 @@ class EsSystemConf:
         systemTxt += "        <theme>%s</theme>\n"         % (EsSystemConf.themeName(system, data))
         if groupValue != "":
             systemTxt += "        <group>%s</group>\n" % (groupValue)        
-        if not("includeEmulators" in data and data["includeEmulators"] is False):
-            systemTxt += listEmulatorsTxt
+        systemTxt += listEmulatorsTxt
         systemTxt += "  </system>\n"
         return systemTxt
 
