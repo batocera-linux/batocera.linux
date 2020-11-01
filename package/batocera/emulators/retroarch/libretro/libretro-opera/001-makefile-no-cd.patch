@@ -1,0 +1,12 @@
+--- a/Makefile	2020-11-01 18:48:54.399433855 +0100
++++ b/Makefile	2020-11-01 18:49:02.891592178 +0100
+@@ -58,9 +58,6 @@
+         SHARED := -shared -lpthread -lm -z defs
+     else
+         SHARED := -lpthread -lm -shared -Wl,--no-undefined -Wl,--version-script=link.T
+-        ifneq ($(findstring Linux,$(shell uname -s)),)
+-            HAVE_CDROM = 1
+-        endif
+     endif
+ 
+     THREADED_DSP = 1
