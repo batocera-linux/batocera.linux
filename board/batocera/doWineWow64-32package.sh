@@ -136,7 +136,7 @@ cp -pr "${G_TARGETDIR}/usr/lib/libncurses.so"* "${TMPOUT}/lib32/" || exit 1
 cp -pr "${G_TARGETDIR}/usr/lib/libmspack.so"*  "${TMPOUT}/lib32/" || exit 1
 cp -pr "${G_TARGETDIR}/usr/lib/libdbus"*"so"*  "${TMPOUT}/lib32/" || exit 1
 cp -pr "${G_TARGETDIR}/usr/lib/libopenal.so"*  "${TMPOUT}/lib32/" || exit 1
-cp -pr "${G_TARGETDIR}/usr/lib/libvulkan.so"*  "${TMPOUT}/lib32/" || exit 1
+cp -pr "${G_TARGETDIR}/usr/lib/libvulkan"*"so"*  "${TMPOUT}/lib32/" || exit 1
 
 # binaries
 echo "binaries..."
@@ -159,8 +159,10 @@ do
 done
 
 # icd.d json files
+# path needs to be updated to fit /lib32
 mkdir -p "${TMPOUT}/usr/share/vulkan" || exit 1
 cp -pr "${G_TARGETDIR}/usr/share/vulkan/icd.d" "${TMPOUT}/usr/share/vulkan/" || exit 1
+sed -i -e s+"\"/usr/lib/"+"\"/lib32/"+ "${TMPOUT}/usr/share/vulkan/icd.d/"*.json || exit 1
 
 # fakedll
 echo "fakedll..."
