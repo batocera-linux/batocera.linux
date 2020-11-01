@@ -36,7 +36,7 @@ class Evmapy():
                 #"/usr/share/evmapy/{}.{}.keys" .format (system, emulator),
                 "/usr/share/evmapy/{}.keys" .format (system)
         ]:
-            if os.path.exists(keysfile):
+            if os.path.exists(keysfile) and not (os.path.isdir(rom) and keysfile == "{}.keys" .format (rom)): # "{}.keys" .format (rom) is forbidden for directories, it must be inside
                 eslog.log("evmapy on {}".format(keysfile))
                 subprocess.call(["batocera-evmapy", "clear"])
     
