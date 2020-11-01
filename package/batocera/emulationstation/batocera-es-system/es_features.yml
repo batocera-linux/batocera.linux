@@ -623,3 +623,14 @@ rpcs3:
 
 wine:
   features: [padtokeyboard]
+  cfeatures:
+    dxvk:
+      prompt: dxvk
+      choices:
+        Off: 0
+        On:  1
+    dxvk_hud:
+      prompt: dxvk hud
+      choices:
+        Off: 0
+        On:  1
