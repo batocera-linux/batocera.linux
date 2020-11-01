@@ -28,6 +28,7 @@ class Evmapy():
         # consider files here in this order to get a configuration
         for keysfile in [
                 "{}.keys" .format (rom),
+                "{}/padto.keys" .format (rom), # case when the rom is a directory
                 #"/userdata/system/configs/evmapy/{}.{}.{}.keys" .format (system, emulator, core),
                 #"/userdata/system/configs/evmapy/{}.{}.keys" .format (system, emulator),
                 "/userdata/system/configs/evmapy/{}.keys" .format (system),
