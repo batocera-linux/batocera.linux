@@ -147,7 +147,7 @@ play_exe() {
     GAMEEXE=$(basename "${GAMENAME}")
 
     createWineDirectory "${WINEPOINT}"
-    dxvk_install "${WINEPREFIX}" || return 1
+    dxvk_install "${WINEPOINT}" || return 1
 
     (cd "${GAMEDIR}" && WINEPREFIX=${WINEPOINT} wine "${GAMEEXE}")
     waitWineServer
@@ -163,7 +163,7 @@ play_winetgz() {
 	(cd "${WINEPOINT}" && gunzip -c "${GAMENAME}" | tar xf -) || return 1
     fi
 
-    dxvk_install "${WINEPREFIX}" || return 1
+    dxvk_install "${WINEPOINT}" || return 1
 
     WINE_CMD=$(getWine_var "${WINEPOINT}" "CMD" "explorer")
     WINE_DIR=$(getWine_var "${WINEPOINT}" "DIR" "")
@@ -200,7 +200,7 @@ play_squashfs() {
 	rmdir "${WINEPOINT}"
     fi
 
-    dxvk_install "${WINEPREFIX}" || return 1
+    dxvk_install "${WINEPOINT}" || return 1
 
     WINE_CMD=$(getWine_var "${WINEPOINT}" "CMD" "explorer")
     WINE_DIR=$(getWine_var "${WINEPOINT}" "DIR" "")
