@@ -102,6 +102,7 @@ class Evmapy():
                                 axisMin, axisMax = Evmapy.__getPadMinMaxAxis(pad.dev, int(input.code))
                                 known_buttons_names["ABS" + str(axisId) + axisName + ":min"] = True
                                 known_buttons_names["ABS" + str(axisId) + axisName + ":max"] = True
+                                known_buttons_names["ABS" + str(axisId) + axisName + ":val"] = True
                                 padConfig["axes"].append({
                                     "name": "ABS" + str(axisId) + axisName,
                                     "code": int(input.code),
@@ -115,6 +116,10 @@ class Evmapy():
                         for action in padActionsDefined:
                             if "trigger" in action:
                                 trigger = Evmapy.__trigger_mapper(action["trigger"], known_buttons_alias, known_buttons_names)
+                                if "mode" not in action:
+                                    mode = Evmapy.__trigger_mapper_mode(action["trigger"])
+                                    if mode != None:
+                                        action["mode"] = mode
                                 action["trigger"] = trigger
                                 if isinstance(trigger, list):
                                     allfound = True
@@ -162,13 +167,42 @@ class Evmapy():
             "joystick2right": "ABS1X:max",
             "joystick2left": "ABS1X:min",
             "joystick2down": "ABS1Y:max",
-            "joystick2up": "ABS1Y:min"
+            "joystick2up": "ABS1Y:min",
+            "joystick1x": ["ABS1X:val", "ABS1X:min", "ABS1X:max"],
+            "joystick1y": ["ABS1Y:val", "ABS1Y:min", "ABS1Y:max"],
+            "joystick2x": ["ABS2X:val", "ABS2X:min", "ABS2X:max"],
+            "joystick2y": ["ABS2Y:val", "ABS2Y:min", "ABS2Y:max"]
         }
         if trigger in known_buttons_alias:
             return known_buttons_alias[trigger]
-        if trigger in mapping and mapping[trigger] in known_buttons_names:
-            return mapping[trigger]
+        if trigger in mapping:
+            if isinstance(mapping[trigger], list):
+                all_found = True
+                for x in mapping[trigger]:
+                    if x not in known_buttons_names:
+                        all_found = False
+                if all_found:
+                    return mapping[trigger]
+            elif mapping[trigger] in known_buttons_names:
+                return mapping[trigger]
         return trigger # no tranformation
+
+    @staticmethod
+    def __trigger_mapper_mode(trigger):
+        if isinstance(trigger, list):
+            new_trigger = []
+            for x in trigger:
+                mode = Evmapy.__trigger_mapper_mode_string(x)
+                if mode != None:
+                    return mode
+            return None
+        return Evmapy.__trigger_mapper_mode_string(trigger)
+
+    @staticmethod
+    def __trigger_mapper_mode_string(trigger):
+        if trigger in [ "joystick1x", "joystick1y", "joystick2x", "joystick2y"]:
+            return "any"
+        return None
 
     @staticmethod
     def __getPadMinMaxAxis(devicePath, axisCode):
