@@ -111,8 +111,34 @@ class Evmapy():
                                 })
 
                         # only add actions for which buttons are defined (otherwise, evmapy doesn't like it)
-                        padActionsDefined = padActionConfig["actions_player"+str(nplayer)]
+                        padActionsPreDefined = padActionConfig["actions_player"+str(nplayer)]
                         padActionsFiltered = []
+
+                        # handle mouse events : only joystick1 or joystick2 defined for 2 events
+                        padActionsDefined = []
+                        for action in padActionsPreDefined:
+                            if "type" in action and action["type"] == "mouse" and "target" not in action and "trigger" in action:
+                                if action["trigger"] == "joystick1":
+                                    newaction = action.copy()
+                                    newaction["trigger"] = "joystick1x"
+                                    newaction["target"] = 'X'
+                                    padActionsDefined.append(newaction)
+                                    newaction = action.copy()
+                                    newaction["trigger"] = "joystick1y"
+                                    newaction["target"] = 'Y'
+                                    padActionsDefined.append(newaction)
+                                elif action["trigger"] == "joystick2":
+                                    newaction = action.copy()
+                                    newaction["trigger"] = "joystick2x"
+                                    newaction["target"] = 'X'
+                                    padActionsDefined.append(newaction)
+                                    newaction = action.copy()
+                                    newaction["trigger"] = "joystick2y"
+                                    newaction["target"] = 'Y'
+                                    padActionsDefined.append(newaction)
+                            else:
+                                padActionsDefined.append(action)
+
                         for action in padActionsDefined:
                             if "trigger" in action:
                                 trigger = Evmapy.__trigger_mapper(action["trigger"], known_buttons_alias, known_buttons_names)
@@ -168,10 +194,10 @@ class Evmapy():
             "joystick2left": "ABS1X:min",
             "joystick2down": "ABS1Y:max",
             "joystick2up": "ABS1Y:min",
-            "joystick1x": ["ABS1X:val", "ABS1X:min", "ABS1X:max"],
-            "joystick1y": ["ABS1Y:val", "ABS1Y:min", "ABS1Y:max"],
-            "joystick2x": ["ABS2X:val", "ABS2X:min", "ABS2X:max"],
-            "joystick2y": ["ABS2Y:val", "ABS2Y:min", "ABS2Y:max"]
+            "joystick1x": ["ABS0X:val", "ABS0X:min", "ABS0X:max"],
+            "joystick1y": ["ABS0Y:val", "ABS0Y:min", "ABS0Y:max"],
+            "joystick2x": ["ABS1X:val", "ABS1X:min", "ABS1X:max"],
+            "joystick2y": ["ABS1Y:val", "ABS1Y:min", "ABS1Y:max"]
         }
         if trigger in known_buttons_alias:
             return known_buttons_alias[trigger]
