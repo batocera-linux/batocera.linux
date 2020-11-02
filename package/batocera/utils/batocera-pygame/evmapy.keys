@@ -106,18 +106,10 @@
             "type": "key",
             "target": [ "KEY_KP2" ]
 	},
-
         {
-            "trigger": "joystick1x",
-            "type": "mouse",
-            "target": [ "X" ]
+            "trigger": "joystick1",
+            "type": "mouse"
         },
-        {
-            "trigger": "joystick1y",
-            "type": "mouse",
-            "target": [ "Y" ]
-        },
-
 	{
             "trigger": ["hotkey", "start"],
             "type": "exec",
