@@ -103,6 +103,7 @@ class Evmapy():
                                 known_buttons_names["ABS" + str(axisId) + axisName + ":min"] = True
                                 known_buttons_names["ABS" + str(axisId) + axisName + ":max"] = True
                                 known_buttons_names["ABS" + str(axisId) + axisName + ":val"] = True
+
                                 padConfig["axes"].append({
                                     "name": "ABS" + str(axisId) + axisName,
                                     "code": int(input.code),
@@ -139,6 +140,7 @@ class Evmapy():
                             else:
                                 padActionsDefined.append(action)
 
+                        # define actions
                         for action in padActionsDefined:
                             if "trigger" in action:
                                 trigger = Evmapy.__trigger_mapper(action["trigger"], known_buttons_alias, known_buttons_names)
@@ -158,7 +160,23 @@ class Evmapy():
                                     if trigger in known_buttons_names:
                                         padActionsFiltered.append(action)
                                 padConfig["actions"] = padActionsFiltered
-    
+
+                        # use full axis for mouse and 50% for keys
+                        axis_for_mouse = {}
+                        for action in padConfig["actions"]:
+                            if "type" in action and action["type"] == "mouse":
+                                if isinstance(trigger, list):
+                                    for x in action["trigger"]:
+                                        axis_for_mouse[x] = True
+                                else:
+                                    axis_for_mouse[action["trigger"]] = True
+
+                        for axis in padConfig["axes"]:
+                            if axis["name"]+":val" not in axis_for_mouse and axis["name"]+":min" not in axis_for_mouse and axis["name"]+":max" not in axis_for_mouse:
+                                min, max = Evmapy.__getPadMinMaxAxisForKeys(axis["min"], axis["max"])
+                                axis["min"] = min
+                                axis["max"] = max
+
                         # save config file
                         with open(configfile, "w") as fd:
                             fd.write(json.dumps(padConfig, indent=4))
@@ -239,8 +257,12 @@ class Evmapy():
             if event_type == 3: # "EV_ABS"
                 for abs_code, val in capabilities[event_type]:
                     if abs_code == axisCode:
-                        valrange = (val.max - val.min)/2 # for each side
-                        valmin   = val.min + valrange/2
-                        valmax   = val.max - valrange/2
-                        return valmin, valmax
+                        return val.min, val.max
         return 0,0 # not found
+
+    @staticmethod
+    def __getPadMinMaxAxisForKeys(min, max):
+        valrange = (max - min)/2 # for each side
+        valmin   = min + valrange/2
+        valmax   = max - valrange/2
+        return valmin, valmax
