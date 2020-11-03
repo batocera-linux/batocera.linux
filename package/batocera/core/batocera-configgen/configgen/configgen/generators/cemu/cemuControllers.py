@@ -137,8 +137,8 @@ def generateControllerConfig(system, playersControllers, rom):
             cemuSettings.set("Controller", "2", "button_1")    # B
             cemuSettings.set("Controller", "3", "button_8")    # X
             cemuSettings.set("Controller", "4", "button_4")    # Y
-            cemuSettings.set("Controller", "5", "button_20")    # L
-            cemuSettings.set("Controller", "6", "button_10")    # R
+            cemuSettings.set("Controller", "5", "button_10")    # L
+            cemuSettings.set("Controller", "6", "button_20")    # R
             cemuSettings.set("Controller", "7", "button_100000000")    # L2
             cemuSettings.set("Controller", "8", "button_800000000")    # R2
             cemuSettings.set("Controller", "9", "button_40")    # Start
