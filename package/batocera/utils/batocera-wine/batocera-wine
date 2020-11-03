@@ -349,7 +349,7 @@ case "${ACTION}" in
 	    "wine")
 		play_wine "${GAMENAME}" || cleanAndExit 1
 		;;
-        "pc")
+	    "pc")
 		play_pc "${GAMENAME}" || cleanAndExit 1
 		;;
 	    "exe")
