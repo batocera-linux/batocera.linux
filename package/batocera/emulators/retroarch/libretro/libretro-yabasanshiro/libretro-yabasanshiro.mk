@@ -3,8 +3,8 @@
 # YABASANSHIRO
 #
 ################################################################################
-# Version.: Commits on Nov 1, 2020
-LIBRETRO_YABASANSHIRO_VERSION = 2da53324092af7a9d72b5ebbe5b77486725eef09
+# Version.: Commits on Nov 3, 2020
+LIBRETRO_YABASANSHIRO_VERSION = 233a31827cd32ccec4803800cb2f554e1c363d78
 LIBRETRO_YABASANSHIRO_SITE = $(call github,libretro,yabause,$(LIBRETRO_YABASANSHIRO_VERSION))
 LIBRETRO_YABASANSHIRO_LICENSE = GPLv2
 
