@@ -1,0 +1,10 @@
+--- a/yabause/src/libretro/Makefile.common	2020-11-03 15:58:01.000000000 +0100
++++ b/yabause/src/libretro/Makefile.common	2020-11-03 17:44:01.396733383 +0100
+@@ -141,6 +141,7 @@
+ 	$(LIBRETRO_COMM_DIR)/vfs/vfs_implementation.c \
+ 	$(LIBRETRO_COMM_DIR)/streams/file_stream.c \
+ 	$(LIBRETRO_COMM_DIR)/streams/file_stream_transforms.c \
++	$(LIBRETRO_COMM_DIR)/string/stdstring.c \
+ 	$(LIBRETRO_COMM_DIR)/time/rtime.c \
+ 	$(LIBRETRO_COMM_DIR)/rthreads/rthreads.c \
+ 	$(LIBCHDR_DIR)/src/libchdr_chd.c \
