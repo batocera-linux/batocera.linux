@@ -161,6 +161,11 @@ class Evmapy():
                                         padActionsFiltered.append(action)
                                 padConfig["actions"] = padActionsFiltered
 
+                        # remove comments
+                        for action in padConfig["actions"]:
+                            if "description" in action:
+                                del action["description"]
+
                         # use full axis for mouse and 50% for keys
                         axis_for_mouse = {}
                         for action in padConfig["actions"]:
