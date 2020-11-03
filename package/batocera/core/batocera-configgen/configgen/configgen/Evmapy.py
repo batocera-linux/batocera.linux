@@ -170,7 +170,7 @@ class Evmapy():
                         axis_for_mouse = {}
                         for action in padConfig["actions"]:
                             if "type" in action and action["type"] == "mouse":
-                                if isinstance(trigger, list):
+                                if isinstance(action["trigger"], list):
                                     for x in action["trigger"]:
                                         axis_for_mouse[x] = True
                                 else:
