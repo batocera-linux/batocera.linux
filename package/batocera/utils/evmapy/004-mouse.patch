@@ -21,7 +21,7 @@ index 98e8be7..2f7197a 100644
      if action['mode'] not in ('all', 'any', 'sequence'):
          raise ConfigError("invalid action mode '%s'" % action['mode'])
 diff --git a/evmapy/multiplexer.py b/evmapy/multiplexer.py
-index a9f0730..0dfa479 100644
+index a9f0730..c0e0153 100644
 --- a/evmapy/multiplexer.py
 +++ b/evmapy/multiplexer.py
 @@ -28,6 +28,7 @@ import signal
@@ -38,14 +38,14 @@ index a9f0730..0dfa479 100644
          self._uinput = None
 -
 -        valid_events={ecodes.EV_KEY: [
-+        self._mousePosition = { "x": 0, "y": 0, "last": time.time(), "every": 0.005, "deadzone": 0.05, "accelerationzone": 0.90, "accelerationfactor": 3 }
++        self._mousePosition = { "x": 0, "y": 0, "last": time.time(), "every": 0.006, "deadzone": 0.05, "speed": 4.0 }
 +        global_config_filepath = "/etc/evmapy.json"
-+        # { "mouse_config": { "every": 0.005, "deadzone": 0.05, "accelerationzone": 0.90, "accelerationfactor": 3 } }
++        # { "mouse_config": { "every": 0.005, "deadzone": 0.06 } }
 +        if os.path.exists(global_config_filepath):
 +            with open(global_config_filepath) as config_file:
 +                global_config = json.load(config_file)
 +                if "mouse_config" in global_config:
-+                    for key in ["every", "deadzone", "accelerationzone", "accelerationfactor"]:
++                    for key in ["every", "deadzone", "speed"]:
 +                        if key in global_config["mouse_config"]:
 +                            self._mousePosition[key] =  global_config["mouse_config"][key]
 +
@@ -127,7 +127,7 @@ index a9f0730..0dfa479 100644
          action = self._delayed[0]
          if action['type'] == 'key':
              if action['direction'] == 'down':
-@@ -715,6 +751,43 @@ class Multiplexer(object):
+@@ -715,6 +751,44 @@ class Multiplexer(object):
              self._logger.debug("writing: code 00, type 00, val 00")
              self._uinput.syn()
  
@@ -151,23 +151,24 @@ index a9f0730..0dfa479 100644
 +            return
 +
 +        if abs(self._mousePosition["x"]) >= self._mousePosition["deadzone"]:
-+            order = 1
-+            if self._mousePosition["x"] < 0:
-+                order = order * -1
-+            if abs(self._mousePosition["x"]) >= self._mousePosition["accelerationzone"]:
-+                order = order * self._mousePosition["accelerationfactor"]
-+            self._uinput.write(evdev.ecodes.ecodes['EV_REL'], evdev.ecodes.ecodes['REL_X'], order)
++            self._uinput.write(evdev.ecodes.ecodes['EV_REL'], evdev.ecodes.ecodes['REL_X'], self._mouse_move_per_to_abs(self._mousePosition["x"]))
 +
 +        if abs(self._mousePosition["y"]) >= self._mousePosition["deadzone"]:
-+            order = 1
-+            if self._mousePosition["y"] < 0:
-+                order = order * -1
-+            if abs(self._mousePosition["y"]) >= self._mousePosition["accelerationzone"]:
-+                order = order * self._mousePosition["accelerationfactor"]
-+            self._uinput.write(evdev.ecodes.ecodes['EV_REL'], evdev.ecodes.ecodes['REL_Y'], order)
++            self._uinput.write(evdev.ecodes.ecodes['EV_REL'], evdev.ecodes.ecodes['REL_Y'], self._mouse_move_per_to_abs(self._mousePosition["y"]))
 +
++        self._uinput.syn()
 +        self._mousePosition["last"] = now
 +
++    def _mouse_move_per_to_abs(self, per):
++        order = per * per
++        order = order * self._mousePosition["speed"]
++        if per < 0:
++            order = order * -1
++            order = order -1
++        else:
++            order = order +1
++        return int(order)
++        
      def _execute_program(self, action):
          """
          Run external program(s) associated with the given action.
