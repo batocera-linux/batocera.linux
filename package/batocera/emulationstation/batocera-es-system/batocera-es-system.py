@@ -252,7 +252,21 @@ class EsSystemConf:
                                 if core_featuresTxt != "":
                                     core_featuresTxt += ", "
                                 core_featuresTxt += feature
-                        featuresTxt += "      <core name=\"{}\" features=\"{}\" />\n".format(core, core_featuresTxt)
+                        if "cfeatures" in features[emulator]["cores"][core]:
+                            featuresTxt += "      <core name=\"{}\" features=\"{}\">\n".format(core, core_featuresTxt)
+
+                            # core features
+                            for cfeature in features[emulator]["cores"][core]["cfeatures"]:
+                                featuresTxt += "        <feature name=\"{}\" value=\"{}\">\n".format(features[emulator]["cores"][core]["cfeatures"][cfeature]["prompt"], cfeature)
+                                choices = OrderedDict(sorted(features[emulator]["cores"][core]["cfeatures"][cfeature]["choices"].items(), key=itemgetter(1)))
+                                for choice in choices:
+                                    featuresTxt += "          <choice name=\"{}\" value=\"{}\" />\n".format(choice, features[emulator]["cores"][core]["cfeatures"][cfeature]["choices"][choice])
+                                featuresTxt += "        </feature>\n"
+                            # #############
+
+                            featuresTxt += "      </core>\n"
+                        else:
+                            featuresTxt += "      <core name=\"{}\" features=\"{}\" />\n".format(core, core_featuresTxt)
                     featuresTxt += "    </cores>\n"
                 if "systems" in features[emulator]:
                     featuresTxt += "    <systems>\n"
