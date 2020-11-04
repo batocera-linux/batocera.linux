@@ -17,6 +17,7 @@ export WINEDLLPATH="/lib32/wine/fakedlls:/usr/lib/wine/fakedlls"
 usage() {
     echo "${1} play    	     <game>.iso"             >&2
     echo "${1} play    	     <game>.exe"             >&2
+    echo "${1} play    	     <game>.pc"              >&2
     echo "${1} play    	     <game>.wine"            >&2
     echo "${1} play    	     <game>.wine.squashfs"   >&2
     echo "${1} play    	     <game>.wtgz"            >&2
