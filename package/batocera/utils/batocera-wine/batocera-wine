@@ -17,6 +17,7 @@ export WINEDLLPATH="/lib32/wine/fakedlls:/usr/lib/wine/fakedlls"
 usage() {
     echo "${1} play    	     <game>.iso"             >&2
     echo "${1} play    	     <game>.exe"             >&2
+    echo "${1} play    	     <game>.pc"              >&2
     echo "${1} play    	     <game>.wine"            >&2
     echo "${1} play    	     <game>.wine.squashfs"   >&2
     echo "${1} play    	     <game>.wtgz"            >&2
@@ -131,6 +132,18 @@ play_wine() {
     waitWineServer
 }
 
+play_pc() {
+    GAMENAME=$1
+    WINEPOINT="${G_SAVES_DIR}/"$(basename "${GAMENAME}")".wine"
+
+    createWineDirectory "${WINEPOINT}" || return 1
+    dxvk_install "${WINEPOINT}" || return 1
+
+    WINE_CMD=$(getWine_var "${GAMENAME}" "CMD" "explorer")
+    (cd "${GAMENAME}" && WINEPREFIX=${WINEPOINT} wine ${WINE_CMD})
+    waitWineServer
+}
+
 trick_wine() {
     GAMENAME=$1
     TRICK=$2
@@ -149,7 +162,7 @@ play_exe() {
     GAMEDIR=$(dirname "${GAMENAME}")
     GAMEEXE=$(basename "${GAMENAME}")
 
-    createWineDirectory "${WINEPOINT}"
+    createWineDirectory "${WINEPOINT}" || return 1
     dxvk_install "${WINEPOINT}" || return 1
 
     (cd "${GAMEDIR}" && WINEPREFIX=${WINEPOINT} wine "${GAMEEXE}")
@@ -336,6 +349,9 @@ case "${ACTION}" in
 	case "${GAMEEXT}" in
 	    "wine")
 		play_wine "${GAMENAME}" || cleanAndExit 1
+		;;
+	    "pc")
+		play_pc "${GAMENAME}" || cleanAndExit 1
 		;;
 	    "exe")
 		play_exe "${GAMENAME}" || cleanAndExit 1
