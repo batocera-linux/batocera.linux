@@ -3,9 +3,9 @@
 # MRBOOM
 #
 ################################################################################
-# Version.: Commits on Jun 26, 2020
-LIBRETRO_MRBOOM_VERSION = 1bd7a1ab2c72c8e748728dccb8bd64a3ba26ce29
-LIBRETRO_MRBOOM_SITE = https://github.com/libretro/mrboom-libretro.git
+# Version.: Commits on Nov 1, 2020
+LIBRETRO_MRBOOM_VERSION = e074bafa1fe9480df1ba412752912a2c2c454958
+LIBRETRO_MRBOOM_SITE = https://github.com/Javanaise/mrboom-libretro.git
 LIBRETRO_MRBOOM_SITE_METHOD=git
 LIBRETRO_MRBOOM_GIT_SUBMODULES=YES
 LIBRETRO_MRBOOM_LICENSE="GPLv2"
