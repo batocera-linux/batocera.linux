@@ -106,7 +106,7 @@ libretro:
     handy:
       features: [netplay, rewind, autosave]
     hatari:
-      features: [                 autosave]
+      features: [                 autosave, padtokeyboard]
     imame4all:
       features: [netplay, rewind, autosave]
     kronos:
@@ -275,7 +275,7 @@ libretro:
     prosystem:
       features: [         rewind, autosave]
     puae:
-      features: [         rewind, autosave]
+      features: [         rewind, autosave, padtokeyboard]
       cfeatures:
             video_resolution:
                 prompt: VIDEO RESOLUTION
@@ -430,7 +430,7 @@ libretro:
                     "4k":       4k
 
 amiberry:
-  features: [ratio]
+  features: [ratio, padtokeyboard]
 
 citra:
   features: [ratio, rewind, screen_layout]
@@ -520,7 +520,7 @@ dosbox-x:
   features: [ratio, padtokeyboard]
 
 fsuae:
-  features: [ratio]
+  features: [ratio, padtokeyboard]
 
 linapple:
   features: [ratio, padtokeyboard]
