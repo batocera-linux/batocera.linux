@@ -215,6 +215,7 @@ play_squashfs() {
 	rmdir "${SQUASHFSPOINT}"
 	rm -rf "${WORKPOINT}"
 	rmdir "${WINEPOINT}"
+	return 1
     fi
 
     dxvk_install "${WINEPOINT}" || return 1
