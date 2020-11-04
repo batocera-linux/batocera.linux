@@ -53,6 +53,7 @@ dxvk_install() {
 
     if test "${DXVK}" = 1
     then
+	mkdir -p "${WINEPREFIX}/drive_c/windows/system32" "${WINEPREFIX}/drive_c/windows/syswow64" || return 1
 	if test -e "/userdata/system/dxvk"
 	then
 	    echo "Creating links on /userdata, Linux File System required !!!"
