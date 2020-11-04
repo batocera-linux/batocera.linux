@@ -141,7 +141,8 @@ play_pc() {
     dxvk_install "${WINEPOINT}" || return 1
 
     WINE_CMD=$(getWine_var "${GAMENAME}" "CMD" "explorer")
-    (cd "${GAMENAME}" && WINEPREFIX=${WINEPOINT} wine ${WINE_CMD})
+    WINE_DIR=$(getWine_var "${GAMENAME}" "DIR" "")
+    (cd "${GAMENAME}/${WINE_DIR}" && WINEPREFIX=${WINEPOINT} wine ${WINE_CMD})
     waitWineServer
 }
 
