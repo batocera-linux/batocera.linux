@@ -19,7 +19,7 @@ usage() {
     echo "${1} play    	     <game>.exe"             >&2
     echo "${1} play    	     <game>.pc"              >&2
     echo "${1} play    	     <game>.wine"            >&2
-    echo "${1} play    	     <game>.wine.squashfs"   >&2
+    echo "${1} play    	     <game>.wsquashfs"       >&2
     echo "${1} play    	     <game>.wtgz"            >&2
     echo "${1} install 	     <game>.iso"             >&2
     echo "${1} install 	     <game>.exe"             >&2
@@ -305,7 +305,7 @@ wine2squashfs() {
     GAMENAME=$1
     BASEGAMENAME=$(basename "${GAMENAME}")
     GAMEDIR="${GAMENAME}"
-    SQUASHFSFILE="${G_ROMS_DIR}/${BASEGAMENAME}.squashfs"
+    SQUASHFSFILE=$(echo "${G_ROMS_DIR}/${BASEGAMENAME}.squashfs" | sed -e s+"\.wine\.squashfs$"+".wsquashfs"+)
     
     mksquashfs "${GAMEDIR}" "${SQUASHFSFILE}" || return 1
     return 0
@@ -361,7 +361,7 @@ case "${ACTION}" in
 #	    "iso")
 #		play_iso "${GAMENAME}" || cleanAndExit 1
 #		;;
-	    "squashfs")
+	    "wsquashfs")
 		play_squashfs "${GAMENAME}" || cleanAndExit 1
 		;;
 	    "wtgz")
