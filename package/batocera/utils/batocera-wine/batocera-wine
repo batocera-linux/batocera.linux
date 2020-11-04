@@ -209,7 +209,7 @@ play_squashfs() {
 	return 1
     fi
 
-    if ! mount -t overlay overlay -o rw,lowerdir="${SQUASHFSPOINT}",upperdir="${SAVEPOINT}",workdir="${WORKPOINT}",index=on,redirect_dir=on "${WINEPOINT}"
+    if ! mount -t overlay overlay -o rw,lowerdir="${SQUASHFSPOINT}",upperdir="${SAVEPOINT}",workdir="${WORKPOINT}",redirect_dir=on "${WINEPOINT}"
     then
 	umount "${SQUASHFSPOINT}"
 	rmdir "${SQUASHFSPOINT}"
