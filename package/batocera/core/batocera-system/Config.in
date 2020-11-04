@@ -215,6 +215,7 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
 
     # joy 2 pad
     select BR2_PACKAGE_EVMAPY
+    select BR2_PACKAGE_EVMAPY_SYSTEM_CONFIG
 
     # required gcc flags
     # required for different emulators, i suggest to enable it always to not have different behavior depending on boards
