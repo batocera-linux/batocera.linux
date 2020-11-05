@@ -229,6 +229,9 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
     if system.config['core'] == 'cap32':
         retroarchConfig['cap32_combokey'] = 'y'
 
+    # Disable internal image viewer (ES does it, and pico-8 won't load .p8.png)
+    retroarchConfig['builtin_imageviewer_enable'] = 'false'
+
     # Netplay management
     if 'netplay.mode' in system.config and system.config['netplay.mode'] in systemNetplayModes:
         # Security : hardcore mode disables save states, which would kill netplay
