@@ -10,6 +10,7 @@
 # 20200304 - fixed a bug in rare cases where a RA game has no success icons
 # 20200410 - updated for retroachievements.org HTML changes, again
 # 20200625 - retroachievements.org HTML changes, again
+# 20201104 - retroachievements.org HTML changes, again, again
 #
 # Usage:
 # batocera-retroachievements-info
@@ -65,8 +66,8 @@ function process() {
 	        echo "  <averagecompletion>$avcompletion</averagecompletion>"
 		echo -ne "$pic"
 		echo "$parsedid" | sed -e "s;\(.*\)@\(.*\);  <registered>\1</registered>\n  <lastactivity>\2</lastactivity>;"
-		xmllint --html "$tmpfile" 2>/dev/null | grep '<a href="/Game/[0-9]*\">.*points.<br\?>' | sed -e "/^[[:blank:]]*$/d" | sed -e 's:\(<a href=\"/Game/[0-9]*\">.*\)points\.<br>:\1points\@\\\n:g;' > "$tmpfile"_2
-		cat "$tmpfile"_2 | awk -v FS="(href=\"/Game/[0-9]*\">|@)" '{print $2}' | sed -e "s;</a><br/*>\(Last played[ 0-9:-]*\)<br/*>\(.*\);@\2@\1;" | sed -e "s;achievements, ;achievements@;" | sed -e "s;Earned ;;" | sed -e "/^[[:blank:]]*$/d" > "$tmpfile"_st
+		xmllint --html "$tmpfile" 2>/dev/null | grep '<a href="/[gG]ame/[0-9]*\">.*points.<br\?>' | sed -e "/^[[:blank:]]*$/d" | sed -e 's:\(<a href=\"/[gG]ame/[0-9]*\">.*\)points\.<br>:\1points\@\\\n:g;' > "$tmpfile"_2
+		cat "$tmpfile"_2 | awk -v FS="(href=\"/[gG]ame/[0-9]*\">|@)" '{print $2}' | sed -e "s;</a><br/*>\(Last played[ 0-9:-]*\)<br/*>\(.*\);@\2@\1;" | sed -e "s;achievements, ;achievements@;" | sed -e "s;Earned ;;" | sed -e "/^[[:blank:]]*$/d" > "$tmpfile"_st
 		cat "$tmpfile"_2 | grep -e 'div class="bb_inline" onmouseover' -e '^$' | sed "s:.*src=\"\(.*/Badge/.*\.png\)\".*:\1:" | sed "s;^$;https://batocera.org/favicon-64.png;" > "$tmpfile"_ba
 		i=0
 		if [ $(cat "$tmpfile"_ba | wc -l) -eq $(cat "$tmpfile"_st | wc -l) ]; then
