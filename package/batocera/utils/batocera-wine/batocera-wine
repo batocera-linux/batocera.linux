@@ -5,7 +5,6 @@ set -x
 ACTION=$1
 shift
 
-G_WINE_VERSION=$(wine --version)
 G_SAVES_DIR="/userdata/saves/windows"
 G_ROMS_DIR="/userdata/roms/windows"
 

@@ -126,7 +126,14 @@ for BIN in "${G_TARGETDIR}/usr/bin/wine" \
 "${G_TARGETDIR}/usr/lib/wine/"*.so \
 "${G_TARGETDIR}/usr/lib/gstreamer-1.0/"*.so \
 "${G_TARGETDIR}/usr/lib/libEGL_mesa"* \
-"${G_TARGETDIR}/usr/lib/libGLX_mesa"*
+"${G_TARGETDIR}/usr/lib/libGLX_mesa"* \
+"${G_TARGETDIR}/usr/lib/libncurses.so"* \
+"${G_TARGETDIR}/usr/lib/libmspack.so"* \
+"${G_TARGETDIR}/usr/lib/libdbus"*"so"* \
+"${G_TARGETDIR}/usr/lib/libopenal.so"* \
+"${G_TARGETDIR}/usr/lib/libvulkan"*"so"* \
+"${G_TARGETDIR}/usr/lib/libgcrypt"*"so"* \
+"${G_TARGETDIR}/lib/libnss_"*
 do
     findDeps "${BIN}" "${TMPOUT}/lib32" || exit 1
 done
@@ -137,6 +144,8 @@ cp -pr "${G_TARGETDIR}/usr/lib/libmspack.so"*  "${TMPOUT}/lib32/" || exit 1
 cp -pr "${G_TARGETDIR}/usr/lib/libdbus"*"so"*  "${TMPOUT}/lib32/" || exit 1
 cp -pr "${G_TARGETDIR}/usr/lib/libopenal.so"*  "${TMPOUT}/lib32/" || exit 1
 cp -pr "${G_TARGETDIR}/usr/lib/libvulkan"*"so"*  "${TMPOUT}/lib32/" || exit 1
+cp -pr "${G_TARGETDIR}/usr/lib/libgcrypt"*"so"*  "${TMPOUT}/lib32/" || exit 1
+cp -pr "${G_TARGETDIR}/lib/libnss_"*"so"*  "${TMPOUT}/lib32/" || exit 1
 
 # binaries
 echo "binaries..."
