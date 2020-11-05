@@ -4,6 +4,7 @@
 # @lbrpdx on Batocera forum and Discord
 # 
 # 20200528 - Initial revision
+# 20201104 - Update groups, support mutiple archs
 # 
 INFO=.PKGINFO
 BATOEXEC=.BATOEXEC
@@ -24,7 +25,10 @@ COMMENT_CHAR="#"
 # builddate = 1590539371 # epoch of creation
 
 ##### Valid "groups" for Batocera packages #####
-GRP_ARRAY=(game music theme bezel misc 3do 3ds amiga1200 amiga500 amigacd32 amigacdtv amstradcpc apple2 atari2600 atari5200 atari7800 atari800 atarist atomiswave c128 c20 c64 cannonball cavestory colecovision daphne dos dreamcast fbneo fds gameandwatch gamecube gamegear gb gb2players gba gbc gbc2players gx4000 hbmame imageviewer intellivision jaguar lightgun lutro lynx mame mastersystem megadrive moonlight mrboom msx1 msx2 msx2+ n64 naomi nds neogeo neogeocd nes ngp ngpc odyssey2 openbor pc88 pc98 pcengine pcenginecd pcfx pokemini ports prboom ps2 ps3 psp psx satellaview saturn scummvm sega32x segacd sg1000 snes sufami supergrafx thomson tyrquake vectrex virtualboy wii wiiu windows32 windows32_installers windows64 windows64_installers wswan wswanc x68000 zx81 zxspectrum)
+GRP_ARRAY=(game music theme bezel misc 3do 3ds amiga1200 amiga500 amigacd32 amigacdtv amstradcpc apple2 atari2600 atari5200 atari7800 atari800 atarist atomiswave c128 c20 c64 cannonball cavestory colecovision daphne dos dreamcast fbneo fds gameandwatch gamecube gamegear gb gb2players gba gbc gbc2players gx4000 hbmame imageviewer intellivision jaguar lightgun lutro lynx mame mastersystem megadrive moonlight mrboom msx1 msx2 msx2+ n64 naomi nds neogeo neogeocd nes ngp ngpc odyssey2 openbor pc88 pc98 pcengine pcenginecd pcfx pokemini pico8 ports prboom ps2 ps3 psp psx satellaview saturn scummvm sega32x segacd sg1000 snes sufami supergrafx thomson tic80 tyrquake vectrex virtualboy wii wiiu windows windows_installers wswan wswanc x68000 zx81 zxspectrum)
+
+##### Valid archs for Batocera packages #####
+ARCH_ARRAY=(x86_64 x86 armv7l aarch64)
 
 ##### Function Calls #####
 
@@ -58,6 +62,10 @@ function check_argument() {
 	if [[ "$vinput" == "group" ]]; then
 		# optionally accept sub-groups like nes-platform, megadrive-shooter...
 		! (printf "%s\n" "${GRP_ARRAY[@]}" | grep -q ${val//-*/}) && echo "WARNING: Unknown group '$val' in your .PKGINFO" >&2
+	fi
+	if [[ "$vinput" == "arch" ]]; then
+		# optionally accept sub-groups like nes-platform, megadrive-shooter...
+		! (printf "%s\n" "${ARCH_ARRAY[@]}" | grep -q ${val//-*/}) && echo "WARNING: Unknown arch '$val' in your .PKGINFO -- only the first one will be generated, and most probably won't install" >&2
 	fi
 }
 
@@ -135,7 +143,9 @@ function main() {
 		    mkdir -p "$BATOEXEC_PATH"
 		    cp -f "$BATOEXEC" "$BATOEXEC_PATH"/"$(get_config pkgname)"
 	    fi
-	    make_pkg "$(get_config pkgname)-$(get_config pkgver)-$(get_config arch)"
+	    for a in $(get_config arch | sed "s:,: :g"); do
+		    make_pkg "$(get_config pkgname)-$(get_config pkgver)-$a"
+	    done
 
 }
 
