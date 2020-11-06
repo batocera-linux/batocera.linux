@@ -128,7 +128,7 @@ play_wine() {
 
     WINE_CMD=$(getWine_var "${WINEPOINT}" "CMD" "explorer")
     WINE_DIR=$(getWine_var "${WINEPOINT}" "DIR" "")
-    (cd "${WINEPOINT}/${WINE_DIR}" && WINEPREFIX=${WINEPOINT} wine ${WINE_CMD})
+    (cd "${WINEPOINT}/${WINE_DIR}" && WINEPREFIX=${WINEPOINT} eval "wine ${WINE_CMD}")
     waitWineServer
 }
 
@@ -141,7 +141,7 @@ play_pc() {
 
     WINE_CMD=$(getWine_var "${GAMENAME}" "CMD" "explorer")
     WINE_DIR=$(getWine_var "${GAMENAME}" "DIR" "")
-    (cd "${GAMENAME}/${WINE_DIR}" && WINEPREFIX=${WINEPOINT} wine ${WINE_CMD})
+    (cd "${GAMENAME}/${WINE_DIR}" && WINEPREFIX=${WINEPOINT} eval "wine ${WINE_CMD}")
     waitWineServer
 }
 
@@ -184,7 +184,7 @@ play_winetgz() {
 
     WINE_CMD=$(getWine_var "${WINEPOINT}" "CMD" "explorer")
     WINE_DIR=$(getWine_var "${WINEPOINT}" "DIR" "")
-    (cd "${WINEPOINT}/${WINE_DIR}" && WINEPREFIX=${WINEPOINT} wine ${WINE_CMD})
+    (cd "${WINEPOINT}/${WINE_DIR}" && WINEPREFIX=${WINEPOINT} eval "wine ${WINE_CMD}")
     waitWineServer
 }
 
@@ -222,7 +222,7 @@ play_squashfs() {
 
     WINE_CMD=$(getWine_var "${WINEPOINT}" "CMD" "explorer")
     WINE_DIR=$(getWine_var "${WINEPOINT}" "DIR" "")
-    (cd "${WINEPOINT}/${WINE_DIR}" && WINEPREFIX=${WINEPOINT} wine ${WINE_CMD})
+    (cd "${WINEPOINT}/${WINE_DIR}" && WINEPREFIX=${WINEPOINT} eval "wine ${WINE_CMD}")
     waitWineServer
 
     # try to clean the cdrom
