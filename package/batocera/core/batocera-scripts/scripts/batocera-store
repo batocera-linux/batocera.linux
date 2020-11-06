@@ -10,30 +10,40 @@ case "${ACTION}" in
     "install")
 	PKG=$1
 	pacman --noconfirm -S "${PKG}"
-	if [ $? -eq 1 ]; then
+	RET=$?
+	if [ ${RET} -eq 1 ]; then
 		sleep 1
 		pgrep pacman >/dev/null || rm -f /userdata/system/pacman/db/db.lck
 	fi
+	exit ${RET}
 	;;
     "remove")
 	PKG=$1
 	pacman --noconfirm -R "${PKG}"
-	if [ $? -eq 1 ]; then
+	RET=$?
+	if [ ${RET} -eq 1 ]; then
 		sleep 1
 		pgrep pacman >/dev/null || rm -f /userdata/system/pacman/db/db.lck
 	fi
+	exit ${RET}
 	;;
     "list")
 	if test ! -e /userdata/system/pacman/db/sync/batocera.db
 	then
 		pacman --noconfirm -Syu
 	fi
-	[ $TERMINAL -eq 1 ] && pacman --noconfirm -Ss
-	[ $TERMINAL -eq 0 ] && pacman --noconfirm -Ss --xml
-
+	if [ $TERMINAL -eq 1 ]; then
+		pacman --noconfirm -Ss
+		RET=$?
+	else
+		pacman --noconfirm -Ss --xml
+		RET=$?
+	fi
+	exit ${RET}
 	;;
     "update")
 	pacman --noconfirm -Syu
+	exit $?
 	;;
     *)
 	echo "${0} install <package>" >&2
