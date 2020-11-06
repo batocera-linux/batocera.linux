@@ -9,12 +9,17 @@ fi
 
 case "$1" in
 	start)
-		enabled="`batocera-settings -command load -key system.es.atstartup`"
+		enabled="$(batocera-settings -command load -key system.es.atstartup)"
 		if [ "$enabled" != "0" ];then
 			batocera-resolution minTomaxResolution-secure
-			settings_lang="`batocera-settings -command load -key system.language`"
+			settings_lang="$(batocera-settings -command load -key system.language)"
+			es_splash_set="--no-splash"
+			if [ "$(batocera-settings -command load -key es.progressbar.enabled)" -eq 1 ]; then
+				#per default ES displays progress bar, we need to set: --no-splash
+				es_splash_set=
+			fi
 			cd /userdata # es need a PWD
-			HOME=/userdata/system LANG="${settings_lang}.UTF-8" %BATOCERA_EMULATIONSTATION_PREFIX% %BATOCERA_EMULATIONSTATION_CMD% %BATOCERA_EMULATIONSTATION_ARGS% %BATOCERA_EMULATIONSTATION_POSTFIX%
+			HOME=/userdata/system LANG="${settings_lang}.UTF-8" %BATOCERA_EMULATIONSTATION_PREFIX% %BATOCERA_EMULATIONSTATION_CMD% %BATOCERA_EMULATIONSTATION_ARGS% ${es_splash_set} %BATOCERA_EMULATIONSTATION_POSTFIX%
 		fi
 		;;
 
