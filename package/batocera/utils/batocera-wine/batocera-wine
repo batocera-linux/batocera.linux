@@ -79,6 +79,20 @@ dxvk_install() {
     return 0
 }
 
+mf_install() {
+    test -e "/userdata/system/wine_tweak/mf/" || return 0
+
+    MF="$(batocera-settings -command load -key windows.mf)"
+
+    if test "${MF}" = 1
+    then
+   	pushd "/userdata/system/wine_tweak/mf/" &>/dev/null || exit
+	chmod +x mf-install.sh
+    WINEPREFIX=$1 ./mf-install.sh
+	popd &>/dev/null || exit
+    fi
+}
+
 createWineDirectory() {
     WINEPREFIX=$1
 
@@ -138,6 +152,7 @@ play_pc() {
 
     createWineDirectory "${WINEPOINT}" || return 1
     dxvk_install "${WINEPOINT}" || return 1
+    mf_install "${WINEPREFIX}" || return 1
 
     WINE_CMD=$(getWine_var "${GAMENAME}" "CMD" "explorer")
     WINE_DIR=$(getWine_var "${GAMENAME}" "DIR" "")
@@ -165,6 +180,7 @@ play_exe() {
 
     createWineDirectory "${WINEPOINT}" || return 1
     dxvk_install "${WINEPOINT}" || return 1
+    mf_install "${WINEPREFIX}" || return 1
 
     (cd "${GAMEDIR}" && WINEPREFIX=${WINEPOINT} wine "${GAMEEXE}")
     waitWineServer
