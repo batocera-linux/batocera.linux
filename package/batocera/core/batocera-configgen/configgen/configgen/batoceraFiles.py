@@ -117,6 +117,9 @@ overlaySystem = "/usr/share/batocera/datainit/decorations"
 overlayUser = "/userdata/decorations"
 overlayConfigFile = "/userdata/system/configs/retroarch/overlay.cfg"
 
+rasoundsSystem = "/usr/share/libretro/assets/sounds/"
+rasoundsUser = "/userdata/retroachievements_sounds"
+
 amiberryRoot = CONF + '/amiberry'
 amiberryRetroarchInputsDir = amiberryRoot + '/conf/retroarch/inputs'
 amiberryRetroarchCustom = amiberryRoot + '/conf/retroarch/retroarchcustom.cfg'
