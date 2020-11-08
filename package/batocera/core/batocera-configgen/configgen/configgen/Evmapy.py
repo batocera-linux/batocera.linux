@@ -89,8 +89,8 @@ class Evmapy():
                                         "max": 1
                                     })
                             elif input.type == "axis":
-                                axisId = 0
-                                axisName = ""
+                                axisId = None
+                                axisName = None
                                 if input.name == "joystick1up" or input.name == "joystick1left":
                                     axisId = 0
                                 elif input.name == "joystick2up" or input.name == "joystick2left":
@@ -99,17 +99,19 @@ class Evmapy():
                                     axisName = "Y"
                                 elif input.name == "joystick1left" or input.name == "joystick2left":
                                     axisName = "X"
-                                axisMin, axisMax = Evmapy.__getPadMinMaxAxis(pad.dev, int(input.code))
-                                known_buttons_names["ABS" + str(axisId) + axisName + ":min"] = True
-                                known_buttons_names["ABS" + str(axisId) + axisName + ":max"] = True
-                                known_buttons_names["ABS" + str(axisId) + axisName + ":val"] = True
 
-                                padConfig["axes"].append({
-                                    "name": "ABS" + str(axisId) + axisName,
-                                    "code": int(input.code),
-                                    "min": axisMin,
-                                    "max": axisMax
-                                })
+                                if axisId in [0, 1] and axisName in ["X", "Y"]:
+                                    axisMin, axisMax = Evmapy.__getPadMinMaxAxis(pad.dev, int(input.code))
+                                    known_buttons_names["ABS" + str(axisId) + axisName + ":min"] = True
+                                    known_buttons_names["ABS" + str(axisId) + axisName + ":max"] = True
+                                    known_buttons_names["ABS" + str(axisId) + axisName + ":val"] = True
+
+                                    padConfig["axes"].append({
+                                        "name": "ABS" + str(axisId) + axisName,
+                                        "code": int(input.code),
+                                        "min": axisMin,
+                                        "max": axisMax
+                                    })
 
                         # only add actions for which buttons are defined (otherwise, evmapy doesn't like it)
                         padActionsPreDefined = padActionConfig["actions_player"+str(nplayer)]
