@@ -1,0 +1,12 @@
+config BR2_PACKAGE_MAME
+	bool "mame"
+        depends on BR2_INSTALL_LIBSTDCPP
+        select BR2_PACKAGE_SDL2
+	select BR2_PACKAGE_ZLIB
+        select BR2_PACKAGE_LIBPNG
+	select BR2_PACKAGE_FONTCONFIG
+
+	help
+	  MAME emulator standalone package
+
+	  https://mamedev.org
