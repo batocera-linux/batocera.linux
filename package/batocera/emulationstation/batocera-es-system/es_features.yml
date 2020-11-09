@@ -5,6 +5,7 @@ libretro:
   features: [ratio, smooth, shaders, pixel_perfect, decoration, latency_reduction, game_translation]
   cfeatures:
     gfxbackend:
+      archs_include: [x86, x86_64]
       prompt: GRAPHICS BACKEND
       choices:
         "OpenGL": opengl
@@ -502,6 +503,7 @@ dolphin:
                 "Off": 0
                 "On":  1
         gfxbackend:
+            archs_include: [x86, x86_64]
             prompt: GRAPHICS BACKEND
             choices:
                 "OpenGL": OGL
@@ -509,7 +511,7 @@ dolphin:
 
   systems:
     wii:
-        features: [emulated_wiimotes]                  
+        features: [emulated_wiimotes]
 dosbox:
   features: [ratio, padtokeyboard]
 
