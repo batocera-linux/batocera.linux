@@ -19,7 +19,7 @@ class EsSystemConf:
 
     # Generate the es_systems.cfg file by searching the information in the es_system.yml file
     @staticmethod
-    def generate(rulesYaml, featuresYaml, configFile, esSystemFile, esFeaturesFile, systemsConfigFile, archSystemsConfigFile, romsdirsource, romsdirtarget):
+    def generate(rulesYaml, featuresYaml, configFile, esSystemFile, esFeaturesFile, systemsConfigFile, archSystemsConfigFile, romsdirsource, romsdirtarget, arch):
         rules = yaml.safe_load(file(rulesYaml, "r"))
         config = EsSystemConf.loadConfig(configFile)
         es_system = ""
@@ -53,7 +53,7 @@ class EsSystemConf:
             es_system += EsSystemConf.generateSystem(system, data, config, defaultEmulator, defaultCore)
         es_system += "</systemList>\n"
         EsSystemConf.createEsSystem(es_system, esSystemFile)
-        EsSystemConf.createEsFeatures(featuresYaml, rules, esFeaturesFile)
+        EsSystemConf.createEsFeatures(featuresYaml, rules, esFeaturesFile, arch)
 
         print "removing the " + romsdirtarget + " folder..."
         if os.path.isdir(romsdirtarget):
@@ -225,7 +225,7 @@ class EsSystemConf:
 
     # Write the information in the es_features.cfg file
     @staticmethod
-    def createEsFeatures(featuresYaml, systems, esFeaturesFile):
+    def createEsFeatures(featuresYaml, systems, esFeaturesFile, arch):
         features = yaml.safe_load(file(featuresYaml, "r"))
         es_features = open(esFeaturesFile, "w")
         featuresTxt = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n"
@@ -257,11 +257,14 @@ class EsSystemConf:
 
                             # core features
                             for cfeature in features[emulator]["cores"][core]["cfeatures"]:
-                                featuresTxt += "        <feature name=\"{}\" value=\"{}\">\n".format(features[emulator]["cores"][core]["cfeatures"][cfeature]["prompt"], cfeature)
-                                choices = OrderedDict(sorted(features[emulator]["cores"][core]["cfeatures"][cfeature]["choices"].items(), key=itemgetter(1)))
-                                for choice in choices:
-                                    featuresTxt += "          <choice name=\"{}\" value=\"{}\" />\n".format(choice, features[emulator]["cores"][core]["cfeatures"][cfeature]["choices"][choice])
-                                featuresTxt += "        </feature>\n"
+                                if "archs_include" not in features[emulator]["cores"][core]["cfeatures"][cfeature] or arch in features[emulator]["cores"][core]["cfeatures"][cfeature]["archs_include"]:
+                                    featuresTxt += "        <feature name=\"{}\" value=\"{}\">\n".format(features[emulator]["cores"][core]["cfeatures"][cfeature]["prompt"], cfeature)
+                                    choices = OrderedDict(sorted(features[emulator]["cores"][core]["cfeatures"][cfeature]["choices"].items(), key=itemgetter(1)))
+                                    for choice in choices:
+                                        featuresTxt += "          <choice name=\"{}\" value=\"{}\" />\n".format(choice, features[emulator]["cores"][core]["cfeatures"][cfeature]["choices"][choice])
+                                    featuresTxt += "        </feature>\n"
+                                else:
+                                    print "skipping core " + emulator + "/" + core + " cfeature " + cfeature
                             # #############
 
                             featuresTxt += "      </core>\n"
@@ -280,20 +283,26 @@ class EsSystemConf:
                         featuresTxt += "      <system name=\"{}\" features=\"{}\" >\n".format(system, system_featuresTxt)
                         if "cfeatures" in features[emulator]["systems"][system]:
                             for cfeature in features[emulator]["systems"][system]["cfeatures"]:
-                                featuresTxt += "        <feature name=\"{}\" value=\"{}\">\n".format(features[emulator]["systems"][system]["cfeatures"][cfeature]["prompt"], cfeature)
-                                choices = OrderedDict(sorted(features[emulator]["systems"][system]["cfeatures"][cfeature]["choices"].items(), key=itemgetter(1)))
-                                for choice in choices:
-                                    featuresTxt += "        <choice name=\"{}\" value=\"{}\" />\n".format(choice, features[emulator]["systems"][system]["cfeatures"][cfeature]["choices"][choice])
-                                featuresTxt += "        </feature>\n"                        
+                                if "archs_include" not in features[emulator]["systems"][system]["cfeatures"][cfeature] or arch in features[emulator]["systems"][system]["cfeatures"][cfeature]["archs_include"]:
+                                    featuresTxt += "        <feature name=\"{}\" value=\"{}\">\n".format(features[emulator]["systems"][system]["cfeatures"][cfeature]["prompt"], cfeature)
+                                    choices = OrderedDict(sorted(features[emulator]["systems"][system]["cfeatures"][cfeature]["choices"].items(), key=itemgetter(1)))
+                                    for choice in choices:
+                                        featuresTxt += "        <choice name=\"{}\" value=\"{}\" />\n".format(choice, features[emulator]["systems"][system]["cfeatures"][cfeature]["choices"][choice])
+                                    featuresTxt += "        </feature>\n"
+                                else:
+                                    print "skipping system " + emulator + "/" + system + " cfeature " + cfeature
                         featuresTxt += "      </system>\n"
                     featuresTxt += "    </systems>\n"
                 if "cfeatures" in features[emulator]:
                     for cfeature in features[emulator]["cfeatures"]:
-                        featuresTxt += "    <feature name=\"{}\" value=\"{}\">\n".format(features[emulator]["cfeatures"][cfeature]["prompt"], cfeature)
-                        choices = OrderedDict(sorted(features[emulator]["cfeatures"][cfeature]["choices"].items(), key=itemgetter(1)))
-                        for choice in choices:
-                            featuresTxt += "      <choice name=\"{}\" value=\"{}\" />\n".format(choice, features[emulator]["cfeatures"][cfeature]["choices"][choice])
-                        featuresTxt += "    </feature>\n"
+                        if "archs_include" not in features[emulator]["cfeatures"][cfeature] or arch in features[emulator]["cfeatures"][cfeature]["archs_include"]:
+                            featuresTxt += "    <feature name=\"{}\" value=\"{}\">\n".format(features[emulator]["cfeatures"][cfeature]["prompt"], cfeature)
+                            choices = OrderedDict(sorted(features[emulator]["cfeatures"][cfeature]["choices"].items(), key=itemgetter(1)))
+                            for choice in choices:
+                                featuresTxt += "      <choice name=\"{}\" value=\"{}\" />\n".format(choice, features[emulator]["cfeatures"][cfeature]["choices"][choice])
+                            featuresTxt += "    </feature>\n"
+                        else:
+                            print "skipping emulator " + emulator + " cfeature " + cfeature
 
                 featuresTxt += "  </emulator>\n"
             else:
@@ -424,5 +433,6 @@ if __name__ == "__main__":
     parser.add_argument("gen_defaults_arch",   help="defaults configgen defaults")
     parser.add_argument("romsdirsource", help="emulationstation roms directory")
     parser.add_argument("romsdirtarget", help="emulationstation roms directory")
+    parser.add_argument("arch", help="arch")
     args = parser.parse_args()
-    EsSystemConf.generate(args.yml, args.features, args.config, args.es_systems, args.es_features, args.gen_defaults_global, args.gen_defaults_arch, args.romsdirsource, args.romsdirtarget)
+    EsSystemConf.generate(args.yml, args.features, args.config, args.es_systems, args.es_features, args.gen_defaults_global, args.gen_defaults_arch, args.romsdirsource, args.romsdirtarget, args.arch)

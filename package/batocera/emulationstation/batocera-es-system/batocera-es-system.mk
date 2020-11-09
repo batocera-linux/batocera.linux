@@ -19,7 +19,7 @@ define BATOCERA_ES_SYSTEM_BUILD_CMDS
 		$(STAGING_DIR)/usr/share/batocera/configgen/configgen-defaults.yml \
 		$(STAGING_DIR)/usr/share/batocera/configgen/configgen-defaults-arch.yml \
 		$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulationstation/batocera-es-system/roms \
-		$(@D)/roms
+		$(@D)/roms $(BATOCERA_SYSTEM_ARCH)
 endef
 
 define BATOCERA_ES_SYSTEM_INSTALL_TARGET_CMDS
