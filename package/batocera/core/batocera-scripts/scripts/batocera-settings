@@ -12,6 +12,8 @@
 #           --command    load write enable disable status
 #           --key        any key in batocera.conf (kodi.enabled...)
 #           --value      any alphanumerical string
+#           --system     if specified, key not not be prefixed (by global. or something else) and value system.xxx or global.xxx will be searched and returned
+#           --game       if specified, key not not be prefixed (by global. or something else) and value game.xxx or system.xxx or global.xxx will be searched and returned
 #                        use quotation marks to avoid globbing use slashes escape special characters 
 
 # This script reads only 1st occurrence if string and writes only to this first hit
@@ -90,8 +92,9 @@ function dash_style() {
     #commands. It will also accept the more common posix double dashes   
     #Accept dashes and double dashes and build new array ii with parameter set
     #The else-branch can be used for the shortform
-
-    for i in --command --key --value; do
+    keys=$1
+    shift
+    for i in $keys; do
         if [[ -z "$1" ]]; then
             continue 
         elif [[ "$i" =~ ^-{0,1}"${1,,}" ]]; then
@@ -110,14 +113,19 @@ function dash_style() {
 function usage() {
 val=" Usage of BASE COMMAND:
 
-           <file> --command <cmd> --key <key> --value <value>
+           <file> --command <cmd> --key <key> --value <value> --sytem <system> --game <game>
 
-           shortform: <file> <cmd> <key> <value>
+           shortform: <file> <cmd> <key> <value> <system> <game>
 
            --command    load write enable disable status
            --key        any key in batocera.conf (kodi.enabled...)
            --value      any alphanumerical string
                         use quotation marks to avoid globbing
+           --system     any alphanumerical string
+                        use quotation marks to avoid globbing
+           --game       any alphanumerical string
+                        use quotation marks to avoid globbing
+
 
            For write command --value <value> must be provided
 
@@ -148,14 +156,26 @@ function main() {
 
     #How much arguments are parsed, up to 6 then it is the long format
     #up to 3 then it is the short format
-    if [[ ${#@} -eq 0 || ${#@} -gt 6 ]]; then
+    if [[ ${#@} -eq 0 || ${#@} -gt 10 ]]; then
         usage
         exit 1
     else
-        dash_style "$@"
+	if test "$1" = "load" -o "$1 $2" = "--command load"
+	then
+            dash_style "--command --key --system --game" "$@"
+	else
+	    dash_style "--command --key --value" "$@"
+	fi
         command="${ii[0]}"
         keyvalue="${ii[1]}"
-        newvalue="${ii[2]}"
+
+	if test "$command" == "read" -o "$command" == "get" -o "$command" == "load"
+	then
+	    systemvalue="${ii[2]}"
+	    gamevalue="${ii[3]}"
+	else
+            newvalue="${ii[2]}"
+	fi
         unset ii
     fi
 
@@ -165,7 +185,10 @@ function main() {
     case "${command,,}" in
 
         "read"|"get"|"load")
-            val="$(get_config $keyvalue)"
+	    test -n "$gamevalue" && test -n "$systemvalue" && val="$(get_config $systemvalue\\[\"$gamevalue\"\\].$keyvalue)"
+	    test -z "$val" && test -n "$systemvalue" && val="$(get_config $systemvalue.$keyvalue)"
+	    test -z "$val" && val="$(get_config global.$keyvalue)"
+	    test -z "$val" && val="$(get_config $keyvalue)"
             ret=$?
             [[ "$val" == "$COMMENT_CHAR" ]] && exit 11
             [[ -z "$val" && $ret -eq 0 ]] && exit 10
