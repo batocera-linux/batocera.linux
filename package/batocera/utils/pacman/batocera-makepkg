@@ -138,7 +138,6 @@ function main() {
 	    write_argument builddate $(date +%s)
 	    # Finally, create the actual package
 	    sanitize_info
-	    rm -rf "$BATOEXEC_PATH" # avoid copy/paste from previous packages
 	    if [[ -f "$BATOEXEC" ]]; then
 		    mkdir -p "$BATOEXEC_PATH"
 		    cp -f "$BATOEXEC" "$BATOEXEC_PATH"/"$(get_config pkgname)"
