@@ -17,22 +17,22 @@ def generateControllerConfig(system, playersControllers, rom):
     #make controller directory if it doesn't exist
     if not path.isdir(batoceraFiles.CONF + "/cemu/controllerProfiles"):
         os.mkdir(batoceraFiles.CONF + "/cemu/controllerProfiles")
-        
-    if not path.isdir(batoceraFiles.CONF + "/evmapy"):    
+
+    if not path.isdir(batoceraFiles.CONF + "/evmapy"):
         os.mkdir(batoceraFiles.CONF + "/evmapy")
-        
+
     #purge old controller files
     for counter in range(0,8):
         configFileName = "{}/{}".format(batoceraFiles.CONF + "/cemu/controllerProfiles/", "controller" + str(counter) +".txt")
         if os.path.isfile(configFileName):
-            os.remove(configFileName)   
+            os.remove(configFileName)
 
     #Create the evmapy configFile
-    
+
     configFileName = "{}/{}".format(batoceraFiles.CONF + "/evmapy/","wiiu.keys")
     if os.path.isfile(configFileName):
-        os.remove(configFileName)  
-    
+        os.remove(configFileName)
+
 
 
     data =  {}
@@ -42,16 +42,16 @@ def generateControllerConfig(system, playersControllers, rom):
             "type": "key",
             "target": [ "KEY_LEFTALT", "KEY_F4" ]
         })
-    
+
     with open(batoceraFiles.CONF + "/evmapy/wiiu.keys", 'w') as outfile:
         json.dump(data, outfile)
-    
-    
+
+
     #We are exporting SDL_GAMECONTROLLERCONFIG in cemuGenerator, so we can assume all controllers are now working with xInput
     nplayer = 0
     sdlstring = ''
     double_pads = dict()
-    
+
     sdlMapping = {
         'b':      'a',  'a':        'b',
         'x':      'y',  'y':        'x',
@@ -63,13 +63,13 @@ def generateControllerConfig(system, playersControllers, rom):
         'joystick1up': 'lefty', 'joystick1left': 'leftx',
         'joystick2up': 'righty', 'joystick2left': 'rightx', 'hotkey': 'guide'
     }
-    
-    
-    
-    
+
+
+
+
     for playercontroller, pad in sorted(playersControllers.items()):
         #if nplayer == 0:  #For Future Hotkeys
-       
+
         if pad.configName not in double_pads:
             double_pads[pad.configName] = 1
             sdlstring=sdlstring + pad.guid + ',' + pad.configName
@@ -81,29 +81,31 @@ def generateControllerConfig(system, playersControllers, rom):
                 if keyname is not None:
                     sdlstring=sdlstring + write_key(keyname, input.type, input.id, input.value, pad.nbaxes, False, None)
             sdlstring=sdlstring + ',platform:Linux,\n'
-            
-            
- 
-        cemuSettings = ConfigParser.ConfigParser()    
-        cemuSettings.optionxform = str    
-        
+
+
+
+        cemuSettings = ConfigParser.ConfigParser()
+        cemuSettings.optionxform = str
+
         #Add Default Sections
         if not cemuSettings.has_section("General"):
             cemuSettings.add_section("General")
         if not cemuSettings.has_section("Controller"):
-            cemuSettings.add_section("Controller")         
+            cemuSettings.add_section("Controller")
 
         cemuSettings.set("General", "api", "XInput")
         cemuSettings.set("General", "controller", nplayer)
-        
+
         if (system.isOptSet('emulatedwiimotes') and system.getOptBoolean('emulatedwiimotes') == True):
             cemuSettings.set("General", "emulate", "Wiimote")
         elif (nplayer == 0):
             cemuSettings.set("General", "emulate", "Wii U GamePad")
+            addIndex = 0
         else:
             cemuSettings.set("General", "emulate", "Wii U Pro Controller")
-            
-            
+            addIndex = 1
+
+
         cemuSettings.set("Controller", "rumble", "0")
         cemuSettings.set("Controller", "leftRange", "1")
         cemuSettings.set("Controller", "rightRange", "1")
@@ -129,7 +131,7 @@ def generateControllerConfig(system, playersControllers, rom):
             cemuSettings.set("Controller", "14", "button_10000000000")   # Nunchuk Down (RStick)
             cemuSettings.set("Controller", "15", "button_8000000000")   # Nunchuk Left (RStick)
             cemuSettings.set("Controller", "16", "button_200000000")   # Nunchuk Right (RStick)
-            cemuSettings.set("Controller", "17", "0")   # Home 
+            cemuSettings.set("Controller", "17", "0")   # Home
             cemuSettings.set("Controller", "nunchuck", "1")
             cemuSettings.set("Controller", "motionPlus", "0")
         else:
@@ -143,31 +145,31 @@ def generateControllerConfig(system, playersControllers, rom):
             cemuSettings.set("Controller", "8", "button_800000000")    # R2
             cemuSettings.set("Controller", "9", "button_40")    # Start
             cemuSettings.set("Controller", "10", "button_80")   # Select
-            cemuSettings.set("Controller", "11", "button_4000000")   # Up
-            cemuSettings.set("Controller", "12", "button_8000000")   # Down
-            cemuSettings.set("Controller", "13", "button_10000000")   # Left
-            cemuSettings.set("Controller", "14", "button_20000000")   # Right
-            cemuSettings.set("Controller", "15", "button_100")   # LStick Click
-            cemuSettings.set("Controller", "16", "button_200")   # RStick Click
-            cemuSettings.set("Controller", "17", "button_80000000")   # LStick Up
-            cemuSettings.set("Controller", "18", "button_2000000000")   # LStick Down
-            cemuSettings.set("Controller", "19", "button_1000000000")   # LStick Left
-            cemuSettings.set("Controller", "20", "button_40000000")   # LStick Right
-            cemuSettings.set("Controller", "21", "button_400000000")   # RStick Up
-            cemuSettings.set("Controller", "22", "button_10000000000")   # RStick Down
-            cemuSettings.set("Controller", "23", "button_8000000000")   # RStick Left
-            cemuSettings.set("Controller", "24", "button_200000000")   # RStick Right
+            cemuSettings.set("Controller", 11 + addIndex, "button_4000000")   # Up
+            cemuSettings.set("Controller", 12 + addIndex, "button_8000000")   # Down
+            cemuSettings.set("Controller", 13 + addIndex, "button_10000000")   # Left
+            cemuSettings.set("Controller", 14 + addIndex, "button_20000000")   # Right
+            cemuSettings.set("Controller", 15 + addIndex, "button_100")   # LStick Click
+            cemuSettings.set("Controller", 16 + addIndex, "button_200")   # RStick Click
+            cemuSettings.set("Controller", 17 + addIndex, "button_80000000")   # LStick Up
+            cemuSettings.set("Controller", 18 + addIndex, "button_2000000000")   # LStick Down
+            cemuSettings.set("Controller", 19 + addIndex, "button_1000000000")   # LStick Left
+            cemuSettings.set("Controller", 20 + addIndex, "button_40000000")   # LStick Right
+            cemuSettings.set("Controller", 21 + addIndex, "button_400000000")   # RStick Up
+            cemuSettings.set("Controller", 22 + addIndex, "button_10000000000")   # RStick Down
+            cemuSettings.set("Controller", 23 + addIndex, "button_8000000000")   # RStick Left
+            cemuSettings.set("Controller", 24 + addIndex, "button_200000000")   # RStick Right
 
-            
+
         configFileName = "{}/{}".format(batoceraFiles.CONF + "/cemu/controllerProfiles/", "controller" + str(nplayer) + ".txt")
                 # save dolphin.ini
         with open(configFileName, 'w') as configfile:
             cemuSettings.write(configfile)
-        nplayer+=1 
+        nplayer+=1
 
     return sdlstring
 
-def write_key(keyname, input_type, input_id, input_value, input_global_id, reverse, hotkey_id):     
+def write_key(keyname, input_type, input_id, input_value, input_global_id, reverse, hotkey_id):
     #Sample Output
     #a:b1,b:b0,back:b10,dpdown:h0.4,dpleft:h0.8,dpright:h0.2,dpup:h0.1,guide:b2,leftshoulder:b6,leftstick:b13,lefttrigger:b8,leftx:a0,lefty:a1,rightshoulder:b7,rightstick:b14,righttrigger:b9,rightx:a2,righty:a3,start:b11,x:b4,y:b3
     output = "," + keyname + ":"
