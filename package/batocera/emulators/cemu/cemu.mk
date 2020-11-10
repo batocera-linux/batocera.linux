@@ -20,6 +20,7 @@ define CEMU_INSTALL_TARGET_CMDS
 	# keys.txt
 	mkdir -p $(TARGET_DIR)/usr/share/batocera/datainit/bios/cemu
 	touch $(TARGET_DIR)/usr/share/batocera/datainit/bios/cemu/keys.txt
+	ln -sf /userdata/bios/cemu/keys.txt $(TARGET_DIR)/userdata/system/configs/cemu/keys.txt
 	
 	#evmap config
 	mkdir -p $(TARGET_DIR)/usr/share/evmapy
