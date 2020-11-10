@@ -10,7 +10,7 @@ MAME_DEPENDENCIES = sdl2 zlib libpng fontconfig sqlite jpeg flac rapidjson
 MAME_LICENSE = MAME
 
 MAME_CROSS_ARCH = unknown
-MAME_CROSS_OPTS = ""
+MAME_CROSS_OPTS = 
 MAME_TARGET_NAME = mamearcade
 
 # x86_64 is desktop linux based on X11 and OpenGL

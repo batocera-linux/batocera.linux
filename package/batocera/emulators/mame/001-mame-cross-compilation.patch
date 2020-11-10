@@ -1,6 +1,6 @@
 diff -ur ./3rdparty/minimp3/minimp3.h /home/romain/batocera.linux/output/odroidn2/build/mame-mame0226/3rdparty/minimp3/minimp3.h
 --- a/3rdparty/minimp3/minimp3.h	2020-10-27 02:00:36.000000000 +0100
-+++ b/3rdparty/minimp3/minimp3.h	2020-11-09 18:39:21.731361951 +0100
++++ b/3rdparty/minimp3/minimp3.h	2020-11-10 17:13:17.377760626 +0100
 @@ -84,6 +84,10 @@
  #define MINIMP3_MIN(a, b)           ((a) > (b) ? (b) : (a))
  #define MINIMP3_MAX(a, b)           ((a) < (b) ? (b) : (a))
@@ -12,6 +12,16 @@ diff -ur ./3rdparty/minimp3/minimp3.h /home/romain/batocera.linux/output/odroidn
  #if !defined(MINIMP3_NO_SIMD)
  
  #if !defined(MINIMP3_ONLY_SIMD) && (defined(_M_X64) || defined(_M_ARM64) || defined(__x86_64__) || defined(__aarch64__))
+@@ -96,6 +100,9 @@
+ #include <intrin.h>
+ #endif /* defined(_MSC_VER) */
+ #include <immintrin.h>
++#ifdef HAVE_SSE
++#undef HAVE_SSE
++#endif
+ #define HAVE_SSE 1
+ #define HAVE_SIMD 1
+ #define VSTORE _mm_storeu_ps
 diff -ur ./makefile /home/romain/batocera.linux/output/odroidn2/build/mame-mame0226/makefile
 --- a/makefile	2020-10-27 02:00:36.000000000 +0100
 +++ b/makefile	2020-11-09 18:56:15.179960037 +0100
