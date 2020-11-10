@@ -204,7 +204,7 @@ diff -ur ./scripts/toolchain.lua /home/romain/batocera.linux/output/odroidn2/bui
 +	configuration { "linux-gcc", "arm64" }
 +		objdir (_buildDir .. "linux_gcc" .. "/obj")
 +		buildoptions {
-+			"-march=armv8-a",
++			"",
 +		}
 +
 +	configuration { "linux-gcc", "arm64", "Release" }
