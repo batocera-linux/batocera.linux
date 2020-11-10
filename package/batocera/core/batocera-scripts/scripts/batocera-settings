@@ -185,7 +185,7 @@ function main() {
     case "${command,,}" in
 
         "read"|"get"|"load")
-	    test -n "$gamevalue" && test -n "$systemvalue" && val="$(get_config $systemvalue\\[\"$gamevalue\"\\].$keyvalue)"
+	    test -n "$gamevalue" && test -n "$systemvalue" && val=$(get_config "${systemvalue}\[\"${gamevalue}\"\].${keyvalue}")
 	    test -z "$val" && test -n "$systemvalue" && val="$(get_config $systemvalue.$keyvalue)"
 	    test -z "$val" && val="$(get_config global.$keyvalue)"
 	    test -z "$val" && val="$(get_config $keyvalue)"
