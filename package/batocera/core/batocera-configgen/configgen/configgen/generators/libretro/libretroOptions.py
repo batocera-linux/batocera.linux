@@ -163,12 +163,12 @@ def generateCoreSettings(retroarchCore, system):
             coreSettings.save('mupen64plus-MultiSampling', '"0"')
         # Texture filter
         if system.isOptSet('Texture_filter'):
-            coreSettings.save('mupen64plus-txFilterMode', system.config['Texture_filter'])
+            coreSettings.save('mupen64plus-txFilterMode', '"' + system.config['Texture_filter'] + '"')
         else:
             coreSettings.save('mupen64plus-txFilterMode', '"None"')
         # Texture Enhancement
         if system.isOptSet('Texture_Enhancement'):
-            coreSettings.save('mupen64plus-txEnhancementMode', system.config['Texture_Enhancement'])
+            coreSettings.save('mupen64plus-txEnhancementMode', '"' + system.config['Texture_Enhancement'] + '"')
         else:
             coreSettings.save('mupen64plus-txEnhancementMode', '"None"')
 
@@ -311,7 +311,29 @@ def generateCoreSettings(retroarchCore, system):
         else:
             coreSettings.save('beetle_psx_hw_widescreen_hack', '"disabled"')
 
-    if (system.config['core'] == 'pcsx_rearmed'):
+     if (system.config['core'] == 'duckstation'):
+        # resolution scale (default 1)
+        if system.isOptSet('resolution_scale'):
+            coreSettings.save('duckstation_GPU.ResolutionScale', system.config['resolution_scale'])
+        else:
+            coreSettings.save('duckstation_GPU.ResolutionScale', '"1"')
+        # multisampling antialiasing (default 1x)
+        if system.isOptSet('antialiasing'):
+            coreSettings.save('duckstation_GPU.MSAA', system.config['antialiasing'])
+        else:
+            coreSettings.save('duckstation_GPU.MSAA', '"1"')
+        # texture filtering (default nearest)
+        if system.isOptSet('texture_filtering'):
+            coreSettings.save('duckstation_GPU.TextureFilter', system.config['texture_filtering'])
+        else:
+            coreSettings.save('duckstation_GPU.TextureFilter', '"Nearest"')
+        # widescreen hack (default off)
+        if system.isOptSet('widescreen_hack'):
+            coreSettings.save('duckstation_GPU.WidescreenHack', system.config['widescreen_hack'])
+        else:
+            coreSettings.save('duckstation_GPU.WidescreenHack', '"false"')
+
+     if (system.config['core'] == 'pcsx_rearmed'):
         for n in range(1, 8+1):
             val = coreSettings.load('pcsx_rearmed_pad{}type'.format(n))
             if val == '"none"' or val == "" or val is None:
