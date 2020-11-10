@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-WINE_LUTRIS_VERSION = 5.7-11
+WINE_LUTRIS_VERSION = 5.21
 WINE_LUTRIS_SOURCE = lutris-$(WINE_LUTRIS_VERSION).tar.gz
 WINE_LUTRIS_SITE = https://github.com/lutris/wine/archive
 WINE_LUTRIS_LICENSE = LGPL-2.1+
