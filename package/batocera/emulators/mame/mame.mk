@@ -12,22 +12,28 @@ MAME_LICENSE = MAME
 MAME_CROSS_ARCH = unknown
 MAME_CROSS_OPTS = 
 MAME_TARGET_NAME = mamearcade
+MAME_CFLAGS =
 
 # x86_64 is desktop linux based on X11 and OpenGL
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86_64),y)
 MAME_CROSS_ARCH = x86_64
 MAME_TARGET_NAME = mamearcade64
+MAME_CROSS_OPTS += PTR64=1
 # other archs are embedded, no X11, no OpenGL (only ES)
 else
-MAME_CROSS_OPTS = NO_X11=1 NO_OPENGL=1 NO_USE_XINPUT=1 NO_USE_BGFX_KHRONOS=1
+MAME_CROSS_OPTS += NO_X11=1 NO_OPENGL=1 NO_USE_XINPUT=1 NO_USE_BGFX_KHRONOS=1
 endif
 
 # allow cross-architecture compilation with MAME build system
 ifeq ($(BR2_aarch64),y)
 MAME_CROSS_ARCH = arm64
+MAME_CROSS_OPTS += PTR64=1
 endif
 ifeq ($(BR2_arm),y)
 MAME_CROSS_ARCH = arm
+MAME_CROSS_OPTS += PTR64=0
+# Always enable NEON on 32-bit arm
+MAME_CFLAGS += -D__ARM_NEON__ -D__ARM_NEON
 endif
 
 define MAME_BUILD_CMDS
@@ -35,20 +41,17 @@ define MAME_BUILD_CMDS
 	cd $(@D); \
 	$(MAKE) TARGETOS=linux OSD=sdl genie \
 	TARGET=mame SUBTARGET=tiny \
-	PTR64=1 \
 	NO_USE_PORTAUDIO=1 NO_X11=1 USE_SDL=0 \
 	USE_QTDEBUG=0 DEBUG=0 IGNORE_GIT=1 MPARAM=""
 
 	# Compile tools target
 	cd $(@D); \
-	CFLAGS="--sysroot=$(STAGING_DIR)"   \
-	CXXFLAGS="--sysroot=$(STAGING_DIR)" \
+	CFLAGS="--sysroot=$(STAGING_DIR) $(MAME_CFLAGS)"   \
 	LDFLAGS="--sysroot=$(STAGING_DIR)"  MPARAM="" \
 	PKG_CONFIG="$(HOST_DIR)/usr/bin/pkg-config --define-prefix" \
 	PKG_CONFIG_PATH="$(STAGING_DIR)/usr/lib/pkgconfig" \
 	$(MAKE) TARGETOS=linux OSD=sdl \
 	TARGET=mame SUBTARGET=tools \
-	PTR64=1 \
 	OVERRIDE_CC="$(TARGET_CC)" \
 	OVERRIDE_CXX="$(TARGET_CXX)" \
 	OVERRIDE_LD="$(TARGET_LD)" \
@@ -74,15 +77,13 @@ define MAME_BUILD_CMDS
 
 	# Compile emulation target
 	cd $(@D); \
-	CFLAGS="--sysroot=$(STAGING_DIR)"   \
-	CXXFLAGS="--sysroot=$(STAGING_DIR)" \
+	CFLAGS="--sysroot=$(STAGING_DIR) $(MAME_CFLAGS)"   \
 	LDFLAGS="--sysroot=$(STAGING_DIR)"  MPARAM="" \
 	PKG_CONFIG="$(HOST_DIR)/usr/bin/pkg-config --define-prefix" \
 	PKG_CONFIG_PATH="$(STAGING_DIR)/usr/lib/pkgconfig" \
 	$(MAKE) TARGETOS=linux OSD=sdl \
 	TARGET=mame \
 	SUBTARGET=arcade \
-	PTR64=1 \
 	OVERRIDE_CC="$(TARGET_CC)" \
 	OVERRIDE_CXX="$(TARGET_CXX)" \
 	OVERRIDE_LD="$(TARGET_LD)" \

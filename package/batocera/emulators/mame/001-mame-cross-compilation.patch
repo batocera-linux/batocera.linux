@@ -22,6 +22,14 @@ diff -ur ./3rdparty/minimp3/minimp3.h /home/romain/batocera.linux/output/odroidn
  #define HAVE_SSE 1
  #define HAVE_SIMD 1
  #define VSTORE _mm_storeu_ps
+@@ -844,6 +851,7 @@
+         VSTORE(right + i, VSUB(vl, vr));
+     }
+ #endif /* HAVE_SIMD */
++    i = (n >> 2) << 2;
+     for (; i < n; i++)
+     {
+         float a = left[i];
 diff -ur ./makefile /home/romain/batocera.linux/output/odroidn2/build/mame-mame0226/makefile
 --- a/makefile	2020-10-27 02:00:36.000000000 +0100
 +++ b/makefile	2020-11-09 18:56:15.179960037 +0100
