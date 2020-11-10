@@ -38,12 +38,13 @@ waitWineServer() {
 dxvk_install() {
     export WINEDLLOVERRIDES="winemenubuilder.exe="
     WINEPREFIX=$1
+    ROMGAMENAME=$(basename "${GAMENAME}")
 
     # install dxvk only on system where it is available (aka, not x86)
     test -e "/usr/share/dxvk" || return 0
 
-    DXVK="$(batocera-settings -command load -key windows.dxvk)"
-    DXVK_HUD="$(batocera-settings -command load -key windows.dxvk_hud)"
+    DXVK=$(batocera-settings --command load --key dxvk --system windows --game "${ROMGAMENAME}")
+    DXVK_HUD=$(batocera-settings --command load --key dxvk_hud --system windows --game "${ROMGAMENAME}")
 
     if test "${DXVK_HUD}" = 1
     then
