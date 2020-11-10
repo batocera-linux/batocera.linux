@@ -33,6 +33,8 @@ RUN dpkg --add-architecture i386 && \
 		device-tree-compiler \
 		gettext \
 		locales \
+		graphviz \
+		python \
 	&& apt clean
 
 # Set locale

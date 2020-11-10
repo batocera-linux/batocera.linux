@@ -1,26 +1,34 @@
 2020/XX/XX - batocera.linux 29
 	* add: duckstation (libretro core for x86_64 and AArch64 boards)
 	* add: hbmame (x86, x86_64, odroid n2)
-	* add: wine (32 and 64 bits)
+	* add: windows games 32 and 64 bits (wine)
+	* add: DXVK for wine (Run DX9 to DX11 Games)
+	* add: VKD3D-Proton for wine (Run DX12 Games)
+	* add: wiiu emulator (cemu)
 	* add: TIC-80 and pico-8 emulators (fantasy consoles)
 	* add: pygame support : create your own games.
-	* add: Odroid C4 support [BETA]
-	* add: Odroid C2 support revived (using Mesa/Lima and mainline kernel)
-	* add: Khadas VIM2 support [BETA] (https://wiki.batocera.org/devices#khadas_vim2 for details)
+	* add: keyboard and mouse support from joystick (configurable from es, for system like dos, apple2, ...)
+	* add: Odroid C4 support
+	* add: Odroid C2 support revived (using Mesa/Lima and 5.8 kernel)
+	* add: Khadas VIM2 support (https://wiki.batocera.org/devices#khadas_vim2 for details)
 	* add: Anbernic RG351P support
 	* add: ES support for animated storyboards
 	* add: Content Downloader: support for multi-repos and search
 	* add: Bezels auto-resized (as long as your aspect ratio is >= 16/10)
+	* add: easy vulkan configuration for retroarch
 	* fix: Odroid Go Advance splash screen
-	* fix: some CHD files not working for Dreamcast (lr-flycast)
+	* fix: CHD broken support on most systems
 	* fix: netplay (and add "watch mode")
-	* bump: Stella to 6.3
+	* bump: Dosbox-X to 0.83.7
+	* bump: mGBA to 0.8.4
+	* bump: Stella to 6.4
 	* bump: PCSX-ReARMed
 	* bump: MAME to 0.225
 	* bump: ScummVM to 2.2.0
 	* bump: Amiberry to 3.3
 	* bump: YabaSanshiro to 3.5
 	* bump: many default bezels updated
+	* bump: WinBTRFS Driver to 1.7.5
 
 2020/10/04 - batocera.linux 5.27.2
 	* fix some issues with some tvs (giving bad resolutions information)

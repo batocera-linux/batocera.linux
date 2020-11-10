@@ -81,6 +81,10 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
     # basic configuration
     retroarchConfig['quit_press_twice'] = 'false'            # not aligned behavior on other emus
     retroarchConfig['video_driver'] = '"gl"'                 # needed for the ozone menu
+
+    if system.isOptSet("gfxbackend") and system.config["gfxbackend"] == "vulkan":
+        retroarchConfig['video_driver'] = '"vulkan"'
+
     retroarchConfig['video_black_frame_insertion'] = 'false' # don't use anymore this value while it doesn't allow the shaders to work
     retroarchConfig['pause_nonactive'] = 'false'             # required at least on x86 x86_64 otherwise, the game is paused at launch
     retroarchConfig['audio_driver'] = 'alsa'                 # force ALSA. TODO: check audio.backend
@@ -224,6 +228,9 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
     # Virtual keyboard for Amstrad CPC (select+start)
     if system.config['core'] == 'cap32':
         retroarchConfig['cap32_combokey'] = 'y'
+
+    # Disable internal image viewer (ES does it, and pico-8 won't load .p8.png)
+    retroarchConfig['builtin_imageviewer_enable'] = 'false'
 
     # Netplay management
     if 'netplay.mode' in system.config and system.config['netplay.mode'] in systemNetplayModes:

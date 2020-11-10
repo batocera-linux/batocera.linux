@@ -1,0 +1,272 @@
+diff --git a/evmapy/config.py b/evmapy/config.py
+index 98e8be7..2f7197a 100644
+--- a/evmapy/config.py
++++ b/evmapy/config.py
+@@ -286,7 +286,7 @@ def parse(config_input):
+                 event = next(e for e in events if e['name'] == event_name)
+             except StopIteration:
+                 raise ConfigError("unknown event '%s'" % event_name)
+-            if suffix and suffix not in event:
++            if suffix and suffix not in event and suffix != "val":
+                 raise ConfigError("invalid event suffix '%s'" % suffix)
+             if action not in config['map'][event['code']]:
+                 config['map'][event['code']].append(action)
+@@ -403,7 +403,7 @@ def validate_action(action):
+     hold = action['hold']
+     trigger = action['trigger']
+     target = evmapy.util.as_list(action['target'])
+-    if action['type'] not in ('exec', 'key'):
++    if action['type'] not in ('exec', 'key', 'mouse'):
+         raise ConfigError("invalid action type '%s'" % action['type'])
+     if action['mode'] not in ('all', 'any', 'sequence'):
+         raise ConfigError("invalid action mode '%s'" % action['mode'])
+diff --git a/evmapy/multiplexer.py b/evmapy/multiplexer.py
+index a9f0730..c0e0153 100644
+--- a/evmapy/multiplexer.py
++++ b/evmapy/multiplexer.py
+@@ -28,6 +28,7 @@ import signal
+ import time
+ 
+ import evdev
++import json
+ 
+ import evmapy.config
+ import evmapy.controller
+@@ -66,8 +67,27 @@ class Multiplexer(object):
+         self._logger = logging.getLogger()
+         self._poll = None
+         self._uinput = None
+-
+-        valid_events={ecodes.EV_KEY: [
++        self._mousePosition = { "x": 0, "y": 0, "last": time.time(), "every": 0.006, "deadzone": 0.05, "speed": 4.0 }
++        global_config_filepath = "/etc/evmapy.json"
++        # { "mouse_config": { "every": 0.005, "deadzone": 0.06 } }
++        if os.path.exists(global_config_filepath):
++            with open(global_config_filepath) as config_file:
++                global_config = json.load(config_file)
++                if "mouse_config" in global_config:
++                    for key in ["every", "deadzone", "speed"]:
++                        if key in global_config["mouse_config"]:
++                            self._mousePosition[key] =  global_config["mouse_config"][key]
++
++        valid_events={
++            ecodes.EV_REL: [
++            evdev.ecodes.REL_X,
++            evdev.ecodes.REL_Y,
++            evdev.ecodes.REL_WHEEL
++            ],
++            ecodes.EV_KEY: [
++            evdev.ecodes.BTN_LEFT,
++            evdev.ecodes.BTN_RIGHT,
++            evdev.ecodes.BTN_MIDDLE,
+             evdev.ecodes.KEY_ESC,
+             evdev.ecodes.KEY_1,
+             evdev.ecodes.KEY_2,
+@@ -602,11 +622,18 @@ class Multiplexer(object):
+         signal.signal(signal.SIGTERM, raise_signal_exception)
+         while True:
+             # Calculate time until the next delayed action triggers
+-            try:
+-                now = time.time()
+-                timeout = max(0, (self._delayed[0]['when'] - now) * 1000)
+-            except IndexError:
++            now = time.time()
++            timeout = 0
++            if 0 in self._delayed and 'when' in self._delayed[0]:
++                timeout = max(timeout, (self._delayed[0]['when'] - now) * 1000)
++
++            mouse_timeout = self._mouse_timeout(now)
++            if mouse_timeout != None:
++                timeout = max(timeout, mouse_timeout*1000)
++
++            if timeout == 0:
+                 timeout = None
++
+             # Wait for either an input event or the moment when the next
+             # delayed action should be triggered, whichever comes first
+             try:
+@@ -628,6 +655,9 @@ class Multiplexer(object):
+                 # It's time for the next delayed action
+                 self._perform_delayed_actions()
+ 
++            # perform mouse events
++            self._perform_mouse_actions(now)
++
+     def _perform_normal_actions(self, actions):
+         """
+         Start/stop actions requested by a source in response to the
+@@ -639,7 +669,7 @@ class Multiplexer(object):
+         :type actions: list
+         :returns: None
+         """
+-        for (action, start) in actions:
++        for (action, start, event_infos) in actions:
+             self._logger.debug("action=%s, start=%s", action, start)
+             if action['hold'] == 0:
+                 if start:
+@@ -647,9 +677,13 @@ class Multiplexer(object):
+                         self._uinput_synthesize(action, press=True)
+                     elif action['type'] == 'exec':
+                         self._execute_program(action)
++                    elif action['type'] == 'mouse':
++                        self._uinput_mouse(action, event_infos)
+                 else:
+                     if action['type'] == 'key':
+                         self._uinput_synthesize(action, press=False)
++                    elif action['type'] == 'mouse':
++                        self._uinput_mouse(action, event_infos)
+             else:
+                 if start:
+                     # Schedule delayed action to trigger after hold time
+@@ -675,6 +709,8 @@ class Multiplexer(object):
+ 
+         :returns: None
+         """
++        if 0 not in self._delayed:
++            return
+         action = self._delayed[0]
+         if action['type'] == 'key':
+             if action['direction'] == 'down':
+@@ -715,6 +751,44 @@ class Multiplexer(object):
+             self._logger.debug("writing: code 00, type 00, val 00")
+             self._uinput.syn()
+ 
++    def _uinput_mouse(self, action, value):
++        keys = evmapy.util.as_list(action['target'])
++        for axis in keys:
++            if axis == "X":
++                self._mousePosition["x"] = value
++            elif axis == "Y":
++                self._mousePosition["y"] = value
++
++    def _mouse_timeout(self, now):
++        if abs(self._mousePosition["x"]) < self._mousePosition["deadzone"] and abs(self._mousePosition["y"]) < self._mousePosition["deadzone"]:
++            return None
++        return self._mousePosition["every"]
++
++    def _perform_mouse_actions(self, now):
++        if abs(self._mousePosition["x"]) < self._mousePosition["deadzone"] and abs(self._mousePosition["y"]) < self._mousePosition["deadzone"]:
++            return
++        if now < self._mousePosition["last"] + self._mousePosition["every"]:
++            return
++
++        if abs(self._mousePosition["x"]) >= self._mousePosition["deadzone"]:
++            self._uinput.write(evdev.ecodes.ecodes['EV_REL'], evdev.ecodes.ecodes['REL_X'], self._mouse_move_per_to_abs(self._mousePosition["x"]))
++
++        if abs(self._mousePosition["y"]) >= self._mousePosition["deadzone"]:
++            self._uinput.write(evdev.ecodes.ecodes['EV_REL'], evdev.ecodes.ecodes['REL_Y'], self._mouse_move_per_to_abs(self._mousePosition["y"]))
++
++        self._uinput.syn()
++        self._mousePosition["last"] = now
++
++    def _mouse_move_per_to_abs(self, per):
++        order = per * per
++        order = order * self._mousePosition["speed"]
++        if per < 0:
++            order = order * -1
++            order = order -1
++        else:
++            order = order +1
++        return int(order)
++        
+     def _execute_program(self, action):
+         """
+         Run external program(s) associated with the given action.
+diff --git a/evmapy/source.py b/evmapy/source.py
+index ea80351..55d73a5 100644
+--- a/evmapy/source.py
++++ b/evmapy/source.py
+@@ -101,7 +101,7 @@ class Source(object):
+             ]
+             if event.type not in supported_events:
+                 continue
+-            (event_name, event_active) = self._normalize_event(event)
++            (event_name, event_active, event_infos) = self._normalize_event(event)
+             if not event_name:
+                 continue
+             if event_active:
+@@ -109,7 +109,7 @@ class Source(object):
+                 self._event_history[1] = event_name
+             for action in self._config['map'][event.code]:
+                 pending.extend(
+-                    self._process_action(action, event_name, event_active)
++                    self._process_action(action, event_name, event_active, event_infos)
+                 )
+         return pending
+ 
+@@ -142,7 +142,7 @@ class Source(object):
+         :returns: normalized event name and event state
+         :rtype: tuple
+         """
+-        retval = (None, None)
++        retval = (None, None, None)
+         try:
+             event_info = self._config['events'][event.code]
+         except KeyError:
+@@ -154,26 +154,29 @@ class Source(object):
+             # Axis event
+             minimum = event_info['min']
+             maximum = event_info['max']
++            axisval = (event.value - (minimum + maximum)/2.0) / (maximum - (minimum + maximum)/2.0) # percentage of avancement
+             if previous > minimum and current <= minimum:
+-                retval = (name + ':min', True)
++                retval = (name + ':min', True, axisval)
+             elif previous <= minimum and current > minimum:
+-                retval = (name + ':min', False)
++                retval = (name + ':min', False, axisval)
+             elif previous < maximum and current >= maximum:
+-                retval = (name + ':max', True)
++                retval = (name + ':max', True, axisval)
+             elif previous >= maximum and current < maximum:
+-                retval = (name + ':max', False)
++                retval = (name + ':max', False, axisval)
++            else:
++                retval = (name + ':val', True, axisval)
+         else:
+             # Button event
+             if current == evdev.KeyEvent.key_hold:
+                 return retval
+             elif current > previous:
+-                retval = (name, True)
++                retval = (name, True, None)
+             else:
+-                retval = (name, False)
++                retval = (name, False, None)
+         event_info['previous'] = current
+         return retval
+ 
+-    def _process_action(self, action, event_name, event_active):
++    def _process_action(self, action, event_name, event_active, event_infos):
+         """
+         Process the given event in the context of the given action.
+ 
+@@ -197,10 +200,10 @@ class Source(object):
+             if event_active:
+                 action['trigger_active'][event_index] = True
+                 if action['mode'] == 'any' or all(action['trigger_active']):
+-                    retval.append((action, True))
++                    retval.append((action, True, event_infos))
+             else:
+                 if action['mode'] == 'any' or all(action['trigger_active']):
+-                    retval.append((action, False))
++                    retval.append((action, False, event_infos))
+                 action['trigger_active'][event_index] = False
+         else:
+             sequence = action['trigger']
+@@ -210,7 +213,7 @@ class Source(object):
+                         self._event_history[0] == sequence[current-1]):
+                     action['sequence_cur'] += 1
+                     if action['sequence_cur'] == len(sequence):
+-                        retval.append((action, True))
++                        retval.append((action, True, event_infos))
+                         action['sequence_cur'] = 1
+                         action['sequence_done'] = True
+                         self._event_history[1] = None
+@@ -218,6 +221,6 @@ class Source(object):
+                     action['sequence_cur'] = 1
+             else:
+                 if action['sequence_done'] and event_name == sequence[-1]:
+-                    retval.append((action, False))
++                    retval.append((action, False, event_infos))
+                     action['sequence_done'] = False
+         return retval

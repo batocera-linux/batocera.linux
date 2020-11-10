@@ -4,8 +4,8 @@
      PrintScreenSizeInfo();
  }
  
--#define MAPPERFILE_SDL1         "mapper-" VERSION ".map"
--#define MAPPERFILE_SDL2         "mapper-" VERSION ".sdl2.map"
+-#define MAPPERFILE_SDL1         "mapper-dosbox-x.sdl1.map"
+-#define MAPPERFILE_SDL2         "mapper-dosbox-x.sdl2.map"
 +#define MAPPERFILE_SDL1         "mapper-sdl2.map"
 +#define MAPPERFILE_SDL2         "mapper-sdl2.map"
  #if defined(C_SDL2)
@@ -20,18 +20,18 @@
  #endif
  
  #if C_SET_PRIORITY
---- a/src/misc/cross.cpp	2020-08-03 06:33:31.000000000 +0200
-+++ b/src/misc/cross.cpp	2020-08-28 13:24:35.977009442 +0200
-@@ -89,7 +89,7 @@
- #elif defined(RISCOS)
- 	in = "/<Choices$Write>/DosBox-X";
+--- a/src/misc/cross.cpp	2020-11-04 16:21:48.281934402 +0100
++++ b/src/misc/cross.cpp	2020-11-04 16:24:17.576770566 +0100
+@@ -105,7 +105,7 @@
  #elif !defined(HX_DOS)
--	in = "~/.config/dosbox-x";
-+	in = "/userdata/system/configs/dosbox";
+ 	const char *xdg_conf_home = getenv("XDG_CONFIG_HOME");
+ 	const std::string conf_home = xdg_conf_home && xdg_conf_home[0] == '/' ? xdg_conf_home: "~/.config";
+-	in = conf_home + "/dosbox-x";
++	in = conf_home + "/dosbox";
  	ResolveHomedir(in);
  #endif
- 	in += CROSS_FILESPLIT;
-@@ -101,7 +101,7 @@
+ 	//LOG_MSG("Config dir: %s", in.c_str());
+@@ -118,7 +118,7 @@
  #elif defined(MACOSX)
  #define DEFAULT_CONFIG_FILE "DOSBox-X " VERSION " Preferences"
  #else /*linux freebsd*/
@@ -40,12 +40,12 @@
  #endif
  	in = DEFAULT_CONFIG_FILE;
  }
-@@ -123,7 +123,7 @@
- 	in = "/<Choices$Write>/DosBox-X";
- 	mkdir(in.c_str(),0700);
+@@ -142,7 +142,7 @@
  #elif !defined(HX_DOS)
--	in = "~/.config/dosbox-x";
-+	in = "/userdata/system/configs/dosbox";;
+ 	const char *xdg_conf_home = getenv("XDG_CONFIG_HOME");
+ 	const std::string conf_home = xdg_conf_home && xdg_conf_home[0] == '/' ? xdg_conf_home: "~/.config";
+-	in = conf_home + "/dosbox-x";
++	in = conf_home + "/dosbox";
  	ResolveHomedir(in);
  	mkdir(in.c_str(),0700);
  #endif

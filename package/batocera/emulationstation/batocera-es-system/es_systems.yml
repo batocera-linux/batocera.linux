@@ -791,7 +791,7 @@ pico8:
   manufacturer: Ports
   release:
   hardware: console
-  extensions: [p8 png]
+  extensions: [p8, png]
   emulators:
     libretro:
       retro8: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_RETRO8] }
@@ -1150,7 +1150,6 @@ apple2:
   release: 1977
   hardware: computer
   extensions: [nib, do, po, dsk]
-  includeEmulators: no
   emulators:
     linapple:
       linapple: { requireAnyOf: [BR2_PACKAGE_LINAPPLE] }
@@ -1415,7 +1414,7 @@ windows:
   manufacturer: Microsoft
   release: 1992
   hardware: pc
-  extensions: [exe, wine, squashfs, wtgz]
+  extensions: [pc, exe, wine, wsquashfs, wtgz]
   platform:   pc
   theme:      windows
   emulators:

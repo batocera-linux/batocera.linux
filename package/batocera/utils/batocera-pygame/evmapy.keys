@@ -106,7 +106,10 @@
             "type": "key",
             "target": [ "KEY_KP2" ]
 	},
-
+        {
+            "trigger": "joystick2",
+            "type": "mouse"
+        },
 	{
             "trigger": ["hotkey", "start"],
             "type": "exec",

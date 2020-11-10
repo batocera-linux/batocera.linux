@@ -86,7 +86,9 @@ systems = {
     # https://docs.libretro.com/library/pcsx_rearmed/#bios
     "psx": { "name": "PSX", "biosFiles": [  { "md5": "6e3735ff4c7dc899ee98981385f6f3d0", "file": "bios/scph101.bin"    },
                                             { "md5": "dc2b9bf8da62ec93e868cfd29f0d067d", "file": "bios/scph1001.bin"   },
+                                            { "md5": "8dd7d5296a650fac7319bce665a6a53c", "file": "bios/scph5500.bin"   },
                                             { "md5": "490f666e1afb15b7362b406ed1cea246", "file": "bios/scph5501.bin"   },
+                                            { "md5": "32736f17079d0b2b7024407c39bd3050", "file": "bios/scph5502.bin"   },
                                             { "md5": "1e68c231d0896b7eadcad1d7d8e76129", "file": "bios/scph7001.bin"   } ] },
 
     # https://pcsx2.net/config-guide/official-english-pcsx2-configuration-guide.html#Bios
@@ -192,7 +194,7 @@ def displayMissingBios(systems, missingBios):
     sortedMissingBios = OrderedDict(sorted(missingBios.items()))
     if sortedMissingBios:
         for system in sortedMissingBios:
-            print("> {}".format(systems[system]["name"]))
+            print("> {}".format(system))
             for file in sortedMissingBios[system].keys():
                 md5str = "-"
                 if sortedMissingBios[system][file]["md5"] != "":

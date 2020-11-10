@@ -3,15 +3,23 @@
 
 libretro:
   features: [ratio, smooth, shaders, pixel_perfect, decoration, latency_reduction, game_translation]
+  cfeatures:
+    gfxbackend:
+      archs_include: [x86, x86_64]
+      prompt: GRAPHICS BACKEND
+      choices:
+        "OpenGL": opengl
+        "Vulkan": vulkan
+
   cores:
     '81':
       features: [netplay, rewind, autosave, padtokeyboard]
     atari800:
-      features: [ ]
+      features: [         rewind, autosave, padtokeyboard]
     beetle-saturn:
       features: [netplay,         autosave]
     bluemsx:
-      features: [         rewind, autosave]
+      features: [         rewind, autosave, padtokeyboard]
     bsnes:
       features: [netplay, rewind, autosave]
     cap32:
@@ -19,7 +27,7 @@ libretro:
     citra:
       features: [         rewind, autosave]
     daphne:
-      features: [ ]
+      features: [padtokeyboard]
     desmume:
       features: [netplay, rewind, autosave]
       cfeatures:
@@ -46,7 +54,7 @@ libretro:
     dolphin:
       features: [ ]
     dosbox:
-      features: [ ]
+      features: [ padtokeyboard ]
     duckstation:
       features: [ ]
     fbneo:
@@ -85,7 +93,7 @@ libretro:
                     "Off": disabled
                     "On":  enabled
     freeintv:
-      features: [ ]
+      features: [padtokeyboard]
     fuse:
       features: [         rewind, autosave, padtokeyboard]
     gambatte:
@@ -99,7 +107,7 @@ libretro:
     handy:
       features: [netplay, rewind, autosave]
     hatari:
-      features: [                 autosave]
+      features: [                 autosave, padtokeyboard]
     imame4all:
       features: [netplay, rewind, autosave]
     kronos:
@@ -236,9 +244,9 @@ libretro:
     retro8:
       features: [ ]
     quasi88:
-      features: [netplay, rewind, autosave]
+      features: [netplay, rewind, autosave, padtokeyboard]
     np2kai:
-      features: [netplay, rewind, autosave]
+      features: [netplay, rewind, autosave, padtokeyboard]
     nxengine:
       features: [ ]
     o2em:
@@ -268,7 +276,7 @@ libretro:
     prosystem:
       features: [         rewind, autosave]
     puae:
-      features: [         rewind, autosave]
+      features: [         rewind, autosave, padtokeyboard]
       cfeatures:
             video_resolution:
                 prompt: VIDEO RESOLUTION
@@ -314,9 +322,9 @@ libretro:
                     "On":         jump
                     "Off":        disabled
     px68k:
-      features: [ ]
+      features: [padtokeyboard]
     scummvm:
-      features: [ ]
+      features: [padtokeyboard]
     snes9x:
       features: [netplay, rewind, autosave]
       cfeatures:
@@ -342,9 +350,9 @@ libretro:
     tgbdual:
       features: [netplay, rewind, autosave]
     theodore:
-      features: [netplay, rewind, autosave]
+      features: [netplay, rewind, autosave, padtokeyboard]
     tyrquake:
-      features: [ ]
+      features: [padtokeyboard]
     vb:
       features: [netplay, rewind, autosave]
       cfeatures:
@@ -373,7 +381,7 @@ libretro:
     vecx:
       features: [         rewind, autosave]
     vice:
-      features: [         rewind, autosave]
+      features: [         rewind, autosave, padtokeyboard]
       cfeatures:
             external_palette:
                 prompt: EXTERNAL PALETTE
@@ -408,7 +416,7 @@ libretro:
                     "medium":           medium
                     "maximum":          maximum
     virtualjaguar:
-      features: [ ]
+      features: [padtokeyboard]
     yabasanshiro:
       features: [         rewind, autosave]
       cfeatures:
@@ -423,13 +431,13 @@ libretro:
                     "4k":       4k
 
 amiberry:
-  features: [ratio]
+  features: [ratio, padtokeyboard]
 
 citra:
   features: [ratio, rewind, screen_layout]
 
 daphne:
-  features: [ratio]
+  features: [ratio, padtokeyboard]
 
 dolphin:
   features: [ratio, internal_resolution]
@@ -495,6 +503,7 @@ dolphin:
                 "Off": 0
                 "On":  1
         gfxbackend:
+            archs_include: [x86, x86_64]
             prompt: GRAPHICS BACKEND
             choices:
                 "OpenGL": OGL
@@ -502,7 +511,7 @@ dolphin:
 
   systems:
     wii:
-        features: [emulated_wiimotes]                  
+        features: [emulated_wiimotes]
 dosbox:
   features: [ratio, padtokeyboard]
 
@@ -513,7 +522,7 @@ dosbox-x:
   features: [ratio, padtokeyboard]
 
 fsuae:
-  features: [ratio]
+  features: [ratio, padtokeyboard]
 
 linapple:
   features: [ratio, padtokeyboard]
@@ -570,10 +579,10 @@ flycast:
   features: [ratio]
 
 scummvm:
-  features: [ratio]
+  features: [ratio, padtokeyboard]
 
 vice:
-  features: [ratio]
+  features: [ratio, padtokeyboard]
 openbor:
   cfeatures:
     ratio:
@@ -613,3 +622,17 @@ melonds:
 
 rpcs3:
   features: []
+
+wine:
+  features: [padtokeyboard]
+  cfeatures:
+    dxvk:
+      prompt: dxvk
+      choices:
+        Off: 0
+        On:  1
+    dxvk_hud:
+      prompt: dxvk hud
+      choices:
+        Off: 0
+        On:  1

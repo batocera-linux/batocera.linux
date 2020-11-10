@@ -10,34 +10,85 @@ case "${ACTION}" in
     "install")
 	PKG=$1
 	pacman --noconfirm -S "${PKG}"
-	if [ $? -eq 1 ]; then
+	RET=$?
+	if [ ${RET} -eq 1 ]; then
 		sleep 1
 		pgrep pacman >/dev/null || rm -f /userdata/system/pacman/db/db.lck
 	fi
+	exit ${RET}
 	;;
     "remove")
 	PKG=$1
 	pacman --noconfirm -R "${PKG}"
-	if [ $? -eq 1 ]; then
+	RET=$?
+	if [ ${RET} -eq 1 ]; then
 		sleep 1
 		pgrep pacman >/dev/null || rm -f /userdata/system/pacman/db/db.lck
 	fi
+	exit ${RET}
 	;;
     "list")
 	if test ! -e /userdata/system/pacman/db/sync/batocera.db
 	then
 		pacman --noconfirm -Syu
 	fi
-	[ $TERMINAL -eq 1 ] && pacman --noconfirm -Ss
-	[ $TERMINAL -eq 0 ] && pacman --noconfirm -Ss --xml
-
+	if [ $TERMINAL -eq 1 ]; then
+		pacman --noconfirm -Ss
+		RET=$?
+	else
+		pacman --noconfirm -Ss --xml
+		RET=$?
+	fi
+	exit ${RET}
 	;;
     "update")
 	pacman --noconfirm -Syu
+	exit $?
+	;;
+    "list-repositories")
+	(cat <<EOF
+#!/usr/bin/python
+
+import sys
+import subprocess
+import ConfigParser
+import io
+
+def getConfig():
+    proc = subprocess.Popen(["pacman-conf"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    out, err = proc.communicate()
+    exitcode = proc.returncode
+
+    if exitcode != 0:
+        sys.stderr.write(err)
+        raise Exception("unable to read config")
+
+    buf = io.StringIO(out.decode('utf-8'))
+    config = ConfigParser.ConfigParser(allow_no_value=True)
+    config.readfp(buf)
+    return config
+
+def config2xml(config):
+    print("<?xml version=\"1.0\"?>")
+    print("<repositories>")
+    for section in config.sections():
+        if section != "options":
+            try:
+                server = config.get(section, "Server")
+                print("  <repository name=\"{}\" server=\"{}\" />".format(section, server))
+            except:
+                pass
+    print("</repositories>")
+
+config2xml(getConfig())
+EOF
+	) | python
+	     exit $?
 	;;
     *)
 	echo "${0} install <package>" >&2
 	echo "${0} remove  <package>" >&2
 	echo "${0} list" >&2
+	echo "${0} list-repositories" >&2
 	echo "${0} update" >&2
 esac

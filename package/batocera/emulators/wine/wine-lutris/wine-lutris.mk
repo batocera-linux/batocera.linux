@@ -12,6 +12,15 @@ WINE_LUTRIS_LICENSE_FILES = COPYING.LIB LICENSE
 WINE_LUTRIS_DEPENDENCIES = host-bison host-flex host-wine-lutris
 HOST_WINE_LUTRIS_DEPENDENCIES = host-bison host-flex
 
+# cross packages version dependancy check
+# check dependancy with the mono version
+# otherwise, wine doesn't found it
+define WINE_LUTRIS_HOOK_CHECK_MONO
+	grep -E '^#define WINE_MONO_VERSION "'$(WINE_MONO_VERSION)'"$$' $(@D)/dlls/mscoree/mscoree_private.h
+endef
+
+WINE_LUTRIS_PRE_CONFIGURE_HOOKS += WINE_LUTRIS_HOOK_CHECK_MONO
+
 # Wine needs its own directory structure and tools for cross compiling
 WINE_LUTRIS_CONF_OPTS = \
 	--with-wine-tools=../host-wine-lutris-$(WINE_LUTRIS_VERSION) \

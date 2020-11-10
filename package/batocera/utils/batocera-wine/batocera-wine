@@ -5,7 +5,6 @@ set -x
 ACTION=$1
 shift
 
-G_WINE_VERSION=$(wine --version)
 G_SAVES_DIR="/userdata/saves/windows"
 G_ROMS_DIR="/userdata/roms/windows"
 
@@ -17,8 +16,9 @@ export WINEDLLPATH="/lib32/wine/fakedlls:/usr/lib/wine/fakedlls"
 usage() {
     echo "${1} play    	     <game>.iso"             >&2
     echo "${1} play    	     <game>.exe"             >&2
+    echo "${1} play    	     <game>.pc"              >&2
     echo "${1} play    	     <game>.wine"            >&2
-    echo "${1} play    	     <game>.wine.squashfs"   >&2
+    echo "${1} play    	     <game>.wsquashfs"       >&2
     echo "${1} play    	     <game>.wtgz"            >&2
     echo "${1} install 	     <game>.iso"             >&2
     echo "${1} install 	     <game>.exe"             >&2
@@ -52,24 +52,28 @@ dxvk_install() {
 
     if test "${DXVK}" = 1
     then
+	mkdir -p "${WINEPREFIX}/drive_c/windows/system32" "${WINEPREFIX}/drive_c/windows/syswow64" || return 1
 	if test -e "/userdata/system/dxvk"
 	then
-	    cp "/userdata/system/dxvk/x64/"{d3d11.dll,d3d10core.dll,d3d10.dll,d3d10_1.dll,d3d9.dll,dxgi.dll} "${WINEPREFIX}/drive_c/windows/system32" || return 1
-            cp "/userdata/system/dxvk/x32/"{d3d11.dll,d3d10core.dll,d3d10.dll,d3d10_1.dll,d3d9.dll,dxgi.dll} "${WINEPREFIX}/drive_c/windows/syswow64" || return 1
+	    echo "Creating links on /userdata, Linux File System required !!!"
+	    ln -sf "/userdata/system/dxvk/x64/"{d3d12.dll,d3d11.dll,d3d10core.dll,d3d10.dll,d3d10_1.dll,d3d9.dll,dxgi.dll} "${WINEPREFIX}/drive_c/windows/system32" || return 1
+            ln -sf "/userdata/system/dxvk/x32/"{d3d12.dll,d3d11.dll,d3d10core.dll,d3d10.dll,d3d10_1.dll,d3d9.dll,dxgi.dll} "${WINEPREFIX}/drive_c/windows/syswow64" || return 1
 	else
-	    cp "/usr/share/dxvk/x64/"{d3d11.dll,d3d10core.dll,d3d10.dll,d3d10_1.dll,d3d9.dll,dxgi.dll} "${WINEPREFIX}/drive_c/windows/system32" || return 1
-            cp "/usr/share/dxvk/x32/"{d3d11.dll,d3d10core.dll,d3d10.dll,d3d10_1.dll,d3d9.dll,dxgi.dll} "${WINEPREFIX}/drive_c/windows/syswow64" || return 1
+	    echo "Creating links on /userdata, Linux File System required !!!"
+	    ln -sf "/usr/share/dxvk/x64/"{d3d12.dll,d3d11.dll,d3d10core.dll,d3d10.dll,d3d10_1.dll,d3d9.dll,dxgi.dll} "${WINEPREFIX}/drive_c/windows/system32" || return 1
+            ln -sf "/usr/share/dxvk/x32/"{d3d12.dll,d3d11.dll,d3d10core.dll,d3d10.dll,d3d10_1.dll,d3d9.dll,dxgi.dll} "${WINEPREFIX}/drive_c/windows/syswow64" || return 1
 	fi
     else
-	cp "/usr/lib/wine/fakedlls/"{d3d11.dll,d3d10core.dll,d3d10.dll,d3d10_1.dll,d3d9.dll,dxgi.dll}   "${WINEPREFIX}/drive_c/windows/system32" || return 1
-        cp "/lib32/wine/fakedlls/"{d3d11.dll,d3d10core.dll,d3d10.dll,d3d10_1.dll,d3d9.dll,dxgi.dll} "${WINEPREFIX}/drive_c/windows/syswow64" || return 1
+	echo "Creating links on /userdata, Linux File System required !!!"
+	ln -sf "/usr/lib/wine/fakedlls/"{d3d12.dll,d3d11.dll,d3d10core.dll,d3d10.dll,d3d10_1.dll,d3d9.dll,dxgi.dll}   "${WINEPREFIX}/drive_c/windows/system32" || return 1
+        ln -sf "/lib32/wine/fakedlls/"{d3d12.dll,d3d11.dll,d3d10core.dll,d3d10.dll,d3d10_1.dll,d3d9.dll,dxgi.dll} "${WINEPREFIX}/drive_c/windows/syswow64" || return 1
     fi
 
     if test "${DXVK}" = 1
     then
-	export WINEDLLOVERRIDES="${WINEDLLOVERRIDES};dxgi,d3d9,d3d10,d3d10_1,d3d10core,d3d11=n;nvapi64,nvapi="
+	export WINEDLLOVERRIDES="${WINEDLLOVERRIDES};dxgi,d3d9,d3d10,d3d10_1,d3d10core,d3d11,d3d12=n;nvapi64,nvapi="
     else
-	export WINEDLLOVERRIDES="${WINEDLLOVERRIDES};dxgi,d3d9,d3d10,d3d10_1,d3d10core,d3d11=b"
+	export WINEDLLOVERRIDES="${WINEDLLOVERRIDES};dxgi,d3d9,d3d10,d3d10_1,d3d10core,d3d11,d3d12=b"
     fi
 
     return 0
@@ -124,7 +128,20 @@ play_wine() {
 
     WINE_CMD=$(getWine_var "${WINEPOINT}" "CMD" "explorer")
     WINE_DIR=$(getWine_var "${WINEPOINT}" "DIR" "")
-    (cd "${WINEPOINT}/${WINE_DIR}" && WINEPREFIX=${WINEPOINT} wine ${WINE_CMD})
+    (cd "${WINEPOINT}/${WINE_DIR}" && WINEPREFIX=${WINEPOINT} eval "wine ${WINE_CMD}")
+    waitWineServer
+}
+
+play_pc() {
+    GAMENAME=$1
+    WINEPOINT="${G_SAVES_DIR}/"$(basename "${GAMENAME}")".wine"
+
+    createWineDirectory "${WINEPOINT}" || return 1
+    dxvk_install "${WINEPOINT}" || return 1
+
+    WINE_CMD=$(getWine_var "${GAMENAME}" "CMD" "explorer")
+    WINE_DIR=$(getWine_var "${GAMENAME}" "DIR" "")
+    (cd "${GAMENAME}/${WINE_DIR}" && WINEPREFIX=${WINEPOINT} eval "wine ${WINE_CMD}")
     waitWineServer
 }
 
@@ -146,7 +163,7 @@ play_exe() {
     GAMEDIR=$(dirname "${GAMENAME}")
     GAMEEXE=$(basename "${GAMENAME}")
 
-    createWineDirectory "${WINEPOINT}"
+    createWineDirectory "${WINEPOINT}" || return 1
     dxvk_install "${WINEPOINT}" || return 1
 
     (cd "${GAMEDIR}" && WINEPREFIX=${WINEPOINT} wine "${GAMEEXE}")
@@ -167,7 +184,7 @@ play_winetgz() {
 
     WINE_CMD=$(getWine_var "${WINEPOINT}" "CMD" "explorer")
     WINE_DIR=$(getWine_var "${WINEPOINT}" "DIR" "")
-    (cd "${WINEPOINT}/${WINE_DIR}" && WINEPREFIX=${WINEPOINT} wine ${WINE_CMD})
+    (cd "${WINEPOINT}/${WINE_DIR}" && WINEPREFIX=${WINEPOINT} eval "wine ${WINE_CMD}")
     waitWineServer
 }
 
@@ -192,19 +209,20 @@ play_squashfs() {
 	return 1
     fi
 
-    if ! mount -t overlay overlay -o rw,lowerdir="${SQUASHFSPOINT}",upperdir="${SAVEPOINT}",workdir="${WORKPOINT}",index=on,redirect_dir=on "${WINEPOINT}"
+    if ! mount -t overlay overlay -o rw,lowerdir="${SQUASHFSPOINT}",upperdir="${SAVEPOINT}",workdir="${WORKPOINT}",redirect_dir=on "${WINEPOINT}"
     then
 	umount "${SQUASHFSPOINT}"
 	rmdir "${SQUASHFSPOINT}"
 	rm -rf "${WORKPOINT}"
 	rmdir "${WINEPOINT}"
+	return 1
     fi
 
     dxvk_install "${WINEPOINT}" || return 1
 
     WINE_CMD=$(getWine_var "${WINEPOINT}" "CMD" "explorer")
     WINE_DIR=$(getWine_var "${WINEPOINT}" "DIR" "")
-    (cd "${WINEPOINT}/${WINE_DIR}" && WINEPREFIX=${WINEPOINT} wine ${WINE_CMD})
+    (cd "${WINEPOINT}/${WINE_DIR}" && WINEPREFIX=${WINEPOINT} eval "wine ${WINE_CMD}")
     waitWineServer
 
     # try to clean the cdrom
@@ -287,7 +305,7 @@ wine2squashfs() {
     GAMENAME=$1
     BASEGAMENAME=$(basename "${GAMENAME}")
     GAMEDIR="${GAMENAME}"
-    SQUASHFSFILE="${G_ROMS_DIR}/${BASEGAMENAME}.squashfs"
+    SQUASHFSFILE=$(echo "${G_ROMS_DIR}/${BASEGAMENAME}.squashfs" | sed -e s+"\.wine\.squashfs$"+".wsquashfs"+)
     
     mksquashfs "${GAMEDIR}" "${SQUASHFSFILE}" || return 1
     return 0
@@ -334,13 +352,16 @@ case "${ACTION}" in
 	    "wine")
 		play_wine "${GAMENAME}" || cleanAndExit 1
 		;;
+	    "pc")
+		play_pc "${GAMENAME}" || cleanAndExit 1
+		;;
 	    "exe")
 		play_exe "${GAMENAME}" || cleanAndExit 1
 		;;
 #	    "iso")
 #		play_iso "${GAMENAME}" || cleanAndExit 1
 #		;;
-	    "squashfs")
+	    "wsquashfs")
 		play_squashfs "${GAMENAME}" || cleanAndExit 1
 		;;
 	    "wtgz")

@@ -1,0 +1,13 @@
+--- a/Makefile	2020-11-01 18:44:14.050287523 +0100
++++ b/Makefile	2020-11-01 18:44:21.302418293 +0100
+@@ -117,10 +117,6 @@
+       endif
+    endif
+ 
+-ifneq ($(findstring Linux,$(shell uname -s)),)
+-   HAVE_CDROM = 1
+-endif
+-
+ # OS X
+ else ifeq ($(platform), osx)
+    TARGET  := $(TARGET_NAME)_libretro.dylib

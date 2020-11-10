@@ -1,0 +1,22 @@
+--- a/src/burner/libretro/libretro.cpp	2020-11-05 09:03:03.959503610 +0100
++++ b/src/burner/libretro/libretro.cpp	2020-11-05 09:02:17.962639812 +0100
+@@ -252,6 +252,9 @@
+ 
+ extern unsigned int (__cdecl *BurnHighCol) (signed int r, signed int g, signed int b, signed int i);
+ 
++#ifndef GIT_VERSION
++#define GIT_VERSION ""
++#endif
+ void retro_get_system_info(struct retro_system_info *info)
+ {
+ 	char *library_version = (char*)calloc(22, sizeof(char));
+@@ -259,9 +262,6 @@
+ 	sprintf(library_version, "v%x.%x.%x.%02x %s", nBurnVer >> 20, (nBurnVer >> 16) & 0x0F, (nBurnVer >> 8) & 0xFF, nBurnVer & 0xFF, GIT_VERSION);
+ 
+ 	info->library_name = APP_TITLE;
+-#ifndef GIT_VERSION
+-#define GIT_VERSION ""
+-#endif
+ 	info->library_version = strdup(library_version);
+ 	info->need_fullpath = true;
+ 	info->block_extract = true;
