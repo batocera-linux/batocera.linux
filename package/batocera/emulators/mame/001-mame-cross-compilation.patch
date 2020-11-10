@@ -212,6 +212,28 @@ diff -ur ./scripts/toolchain.lua /home/romain/batocera.linux/output/odroidn2/bui
  			"$(ANDROID_NDK_ROOT)/sources/cxx-stl/llvm-libc++/libcxx/include",
  			"$(ANDROID_NDK_ROOT)/sources/cxx-stl/llvm-libc++/include",
  			"$(ANDROID_NDK_ROOT)/sysroot/usr/include",
+@@ -1112,10 +1132,17 @@
+ 		}
+ 
+ 	configuration { "linux-* or rpi" }
+-		postbuildcommands {
+-			"$(SILENT) echo Stripping symbols.",
+-			"$(SILENT) strip -s \"$(TARGET)\""
+-		}
++		if _OPTIONS['STRIP']~=nil then
++			postbuildcommands {
++				"$(SILENT) echo Stripping symbols.",
++				"$(SILENT) " .. _OPTIONS['STRIP'] .. " -s \"$(TARGET)\""
++			}
++		else
++			postbuildcommands {
++				"$(SILENT) echo Stripping symbols.",
++				"$(SILENT) strip -s \"$(TARGET)\""
++			}
++		end
+ 
+ 	configuration { "mingw*", "x64" }
+ 		postbuildcommands {
 diff -ur ./src/osd/modules/render/drawbgfx.cpp /home/romain/batocera.linux/output/odroidn2/build/mame-mame0226/src/osd/modules/render/drawbgfx.cpp
 --- a/src/osd/modules/render/drawbgfx.cpp	2020-10-27 02:00:36.000000000 +0100
 +++ b/src/osd/modules/render/drawbgfx.cpp	2020-11-09 18:45:54.759139263 +0100

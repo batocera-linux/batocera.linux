@@ -1,0 +1,87 @@
+--- /dev/null	2020-10-23 13:13:03.827999919 +0200
++++ b/scripts/target/mame/tools.lua	2020-11-10 16:05:11.875945351 +0100
+@@ -0,0 +1,71 @@
++-- license:BSD-3-Clause
++-- copyright-holders:MAMEdev Team
++
++---------------------------------------------------------------------------
++--
++--   tools.lua
++--
++--   Small driver-specific example makefile
++--   Use make SUBTARGET=tools to build
++--
++---------------------------------------------------------------------------
++
++
++--------------------------------------------------
++-- Specify all the CPU cores necessary for the
++-- drivers referenced in tools.lst.
++--------------------------------------------------
++
++--------------------------------------------------
++-- Specify all the sound cores necessary for the
++-- drivers referenced in tools.lst.
++--------------------------------------------------
++
++--------------------------------------------------
++-- specify available video cores
++--------------------------------------------------
++
++--------------------------------------------------
++-- specify available machine cores
++--------------------------------------------------
++
++MACHINES["NETLIST"] = true
++
++--------------------------------------------------
++-- specify available bus cores
++--------------------------------------------------
++
++--------------------------------------------------
++-- This is the list of files that are necessary
++-- for building all of the drivers referenced
++-- in tools.lst
++--------------------------------------------------
++
++function createProjects_mame_tools(_target, _subtarget)
++	project ("mame_tools")
++	targetsubdir(_target .."_" .. _subtarget)
++	kind (LIBTYPE)
++	uuid (os.uuid("drv-mame-tools"))
++	addprojectflags()
++	precompiledheaders_novs()
++
++	includedirs {
++		MAME_DIR .. "src/osd",
++		MAME_DIR .. "src/emu",
++		MAME_DIR .. "src/devices",
++		MAME_DIR .. "src/mame",
++		MAME_DIR .. "src/lib",
++		MAME_DIR .. "src/lib/util",
++		MAME_DIR .. "3rdparty",
++		GEN_DIR  .. "mame/layout",
++	}
++
++files{
++}
++end
++
++function linkProjects_mame_tools(_target, _subtarget)
++	links {
++		"mame_tools",
++	}
++end
+--- /dev/null	2020-10-23 13:13:03.827999919 +0200
++++ b/src/mame/tools.lst	2020-11-10 16:04:04.922626428 +0100
+@@ -0,0 +1,10 @@
++// license:BSD-3-Clause
++// copyright-holders:Aaron Giles
++/******************************************************************************
++
++    tools.lst
++
++    List of all enabled drivers in the system. This file is parsed by
++    makelist.exe, sorted, and output as C code describing the drivers.
++
++******************************************************************************/
