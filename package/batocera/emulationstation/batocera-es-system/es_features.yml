@@ -57,6 +57,45 @@ libretro:
       features: [ padtokeyboard ]
     duckstation:
       features: [ ]
+      cfeatures:
+            internal_resolution:
+                prompt:  INTERNAL RESOLUTION
+                choices:
+                    "native":   1
+                    "2x":       2
+                    "3x/720p":  3
+                    "4x":       4
+                    "5x/1080p": 5
+                    "6x/1440p": 6
+                    "7x":       7
+                    "8x":       8
+                    "9x":       9
+            antialiasing:
+                prompt:  MSAA/SSAA
+                choices:
+                    "Off":      1
+                    "2x msaa":  2
+                    "4x msaa":  4
+                    "8x msaa":  8
+                    "16x msaa": 16
+                    "32x msaa": 32
+                    "2x ssaa":  2-ssaa
+                    "4x ssaa":  4-ssaa
+                    "8x ssaa":  8-ssaa
+                    "16x ssaa": 16-ssaa
+                    "32x ssaa": 32-ssaa
+            texture_filtering:
+                prompt:  TEXTURE FILTER
+                choices:
+                    "nearest":   Nearest
+                    "bilinear":  Bilinear
+                    "jinc2":     JINC2
+                    "xBR":       xBR
+            widescreen_hack:
+                prompt: WIDESCREEN HACK
+                choices:
+                    "Off":  false
+                    "On":   true
     fbneo:
       features: [netplay, rewind, autosave]
     fceumm:
