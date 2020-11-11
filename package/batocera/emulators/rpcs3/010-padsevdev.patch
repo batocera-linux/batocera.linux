@@ -1,0 +1,180 @@
+diff --git a/rpcs3/Input/evdev_joystick_handler.cpp b/rpcs3/Input/evdev_joystick_handler.cpp
+index b6dab60..4a8438c 100644
+--- a/rpcs3/Input/evdev_joystick_handler.cpp
++++ b/rpcs3/Input/evdev_joystick_handler.cpp
+@@ -16,6 +16,7 @@
+ #include <cstring>
+ #include <cstdio>
+ #include <cmath>
++#include <sstream>
+ 
+ LOG_CHANNEL(evdev_log, "evdev");
+ 
+@@ -96,23 +97,23 @@ bool evdev_joystick_handler::Init()
+ 	if (m_is_init)
+ 		return true;
+ 
+-	m_pos_axis_config.load();
+-
+-	if (!m_pos_axis_config.exist())
+-		m_pos_axis_config.save();
+-
+-	for (const auto& node : m_pos_axis_config.get_nodes())
+-	{
+-		if (*static_cast<cfg::_bool*>(node.second))
+-		{
+-			const auto name = node.first;
+-			const int code  = libevdev_event_code_from_name(EV_ABS, name.c_str());
+-			if (code < 0)
+-				evdev_log.error("Failed to read axis name from %s. [code = %d] [name = %s]", m_pos_axis_config.cfg_name, code, name);
+-			else
+-				m_positive_axis.emplace_back(code);
+-		}
+-	}
++	//m_pos_axis_config.load();
++	//
++	//if (!m_pos_axis_config.exist())
++	//	m_pos_axis_config.save();
++	//
++	//for (const auto& node : m_pos_axis_config.get_nodes())
++	//{
++	//	if (*static_cast<cfg::_bool*>(node.second))
++	//	{
++	//		const auto name = node.first;
++	//		const int code  = libevdev_event_code_from_name(EV_ABS, name.c_str());
++	//		if (code < 0)
++	//			evdev_log.error("Failed to read axis name from %s. [code = %d] [name = %s]", m_pos_axis_config.cfg_name, code, name);
++	//		else
++	//			m_positive_axis.emplace_back(code);
++	//	}
++	//}
+ 
+ 	m_is_init = true;
+ 	return true;
+@@ -240,19 +241,26 @@ std::unordered_map<u64, std::pair<u16, bool>> evdev_joystick_handler::GetButtonV
+ 		const int min = libevdev_get_abs_minimum(dev, code);
+ 		const int max = libevdev_get_abs_maximum(dev, code);
+ 
++		int mid = (min+max)/2;
++		int size = (max-min)/2;
++
+ 		// Triggers do not need handling of negative values
+-		if (min >= 0 && std::find(m_positive_axis.begin(), m_positive_axis.end(), code) == m_positive_axis.end())
++		if (min >= 0 && std::find(m_positive_axis.begin(), m_positive_axis.end(), code) != m_positive_axis.end())
+ 		{
+-			const float fvalue = ScaledInput(val, min, max);
+-			button_values.emplace(code, std::make_pair<u16, bool>(static_cast<u16>(fvalue), false));
+-			continue;
++		  if(val > mid) {
++		    const float fvalue = ScaledInput(val, min, max);
++		    button_values.emplace(code, std::make_pair<u16, bool>(static_cast<u16>(fvalue), false));
++		  }
++		  continue;
+ 		}
+ 
++		if(val > mid+size/10 || val < mid-size/10) { // /10 for a deadzone
+ 		const float fvalue = ScaledInput2(val, min, max);
+ 		if (fvalue < 0)
+ 			button_values.emplace(code, std::make_pair<u16, bool>(static_cast<u16>(std::abs(fvalue)), true));
+ 		else
+ 			button_values.emplace(code, std::make_pair<u16, bool>(static_cast<u16>(fvalue), false));
++		}
+ 	}
+ 
+ 	return button_values;
+@@ -333,8 +341,12 @@ void evdev_joystick_handler::get_next_button_press(const std::string& padId, con
+ 
+ 	std::pair<u16, std::string> pressed_button = { 0, "" };
+ 
+-	for (const auto& [code, name] : button_list)
++	for (const auto& [code, name2] : button_list)
+ 	{
++	  std::stringstream ss;
++	  ss << code;
++	  std::string name = ss.str();
++
+ 		// Handle annoying useless buttons
+ 		if (padId.find("Xbox 360") != umax && code >= BTN_TRIGGER_HAPPY)
+ 			continue;
+@@ -357,8 +369,12 @@ void evdev_joystick_handler::get_next_button_press(const std::string& padId, con
+ 		}
+ 	}
+ 
+-	for (const auto& [code, name] : axis_list)
++	for (const auto& [code, name2] : axis_list)
+ 	{
++	  std::stringstream ss;
++	  ss << (code+1000);
++	  std::string name = ss.str();
++
+ 		if (data[code].second)
+ 			continue;
+ 
+@@ -380,8 +396,12 @@ void evdev_joystick_handler::get_next_button_press(const std::string& padId, con
+ 		}
+ 	}
+ 
+-	for (const auto& [code, name] : rev_axis_list)
++	for (const auto& [code, name2] : rev_axis_list)
+ 	{
++	  std::stringstream ss;
++	  ss << "-" << (code+1000);
++	  std::string name = ss.str();
++
+ 		if (!data[code].second)
+ 			continue;
+ 
+@@ -683,6 +703,19 @@ int evdev_joystick_handler::add_device(const std::string& device, const std::sha
+ 					}
+ 				}
+ 
++				// mark triggers
++				int val;
++				for (const auto& [code, axis_name] : axis_list)
++				  {
++				    if (libevdev_fetch_event_value(dev, EV_ABS, code, &val) != 0) {
++				      const int min = libevdev_get_abs_minimum(dev, code);
++				      const int max = libevdev_get_abs_maximum(dev, code);
++				      if(val == min || val == max) {
++					m_positive_axis.emplace_back(code);
++				      }
++				    }
++				  }
++
+ 				// Alright, now that we've confirmed we haven't added this joystick yet, les do dis.
+ 				m_dev->device     = dev;
+ 				m_dev->path       = path;
+@@ -905,25 +938,15 @@ bool evdev_joystick_handler::bindPadToDevice(std::shared_ptr<Pad> pad, const std
+ 	{
+ 		EvdevButton button{ 0, -1, EV_ABS };
+ 
+-		int key  = FindKeyCode(axis_list, name, false);
+-		if (key >= 0)
+-			axis_orientations.emplace(i, false);
+-
+-		if (key < 0)
+-		{
+-			key = FindKeyCode(rev_axis_list, name, false);
+-			if (key >= 0)
+-				axis_orientations.emplace(i, true);
+-		}
++		int key  = atoi(name.to_string().c_str());
+ 
+-		if (key < 0)
+-		{
+-			key         = FindKeyCode(button_list, name);
+-			button.type = EV_KEY;
+-		}
+-		else
+-		{
+-			button.dir = axis_orientations[i];
++		if(key > 1000) { // axis
++		  if (key >= 0)
++		    axis_orientations.emplace(i, false);
++		  else
++		    axis_orientations.emplace(i, true);
++		} else {
++		  button.type = EV_KEY;
+ 		}
+ 
+ 		button.code = static_cast<u32>(key);
