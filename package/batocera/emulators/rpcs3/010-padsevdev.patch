@@ -1,5 +1,5 @@
 diff --git a/rpcs3/Input/evdev_joystick_handler.cpp b/rpcs3/Input/evdev_joystick_handler.cpp
-index b6dab60..4a8438c 100644
+index b6dab60..af6b86e 100644
 --- a/rpcs3/Input/evdev_joystick_handler.cpp
 +++ b/rpcs3/Input/evdev_joystick_handler.cpp
 @@ -16,6 +16,7 @@
@@ -144,7 +144,7 @@ index b6dab60..4a8438c 100644
  				// Alright, now that we've confirmed we haven't added this joystick yet, les do dis.
  				m_dev->device     = dev;
  				m_dev->path       = path;
-@@ -905,25 +938,15 @@ bool evdev_joystick_handler::bindPadToDevice(std::shared_ptr<Pad> pad, const std
+@@ -905,25 +938,19 @@ bool evdev_joystick_handler::bindPadToDevice(std::shared_ptr<Pad> pad, const std
  	{
  		EvdevButton button{ 0, -1, EV_ABS };
  
@@ -158,8 +158,7 @@ index b6dab60..4a8438c 100644
 -			if (key >= 0)
 -				axis_orientations.emplace(i, true);
 -		}
-+		int key  = atoi(name.to_string().c_str());
- 
+-
 -		if (key < 0)
 -		{
 -			key         = FindKeyCode(button_list, name);
@@ -168,11 +167,17 @@ index b6dab60..4a8438c 100644
 -		else
 -		{
 -			button.dir = axis_orientations[i];
-+		if(key > 1000) { // axis
-+		  if (key >= 0)
++		int key  = atoi(name.to_string().c_str());
++
++		if(key <= -1000 || key >= 1000) { // axis
++		  if (key >= 0) {
++		    key -= 1000;
 +		    axis_orientations.emplace(i, false);
-+		  else
++		  } else {
++		    key += 1000;
++		    key *= -1;
 +		    axis_orientations.emplace(i, true);
++		  }
 +		} else {
 +		  button.type = EV_KEY;
  		}
