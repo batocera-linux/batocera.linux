@@ -311,7 +311,7 @@ def generateCoreSettings(retroarchCore, system):
         else:
             coreSettings.save('beetle_psx_hw_widescreen_hack', '"disabled"')
 
-     if (system.config['core'] == 'duckstation'):
+    if (system.config['core'] == 'duckstation'):
         # resolution scale (default 1)
         if system.isOptSet('resolution_scale'):
             coreSettings.save('duckstation_GPU.ResolutionScale', system.config['resolution_scale'])
@@ -333,7 +333,7 @@ def generateCoreSettings(retroarchCore, system):
         else:
             coreSettings.save('duckstation_GPU.WidescreenHack', '"false"')
 
-     if (system.config['core'] == 'pcsx_rearmed'):
+    if (system.config['core'] == 'pcsx_rearmed'):
         for n in range(1, 8+1):
             val = coreSettings.load('pcsx_rearmed_pad{}type'.format(n))
             if val == '"none"' or val == "" or val is None:
