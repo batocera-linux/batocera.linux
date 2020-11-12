@@ -1,4 +1,4 @@
 #!/bin/bash
 
 killall xow
-nohup /usr/bin/xow &
+nohup /usr/bin/xow >/dev/null 2>/dev/null &
