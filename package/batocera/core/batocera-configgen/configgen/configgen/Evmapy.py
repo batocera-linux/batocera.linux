@@ -63,7 +63,7 @@ class Evmapy():
                             input = pad.inputs[index]
                             if input.type == "button":
                                 # don't add 2 times the same button (ie select as hotkey)
-                                if input.code not in known_buttons_codes:
+                                if input.code not in known_buttons_codes and input.code is not None:
                                     known_buttons_names[input.name] = True
                                     known_buttons_codes[input.code] = input.name # keep the master name for aliases
                                     padConfig["buttons"].append({
@@ -100,7 +100,7 @@ class Evmapy():
                                 elif input.name == "joystick1left" or input.name == "joystick2left":
                                     axisName = "X"
 
-                                if axisId in [0, 1] and axisName in ["X", "Y"]:
+                                if axisId in [0, 1] and axisName in ["X", "Y"] and input.code is not None:
                                     axisMin, axisMax = Evmapy.__getPadMinMaxAxis(pad.dev, int(input.code))
                                     known_buttons_names["ABS" + str(axisId) + axisName + ":min"] = True
                                     known_buttons_names["ABS" + str(axisId) + axisName + ":max"] = True
