@@ -661,6 +661,17 @@ melonds:
 
 rpcs3:
   features: []
+  cfeatures:
+    gui:
+      prompt: Display user interface
+      choices:
+        Off: 0
+        On:  1
+    gfxbackend:
+      prompt: GRAPHICS BACKEND
+      choices:
+        OpenGL: OpenGL
+        Vulkan: Vulkan
 
 wine:
   features: [padtokeyboard]

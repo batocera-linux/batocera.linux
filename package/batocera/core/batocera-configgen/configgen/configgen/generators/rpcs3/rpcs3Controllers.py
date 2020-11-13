@@ -19,7 +19,7 @@ def generateConfigInputYml(controllers):
         if nplayer <= 7:
             f.write("Player {} Input:\n".format(nplayer))
             f.write("  Handler: Evdev\n")
-            f.write("  Device: {}\n".format(pad.realName))
+            f.write("  Device: {}\n".format(pad.dev))
             f.write("  Profile: pad{}\n".format(nplayer))
         nplayer += 1
     for i in range(nplayer, 8):
