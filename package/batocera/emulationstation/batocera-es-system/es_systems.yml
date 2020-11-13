@@ -1461,6 +1461,21 @@ pygame:
   comment_fr: |
           Créez vos jeux vous-même ! Pygame vous aide à créer vos propres jeux en quelques lignes de code seulement. Vous trouvez sur internet plein d'exemples et de tutoriaux.
 
+linux:
+  name:       Linux
+  manufacturer: Linux
+  release:
+  hardware: port
+  extensions: [pc]
+  group: ports
+  path:       /userdata/roms/linux
+  command:    "cd %ROM% && /bin/sh run.sh %CONTROLLERSCONFIG%"
+  force:      True
+  comment_en: |
+          Third party Linux games and apps that can be run from a .pc games.
+  comment_fr: |
+          Jeux et applications Linux additionnels qui peuvent etre lancés depuis un dossier .pc.
+
 imageviewer:
   name:       Screenshots
   manufacturer: Misc. System
