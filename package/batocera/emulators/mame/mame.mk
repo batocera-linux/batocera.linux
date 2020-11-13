@@ -21,7 +21,7 @@ MAME_TARGET_NAME = mamearcade64
 MAME_CROSS_OPTS += PTR64=1
 # other archs are embedded, no X11, no OpenGL (only ES)
 else
-MAME_CROSS_OPTS += NO_X11=1 NO_OPENGL=1 NO_USE_XINPUT=1 NO_USE_BGFX_KHRONOS=1
+MAME_CROSS_OPTS += NO_X11=1 NO_OPENGL=1 NO_USE_XINPUT=1 NO_USE_BGFX_KHRONOS=1 FORCE_DRC_C_BACKEND=1
 endif
 
 # allow cross-architecture compilation with MAME build system
@@ -38,6 +38,10 @@ endif
 
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_ODROIDC4),y)
 MAME_CFLAGS += -mcpu=cortex-a55 -mtune=cortex-a55
+endif
+
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_ODROIDN2)$(BR2_PACKAGE_BATOCERA_TARGET_VIM3),y)
+MAME_CFLAGS += -mcpu=cortex-a73 -mtune=cortex-a73.cortex-a53
 endif
 
 define MAME_BUILD_CMDS
@@ -81,10 +85,6 @@ define MAME_BUILD_CMDS
 	STRIP_SYMBOLS=1 \
 	TOOLS=1
 endef
-
-# Systems libs disabled for now
-#	USE_SYSTEM_LIB_LUA=1 \
-#	USE_SYSTEM_LIB_PUGIXML=1 \
 
 define MAME_INSTALL_TARGET_CMDS
 	# Create specific directories on target to store MAME distro
