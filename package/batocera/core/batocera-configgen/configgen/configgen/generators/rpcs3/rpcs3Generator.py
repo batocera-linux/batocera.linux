@@ -88,7 +88,7 @@ class Rpcs3Generator(Generator):
         if system.isOptSet("gfxbackend"):
             rpcs3ymlconfig["Video"]['Renderer'] = system.config["gfxbackend"]
         else:
-            rpcs3ymlconfig["Video"]['Renderer'] = 'Vulkan' # OpenGL
+            rpcs3ymlconfig["Video"]['Renderer'] = 'OpenGL' # Vulkan
 
         rpcs3ymlconfig["Audio"]['Renderer'] = 'ALSA'
         rpcs3ymlconfig["Audio"]['Audio Channels'] = 'Downmix to Stereo'
