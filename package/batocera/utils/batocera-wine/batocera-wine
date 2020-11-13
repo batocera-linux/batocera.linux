@@ -43,8 +43,8 @@ dxvk_install() {
     # install dxvk only on system where it is available (aka, not x86)
     test -e "/usr/share/dxvk" || return 0
 
-    DXVK=$(batocera-settings --command load --key dxvk --system windows --game "${ROMGAMENAME}")
-    DXVK_HUD=$(batocera-settings --command load --key dxvk_hud --system windows --game "${ROMGAMENAME}")
+    DXVK=$(batocera-settings -e -r dxvk -s windows -g "${ROMGAMENAME}")
+    DXVK_HUD=$(batocera-settings -e -r dxvk_hud -s windows -g "${ROMGAMENAME}")
 
     if test "${DXVK_HUD}" = 1
     then
