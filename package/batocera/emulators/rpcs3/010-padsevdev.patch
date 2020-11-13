@@ -1,5 +1,5 @@
 diff --git a/rpcs3/Input/evdev_joystick_handler.cpp b/rpcs3/Input/evdev_joystick_handler.cpp
-index b6dab60..0230a80 100644
+index b6dab60..bbc9d3b 100644
 --- a/rpcs3/Input/evdev_joystick_handler.cpp
 +++ b/rpcs3/Input/evdev_joystick_handler.cpp
 @@ -16,6 +16,7 @@
@@ -150,6 +150,33 @@ index b6dab60..0230a80 100644
  		if (!data[code].second)
  			continue;
  
+@@ -551,7 +578,7 @@ int evdev_joystick_handler::GetButtonInfo(const input_event& evt, const std::sha
+ 		const int max = libevdev_get_abs_maximum(dev, code);
+ 
+ 		// Triggers do not need handling of negative values
+-		if (min >= 0 && std::find(m_positive_axis.begin(), m_positive_axis.end(), code) == m_positive_axis.end())
++		if (min >= 0 && std::find(m_positive_axis.begin(), m_positive_axis.end(), code) != m_positive_axis.end())
+ 		{
+ 			m_is_negative          = false;
+ 			m_is_button_or_trigger = true;
+@@ -598,7 +625,7 @@ std::vector<std::string> evdev_joystick_handler::ListDevices()
+ 				libevdev_has_event_type(dev, EV_ABS))
+ 			{
+ 				// It's a joystick.
+-				std::string name = get_device_name(dev);
++				std::string name = "/dev/input/" + et.name;
+ 
+ 				if (unique_names.find(name) == unique_names.end())
+ 					unique_names.emplace(name, 1);
+@@ -642,7 +669,7 @@ int evdev_joystick_handler::add_device(const std::string& device, const std::sha
+ 				continue;
+ 			}
+ 
+-			std::string name = get_device_name(dev);
++			std::string name = path;
+ 
+ 			if (unique_names.find(name) == unique_names.end())
+ 				unique_names.emplace(name, 1);
 @@ -683,6 +710,19 @@ int evdev_joystick_handler::add_device(const std::string& device, const std::sha
  					}
  				}
