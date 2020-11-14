@@ -213,7 +213,7 @@ function processing() {
     case "${command}" in
 
         "read"|"get"|"load"|"r")
-            val="$(get_config "$keyvalue")"
+            val="$(get_config "${keyvalue//[[:punct:]]/.}")"
             ret=$?
             [[ "$val" == "$COMMENT_CHAR" ]] && return 11
             [[ -z "$val" && $ret -eq 0 ]] && return 10
@@ -222,7 +222,7 @@ function processing() {
         ;;
 
         "stat"|"status")
-            val="$(get_config $keyvalue)"
+            val="$(get_config "${keyvalue//[[:punct:]]/.}")"
             ret=$?
             [[ -f "$BATOCERA_CONFIGFILE" ]] && echo "ok: found '$BATOCERA_CONFIGFILE'" >&2 || echo "error: not found '$BATOCERA_CONFIGFILE'" >&2
             [[ -w "$BATOCERA_CONFIGFILE" ]] && echo "ok: r/w file '$BATOCERA_CONFIGFILE'" >&2 || echo "error: r/o file '$BATOCERA_CONFIGFILE'" >&2
@@ -239,7 +239,7 @@ function processing() {
             #We can comment line down to erase keys, it's much saver to check if a value is setted
             [[ -z "$newvalue" ]] && echo "error: '$keyvalue' needs value to be setted" >&2 && return 1
 
-            val="$(get_config $keyvalue)"
+            val="$(get_config "${keyvalue//[[:punct:]]/.}")" ### Quick fix use 'values["This is a test"].key' for write values
             ret=$?
             if [[ "$val" == "$COMMENT_CHAR" ]]; then
                 uncomment_config "$keyvalue"
@@ -258,7 +258,7 @@ function processing() {
         ;;
 
         "uncomment"|"enable"|"activate")
-            val="$(get_config $keyvalue)"
+            val="$(get_config "${keyvalue//[[:punct:]]/.}")"
             ret=$?
             # Boolean
             if [[ "$val" == "$COMMENT_CHAR" ]]; then
@@ -273,7 +273,7 @@ function processing() {
         ;;
 
         "comment"|"disable"|"remark")
-            val="$(get_config $keyvalue)"
+            val="$(get_config "${keyvalue//[[:punct:]]/.}")"
             ret=$?
             # Boolean
             [[ "$val" == "$COMMENT_CHAR" || "$val" == "0" ]] && return 0
