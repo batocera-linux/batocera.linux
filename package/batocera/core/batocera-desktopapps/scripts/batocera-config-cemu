@@ -7,11 +7,11 @@ fi
 
 if test -e /userdata/system/configs/cemu/settings.xml
 then
-    cp /userdata/system/configs/cemu/settings.xml /usr/cemu/setings.xml || exit 1
+    cp /userdata/system/configs/cemu/settings.xml /usr/cemu/settings.xml || exit 1
 fi
 WINEPREFIX=/userdata/saves/cemu wine64 /usr/cemu/Cemu.exe -m z:/userdata/saves/cemu
-if test -e /usr/cemu/setings.xml
+if test -e /usr/cemu/settings.xml
 then
-    cp /usr/cemu/setings.xml /userdata/system/configs/cemu/settings.xml || exit 1
+    cp /usr/cemu/settings.xml /userdata/system/configs/cemu/settings.xml || exit 1
 fi
 exit 0
