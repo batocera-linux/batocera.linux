@@ -8,6 +8,7 @@ import batoceraFiles
 from xml.dom import minidom
 import codecs
 import cemuControllers
+from shutil import copyfile
 
 class CemuGenerator(Generator):
 
@@ -25,8 +26,8 @@ class CemuGenerator(Generator):
             os.mkdir(batoceraFiles.SAVES + "/cemu")
 
         CemuGenerator.CemuConfig(batoceraFiles.CONF + "/cemu/settings.xml")
-        # TODO
-        #CemuGenerator.CemuConfig("/usr/cemu/settings.xml")
+        # copy the file from where cemu reads it
+        copyfile(batoceraFiles.CONF + "/cemu/settings.xml", "/usr/cemu/settings.xml")
         
         sdlstring = cemuControllers.generateControllerConfig(system, playersControllers, rom)
         
