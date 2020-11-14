@@ -115,6 +115,9 @@ function usage() {
 
 function build_key() {
 
+    ### Fix for special chars !"#$%&'()*+,-./:;<=>?@[\]^_`{|} ~.
+    gamevalue="${gamevalue//[[:punct:]]/.}"
+
     ii=("${systemvalue}\[\"${gamevalue}\"\].${keyvalue}"
         "${systemvalue}.${keyvalue}"
         "global.${keyvalue}")
@@ -183,7 +186,7 @@ function main() {
                 :) echo "Missing option argument for -$OPTARG" >&2; exit 1;;
                 f) BATOCERA_CONFIGFILE="$OPTARG";;
                 e) extend_flag=1;;
-                a) append_flag=1;;
+                a) append_flag=1; extend_flag=0;; ### Quick fix
                 v) newvalue="$OPTARG"; newvalue_flag=1;;
                 w) command=$option; keyvalue="$OPTARG"; write_flag=1;;
                 r) command=$option; keyvalue="$OPTARG";;
