@@ -35,6 +35,21 @@ waitWineServer() {
     done
 }
 
+wine_options() {
+    ESYNC=$(batocera-settings -e -r esync -s windows -g "${ROMGAMENAME}")
+    FSYNC=$(batocera-settings -e -r fsync -s windows -g "${ROMGAMENAME}")
+    PBA=$(batocera-settings -e -r pba -s windows -g "${ROMGAMENAME}")
+
+    export WINEESYNC=1
+    test "${ESYNC}" = 0 && WINEESYNC=0
+
+    export WINEFSYNC=1
+    test "${FSYNC}" = 0 && WINEFSYNC=0
+
+    export PBA_ENABLE=0
+    test "${PBA}" = 1 && PBA_ENABLE=1
+}
+
 dxvk_install() {
     export WINEDLLOVERRIDES="winemenubuilder.exe="
     WINEPREFIX=$1
@@ -45,18 +60,6 @@ dxvk_install() {
 
     DXVK=$(batocera-settings -e -r dxvk -s windows -g "${ROMGAMENAME}")
     DXVK_HUD=$(batocera-settings -e -r dxvk_hud -s windows -g "${ROMGAMENAME}")
-    ESYNC=$(batocera-settings -e -r esync -s windows -g "${ROMGAMENAME}")
-    FSYNC=$(batocera-settings -e -r fsync -s windows -g "${ROMGAMENAME}")
-    PBA=$(batocera-settings -e -r pba -s windows -g "${ROMGAMENAME}")
-    
-    export WINEESYNC=1
-    test "${ESYNC}" = 0 && WINEESYNC=0
-    
-    export WINEFSYNC=1
-    test "${FSYNC}" = 0 && WINEFSYNC=0
-    
-    export PBA_ENABLE=0
-    test "${PBA}" = 1 && PBA_ENABLE=1
 
     if test "${DXVK_HUD}" = 1
     then
@@ -148,7 +151,8 @@ play_wine() {
 play_pc() {
     GAMENAME=$1
     WINEPOINT="${G_SAVES_DIR}/"$(basename "${GAMENAME}")".wine"
-
+    
+    wine_options
     createWineDirectory "${WINEPOINT}" || return 1
     dxvk_install "${WINEPOINT}" || return 1
 
@@ -176,6 +180,7 @@ play_exe() {
     GAMEDIR=$(dirname "${GAMENAME}")
     GAMEEXE=$(basename "${GAMENAME}")
 
+    wine_options
     createWineDirectory "${WINEPOINT}" || return 1
     dxvk_install "${WINEPOINT}" || return 1
 
@@ -186,6 +191,7 @@ play_exe() {
 play_winetgz() {
     GAMENAME=$1
 
+    wine_options
     WINEPOINT="${G_SAVES_DIR}/"$(basename "${GAMENAME}")".wine"
     if ! test -e "${WINEPOINT}"
     then
@@ -203,6 +209,7 @@ play_winetgz() {
 
 play_squashfs() {
     GAMENAME=$1
+    wine_options
     BASEGAMENAME=$(basename "${GAMENAME}")
     WINEPOINT="/var/run/wine/${BASEGAMENAME}"
     SQUASHFSPOINT="/var/run/wine/squashfs_${BASEGAMENAME}"
