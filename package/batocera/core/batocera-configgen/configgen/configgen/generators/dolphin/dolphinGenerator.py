@@ -137,7 +137,7 @@ class DolphinGenerator(Generator):
             dolphinGFXSettings.set("Settings", "HiresTextures", '"True"')
             dolphinGFXSettings.set("Settings", "CacheHiresTextures", '"True"')
             
-        # widescreen - Default Off
+        # widescreen hack (widescreen cheatcodes take priority) - Default Off
         if system.isOptSet('widescreen_hack'):
             dolphinGFXSettings.set("Settings", "wideScreenHack", system.config["widescreen_hack"])
         else:
