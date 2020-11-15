@@ -152,7 +152,7 @@ play_pc() {
     GAMENAME=$1
     WINEPOINT="${G_SAVES_DIR}/"$(basename "${GAMENAME}")".wine"
     
-    wine_options || return 1
+    wine_options
     createWineDirectory "${WINEPOINT}" || return 1
     dxvk_install "${WINEPOINT}" || return 1
 
@@ -180,7 +180,7 @@ play_exe() {
     GAMEDIR=$(dirname "${GAMENAME}")
     GAMEEXE=$(basename "${GAMENAME}")
 
-    wine_options || return 1
+    wine_options
     createWineDirectory "${WINEPOINT}" || return 1
     dxvk_install "${WINEPOINT}" || return 1
 
@@ -191,7 +191,7 @@ play_exe() {
 play_winetgz() {
     GAMENAME=$1
 
-    wine_options || return 1
+    wine_options
     WINEPOINT="${G_SAVES_DIR}/"$(basename "${GAMENAME}")".wine"
     if ! test -e "${WINEPOINT}"
     then
@@ -209,7 +209,7 @@ play_winetgz() {
 
 play_squashfs() {
     GAMENAME=$1
-    wine_options || return 1
+    wine_options
     BASEGAMENAME=$(basename "${GAMENAME}")
     WINEPOINT="/var/run/wine/${BASEGAMENAME}"
     SQUASHFSPOINT="/var/run/wine/squashfs_${BASEGAMENAME}"
