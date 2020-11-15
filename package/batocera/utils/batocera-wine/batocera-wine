@@ -49,20 +49,14 @@ dxvk_install() {
     FSYNC=$(batocera-settings -e -r fsync -s windows -g "${ROMGAMENAME}")
     PBA=$(batocera-settings -e -r pba -s windows -g "${ROMGAMENAME}")
     
-    if test "${ESYNC}" = 1
-    then
-	export WINEESYNC=1
-    fi
+    export WINEESYNC=1
+    test "${ESYNC}" = 0 && WINEESYNC=0
     
-    if test "${FSYNC}" = 1
-    then
-	export WINEFSYNC=1
-    fi
+    export WINEFSYNC=1
+    test "${FSYNC}" = 0 && WINEFSYNC=0
     
-    if test "${PBA}" = 1
-    then
-	export PBA_ENABLE=1
-    fi
+    export PBA_ENABLE=0
+    test "${PBA}" = 1 && PBA_ENABLE=1
 
     if test "${DXVK_HUD}" = 1
     then
