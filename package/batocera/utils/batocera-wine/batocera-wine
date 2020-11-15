@@ -45,6 +45,18 @@ dxvk_install() {
 
     DXVK=$(batocera-settings -e -r dxvk -s windows -g "${ROMGAMENAME}")
     DXVK_HUD=$(batocera-settings -e -r dxvk_hud -s windows -g "${ROMGAMENAME}")
+    ESYNC=$(batocera-settings -e -r esync -s windows -g "${ROMGAMENAME}")
+    FSYNC=$(batocera-settings -e -r fsync -s windows -g "${ROMGAMENAME}")
+    
+    if test "${ESYNC}" = 1
+    then
+	export WINEESYNC=1
+    fi
+    
+    if test "${FSYNC}" = 1
+    then
+	export WINEFSYNC=1
+    fi
 
     if test "${DXVK_HUD}" = 1
     then
