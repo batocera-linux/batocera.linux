@@ -67,8 +67,8 @@ githublasttag_GETNET() {
 
 githublastcommit_GETNET() {
     wget -qO - "https://github.com/${1}/commits" |
-	grep ":commit:" | head -1 |
-	sed -e s+'.*:commit:\([^"]*\)".*'+'\1'+
+	grep "/commit/" | head -1 |
+	sed -e s+'.*/commit/\([^"]*\)".*'+'\1'+
 }
 
 githubcommitdate_GETNET() {
