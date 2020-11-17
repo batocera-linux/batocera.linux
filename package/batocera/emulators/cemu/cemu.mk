@@ -17,8 +17,8 @@ define CEMU_INSTALL_TARGET_CMDS
 	mkdir -p $(TARGET_DIR)/usr/cemu/
 	cp -prn $(@D)/cemu_$(CEMU_VERSION)/{Cemu.exe,gameProfiles,resources} $(TARGET_DIR)/usr/cemu/
 
-	# settings
-	ln -sf /userdata/system/configs/cemu/settings.xml $(TARGET_DIR)/usr/cemu/settings.xml
+	# settings - can't be a link while cemu remove it
+	#ln -sf /userdata/system/configs/cemu/settings.xml $(TARGET_DIR)/usr/cemu/settings.xml
 
 	# keys.txt
 	mkdir -p $(TARGET_DIR)/usr/share/batocera/datainit/bios/cemu
