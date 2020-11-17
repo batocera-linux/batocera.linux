@@ -68,7 +68,7 @@ index b210cea..77d4e86 100644
 +	  State::Load(slot);
 +	  hotkey = 0;
 +	}
-+	if( (x.button & PAD_BUTTON_X) == PAD_BUTTON_X) {
++	if( (x.button & PAD_BUTTON_B) == PAD_BUTTON_B) {
 +	  State::Save(slot);
 +	  hotkey = 0;
 +	}

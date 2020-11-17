@@ -114,6 +114,8 @@ def rpcs3_mappingValue(name, type, code, value):
             return -1016
         raise Exception("invalid hat value {}".format(value))
     elif type == "axis":
+        if code is None:
+            return ""
         res = int(code)+1000
         if value < 0:
             eslog.log("name = {} and value = {}".format(name, value))

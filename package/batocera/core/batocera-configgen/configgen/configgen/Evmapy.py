@@ -65,15 +65,16 @@ class Evmapy():
                             input = pad.inputs[index]
                             if input.type == "button":
                                 # don't add 2 times the same button (ie select as hotkey)
-                                if input.code not in known_buttons_codes and input.code is not None:
-                                    known_buttons_names[input.name] = True
-                                    known_buttons_codes[input.code] = input.name # keep the master name for aliases
-                                    padConfig["buttons"].append({
-                                        "name": input.name,
-                                        "code": int(input.code)
-                                    })
-                                else:
-                                    known_buttons_alias[input.name] = known_buttons_codes[input.code]
+                                if input.code is not None:
+                                    if input.code not in known_buttons_codes:
+                                        known_buttons_names[input.name] = True
+                                        known_buttons_codes[input.code] = input.name # keep the master name for aliases
+                                        padConfig["buttons"].append({
+                                            "name": input.name,
+                                            "code": int(input.code)
+                                        })
+                                    else:
+                                        known_buttons_alias[input.name] = known_buttons_codes[input.code]
                             elif input.type == "hat":
                                 if int(input.value) in [1, 2]: # don't duplicate values
                                     if int(input.value) == 1:
