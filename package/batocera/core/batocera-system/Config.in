@@ -614,13 +614,16 @@ config BR2_PACKAGE_BATOCERA_KODI18
        bool "batocera.linux Kodi18 packages selection"
        default n
        select BR2_PACKAGE_KODI             # kodi
-       select BR2_PACKAGE_KODI_PERIPHERAL_JOYSTICK     # joysticks for kodi
        select BR2_PACKAGE_PYTHON_PYOPENSSL  # used by some kodi plugins
        select BR2_PACKAGE_X264              # decoder
        select BR2_PACKAGE_X265              # decoder
        select BR2_PACKAGE_LIBAACS           # decoder
        select BR2_PACKAGE_LIBDVDCSS         # decoder
        select BR2_PACKAGE_GNUTLS            # https streams
+
+       # Kodi game controllers
+       select BR2_PACKAGE_KODI_PERIPHERAL_JOYSTICK		# joysticks for kodi
+       select BR2_PACKAGE_KODI_PERIPHERAL_XARCADE      		# xarcade for kodi
 
        # Rockchip ffmpeg playback package
        select BR2_PACKAGE_ROCKCHIP_MPP      if BR2_PACKAGE_BATOCERA_TARGET_ROCKCHIP_ANY
