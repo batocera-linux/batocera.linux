@@ -86,7 +86,7 @@ BATOCERA_EMULATIONSTATION_POSTFIX = \&
 
 # on rpi1: dont load ES in background
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI1),y)
-	BATOCERA_EMULATIONSTATION_POSTFIX =
+	BATOCERA_EMULATIONSTATION_POSTFIX = \& sleep 5
 endif
 
 # on rpi 1 2 3, the splash with video + es splash is ok
