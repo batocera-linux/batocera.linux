@@ -334,9 +334,7 @@ config BR2_PACKAGE_BATOCERA_ALL_SYSTEMS
 
         select BR2_PACKAGE_DOSBOX               # ALL # dos
 
-        select BR2_PACKAGE_DOSBOX_X             if !BR2_PACKAGE_BATOCERA_TARGET_ROCK960 && \
-                                                   !BR2_PACKAGE_BATOCERA_TARGET_RPI_ANY && \
-                                                   !BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA
+        select BR2_PACKAGE_DOSBOX_X             if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
                                                    # dos
 
         select BR2_PACKAGE_VICE                 # ALL # c64
