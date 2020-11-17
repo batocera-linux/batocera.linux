@@ -3,8 +3,8 @@
 # MAME2010
 #
 ################################################################################
-# Version.: Commits on Jul 06, 2020
-LIBRETRO_MAME2010_VERSION = 9b0e3b3384cc8e86e78870262f4027bdce9de0f4
+# Version.: Commits on Oct 08, 2020
+LIBRETRO_MAME2010_VERSION = 2d2e86b5d8dced24a390bbb3b44d913833a1f6fa
 LIBRETRO_MAME2010_SITE = $(call github,libretro,mame2010-libretro,$(LIBRETRO_MAME2010_VERSION))
 LIBRETRO_MAME2010_LICENSE = MAME
 
