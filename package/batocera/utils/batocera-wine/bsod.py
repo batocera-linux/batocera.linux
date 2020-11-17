@@ -33,7 +33,7 @@ infoObject = pygame.display.Info()
 screen = pygame.display.set_mode((infoObject.current_w, infoObject.current_h))
 
 # bsod
-bsod(screen, "An error did not occured.\n\nWine is just generating the C: drive structure.\nJust wait some seconds please.\n\nAddress dword Dll base\n80125800 kernel32.dll\nCode: 0E : 016F : BBF")
+bsod(screen, "No error has occured.\n\nWine is just generating the C: drive structure.\n\nPlease wait a few minutes.\n\nAddress dword Dll base\n80125800 kernel32.dll\nCode: 0E : 016F : BBF")
 pygame.display.flip()
 
 running = True
