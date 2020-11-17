@@ -3,9 +3,9 @@
 # MESEN
 #
 ################################################################################
-# Version.: Commits on Apr 10, 2020
-LIBRETRO_MESEN_VERSION = 8fa506631a7285523819c9fae44fe2d4bc983d2f
-LIBRETRO_MESEN_SITE = $(call github,SourMesen,Mesen,$(LIBRETRO_MESEN_VERSION))
+# Version.: Commits on Oct 07, 2020
+LIBRETRO_MESEN_VERSION = aa2f444467ab92b8f4faaffbf013c728e79e2d8a
+LIBRETRO_MESEN_SITE = $(call github,libretro,Mesen,$(LIBRETRO_MESEN_VERSION))
 
 define LIBRETRO_MESEN_BUILD_CMDS
 	$(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" -C $(@D)/Libretro
