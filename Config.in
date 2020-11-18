@@ -234,7 +234,6 @@ endmenu
 
 menu "Kodi"
 if BR2_PACKAGE_KODI
-  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi/kodi18-peripheral-joystick/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi/kodi18-resource-language-de_de/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi/kodi18-resource-language-es_es/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi/kodi18-resource-language-eu_es/Config.in"
