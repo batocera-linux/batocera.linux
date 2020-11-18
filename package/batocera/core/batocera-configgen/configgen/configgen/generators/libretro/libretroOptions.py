@@ -234,6 +234,13 @@ def generateCoreSettings(retroarchCore, system):
 
     if (system.config['core'] == 'genesisplusgx'):
         coreSettings.save('genesis_plus_gx_no_sprite_limit',    '"enabled"')
+        
+    if (system.config['core'] == 'snes9x'):
+        # reduce slowdown
+        if system.isOptSet('reduce_slowdown'):
+            coreSettings.save('snes9x_overclock_cycles', system.config['reduce_slowdown'])
+        else:
+            coreSettings.save('snes9x_overclock_cycles', '"compatible"')
 
     if (system.config['core'] == 'snes9x_next'):
         coreSettings.save('snes9x_2010_reduce_sprite_flicker',       '"enabled"')
