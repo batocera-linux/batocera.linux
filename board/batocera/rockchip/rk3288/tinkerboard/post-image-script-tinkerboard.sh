@@ -23,7 +23,7 @@ mkdir -p "${BINARIES_DIR}/boot/extlinux" || exit 1
 cp "${BINARIES_DIR}/zImage"                 "${BINARIES_DIR}/boot/boot/linux"                || exit 1
 cp "${BINARIES_DIR}/initrd.gz"             "${BINARIES_DIR}/boot/boot/initrd.gz"            || exit 1
 cp "${BINARIES_DIR}/rootfs.squashfs"       "${BINARIES_DIR}/boot/boot/batocera.update"      || exit 1
-cp "${BINARIES_DIR}/rk3288-miniarm.dtb"  "${BINARIES_DIR}/boot/boot/rk3288-miniarm.dtb" || exit 1
+cp "${BINARIES_DIR}/rk3288-tinker.dtb"  "${BINARIES_DIR}/boot/boot/rk3288-tinker.dtb" || exit 1
 cp "${BINARIES_DIR}/batocera-boot.conf"    "${BINARIES_DIR}/boot/batocera-boot.conf"        || exit 1
 cp "${BOARD_DIR}/boot/extlinux.conf" "${BINARIES_DIR}/boot/extlinux"                   || exit 1
 cp -pr "${BINARIES_DIR}/tools"       "${BINARIES_DIR}/boot/"                || exit 1
