@@ -9,14 +9,14 @@ PACKAGES_RETROARCH="retroarch retroarch-assets common-shaders glsl-shaders slang
 
 PACKAGES_LIBRETRO="libretro-81 libretro-atari800 libretro-beetle-lynx libretro-beetle-ngp libretro-beetle-pce libretro-beetle-pce-fast libretro-beetle-pcfx
 					libretro-beetle-psx libretro-beetle-saturn libretro-beetle-supergrafx libretro-beetle-vb libretro-beetle-wswan libretro-blastem
-					libretro-bluemsx libretro-bsnes libretro-cap32 libretro-cheats libretro-citra libretro-daphne libretro-desmume libretro-dolphin
+					libretro-bluemsx libretro-bsnes libretro-cap32 libretro-cheats libretro-citra libretro-desmume libretro-dolphin libretro-vice
 					libretro-dosbox libretro-duckstation libretro-fbneo libretro-fceumm libretro-flycast libretro-freeintv libretro-fuse libretro-gambatte
 					libretro-genesisplusgx libretro-gpsp libretro-gw libretro-handy libretro-hatari libretro-hbmame libretro-imageviewer libretro-imame
 					libretro-kronos libretro-lutro libretro-mame libretro-mame2003-plus libretro-mame2010 libretro-mgba libretro-virtualjaguar libretro-yabasanshiro
 					libretro-mrboom libretro-mupen64plus-next libretro-neocd libretro-nestopia libretro-nxengine libretro-o2em libretro-opera libretro-parallel-n64
 					libretro-pc88 libretro-pc98 libretro-pcsx libretro-picodrive libretro-pocketsnes libretro-pokemini libretro-ppsspp libretro-prboom
 					libretro-prosystem libretro-puae libretro-px68k libretro-scummvm libretro-snes9x libretro-snes9x-next libretro-stella libretro-tgbdual
-					libretro-theodore libretro-tic80 libretro-tyrquake libretro-vba-m libretro-vecx libretro-vice"					
+					libretro-theodore libretro-tic80 libretro-tyrquake libretro-vba-m libretro-vecx"					
 
 PACKAGES_MUPEN="mupen64plus-audio-sdl mupen64plus-core mupen64plus-gles2 mupen64plus-gliden64 mupen64plus-input-sdl mupen64plus-omx
 				mupen64plus-rsphle mupen64plus-uiconsole mupen64plus-video-glide64mk2 mupen64plus-video-rice"
