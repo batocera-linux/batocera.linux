@@ -134,6 +134,7 @@ for BIN in "${G_TARGETDIR}/usr/bin/wine" \
 "${G_TARGETDIR}/usr/lib/libvulkan"*"so"* \
 "${G_TARGETDIR}/usr/lib/libgcrypt"*"so"* \
 "${G_TARGETDIR}/usr/lib/libmpg123"*"so"* \
+"${G_TARGETDIR}/usr/lib/lib"*"krb5"*"so"* \
 "${G_TARGETDIR}/lib/libnss_"*
 do
     findDeps "${BIN}" "${TMPOUT}/lib32" || exit 1
@@ -147,6 +148,7 @@ cp -pr "${G_TARGETDIR}/usr/lib/libopenal.so"*  "${TMPOUT}/lib32/" || exit 1
 cp -pr "${G_TARGETDIR}/usr/lib/libvulkan"*"so"*  "${TMPOUT}/lib32/" || exit 1
 cp -pr "${G_TARGETDIR}/usr/lib/libgcrypt"*"so"*  "${TMPOUT}/lib32/" || exit 1
 cp -pr "${G_TARGETDIR}/usr/lib/libmpg123"*"so"*  "${TMPOUT}/lib32/" || exit 1
+cp -pr "${G_TARGETDIR}/usr/lib/lib"*"krb5"*"so"*  "${TMPOUT}/lib32/" || exit 1
 cp -pr "${G_TARGETDIR}/lib/libnss_"*"so"*  "${TMPOUT}/lib32/" || exit 1
 
 # binaries
