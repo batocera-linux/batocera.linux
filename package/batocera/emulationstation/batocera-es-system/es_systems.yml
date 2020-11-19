@@ -9,7 +9,6 @@ snes:
       pocketsnes:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_POCKETSNES] }
       snes9x_next: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_SNES9X_NEXT] }
       snes9x:      { requireAnyOf: [BR2_PACKAGE_LIBRETRO_SNES9X] }
-      mesen-s:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MESEN_S] }
       bsnes:       { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BSNES] }
 
 c64:
@@ -125,7 +124,6 @@ nes:
     libretro:
       fceumm:   { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FCEUMM] }
       nestopia: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_NESTOPIA] }
-      mesen:   { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MESEN] }
 
 n64:
   name:       Nintendo 64

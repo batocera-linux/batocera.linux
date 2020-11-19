@@ -12,11 +12,11 @@ PACKAGES_LIBRETRO="libretro-81 libretro-atari800 libretro-beetle-lynx libretro-b
 					libretro-bluemsx libretro-bsnes libretro-cap32 libretro-cheats libretro-citra libretro-daphne libretro-desmume libretro-dolphin
 					libretro-dosbox libretro-duckstation libretro-fbneo libretro-fceumm libretro-flycast libretro-freeintv libretro-fuse libretro-gambatte
 					libretro-genesisplusgx libretro-gpsp libretro-gw libretro-handy libretro-hatari libretro-hbmame libretro-imageviewer libretro-imame
-					libretro-kronos libretro-lutro libretro-mame libretro-mame2003-plus libretro-mame2010  libretro-mesen-s libretro-mesen libretro-mgba
+					libretro-kronos libretro-lutro libretro-mame libretro-mame2003-plus libretro-mame2010 libretro-mgba libretro-virtualjaguar libretro-yabasanshiro
 					libretro-mrboom libretro-mupen64plus-next libretro-neocd libretro-nestopia libretro-nxengine libretro-o2em libretro-opera libretro-parallel-n64
 					libretro-pc88 libretro-pc98 libretro-pcsx libretro-picodrive libretro-pocketsnes libretro-pokemini libretro-ppsspp libretro-prboom
 					libretro-prosystem libretro-puae libretro-px68k libretro-scummvm libretro-snes9x libretro-snes9x-next libretro-stella libretro-tgbdual
-					libretro-theodore libretro-tic80 libretro-tyrquake libretro-vba-m libretro-vecx libretro-vice libretro-virtualjaguar libretro-yabasanshiro"					
+					libretro-theodore libretro-tic80 libretro-tyrquake libretro-vba-m libretro-vecx libretro-vice"					
 
 PACKAGES_MUPEN="mupen64plus-audio-sdl mupen64plus-core mupen64plus-gles2 mupen64plus-gliden64 mupen64plus-input-sdl mupen64plus-omx
 				mupen64plus-rsphle mupen64plus-uiconsole mupen64plus-video-glide64mk2 mupen64plus-video-rice"
