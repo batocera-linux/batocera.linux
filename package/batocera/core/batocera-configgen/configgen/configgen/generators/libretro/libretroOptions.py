@@ -92,19 +92,6 @@ def generateCoreSettings(retroarchCore, system):
         coreSettings.save('mame2003-plus_skip_warnings',    '"enabled"')
         coreSettings.save('mame2003-plus_analog',           '"digital"')
 
-    if (system.config['core'] == 'mesen'):
-        coreSettings.save('mesen_nospritelimit',    '"enabled"')
-        # overscan horizontal
-        if system.isOptSet('overscan_h'):
-            coreSettings.save('mesen_overscan_horizontal', system.config['overscan_h'])
-        else:
-            coreSettings.save('mesen_overscan_horizontal', '"None"')
-        # overscan vertical
-        if system.isOptSet('overscan_v'):
-            coreSettings.save('mesen_overscan_vertical', system.config['overscan_v'])
-        else:
-            coreSettings.save('mesen_overscan_vertical', '"None"')
-
     if (system.config['core'] == 'puae'):
         coreSettings.save('puae_video_options_display ',    '"enabled"')
         # video resolution
