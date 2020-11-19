@@ -47,7 +47,7 @@ def generateRetroarchCustom():
     retroarchSettings.save('video_shader_enable',               '"false"')
     
     # Audio
-    retroarchSettings.save('audio_volume',                       '"8.0"')
+    retroarchSettings.save('audio_volume',                       '"2.0"')
     
     # Settings
     retroarchSettings.save('global_core_options',               '"true"')
