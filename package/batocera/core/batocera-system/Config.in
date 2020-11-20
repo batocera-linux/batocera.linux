@@ -464,7 +464,8 @@ config BR2_PACKAGE_BATOCERA_RETROARCH
                                                          # PSX
 
         select BR2_PACKAGE_LIBRETRO_FLYCAST           if !BR2_PACKAGE_BATOCERA_TARGET_RPI1    && \
-                                                         !BR2_PACKAGE_BATOCERA_TARGET_RPI2
+                                                         !BR2_PACKAGE_BATOCERA_TARGET_RPI2    && \
+							 !BR2_PACKAGE_BATOCERA_TARGET_X86
                                                                                      # FLYCAST
 
         select BR2_PACKAGE_LIBRETRO_BSNES             if BR2_PACKAGE_BATOCERA_TARGET_X86_64 # BSNES
