@@ -3,18 +3,26 @@
 ### CONFIGURATION ###
 KODI_LANGUAGES="de_de es_es eu_es fr_fr it_it pt_br sv_se tr_tr zh_cn"
 
-PACKAGES_KODI="kodi-superrepo-repositories kodi-superrepo-repositories"
-PACKAGES_RETROARCH="retroarch libretro-pcsx libretro-snes9x-next libretro-81 libretro-beetle-lynx libretro-beetle-ngp libretro-beetle-pce libretro-beetle-pce-fast libretro-beetle-pcfx libretro-armsnes libretro-beetle-supergrafx libretro-beetle-vb libretro-beetle-wswan libretro-bluemsx libretro-cap32 libretro-cheats libretro-fbneo libretro-fceumm libretro-fuse libretro-gambatte libretro-genesisplusgx libretro-gpsp libretro-gw libretro-hatari libretro-imageviewer libretro-imame libretro-lutro libretro-mame2003 libretro-mesen libretro-mesen-s libretro-vba-m libretro-mame2010 libretro-hbmame libretro-mgba libretro-mupen64 libretro-nestopia libretro-nxengine libretro-o2em libretro-picodrive libretro-pocketsnes libretro-prboom libretro-prosystem libretro-stella libretro-tgbdual libretro-vecx libretro-virtualjaguar libretro-snes9x libretro-beetle-saturn libretro-flycast libretro-desmume libretro-mupen64plus libretro-parallel-n64 libretro-freeintv libretro-atari800 libretro-opera"
-PACKAGES_MUPEN="mupen64plus-audio-sdl mupen64plus-core mupen64plus-gles2 mupen64plus-gliden64 mupen64plus-input-sdl mupen64plus-omx mupen64plus-video-rice mupen64plus-rsphle mupen64plus-uiconsole mupen64plus-video-glide64mk2"
-PACKAGES_OTHERS="dolphin-emu ppsspp reicast linapple advancemame vice amiberry fsuae dosbox"
-PACKAGES_MISC="qtsixa qtsixa-shanwan raspi2png jstest2 mk_arcade_joystick_rpi"
 
-PACKAGES_TEST="retroarch ppsspp"
+### GROUPS ###
+PACKAGES_RETROARCH="retroarch retroarch-assets common-shaders glsl-shaders slang-shaders "
 
-# FIXED COMMITS
-# PKGVER_6fc6bfbb243de4da05a86d1edc3950815a964f1e=v1.7.1 # retroarch
+PACKAGES_LIBRETRO="libretro-81 libretro-atari800 libretro-beetle-lynx libretro-beetle-ngp libretro-beetle-pce libretro-beetle-pce-fast libretro-beetle-pcfx
+					libretro-beetle-psx libretro-beetle-saturn libretro-beetle-supergrafx libretro-beetle-vb libretro-beetle-wswan libretro-blastem
+					libretro-bluemsx libretro-bsnes libretro-cap32 libretro-cheats libretro-citra libretro-desmume libretro-dolphin libretro-vice
+					libretro-dosbox libretro-duckstation libretro-fbneo libretro-fceumm libretro-flycast libretro-freeintv libretro-fuse libretro-gambatte
+					libretro-genesisplusgx libretro-gpsp libretro-gw libretro-handy libretro-hatari libretro-hbmame libretro-imageviewer libretro-imame
+					libretro-kronos libretro-lutro libretro-mame libretro-mame2003-plus libretro-mame2010 libretro-mgba libretro-virtualjaguar libretro-yabasanshiro
+					libretro-mrboom libretro-mupen64plus-next libretro-neocd libretro-nestopia libretro-nxengine libretro-o2em libretro-opera libretro-parallel-n64
+					libretro-pc88 libretro-pc98 libretro-pcsx libretro-picodrive libretro-pocketsnes libretro-pokemini libretro-ppsspp libretro-prboom
+					libretro-prosystem libretro-puae libretro-px68k libretro-scummvm libretro-snes9x libretro-snes9x-next libretro-stella libretro-tgbdual
+					libretro-theodore libretro-tic80 libretro-tyrquake libretro-vba-m libretro-vecx"					
 
-PACKAGES_GROUPS="KODI RETROARCH MUPEN MISC OTHERS"
+PACKAGES_MUPEN="mupen64plus-audio-sdl mupen64plus-core mupen64plus-gles2 mupen64plus-gliden64 mupen64plus-input-sdl mupen64plus-omx
+				mupen64plus-rsphle mupen64plus-uiconsole mupen64plus-video-glide64mk2 mupen64plus-video-rice"
+
+
+PACKAGES_GROUPS="RETROARCH LIBRETRO MUPEN"
 ### ############# ###
 
 ## SPECIFICS ##
@@ -59,8 +67,8 @@ githublasttag_GETNET() {
 
 githublastcommit_GETNET() {
     wget -qO - "https://github.com/${1}/commits" |
-	grep ":commit:" | head -1 |
-	sed -e s+'.*:commit:\([^"]*\)".*'+'\1'+
+	grep "/commit/" | head -1 |
+	sed -e s+'.*/commit/\([^"]*\)".*'+'\1'+
 }
 
 githubcommitdate_GETNET() {

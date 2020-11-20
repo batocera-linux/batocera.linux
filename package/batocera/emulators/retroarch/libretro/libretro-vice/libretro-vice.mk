@@ -3,8 +3,8 @@
 # LIBRETRO-VICE
 #
 ################################################################################
-# Version.: Commits on Jul 11, 2020
-LIBRETRO_VICE_VERSION = 3db970b7f9b932bd5b4e60d0fad874486c79f53f
+# Version.: Commits on Nov 16, 2020
+LIBRETRO_VICE_VERSION = e1e4bdd9b11a8a9ba7bc8e8451033a2edc5e139d
 LIBRETRO_VICE_SITE = $(call github,libretro,vice-libretro,$(LIBRETRO_VICE_VERSION))
 LIBRETRO_VICE_LICENSE = GPLv2
 
@@ -15,7 +15,7 @@ ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI3),y)
 endif
 
 define LIBRETRO_VICE_BUILD_CMDS
-	$(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" -C $(@D) -f Makefile platform="$(LIBRETRO_VICE_PLATFORM)"
+	$(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" GIT_VERSION=" e1e4bd" -C $(@D) -f Makefile platform="$(LIBRETRO_VICE_PLATFORM)"
 endef
 
 define LIBRETRO_VICE_INSTALL_TARGET_CMDS

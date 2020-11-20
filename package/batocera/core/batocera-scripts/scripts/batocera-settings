@@ -1,36 +1,7 @@
 #!/bin/bash
 
-# batocera-settings can mimic batoceraSettings.py
-# goal: abolish this python script, it's useless for the sake of the load feature only
-#       get a more user friendly environment for setting, getting and saving keys
-#
-# Usage of BASE COMMAND:
-#           longform:   <filename> --command <cmd> --key <key> --value <value>
-#
-#           shortform:  <file> <cmd> <key> <value>
-#
-#           --command    load write enable disable status
-#           --key        any key in batocera.conf (kodi.enabled...)
-#           --value      any alphanumerical string
-#           --system     if specified, key not not be prefixed (by global. or something else) and value system.xxx or global.xxx will be searched and returned
-#           --game       if specified, key not not be prefixed (by global. or something else) and value game.xxx or system.xxx or global.xxx will be searched and returned
-#                        use quotation marks to avoid globbing use slashes escape special characters 
-
-# This script reads only 1st occurrence if string and writes only to this first hit
-#
-# This script uses #-Character to comment values
-#
-# If there is a boolean value (0,1) then then enable and disable command will set the corresponding
-# boolean value.
-
-# Examples:
-# 'batocera-settings --command load --key wifi.enabled' will print out 0 or 1
-# 'batocera-settings --command write --key wifi.ssid -value "This is my NET"' will set 'wlan.ssid=This is my NET'
-# 'batocera-settings enable wifi.ssid' will remove # from  configfile (activate)
-# 'batocera-settings disable wifi.enabled' will set key wifi.enabled=0
-# 'botocera-settings /myown/config.file --command status --key my.key' will output status of own config.file and my.key 
-
-# by cyperghost - 2019/12/30
+# by cyperghost - 2019/12/30 - rev 2
+# updated for batocera 29 to NG parser - 2020/11/13
 
 ##### INITS #####
 BATOCERA_CONFIGFILE="/userdata/system/batocera.conf"
@@ -46,10 +17,10 @@ function get_config() {
     #Otherwise strip till the equal-char to obtain value
     local val
     local ret
-    val="$(grep -E -m1 "^\s*$1\s*=" $BATOCERA_CONFIGFILE)"
+    val="$(grep -E -m1 "^\s*${1//[[:punct:]\ ]/.}\s*=" $BATOCERA_CONFIGFILE)"
     ret=$?
-    if [[ $ret -eq 1 ]]; then 
-        val="$(grep -E -m1 "^$COMMENT_CHAR_SEARCH\s*$1\s*=" $BATOCERA_CONFIGFILE)"
+    if [[ $ret -eq 1 ]]; then
+        val="$(grep -E -m1 "^$COMMENT_CHAR_SEARCH\s*${1//[[:punct:]\ ]/.}\s*=" $BATOCERA_CONFIGFILE)"
         ret=$?
         [[ $ret -eq 0 ]] && val=$COMMENT_CHAR
     else
@@ -60,19 +31,25 @@ function get_config() {
     return $ret
 }
 
+function add_value() {
+    #Will append new key to config file
+    [[ -n $(tail -c1 "$BATOCERA_CONFIGFILE") ]] && printf '\n' >> "$BATOCERA_CONFIGFILE"
+    printf "${1}=${2}\n" >> "$BATOCERA_CONFIGFILE"
+}
+
 function set_config() {
      #Will search for first key.name at beginning of line and write value to it
-     sed -i "1,/^\(\s*$1\s*=\).*/s//\1$2/" "$BATOCERA_CONFIGFILE"
+     sed -i "1,/^\(\s*${1//[[:punct:]\ ]/.}\s*=\).*/s//\1$2/" "$BATOCERA_CONFIGFILE"
 }
 
 function uncomment_config() {
      #Will search for first Comment Char at beginning of line and remove it
-     sed -i "1,/^$COMMENT_CHAR_SEARCH\(\s*$1\)/s//\1/" "$BATOCERA_CONFIGFILE"
+     sed -i "1,/^$COMMENT_CHAR_SEARCH\(\s*${1//[[:punct:]\ ]/.}\)/s//\1/" "$BATOCERA_CONFIGFILE"
 }
 
 function comment_config() {
      #Will search for first key.name at beginning of line and add a comment char to it
-     sed -i "1,/^\(\s*$1\)/s//$COMMENT_CHAR\1/" "$BATOCERA_CONFIGFILE"
+     sed -i "1,/^\(\s*${1//[[:punct:]\ ]/.}\)/s//$COMMENT_CHAR\1/" "$BATOCERA_CONFIGFILE"
 }
 
 function check_argument() {
@@ -87,16 +64,15 @@ function check_argument() {
     fi
 }
 
-function dash_style() {
+function classic_style() {
     #This function is needed to "simulate" the python script with single dash
-    #commands. It will also accept the more common posix double dashes   
+    #commands. It will also accept the more common posix double dashes
     #Accept dashes and double dashes and build new array ii with parameter set
     #The else-branch can be used for the shortform
-    keys=$1
-    shift
-    for i in $keys; do
+
+    for i in --command --key --value; do
         if [[ -z "$1" ]]; then
-            continue 
+            continue
         elif [[ "$i" =~ ^-{0,1}"${1,,}" ]]; then
             check_argument $1 $2
             [[ $? -eq 0 ]] || exit 1
@@ -111,93 +87,139 @@ function dash_style() {
 
 
 function usage() {
-val=" Usage of BASE COMMAND:
+    cat <<-_EOF_
+	Basic usage: $(basename ${0}) -f [file] -r [key] -w [key] -v [value]
+	Extended usage:	$(basename ${0}) -e -g [game] -s [system] -r [key]
 
-           <file> --command <cmd> --key <key> --value <value> --sytem <system> --game <game>
+	  -f   Loads any config file, default '/userdata/system/batocera.conf'
+	  -r   Read 'key' and returns value from config file
+	  -w   Write 'key' to config file, mandatory parameter -v
+	  -v   Set value to selected 'key', any alphanumeric value
+	  -e   Activate extended mode, needed for parsing game/system specific keys
+	  -g   Any alphanumeric string for game, set quotes to avoid globbing, use -e
+	  -s   Any alphanumeric string for system, use together with 'e'
+	  -a   Append new key and value to a file
+	    This will loop through 'system["GAME"].key', 'system.key' or 'gloabal.key'
 
-           shortform: <file> <cmd> <key> <value> <system> <game>
+	Classic: $(basename ${0}) [file] -command [cmd] -key [key] -value [value]
+	Classic short: $(basename ${0}) [file] [cmd] [key] [value]
+	  -command    load write enable disable status
+	  -key        any key in batocera.conf (kodi.enabled...)
+	  -value      any alphanumerical string, needed for write command
 
-           --command    load write enable disable status
-           --key        any key in batocera.conf (kodi.enabled...)
-           --value      any alphanumerical string
-                        use quotation marks to avoid globbing
-           --system     any alphanumerical string
-                        use quotation marks to avoid globbing
-           --game       any alphanumerical string
-                        use quotation marks to avoid globbing
-
-
-           For write command --value <value> must be provided
-
-           exit codes: exit 0  = value is available, proper exit
-                       exit 1  = general error
-                       exit 2  = file error
-                       exit 10 = value found, but empty
-                       exit 11 = value found, but not activated
-                       exit 12 = value not found
-
-           If you don't set a filename then default is '~/batocera.conf'"
-
-echo "$val"
-
+	Return codes: exit 0 = value found     exit 10 = value empty
+	              exit 1 = general error   exit 11 = value commented out
+	              exit 2 = file error      exit 12 = value not found
+	_EOF_
 }
+
+function build_key() {
+
+    ii=("${systemvalue}[\"${gamevalue}\"].${keyvalue}"
+        "${systemvalue}.${keyvalue}"
+        "global.${keyvalue}")
+
+    [[ $game_flag -eq 0 ]] && ii=("${ii[@]:1}")
+    [[ $system_flag -eq 0 ]] && ii=("${ii[@]:2}")
+    [[ ${#ii[@]} -eq 0 ]] && ii="global.${keyvalue}"
+
+    for i in "${ii[@]}"; do
+        if grep -qEo -m1 "^${i//[[:punct:]\ ]/.}" "$BATOCERA_CONFIGFILE"; then
+            keyvalue="$i"
+            return 0
+        fi
+    done
+    unset ii
+    return 1
+}
+
 ##### Function Calls #####
 
 ##### MAIN FUNCTION #####
 function main() {
-
-    #Filename parsed?
-    if [[ -f "$1" ]]; then
-        BATOCERA_CONFIGFILE="$1"
-        shift 
-    else
-       [[ -f "$BATOCERA_CONFIGFILE" ]] || { echo "not found: $BATOCERA_CONFIGFILE" >&2; exit 2; }
-    fi
-
-    #How much arguments are parsed, up to 6 then it is the long format
-    #up to 3 then it is the short format
-    if [[ ${#@} -eq 0 || ${#@} -gt 10 ]]; then
+    #Determine here between the classic mode born from 4.x versions
+    #and try to make a future proof but simple parser
+    # No args -> helppage
+    if [[ ${#@} -eq 0 ]]; then
         usage
         exit 1
-    else
-	if test "$1" = "load" -o "$1 $2" = "--command load"
-	then
-            dash_style "--command --key --system --game" "$@"
-	else
-	    dash_style "--command --key --value" "$@"
-	fi
+    # Select classic mode, if first parameter is a file or gt 2
+    elif [[ ${#1} -gt 2 || -f "$1" ]]; then
+        #Filename parsed?
+        if [[ -f "$1" ]]; then
+            BATOCERA_CONFIGFILE="$1"
+            shift
+            [[ -f "$BATOCERA_CONFIGFILE" ]] || { echo "error: Not found config file '$BATOCERA_CONFIGFILE'" >&2; exit 2; }
+        fi
+
+        classic_style "$@"
         command="${ii[0]}"
         keyvalue="${ii[1]}"
-
-	if test "$command" == "read" -o "$command" == "get" -o "$command" == "load"
-	then
-	    systemvalue="${ii[2]}"
-	    gamevalue="${ii[3]}"
-	else
-            newvalue="${ii[2]}"
-	fi
+        newvalue="${ii[2]}"
         unset ii
+        [[ -z $keyvalue ]] && { echo "error: Provide a proper keyvalue" >&2; exit 1; }
+        processing
+        exit $?
+    else
+        #GETOPT function, the batocera-settings NG
+        #r=read single key; w=write single key
+        #f=file; v=value
+        #-- Extended options --
+        #e=enable extended options (no argument)
+        #s=system; g=game; r=key
+        #This is used to build a key -> specific to system, game or global
+        #
+        # Set defaults
+        extend_flag=0
+        game_flag=0
+        system_flag=0
+        newvalue_flag=0
+        write_flag=0
+        append_flag=0
+
+        while getopts ':r:w:v:g:s:f:eha' option
+        do
+            case "$option" in
+                :) echo "Missing option argument for -$OPTARG" >&2; exit 1;;
+                f) BATOCERA_CONFIGFILE="$OPTARG";;
+                e) extend_flag=1;;
+                a) append_flag=1; extend_flag=0;;
+                v) newvalue="$OPTARG"; newvalue_flag=1;;
+                w) command=$option; keyvalue="$OPTARG"; write_flag=1; extend_flag=0;;
+                r) command=$option; keyvalue="$OPTARG";;
+                h) usage; exit 0;;
+                g) gamevalue="$OPTARG"; game_flag=1;;
+                s) systemvalue="$OPTARG"; system_flag=1;;
+                *) echo "Unimplemented option: -$OPTARG" >&2; exit 1 ;;
+            esac
+            [[ $option =~ ^(e|a) ]] || check_argument "-${option}" "$OPTARG"
+            [[ $? -eq 0 ]] || exit 1
+        done
+            [[ -z $command ]] && { echo "error: Provide a proper command" >&2; exit 1; }
+            [[ -z $keyvalue ]] && { echo "error: Provide a proper keyvalue" >&2; exit 1; }
+            [[ $command == "w" && $write_flag -ne $newvalue_flag ]] && { echo "error: Use '-v value' and '-w key' commands" >&2; exit 1; }
+            [[ -f "$BATOCERA_CONFIGFILE" ]] || { echo "error: Not found config file '$BATOCERA_CONFIGFILE'" >&2; exit 2; }
+            [[ $extend_flag -eq 1 ]] && build_key
+            processing
+            exit $?
     fi
+}
 
-    [[ -z $keyvalue ]] && { echo "error: Please provide a proper keyvalue" >&2; exit 1; }
-
+function processing() {
     # value processing, switch case
-    case "${command,,}" in
+    case "${command}" in
 
-        "read"|"get"|"load")
-	    test -n "$gamevalue" && test -n "$systemvalue" && val="$(get_config $systemvalue\\[\"$gamevalue\"\\].$keyvalue)"
-	    test -z "$val" && test -n "$systemvalue" && val="$(get_config $systemvalue.$keyvalue)"
-	    test -z "$val" && val="$(get_config global.$keyvalue)"
-	    test -z "$val" && val="$(get_config $keyvalue)"
+        "read"|"get"|"load"|"r")
+            val="$(get_config "${keyvalue}")"
             ret=$?
-            [[ "$val" == "$COMMENT_CHAR" ]] && exit 11
-            [[ -z "$val" && $ret -eq 0 ]] && exit 10
-            [[ -z "$val" && $ret -eq 1 ]] && exit 12
-            [[ -n "$val" ]] && echo "$val" && exit 0
+            [[ "$val" == "$COMMENT_CHAR" ]] && return 11
+            [[ -z "$val" && $ret -eq 0 ]] && return 10
+            [[ -z "$val" && $ret -eq 1 ]] && return 12
+            [[ -n "$val" ]] && echo "$val" && return 0
         ;;
 
         "stat"|"status")
-            val="$(get_config $keyvalue)"
+            val="$(get_config "${keyvalue}")"
             ret=$?
             [[ -f "$BATOCERA_CONFIGFILE" ]] && echo "ok: found '$BATOCERA_CONFIGFILE'" >&2 || echo "error: not found '$BATOCERA_CONFIGFILE'" >&2
             [[ -w "$BATOCERA_CONFIGFILE" ]] && echo "ok: r/w file '$BATOCERA_CONFIGFILE'" >&2 || echo "error: r/o file '$BATOCERA_CONFIGFILE'" >&2
@@ -205,34 +227,35 @@ function main() {
             [[ -z "$val" && $ret -eq 0 ]] && echo "error: '$keyvalue' is empty - use 'comment' command to retrieve" >&2
             [[ "$val" == "$COMMENT_CHAR" ]] && echo "error: '$keyvalue' is commented $COMMENT_CHAR!" >&2 && val=
             [[ -n "$val" ]] && echo "ok: '$keyvalue' $val"
-            exit 0
+            return 0
         ;;
 
-        "set"|"write"|"save")
+        "set"|"write"|"save"|"w")
             #Is file write protected?
-            [[ -w "$BATOCERA_CONFIGFILE" ]] || { echo "r/o file: $BATOCERA_CONFIGFILE" >&2; exit 2; }
-            #We can comment line above to erase keys, it's much saver to check if a value is setted
-            [[ -z "$newvalue" ]] && echo "error: '$keyvalue' needs value to be setted" >&2 && exit 1
+            [[ -w "$BATOCERA_CONFIGFILE" ]] || { echo "r/o file: $BATOCERA_CONFIGFILE" >&2; return 2; }
+            #We can comment line down to erase keys, it's much saver to check if a value is setted
+            [[ -z "$newvalue" ]] && echo "error: '$keyvalue' needs value to be setted" >&2 && return 1
 
-            val="$(get_config $keyvalue)"
+            val="$(get_config "${keyvalue}")"
             ret=$?
             if [[ "$val" == "$COMMENT_CHAR" ]]; then
-                echo "$keyvalue: hashed out!" >&2
                 uncomment_config "$keyvalue"
                 set_config "$keyvalue" "$newvalue"
-                echo "$keyvalue: set from '$val' to '$newvalue'" >&2
-                exit 0
-            elif [[ -z "$val" && $ret -eq 1 ]]; then
+                return $?
+            elif [[ -z "$val" && $ret -eq 1 && $append_flag -eq 0 ]]; then
                 echo "$keyvalue: not found!" >&2
-                exit 12
+                return 12
+            elif [[ -z "$val" && $ret -eq 1 && $append_flag -eq 1 ]]; then
+            add_value "$keyvalue" "$newvalue"
+                return $?
             elif [[ "$val" != "$newvalue" ]]; then
                 set_config "$keyvalue" "$newvalue"
-                exit 0 
+                return 0
             fi
         ;;
 
         "uncomment"|"enable"|"activate")
-            val="$(get_config $keyvalue)"
+            val="$(get_config "$keyvalue")"
             ret=$?
             # Boolean
             if [[ "$val" == "$COMMENT_CHAR" ]]; then
@@ -242,17 +265,17 @@ function main() {
                  set_config "$keyvalue" "1"
                  echo "$keyvalue: boolean set '1'" >&2
             elif [[ -z "$val" && $ret -eq 1 ]]; then
-                 echo "$keyvalue: not found!" && exit 2
+                 echo "$keyvalue: not found!" && return 12
             fi
         ;;
 
         "comment"|"disable"|"remark")
-            val="$(get_config $keyvalue)"
+            val="$(get_config "${keyvalue}")"
             ret=$?
             # Boolean
-            [[ "$val" == "$COMMENT_CHAR" || "$val" == "0" ]] && exit 0
+            [[ "$val" == "$COMMENT_CHAR" || "$val" == "0" ]] && return 0
             if [[ -z "$val" && $ret -eq 1 ]]; then
-                echo "$keyvalue: not found!" >&2 && exit 12
+                echo "$keyvalue: not found!" >&2 && return 12
             elif [[ "$val" == "1" ]]; then
                  set_config "$keyvalue" "0"
                  echo "$keyvalue: boolean set to '0'" >&2
@@ -264,7 +287,7 @@ function main() {
 
         *)
             echo "ERROR: invalid command '$command'" >&2
-            exit 1
+            return 1
         ;;
     esac
 }

@@ -29,7 +29,8 @@ then
 fi
 
 # we don't want default xorg files
-rm -f "${TARGET_DIR}/etc/X11/xorg.conf" || exit 1
+rm -f "${TARGET_DIR}/etc/X11/xorg.conf"  || exit 1
+rm -f "${TARGET_DIR}/etc/init.d/S40xorg" || exit 1
 
 # remove the S10triggerhappy
 rm -f "${TARGET_DIR}/etc/init.d/S10triggerhappy" || exit 1

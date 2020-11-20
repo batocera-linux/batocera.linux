@@ -369,7 +369,11 @@ function argonone_start()
          echo "dtparam=i2c-1=on" >> "/boot/config.txt"
     fi
     modprobe i2c-dev
-    modprobe i2c-bcm2708
+    modprobe i2c-bcm2835
+    # Yes, with kernel 5.4.51 on Batocera-29, this is required
+    # Otherwise the kernel module is not correctly loaded
+    rmmod i2c_bcm2835
+    modprobe i2c-bcm2835
     /usr/bin/rpi-argonone start &
     wait $!
 }

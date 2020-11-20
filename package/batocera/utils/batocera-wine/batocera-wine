@@ -35,15 +35,39 @@ waitWineServer() {
     done
 }
 
+wine_options() {
+    ROMGAMENAME=$(basename "${GAMENAME}")
+    
+    ESYNC=$(batocera-settings -e -r esync -s windows -g "${ROMGAMENAME}")
+    FSYNC=$(batocera-settings -e -r fsync -s windows -g "${ROMGAMENAME}")
+    PBA=$(batocera-settings -e -r pba -s windows -g "${ROMGAMENAME}")
+    VIRTUAL_DESKTOP=$(batocera-settings -e -r virtual_desktop -s windows -g "${ROMGAMENAME}")
+    VIRTUAL_DESKTOP_SIZE=$(batocera-settings -e -r videomode -s windows -g "${ROMGAMENAME}" || batocera-resolution currentResolution)
+
+    if [ "${VIRTUAL_DESKTOP}" = 1 ]; then
+	VDESKTOP="explorer /desktop=Wine,${VIRTUAL_DESKTOP_SIZE}"
+    fi
+
+    export WINEESYNC=1
+    test "${ESYNC}" = 0 && WINEESYNC=0
+
+    export WINEFSYNC=1
+    test "${FSYNC}" = 0 && WINEFSYNC=0
+
+    export PBA_ENABLE=0
+    test "${PBA}" = 1 && PBA_ENABLE=1
+}
+
 dxvk_install() {
     export WINEDLLOVERRIDES="winemenubuilder.exe="
     WINEPREFIX=$1
+    ROMGAMENAME=$(basename "${GAMENAME}")
 
     # install dxvk only on system where it is available (aka, not x86)
     test -e "/usr/share/dxvk" || return 0
 
-    DXVK="$(batocera-settings -command load -key windows.dxvk)"
-    DXVK_HUD="$(batocera-settings -command load -key windows.dxvk_hud)"
+    DXVK=$(batocera-settings -e -r dxvk -s windows -g "${ROMGAMENAME}")
+    DXVK_HUD=$(batocera-settings -e -r dxvk_hud -s windows -g "${ROMGAMENAME}")
 
     if test "${DXVK_HUD}" = 1
     then
@@ -126,22 +150,24 @@ play_wine() {
     GAMENAME=$1
     WINEPOINT="${GAMENAME}"
 
+    wine_options
     WINE_CMD=$(getWine_var "${WINEPOINT}" "CMD" "explorer")
     WINE_DIR=$(getWine_var "${WINEPOINT}" "DIR" "")
-    (cd "${WINEPOINT}/${WINE_DIR}" && WINEPREFIX=${WINEPOINT} eval "wine ${WINE_CMD}")
+    (cd "${WINEPOINT}/${WINE_DIR}" && WINEPREFIX=${WINEPOINT} eval "wine ${VDESKTOP} ${WINE_CMD}")
     waitWineServer
 }
 
 play_pc() {
     GAMENAME=$1
     WINEPOINT="${G_SAVES_DIR}/"$(basename "${GAMENAME}")".wine"
-
+    
+    wine_options
     createWineDirectory "${WINEPOINT}" || return 1
     dxvk_install "${WINEPOINT}" || return 1
 
     WINE_CMD=$(getWine_var "${GAMENAME}" "CMD" "explorer")
     WINE_DIR=$(getWine_var "${GAMENAME}" "DIR" "")
-    (cd "${GAMENAME}/${WINE_DIR}" && WINEPREFIX=${WINEPOINT} eval "wine ${WINE_CMD}")
+    (cd "${GAMENAME}/${WINE_DIR}" && WINEPREFIX=${WINEPOINT} eval "wine ${VDESKTOP} ${WINE_CMD}")
     waitWineServer
 }
 
@@ -163,16 +189,18 @@ play_exe() {
     GAMEDIR=$(dirname "${GAMENAME}")
     GAMEEXE=$(basename "${GAMENAME}")
 
+    wine_options
     createWineDirectory "${WINEPOINT}" || return 1
     dxvk_install "${WINEPOINT}" || return 1
 
-    (cd "${GAMEDIR}" && WINEPREFIX=${WINEPOINT} wine "${GAMEEXE}")
+    (cd "${GAMEDIR}" && WINEPREFIX=${WINEPOINT} wine "${VDESKTOP}" "${GAMEEXE}")
     waitWineServer
 }
 
 play_winetgz() {
     GAMENAME=$1
 
+    wine_options
     WINEPOINT="${G_SAVES_DIR}/"$(basename "${GAMENAME}")".wine"
     if ! test -e "${WINEPOINT}"
     then
@@ -184,12 +212,13 @@ play_winetgz() {
 
     WINE_CMD=$(getWine_var "${WINEPOINT}" "CMD" "explorer")
     WINE_DIR=$(getWine_var "${WINEPOINT}" "DIR" "")
-    (cd "${WINEPOINT}/${WINE_DIR}" && WINEPREFIX=${WINEPOINT} eval "wine ${WINE_CMD}")
+    (cd "${WINEPOINT}/${WINE_DIR}" && WINEPREFIX=${WINEPOINT} eval "wine ${VDESKTOP} ${WINE_CMD}")
     waitWineServer
 }
 
 play_squashfs() {
     GAMENAME=$1
+    wine_options
     BASEGAMENAME=$(basename "${GAMENAME}")
     WINEPOINT="/var/run/wine/${BASEGAMENAME}"
     SQUASHFSPOINT="/var/run/wine/squashfs_${BASEGAMENAME}"
@@ -222,7 +251,7 @@ play_squashfs() {
 
     WINE_CMD=$(getWine_var "${WINEPOINT}" "CMD" "explorer")
     WINE_DIR=$(getWine_var "${WINEPOINT}" "DIR" "")
-    (cd "${WINEPOINT}/${WINE_DIR}" && WINEPREFIX=${WINEPOINT} eval "wine ${WINE_CMD}")
+    (cd "${WINEPOINT}/${WINE_DIR}" && WINEPREFIX=${WINEPOINT} eval "wine ${VDESKTOP} ${WINE_CMD}")
     waitWineServer
 
     # try to clean the cdrom

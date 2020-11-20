@@ -37,4 +37,11 @@ define RPCS3_BUILD_CMDS
 		$(MAKE) -C $(@D)
 endef
 
+define RPCS3_INSTALL_EVMAPY
+	mkdir -p $(TARGET_DIR)/usr/share/evmapy
+	$(INSTALL) -D -m 0644 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/rpcs3/evmapy.keys $(TARGET_DIR)/usr/share/evmapy/ps3.keys
+endef
+
+RPCS3_POST_INSTALL_TARGET_HOOKS = RPCS3_INSTALL_EVMAPY
+
 $(eval $(cmake-package))

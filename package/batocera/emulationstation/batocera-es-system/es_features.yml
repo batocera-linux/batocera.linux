@@ -57,6 +57,45 @@ libretro:
       features: [ padtokeyboard ]
     duckstation:
       features: [ ]
+      cfeatures:
+            resolution_scale:
+                prompt:  INTERNAL RESOLUTION
+                choices:
+                    "native":   1
+                    "2x":       2
+                    "3x/720p":  3
+                    "4x":       4
+                    "5x/1080p": 5
+                    "6x/1440p": 6
+                    "7x":       7
+                    "8x":       8
+                    "9x":       9
+            antialiasing:
+                prompt:  MSAA/SSAA
+                choices:
+                    "Off":      1
+                    "2x msaa":  2
+                    "4x msaa":  4
+                    "8x msaa":  8
+                    "16x msaa": 16
+                    "32x msaa": 32
+                    "2x ssaa":  2-ssaa
+                    "4x ssaa":  4-ssaa
+                    "8x ssaa":  8-ssaa
+                    "16x ssaa": 16-ssaa
+                    "32x ssaa": 32-ssaa
+            texture_filtering:
+                prompt:  TEXTURE FILTER
+                choices:
+                    "nearest":   Nearest
+                    "bilinear":  Bilinear
+                    "jinc2":     JINC2
+                    "xBR":       xBR
+            widescreen_hack:
+                prompt: WIDESCREEN HACK
+                choices:
+                    "Off":  false
+                    "On":   true
     fbneo:
       features: [netplay, rewind, autosave]
     fceumm:
@@ -154,23 +193,6 @@ libretro:
     mednafen_supergrafx:
       features: [netplay, rewind, autosave]
     mednafen_wswan:
-      features: [netplay, rewind, autosave]
-    mesen:
-      features: [netplay, rewind, autosave]
-      cfeatures:
-            overscan_h:
-                prompt: OVERSCAN HORIZONTAL
-                choices:
-                    "off":     None
-                    "8px":     8px
-                    "16px":    16px
-            overscan_v:
-                prompt: OVERSCAN VERTICAL
-                choices:
-                    "off":     None
-                    "8px":     8px
-                    "16px":    16px
-    mesen-s:
       features: [netplay, rewind, autosave]
     mgba:
       features: [         rewind, autosave]
@@ -622,6 +644,17 @@ melonds:
 
 rpcs3:
   features: []
+  cfeatures:
+    gui:
+      prompt: Display user interface
+      choices:
+        Off: 0
+        On:  1
+    gfxbackend:
+      prompt: GRAPHICS BACKEND
+      choices:
+        OpenGL: OpenGL
+        Vulkan: Vulkan
 
 wine:
   features: [padtokeyboard]
@@ -633,6 +666,26 @@ wine:
         On:  1
     dxvk_hud:
       prompt: dxvk hud
+      choices:
+        Off: 0
+        On:  1
+    esync:
+      prompt: esync
+      choices:
+        Off: 0
+        On:  1
+    fsync:
+      prompt: fsync
+      choices:
+        Off: 0
+        On:  1
+    pba:
+      prompt: pba
+      choices:
+        Off: 0
+        On:  1
+    virtual_desktop:
+      prompt: virtual_desktop
       choices:
         Off: 0
         On:  1

@@ -92,19 +92,6 @@ def generateCoreSettings(retroarchCore, system):
         coreSettings.save('mame2003-plus_skip_warnings',    '"enabled"')
         coreSettings.save('mame2003-plus_analog',           '"digital"')
 
-    if (system.config['core'] == 'mesen'):
-        coreSettings.save('mesen_nospritelimit',    '"enabled"')
-        # overscan horizontal
-        if system.isOptSet('overscan_h'):
-            coreSettings.save('mesen_overscan_horizontal', system.config['overscan_h'])
-        else:
-            coreSettings.save('mesen_overscan_horizontal', '"None"')
-        # overscan vertical
-        if system.isOptSet('overscan_v'):
-            coreSettings.save('mesen_overscan_vertical', system.config['overscan_v'])
-        else:
-            coreSettings.save('mesen_overscan_vertical', '"None"')
-
     if (system.config['core'] == 'puae'):
         coreSettings.save('puae_video_options_display ',    '"enabled"')
         # video resolution
@@ -163,12 +150,12 @@ def generateCoreSettings(retroarchCore, system):
             coreSettings.save('mupen64plus-MultiSampling', '"0"')
         # Texture filter
         if system.isOptSet('Texture_filter'):
-            coreSettings.save('mupen64plus-txFilterMode', system.config['Texture_filter'])
+            coreSettings.save('mupen64plus-txFilterMode', '"' + system.config['Texture_filter'] + '"')
         else:
             coreSettings.save('mupen64plus-txFilterMode', '"None"')
         # Texture Enhancement
         if system.isOptSet('Texture_Enhancement'):
-            coreSettings.save('mupen64plus-txEnhancementMode', system.config['Texture_Enhancement'])
+            coreSettings.save('mupen64plus-txEnhancementMode', '"' + system.config['Texture_Enhancement'] + '"')
         else:
             coreSettings.save('mupen64plus-txEnhancementMode', '"None"')
 
@@ -310,6 +297,28 @@ def generateCoreSettings(retroarchCore, system):
             coreSettings.save('beetle_psx_hw_widescreen_hack', system.config['widescreen_hack'])
         else:
             coreSettings.save('beetle_psx_hw_widescreen_hack', '"disabled"')
+
+    if (system.config['core'] == 'duckstation'):
+        # resolution scale (default 1)
+        if system.isOptSet('resolution_scale'):
+            coreSettings.save('duckstation_GPU.ResolutionScale', system.config['resolution_scale'])
+        else:
+            coreSettings.save('duckstation_GPU.ResolutionScale', '"1"')
+        # multisampling antialiasing (default 1x)
+        if system.isOptSet('antialiasing'):
+            coreSettings.save('duckstation_GPU.MSAA', system.config['antialiasing'])
+        else:
+            coreSettings.save('duckstation_GPU.MSAA', '"1"')
+        # texture filtering (default nearest)
+        if system.isOptSet('texture_filtering'):
+            coreSettings.save('duckstation_GPU.TextureFilter', system.config['texture_filtering'])
+        else:
+            coreSettings.save('duckstation_GPU.TextureFilter', '"Nearest"')
+        # widescreen hack (default off)
+        if system.isOptSet('widescreen_hack'):
+            coreSettings.save('duckstation_GPU.WidescreenHack', system.config['widescreen_hack'])
+        else:
+            coreSettings.save('duckstation_GPU.WidescreenHack', '"false"')
 
     if (system.config['core'] == 'pcsx_rearmed'):
         for n in range(1, 8+1):

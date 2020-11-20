@@ -9,7 +9,6 @@ snes:
       pocketsnes:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_POCKETSNES] }
       snes9x_next: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_SNES9X_NEXT] }
       snes9x:      { requireAnyOf: [BR2_PACKAGE_LIBRETRO_SNES9X] }
-      mesen-s:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MESEN_S] }
       bsnes:       { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BSNES] }
 
 c64:
@@ -125,7 +124,6 @@ nes:
     libretro:
       fceumm:   { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FCEUMM] }
       nestopia: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_NESTOPIA] }
-      mesen:   { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MESEN] }
 
 n64:
   name:       Nintendo 64
@@ -1234,7 +1232,14 @@ ps3:
   emulators:
     rpcs3:
       rpcs3: { requireAnyOf: [BR2_PACKAGE_RPCS3] }
-
+  comment_en: |
+    You must first load the firmware by running rpcs3-config from menu>f1>Applications then File>Install firmware.
+    PS3 roms are directories must be renamed to end with .ps3.
+    First time you load a game, it takes time (a progress bar is visible). It doesn't happen next times.
+  comment_fr: |
+    Vous devez préalablement charger le firmware en lançant rpcs3-config depuis menu>f1>Applications puis File>Install firmware.
+    Les roms ps3 sont des dossiers ; ils doivent être renommés pour terminer par .ps3
+    La première fois que vous chargez un jeu, cela met du temps (une barre de progression est visible). Cela ne se produit pas les fois suivantes.
 
 3do:
   name:       3DO Interactive Multiplayer
@@ -1339,8 +1344,6 @@ daphne:
   emulators:
     daphne:
       hypseus:  { requireAnyOf: [BR2_PACKAGE_DAPHNE]          }
-    libretro:
-      daphne:   { requireAnyOf: [BR2_PACKAGE_LIBRETRO_DAPHNE] }
 
 thomson:
   name:       Thomson - MO/TO (Theodore)
