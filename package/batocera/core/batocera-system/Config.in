@@ -343,7 +343,7 @@ config BR2_PACKAGE_BATOCERA_ALL_SYSTEMS
 
         select BR2_PACKAGE_BATOCERA_MUPEN64     if !BR2_PACKAGE_BATOCERA_TARGET_RPI1 # mupen64 (n64)
 
-        select BR2_PACKAGE_FLYCAST              if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY || \
+        select BR2_PACKAGE_FLYCAST              if BR2_PACKAGE_BATOCERA_TARGET_X86_64 || \
                                                    BR2_PACKAGE_BATOCERA_TARGET_ROCKCHIP_ANY
 
         select BR2_PACKAGE_REICAST              if !BR2_PACKAGE_BATOCERA_TARGET_RPI1 && \
