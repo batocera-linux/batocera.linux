@@ -15,6 +15,10 @@ class DolphinGenerator(Generator):
         if not os.path.exists(os.path.dirname(batoceraFiles.dolphinIni)):
             os.makedirs(os.path.dirname(batoceraFiles.dolphinIni))
 
+        # dir required for saves
+        if not os.path.exists(batoceraFiles.dolphinData + "/StateSaves"):
+            os.makedirs(batoceraFiles.dolphinData + "/StateSaves")
+
         dolphinControllers.generateControllerConfig(system, playersControllers, rom)
 
         # dolphin.ini
