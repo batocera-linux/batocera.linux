@@ -1,18 +1,10 @@
---- a/libswirl/utils/glwrap/gl3w-es.cpp	2020-08-22 12:50:11.324789338 +0200
-+++ b/libswirl/utils/glwrap/gl3w-es.cpp	2020-08-22 12:50:22.441013541 +0200
-@@ -8,7 +8,7 @@
+--- a/libswirl/utils/glwrap/gl3w-es.cpp	2020-11-20 17:45:37.681933834 +0100
++++ b/libswirl/utils/glwrap/gl3w-es.cpp	2020-11-20 17:45:55.638250487 +0100
+@@ -8,6 +8,7 @@
  #include "gl3w.h"
  
  #if defined(SUPPORT_EGL)
--#include "khronos/EGL/egl.h"
-+#include <EGL/egl.h>
++#define EGL_NO_X11
+ #include "khronos/EGL/egl.h"
  #if defined(_ANDROID)
  #include <dlfcn.h>
- #endif
-@@ -420,4 +420,4 @@
-     SYM(TexStorage3DMultisample),
- 
-     { nullptr, nullptr },
--};
-\ Pas de fin de ligne à la fin du fichier
-+};

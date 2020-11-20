@@ -1,0 +1,10 @@
+--- a/libswirl/utils/glinit/egl/egl.cpp	2020-11-20 17:54:02.111850214 +0100
++++ b/libswirl/utils/glinit/egl/egl.cpp	2020-11-20 17:54:12.260043232 +0100
+@@ -6,6 +6,7 @@
+ 
+ #include "rend/gles/gles.h"
+ 
++#define EGL_NO_X11
+ #include <EGL/egl.h>
+ #include "deps/khronos/EGL/eglext.h"
+ 
