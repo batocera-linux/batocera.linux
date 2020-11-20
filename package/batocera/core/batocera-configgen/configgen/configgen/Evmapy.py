@@ -46,7 +46,7 @@ class Evmapy():
                 nplayer = 1
                 for playercontroller, pad in sorted(playersControllers.items()):
                     if "actions_player"+str(nplayer) in padActionConfig:
-                        configfile = "/var/run/evmapy/{}.json" .format (re.sub(r'[^\w]', '.', pad.realName))
+                        configfile = "/var/run/evmapy/{}.json" .format (os.path.basename(pad.dev))
                         eslog.log("config file for keysfile is {} (from {})" .format (configfile, keysfile))
     
                         # create mapping
