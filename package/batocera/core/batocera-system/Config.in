@@ -459,7 +459,8 @@ config BR2_PACKAGE_BATOCERA_RETROARCH
                                                          !BR2_PACKAGE_BATOCERA_TARGET_S912
                                                          # PCFX
 
-        select BR2_PACKAGE_LIBRETRO_BEETLE_PSX        if !BR2_PACKAGE_BATOCERA_TARGET_RPI_ANY
+        select BR2_PACKAGE_LIBRETRO_BEETLE_PSX        if !BR2_PACKAGE_BATOCERA_TARGET_RPI_ANY && \
+	                                                 !BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA
                                                          # PSX
 
         select BR2_PACKAGE_LIBRETRO_FLYCAST           if !BR2_PACKAGE_BATOCERA_TARGET_RPI1    && \
