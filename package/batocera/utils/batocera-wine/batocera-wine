@@ -10,6 +10,7 @@ G_ROMS_DIR="/userdata/roms/windows"
 
 PATH=$PATH:/usr/bin32
 export LD_LIBRARY_PATH="/lib32:/lib32/wine:/lib:/usr/lib:/usr/lib/wine"
+export GST_PLUGIN_PATH="/lib32/gstreamer-1.0:/usr/lib/gstreamer-1.0"
 export LIBGL_DRIVERS_PATH="/lib32/dri:/usr/lib/dri"
 export WINEDLLPATH="/lib32/wine/fakedlls:/usr/lib/wine/fakedlls"
 
