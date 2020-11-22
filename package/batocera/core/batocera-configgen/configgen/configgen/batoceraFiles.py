@@ -37,6 +37,7 @@ batoceraBins = {'dosbox'         : '/usr/bin/dosbox'
               , 'daphne'         : '/usr/bin/hypseus'
               , 'melonds'        : '/usr/bin/melonDS'
               , 'rpcs3'          : '/usr/bin/rpcs3'
+              , 'mame'           : '/usr/bin/mame/mamearcade64'
 }
 
 

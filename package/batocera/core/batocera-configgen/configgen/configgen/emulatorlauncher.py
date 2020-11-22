@@ -33,6 +33,7 @@ from generators.cemu.cemuGenerator import CemuGenerator
 from generators.melonds.melondsGenerator import MelonDSGenerator
 from generators.rpcs3.rpcs3Generator import Rpcs3Generator
 from generators.pygame.pygameGenerator import PygameGenerator
+from generators.mame.mameGenerator import MameGenerator
 import controllersConfig as controllers
 import signal
 import batoceraFiles
@@ -67,6 +68,7 @@ generators = {
     'cemu' : CemuGenerator(),
     'melonds' : MelonDSGenerator(),
     'rpcs3' : Rpcs3Generator(),
+    'mame' : MameGenerator(),
     'pygame': PygameGenerator()
 }
 
