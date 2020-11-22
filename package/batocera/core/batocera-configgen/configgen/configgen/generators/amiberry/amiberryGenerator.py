@@ -23,17 +23,20 @@ class AmiberryGenerator(Generator):
         if romType != 'UNKNOWN' :           
             commandArray = [ batoceraFiles.batoceraBins[system.config['emulator']], "-G" ]
             if romType != 'WHDL' :
-                commandArray.append("-model=" + system.config['core'])
+                commandArray.append("--model")
+                commandArray.append(system.config['core'])
             
             if romType == 'WHDL' :
-                commandArray.append("-autoload="+rom)
+                commandArray.append("--autoload")
+                commandArray.append(rom)
             elif romType == 'HDF' :
                 commandArray.append("-s")
                 commandArray.append("hardfile2=rw,DH0:"+rom+",32,1,2,512,0,,uae0")
                 commandArray.append("-s")
                 commandArray.append("uaehf0=hdf,rw,DH0:"+rom+",32,1,2,512,0,,uae0")
             elif romType == 'CD' :
-                commandArray.append("-cdimage="+rom)
+                commandArray.append("--cdimage")
+                commandArray.append(rom)
             elif romType == 'DISK':
                 # floppies
                 n = 0
