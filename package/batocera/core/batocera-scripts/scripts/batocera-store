@@ -30,7 +30,7 @@ case "${ACTION}" in
     "list")
 	if test ! -e /userdata/system/pacman/db/sync/batocera.db
 	then
-		pacman --noconfirm -Syu
+		pacman --noconfirm -Sy
 	fi
 	if [ $TERMINAL -eq 1 ]; then
 		pacman --noconfirm -Ss
@@ -40,6 +40,10 @@ case "${ACTION}" in
 		RET=$?
 	fi
 	exit ${RET}
+	;;
+    "refresh")
+	pacman --noconfirm -Sy
+	exit $?
 	;;
     "update")
 	pacman --noconfirm -Syu
@@ -90,5 +94,6 @@ EOF
 	echo "${0} remove  <package>" >&2
 	echo "${0} list" >&2
 	echo "${0} list-repositories" >&2
+	echo "${0} refresh" >&2
 	echo "${0} update" >&2
 esac

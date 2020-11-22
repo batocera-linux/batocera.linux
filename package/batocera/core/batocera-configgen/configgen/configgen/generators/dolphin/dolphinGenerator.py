@@ -15,6 +15,10 @@ class DolphinGenerator(Generator):
         if not os.path.exists(os.path.dirname(batoceraFiles.dolphinIni)):
             os.makedirs(os.path.dirname(batoceraFiles.dolphinIni))
 
+        # dir required for saves
+        if not os.path.exists(batoceraFiles.dolphinData + "/StateSaves"):
+            os.makedirs(batoceraFiles.dolphinData + "/StateSaves")
+
         dolphinControllers.generateControllerConfig(system, playersControllers, rom)
 
         # dolphin.ini
@@ -47,7 +51,7 @@ class DolphinGenerator(Generator):
 
         # PanicHandlers displaymessages
         dolphinSettings.set("Interface", "UsePanicHandlers", '"False"')
-        dolphinSettings.set("Interface", "OnScreenDisplayMessages", '"False"')
+        dolphinSettings.set("Interface", "OnScreenDisplayMessages", '"True"')
 
         # don't confirm at stop
         dolphinSettings.set("Interface", "ConfirmStop", '"False"')
@@ -59,32 +63,32 @@ class DolphinGenerator(Generator):
             dolphinSettings.set("Core", "EnableCheats", '"False"')
 
         # speed up disc transfert rate
-        if system.isOptSet("enable_fastdisc"):
-            dolphinSettings.set("Core", "FastDiscSpeed", system.config["enable_fastdisc"])
+        if system.isOptSet("enable_fastdisc") and system.getOptBoolean("enable_fastdisc"):
+            dolphinSettings.set("Core", "FastDiscSpeed", '"True"')
         else:
             dolphinSettings.set("Core", "FastDiscSpeed", '"False"')
 
         # Dual Core
         if system.isOptSet("dual_core") and not system.getOptBoolean("dual_core"):
-            dolphinSettings.set("Core", "CPUThread", '"True"')
-        else:
             dolphinSettings.set("Core", "CPUThread", '"False"')
+        else:
+            dolphinSettings.set("Core", "CPUThread", '"True"')
 
         # Gpu Sync
-        if system.isOptSet("gpu_sync") and not system.getOptBoolean("gpu_sync"):
-            dolphinSettings.set("Core", "SyncGPU", '"False"')
-        else:
+        if system.isOptSet("gpu_sync") and system.getOptBoolean("gpu_sync"):
             dolphinSettings.set("Core", "SyncGPU", '"True"')
+        else:
+            dolphinSettings.set("Core", "SyncGPU", '"False"')
 
         # language (for gamecube at least)
         dolphinSettings.set("Core", "SelectedLanguage", getGameCubeLangFromEnvironment())
         dolphinSettings.set("Core", "GameCubeLanguage", getGameCubeLangFromEnvironment())
 
         # Enable MMU - Default On
-        if system.isOptSet("enable_mmu") and not system.getOptBoolean("enable_mmu"):
-            dolphinSettings.set("Core", "MMU", '"False"')
-        else:
+        if system.isOptSet("enable_mmu") and system.getOptBoolean("enable_mmu"):
             dolphinSettings.set("Core", "MMU", '"True"')
+        else:
+            dolphinSettings.set("Core", "MMU", '"False"')
 
         # backend - Default
         if system.isOptSet("gfxbackend"):
@@ -110,7 +114,7 @@ class DolphinGenerator(Generator):
         # To prevent ConfigParser from converting to lower case
         dolphinGFXSettings.optionxform = str
         dolphinGFXSettings.read(batoceraFiles.dolphinGfxIni)
-        
+
         #Add Default Sections
         if not dolphinGFXSettings.has_section("Settings"):
             dolphinGFXSettings.add_section("Settings")
@@ -124,11 +128,11 @@ class DolphinGenerator(Generator):
         dolphinGFXSettings.set("Settings", "AspectRatio", getGfxRatioFromConfig(system.config, gameResolution))
 
         # show fps
-        if system.isOptSet('showFPS') and system.getOptBoolean('showFPS'):
+        if system.isOptSet("showFPS") and system.getOptBoolean("showFPS"):
             dolphinGFXSettings.set("Settings", "ShowFPS", '"True"')
         else:
             dolphinGFXSettings.set("Settings", "ShowFPS", '"False"')
-			
+
         # HiResTextures - Default On
         if system.isOptSet('hires_textures') and not system.getOptBoolean('hires_textures'):
             dolphinGFXSettings.set("Settings", "HiresTextures", '"False"')
@@ -138,14 +142,13 @@ class DolphinGenerator(Generator):
             dolphinGFXSettings.set("Settings", "CacheHiresTextures", '"True"')
             
         # widescreen hack but only if enable cheats is not enabled - Default Off
-        if (system.isOptSet('widescreen_hack') and system.getOptBoolean('widescreen_hack') and system.isOptSet('enable_cheats') and not system.getOptBoolean('enable_cheats')):
+        if (system.isOptSet('widescreen_hack') and system.getOptBoolean('widescreen_hack') and (not system.isOptSet('enable_cheats') or not system.getOptBoolean('enable_cheats'))):
             dolphinGFXSettings.set("Settings", "wideScreenHack", '"True"')
         else:
             dolphinGFXSettings.remove_option("Settings", '"wideScreenHack"')
 
         # various performance hacks - Default Off
         if system.isOptSet('perf_hacks') and system.getOptBoolean('perf_hacks'):
-       
             dolphinGFXSettings.set("Hacks", "BBoxEnable", '"False"')
             dolphinGFXSettings.set("Hacks", "DeferEFBCopies", '"True"')
             dolphinGFXSettings.set("Hacks", "EFBEmulateFormatChanges", '"False"')

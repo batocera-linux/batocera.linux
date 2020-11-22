@@ -194,23 +194,6 @@ libretro:
       features: [netplay, rewind, autosave]
     mednafen_wswan:
       features: [netplay, rewind, autosave]
-    mesen:
-      features: [netplay, rewind, autosave]
-      cfeatures:
-            overscan_h:
-                prompt: OVERSCAN HORIZONTAL
-                choices:
-                    "off":     None
-                    "8px":     8px
-                    "16px":    16px
-            overscan_v:
-                prompt: OVERSCAN VERTICAL
-                choices:
-                    "off":     None
-                    "8px":     8px
-                    "16px":    16px
-    mesen-s:
-      features: [netplay, rewind, autosave]
     mgba:
       features: [         rewind, autosave]
     mrboom:
@@ -698,6 +681,11 @@ wine:
         On:  1
     pba:
       prompt: pba
+      choices:
+        Off: 0
+        On:  1
+    virtual_desktop:
+      prompt: virtual desktop
       choices:
         Off: 0
         On:  1
