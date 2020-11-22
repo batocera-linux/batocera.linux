@@ -25,17 +25,17 @@ BATOCERA_POST_IMAGE_SCRIPT=""
 
 case "${BATOCERA_TARGET}" in
 	RPI0|RPI1|RPI2)
-	BOARD_DIR="${BATO_DIR}/rpi"
+	BOARD_DIR="${BATO_DIR}/raspberrypi/rpi"
 	BATOCERA_POST_IMAGE_SCRIPT="${BOARD_DIR}/post-image-script-rpi012.sh"
 	;;
 
 	RPI3)
-	BOARD_DIR="${BATO_DIR}/rpi"
+	BOARD_DIR="${BATO_DIR}/raspberrypi/rpi3"
 	BATOCERA_POST_IMAGE_SCRIPT="${BOARD_DIR}/post-image-script-rpi3.sh"
 	;;
 
 	RPI4)
-	BOARD_DIR="${BATO_DIR}/rpi4"
+	BOARD_DIR="${BATO_DIR}/raspberrypi/rpi4"
 	BATOCERA_POST_IMAGE_SCRIPT="${BOARD_DIR}/post-image-script-rpi4.sh"
 	;;
 
