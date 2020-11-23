@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# run manually:  board/batocera/doPcsx2package.sh "output/target" "output/pcsx2" "output/images/batocera"
+# run manually:  board/batocera/scripts/doPcsx2package.sh "output/target" "output/pcsx2" "output/images/batocera"
 
 basicLdd() {
     LANG=C readelf -d "${1}" | grep -E "Shared library: " | sed -e s+"^.*Shared library: \[\([^]]*\)\]$"+"\1"+
