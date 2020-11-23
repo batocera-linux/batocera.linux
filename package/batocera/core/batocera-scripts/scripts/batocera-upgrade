@@ -20,6 +20,32 @@ getPer() {
     done
 }
 
+do_versioncheck() {
+    echo "$1" | awk '{ $0=$(NF-1)$NF; gsub(/[^0-9]/,""); print }'
+}
+
+do_wannaupdate() {
+    local text; local to
+    CUR_VER=$(cat /usr/share/batocera/batocera.version)
+    NET_VER=$(wget -q -O - "${DWD_HTTP_DIR}/batocera.version" | head -n1)
+    [ $? -ne 0 ] && return #Possible an update URL which is not valid 
+    echo "Current Version installed:    $CUR_VER"
+    echo "Version you want to download: $NET_VER"
+    CUR_VER=$(do_versioncheck "$CUR_VER")
+    NET_VER=$(do_versioncheck "$NET_VER")
+    [ -z $NET_VER ] && NET_VER=0
+    [ $CUR_VER -lt $NET_VER ] && { text="UPGRADE found!"; to=1; }
+    [ $CUR_VER -gt $NET_VER ] && { text="DOWNGRADE found!"; to=10; }
+    [ $CUR_VER -eq $NET_VER ] && { text="No Update found!"; to=15; }
+    [ $NET_VER -eq 0 ] && { text="Could not detect version!"; to=15; }
+    read -p "${text} Press Y or wait ${to}s to proceed! Press N to break!" -N 1 -t ${to}
+    [ $? -gt 128 ] && REPLY=y
+    if [ $REPLY == n ] || [ $REPLY == N ] ; then
+        echo; echo "Abort..."
+        exit
+    fi
+}
+
 # ---- MAIN ----
 
 CUSTOM_URLDIR=
@@ -31,7 +57,9 @@ fi
 #Started from Terminal/SSH or from Emulationstation?
 [ -t 1 ] && TERMINAL=1 || TERMINAL=0
 
-echo "starting the upgrade..."
+echo "Starting the upgrade..."
+
+# --- Prepare update URLs ---
 
 updateurl="https://updates.batocera.org"
 systemsetting="/usr/bin/batocera-settings"
@@ -56,6 +84,14 @@ if test -n "${CUSTOM_URLDIR}"
 then
     DWD_HTTP_DIR="${CUSTOM_URLDIR}"
 fi
+
+# give user more hints for update in terminal
+[ $TERMINAL -eq 1 ] && { do_wannaupdate; echo; }
+
+# --- Prepare file downloads ---
+
+# download directory
+mkdir -p /userdata/system/upgrade || exit 1
 
 # get size to download
 url="${DWD_HTTP_DIR}/boot.tar.xz"
@@ -168,5 +204,5 @@ rm -f "/userdata/system/upgrade/boot.tar.xz"
 rm -f "/userdata/system/upgrade/boot.tar.xz.md5"
 sync
 
-echo "Done. Please reboot batocera so that the changes take effect !"
+echo; echo "Done. Please reboot the sytem so that the changes take effect !"
 exit 0

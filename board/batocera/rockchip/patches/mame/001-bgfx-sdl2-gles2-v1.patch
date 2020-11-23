@@ -1,0 +1,537 @@
+From dd27481de69782f87fcd6910e558d4067196f486 Mon Sep 17 00:00:00 2001
+From: Romain TISSERAND <romain.tisserand@gmail.com>
+Date: Mon, 16 Nov 2020 18:03:20 +0100
+Subject: [PATCH] Ugly bgfx+sdl2+gles patch to get MAME running on embedded
+
+---
+ 3rdparty/bgfx/scripts/bgfx.lua       |   6 +
+ 3rdparty/bgfx/src/config.h           |  16 +++
+ 3rdparty/bgfx/src/glcontext_sdl2.cpp | 191 +++++++++++++++++++++++++++
+ 3rdparty/bgfx/src/glcontext_sdl2.h   |  56 ++++++++
+ 3rdparty/bgfx/src/renderer_gl.cpp    |   2 +
+ 3rdparty/bgfx/src/renderer_gl.h      |  15 ++-
+ scripts/genie.lua                    |   4 +
+ scripts/src/3rdparty.lua             |   1 +
+ src/osd/modules/render/drawbgfx.cpp  |  22 +--
+ src/osd/sdl/window.cpp               |  40 +++++-
+ 10 files changed, 327 insertions(+), 26 deletions(-)
+ create mode 100644 3rdparty/bgfx/src/glcontext_sdl2.cpp
+ create mode 100644 3rdparty/bgfx/src/glcontext_sdl2.h
+
+diff --git a/3rdparty/bgfx/scripts/bgfx.lua b/3rdparty/bgfx/scripts/bgfx.lua
+index 69335c67964..cb10aa72775 100644
+--- a/3rdparty/bgfx/scripts/bgfx.lua
++++ b/3rdparty/bgfx/scripts/bgfx.lua
+@@ -64,6 +64,12 @@ function bgfxProjectBase(_kind, _defines)
+ 			buildoptions {
+ 				"-fPIC",
+ 			}
++			links {
++				"SDL2",
++				"EGL",
++				"GLESv2",
++				"pthread",
++			}
+ 
+ 		configuration {}
+ 	end
+diff --git a/3rdparty/bgfx/src/config.h b/3rdparty/bgfx/src/config.h
+index 1d3652cda88..fb8aa2a7f86 100644
+--- a/3rdparty/bgfx/src/config.h
++++ b/3rdparty/bgfx/src/config.h
+@@ -8,10 +8,21 @@
+ 
+ #include <bx/bx.h>
+ 
++// # Configuration options for bgfx.
++//
++// Any of `BGFX_CONFIG_*` options that's inside `#ifndef` block can be configured externally
++// via compiler options.
++//
++// When selecting rendering backends select all backends you want to include in the build.
++
+ #ifndef BGFX_CONFIG_DEBUG
+ #	define BGFX_CONFIG_DEBUG 0
+ #endif // BGFX_CONFIG_DEBUG
+ 
++#ifndef BGFX_CONFIG_SDL2
++#	define BGFX_CONFIG_SDL2 1
++#endif // BGFX_CONFIG_SDL2
++
+ #if !defined(BGFX_CONFIG_RENDERER_DIRECT3D9)  \
+  && !defined(BGFX_CONFIG_RENDERER_DIRECT3D11) \
+  && !defined(BGFX_CONFIG_RENDERER_DIRECT3D12) \
+@@ -74,6 +85,10 @@
+ 					|| BX_PLATFORM_OSX        \
+ 					|| BX_PLATFORM_WINDOWS    \
+ 					? BGFX_CONFIG_RENDERER_OPENGL_MIN_VERSION : 0)
++#	if BGFX_CONFIG_SDL2
++#		undef  BGFX_CONFIG_RENDERER_OPENGL
++#		define BGFX_CONFIG_RENDERER_OPENGL 0
++#	endif
+ #	endif // BGFX_CONFIG_RENDERER_OPENGL
+ 
+ #	ifndef BGFX_CONFIG_RENDERER_OPENGLES_MIN_VERSION
+@@ -88,6 +103,7 @@
+ 					|| BX_PLATFORM_RPI          \
+ 					|| BX_PLATFORM_STEAMLINK    \
+ 					|| BX_PLATFORM_NX           \
++					|| BGFX_CONFIG_SDL2         \
+ 					? BGFX_CONFIG_RENDERER_OPENGLES_MIN_VERSION : 0)
+ #	endif // BGFX_CONFIG_RENDERER_OPENGLES
+ 
+diff --git a/3rdparty/bgfx/src/glcontext_sdl2.cpp b/3rdparty/bgfx/src/glcontext_sdl2.cpp
+new file mode 100644
+index 00000000000..f793e197f2d
+--- /dev/null
++++ b/3rdparty/bgfx/src/glcontext_sdl2.cpp
+@@ -0,0 +1,191 @@
++/*
++ * Copyright 2011-2020 Branimir Karadzic. All rights reserved.
++ * License: https://github.com/bkaradzic/bgfx#license-bsd-2-clause
++ */
++
++#include "bgfx_p.h"
++
++#if (BGFX_CONFIG_RENDERER_OPENGLES || BGFX_CONFIG_RENDERER_OPENGL)
++#	include "renderer_gl.h"
++
++#	if BGFX_USE_SDL2
++
++namespace bgfx { namespace gl
++{
++
++#	define GL_IMPORT(_optional, _proto, _func, _import) _proto _func = NULL
++#	include "glimports.h"
++
++	struct SwapChainGL
++	{
++		SwapChainGL(SDL_Window* _window, SDL_GLContext _context)
++			: m_window(_window)
++		{
++			SDL_GL_SetAttribute(SDL_GL_SHARE_WITH_CURRENT_CONTEXT, 1);
++			m_context = SDL_GL_CreateContext(m_window);
++			SDL_GL_SetAttribute(SDL_GL_SHARE_WITH_CURRENT_CONTEXT, 0);
++			BX_CHECK(NULL != m_context, "Create swap chain failed: %s", SDL_GetError() );
++
++			makeCurrent();
++			GL_CHECK(glClearColor(0.0f, 0.0f, 0.0f, 0.0f) );
++			GL_CHECK(glClear(GL_COLOR_BUFFER_BIT) );
++			swapBuffers();
++			GL_CHECK(glClear(GL_COLOR_BUFFER_BIT) );
++			swapBuffers();
++            		SDL_GL_MakeCurrent(m_window, _context);
++		}
++
++		~SwapChainGL()
++		{
++            		//EGLSurface defaultSurface = eglGetCurrentSurface(EGL_DRAW);
++            		SDL_GLContext defaultContext = SDL_GL_GetCurrentContext();
++			SDL_GL_MakeCurrent(m_window, 0);
++			SDL_GL_DeleteContext(m_context);
++            		SDL_GL_MakeCurrent(m_window, defaultContext);
++		}
++
++		void makeCurrent()
++		{
++			SDL_GL_MakeCurrent(m_window, m_context);
++		}
++
++		void swapBuffers()
++		{
++			SDL_GL_SwapWindow(m_window);
++		}
++
++		SDL_GLContext m_context;
++		SDL_Window* m_window;
++	};
++
++	void GlContext::create(uint32_t _width, uint32_t _height)
++	{
++		BX_UNUSED(_width, _height);
++		m_window = (SDL_Window*)g_platformData.nwh;
++		BGFX_FATAL(m_window != NULL, Fatal::UnableToInitialize, "Failed to retrieve SDL2/GLES window");
++		SDL_GL_SetAttribute(SDL_GL_SHARE_WITH_CURRENT_CONTEXT, 1);
++		m_context = SDL_GL_CreateContext(m_window);
++		BGFX_FATAL(m_context != NULL, Fatal::UnableToInitialize, "Failed to create context.");
++		int success = SDL_GL_MakeCurrent(m_window, m_context);
++		if (success != 0)
++			BX_TRACE("cannot set sdl/gl context %s", SDL_GetError());
++		m_current = NULL;
++		SDL_GL_SetSwapInterval(0);
++		import();
++		g_internalData.context = m_context;
++	}
++
++	void GlContext::destroy()
++	{
++		if (NULL != m_window)
++		{
++			SDL_GL_MakeCurrent(m_window, 0);
++			SDL_GL_DeleteContext(m_context);
++			m_context = NULL;
++		}
++	}
++
++	void GlContext::resize(uint32_t _width, uint32_t _height, uint32_t _flags)
++	{
++#	if BX_PLATFORM_EMSCRIPTEN
++		EMSCRIPTEN_CHECK(emscripten_set_canvas_element_size(HTML5_TARGET_CANVAS_SELECTOR, _width, _height) );
++#	else
++		if (NULL != m_window)
++		{
++			SDL_SetWindowSize(m_window, _width, _height);
++		}
++		BX_UNUSED(_width, _height);
++#	endif // BX_PLATFORM_*
++
++		if (NULL != m_window)
++		{
++			bool vsync = !!(_flags&BGFX_RESET_VSYNC);
++			SDL_GL_SetSwapInterval(vsync ? 1 : 0);
++		}
++	}
++
++	uint64_t GlContext::getCaps() const
++	{
++		return BX_ENABLED(0
++						| BX_PLATFORM_LINUX
++						| BX_PLATFORM_WINDOWS
++						| BX_PLATFORM_ANDROID
++						)
++			? BGFX_CAPS_SWAP_CHAIN
++			: 0
++			;
++	}
++
++	SwapChainGL* GlContext::createSwapChain(void* _nwh)
++	{
++		return BX_NEW(g_allocator, SwapChainGL)(m_window, m_context);
++	}
++
++	void GlContext::destroySwapChain(SwapChainGL* _swapChain)
++	{
++		BX_DELETE(g_allocator, _swapChain);
++	}
++
++	void GlContext::swap(SwapChainGL* _swapChain)
++	{
++		makeCurrent(_swapChain);
++
++		if (NULL == _swapChain)
++		{
++			if (NULL != m_window)
++			{
++				SDL_GL_SwapWindow(m_window);
++			}
++		}
++		else
++		{
++			_swapChain->swapBuffers();
++		}
++	}
++
++	void GlContext::makeCurrent(SwapChainGL* _swapChain)
++	{
++		if (m_current != _swapChain)
++		{
++			m_current = _swapChain;
++
++			if (NULL == _swapChain)
++			{
++				if (NULL != m_window)
++				{
++					SDL_GL_MakeCurrent(m_window, m_context);
++				}
++			}
++			else
++			{
++				_swapChain->makeCurrent();
++			}
++		}
++	}
++
++	void GlContext::import()
++	{
++		BX_TRACE("Import:");
++#		define GL_EXTENSION(_optional, _proto, _func, _import)                           \
++			{                                                                            \
++				if (NULL == _func)                                                       \
++				{                                                                        \
++					_func = reinterpret_cast<_proto>(SDL_GL_GetProcAddress(#_import) );      \
++					BX_TRACE("\t%p " #_func " (" #_import ")", _func);                   \
++					BGFX_FATAL(_optional || NULL != _func                                \
++						, Fatal::UnableToInitialize                                      \
++						, "Failed to create OpenGLES context. SDL2_GL_GetProcAddress(\"%s\")" \
++						, #_import);                                                     \
++				}                                                                        \
++			}
++
++
++#	include "glimports.h"
++
++#	undef GL_EXTENSION
++	}
++
++} /* namespace gl */ } // namespace bgfx
++
++#	endif // BGFX_USE_SDL2
++#endif // (BGFX_CONFIG_RENDERER_OPENGLES || BGFX_CONFIG_RENDERER_OPENGL)
+diff --git a/3rdparty/bgfx/src/glcontext_sdl2.h b/3rdparty/bgfx/src/glcontext_sdl2.h
+new file mode 100644
+index 00000000000..7a7790e77e3
+--- /dev/null
++++ b/3rdparty/bgfx/src/glcontext_sdl2.h
+@@ -0,0 +1,56 @@
++/*
++ * Copyright 2011-2020 Branimir Karadzic. All rights reserved.
++ * License: https://github.com/bkaradzic/bgfx#license-bsd-2-clause
++ */
++
++#ifndef BGFX_GLCONTEXT_SDL2_H_HEADER_GUARD
++#define BGFX_GLCONTEXT_SDL2_H_HEADER_GUARD
++
++#if BGFX_USE_SDL2
++
++#include <SDL2/SDL.h>
++
++#if defined(Success)
++// X11 defines Success
++#	undef Success
++#endif // defined(Success)
++
++namespace bgfx { namespace gl
++{
++	struct SwapChainGL;
++
++	struct GlContext
++	{
++		GlContext()
++			: m_current(NULL)
++			, m_context(NULL)
++			, m_window(NULL)
++		{
++		}
++
++		void create(uint32_t _width, uint32_t _height);
++		void destroy();
++		void resize(uint32_t _width, uint32_t _height, uint32_t _flags);
++
++		uint64_t getCaps() const;
++		SwapChainGL* createSwapChain(void* _nwh);
++		void destroySwapChain(SwapChainGL*  _swapChain);
++		void swap(SwapChainGL* _swapChain = NULL);
++		void makeCurrent(SwapChainGL* _swapChain = NULL);
++
++		void import();
++
++		bool isValid() const
++		{
++			return NULL != m_context;
++		}
++
++		SwapChainGL* m_current;
++		SDL_GLContext m_context;
++		SDL_Window*  m_window;
++	};
++} /* namespace gl */ } // namespace bgfx
++
++#endif // BGFX_USE_SDL2
++
++#endif // BGFX_GLCONTEXT_SDL2_H_HEADER_GUARD
+diff --git a/3rdparty/bgfx/src/renderer_gl.cpp b/3rdparty/bgfx/src/renderer_gl.cpp
+index dadfb5c2dd4..1563e586eee 100644
+--- a/3rdparty/bgfx/src/renderer_gl.cpp
++++ b/3rdparty/bgfx/src/renderer_gl.cpp
+@@ -6510,11 +6510,13 @@ BX_TRACE("%d, %d, %d, %s", _array, _srgb, _mipAutogen, getName(_format) );
+ 		}
+ 		PrimInfo prim = s_primInfo[primIndex];
+ 
++		/* HACK SDL2 GLES
+ 		GL_CHECK(glPolygonMode(GL_FRONT_AND_BACK
+ 			, _render->m_debug&BGFX_DEBUG_WIREFRAME
+ 			? GL_LINE
+ 			: GL_FILL
+ 			) );
++		*/
+ 
+ 		bool wasCompute = false;
+ 		bool viewHasScissor = false;
+diff --git a/3rdparty/bgfx/src/renderer_gl.h b/3rdparty/bgfx/src/renderer_gl.h
+index 3c224d325d2..fdde5e76f73 100644
+--- a/3rdparty/bgfx/src/renderer_gl.h
++++ b/3rdparty/bgfx/src/renderer_gl.h
+@@ -16,6 +16,15 @@
+ 			|| BX_PLATFORM_WINDOWS                        \
+ 			) )
+ 
++#if BGFX_USE_EGL && BGFX_CONFIG_SDL2
++#	undef BGFX_USE_EGL
++#	define BGFX_USE_EGL 0
++#endif
++
++#define BGFX_USE_SDL2 (BGFX_CONFIG_RENDERER_OPENGLES && (0 \
++	|| BGFX_CONFIG_SDL2                                \
++	) )
++
+ #define BGFX_USE_HTML5 (BGFX_CONFIG_RENDERER_OPENGLES && (0 \
+ 			|| BX_PLATFORM_EMSCRIPTEN                     \
+ 			) )
+@@ -128,9 +137,13 @@ typedef uint64_t GLuint64;
+ #		include "glcontext_egl.h"
+ #	endif // BGFX_USE_EGL
+ 
++#	if BGFX_USE_SDL2
++#		include "glcontext_sdl2.h"
++#	endif // BGFX_USE_SDL2
++
+ #	if BGFX_USE_HTML5
+ #		include "glcontext_html5.h"
+-#	endif // BGFX_USE_EGL
++#	endif // BGFX_USE_HTML5
+ 
+ #	if BX_PLATFORM_EMSCRIPTEN
+ #		include <emscripten/emscripten.h>
+diff --git a/scripts/genie.lua b/scripts/genie.lua
+index db16f3b56b6..eb8801dcffb 100644
+--- a/scripts/genie.lua
++++ b/scripts/genie.lua
+@@ -1205,6 +1205,10 @@ configuration { "linux-* or rpi or ci20"}
+ 		links {
+ 			"dl",
+ 			"rt",
++                        "EGL",
++                        "GLESv1_CM",
++                        "GLESv2",
++                        "SDL2",
+ 		}
+ 		if _OPTIONS["distro"]=="debian-stable" then
+ 			defines
+diff --git a/scripts/src/3rdparty.lua b/scripts/src/3rdparty.lua
+index 39697d93051..f82bfc53204 100644
+--- a/scripts/src/3rdparty.lua
++++ b/scripts/src/3rdparty.lua
+@@ -1453,6 +1453,7 @@ end
+ 		MAME_DIR .. "3rdparty/bgfx/src/glcontext_glx.cpp",
+ 		MAME_DIR .. "3rdparty/bgfx/src/glcontext_html5.cpp",
+ 		MAME_DIR .. "3rdparty/bgfx/src/glcontext_wgl.cpp",
++		MAME_DIR .. "3rdparty/bgfx/src/glcontext_sdl2.cpp",
+ 		MAME_DIR .. "3rdparty/bgfx/src/nvapi.cpp",
+ 		MAME_DIR .. "3rdparty/bgfx/src/renderer_d3d11.cpp",
+ 		MAME_DIR .. "3rdparty/bgfx/src/renderer_d3d12.cpp",
+diff --git a/src/osd/modules/render/drawbgfx.cpp b/src/osd/modules/render/drawbgfx.cpp
+index 39f11a26d37..925fd3042c0 100644
+--- a/src/osd/modules/render/drawbgfx.cpp
++++ b/src/osd/modules/render/drawbgfx.cpp
+@@ -183,27 +183,9 @@ static void* sdlNativeWindowHandle(SDL_Window* _window)
+ 
+ inline bool sdlSetWindow(SDL_Window* _window)
+ {
+-	SDL_SysWMinfo wmi;
+-	SDL_VERSION(&wmi.version);
+-	if (!SDL_GetWindowWMInfo(_window, &wmi) )
+-	{
+-		return false;
+-	}
+-
+ 	bgfx::PlatformData pd;
+-#   if BX_PLATFORM_LINUX || BX_PLATFORM_BSD
+-	pd.ndt          = wmi.info.x11.display;
+-	pd.nwh          = (void*)(uintptr_t)wmi.info.x11.window;
+-#   elif BX_PLATFORM_OSX
+-	pd.ndt          = NULL;
+-	pd.nwh          = wmi.info.cocoa.window;
+-#   elif BX_PLATFORM_WINDOWS
+-	pd.ndt          = NULL;
+-	pd.nwh          = wmi.info.win.window;
+-#   elif BX_PLATFORM_STEAMLINK
+-	pd.ndt          = wmi.info.vivante.display;
+-	pd.nwh          = wmi.info.vivante.window;
+-#   endif // BX_PLATFORM_
++	pd.nwh          = (void*)SDL_GL_GetCurrentWindow();
++	pd.ndt          = (void*)SDL_GL_GetCurrentContext();
+ 	pd.context      = NULL;
+ 	pd.backBuffer   = NULL;
+ 	pd.backBufferDS = NULL;
+diff --git a/src/osd/sdl/window.cpp b/src/osd/sdl/window.cpp
+index 9f07ce7cd49..814503f8427 100644
+--- a/src/osd/sdl/window.cpp
++++ b/src/osd/sdl/window.cpp
+@@ -95,7 +95,8 @@ bool sdl_osd_interface::window_init()
+ 	switch (video_config.mode)
+ 	{
+ 		case VIDEO_MODE_BGFX:
+-			renderer_bgfx::init(machine());
++			// LATER
++			// renderer_bgfx::init(machine());
+ 			break;
+ #if (USE_OPENGL)
+ 		case VIDEO_MODE_OPENGL:
+@@ -665,6 +666,12 @@ int sdl_window_info::complete_create()
+ {
+ 	osd_dim temp(0,0);
+ 
++	if (SDL_WasInit(SDL_INIT_VIDEO)==0)
++	{
++		osd_printf_verbose("Force SDL_INIT_VIDEO\n");
++		SDL_InitSubSystem(SDL_INIT_VIDEO);
++	}
++
+ 	// clear out original mode. Needed on OSX
+ 	if (fullscreen())
+ 	{
+@@ -694,13 +701,21 @@ int sdl_window_info::complete_create()
+ 	 *
+ 	 */
+ 	osd_printf_verbose("Enter sdl_info::create\n");
+-	if (renderer().has_flags(osd_renderer::FLAG_NEEDS_OPENGL) && !video_config.novideo)
++	//if (renderer().has_flags(osd_renderer::FLAG_NEEDS_OPENGL) && !video_config.novideo)
+ 	{
++		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
++		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
++		SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
++                SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
++                SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
++                SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
++                SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
++                SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+ 		SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
+-		m_extra_flags = SDL_WINDOW_OPENGL;
++		m_extra_flags = SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN;
+ 	}
+-	else
+-		m_extra_flags = 0;
++	//else
++	//	m_extra_flags = 0;
+ 
+ 	// We need to workaround an issue in SDL 2.0.4 for OS X where setting the
+ 	// relative mode on the mouse in fullscreen mode makes mouse events stop
+@@ -749,6 +764,19 @@ int sdl_window_info::complete_create()
+ 		return 1;
+ 	}
+ 
++	SDL_GL_SetAttribute(SDL_GL_SHARE_WITH_CURRENT_CONTEXT, 1);
++        SDL_GLContext context = SDL_GL_CreateContext(sdlwindow);
++	if (context == nullptr )
++	{
++		osd_printf_error("GL context creation failed: %s\n", SDL_GetError());
++		return 1;
++	}
++	if (SDL_GL_MakeCurrent(sdlwindow, context) < 0)
++	{
++		osd_printf_error("GL context setup failed: %s\n", SDL_GetError());
++		return 1;
++	}
++
+ 	set_platform_window(sdlwindow);
+ 
+ 	if (fullscreen() && video_config.switchres)
+@@ -811,6 +839,8 @@ int sdl_window_info::complete_create()
+ 	if (fullscreen() && video_config.switchres)
+ 		monitor()->update_resolution(temp.width(), temp.height());
+ 
++	renderer_bgfx::init(machine());
++
+ 	// initialize the drawing backend
+ 	if (renderer().create())
+ 		return 1;

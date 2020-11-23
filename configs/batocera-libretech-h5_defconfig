@@ -25,8 +25,8 @@ BR2_GENERATE_LOCALE="en_US.UTF-8 ar_YE.UTF-8 ca_ES.UTF-8 de_DE.UTF-8 el_GR.UTF-8
 BR2_TARGET_TZ_INFO=y
 BR2_TARGET_LOCALTIME="Europe/Paris"
 BR2_ROOTFS_OVERLAY="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/fsoverlay $(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/libretech-h5/fsoverlay"
-BR2_ROOTFS_POST_BUILD_SCRIPT="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/post-build-script.sh"
-BR2_ROOTFS_POST_IMAGE_SCRIPT="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/post-image-script.sh"
+BR2_ROOTFS_POST_BUILD_SCRIPT="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/scripts/post-build-script.sh"
+BR2_ROOTFS_POST_IMAGE_SCRIPT="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/scripts/post-image-script.sh"
 BR2_TARGET_ROOTFS_SQUASHFS4_ZSTD=y
 
 # Firmware
