@@ -104,6 +104,43 @@ dxvk_install() {
     return 0
 }
 
+sandboxing_prefix() {
+    if [ -d "${WINEPREFIX}/drive_c/users/steamuser" ]; then
+        USERNAME=steamuser
+    fi
+
+    if [ -d "${WINEPREFIX}/drive_c/users/root" ]; then
+        USERNAME=root
+    fi
+
+    echo "Remove Symblink"
+    if [ -L "${WINEPREFIX}/drive_c/users/${USERNAME}/Downloads" ]; then
+    unlink "${WINEPREFIX}/drive_c/users/${USERNAME}/Downloads" || return 1
+    fi
+
+    if [ -L "${WINEPREFIX}/drive_c/users/${USERNAME}/My Documents" ]; then
+    unlink "${WINEPREFIX}/drive_c/users/${USERNAME}/My Documents" || return 1
+    fi
+
+    if [ -L "${WINEPREFIX}/drive_c/users/${USERNAME}/My Music" ]; then
+    unlink "${WINEPREFIX}/drive_c/users/${USERNAME}/My Music" || return 1
+    fi
+
+    if [ -L "${WINEPREFIX}/drive_c/users/${USERNAME}/My Pictures" ]; then
+    unlink "${WINEPREFIX}/drive_c/users/${USERNAME}/My Pictures" || return 1
+    fi
+
+    if [ -L "${WINEPREFIX}/drive_c/users/${USERNAME}/My Videos" ]; then
+    unlink "${WINEPREFIX}/drive_c/users/${USERNAME}/My Videos" || return 1
+    fi
+
+    if [ -L "${WINEPREFIX}/drive_c/users/${USERNAME}/Templates" ]; then
+    unlink "${WINEPREFIX}/drive_c/users/${USERNAME}/Templates" || return 1
+    fi
+
+    return 0
+}
+
 createWineDirectory() {
     WINEPREFIX=$1
 
@@ -164,6 +201,7 @@ play_pc() {
     
     wine_options
     createWineDirectory "${WINEPOINT}" || return 1
+    sandboxing_prefix "${WINEPOINT}" || return 1
     dxvk_install "${WINEPOINT}" || return 1
 
     WINE_CMD=$(getWine_var "${GAMENAME}" "CMD" "explorer")
@@ -192,6 +230,7 @@ play_exe() {
 
     wine_options
     createWineDirectory "${WINEPOINT}" || return 1
+    sandboxing_prefix "${WINEPOINT}" || return 1
     dxvk_install "${WINEPOINT}" || return 1
 
     (cd "${GAMEDIR}" && WINEPREFIX=${WINEPOINT} wine "${GAMEEXE}")
