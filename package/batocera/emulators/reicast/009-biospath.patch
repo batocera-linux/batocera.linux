@@ -1,0 +1,13 @@
+diff --git a/libswirl/gui/gui.cpp b/libswirl/gui/gui.cpp
+index 9a6e58d..599d27b 100644
+--- a/libswirl/gui/gui.cpp
++++ b/libswirl/gui/gui.cpp
+@@ -760,7 +760,7 @@ struct ReicastUI_impl : GUI {
+             return true;
+         }
+ 
+-        auto bios_path = get_readonly_data_path(DATA_PATH);
++        auto bios_path = std::string("/userdata/bios");
+ 
+         virtualDreamcast.reset(VirtualDreamcast::Create());
+ 
