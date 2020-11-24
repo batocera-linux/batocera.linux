@@ -116,26 +116,32 @@ sandboxing_prefix() {
     echo "Remove Symblink"
     if [ -L "${WINEPREFIX}/drive_c/users/${USERNAME}/Downloads" ]; then
     unlink "${WINEPREFIX}/drive_c/users/${USERNAME}/Downloads" || return 1
+    mkdir -p "${WINEPREFIX}/drive_c/users/${USERNAME}/Downloads" || return 1
     fi
 
     if [ -L "${WINEPREFIX}/drive_c/users/${USERNAME}/My Documents" ]; then
     unlink "${WINEPREFIX}/drive_c/users/${USERNAME}/My Documents" || return 1
+    mkdir -p "${WINEPREFIX}/drive_c/users/${USERNAME}/My Documents" || return 1
     fi
 
     if [ -L "${WINEPREFIX}/drive_c/users/${USERNAME}/My Music" ]; then
     unlink "${WINEPREFIX}/drive_c/users/${USERNAME}/My Music" || return 1
+    mkdir -p "${WINEPREFIX}/drive_c/users/${USERNAME}/My Music" || return 1
     fi
 
     if [ -L "${WINEPREFIX}/drive_c/users/${USERNAME}/My Pictures" ]; then
     unlink "${WINEPREFIX}/drive_c/users/${USERNAME}/My Pictures" || return 1
+    mkdir -p "${WINEPREFIX}/drive_c/users/${USERNAME}/My Pictures" || return 1
     fi
 
     if [ -L "${WINEPREFIX}/drive_c/users/${USERNAME}/My Videos" ]; then
     unlink "${WINEPREFIX}/drive_c/users/${USERNAME}/My Videos" || return 1
+    mkdir -p "${WINEPREFIX}/drive_c/users/${USERNAME}/My Videos" || return 1
     fi
 
     if [ -L "${WINEPREFIX}/drive_c/users/${USERNAME}/Templates" ]; then
     unlink "${WINEPREFIX}/drive_c/users/${USERNAME}/Templates" || return 1
+    mkdir -p "${WINEPREFIX}/drive_c/users/${USERNAME}/Templates" || return 1
     fi
 
     return 0
