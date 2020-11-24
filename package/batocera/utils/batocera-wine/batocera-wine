@@ -138,6 +138,14 @@ sandboxing_prefix() {
     unlink "${WINEPREFIX}/drive_c/users/${USERNAME}/Templates" || return 1
     fi
 
+    echo "Create user directory"
+    mkdir -p "${WINEPREFIX}/drive_c/users/${USERNAME}/Downloads" || return 1
+    mkdir -p "${WINEPREFIX}/drive_c/users/${USERNAME}/My Documents" || return 1
+    mkdir -p "${WINEPREFIX}/drive_c/users/${USERNAME}/My Music" || return 1
+    mkdir -p "${WINEPREFIX}/drive_c/users/${USERNAME}/My Pictures" || return 1
+    mkdir -p "${WINEPREFIX}/drive_c/users/${USERNAME}/My Videos" || return 1
+    mkdir -p "${WINEPREFIX}/drive_c/users/${USERNAME}/Templates" || return 1
+
     return 0
 }
 
