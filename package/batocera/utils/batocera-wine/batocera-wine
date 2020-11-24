@@ -194,7 +194,7 @@ play_exe() {
     createWineDirectory "${WINEPOINT}" || return 1
     dxvk_install "${WINEPOINT}" || return 1
 
-    (cd "${GAMEDIR}" && WINEPREFIX=${WINEPOINT} wine "${VDESKTOP}" "${GAMEEXE}")
+    (cd "${GAMEDIR}" && WINEPREFIX=${WINEPOINT} wine "${GAMEEXE}")
     waitWineServer
 }
 
