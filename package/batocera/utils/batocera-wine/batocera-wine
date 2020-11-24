@@ -104,6 +104,41 @@ dxvk_install() {
     return 0
 }
 
+sandboxing_prefix() {
+    # already created
+    test -e "${WINEPREFIX}/.sandboxing" && return 0
+
+    if [ -d "${WINEPREFIX}/drive_c/users/steamuser" ]; then
+        USERNAME=steamuser
+    fi
+
+    if [ -d "${WINEPREFIX}/drive_c/users/root" ]; then
+        USERNAME=root
+    fi
+
+    echo "Remove Symblink"
+    rm -rf "${WINEPREFIX}/drive_c/users/${USERNAME}/Downloads" || return 1
+    rm -rf "${WINEPREFIX}/drive_c/users/${USERNAME}/My Documents" || return 1
+    rm -rf "${WINEPREFIX}/drive_c/users/${USERNAME}/My Music" || return 1
+    rm -rf "${WINEPREFIX}/drive_c/users/${USERNAME}/My Pictures" || return 1
+    rm -rf "${WINEPREFIX}/drive_c/users/${USERNAME}/My Videos" || return 1
+    rm -rf "${WINEPREFIX}/drive_c/users/${USERNAME}/Templates" || return 1
+
+    echo "Create users folders"
+    mkdir -p "${WINEPREFIX}/drive_c/users/${USERNAME}/Downloads" || return 1
+    mkdir -p "${WINEPREFIX}/drive_c/users/${USERNAME}/My Documents" || return 1
+    mkdir -p "${WINEPREFIX}/drive_c/users/${USERNAME}/My Music" || return 1
+    mkdir -p "${WINEPREFIX}/drive_c/users/${USERNAME}/My Pictures" || return 1
+    mkdir -p "${WINEPREFIX}/drive_c/users/${USERNAME}/My Videos" || return 1
+    mkdir -p "${WINEPREFIX}/drive_c/users/${USERNAME}/Templates" || return 1
+
+    echo OK > "${WINEPREFIX}/.sandboxing" || return 1
+
+#    wine regedit /D 'HKEY_LOCAL_MACHINE\\Software\\Microsoft\Windows\CurrentVersion\Explorer\Desktop\Namespace\{9D20AAE8-0625-44B0-9CA7-71889C2254D9}' &>/dev/null
+#    echo disable > "${WINEPREFIX}/.update-timestamp"
+    return 0
+}
+
 createWineDirectory() {
     WINEPREFIX=$1
 
@@ -164,6 +199,7 @@ play_pc() {
     
     wine_options
     createWineDirectory "${WINEPOINT}" || return 1
+    sandboxing_prefix "${WINEPOINT}" || return 1
     dxvk_install "${WINEPOINT}" || return 1
 
     WINE_CMD=$(getWine_var "${GAMENAME}" "CMD" "explorer")
@@ -192,6 +228,7 @@ play_exe() {
 
     wine_options
     createWineDirectory "${WINEPOINT}" || return 1
+    sandboxing_prefix "${WINEPOINT}" || return 1
     dxvk_install "${WINEPOINT}" || return 1
 
     (cd "${GAMEDIR}" && WINEPREFIX=${WINEPOINT} wine "${GAMEEXE}")
