@@ -6,7 +6,7 @@ def generateControllerConfig(config, playersControllers, core):
     else:
         setupControllers(config, playersControllers, 64)
 
-def JoystickValue(key, pad, joy_max_inputs):
+def JoystickValue(key, pad, joy_max_inputs, invertAxis = False):
     if key not in pad.inputs:
         return 0
 
@@ -28,7 +28,7 @@ def JoystickValue(key, pad, joy_max_inputs):
 
     elif input.type == "axis":
         axisfirst = 1 + (int(pad.index)) * joy_max_inputs + int(pad.nbbuttons) + 2 * int(input.id)
-        if (input.value > 0):
+        if ((invertAxis and int(input.value) < 0) or (not invertAxis and int(input.value) > 0)):
             axisfirst += 1
         value = axisfirst
 
@@ -60,6 +60,12 @@ def setupControllers(config, playersControllers, joy_max_inputs):
         else:
             config.save("keys." + str(idx) + ".12", "0") # ESC
 
+        # axis
+        config.save("keys." + str(idx) + ".13", JoystickValue("joystick1up",       pad, joy_max_inputs))        # axis up
+        config.save("keys." + str(idx) + ".14", JoystickValue("joystick1up",       pad, joy_max_inputs, True))  # axis down
+        config.save("keys." + str(idx) + ".15", JoystickValue("joystick1left",     pad, joy_max_inputs))        # axis left
+        config.save("keys." + str(idx) + ".16", JoystickValue("joystick1left",     pad, joy_max_inputs, True))  # axis right
+
         # next one
         idx += 1
 
@@ -77,3 +83,12 @@ def setupControllers(config, playersControllers, joy_max_inputs):
         config.remove("keys." + str(idx) + ".9")
         config.remove("keys." + str(idx) + ".10")
         config.remove("keys." + str(idx) + ".11")
+
+        # hotkey
+        if idx != 0:
+            config.remove("keys." + str(idx) + ".12")
+
+        config.remove("keys." + str(idx) + ".13")
+        config.remove("keys." + str(idx) + ".14")
+        config.remove("keys." + str(idx) + ".15")
+        config.remove("keys." + str(idx) + ".16")

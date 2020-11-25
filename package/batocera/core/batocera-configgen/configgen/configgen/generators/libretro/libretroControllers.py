@@ -8,12 +8,6 @@ sys.path.append(
 from settings.unixSettings import UnixSettings
 import batoceraFiles
 
-# Map an emulationstation button name to the corresponding retroarch name
-retroarchbtns = {'a': 'a', 'b': 'b', 'x': 'x', 'y': 'y', \
-                 'pageup': 'l', 'pagedown': 'r', 'l2': 'l2', 'r2': 'r2', \
-                 'l3': 'l3', 'r3': 'r3', \
-                 'start': 'start', 'select': 'select'}
-
 # Map an emulationstation direction to the corresponding retroarch
 retroarchdirs = {'up': 'up', 'down': 'down', 'left': 'left', 'right': 'right'}
 
@@ -62,17 +56,29 @@ def writeHotKeyConfig(retroconfig, controllers):
 
 # Write a configuration for a specified controller
 def writeControllerConfig(retroconfig, controller, playerIndex, system, retroarchspecials):
-    generatedConfig = generateControllerConfig(controller, retroarchspecials)
+    generatedConfig = generateControllerConfig(controller, retroarchspecials, system)
     for key in generatedConfig:
         retroconfig.save(key, generatedConfig[key])
 
     retroconfig.save('input_player{}_joypad_index'.format(playerIndex), controller.index)
-    retroconfig.save('input_player{}_analog_dpad_mode'.format(playerIndex),
-                          getAnalogMode(controller, system))
+    retroconfig.save('input_player{}_analog_dpad_mode'.format(playerIndex), getAnalogMode(controller, system))
 
 
 # Create a configuration for a given controller
-def generateControllerConfig(controller, retroarchspecials):
+def generateControllerConfig(controller, retroarchspecials, system):
+# Map an emulationstation button name to the corresponding retroarch name
+    retroarchbtns = {'a': 'a', 'b': 'b', 'x': 'x', 'y': 'y', \
+                     'pageup': 'l', 'pagedown': 'r', 'l2': 'l2', 'r2': 'r2', \
+                     'l3': 'l3', 'r3': 'r3', \
+                     'start': 'start', 'select': 'select'}
+
+    # some input adaptations for some cores...
+    # z is important, in case l2 (z) is not available for this pad, use l1
+    if system.name == "n64":
+        if 'r2' not in controller.inputs:
+            retroarchbtns["pageup"] = "l2"
+            retroarchbtns["l2"] = "l"
+
     config = dict()
     # config['input_device'] = '"%s"' % controller.realName
     for btnkey in retroarchbtns:
@@ -91,8 +97,12 @@ def generateControllerConfig(controller, retroarchspecials):
         jsvalue = retroarchjoysticks[jskey]
         if jskey in controller.inputs:
             input = controller.inputs[jskey]
-            config['input_player%s_%s_minus_axis' % (controller.player, jsvalue)] = '-%s' % input.id
-            config['input_player%s_%s_plus_axis' % (controller.player, jsvalue)] = '+%s' % input.id
+            if input.value == '-1':
+                config['input_player%s_%s_minus_axis' % (controller.player, jsvalue)] = '-%s' % input.id
+                config['input_player%s_%s_plus_axis' % (controller.player, jsvalue)] = '+%s' % input.id
+            else:
+                config['input_player%s_%s_minus_axis' % (controller.player, jsvalue)] = '+%s' % input.id
+                config['input_player%s_%s_plus_axis' % (controller.player, jsvalue)] = '-%s' % input.id
     if controller.player == '1':
         specialMap = retroarchspecials
         for specialkey in specialMap:
@@ -120,21 +130,14 @@ def getConfigValue(input):
     if input.type == 'key':
         return input.id
 
-
 # return the retroarch analog_dpad_mode
 def getAnalogMode(controller, system):
-    # if system.name != 'psx':
+    # don't enable analog as hat mode for some systems
+    if system.name == 'n64' or system.name == 'dreamcast' or system.name == '3ds':
+        return '0'
+
     for dirkey in retroarchdirs:
         if dirkey in controller.inputs:
             if (controller.inputs[dirkey].type == 'button') or (controller.inputs[dirkey].type == 'hat'):
                 return '1'
     return '0'
-
-
-# return the playstation analog mode for a controller
-def getAnalogCoreMode(controller):
-    for dirkey in retroarchdirs:
-        if dirkey in controller.inputs:
-            if (controller.inputs[dirkey].type == 'button') or (controller.inputs[dirkey].type == 'hat'):
-                return 'analog'
-    return 'standard'

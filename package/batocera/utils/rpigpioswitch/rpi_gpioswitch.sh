@@ -14,6 +14,7 @@
 #v1.4 - add RETROFLAG_ADV advanced reset script for NESPi+, MegaPi and SuperPi
 #v1.5 - add KINTARO for Kintaro/Roshambo cases
 #v1.6 - add ARGONONE for Rpi4 Argon One case fan control - @lbrpdx
+#v1.7 - add NESPI4 support - @lala
 #by cyperghost 11.11.2019
 
 #dialog for selecting your switch or power device
@@ -152,8 +153,8 @@ function onoffshim_start()
     #Check if dtooverlay is setted in /boot/config
     #This is needed to do proper restarts/shutdowns
     if ! grep -q "^dtoverlay=gpio-poweroff,gpiopin=$2,active_low=1,input=1" "/boot/config.txt"; then
-         mount -o remount, rw /boot
-         echo "dtoverlay=gpio-poweroff,gpiopin=$2,active_low=1,input=1" >> "/boot/config.txt"
+        mount -o remount, rw /boot
+        echo "dtoverlay=gpio-poweroff,gpiopin=$2,active_low=1,input=1" >> "/boot/config.txt"
     fi
 
     # This is Button command (GPIO17 default)
@@ -207,8 +208,8 @@ function msldigital_start()
 
 function msldigital_stop()
 {
-    if [ -f "/tmp/shutdown.please" -o -f "/tmp/poweroff.please" ]; then
-        if [ -f "/tmp/shutdown.please" -a "$CONFVALUE" = "REMOTEPIBOARD_2005" ]; then
+    if [ -f "/tmp/shutdown.please" ] || [ -f "/tmp/poweroff.please" ]; then
+        if [ -f "/tmp/shutdown.please" ] && [ "$CONFVALUE" = "REMOTEPIBOARD_2005" ]; then
             # Init GPIO
             GPIOpin=15
             echo "$GPIOpin" > /sys/class/gpio/export
@@ -285,7 +286,7 @@ function wittyPi_stop()
     halt_pin=$2
 
     # light the white LED
-    if [ -f "/tmp/shutdown.please" -o -f "/tmp/poweroff.please" ]; then
+    if [ -f "/tmp/shutdown.please" ] || [ -f "/tmp/poweroff.please" ]; then
         gpio mode $led_pin out
         gpio write $led_pin 1
     fi
@@ -329,6 +330,17 @@ function pin56_stop()
 #https://www.retroflag.com
 function retroflag_start()
 {
+    #Check if dtooverlay is setted in /boot/config -- Do this arch related!
+    case $(cat /usr/share/batocera/batocera.arch) in
+        rpi4)
+            if ! grep -q "^dtoverlay=gpio-poweroff,gpiopin=4,active_low=1,input=1" "/boot/config.txt"; then
+                mount -o remount, rw /boot
+                echo "# Overlay setup for proper powercut, needed for Retroflag cases" >> "/boot/config.txt"
+                echo "dtoverlay=gpio-poweroff,gpiopin=4,active_low=1,input=1" >> "/boot/config.txt"
+            fi
+        ;;
+    esac
+
     #$1 = rpi-retroflag-SafeShutdown/rpi-retroflag-GPiCase/rpi-retroflag-AdvancedSafeShutdown
     "$1" &
     pid=$!
@@ -357,8 +369,13 @@ function argonone_start()
          echo "dtparam=i2c-1=on" >> "/boot/config.txt"
     fi
     modprobe i2c-dev
-    modprobe i2c-bcm2708
+    modprobe i2c-bcm2835
+    # Yes, with kernel 5.4.51 on Batocera-29, this is required
+    # Otherwise the kernel module is not correctly loaded
+    rmmod i2c_bcm2835
+    modprobe i2c-bcm2835
     /usr/bin/rpi-argonone start &
+    wait $!
 }
 
 function argonone_stop()
@@ -374,6 +391,8 @@ function argonone_stop()
     else
         # only stop fan (keep power block on)
         /usr/bin/rpi-argonone stop &
+    fi
+}
 
 #https://www.kintaro.co
 function kintaro_start()

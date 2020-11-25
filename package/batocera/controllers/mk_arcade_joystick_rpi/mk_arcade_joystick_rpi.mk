@@ -3,8 +3,8 @@
 # MK_ARCADE_JOYSTICK_RPI
 #
 ################################################################################
-# Version: 0.1.7 Commits on May 08, 2020
-MK_ARCADE_JOYSTICK_RPI_VERSION = 910dd090459b14d7d1cf186a3dadfd4ff3ec877b
+# Version: 0.1.8 Commits on Sep 20, 2020
+MK_ARCADE_JOYSTICK_RPI_VERSION = e1db04befc729e420d32b62dd14ecff8fb7cedd3
 MK_ARCADE_JOYSTICK_RPI_SITE = $(call github,batocera-linux,mk_arcade_joystick_rpi,$(MK_ARCADE_JOYSTICK_RPI_VERSION))
 MK_ARCADE_JOYSTICK_RPI_DEPENDENCIES = linux
 
@@ -21,4 +21,5 @@ define MK_ARCADE_JOYSTICK_RPI_INSTALL_TARGET_CMDS
         $(MAKE) -C $(@D) $(LINUX_MAKE_FLAGS) KERNELDIR=$(LINUX_DIR) modules_install
 endef
 
+$(eval $(kernel-module))
 $(eval $(generic-package))

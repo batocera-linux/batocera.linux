@@ -1,0 +1,13 @@
+diff --git a/buildconfig/config_unix.py b/buildconfig/config_unix.py
+index c9df2f4..8e3d63c 100644
+--- a/buildconfig/config_unix.py
++++ b/buildconfig/config_unix.py
+@@ -48,7 +48,7 @@ class DependencyProg:
+                 elif f[:3] == '-Wl':
+                     self.cflags += '-Xlinker ' + f + ' '
+             if self.name == 'SDL':
+-                inc = '-I' + '/usr/X11R6/include'
++                inc = '' #'-I' + '/usr/X11R6/include'
+                 self.cflags = inc + ' ' + self.cflags
+         except (ValueError, TypeError):
+             print ('WARNING: "%s" failed!' % command)

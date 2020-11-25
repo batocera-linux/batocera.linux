@@ -1,101 +1,66 @@
-diff --git a/src/gui/sdl_mapper.cpp b/src/gui/sdl_mapper.cpp
-index 3a72015..e98ec9a 100644
---- a/src/gui/sdl_mapper.cpp
-+++ b/src/gui/sdl_mapper.cpp
-@@ -31,6 +31,7 @@
- #include "dosbox.h"
- #include "video.h"
- #include "keyboard.h"
-+#include "mouse.h"
- #include "pic.h"
- #include "control.h"
- #include "joystick.h"
-@@ -57,6 +58,7 @@
- #define BFLG_Hold               0x0001
- #define BFLG_Repeat             0x0004
+--- a/src/gui/sdl_mapper.cpp	2020-08-03 06:33:31.000000000 +0200
++++ b/src/gui/sdl_mapper.cpp	2020-08-28 21:37:39.460659614 +0200
+@@ -73,6 +73,7 @@
+ #define MAX_VJOY_HATS           16
+ #define MAX_VJOY_AXES           8
  
 +#define MOUSE_OFFSET            8
  
- #define MAXSTICKS               8
- #define MAXACTIVE               16
-@@ -2237,6 +2239,35 @@ public:
-     KBD_KEYS key;
+ class CEvent;
+ class CKeyEvent;
+@@ -2428,6 +2429,21 @@
+ 	Bit8u button;
  };
  
-+class CMouseButtonEvent : public CTriggeredEvent {
-+public:
-+	CMouseButtonEvent(char const * const _entry,Bit8u _button) : CTriggeredEvent(_entry) {
-+		button=_button;
-+	}
-+	void Active(bool yesno) {
-+		if (yesno)
-+			Mouse_ButtonPressed(button);
-+		else
-+			Mouse_ButtonReleased(button);
-+	}
-+	Bit8u button;
-+};
-+
 +class CMouseMoveEvent : public CContinuousEvent {
 +public:
-+	CMouseMoveEvent(char const * const _entry,float _xrel, float _yrel) : CContinuousEvent(_entry) {
-+		xrel=_xrel;
-+		yrel=_yrel;
++   CMouseMoveEvent(char const * const _entry,float _xrel, float _yrel) : CContinuousEvent(_entry) {
++       xrel=_xrel;
++       yrel=_yrel;
 +        }
-+	void Active(bool /*moved*/) {
-+		Mouse_CursorMoved((float)xrel*MOUSE_OFFSET*GetValue()/32767.0,
-+			(float)yrel*MOUSE_OFFSET*GetValue()/32767.0,
-+			0, 0, true);
++   void Active(bool /*moved*/) {
++       Mouse_CursorMoved((float)xrel*MOUSE_OFFSET*GetValue()/32767.0,
++           (float)yrel*MOUSE_OFFSET*GetValue()/32767.0,
++           0, 0, true);
 +
-+	}
-+	float xrel, yrel;
++   }
++   float xrel, yrel;
 +};
 +
  //! \brief Joystick axis event handling for the mapper
  class CJAxisEvent : public CContinuousEvent {
  public:
-@@ -2846,6 +2877,24 @@ static CKeyEvent * AddKeyButtonEvent(Bitu x,Bitu y,Bitu dx,Bitu dy,char const *
-     return event;
+@@ -3053,6 +3069,16 @@
+ 	return event;
  }
  
-+static CMouseButtonEvent * AddMouseButtonEvent(Bitu x,Bitu y,Bitu dx,Bitu dy,char const * const title,char const * const entry,Bit8u button) {
-+	char buf[64];
-+	strcpy(buf,"mbutton_");
-+	strcat(buf,entry);
-+	CMouseButtonEvent * event=new CMouseButtonEvent(buf,button);
-+	new CEventButton(x,y,dx,dy,title,event);
-+	return event;
-+}
-+
 +static CMouseMoveEvent * AddMouseMoveEvent(Bitu x,Bitu y,Bitu dx,Bitu dy,char const * const title,char const * const entry,float xrel,float yrel) {
-+	char buf[64];
-+	strcpy(buf,"maxis_");
-+	strcat(buf,entry);
-+	CMouseMoveEvent * event=new CMouseMoveEvent(buf,xrel,yrel);
-+	new CEventButton(x,y,dx,dy,title,event);
-+	return event;
++   char buf[64];
++   strcpy(buf,"maxis_");
++   strcat(buf,entry);
++   CMouseMoveEvent * event=new CMouseMoveEvent(buf,xrel,yrel);
++   new CEventButton(x,y,dx,dy,title,event);
++   return event;
 +}
 +
++ 
  static CJAxisEvent * AddJAxisButton(Bitu x,Bitu y,Bitu dx,Bitu dy,char const * const title,Bitu stick,Bitu axis,bool positive,CJAxisEvent * opposite_axis) {
      char buf[64];
      sprintf(buf,"jaxis_%d_%d%s",(int)stick,(int)axis,positive ? "+" : "-");
-@@ -3046,6 +3095,19 @@ static void CreateLayout(void) {
-     AddKeyButtonEvent(PX(XO+3),PY(YO+2),BW*3,BH,"HANYONG", "kor_hanyong",KBD_kor_hanyong);
+@@ -3179,6 +3205,16 @@
+ 	AddMouseButtonEvent(PX(XO+2),PY(YO),BW,BH,"R","right",1);
  #undef XO
  #undef YO
 +#define XO 6
 +#define YO 8
-+	/* Mouse Buttons and Axis */
-+	new CTextButton(PX(XO+0),PY(YO-1),2*BW,20,"Mouse");
-+	AddMouseButtonEvent(PX(XO+0),PY(YO),BW,BH,"L","left",0);
-+	AddMouseButtonEvent(PX(XO+2),PY(YO-1),BW,BH,"M","middle",2);
-+	AddMouseButtonEvent(PX(XO+2),PY(YO),BW,BH,"R","right",1);
-+	AddMouseMoveEvent(PX(XO+1),PY(YO),BW,BH,"Y-","y-",0,-1);
-+	AddMouseMoveEvent(PX(XO+0),PY(YO+1),BW,BH,"X-","x-",-1,0);
-+	AddMouseMoveEvent(PX(XO+1),PY(YO+1),BW,BH,"Y+","y+",0,1);
-+	AddMouseMoveEvent(PX(XO+2),PY(YO+1),BW,BH,"X+","x+",1,0);
++   /* Mouse Buttons and Axis */
++   new CTextButton(PX(XO+0),PY(YO-1),2*BW,20,"Mouse axis");
++   AddMouseMoveEvent(PX(XO+1),PY(YO),BW,BH,"Y-","y-",0,-1);
++   AddMouseMoveEvent(PX(XO+0),PY(YO+1),BW,BH,"X-","x-",-1,0);
++   AddMouseMoveEvent(PX(XO+1),PY(YO+1),BW,BH,"Y+","y+",0,1);
++   AddMouseMoveEvent(PX(XO+2),PY(YO+1),BW,BH,"X+","x+",1,0);
 +#undef XO
 +#undef YO
- #define XO 10
- #define YO 8
-     /* Joystick Buttons/Texts */
+ #define XO 0
+ #define YO 7
+     /* Numeric KeyPad */

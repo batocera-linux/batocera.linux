@@ -1,0 +1,15 @@
+--- a/src/Config.cpp	2020-09-06 12:32:05.331467334 +0200
++++ b/src/Config.cpp	2020-09-06 12:32:35.531977551 +0200
+@@ -53,9 +53,9 @@
+ 
+ ConfigEntry ConfigFile[] =
+ {
+-    {"BIOS9Path", 1, BIOS9Path, 0, "", 1023},
+-    {"BIOS7Path", 1, BIOS7Path, 0, "", 1023},
+-    {"FirmwarePath", 1, FirmwarePath, 0, "", 1023},
++    {"BIOS9Path", 1, BIOS9Path, 0, "/userdata/bios/bios9.bin", 1023},
++    {"BIOS7Path", 1, BIOS7Path, 0, "/userdata/bios/bios7.bin", 1023},
++    {"FirmwarePath", 1, FirmwarePath, 0, "/userdata/bios/firmware.bin", 1023},
+     {"DLDIEnable", 0, &DLDIEnable, 0, NULL, 0},
+     {"DLDISDPath", 1, DLDISDPath, 0, "", 1023},
+ 

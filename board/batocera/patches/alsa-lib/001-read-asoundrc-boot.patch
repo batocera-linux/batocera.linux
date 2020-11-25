@@ -1,0 +1,12 @@
+diff --git a/src/conf/alsa.conf b/src/conf/alsa.conf
+index a04173a..21c7af5 100644
+--- a/src/conf/alsa.conf
++++ b/src/conf/alsa.conf
+@@ -12,6 +12,7 @@
+ 			"/etc/alsa/conf.d"
+ 			"/etc/asound.conf|||/usr/etc/asound.conf"
+ 			"~/.asoundrc"
++			"/boot/asoundrc"
+ 			{
+ 				@func concat
+ 				strings [

@@ -25,6 +25,8 @@ class LibretroGenerator(Generator):
             #  Write controllers configuration files
             retroconfig = UnixSettings(batoceraFiles.retroarchCustom, separator=' ')
             libretroControllers.writeControllersConfig(retroconfig, system, playersControllers)
+            # force pathes
+            libretroRetroarchCustom.generateRetroarchCustomPathes(retroconfig)
             # Write configuration to retroarchcustom.cfg
             if 'bezel' not in system.config or system.config['bezel'] == '':
                 bezel = None
@@ -35,6 +37,7 @@ class LibretroGenerator(Generator):
                 bezel = None
 
             libretroConfig.writeLibretroConfig(retroconfig, system, playersControllers, rom, bezel, gameResolution)
+            retroconfig.write()
 
         # Retroarch core on the filesystem
         retroarchCore = batoceraFiles.retroarchCores + system.config['core'] + batoceraFiles.libretroExt
@@ -87,7 +90,7 @@ class LibretroGenerator(Generator):
         if 'netplay.mode' in system.config:
             if system.config['netplay.mode'] == 'host':
                 commandArray.append("--host")
-            elif system.config['netplay.mode'] == 'client':
+            elif system.config['netplay.mode'] == 'client' or system.config['netplay.mode'] == 'spectator':
                 commandArray.extend(["--connect", system.config['netplay.server.ip']])
             if 'netplay.server.port' in system.config:
                 commandArray.extend(["--port", system.config['netplay.server.port']])
@@ -104,6 +107,9 @@ class LibretroGenerator(Generator):
         
         if system.name == 'dos':
             rom = 'set ROOT=' + rom
+
+        if system.name == 'scummvm':
+            rom = os.path.dirname(rom) + '/' + romName[1:-8]
         
         commandArray.append(rom)
         return Command.Command(array=commandArray)

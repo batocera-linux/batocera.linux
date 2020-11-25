@@ -1,0 +1,17 @@
+diff --git a/makefile b/makefile
+index dc9c4e38..d7d8864c 100644
+--- a/makefile
++++ b/makefile
+@@ -139,9 +139,9 @@ OS := windows
+ GENIEOS := windows
+ PLATFORM := x86
+ else
+-UNAME := $(shell uname -mps)
+-UNAME_M := $(shell uname -m)
+-UNAME_P := $(shell uname -p)
++UNAME := Linux $(PLATFORM) $(PLATFORM)
++UNAME_M := $(PLATFORM)
++UNAME_P := $(PLATFORM)
+ GENIEOS := linux
+ PLATFORM := unknown
+ ifneq ($(filter x86_64,$(UNAME_P)),)

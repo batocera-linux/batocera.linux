@@ -1,0 +1,491 @@
+diff --git a/arch/arm64/boot/dts/rockchip/rk3399-rock960-ab.dts b/arch/arm64/boot/dts/rockchip/rk3399-rock960-ab.dts
+index 2aab33eb3..89a6d06c9 100644
+--- a/arch/arm64/boot/dts/rockchip/rk3399-rock960-ab.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3399-rock960-ab.dts
+@@ -1,43 +1,6 @@
++// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
+ /*
+- * Copyright (c) 2016 Fuzhou Rockchip Electronics Co., Ltd
+- *
+- * This file is dual-licensed: you can use it either under the terms
+- * of the GPL or the X11 license, at your option. Note that this dual
+- * licensing only applies to this file, and not this project as a
+- * whole.
+- *
+- *  a) This file is free software; you can redistribute it and/or
+- *     modify it under the terms of the GNU General Public License as
+- *     published by the Free Software Foundation; either version 2 of the
+- *     License, or (at your option) any later version.
+- *
+- *     This file is distributed in the hope that it will be useful,
+- *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+- *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+- *     GNU General Public License for more details.
+- *
+- * Or, alternatively,
+- *
+- *  b) Permission is hereby granted, free of charge, to any person
+- *     obtaining a copy of this software and associated documentation
+- *     files (the "Software"), to deal in the Software without
+- *     restriction, including without limitation the rights to use,
+- *     copy, modify, merge, publish, distribute, sublicense, and/or
+- *     sell copies of the Software, and to permit persons to whom the
+- *     Software is furnished to do so, subject to the following
+- *     conditions:
+- *
+- *     The above copyright notice and this permission notice shall be
+- *     included in all copies or substantial portions of the Software.
+- *
+- *     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+- *     EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+- *     OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+- *     NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+- *     HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+- *     WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+- *     FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+- *     OTHER DEALINGS IN THE SOFTWARE.
++ * Copyright (c) 2018 Fuzhou Rockchip Electronics Co., Ltd
+  */
+ 
+ /dts-v1/;
+@@ -59,7 +22,7 @@
+ 		rockchip,serial-id = <2>;
+ 		rockchip,signal-irq = <182>;
+ 		rockchip,wake-irq = <0>;
+-		rockchip,irq-mode-enable = <1>;  /* If enable uart uses irq instead of fiq */
++		rockchip,irq-mode-enable = <1>;
+ 		rockchip,baudrate = <1500000>;  /* Only 115200 and 1500000 */
+ 		pinctrl-names = "default";
+ 		pinctrl-0 = <&uart2c_xfer>;
+@@ -99,8 +62,7 @@
+ 
+ 	vcc3v3_pcie: vcc3v3-pcie-regulator {
+ 		compatible = "regulator-fixed";
+-		enable-active-high;
+-		gpio = <&gpio2 5 GPIO_ACTIVE_HIGH>;
++		gpio = <&gpio3 11 GPIO_ACTIVE_LOW>;
+ 		pinctrl-names = "default";
+ 		pinctrl-0 = <&pcie_drv>;
+ 		regulator-boot-on;
+@@ -135,13 +97,6 @@
+ 		vin-supply = <&vcc_sys>;
+ 	};
+ 
+-	xin32k: xin32k {
+-		compatible = "fixed-clock";
+-		clock-frequency = <32768>;
+-		clock-output-names = "xin32k";
+-		#clock-cells = <0>;
+-	};
+-
+ 	clkin_gmac: external-gmac-clock {
+ 		compatible = "fixed-clock";
+ 		clock-frequency = <125000000>;
+@@ -154,6 +109,7 @@
+ 		simple-audio-card,format = "i2s";
+ 		simple-audio-card,mclk-fs = <256>;
+ 		simple-audio-card,name = "HDMI-CODEC";
++
+ 		simple-audio-card,cpu {
+ 			sound-dai = <&i2s2>;
+ 		};
+@@ -225,48 +181,6 @@
+ 	test-power {
+ 		status = "okay";
+ 	};
+-
+-	leds {
+-		compatible = "gpio-leds";
+-		status = "okay";
+-
+-		yellow {
+-			label = "rock960:yellow:wifi";
+-			linux,default-trigger = "rfkill0";
+-			default-state = "on";
+-			gpios = <&gpio4 29 GPIO_ACTIVE_HIGH>;
+-		};
+-		blue {
+-			label = "rock960:blue:bluetooth";
+-			linux,default-trigger = "rfkill1";
+-			default-state = "on";
+-			gpios = <&gpio4 30 GPIO_ACTIVE_HIGH>;
+-		};
+-		green@0 {
+-			label = "rock960:green:user0";
+-			linux,default-trigger = "heartbeat";
+-			default-state = "on";
+-			gpios = <&gpio4 18 GPIO_ACTIVE_HIGH>;
+-		};
+-		green@1 {
+-			label = "rock960:green:user1";
+-			linux,default-trigger = "heartbeat";
+-			default-state = "on";
+-			gpios = <&gpio4 22 GPIO_ACTIVE_HIGH>;
+-	        };
+-		green@2 {
+-			label = "rock960:green:user2";
+-			linux,default-trigger = "heartbeat";
+-			default-state = "on";
+-			gpios = <&gpio4 24 GPIO_ACTIVE_HIGH>;
+-		};
+-		green@3 {
+-			label = "rock960:green:user3";
+-			linux,default-trigger = "heartbeat";
+-			default-state = "on";
+-			gpios = <&gpio4 28 GPIO_ACTIVE_HIGH>;
+-		};
+-	};
+ };
+ 
+ &hdmi {
+@@ -274,17 +188,6 @@
+ 	#size-cells = <0>;
+ 	#sound-dai-cells = <0>;
+ 	status = "okay";
+-	rockchip,phy-table =
+-		<74250000 0x8009 0x0004 0x0272>,
+-		<165000000 0x802b 0x0004 0x0209>,
+-		<297000000 0x8039 0x0005 0x028d>,
+-		<594000000 0x8039 0x0000 0x019d>,
+-		<000000000 0x0000 0x0000 0x0000>;
+-};
+-
+-&cdn_dp {
+-	status = "okay";
+-	extcon = <&fusb0>;
+ };
+ 
+ &sdmmc {
+@@ -388,7 +291,6 @@
+ 		regulator-name = "vdd_gpu";
+ 		regulator-min-microvolt = <712500>;
+ 		regulator-max-microvolt = <1500000>;
+-		regulator-enable-ramp-delay = <300>;
+ 		regulator-ramp-delay = <1000>;
+ 		fcs,suspend-voltage-selector = <1>;
+ 		regulator-always-on;
+@@ -410,7 +312,7 @@
+ 		rockchip,system-power-controller;
+ 		wakeup-source;
+ 		#clock-cells = <1>;
+-		clock-output-names = "rk808-clkout1", "rk808-clkout2";
++		clock-output-names = "xin32k", "rk808-clkout2";
+ 
+ 		vcc1-supply = <&vcc_sys>;
+ 		vcc2-supply = <&vcc_sys>;
+@@ -592,27 +494,56 @@
+ 	status = "okay";
+ };
+ 
+-&i2c2 {
++&i2c6 {
+ 	status = "okay";
++};
+ 
++&i2c4 {
++	status = "okay";
++	fusb0: fusb30x@22 {
++		compatible = "fairchild,fusb302";
++		reg = <0x22>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&fusb0_int>;
++		vbus-5v-gpios = <&gpio1 3 GPIO_ACTIVE_HIGH>;
++		int-n-gpios = <&gpio1 2 GPIO_ACTIVE_HIGH>;
++		status = "okay";
++	};
++};
++
++&i2c2 {
++	status = "okay";
+ 	camera0: camera-module@10 {
+-		compatible = "ovti,ov13850";
+ 		status = "disabled";
+-		reg = <0x10>;
++		compatible = "omnivision,ov13850-v4l2-i2c-subdev";
++		reg = < 0x10 >;
++		device_type = "v4l2-i2c-subdev";
+ 		clocks = <&cru SCLK_CIF_OUT>;
+-		clock-names = "xvclk";
+-
+-		reset-gpios = <&gpio3 29 GPIO_ACTIVE_HIGH>;
+-		pwdn-gpios = <&gpio3 28 GPIO_ACTIVE_HIGH>;
+-		pinctrl-names = "rockchip,camera_default";
+-		pinctrl-0 = <&cif_clkout>;
++		clock-names = "clk_cif_out";
++		pinctrl-names = "rockchip,camera_default",
++				"rockchip,camera_sleep";
++		pinctrl-0 = <&cam0_default_pins>;
++		pinctrl-1 = <&cam0_sleep_pins>;
++		//rockchip,pd-gpio = <&gpio4 4 GPIO_ACTIVE_LOW>;
++		rockchip,pwr-gpio = <&gpio4 4 GPIO_ACTIVE_HIGH>;
++		rockchip,rst-gpio = <&gpio3 29 GPIO_ACTIVE_LOW>;
++		rockchip,camera-module-mclk-name = "clk_cif_out";
++		rockchip,camera-module-facing = "back";
++		rockchip,camera-module-name = "cmk-cb0695-fv1";
++		rockchip,camera-module-len-name = "lg9569a2";
++		rockchip,camera-module-fov-h = "66.0";
++		rockchip,camera-module-fov-v = "50.1";
++		rockchip,camera-module-orientation = <0>;
++		rockchip,camera-module-iq-flip = <0>;
++		rockchip,camera-module-iq-mirror = <0>;
++		rockchip,camera-module-flip = <1>;
++		rockchip,camera-module-mirror = <0>;
+ 
+-		port {
+-			ucam_out0: endpoint {
+-			remote-endpoint = <&mipi_in_ucam0>;
+-			data-lanes = <1 2>;
+-			};
+-		};
++		rockchip,camera-module-defrect0 = <2112 1568 0 0 2112 1568>;
++		rockchip,camera-module-defrect1 = <4224 3136 0 0 4224 3136>;
++		rockchip,camera-module-defrect3 = <3264 2448 0 0 3264 2448>;
++		rockchip,camera-module-flash-support = <1>;
++		rockchip,camera-module-mipi-dphy-index = <0>;
+ 	};
+ 
+ 	camera1: camera-module@36 {
+@@ -646,46 +577,6 @@
+ 		rockchip,camera-module-mipi-dphy-index = <0>;
+ 	};
+ 
+-	camera2: camera-module@3C {
+-		status = "disabled";
+-		compatible = "ovti,ov5645";
+-		reg = <0x3c>;
+-		clocks = <&cru SCLK_CIF_OUT>;
+-		clock-names = "xvclk";
+-		
+-		pinctrl-names = "rockchip,camera_default";
+-		pinctrl-0 = <&cif_clkout>;
+-		reset-gpios = <&gpio3 29 GPIO_ACTIVE_HIGH>;
+-		pwdn-gpios = <&gpio3 28 GPIO_ACTIVE_HIGH>;
+-
+-		port {
+-			ucam_out2: endpoint {
+-				remote-endpoint = <&mipi_in_ucam0>;
+-				data-lanes = <1 2>;
+-			};
+-		};
+-	};
+-};
+-
+-&i2c4 {
+-	status = "okay";
+-	fusb0: fusb30x@22 {
+-		compatible = "fairchild,fusb302";
+-		reg = <0x22>;
+-		pinctrl-names = "default";
+-		pinctrl-0 = <&fusb0_int>;
+-		vbus-5v-gpios = <&gpio1 3 GPIO_ACTIVE_HIGH>;
+-		int-n-gpios = <&gpio1 2 GPIO_ACTIVE_HIGH>;
+-		status = "okay";
+-	};
+-};
+-
+-&i2c6 {
+-	status = "okay";
+-};
+-
+-&i2c7 {
+-	status = "okay";
+ };
+ 
+ &cpu_l0 {
+@@ -777,26 +668,30 @@
+ &uart0 {
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&uart0_xfer &uart0_cts>;
++	dmas = <&dmac_peri 0>, <&dmac_peri 1>;
++	dma-names = "tx", "rx";
+ 	status = "okay";
+ };
+ 
+ &uart3 {
++	compatible = "rockchip,rk3399-uart", "snps,dw-apb-uart";
++	reg = <0x0 0xff1b0000 0x0 0x100>;
++	clocks = <&cru SCLK_UART3>, <&cru PCLK_UART3>;
++	clock-names = "baudclk", "apb_pclk";
++	interrupts = <GIC_SPI 101 IRQ_TYPE_LEVEL_HIGH 0>;
++	dmas = <&dmac_peri 6>, <&dmac_peri 7>;
++	dma-names = "tx", "rx";
++	reg-shift = <2>;
++	reg-io-width = <4>;
++	pinctrl-names = "default";
++	pinctrl-0 = <&uart3_xfer &uart3_cts &uart3_rts>;
+ 	status = "okay";
+ };
+ 
+ &uart4 {
+ 	status = "okay";
+-};
+-
+-&spi0 {
+-	status = "okay";
+-	max-freq = <48000000>;
+-	dev-port = <1>;
+-	spidev@0 {
+-		compatible = "linux,spidev";
+-		/*reg = <0x00>;*/
+-		spi-max-frequency = <48000000>;
+-	};
++	dmas = <&dmac_peri 8>, <&dmac_peri 9>;
++	dma-names = "tx", "rx";
+ };
+ 
+ &usb_host0_ehci {
+@@ -816,12 +711,12 @@
+ };
+ 
+ &usbdrd3_0 {
+-	//extcon = <&fusb0>;
++	extcon = <&fusb0>;
+ 	status = "okay";
+ };
+ 
+ &usbdrd_dwc3_0 {
+-	dr_mode = "host";
++	dr_mode = "otg";
+ 	status = "okay";
+ };
+ 
+@@ -998,7 +893,7 @@
+ };
+ 
+ &pcie0 {
+-	ep-gpios = <&gpio2 2 GPIO_ACTIVE_HIGH>;
++	ep-gpios = <&gpio3 9 GPIO_ACTIVE_HIGH>;
+ 	num-lanes = <4>;
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&pcie_clkreqn_cpm>;
+@@ -1006,6 +901,7 @@
+ };
+ 
+ &pinctrl {
++
+ 	sdio0 {
+ 		sdio0_bus1: sdio0-bus1 {
+ 			rockchip,pins =
+@@ -1080,7 +976,7 @@
+ 	pcie {
+ 		pcie_drv: pcie-drv {
+ 			rockchip,pins =
+-				<2 5 RK_FUNC_GPIO &pcfg_pull_none>;
++				<3 11 RK_FUNC_GPIO &pcfg_pull_none>;
+ 			};
+ 	};
+ 
+@@ -1172,8 +1068,6 @@
+ 
+ &vopb {
+ 	status = "okay";
+-	assigned-clocks = <&cru DCLK_VOP0_DIV>;
+-	assigned-clock-parents = <&cru PLL_VPLL>;
+ };
+ 
+ &vopb_mmu {
+@@ -1182,94 +1076,42 @@
+ 
+ &vopl {
+ 	status = "okay";
+-	assigned-clocks = <&cru DCLK_VOP1_DIV>;
+-	assigned-clock-parents = <&cru PLL_CPLL>;
+ };
+ 
+ &vopl_mmu {
+ 	status = "okay";
+ };
+ 
+-&rkisp1_0 {
++&cif_isp0 {
++	rockchip,camera-modules-attached = <&camera0>;
+ 	status = "okay";
+-	port {
+-		#address-cells = <1>;
+-		#size-cells = <0>;
+-
+-		isp0_mipi_in: endpoint@0 {
+-			reg = <0>;
+-			remote-endpoint = <&dphy_rx0_out>;
+-		};
+-	};
+-};
+-
+-&mipi_dphy_rx0 {
+-	status = "okay";
+-
+-	ports {
+-		#address-cells = <1>;
+-		#size-cells = <0>;
+-
+-		port@0 {
+-			reg = <0>;
+-			#address-cells = <1>;
+-			#size-cells = <0>;
+-
+-			mipi_in_ucam0: endpoint@1 {
+-				reg = <1>;
+-				remote-endpoint = <&ucam_out2>;
+-				data-lanes = <1 2>;
+-			};
+-		};
+-
+-		port@1 {
+-			reg = <1>;
+-			#address-cells = <1>;
+-			#size-cells = <0>;
+-
+-			dphy_rx0_out: endpoint@0 {
+-				reg = <0>;
+-				remote-endpoint = <&isp0_mipi_in>;
+-			};
+-		};
+-	};
+ };
+ 
+ &isp0_mmu {
+ 	status = "okay";
+ };
+ 
+-&isp1_mmu {
++&cif_isp1 {
++	rockchip,camera-modules-attached = <&camera1>;
+ 	status = "disabled";
+ };
+ 
+-&vpu {
++&isp1_mmu {
+ 	status = "okay";
+ };
+ 
+-&vpu_mmu {
++&vpu {
+ 	status = "okay";
++	/* 0 means ion, 1 means drm */
++	//allocator = <0>;
+ };
+ 
+ &rkvdec {
+ 	status = "okay";
+-};
+-
+-&vdec_mmu {
+-	status = "okay";
++	/* 0 means ion, 1 means drm */
++	//allocator = <0>;
+ };
+ 
+ &display_subsystem {
+ 	status = "okay";
+-
+-	route {
+-		route_hdmi: route-hdmi {
+-			status = "okay";
+-			connect = <&vopb_out_hdmi>;
+-		};
+-
+-		route_dp: route-dp {
+-			connect = <&vopl_out_dp>;
+-		};
+-	};
+ };

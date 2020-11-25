@@ -15,7 +15,7 @@ OPENBOR_EXTRAOPTS=""
 ifeq ($(BR2_x86_64),y)
 	OPENBOR_EXTRAOPTS=BUILD_LINUX=1 BUILD_PLATFORM=x86_64
 endif
-ifeq ($(BR2_x86_i586),y)
+ifeq ($(BR2_x86_i686),y)
 	OPENBOR_EXTRAOPTS=BUILD_LINUX=1
 endif
 ifeq ($(BR2_arm)$(BR2_aarch64),y)

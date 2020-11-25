@@ -3,11 +3,11 @@ DL_DIR      ?= $(PROJECT_DIR)/dl
 OUTPUT_DIR  ?= $(PROJECT_DIR)/output
 CCACHE_DIR  ?= $(PROJECT_DIR)/buildroot-ccache
 LOCAL_MK	?= $(PROJECT_DIR)/batocera.mk
-EXTRA_PKGS  ?=
+EXTRA_PKGS	?=
 
 -include $(LOCAL_MK)
 
-DOCKER_REPO := batocera
+DOCKER_REPO := batoceralinux
 IMAGE_NAME  := batocera.linux-build
 
 TARGETS := $(sort $(shell find $(PROJECT_DIR)/configs/ -name 'b*' | sed -n 's/.*\/batocera-\(.*\)_defconfig/\1/p'))
@@ -45,16 +45,19 @@ update-docker-image:
 publish-docker-image:
 	@docker push $(DOCKER_REPO)/$(IMAGE_NAME):latest
 
-output-dir-%:
+output-dir-%: %-supported
 	@mkdir -p $(OUTPUT_DIR)/$*
 
 ccache-dir:
 	@mkdir -p $(CCACHE_DIR)
 
+dl-dir:
+	@mkdir -p $(DL_DIR)
+
 %-supported:
 	$(if $(findstring $*, $(TARGETS)),,$(error "$* not supported!"))
 
-%-clean: batocera-docker-image %-supported output-dir-%
+%-clean: batocera-docker-image output-dir-%
 	@docker run -it --init --rm \
 		-v $(PROJECT_DIR):/build \
 		-v $(DL_DIR):/build/buildroot/dl \
@@ -62,10 +65,10 @@ ccache-dir:
 		-v /etc/passwd:/etc/passwd:ro \
 		-v /etc/group:/etc/group:ro \
 		-u $(UID):$(GID) \
-		batocera/batocera.linux-build \
+		$(DOCKER_REPO)/$(IMAGE_NAME) \
 		make O=/$* BR2_EXTERNAL=/build -C /build/buildroot clean
 
-%-config: batocera-docker-image %-supported output-dir-%
+%-config: batocera-docker-image output-dir-%
 	@cp -f $(PROJECT_DIR)/configs/batocera-$*_defconfig $(PROJECT_DIR)/configs/batocera-$*_defconfig-tmp
 	@for opt in $(EXTRA_OPTS); do \
 		echo $$opt >> $(PROJECT_DIR)/configs/batocera-$*_defconfig ; \
@@ -77,11 +80,11 @@ ccache-dir:
 		-v /etc/passwd:/etc/passwd:ro \
 		-v /etc/group:/etc/group:ro \
 		-u $(UID):$(GID) \
-		batocera/batocera.linux-build \
+		$(DOCKER_REPO)/$(IMAGE_NAME) \
 		make O=/$* BR2_EXTERNAL=/build -C /build/buildroot batocera-$*_defconfig
 	@mv -f $(PROJECT_DIR)/configs/batocera-$*_defconfig-tmp $(PROJECT_DIR)/configs/batocera-$*_defconfig
 
-%-build: batocera-docker-image %-supported %-config ccache-dir
+%-build: batocera-docker-image %-config ccache-dir dl-dir
 	@docker run -it --rm \
 		-v $(PROJECT_DIR):/build \
 		-v $(DL_DIR):/build/buildroot/dl \
@@ -91,10 +94,10 @@ ccache-dir:
 		-v /etc/passwd:/etc/passwd:ro \
 		-v /etc/group:/etc/group:ro \
 		$(DOCKER_OPTS) \
-		batocera/batocera.linux-build \
+		$(DOCKER_REPO)/$(IMAGE_NAME) \
 		make O=/$* BR2_EXTERNAL=/build -C /build/buildroot $(CMD)
 
-%-shell: batocera-docker-image %-supported output-dir-%
+%-shell: batocera-docker-image output-dir-%
 	@docker run -it --rm \
 		-v $(PROJECT_DIR):/build \
 		-v $(DL_DIR):/build/buildroot/dl \
@@ -104,7 +107,7 @@ ccache-dir:
 		$(DOCKER_OPTS) \
 		-v /etc/passwd:/etc/passwd:ro \
 		-v /etc/group:/etc/group:ro \
-		batocera/batocera.linux-build
+		$(DOCKER_REPO)/$(IMAGE_NAME)
 
 %-cleanbuild: %-clean %-build
 	@echo
@@ -126,3 +129,45 @@ ccache-dir:
 
 %-tail: output-dir-%
 	@tail -F $(OUTPUT_DIR)/$*/build/build-time.log
+
+%-snapshot: %-supported
+	$(if $(shell which btrfs 2>/dev/null),, $(error "btrfs not found!"))
+	@mkdir -p $(OUTPUT_DIR)/snapshots
+	-@sudo btrfs sub del $(OUTPUT_DIR)/snapshots/$*-toolchain
+	@btrfs subvolume snapshot -r $(OUTPUT_DIR)/$* $(OUTPUT_DIR)/snapshots/$*-toolchain
+
+%-rollback: %-supported
+	$(if $(shell which btrfs 2>/dev/null),, $(error "btrfs not found!"))
+	-@sudo btrfs sub del $(OUTPUT_DIR)/$*
+	@btrfs subvolume snapshot $(OUTPUT_DIR)/snapshots/$*-toolchain $(OUTPUT_DIR)/$*
+
+%-flash: %-supported
+	$(if $(DEV),,$(error "DEV not specified!"))
+	@gzip -dc $(OUTPUT_DIR)/$*/images/batocera/batocera-*.img.gz | sudo dd of=$(DEV) bs=5M status=progress
+	@sync
+
+%-upgrade: %-supported
+	$(if $(DEV),,$(error "DEV not specified!"))
+	-@sudo umount /tmp/mount
+	-@mkdir /tmp/mount
+	@sudo mount $(DEV)1 /tmp/mount
+	-@sudo rm /tmp/mount/boot/batocera
+	@sudo tar xvf $(OUTPUT_DIR)/$*/images/batocera/boot.tar.xz -C /tmp/mount --no-same-owner
+	@sudo umount /tmp/mount
+	-@rmdir /tmp/mount
+
+%-toolchain: %-supported
+	$(if $(shell which btrfs 2>/dev/null),, $(error "btrfs not found!"))
+	-@sudo btrfs sub del $(OUTPUT_DIR)/$*
+	@btrfs subvolume create $(OUTPUT_DIR)/$*
+	@$(MAKE) $*-config
+	@$(MAKE) $*-build CMD=toolchain
+	@$(MAKE) $*-build CMD=llvm
+	@$(MAKE) $*-snapshot
+
+uart:
+	$(if $(shell which picocom 2>/dev/null),, $(error "picocom not found!"))
+	$(if $(SERIAL_DEV),,$(error "SERIAL_DEV not specified!"))
+	$(if $(SERIAL_BAUDRATE),,$(error "SERIAL_BAUDRATE not specified!"))
+	$(if $(wildcard $(SERIAL_DEV)),,$(error "$(SERIAL_DEV) not available!"))
+	@picocom $(SERIAL_DEV) -b $(SERIAL_BAUDRATE)

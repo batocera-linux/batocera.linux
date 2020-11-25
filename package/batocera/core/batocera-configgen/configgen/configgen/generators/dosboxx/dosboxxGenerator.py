@@ -2,7 +2,7 @@
 import Command
 import batoceraFiles
 from generators.Generator import Generator
-import os.path
+import os.path, shutil
 from os.path import dirname
 from os.path import isdir
 from os.path import isfile
@@ -25,8 +25,13 @@ class DosBoxxGenerator(Generator):
         iniSettings = ConfigParser.ConfigParser()
         # To prevent ConfigParser from converting to lower case
         iniSettings.optionxform = str
+
+        # copy config file to custom config file to avoid overwritting by dosbox-x
+        customConfFile = os.path.join(batoceraFiles.dosboxxCustom,'dosboxx-custom.conf')
+
         if os.path.exists(configFile):
-            iniSettings.read(configFile)
+            shutil.copy2(configFile, customConfFile)
+            iniSettings.read(customConfFile)
 
         # sections
         if not iniSettings.has_section("sdl"):
@@ -34,16 +39,16 @@ class DosBoxxGenerator(Generator):
         iniSettings.set("sdl", "output", "opengl")
 
         # save
-        with open(configFile, 'w') as config:
+        with open(customConfFile, 'w') as config:
             iniSettings.write(config)
 
+        # -fullscreen removed as it crashes on N2
         commandArray = [batoceraFiles.batoceraBins[system.config['emulator']],
 			"-exit", 
 			"-c", """mount c {}""".format(gameDir),
                         "-c", "c:",
                         "-c", "dosbox.bat",
                         "-fastbioslogo",
-                        "-fullscreen",
-                        "-conf {}".format(configFile)]
+                        "-conf {}".format(customConfFile)]
 
-        return Command.Command(array=commandArray)
+        return Command.Command(array=commandArray, env={"XDG_CONFIG_HOME":batoceraFiles.CONF})

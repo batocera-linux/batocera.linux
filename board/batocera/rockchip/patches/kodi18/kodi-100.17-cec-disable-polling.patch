@@ -1,0 +1,13 @@
+--- a/xbmc/peripherals/bus/virtual/PeripheralBusCEC.cpp	2019-05-12 07:24:23.921984777 +0200
++++ b/xbmc/peripherals/bus/virtual/PeripheralBusCEC.cpp	2019-05-12 07:03:41.221761552 +0200
+@@ -50,6 +50,10 @@
+       /** the Pi's adapter cannot be removed, no need to rescan */
+       m_bNeedsPolling = false;
+       break;
++    case ADAPTERTYPE_LINUX:
++      /** the Linux adapter cannot be removed, no need to rescan */
++      m_bNeedsPolling = false;
++      break;
+     default:
+       break;
+     }

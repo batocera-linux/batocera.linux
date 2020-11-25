@@ -1,9 +1,96 @@
-2020/XX/XX - batocera.linux 5.27
-	* add: Khadas VIM3 support (see https://wiki.batocera.org/devices#khadas_vim3 for details)
-	* add: libretro-quasi88 (NEC PC-8800)
+2020/XX/XX - batocera.linux 29
+	* add: duckstation (libretro core for x86_64 and AArch64 boards)
+	* add: hbmame (x86, x86_64, odroid n2)
+	* add: windows games 32 and 64 bits (wine)
+	* add: DXVK for wine (Run DirectX9 to 11 Games)
+	* add: VKD3D-Proton for wine (Run DirectX 12 Games)
+	* add: wiiu emulator (cemu)
+	* add: ps3 emulator (rpcs3)
+	* add: TIC-80 and pico-8 emulators (fantasy consoles)
+	* add: pygame support : create your own games / learn python.
+	* add: keyboard and mouse support from joystick (configurable easyly from es, for system like dos, apple2, windows, ...)
+	* add: Odroid C4 support
+	* add: Odroid C2 support revived (using Mesa/Lima and 5.8 kernel)
+	* add: Khadas VIM2 support (https://wiki.batocera.org/devices#khadas_vim2 for details)
+	* add: Anbernic RG351P support
+	* add: ES support for animated storyboards
+	* add: ES reads videos and pdf from the screenshots system (directly in es)
+	* add: ES find similar games feature
+	* add: Content Downloader: support for multi-repos and search
+	* add: Content Downloader: filtered on systems supported by your board
+	* add: Bezels auto-resized (as long as your aspect ratio is >= 16/10)
+	* add: easy vulkan configuration for retroarch / rpcs3
+	* add: odroidn2 : jaguar
+	* add: dolphin performances on odroidn2 increased
+	* fix: Odroid Go Advance splash screen
+	* fix: CHD broken support on most systems
+	* fix: netplay (and add "watch mode")
+	* bump: Dosbox-X to 0.83.7
+	* bump: mGBA to 0.8.4
+	* bump: Stella to 6.4
+	* bump: PCSX-ReARMed
+	* bump: MAME to 0.225
+	* bump: ScummVM to 2.2.0
+	* bump: Amiberry to 3.3
+	* bump: YabaSanshiro to 3.5
+	* bump: many default bezels updated
+	* bump: WinBTRFS Driver to 1.7.5
 
-2020/XX/XX - batocera.linux 5.26
+2020/10/04 - batocera.linux 5.27.2
+	* fix some issues with some tvs (giving bad resolutions information)
+	* fix rpi gpio
+	* fix pcsx2 on some cpu (x68*)
+
+2020/09/15 - batocera.linux 5.27
+	* add: Retroflag NESPi 4 case support
+	* add: wifi hidden SSID support
+	* add: Khadas VIM3 support (see https://wiki.batocera.org/devices#khadas_vim3 for details)
+	* add: Allwinner h5 support (Tritium-H5) from Librecomputer
+	* add: odroid n2+ support (including overclocking up to 2400 and fan)
+	* add: libretro-quasi88 (NEC PC-8800)
+	* add: cannonball (outrun engine)
+	* add: libretro-scummvm core (working)
+	* add: batocera-record (on x86*) to record video of batocera from command line
+	* add: filesystem compression (btrfs option in batocera.conf)
+	* add: game manuals scrapping / rendering
+	* add: batocera manual
+	* add: Batocera content downloader (with 'pacman' package manager)
+	* add: New UI for installing/removing themes, bezels, free content
+	* add: new options for upscaling when emulators support it (PSX, Dreamcast, DS, Gamecube, Wii...)
+	* add: system manufacturers bar
+	* add: flags for games locales
+	* add: support for RTL languages (arabic translation)
+	* add: multi-thread support for ScreenScraper
+	* add: oc_FR language
+	* add: Vulkan support
+	* add: technical stats and info on SSH login
+	* add: resolution configuration by system/game for many boards
+	* add: rpi4 saturn support
+	* add: n2 gamecube support
+	* fix: theBezelProject default bezel now correctly installed
+	* fix: audio in video snaps (rockpro64)
+	* fix: volume slider in ES (rockpro64)
+	* fix: bezels resizing for ultrawide screens
+	* fix: wifi connection
+	* fix: RetroAchievements window (data scraping, fix for small screens)
+	* fix: remove .zip support for CD-based systems
+	* fix: odroid n2 owners should reburn completly the image to get better performances (overclocking)
+	* bump: Intel Iris driver
+	* bump: RPi3 and RPi4 kms video driver
+	* bump: RetroArch 1.9.0 along with libretro emulators
+	* bump: Yabasanshiro to 3.4.2
+	* bump: PPSSPP to 1.10.3
+	* bump: Dolphin to 5.0-12257
+	* bump: MAME to 0.223
+	* bump: linapple
+	* bump: citra-emu
+	* bump: Kodi 18.8
+	* bump: nvidia-driver (450.66)
+	* add: new batocera-splash modes (see batocera.conf)
+
+2020/06/01 - batocera.linux 5.26
 	* add: support for Raspberry Pi4
+	* add: support for Argon One
 	* add: support for Odroid Go Advanced Black Edition (wifi/l2/r2)
 	* es: background music now supports .flac, .wav and popular popular chiptune formats (.mod, .xm., .s3m, .far, .mtm, .669...)
 	* es: simplified UI for custom features selection

@@ -1,0 +1,30 @@
+From 7adc8f706efab65d8d7e5f960690faca3d5c190d Mon Sep 17 00:00:00 2001
+From: popcornmix <popcornmix@gmail.com>
+Date: Sat, 4 Mar 2017 19:24:02 +0000
+Subject: [PATCH] ffmpeg: Call get_format to fix an issue with MMAL rendering
+
+MRFIXIT updated for 4.3
+
+---
+ libavcodec/dvdec.c | 7 +++++++
+ libavcodec/rv34.c  | 6 +++++-
+ 2 files changed, 12 insertions(+), 1 deletion(-)
+
+diff --git a/libavcodec/dvdec.c b/libavcodec/dvdec.c
+index 0b4c1bc..00081ef 100644
+--- a/libavcodec/dvdec.c
++++ b/libavcodec/dvdec.c
+@@ -196,6 +197,12 @@ static av_cold int dvvideo_decode_init(AVCodecContext *avctx)
+     s->idct_put[0] = idsp.idct_put;
+     s->idct_put[1] = ff_simple_idct248_put;
+ 
++    static const enum AVPixelFormat pix_fmts[] = {
++       AV_PIX_FMT_YUV420P,
++       AV_PIX_FMT_NONE
++    };
++    avctx->pix_fmt = ff_get_format(avctx, pix_fmts);
++
+     return ff_dvvideo_init(avctx);
+ }
+ 
+

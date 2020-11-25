@@ -1,0 +1,11 @@
+--- a/app/CMakeLists.txt	2020-07-09 16:45:41.000000000 +0200
++++ b/app/CMakeLists.txt	2020-07-19 12:29:29.466250406 +0200
+@@ -88,7 +88,7 @@
+     ${CMAKE_CURRENT_SOURCE_DIR}/../tests/system_test/sub_tests
+     ${CMAKE_CURRENT_SOURCE_DIR}/../tests/system_test)
+ 
+-target_link_libraries(${PROJECT_NAME} PUBLIC framework)
++target_link_libraries(${PROJECT_NAME} PUBLIC framework dl)
+ 
+ if(VKB_BUILD_TESTS)
+     target_include_directories(${PROJECT_NAME} PUBLIC

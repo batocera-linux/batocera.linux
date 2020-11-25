@@ -1,0 +1,74 @@
+diff --git a/evmapy/config.py b/evmapy/config.py
+index 6539fa7..4a929d6 100644
+--- a/evmapy/config.py
++++ b/evmapy/config.py
+@@ -45,16 +45,13 @@ class ConfigError(Exception):
+     """
+ 
+     def __init__(self, reason, path=None):
+-        super().__init__()
++        super(Exception, self).__init__()
+         self.path = path
+         self.not_found = False
+         if isinstance(reason, ConfigError):
+             self.error = reason.error
+         elif isinstance(reason, ValueError):
+             self.error = "Invalid JSON file: %s" % str(reason)
+-        elif isinstance(reason, FileNotFoundError):
+-            self.error = "File not found"
+-            self.not_found = True
+         else:
+             self.error = str(reason)
+ 
+@@ -359,13 +359,13 @@ def validate_parameters(config):
+                         "unknown %s parameter '%s'" % (level, param)
+                     )
+                 valid_types = evmapy.util.as_list(valid[param])
+-                valid_type_names = [t.__name__ for t in valid_types]
+-                if type(obj[param]).__name__ not in valid_type_names:
+-                    raise ConfigError(
+-                        "'%s' has to be of type %s" % (
+-                            param, " or ".join(valid_type_names)
+-                        )
+-                    )
++                #valid_type_names = [t.__name__ for t in valid_types]
++                #if type(obj[param]).__name__ not in valid_type_names:
++                #    raise ConfigError(
++                #        "'%s' has to be of type %s" % (
++                #            param, " or ".join(valid_type_names)
++                #        )
++                #    )
+ 
+ 
+ def validate_events(events):
+diff --git a/evmapy/controller.py b/evmapy/controller.py
+index 5114548..201193e 100644
+--- a/evmapy/controller.py
++++ b/evmapy/controller.py
+@@ -123,7 +123,7 @@ class Controller(object):
+         try:
+             control_socket_path = _get_control_socket_path()
+             os.mkdir(os.path.dirname(control_socket_path))
+-        except FileExistsError:
++        except:
+             pass
+         try:
+             send_request({
+@@ -131,11 +131,12 @@ class Controller(object):
+                 'wait':     True,
+             })
+             raise SocketInUseError
+-        except ConnectionRefusedError:
+-            self._logger.info("removing stale control socket")
+-            os.remove(control_socket_path)
+-        except FileNotFoundError:
+-            pass
++        except:
++            try:
++                self._logger.info("removing stale control socket")
++                os.remove(control_socket_path)
++            except:
++                pass
+         control_socket = socket.socket(socket.AF_UNIX, socket.SOCK_DGRAM)
+         control_socket.bind(control_socket_path)
+         os.chmod(control_socket_path, stat.S_IRUSR | stat.S_IWUSR)

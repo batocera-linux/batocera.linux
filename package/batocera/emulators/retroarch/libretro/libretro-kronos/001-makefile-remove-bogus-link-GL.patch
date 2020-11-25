@@ -1,0 +1,28 @@
+--- a/yabause/src/libretro/Makefile	2020-11-03 17:40:13.636518068 +0100
++++ b/yabause/src/libretro/Makefile	2020-11-03 17:39:36.935836823 +0100
+@@ -111,7 +111,7 @@
+ 	TARGET := $(TARGET_NAME)_libretro.so
+ 	fpic := -fPIC
+ 	SHARED := -shared -Wl,--no-undefined -Wl,--version-script=link.T
++	LDFLAGS += -lpthread
+-	LDFLAGS += -lpthread -lGL
+ 	ARCH_IS_LINUX = 1
+ 	HAVE_SSE = 0
+ 	FORCE_GLES = 1
+@@ -123,7 +123,7 @@
+ 	TARGET := $(TARGET_NAME)_libretro.so
+ 	fpic := -fPIC
+ 	SHARED := -shared -Wl,--no-undefined -Wl,--version-script=link.T
++	LDFLAGS += -lpthread
+-	LDFLAGS += -lpthread -lGL
+ 	ARCH_IS_LINUX = 1
+ 	HAVE_SSE = 0
+ 	FORCE_GLES = 1
+@@ -139,7 +139,7 @@
+ 	TARGET := $(TARGET_NAME)_libretro.so
+ 	fpic := -fPIC
+ 	SHARED := -shared -Wl,--no-undefined -Wl,--version-script=link.T
++	LDFLAGS += -lpthread
+-	LDFLAGS += -lpthread -lGL
+ 	ARCH_IS_LINUX = 1
+ 	BOARD := $(shell cat /proc/cpuinfo | grep -i odroid | awk '{print $$3}')

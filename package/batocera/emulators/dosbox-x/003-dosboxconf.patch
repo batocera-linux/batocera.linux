@@ -1,56 +1,51 @@
-diff --git a/src/gui/sdlmain.cpp b/src/gui/sdlmain.cpp
-index ec6ba7b..f689b3c 100644
---- a/src/gui/sdlmain.cpp
-+++ b/src/gui/sdlmain.cpp
-@@ -635,9 +635,9 @@ void UpdateWindowDimensions(void)
+--- a/src/gui/sdlmain.cpp	2020-08-03 06:33:31.000000000 +0200
++++ b/src/gui/sdlmain.cpp	2020-08-28 13:21:18.681580955 +0200
+@@ -907,8 +907,8 @@
+     PrintScreenSizeInfo();
  }
  
+-#define MAPPERFILE_SDL1         "mapper-dosbox-x.sdl1.map"
+-#define MAPPERFILE_SDL2         "mapper-dosbox-x.sdl2.map"
++#define MAPPERFILE_SDL1         "mapper-sdl2.map"
++#define MAPPERFILE_SDL2         "mapper-sdl2.map"
  #if defined(C_SDL2)
--# define MAPPERFILE             "mapper-" VERSION ".sdl2.map"
-+# define MAPPERFILE             "mapper-sdl2.map"
+ # define MAPPERFILE             MAPPERFILE_SDL2
  #else
--# define MAPPERFILE             "mapper-" VERSION ".map"
-+# define MAPPERFILE             "mapper-sdl2.map"
- #endif
- 
- void                        GUI_ResetResize(bool);
-@@ -677,7 +677,7 @@ extern "C" void SDL1_hax_SetMenu(HMENU menu);
+@@ -954,7 +954,7 @@
  #elif defined(HAIKU)
- #define DEFAULT_CONFIG_FILE "~/config/settings/dosbox/dosbox.conf"
+ #define DEFAULT_CONFIG_FILE "~/config/settings/dosbox-x/dosbox-x.conf"
  #else /*linux freebsd*/
 -# define DEFAULT_CONFIG_FILE            "/.dosboxrc"
 +# define DEFAULT_CONFIG_FILE            "/dosboxx.conf"
  #endif
  
  #if C_SET_PRIORITY
-diff --git a/src/misc/cross.cpp b/src/misc/cross.cpp
-index 05a5893..74daf41 100644
---- a/src/misc/cross.cpp
-+++ b/src/misc/cross.cpp
-@@ -89,7 +89,7 @@ void Cross::GetPlatformConfigDir(std::string& in) {
- #elif defined(RISCOS)
- 	in = "/<Choices$Write>/DosBox-X";
+--- a/src/misc/cross.cpp	2020-11-04 16:21:48.281934402 +0100
++++ b/src/misc/cross.cpp	2020-11-04 16:24:17.576770566 +0100
+@@ -105,7 +105,7 @@
  #elif !defined(HX_DOS)
--	in = "~/.dosbox";
-+	in = "/userdata/system/configs/dosbox";
+ 	const char *xdg_conf_home = getenv("XDG_CONFIG_HOME");
+ 	const std::string conf_home = xdg_conf_home && xdg_conf_home[0] == '/' ? xdg_conf_home: "~/.config";
+-	in = conf_home + "/dosbox-x";
++	in = conf_home + "/dosbox";
  	ResolveHomedir(in);
  #endif
- 	in += CROSS_FILESPLIT;
-@@ -101,7 +101,7 @@ void Cross::GetPlatformConfigName(std::string& in) {
+ 	//LOG_MSG("Config dir: %s", in.c_str());
+@@ -118,7 +118,7 @@
  #elif defined(MACOSX)
- #define DEFAULT_CONFIG_FILE "DOSBox " VERSION " Preferences"
+ #define DEFAULT_CONFIG_FILE "DOSBox-X " VERSION " Preferences"
  #else /*linux freebsd*/
--#define DEFAULT_CONFIG_FILE "dosbox-" VERSION ".conf"
+-#define DEFAULT_CONFIG_FILE "dosbox-x-" VERSION ".conf"
 +#define DEFAULT_CONFIG_FILE "dosboxx.conf"
  #endif
  	in = DEFAULT_CONFIG_FILE;
  }
-@@ -123,7 +123,7 @@ void Cross::CreatePlatformConfigDir(std::string& in) {
- 	in = "/<Choices$Write>/DosBox-X";
- 	mkdir(in.c_str(),0700);
+@@ -142,7 +142,7 @@
  #elif !defined(HX_DOS)
--	in = "~/.dosbox";
-+	in = "/userdata/system/configs/dosbox";
+ 	const char *xdg_conf_home = getenv("XDG_CONFIG_HOME");
+ 	const std::string conf_home = xdg_conf_home && xdg_conf_home[0] == '/' ? xdg_conf_home: "~/.config";
+-	in = conf_home + "/dosbox-x";
++	in = conf_home + "/dosbox";
  	ResolveHomedir(in);
  	mkdir(in.c_str(),0700);
  #endif

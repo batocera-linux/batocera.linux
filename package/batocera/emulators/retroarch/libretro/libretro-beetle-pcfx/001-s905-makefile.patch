@@ -1,0 +1,21 @@
+--- a/Makefile	2020-09-12 10:58:25.473319041 +0200
++++ b/Makefile	2020-09-12 11:01:51.937071641 +0200
+@@ -106,6 +106,18 @@
+    FLAGS += -mcpu=cortex-a73
+    ASFLAGS += -mcpu=cortex-a73
+ 
++# Odroid-C2 / S905 based boards
++else ifneq (,$(findstring S905,$(platform)))
++   TARGET := $(TARGET_NAME)_libretro.so
++   fpic := -fPIC
++   SHARED := -shared -Wl,--no-undefined -Wl,--version-script=link.T
++   CC = gcc
++   LDFLAGS += $(PTHREAD_FLAGS)
++   FLAGS += $(PTHREAD_FLAGS)
++   IS_X86 = 0
++   FLAGS += -mcpu=cortex-a53
++   ASFLAGS += -mcpu=cortex-a53
++
+ # iOS
+ else ifneq (,$(findstring ios,$(platform)))
+ 

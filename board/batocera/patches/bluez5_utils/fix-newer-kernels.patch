@@ -1,0 +1,23 @@
+MRFIXIT: New kernel versions need this to fix missing SIOCGSTAMP definition
+--- a/tools/rctest.c
++++ b/tools/rctest.c
+@@ -49,6 +49,8 @@
+ 
+ #include "src/shared/util.h"
+ 
++#include <linux/sockios.h>
++
+ /* Test modes */
+ enum {
+ 	SEND,
+--- a/tools/l2test.c
++++ b/tools/l2test.c
+@@ -49,6 +49,8 @@
+ 
+ #include "src/shared/util.h"
+ 
++#include <linux/sockios.h>
++
+ #define NIBBLE_TO_ASCII(c)  ((c) < 0x0a ? (c) + 0x30 : (c) + 0x57)
+ 
+ #define BREDR_DEFAULT_PSM	0x1011

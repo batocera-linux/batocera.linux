@@ -1,0 +1,89 @@
+diff --git a/reicast/linux/Makefile b/reicast/linux/Makefile
+index 2898360..c9d7d5e 100644
+--- a/reicast/linux/Makefile
++++ b/reicast/linux/Makefile
+@@ -20,8 +20,8 @@ CHD5_FLAC := 1
+ MFLAGS :=
+ ASFLAGS :=
+ LDFLAGS :=
+-INCS :=
+-LIBS :=
++INCS := -I../linux-deps/include
++LIBS := -L../linux-deps/lib
+ CFLAGS :=
+ CXXFLAGS :=
+ 
+@@ -98,7 +98,7 @@ ifneq (,$(findstring x86,$(platform)))
+     NOT_ARM := 1
+     USE_X11 := 1
+     MFLAGS += -m32
+-    ASFLAGS += --32
++    ASFLAGS += -c
+     LDFLAGS += -m32
+     CFLAGS += -m32 -D TARGET_LINUX_x86 -D TARGET_NO_AREC -fsingle-precision-constant
+     CXXFLAGS += -fno-exceptions
+@@ -147,6 +147,9 @@ else ifneq (,$(findstring rpi,$(platform)))
+     else ifneq (,$(findstring rpi3,$(platform)))
+         MFLAGS += -march=armv8-a+crc -mtune=cortex-a53 -mfpu=neon-fp-armv8 -mfloat-abi=hard
+         ASFLAGS += -march=armv8-a+crc -mtune=cortex-a53 -mfpu=neon-fp-armv8 -mfloat-abi=hard
++    else ifneq (,$(findstring rpi4,$(platform)))
++        MFLAGS += -march=armv8-a+crc -mtune=cortex-a72 -mfpu=neon-fp-armv8 -mfloat-abi=hard
++        ASFLAGS += -march=armv8-a+crc -mtune=cortex-a72 -mfpu=neon-fp-armv8 -mfloat-abi=hard
+     endif
+     ifneq (,$(findstring mesa,$(platform)))
+         USE_SDL := 1
+@@ -158,7 +161,7 @@ else ifneq (,$(findstring rpi,$(platform)))
+         CFLAGS += -D TARGET_VIDEOCORE
+         CXXFLAGS += -DGLES
+         USE_OMX := 1
+-        USE_DISPMANX := 1
++        USE_GLES := 1
+     endif
+     undefine USE_X11
+ 
+@@ -193,6 +196,18 @@ else ifneq (,$(findstring odroid,$(platform)))
+         MFLAGS += -march=armv7ve -mtune=cortex-a15.cortex-a7
+         ASFLAGS += -march=armv7ve
+ 
++    # ODROIDN2
++    else ifneq (,$(findstring odroidn2,$(platform)))
++        MFLAGS += -march=armv8-a+crc -mtune=cortex-a53
++        ASFLAGS += -march=armv8-a+crc -mfpu=neon -mfloat-abi=hard
++        CFLAGS += -DGLES3 -DPNG_ARM_NEON=1 -DPNG_ARM_NEON_OPT=1
++    
++    # ODROIDGOA
++    else ifneq (,$(findstring odroidgoa,$(platform)))
++        MFLAGS += -march=armv8-a+crc -mtune=cortex-a35
++        ASFLAGS += -march=armv8-a+crc -mfpu=neon -mfloat-abi=hard
++        CFLAGS += -DGLES3 -DPNG_ARM_NEON=1 -DPNG_ARM_NEON_OPT=1
++
+     # Other ODROIDs
+     else
+         MFLAGS += -march=armv7-a
+@@ -209,6 +224,13 @@ else ifneq (,$(findstring odroid,$(platform)))
+         endif
+     endif
+ 
++# ROCKPRO64
++else ifneq (,$(findstring rockpro64,$(platform)))
++    MFLAGS += -marm -march=armv8-a+crc -mfpu=neon -mfloat-abi=hard -funroll-loops -mtune=cortex-a53
++    ASFLAGS += -march=armv8-a+crc -mfpu=neon -mfloat-abi=hard
++    CFLAGS += -D TARGET_LINUX_ARMELv7 -DARM_HARDFP -fsingle-precision-constant -DPNG_ARM_NEON=1 -DPNG_ARM_NEON_OPT=1
++    USE_GLES := 1
++
+ # GCW Zero
+ else ifneq (,$(findstring gcwz,$(platform)))
+     NOT_ARM := 1
+@@ -257,7 +279,11 @@ CFLAGS += -ffast-math -ftree-vectorize
+ 
+ CXXFLAGS += -fno-rtti -fpermissive -fno-operator-names
+ 
+-INCS += -I$(RZDCY_SRC_DIR) -I$(RZDCY_SRC_DIR)/deps -I$(RZDCY_SRC_DIR)/khronos
++ifneq (,$(findstring mesa,$(platform)))
++    INCS += -I$(RZDCY_SRC_DIR) -I$(RZDCY_SRC_DIR)/deps
++else
++    INCS += -I$(RZDCY_SRC_DIR) -I$(RZDCY_SRC_DIR)/deps -I$(RZDCY_SRC_DIR)/khronos
++endif
+ 
+ LIBS += -lm -lrt
+ LIBS  += -lpthread

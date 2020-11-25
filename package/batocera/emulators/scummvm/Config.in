@@ -12,7 +12,6 @@ config BR2_PACKAGE_SCUMMVM
         select BR2_PACKAGE_LIBPNG
         select BR2_PACKAGE_LIBTHEORA
         select BR2_PACKAGE_FAAD2
-        select BR2_PACKAGE_FLUIDSYNTH
         select BR2_PACKAGE_FREETYPE
 
 	select BR2_PACKAGE_ZLIB  
@@ -21,5 +20,5 @@ config BR2_PACKAGE_SCUMMVM
 		ScummVM point and click 
 		http://wiki.scummvm.org/
 
-comment "Scummvm  needs a toolchain w/ C++,  SDL"
-	depends on !BR2_INSTALL_LIBSTDCPP || !BR2_PACKAGE_SDL
+comment "Scummvm  needs a toolchain w/ C++,  SDL2"
+	depends on !BR2_INSTALL_LIBSTDCPP || !BR2_PACKAGE_SDL2

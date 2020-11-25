@@ -46,8 +46,6 @@ gamecube:
 wii:
   emulator: dolphin
   core: dolphin
-  options:
-    emulatedwiimotes: false
 ps2:
   emulator: pcsx2
   core: pcsx2
@@ -98,6 +96,9 @@ neogeocd:
 mame:
   emulator: libretro
   core:     mame078plus
+hbmame:
+  emulator: libretro
+  core:     hbmame
 fbneo:
   emulator: libretro
   core:     fbneo
@@ -222,6 +223,9 @@ prboom:
 mrboom:
   emulator: libretro
   core:     mrboom
+cannonball:
+  emulator: cannonball
+  core:     cannonball
 psx:
   emulator: libretro
   core:     pcsx_rearmed
@@ -232,10 +236,8 @@ imageviewer:
   emulator: libretro
   core:     imageviewer
 scummvm:
-  emulator: scummvm
-  core: scummvm
-  options:
-    videomode: default
+  emulator: libretro
+  core:     scummvm
 colecovision:
   emulator: libretro
   core:     bluemsx
@@ -300,4 +302,20 @@ windows_installers:
 supermodel3:
   emulator: supermodel3
   core: supermodel3
-
+wiiu:
+  emulator: cemu
+  core:     cemu
+ps3:
+  emulator: rpcs3
+  core:     rpcs3
+pygame:
+  emulator: pygame
+  core:     pygame
+tic80:
+  emulator: libretro
+  core:     tic80
+pico8:
+  emulator: libretro
+  core:     retro8
+  options:
+    ratio: 1/1

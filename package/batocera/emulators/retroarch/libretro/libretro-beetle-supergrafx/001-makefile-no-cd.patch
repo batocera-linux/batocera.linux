@@ -1,0 +1,13 @@
+--- a/Makefile	2020-11-01 18:47:03.009368972 +0100
++++ b/Makefile	2020-11-01 18:47:12.025535212 +0100
+@@ -71,10 +71,6 @@
+    LDFLAGS += -lrt
+    endif
+ 
+-   ifneq ($(findstring Linux,$(shell uname -s)),)
+-     HAVE_CDROM = 1
+-   endif
+-
+    # Raspberry Pi
+    ifneq (,$(findstring rpi,$(platform)))
+       FLAGS += -fomit-frame-pointer -ffast-math

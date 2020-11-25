@@ -1,0 +1,42 @@
+--- a/Makefile	2020-10-01 17:35:35.982642776 +0200
++++ b/Makefile	2020-10-01 17:58:40.190410867 +0200
+@@ -448,7 +448,7 @@
+ 	HAVE_GENERIC_JIT = 0
+ 	HAVE_LTCG = 0
+ 
+-# Amlogic S905/S905X/S912 (AMLGXBB/AMLGXL/AMLGXM) e.g. Khadas VIM1/2 / S905X2 (AMLG12A) & S922X/A311D (AMLG12B) e.g. Khadas VIM3 - 32-bit userspace
++# Amlogic S905/S905X/S912 (AMLGXBB/AMLGXL/AMLGXM) e.g. Khadas VIM1/2 / S905X2 (AMLG12A) & S922X/A311D (AMLG12B) e.g. Khadas VIM3
+ else ifneq (,$(findstring AMLG,$(platform)))
+   EXT ?= so
+   TARGET := $(TARGET_NAME)_libretro.$(EXT)
+@@ -456,13 +456,13 @@
+   LDFLAGS +=  -Wl,--no-undefined
+   fpic = -fPIC
+   LIBS += -lrt
+-  ARM_FLOAT_ABI_HARD = 1
++  ARM_FLOAT_ABI_HARD = 0
+   FORCE_GLES = 1
+   SINGLE_PREC_FLAGS = 1
+-
+-  CPUFLAGS += -DNO_ASM -DARM_ASM -frename-registers -ftree-vectorize
+-  CFLAGS += -march=armv8-a+crc -mfloat-abi=hard -mfpu=neon-fp-armv8 $(CPUFLAGS)
+-  CXXFLAGS += -march=armv8-a+crc -mfloat-abi=hard -mfpu=neon-fp-armv8 $(CPUFLAGS)
++  CPUFLAGS += -DTARGET_LINUX_ARMv8 -frename-registers
++  CFLAGS += -mcpu=cortex-a53 $(CPUFLAGS)
++  CXXFLAGS += -mcpu=cortex-a53 $(CPUFLAGS)
++  ASFLAGS += $(CFLAGS) -c -frename-registers -fno-strict-aliasing -ffast-math -ftree-vectorize
+ 
+   ifneq (,$(findstring AMLG12,$(platform)))
+     ifneq (,$(findstring AMLG12B,$(platform)))
+@@ -478,10 +478,8 @@
+     CORE_DEFINES += -DLOW_END
+   endif
+ 
+-  ASFLAGS += $(CFLAGS) -c -frename-registers -fno-strict-aliasing -ffast-math -ftree-vectorize
+-
+   PLATFORM_EXT := unix
+-  WITH_DYNAREC=arm
++  WITH_DYNAREC=arm64
+   HAVE_GENERIC_JIT = 0
+ 
+ # Rockchip RK3288 e.g. Asus Tinker Board / RK3328 e.g. PINE64 Rock64 / RK3399 e.g. PINE64 RockPro64 - 32-bit userspace

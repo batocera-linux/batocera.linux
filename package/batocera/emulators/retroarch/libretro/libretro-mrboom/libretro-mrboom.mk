@@ -3,12 +3,12 @@
 # MRBOOM
 #
 ################################################################################
-# Version.: Commits on May 2, 2020
-LIBRETRO_MRBOOM_VERSION = 441ba41151f2a688c6d9a2c1a34ff2106d8c57f8
-LIBRETRO_MRBOOM_SITE = https://github.com/libretro/mrboom-libretro.git
+# Version.: Commits on Nov 17, 2020
+LIBRETRO_MRBOOM_VERSION = 5b9fd285853e1b57cb59d4e35680eb88e0de6315
+LIBRETRO_MRBOOM_SITE = https://github.com/Javanaise/mrboom-libretro.git
 LIBRETRO_MRBOOM_SITE_METHOD=git
 LIBRETRO_MRBOOM_GIT_SUBMODULES=YES
-LIBRETRO_MRBOOM_LICENSE="GPLv2"
+LIBRETRO_MRBOOM_LICENSE=GPLv2
 
 ifeq ($(BR2_ARM_FPU_NEON_VFPV4)$(BR2_ARM_FPU_NEON)$(BR2_ARM_FPU_NEON_FP_ARMV8),y)
     LIBRETRO_MRBOOM_EXTRA_ARGS = HAVE_NEON=1

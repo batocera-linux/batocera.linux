@@ -21,7 +21,8 @@ class Pcsx2Generator(Generator):
         # config files
         configureReg(batoceraFiles.pcsx2ConfigDir)
         configureUI(batoceraFiles.pcsx2ConfigDir, batoceraFiles.BIOS, system.config, gameResolution)
-        configureGFX(batoceraFiles.pcsx2ConfigDir, system.config['showFPS'] == 'true')
+        configureVM(batoceraFiles.pcsx2ConfigDir, system)
+        configureGFX(batoceraFiles.pcsx2ConfigDir, system)
         configureAudio(batoceraFiles.pcsx2ConfigDir)
 
         if isAVX2:
@@ -83,29 +84,97 @@ def configureReg(config_directory):
     f.write("RunWizard=0\n")
     f.close()
 
-def configureGFX(config_directory, printFPS):
+def configureVM(config_directory, system):
+
+    configFileName = "{}/{}".format(config_directory + "/inis", "PCSX2_vm.ini")
+    
+    if not os.path.exists(config_directory + "/inis"):
+        os.makedirs(config_directory + "/inis")
+        
+    if not os.path.isfile(configFileName):
+        f = open(configFileName, "w")
+        f.write("[EmuCore]\n")
+        f.close()
+    
+    # this file looks like a .ini
+    pcsx2VMConfig = ConfigParser.ConfigParser()
+    # To prevent ConfigParser from converting to lower case
+    pcsx2VMConfig.optionxform = str   
+    
+    if os.path.isfile(configFileName):  
+        pcsx2VMConfig.read(configFileName)
+    
+    if not pcsx2VMConfig.has_section("EmuCore/GS"):
+        #Some defaults needed on first run 
+        pcsx2VMConfig.add_section("EmuCore/GS")
+        pcsx2VMConfig.set("EmuCore/GS","VsyncQueueSize", "2")
+        pcsx2VMConfig.set("EmuCore/GS","FrameLimitEnable", "1")
+        pcsx2VMConfig.set("EmuCore/GS","SynchronousMTGS", "disabled")
+        pcsx2VMConfig.set("EmuCore/GS","FrameSkipEnable", "disabled")   
+        pcsx2VMConfig.set("EmuCore/GS","LimitScalar", "1.00")
+        pcsx2VMConfig.set("EmuCore/GS","FramerateNTSC", "59.94")    
+        pcsx2VMConfig.set("EmuCore/GS","FrameratePAL", "50")   
+        pcsx2VMConfig.set("EmuCore/GS","FramesToDraw", "2")
+        pcsx2VMConfig.set("EmuCore/GS","FramesToSkip", "2")      
+
+    if system.isOptSet('vsync'):
+        pcsx2VMConfig.set("EmuCore/GS","VsyncEnable", system.config["vsync"])
+    else:
+        pcsx2VMConfig.set("EmuCore/GS","VsyncEnable", "1")    
+
+    with open(configFileName, 'w') as configfile:
+        pcsx2VMConfig.write(configfile)
+        
+        
+def configureGFX(config_directory, system):
     configFileName = "{}/{}".format(config_directory + "/inis", "GSdx.ini")
     if not os.path.exists(config_directory):
         os.makedirs(config_directory + "/inis")
-
-    if os.path.exists(configFileName):
-        # existing configuration file
-        pcsx2GFXSettings = UnixSettings(configFileName, separator=' ')
-        pcsx2GFXSettings.save("osd_fontname", "/usr/share/fonts/dejavu/DejaVuSans.ttf")
-        pcsx2GFXSettings.save("osd_indicator_enabled", 1)
-        if printFPS:
-            pcsx2GFXSettings.save("osd_monitor_enabled", 1)
-        else:
-            pcsx2GFXSettings.save("osd_monitor_enabled", 0)
-    else:
+    
+    #create the config file if it doesn't exist
+    if not os.path.exists(configFileName):
         f = open(configFileName, "w")
         f.write("osd_fontname = /usr/share/fonts/dejavu/DejaVuSans.ttf\n")
-        f.write("osd_indicator_enabled = 1\n")
-        if printFPS:
-            f.write("osd_monitor_enabled = 1\n")
-        else:
-            f.write("osd_monitor_enabled = 0\n")
         f.close()
+        
+    
+    # Update settings
+    pcsx2GFXSettings = UnixSettings(configFileName, separator=' ')
+    pcsx2GFXSettings.save("osd_fontname", "/usr/share/fonts/dejavu/DejaVuSans.ttf")
+    pcsx2GFXSettings.save("osd_indicator_enabled", 1)
+    pcsx2GFXSettings.save("UserHacks", 1)
+    #showFPS
+    if system.isOptSet('showFPS') and system.getOptBoolean('showFPS'):
+        pcsx2GFXSettings.save("osd_monitor_enabled", 1)
+    else:
+        pcsx2GFXSettings.save("osd_monitor_enabled", 0)
+    #internal resolution
+    if system.isOptSet('internalresolution'):
+        pcsx2GFXSettings.save("upscale_multiplier", system.config["internalresolution"])
+    else:
+        pcsx2GFXSettings.save("upscale_multiplier", "1")
+    #skipdraw
+    if system.isOptSet('skipdraw'):
+        pcsx2GFXSettings.save('UserHacks_SkipDraw', system.config['skipdraw'])
+    else:
+        pcsx2GFXSettings.save('UserHacks_SkipDraw', '0')
+    #align sprite
+    if system.isOptSet('align_sprite'):
+        pcsx2GFXSettings.save('UserHacks_align_sprite_X', system.config['align_sprite'])
+    else:
+        pcsx2GFXSettings.save('UserHacks_align_sprite_X', '0')
+        
+    if system.isOptSet('vsync'):
+        pcsx2GFXSettings.save("vsync", system.config["vsync"])
+    else:
+        pcsx2GFXSettings.save("vsync", "1")
+
+    if system.isOptSet('anisotropic_filtering'):
+        pcsx2GFXSettings.save("MaxAnisotropy", system.config["anisotropic_filtering"])
+    else:
+        pcsx2GFXSettings.save("MaxAnisotropy", "0")    
+
+    pcsx2GFXSettings.write()
 
 def configureUI(config_directory, bios_directory, system_config, gameResolution):
     configFileName = "{}/{}".format(config_directory + "/inis", "PCSX2_ui.ini")
@@ -140,10 +209,11 @@ def configureUI(config_directory, bios_directory, system_config, gameResolution)
         except:
             pass
 
-    for section in [ "ProgramLog", "Filenames", "GSWindow" ]:
+    for section in [ "ProgramLog", "Filenames", "GSWindow", "NO_SECTION" ]:
         if not iniConfig.has_section(section):
             iniConfig.add_section(section)
-
+    
+    iniConfig.set("NO_SECTION","EnablePresets","disabled")
     iniConfig.set("ProgramLog", "Visible",     "disabled")
     iniConfig.set("Filenames",  "BIOS",        biosFile)
     iniConfig.set("GSWindow",   "AspectRatio", resolution)

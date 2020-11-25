@@ -6,7 +6,7 @@
 
 BATOCERA_ES_SYSTEM_DEPENDENCIES = host-python host-python-pyyaml batocera-configgen
 BATOCERA_ES_SYSTEM_SOURCE=
-BATOCERA_ES_SYSTEM_VERSION=1.0
+BATOCERA_ES_SYSTEM_VERSION=1.03
 
 define BATOCERA_ES_SYSTEM_BUILD_CMDS
 	$(HOST_DIR)/bin/python \
@@ -19,7 +19,7 @@ define BATOCERA_ES_SYSTEM_BUILD_CMDS
 		$(STAGING_DIR)/usr/share/batocera/configgen/configgen-defaults.yml \
 		$(STAGING_DIR)/usr/share/batocera/configgen/configgen-defaults-arch.yml \
 		$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulationstation/batocera-es-system/roms \
-		$(@D)/roms
+		$(@D)/roms $(BATOCERA_SYSTEM_ARCH)
 endef
 
 define BATOCERA_ES_SYSTEM_INSTALL_TARGET_CMDS

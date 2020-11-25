@@ -1,0 +1,44 @@
+From ca3c0a0b70373da243949b7b72bbbf8bb47f01d5 Mon Sep 17 00:00:00 2001
+From: Jonas Karlman <jonas@kwiboo.se>
+Date: Sun, 9 Sep 2018 12:37:29 +0200
+Subject: [PATCH] rkmppdec: continue on errinfo frame
+
+---
+ libavcodec/rkmppdec.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/libavcodec/rkmppdec.c b/libavcodec/rkmppdec.c
+index c00f08c70b..72be832141 100644
+--- a/libavcodec/rkmppdec.c
++++ b/libavcodec/rkmppdec.c
+@@ -49,6 +49,7 @@ typedef struct {
+ 
+     char first_packet;
+     char eos_reached;
++    int errors;
+ 
+     AVBufferRef *frames_ref;
+     AVBufferRef *device_ref;
+@@ -386,12 +387,13 @@ static int rkmpp_retrieve_frame(AVCodecContext *avctx, AVFrame *frame)
+             goto fail;
+         } else if (mpp_frame_get_errinfo(mppframe)) {
+             av_log(avctx, AV_LOG_ERROR, "Received a errinfo frame.\n");
+-            ret = AVERROR_UNKNOWN;
++            ret = (decoder->errors++ > 100) ? AVERROR_UNKNOWN : AVERROR(EAGAIN);
+             goto fail;
+         }
+ 
+         // here we should have a valid frame
+         av_log(avctx, AV_LOG_DEBUG, "Received a frame.\n");
++        decoder->errors = 0;
+ 
+         // setup general frame fields
+         frame->format           = AV_PIX_FMT_DRM_PRIME;
+@@ -544,6 +546,7 @@ static void rkmpp_flush(AVCodecContext *avctx)
+     ret = decoder->mpi->reset(decoder->ctx);
+     if (ret == MPP_OK) {
+         decoder->first_packet = 1;
++        decoder->errors = 0;
+     } else
+         av_log(avctx, AV_LOG_ERROR, "Failed to reset MPI (code = %d)\n", ret);
+ }

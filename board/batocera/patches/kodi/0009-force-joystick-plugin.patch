@@ -2,14 +2,13 @@ diff --git a/system/addon-manifest.xml b/system/addon-manifest.xml
 index 04cce30..6b78029 100644
 --- a/system/addon-manifest.xml
 +++ b/system/addon-manifest.xml
-@@ -42,5 +42,16 @@
-   <addon>xbmc.pvr</addon>
+@@ -51,5 +51,15 @@
+   <addon>xbmc.metadata</addon>
    <addon>xbmc.python</addon>
    <addon>xbmc.webinterface</addon>
 -  <addon optional="true">peripheral.joystick</addon>
 +  <addon>peripheral.joystick</addon>
 +  <addon>superrepo.kodi.krypton.repositories</addon>
-+  <addon>plugin.video.filmon</addon>
 +  <addon>resource.language.fr_fr</addon>
 +  <addon>resource.language.de_de</addon>
 +  <addon>resource.language.es_es</addon>
@@ -24,24 +23,15 @@ diff --git a/system/keymaps/joystick.xml b/system/keymaps/joystick.xml
 index 937baf2..545b3d9 100644
 --- a/system/keymaps/joystick.xml
 +++ b/system/keymaps/joystick.xml
-@@ -29,7 +29,7 @@
+@@ -49,7 +49,7 @@
+       <x>ContextMenu</x>
        <y>FullScreen</y>
        <start>ActivateWindow(PlayerControls)</start>
-       <back>PreviousMenu</back>
 -      <guide>ActivateWindow(Home)</guide>
 +      <guide>ActivateWindow(10111)</guide>
        <up>Up</up>
        <down>Down</down>
        <right>Right</right>
-@@ -70,7 +70,7 @@
-       <y>FullScreen</y>
-       <start>Info</start>
-       <back>Seek(-7)</back>
--      <guide>ActivateWindow(Home)</guide>
-+      <guide>ActivateWindow(10111)</guide>
-       <up>ChapterOrBigStepForward</up>
-       <down>ChapterOrBigStepBack</down>
-       <right>StepForward</right>
 diff --git a/xbmc/addons/AddonDatabase.cpp b/xbmc/addons/AddonDatabase.cpp
 index f56fbc2..de3d020 100644
 --- a/xbmc/addons/AddonDatabase.cpp

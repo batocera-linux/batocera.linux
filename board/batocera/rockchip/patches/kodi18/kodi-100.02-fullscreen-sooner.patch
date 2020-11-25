@@ -1,0 +1,29 @@
+From 2099630e3dc6ee74ad7df3fd96d1a93f1992f8b4 Mon Sep 17 00:00:00 2001
+From: Jonas Karlman <jonas@kwiboo.se>
+Date: Sat, 16 Jun 2018 18:14:33 +0200
+Subject: [PATCH] RendererDRMPRIME: switch to full screen early
+MRFIXIT REWORKED
+--- a/xbmc/cores/VideoPlayer/VideoRenderers/HwDecRender/RendererDRMPRIME.cpp
++++ b/xbmc/cores/VideoPlayer/VideoRenderers/HwDecRender/RendererDRMPRIME.cpp
+@@ -79,6 +79,8 @@
+   Flush(false);
+ 
+   m_bConfigured = true;
++
++  CServiceBroker::GetWinSystem()->GetGfxContext().SetFullScreenVideo(true);
+   return true;
+ }
+ 
+--- a/xbmc/cores/VideoPlayer/VideoRenderers/RenderManager.cpp
++++ b/xbmc/cores/VideoPlayer/VideoRenderers/RenderManager.cpp
+@@ -295,6 +295,9 @@
+       if (!Configure())
+         return;
+ 
++      if (m_renderState == STATE_CONFIGURED)
++        UpdateResolution();
++
+       firstFrame = true;
+       FrameWait(50);
+     }
+

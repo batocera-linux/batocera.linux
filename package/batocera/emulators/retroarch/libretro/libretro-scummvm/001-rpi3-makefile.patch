@@ -1,0 +1,21 @@
+--- a/backends/platform/libretro/build/Makefile	2020-07-23 06:35:02.226330298 +0200
++++ b/backends/platform/libretro/build/Makefile	2020-07-23 06:39:01.544809343 +0200
+@@ -62,7 +62,17 @@
+ AR        = ar cru
+ RANLIB    = ranlib
+ 
+-ifeq ($(platform), unix)
++ifeq ($(platform), rpi3)
++   TARGET = $(TARGET_NAME)_libretro.so
++   DEFINES += -fPIC
++   DEFINES += -DARM
++   CFLAGS += -fPIC
++   LDFLAGS += -shared -Wl,--version-script=../link.T -fPIC
++   CFLAGS += -marm -mcpu=cortex-a53 -mfpu=neon-fp-armv8 -mfloat-abi=hard
++   CFLAGS += -fomit-frame-pointer -ffast-math
++   CXXFLAGS = $(CFLAGS) -frtti
++
++else ifeq ($(platform), unix)
+    TARGET  := $(TARGET_NAME)_libretro.so
+    DEFINES += -fPIC
+    LDFLAGS += -shared -Wl,--version-script=../link.T -fPIC

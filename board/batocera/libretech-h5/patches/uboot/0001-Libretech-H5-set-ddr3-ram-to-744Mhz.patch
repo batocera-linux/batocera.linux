@@ -1,0 +1,25 @@
+From c5ef872e47b03c250c9b2acbfcc0126a66c546b2 Mon Sep 17 00:00:00 2001
+From: Ntemis <ierokipides.dem@gmail.com>
+Date: Thu, 10 Sep 2020 21:22:40 +0300
+Subject: [PATCH] Libretech-H5:set ddr ram to 744Mhz
+
+---
+ configs/libretech_all_h3_cc_h5_defconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/configs/libretech_all_h3_cc_h5_defconfig b/configs/libretech_all_h3_cc_h5_defconfig
+index b70b13f4..fb19c890 100644
+--- a/configs/libretech_all_h3_cc_h5_defconfig
++++ b/configs/libretech_all_h3_cc_h5_defconfig
+@@ -2,7 +2,7 @@ CONFIG_ARM=y
+ CONFIG_ARCH_SUNXI=y
+ CONFIG_SPL=y
+ CONFIG_MACH_SUN50I_H5=y
+-CONFIG_DRAM_CLK=672
++CONFIG_DRAM_CLK=744
+ CONFIG_MMC_SUNXI_SLOT_EXTRA=2
+ # CONFIG_SYS_MALLOC_CLEAR_ON_INIT is not set
+ CONFIG_DEFAULT_DEVICE_TREE="sun50i-h5-libretech-all-h3-cc"
+-- 
+2.25.1
+

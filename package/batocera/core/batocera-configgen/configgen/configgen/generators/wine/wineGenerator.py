@@ -8,11 +8,11 @@ from os import path
 class WineGenerator(Generator):
 
     def generate(self, system, rom, playersControllers, gameResolution):
-        romBasename = path.basename(rom)
-
         if system.name == "windows_installers":
-            commandArray = ["batocera-wine", "install", romBasename]
+            commandArray = ["batocera-wine", "install", rom]
             return Command.Command(array=commandArray)
-        else:
-            commandArray = ["batocera-wine", "play", romBasename]
+        elif system.name == "windows":
+            commandArray = ["batocera-wine", "play", rom]
             return Command.Command(array=commandArray)
+
+        raise Exception("invalid system " + system.name)

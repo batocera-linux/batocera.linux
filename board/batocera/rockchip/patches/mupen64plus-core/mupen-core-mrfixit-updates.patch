@@ -1,0 +1,746 @@
+MRFIXIT: remove the makefile neon flag because I've added it into the mupen core package to allow for vfpv4
+--- a/projects/unix/Makefile
++++ b/projects/unix/Makefile
+@@ -112,9 +112,7 @@
+         CFLAGS += -DARMv5_ONLY
+         $(warning Using ARMv5_ONLY)
+     endif
+-    ifeq ($(NEON), 1)
+-        CFLAGS += -mfpu=neon -mfloat-abi=hard
+-    else
++    ifneq ($(NEON), 1)
+       ifeq ($(VFP_HARD), 1)
+         CFLAGS += -mfpu=vfp -mfloat-abi=hard
+       else
+
+
+MRFIXIT: Fix NEON compile
+The NEON parameter conflicts with a build flag, also fix some compiler flags for neon based on this:
+https://gcc.gnu.org/legacy-ml/gcc-patches/2015-01/msg02717.html
+--- a/src/device/r4300/new_dynarec/arm/arm_cpu_features.h
++++ b/src/device/r4300/new_dynarec/arm/arm_cpu_features.h
+@@ -31,13 +31,13 @@
+     unsigned char VFP;
+     unsigned char EDSP;
+     unsigned char ThumbEE;
+-    unsigned char NEON;
++    unsigned char hasNEON;
+     unsigned char VFPv3;
+     unsigned char TLS;
+     unsigned char VFPv4;
+     unsigned char IDIVa;
+     unsigned char IDIVt;
+-}arm_cpu_features_t;
++} arm_cpu_features_t;
+ 
+ extern arm_cpu_features_t arm_cpu_features;
+ void detect_arm_cpu_features(void);
+--- a/src/device/r4300/new_dynarec/arm/arm_cpu_features.c
++++ b/src/device/r4300/new_dynarec/arm/arm_cpu_features.c
+@@ -109,7 +109,7 @@
+     arm_cpu_features.VFP      = check_arm_cpu_feature("vfp");
+     arm_cpu_features.EDSP     = check_arm_cpu_feature("edsp");
+     arm_cpu_features.ThumbEE  = check_arm_cpu_feature("thumbee");
+-    arm_cpu_features.NEON     = check_arm_cpu_feature("neon");
++    arm_cpu_features.hasNEON     = check_arm_cpu_feature("neon");
+     arm_cpu_features.VFPv3    = check_arm_cpu_feature("vfpv3");
+     arm_cpu_features.TLS      = check_arm_cpu_feature("tls");
+     arm_cpu_features.VFPv4    = check_arm_cpu_feature("vfpv4");
+@@ -134,7 +134,7 @@
+     if (arm_cpu_features.VFP)      strcat(buffer, ", VFP");
+     if (arm_cpu_features.EDSP)     strcat(buffer, ", ESDP");
+     if (arm_cpu_features.ThumbEE)  strcat(buffer, ", ThumbEE");
+-    if (arm_cpu_features.NEON)     strcat(buffer, ", NEON");
++    if (arm_cpu_features.hasNEON)     strcat(buffer, ", NEON");
+     if (arm_cpu_features.VFPv3)    strcat(buffer, ", VFPv3");
+     if (arm_cpu_features.TLS)      strcat(buffer, ", TLS");
+     if (arm_cpu_features.VFPv4)    strcat(buffer, ", VFPv4");
+--- a/src/device/r4300/new_dynarec/arm/linkage_arm.S
++++ b/src/device/r4300/new_dynarec/arm/linkage_arm.S
+@@ -40,24 +40,24 @@
+ #define TEXT_SECTION .text
+ #define END_SECTION
+ 
+-#ifndef __ARM_NEON__
++#if defined(__ARM_NEON__) || defined(__ARM_NEON)
++    .fpu neon
++#else
+ #if (defined(__VFP_FP__) && !defined(__SOFTFP__) && defined(__ARM_PCS_VFP))
+     .fpu vfp
+ #else
+     .fpu softvfp
+ #endif
+-#else
+-    .fpu neon
+ #endif
+     .eabi_attribute 20, 1
+     .eabi_attribute 21, 1
+-#ifndef __ARM_NEON__
++#if !defined(__ARM_NEON__) && !defined(__ARM_NEON)
+     .eabi_attribute 23, 3
+ #endif
+     .eabi_attribute 24, 1
+     .eabi_attribute 25, 1
+     .eabi_attribute 26, 2
+-#ifndef __ARM_NEON__
++#if !defined(__ARM_NEON__) && !defined(__ARM_NEON)
+ #if (defined(__VFP_FP__) && !defined(__SOFTFP__) && defined(__ARM_PCS_VFP))
+     .eabi_attribute 28, 1
+ #endif
+
+
+From 8a9e5ad94a2060731d1b075547c7746a8c3785fa Mon Sep 17 00:00:00 2001
+From: fzurita <fzurita@gmail.com>
+Date: Sun, 1 Dec 2019 22:23:56 -0500
+Subject: [PATCH 1/5] Workaround for bad count per scanline values
+
+---
+ src/device/rcp/vi/vi_controller.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/src/device/rcp/vi/vi_controller.c b/src/device/rcp/vi/vi_controller.c
+index 797c05483..e6f7c6951 100644
+--- a/src/device/rcp/vi/vi_controller.c
++++ b/src/device/rcp/vi/vi_controller.c
+@@ -132,6 +132,13 @@ void write_vi_regs(void* opaque, uint32_t address, uint32_t value, uint32_t mask
+         {
+             masked_write(&vi->regs[VI_V_SYNC_REG], value, mask);
+             vi->count_per_scanline = (vi->clock / vi->expected_refresh_rate) / (vi->regs[VI_V_SYNC_REG] + 1);
++
++            //Workaround for ROM hacks like Last impack
++            if(vi->count_per_scanline  < 1300)
++            {
++                vi->count_per_scanline = 1542;
++            }
++
+             vi->delay = (vi->regs[VI_V_SYNC_REG] + 1) * vi->count_per_scanline;
+         }
+         return;
+
+From 51a048e464c33eca43691a915d3be71840f49b79 Mon Sep 17 00:00:00 2001
+From: fzurita <fzurita@gmail.com>
+Date: Sun, 1 Dec 2019 22:31:38 -0500
+Subject: [PATCH 2/5] Allow some ROM hacks to run
+
+---
+ data/mupen64plus.ini              | 27 ++++++++++++++++++++++++++-
+ src/device/device.c               |  3 ++-
+ src/device/device.h               |  1 +
+ src/device/rcp/pi/pi_controller.c | 21 ++++++++++++++++-----
+ src/device/rcp/pi/pi_controller.h |  3 ++-
+ src/main/main.c                   |  4 +++-
+ src/main/rom.c                    | 17 +++++++++++++++++
+ src/main/rom.h                    |  3 +++
+ 8 files changed, 70 insertions(+), 9 deletions(-)
+
+diff --git a/data/mupen64plus.ini b/data/mupen64plus.ini
+index a3a87a878..32b4cf879 100644
+--- a/data/mupen64plus.ini
++++ b/data/mupen64plus.ini
+@@ -978,7 +978,6 @@ RefMD5=B8085C2EDB1C6D23E52ED8C06D92B4F8
+ [6EEA5C4A6256092ED8F9BA8861C689C6]
+ GoodName=Army Men - Sarge's Heroes 2 (U) [!]
+ CRC=B20F73B6 2975FC34
+-CountPerOp=1
+ Players=4
+ SaveType=None
+ Mempak=Yes
+@@ -11654,6 +11653,16 @@ Mempak=Yes
+ Rumble=Yes
+ Transferpak=Yes
+ 
++[435D75D07878D305293EC4D591B86303]
++GoodName=Goldeneye X Cloudless
++CRC=E8B3F63D E5A997B1
++RefMD5=E03B088B6AC9E0080440EFED07C1E40F
++
++[67F2E18ED18A5F0EA3FE2D913E3F1786]
++GoodName=Goldeneye X Clouds
++CRC=FDF95D15 618546CA
++RefMD5=E03B088B6AC9E0080440EFED07C1E40F
++
+ [E0BCB2758EDF0AC6AB7DB36D98E1E57C]
+ GoodName=Pikachu Genki Dechu (J) [!]
+ CRC=3F245305 FC0B74AA
+@@ -14573,6 +14582,7 @@ CRC=1AD61BB9 F1E2BE1A
+ [A215BC1CE06960E0C469DB9520E907C6]
+ GoodName=Super Irishley Drunk Giant WaLuigi 64 (Super Mario 64 Hack)
+ CRC=635A42C5 BDC58EDC
++ForceAlignmentOfPiDma=0
+ 
+ [45676429EF6B90E65B517129B700308E]
+ GoodName=Super Mario 64 (E) (M3) [!]
+@@ -14719,6 +14729,7 @@ RefMD5=20B854B239203BAF6C961B850A4A51A2
+ GoodName=Super Mario Magic Plant Adventure 64 (Super Mario 64 Hack)
+ CRC=635A42C5 BDC58EDC
+ RefMD5=20B854B239203BAF6C961B850A4A51A2
++ForceAlignmentOfPiDma=0
+ 
+ [2D727C3278AA232D94F2FB45AEC4D303]
+ GoodName=Super Mario 64 - Shindou Edition (J) [!]
+@@ -14874,21 +14885,25 @@ RefMD5=6B5D93B3566E96147009D1AC4FB15C97
+ GoodName=Super WaLuigi 64 (Super Mario 64 Hack)
+ CRC=635A42C5 BDC58EDC
+ RefMD5=20B854B239203BAF6C961B850A4A51A2
++ForceAlignmentOfPiDma=0
+ 
+ [99138CB0D1325F7BB7C2EDAB5D7F6C54]
+ GoodName=Super Wario 64 (Super Mario 64 Hack)
+ CRC=635A42C5 BDC58EDC
+ RefMD5=20B854B239203BAF6C961B850A4A51A2
++ForceAlignmentOfPiDma=0
+ 
+ [7DDF1CC63401CF43836BD14F199B6C70]
+ GoodName=Super Wario 64 V1.0 by Rulesless (Super Mario 64 Hack) [T+Ita]
+ CRC=75A15B07 2E391683
+ RefMD5=20B854B239203BAF6C961B850A4A51A2
++ForceAlignmentOfPiDma=0
+ 
+ [93582A59F442502CADAA39BD6CC1B2CE]
+ GoodName=Super Wario 64 V1.0 by Rulesless (Super Mario 64 Hack)
+ CRC=635A42C5 BDC58EDC
+ RefMD5=20B854B239203BAF6C961B850A4A51A2
++ForceAlignmentOfPiDma=0
+ 
+ [6D58A01EF7A7A7C779D2A66315992C5F]
+ GoodName=Supercross 2000 (E) (M3) [!]
+@@ -16354,6 +16369,16 @@ SaveType=SRAM
+ Mempak=Yes
+ Rumble=Yes
+ 
++[34A4FE395DA536A93C00E86D69FBEA10]
++GoodName=Virtual Pro Wrestling 2 - Oudou Keishou (J) [t1]
++CRC=3C82C9A4 F0EC379D
++RefMD5=90002501777E3237739F5ED9B0E349E2
++
++[DB9B1E49513CB38E712084755051C018]
++GoodName=Virtual Pro Wrestling 2 - Oudou Keishou (J) [t2]
++CRC=3C82C9A4 F0EC379D
++RefMD5=90002501777E3237739F5ED9B0E349E2
++
+ [5E6202200AF40A8F026780EDFE1E15D0]
+ GoodName=Virtual Pro Wrestling 64 (J) [!]
+ CRC=045C08C4 4AFD798B
+diff --git a/src/device/device.c b/src/device/device.c
+index a6c3c70b2..313a07076 100644
+--- a/src/device/device.c
++++ b/src/device/device.c
+@@ -85,6 +85,7 @@ void init_device(struct device* dev,
+     unsigned int count_per_op,
+     int no_compiled_jump,
+     int randomize_interrupt,
++    int forceAlignmentOfPiDma,
+     /* ai */
+     void* aout, const struct audio_out_backend_interface* iaout,
+     /* si */
+@@ -183,7 +184,7 @@ void init_device(struct device* dev,
+     init_pi(&dev->pi,
+             get_pi_dma_handler,
+             &dev->cart, &dev->dd,
+-            &dev->mi, &dev->ri, &dev->dp);
++            &dev->mi, &dev->ri, &dev->dp, forceAlignmentOfPiDma);
+     init_ri(&dev->ri, &dev->rdram);
+     init_si(&dev->si, si_dma_duration, &dev->mi, &dev->pif, &dev->ri);
+     init_vi(&dev->vi, vi_clock, expected_refresh_rate, &dev->mi, &dev->dp);
+diff --git a/src/device/device.h b/src/device/device.h
+index 0ecaeda60..7f4a07b89 100644
+--- a/src/device/device.h
++++ b/src/device/device.h
+@@ -120,6 +120,7 @@ void init_device(struct device* dev,
+     unsigned int count_per_op,
+     int no_compiled_jump,
+     int randomize_interrupt,
++    int forceAlignmentOfPiDma,
+     /* ai */
+     void* aout, const struct audio_out_backend_interface* iaout,
+     /* si */
+diff --git a/src/device/rcp/pi/pi_controller.c b/src/device/rcp/pi/pi_controller.c
+index f0d5dfef9..8c4856f6e 100644
+--- a/src/device/rcp/pi/pi_controller.c
++++ b/src/device/rcp/pi/pi_controller.c
+@@ -48,12 +48,16 @@
+     return 1;
+ }
+ 
++/** static (local) variables **/
++static uint32_t   l_ForceAlignmentOfPiDmaCartMask = ~UINT32_C(1);
++static uint32_t   l_ForceAlignmentOfPiDmaDramMask = ~UINT32_C(1);
++
+ static void dma_pi_read(struct pi_controller* pi)
+ {
+     if (!validate_pi_request(pi))
+         return;
+ 
+-    uint32_t cart_addr = pi->regs[PI_CART_ADDR_REG] & ~UINT32_C(1);
++    uint32_t cart_addr = pi->regs[PI_CART_ADDR_REG] & l_ForceAlignmentOfPiDmaCartMask;
+-    uint32_t dram_addr = pi->regs[PI_DRAM_ADDR_REG] & 0xffffff;
++    uint32_t dram_addr = pi->regs[PI_DRAM_ADDR_REG] & l_ForceAlignmentOfPiDmaDramMask;
+     uint32_t length = (pi->regs[PI_RD_LEN_REG] & UINT32_C(0x00fffffe)) + 2;
+     const uint8_t* dram = (uint8_t*)pi->ri->rdram->dram;
+@@ -85,7 +88,7 @@
+     if (!validate_pi_request(pi))
+         return;
+ 
+-    uint32_t cart_addr = pi->regs[PI_CART_ADDR_REG] & ~UINT32_C(1);
++    uint32_t cart_addr = pi->regs[PI_CART_ADDR_REG] & l_ForceAlignmentOfPiDmaCartMask;
+-    uint32_t dram_addr = pi->regs[PI_DRAM_ADDR_REG] & 0xffffff;
++    uint32_t dram_addr = pi->regs[PI_DRAM_ADDR_REG] & l_ForceAlignmentOfPiDmaDramMask;
+     uint32_t length = (pi->regs[PI_WR_LEN_REG] & UINT32_C(0x00fffffe)) + 2;
+     uint8_t* dram = (uint8_t*)pi->ri->rdram->dram;
+@@ -119,8 +122,14 @@
+              struct dd_controller* dd,
+              struct mi_controller* mi,
+              struct ri_controller* ri,
+-             struct rdp_core* dp)
++             struct rdp_core* dp,
++             int forceAlignmentOfPiDma)
+ {
++    if(!forceAlignmentOfPiDma) {
++        l_ForceAlignmentOfPiDmaCartMask = UINT32_C(0xffffffff);
++        l_ForceAlignmentOfPiDmaDramMask = UINT32_C(0xffffffff);
++    }
++
+     pi->get_pi_dma_handler = get_pi_dma_handler;
+     pi->cart = cart;
+     pi->dd = dd;
+diff --git a/src/device/rcp/pi/pi_controller.h b/src/device/rcp/pi/pi_controller.h
+index 5ab283325..d26fafa13 100644
+--- a/src/device/rcp/pi/pi_controller.h
++++ b/src/device/rcp/pi/pi_controller.h
+@@ -85,7 +85,8 @@ void init_pi(struct pi_controller* pi,
+              struct dd_controller* dd,
+              struct mi_controller* mi,
+              struct ri_controller* ri,
+-             struct rdp_core* dp);
++             struct rdp_core* dp,
++             int forceAlignmentOfPiDma);
+ 
+ void poweron_pi(struct pi_controller* pi);
+ 
+diff --git a/src/main/main.c b/src/main/main.c
+index 55ce99710..98f5a0ee3 100644
+--- a/src/main/main.c
++++ b/src/main/main.c
+@@ -1274,6 +1274,7 @@ m64p_error main_run(void)
+     unsigned int count_per_op;
+     unsigned int emumode;
+     unsigned int disable_extra_mem;
++    unsigned int force_alignment_pi_dma;
+     int si_dma_duration;
+     int no_compiled_jump;
+     int randomize_interrupt;
+@@ -1311,7 +1312,7 @@ m64p_error main_run(void)
+     else
+         disable_extra_mem = ConfigGetParamInt(g_CoreConfig, "DisableExtraMem");
+ 
+-
++    force_alignment_pi_dma = ROM_PARAMS.forcealignmentofpidma;
+     rdram_size = (disable_extra_mem == 0) ? 0x800000 : 0x400000;
+ 
+     if (count_per_op <= 0)
+@@ -1532,6 +1533,7 @@ m64p_error main_run(void)
+                 count_per_op,
+                 no_compiled_jump,
+                 randomize_interrupt,
++                force_alignment_pi_dma,
+                 &g_dev.ai, &g_iaudio_out_backend_plugin_compat,
+                 si_dma_duration,
+                 rdram_size,
+diff --git a/src/main/rom.c b/src/main/rom.c
+index 3ffbd2c62..ba569f904 100644
+--- a/src/main/rom.c
++++ b/src/main/rom.c
+@@ -51,6 +51,8 @@ enum { DEFAULT_COUNT_PER_OP = 2 };
+ enum { DEFAULT_DISABLE_EXTRA_MEM = 0 };
+ /* Default SI DMA duration */
+ enum { DEFAULT_SI_DMA_DURATION = 0x900 };
++/* Force alignment of PI DMA */
++enum { DEFAULT_FORCE_ALIGNMENT_OF_PI_DMA = 0 };
+ 
+ static romdatabase_entry* ini_search_by_md5(md5_byte_t* md5);
+ 
+@@ -168,6 +170,7 @@ m64p_error open_rom(const unsigned char* romimage, unsigned int size)
+     ROM_PARAMS.countperop = DEFAULT_COUNT_PER_OP;
+     ROM_PARAMS.disableextramem = DEFAULT_DISABLE_EXTRA_MEM;
+     ROM_PARAMS.sidmaduration = DEFAULT_SI_DMA_DURATION;
++    ROM_PARAMS.forcealignmentofpidma = DEFAULT_FORCE_ALIGNMENT_OF_PI_DMA;
+     ROM_PARAMS.cheats = NULL;
+ 
+     memcpy(ROM_PARAMS.headername, ROM_HEADER.Name, 20);
+@@ -190,6 +193,7 @@ m64p_error open_rom(const unsigned char* romimage, unsigned int size)
+         ROM_PARAMS.countperop = entry->countperop;
+         ROM_PARAMS.disableextramem = entry->disableextramem;
+         ROM_PARAMS.sidmaduration = entry->sidmaduration;
++        ROM_PARAMS.forcealignmentofpidma = entry->forcealignmentofpidma;
+         ROM_PARAMS.cheats = entry->cheats;
+     }
+     else
+@@ -206,6 +210,7 @@ m64p_error open_rom(const unsigned char* romimage, unsigned int size)
+         ROM_PARAMS.countperop = DEFAULT_COUNT_PER_OP;
+         ROM_PARAMS.disableextramem = DEFAULT_DISABLE_EXTRA_MEM;
+         ROM_PARAMS.sidmaduration = DEFAULT_SI_DMA_DURATION;
++        ROM_PARAMS.forcealignmentofpidma = DEFAULT_FORCE_ALIGNMENT_OF_PI_DMA;
+         ROM_PARAMS.cheats = NULL;
+     }
+ 
+@@ -374,6 +379,12 @@ static size_t romdatabase_resolve_round(void)
+             entry->entry.set_flags |= ROMDATABASE_ENTRY_SIDMADURATION;
+         }
+ 
++        if (!isset_bitmask(entry->entry.set_flags, ROMDATABASE_ENTRY_FORCEALIGNMENTOFPIDMA) &&
++            isset_bitmask(ref->set_flags, ROMDATABASE_ENTRY_FORCEALIGNMENTOFPIDMA)) {
++            entry->entry.sidmaduration = ref->forcealignmentofpidma;
++            entry->entry.set_flags |= ROMDATABASE_ENTRY_FORCEALIGNMENTOFPIDMA;
++        }
++
+         free(entry->entry.refmd5);
+         entry->entry.refmd5 = NULL;
+     }
+@@ -470,6 +481,7 @@ void romdatabase_open(void)
+             search->entry.mempak = 1;
+             search->entry.biopak = 0;
+             search->entry.sidmaduration = DEFAULT_SI_DMA_DURATION;
++            search->entry.forcealignmentofpidma = 1; //If ROM is in database, force alignment by default
+             search->entry.set_flags = ROMDATABASE_ENTRY_NONE;
+ 
+             search->next_entry = NULL;
+@@ -666,6 +678,11 @@ void romdatabase_open(void)
+                     DebugMessage(M64MSG_WARNING, "ROM Database: Invalid SiDmaDuration on line %i", lineno);
+                 }
+             }
++            else if(!strcmp(l.name, "ForceAlignmentOfPiDma"))
++            {
++                search->entry.forcealignmentofpidma = atoi(l.value);
++                search->entry.set_flags |= ROMDATABASE_ENTRY_FORCEALIGNMENTOFPIDMA;
++            }
+             else
+             {
+                 DebugMessage(M64MSG_WARNING, "ROM Database: Unknown property on line %i", lineno);
+diff --git a/src/main/rom.h b/src/main/rom.h
+index deff7f2c5..320768398 100644
+--- a/src/main/rom.h
++++ b/src/main/rom.h
+@@ -51,6 +51,7 @@ typedef struct _rom_params
+    unsigned char countperop;
+    int disableextramem;
+    unsigned int sidmaduration;
++   unsigned int forcealignmentofpidma;
+ } rom_params;
+ 
+ extern m64p_rom_header   ROM_HEADER;
+@@ -127,6 +128,7 @@ typedef struct
+    unsigned char mempak; /* 0 - No, 1 - Yes boolean for mempak support. */
+    unsigned char biopak; /* 0 - No, 1 - Yes boolean for biopak support. */
+    unsigned int sidmaduration;
++   unsigned int forcealignmentofpidma;
+    uint32_t set_flags;
+ } romdatabase_entry;
+ 
+@@ -144,6 +146,7 @@ typedef struct
+ #define ROMDATABASE_ENTRY_MEMPAK        BIT(10)
+ #define ROMDATABASE_ENTRY_BIOPAK        BIT(11)
+ #define ROMDATABASE_ENTRY_SIDMADURATION BIT(12)
++#define ROMDATABASE_ENTRY_FORCEALIGNMENTOFPIDMA BIT(13)
+ 
+ typedef struct _romdatabase_search
+ {
+
+From d5b98ae64c44515a2904ae6b359b377b80943118 Mon Sep 17 00:00:00 2001
+From: fzurita <fzurita@gmail.com>
+Date: Sun, 1 Dec 2019 22:33:08 -0500
+Subject: [PATCH 3/5] Glover fix
+
+---
+ src/device/r4300/new_dynarec/new_dynarec.c | 18 ++++++++++++------
+ 1 file changed, 12 insertions(+), 6 deletions(-)
+
+diff --git a/src/device/r4300/new_dynarec/new_dynarec.c b/src/device/r4300/new_dynarec/new_dynarec.c
+index 4cfd3eddd..f534098fd 100644
+--- a/src/device/r4300/new_dynarec/new_dynarec.c
++++ b/src/device/r4300/new_dynarec/new_dynarec.c
+@@ -3219,6 +3219,8 @@ static void alu_assemble(int i,struct regstat *i_regs)
+           assert(s1l>=0);
+           assert(s2l>=0);
+           if(th>=0) {
++            assert(s1h>=0);
++            assert(s2h>=0);
+             #ifdef INVERTED_CARRY
+             if(opcode2[i]&2) emit_sub64_32(s1l,s1h,s2l,s2h,tl,th);
+             #else
+@@ -3367,23 +3369,27 @@ static void alu_assemble(int i,struct regstat *i_regs)
+           s2l=get_reg(i_regs->regmap,rs2[i]);
+           s2h=get_reg(i_regs->regmap,rs2[i]|64);
+           if(rs1[i]&&rs2[i]) {
+-            assert(s1l>=0);assert(s1h>=0);
+-            assert(s2l>=0);assert(s2h>=0);
++            assert(s1l>=0);
++            assert(s2l>=0);
++
++            if(s1h<0) {emit_loadreg(rs1[i]|64,tl); s1h=tl;}
++            if(s2h<0) {emit_loadreg(rs2[i]|64,th); s2h=th;}
++
+             if(opcode2[i]==0x24) { // AND
+-              emit_and(s1l,s2l,tl);
+               emit_and(s1h,s2h,th);
++              emit_and(s1l,s2l,tl);
+             } else
+             if(opcode2[i]==0x25) { // OR
+-              emit_or(s1l,s2l,tl);
+               emit_or(s1h,s2h,th);
++              emit_or(s1l,s2l,tl);
+             } else
+             if(opcode2[i]==0x26) { // XOR
+-              emit_xor(s1l,s2l,tl);
+               emit_xor(s1h,s2h,th);
++              emit_xor(s1l,s2l,tl);
+             } else
+             if(opcode2[i]==0x27) { // NOR
+-              emit_or(s1l,s2l,tl);
+               emit_or(s1h,s2h,th);
++              emit_or(s1l,s2l,tl);
+               emit_not(tl,tl);
+               emit_not(th,th);
+             }
+
+From 5f39016b3c3c0cde0c29bdf782b4b8ceccd8410a Mon Sep 17 00:00:00 2001
+From: fzurita <fzurita@gmail.com>
+Date: Sun, 1 Dec 2019 22:37:02 -0500
+Subject: [PATCH 4/5] Always allocate 16MB of RDRAM
+
+---
+ src/device/memory/memory.c |  4 +--
+ src/device/memory/memory.h |  4 ++-
+ src/device/rdram/rdram.c   |  2 +-
+ src/main/main.c            |  2 +-
+ src/main/savestates.c      | 55 +++++++++++++++++++++++++++++++++-----
+ 5 files changed, 56 insertions(+), 11 deletions(-)
+
+diff --git a/src/device/memory/memory.c b/src/device/memory/memory.c
+index 3529a513c..a214ec69a 100644
+--- a/src/device/memory/memory.c
++++ b/src/device/memory/memory.c
+@@ -215,7 +215,7 @@ void apply_mem_mapping(struct memory* mem, const struct mem_mapping* mapping)
+ 
+ enum {
+     MB_RDRAM_DRAM = 0,
+-    MB_CART_ROM = MB_RDRAM_DRAM + RDRAM_MAX_SIZE,
++    MB_CART_ROM = MB_RDRAM_DRAM + RDRAM_16MB_SIZE,
+     MB_RSP_MEM  = MB_CART_ROM   + CART_ROM_MAX_SIZE,
+     MB_DD_ROM   = MB_RSP_MEM    + SP_MEM_SIZE,
+     MB_PIF_MEM  = MB_DD_ROM     + DD_ROM_MAX_SIZE,
+@@ -272,7 +272,7 @@ uint32_t* mem_base_u32(void* mem_base, uint32_t address)
+         /* In compressed mem base mode, select appropriate mem_base offset */
+         mem_base = MEM_BASE_PTR(mem_base);
+ 
+-        if (address < RDRAM_MAX_SIZE) {
++        if (address < RDRAM_16MB_SIZE) {
+             mem = (uint32_t*)((uint8_t*)mem_base + (address - MM_RDRAM_DRAM + MB_RDRAM_DRAM));
+         }
+         else if (address >= MM_CART_ROM) {
+diff --git a/src/device/memory/memory.h b/src/device/memory/memory.h
+index 7cb02e256..fadc4494b 100644
+--- a/src/device/memory/memory.h
++++ b/src/device/memory/memory.h
+@@ -27,7 +27,9 @@
+ 
+ #include "osal/preproc.h"
+ 
+-enum { RDRAM_MAX_SIZE = 0x800000 };
++enum { RDRAM_16MB_SIZE = 0x1000000 };
++enum { RDRAM_8MB_SIZE = 0x800000 };
++enum { RDRAM_4MB_SIZE = 0x400000 };
+ enum { CART_ROM_MAX_SIZE = 0x4000000 };
+ enum { DD_ROM_MAX_SIZE = 0x400000 };
+ 
+diff --git a/src/device/rdram/rdram.c b/src/device/rdram/rdram.c
+index 390577a9b..ed223e134 100644
+--- a/src/device/rdram/rdram.c
++++ b/src/device/rdram/rdram.c
+@@ -138,7 +138,7 @@ void poweron_rdram(struct rdram* rdram)
+     size_t module;
+     size_t modules = get_modules_count(rdram);
+     memset(rdram->regs, 0, RDRAM_MAX_MODULES_COUNT*RDRAM_REGS_COUNT*sizeof(uint32_t));
+-    memset(rdram->dram, 0, rdram->dram_size);
++    memset(rdram->dram, 0, RDRAM_16MB_SIZE);
+ 
+     DebugMessage(M64MSG_INFO, "Initializing %u RDRAM modules for a total of %u MB",
+         (uint32_t) modules, (uint32_t) rdram->dram_size / (1024*1024));
+diff --git a/src/main/main.c b/src/main/main.c
+index 98f5a0ee3..0215f70b3 100644
+--- a/src/main/main.c
++++ b/src/main/main.c
+@@ -1313,7 +1313,7 @@ m64p_error main_run(void)
+         disable_extra_mem = ConfigGetParamInt(g_CoreConfig, "DisableExtraMem");
+ 
+     force_alignment_pi_dma = ROM_PARAMS.forcealignmentofpidma;
+-    rdram_size = (disable_extra_mem == 0) ? 0x800000 : 0x400000;
++    rdram_size = (disable_extra_mem == 0) ? RDRAM_8MB_SIZE : RDRAM_4MB_SIZE;
+ 
+     if (count_per_op <= 0)
+         count_per_op = ROM_PARAMS.countperop;
+diff --git a/src/main/savestates.c b/src/main/savestates.c
+index 2c5a51efd..fa644d6b0 100644
+--- a/src/main/savestates.c
++++ b/src/main/savestates.c
+@@ -417,7 +417,16 @@ static int savestates_load_m64p(struct device* dev, char *filepath)
+     dev->dp.dps_regs[DPS_BUFTEST_ADDR_REG] = GETDATA(curr, uint32_t);
+     dev->dp.dps_regs[DPS_BUFTEST_DATA_REG] = GETDATA(curr, uint32_t);
+ 
+-    COPYARRAY(dev->rdram.dram, curr, uint32_t, RDRAM_MAX_SIZE/4);
++    if (dev->rdram.dram_size < RDRAM_8MB_SIZE)
++    {
++        COPYARRAY(dev->rdram.dram, curr, uint32_t, dev->rdram.dram_size/4);
++        curr += RDRAM_8MB_SIZE - dev->rdram.dram_size;
++    }
++    else
++    {
++        COPYARRAY(dev->rdram.dram, curr, uint32_t, RDRAM_8MB_SIZE/4);
++    }
++
+     COPYARRAY(dev->sp.mem, curr, uint32_t, SP_MEM_SIZE/4);
+     COPYARRAY(dev->pif.ram, curr, uint8_t, PIF_RAM_SIZE);
+ 
+@@ -1199,8 +1208,16 @@ static int savestates_load_pj64(struct device* dev,
+     }
+ 
+     // RDRAM
+-    memset(dev->rdram.dram, 0, RDRAM_MAX_SIZE);
+-    COPYARRAY(dev->rdram.dram, curr, uint32_t, SaveRDRAMSize/4);
++    if (dev->rdram.dram_size < SaveRDRAMSize)
++    {
++        COPYARRAY(dev->rdram.dram, curr, uint32_t, dev->rdram.dram_size/4);
++        curr += SaveRDRAMSize - dev->rdram.dram_size;
++    }
++    else
++    {
++        memset(dev->rdram.dram, 0, dev->rdram.dram_size);
++        COPYARRAY(dev->rdram.dram, curr, uint32_t, SaveRDRAMSize/4);
++    }
+ 
+     // DMEM + IMEM
+     COPYARRAY(dev->sp.mem, curr, uint32_t, SP_MEM_SIZE/4);
+@@ -1668,7 +1685,20 @@ static int savestates_save_m64p(const struct device* dev, char *filepath)
+     PUTDATA(curr, uint32_t, dev->dp.dps_regs[DPS_BUFTEST_ADDR_REG]);
+     PUTDATA(curr, uint32_t, dev->dp.dps_regs[DPS_BUFTEST_DATA_REG]);
+ 
+-    PUTARRAY(dev->rdram.dram, curr, uint32_t, RDRAM_MAX_SIZE/4);
++    if (dev->rdram.dram_size < RDRAM_8MB_SIZE)
++    {
++        PUTARRAY(dev->rdram.dram, curr, uint32_t, dev->rdram.dram_size/4);
++        int dummyDataSize = RDRAM_8MB_SIZE - dev->rdram.dram_size;
++        for (i = 0; i < dummyDataSize/4; i++)
++        {
++            PUTDATA(curr, uint32_t, 0);
++        }
++    }
++    else
++    {
++        PUTARRAY(dev->rdram.dram, curr, uint32_t, RDRAM_8MB_SIZE/4);
++    }
++
+     PUTARRAY(dev->sp.mem, curr, uint32_t, SP_MEM_SIZE/4);
+     PUTARRAY(dev->pif.ram, curr, uint8_t, PIF_RAM_SIZE);
+ 
+@@ -1870,7 +1900,7 @@ static int savestates_save_pj64(const struct device* dev,
+                                 int (*write_func)(void *, const void *, size_t))
+ {
+     unsigned int i;
+-    unsigned int SaveRDRAMSize = RDRAM_MAX_SIZE;
++    unsigned int SaveRDRAMSize = RDRAM_8MB_SIZE;
+ 
+     size_t savestateSize;
+     unsigned char *savestateData, *curr;
+@@ -2015,7 +2045,20 @@ static int savestates_save_pj64(const struct device* dev,
+ 
+     PUTARRAY(dev->pif.ram, curr, uint8_t, PIF_RAM_SIZE);
+ 
+-    PUTARRAY(dev->rdram.dram, curr, uint32_t, SaveRDRAMSize/4);
++    if (dev->rdram.dram_size < SaveRDRAMSize)
++    {
++        PUTARRAY(dev->rdram.dram, curr, uint32_t, dev->rdram.dram_size/4);
++        size_t dummyDataSize = SaveRDRAMSize - dev->rdram.dram_size;
++        for (i = 0; i < dummyDataSize/4; i++)
++        {
++            PUTDATA(curr, uint32_t, 0);
++        }
++    }
++    else
++    {
++        PUTARRAY(dev->rdram.dram, curr, uint32_t, SaveRDRAMSize/4);
++    }
++
+     PUTARRAY(dev->sp.mem, curr, uint32_t, SP_MEM_SIZE/4);
+ 
+     // Write the save state data to the output
+
+From 1f669c0a4bc1bf703f7fe43d2edc5cdd5cfc91c4 Mon Sep 17 00:00:00 2001
+From: fzurita <fzurita@gmail.com>
+Date: Sun, 12 Jan 2020 08:56:13 -0500
+Subject: [PATCH 5/5] Temporary Indiana Jones fix
+
+---
+ src/device/r4300/new_dynarec/arm/assem_arm.c     | 4 ++++
+ src/device/r4300/new_dynarec/arm64/assem_arm64.c | 3 +++
+ src/device/r4300/new_dynarec/x64/assem_x64.c     | 4 ++++
+ src/device/r4300/new_dynarec/x86/assem_x86.c     | 4 ++++
+ 4 files changed, 15 insertions(+)
+
+diff --git a/src/device/r4300/new_dynarec/arm/assem_arm.c b/src/device/r4300/new_dynarec/arm/assem_arm.c
+index e8d6aaeed..42a2c69ad 100644
+--- a/src/device/r4300/new_dynarec/arm/assem_arm.c
++++ b/src/device/r4300/new_dynarec/arm/assem_arm.c
+@@ -239,6 +239,10 @@ static void cache_flush(char* start, char* end)
+ static void set_jump_target(int addr,u_int target)
+ {
+   u_char *ptr=(u_char *)addr;
++
++  if(!ptr) // Indiana Jones is weird
++    return;
++    
+   u_int *ptr2=(u_int *)ptr;
+   if(ptr[3]==0xe2) {
+     assert((target-(u_int)ptr2-8)<1024);
+diff --git a/src/device/r4300/new_dynarec/arm64/assem_arm64.c b/src/device/r4300/new_dynarec/arm64/assem_arm64.c
+index 3dc154118..aad1f8a9a 100644
+--- a/src/device/r4300/new_dynarec/arm64/assem_arm64.c
++++ b/src/device/r4300/new_dynarec/arm64/assem_arm64.c
+@@ -297,6 +297,9 @@ static void set_jump_target(intptr_t addr,uintptr_t target)
+   u_int *ptr=(u_int *)addr;
+   intptr_t offset=target-(intptr_t)addr;
+ 
++  if(!ptr) // Indiana Jones is weird
++    return;
++  
+   if((*ptr&0xFC000000)==0x14000000) {
+     assert(offset>=-134217728LL&&offset<134217728LL);
+     *ptr=(*ptr&0xFC000000)|((offset>>2)&0x3ffffff);
+diff --git a/src/device/r4300/new_dynarec/x64/assem_x64.c b/src/device/r4300/new_dynarec/x64/assem_x64.c
+index 5d1513cde..1a0a852cf 100644
+--- a/src/device/r4300/new_dynarec/x64/assem_x64.c
++++ b/src/device/r4300/new_dynarec/x64/assem_x64.c
+@@ -70,6 +70,10 @@ static const uintptr_t invalidate_block_reg[8] = {
+ static void set_jump_target(uintptr_t addr,uintptr_t target)
+ {
+   u_char *ptr=(u_char *)addr;
++
++  if(!ptr) // Indiana Jones is weird
++    return;
++
+   if(*ptr==0x0f)
+   {
+     assert(ptr[1]>=0x80&&ptr[1]<=0x8f); // conditional jmp
+diff --git a/src/device/r4300/new_dynarec/x86/assem_x86.c b/src/device/r4300/new_dynarec/x86/assem_x86.c
+index 8c4de5a22..c1b7294c1 100644
+--- a/src/device/r4300/new_dynarec/x86/assem_x86.c
++++ b/src/device/r4300/new_dynarec/x86/assem_x86.c
+@@ -60,6 +60,10 @@ static const u_int invalidate_block_reg[8] = {
+ static void set_jump_target(int addr,int target)
+ {
+   u_char *ptr=(u_char *)addr;
++
++  if(!ptr) // Indiana Jones is weird
++    return;
++
+   if(*ptr==0x0f)
+   {
+     assert(ptr[1]>=0x80&&ptr[1]<=0x8f);

@@ -1,0 +1,22 @@
+--- a/CAPSImage/configure	2018-09-26 21:42:33.257830703 -0400
++++ b/CAPSImage/configure	2018-09-26 21:41:58.629830000 -0400
+@@ -637,7 +637,7 @@
+ 	;;
+ esac
+ 
+-CFLAGS="-Wall -Wno-sign-compare -Wno-missing-braces -Wno-parentheses -g ${CFLAGS}"
++CFLAGS="-Wall -Wno-narrowing -Wno-sign-compare -Wno-missing-braces -Wno-parentheses -g ${CFLAGS}"
+ CXXFLAGS="${CFLAGS} -fconserve-space -fno-for-scope -fno-exceptions -fno-rtti"
+ 
+ 
+--- a/CAPSImage/configure.in	2018-09-26 21:42:33.257830703 -0400
++++ b/CAPSImage/configure.in	2018-09-26 21:41:58.629830000 -0400
+@@ -36,7 +36,7 @@
+ 	;;
+ esac
+ 
+-CFLAGS="-Wall -Wno-sign-compare -Wno-missing-braces -Wno-parentheses -g ${CFLAGS}"
++CFLAGS="-Wall -Wno-narrowing -Wno-sign-compare -Wno-missing-braces -Wno-parentheses -g ${CFLAGS}"
+ CXXFLAGS="${CFLAGS} -fconserve-space -fno-for-scope -fno-exceptions -fno-rtti"
+ 
+ AC_SUBST(PACKAGE)

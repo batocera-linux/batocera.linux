@@ -1,0 +1,389 @@
+From 8132877d34935f3d0a2c661f00f67f782b6bc8f8 Mon Sep 17 00:00:00 2001
+From: Roman Stratiienko <roman.stratiienko@globallogic.com>
+Date: Sat, 28 Dec 2019 22:28:17 +0200
+Subject: [PATCH 1/3] drm/sun4i: Reimplement plane z position setting logic
+
+To set blending channel order register software needs to know state and
+position of each channel, which impossible at plane commit stage.
+
+Move this procedure to atomic_flush stage, where all necessary information
+is available.
+
+Signed-off-by: Roman Stratiienko <roman.stratiienko@globallogic.com>
+Signed-off-by: Jernej Skrabec <jernej.skrabec@siol.net>
+---
+ drivers/gpu/drm/sun4i/sun8i_mixer.c    | 43 ++++++++++++++++++++++++--
+ drivers/gpu/drm/sun4i/sun8i_mixer.h    |  5 +++
+ drivers/gpu/drm/sun4i/sun8i_ui_layer.c | 42 ++++---------------------
+ drivers/gpu/drm/sun4i/sun8i_vi_layer.c | 39 +++--------------------
+ 4 files changed, 57 insertions(+), 72 deletions(-)
+
+diff --git a/drivers/gpu/drm/sun4i/sun8i_mixer.c b/drivers/gpu/drm/sun4i/sun8i_mixer.c
+index cc4fb916318f..1ad704b737cf 100644
+--- a/drivers/gpu/drm/sun4i/sun8i_mixer.c
++++ b/drivers/gpu/drm/sun4i/sun8i_mixer.c
+@@ -250,8 +250,45 @@ int sun8i_mixer_drm_format_to_hw(u32 format, u32 *hw_format)
+ 
+ static void sun8i_mixer_commit(struct sunxi_engine *engine)
+ {
++	struct sun8i_mixer *mixer = engine_to_sun8i_mixer(engine);
++	int channel_by_zpos[SUN8I_MIXER_MAX_CHANNELS];
++	u32 base = sun8i_blender_base(mixer);
++	u32 route = 0, pipe_ctl = 0;
++	unsigned int channel_count;
++	int i, j;
++
++	channel_count = mixer->cfg->vi_num + mixer->cfg->ui_num;
++
++	DRM_DEBUG_DRIVER("Update blender routing\n");
++
++	for (i = 0; i < SUN8I_MIXER_MAX_CHANNELS; i++)
++		channel_by_zpos[i] = -1;
++
++	for (i = 0; i < channel_count; i++)	{
++		int zpos = mixer->channel_zpos[i];
++
++		if (zpos >= 0 && zpos < channel_count)
++			channel_by_zpos[zpos] = i;
++	}
++
++	j = 0;
++	for (i = 0; i < channel_count; i++) {
++		int ch = channel_by_zpos[i];
++
++		if (ch >= 0) {
++			pipe_ctl |= SUN8I_MIXER_BLEND_PIPE_CTL_EN(j);
++			route |= ch << SUN8I_MIXER_BLEND_ROUTE_PIPE_SHIFT(j);
++			j++;
++		}
++	}
++
++	regmap_update_bits(mixer->engine.regs, SUN8I_MIXER_BLEND_PIPE_CTL(base),
++			   SUN8I_MIXER_BLEND_PIPE_CTL_EN_MSK, pipe_ctl);
++
++	regmap_write(mixer->engine.regs,
++		     SUN8I_MIXER_BLEND_ROUTE(base), route);
++
+ 	DRM_DEBUG_DRIVER("Committing changes\n");
+-
+ 	regmap_write(engine->regs, SUN8I_MIXER_GLOBAL_DBUFF,
+ 		     SUN8I_MIXER_GLOBAL_DBUFF_ENABLE);
+ }
+@@ -489,10 +526,12 @@ static int sun8i_mixer_bind(struct device *dev, struct device *master,
+ 		     SUN8I_MIXER_BLEND_COLOR_BLACK);
+ 
+ 	plane_cnt = mixer->cfg->vi_num + mixer->cfg->ui_num;
+-	for (i = 0; i < plane_cnt; i++)
++	for (i = 0; i < plane_cnt; i++) {
+ 		regmap_write(mixer->engine.regs,
+ 			     SUN8I_MIXER_BLEND_MODE(base, i),
+ 			     SUN8I_MIXER_BLEND_MODE_DEF);
++		mixer->channel_zpos[i] = -1;
++	}
+ 
+ 	regmap_update_bits(mixer->engine.regs, SUN8I_MIXER_BLEND_PIPE_CTL(base),
+ 			   SUN8I_MIXER_BLEND_PIPE_CTL_EN_MSK, 0);
+diff --git a/drivers/gpu/drm/sun4i/sun8i_mixer.h b/drivers/gpu/drm/sun4i/sun8i_mixer.h
+index 7576b523fdbb..7b378d6e4dd9 100644
+--- a/drivers/gpu/drm/sun4i/sun8i_mixer.h
++++ b/drivers/gpu/drm/sun4i/sun8i_mixer.h
+@@ -12,6 +12,8 @@
+ 
+ #include "sunxi_engine.h"
+ 
++#define SUN8I_MIXER_MAX_CHANNELS		5
++
+ #define SUN8I_MIXER_SIZE(w, h)			(((h) - 1) << 16 | ((w) - 1))
+ #define SUN8I_MIXER_COORD(x, y)			((y) << 16 | (x))
+ 
+@@ -179,6 +181,9 @@ struct sun8i_mixer {
+ 
+ 	struct clk			*bus_clk;
+ 	struct clk			*mod_clk;
++
++	/* -1 means that layer is disabled */
++	int channel_zpos[SUN8I_MIXER_MAX_CHANNELS];
+ };
+ 
+ static inline struct sun8i_mixer *
+diff --git a/drivers/gpu/drm/sun4i/sun8i_ui_layer.c b/drivers/gpu/drm/sun4i/sun8i_ui_layer.c
+index 54f937a7d5e7..651d3bf096c6 100644
+--- a/drivers/gpu/drm/sun4i/sun8i_ui_layer.c
++++ b/drivers/gpu/drm/sun4i/sun8i_ui_layer.c
+@@ -24,12 +24,10 @@
+ #include "sun8i_ui_scaler.h"
+ 
+ static void sun8i_ui_layer_enable(struct sun8i_mixer *mixer, int channel,
+-				  int overlay, bool enable, unsigned int zpos,
+-				  unsigned int old_zpos)
++				  int overlay, bool enable, unsigned int zpos)
+ {
+-	u32 val, bld_base, ch_base;
++	u32 val, ch_base;
+ 
+-	bld_base = sun8i_blender_base(mixer);
+ 	ch_base = sun8i_channel_base(mixer, channel);
+ 
+ 	DRM_DEBUG_DRIVER("%sabling channel %d overlay %d\n",
+@@ -44,32 +42,7 @@ static void sun8i_ui_layer_enable(struct sun8i_mixer *mixer, int channel,
+ 			   SUN8I_MIXER_CHAN_UI_LAYER_ATTR(ch_base, overlay),
+ 			   SUN8I_MIXER_CHAN_UI_LAYER_ATTR_EN, val);
+ 
+-	if (!enable || zpos != old_zpos) {
+-		regmap_update_bits(mixer->engine.regs,
+-				   SUN8I_MIXER_BLEND_PIPE_CTL(bld_base),
+-				   SUN8I_MIXER_BLEND_PIPE_CTL_EN(old_zpos),
+-				   0);
+-
+-		regmap_update_bits(mixer->engine.regs,
+-				   SUN8I_MIXER_BLEND_ROUTE(bld_base),
+-				   SUN8I_MIXER_BLEND_ROUTE_PIPE_MSK(old_zpos),
+-				   0);
+-	}
+-
+-	if (enable) {
+-		val = SUN8I_MIXER_BLEND_PIPE_CTL_EN(zpos);
+-
+-		regmap_update_bits(mixer->engine.regs,
+-				   SUN8I_MIXER_BLEND_PIPE_CTL(bld_base),
+-				   val, val);
+-
+-		val = channel << SUN8I_MIXER_BLEND_ROUTE_PIPE_SHIFT(zpos);
+-
+-		regmap_update_bits(mixer->engine.regs,
+-				   SUN8I_MIXER_BLEND_ROUTE(bld_base),
+-				   SUN8I_MIXER_BLEND_ROUTE_PIPE_MSK(zpos),
+-				   val);
+-	}
++	mixer->channel_zpos[channel] = enable ? zpos : -1;
+ }
+ 
+ static int sun8i_ui_layer_update_coord(struct sun8i_mixer *mixer, int channel,
+@@ -267,11 +240,9 @@ static void sun8i_ui_layer_atomic_disable(struct drm_plane *plane,
+ 					  struct drm_plane_state *old_state)
+ {
+ 	struct sun8i_ui_layer *layer = plane_to_sun8i_ui_layer(plane);
+-	unsigned int old_zpos = old_state->normalized_zpos;
+ 	struct sun8i_mixer *mixer = layer->mixer;
+ 
+-	sun8i_ui_layer_enable(mixer, layer->channel, layer->overlay, false, 0,
+-			      old_zpos);
++	sun8i_ui_layer_enable(mixer, layer->channel, layer->overlay, false, 0);
+ }
+ 
+ static void sun8i_ui_layer_atomic_update(struct drm_plane *plane,
+@@ -279,12 +250,11 @@ static void sun8i_ui_layer_atomic_update(struct drm_plane *plane,
+ {
+ 	struct sun8i_ui_layer *layer = plane_to_sun8i_ui_layer(plane);
+ 	unsigned int zpos = plane->state->normalized_zpos;
+-	unsigned int old_zpos = old_state->normalized_zpos;
+ 	struct sun8i_mixer *mixer = layer->mixer;
+ 
+ 	if (!plane->state->visible) {
+ 		sun8i_ui_layer_enable(mixer, layer->channel,
+-				      layer->overlay, false, 0, old_zpos);
++				      layer->overlay, false, 0);
+ 		return;
+ 	}
+ 
+@@ -295,7 +265,7 @@ static void sun8i_ui_layer_atomic_update(struct drm_plane *plane,
+ 	sun8i_ui_layer_update_buffer(mixer, layer->channel,
+ 				     layer->overlay, plane);
+ 	sun8i_ui_layer_enable(mixer, layer->channel, layer->overlay,
+-			      true, zpos, old_zpos);
++			      true, zpos);
+ }
+ 
+ static struct drm_plane_helper_funcs sun8i_ui_layer_helper_funcs = {
+diff --git a/drivers/gpu/drm/sun4i/sun8i_vi_layer.c b/drivers/gpu/drm/sun4i/sun8i_vi_layer.c
+index 22c8c5375d0d..bd28e76363d9 100644
+--- a/drivers/gpu/drm/sun4i/sun8i_vi_layer.c
++++ b/drivers/gpu/drm/sun4i/sun8i_vi_layer.c
+@@ -18,8 +18,7 @@
+ #include "sun8i_vi_scaler.h"
+ 
+ static void sun8i_vi_layer_enable(struct sun8i_mixer *mixer, int channel,
+-				  int overlay, bool enable, unsigned int zpos,
+-				  unsigned int old_zpos)
++				  int overlay, bool enable, unsigned int zpos)
+ {
+ 	u32 val, bld_base, ch_base;
+ 
+@@ -38,32 +37,7 @@ static void sun8i_vi_layer_enable(struct sun8i_mixer *mixer, int channel,
+ 			   SUN8I_MIXER_CHAN_VI_LAYER_ATTR(ch_base, overlay),
+ 			   SUN8I_MIXER_CHAN_VI_LAYER_ATTR_EN, val);
+ 
+-	if (!enable || zpos != old_zpos) {
+-		regmap_update_bits(mixer->engine.regs,
+-				   SUN8I_MIXER_BLEND_PIPE_CTL(bld_base),
+-				   SUN8I_MIXER_BLEND_PIPE_CTL_EN(old_zpos),
+-				   0);
+-
+-		regmap_update_bits(mixer->engine.regs,
+-				   SUN8I_MIXER_BLEND_ROUTE(bld_base),
+-				   SUN8I_MIXER_BLEND_ROUTE_PIPE_MSK(old_zpos),
+-				   0);
+-	}
+-
+-	if (enable) {
+-		val = SUN8I_MIXER_BLEND_PIPE_CTL_EN(zpos);
+-
+-		regmap_update_bits(mixer->engine.regs,
+-				   SUN8I_MIXER_BLEND_PIPE_CTL(bld_base),
+-				   val, val);
+-
+-		val = channel << SUN8I_MIXER_BLEND_ROUTE_PIPE_SHIFT(zpos);
+-
+-		regmap_update_bits(mixer->engine.regs,
+-				   SUN8I_MIXER_BLEND_ROUTE(bld_base),
+-				   SUN8I_MIXER_BLEND_ROUTE_PIPE_MSK(zpos),
+-				   val);
+-	}
++	mixer->channel_zpos[channel] = enable ? zpos : -1;
+ }
+ 
+ static int sun8i_vi_layer_update_coord(struct sun8i_mixer *mixer, int channel,
+@@ -370,11 +344,9 @@ static void sun8i_vi_layer_atomic_disable(struct drm_plane *plane,
+ 					  struct drm_plane_state *old_state)
+ {
+ 	struct sun8i_vi_layer *layer = plane_to_sun8i_vi_layer(plane);
+-	unsigned int old_zpos = old_state->normalized_zpos;
+ 	struct sun8i_mixer *mixer = layer->mixer;
+ 
+-	sun8i_vi_layer_enable(mixer, layer->channel, layer->overlay, false, 0,
+-			      old_zpos);
++	sun8i_vi_layer_enable(mixer, layer->channel, layer->overlay, false, 0);
+ }
+ 
+ static void sun8i_vi_layer_atomic_update(struct drm_plane *plane,
+@@ -382,12 +354,11 @@ static void sun8i_vi_layer_atomic_update(struct drm_plane *plane,
+ {
+ 	struct sun8i_vi_layer *layer = plane_to_sun8i_vi_layer(plane);
+ 	unsigned int zpos = plane->state->normalized_zpos;
+-	unsigned int old_zpos = old_state->normalized_zpos;
+ 	struct sun8i_mixer *mixer = layer->mixer;
+ 
+ 	if (!plane->state->visible) {
+ 		sun8i_vi_layer_enable(mixer, layer->channel,
+-				      layer->overlay, false, 0, old_zpos);
++				      layer->overlay, false, 0);
+ 		return;
+ 	}
+ 
+@@ -398,7 +369,7 @@ static void sun8i_vi_layer_atomic_update(struct drm_plane *plane,
+ 	sun8i_vi_layer_update_buffer(mixer, layer->channel,
+ 				     layer->overlay, plane);
+ 	sun8i_vi_layer_enable(mixer, layer->channel, layer->overlay,
+-			      true, zpos, old_zpos);
++			      true, zpos);
+ }
+ 
+ static struct drm_plane_helper_funcs sun8i_vi_layer_helper_funcs = {
+-- 
+2.27.0
+
+
+From 9d11b18afdb63d60714a78c5966f674aa66ee6b9 Mon Sep 17 00:00:00 2001
+From: Jernej Skrabec <jernej.skrabec@siol.net>
+Date: Sun, 19 Jul 2020 11:28:49 +0200
+Subject: [PATCH 2/3] drm/sun4i: Don't use update regmap variant for blend pipe
+ register
+
+Readout might return invalid value, so always write it.
+
+Signed-off-by: Jernej Skrabec <jernej.skrabec@siol.net>
+---
+ drivers/gpu/drm/sun4i/sun8i_mixer.c | 19 ++++++++-----------
+ 1 file changed, 8 insertions(+), 11 deletions(-)
+
+diff --git a/drivers/gpu/drm/sun4i/sun8i_mixer.c b/drivers/gpu/drm/sun4i/sun8i_mixer.c
+index 1ad704b737cf..8825518e06c8 100644
+--- a/drivers/gpu/drm/sun4i/sun8i_mixer.c
++++ b/drivers/gpu/drm/sun4i/sun8i_mixer.c
+@@ -282,8 +282,14 @@ static void sun8i_mixer_commit(struct sunxi_engine *engine)
+ 		}
+ 	}
+ 
+-	regmap_update_bits(mixer->engine.regs, SUN8I_MIXER_BLEND_PIPE_CTL(base),
+-			   SUN8I_MIXER_BLEND_PIPE_CTL_EN_MSK, pipe_ctl);
++	/*
++	 * Set fill color of bottom plane to black. Generally not needed
++	 * except when VI plane is at bottom (zpos = 0) and enabled.
++	 */
++	pipe_ctl |= SUN8I_MIXER_BLEND_PIPE_CTL_FC_EN(0);
++
++	regmap_write(mixer->engine.regs,
++		     SUN8I_MIXER_BLEND_PIPE_CTL(base), pipe_ctl);
+ 
+ 	regmap_write(mixer->engine.regs,
+ 		     SUN8I_MIXER_BLEND_ROUTE(base), route);
+@@ -516,12 +522,6 @@ static int sun8i_mixer_bind(struct device *dev, struct device *master,
+ 	regmap_write(mixer->engine.regs, SUN8I_MIXER_BLEND_BKCOLOR(base),
+ 		     SUN8I_MIXER_BLEND_COLOR_BLACK);
+ 
+-	/*
+-	 * Set fill color of bottom plane to black. Generally not needed
+-	 * except when VI plane is at bottom (zpos = 0) and enabled.
+-	 */
+-	regmap_write(mixer->engine.regs, SUN8I_MIXER_BLEND_PIPE_CTL(base),
+-		     SUN8I_MIXER_BLEND_PIPE_CTL_FC_EN(0));
+ 	regmap_write(mixer->engine.regs, SUN8I_MIXER_BLEND_ATTR_FCOLOR(base, 0),
+ 		     SUN8I_MIXER_BLEND_COLOR_BLACK);
+ 
+@@ -533,9 +533,6 @@ static int sun8i_mixer_bind(struct device *dev, struct device *master,
+ 		mixer->channel_zpos[i] = -1;
+ 	}
+ 
+-	regmap_update_bits(mixer->engine.regs, SUN8I_MIXER_BLEND_PIPE_CTL(base),
+-			   SUN8I_MIXER_BLEND_PIPE_CTL_EN_MSK, 0);
+-
+ 	return 0;
+ 
+ err_disable_bus_clk:
+-- 
+2.27.0
+
+
+From bb41e6a8620fc7c3fd91be8155ef5972ea04c0c8 Mon Sep 17 00:00:00 2001
+From: Jernej Skrabec <jernej.skrabec@siol.net>
+Date: Sun, 19 Jul 2020 11:37:41 +0200
+Subject: [PATCH 3/3] drm/sun4i: mixer: Add caching support
+
+Most registers are not safe to read out so enable cache in regmap.
+
+Signed-off-by: Jernej Skrabec <jernej.skrabec@siol.net>
+---
+ drivers/gpu/drm/sun4i/sun8i_mixer.c | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
+
+diff --git a/drivers/gpu/drm/sun4i/sun8i_mixer.c b/drivers/gpu/drm/sun4i/sun8i_mixer.c
+index 8825518e06c8..006b746b0e95 100644
+--- a/drivers/gpu/drm/sun4i/sun8i_mixer.c
++++ b/drivers/gpu/drm/sun4i/sun8i_mixer.c
+@@ -346,11 +346,23 @@ static const struct sunxi_engine_ops sun8i_engine_ops = {
+ 	.layers_init	= sun8i_layers_init,
+ };
+ 
++static bool sun8i_mixer_volatile_reg(struct device *dev, unsigned int reg)
++{
++	switch (reg) {
++	case SUN8I_MIXER_GLOBAL_STATUS:
++	case SUN8I_MIXER_GLOBAL_DBUFF:
++		return true;
++	}
++	return false;
++}
++
+ static struct regmap_config sun8i_mixer_regmap_config = {
++	.cache_type	= REGCACHE_FLAT,
+ 	.reg_bits	= 32,
+ 	.val_bits	= 32,
+ 	.reg_stride	= 4,
+ 	.max_register	= 0xbfffc, /* guessed */
++	.volatile_reg	= sun8i_mixer_volatile_reg,
+ };
+ 
+ static int sun8i_mixer_of_get_id(struct device_node *node)
+-- 
+2.27.0
+

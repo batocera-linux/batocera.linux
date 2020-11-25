@@ -1,30 +1,10 @@
 config BR2_PACKAGE_BATOCERA_SCRIPTS
-        bool "batocera-scripts"
+	bool "batocera-scripts"
 
-        select BR2_PACKAGE_PCIUTILS
+	select BR2_PACKAGE_PCIUTILS
+	select BR2_PACKAGE_PYTHON2_GOBJECT
+	select BR2_PACKAGE_PYTHON
+	select BR2_PACKAGE_JQ # for vulkan parsing
 
-        help
-         Batocera scripts
-
-choice
-        prompt "audio type"
-        default BR2_PACKAGE_BATOCERA_AUDIO_NONE
-        help
-          Select batocera.linux audio type
-
-config BR2_PACKAGE_BATOCERA_AUDIO_NONE
-        bool "pure alsa"
-
-config BR2_PACKAGE_BATOCERA_AUDIO_DMIX
-        bool "alsa + dmix"
-
-config BR2_PACKAGE_BATOCERA_AUDIO_RPI
-        bool "alsa for rpi"
-
-config BR2_PACKAGE_BATOCERA_AUDIO_ODROIDGOA
-        bool "alsa for odroidgoa"
-
-config BR2_PACKAGE_BATOCERA_AUDIO_VIM3
-        bool "alsa for vim3"
-
-endchoice
+	help
+	  Batocera scripts

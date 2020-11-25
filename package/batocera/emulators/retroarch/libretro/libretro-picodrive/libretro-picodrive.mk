@@ -3,12 +3,12 @@
 # libretro-picodrive
 #
 ################################################################################
-# Version.: Commits on Mar 14, 2020
-LIBRETRO_PICODRIVE_VERSION = 93589da1b97373c9dc747d29eba81ed9158a5209
-LIBRETRO_PICODRIVE_SITE = https://github.com/notaz/picodrive.git
+# Version.: Commits on Nov 13, 2020
+LIBRETRO_PICODRIVE_VERSION = 69b7b2641bcca4503854bab87f784e514a731616
+LIBRETRO_PICODRIVE_SITE = https://github.com/irixxxx/picodrive.git
 LIBRETRO_PICODRIVE_SITE_METHOD=git
 LIBRETRO_PICODRIVE_GIT_SUBMODULES=YES
-LIBRETRO_PICODRIVE_DEPENDENCIES = libpng sdl
+LIBRETRO_PICODRIVE_DEPENDENCIES = libpng
 LIBRETRO_PICODRIVE_LICENSE = MAME
 
 LIBRETRO_PICODRIVE_PLATFORM = $(LIBRETRO_PLATFORM)
@@ -21,13 +21,18 @@ ifeq ($(BR2_aarch64),y)
   LIBRETRO_PICODRIVE_PLATFORM = aarch64
 endif
 
-ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI3)$(BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA),y)
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86_ANY),y)
+  LIBRETRO_PICODRIVE_PLATFORM = x86
+endif
+
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI3)$(BR2_PACKAGE_BATOCERA_TARGET_RPI4)$(BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA),y)
 	LIBRETRO_PICODRIVE_PLATFORM = armv neon
 endif
 
 define LIBRETRO_PICODRIVE_BUILD_CMDS
-	$(MAKE) -C $(@D)/cpu/cyclone CONFIG_FILE=$(@D)/cpu/cyclone_config.h	
-	$(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" -C  $(@D) -f Makefile.libretro platform="$(LIBRETRO_PICODRIVE_PLATFORM)"
+	$(MAKE) -C $(@D)/cpu/cyclone CONFIG_FILE=$(@D)/cpu/cyclone_config.h
+	# force -j 1 to avoid parallel issues in the makefile
+	$(TARGET_CONFIGURE_OPTS) $(MAKE) -j 1 CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" -C  $(@D) -f Makefile.libretro platform="$(LIBRETRO_PICODRIVE_PLATFORM)"
 endef
 
 define LIBRETRO_PICODRIVE_INSTALL_TARGET_CMDS

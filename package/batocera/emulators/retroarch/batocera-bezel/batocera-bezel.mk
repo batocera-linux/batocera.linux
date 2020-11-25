@@ -3,13 +3,22 @@
 # batocera bezel
 #
 ################################################################################
-# Version.: Commits on May 11, 2020
-BATOCERA_BEZEL_VERSION = 0adc9c1f0a85371332d10e127eeea095c95c8e05
+# Version.: Commits on Nov 10, 2020
+BATOCERA_BEZEL_VERSION = d5e906b78060d04cbccc0ce97222707fd1f78452
 BATOCERA_BEZEL_SITE = $(call github,batocera-linux,batocera-bezel,$(BATOCERA_BEZEL_VERSION))
 
 define BATOCERA_BEZEL_INSTALL_TARGET_CMDS
 	mkdir -p $(TARGET_DIR)/usr/share/batocera/datainit/decorations
-	cp -r $(@D)/* $(TARGET_DIR)/usr/share/batocera/datainit/decorations
+	cp -r $(@D)/ambiance_broadcast 	      $(TARGET_DIR)/usr/share/batocera/datainit/decorations
+	cp -r $(@D)/ambiance_gameroom 	      $(TARGET_DIR)/usr/share/batocera/datainit/decorations
+	cp -r $(@D)/ambiance_monitor_1084s    $(TARGET_DIR)/usr/share/batocera/datainit/decorations
+	cp -r $(@D)/ambiance_night 	      $(TARGET_DIR)/usr/share/batocera/datainit/decorations
+	cp -r $(@D)/ambiance_vintage_tv	      $(TARGET_DIR)/usr/share/batocera/datainit/decorations
+	cp -r $(@D)/arcade_1980s  	      $(TARGET_DIR)/usr/share/batocera/datainit/decorations
+	cp -r $(@D)/arcade_1980s_vertical     $(TARGET_DIR)/usr/share/batocera/datainit/decorations
+	cp -r $(@D)/arcade_vertical_default   $(TARGET_DIR)/usr/share/batocera/datainit/decorations
+	cp -r $(@D)/default_unglazed          $(TARGET_DIR)/usr/share/batocera/datainit/decorations
+
 	(cd $(TARGET_DIR)/usr/share/batocera/datainit/decorations && ln -sf default_unglazed default) # default bezel
 
 	echo -e "You can find help here to find how to customize decorations: \n" \

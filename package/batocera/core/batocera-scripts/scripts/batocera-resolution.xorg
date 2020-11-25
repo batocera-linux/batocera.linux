@@ -1,0 +1,91 @@
+#!/bin/bash
+
+ACTION=$1
+shift
+
+if test -z "${ACTION}"
+then
+    echo "${0} listModes" >&2
+    echo "${0} setMode <MODE>" >&2
+    echo "${0} currentMode" >&2
+    echo "${0} currentResolution" >&2
+    echo "${0} listOutputs" >&2
+    echo "${0} setOutput <output>" >&2
+    echo "${0} minTomaxResolution" >&2
+    echo "${0} minTomaxResolution-secure" >&2
+    exit 1
+fi
+
+case "${ACTION}" in
+    "listModes")
+	xrandr --listModes | sed -e s+'\*$'++ | sed -e s+'^[^ ]* \(.*\)$'+'\1:\1'+
+    ;;
+    "setMode")
+	MODE=$1
+	OUTPUT=$(xrandr --listConnectedOutputs | grep -E '\*$' | sed -e s+'*$'++ | head -1)
+	xrandr --output "${OUTPUT}" --mode "${MODE}"
+	;;
+    "currentMode")
+	xrandr --listModes | grep -E '\*$' | sed -e s+'\*$'++ | sed -e s+'\*$'++ -e s+'^[^ ]* '++
+	;;
+    "currentResolution")
+	xrandr --currentResolution | tail -n1
+	;;
+    "listOutputs")
+	xrandr --listConnectedOutputs | sed -e s+"*$"++
+	;;
+    "setOutput")
+	MODE=$1
+	if xrandr --listConnectedOutputs | sed -e s+"*$"++ | grep -qE "^${MODE}$"
+	then
+	    # disable all other outputs
+	    xrandr --listConnectedOutputs | sed -e s+"*$"++ | grep -vE "^${MODE}$" |
+		while read OUTP
+		do
+		    xrandr --output "${OUTP}" --off
+		done
+	else
+	    # disable all except the first one
+	    xrandr --listConnectedOutputs | sed -e s+"*$"++ |
+		(
+		    read FIRSTOUTPUT
+		    while read OUTP
+		    do
+			xrandr --output "${OUTP}" --off
+		    done
+		)
+	fi
+	;;
+    "minTomaxResolution" | "minTomaxResolution-secure")
+	# minimize resolution because of 4K tv
+	MAXWIDTH=1920
+	MAXHEIGHT=1080
+	CURRENT_RESOLUTION=$(xrandr --currentResolution)
+	CURRENTWIDTH=$(echo "${CURRENT_RESOLUTION}" | cut -d x -f 1)
+	CURRENTHEIGHT=$(echo "${CURRENT_RESOLUTION}" | cut -d x -f 2)
+
+	if test "${CURRENTWIDTH}" -le "${MAXWIDTH}" -a "${CURRENTHEIGHT}" -le "${MAXHEIGHT}"
+	then
+	    exit 0
+	fi
+
+	# select a new one
+	# select the first one valid
+	# is it the best ? or should we loop to search the first with the same ratio ?
+	xrandr --listModes | grep -vE "\*$" |
+	    while read SUGGRESOLUTION SUGGMODE
+	    do
+		SUGGWIDTH=$(echo "${SUGGRESOLUTION}" | cut -d x -f 1)
+		SUGGHEIGHT=$(echo "${SUGGRESOLUTION}" | cut -d x -f 2)
+		if test "${SUGGWIDTH}" -le "${MAXWIDTH}" -a "${SUGGHEIGHT}" -le "${MAXHEIGHT}"
+		then
+		    OUTPUT=$(xrandr --listConnectedOutputs | grep -E '\*$' | sed -e s+'*$'++ | head -1)
+		    xrandr --output "${OUTPUT}" --mode "${SUGGMODE}"
+		    exit 0
+		fi
+	    done
+	;;
+	"setDPI")
+	xrandr --dpi $1
+esac
+exit 0

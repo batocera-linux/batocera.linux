@@ -9,6 +9,7 @@ from settings.unixSettings import UnixSettings
 import json
 from utils.logger import eslog
 from PIL import Image, ImageOps
+import struct
 
 sys.path.append(
     os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
@@ -23,16 +24,15 @@ def defined(key, dict):
 ratioIndexes = ["4/3", "16/9", "16/10", "16/15", "21/9", "1/1", "2/1", "3/2", "3/4", "4/1", "4/4", "5/4", "6/5", "7/9", "8/3",
                 "8/7", "19/12", "19/14", "30/17", "32/9", "config", "squarepixel", "core", "custom"]
 
-
 # Define the libretro device type corresponding to the libretro cores, when needed.
 coreToP1Device = {'cap32': '513', '81': '257', 'fuse': '513'};
 coreToP2Device = {'fuse': '513'};
 
 # Define systems compatible with retroachievements
-systemToRetroachievements = {'atari2600', 'atari7800', 'atarijaguar', 'colecovision', 'nes', 'snes', 'virtualboy', 'n64', 'sg1000', 'mastersystem', 'megadrive', 'segacd', 'sega32x', 'saturn', 'pcengine', 'pcenginecd', 'supergrafx', 'psx', 'mame', 'fbneo', 'neogeo', 'lightgun', 'apple2', 'lynx', 'wswan', 'wswanc', 'gb', 'gbc', 'gba', 'nds', 'pokemini', 'gamegear', 'ngp', 'ngpc'}; 
+systemToRetroachievements = {'atari2600', 'atari7800', 'atarijaguar', 'colecovision', 'nes', 'snes', 'virtualboy', 'n64', 'sg1000', 'mastersystem', 'megadrive', 'segacd', 'sega32x', 'saturn', 'pcengine', 'pcenginecd', 'supergrafx', 'psx', 'mame', 'hbmame', 'fbneo', 'neogeo', 'lightgun', 'apple2', 'lynx', 'wswan', 'wswanc', 'gb', 'gbc', 'gba', 'nds', 'pokemini', 'gamegear', 'ngp', 'ngpc'}; 
 
 # Define systems not compatible with rewind option
-systemNoRewind = {'sega32x', 'psx', 'zxspectrum', 'odyssey2', 'mame', 'n64', 'dreamcast', 'atomiswave', 'naomi', 'neogeocd', 'saturn', 'fbneo'};
+systemNoRewind = {'sega32x', 'psx', 'zxspectrum', 'odyssey2', 'mame', 'hbmame', 'n64', 'dreamcast', 'atomiswave', 'naomi', 'neogeocd', 'saturn', 'fbneo'};
 
 # Define systems not compatible with run-ahead option (warning: this option is CPU intensive!)
 systemNoRunahead = {'sega32x', 'n64', 'dreamcast', 'atomiswave', 'naomi', 'neogeocd', 'saturn'};
@@ -45,10 +45,25 @@ systemToP1Device = {'msx': '257', 'msx1': '257', 'msx2': '257', 'colecovision': 
 systemToP2Device = {'msx': '257', 'msx1': '257', 'msx2': '257', 'colecovision': '1' };
 
 # Netplay modes
-systemNetplayModes = {'host', 'client'}
+systemNetplayModes = {'host', 'client', 'spectator'}
 
 def writeLibretroConfig(retroconfig, system, controllers, rom, bezel, gameResolution):
     writeLibretroConfigToFile(retroconfig, createLibretroConfig(system, controllers, rom, bezel, gameResolution))
+
+# Much faster than PIL Image.size
+def fast_image_size(image_file):
+    if not os.path.exists(image_file):
+        return -1, -1
+    with open(image_file, 'rb') as fhandle:
+        head = fhandle.read(32)
+        if len(head) != 32:
+           # corrupted header, or not a PNG
+           return -1, -1
+        check = struct.unpack('>i', head[4:8])[0]
+        if check != 0x0d0a1a0a:
+           # Not a PNG
+           return -1, -1
+        return struct.unpack('>ii', head[16:24]) #image width, height
 
 # take a system, and returns a dict of retroarch.cfg compatible parameters
 def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
@@ -66,8 +81,14 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
     # basic configuration
     retroarchConfig['quit_press_twice'] = 'false'            # not aligned behavior on other emus
     retroarchConfig['video_driver'] = '"gl"'                 # needed for the ozone menu
+
+    if system.isOptSet("gfxbackend") and system.config["gfxbackend"] == "vulkan":
+        retroarchConfig['video_driver'] = '"vulkan"'
+
     retroarchConfig['video_black_frame_insertion'] = 'false' # don't use anymore this value while it doesn't allow the shaders to work
     retroarchConfig['pause_nonactive'] = 'false'             # required at least on x86 x86_64 otherwise, the game is paused at launch
+    retroarchConfig['audio_driver'] = 'alsa'                 # force ALSA. TODO: check audio.backend
+    retroarchConfig['midi_driver'] = 'alsa'
     retroarchConfig['cache_directory'] = '/userdata/system/.cache'
 
     # fs is required at least for x86* and odroidn2
@@ -208,28 +229,56 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
     if system.config['core'] == 'cap32':
         retroarchConfig['cap32_combokey'] = 'y'
 
+    # Disable internal image viewer (ES does it, and pico-8 won't load .p8.png)
+    retroarchConfig['builtin_imageviewer_enable'] = 'false'
+
     # Netplay management
     if 'netplay.mode' in system.config and system.config['netplay.mode'] in systemNetplayModes:
         # Security : hardcore mode disables save states, which would kill netplay
         retroarchConfig['cheevos_hardcore_mode_enable'] = 'false'
         # Quite strangely, host mode requires netplay_mode to be set to false when launched from command line
         retroarchConfig['netplay_mode']              = "false"
-        retroarchConfig['netplay_ip_port']           = systemConfig.get('netplay.server.port', "")
+        retroarchConfig['netplay_ip_port']           = systemConfig.get('netplay.port', "")
         retroarchConfig['netplay_delay_frames']      = systemConfig.get('netplay.frames', "")
         retroarchConfig['netplay_nickname']          = systemConfig.get('netplay.nickname', "")
         retroarchConfig['netplay_client_swap_input'] = "false"
-        if system.config['netplay.mode'] == 'client':
+        if system.config['netplay.mode'] == 'client' or system.config['netplay.mode'] == 'spectator':
             # But client needs netplay_mode = true ... bug ?
             retroarchConfig['netplay_mode']              = "true"
             retroarchConfig['netplay_ip_address']        = systemConfig.get('netplay.server.ip', "")
+            retroarchConfig['netplay_ip_port']           = systemConfig.get('netplay.server.port', "")
             retroarchConfig['netplay_client_swap_input'] = "true"
-        # mode spectator
+
+        # connect as client
+        if system.config['netplay.mode'] == 'client':
+            if 'netplay.password' in system.config:
+                retroarchConfig['netplay_password'] = '"' + systemConfig.get("netplay.password", "") + '"'
+            else:
+                retroarchConfig['netplay_password'] = ""
+
+        # connect as spectator
+        if system.config['netplay.mode'] == 'spectator':
+            retroarchConfig['netplay_start_as_spectator'] = "true"
+            if 'netplay.password' in system.config:
+                retroarchConfig['netplay_spectate_password'] = '"' + systemConfig.get("netplay.password", "") + '"'
+            else:
+                retroarchConfig['netplay_spectate_password'] = ""
+        else:
+            retroarchConfig['netplay_start_as_spectator'] = "false"            
+
+         # Netplay host passwords
+        if system.config['netplay.mode'] == 'host':
+            retroarchConfig['netplay_password'] = '"' + systemConfig.get("netplay.password", "") + '"'
+            retroarchConfig['netplay_spectate_password'] = '"' + systemConfig.get("netplay.spectatepassword", "") + '"'
+
+        # enable or disable server spectator mode
         if system.isOptSet('netplay.spectator') and system.getOptBoolean('netplay.spectator') == True:
             retroarchConfig['netplay_spectator_mode_enable'] = 'true'
         else:
             retroarchConfig['netplay_spectator_mode_enable'] = 'false'
+
         # relay
-        if 'netplay.relay' in system.config and system.config['netplay.relay'] != "" :
+        if 'netplay.relay' in system.config and system.config['netplay.relay'] != "" and system.config['netplay.relay'] != "none" :
             retroarchConfig['netplay_use_mitm_server'] = "true"
             retroarchConfig['netplay_mitm_server'] = systemConfig.get('netplay.relay', "")
         else:
@@ -247,6 +296,9 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
         retroarchConfig['menu_driver'] = 'rgui'
         retroarchConfig['width']  = gameResolution["width"]  *2 # on low resolution, higher values for width and height makes a nicer image (640x480 on the gpi case)
         retroarchConfig['height'] = gameResolution["height"] *2 # default value
+        retroarchConfig['menu_linear_filter'] = 'true'
+        retroarchConfig['rgui_aspect_ratio'] = '0'
+        retroarchConfig['rgui_aspect_ratio_lock'] = '3'
     else:
         retroarchConfig['video_font_size'] = '32'
         retroarchConfig['menu_driver'] = 'ozone'
@@ -280,7 +332,11 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
         bezel_stretch = True
     else:
         bezel_stretch = False
-    writeBezelConfig(bezel, retroarchConfig, system.name, rom, gameResolution, bezel_stretch)
+    try:
+        writeBezelConfig(bezel, retroarchConfig, system.name, rom, gameResolution, bezel_stretch)
+    except:
+        # error with bezels, disabling them
+        writeBezelConfig(None, retroarchConfig, system.name, rom, gameResolution, bezel_stretch)
 
     # custom : allow the user to configure directly retroarch.cfg via batocera.conf via lines like : snes.retroarch.menu_driver=rgui
     for user_config in systemConfig:
@@ -371,27 +427,32 @@ def writeBezelConfig(bezel, retroarchConfig, systemName, rom, gameResolution, be
 
     if viewPortUsed:
         if gameResolution["width"] != infos["width"] or gameResolution["height"] != infos["height"]:
-            infosRatio = float(infos["width"]) / float(infos["height"])
-            if gameRatio < infosRatio - 0.1: # keep a margin
+            if gameRatio < 1.6: # let's use bezels only for 16:10, 5:3, 16:9 and wider aspect ratios
                 return
             else:
                 bezelNeedAdaptation = True
         retroarchConfig['aspect_ratio_index'] = str(ratioIndexes.index("custom")) # overwritten from the beginning of this file
     else:
         # when there is no information about width and height in the .info, assume that the tv is HD 16/9 and infos are core provided
-        infosRatio = 1920.0 / 1080.0
-        if gameRatio < infosRatio - 0.1: # keep a margin
+        if gameRatio < 1.6: # let's use bezels only for 16:10, 5:3, 16:9 and wider aspect ratios
             return
         else:
             # No info on the bezel, let's get the bezel image width and height and apply the
-            # ratios from usual 4:3 1920x1080 bezels (example: theBezelProject)
-            infos["width"], infos["height"] = Image.open(overlay_png_file).size
-            infos["top"]    = int(infos["height"] * 2 / 1080)
-            infos["left"]   = int(infos["width"] * 241 / 1920) # 241 = (1920 - (1920 / (4:3))) / 2 + 1 pixel = where viewport start
-            infos["bottom"] = int(infos["height"] * 2 / 1080)
-            infos["right"]  = int(infos["width"] * 241 / 1920)
-            bezelNeedAdaptation = True
-        retroarchConfig['aspect_ratio_index'] = str(ratioIndexes.index("core")) # overwritten from the beginning of this file
+            # ratios from usual 16:9 1920x1080 bezels (example: theBezelProject)
+            try:
+                infos["width"], infos["height"] = fast_image_size(overlay_png_file)
+                infos["top"]    = int(infos["height"] * 2 / 1080)
+                infos["left"]   = int(infos["width"] * 241 / 1920) # 241 = (1920 - (1920 / (4:3))) / 2 + 1 pixel = where viewport start
+                infos["bottom"] = int(infos["height"] * 2 / 1080)
+                infos["right"]  = int(infos["width"] * 241 / 1920)
+                bezelNeedAdaptation = True
+            except:
+                pass # outch, no ratio will be applied.
+        if gameResolution["width"] == infos["width"] and gameResolution["height"] == infos["height"]:
+            bezelNeedAdaptation = False
+            retroarchConfig['aspect_ratio_index'] = str(ratioIndexes.index("core"))
+        else:
+            retroarchConfig['aspect_ratio_index'] = str(ratioIndexes.index("custom")) # overwritten from the beginning of this file
 
     retroarchConfig['input_overlay_enable']       = "true"
     retroarchConfig['input_overlay_scale']        = "1.0"
@@ -434,18 +495,25 @@ def writeBezelConfig(bezel, retroarchConfig, systemName, rom, gameResolution, be
                 else:
                     if os.path.getmtime(output_png_file) < os.path.getmtime(overlay_png_file):
                         create_new_bezel_file = True
+            # fast way of checking the size of a png
+            oldwidth, oldheight = fast_image_size(output_png_file)
+            if (oldwidth != gameResolution["width"] or oldheight != gameResolution["height"]):
+                create_new_bezel_file = True
+
+            xoffset = gameResolution["width"]  - infos["width"]
+            yoffset = gameResolution["height"] - infos["height"]
+            retroarchConfig['custom_viewport_x']      = infos["left"] + xoffset/2
+            retroarchConfig['custom_viewport_y']      = infos["top"] + yoffset/2
+            retroarchConfig['custom_viewport_width']  = infos["width"]  - infos["left"] - infos["right"]
+            retroarchConfig['custom_viewport_height'] = infos["height"] - infos["top"]  - infos["bottom"]
+            retroarchConfig['video_message_pos_x']    = infos["messagex"] + xoffset/2
+            retroarchConfig['video_message_pos_y']    = infos["messagey"] + yoffset/2
 
             if create_new_bezel_file is True:
                 # Padding left and right borders for ultrawide screens (larger than 16:9 aspect ratio)
+                # or up/down for 4K
+                eslog.log("Generating a new adapted bezel file {}".format(output_png_file))
                 fillcolor = 'black'
-                xoffset = gameResolution["width"]  - infos["width"]
-                yoffset = gameResolution["height"] - infos["height"]
-                retroarchConfig['custom_viewport_x']      = infos["left"] + xoffset/2
-                retroarchConfig['custom_viewport_y']      = infos["top"] + yoffset/2
-                retroarchConfig['custom_viewport_width']  = infos["width"]  - infos["left"] - infos["right"]
-                retroarchConfig['custom_viewport_height'] = infos["height"] - infos["top"]  - infos["bottom"]
-                retroarchConfig['video_message_pos_x']    = infos["messagex"] + xoffset/2
-                retroarchConfig['video_message_pos_y']    = infos["messagey"] + yoffset/2
 
                 borderw = 0
                 borderh = 0
@@ -468,7 +536,6 @@ def writeBezelConfig(bezel, retroarchConfig, systemName, rom, gameResolution, be
                 else:
                     imgout = ImageOps.expand(imgin, border=(borderw, borderh, xoffset-borderw, yoffset-borderh), fill=fillcolor)
                     imgout.save(output_png_file, mode="RGBA", format="PNG")
-
             overlay_png_file = output_png_file # replace by the new file (recreated or cached in /tmp)
     else:
         if viewPortUsed:
@@ -479,10 +546,11 @@ def writeBezelConfig(bezel, retroarchConfig, systemName, rom, gameResolution, be
         retroarchConfig['video_message_pos_x']    = infos["messagex"]
         retroarchConfig['video_message_pos_y']    = infos["messagey"]
 
+    eslog.log("Bezel file set to {}".format(overlay_png_file))
     writeBezelCfgConfig(overlay_cfg_file, overlay_png_file)
 
 def isLowResolution(gameResolution):
-    return gameResolution["width"] < 400 and gameResolution["height"] < 400
+    return gameResolution["width"] < 400 or gameResolution["height"] < 400
 
 def writeBezelCfgConfig(cfgFile, overlay_png_file):
     fd = open(cfgFile, "w")

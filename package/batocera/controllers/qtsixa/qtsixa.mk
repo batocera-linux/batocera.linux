@@ -5,7 +5,7 @@
 ################################################################################
 QTSIXA_VERSION = gasia
 QTSIXA_SITE = $(call github,batocera-linux,qtsixa,$(QTSIXA_VERSION))
-QTSIXA_DEPENDENCIES = sdl linux-headers libusb-compat bluez5_utils
+QTSIXA_DEPENDENCIES = linux-headers libusb-compat bluez5_utils
 PKGCONFIG_CONFIG=$(STAGING_DIR)/usr/lib/pkgconfig
 
 QTSIXA_INCLUDES =-I$(STAGING_DIR)/usr/include

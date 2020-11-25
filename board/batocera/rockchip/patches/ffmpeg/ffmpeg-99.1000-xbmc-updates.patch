@@ -1,0 +1,220 @@
+MRFIXIT: Updates to 4.3 from https://github.com/xbmc/FFmpeg
+
+https://github.com/FFmpeg/FFmpeg/compare/n4.3...xbmc:4.3-Matrix-Alpha1
+
+
+From a4329e7de89dc81fb4b47041aa225806b0eec87d Mon Sep 17 00:00:00 2001
+From: marc <mhocking@ubuntu-desktop.(none)>
+Date: Mon, 18 Feb 2013 17:18:18 +0000
+Subject: [PATCH 1/6] dxva-h264: Fix an AMD driver issue with playback of
+ streams that don't start with an I-Frame
+
+---
+ libavcodec/dxva2_h264.c | 8 ++++++++
+ libavcodec/h264_slice.c | 1 +
+ libavcodec/h264dec.c    | 1 +
+ libavcodec/h264dec.h    | 2 ++
+ 4 files changed, 12 insertions(+)
+
+diff --git a/libavcodec/dxva2_h264.c b/libavcodec/dxva2_h264.c
+index 5b23b28f120..c0a8d80f3b1 100644
+--- a/libavcodec/dxva2_h264.c
++++ b/libavcodec/dxva2_h264.c
+@@ -504,6 +504,14 @@ static int dxva2_h264_end_frame(AVCodecContext *avctx)
+ 
+     if (ctx_pic->slice_count <= 0 || ctx_pic->bitstream_size <= 0)
+         return -1;
++
++    // Wait for an I-frame before start decoding. Workaround for ATI UVD and UVD+ GPUs
++    if (!h->got_first_iframe) {
++        if (!(ctx_pic->pp.wBitFields & (1 << 15)))
++            return -1;
++        h->got_first_iframe = 1;
++    }
++
+     ret = ff_dxva2_common_end_frame(avctx, h->cur_pic_ptr->f,
+                                     &ctx_pic->pp, sizeof(ctx_pic->pp),
+                                     &ctx_pic->qm, sizeof(ctx_pic->qm),
+diff --git a/libavcodec/h264_slice.c b/libavcodec/h264_slice.c
+index 713953778ae..db8363e4cc9 100644
+--- a/libavcodec/h264_slice.c
++++ b/libavcodec/h264_slice.c
+@@ -928,6 +928,7 @@ static int h264_slice_header_init(H264Context *h)
+ 
+     h->first_field           = 0;
+     h->prev_interlaced_frame = 1;
++    h->got_first_iframe = 0;
+ 
+     init_scan_tables(h);
+     ret = ff_h264_alloc_tables(h);
+diff --git a/libavcodec/h264dec.c b/libavcodec/h264dec.c
+index 6270ea80dff..5eedeb3c275 100644
+--- a/libavcodec/h264dec.c
++++ b/libavcodec/h264dec.c
+@@ -467,6 +467,7 @@ void ff_h264_flush_change(H264Context *h)
+ 
+     h->next_outputed_poc = INT_MIN;
+     h->prev_interlaced_frame = 1;
++    h->got_first_iframe = 0;
+     idr(h);
+ 
+     h->poc.prev_frame_num = -1;
+diff --git a/libavcodec/h264dec.h b/libavcodec/h264dec.h
+index 29c4d4e42c1..a419615124b 100644
+--- a/libavcodec/h264dec.h
++++ b/libavcodec/h264dec.h
+@@ -539,6 +539,8 @@ typedef struct H264Context {
+      * slices) anymore */
+     int setup_finished;
+ 
++    int got_first_iframe;
++
+     int cur_chroma_format_idc;
+     int cur_bit_depth_luma;
+     int16_t slice_row[MAX_SLICES]; ///< to detect when MAX_SLICES is too low
+
+From 507cd91855b0b8ceab55c6987027f7502bf080da Mon Sep 17 00:00:00 2001
+From: Rechi <Rechi@users.noreply.github.com>
+Date: Tue, 21 Nov 2017 08:16:53 +0100
+Subject: [PATCH 2/6] use Kodi as extra version
+
+---
+ Makefile | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/Makefile b/Makefile
+index 45a22b0cb3c..76454245bb2 100644
+--- a/Makefile
++++ b/Makefile
+@@ -120,7 +120,7 @@ GIT_LOG     = $(SRC_PATH)/.git/logs/HEAD
+ .version: M=@
+ 
+ libavutil/ffversion.h .version:
+-	$(M)$(VERSION_SH) $(SRC_PATH) libavutil/ffversion.h $(EXTRA_VERSION)
++	$(M)$(VERSION_SH) $(SRC_PATH) libavutil/ffversion.h Kodi
+ 	$(Q)touch .version
+ 
+ # force version.sh to run whenever version might have changed
+
+From 77503255628334fb97161d627c0b8bf3c0222104 Mon Sep 17 00:00:00 2001
+From: Rechi <Rechi@users.noreply.github.com>
+Date: Tue, 21 Nov 2017 08:16:53 +0100
+Subject: [PATCH 3/6] common.mak: never ignore an error if strip doesn't
+ succeed
+
+---
+ ffbuild/common.mak | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/ffbuild/common.mak b/ffbuild/common.mak
+index a60d27c9bd3..9efe7410868 100644
+--- a/ffbuild/common.mak
++++ b/ffbuild/common.mak
+@@ -79,7 +79,7 @@ COMPILE_NVCC = $(call COMPILE,NVCC)
+ 
+ %.o: %.asm
+ 	$(COMPILE_X86ASM)
+-	-$(if $(ASMSTRIPFLAGS), $(STRIP) $(ASMSTRIPFLAGS) $@)
++	$(if $(STRIP), $(if $(ASMSTRIPFLAGS), $(STRIP) $(ASMSTRIPFLAGS) $@))
+ 
+ %.o: %.rc
+ 	$(WINDRES) $(IFLAGS) --preprocessor "$(DEPWINDRES) -E -xc-header -DRC_INVOKED $(CC_DEPFLAGS)" -o $@ $<
+
+From 1e063cd77fb8e2eedc4e2c2e033e65b0d978c55d Mon Sep 17 00:00:00 2001
+From: wsnipex <wsnipex@a1.net>
+Date: Tue, 21 Nov 2017 08:16:53 +0100
+Subject: [PATCH 4/6] only check for a git rev if the src tree is in a git repo
+
+fixes the version string when building from the kodi depends src tree
+---
+ ffbuild/version.sh | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/ffbuild/version.sh b/ffbuild/version.sh
+index edc4dd33c54..239a138ca77 100755
+--- a/ffbuild/version.sh
++++ b/ffbuild/version.sh
+@@ -2,6 +2,7 @@
+ 
+ # Usage: version.sh <ffmpeg-root-dir> <output-version.h> <extra-version>
+ 
++if [ -d $1/.git ]; then  # only check for a git rev, if the src tree is in a git repo
+ # check for git short hash
+ if ! test "$revision"; then
+     if (cd "$1" && grep git RELEASE 2> /dev/null >/dev/null) ; then
+@@ -27,6 +28,7 @@ if [ -z "$revision" ]; then
+       git_hash="${srcdir##*-}";;
+   esac
+ fi
++fi
+ 
+ # no revision number found
+ test "$revision" || revision=$(cd "$1" && cat RELEASE 2> /dev/null)
+
+From 76c2c45b779aa3da90a603a64f5db57c1e1ea50a Mon Sep 17 00:00:00 2001
+From: Anton Fedchin <afedchin at ruswizards.com>
+Date: Fri, 11 Jan 2019 10:47:43 +0100
+Subject: [PATCH 5/6] after 153b36f there is a possibility to crash when trying
+ to get index of a surface which points to nirvana.
+
+it may occurs when a stream starts with non i-frame.
+---
+ libavcodec/dxva2.c | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
+
+diff --git a/libavcodec/dxva2.c b/libavcodec/dxva2.c
+index 32416112bfd..dfae5004448 100644
+--- a/libavcodec/dxva2.c
++++ b/libavcodec/dxva2.c
+@@ -771,16 +771,18 @@ unsigned ff_dxva2_get_surface_index(const AVCodecContext *avctx,
+ #if CONFIG_D3D11VA
+     if (avctx->pix_fmt == AV_PIX_FMT_D3D11)
+         return (intptr_t)frame->data[1];
+-    if (avctx->pix_fmt == AV_PIX_FMT_D3D11VA_VLD) {
++    if (avctx->pix_fmt == AV_PIX_FMT_D3D11VA_VLD && surface) {
+         D3D11_VIDEO_DECODER_OUTPUT_VIEW_DESC viewDesc;
+         ID3D11VideoDecoderOutputView_GetDesc((ID3D11VideoDecoderOutputView*) surface, &viewDesc);
+         return viewDesc.Texture2D.ArraySlice;
+     }
+ #endif
+ #if CONFIG_DXVA2
+-    for (i = 0; i < DXVA_CONTEXT_COUNT(avctx, ctx); i++) {
+-        if (avctx->pix_fmt == AV_PIX_FMT_DXVA2_VLD && ctx->dxva2.surface[i] == surface)
+-            return i;
++    if (avctx->pix_fmt == AV_PIX_FMT_DXVA2_VLD) {
++        for (i = 0; i < DXVA_CONTEXT_COUNT(avctx, ctx); i++) {
++            if (ctx->dxva2.surface[i] == surface)
++                return i;
++        }
+     }
+ #endif
+ 
+
+From f6ae50a5f24006d1bc75f03ae11853dd77d0b8d3 Mon Sep 17 00:00:00 2001
+From: Rainer Hochecker <fernetmenta@online.de>
+Date: Sat, 26 Jan 2019 19:48:35 +0100
+Subject: [PATCH 6/6] avcodec/vaapi_h264: skip decode if pic has no slices
+
+This fixes / workarounds https://bugs.freedesktop.org/show_bug.cgi?id=105368.
+It was hit frequently when watching h264 channels received via DVB-X.
+Corresponding kodi bug: https://github.com/xbmc/xbmc/issues/15704
+---
+ libavcodec/vaapi_h264.c | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/libavcodec/vaapi_h264.c b/libavcodec/vaapi_h264.c
+index 9332aa6f310..d4494beebf8 100644
+--- a/libavcodec/vaapi_h264.c
++++ b/libavcodec/vaapi_h264.c
+@@ -314,6 +314,11 @@ static int vaapi_h264_end_frame(AVCodecContext *avctx)
+     H264SliceContext *sl = &h->slice_ctx[0];
+     int ret;
+ 
++    if (pic->nb_slices == 0) {
++        ret = AVERROR_INVALIDDATA;
++        goto finish;
++    }
++
+     ret = ff_vaapi_decode_issue(avctx, pic);
+     if (ret < 0)
+         goto finish;

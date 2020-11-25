@@ -8,7 +8,7 @@ XBOXDRV_SITE =  $(call github,xboxdrv,xboxdrv,$(XBOXDRV_VERSION))
 XBOXDRV_DEPENDENCIES = libusb dbus-python dbus-glib host-scons boost
 
 define XBOXDRV_BUILD_CMDS
-        CFLAGS="$(TARGET_CFLAGS) -I$(STAGING_DIR)/usr/include" CXXFLAGS="$(TARGET_CXXFLAGS) -I$(STAGING_DIR)/usr/include" LD_FLAGS="$(TARGET_LDFLAGS)" \
+        PATH="$(HOST_DIR)/bin:$$PATH" CFLAGS="$(TARGET_CFLAGS) -I$(STAGING_DIR)/usr/include" CXXFLAGS="$(TARGET_CXXFLAGS) -I$(STAGING_DIR)/usr/include" LD_FLAGS="$(TARGET_LDFLAGS)" \
 	$(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" -C $(@D) PREFIX="/usr"
 endef
 

@@ -5,6 +5,7 @@ import time
 import sys
 from sys import exit
 from Emulator import Emulator
+from Evmapy import Evmapy
 import generators
 from generators.kodi.kodiGenerator import KodiGenerator
 from generators.linapple.linappleGenerator import LinappleGenerator
@@ -18,20 +19,28 @@ from generators.dolphin.dolphinGenerator import DolphinGenerator
 from generators.pcsx2.pcsx2Generator import Pcsx2Generator
 from generators.scummvm.scummvmGenerator import ScummVMGenerator
 from generators.dosbox.dosboxGenerator import DosBoxGenerator
+from generators.dosboxstaging.dosboxstagingGenerator import DosBoxStagingGenerator
 from generators.dosboxx.dosboxxGenerator import DosBoxxGenerator
 from generators.vice.viceGenerator import ViceGenerator
 from generators.fsuae.fsuaeGenerator import FsuaeGenerator
 from generators.amiberry.amiberryGenerator import AmiberryGenerator
 from generators.citra.citraGenerator import CitraGenerator
 from generators.daphne.daphneGenerator import DaphneGenerator
+from generators.cannonball.cannonballGenerator import CannonballGenerator
 from generators.openbor.openborGenerator import OpenborGenerator
 from generators.supermodel3.supermodel3Generator import Supermodel3Generator
+from generators.wine.wineGenerator import WineGenerator
+from generators.cemu.cemuGenerator import CemuGenerator
+from generators.melonds.melondsGenerator import MelonDSGenerator
+from generators.rpcs3.rpcs3Generator import Rpcs3Generator
+from generators.pygame.pygameGenerator import PygameGenerator
+from generators.mame.mameGenerator import MameGenerator
+
 import controllersConfig as controllers
 import signal
 import batoceraFiles
 import os
 import subprocess
-import json
 import utils.videoMode as videoMode
 from utils.logger import eslog
 
@@ -42,6 +51,7 @@ generators = {
     'moonlight': MoonlightGenerator(),
     'scummvm': ScummVMGenerator(),
     'dosbox': DosBoxGenerator(),
+    'dosbox_staging': DosBoxStagingGenerator(),
     'dosboxx': DosBoxxGenerator(),
     'mupen64plus': MupenGenerator(),
     'vice': ViceGenerator(),
@@ -54,8 +64,15 @@ generators = {
     'ppsspp': PPSSPPGenerator(),
     'citra' : CitraGenerator(),
     'daphne' : DaphneGenerator(),
+    'cannonball' : CannonballGenerator(),
     'openbor' : OpenborGenerator(),
-    'supermodel3': Supermodel3Generator()
+    'supermodel3': Supermodel3Generator(),
+    'wine' : WineGenerator(),
+    'cemu' : CemuGenerator(),
+    'melonds' : MelonDSGenerator(),
+    'rpcs3' : Rpcs3Generator(),
+    'mame' : MameGenerator(),
+    'pygame': PygameGenerator()
 }
 
 def main(args, maxnbplayers):
@@ -99,12 +116,24 @@ def main(args, maxnbplayers):
     # the resolution must be changed before configuration while the configuration may depend on it (ie bezels)
     wantedGameMode = generators[system.config['emulator']].getResolutionMode(system.config)
     systemMode = videoMode.getCurrentMode()
+
     resolutionChanged = False
     exitCode = -1
     try:
-        eslog.log("current video mode: {}".format(systemMode))
+        # lower the resolution if mode is auto
+        newsystemMode = systemMode # newsystemmode is the mode after minmax (ie in 1K if tv was in 4K), systemmode is the mode before (ie in es)
+        if system.config["videomode"] == "" or system.config["videomode"] == "default":
+            eslog.log("minTomaxResolution")
+            eslog.log("video mode before minmax: {}".format(systemMode))
+            videoMode.minTomaxResolution()
+            newsystemMode = videoMode.getCurrentMode()
+            if newsystemMode != systemMode:
+                resolutionChanged = True
+
+        eslog.log("current video mode: {}".format(newsystemMode))
         eslog.log("wanted video mode: {}".format(wantedGameMode))
-        if wantedGameMode != 'default' and wantedGameMode != systemMode:
+
+        if wantedGameMode != 'default' and wantedGameMode != newsystemMode:
             videoMode.changeMode(wantedGameMode)
             resolutionChanged = True
         gameResolution = videoMode.getCurrentResolution()
@@ -126,8 +155,8 @@ def main(args, maxnbplayers):
         # network options
         if args.netplaymode is not None:
             system.config["netplay.mode"] = args.netplaymode
-        if args.netplayspectator is not None:
-            system.config["netplay.spectator"] = args.netplayspectator
+        if args.netplaypass is not None:
+            system.config["netplay.password"] = args.netplaypass
         if args.netplayip is not None:
             system.config["netplay.server.ip"] = args.netplayip
         if args.netplayport is not None:
@@ -138,7 +167,11 @@ def main(args, maxnbplayers):
         callExternalScripts("/userdata/system/scripts", "gameStart", [systemName, system.config['emulator'], effectiveCore, effectiveRom])
 
         # run the emulator
-        exitCode = runCommand(generators[system.config['emulator']].generate(system, args.rom, playersControllers, gameResolution))
+        try:
+            Evmapy.start(systemName, system.config['emulator'], effectiveCore, effectiveRom, playersControllers)
+            exitCode = runCommand(generators[system.config['emulator']].generate(system, args.rom, playersControllers, gameResolution))
+        finally:
+            Evmapy.stop()
 
         # run a script after emulator shuts down
         callExternalScripts("/userdata/system/scripts", "gameStop", [systemName, system.config['emulator'], effectiveCore, effectiveRom])
@@ -181,7 +214,7 @@ def runCommand(command):
         sys.stdout.write(out)
         sys.stderr.write(err)
     except:
-        eslog("emulator exited")
+        eslog.log("emulator exited")
 
     return exitcode
 
@@ -213,7 +246,7 @@ if __name__ == '__main__':
     parser.add_argument("-emulator", help="force emulator", type=str, required=False)
     parser.add_argument("-core", help="force emulator core", type=str, required=False)
     parser.add_argument("-netplaymode", help="host/client", type=str, required=False)
-    parser.add_argument("-netplayspectator", help="enable spectator mode", default=False, action='store_true', required=False)
+    parser.add_argument("-netplaypass", help="enable spectator mode", type=str, required=False)
     parser.add_argument("-netplayip", help="remote ip", type=str, required=False)
     parser.add_argument("-netplayport", help="remote port", type=str, required=False)
 

@@ -6,7 +6,7 @@
 
 BATOCERA_SYSTEM_SOURCE=
 
-BATOCERA_SYSTEM_VERSION = 5.27-dev
+BATOCERA_SYSTEM_VERSION = 30-dev
 BATOCERA_SYSTEM_DATE_TIME = $(shell date "+%Y/%m/%d %H:%M")
 BATOCERA_SYSTEM_DEPENDENCIES = tzdata
 
@@ -46,9 +46,12 @@ else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_XU4),y)
 	BATOCERA_SYSTEM_ARCH=odroidxu4
 	BATOCERA_SYSTEM_BATOCERA_CONF=xu4
 	BATOCERA_SYSTEM_SUBDIR=
-else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_C2),y)
+else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_ODROIDC2),y)
 	BATOCERA_SYSTEM_ARCH=odroidc2
-	BATOCERA_SYSTEM_BATOCERA_CONF=c2
+	BATOCERA_SYSTEM_BATOCERA_CONF=odroidc2
+else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_ODROIDC4),y)
+	BATOCERA_SYSTEM_ARCH=odroidc4
+	BATOCERA_SYSTEM_BATOCERA_CONF=odroidc4
 else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_S905),y)
 	BATOCERA_SYSTEM_ARCH=s905
 	BATOCERA_SYSTEM_BATOCERA_CONF=s905
@@ -94,7 +97,7 @@ define BATOCERA_SYSTEM_INSTALL_TARGET_CMDS
 
 	# datainit
 	mkdir -p $(TARGET_DIR)/usr/share/batocera/datainit/system
-	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-system/$(BATOCERA_SYSTEM_BATOCERA_CONF)/batocera.conf $(TARGET_DIR)/usr/share/batocera/datainit/system
+	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-system/batocera.conf $(TARGET_DIR)/usr/share/batocera/datainit/system
 
 	# batocera-boot.conf
 	$(INSTALL) -D -m 0644 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-system/batocera-boot.conf $(BINARIES_DIR)/$(BATOCERA_SYSTEM_SUBDIR)/batocera-boot.conf

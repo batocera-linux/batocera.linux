@@ -1,0 +1,13 @@
+diff --git a/evmapy/util.py b/evmapy/util.py
+index 6e44d10..0a90ef8 100644
+--- a/evmapy/util.py
++++ b/evmapy/util.py
+@@ -64,7 +64,7 @@ def get_app_info():
+         'version':  '1.0',
+         'user':     pwd.getpwuid(os.geteuid()),
+     }
+-    info['config_dir'] = os.path.join(info['user'].pw_dir, '.' + info['name'])
++    info['config_dir'] = "/var/run/evmapy"
+     return info
+ 
+ 

@@ -14,11 +14,35 @@ then
     exit 0
 fi
 ###
+### full version (not on login, otherwise you can't log when OpenGL/Vulkan are out of order)
+if test "$1" = "--full"
+then
+	FULL_DISPLAY=1
+else
+	FULL_DISPLAY=0
+fi
+###
+
+getCpu() {
+    test -e "${1}/cpufreq/scaling_max_freq" || return 0
+
+    if test -e "${1}/online"
+    then
+	OL=$(cat "${CPU}/online")
+	test "${OL}" = 1 || return 0
+    fi
+    cat "${CPU}/cpufreq/scaling_max_freq"
+}
 
 V_ARCH=$(cat /usr/share/batocera/batocera.arch)
 V_CPUNB=$(grep -E $'^processor\t:' /proc/cpuinfo | wc -l)
 V_CPUMODEL1=$(grep -E $'^model name\t:' /proc/cpuinfo | head -1 | sed -e s+'^model name\t: '++)
 V_SYSTEM=$(uname -rs)
+# min freq : minimum freq among the max cpus ; consider only online cpus
+V_CPUMINFREQ=$(for CPU in /sys/devices/system/cpu/cpu*; do getCpu "${CPU}"; done | sort -n  | head -1)
+V_CPUMAXFREQ=$(for CPU in /sys/devices/system/cpu/cpu*; do getCpu "${CPU}"; done | sort -rn | head -1)
+let V_CPUMINFREQ=${V_CPUMINFREQ}/1000
+let V_CPUMAXFREQ=${V_CPUMAXFREQ}/1000
 
 # battery
 BATT=$(cat /sys/class/power_supply/{BAT,bat}*/uevent 2>/dev/null | grep -E "^POWER_SUPPLY_CAPACITY=" | sed -e s+'^POWER_SUPPLY_CAPACITY='++ | sort -rn | head -1)
@@ -50,13 +74,13 @@ done
 TEMPE=$(cat /sys/devices/virtual/thermal/thermal_zone*/temp 2>/dev/null | sort -rn | head -1 | sed -e s+"[0-9][0-9][0-9]$"++)
 if test -n "${TEMPE}"
 then
-    echo "Temperature: ${TEMPE}°"
+    echo "Temperature: ${TEMPE}°C"
 fi
 
 echo "Architecture: ${V_ARCH}"
 if test -e /sys/firmware/devicetree/base/model
 then
-    DTMODEL=$(cat /sys/firmware/devicetree/base/model)
+    DTMODEL=$(tr -d '\0' </sys/firmware/devicetree/base/model)
     echo "Model: ${DTMODEL}"
 fi
 
@@ -73,17 +97,42 @@ MEM_TOTAL_MB=$(expr "${MEM_TOTAL_KB}" / 1024)
 MEM_AVAILABLE_MB=$(expr "${MEM_AVAILABLE_KB}" / 1024)
 echo "Available memory: ${MEM_AVAILABLE_MB}/${MEM_TOTAL_MB} MB"
 
-if test "${V_ARCH}" = "x86" -o "${V_ARCH}" = "x86_64"
-then
-    V_OPENGLVERSION=$(DISPLAY=:0.0 glxinfo | grep -E '^OpenGL core profile version string:' | sed -e s+'^OpenGL core profile version string:[ ]*'++)
-    if test -z "${V_OPENGLVERSION}"
-    then
-	V_OPENGLVERSION=$(DISPLAY=:0.0 glxinfo | grep -E '^OpenGL version string:' | sed -e s+'^OpenGL version string:[ ]*'++)
-    fi
-    echo "OpenGL: ${V_OPENGLVERSION}"
+if [[ "${FULL_DISPLAY}" != 0 ]]; then
+	# OPENGL
+	if test "${V_ARCH}" = "x86" -o "${V_ARCH}" = "x86_64"
+	then
+	    V_OPENGLVERSION=$(DISPLAY=:0.0 glxinfo 2>/dev/null | grep -E '^OpenGL core profile version string:' | sed -e s+'^OpenGL core profile version string:[ ]*'++)
+	    if test -z "${V_OPENGLVERSION}"
+	    then
+		V_OPENGLVERSION=$(DISPLAY=:0.0 glxinfo 2>/dev/null | grep -E '^OpenGL version string:' | sed -e s+'^OpenGL version string:[ ]*'++)
+	    fi
+	    echo "OpenGL: ${V_OPENGLVERSION}"
+	fi
+
+	# VULKAN
+	if test -e /usr/bin/vulkaninfo
+	then
+	    APIVERSION=$(vulkaninfo --json 2>/dev/null | jq -r ".VkPhysicalDeviceProperties.apiVersion" 2>/dev/null)
+	    if test -n "${APIVERSION}"
+	    then
+		let "APIVERSION_MAJOR=${APIVERSION} >> 22"
+		let "APIVERSION_MINOR=(${APIVERSION} >> 12) & 0x3ff"
+		let "APIVERSION_PATCH=${APIVERSION} & 0xfff"
+		echo "Vulkan: ${APIVERSION_MAJOR}.${APIVERSION_MINOR}.${APIVERSION_PATCH}"
+	    else
+		echo "Vulkan: none"
+	    fi
+	fi
 fi
-echo "Cpu model: ${V_CPUMODEL1}"
+
+[[ -z ${V_CPUMODEL1} ]] || echo "Cpu model: ${V_CPUMODEL1}"
 echo "Cpu number: ${V_CPUNB}"
+if test "${V_CPUMINFREQ}" != "${V_CPUMAXFREQ}"
+then
+    echo "Cpu frequency: ${V_CPUMINFREQ}/${V_CPUMAXFREQ} MHz"
+else
+    echo "Cpu max frequency: ${V_CPUMAXFREQ} MHz"
+fi
 if grep -q " avx2" /proc/cpuinfo
 then
     echo "Cpu feature: avx2"

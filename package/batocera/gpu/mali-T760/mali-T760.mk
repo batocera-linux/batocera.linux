@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-MALI_T760_VERSION = 9abaef63196bf7c0624b2c9b6e4dfa1f0c8df44f
+MALI_T760_VERSION = d1a0cc76633ac5e2487e228518aa8e6dbcc8e763
 MALI_T760_SITE = $(call github,Ntemis,libmali,$(MALI_T760_VERSION))
 
 MALI_T760_INSTALL_STAGING = YES

@@ -1,8 +1,8 @@
 diff --git a/Makefile.libretro b/Makefile.libretro
-index 8f48a32..7d07e5b 100644
+index 8f48a32..623f65a 100644
 --- a/Makefile.libretro
 +++ b/Makefile.libretro
-@@ -58,6 +58,16 @@ ifneq ($(findstring __thumb__,$(shell $(CC) -E -dD $(CFLAGS) include/arm_feature
+@@ -58,6 +58,27 @@ ifneq ($(findstring __thumb__,$(shell $(CC) -E -dD $(CFLAGS) include/arm_feature
  endif
  endif
  
@@ -15,6 +15,17 @@ index 8f48a32..7d07e5b 100644
 +
 +	CFLAGS += -fomit-frame-pointer -ffast-math -DARM
 +	CPUFLAGS += -march=armv8-a+crc -mfpu=neon-fp-armv8 -mcpu=cortex-a73 -mtune=cortex-a73.cortex-a53
++
++# ALLWINNER H5
++else ifneq (,$(findstring h5,$(platform)))
++	TARGET := $(TARGET_NAME)_libretro.so
++	fpic := -fPIC
++	SHARED := -shared -Wl,-version-script=link.T
++    ARCH = arm64
++    DYNAREC ?= lightrec
++	CFLAGS += -fomit-frame-pointer -ffast-math -DARM
++	CPUFLAGS += -march=armv8-a+crc -mfpu=neon-fp-armv8 -mcpu=cortex-a53 -mtune=cortex-a53
++
 +
  else ifeq ($(platform), linux-portable)
  	TARGET := $(TARGET_NAME)_libretro.so

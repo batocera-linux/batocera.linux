@@ -1,0 +1,12 @@
+config BR2_PACKAGE_LIBRETRO_DUCKSTATION
+    bool "libretro-duckstation"
+    select BR2_PACKAGE_FMT
+    select BR2_PACKAGE_BOOST
+    select BR2_PACKAGE_FFMPEG  
+    select BR2_PACKAGE_SDL2
+    help
+      DuckStation - PlayStation 1, aka. PSX Emulator
+
+	    https://github.com/stenzek/duckstation
+
+

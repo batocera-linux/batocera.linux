@@ -9,7 +9,6 @@ snes:
       pocketsnes:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_POCKETSNES] }
       snes9x_next: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_SNES9X_NEXT] }
       snes9x:      { requireAnyOf: [BR2_PACKAGE_LIBRETRO_SNES9X] }
-      mesen-s:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MESEN_S] }
       bsnes:       { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BSNES] }
 
 c64:
@@ -94,7 +93,7 @@ amigacd32:
   manufacturer: Commodore
   release: 1994
   hardware: console
-  extensions: [iso, cue, zip, lha]
+  extensions: [iso, cue, lha]
   emulators:
     fsuae:
       CD32:   { requireAnyOf: [BR2_PACKAGE_FSUAE]         }
@@ -125,7 +124,6 @@ nes:
     libretro:
       fceumm:   { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FCEUMM] }
       nestopia: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_NESTOPIA] }
-      mesen:   { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MESEN] }
 
 n64:
   name:       Nintendo 64
@@ -210,6 +208,8 @@ nds:
   emulators:
     libretro:
       desmume: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_DESMUME] }
+    melonds:
+      melonds: { requireAnyOf: [BR2_PACKAGE_MELONDS] }
 
 fds:
   name:       Family Computer Disk System
@@ -247,7 +247,7 @@ dreamcast:
   manufacturer: Sega
   release: 1998
   hardware: console
-  extensions: [cdi, cue, gdi, chd, zip, 7z]
+  extensions: [cdi, cue, gdi, chd]
   emulators:
     libretro:
       flycast:        { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FLYCAST] }
@@ -262,6 +262,7 @@ naomi:
   release: 1998
   hardware: arcade
   extensions: [lst, bin, dat, zip, 7z]
+  platform:   naomi, arcade
   emulators:
     libretro:
       flycast:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FLYCAST]  }
@@ -274,6 +275,7 @@ atomiswave:
   release: 2003
   hardware: arcade
   extensions: [lst, bin, dat, zip, 7z]
+  platform:   atomiswave, arcade
   emulators:
     libretro:
       flycast: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FLYCAST] }
@@ -298,11 +300,11 @@ segacd:
   manufacturer: Sega
   release: 1991
   hardware: console
-  extensions: [chd, cue, iso, zip, 7z]
+  extensions: [chd, cue, iso]
   emulators:
     libretro:
       genesisplusgx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GENESISPLUSGX] }
-      picodrive:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PICODRIVE] }
+      picodrive:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PICODRIVE], incompatible_extensions: [chd] }
 
 sega32x:
   name:       Sega 32x
@@ -364,10 +366,11 @@ psx:
   manufacturer: Sony
   release: 1994
   hardware: console
-  extensions: [cue, img, mdf, pbp, toc, cbn, m3u, ccd, chd, zip, 7z, iso]
+  extensions: [cue, img, mdf, pbp, toc, cbn, m3u, ccd, chd, iso]
   emulators:
     libretro:
       pcsx_rearmed: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PCSX] }
+      duckstation:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_DUCKSTATION], incompatible_extensions: [pbp] }
       mednafen_psx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BEETLE_PSX] }
 
 pcengine:
@@ -386,7 +389,7 @@ pcenginecd:
   manufacturer: NEC
   release: 1988
   hardware: console
-  extensions: [pce, cue, ccd, iso, img, chd, zip, 7z]
+  extensions: [pce, cue, ccd, iso, img, chd]
   theme:      pce-cd
   emulators:
     libretro:
@@ -428,14 +431,14 @@ scummvm:
   comment_en: |
     Put scummvm games foders in this folder.
 
-    For each game, you must create a file named from the short name of the game and with the extension ".7z .svm .scummvm .residualvm .zip"
+    For each game, you must create a file named from the short name of the game and with the extension ".scummvm"
 
     Short game names can be found at http://scummvm.org/compatibility/
     For example, for "Broken Sword" create the file "Broken Sword/sword1.scummvm"
   comment_fr: |
     Placez les dossiers de jeux scummvm dans ce dossier.
 
-    Pour chaque jeu, dans son repertoire, vous devez creer un fichier portant le nom court du jeu et finissant par ".7z .svm .scummvm .residualvm .zip"
+    Pour chaque jeu, dans son repertoire, vous devez creer un fichier portant le nom court du jeu et finissant par ".scummvm"
 
     Vous trouverez les noms courts a l'adresse : http://scummvm.org/compatibility/
     Par exemple pour "Les Chevaliers de Baphomet" creez le fichier "Les Chevaliers de Baphomet/sword1.scummvm"
@@ -450,11 +453,13 @@ dos:
   platform:   pc
   emulators:
     dosbox:
-      dosbox:   { requireAnyOf: [BR2_PACKAGE_DOSBOX]          }
+      dosbox:           { requireAnyOf: [BR2_PACKAGE_DOSBOX]          }
+    dosbox_staging:
+      dosbox_staging:   { requireAnyOf: [BR2_PACKAGE_DOSBOX_STAGING]  }
     dosboxx:
-      dosbox-x: { requireAnyOf: [BR2_PACKAGE_DOSBOX_X]        }
+      dosbox-x:         { requireAnyOf: [BR2_PACKAGE_DOSBOX_X]        }
     libretro:
-      dosbox:   { requireAnyOf: [BR2_PACKAGE_LIBRETRO_DOSBOX] }
+      dosbox:           { requireAnyOf: [BR2_PACKAGE_LIBRETRO_DOSBOX] }
   comment_en: |
     Each game (files) must be placed its own directory having the ".pc .dos" extension.
     In each directory, a dosbox.bat file must contain the command line for launching the game.
@@ -490,7 +495,7 @@ dos:
 
 fbneo:
   name:       Final Burn Neo
-  manufacturer: Misc. Arcade
+  manufacturer: Arcade
   release:
   hardware: arcade
   extensions: [zip, 7z]
@@ -509,7 +514,7 @@ fbneo:
 
 mame:
   name:       Mame
-  manufacturer: Misc. Arcade
+  manufacturer: Arcade
   release:
   hardware: arcade
   extensions: [zip, 7z]
@@ -521,6 +526,9 @@ mame:
       mame0139:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME2010]       }
       mame:         { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME]           }
       fbneo:        { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FBNEO]          }
+    mame:
+      mame:         { requireAnyOf: [BR2_PACKAGE_MAME]                    }
+
   comment_en: |
     The system uses libretro mame2003 as default core: compatible ROMs must come from set 0.78
     The libretro core imame4all, based on MAME v0.37b5, is also included.
@@ -534,12 +542,31 @@ mame:
     Fichiers spéciaux pour le core mame2003 :
     - Ajoutez vos fichiers samples dans le répertoire /userdata/bios/mame2003/samples/
 
+hbmame:
+  name:       HBMame
+  manufacturer: Arcade
+  release: 2013
+  hardware: arcade
+  extensions: [zip, 7z]
+  emulators:
+    libretro:
+      hbmame:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_HBMAME] }
+  comment_en: |
+    HBMAME (HomeBrew MAME) is a derivative of MAME, and contains various hacks and homebrews.
+    What's in it?
+        - Homebrew games meant for arcade hardware, or emulators of arcade hardware
+        - Hacks of arcade games
+        - Test roms and similar that do not generate revenue
+        - Selected bootlegs that are not in MAME
+        - Games that are enhanced or improved but not suitable for MAME
+
 neogeo:
   name:       Neo-Geo
   manufacturer: SNK
   release: 1990
   hardware: console
   extensions: [7z, zip]
+  platform:   neogeo, arcade
   emulators:
     libretro:
       fbneo:        { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FBNEO]          }
@@ -547,13 +574,15 @@ neogeo:
       mame078plus:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME2003_PLUS]  }
       mame0139:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME2010]       }
       mame:         { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME]           }
+    mame:
+      mame:         { requireAnyOf: [BR2_PACKAGE_MAME]                    }
 
 neogeocd:
   name:       Neo-Geo CD
   manufacturer: SNK
   release: 1994
   hardware: console
-  extensions: [cue, iso, chd, zip, 7z]
+  extensions: [cue, iso, chd]
   emulators:
     libretro:
       neocd:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_NEOCD] }
@@ -705,7 +734,7 @@ wswanc:
 
 prboom:
   name:       PrBoom
-  manufacturer: Misc. Port
+  manufacturer: Ports
   release:
   hardware: port
   extensions: [wad, iwad, pwad]
@@ -726,7 +755,7 @@ prboom:
 
 tyrquake:
   name:       TyrQuake
-  manufacturer: Misc. Port
+  manufacturer: Ports
   release:
   hardware: port
   extensions: [pak]
@@ -741,7 +770,7 @@ tyrquake:
 
 mrboom:
   name:       MrBoom
-  manufacturer: Misc. Port
+  manufacturer: Ports
   release:
   hardware: port
   extensions: [libretro]
@@ -749,6 +778,41 @@ mrboom:
   emulators:
     libretro:
       mrboom: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MRBOOM] }
+
+tic80:
+  name:       TIC-80
+  manufacturer: Ports
+  release:
+  hardware: console
+  extensions: [tic]
+  emulators:
+    libretro:
+      tic80: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_TIC80] }
+
+pico8:
+  name:       Pico-8
+  manufacturer: Ports
+  release:
+  hardware: console
+  extensions: [p8, png]
+  emulators:
+    libretro:
+      retro8: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_RETRO8] }
+
+cannonball:
+  name:       Cannonball
+  manufacturer: Ports
+  release:
+  hardware: port
+  extensions: [cannonball]
+  group: ports
+  emulators:
+    cannonball:
+      cannonball: { requireAnyOf: [BR2_PACKAGE_CANNONBALL] }
+  comment_en: |
+    Add mame 'OutRun rev. B' ROMs (epr-10187.88, epr-10327a.76.. ) in this directory and rename Cannonball.cannonball.disabled to Cannonball.cannonball.
+  comment_fr: |
+    Ajoutez les roms mame de 'OutRun rev. B' (epr-10187.88, epr-10327a.76.. ) dans ce dossier et renommez Cannonball.cannonball.disabled en Cannonball.cannonball.
 
 vectrex:
   name:       Vectrex
@@ -762,7 +826,7 @@ vectrex:
 
 lutro:
   name:       Lutro
-  manufacturer: Misc. Port
+  manufacturer: Ports
   release:
   hardware: port
   extensions: [lutro, zip, 7z]
@@ -896,7 +960,7 @@ msx2:
   manufacturer: Microsoft
   release: 1985
   hardware: computer
-  extensions: [dsk, mx2, om, zip, 7z]
+  extensions: [dsk, mx2, rom, zip, 7z]
   platform:   msx
   group:      msx
   emulators:
@@ -956,7 +1020,7 @@ msx2+:
   manufacturer: Microsoft
   release: 1988
   hardware: computer
-  extensions: [dsk, mx2, om, zip, 7z]
+  extensions: [dsk, mx2, rom, zip, 7z]
   platform:   msx
   group:      msx
   emulators:
@@ -1089,7 +1153,6 @@ apple2:
   release: 1977
   hardware: computer
   extensions: [nib, do, po, dsk]
-  includeEmulators: no
   emulators:
     linapple:
       linapple: { requireAnyOf: [BR2_PACKAGE_LINAPPLE] }
@@ -1099,7 +1162,7 @@ saturn:
   manufacturer: Sega
   release: 1994
   hardware: console
-  extensions: [cue, ccd, m3u, chd, iso, zip, 7z]
+  extensions: [cue, ccd, m3u, chd, iso, zip]
   emulators:
     libretro:
       beetle-saturn: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BEETLE_SATURN] }
@@ -1122,22 +1185,26 @@ gamecube:
   manufacturer: Nintendo
   release: 2001
   hardware: console
-  extensions: [gcm, iso, gcz, ciso, wbfs]
+  extensions: [gcm, iso, gcz, ciso, wbfs, rvz, elf, dol]
   platform:   gc
   theme:      gc
   emulators:
     dolphin:
       dolphin:  { requireAnyOf: [BR2_PACKAGE_DOLPHIN_EMU]       }
+    libretro:
+      dolphin: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_DOLPHIN] }
 
 wii:
   name:       Nintendo Wii
   manufacturer: Nintendo
   release: 2006
   hardware: console
-  extensions: [gcm, iso, gcz, ciso, wbfs, wad]
+  extensions: [gcm, iso, gcz, ciso, wbfs, wad, rvz, elf, dol]
   emulators:
     dolphin:
       dolphin:  { requireAnyOf: [BR2_PACKAGE_DOLPHIN_EMU]       }
+    libretro:
+      dolphin: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_DOLPHIN] }
   comment_en: |
     To use a virtual horizontal wiimote, include ".side." in the filename (for example ".side.iso").
     You can choose the axis controls among i(nfrared), s(wing), t(ilt) or n(unchuk) :
@@ -1150,23 +1217,41 @@ wii:
         par exemple, pour jouer à mariokart wii, renommer le jeu en mario_kart.side.ti.iso (vous aurez le tilt sur le 1er axe et l'infrarouge sur le 2e (ti))
         par exemple, pour jouer à mario galaxy, renommer le jeu en mario_galaxy.ni.iso (vous aurez le nunchuk sur le 1er axe et l'infrarouge sur le 2e (ni))
     Mettez les textures personnalisées dans /userdata/saves/dolphin-emu/Load/Textures/<game id>.
+
 ps2:
   name:       Sony Playstation 2
   manufacturer: Sony
   release: 2000
   hardware: console
   extensions: [iso, mdf, nrg, bin, img, dump, gz, cso]
-  includeEmulators: no
   emulators:
     pcsx2:
       pcsx2: { requireAnyOf: [BR2_PACKAGE_PCSX2, BR2_PACKAGE_PCSX2_AVX2, BR2_PACKAGE_PCSX2_X86] }
+
+ps3:
+  name:       Sony Playstation 3
+  manufacturer: Sony
+  release: 2006
+  hardware: console
+  extensions: [ps3]
+  emulators:
+    rpcs3:
+      rpcs3: { requireAnyOf: [BR2_PACKAGE_RPCS3] }
+  comment_en: |
+    You must first load the firmware by running rpcs3-config from menu>f1>Applications then File>Install firmware.
+    PS3 roms are directories must be renamed to end with .ps3.
+    First time you load a game, it takes time (a progress bar is visible). It doesn't happen next times.
+  comment_fr: |
+    Vous devez préalablement charger le firmware en lançant rpcs3-config depuis menu>f1>Applications puis File>Install firmware.
+    Les roms ps3 sont des dossiers ; ils doivent être renommés pour terminer par .ps3
+    La première fois que vous chargez un jeu, cela met du temps (une barre de progression est visible). Cela ne se produit pas les fois suivantes.
 
 3do:
   name:       3DO Interactive Multiplayer
   manufacturer: Panasonic - Sanyo - Goldstar
   release: 1993
   hardware: console
-  extensions: [iso, chd, cue, zip, 7z]
+  extensions: [iso, chd, cue]
   emulators:
     libretro:
       opera:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_OPERA]  }
@@ -1205,7 +1290,7 @@ x68000:
 
 openbor:
   name:       OpenBOR
-  manufacturer: Misc. Port
+  manufacturer: Ports
   release:
   hardware: port
   extensions: [pak]
@@ -1265,16 +1350,15 @@ supermodel3:
       supermodel3: { requireAnyOf: [BR2_PACKAGE_SUPERMODEL3] }
 
 daphne:
-  name:       Arcade (Daphne)
-  manufacturer: Misc. Arcade
+  name:       Daphne
+  manufacturer: Arcade
   release:
   hardware: arcade
   extensions: [daphne]
+  platform:   daphne, arcade
   emulators:
     daphne:
       hypseus:  { requireAnyOf: [BR2_PACKAGE_DAPHNE]          }
-    libretro:
-      daphne:   { requireAnyOf: [BR2_PACKAGE_LIBRETRO_DAPHNE] }
 
 thomson:
   name:       Thomson - MO/TO (Theodore)
@@ -1330,7 +1414,7 @@ lightgun:
 
 ports:
   name:       Ports
-  manufacturer: Misc. Port
+  manufacturer: Ports
   release:
   hardware: port
   extensions: [sh]
@@ -1348,24 +1432,52 @@ windows:
   manufacturer: Microsoft
   release: 1992
   hardware: pc
-  extensions: [exe, iso, wine, squashfs]
+  extensions: [pc, exe, wine, wsquashfs, wtgz]
   platform:   pc
-  theme:      pc
+  theme:      windows
   emulators:
     wine:
-      wine:  { requireAnyOf: [BR2_PACKAGE_WINE] }
+      wine:  { requireAnyOf: [BR2_PACKAGE_WINE_LUTRIS] }
 
 windows_installers:
-  name:       Windows installers
+  name:       Install a new Windows game
   manufacturer: Microsoft
   release: 1992
   hardware: pc
-  extensions: [exe, iso, wine]
+  extensions: [exe, iso]
   platform:   pc
-  theme:      pc
+  group:      windows
   emulators:
     wine:
-      wine:  { requireAnyOf: [BR2_PACKAGE_WINE] }
+      wine:  { requireAnyOf: [BR2_PACKAGE_WINE_LUTRIS] }
+
+wiiu:
+  name:       Wii U
+  manufacturer: Nintendo
+  release: 2012
+  hardware: console
+  extensions: [wup, wud, wux, rpx]
+  platform:   wiiu
+  theme:      wiiu
+  emulators:
+    cemu:
+      cemu:  { requireAnyOf: [BR2_PACKAGE_CEMU] }
+
+pygame:
+  name:       pygame
+  manufacturer: pygame
+  release: 2000
+  hardware: library
+  extensions: [pygame]
+  platform:   pygame
+  theme:      pygame
+  emulators:
+    pygame:
+      pygame:  { requireAnyOf: [BR2_PACKAGE_BATOCERA_PYGAME] }
+  comment_en: |
+          Create your game yourself ! Pygame helps you to create games in only some lines. Find a lot of example on internet.
+  comment_fr: |
+          Créez vos jeux vous-même ! Pygame vous aide à créer vos propres jeux en quelques lignes de code seulement. Vous trouvez sur internet plein d'exemples et de tutoriaux.
 
 imageviewer:
   name:       Screenshots

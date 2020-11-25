@@ -3,37 +3,138 @@
 
 libretro:
   features: [ratio, smooth, shaders, pixel_perfect, decoration, latency_reduction, game_translation]
+  cfeatures:
+    gfxbackend:
+      archs_include: [x86, x86_64]
+      prompt: GRAPHICS BACKEND
+      choices:
+        "OpenGL": opengl
+        "Vulkan": vulkan
+
   cores:
     '81':
-      features: [netplay, rewind, autosave]
+      features: [netplay, rewind, autosave, padtokeyboard]
     atari800:
-      features: [         rewind, autosave]
+      features: [         rewind, autosave, padtokeyboard]
     beetle-saturn:
-      features: [netplay, rewind, autosave]
+      features: [netplay,         autosave]
     bluemsx:
-      features: [         rewind, autosave]
+      features: [         rewind, autosave, padtokeyboard]
     bsnes:
       features: [netplay, rewind, autosave]
     cap32:
-      features: [netplay, rewind, autosave]
+      features: [netplay, rewind, autosave, padtokeyboard]
     citra:
       features: [         rewind, autosave]
     daphne:
-      features: [         rewind, autosave]
+      features: [padtokeyboard]
     desmume:
       features: [netplay, rewind, autosave]
+      cfeatures:
+            texture_scaling:
+                prompt: TEXTURES UPSCALING (XBRZ)
+                choices:
+                    "Off": 1
+                    "2x":  2
+                    "4x":  4
+            texture_smoothing:
+                prompt: TEXTURES SMOOTHING
+                choices:
+                    "Off": disabled
+                    "On":  enabled
+            multisampling:
+                prompt: MULTISAMPLING AA
+                choices:
+                    "Off": disabled
+                    "2x":  2
+                    "4x":  4
+                    "8x":  8
+                    "16x": 16
+                    "32x": 32
+    dolphin:
+      features: [ ]
     dosbox:
-      features: [         rewind, autosave]
+      features: [ padtokeyboard ]
+    duckstation:
+      features: [ ]
+      cfeatures:
+            resolution_scale:
+                prompt:  INTERNAL RESOLUTION
+                choices:
+                    "native":   1
+                    "2x":       2
+                    "3x/720p":  3
+                    "4x":       4
+                    "5x/1080p": 5
+                    "6x/1440p": 6
+                    "7x":       7
+                    "8x":       8
+                    "9x":       9
+            antialiasing:
+                prompt:  MSAA/SSAA
+                choices:
+                    "Off":      1
+                    "2x msaa":  2
+                    "4x msaa":  4
+                    "8x msaa":  8
+                    "16x msaa": 16
+                    "32x msaa": 32
+                    "2x ssaa":  2-ssaa
+                    "4x ssaa":  4-ssaa
+                    "8x ssaa":  8-ssaa
+                    "16x ssaa": 16-ssaa
+                    "32x ssaa": 32-ssaa
+            texture_filtering:
+                prompt:  TEXTURE FILTER
+                choices:
+                    "nearest":   Nearest
+                    "bilinear":  Bilinear
+                    "jinc2":     JINC2
+                    "xBR":       xBR
+            widescreen_hack:
+                prompt: WIDESCREEN HACK
+                choices:
+                    "Off":  false
+                    "On":   true
     fbneo:
       features: [netplay, rewind, autosave]
     fceumm:
       features: [netplay, rewind, autosave]
     flycast:
       features: [         rewind, autosave]
+      cfeatures:
+            anisotropic_filtering:
+                prompt: ANISOTROPIC FILTERING
+                choices:
+                    "Off": off
+                    "2x":  2
+                    "4x":  4
+                    "8x":  8
+                    "16x": 16
+            texture_upscaling:
+                prompt: TEXTURES UPSCALING (XBRZ)
+                choices:
+                    "Off": off
+                    "2x":  2x
+                    "4x":  4x
+                    "6x":  6x
+            render_to_texture_upscaling:
+                prompt: RENDER TO TEXTURES UPSCALING
+                choices:
+                    "Off": 1x
+                    "2x":  2x
+                    "3x":  3x
+                    "4x":  4x
+                    "8x":  8x
+            widescreen_hack:
+                prompt: WIDESCREEN HACK
+                choices:
+                    "Off": disabled
+                    "On":  enabled
     freeintv:
-      features: [         rewind, autosave]
+      features: [padtokeyboard]
     fuse:
-      features: [         rewind, autosave]
+      features: [         rewind, autosave, padtokeyboard]
     gambatte:
       features: [         rewind, autosave, colorization]
     genesisplusgx:
@@ -41,18 +142,20 @@ libretro:
     gpsp:
       features: [         rewind, autosave]
     gw:
-      features: [         rewind, autosave]
+      features: [ ]
     handy:
       features: [netplay, rewind, autosave]
     hatari:
-      features: [         rewind, autosave]
+      features: [                 autosave, padtokeyboard]
     imame4all:
       features: [netplay, rewind, autosave]
     kronos:
-      features: [         rewind, autosave]
+      features: [                 autosave]
     lutro:
-      features: [         rewind, autosave]
+      features: [ ]
     mame:
+      features: [netplay, rewind, autosave]
+    hbmame:
       features: [netplay, rewind, autosave]
     mame0139:
       features: [netplay, rewind, autosave]
@@ -64,13 +167,32 @@ libretro:
       features: [netplay, rewind, autosave]
     mednafen_psx:
       features: [         rewind, autosave]
+      cfeatures:
+            internal_resolution:
+                prompt: INTERNAL RESOLUTION
+                choices:
+                    "1x(native)": 1x(native)
+                    "2x":         2x
+                    "4x":         4x
+                    "8x":         8x
+                    "16x":        16x
+            texture_filtering:
+                prompt: TEXTURE FILTERING
+                choices:
+                    "Nearest":    nearest
+                    "SABR":       SABR
+                    "xBR":        xBR
+                    "Bilinear":   bilinear
+                    "3-Point":    3-point
+                    "JINC2":      JINC2
+            widescreen_hack:
+                prompt: WIDESCREEN HACK
+                choices:
+                    "Off":        disabled
+                    "On":         enabled
     mednafen_supergrafx:
       features: [netplay, rewind, autosave]
     mednafen_wswan:
-      features: [netplay, rewind, autosave]
-    mesen:
-      features: [netplay, rewind, autosave]
-    mesen-s:
       features: [netplay, rewind, autosave]
     mgba:
       features: [         rewind, autosave]
@@ -78,18 +200,79 @@ libretro:
       features: [netplay, rewind, autosave]
     mupen64plus-next:
       features: [         rewind, autosave]
+      cfeatures:
+            BilinearMode:
+                prompt: BILINEAR FILTERING
+                choices:
+                    "standard":   standard
+                    "3 point":    3point
+            MultiSampling:
+                prompt: MSAA LEVEL
+                choices:
+                    "off":        0
+                    "2x":         2
+                    "4x":         4
+                    "8x":         8
+                    "16x":        16
+            Texture_filter:
+                prompt: TEXTURE FILTER
+                choices:
+                    "off":        None
+                    "Smooth 1":   Smooth filtering 1
+                    "Smooth 2":   Smooth filtering 2
+                    "Smooth 3":   Smooth filtering 3
+                    "Smooth 4":   Smooth filtering 4
+                    "Sharp 1":    Sharp filtering 1
+                    "Sharp 2":    Sharp filtering 2
+            Texture_Enhancement:
+                prompt: Texture Enhancement
+                choices:
+                    "off":        None
+                    "As Is":      As Is
+                    "X2":         X2
+                    "X2SAI":      X2SAI
+                    "HQ2X":       HQ2X
+                    "HQ2XS":      HQ2XS
+                    "LQ2X":       LQ2X
+                    "LQ2XS":      LQ2XS
+                    "HQ4X":       HQ4X
+                    "2xBRZ":      2xBRZ
+                    "3xBRZ":      3xBRZ
+                    "4xBRZ":      4xBRZ
+                    "5xBRZ":      5xBRZ
+                    "6xBRZ":      6xBRZ
     neocd:
-      features: [         rewind, autosave]
+      features: [                 autosave]
     nestopia:
       features: [netplay, rewind, autosave]
+      cfeatures:
+            palette:
+                prompt: COLOR PALETTE
+                choices:
+                    "consumer":             consumer
+                    "cxa2025as":            cxa2025as
+                    "canonical":            canonical
+                    "alternative":          alternative
+                    "rgb":                  rgb
+                    "pal":                  pal
+                    "composite-direct-fbx": composite-direct-fbx
+                    "pvm-style-d93-fbx":    pvm-style-d93-fbx
+                    "ntsc-hardware-fbx":    ntsc-hardware-fbx
+                    "nes-classic-fbx-fs":   nes-classic-fbx-fs
+                    "raw":                  raw
+                    "custom":               custom
+    tic80:
+      features: [                 autosave]
+    retro8:
+      features: [ ]
     quasi88:
-      features: [netplay, rewind, autosave]
+      features: [netplay, rewind, autosave, padtokeyboard]
     np2kai:
-      features: [netplay, rewind, autosave]
+      features: [netplay, rewind, autosave, padtokeyboard]
     nxengine:
-      features: [         rewind, autosave]
+      features: [ ]
     o2em:
-      features: [         rewind, autosave]
+      features: [                 autosave]
     opera:
       features: [netplay, rewind, autosave]
     parallel_n64:
@@ -115,114 +298,316 @@ libretro:
     prosystem:
       features: [         rewind, autosave]
     puae:
-      features: [         rewind, autosave]
+      features: [         rewind, autosave, padtokeyboard]
+      cfeatures:
+            video_resolution:
+                prompt: VIDEO RESOLUTION
+                choices:
+                    "360p":       lores
+                    "720p":       hires
+                    "1440p":      superhires
+            video_standard:
+                prompt: VIDEO STANDARD
+                choices:
+                    "pal":        PAL
+                    "ntsc":       NTSC
+            zoom_mode:
+                prompt: ZOOM MODE
+                choices:
+                    "deactivate": none
+                    "medium":     medium
+                    "large":      large
+                    "larger":     larger
+            keyrah_mapping:
+                prompt: KEYRAH 2P MAPPING
+                choices:
+                    "On":         enabled
+                    "Off":        disabled
+            mouse_speed:
+                prompt: MOUSE SPEED
+                choices:
+                    "original":   100
+                    "50%":        50
+                    "70%":        70
+                    "120%":       120
+                    "150%":       150
+                    "170%":       170
+                    "200%":       200
+            whdload:
+                prompt: WHDLOAD
+                choices:
+                    "On":         config
+                    "Off":        disabled
+            pad_options:
+                prompt: JUMP ON B
+                choices:
+                    "On":         jump
+                    "Off":        disabled
     px68k:
-      features: [         rewind, autosave]
+      features: [padtokeyboard]
     scummvm:
-      features: [         rewind, autosave]
+      features: [padtokeyboard]
     snes9x:
       features: [netplay, rewind, autosave]
+      cfeatures:
+            reduce_slowdown:
+                prompt: REDUCE SLOWDOWN
+                choices:
+                    "off":        disabled
+                    "light":      light
+                    "compatible": compatible
+                    "max":        max
     snes9x_next:
       features: [netplay, rewind, autosave]
+      cfeatures:
+            reduce_slowdown:
+                prompt: REDUCE SLOWDOWN
+                choices:
+                    "off":        disabled
+                    "light":      light
+                    "compatible": compatible
+                    "max":        max
     stella:
       features: [netplay, rewind, autosave]
     tgbdual:
       features: [netplay, rewind, autosave]
     theodore:
-      features: [netplay, rewind, autosave]
+      features: [netplay, rewind, autosave, padtokeyboard]
     tyrquake:
-      features: [         rewind, autosave]
+      features: [padtokeyboard]
     vb:
       features: [netplay, rewind, autosave]
+      cfeatures:
+            2d_color_mode:
+                prompt: 2D COLOR MODE
+                choices:
+                    "original":            black & red
+                    "black/white":         black & white
+                    "black/blue":          black & blue
+                    "black/cyan":          black & cyan
+                    "black/electric cyan": black & electric cyan
+                    "black/green":         black & green
+                    "black/magenta":       black & magenta
+                    "black/yellow":        black & yellow
+            3d_color_mode:
+                prompt: 3D GLASSES COLOR MODE
+                choices:
+                    "off":                 disabled
+                    "red/blue":            red & blue
+                    "red/cyan":            red & cyan
+                    "red/electric cyan":   red & electric cyan
+                    "green/magenta":       green & magenta
+                    "yellow/blue":         yellow & blue
     vba-m:
       features: [         rewind, autosave]
     vecx:
       features: [         rewind, autosave]
     vice:
-      features: [         rewind, autosave]
+      features: [         rewind, autosave, padtokeyboard]
+      cfeatures:
+            external_palette:
+                prompt: EXTERNAL PALETTE
+                choices:
+                    "default":          default
+                    "colodore":         colodore
+                    "pepto-pal":        pepto-pal
+                    "pepto-ntsc":       pepto-ntsc
+                    "pepto-ntsc-sony":  pepto-ntsc-sony
+                    "cjam":             cjam
+                    "c64hq":            c64hq
+                    "c64s":             c64s
+                    "ccs64":            ccs64
+                    "community-colors": community-colors
+                    "deekay":           deekay
+                    "frodo":            frodo
+                    "godot":            godot
+                    "pc64":             pc64
+                    "ptoing":           ptoing
+                    "rgb":              rgb
+                    "vice":             vice
+            aspect_ratio:
+                prompt: ASPECT RATIO
+                choices:
+                    "pal":              pal
+                    "ntsc":             ntsc
+            zoom_mode:
+                prompt: ZOOM MODE
+                choices:
+                    "deactivate":       none
+                    "small":            small
+                    "medium":           medium
+                    "maximum":          maximum
     virtualjaguar:
-      features: [         rewind, autosave]
+      features: [padtokeyboard]
     yabasanshiro:
       features: [         rewind, autosave]
+      cfeatures:
+            resolution_mode:
+                prompt: RESOLUTION MODE
+                choices:
+                    "original": original
+                    "2x":       2x
+                    "4x":       4x
+                    "720p":     720p
+                    "1080p":    1080p
+                    "4k":       4k
 
 amiberry:
-  features: [ratio, rewind]
+  features: [ratio, padtokeyboard]
 
 citra:
   features: [ratio, rewind, screen_layout]
 
 daphne:
-  features: [ratio, rewind]
+  features: [ratio, padtokeyboard]
 
 dolphin:
-  features: [ratio, rewind]
-  systems:
-    cfeatures:
-        internalresolution:
-          prompt: INTERNAL RESOLUTION
-            choices:
-                1x Native: 1
-                2x Native: 2
-                3x Native: 3
-                4x Native: 4
-                5x Native: 5 
-                6x Native: 6 
-    wii:
-      features: [emulated_wiimotes]
-      cfeatures:
+  features: [ratio, internal_resolution]
+  cfeatures:
         perf_hacks:
-          prompt: PERFORMANCE HACKS
+            prompt: PERFORMANCE HACKS
             choices:
-                OFF: 0
-                ON: 1
+                "Off": 0
+                "On":  1
+        anisotropic_filtering:
+            prompt: ANISOTROPIC FILTERING
+            choices:
+                "Off": 0
+                "2x":  1
+                "4x":  2
+                "8x":  3
+                "16x": 4
+        dual_core:
+            prompt: DUAL CORE
+            choices:
+                "Off": 0
+                "On":  1
+        gpu_sync:
+            prompt: GPU SYNC
+            choices:
+                "Off": 0
+                "On":  1
+        antialiasing:
+            prompt: ANTIALIASING
+            choices:
+                "Off": 0
+                "2x":  2
+                "4x":  4
+                "8x":  8
         hires_textures:
-          prompt: HIRES TEXTURES
+            prompt: HIRES TEXTURES
             choices:
-                OFF: 0
-                ON: 1                
+                "Off": 0
+                "On":  1                
         widescreen_hack:
-          prompt: WIDESCREEN HACK
+            prompt: WIDESCREEN HACK
             choices:
-                OFF: 0
-                ON: 1                  
+                "Off": 0
+                "On":  1  
+        enable_cheats:
+            prompt: ENABLE CHEATS
+            choices:
+                "Off": 0
+                "On":  1
+        enable_mmu:
+            prompt: MEMORY MANAGEMENT UNIT
+            choices:
+                "Off": 0
+                "On":  1
+        enable_fastdisc:
+            prompt: FAST DISK SPEED
+            choices:
+                "Off": 0
+                "On":  1
+        vsync:
+            prompt: VSYNC
+            choices:
+                "Off": 0
+                "On":  1
+        gfxbackend:
+            archs_include: [x86, x86_64]
+            prompt: GRAPHICS BACKEND
+            choices:
+                "OpenGL": OGL
+                "Vulkan": Vulkan
+
+  systems:
+    wii:
+        features: [emulated_wiimotes]
 dosbox:
-  features: [ratio, rewind]
+  features: [ratio, padtokeyboard]
+
+dosbox_staging:
+  features: [ratio, padtokeyboard]
 
 dosbox-x:
-  features: [ratio, rewind]
+  features: [ratio, padtokeyboard]
 
 fsuae:
-  features: [ratio, rewind]
+  features: [ratio, padtokeyboard]
 
 linapple:
-  features: [ratio, rewind]
+  features: [ratio, padtokeyboard]
 
 moonlight:
-  features: [ratio, rewind]
+  features: [ratio]
 
 mupen64plus:
-  features: [ratio, rewind]
+  features: [ratio]
 
 pcsx2:
-  features: [ratio, rewind, fullboot]
+  features: [ratio, fullboot, internal_resolution]
+  cfeatures:
+        anisotropic_filtering:
+            prompt: ANISOTROPIC FILTERING
+            choices:
+                "Off": 0
+                "2x":  2
+                "4x":  4
+                "8x":  8
+                "16x": 16
+        skipdraw:
+            prompt: SKIPDRAW
+            choices:
+                "Off": 0
+                "1":   1
+                "2":   2
+                "3":   3
+                "4":   4
+                "5":   5
+        align_sprite:
+            prompt: ALIGN SPRITE
+            choices:
+                "Off": 0
+                "On":  1
+        vsync:
+            prompt: VSYNC
+            choices:
+                "Off": 0
+                "On":  1
 
 ppsspp:
-  features: [ratio, rewind, internal_resolution]
-
+  features: [ratio, internal_resolution]
+  cfeatures:
+        frameskip:
+            prompt: FRAME SKIP
+            choices:
+                "Off": 0
+                "On":  1
 reicast:
-  features: [ratio, rewind]
+  features: [ratio]
 
 flycast:
-  features: [ratio, rewind]
+  features: [ratio]
 
 scummvm:
-  features: [ratio, rewind]
+  features: [ratio, padtokeyboard]
 
 supermodel3:
   features: [ratio]
 
 vice:
-  features: [ratio, rewind]
+  features: [ratio, padtokeyboard]
 openbor:
   cfeatures:
     ratio:
@@ -245,3 +630,68 @@ openbor:
         ScanLines TV:   9
         TV 2x:         10
         Dot Matrix:    11
+
+cannonball:
+  features: [ratio]
+  cfeatures:
+    highResolution:
+      prompt: HIGH RESOLUTION
+      choices:
+        Off: 0
+        On:  1
+cemu:
+  features: [emulated_wiimotes]
+
+melonds:
+  features: []
+
+rpcs3:
+  features: []
+  cfeatures:
+    gui:
+      prompt: Display user interface
+      choices:
+        Off: 0
+        On:  1
+    gfxbackend:
+      prompt: GRAPHICS BACKEND
+      choices:
+        OpenGL: OpenGL
+        Vulkan: Vulkan
+
+mame:
+  features: []
+
+wine:
+  features: [padtokeyboard]
+  cfeatures:
+    dxvk:
+      prompt: dxvk
+      choices:
+        Off: 0
+        On:  1
+    dxvk_hud:
+      prompt: dxvk hud
+      choices:
+        Off: 0
+        On:  1
+    esync:
+      prompt: esync
+      choices:
+        Off: 0
+        On:  1
+    fsync:
+      prompt: fsync
+      choices:
+        Off: 0
+        On:  1
+    pba:
+      prompt: pba
+      choices:
+        Off: 0
+        On:  1
+    virtual_desktop:
+      prompt: virtual desktop
+      choices:
+        Off: 0
+        On:  1

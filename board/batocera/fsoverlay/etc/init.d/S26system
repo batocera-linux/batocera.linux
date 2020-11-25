@@ -4,18 +4,6 @@ systemsetting="batocera-settings"
 config_script=batocera-config
 log="/userdata/system/logs/batocera.log"
 
-rb_volume_configure() {
-    batocera-audio "unlock-volume" >> $log
-}
-
-batocera_audio_configure() {
-    settingsAudio="`$systemsetting -command load -key audio.device`"
-    if [[ "$settingsAudio" == "" ]];then
-        settingsAudio="auto"
-    fi
-    batocera-audio set "$settingsAudio" >> $log
-}
-
 rb_gpio_configure() {
     settings_gpio_mk="`$systemsetting -command load -key controllers.gpio.enabled`"
     if [ "$settings_gpio_mk" == "1" ];then
@@ -102,15 +90,6 @@ rb_xarcade2jstick() {
     fi
 }
 
-# from https://batocera-linux.xorhub.com/forum/d/794-how-to-hdmi-sound-on-x86-builds
-rb_alsa_load() {
-    alsactl restore -f /userdata/system/asound.state
-}
-
-rb_alsa_save() {
-    alsactl store -f /userdata/system/asound.state
-}
-
 ba_es_core_dump() {
     sysctl -w kernel.core_pattern=/userdata/system/logs/core.%e
 }
@@ -124,7 +103,6 @@ case "$1" in
 	rb_gpio_configure&    # 0.9 start by the gpio while it's the longer
 	rb_keyboad_lang&      # 0.7
 	rb_xbox&              # 0.6
-	( rb_volume_configure ; batocera_audio_configure ; rb_alsa_load) &  # 1.0
 	rb_timezone&          # 0.4
 	rb_hostname&          # 0.4
 	rb_xarcade2jstick&    # 0.1
@@ -132,10 +110,8 @@ case "$1" in
 	wait
 	;;
   stop)
-        rb_alsa_save
 	;;
   restart|reload)
-	batocera_audio_configure
 	;;
   *)
 esac

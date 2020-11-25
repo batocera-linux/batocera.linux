@@ -1,0 +1,10 @@
+--- a/3rdparty/wolfssl/CMakeLists.txt	2020-07-21 15:06:25.534717568 +0200
++++ b/3rdparty/wolfssl/CMakeLists.txt	2020-07-21 15:06:35.250874736 +0200
+@@ -20,6 +20,7 @@
+ include_directories(${wolfssl_DIR} ${CMAKE_CURRENT_SOURCE_DIR})
+ 
+ # Add wolfSSL library source files, to be compiled as STATIC library
++set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+ add_library(wolfssl-3-static STATIC
+             ${wolfssl_DIR}/wolfcrypt/src/aes.c
+             ${wolfssl_DIR}/wolfcrypt/src/arc4.c

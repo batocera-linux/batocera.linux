@@ -11,6 +11,7 @@
 # Added update information + beta branch // 10.02.2020
 # Added --reboot // 26.02.2020
 # Added --overlay and --remount // 13.04.2020
+# Updated version detection only depended from build-date and build-time now
 
 # Get all childpids from calling process
 function getcpid() {
@@ -59,6 +60,11 @@ function emu_kill() {
         done
         unset pidarray
     fi
+}
+
+# Future proof update check, depends just on build-date and build-time
+function version_update() {
+    echo "$1" | awk '{ $0=$(NF-1)$NF; gsub(/[^0-9]/,""); print }'
 }
 
 # ---- MAINS ----
@@ -139,7 +145,7 @@ case ${1,,} in
             echo "Branch:      ${BRANCH^^}-branch searched"
             echo "Used arch:   $ARCH"
             echo "Installed:   $VER"
-            if [[ ${VER//[^[:digit:]]/} -lt ${NET_VERSION//[^[:digit:]]/} ]]; then
+            if [[ $(version_update "$VER") -lt $(version_update "$NET_VERSION") ]]; then
                 echo "Status:      Possible Update found!"
                 ret=0
             else
@@ -200,7 +206,7 @@ case ${1,,} in
                              default: stable, you can type --update beta
                   --overlay  will try to backup your overlay file
                   --remount  toggle write access to <dir>, default /boot
-                             This switch can have serious effects for your setup!"
+                             This switch can have serious effects for your setup"
     ;;
 
 esac

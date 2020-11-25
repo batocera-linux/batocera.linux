@@ -1,17 +1,17 @@
 #!/bin/bash
 
 soundDisabled() {
-    grep -qE "^[ ]*splashsound[ ]*=[ ]*false[ ]*$" /boot/batocera-boot.conf
+    grep -qE "^[ ]*splash.screen.sound[ ]*=[ ]*0[ ]*$" /boot/batocera-boot.conf
 }
 
 do_start ()
 {
-    if ls /boot/*.mp4 >/dev/null 2>/dev/null
+    if ls /boot/splash/*.mp4 >/dev/null 2>/dev/null
     then
-        do_videostart "$(ls /boot/*.mp4 | sed -e "$((RANDOM%$(ls -1 /boot/*.mp4 | wc -l)+1))!d")"
-    elif [[ $(ls /boot/*.{jpg,png}  2>/dev/null) ]]
+        do_videostart "$(ls /boot/splash/*.mp4 | sed -e "$((RANDOM%$(ls -1 /boot/splash/*.mp4 | wc -l)+1))!d")"
+    elif [[ $(ls /boot/splash/*.{jpg,png}  2>/dev/null) ]]
     then
-        do_imagestart "$(ls /boot/*.{jpg,png} | sed -e "$((RANDOM%$(ls -1 /boot/*.{jpg,png} | wc -l)+1))!d")"
+        do_imagestart "$(ls /boot/splash/*.{jpg,png} | sed -e "$((RANDOM%$(ls -1 /boot/splash/*.{jpg,png} | wc -l)+1))!d")"
     else
         do_videostart "/usr/share/batocera/splash/splash.mp4"
     fi
@@ -28,6 +28,8 @@ do_imagestart()
         let N++
     done
     test -e /dev/fb0 && fbv -f -i "${image}"
+    sleep infinity
+    wait $!
 }
 
 do_videostart ()
@@ -39,19 +41,12 @@ do_videostart ()
         ffplay_opt=-an
     fi
     /usr/bin/ffplay $ffplay_opt -autoexit -loglevel 0 "$video" &
-    PID=$!
-    # Wait for emulationstation or Kodi, but not more than 20 seconds
-    count=0
-    while [[ ! -f "/tmp/emulationstation.ready" && ! -e "/var/run/kodi.msg" && $count -lt 400 ]]; do
-        sleep 0.1
-        ((count++))
-    done
-    kill -9 "${PID}"
+    wait $! 
 }
 
 case "$1" in
     start)
-	grep -qE '^[ ]*autoresize[ ]*=[ ]*true[ ]*$' "/boot/batocera-boot.conf" && exit 0
+        grep -qE '^[ ]*splash.screen.enabled[ ]*=[ ]*0[ ]*$' "/boot/batocera-boot.conf" && exit 0
         do_start &
         ;;
     stop)

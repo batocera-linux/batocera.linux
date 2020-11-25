@@ -1,0 +1,24 @@
+--- a/Makefile	2020-10-01 18:15:51.627083117 +0200
++++ b/Makefile	2020-10-01 18:17:45.433361160 +0200
+@@ -118,11 +118,9 @@
+     LDFLAGS += -L/opt/vero3/lib
+     HAVE_NEON = 1
+ 
+-# Amlogic S905/S905X/S912 (AMLGXBB/AMLGXL/AMLGXM) e.g. Khadas VIM1/2 / S905X2 (AMLG12A) & S922X/A311D (AMLG12B) e.g. Khadas VIM3 - 32-bit userspace
++# Amlogic S905/S905X/S912 (AMLGXBB/AMLGXL/AMLGXM) e.g. Khadas VIM1/2 / S905X2 (AMLG12A) & S922X/A311D (AMLG12B) e.g. Khadas VIM3
+ else ifneq (,$(findstring AMLG,$(PLATFORM)))
+-    CPUFLAGS += -mfloat-abi=hard -mfpu=neon-fp-armv8
+-    CPPFLAGS += -DARMV6_ASSEMBLY -D_FILE_OFFSET_BITS=64 -DARMV6T2 -DUSE_ARMNEON -DARM_HAS_DIV
+-    HAVE_NEON = 1
++    CPPFLAGS += -DCPU_AARCH64 -D_FILE_OFFSET_BITS=64
+ 
+     ifneq (,$(findstring AMLG12,$(PLATFORM)))
+       ifneq (,$(findstring AMLG12B,$(PLATFORM)))
+@@ -133,6 +131,7 @@
+     else ifneq (,$(findstring AMLGX,$(PLATFORM)))
+       CPUFLAGS += -mcpu=cortex-a53
+       CPPFLAGS += -DUSE_RENDER_THREAD
++    AARCH64 = 1
+     endif
+ 
+ # Odroid Go Advance target (SDL2, 64-bit)

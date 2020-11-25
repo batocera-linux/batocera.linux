@@ -3,8 +3,8 @@
 # BLASTEM
 #
 ################################################################################
-# Version.: Commits on May 16, 2020
-LIBRETRO_BLASTEM_VERSION = a042e046f7f2
+# Version.: Commits on Nov 09, 2020
+LIBRETRO_BLASTEM_VERSION = 8e7b06ade815
 LIBRETRO_BLASTEM_SOURCE = $(LIBRETRO_BLASTEM_VERSION).tar.gz
 LIBRETRO_BLASTEM_SITE = https://www.retrodev.com/repos/blastem/archive
 
@@ -15,7 +15,7 @@ LIBRETRO_BLASTEM_EXTRAOPTS=""
 ifeq ($(BR2_x86_64),y)
         LIBRETRO_BLASTEM_EXTRAOPTS=CPU=x86_64
 endif
-ifeq ($(BR2_x86_i586),y)
+ifeq ($(BR2_x86_i686),y)
         LIBRETRO_BLASTEM_EXTRAOPTS=CPU=i686
 endif
 

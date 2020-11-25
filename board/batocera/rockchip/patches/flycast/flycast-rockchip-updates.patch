@@ -1,0 +1,77 @@
+Fix Compile
+--- a/core/deps/picotcp/modules/pico_tcp.c
++++ b/core/deps/picotcp/modules/pico_tcp.c
+@@ -48,7 +48,7 @@
+ /* check if the hold queue contains data (again Nagle) */
+ #define IS_TCP_HOLDQ_EMPTY(t)   (t->tcpq_hold.size == 0)
+ 
+-#define IS_INPUT_QUEUE(q)  (q->pool.compare == input_segment_compare)
++#define IS_INPUT_QUEUE(q)  (0)
+ #define TCP_INPUT_OVERHEAD (sizeof(struct tcp_input_segment) + sizeof(struct pico_tree_node))
+ 
+ 
+
+Fix X11 reference when building without it
+--- a/core/khronos/EGL/eglplatform.h
++++ b/core/khronos/EGL/eglplatform.h
+@@ -95,13 +95,12 @@
+ 
+ #elif defined(__unix__)
+ 
+-/* X11 (tentative)  */
+-#include <X11/Xlib.h>
+-#include <X11/Xutil.h>
++struct gbm_device;
++struct gbm_surface;
+ 
+-typedef Display *EGLNativeDisplayType;
+-typedef Pixmap   EGLNativePixmapType;
+-typedef Window   EGLNativeWindowType;
++typedef struct gbm_device * EGLNativeDisplayType;
++typedef struct gbm_surface * EGLNativeWindowType;
++typedef void * EGLNativePixmapType;
+ 
+ #else
+ #error "Platform not recognized"
+
+Add rockchip platform
+Use "/opt/vc" as include path so the buildroot package replaces it with the correct staging folder
+Also include libdrm and gbm for compatibility with resolution switcher, otherwise not needed
+--- a/shell/linux/Makefile
++++ b/shell/linux/Makefile
+@@ -209,6 +223,20 @@ else ifneq (,$(findstring odroid,$(platform)))
+         endif
+     endif
+ 
++# ROCKCHIP
++else ifneq (,$(findstring rockchip,$(platform)))
++    MFLAGS += -marm -march=armv8-a+crc -mfpu=neon -mfloat-abi=hard -funroll-loops -mtune=cortex-a53
++    ASFLAGS += -march=armv8-a+crc -mfpu=neon -mfloat-abi=hard
++    CXXFLAGS += -fexceptions
++    CFLAGS += -D TARGET_LINUX_ARMv8 -DARM_HARDFP -fsingle-precision-constant -DPNG_ARM_NEON=1 -DPNG_ARM_NEON_OPT=1 -DMESA_EGL_NO_X11_HEADERS=1 -DEGL_NO_X11=1 -fpermissive -fno-builtin-sqrtf
++    INCS +=  -I/opt/vc/include/ -I/opt/vc/include/libdrm
++    LIBS += -lpng -lz -ldrm -lGLESv2
++    USE_GLES := 1
++    USE_EVDEV := 1
++    USE_UDEV := 1
++    FOR_LINUX := 1
++    ISARM64 := 1
++
+ # GCW Zero
+ else ifneq (,$(findstring gcwz,$(platform)))
+     NOT_ARM := 1
+
+Don't include khronos, use system files
+--- a/shell/linux/Makefile
++++ b/shell/linux/Makefile
+@@ -313,7 +313,7 @@
+ 
+ CXXFLAGS += $(RZDCY_CFLAGS) -fno-rtti -fno-operator-names -D_GLIBCXX_USE_CXX11_ABI=0 -std=gnu++11
+ 
+-INCS += -I$(RZDCY_SRC_DIR) -I$(RZDCY_SRC_DIR)/deps -I$(RZDCY_SRC_DIR)/khronos
++INCS += -I$(RZDCY_SRC_DIR) -I$(RZDCY_SRC_DIR)/deps
+ 
+ ifdef FOR_WINDOWS
+ 	LIBS += -lm -static -lpthread
+
+

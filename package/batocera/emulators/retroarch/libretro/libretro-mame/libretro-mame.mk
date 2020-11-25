@@ -3,11 +3,9 @@
 # MAME
 #
 ################################################################################
-# Version: Commits on Apr 13, 2020 (0.220)
-LIBRETRO_MAME_VERSION = abca8f7ac5fe24ba7c29a75d6ebda591a20f61cd
-# LIBRETRO_MAME_SITE = $(call github,tcamargo,mame,$(LIBRETRO_MAME_VERSION))
+# Version: Commits on Nov 16, 2020 (0.226)
+LIBRETRO_MAME_VERSION = 14e436ffcdc11e8a983d15a4362dc1f60a9dd936
 LIBRETRO_MAME_SITE = $(call github,libretro,mame,$(LIBRETRO_MAME_VERSION))
-# LIBRETRO_MAME_OVERRIDE_SRCDIR = /sources/mame
 LIBRETRO_MAME_LICENSE = MAME
 # install in staging for debugging (gdb)
 LIBRETRO_MAME_INSTALL_STAGING=YES
@@ -20,14 +18,16 @@ ifeq ($(BR2_i386),y)
 	LIBRETRO_MAME_EXTRA_ARGS += PTR64=0 LIBRETRO_CPU=x86 PLATFORM=x86
 endif
 
-ifeq ($(BR2_arm),y)
+ifeq ($(BR2_arm),y) 
 	LIBRETRO_MAME_EXTRA_ARGS += PTR64=0 LIBRETRO_CPU=arm PLATFORM=arm
-	LIBRETRO_MAME_ARCHOPTS += -D__arm__
+	# workaround for asmjit broken build system (arm backend is not public)
+	LIBRETRO_MAME_ARCHOPTS += -D__arm__ -DASMJIT_BUILD_X86
 endif
 
 ifeq ($(BR2_aarch64),y)
 	LIBRETRO_MAME_EXTRA_ARGS += PTR64=1 LIBRETRO_CPU= PLATFORM=arm64
-	LIBRETRO_MAME_ARCHOPTS += -D__aarch64__
+	# workaround for asmjit broken build system (arm backend is not public)
+	LIBRETRO_MAME_ARCHOPTS += -D__aarch64__ -DASMJIT_BUILD_X86
 endif
 
 ifeq ($(BR2_ENABLE_DEBUG),y)

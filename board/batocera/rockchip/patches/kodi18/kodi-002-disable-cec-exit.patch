@@ -1,0 +1,18 @@
+MRFIXIT: when kodi exits, the display is sent a CEC code which usually turns off the display. This isn't ideal in batocera - unless it's a power-off event. A reboot CEC doesn't disable the monitor, so use that unless it's a power off event.
+--- a/xbmc/Application.cpp
++++ b/xbmc/Application.cpp
+@@ -2549,7 +2549,13 @@
+     m_frameMoveGuard.unlock();
+ 
+     CVariant vExitCode(CVariant::VariantTypeObject);
+-    vExitCode["exitcode"] = exitCode;
++
++    // Passing a CEC exit code usually powers off display - avoid that by pretending it's a reboot unless it's a power-off
++    if (exitCode == EXITCODE_POWERDOWN)
++      vExitCode["exitcode"] = exitCode;
++    else
++      vExitCode["exitcode"] = EXITCODE_REBOOT;
++
+     CServiceBroker::GetAnnouncementManager()->Announce(ANNOUNCEMENT::System, "xbmc", "OnQuit", vExitCode);
+ 
+     // Abort any active screensaver

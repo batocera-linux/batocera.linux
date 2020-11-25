@@ -4,30 +4,28 @@
 #
 ################################################################################
 
-BATOCERA_SCRIPTS_VERSION = 1.0
+BATOCERA_SCRIPTS_VERSION = 1.1
 BATOCERA_SCRIPTS_LICENSE = GPL
 BATOCERA_SCRIPTS_DEPENDENCIES = pciutils
 BATOCERA_SCRIPTS_SOURCE=
 
-# audio
-ifeq ($(BR2_PACKAGE_BATOCERA_AUDIO_DMIX),y)
-	BATOCERA_AUDIO_SCRIPT=dmix
-	BATOCERA_SCRIPTS_POST_INSTALL_TARGET_HOOKS += BATOCERA_SCRIPTS_INSTALL_AUDIO_DMIX
-else ifeq ($(BR2_PACKAGE_BATOCERA_AUDIO_RPI),y)
-	BATOCERA_AUDIO_SCRIPT=rpi
-else ifeq ($(BR2_PACKAGE_BATOCERA_AUDIO_ODROIDGOA),y)
-	BATOCERA_AUDIO_SCRIPT=odroidgoa
-	BATOCERA_SCRIPTS_POST_INSTALL_TARGET_HOOKS += BATOCERA_SCRIPTS_INSTALL_AUDIO_DMIX
-else ifeq ($(BR2_PACKAGE_BATOCERA_AUDIO_VIM3),y)
-	BATOCERA_AUDIO_SCRIPT=vim3
-else
-	BATOCERA_AUDIO_SCRIPT=none
+BATOCERA_SCRIPT_RESOLUTION_TYPE=basic
+ifeq ($(BR2_PACKAGE_RPI_USERLAND),y)
+  BATOCERA_SCRIPT_RESOLUTION_TYPE=tvservice
+endif
+ifeq ($(BR2_PACKAGE_LIBDRM),y)
+  BATOCERA_SCRIPT_RESOLUTION_TYPE=drm
+endif
+ifeq ($(BR2_PACKAGE_XORG7),y)
+  BATOCERA_SCRIPT_RESOLUTION_TYPE=xorg
+endif
+
+# doesn't work on odroidgoa with mali g31_gbm and rockpro64 and mali rk450
+ifeq ($(BR2_PACKAGE_MALI_G31_GBM)$(BR2_PACKAGE_MALI_RK450),y)
+  BATOCERA_SCRIPT_RESOLUTION_TYPE=basic
 endif
 
 define BATOCERA_SCRIPTS_INSTALL_TARGET_CMDS
-	mkdir -p $(TARGET_DIR)/usr/lib/python2.7 $(TARGET_DIR)/usr/bin $(TARGET_DIR)/usr/share/sounds
-	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-scripts/Mallet.wav           $(TARGET_DIR)/usr/share/sounds
-
 	install -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-scripts/scripts/bluetooth/bluezutils.py            $(TARGET_DIR)/usr/lib/python2.7/ # any variable ?
 	install -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-scripts/scripts/bluetooth/batocera-bluetooth       $(TARGET_DIR)/usr/bin/
 	install -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-scripts/scripts/bluetooth/batocera-bluetooth-agent $(TARGET_DIR)/usr/bin/
@@ -38,6 +36,7 @@ define BATOCERA_SCRIPTS_INSTALL_TARGET_CMDS
 	install -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-scripts/scripts/batocera-kodilauncher           $(TARGET_DIR)/usr/bin/
 	install -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-scripts/scripts/batocera-usbmount               $(TARGET_DIR)/usr/bin/
 	install -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-scripts/scripts/batocera-encode                 $(TARGET_DIR)/usr/bin/
+	install -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-scripts/scripts/batocera-padsinfo               $(TARGET_DIR)/usr/bin/
 	install -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-scripts/scripts/batocera-info                   $(TARGET_DIR)/usr/bin/
 	install -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-scripts/scripts/batocera-install                $(TARGET_DIR)/usr/bin/
 	install -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-scripts/scripts/batocera-format                 $(TARGET_DIR)/usr/bin/
@@ -57,29 +56,26 @@ define BATOCERA_SCRIPTS_INSTALL_TARGET_CMDS
 	install -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-scripts/scripts/batocera-brightness             $(TARGET_DIR)/usr/bin/
 	install -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-scripts/scripts/batocera-es-swissknife          $(TARGET_DIR)/usr/bin/
 	install -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-scripts/scripts/batocera-create-collection      $(TARGET_DIR)/usr/bin/
-	install -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-scripts/scripts/batocera-audio-$(BATOCERA_AUDIO_SCRIPT) $(TARGET_DIR)/usr/bin/batocera-audio
-endef
-
-define BATOCERA_SCRIPTS_INSTALL_AUDIO_DMIX
-	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-scripts/alsa/asound.conf.dmix $(TARGET_DIR)/etc/asound.conf
+	install -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-scripts/scripts/batocera-store                  $(TARGET_DIR)/usr/bin/
+	install -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-scripts/scripts/batocera-resolution.$(BATOCERA_SCRIPT_RESOLUTION_TYPE) $(TARGET_DIR)/usr/bin/batocera-resolution
 endef
 
 define BATOCERA_SCRIPTS_INSTALL_XORG
 	mkdir -p $(TARGET_DIR)/etc/X11/xorg.conf.d
 	ln -fs /userdata/system/99-nvidia.conf $(TARGET_DIR)/etc/X11/xorg.conf.d/99-nvidia.conf
+	install -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-scripts/scripts/batocera-record $(TARGET_DIR)/usr/bin/
 endef
 
-define BATOCERA_SCRIPTS_INSTALL_WINE
-	ln -fs /userdata/system/99-nvidia.conf $(TARGET_DIR)/etc/X11/xorg.conf.d/99-nvidia.conf
-	install -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-scripts/scripts/batocera-wine $(TARGET_DIR)/usr/bin/
+define BATOCERA_SCRIPTS_INSTALL_ROCKCHIP
+	install -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-scripts/scripts/batocera-rockchip-suspend $(TARGET_DIR)/usr/bin/
 endef
 
 ifeq ($(BR2_PACKAGE_XSERVER_XORG_SERVER),y)
   BATOCERA_SCRIPTS_POST_INSTALL_TARGET_HOOKS += BATOCERA_SCRIPTS_INSTALL_XORG
 endif
 
-ifeq ($(BR2_PACKAGE_WINE),y)
-  BATOCERA_SCRIPTS_POST_INSTALL_TARGET_HOOKS += BATOCERA_SCRIPTS_INSTALL_WINE
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_ROCKCHIP_ANY),y)
+  BATOCERA_SCRIPTS_POST_INSTALL_TARGET_HOOKS += BATOCERA_SCRIPTS_INSTALL_ROCKCHIP
 endif
 
 $(eval $(generic-package))

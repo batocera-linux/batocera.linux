@@ -1,0 +1,11 @@
+--- a/Makefile	2020-08-09 13:16:58.099985199 +0200
++++ b/Makefile	2020-08-09 13:16:12.919111541 +0200
+@@ -26,7 +26,7 @@
+     export TopDIR ?= $(shell pwd)
+ else
+     # dkms processing or in tree compilation
+-    export TopDIR ?= $(srctree)/$(src)
++    export TopDIR ?= /$(srctree)/$(src)
+ endif
+ 
+ EXTRA_CFLAGS += -I$(TopDIR)/include

@@ -1,0 +1,545 @@
+MFFIXIT: collection of patches from upstream to address some existing issues with SDL 2.0.12 causing segfaults
+
+From 5538d8fec6cab78b8c9409f6826cc1ccebba76e7 Mon Sep 17 00:00:00 2001
+From: "Ryan C. Gordon" <icculus@icculus.org>
+Date: Fri, 20 Mar 2020 15:13:09 -0400
+Subject: [PATCH 042/326] egl: Don't use SDL_LoadFunction to get GL entry
+ points on Emscripten.
+
+This results in a dlsym() call, which causes Emscripten to panic if the game
+wasn't explicitly built dlopen support. eglGetProcAddress works just fine on
+this platform, so just let that codepath handle it.
+
+--HG--
+extra : rebase_source : 7cf75ced6741da7762b0bbe8e86c8ab4c70dcbd3
+---
+ src/video/SDL_egl.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/src/video/SDL_egl.c b/src/video/SDL_egl.c
+index a8a1485bb9..189ae63d15 100644
+--- a/src/video/SDL_egl.c
++++ b/src/video/SDL_egl.c
+@@ -231,6 +231,7 @@ SDL_EGL_GetProcAddress(_THIS, const char *proc)
+         retval = _this->egl_data->eglGetProcAddress(proc);
+     }
+ 
++    #ifndef __EMSCRIPTEN__  /* LoadFunction isn't needed on Emscripten and will call dlsym(), causing other problems. */
+     /* Try SDL_LoadFunction() first for EGL <= 1.4, or as a fallback for >= 1.5. */
+     if (!retval) {
+         static char procname[64];
+@@ -242,8 +243,9 @@ SDL_EGL_GetProcAddress(_THIS, const char *proc)
+             retval = SDL_LoadFunction(_this->egl_data->egl_dll_handle, procname);
+         }
+     }
++    #endif
+ 
+-    /* Try eglGetProcAddress if we on <= 1.4 and still searching... */
++    /* Try eglGetProcAddress if we're on <= 1.4 and still searching... */
+     if (!retval && !is_egl_15_or_later && _this->egl_data->eglGetProcAddress) {
+         retval = _this->egl_data->eglGetProcAddress(proc);
+         if (retval) {
+
+
+From cd2ac0e06f1cc02e9ba427474862eab47867189d Mon Sep 17 00:00:00 2001
+From: Jay Petacat <jay@jayschwa.net>
+Date: Sun, 22 Mar 2020 20:09:14 -0400
+Subject: [PATCH 059/326] Do not overwrite window surface created by driver
+
+If a driver's implementation of CreateWindowFramebuffer sets the window
+surface, use that rather than overwriting it. A driver may set the window
+surface if data cannot be passed via the CreateWindowFramebuffer output
+parameters (e.g. surface palette colors).
+---
+ src/video/SDL_video.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/src/video/SDL_video.c b/src/video/SDL_video.c
+index de0bc1cbc7..76097a8e49 100644
+--- a/src/video/SDL_video.c
++++ b/src/video/SDL_video.c
+@@ -2319,6 +2319,10 @@ SDL_CreateWindowFramebuffer(SDL_Window * window)
+         return NULL;
+     }
+ 
++    if (window->surface) {
++        return window->surface;
++    }
++
+     if (!SDL_PixelFormatEnumToMasks(format, &bpp, &Rmask, &Gmask, &Bmask, &Amask)) {
+         return NULL;
+     }
+
+From d2960c1374df9620032c280915afd8f31383b9e9 Mon Sep 17 00:00:00 2001
+From: Jay Petacat <jay@jayschwa.net>
+Date: Sun, 12 Apr 2020 00:55:52 -0400
+Subject: [PATCH 122/326] video: NULL out pointer to freed window surface
+
+This behavior matches SDL_RecreateWindow and makes it less likely that
+another piece of code (e.g. a DestroyWindowFramebuffer implementation)
+will attempt to use or free the stale surface pointer.
+---
+ src/video/SDL_video.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/src/video/SDL_video.c b/src/video/SDL_video.c
+index b6d083a534..d8778aa4db 100644
+--- a/src/video/SDL_video.c
++++ b/src/video/SDL_video.c
+@@ -2796,6 +2796,8 @@ SDL_DestroyWindow(SDL_Window * window)
+     if (window->surface) {
+         window->surface->flags &= ~SDL_DONTFREE;
+         SDL_FreeSurface(window->surface);
++        window->surface = NULL;
++        window->surface_valid = SDL_FALSE;
+     }
+     if (_this->DestroyWindowFramebuffer) {
+         _this->DestroyWindowFramebuffer(_this, window);
+
+From b04f324e97551ba114f4700910e5a822c738661c Mon Sep 17 00:00:00 2001
+From: "Ryan C. Gordon" <icculus@icculus.org>
+Date: Mon, 13 Apr 2020 14:44:21 -0400
+Subject: [PATCH 125/326] opengl: Allow SDL_GL_MakeCurrent() to accept a NULL
+ window (thanks, Martin!).
+
+This allows you to bind surfaceless contexts on a background thread to, for
+example, load assets in a separate context, for platforms that have different
+requirements about sharing surfaces, etc.
+
+Martin's notes on the matter:
+
+"Here's a patch that enables passing NULL windows to SDL_GL_MakeCurrent, if
+the involved APIs allow it. Currently, this is only the case for EGL, and
+even then only if some specific extensions are present (which they usually
+are).
+
+If "surfaceless" contexts are not supported, SDL_GL_MakeCurrent continues to
+generate an error (albeit with a more specific error message than it used to),
+so this should not break anything that wasn't broken before."
+
+(Please see https://bugzilla.libsdl.org/show_bug.cgi?id=3695 for more
+discussion.)
+
+Fixes Bugzilla #3695.
+---
+ src/video/SDL_egl.c      | 34 +++++++++++++++++++++++++++++++++-
+ src/video/SDL_egl_c.h    |  7 +------
+ src/video/SDL_sysvideo.h |  5 +++++
+ src/video/SDL_video.c    |  4 +++-
+ 4 files changed, 42 insertions(+), 8 deletions(-)
+
+diff --git a/src/video/SDL_egl.c b/src/video/SDL_egl.c
+index f89e21b1ad..3a84e4a27a 100644
+--- a/src/video/SDL_egl.c
++++ b/src/video/SDL_egl.c
+@@ -81,6 +81,10 @@
+ #define DEFAULT_OGL_ES "libGLESv1_CM.so.1"
+ #endif /* SDL_VIDEO_DRIVER_RPI */
+ 
++#if SDL_VIDEO_OPENGL
++#include "SDL_opengl.h"
++#endif
++
+ /** If we happen to not have this defined because of an older EGL version, just define it 0x0
+     as eglGetPlatformDisplayEXT will most likely be NULL if this is missing
+ */
+@@ -943,6 +947,34 @@ SDL_EGL_CreateContext(_THIS, EGLSurface egl_surface)
+         return NULL;
+     }
+ 
++    /* Check whether making contexts current without a surface is supported.
++     * First condition: EGL must support it. That's the case for EGL 1.5
++     * or later, or if the EGL_KHR_surfaceless_context extension is present. */
++    if ((_this->egl_data->egl_version_major > 1) ||
++        ((_this->egl_data->egl_version_major == 1) && (_this->egl_data->egl_version_minor >= 5)) ||
++        SDL_EGL_HasExtension(_this, SDL_EGL_DISPLAY_EXTENSION, "EGL_KHR_surfaceless_context"))
++    {
++        /* Secondary condition: The client API must support it. */
++        if (profile_es) {
++            /* On OpenGL ES, the GL_OES_surfaceless_context extension must be
++             * present. */
++            if (SDL_GL_ExtensionSupported("GL_OES_surfaceless_context")) {
++                _this->gl_allow_no_surface = 1;
++            }
++        } else {
++            /* Desktop OpenGL supports it by default from version 3.0 on. */
++            void (APIENTRY * glGetIntegervFunc) (GLenum pname, GLint * params);
++            glGetIntegervFunc = SDL_GL_GetProcAddress("glGetIntegerv");
++            if (glGetIntegervFunc) {
++                GLint v = 0;
++                glGetIntegervFunc(GL_MAJOR_VERSION, &v);
++                if (v >= 3) {
++                    _this->gl_allow_no_surface = 1;
++                }
++            }
++        }
++    }
++
+     return (SDL_GLContext) egl_context;
+ }
+ 
+@@ -958,7 +990,7 @@ SDL_EGL_MakeCurrent(_THIS, EGLSurface egl_surface, SDL_GLContext context)
+     /* The android emulator crashes badly if you try to eglMakeCurrent 
+      * with a valid context and invalid surface, so we have to check for both here.
+      */
+-    if (!egl_context || !egl_surface) {
++    if (!egl_context || (!egl_surface && !_this->gl_allow_no_surface)) {
+          _this->egl_data->eglMakeCurrent(_this->egl_data->egl_display, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
+     } else {
+         if (!_this->egl_data->eglMakeCurrent(_this->egl_data->egl_display,
+diff --git a/src/video/SDL_egl_c.h b/src/video/SDL_egl_c.h
+index 83bd6345d4..b01d4bec79 100644
+--- a/src/video/SDL_egl_c.h
++++ b/src/video/SDL_egl_c.h
+@@ -147,12 +147,7 @@ BACKEND ## _GLES_SwapWindow(_THIS, SDL_Window * window) \
+ #define SDL_EGL_MakeCurrent_impl(BACKEND) int \
+ BACKEND ## _GLES_MakeCurrent(_THIS, SDL_Window * window, SDL_GLContext context) \
+ {\
+-    if (window && context) { \
+-        return SDL_EGL_MakeCurrent(_this, ((SDL_WindowData *) window->driverdata)->egl_surface, context); \
+-    }\
+-    else {\
+-        return SDL_EGL_MakeCurrent(_this, NULL, NULL);\
+-    }\
++    return SDL_EGL_MakeCurrent(_this, window ? ((SDL_WindowData *) window->driverdata)->egl_surface : EGL_NO_SURFACE, context);\
+ }
+ 
+ #define SDL_EGL_CreateContext_impl(BACKEND) SDL_GLContext \
+diff --git a/src/video/SDL_sysvideo.h b/src/video/SDL_sysvideo.h
+index 6f1faa031f..ea907c2193 100644
+--- a/src/video/SDL_sysvideo.h
++++ b/src/video/SDL_sysvideo.h
+@@ -375,6 +375,11 @@ struct SDL_VideoDevice
+     SDL_TLSID current_glwin_tls;
+     SDL_TLSID current_glctx_tls;
+ 
++    /* Flag that stores whether it's allowed to call SDL_GL_MakeCurrent()
++     * with a NULL window, but a non-NULL context. (Not allowed in most cases,
++     * except on EGL under some circumstances.) */
++    int gl_allow_no_surface;
++
+     /* * * */
+     /* Data used by the Vulkan drivers */
+     struct
+diff --git a/src/video/SDL_video.c b/src/video/SDL_video.c
+index d8778aa4db..5cb82b6f42 100644
+--- a/src/video/SDL_video.c
++++ b/src/video/SDL_video.c
+@@ -3585,12 +3585,14 @@ SDL_GL_MakeCurrent(SDL_Window * window, SDL_GLContext ctx)
+ 
+     if (!ctx) {
+         window = NULL;
+-    } else {
++    } else if (window) {
+         CHECK_WINDOW_MAGIC(window, -1);
+ 
+         if (!(window->flags & SDL_WINDOW_OPENGL)) {
+             return SDL_SetError("The specified window isn't an OpenGL window");
+         }
++    } else if (!_this->gl_allow_no_surface) {
++        return SDL_SetError("Use of OpenGL without a window is not supported on this platform");
+     }
+ 
+     retval = _this->GL_MakeCurrent(_this, window, ctx);
+
+
+From 81721005fef7d844fe80e8a87a3b4d1a80ea5d48 Mon Sep 17 00:00:00 2001
+From: Conn O'Griofa <connogriofa@gmail.com>
+Date: Mon, 13 Apr 2020 14:48:38 -0400
+Subject: [PATCH 127/326] SDL_EGL_ChooseConfig: don't fall through if no
+ matching format exists On Raspberry Pi 3 via the VC4 driver in firmware KMS
+ mode, none of the found configs match the desired format, causing the
+ function to fall through without any config being selected.
+
+Fix by first iterating over the found configs, and if no match exists,
+don't exclude the non-matching configs. This should fix RPI3 and possibly other
+targets without breaking targets that have a matching native format (such as RPI4).
+---
+ src/video/SDL_egl.c | 16 +++++++++++++++-
+ 1 file changed, 15 insertions(+), 1 deletion(-)
+
+diff --git a/src/video/SDL_egl.c b/src/video/SDL_egl.c
+index 1561bc9ca7..cb19a287d5 100644
+--- a/src/video/SDL_egl.c
++++ b/src/video/SDL_egl.c
+@@ -683,6 +683,7 @@ SDL_EGL_ChooseConfig(_THIS)
+     EGLint found_configs = 0, value;
+     /* 128 seems even nicer here */
+     EGLConfig configs[128];
++    SDL_bool has_matching_format = SDL_FALSE;
+     int i, j, best_bitdiff = -1, bitdiff;
+    
+     if (!_this->egl_data) {
+@@ -766,11 +767,24 @@ SDL_EGL_ChooseConfig(_THIS)
+         return SDL_EGL_SetError("Couldn't find matching EGL config", "eglChooseConfig");
+     }
+ 
++    /* first ensure that a found config has a matching format, or the function will fall through. */
++    for (i = 0; i < found_configs; i++ ) {
++        if (_this->egl_data->egl_required_visual_id)
++        {
++            EGLint format;
++            _this->egl_data->eglGetConfigAttrib(_this->egl_data->egl_display,
++                                            configs[i],
++                                            EGL_NATIVE_VISUAL_ID, &format);
++            if (_this->egl_data->egl_required_visual_id == format)
++                has_matching_format = SDL_TRUE;
++        }
++    }
++
+     /* eglChooseConfig returns a number of configurations that match or exceed the requested attribs. */
+     /* From those, we select the one that matches our requirements more closely via a makeshift algorithm */
+ 
+     for (i = 0; i < found_configs; i++ ) {
+-        if (_this->egl_data->egl_required_visual_id)
++        if (has_matching_format && _this->egl_data->egl_required_visual_id)
+         {
+             EGLint format;
+             _this->egl_data->eglGetConfigAttrib(_this->egl_data->egl_display,
+
+
+From 56ab0e567056ede128f8f34e7fdd97ba47fe63ea Mon Sep 17 00:00:00 2001
+From: "Ryan C. Gordon" <icculus@icculus.org>
+Date: Mon, 13 Apr 2020 18:21:28 -0400
+Subject: [PATCH 132/326] egl: Attempt to make this compile on WinRT, etc.
+
+--HG--
+extra : rebase_source : 11c3478b651613c87e6813937ae35e9abc65936e
+---
+ src/video/SDL_egl.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/video/SDL_egl.c b/src/video/SDL_egl.c
+index cb19a287d5..5a90fc1835 100644
+--- a/src/video/SDL_egl.c
++++ b/src/video/SDL_egl.c
+@@ -977,7 +977,7 @@ SDL_EGL_CreateContext(_THIS, EGLSurface egl_surface)
+             }
+         } else {
+             /* Desktop OpenGL supports it by default from version 3.0 on. */
+-            void (APIENTRY * glGetIntegervFunc) (GLenum pname, GLint * params);
++            void (GL_APIENTRY * glGetIntegervFunc) (GLenum pname, GLint * params);
+             glGetIntegervFunc = SDL_GL_GetProcAddress("glGetIntegerv");
+             if (glGetIntegervFunc) {
+                 GLint v = 0;
+
+From b4361c535ef7b0c9334c1be7f562ee5fa4e76ab4 Mon Sep 17 00:00:00 2001
+From: "Ryan C. Gordon" <icculus@icculus.org>
+Date: Mon, 13 Apr 2020 22:06:12 -0400
+Subject: [PATCH 137/326] opengl: Don't try to do Desktop OpenGL stuff if
+ support isn't available.
+
+--HG--
+extra : rebase_source : 083533ff3a9a5c9404a65e4fefafeed9fffc9ae9
+---
+ src/video/SDL_egl.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/src/video/SDL_egl.c b/src/video/SDL_egl.c
+index 5a90fc1835..58939053c7 100644
+--- a/src/video/SDL_egl.c
++++ b/src/video/SDL_egl.c
+@@ -975,9 +975,10 @@ SDL_EGL_CreateContext(_THIS, EGLSurface egl_surface)
+             if (SDL_GL_ExtensionSupported("GL_OES_surfaceless_context")) {
+                 _this->gl_allow_no_surface = SDL_TRUE;
+             }
++#if SDL_VIDEO_OPENGL
+         } else {
+             /* Desktop OpenGL supports it by default from version 3.0 on. */
+-            void (GL_APIENTRY * glGetIntegervFunc) (GLenum pname, GLint * params);
++            void (APIENTRY * glGetIntegervFunc) (GLenum pname, GLint * params);
+             glGetIntegervFunc = SDL_GL_GetProcAddress("glGetIntegerv");
+             if (glGetIntegervFunc) {
+                 GLint v = 0;
+@@ -986,6 +987,7 @@ SDL_EGL_CreateContext(_THIS, EGLSurface egl_surface)
+                     _this->gl_allow_no_surface = SDL_TRUE;
+                 }
+             }
++#endif
+         }
+     }
+ 
+
+
+From 68d5560206144954d0b2be71b981268f12d4c20b Mon Sep 17 00:00:00 2001
+From: Sam Lantinga <slouken@libsdl.org>
+Date: Tue, 2 Jun 2020 16:57:20 -0700
+Subject: [PATCH 275/326] Fixed bug 5147 - KMSDRM: SetWindowFullscreen()
+ failing with SDL_WINDOW_FULLSCREEN_DESKTOP
+
+Manuel Alfayate Corchete
+
+This patch is needed so programs that do this work as expected:
+1) Start in a different video mode than the mode used by the system and then...
+2) Try to go fullscreen with the mode originally used by the system via SetWindowFullScreen() with the SDL_WINDOW_FULLSCREEN_DESKTOP flag.
+
+An example would be pt2-clone in https://github.com/8bitbubsy/pt2-clone.
+This program does this:
+
+Starts with:
+
+video.window = SDL_CreateWindow("", SDL_WINDOWPOS_CENTERED,
+    SDL_WINDOWPOS_CENTERED, screenW, screenH, windowFlags);
+
+
+and then, *IF* the user has configured it in fullscreen mode in its .ini, it tries to go fullscreen with the desktop mode:
+
+SDL_SetWindowFullscreen(video.window, SDL_WINDOW_FULLSCREEN_DESKTOP);
+
+
+This sequence of operations is currently failing because SDL_SetDisplayModeForDisplay() in SDL_video.c fails because display->desktop_mode is not being initialized with its correct value: SetDisplayMode() in SDL_kmsdrmvideo.c will not be able to set the mode because it detects the mode to have a driverdata of 0x0 ("if (!modedata)") and rightfully returns an error.
+
+So, the included patch fixes this small problem, and programs that first change the video mode and then try to go fullscreen with the system video mode will now work.
+The patch simply fixes an small omission, but its really needed now that dynamic video mode changing was implemented on the KMSDRM backend.
+---
+ src/video/kmsdrm/SDL_kmsdrmvideo.c | 22 +++++++++++++---------
+ 1 file changed, 13 insertions(+), 9 deletions(-)
+
+diff --git a/src/video/kmsdrm/SDL_kmsdrmvideo.c b/src/video/kmsdrm/SDL_kmsdrmvideo.c
+index 608bee5cbe..e00f9590e2 100644
+--- a/src/video/kmsdrm/SDL_kmsdrmvideo.c
++++ b/src/video/kmsdrm/SDL_kmsdrmvideo.c
+@@ -601,6 +601,19 @@ KMSDRM_VideoInit(_THIS)
+     display.desktop_mode.format = drmToSDLPixelFormat(fb->bpp, fb->depth);
+     drmModeFreeFB(fb);
+ #endif
++
++    /* DRM mode index for the desktop mode is needed to complete desktop mode init NOW,
++       so look for it in the DRM modes array. */
++    for (int i = 0; i < dispdata->conn->count_modes; i++) {
++        if (!SDL_memcmp(dispdata->conn->modes + i, &dispdata->saved_crtc->mode, sizeof(drmModeModeInfo))) {
++            SDL_DisplayModeData *modedata = SDL_calloc(1, sizeof(SDL_DisplayModeData));
++            if (modedata) {
++                modedata->mode_index = i;
++                display.desktop_mode.driverdata = modedata;
++            }   
++        }   
++    }   
++
+     display.current_mode = display.desktop_mode;
+     display.driverdata = dispdata;
+     SDL_AddVideoDisplay(&display);
+@@ -760,7 +773,6 @@ KMSDRM_CreateWindow(_THIS, SDL_Window * window)
+ {
+     SDL_VideoData *viddata = (SDL_VideoData *)_this->driverdata;
+     SDL_WindowData *windata;
+-    SDL_VideoDisplay *display;
+ 
+ #if SDL_VIDEO_OPENGL_EGL
+     if (!_this->egl_data) {
+@@ -778,14 +790,6 @@ KMSDRM_CreateWindow(_THIS, SDL_Window * window)
+         goto error;
+     }
+ 
+-    /* Windows have one size for now */
+-    display = SDL_GetDisplayForWindow(window);
+-    window->w = display->desktop_mode.w;
+-    window->h = display->desktop_mode.h;
+-
+-    /* Maybe you didn't ask for a fullscreen OpenGL window, but that's what you get */
+-    window->flags |= (SDL_WINDOW_FULLSCREEN | SDL_WINDOW_OPENGL);
+-
+     /* In case we want low-latency, double-buffer video, we take note here */
+     windata->double_buffer = SDL_FALSE;
+ 
+
+From b7252b8c26cb64a563d6091bee4841e668d84a62 Mon Sep 17 00:00:00 2001
+From: "Ryan C. Gordon" <icculus@icculus.org>
+Date: Wed, 3 Jun 2020 16:42:19 -0400
+Subject: [PATCH 280/326] video: Set window->surface NULL after freeing it.
+
+Otherwise, when SDL_CreateWindowFramebuffer() is called again, it will return
+the free'd surface instead of creating a new one.
+
+--HG--
+extra : rebase_source : 83e1f3f0b41d39ac1e344dd0550212e8ce75a66f
+---
+ src/video/SDL_video.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/src/video/SDL_video.c b/src/video/SDL_video.c
+index bebd566c7e..dabdd8f242 100644
+--- a/src/video/SDL_video.c
++++ b/src/video/SDL_video.c
+@@ -2374,6 +2374,7 @@ SDL_GetWindowSurface(SDL_Window * window)
+         if (window->surface) {
+             window->surface->flags &= ~SDL_DONTFREE;
+             SDL_FreeSurface(window->surface);
++            window->surface = NULL;
+         }
+         window->surface = SDL_CreateWindowFramebuffer(window);
+         if (window->surface) {
+
+
+From c37c06746af74788321bc2e504f5e4c3a6edb903 Mon Sep 17 00:00:00 2001
+From: "Ryan C. Gordon" <icculus@icculus.org>
+Date: Fri, 26 Jun 2020 20:16:43 -0400
+Subject: [PATCH 317/326] video: Changed SDL_VIDEO_MINIMIZE_ON_FOCUS_LOSS to
+ default to FALSE.
+
+Fixes Bugzilla #5106.  (and probably many others, too!)
+
+--HG--
+extra : amend_source : f488f328af4702a97c7bff8435b6123c483905ed
+---
+ include/SDL_hints.h   | 4 +++-
+ src/video/SDL_video.c | 2 +-
+ 2 files changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/include/SDL_hints.h b/include/SDL_hints.h
+index f0b7e52d89..cd4d4ead38 100644
+--- a/include/SDL_hints.h
++++ b/include/SDL_hints.h
+@@ -369,7 +369,9 @@ extern "C" {
+ #define SDL_HINT_MOUSE_TOUCH_EVENTS    "SDL_MOUSE_TOUCH_EVENTS"
+ 
+ /**
+- *  \brief Minimize your SDL_Window if it loses key focus when in fullscreen mode. Defaults to true.
++ *  \brief Minimize your SDL_Window if it loses key focus when in fullscreen mode. Defaults to false.
++ *  \warning  Before SDL 2.0.14, this defaulted to true! In 2.0.14, we're
++ *            seeing if "true" causes more problems than it solves in modern times.
+  *
+  */
+ #define SDL_HINT_VIDEO_MINIMIZE_ON_FOCUS_LOSS   "SDL_VIDEO_MINIMIZE_ON_FOCUS_LOSS"
+diff --git a/src/video/SDL_video.c b/src/video/SDL_video.c
+index dabdd8f242..f49bd0cf43 100644
+--- a/src/video/SDL_video.c
++++ b/src/video/SDL_video.c
+@@ -2734,7 +2734,7 @@ ShouldMinimizeOnFocusLoss(SDL_Window * window)
+     }
+ #endif
+ 
+-    return SDL_GetHintBoolean(SDL_HINT_VIDEO_MINIMIZE_ON_FOCUS_LOSS, SDL_TRUE);
++    return SDL_GetHintBoolean(SDL_HINT_VIDEO_MINIMIZE_ON_FOCUS_LOSS, SDL_FALSE);
+ }
+ 
+ void
+
+
+From 3f720e2f530611c4f560a8a4d085bc9215404756 Mon Sep 17 00:00:00 2001
+From: "Ryan C. Gordon" <icculus@icculus.org>
+Date: Fri, 26 Jun 2020 21:37:29 -0400
+Subject: [PATCH 319/326] video: Make SDL_CreateWindow use
+ SDL_Init(SDL_INIT_VIDEO), not SDL_VideoInit.
+
+Otherwise, the video subsystem won't deinitialize during SDL_Quit().
+
+Fixes Bugzilla #5067.
+---
+ src/video/SDL_video.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/video/SDL_video.c b/src/video/SDL_video.c
+index f49bd0cf43..57741776aa 100644
+--- a/src/video/SDL_video.c
++++ b/src/video/SDL_video.c
+@@ -1429,7 +1429,7 @@ SDL_CreateWindow(const char *title, int x, int y, int w, int h, Uint32 flags)
+ 
+     if (!_this) {
+         /* Initialize the video system if needed */
+-        if (SDL_VideoInit(NULL) < 0) {
++        if (SDL_Init(SDL_INIT_VIDEO) < 0) {
+             return NULL;
+         }
+     }
+

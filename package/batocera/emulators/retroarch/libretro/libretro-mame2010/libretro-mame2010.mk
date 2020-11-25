@@ -3,8 +3,8 @@
 # MAME2010
 #
 ################################################################################
-# Version.: Commits on May 24, 2020
-LIBRETRO_MAME2010_VERSION = bef96188e7276422eab81b44b41361896885bae5
+# Version.: Commits on Oct 08, 2020
+LIBRETRO_MAME2010_VERSION = 2d2e86b5d8dced24a390bbb3b44d913833a1f6fa
 LIBRETRO_MAME2010_SITE = $(call github,libretro,mame2010-libretro,$(LIBRETRO_MAME2010_VERSION))
 LIBRETRO_MAME2010_LICENSE = MAME
 
@@ -14,7 +14,7 @@ ifeq ($(BR2_x86_64),y)
 	LIBRETRO_MAME2010_EXTRA_ARGS += PTR64=1 ARM_ENABLED=0 LCPU=x86_64
 endif
 
-ifeq ($(BR2_x86_i586),y)
+ifeq ($(BR2_x86_i686),y)
 	LIBRETRO_MAME2010_EXTRA_ARGS += PTR64=0 ARM_ENABLED=0 LCPU=x86
 endif
 

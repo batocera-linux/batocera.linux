@@ -13,8 +13,8 @@ class CitraGenerator(Generator):
     def generate(self, system, rom, playersControllers, gameResolution):
         CitraGenerator.writeCITRAConfig(batoceraFiles.citraConfig, system, playersControllers)
 
-        commandArray = [batoceraFiles.batoceraBins[system.config['emulator']], "-platform", "xcb", rom]
-        return Command.Command(array=commandArray, env={"XDG_CONFIG_HOME":batoceraFiles.CONF, "XDG_DATA_HOME":batoceraFiles.citraSaves, "XDG_CACHE_HOME":batoceraFiles.CACHE})
+        commandArray = [batoceraFiles.batoceraBins[system.config['emulator']], rom]
+        return Command.Command(array=commandArray, env={"XDG_CONFIG_HOME":batoceraFiles.CONF, "XDG_DATA_HOME":batoceraFiles.citraSaves, "XDG_CACHE_HOME":batoceraFiles.CACHE, "QT_QPA_PLATFORM":"xcb"})
 
     @staticmethod
     def writeCITRAConfig(citraConfigFile, system, playersControllers):

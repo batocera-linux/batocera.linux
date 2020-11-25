@@ -4,6 +4,7 @@ import sys
 import os
 import ConfigParser
 import batoceraFiles
+from utils.logger import eslog
 
 sys.path.append(
     os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
@@ -22,14 +23,15 @@ flycastMapping = { 'a' :             {'button': 'btn_b'},
                    'pagedown' :      {'axis': 'axis_trigger_right', 'button': 'btn_trigger_right'},
                    'joystick1left' : {'axis': 'axis_x'},
                    'joystick1up' :   {'axis': 'axis_y'},
+                   'joystick2left' : {'axis': 'axis_right_x'},
+                   'joystick2up' :   {'axis': 'axis_right_y'},
                    # The DPAD can be an axis (for gpio sticks for example) or a hat
                    'left' :          {'hat': 'axis_dpad1_x', 'axis': 'axis_x', 'button': 'btn_dpad1_left'},
                    'up' :            {'hat': 'axis_dpad1_y', 'axis': 'axis_y', 'button': 'btn_dpad1_up'},
                    'right' :         {'button': 'btn_dpad1_right'},
                    'down' :          {'button': 'btn_dpad1_down'},
-# We are only interested in L2/R2 if they are axis, to have real dreamcasttriggers
-                   'r2' :            {'axis':  'axis_trigger_right'},
-                   'l2' :            {'axis': 'axis_trigger_left'}
+                   'r2' :            {'axis':  'axis_trigger_right', 'button': 'btn_trigger_right'},
+                   'l2' :            {'axis': 'axis_trigger_left', 'button': 'btn_trigger_left'}
 }
 
 sections = { 'emulator' : ['mapping_name', 'btn_escape'],
@@ -42,12 +44,12 @@ sections = { 'emulator' : ['mapping_name', 'btn_escape'],
 # Create the controller configuration file
 # returns its name
 def generateControllerConfig(controller):
-	# Set config file name
+    # Set config file name
     configFileName = "{}/evdev_{}.cfg".format(batoceraFiles.flycastMapping,controller.realName)
     Config = ConfigParser.ConfigParser()
 
     if not os.path.exists(os.path.dirname(configFileName)):
-            os.makedirs(os.path.dirname(configFileName))
+        os.makedirs(os.path.dirname(configFileName))
          
     cfgfile = open(configFileName,'w+')
     
@@ -57,33 +59,42 @@ def generateControllerConfig(controller):
 
     # Add controller name
     Config.set("emulator", "mapping_name", controller.realName)
-
+    
+    l2_r2_flag = False
+    if 'r2' in controller.inputs:
+        l2_r2_flag = True
     # Parse controller inputs
     for index in controller.inputs:
-		input = controller.inputs[index]
-		if input.name not in flycastMapping:
-			continue
-		if input.type not in flycastMapping[input.name]:
-			continue
-		var = flycastMapping[input.name][input.type]
-		for i in sections:
-			if var in sections[i]:
-				section = i
-				break
+        input = controller.inputs[index]
+        
+        if input.name not in flycastMapping:
+            continue
+        if input.type not in flycastMapping[input.name]:
+            continue
+        var = flycastMapping[input.name][input.type]
+        eslog.log("Var: {}".format(var))
+        for i in sections:
+            if var in sections[i]:
+                section = i
+                break
 
-		# Sadly, we don't get the right axis code for Y hats. So, dirty hack time
-                if input.code is not None:
-		    code = input.code
-		    if input.type == 'hat':
-		        if input.name == 'up':
-    			    code = int(input.code) + 1
-		        else:
-    			    code = input.code
-		    Config.set(section, var, code)
+        # Sadly, we don't get the right axis code for Y hats. So, dirty hack time
+        if not (l2_r2_flag and (input.name == 'pageup' or input.name == 'pagedown')):
+            if input.code is not None:
+                code = input.code
+                Config.set(section, var, code)
+            elif input.type == 'hat':
+                if input.code is None:  #handles pads that don't have hat codes set
+                    if input.name == 'up':  #Default values for hat0.  Formula for calculation is 16+input.id*2 and 17+input.id*2
+                        code = 17 + 2*int(input.id) # ABS_HAT0Y=17
+                    else:
+                        code = 16 + 2*int(input.id) # ABS_HAT0X=16
                 else:
-                    print("code not found for key " + input.name + " on pad " + controller.realName + " (please reconfigure your pad)")
+                    code = input.code
+                Config.set(section, var, code)
+            else:
+                eslog.log("code not found for key " + input.name + " on pad " + controller.realName + " (please reconfigure your pad)")
 
     Config.write(cfgfile)
     cfgfile.close()
     return configFileName
-

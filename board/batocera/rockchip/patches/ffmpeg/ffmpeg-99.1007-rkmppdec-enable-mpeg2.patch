@@ -1,0 +1,82 @@
+From 5062ff7504a92a144b32e20b6b4d5627240f81c8 Mon Sep 17 00:00:00 2001
+From: Jonas Karlman <jonas@kwiboo.se>
+Date: Wed, 12 Sep 2018 22:29:22 +0200
+Subject: [PATCH] rkmppdec: enable mpeg2
+
+MRFIXIT fixed to apply to 4.3
+
+---
+ configure              | 1 +
+ libavcodec/Makefile    | 1 +
+ libavcodec/allcodecs.c | 1 +
+ libavcodec/rkmppdec.c  | 8 ++++++++
+ 4 files changed, 11 insertions(+)
+
+diff --git a/configure b/configure
+index 15e6c321b1..c17252f883 100755
+--- a/configure
++++ b/configure
+@@ -2954,6 +2954,7 @@ mpeg2_crystalhd_decoder_select="crystalhd"
+ mpeg2_cuvid_decoder_deps="cuvid"
+ mpeg2_mmal_decoder_deps="mmal"
+ mpeg2_mediacodec_decoder_deps="mediacodec"
++mpeg2_rkmpp_decoder_deps="rkmpp"
+ mpeg2_qsv_decoder_select="qsvdec"
+ mpeg2_qsv_encoder_select="qsvenc"
+ mpeg2_vaapi_encoder_select="cbs_mpeg2 vaapi_encode"
+diff --git a/libavcodec/Makefile b/libavcodec/Makefile
+index 4b8ad121db..f1580bb10b 100644
+--- a/libavcodec/Makefile
++++ b/libavcodec/Makefile
+@@ -447,6 +447,7 @@ OBJS-$(CONFIG_MPEG1VIDEO_ENCODER)      += mpeg12enc.o mpeg12.o
+ OBJS-$(CONFIG_MPEG1_CUVID_DECODER)     += cuviddec.o
+ OBJS-$(CONFIG_MPEG1_V4L2M2M_DECODER)   += v4l2_m2m_dec.o
+ OBJS-$(CONFIG_MPEG2_MMAL_DECODER)      += mmaldec.o
++OBJS-$(CONFIG_MPEG2_RKMPP_DECODER)     += rkmppdec.o
+ OBJS-$(CONFIG_MPEG2_QSV_DECODER)       += qsvdec_other.o
+ OBJS-$(CONFIG_MPEG2_QSV_ENCODER)       += qsvenc_mpeg2.o
+ OBJS-$(CONFIG_MPEG2VIDEO_DECODER)      += mpeg12dec.o mpeg12.o mpeg12data.o
+diff --git a/libavcodec/allcodecs.c b/libavcodec/allcodecs.c
+index 4d4ef530e4..07e1216333 100644
+--- a/libavcodec/allcodecs.c
++++ b/libavcodec/allcodecs.c
+@@ -192,6 +192,7 @@ extern AVCodec ff_mpeg1_v4l2m2m_decoder;
+ extern AVCodec ff_mpeg2_mmal_decoder;
+ extern AVCodec ff_mpeg2_crystalhd_decoder;
+ extern AVCodec ff_mpeg2_v4l2m2m_decoder;
++extern AVCodec ff_mpeg2_rkmpp_decoder;
+ extern AVCodec ff_mpeg2_qsv_decoder;
+ extern AVCodec ff_mpeg2_mediacodec_decoder;
+ extern AVCodec ff_msa1_decoder;
+diff --git a/libavcodec/rkmppdec.c b/libavcodec/rkmppdec.c
+index 72be832141..48016bc681 100644
+--- a/libavcodec/rkmppdec.c
++++ b/libavcodec/rkmppdec.c
+@@ -70,6 +70,7 @@ static MppCodingType rkmpp_get_codingtype(AVCodecContext *avctx)
+     switch (avctx->codec_id) {
+     case AV_CODEC_ID_H264:          return MPP_VIDEO_CodingAVC;
+     case AV_CODEC_ID_HEVC:          return MPP_VIDEO_CodingHEVC;
++    case AV_CODEC_ID_MPEG2VIDEO:    return MPP_VIDEO_CodingMPEG2;
+     case AV_CODEC_ID_VP8:           return MPP_VIDEO_CodingVP8;
+     case AV_CODEC_ID_VP9:           return MPP_VIDEO_CodingVP9;
+     default:                        return MPP_VIDEO_CodingUnused;
+@@ -405,6 +406,12 @@ static int rkmpp_retrieve_frame(AVCodecContext *avctx, AVFrame *frame)
+         frame->color_trc        = mpp_frame_get_color_trc(mppframe);
+         frame->colorspace       = mpp_frame_get_colorspace(mppframe);
+ 
++        if (avctx->codec_id == AV_CODEC_ID_MPEG2VIDEO) {
++            MppFrameRational dar = mpp_frame_get_sar(mppframe);
++            frame->sample_aspect_ratio = av_div_q((AVRational) { dar.num, dar.den },
++                                                  (AVRational) { frame->width, frame->height });
++        }
++
+         mode = mpp_frame_get_mode(mppframe);
+         frame->interlaced_frame = ((mode & MPP_FRAME_FLAG_FIELD_ORDER_MASK) == MPP_FRAME_FLAG_DEINTERLACED);
+         frame->top_field_first  = ((mode & MPP_FRAME_FLAG_FIELD_ORDER_MASK) == MPP_FRAME_FLAG_TOP_FIRST);
+@@ -585,5 +592,6 @@ static const AVCodecHWConfigInternal *rkmpp_hw_configs[] = {
+ 
+ RKMPP_DEC(h264,  AV_CODEC_ID_H264,          "h264_mp4toannexb")
+ RKMPP_DEC(hevc,  AV_CODEC_ID_HEVC,          "hevc_mp4toannexb")
++RKMPP_DEC(mpeg2, AV_CODEC_ID_MPEG2VIDEO,    NULL)
+ RKMPP_DEC(vp8,   AV_CODEC_ID_VP8,           NULL)
+ RKMPP_DEC(vp9,   AV_CODEC_ID_VP9,           NULL)

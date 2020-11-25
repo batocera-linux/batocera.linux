@@ -22,6 +22,9 @@ PCSX2_CONF_OPTS += -DEXTRA_PLUGINS=TRUE
 
 PCSX2_CONF_OPTS += -DDISABLE_ADVANCE_SIMD=ON
 
+# https://github.com/PCSX2/pcsx2/blob/51ceec74a351bd25a1066ec2c02c2aa3f8c813f4/cmake/BuildParameters.cmake#L215
+PCSX2_CONF_OPTS += -DARCH_FLAG="-msse -msse2 -mfxsr -mxsave -march=i686"
+
 define PCSX2_INSTALL_TARGET_CMDS
 	$(INSTALL) -m 0755 -D $(@D)/pcsx2/PCSX2 $(TARGET_DIR)/usr/PCSX/bin/PCSX2
 	cp -pr $(@D)/bin/Langs      $(TARGET_DIR)/usr/PCSX/bin
