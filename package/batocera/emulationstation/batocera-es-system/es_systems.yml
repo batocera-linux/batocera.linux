@@ -1329,6 +1329,16 @@ gx4000:
     libretro:
       cap32: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_CAP32] }
 
+supermodel3:
+   name:       Sega Model 3
+   manufacturer: Sega
+   release: 1996
+   hardware: arcade
+   extensions: [zip, 7z]
+   emulators:
+     supermodel3:
+       supermodel3: { requireAnyOf: [BR2_PACKAGE_SUPERMODEL3] }
+
 daphne:
   name:       Daphne
   manufacturer: Arcade
