@@ -137,7 +137,7 @@ do_install() {
 
 	# get size to download
 	echo "url: ${url}"
-	headers=$(curl -sfIL ${url})
+	headers=$(curl -A "batocera-install.header" -sfIL ${url})
 	test $? -eq 0 || return 1
 	bytessize=$(echo "$headers" | grep "Content-Length: " | sed -e s+'^Content-Length: \([0-9]*\).*$'+'\1'+)
 	size=$((bytessize / 1024 / 1024))
@@ -178,7 +178,7 @@ do_install() {
 	    getPer "${size}" "${INSIMG}" &
 	    GETPERPID=$!
 
-	    if ! curl -sfL "${url}" -o "${INSIMG}"
+	    if ! curl -A "batocera-install" -sfL "${url}" -o "${INSIMG}"
 	    then
 		echo "Downloading failed" >&2
 		kill -9 "${GETPERPID}"

@@ -60,7 +60,7 @@ fi
 # get size to download
 url="${DWD_HTTP_DIR}/boot.tar.xz"
 echo "url: ${url}"
-headers=$(curl -sfIL "${url}")
+headers=$(curl -A "batocera-upgrade.header" -sfIL "${url}")
 test $? -eq 0 || exit 1
 size=$(echo "$headers" | grep "Content-Length: " | sed -e s+'^Content-Length: \([0-9]*\).*$'+'\1'+)
 size=$((size / 1024 / 1024))
@@ -88,16 +88,16 @@ if [ $TERMINAL = 0 ]; then
     getPer "${size}" &
     GETPERPID=$!
     mkdir -p "/userdata/system/upgrade" || exit 1
-    curl -sfL "${url}" -o "/userdata/system/upgrade/boot.tar.xz" || exit 1
+    curl -A "batocera-upgrade" -sfL "${url}" -o "/userdata/system/upgrade/boot.tar.xz" || exit 1
     kill -9 "${GETPERPID}"
     GETPERPID=
 else
     # Download inside SSH/TERMINAL
-    wget -q --show-progress "${url}" -O "/userdata/system/upgrade/boot.tar.xz" || exit 1
+    wget -U "batocera-upgrade" -q --show-progress "${url}" -O "/userdata/system/upgrade/boot.tar.xz" || exit 1
 fi
 
 # try to download an md5 checksum
-curl -sfL "${url}.md5" -o "/userdata/system/upgrade/boot.tar.xz.md5"
+curl -A "batocera-upgrade.md5" -sfL "${url}.md5" -o "/userdata/system/upgrade/boot.tar.xz.md5"
 if test -e "/userdata/system/upgrade/boot.tar.xz.md5"
 then
     DISTMD5=$(cat "/userdata/system/upgrade/boot.tar.xz.md5")
