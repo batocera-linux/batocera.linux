@@ -493,6 +493,23 @@ dos:
     Les jeux DOS sont disponibles sur myabandonware:
     http://www.myabandonware.com/browse/platform/dos/
 
+devilutionx:
+  name:       DevilutionX
+  manufacturer: Ports
+  release:
+  hardware:   port
+  extensions: [mpq]
+  group: ports
+  emulators:
+    devilutionx:
+      devilutionx: { requireAnyOf: [BR2_PACKAGE_DEVILUTIONX] }
+  comment_en: |
+    Diablo 1.
+
+    Place diabdat.mpq (all lowercase) from your CD or GoG installation into:
+
+        /userdata/roms/devilution/
+
 fbneo:
   name:       Final Burn Neo
   manufacturer: Arcade

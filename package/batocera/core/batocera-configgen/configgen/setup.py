@@ -33,6 +33,7 @@ setup(name='batocera-configgen',
         'configgen.generators.melonds',
         'configgen.generators.pygame',
         'configgen.generators.mame',
+        'configgen.generators.devilutionx',
         'configgen.settings',
         'configgen.utils']
       )
