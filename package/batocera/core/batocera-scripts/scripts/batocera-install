@@ -139,7 +139,7 @@ do_install() {
 	echo "url: ${url}"
 	headers=$(curl -A "batocera-install.header" -sfIL ${url})
 	test $? -eq 0 || return 1
-	bytessize=$(echo "$headers" | grep "Content-Length: " | sed -e s+'^Content-Length: \([0-9]*\).*$'+'\1'+)
+	bytessize=$(echo "$headers" | grep "Content-Length: " | tail -1 | sed -e s+'^Content-Length: \([0-9]*\).*$'+'\1'+) # take the last one in case of redirection
 	size=$((bytessize / 1024 / 1024))
 	test $? -eq 0 || return 1
 
