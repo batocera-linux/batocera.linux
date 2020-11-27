@@ -3,8 +3,8 @@
 # libretro-picodrive
 #
 ################################################################################
-# Version.: Commits on Nov 13, 2020
-LIBRETRO_PICODRIVE_VERSION = 69b7b2641bcca4503854bab87f784e514a731616
+# Version.: Release on Nov 22, 2020
+LIBRETRO_PICODRIVE_VERSION = v1.97
 LIBRETRO_PICODRIVE_SITE = https://github.com/irixxxx/picodrive.git
 LIBRETRO_PICODRIVE_SITE_METHOD=git
 LIBRETRO_PICODRIVE_GIT_SUBMODULES=YES
