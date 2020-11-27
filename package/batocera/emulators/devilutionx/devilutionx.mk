@@ -4,8 +4,7 @@
 #
 ################################################################################
 
-# The first commit that allows specifying `--config-dir` (24 Nov 2020)
-DEVILUTIONX_VERSION = 9c7d6c96
+DEVILUTIONX_VERSION = b10b4381
 DEVILUTIONX_SITE = $(call github,diasurgical,devilutionx,$(DEVILUTIONX_VERSION))
 DEVILUTIONX_DEPENDENCIES = sdl2 sdl2_mixer sdl2_image sdl2_ttf libsodium
 
