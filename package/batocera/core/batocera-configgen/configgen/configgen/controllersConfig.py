@@ -4,6 +4,18 @@ import batoceraFiles
 
 esInputs = batoceraFiles.esInputs
 
+"""Default mapping of Batocera keys to SDL_GAMECONTROLLERCONFIG keys."""
+_DEFAULT_SDL_MAPPING = {
+    'b':      'a',  'a':        'b',
+    'x':      'y',  'y':        'x',
+    'l2':     'lefttrigger',  'r2':    'righttrigger',
+    'l3':     'leftstick',  'r3':    'rightstick',
+    'pageup': 'leftshoulder', 'pagedown': 'rightshoulder',
+    'start':     'start',  'select':    'back',
+    'up': 'dpup', 'down': 'dpdown', 'left': 'dpleft', 'right': 'dpright',
+    'joystick1up': 'lefty', 'joystick1left': 'leftx',
+    'joystick2up': 'righty', 'joystick2left': 'rightx', 'hotkey': 'guide'
+}
 
 class Input:
     def __init__(self, name, type, id, value, code):
@@ -32,50 +44,7 @@ class Controller:
             self.inputs = inputs
 
     def generateSDLGameDBLine(self):
-        # Making a dirty assumption here : if a dpad is an axis, then it shouldn't have any analog joystick
-        nameMapping = {
-            'a'             : { 'button' : 'b' },
-            'b'             : { 'button' : 'a' },
-            'x'             : { 'button' : 'y' },
-            'y'             : { 'button' : 'x' },
-            'start'         : { 'button' : 'start' },
-            'select'        : { 'button' : 'back' },
-            'pageup'        : { 'button' : 'leftshoulder' },
-            'pagedown'      : { 'button' : 'rightshoulder' },
-            'l2'            : { 'button' : 'lefttrigger', 'axis' : 'lefttrigger' },
-            'r2'            : { 'button' : 'righttrigger', 'axis' : 'righttrigger' },
-            'l3'            : { 'button' : 'leftstick' },
-            'r3'            : { 'button' : 'rightstick' },
-            'up'            : { 'button' : 'dpup',    'hat' : 'dpup', 'axis' : 'lefty' },
-            'down'          : { 'button' : 'dpdown',  'hat' : 'dpdown' },
-            'left'          : { 'button' : 'dpleft',  'hat' : 'dpleft', 'axis' : 'leftx' },
-            'right'         : { 'button' : 'dpright', 'hat' : 'dpright' },
-            'joystick1up'   : { 'axis' : 'lefty' },
-            'joystick1left' : { 'axis' : 'leftx' },
-            'joystick2up'   : { 'axis' : 'righty' },
-            'joystick2left' : { 'axis' : 'rightx' },
-            'hotkey'        : { 'button' : 'guide' }
-        }
-        typePrefix = {
-            'axis'   : 'a',
-            'button' : 'b',
-            'hat'    : 'h0.' # Force dpad 0 until ES handles others
-        }
-
-        if not self.inputs:
-            return None
-        # TODO: python3 - force to use unicode
-        strOut = u"{},{},platform:Linux,".format(self.guid, self.configName)
-
-        for idx, input in self.inputs.iteritems():
-            if input.name in nameMapping and input.type in typePrefix and input.type in nameMapping[input.name] :
-                if input.type == 'hat':
-                    # TODO: python3 - force to use unicode
-                    strOut += u"{}:{}{},".format(nameMapping[input.name][input.type], typePrefix[input.type], input.value)
-                else:
-                    # TODO: python3 - force to use unicode
-                    strOut += u"{}:{}{},".format(nameMapping[input.name][input.type], typePrefix[input.type], input.id)
-        return strOut
+        return _generateSdlGameControllerConfig(self)
 
 
 # Load all controllers from the es_input.cfg
@@ -143,11 +112,65 @@ def findBestControllerConfig(controllers, x, pxguid, pxindex, pxname, pxdev, pxn
                               controller.inputs, pxdev, pxnbbuttons, pxnbhats, pxnbaxes)
     return None
 
-def generateSDLGameDBAllControllers(controllers, outputFile = "/tmp/gamecontrollerdb.txt"):
-    finalData = []
+
+def _generateSdlGameControllerConfig(controller, sdlMapping=_DEFAULT_SDL_MAPPING):
+    """Returns an SDL_GAMECONTROLLERCONFIG-formatted string for the given configuration."""
+    config = []
+    config.append(controller.guid)
+    config.append(controller.configName)
+    for k in controller.inputs:
+        input = controller.inputs[k]
+        keyname = sdlMapping.get(input.name, None)
+        if input.name is not None:
+            sdlConf = _keyToSdlGameControllerConfig(
+                keyname, input.type, input.id, input.value)
+            if sdlConf is not None:
+                config.append(sdlConf)
+    config.append('')
+    return ','.join(config)
+
+
+def _keyToSdlGameControllerConfig(keyname, type, id, value=None):
+    """
+    Converts a key mapping to the SDL_GAMECONTROLLER format.
+
+    Arguments:
+      keyname: (str) One of the SDL_GAMECONTROLLERCONFIG keys.
+      type: (str) 'button', 'hat', or 'axis'
+      id: (int) Numeric key id.
+      value: (int) Hat value. Only used if type == 'hat'.
+    Returns:
+      (str) SDL_GAMECONTROLLERCONFIG-formatted key mapping string.
+    Examples:
+      keyToSdlGameControllerConfig('button', 'leftshoulder', 6)
+        'leftshoulder:b6'
+
+      keyToSdlGameControllerConfig('hat', 'dpleft', 0, 8)
+        'dpleft:h0.9'
+
+      keyToSdlGameControllerConfig('axis', 'lefty', 1)
+        'lefty:a1'
+    """
+    if type == 'button':
+        return '{}:b{}'.format(keyname, id)
+    elif type == 'hat':
+        return '{}:h{}.{}'.format(keyname, id, value)
+    elif type == 'axis':
+        return '{}:a{}{}'.format(keyname, id, '~' if int(value) > 0 else '')
+    elif type == 'key':
+        return None
+    else:
+        raise ValueError, 'unknown key type: {!r}'.format(type)
+
+
+def generateSdlGameControllerConfig(controllers):
+    configs = []
     for idx, controller in controllers.iteritems():
-        finalData.append(controller.generateSDLGameDBLine())
-    sdlData = "\n".join(finalData).encode("utf-8")
+        configs.append(controller.generateSDLGameDBLine())
+    return "\n".join(configs)
+
+
+def writeSDLGameDBAllControllers(controllers, outputFile = "/tmp/gamecontrollerdb.txt"):
     with open(outputFile, "w") as text_file:
-        text_file.write(sdlData)
+        text_file.write(generateSdlGameControllerConfig(controllers).encode("utf-8"))
     return outputFile
