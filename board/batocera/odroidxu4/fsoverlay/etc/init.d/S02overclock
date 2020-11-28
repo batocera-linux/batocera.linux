@@ -1,9 +1,19 @@
 #!/bin/bash
 
-test "${1}" = "start" || exit 0
+if test "${1}" = "start"
+then
+    # disable low cores
+    echo "0" > /sys/devices/system/cpu/cpu0/online
+    echo "0" > /sys/devices/system/cpu/cpu1/online
+    echo "0" > /sys/devices/system/cpu/cpu2/online
+    echo "0" > /sys/devices/system/cpu/cpu3/online
+fi
 
-# disable low cores
-echo "0" > /sys/devices/system/cpu/cpu0/online
-echo "0" > /sys/devices/system/cpu/cpu1/online
-echo "0" > /sys/devices/system/cpu/cpu2/online
-echo "0" > /sys/devices/system/cpu/cpu3/online
+if test "${1}" = "stop"
+then
+    # enable them, otherwise, it breaks the reboot
+    echo "1" > /sys/devices/system/cpu/cpu0/online
+    echo "1" > /sys/devices/system/cpu/cpu1/online
+    echo "1" > /sys/devices/system/cpu/cpu2/online
+    echo "1" > /sys/devices/system/cpu/cpu3/online
+fi
