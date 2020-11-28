@@ -7,6 +7,7 @@ from os import path
 import batoceraFiles
 from xml.dom import minidom
 import codecs
+import controllersConfig
 import cemuControllers
 from shutil import copyfile
 
@@ -28,11 +29,20 @@ class CemuGenerator(Generator):
         CemuGenerator.CemuConfig(batoceraFiles.CONF + "/cemu/settings.xml")
         # copy the file from where cemu reads it
         copyfile(batoceraFiles.CONF + "/cemu/settings.xml", "/usr/cemu/settings.xml")
-        
-        sdlstring = cemuControllers.generateControllerConfig(system, playersControllers, rom)
-        
+
+        cemuControllers.generateControllerConfig(system, playersControllers, rom)
+
         commandArray = ["wine64", "/usr/cemu/Cemu.exe", "-g", "z:" + rom, "-m", "z:" + batoceraFiles.SAVES + "/cemu", "-f"]
-        return Command.Command(array=commandArray, env={"WINEPREFIX":batoceraFiles.SAVES + "/cemu", "vblank_mode":"0", "mesa_glthread":"true", "SDL_GAMECONTROLLERCONFIG":sdlstring, "WINEDLLOVERRIDES":"mscoree=;mshtml=;dbghelp.dll=n,b", "__GL_THREADED_OPTIMIZATIONS":"1" })
+        return Command.Command(
+            array=commandArray,
+            env={
+                "WINEPREFIX": batoceraFiles.SAVES + "/cemu",
+                "vblank_mode": "0",
+                "mesa_glthread": "true",
+                "SDL_GAMECONTROLLERCONFIG": controllersConfig.generateSdlGameControllerConfig(playersControllers),
+                "WINEDLLOVERRIDES": "mscoree=;mshtml=;dbghelp.dll=n,b",
+                "__GL_THREADED_OPTIMIZATIONS": "1"
+            })
 
     @staticmethod
     def CemuConfig(configFile):
