@@ -7,7 +7,8 @@
 BATOCERA_SCRIPTS_VERSION = 1.1
 BATOCERA_SCRIPTS_LICENSE = GPL
 BATOCERA_SCRIPTS_DEPENDENCIES = pciutils
-BATOCERA_SCRIPTS_SOURCE=
+BATOCERA_SCRIPTS_SITE=$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-scripts/src
+BATOCERA_SCRIPTS_SITE_METHOD=local
 
 BATOCERA_SCRIPT_RESOLUTION_TYPE=basic
 ifeq ($(BR2_PACKAGE_RPI_USERLAND),y)
@@ -25,7 +26,7 @@ ifeq ($(BR2_PACKAGE_MALI_G31_GBM),y)
   BATOCERA_SCRIPT_RESOLUTION_TYPE=basic
 endif
 
-define BATOCERA_SCRIPTS_INSTALL_TARGET_CMDS
+define BATOCERA_SCRIPTS_INSTALL_ALL
 	install -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-scripts/scripts/bluetooth/bluezutils.py            $(TARGET_DIR)/usr/lib/python2.7/ # any variable ?
 	install -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-scripts/scripts/bluetooth/batocera-bluetooth       $(TARGET_DIR)/usr/bin/
 	install -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-scripts/scripts/bluetooth/batocera-bluetooth-agent $(TARGET_DIR)/usr/bin/
@@ -60,6 +61,8 @@ define BATOCERA_SCRIPTS_INSTALL_TARGET_CMDS
 	install -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-scripts/scripts/batocera-resolution.$(BATOCERA_SCRIPT_RESOLUTION_TYPE) $(TARGET_DIR)/usr/bin/batocera-resolution
 endef
 
+BATOCERA_SCRIPTS_POST_INSTALL_TARGET_HOOKS += BATOCERA_SCRIPTS_INSTALL_ALL
+
 define BATOCERA_SCRIPTS_INSTALL_XORG
 	mkdir -p $(TARGET_DIR)/etc/X11/xorg.conf.d
 	ln -fs /userdata/system/99-nvidia.conf $(TARGET_DIR)/etc/X11/xorg.conf.d/99-nvidia.conf
@@ -78,4 +81,4 @@ ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_ROCKCHIP_ANY),y)
   BATOCERA_SCRIPTS_POST_INSTALL_TARGET_HOOKS += BATOCERA_SCRIPTS_INSTALL_ROCKCHIP
 endif
 
-$(eval $(generic-package))
+$(eval $(meson-package))
