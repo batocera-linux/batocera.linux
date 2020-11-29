@@ -20,10 +20,10 @@ case "$1" in
 
 	stop)
 		killall emulationstation
-		if [[ $? -eq 0 ]]; then
+		if [ $? -eq 0 ]; then
 			sleep 20 &
 			watchdog=$!
-			while [[ -n $(pidof emulationstation) ]]; do
+			while [ -n $(pidof emulationstation) ]; do
 				sleep 0.25
 				$(kill -0 $watchdog) || exit
 			done

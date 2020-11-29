@@ -5,7 +5,7 @@ case "$1" in
                 ;;
         stop)
                 enabled="`batocera-settings -r system.cec.standby`"
-                if [ "$enabled" == "1" ];then
+                if [ "$enabled" = "1" ]; then
                         echo standby 0 | cec-client -s -d 1 &
                 fi
                 ;;

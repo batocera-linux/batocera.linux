@@ -10,7 +10,7 @@ case "$1" in
 		connmanctl state | grep -qE '^[ ]*State[ ]='
 		while test $? -ne 0 -a $N -lt 5 # 5 tries
 		do
-		    let N++
+		    N=$((N+1))
 		    sleep 1
 		    connmanctl state | grep -qE '^[ ]*State[ ]='
 		done
