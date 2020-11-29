@@ -81,12 +81,11 @@ class CemuGenerator(Generator):
         
         CemuGenerator.setSectionConfig(config, xml_root, "Graphic", "")
         graphic_root = CemuGenerator.getRoot(config, "Graphic")
-                
-		if system.isOptSet("gfxbackend"):
-            if system.config["gfxbackend"] == "OpenGL":
-				CemuGenerator.setSectionConfig(config, graphic_root, "api", "0") #OpenGL
-			else:
-				CemuGenerator.setSectionConfig(config, graphic_root, "api", "1") #Vulkan
+        if system.isOptSet("gfxbackend"):
+	    if system.config["gfxbackend"] == "OpenGL":
+                CemuGenerator.setSectionConfig(config, graphic_root, "api", "0") #OpenGL
+            else:
+                CemuGenerator.setSectionConfig(config, graphic_root, "api", "1") #Vulkan
         else:
             CemuGenerator.setSectionConfig(config, graphic_root, "api", "0") #OpenGL
         
