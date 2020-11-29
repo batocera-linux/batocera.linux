@@ -1,7 +1,7 @@
 #!/bin/bash
 
 CONFIGFILE=/boot/config.txt
-CONFIG="$(batocera-settings "$CONFIGFILE" --command load --key force_gpi_defaults)"
+CONFIG="$(batocera-settings -f "$CONFIGFILE" -r force_gpi_defaults)"
 CONFIGERR=$?
 [[ $CONFIGERR -eq  12 || $CONFIG -eq 1 ]] || exit 0
 

@@ -23,7 +23,7 @@ echo "Stopping ES..."
 mount -o remount,rw /boot
 
 echo "Activating Nvidia driver"
-batocera-settings /boot/batocera-boot.conf --command uncomment --key nvidia-driver
+batocera-settings -f /boot/batocera-boot.conf -w nvidia-driver -v true
 
 echo "Writing NVidia Xconf..."
 cat > /userdata/system/99-nvidia.conf <<_EOF_

@@ -10,12 +10,12 @@ devices="ATX_RASPI_R2_6 REMOTEPIBOARD_2003 REMOTEPIBOARD_2005 MAUSBERRY WITTYPI 
 
 # Read current config, if no key is set in batocera.conf then try to use
 # default value setted by udev-rule
-powerswitch="$(batocera-settings --command load --key system.power.switch)"
+powerswitch="$(batocera-settings -r system.power.switch)"
 if [ $? -ne 0 ] && [ -f /var/run/powerswitch-by-udevrule ]; then
     powerswitch="$(cat /var/run/powerswitch-by-udevrule)"
 fi
 # Read if a GPIO joypad is needed (to init on selected archs)
-gpiopad="$(batocera-settings --command load --key controllers.gpio.enabled)"
+gpiopad="$(batocera-settings -r controllers.gpio.enabled)"
 
 # Carry out specific functions when asked to by the system
 case "$1" in

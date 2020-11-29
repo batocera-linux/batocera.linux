@@ -44,7 +44,7 @@ echo "---- batocera-config ----" >> $log
 
 if [ "$command" == "getRootPassword" ]; then
     # security disabled, force the default one without changing boot configuration
-    securityenabled="`$systemsetting  -command load -key system.security.enabled`"
+    securityenabled="`$systemsetting -r system.security.enabled`"
     if [ "$securityenabled" != "1" ];then
 	echo "linux"
 	exit 0
@@ -66,7 +66,7 @@ if [ "$command" == "setRootPassword" ]; then
     PASSWD=${2}
 
     # security disabled, don't change
-    securityenabled="`$systemsetting  -command load -key system.security.enabled`"
+    securityenabled="`$systemsetting -r system.security.enabled`"
     if [ "$securityenabled" != "1" ];then
 	exit 0
     fi
@@ -173,13 +173,13 @@ if [ "$command" == "module" ];then
 fi
 
 if [ "$command" == "canupdate" ];then
-	updatetype="`$systemsetting  -command load -key updates.type`"
+	updatetype="`$systemsetting -r updates.type`"
 	if test "${updatetype}" != "stable" -a "${updatetype}" != "unstable" -a "${updatetype}" != "beta"
 	then
 		# force a default value in case the value is removed or miswritten
 		updatetype="stable"
 	fi
-	settingsupdateurl="`$systemsetting  -command load -key updates.url`"
+	settingsupdateurl="`$systemsetting -r updates.url`"
 
 	# customizable upgrade url website
 	if test -n "${settingsupdateurl}"

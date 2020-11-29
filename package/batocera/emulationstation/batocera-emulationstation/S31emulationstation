@@ -9,10 +9,10 @@ fi
 
 case "$1" in
 	start)
-		enabled="`batocera-settings -command load -key system.es.atstartup`"
+		enabled="`batocera-settings -r system.es.atstartup`"
 		if [ "$enabled" != "0" ];then
 			batocera-resolution minTomaxResolution-secure
-			settings_lang="`batocera-settings -command load -key system.language`"
+			settings_lang="`batocera-settings -r system.language`"
 			cd /userdata # es need a PWD
 			HOME=/userdata/system LANG="${settings_lang}.UTF-8" %BATOCERA_EMULATIONSTATION_PREFIX% %BATOCERA_EMULATIONSTATION_CMD% %BATOCERA_EMULATIONSTATION_ARGS% %BATOCERA_EMULATIONSTATION_POSTFIX%
 		fi

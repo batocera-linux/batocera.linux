@@ -7,7 +7,7 @@ case "$1" in
     start)
         # Restores old settings saved in userdata
         batocera-bluetooth restore
-        enabled="$(batocera-settings -command load -key controllers.bluetooth.enabled)"
+        enabled="$(batocera-settings -r controllers.bluetooth.enabled)"
         [ "$enabled" == "1" ] || exit 0
         # soft unblock bluetooth
         rfkill unblock bluetooth
@@ -41,8 +41,8 @@ case "$1" in
             esac
         done
 
-        btaddr="$(batocera-settings -command load -key bluetooth.adapter)"
-        settings_version="$(batocera-settings -command load -key controllers.ps3.driver)"
+        btaddr="$(batocera-settings -r bluetooth.adapter)"
+        settings_version="$(batocera-settings -r controllers.ps3.driver)"
         if [ "$settings_version" != "bluez" ]
 	then
             BLUETOOTHD_ARGS="--noplugin=sixaxis"

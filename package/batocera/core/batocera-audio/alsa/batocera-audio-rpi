@@ -14,7 +14,7 @@ case "${ACTION}" in
 	;;	
 
 	"get")	
-		batocera-settings -command load -key audio.device	
+		batocera-settings -r audio.device	
 	;;	
 
 	"set")	

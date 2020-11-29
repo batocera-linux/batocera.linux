@@ -252,7 +252,7 @@ case "${MODE}" in
 esac
 
 # fs compression
-compressenabled="`batocera-settings -command load -key system.fscompression.enabled`"
+compressenabled="`batocera-settings -r system.fscompression.enabled`"
 if [[ "$compressenabled" == "1" ]]
 then
     if grep -qE "^/dev/[^ ]* /userdata btrfs.*$" /proc/mounts
