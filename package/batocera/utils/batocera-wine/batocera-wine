@@ -42,6 +42,7 @@ wine_options() {
     ESYNC=$(batocera-settings -e -r esync -s windows -g "${ROMGAMENAME}")
     FSYNC=$(batocera-settings -e -r fsync -s windows -g "${ROMGAMENAME}")
     PBA=$(batocera-settings -e -r pba -s windows -g "${ROMGAMENAME}")
+    KEYBOARD=$(batocera-settings -e -r kblayout -s system)
     VIRTUAL_DESKTOP=$(batocera-settings -e -r virtual_desktop -s windows -g "${ROMGAMENAME}")
     VIRTUAL_DESKTOP_SIZE=$(batocera-settings -e -r videomode -s windows -g "${ROMGAMENAME}" || batocera-resolution currentResolution)
 
@@ -57,6 +58,8 @@ wine_options() {
 
     export PBA_ENABLE=0
     test "${PBA}" = 1 && PBA_ENABLE=1
+    
+    setxkbmap "${KEYBOARD}"  
 }
 
 dxvk_install() {
