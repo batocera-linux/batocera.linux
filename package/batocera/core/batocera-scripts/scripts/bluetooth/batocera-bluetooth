@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 ACTION=$1
 shift
@@ -18,7 +18,7 @@ do_save() {
 
 do_restore() {
     BCK=/userdata/system/bluetooth/bluetooth.tar
-    [[ -f ${BCK} ]] && (cd /var/lib && tar xf "${BCK}")
+    [ -f "${BCK}" ] && (cd /var/lib && tar xf "${BCK}")
 }
 
 do_list() {
@@ -69,7 +69,7 @@ do_trust() {
 	    echo "${NEW_MSG}"
 	fi
 	sleep 1
-	let N--
+	N=$((N-1))
     done
 
     # stop discovering
