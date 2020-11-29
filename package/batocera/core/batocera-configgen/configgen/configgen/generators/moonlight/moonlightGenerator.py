@@ -18,7 +18,7 @@ class MoonlightGenerator(Generator):
     def generate(self, system, rom, playersControllers, gameResolution):
         moonlightConfig.generateMoonlightConfig()
         outputFile = batoceraFiles.moonlightCustom + '/gamecontrollerdb.txt'
-        configFile = controllersConfig.generateSDLGameDBAllControllers(playersControllers, outputFile)
+        configFile = controllersConfig.writeSDLGameDBAllControllers(playersControllers, outputFile)
         gameName,confFile = self.getRealGameNameAndConfigFile(rom)
         commandArray = [batoceraFiles.batoceraBins[system.config['emulator']], 'stream','-config',  confFile]
         commandArray.append('-app')
