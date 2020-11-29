@@ -33,6 +33,8 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
 
     # minimal system required packages
     select BR2_PACKAGE_BATOCERA_INITRAMFS                # initramfs to boot the system
+    select BR2_PACKAGE_BASH                              # bash shell, used as the interactive shell
+    select BR2_SYSTEM_BIN_SH_DASH                        # /bin/sh implementation
     select BR2_PACKAGE_RNG_TOOLS                         # system entropy
     select BR2_PACKAGE_BATOCERA_EMULATIONSTATION         # emulationstation
     select BR2_PACKAGE_ES_THEME_CARBON                   # emulationstation theme
