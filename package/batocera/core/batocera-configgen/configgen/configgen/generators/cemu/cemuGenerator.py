@@ -26,9 +26,9 @@ class CemuGenerator(Generator):
         if not path.isdir(batoceraFiles.SAVES + "/cemu"):
             os.mkdir(batoceraFiles.SAVES + "/cemu")
 
-        CemuGenerator.CemuConfig(batoceraFiles.CONF + "/cemu/settings.xml")
+        CemuGenerator.CemuConfig(batoceraFiles.CONF + "/cemu/settings.xml", system)
         # copy the file from where cemu reads it
-        copyfile(batoceraFiles.CONF + "/cemu/settings.xml", "/usr/cemu/settings.xml", system)
+        copyfile(batoceraFiles.CONF + "/cemu/settings.xml", "/usr/cemu/settings.xml")
 
         cemuControllers.generateControllerConfig(system, playersControllers, rom)
 
