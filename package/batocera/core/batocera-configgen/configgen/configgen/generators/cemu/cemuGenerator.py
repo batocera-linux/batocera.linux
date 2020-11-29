@@ -7,7 +7,6 @@ from os import path
 import batoceraFiles
 from xml.dom import minidom
 import codecs
-import controllersConfig
 import cemuControllers
 from shutil import copyfile
 
@@ -29,20 +28,11 @@ class CemuGenerator(Generator):
         CemuGenerator.CemuConfig(batoceraFiles.CONF + "/cemu/settings.xml", system)
         # copy the file from where cemu reads it
         copyfile(batoceraFiles.CONF + "/cemu/settings.xml", "/usr/cemu/settings.xml")
-
-        cemuControllers.generateControllerConfig(system, playersControllers, rom)
-
+        
+        sdlstring = cemuControllers.generateControllerConfig(system, playersControllers, rom)
+        
         commandArray = ["wine64", "/usr/cemu/Cemu.exe", "-g", "z:" + rom, "-m", "z:" + batoceraFiles.SAVES + "/cemu", "-f"]
-        return Command.Command(
-            array=commandArray,
-            env={
-                "WINEPREFIX": batoceraFiles.SAVES + "/cemu",
-                "vblank_mode": "0",
-                "mesa_glthread": "true",
-                "SDL_GAMECONTROLLERCONFIG": controllersConfig.generateSdlGameControllerConfig(playersControllers),
-                "WINEDLLOVERRIDES": "mscoree=;mshtml=;dbghelp.dll=n,b",
-                "__GL_THREADED_OPTIMIZATIONS": "1"
-            })
+        return Command.Command(array=commandArray, env={"WINEPREFIX":batoceraFiles.SAVES + "/cemu", "vblank_mode":"0", "mesa_glthread":"true", "SDL_GAMECONTROLLERCONFIG":sdlstring, "WINEDLLOVERRIDES":"mscoree=;mshtml=;dbghelp.dll=n,b", "__GL_THREADED_OPTIMIZATIONS":"1" })
 
     @staticmethod
     def CemuConfig(configFile, system):
@@ -75,19 +65,23 @@ class CemuGenerator(Generator):
         CemuGenerator.setSectionConfig(config, xml_root, "Audio", "")
         audio_root = CemuGenerator.getRoot(config, "Audio")
         CemuGenerator.setSectionConfig(config, audio_root, "TVDevice", "default")
-        CemuGenerator.setSectionConfig(config, audio_root, "TVVolume", "90")
+        CemuGenerator.setSectionConfig(config, audio_root, "TVVolume", "50")
         ##TVVolume
+
         #Graphic Settings
-        
         CemuGenerator.setSectionConfig(config, xml_root, "Graphic", "")
+
         graphic_root = CemuGenerator.getRoot(config, "Graphic")
+
 	if system.isOptSet("gfxbackend"):
-	    if system.config["gfxbackend"] == "OpenGL":
+            if system.config["gfxbackend"] == "OpenGL":
                 CemuGenerator.setSectionConfig(config, graphic_root, "api", "0") #OpenGL
             else:
-                CemuGenerator.setSectionConfig(config, graphic_root, "api", "1") #Vulkan
+		CemuGenerator.setSectionConfig(config, graphic_root, "api", "1") #Vulkan
         else:
             CemuGenerator.setSectionConfig(config, graphic_root, "api", "0") #OpenGL
+
+        
         
 
         # save the config file
