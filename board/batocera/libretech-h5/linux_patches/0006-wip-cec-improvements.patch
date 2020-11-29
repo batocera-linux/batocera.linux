@@ -165,7 +165,7 @@ index 43643ad31730..d840bc07cba6 100644
 -	regmap_write(phy->regs, SUN8I_HDMI_PHY_CEC_REG, 0);
 +	/* manual control of CEC pins */
 +	regmap_write(phy->regs, SUN8I_HDMI_PHY_CEC_REG,
-+		     SUN8I_HDMI_PHY_CEC_PIN_CTRL);
++		     phy->variant->bit_bang_cec ? SUN8I_HDMI_PHY_CEC_PIN_CTRL : 0);
  
  	/* read calibration data */
  	regmap_read(phy->regs, SUN8I_HDMI_PHY_ANA_STS_REG, &val);
@@ -227,14 +227,6 @@ index 43643ad31730..d840bc07cba6 100644
  	.has_phy_clk = true,
  	.is_custom_phy = true,
  	.phy_init = &sun8i_hdmi_phy_init_h3,
-@@ -557,6 +600,7 @@ static const struct sun8i_hdmi_phy_variant sun8i_h3_hdmi_phy = {
- };
- 
- static const struct sun8i_hdmi_phy_variant sun8i_r40_hdmi_phy = {
-+	.bit_bang_cec = true,
- 	.has_phy_clk = true,
- 	.has_second_pll = true,
- 	.is_custom_phy = true,
 @@ -566,6 +610,7 @@ static const struct sun8i_hdmi_phy_variant sun8i_r40_hdmi_phy = {
  };
  
