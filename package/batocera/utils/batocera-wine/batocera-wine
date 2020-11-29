@@ -42,7 +42,7 @@ wine_options() {
     ESYNC=$(batocera-settings -e -r esync -s windows -g "${ROMGAMENAME}")
     FSYNC=$(batocera-settings -e -r fsync -s windows -g "${ROMGAMENAME}")
     PBA=$(batocera-settings -e -r pba -s windows -g "${ROMGAMENAME}")
-    KEYBOARD=$(batocera-settings -e -r kblayout -s system)
+    KEYBOARD=$(batocera-settings -r system.kblayout)
     VIRTUAL_DESKTOP=$(batocera-settings -e -r virtual_desktop -s windows -g "${ROMGAMENAME}")
     VIRTUAL_DESKTOP_SIZE=$(batocera-settings -e -r videomode -s windows -g "${ROMGAMENAME}" || batocera-resolution currentResolution)
 
