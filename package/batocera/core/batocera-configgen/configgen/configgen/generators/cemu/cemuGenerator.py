@@ -26,7 +26,7 @@ class CemuGenerator(Generator):
         if not path.isdir(batoceraFiles.SAVES + "/cemu"):
             os.mkdir(batoceraFiles.SAVES + "/cemu")
 
-        CemuGenerator.CemuConfig(batoceraFiles.CONF + "/cemu/settings.xml")
+        CemuGenerator.CemuConfig(batoceraFiles.CONF + "/cemu/settings.xml", system)
         # copy the file from where cemu reads it
         copyfile(batoceraFiles.CONF + "/cemu/settings.xml", "/usr/cemu/settings.xml")
 
@@ -45,7 +45,7 @@ class CemuGenerator(Generator):
             })
 
     @staticmethod
-    def CemuConfig(configFile):
+    def CemuConfig(configFile, system):
         # config file
         config = minidom.Document()
         if os.path.exists(configFile):
@@ -81,8 +81,15 @@ class CemuGenerator(Generator):
         
         CemuGenerator.setSectionConfig(config, xml_root, "Graphic", "")
         graphic_root = CemuGenerator.getRoot(config, "Graphic")
-        
-        graphic_root = CemuGenerator.getRoot(config, "Graphic")
+
+        if system.isOptSet("gfxbackend"):
+            if system.config["gfxbackend"] == "OpenGL":
+                CemuGenerator.setSectionConfig(config, graphic_root, "api", "0") #OpenGL
+            else:
+                CemuGenerator.setSectionConfig(config, graphic_root, "api", "1") #Vulkan
+        else:
+            CemuGenerator.setSectionConfig(config, graphic_root, "api", "0") #OpenGL
+
         
         
 
