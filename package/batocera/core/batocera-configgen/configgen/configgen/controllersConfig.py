@@ -156,7 +156,10 @@ def _keyToSdlGameControllerConfig(keyname, type, id, value=None):
     elif type == 'hat':
         return '{}:h{}.{}'.format(keyname, id, value)
     elif type == 'axis':
-        return '{}:a{}{}'.format(keyname, id, '~' if int(value) > 0 else '')
+        if 'joystick' in keyname:
+            return '{}:a{}{}'.format(keyname, id, '~' if int(value) > 0 else '')
+        else:
+            return '{}:a{}{}'.format(keyname, id, '')
     elif type == 'key':
         return None
     else:
