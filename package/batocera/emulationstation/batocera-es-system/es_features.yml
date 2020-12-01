@@ -640,6 +640,14 @@ cannonball:
         On:  1
 cemu:
   features: [emulated_wiimotes]
+  cfeatures:
+    gui:
+    gfxbackend:
+      prompt: GRAPHICS BACKEND
+      choices:
+        OpenGL: OpenGL
+        Vulkan: Vulkan
+
 
 melonds:
   features: []
