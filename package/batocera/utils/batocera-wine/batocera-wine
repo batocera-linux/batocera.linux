@@ -200,6 +200,7 @@ play_wine() {
     WINEPOINT="${GAMENAME}"
 
     wine_options
+    dxvk_install "${WINEPOINT}" || return 1
     WINE_CMD=$(getWine_var "${WINEPOINT}" "CMD" "explorer")
     WINE_DIR=$(getWine_var "${WINEPOINT}" "DIR" "")
     (cd "${WINEPOINT}/${WINE_DIR}" && WINEPREFIX=${WINEPOINT} eval "wine ${VDESKTOP} ${WINE_CMD}")
