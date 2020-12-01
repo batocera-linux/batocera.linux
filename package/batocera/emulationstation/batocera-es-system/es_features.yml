@@ -660,6 +660,40 @@ rpcs3:
 
 mame:
   features: []
+  cfeatures:
+    video:
+      prompt: Video engine
+      choices:
+        "BGFX": bgfx
+        "Accel": accel
+        "OpenGL": opengl
+
+    bgfxbackend:
+      prompt: BGFX backend
+      choices:
+        "Auto": auto
+        "OpenGL": opengl
+        "OpenGLES": gles
+        "Vulkan": vulkan
+
+    rotation:
+      prompt: Rotation
+      choices:
+        "Disabled": null
+        "AutoCW90": autoror
+        "AutoCW270": autorol
+
+    bgfxshaders:
+      prompt: Shaders
+      choices:
+        "None": null
+        "CrtGeom": crt-geom
+        "CrtGeomDeluxe": crt-geom-deluxe
+        "SuperEagle": eagle
+        "HLSL": hlsl
+        "HQ2X": hq2x
+        "HQ3X": hq3x
+        "HQ4X": hq4x
 
 wine:
   features: [padtokeyboard]
