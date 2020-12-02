@@ -4,9 +4,8 @@ config BR2_PACKAGE_SUPERMODEL3
         select BR2_PACKAGE_SDL2
 
         help
-          A SEGA Model 3 emulator.
+          Supermodel is a Sega Model 3 that uses the SDL-library
 
-	  http://www.supermodel3.com
+          https://sourceforge.net/p/model3emu/
 
-comment "SUPERMODEL3 needs a toolchain w/ C++"
-	depends on !BR2_INSTALL_LIBSTDCPP
+

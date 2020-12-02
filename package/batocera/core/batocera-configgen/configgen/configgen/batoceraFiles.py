@@ -38,6 +38,7 @@ batoceraBins = {'dosbox'         : '/usr/bin/dosbox'
               , 'melonds'        : '/usr/bin/melonDS'
               , 'rpcs3'          : '/usr/bin/rpcs3'
               , 'mame'           : '/usr/bin/mame/mamearcade64'
+              , 'supermodel3'  : '/usr/bin/supermodel3'
 }
 
 
@@ -142,6 +143,10 @@ flycastBios = BIOS
 flycastVMUBlank = '/usr/lib/python2.7/site-packages/configgen/datainit/dreamcast/vmu_save_blank.bin'
 flycastVMUA1 = flycastSaves + '/flycast/vmu_save_A1.bin'
 flycastVMUA2 = flycastSaves + '/flycast/vmu_save_A2.bin'
+
+supermodel3Custom = CONF + '/supermodel3'
+supermodel3Config = supermodel3Custom + '/Config'
+supermodel3Ini = supermodel3Config + '/Supermodel.ini'
 
 cemuConfig = CONF + '/cemu/config.ini'
 cemuHomedir = ROMS + '/wiiu'
