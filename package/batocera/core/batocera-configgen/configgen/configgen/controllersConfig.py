@@ -118,6 +118,7 @@ def _generateSdlGameControllerConfig(controller, sdlMapping=_DEFAULT_SDL_MAPPING
     config = []
     config.append(controller.guid)
     config.append(controller.configName)
+    config.append("platform:Linux")
     for k in controller.inputs:
         input = controller.inputs[k]
         keyname = sdlMapping.get(input.name, None)
