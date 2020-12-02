@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-DXVK_VERSION = 1.7.2
+DXVK_VERSION = 1.7.3
 DXVK_SOURCE = dxvk-$(DXVK_VERSION).tar.gz
 DXVK_SITE = https://github.com/doitsujin/dxvk/releases/download/v$(DXVK_VERSION)
 DXVK_LICENSE = zlib/libpng
