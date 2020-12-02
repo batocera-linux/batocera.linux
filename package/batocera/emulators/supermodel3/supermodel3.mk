@@ -20,13 +20,13 @@ define SUPERMODEL3_BUILD_CMDS
 	$(SED) "s|CXX = g++|CXX = $(TARGET_CXX)|g" $(@D)/Makefile
 	$(SED) "s|LD = gcc|LD = $(TARGET_CC)|g" $(@D)/Makefile
 	$(SED) "s|sdl2-config|$(STAGING_DIR)/usr/bin/sdl2-config|g" $(@D)/Makefile
-	$(SED) "s+-march=native+-msse+g" $(@D)/Makefiles/Makefile.inc
-	$(SED) "s+OUTFILE = supermodel+OUTFILE = supermodel3+g" $(@D)/Makefiles/Makefile.inc
+	$(SED) "s+-march=native -mfpmath=sse++g" $(@D)/Makefiles/Rules.inc
+	$(SED) "s+OUTFILE = supermodel+OUTFILE = supermodel3+g" $(@D)/Makefiles/Rules.inc
 	$(TARGET_CONFIGURE_OPTS) $(MAKE) -C $(@D) -f Makefile VERBOSE=1
 endef
 
 define SUPERMODEL3_INSTALL_TARGET_CMDS
-	$(INSTALL) -D -m 0755 $(@D)/bin/supermodel \
+	$(INSTALL) -D -m 0755 $(@D)/bin/supermodel3 \
 		$(TARGET_DIR)/usr/bin/supermodel3
 	$(INSTALL) -D -m 0644 $(@D)/Config/Games.xml \
 		$(TARGET_DIR)/usr/share/batocera/datainit/system/configs/model3/Games.xml
@@ -42,7 +42,7 @@ define SUPERMODEL3_LINE_ENDINGS_FIXUP
 endef
 
 define SUPERMODEL3_INSTALL_STAGING_CMDS
-	$(INSTALL) -D -m 0755 $(@D)/bin/supermodel \
+	$(INSTALL) -D -m 0755 $(@D)/bin/supermodel3 \
 		$(STAGING_DIR)/usr/bin/supermodel3
 	$(INSTALL) -D -m 0644 $(@D)/Config/Games.xml \
 		$(STAGING_DIR)/usr/share/batocera/datainit/system/configs/model3/Games.xml
@@ -51,6 +51,6 @@ define SUPERMODEL3_INSTALL_STAGING_CMDS
 	mkdir -p $(STAGING_DIR)/usr/share/batocera/datainit/system/configs/model3/NVRAM
 endef
 
-SUPERMODEL_PRE_PATCH_HOOKS += SUPERMODEL_LINE_ENDINGS_FIXUP
+SUPERMODEL3_PRE_PATCH_HOOKS += SUPERMODEL3_LINE_ENDINGS_FIXUP
 
 $(eval $(generic-package))
