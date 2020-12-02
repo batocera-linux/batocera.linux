@@ -44,39 +44,37 @@ case "${ACTION}" in
 	;;
     "setOutput")
 	;;
-    "minTomaxResolution-secure")
-	CURRENT=$(f_listModes "current" | head -1 | cut -d : -f 1)
-	echo "${CURRENT}" > /var/run/drmMode
-	exit 0 # dont minimize for 4K tv, causing too many troubles while tv don't give the correct informations
-	;;
-    "minTomaxResolution")
-	# minimize resolution because of 4K tv
-	MAXWIDTH=1920
-	MAXHEIGHT=1080
-
-	# if current resolution is ok, keep it
-	read CURRENTWIDTH CURRENTHEIGHT <<< $(f_listModes "current" | sed -e s+"^\([0-9]*\):\([0-9]*\)x\([0-9]*\) \([0-9]*\)\(.*\)$"+"\2 \3"+)
-	if test "${CURRENTWIDTH}" -le "${MAXWIDTH}" -a "${CURRENTHEIGHT}" -le "${MAXHEIGHT}"
-	then
-	    exit 0
-	fi
-
-	# select a new one
-	# select the first one valid
-	# is it the best ? or should we loop to search the first with the same ratio ?
-	f_listModes | sed -e s+"^\([0-9]*\):\([0-9]*x[0-9]*\) \([0-9]*\)\(.*\)$"+"\2_\3:\1:\2"+ | sort -rn | # highest resolution first
-            while IFS=':\n' read SORTSTR SUGGMODE SUGGRESOLUTION
-            do
-		SUGGWIDTH=$(echo "${SUGGRESOLUTION}" | cut -d x -f 1)
-		SUGGHEIGHT=$(echo "${SUGGRESOLUTION}" | cut -d x -f 2)
-
-		if test "${SUGGWIDTH}" -le "${MAXWIDTH}" -a "${SUGGHEIGHT}" -le "${MAXHEIGHT}"
+    "minTomaxResolution" | "minTomaxResolution-secure")
+	maxres=$(batocera-settings -r es.maxresolution)
+	if [ -z ${maxres} ] || [ ${maxres} = 0 ]; then
+		CURRENT=$(f_listModes "current" | head -1 | cut -d : -f 1)
+		echo "${CURRENT}" > /var/run/drmMode
+		exit 0 # dont minimize for 4K tv, causing too many troubles when tvs don't give the correct information
+	else
+		# if es.maxresolution is set in batocera.conf, minimize resolution to 1080 because of 4K tv
+		MAXWIDTH=1920
+		MAXHEIGHT=1080
+		# if current resolution is ok, keep it
+		read CURRENTWIDTH CURRENTHEIGHT <<< $(f_listModes "current" | sed -e s+"^\([0-9]*\):\([0-9]*\)x\([0-9]*\) \([0-9]*\)\(.*\)$"+"\2 \3"+)
+		if test "${CURRENTWIDTH}" -le "${MAXWIDTH}" -a "${CURRENTHEIGHT}" -le "${MAXHEIGHT}"
 		then
-                    echo "${SUGGMODE}" > /var/run/drmMode
-                    exit 0
+			exit 0
 		fi
-            done
+		# select a new one
+		# select the first one valid
+		# is it the best ? or should we loop to search the first with the same ratio ?
+		f_listModes | sed -e s+"^\([0-9]*\):\([0-9]*x[0-9]*\) \([0-9]*\)\(.*\)$"+"\2_\3:\1:\2"+ | sort -rn | # highest resolution first
+		while IFS=':\n' read SORTSTR SUGGMODE SUGGRESOLUTION
+		do
+			SUGGWIDTH=$(echo "${SUGGRESOLUTION}" | cut -d x -f 1)
+			SUGGHEIGHT=$(echo "${SUGGRESOLUTION}" | cut -d x -f 2)
+			if test "${SUGGWIDTH}" -le "${MAXWIDTH}" -a "${SUGGHEIGHT}" -le "${MAXHEIGHT}"
+			then
+				echo "${SUGGMODE}" > /var/run/drmMode
+				exit 0
+			fi
+		done
+	fi
         ;;
-
 esac
 exit 0
