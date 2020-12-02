@@ -32,6 +32,7 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
     bool "batocera.linux minimal"
 
     # minimal system required packages
+    select BR2_TARGET_BATOCERA_IMAGES_DEFINITIONS
     select BR2_PACKAGE_BATOCERA_INITRAMFS                # initramfs to boot the system
     select BR2_PACKAGE_BASH                              # bash shell, used as the interactive shell
     select BR2_SYSTEM_BIN_SH_DASH                        # /bin/sh implementation
@@ -246,6 +247,29 @@ config BR2_PACKAGE_BATOCERA_DEV
 
     help
       Install dev packages for batocera.linux
+
+config BR2_TARGET_BATOCERA_IMAGES_DEFINITIONS
+    bool "target images definitions"
+    config BR2_TARGET_BATOCERA_IMAGES
+        string "target images"
+	default "amlogic/odroidc2"     	      if BR2_PACKAGE_BATOCERA_TARGET_ODROIDC2
+	default "amlogic/odroidc4"     	      if BR2_PACKAGE_BATOCERA_TARGET_ODROIDC4
+        default "amlogic/odroidn2"     	      if BR2_PACKAGE_BATOCERA_TARGET_ODROIDN2
+	default "amlogic/s912"         	      if BR2_PACKAGE_BATOCERA_TARGET_S912
+        default "amlogic/vim3"         	      if BR2_PACKAGE_BATOCERA_TARGET_VIM3
+	default "raspberrypi/rpi"      	      if BR2_PACKAGE_BATOCERA_TARGET_RPI1
+	default "raspberrypi/rpi"      	      if BR2_PACKAGE_BATOCERA_TARGET_RPI2
+	default "raspberrypi/rpi3"     	      if BR2_PACKAGE_BATOCERA_TARGET_RPI3
+	default "raspberrypi/rpi4"     	      if BR2_PACKAGE_BATOCERA_TARGET_RPI4
+	default "rockchip/odroidgoa"   	      if BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA
+	default "rockchip/rk3288/miqi" 	      if BR2_PACKAGE_BATOCERA_TARGET_MIQI
+	default "rockchip/rk3288/tinkerboard" if BR2_PACKAGE_BATOCERA_TARGET_TINKERBOARD
+	default "rockchip/rk3399/rock960"     if BR2_PACKAGE_BATOCERA_TARGET_ROCK960
+	default "rockchip/rk3399/rockpro64"   if BR2_PACKAGE_BATOCERA_TARGET_ROCKPRO64
+	default "libretech-h5"         	      if BR2_PACKAGE_BATOCERA_TARGET_LIBRETECH_H5
+	default "odroidxu4"                   if BR2_PACKAGE_BATOCERA_TARGET_XU4
+	default "x86"                  	      if BR2_PACKAGE_BATOCERA_TARGET_X86
+	default "x86"                  	      if BR2_PACKAGE_BATOCERA_TARGET_X86_64
 
 choice
         prompt "batocera.linux target"

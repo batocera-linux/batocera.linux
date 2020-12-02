@@ -7,149 +7,101 @@
 # BINARIES_DIR = images dir
 # TARGET_DIR = target dir
 
+##### constants ################
 BATOCERA_BINARIES_DIR="${BINARIES_DIR}/batocera"
-BATOCERA_TARGET_DIR="${TARGET_DIR}/batocera"
+GENIMAGE_TMP="${BUILD_DIR}/genimage.tmp"
+################################
 
-if [ -d "${BATOCERA_BINARIES_DIR}" ]; then
-	rm -rf "${BATOCERA_BINARIES_DIR}"
+##### find images to build #####
+BATOCERA_TARGET=$(grep -E "^BR2_PACKAGE_BATOCERA_TARGET_[A-Z_0-9]*=y$" "${BR2_CONFIG}" | grep -vE "_ANY=" | sed -e s+'^BR2_PACKAGE_BATOCERA_TARGET_\([A-Z_0-9]*\)=y$'+'\1'+)
+BATOCERA_LOWER_TARGET=$(echo "${BATOCERA_TARGET}" | tr [A-Z] [a-z])
+BATOCERA_IMAGES_TARGETS=$(grep -E "^BR2_TARGET_BATOCERA_IMAGES[ ]*=[ ]*\".*\"[ ]*$" "${BR2_CONFIG}" | sed -e s+"^BR2_TARGET_BATOCERA_IMAGES[ ]*=[ ]*\"\(.*\)\"[ ]*$"+"\1"+)
+if test -z "${BATOCERA_IMAGES_TARGETS}"
+then
+    echo "no BR2_TARGET_BATOCERA_IMAGES defined." >&2
+    exit 1
+fi
+################################
+
+#### common parent dir to al images #
+if echo "${BATOCERA_IMAGES_TARGETS}" | grep -qE '^[^ ]*$'
+then
+    # single board directory
+    COMMON_PARENT_DIR=${BATOCERA_IMAGES_TARGETS}
+else
+    # when there are several one, the first one is the common directory where to find the create-boot-script.sh directory
+    COMMON_PARENT_DIR=$(echo "${BATOCERA_IMAGES_TARGETS}" | cut -d ' ' -f 1)
+    BATOCERA_IMAGES_TARGETS=$(echo "${BATOCERA_IMAGES_TARGETS}" | cut -d ' ' -f 2-)
 fi
 
-mkdir -p "${BATOCERA_BINARIES_DIR}" || { echo "Error in creating '${BATOCERA_BINARIES_DIR}'"; exit 1; }
+#### clean the (previous if exists) target directory ###
+if test -d "${BATOCERA_BINARIES_DIR}"
+then
+    rm -rf "${BATOCERA_BINARIES_DIR}" || exit 1
+fi
+mkdir -p "${BATOCERA_BINARIES_DIR}/images" || exit 1
 
-BATOCERA_TARGET=$(grep -E "^BR2_PACKAGE_BATOCERA_TARGET_[A-Z_0-9]*=y$" "${BR2_CONFIG}" | grep -vE "_VCORE=" | sed -e s+'^BR2_PACKAGE_BATOCERA_TARGET_\([A-Z_0-9]*\)=y$'+'\1'+)
-BATO_DIR="${BR2_EXTERNAL_BATOCERA_PATH}/board/batocera"
+#### prepare the boot dir ######
+BATOCERA_POST_IMAGE_SCRIPT="${BR2_EXTERNAL_BATOCERA_PATH}/board/batocera/${COMMON_PARENT_DIR}/create-boot-script.sh"
+bash "${BATOCERA_POST_IMAGE_SCRIPT}" "${HOST_DIR}" "${BR2_EXTERNAL_BATOCERA_PATH}/board/batocera/${COMMON_PARENT_DIR}" "${BUILD_DIR}" "${BINARIES_DIR}" "${TARGET_DIR}" "${BATOCERA_BINARIES_DIR}" || exit 1
+# add some common files
+cp -pr "${BINARIES_DIR}/tools"              "${BATOCERA_BINARIES_DIR}/boot/" || exit 1
+cp     "${BINARIES_DIR}/batocera-boot.conf" "${BATOCERA_BINARIES_DIR}/boot/" || exit 1
 
-echo -e "\n----- Generating images/batocera files -----\n"
+#### boot.tar.xz ###############
+echo "creating boot.tar.xz"
+(cd "${BATOCERA_BINARIES_DIR}/boot" && tar -I "xz -T0" -cf "${BATOCERA_BINARIES_DIR}/boot.tar.xz" *) || exit 1
 
-BATOCERA_POST_IMAGE_SCRIPT=""
-
-case "${BATOCERA_TARGET}" in
-	RPI0|RPI1|RPI2)
-	BOARD_DIR="${BATO_DIR}/raspberrypi/rpi"
-	BATOCERA_POST_IMAGE_SCRIPT="${BOARD_DIR}/post-image-script-rpi012.sh"
-	;;
-
-	RPI3)
-	BOARD_DIR="${BATO_DIR}/raspberrypi/rpi3"
-	BATOCERA_POST_IMAGE_SCRIPT="${BOARD_DIR}/post-image-script-rpi3.sh"
-	;;
-
-	RPI4)
-	BOARD_DIR="${BATO_DIR}/raspberrypi/rpi4"
-	BATOCERA_POST_IMAGE_SCRIPT="${BOARD_DIR}/post-image-script-rpi4.sh"
-	;;
-
-	S905)
-	BOARD_DIR="${BATO_DIR}/amlogic/s905"
-	BATOCERA_POST_IMAGE_SCRIPT="${BOARD_DIR}/post-image-script-s905.sh"
-	;;
-
-	S912)
-	BOARD_DIR="${BATO_DIR}/amlogic/s912"
-	BATOCERA_POST_IMAGE_SCRIPT="${BOARD_DIR}/post-image-script-s912.sh"
-	;;
-
-	X86|X86_64)
-	BOARD_DIR="${BATO_DIR}/x86"
-	BATOCERA_POST_IMAGE_SCRIPT="${BOARD_DIR}/post-image-script-x86.sh"
-	;;
-
-	XU4)
-	BOARD_DIR="${BATO_DIR}/odroidxu4"
-	BATOCERA_POST_IMAGE_SCRIPT="${BOARD_DIR}/post-image-script-odroidxu4.sh"
-	;;
-
-	ODROIDC2)
-	BOARD_DIR="${BATO_DIR}/amlogic/odroidc2"
-	BATOCERA_POST_IMAGE_SCRIPT="${BOARD_DIR}/post-image-script-odroidc2.sh"
-	;;
-
-	ODROIDC4)
-        BOARD_DIR="${BATO_DIR}/amlogic/odroidc4"
-	BATOCERA_POST_IMAGE_SCRIPT="${BOARD_DIR}/post-image-script-odroidc4.sh"
-	;;
-
-	ODROIDN2)
-        BOARD_DIR="${BATO_DIR}/amlogic/odroidn2"
-	BATOCERA_POST_IMAGE_SCRIPT="${BOARD_DIR}/post-image-script-odroidn2.sh"
-	;;
-
-	ODROIDGOA)
-	BOARD_DIR="${BATO_DIR}/rockchip/odroidgoa"
-	BATOCERA_POST_IMAGE_SCRIPT="${BOARD_DIR}/post-image-script-odroidgoa.sh"
-	;;
-
-	ROCKPRO64)
-	BOARD_DIR="${BATO_DIR}/rockchip/rk3399/rockpro64"
-	BATOCERA_POST_IMAGE_SCRIPT="${BOARD_DIR}/post-image-script-rockpro64.sh"
-	;;
-
-	ROCK960)
-	BOARD_DIR="${BATO_DIR}/rockchip/rk3399/rock960"
-	BATOCERA_POST_IMAGE_SCRIPT="${BOARD_DIR}/post-image-script-rock960.sh"
-	;;
-
-	TINKERBOARD)
-	BOARD_DIR="${BATO_DIR}/rockchip/rk3288/tinkerboard"
-	BATOCERA_POST_IMAGE_SCRIPT="${BOARD_DIR}/post-image-script-tinkerboard.sh"
-	;;
-
-	MIQI)
-	BOARD_DIR="${BATO_DIR}/rockchip/rk3288/miqi"
-	BATOCERA_POST_IMAGE_SCRIPT="${BOARD_DIR}/post-image-script-miqi.sh"
-	;;
-
-	VIM3)
-	BOARD_DIR="${BATO_DIR}/amlogic/vim3"
-	BATOCERA_POST_IMAGE_SCRIPT="${BOARD_DIR}/post-image-script-vim3.sh"
-	;;
-
-	LIBRETECH_H5)
-	BOARD_DIR="${BATO_DIR}/libretech-h5"
-	BATOCERA_POST_IMAGE_SCRIPT="${BOARD_DIR}/post-image-script-libretech-h5.sh"
-	;;
-
-	*)
-	echo "Outch. Unknown target ${BATOCERA_TARGET} (see copy-batocera-archives.sh)" >&2
-	bash
-	exit 1
-esac
-
-# run image script for specific target
-bash "${BATOCERA_POST_IMAGE_SCRIPT}" "${HOST_DIR}" "${BOARD_DIR}" "${BUILD_DIR}" "${BINARIES_DIR}" "${TARGET_DIR}" "${BATOCERA_BINARIES_DIR}" "${BATOCERA_TARGET_DIR}"
-
-# common
-
-# renaming
+##### build images #############
 SUFFIXVERSION=$(cat "${TARGET_DIR}/usr/share/batocera/batocera.version" | sed -e s+'^\([0-9\.]*\).*$'+'\1'+) # xx.yy version
-SUFFIXTARGET=$(echo "${BATOCERA_TARGET}" | tr A-Z a-z)
 SUFFIXDATE=$(date +%Y%m%d)
-SUFFIXIMG="-${SUFFIXVERSION}-${SUFFIXTARGET}-${SUFFIXDATE}"
-mv "${BATOCERA_BINARIES_DIR}/batocera.img" "${BATOCERA_BINARIES_DIR}/batocera${SUFFIXIMG}.img" || exit 1
+# rename the squashfs : the .update is the version that will be renamed at boot to replace the old version
+mv "${BATOCERA_BINARIES_DIR}/boot/boot/batocera.update" "${BATOCERA_BINARIES_DIR}/boot/boot/batocera" || exit 1
 
-cp "${TARGET_DIR}/usr/share/batocera/batocera.version" "${BATOCERA_BINARIES_DIR}" || exit 1
-
-
-# gzip image
-gzip "${BATOCERA_BINARIES_DIR}/batocera${SUFFIXIMG}.img" || exit 1
-
-#
-for FILE in "${BATOCERA_BINARIES_DIR}/boot.tar.xz" "${BATOCERA_BINARIES_DIR}/batocera${SUFFIXIMG}.img.gz"
+#### buld the images ###########
+for BATOCERA_PATHSUBTARGET in ${BATOCERA_IMAGES_TARGETS}
 do
-	echo "creating ${FILE}.md5"
-	CKS=$(md5sum "${FILE}" | sed -e s+'^\([^ ]*\) .*$'+'\1'+)
-	echo "${CKS}" > "${FILE}.md5"
-	echo "${CKS}  $(basename "${FILE}")" >> "${BATOCERA_BINARIES_DIR}/MD5SUMS"
+    BATOCERA_SUBTARGET=$(basename "${BATOCERA_PATHSUBTARGET}")
+    if test "${BATOCERA_LOWER_TARGET}" != "${BATOCERA_SUBTARGET}"
+    then
+	BATOCERAIMG="${BATOCERA_BINARIES_DIR}/images/batocera-${BATOCERA_LOWER_TARGET}-${BATOCERA_SUBTARGET}-${SUFFIXVERSION}-${SUFFIXDATE}.img"
+    else
+	BATOCERAIMG="${BATOCERA_BINARIES_DIR}/images/batocera-${BATOCERA_LOWER_TARGET}-${SUFFIXVERSION}-${SUFFIXDATE}.img"
+    fi
+    echo "creating image ${BATOCERA_IMG}..." >&2
+    rm -rf "${GENIMAGE_TMP}" || exit 1
+    GENIMAGEFILE="${BR2_EXTERNAL_BATOCERA_PATH}/board/batocera/${BATOCERA_PATHSUBTARGET}/genimage.cfg"
+    FILES=$(find "${BATOCERA_BINARIES_DIR}/boot" -type f | sed -e s+"^${BATOCERA_BINARIES_DIR}/boot/\(.*\)$"+"file \1 \{ image = '\1' }"+ | tr '\n' '@')
+    cat "${GENIMAGEFILE}" | sed -e s+'@files'+"${FILES}"+ | tr '@' '\n' > "${BATOCERA_BINARIES_DIR}/genimage.cfg" || exit 1
+
+    genimage --rootpath="${TARGET_DIR}" --inputpath="${BATOCERA_BINARIES_DIR}/boot" --outputpath="${BATOCERA_BINARIES_DIR}" --config="${BATOCERA_BINARIES_DIR}/genimage.cfg" --tmppath="${GENIMAGE_TMP}" || exit 1
+    rm -f "${BATOCERA_BINARIES_DIR}/boot.vfat" || exit 1
+    rm -f "${BATOCERA_BINARIES_DIR}/userdata.ext4" || exit 1
+    mv "${BATOCERA_BINARIES_DIR}/batocera.img" "${BATOCERAIMG}" || exit 1
+    gzip "${BATOCERAIMG}" || exit 1
 done
 
-# pcsx2 package
+#### md5 #######################
+for FILE in "${BATOCERA_BINARIES_DIR}/boot.tar.xz" "${BATOCERA_BINARIES_DIR}/images/batocera-"*".img.gz"
+do
+    echo "creating ${FILE}.md5"
+    CKS=$(md5sum "${FILE}" | sed -e s+'^\([^ ]*\) .*$'+'\1'+)
+    echo "${CKS}" > "${FILE}.md5"
+    echo "${CKS}  $(basename "${FILE}")" >> "${BATOCERA_BINARIES_DIR}/MD5SUMS"
+done
+
+#### update the target dir with some information files
+cp "${TARGET_DIR}/usr/share/batocera/batocera.version" "${BATOCERA_BINARIES_DIR}" || exit 1
+"${BR2_EXTERNAL_BATOCERA_PATH}"/scripts/linux/systemsReport.sh "${PWD}" "${BATOCERA_BINARIES_DIR}" || exit 1
+
+#### pcsx2 package
 if grep -qE "^BR2_PACKAGE_PCSX2=y$" "${BR2_CONFIG}"
 then
 	echo "building the pcsx2 package..."
 	"${BR2_EXTERNAL_BATOCERA_PATH}"/board/batocera/scripts/doPcsx2package.sh "${TARGET_DIR}" "${BINARIES_DIR}/pcsx2" "${BATOCERA_BINARIES_DIR}" || exit 1
 fi
 
-# wine package
+#### wine package
 if grep -qE "^BR2_PACKAGE_WINE_LUTRIS=y$" "${BR2_CONFIG}"
 then
 	if grep -qE "^BR2_x86_i686=y$" "${BR2_CONFIG}"
@@ -158,7 +110,5 @@ then
 		"${BR2_EXTERNAL_BATOCERA_PATH}"/board/batocera/scripts/doWinepackage.sh "${TARGET_DIR}" "${BINARIES_DIR}/wine" "${BATOCERA_BINARIES_DIR}" || exit 1
 	fi
 fi
-
-"${BR2_EXTERNAL_BATOCERA_PATH}"/scripts/linux/systemsReport.sh "${PWD}" "${BATOCERA_BINARIES_DIR}"
 
 exit 0
