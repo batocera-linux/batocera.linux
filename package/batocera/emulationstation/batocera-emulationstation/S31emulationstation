@@ -10,8 +10,14 @@ fi
 case "$1" in
 	start)
 		enabled="`batocera-settings -command load -key system.es.atstartup`"
+		secured="`batocera-settings -command load -key system.es.maxresolution`"
 		if [ "$enabled" != "0" ];then
-			batocera-resolution minTomaxResolution-secure
+		        if test "${secured}" = 0 -o -z "${secured}"
+			then
+			  batocera-resolution minTomaxResolution-secure
+			else
+			  batocera-resolution minTomaxResolution
+			fi
 			settings_lang="`batocera-settings -command load -key system.language`"
 			cd /userdata # es need a PWD
 			HOME=/userdata/system LANG="${settings_lang}.UTF-8" %BATOCERA_EMULATIONSTATION_PREFIX% %BATOCERA_EMULATIONSTATION_CMD% %BATOCERA_EMULATIONSTATION_ARGS% %BATOCERA_EMULATIONSTATION_POSTFIX%
