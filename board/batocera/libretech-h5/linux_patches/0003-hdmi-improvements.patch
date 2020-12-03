@@ -145,3 +145,413 @@ index bfb1519..47632a3 100644
 -- 
 2.14.1
 
+From 759c992d38d1a02560687247dec7ac05f4e8b3ce Mon Sep 17 00:00:00 2001
+From: Jonas Karlman <jonas@kwiboo.se>
+Date: Sun, 8 Dec 2019 13:13:46 +0000
+Subject: [PATCH] drm: dw-hdmi: rename last_connector_result
+
+Signed-off-by: Jonas Karlman <jonas@kwiboo.se>
+---
+ drivers/gpu/drm/bridge/synopsys/dw-hdmi.c | 20 ++++++++++----------
+ 1 file changed, 10 insertions(+), 10 deletions(-)
+
+diff --git a/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c b/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
+index 0e716c40c42c..2dad989e7b4f 100644
+--- a/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
++++ b/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
+@@ -197,7 +197,7 @@ struct dw_hdmi {
+ 
+ 	hdmi_codec_plugged_cb plugged_cb;
+ 	struct device *codec_dev;
+-	enum drm_connector_status last_connector_result;
++	enum drm_connector_status last_connector_status;
+ };
+ 
+ #define HDMI_IH_PHY_STAT0_RX_SENSE \
+@@ -236,7 +236,7 @@ int dw_hdmi_set_plugged_cb(struct dw_hdmi *hdmi, hdmi_codec_plugged_cb fn,
+ 	mutex_lock(&hdmi->mutex);
+ 	hdmi->plugged_cb = fn;
+ 	hdmi->codec_dev = codec_dev;
+-	plugged = hdmi->last_connector_result == connector_status_connected;
++	plugged = hdmi->last_connector_status == connector_status_connected;
+ 	handle_plugged_change(hdmi, plugged);
+ 	mutex_unlock(&hdmi->mutex);
+ 
+@@ -2271,7 +2271,7 @@ dw_hdmi_connector_detect(struct drm_connector *connector, bool force)
+ {
+ 	struct dw_hdmi *hdmi = container_of(connector, struct dw_hdmi,
+ 					     connector);
+-	enum drm_connector_status result;
++	enum drm_connector_status status;
+ 
+ 	mutex_lock(&hdmi->mutex);
+ 	hdmi->force = DRM_FORCE_UNSPECIFIED;
+@@ -2279,18 +2279,18 @@ dw_hdmi_connector_detect(struct drm_connector *connector, bool force)
+ 	dw_hdmi_update_phy_mask(hdmi);
+ 	mutex_unlock(&hdmi->mutex);
+ 
+-	result = hdmi->phy.ops->read_hpd(hdmi, hdmi->phy.data);
++	status = hdmi->phy.ops->read_hpd(hdmi, hdmi->phy.data);
+ 
+ 	mutex_lock(&hdmi->mutex);
+-	if (result != hdmi->last_connector_result) {
+-		dev_dbg(hdmi->dev, "read_hpd result: %d", result);
++	if (status != hdmi->last_connector_status) {
++		dev_dbg(hdmi->dev, "connector status: %d", status);
+ 		handle_plugged_change(hdmi,
+-				      result == connector_status_connected);
+-		hdmi->last_connector_result = result;
++				      status == connector_status_connected);
++		hdmi->last_connector_status = status;
+ 	}
+ 	mutex_unlock(&hdmi->mutex);
+ 
+-	return result;
++	return status;
+ }
+ 
+ static int dw_hdmi_connector_get_modes(struct drm_connector *connector)
+@@ -3053,7 +3053,7 @@ __dw_hdmi_probe(struct platform_device *pdev,
+ 	hdmi->rxsense = true;
+ 	hdmi->phy_mask = (u8)~(HDMI_PHY_HPD | HDMI_PHY_RX_SENSE);
+ 	hdmi->mc_clkdis = 0x7f;
+-	hdmi->last_connector_result = connector_status_disconnected;
++	hdmi->last_connector_status = connector_status_disconnected;
+ 
+ 	mutex_init(&hdmi->mutex);
+ 	mutex_init(&hdmi->audio_mutex);
+
+From 753bd0f066fd26f253f45ca652bb8a532c6dad90 Mon Sep 17 00:00:00 2001
+From: Jonas Karlman <jonas@kwiboo.se>
+Date: Sun, 1 Dec 2019 20:51:22 +0000
+Subject: [PATCH] drm: dw-hdmi: extract handle_plugged_change call
+
+Signed-off-by: Jonas Karlman <jonas@kwiboo.se>
+---
+ drivers/gpu/drm/bridge/synopsys/dw-hdmi.c | 22 ++++++++++++++--------
+ 1 file changed, 14 insertions(+), 8 deletions(-)
+
+diff --git a/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c b/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
+index 2dad989e7b4f..ac198fcaba8b 100644
+--- a/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
++++ b/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
+@@ -228,6 +228,19 @@ static void handle_plugged_change(struct dw_hdmi *hdmi, bool plugged)
+ 		hdmi->plugged_cb(hdmi->codec_dev, plugged);
+ }
+ 
++static void dw_hdmi_update_connector_status(struct dw_hdmi *hdmi,
++                                            enum drm_connector_status status)
++{
++	mutex_lock(&hdmi->mutex);
++	if (status != hdmi->last_connector_status) {
++		dev_dbg(hdmi->dev, "connector status: %d", status);
++		handle_plugged_change(hdmi,
++				      status == connector_status_connected);
++		hdmi->last_connector_status = status;
++	}
++	mutex_unlock(&hdmi->mutex);
++}
++
+ int dw_hdmi_set_plugged_cb(struct dw_hdmi *hdmi, hdmi_codec_plugged_cb fn,
+ 			   struct device *codec_dev)
+ {
+@@ -2281,14 +2294,7 @@ dw_hdmi_connector_detect(struct drm_connector *connector, bool force)
+ 
+ 	status = hdmi->phy.ops->read_hpd(hdmi, hdmi->phy.data);
+ 
+-	mutex_lock(&hdmi->mutex);
+-	if (status != hdmi->last_connector_status) {
+-		dev_dbg(hdmi->dev, "connector status: %d", status);
+-		handle_plugged_change(hdmi,
+-				      status == connector_status_connected);
+-		hdmi->last_connector_status = status;
+-	}
+-	mutex_unlock(&hdmi->mutex);
++	dw_hdmi_update_connector_status(hdmi, status);
+ 
+ 	return status;
+ }
+
+From fdd68a4db03fba2017a4aa65830adf3b8d5a585c Mon Sep 17 00:00:00 2001
+From: Jonas Karlman <jonas@kwiboo.se>
+Date: Sat, 28 Sep 2019 13:34:46 +0000
+Subject: [PATCH] drm: dw-hdmi: remove unused struct member
+
+Signed-off-by: Jonas Karlman <jonas@kwiboo.se>
+---
+ drivers/gpu/drm/bridge/synopsys/dw-hdmi.c | 4 ----
+ 1 file changed, 4 deletions(-)
+
+diff --git a/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c b/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
+index ac198fcaba8b..7a0eb443cec6 100644
+--- a/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
++++ b/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
+@@ -41,8 +41,6 @@
+ #define DDC_CI_ADDR		0x37
+ #define DDC_SEGMENT_ADDR	0x30
+ 
+-#define HDMI_EDID_LEN		512
+-
+ /* DW-HDMI Controller >= 0x200a are at least compliant with SCDC version 1 */
+ #define SCDC_MIN_SOURCE_VERSION	0x1
+ 
+@@ -152,8 +150,6 @@ struct dw_hdmi {
+ 
+ 	int vic;
+ 
+-	u8 edid[HDMI_EDID_LEN];
+-
+ 	struct {
+ 		const struct dw_hdmi_phy_ops *ops;
+ 		const char *name;
+
+From 1b52bf5366035687e7e028f1320c9e2d37dd01a3 Mon Sep 17 00:00:00 2001
+From: Jonas Karlman <jonas@kwiboo.se>
+Date: Sat, 28 Sep 2019 13:34:46 +0000
+Subject: [PATCH] drm: dw-hdmi: read edid in detect callback
+
+Signed-off-by: Jonas Karlman <jonas@kwiboo.se>
+---
+ drivers/gpu/drm/bridge/synopsys/dw-hdmi.c | 79 +++++++++++++++++++++++--------
+ 1 file changed, 58 insertions(+), 21 deletions(-)
+
+diff --git a/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c b/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
+index 7a0eb443cec6..363f7c5a8016 100644
+--- a/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
++++ b/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
+@@ -150,6 +150,8 @@ struct dw_hdmi {
+ 
+ 	int vic;
+ 
++	struct edid *cached_edid;
++
+ 	struct {
+ 		const struct dw_hdmi_phy_ops *ops;
+ 		const char *name;
+@@ -2217,9 +2219,55 @@ static void initialize_hdmi_ih_mutes(struct dw_hdmi *hdmi)
+ 	hdmi_writeb(hdmi, ih_mute, HDMI_IH_MUTE);
+ }
+ 
++static void dw_hdmi_clear_edid(struct drm_connector *connector)
++{
++	struct dw_hdmi *hdmi = container_of(connector, struct dw_hdmi,
++					     connector);
++
++	if (!hdmi->cached_edid)
++		return;
++
++	hdmi->sink_is_hdmi = false;
++	hdmi->sink_has_audio = false;
++
++	kfree(hdmi->cached_edid);
++	hdmi->cached_edid = NULL;
++}
++
++static void dw_hdmi_get_edid(struct drm_connector *connector)
++{
++	struct dw_hdmi *hdmi = container_of(connector, struct dw_hdmi,
++					     connector);
++	struct edid *edid;
++
++	if (!hdmi->ddc || hdmi->cached_edid)
++		return;
++
++	edid = drm_get_edid(connector, hdmi->ddc);
++
++	if (edid && edid->input & DRM_EDID_INPUT_DIGITAL) {
++		dev_dbg(hdmi->dev, "got edid: width[%d] x height[%d]\n",
++			edid->width_cm, edid->height_cm);
++
++		hdmi->sink_is_hdmi = drm_detect_hdmi_monitor(edid);
++		hdmi->sink_has_audio = drm_detect_monitor_audio(edid);
++
++		hdmi->cached_edid = edid;
++	} else {
++		dev_dbg(hdmi->dev, "failed to get edid\n");
++
++		kfree(edid);
++		edid = NULL;
++	}
++
++	drm_connector_update_edid_property(connector, edid);
++	cec_notifier_set_phys_addr_from_edid(hdmi->cec_notifier, edid);
++}
++
+ static void dw_hdmi_poweron(struct dw_hdmi *hdmi)
+ {
+ 	hdmi->bridge_is_on = true;
++	dw_hdmi_get_edid(&hdmi->connector);
+ 	dw_hdmi_setup(hdmi, &hdmi->previous_mode);
+ }
+ 
+@@ -2290,6 +2338,11 @@ dw_hdmi_connector_detect(struct drm_connector *connector, bool force)
+ 
+ 	status = hdmi->phy.ops->read_hpd(hdmi, hdmi->phy.data);
+ 
++	if (status == connector_status_disconnected)
++		dw_hdmi_clear_edid(connector);
++	else
++		dw_hdmi_get_edid(connector);
++
+ 	dw_hdmi_update_connector_status(hdmi, status);
+ 
+ 	return status;
+@@ -2299,28 +2352,8 @@ static int dw_hdmi_connector_get_modes(struct drm_connector *connector)
+ {
+ 	struct dw_hdmi *hdmi = container_of(connector, struct dw_hdmi,
+ 					     connector);
+-	struct edid *edid;
+-	int ret = 0;
+-
+-	if (!hdmi->ddc)
+-		return 0;
+ 
+-	edid = drm_get_edid(connector, hdmi->ddc);
+-	if (edid) {
+-		dev_dbg(hdmi->dev, "got edid: width[%d] x height[%d]\n",
+-			edid->width_cm, edid->height_cm);
+-
+-		hdmi->sink_is_hdmi = drm_detect_hdmi_monitor(edid);
+-		hdmi->sink_has_audio = drm_detect_monitor_audio(edid);
+-		drm_connector_update_edid_property(connector, edid);
+-		cec_notifier_set_phys_addr_from_edid(hdmi->cec_notifier, edid);
+-		ret = drm_add_edid_modes(connector, edid);
+-		kfree(edid);
+-	} else {
+-		dev_dbg(hdmi->dev, "failed to get edid\n");
+-	}
+-
+-	return ret;
++	return drm_add_edid_modes(connector, hdmi->cached_edid);
+ }
+ 
+ static bool hdr_metadata_equal(const struct drm_connector_state *old_state,
+@@ -2699,6 +2732,9 @@ static void dw_hdmi_bridge_detach(struct drm_bridge *bridge)
+ 	cec_notifier_conn_unregister(hdmi->cec_notifier);
+ 	hdmi->cec_notifier = NULL;
+ 	mutex_unlock(&hdmi->cec_notifier_mutex);
++
++	kfree(hdmi->cached_edid);
++	hdmi->cached_edid = NULL;
+ }
+ 
+ static enum drm_mode_status
+@@ -3388,6 +3424,7 @@ EXPORT_SYMBOL_GPL(dw_hdmi_unbind);
+ 
+ void dw_hdmi_resume(struct dw_hdmi *hdmi)
+ {
++	dw_hdmi_clear_edid(&hdmi->connector);
+ 	dw_hdmi_init_hw(hdmi);
+ }
+ EXPORT_SYMBOL_GPL(dw_hdmi_resume);
+
+From 94b8204bf9165575ee51d9e18c4a2df16e2199ed Mon Sep 17 00:00:00 2001
+From: Jonas Karlman <jonas@kwiboo.se>
+Date: Sat, 28 Sep 2019 13:34:47 +0000
+Subject: [PATCH] drm: dw-hdmi: read edid in force callback
+
+Signed-off-by: Jonas Karlman <jonas@kwiboo.se>
+---
+ drivers/gpu/drm/bridge/synopsys/dw-hdmi.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c b/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
+index 363f7c5a8016..dff27934287c 100644
+--- a/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
++++ b/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
+@@ -2405,6 +2405,13 @@ static void dw_hdmi_connector_force(struct drm_connector *connector)
+ 	dw_hdmi_update_power(hdmi);
+ 	dw_hdmi_update_phy_mask(hdmi);
+ 	mutex_unlock(&hdmi->mutex);
++
++	dw_hdmi_clear_edid(connector);
++
++	if (connector->status != connector_status_connected)
++		return;
++
++	dw_hdmi_get_edid(connector);
+ }
+ 
+ static const struct drm_connector_funcs dw_hdmi_connector_funcs = {
+
+From d2ba7dbdb7d87a1240aac2652bddb49ce147b790 Mon Sep 17 00:00:00 2001
+From: Jonas Karlman <jonas@kwiboo.se>
+Date: Sat, 28 Sep 2019 13:34:47 +0000
+Subject: [PATCH] drm: dw-hdmi: invalidate cec phys addr in detect callback
+
+Signed-off-by: Jonas Karlman <jonas@kwiboo.se>
+---
+ drivers/gpu/drm/bridge/synopsys/dw-hdmi.c | 17 +++--------------
+ 1 file changed, 3 insertions(+), 14 deletions(-)
+
+diff --git a/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c b/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
+index dff27934287c..c922639e25eb 100644
+--- a/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
++++ b/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
+@@ -190,7 +190,6 @@ struct dw_hdmi {
+ 	void (*enable_audio)(struct dw_hdmi *hdmi);
+ 	void (*disable_audio)(struct dw_hdmi *hdmi);
+ 
+-	struct mutex cec_notifier_mutex;
+ 	struct cec_notifier *cec_notifier;
+ 
+ 	hdmi_codec_plugged_cb plugged_cb;
+@@ -2232,6 +2231,8 @@ static void dw_hdmi_clear_edid(struct drm_connector *connector)
+ 
+ 	kfree(hdmi->cached_edid);
+ 	hdmi->cached_edid = NULL;
++
++	cec_notifier_phys_addr_invalidate(hdmi->cec_notifier);
+ }
+ 
+ static void dw_hdmi_get_edid(struct drm_connector *connector)
+@@ -2724,9 +2725,7 @@ static int dw_hdmi_bridge_attach(struct drm_bridge *bridge)
+ 	if (!notifier)
+ 		return -ENOMEM;
+ 
+-	mutex_lock(&hdmi->cec_notifier_mutex);
+ 	hdmi->cec_notifier = notifier;
+-	mutex_unlock(&hdmi->cec_notifier_mutex);
+ 
+ 	return 0;
+ }
+@@ -2735,10 +2734,8 @@ static void dw_hdmi_bridge_detach(struct drm_bridge *bridge)
+ {
+ 	struct dw_hdmi *hdmi = bridge->driver_private;
+ 
+-	mutex_lock(&hdmi->cec_notifier_mutex);
+ 	cec_notifier_conn_unregister(hdmi->cec_notifier);
+ 	hdmi->cec_notifier = NULL;
+-	mutex_unlock(&hdmi->cec_notifier_mutex);
+ 
+ 	kfree(hdmi->cached_edid);
+ 	hdmi->cached_edid = NULL;
+@@ -2906,18 +2903,11 @@ static irqreturn_t dw_hdmi_irq(int irq, void *dev_id)
+ 	 * ask the source to re-read the EDID.
+ 	 */
+ 	if (intr_stat &
+-	    (HDMI_IH_PHY_STAT0_RX_SENSE | HDMI_IH_PHY_STAT0_HPD)) {
++	    (HDMI_IH_PHY_STAT0_RX_SENSE | HDMI_IH_PHY_STAT0_HPD))
+ 		dw_hdmi_setup_rx_sense(hdmi,
+ 				       phy_stat & HDMI_PHY_HPD,
+ 				       phy_stat & HDMI_PHY_RX_SENSE);
+ 
+-		if ((phy_stat & (HDMI_PHY_RX_SENSE | HDMI_PHY_HPD)) == 0) {
+-			mutex_lock(&hdmi->cec_notifier_mutex);
+-			cec_notifier_phys_addr_invalidate(hdmi->cec_notifier);
+-			mutex_unlock(&hdmi->cec_notifier_mutex);
+-		}
+-	}
+-
+ 	if (intr_stat & HDMI_IH_PHY_STAT0_HPD) {
+ 		dev_dbg(hdmi->dev, "EVENT=%s\n",
+ 			phy_int_pol & HDMI_PHY_HPD ? "plugin" : "plugout");
+@@ -3102,7 +3092,6 @@ __dw_hdmi_probe(struct platform_device *pdev,
+ 
+ 	mutex_init(&hdmi->mutex);
+ 	mutex_init(&hdmi->audio_mutex);
+-	mutex_init(&hdmi->cec_notifier_mutex);
+ 	spin_lock_init(&hdmi->audio_lock);
+ 
+ 	ddc_node = of_parse_phandle(np, "ddc-i2c-bus", 0);
+

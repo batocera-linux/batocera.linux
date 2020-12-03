@@ -379,7 +379,7 @@ index 8825518e06c8..006b746b0e95 100644
  	.reg_bits	= 32,
  	.val_bits	= 32,
  	.reg_stride	= 4,
- 	.max_register	= 0xffffc, /* guessed */
+ 	.max_register	= 0xbfffc, /* guessed */
 +	.volatile_reg	= sun8i_mixer_volatile_reg,
  };
  

@@ -603,6 +603,92 @@ index 3e2e32098312..d1b094c8aaeb 100644
 2.25.1
 
 
+From 8da7946b350d6e951eea38f9b920628b6abead01 Mon Sep 17 00:00:00 2001
+From: Jernej Skrabec <jernej.skrabec@siol.net>
+Date: Thu, 14 Feb 2019 22:50:12 +0100
+Subject: [PATCH 07/11] media: cedrus: H264 interlace hack
+
+Signed-off-by: Jernej Skrabec <jernej.skrabec@siol.net>
+---
+ .../staging/media/sunxi/cedrus/cedrus_h264.c  | 24 ++++++++++++-------
+ 1 file changed, 16 insertions(+), 8 deletions(-)
+
+diff --git a/drivers/staging/media/sunxi/cedrus/cedrus_h264.c b/drivers/staging/media/sunxi/cedrus/cedrus_h264.c
+index 54ee2aa423e2..ba723d5af35c 100644
+--- a/drivers/staging/media/sunxi/cedrus/cedrus_h264.c
++++ b/drivers/staging/media/sunxi/cedrus/cedrus_h264.c
+@@ -102,7 +102,7 @@ static void cedrus_write_frame_list(struct cedrus_ctx *ctx,
+ 	struct cedrus_dev *dev = ctx->dev;
+ 	unsigned long used_dpbs = 0;
+ 	unsigned int position;
+-	unsigned int output = 0;
++	int output = -1;
+ 	unsigned int i;
+ 
+ 	cap_q = v4l2_m2m_get_vq(ctx->fh.m2m_ctx, V4L2_BUF_TYPE_VIDEO_CAPTURE);
+@@ -125,6 +125,11 @@ static void cedrus_write_frame_list(struct cedrus_ctx *ctx,
+ 		position = cedrus_buf->codec.h264.position;
+ 		used_dpbs |= BIT(position);
+ 
++		if (run->dst->vb2_buf.timestamp == dpb->reference_ts) {
++			output = position;
++			continue;
++		}
++
+ 		if (!(dpb->flags & V4L2_H264_DPB_ENTRY_FLAG_ACTIVE))
+ 			continue;
+ 
+@@ -132,13 +137,11 @@ static void cedrus_write_frame_list(struct cedrus_ctx *ctx,
+ 				    dpb->top_field_order_cnt,
+ 				    dpb->bottom_field_order_cnt,
+ 				    &pic_list[position]);
+-
+-		output = max(position, output);
+ 	}
+ 
+-	position = find_next_zero_bit(&used_dpbs, CEDRUS_H264_FRAME_NUM,
+-				      output);
+-	if (position >= CEDRUS_H264_FRAME_NUM)
++	if (output >= 0)
++		position = output;
++	else
+ 		position = find_first_zero_bit(&used_dpbs, CEDRUS_H264_FRAME_NUM);
+ 
+ 	output_buf = vb2_to_cedrus_buffer(&run->dst->vb2_buf);
+@@ -164,6 +167,10 @@ static void cedrus_write_frame_list(struct cedrus_ctx *ctx,
+ 
+ #define CEDRUS_MAX_REF_IDX	32
+ 
++#define REF_IDX(v)		(v & GENMASK(5, 0))
++#define REF_FIELD(v)		(v >> 6)
++#define REF_FIELD_BOTTOM	2
++
+ static void _cedrus_write_ref_list(struct cedrus_ctx *ctx,
+ 				   struct cedrus_run *run,
+ 				   const u8 *ref_list, u8 num_ref,
+@@ -188,7 +195,7 @@ static void _cedrus_write_ref_list(struct cedrus_ctx *ctx,
+ 		int buf_idx;
+ 		u8 dpb_idx;
+ 
+-		dpb_idx = ref_list[i];
++		dpb_idx = REF_IDX(ref_list[i]);
+ 		dpb = &decode->dpb[dpb_idx];
+ 
+ 		if (!(dpb->flags & V4L2_H264_DPB_ENTRY_FLAG_ACTIVE))
+@@ -203,7 +210,8 @@ static void _cedrus_write_ref_list(struct cedrus_ctx *ctx,
+ 		position = cedrus_buf->codec.h264.position;
+ 
+ 		sram_array[i] |= position << 1;
+-		if (ref_buf->field == V4L2_FIELD_BOTTOM)
++		/* set bottom field flag when reference is to bottom field */
++		if (REF_FIELD(ref_list[i]) == REF_FIELD_BOTTOM)
+ 			sram_array[i] |= BIT(0);
+ 	}
+ 
+-- 
+2.25.1
+
+
 From 464ef73deba86cb59d14a5094604f4bb30ac1ce7 Mon Sep 17 00:00:00 2001
 From: Jernej Skrabec <jernej.skrabec@siol.net>
 Date: Sat, 9 Nov 2019 13:06:15 +0100
@@ -1001,7 +1087,7 @@ index ba723d5af35c..c336366f6e19 100644
 +			output_buf->codec.h264.mv_col_buf_size = 0;
 +	}
 +
- 	if (decode->flags & V4L2_H264_DECODE_PARAM_FLAG_FIELD_PIC)
+ 	if (slice->flags & V4L2_H264_SLICE_FLAG_FIELD_PIC)
  		output_buf->codec.h264.pic_type = CEDRUS_H264_PIC_TYPE_FIELD;
  	else if (sps->flags & V4L2_H264_SPS_FLAG_MB_ADAPTIVE_FRAME_FIELD)
 @@ -525,8 +544,6 @@ static int cedrus_h264_start(struct cedrus_ctx *ctx)
@@ -1214,7 +1300,7 @@ index 7f95216a552e..daff14d0a1ae 100644
  	pix_fmt->width = width;
  	pix_fmt->height = height;
  
-@@ -237,17 +248,27 @@ static int cedrus_try_fmt_vid_cap(struct file *file, void *priv,
+@@ -237,15 +248,25 @@ static int cedrus_try_fmt_vid_cap(struct file *file, void *priv,
  	struct cedrus_ctx *ctx = cedrus_file2ctx(file);
  	struct cedrus_dev *dev = ctx->dev;
  	struct v4l2_pix_format *pix_fmt = &f->fmt.pix;
@@ -1234,8 +1320,6 @@ index 7f95216a552e..daff14d0a1ae 100644
 +	sps->bit_depth_luma_minus8 == 2;
 +
  	pix_fmt->pixelformat = fmt->pixelformat;
- 	pix_fmt->width = ctx->src_fmt.width;
- 	pix_fmt->height = ctx->src_fmt.height;
 -	cedrus_prepare_format(pix_fmt);
 +
 +	pix_fmt->pixelformat = fmt->pixelformat;
@@ -1250,15 +1334,6 @@ index 7f95216a552e..daff14d0a1ae 100644
 -	pix_fmt->pixelformat = fmt->pixelformat;
 -	cedrus_prepare_format(pix_fmt);
 +	cedrus_prepare_format(pix_fmt, 0);
- 
- 	return 0;
- }
-@@ -348,7 +348,7 @@ static int cedrus_s_fmt_vid_out(struct file *file, void *priv,
- 	ctx->dst_fmt.quantization = f->fmt.pix.quantization;
- 	ctx->dst_fmt.width = ctx->src_fmt.width;
- 	ctx->dst_fmt.height = ctx->src_fmt.height;
--	cedrus_prepare_format(&ctx->dst_fmt);
-+	cedrus_prepare_format(&ctx->dst_fmt, 0);
  
  	return 0;
  }
@@ -2438,33 +2513,3 @@ index 000000000000..93beffd07c35
 +	.stop		= cedrus_vp8_stop,
 +	.trigger	= cedrus_vp8_trigger,
 +};
-From 732934b823fb3519f3616a4493db88928a8fec3a Mon Sep 17 00:00:00 2001
-From: Jernej Skrabec <jernej.skrabec@siol.net>
-Date: Wed, 21 Oct 2020 22:26:05 +0200
-Subject: [PATCH] media: cedrus: h264: Fix check for presence of scaling matrix
-
-If scaling matrix control is present, VPU should not use default matrix.
-Fix that.
-
-Fixes: b3a23db0e2f8 ("media: cedrus: Use H264_SCALING_MATRIX only when required")
-Signed-off-by: Jernej Skrabec <jernej.skrabec@siol.net>
----
- drivers/staging/media/sunxi/cedrus/cedrus_h264.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/staging/media/sunxi/cedrus/cedrus_h264.c b/drivers/staging/media/sunxi/cedrus/cedrus_h264.c
-index 28319351e909..781c84a9b1b7 100644
---- a/drivers/staging/media/sunxi/cedrus/cedrus_h264.c
-+++ b/drivers/staging/media/sunxi/cedrus/cedrus_h264.c
-@@ -446,7 +446,7 @@ static void cedrus_set_params(struct cedrus_ctx *ctx,
- 	reg |= (pps->second_chroma_qp_index_offset & 0x3f) << 16;
- 	reg |= (pps->chroma_qp_index_offset & 0x3f) << 8;
- 	reg |= (pps->pic_init_qp_minus26 + 26 + slice->slice_qp_delta) & 0x3f;
--	if (pps->flags & V4L2_H264_PPS_FLAG_SCALING_MATRIX_PRESENT)
-+	if (!(pps->flags & V4L2_H264_PPS_FLAG_SCALING_MATRIX_PRESENT))
- 		reg |= VE_H264_SHS_QP_SCALING_MATRIX_DEFAULT;
- 	cedrus_write(dev, VE_H264_SHS_QP, reg);
- 
--- 
-2.29.0
-
