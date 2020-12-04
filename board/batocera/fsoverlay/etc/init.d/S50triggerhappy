@@ -2,7 +2,7 @@
 
 CONFFILE=multimedia_keys.conf
 
-enabled="`batocera-settings -command load -key system.multimediakeys.enabled`"
+enabled="`batocera-settings -r system.multimediakeys.enabled`"
 if [ "$enabled" = "0" ];then
     CONFFILE=multimedia_keys_disabled.conf
 fi

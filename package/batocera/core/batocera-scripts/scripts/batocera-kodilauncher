@@ -1,15 +1,15 @@
 #!/bin/bash
 
 systemsetting="batocera-settings"
-WAITMODE="`$systemsetting  -command load -key kodi.network.waitmode`"
+WAITMODE="`$systemsetting -r kodi.network.waitmode`"
 
 # if the mode is required or wish,
 # kodi waits for the network before starting
 # in fact, it waits that an ip is available (such as a db service for example)
 if test "${WAITMODE}" = "required" -o "${WAITMODE}" = "wish"
 then
-    WAITTIME="`$systemsetting  -command load -key kodi.network.waittime`"
-    WAITHOST="`$systemsetting  -command load -key kodi.network.waithost`"
+    WAITTIME="`$systemsetting -r kodi.network.waittime`"
+    WAITHOST="`$systemsetting -r kodi.network.waithost`"
 
     DOCONT=1
     NWAITED=0
