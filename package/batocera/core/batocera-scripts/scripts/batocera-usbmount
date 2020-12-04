@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 # the aim of this script
 # is to make things happend in this way :
@@ -23,7 +23,7 @@ fi
 if mkdir -p /var/run/usbmount.delay
 then
     N=$(ls /var/run/usbmount.delay | wc -l)
-    let N++
+    N=$((N+1))
     set |
 	grep -E '^DEVNAME=|^ID_FS_USAGE=|^ID_FS_UUID=|^ID_FS_TYPE=|^ID_FS_LABEL=' |
 	sed -e s+'^'+'export '+ > /var/run/usbmount.delay/"$N"."$1"

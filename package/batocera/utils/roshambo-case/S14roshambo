@@ -1,10 +1,10 @@
-#! /bin/sh
+#!/bin/sh
 
 enabled=`batocera-settings -r roshambo.enabled`
 
 case "$1" in
 	start)
-		if [ "$enabled" == "1" ];then
+		if [ "$enabled" = "1" ]; then
 			echo "Starting Roshambo Case"
 			# run application you want to start
 			python /usr/bin/roshambo-case.py &
@@ -12,7 +12,7 @@ case "$1" in
 		;;
 	stop)
 		echo "Stopping Roshambo case"
-		if [ "$enabled" == "1" ];then
+		if [ "$enabled" = "1" ]; then
 			kill $(ps aux | grep roshambo-case.py | awk '{ print $1 }')
 		fi
 		;;

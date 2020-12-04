@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 # no brightness
 test ! -e /sys/class/backlight/backlight/brightness && exit 0

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 if test "$1" != "start"
 then
@@ -34,11 +34,19 @@ done
 # the user can delete files, files will not be recreated
 for FILE in music bios extractions kodi saves screenshots splash \
             system/.config/lirc/lircd.conf \
-            system/configs/emulationstation/{es_input.cfg,es_settings.cfg} \
+            system/configs/emulationstation/es_input.cfg \
+            system/configs/emulationstation/es_input.cfg/es_settings.cfg \
             system/.kodi \
-            system/configs/{shadersets,xarcade2jstick,amiberry,dosbox,mupen64,ppsspp,cannonball} \
+            system/configs/amiberry \
+            system/configs/cannonball \
+            system/configs/dosbox \
+            system/configs/mupen64 \
+            system/configs/ppsspp \
+            system/configs/shadersets \
+            system/configs/xarcade2jstick \
             system/batocera.conf \
-            system/pacman/hooks/batocera-{install,uninstall}.hook \
+            system/pacman/hooks/batocera-install.hook \
+            system/pacman/hooks/batocera-uninstall.hook \
             system/pacman/pacman.conf \
             bios/mame2003
 do
