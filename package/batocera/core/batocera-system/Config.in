@@ -1,6 +1,6 @@
 
 ##### define variables to use in this file
-if BR2_PACKAGE_BATOCERA_TARGET_RPI1 || BR2_PACKAGE_BATOCERA_TARGET_RPI2 || BR2_PACKAGE_BATOCERA_TARGET_RPI3 # NOT RPI4
+if BR2_PACKAGE_BATOCERA_TARGET_RPI1 || BR2_PACKAGE_BATOCERA_TARGET_RPI2 || BR2_PACKAGE_BATOCERA_TARGET_RPI3 # NOT RPI_MESA3D
    config BR2_PACKAGE_BATOCERA_TARGET_RPI_ANY
         bool "any rpi"
         default y
@@ -56,27 +56,27 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
     select BR2_PACKAGE_NTFS_3G_NTFSPROGS                 # ntfs
     select BR2_PACKAGE_BTRFS_PROGS                       # btrfs
     select BR2_PACKAGE_WINBTRFS                          # btrfs
-    select BR2_PACKAGE_RASPI2PNG                         if BR2_PACKAGE_BATOCERA_TARGET_RPI_ANY # screenshots
+    select BR2_PACKAGE_RASPI2PNG                         if BR2_PACKAGE_BATOCERA_TARGET_RPI_ANY && !BR2_PACKAGE_BATOCERA_RPI_MESA3D # screenshots
     select BR2_PACKAGE_GPICASE                           if BR2_PACKAGE_BATOCERA_TARGET_RPI1 # retroflag gpicase
     select BR2_PACKAGE_ROSHAMBO_CASE                     if BR2_PACKAGE_BATOCERA_TARGET_ROCKPRO64 # roshambo case
-    select BR2_PACKAGE_RPIGPIOSWITCH                     if BR2_PACKAGE_BATOCERA_TARGET_RPI_ANY || BR2_PACKAGE_BATOCERA_TARGET_RPI4 # gpio switchs
-    select BR2_PACKAGE_RETROGAME                         if BR2_PACKAGE_BATOCERA_TARGET_RPI_ANY || BR2_PACKAGE_BATOCERA_TARGET_RPI4 # gpio pads
+    select BR2_PACKAGE_RPIGPIOSWITCH                     if BR2_PACKAGE_BATOCERA_TARGET_RPI_ANY || BR2_PACKAGE_BATOCERA_RPI_MESA3D # gpio switchs
+    select BR2_PACKAGE_RETROGAME                         if BR2_PACKAGE_BATOCERA_TARGET_RPI_ANY || BR2_PACKAGE_BATOCERA_RPI_MESA3D # gpio pads
     select BR2_PACKAGE_CONNMAN                           # network manager
     select BR2_PACKAGE_CONNMAN_WIFI                      # network manager
     select BR2_PACKAGE_CONNMAN_CLIENT                    # network manager
     select BR2_PACKAGE_WPA_SUPPLICANT                    # wifi
     select BR2_PACKAGE_WPA_SUPPLICANT_CLI                # wifi
     select BR2_PACKAGE_WPA_SUPPLICANT_DBUS_INTROSPECTION # wifi
-    select BR2_PACKAGE_RPI_FIRMWARE                      if BR2_PACKAGE_BATOCERA_TARGET_RPI_ANY || BR2_PACKAGE_BATOCERA_TARGET_RPI4 # rpi firmwares
-    select BR2_PACKAGE_RPI_WIFI_FIRMWARE                 if BR2_PACKAGE_BATOCERA_TARGET_RPI_ANY || BR2_PACKAGE_BATOCERA_TARGET_RPI4 # rpi wifi firmware
-    select BR2_PACKAGE_RPI_BT_FIRMWARE                   if BR2_PACKAGE_BATOCERA_TARGET_RPI_ANY || BR2_PACKAGE_BATOCERA_TARGET_RPI4 # rpi bluetooth firmware
+    select BR2_PACKAGE_RPI_FIRMWARE                      if BR2_PACKAGE_BATOCERA_TARGET_RPI_ANY || BR2_PACKAGE_BATOCERA_RPI_MESA3D # rpi firmwares
+    select BR2_PACKAGE_RPI_WIFI_FIRMWARE                 if BR2_PACKAGE_BATOCERA_TARGET_RPI_ANY || BR2_PACKAGE_BATOCERA_RPI_MESA3D # rpi wifi firmware
+    select BR2_PACKAGE_RPI_BT_FIRMWARE                   if BR2_PACKAGE_BATOCERA_TARGET_RPI_ANY || BR2_PACKAGE_BATOCERA_RPI_MESA3D # rpi bluetooth firmware
     select BR2_PACKAGE_DROPBEAR                          # ssh server
     select BR2_PACKAGE_QTSIXA_SHANWAN                    # ps3 pad
     select BR2_PACKAGE_XARCADE2JSTICK                    # keyboard events of the Xarcade Tankstick
     select BR2_PACKAGE_UTIL_LINUX_LIBMOUNT               # for util-linux compilation to work (so, may be removed in the future)
     select BR2_PACKAGE_DBUS_PYTHON                       # required for bluetooth scripts
     # Deprecated, which what library should we replace ?
-    #select BR2_PACKAGE_WIRINGPI                          if BR2_PACKAGE_BATOCERA_TARGET_RPI_ANY || BR2_PACKAGE_BATOCERA_TARGET_RPI4 # gpio
+    #select BR2_PACKAGE_WIRINGPI                          if BR2_PACKAGE_BATOCERA_TARGET_RPI_ANY || BR2_PACKAGE_BATOCERA_RPI_MESA3D # gpio
     select BR2_PACKAGE_PARTED                            # partition management (for the first boot)
     select BR2_PACKAGE_USBMOUNT                          # usb key/sd card mounter
     select BR2_PACKAGE_USBUTILS                          # usb key/sd card tools
@@ -93,7 +93,7 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
     select BR2_PACKAGE_LIBRGA                            if BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA # Used in screen rotation (SDL and Retroarch)
 
     select BR2_PACKAGE_SDL2_OPENGLES                     if BR2_PACKAGE_BATOCERA_TARGET_RPI_ANY      || \
-                                                            BR2_PACKAGE_BATOCERA_TARGET_RPI4         || \
+                                                            BR2_PACKAGE_BATOCERA_RPI_MESA3D          || \
                                                             BR2_PACKAGE_BATOCERA_TARGET_LIBRETECH_H5 || \
                                                             BR2_PACKAGE_BATOCERA_TARGET_XU4          || \
                                                             BR2_PACKAGE_BATOCERA_TARGET_ROCKPRO64    || \
@@ -116,7 +116,7 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
                                                             BR2_PACKAGE_BATOCERA_TARGET_XU4          || \
                                                             BR2_PACKAGE_BATOCERA_TARGET_TINKERBOARD  || \
                                                             BR2_PACKAGE_BATOCERA_TARGET_MIQI         || \
-                                                            BR2_PACKAGE_BATOCERA_TARGET_RPI4         || \
+                                                            BR2_PACKAGE_BATOCERA_RPI_MESA3D          || \
                                                             BR2_PACKAGE_BATOCERA_TARGET_VIM3         || \
                                                             BR2_PACKAGE_BATOCERA_TARGET_ODROIDC2     || \
                                                             BR2_PACKAGE_BATOCERA_TARGET_ODROIDC4     || \
@@ -210,9 +210,9 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
     select BR2_PACKAGE_FDUPES
 
     # gpio controllers
-    select BR2_PACKAGE_DB9_GPIO_RPI                 if BR2_PACKAGE_BATOCERA_TARGET_RPI_ANY || BR2_PACKAGE_BATOCERA_TARGET_RPI4
-    select BR2_PACKAGE_GAMECON_GPIO_RPI             if BR2_PACKAGE_BATOCERA_TARGET_RPI_ANY || BR2_PACKAGE_BATOCERA_TARGET_RPI4
-    select BR2_PACKAGE_MK_ARCADE_JOYSTICK_RPI       if BR2_PACKAGE_BATOCERA_TARGET_RPI_ANY || BR2_PACKAGE_BATOCERA_TARGET_RPI4
+    select BR2_PACKAGE_DB9_GPIO_RPI                 if BR2_PACKAGE_BATOCERA_TARGET_RPI_ANY || BR2_PACKAGE_BATOCERA_RPI_MESA3D
+    select BR2_PACKAGE_GAMECON_GPIO_RPI             if BR2_PACKAGE_BATOCERA_TARGET_RPI_ANY || BR2_PACKAGE_BATOCERA_RPI_MESA3D
+    select BR2_PACKAGE_MK_ARCADE_JOYSTICK_RPI       if BR2_PACKAGE_BATOCERA_TARGET_RPI_ANY || BR2_PACKAGE_BATOCERA_RPI_MESA3D
 
     # xbox controllers (for linux older than ~4.16)
     select BR2_PACKAGE_XBOXDRV if BR2_PACKAGE_BATOCERA_TARGET_905 || BR2_PACKAGE_BATOCERA_TARGET_912
