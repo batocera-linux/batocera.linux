@@ -15,3 +15,4 @@ GLSLANG_CONF_OPTS += -DCMAKE_BUILD_TYPE=Release
 GLSLANG_CONF_ENV += LDFLAGS="--lpthread -ldl"
 
 $(eval $(cmake-package))
+$(eval $(host-cmake-package))
