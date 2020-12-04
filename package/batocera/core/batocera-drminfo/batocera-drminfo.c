@@ -173,14 +173,15 @@ static int modeset_create_fb(int fd, struct modeset_dev *dev)
 	dev->map = mmap(0, dev->size, PROT_READ | PROT_WRITE, MAP_SHARED,
 		        fd, mreq.offset);
 	if (dev->map == MAP_FAILED) {
-		fprintf(stderr, "cannot mmap dumb buffer (%d): %m\n",
-			errno);
-		ret = -errno;
-		goto err_fb;
+		//fprintf(stderr, "cannot mmap dumb buffer (%d): %m\n",
+		//	errno);
+		//ret = -errno;
+		//goto err_fb;
+		dev->map = NULL;
+	} else {
+	  /* clear the framebuffer to 0 */
+	  memset(dev->map, 0, dev->size);
 	}
-
-	/* clear the framebuffer to 0 */
-	memset(dev->map, 0, dev->size);
 
 	return 0;
 
@@ -380,7 +381,9 @@ static void modeset_cleanup(int fd)
 		iter = modeset_list;
 		modeset_list = iter->next;
 
-		munmap(iter->map, iter->size);
+		if(iter->map != NULL) {
+		  munmap(iter->map, iter->size);
+		}
 		drmModeRmFB(fd, iter->fb);
 
 		memset(&dreq, 0, sizeof(dreq));
