@@ -1,4 +1,3 @@
-
 #ifndef _BATOCERA_READ_FILE_H_
 #define _BATOCERA_READ_FILE_H_
 

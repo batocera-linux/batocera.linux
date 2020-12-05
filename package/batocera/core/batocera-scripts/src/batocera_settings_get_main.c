@@ -6,10 +6,11 @@
 #include "batocera_settings_get.h"
 
 static const char kUsage[] =
-    "batocera-settings-get [-f CONFIG_FILE] <key> [<key>...]\n\n"
-    "  Prints the value of the key or returns a non-zero exit status.\n"
-    "  If multiple keys are given, tries them in order until it finds a key "
-    "that exists.\n";
+    "Usage: batocera-settings-get [-f CONFIG_FILE] <KEY> [KEY]...\n\n"
+    "Prints the value of the key or returns a non-zero exit status.\n"
+    "If multiple keys are given, tries them in order until it finds a key"
+    " that exists.\n\n"
+    "By default, reads from /userdata/system/batocera.conf\n";
 
 int main(int argc, char *argv[]) {
   if (argc < 2 || strcmp(argv[1], "--help") == 0) {

@@ -6,11 +6,12 @@
 #include "batocera_settings_set.h"
 
 static const char kUsage[] =
-    "batocera-settings-set [-f CONFIG_FILE] <key> <value> [<key> "
-    "<value>...]\n\n"
-    "  Sets value(s) in the config file.\n"
-    "  If a commented key exists, will uncomment it and set the value in-place "
-    "instead of appending a new key\n";
+    "Usage: batocera-settings-set [-f CONFIG_FILE] <KEY> <VALUE> [KEY "
+    "VALUE]...\n\n"
+    "Sets value(s) in the config file.\n"
+    "If a commented key exists, will uncomment it and set the value in-place"
+    " instead of appending a new key\n\n"
+    "By default, writes to /userdata/system/batocera.conf\n";
 
 int main(int argc, char *argv[]) {
   if (argc < 2 || strcmp(argv[1], "--help") == 0) {
