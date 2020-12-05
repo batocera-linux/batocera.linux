@@ -16,8 +16,7 @@ void batocera_read_file(const char *fname, char **out_data, size_t *out_size) {
   fseek(f, 0, SEEK_SET);
 
   char *data = malloc(fsize + 1);
-  fread(data, fsize, 1, f);
-  if (ferror(f)) {
+  if (fread(data, fsize, 1, f) != 1 && ferror(f)) {
     perror(fname);
     exit(1);
   }
