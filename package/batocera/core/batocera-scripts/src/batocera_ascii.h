@@ -4,7 +4,8 @@
 // Returns a pointer to the first non-leading whitespace.
 // Only ' ' and '\t' are considered whitespace.
 // Requires: begin <= end.
-static inline const char *skip_leading_whitespace(const char *begin, const char *end) {
+static inline const char *skip_leading_whitespace(const char *begin,
+                                                  const char *end) {
   while (begin != end && (*begin == ' ' || *begin == '\t')) ++begin;
   return begin;
 }
@@ -13,7 +14,7 @@ static inline const char *skip_leading_whitespace(const char *begin, const char 
 // Only ' ' and '\t' are considered whitespace.
 // Requires: begin <= end.
 static inline const char *skip_trailing_whitespace(const char *begin,
-                                            const char *end) {
+                                                   const char *end) {
   while (begin != end && (*(end - 1) == ' ' || *(end - 1) == '\t')) --end;
   return end;
 }

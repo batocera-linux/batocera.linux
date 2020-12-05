@@ -54,8 +54,7 @@ int main(int argc, char *argv[]) {
 
   fwrite(result.value, sizeof(char), result.value_size, stdout);
   fputc('\n', stderr);
-  if (ferror(stderr))
-    goto get_failed;
+  if (ferror(stderr)) goto get_failed;
 
   free(config_contents);
   return EXIT_SUCCESS;

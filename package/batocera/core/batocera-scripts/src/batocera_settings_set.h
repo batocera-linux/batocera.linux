@@ -12,7 +12,8 @@ struct batocera_settings_set_result_t {
   size_t error_size;
 };
 
-struct batocera_settings_set_result_t
-batocera_settings_set(const char *config_contents, size_t config_contents_size, const char *kvs[], size_t kvs_size);
+struct batocera_settings_set_result_t batocera_settings_set(
+    const char *config_contents, size_t config_contents_size, const char *kvs[],
+    size_t kvs_size);
 
 #endif  // _BATOCERA_SETTINGS_SET_H_

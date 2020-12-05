@@ -11,11 +11,9 @@ void batocera_stringbuf_init(struct batocera_stringbuf *buf, size_t capacity) {
 }
 
 static void ensure_capacity(struct batocera_stringbuf *buf, size_t capacity) {
-  if (buf->capacity >= capacity)
-    return;
+  if (buf->capacity >= capacity) return;
   size_t new_capacity = (2 * buf->capacity + 1) * sizeof(char);
-  if (new_capacity < capacity)
-    new_capacity = capacity;
+  if (new_capacity < capacity) new_capacity = capacity;
   char *new_buf = realloc(buf->data, new_capacity);
   if (new_buf == NULL) {
     perror("batocera_stringbuf_append");

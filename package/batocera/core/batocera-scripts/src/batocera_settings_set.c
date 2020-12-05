@@ -29,10 +29,9 @@ static void write_kv(struct batocera_stringbuf *out, const char *key,
   batocera_stringbuf_append_line(out, value, value_size);
 }
 
-static struct batocera_settings_set_result_t
-batocera_settings_set_sized(const char *config_contents,
-                            size_t config_contents_size, const char *kvs[],
-                            size_t kvs_size, const size_t kvs_sizes[]) {
+static struct batocera_settings_set_result_t batocera_settings_set_sized(
+    const char *config_contents, size_t config_contents_size, const char *kvs[],
+    size_t kvs_size, const size_t kvs_sizes[]) {
   struct batocera_settings_set_result_t result;
   memset(&result, 0, sizeof(result));
 
@@ -49,8 +48,7 @@ batocera_settings_set_sized(const char *config_contents,
     const char *line_begin = line_end + 1;
     line_end = memchr(line_begin, '\n', eof - line_begin);
     if (line_end == NULL) {
-      if (line_begin == eof)
-        break;
+      if (line_begin == eof) break;
       line_end = eof;
     }
 
@@ -61,8 +59,7 @@ batocera_settings_set_sized(const char *config_contents,
     }
 
     const bool commented = *key_begin == '#';
-    if (commented)
-      ++key_begin;
+    if (commented) ++key_begin;
     if (key_begin == line_end) {
       batocera_stringbuf_append_line(&out, line_begin, line_end - line_begin);
       continue;
@@ -107,12 +104,11 @@ batocera_settings_set_sized(const char *config_contents,
   return result;
 }
 
-struct batocera_settings_set_result_t
-batocera_settings_set(const char *config_contents, size_t config_contents_size,
-                      const char *kvs[], size_t kvs_size) {
+struct batocera_settings_set_result_t batocera_settings_set(
+    const char *config_contents, size_t config_contents_size, const char *kvs[],
+    size_t kvs_size) {
   size_t *kvs_sizes = malloc(sizeof(size_t) * kvs_size);
-  for (size_t i = 0; i < kvs_size; ++i)
-    kvs_sizes[i] = strlen(kvs[i]);
+  for (size_t i = 0; i < kvs_size; ++i) kvs_sizes[i] = strlen(kvs[i]);
 
   struct batocera_settings_set_result_t result = batocera_settings_set_sized(
       config_contents, config_contents_size, kvs, kvs_size, kvs_sizes);

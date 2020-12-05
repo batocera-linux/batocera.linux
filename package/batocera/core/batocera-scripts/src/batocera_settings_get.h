@@ -14,7 +14,8 @@ struct batocera_settings_get_result_t {
   size_t error_size;
 };
 
-struct batocera_settings_get_result_t
-batocera_settings_get(const char *config_contents, size_t config_size, const char *keys[], size_t keys_size);
+struct batocera_settings_get_result_t batocera_settings_get(
+    const char *config_contents, size_t config_size, const char *keys[],
+    size_t keys_size);
 
 #endif  // _BATOCERA_SETTINGS_GET_H_
