@@ -5,19 +5,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "batocera_ascii.h"
 #include "batocera_stringbuf.h"
-
-static const char *skip_whitespace(const char *begin, const char *end) {
-  while (begin != end && (*begin == ' ' || *begin == '\t'))
-    ++begin;
-  return begin;
-}
-
-static const char *skip_whitespace_end(const char *begin, const char *end) {
-  while (begin != end && (*(end - 1) == ' ' || *(end - 1) == '\t'))
-    --end;
-  return end;
-}
 
 static const size_t NOT_FOUND = -1;
 static size_t find_kv(const char *kvs[], size_t kvs_size,
@@ -65,7 +54,7 @@ batocera_settings_set_sized(const char *config_contents,
       line_end = eof;
     }
 
-    const char *key_begin = skip_whitespace(line_begin, line_end);
+    const char *key_begin = skip_leading_whitespace(line_begin, line_end);
     if (key_begin == line_end) {
       batocera_stringbuf_append_line(&out, line_begin, line_end - line_begin);
       continue;
@@ -95,7 +84,7 @@ batocera_settings_set_sized(const char *config_contents,
       free(written);
       return result;
     }
-    const char *key_end = skip_whitespace_end(key_begin, eq_pos);
+    const char *key_end = skip_trailing_whitespace(key_begin, eq_pos);
 
     const size_t i = find_kv(kvs, kvs_size, kvs_sizes, key_begin, key_end);
     if (i == NOT_FOUND) {

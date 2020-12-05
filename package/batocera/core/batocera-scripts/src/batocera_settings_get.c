@@ -4,17 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-static const char *skip_whitespace(const char *begin, const char *end) {
-  while (begin != end && (*begin == ' ' || *begin == '\t'))
-    ++begin;
-  return begin;
-}
-
-static const char *skip_whitespace_end(const char *begin, const char *end) {
-  while (begin != end && (*(end - 1) == ' ' || *(end - 1) == '\t'))
-    --end;
-  return end;
-}
+#include "batocera_ascii.h"
 
 static struct batocera_settings_get_result_t
 batocera_settings_get_one(const char *config_contents, size_t config_size,
@@ -32,7 +22,7 @@ batocera_settings_get_one(const char *config_contents, size_t config_size,
     if (line_end == NULL)
       line_end = eof;
 
-    const char *key_begin = skip_whitespace(line_begin, line_end);
+    const char *key_begin = skip_leading_whitespace(line_begin, line_end);
     if (key_begin == line_end || *key_begin == '#')
       continue;
 
@@ -46,7 +36,7 @@ batocera_settings_get_one(const char *config_contents, size_t config_size,
                    (int)(line_end - line_begin), line_begin, line_num);
       return result;
     }
-    const char *key_end = skip_whitespace_end(key_begin, eq_pos);
+    const char *key_end = skip_trailing_whitespace(key_begin, eq_pos);
 
     if (key_end - key_begin != key_size ||
         memcmp(key_begin, key, key_size) != 0)
@@ -54,7 +44,7 @@ batocera_settings_get_one(const char *config_contents, size_t config_size,
     result.key = key_begin;
     result.key_size = key_size;
 
-    const char *value_begin = skip_whitespace(eq_pos + 1, line_end);
+    const char *value_begin = skip_leading_whitespace(eq_pos + 1, line_end);
     const char *value_end = line_end;
     if (value_end > value_begin && (*(value_end - 1) == '\r'))
       --value_end;
