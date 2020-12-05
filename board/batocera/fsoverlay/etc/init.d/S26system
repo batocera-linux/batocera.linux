@@ -1,26 +1,26 @@
-#!/bin/bash
+#!/bin/sh
 
 systemsetting="batocera-settings"
 config_script=batocera-config
 log="/userdata/system/logs/batocera.log"
 
 rb_gpio_configure() {
-    settings_gpio_mk="`$systemsetting -command load -key controllers.gpio.enabled`"
-    if [ "$settings_gpio_mk" == "1" ];then
-	settings_gpio_map="`$systemsetting -command load -key controllers.gpio.args`"
-	[ "$settings_gpio_map" == "" ] && settings_gpio_map="map=1,2"
+    settings_gpio_mk="`$systemsetting -r controllers.gpio.enabled`"
+    if [ "$settings_gpio_mk" = "1" ]; then
+	settings_gpio_map="`$systemsetting -r controllers.gpio.args`"
+	[ "$settings_gpio_map" = "" ] && settings_gpio_map="map=1,2"
         eval $config_script "module" "load" mk_arcade_joystick_rpi "$settings_gpio_map" >> $log
     else
 	# mk disabled let's check for db9
-	settings_db9="`$systemsetting -command load -key controllers.db9.enabled`"
-	if [ "$settings_db9" == "1" ];then
-            settings_db9_map="`$systemsetting -command load -key controllers.db9.args`"
+	settings_db9="`$systemsetting -r controllers.db9.enabled`"
+	if [ "$settings_db9" = "1" ]; then
+            settings_db9_map="`$systemsetting -r controllers.db9.args`"
             eval $config_script "module" "load" db9_gpio_rpi "$settings_db9_map" >> $log
 	else
 	    # db9 and mk disabled let's check for gamecon
-            settings_gamecon="`$systemsetting -command load -key controllers.gamecon.enabled`"
-            if [ "$settings_gamecon" == "1" ];then
-                settings_gamecon_map="`$systemsetting -command load -key controllers.gamecon.args`"
+            settings_gamecon="`$systemsetting -r controllers.gamecon.enabled`"
+            if [ "$settings_gamecon" = "1" ]; then
+                settings_gamecon_map="`$systemsetting -r controllers.gamecon.args`"
                 eval $config_script "module" "load" gamecon_gpio_rpi "$settings_gamecon_map" >> $log
 	    fi
 	fi
@@ -28,45 +28,45 @@ rb_gpio_configure() {
 }
 
 rb_keyboad_lang() {
-    settings_lang="`$systemsetting -command load -key system.language`"
-    settings_kb="`$systemsetting -command load -key system.kblayout`"
-    if [[ "$settings_kb" != "" ]];then
+    settings_lang="`$systemsetting -r system.language`"
+    settings_kb="`$systemsetting -r system.kblayout`"
+    if [ "$settings_kb" != "" ]; then
 	loadkeys "$settings_kb" >> $log
     else
         keyboardmap=`echo "$settings_lang" | cut -c1-2`
-	if [[ "$keyboardmap" != "" ]]; then
+	if [ "$keyboardmap" != "" ]; then
             loadkeys "$keyboardmap" >> $log
 	fi
     fi
 }
 
 rb_xbox() {
-    settings_xbox="`$systemsetting -command load -key controllers.xboxdrv.enabled`"
-    settings_xbox_nb="`$systemsetting -command load -key controllers.xboxdrv.nbcontrols`"
-    if [[ "$settings_xbox" == "1" ]];then
+    settings_xbox="`$systemsetting -r controllers.xboxdrv.enabled`"
+    settings_xbox_nb="`$systemsetting -r controllers.xboxdrv.nbcontrols`"
+    if [ "$settings_xbox" = "1" ]; then
         rmmod xpad
-        if [[ "$settings_xbox_nb" == "1" ]];then
+        if [ "$settings_xbox_nb" = "1" ]; then
             /usr/bin/xboxdrv --detach --daemon --id 0 --led 2 --deadzone 4000 --silent --trigger-as-button --dbus disabled --detach-kernel-driver >> $log &
-        elif [[ "$settings_xbox_nb" == "2" ]];then
+        elif [ "$settings_xbox_nb" = "2" ]; then
             /usr/bin/xboxdrv --detach --daemon --id 0 --led 2 --deadzone 4000 --silent --trigger-as-button --next-controller --id 1 --led 3 --deadzone 4000 --silent --trigger-as-button --dbus disabled --detach-kernel-driver >> $log &
-        elif [[ "$settings_xbox_nb" == "3" ]];then
+        elif [ "$settings_xbox_nb" = "3" ]; then
             /usr/bin/xboxdrv --detach --daemon --id 0 --led 2 --deadzone 4000 --silent --trigger-as-button --next-controller --id 1 --led 3 --deadzone 4000 --silent --trigger-as-button --next-controller --id 2 --led 4 --deadzone 4000 --silent --trigger-as-button --dbus disabled --detach-kernel-driver >> $log &
-        elif [[ "$settings_xbox_nb" == "4" ]];then
+        elif [ "$settings_xbox_nb" = "4" ]; then
             /usr/bin/xboxdrv --detach --daemon --id 0 --led 2 --deadzone 4000 --silent --trigger-as-button --next-controller --id 1 --led 3 --deadzone 4000 --silent --trigger-as-button --next-controller --id 2 --led 4 --deadzone 4000 --silent --trigger-as-button --next-controller --id 3 --led 5 --deadzone 4000 --silent --trigger-as-button --dbus disabled --detach-kernel-driver >> $log &
         fi
     fi
 }
 
 rb_timezone() {
-    settings_timezone="`$systemsetting -command load -key system.timezone`"
-    if [[ "$settings_timezone" != "" ]];then
+    settings_timezone="`$systemsetting -r system.timezone`"
+    if [ "$settings_timezone" != "" ]; then
         eval $config_script "tz" "$settings_timezone" >> $log
     fi
 }
 
 rb_hostname() {
-    settings_hostname="`$systemsetting -command load -key system.hostname`"
-    if [[ "$settings_hostname" != "" ]];then
+    settings_hostname="`$systemsetting -r system.hostname`"
+    if [ "$settings_hostname" != "" ]; then
         hostname "${settings_hostname}"
 	echo "127.0.0.1	localhost"             > /etc/hosts
 	echo "127.0.1.1	${settings_hostname}" >> /etc/hosts
@@ -74,8 +74,8 @@ rb_hostname() {
 }
 
 rb_xarcade2jstick() {
-    settings_xarcade="`$systemsetting -command load -key controllers.xarcade.enabled`"
-    if [[ "$settings_xarcade" == "1" ]];then
+    settings_xarcade="`$systemsetting -r controllers.xarcade.enabled`"
+    if [ "$settings_xarcade" = "1" ]; then
         # First try : suppose a real X-Arcade is plugged
         /usr/bin/xarcade2jstick -d
         if [ $? -ne "0" ]

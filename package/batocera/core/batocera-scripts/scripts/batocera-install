@@ -4,7 +4,7 @@ updateurl="https://updates.batocera.org"
 systemsetting="batocera-settings"
 
 # customizable upgrade url website
-settingsupdateurl=$($systemsetting -command load -key updates.url)
+settingsupdateurl=$($systemsetting -r updates.url)
 test -n "${settingsupdateurl}" && updateurl="${settingsupdateurl}"
 
 IMGFOLDER="/userdata/system/installs"

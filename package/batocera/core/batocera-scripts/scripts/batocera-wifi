@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 ACTION=$1
 shift
@@ -45,7 +45,7 @@ do_disable() {
 }
 
 do_start() {
-    settingsWlan="$(batocera-settings -command load -key wifi.enabled)"
+    settingsWlan="$(batocera-settings -r wifi.enabled)"
     if [ "$settingsWlan" != "1" ];then
         return 0
     fi

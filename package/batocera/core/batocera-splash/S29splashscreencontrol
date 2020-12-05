@@ -45,7 +45,7 @@ case $1 in
         [[ $PID == $(pgrep -f "sleep infinity") ]] && picture=1 || picture=0
 
         # Read Config and set some defaults
-        splash_setting=$(batocera-settings -command load -key splash.screen.length)
+        splash_setting=$(batocera-settings -r splash.screen.length)
         [[ -z $splash_setting ]] && splash_setting=auto
         [[ ${splash_setting,,} == auto && $ARCH =~ rpi(1|2|3) ]] && splash_setting=$ARCH
             

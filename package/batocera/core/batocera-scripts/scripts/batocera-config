@@ -1,7 +1,7 @@
-#!/bin/bash
+#!/bin/sh
 
 if [ ! "$1" ];then
-	echo -e "usage : batocera-config [command] [args]\nWith command in\n\toverscan [enable|disable]\n\tcanupdate\n\tupdate\n\tstorage [current|list|INTERNAL|ANYEXTERNAL|RAM|DEV UUID]\n\tsetRootPassword [password]\n\tgetRootPassword\n\ttz [|tz]"
+	printf "usage : batocera-config [command] [args]\nWith command in\n\toverscan [enable|disable]\n\tcanupdate\n\tupdate\n\tstorage [current|list|INTERNAL|ANYEXTERNAL|RAM|DEV UUID]\n\tsetRootPassword [password]\n\tgetRootPassword\n\ttz [|tz]\n"
 	exit 1
 fi
 configFile="/boot/config.txt"
@@ -42,9 +42,9 @@ systemsetting="batocera-settings"
 
 echo "---- batocera-config ----" >> $log
 
-if [ "$command" == "getRootPassword" ]; then
+if [ "$command" = "getRootPassword" ]; then
     # security disabled, force the default one without changing boot configuration
-    securityenabled="`$systemsetting  -command load -key system.security.enabled`"
+    securityenabled="`$systemsetting -r system.security.enabled`"
     if [ "$securityenabled" != "1" ];then
 	echo "linux"
 	exit 0
@@ -62,11 +62,11 @@ if [ "$command" == "getRootPassword" ]; then
     exit 0
 fi
 
-if [ "$command" == "setRootPassword" ]; then
+if [ "$command" = "setRootPassword" ]; then
     PASSWD=${2}
 
     # security disabled, don't change
-    securityenabled="`$systemsetting  -command load -key system.security.enabled`"
+    securityenabled="`$systemsetting -r system.security.enabled`"
     if [ "$securityenabled" != "1" ];then
 	exit 0
     fi
@@ -101,8 +101,8 @@ if [ "$command" == "setRootPassword" ]; then
     fi    
 fi
 
-if [ "$command" == "overscan" ]; then
-if [ "$mode" == "set" ];then
+if [ "$command" = "overscan" ]; then
+if [ "$mode" = "set" ];then
 # set will set overscan values abd  also enable this mode
 	if [ -z "$extra1" ] || [ -z "$extra2" ] || [ -z "$extra3" ] || [ -z "$extra4" ]; then
 		echo "$0 $command $mode needs 4 arguments:"
@@ -126,11 +126,11 @@ if [ "$mode" == "set" ];then
 fi
 if [ -f "$configFile" ];then
         preBootConfig
-	if [ "$mode" == "enable" ];then
+	if [ "$mode" = "enable" ];then
 		echo "enabling overscan" >> $log
 		bato_config_set_value disable_overscan 0
 		bato_config_set_value overscan_scale 1
-	elif [ "$mode" == "disable" ];then
+	elif [ "$mode" = "disable" ];then
                 echo "disabling overscan" >> $log
 		bato_config_set_value disable_overscan 1
 		bato_config_set_value overscan_scale 0
@@ -145,26 +145,26 @@ else
 fi
 fi
 
-if [ "$command" == "lsoutputs" ]
+if [ "$command" = "lsoutputs" ]
 then
     echo "auto"
     batocera-resolution listOutputs
 fi
 
-if [ "$command" == "gpiocontrollers" ];then
+if [ "$command" = "gpiocontrollers" ];then
 	command="module"
 	mode="load"
 	extra1="mk_arcade_joystick_rpi"
 	extra2="map=1,2"
 fi
 
-if [ "$command" == "module" ];then
+if [ "$command" = "module" ];then
 	modulename="$extra1"
 	map="$extra2"
 	# remove in all cases
 	rmmod /lib/modules/`uname -r`/extra/${modulename}.ko >> $log
 
-        if [ "$mode" == "load" ];then
+        if [ "$mode" = "load" ];then
 	        echo "loading module $modulename args = $map" >> $log
 		insmod /lib/modules/`uname -r`/extra/${modulename}.ko $map >> $log
 		[ "$?" ] || exit 1
@@ -172,14 +172,14 @@ if [ "$command" == "module" ];then
 	exit 0
 fi
 
-if [ "$command" == "canupdate" ];then
-	updatetype="`$systemsetting  -command load -key updates.type`"
+if [ "$command" = "canupdate" ];then
+	updatetype="`$systemsetting -r updates.type`"
 	if test "${updatetype}" != "stable" -a "${updatetype}" != "unstable" -a "${updatetype}" != "beta"
 	then
 		# force a default value in case the value is removed or miswritten
 		updatetype="stable"
 	fi
-	settingsupdateurl="`$systemsetting  -command load -key updates.url`"
+	settingsupdateurl="`$systemsetting -r updates.url`"
 
 	# customizable upgrade url website
 	if test -n "${settingsupdateurl}"
@@ -189,7 +189,7 @@ if [ "$command" == "canupdate" ];then
 
 	#echo "Update url: ${updateurl}/${arch}/${updatetype}/last"
 	available=`wget -qO- ${updateurl}/${arch}/${updatetype}/last/batocera.version`
-	if [[ "$?" != "0" ]];then
+	if [ "$?" != "0" ];then
 	        echo "Unable to access the url" >&2
 		exit 2
 	fi
@@ -197,30 +197,30 @@ if [ "$command" == "canupdate" ];then
 
 	echo "${available}"
 
-	if [[ "$available" != "$installed" ]]; then
+	if [ "$available" != "$installed" ]; then
 		exit 0
 	fi
 	exit 12
 fi
 
-if [ "$command" == "update" ];then
+if [ "$command" = "update" ];then
 	batocera-upgrade
 	exit $?
 fi
 
-if [[ "$command" == "storage" ]]; then
-    if [[ "$mode" == "current" ]]; then
+if [ "$command" = "storage" ]; then
+    if [ "$mode" = "current" ]; then
 	if test -e $storageFile
 	then
             SHAREDEVICE=`cat ${storageFile} | grep "sharedevice=" | head -n1 | cut -d'=' -f2`
-            [[ "$?" -ne "0" || "$SHAREDEVICE" == "" ]] && SHAREDEVICE=INTERNAL
+            [ "$?" -ne "0" -o "$SHAREDEVICE" = "" ] && SHAREDEVICE=INTERNAL
 	    echo "$SHAREDEVICE"
 	else
 	    echo "INTERNAL"
 	fi
 	exit 0
     fi
-    if [[ "$mode" == "list" ]]; then
+    if [ "$mode" = "list" ]; then
 	echo "INTERNAL"
 	echo "ANYEXTERNAL"
 	echo "RAM"
@@ -235,9 +235,9 @@ if [[ "$command" == "storage" ]]; then
 	    sed -e s+'^NAME="[^"]*" FSTYPE="[^"]*" LABEL="\([^"]*\)" UUID="\([^"]*\)" SIZE="\([^"]*\)" TYPE="[^"]*"$'+'DEV \2 \1 - \3'+
 	exit 0
     fi
-    if [[ "${mode}" == "INTERNAL" || "${mode}" == "ANYEXTERNAL" || "${mode}" == "RAM" || "${mode}" == "DEV" ]]; then
+    if [ "${mode}" = "INTERNAL" -o "${mode}" = "ANYEXTERNAL" -o "${mode}" = "RAM" -o "${mode}" = "DEV" ]; then
 	preBootConfig
-	if [[ "${mode}" == "INTERNAL" || "${mode}" == "ANYEXTERNAL" || "${mode}" == "RAM" ]]; then
+	if [ "${mode}" = "INTERNAL" -o "${mode}" = "ANYEXTERNAL" -o "${mode}" = "RAM" ]; then
             if grep -qE "^sharedevice=" "${storageFile}"
 	    then
                sed -i "s|sharedevice=.*|sharedevice=${mode}|g" "${storageFile}"
@@ -245,7 +245,7 @@ if [[ "$command" == "storage" ]]; then
                echo "sharedevice=${mode}" >> "${storageFile}"
             fi
 	fi
-	if [[ "${mode}" == "DEV" ]]; then
+	if [ "${mode}" = "DEV" ]; then
             if grep -qE "^sharedevice=" "${storageFile}"
 	    then
                sed -i "s|sharedevice=.*|sharedevice=${mode} $extra1|g" "${storageFile}"
@@ -258,7 +258,7 @@ if [[ "$command" == "storage" ]]; then
     fi
 fi
 
-if [[ "$command" == "forgetBT" ]]; then
+if [ "$command" = "forgetBT" ]; then
    killall -9 hcitool
    /etc/init.d/S32bluetooth stop
    rm -rf /var/lib/bluetooth
@@ -268,8 +268,8 @@ if [[ "$command" == "forgetBT" ]]; then
    exit 0
 fi
 
-if [ "$command" == "tz" ];then
-    if test "$mode" == ""
+if [ "$command" = "tz" ];then
+    if test "$mode" = ""
     then
 	cat /usr/share/batocera/tz
     else

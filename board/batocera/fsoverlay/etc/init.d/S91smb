@@ -4,9 +4,9 @@
 #
 
 systemsetting="batocera-settings"
-securityenabled="`$systemsetting  -command load -key system.security.enabled`"
+securityenabled="`$systemsetting -r system.security.enabled`"
 
-if [ "$securityenabled" == "1" ];then
+if [ "$securityenabled" = "1" ]; then
     CONFIGFILE="/etc/samba/smb-secure.conf"
 else
     CONFIGFILE="/etc/samba/smb.conf"
@@ -21,8 +21,8 @@ mkdir -p /var/run/samba
 RETVAL=0
 
 start() {
-	enabled="`$systemsetting  -command load -key system.samba.enabled`"
-    	if [ "$enabled" == "0" ];then
+	enabled="`$systemsetting -r system.samba.enabled`"
+	if [ "$enabled" = "0" ]; then
 	  echo "SMB services: disabled"
 	  exit 0
         fi

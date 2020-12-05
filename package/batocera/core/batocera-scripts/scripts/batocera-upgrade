@@ -65,8 +65,8 @@ updateurl="https://updates.batocera.org"
 systemsetting="/usr/bin/batocera-settings"
 
 arch=$(cat /usr/share/batocera/batocera.arch)
-updatetype=$($systemsetting -command load -key updates.type)
-settingsupdateurl=$($systemsetting -command load -key updates.url)
+updatetype=$($systemsetting -r updates.type)
+settingsupdateurl=$($systemsetting -r updates.url)
 
 # customizable upgrade url website
 test -n "${settingsupdateurl}" && updateurl="${settingsupdateurl}"

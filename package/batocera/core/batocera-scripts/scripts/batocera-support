@@ -25,7 +25,7 @@ d_cp() {
 }
 
 
-if mkdir "${TMPDIR}" && mkdir "${TMPDIR}/"{system,joysticks,lirc,kodi,coredumps}
+if mkdir "${TMPDIR}" && mkdir "${TMPDIR}/system" "${TMPDIR}/joysticks" "${TMPDIR}/lirc" "${TMPDIR}/kodi" "${TMPDIR}/coredumps"
 then
     if ! cd "${TMPDIR}"
     then

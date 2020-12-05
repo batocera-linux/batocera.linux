@@ -1,6 +1,6 @@
-#!/bin/bash
+#!/bin/sh
 
-if [[ "$1" == "stop" ]]
+if [ "$1" = "stop" ]
 then
     # umount all network configs
     # don't just remount the one of the config in case the config changed
@@ -9,7 +9,7 @@ then
     exit 0
 fi
 
-if [[ "$1" != "start" ]]
+if [ "$1" != "start" ]
 then
     exit 0
 fi
@@ -28,7 +28,7 @@ INTERNALDEVICE=$(batocera-part "share_internal")
 INTERNALDEVICETYPE=$(blkid "${INTERNALDEVICE}" | sed -e s+'^.* TYPE="\([^"]*\)\".*'+'\1'+)
 
 SHAREDEVICE=$(cat "${SHARECONFFILE}" | grep -E '^[ ]*sharedevice=' | head -n1 | cut -d'=' -f2)
-[[ "$?" -ne "0" || "$SHAREDEVICE" == "" ]] && SHAREDEVICE=INTERNAL
+[ "$?" -ne "0" -o "$SHAREDEVICE" = "" ] && SHAREDEVICE=INTERNAL
 
 getMaxTryConfig() {
     SHARECONFFILE=${1}
@@ -51,13 +51,13 @@ mountDeviceOrFallback() {
     BATOCERAFULLFS="/var/batocerafs"
     FALLBACK=1
 
-    if [[ -n "${DEVICE}" ]]
+    if [ -n "${DEVICE}" ]
     then
         if mkdir -p "${BATOCERAFULLFS}"
         then
             if batocera-mount "${TDEVICE}" 1 "${DEVICE}" "${BATOCERAFULLFS}"
             then
-                if [[ -d "${BATOCERAFULLFS}/recalbox" && ! -d "${BATOCERAFULLFS}/batocera" ]] # legacy renaming (rename only if batocera doesn't exist and recalbox does)
+                if [ -d "${BATOCERAFULLFS}/recalbox" -a ! -d "${BATOCERAFULLFS}/batocera" ] # legacy renaming (rename only if batocera doesn't exist and recalbox does)
                 then
                     mv "${BATOCERAFULLFS}/recalbox" "${BATOCERAFULLFS}/batocera"
                 fi
@@ -72,7 +72,7 @@ mountDeviceOrFallback() {
         fi
     fi
 
-    if [[ "${FALLBACK}" == "1" ]]
+    if [ "${FALLBACK}" = "1" ]
     then
         if ! batocera-mount "${INTERNALDEVICETYPE}" 1 "${INTERNALDEVICE}" /userdata
         then
@@ -82,7 +82,7 @@ mountDeviceOrFallback() {
 }
 
 fixbatoceraconfname() {
-    [[ -e "/userdata/system/recalbox.conf" ]] && mv /userdata/system/recalbox.conf /userdata/system/batocera.conf
+    [ -e "/userdata/system/recalbox.conf" ] && mv /userdata/system/recalbox.conf /userdata/system/batocera.conf
 }
 
 mountNetwork() {
@@ -114,11 +114,11 @@ mountNetwork() {
             XTRY=5  # X tries and give up
             XWAIT=4 # N seconds between each try
 
-            while [[ "${XTRY}" -gt 0 ]]
+            while [ "${XTRY}" -gt 0 ]
             do
-                (( XTRY-- ))
+                XTRY=$((XTRY-1))
                 CMD_EXEC=echo
-                if [[ "${CTYPE}" == "cmd" ]]
+                if [ "${CTYPE}" = "cmd" ]
                 then
                     CMD_EXEC="${CMD}"
                 else
@@ -194,9 +194,9 @@ fi
 case "${MODE}" in
     "DEV")
         LDEVICE=$(blkid | grep " UUID=\"${UUID}\"")
-        while [[ -z "${LDEVICE}" && "${NTRY}" -lt "${MAXTRY}" ]] # wait the device that can take some seconds after udev started
+        while [ -z "${LDEVICE}" -a "${NTRY}" -lt "${MAXTRY}" ] # wait the device that can take some seconds after udev started
         do
-            (( NTRY++ ))
+            NTRY=$((NTRY+1))
             sleep 1
            LDEVICE=$(blkid | grep " UUID=\"${UUID}\"")
         done
@@ -210,7 +210,7 @@ case "${MODE}" in
         LDEVICE=$(blkid | grep -vE "^${PARTPREFIX}" | head -1)
         while [ -z "${LDEVICE}" ] && [ "${NTRY}" -lt "${MAXTRY}" ] # wait the device that can take some seconds after udev started
         do
-            let NTRY++
+            NTRY=$((NTRY+1))
             sleep 1
             LDEVICE=$(blkid | grep -vE "^${PARTPREFIX}" | head -1)
         done
@@ -252,8 +252,8 @@ case "${MODE}" in
 esac
 
 # fs compression
-compressenabled="`batocera-settings -command load -key system.fscompression.enabled`"
-if [[ "$compressenabled" == "1" ]]
+compressenabled="`batocera-settings -r system.fscompression.enabled`"
+if [ "$compressenabled" = "1" ]
 then
     if grep -qE "^/dev/[^ ]* /userdata btrfs.*$" /proc/mounts
     then
@@ -263,7 +263,7 @@ fi
 
 
 # share upgrade, just unzip share.zip from upgrade, no need to reboot
-if [[ -e "/userdata/system/upgrade/share.zip" ]]
+if [ -e "/userdata/system/upgrade/share.zip" ]
 then
     (cd /userdata && unzip -o /userdata/system/upgrade/share.zip) > /userdata/system/upgrade/upgrade.share.out.log 2> /userdata/system/upgrade/upgrade.share.err.log
     # always remove to not apply indefinitly

@@ -20,7 +20,7 @@ then
 fi
 
 # secure ssh
-enabled="`$systemsetting  -command load -key system.security.enabled`"
+enabled="`$systemsetting -r system.security.enabled`"
 if [ "$enabled" != "1" ];then
     MASTERPASSWD="linux"
 fi
