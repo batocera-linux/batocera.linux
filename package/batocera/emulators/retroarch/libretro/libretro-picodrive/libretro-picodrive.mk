@@ -5,9 +5,7 @@
 ################################################################################
 # Version.: Release on Nov 22, 2020
 LIBRETRO_PICODRIVE_VERSION = v1.97
-LIBRETRO_PICODRIVE_SITE = https://github.com/irixxxx/picodrive.git
-LIBRETRO_PICODRIVE_SITE_METHOD=git
-LIBRETRO_PICODRIVE_GIT_SUBMODULES=YES
+LIBRETRO_PICODRIVE_SITE = $(call github,irixxxx,picodrive,$(LIBRETRO_PICODRIVE_VERSION))
 LIBRETRO_PICODRIVE_DEPENDENCIES = libpng
 LIBRETRO_PICODRIVE_LICENSE = MAME
 
