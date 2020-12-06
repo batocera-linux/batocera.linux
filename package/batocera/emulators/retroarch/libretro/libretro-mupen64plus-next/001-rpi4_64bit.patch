@@ -1,0 +1,12 @@
+--- a/Makefile	2020-12-06 17:40:07.314644268 +0100
++++ b/Makefile	2020-12-06 17:40:32.055103841 +0100
+@@ -163,6 +163,9 @@
+    else ifneq (,$(findstring rpi4,$(platform)))
+       CPUFLAGS += -march=armv8-a+crc -mtune=cortex-a72
+       ARM_CPUFLAGS = -mfpu=neon-fp-armv8
++   else ifneq (,$(findstring rpi4_64,$(platform)))
++      CPUFLAGS += -mcpu=cortex-a72 -mtune=cortex-a72
++      ARM_CPUFLAGS =
+    else ifneq (,$(findstring rpi,$(platform)))
+       CPUFLAGS += -mcpu=arm1176jzf-s
+       ARM_CPUFLAGS = -mfpu=vfp
