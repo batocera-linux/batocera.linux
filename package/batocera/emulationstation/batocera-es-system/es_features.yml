@@ -5,7 +5,7 @@ libretro:
   features: [ratio, smooth, shaders, pixel_perfect, decoration, latency_reduction, game_translation]
   cfeatures:
     gfxbackend:
-      archs_include: [x86, x86_64]
+      archs_include: [x86, x86_64, rpi4]
       prompt: GRAPHICS BACKEND
       choices:
         "OpenGL": opengl
@@ -527,7 +527,7 @@ dolphin:
                 "Off": 0
                 "On":  1
         gfxbackend:
-            archs_include: [x86, x86_64]
+            archs_include: [x86, x86_64, rpi4]
             prompt: GRAPHICS BACKEND
             choices:
                 "OpenGL": OGL
@@ -676,6 +676,7 @@ mame:
         "OpenGL": opengl
 
     bgfxbackend:
+      archs_include: [x86, x86_64, rpi4]
       prompt: BGFX backend
       choices:
         "Auto": auto
