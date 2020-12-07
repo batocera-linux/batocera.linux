@@ -437,6 +437,7 @@ config BR2_PACKAGE_BATOCERA_RETROARCH
                                                          # MUPEN64PLUS_NEXT
 
         select BR2_PACKAGE_LIBRETRO_PARALLEL_N64      if !BR2_PACKAGE_BATOCERA_RPI_VCORE     && \
+                                                         !BR2_PACKAGE_BATOCERA_TARGET_RPI4        && \
                                                          !BR2_PACKAGE_BATOCERA_TARGET_ODROIDC2    && \
                                                          !BR2_PACKAGE_BATOCERA_TARGET_ODROIDC4    && \
                                                          !BR2_PACKAGE_BATOCERA_TARGET_S905     	  && \
