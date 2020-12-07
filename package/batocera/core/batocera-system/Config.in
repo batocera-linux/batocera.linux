@@ -68,6 +68,7 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
     select BR2_PACKAGE_RPI_FIRMWARE                      if BR2_PACKAGE_BATOCERA_TARGET_RPI_ANY || BR2_PACKAGE_BATOCERA_TARGET_RPI4 # rpi firmwares
     select BR2_PACKAGE_RPI_WIFI_FIRMWARE                 if BR2_PACKAGE_BATOCERA_TARGET_RPI_ANY || BR2_PACKAGE_BATOCERA_TARGET_RPI4 # rpi wifi firmware
     select BR2_PACKAGE_RPI_BT_FIRMWARE                   if BR2_PACKAGE_BATOCERA_TARGET_RPI_ANY || BR2_PACKAGE_BATOCERA_TARGET_RPI4 # rpi bluetooth firmware
+    select BR2_PACKAGE_FIRMWARE_NONFREE_RPI              if BR2_PACKAGE_BATOCERA_TARGET_RPI4 # rpi 400 wifi firmware
     select BR2_PACKAGE_DROPBEAR                          # ssh server
     select BR2_PACKAGE_QTSIXA_SHANWAN                    # ps3 pad
     select BR2_PACKAGE_XARCADE2JSTICK                    # keyboard events of the Xarcade Tankstick
