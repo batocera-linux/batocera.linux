@@ -24,7 +24,7 @@ cp "${BOARD_DIR}/boot/config.txt" "${BINARIES_DIR}/rpi-firmware/config.txt"   ||
 cp "${BOARD_DIR}/boot/cmdline.txt" "${BINARIES_DIR}/rpi-firmware/cmdline.txt" || exit 1
 
 KERNEL_VERSION=$(grep -E "^BR2_LINUX_KERNEL_VERSION=" "${BR2_CONFIG}" | sed -e s+'^BR2_LINUX_KERNEL_VERSION="\(.*\)"$'+'\1'+)
-cp "${BINARIES_DIR}/zImage" "${BINARIES_DIR}/rpi-firmware/boot/linux" || exit 1
+cp "${BINARIES_DIR}/Image" "${BINARIES_DIR}/rpi-firmware/boot/linux" || exit 1
 cp "${BINARIES_DIR}/initrd.gz" "${BINARIES_DIR}/rpi-firmware/boot" || exit 1
 cp "${BINARIES_DIR}/rootfs.squashfs" "${BINARIES_DIR}/rpi-firmware/boot/batocera.update" || exit 1
 cp -pr "${BINARIES_DIR}/tools"       "${BINARIES_DIR}/rpi-firmware/"                     || exit 1
