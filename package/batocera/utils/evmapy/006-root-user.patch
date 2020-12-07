@@ -1,0 +1,12 @@
+diff -uri evmapy-bd65338c236cd30b4f2d7835733ea5d6b108b75d/evmapy/util.py evmapy-new/evmapy/util.py
+--- evmapy-bd65338c236cd30b4f2d7835733ea5d6b108b75d/evmapy/util.py      2020-12-07 00:13:13.385533322 +0100
++++ evmapy-new/evmapy/util.py   2020-12-07 00:10:48.101534334 +0100
+@@ -62,7 +62,7 @@
+     info = {
+         'name':     'evmapy',
+         'version':  '1.0',
+-        'user':     pwd.getpwuid(os.geteuid()),
++        'user':     'root',
+     }
+     info['config_dir'] = "/var/run/evmapy"
+     return info
