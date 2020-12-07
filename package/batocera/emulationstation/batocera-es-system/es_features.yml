@@ -2,7 +2,7 @@
 # the aim is to display in es only the available options
 
 libretro:
-  features: [ratio, smooth, shaders, pixel_perfect, decoration, latency_reduction, game_translation]
+  features: [ratio, smooth, shaders, pixel_perfect, decoration, latency_reduction, game_translation, rga_scaling]
   cfeatures:
     gfxbackend:
       archs_include: [x86, x86_64, rpi4]

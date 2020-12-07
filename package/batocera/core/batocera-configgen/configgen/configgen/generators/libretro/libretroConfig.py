@@ -99,6 +99,11 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
     else:
         retroarchConfig['video_smooth'] = 'false'
 
+    if system.isOptSet('rga_scaling') and system.getOptBoolean('rga_scaling') == True:
+        retroarchConfig['video_ctx_scaling'] = 'true'
+    else:
+        retroarchConfig['video_ctx_scaling'] = 'false'
+
     if 'shader' in renderConfig and renderConfig['shader'] != None:
         retroarchConfig['video_shader_enable'] = 'true'
         retroarchConfig['video_smooth']        = 'false'     # seems to be necessary for weaker SBCs
