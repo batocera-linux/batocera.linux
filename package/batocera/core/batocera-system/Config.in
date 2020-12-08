@@ -94,7 +94,7 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
     select BR2_PACKAGE_CA_CERTIFICATES                   # ssl certificates
     select BR2_PACKAGE_LIBRGA                            if BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA # Used in screen rotation (SDL and Retroarch)
 
-    select BR2_PACKAGE_SDL2_OPENGLES                     if BR2_PACKAGE_BATOCERA_RPI_VCORE      || \
+    select BR2_PACKAGE_SDL2_OPENGLES                     if BR2_PACKAGE_BATOCERA_RPI_VCORE           || \
                                                             BR2_PACKAGE_BATOCERA_RPI_MESA3D          || \
                                                             BR2_PACKAGE_BATOCERA_TARGET_LIBRETECH_H5 || \
                                                             BR2_PACKAGE_BATOCERA_TARGET_XU4          || \
@@ -369,8 +369,8 @@ config BR2_PACKAGE_BATOCERA_ALL_SYSTEMS
 
         select BR2_PACKAGE_DOSBOX               # ALL # dos
 
-        select BR2_PACKAGE_DOSBOX_X             if !BR2_PACKAGE_BATOCERA_TARGET_ROCK960 && \
-                                                   !BR2_PACKAGE_BATOCERA_RPI_VCORE && \
+        select BR2_PACKAGE_DOSBOX_X             if !BR2_PACKAGE_BATOCERA_TARGET_ROCK960    && \
+                                                   !BR2_PACKAGE_BATOCERA_RPI_VCORE         && \
                                                    !BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA
                                                    # dos
 
@@ -380,21 +380,20 @@ config BR2_PACKAGE_BATOCERA_ALL_SYSTEMS
 
         select BR2_PACKAGE_BATOCERA_MUPEN64     if !BR2_PACKAGE_BATOCERA_TARGET_RPI1 # mupen64 (n64)
 
-        select BR2_PACKAGE_FLYCAST              if BR2_PACKAGE_BATOCERA_TARGET_X86_64 || \
-                                                   BR2_PACKAGE_BATOCERA_TARGET_ROCKCHIP_ANY
+        select BR2_PACKAGE_FLYCAST              if BR2_PACKAGE_BATOCERA_TARGET_X86_64 || BR2_PACKAGE_BATOCERA_TARGET_ROCKCHIP_ANY
 
-        #select BR2_PACKAGE_REICAST              if !BR2_PACKAGE_BATOCERA_TARGET_RPI1 && \
-        #                                           !BR2_PACKAGE_BATOCERA_TARGET_RPI2 && \
-        #                                           !BR2_PACKAGE_BATOCERA_TARGET_S912 && \
-        #                                           !BR2_PACKAGE_BATOCERA_TARGET_ODROIDC2   && \
-        #                                           !BR2_PACKAGE_BATOCERA_TARGET_ODROIDC4   && \
-        #                                           !BR2_PACKAGE_BATOCERA_TARGET_ODROIDN2 && \
-        #                                           !BR2_PACKAGE_BATOCERA_TARGET_S905 && \
+        #select BR2_PACKAGE_REICAST              if !BR2_PACKAGE_BATOCERA_TARGET_RPI1         && \
+        #                                           !BR2_PACKAGE_BATOCERA_TARGET_RPI2         && \
+        #                                           !BR2_PACKAGE_BATOCERA_TARGET_S912         && \
+        #                                           !BR2_PACKAGE_BATOCERA_TARGET_ODROIDC2     && \
+        #                                           !BR2_PACKAGE_BATOCERA_TARGET_ODROIDC4     && \
+        #                                           !BR2_PACKAGE_BATOCERA_TARGET_ODROIDN2     && \
+        #                                           !BR2_PACKAGE_BATOCERA_TARGET_S905         && \
         #                                           !BR2_PACKAGE_BATOCERA_TARGET_LIBRETECH_H5 && \
         #                                           !BR2_PACKAGE_BATOCERA_TARGET_VIM3
                                                    # dreamcast
 
-        select BR2_PACKAGE_PPSSPP               if !BR2_PACKAGE_BATOCERA_RPI_VCORE && !BR2_PACKAGE_BATOCERA_TARGET_RPI3
+        select BR2_PACKAGE_PPSSPP               if !BR2_PACKAGE_BATOCERA_RPI_VCORE
 
         #select BR2_PACKAGE_PPSSPP15             if BR2_PACKAGE_BATOCERA_TARGET_RPI3 # psp
 
@@ -617,11 +616,10 @@ config BR2_PACKAGE_BATOCERA_MUPEN64
                                                            BR2_PACKAGE_BATOCERA_TARGET_ROCKCHIP_ANY
                                                            # GLIDEN64
 
-        select BR2_PACKAGE_MUPEN64PLUS_GLES2            if BR2_PACKAGE_BATOCERA_RPI_VCORE      || \
-                                                            BR2_PACKAGE_BATOCERA_TARGET_RPI4        || \
-                                                            BR2_PACKAGE_BATOCERA_TARGET_ROCKCHIP_ANY
-
-                                                            # GLES2
+        select BR2_PACKAGE_MUPEN64PLUS_GLES2            if BR2_PACKAGE_BATOCERA_RPI_VCORE           || \
+                                                           BR2_PACKAGE_BATOCERA_TARGET_RPI4         || \
+                                                           BR2_PACKAGE_BATOCERA_TARGET_ROCKCHIP_ANY
+                                                           # GLES2
 
         select BR2_PACKAGE_MUPEN64PLUS_V20_GLIDEN64     if BR2_PACKAGE_BATOCERA_RPI_VCORE
 
