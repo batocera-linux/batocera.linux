@@ -19,7 +19,13 @@ define WINE_PROTON_HOOK_CHECK_MONO
 	grep -E '^#define WINE_MONO_VERSION "'$(WINE_MONO_VERSION)'"$$' $(@D)/dlls/mscoree/mscoree_private.h
 endef
 
+# That create folder for install
+define WINE_PROTON_CREATE_WINE_FOLDER
+	mkdir -p $(TARGET_DIR)/usr/wine/proton
+endef
+
 WINE_PROTON_PRE_CONFIGURE_HOOKS += WINE_PROTON_HOOK_CHECK_MONO
+WINE_PROTON_PRE_CONFIGURE_HOOKS += WINE_PROTON_CREATE_WINE_FOLDER
 
 # Wine needs its own directory structure and tools for cross compiling
 WINE_PROTON_CONF_OPTS = \
