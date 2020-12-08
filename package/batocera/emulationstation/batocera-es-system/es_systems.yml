@@ -1444,7 +1444,8 @@ windows:
   theme:      windows
   emulators:
     wine:
-      wine:  { requireAnyOf: [BR2_PACKAGE_WINE_LUTRIS] }
+      lutris:  { requireAnyOf: [BR2_PACKAGE_WINE_LUTRIS] }
+      proton:  { requireAnyOf: [BR2_PACKAGE_WINE_PROTON] }
 
 windows_installers:
   name:       Install a new Windows game
@@ -1456,7 +1457,8 @@ windows_installers:
   group:      windows
   emulators:
     wine:
-      wine:  { requireAnyOf: [BR2_PACKAGE_WINE_LUTRIS] }
+      lutris:  { requireAnyOf: [BR2_PACKAGE_WINE_LUTRIS] }
+      proton:  { requireAnyOf: [BR2_PACKAGE_WINE_PROTON] }
 
 wiiu:
   name:       Wii U
