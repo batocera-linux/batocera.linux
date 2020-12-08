@@ -9,10 +9,10 @@ FIRMWARE_NONFREE_RPI_SITE = https://github.com/RPi-Distro/firmware-nonfree.git
 FIRMWARE_NONFREE_RPI_SITE_METHOD = git
 
 define FIRMWARE_NONFREE_RPI_INSTALL_TARGET_CMDS
-	mkdir -p $(TARGET_DIR)/lib/firmware
+	mkdir -p $(TARGET_DIR)/lib/firmware/brcm
 	# -n is mandatory while some other packages provides firmwares too
 	# this is not ideal, but i don't know how to tell to buildroot to install this package first (and not worry about all packages installing firmwares)
-	cp -prn $(@D)/brcm/{brcmfmac43456-sdio.bin,brcmfmac43456-sdio.txt,brcmfmac43456-sdio.clm_blob} $(TARGET_DIR)/lib/firmware/
+	cp -prn $(@D)/brcm/{brcmfmac43456-sdio.bin,brcmfmac43456-sdio.txt,brcmfmac43456-sdio.clm_blob} $(TARGET_DIR)/lib/firmware/brcm/
 endef
 
 $(eval $(generic-package))
