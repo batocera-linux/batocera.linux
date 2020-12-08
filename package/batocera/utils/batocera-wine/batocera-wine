@@ -5,14 +5,24 @@ set -x
 ACTION=$1
 shift
 
+## Wine executables
+WINE_VERSION=$(batocera-settings -e -r wine_version -s windows -g "${ROMGAMENAME}") || export WINE_VERSION=proton
+DIR="/usr/wine"
+WINE="${DIR}/${WINE_VERSION}/bin/wine"
+WINE64="${DIR}/${WINE_VERSION}/bin/wine64"
+WINESERVER="${DIR}/${WINE_VERSION}/bin/wineserver"
+MSIEXEC="${DIR}/${WINE_VERSION}/bin/msiexec"
+
+## Folders
 G_SAVES_DIR="/userdata/saves/windows"
 G_ROMS_DIR="/userdata/roms/windows"
 
-PATH=$PATH:/usr/bin32
-export LD_LIBRARY_PATH="/lib32:/lib32/wine:/lib:/usr/lib:/usr/lib/wine"
+## Export Wine libs
+PATH=$PATH:PATH=$PATH:${DIR}/${WINE_VERSION}/bin
+export LD_LIBRARY_PATH="/lib32:${DIR}/${WINE_VERSION}/lib/wine:/lib:/usr/lib:${DIR}/${WINE_VERSION}/lib64/wine"
 export GST_PLUGIN_PATH="/lib32/gstreamer-1.0:/usr/lib/gstreamer-1.0"
 export LIBGL_DRIVERS_PATH="/lib32/dri:/usr/lib/dri"
-export WINEDLLPATH="/lib32/wine/fakedlls:/usr/lib/wine/fakedlls"
+export WINEDLLPATH="${DIR}/${WINE_VERSION}/lib/wine/fakedlls:${DIR}/${WINE_VERSION}/lib64/wine/fakedlls"
 
 usage() {
     echo "${1} play    	     <game>.iso"             >&2
@@ -29,7 +39,7 @@ usage() {
 }
 
 waitWineServer() {
-    while pgrep /usr/bin/wineserver
+    while pgrep "${WINESERVER}"
     do
 	echo "waiting wineserver" >&2
 	sleep 1
@@ -164,7 +174,7 @@ createWineDirectory() {
   
     mkdir -p "${WINEPREFIX}" || return 1
 
-    if ! WINEPREFIX=${WINEPREFIX} wine hostname
+    if ! WINEPREFIX=${WINEPREFIX} ${WINE} hostname
     then
 	rm -rf "${WINEPREFIX}"
 	kill -15 ${BSODPID}
@@ -203,7 +213,7 @@ play_wine() {
     dxvk_install "${WINEPOINT}" || return 1
     WINE_CMD=$(getWine_var "${WINEPOINT}" "CMD" "explorer")
     WINE_DIR=$(getWine_var "${WINEPOINT}" "DIR" "")
-    (cd "${WINEPOINT}/${WINE_DIR}" && WINEPREFIX=${WINEPOINT} eval "wine ${VDESKTOP} ${WINE_CMD}")
+    (cd "${WINEPOINT}/${WINE_DIR}" && WINEPREFIX=${WINEPOINT} eval "${WINE} ${VDESKTOP} ${WINE_CMD}")
     waitWineServer
 }
 
@@ -218,7 +228,7 @@ play_pc() {
 
     WINE_CMD=$(getWine_var "${GAMENAME}" "CMD" "explorer")
     WINE_DIR=$(getWine_var "${GAMENAME}" "DIR" "")
-    (cd "${GAMENAME}/${WINE_DIR}" && WINEPREFIX=${WINEPOINT} eval "wine ${VDESKTOP} ${WINE_CMD}")
+    (cd "${GAMENAME}/${WINE_DIR}" && WINEPREFIX=${WINEPOINT} eval "${WINE} ${VDESKTOP} ${WINE_CMD}")
     waitWineServer
 }
 
@@ -264,7 +274,7 @@ play_winetgz() {
 
     WINE_CMD=$(getWine_var "${WINEPOINT}" "CMD" "explorer")
     WINE_DIR=$(getWine_var "${WINEPOINT}" "DIR" "")
-    (cd "${WINEPOINT}/${WINE_DIR}" && WINEPREFIX=${WINEPOINT} eval "wine ${VDESKTOP} ${WINE_CMD}")
+    (cd "${WINEPOINT}/${WINE_DIR}" && WINEPREFIX=${WINEPOINT} eval "${WINE} ${VDESKTOP} ${WINE_CMD}")
     waitWineServer
 }
 
@@ -303,7 +313,7 @@ play_squashfs() {
 
     WINE_CMD=$(getWine_var "${WINEPOINT}" "CMD" "explorer")
     WINE_DIR=$(getWine_var "${WINEPOINT}" "DIR" "")
-    (cd "${WINEPOINT}/${WINE_DIR}" && WINEPREFIX=${WINEPOINT} eval "wine ${VDESKTOP} ${WINE_CMD}")
+    (cd "${WINEPOINT}/${WINE_DIR}" && WINEPREFIX=${WINEPOINT} eval "${WINE} ${VDESKTOP} ${WINE_CMD}")
     waitWineServer
 
     # try to clean the cdrom
@@ -346,7 +356,7 @@ install_msi() {
 
     createWineDirectory "${WINEPOINT}"
 
-    (cd "${GAMEDIR}" && WINEPREFIX=${WINEPOINT} msiexec /i "${INSTALLERFILE}")
+    (cd "${GAMEDIR}" && WINEPREFIX=${WINEPOINT} "${MSIEXEC}" /i "${INSTALLERFILE}")
     waitWineServer
     init_cmd "${WINEPOINT}"
 }

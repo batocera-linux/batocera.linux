@@ -36,7 +36,8 @@ WINE_LUTRIS_CONF_OPTS = \
 	--without-opencl \
 	--without-oss \
 	--without-vkd3d \
-	--without-vulkan
+	--without-vulkan \
+	--prefix=$(TARGET_DIR)/usr/wine/lutris
 
 # batocera
 ifeq ($(BR2_x86_64),y)
