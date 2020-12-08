@@ -4,9 +4,9 @@
 #
 ################################################################################
 
-WINE_PROTON_VERSION = 5.13-3
-WINE_PROTON_SOURCE = proton-$(WINE_PROTON_VERSION).tar.gz
-WINE_PROTON_SITE = https://github.com/ValveSoftware/Proton/archive
+WINE_PROTON_VERSION = 5.13-3-rc2
+WINE_PROTON_SOURCE = proton-wine-$(WINE_PROTON_VERSION).tar.gz
+WINE_PROTON_SITE = https://github.com/ValveSoftware/wine/archive
 WINE_PROTON_LICENSE = LGPL-2.1+
 WINE_PROTON_LICENSE_FILES = COPYING.LIB LICENSE
 WINE_PROTON_DEPENDENCIES = host-bison host-flex host-wine-proton
