@@ -33,7 +33,8 @@ WINE_PROTON_WOW64_32_CONF_OPTS = \
 	--without-hal \
 	--without-opencl \
 	--without-oss \
-	--prefix=$(TARGET_DIR)/usr/wine/proton
+	--prefix=$(TARGET_DIR)/usr/wine/proton \
+	--exec-prefix=$(TARGET_DIR)/usr/wine/proton
 
 # batocera
 # gcrypt

@@ -43,7 +43,8 @@ WINE_PROTON_CONF_OPTS = \
 	--without-oss \
 	--without-vkd3d \
 	--without-vulkan \
-	--prefix=$(TARGET_DIR)/usr/wine/proton
+	--prefix=$(TARGET_DIR)/usr/wine/proton \
+	--exec-prefix=$(TARGET_DIR)/usr/wine/proton
 
 # batocera
 ifeq ($(BR2_x86_64),y)
