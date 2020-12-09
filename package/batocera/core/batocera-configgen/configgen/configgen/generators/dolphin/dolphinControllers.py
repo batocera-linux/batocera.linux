@@ -161,8 +161,8 @@ def generateControllerConfig_gamecube(playersControllers,rom):
     gamecubeMapping = {
         'y':      'Buttons/B',  'b':        'Buttons/A',
         'x':      'Buttons/Y',  'a':        'Buttons/X',
-        'r2':     'Buttons/Z',  'start':    'Buttons/Start',
-        'pageup': 'Triggers/L', 'pagedown': 'Triggers/R',
+        'pageup':     'Buttons/Z',  'start':    'Buttons/Start',
+        'l2': 'Triggers/L', 'r2': 'Triggers/R',
         'up': 'D-Pad/Up', 'down': 'D-Pad/Down', 'left': 'D-Pad/Left', 'right': 'D-Pad/Right',
         'joystick1up': 'Main Stick/Up', 'joystick1left': 'Main Stick/Left',
         'joystick2up': 'C-Stick/Up',    'joystick2left': 'C-Stick/Left', 'hotkey': 'Buttons/Hotkey'
@@ -173,13 +173,16 @@ def generateControllerConfig_gamecube(playersControllers,rom):
         'C-Stick/Up':      'C-Stick/Down',
         'C-Stick/Left':    'C-Stick/Right'
     }
-    # if joystick1up is missing on the pad, use up instead
+    # if joystick1up is missing on the pad, use up instead, and if l2/r2 is missing, use l1/r1
     gamecubeReplacements = {
         'joystick1up': 'up',
         'joystick1left': 'left',
         'joystick1down': 'down',
-        'joystick1right': 'right'
+        'joystick1right': 'right',
+        'l2': 'pageup',
+        'r2': 'pagedown'
     }
+    
 
     #This section allows a per ROM override of the default key options.
     configname = rom + ".cfg"  #Define ROM configuration name
@@ -251,8 +254,11 @@ def generateHotkeys(playersControllers):
                 # write the configuration for this key
                 if keyname is not None:
                     write_key(f, keyname, input.type, input.id, input.value, pad.nbaxes, False, hotkey.id)
+                    
                 #else:
                 #    f.write("# undefined key: name="+input.name+", type="+input.type+", id="+str(input.id)+", value="+str(input.value)+"\n")
+                
+
 
         nplayer += 1
 
@@ -303,12 +309,12 @@ def generateControllerConfig_any(playersControllers, filename, anyDefKey, anyMap
             keyname = None
             if input.name in currentMapping:
                 keyname = currentMapping[input.name]
-            #else:
-            #    f.write("# undefined key: name="+input.name+", type="+input.type+", id="+str(input.id)+", value="+str(input.value)+"\n")
 
             # write the configuration for this key
             if keyname is not None:
                 write_key(f, keyname, input.type, input.id, input.value, pad.nbaxes, False, None)
+                if 'Triggers' in keyname and input.type == 'axis':
+                    write_key(f, keyname + '-Analog', input.type, input.id, input.value, pad.nbaxes, False, None)
             # write the 2nd part
             if input.name in { "joystick1up", "joystick1left", "joystick2up", "joystick2left"} and keyname is not None:
                 write_key(f, anyReverseAxes[keyname], input.type, input.id, input.value, pad.nbaxes, True, None)
