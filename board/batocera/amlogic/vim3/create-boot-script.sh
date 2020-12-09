@@ -25,8 +25,7 @@ cp "${BINARIES_DIR}/boot.scr"                          "${BATOCERA_BINARIES_DIR}
 cp "${BOARD_DIR}/boot/logo.bmp"                        "${BATOCERA_BINARIES_DIR}/boot/boot/"          || exit 1
 cp "${BOARD_DIR}/boot/extlinux.conf"                   "${BATOCERA_BINARIES_DIR}/boot/boot/extlinux/" || exit 1
 
-#dd if=${BINARIES_DIR}/u-boot.bin.sd.bin of=${BATOCERAIMG} conv=fsync,notrunc bs=512 skip=1 seek=1 || exit 1
-#dd if=${BINARIES_DIR}/u-boot.bin.sd.bin of=${BATOCERAIMG} conv=fsync,notrunc bs=1 count=444 || exit 1
-echo to be finished, uboot to be put in image
+dd if="${BINARIES_DIR}/u-boot.bin.sd.bin" of="${BINARIES_DIR}/u-boot1.bin" bs=1   count=444     || exit 1
+dd if="${BINARIES_DIR}/u-boot.bin.sd.bin" of="${BINARIES_DIR}/u-boot2.bin" bs=512 skip=1 seek=1 || exit 1
 
-exit 1
+exit 0
