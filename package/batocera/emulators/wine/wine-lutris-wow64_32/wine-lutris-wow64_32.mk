@@ -33,8 +33,8 @@ WINE_LUTRIS_WOW64_32_CONF_OPTS = \
 	--without-hal \
 	--without-opencl \
 	--without-oss \
-	--prefix=$(TARGET_DIR)/usr/wine/lutris \
-	--exec-prefix=$(TARGET_DIR)/usr/wine/lutris
+	--prefix=/usr/wine/lutris \
+	--exec-prefix=/usr/wine/lutris
 
 # batocera
 # gcrypt
