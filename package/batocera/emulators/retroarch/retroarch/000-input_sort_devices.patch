@@ -1,23 +1,68 @@
 diff --git a/input/drivers_joypad/udev_joypad.c b/input/drivers_joypad/udev_joypad.c
-index e60a8b2..03ba777 100644
+index 98bde28..9f221f4 100644
 --- a/input/drivers_joypad/udev_joypad.c
 +++ b/input/drivers_joypad/udev_joypad.c
-@@ -542,6 +542,14 @@ static void udev_joypad_poll(void)
+@@ -529,6 +529,59 @@ static void udev_joypad_poll(void)
     }
  }
  
++int isNumber(const char *s) {
++  int n;
++
++  if(strlen(s) == 0) {
++    return 0;
++  }
++
++  for(n=0; n<strlen(s); n++) {
++    if(!(s[n] == '0' || s[n] == '1' || s[n] == '2' || s[n] == '3' || s[n] == '4' ||
++	 s[n] == '5' || s[n] == '6' || s[n] == '7' || s[n] == '8' || s[n] == '9'))
++      return 0;
++  }
++  return 1;
++}
++
++// compare /dev/input/eventX and /dev/input/eventY where X and Y are numbers
++int strcmp_events(const char* x, const char* y) {
++
++  // find a common string
++  int n, common, is_number;
++  int a, b;
++
++  n=0;
++  while(x[n] == y[n] && x[n] != '\0' && y[n] != '\0') {
++    n++;
++  }
++  common = n;
++
++  // check if remaining string is a number
++  is_number = 1;
++  if(isNumber(x+common) == 0) is_number = 0;
++  if(isNumber(y+common) == 0) is_number = 0;
++
++  if(is_number == 1) {
++    a = atoi(x+common);
++    b = atoi(y+common);
++
++    if(a == b) return  0;
++    if(a < b)  return -1;
++    return 1;
++  } else {
++    return strcmp(x, y);
++  }
++}
++
 +/* Used for sorting devnodes to appear in the correct order */
 +static int sort_devnodes(const void *a, const void *b)
 +{
 +   const struct joypad_udev_entry *aa = (const struct joypad_udev_entry*)a;
 +   const struct joypad_udev_entry *bb = (const struct joypad_udev_entry*)b;
-+   return strcmp(aa->devnode, bb->devnode);
++   return strcmp_events(aa->devnode, bb->devnode);
 +}
 +
  static bool udev_joypad_init(void *data)
  {
     unsigned i;
-@@ -576,12 +584,32 @@ static bool udev_joypad_init(void *data)
+@@ -563,12 +616,32 @@ static bool udev_joypad_init(void *data)
     udev_enumerate_scan_devices(enumerate);
     devs = udev_enumerate_get_list_entry(enumerate);
  
