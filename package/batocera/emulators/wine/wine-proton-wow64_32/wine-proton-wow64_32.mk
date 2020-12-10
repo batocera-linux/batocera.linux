@@ -12,6 +12,13 @@ WINE_PROTON_WOW64_32_LICENSE_FILES = COPYING.LIB LICENSE
 WINE_PROTON_WOW64_32_DEPENDENCIES = host-bison host-flex host-wine-proton
 HOST_WINE_PROTON_WOW64_32_DEPENDENCIES = host-bison host-flex
 
+# That create folder for install
+define WINE_PROTON_CREATE_WINE_FOLDER
+	mkdir -p $(TARGET_DIR)/usr/wine/proton
+endef
+
+WINE_PROTON_PRE_CONFIGURE_HOOKS += WINE_PROTON_CREATE_WINE_FOLDER
+
 # Wine needs its own directory structure and tools for cross compiling
 WINE_PROTON_WOW64_32_CONF_OPTS = \
 	--with-wine-tools=../host-wine-proton-$(WINE_PROTON_WOW64_32_VERSION) \
@@ -26,7 +33,8 @@ WINE_PROTON_WOW64_32_CONF_OPTS = \
 	--without-hal \
 	--without-opencl \
 	--without-oss \
-	--prefix=$(TARGET_DIR)/usr/wine/proton
+	--prefix=$(TARGET_DIR)/usr/wine/proton \
+	--exec-prefix=$(TARGET_DIR)/usr/wine/proton
 
 # batocera
 # gcrypt

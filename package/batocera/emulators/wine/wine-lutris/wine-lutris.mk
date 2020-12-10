@@ -19,7 +19,13 @@ define WINE_LUTRIS_HOOK_CHECK_MONO
 	grep -E '^#define WINE_MONO_VERSION "'$(WINE_MONO_VERSION)'"$$' $(@D)/dlls/mscoree/mscoree_private.h
 endef
 
+# That create folder for install
+define WINE_LUTRIS_CREATE_WINE_FOLDER
+	mkdir -p $(TARGET_DIR)/usr/wine/lutris
+endef
+
 WINE_LUTRIS_PRE_CONFIGURE_HOOKS += WINE_LUTRIS_HOOK_CHECK_MONO
+WINE_LUTRIS_PRE_CONFIGURE_HOOKS += WINE_LUTRIS_CREATE_WINE_FOLDER
 
 # Wine needs its own directory structure and tools for cross compiling
 WINE_LUTRIS_CONF_OPTS = \
@@ -37,7 +43,8 @@ WINE_LUTRIS_CONF_OPTS = \
 	--without-oss \
 	--without-vkd3d \
 	--without-vulkan \
-	--prefix=$(TARGET_DIR)/usr/wine/lutris
+	--prefix=$(TARGET_DIR)/usr/wine/lutris \
+	--exec-prefix=$(TARGET_DIR)/usr/wine/lutris
 
 # batocera
 ifeq ($(BR2_x86_64),y)
