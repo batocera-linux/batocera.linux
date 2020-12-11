@@ -5,7 +5,7 @@ RUN="/usr/bin/rpi_gpioswitch"
 BTD_PID=$(pgrep -f "/bin/bash $RUN")
 
 #Add new devices here and modify /usr/bin/rpi_gpioswitch, too
-devices="ATX_RASPI_R2_6 REMOTEPIBOARD_2003 REMOTEPIBOARD_2005 MAUSBERRY WITTYPI ONOFFSHIM RETROFLAG \
+devices="ATX_RASPI_R2_6 REMOTEPIBOARD_2003 REMOTEPIBOARD_2005 MAUSBERRY ONOFFSHIM RETROFLAG \
          RETROFLAG_ADV RETROFLAG_GPI KINTARO PIN56ONOFF PIN56PUSH PIN356ONOFFRESET ARGONONE"
 
 # Read current config, if no key is set in batocera.conf then try to use
@@ -14,19 +14,10 @@ powerswitch="$(batocera-settings -r system.power.switch)"
 if [ $? -ne 0 ] && [ -f /var/run/powerswitch-by-udevrule ]; then
     powerswitch="$(cat /var/run/powerswitch-by-udevrule)"
 fi
-# Read if a GPIO joypad is needed (to init on selected archs)
-gpiopad="$(batocera-settings -r controllers.gpio.enabled)"
 
 # Carry out specific functions when asked to by the system
 case "$1" in
     start)
-        if [ "$gpiopad" == 1 ]; then
-            case $(cat /usr/share/batocera/batocera.arch) in
-                rpi4)
-                    /usr/bin/rpi-gpio-init
-                ;;
-            esac
-	fi
         for i in $devices; do
             if [ "$i" == "$powerswitch" ]; then
                 $RUN start "$powerswitch" &

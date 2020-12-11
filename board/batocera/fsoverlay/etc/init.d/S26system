@@ -1,48 +1,25 @@
 #!/bin/sh
 
 systemsetting="batocera-settings"
-config_script=batocera-config
+config_script="batocera-config"
 log="/userdata/system/logs/batocera.log"
 
-rb_gpio_configure() {
-    settings_gpio_mk="`$systemsetting -r controllers.gpio.enabled`"
-    if [ "$settings_gpio_mk" = "1" ]; then
-	settings_gpio_map="`$systemsetting -r controllers.gpio.args`"
-	[ "$settings_gpio_map" = "" ] && settings_gpio_map="map=1,2"
-        eval $config_script "module" "load" mk_arcade_joystick_rpi "$settings_gpio_map" >> $log
-    else
-	# mk disabled let's check for db9
-	settings_db9="`$systemsetting -r controllers.db9.enabled`"
-	if [ "$settings_db9" = "1" ]; then
-            settings_db9_map="`$systemsetting -r controllers.db9.args`"
-            eval $config_script "module" "load" db9_gpio_rpi "$settings_db9_map" >> $log
-	else
-	    # db9 and mk disabled let's check for gamecon
-            settings_gamecon="`$systemsetting -r controllers.gamecon.enabled`"
-            if [ "$settings_gamecon" = "1" ]; then
-                settings_gamecon_map="`$systemsetting -r controllers.gamecon.args`"
-                eval $config_script "module" "load" gamecon_gpio_rpi "$settings_gamecon_map" >> $log
-	    fi
-	fi
-    fi
-}
-
-rb_keyboad_lang() {
-    settings_lang="`$systemsetting -r system.language`"
-    settings_kb="`$systemsetting -r system.kblayout`"
+ba_keyboard_lang() {
+    settings_lang="$($systemsetting -r system.language)"
+    settings_kb="$($systemsetting -r system.kblayout)"
     if [ "$settings_kb" != "" ]; then
-	loadkeys "$settings_kb" >> $log
+        loadkeys "$settings_kb" >> $log
     else
-        keyboardmap=`echo "$settings_lang" | cut -c1-2`
-	if [ "$keyboardmap" != "" ]; then
+        keyboardmap=$(echo "$settings_lang" | cut -c1-2)
+        if [ "$keyboardmap" != "" ]; then
             loadkeys "$keyboardmap" >> $log
-	fi
+        fi
     fi
 }
 
-rb_xbox() {
-    settings_xbox="`$systemsetting -r controllers.xboxdrv.enabled`"
-    settings_xbox_nb="`$systemsetting -r controllers.xboxdrv.nbcontrols`"
+ba_xbox() {
+    settings_xbox="$($systemsetting -r controllers.xboxdrv.enabled)"
+    settings_xbox_nb="$($systemsetting -r controllers.xboxdrv.nbcontrols)"
     if [ "$settings_xbox" = "1" ]; then
         rmmod xpad
         if [ "$settings_xbox_nb" = "1" ]; then
@@ -57,24 +34,24 @@ rb_xbox() {
     fi
 }
 
-rb_timezone() {
-    settings_timezone="`$systemsetting -r system.timezone`"
+ba_timezone() {
+    settings_timezone="$($systemsetting -r system.timezone)"
     if [ "$settings_timezone" != "" ]; then
         eval $config_script "tz" "$settings_timezone" >> $log
     fi
 }
 
-rb_hostname() {
-    settings_hostname="`$systemsetting -r system.hostname`"
+ba_hostname() {
+    settings_hostname="$($systemsetting -r system.hostname)"
     if [ "$settings_hostname" != "" ]; then
         hostname "${settings_hostname}"
-	echo "127.0.0.1	localhost"             > /etc/hosts
-	echo "127.0.1.1	${settings_hostname}" >> /etc/hosts
+        echo "127.0.0.1	localhost"             > /etc/hosts
+        echo "127.0.1.1	${settings_hostname}" >> /etc/hosts
     fi
 }
 
-rb_xarcade2jstick() {
-    settings_xarcade="`$systemsetting -r controllers.xarcade.enabled`"
+ba_xarcade2jstick() {
+    settings_xarcade="$($systemsetting -r controllers.xarcade.enabled)"
     if [ "$settings_xarcade" = "1" ]; then
         # First try : suppose a real X-Arcade is plugged
         /usr/bin/xarcade2jstick -d
@@ -96,23 +73,21 @@ ba_es_core_dump() {
 
 case "$1" in
   start)
-	# Dos carriage return characters
-	sed -i 's/\r//g' /userdata/system/batocera.conf
+    # Remove carriage return characters from Windows files
+    dos2unix /userdata/system/batocera.conf
 
-	# configure
-	rb_gpio_configure&    # 0.9 start by the gpio while it's the longer
-	rb_keyboad_lang&      # 0.7
-	rb_xbox&              # 0.6
-	rb_timezone&          # 0.4
-	rb_hostname&          # 0.4
-	rb_xarcade2jstick&    # 0.1
-	ba_es_core_dump&
-	wait
-	;;
+    # configure
+    ba_keyboard_lang &
+    ba_xbox &
+    ba_timezone &
+    ba_hostname &
+    ba_xarcade2jstick &
+    ba_es_core_dump &
+    ;;
   stop)
-	;;
+    ;;
   restart|reload)
-	;;
+    ;;
   *)
 esac
 
