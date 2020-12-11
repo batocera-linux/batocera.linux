@@ -101,14 +101,3 @@ then
 	"${BR2_EXTERNAL_BATOCERA_PATH}"/board/batocera/scripts/doPcsx2package.sh "${TARGET_DIR}" "${BINARIES_DIR}/pcsx2" "${BATOCERA_BINARIES_DIR}" || exit 1
 fi
 
-#### wine package
-if grep -qE "^BR2_PACKAGE_WINE_LUTRIS=y$" "${BR2_CONFIG}"
-then
-	if grep -qE "^BR2_x86_i686=y$" "${BR2_CONFIG}"
-	then
-		echo "building the wine package..."
-		"${BR2_EXTERNAL_BATOCERA_PATH}"/board/batocera/scripts/doWinepackage.sh "${TARGET_DIR}" "${BINARIES_DIR}/wine" "${BATOCERA_BINARIES_DIR}" || exit 1
-	fi
-fi
-
-exit 0

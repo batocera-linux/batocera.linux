@@ -83,18 +83,6 @@ if ! mkdir -p "${TMPOUT}/lib32"
 then
     exit 1
 fi
-if ! mkdir -p "${TMPOUT}/lib32/wine"
-then
-    exit 1
-fi
-if ! mkdir -p "${TMPOUT}/lib32/wine/lutris"
-then
-    exit 1
-fi
-if ! mkdir -p "${TMPOUT}/lib32/wine/proton"
-then
-    exit 1
-fi
 if ! mkdir -p "${TMPOUT}/lib32/gstreamer-1.0"
 then
     exit 1
@@ -120,10 +108,6 @@ fi
 # "${G_TARGETDIR}/usr/lib/"*.so \
 echo "libs..."
 #cp -p  "${G_TARGETDIR}/usr/lib/"* "${TMPOUT}/lib32" 2>/dev/null
-cp -pr "${G_TARGETDIR}/usr/wine/lutris/lib/"* "${TMPOUT}/lib32/wine/lutris" || exit 1
-cp -pr "${G_TARGETDIR}/usr/wine/proton/lib/"* "${TMPOUT}/lib32/wine/proton" || exit 1
-cp -pr "${G_TARGETDIR}/usr/wine/lutris/lib/wine/"* "${TMPOUT}/lib32/wine/lutris" || exit 1
-cp -pr "${G_TARGETDIR}/usr/wine/proton/lib/wine/"* "${TMPOUT}/lib32/wine/proton" || exit 1
 cp -pr "${G_TARGETDIR}/usr/lib/gstreamer-1.0/"* "${TMPOUT}/lib32/gstreamer-1.0" || exit 1
 #cp -pr "${G_TARGETDIR}/usr/lib/pulseaudio/"* "${TMPOUT}/lib32/pulseaudio" || exit 1
 cp -pr "${G_TARGETDIR}/usr/share/gst-plugins-base/"* "${TMPOUT}/usr/share/gst-plugins-base" || exit 1
@@ -166,14 +150,16 @@ cp -pr "${G_TARGETDIR}/usr/lib/libmpg123"*"so"*  "${TMPOUT}/lib32/" || exit 1
 cp -pr "${G_TARGETDIR}/usr/lib/lib"*"krb5"*"so"*  "${TMPOUT}/lib32/" || exit 1
 cp -pr "${G_TARGETDIR}/lib/libnss_"*"so"*  "${TMPOUT}/lib32/" || exit 1
 
-# binaries
-echo "binaries..."
-mkdir -p "${TMPOUT}/usr/bin32/lutris"                         || exit 1
-mkdir -p "${TMPOUT}/usr/bin32/proton"                         || exit 1
-echo " wine binaries"
+# installation
+echo "wine installation..."
+mkdir -p "${TMPOUT}/usr/wine/lutris"                         || exit 1
+mkdir -p "${TMPOUT}/usr/wine/proton"                         || exit 1
+cp -pr "${G_TARGETDIR}/usr/wine/lutris" "${TMPOUT}/usr/wine/" || exit 1
+cp -pr "${G_TARGETDIR}/usr/wine/proton" "${TMPOUT}/usr/wine/" || exit 1
+# helper bins
+echo " wine helper binaries"
+mkdir -p "${TMPOUT}/usr/bin32"				|| exit 1
 #cp -p "${G_TARGETDIR}/usr/bin/cabextract"          "${TMPOUT}/usr/bin32/" || exit 1
-cp -p "${G_TARGETDIR}/usr/wine/lutris/bin/wine"*    "${TMPOUT}/usr/bin32/lutris/" || exit 1
-cp -p "${G_TARGETDIR}/usr/wine/proton/bin/wine"*    "${TMPOUT}/usr/bin32/proton/" || exit 1
 cp -p "${G_TARGETDIR}/usr/bin/gst"*          "${TMPOUT}/usr/bin32/" || exit 1
 
 # dri
@@ -193,18 +179,6 @@ done
 mkdir -p "${TMPOUT}/usr/share/vulkan" || exit 1
 cp -pr "${G_TARGETDIR}/usr/share/vulkan/icd.d" "${TMPOUT}/usr/share/vulkan/" || exit 1
 sed -i -e s+"\"/usr/lib/"+"\"/lib32/"+ "${TMPOUT}/usr/share/vulkan/icd.d/"*.json || exit 1
-
-# fakedll
-echo "fakedll..."
-cp -pr "${G_TARGETDIR}/usr/wine/lutris/lib/wine/fakedlls" "${TMPOUT}/lib32/wine/lutris/" || exit 1
-cp -pr "${G_TARGETDIR}/usr/wine/proton/lib/wine/fakedlls" "${TMPOUT}/lib32/wine/proton/" || exit 1
-
-# shared data
-echo "nls..."
-mkdir -p "${TMPOUT}/share/wine/lutris" || exit 1
-mkdir -p "${TMPOUT}/share/wine/proton" || exit 1
-cp -pr "${G_TARGETDIR}/usr/wine/lutris/share" "${TMPOUT}/share/wine/lutris/" || exit 1
-cp -pr "${G_TARGETDIR}/usr/wine/proton/share" "${TMPOUT}/share/wine/proton/" || exit 1
 
 # ld
 echo "ld..."
