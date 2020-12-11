@@ -23,7 +23,6 @@ WINE_PROTON_PRE_CONFIGURE_HOOKS += WINE_PROTON_CREATE_WINE_FOLDER
 WINE_PROTON_WOW64_32_CONF_OPTS = \
 	--with-wine-tools=../host-wine-proton-$(WINE_PROTON_WOW64_32_VERSION) \
 	--disable-tests \
-	--with-wine64=/build/output/images/wow64_32_part64 \
 	--without-capi \
 	--without-coreaudio \
 	--without-gettext \
@@ -35,6 +34,9 @@ WINE_PROTON_WOW64_32_CONF_OPTS = \
 	--without-oss \
 	--prefix=/usr/wine/proton \
 	--exec-prefix=/usr/wine/proton
+
+	# breaks build ??
+	# --with-wine64=/build/output/images/wow64_32_part64/
 
 # batocera
 # gcrypt
