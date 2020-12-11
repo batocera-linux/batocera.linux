@@ -404,7 +404,7 @@ libretro:
       features: [         rewind, autosave]
     vecx:
       features: [         rewind, autosave]
-    vice:
+    vice_x64:
       features: [         rewind, autosave, padtokeyboard]
       cfeatures:
             external_palette:
@@ -439,6 +439,14 @@ libretro:
                     "small":            small
                     "medium":           medium
                     "maximum":          maximum
+    vice_x64sc:
+      features: [         rewind, autosave, padtokeyboard]
+    vice_xplus4:
+      features: [         rewind, autosave, padtokeyboard]
+    vice_x128:
+      features: [         rewind, autosave, padtokeyboard]
+    vice_xvic:
+      features: [         rewind, autosave, padtokeyboard]
     virtualjaguar:
       features: [padtokeyboard]
     yabasanshiro:

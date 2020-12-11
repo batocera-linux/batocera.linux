@@ -20,12 +20,14 @@ c64:
   platform:   c64
   emulators:
     vice:
-      x64:      { requireAnyOf: [BR2_PACKAGE_VICE]          }
-      x64dtv:   { requireAnyOf: [BR2_PACKAGE_VICE]          }
-      xscpu64:  { requireAnyOf: [BR2_PACKAGE_VICE]          }
-      xplus4:   { requireAnyOf: [BR2_PACKAGE_VICE]          }
+      x64:         { requireAnyOf: [BR2_PACKAGE_VICE]          }
+      x64dtv:      { requireAnyOf: [BR2_PACKAGE_VICE]          }
+      xscpu64:     { requireAnyOf: [BR2_PACKAGE_VICE]          }
+      xplus4:      { requireAnyOf: [BR2_PACKAGE_VICE]          }
     libretro:
-      vice:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_VICE] }
+      vice_x64:    { requireAnyOf: [BR2_PACKAGE_LIBRETRO_VICE] }
+      vice_x64sc:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_VICE] }
+      vice_xplus4: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_VICE] }
 
 c128:
   name:       Commodore 128
@@ -36,7 +38,9 @@ c128:
   platform:   c64
   emulators:
     vice:
-      x128:     { requireAnyOf: [BR2_PACKAGE_VICE] }
+      x128:          { requireAnyOf: [BR2_PACKAGE_VICE] }
+    libretro:
+      vice_x128:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_VICE] }
 
 c20:
   name:       Commodore VIC-20
@@ -47,7 +51,9 @@ c20:
   platform:   c64
   emulators:
     vice:
-      xvic:     { requireAnyOf: [BR2_PACKAGE_VICE] }
+      xvic:       { requireAnyOf: [BR2_PACKAGE_VICE] }
+    libretro:
+      vice_xvic: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_VICE] }
 
 amiga500:
   name:       Amiga OCS/ECS
