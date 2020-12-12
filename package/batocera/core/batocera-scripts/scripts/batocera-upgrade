@@ -21,14 +21,15 @@ getPer() {
 }
 
 do_versioncheck() {
-    echo "$1" | awk '{ $0=$(NF-1)$NF; gsub(/[^0-9]/,""); print }'
+    echo "$1" | awk '{ $0=$(NF-1)$NF; gsub(/[^0-9]/,""); print }' 2>/dev/null
 }
 
 do_wannaupdate() {
     local text; local to
     CUR_VER=$(cat /usr/share/batocera/batocera.version)
-    NET_VER=$(wget -q -O - "${DWD_HTTP_DIR}/batocera.version" | head -n1)
-    [ $? -ne 0 ] && return #Possible an update URL which is not valid 
+    NET_VER=$(wget -q -O - "${DWD_HTTP_DIR}/batocera.version")
+    [ $? -ne 0 ] && { echo "Something went wrong..."; return; } #Possible an update URL which is not valid
+    NET_VER=$(echo "$NET_VER" | head -n1)
     echo "Current Version installed:    $CUR_VER"
     echo "Version you want to download: $NET_VER"
     CUR_VER=$(do_versioncheck "$CUR_VER")
@@ -74,9 +75,6 @@ test -n "${settingsupdateurl}" && updateurl="${settingsupdateurl}"
 # force a default value in case the value is removed or miswritten
 test "${updatetype}" != "stable" -a "${updatetype}" != "unstable" -a "${updatetype}" != "beta" && updatetype="stable"
 
-# download directory
-mkdir -p /userdata/system/upgrade || exit 1
-
 # custom the url directory
 DWD_HTTP_DIR="${updateurl}/${arch}/${updatetype}/last"
 
@@ -110,8 +108,8 @@ do
     test $? -eq 0 || exit 1
     if test "${size}" -gt "${freespace}"
     then
-	echo "Not enough space on ${fs} to download the update"
-	exit 1
+        echo "Not enough space on ${fs} to download the update"
+        exit 1
     fi
 done
 
@@ -123,7 +121,6 @@ if [ $TERMINAL = 0 ]; then
     touch "/userdata/system/upgrade/boot.tar.xz"
     getPer "${size}" &
     GETPERPID=$!
-    mkdir -p "/userdata/system/upgrade" || exit 1
     curl -A "batocera-upgrade" -sfL "${url}" -o "/userdata/system/upgrade/boot.tar.xz" || exit 1
     kill -9 "${GETPERPID}"
     GETPERPID=
@@ -140,10 +137,10 @@ then
     CURRMD5=$(md5sum "/userdata/system/upgrade/boot.tar.xz" | sed -e s+' .*$'++)
     if test "${DISTMD5}" = "${CURRMD5}"
     then
-	echo "valid checksum."
+        echo "valid checksum."
     else
-	echo "invalid checksum. Got +${DISTMD5}+. Attempted +${CURRMD5}+."
-	exit 1
+        echo "invalid checksum. Got +${DISTMD5}+. Attempted +${CURRMD5}+."
+        exit 1
     fi
 else
     echo "no checksum found. don't check the file."
@@ -165,10 +162,10 @@ for BOOTFILE in ${BOOTFILES}
 do
     if test -e "/boot/${BOOTFILE}"
     then
-	if ! cp "/boot/${BOOTFILE}" "/boot/${BOOTFILE}.upgrade"
-	then
-	    exit 1
-	fi
+        if ! cp "/boot/${BOOTFILE}" "/boot/${BOOTFILE}.upgrade"
+        then
+            exit 1
+        fi
     fi
 done
 
@@ -184,10 +181,10 @@ for BOOTFILE in ${BOOTFILES}
 do
     if test -e "/boot/${BOOTFILE}.upgrade"
     then
-	if ! mv "/boot/${BOOTFILE}.upgrade" "/boot/${BOOTFILE}"
-	then
-	    echo "Outch" >&2
-	fi
+        if ! mv "/boot/${BOOTFILE}.upgrade" "/boot/${BOOTFILE}"
+        then
+            echo "Outch" >&2
+        fi
     fi
 done
 
@@ -204,5 +201,5 @@ rm -f "/userdata/system/upgrade/boot.tar.xz"
 rm -f "/userdata/system/upgrade/boot.tar.xz.md5"
 sync
 
-echo; echo "Done. Please reboot the sytem so that the changes take effect !"
+echo; echo "Done. Please reboot the system so that the changes take effect!"
 exit 0
