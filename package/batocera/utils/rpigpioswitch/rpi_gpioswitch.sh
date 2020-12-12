@@ -390,15 +390,10 @@ case "$CONFVALUE" in
     "REMOTEPIBOARD_2005")
         msldigital_$1 14
     ;;
-    "PIN56ONOFF")
-        pin56_$1 onoff
-    ;;
-    "PIN56PUSH")
-        echo "will start pin56_$1"
-        pin56_$1 push
+    "PIN56PUSH"|"PIN56ONOFF")
+        pin56_$1
     ;;
     "PIN356ONOFFRESET")
-        echo "will start pin356_$1"
         pin356_$1 noparam
     ;;
     "RETROFLAG")
@@ -430,12 +425,12 @@ case "$CONFVALUE" in
     ;;
     --HELP|*)
         [[ $CONFVALUE == "--HELP" ]] || echo "Wrong argument given to 'start' or 'stop' parameter"
+        echo "Try: $(basename "$0") {start|stop} <value>"
         echo
-        echo "Try: rpi_gpioswitch.sh [start|stop] [value]"
+        echo -e -n "Valid values are:\t"
+        for i in $(seq 1 2 ${#powerdevices[@]}); do
+            echo -e -n "${powerdevices[i-1]}\n\t\t\t"
+        done
         echo
-        echo "Valid values are: REMOTEPIBOARD_2003, REMOTEPIBOARD_2005
-                  ATX_RASPI_R2_6, MAUSBERRY, ONOFFSHIM, RETROFLAG, RETROFLAG_GPI
-                  PIN56ONOFF, PIN56PUSH, PIN356ONOFFRESET, KINTARO, ARGONONE"
-        exit 1
     ;;
 esac

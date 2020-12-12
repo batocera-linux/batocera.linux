@@ -1,6 +1,5 @@
-#!/bin/bash
+#!/bin/sh
 
-NAME="S92switch"
 RUN="/usr/bin/rpi_gpioswitch"
 BTD_PID=$(pgrep -f "/bin/bash $RUN")
 
@@ -19,7 +18,7 @@ fi
 case "$1" in
     start)
         for i in $devices; do
-            if [ "$i" == "$powerswitch" ]; then
+            if [ "$i" = "$powerswitch" ]; then
                 $RUN start "$powerswitch" &
                 break
             fi
