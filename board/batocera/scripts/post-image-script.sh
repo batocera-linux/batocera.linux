@@ -28,10 +28,12 @@ if echo "${BATOCERA_IMAGES_TARGETS}" | grep -qE '^[^ ]*$'
 then
     # single board directory
     COMMON_PARENT_DIR=${BATOCERA_IMAGES_TARGETS}
+    IMGMODE=single
 else
     # when there are several one, the first one is the common directory where to find the create-boot-script.sh directory
     COMMON_PARENT_DIR=$(echo "${BATOCERA_IMAGES_TARGETS}" | cut -d ' ' -f 1)
     BATOCERA_IMAGES_TARGETS=$(echo "${BATOCERA_IMAGES_TARGETS}" | cut -d ' ' -f 2-)
+    IMGMODE=multi
 fi
 
 #### clean the (previous if exists) target directory ###
@@ -58,11 +60,11 @@ SUFFIXDATE=$(date +%Y%m%d)
 # rename the squashfs : the .update is the version that will be renamed at boot to replace the old version
 mv "${BATOCERA_BINARIES_DIR}/boot/boot/batocera.update" "${BATOCERA_BINARIES_DIR}/boot/boot/batocera" || exit 1
 
-#### buld the images ###########
+#### build the images ###########
 for BATOCERA_PATHSUBTARGET in ${BATOCERA_IMAGES_TARGETS}
 do
     BATOCERA_SUBTARGET=$(basename "${BATOCERA_PATHSUBTARGET}")
-    if test "${BATOCERA_LOWER_TARGET}" != "${BATOCERA_SUBTARGET}"
+    if test "${IMGMODE}" = "multi"
     then
 	BATOCERAIMG="${BATOCERA_BINARIES_DIR}/images/batocera-${BATOCERA_LOWER_TARGET}-${BATOCERA_SUBTARGET}-${SUFFIXVERSION}-${SUFFIXDATE}.img"
     else
