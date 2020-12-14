@@ -5,8 +5,8 @@ config_script="batocera-config"
 log="/userdata/system/logs/batocera.log"
 
 ba_keyboard_lang() {
-    settings_lang="$($systemsetting -r system.language)"
-    settings_kb="$($systemsetting -r system.kblayout)"
+    settings_lang="$($systemsetting -r system.language || echo 'en_US')"
+    settings_kb="$($systemsetting -r system.kblayout || echo 'us')"
     if [ "$settings_kb" != "" ]; then
         loadkeys "$settings_kb" >> $log
     else
