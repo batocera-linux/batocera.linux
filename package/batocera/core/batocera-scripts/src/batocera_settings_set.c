@@ -59,7 +59,10 @@ static struct batocera_settings_set_result_t batocera_settings_set_sized(
     }
 
     const bool commented = *key_begin == '#';
-    if (commented) ++key_begin;
+    if (commented) {
+      ++key_begin;
+      key_begin = skip_leading_whitespace(key_begin, line_end);
+    }
     if (key_begin == line_end) {
       batocera_stringbuf_append_line(&out, line_begin, line_end - line_begin);
       continue;
