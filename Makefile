@@ -143,7 +143,7 @@ dl-dir:
 
 %-flash: %-supported
 	$(if $(DEV),,$(error "DEV not specified!"))
-	@gzip -dc $(OUTPUT_DIR)/$*/images/batocera/batocera-*.img.gz | sudo dd of=$(DEV) bs=5M status=progress
+	@gzip -dc $(OUTPUT_DIR)/$*/images/batocera/images/batocera-*.img.gz | sudo dd of=$(DEV) bs=5M status=progress
 	@sync
 
 %-upgrade: %-supported
