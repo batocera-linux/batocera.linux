@@ -48,14 +48,13 @@ int main(int argc, char *argv[]) {
     free(result.error);
     goto get_failed;
   } else if (result.value == NULL) {
-    const char message[] = "not found\n";
-    fwrite(message, sizeof(char), sizeof(message), stderr);
+    // Key not found.
     goto get_failed;
   }
 
   fwrite(result.value, sizeof(char), result.value_size, stdout);
-  fputc('\n', stderr);
-  if (ferror(stderr)) goto get_failed;
+  fputc('\n', stdout);
+  if (ferror(stdout)) goto get_failed;
 
   free(config_contents);
   return EXIT_SUCCESS;
