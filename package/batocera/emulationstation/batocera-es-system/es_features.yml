@@ -1872,21 +1872,21 @@ amiberry:
 cannonball:
   features: [ratio]
   cfeatures:
-    highResolution:
-      prompt: HIGH RESOLUTION
-      label:  Increase video to Hi Resolution
-      choices:
-        "Off": 0
-        "On":  1
+        highResolution:
+            prompt: HIGH RESOLUTION
+            label:  Increase video to Hi Resolution
+            choices:
+                "Off": 0
+                "On":  1
 cemu:
   features: [emulated_wiimotes]
   cfeatures:
-    gfxbackend:
-      prompt: GRAPHICS BACKEND
-      label:  Choose your graphics rendering
-      choices:
-        OpenGL: OpenGL
-        Vulkan: Vulkan
+        gfxbackend:
+            prompt: GRAPHICS BACKEND
+            label:  Choose your graphics rendering
+            choices:
+                "OpenGL": OpenGL
+                "Vulkan": Vulkan
 
 citra:
   features: [ratio, rewind, screen_layout]
@@ -2096,18 +2096,18 @@ reicast:
 rpcs3:
   features: []
   cfeatures:
-    gui:
-      prompt: GRAPHICAL USER INTERFACE
-      label:  Display the user interface
-      choices:
-        "Off":      0
-        "On":       1
-    gfxbackend:
-      prompt: GRAPHICS BACKEND
-      label:  Choose your graphics rendering
-      choices:
-        "OpenGL":   OpenGL
-        "Vulkan":   Vulkan
+        gui:
+            prompt: GRAPHICAL USER INTERFACE
+            label:  Display the user interface
+            choices:
+                "Off":      0
+                "On":       1
+        gfxbackend:
+            prompt: GRAPHICS BACKEND
+            label:  Choose your graphics rendering
+            choices:
+                "OpenGL":   OpenGL
+                "Vulkan":   Vulkan
 
 scummvm:
   features: [ratio, padtokeyboard]
@@ -2118,78 +2118,78 @@ vice:
 mame:
   features: []
   cfeatures:
-    video:
-      prompt: GRAPHICS BACKEND
-      label:  Choose your graphics rendering
-      choices:
-        "BGFX":          bgfx
-        "Accel":         accel
-        "OpenGL":        opengl
-    bgfxbackend:
-      archs_include: [x86, x86_64, rpi4]
-      prompt: BGFX BACKEND
-      label:  Choose your graphics API
-      choices:
-        "Automatic"      auto
-        "OpenGL":        opengl
-        "OpenGLES":      gles
-        "Vulkan":        vulkan
-    rotation:
-      prompt: TATE MODE
-      label:  Rotating display to vertical mode rendering
-      choices:
-        "Disabled":      null
-        "Rotate 90":     autoror
-        "Rotate 270":    autorol
-    bgfxshaders:
-      prompt: VIDEO FILTER
-      label:  Apply to achieve some kind of visual effect
-      choices:
-        "None":          null
-        "CrtGeom":       crt-geom
-        "CrtGeomDeluxe": crt-geom-deluxe
-        "SuperEagle":    eagle
-        "HLSL":          hlsl
-        "HQ2X":          hq2x
-        "HQ3X":          hq3x
-        "HQ4X":          hq4x
+        video:
+            prompt: GRAPHICS BACKEND
+            label:  Choose your graphics rendering
+            choices:
+                "BGFX":          bgfx
+                "Accel":         accel
+                "OpenGL":        opengl
+        bgfxbackend:
+            archs_include: [x86, x86_64, rpi4]
+            prompt: BGFX BACKEND
+            label:  Choose your graphics API
+            choices:
+                "Automatic":     auto
+                "OpenGL":        opengl
+                "OpenGLES":      gles
+                "Vulkan":        vulkan
+        rotation:
+            prompt: TATE MODE
+            label:  Rotating display to vertical mode rendering
+            choices:
+                "Disabled":      null
+                "Rotate 90":     autoror
+                "Rotate 270":    autorol
+        bgfxshaders:
+            prompt: VIDEO FILTER
+            label:  Apply to achieve some kind of visual effect
+            choices:
+                "None":          null
+                "CrtGeom":       crt-geom
+                "CrtGeomDeluxe": crt-geom-deluxe
+                "SuperEagle":    eagle
+                "HLSL":          hlsl
+                "HQ2X":          hq2x
+                "HQ3X":          hq3x
+                "HQ4X":          hq4x
 
 wine:
   features: [padtokeyboard]
   cfeatures:
-    dxvk:
-      prompt: DXVK
-      label:  Direct-X to Vulkan
-      choices:
-        "Off": 0
-        "On":  1
-    dxvk_hud:
-      prompt: DXVK HUD
-      label:  Show information overlay
-      choices:
-        "Off": 0
-        "On":  1
-    esync:
-      prompt: ESYNC
-      label:  ESync
-      choices:
-        "Off": 0
-        "On":  1
-    fsync:
-      prompt: FSYNC
-      label:  FSync
-      choices:
-        "Off": 0
-        "On":  1
-    pba:
-      prompt: PBA
-      label:  Persistent Buffer Allocator
-      choices:
-        "Off": 0
-        "On":  1
-    virtual_desktop:
-      prompt: VIRTUAL DESKTOP
-      label:  Using a virtual desktop to fix the resolution
-      choices:
-        "Off": 0
-        "On":  1
+        dxvk:
+            prompt: DXVK
+            label:  Converts the DirectX calls from 9 to 12 in Vulkan
+            choices:
+                "Off": 0
+                "On":  1
+        dxvk_hud:
+            prompt: DXVK HUD
+            label:  See your FPS and version of Vulkan API and Driver
+            choices:
+                "Off": 0
+                "On":  1
+        esync:
+            prompt: ESYNC
+            label:  Can increase performance for games that stress CPU
+            choices:
+                "Off": 0
+                "On":  1
+        fsync:
+            prompt: FSYNC
+            label:  Can improving frame rates and responsiveness
+            choices:
+                "Off": 0
+                "On":  1
+        pba:
+            prompt: PBA
+            label:  Vastly improving the speed of buffer maps
+            choices:
+                "Off": 0
+                "On":  1
+        virtual_desktop:
+            prompt: VIRTUAL DESKTOP
+            label:  Define the resolution and a new dedicated window
+            choices:
+                "Off": 0
+                "On":  1
