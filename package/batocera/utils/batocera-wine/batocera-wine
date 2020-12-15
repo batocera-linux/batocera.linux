@@ -5,8 +5,13 @@ set -x
 ACTION=$1
 shift
 
+## Wine detection
+GAMENAME=$1 
+ROMGAMENAME=$(basename "${GAMENAME}")
+WINE_VERSION=$(batocera-settings -e -r core -s windows -g "${ROMGAMENAME}") || WINE_VERSION=$(batocera-settings -e -r core -s windows)
+if [ -z "${WINE_VERSION}" ]; then WINE_VERSION=proton; fi
+
 ## Wine executables
-WINE_VERSION=$(batocera-settings -e -r core -s windows -g "${ROMGAMENAME}") || export WINE_VERSION=proton
 DIR="/usr/wine"
 WINE="${DIR}/${WINE_VERSION}/bin/wine"
 WINE64="${DIR}/${WINE_VERSION}/bin/wine64"
