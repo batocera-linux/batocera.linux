@@ -23,7 +23,7 @@ cp "${BINARIES_DIR}/rootfs.squashfs" "${BATOCERA_BINARIES_DIR}/boot/boot/batocer
 
 cp "${BOARD_DIR}/boot/boot-logo.bmp.gz" "${BATOCERA_BINARIES_DIR}/boot/" || exit 1
 cp "${BOARD_DIR}/boot/README.txt"       "${BATOCERA_BINARIES_DIR}/boot/" || exit 1
-for DTB in gxbb_p200_2G.dtb  gxbb_p200.dtb  gxl_p212_1g.dtb  gxl_p212_2g.dtb all_merged.dtb
+for DTB in meson-gxl-s905d-p230.dtb meson-gxl-s905d-p231.dtb meson-gxl-s905w-p281.dtb meson-gxl-s905w-tx3-mini.dtb meson-gxl-s905x-p212.dtb
 do
 	cp "${BINARIES_DIR}/${DTB}" "${BATOCERA_BINARIES_DIR}/boot/boot/" || exit 1
 done

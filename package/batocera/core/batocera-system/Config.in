@@ -255,7 +255,8 @@ config BR2_TARGET_BATOCERA_IMAGES_DEFINITIONS
 	default "amlogic/odroidc2"     	      if BR2_PACKAGE_BATOCERA_TARGET_ODROIDC2
 	default "amlogic/odroidc4"     	      if BR2_PACKAGE_BATOCERA_TARGET_ODROIDC4
         default "amlogic/odroidn2"     	      if BR2_PACKAGE_BATOCERA_TARGET_ODROIDN2
-	default "amlogic/s912"         	      if BR2_PACKAGE_BATOCERA_TARGET_S912
+	default "amlogic/s905"         	      if BR2_PACKAGE_BATOCERA_TARGET_S905
+	default "amlogic/s912"                if BR2_PACKAGE_BATOCERA_TARGET_S912
         default "amlogic/vim3"         	      if BR2_PACKAGE_BATOCERA_TARGET_VIM3
 	default "raspberrypi/rpi"      	      if BR2_PACKAGE_BATOCERA_TARGET_RPI1
 	default "raspberrypi/rpi"      	      if BR2_PACKAGE_BATOCERA_TARGET_RPI2
@@ -397,7 +398,8 @@ config BR2_PACKAGE_BATOCERA_ALL_SYSTEMS
 
         select BR2_PACKAGE_PPSSPP15             if BR2_PACKAGE_BATOCERA_TARGET_RPI3 # psp
 
-        select BR2_PACKAGE_AMIBERRY             if !BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
+        select BR2_PACKAGE_AMIBERRY             if !BR2_PACKAGE_BATOCERA_TARGET_X86_ANY && \
+						   !BR2_PACKAGE_BATOCERA_TARGET_S905
                                                    # amiga
 
         select BR2_PACKAGE_FSUAE                if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
@@ -501,7 +503,8 @@ config BR2_PACKAGE_BATOCERA_RETROARCH
 
         select BR2_PACKAGE_LIBRETRO_FLYCAST           if !BR2_PACKAGE_BATOCERA_TARGET_RPI1    && \
                                                          !BR2_PACKAGE_BATOCERA_TARGET_RPI2    && \
-							 !BR2_PACKAGE_BATOCERA_TARGET_X86
+							 !BR2_PACKAGE_BATOCERA_TARGET_X86     && \
+							 !BR2_PACKAGE_BATOCERA_TARGET_S905 
                                                                                      # FLYCAST
 
         select BR2_PACKAGE_LIBRETRO_BSNES             if BR2_PACKAGE_BATOCERA_TARGET_X86_64 # BSNES
