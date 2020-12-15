@@ -500,12 +500,12 @@ dolphin:
             prompt: HIRES TEXTURES
             choices:
                 "Off": 0
-                "On":  1                
+                "On":  1
         widescreen_hack:
             prompt: WIDESCREEN HACK
             choices:
                 "Off": 0
-                "On":  1  
+                "On":  1
         enable_cheats:
             prompt: ENABLE CHEATS
             choices:
@@ -532,6 +532,21 @@ dolphin:
             choices:
                 "OpenGL": OGL
                 "Vulkan": Vulkan
+        dsmotion:
+            prompt: DUALSHOCK MOTION
+            choices:
+                "Off": 0
+                "On":  1
+        rumble:
+            prompt: RUMBLE
+            choices:
+                "Off": 0
+                "On":  1
+        mouseir:
+            prompt: USE MOUSE AS IR
+            choices:
+                "Off": 0
+                "On":  1
 
   systems:
     wii:
