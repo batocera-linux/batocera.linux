@@ -3,7 +3,7 @@
 # Batocera splash
 #
 ################################################################################
-BATOCERA_SPLASH_VERSION = 2.0
+BATOCERA_SPLASH_VERSION = 3
 BATOCERA_SPLASH_SOURCE=
 
 BATOCERA_SPLASH_TGVERSION=$(BATOCERA_SYSTEM_VERSION) $(BATOCERA_SYSTEM_DATE_TIME)

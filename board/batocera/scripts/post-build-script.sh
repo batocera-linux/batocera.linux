@@ -12,7 +12,7 @@ BATOCERA_TARGET=$(grep -E "^BR2_PACKAGE_BATOCERA_TARGET_[A-Z_0-9]*=y$" "${BR2_CO
 # For the root user:
 # 1. Use Bash instead of Dash for interactive use.
 # 2. Set home directory to /userdata/system instead of /root.
-sed -i "s|root:x:0:0:root:/root:/bin/dash|root:x:0:0:root:/userdata/system:/bin/bash|g" "${TARGET_DIR}/etc/passwd" || exit 1
+sed -i "s|root:x:0:0:root:/root:/bin/sh|root:x:0:0:root:/userdata/system:/bin/bash|g" "${TARGET_DIR}/etc/passwd" || exit 1
 
 rm -rf "${TARGET_DIR}/etc/dropbear" || exit 1
 ln -sf "/userdata/system/ssh" "${TARGET_DIR}/etc/dropbear" || exit 1
@@ -107,9 +107,9 @@ mkdir -p "${TARGET_DIR}/usr/share/batocera/datainit/bios" || exit 1
 python "${BR2_EXTERNAL_BATOCERA_PATH}/package/batocera/core/batocera-scripts/scripts/batocera-systems" --createReadme > "${TARGET_DIR}/usr/share/batocera/datainit/bios/readme.txt" || exit 1
 
 # enable serial console
-if ! [[ -z "${BR2_TARGET_GENERIC_GETTY_PORT}" ]]; then
-	SYSTEM_GETTY_PORT=$(grep "BR2_TARGET_GENERIC_GETTY_PORT" "${BR2_CONFIG}" | sed 's/.*\"\(.*\)\"/\1/')
-	SYSTEM_GETTY_BAUDRATE=$(grep -E "^BR2_TARGET_GENERIC_GETTY_BAUDRATE_[0-9]*=y$" "${BR2_CONFIG}" | sed -e s+'^BR2_TARGET_GENERIC_GETTY_BAUDRATE_\([0-9]*\)=y$'+'\1'+)
-sed -i -e '/# GENERIC_SERIAL$/s~^.*#~S0::respawn:/sbin/getty -L '${SYSTEM_GETTY_PORT}' '${SYSTEM_GETTY_BAUDRATE}' vt100 #~' \
-    ${TARGET_DIR}/etc/inittab
+SYSTEM_GETTY_PORT=$(grep "BR2_TARGET_GENERIC_GETTY_PORT" "${BR2_CONFIG}" | sed 's/.*\"\(.*\)\"/\1/')
+if ! [[ -z "${SYSTEM_GETTY_PORT}" ]]; then
+    SYSTEM_GETTY_BAUDRATE=$(grep -E "^BR2_TARGET_GENERIC_GETTY_BAUDRATE_[0-9]*=y$" "${BR2_CONFIG}" | sed -e s+'^BR2_TARGET_GENERIC_GETTY_BAUDRATE_\([0-9]*\)=y$'+'\1'+)
+    sed -i -e '/# GENERIC_SERIAL$/s~^.*#~S0::respawn:/sbin/getty -n -L -l /usr/bin/batocera-autologin '${SYSTEM_GETTY_PORT}' '${SYSTEM_GETTY_BAUDRATE}' vt100 #~' \
+        ${TARGET_DIR}/etc/inittab
 fi
