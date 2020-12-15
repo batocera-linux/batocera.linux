@@ -451,6 +451,7 @@ endef
 define WINE_LUTRIS_WOW64_32_SHAREDIR_HOOK
 	mkdir -p $(TARGET_DIR)/share/wine/
 	cp -pr $(@D)/nls $(TARGET_DIR)/share/wine/
+	rm -Rf $(TARGET_DIR)/usr/wine/lutris/include
 endef
 
 WINE_LUTRIS_WOW64_32_PRE_BUILD_HOOKS += WINE_LUTRIS_WOW64_32_WOWDIRS_HOOK
