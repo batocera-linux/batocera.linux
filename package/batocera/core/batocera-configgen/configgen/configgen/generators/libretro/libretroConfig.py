@@ -25,14 +25,16 @@ ratioIndexes = ["4/3", "16/9", "16/10", "16/15", "21/9", "1/1", "2/1", "3/2", "3
                 "8/7", "19/12", "19/14", "30/17", "32/9", "config", "squarepixel", "core", "custom"]
 
 # Define the libretro device type corresponding to the libretro cores, when needed.
-coreToP1Device = {'cap32': '513', '81': '257', 'fuse': '513'};
-coreToP2Device = {'fuse': '513'};
+coreToP1Device = {'atari800': '513', 'cap32': '513', '81': '259', 'fuse': '769'};
+coreToP2Device = {'atari800': '513', 'fuse': '513'};
 
 # Define systems compatible with retroachievements
 systemToRetroachievements = {'atari2600', 'atari7800', 'atarijaguar', 'colecovision', 'nes', 'snes', 'virtualboy', 'n64', 'sg1000', 'mastersystem', 'megadrive', 'segacd', 'sega32x', 'saturn', 'pcengine', 'pcenginecd', 'supergrafx', 'psx', 'mame', 'hbmame', 'fbneo', 'neogeo', 'lightgun', 'apple2', 'lynx', 'wswan', 'wswanc', 'gb', 'gbc', 'gba', 'nds', 'pokemini', 'gamegear', 'ngp', 'ngpc'}; 
 
 # Define systems not compatible with rewind option
-systemNoRewind = {'sega32x', 'psx', 'zxspectrum', 'odyssey2', 'mame', 'hbmame', 'n64', 'dreamcast', 'atomiswave', 'naomi', 'neogeocd', 'saturn', 'fbneo'};
+#systemNoRewind = {'sega32x', 'psx', 'zxspectrum', 'odyssey2', 'mame', 'hbmame', 'n64', 'dreamcast', 'atomiswave', 'naomi', 'neogeocd', 'saturn', 'fbneo'};
+# TOTO: Select goog list
+systemNoRewind = {'saturn'};
 
 # Define systems not compatible with run-ahead option (warning: this option is CPU intensive!)
 systemNoRunahead = {'sega32x', 'n64', 'dreamcast', 'atomiswave', 'naomi', 'neogeocd', 'saturn'};
@@ -68,7 +70,7 @@ def fast_image_size(image_file):
 # take a system, and returns a dict of retroarch.cfg compatible parameters
 def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
     # Create/update retroarch-core-options.cfg
-    libretroOptions.generateCoreSettings(batoceraFiles.retroarchCoreCustom, system)
+    libretroOptions.generateCoreSettings(batoceraFiles.retroarchCoreCustom, system, rom)
 
     # Create/update hatari.cfg
     if system.name == 'atarist':
@@ -154,22 +156,19 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
     retroarchConfig['savestate_directory'] = batoceraFiles.savesDir + system.name
     retroarchConfig['savefile_directory'] = batoceraFiles.savesDir + system.name
 
+    # Devices choices
     retroarchConfig['input_libretro_device_p1'] = '1'
     retroarchConfig['input_libretro_device_p2'] = '1'
 
     if(system.config['core'] in coreToP1Device):
         retroarchConfig['input_libretro_device_p1'] = coreToP1Device[system.config['core']]
-
     if(system.config['core'] in coreToP2Device):
         retroarchConfig['input_libretro_device_p2'] = coreToP2Device[system.config['core']]
 
     if len(controllers) > 2 and (system.config['core'] == 'snes9x_next' or system.config['core'] == 'snes9x'):
         retroarchConfig['input_libretro_device_p2'] = '257'
 
-    if system.config['core'] == 'atari800':
-        retroarchConfig['input_libretro_device_p1'] = '513'
-        retroarchConfig['input_libretro_device_p2'] = '513'
-
+    # Retroachievements
     retroarchConfig['cheevos_enable'] = 'false'
     retroarchConfig['cheevos_hardcore_mode_enable'] = 'false'
     retroarchConfig['cheevos_leaderboards_enable'] = 'false'
@@ -224,10 +223,6 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
     # forced values (so that if the config is not correct, fix it)
     if system.config['core'] == 'tgbdual':
         retroarchConfig['aspect_ratio_index'] = str(ratioIndexes.index("core")) # reset each time in this function
-
-    # Virtual keyboard for Amstrad CPC (select+start)
-    if system.config['core'] == 'cap32':
-        retroarchConfig['cap32_combokey'] = 'y'
 
     # Disable internal image viewer (ES does it, and pico-8 won't load .p8.png)
     retroarchConfig['builtin_imageviewer_enable'] = 'false'
