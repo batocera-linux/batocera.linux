@@ -57,7 +57,6 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
     select BR2_PACKAGE_NTFS_3G_NTFSPROGS                 # ntfs
     select BR2_PACKAGE_BTRFS_PROGS                       # btrfs
     select BR2_PACKAGE_WINBTRFS                          # btrfs
-    select BR2_PACKAGE_XFSPROGS                          # xfs
     select BR2_PACKAGE_RASPI2PNG                         if BR2_PACKAGE_BATOCERA_RPI_VCORE && !BR2_PACKAGE_BATOCERA_RPI_MESA3D # screenshots
     select BR2_PACKAGE_GPICASE                           if BR2_PACKAGE_BATOCERA_TARGET_RPI1 # retroflag gpicase
     select BR2_PACKAGE_ROSHAMBO_CASE                     if BR2_PACKAGE_BATOCERA_TARGET_ROCKPRO64 # roshambo case
