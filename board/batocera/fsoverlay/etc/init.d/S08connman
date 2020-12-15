@@ -17,7 +17,7 @@ case "$1" in
 		echo "done."
 		;;
 	stop)
-		printf "Stopping connman ..."
+		printf "Stopping connman: "
 		start-stop-daemon -K -q -p /var/run/connmand.pid
 		echo "done."
 		;;

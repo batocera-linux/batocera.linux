@@ -62,7 +62,7 @@ case "$1" in
     stop)
         start-stop-daemon -K -q -p /var/run/bluetooth-agent.pid
         start-stop-daemon -K -q -p /var/run/bluetoothd.pid
-        killall hciattach
+        killall hciattach &> /dev/null
         batocera-bluetooth save
     ;;
 
