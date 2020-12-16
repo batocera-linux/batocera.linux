@@ -140,7 +140,9 @@ def generateCoreSettings(retroarchCore, system, rom):
             coreSettings.save('vice_physical_keyboard_pass_through', system.config['keyboard_pass_through'])
         else:
             coreSettings.save('vice_physical_keyboard_pass_through', '"disabled"')
-            
+
+    # TODO: Add core options for C128 / C16Plus4 / Vic20 / Pet
+
     # Commodore AMIGA
     if (system.config['core'] == 'puae'):
         # Show Video Options
@@ -425,8 +427,8 @@ def generateCoreSettings(retroarchCore, system, rom):
             coreSettings.save('pcfx_nospritelimit', '"enabled"')
 
     # Nintendo 3DS
+    # TODO: Add CORE Options for 3DS
     if (system.config['core'] == 'citra'):
-        # TODO: Add CORE Options for 3DS
         # Set OpenGL rendering
         if not os.path.exists(batoceraFiles.CONF + "/retroarch/3ds.cfg"):
             f = open(batoceraFiles.CONF + "/retroarch/3ds.cfg", "w")
@@ -441,49 +443,39 @@ def generateCoreSettings(retroarchCore, system, rom):
         # .htc files must be placed in 'Mupen64plus/cache'
         coreSettings.save('mupen64plus-txHiresEnable', '"True"')
         # Video 4:3 Resolution
-        if system.isOptSet('43screensize'):
-            coreSettings.save('mupen64plus-43screensize', system.config['43screensize'])
+        if system.isOptSet('mupen64plus-43screensize') and system.config['mupen64plus-43screensize'] != '320x240':
+            coreSettings.save('mupen64plus-43screensize', system.config['mupen64plus-43screensize'])
         else:
             coreSettings.save('mupen64plus-43screensize', '"320x240"')
         # Video 16:9 Resolution
-        if system.isOptSet('169screensize'):
-            coreSettings.save('mupen64plus-169screensize', system.config['169screensize'])
+        if system.isOptSet('mupen64plus-169screensize') and system.config['mupen64plus-169screensize'] != '640x360':
+            coreSettings.save('mupen64plus-169screensize', system.config['mupen64plus-169screensize'])
         else:
             coreSettings.save('mupen64plus-169screensize', '"640x360"')
         # Widescreen Hack
-        if system.isOptSet('aspect'):
-            coreSettings.save('mupen64plus-aspect', '"' + system.config['aspect'] + '"')
-            #if (system.config['aspect'] != '4:3'):
-                # Auto Config System
-                # TODO: Update this trick with a beter solution
-                #system.save('ratio', '16/9')
-                #system.save('bezel', 'none')
-                
-                #retroarchConfig['aspect_ratio_index'] = '"16/9"')
-                #retroarchConfig['video_aspect_ratio_auto'] = 'false'
-                #retroarchConfig['input_overlay_enable'] = "false"
-                #retroarchConfig['video_message_pos_x']  = 0.05
-                #retroarchConfig['video_message_pos_y']  = 0.05
+        # Increases from 4:3 to 16:9 in 3D games (bad for 2D)
+        if system.isOptSet('mupen64plus-aspect') and system.isOptSet('ratio') and system.isOptSet('bezel') and system.config['mupen64plus-aspect'] == '16:9 adjusted' and system.config["ratio"] == "16/9" and system.config["bezel"] == "none":
+            coreSettings.save('mupen64plus-aspect', '"16:9 adjusted"')
         else:
             coreSettings.save('mupen64plus-aspect', '"4:3"')
         # Bilinear Filtering
-        if system.isOptSet('BilinearMode'):
-            coreSettings.save('mupen64plus-BilinearMode', system.config['BilinearMode'])
+        if system.isOptSet('mupen64plus-BilinearMode') and system.config['mupen64plus-BilinearMode'] == '3point':
+            coreSettings.save('mupen64plus-BilinearMode', '"3point"')
         else:
             coreSettings.save('mupen64plus-BilinearMode', '"standard"')
         # Anti-aliasing (MSA)
-        if system.isOptSet('MultiSampling'):
-            coreSettings.save('mupen64plus-MultiSampling', system.config['MultiSampling'])
+        if system.isOptSet('mupen64plus-MultiSampling') and system.config['mupen64plus-MultiSampling'] != '0':
+            coreSettings.save('mupen64plus-MultiSampling', system.config['mupen64plus-MultiSampling'])
         else:
             coreSettings.save('mupen64plus-MultiSampling', '"0"')
         # Texture Filtering
-        if system.isOptSet('Texture_filter'):
-            coreSettings.save('mupen64plus-txFilterMode', '"' + system.config['Texture_filter'] + '"')
+        if system.isOptSet('mupen64plus-txFilterMode') and system.config['mupen64plus-txFilterMode'] != 'None':
+            coreSettings.save('mupen64plus-txFilterMode', '"' + system.config['mupen64plus-txFilterMode'] + '"')
         else:
             coreSettings.save('mupen64plus-txFilterMode', '"None"')
         # Texture Enhancement
-        if system.isOptSet('Texture_Enhancement'):
-            coreSettings.save('mupen64plus-txEnhancementMode', '"' + system.config['Texture_Enhancement'] + '"')
+        if system.isOptSet('mupen64plus-txEnhancementMode') and system.config['mupen64plus-txEnhancementMode'] != 'None':
+            coreSettings.save('mupen64plus-txEnhancementMode', '"' + system.config['mupen64plus-txEnhancementMode'] + '"')
         else:
             coreSettings.save('mupen64plus-txEnhancementMode', '"None"')
 
@@ -577,7 +569,6 @@ def generateCoreSettings(retroarchCore, system, rom):
         # GB / GBC: Use Super Game Boy borders
         if system.isOptSet('sgb_borders') and system.config['sgb_borders'] == "True":
             coreSettings.save('mgba_sgb_borders', '"ON"')
-            # TODO: Maybe autoswitch on a good FULLSCREEN BEZEL
         else:
             coreSettings.save('mgba_sgb_borders', '"OFF"')
         # GB / GBC: Color Correction
@@ -613,7 +604,6 @@ def generateCoreSettings(retroarchCore, system, rom):
         else:
             coreSettings.save('vbam_palettes', '"black and white"')
         # GB / GBC: Use Super Game Boy borders
-        # TODO: Maybe autoswitch on a good FULLSCREEN BEZEL
         if system.isOptSet('showborders_gb') and system.name == 'gb':
             coreSettings.save('vbam_showborders', system.config['showborders_gb'])
             # Force SGB mode, "sgb2" is same
@@ -825,58 +815,50 @@ def generateCoreSettings(retroarchCore, system, rom):
         coreSettings.save('reicast_lightgun3_crosshair', '"Green"')
         coreSettings.save('reicast_lightgun4_crosshair', '"White"')
         # Video resolution 
-        if system.isOptSet('internal_resolution_flycast'):
-            coreSettings.save('reicast_internal_resolution', system.config['internal_resolution_flycast'])
+        if system.isOptSet('reicast_internal_resolution'):
+            coreSettings.save('reicast_internal_resolution', system.config['reicast_internal_resolution'])
         else:
             coreSettings.save('reicast_internal_resolution', '"640x480"')
         # Textures Mip-mapping (blur)
-        if system.isOptSet('mipmapping'):
-            coreSettings.save('reicast_mipmapping', system.config['mipmapping'])
+        if system.isOptSet('reicast_mipmapping'):
+            coreSettings.save('reicast_mipmapping', system.config['reicast_mipmapping'])
         else:
             coreSettings.save('reicast_mipmapping', '"disabled"')
         # Anisotropic Filtering
-        if system.isOptSet('anisotropic_filtering'):
-            coreSettings.save('reicast_anisotropic_filtering', system.config['anisotropic_filtering'])
+        if system.isOptSet('reicast_anisotropic_filtering'):
+            coreSettings.save('reicast_anisotropic_filtering', system.config['reicast_anisotropic_filtering'])
         else:
             coreSettings.save('reicast_anisotropic_filtering', '"off"')
         # Texture Upscaling (xBRZ)
-        if system.isOptSet('texture_upscaling'):
-            coreSettings.save('reicast_texupscale', '"' + system.config['texture_upscaling'] + '"')
+        if system.isOptSet('reicast_texupscale'):
+            coreSettings.save('reicast_texupscale', '"' + system.config['reicast_texupscale'] + '"')
         else:
             coreSettings.save('reicast_texupscale', '"off"')
         # Render to Texture Upscaling
-        if system.isOptSet('render_to_texture_upscaling'):
-            coreSettings.save('reicast_render_to_texture_upscaling', system.config['render_to_texture_upscaling'])
+        if system.isOptSet('reicast_render_to_texture_upscaling'):
+            coreSettings.save('reicast_render_to_texture_upscaling', system.config['reicast_render_to_texture_upscaling'])
         else:
             coreSettings.save('reicast_render_to_texture_upscaling', '"1x"')
         # Frame Skip
-        if system.isOptSet('frame_skipping'):
-            coreSettings.save('reicast_frame_skipping', system.config['frame_skipping'])
+        if system.isOptSet('reicast_frame_skipping'):
+            coreSettings.save('reicast_frame_skipping', system.config['reicast_frame_skipping'])
         else:
             coreSettings.save('reicast_frame_skipping', '"disabled"')
         # Force Windows CE Mode
-        if system.isOptSet('force_wince'):
-            coreSettings.save('reicast_force_wince', system.config['force_wince'])
+        if system.isOptSet('reicast_force_wince'):
+            coreSettings.save('reicast_force_wince', system.config['reicast_force_wince'])
         else:
             coreSettings.save('reicast_force_wince', '"disabled"')
-        # Widescreen Hack
-        if system.isOptSet('widescreen_hack_flycast'):
-            coreSettings.save('reicast_widescreen_hack', system.config['widescreen_hack_flycast'])
-            if (system.config['widescreen_hack_flycast'] == 'enabled'):
-                # Auto Config System
-                #system.config["ratio"] == "16/9"
-                #system.config["bezel"] == "none"
-                # Prefer Hack from Cheat
-                coreSettings.save('reicast_widescreen_cheats', '"disabled"')
-        else:
-            coreSettings.save('reicast_widescreen_hack', '"disabled"')
         # Widescreen Cheat
-        if system.isOptSet('widescreen_cheats'):
-            coreSettings.save('reicast_widescreen_cheats', system.config['widescreen_cheats'])
-            #if (system.config['widescreen_cheats'] == 'enabled'):
-                # TODO: Auto configure to remove BEZEL and switch RATIO to 16/9
+        if system.isOptSet('reicast_widescreen_cheats') and system.isOptSet('ratio') and system.isOptSet('bezel') and system.config['reicast_widescreen_cheats'] == 'enabled' and system.config["ratio"] == "16/9" and system.config["bezel"] == "none":
+            coreSettings.save('reicast_widescreen_cheats', '"enabled"')
         else:
             coreSettings.save('reicast_widescreen_cheats', '"disabled"')
+        # Widescreen Hack (prefer Cheat)
+        if system.isOptSet('reicast_widescreen_hack') and system.isOptSet('ratio') and system.isOptSet('bezel') and system.isOptSet('reicast_widescreen_cheats') and system.config['reicast_widescreen_hack'] == 'enabled' and system.config["ratio"] == "16/9" and system.config["bezel"] == "none" and system.config['reicast_widescreen_cheats'] == 'disabled':
+            coreSettings.save('reicast_widescreen_hack',   '"enabled"')
+        else:
+            coreSettings.save('reicast_widescreen_hack',   '"disabled"')
 
         ## Atomiswave / Naomi
         
@@ -1097,40 +1079,38 @@ def generateCoreSettings(retroarchCore, system, rom):
     # Sony PSX
     if (system.config['core'] == 'mednafen_psx'):
         # CPU Frequency Scaling (Overclock)
-        if system.isOptSet('beetlepsx_cpu_freq'):
-            coreSettings.save('beetle_psx_cpu_freq_scale', system.config['beetlepsx_cpu_freq'])
+        if system.isOptSet('beetle_psx_cpu_freq_scale'):
+            coreSettings.save('beetle_psx_cpu_freq_scale', system.config['beetle_psx_cpu_freq_scale'])
         else:
             coreSettings.save('beetle_psx_cpu_freq_scale', '"100%(native)"')
         # Show official Bootlogo
-        if system.isOptSet('skip_bios_psx'):
-            coreSettings.save('beetle_psx_skip_bios', system.config['skip_bios_psx'])
+        if system.isOptSet('beetle_psx_skip_bios'):
+            coreSettings.save('beetle_psx_skip_bios', system.config['beetle_psx_skip_bios'])
         else:
             coreSettings.save('beetle_psx_skip_bios', '"disabled"')
         # Video Resolution
-        if system.isOptSet('internal_resolution_mednafen'):
-            coreSettings.save('beetle_psx_internal_resolution', system.config['internal_resolution_mednafen'])
+        if system.isOptSet('beetle_psx_internal_resolution'):
+            coreSettings.save('beetle_psx_internal_resolution', system.config['beetle_psx_internal_resolution'])
         else:
             coreSettings.save('beetle_psx_internal_resolution', '"1x(native)"')
         # Widescreen Hack
-        if system.isOptSet('widescreen_hack_mednafen'):
-            coreSettings.save('beetle_psx_widescreen_hack', system.config['widescreen_hack_mednafen'])
-            #if (system.config['widescreen_hack_mednafen'] == 'enabled'):
-                # TODO: Auto configure to remove BEZEL and switch RATIO to 16/9
+        if system.isOptSet('beetle_psx_widescreen_hack') and system.isOptSet('ratio') and system.isOptSet('bezel') and system.config['beetle_psx_widescreen_hack'] == 'enabled' and system.config["ratio"] == "16/9" and system.config["bezel"] == "none":
+            coreSettings.save('beetle_psx_widescreen_hack', '"enabled"')
         else:
             coreSettings.save('beetle_psx_widescreen_hack', '"disabled"')
         # Frame Duping (Speedup)
-        if system.isOptSet('frame_duping'):
-            coreSettings.save('beetle_psx_frame_duping', system.config['frame_duping'])
+        if system.isOptSet('beetle_psx_frame_duping'):
+            coreSettings.save('beetle_psx_frame_duping', system.config['beetle_psx_frame_duping'])
         else:
             coreSettings.save('beetle_psx_frame_duping', '"disabled"') 
         # CPU Dynarec (Speedup)
-        if system.isOptSet('cpu_dynarec'):
-            coreSettings.save('beetle_psx_cpu_dynarec', system.config['cpu_dynarec'])
+        if system.isOptSet('beetle_psx_cpu_dynarec'):
+            coreSettings.save('beetle_psx_cpu_dynarec', system.config['beetle_psx_cpu_dynarec'])
         else:
             coreSettings.save('beetle_psx_cpu_dynarec', '"disabled"')
         # Dynarec Code Invalidation
-        if system.isOptSet('dynarec_invalidate'):
-            coreSettings.save('beetle_psx_dynarec_invalidate', system.config['dynarec_invalidate'])
+        if system.isOptSet('beetle_psx_dynarec_invalidate'):
+            coreSettings.save('beetle_psx_dynarec_invalidate', system.config['beetle_psx_dynarec_invalidate'])
         else:
             coreSettings.save('beetle_psx_dynarec_invalidate', '"full"')
         # Multitap
@@ -1149,49 +1129,46 @@ def generateCoreSettings(retroarchCore, system, rom):
             coreSettings.save('beetle_psx_enable_multitap_port2', '"disabled"')
 
     if (system.config['core'] == 'duckstation'):
-        coreSettings.save('duckstation_Display.AspectRatio', '"4:3"')
-        
         # Show official Bootlogo
-        if system.isOptSet('PatchFastBoot'):
-            coreSettings.save('duckstation_BIOS.PatchFastBoot', system.config['PatchFastBoot'])
+        if system.isOptSet('duckstation_PatchFastBoot'):
+            coreSettings.save('duckstation_BIOS.PatchFastBoot', system.config['duckstation_PatchFastBoot'])
         else:
             coreSettings.save('duckstation_BIOS.PatchFastBoot', '"false"')
         # Video Resolution
-        if system.isOptSet('resolution_scale'):
-            coreSettings.save('duckstation_GPU.ResolutionScale', system.config['resolution_scale'])
+        if system.isOptSet('duckstation_resolution_scale'):
+            coreSettings.save('duckstation_GPU.ResolutionScale', system.config['duckstation_resolution_scale'])
         else:
             coreSettings.save('duckstation_GPU.ResolutionScale', '"1"')
         # Anti-aliasing (MSAA/SSAA)
-        if system.isOptSet('antialiasing'):
-            coreSettings.save('duckstation_GPU.MSAA', system.config['antialiasing'])
+        if system.isOptSet('duckstation_antialiasing'):
+            coreSettings.save('duckstation_GPU.MSAA', system.config['duckstation_antialiasing'])
         else:
             coreSettings.save('duckstation_GPU.MSAA', '"1"')
         # Texture Filtering
-        if system.isOptSet('texture_filtering'):
-            coreSettings.save('duckstation_GPU.TextureFilter', system.config['texture_filtering'])
+        if system.isOptSet('duckstation_texture_filtering'):
+            coreSettings.save('duckstation_GPU.TextureFilter', system.config['duckstation_texture_filtering'])
         else:
             coreSettings.save('duckstation_GPU.TextureFilter', '"Nearest"')
         # Widescreen Hack
-        if system.isOptSet('widescreen_hack_duckstation'):
-            coreSettings.save('duckstation_GPU.WidescreenHack', system.config['widescreen_hack_duckstation'])
-            if (system.config['widescreen_hack_duckstation'] == 'true'):
-                coreSettings.save('duckstation_Display.AspectRatio', '"16:9"')
-                # TODO: Auto configure to remove BEZEL and switch RATIO to 16/9
+        if system.isOptSet('duckstation_widescreen_hack') and system.isOptSet('ratio') and system.isOptSet('bezel') and system.config['duckstation_widescreen_hack'] == 'true' and system.config["ratio"] == "16/9" and system.config["bezel"] == "none":
+            coreSettings.save('duckstation_GPU.WidescreenHack',  '"true"')
+            coreSettings.save('duckstation_Display.AspectRatio', '"16:9"')
         else:
-            coreSettings.save('duckstation_GPU.WidescreenHack', '"false"')
+            coreSettings.save('duckstation_GPU.WidescreenHack',  '"false"')
+            coreSettings.save('duckstation_Display.AspectRatio', '"4:3"')
          # Crop Mode
         if system.isOptSet('duckstation_CropMode'):
             coreSettings.save('duckstation_Display.CropMode', system.config['duckstation_CropMode'])
         else:
             coreSettings.save('duckstation_Display.CropMode', '"Overscan"')
         # Controller 1 Type
-        if system.isOptSet('Controller1'):
-            coreSettings.save('duckstation_Controller1.Type', system.config['Controller1'])
+        if system.isOptSet('duckstation_Controller1'):
+            coreSettings.save('duckstation_Controller1.Type', system.config['duckstation_Controller1'])
         else:
             coreSettings.save('duckstation_Controller1.Type', '"DigitalController"')
         # Controller 2 Type
-        if system.isOptSet('Controller2'):
-            coreSettings.save('duckstation_Controller2.Type', system.config['Controller2'])
+        if system.isOptSet('duckstation_Controller2'):
+            coreSettings.save('duckstation_Controller2.Type', system.config['duckstation_Controller2'])
         else:
             coreSettings.save('duckstation_Controller2.Type', '"DigitalController"')
 

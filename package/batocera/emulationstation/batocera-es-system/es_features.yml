@@ -220,13 +220,13 @@ libretro:
     duckstation:
       features: [                 autosave, latency_reduction]
       cfeatures:
-            PatchFastBoot:
+            duckstation_PatchFastBoot:
                 prompt: SHOW BIOS BOOTLOGO
                 label:  Show BIOS animation when starting content
                 choices:
                     "Off":        "true"
                     "On":         "false"
-            resolution_scale:
+            duckstation_resolution_scale:
                 prompt: VIDEO RESOLUTION
                 label:  Improve the fidelity of 3D models (unaffect 2D)
                 choices:
@@ -239,7 +239,7 @@ libretro:
                     "7x":         7
                     "8x":         8
                     "9x":         9
-            antialiasing:
+            duckstation_antialiasing:
                 prompt: ANTI-ALIASING (MSAA/SSAA)
                 label:  Smooth out jagged edges on 3D objetcs polygons 
                 choices:
@@ -254,7 +254,7 @@ libretro:
                     "8x ssaa":    8-ssaa
                     "16x ssaa":   16-ssaa
                     "32x ssaa":   32-ssaa
-            texture_filtering:
+            duckstation_texture_filtering:
                 prompt: TEXTURE FILTERING
                 label:  Smooths out textures on 3D objetcs
                 choices:
@@ -262,9 +262,9 @@ libretro:
                     "bilinear":   Bilinear
                     "jinc2":      JINC2
                     "xBR":        xBR
-            widescreen_hack_duckstation:
+            duckstation_widescreen_hack:
                 prompt: WIDESCREEN HACK
-                label:  Increases from 4:3 to 16:9 in 3D games (bad for 2D)
+                label:  You must use a 16/9 RATIO and disable BEZEL
                 choices:
                     "Off":        "false"
                     "On":         "true"
@@ -275,7 +275,7 @@ libretro:
                     "Off":                "None"
                     "Only Overscan Area": "Overscan"
                     "All Borders":        "Borders"
-            Controller1:
+            duckstation_Controller1:
                 prompt: CONTROLLER 1 TYPE
                 label:  Sets the type of controller for slot 1
                 choices:
@@ -285,7 +285,7 @@ libretro:
                     "Namco GunCon":                  NamcoGunCon
                     "PlayStation Mouse":             PlayStationMouse
                     "NeGcon":                        NeGcon
-            Controller2:
+            duckstation_Controller2:
                 prompt: CONTROLLER 2 TYPE
                 label:  Sets the type of controller for slot 2
                 choices:
@@ -411,7 +411,7 @@ libretro:
     flycast:
       features: [                 autosave]
       cfeatures:
-            internal_resolution_flycast:
+            reicast_internal_resolution:
                 prompt: VIDEO RESOLUTION
                 label:  Improve the fidelity of 3D models (unaffect 2D)
                 choices:
@@ -435,13 +435,13 @@ libretro:
                     "11520x8640": 11520x8640
                     "12160x9120": 12160x9120
                     "12800x9600": 12800x9600
-            mipmapping:
+            reicast_mipmapping:
                 prompt: TEXTURES MIP-MAPPING (BLUR)
                 label:  Smooths out textures on 3D objetcs
                 choices:
                     "Off": disabled
                     "On":  enabled
-            anisotropic_filtering:
+            reicast_anisotropic_filtering:
                 prompt: ANISOTROPIC FILTERING
                 label:  Enhance the quality with on perspective textures
                 choices:
@@ -450,7 +450,7 @@ libretro:
                     "4x":  4
                     "8x":  8
                     "16x": 16
-            texture_upscaling:
+            reicast_texupscale:
                 prompt: TEXTURES UPSCALING (XBRZ)
                 label:  Upscaling 2D pixel art graphics (2D Games Only)
                 choices:
@@ -458,7 +458,7 @@ libretro:
                     "2x":  2x
                     "4x":  4x
                     "6x":  6x
-            render_to_texture_upscaling:
+            reicast_render_to_texture_upscaling:
                 prompt: RENDER TO TEXTURES UPSCALING
                 label:  Upscaling textures resolution on 3D objetcs
                 choices:
@@ -467,7 +467,7 @@ libretro:
                     "3x":  3x
                     "4x":  4x
                     "8x":  8x
-            frame_skipping:
+            reicast_frame_skipping:
                 prompt: FRAME SKIP
                 label:  Skip frames to improve performance (Smoothless)
                 choices:
@@ -478,21 +478,21 @@ libretro:
                     "4":   4
                     "5":   5
                     "6":   6
-            force_wince:
+            reicast_force_wince:
                 prompt: FORCE WINDOWS CE MODE
                 label:  Enable full MMU emulation for Windows CE games
                 choices:
                     "Off": disabled
                     "On":  enabled
-            widescreen_hack_flycast:
-                prompt: WIDESCREEN HACK
-                label:  Increases from 4:3 to 16:9 in 3D games (bad for 2D)
+            reicast_widescreen_cheats:
+                prompt: WIDESCREEN CHEAT (PRIORITY)
+                label:  You must use a 16/9 RATIO and disable BEZEL
                 choices:
                     "Off": disabled
                     "On":  enabled
-            widescreen_cheats:
-                prompt: WIDESCREEN CHEAT
-                label:  Same as HACK but with a specific setting by game
+            reicast_widescreen_hack:
+                prompt: WIDESCREEN HACK
+                label:  You must use a 16/9 RATIO and disable BEZEL
                 choices:
                     "Off": disabled
                     "On":  enabled
@@ -745,13 +745,13 @@ libretro:
     mednafen_psx:
       features: [                 autosave, latency_reduction]
       cfeatures:
-            skip_bios_psx:
+            beetle_psx_skip_bios:
                 prompt: SHOW BIOS BOOTLOGO
                 label:  Show BIOS animation when starting content
                 choices:
                     "Off":        enabled
                     "On":         disabled
-            beetlepsx_cpu_freq:
+            beetle_psx_cpu_freq_scale:
                 prompt: OVERCLOCKING (HEAVY CPU)
                 label:  Can eliminate slowdown and improve frame rates
                 choices:
@@ -782,7 +782,7 @@ libretro:
                     "650%":         650%
                     "700%":         700%
                     "750%":         750%
-            internal_resolution_mednafen:
+            beetle_psx_internal_resolution:
                 prompt: VIDEO RESOLUTION
                 label:  Improve the fidelity of 3D models (unaffect 2D)
                 choices:
@@ -791,19 +791,19 @@ libretro:
                     "4x":         4x
                     "8x":         8x
                     "16x":        16x
-            widescreen_hack_mednafen:
+            beetle_psx_widescreen_hack:
                 prompt: WIDESCREEN HACK
-                label:  Increases from 4:3 to 16:9 in 3D games (bad for 2D)
+                label:  You must use a 16/9 RATIO and disable BEZEL
                 choices:
                     "Off":        disabled
                     "On":         enabled
-            frame_duping:
+            beetle_psx_frame_duping:
                 prompt: FRAME DUPING (SPEEDDUP)
                 label:  Small performance increase (may lost anim. frames)
                 choices:
                     "Off":        disabled
                     "On":         enabled
-            cpu_dynarec:
+            beetle_psx_cpu_dynarec:
                 prompt: CPU DYNAREC (SPEEDDUP)
                 label:  Much faster than interpreter (but may have bugs)
                 choices:
@@ -811,7 +811,7 @@ libretro:
                     "Max Performance":              execute
                     "Cycle Timing Check":           execute_once
                     "Lightrec Interpreter":         run_interpreter
-            dynarec_invalidate:
+            beetle_psx_dynarec_invalidate:
                 prompt: DYNAREC CODE INVALIDATION
                 label:  Some games require DMA Only (for CPU Dynarec)
                 choices:
@@ -927,7 +927,7 @@ libretro:
     mupen64plus-next:
       features: [                 autosave]
       cfeatures:
-            43screensize:
+            mupen64plus-43screensize:
                 prompt: VIDEO 4:3 RESOLUTION
                 label:  Improve the fidelity of 3D models (unaffect 2D)
                 choices:
@@ -942,7 +942,7 @@ libretro:
                     "3200x2400": 3200x2400
                     "3520x2640": 3520x2640
                     "3840x2880": 3840x2880
-            169screensize:
+            mupen64plus-169screensize:
                 prompt: VIDEO 16:9 RESOLUTION
                 label:  Improve the fidelity of 3D models (unaffect 2D)
                 choices:
@@ -953,19 +953,19 @@ libretro:
                     "2560x1440": 2560x1440
                     "3840x2160": 3840x2160
                     "7680x4320": 7680x4320
-            aspect:
+            mupen64plus-aspect:
                 prompt: WIDESCREEN HACK
-                label:  Increases from 4:3 to 16:9 in 3D games (bad for 2D)
+                label:  You must use a 16/9 RATIO and disable BEZEL
                 choices:
                     "Off":       4:3
                     "On":        16:9 adjusted
-            BilinearMode:
+            mupen64plus-BilinearMode:
                 prompt: BILINEAR FILTERING
                 label:  Filter to gradually switch colors
                 choices:
                     "standard":   standard
                     "3 point":    3point
-            MultiSampling:
+            mupen64plus-MultiSampling:
                 prompt: ANTI-ALIASING (MSAA)
                 label:  Smooth out jagged edges on 3D objetcs polygons 
                 choices:
@@ -974,7 +974,7 @@ libretro:
                     "4x":         4
                     "8x":         8
                     "16x":        16
-            Texture_filter:
+            mupen64plus-txFilterMode:
                 prompt: TEXTURE FILTERING
                 label:  Smooths out textures on 3D objetcs
                 choices:
@@ -985,7 +985,7 @@ libretro:
                     "Smooth 4":   Smooth filtering 4
                     "Sharp 1":    Sharp filtering 1
                     "Sharp 2":    Sharp filtering 2
-            Texture_Enhancement:
+            mupen64plus-txEnhancementMode:
                 prompt: TEXTURE ENHANCEMENT (XBRZ)
                 label:  Scales up a nearest-neighbor version of the texture
                 choices:
