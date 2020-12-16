@@ -86,7 +86,7 @@ case $1 in
 	# --modify-window=2 for different fs
         RSYNC="rsync --modify-window=2 -tin --dirs --delete $SPLASHUSER $SPLASHBOOT"
         #File changes can be detected by -i switch output
-        [ $($RSYNC | grep -e '^\*deleting' -e '^>f++++++') ] || exit 0
+        [ "$($RSYNC | grep -e '^\*deleting' -e '^>f++++++')" ] || exit 0
 
         #Check filesize of /userdata/splash and set a directory size limit (256MB*1024kB)
         [ $(du -s $SPLASHUSER | awk '{print $1}') -lt 262144 ] || exit 1
