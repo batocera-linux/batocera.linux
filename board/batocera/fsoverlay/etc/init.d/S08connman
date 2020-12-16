@@ -2,22 +2,22 @@
 
 case "$1" in
 	start)
-		printf "Starting connman ... "
+		printf "Starting connman: "
 		start-stop-daemon -S -q -m -b -p /var/run/connmand.pid --exec /usr/sbin/connmand -- -n
 
 		# wait connmann is started. otherwise, S10wifi is unable to execute connmanctl commands
 		N=0
-		connmanctl state | grep -qE '^[ ]*State[ ]='
+		connmanctl state 2>/dev/null | grep -qE '^[ ]*State[ ]='
 		while test $? -ne 0 -a $N -lt 5 # 5 tries
 		do
 		    N=$((N+1))
 		    sleep 1
-		    connmanctl state | grep -qE '^[ ]*State[ ]='
+		    connmanctl state 2>/dev/null | grep -qE '^[ ]*State[ ]='
 		done
 		echo "done."
 		;;
 	stop)
-		printf "Stopping connman ..."
+		printf "Stopping connman: "
 		start-stop-daemon -K -q -p /var/run/connmand.pid
 		echo "done."
 		;;

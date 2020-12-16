@@ -1,4 +1,6 @@
-#!/bin/bash
+#!/bin/sh
+
+DAEMON="splash"
 
 soundDisabled() {
     grep -qE "^[ ]*splash.screen.sound[ ]*=[ ]*0[ ]*$" /boot/batocera-boot.conf
@@ -40,14 +42,16 @@ do_videostart ()
     then
         mpv_opt=--no-audio
     fi
-    /usr/bin/mpv --no-config $mpv_opt "$video" &
+    /usr/bin/mpv --really-quiet --no-config $mpv_opt "$video" &
     wait $!
 }
 
 case "$1" in
     start)
+        printf 'Starting %s: ' "$DAEMON"
         grep -qE '^[ ]*splash.screen.enabled[ ]*=[ ]*0[ ]*$' "/boot/batocera-boot.conf" && exit 0
         do_start &
+        echo "OK"
         ;;
     stop)
         ;;
