@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 # Splash Screen Control
 # This service controls length of video/picture displayed during startup
 # Furthermore it copies content from /userdata/splash to /boot/splash
@@ -7,11 +7,11 @@
 splash_autoplay ()
 {
     count=0
-    while [[ $count -lt 90 ]]
+    while [ $count -lt 90 ]
     do
         sleep 1
-        ((count++))
-        kill -0 $PID &>/dev/null  || break
+        count=$((count+1))
+        kill -0 $PID &>/dev/null || break
     done
 }
 
@@ -20,10 +20,10 @@ splash_default_rpi ()
     # Stop the video when ready
     # Wait for emulationstation or Kodi, but not more than 20 seconds
     count=0
-    while [[ ! -f "/tmp/emulationstation.ready" && ! -e "/var/run/kodi.msg" && $count -lt 20 ]]
+    while [ ! -f "/tmp/emulationstation.ready" -a ! -e "/var/run/kodi.msg" -a $count -lt 20 ]
     do
         sleep 1
-        ((count++))
+        count=$((count+1))
     done
     kill -9 $PID
 }
@@ -42,15 +42,14 @@ case $1 in
 
         # If the timer for picture is active then kill this PID to avoid
         # unwanted behaviour in splash_autoplay
-        [[ $PID == $(pgrep -f "sleep infinity") ]] && picture=1 || picture=0
+        [ $PID = $(pgrep -f "sleep infinity") ] && picture=1 || picture=0
 
         # Read Config and set some defaults
         splash_setting=$(batocera-settings -r splash.screen.length)
-        [[ -z $splash_setting ]] && splash_setting=auto
-        [[ ${splash_setting,,} == auto && $ARCH =~ rpi(1|2|3) ]] && splash_setting=$ARCH
-            
+        [ -z $splash_setting ] && splash_setting=auto
+        [ $splash_setting = auto -a $(echo $ARCH | cut -c 1-3) = rpi ] && splash_setting=$ARCH
 
-        case ${splash_setting,,} in
+        case $splash_setting in
             rpi*)
                 # Standard BATOCERA setting, for Pi platform
                 # A video splash will be displayed ~16s on Pi3 platform you'll smoothly boot into ES
@@ -60,7 +59,7 @@ case $1 in
             auto)
                 # Play video as long as possible, ideal for fast boards
                 #
-                [[ $picture -eq 0 ]] && splash_autoplay
+                [ $picture -eq 0 ] && splash_autoplay
                 kill -9 $PID &> /dev/null
             ;;
             i[0-90]*|k[0-90]*|[0-90]*)
@@ -69,16 +68,16 @@ case $1 in
                 # i-mode: This mode will not kill video in background this is a posible setup
                 #         for RPi system and you will smoothly boot into ES
                 #
-                sleeptimer=${splash_setting//[^[:digit:]]/}
-                [[ $picture -eq 1 && $sleeptimer -gt 10 ]] && sleeptimer=10
+                sleeptimer=$(echo $splash_setting | grep -Eo [1-9] | tr -d "\n")
+                [ $picture -eq 1 -a $sleeptimer -gt 10 ] && sleeptimer=10
                 sleep $sleeptimer
-                [[ $picture -eq 1 || ${splash_setting:0:1} != i ]] && kill -9 $PID
+                [ $picture -eq 1 -o $(echo $splash_setting | cut -c 1) != i ] && kill -9 $PID
             ;;
             fastboot|*)
                 # fastboot or invalid settings
                 #
                 kill -9 $PID
-                exit 1
+                exit 0
             ;;
         esac
     ;;
@@ -87,10 +86,10 @@ case $1 in
 	# --modify-window=2 for different fs
         RSYNC="rsync --modify-window=2 -tin --dirs --delete $SPLASHUSER $SPLASHBOOT"
         #File changes can be detected by -i switch output
-        [[ -n $($RSYNC | grep -e '^\*deleting' -e '^>f++++++') ]] || exit 0
+        [ $($RSYNC | grep -e '^\*deleting' -e '^>f++++++') ] || exit 0
 
         #Check filesize of /userdata/splash and set a directory size limit (256MB*1024kB)
-        [[ $(du -s $SPLASHUSER | awk '{print $1}') -lt 262144 ]] || exit 1
+        [ $(du -s $SPLASHUSER | awk '{print $1}') -lt 262144 ] || exit 1
 
         RSYNC="rsync --modify-window=2 -ti --dirs --delete $SPLASHUSER $SPLASHBOOT"
         mount -o remount,rw /boot
