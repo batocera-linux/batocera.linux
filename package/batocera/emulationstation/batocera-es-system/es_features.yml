@@ -2,7 +2,7 @@
 # the aim is to display in es only the available options
 
 libretro:
-  features: [ratio, smooth, shaders, pixel_perfect, decoration, latency_reduction, game_translation]
+  features: [ratio, smooth, shaders, pixel_perfect, decoration, game_translation]
   cfeatures:
     gfxbackend:
       archs_include: [x86, x86_64, rpi4]
@@ -14,7 +14,7 @@ libretro:
 
   cores:
     '81':
-      features: [netplay, rewind, autosave, padtokeyboard]
+      features: [netplay, rewind, autosave, latency_reduction, padtokeyboard]
       cfeatures:
             81_chroma_81:
                 prompt: COLORISATION
@@ -31,7 +31,7 @@ libretro:
                     "Off":       none
                     "On":        WRX
     atari800:
-      features: [                           padtokeyboard]
+      features: [                           latency_reduction, padtokeyboard]
       systems:
             atari800:
                 cfeatures:
@@ -79,9 +79,9 @@ libretro:
                             "Off":     disabled
                             "On":      enabled
     beetle-saturn:
-      features: [netplay,         autosave]
+      features: [netplay,         autosave, latency_reduction]
     bluemsx:
-      features: [         rewind, autosave, padtokeyboard]
+      features: [         rewind, autosave, latency_reduction, padtokeyboard]
       cfeatures:
             bluemsx_nospritelimits:
                 prompt: REDUCE SPRITE FLICKERING
@@ -90,9 +90,9 @@ libretro:
                     "Off": OFF
                     "On":  ON
     bsnes:
-      features: [netplay, rewind, autosave]
+      features: [netplay, rewind, autosave, latency_reduction]
     cap32:
-      features: [netplay, rewind, autosave, padtokeyboard]
+      features: [netplay, rewind, autosave, latency_reduction, padtokeyboard]
       cfeatures:
             cap32_model:
                 prompt: CPC MODEL
@@ -111,11 +111,11 @@ libretro:
                     "512":   512
                     "576+":  576
     citra:
-      features: [         rewind, autosave]
+      features: [         rewind, autosave, latency_reduction]
     daphne:
-      features: [padtokeyboard]
+      features: [                           latency_reduction, padtokeyboard]
     desmume:
-      features: [netplay, rewind, autosave]
+      features: [netplay, rewind, autosave, latency_reduction]
       cfeatures:
             internal_resolution_desmume:
                 prompt: VIDEO RESOLUTION
@@ -186,7 +186,7 @@ libretro:
     dolphin:
       features: [ ]
     dosbox:
-      features: [padtokeyboard]
+      features: [                           latency_reduction, padtokeyboard]
       cfeatures:
             core_timing:
                 prompt: CPU TIMING MODE (FPS)
@@ -218,7 +218,7 @@ libretro:
                     "scan2x":      scan2x
                     "scan3x":      scan3x
     duckstation:
-      features: [ ]
+      features: [                 autosave, latency_reduction]
       cfeatures:
             PatchFastBoot:
                 prompt: SHOW BIOS BOOTLOGO
@@ -296,7 +296,7 @@ libretro:
                     "PlayStation Mouse":             PlayStationMouse
                     "NeGcon":                        NeGcon
     fbneo:
-      features: [netplay, rewind, autosave]
+      features: [netplay, rewind, autosave, latency_reduction]
       cfeatures:
             fbneo-cpu-speed-adjust:
                 prompt: CPU CLOCK
@@ -356,7 +356,7 @@ libretro:
                             "Shared":                             shared
                             "Per-game":                           per-game
     fceumm:
-      features: [netplay, rewind, autosave]
+      features: [netplay, rewind, autosave, latency_reduction]
       cfeatures:
             fceumm_nospritelimit:
                 prompt: REDUCE SPRITE FLICKERING
@@ -409,7 +409,7 @@ libretro:
                     "2x-Postrender":        2x-Postrender
                     "2x-VBlank":            2x-VBlank
     flycast:
-      features: [         rewind, autosave]
+      features: [                 autosave]
       cfeatures:
             internal_resolution_flycast:
                 prompt: VIDEO RESOLUTION
@@ -514,9 +514,9 @@ libretro:
                             "Horizontal": horizontal
                             "Vertical":   vertical
     freeintv:
-      features: [padtokeyboard]
+      features: [                           latency_reduction, padtokeyboard]
     fuse:
-      features: [         rewind, autosave, padtokeyboard]
+      features: [                 autosave, latency_reduction, padtokeyboard]
       cfeatures:
             fuse_hide_border:
                 prompt: ZOOM (HIDES BORDER)
@@ -525,7 +525,7 @@ libretro:
                     "Off":  disabled
                     "On":   enabled
     gambatte:
-      features: [         rewind, autosave, colorization]
+      features: [         rewind, autosave, latency_reduction, colorization]
       cfeatures:
             gb_bootloader:
                 prompt: SHOW BIOS BOOTLOGO
@@ -543,7 +543,7 @@ libretro:
                     "LCD Ghosting (Accurate)": lcd_ghosting
                     "LCD Ghosting (Fast)":     lcd_ghosting_fast
     genesisplusgx:
-      features: [netplay, rewind, autosave]
+      features: [netplay, rewind, autosave, latency_reduction]
       cfeatures:
             gpgx_no_sprite_limit:
                 prompt: REDUCE SPRITE FLICKERING
@@ -606,25 +606,69 @@ libretro:
                             "Off":       disabled
                             "On":        enabled
     gpsp:
-      features: [         rewind, autosave]
+      features: [         rewind, autosave, latency_reduction]
     gw:
-      features: [ ]
+      features: [                           latency_reduction]
     handy:
-      features: [netplay, rewind, autosave]
+      features: [netplay, rewind, autosave, latency_reduction]
     hatari:
-      features: [                 autosave, padtokeyboard]
+      features: [                 autosave, latency_reduction, padtokeyboard]
     imame4all:
-      features: [netplay, rewind, autosave]
+      features: [netplay, rewind, autosave, latency_reduction]
     kronos:
       features: [                 autosave]
     lutro:
       features: [ ]
     mame:
-      features: [netplay, rewind, autosave]
+      features: [netplay,         autosave, latency_reduction]
+      cfeatures:
+            mame_cpu_overclock:
+                prompt: CPU OVERCLOCK
+                label:  Minimize ingame slowdowns of some games
+                choices:
+                    "default":        default
+                    "30":             30
+                    "35":             35
+                    "40":             40
+                    "45":             45
+                    "50":             50
+                    "55":             55
+                    "60":             60
+                    "65":             65
+                    "70":             70
+                    "75":             75
+                    "80":             80
+                    "85":             85
+                    "90":             90
+                    "95":             95
+                    "100":            100
+                    "105":            105
+                    "110":            110
+                    "115":            115
+                    "120":            120
+                    "125":            125
+                    "130":            130
+                    "135":            135
+                    "140":            140
+                    "145":            145
+                    "150":            150
+            mame_altres:
+                prompt: VIDEO RESOLUTION
+                label:  Increase video to Highter Resolution
+                choices:
+                    "640x480":        640x480
+                    "800x600":        800x600
+                    "960x720":        960x720
+                    "1024x768":       1024x768
+                    "1280x720":       1280x720
+                    "1600x800":       1600x800
+                    "1920x1080":      1920x1080
+                    "2560x1440":      2560x1440
+                    "3840x2160":      3840x2160
     hbmame:
-      features: [netplay, rewind, autosave]
+      features: [netplay,         autosave, latency_reduction]
     mame0139:
-      features: [netplay, rewind, autosave]
+      features: [netplay,         autosave, latency_reduction]
       cfeatures:
             mame_current_frame_skip:
                 prompt: FRAMSKIP
@@ -653,7 +697,7 @@ libretro:
                     "medium":         medium
                     "fast":           fast
     mame078plus:
-      features: [netplay, rewind, autosave]
+      features: [netplay, rewind, autosave, latency_reduction]
       cfeatures:
             mame2003-plus_analog:
                 prompt: CONTROL MAPPING
@@ -695,11 +739,11 @@ libretro:
                     "Arcade Universe BIOS 4.0 (Cheats)":   unibios40
                     "Arcade Universe BIOS 3.3 (Cheats)":   unibios33
     mednafen_lynx:
-      features: [netplay, rewind, autosave]
+      features: [netplay, rewind, autosave, latency_reduction]
     mednafen_ngp:
-      features: [netplay, rewind, autosave]
+      features: [netplay, rewind, autosave, latency_reduction]
     mednafen_psx:
-      features: [         rewind, autosave]
+      features: [                 autosave, latency_reduction]
       cfeatures:
             skip_bios_psx:
                 prompt: SHOW BIOS BOOTLOGO
@@ -782,11 +826,18 @@ libretro:
                     "Port2":            port2
                     "Port1+2":          port12
     mednafen_supergrafx:
-      features: [netplay, rewind, autosave]
+      features: [netplay, rewind, autosave, latency_reduction]
+      cfeatures:
+            sgx_nospritelimit:
+                prompt: REDUCE SPRITE FLICKERING
+                label:  Remove 16-sprites-per-scanline hardware limit
+                choices:
+                    "Off":        disabled
+                    "On":         enabled
     mednafen_wswan:
-      features: [netplay, rewind, autosave]
+      features: [netplay, rewind, autosave, latency_reduction]
     mgba:
-      features: [         rewind, autosave]
+      features: [         rewind, autosave, latency_reduction]
       cfeatures:
             skip_bios_mgba:
                 prompt: SHOW BIOS BOOTLOGO
@@ -857,7 +908,7 @@ libretro:
                             "9":  9
                             "10": 10
     mrboom:
-      features: [netplay, rewind, autosave]
+      features: [netplay, rewind, autosave, latency_reduction]
       cfeatures:
             mrboom-aspect:
                 prompt: TEAM MODE
@@ -874,7 +925,7 @@ libretro:
                     "Off":    OFF
                     "On":     ON
     mupen64plus-next:
-      features: [         rewind, autosave]
+      features: [                 autosave]
       cfeatures:
             43screensize:
                 prompt: VIDEO 4:3 RESOLUTION
@@ -976,7 +1027,7 @@ libretro:
                     "Off":          Off
                     "On":           On
     nestopia:
-      features: [netplay, rewind, autosave]
+      features: [netplay, rewind, autosave, latency_reduction]
       cfeatures:
             nestopia_nospritelimit:
                 prompt: REDUCE SPRITE FLICKERING
@@ -1150,11 +1201,11 @@ libretro:
                     "Manual keyboard":              Manual Keyboard
                     "Atari Joypad":                 Atari Joypad
     nxengine:
-      features: [ ]
+      features: [                           latency_reduction]
     o2em:
-      features: [                 autosave]
+      features: [         rewind, autosave, latency_reduction]
     opera:
-      features: [netplay, rewind, autosave]
+      features: [netplay, rewind, autosave, latency_reduction]
       cfeatures:
             high_resolution:
                 prompt: VIDEO RESOLUTION
@@ -1195,7 +1246,7 @@ libretro:
                     "Dinopark Tycoon":   timing_hack3
                     "Microcosm":         timing_hack5
     parallel_n64:
-      features: [         rewind, autosave]
+      features: [                 autosave]
       cfeatures:
             screensize:
                 prompt: VIDEO RESOLUTION
@@ -1220,7 +1271,7 @@ libretro:
                     "Bilinear":    bilinear
                     "Nearest":     nearest
     pce:
-      features: [netplay, rewind, autosave]
+      features: [netplay, rewind, autosave, latency_reduction]
       cfeatures:
             pce_nospritelimit:
                 prompt: REDUCE SPRITE FLICKERING
@@ -1229,7 +1280,7 @@ libretro:
                     "Off":        disabled
                     "On":         enabled
     pce_fast:
-      features: [netplay, rewind, autosave]
+      features: [netplay, rewind, autosave, latency_reduction]
       cfeatures:
             sgx_nospritelimit:
                 prompt: REDUCE SPRITE FLICKERING
@@ -1238,7 +1289,7 @@ libretro:
                     "Off":        disabled
                     "On":         enabled
     pcfx:
-      features: [netplay, rewind, autosave]
+      features: [netplay, rewind, autosave, latency_reduction]
       cfeatures:
             pcfx_nospritelimit:
                 prompt: REDUCE SPRITE FLICKERING
@@ -1247,7 +1298,7 @@ libretro:
                     "Off":        disabled
                     "On":         enabled
     pcsx_rearmed:
-      features: [         rewind, autosave]
+      features: [                 autosave, latency_reduction]
       cfeatures:
             show_bios_bootlogo:
                 prompt: SHOW BIOS BOOTLOGO
@@ -1292,7 +1343,7 @@ libretro:
                     "Pandemonium 2 Lazy Screen Update Fix": Pandemonium
                     "Parasite Eve 2/Vandal Hearts 1&2 Fix": Parasite_Eve
     picodrive:
-      features: [netplay, rewind, autosave]
+      features: [netplay,         autosave]
       cfeatures:
             picodrive_sprlim:
                 prompt: REDUCE SPRITE FLICKERING
@@ -1301,9 +1352,9 @@ libretro:
                     "Off":          disabled
                     "On":           enabled
     pocketsnes:
-      features: [netplay, rewind, autosave]
+      features: [netplay, rewind, autosave, latency_reduction]
     pokemini:
-      features: [         rewind, autosave]
+      features: [         rewind, autosave, latency_reduction]
       cfeatures:
             pokemini_lcdfilter:
                 prompt: LCD FILTER
@@ -1318,9 +1369,9 @@ libretro:
                     "Off":  3shades
                     "On":   analog
     ppsspp:
-      features: [         rewind, autosave]
+      features: [         rewind, autosave, latency_reduction]
     prboom:
-      features: [         rewind, autosave]
+      features: [         rewind, autosave, latency_reduction]
       cfeatures:
             prboom-resolution:
                 prompt: VIDEO RESOLUTION
@@ -1335,7 +1386,7 @@ libretro:
                     "2240x1400":  2240x1400
                     "2560x1600":  2560x1600
     prosystem:
-      features: [         rewind, autosave]
+      features: [         rewind, autosave, latency_reduction]
     puae:
       features: [         rewind, autosave, padtokeyboard]
       cfeatures:
@@ -1403,7 +1454,7 @@ libretro:
                     "1":          1
                     "2":          2
     px68k:
-      features: [padtokeyboard]
+      features: [                           latency_reduction, padtokeyboard]
       cfeatures:
             px68k_cpuspeed:
                 prompt: CPU SPEED (OVERCLOCK)
@@ -1456,7 +1507,7 @@ libretro:
                     "Megadrive (8 Buttons)":     CPSF-MD (8 Buttons)
                     "Super Famicom (8 Buttons)": CPSF-SFC (8 Buttons)
     quasi88:
-      features: [netplay, rewind, autosave, padtokeyboard]
+      features: [netplay, rewind, autosave, latency_reduction, padtokeyboard]
       cfeatures:
             q88_basic_mode:
                 prompt: PC MODEL
@@ -1484,11 +1535,11 @@ libretro:
                     "Off":                  disabled
                     "On":                   enabled
     retro8:
-      features: [ ]
+      features: [                           latency_reduction]
     scummvm:
-      features: [padtokeyboard]
+      features: [                           latency_reduction, padtokeyboard]
     snes9x:
-      features: [netplay, rewind, autosave]
+      features: [netplay, rewind, autosave, latency_reduction]
       cfeatures:
             reduce_sprite_flicker:
                 prompt: REDUCE SPRITE FLICKERING (HACK, UNSTABLE)
@@ -1530,7 +1581,7 @@ libretro:
                     "Merge":      merge
                     "Blur":       blur
     snes9x_next:
-      features: [netplay, rewind, autosave]
+      features: [netplay, rewind, autosave, latency_reduction]
       cfeatures:
             2010_reduce_sprite_flicker:
                 prompt: REDUCE SPRITE FLICKERING (HACK, UNSTABLE)
@@ -1563,15 +1614,15 @@ libretro:
                     "30 MHz":               30 MHz
                     "40 MHz":               40 MHz
     stella:
-      features: [netplay, rewind, autosave]
+      features: [netplay, rewind, autosave, latency_reduction]
     tgbdual:
-      features: [netplay, rewind, autosave]
+      features: [netplay, rewind, autosave, latency_reduction]
     theodore:
-      features: [netplay, rewind, autosave, padtokeyboard]
+      features: [netplay, rewind, autosave, latency_reduction, padtokeyboard]
     tic80:
-      features: [padtokeyboard]
+      features: [                           latency_reduction, padtokeyboard]
     tyrquake:
-      features: [padtokeyboard]
+      features: [                           latency_reduction, padtokeyboard]
       features: [         rewind, autosave]
       cfeatures:
             tyrquake_resolution:
@@ -1611,7 +1662,7 @@ libretro:
                     "Off":        disabled
                     "On":         enabled
     vb:
-      features: [netplay, rewind, autosave]
+      features: [netplay, rewind, autosave, latency_reduction]
       cfeatures:
             2d_color_mode:
                 prompt: COLOR PALETTE (2D)
@@ -1636,7 +1687,7 @@ libretro:
                     "green/magenta":       green & magenta
                     "yellow/blue":         yellow & blue
     vba-m:
-      features: [         rewind, autosave]
+      features: [         rewind, autosave, latency_reduction]
       systems:
             gb:
                 cfeatures:
@@ -1751,7 +1802,7 @@ libretro:
                             "115": 115
                             "120": 120
     vecx:
-      features: [         rewind, autosave]
+      features: [         rewind, autosave, latency_reduction]
       cfeatures:
             res_multi:
                 prompt: RESOLUTION MULTIPLIER
@@ -1762,7 +1813,7 @@ libretro:
                     "3":    3
                     "4":    4
     vice_x64:
-      features: [         rewind, autosave, padtokeyboard]
+      features: [         rewind, autosave, latency_reduction, padtokeyboard]
       cfeatures:
             external_palette:
                 prompt: EXTERNAL PALETTE
@@ -1812,17 +1863,17 @@ libretro:
                     "Off":              disabled
                     "On":               enabled
     vice_x64sc:
-      features: [         rewind, autosave, padtokeyboard]
+      features: [         rewind, autosave, latency_reduction, padtokeyboard]
     vice_xplus4:
-      features: [         rewind, autosave, padtokeyboard]
+      features: [         rewind, autosave, latency_reduction, padtokeyboard]
     vice_x128:
-      features: [         rewind, autosave, padtokeyboard]
+      features: [         rewind, autosave, latency_reduction, padtokeyboard]
     vice_xvic:
-      features: [         rewind, autosave, padtokeyboard]
+      features: [         rewind, autosave, latency_reduction, padtokeyboard]
     vice_xpet:
-      features: [         rewind, autosave, padtokeyboard]
+      features: [         rewind, autosave, latency_reduction, padtokeyboard]
     virtualjaguar:
-      features: [padtokeyboard]
+      features: [                 autosave, latency_reduction, padtokeyboard]
       cfeatures:
             usefastblitter:
                 prompt: FAST BLITTER (LESS COMPATIBLE)
@@ -1843,7 +1894,7 @@ libretro:
                     "Off":      disabled
                     "On":       enabled
     yabasanshiro:
-      features: [         rewind, autosave]
+      features: [                 autosave]
       cfeatures:
             resolution_mode:
                 prompt: VIDEO RESOLUTION

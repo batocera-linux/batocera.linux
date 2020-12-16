@@ -195,8 +195,25 @@ def generateCoreSettings(retroarchCore, system, rom):
     if (system.config['core'] == 'o2em'):
         # Virtual keyboard transparency
         coreSettings.save('o2em_vkb_transparency ', '"20%"')
-    
-    # MAME 2003+
+
+    # MAME 0.225
+    if (system.config['core'] == 'mame'):
+        # Lightgun mode
+        coreSettings.save('mame_lightgun_mode', '"lightgun"')
+        # Enable cheats
+        coreSettings.save('mame_cheats_enable', '"enabled"')
+        # CPU Overclock
+        if system.isOptSet('mame_cpu_overclock'):
+            coreSettings.save('mame_cpu_overclock', system.config['mame_cpu_overclock'])
+        else:
+            coreSettings.save('mame_cpu_overclock', '"default"')
+        # Video Resolution
+        if system.isOptSet('mame_altres'):
+            coreSettings.save('mame_altres', system.config['mame_altres'])
+        else:
+            coreSettings.save('mame_altres', '"640x480"')
+
+    # MAME 2003 Plus
     if (system.config['core'] == 'mame078plus'):
         # Skip Disclaimer and Warnings
         coreSettings.save('mame2003-plus_skip_disclaimer', '"enabled"')
@@ -398,7 +415,7 @@ def generateCoreSettings(retroarchCore, system, rom):
             coreSettings.save('sgx_nospritelimit', system.config['sgx_nospritelimit'])
         else:
             coreSettings.save('sgx_nospritelimit', '"enabled"')
-        
+
     # Nec PC-FX
     if (system.config['core'] == 'pcfx'):
         # Remove 16-sprites-per-scanline hardware limit
@@ -747,7 +764,7 @@ def generateCoreSettings(retroarchCore, system, rom):
         else:
             coreSettings.save('snes9x_2010_overclock', '"10 MHz (Default)"')
 
-    # TODO: Add CORE options for BSnes on PC
+    # TODO: Add CORE options for BSnes and PocketSNES
     
     # Nintendo Virtual Boy
     if (system.config['core'] == 'vb'):
