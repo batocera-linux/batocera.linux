@@ -370,6 +370,13 @@ else
 WINE_LUTRIS_CONF_OPTS += --without-zlib
 endif
 
+# Cleanup final directory
+define WINE_LUTRIS_REMOVE_INCLUDES_HOOK
+        rm -Rf $(TARGET_DIR)/usr/wine/lutris/include
+endef
+
+WINE_LUTRIS_POST_INSTALL_TARGET_HOOKS += WINE_LUTRIS_REMOVE_INCLUDES_HOOK
+
 # host-gettext is essential for .po file support in host-wine wrc
 ifeq ($(BR2_SYSTEM_ENABLE_NLS),y)
 HOST_WINE_LUTRIS_DEPENDENCIES += host-gettext

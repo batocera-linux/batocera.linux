@@ -130,6 +130,13 @@ else
 WINE_PROTON_CONF_OPTS += --without-fontconfig
 endif
 
+# Cleanup final directory
+define WINE_PROTON_REMOVE_INCLUDES_HOOK
+        rm -Rf $(TARGET_DIR)/usr/wine/proton/include
+endef
+
+WINE_PROTON_POST_INSTALL_TARGET_HOOKS += WINE_PROTON_REMOVE_INCLUDES_HOOK
+
 # To support freetype in wine we also need freetype in host-wine for the cross compiling tools
 ifeq ($(BR2_PACKAGE_FREETYPE),y)
 WINE_PROTON_CONF_OPTS += --with-freetype
