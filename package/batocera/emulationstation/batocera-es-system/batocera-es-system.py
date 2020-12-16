@@ -12,6 +12,17 @@ import shutil
 from collections import OrderedDict
 from operator import itemgetter
 
+def ordered_load(stream, Loader=yaml.Loader, object_pairs_hook=OrderedDict):
+    class OrderedLoader(Loader):
+        pass
+    def construct_mapping(loader, node):
+        loader.flatten_mapping(node)
+        return object_pairs_hook(loader.construct_pairs(node))
+    OrderedLoader.add_constructor(
+        yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG,
+        construct_mapping)
+    return yaml.load(stream, OrderedLoader)
+
 class EsSystemConf:
 
     default_parentpath = "/userdata/roms"
@@ -226,7 +237,7 @@ class EsSystemConf:
     # Write the information in the es_features.cfg file
     @staticmethod
     def createEsFeatures(featuresYaml, systems, esFeaturesFile, arch):
-        features = yaml.safe_load(file(featuresYaml, "r"))
+        features = ordered_load(file(featuresYaml, "r"))
         es_features = open(esFeaturesFile, "w")
         featuresTxt = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n"
         featuresTxt += "<features>\n"
@@ -259,8 +270,7 @@ class EsSystemConf:
                             for cfeature in features[emulator]["cores"][core]["cfeatures"]:
                                 if "archs_include" not in features[emulator]["cores"][core]["cfeatures"][cfeature] or arch in features[emulator]["cores"][core]["cfeatures"][cfeature]["archs_include"]:
                                     featuresTxt += "        <feature name=\"{}\" value=\"{}\">\n".format(features[emulator]["cores"][core]["cfeatures"][cfeature]["prompt"], cfeature)
-                                    choices = OrderedDict(sorted(features[emulator]["cores"][core]["cfeatures"][cfeature]["choices"].items(), key=itemgetter(1)))
-                                    for choice in choices:
+                                    for choice in features[emulator]["cores"][core]["cfeatures"][cfeature]["choices"]:
                                         featuresTxt += "          <choice name=\"{}\" value=\"{}\" />\n".format(choice, features[emulator]["cores"][core]["cfeatures"][cfeature]["choices"][choice])
                                     featuresTxt += "        </feature>\n"
                                 else:
@@ -285,8 +295,7 @@ class EsSystemConf:
                             for cfeature in features[emulator]["systems"][system]["cfeatures"]:
                                 if "archs_include" not in features[emulator]["systems"][system]["cfeatures"][cfeature] or arch in features[emulator]["systems"][system]["cfeatures"][cfeature]["archs_include"]:
                                     featuresTxt += "        <feature name=\"{}\" value=\"{}\">\n".format(features[emulator]["systems"][system]["cfeatures"][cfeature]["prompt"], cfeature)
-                                    choices = OrderedDict(sorted(features[emulator]["systems"][system]["cfeatures"][cfeature]["choices"].items(), key=itemgetter(1)))
-                                    for choice in choices:
+                                    for choice in features[emulator]["systems"][system]["cfeatures"][cfeature]["choices"]:
                                         featuresTxt += "        <choice name=\"{}\" value=\"{}\" />\n".format(choice, features[emulator]["systems"][system]["cfeatures"][cfeature]["choices"][choice])
                                     featuresTxt += "        </feature>\n"
                                 else:
@@ -297,8 +306,7 @@ class EsSystemConf:
                     for cfeature in features[emulator]["cfeatures"]:
                         if "archs_include" not in features[emulator]["cfeatures"][cfeature] or arch in features[emulator]["cfeatures"][cfeature]["archs_include"]:
                             featuresTxt += "    <feature name=\"{}\" value=\"{}\">\n".format(features[emulator]["cfeatures"][cfeature]["prompt"], cfeature)
-                            choices = OrderedDict(sorted(features[emulator]["cfeatures"][cfeature]["choices"].items(), key=itemgetter(1)))
-                            for choice in choices:
+                            for choice in features[emulator]["cfeatures"][cfeature]["choices"]:
                                 featuresTxt += "      <choice name=\"{}\" value=\"{}\" />\n".format(choice, features[emulator]["cfeatures"][cfeature]["choices"][choice])
                             featuresTxt += "    </feature>\n"
                         else:
