@@ -86,10 +86,10 @@ class DolphinGenerator(Generator):
         dolphinSettings.set("Core", "GameCubeLanguage", getGameCubeLangFromEnvironment())
 
         # Enable MMU
-        if system.isOptSet("enable_mmu") and not system.getOptBoolean("enable_mmu"):
-            dolphinSettings.set("Core", "MMU", '"False"')
-        else:
+        if system.isOptSet("enable_mmu") and system.getOptBoolean("enable_mmu"):
             dolphinSettings.set("Core", "MMU", '"True"')
+        else:
+            dolphinSettings.set("Core", "MMU", '"False"')
 
         # Backend - Default OpenGL
         if system.isOptSet("gfxbackend") and system.getOptBoolean("gfxbackend") == 'Vulkan':
@@ -135,7 +135,7 @@ class DolphinGenerator(Generator):
         else:
             dolphinGFXSettings.set("Settings", "ShowFPS", '"False"')
 
-        # HiResTextures - Default On
+        # HiResTextures
         if system.isOptSet('hires_textures') and not system.getOptBoolean('hires_textures'):
             dolphinGFXSettings.set("Settings", "HiresTextures",      '"False"')
             dolphinGFXSettings.set("Settings", "CacheHiresTextures", '"False"')
@@ -143,7 +143,7 @@ class DolphinGenerator(Generator):
             dolphinGFXSettings.set("Settings", "HiresTextures",      '"True"')
             dolphinGFXSettings.set("Settings", "CacheHiresTextures", '"True"')
             
-        # Widescreen Hack - Default Off
+        # Widescreen Hack
         if (system.isOptSet('widescreen_hack') and system.getOptBoolean('widescreen_hack'):
             # Prefer Cheats than Hack 
             if system.isOptSet('enable_cheats') and system.getOptBoolean('enable_cheats'))):
@@ -181,25 +181,25 @@ class DolphinGenerator(Generator):
                 dolphinGFXSettings.remove_option("Enhancements", "DisableCopyFilter")
                 dolphinGFXSettings.remove_option("Enhancements", "ForceTrueColor")  
 
-        # Internal resolution settings - Default 1X
+        # Internal resolution settings
         if system.isOptSet('internalresolution'):
             dolphinGFXSettings.set("Settings", "InternalResolution", system.config["internalresolution"])
         else:
             dolphinGFXSettings.set("Settings", "InternalResolution", '"1"')
 
-        # VSync - Default On
+        # VSync
         if system.isOptSet('vsync'):
             dolphinGFXSettings.set("Hardware", "VSync", system.getOptBoolean('vsync'))
         else:
             dolphinGFXSettings.set("Hardware", "VSync", '"True"')
 
-        # Anisotropic filtering - Auto 0
+        # Anisotropic filtering
         if system.isOptSet('anisotropic_filtering'):
             dolphinGFXSettings.set("Enhancements", "MaxAnisotropy", system.config["anisotropic_filtering"])
         else:
             dolphinGFXSettings.set("Enhancements", "MaxAnisotropy", '"0"')
 
-		# Anti aliasing - Auto 0
+		# Anti aliasing
         if system.isOptSet('antialiasing'):
             dolphinGFXSettings.set("Settings", "MSAA", system.config["antialiasing"])
         else:
