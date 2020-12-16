@@ -14,11 +14,11 @@ def generateControllerConfig(system, playersControllers, rom):
         if (system.isOptSet('emulatedwiimotes') and system.getOptBoolean('emulatedwiimotes') == False):
             #Generate if hardcoded
             generateControllerConfig_realwiimotes("WiimoteNew.ini", "Wiimote")
-            generateControllerConfig_gamecube(playersControllers,rom) # you can use the gamecube pads on the wii together with wiimotes          
+            generateControllerConfig_gamecube(playersControllers,rom) # you can use the gamecube pads on the wii together with wiimotes
         elif (system.isOptSet('emulatedwiimotes') and system.getOptBoolean('emulatedwiimotes') == True):
             #Generate if hardcoded
             generateControllerConfig_emulatedwiimotes(playersControllers, rom)
-            removeControllerConfig_gamecube() # because pads will already be used as emulated wiimotes       
+            removeControllerConfig_gamecube() # because pads will already be used as emulated wiimotes
         elif (".cc." in rom or ".side." in rom or ".is." in rom or ".it." in rom or ".in." in rom or ".ti." in rom or ".ts." in rom or ".tn." in rom or ".ni." in rom or ".ns." in rom or ".nt." in rom):
             #Generate if auto and name extensions are present
             generateControllerConfig_emulatedwiimotes(playersControllers, rom)
@@ -58,7 +58,7 @@ def generateControllerConfig_emulatedwiimotes(playersControllers, rom):
 
     extraOptions = {}
     extraOptions["Source"] = "1"
-        
+
 
     # side wiimote
     # l2 for shaking actions
@@ -75,10 +75,10 @@ def generateControllerConfig_emulatedwiimotes(playersControllers, rom):
 
     # i: infrared, s: swing, t: tilt, n: nunchuk
     # 12 possible combinations : is si / it ti / in ni / st ts / sn ns / tn nt
-    
 
-    
-    
+
+
+
 
     # i
     if ".is." in rom or ".it." in rom or ".in." in rom:
@@ -318,6 +318,27 @@ def generateControllerConfig_any(playersControllers, filename, anyDefKey, anyMap
             # write the 2nd part
             if input.name in { "joystick1up", "joystick1left", "joystick2up", "joystick2left"} and keyname is not None:
                 write_key(f, anyReverseAxes[keyname], input.type, input.id, input.value, pad.nbaxes, True, None)
+            if system.isOptSet("dsmotion") and system.getOptBoolean("dsmotion") == True:
+                f.write("IMUGyroscope/Pitch Up = `Gyro X-`\n")
+                f.write("IMUGyroscope/Pitch Down = `Gyro X+`\n")
+                f.write("IMUGyroscope/Roll Left = `Gyro Z-`\n")
+                f.write("IMUGyroscope/Roll Right = `Gyro Z+`\n")
+                f.write("IMUGyroscope/Yaw Left = `Gyro Y-`\n")
+                f.write("IMUGyroscope/Yaw Right = `Gyro Y+`\n")
+                f.write("IMUIR/Recenter = `Button 10`\n")
+                f.write("IMUAccelerometer/Left = `Accel X-`\n")
+                f.write("IMUAccelerometer/Right = `Accel X+`\n")
+                f.write("IMUAccelerometer/Forward = `Accel Z-`\n")
+                f.write("IMUAccelerometer/Backward = `Accel Z+`\n")
+                f.write("IMUAccelerometer/Up = `Accel Y-`\n")
+                f.write("IMUAccelerometer/Down = `Accel Y+`\n")
+            if system.isOptSet("mouseir") and system.getOptBoolean("mouseir") == True:
+                f.write("IR/Up = `Cursor Y-`\n")
+                f.write("IR/Down = `Cursor Y+`\n")
+                f.write("IR/Left = `Cursor X-`\n")
+                f.write("IR/Right = `Cursor X+`\n")
+            if system.isOptSet("rumble") and system.getOptBoolean("rumble") == True:
+                f.write("Rumble/Motor = Weak\n")
 
         nplayer += 1
     f.write
