@@ -6,8 +6,8 @@ libretro:
   cfeatures:
     gfxbackend:
       archs_include: [x86, x86_64, rpi4]
-      prompt: GRAPHICS BACKEND
-      label:  Choose your graphics rendering
+      prompt:      GRAPHICS BACKEND
+      description: Choose your graphics rendering
       choices:
         "OpenGL": opengl
         "Vulkan": vulkan
@@ -17,15 +17,15 @@ libretro:
       features: [netplay, rewind, autosave, latency_reduction, padtokeyboard]
       cfeatures:
             81_chroma_81:
-                prompt: COLORISATION
-                label:  Enable the Chroma 81 interface
+                prompt:      COLORISATION
+                description: Enable the Chroma 81 interface
                 choices:
                     "Automatic": automatic
                     "Off":       disabled
                     "On":        enabled
             81_highres:
-                prompt: HIGH RESOLUTION
-                label:  Enables WRX high resolution module
+                prompt:      HIGH RESOLUTION
+                description: Enables WRX high resolution module
                 choices:
                     "Automatic": automatic
                     "Off":       none
@@ -36,33 +36,33 @@ libretro:
             atari800:
                 cfeatures:
                     atari800_system:
-                        prompt: ATARI SYSTEM
-                        label:  Choose what Atari System to emulate
+                        prompt:      ATARI SYSTEM
+                        description: Choose what Atari System to emulate
                         choices:
                             "400/600XL/800 (48K) (OS B)": 400/800 (OS B)
                             "800XL/1200XL/XEGS (64K)":    800XL (64K)
                             "130XE (128K)":               130XE (128K)
                     atari800_ntscpal:
-                        prompt: VIDEO STANDARD
-                        label:  Switch frequency and resolution by region
+                        prompt:      VIDEO STANDARD
+                        description: Switch frequency and resolution by region
                         choices:
                             "NTSC":    NTSC
                             "PAL":     PAL
                     atari800_sioaccel:
-                        prompt: SIO ACCELERATION
-                        label:  Speeds up file loading. A few games will not load
+                        prompt:      SIO ACCELERATION
+                        description: Speeds up file loading. A few games will not load
                         choices:
                             "Off":     disabled
                             "On":      enabled
                     atari800_artifacting:
-                        prompt: HI-RES ARTIFACTING
-                        label:  Artificial color filters to mimic actual hardware
+                        prompt:      HI-RES ARTIFACTING
+                        description: Artificial color filters to mimic actual hardware
                         choices:
                             "Off":     disabled
                             "On":      enabled
                     atari800_resolution:
-                        prompt: INTERNAL RESOLUTION
-                        label:  Enables alternate resolutions for some games
+                        prompt:      INTERNAL RESOLUTION
+                        description: Enables alternate resolutions for some games
                         choices:
                             "336x240": 336x240
                             "320x240": 320x240
@@ -73,8 +73,8 @@ libretro:
             atari5200:
                 cfeatures:
                     atari800_opt2:
-                        prompt: JOY HACK (FOR ROBOTRON)
-                        label:  Treats the second analog stick as joystick 2
+                        prompt:      JOY HACK (FOR ROBOTRON)
+                        description: Treats the second analog stick as joystick 2
                         choices:
                             "Off":     disabled
                             "On":      enabled
@@ -84,8 +84,8 @@ libretro:
       features: [         rewind, autosave, latency_reduction, padtokeyboard]
       cfeatures:
             bluemsx_nospritelimits:
-                prompt: REDUCE SPRITE FLICKERING
-                label:  Remove the 4 sprite per line limit
+                prompt:      REDUCE SPRITE FLICKERING
+                description: Remove the 4 sprite per line limit
                 choices:
                     "Off": OFF
                     "On":  ON
@@ -95,15 +95,15 @@ libretro:
       features: [netplay, rewind, autosave, latency_reduction, padtokeyboard]
       cfeatures:
             cap32_model:
-                prompt: CPC MODEL
-                label:  Choose which Amstrad CPC model to emulate
+                prompt:      CPC MODEL
+                description: Choose which Amstrad CPC model to emulate
                 choices:
                     "464":   464
                     "6128":  6128
                     "6128+": 6128+
             cap32_ram:
-                prompt: RAM SIZE
-                label:  CPC physical RAM size in kB
+                prompt:      RAM SIZE
+                description: CPC physical RAM size in kB
                 choices:
                     "64":    64
                     "128":   128
@@ -118,8 +118,8 @@ libretro:
       features: [netplay, rewind, autosave, latency_reduction]
       cfeatures:
             internal_resolution_desmume:
-                prompt: VIDEO RESOLUTION
-                label:  Improve the fidelity of 3D models (unaffect 2D)
+                prompt:      VIDEO RESOLUTION
+                description: Improve the fidelity of 3D models (unaffect 2D)
                 choices:
                     "256x192":   256x192
                     "512x384":   512x384
@@ -132,21 +132,21 @@ libretro:
                     "2304x1728": 2304x1728
                     "2560x1920": 2560x1920
             texture_scaling:
-                prompt: TEXTURES UPSCALING (XBRZ)
-                label:  Upscaling textures resolution on 3D objetcs
+                prompt:      TEXTURES UPSCALING (XBRZ)
+                description: Upscaling textures resolution on 3D objetcs
                 choices:
                     "Off": 1
                     "2x":  2
                     "4x":  4
             texture_smoothing:
-                prompt: TEXTURES SMOOTHING
-                label:  Smooths out textures on 3D objetcs
+                prompt:      TEXTURES SMOOTHING
+                description: Smooths out textures on 3D objetcs
                 choices:
                     "Off": disabled
                     "On":  enabled
             multisampling:
-                prompt: ANTI-ALIASING (MSAA)
-                label:  Smooth out jagged edges on 3D objetcs polygons 
+                prompt:      ANTI-ALIASING (MSAA)
+                description: Smooth out jagged edges on 3D objetcs polygons 
                 choices:
                     "Off": disabled
                     "2x":  2
@@ -155,8 +155,8 @@ libretro:
                     "16x": 16
                     "32x": 32
             screens_layout:
-                prompt: SCREEN LAYOUT
-                label:  Allows you to arrange the DS screens
+                prompt:      SCREEN LAYOUT
+                description: Allows you to arrange the DS screens
                 choices:
                     "top/bottom":    top/bottom
                     "bottom/top":    bottom/top
@@ -168,8 +168,8 @@ libretro:
                     "hybrid/top":    hybrid/top
                     "hybrid/bottom": hybrid/bottom
             frameskip_desmume:
-                prompt: FRAME SKIP
-                label:  Skip frames to improve performance (Smoothless)
+                prompt:      FRAME SKIP
+                description: Skip frames to improve performance (Smoothless)
                 choices:
                     "Off": 0
                     "1":   1
@@ -189,15 +189,15 @@ libretro:
       features: [                           latency_reduction, padtokeyboard]
       cfeatures:
             core_timing:
-                prompt: CPU TIMING MODE (FPS)
-                label:  Skip frames to improve performance (Smoothless)
+                prompt:      CPU TIMING MODE (FPS)
+                description: Skip frames to improve performance (Smoothless)
                 choices:
                     "internal (fixed 60fps)":  internal_fixed
                     "internal (variable fps)": internal_variable
                     "external (variable fps)": external
             filter:
-                prompt: VIDEO FILTER
-                label:  Apply to achieve some kind of visual effect
+                prompt:      VIDEO FILTER
+                description: Apply to achieve some kind of visual effect
                 choices:
                     "Off":         none
                     "normal2x":    normal2x
@@ -221,14 +221,14 @@ libretro:
       features: [                 autosave, latency_reduction]
       cfeatures:
             duckstation_PatchFastBoot:
-                prompt: SHOW BIOS BOOTLOGO
-                label:  Show BIOS animation when starting content
+                prompt:      SHOW BIOS BOOTLOGO
+                description: Show BIOS animation when starting content
                 choices:
                     "Off":        "true"
                     "On":         "false"
             duckstation_resolution_scale:
-                prompt: VIDEO RESOLUTION
-                label:  Improve the fidelity of 3D models (unaffect 2D)
+                prompt:      VIDEO RESOLUTION
+                description: Improve the fidelity of 3D models (unaffect 2D)
                 choices:
                     "1x(native)": 1
                     "2x":         2
@@ -240,8 +240,8 @@ libretro:
                     "8x":         8
                     "9x":         9
             duckstation_antialiasing:
-                prompt: ANTI-ALIASING (MSAA/SSAA)
-                label:  Smooth out jagged edges on 3D objetcs polygons 
+                prompt:      ANTI-ALIASING (MSAA/SSAA)
+                description: Smooth out jagged edges on 3D objetcs polygons 
                 choices:
                     "Off":        1
                     "2x msaa":    2
@@ -255,29 +255,29 @@ libretro:
                     "16x ssaa":   16-ssaa
                     "32x ssaa":   32-ssaa
             duckstation_texture_filtering:
-                prompt: TEXTURE FILTERING
-                label:  Smooths out textures on 3D objetcs
+                prompt:      TEXTURE FILTERING
+                description: Smooths out textures on 3D objetcs
                 choices:
                     "nearest":    Nearest
                     "bilinear":   Bilinear
                     "jinc2":      JINC2
                     "xBR":        xBR
             duckstation_widescreen_hack:
-                prompt: WIDESCREEN HACK
-                label:  You must use a 16/9 RATIO and disable BEZEL
+                prompt:      WIDESCREEN HACK
+                description: You must use a 16/9 RATIO and disable BEZEL
                 choices:
                     "Off":        "false"
                     "On":         "true"
             duckstation_CropMode:
-                prompt: CROP MODE
-                label:  Changes how much of the image is cropped
+                prompt:      CROP MODE
+                description: Changes how much of the image is cropped
                 choices:
                     "Off":                "None"
                     "Only Overscan Area": "Overscan"
                     "All Borders":        "Borders"
             duckstation_Controller1:
-                prompt: CONTROLLER 1 TYPE
-                label:  Sets the type of controller for slot 1
+                prompt:      CONTROLLER 1 TYPE
+                description: Use DualShock type for games with Rumble mode
                 choices:
                     "None":                          None
                     "Digital Controller":            DigitalController
@@ -286,8 +286,8 @@ libretro:
                     "PlayStation Mouse":             PlayStationMouse
                     "NeGcon":                        NeGcon
             duckstation_Controller2:
-                prompt: CONTROLLER 2 TYPE
-                label:  Sets the type of controller for slot 2
+                prompt:      CONTROLLER 2 TYPE
+                description: Use DualShock type for games with Rumble mode
                 choices:
                     "None":                          None
                     "Digital Controller":            DigitalController
@@ -299,8 +299,8 @@ libretro:
       features: [netplay, rewind, autosave, latency_reduction]
       cfeatures:
             fbneo-cpu-speed-adjust:
-                prompt: CPU CLOCK
-                label:  Can fix native slowdowns in some games
+                prompt:      CPU CLOCK
+                description: Can fix native slowdowns in some games
                 choices:
                     "30%":        30%
                     "40%":        40%
@@ -321,8 +321,8 @@ libretro:
                     "190%":       190%
                     "200%":       200%
             fbneo-frameskip:
-                prompt: FRAMESKIP
-                label:  Skip frames to improve performance (Smoothless)
+                prompt:      FRAMESKIP
+                description: Skip frames to improve performance (Smoothless)
                 choices:
                     "No skipping":                         0
                     "Skip rendering of 1 frames out of 2": 1
@@ -330,8 +330,8 @@ libretro:
                     "Skip rendering of 3 frames out of 4": 3
                     "Skip rendering of 4 frames out of 5": 4
             fbneo-lightgun-hide-crosshair:
-                prompt: CROSSHAIR (LIGHTGUN)
-                label:  Show crosshair if you play with a lightgun device
+                prompt:      CROSSHAIR (LIGHTGUN)
+                description: Show crosshair if you play with a lightgun device
                 choices:
                     "Off":                                enabled
                     "On":                                 disabled
@@ -339,8 +339,8 @@ libretro:
             neogeo:
                 cfeatures:
                     fbneo-neogeo-mode-switch:
-                        prompt: NEOGEO MODE
-                        label:  Load appropriate Bios depending on your choice
+                        prompt:      NEOGEO MODE
+                        description: Load appropriate Bios depending on your choice
                         choices:
                             "Console AES World":                   AES Asia
                             "Console AES Japan":                   AES Japan
@@ -349,8 +349,8 @@ libretro:
                             "Arcade MVS Japan":                    MVS Japan
                             "Arcade Universe BIOS (Cheats)":       Universe BIOS
                     fbneo-memcard-mode:
-                        prompt: MEMORY CARD MODE
-                        label:  Change the behavior for the memory card
+                        prompt:      MEMORY CARD MODE
+                        description: Change the behavior for the memory card
                         choices:
                             "Off":                                disabled
                             "Shared":                             shared
@@ -359,14 +359,14 @@ libretro:
       features: [netplay, rewind, autosave, latency_reduction]
       cfeatures:
             fceumm_nospritelimit:
-                prompt: REDUCE SPRITE FLICKERING
-                label:  Removes 8-sprites-per-scanline hardware limit
+                prompt:      REDUCE SPRITE FLICKERING
+                description: Removes 8-sprites-per-scanline hardware limit
                 choices:
                     "Off":                  disabled
                     "On":                   enabled
             fceumm_palette:
-                prompt: COLOR PALETTE
-                label:  Choose which color palette is going to be used
+                prompt:      COLOR PALETTE
+                description: Choose which color palette is going to be used
                 choices:
                     "default":              default
                     "asqrealc":             asqrealc
@@ -387,23 +387,23 @@ libretro:
                     "wavebeam":             wavebeam
                     "custom":               custom
             fceumm_ntsc_filter:
-                prompt: NTSC FILTER
-                label:  Enable blargg NTSC video filters
+                prompt:      NTSC FILTER
+                description: Enable blargg NTSC video filters
                 choices:
                     "Off":                                    disabled
                     "Composite (color bleeding + artifacts)": composite
                     "SVideo (color bleeding only)":           svideo
                     "RGB (crisp image)":                      rgb
             fceumm_sndquality:
-                prompt: SOUND QUALITY (HIGHTER DEVICES)
-                label:  High sound quality for games using expansion audio
+                prompt:      SOUND QUALITY (HIGHTER DEVICES)
+                description: High sound quality for games using expansion audio
                 choices:
                     "Low":                  Low
                     "High":                 High
                     "Very High":            Very High
             fceumm_overclocking:
-                prompt: PPU OVERCLOCKING
-                label:  Minimize ingame slowdowns of some games (Contra Force)
+                prompt:      PPU OVERCLOCKING
+                description: Minimize ingame slowdowns of some games (Contra Force)
                 choices:
                     "disabled":             disabled
                     "2x-Postrender":        2x-Postrender
@@ -412,8 +412,8 @@ libretro:
       features: [                 autosave]
       cfeatures:
             reicast_internal_resolution:
-                prompt: VIDEO RESOLUTION
-                label:  Improve the fidelity of 3D models (unaffect 2D)
+                prompt:      VIDEO RESOLUTION
+                description: Improve the fidelity of 3D models (unaffect 2D)
                 choices:
                     "640x480":    640x480
                     "1280x960":   1280x960
@@ -436,14 +436,14 @@ libretro:
                     "12160x9120": 12160x9120
                     "12800x9600": 12800x9600
             reicast_mipmapping:
-                prompt: TEXTURES MIP-MAPPING (BLUR)
-                label:  Smooths out textures on 3D objetcs
+                prompt:      TEXTURES MIP-MAPPING (BLUR)
+                description: Smooths out textures on 3D objetcs
                 choices:
                     "Off": disabled
                     "On":  enabled
             reicast_anisotropic_filtering:
-                prompt: ANISOTROPIC FILTERING
-                label:  Enhance the quality with on perspective textures
+                prompt:      ANISOTROPIC FILTERING
+                description: Enhance the quality with on perspective textures
                 choices:
                     "Off": off
                     "2x":  2
@@ -451,16 +451,16 @@ libretro:
                     "8x":  8
                     "16x": 16
             reicast_texupscale:
-                prompt: TEXTURES UPSCALING (XBRZ)
-                label:  Upscaling 2D pixel art graphics (2D Games Only)
+                prompt:      TEXTURES UPSCALING (XBRZ)
+                description: Upscaling 2D pixel art graphics (2D Games Only)
                 choices:
                     "Off": off
                     "2x":  2x
                     "4x":  4x
                     "6x":  6x
             reicast_render_to_texture_upscaling:
-                prompt: RENDER TO TEXTURES UPSCALING
-                label:  Upscaling textures resolution on 3D objetcs
+                prompt:      RENDER TO TEXTURES UPSCALING
+                description: Upscaling textures resolution on 3D objetcs
                 choices:
                     "Off": 1x
                     "2x":  2x
@@ -468,8 +468,8 @@ libretro:
                     "4x":  4x
                     "8x":  8x
             reicast_frame_skipping:
-                prompt: FRAME SKIP
-                label:  Skip frames to improve performance (Smoothless)
+                prompt:      FRAME SKIP
+                description: Skip frames to improve performance (Smoothless)
                 choices:
                     "Off": disabled
                     "1":   1
@@ -479,20 +479,20 @@ libretro:
                     "5":   5
                     "6":   6
             reicast_force_wince:
-                prompt: FORCE WINDOWS CE MODE
-                label:  Enable full MMU emulation for Windows CE games
+                prompt:      FORCE WINDOWS CE MODE
+                description: Enable full MMU emulation for Windows CE games
                 choices:
                     "Off": disabled
                     "On":  enabled
             reicast_widescreen_cheats:
-                prompt: WIDESCREEN CHEAT (PRIORITY)
-                label:  You must use a 16/9 RATIO and disable BEZEL
+                prompt:      WIDESCREEN CHEAT (PRIORITY)
+                description: You must use a 16/9 RATIO and disable BEZEL
                 choices:
                     "Off": disabled
                     "On":  enabled
             reicast_widescreen_hack:
-                prompt: WIDESCREEN HACK
-                label:  You must use a 16/9 RATIO and disable BEZEL
+                prompt:      WIDESCREEN HACK
+                description: You must use a 16/9 RATIO and disable BEZEL
                 choices:
                     "Off": disabled
                     "On":  enabled
@@ -500,16 +500,16 @@ libretro:
             atomiswave:
                 cfeatures:
                     screen_rotation_atomiswave:
-                        prompt: SCREEN ORIENTATION
-                        label:  Rotate screen for some arcade games
+                        prompt:      SCREEN ORIENTATION
+                        description: Rotate screen for some arcade games
                         choices:
                             "Horizontal": horizontal
                             "Vertical":   vertical
             naomi:
                 cfeatures:
                     screen_rotation_naomi:
-                        prompt: SCREEN ORIENTATION
-                        label:  Rotate screen for some arcade games
+                        prompt:      SCREEN ORIENTATION
+                        description: Rotate screen for some arcade games
                         choices:
                             "Horizontal": horizontal
                             "Vertical":   vertical
@@ -519,8 +519,8 @@ libretro:
       features: [                 autosave, latency_reduction, padtokeyboard]
       cfeatures:
             fuse_hide_border:
-                prompt: ZOOM (HIDES BORDER)
-                label:  Making the game occupy the entire screen area
+                prompt:      ZOOM (HIDES BORDER)
+                description: Making the game occupy the entire screen area
                 choices:
                     "Off":  disabled
                     "On":   enabled
@@ -528,14 +528,14 @@ libretro:
       features: [         rewind, autosave, latency_reduction, colorization]
       cfeatures:
             gb_bootloader:
-                prompt: SHOW BIOS BOOTLOGO
-                label:  Show BIOS animation when starting content
+                prompt:      SHOW BIOS BOOTLOGO
+                description: Show BIOS animation when starting content
                 choices:
                     "Off":                     disabled
                     "On":                      enabled
             mix_frames:
-                prompt: GHOSTING EFFECT
-                label:  Simulation of LCD ghosting effects
+                prompt:      GHOSTING EFFECT
+                description: Simulation of LCD ghosting effects
                 choices:
                     "Off":                     disabled
                     "Simple (Accurate)":       mix
@@ -546,8 +546,8 @@ libretro:
       features: [netplay, rewind, autosave, latency_reduction]
       cfeatures:
             gpgx_no_sprite_limit:
-                prompt: REDUCE SPRITE FLICKERING
-                label:  Reduce sprite flickering when enabled
+                prompt:      REDUCE SPRITE FLICKERING
+                description: Reduce sprite flickering when enabled
                 choices:
                     "Off":                disabled
                     "On":                 enabled
@@ -555,38 +555,38 @@ libretro:
             megadrive:
                 cfeatures:
                     gpgx_blargg_filter_md:
-                        prompt: NTSC FILTER
-                        label:  Enable blargg NTSC video filters
+                        prompt:      NTSC FILTER
+                        description: Enable blargg NTSC video filters
                         choices:
                             "Off":                                    Off
                             "Composite (color bleeding + artifacts)": composite
                             "SVideo (color bleeding only)":           svideo
                             "RGB (crisp image)":                      rgb
                     gun_cursor_md:
-                        prompt: SHOW LIGHTGUN CROSSHAIR
-                        label:  Shows crosshairs for Menacer and Justifiers devices
+                        prompt:      SHOW LIGHTGUN CROSSHAIR
+                        description: Shows crosshairs for Menacer and Justifiers devices
                         choices:
                             "Off":        disabled
                             "On":         enabled
             mastersystem:
                 cfeatures:
                     gpgx_blargg_filter_ms:
-                        prompt: NTSC FILTER
-                        label:  Enable blargg NTSC video filters
+                        prompt:      NTSC FILTER
+                        description: Enable blargg NTSC video filters
                         choices:
                             "Off":                                    Off
                             "Composite (color bleeding + artifacts)": composite
                             "SVideo (color bleeding only)":           svideo
                             "RGB (crisp image)":                      rgb
                     gun_cursor_ms:
-                        prompt: SHOW LIGHTGUN CROSSHAIR
-                        label:  Shows crosshairs for Light Phaser device
+                        prompt:      SHOW LIGHTGUN CROSSHAIR
+                        description: Shows crosshairs for Light Phaser device
                         choices:
                             "Off":        disabled
                             "On":         enabled
                     ym2413:
-                        prompt: FM CHIP (YM2413)
-                        label:  Enhanced sound output support for compatible games
+                        prompt:      FM CHIP (YM2413)
+                        description: Enhanced sound output support for compatible games
                         choices:
                             "Automatic":  automatic
                             "Off":        disabled
@@ -594,14 +594,14 @@ libretro:
             gamegear:
                 cfeatures:
                     lcd_filter:
-                        prompt: LCD GHOSTING FILTER
-                        label:  Simulate the movement blur effect on old LCD screen
+                        prompt:      LCD GHOSTING FILTER
+                        description: Simulate the movement blur effect on old LCD screen
                         choices:
                             "Off":       disabled
                             "On":        enabled
                     gg_extra:
-                        prompt: EXTENDED SCREEN
-                        label:  Extend the game screen area like on a Master System
+                        prompt:      EXTENDED SCREEN
+                        description: Extend the game screen area like on a Master System
                         choices:
                             "Off":       disabled
                             "On":        enabled
@@ -623,8 +623,8 @@ libretro:
       features: [netplay,         autosave, latency_reduction]
       cfeatures:
             mame_cpu_overclock:
-                prompt: CPU OVERCLOCK
-                label:  Minimize ingame slowdowns of some games
+                prompt:      CPU OVERCLOCK
+                description: Minimize ingame slowdowns of some games
                 choices:
                     "default":        default
                     "30":             30
@@ -653,8 +653,8 @@ libretro:
                     "145":            145
                     "150":            150
             mame_altres:
-                prompt: VIDEO RESOLUTION
-                label:  Increase video to Highter Resolution
+                prompt:      VIDEO RESOLUTION
+                description: Increase video to Highter Resolution
                 choices:
                     "640x480":        640x480
                     "800x600":        800x600
@@ -671,8 +671,8 @@ libretro:
       features: [netplay,         autosave, latency_reduction]
       cfeatures:
             mame_current_frame_skip:
-                prompt: FRAMSKIP
-                label:  Skip frames to improve performance (smoothless)
+                prompt:      FRAMSKIP
+                description: Skip frames to improve performance (smoothless)
                 choices:
                     "Off":            0
                     "1":              1
@@ -681,8 +681,8 @@ libretro:
                     "4":              4
                     "Automatic":      automatic
             mame_current_turbo_button:
-                prompt: AUTOFIRE
-                label:  Choice the buton to enable Autofire
+                prompt:      AUTOFIRE
+                description: Choice the buton to enable Autofire
                 choices:
                     "Off":            disabled
                     "button 1":       button 1
@@ -690,8 +690,8 @@ libretro:
                     "R2 to button 1": R2 to button 1 mapping
                     "R2 to button 2": R2 to button 2 mapping
             mame_current_turbo_delay:
-                prompt: AUTOFIRE PULSE SPEED
-                label:  Choose the fire speed for Autofire 
+                prompt:      AUTOFIRE PULSE SPEED
+                description: Choose the fire speed for Autofire 
                 choices:
                     "slow":           slow
                     "medium":         medium
@@ -700,14 +700,14 @@ libretro:
       features: [netplay, rewind, autosave, latency_reduction]
       cfeatures:
             mame2003-plus_analog:
-                prompt: CONTROL MAPPING
-                label:  Choose from Analog and Digital controller
+                prompt:      CONTROL MAPPING
+                description: Choose from Analog and Digital controller
                 choices:
                     "Analog":       analog
                     "Digital":      digital
             mame2003-plus_frameskip:
-                prompt: FRAMSKIP
-                label:  Skip frames to improve performance (smoothless)
+                prompt:      FRAMSKIP
+                description: Skip frames to improve performance (smoothless)
                 choices:
                     "Off":          0
                     "1":            1
@@ -716,21 +716,21 @@ libretro:
                     "4":            4
                     "5":            5
             mame2003-plus_input_interface:
-                prompt: INPUT INTERFACE
-                label:  Use input directly sends by keyboard to the core
+                prompt:      INPUT INTERFACE
+                description: Use input directly sends by keyboard to the core
                 choices:
                     "retropad":     retropad
                     "keyboard":     keyboard
                     "simultaneous": simultaneous
             mame2003-plus_tate_mode:
-                prompt: TATE MODE
-                label:  Rotating display to vertical mode rendering
+                prompt:      TATE MODE
+                description: Rotating display to vertical mode rendering
                 choices:
                     "Off":        disabled
                     "On":         enabled
             mame2003-plus_neogeo_bios:
-                prompt: NEOGEO MODE
-                label:  Manually specify your choice of Neo Geo BIOS
+                prompt:      NEOGEO MODE
+                description: Manually specify your choice of Neo Geo BIOS
                 choices:
                     "Console AES World":                   asia-aes
                     "Arcade MVS Europe":                   euro
@@ -746,14 +746,14 @@ libretro:
       features: [                 autosave, latency_reduction]
       cfeatures:
             beetle_psx_skip_bios:
-                prompt: SHOW BIOS BOOTLOGO
-                label:  Show BIOS animation when starting content
+                prompt:      SHOW BIOS BOOTLOGO
+                description: Show BIOS animation when starting content
                 choices:
                     "Off":        enabled
                     "On":         disabled
             beetle_psx_cpu_freq_scale:
-                prompt: OVERCLOCKING (HEAVY CPU)
-                label:  Can eliminate slowdown and improve frame rates
+                prompt:      OVERCLOCKING (HEAVY CPU)
+                description: Can eliminate slowdown and improve frame rates
                 choices:
                     "50%":          50%
                     "60%":          60%
@@ -783,8 +783,8 @@ libretro:
                     "700%":         700%
                     "750%":         750%
             beetle_psx_internal_resolution:
-                prompt: VIDEO RESOLUTION
-                label:  Improve the fidelity of 3D models (unaffect 2D)
+                prompt:      VIDEO RESOLUTION
+                description: Improve the fidelity of 3D models (unaffect 2D)
                 choices:
                     "1x(native)": 1x(native)
                     "2x":         2x
@@ -792,45 +792,71 @@ libretro:
                     "8x":         8x
                     "16x":        16x
             beetle_psx_widescreen_hack:
-                prompt: WIDESCREEN HACK
-                label:  You must use a 16/9 RATIO and disable BEZEL
+                prompt:      WIDESCREEN HACK
+                description: You must use a 16/9 RATIO and disable BEZEL
                 choices:
                     "Off":        disabled
                     "On":         enabled
             beetle_psx_frame_duping:
-                prompt: FRAME DUPING (SPEEDDUP)
-                label:  Small performance increase (may lost anim. frames)
+                prompt:      FRAME DUPING (SPEEDDUP)
+                description: Small performance increase (may lost anim. frames)
                 choices:
                     "Off":        disabled
                     "On":         enabled
             beetle_psx_cpu_dynarec:
-                prompt: CPU DYNAREC (SPEEDDUP)
-                label:  Much faster than interpreter (but may have bugs)
+                prompt:      CPU DYNAREC (SPEEDDUP)
+                description: Much faster than interpreter (but may have bugs)
                 choices:
                     "Desabled (Beatle Interpreter": disabled
                     "Max Performance":              execute
                     "Cycle Timing Check":           execute_once
                     "Lightrec Interpreter":         run_interpreter
             beetle_psx_dynarec_invalidate:
-                prompt: DYNAREC CODE INVALIDATION
-                label:  Some games require DMA Only (for CPU Dynarec)
+                prompt:      DYNAREC CODE INVALIDATION
+                description: Some games require DMA Only (for CPU Dynarec)
                 choices:
                     "Full":                         full
                     "DMA Only (Slightly Faster)":   dma
             multitap_mednafen:
-                prompt: ENABLE MULTITAP
-                label:  Allowing 5-8 player support in games
+                prompt:      ENABLE MULTITAP
+                description: Allowing 5-8 player support in games
                 choices:
                     "Off":              disabled
-                    "Port1":            port1
-                    "Port2":            port2
-                    "Port1+2":          port12
+                    "Port 1":           port1
+                    "Port 2":           port2
+                    "Port 1+2":         port12
+            beetle_psx_Controller1:
+                prompt:      CONTROLLER 1 TYPE
+                description: Use DualShock type for games with Rumble mode
+                choices:
+                    "None":                          0
+                    "Digital Controller":            1
+                    "Analog Controller":             261
+                    "Analog Controller (DualShock)": 517
+                    "Analog Joystick":               773
+                    "Namco GunCon":                  260
+                    "Justifier":                     516
+                    "PlayStation Mouse":             258
+                    "NeGcon":                        1029
+            beetle_psx_Controller2:
+                prompt:      CONTROLLER 2 TYPE
+                description: Use DualShock type for games with Rumble mode
+                choices:
+                    "None":                          0
+                    "Digital Controller":            1
+                    "Analog Controller":             261
+                    "Analog Controller (DualShock)": 517
+                    "Analog Joystick":               773
+                    "Namco GunCon":                  260
+                    "Justifier":                     516
+                    "PlayStation Mouse":             258
+                    "NeGcon":                        1029
     mednafen_supergrafx:
       features: [netplay, rewind, autosave, latency_reduction]
       cfeatures:
             sgx_nospritelimit:
-                prompt: REDUCE SPRITE FLICKERING
-                label:  Remove 16-sprites-per-scanline hardware limit
+                prompt:      REDUCE SPRITE FLICKERING
+                description: Remove 16-sprites-per-scanline hardware limit
                 choices:
                     "Off":        disabled
                     "On":         enabled
@@ -840,8 +866,8 @@ libretro:
       features: [         rewind, autosave, latency_reduction]
       cfeatures:
             skip_bios_mgba:
-                prompt: SHOW BIOS BOOTLOGO
-                label:  Show BIOS animation when starting content
+                prompt:      SHOW BIOS BOOTLOGO
+                description: Show BIOS animation when starting content
                 choices:
                     "Off": ON
                     "On":  OFF
@@ -849,37 +875,37 @@ libretro:
             gb:
                 cfeatures:
                     sgb_borders:
-                        prompt: SUPER GB BORDERS
-                        label:  Only for Super Game Boy enhanced games
+                        prompt:      SUPER GB BORDERS
+                        description: Only for Super Game Boy enhanced games
                         choices:
                             "Off": OFF
                             "On":  ON
                     color_correction:
-                        prompt: COLOR CORRECTION
-                        label:  Adjusts output colors to feel real hardware
+                        prompt:      COLOR CORRECTION
+                        description: Adjusts output colors to feel real hardware
                         choices:
                             "Off": OFF
                             "On":  GBA
             gbc:
                 cfeatures:
                     sgb_borders:
-                        prompt: SUPER GB BORDERS
-                        label:  Only for Super Game Boy enhanced games
+                        prompt:      SUPER GB BORDERS
+                        description: Only for Super Game Boy enhanced games
                         choices:
                             "Off": OFF
                             "On":  ON
                     color_correction:
-                        prompt: COLOR CORRECTION
-                        label:  Adjusts output colors to feel real hardware
-                        label:  
+                        prompt:      COLOR CORRECTION
+                        description: Adjusts output colors to feel real hardware
+                        description: 
                         choices:
                             "Off": OFF
                             "On":  GBC
             gba:
                 cfeatures:
                     solar_sensor_level:
-                        prompt: SOLAR SENSOR LEVEL
-                        label: Only for games that employed it (for Boktai)
+                        prompt:      SOLAR SENSOR LEVEL
+                        description: Only for games that employed it (for Boktai)
                         choices:
                             "0":  0
                             "1":  1
@@ -893,8 +919,8 @@ libretro:
                             "9":  9
                             "10": 10
                     frameskip_mgba:
-                        prompt: FRAMESKIP
-                        label:  Skip frames to improve performance (smoothless)
+                        prompt:      FRAMESKIP
+                        description: Skip frames to improve performance (smoothless)
                         choices:
                             "0":  0
                             "1":  1
@@ -911,16 +937,16 @@ libretro:
       features: [netplay, rewind, autosave, latency_reduction]
       cfeatures:
             mrboom-aspect:
-                prompt: TEAM MODE
-                label:  Choose the Team mode color
+                prompt:      TEAM MODE
+                description: Choose the Team mode color
                 choices:
                     "Selfie": Native
                     "Color":  Color
                     "Sex":    Sex
                     "Skynet": Skynet
             mrboom-nomonster:
-                prompt: MONSTERS
-                label:  Enable or disable monsters on battle
+                prompt:      MONSTERS
+                description: Enable or disable monsters on battle
                 choices:
                     "Off":    OFF
                     "On":     ON
@@ -928,8 +954,8 @@ libretro:
       features: [                 autosave]
       cfeatures:
             mupen64plus-43screensize:
-                prompt: VIDEO 4:3 RESOLUTION
-                label:  Improve the fidelity of 3D models (unaffect 2D)
+                prompt:      VIDEO 4:3 RESOLUTION
+                description: Improve the fidelity of 3D models (unaffect 2D)
                 choices:
                     "320x240":   320x240
                     "640x480":   640x480
@@ -943,8 +969,8 @@ libretro:
                     "3520x2640": 3520x2640
                     "3840x2880": 3840x2880
             mupen64plus-169screensize:
-                prompt: VIDEO 16:9 RESOLUTION
-                label:  Improve the fidelity of 3D models (unaffect 2D)
+                prompt:      VIDEO 16:9 RESOLUTION
+                description: Improve the fidelity of 3D models (unaffect 2D)
                 choices:
                     "640x360":   640x360
                     "960x540":   960x540
@@ -954,20 +980,20 @@ libretro:
                     "3840x2160": 3840x2160
                     "7680x4320": 7680x4320
             mupen64plus-aspect:
-                prompt: WIDESCREEN HACK
-                label:  You must use a 16/9 RATIO and disable BEZEL
+                prompt:      WIDESCREEN HACK
+                description: You must use a 16/9 RATIO and disable BEZEL
                 choices:
                     "Off":       4:3
                     "On":        16:9 adjusted
             mupen64plus-BilinearMode:
-                prompt: BILINEAR FILTERING
-                label:  Filter to gradually switch colors
+                prompt:      BILINEAR FILTERING
+                description: Filter to gradually switch colors
                 choices:
                     "standard":   standard
                     "3 point":    3point
             mupen64plus-MultiSampling:
-                prompt: ANTI-ALIASING (MSAA)
-                label:  Smooth out jagged edges on 3D objetcs polygons 
+                prompt:      ANTI-ALIASING (MSAA)
+                description: Smooth out jagged edges on 3D objetcs polygons 
                 choices:
                     "Off":        0
                     "2x":         2
@@ -975,8 +1001,8 @@ libretro:
                     "8x":         8
                     "16x":        16
             mupen64plus-txFilterMode:
-                prompt: TEXTURE FILTERING
-                label:  Smooths out textures on 3D objetcs
+                prompt:      TEXTURE FILTERING
+                description: Smooths out textures on 3D objetcs
                 choices:
                     "Off":        None
                     "Smooth 1":   Smooth filtering 1
@@ -986,8 +1012,8 @@ libretro:
                     "Sharp 1":    Sharp filtering 1
                     "Sharp 2":    Sharp filtering 2
             mupen64plus-txEnhancementMode:
-                prompt: TEXTURE ENHANCEMENT (XBRZ)
-                label:  Scales up a nearest-neighbor version of the texture
+                prompt:      TEXTURE ENHANCEMENT (XBRZ)
+                description: Scales up a nearest-neighbor version of the texture
                 choices:
                     "Off":        None
                     "As Is":      As Is
@@ -1007,22 +1033,22 @@ libretro:
       features: [         rewind, autosave]
       cfeatures:
             neocd_region:
-                prompt: CONSOLE REGION
-                label:  Change language of some games
+                prompt:      CONSOLE REGION
+                description: Change language of some games
                 choices:
                     "Japan":        Japan
                     "USA":          USA
                     "Europe":       Europe
             neocd_bios:
-                prompt: BIOS SELECT
-                label:  CD Universe Bios not include cheats
+                prompt:      BIOS SELECT
+                description: CD Universe Bios not include cheats
                 choices:
                     "CDZ":          CDZ
                     "CDZ (MAME)":   CDZ (MAME)
                     "Universe 3.2": Universe 3.2
             neocd_per_content_saves:
-                prompt: PER-GAME SAVES
-                label:  Use one save file per-game
+                prompt:      PER-GAME SAVES
+                description: Use one save file per-game
                 choices:
                     "Off":          Off
                     "On":           On
@@ -1030,14 +1056,14 @@ libretro:
       features: [netplay, rewind, autosave, latency_reduction]
       cfeatures:
             nestopia_nospritelimit:
-                prompt: REDUCE SPRITE FLICKERING
-                label:  Removes 8-sprites-per-scanline hardware limi
+                prompt:      REDUCE SPRITE FLICKERING
+                description: Removes 8-sprites-per-scanline hardware limi
                 choices:
                     "Off":                  disabled
                     "On":                   enabled
             nestopia_palette:
-                prompt: COLOR PALETTE
-                label:  Choose which color palette is going to be used
+                prompt:      COLOR PALETTE
+                description: Choose which color palette is going to be used
                 choices:
                     "consumer":             consumer
                     "cxa2025as":            cxa2025as
@@ -1051,22 +1077,22 @@ libretro:
                     "nes-classic-fbx-fs":   nes-classic-fbx-fs
                     "custom":               custom
             nestopia_blargg_ntsc_filter:
-                prompt: NTSC FILTER
-                label:  Enable blargg NTSC video filters
+                prompt:      NTSC FILTER
+                description: Enable blargg NTSC video filters
                 choices:
                     "Off":                                    disabled
                     "Composite (color bleeding + artifacts)": composite
                     "SVideo (color bleeding only)":           svideo
                     "RGB (crisp image)":                      rgb
             nestopia_overclock:
-                prompt: CPU OVERCLOCK
-                label:  Minimize ingame slowdowns of some games (Contra Force)
+                prompt:      CPU OVERCLOCK
+                description: Minimize ingame slowdowns of some games (Contra Force)
                 choices:
                     "Off":                  1x
                     "2x":                   2x
             nestopia_select_adapter:
-                prompt: 4 PLAYER ADAPTER
-                label:  Manually select a 4 Player Adapter for some games
+                prompt:      4 PLAYER ADAPTER
+                description: Manually select a 4 Player Adapter for some games
                 choices:
                     "Autodetect":           auto
                     "ntsc":                 ntsc
@@ -1075,15 +1101,15 @@ libretro:
       features: [netplay, rewind, autosave, padtokeyboard]
       cfeatures:
             np2kai_model:
-                prompt: PC MODEL
-                label:  Selects the correct PC model being emulated
+                prompt:      PC MODEL
+                description: Selects the correct PC model being emulated
                 choices:
                     "PC-286":    PC-286
                     "PC-9801VM": PC-9801VM
                     "PC-9801VX": PC-9801VX
             np2kai_cpu_feature:
-                prompt: CPU FEATURE
-                label:  Select the processor model
+                prompt:      CPU FEATURE
+                description: Select the processor model
                 choices:
                     "Intel 80386":         Intel 80386
                     "Intel i486DX":        Intel i486DX
@@ -1093,8 +1119,8 @@ libretro:
                     "Intel Pentium 4":     Intel Pentium 4
                     "Neko Processor II":   Neko Processor II
             np2kai_clk_mult:
-                prompt: CPU CLOCK MULTIPLIER
-                label:  Recommended to use somewhere between a 4x and 8x
+                prompt:      CPU CLOCK MULTIPLIER
+                description: Recommended to use somewhere between a 4x and 8x
                 choices:
                     "2x":        2
                     "4x":        4
@@ -1116,8 +1142,8 @@ libretro:
                     "88x":       88
                     "100x":      100
             np2kai_ExMemory:
-                prompt: RAM SIZE
-                label:  Select memory required by game, 13 Mo recommanded
+                prompt:      RAM SIZE
+                description: Select memory required by game, 13 Mo recommanded
                 choices:
                     "1 Mo":      1
                     "3 Mo":      2
@@ -1132,27 +1158,27 @@ libretro:
                     "512 Mo":    512
                     "1024 Mo":   1024
             np2kai_gdc:
-                prompt: GDC
-                label:  Graphic Display Controller model
+                prompt:      GDC
+                description: Graphic Display Controller model
                 choices:
                     "uPD7220":   uPD7220
                     "uPD72020":  uPD72020
             np2kai_skipline:
-                prompt: REMOVE SCANLINES
-                label:  (Off) will show Black Scanline in older games (Graphically designed to use scanlines)
+                prompt:      REMOVE SCANLINES
+                description: (Off) will show Black Scanline in older games (Graphically designed to use scanlines)
                 choices:
                     "Full 255 lines": Full 255 lines
                     "Off":            OFF
                     "On":             ON
             np2kai_realpal:
-                prompt: REAL PALETTES
-                label:  Some games only working correctly with this (Apros)
+                prompt:      REAL PALETTES
+                description: Some games only working correctly with this (Apros)
                 choices:
                     "Off":       OFF
                     "On":        ON
             np2kai_SNDboard:
-                prompt: SOUND BOARD
-                label:  Choose 26K for old games and 86K for newer games
+                prompt:      SOUND BOARD
+                description: Choose 26K for old games and 86K for newer games
                 choices:
                     "None":                                             None
                     "PC9801-14":                                        PC9801-14
@@ -1183,14 +1209,14 @@ libretro:
                     "Otomi-chanx2 + 86":                                Otomi-chanx2 + 86
                     "WaveStar":                                         WaveStar
             np2kai_jast_snd:
-                prompt: JAST SOUND
-                label:  To have music and not only sound in games (Owl-Zoo)
+                prompt:      JAST SOUND
+                description: To have music and not only sound in games (Owl-Zoo)
                 choices:
                     "Off":                          OFF
                     "On":                           ON
             np2kai_joymode:
-                prompt: Joypad D-pad Mapping
-                label:  Emulate a keyboard/mouse/joypad on your gamepad
+                prompt:      Joypad D-pad Mapping
+                description: Emulate a keyboard/mouse/joypad on your gamepad
                 choices:
                     "Off":                          OFF
                     "Mouse":                        Mouse
@@ -1208,14 +1234,14 @@ libretro:
       features: [netplay, rewind, autosave, latency_reduction]
       cfeatures:
             high_resolution:
-                prompt: VIDEO RESOLUTION
-                label:  Improve the fidelity of 3D models (unaffect 2D)
+                prompt:      VIDEO RESOLUTION
+                description: Improve the fidelity of 3D models (unaffect 2D)
                 choices:
                     "320x240":         disabled
                     "640x480":         enabled
             cpu_overclock:
-                prompt: CPU OVERCLOCK
-                label:  Improve frame rates in many games (like NFS)
+                prompt:      CPU OVERCLOCK
+                description: Improve frame rates in many games (like NFS)
                 choices:
                     "1.0x (12.50Mhz)": 1.0x (12.50Mhz)
                     "1.1x (13.75Mhz)": 1.1x (13.75Mhz)
@@ -1225,8 +1251,8 @@ libretro:
                     "1.8x (22.50Mhz)": 1.8x (22.50Mhz)
                     "2.0x (25.00Mhz)": 2.0x (25.00Mhz)
             active_devices:
-                prompt: ACTIVE INPUT DEVICES FIX
-                label:  Fixing a possible bug with controller detection
+                prompt:      ACTIVE INPUT DEVICES FIX
+                description: Fixing a possible bug with controller detection
                 choices:
                     "1":               1
                     "2":               2
@@ -1237,8 +1263,8 @@ libretro:
                     "7":               7
                     "8":               8
             game_fixes_opera:
-                prompt: ADDITIONAL GAME FIXES
-                label:  Enable these options to fix them games
+                prompt:      ADDITIONAL GAME FIXES
+                description: Enable these options to fix them games
                 choices:
                     "Off":               disabled
                     "Alone in the Dark": timing_hack6
@@ -1249,8 +1275,8 @@ libretro:
       features: [                 autosave]
       cfeatures:
             screensize:
-                prompt: VIDEO RESOLUTION
-                label:  Improve the fidelity of 3D models (unaffect 2D)
+                prompt:      VIDEO RESOLUTION
+                description: Improve the fidelity of 3D models (unaffect 2D)
                 choices:
                     "320x240":   320x240
                     "640x480":   640x480
@@ -1263,8 +1289,8 @@ libretro:
                     "2880x2160": 2880x2160
                     "5760x4320": 5760x4320
             filtering:
-                prompt: TEXTURE FILTERING
-                label:  Smooths out textures on 3D objetcs
+                prompt:      TEXTURE FILTERING
+                description: Smooths out textures on 3D objetcs
                 choices:
                     "Automatic":   automatic
                     "N64 3-point": N64 3-point
@@ -1274,8 +1300,8 @@ libretro:
       features: [netplay, rewind, autosave, latency_reduction]
       cfeatures:
             pce_nospritelimit:
-                prompt: REDUCE SPRITE FLICKERING
-                label:  Remove 16-sprites-per-scanline hardware limit
+                prompt:      REDUCE SPRITE FLICKERING
+                description: Remove 16-sprites-per-scanline hardware limit
                 choices:
                     "Off":        disabled
                     "On":         enabled
@@ -1283,8 +1309,8 @@ libretro:
       features: [netplay, rewind, autosave, latency_reduction]
       cfeatures:
             sgx_nospritelimit:
-                prompt: REDUCE SPRITE FLICKERING
-                label:  Remove 16-sprites-per-scanline hardware limit
+                prompt:      REDUCE SPRITE FLICKERING
+                description: Remove 16-sprites-per-scanline hardware limit
                 choices:
                     "Off":        disabled
                     "On":         enabled
@@ -1292,8 +1318,8 @@ libretro:
       features: [netplay, rewind, autosave, latency_reduction]
       cfeatures:
             pcfx_nospritelimit:
-                prompt: REDUCE SPRITE FLICKERING
-                label:  Remove 16-sprites-per-scanline hardware limit
+                prompt:      REDUCE SPRITE FLICKERING
+                description: Remove 16-sprites-per-scanline hardware limit
                 choices:
                     "Off":        disabled
                     "On":         enabled
@@ -1301,37 +1327,37 @@ libretro:
       features: [                 autosave, latency_reduction]
       cfeatures:
             show_bios_bootlogo:
-                prompt: SHOW BIOS BOOTLOGO
-                label:  Show animation when starting (Breaks some games)
+                prompt:      SHOW BIOS BOOTLOGO
+                description: Show animation when starting (Breaks some games)
                 choices:
                     "Off":              disabled
                     "On":               enabled
             frameskip_pcsx:
-                prompt: FRAMESKIP
-                label:  Skip frames to improve performance (Smoothless)
+                prompt:      FRAMESKIP
+                description: Skip frames to improve performance (Smoothless)
                 choices:
                     "Off":              0
                     "1":                1
                     "2":                2
                     "3":                3
             neon_enhancement:
-                prompt: ENHANCED RESOLUTION (SLOWER)
-                label:  Double the resolution (Speed hack causes glitches)
+                prompt:      ENHANCED RESOLUTION (SLOWER)
+                description: Double the resolution (Speed hack causes glitches)
                 choices:
                     "Off":              disabled
                     "On":               enabled
                     "On (Speed hack)":  enabled_with_speedhack
             multitap_pcsx:
-                prompt: ENABLE MULTITAP
-                label:  Allowing 5-8 player support in games
+                prompt:      ENABLE MULTITAP
+                description: Allowing 5-8 player support in games
                 choices:
                     "Off":              disabled
                     "Port1":            port1
                     "Port2":            port2
                     "Port1+2":          port12
             game_fixes_pcsx:
-                prompt: ADDITIONAL GAME FIXES
-                label:  Enable these options to fix them games
+                prompt:      ADDITIONAL GAME FIXES
+                description: Enable these options to fix them games
                 choices:
                     "Off":                                  disabled
                     "Capcom VS games Expand Screen Width":  Capcom_fighting
@@ -1342,12 +1368,34 @@ libretro:
                     "InuYasha Sengoku Battle Fix":          InuYasha_Sengoku
                     "Pandemonium 2 Lazy Screen Update Fix": Pandemonium
                     "Parasite Eve 2/Vandal Hearts 1&2 Fix": Parasite_Eve
+            controller1_pcsx:
+                prompt:      CONTROLLER 1 TYPE
+                description: Use DualShock type for games with Rumble mode
+                choices:
+                    "None":                          0
+                    "Digital Controller":            1
+                    "Analog Controller":             261
+                    "Analog Controller (DualShock)": 517
+                    "Namco GunCon":                  260
+                    "PlayStation Mouse":             258
+                    "NeGcon":                        773
+            controller2_pcsx:
+                prompt:      CONTROLLER 2 TYPE
+                description: Use DualShock type for games with Rumble mode
+                choices:
+                    "None":                          0
+                    "Digital Controller":            1
+                    "Analog Controller":             261
+                    "Analog Controller (DualShock)": 517
+                    "Namco GunCon":                  260
+                    "PlayStation Mouse":             258
+                    "NeGcon":                        773
     picodrive:
       features: [netplay,         autosave]
       cfeatures:
             picodrive_sprlim:
-                prompt: REDUCE SPRITE FLICKERING
-                label:  Reduce sprite flickering when enabled
+                prompt:      REDUCE SPRITE FLICKERING
+                description: Reduce sprite flickering when enabled
                 choices:
                     "Off":          disabled
                     "On":           enabled
@@ -1357,14 +1405,14 @@ libretro:
       features: [         rewind, autosave, latency_reduction]
       cfeatures:
             pokemini_lcdfilter:
-                prompt: LCD FILTER
-                label:  Produces a clean LCD effect
+                prompt:      LCD FILTER
+                description: Produces a clean LCD effect
                 choices:
                     "Off":  none
                     "On":   dotmatrix
             pokemini_lcdmode:
-                prompt: LCD GHOSTING EFFECTS
-                label:  Emulate liquid crystal display
+                prompt:      LCD GHOSTING EFFECTS
+                description: Emulate liquid crystal display
                 choices:
                     "Off":  3shades
                     "On":   analog
@@ -1374,8 +1422,8 @@ libretro:
       features: [         rewind, autosave, latency_reduction]
       cfeatures:
             prboom-resolution:
-                prompt: VIDEO RESOLUTION
-                label:  Smooth out jagged edges on 3D objetcs polygons
+                prompt:      VIDEO RESOLUTION
+                description: Smooth out jagged edges on 3D objetcs polygons
                 choices:
                     "320x200":    320x200
                     "640x400":    640x400
@@ -1391,35 +1439,35 @@ libretro:
       features: [         rewind, autosave, padtokeyboard]
       cfeatures:
             video_resolution:
-                prompt: VIDEO RESOLUTION
-                label:  Increase video to Hi Resolution
+                prompt:      VIDEO RESOLUTION
+                description: Increase video to Hi Resolution
                 choices:
                     "360p":       lores
                     "720p":       hires
                     "1440p":      superhires
             video_standard:
-                prompt: VIDEO STANDARD
-                label:  Switch frequency and resolution by region
+                prompt:      VIDEO STANDARD
+                description: Switch frequency and resolution by region
                 choices:
                     "PAL 50Hz - 288/576px":        PAL
                     "NTSC 60Hz - 240/480px":       NTSC
             zoom_mode:
-                prompt: ZOOM MODE
-                label:  Crops the borders to fit various host screens
+                prompt:      ZOOM MODE
+                description: Crops the borders to fit various host screens
                 choices:
                     "Off":        none
                     "medium":     medium
                     "large":      large
                     "larger":     larger
             keyrah_mapping:
-                prompt: 2P GAMEPAD MAPPING (KEYRAH)
-                label:  Keypad to joyport mappings for 2 players
+                prompt:      2P GAMEPAD MAPPING (KEYRAH)
+                description: Keypad to joyport mappings for 2 players
                 choices:
                     "Off":        disabled
                     "On":         enabled
             mouse_speed:
-                prompt: MOUSE SPEED
-                label:  Affects mouse speed globally.
+                prompt:      MOUSE SPEED
+                description: Affects mouse speed globally.
                 choices:
                     "original":   100
                     "50%":        50
@@ -1429,26 +1477,26 @@ libretro:
                     "170%":       170
                     "200%":       200
             whdload:
-                prompt: WHDLOAD LAUNCHER
-                label:  Enable launching pre-installed WHDLoad installs
+                prompt:      WHDLOAD LAUNCHER
+                description: Enable launching pre-installed WHDLoad installs
                 choices:
                     "Off":        disabled
                     "On":         config
             pad_options:
-                prompt: JUMP ON B
-                label:  Makes second fire button press up
+                prompt:      JUMP ON B
+                description: Makes second fire button press up
                 choices:
                     "Off":        disabled
                     "On":         jump
             disable_joystick:
-                prompt: DISABLE EMULATOR JOYSTICK
-                label:  Passes all physical keyboard events for Pad2Key
+                prompt:      DISABLE EMULATOR JOYSTICK
+                description: Passes all physical keyboard events for Pad2Key
                 choices:
                     "Off":        disabled
                     "On":         enabled
             gfx_framerate:
-                prompt: FRAMESKIP
-                label:  Skip frames to improve performance (Smoothless)
+                prompt:      FRAMESKIP
+                description: Skip frames to improve performance (Smoothless)
                 choices:
                     "Off":        disabled
                     "1":          1
@@ -1457,8 +1505,8 @@ libretro:
       features: [                           latency_reduction, padtokeyboard]
       cfeatures:
             px68k_cpuspeed:
-                prompt: CPU SPEED (OVERCLOCK)
-                label:  Can be used to slow down games that run too fast
+                prompt:      CPU SPEED (OVERCLOCK)
+                description: Can be used to slow down games that run too fast
                 choices:
                     "10Mhz":              10Mhz
                     "16Mhz":              16Mhz
@@ -1469,8 +1517,8 @@ libretro:
                     "150Mhz (Overclock)": 150Mhz (OC)
                     "200Mhz (Overclock)": 200Mhz (OC)
             px68k_ramsize:
-                prompt: RAM SIZE
-                label:  Amount of RAM used
+                prompt:      RAM SIZE
+                description: Amount of RAM used
                 choices:
                     "1MB":                1MB
                     "2MB":                2MB
@@ -1485,8 +1533,8 @@ libretro:
                     "11MB":               11MB
                     "12MB":               12MB
             px68k_frameskip:
-                prompt: FRAME SKIP
-                label:  Improve performance at the expense of smoothness
+                prompt:      FRAME SKIP
+                description: Improve performance at the expense of smoothness
                 choices:
                     "Full Frame":         Full Frame
                     "1/2 Frame":          1/2 Frame
@@ -1500,8 +1548,8 @@ libretro:
                     "1/60 Frame":         1/60 Frame
                     "Auto Frame Skip":    Auto Frame Skip
             px68k_joytype:
-                prompt: TWO PLAYERS JOYPAD TYPE
-                label:  Choose your Joypad type with 2 or 8 buttons
+                prompt:      TWO PLAYERS JOYPAD TYPE
+                description: Choose your Joypad type with 2 or 8 buttons
                 choices:
                     "Default (2 Buttons)":       Default (2 Buttons)
                     "Megadrive (8 Buttons)":     CPSF-MD (8 Buttons)
@@ -1510,16 +1558,16 @@ libretro:
       features: [netplay, rewind, autosave, latency_reduction, padtokeyboard]
       cfeatures:
             q88_basic_mode:
-                prompt: PC MODEL
-                label:  Selects the correct PC model being emulated
+                prompt:      PC MODEL
+                description: Selects the correct PC model being emulated
                 choices:
                     "N88 BASIC V2":         N88 V2
                     "N88 BASIC V1H":        N88 V1H
                     "N88 BASIC V1S":        N88 V1S
                     "N BASIC":              N
             q88_cpu_clock:
-                prompt: CPU CLOCK (OVERCLOCK)
-                label:  Many games run so fast, reduce slowdown on Ys series
+                prompt:      CPU CLOCK (OVERCLOCK)
+                description: Many games run so fast, reduce slowdown on Ys series
                 choices:
                     "1 MHz (Underclock)":   1
                     "2 MHz (Underclock)":   2
@@ -1529,8 +1577,8 @@ libretro:
                     "32 MHz (Overclock)":   32
                     "64 MHz (Overclock)":   64
             q88_pcg-8100:
-                prompt: USE PCG-8100
-                label:  Emulate the PCG-8100 required for some games
+                prompt:      USE PCG-8100
+                description: Emulate the PCG-8100 required for some games
                 choices:
                     "Off":                  disabled
                     "On":                   enabled
@@ -1542,22 +1590,22 @@ libretro:
       features: [netplay, rewind, autosave, latency_reduction]
       cfeatures:
             reduce_sprite_flicker:
-                prompt: REDUCE SPRITE FLICKERING (HACK, UNSTABLE)
-                label:  Increase number of sprites that can be drawn
+                prompt:      REDUCE SPRITE FLICKERING (HACK, UNSTABLE)
+                description: Increase number of sprites that can be drawn
                 choices:
                     "Off":        disabled
                     "On":         enabled
             reduce_slowdown:
-                prompt: REDUCE SLOWDOWN (HACK, UNSTABLE)
-                label:  Overclock SNES CPU for Gradius 3, Super R-Type
+                prompt:      REDUCE SLOWDOWN (HACK, UNSTABLE)
+                description: Overclock SNES CPU for Gradius 3, Super R-Type
                 choices:
                     "Off":        disabled
                     "light":      light
                     "compatible": compatible
                     "max":        max
             overclock_superfx:
-                prompt: SUPER-FX OVERCLOCKING
-                label:  Improve performance on slow devices or cause errors
+                prompt:      SUPER-FX OVERCLOCKING
+                description: Improve performance on slow devices or cause errors
                 choices:
                     "50%":        50%
                     "60%":        60%
@@ -1574,8 +1622,8 @@ libretro:
                     "450%":       450%
                     "500%":       500%
             hires_blend:
-                prompt: HI-RES BLENDING
-                label:  Required for some games effectc (Kirby's Dream Land)
+                prompt:      HI-RES BLENDING
+                description: Required for some games effectc (Kirby's Dream Land)
                 choices:
                     "Off":        disabled
                     "Merge":      merge
@@ -1584,22 +1632,22 @@ libretro:
       features: [netplay, rewind, autosave, latency_reduction]
       cfeatures:
             2010_reduce_sprite_flicker:
-                prompt: REDUCE SPRITE FLICKERING (HACK, UNSTABLE)
-                label:  Increase number of sprites that can be drawn
+                prompt:      REDUCE SPRITE FLICKERING (HACK, UNSTABLE)
+                description: Increase number of sprites that can be drawn
                 choices:
                     "Off":        disabled
                     "On":         enabled
             2010_reduce_slowdown:
-                prompt: REDUCE SLOWDOWN (HACK, UNSTABLE)
-                label:  Overclock SNES CPU for Gradius 3, Super R-Type
+                prompt:      REDUCE SLOWDOWN (HACK, UNSTABLE)
+                description: Overclock SNES CPU for Gradius 3, Super R-Type
                 choices:
                     "Off":        disabled
                     "light":      light
                     "compatible": compatible
                     "max":        max
             2010_overclock_superfx:
-                prompt: SUPER-FX OVERCLOCKING
-                label:  Improve performance on slow devices or cause errors
+                prompt:      SUPER-FX OVERCLOCKING
+                description: Improve performance on slow devices or cause errors
                 choices:
                     "5 MHz (Underclock)":   5 MHz (Underclock)
                     "8 MHz (Underclock)":   8 MHz (Underclock)
@@ -1626,8 +1674,8 @@ libretro:
       features: [         rewind, autosave]
       cfeatures:
             tyrquake_resolution:
-                prompt: VIDEO RESOLUTION
-                label:  Smooth out jagged edges on 3D objetcs polygons
+                prompt:      VIDEO RESOLUTION
+                description: Smooth out jagged edges on 3D objetcs polygons
                 choices:
                     "320x240":    320x240
                     "640x480":    640x480
@@ -1636,8 +1684,8 @@ libretro:
                     "1280x720":   1280x720
                     "1920x1080":  1920x1080
             tyrquake_framerate:
-                prompt: FRAMERATE
-                label:  Modify framerate
+                prompt:      FRAMERATE
+                description: Modify framerate
                 choices:
                     "Automatic":  Automatic
                     "10fps":      10fps
@@ -1656,8 +1704,8 @@ libretro:
                     "155fps":     155fps
                     "160fps":     160fps
             tyrquake_rumble:
-                prompt: RUMBLE
-                label:  Enables joypad rumble
+                prompt:      RUMBLE
+                description: Enables joypad rumble
                 choices:
                     "Off":        disabled
                     "On":         enabled
@@ -1665,8 +1713,8 @@ libretro:
       features: [netplay, rewind, autosave, latency_reduction]
       cfeatures:
             2d_color_mode:
-                prompt: COLOR PALETTE (2D)
-                label:  Choose which color palette to use
+                prompt:      COLOR PALETTE (2D)
+                description: Choose which color palette to use
                 choices:
                     "original":            black & red
                     "black/white":         black & white
@@ -1677,8 +1725,8 @@ libretro:
                     "black/magenta":       black & magenta
                     "black/yellow":        black & yellow
             3d_color_mode:
-                prompt: ANAGLYPH PRESET (3D)
-                label:  Choose the color of your 3D glasses
+                prompt:      ANAGLYPH PRESET (3D)
+                description: Choose the color of your 3D glasses
                 choices:
                     "Off":                 disabled
                     "red/blue":            red & blue
@@ -1692,8 +1740,8 @@ libretro:
             gb:
                 cfeatures:
                     palettes:
-                        prompt: COLORISATION
-                        label:  Set Game Boy palettes to use
+                        prompt:      COLORISATION
+                        description: Set Game Boy palettes to use
                         choices:
                             "original gameboy": original gameboy
                             "black and white":  black and white
@@ -1705,36 +1753,36 @@ libretro:
                             "pink dreams":      pink dreams
                             "weird colors":     weird colors
                     gbcoloroption_gb:
-                        prompt: COLOR CORRECTION
-                        label:  Adjusts output colors to feel real hardware
+                        prompt:      COLOR CORRECTION
+                        description: Adjusts output colors to feel real hardware
                         choices:
                             "Off":       disabled
                             "On":        enabled
                     showborders_gb:
-                        prompt: SUPER GB BORDERS
-                        label:  Only for Super Game Boy enhanced games
+                        prompt:      SUPER GB BORDERS
+                        description: Only for Super Game Boy enhanced games
                         choices:
                             "Off":       disabled
                             "On":        enabled
             gbc:
                 cfeatures:
                     gbcoloroption_gbc:
-                        prompt: COLOR CORRECTION
-                        label:  Adjusts output colors to feel real hardware
+                        prompt:      COLOR CORRECTION
+                        description: Adjusts output colors to feel real hardware
                         choices:
                             "Off":       disabled
                             "On":        enabled
                     showborders_gbc:
-                        prompt: SUPER GB BORDERS
-                        label:  Only for Super Game Boy enhanced games
+                        prompt:      SUPER GB BORDERS
+                        description: Only for Super Game Boy enhanced games
                         choices:
                             "Off":       disabled
                             "On":        enabled
             gba:
                 cfeatures:
                     solarsensor:
-                        prompt: SOLAR SENSOR LEVEL
-                        label: Only for games that employed it (for Boktai)
+                        prompt:      SOLAR SENSOR LEVEL
+                        description: Only for games that employed it (for Boktai)
                         choices:
                             "0":  0
                             "1":  1
@@ -1748,8 +1796,8 @@ libretro:
                             "9":  9
                             "10": 10
                     gyro_sensitivity:
-                        prompt: SENSOR SENSITIVITY (GYROSCOPE)
-                        label: For Gyro-enabled games (bind on left analog)
+                        prompt:      SENSOR SENSITIVITY (GYROSCOPE)
+                        description: For Gyro-enabled games (bind on left analog)
                         choices:
                             "10":  10
                             "15":  15
@@ -1775,8 +1823,8 @@ libretro:
                             "115": 115
                             "120": 120
                     tilt_sensitivity:
-                        prompt: SENSOR SENSITIVITY (TILT)
-                        label: For Gyro-enabled games (bind on right analog)
+                        prompt:      SENSOR SENSITIVITY (TILT)
+                        description: For Gyro-enabled games (bind on right analog)
                         choices:
                             "10":  10
                             "15":  15
@@ -1805,8 +1853,8 @@ libretro:
       features: [         rewind, autosave, latency_reduction]
       cfeatures:
             res_multi:
-                prompt: RESOLUTION MULTIPLIER
-                label:  Resolution multipliers to smooth vectors
+                prompt:      RESOLUTION MULTIPLIER
+                description: Resolution multipliers to smooth vectors
                 choices:
                     "Off":  1
                     "2":    2
@@ -1816,8 +1864,8 @@ libretro:
       features: [         rewind, autosave, latency_reduction, padtokeyboard]
       cfeatures:
             external_palette:
-                prompt: EXTERNAL PALETTE
-                label:  Choose the most accurate colors
+                prompt:      EXTERNAL PALETTE
+                description: Choose the most accurate colors
                 choices:
                     "default":          default
                     "colodore":         colodore
@@ -1837,28 +1885,28 @@ libretro:
                     "rgb":              rgb
                     "vice":             vice
             aspect_ratio:
-                prompt: ASPECT RATIO
-                label:  Switch frequency and resolution by region
+                prompt:      ASPECT RATIO
+                description: Switch frequency and resolution by region
                 choices:
                     "PAL 50Hz - 312/576px":     pal
                     "NTSC 60Hz - 262/492px":    ntsc
             zoom_mode_c64:
-                prompt: ZOOM MODE
-                label:  Crops the borders to fit various host screens
+                prompt:      ZOOM MODE
+                description: Crops the borders to fit various host screens
                 choices:
                     "Off":              none
                     "small":            small
                     "medium":           medium
                     "maximum":          maximum
             JoyPort:
-                prompt: JOYSTICK PORT
-                label:  Choose to use Joystick on port 1 or 2
+                prompt:      JOYSTICK PORT
+                description: Choose to use Joystick on port 1 or 2
                 choices:
                     "Port 1":           Port 1
                     "Port 2":           Port 2
             keyboard_pass_through:
-                prompt: KEYBOARD PASS-THROUGH
-                label:  Passes all physical keyboard events for Pad2Key
+                prompt:      KEYBOARD PASS-THROUGH
+                description: Passes all physical keyboard events for Pad2Key
                 choices:
                     "Off":              disabled
                     "On":               enabled
@@ -1876,20 +1924,20 @@ libretro:
       features: [                 autosave, latency_reduction, padtokeyboard]
       cfeatures:
             usefastblitter:
-                prompt: FAST BLITTER (LESS COMPATIBLE)
-                label:  Use the older and less compatible faster blitter
+                prompt:      FAST BLITTER (LESS COMPATIBLE)
+                description: Use the older and less compatible faster blitter
                 choices:
                     "Off":      disabled
                     "On":       enabled
             bios_vj:
-                prompt: SHOW BIOS BOOTLOGO
-                label:  Show animation when starting (Breaks some games)
+                prompt:      SHOW BIOS BOOTLOGO
+                description: Show animation when starting (Breaks some games)
                 choices:
                     "Off":      disabled
                     "On":       enabled
             doom_res_hack:
-                prompt: DOOM RES HACK
-                label:  Enable for Doom to run at its correct resolution
+                prompt:      DOOM RES HACK
+                description: Enable for Doom to run at its correct resolution
                 choices:
                     "Off":      disabled
                     "On":       enabled
@@ -1897,8 +1945,8 @@ libretro:
       features: [                 autosave]
       cfeatures:
             resolution_mode:
-                prompt: VIDEO RESOLUTION
-                label:  Improve the fidelity of 3D models (unaffect 2D)
+                prompt:      VIDEO RESOLUTION
+                description: Improve the fidelity of 3D models (unaffect 2D)
                 choices:
                     "original": original
                     "2x":       2x
@@ -1907,8 +1955,8 @@ libretro:
                     "1080p":    1080p
                     "4k":       4k
             multitap_yabasanshiro:
-                prompt: ENABLE MULTITAP
-                label:  Allowing 7-12 player support in games
+                prompt:      ENABLE MULTITAP
+                description: Allowing 7-12 player support in games
                 choices:
                     "Off":              disabled
                     "Port1":            port1
@@ -1924,8 +1972,8 @@ cannonball:
   features: [ratio]
   cfeatures:
         highResolution:
-            prompt: HIGH RESOLUTION
-            label:  Increase video to Hi Resolution
+            prompt:      HIGH RESOLUTION
+            description: Increase video to Hi Resolution
             choices:
                 "Off": 0
                 "On":  1
@@ -1933,8 +1981,8 @@ cemu:
   features: [emulated_wiimotes]
   cfeatures:
         gfxbackend:
-            prompt: GRAPHICS BACKEND
-            label:  Choose your graphics rendering
+            prompt:      GRAPHICS BACKEND
+            description: Choose your graphics rendering
             choices:
                 "OpenGL": OpenGL
                 "Vulkan": Vulkan
@@ -1949,14 +1997,14 @@ dolphin:
   features: [ratio, internal_resolution]
   cfeatures:
         perf_hacks:
-            prompt: PERFORMANCE HACKS
-            label:  Increase emulator performance
+            prompt:      PERFORMANCE HACKS
+            description: Increase emulator performance
             choices:
                 "Off": 0
                 "On":  1
         anisotropic_filtering:
-            prompt: ANISOTROPIC FILTERING
-            label:  Enhance the quality with on perspective textures
+            prompt:      ANISOTROPIC FILTERING
+            description: Enhance the quality with on perspective textures
             choices:
                 "Off": 0
                 "2x":  1
@@ -1964,65 +2012,65 @@ dolphin:
                 "8x":  3
                 "16x": 4
         dual_core:
-            prompt: DUAL CORE
-            label:  Usually not much faster than single core mode
+            prompt:      DUAL CORE
+            description: Usually not much faster than single core mode
             choices:
                 "Off": 0
                 "On":  1
         gpu_sync:
-            prompt: GPU SYNC
-            label:  Speed Hack for dual core mode to fix some glitches
+            prompt:      GPU SYNC
+            description: Speed Hack for dual core mode to fix some glitches
             choices:
                 "Off": 0
                 "On":  1
         antialiasing:
-            prompt: ANTI-ALIASING
-            label:  Smooth out jagged edges on 3D objetcs polygons
+            prompt:      ANTI-ALIASING
+            description: Smooth out jagged edges on 3D objetcs polygons
             choices:
                 "Off": 0
                 "2x":  2
                 "4x":  4
                 "8x":  8
         hires_textures:
-            prompt: HIRES TEXTURES
-            label:  Permit to use HD Texture Pack
+            prompt:      HIRES TEXTURES
+            description: Permit to use HD Texture Pack
             choices:
                 "Off": 0
                 "On":  1
         widescreen_hack:
-            prompt: WIDESCREEN HACK
-            label:  You must use a 16/9 RATIO to work
+            prompt:      WIDESCREEN HACK
+            description: You must use a 16/9 RATIO to work
             choices:
                 "Off": 0
                 "On":  1
         enable_cheats:
-            prompt: ENABLE CHEATS
-            label:  To use game cheats or 16/9 Aspect Ratio Fix codes
+            prompt:      ENABLE CHEATS
+            description: To use game cheats or 16/9 Aspect Ratio Fix codes
             choices:
                 "Off": 0
                 "On":  1
         enable_mmu:
-            prompt: MEMORY MANAGEMENT UNIT
-            label:  Allow many games to boot and work properly
+            prompt:      MEMORY MANAGEMENT UNIT
+            description: Allow many games to boot and work properly
             choices:
                 "Off": 0
                 "On":  1
         enable_fastdisc:
-            prompt: FAST DISK SPEED
-            label:  Speed up disc speed to remoe any loading
+            prompt:      FAST DISK SPEED
+            description: Speed up disc speed to remoe any loading
             choices:
                 "Off": 0
                 "On":  1
         vsync:
-            prompt: VSYNC
-            label:  Fix the heavy screen tearing in games (heavy CPU)
+            prompt:      VSYNC
+            description: Fix the heavy screen tearing in games (heavy CPU)
             choices:
                 "Off": 0
                 "On":  1
         gfxbackend:
             archs_include: [x86, x86_64, rpi4]
-            prompt: GRAPHICS BACKEND
-            label:  Choose your graphics rendering
+            prompt:      GRAPHICS BACKEND
+            description: Choose your graphics rendering
             choices:
                 "OpenGL": OGL
                 "Vulkan": Vulkan
@@ -2075,14 +2123,14 @@ mupen64plus:
 openbor:
   cfeatures:
     ratio:
-      prompt: SCREEN RATIO
-      label:  Stretch games to Full Screen but distorted
+      prompt:      SCREEN RATIO
+      description: Stretch games to Full Screen but distorted
       choices:
         "Normal":         0
         "Stretch":        1
     filter:
-      prompt: VIDEO FILTER
-      label:  Apply to achieve some kind of visual effect
+      prompt:      VIDEO FILTER
+      description: Apply to achieve some kind of visual effect
       choices:
         "Simple 2x":      0
         "Bilinear":       1
@@ -2100,8 +2148,8 @@ pcsx2:
   features: [ratio, fullboot, internal_resolution]
   cfeatures:
         anisotropic_filtering:
-            prompt: ANISOTROPIC FILTERING
-            label:  Enhance the quality with on perspective textures
+            prompt:      ANISOTROPIC FILTERING
+            description: Enhance the quality with on perspective textures
             choices:
                 "Off": 0
                 "2x":  2
@@ -2109,8 +2157,8 @@ pcsx2:
                 "8x":  8
                 "16x": 16
         skipdraw:
-            prompt: SKIPDRAW HACK
-            label:  Skip frames to improve performance (Smoothless)
+            prompt:      SKIPDRAW HACK
+            description: Skip frames to improve performance (Smoothless)
             choices:
                 "Off": 0
                 "1":   1
@@ -2119,15 +2167,15 @@ pcsx2:
                 "4":   4
                 "5":   5
         align_sprite:
-            prompt: ALIGN SPRITE (HACK)
-            label:  Remove lines in Internal Resolution (Soul Calibur)
-            label:  
+            prompt:      ALIGN SPRITE (HACK)
+            description: Remove lines in Internal Resolution (Soul Calibur)
+            description: 
             choices:
                 "Off": 0
                 "On":  1
         vsync:
-            prompt: VSYNC
-            label:  Fix the heavy screen tearing in games (heavy CPU)
+            prompt:      VSYNC
+            description: Fix the heavy screen tearing in games (heavy CPU)
             choices:
                 "Off": 0
                 "On":  1
@@ -2136,8 +2184,8 @@ ppsspp:
   features: [ratio, internal_resolution]
   cfeatures:
         frameskip:
-            prompt: FRAME SKIP
-            label:  Skip frames to improve performance (Smoothless)
+            prompt:      FRAME SKIP
+            description: Skip frames to improve performance (Smoothless)
             choices:
                 "Off": 0
                 "On":  1
@@ -2148,14 +2196,14 @@ rpcs3:
   features: []
   cfeatures:
         gui:
-            prompt: GRAPHICAL USER INTERFACE
-            label:  Display the user interface
+            prompt:      GRAPHICAL USER INTERFACE
+            description: Display the user interface
             choices:
                 "Off":      0
                 "On":       1
         gfxbackend:
-            prompt: GRAPHICS BACKEND
-            label:  Choose your graphics rendering
+            prompt:      GRAPHICS BACKEND
+            description: Choose your graphics rendering
             choices:
                 "OpenGL":   OpenGL
                 "Vulkan":   Vulkan
@@ -2170,31 +2218,31 @@ mame:
   features: []
   cfeatures:
         video:
-            prompt: GRAPHICS BACKEND
-            label:  Choose your graphics rendering
+            prompt:      GRAPHICS BACKEND
+            description: Choose your graphics rendering
             choices:
                 "BGFX":          bgfx
                 "Accel":         accel
                 "OpenGL":        opengl
         bgfxbackend:
             archs_include: [x86, x86_64, rpi4]
-            prompt: BGFX BACKEND
-            label:  Choose your graphics API
+            prompt:      BGFX BACKEND
+            description: Choose your graphics API
             choices:
                 "Automatic":     auto
                 "OpenGL":        opengl
                 "OpenGLES":      gles
                 "Vulkan":        vulkan
         rotation:
-            prompt: TATE MODE
-            label:  Rotating display to vertical mode rendering
+            prompt:      TATE MODE
+            description: Rotating display to vertical mode rendering
             choices:
                 "Disabled":      null
                 "Rotate 90":     autoror
                 "Rotate 270":    autorol
         bgfxshaders:
-            prompt: VIDEO FILTER
-            label:  Apply to achieve some kind of visual effect
+            prompt:      VIDEO FILTER
+            description: Apply to achieve some kind of visual effect
             choices:
                 "None":          null
                 "CrtGeom":       crt-geom
@@ -2209,38 +2257,38 @@ wine:
   features: [padtokeyboard]
   cfeatures:
         dxvk:
-            prompt: DXVK
-            label:  Converts the DirectX calls from 9 to 12 in Vulkan
+            prompt:      DXVK
+            description: Converts the DirectX calls from 9 to 12 in Vulkan
             choices:
                 "Off": 0
                 "On":  1
         dxvk_hud:
-            prompt: DXVK HUD
-            label:  See your FPS and version of Vulkan API and Driver
+            prompt:      DXVK HUD
+            description: See your FPS and version of Vulkan API and Driver
             choices:
                 "Off": 0
                 "On":  1
         esync:
-            prompt: ESYNC
-            label:  Can increase performance for games that stress CPU
+            prompt:      ESYNC
+            description: Can increase performance for games that stress CPU
             choices:
                 "Off": 0
                 "On":  1
         fsync:
-            prompt: FSYNC
-            label:  Can improving frame rates and responsiveness
+            prompt:      FSYNC
+            description: Can improving frame rates and responsiveness
             choices:
                 "Off": 0
                 "On":  1
         pba:
-            prompt: PBA
-            label:  Vastly improving the speed of buffer maps
+            prompt:      PBA
+            description: Vastly improving the speed of buffer maps
             choices:
                 "Off": 0
                 "On":  1
         virtual_desktop:
-            prompt: VIRTUAL DESKTOP
-            label:  Define the resolution and a new dedicated window
+            prompt:      VIRTUAL DESKTOP
+            description: Define the resolution and a new dedicated window
             choices:
                 "Off": 0
                 "On":  1

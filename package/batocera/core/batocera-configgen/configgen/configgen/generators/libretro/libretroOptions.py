@@ -5,19 +5,7 @@ import ConfigParser
 from settings.unixSettings import UnixSettings
 import batoceraFiles
 
-def generateCoreSettings(retroarchCore, system, rom):
-    # retroarch-core-options.cfg
-    if not os.path.exists(os.path.dirname(retroarchCore)):
-        os.makedirs(os.path.dirname(retroarchCore))
-
-    try:
-        coreSettings = UnixSettings(retroarchCore, separator=' ')
-    except UnicodeError:
-        # invalid retroarch-core-options.cfg
-        # remove it and try again
-        os.remove(retroarchCore)
-        coreSettings = UnixSettings(retroarchCore, separator=' ')
-
+def generateCoreSettings(coreSettings, system, rom):
 
     # Amstrad CPC / GX4000
     if (system.config['core'] == 'cap32'):
@@ -809,6 +797,8 @@ def generateCoreSettings(retroarchCore, system, rom):
     if (system.config['core'] == 'flycast'):
         # Threaded Rendering
         coreSettings.save('reicast_threaded_rendering',  '"enabled"')
+        # Enable controller force feedback
+        coreSettings.save('reicast_enable_purupuru',  '"enabled"')
         # Crossbar Colors
         coreSettings.save('reicast_lightgun1_crosshair', '"Red"')
         coreSettings.save('reicast_lightgun2_crosshair', '"Blue"')
@@ -1113,6 +1103,8 @@ def generateCoreSettings(retroarchCore, system, rom):
             coreSettings.save('beetle_psx_dynarec_invalidate', system.config['beetle_psx_dynarec_invalidate'])
         else:
             coreSettings.save('beetle_psx_dynarec_invalidate', '"full"')
+        # Analog Stick self calibration
+        coreSettings.save('beetle_psx_analog_calibration', '"enabled"')
         # Multitap
         if system.isOptSet('multitap_mednafen') and system.config['multitap_mednafen'] != 'disabled':
             if system.config['multitap_mednafen'] == 'port1':
@@ -1177,7 +1169,9 @@ def generateCoreSettings(retroarchCore, system, rom):
         coreSettings.save('pcsx_rearmed_show_gpu_peops_settings', '"enabled"')
         # Display Multitap/Gamepad Options
         coreSettings.save('pcsx_rearmed_show_other_input_settings', '"enabled"')
-        
+        # Enable Vibration
+        coreSettings.save('pcsx_rearmed_vibration', '"enabled"')
+
         # Show Bios Bootlogo (Breaks some games)
         if system.isOptSet('show_bios_bootlogo'):
             coreSettings.save('pcsx_rearmed_show_bios_bootlogo', system.config['show_bios_bootlogo'])

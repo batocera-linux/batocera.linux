@@ -24,29 +24,30 @@ def defined(key, dict):
 ratioIndexes = ["4/3", "16/9", "16/10", "16/15", "21/9", "1/1", "2/1", "3/2", "3/4", "4/1", "4/4", "5/4", "6/5", "7/9", "8/3",
                 "8/7", "19/12", "19/14", "30/17", "32/9", "config", "squarepixel", "core", "custom"]
 
-# Define the libretro device type corresponding to the libretro cores, when needed.
-coreToP1Device = {'atari800': '513', 'cap32': '513', '81': '259', 'fuse': '769'};
-coreToP2Device = {'atari800': '513', 'fuse': '513'};
+# Define system emulated by bluemsx core
+systemToBluemsx = {'msx': '"MSX2"', 'msx1': '"MSX2"', 'msx2': '"MSX2"', 'colecovision': '"COL - ColecoVision"' };
 
 # Define systems compatible with retroachievements
 systemToRetroachievements = {'atari2600', 'atari7800', 'atarijaguar', 'colecovision', 'nes', 'snes', 'virtualboy', 'n64', 'sg1000', 'mastersystem', 'megadrive', 'segacd', 'sega32x', 'saturn', 'pcengine', 'pcenginecd', 'supergrafx', 'psx', 'mame', 'hbmame', 'fbneo', 'neogeo', 'lightgun', 'apple2', 'lynx', 'wswan', 'wswanc', 'gb', 'gbc', 'gba', 'nds', 'pokemini', 'gamegear', 'ngp', 'ngpc'}; 
 
-# Define systems not compatible with rewind option
+# Define systems NOT compatible with rewind option
 systemNoRewind = {'sega32x', 'psx', 'zxspectrum', 'hbmame', 'n64', 'dreamcast', 'atomiswave', 'naomi', 'saturn'};
 # 'odyssey2', 'mame', 'neogeocd', 'fbneo'
 
-# Define systems not compatible with run-ahead option (warning: this option is CPU intensive!)
+# Define systems NOT compatible with run-ahead option (warning: this option is CPU intensive!)
 systemNoRunahead = {'sega32x', 'n64', 'dreamcast', 'atomiswave', 'naomi', 'neogeocd', 'saturn'};
 
-# Define system emulated by bluemsx core
-systemToBluemsx = {'msx': '"MSX2"', 'msx1': '"MSX2"', 'msx2': '"MSX2"', 'colecovision': '"COL - ColecoVision"' };
+# Define the libretro device type corresponding to the libretro CORE (when needed)
+coreToP1Device = {'atari800': '513', 'cap32': '513', '81': '259', 'fuse': '769'};
+coreToP2Device = {'atari800': '513', 'fuse': '513'};
 
-# Define the libretro device type corresponding to the libretro cores, when needed.
+# Define the libretro device type corresponding to the libretro SYSTEM (when needed)
 systemToP1Device = {'msx': '257', 'msx1': '257', 'msx2': '257', 'colecovision': '1' };
 systemToP2Device = {'msx': '257', 'msx1': '257', 'msx2': '257', 'colecovision': '1' };
 
 # Netplay modes
 systemNetplayModes = {'host', 'client', 'spectator'}
+
 
 def writeLibretroConfig(retroconfig, system, controllers, rom, bezel, gameResolution):
     writeLibretroConfigToFile(retroconfig, createLibretroConfig(system, controllers, rom, bezel, gameResolution))
@@ -66,10 +67,24 @@ def fast_image_size(image_file):
            return -1, -1
         return struct.unpack('>ii', head[16:24]) #image width, height
 
-# take a system, and returns a dict of retroarch.cfg compatible parameters
+# Take a system, and returns a dict of retroarch.cfg compatible parameters
 def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
+
+    # retroarch-core-options.cfg
+    retroarchCore = batoceraFiles.retroarchCoreCustom
+    if not os.path.exists(os.path.dirname(retroarchCore)):
+        os.makedirs(os.path.dirname(retroarchCore))
+
+    try:
+        coreSettings = UnixSettings(retroarchCore, separator=' ')
+    except UnicodeError:
+        # invalid retroarch-core-options.cfg
+        # remove it and try again
+        os.remove(retroarchCore)
+        coreSettings = UnixSettings(retroarchCore, separator=' ')
+
     # Create/update retroarch-core-options.cfg
-    libretroOptions.generateCoreSettings(batoceraFiles.retroarchCoreCustom, system, rom)
+    libretroOptions.generateCoreSettings(coreSettings, system, rom)
 
     # Create/update hatari.cfg
     if system.name == 'atarist':
@@ -79,27 +94,83 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
     systemConfig = system.config
     renderConfig = system.renderconfig
 
-    # basic configuration
-    retroarchConfig['quit_press_twice'] = 'false'            # not aligned behavior on other emus
-    retroarchConfig['video_driver'] = '"gl"'                 # needed for the ozone menu
+    # Basic configuration
+    retroarchConfig['quit_press_twice'] = 'false'               # not aligned behavior on other emus
+    retroarchConfig['video_driver'] = '"gl"'                    # needed for the ozone menu
 
     if system.isOptSet("gfxbackend") and system.config["gfxbackend"] == "vulkan":
         retroarchConfig['video_driver'] = '"vulkan"'
 
-    retroarchConfig['video_black_frame_insertion'] = 'false' # don't use anymore this value while it doesn't allow the shaders to work
-    retroarchConfig['pause_nonactive'] = 'false'             # required at least on x86 x86_64 otherwise, the game is paused at launch
-    retroarchConfig['audio_driver'] = 'alsa'                 # force ALSA. TODO: check audio.backend
+    retroarchConfig['video_black_frame_insertion'] = 'false'    # don't use anymore this value while it doesn't allow the shaders to work
+    retroarchConfig['pause_nonactive'] = 'false'                # required at least on x86 x86_64 otherwise, the game is paused at launch
+    retroarchConfig['audio_driver'] = 'alsa'                    # force ALSA. TODO: check audio.backend
     retroarchConfig['midi_driver'] = 'alsa'
     retroarchConfig['cache_directory'] = '/userdata/system/.cache'
 
-    # fs is required at least for x86* and odroidn2
-    retroarchConfig['video_fullscreen'] = 'true'
+    retroarchConfig['video_fullscreen'] = 'true'                # Fullscreen is required at least for x86* and odroidn2
 
+    retroarchConfig['savestate_directory'] = batoceraFiles.savesDir + system.name
+    retroarchConfig['savefile_directory'] = batoceraFiles.savesDir + system.name
+
+    # Forced values (so that if the config is not correct, fix it)
+    if system.config['core'] == 'tgbdual':
+        retroarchConfig['aspect_ratio_index'] = str(ratioIndexes.index("core")) # Reset each time in this function
+
+    # Disable internal image viewer (ES does it, and pico-8 won't load .p8.png)
+    retroarchConfig['builtin_imageviewer_enable'] = 'false'
+
+    # Disable the threaded video while it is causing issues to several people ?
+    # This must be set to true on xu4 for performance issues
+    if system.config['video_threaded']:
+        retroarchConfig['video_threaded'] = 'true'
+    else:
+        retroarchConfig['video_threaded'] = 'false'
+
+    # Input configuration
+    retroarchConfig['input_joypad_driver'] = 'udev'
+    retroarchConfig['input_max_users'] = "16"                   # Allow up to 16 players
+
+    retroarchConfig['input_libretro_device_p1'] = '1'           # Default devices choices
+    retroarchConfig['input_libretro_device_p2'] = '1'
+
+    ## Specific choices
+    if(system.config['core'] in coreToP1Device):
+        retroarchConfig['input_libretro_device_p1'] = coreToP1Device[system.config['core']]
+    if(system.config['core'] in coreToP2Device):
+        retroarchConfig['input_libretro_device_p2'] = coreToP2Device[system.config['core']]
+
+    if len(controllers) > 2 and (system.config['core'] == 'snes9x_next' or system.config['core'] == 'snes9x'):
+        retroarchConfig['input_libretro_device_p2'] = '257'
+
+    ## BlueMSX choices by System
+    if(system.name in systemToBluemsx):
+        if system.config['core'] == 'bluemsx':
+            retroarchConfig['input_libretro_device_p1'] = systemToP1Device[system.name]
+            retroarchConfig['input_libretro_device_p2'] = systemToP2Device[system.name]
+
+    ## PlayStation controlers
+    if (system.config['core'] == 'mednafen_psx'):               # Madnafen
+        # Controller 1 Type
+        if system.isOptSet('beetle_psx_Controller1'):
+            retroarchConfig['input_libretro_device_p1'] = system.config['beetle_psx_Controller1']
+        # Controller 2 Type
+        if system.isOptSet('beetle_psx_Controller2'):
+            retroarchConfig['input_libretro_device_p2'] = system.config['beetle_psx_Controller2']
+    if (system.config['core'] == 'pcsx_rearmed'):               # PCSX Rearmed
+        if system.isOptSet('controller1_pcsx'):
+            retroarchConfig['input_libretro_device_p1'] = system.config['controller1_pcsx']
+        # Controller 2 Type
+        if system.isOptSet('controller2_pcsx'):
+            retroarchConfig['input_libretro_device_p2'] = system.config['controller2_pcsx']
+
+
+    # Smooth option
     if system.isOptSet('smooth') and system.getOptBoolean('smooth') == True:
         retroarchConfig['video_smooth'] = 'true'
     else:
         retroarchConfig['video_smooth'] = 'false'
 
+    # Shader option
     if 'shader' in renderConfig and renderConfig['shader'] != None:
         retroarchConfig['video_shader_enable'] = 'true'
         retroarchConfig['video_smooth']        = 'false'     # seems to be necessary for weaker SBCs
@@ -112,7 +183,8 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
     else:
         retroarchConfig['video_shader_enable'] = 'false'
 
-    retroarchConfig['aspect_ratio_index'] = '' # reset in case config was changed (or for overlays)
+    # Ratio option
+    retroarchConfig['aspect_ratio_index'] = ''              # reset in case config was changed (or for overlays)
     if defined('ratio', systemConfig):
         if systemConfig['ratio'] in ratioIndexes:
             retroarchConfig['aspect_ratio_index'] = ratioIndexes.index(systemConfig['ratio'])
@@ -123,18 +195,18 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
             retroarchConfig['video_aspect_ratio_auto'] = 'true'
             retroarchConfig['aspect_ratio_index'] = ''
 
+    # Rewind option
     retroarchConfig['rewind_enable'] = 'false'
-
     if system.isOptSet('rewind') and system.getOptBoolean('rewind') == True:
         if(not system.name in systemNoRewind):
             retroarchConfig['rewind_enable'] = 'true'
     else:
         retroarchConfig['rewind_enable'] = 'false'
 
+    # Retroachievement option
     retroarchConfig['run_ahead_enabled'] = 'false'
     retroarchConfig['run_ahead_frames'] = '0'
     retroarchConfig['run_ahead_secondary_instance'] = 'false'
-
     if system.isOptSet('runahead') and int(system.config['runahead']) >0:
        if (not system.name in systemNoRunahead):
           retroarchConfig['run_ahead_enabled'] = 'true'
@@ -142,6 +214,7 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
           if system.isOptSet('secondinstance') and system.getOptBoolean('secondinstance') == True:
               retroarchConfig['run_ahead_secondary_instance'] = 'true'
 
+    # Autosave option
     if system.isOptSet('autosave') and system.getOptBoolean('autosave') == True:
         retroarchConfig['savestate_auto_save'] = 'true'
         retroarchConfig['savestate_auto_load'] = 'true'
@@ -149,25 +222,7 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
         retroarchConfig['savestate_auto_save'] = 'false'
         retroarchConfig['savestate_auto_load'] = 'false'
 
-    retroarchConfig['input_joypad_driver'] = 'udev'
-    retroarchConfig['input_max_users'] = "16" # allow up to 16 players
-
-    retroarchConfig['savestate_directory'] = batoceraFiles.savesDir + system.name
-    retroarchConfig['savefile_directory'] = batoceraFiles.savesDir + system.name
-
-    # Devices choices
-    retroarchConfig['input_libretro_device_p1'] = '1'
-    retroarchConfig['input_libretro_device_p2'] = '1'
-
-    if(system.config['core'] in coreToP1Device):
-        retroarchConfig['input_libretro_device_p1'] = coreToP1Device[system.config['core']]
-    if(system.config['core'] in coreToP2Device):
-        retroarchConfig['input_libretro_device_p2'] = coreToP2Device[system.config['core']]
-
-    if len(controllers) > 2 and (system.config['core'] == 'snes9x_next' or system.config['core'] == 'snes9x'):
-        retroarchConfig['input_libretro_device_p2'] = '257'
-
-    # Retroachievements
+    # Retroachievements option
     retroarchConfig['cheevos_enable'] = 'false'
     retroarchConfig['cheevos_hardcore_mode_enable'] = 'false'
     retroarchConfig['cheevos_leaderboards_enable'] = 'false'
@@ -207,25 +262,6 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
     else:
         retroarchConfig['video_scale_integer'] = 'false'
 
-    # disable the threaded video while it is causing issues to several people ?
-    # this must be set to true on xu4 for performance issues
-    if system.config['video_threaded']:
-        retroarchConfig['video_threaded'] = 'true'
-    else:
-        retroarchConfig['video_threaded'] = 'false'
-
-    # core options
-    if(system.name in systemToBluemsx):
-        if system.config['core'] == 'bluemsx':
-            retroarchConfig['input_libretro_device_p1'] = systemToP1Device[system.name]
-            retroarchConfig['input_libretro_device_p2'] = systemToP2Device[system.name]
-    # forced values (so that if the config is not correct, fix it)
-    if system.config['core'] == 'tgbdual':
-        retroarchConfig['aspect_ratio_index'] = str(ratioIndexes.index("core")) # reset each time in this function
-
-    # Disable internal image viewer (ES does it, and pico-8 won't load .p8.png)
-    retroarchConfig['builtin_imageviewer_enable'] = 'false'
-
     # Netplay management
     if 'netplay.mode' in system.config and system.config['netplay.mode'] in systemNetplayModes:
         # Security : hardcore mode disables save states, which would kill netplay
@@ -243,14 +279,14 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
             retroarchConfig['netplay_ip_port']           = systemConfig.get('netplay.server.port', "")
             retroarchConfig['netplay_client_swap_input'] = "true"
 
-        # connect as client
+        # Connect as client
         if system.config['netplay.mode'] == 'client':
             if 'netplay.password' in system.config:
                 retroarchConfig['netplay_password'] = '"' + systemConfig.get("netplay.password", "") + '"'
             else:
                 retroarchConfig['netplay_password'] = ""
 
-        # connect as spectator
+        # Connect as spectator
         if system.config['netplay.mode'] == 'spectator':
             retroarchConfig['netplay_start_as_spectator'] = "true"
             if 'netplay.password' in system.config:
@@ -265,13 +301,13 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
             retroarchConfig['netplay_password'] = '"' + systemConfig.get("netplay.password", "") + '"'
             retroarchConfig['netplay_spectate_password'] = '"' + systemConfig.get("netplay.spectatepassword", "") + '"'
 
-        # enable or disable server spectator mode
+        # Enable or disable server spectator mode
         if system.isOptSet('netplay.spectator') and system.getOptBoolean('netplay.spectator') == True:
             retroarchConfig['netplay_spectator_mode_enable'] = 'true'
         else:
             retroarchConfig['netplay_spectator_mode_enable'] = 'false'
 
-        # relay
+        # Relay
         if 'netplay.relay' in system.config and system.config['netplay.relay'] != "" and system.config['netplay.relay'] != "none" :
             retroarchConfig['netplay_use_mitm_server'] = "true"
             retroarchConfig['netplay_mitm_server'] = systemConfig.get('netplay.relay', "")
@@ -284,7 +320,7 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
     else:
         retroarchConfig['fps_show'] = 'false'
 
-    # adaptation for small resolution
+    # Adaptation for small resolution
     if isLowResolution(gameResolution):
         retroarchConfig['video_font_size'] = '12'
         retroarchConfig['menu_driver'] = 'rgui'
@@ -301,7 +337,7 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
         retroarchConfig['width']  = gameResolution["width"]  # default value
         retroarchConfig['height'] = gameResolution["height"] # default value
 
-    # AI service for game translations
+    # AI option (service for game translations)
     if system.isOptSet('ai_service_enabled') and system.getOptBoolean('ai_service_enabled') == True:
         retroarchConfig['ai_service_enable'] = 'true'
         retroarchConfig['ai_service_mode'] = '0'
@@ -321,7 +357,7 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
     else:
         retroarchConfig['ai_service_enable'] = 'false'
 
-    # bezel
+    # Bezel option
     if system.isOptSet('bezel_stretch') and system.getOptBoolean('bezel_stretch') == True:
         bezel_stretch = True
     else:
