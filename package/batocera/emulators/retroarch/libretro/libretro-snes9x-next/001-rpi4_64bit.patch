@@ -1,0 +1,19 @@
+--- a/Makefile.libretro	2020-12-07 12:17:03.475864615 +0100
++++ b/Makefile.libretro	2020-12-07 12:17:36.452469996 +0100
+@@ -309,6 +309,16 @@
+         CFLAGS += -fomit-frame-pointer -ffast-math
+         HAVE_NEON = 1
+ 
++# Raspberry Pi 4 (64-bit)
++else ifeq ($(platform), rpi4_64)
++        TARGET := $(TARGET_NAME)_libretro.so
++        fpic := -fPIC
++        SHARED := -shared -Wl,--version-script=libretro/link.T -Wl,--no-undefined
++        CFLAGS += -DARM
++        CFLAGS += -mcpu=cortex-a72 -mtune=cortex-a72 -funsafe-math-optimizations
++        CFLAGS += -fomit-frame-pointer -ffast-math
++        HAVE_NEON = 1
++
+ # ODROIDN2
+ else ifneq (,$(findstring CortexA73_G12B,$(platform)))
+ 	TARGET := $(TARGET_NAME)_libretro.so
