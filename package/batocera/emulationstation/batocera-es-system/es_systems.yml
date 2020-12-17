@@ -55,6 +55,19 @@ c20:
     libretro:
       vice_xvic: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_VICE] }
 
+pet:
+  name:       Commodore PET
+  manufacturer: Commodore
+  release: 1977
+  hardware: computer
+  extensions: [a0, b0, crt, d64, d81, prg, tap, t64, zip]
+  platform:   c64
+  emulators:
+    vice:
+      xpet:       { requireAnyOf: [BR2_PACKAGE_VICE] }
+    libretro:
+      vice_xpet: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_VICE] }
+
 amiga500:
   name:       Amiga OCS/ECS
   manufacturer: Commodore
