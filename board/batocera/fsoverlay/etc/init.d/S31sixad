@@ -3,34 +3,29 @@
 systemsetting="batocera-settings"
 
 case "$1" in
-  start)
+    start)
         enabled="`$systemsetting -r controllers.ps3.enabled`"
         if [ "$enabled" = "1" ]; then
-                settings_version="`$systemsetting -r controllers.ps3.driver`"
-                [ "$settings_version" = "bluez" ] && exit 0
-                if [ "$settings_version" = "" ]; then
-                        settings_version="official"
-                fi
-                #bluetoothd -u
-                #sleep 2
-                #killall bluetoothd
-                #echo "ok"
-                /usr/sixad/$settings_version/sixad-bin 0 0 0 &
+            settings_version="`$systemsetting -r controllers.ps3.driver`"
+            [ "$settings_version" = "bluez" ] && exit 0
+            if [ "$settings_version" = "" ]; then
+                settings_version="official"
+            fi
+            /usr/sixad/$settings_version/sixad-bin 0 0 0 &
         fi
         ;;
-  stop)
-	killall sixad-bin
-	killall sixad-sixaxis
-	;;
-  restart|reload)
+    stop)
+        killall sixad-bin &> /dev/null
+        killall sixad-sixaxis &> /dev/null
+        ;;
+    restart|reload)
         "$0" stop
         "$0" start
-	;;
-  *)
-	echo "Usage: $0 {start|stop|restart}"
-	exit 1
+        ;;
+    *)
+        echo "Usage: $0 {start|stop|restart}"
+        exit 1
 esac
 
 exit $?
-
 

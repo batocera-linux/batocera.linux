@@ -451,6 +451,7 @@ endef
 define WINE_PROTON_WOW64_32_SHAREDIR_HOOK
 	mkdir -p $(TARGET_DIR)/share/wine/
 	cp -pr $(@D)/nls $(TARGET_DIR)/share/wine/
+	rm -Rf $(TARGET_DIR)/usr/wine/proton/include
 endef
 
 WINE_PROTON_WOW64_32_PRE_BUILD_HOOKS += WINE_PROTON_WOW64_32_WOWDIRS_HOOK

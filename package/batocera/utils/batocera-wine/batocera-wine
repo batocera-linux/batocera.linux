@@ -5,8 +5,12 @@ set -x
 ACTION=$1
 shift
 
+## Wine detection
+GAMENAME=$1 
+ROMGAMENAME=$(basename "${GAMENAME}")
+WINE_VERSION=$(batocera-settings -e -r core -s windows -g "${ROMGAMENAME}") || WINE_VERSION=proton
+
 ## Wine executables
-WINE_VERSION=$(batocera-settings -e -r wine_version -s windows -g "${ROMGAMENAME}") || export WINE_VERSION=proton
 DIR="/usr/wine"
 WINE="${DIR}/${WINE_VERSION}/bin/wine"
 WINE64="${DIR}/${WINE_VERSION}/bin/wine64"
@@ -219,7 +223,7 @@ play_wine() {
 
 play_pc() {
     GAMENAME=$1
-    WINEPOINT="${G_SAVES_DIR}/"$(basename "${GAMENAME}")".wine"
+    WINEPOINT="${G_SAVES_DIR}/${WINE_VERSION}/"$(basename "${GAMENAME}")".wine"
     
     wine_options
     createWineDirectory "${WINEPOINT}" || return 1
@@ -246,7 +250,7 @@ trick_wine() {
 
 play_exe() {
     GAMENAME=$1
-    WINEPOINT="${G_SAVES_DIR}/"$(basename "${GAMENAME}")".wine"
+    WINEPOINT="${G_SAVES_DIR}/${WINE_VERSION}/"$(basename "${GAMENAME}")".wine"
     GAMEDIR=$(dirname "${GAMENAME}")
     GAMEEXE=$(basename "${GAMENAME}")
 

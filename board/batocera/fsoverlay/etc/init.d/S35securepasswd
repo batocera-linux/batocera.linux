@@ -5,6 +5,8 @@ then
   exit 0
 fi
 
+printf "Starting securepasswd: "
+
 systemsetting="batocera-settings"
 
 # /etc/shadow is dynamically generated from the password found in /boot/batocera-boot.conf
@@ -31,4 +33,6 @@ echo "root:${SHADOWPASSWD}:::::::" > /run/batocera.shadow
 
 # secure samba
 mkdir -p "/var/lib/samba/private"
-(echo "${MASTERPASSWD}"; echo "${MASTERPASSWD}") | smbpasswd -a root
+echo -ne "$MASTERPASSWD\n$MASTERPASSWD\n" | smbpasswd -a -s root > /dev/null
+
+echo "done."
