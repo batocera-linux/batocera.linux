@@ -54,6 +54,7 @@ define MAME_BUILD_CMDS
 
 	# Compile emulation target
 	cd $(@D); \
+	SYSROOT="$(STAGING_DIR)" \
 	CFLAGS="--sysroot=$(STAGING_DIR) $(MAME_CFLAGS)"   \
 	LDFLAGS="--sysroot=$(STAGING_DIR)"  MPARAM="" \
 	PKG_CONFIG="$(HOST_DIR)/usr/bin/pkg-config --define-prefix" \
