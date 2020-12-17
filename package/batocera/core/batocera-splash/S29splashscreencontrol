@@ -11,7 +11,7 @@ splash_autoplay ()
     do
         sleep 1
         count=$((count+1))
-        kill -0 $PID &>/dev/null || break
+        kill -0 $PID 2>/dev/null || break
     done
 }
 
@@ -25,7 +25,7 @@ splash_default_rpi ()
         sleep 1
         count=$((count+1))
     done
-    kill -9 $PID
+    kill -9 $PID 2>/dev/null
 }
 
 #### MAIN ####
@@ -50,17 +50,17 @@ case $1 in
         [ $splash_setting = auto -a $(echo $ARCH | cut -c 1-3) = rpi ] && splash_setting=$ARCH
 
         case $splash_setting in
-            rpi*)
+            rpi1|rpi2|rpi3)
                 # Standard BATOCERA setting, for Pi platform
                 # A video splash will be displayed ~16s on Pi3 platform you'll smoothly boot into ES
                 #
                 splash_default_rpi &
             ;;
-            auto)
+            auto|rpi4)
                 # Play video as long as possible, ideal for fast boards
                 #
                 [ $picture -eq 0 ] && splash_autoplay
-                kill -9 $PID &> /dev/null
+                kill -9 $PID 2>/dev/null
             ;;
             i[0-90]*|k[0-90]*|[0-90]*)
                 # k-mode: Stop loading process for x seconds, attention there will be no
@@ -68,15 +68,15 @@ case $1 in
                 # i-mode: This mode will not kill video in background this is a posible setup
                 #         for RPi system and you will smoothly boot into ES
                 #
-                sleeptimer=$(echo $splash_setting | grep -Eo [1-9] | tr -d "\n")
+                sleeptimer=$(echo $splash_setting | grep -Eo [0-9] | tr -d "\n")
                 [ $picture -eq 1 -a $sleeptimer -gt 10 ] && sleeptimer=10
                 sleep $sleeptimer
-                [ $picture -eq 1 -o $(echo $splash_setting | cut -c 1) != i ] && kill -9 $PID
+                [ $picture -eq 1 -o $(echo $splash_setting | cut -c 1) != i ] && kill -9 $PID 2>/dev/null
             ;;
             fastboot|*)
                 # fastboot or invalid settings
                 #
-                kill -9 $PID
+                kill -9 $PID 2>/dev/null
                 exit 0
             ;;
         esac
@@ -93,7 +93,7 @@ case $1 in
 
         RSYNC="rsync --modify-window=2 -ti --dirs --delete $SPLASHUSER $SPLASHBOOT"
         mount -o remount,rw /boot
-        $RSYNC | dialog --backtitle "batocera.linux" --progressbox "Syncing Splashscreen data..." 20 75 &>/dev/tty1
+        $RSYNC | dialog --backtitle "batocera.linux" --progressbox "Syncing Splashscreen data..." 20 75 >/dev/tty1
         mount -o remount,ro /boot
     ;;
     *)
