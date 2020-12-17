@@ -465,6 +465,7 @@ config BR2_PACKAGE_BATOCERA_RETROARCH
                                                          # MUPEN64PLUS_NEXT
 
         select BR2_PACKAGE_LIBRETRO_PARALLEL_N64      if !BR2_PACKAGE_BATOCERA_RPI_VCORE          && \
+                                                         !BR2_PACKAGE_BATOCERA_TARGET_RPI4        && \
                                                          !BR2_PACKAGE_BATOCERA_TARGET_ODROIDC2    && \
                                                          !BR2_PACKAGE_BATOCERA_TARGET_ODROIDC4    && \
                                                          !BR2_PACKAGE_BATOCERA_TARGET_S905     	  && \
@@ -620,7 +621,6 @@ config BR2_PACKAGE_BATOCERA_MUPEN64
                                                            # GLIDEN64
 
         select BR2_PACKAGE_MUPEN64PLUS_GLES2            if BR2_PACKAGE_BATOCERA_RPI_VCORE           || \
-                                                           BR2_PACKAGE_BATOCERA_TARGET_RPI4         || \
                                                            BR2_PACKAGE_BATOCERA_TARGET_ROCKCHIP_ANY
                                                            # GLES2
 

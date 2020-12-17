@@ -1,0 +1,22 @@
+--- a/Makefile	2020-12-06 16:29:38.187044974 +0100
++++ b/Makefile	2020-12-06 16:30:02.247487470 +0100
+@@ -65,13 +65,15 @@
+ 
+    # Raspberry Pi
+    ifneq (,$(findstring rpi,$(platform)))
+-      FLAGS += -fomit-frame-pointer -ffast-math -marm
++      FLAGS += -fomit-frame-pointer -ffast-math
+       ifneq (,$(findstring rpi1,$(platform)))
+-         FLAGS += -march=armv6j -mfpu=vfp -mfloat-abi=hard
++         FLAGS += -march=armv6j -mfpu=vfp -mfloat-abi=hard -marm
+       else ifneq (,$(findstring rpi2,$(platform)))
+-         FLAGS += -mcpu=cortex-a7 -mfpu=neon-vfpv4 -mfloat-abi=hard
++         FLAGS += -mcpu=cortex-a7 -mfpu=neon-vfpv4 -mfloat-abi=hard -marm
+       else ifneq (,$(findstring rpi3,$(platform)))
+-         FLAGS += -mcpu=cortex-a53 -mfpu=neon-fp-armv8 -mfloat-abi=hard
++         FLAGS += -mcpu=cortex-a53 -mfpu=neon-fp-armv8 -mfloat-abi=hard -marm
++      else ifneq (,$(findstring rpi4,$(platform)))
++         FLAGS += -mcpu=cortex-a72 -mtune=cortex-a72
+       endif
+    endif
+ 
