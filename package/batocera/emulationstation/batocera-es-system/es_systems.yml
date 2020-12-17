@@ -1429,6 +1429,9 @@ ports:
   path:       /userdata/roms/ports
   command:    "/bin/sh %ROM% %CONTROLLERSCONFIG%"
   force:      True
+  emulators:
+    linux:
+      linux: { requireAnyOf: [] }
   comment_en: |
           Third party Linux games and apps that can be run from a .sh script.
   comment_fr: |
