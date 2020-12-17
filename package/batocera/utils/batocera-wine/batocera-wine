@@ -107,8 +107,8 @@ dxvk_install() {
 	fi
     else
 	echo "Creating links on /userdata, Linux File System required !!!"
-	ln -sf "/usr/lib/wine/fakedlls/"{d3d12.dll,d3d11.dll,d3d10core.dll,d3d10.dll,d3d10_1.dll,d3d9.dll,dxgi.dll}   "${WINEPREFIX}/drive_c/windows/system32" || return 1
-        ln -sf "/lib32/wine/fakedlls/"{d3d12.dll,d3d11.dll,d3d10core.dll,d3d10.dll,d3d10_1.dll,d3d9.dll,dxgi.dll} "${WINEPREFIX}/drive_c/windows/syswow64" || return 1
+	ln -sf "/usr/wine/${WINE_VERSION}/lib64/wine/fakedlls/"{d3d12.dll,d3d11.dll,d3d10core.dll,d3d10.dll,d3d10_1.dll,d3d9.dll,dxgi.dll}   "${WINEPREFIX}/drive_c/windows/system32" || return 1
+        ln -sf "/usr/wine/${WINE_VERSION}/lib/wine/fakedlls/"{d3d12.dll,d3d11.dll,d3d10core.dll,d3d10.dll,d3d10_1.dll,d3d9.dll,dxgi.dll} "${WINEPREFIX}/drive_c/windows/syswow64" || return 1
     fi
 
     if test "${DXVK}" = 1
