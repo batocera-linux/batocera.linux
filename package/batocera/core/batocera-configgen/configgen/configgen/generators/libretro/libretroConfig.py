@@ -148,20 +148,39 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
             retroarchConfig['input_libretro_device_p1'] = systemToP1Device[system.name]
             retroarchConfig['input_libretro_device_p2'] = systemToP2Device[system.name]
 
-    ## PlayStation controlers
+    ## PlayStation controller
     if (system.config['core'] == 'mednafen_psx'):               # Madnafen
-        # Controller 1 Type
         if system.isOptSet('beetle_psx_Controller1'):
             retroarchConfig['input_libretro_device_p1'] = system.config['beetle_psx_Controller1']
-        # Controller 2 Type
         if system.isOptSet('beetle_psx_Controller2'):
             retroarchConfig['input_libretro_device_p2'] = system.config['beetle_psx_Controller2']
     if (system.config['core'] == 'pcsx_rearmed'):               # PCSX Rearmed
         if system.isOptSet('controller1_pcsx'):
             retroarchConfig['input_libretro_device_p1'] = system.config['controller1_pcsx']
-        # Controller 2 Type
         if system.isOptSet('controller2_pcsx'):
             retroarchConfig['input_libretro_device_p2'] = system.config['controller2_pcsx']
+
+    ## Sega Megadrive controller
+    if system.config['core'] == 'genesisplusgx' and system.name == 'megadrive':
+        if system.isOptSet('controller1_md'):
+            retroarchConfig['input_libretro_device_p1'] = system.config['controller1_md']
+        else:
+            retroarchConfig['input_libretro_device_p1'] = '513' # 6 button
+        if system.isOptSet('controller2_md'):
+            retroarchConfig['input_libretro_device_p2'] = system.config['controller2_md']
+        else:
+            retroarchConfig['input_libretro_device_p2'] = '513' # 6 button
+
+    ## Sega Mastersystem controller
+    if system.config['core'] == 'genesisplusgx' and system.name == 'mastersystem':
+        if system.isOptSet('controller1_ms'):
+            retroarchConfig['input_libretro_device_p1'] = system.config['controller1_ms']
+        else:
+            retroarchConfig['input_libretro_device_p1'] = '769'
+        if system.isOptSet('controller2_ms'):
+            retroarchConfig['input_libretro_device_p2'] = system.config['controller2_ms']
+        else:
+            retroarchConfig['input_libretro_device_p2'] = '769'
 
 
     # Smooth option

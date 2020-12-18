@@ -884,15 +884,15 @@ def generateCoreSettings(coreSettings, system, rom):
         else:
             coreSettings.save('genesis_plus_gx_gun_cursor', '"disabled"')
 
-        # Master System FM (YM2413)
         # system.name == 'mastersystem'
+        # Master System FM (YM2413)
         if system.isOptSet('ym2413'):
             coreSettings.save('genesis_plus_gx_ym2413', system.config['ym2413'])
         else:
             coreSettings.save('genesis_plus_gx_ym2413', '"auto"')
 
-        # Game Gear LCD Ghosting Filter
         # system.name == 'gamegear'
+        # Game Gear LCD Ghosting Filter
         if system.isOptSet('lcd_filter'):
             coreSettings.save('genesis_plus_gx_lcd_filter', system.config['lcd_filter'])
         else:
@@ -905,9 +905,6 @@ def generateCoreSettings(coreSettings, system, rom):
     
     # Sega 32X (Sega Megadrive / MegaCD / Master System)
     if system.config['core'] == 'picodrive':
-        # 6 Button Controller
-        coreSettings.save('picodrive_input1', '"6 button pad"')
-        coreSettings.save('picodrive_input2', '"6 button pad"')
         # Reduce sprite flickering
         if system.isOptSet('picodrive_sprlim') and system.config['picodrive_sprlim'] == 'disabled':
             coreSettings.save('picodrive_sprlim',   '"disabled"')
@@ -915,6 +912,16 @@ def generateCoreSettings(coreSettings, system, rom):
         else:
             coreSettings.save('picodrive_sprlim',   '"enabled"')
             coreSettings.save('picodrive_overscan', '"enabled"')
+        # 6 Button Controller 1
+        if system.isOptSet('picodrive_controller1'):
+            coreSettings.save('picodrive_sprlim', '"' + system.config['picodrive_controller1'] + '"')
+        else:
+            coreSettings.save('picodrive_input1', '"6 button pad"')
+        # 6 Button Controller 2
+        if system.isOptSet('picodrive_controller2'):
+            coreSettings.save('picodrive_input2', '"' + system.config['picodrive_controller2'] + '"')
+        else:
+            coreSettings.save('picodrive_input2', '"6 button pad"')
 
         # Sega MegaCD
         # Emulate the Backup RAM Cartridge for games save (ex: Shining Force CD)

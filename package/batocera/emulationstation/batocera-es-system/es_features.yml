@@ -568,6 +568,34 @@ libretro:
                         choices:
                             "Off":        disabled
                             "On":         enabled
+                    controller1_md:
+                        prompt:      CONTROLLER 1 TYPE
+                        description: Select 3 or 6 button controller, mouse or Multitap
+                        choices:
+                            #"None":                          0
+                            "Joypad Auto":                   1
+                            "Joypad 3 Button":               257
+                            "Joypad 6 Button":               513
+                            "Joypad 3 Button + 4-WayPlay":   1025
+                            "Joypad 6 Button + 4-WayPlay":   1281
+                            "Joypad 3 Button + Teamplayer":  1537
+                            "Joypad 6 Button + Teamplayer":  1793
+                            #"XE-1AP":                        773
+                            "Mouse":                         2
+                    controller2_md:
+                        prompt:      CONTROLLER 2 TYPE
+                        description: Select 3 or 6 button controller, mouse or Multitap
+                        choices:
+                            #"None":                          0
+                            "Joypad Auto":                   1
+                            "Joypad 3 Button":               257
+                            "Joypad 6 Button":               513
+                            "Joypad 3 Button + 4-WayPlay":   1025
+                            "Joypad 6 Button + 4-WayPlay":   1281
+                            "Joypad 3 Button + Teamplayer":  1537
+                            "Joypad 6 Button + Teamplayer":  1793
+                            #"XE-1AP":                        773
+                            "Mouse":                         2
             mastersystem:
                 cfeatures:
                     gpgx_blargg_filter_ms:
@@ -578,12 +606,6 @@ libretro:
                             "Composite (color bleeding + artifacts)": composite
                             "SVideo (color bleeding only)":           svideo
                             "RGB (crisp image)":                      rgb
-                    gun_cursor_ms:
-                        prompt:      SHOW LIGHTGUN CROSSHAIR
-                        description: Shows crosshairs for Light Phaser device
-                        choices:
-                            "Off":        disabled
-                            "On":         enabled
                     ym2413:
                         prompt:      FM CHIP (YM2413)
                         description: Enhanced sound output support for compatible games
@@ -591,6 +613,36 @@ libretro:
                             "Automatic":  automatic
                             "Off":        disabled
                             "On":         enabled
+                    gun_cursor_ms:
+                        prompt:      SHOW LIGHTGUN CROSSHAIR
+                        description: Shows crosshairs for Light Phaser device
+                        choices:
+                            "Off":        disabled
+                            "On":         enabled
+                    controller1_ms:
+                        prompt:      CONTROLLER 1 TYPE
+                        description: Select 2 button controller, Lightgun or Multitap
+                        choices:
+                            #"None":                          0
+                            #"Joypad Auto":                   1
+                            "Joypad 2 Button":               769
+                            "Joypad 2 Button + Master Tap":  2049
+                            "Light Phaser":                  260
+                            "Paddle Control":                261
+                            #"Sports Pad":                    517
+                            #"Graphic Board":                 262
+                    controller2_ms:
+                        prompt:      CONTROLLER 2 TYPE
+                        description: Select 2 button controller, Lightgun or Multitap
+                        choices:
+                            #"None":                          0
+                            #"Joypad Auto":                   1
+                            "Joypad 2 Button":               769
+                            "Joypad 2 Button + Master Tap":  2049
+                            "Light Phaser":                  260
+                            "Paddle Control":                261
+                            #"Sports Pad":                    517
+                            #"Graphic Board":                 262
             gamegear:
                 cfeatures:
                     lcd_filter:
@@ -829,28 +881,28 @@ libretro:
                 prompt:      CONTROLLER 1 TYPE
                 description: Use DualShock type for games with Rumble mode
                 choices:
-                    "None":                          0
+                    #"None":                          0
                     "Digital Controller":            1
-                    "Analog Controller":             261
+                    #"Analog Controller":             261
                     "Analog Controller (DualShock)": 517
-                    "Analog Joystick":               773
+                    #"Analog Joystick":               773
                     "Namco GunCon":                  260
-                    "Justifier":                     516
-                    "PlayStation Mouse":             258
                     "NeGcon":                        1029
+                    #"Justifier":                     516
+                    "PlayStation Mouse":             258
             beetle_psx_Controller2:
                 prompt:      CONTROLLER 2 TYPE
                 description: Use DualShock type for games with Rumble mode
                 choices:
-                    "None":                          0
+                    #"None":                          0
                     "Digital Controller":            1
-                    "Analog Controller":             261
+                    #"Analog Controller":             261
                     "Analog Controller (DualShock)": 517
-                    "Analog Joystick":               773
+                    #"Analog Joystick":               773
                     "Namco GunCon":                  260
-                    "Justifier":                     516
-                    "PlayStation Mouse":             258
                     "NeGcon":                        1029
+                    #"Justifier":                     516
+                    "PlayStation Mouse":             258
     mednafen_supergrafx:
       features: [netplay, rewind, autosave, latency_reduction]
       cfeatures:
@@ -1372,24 +1424,24 @@ libretro:
                 prompt:      CONTROLLER 1 TYPE
                 description: Use DualShock type for games with Rumble mode
                 choices:
-                    "None":                          0
+                    #"None":                          0
                     "Digital Controller":            1
-                    "Analog Controller":             261
+                    #"Analog Controller":             261
                     "Analog Controller (DualShock)": 517
                     "Namco GunCon":                  260
-                    "PlayStation Mouse":             258
                     "NeGcon":                        773
+                    "PlayStation Mouse":             258
             controller2_pcsx:
                 prompt:      CONTROLLER 2 TYPE
                 description: Use DualShock type for games with Rumble mode
                 choices:
-                    "None":                          0
+                    #"None":                          0
                     "Digital Controller":            1
-                    "Analog Controller":             261
+                    #"Analog Controller":             261
                     "Analog Controller (DualShock)": 517
                     "Namco GunCon":                  260
-                    "PlayStation Mouse":             258
                     "NeGcon":                        773
+                    "PlayStation Mouse":             258
     picodrive:
       features: [netplay,         autosave]
       cfeatures:
@@ -1397,8 +1449,20 @@ libretro:
                 prompt:      REDUCE SPRITE FLICKERING
                 description: Reduce sprite flickering when enabled
                 choices:
-                    "Off":          disabled
-                    "On":           enabled
+                    "Off":             disabled
+                    "On":              enabled
+            picodrive_controller1:
+                prompt:      CONTROLLER 1 TYPE
+                description: Select 3 or 6 button controller
+                choices:
+                    "Joypad 3 Button": 3 button pad
+                    "Joypad 6 Button": 6 button pad
+            picodrive_controller2:
+                prompt:      CONTROLLER 2 TYPE
+                description: Select 3 or 6 button controller
+                choices:
+                    "Joypad 3 Button": 3 button pad
+                    "Joypad 6 Button": 6 button pad
     pocketsnes:
       features: [netplay, rewind, autosave, latency_reduction]
     pokemini:
