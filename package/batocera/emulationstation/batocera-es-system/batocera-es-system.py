@@ -269,7 +269,10 @@ class EsSystemConf:
                             # core features
                             for cfeature in features[emulator]["cores"][core]["cfeatures"]:
                                 if "archs_include" not in features[emulator]["cores"][core]["cfeatures"][cfeature] or arch in features[emulator]["cores"][core]["cfeatures"][cfeature]["archs_include"]:
-                                    featuresTxt += "        <feature name=\"{}\" value=\"{}\">\n".format(features[emulator]["cores"][core]["cfeatures"][cfeature]["prompt"], cfeature)
+                                    description = ""
+                                    if "description" in features[emulator]["cores"][core]["cfeatures"][cfeature]:
+                                        description = features[emulator]["cores"][core]["cfeatures"][cfeature]["description"]
+                                    featuresTxt += "        <feature name=\"{}\" value=\"{}\" description=\"{}\">\n".format(features[emulator]["cores"][core]["cfeatures"][cfeature]["prompt"], cfeature, description)
                                     for choice in features[emulator]["cores"][core]["cfeatures"][cfeature]["choices"]:
                                         featuresTxt += "          <choice name=\"{}\" value=\"{}\" />\n".format(choice, features[emulator]["cores"][core]["cfeatures"][cfeature]["choices"][choice])
                                     featuresTxt += "        </feature>\n"
@@ -294,7 +297,10 @@ class EsSystemConf:
                         if "cfeatures" in features[emulator]["systems"][system]:
                             for cfeature in features[emulator]["systems"][system]["cfeatures"]:
                                 if "archs_include" not in features[emulator]["systems"][system]["cfeatures"][cfeature] or arch in features[emulator]["systems"][system]["cfeatures"][cfeature]["archs_include"]:
-                                    featuresTxt += "        <feature name=\"{}\" value=\"{}\">\n".format(features[emulator]["systems"][system]["cfeatures"][cfeature]["prompt"], cfeature)
+                                    description = ""
+                                    if "description" in features[emulator]["systems"][system]["cfeatures"][cfeature]:
+                                        description = features[emulator]["systems"][system]["cfeatures"][cfeature]["description"]
+                                    featuresTxt += "        <feature name=\"{}\" value=\"{}\" description=\"{}\">\n".format(features[emulator]["systems"][system]["cfeatures"][cfeature]["prompt"], cfeature, description)
                                     for choice in features[emulator]["systems"][system]["cfeatures"][cfeature]["choices"]:
                                         featuresTxt += "        <choice name=\"{}\" value=\"{}\" />\n".format(choice, features[emulator]["systems"][system]["cfeatures"][cfeature]["choices"][choice])
                                     featuresTxt += "        </feature>\n"
@@ -305,7 +311,10 @@ class EsSystemConf:
                 if "cfeatures" in features[emulator]:
                     for cfeature in features[emulator]["cfeatures"]:
                         if "archs_include" not in features[emulator]["cfeatures"][cfeature] or arch in features[emulator]["cfeatures"][cfeature]["archs_include"]:
-                            featuresTxt += "    <feature name=\"{}\" value=\"{}\">\n".format(features[emulator]["cfeatures"][cfeature]["prompt"], cfeature)
+                            description = ""
+                            if "description" in features[emulator]["cfeatures"][cfeature]:
+                                description = features[emulator]["cfeatures"][cfeature]["description"]
+                            featuresTxt += "    <feature name=\"{}\" value=\"{}\" description=\"{}\">\n".format(features[emulator]["cfeatures"][cfeature]["prompt"], cfeature, description)
                             for choice in features[emulator]["cfeatures"][cfeature]["choices"]:
                                 featuresTxt += "      <choice name=\"{}\" value=\"{}\" />\n".format(choice, features[emulator]["cfeatures"][cfeature]["choices"][choice])
                             featuresTxt += "    </feature>\n"
