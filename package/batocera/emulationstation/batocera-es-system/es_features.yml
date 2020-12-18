@@ -1996,6 +1996,13 @@ daphne:
 dolphin:
   features: [ratio, internal_resolution]
   cfeatures:
+        gfxbackend:
+            archs_include: [x86, x86_64, rpi4]
+            prompt:      GRAPHICS BACKEND
+            description: Choose your graphics rendering
+            choices:
+                "OpenGL": OGL
+                "Vulkan": Vulkan
         perf_hacks:
             prompt:      PERFORMANCE HACKS
             description: Increase emulator performance
@@ -2067,25 +2074,21 @@ dolphin:
             choices:
                 "Off": 0
                 "On":  1
-        gfxbackend:
-            archs_include: [x86, x86_64, rpi4]
-            prompt:      GRAPHICS BACKEND
-            description: Choose your graphics rendering
-            choices:
-                "OpenGL": OGL
-                "Vulkan": Vulkan
         dsmotion:
-            prompt: DUALSHOCK MOTION
-            choices:
-                "Off": 0
-                "On":  1
-        rumble:
-            prompt: RUMBLE
+            prompt:      DUALSHOCK MOTION CONTROL
+            description: Emulate Wii pointer with your controller Gyroscope
             choices:
                 "Off": 0
                 "On":  1
         mouseir:
-            prompt: USE MOUSE AS IR
+            prompt:      MOUSE AS IR WIIMOTE
+            description: Emulate the Wiimote IR control with a mouse
+            choices:
+                "Off": 0
+                "On":  1
+        rumble:
+            prompt:      ENABLE RUMBLE
+            description: To use vibration on games with Rumble mode
             choices:
                 "Off": 0
                 "On":  1
@@ -2093,6 +2096,17 @@ dolphin:
   systems:
     wii:
         features: [emulated_wiimotes]
+        cfeatures:
+            controller_mode:
+                prompt:      GAMEPAD CONTROLLER MODE
+                description: Use gamepad with L2 for Shake and more on right stick
+                choices:
+                    "Off":                       disabled
+                    "Classic Controller":        cc
+                    "Wiimote Sideway":           side
+                    "Wiimote Sideway + Swing":   is
+                    "Wiimote Sideway + Tilt":    it
+                    "Wiimote Sideway + Nunchuk": in
 dosbox:
   features: [ratio, padtokeyboard]
 
