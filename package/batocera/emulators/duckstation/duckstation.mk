@@ -3,14 +3,14 @@
 # DUCKSTATION
 #
 ################################################################################
-# Version.: Commits on Dec 02, 2020
+# Version.: Commits on Dec 18, 2020
 
 DUCKSTATION_DEPENDENCIES = fmt boost ffmpeg sdl2
 DUCKSTATION_SITE_METHOD=git
 DUCKSTATION_GIT_SUBMODULES=YES
 DUCKSTATION_LICENSE = GPLv2
 
-DUCKSTATION_VERSION = 8ad9dcb1acc5f5fce763e2b067b1baca0b183ce2
+DUCKSTATION_VERSION = 208e746467f2594aaf5e17b4ed68fdd28948f26e
 DUCKSTATION_SITE = https://github.com/stenzek/duckstation.git
 
 DUCKSTATION_CONF_OPTS  = -DENABLE_DISCORD_PRESENCE=OFF -DANDROID=OFF -DBUILD_LIBRETRO_CORE=OFF
