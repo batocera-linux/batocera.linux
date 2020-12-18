@@ -4,9 +4,9 @@ systemsetting="batocera-settings"
 
 case "$1" in
     start)
-        enabled="`$systemsetting -r controllers.ps3.enabled`"
+        enabled="$($systemsetting -r controllers.ps3.enabled)"
         if [ "$enabled" = "1" ]; then
-            settings_version="`$systemsetting -r controllers.ps3.driver`"
+            settings_version="$($systemsetting -r controllers.ps3.driver)"
             [ "$settings_version" = "bluez" ] && exit 0
             if [ "$settings_version" = "" ]; then
                 settings_version="official"
@@ -15,8 +15,8 @@ case "$1" in
         fi
         ;;
     stop)
-        killall sixad-bin &> /dev/null
-        killall sixad-sixaxis &> /dev/null
+        killall sixad-bin > /dev/null
+        killall sixad-sixaxis > /dev/null
         ;;
     restart|reload)
         "$0" stop
@@ -28,4 +28,3 @@ case "$1" in
 esac
 
 exit $?
-
