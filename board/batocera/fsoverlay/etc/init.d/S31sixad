@@ -15,8 +15,8 @@ case "$1" in
         fi
         ;;
     stop)
-        killall sixad-bin > /dev/null
-        killall sixad-sixaxis > /dev/null
+        killall sixad-bin 2>/dev/null
+        killall sixad-sixaxis 2>/dev/null
         ;;
     restart|reload)
         "$0" stop
