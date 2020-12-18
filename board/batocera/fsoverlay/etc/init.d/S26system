@@ -54,14 +54,14 @@ ba_xarcade2jstick() {
     settings_xarcade="$($systemsetting -r controllers.xarcade.enabled)"
     if [ "$settings_xarcade" = "1" ]; then
         # First try : suppose a real X-Arcade is plugged
-        /usr/bin/xarcade2jstick -d &> /dev/null
+        /usr/bin/xarcade2jstick -d > /dev/null
         if [ $? -ne "0" ]
         then
             # the user must have a keyboard encoder then
             for dev in /usr/share/batocera/datainit/system/configs/xarcade2jstick/*
             do
                 dev=$(basename "$dev")
-                [ -h "/dev/input/by-id/$dev" ] && /usr/bin/xarcade2jstick -d -e "/dev/input/by-id/$dev" &> /dev/null && break
+                [ -h "/dev/input/by-id/$dev" ] && /usr/bin/xarcade2jstick -d -e "/dev/input/by-id/$dev" > /dev/null && break
             done
         fi
     fi
