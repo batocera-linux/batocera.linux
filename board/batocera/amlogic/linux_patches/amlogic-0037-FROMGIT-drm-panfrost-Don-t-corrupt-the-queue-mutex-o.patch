@@ -1,0 +1,73 @@
+From 63f2e79321d72a927e97f328c96d1d2436c8d061 Mon Sep 17 00:00:00 2001
+From: Steven Price <steven.price@arm.com>
+Date: Thu, 29 Oct 2020 15:05:53 +0000
+Subject: [PATCH 37/97] FROMGIT: drm/panfrost: Don't corrupt the queue mutex on
+ open/close
+
+The mutex within the panfrost_queue_state should have the lifetime of
+the queue, however it was erroneously initialised/destroyed during
+panfrost_job_{open,close} which is called every time a client
+opens/closes the drm node.
+
+Move the initialisation/destruction to panfrost_job_{init,fini} where it
+belongs.
+
+Fixes: 1a11a88cfd9a ("drm/panfrost: Fix job timeout handling")
+Signed-off-by: Steven Price <steven.price@arm.com>
+---
+ drivers/gpu/drm/panfrost/panfrost_job.c | 14 ++++++--------
+ 1 file changed, 6 insertions(+), 8 deletions(-)
+
+diff --git a/drivers/gpu/drm/panfrost/panfrost_job.c b/drivers/gpu/drm/panfrost/panfrost_job.c
+index 1ce71c1bc0ba..7dd0391a291e 100644
+--- a/drivers/gpu/drm/panfrost/panfrost_job.c
++++ b/drivers/gpu/drm/panfrost/panfrost_job.c
+@@ -554,6 +554,8 @@ int panfrost_job_init(struct panfrost_device *pfdev)
+ 	}
+ 
+ 	for (j = 0; j < NUM_JOB_SLOTS; j++) {
++		mutex_init(&js->queue[j].lock);
++
+ 		js->queue[j].fence_context = dma_fence_context_alloc(1);
+ 
+ 		ret = drm_sched_init(&js->queue[j].sched,
+@@ -584,9 +586,10 @@ void panfrost_job_fini(struct panfrost_device *pfdev)
+ 
+ 	job_write(pfdev, JOB_INT_MASK, 0);
+ 
+-	for (j = 0; j < NUM_JOB_SLOTS; j++)
++	for (j = 0; j < NUM_JOB_SLOTS; j++) {
+ 		drm_sched_fini(&js->queue[j].sched);
+-
++		mutex_destroy(&js->queue[j].lock);
++	}
+ }
+ 
+ int panfrost_job_open(struct panfrost_file_priv *panfrost_priv)
+@@ -597,7 +600,6 @@ int panfrost_job_open(struct panfrost_file_priv *panfrost_priv)
+ 	int ret, i;
+ 
+ 	for (i = 0; i < NUM_JOB_SLOTS; i++) {
+-		mutex_init(&js->queue[i].lock);
+ 		sched = &js->queue[i].sched;
+ 		ret = drm_sched_entity_init(&panfrost_priv->sched_entity[i],
+ 					    DRM_SCHED_PRIORITY_NORMAL, &sched,
+@@ -610,14 +612,10 @@ int panfrost_job_open(struct panfrost_file_priv *panfrost_priv)
+ 
+ void panfrost_job_close(struct panfrost_file_priv *panfrost_priv)
+ {
+-	struct panfrost_device *pfdev = panfrost_priv->pfdev;
+-	struct panfrost_job_slot *js = pfdev->js;
+ 	int i;
+ 
+-	for (i = 0; i < NUM_JOB_SLOTS; i++) {
++	for (i = 0; i < NUM_JOB_SLOTS; i++)
+ 		drm_sched_entity_destroy(&panfrost_priv->sched_entity[i]);
+-		mutex_destroy(&js->queue[i].lock);
+-	}
+ }
+ 
+ int panfrost_job_is_idle(struct panfrost_device *pfdev)
+-- 
+2.17.1
+

@@ -1,0 +1,30 @@
+From f707dcaf43b6f71432112e85f132152a5b2af18b Mon Sep 17 00:00:00 2001
+From: Dongjin Kim <tobetter@gmail.com>
+Date: Tue, 1 Dec 2020 05:28:40 +0000
+Subject: [PATCH 26/97] FROMGIT: arm64: dts: meson: fix typo in sm1 opp table
+
+The freqency 1512000000 should be 1500000000.
+
+Fixes: 3d9e76483049 ("arm64: dts: meson-sm1-sei610: enable DVFS")
+Signed-off-by: Dongjin Kim <tobetter@gmail.com>
+Reviewed-by: Neil Armstrong <narmstrong@baylibre.com>
+---
+ arch/arm64/boot/dts/amlogic/meson-sm1.dtsi | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/arm64/boot/dts/amlogic/meson-sm1.dtsi b/arch/arm64/boot/dts/amlogic/meson-sm1.dtsi
+index 71317f5aada1..c309517abae3 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-sm1.dtsi
++++ b/arch/arm64/boot/dts/amlogic/meson-sm1.dtsi
+@@ -130,7 +130,7 @@
+ 			opp-microvolt = <790000>;
+ 		};
+ 
+-		opp-1512000000 {
++		opp-1500000000 {
+ 			opp-hz = /bits/ 64 <1500000000>;
+ 			opp-microvolt = <800000>;
+ 		};
+-- 
+2.17.1
+

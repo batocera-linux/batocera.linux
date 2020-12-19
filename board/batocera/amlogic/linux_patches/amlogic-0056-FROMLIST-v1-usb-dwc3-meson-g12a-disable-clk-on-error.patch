@@ -1,0 +1,32 @@
+From 70a89213ca76c42ac1ef63016404ed5c79fad2c0 Mon Sep 17 00:00:00 2001
+From: Zheng Zengkai <zhengzengkai@huawei.com>
+Date: Fri, 13 Nov 2020 07:38:28 +0000
+Subject: [PATCH 56/97] FROMLIST(v1): usb: dwc3: meson-g12a: disable clk on
+ error handling path in probe
+
+dwc3_meson_g12a_probe() does not invoke clk_bulk_disable_unprepare()
+on one error handling path. This patch fixes that.
+
+Fixes: 347052e3bf1b ("usb: dwc3: meson-g12a: fix USB2 PHY initialization on G12A and A1 SoCs")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Zheng Zengkai <zhengzengkai@huawei.com>
+---
+ drivers/usb/dwc3/dwc3-meson-g12a.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/usb/dwc3/dwc3-meson-g12a.c b/drivers/usb/dwc3/dwc3-meson-g12a.c
+index 417e05381b5d..bdf1f98dfad8 100644
+--- a/drivers/usb/dwc3/dwc3-meson-g12a.c
++++ b/drivers/usb/dwc3/dwc3-meson-g12a.c
+@@ -754,7 +754,7 @@ static int dwc3_meson_g12a_probe(struct platform_device *pdev)
+ 
+ 	ret = priv->drvdata->setup_regmaps(priv, base);
+ 	if (ret)
+-		return ret;
++		goto err_disable_clks;
+ 
+ 	if (priv->vbus) {
+ 		ret = regulator_enable(priv->vbus);
+-- 
+2.17.1
+

@@ -1,0 +1,30 @@
+From 648ea8ff2bf2aa4f3b5762a271e768e67aec6a19 Mon Sep 17 00:00:00 2001
+From: Christian Hewitt <christianshewitt@gmail.com>
+Date: Sat, 12 Dec 2020 06:03:40 +0000
+Subject: [PATCH 97/97] WIP: arm64: dts: meson: add reboot node to C4/HC4 dtsi
+
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+---
+ arch/arm64/boot/dts/amlogic/meson-sm1-odroid.dtsi | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/amlogic/meson-sm1-odroid.dtsi b/arch/arm64/boot/dts/amlogic/meson-sm1-odroid.dtsi
+index ed151751c744..c65905324f50 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-sm1-odroid.dtsi
++++ b/arch/arm64/boot/dts/amlogic/meson-sm1-odroid.dtsi
+@@ -28,6 +28,12 @@
+ 		reset-gpios = <&gpio BOOT_12 GPIO_ACTIVE_LOW>;
+ 	};
+ 
++	reboot {
++		sd-vqen = <&gpio_ao GPIOE_2 GPIO_ACTIVE_HIGH>;
++		sd-vqsw = <&gpio_ao GPIOAO_6 GPIO_ACTIVE_HIGH>;
++		sd-vmmc = <&gpio_ao GPIOAO_3 GPIO_ACTIVE_HIGH>;
++	};
++
+ 	leds {
+ 		compatible = "gpio-leds";
+ 
+-- 
+2.17.1
+

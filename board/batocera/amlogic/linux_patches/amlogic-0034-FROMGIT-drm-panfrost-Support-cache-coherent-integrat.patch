@@ -1,0 +1,82 @@
+From dc47e8437456fe2596b87d99ceb4d1e64c83a196 Mon Sep 17 00:00:00 2001
+From: Robin Murphy <robin.murphy@arm.com>
+Date: Wed, 16 Sep 2020 00:51:06 +0100
+Subject: [PATCH 34/97] FROMGIT: drm/panfrost: Support cache-coherent
+ integrations
+
+When the GPU's ACE-Lite interface is fully wired up and capable of
+snooping CPU caches, it may be described as "dma-coherent" in
+devicetree, which will already inform the DMA layer not to perform
+unnecessary cache maintenance. However, we still need to ensure that
+the GPU uses the appropriate cacheable outer-shareable attributes in
+order to generate the requisite snoop signals, and that CPU mappings
+don't create a mismatch by using a non-cacheable type either.
+
+Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+---
+ drivers/gpu/drm/panfrost/panfrost_device.h | 1 +
+ drivers/gpu/drm/panfrost/panfrost_drv.c    | 2 ++
+ drivers/gpu/drm/panfrost/panfrost_gem.c    | 2 ++
+ drivers/gpu/drm/panfrost/panfrost_mmu.c    | 1 +
+ 4 files changed, 6 insertions(+)
+
+diff --git a/drivers/gpu/drm/panfrost/panfrost_device.h b/drivers/gpu/drm/panfrost/panfrost_device.h
+index 2e9cbd1c4a58..140e004a3790 100644
+--- a/drivers/gpu/drm/panfrost/panfrost_device.h
++++ b/drivers/gpu/drm/panfrost/panfrost_device.h
+@@ -88,6 +88,7 @@ struct panfrost_device {
+ 	/* pm_domains for devices with more than one. */
+ 	struct device *pm_domain_devs[MAX_PM_DOMAINS];
+ 	struct device_link *pm_domain_links[MAX_PM_DOMAINS];
++	bool coherent;
+ 
+ 	struct panfrost_features features;
+ 	const struct panfrost_compatible *comp;
+diff --git a/drivers/gpu/drm/panfrost/panfrost_drv.c b/drivers/gpu/drm/panfrost/panfrost_drv.c
+index 0fc084110e5b..689be734ed20 100644
+--- a/drivers/gpu/drm/panfrost/panfrost_drv.c
++++ b/drivers/gpu/drm/panfrost/panfrost_drv.c
+@@ -587,6 +587,8 @@ static int panfrost_probe(struct platform_device *pdev)
+ 	if (!pfdev->comp)
+ 		return -ENODEV;
+ 
++	pfdev->coherent = device_get_dma_attr(&pdev->dev) == DEV_DMA_COHERENT;
++
+ 	/* Allocate and initialze the DRM device. */
+ 	ddev = drm_dev_alloc(&panfrost_drm_driver, &pdev->dev);
+ 	if (IS_ERR(ddev))
+diff --git a/drivers/gpu/drm/panfrost/panfrost_gem.c b/drivers/gpu/drm/panfrost/panfrost_gem.c
+index 62d4d710a571..57a31dd0ffed 100644
+--- a/drivers/gpu/drm/panfrost/panfrost_gem.c
++++ b/drivers/gpu/drm/panfrost/panfrost_gem.c
+@@ -218,6 +218,7 @@ static const struct drm_gem_object_funcs panfrost_gem_funcs = {
+  */
+ struct drm_gem_object *panfrost_gem_create_object(struct drm_device *dev, size_t size)
+ {
++	struct panfrost_device *pfdev = dev->dev_private;
+ 	struct panfrost_gem_object *obj;
+ 
+ 	obj = kzalloc(sizeof(*obj), GFP_KERNEL);
+@@ -227,6 +228,7 @@ struct drm_gem_object *panfrost_gem_create_object(struct drm_device *dev, size_t
+ 	INIT_LIST_HEAD(&obj->mappings.list);
+ 	mutex_init(&obj->mappings.lock);
+ 	obj->base.base.funcs = &panfrost_gem_funcs;
++	obj->base.map_cached = pfdev->coherent;
+ 
+ 	return &obj->base.base;
+ }
+diff --git a/drivers/gpu/drm/panfrost/panfrost_mmu.c b/drivers/gpu/drm/panfrost/panfrost_mmu.c
+index 776448c527ea..be8d68fb0e11 100644
+--- a/drivers/gpu/drm/panfrost/panfrost_mmu.c
++++ b/drivers/gpu/drm/panfrost/panfrost_mmu.c
+@@ -371,6 +371,7 @@ int panfrost_mmu_pgtable_alloc(struct panfrost_file_priv *priv)
+ 		.pgsize_bitmap	= SZ_4K | SZ_2M,
+ 		.ias		= FIELD_GET(0xff, pfdev->features.mmu_features),
+ 		.oas		= FIELD_GET(0xff00, pfdev->features.mmu_features),
++		.coherent_walk	= pfdev->coherent,
+ 		.tlb		= &mmu_tlb_ops,
+ 		.iommu_dev	= pfdev->dev,
+ 	};
+-- 
+2.17.1
+

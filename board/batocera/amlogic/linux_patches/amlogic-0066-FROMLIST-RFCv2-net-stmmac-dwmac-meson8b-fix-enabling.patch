@@ -1,0 +1,37 @@
+From 6ad06cff5a8d78128e16f6cda8c089e4af25cb4b Mon Sep 17 00:00:00 2001
+From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Date: Mon, 16 Nov 2020 02:31:10 +0000
+Subject: [PATCH 66/97] FROMLIST(RFCv2): net: stmmac: dwmac-meson8b: fix
+ enabling the timing-adjustment clock
+
+The timing-adjustment clock only has to be enabled when a) there is a
+2ns RX delay configured using device-tree and b) the phy-mode indicates
+that the RX delay should be enabled.
+
+Only enable the RX delay if both are true, instead of (by accident) also
+enabling it when there's the 2ns RX delay configured but the phy-mode
+incicates that the RX delay is not used.
+
+Fixes: 9308c47640d515 ("net: stmmac: dwmac-meson8b: add support for the RX delay configuration")
+Reported-by: Andrew Lunn <andrew@lunn.ch>
+Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+---
+ drivers/net/ethernet/stmicro/stmmac/dwmac-meson8b.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-meson8b.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-meson8b.c
+index 459ae715b33d..42e253958c91 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac-meson8b.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-meson8b.c
+@@ -301,7 +301,7 @@ static int meson8b_init_prg_eth(struct meson8b_dwmac *dwmac)
+ 		return -EINVAL;
+ 	}
+ 
+-	if (rx_dly_config & PRG_ETH0_ADJ_ENABLE) {
++	if (delay_config & PRG_ETH0_ADJ_ENABLE) {
+ 		if (!dwmac->timing_adj_clk) {
+ 			dev_err(dwmac->dev,
+ 				"The timing-adjustment clock is mandatory for the RX delay re-timing\n");
+-- 
+2.17.1
+

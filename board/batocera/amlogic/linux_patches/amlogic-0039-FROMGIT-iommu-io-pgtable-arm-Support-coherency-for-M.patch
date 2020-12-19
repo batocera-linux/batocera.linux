@@ -1,0 +1,46 @@
+From 0d8971f5135111a149650d6593ea0e640016fb02 Mon Sep 17 00:00:00 2001
+From: Robin Murphy <robin.murphy@arm.com>
+Date: Wed, 16 Sep 2020 00:51:05 +0100
+Subject: [PATCH 39/97] FROMGIT: iommu/io-pgtable-arm: Support coherency for
+ Mali LPAE
+
+Midgard GPUs have ACE-Lite master interfaces which allows systems to
+integrate them in an I/O-coherent manner. It seems that from the GPU's
+viewpoint, the rest of the system is its outer shareable domain, and so
+even when snoop signals are wired up, they are only emitted for outer
+shareable accesses. As such, setting the TTBR_SHARE_OUTER bit does
+indeed get coherent pagetable walks working nicely for the coherent
+T620 in the Arm Juno SoC.
+
+Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+Reviewed-by: Steven Price <steven.price@arm.com>
+---
+ drivers/iommu/io-pgtable-arm.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
+index a7a9bc08dcd1..be53cadfb022 100644
+--- a/drivers/iommu/io-pgtable-arm.c
++++ b/drivers/iommu/io-pgtable-arm.c
+@@ -417,7 +417,7 @@ static arm_lpae_iopte arm_lpae_prot_to_pte(struct arm_lpae_io_pgtable *data,
+ 				<< ARM_LPAE_PTE_ATTRINDX_SHIFT);
+ 	}
+ 
+-	if (prot & IOMMU_CACHE)
++	if (prot & IOMMU_CACHE && data->iop.fmt != ARM_MALI_LPAE)
+ 		pte |= ARM_LPAE_PTE_SH_IS;
+ 	else
+ 		pte |= ARM_LPAE_PTE_SH_OS;
+@@ -1021,6 +1021,9 @@ arm_mali_lpae_alloc_pgtable(struct io_pgtable_cfg *cfg, void *cookie)
+ 	cfg->arm_mali_lpae_cfg.transtab = virt_to_phys(data->pgd) |
+ 					  ARM_MALI_LPAE_TTBR_READ_INNER |
+ 					  ARM_MALI_LPAE_TTBR_ADRMODE_TABLE;
++	if (cfg->coherent_walk)
++		cfg->arm_mali_lpae_cfg.transtab |= ARM_MALI_LPAE_TTBR_SHARE_OUTER;
++
+ 	return &data->iop;
+ 
+ out_free_data:
+-- 
+2.17.1
+

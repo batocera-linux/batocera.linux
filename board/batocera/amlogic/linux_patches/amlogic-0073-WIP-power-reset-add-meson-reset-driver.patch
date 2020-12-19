@@ -1,0 +1,228 @@
+From f160adc08be240862e3cb500e9333f8450e5ea07 Mon Sep 17 00:00:00 2001
+From: Christian Hewitt <christianshewitt@gmail.com>
+Date: Mon, 7 Dec 2020 05:36:22 +0000
+Subject: [PATCH 73/97] WIP: power: reset: add meson-reset driver
+
+This is plagiarised from [0] and rebranded with s/odroid/meson to make it
+applicable to all G12/SM1 devices.
+
+[0] https://github.com/tobetter/linux/commit/8a7d15f9099722a877d27817e2a47e4c3a45a610
+
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+---
+ drivers/power/reset/Kconfig        |   6 +
+ drivers/power/reset/Makefile       |   1 +
+ drivers/power/reset/meson-reboot.c | 172 +++++++++++++++++++++++++++++
+ 3 files changed, 179 insertions(+)
+ create mode 100644 drivers/power/reset/meson-reboot.c
+
+diff --git a/drivers/power/reset/Kconfig b/drivers/power/reset/Kconfig
+index d55b3727e00e..ec41643287c4 100644
+--- a/drivers/power/reset/Kconfig
++++ b/drivers/power/reset/Kconfig
+@@ -110,6 +110,12 @@ config POWER_RESET_LINKSTATION
+ 
+ 	  Say Y here if you have a Buffalo LinkStation LS421D/E.
+ 
++config POWER_RESET_MESON
++	bool "Amlogic G12/SM1 reboot/power-off driver"
++	depends on ARCH_MESON
++	help
++	  This driver supports reboot and power off for Amlogic G12/SM1 SoCs
++
+ config POWER_RESET_MSM
+ 	bool "Qualcomm MSM power-off driver"
+ 	depends on ARCH_QCOM
+diff --git a/drivers/power/reset/Makefile b/drivers/power/reset/Makefile
+index c51eceba9ea3..083a54aa2515 100644
+--- a/drivers/power/reset/Makefile
++++ b/drivers/power/reset/Makefile
+@@ -11,6 +11,7 @@ obj-$(CONFIG_POWER_RESET_GPIO) += gpio-poweroff.o
+ obj-$(CONFIG_POWER_RESET_GPIO_RESTART) += gpio-restart.o
+ obj-$(CONFIG_POWER_RESET_HISI) += hisi-reboot.o
+ obj-${CONFIG_POWER_RESET_LINKSTATION} += linkstation-poweroff.o
++obj-$(CONFIG_POWER_RESET_MESON) += meson-reboot.o
+ obj-$(CONFIG_POWER_RESET_MSM) += msm-poweroff.o
+ obj-$(CONFIG_POWER_RESET_MT6323) += mt6323-poweroff.o
+ obj-$(CONFIG_POWER_RESET_OXNAS) += oxnas-restart.o
+diff --git a/drivers/power/reset/meson-reboot.c b/drivers/power/reset/meson-reboot.c
+new file mode 100644
+index 000000000000..bbeb61262d6f
+--- /dev/null
++++ b/drivers/power/reset/meson-reboot.c
+@@ -0,0 +1,172 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/*
++ * Amlogic SoC reset code
++ *
++ * Copyright (C) 2017 Amlogic, Inc. All rights reserved.
++ *
++ */
++
++#include <linux/delay.h>
++#include <linux/err.h>
++#include <linux/init.h>
++#include <linux/kernel.h>
++#include <linux/io.h>
++#include <linux/of.h>
++#include <linux/platform_device.h>
++#include <linux/module.h>
++#include <linux/reboot.h>
++
++#include <asm/system_misc.h>
++
++#include <asm/compiler.h>
++#include <linux/kdebug.h>
++#include <linux/arm-smccc.h>
++
++#include <linux/gpio.h>
++#include <linux/of_gpio.h>
++
++int sd_vqsw;
++int sd_vmmc;
++int sd_vqen;
++
++static u32 psci_function_id_restart;
++static u32 psci_function_id_poweroff;
++
++#define CHECK_RET(ret) { \
++	if (ret) \
++	pr_err("[%s] gpio op failed(%d) at line %d\n",\
++			__func__, ret, __LINE__); \
++}
++
++static noinline int __invoke_psci_fn_smc(u64 function_id, u64 arg0, u64 arg1,
++					 u64 arg2)
++{
++	struct arm_smccc_res res;
++
++	arm_smccc_smc((unsigned long)function_id,
++			(unsigned long)arg0,
++			(unsigned long)arg1,
++			(unsigned long)arg2,
++			0, 0, 0, 0, &res);
++	return res.a0;
++}
++
++void meson_card_reset(void)
++{
++	int ret = 0;
++
++	if ((sd_vqsw == 0) && (sd_vmmc == 0))
++		return;
++
++	if (sd_vqen == 0) {
++		gpio_free(sd_vqsw);
++		gpio_free(sd_vmmc);
++		ret = gpio_request_one(sd_vqsw,
++				GPIOF_OUT_INIT_LOW, "REBOOT");
++		CHECK_RET(ret);
++		mdelay(10);
++		ret = gpio_direction_output(sd_vqsw, 1);
++		CHECK_RET(ret);
++		ret = gpio_request_one(sd_vmmc,
++				GPIOF_OUT_INIT_LOW, "REBOOT");
++		CHECK_RET(ret);
++		mdelay(10);
++		ret = gpio_direction_output(sd_vqsw, 0);
++		CHECK_RET(ret);
++		ret = gpio_direction_output(sd_vmmc, 1);
++		CHECK_RET(ret);
++		mdelay(5);
++		gpio_free(sd_vqsw);
++		gpio_free(sd_vmmc);
++	} else {
++		gpio_free(sd_vqsw);
++		gpio_free(sd_vqen);
++		gpio_free(sd_vmmc);
++
++		ret = gpio_request_one(sd_vqsw,
++				GPIOF_OUT_INIT_LOW, "REBOOT");
++		CHECK_RET(ret);
++		ret = gpio_request_one(sd_vqen,
++				GPIOF_OUT_INIT_LOW, "REBOOT");
++		CHECK_RET(ret);
++		ret = gpio_request_one(sd_vmmc,
++				GPIOF_OUT_INIT_LOW, "REBOOT");
++		CHECK_RET(ret);
++		mdelay(100);
++		ret = gpio_direction_input(sd_vqen);
++		CHECK_RET(ret);
++		ret = gpio_direction_input(sd_vmmc);
++		CHECK_RET(ret);
++		ret = gpio_direction_input(sd_vqsw);
++		CHECK_RET(ret);
++		mdelay(5);
++		gpio_free(sd_vqen);
++		gpio_free(sd_vmmc);
++		gpio_free(sd_vqsw);
++	}
++}
++
++static void do_meson_restart(enum reboot_mode reboot_mode, const char *cmd)
++{
++	meson_card_reset();
++	__invoke_psci_fn_smc(psci_function_id_restart,
++				0, 0, 0);
++}
++
++static void do_meson_poweroff(void)
++{
++	meson_card_reset();
++
++	__invoke_psci_fn_smc(0x82000042, 1, 0, 0);
++	__invoke_psci_fn_smc(psci_function_id_poweroff,
++				0, 0, 0);
++}
++
++static int meson_restart_probe(struct platform_device *pdev)
++{
++	struct device_node *of_node;
++	u32 id;
++
++	if (!of_property_read_u32(pdev->dev.of_node, "sys_reset", &id)) {
++		psci_function_id_restart = id;
++		arm_pm_restart = do_meson_restart;
++	}
++
++	if (!of_property_read_u32(pdev->dev.of_node, "sys_poweroff", &id)) {
++		psci_function_id_poweroff = id;
++		pm_power_off = do_meson_poweroff;
++	}
++
++	of_node = pdev->dev.of_node;
++
++	sd_vqsw = of_get_named_gpio(of_node, "sd-vqsw", 0);
++	if (!gpio_is_valid(sd_vqsw)) sd_vqsw = 0;
++
++	sd_vmmc = of_get_named_gpio(of_node, "sd-vmmc", 0);
++	if (!gpio_is_valid(sd_vmmc)) sd_vmmc = 0;
++
++	sd_vqen = of_get_named_gpio(of_node, "sd-vqen", 0);
++	if (!gpio_is_valid(sd_vqen)) sd_vqen = 0;
++
++	return 0;
++}
++
++static const struct of_device_id of_meson_restart_match[] = {
++	{ .compatible = "meson,reboot", },
++	{},
++};
++MODULE_DEVICE_TABLE(of, of_meson_restart_match);
++
++static struct platform_driver meson_restart_driver = {
++	.probe = meson_restart_probe,
++	.driver = {
++		.name = "meson-restart",
++		.of_match_table = of_match_ptr(of_meson_restart_match),
++	},
++};
++
++static int __init meson_restart_init(void)
++{
++	return platform_driver_register(&meson_restart_driver);
++}
++device_initcall(meson_restart_init);
+-- 
+2.17.1
+

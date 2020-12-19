@@ -1,0 +1,109 @@
+From f17d2fab92566a7ccfabfbcc20f6da1bf34e2f31 Mon Sep 17 00:00:00 2001
+From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Date: Mon, 16 Nov 2020 02:30:14 +0000
+Subject: [PATCH 65/97] FROMLIST(RFCv2): dt-bindings: net: dwmac-meson: use
+ picoseconds for the RGMII RX delay
+
+Amlogic Meson G12A, G12B and SM1 SoCs have a more advanced RGMII RX
+delay register which allows picoseconds precision. Deprecate the old
+"amlogic,rx-delay-ns" in favour of a new "amlogic,rgmii-rx-delay-ps"
+property.
+
+For older SoCs the only known supported values were 0ns and 2ns. The new
+SoCs have 200ps precision and support RGMII RX delays between 0ps and
+3000ps.
+
+While here, also update the description of the RX delay to indicate
+that:
+- with "rgmii" or "rgmii-id" the RX delay should be specified
+- with "rgmii-id" or "rgmii-rxid" the RX delay is added by the PHY so
+  any configuration on the MAC side is ignored
+- with "rmii" the RX delay is not applicable and any configuration is
+  ignored
+
+Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+---
+ .../bindings/net/amlogic,meson-dwmac.yaml     | 61 +++++++++++++++++--
+ 1 file changed, 56 insertions(+), 5 deletions(-)
+
+diff --git a/Documentation/devicetree/bindings/net/amlogic,meson-dwmac.yaml b/Documentation/devicetree/bindings/net/amlogic,meson-dwmac.yaml
+index 6b057b117aa0..62a1e92a645c 100644
+--- a/Documentation/devicetree/bindings/net/amlogic,meson-dwmac.yaml
++++ b/Documentation/devicetree/bindings/net/amlogic,meson-dwmac.yaml
+@@ -74,17 +74,68 @@ allOf:
+             Any configuration is ignored when the phy-mode is set to "rmii".
+ 
+         amlogic,rx-delay-ns:
++          deprecated: true
+           enum:
+             - 0
+             - 2
+           default: 0
++          description:
++            The internal RGMII RX clock delay in nanoseconds. Deprecated, use
++            amlogic,rgmii-rx-delay-ps instead.
++
++        amlogic,rgmii-rx-delay-ps:
++          default: 0
+           description:
+             The internal RGMII RX clock delay (provided by this IP block) in
+-            nanoseconds. When phy-mode is set to "rgmii" then the RX delay
+-            should be explicitly configured. When the phy-mode is set to
+-            either "rgmii-id" or "rgmii-rxid" the RX clock delay is already
+-            provided by the PHY. Any configuration is ignored when the
+-            phy-mode is set to "rmii".
++            picoseconds. When phy-mode is set to "rgmii" or "rgmii-id" then
++            the RX delay should be explicitly configured. When the phy-mode
++            is set to either "rgmii-id" or "rgmii-rxid" the RX clock delay
++            is already provided by the PHY so any configuration here is
++            ignored. Also any configuration is ignored when the phy-mode is
++            set to "rmii".
++
++  - if:
++      properties:
++        compatible:
++          contains:
++            enum:
++              - amlogic,meson8b-dwmac
++              - amlogic,meson8m2-dwmac
++              - amlogic,meson-gxbb-dwmac
++              - amlogic,meson-axg-dwmac
++    then:
++      properties:
++        amlogic,rgmii-rx-delay-ps:
++          enum:
++            - 0
++            - 2000
++
++  - if:
++      properties:
++        compatible:
++          contains:
++            enum:
++              - amlogic,meson-g12a-dwmac
++    then:
++      properties:
++        amlogic,rgmii-rx-delay-ps:
++          enum:
++            - 0
++            - 200
++            - 400
++            - 600
++            - 800
++            - 1000
++            - 1200
++            - 1400
++            - 1600
++            - 1800
++            - 2000
++            - 2200
++            - 2400
++            - 2600
++            - 2800
++            - 3000
+ 
+ properties:
+   compatible:
+-- 
+2.17.1
+

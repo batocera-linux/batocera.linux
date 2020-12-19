@@ -1,0 +1,33 @@
+From 9ab730e70f90b29e36b13b1440058822d070d1e6 Mon Sep 17 00:00:00 2001
+From: Robin Murphy <robin.murphy@arm.com>
+Date: Wed, 16 Sep 2020 00:51:07 +0100
+Subject: [PATCH 08/97] FROMGIT: arm64: dts: meson: Describe G12b GPU as
+ coherent
+
+According to a downstream commit I found in the Khadas vendor kernel,
+the GPU on G12b is wired up for ACE-lite, so (now that Panfrost knows
+how to handle this properly) we should describe it as such. Otherwise
+the mismatch leads to all manner of fun with mismatched attributes and
+inadvertently snooping stale data from caches, which would account for
+at least some of the brokenness observed on this platform.
+
+Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+---
+ arch/arm64/boot/dts/amlogic/meson-g12b.dtsi | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/amlogic/meson-g12b.dtsi b/arch/arm64/boot/dts/amlogic/meson-g12b.dtsi
+index 9b8548e5f6e5..ee8fcae9f9f0 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-g12b.dtsi
++++ b/arch/arm64/boot/dts/amlogic/meson-g12b.dtsi
+@@ -135,3 +135,7 @@
+ 		};
+ 	};
+ };
++
++&mali {
++	dma-coherent;
++};
+-- 
+2.17.1
+

@@ -1,0 +1,31 @@
+From cbd4897df2efc01856dbd2041633c50dd6bf281f Mon Sep 17 00:00:00 2001
+From: Artem Lapkin <art@khadas.com>
+Date: Mon, 16 Nov 2020 15:52:49 +0000
+Subject: [PATCH 22/97] FROMGIT: arm64: dts: meson: fix spi-max-frequency on
+ Khadas VIM2
+
+The max frequency for the w25q32 (VIM v1.2) and w25q128 (VIM v1.4) spifc
+chip is 104Mhz not 30MHz.
+
+Fixes: b8b74dda3908 ("ARM64: dts: meson-gxm: Add support for Khadas VIM2")
+Signed-off-by: Artem Lapkin <art@khadas.com>
+---
+ arch/arm64/boot/dts/amlogic/meson-gxm-khadas-vim2.dts | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/arm64/boot/dts/amlogic/meson-gxm-khadas-vim2.dts b/arch/arm64/boot/dts/amlogic/meson-gxm-khadas-vim2.dts
+index 616364ee5526..955a63aaa5ed 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-gxm-khadas-vim2.dts
++++ b/arch/arm64/boot/dts/amlogic/meson-gxm-khadas-vim2.dts
+@@ -378,7 +378,7 @@
+ 		#size-cells = <1>;
+ 		compatible = "winbond,w25q16", "jedec,spi-nor";
+ 		reg = <0>;
+-		spi-max-frequency = <3000000>;
++		spi-max-frequency = <104000000>;
+ 	};
+ };
+ 
+-- 
+2.17.1
+
