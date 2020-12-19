@@ -263,9 +263,8 @@ class EsSystemConf:
                                 if core_featuresTxt != "":
                                     core_featuresTxt += ", "
                                 core_featuresTxt += feature
-                        if "cfeatures" in features[emulator]["cores"][core]:
+                        if "cfeatures" in features[emulator]["cores"][core] or "systems" in features[emulator]["cores"][core]:
                             featuresTxt += "      <core name=\"{}\" features=\"{}\">\n".format(core, core_featuresTxt)
-
                             # core features
                             for cfeature in features[emulator]["cores"][core]["cfeatures"]:
                                 if "archs_include" not in features[emulator]["cores"][core]["cfeatures"][cfeature] or arch in features[emulator]["cores"][core]["cfeatures"][cfeature]["archs_include"]:
@@ -280,6 +279,32 @@ class EsSystemConf:
                                     print "skipping core " + emulator + "/" + core + " cfeature " + cfeature
                             # #############
 
+                            # systems in cores/core
+                            if "systems" in features[emulator]["cores"][core]:
+                               featuresTxt += "        <systems>\n"
+                               for system in features[emulator]["cores"][core]["systems"]:
+                                   system_featuresTxt = ""
+                                   if "features" in features[emulator]["cores"][core]["systems"][system]:
+                                       for feature in features[emulator]["cores"][core]["systems"][system]["features"]:
+                                           if system_featuresTxt != "":
+                                               system_featuresTxt += ", "
+                                           system_featuresTxt += feature
+                                   featuresTxt += "          <system name=\"{}\" features=\"{}\" >\n".format(system, system_featuresTxt)
+                                   if "cfeatures" in features[emulator]["cores"][core]["systems"][system]:
+                                       for cfeature in features[emulator]["cores"][core]["systems"][system]["cfeatures"]:
+                                           if "archs_include" not in features[emulator]["cores"][core]["systems"][system]["cfeatures"][cfeature] or arch in features[emulator]["cores"][core]["systems"][system]["cfeatures"][cfeature]["archs_include"]:
+                                               description = ""
+                                               if "description" in features[emulator]["cores"][core]["systems"][system]["cfeatures"][cfeature]:
+                                                   description = features[emulator]["cores"][core]["systems"][system]["cfeatures"][cfeature]["description"]
+                                               featuresTxt += "            <feature name=\"{}\" value=\"{}\" description=\"{}\">\n".format(features[emulator]["cores"][core]["systems"][system]["cfeatures"][cfeature]["prompt"], cfeature, description)
+                                               for choice in features[emulator]["cores"][core]["systems"][system]["cfeatures"][cfeature]["choices"]:
+                                                   featuresTxt += "              <choice name=\"{}\" value=\"{}\" />\n".format(choice, features[emulator]["cores"][core]["systems"][system]["cfeatures"][cfeature]["choices"][choice])
+                                               featuresTxt += "            </feature>\n"
+                                           else:
+                                               print "skipping system " + emulator + "/" + system + " cfeature " + cfeature
+                                   featuresTxt += "          </system>\n"
+                               featuresTxt += "        </systems>\n"
+                               ###
                             featuresTxt += "      </core>\n"
                         else:
                             featuresTxt += "      <core name=\"{}\" features=\"{}\" />\n".format(core, core_featuresTxt)
