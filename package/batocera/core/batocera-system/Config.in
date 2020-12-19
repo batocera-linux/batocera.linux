@@ -778,6 +778,11 @@ config BR2_PACKAGE_BATOCERA_XORG
        select BR2_PACKAGE_XDRIVER_XF86_INPUT_KEYBOARD
        select BR2_PACKAGE_XDRIVER_XF86_INPUT_LIBINPUT
 
+       # GPU drivers (needed for old Nvidia&AMD cards for edid handshake with display)
+       select BR2_PACKAGE_XDRIVER_XF86_VIDEO_AMDGPU
+       select BR2_PACKAGE_XDRIVER_XF86_VIDEO_ATI
+       select BR2_PACKAGE_XDRIVER_XF86_VIDEO_NOUVEAU
+
        # applications
        select BR2_PACKAGE_XAPP_SETXKBMAP
        select BR2_PACKAGE_XAPP_XEV
