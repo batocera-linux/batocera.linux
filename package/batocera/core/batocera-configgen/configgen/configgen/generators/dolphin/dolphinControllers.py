@@ -9,82 +9,78 @@ from utils.logger import eslog
 
 # Create the controller configuration file
 def generateControllerConfig(system, playersControllers, rom):
+
     generateHotkeys(playersControllers)
     if system.name == "wii":
         if (system.isOptSet('emulatedwiimotes') and system.getOptBoolean('emulatedwiimotes') == False):
-            #Generate if hardcoded
+            # Generate if hardcoded
             generateControllerConfig_realwiimotes("WiimoteNew.ini", "Wiimote")
-            generateControllerConfig_gamecube(playersControllers,rom) # you can use the gamecube pads on the wii together with wiimotes
+            generateControllerConfig_gamecube(system, playersControllers,rom)           # You can use the gamecube pads on the wii together with wiimotes
         elif (system.isOptSet('emulatedwiimotes') and system.getOptBoolean('emulatedwiimotes') == True):
-            #Generate if hardcoded
-            generateControllerConfig_emulatedwiimotes(playersControllers, rom)
-            removeControllerConfig_gamecube() # because pads will already be used as emulated wiimotes
-        elif (".cc." in rom or ".side." in rom or ".is." in rom or ".it." in rom or ".in." in rom or ".ti." in rom or ".ts." in rom or ".tn." in rom or ".ni." in rom or ".ns." in rom or ".nt." in rom):
-            #Generate if auto and name extensions are present
-            generateControllerConfig_emulatedwiimotes(playersControllers, rom)
-            removeControllerConfig_gamecube() # because pads will already be used as emulated wiimotes
+            # Generate if hardcoded
+            generateControllerConfig_emulatedwiimotes(system, playersControllers, rom)
+            removeControllerConfig_gamecube()                                           # Because pads will already be used as emulated wiimotes
+        elif (".cc." in rom or ".side." in rom or ".is." in rom or ".it." in rom or ".in." in rom or ".ti." in rom or ".ts." in rom or ".tn." in rom or ".ni." in rom or ".ns." in rom or ".nt." in rom) or system.isOptSet("sideWiimote"):
+            # Generate if auto and name extensions are present
+            generateControllerConfig_emulatedwiimotes(system, playersControllers, rom)
+            removeControllerConfig_gamecube()                                           # Because pads will already be used as emulated wiimotes
         else:
             generateControllerConfig_realwiimotes("WiimoteNew.ini", "Wiimote")
-            generateControllerConfig_gamecube(playersControllers,rom) # you can use the gamecube pads on the wii together with wiimotes
+            generateControllerConfig_gamecube(system, playersControllers,rom)           # You can use the gamecube pads on the wii together with wiimotes
     elif system.name == "gamecube":
-        generateControllerConfig_gamecube(playersControllers,rom) #pass ROM name to allow for per ROM configuration
+        generateControllerConfig_gamecube(system, playersControllers,rom)               # Pass ROM name to allow for per ROM configuration
     else:
         raise ValueError("Invalid system name : '" + system.name + "'")
 
-def generateControllerConfig_emulatedwiimotes(playersControllers, rom):
+def generateControllerConfig_emulatedwiimotes(system, playersControllers, rom):
     wiiMapping = {
-        'x':      'Buttons/2',  'b':        'Buttons/A',
-        'y':      'Buttons/1',  'a':        'Buttons/B',
-        'pageup': 'Buttons/-',  'pagedown': 'Buttons/+',
-        'select':    'Buttons/Home',
+        'x':            'Buttons/2',    'b':             'Buttons/A',
+        'y':            'Buttons/1',    'a':             'Buttons/B',
+        'pageup':       'Buttons/-',    'pagedown':      'Buttons/+',
+        'select':       'Buttons/Home',
         'up': 'D-Pad/Up', 'down': 'D-Pad/Down', 'left': 'D-Pad/Left', 'right': 'D-Pad/Right',
-        'joystick1up': 'IR/Up',    'joystick1left': 'IR/Left',
-        'joystick2up': 'Tilt/Forward', 'joystick2left': 'Tilt/Left'
+        'joystick1up':  'IR/Up',        'joystick1left': 'IR/Left',
+        'joystick2up':  'Tilt/Forward', 'joystick2left': 'Tilt/Left',
+        'hotkey':       'Buttons/Hotkey'
     }
     wiiReverseAxes = {
-        'IR/Up':      'IR/Down',
-        'IR/Left':    'IR/Right',
-        'Swing/Up':   'Swing/Down',
-        'Swing/Left': 'Swing/Right',
-        'Tilt/Left':  'Tilt/Right',
+        'IR/Up':        'IR/Down',
+        'IR/Left':      'IR/Right',
+        'Swing/Up':     'Swing/Down',
+        'Swing/Left':   'Swing/Right',
+        'Tilt/Left':    'Tilt/Right',
         'Tilt/Forward': 'Tilt/Backward',
-        'Nunchuk/Stick/Up' :  'Nunchuk/Stick/Down',
-        'Nunchuk/Stick/Left': 'Nunchuk/Stick/Right',
-        'Classic/Right Stick/Up' : 'Classic/Right Stick/Down',
-        'Classic/Right Stick/Left' : 'Classic/Right Stick/Right',
-        'Classic/Left Stick/Up' : 'Classic/Left Stick/Down',
-        'Classic/Left Stick/Left' : 'Classic/Left Stick/Right'
+        'Nunchuk/Stick/Up':         'Nunchuk/Stick/Down',
+        'Nunchuk/Stick/Left':       'Nunchuk/Stick/Right',
+        'Classic/Right Stick/Up':   'Classic/Right Stick/Down',
+        'Classic/Right Stick/Left': 'Classic/Right Stick/Right',
+        'Classic/Left Stick/Up':    'Classic/Left Stick/Down',
+        'Classic/Left Stick/Left':  'Classic/Left Stick/Right'
     }
 
     extraOptions = {}
     extraOptions["Source"] = "1"
 
-
-    # side wiimote
+    # Side wiimote
     # l2 for shaking actions
-    if ".side." in rom:
+    if (".side." in rom) or (system.isOptSet("controller_mode") and system.config['controller_mode'] != 'disabled' and system.config['controller_mode'] != 'cc'):
         extraOptions["Options/Sideways Wiimote"] = "1"
-        wiiMapping['x']   = 'Buttons/B'
-        wiiMapping['y'] = 'Buttons/A'
-        wiiMapping['a']   = 'Buttons/2'
-        wiiMapping['b'] = 'Buttons/1'
+        wiiMapping['x']  = 'Buttons/B'
+        wiiMapping['y']  = 'Buttons/A'
+        wiiMapping['a']  = 'Buttons/2'
+        wiiMapping['b']  = 'Buttons/1'
         wiiMapping['l2'] = 'Shake/X'
         wiiMapping['l2'] = 'Shake/Y'
         wiiMapping['l2'] = 'Shake/Z'
 
-
     # i: infrared, s: swing, t: tilt, n: nunchuk
     # 12 possible combinations : is si / it ti / in ni / st ts / sn ns / tn nt
 
-
-
-
-
     # i
-    if ".is." in rom or ".it." in rom or ".in." in rom:
+    if (".is." in rom or ".it." in rom or ".in." in rom) or (system.isOptSet("controller_mode") and system.config['controller_mode'] != 'disabled' and system.config['controller_mode'] != 'in' and system.config['controller_mode'] != 'cc'):
         wiiMapping['joystick1up']   = 'IR/Up'
         wiiMapping['joystick1left'] = 'IR/Left'
-    if ".si." in rom or ".ti." in rom or ".ni." in rom:
+    if (".si." in rom or ".ti." in rom or ".ni." in rom) or (system.isOptSet("controller_mode") and system.config['controller_mode'] == 'in' and system.config['controller_mode'] != 'cc'):
         wiiMapping['joystick2up']   = 'IR/Up'
         wiiMapping['joystick2left'] = 'IR/Left'
 
@@ -92,7 +88,7 @@ def generateControllerConfig_emulatedwiimotes(playersControllers, rom):
     if ".si." in rom or ".st." in rom or ".sn." in rom:
         wiiMapping['joystick1up']   = 'Swing/Up'
         wiiMapping['joystick1left'] = 'Swing/Left'
-    if ".is." in rom or ".ts." in rom or ".ns." in rom:
+    if (".is." in rom or ".ts." in rom or ".ns." in rom) or (system.isOptSet("controller_mode") and system.config['controller_mode'] == 'is'):
         wiiMapping['joystick2up']   = 'Swing/Up'
         wiiMapping['joystick2left'] = 'Swing/Left'
 
@@ -100,12 +96,12 @@ def generateControllerConfig_emulatedwiimotes(playersControllers, rom):
     if ".ti." in rom or ".ts." in rom or ".tn." in rom:
         wiiMapping['joystick1up']   = 'Tilt/Forward'
         wiiMapping['joystick1left'] = 'Tilt/Left'
-    if ".it." in rom or ".st." in rom or ".nt." in rom:
+    if (".it." in rom or ".st." in rom or ".nt." in rom) or (system.isOptSet("controller_mode") and system.config['controller_mode'] == 'it'):
         wiiMapping['joystick2up']   = 'Tilt/Forward'
         wiiMapping['joystick2left'] = 'Tilt/Left'
 
     # n
-    if ".ni." in rom or ".ns." in rom or ".nt." in rom:
+    if (".ni." in rom or ".ns." in rom or ".nt." in rom) or (system.isOptSet("controller_mode") and system.config['controller_mode'] == 'in'):
         extraOptions['Extension']   = 'Nunchuk'
         wiiMapping['l2'] = 'Nunchuk/Buttons/C'
         wiiMapping['r2'] = 'Nunchuk/Buttons/Z'
@@ -118,7 +114,8 @@ def generateControllerConfig_emulatedwiimotes(playersControllers, rom):
         wiiMapping['joystick2up']   = 'Nunchuk/Stick/Up'
         wiiMapping['joystick2left'] = 'Nunchuk/Stick/Left'
 
-    if ".cc." in rom:  #Classic Controller Settings
+    # cc : Classic Controller Settings
+    if (".cc." in rom) or (system.isOptSet("controller_mode") and system.config['controller_mode'] == 'cc'):
         extraOptions['Extension']   = 'Classic'
         wiiMapping['x'] = 'Classic/Buttons/X'
         wiiMapping['y'] = 'Classic/Buttons/Y'
@@ -139,9 +136,9 @@ def generateControllerConfig_emulatedwiimotes(playersControllers, rom):
         wiiMapping['joystick2up'] = 'Classic/Right Stick/Up'
         wiiMapping['joystick2left'] = 'Classic/Right Stick/Left'
 
-    #This section allows a per ROM override of the default key options.
-    configname = rom + ".cfg"  #Define ROM configuration name
-    if os.path.isfile(configname): #file exists
+    # This section allows a per ROM override of the default key options.
+    configname = rom + ".cfg"       # Define ROM configuration name
+    if os.path.isfile(configname):  # File exists
         import ast
         with open(configname) as cconfig:
             line = cconfig.readline()
@@ -151,21 +148,21 @@ def generateControllerConfig_emulatedwiimotes(playersControllers, rom):
                 wiiMapping.update(res)
                 line = cconfig.readline()
 
-
     eslog.log("Extra Options: {}".format(extraOptions))
     eslog.log("Wii Mappings: {}".format(wiiMapping))
 
-    generateControllerConfig_any(playersControllers, "WiimoteNew.ini", "Wiimote", wiiMapping, wiiReverseAxes, None, extraOptions)
+    generateControllerConfig_any(system, playersControllers, "WiimoteNew.ini", "Wiimote", wiiMapping, wiiReverseAxes, None, extraOptions)
 
-def generateControllerConfig_gamecube(playersControllers,rom):
+def generateControllerConfig_gamecube(system, playersControllers,rom):
     gamecubeMapping = {
-        'y':      'Buttons/B',  'b':        'Buttons/A',
-        'x':      'Buttons/Y',  'a':        'Buttons/X',
-        'pageup':     'Buttons/Z',  'start':    'Buttons/Start',
-        'l2': 'Triggers/L', 'r2': 'Triggers/R',
+        'y':            'Buttons/B',     'b':             'Buttons/A',
+        'x':            'Buttons/Y',     'a':             'Buttons/X',
+        'pageup':       'Buttons/Z',     'start':         'Buttons/Start',
+        'l2':           'Triggers/L',    'r2':            'Triggers/R',
         'up': 'D-Pad/Up', 'down': 'D-Pad/Down', 'left': 'D-Pad/Left', 'right': 'D-Pad/Right',
-        'joystick1up': 'Main Stick/Up', 'joystick1left': 'Main Stick/Left',
-        'joystick2up': 'C-Stick/Up',    'joystick2left': 'C-Stick/Left', 'hotkey': 'Buttons/Hotkey'
+        'joystick1up':  'Main Stick/Up', 'joystick1left': 'Main Stick/Left',
+        'joystick2up':  'C-Stick/Up',    'joystick2left': 'C-Stick/Left',
+        'hotkey':       'Buttons/Hotkey'
     }
     gamecubeReverseAxes = {
         'Main Stick/Up':   'Main Stick/Down',
@@ -173,20 +170,19 @@ def generateControllerConfig_gamecube(playersControllers,rom):
         'C-Stick/Up':      'C-Stick/Down',
         'C-Stick/Left':    'C-Stick/Right'
     }
-    # if joystick1up is missing on the pad, use up instead, and if l2/r2 is missing, use l1/r1
+    # If joystick1up is missing on the pad, use up instead, and if l2/r2 is missing, use l1/r1
     gamecubeReplacements = {
-        'joystick1up': 'up',
-        'joystick1left': 'left',
-        'joystick1down': 'down',
+        'joystick1up':    'up',
+        'joystick1left':  'left',
+        'joystick1down':  'down',
         'joystick1right': 'right',
-        'l2': 'pageup',
-        'r2': 'pagedown'
+        'l2':             'pageup',
+        'r2':             'pagedown'
     }
-    
 
-    #This section allows a per ROM override of the default key options.
-    configname = rom + ".cfg"  #Define ROM configuration name
-    if os.path.isfile(configname): #file exists
+    # This section allows a per ROM override of the default key options.
+    configname = rom + ".cfg"       # Define ROM configuration name
+    if os.path.isfile(configname):  # File exists
         import ast
         with open(configname) as cconfig:
             line = cconfig.readline()
@@ -196,8 +192,7 @@ def generateControllerConfig_gamecube(playersControllers,rom):
                 gamecubeMapping.update(res)
                 line = cconfig.readline()
 
-
-    generateControllerConfig_any(playersControllers, "GCPadNew.ini", "GCPad", gamecubeMapping, gamecubeReverseAxes, gamecubeReplacements)
+    generateControllerConfig_any(system, playersControllers, "GCPadNew.ini", "GCPad", gamecubeMapping, gamecubeReverseAxes, gamecubeReplacements)
 
 def removeControllerConfig_gamecube():
     configFileName = "{}/{}".format(batoceraFiles.dolphinConfig, "GCPadNew.ini")
@@ -220,12 +215,12 @@ def generateHotkeys(playersControllers):
     f = codecs.open(configFileName, "w", encoding="utf_8_sig")
 
     hotkeysMapping = {
-        'a':  'Keys/Reset',                      'b': 'Keys/Toggle Pause',
-        'x':  'Keys/Load from selected slot',    'y': 'Keys/Save to selected slot',
-        'r2': None,                          'start': 'Keys/Exit',
+        'a':           'Keys/Reset',                    'b': 'Keys/Toggle Pause',
+        'x':           'Keys/Load from selected slot',  'y': 'Keys/Save to selected slot',
+        'r2':          None,                            'start': 'Keys/Exit',
         'pageup': 'Keys/Take Screenshot', 'pagedown': 'Keys/Toggle 3D Side-by-side',
         'up': 'Keys/Select State Slot 1', 'down': 'Keys/Select State Slot 2', 'left': None, 'right': None,
-        'joystick1up': None, 'joystick1left': None,
+        'joystick1up': None,    'joystick1left': None,
         'joystick2up': None,    'joystick2left': None
     }
 
@@ -235,7 +230,7 @@ def generateHotkeys(playersControllers):
             f.write("[Hotkeys1]" + "\n")
             f.write("Device = evdev/0/" + pad.realName.strip() + "\n")
 
-            # search the hotkey button
+            # Search the hotkey button
             hotkey = None
             if "hotkey" not in pad.inputs:
                 return
@@ -251,31 +246,29 @@ def generateHotkeys(playersControllers):
                 if input.name in hotkeysMapping:
                     keyname = hotkeysMapping[input.name]
 
-                # write the configuration for this key
+                # Write the configuration for this key
                 if keyname is not None:
                     write_key(f, keyname, input.type, input.id, input.value, pad.nbaxes, False, hotkey.id)
                     
                 #else:
                 #    f.write("# undefined key: name="+input.name+", type="+input.type+", id="+str(input.id)+", value="+str(input.value)+"\n")
-                
-
 
         nplayer += 1
 
     f.write
     f.close()
 
-def generateControllerConfig_any(playersControllers, filename, anyDefKey, anyMapping, anyReverseAxes, anyReplacements, extraOptions = {}):
+def generateControllerConfig_any(system, playersControllers, filename, anyDefKey, anyMapping, anyReverseAxes, anyReplacements, extraOptions = {}):
     configFileName = "{}/{}".format(batoceraFiles.dolphinConfig, filename)
     f = codecs.open(configFileName, "w", encoding="utf_8_sig")
     nplayer = 1
     nsamepad = 0
 
-    # in case of two pads having the same name, dolphin wants a number to handle this
+    # In case of two pads having the same name, dolphin wants a number to handle this
     double_pads = dict()
 
     for playercontroller, pad in sorted(playersControllers.items()):
-        # handle x pads having the same name
+        # Handle x pads having the same name
         if pad.configName in double_pads:
             nsamepad = double_pads[pad.configName]
         else:
@@ -287,9 +280,9 @@ def generateControllerConfig_any(playersControllers, filename, anyDefKey, anyMap
         for opt in extraOptions:
             f.write(opt + " = " + extraOptions[opt] + "\n")
 
-        # recompute the mapping according to available buttons on the pads and the available replacements
+        # Recompute the mapping according to available buttons on the pads and the available replacements
         currentMapping = anyMapping
-        # apply replacements
+        # Apply replacements
         if anyReplacements is not None:
             for x in anyReplacements:
             	if x not in pad.inputs and x in currentMapping:
@@ -310,14 +303,15 @@ def generateControllerConfig_any(playersControllers, filename, anyDefKey, anyMap
             if input.name in currentMapping:
                 keyname = currentMapping[input.name]
 
-            # write the configuration for this key
+            # Write the configuration for this key
             if keyname is not None:
                 write_key(f, keyname, input.type, input.id, input.value, pad.nbaxes, False, None)
                 if 'Triggers' in keyname and input.type == 'axis':
                     write_key(f, keyname + '-Analog', input.type, input.id, input.value, pad.nbaxes, False, None)
-            # write the 2nd part
+            # Write the 2nd part
             if input.name in { "joystick1up", "joystick1left", "joystick2up", "joystick2left"} and keyname is not None:
                 write_key(f, anyReverseAxes[keyname], input.type, input.id, input.value, pad.nbaxes, True, None)
+            # DualShock Motion control
             if system.isOptSet("dsmotion") and system.getOptBoolean("dsmotion") == True:
                 f.write("IMUGyroscope/Pitch Up = `Gyro X-`\n")
                 f.write("IMUGyroscope/Pitch Down = `Gyro X+`\n")
@@ -332,11 +326,13 @@ def generateControllerConfig_any(playersControllers, filename, anyDefKey, anyMap
                 f.write("IMUAccelerometer/Backward = `Accel Z+`\n")
                 f.write("IMUAccelerometer/Up = `Accel Y-`\n")
                 f.write("IMUAccelerometer/Down = `Accel Y+`\n")
+            # Mouse to emulate Wiimote
             if system.isOptSet("mouseir") and system.getOptBoolean("mouseir") == True:
                 f.write("IR/Up = `Cursor Y-`\n")
                 f.write("IR/Down = `Cursor Y+`\n")
                 f.write("IR/Left = `Cursor X-`\n")
                 f.write("IR/Right = `Cursor X+`\n")
+            # Rumble option
             if system.isOptSet("rumble") and system.getOptBoolean("rumble") == True:
                 f.write("Rumble/Motor = Weak\n")
 
@@ -352,11 +348,11 @@ def write_key(f, keyname, input_type, input_id, input_value, input_global_id, re
     if input_type == "button":
         f.write("Button " + str(input_id))
     elif input_type == "hat":
-        if input_value == "1" or input_value == "4": # up or down
+        if input_value == "1" or input_value == "4":        # up or down
             f.write("Axis " + str(int(input_global_id)+1))
         else:
             f.write("Axis " + str(input_global_id))
-        if input_value == "1" or input_value == "8": # up or left
+        if input_value == "1" or input_value == "8":        # up or left
             f.write("-")
         else:
             f.write("+")
