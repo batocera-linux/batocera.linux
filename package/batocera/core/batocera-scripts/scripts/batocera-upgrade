@@ -66,6 +66,8 @@ updateurl="https://updates.batocera.org"
 systemsetting="/usr/bin/batocera-settings"
 
 arch=$(cat /usr/share/batocera/batocera.arch)
+test "${arch}" = "rpi4" && arch=rpi464 # "temporarly" download on rpi464 for rpi4
+
 updatetype=$($systemsetting -r updates.type)
 settingsupdateurl=$($systemsetting -r updates.url)
 
