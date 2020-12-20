@@ -266,17 +266,18 @@ class EsSystemConf:
                         if "cfeatures" in features[emulator]["cores"][core] or "systems" in features[emulator]["cores"][core]:
                             featuresTxt += "      <core name=\"{}\" features=\"{}\">\n".format(core, core_featuresTxt)
                             # core features
-                            for cfeature in features[emulator]["cores"][core]["cfeatures"]:
-                                if "archs_include" not in features[emulator]["cores"][core]["cfeatures"][cfeature] or arch in features[emulator]["cores"][core]["cfeatures"][cfeature]["archs_include"]:
-                                    description = ""
-                                    if "description" in features[emulator]["cores"][core]["cfeatures"][cfeature]:
-                                        description = features[emulator]["cores"][core]["cfeatures"][cfeature]["description"]
-                                    featuresTxt += "        <feature name=\"{}\" value=\"{}\" description=\"{}\">\n".format(features[emulator]["cores"][core]["cfeatures"][cfeature]["prompt"], cfeature, description)
-                                    for choice in features[emulator]["cores"][core]["cfeatures"][cfeature]["choices"]:
-                                        featuresTxt += "          <choice name=\"{}\" value=\"{}\" />\n".format(choice, features[emulator]["cores"][core]["cfeatures"][cfeature]["choices"][choice])
-                                    featuresTxt += "        </feature>\n"
-                                else:
-                                    print "skipping core " + emulator + "/" + core + " cfeature " + cfeature
+                            if "cfeatures" in features[emulator]["cores"][core]:
+                               for cfeature in features[emulator]["cores"][core]["cfeatures"]:
+                                   if "archs_include" not in features[emulator]["cores"][core]["cfeatures"][cfeature] or arch in features[emulator]["cores"][core]["cfeatures"][cfeature]["archs_include"]:
+                                       description = ""
+                                       if "description" in features[emulator]["cores"][core]["cfeatures"][cfeature]:
+                                           description = features[emulator]["cores"][core]["cfeatures"][cfeature]["description"]
+                                       featuresTxt += "        <feature name=\"{}\" value=\"{}\" description=\"{}\">\n".format(features[emulator]["cores"][core]["cfeatures"][cfeature]["prompt"], cfeature, description)
+                                       for choice in features[emulator]["cores"][core]["cfeatures"][cfeature]["choices"]:
+                                           featuresTxt += "          <choice name=\"{}\" value=\"{}\" />\n".format(choice, features[emulator]["cores"][core]["cfeatures"][cfeature]["choices"][choice])
+                                       featuresTxt += "        </feature>\n"
+                                   else:
+                                       print "skipping core " + emulator + "/" + core + " cfeature " + cfeature
                             # #############
 
                             # systems in cores/core
