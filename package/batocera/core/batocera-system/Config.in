@@ -205,6 +205,7 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
 
     # script tool
     select BR2_PACKAGE_DIALOG
+    select BR2_PACKAGE_PV                                # Pipe Viewer monitoring the progress of data
 
     # tools
     select BR2_PACKAGE_OPENVPN
