@@ -14,8 +14,8 @@ BINARIES_DIR=$4
 TARGET_DIR=$5
 BATOCERA_BINARIES_DIR=$6
 
-mkdir -p "${BINARIES_DIR}/boot/boot"     || exit 1
-mkdir -p "${BINARIES_DIR}/boot/extlinux" || exit 1
+mkdir -p "${BATOCERA_BINARIES_DIR}/boot/boot"     || exit 1
+mkdir -p "${BATOCERA_BINARIES_DIR}/boot/extlinux" || exit 1
 
 cp "${BINARIES_DIR}/Image"                 "${BATOCERA_BINARIES_DIR}/boot/boot/linux"                || exit 1
 cp "${BINARIES_DIR}/initrd.gz"             "${BATOCERA_BINARIES_DIR}/boot/boot/initrd.gz"            || exit 1
