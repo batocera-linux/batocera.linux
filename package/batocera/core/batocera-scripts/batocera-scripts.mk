@@ -10,14 +10,18 @@ BATOCERA_SCRIPTS_DEPENDENCIES = pciutils
 BATOCERA_SCRIPTS_SOURCE=
 
 BATOCERA_SCRIPT_RESOLUTION_TYPE=basic
+BATOCERA_SCRIPT_SCREENSHOT_TYPE=basic
 ifeq ($(BR2_PACKAGE_RPI_USERLAND),y)
   BATOCERA_SCRIPT_RESOLUTION_TYPE=tvservice
+  BATOCERA_SCRIPT_SCREENSHOT_TYPE=tvservice
 endif
 ifeq ($(BR2_PACKAGE_LIBDRM),y)
   BATOCERA_SCRIPT_RESOLUTION_TYPE=drm
+  BATOCERA_SCRIPT_SCREENSHOT_TYPE=drm
 endif
 ifeq ($(BR2_PACKAGE_XORG7),y)
   BATOCERA_SCRIPT_RESOLUTION_TYPE=xorg
+  BATOCERA_SCRIPT_SCREENSHOT_TYPE=xorg
 endif
 
 # doesn't work on odroidgoa with mali g31_gbm
@@ -59,7 +63,7 @@ define BATOCERA_SCRIPTS_INSTALL_TARGET_CMDS
 	install -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-scripts/scripts/batocera-store                  $(TARGET_DIR)/usr/bin/
 	install -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-scripts/scripts/batocera-autologin              $(TARGET_DIR)/usr/bin/
 	install -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-scripts/scripts/batocera-resolution.$(BATOCERA_SCRIPT_RESOLUTION_TYPE) $(TARGET_DIR)/usr/bin/batocera-resolution
-	install -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-scripts/scripts/batocera-screenshot.$(BATOCERA_SCRIPT_RESOLUTION_TYPE) $(TARGET_DIR)/usr/bin/batocera-screenshot
+	install -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-scripts/scripts/batocera-screenshot.$(BATOCERA_SCRIPT_SCREENSHOT_TYPE) $(TARGET_DIR)/usr/bin/batocera-screenshot
 endef
 
 define BATOCERA_SCRIPTS_INSTALL_XORG
