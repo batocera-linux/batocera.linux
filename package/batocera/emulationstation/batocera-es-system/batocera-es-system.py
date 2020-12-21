@@ -248,9 +248,7 @@ class EsSystemConf:
                     if emulator_featuresTxt != "":
                         emulator_featuresTxt += ", "
                     emulator_featuresTxt += feature
-                featuresTxt += "  <emulator name=\"{}\" features=\"{}\"".format(emulator, emulator_featuresTxt)
-            else:
-                featuresTxt += "  <emulator name=\"{}\"".format(emulator)
+            featuresTxt += "  <emulator name=\"{}\" features=\"{}\"".format(emulator, emulator_featuresTxt)
 
             if "cores" in features[emulator] or "systems" in features[emulator] or "cfeatures" in features[emulator]:
                 featuresTxt += ">\n"
