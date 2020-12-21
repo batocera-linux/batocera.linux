@@ -2438,33 +2438,3 @@ index 000000000000..93beffd07c35
 +	.stop		= cedrus_vp8_stop,
 +	.trigger	= cedrus_vp8_trigger,
 +};
-From 732934b823fb3519f3616a4493db88928a8fec3a Mon Sep 17 00:00:00 2001
-From: Jernej Skrabec <jernej.skrabec@siol.net>
-Date: Wed, 21 Oct 2020 22:26:05 +0200
-Subject: [PATCH] media: cedrus: h264: Fix check for presence of scaling matrix
-
-If scaling matrix control is present, VPU should not use default matrix.
-Fix that.
-
-Fixes: b3a23db0e2f8 ("media: cedrus: Use H264_SCALING_MATRIX only when required")
-Signed-off-by: Jernej Skrabec <jernej.skrabec@siol.net>
----
- drivers/staging/media/sunxi/cedrus/cedrus_h264.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/staging/media/sunxi/cedrus/cedrus_h264.c b/drivers/staging/media/sunxi/cedrus/cedrus_h264.c
-index 28319351e909..781c84a9b1b7 100644
---- a/drivers/staging/media/sunxi/cedrus/cedrus_h264.c
-+++ b/drivers/staging/media/sunxi/cedrus/cedrus_h264.c
-@@ -446,7 +446,7 @@ static void cedrus_set_params(struct cedrus_ctx *ctx,
- 	reg |= (pps->second_chroma_qp_index_offset & 0x3f) << 16;
- 	reg |= (pps->chroma_qp_index_offset & 0x3f) << 8;
- 	reg |= (pps->pic_init_qp_minus26 + 26 + slice->slice_qp_delta) & 0x3f;
--	if (pps->flags & V4L2_H264_PPS_FLAG_SCALING_MATRIX_PRESENT)
-+	if (!(pps->flags & V4L2_H264_PPS_FLAG_SCALING_MATRIX_PRESENT))
- 		reg |= VE_H264_SHS_QP_SCALING_MATRIX_DEFAULT;
- 	cedrus_write(dev, VE_H264_SHS_QP, reg);
- 
--- 
-2.29.0
-

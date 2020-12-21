@@ -216,7 +216,7 @@ index 43643ad31730..d840bc07cba6 100644
 +};
 +#endif
 +
- static struct regmap_config sun8i_hdmi_phy_regmap_config = {
+ static const struct regmap_config sun8i_hdmi_phy_regmap_config = {
  	.reg_bits	= 32,
  	.val_bits	= 32,
 @@ -549,6 +591,7 @@ static const struct sun8i_hdmi_phy_variant sun8i_a83t_hdmi_phy = {

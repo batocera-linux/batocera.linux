@@ -1,0 +1,35 @@
+From 559f5716ee5e45e87e3bb7f7e5ded5c6116d194b Mon Sep 17 00:00:00 2001
+From: Jernej Skrabec <jernej.skrabec@siol.net>
+Date: Tue, 26 May 2020 20:08:27 +0200
+Subject: [PATCH 2/2] arm64: dts: h6 deinterlace
+
+Signed-off-by: Jernej Skrabec <jernej.skrabec@siol.net>
+---
+ arch/arm64/boot/dts/allwinner/sun50i-h6.dtsi | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/allwinner/sun50i-h6.dtsi b/arch/arm64/boot/dts/allwinner/sun50i-h6.dtsi
+index 78b1361dfbb9..d45893b7b7b8 100644
+--- a/arch/arm64/boot/dts/allwinner/sun50i-h6.dtsi
++++ b/arch/arm64/boot/dts/allwinner/sun50i-h6.dtsi
+@@ -152,6 +152,17 @@ mixer0_out_tcon_top_mixer0: endpoint {
+ 			};
+ 		};
+ 
++		deinterlace: deinterlace@1420000 {
++			compatible = "allwinner,sun50i-h6-deinterlace";
++			reg = <0x01420000 0x2000>;
++			clocks = <&ccu CLK_BUS_DEINTERLACE>,
++				 <&ccu CLK_DEINTERLACE>,
++				 <&ccu CLK_MBUS_DEINTERLACE>;
++			clock-names = "bus", "mod", "ram";
++			resets = <&ccu RST_BUS_DEINTERLACE>;
++			interrupts = <GIC_SPI 79 IRQ_TYPE_LEVEL_HIGH>;
++		};
++
+ 		video-codec@1c0e000 {
+ 			compatible = "allwinner,sun50i-h6-video-engine";
+ 			reg = <0x01c0e000 0x2000>;
+-- 
+2.27.0
+
