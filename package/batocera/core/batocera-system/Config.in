@@ -188,7 +188,7 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
     select BR2_PACKAGE_WAYLAND				 if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY || BR2_PACKAGE_BATOCERA_TARGET_RPI4
 
     # wireless drivers
-    select BR2_PACKAGE_RTL8821AU                         if !BR2_PACKAGE_BATOCERA_RPI_VCORE
+    select BR2_PACKAGE_RTL8821AU                         if !BR2_PACKAGE_BATOCERA_RPI_VCORE && !BR2_PACKAGE_BATOCERA_TARGET_X86_ANY # not compiling on BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
     select BR2_PACKAGE_RTL8821CE                         if !BR2_PACKAGE_BATOCERA_RPI_VCORE           && \
                                                             !BR2_PACKAGE_BATOCERA_TARGET_RPI3         && \
                                                             !BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA    && \
