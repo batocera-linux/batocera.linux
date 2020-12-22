@@ -1,14 +1,14 @@
 #!/bin/sh
 
-if [ "$(/usr/bin/batocera-settings-get -f /boot/config.txt is_gpicase)" = 1 ]; then
+if grep '^include [ ]*gpicase\.txt' /boot/config.txt; then
     exit 0
 fi
 
 mount -o remount,rw /boot
 
-echo "# ====== GPi Case setup section =====
-# WARNING: EDITING THIS SECTION MAY RESULT IN BOOT FAILURE
-is_gpicase=1
+cat <<'BOOTCONFIG' > /boot/gpicase.txt
+# ====== GPi Case setup
+# WARNING: EDITING THIS FILE MAY RESULT IN BOOT FAILURE
 dtoverlay=dpi24_gpicase
 dtoverlay=pwm-audio-pi-zero_gpicase
 display_rotate=1
@@ -28,7 +28,13 @@ hdmi_timings=240 1 38 10 20 320 1 20 4 4 0 0 0 60 0 6400000 1
 dtoverlay=pwm-2chan_gpicase,pin=18,func=2,pin2=19,func2=2
 disable_pvt=1
 disable_audio_dither=1
-# ====== End of GPi Case setup section =====" >> /boot/config.txt
+BOOTCONFIG
 
-echo "gpicase settings added. Rebooting now..."
+cat <<'BOOTCONFIG' > /boot/config.txt
+# WARNING: DO NOT REMOVE THIS LINE:
+include gpicase.txt
+
+BOOTCONFIG
+
+echo '/boot/gpicase.txt written, rebooting now...'
 shutdown -r now
