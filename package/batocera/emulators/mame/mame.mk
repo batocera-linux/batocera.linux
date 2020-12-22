@@ -47,6 +47,7 @@ endif
 define MAME_BUILD_CMDS
 	# First, we need to build genie for host
 	cd $(@D); \
+	PATH="$(HOST_DIR)/bin:$$PATH" \
 	$(MAKE) TARGETOS=linux OSD=sdl genie \
 	TARGET=mame SUBTARGET=tiny \
 	NO_USE_PORTAUDIO=1 NO_X11=1 USE_SDL=0 \
@@ -54,6 +55,7 @@ define MAME_BUILD_CMDS
 
 	# Compile emulation target
 	cd $(@D); \
+	PATH="$(HOST_DIR)/bin:$$PATH" \
 	SYSROOT="$(STAGING_DIR)" \
 	CFLAGS="--sysroot=$(STAGING_DIR) $(MAME_CFLAGS)"   \
 	LDFLAGS="--sysroot=$(STAGING_DIR)"  MPARAM="" \
