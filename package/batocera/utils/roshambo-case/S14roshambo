@@ -1,6 +1,6 @@
 #!/bin/sh
 
-enabled=`batocera-settings -r roshambo.enabled`
+enabled="$(/usr/bin/batocera-settings-get roshambo.enabled)"
 
 case "$1" in
 	start)

@@ -1,12 +1,10 @@
 #!/bin/sh
 
-systemsetting="batocera-settings"
-
 case "$1" in
     start)
-        enabled="$($systemsetting -r controllers.ps3.enabled)"
+        enabled="$(/usr/bin/batocera-settings-get controllers.ps3.enabled)"
         if [ "$enabled" = "1" ]; then
-            settings_version="$($systemsetting -r controllers.ps3.driver)"
+            settings_version="$(/usr/bin/batocera-settings-get controllers.ps3.driver)"
             [ "$settings_version" = "bluez" ] && exit 0
             if [ "$settings_version" = "" ]; then
                 settings_version="official"

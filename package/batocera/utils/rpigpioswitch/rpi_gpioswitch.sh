@@ -25,7 +25,7 @@ function powerdevice_dialog()
     local switch cmd button #dialog variabels
     local currentswitch #show current switch
 
-    currentswitch=$(batocera-settings -r system.power.switch)
+    currentswitch="$(/usr/bin/batocera-settings-get system.power.switch)"
     [[ -z $currentswitch || $currentswitch == "#" ]] && currentswitch="disabled"
 
     powerdevices=(
@@ -417,11 +417,11 @@ case "$CONFVALUE" in
 
         # Write values and display MsgBox
         [[ -n $switch ]] || { echo "Abort! Nothing changed...."; exit 1;}
-        batocera-settings -w system.power.switch -v "$switch"
+        /usr/bin/batocera-settings-set system.power.switch "$switch"
         [[ $? -eq 0 ]] && info_msg="No error! Everything went okay!" || info_msg="An error occurred!"
         dialog --backtitle "BATOCERA Power Switch Selection Toolkit" \
                --title " STATUS OF NEW VALUE " \
-               --msgbox "${info_msg}\n\n$(batocera-settings status system.power.switch)" 0 0
+               --msgbox "${info_msg}\n\n$(/usr/bin/batocera-settings-get system.power.switch)" 0 0
     ;;
     --HELP|*)
         [[ $CONFVALUE == "--HELP" ]] || echo "Wrong argument given to 'start' or 'stop' parameter"

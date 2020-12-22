@@ -9,7 +9,7 @@ devices="ATX_RASPI_R2_6 REMOTEPIBOARD_2003 REMOTEPIBOARD_2005 MAUSBERRY ONOFFSHI
 
 # Read current config, if no key is set in batocera.conf then try to use
 # default value setted by udev-rule
-powerswitch="$(batocera-settings -r system.power.switch)"
+powerswitch="$(/usr/bin/batocera-settings-get system.power.switch)"
 if [ $? -ne 0 ] && [ -f /var/run/powerswitch-by-udevrule ]; then
     powerswitch="$(cat /var/run/powerswitch-by-udevrule)"
 fi

@@ -1,10 +1,9 @@
 #!/bin/bash
 
 updateurl="https://updates.batocera.org"
-systemsetting="batocera-settings"
 
 # customizable upgrade url website
-settingsupdateurl=$($systemsetting -r updates.url)
+settingsupdateurl="$(/usr/bin/batocera-settings-get updates.url)"
 test -n "${settingsupdateurl}" && updateurl="${settingsupdateurl}"
 
 IMGFOLDER="/userdata/system/installs"
