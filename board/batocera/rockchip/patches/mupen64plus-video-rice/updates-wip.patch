@@ -103,8 +103,8 @@ index fbedc77..d89a7de 100644
  # base CFLAGS, LDLIBS, and LDFLAGS
  OPTFLAGS ?= -O3 -flto
  WARNFLAGS ?= -Wall
--CFLAGS += $(OPTFLAGS) $(WARNFLAGS) -ffast-math -fno-strict-aliasing -fvisibility=hidden -I../../src
-+CFLAGS += $(OPTFLAGS) $(WARNFLAGS) -ffast-math -fsingle-precision-constant -fno-strict-aliasing -fvisibility=hidden -I../../src
+-CFLAGS += $(OPTFLAGS) $(WARNFLAGS) -ffast-math -fno-strict-aliasing -fvisibility=hidden -I$(SRCDIR)
++CFLAGS += $(OPTFLAGS) $(WARNFLAGS) -ffast-math -fsingle-precision-constant -fno-strict-aliasing -fvisibility=hidden -I$(SRCDIR)
  CXXFLAGS += -fvisibility-inlines-hidden
  LDFLAGS += $(SHARED)
  
