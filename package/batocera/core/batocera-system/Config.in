@@ -168,7 +168,6 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
     select BR2_PACKAGE_DIALOG
 
     # tools
-    select BR2_PACKAGE_OPENVPN
     select BR2_PACKAGE_I2C_TOOLS
     select BR2_PACKAGE_MDADM # RAID
     select BR2_PACKAGE_MC
@@ -607,6 +606,9 @@ config BR2_PACKAGE_BATOCERA_KODI18
        select BR2_PACKAGE_LIBAACS           # decoder
        select BR2_PACKAGE_LIBDVDCSS         # decoder
        select BR2_PACKAGE_GNUTLS            # https streams
+
+       # VPN support
+       select BR2_PACKAGE_OPENVPN
 
        # Kodi game controllers
        select BR2_PACKAGE_KODI_PERIPHERAL_JOYSTICK		# joysticks for kodi
