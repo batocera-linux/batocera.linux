@@ -24,6 +24,8 @@ cp "${BINARIES_DIR}/rootfs.squashfs" "${BATOCERA_BINARIES_DIR}/boot/boot/batocer
 cp "${BINARIES_DIR}/rk3326-rg351p-linux.dtb"        "${BATOCERA_BINARIES_DIR}/boot/boot/rk3326-rg351p-linux.dtb"        || exit 1
 cp "${BINARIES_DIR}/rk3326-odroidgo2-linux.dtb"     "${BATOCERA_BINARIES_DIR}/boot/boot/rk3326-odroidgo2-linux.dtb"     || exit 1
 cp "${BINARIES_DIR}/rk3326-odroidgo2-linux-v11.dtb" "${BATOCERA_BINARIES_DIR}/boot/boot/rk3326-odroidgo2-linux-v11.dtb" || exit 1
+cp "${BINARIES_DIR}/rk3326-odroidgo3-linux.dtb"     "${BATOCERA_BINARIES_DIR}/boot/boot/rk3326-odroidgo3-linux.dtb"     || exit 1
+
 cp "${BOARD_DIR}/boot/boot.ini"                     "${BATOCERA_BINARIES_DIR}/boot/"                                    || exit 1
 
 exit 0
