@@ -3,19 +3,17 @@
 # thanks @lbrpdx for some code snippets ;)
 # We have download progress badge for ES now! - lala 2020/12/20
 
-#Inits (for future, better use values from config file)
+#Inits (for future, maybe use values from config file)
 DEST_PKG=/userdata/system/pacman/pkg
 DB_FILE=/userdata/system/pacman/db/db.lck
 
 do_getPer() {
 	local TARFILE="$1"
 	local TARVAL="$2"
-	local PER
-	# Needed loop, otherwise pacman will fail
+	local PER; local CURVAL
 	until [ -f "$TARFILE" ]; do
-		sleep 1
-	done
-	# Download loop
+		sleep 0.1
+	done 
 	while [ -f "$TARFILE" ]; do
 		CURVAL=$(stat "$TARFILE" | grep -E '^[ ]*Size:' | sed -e s+'^[ ]*Size: \([0-9][0-9]*\) .*$'+'\1'+)
 		PER=$(expr ${CURVAL} '*' 100 / ${TARVAL})
@@ -26,8 +24,7 @@ do_getPer() {
 
 
 do_clean () {
-	if ! lsof | grep ${DB_FILE}
-	then
+	if ! lsof | grep ${DB_FILE}; then
 		rm -f ${DB_FILE}
 	fi
 }
@@ -48,7 +45,6 @@ case "${ACTION}" in
 		RET=$?
 		if [ ${RET} -eq 1 ]; then
 			echo "Download error!"
-			sleep 5
 		else
 			pacman --noconfirm -S "${PKG}"
 			RET=$?	
@@ -58,7 +54,7 @@ case "${ACTION}" in
 		# Retrieve some information from pacman package
 		SIZE=$(pacman -Sw --print-format "%s" "${PKG}")
 		FILE=$(basename $(pacman -Sw --print-format "%l" "${PKG}"))
-		NAME=$(pacman -Si "${PKG}" | grep "Description" | awk '{print $3}') #Can be improved later!
+		NAME=$(pacman -Si "${PKG}" | grep "Description" | awk '{print substr($0, index($0, $3))}')
 		USER_INFO_DLSIZE=$(pacman -Si "${PKG}" | grep "Download Size" | awk '{print $4$5}')
 		USER_INFO_INSIZE=$(pacman -Si "${PKG}" | grep "Installed Size" | awk '{print $4$5}')
 
@@ -73,7 +69,7 @@ case "${ACTION}" in
 			pacman --noconfirm -S "${PKG}" 2>&1 >/dev/null &
 			PID=$!; RET=$?
 			echo "$USER_INFO_INSIZE to extract.... >>>70"
-			sleep 1 # to avoid errors displayed, for example error upgrades, very hacky not nice!
+			sleep 1 # to avoid errors, for example error upgrades, very hacky
 			echo "$USER_INFO_INSIZE to extract.... >>>70"
 			wait $PID
 			echo "$NAME installed ... >>>100"
@@ -109,15 +105,18 @@ case "${ACTION}" in
 	exit $?
 	;;
     "clean")
-	pacman --noconfirm -Scc
+	pacman --noconfirm -Sc
 	exit $?
+	;;
+    "clean-all")
+	rm -f "${DEST_PKG}/"*
+        exit $?
 	;;
     "update")
 	pacman --noconfirm -Syu
 	exit $?
 	;;
     "list-repositories")
-	#Don't remove the spaces!
 	(cat <<-_EOF_
 	#!/usr/bin/python
 
@@ -163,6 +162,7 @@ case "${ACTION}" in
 	echo "${0} list" >&2
 	echo "${0} list-repositories" >&2
 	echo "${0} clean" >&2
+	echo "${0} clean-all" >&2
 	echo "${0} refresh" >&2
 	echo "${0} update" >&2
 esac
