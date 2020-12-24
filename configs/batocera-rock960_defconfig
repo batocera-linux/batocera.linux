@@ -72,8 +72,11 @@ BR2_PACKAGE_FIRMWARE_ROCKPRO64=y
 # choices can be put in _defconfig files only
 BR2_PACKAGE_BATOCERA_SPLASH_MPV=y
 
-# Enables ccache, strace and gdb
+# Batocera
 #BR2_PACKAGE_BATOCERA_DEV=y
-
-# Enable experimental packages
+#BR2_PACKAGE_BATOCERA_DEBUG=y
 #BR2_PACKAGE_BATOCERA_CORES_EXPERIMENTAL=y
+
+# Enables ccache
+#BR2_CCACHE=y
+#BR2_CCACHE_INITIAL_SETUP=\"--max-size=50G\"
