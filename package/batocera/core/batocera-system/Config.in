@@ -454,7 +454,6 @@ config BR2_PACKAGE_BATOCERA_RETROARCH
 
         select BR2_PACKAGE_SLANG_SHADERS	          if BR2_PACKAGE_VULKAN_HEADERS && BR2_PACKAGE_VULKAN_LOADER
         select BR2_PACKAGE_LIBRETRO_MUPEN64PLUS_NEXT  if !BR2_PACKAGE_BATOCERA_RPI_VCORE            && \
-                                                         !BR2_PACKAGE_BATOCERA_TARGET_RPI3          && \
                                                          !BR2_PACKAGE_BATOCERA_TARGET_ODROIDC2      && \
                                                          !BR2_PACKAGE_BATOCERA_TARGET_ODROIDC4      && \
                                                          !BR2_PACKAGE_BATOCERA_TARGET_S905          && \
@@ -462,6 +461,7 @@ config BR2_PACKAGE_BATOCERA_RETROARCH
                                                          # MUPEN64PLUS_NEXT
 
         select BR2_PACKAGE_LIBRETRO_PARALLEL_N64      if !BR2_PACKAGE_BATOCERA_RPI_VCORE          && \
+                                                         !BR2_PACKAGE_BATOCERA_TARGET_RPI3        && \
                                                          !BR2_PACKAGE_BATOCERA_TARGET_RPI4        && \
                                                          !BR2_PACKAGE_BATOCERA_TARGET_ODROIDC2    && \
                                                          !BR2_PACKAGE_BATOCERA_TARGET_ODROIDC4    && \
@@ -613,6 +613,7 @@ config BR2_PACKAGE_BATOCERA_MUPEN64
         select BR2_PACKAGE_MUPEN64PLUS_OMX              if BR2_PACKAGE_BATOCERA_RPI_VCORE # rpi audio
 
         select BR2_PACKAGE_MUPEN64PLUS_GLIDEN64         if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY      || \
+                                                           BR2_PACKAGE_BATOCERA_TARGET_RPI3         || \
                                                            BR2_PACKAGE_BATOCERA_TARGET_RPI4         || \
                                                            BR2_PACKAGE_BATOCERA_TARGET_VIM3         || \
                                                            BR2_PACKAGE_BATOCERA_TARGET_LIBRETECH_H5 || \
