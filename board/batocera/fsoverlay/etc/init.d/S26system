@@ -17,23 +17,6 @@ ba_keyboard_lang() {
     fi
 }
 
-ba_xbox() {
-    settings_xbox="$($systemsetting -r controllers.xboxdrv.enabled)"
-    settings_xbox_nb="$($systemsetting -r controllers.xboxdrv.nbcontrols)"
-    if [ "$settings_xbox" = "1" ]; then
-        rmmod xpad
-        if [ "$settings_xbox_nb" = "1" ]; then
-            /usr/bin/xboxdrv --detach --daemon --id 0 --led 2 --deadzone 4000 --silent --trigger-as-button --dbus disabled --detach-kernel-driver >> $log &
-        elif [ "$settings_xbox_nb" = "2" ]; then
-            /usr/bin/xboxdrv --detach --daemon --id 0 --led 2 --deadzone 4000 --silent --trigger-as-button --next-controller --id 1 --led 3 --deadzone 4000 --silent --trigger-as-button --dbus disabled --detach-kernel-driver >> $log &
-        elif [ "$settings_xbox_nb" = "3" ]; then
-            /usr/bin/xboxdrv --detach --daemon --id 0 --led 2 --deadzone 4000 --silent --trigger-as-button --next-controller --id 1 --led 3 --deadzone 4000 --silent --trigger-as-button --next-controller --id 2 --led 4 --deadzone 4000 --silent --trigger-as-button --dbus disabled --detach-kernel-driver >> $log &
-        elif [ "$settings_xbox_nb" = "4" ]; then
-            /usr/bin/xboxdrv --detach --daemon --id 0 --led 2 --deadzone 4000 --silent --trigger-as-button --next-controller --id 1 --led 3 --deadzone 4000 --silent --trigger-as-button --next-controller --id 2 --led 4 --deadzone 4000 --silent --trigger-as-button --next-controller --id 3 --led 5 --deadzone 4000 --silent --trigger-as-button --dbus disabled --detach-kernel-driver >> $log &
-        fi
-    fi
-}
-
 ba_timezone() {
     settings_timezone="$($systemsetting -r system.timezone)"
     if [ "$settings_timezone" != "" ]; then
@@ -79,7 +62,6 @@ case "$1" in
 
     # configure
     ba_keyboard_lang &
-    ba_xbox &
     ba_timezone &
     ba_hostname &
     ba_xarcade2jstick &

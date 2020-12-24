@@ -95,51 +95,11 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
     select BR2_PACKAGE_CA_CERTIFICATES                   # ssl certificates
     select BR2_PACKAGE_LIBRGA                            if BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA # Used in screen rotation (SDL and Retroarch)
 
-    select BR2_PACKAGE_SDL2_OPENGLES                     if BR2_PACKAGE_BATOCERA_RPI_VCORE           || \
-                                                            BR2_PACKAGE_BATOCERA_RPI_MESA3D          || \
-                                                            BR2_PACKAGE_BATOCERA_TARGET_LIBRETECH_H5 || \
-                                                            BR2_PACKAGE_BATOCERA_TARGET_XU4          || \
-                                                            BR2_PACKAGE_BATOCERA_TARGET_ROCKPRO64    || \
-                                                            BR2_PACKAGE_BATOCERA_TARGET_ROCK960      || \
-                                                            BR2_PACKAGE_BATOCERA_TARGET_ODROIDN2     || \
-                                                            BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA    || \
-                                                            BR2_PACKAGE_BATOCERA_TARGET_S905         || \
-                                                            BR2_PACKAGE_BATOCERA_TARGET_S912         || \
-                                                            BR2_PACKAGE_BATOCERA_TARGET_ODROIDC2     || \
-                                                            BR2_PACKAGE_BATOCERA_TARGET_ODROIDC4     || \
-                                                            BR2_PACKAGE_BATOCERA_TARGET_TINKERBOARD  || \
-                                                            BR2_PACKAGE_BATOCERA_TARGET_MIQI         || \
-                                                            BR2_PACKAGE_BATOCERA_TARGET_VIM3  
-                                                            # opengles for sdl2
+    select BR2_PACKAGE_SDL2_OPENGLES                     if !BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
 
-    select BR2_PACKAGE_SDL2_KMSDRM                       if BR2_PACKAGE_BATOCERA_TARGET_ROCKPRO64    || \
-                                                            BR2_PACKAGE_BATOCERA_TARGET_ROCK960      || \
-                                                            BR2_PACKAGE_BATOCERA_TARGET_ODROIDN2     || \
-                                                            BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA    || \
-                                                            BR2_PACKAGE_BATOCERA_TARGET_XU4          || \
-                                                            BR2_PACKAGE_BATOCERA_TARGET_TINKERBOARD  || \
-                                                            BR2_PACKAGE_BATOCERA_TARGET_MIQI         || \
-                                                            BR2_PACKAGE_BATOCERA_RPI_MESA3D          || \
-                                                            BR2_PACKAGE_BATOCERA_TARGET_VIM3         || \
-                                                            BR2_PACKAGE_BATOCERA_TARGET_ODROIDC2     || \
-                                                            BR2_PACKAGE_BATOCERA_TARGET_ODROIDC4     || \
-                                                            BR2_PACKAGE_BATOCERA_TARGET_S905         || \
-                                                            BR2_PACKAGE_BATOCERA_TARGET_S912         || \
-                                                            BR2_PACKAGE_BATOCERA_TARGET_LIBRETECH_H5
+    select BR2_PACKAGE_SDL2_KMSDRM                       if !BR2_PACKAGE_BATOCERA_RPI_VCORE
 
-    select BR2_PACKAGE_LIBDRM                            if BR2_PACKAGE_BATOCERA_TARGET_ROCKPRO64    || \
-                                                            BR2_PACKAGE_BATOCERA_TARGET_ROCK960      || \
-                                                            BR2_PACKAGE_BATOCERA_TARGET_ODROIDN2     || \
-                                                            BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA    || \
-                                                            BR2_PACKAGE_BATOCERA_TARGET_XU4          || \
-                                                            BR2_PACKAGE_BATOCERA_TARGET_TINKERBOARD  || \
-                                                            BR2_PACKAGE_BATOCERA_TARGET_MIQI         || \
-                                                            BR2_PACKAGE_BATOCERA_TARGET_VIM3         || \
-                                                            BR2_PACKAGE_BATOCERA_TARGET_ODROIDC2     || \
-                                                            BR2_PACKAGE_BATOCERA_TARGET_ODROIDC4     || \
-                                                            BR2_PACKAGE_BATOCERA_TARGET_S905         || \
-                                                            BR2_PACKAGE_BATOCERA_TARGET_S912         || \
-                                                            BR2_PACKAGE_BATOCERA_TARGET_LIBRETECH_H5
+    select BR2_PACKAGE_LIBDRM                            if !BR2_PACKAGE_BATOCERA_RPI_VCORE
 
     select BR2_PACKAGE_BATOCERA_DRMINFO                  if BR2_PACKAGE_LIBDRM
 
@@ -208,7 +168,6 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
     select BR2_PACKAGE_DIALOG
 
     # tools
-    select BR2_PACKAGE_OPENVPN
     select BR2_PACKAGE_I2C_TOOLS
     select BR2_PACKAGE_MDADM # RAID
     select BR2_PACKAGE_MC
@@ -218,9 +177,6 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
     select BR2_PACKAGE_DB9_GPIO_RPI                 if BR2_PACKAGE_BATOCERA_RPI_VCORE || BR2_PACKAGE_BATOCERA_RPI_MESA3D
     select BR2_PACKAGE_GAMECON_GPIO_RPI             if BR2_PACKAGE_BATOCERA_RPI_VCORE || BR2_PACKAGE_BATOCERA_RPI_MESA3D
     select BR2_PACKAGE_MK_ARCADE_JOYSTICK_RPI       if BR2_PACKAGE_BATOCERA_RPI_VCORE || BR2_PACKAGE_BATOCERA_RPI_MESA3D
-
-    # xbox controllers (for linux older than ~4.16)
-    select BR2_PACKAGE_XBOXDRV if BR2_PACKAGE_BATOCERA_TARGET_905 || BR2_PACKAGE_BATOCERA_TARGET_912
 
     # joy 2 pad
     select BR2_PACKAGE_EVMAPY
@@ -236,19 +192,23 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
 config BR2_PACKAGE_BATOCERA_DEV
     bool "add dev options"
 
-    select BR2_CCACHE                   if BR2_PACKAGE_BATOCERA_DEV
-    select BR2_PACKAGE_STRACE           if BR2_PACKAGE_BATOCERA_DEV
-    select BR2_PACKAGE_GDB              if BR2_PACKAGE_BATOCERA_DEV
-    select BR2_PACKAGE_GDB_DEBUGGER     if BR2_PACKAGE_BATOCERA_DEV
-    select BR2_PACKAGE_TMUX             if BR2_PACKAGE_BATOCERA_DEV
-    select BR2_PACKAGE_X11VNC           if BR2_PACKAGE_BATOCERA_DEV && BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
-
-    select BR2_PACKAGE_VULKAN_SAMPLES   if  BR2_PACKAGE_BATOCERA_DEV && \
-					   ( BR2_PACKAGE_BATOCERA_TARGET_X86_ANY || \
-					     BR2_PACKAGE_BATOCERA_TARGET_RPI4 )
+    select BR2_CCACHE                   
+    select BR2_PACKAGE_TMUX             
+    select BR2_PACKAGE_X11VNC           if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
 
     help
       Install dev packages for batocera.linux
+
+config BR2_PACKAGE_BATOCERA_DEBUG
+    bool "add debug options"
+
+    select BR2_PACKAGE_STRACE           
+    select BR2_PACKAGE_GDB              
+    select BR2_PACKAGE_GDB_DEBUGGER     
+    select BR2_PACKAGE_VULKAN_SAMPLES  if ( BR2_PACKAGE_BATOCERA_TARGET_X86_ANY || BR2_PACKAGE_BATOCERA_TARGET_RPI4 )
+
+    help
+      Install debug packages for batocera.linux
 
 config BR2_TARGET_BATOCERA_IMAGES_DEFINITIONS
     bool "target images definitions"
@@ -643,6 +603,9 @@ config BR2_PACKAGE_BATOCERA_KODI18
        select BR2_PACKAGE_LIBAACS           # decoder
        select BR2_PACKAGE_LIBDVDCSS         # decoder
        select BR2_PACKAGE_GNUTLS            # https streams
+
+       # VPN support
+       select BR2_PACKAGE_OPENVPN
 
        # Kodi game controllers
        select BR2_PACKAGE_KODI_PERIPHERAL_JOYSTICK		# joysticks for kodi
