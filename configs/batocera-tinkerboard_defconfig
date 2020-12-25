@@ -80,8 +80,11 @@ BR2_PACKAGE_HOST_UBOOT_TOOLS=y
 # Batocera Splash Video
 # BR2_PACKAGE_BATOCERA_SPLASH_MPV=y
 
-# Enables ccache, strace and gdb
+# Batocera
 #BR2_PACKAGE_BATOCERA_DEV=y
-
-# Enable experimental packages
+#BR2_PACKAGE_BATOCERA_DEBUG=y
 #BR2_PACKAGE_BATOCERA_CORES_EXPERIMENTAL=y
+
+# Enables ccache
+#BR2_CCACHE=y
+#BR2_CCACHE_INITIAL_SETUP=\"--max-size=50G\"
