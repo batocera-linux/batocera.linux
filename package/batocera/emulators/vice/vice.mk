@@ -25,6 +25,11 @@ VICE_CONF_OPTS += --with-png
 VICE_CONF_OPTS += --without-pulse
 VICE_CONF_OPTS += --enable-x64
 
+VICE_CONF_OPTS += --enable-arch=sdl
+VICE_CONF_OPTS += --enable-sdlui2
+VICE_CONF_OPTS += --disable-debug-gtk3ui
+VICE_CONF_OPTS += --disable-native-gtk3ui
+
 VICE_CONF_ENV += LDFLAGS=-lSDL2
 
 $(eval $(autotools-package))
