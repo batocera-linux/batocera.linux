@@ -154,6 +154,7 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
                                                             !BR2_PACKAGE_BATOCERA_TARGET_RPI3         && \
                                                             !BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA    && \
                                                             !BR2_PACKAGE_BATOCERA_TARGET_LIBRETECH_H5 && \
+                                                            !BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_ZERO2 && \
                                                             !BR2_PACKAGE_BATOCERA_TARGET_MIQI         && \
                                                             !BR2_PACKAGE_BATOCERA_TARGET_TINKERBOARD
 
@@ -229,6 +230,7 @@ config BR2_TARGET_BATOCERA_IMAGES_DEFINITIONS
 	default "rockchip/rk3399/rock960"     if BR2_PACKAGE_BATOCERA_TARGET_ROCK960
 	default "rockchip/rk3399/rockpro64"   if BR2_PACKAGE_BATOCERA_TARGET_ROCKPRO64
 	default "libretech-h5"         	      if BR2_PACKAGE_BATOCERA_TARGET_LIBRETECH_H5
+	default "orangepi-zero2"              if BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_ZERO2
 	default "odroidxu4"                   if BR2_PACKAGE_BATOCERA_TARGET_XU4
 	default "x86"                  	      if BR2_PACKAGE_BATOCERA_TARGET_X86
 	default "x86"                  	      if BR2_PACKAGE_BATOCERA_TARGET_X86_64
@@ -296,6 +298,9 @@ config BR2_PACKAGE_BATOCERA_TARGET_VIM3
 config BR2_PACKAGE_BATOCERA_TARGET_LIBRETECH_H5
         bool "libretech_h5"
 
+config BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_ZERO2
+        bool "orangepi_zero2"
+
 endchoice
 
 config BR2_PACKAGE_BATOCERA_EXTRAS
@@ -351,6 +356,7 @@ config BR2_PACKAGE_BATOCERA_ALL_SYSTEMS
         #                                           !BR2_PACKAGE_BATOCERA_TARGET_ODROIDN2     && \
         #                                           !BR2_PACKAGE_BATOCERA_TARGET_S905         && \
         #                                           !BR2_PACKAGE_BATOCERA_TARGET_LIBRETECH_H5 && \
+        #                                           !BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_ZERO2 && \
         #                                           !BR2_PACKAGE_BATOCERA_TARGET_VIM3
                                                    # dreamcast
 
@@ -453,6 +459,7 @@ config BR2_PACKAGE_BATOCERA_RETROARCH
                                                          !BR2_PACKAGE_BATOCERA_TARGET_S905         && \
                                                          !BR2_PACKAGE_BATOCERA_TARGET_VIM3         && \
                                                          !BR2_PACKAGE_BATOCERA_TARGET_LIBRETECH_H5 && \
+                                                         !BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_ZERO2 && \
                                                          !BR2_PACKAGE_BATOCERA_TARGET_S912
                                                          # PCFX
 
@@ -473,7 +480,7 @@ config BR2_PACKAGE_BATOCERA_RETROARCH
         select BR2_PACKAGE_LIBRETRO_VICE              if !BR2_PACKAGE_BATOCERA_TARGET_RPI1    && \
                                                          !BR2_PACKAGE_BATOCERA_TARGET_RPI2
 
-        select BR2_PACKAGE_LIBRETRO_MAME              if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY || BR2_PACKAGE_BATOCERA_TARGET_ROCKPRO64 || BR2_PACKAGE_BATOCERA_TARGET_TINKERBOARD || BR2_PACKAGE_BATOCERA_TARGET_MIQI || BR2_PACKAGE_BATOCERA_TARGET_ODROIDN2 || BR2_PACKAGE_BATOCERA_TARGET_XU4 || BR2_PACKAGE_BATOCERA_TARGET_ROCK960 || BR2_PACKAGE_BATOCERA_TARGET_VIM3 || BR2_PACKAGE_BATOCERA_TARGET_LIBRETECH_H5
+        select BR2_PACKAGE_LIBRETRO_MAME              if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY || BR2_PACKAGE_BATOCERA_TARGET_ROCKPRO64 || BR2_PACKAGE_BATOCERA_TARGET_TINKERBOARD || BR2_PACKAGE_BATOCERA_TARGET_MIQI || BR2_PACKAGE_BATOCERA_TARGET_ODROIDN2 || BR2_PACKAGE_BATOCERA_TARGET_XU4 || BR2_PACKAGE_BATOCERA_TARGET_ROCK960 || BR2_PACKAGE_BATOCERA_TARGET_VIM3 || BR2_PACKAGE_BATOCERA_TARGET_LIBRETECH_H5 || BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_ZERO2
         select BR2_PACKAGE_LIBRETRO_HBMAME            if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY || BR2_PACKAGE_BATOCERA_TARGET_ODROIDN2
         select BR2_PACKAGE_LIBRETRO_KRONOS            if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY || BR2_PACKAGE_BATOCERA_TARGET_ODROIDN2 || BR2_PACKAGE_BATOCERA_TARGET_VIM3
 
@@ -536,7 +543,9 @@ config BR2_PACKAGE_BATOCERA_RETROARCH
         select BR2_PACKAGE_LIBRETRO_RETRO8            # ALL
 
         select BR2_PACKAGE_LIBRETRO_DOSBOX            if !BR2_PACKAGE_BATOCERA_TARGET_ROCK960     && \
-                                                         !BR2_PACKAGE_BATOCERA_TARGET_LIBRETECH_H5
+                                                         !BR2_PACKAGE_BATOCERA_TARGET_LIBRETECH_H5 && \
+                                                         !BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_ZERO2
+
         select BR2_PACKAGE_LIBRETRO_DOSBOX_PURE       # ALL
 
         select BR2_PACKAGE_LIBRETRO_PUAE              if !BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA
@@ -546,6 +555,7 @@ config BR2_PACKAGE_BATOCERA_RETROARCH
 	select BR2_PACKAGE_LIBRETRO_DUCKSTATION	      if  BR2_PACKAGE_BATOCERA_TARGET_X86_64   || \
 						          BR2_PACKAGE_BATOCERA_TARGET_ODROIDC4 || \
 						          BR2_PACKAGE_BATOCERA_TARGET_LIBRETECH_H5 || \
+						          BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_ZERO2 || \
 						          BR2_PACKAGE_BATOCERA_TARGET_ODROIDN2 || \
 						          BR2_PACKAGE_BATOCERA_TARGET_VIM3
 
@@ -576,6 +586,7 @@ config BR2_PACKAGE_BATOCERA_MUPEN64
                                                            BR2_PACKAGE_BATOCERA_TARGET_RPI4         || \
                                                            BR2_PACKAGE_BATOCERA_TARGET_VIM3         || \
                                                            BR2_PACKAGE_BATOCERA_TARGET_LIBRETECH_H5 || \
+                                                           BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_ZERO2 || \
                                                            BR2_PACKAGE_BATOCERA_TARGET_ROCKCHIP_ANY
                                                            # GLIDEN64
 
