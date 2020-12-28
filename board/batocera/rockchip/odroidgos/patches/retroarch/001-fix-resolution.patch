@@ -1,0 +1,37 @@
+--- a/gfx/drivers/oga_gfx.c	2020-12-28 19:31:08.827671401 +0100
++++ b/gfx/drivers/oga_gfx.c	2020-12-28 19:32:05.228696584 +0100
+@@ -47,8 +47,8 @@
+ 
+ #define ALIGN(val, align)   (((val) + (align) - 1) & ~((align) - 1))
+ 
+-#define NATIVE_WIDTH 480
+-#define NATIVE_HEIGHT 320
++#define NATIVE_WIDTH 854
++#define NATIVE_HEIGHT 480
+ 
+ #define NUM_PAGES 2
+ 
+--- a/gfx/drivers_context/drm_go2_ctx.c	2020-12-28 19:43:45.541447029 +0100
++++ b/gfx/drivers_context/drm_go2_ctx.c	2020-12-28 19:44:19.958074250 +0100
+@@ -118,8 +118,8 @@
+    if (!drm)
+       return NULL;
+ 
+-   drm->native_width  = 480;
+-   drm->native_height = 320;
++   drm->native_width  = 854;
++   drm->native_height = 480;
+ 
+    drm->display       = go2_display_create();
+    drm->presenter     = go2_presenter_create(drm->display,
+@@ -311,8 +311,8 @@
+    if (out_w != src_w || out_h != src_h)
+    {
+        out_w = out_h * video_driver_get_aspect_ratio();
+-       out_w = (out_w > 480) ? 480 : out_w;
+-       out_x = (480 - out_w) / 2;
++       out_w = (out_w > 854) ? 854 : out_w;
++       out_x = (854 - out_w) / 2;
+        if (out_x < 0)
+            out_x = 0;
+     }
