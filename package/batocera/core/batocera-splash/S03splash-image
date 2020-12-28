@@ -7,6 +7,11 @@ do_start ()
         image="$(ls /boot/splash/*.{jpg,png} | sed -e "$((RANDOM%$(ls -1 /boot/splash/*.{jpg,png} | wc -l)+1))!d")"
     else
         image="/usr/share/batocera/splash/logo-version.png"
+	# no image => for ogoa (or any other), logo-version-wxh.png
+	if ! test -e "${image}"
+	then
+	    image="/usr/share/batocera/splash/logo-version-"$(batocera-resolution currentResolution)".png"
+	fi
     fi
 
     # on some sytems, fb0 is not immediatly loaded, so, keep a chance by waiting a bit
