@@ -107,11 +107,11 @@ index 216c45d..a6fe7f8 100644
 +    // initialize 2D raster graphic acceleration unit (RGA)
 +    c_RkRgaInit();
 +
-+    // create buffers for RGA
++    // create buffers for RGA with adjusted stride
 +    for (int i = 0; i < RGA_BUFFERS_MAX; ++i)
 +    {
 +        viddata->rga_buffers[i] = KMSDRM_gbm_bo_create(viddata->gbm,
-+              frameWidth, frameHeight,
++              frameWidth, (frameHeight + 32) & (~31),
 +              GBM_FORMAT_XRGB8888, GBM_BO_USE_SCANOUT | GBM_BO_USE_RENDERING);
 +        assert(viddata->rga_buffers[i]);
 +
@@ -124,8 +124,8 @@ index 216c45d..a6fe7f8 100644
 +    src_info.mmuFlag = 1;
 +    src_info.rotation = HAL_TRANSFORM_ROT_270;
 +
-+    // swap width and height here because our source buffer is 480x320
-+    rga_set_rect(&src_info.rect, 0, 0, frameHeight, frameWidth, frameHeight, frameWidth, RK_FORMAT_BGRA_8888);
++    // swap width and height and adjust stride here because our source buffer is 480x854
++    rga_set_rect(&src_info.rect, 0, 0, frameHeight, frameWidth, (frameHeight + 32) & (~31), frameWidth, RK_FORMAT_BGRA_8888);
 +
 +    dst_info.fd = -1;
 +    dst_info.mmuFlag = 1;
