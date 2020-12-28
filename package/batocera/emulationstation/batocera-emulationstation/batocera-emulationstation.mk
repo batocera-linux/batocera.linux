@@ -112,6 +112,12 @@ ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA),y)
 	BATOCERA_EMULATIONSTATION_ARGS += --resolution 480 320
 endif
 
+# # on odroidgs: set resolution and EGL/GL hack
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOS),y)
+	BATOCERA_EMULATIONSTATION_PREFIX += SDL_VIDEO_GL_DRIVER=/usr/lib/libGLESv2.so SDL_VIDEO_EGL_DRIVER=/usr/lib/libGLESv2.so
+	BATOCERA_EMULATIONSTATION_ARGS += --resolution 854 480
+endif
+
 define BATOCERA_EMULATIONSTATION_BOOT
 	$(INSTALL) -D -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulationstation/batocera-emulationstation/S31emulationstation $(TARGET_DIR)/etc/init.d/S31emulationstation
 	sed -i -e 's;%BATOCERA_EMULATIONSTATION_PREFIX%;${BATOCERA_EMULATIONSTATION_PREFIX};g' \

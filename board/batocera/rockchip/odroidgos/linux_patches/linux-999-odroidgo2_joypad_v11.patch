@@ -1,0 +1,64 @@
+diff --git a/arch/arm64/boot/dts/rockchip/rk3326-odroidgo2-linux-v11.dts b/arch/arm64/boot/dts/rockchip/rk3326-odroidgo2-linux-v11.dts
+index 405043c17b88..1d2bbd6445bb 100644
+--- a/arch/arm64/boot/dts/rockchip/rk3326-odroidgo2-linux-v11.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3326-odroidgo2-linux-v11.dts
+@@ -22,6 +22,11 @@
+ 
+ 	joypad: odroidgo2-joypad {
+                 compatible = "odroidgo2-joypad";
++                
++                joypad-name = "odroidgo2_joypad_v11";
++                joypad-product = <0x0002>;
++                joypad-revision = <0x0011>;
++				
+                 /*
+                   - odroidgo2-joypad sysfs list -
+ 		   * for poll device interval(ms)
+diff --git a/arch/arm64/boot/dts/rockchip/rk3326-odroidgo2-linux.dts b/arch/arm64/boot/dts/rockchip/rk3326-odroidgo2-linux.dts
+index 687bdf388d27..1b2dd792af0c 100644
+--- a/arch/arm64/boot/dts/rockchip/rk3326-odroidgo2-linux.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3326-odroidgo2-linux.dts
+@@ -22,6 +22,11 @@
+ 
+ 	joypad: odroidgo2-joypad {
+                 compatible = "odroidgo2-joypad";
++                
++                joypad-name = "odroidgo2_joypad";
++                joypad-product = <0x0001>;
++                joypad-revision = <0x0101>;
++				
+                 /*
+                   - odroidgo2-joypad sysfs list -
+ 		   * for poll device interval(ms)
+diff --git a/drivers/input/joystick/odroidgo2-joypad.c b/drivers/input/joystick/odroidgo2-joypad.c
+index 208bfb473179..3c56809a8bb2 100644
+--- a/drivers/input/joystick/odroidgo2-joypad.c
++++ b/drivers/input/joystick/odroidgo2-joypad.c
+@@ -646,6 +646,8 @@
+ 	struct input_polled_dev *poll_dev;
+ 	struct input_dev *input;
+ 	int nbtn, error;
++	u32 joypad_revision = 0;
++	u32 joypad_product = 0;
+ 
+ 	poll_dev = devm_input_allocate_polled_device(dev);
+ 	if (!poll_dev) {
+@@ -661,13 +663,15 @@
+ 
+ 	input = poll_dev->input;
+ 
+-	input->name = DRV_NAME;
++	device_property_read_string(dev, "joypad-name", &input->name);
+ 	input->phys = DRV_NAME"/input0";
+ 
++	device_property_read_u32(dev, "joypad-revision", &joypad_revision);
++	device_property_read_u32(dev, "joypad-product", &joypad_product);
+ 	input->id.bustype = BUS_HOST;
+ 	input->id.vendor  = 0x0001;
+-	input->id.product = 0x0001;
+-	input->id.version = 0x0101;
++	input->id.product = (u16)joypad_product;
++	input->id.version = (u16)joypad_revision;
+ 
+ 	/* IIO ADC key setup (0 mv ~ 1800 mv) * adc->scale */
+ 	__set_bit(EV_ABS, input->evbit);

@@ -1,0 +1,80 @@
+From e5e701c2b8470de044c5c71d2a54ecfc72680d59 Mon Sep 17 00:00:00 2001
+From: Rasmus Villemoes <linux@rasmusvillemoes.dk>
+Date: Wed, 19 Sep 2018 11:35:56 +0900
+Subject: [PATCH] Kbuild: fix # escaping in .cmd files for future Make
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+[ commit 9564a8cf422d7b58f6e857e3546d346fa970191e in Linux ]
+
+I tried building using a freshly built Make (4.2.1-69-g8a731d1), but
+already the objtool build broke with
+
+orc_dump.c: In function ‘orc_dump’:
+orc_dump.c:106:2: error: ‘elf_getshnum’ is deprecated [-Werror=deprecated-declarations]
+  if (elf_getshdrnum(elf, &nr_sections)) {
+
+Turns out that with that new Make, the backslash was not removed, so cpp
+didn't see a #include directive, grep found nothing, and
+-DLIBELF_USE_DEPRECATED was wrongly put in CFLAGS.
+
+Now, that new Make behaviour is documented in their NEWS file:
+
+  * WARNING: Backward-incompatibility!
+    Number signs (#) appearing inside a macro reference or function invocation
+    no longer introduce comments and should not be escaped with backslashes:
+    thus a call such as:
+      foo := $(shell echo '#')
+    is legal.  Previously the number sign needed to be escaped, for example:
+      foo := $(shell echo '\#')
+    Now this latter will resolve to "\#".  If you want to write makefiles
+    portable to both versions, assign the number sign to a variable:
+      C := \#
+      foo := $(shell echo '$C')
+    This was claimed to be fixed in 3.81, but wasn't, for some reason.
+    To detect this change search for 'nocomment' in the .FEATURES variable.
+
+This also fixes up the two make-cmd instances to replace # with $(pound)
+rather than with \#. There might very well be other places that need
+similar fixup in preparation for whatever future Make release contains
+the above change, but at least this builds an x86_64 defconfig with the
+new make.
+
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=197847
+Cc: Randy Dunlap <rdunlap@infradead.org>
+Signed-off-by: Rasmus Villemoes <linux@rasmusvillemoes.dk>
+Signed-off-by: Masahiro Yamada <yamada.masahiro@socionext.com>
+---
+ scripts/Kbuild.include | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/scripts/Kbuild.include b/scripts/Kbuild.include
+index 2c7918ad37..13ebddda65 100644
+--- a/scripts/Kbuild.include
++++ b/scripts/Kbuild.include
+@@ -7,6 +7,7 @@ quote   := "
+ squote  := '
+ empty   :=
+ space   := $(empty) $(empty)
++pound := \#
+ 
+ ###
+ # Name of target with a '.' as filename prefix. foo/bar.o => foo/.bar.o
+@@ -242,11 +243,11 @@ endif
+ 
+ # Replace >$< with >$$< to preserve $ when reloading the .cmd file
+ # (needed for make)
+-# Replace >#< with >\#< to avoid starting a comment in the .cmd file
++# Replace >#< with >$(pound)< to avoid starting a comment in the .cmd file
+ # (needed for make)
+ # Replace >'< with >'\''< to be able to enclose the whole string in '...'
+ # (needed for the shell)
+-make-cmd = $(call escsq,$(subst \#,\\\#,$(subst $$,$$$$,$(cmd_$(1)))))
++make-cmd = $(call escsq,$(subst $(pound),$$(pound),$(subst $$,$$$$,$(cmd_$(1)))))
+ 
+ # Find any prerequisites that is newer than target or that does not exist.
+ # PHONY targets skipped in both cases.
+-- 
+2.27.0
+
