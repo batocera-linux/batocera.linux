@@ -1,5 +1,3 @@
-# credits .: Daniel Mehrwald
-# https://github.com/AreaScout/SDL/commit/54675d1edc8b8d5919ae665f7d12be3b254b0df7?diff=unified
 diff --git a/Makefile.in b/Makefile.in
 index 65b0fd9..66ebbf3 100644
 --- a/Makefile.in
@@ -14,7 +12,7 @@ index 65b0fd9..66ebbf3 100644
  LIBTOOL = @LIBTOOL@
  INSTALL = @INSTALL@
 diff --git a/src/video/kmsdrm/SDL_kmsdrmopengles.c b/src/video/kmsdrm/SDL_kmsdrmopengles.c
-index ae4b358..1e8276b 100644
+index cf59478..0a9b022 100644
 --- a/src/video/kmsdrm/SDL_kmsdrmopengles.c
 +++ b/src/video/kmsdrm/SDL_kmsdrmopengles.c
 @@ -33,6 +33,9 @@
@@ -74,7 +72,7 @@ index e3e48ef..aa240cc 100644
  
  #undef SDL_KMSDRM_MODULE
 diff --git a/src/video/kmsdrm/SDL_kmsdrmvideo.c b/src/video/kmsdrm/SDL_kmsdrmvideo.c
-index 216c45d..a6fe7f8 100644
+index a8d92b2..96f97af 100644
 --- a/src/video/kmsdrm/SDL_kmsdrmvideo.c
 +++ b/src/video/kmsdrm/SDL_kmsdrmvideo.c
 @@ -42,6 +42,7 @@
@@ -95,23 +93,29 @@ index 216c45d..a6fe7f8 100644
  static int
  check_modestting(int devindex)
  {
-@@ -254,6 +258,40 @@ KMSDRM_FBDestroyCallback(struct gbm_bo *bo, void *data)
+@@ -254,6 +258,46 @@ KMSDRM_FBDestroyCallback(struct gbm_bo *bo, void *data)
      SDL_free(fb_info);
  }
  
 +static void
 +KMSDRM_InitRotateBuffer(_THIS, int frameWidth, int frameHeight)
 +{
++    int l_frameHeight;
 +    SDL_VideoData *viddata = ((SDL_VideoData *)_this->driverdata);
 +
 +    // initialize 2D raster graphic acceleration unit (RGA)
 +    c_RkRgaInit();
 +
++    l_frameHeight = frameHeight;
++    if(l_frameHeight % 32 != 0) {
++      l_frameHeight = (frameHeight + 32) & (~31);
++    }
++
 +    // create buffers for RGA with adjusted stride
 +    for (int i = 0; i < RGA_BUFFERS_MAX; ++i)
 +    {
 +        viddata->rga_buffers[i] = KMSDRM_gbm_bo_create(viddata->gbm,
-+              frameWidth, (frameHeight + 32) & (~31),
++              frameWidth, l_frameHeight,
 +              GBM_FORMAT_XRGB8888, GBM_BO_USE_SCANOUT | GBM_BO_USE_RENDERING);
 +        assert(viddata->rga_buffers[i]);
 +
@@ -125,7 +129,7 @@ index 216c45d..a6fe7f8 100644
 +    src_info.rotation = HAL_TRANSFORM_ROT_270;
 +
 +    // swap width and height and adjust stride here because our source buffer is 480x854
-+    rga_set_rect(&src_info.rect, 0, 0, frameHeight, frameWidth, (frameHeight + 32) & (~31), frameWidth, RK_FORMAT_BGRA_8888);
++    rga_set_rect(&src_info.rect, 0, 0, frameHeight, frameWidth, l_frameHeight, frameWidth, RK_FORMAT_BGRA_8888);
 +
 +    dst_info.fd = -1;
 +    dst_info.mmuFlag = 1;
@@ -136,7 +140,7 @@ index 216c45d..a6fe7f8 100644
  KMSDRM_FBInfo *
  KMSDRM_FBFromBO(_THIS, struct gbm_bo *bo)
  {
-@@ -387,8 +425,8 @@ KMSDRM_CreateSurfaces(_THIS, SDL_Window * window)
+@@ -387,8 +431,8 @@ KMSDRM_CreateSurfaces(_THIS, SDL_Window * window)
      SDL_VideoData *viddata = ((SDL_VideoData *)_this->driverdata);
      SDL_WindowData *windata = (SDL_WindowData *)window->driverdata;
      SDL_DisplayData *dispdata = (SDL_DisplayData *) SDL_GetDisplayForWindow(window)->driverdata;
@@ -146,8 +150,8 @@ index 216c45d..a6fe7f8 100644
 +    Uint32 height = dispdata->mode.hdisplay;
      Uint32 surface_fmt = GBM_FORMAT_XRGB8888;
      Uint32 surface_flags = GBM_BO_USE_SCANOUT | GBM_BO_USE_RENDERING;
-     EGLContext egl_context;
-@@ -579,8 +617,8 @@ KMSDRM_VideoInit(_THIS)
+ #if SDL_VIDEO_OPENGL_EGL
+@@ -599,8 +643,8 @@ KMSDRM_VideoInit(_THIS)
  
      /* Setup the single display that's available */
  
@@ -158,7 +162,7 @@ index 216c45d..a6fe7f8 100644
      display.desktop_mode.refresh_rate = dispdata->mode.vrefresh;
  #if 1
      display.desktop_mode.format = SDL_PIXELFORMAT_ARGB8888;
-@@ -697,8 +735,8 @@ KMSDRM_GetDisplayModes(_THIS, SDL_VideoDisplay * display)
+@@ -730,8 +774,8 @@ KMSDRM_GetDisplayModes(_THIS, SDL_VideoDisplay * display)
            modedata->mode_index = i;
          }
  
@@ -169,7 +173,7 @@ index 216c45d..a6fe7f8 100644
          mode.refresh_rate = conn->modes[i].vrefresh;
          mode.format = SDL_PIXELFORMAT_ARGB8888;
          mode.driverdata = modedata;
-@@ -750,6 +788,7 @@ KMSDRM_CreateWindow(_THIS, SDL_Window * window)
+@@ -782,6 +826,7 @@ KMSDRM_CreateWindow(_THIS, SDL_Window * window)
  {
      SDL_VideoData *viddata = (SDL_VideoData *)_this->driverdata;
      SDL_WindowData *windata;
@@ -177,7 +181,7 @@ index 216c45d..a6fe7f8 100644
  
  #if SDL_VIDEO_OPENGL_EGL
      if (!_this->egl_data) {
-@@ -812,6 +851,9 @@ KMSDRM_CreateWindow(_THIS, SDL_Window * window)
+@@ -836,6 +881,9 @@ KMSDRM_CreateWindow(_THIS, SDL_Window * window)
      SDL_SetMouseFocus(window);
      SDL_SetKeyboardFocus(window);
  
@@ -187,7 +191,7 @@ index 216c45d..a6fe7f8 100644
      return 0;
  
  error:
-@@ -849,6 +891,13 @@ KMSDRM_DestroyWindow(_THIS, SDL_Window * window)
+@@ -873,6 +921,13 @@ KMSDRM_DestroyWindow(_THIS, SDL_Window * window)
      window->driverdata = NULL;
  
      SDL_free(windata);
