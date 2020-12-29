@@ -130,10 +130,21 @@ define MAME_INSTALL_TARGET_CMDS
         $(INSTALL) -D $(@D)/jedutil		$(TARGET_DIR)/usr/bin/mame/
         $(INSTALL) -D $(@D)/ldresample		$(TARGET_DIR)/usr/bin/mame/
         $(INSTALL) -D $(@D)/ldverify		$(TARGET_DIR)/usr/bin/mame/
-        $(INSTALL) -D $(@D)/nltool		$(TARGET_DIR)/usr/bin/mame/
-        $(INSTALL) -D $(@D)/nlwav		$(TARGET_DIR)/usr/bin/mame/
         $(INSTALL) -D $(@D)/romcmp		$(TARGET_DIR)/usr/bin/mame/
-        $(INSTALL) -D $(@D)/unidasm		$(TARGET_DIR)/usr/bin/mame/
+
+        # MAME dev tools skipped
+	#$(INSTALL) -D $(@D)/unidasm		$(TARGET_DIR)/usr/bin/mame/
+        #$(INSTALL) -D $(@D)/nltool		$(TARGET_DIR)/usr/bin/mame/
+        #$(INSTALL) -D $(@D)/nlwav		$(TARGET_DIR)/usr/bin/mame/
+
+	# Delete .po translation files
+	find $(TARGET_DIR)/usr/bin/mame/language -name "*.po" -type f -delete
+
+	# Delete bgfx shaders for DX9/DX11/Metal
+	rm -Rf $(TARGET_DIR)/usr/bin/mame/bgfx/shaders/metal/
+	rm -Rf $(TARGET_DIR)/usr/bin/mame/bgfx/shaders/dx11/
+	rm -Rf $(TARGET_DIR)/usr/bin/mame/bgfx/shaders/dx9/
+
 endef
 
 $(eval $(generic-package))
