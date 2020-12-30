@@ -115,7 +115,11 @@ function make_pkg() {
 	pk=../"$1".pkg.tar.xz
 	[[ -f "$pk" ]] && echo "ERROR: file $pk already exists. Aborting." && exit 1
 	echo "Creating package $pk ..."
-	tar -cf - "$INFO" "$BATOEXEC" * | xz -c -z - > "$pk"
+	if [ -e "$BATOEXEC" ]; then
+	    tar -cf - "$INFO" "$BATOEXEC" * | xz -c -z - > "$pk"
+	else
+	    tar -cf - "$INFO" * | xz -c -z - > "$pk"
+	fi
 	ret=$?
 	[[ $ret -eq 0 ]] && echo "SUCCESS: package $pk correctly generated" && exit 0
 }
@@ -150,5 +154,3 @@ function main() {
 
 # calling main function
 main "${@}"
-
-
