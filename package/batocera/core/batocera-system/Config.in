@@ -115,6 +115,7 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
     select BR2_PACKAGE_RPI_WIFI_FIRMWARE                 if BR2_PACKAGE_BATOCERA_RPI_VCORE || BR2_PACKAGE_BATOCERA_RPI_MESA3D # rpi wifi firmware
     select BR2_PACKAGE_RPI_BT_FIRMWARE                   if BR2_PACKAGE_BATOCERA_RPI_VCORE || BR2_PACKAGE_BATOCERA_RPI_MESA3D # rpi bluetooth firmware
     select BR2_PACKAGE_DROPBEAR                          # ssh server
+    select BR2_PACKAGE_PM_UTILS # suspend
     select BR2_PACKAGE_QTSIXA_SHANWAN                    # ps3 pad
     select BR2_PACKAGE_XARCADE2JSTICK                    # keyboard events of the Xarcade Tankstick
     select BR2_PACKAGE_UTIL_LINUX_LIBMOUNT               # for util-linux compilation to work (so, may be removed in the future)
