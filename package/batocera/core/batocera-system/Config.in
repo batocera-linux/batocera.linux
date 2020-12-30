@@ -123,7 +123,7 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
     select BR2_PACKAGE_CA_CERTIFICATES                   # ssl certificates
     select BR2_PACKAGE_LIBRGA                            if BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA # Used in screen rotation (SDL and Retroarch)
 
-    select BR2_PACKAGE_SDL2_OPENGLES                     if !BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
+    select BR2_PACKAGE_SDL2_OPENGLES                     # ALL
 
     select BR2_PACKAGE_SDL2_KMSDRM                       if !BR2_PACKAGE_BATOCERA_RPI_VCORE
 
@@ -175,6 +175,9 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
                                                             !BR2_PACKAGE_BATOCERA_TARGET_LIBRETECH_H5 && \
                                                             !BR2_PACKAGE_BATOCERA_TARGET_MIQI         && \
                                                             !BR2_PACKAGE_BATOCERA_TARGET_TINKERBOARD
+
+    # gpu drivers
+    select BR2_PACKAGE_BATOCERA_GPU_X86			 if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
 
     # xorg
     select BR2_PACKAGE_BATOCERA_XORG                     if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
@@ -902,7 +905,6 @@ config BR2_PACKAGE_BATOCERA_XORG
        select BR2_PACKAGE_XSERVER_XORG_SERVER
 
        # xwayland based architecture (no more ddx drivers)
-       select BR2_PACKAGE_LIBDRM
        select BR2_PACKAGE_LIBEPOXY    # required to enable xorg glamor
        select BR2_PACKAGE_WAYLAND_PROTOCOLS
        select BR2_PACKAGE_XLIB_LIBXCOMPOSITE
@@ -916,6 +918,8 @@ config BR2_PACKAGE_BATOCERA_XORG
        select BR2_PACKAGE_XDRIVER_XF86_VIDEO_AMDGPU
        select BR2_PACKAGE_XDRIVER_XF86_VIDEO_ATI
        select BR2_PACKAGE_XDRIVER_XF86_VIDEO_NOUVEAU
+       select BR2_PACKAGE_XDRIVER_XF86_INTEL
+       select BR2_PACKAGE_BATOCERA_NVIDIA_DRIVER_XORG   if BR2_PACKAGE_BATOCERA_TARGET_X86_64
 
        # applications
        select BR2_PACKAGE_XAPP_SETXKBMAP
@@ -925,10 +929,13 @@ config BR2_PACKAGE_BATOCERA_XORG
        select BR2_PACKAGE_XAPP_XRANDR # required for resolution manipulation
        select BR2_PACKAGE_XAPP_XSET   # X11 Xset command
 
+
+config BR2_PACKAGE_BATOCERA_GPU_X86
+       bool "batocera.linux GPU support for x86 platform"
+
        # nvidia
        select BR2_PACKAGE_LIBGLVND             if BR2_PACKAGE_BATOCERA_TARGET_X86    # already set by nvidia for x86_64, but required on x86 for pcsx2
        select BR2_PACKAGE_BATOCERA_NVIDIA_DRIVER        if BR2_PACKAGE_BATOCERA_TARGET_X86_64
-       select BR2_PACKAGE_BATOCERA_NVIDIA_DRIVER_XORG   if BR2_PACKAGE_BATOCERA_TARGET_X86_64
        select BR2_PACKAGE_BATOCERA_NVIDIA_DRIVER_MODULE if BR2_PACKAGE_BATOCERA_TARGET_X86_64
 
        # mesa
@@ -949,6 +956,7 @@ config BR2_PACKAGE_BATOCERA_XORG
        select BR2_PACKAGE_MESA3D_GALLIUM_DRIVER_VIRGL		if  BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
        select BR2_PACKAGE_MESA3D_GALLIUM_DRIVER_TEGRA		if !BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
        select BR2_PACKAGE_MESA3D_GALLIUM_DRIVER_R300		if  BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
+       select BR2_PACKAGE_MESA3D_OPENGL_ES
        select BR2_PACKAGE_MESA3D_OPENGL_EGL
        select BR2_PACKAGE_MESA3D_OPENGL_GLX			if  BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
        select BR2_PACKAGE_MESA3D_LLVM
