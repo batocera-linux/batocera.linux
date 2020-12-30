@@ -38,6 +38,7 @@ batoceraBins = {'dosbox'         : '/usr/bin/dosbox'
               , 'melonds'        : '/usr/bin/melonDS'
               , 'rpcs3'          : '/usr/bin/rpcs3'
               , 'mame'           : '/usr/bin/mame/mamearcade64'
+              , 'hatari'         : '/usr/bin/hatari'
 }
 
 
