@@ -34,6 +34,7 @@ setup(name='batocera-configgen',
         'configgen.generators.pygame',
         'configgen.generators.mame',
         'configgen.generators.devilutionx',
+        'configgen.generators.hatari',
         'configgen.settings',
         'configgen.utils']
       )

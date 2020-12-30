@@ -35,6 +35,7 @@ from generators.rpcs3.rpcs3Generator import Rpcs3Generator
 from generators.pygame.pygameGenerator import PygameGenerator
 from generators.mame.mameGenerator import MameGenerator
 from generators.devilutionx.devilutionxGenerator import DevilutionXGenerator
+from generators.hatari.hatariGenerator import HatariGenerator
 import controllersConfig as controllers
 import signal
 import batoceraFiles
@@ -72,6 +73,7 @@ generators = {
     'mame' : MameGenerator(),
     'pygame': PygameGenerator(),
     'devilutionx': DevilutionXGenerator(),
+    'hatari': HatariGenerator(),
 }
 
 def main(args, maxnbplayers):

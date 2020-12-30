@@ -572,7 +572,8 @@ config BR2_PACKAGE_BATOCERA_COMPUTER_SYSTEMS
 		select BR2_PACKAGE_LIBRETRO_CAP32             # ALL
 		select BR2_PACKAGE_LIBRETRO_81                # ALL
 
-		# Atari ST
+		# Atari ST/TT/Falcon
+		select BR2_PACKAGE_HATARI                     # ALL
 		select BR2_PACKAGE_LIBRETRO_HATARI            # ALL
 
 		# MSX range

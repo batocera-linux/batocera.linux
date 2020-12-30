@@ -915,6 +915,8 @@ atarist:
   emulators:
     libretro:
       hatari: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_HATARI] }
+    hatari:
+      hatari: { requireAnyOf: [BR2_PACKAGE_HATARI] }
 
 amstradcpc:
   name:       Amstrad CPC
