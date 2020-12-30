@@ -28,8 +28,8 @@ fi
 # Uncompress Wine
 wine_extract() {
 if [ -e "${DIR}/proton.7z" ] || [ -e "${DIR}/lutris.7z" ]; then
-7zr x "${DIR}/proton.7z" && rm -f "${DIR}/proton.7z"
-7zr x "${DIR}/lutris.7z" && rm -f "${DIR}/lutris.7z"
+7zr x "${DIR}/proton.7z" -o"${DIR}" && rm -f "${DIR}/proton.7z"
+7zr x "${DIR}/lutris.7z" -o"${DIR}" && rm -f "${DIR}/lutris.7z"
 fi
 }
 
