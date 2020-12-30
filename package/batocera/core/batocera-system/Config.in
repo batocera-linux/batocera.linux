@@ -70,7 +70,7 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
     select BR2_PACKAGE_ES_BACKGROUND_MUSICS              # emulationstation musics
     select BR2_PACKAGE_BATOCERA_ES_SYSTEM                # emulation station es_systems.cfg generator + default roms
     select BR2_PACKAGE_BATOCERA_CONFIGGEN                # emulation station external command launcher
-    select BR2_PACKAGE_TRIGGERHAPPY                      # multimedia/power buttons
+    select BR2_PACKAGE_BATOCERA_TRIGGERHAPPY             # multimedia/power buttons
     select BR2_PACKAGE_XOSD                              if BR2_PACKAGE_XSERVER_XORG_SERVER # osd information displaying
     select BR2_PACKAGE_CIFS_UTILS                        # required for boot mounts
     select BR2_PACKAGE_BATOCERA_IMAGE                    # tools to generate batocera image

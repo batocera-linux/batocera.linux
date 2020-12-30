@@ -2,16 +2,32 @@
 
 CONFFILE=multimedia_keys.conf
 
+# hack for odroidgoa models
+BOARD_MODEL=$(cat /sys/firmware/devicetree/base/model 2>/dev/null | sed -e s+"[^A-Za-z0-9]"+"_"+g)
+BOARD_CONFFILE=multimedia_keys_${BOARD_MODEL}.conf
+if test -e "/etc/triggerhappy/triggers.d/${BOARD_CONFFILE}"
+then
+    CONFFILE=${BOARD_CONFFILE}
+fi
+
 enabled="$(/usr/bin/batocera-settings-get system.multimediakeys.enabled)"
 if [ "$enabled" = "0" ];then
     CONFFILE=multimedia_keys_disabled.conf
 fi
 
+# system conf
+CONFPATH=/etc/triggerhappy/triggers.d/${CONFFILE}
+
+# custom conf
+if test -e "/userdata/system/configs/multimedia_keys.conf"
+then
+    CONFPATH=/userdata/system/configs/multimedia_keys.conf
+fi
 
 NAME=thd
 DAEMON=/usr/sbin/$NAME
 PIDFILE=/var/run/$NAME.pid
-DAEMON_ARGS="--daemon --triggers /etc/triggerhappy/triggers.d/${CONFFILE} --socket /var/run/thd.socket --pidfile $PIDFILE /dev/input/event*"
+DAEMON_ARGS="--daemon --triggers ${CONFPATH} --socket /var/run/thd.socket --pidfile $PIDFILE /dev/input/event*"
 
 # Sanity checks
 test -x $DAEMON || exit 0
