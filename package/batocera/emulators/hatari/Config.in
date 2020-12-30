@@ -1,6 +1,9 @@
 config BR2_PACKAGE_HATARI
     bool "hatari"
     select BR2_PACKAGE_SDL2
+    select BR2_PACKAGE_ZLIB
+    select BR2_PACKAGE_LIBPNG
+    select BR2_PACKAGE_CAPSIMG
 
     help
     	An Atari ST/STe/TT/Falcon emulator
