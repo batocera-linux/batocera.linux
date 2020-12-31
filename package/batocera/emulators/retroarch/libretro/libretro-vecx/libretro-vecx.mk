@@ -4,7 +4,7 @@
 #
 ################################################################################
 # Version.: Commits on Oct 18, 2020
-LIBRETRO_VECX_VERSION = 7f8d42e0f5e891997afa72a639dbcc0f3be710c6
+LIBRETRO_VECX_VERSION = a9b6985200da790839e6fb69d243075d52a19be2
 LIBRETRO_VECX_SITE = $(call github,libretro,libretro-vecx,$(LIBRETRO_VECX_VERSION))
 LIBRETRO_VECX_LICENSE = GPLv2|LGPLv2.1
 
