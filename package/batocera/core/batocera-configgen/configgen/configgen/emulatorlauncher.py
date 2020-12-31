@@ -136,6 +136,12 @@ def main(args, maxnbplayers):
             videoMode.changeMode(wantedGameMode)
             resolutionChanged = True
         gameResolution = videoMode.getCurrentResolution()
+
+        # if resolution is reversed (ie ogoa boards), reverse it in the gameResolution to have it correct
+        if system.isOptSet('resolutionIsReversed') and system.getOptBoolean('resolutionIsReversed') == True:
+            x = gameResolution["width"]
+            gameResolution["width"]  = gameResolution["height"]
+            gameResolution["height"] = x
         eslog.log("resolution: {}x{}".format(str(gameResolution["width"]), str(gameResolution["height"])))
 
         # savedir: create the save directory if not already done
