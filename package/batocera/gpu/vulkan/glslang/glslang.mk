@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-GLSLANG_VERSION = 9eef54b2513ca6b40b47b07d24f453848b65c0df
+GLSLANG_VERSION = c594de23cdd790d64ad5f9c8b059baae0ee2941d
 GLSLANG_SITE =  https://github.com/KhronosGroup/glslang
 GLSLANG_SITE_METHOD=git
 GLSLANG_DEPENDENCIES = mesa3d vulkan-headers vulkan-loader
