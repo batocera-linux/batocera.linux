@@ -2019,7 +2019,7 @@ index 00000000000..4793dea3f85
 +	if (game->name[0] == 0) sprintf(game->name, "empty");
 +
 +	machine_config config(*game_drv, options);
-+	screen = screen_device_iterator(config.root_device()).first();
++	screen = screen_device_enumerator(config.root_device()).first();
 +
 +	// Fill in current video mode settings
 +	game->orientation = effective_orientation(machine);
@@ -2044,7 +2044,7 @@ index 00000000000..4793dea3f85
 +	game->refresh = ATTOSECONDS_TO_HZ(screen->refresh_attoseconds());
 +
 +	// Check for multiple screens
-+	screen_device_iterator iter(config.root_device());
++	screen_device_enumerator iter(config.root_device());
 +	game->screens = iter.count();
 +}
 +
@@ -2094,7 +2094,7 @@ index 00000000000..4793dea3f85
 +	float new_vfreq = game->refresh;
 +	bool new_orientation = effective_orientation(machine);
 +
-+	screen_device_iterator scriter(machine.root_device());
++	screen_device_enumerator scriter(machine.root_device());
 +	if (scriter.count())
 +	{
 +		screen_device *screen = scriter.first();
@@ -3139,7 +3139,7 @@ index ee5dffdeaf0..0ba947e15b5 100644
 +	}
 +
  	// determine the refresh rate of the primary screen
- 	const screen_device *primary_screen = screen_device_iterator(win->machine().root_device()).first();
+ 	const screen_device *primary_screen = screen_device_enumerator(win->machine().root_device()).first();
  	if (primary_screen != nullptr)
 @@ -1320,10 +1481,6 @@ void renderer_d3d9::pick_best_mode()
  		if (mode.Width < minwidth || mode.Height < minheight)
