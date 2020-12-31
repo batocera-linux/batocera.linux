@@ -124,32 +124,36 @@ def _generateSdlGameControllerConfig(controller, sdlMapping=_DEFAULT_SDL_MAPPING
         keyname = sdlMapping.get(input.name, None)
         if input.name is not None:
             sdlConf = _keyToSdlGameControllerConfig(
-                keyname, input.type, input.id, input.value)
+                keyname, input.name, input.type, input.id, input.value)
             if sdlConf is not None:
                 config.append(sdlConf)
     config.append('')
     return ','.join(config)
 
 
-def _keyToSdlGameControllerConfig(keyname, type, id, value=None):
+def _keyToSdlGameControllerConfig(keyname, name, type, id, value=None):
     """
     Converts a key mapping to the SDL_GAMECONTROLLER format.
 
     Arguments:
-      keyname: (str) One of the SDL_GAMECONTROLLERCONFIG keys.
+      keyname: (str) SDL_GAMECONTROLLERCONFIG input name.
+      name: (str) `es_input.cfg` input name.
       type: (str) 'button', 'hat', or 'axis'
       id: (int) Numeric key id.
-      value: (int) Hat value. Only used if type == 'hat'.
+      value: (int) Hat value. Only used if type == 'hat' or type == 'axis' and 'joystick' in name.
     Returns:
       (str) SDL_GAMECONTROLLERCONFIG-formatted key mapping string.
     Examples:
-      keyToSdlGameControllerConfig('button', 'leftshoulder', 6)
+      _keyToSdlGameControllerConfig('leftshoulder', 'l1', 'button', 6)
         'leftshoulder:b6'
 
-      keyToSdlGameControllerConfig('hat', 'dpleft', 0, 8)
+      _keyToSdlGameControllerConfig('dpleft', 'left', 'hat', 0, 8)
         'dpleft:h0.9'
 
-      keyToSdlGameControllerConfig('axis', 'lefty', 1)
+      _keyToSdlGameControllerConfig('lefty', 'joystick1up', 'axis', 1, -1)
+        'lefty:a1'
+
+      _keyToSdlGameControllerConfig('lefty', 'joystick1up', 'axis', 1, 1)
         'lefty:a1'
     """
     if type == 'button':
@@ -157,10 +161,10 @@ def _keyToSdlGameControllerConfig(keyname, type, id, value=None):
     elif type == 'hat':
         return '{}:h{}.{}'.format(keyname, id, value)
     elif type == 'axis':
-        if 'joystick' in keyname:
+        if 'joystick' in name:
             return '{}:a{}{}'.format(keyname, id, '~' if int(value) > 0 else '')
         else:
-            return '{}:a{}{}'.format(keyname, id, '')
+            return '{}:a{}'.format(keyname, id)
     elif type == 'key':
         return None
     else:
