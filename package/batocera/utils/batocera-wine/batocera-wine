@@ -15,8 +15,17 @@ GAMENAME=$1
 ROMGAMENAME=$(basename "${GAMENAME}")
 WINE_VERSION="$(get_setting core windows "${ROMGAMENAME}" || echo proton)"
 
+# Wine Folder
+wine_folder() {
+if test -e "/userdata/system/wine/proton" || test -e "/userdata/system/wine/lutris"; then
+    echo "/userdata/system/wine"
+    else
+    echo "/usr/wine"
+fi
+}
+
 ## Wine executables
-DIR="/usr/wine"
+DIR=$(wine_folder)
 WINE="${DIR}/${WINE_VERSION}/bin/wine"
 WINE64="${DIR}/${WINE_VERSION}/bin/wine64"
 WINESERVER="${DIR}/${WINE_VERSION}/bin/wineserver"
@@ -98,15 +107,15 @@ dxvk_install() {
     if test "${DXVK}" = 1
     then
 	mkdir -p "${WINEPREFIX}/drive_c/windows/system32" "${WINEPREFIX}/drive_c/windows/syswow64" || return 1
-	if test -e "/userdata/system/dxvk"
+	if test -e "/userdata/system/wine/dxvk"
 	then
 	    echo "Creating links on /userdata, Linux File System required !!!"
-	    ln -sf "/userdata/system/dxvk/x64/"{d3d12.dll,d3d11.dll,d3d10core.dll,d3d10.dll,d3d10_1.dll,d3d9.dll,dxgi.dll} "${WINEPREFIX}/drive_c/windows/system32" || return 1
-            ln -sf "/userdata/system/dxvk/x32/"{d3d12.dll,d3d11.dll,d3d10core.dll,d3d10.dll,d3d10_1.dll,d3d9.dll,dxgi.dll} "${WINEPREFIX}/drive_c/windows/syswow64" || return 1
+	    ln -sf "/userdata/system/wine/dxvk/x64/"{d3d12.dll,d3d11.dll,d3d10core.dll,d3d10.dll,d3d10_1.dll,d3d9.dll,dxgi.dll} "${WINEPREFIX}/drive_c/windows/system32" || return 1
+        ln -sf "/userdata/system/wine/dxvk/x32/"{d3d12.dll,d3d11.dll,d3d10core.dll,d3d10.dll,d3d10_1.dll,d3d9.dll,dxgi.dll} "${WINEPREFIX}/drive_c/windows/syswow64" || return 1
 	else
 	    echo "Creating links on /userdata, Linux File System required !!!"
 	    ln -sf "/usr/share/dxvk/x64/"{d3d12.dll,d3d11.dll,d3d10core.dll,d3d10.dll,d3d10_1.dll,d3d9.dll,dxgi.dll} "${WINEPREFIX}/drive_c/windows/system32" || return 1
-            ln -sf "/usr/share/dxvk/x32/"{d3d12.dll,d3d11.dll,d3d10core.dll,d3d10.dll,d3d10_1.dll,d3d9.dll,dxgi.dll} "${WINEPREFIX}/drive_c/windows/syswow64" || return 1
+        ln -sf "/usr/share/dxvk/x32/"{d3d12.dll,d3d11.dll,d3d10core.dll,d3d10.dll,d3d10_1.dll,d3d9.dll,dxgi.dll} "${WINEPREFIX}/drive_c/windows/syswow64" || return 1
 	fi
     else
 	echo "Creating links on /userdata, Linux File System required !!!"
