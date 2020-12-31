@@ -25,7 +25,7 @@ fi
 }
 
 ## Wine executables
-DIR=$(wine_folder)
+DIR="$(wine_folder)"
 WINE="${DIR}/${WINE_VERSION}/bin/wine"
 WINE64="${DIR}/${WINE_VERSION}/bin/wine64"
 WINESERVER="${DIR}/${WINE_VERSION}/bin/wineserver"
