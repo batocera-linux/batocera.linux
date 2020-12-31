@@ -1183,7 +1183,7 @@ def generateCoreSettings(coreSettings, system, rom):
         if system.isOptSet('show_bios_bootlogo'):
             coreSettings.save('pcsx_rearmed_show_bios_bootlogo', system.config['show_bios_bootlogo'])
         else:
-            coreSettings.save('pcsx_rearmed_show_bios_bootlogo', '"enabled"')
+            coreSettings.save('pcsx_rearmed_show_bios_bootlogo', '"disabled"')
         # Frameskip
         if system.isOptSet('frameskip_pcsx'):
             coreSettings.save('pcsx_rearmed_frameskip', system.config['frameskip_pcsx'])
