@@ -108,10 +108,3 @@ done
 cp "${TARGET_DIR}/usr/share/batocera/batocera.version" "${BATOCERA_BINARIES_DIR}" || exit 1
 "${BR2_EXTERNAL_BATOCERA_PATH}"/scripts/linux/systemsReport.sh "${PWD}" "${BATOCERA_BINARIES_DIR}" || exit 1
 
-#### pcsx2 package
-if grep -qE "^BR2_PACKAGE_PCSX2=y$" "${BR2_CONFIG}"
-then
-	echo "building the pcsx2 package..."
-	"${BR2_EXTERNAL_BATOCERA_PATH}"/board/batocera/scripts/doPcsx2package.sh "${TARGET_DIR}" "${BINARIES_DIR}/pcsx2" "${BATOCERA_BINARIES_DIR}" || exit 1
-fi
-
