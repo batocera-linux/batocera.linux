@@ -3,8 +3,8 @@
 # MAME
 #
 ################################################################################
-# Version.: Release 0.226
-MAME_VERSION = mame0226
+# Version.: Release 0.227
+MAME_VERSION = mame0227
 MAME_SITE = $(call github,mamedev,mame,$(MAME_VERSION))
 MAME_DEPENDENCIES = sdl2 zlib libpng fontconfig sqlite jpeg flac rapidjson
 MAME_LICENSE = MAME
@@ -13,6 +13,9 @@ MAME_CROSS_ARCH = unknown
 MAME_CROSS_OPTS = 
 MAME_TARGET_NAME = mamearcade
 MAME_CFLAGS =
+
+# Limit number of jobs not to eat too much RAM....
+MAME_JOBS = 8
 
 # x86_64 is desktop linux based on X11 and OpenGL
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86_64),y)
@@ -61,7 +64,7 @@ define MAME_BUILD_CMDS
 	LDFLAGS="--sysroot=$(STAGING_DIR)"  MPARAM="" \
 	PKG_CONFIG="$(HOST_DIR)/usr/bin/pkg-config --define-prefix" \
 	PKG_CONFIG_PATH="$(STAGING_DIR)/usr/lib/pkgconfig" \
-	$(MAKE) TARGETOS=linux OSD=sdl \
+	$(MAKE) -j$(MAME_JOBS) TARGETOS=linux OSD=sdl \
 	TARGET=mame \
 	SUBTARGET=arcade \
 	OVERRIDE_CC="$(TARGET_CC)" \
