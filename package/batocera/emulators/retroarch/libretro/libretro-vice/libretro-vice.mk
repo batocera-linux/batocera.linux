@@ -4,7 +4,7 @@
 #
 ################################################################################
 # Version.: Commits on Nov 16, 2020
-LIBRETRO_VICE_VERSION = e1e4bdd9b11a8a9ba7bc8e8451033a2edc5e139d
+LIBRETRO_VICE_VERSION = d991c8486d47e11dbdc9b3fec7a1873f57dffee8
 LIBRETRO_VICE_SITE = $(call github,libretro,vice-libretro,$(LIBRETRO_VICE_VERSION))
 LIBRETRO_VICE_LICENSE = GPLv2
 
