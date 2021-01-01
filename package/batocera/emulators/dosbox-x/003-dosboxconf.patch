@@ -1,16 +1,5 @@
 --- a/src/gui/sdlmain.cpp	2020-08-03 06:33:31.000000000 +0200
 +++ b/src/gui/sdlmain.cpp	2020-08-28 13:21:18.681580955 +0200
-@@ -907,8 +907,8 @@
-     PrintScreenSizeInfo();
- }
- 
--#define MAPPERFILE_SDL1         "mapper-dosbox-x.sdl1.map"
--#define MAPPERFILE_SDL2         "mapper-dosbox-x.sdl2.map"
-+#define MAPPERFILE_SDL1         "mapper-sdl2.map"
-+#define MAPPERFILE_SDL2         "mapper-sdl2.map"
- #if defined(C_SDL2)
- # define MAPPERFILE             MAPPERFILE_SDL2
- #else
 @@ -954,7 +954,7 @@
  #elif defined(HAIKU)
  #define DEFAULT_CONFIG_FILE "~/config/settings/dosbox-x/dosbox-x.conf"
