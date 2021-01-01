@@ -120,6 +120,11 @@ ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA),y)
 	RETROARCH_DEPENDENCIES += librga
 endif
 
+# x86 platform force Desktop GL (it's a hack...)
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86_ANY),y)
+	RETROARCH_CONF_OPTS += --enable-opengl --disable-opengles
+	RETROARCH_DEPENDENCIES += libgl
+endif
 
 ifeq ($(BR2_PACKAGE_XSERVER_XORG_SERVER),)
 	ifeq ($(BR2_PACKAGE_MESA3D_OPENGL_EGL),y)
