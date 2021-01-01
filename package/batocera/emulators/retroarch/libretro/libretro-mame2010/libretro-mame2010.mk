@@ -4,7 +4,7 @@
 #
 ################################################################################
 # Version.: Commits on Oct 08, 2020
-LIBRETRO_MAME2010_VERSION = d3315f1014282acbf8e3b0e8ccf9d1177b0573c0
+LIBRETRO_MAME2010_VERSION = 1ab4339099e991bf551f59633ed31ff13bf70518
 LIBRETRO_MAME2010_SITE = $(call github,libretro,mame2010-libretro,$(LIBRETRO_MAME2010_VERSION))
 LIBRETRO_MAME2010_LICENSE = MAME
 
@@ -31,13 +31,13 @@ define LIBRETRO_MAME2010_BUILD_CMDS
 	$(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" LD="$(TARGET_CC)" -C $(@D)/ -f Makefile platform="$(LIBRETRO_PLATFORM)" $(LIBRETRO_MAME2010_EXTRA_ARGS)
 endef
 
+# Bios
+# Need to think of another way to use these files.
+# They take up a lot of space on tmpfs.
 define LIBRETRO_MAME2010_INSTALL_TARGET_CMDS
 	$(INSTALL) -D $(@D)/mame2010_libretro.so \
 		$(TARGET_DIR)/usr/lib/libretro/mame0139_libretro.so
 
-	# Bios
-    # Need to think of another way to use these files.
-    # They take up a lot of space on tmpfs.
 	mkdir -p $(TARGET_DIR)/usr/share/batocera/datainit/bios/mame2010/samples
 	$(INSTALL) -D $(@D)/metadata/* \
 		$(TARGET_DIR)/usr/share/batocera/datainit/bios/mame2010
