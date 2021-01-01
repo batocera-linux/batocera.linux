@@ -1,0 +1,16 @@
+--- a/libretro/Makefile	2020-12-06 17:45:32.020681801 +0100
++++ b/libretro/Makefile	2020-12-06 17:45:19.588450451 +0100
+@@ -210,6 +210,13 @@
+ 	PLATFORM_DEFINES += -marm -mcpu=cortex-a53 -mfpu=neon-fp-armv8 -mfloat-abi=hard -ffast-math
+ 	PLATFORM_DEFINES += -DARM
+ 
++# Raspberry Pi 4 (64-bit)
++else ifeq ($(platform), rpi4_64)
++	TARGET := $(TARGET_NAME)_libretro.so
++	fpic := -fPIC
++	SHARED := -shared -Wl,-version-script=link.T -Wl,-no-undefined
++	PLATFORM_DEFINES += -mcpu=cortex-a72 -mtune=cortex-a72 -ffast-math
++
+ # Lightweight PS3 Homebrew SDK
+ else ifeq ($(platform), psl1ght)
+ 	TARGET := $(TARGET_NAME)_libretro_$(platform).a

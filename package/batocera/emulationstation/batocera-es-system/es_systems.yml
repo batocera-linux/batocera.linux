@@ -20,12 +20,14 @@ c64:
   platform:   c64
   emulators:
     vice:
-      x64:      { requireAnyOf: [BR2_PACKAGE_VICE]          }
-      x64dtv:   { requireAnyOf: [BR2_PACKAGE_VICE]          }
-      xscpu64:  { requireAnyOf: [BR2_PACKAGE_VICE]          }
-      xplus4:   { requireAnyOf: [BR2_PACKAGE_VICE]          }
+      x64:         { requireAnyOf: [BR2_PACKAGE_VICE]          }
+      x64dtv:      { requireAnyOf: [BR2_PACKAGE_VICE]          }
+      xscpu64:     { requireAnyOf: [BR2_PACKAGE_VICE]          }
+      xplus4:      { requireAnyOf: [BR2_PACKAGE_VICE]          }
     libretro:
-      vice:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_VICE] }
+      vice_x64:    { requireAnyOf: [BR2_PACKAGE_LIBRETRO_VICE] }
+      vice_x64sc:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_VICE] }
+      vice_xplus4: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_VICE] }
 
 c128:
   name:       Commodore 128
@@ -36,7 +38,9 @@ c128:
   platform:   c64
   emulators:
     vice:
-      x128:     { requireAnyOf: [BR2_PACKAGE_VICE] }
+      x128:          { requireAnyOf: [BR2_PACKAGE_VICE] }
+    libretro:
+      vice_x128:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_VICE] }
 
 c20:
   name:       Commodore VIC-20
@@ -47,7 +51,22 @@ c20:
   platform:   c64
   emulators:
     vice:
-      xvic:     { requireAnyOf: [BR2_PACKAGE_VICE] }
+      xvic:       { requireAnyOf: [BR2_PACKAGE_VICE] }
+    libretro:
+      vice_xvic: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_VICE] }
+
+pet:
+  name:       Commodore PET
+  manufacturer: Commodore
+  release: 1977
+  hardware: computer
+  extensions: [a0, b0, crt, d64, d81, prg, tap, t64, zip]
+  platform:   c64
+  emulators:
+    vice:
+      xpet:       { requireAnyOf: [BR2_PACKAGE_VICE] }
+    libretro:
+      vice_xpet: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_VICE] }
 
 amiga500:
   name:       Amiga OCS/ECS
@@ -247,7 +266,7 @@ dreamcast:
   manufacturer: Sega
   release: 1998
   hardware: console
-  extensions: [cdi, cue, gdi, chd]
+  extensions: [cdi, cue, gdi, chd, m3u]
   emulators:
     libretro:
       flycast:        { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FLYCAST] }
@@ -370,7 +389,7 @@ psx:
   emulators:
     libretro:
       pcsx_rearmed: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PCSX] }
-      duckstation:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_DUCKSTATION] }
+      duckstation:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_DUCKSTATION], incompatible_extensions: [pbp] }
       mednafen_psx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BEETLE_PSX] }
 
 pcengine:
@@ -460,6 +479,7 @@ dos:
       dosbox-x:         { requireAnyOf: [BR2_PACKAGE_DOSBOX_X]        }
     libretro:
       dosbox:           { requireAnyOf: [BR2_PACKAGE_LIBRETRO_DOSBOX] }
+      dosbox_pure:      { requireAnyOf: [BR2_PACKAGE_LIBRETRO_DOSBOX_PURE] }
   comment_en: |
     Each game (files) must be placed its own directory having the ".pc .dos" extension.
     In each directory, a dosbox.bat file must contain the command line for launching the game.
@@ -492,6 +512,23 @@ dos:
 
     Les jeux DOS sont disponibles sur myabandonware:
     http://www.myabandonware.com/browse/platform/dos/
+
+devilutionx:
+  name:       DevilutionX
+  manufacturer: Ports
+  release:
+  hardware:   port
+  extensions: [mpq]
+  group: ports
+  emulators:
+    devilutionx:
+      devilutionx: { requireAnyOf: [BR2_PACKAGE_DEVILUTIONX] }
+  comment_en: |
+    Diablo 1.
+
+    Place diabdat.mpq (all lowercase) from your CD or GoG installation into:
+
+        /userdata/roms/devilution/
 
 fbneo:
   name:       Final Burn Neo
@@ -526,6 +563,9 @@ mame:
       mame0139:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME2010]       }
       mame:         { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME]           }
       fbneo:        { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FBNEO]          }
+    mame:
+      mame:         { requireAnyOf: [BR2_PACKAGE_MAME]                    }
+
   comment_en: |
     The system uses libretro mame2003 as default core: compatible ROMs must come from set 0.78
     The libretro core imame4all, based on MAME v0.37b5, is also included.
@@ -571,6 +611,8 @@ neogeo:
       mame078plus:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME2003_PLUS]  }
       mame0139:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME2010]       }
       mame:         { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME]           }
+    mame:
+      mame:         { requireAnyOf: [BR2_PACKAGE_MAME]                    }
 
 neogeocd:
   name:       Neo-Geo CD
@@ -873,6 +915,8 @@ atarist:
   emulators:
     libretro:
       hatari: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_HATARI] }
+    hatari:
+      hatari: { requireAnyOf: [BR2_PACKAGE_HATARI] }
 
 amstradcpc:
   name:       Amstrad CPC
@@ -1422,7 +1466,8 @@ windows:
   theme:      windows
   emulators:
     wine:
-      wine:  { requireAnyOf: [BR2_PACKAGE_WINE_LUTRIS] }
+      lutris:  { requireAnyOf: [BR2_PACKAGE_WINE_LUTRIS] }
+      proton:  { requireAnyOf: [BR2_PACKAGE_WINE_PROTON] }
 
 windows_installers:
   name:       Install a new Windows game
@@ -1434,7 +1479,8 @@ windows_installers:
   group:      windows
   emulators:
     wine:
-      wine:  { requireAnyOf: [BR2_PACKAGE_WINE_LUTRIS] }
+      lutris:  { requireAnyOf: [BR2_PACKAGE_WINE_LUTRIS] }
+      proton:  { requireAnyOf: [BR2_PACKAGE_WINE_PROTON] }
 
 wiiu:
   name:       Wii U
@@ -1469,7 +1515,7 @@ imageviewer:
   manufacturer: Misc. System
   release:
   hardware: system
-  extensions: [jpg, jpeg, png, bmp, psd, tga, gif, hdr, pic, ppm, pgm, mkv]
+  extensions: [jpg, jpeg, png, bmp, psd, tga, gif, hdr, pic, ppm, pgm, mkv, pdf, mp4, avi]
   path:       /userdata/screenshots
   platform:   ignore
   emulators:

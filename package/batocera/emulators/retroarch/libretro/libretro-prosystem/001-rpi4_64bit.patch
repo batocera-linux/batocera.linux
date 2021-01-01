@@ -1,0 +1,19 @@
+--- a/Makefile	2020-12-07 11:43:42.358549797 +0100
++++ b/Makefile	2020-12-07 11:44:04.662945668 +0100
+@@ -312,6 +312,16 @@
+ 	FLAGS += -marm -marm -mcpu=cortex-a53 -mfpu=neon-fp-armv8 -mfloat-abi=hard
+ 	FLAGS += -fomit-frame-pointer -ffast-math
+ 
++# Raspberry Pi 4
++else ifeq ($(platform), rpi4)
++	TARGET := $(TARGET_NAME)_libretro.so
++	fpic := -fPIC
++	SHARED := -shared -Wl,--no-undefined -Wl,--version-script=link.T
++	CFLAGS+=-fsigned-char
++	FLAGS += -DARM 
++	FLAGS += -mcpu=cortex-a72 -mtune=cortex-a72
++	FLAGS += -fomit-frame-pointer -ffast-math
++
+ else ifeq ($(platform), emscripten)
+ 	TARGET := $(TARGET_NAME)_libretro_$(platform).bc
+ 	STATIC_LINKING = 1

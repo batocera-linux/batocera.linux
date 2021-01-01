@@ -1,16 +1,16 @@
 diff --git a/es-core/src/InputConfig.h b/es-core/src/InputConfig.h
-index f1acf9b..6fb21d2 100644
+index bff0769..32b957e 100644
 --- a/es-core/src/InputConfig.h
 +++ b/es-core/src/InputConfig.h
-@@ -136,6 +136,7 @@ public:
+@@ -135,6 +135,7 @@ public:
  	inline int getDeviceId() const { return mDeviceId; };
          
  	inline int getDeviceIndex() const { return mDeviceIndex; }; // batocera
 +	inline void setDeviceIndex(int index) { mDeviceIndex = index; }; // batocera
  	inline const std::string& getDeviceName() { return mDeviceName; }
  	inline const std::string& getDeviceGUIDString() { return mDeviceGUID; }
- 	inline int getDeviceNbAxes() const { return mDeviceNbAxes; }; // batocera
-@@ -159,7 +160,7 @@ public:
+ 	inline int getDeviceNbButtons() const { return mDeviceNbButtons; }; // batocera
+@@ -163,7 +164,7 @@ public:
  private:
  	std::map<std::string, Input> mNameMap;
  	const int mDeviceId;
@@ -18,12 +18,12 @@ index f1acf9b..6fb21d2 100644
 +	int mDeviceIndex; // batocera
  	const std::string mDeviceName;
  	const std::string mDeviceGUID;
- 	const int mDeviceNbAxes; // number of axes of the device // batocera
+ 	const int mDeviceNbButtons; // number of buttons of the device // batocera
 diff --git a/es-core/src/InputManager.cpp b/es-core/src/InputManager.cpp
-index ddaace8..12fd128 100644
+index 565838d..39a862e 100644
 --- a/es-core/src/InputManager.cpp
 +++ b/es-core/src/InputManager.cpp
-@@ -102,6 +103,8 @@ void InputManager::addJoystickByDeviceIndex(int id)
+@@ -103,6 +103,8 @@ void InputManager::addJoystickByDeviceIndex(int id)
  	int numAxes = SDL_JoystickNumAxes(joy);
  	mPrevAxisValues[joyId] = new int[numAxes];
  	std::fill(mPrevAxisValues[joyId], mPrevAxisValues[joyId] + numAxes, 0); //initialize array to 0
@@ -32,12 +32,57 @@ index ddaace8..12fd128 100644
  }
  
  void InputManager::removeJoystickByJoystickID(SDL_JoystickID joyId)
-@@ -127,6 +130,20 @@ void InputManager::removeJoystickByJoystickID(SDL_JoystickID joyId)
+@@ -128,6 +130,65 @@ void InputManager::removeJoystickByJoystickID(SDL_JoystickID joyId)
  	}else{
  		LOG(LogError) << "Could not find joystick to close (instance ID: " << joyId << ")";
  	}
 +
 +	recomputeJoysticksIndexes();
++}
++
++int isNumber(const char *s) {
++  int n;
++
++  if(strlen(s) == 0) {
++    return 0;
++  }
++
++  for(n=0; n<strlen(s); n++) {
++    if(!(s[n] == '0' || s[n] == '1' || s[n] == '2' || s[n] == '3' || s[n] == '4' ||
++	 s[n] == '5' || s[n] == '6' || s[n] == '7' || s[n] == '8' || s[n] == '9'))
++      return 0;
++  }
++  return 1;
++}
++
++// compare /dev/input/eventX and /dev/input/eventY where X and Y are numbers
++int strcmp_events(const char* x, const char* y) {
++
++  // find a common string
++  int n, common, is_number;
++  int a, b;
++
++  n=0;
++  while(x[n] == y[n] && x[n] != '\0' && y[n] != '\0') {
++    n++;
++  }
++  common = n;
++
++  // check if remaining string is a number
++  is_number = 1;
++  if(isNumber(x+common) == 0) is_number = 0;
++  if(isNumber(y+common) == 0) is_number = 0;
++
++  if(is_number == 1) {
++    a = atoi(x+common);
++    b = atoi(y+common);
++
++    if(a == b) return  0;
++    if(a < b)  return -1;
++    return 1;
++  } else {
++    return strcmp(x, y);
++  }
 +}
 +
 +void InputManager::recomputeJoysticksIndexes() {
@@ -46,7 +91,7 @@ index ddaace8..12fd128 100644
 +  for (auto config : mInputConfigs)
 +    devicesByPath.push_back(std::pair<std::string, InputConfig*>(SDL_JoystickDevicePathById(config.first), config.second));
 +
-+  std::sort(devicesByPath.begin(), devicesByPath.end(), [](std::pair<std::string, InputConfig*> a, std::pair<std::string, InputConfig*> b) -> bool { return a.first < b.first; });
++  std::sort(devicesByPath.begin(), devicesByPath.end(), [](std::pair<std::string, InputConfig*> a, std::pair<std::string, InputConfig*> b) -> bool { return strcmp_events(a.first.c_str(), b.first.c_str()) == -1; });
 +
 +  for (int i = 0; i < devicesByPath.size(); i++)
 +    devicesByPath[i].second->setDeviceIndex(i);
@@ -54,14 +99,14 @@ index ddaace8..12fd128 100644
  
  // batocera
 diff --git a/es-core/src/InputManager.h b/es-core/src/InputManager.h
-index edc5033..cf4c066 100644
+index fc37fae..4325e72 100644
 --- a/es-core/src/InputManager.h
 +++ b/es-core/src/InputManager.h
-@@ -37,6 +37,7 @@ private:
+@@ -38,6 +38,7 @@ private:
  
  	void addJoystickByDeviceIndex(int id);
  	void removeJoystickByJoystickID(SDL_JoystickID id);
 +	void recomputeJoysticksIndexes();
  	bool loadInputConfig(InputConfig* config); // returns true if successfully loaded, false if not (or didn't exist)
  
-         // batocera
+     // batocera

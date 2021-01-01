@@ -19,7 +19,13 @@ define WINE_LUTRIS_HOOK_CHECK_MONO
 	grep -E '^#define WINE_MONO_VERSION "'$(WINE_MONO_VERSION)'"$$' $(@D)/dlls/mscoree/mscoree_private.h
 endef
 
+# That create folder for install
+define WINE_LUTRIS_CREATE_WINE_FOLDER
+	mkdir -p $(TARGET_DIR)/usr/wine/lutris
+endef
+
 WINE_LUTRIS_PRE_CONFIGURE_HOOKS += WINE_LUTRIS_HOOK_CHECK_MONO
+WINE_LUTRIS_PRE_CONFIGURE_HOOKS += WINE_LUTRIS_CREATE_WINE_FOLDER
 
 # Wine needs its own directory structure and tools for cross compiling
 WINE_LUTRIS_CONF_OPTS = \
@@ -36,7 +42,9 @@ WINE_LUTRIS_CONF_OPTS = \
 	--without-opencl \
 	--without-oss \
 	--without-vkd3d \
-	--without-vulkan
+	--without-vulkan \
+	--prefix=/usr/wine/lutris \
+	--exec-prefix=/usr/wine/lutris
 
 # batocera
 ifeq ($(BR2_x86_64),y)
@@ -361,6 +369,13 @@ WINE_LUTRIS_DEPENDENCIES += zlib
 else
 WINE_LUTRIS_CONF_OPTS += --without-zlib
 endif
+
+# Cleanup final directory
+define WINE_LUTRIS_REMOVE_INCLUDES_HOOK
+        rm -Rf $(TARGET_DIR)/usr/wine/lutris/include
+endef
+
+WINE_LUTRIS_POST_INSTALL_TARGET_HOOKS += WINE_LUTRIS_REMOVE_INCLUDES_HOOK
 
 # host-gettext is essential for .po file support in host-wine wrc
 ifeq ($(BR2_SYSTEM_ENABLE_NLS),y)

@@ -7,13 +7,12 @@ default:
     retroarch.menu_driver: rgui
     retroarch.menu_widget_scale_auto: "false"
     retroarch.menu_widget_scale_factor: 1.5
+    resolutionIsReversed: true
 
 n64:
   emulator: mupen64plus
   core: glide64mk2
   options:
-    mupen64plus.Video-General.ScreenWidth: 480
-    mupen64plus.Video-General.ScreenHeight: 320
     mupen64plus.Video-Glide64mk2.aspect: 2
     mupen64plus.Video-General.Rotate: 0 # for people upgrading
 psp:

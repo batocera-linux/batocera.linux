@@ -4,7 +4,7 @@
 #
 ################################################################################
 # Version.: Commits on Oct 27, 2020
-LIBRETRO_RETRO8_VERSION = cf53a26a9e025444b9dfca26d1be753e3cfe32f8
+LIBRETRO_RETRO8_VERSION = 87b5f5446a4dc7987f836ece5c6a3e23daeb9839
 LIBRETRO_RETRO8_SITE = $(call github,jakz,retro8,$(LIBRETRO_RETRO8_VERSION))
 LIBRETRO_RETRO8_LICENSE = GPLv3.0
 

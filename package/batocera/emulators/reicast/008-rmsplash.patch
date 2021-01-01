@@ -1,0 +1,25 @@
+diff --git a/libswirl/gui/gui_welcome.cpp b/libswirl/gui/gui_welcome.cpp
+index a9ff8c6..b2d1ee9 100644
+--- a/libswirl/gui/gui_welcome.cpp
++++ b/libswirl/gui/gui_welcome.cpp
+@@ -61,17 +61,17 @@ void gui_welcome(ImFont* font64) {
+ 
+ 	ImGui::SetWindowFontScale(scale);
+ 
+-	DrawTextCentered("Reicast");
++	//DrawTextCentered("Reicast");
+ 	
+ 		string ver = REICAST_VERSION;
+ 	auto ver_numeric = ver.substr(0, ver.find_last_of("-"));
+ 	auto ver_hash = "(" + ver.substr(ver.find_last_of("-") + 2) + ")";
+ 
+ 	ImGui::SetWindowFontScale(scale / 3.5);
+-	DrawTextCentered(ver_numeric.c_str());
++	//DrawTextCentered(ver_numeric.c_str());
+ 	
+ 	ImGui::SetWindowFontScale(scale / 6);
+-	DrawTextCentered(ver_hash.c_str());
++	//DrawTextCentered(ver_hash.c_str());
+ 
+ 	ImGui::End();
+ 	ImGui::PopFont();

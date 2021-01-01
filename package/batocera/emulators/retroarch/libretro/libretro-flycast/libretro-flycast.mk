@@ -3,8 +3,8 @@
 # LIBRETRO-FLYCAST
 #
 ################################################################################
-# Version.: Commits on Nov 16, 2020
-LIBRETRO_FLYCAST_VERSION = ca2fa4212c22666312a8f103babfc14cff7f2a4e
+# Version.: Commits on Nov 26, 2020
+LIBRETRO_FLYCAST_VERSION = b7839962a58577cd94992ecfc0f3c6f041b90484
 LIBRETRO_FLYCAST_SITE = $(call github,libretro,flycast,$(LIBRETRO_FLYCAST_VERSION))
 LIBRETRO_FLYCAST_LICENSE = GPLv2
 
@@ -19,8 +19,8 @@ LIBRETRO_FLYCAST_EXTRA_ARGS = HAVE_OPENMP=1
 # the Makefile imposes that the platform has gles (or force FORCE_GLES is set) to not link with lGL
 
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI4),y)
-	LIBRETRO_FLYCAST_PLATFORM = rpi-rpi4
-	LIBRETRO_FLYCAST_EXTRA_ARGS += ARCH=arm
+	LIBRETRO_FLYCAST_PLATFORM = rpi-rpi4_64
+	LIBRETRO_FLYCAST_EXTRA_ARGS += ARCH=arm64
 endif
 
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI3),y)

@@ -1,4 +1,21 @@
-2020/XX/XX - batocera.linux 29
+2021/XX/XX - batocera.linux 30
+	* odroid go super support
+	* add: DevilutionX (Diablo 1)
+	* add: MAME (standalone) 0.227 with ARCADE64 filter list and GroovyMame 15 kHz patches
+	* add: Kernel 15 kHz patch
+	* add: Pi 400 support
+	* add: Wine Proton (For more compatibility)
+	* bump: Picodrive
+	* bump: FAudio (Wine) to 20.12
+	* bump: Dosbox-X to 0.83.8
+	* bump: Linux 5.10 LTS kernel series for x86, x86_64 and some aarch64 boards
+	* bump: DXVK (Wine) to 1.7.3
+	* bump: VKD3D-Proton (Wine) to 2.1
+	* bump: Mesa3D to 20.3.2
+	* fix: set mac eth addr for vim3
+
+2020/12/11 - batocera.linux 29
+	* new version is 29. before this, the codification was 5.xx, so the 28th version was 5.27.2. the 1st version (with the same technical arch) was 5.0.
 	* add: duckstation (libretro core for x86_64 and AArch64 boards)
 	* add: hbmame (x86, x86_64, odroid n2)
 	* add: windows games 32 and 64 bits (wine)
@@ -15,6 +32,7 @@
 	* add: Anbernic RG351P support
 	* add: ES support for animated storyboards
 	* add: ES reads videos and pdf from the screenshots system (directly in es)
+	* add: ES find similar games feature
 	* add: Content Downloader: support for multi-repos and search
 	* add: Content Downloader: filtered on systems supported by your board
 	* add: Bezels auto-resized (as long as your aspect ratio is >= 16/10)

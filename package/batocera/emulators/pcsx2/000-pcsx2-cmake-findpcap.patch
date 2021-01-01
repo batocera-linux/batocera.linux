@@ -1,0 +1,30 @@
+--- a/cmake/FindPCAP.cmake	2020-12-30 18:55:31.471560982 +0100
++++ b/cmake/FindPCAP.cmake	2020-12-30 18:57:37.270004302 +0100
+@@ -41,26 +41,7 @@
+ 
+ include(CheckCSourceCompiles)
+ set(CMAKE_REQUIRED_LIBRARIES ${PCAP_LIBRARY})
+-check_c_source_compiles("int main() { return 0; }" PCAP_LINKS_SOLO)
+-set(CMAKE_REQUIRED_LIBRARIES)
+-
+-# check if linking against libpcap also needs to link against a thread library
+-if (NOT PCAP_LINKS_SOLO)
+-    find_package(Threads)
+-    if (THREADS_FOUND)
+-        set(CMAKE_REQUIRED_LIBRARIES ${PCAP_LIBRARY} ${CMAKE_THREAD_LIBS_INIT})
+-        check_c_source_compiles("int main() { return 0; }" PCAP_NEEDS_THREADS)
+-        set(CMAKE_REQUIRED_LIBRARIES)
+-    endif ()
+-    if (THREADS_FOUND AND PCAP_NEEDS_THREADS)
+-        set(_tmp ${PCAP_LIBRARY} ${CMAKE_THREAD_LIBS_INIT})
+-        list(REMOVE_DUPLICATES _tmp)
+-        set(PCAP_LIBRARY ${_tmp}
+-            CACHE STRING "Libraries needed to link against libpcap" FORCE)
+-    else ()
+-        message(FATAL_ERROR "Couldn't determine how to link against libpcap")
+-    endif ()
+-endif ()
++set(PCAP_LIBRARY ${PCAP_LIBRARY} CACHE STRING "Libraries needed to link against libpcap" FORCE)
+ 
+ include(CheckFunctionExists)
+ set(CMAKE_REQUIRED_LIBRARIES ${PCAP_LIBRARY})

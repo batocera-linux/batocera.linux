@@ -1,0 +1,7 @@
+config BR2_PACKAGE_L3AFPAD
+	bool "l3afpad"
+	depends on BR2_PACKAGE_LIBGTK3
+	help
+	  GTK+ based simple text editor
+
+	  https://github.com/stevenhoneyman/l3afpad

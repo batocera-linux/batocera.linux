@@ -4,7 +4,7 @@
 #
 ################################################################################
 # Version.: Commits on Oct 22, 2020
-LIBRETRO_DOLPHIN_VERSION = 7510bb279a371a1c53ebe8dd20214df2eb89794e
+LIBRETRO_DOLPHIN_VERSION = a2afe5334bef76b8a6e0f7807ebdc074ac11fe2d
 LIBRETRO_DOLPHIN_SITE = $(call github,libretro,dolphin,$(LIBRETRO_DOLPHIN_VERSION))
 LIBRETRO_DOLPHIN_LICENSE = GPLv2
 

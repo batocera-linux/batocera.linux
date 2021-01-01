@@ -13,6 +13,10 @@ define ALLLINUXFIRMWARES_INSTALL_TARGET_CMDS
 	# -n is mandatory while some other packages provides firmwares too
 	# this is not ideal, but i don't know how to tell to buildroot to install this package first (and not worry about all packages installing firmwares)
 	cp -prn $(@D)/* $(TARGET_DIR)/lib/firmware/
+
+	# exclude some dirs not required on batocera
+	rm -rf $(TARGET_DIR)/lib/firmware/liquidio
+	rm -rf $(TARGET_DIR)/lib/firmware/netronome
 endef
 
 $(eval $(generic-package))

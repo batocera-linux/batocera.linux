@@ -1,0 +1,37 @@
+From: Sean Young <sean@mess.org>
+Subject: [PATCH 1/2] media: sunxi-cir: ensure IR is handled when it is
+ continuous
+Date: Tue, 10 Nov 2020 09:15:56 +0000
+
+If a user holds a button down on a remote, then no ir idle interrupt will
+be generated until the user releases the button, depending on how quickly
+the remote repeats. No IR is processed until that point, which means that
+holding down a button may not do anything.
+
+This also resolves an issue on a Cubieboard 1 where the IR receiver is
+picking up ambient infrared as IR and spews out endless
+"rc rc0: IR event FIFO is full!" messages unless you choose to live in
+the dark.
+
+Cc: stable@vger.kernel.org
+Reported-by: Hans Verkuil <hverkuil@xs4all.nl>
+Signed-off-by: Sean Young <sean@mess.org>
+Tested-by: Hans Verkuil <hverkuil@xs4all.nl>
+---
+ drivers/media/rc/sunxi-cir.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/drivers/media/rc/sunxi-cir.c b/drivers/media/rc/sunxi-cir.c
+index ddee6ee37bab1..4afc5895bee74 100644
+--- a/drivers/media/rc/sunxi-cir.c
++++ b/drivers/media/rc/sunxi-cir.c
+@@ -137,6 +137,8 @@ static irqreturn_t sunxi_ir_irq(int irqno, void *dev_id)
+ 	} else if (status & REG_RXSTA_RPE) {
+ 		ir_raw_event_set_idle(ir->rc, true);
+ 		ir_raw_event_handle(ir->rc);
++	} else {
++		ir_raw_event_handle(ir->rc);
+ 	}
+ 
+ 	spin_unlock(&ir->ir_lock);
+

@@ -3,8 +3,8 @@
 # MAME
 #
 ################################################################################
-# Version.: Release 0.226
-MAME_VERSION = mame0226
+# Version.: Release 0.227
+MAME_VERSION = mame0227
 MAME_SITE = $(call github,mamedev,mame,$(MAME_VERSION))
 MAME_DEPENDENCIES = sdl2 zlib libpng fontconfig sqlite jpeg flac rapidjson
 MAME_LICENSE = MAME
@@ -13,6 +13,9 @@ MAME_CROSS_ARCH = unknown
 MAME_CROSS_OPTS = 
 MAME_TARGET_NAME = mamearcade
 MAME_CFLAGS =
+
+# Limit number of jobs not to eat too much RAM....
+MAME_JOBS = 8
 
 # x86_64 is desktop linux based on X11 and OpenGL
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86_64),y)
@@ -47,6 +50,7 @@ endif
 define MAME_BUILD_CMDS
 	# First, we need to build genie for host
 	cd $(@D); \
+	PATH="$(HOST_DIR)/bin:$$PATH" \
 	$(MAKE) TARGETOS=linux OSD=sdl genie \
 	TARGET=mame SUBTARGET=tiny \
 	NO_USE_PORTAUDIO=1 NO_X11=1 USE_SDL=0 \
@@ -54,11 +58,13 @@ define MAME_BUILD_CMDS
 
 	# Compile emulation target
 	cd $(@D); \
+	PATH="$(HOST_DIR)/bin:$$PATH" \
+	SYSROOT="$(STAGING_DIR)" \
 	CFLAGS="--sysroot=$(STAGING_DIR) $(MAME_CFLAGS)"   \
 	LDFLAGS="--sysroot=$(STAGING_DIR)"  MPARAM="" \
 	PKG_CONFIG="$(HOST_DIR)/usr/bin/pkg-config --define-prefix" \
 	PKG_CONFIG_PATH="$(STAGING_DIR)/usr/lib/pkgconfig" \
-	$(MAKE) TARGETOS=linux OSD=sdl \
+	$(MAKE) -j$(MAME_JOBS) TARGETOS=linux OSD=sdl \
 	TARGET=mame \
 	SUBTARGET=arcade \
 	OVERRIDE_CC="$(TARGET_CC)" \
@@ -127,10 +133,21 @@ define MAME_INSTALL_TARGET_CMDS
         $(INSTALL) -D $(@D)/jedutil		$(TARGET_DIR)/usr/bin/mame/
         $(INSTALL) -D $(@D)/ldresample		$(TARGET_DIR)/usr/bin/mame/
         $(INSTALL) -D $(@D)/ldverify		$(TARGET_DIR)/usr/bin/mame/
-        $(INSTALL) -D $(@D)/nltool		$(TARGET_DIR)/usr/bin/mame/
-        $(INSTALL) -D $(@D)/nlwav		$(TARGET_DIR)/usr/bin/mame/
         $(INSTALL) -D $(@D)/romcmp		$(TARGET_DIR)/usr/bin/mame/
-        $(INSTALL) -D $(@D)/unidasm		$(TARGET_DIR)/usr/bin/mame/
+
+        # MAME dev tools skipped
+	#$(INSTALL) -D $(@D)/unidasm		$(TARGET_DIR)/usr/bin/mame/
+        #$(INSTALL) -D $(@D)/nltool		$(TARGET_DIR)/usr/bin/mame/
+        #$(INSTALL) -D $(@D)/nlwav		$(TARGET_DIR)/usr/bin/mame/
+
+	# Delete .po translation files
+	find $(TARGET_DIR)/usr/bin/mame/language -name "*.po" -type f -delete
+
+	# Delete bgfx shaders for DX9/DX11/Metal
+	rm -Rf $(TARGET_DIR)/usr/bin/mame/bgfx/shaders/metal/
+	rm -Rf $(TARGET_DIR)/usr/bin/mame/bgfx/shaders/dx11/
+	rm -Rf $(TARGET_DIR)/usr/bin/mame/bgfx/shaders/dx9/
+
 endef
 
 $(eval $(generic-package))

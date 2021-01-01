@@ -4,7 +4,7 @@
 #
 ################################################################################
 # Version.: Commits on Nov 11, 2020
-LIBRETRO_SNES9X_NEXT_VERSION = 32e556249e39ecd9fbff7ef1d1297ffa152cbbe1
+LIBRETRO_SNES9X_NEXT_VERSION = 6008a1ac52c5ace3b721bf8ee12d2d76634280d5
 LIBRETRO_SNES9X_NEXT_SITE = $(call github,libretro,snes9x2010,$(LIBRETRO_SNES9X_NEXT_VERSION))
 LIBRETRO_SNES9X_NEXT_LICENSE = Non-commercial
 
@@ -16,6 +16,10 @@ endif
 
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI3),y)
 	LIBRETRO_SNES9X_NEXT_PLATFORM = rpi3
+endif
+
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI4),y)
+	LIBRETRO_SNES9X_NEXT_PLATFORM = rpi4_64
 endif
 
 define LIBRETRO_SNES9X_NEXT_BUILD_CMDS

@@ -5,13 +5,42 @@ set -x
 ACTION=$1
 shift
 
+# Arguments: key, system, game
+get_setting() {
+    /usr/bin/batocera-settings-get "$2[\"$3\"].$1" "$2.$1" "global.$1"
+}
+
+## Wine detection
+GAMENAME=$1 
+ROMGAMENAME=$(basename "${GAMENAME}")
+WINE_VERSION="$(get_setting core windows "${ROMGAMENAME}" || echo proton)"
+
+# Wine Folder
+wine_folder() {
+if test -e "/userdata/system/wine/proton" || test -e "/userdata/system/wine/lutris"; then
+    echo "/userdata/system/wine"
+    else
+    echo "/usr/wine"
+fi
+}
+
+## Wine executables
+DIR="$(wine_folder)"
+WINE="${DIR}/${WINE_VERSION}/bin/wine"
+WINE64="${DIR}/${WINE_VERSION}/bin/wine64"
+WINESERVER="${DIR}/${WINE_VERSION}/bin/wineserver"
+MSIEXEC="${DIR}/${WINE_VERSION}/bin/msiexec"
+
+## Folders
 G_SAVES_DIR="/userdata/saves/windows"
 G_ROMS_DIR="/userdata/roms/windows"
 
-PATH=$PATH:/usr/bin32
-export LD_LIBRARY_PATH="/lib32:/lib32/wine:/lib:/usr/lib:/usr/lib/wine"
+## Export Wine libs
+PATH=$PATH:PATH=$PATH:${DIR}/${WINE_VERSION}/bin
+export LD_LIBRARY_PATH="/lib32:${DIR}/${WINE_VERSION}/lib/wine:/lib:/usr/lib:${DIR}/${WINE_VERSION}/lib64/wine"
+export GST_PLUGIN_PATH="/lib32/gstreamer-1.0:/usr/lib/gstreamer-1.0"
 export LIBGL_DRIVERS_PATH="/lib32/dri:/usr/lib/dri"
-export WINEDLLPATH="/lib32/wine/fakedlls:/usr/lib/wine/fakedlls"
+export WINEDLLPATH="${DIR}/${WINE_VERSION}/lib/wine/fakedlls:${DIR}/${WINE_VERSION}/lib64/wine/fakedlls"
 
 usage() {
     echo "${1} play    	     <game>.iso"             >&2
@@ -28,7 +57,7 @@ usage() {
 }
 
 waitWineServer() {
-    while pgrep /usr/bin/wineserver
+    while pgrep "${WINESERVER}"
     do
 	echo "waiting wineserver" >&2
 	sleep 1
@@ -36,13 +65,12 @@ waitWineServer() {
 }
 
 wine_options() {
-    ROMGAMENAME=$(basename "${GAMENAME}")
-    
-    ESYNC=$(batocera-settings -e -r esync -s windows -g "${ROMGAMENAME}")
-    FSYNC=$(batocera-settings -e -r fsync -s windows -g "${ROMGAMENAME}")
-    PBA=$(batocera-settings -e -r pba -s windows -g "${ROMGAMENAME}")
-    VIRTUAL_DESKTOP=$(batocera-settings -e -r virtual_desktop -s windows -g "${ROMGAMENAME}")
-    VIRTUAL_DESKTOP_SIZE=$(batocera-settings -e -r videomode -s windows -g "${ROMGAMENAME}" || batocera-resolution currentResolution)
+    ESYNC="$(get_setting esync windows "${ROMGAMENAME}")"
+    FSYNC="$(get_setting fsync windows "${ROMGAMENAME}")"
+    PBA="$(get_setting pba windows "${ROMGAMENAME}")"
+    KEYBOARD="$(/usr/bin/batocera-settings-get system.kblayout)"
+    VIRTUAL_DESKTOP="$(get_setting virtual_desktop windows "${ROMGAMENAME}")"
+    VIRTUAL_DESKTOP_SIZE="$(get_setting videomode windows "${ROMGAMENAME}" || batocera-resolution currentResolution)"
 
     if [ "${VIRTUAL_DESKTOP}" = 1 ]; then
 	VDESKTOP="explorer /desktop=Wine,${VIRTUAL_DESKTOP_SIZE}"
@@ -56,6 +84,8 @@ wine_options() {
 
     export PBA_ENABLE=0
     test "${PBA}" = 1 && PBA_ENABLE=1
+    
+    setxkbmap "${KEYBOARD}"
 }
 
 dxvk_install() {
@@ -66,8 +96,8 @@ dxvk_install() {
     # install dxvk only on system where it is available (aka, not x86)
     test -e "/usr/share/dxvk" || return 0
 
-    DXVK=$(batocera-settings -e -r dxvk -s windows -g "${ROMGAMENAME}")
-    DXVK_HUD=$(batocera-settings -e -r dxvk_hud -s windows -g "${ROMGAMENAME}")
+    DXVK="$(get_setting dxvk windows "${ROMGAMENAME}")"
+    DXVK_HUD="$(get_setting dxvk_hud windows "${ROMGAMENAME}")"
 
     if test "${DXVK_HUD}" = 1
     then
@@ -77,20 +107,20 @@ dxvk_install() {
     if test "${DXVK}" = 1
     then
 	mkdir -p "${WINEPREFIX}/drive_c/windows/system32" "${WINEPREFIX}/drive_c/windows/syswow64" || return 1
-	if test -e "/userdata/system/dxvk"
+	if test -e "/userdata/system/wine/dxvk"
 	then
 	    echo "Creating links on /userdata, Linux File System required !!!"
-	    ln -sf "/userdata/system/dxvk/x64/"{d3d12.dll,d3d11.dll,d3d10core.dll,d3d10.dll,d3d10_1.dll,d3d9.dll,dxgi.dll} "${WINEPREFIX}/drive_c/windows/system32" || return 1
-            ln -sf "/userdata/system/dxvk/x32/"{d3d12.dll,d3d11.dll,d3d10core.dll,d3d10.dll,d3d10_1.dll,d3d9.dll,dxgi.dll} "${WINEPREFIX}/drive_c/windows/syswow64" || return 1
+	    ln -sf "/userdata/system/wine/dxvk/x64/"{d3d12.dll,d3d11.dll,d3d10core.dll,d3d10.dll,d3d10_1.dll,d3d9.dll,dxgi.dll} "${WINEPREFIX}/drive_c/windows/system32" || return 1
+        ln -sf "/userdata/system/wine/dxvk/x32/"{d3d12.dll,d3d11.dll,d3d10core.dll,d3d10.dll,d3d10_1.dll,d3d9.dll,dxgi.dll} "${WINEPREFIX}/drive_c/windows/syswow64" || return 1
 	else
 	    echo "Creating links on /userdata, Linux File System required !!!"
 	    ln -sf "/usr/share/dxvk/x64/"{d3d12.dll,d3d11.dll,d3d10core.dll,d3d10.dll,d3d10_1.dll,d3d9.dll,dxgi.dll} "${WINEPREFIX}/drive_c/windows/system32" || return 1
-            ln -sf "/usr/share/dxvk/x32/"{d3d12.dll,d3d11.dll,d3d10core.dll,d3d10.dll,d3d10_1.dll,d3d9.dll,dxgi.dll} "${WINEPREFIX}/drive_c/windows/syswow64" || return 1
+        ln -sf "/usr/share/dxvk/x32/"{d3d12.dll,d3d11.dll,d3d10core.dll,d3d10.dll,d3d10_1.dll,d3d9.dll,dxgi.dll} "${WINEPREFIX}/drive_c/windows/syswow64" || return 1
 	fi
     else
 	echo "Creating links on /userdata, Linux File System required !!!"
-	ln -sf "/usr/lib/wine/fakedlls/"{d3d12.dll,d3d11.dll,d3d10core.dll,d3d10.dll,d3d10_1.dll,d3d9.dll,dxgi.dll}   "${WINEPREFIX}/drive_c/windows/system32" || return 1
-        ln -sf "/lib32/wine/fakedlls/"{d3d12.dll,d3d11.dll,d3d10core.dll,d3d10.dll,d3d10_1.dll,d3d9.dll,dxgi.dll} "${WINEPREFIX}/drive_c/windows/syswow64" || return 1
+	ln -sf "/usr/wine/${WINE_VERSION}/lib64/wine/fakedlls/"{d3d12.dll,d3d11.dll,d3d10core.dll,d3d10.dll,d3d10_1.dll,d3d9.dll,dxgi.dll}   "${WINEPREFIX}/drive_c/windows/system32" || return 1
+        ln -sf "/usr/wine/${WINE_VERSION}/lib/wine/fakedlls/"{d3d12.dll,d3d11.dll,d3d10core.dll,d3d10.dll,d3d10_1.dll,d3d9.dll,dxgi.dll} "${WINEPREFIX}/drive_c/windows/syswow64" || return 1
     fi
 
     if test "${DXVK}" = 1
@@ -99,6 +129,51 @@ dxvk_install() {
     else
 	export WINEDLLOVERRIDES="${WINEDLLOVERRIDES};dxgi,d3d9,d3d10,d3d10_1,d3d10core,d3d11,d3d12=b"
     fi
+
+    return 0
+}
+
+sandboxing_prefix() {
+    if [ -d "${WINEPREFIX}/drive_c/users/steamuser" ]; then
+        USERNAME=steamuser
+    fi
+
+    if [ -d "${WINEPREFIX}/drive_c/users/root" ]; then
+        USERNAME=root
+    fi
+
+    echo "Remove Symblink"
+    if [ -L "${WINEPREFIX}/drive_c/users/${USERNAME}/Downloads" ]; then
+    unlink "${WINEPREFIX}/drive_c/users/${USERNAME}/Downloads" || return 1
+    fi
+
+    if [ -L "${WINEPREFIX}/drive_c/users/${USERNAME}/My Documents" ]; then
+    unlink "${WINEPREFIX}/drive_c/users/${USERNAME}/My Documents" || return 1
+    fi
+
+    if [ -L "${WINEPREFIX}/drive_c/users/${USERNAME}/My Music" ]; then
+    unlink "${WINEPREFIX}/drive_c/users/${USERNAME}/My Music" || return 1
+    fi
+
+    if [ -L "${WINEPREFIX}/drive_c/users/${USERNAME}/My Pictures" ]; then
+    unlink "${WINEPREFIX}/drive_c/users/${USERNAME}/My Pictures" || return 1
+    fi
+
+    if [ -L "${WINEPREFIX}/drive_c/users/${USERNAME}/My Videos" ]; then
+    unlink "${WINEPREFIX}/drive_c/users/${USERNAME}/My Videos" || return 1
+    fi
+
+    if [ -L "${WINEPREFIX}/drive_c/users/${USERNAME}/Templates" ]; then
+    unlink "${WINEPREFIX}/drive_c/users/${USERNAME}/Templates" || return 1
+    fi
+
+    echo "Create user directory"
+    mkdir -p "${WINEPREFIX}/drive_c/users/${USERNAME}/Downloads" || return 1
+    mkdir -p "${WINEPREFIX}/drive_c/users/${USERNAME}/My Documents" || return 1
+    mkdir -p "${WINEPREFIX}/drive_c/users/${USERNAME}/My Music" || return 1
+    mkdir -p "${WINEPREFIX}/drive_c/users/${USERNAME}/My Pictures" || return 1
+    mkdir -p "${WINEPREFIX}/drive_c/users/${USERNAME}/My Videos" || return 1
+    mkdir -p "${WINEPREFIX}/drive_c/users/${USERNAME}/Templates" || return 1
 
     return 0
 }
@@ -115,7 +190,7 @@ createWineDirectory() {
   
     mkdir -p "${WINEPREFIX}" || return 1
 
-    if ! WINEPREFIX=${WINEPREFIX} wine hostname
+    if ! WINEPREFIX=${WINEPREFIX} ${WINE} hostname
     then
 	rm -rf "${WINEPREFIX}"
 	kill -15 ${BSODPID}
@@ -151,23 +226,25 @@ play_wine() {
     WINEPOINT="${GAMENAME}"
 
     wine_options
+    dxvk_install "${WINEPOINT}" || return 1
     WINE_CMD=$(getWine_var "${WINEPOINT}" "CMD" "explorer")
     WINE_DIR=$(getWine_var "${WINEPOINT}" "DIR" "")
-    (cd "${WINEPOINT}/${WINE_DIR}" && WINEPREFIX=${WINEPOINT} eval "wine ${VDESKTOP} ${WINE_CMD}")
+    (cd "${WINEPOINT}/${WINE_DIR}" && WINEPREFIX=${WINEPOINT} eval "${WINE} ${VDESKTOP} ${WINE_CMD}")
     waitWineServer
 }
 
 play_pc() {
     GAMENAME=$1
-    WINEPOINT="${G_SAVES_DIR}/"$(basename "${GAMENAME}")".wine"
+    WINEPOINT="${G_SAVES_DIR}/${WINE_VERSION}/"$(basename "${GAMENAME}")".wine"
     
     wine_options
     createWineDirectory "${WINEPOINT}" || return 1
+    sandboxing_prefix "${WINEPOINT}" || return 1
     dxvk_install "${WINEPOINT}" || return 1
 
     WINE_CMD=$(getWine_var "${GAMENAME}" "CMD" "explorer")
     WINE_DIR=$(getWine_var "${GAMENAME}" "DIR" "")
-    (cd "${GAMENAME}/${WINE_DIR}" && WINEPREFIX=${WINEPOINT} eval "wine ${VDESKTOP} ${WINE_CMD}")
+    (cd "${GAMENAME}/${WINE_DIR}" && WINEPREFIX=${WINEPOINT} eval "${WINE} ${VDESKTOP} ${WINE_CMD}")
     waitWineServer
 }
 
@@ -185,15 +262,16 @@ trick_wine() {
 
 play_exe() {
     GAMENAME=$1
-    WINEPOINT="${G_SAVES_DIR}/"$(basename "${GAMENAME}")".wine"
+    WINEPOINT="${G_SAVES_DIR}/${WINE_VERSION}/"$(basename "${GAMENAME}")".wine"
     GAMEDIR=$(dirname "${GAMENAME}")
     GAMEEXE=$(basename "${GAMENAME}")
 
     wine_options
     createWineDirectory "${WINEPOINT}" || return 1
+    sandboxing_prefix "${WINEPOINT}" || return 1
     dxvk_install "${WINEPOINT}" || return 1
 
-    (cd "${GAMEDIR}" && WINEPREFIX=${WINEPOINT} wine "${VDESKTOP}" "${GAMEEXE}")
+    (cd "${GAMEDIR}" && WINEPREFIX=${WINEPOINT} wine "${GAMEEXE}")
     waitWineServer
 }
 
@@ -212,7 +290,7 @@ play_winetgz() {
 
     WINE_CMD=$(getWine_var "${WINEPOINT}" "CMD" "explorer")
     WINE_DIR=$(getWine_var "${WINEPOINT}" "DIR" "")
-    (cd "${WINEPOINT}/${WINE_DIR}" && WINEPREFIX=${WINEPOINT} eval "wine ${VDESKTOP} ${WINE_CMD}")
+    (cd "${WINEPOINT}/${WINE_DIR}" && WINEPREFIX=${WINEPOINT} eval "${WINE} ${VDESKTOP} ${WINE_CMD}")
     waitWineServer
 }
 
@@ -251,7 +329,7 @@ play_squashfs() {
 
     WINE_CMD=$(getWine_var "${WINEPOINT}" "CMD" "explorer")
     WINE_DIR=$(getWine_var "${WINEPOINT}" "DIR" "")
-    (cd "${WINEPOINT}/${WINE_DIR}" && WINEPREFIX=${WINEPOINT} eval "wine ${VDESKTOP} ${WINE_CMD}")
+    (cd "${WINEPOINT}/${WINE_DIR}" && WINEPREFIX=${WINEPOINT} eval "${WINE} ${VDESKTOP} ${WINE_CMD}")
     waitWineServer
 
     # try to clean the cdrom
@@ -294,7 +372,7 @@ install_msi() {
 
     createWineDirectory "${WINEPOINT}"
 
-    (cd "${GAMEDIR}" && WINEPREFIX=${WINEPOINT} msiexec /i "${INSTALLERFILE}")
+    (cd "${GAMEDIR}" && WINEPREFIX=${WINEPOINT} "${MSIEXEC}" /i "${INSTALLERFILE}")
     waitWineServer
     init_cmd "${WINEPOINT}"
 }

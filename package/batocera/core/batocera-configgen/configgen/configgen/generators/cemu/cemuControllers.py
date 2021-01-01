@@ -49,41 +49,8 @@ def generateControllerConfig(system, playersControllers, rom):
 
     #We are exporting SDL_GAMECONTROLLERCONFIG in cemuGenerator, so we can assume all controllers are now working with xInput
     nplayer = 0
-    sdlstring = ''
-    double_pads = dict()
-
-    sdlMapping = {
-        'b':      'a',  'a':        'b',
-        'x':      'y',  'y':        'x',
-        'l2':     'lefttrigger',  'r2':    'righttrigger',
-        'l3':     'leftstick',  'r3':    'rightstick',
-        'pageup': 'leftshoulder', 'pagedown': 'rightshoulder',
-        'start':     'start',  'select':    'back',
-        'up': 'dpup', 'down': 'dpdown', 'left': 'dpleft', 'right': 'dpright',
-        'joystick1up': 'lefty', 'joystick1left': 'leftx',
-        'joystick2up': 'righty', 'joystick2left': 'rightx', 'hotkey': 'guide'
-    }
-
-
-
 
     for playercontroller, pad in sorted(playersControllers.items()):
-        #if nplayer == 0:  #For Future Hotkeys
-
-        if pad.configName not in double_pads:
-            double_pads[pad.configName] = 1
-            sdlstring=sdlstring + pad.guid + ',' + pad.configName
-            for x in pad.inputs:
-                input = pad.inputs[x]
-                keyname = None
-                if input.name in sdlMapping:
-                    keyname = sdlMapping[input.name]
-                if keyname is not None:
-                    sdlstring=sdlstring + write_key(keyname, input.type, input.id, input.value, pad.nbaxes, False, None)
-            sdlstring=sdlstring + ',platform:Linux,\n'
-
-
-
         cemuSettings = ConfigParser.ConfigParser()
         cemuSettings.optionxform = str
 
@@ -167,16 +134,3 @@ def generateControllerConfig(system, playersControllers, rom):
             cemuSettings.write(configfile)
         nplayer+=1
 
-    return sdlstring
-
-def write_key(keyname, input_type, input_id, input_value, input_global_id, reverse, hotkey_id):
-    #Sample Output
-    #a:b1,b:b0,back:b10,dpdown:h0.4,dpleft:h0.8,dpright:h0.2,dpup:h0.1,guide:b2,leftshoulder:b6,leftstick:b13,lefttrigger:b8,leftx:a0,lefty:a1,rightshoulder:b7,rightstick:b14,righttrigger:b9,rightx:a2,righty:a3,start:b11,x:b4,y:b3
-    output = "," + keyname + ":"
-    if input_type == "button":
-        output = output + "b" + str(input_id)
-    elif input_type == "hat":
-        output = output + "h" + str(input_id) + "." + str(input_value)
-    elif input_type == "axis":
-        output = output + "a" + str(input_id)
-    return output

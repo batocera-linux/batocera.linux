@@ -121,7 +121,7 @@ function install_theme() {
 				# Attempt to get real filesize to download, we love github
                         	# if after 10 attempts nothing happens we use old method
                         	for i in {0..9}; do
-			    		size=$(curl -Is "https://codeload.github.com/${reponame}/${gitname}/zip/master" | grep Content-Length | cut -d ' ' -f2 | tr -d '\r')
+			    		size=$(curl -Is "https://codeload.github.com/${reponame}/${gitname}/zip/master" | grep Content-Length | tail -1 | cut -d ' ' -f2 | tr -d '\r')
                             		[[ -z $size ]] && sleep 5 || { size=$((size / 1024 / 1024 )); break; }
                         	done
 				# Fallback Option (old format), JSON hack

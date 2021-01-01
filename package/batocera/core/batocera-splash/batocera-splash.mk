@@ -3,7 +3,7 @@
 # Batocera splash
 #
 ################################################################################
-BATOCERA_SPLASH_VERSION = 2.0
+BATOCERA_SPLASH_VERSION = 3
 BATOCERA_SPLASH_SOURCE=
 
 BATOCERA_SPLASH_TGVERSION=$(BATOCERA_SYSTEM_VERSION) $(BATOCERA_SYSTEM_DATE_TIME)
@@ -65,7 +65,8 @@ endef
 
 define BATOCERA_SPLASH_INSTALL_ROTATE_OGA_IMAGE
 	mkdir -p $(TARGET_DIR)/usr/share/batocera/splash
-	convert "$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/logo.png" -shave 150x0 -resize 480x320 -fill white -pointsize 15 -annotate +40+300 "$(BATOCERA_SPLASH_TGVERSION)" -rotate -90 "${TARGET_DIR}/usr/share/batocera/splash/logo-version.png"
+	convert "$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/logo.png" -shave 150x0 -resize 480x320 -fill white -pointsize 15 -annotate +40+300 "$(BATOCERA_SPLASH_TGVERSION)" -rotate -90 "${TARGET_DIR}/usr/share/batocera/splash/logo-version-320x480.png"
+	convert "$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/logo.png"              -resize 854x480 -fill white -pointsize 15 -annotate +40+440 "$(BATOCERA_SPLASH_TGVERSION)" -rotate -90 "${TARGET_DIR}/usr/share/batocera/splash/logo-version-480x854.png"
 endef
 
 define BATOCERA_SPLASH_INSTALL_ROTATE_IMAGE

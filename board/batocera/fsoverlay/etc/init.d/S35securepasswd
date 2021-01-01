@@ -5,7 +5,7 @@ then
   exit 0
 fi
 
-systemsetting="batocera-settings"
+printf "Starting securepasswd: "
 
 # /etc/shadow is dynamically generated from the password found in /boot/batocera-boot.conf
 # the password is visible only in the es interface
@@ -20,7 +20,7 @@ then
 fi
 
 # secure ssh
-enabled="`$systemsetting  -command load -key system.security.enabled`"
+enabled="$(/usr/bin/batocera-settings-get system.security.enabled)"
 if [ "$enabled" != "1" ];then
     MASTERPASSWD="linux"
 fi
@@ -31,4 +31,6 @@ echo "root:${SHADOWPASSWD}:::::::" > /run/batocera.shadow
 
 # secure samba
 mkdir -p "/var/lib/samba/private"
-(echo "${MASTERPASSWD}"; echo "${MASTERPASSWD}") | smbpasswd -a root
+echo -ne "$MASTERPASSWD\n$MASTERPASSWD\n" | smbpasswd -a -s root > /dev/null
+
+echo "done."
