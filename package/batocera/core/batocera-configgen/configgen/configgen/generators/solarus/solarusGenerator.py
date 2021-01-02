@@ -8,7 +8,7 @@ import controllersConfig
 class SolarusGenerator(Generator):
 
     def generate(self, system, rom, playersControllers, gameResolution):
-        commandArray = ["solarus-run" ]
+        commandArray = ["solarus-run", "-fullscreen=yes", "-cursor-visible=no", "-lua-console=no", rom]
         return Command.Command(
             array=commandArray,
             env={
