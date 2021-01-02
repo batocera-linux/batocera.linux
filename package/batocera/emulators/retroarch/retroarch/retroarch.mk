@@ -120,8 +120,7 @@ ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA),y)
 	RETROARCH_DEPENDENCIES += librga
 endif
 
-# x86 platform force Desktop GL (it's a hack...)
-ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86_ANY),y)
+ifeq ($(BR2_PACKAGE_HAS_LIBGL),y)
 	RETROARCH_CONF_OPTS += --enable-opengl --disable-opengles
 	RETROARCH_DEPENDENCIES += libgl
 endif

@@ -255,6 +255,10 @@ endif
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi/kodi-superrepo-repositories/Config.in"
 endmenu
 
+menu "Looks"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/looks/adwaita-icon-theme-light/Config.in"
+endmenu
+
 menu "Utils"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/utils/raspi2png/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/utils/gpicase/Config.in"
