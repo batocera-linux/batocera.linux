@@ -96,6 +96,7 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
 
     # Basic configuration
     retroarchConfig['quit_press_twice'] = 'false'               # not aligned behavior on other emus
+    retroarchConfig['menu_show_restart_retroarch'] = 'false'    # this option messes everything up on Batocera if ever clicked
     retroarchConfig['video_driver'] = '"gl"'                    # needed for the ozone menu
 
     if system.isOptSet("gfxbackend") and system.config["gfxbackend"] == "vulkan":
