@@ -392,6 +392,10 @@ config BR2_PACKAGE_BATOCERA_HOMEBREW_SYSTEMS
 		# PyGAME
 		select BR2_PACKAGE_BATOCERA_PYGAME
 
+		# RPG game engines
+		select BR2_PACKAGE_LUAJIT		
+		select BR2_PACKAGE_SOLARUS
+
 		# Fantasy consoles
 		select BR2_PACKAGE_LIBRETRO_TIC80             # ALL
 		select BR2_PACKAGE_LIBRETRO_RETRO8            # ALL

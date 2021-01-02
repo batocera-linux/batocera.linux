@@ -1494,6 +1494,16 @@ wiiu:
     cemu:
       cemu:  { requireAnyOf: [BR2_PACKAGE_CEMU] }
 
+solarus:
+  name:       Solarus
+  manufacturer: Ports
+  release:
+  hardware: port
+  extensions: [zip]
+  emulators:
+    solarus:
+      solarus: { requireAnyOf: [BR2_PACKAGE_SOLARUS] }
+
 pygame:
   name:       pygame
   manufacturer: pygame
