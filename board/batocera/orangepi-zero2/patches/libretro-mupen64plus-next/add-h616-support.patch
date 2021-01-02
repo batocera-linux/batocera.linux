@@ -1,0 +1,22 @@
+diff --git a/Makefile b/Makefile
+index e492983..8210aa6 100644
+--- a/Makefile
++++ b/Makefile
+@@ -275,6 +275,17 @@ else ifneq (,$(findstring amlogic,$(platform)))
+    WITH_DYNAREC=arm
+    COREFLAGS += -DUSE_GENERIC_GLESV2 -DOS_LINUX
+    CPUFLAGS += -march=armv8-a -mcpu=cortex-a53 -mtune=cortex-a53
++   
++# Allwinner H616
++else ifneq (,$(findstring h616,$(platform)))
++   TARGET := $(TARGET_NAME)_libretro.so
++   LDFLAGS += -shared -Wl,--version-script=$(LIBRETRO_DIR)/link.T -Wl,--no-undefined -ldl
++   GL_LIB := -lGLESv2
++   WITH_DYNAREC := aarch64
++   CPUFLAGS += -mtune=cortex-a53
++   GLES = 1
++   COREFLAGS += -DOS_LINUX
++   ASFLAGS = -f elf64 -d ELF_TYPE
+ 
+ # Rockchip RK3288 e.g. Asus Tinker Board / RK3328 e.g. PINE64 Rock64 / RK3399 e.g. PINE64 RockPro64 - 32-bit userspace
+ else ifneq (,$(findstring RK,$(platform)))
