@@ -8,7 +8,6 @@ export XDG_CACHE_HOME=/tmp/xdg_cache
 
 unclutter-remote -s
 
-# dbus-launch is required for gio/gvfs (trash:// network://)
-DISPLAY=:0.0 dbus-launch pcmanfm /userdata
+DISPLAY=:0.0 pcmanfm /userdata
 
 unclutter-remote -h
