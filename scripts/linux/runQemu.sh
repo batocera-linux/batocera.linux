@@ -14,7 +14,15 @@ if test $# -lt 1
 then
     echo "${0} <batocera.img>" >&2
     echo "${0} <batocera.img> <share image>" >&2
-    echo "You can create a share image with : # qemu-img create share.img 4G" >&2
+    echo "You can create a share image with : # dd if=/dev/zero of=share.img count=5 bs=1G" >&2
+    echo "You can format it from batocera" >&2
+    echo "Then you can mount it on linux with : " >&2
+    echo 'X=$(sudo losetup -f)' >&2
+    echo 'mkdir -p BATOCERA' >&2
+    echo 'sudo losetup -P $X share.img' >&2
+    echo 'sudo mount ${X}p1 BATOCERA' >&2
+    echo 'sudo umount BATOCERA' >&2
+    echo 'sudo losetup -D $X' >&2
     exit 1
 fi
 
@@ -40,7 +48,7 @@ SHARE_IMG=$2
 
 if test -n "${SHARE_IMG}"
 then
-    SHARE_CMD="-drive format=raw,file=${SHARE_IMG}"
+    SHARE_CMD="-hdb ${SHARE_IMG}"
 else
     SHARE_CMD=
     echo "***** no share disk set." >&2
