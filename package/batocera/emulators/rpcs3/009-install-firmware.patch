@@ -18,15 +18,15 @@ index e6731b91d..3cf782992 100644
  
  int find_arg(std::string arg, int& argc, char* argv[])
  {
-@@ -423,6 +425,8 @@ int main(int argc, char** argv)
+@@ -469,6 +469,8 @@
  	parser.addOption(QCommandLineOption(arg_stylesheet, "Loads a custom stylesheet.", "path", ""));
  	const QCommandLineOption config_option(arg_config, "Forces the emulator to use this configuration file.", "path", "");
  	parser.addOption(config_option);
 +	const QCommandLineOption installfw_option(arg_installfw, "Forces the emulator to install this firmware file.", "path", "");
 +	parser.addOption(installfw_option);
+ 	parser.addOption(QCommandLineOption(arg_q_debug, "Log qDebug to RPCS3.log."));
  	parser.addOption(QCommandLineOption(arg_error, "For internal usage."));
  	parser.addOption(QCommandLineOption(arg_updating, "For internal usage."));
- 	parser.process(app->arguments());
 @@ -485,6 +489,33 @@ int main(int argc, char** argv)
  		Emu.SetConfigOverride(config_override_path);
  	}
