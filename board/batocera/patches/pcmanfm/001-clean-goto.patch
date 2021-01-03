@@ -1,0 +1,27 @@
+diff --git a/src/main-win-ui.c b/src/main-win-ui.c
+index 47f17f6..24226cd 100644
+--- a/src/main-win-ui.c
++++ b/src/main-win-ui.c
+@@ -141,10 +141,8 @@ static const char main_menu_xml[] =
+     "<menuitem action='Up'/>"
+     "<separator/>"
+     "<menuitem action='Home'/>"
+-    "<menuitem action='Desktop'/>"
+     "<menuitem action='Trash'/>"
+     "<menuitem action='Apps'/>"
+-    "<menuitem action='Computer'/>"
+     "<menuitem action='Network'/>"
+     "<separator/>"
+     "<menuitem action='Location'/>"
+@@ -234,11 +232,9 @@ static GtkActionEntry main_win_actions[]=
+         {"Next", GTK_STOCK_GO_FORWARD, N_("_Next Folder"), "<Alt>Right", N_("Go forward to next folder in history"), G_CALLBACK(on_go_forward)},
+         {"Up", GTK_STOCK_GO_UP, N_("Pa_rent Folder"), "<Alt>Up", N_("Go to parent Folder"), G_CALLBACK(on_go_up)},
+         {"Home", "user-home", N_("H_ome Folder"), "<Alt>Home", N_("Go to home folder"), G_CALLBACK(on_go_home)},
+-        {"Desktop", "user-desktop", N_("_Desktop"), NULL, N_("Go to desktop folder"), G_CALLBACK(on_go_desktop)},
+         {"Trash", "user-trash", N_("_Trash Can"), NULL, N_("Open trash can"), G_CALLBACK(on_go_trash)},
+         {"Root", "drive-harddisk", N_("Filesyste_m Root"), NULL, N_("Go fo filesystem root"), NULL},
+         {"Apps", "system-software-install", N_("_Applications"), NULL, N_("Go to root of applications menu folder"), G_CALLBACK(on_go_apps)},
+-        {"Computer", "computer", N_("Dev_ices"), NULL, N_("Go to list of devices connected to the computer"), G_CALLBACK(on_go_computer)},
+         {"Network", GTK_STOCK_NETWORK, N_("Net_work"), NULL, N_("Go to list of places on the network"), G_CALLBACK(on_go_network)},
+         {"Location", GTK_STOCK_JUMP_TO, N_("_Go to Location..."), "<Ctrl>L", NULL, G_CALLBACK(on_location)},
+         {"Connect", NULL, N_("_Connect to Server..."), NULL, N_("Open a window to choose remote folder location"), G_CALLBACK(on_go_connect)},

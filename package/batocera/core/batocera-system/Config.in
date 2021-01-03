@@ -392,6 +392,10 @@ config BR2_PACKAGE_BATOCERA_HOMEBREW_SYSTEMS
 		# PyGAME
 		select BR2_PACKAGE_BATOCERA_PYGAME
 
+		# RPG game engines
+		select BR2_PACKAGE_LUAJIT		
+		select BR2_PACKAGE_SOLARUS
+
 		# Fantasy consoles
 		select BR2_PACKAGE_LIBRETRO_TIC80             # ALL
 		select BR2_PACKAGE_LIBRETRO_RETRO8            # ALL
@@ -925,6 +929,7 @@ config BR2_PACKAGE_BATOCERA_XORG
        select BR2_PACKAGE_LIBGTK3		            # gtk3 library
        select BR2_PACKAGE_L3AFPAD                           # gtk3 text editor
        select BR2_PACKAGE_PCMANFM                           # file manager
+       select BR2_PACKAGE_GVFS                              if BR2_PACKAGE_PCMANFM # file systems (trash, smb, ... in pcmanfm)
        select BR2_PACKAGE_ADWAITA_ICON_THEME_LIGHT          if BR2_PACKAGE_PCMANFM # theme for file manager
        select BR2_PACKAGE_XTERM                             # terminal
        select BR2_PACKAGE_OPENBOX                           # window manager

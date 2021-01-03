@@ -94,7 +94,7 @@ dxvk_install() {
     ROMGAMENAME=$(basename "${GAMENAME}")
 
     # install dxvk only on system where it is available (aka, not x86)
-    test -e "/usr/share/dxvk" || return 0
+    test -e "/usr/wine/dxvk" || return 0
 
     DXVK="$(get_setting dxvk windows "${ROMGAMENAME}")"
     DXVK_HUD="$(get_setting dxvk_hud windows "${ROMGAMENAME}")"
@@ -114,8 +114,8 @@ dxvk_install() {
         ln -sf "/userdata/system/wine/dxvk/x32/"{d3d12.dll,d3d11.dll,d3d10core.dll,d3d10.dll,d3d10_1.dll,d3d9.dll,dxgi.dll} "${WINEPREFIX}/drive_c/windows/syswow64" || return 1
 	else
 	    echo "Creating links on /userdata, Linux File System required !!!"
-	    ln -sf "/usr/share/dxvk/x64/"{d3d12.dll,d3d11.dll,d3d10core.dll,d3d10.dll,d3d10_1.dll,d3d9.dll,dxgi.dll} "${WINEPREFIX}/drive_c/windows/system32" || return 1
-        ln -sf "/usr/share/dxvk/x32/"{d3d12.dll,d3d11.dll,d3d10core.dll,d3d10.dll,d3d10_1.dll,d3d9.dll,dxgi.dll} "${WINEPREFIX}/drive_c/windows/syswow64" || return 1
+	    ln -sf "/usr/wine/dxvk/x64/"{d3d12.dll,d3d11.dll,d3d10core.dll,d3d10.dll,d3d10_1.dll,d3d9.dll,dxgi.dll} "${WINEPREFIX}/drive_c/windows/system32" || return 1
+        ln -sf "/usr/wine/dxvk/x32/"{d3d12.dll,d3d11.dll,d3d10core.dll,d3d10.dll,d3d10_1.dll,d3d9.dll,dxgi.dll} "${WINEPREFIX}/drive_c/windows/syswow64" || return 1
 	fi
     else
 	echo "Creating links on /userdata, Linux File System required !!!"
