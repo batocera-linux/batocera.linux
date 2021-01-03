@@ -119,14 +119,33 @@ def _generateSdlGameControllerConfig(controller, sdlMapping=_DEFAULT_SDL_MAPPING
     config.append(controller.guid)
     config.append(controller.configName)
     config.append("platform:Linux")
+
+    def add_mapping(input):
+        keyname = sdlMapping.get(input.name, None)
+        if keyname is None:
+            return
+        sdlConf = _keyToSdlGameControllerConfig(
+            keyname, input.name, input.type, input.id, input.value)
+        if sdlConf is not None:
+            config.append(sdlConf)
+
+    # "hotkey" is often mapped to an existing button but such a duplicate mapping
+    # confuses SDL apps. We add "hotkey" mapping only if its target isn't also mapped elsewhere.
+    hotkey_input = None
+    mapped_button_ids = set()
     for k in controller.inputs:
         input = controller.inputs[k]
-        keyname = sdlMapping.get(input.name, None)
-        if input.name is not None:
-            sdlConf = _keyToSdlGameControllerConfig(
-                keyname, input.name, input.type, input.id, input.value)
-            if sdlConf is not None:
-                config.append(sdlConf)
+        if input.name is None:
+            continue
+        if input.name == 'hotkey':
+            hotkey_input = input
+            continue
+        if input.type == 'button':
+            mapped_button_ids.add(input.id)
+        add_mapping(input)
+
+    if hotkey_input is not None and not hotkey_input.id in mapped_button_ids:
+        add_mapping(hotkey_input)
     config.append('')
     return ','.join(config)
 
