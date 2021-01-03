@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-FAUDIO_VERSION = 20.12
+FAUDIO_VERSION = 21.01
 FAUDIO_SITE = $(call github,FNA-XNA,FAudio,$(FAUDIO_VERSION))
 
 FAUDIO_LICENSE = ZLIB
