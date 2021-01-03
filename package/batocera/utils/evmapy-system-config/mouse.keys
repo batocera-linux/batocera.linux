@@ -13,6 +13,17 @@
         {
             "trigger": "joystick2",
             "type": "mouse"
+        },
+	{
+            "trigger": [
+                "hotkey",
+                "start"
+            ],
+            "type": "key",
+            "target": [
+                "KEY_LEFTALT",
+                "KEY_F4"
+            ]
         }
     ]
 }

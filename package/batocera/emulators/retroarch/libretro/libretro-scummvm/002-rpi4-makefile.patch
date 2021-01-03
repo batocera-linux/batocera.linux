@@ -1,0 +1,19 @@
+--- a/backends/platform/libretro/build/Makefile	2020-12-07 12:08:16.969983199 +0100
++++ b/backends/platform/libretro/build/Makefile	2020-12-07 12:08:44.594515853 +0100
+@@ -72,6 +72,16 @@
+    CFLAGS += -fomit-frame-pointer -ffast-math
+    CXXFLAGS = $(CFLAGS) -frtti
+ 
++else ifeq ($(platform), rpi4)
++   TARGET = $(TARGET_NAME)_libretro.so
++   DEFINES += -fPIC
++   DEFINES += -DARM
++   CFLAGS += -fPIC
++   LDFLAGS += -shared -Wl,--version-script=../link.T -fPIC
++   CFLAGS += -mcpu=cortex-a72 -mtune=cortex-a72
++   CFLAGS += -fomit-frame-pointer -ffast-math
++   CXXFLAGS = $(CFLAGS) -frtti
++
+ else ifeq ($(platform), unix)
+    TARGET  := $(TARGET_NAME)_libretro.so
+    DEFINES += -fPIC

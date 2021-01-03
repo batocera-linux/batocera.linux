@@ -1,0 +1,19 @@
+--- a/Makefile	2020-12-06 17:23:39.556453897 +0100
++++ b/Makefile	2020-12-06 17:24:15.893112999 +0100
+@@ -224,6 +224,16 @@
+    CPU_ARCH := arm
+    ARM = 1
+ 
++else ifeq ($(platform), rpi4_64)
++   TARGET = $(TARGET_NAME)_libretro.so
++   fpic = -fPIC
++   CFLAGS += $(fpic)
++   LDFLAGS += $(fpic) -shared -Wl,--version-script=link.T
++   PLATCFLAGS += -mcpu=cortex-a72 -mtune=cortex-a72
++   PLATCFLAGS += -fomit-frame-pointer -ffast-math
++   CXXFLAGS = $(CFLAGS) -fno-rtti -fno-exceptions
++   CPU_ARCH := arm64
++
+ # Classic Platforms ####################
+ # Platform affix = classic_<ISA>_<µARCH>
+ # Help at https://modmyclassic.com/comp

@@ -1,0 +1,13 @@
+diff --git a/evmapy/config.py b/evmapy/config.py
+index 2f7197a..3300764 100644
+--- a/evmapy/config.py
++++ b/evmapy/config.py
+@@ -72,7 +72,7 @@ def _get_device_config_path(device):
+     :rtype: str
+     """
+     info = evmapy.util.get_app_info()
+-    config_filename = re.sub(r'[^\w]', '.', device.name) + '.json'
++    config_filename = os.path.basename(device.fn) + '.json'
+     return os.path.join(info['config_dir'], config_filename)
+ 
+ 

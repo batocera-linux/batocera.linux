@@ -1,0 +1,12 @@
+diff --git a/dlls/mmdevapi/tests/mmdevenum.c b/dlls/mmdevapi/tests/mmdevenum.c
+index 11df1f0..588e99c 100644
+--- a/dlls/mmdevapi/tests/mmdevenum.c
++++ b/dlls/mmdevapi/tests/mmdevenum.c
+@@ -142,7 +142,6 @@ static HRESULT WINAPI async_activate_QueryInterface(
+         void **ppvObject)
+ {
+     if(IsEqualIID(riid, &IID_IUnknown) ||
+-            IsEqualIID(riid, &IID_IAgileObject) ||
+             IsEqualIID(riid, &IID_IActivateAudioInterfaceCompletionHandler)){
+         *ppvObject = iface;
+         IUnknown_AddRef((IUnknown*)*ppvObject);

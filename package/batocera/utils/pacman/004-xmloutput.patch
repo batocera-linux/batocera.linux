@@ -130,7 +130,7 @@ index 35cfcd9..235f53b 100644
 +		      printf("    <group>%s</group>\n", elt);
 +		    }
 +		  }
-+		  if((lst = alpm_pkg_get_groups(pkg)) != NULL) {
++		  if((lst = alpm_pkg_get_licenses(pkg)) != NULL) {
 +		    for(k = lst; k; k = alpm_list_next(k)) {
 +		      const char *elt = k->data;
 +		      printf("    <license>%s</license>\n", elt);

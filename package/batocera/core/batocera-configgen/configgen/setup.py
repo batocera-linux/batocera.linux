@@ -32,6 +32,10 @@ setup(name='batocera-configgen',
         'configgen.generators.cemu',
         'configgen.generators.melonds',
         'configgen.generators.pygame',
+        'configgen.generators.mame',
+        'configgen.generators.devilutionx',
+        'configgen.generators.hatari',
+        'configgen.generators.solarus',
         'configgen.settings',
         'configgen.utils']
       )

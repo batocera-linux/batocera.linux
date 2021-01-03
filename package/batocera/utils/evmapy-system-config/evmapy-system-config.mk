@@ -13,6 +13,8 @@ define EVMAPY_SYSTEM_CONFIG_INSTALL_TARGET_CMDS
 	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/utils/evmapy-system-config/mouse.keys $(TARGET_DIR)/usr/share/evmapy/amiga1200.keys
 	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/utils/evmapy-system-config/mouse.keys $(TARGET_DIR)/usr/share/evmapy/atarist.keys
 	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/utils/evmapy-system-config/mouse.keys $(TARGET_DIR)/usr/share/evmapy/x68000.keys
+	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/utils/evmapy-system-config/hotkey.keys $(TARGET_DIR)/usr/share/evmapy/windows.keys
+	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/utils/evmapy-system-config/mouse.keys $(TARGET_DIR)/usr/share/evmapy/windows_installers.keys
 endef
 
 $(eval $(generic-package))

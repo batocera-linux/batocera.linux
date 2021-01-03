@@ -1,0 +1,14 @@
+--- a/src/arch/shared/archdep_exit.c	2020-12-25 12:13:22.534061315 +0100
++++ b/src/arch/shared/archdep_exit.c	2020-12-25 12:14:44.699511195 +0100
+@@ -32,9 +32,11 @@
+ 
+ #ifdef UNIX_COMPILE
+ #ifndef MACOSX_SUPPORT
++#ifdef USE_NATIVE_GTK3
+ #include <X11/Xlib.h>
+ #endif
+ #endif
++#endif
+ 
+ #ifdef WIN32_COMPILE
+ #include <windows.h>

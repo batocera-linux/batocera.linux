@@ -1,0 +1,13 @@
+diff --git a/sdl_cfg.lua b/home/romain/sdl_cfg.lua
+index bae9cfd..983dee9 100644
+--- a/scripts/src/osd/sdl_cfg.lua
++++ b/scripts/scr/osd/sdl_cfg.lua
+@@ -135,7 +135,7 @@ if _OPTIONS["targetos"]=="windows" then
+ 
+ elseif _OPTIONS["targetos"]=="linux" then
+ 	buildoptions {
+-		backtick(pkgconfigcmd() .. " --cflags libdrm"),
++		"-I" .. os.getenv("SYSROOT") .."/usr/include -I" .. os.getenv("SYSROOT") .. "/usr/include/libdrm"
+ 	}
+ 	if _OPTIONS["QT_HOME"]~=nil then
+ 		buildoptions {

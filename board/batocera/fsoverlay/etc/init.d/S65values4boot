@@ -7,27 +7,21 @@
 # Only copy values on shutdown/reboot
 [ "$1" = "stop" ] || exit 0
 
-BATOCONF="/userdata/system/batocera.conf"
-BOOTCONF="/boot/batocera-boot.conf"
-BOOTLOCK=0
-
-for i in wifi.enabled wifi.ssid wifi.key wifi2.ssid wifi2.key wifi3.ssid wifi3.key wifi.hidden.ssid wifi.hidden.key splash.screen.enabled splash.screen.sound
+set --
+for key in wifi.enabled wifi.ssid wifi.key wifi2.ssid wifi2.key wifi3.ssid wifi3.key wifi.hidden.ssid wifi.hidden.key splash.screen.enabled splash.screen.sound
 do
-    userdata="$(grep -m1 ^[\ #]*$i\s*= "$BATOCONF")" || continue
-    bootdata="$(grep -m1 ^[\ #]*$i\s*= "$BOOTCONF")"
-    ret=$?
-
-    if [ "$userdata" != "$bootdata" ]
+    value="$(/usr/bin/batocera-settings-get "$key")" || continue
+    if [ "$value" != "$(/usr/bin/batocera-settings-get -f /boot/batocera-boot.conf "$key")" ]
     then
-        # Make boot partition writeable and set trigger
-        mount -o remount,rw /boot
-        BOOTLOCK=1
-        # Change key values or create key - depence if key is available or not
-        [ $ret -eq 0 ] && sed -i "s/^[\ #]*$i\s*=.*/$userdata/" "$BOOTCONF"
-        [ $ret -eq 1 ] && echo "$userdata" >> "$BOOTCONF"
+        set -- "$@" "$key" "$value"
     fi
 done
 
-# Lock boot partition
-[ $BOOTLOCK -eq 0 ] || mount -o remount,ro /boot
+if [ $# -gt 0 ]
+then
+    mount -o remount,rw /boot
+    /usr/bin/batocera-settings-set -f /boot/batocera-boot.conf "$@"
+    mount -o remount,ro /boot
+fi
+
 exit $?

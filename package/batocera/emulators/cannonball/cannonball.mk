@@ -42,6 +42,11 @@ define CANNONBALL_SETUP_CMAKE
         $(SED) "s+/usr+$(STAGING_DIR)/usr+g" $(@D)/sdl2gl.cmake
         $(SED) "s+/usr+$(STAGING_DIR)/usr+g" $(@D)/sdl2gles.cmake
         $(SED) "s+/usr+$(STAGING_DIR)/usr+g" $(@D)/sdl2gles_rpi.cmake
+
+	# Rpi4 64-bit compilation
+	$(SED) "s+-mfpu=neon-fp-armv8++g" $(@D)/sdl2gles_rpi.cmake
+	$(SED) "s+-mfloat-abi=hard++g" $(@D)/sdl2gles_rpi.cmake
+
         #$(SED) "s+set(xml+#set(xml+g" $(@D)/sdl2.cmake
         #$(SED) "s+set(xml+#set(xml+g" $(@D)/sdl2gl.cmake
         #$(SED) "s+set(xml+#set(xml+g" $(@D)/sdl2gles.cmake

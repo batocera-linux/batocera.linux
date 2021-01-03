@@ -12,11 +12,17 @@ WINE_LUTRIS_WOW64_32_LICENSE_FILES = COPYING.LIB LICENSE
 WINE_LUTRIS_WOW64_32_DEPENDENCIES = host-bison host-flex host-wine-lutris
 HOST_WINE_LUTRIS_WOW64_32_DEPENDENCIES = host-bison host-flex
 
+# That create folder for install
+define WINE_LUTRIS_CREATE_WINE_FOLDER
+	mkdir -p $(TARGET_DIR)/usr/wine/lutris
+endef
+
+WINE_LUTRIS_PRE_CONFIGURE_HOOKS += WINE_LUTRIS_CREATE_WINE_FOLDER
+
 # Wine needs its own directory structure and tools for cross compiling
 WINE_LUTRIS_WOW64_32_CONF_OPTS = \
 	--with-wine-tools=../host-wine-lutris-$(WINE_LUTRIS_WOW64_32_VERSION) \
 	--disable-tests \
-	--with-wine64=/build/output/images/wow64_32_part64 \
 	--without-capi \
 	--without-coreaudio \
 	--without-gettext \
@@ -25,7 +31,12 @@ WINE_LUTRIS_WOW64_32_CONF_OPTS = \
 	--without-gsm \
 	--without-hal \
 	--without-opencl \
-	--without-oss
+	--without-oss \
+	--prefix=/usr/wine/lutris \
+	--exec-prefix=/usr/wine/lutris
+
+	# breaks build... ???
+	# --with-wine64=/build/output/images/wow64_32_part64/
 
 # batocera
 # gcrypt
@@ -440,6 +451,7 @@ endef
 define WINE_LUTRIS_WOW64_32_SHAREDIR_HOOK
 	mkdir -p $(TARGET_DIR)/share/wine/
 	cp -pr $(@D)/nls $(TARGET_DIR)/share/wine/
+	rm -Rf $(TARGET_DIR)/usr/wine/lutris/include
 endef
 
 WINE_LUTRIS_WOW64_32_PRE_BUILD_HOOKS += WINE_LUTRIS_WOW64_32_WOWDIRS_HOOK

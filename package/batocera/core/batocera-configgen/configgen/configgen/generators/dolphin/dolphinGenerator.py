@@ -15,16 +15,21 @@ class DolphinGenerator(Generator):
         if not os.path.exists(os.path.dirname(batoceraFiles.dolphinIni)):
             os.makedirs(os.path.dirname(batoceraFiles.dolphinIni))
 
+        # Dir required for saves
+        if not os.path.exists(batoceraFiles.dolphinData + "/StateSaves"):
+            os.makedirs(batoceraFiles.dolphinData + "/StateSaves")
+
         dolphinControllers.generateControllerConfig(system, playersControllers, rom)
 
-        # dolphin.ini
+        ## dolphin.ini ##
+
         dolphinSettings = ConfigParser.ConfigParser()
         # To prevent ConfigParser from converting to lower case
         dolphinSettings.optionxform = str
         if os.path.exists(batoceraFiles.dolphinIni):
             dolphinSettings.read(batoceraFiles.dolphinIni)
 
-        # sections
+        # Sections
         if not dolphinSettings.has_section("General"):
             dolphinSettings.add_section("General")
         if not dolphinSettings.has_section("Core"):
@@ -34,84 +39,85 @@ class DolphinGenerator(Generator):
         if not dolphinSettings.has_section("Analytics"):
             dolphinSettings.add_section("Analytics")
 
-        # draw or not FPS
+        # Draw or not FPS
         if system.isOptSet("showFPS") and system.getOptBoolean("showFPS"):
-            dolphinSettings.set("General", "ShowLag", '"True"')
+            dolphinSettings.set("General", "ShowLag",        '"True"')
             dolphinSettings.set("General", "ShowFrameCount", '"True"')
         else:
-            dolphinSettings.set("General", "ShowLag", '"False"')
+            dolphinSettings.set("General", "ShowLag",        '"False"')
             dolphinSettings.set("General", "ShowFrameCount", '"False"')
 
-        # don't ask about statistics
+        # Don't ask about statistics
         dolphinSettings.set("Analytics", "PermissionAsked", '"True"')
 
         # PanicHandlers displaymessages
-        dolphinSettings.set("Interface", "UsePanicHandlers", '"False"')
-        dolphinSettings.set("Interface", "OnScreenDisplayMessages", '"False"')
+        dolphinSettings.set("Interface", "UsePanicHandlers",        '"False"')
+        dolphinSettings.set("Interface", "OnScreenDisplayMessages", '"True"')
 
-        # don't confirm at stop
+        # Don't confirm at stop
         dolphinSettings.set("Interface", "ConfirmStop", '"False"')
 
-        # Cheats - Default Off
-        if system.isOptSet("enable_cheats"):
-            dolphinSettings.set("Core", "EnableCheats", system.config['enable_cheats'])
+        # Enable Cheats
+        if system.isOptSet("enable_cheats") and system.getOptBoolean("enable_cheats"):
+            dolphinSettings.set("Core", "EnableCheats", '"True"')
         else:
             dolphinSettings.set("Core", "EnableCheats", '"False"')
 
-        # speed up disc transfert rate
-        if system.isOptSet("enable_fastdisc"):
-            dolphinSettings.set("Core", "FastDiscSpeed", system.config["enable_fastdisc"])
+        # Speed up disc transfert rate
+        if system.isOptSet("enable_fastdisc") and system.getOptBoolean("enable_fastdisc"):
+            dolphinSettings.set("Core", "FastDiscSpeed", '"True"')
         else:
             dolphinSettings.set("Core", "FastDiscSpeed", '"False"')
 
         # Dual Core
         if system.isOptSet("dual_core") and not system.getOptBoolean("dual_core"):
-            dolphinSettings.set("Core", "CPUThread", '"True"')
-        else:
             dolphinSettings.set("Core", "CPUThread", '"False"')
+        else:
+            dolphinSettings.set("Core", "CPUThread", '"True"')
 
         # Gpu Sync
-        if system.isOptSet("gpu_sync") and not system.getOptBoolean("gpu_sync"):
-            dolphinSettings.set("Core", "SyncGPU", '"False"')
-        else:
+        if system.isOptSet("gpu_sync") and system.getOptBoolean("gpu_sync"):
             dolphinSettings.set("Core", "SyncGPU", '"True"')
+        else:
+            dolphinSettings.set("Core", "SyncGPU", '"False"')
 
-        # language (for gamecube at least)
+        # Language (for gamecube at least)
         dolphinSettings.set("Core", "SelectedLanguage", getGameCubeLangFromEnvironment())
         dolphinSettings.set("Core", "GameCubeLanguage", getGameCubeLangFromEnvironment())
 
-        # Enable MMU - Default On
-        if system.isOptSet("enable_mmu") and not system.getOptBoolean("enable_mmu"):
-            dolphinSettings.set("Core", "MMU", '"False"')
-        else:
+        # Enable MMU
+        if system.isOptSet("enable_mmu") and system.getOptBoolean("enable_mmu"):
             dolphinSettings.set("Core", "MMU", '"True"')
+        else:
+            dolphinSettings.set("Core", "MMU", '"False"')
 
-        # backend - Default
-        if system.isOptSet("gfxbackend"):
-            dolphinSettings.set("Core", "GFXBackend", system.config["gfxbackend"])
+        # Backend - Default OpenGL
+        if system.isOptSet("gfxbackend") and system.getOptBoolean("gfxbackend") == 'Vulkan':
+            dolphinSettings.set("Core", "GFXBackend", '"Vulkan"')
         else:
             dolphinSettings.set("Core", "GFXBackend", '"OGL"')
 
-        # wiimote scanning
+        # Wiimote scanning
         dolphinSettings.set("Core", "WiimoteContinuousScanning", '"True"')
 
-        # gamecube pads forced as standard pad
+        # Gamecube pads forced as standard pad
         dolphinSettings.set("Core", "SIDevice0", '"6"')
         dolphinSettings.set("Core", "SIDevice1", '"6"')
         dolphinSettings.set("Core", "SIDevice2", '"6"')
         dolphinSettings.set("Core", "SIDevice3", '"6"')
 
-        # save dolphin.ini
+        # Save dolphin.ini
         with open(batoceraFiles.dolphinIni, 'w') as configfile:
             dolphinSettings.write(configfile)
 
-        # gfx.ini
+        ## gfx.ini ##
+
         dolphinGFXSettings = ConfigParser.ConfigParser()
         # To prevent ConfigParser from converting to lower case
         dolphinGFXSettings.optionxform = str
         dolphinGFXSettings.read(batoceraFiles.dolphinGfxIni)
-        
-        #Add Default Sections
+
+        # Add Default Sections
         if not dolphinGFXSettings.has_section("Settings"):
             dolphinGFXSettings.add_section("Settings")
         if not dolphinGFXSettings.has_section("Hacks"):
@@ -123,29 +129,32 @@ class DolphinGenerator(Generator):
             
         dolphinGFXSettings.set("Settings", "AspectRatio", getGfxRatioFromConfig(system.config, gameResolution))
 
-        # show fps
-        if system.isOptSet('showFPS') and system.getOptBoolean('showFPS'):
+        # Show fps
+        if system.isOptSet("showFPS") and system.getOptBoolean("showFPS"):
             dolphinGFXSettings.set("Settings", "ShowFPS", '"True"')
         else:
             dolphinGFXSettings.set("Settings", "ShowFPS", '"False"')
-			
-        # HiResTextures - Default On
+
+        # HiResTextures
         if system.isOptSet('hires_textures') and not system.getOptBoolean('hires_textures'):
-            dolphinGFXSettings.set("Settings", "HiresTextures", '"False"')
+            dolphinGFXSettings.set("Settings", "HiresTextures",      '"False"')
             dolphinGFXSettings.set("Settings", "CacheHiresTextures", '"False"')
         else:
-            dolphinGFXSettings.set("Settings", "HiresTextures", '"True"')
+            dolphinGFXSettings.set("Settings", "HiresTextures",      '"True"')
             dolphinGFXSettings.set("Settings", "CacheHiresTextures", '"True"')
-            
-        # widescreen hack but only if enable cheats is not enabled - Default Off
-        if (system.isOptSet('widescreen_hack') and system.getOptBoolean('widescreen_hack') and system.isOptSet('enable_cheats') and not system.getOptBoolean('enable_cheats')):
-            dolphinGFXSettings.set("Settings", "wideScreenHack", '"True"')
-        else:
-            dolphinGFXSettings.remove_option("Settings", '"wideScreenHack"')
 
-        # various performance hacks - Default Off
+        # Widescreen Hack
+        if system.isOptSet('widescreen_hack') and system.getOptBoolean('widescreen_hack'):
+            # Prefer Cheats than Hack 
+            if system.isOptSet('enable_cheats') and system.getOptBoolean('enable_cheats'):
+                dolphinGFXSettings.set("Settings", "wideScreenHack", '"False"')
+            else:
+                dolphinGFXSettings.set("Settings", "wideScreenHack", '"True"')
+        else:
+            dolphinGFXSettings.set("Settings", "wideScreenHack", '"False"')
+
+        # Various performance hacks - Default Off
         if system.isOptSet('perf_hacks') and system.getOptBoolean('perf_hacks'):
-       
             dolphinGFXSettings.set("Hacks", "BBoxEnable", '"False"')
             dolphinGFXSettings.set("Hacks", "DeferEFBCopies", '"True"')
             dolphinGFXSettings.set("Hacks", "EFBEmulateFormatChanges", '"False"')
@@ -171,38 +180,36 @@ class DolphinGenerator(Generator):
                 dolphinGFXSettings.remove_option("Enhancements", "ArbitraryMipmapDetection")
                 dolphinGFXSettings.remove_option("Enhancements", "DisableCopyFilter")
                 dolphinGFXSettings.remove_option("Enhancements", "ForceTrueColor")  
-  
-        # internal resolution settings - Default 1X
+
+        # Internal resolution settings
         if system.isOptSet('internalresolution'):
             dolphinGFXSettings.set("Settings", "InternalResolution", system.config["internalresolution"])
         else:
             dolphinGFXSettings.set("Settings", "InternalResolution", '"1"')
 
-        # vsync - Default
+        # VSync
         if system.isOptSet('vsync'):
             dolphinGFXSettings.set("Hardware", "VSync", system.getOptBoolean('vsync'))
         else:
             dolphinGFXSettings.set("Hardware", "VSync", '"True"')
-            
 
-  
-        # anisotropic filtering - Auto 0
+        # Anisotropic filtering
         if system.isOptSet('anisotropic_filtering'):
             dolphinGFXSettings.set("Enhancements", "MaxAnisotropy", system.config["anisotropic_filtering"])
         else:
             dolphinGFXSettings.set("Enhancements", "MaxAnisotropy", '"0"')
-			
-		# anti aliasing - Auto 0
+
+		# Anti aliasing
         if system.isOptSet('antialiasing'):
             dolphinGFXSettings.set("Settings", "MSAA", system.config["antialiasing"])
         else:
             dolphinGFXSettings.set("Settings", "MSAA", '"0"')
-			
-		# save gfx.ini
+
+		# Save gfx.ini
         with open(batoceraFiles.dolphinGfxIni, 'w') as configfile:
             dolphinGFXSettings.write(configfile)
 
-        # update SYSCONF
+        # Update SYSCONF
         try:
             dolphinSYSCONF.update(system.config, batoceraFiles.dolphinSYSCONF, gameResolution)
         except Exception:
@@ -214,6 +221,7 @@ class DolphinGenerator(Generator):
 
         return Command.Command(array=commandArray, env={"XDG_CONFIG_HOME":batoceraFiles.CONF, "XDG_DATA_HOME":batoceraFiles.SAVES, "QT_QPA_PLATFORM":"xcb"})
 
+
 def getGfxRatioFromConfig(config, gameResolution):
     # 2: 4:3 ; 1: 16:9  ; 0: auto
     if "ratio" in config:
@@ -223,9 +231,8 @@ def getGfxRatioFromConfig(config, gameResolution):
             return 1
     return 0
 
-# seem to be only for the gamecube. However, while this is not in a gamecube section
-# it may be used for something else, so set it anyway
-
+# Seem to be only for the gamecube. However, while this is not in a gamecube section
+# It may be used for something else, so set it anyway
 def getGameCubeLangFromEnvironment():
     lang = environ['LANG'][:5]
     availableLanguages = { "en_US": 0, "de_DE": 1, "fr_FR": 2, "es_ES": 3, "it_IT": 4, "nl_NL": 5 }

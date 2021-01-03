@@ -145,7 +145,7 @@ zx81:
   core:     '81'
 dos:
   emulator: libretro
-  core: dosbox
+  core: dosbox_pure
   options:
     videomode: default
 c64:
@@ -157,6 +157,9 @@ c128:
 c20:
   emulator: vice
   core:     xvic
+pet:
+  emulator: vice
+  core:     xpet
 x68000:
   emulator: libretro
   core:     px68k
@@ -295,10 +298,10 @@ openbor:
     filter: 0
 windows:
   emulator: wine
-  core:     wine
+  core:     proton
 windows_installers:
   emulator: wine
-  core:     wine
+  core:     proton
 wiiu:
   emulator: cemu
   core:     cemu
@@ -316,3 +319,9 @@ pico8:
   core:     retro8
   options:
     ratio: 1/1
+devilutionx:
+  emulator: devilutionx
+  core:     devilutionx
+solarus:
+  emulator: solarus
+  core:     solarus

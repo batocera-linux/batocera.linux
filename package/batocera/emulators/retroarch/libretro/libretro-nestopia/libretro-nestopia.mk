@@ -3,8 +3,8 @@
 # NESTOPIA
 #
 ################################################################################
-# Version.: Commits on May 10, 2020
-LIBRETRO_NESTOPIA_VERSION = 357e1463a01fe2ca0dd91941aacaaa9944f95e4d
+# Version.: Commits on Oct 07, 2020
+LIBRETRO_NESTOPIA_VERSION = 959d79ebab9ee2c26bde27ced810ceb128cbd596
 LIBRETRO_NESTOPIA_SITE = $(call github,libretro,nestopia,$(LIBRETRO_NESTOPIA_VERSION))
 LIBRETRO_NESTOPIA_LICENSE = GPLv2
 
@@ -12,6 +12,10 @@ LIBRETRO_NESTOPIA_PLATFORM = $(LIBRETRO_PLATFORM)
 
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI3),y)
 	LIBRETRO_NESTOPIA_PLATFORM = rpi3
+endif
+
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI4),y)
+	LIBRETRO_NESTOPIA_PLATFORM = rpi4_64
 endif
 
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA),y)

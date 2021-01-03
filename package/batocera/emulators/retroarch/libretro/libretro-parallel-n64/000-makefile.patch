@@ -1,5 +1,5 @@
 diff --git a/Makefile b/Makefile
-index bfc5a477..647caf6d 100644
+index 3269005..a215089 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -58,6 +58,12 @@ else ifneq (,$(findstring rpi,$(platform)))
@@ -15,7 +15,7 @@ index bfc5a477..647caf6d 100644
  endif
  
  # system platform
-@@ -153,12 +159,47 @@ ifneq (,$(findstring unix,$(platform)))
+@@ -150,6 +156,10 @@ ifneq (,$(findstring unix,$(platform)))
           CPUFLAGS += -DNO_ASM -DARM -D__arm__ -DARM_ASM -D__NEON_OPT -DNOSSE
           CPUFLAGS += -mcpu=cortex-a53 -mfpu=neon-fp-armv8 -mfloat-abi=hard
           HAVE_NEON = 1
@@ -23,12 +23,13 @@ index bfc5a477..647caf6d 100644
 +         CPUFLAGS += -DNO_ASM -DARM -D__arm__ -DARM_ASM -D__NEON_OPT -DNOSSE
 +         CPUFLAGS += -mcpu=cortex-a72 -mfpu=neon-fp-armv8 -mfloat-abi=hard
 +         HAVE_NEON = 1
-       else
-          CPUFLAGS += -DARMv5_ONLY -DNO_ASM
-       endif
-       CPUFLAGS += -DARM_FIX
-    endif
+       # Raspberry pi 4 in 64bit mode with VULKAN
+       else ifneq (,$(findstring rpi4_64,$(platform)))
+          CPUFLAGS += -DNO_ASM -DARM -DARM_ASM -DDONT_WANT_ARM_OPTIMIZATIONS -DARM_FIX -DCLASSIC -DARM64
+@@ -166,6 +176,37 @@ ifneq (,$(findstring unix,$(platform)))
  
+    endif
+    
 +   # RockPro64
 +   ifneq (,$(findstring rockpro64,$(platform)))
 +      GLES = 1
@@ -63,13 +64,13 @@ index bfc5a477..647caf6d 100644
     # ODROIDs
     ifneq (,$(findstring odroid,$(platform)))
        BOARD ?= $(shell cat /proc/cpuinfo | grep -i odroid | awk '{print $$3}')
-@@ -174,6 +215,9 @@ ifneq (,$(findstring unix,$(platform)))
+@@ -181,6 +222,9 @@ ifneq (,$(findstring unix,$(platform)))
        else ifneq (,$(findstring ODROID-XU,$(BOARD)))
           # ODROID-XU3 XU4 and XU3-Lite
           CPUFLAGS += -mcpu=cortex-a15 -mtune=cortex-a15.cortex-a7 -mfpu=neon-vfpv4
 +      # ODROIDGOA
 +      else ifneq (,$(findstring ODROIDGOA,$(BOARD)))
-+        CPUFLAGS += -march=armv8-a+crc -mfpu=neon-fp-armv8 -mcpu=cortex-a35 -mtune=cortex-a35
++         CPUFLAGS += -march=armv8-a+crc -mfpu=neon-fp-armv8 -mcpu=cortex-a35 -mtune=cortex-a35
        else
           # ODROID-U3, U2, X2 & X
-          CPUFLAGS += -mcpu=cortex-a9 -mfpu=neon
+           CPUFLAGS += -mcpu=cortex-a9 -mfpu=neon

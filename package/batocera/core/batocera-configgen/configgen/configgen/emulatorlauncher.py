@@ -33,6 +33,10 @@ from generators.cemu.cemuGenerator import CemuGenerator
 from generators.melonds.melondsGenerator import MelonDSGenerator
 from generators.rpcs3.rpcs3Generator import Rpcs3Generator
 from generators.pygame.pygameGenerator import PygameGenerator
+from generators.mame.mameGenerator import MameGenerator
+from generators.devilutionx.devilutionxGenerator import DevilutionXGenerator
+from generators.hatari.hatariGenerator import HatariGenerator
+from generators.solarus.solarusGenerator import SolarusGenerator
 import controllersConfig as controllers
 import signal
 import batoceraFiles
@@ -67,7 +71,11 @@ generators = {
     'cemu' : CemuGenerator(),
     'melonds' : MelonDSGenerator(),
     'rpcs3' : Rpcs3Generator(),
-    'pygame': PygameGenerator()
+    'mame' : MameGenerator(),
+    'pygame': PygameGenerator(),
+    'devilutionx': DevilutionXGenerator(),
+    'hatari': HatariGenerator(),
+    'solarus': SolarusGenerator(),
 }
 
 def main(args, maxnbplayers):
@@ -132,6 +140,12 @@ def main(args, maxnbplayers):
             videoMode.changeMode(wantedGameMode)
             resolutionChanged = True
         gameResolution = videoMode.getCurrentResolution()
+
+        # if resolution is reversed (ie ogoa boards), reverse it in the gameResolution to have it correct
+        if system.isOptSet('resolutionIsReversed') and system.getOptBoolean('resolutionIsReversed') == True:
+            x = gameResolution["width"]
+            gameResolution["width"]  = gameResolution["height"]
+            gameResolution["height"] = x
         eslog.log("resolution: {}x{}".format(str(gameResolution["width"]), str(gameResolution["height"])))
 
         # savedir: create the save directory if not already done

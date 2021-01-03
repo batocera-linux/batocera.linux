@@ -1,7 +1,53 @@
-#!/bin/bash
+#!/bin/sh
+
+# thanks @lbrpdx for some code snippets ;)
+# We have download progress badge for ES now! - lala 2020/12/20
+
+#Inits (for future, maybe use values from config file)
+DEST_PKG=/userdata/system/pacman/pkg
+DB_FILE=/userdata/system/pacman/db/db.lck
+
+# Just a work meter - better than some static output
+do_bepatient() {
+	local COUNT=0
+	while kill -0 $PID 2>/dev/null; do
+		COUNT=$((COUNT+5))
+		[ $COUNT -gt 100 ] && COUNT=0 
+		echo "$USER_INFO_INSIZE to extract ...>>>$COUNT"
+		sleep 0.1
+	done
+}
+
+# Download loop with real size
+# First loop is to check presence of file otherwise pacman is stuck
+# Second loop is the percentage progress
+do_getPer() {
+	local TARFILE="$1"
+	local TARVAL="$2"
+	local PER; local CURVAL
+	until [ -f "$TARFILE" ]; do
+		sleep 0.1
+		kill -0 $PID 2>/dev/null || return
+	done
+	while [ -f "$TARFILE" ]; do
+		CURVAL=$(stat "$TARFILE" | grep -E '^[ ]*Size:' | sed -e s+'^[ ]*Size: \([0-9][0-9]*\) .*$'+'\1'+)
+		PER=$(expr ${CURVAL} '*' 100 / ${TARVAL})
+		echo "[${USER_INFO_DLSIZE}] - '${NAME}' >>>${PER}"
+		sleep 0.5
+		kill -0 $PID 2>/dev/null || break
+	done
+}
+
+
+do_clean () {
+	if ! lsof | grep ${DB_FILE}; then
+		rm -f ${DB_FILE}
+	fi
+}
 
 ACTION=$1
 shift
+do_clean #Delete db.lck file if it's NOT in usage
 
 #Started from Terminal/SSH or from Emulationstation?
 [ -t 1 ] && TERMINAL=1 || TERMINAL=0
@@ -9,28 +55,56 @@ shift
 case "${ACTION}" in
     "install")
 	PKG=$1
-	pacman --noconfirm -S "${PKG}"
-	RET=$?
-	if [ ${RET} -eq 1 ]; then
-		sleep 1
-		pgrep pacman >/dev/null || rm -f /userdata/system/pacman/db/db.lck
+	# TERMINAL DOWNLOAD
+	if [ $TERMINAL -eq 1 ]; then
+		pacman --noconfirm -Sw "${PKG}"
+		RET=$?
+		if [ ${RET} -eq 1 ]; then
+			echo "Download error!"
+		else
+			pacman --noconfirm -S "${PKG}"
+			RET=$?	
+		fi
+	# DOWNLOAD INSIDE ES
+	else
+		# Retrieve some information from pacman package
+		SIZE=$(pacman -Sw --print-format "%s" "${PKG}")
+		FILE=$(basename $(pacman -Sw --print-format "%l" "${PKG}"))
+		NAME=$(pacman -Si "${PKG}" | grep "Description" | awk '{print substr($0, index($0, $3))}' | cut -c 1-20)
+		USER_INFO_DLSIZE=$(pacman -Si "${PKG}" | grep "Download Size" | awk '{print $4$5}')
+		USER_INFO_INSIZE=$(pacman -Si "${PKG}" | grep "Installed Size" | awk '{print $4$5}')
+
+		# Download package now, send pacman in background and silence
+		pacman --noconfirm -Sw "${PKG}" 2>&1 >/dev/null &
+		RET=$?; PID=$!
+		# The .part is needed, check if file is already present
+		# Donwload loop with real size
+		do_getPer "${DEST_PKG}/${FILE}.part" "$SIZE"
+
+
+		if [ ${RET} -eq 0 ]; then
+			# Install package directly (without Sync)
+			pacman --noconfirm -S "${PKG}" 2>&1 >/dev/null &
+			PID=$!; RET=$?
+			# Loop with a indicator for working state
+			do_bepatient
+
+		else
+			echo "Download error!"
+			sleep 5			
+		fi
 	fi
 	exit ${RET}
 	;;
     "remove")
 	PKG=$1
 	pacman --noconfirm -R "${PKG}"
-	RET=$?
-	if [ ${RET} -eq 1 ]; then
-		sleep 1
-		pgrep pacman >/dev/null || rm -f /userdata/system/pacman/db/db.lck
-	fi
-	exit ${RET}
+	exit $?
 	;;
     "list")
 	if test ! -e /userdata/system/pacman/db/sync/batocera.db
 	then
-		pacman --noconfirm -Syu
+		pacman --noconfirm -Sy
 	fi
 	if [ $TERMINAL -eq 1 ]; then
 		pacman --noconfirm -Ss
@@ -41,13 +115,69 @@ case "${ACTION}" in
 	fi
 	exit ${RET}
 	;;
+    "refresh")
+	pacman --noconfirm -Sy
+	exit $?
+	;;
+    "clean")
+	pacman --noconfirm -Sc
+	exit $?
+	;;
+    "clean-all")
+	rm -f "${DEST_PKG}/"*
+        exit $?
+	;;
     "update")
 	pacman --noconfirm -Syu
 	exit $?
+	;;
+    "list-repositories")
+	(cat <<-_EOF_
+	#!/usr/bin/python
+
+	import sys
+	import subprocess
+	import ConfigParser
+	import io
+
+	def getConfig():
+	    proc = subprocess.Popen(["pacman-conf"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+	    out, err = proc.communicate()
+	    exitcode = proc.returncode
+
+	    if exitcode != 0:
+	        sys.stderr.write(err)
+	        raise Exception("unable to read config")
+
+	    buf = io.StringIO(out.decode('utf-8'))
+	    config = ConfigParser.ConfigParser(allow_no_value=True)
+	    config.readfp(buf)
+	    return config
+
+	def config2xml(config):
+	    print("<?xml version=\"1.0\"?>")
+	    print("<repositories>")
+	    for section in config.sections():
+	        if section != "options":
+	            try:
+	                server = config.get(section, "Server")
+	                print("  <repository name=\"{}\" server=\"{}\" />".format(section, server))
+	            except:
+	                pass
+	    print("</repositories>")
+
+	config2xml(getConfig())
+	_EOF_
+	) | python
+	     exit $?
 	;;
     *)
 	echo "${0} install <package>" >&2
 	echo "${0} remove  <package>" >&2
 	echo "${0} list" >&2
+	echo "${0} list-repositories" >&2
+	echo "${0} clean" >&2
+	echo "${0} clean-all" >&2
+	echo "${0} refresh" >&2
 	echo "${0} update" >&2
 esac

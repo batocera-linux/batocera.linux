@@ -1,0 +1,39 @@
+diff --git a/evmapy/__main__.py b/evmapy/__main__.py
+index 66d3d34..f213529 100644
+--- a/evmapy/__main__.py
++++ b/evmapy/__main__.py
+@@ -120,7 +120,7 @@ def main(argv=sys.argv[1:]):
+         info = evmapy.util.get_app_info()
+         logger = initialize_logging(info['name'], args.debug)
+         logger.info("%s %s initializing", info['name'], info['version'])
+-        logger.info("running as user %s", info['user'].pw_name)
++        logger.info("running as user %s", "root")
+         logger.info("using configuration directory %s", info['config_dir'])
+         evmapy.multiplexer.Multiplexer().run()
+ 
+diff --git a/evmapy/controller.py b/evmapy/controller.py
+index 201193e..e403823 100644
+--- a/evmapy/controller.py
++++ b/evmapy/controller.py
+@@ -100,7 +100,7 @@ def perform_request(request):
+         return send_request(request)
+     except (ConnectionRefusedError, FileNotFoundError):
+         exit("No %s instance is running as %s" % (
+-            info['name'], info['user'].pw_name
++            info['name'], "root"
+         ))
+     except TimeoutError:
+         exit("Timeout waiting for a response from %s" % info['name'])
+diff --git a/evmapy/multiplexer.py b/evmapy/multiplexer.py
+index c0e0153..991cb01 100644
+--- a/evmapy/multiplexer.py
++++ b/evmapy/multiplexer.py
+@@ -470,7 +470,7 @@ class Multiplexer(object):
+         try:
+             signal.signal(signal.SIGHUP, signal.SIG_IGN)
+             info = evmapy.util.get_app_info()
+-            app_with_user = (info['name'], info['user'].pw_name)
++            app_with_user = (info['name'], "root")
+             # Create the control socket
+             self._controller = evmapy.controller.Controller(self)
+             # Try to open /dev/uinput, failing gracefully

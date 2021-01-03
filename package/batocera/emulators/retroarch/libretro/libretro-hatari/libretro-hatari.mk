@@ -3,8 +3,8 @@
 # HATARI
 #
 ################################################################################
-# Version.: Commits on Apr 2, 2020
-LIBRETRO_HATARI_VERSION = f8c35958ec1c93c32d41d61fa4903b2f5daec78c
+# Version.: Commits on Oct 27, 2020
+LIBRETRO_HATARI_VERSION = 664ac30180064b7f616330d8ac16adf3dd78be12
 LIBRETRO_HATARI_SITE = $(call github,libretro,hatari,$(LIBRETRO_HATARI_VERSION))
 LIBRETRO_HATARI_DEPENDENCIES = libcapsimage
 LIBRETRO_HATARI_LICENSE = GPLv2
@@ -13,6 +13,10 @@ LIBRETRO_HATARI_PLATFORM = $(LIBRETRO_PLATFORM)
 
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI3),y)
 	LIBRETRO_HATARI_PLATFORM = armv
+endif
+
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI4),y)
+	LIBRETRO_HATARI_PLATFORM = unix
 endif
 
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA),y)

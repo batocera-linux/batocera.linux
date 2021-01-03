@@ -31,6 +31,8 @@ def setViceConfig(viceConfigFile, system):
         systemCore = "SCPU64"    
     elif(system.config['core'] == 'xvic'):
        systemCore = "VIC20"    
+    elif(system.config['core'] == 'xpet'):
+       systemCore = "PET"    
     else:
         systemCore = "C128"
 

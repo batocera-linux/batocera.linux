@@ -1,13 +1,12 @@
 config BR2_PACKAGE_VULKAN_TOOLS
   bool "vulkan-tools"
-  depends on BR2_i386 || BR2_x86_64
   depends on BR2_PACKAGE_MESA3D
   depends on BR2_PACKAGE_VULKAN_HEADERS
   depends on BR2_PACKAGE_VULKAN_LOADER
   depends on BR2_PACKAGE_WAYLAND
   depends on BR2_PACKAGE_HOST_PYTHON3
   depends on BR2_PACKAGE_HOST_PYTHON3_SSL
-  depends on BR2_PACKAGE_GLSLANG
+  select BR2_PACKAGE_HOST_GLSLANG
   help
     Vulkan tools from Khronos
 

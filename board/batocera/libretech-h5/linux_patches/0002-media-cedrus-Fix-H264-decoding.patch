@@ -1,0 +1,38 @@
+From 45e6e50e3420425d1db8022aa2773dd697c6f054 Mon Sep 17 00:00:00 2001
+From: Jernej Skrabec <jernej.skrabec@siol.net>
+Date: Wed, 23 Dec 2020 11:23:40 +0100
+Subject: [PATCH 2/2] media: cedrus: Fix H264 decoding
+
+During H264 API overhaul subtle bug was introduced Cedrus driver.
+Progressive references have both, top and bottom reference flags set.
+Cedrus reference list expects only bottom reference flag and only when
+interlaced frames are decoded. However, due to a bug in Cedrus check,
+exclusivity is not tested and that flag is set also for progressive
+references. That causes "jumpy" background with many videos.
+
+Fix that by checking that only bottom reference flag is set in control
+and nothing else.
+
+Tested-by: Andre Heider <a.heider@gmail.com>
+Fixes: cfc8c3ed533e ("media: cedrus: h264: Properly configure reference field")
+Signed-off-by: Jernej Skrabec <jernej.skrabec@siol.net>
+---
+ drivers/staging/media/sunxi/cedrus/cedrus_h264.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/staging/media/sunxi/cedrus/cedrus_h264.c b/drivers/staging/media/sunxi/cedrus/cedrus_h264.c
+index 781c84a9b1b7..de7442d4834d 100644
+--- a/drivers/staging/media/sunxi/cedrus/cedrus_h264.c
++++ b/drivers/staging/media/sunxi/cedrus/cedrus_h264.c
+@@ -203,7 +203,7 @@ static void _cedrus_write_ref_list(struct cedrus_ctx *ctx,
+ 		position = cedrus_buf->codec.h264.position;
+ 
+ 		sram_array[i] |= position << 1;
+-		if (ref_list[i].fields & V4L2_H264_BOTTOM_FIELD_REF)
++		if (ref_list[i].fields == V4L2_H264_BOTTOM_FIELD_REF)
+ 			sram_array[i] |= BIT(0);
+ 	}
+ 
+-- 
+2.29.2
+

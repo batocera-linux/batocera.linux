@@ -3,8 +3,8 @@
 # NXENGINE
 #
 ################################################################################
-# Version.: Commits on Jan 09, 2020
-LIBRETRO_NXENGINE_VERSION = f39250e54f20c616dd4403cb8d4cab14032530b5
+# Version.: Commits on Oct 20, 2020
+LIBRETRO_NXENGINE_VERSION = d9351e689ce556bddf541bce3da02c2e22bc555d
 LIBRETRO_NXENGINE_SITE = $(call github,libretro,nxengine-libretro,$(LIBRETRO_NXENGINE_VERSION))
 LIBRETRO_NXENGINE_LICENSE = GPLv3
 
@@ -12,6 +12,10 @@ LIBRETRO_NXENGINE_PLATFORM = $(LIBRETRO_PLATFORM)
 
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI3),y)
 	LIBRETRO_NXENGINE_PLATFORM = rpi3
+endif
+
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI4),y)
+	LIBRETRO_NXENGINE_PLATFORM = rpi4_64
 endif
 
 define LIBRETRO_NXENGINE_BUILD_CMDS

@@ -135,7 +135,9 @@ def fillIniPlayer(nplayer, iniConfig, controller, config):
         iniConfig.set(section, 'Version', '2')
         iniConfig.set(section, 'mode', 0)
         iniConfig.set(section, 'device', controller.index)
-        iniConfig.set(section, 'name', controller.realName)
+        # TODO: python 3 remove hack to overcome ConfigParser limitation with utf8 in python 2.7
+        name_encode = controller.realName.encode("ascii", "ignore")
+        iniConfig.set(section, 'name', name_encode)
         iniConfig.set(section, 'plugged', True)
         iniConfig.set(section, 'plugin', 2)
         iniConfig.set(section, 'AnalogDeadzone', config['AnalogDeadzone'])

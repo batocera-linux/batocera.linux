@@ -1,0 +1,7 @@
+config BR2_PACKAGE_FIRMWARE_NONFREE_RPI
+	bool "firmware_nonfree_rpi"
+	help
+	  This package provides various binary firmware files (closed
+	  binary blobs) for such devices like LAN, WLAN cards etc.
+
+	  https://github.com/RPi-Distro/firmware-nonfree.git

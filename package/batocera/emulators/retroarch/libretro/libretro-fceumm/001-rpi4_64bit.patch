@@ -1,0 +1,17 @@
+--- a/Makefile.libretro	2020-12-06 16:34:34.004486480 +0100
++++ b/Makefile.libretro	2020-12-06 16:36:25.258533236 +0100
+@@ -251,6 +251,14 @@
+ 	CFLAGS += -marm -mcpu=cortex-a53 -mfpu=neon-fp-armv8 -mfloat-abi=hard -funsafe-math-optimizations
+ 	CFLAGS += -fomit-frame-pointer -fstrict-aliasing -ffast-math
+ 
++# Raspberry Pi 4 (64-bit)
++else ifeq ($(platform), rpi4)
++	TARGET := $(TARGET_NAME)_libretro.so
++	fpic := -fPIC
++	SHARED := -shared -Wl,--version-script=src/drivers/libretro/link.T -Wl,-no-undefined
++	CFLAGS += -mcpu=cortex-a72 -mtune=cortex-a72 -funsafe-math-optimizations
++	CFLAGS += -fomit-frame-pointer -fstrict-aliasing -ffast-math
++
+ # Lightweight PS3 Homebrew SDK
+ else ifeq ($(platform), psl1ght)
+ 	TARGET := $(TARGET_NAME)_libretro_$(platform).a

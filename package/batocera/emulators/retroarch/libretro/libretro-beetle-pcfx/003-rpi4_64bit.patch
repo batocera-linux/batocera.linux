@@ -1,0 +1,21 @@
+--- a/Makefile	2020-12-06 16:23:20.008093354 +0100
++++ b/Makefile	2020-12-06 16:23:59.828824941 +0100
+@@ -130,6 +130,18 @@
+    FLAGS += -mcpu=cortex-a55
+    ASFLAGS += -mcpu=cortex-a55
+ 
++# Raspberry Pi 4 64-bit
++else ifneq (,$(findstring rpi4,$(platform)))
++   TARGET := $(TARGET_NAME)_libretro.so
++   fpic := -fPIC
++   SHARED := -shared -Wl,--no-undefined -Wl,--version-script=link.T
++   CC = gcc
++   LDFLAGS += $(PTHREAD_FLAGS)
++   FLAGS += $(PTHREAD_FLAGS)
++   IS_X86 = 0
++   FLAGS += -mcpu=cortex-a72 -mtune=cortex-a72
++   ASFLAGS += -mcpu=cortex-a72 -mtune=cortex-a72
++
+ # iOS
+ else ifneq (,$(findstring ios,$(platform)))
+ 

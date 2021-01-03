@@ -1,0 +1,13 @@
+diff --git a/core/stdclass.cpp b/core/stdclass.cpp
+index 5b3f129..5c4439c 100644
+--- a/core/stdclass.cpp
++++ b/core/stdclass.cpp
+@@ -75,6 +75,7 @@ string get_writable_vmu_path(const char *logical_port)
+    else
+    {
+       sprintf(filename, "vmu_save_%s.bin", logical_port);
+-      return get_writable_data_path(filename);
++      //return get_writable_data_path(filename);
++      return std::string("/userdata/saves/dreamcast/") + filename;
+    }
+ }

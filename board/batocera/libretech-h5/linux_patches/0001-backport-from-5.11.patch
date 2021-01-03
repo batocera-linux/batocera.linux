@@ -1,0 +1,45 @@
+From 343bbfd1652964fb52520c4cc232c5a2c679cb21 Mon Sep 17 00:00:00 2001
+From: Jernej Skrabec <jernej.skrabec@siol.net>
+Date: Tue, 25 Aug 2020 19:35:22 +0200
+Subject: [PATCH] media: cedrus: Add support for R40
+
+Video engine in R40 is very similar to that in A33 but it runs on lower
+speed, at least according to OS images released by board designer.
+
+Signed-off-by: Jernej Skrabec <jernej.skrabec@siol.net>
+Signed-off-by: Maxime Ripard <maxime@cerno.tech>
+Link: https://lore.kernel.org/r/20200825173523.1289379-5-jernej.skrabec@siol.net
+---
+ drivers/staging/media/sunxi/cedrus/cedrus.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
+
+diff --git a/drivers/staging/media/sunxi/cedrus/cedrus.c b/drivers/staging/media/sunxi/cedrus/cedrus.c
+index bc27f9430eeb..83a654a618be 100644
+--- a/drivers/staging/media/sunxi/cedrus/cedrus.c
++++ b/drivers/staging/media/sunxi/cedrus/cedrus.c
+@@ -496,6 +496,11 @@ static const struct cedrus_variant sun8i_h3_cedrus_variant = {
+ 	.mod_rate	= 402000000,
+ };
+ 
++static const struct cedrus_variant sun8i_r40_cedrus_variant = {
++	.capabilities	= CEDRUS_CAPABILITY_UNTILED,
++	.mod_rate	= 297000000,
++};
++
+ static const struct cedrus_variant sun50i_a64_cedrus_variant = {
+ 	.capabilities	= CEDRUS_CAPABILITY_UNTILED |
+ 			  CEDRUS_CAPABILITY_H265_DEC,
+@@ -536,6 +541,10 @@ static const struct of_device_id cedrus_dt_match[] = {
+ 		.compatible = "allwinner,sun8i-h3-video-engine",
+ 		.data = &sun8i_h3_cedrus_variant,
+ 	},
++	{
++		.compatible = "allwinner,sun8i-r40-video-engine",
++		.data = &sun8i_r40_cedrus_variant,
++	},
+ 	{
+ 		.compatible = "allwinner,sun50i-a64-video-engine",
+ 		.data = &sun50i_a64_cedrus_variant,
+-- 
+2.28.0
+

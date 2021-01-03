@@ -1,0 +1,58 @@
+#!/bin/sh
+
+config_script="batocera-config"
+log="/userdata/system/logs/batocera.log"
+gpio_enabled=1
+arch="$(cat /usr/share/batocera/batocera.arch)"
+
+ba_gpio_configure() {
+    settings_gpio_mk="$(/usr/bin/batocera-settings-get controllers.gpio.enabled)"
+    if [ "$settings_gpio_mk" = "1" ]; then
+        settings_gpio_map="$(/usr/bin/batocera-settings-get controllers.gpio.args)"
+    [ "$settings_gpio_map" = "" ] && settings_gpio_map="map=1,2"
+        eval $config_script "module" "load" mk_arcade_joystick_rpi "$settings_gpio_map" >> $log
+    else
+    # mk disabled let's check for db9
+    settings_db9="$(/usr/bin/batocera-settings-get controllers.db9.enabled)"
+        if [ "$settings_db9" = "1" ]; then
+            settings_db9_map="$(/usr/bin/batocera-settings-get controllers.db9.args)"
+            eval $config_script "module" "load" db9_gpio_rpi "$settings_db9_map" >> $log
+        else
+        # db9 and mk disabled let's check for gamecon
+            settings_gamecon="$(/usr/bin/batocera-settings-get controllers.gamecon.enabled)"
+            if [ "$settings_gamecon" = "1" ]; then
+                settings_gamecon_map="$(/usr/bin/batocera-settings-get controllers.gamecon.args)"
+                eval $config_script "module" "load" gamecon_gpio_rpi "$settings_gamecon_map" >> $log
+            else
+                # no GPIO input enabled at all!
+                gpio_enabled=0
+            fi
+        fi
+    fi
+}
+
+case "$1" in
+  start)
+    ba_gpio_configure
+
+    # Required to initialize GPIO pins on RPi4
+    if [ "$arch" = "rpi4" ] && [ $gpio_enabled -eq 1 ]
+    then
+    /usr/bin/python - <<-_EOF_
+		import RPi.GPIO as GPIO
+		GPIO.setmode(GPIO.BCM)
+		GPIO.setwarnings(False)
+		btn_list = range(2,28)
+		GPIO.setup(btn_list, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+	_EOF_
+    fi
+
+    ;;
+  stop)
+    ;;
+  restart|reload)
+    ;;
+  *)
+esac
+
+exit $?
