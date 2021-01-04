@@ -37,6 +37,7 @@ setup(name='batocera-configgen',
         'configgen.generators.hatari',
         'configgen.generators.solarus',
         'configgen.generators.easyrpg',
+        'configgen.generators.redream',
         'configgen.settings',
         'configgen.utils']
       )
