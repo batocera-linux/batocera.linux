@@ -392,9 +392,13 @@ config BR2_PACKAGE_BATOCERA_HOMEBREW_SYSTEMS
 		# PyGAME
 		select BR2_PACKAGE_BATOCERA_PYGAME
 
-		# RPG game engines
-		select BR2_PACKAGE_LUAJIT		
-		select BR2_PACKAGE_SOLARUS
+		# RPG engine : Solarus
+		select BR2_PACKAGE_LUAJIT		# for performance
+		select BR2_PACKAGE_SOLARUS		# engine itself
+
+		# RPG engine : EasyRPG / RPG MAker
+		select BR2_PACKAGE_EASYRPG_PLAYER	# standalone
+		select BR2_PACKAGE_LIBRETRO_EASYRPG	# libretro core
 
 		# Fantasy consoles
 		select BR2_PACKAGE_LIBRETRO_TIC80             # ALL
