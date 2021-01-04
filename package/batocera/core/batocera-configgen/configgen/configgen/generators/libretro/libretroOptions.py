@@ -33,7 +33,7 @@ def generateCoreSettings(coreSettings, system, rom):
             if system.isOptSet('atari800_system'):
                 coreSettings.save('atari800_system', '"' + system.config['atari800_system'] + '"')
             else:
-                coreSettings.save('atari800_system', '"130XE (128K)"')
+                coreSettings.save('atari800_system', '"800XL (64K)"')
             # Video Standard
             if system.isOptSet('atari800_ntscpal'):
                 coreSettings.save('atari800_ntscpal', system.config['atari800_ntscpal'])
@@ -53,13 +53,15 @@ def generateCoreSettings(coreSettings, system, rom):
             if system.isOptSet('atari800_resolution'):
                 coreSettings.save('atari800_resolution', system.config['atari800_resolution'])
             else:
-                coreSettings.save('atari800_resolution', '"336x240"')
+                coreSettings.save('atari800_resolution', '"400x300"')
             
             # WARNING: Now we must stop to use "atari800.cfg" because core options crush them
 
-        else:
+        elif:
             # Select Atari 5200
             coreSettings.save('atari800_system', '"5200"')
+            # Autodetect A5200 CartType (Off/On)
+            coreSettings.save('atari800_CartType', '"enabled"')
             # Joy Hack (for robotron)
             if system.isOptSet('atari800_opt2'):
                 coreSettings.save('atari800_opt2', system.config['atari800_opt2'])
