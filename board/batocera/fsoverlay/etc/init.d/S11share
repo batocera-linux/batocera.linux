@@ -4,8 +4,8 @@ if [ "$1" = "stop" ]
 then
     # umount all network configs
     # don't just remount the one of the config in case the config changed
-    umount -a -t nfs
-    umount -a -t cifs
+    umount -l -a -t nfs
+    umount -l -a -t cifs
     exit 0
 fi
 
