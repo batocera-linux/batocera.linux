@@ -1504,6 +1504,16 @@ solarus:
     solarus:
       solarus: { requireAnyOf: [BR2_PACKAGE_SOLARUS] }
 
+easyrpg:
+  name:       EasyRPG
+  manufacturer: Ports
+  release:
+  hardware: port
+  extensions: [zip, easyrpg]
+  emulators:
+    easyrpg:
+      easyrpg: { requireAnyOf: [BR2_PACKAGE_EASYRPG_PLAYER] }
+
 pygame:
   name:       pygame
   manufacturer: pygame
