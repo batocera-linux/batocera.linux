@@ -236,6 +236,8 @@ menu "Emulators"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/wine/vkd3d/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/wine/wine-mono/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/python-pygame2/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/easyrpg/liblcf/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/easyrpg/easyrpg-player/Config.in"
 endmenu
 
 menu "Kodi"

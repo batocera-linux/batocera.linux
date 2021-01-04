@@ -393,8 +393,9 @@ config BR2_PACKAGE_BATOCERA_HOMEBREW_SYSTEMS
 		select BR2_PACKAGE_BATOCERA_PYGAME
 
 		# RPG game engines
-		select BR2_PACKAGE_LUAJIT		
+		select BR2_PACKAGE_LUAJIT		# needed by Solarus
 		select BR2_PACKAGE_SOLARUS
+		select BR2_PACKAGE_EASYRPG_PLAYER	# RPG Maker game engine
 
 		# Fantasy consoles
 		select BR2_PACKAGE_LIBRETRO_TIC80             # ALL
