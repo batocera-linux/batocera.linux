@@ -400,7 +400,6 @@ config BR2_PACKAGE_BATOCERA_HOMEBREW_SYSTEMS
 		select BR2_PACKAGE_LIBRETRO_TIC80             # ALL
 		select BR2_PACKAGE_LIBRETRO_RETRO8            # ALL
 
-
 #### Sega Dreamcast, Naomi and Atomiswave ####
 config BR2_PACKAGE_BATOCERA_SEGADC
 		bool "batocera.linux dreamcast/naomi/atomiswave emulators/cores"
@@ -729,6 +728,9 @@ config BR2_PACKAGE_BATOCERA_CONSOLE_SYSTEMS
 
 		# Atari 7800
 		select BR2_PACKAGE_LIBRETRO_PROSYSTEM         # ALL
+
+		# Fairchild Channel F
+		select BR2_PACKAGE_LIBRETRO_FREECHAF          # ALL
 
 		help
 		  All avaible systems for the selected architecture

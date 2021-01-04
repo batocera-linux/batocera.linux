@@ -836,6 +836,16 @@ pico8:
     libretro:
       retro8: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_RETRO8] }
 
+channel-f:
+  name:       Channel-F
+  manufacturer: Fairchild
+  release:
+  hardware: console
+  extensions: [zip, rom, bin, chf]
+  emulators:
+    libretro:
+      freechaf: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FREECHAF] }
+
 cannonball:
   name:       Cannonball
   manufacturer: Ports
