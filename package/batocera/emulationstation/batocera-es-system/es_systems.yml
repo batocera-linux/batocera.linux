@@ -1513,6 +1513,8 @@ easyrpg:
   emulators:
     easyrpg:
       easyrpg: { requireAnyOf: [BR2_PACKAGE_EASYRPG_PLAYER] }
+    libretro:
+      easyrpg: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_EASYRPG] }
 
 pygame:
   name:       pygame
