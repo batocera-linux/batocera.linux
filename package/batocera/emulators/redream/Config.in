@@ -1,5 +1,5 @@
-config BR2_PACKAGE_REDREAM_X86_64
-	bool "redream-x86_64"
+config BR2_PACKAGE_REDREAM
+	bool "redream"
         depends on BR2_x86_64
 	# Wine unconditionally builds shared libraries
 	depends on !BR2_STATIC_LIBS
