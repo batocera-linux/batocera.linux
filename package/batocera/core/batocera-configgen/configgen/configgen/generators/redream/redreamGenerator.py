@@ -5,7 +5,7 @@ from generators.Generator import Generator
 import controllersConfig
 
 
-class SolarusGenerator(Generator):
+class RedreamGenerator(Generator):
 
     def generate(self, system, rom, playersControllers, gameResolution):
         commandArray = ["redream", "--gamedir /userdata/roms/dreamcast", "--fullmode", rom]
