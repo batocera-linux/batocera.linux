@@ -820,8 +820,8 @@ mrboom:
 
 tic80:
   name:       TIC-80
-  manufacturer: Ports
-  release:
+  manufacturer: Fantasy
+  release: 2016
   hardware: console
   extensions: [tic]
   emulators:
@@ -830,8 +830,8 @@ tic80:
 
 pico8:
   name:       Pico-8
-  manufacturer: Ports
-  release:
+  manufacturer: Fantasy
+  release: 2015
   hardware: console
   extensions: [p8, png]
   emulators:
@@ -841,7 +841,7 @@ pico8:
 channel-f:
   name:       Channel-F
   manufacturer: Fairchild
-  release:
+  release: 1976
   hardware: console
   extensions: [zip, rom, bin, chf]
   emulators:
@@ -1326,6 +1326,16 @@ x68000:
   emulators:
     libretro:
       px68k: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PX68K] }
+
+x1:
+  name:       Sharp X1
+  manufacturer: Sharp
+  release: 1982
+  hardware: computer
+  extensions: [dx1, zip, 2d, 2hd, tfd, d88, 88d, hdm, xdf, dup, cmd, 7z]
+  emulators:
+    libretro:
+      x1: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_XMIL] }
 
 3ds:
   name:       Nintendo 3DS
