@@ -546,6 +546,9 @@ config BR2_PACKAGE_BATOCERA_PORTS_SYSTEMS
         # MrBoom (Bomberman clone)
         select BR2_PACKAGE_LIBRETRO_MRBOOM            # ALL
 
+	# Prince of Persia
+	select BR2_PACKAGE_SDLPOP
+
 	help
 	Ports
 
@@ -590,6 +593,7 @@ config BR2_PACKAGE_BATOCERA_COMPUTER_SYSTEMS
 		select BR2_PACKAGE_LIBRETRO_PC88              # ALL
 		select BR2_PACKAGE_LIBRETRO_PC98              # ALL
 		select BR2_PACKAGE_LIBRETRO_PX68K             # ALL
+		select BR2_PACKAGE_LIBRETRO_XMIL              # ALL
 
 	help
 	Old computers
