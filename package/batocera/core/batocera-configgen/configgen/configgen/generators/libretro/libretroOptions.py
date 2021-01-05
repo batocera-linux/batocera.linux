@@ -57,7 +57,7 @@ def generateCoreSettings(coreSettings, system, rom):
             
             # WARNING: Now we must stop to use "atari800.cfg" because core options crush them
 
-        elif:
+        else:
             # Select Atari 5200
             coreSettings.save('atari800_system', '"5200"')
             # Autodetect A5200 CartType (Off/On)
