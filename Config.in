@@ -198,6 +198,7 @@ menu "Emulators"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/cemu/cemu/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/cemu/cemu-hook/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/cemu/cemutil/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/sdlpop/Config.in"
 
   menu "mupen64plus"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/mupen64plus/mupen64plus-core/Config.in"
