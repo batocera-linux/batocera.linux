@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-MALI_T760_VERSION = d1a0cc76633ac5e2487e228518aa8e6dbcc8e763
+MALI_T760_VERSION = c1e706c40042ed39a5896eb6c216dd27d2e25875
 MALI_T760_SITE = $(call github,Ntemis,libmali,$(MALI_T760_VERSION))
 
 MALI_T760_INSTALL_STAGING = YES
@@ -15,9 +15,9 @@ MALI_T760_STAGING_DIR=$(STAGING_DIR)
 MALI_T760_LIBDIR=arm-linux-gnueabihf
 
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_MIQI),y)
-MALI_T760_LIBFILE=libmali-midgard-t76x-r14p0-r1p0-gbm.so
+MALI_T760_LIBFILE=libmali-midgard-t76x-r18p0-r1p0-gbm.so
 else
-MALI_T760_LIBFILE=libmali-midgard-t76x-r14p0-r0p0-gbm.so
+MALI_T760_LIBFILE=libmali-midgard-t76x-r18p0-r0p0-gbm.so
 endif
 
 define MALI_T760_INSTALL_STAGING_CMDS

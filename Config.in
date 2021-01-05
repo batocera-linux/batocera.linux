@@ -240,6 +240,7 @@ menu "Emulators"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/python-pygame2/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/easyrpg/liblcf/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/easyrpg/easyrpg-player/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/redream/Config.in"
 endmenu
 
 menu "Kodi"
@@ -297,6 +298,8 @@ menu "Libraries"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/librga/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/alsa-plugins/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/catch2/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/libxmp/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/wildmidi/Config.in"
 endmenu
 
 endmenu
