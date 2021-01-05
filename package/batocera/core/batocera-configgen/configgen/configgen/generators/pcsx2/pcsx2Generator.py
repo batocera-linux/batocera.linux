@@ -58,9 +58,9 @@ class Pcsx2Generator(Generator):
             arch = content_file.read()
 
         if arch == "x86":
-            return Command.Command(array=commandArray, env={"XDG_CONFIG_HOME":batoceraFiles.CONF})
-        else:
             return Command.Command(array=commandArray, env={"XDG_CONFIG_HOME":batoceraFiles.CONF, "LD_LIBRARY_PATH": "/lib32", "LIBGL_DRIVERS_PATH": "/lib32/dri"})
+        else:
+            return Command.Command(array=commandArray, env={"XDG_CONFIG_HOME":batoceraFiles.CONF})
 
 def getGfxRatioFromConfig(config, gameResolution):
     # 2: 4:3 ; 1: 16:9
