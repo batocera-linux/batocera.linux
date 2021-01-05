@@ -4,36 +4,48 @@
 #
 ################################################################################
 
-LIBCAPSIMAGE_SOURCE = ipfdec_source$(LIBCAPSIMAGE_VERSION).zip
-LIBCAPSIMAGE_VERSION = 4.2
+LIBCAPSIMAGE_SOURCE = spsdeclib_$(LIBCAPSIMAGE_VERSION)_source.zip
+LIBCAPSIMAGE_VERSION = 5.1
 LIBCAPSIMAGE_SITE = http://www.kryoflux.com/download
 LIBCAPSIMAGE_SITE_METHOD = wget
-LIBCAPSIMAGE_SUBDIR = CAPSImage
+LIBCAPSIMAGE_SUBDIR = capsimg_source_linux_macosx/CAPSImg
 
 LIBCAPSIMAGE_INSTALL_STAGING = YES
 
 define LIBCAPSIMAGE_EXTRACT_CMDS
 	$(UNZIP) $(DL_DIR)/$(LIBCAPSIMAGE_DL_SUBDIR)/$(LIBCAPSIMAGE_SOURCE) -d $(@D)
+	$(UNZIP) -x $(@D)/capsimg_source_linux_macosx.zip  -d $(@D)
 endef
 
 define LIBCAPSIMAGE_INSTALL_STAGING_CMDS
+	mkdir -p $(STAGING_DIR)/usr/include/caps
+	cp -r $(@D)/capsimg_source_linux_macosx/CAPSImg/*.h \
+		$(STAGING_DIR)/usr/include/caps
+	cp -r $(@D)/capsimg_source_linux_macosx/Codec/*.h \
+		$(STAGING_DIR)/usr/include/caps
+	cp -r $(@D)/capsimg_source_linux_macosx/Compatibility/*.h \
+		$(STAGING_DIR)/usr/include/caps
+	cp -r $(@D)/capsimg_source_linux_macosx/Core/*.h \
+		$(STAGING_DIR)/usr/include/caps
+	cp -r $(@D)/capsimg_source_linux_macosx/Device/*.h \
+		$(STAGING_DIR)/usr/include/caps
+	cp -r $(@D)/capsimg_source_linux_macosx/LibIPF/*.h \
+		$(STAGING_DIR)/usr/include/caps
 	mkdir -p $(STAGING_DIR)/usr/lib/capsimage
-	cp $(@D)/CAPSImage/libcapsimage.so.4.2 \
+	cp $(@D)/capsimg_source_linux_macosx/CAPSImg/libcapsimage.so.5.1 \
 		$(STAGING_DIR)/usr/lib
-	cp -r $(@D)/CAPSImage/include/caps \
-		$(STAGING_DIR)/usr/lib/capsimage
-	ln -sf $(STAGING_DIR)/usr/lib/libcapsimage.so.4.2 $(STAGING_DIR)/usr/lib/libcapsimage.so
+	ln -sf $(STAGING_DIR)/usr/lib/libcapsimage.so.5.1 $(STAGING_DIR)/usr/lib/libcapsimage.so
 endef
 
 define LIBCAPSIMAGE_INSTALL_TARGET_CMDS
 	mkdir -p $(STAGING_DIR)/usr/lib/capsimage
-	cp $(@D)/CAPSImage/libcapsimage.so.4.2 \
+	cp $(@D)/capsimg_source_linux_macosx/CAPSImg/libcapsimage.so.5.1 \
 		$(TARGET_DIR)/usr/lib
-	ln -sf /usr/lib/libcapsimage.so.4.2 $(TARGET_DIR)/usr/lib/libcapsimage.so.4
+	ln -sf /usr/lib/libcapsimage.so.5.1 $(TARGET_DIR)/usr/lib/libcapsimage.so.5
 endef
 
 define LIBCAPSIMAGE_PRE_CONFIGURE_FIXUP
-	chmod u+x $(@D)/CAPSImage/configure
+	chmod u+x $(@D)/capsimg_source_linux_macosx/CAPSImg/configure
 endef
 
 LIBCAPSIMAGE_PRE_CONFIGURE_HOOKS += LIBCAPSIMAGE_PRE_CONFIGURE_FIXUP
