@@ -5,7 +5,7 @@
 ################################################################################
 # Version.: Commits on Dec 21, 2020
 LIBRETRO_EASYRPG_VERSION = 7767965ad25f898fbfe8afeec75802ffca8fb317
-LIBRETRO_EASYRPG_DEPENDENCIES = sdl2 zlib fmt libpng freetype mpg123 libvorbis opusfile sdl2_mixer pixman
+LIBRETRO_EASYRPG_DEPENDENCIES = sdl2 zlib fmt libpng freetype mpg123 libvorbis opusfile sdl2_mixer pixman speexdsp
 LIBRETRO_EASYRPG_LICENSE = MIT
 LIBRETRO_EASYRPG_SITE = https://github.com/EasyRPG/Player.git
 LIBRETRO_EASYRPG_GIT_SUBMODULES=YES
