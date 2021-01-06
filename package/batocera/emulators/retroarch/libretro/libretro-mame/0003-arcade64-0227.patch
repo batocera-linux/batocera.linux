@@ -1,6 +1,6 @@
---- a/scripts/target/mame/arcade.lua	2020-10-27 02:00:36.000000000 +0100
-+++ b/scripts/target/mame/arcade.lua	2020-10-28 03:45:15.000000000 +0100
-@@ -852,7 +852,7 @@
+--- a/scripts/target/mame/arcade.lua	2020-12-31 12:34:45.276090960 +0100
++++ b/scripts/target/mame/arcade.lua	2020-12-31 12:35:12.696541331 +0100
+@@ -865,7 +865,7 @@
  		"ascii",
  		"atari",
  		"atlus",
@@ -9,7 +9,7 @@
  		"bfm",
  		"bmc",
  		"capcom",
-@@ -878,16 +878,14 @@
+@@ -891,16 +891,14 @@
  		"gottlieb",
  		"ibmpc",
  		"igs",
@@ -27,7 +27,7 @@
  		"meadows",
  		"merit",
  		"metro",
-@@ -924,6 +922,7 @@
+@@ -937,6 +935,7 @@
  		"subsino",
  		"suna",
  		"sunelect",
@@ -35,7 +35,7 @@
  		"taito",
  		"tatsumi",
  		"tch",
-@@ -933,6 +932,7 @@
+@@ -946,6 +945,7 @@
  		"terminal",
  		"thepit",
  		"toaplan",
@@ -43,7 +43,7 @@
  		"unico",
  		"univers",
  		"upl",
-@@ -1024,7 +1024,7 @@
+@@ -1037,7 +1037,7 @@
  
  createMAMEProjects(_target, _subtarget, "adp")
  files {
@@ -52,7 +52,7 @@
  	MAME_DIR .. "src/mame/drivers/manohman.cpp",
  	MAME_DIR .. "src/mame/drivers/stellafr.cpp",
  }
-@@ -1032,7 +1032,7 @@
+@@ -1045,7 +1045,7 @@
  createMAMEProjects(_target, _subtarget, "alba")
  files {
  	MAME_DIR .. "src/mame/drivers/albazc.cpp",
@@ -61,7 +61,7 @@
  	MAME_DIR .. "src/mame/drivers/rmhaihai.cpp",
  }
  
-@@ -1070,7 +1070,7 @@
+@@ -1083,7 +1083,7 @@
  
  createMAMEProjects(_target, _subtarget, "amiga")
  files {
@@ -70,7 +70,7 @@
  	MAME_DIR .. "src/mame/drivers/amiga.cpp",
  	MAME_DIR .. "src/mame/machine/amiga.cpp",
  	MAME_DIR .. "src/mame/video/amiga.cpp",
-@@ -1133,7 +1133,7 @@
+@@ -1146,7 +1146,7 @@
  	MAME_DIR .. "src/mame/drivers/atarisy2.cpp",
  	MAME_DIR .. "src/mame/includes/atarisy2.h",
  	MAME_DIR .. "src/mame/video/atarisy2.cpp",
@@ -79,7 +79,7 @@
  	MAME_DIR .. "src/mame/drivers/atarittl.cpp",
  	MAME_DIR .. "src/mame/machine/nl_gtrak10.cpp",
  	MAME_DIR .. "src/mame/machine/nl_gtrak10.h",
-@@ -1418,59 +1418,58 @@
+@@ -1431,59 +1431,58 @@
  createMAMEProjects(_target, _subtarget, "barcrest")
  files {
  	MAME_DIR .. "src/mame/drivers/mpu2.cpp",
@@ -185,7 +185,7 @@
  	MAME_DIR .. "src/mame/video/bfm_dm01.cpp",
  }
  
-@@ -1492,7 +1491,7 @@
+@@ -1505,7 +1504,7 @@
  	MAME_DIR .. "src/mame/drivers/1943.cpp",
  	MAME_DIR .. "src/mame/includes/1943.h",
  	MAME_DIR .. "src/mame/video/1943.cpp",
@@ -194,7 +194,7 @@
  	MAME_DIR .. "src/mame/drivers/bionicc.cpp",
  	MAME_DIR .. "src/mame/drivers/supduck.cpp",
  	MAME_DIR .. "src/mame/video/tigeroad_spr.cpp",
-@@ -1734,7 +1733,7 @@
+@@ -1747,7 +1746,7 @@
  	MAME_DIR .. "src/mame/drivers/exprraid.cpp",
  	MAME_DIR .. "src/mame/includes/exprraid.h",
  	MAME_DIR .. "src/mame/video/exprraid.cpp",
@@ -203,7 +203,7 @@
  	MAME_DIR .. "src/mame/drivers/firetrap.cpp",
  	MAME_DIR .. "src/mame/includes/firetrap.h",
  	MAME_DIR .. "src/mame/video/firetrap.cpp",
-@@ -2163,15 +2162,6 @@
+@@ -2175,15 +2174,6 @@
  	MAME_DIR .. "src/mame/machine/igs028.h",
  }
  
@@ -219,7 +219,7 @@
  createMAMEProjects(_target, _subtarget, "irem")
  files {
  	MAME_DIR .. "src/mame/drivers/m10.cpp",
-@@ -2370,15 +2360,6 @@
+@@ -2384,15 +2374,6 @@
  	MAME_DIR .. "src/mame/video/sknsspr.h",
  }
  
@@ -235,7 +235,25 @@
  createMAMEProjects(_target, _subtarget, "konami")
  files {
  	MAME_DIR .. "src/mame/drivers/88games.cpp",
-@@ -2714,13 +2695,13 @@
+@@ -2514,12 +2495,12 @@
+ 	MAME_DIR .. "src/mame/machine/3dom2.h",
+ 	MAME_DIR .. "src/mame/video/3dom2_te.cpp",
+ 	MAME_DIR .. "src/mame/video/3dom2_te.h",
+-	MAME_DIR .. "src/mame/drivers/konblands.cpp",
+-	MAME_DIR .. "src/mame/drivers/kongs470.cpp",
+-	MAME_DIR .. "src/mame/drivers/konmedal.cpp",
+-	MAME_DIR .. "src/mame/drivers/konmedal68k.cpp",
++--	MAME_DIR .. "src/mame/drivers/konblands.cpp",
++--	MAME_DIR .. "src/mame/drivers/kongs470.cpp",
++--	MAME_DIR .. "src/mame/drivers/konmedal.cpp",
++--	MAME_DIR .. "src/mame/drivers/konmedal68k.cpp",
+ 	MAME_DIR .. "src/mame/drivers/kontest.cpp",
+-	MAME_DIR .. "src/mame/drivers/konendev.cpp",
++--	MAME_DIR .. "src/mame/drivers/konendev.cpp",
+ 	MAME_DIR .. "src/mame/drivers/kpython.cpp",
+ 	MAME_DIR .. "src/mame/drivers/ksys573.cpp",
+ 	MAME_DIR .. "src/mame/machine/k573cass.cpp",
+@@ -2729,13 +2710,13 @@
  
  createMAMEProjects(_target, _subtarget, "maygay")
  files {
@@ -256,7 +274,7 @@
  }
  
  createMAMEProjects(_target, _subtarget, "meadows")
-@@ -2841,7 +2822,7 @@
+@@ -2856,7 +2837,7 @@
  	MAME_DIR .. "src/mame/drivers/mw18w.cpp",
  	MAME_DIR .. "src/mame/drivers/mwsub.cpp",
  	MAME_DIR .. "src/mame/drivers/omegrace.cpp",
@@ -265,7 +283,7 @@
  	MAME_DIR .. "src/mame/drivers/seattle.cpp",
  	MAME_DIR .. "src/mame/drivers/sspeedr.cpp",
  	MAME_DIR .. "src/mame/includes/sspeedr.h",
-@@ -3678,7 +3659,7 @@
+@@ -3693,7 +3674,7 @@
  
  createMAMEProjects(_target, _subtarget, "seibu")
  files {
@@ -274,7 +292,7 @@
  	MAME_DIR .. "src/mame/drivers/bloodbro.cpp",
  	MAME_DIR .. "src/mame/includes/bloodbro.h",
  	MAME_DIR .. "src/mame/video/bloodbro.cpp",
-@@ -3812,9 +3793,9 @@
+@@ -3829,9 +3810,9 @@
  files {
  	MAME_DIR .. "src/mame/drivers/nyny.cpp",
  	MAME_DIR .. "src/mame/drivers/r2dtank.cpp",
@@ -287,7 +305,7 @@
  	MAME_DIR .. "src/mame/drivers/sigmab98.cpp",
  	MAME_DIR .. "src/mame/drivers/spiders.cpp",
  	MAME_DIR .. "src/mame/includes/spiders.h",
-@@ -3937,6 +3918,12 @@
+@@ -3954,6 +3935,12 @@
  	MAME_DIR .. "src/mame/drivers/tonton.cpp",
  }
  
@@ -300,7 +318,7 @@
  createMAMEProjects(_target, _subtarget, "taito")
  files {
  	MAME_DIR .. "src/mame/drivers/2mindril.cpp",
-@@ -4399,6 +4386,11 @@
+@@ -4416,6 +4403,11 @@
  	MAME_DIR .. "src/mame/video/toaplan_scu.h",
  }
  
@@ -312,7 +330,7 @@
  createMAMEProjects(_target, _subtarget, "unico")
  files {
  	MAME_DIR .. "src/mame/drivers/drgnmst.cpp",
-@@ -4588,128 +4580,128 @@
+@@ -4605,128 +4597,128 @@
  
  createMAMEProjects(_target, _subtarget, "pinball")
  files {
@@ -561,7 +579,7 @@
  }
  
  --------------------------------------------------
-@@ -4719,67 +4711,66 @@
+@@ -4736,67 +4728,66 @@
  createMAMEProjects(_target, _subtarget, "misc")
  files {
  	MAME_DIR .. "src/mame/drivers/39in1.cpp",
@@ -665,7 +683,7 @@
  	MAME_DIR .. "src/mame/drivers/cdi.cpp",
  	MAME_DIR .. "src/mame/includes/cdi.h",
  	MAME_DIR .. "src/mame/video/mcd212.cpp",
-@@ -4790,22 +4781,22 @@
+@@ -4807,24 +4798,24 @@
  	MAME_DIR .. "src/mame/machine/cdicdic.h",
  	MAME_DIR .. "src/mame/drivers/chameleonrx1.cpp",
  	MAME_DIR .. "src/mame/drivers/chance32.cpp",
@@ -673,12 +691,14 @@
 -	MAME_DIR .. "src/mame/drivers/chexx.cpp",
 -	MAME_DIR .. "src/mame/drivers/chicago.cpp",
 -	MAME_DIR .. "src/mame/drivers/chsuper.cpp",
+-	MAME_DIR .. "src/mame/drivers/cirsa820xxx.cpp",
 -	MAME_DIR .. "src/mame/drivers/clowndwn.cpp",
 -	MAME_DIR .. "src/mame/drivers/clpoker.cpp",
 +--	MAME_DIR .. "src/mame/drivers/changyu.cpp",
 +--	MAME_DIR .. "src/mame/drivers/chexx.cpp",
 +--	MAME_DIR .. "src/mame/drivers/chicago.cpp",
 +--	MAME_DIR .. "src/mame/drivers/chsuper.cpp",
++--	MAME_DIR .. "src/mame/drivers/cirsa820xxx.cpp",
 +--	MAME_DIR .. "src/mame/drivers/clowndwn.cpp",
 +--	MAME_DIR .. "src/mame/drivers/clpoker.cpp",
  	MAME_DIR .. "src/mame/drivers/cocoloco.cpp",
@@ -686,7 +706,9 @@
  	MAME_DIR .. "src/mame/audio/nl_cocoloco.cpp",
  	MAME_DIR .. "src/mame/drivers/coinmstr.cpp",
 -	MAME_DIR .. "src/mame/drivers/coinmvga.cpp",
+-	MAME_DIR .. "src/mame/drivers/cointek.cpp",
 +--	MAME_DIR .. "src/mame/drivers/coinmvga.cpp",
++--	MAME_DIR .. "src/mame/drivers/cointek.cpp",
  	MAME_DIR .. "src/mame/drivers/comebaby.cpp",
 -	MAME_DIR .. "src/mame/drivers/cowtipping.cpp",
 -	MAME_DIR .. "src/mame/drivers/crazybal.cpp",
@@ -699,7 +721,7 @@
  	MAME_DIR .. "src/mame/drivers/bntyhunt.cpp",
  	MAME_DIR .. "src/mame/drivers/coolpool.cpp",
  	MAME_DIR .. "src/mame/includes/coolpool.h",
-@@ -4839,55 +4830,57 @@
+@@ -4858,55 +4849,57 @@
  	MAME_DIR .. "src/mame/drivers/dribling.cpp",
  	MAME_DIR .. "src/mame/includes/dribling.h",
  	MAME_DIR .. "src/mame/video/dribling.cpp",
@@ -779,7 +801,7 @@
  	MAME_DIR .. "src/mame/drivers/good.cpp",
  	MAME_DIR .. "src/mame/drivers/gotcha.cpp",
  	MAME_DIR .. "src/mame/includes/gotcha.h",
-@@ -4897,35 +4890,37 @@
+@@ -4916,35 +4909,37 @@
  	MAME_DIR .. "src/mame/includes/gumbo.h",
  	MAME_DIR .. "src/mame/video/gumbo.cpp",
  	MAME_DIR .. "src/mame/drivers/gunpey.cpp",
@@ -835,7 +857,7 @@
  	MAME_DIR .. "src/mame/drivers/kurukuru.cpp",
  	MAME_DIR .. "src/mame/drivers/kyugo.cpp",
  	MAME_DIR .. "src/mame/includes/kyugo.h",
-@@ -4934,41 +4929,40 @@
+@@ -4953,41 +4948,40 @@
  	MAME_DIR .. "src/mame/includes/ladyfrog.h",
  	MAME_DIR .. "src/mame/video/ladyfrog.cpp",
  	MAME_DIR .. "src/mame/drivers/laserbas.cpp",
@@ -891,7 +913,7 @@
  	MAME_DIR .. "src/mame/drivers/miniboy7.cpp",
  	MAME_DIR .. "src/mame/drivers/minivideo.cpp",
  	MAME_DIR .. "src/mame/drivers/mirax.cpp",
-@@ -4978,25 +4972,28 @@
+@@ -4997,25 +4991,28 @@
  	MAME_DIR .. "src/mame/drivers/mosaic.cpp",
  	MAME_DIR .. "src/mame/includes/mosaic.h",
  	MAME_DIR .. "src/mame/video/mosaic.cpp",
@@ -935,7 +957,7 @@
  	MAME_DIR .. "src/mame/drivers/odyssey.cpp",
  	MAME_DIR .. "src/mame/drivers/oneshot.cpp",
  	MAME_DIR .. "src/mame/includes/oneshot.h",
-@@ -5008,12 +5005,13 @@
+@@ -5027,12 +5024,13 @@
  	MAME_DIR .. "src/mame/drivers/pass.cpp",
  	MAME_DIR .. "src/mame/includes/pass.h",
  	MAME_DIR .. "src/mame/video/pass.cpp",
@@ -952,7 +974,7 @@
  	MAME_DIR .. "src/mame/drivers/pipeline.cpp",
  	MAME_DIR .. "src/mame/drivers/pkscram.cpp",
  	MAME_DIR .. "src/mame/drivers/pntnpuzl.cpp",
-@@ -5024,32 +5022,31 @@
+@@ -5043,33 +5041,32 @@
  	MAME_DIR .. "src/mame/includes/polyplay.h",
  	MAME_DIR .. "src/mame/audio/polyplay.cpp",
  	MAME_DIR .. "src/mame/video/polyplay.cpp",
@@ -972,9 +994,11 @@
 -	MAME_DIR .. "src/mame/drivers/rcorsair.cpp",
 +--	MAME_DIR .. "src/mame/drivers/rcorsair.cpp",
  	MAME_DIR .. "src/mame/drivers/re900.cpp",
+-	MAME_DIR .. "src/mame/drivers/rf51w14cg.cpp",
 -	MAME_DIR .. "src/mame/drivers/rfslots8085.cpp",
 -	MAME_DIR .. "src/mame/drivers/rfslotspcpent.cpp",
 -	MAME_DIR .. "src/mame/drivers/rgum.cpp",
++--	MAME_DIR .. "src/mame/drivers/rf51w14cg.cpp",
 +--	MAME_DIR .. "src/mame/drivers/rfslots8085.cpp",
 +--	MAME_DIR .. "src/mame/drivers/rfslotspcpent.cpp",
 +--	MAME_DIR .. "src/mame/drivers/rgum.cpp",
@@ -998,7 +1022,7 @@
  	MAME_DIR .. "src/mame/drivers/skimaxx.cpp",
  	MAME_DIR .. "src/mame/drivers/skopro.cpp",
  	MAME_DIR .. "src/mame/drivers/skyarmy.cpp",
-@@ -5058,7 +5055,8 @@
+@@ -5078,7 +5075,8 @@
  	MAME_DIR .. "src/mame/drivers/smotor.cpp",
  	MAME_DIR .. "src/mame/drivers/smsmcorp.cpp",
  	MAME_DIR .. "src/mame/drivers/sothello.cpp",
@@ -1008,7 +1032,7 @@
  	MAME_DIR .. "src/mame/audio/special.cpp",
  	MAME_DIR .. "src/mame/audio/special.h",
  	MAME_DIR .. "src/mame/drivers/spool99.cpp",
-@@ -5071,25 +5069,24 @@
+@@ -5091,25 +5089,24 @@
  	MAME_DIR .. "src/mame/drivers/strkzn.cpp",
  	MAME_DIR .. "src/mame/drivers/stuntair.cpp",
  	MAME_DIR .. "src/mame/drivers/su2000.cpp",
@@ -1042,12 +1066,14 @@
  	MAME_DIR .. "src/mame/drivers/truco.cpp",
  	MAME_DIR .. "src/mame/includes/truco.h",
  	MAME_DIR .. "src/mame/video/truco.cpp",
-@@ -5101,12 +5098,12 @@
+@@ -5121,13 +5118,13 @@
  	MAME_DIR .. "src/mame/drivers/ttchamp.cpp",
  	MAME_DIR .. "src/mame/drivers/tugboat.cpp",
  	MAME_DIR .. "src/mame/drivers/tvg01.cpp",
+-	MAME_DIR .. "src/mame/drivers/twinbskt.cpp",
 -	MAME_DIR .. "src/mame/drivers/ice_bozopail.cpp",
 -	MAME_DIR .. "src/mame/drivers/ice_tbd.cpp",
++--	MAME_DIR .. "src/mame/drivers/twinbskt.cpp",
 +--	MAME_DIR .. "src/mame/drivers/ice_bozopail.cpp",
 +--	MAME_DIR .. "src/mame/drivers/ice_tbd.cpp",
  	MAME_DIR .. "src/mame/drivers/umipoker.cpp",
@@ -1059,7 +1085,7 @@
  	MAME_DIR .. "src/mame/drivers/usgames.cpp",
  	MAME_DIR .. "src/mame/includes/usgames.h",
  	MAME_DIR .. "src/mame/video/usgames.cpp",
-@@ -5116,17 +5113,17 @@
+@@ -5137,18 +5134,18 @@
  	MAME_DIR .. "src/mame/includes/vectrex.h",
  	MAME_DIR .. "src/mame/video/vectrex.cpp",
  	MAME_DIR .. "src/mame/machine/vectrex.cpp",
@@ -1075,9 +1101,11 @@
 +--	MAME_DIR .. "src/mame/drivers/vpoker.cpp",
  	MAME_DIR .. "src/mame/drivers/vroulet.cpp",
 -	MAME_DIR .. "src/mame/drivers/wildpkr.cpp",
+-	MAME_DIR .. "src/mame/drivers/winbingo.cpp",
 -	MAME_DIR .. "src/mame/drivers/wms.cpp",
 -	MAME_DIR .. "src/mame/drivers/xtom3d.cpp",
 +--	MAME_DIR .. "src/mame/drivers/wildpkr.cpp",
++--	MAME_DIR .. "src/mame/drivers/winbingo.cpp",
 +--	MAME_DIR .. "src/mame/drivers/wms.cpp",
 +--	MAME_DIR .. "src/mame/drivers/xtom3d.cpp",
  	MAME_DIR .. "src/mame/drivers/xyonix.cpp",
@@ -1085,8 +1113,8 @@
 +--	MAME_DIR .. "src/mame/drivers/yuvomz80.cpp",
  }
  end
---- a/src/mame/arcade.flt	2020-10-27 02:00:36.000000000 +0100
-+++ b/src/mame/arcade.flt	2020-10-28 03:45:15.000000000 +0100
+--- a/src/mame/arcade.flt	2020-12-31 12:34:31.687798891 +0100
++++ b/src/mame/arcade.flt	2020-12-31 12:35:26.572784222 +0100
 @@ -1,65 +1,65 @@
 -1942.cpp
 -1943.cpp
@@ -1116,34 +1144,34 @@
 -aeroboto.cpp
 -aerofgt.cpp
 -age_candy.cpp
-+1942.cpp           // ok
-+1943.cpp           // ok
-+1945kiii.cpp       // ok
-+20pacgal.cpp       // ok
-+//24cdjuke.cpp     // mechanical
-+2mindril.cpp       // ok
-+30test.cpp         // ok
-+39in1.cpp          // ok
-+//3do.cpp          // chd
-+3x3puzzl.cpp       // ok
-+40love.cpp         // ok
-+//4enlinea.cpp     // check
-+4enraya.cpp        // ok
-+//4roses.cpp       // check
-+//5clown.cpp       // poker
-+8080bw.cpp         // ok
-+88games.cpp        // ok
-+//a1supply.cpp     // check
-+ace.cpp            // ok
-+//acefruit.cpp     // fruit
-+//aces1.cpp        // fruit
-+//acesp.cpp        // fruit
-+acommand.cpp       // ok
-+actfancr.cpp       // ok
-+//adp.cpp            // ok
-+aeroboto.cpp       // ok
-+aerofgt.cpp        // ok
-+//age_candy.cpp    // mechanical
++1942.cpp                   //
++1943.cpp                   //
++1945kiii.cpp               //
++20pacgal.cpp               //
++//24cdjuke.cpp             // mechanical
++2mindril.cpp               //
++30test.cpp                 //
++39in1.cpp                  //
++//3do.cpp                  // chd
++3x3puzzl.cpp               //
++40love.cpp                 //
++//4enlinea.cpp             // check
++4enraya.cpp                //
++//4roses.cpp               // check
++//5clown.cpp               // poker
++8080bw.cpp                 //
++88games.cpp                //
++//a1supply.cpp             // check
++ace.cpp                    //
++//acefruit.cpp             // fruit
++//aces1.cpp                // fruit
++//acesp.cpp                // fruit
++acommand.cpp               //
++actfancr.cpp               //
++//adp.cpp                  //
++aeroboto.cpp               //
++aerofgt.cpp                //
++//age_candy.cpp            // mechanical
  airbustr.cpp
 -airraid.cpp
 +//airraid.cpp
@@ -1173,7 +1201,7 @@
 -ampoker2.cpp
 +//alvg.cpp         // pinball
 +//amaticmg.cpp
-+ambush.cpp         // ok
++ambush.cpp         //
 +//amerihok.cpp     // check
 +//ampoker2.cpp     // poker
  amspdwy.cpp
@@ -1337,7 +1365,7 @@
  calchase.cpp
 -calcune.cpp
 -calomega.cpp
-+calcune.cpp             // ok
++calcune.cpp             //
 +//calomega.cpp     // poker
  calorie.cpp
  canyon.cpp
@@ -1368,7 +1396,7 @@
  cchasm.cpp
  cclimber.cpp
  cdi.cpp
-@@ -217,15 +217,15 @@
+@@ -217,28 +217,28 @@
  chanbara.cpp
  chance32.cpp
  changela.cpp
@@ -1389,7 +1417,12 @@
  cidelsa.cpp
  cinemat.cpp
  circus.cpp
-@@ -236,8 +236,8 @@
+ circusc.cpp
+-cirsa820xxx.cpp
++//cirsa820xxx.cpp      // skel-mech
+ cischeat.cpp
+ citycon.cpp
+ clayshoo.cpp
  cliffhgr.cpp
  cloak.cpp
  cloud9.cpp
@@ -1400,16 +1433,18 @@
  clshroad.cpp
  cmmb.cpp
  cninja.cpp
-@@ -245,7 +245,7 @@
+@@ -246,8 +246,8 @@
  cobra.cpp
  cocoloco.cpp
  coinmstr.cpp
 -coinmvga.cpp
+-cointek.cpp
 +//coinmvga.cpp     // check
++//cointek.cpp        // skeleton
  combatsc.cpp
  comebaby.cpp
  commando.cpp
-@@ -254,32 +254,32 @@
+@@ -256,32 +256,32 @@
  coolpool.cpp
  coolridr.cpp
  cop01.cpp
@@ -1448,7 +1483,7 @@
  cv1k.cpp
  cvs.cpp
  cwheel.cpp
-@@ -308,21 +308,23 @@
+@@ -310,21 +310,23 @@
  ddragon.cpp
  ddragon3.cpp
  ddribble.cpp
@@ -1477,7 +1512,7 @@
  dfruit.cpp
  dgpix.cpp
  dietgo.cpp
-@@ -334,8 +336,8 @@
+@@ -336,8 +338,8 @@
  djmain.cpp
  dkmb.cpp
  dkong.cpp
@@ -1488,7 +1523,7 @@
  dmndrby.cpp
  docastle.cpp
  dogfgt.cpp
-@@ -351,20 +353,20 @@
+@@ -353,20 +355,20 @@
  dribling.cpp
  drmicro.cpp
  drtomy.cpp
@@ -1510,14 +1545,14 @@
 +//ecoinf2.cpp      // fruit
 +//ecoinf3.cpp      // fruit
 +//ecoinfr.cpp      // fruit
-+efdt.cpp           // ok
++efdt.cpp           //
  egghunt.cpp
 -electra.cpp
 +//electra.cpp      // ttl
  embargo.cpp
  enigma2.cpp
  eolith.cpp
-@@ -374,7 +376,7 @@
+@@ -376,7 +378,7 @@
  equites.cpp
  ertictac.cpp
  esd16.cpp
@@ -1526,7 +1561,7 @@
  espial.cpp
  esripsys.cpp
  ettrivia.cpp
-@@ -382,11 +384,11 @@
+@@ -384,11 +386,11 @@
  exerion.cpp
  exidy.cpp
  exidy440.cpp
@@ -1540,7 +1575,7 @@
  exzisus.cpp
  ez2d.cpp
  f-32.cpp
-@@ -398,18 +400,18 @@
+@@ -400,18 +402,18 @@
  fastlane.cpp
  fcombat.cpp
  fcrash.cpp
@@ -1564,7 +1599,7 @@
  flipjack.cpp
  flkatck.cpp
  flower.cpp
-@@ -417,30 +419,30 @@
+@@ -419,30 +421,30 @@
  flyball.cpp
  foodf.cpp
  forte2.cpp
@@ -1603,7 +1638,7 @@
  galaga.cpp
  galastrm.cpp
  galaxi.cpp
-@@ -455,12 +457,12 @@
+@@ -457,12 +459,12 @@
  galpanic.cpp
  galpanic_ms.cpp
  galspnbl.cpp
@@ -1621,7 +1656,7 @@
  gaplus.cpp
  gatron.cpp
  gauntlet.cpp
-@@ -472,21 +474,21 @@
+@@ -474,21 +476,21 @@
  giclassic.cpp
  gijoe.cpp
  ginganin.cpp
@@ -1651,7 +1686,7 @@
  gomoku.cpp
  good.cpp
  goodejan.cpp
-@@ -495,8 +497,8 @@
+@@ -497,8 +499,8 @@
  gottlieb.cpp
  gotya.cpp
  gpworld.cpp
@@ -1662,7 +1697,7 @@
  gradius3.cpp
  grchamp.cpp
  gridlee.cpp
-@@ -506,12 +508,12 @@
+@@ -508,12 +510,12 @@
  gstriker.cpp
  gsword.cpp
  gticlub.cpp
@@ -1681,7 +1716,7 @@
  guab.cpp
  gumbo.cpp
  gunbustr.cpp
-@@ -521,72 +523,72 @@
+@@ -523,72 +525,72 @@
  gyruss.cpp
  halleys.cpp
  hanaawas.cpp
@@ -1785,7 +1820,7 @@
  jaguar.cpp
  jailbrek.cpp
  jalmah.cpp
-@@ -596,26 +598,26 @@
+@@ -598,26 +600,26 @@
  jchan.cpp
  jclub2.cpp
  jedi.cpp
@@ -1826,7 +1861,7 @@
  kaneko16.cpp
  kangaroo.cpp
  karnov.cpp
-@@ -628,7 +630,7 @@
+@@ -630,7 +632,7 @@
  kingobox.cpp
  kingpin.cpp
  kinst.cpp
@@ -1835,22 +1870,24 @@
  klax.cpp
  kncljoe.cpp
  koftball.cpp
-@@ -638,10 +640,10 @@
+@@ -640,11 +642,11 @@
  konamigv.cpp
  konamigx.cpp
  konamim2.cpp
 -konblands.cpp
 -konendev.cpp
+-kongs470.cpp
 -konmedal.cpp
 -konmedal68k.cpp
 +//konblands.cpp    // not working; check back later
 +//konendev.cpp     // fruit
++//kongs470.cpp                   // skel
 +//konmedal.cpp     // check
 +//konmedal68k.cpp  // check
  kontest.cpp
  kopunch.cpp
  kpython.cpp
-@@ -660,33 +662,33 @@
+@@ -663,33 +665,33 @@
  lastduel.cpp
  lastfght.cpp
  lazercmd.cpp
@@ -1896,7 +1933,7 @@
  lwings.cpp
  m10.cpp
  m107.cpp
-@@ -700,15 +702,15 @@
+@@ -703,15 +705,15 @@
  m79amb.cpp
  m90.cpp
  m92.cpp
@@ -1917,7 +1954,7 @@
  magmax.cpp
  magreel.cpp
  magtouch.cpp
-@@ -716,29 +718,29 @@
+@@ -719,29 +721,29 @@
  mainsnk.cpp
  majorpkr.cpp
  malzak.cpp
@@ -1955,7 +1992,7 @@
  mediagx.cpp
  megadriv_acbl.cpp
  megaphx.cpp
-@@ -747,27 +749,27 @@
+@@ -750,27 +752,27 @@
  megatech.cpp
  megazone.cpp
  meijinsn.cpp
@@ -1992,7 +2029,7 @@
  midas.cpp
  midqslvr.cpp
  midtunit.cpp
-@@ -777,7 +779,7 @@
+@@ -780,7 +782,7 @@
  midyunit.cpp
  midzeus.cpp
  mikie.cpp
@@ -2001,7 +2038,7 @@
  miniboy7.cpp
  minivadr.cpp
  minivideo.cpp
-@@ -792,57 +794,57 @@
+@@ -795,57 +797,57 @@
  mjsister.cpp
  mlanding.cpp
  mmagic.cpp
@@ -2088,7 +2125,7 @@
  mystston.cpp
  mystwarr.cpp
  n8080.cpp
-@@ -850,9 +852,9 @@
+@@ -853,9 +855,9 @@
  namcona1.cpp
  namconb1.cpp
  namcond1.cpp
@@ -2100,7 +2137,7 @@
  namcos11.cpp
  namcos12.cpp
  namcos1b.cpp
-@@ -861,7 +863,7 @@
+@@ -864,7 +866,7 @@
  namcos21_c67.cpp
  namcos21_de.cpp
  namcos22.cpp
@@ -2109,7 +2146,7 @@
  namcos86.cpp
  naomi.cpp
  naughtyb.cpp
-@@ -874,11 +876,11 @@
+@@ -877,11 +879,11 @@
  neogeo.cpp
  neopcb.cpp
  neoprint.cpp
@@ -2125,7 +2162,7 @@
  nightgal.cpp
  nightmare.cpp
  ninjakd2.cpp
-@@ -887,13 +889,13 @@
+@@ -890,13 +892,13 @@
  niyanpai.cpp
  nmg5.cpp
  nmk16.cpp
@@ -2145,7 +2182,7 @@
  nss.cpp
  nwk-tr.cpp
  nycaptor.cpp
-@@ -916,7 +918,7 @@
+@@ -919,7 +921,7 @@
  pacland.cpp
  pacman.cpp
  pandoras.cpp
@@ -2154,7 +2191,7 @@
  panicr.cpp
  paradise.cpp
  paranoia.cpp
-@@ -932,18 +934,18 @@
+@@ -935,18 +937,18 @@
  pcxt.cpp
  pengadvb.cpp
  pengo.cpp
@@ -2180,7 +2217,7 @@
  pingpong.cpp
  pinkiri8.cpp
  pipedrm.cpp
-@@ -955,14 +957,14 @@
+@@ -958,14 +960,14 @@
  pktgaldx.cpp
  playch10.cpp
  playmark.cpp
@@ -2201,7 +2238,7 @@
  pokerout.cpp
  polepos.cpp
  policetr.cpp
-@@ -974,15 +976,15 @@
+@@ -977,15 +979,15 @@
  popobear.cpp
  popper.cpp
  portrait.cpp
@@ -2221,7 +2258,7 @@
  psikyo.cpp
  psikyo4.cpp
  psikyosh.cpp
-@@ -1002,7 +1004,7 @@
+@@ -1005,7 +1007,7 @@
  quizdna.cpp
  quizo.cpp
  quizpani.cpp
@@ -2230,7 +2267,7 @@
  quizshow.cpp
  r2dtank.cpp
  r2dx_v33.cpp
-@@ -1012,58 +1014,58 @@
+@@ -1015,59 +1017,59 @@
  raiden_ms.cpp
  rallyx.cpp
  rampart.cpp
@@ -2251,9 +2288,11 @@
  relief.cpp
  renegade.cpp
  retofinv.cpp
+-rf51w14cg.cpp
 -rfslots8085.cpp
 -rfslotspcpent.cpp
 -rgum.cpp
++//rf51w14cg.cpp               // skeleton gambling
 +//rfslots8085.cpp  // skeleton mechanical
 +//rfslotspcpent.cpp          // mechanical
 +//rgum.cpp         // check
@@ -2311,7 +2350,7 @@
  sanremo.cpp
  saturn.cpp
  sauro.cpp
-@@ -1072,38 +1074,38 @@
+@@ -1076,38 +1078,38 @@
  sbowling.cpp
  sbrkout.cpp
  sbugger.cpp
@@ -2360,7 +2399,7 @@
  segaxbd.cpp
  segaybd.cpp
  seibucats.cpp
-@@ -1115,8 +1117,8 @@
+@@ -1119,8 +1121,8 @@
  seta.cpp
  seta2.cpp
  sf.cpp
@@ -2371,7 +2410,7 @@
  sfkick.cpp
  sg1000a.cpp
  shadfrce.cpp
-@@ -1125,23 +1127,23 @@
+@@ -1129,23 +1131,23 @@
  shangkid.cpp
  shaolins.cpp
  shisen.cpp
@@ -2400,7 +2439,7 @@
  skimaxx.cpp
  skopro.cpp
  skullxbo.cpp
-@@ -1153,10 +1155,10 @@
+@@ -1157,10 +1159,10 @@
  skyraid.cpp
  slapfght.cpp
  slapshot.cpp
@@ -2410,11 +2449,11 @@
 -slotcarn.cpp
 -smotor.cpp
 +//slotcarn.cpp     // fruit-poker
-+smotor.cpp           // ok
++smotor.cpp           //
  smsmcorp.cpp
  sms_bootleg.cpp
  snesb.cpp
-@@ -1176,19 +1178,19 @@
+@@ -1180,19 +1182,19 @@
  spcforce.cpp
  spdheat.cpp
  spdodgeb.cpp
@@ -2441,7 +2480,7 @@
  spool99.cpp
  sprcros2.cpp
  sprint2.cpp
-@@ -1214,36 +1216,36 @@
+@@ -1218,36 +1220,36 @@
  stadhero.cpp
  starcrus.cpp
  starfire.cpp
@@ -2489,7 +2528,7 @@
  superqix.cpp
  supertnk.cpp
  superwng.cpp
-@@ -1252,29 +1254,29 @@
+@@ -1256,29 +1258,29 @@
  suprnova.cpp
  suprridr.cpp
  suprslam.cpp
@@ -2524,7 +2563,7 @@
  taito_x.cpp
  taito_z.cpp
  tank8.cpp
-@@ -1283,24 +1285,24 @@
+@@ -1287,24 +1289,24 @@
  taotaido.cpp
  tapatune.cpp
  targeth.cpp
@@ -2554,7 +2593,7 @@
  thedealr.cpp
  thedeep.cpp
  thepit.cpp
-@@ -1313,11 +1315,11 @@
+@@ -1317,11 +1319,11 @@
  tigeroad.cpp
  timelimt.cpp
  timeplt.cpp
@@ -2568,7 +2607,7 @@
  tnzs.cpp
  toaplan1.cpp
  toaplan2.cpp
-@@ -1336,7 +1338,7 @@
+@@ -1340,7 +1342,7 @@
  travrusa.cpp
  triforce.cpp
  triplhnt.cpp
@@ -2577,7 +2616,7 @@
  trivrus.cpp
  truco.cpp
  trucocl.cpp
-@@ -1352,7 +1354,7 @@
+@@ -1356,10 +1358,10 @@
  turbo.cpp
  turrett.cpp
  tutankhm.cpp
@@ -2585,8 +2624,12 @@
 +//tvcapcom.cpp     // skeleton
  tvg01.cpp
  twin16.cpp
+-twinbskt.cpp
++//twinbskt.cpp       // skeleton
  twincobr.cpp
-@@ -1365,12 +1367,12 @@
+ twinkle.cpp
+ twins.cpp
+@@ -1370,12 +1372,12 @@
  ultrsprt.cpp
  umipoker.cpp
  undrfire.cpp
@@ -2602,7 +2645,7 @@
  usgames.cpp
  v0bowl.cpp
  vamphalf.cpp
-@@ -1378,7 +1380,7 @@
+@@ -1383,7 +1385,7 @@
  vastar.cpp
  vball.cpp
  vcombat.cpp
@@ -2611,7 +2654,7 @@
  vectrex.cpp
  vega.cpp
  vegaeo.cpp
-@@ -1387,18 +1389,18 @@
+@@ -1392,18 +1394,18 @@
  vertigo.cpp
  vicdual.cpp
  victory.cpp
@@ -2635,7 +2678,7 @@
  vroulet.cpp
  vsnes.cpp
  vulgus.cpp
-@@ -1414,25 +1416,25 @@
+@@ -1419,26 +1421,26 @@
  welltris.cpp
  wgp.cpp
  wheelfir.cpp
@@ -2648,6 +2691,8 @@
 +//wico.cpp         // pinball
 +//wildpkr.cpp      // poker
  williams.cpp
+-winbingo.cpp
++//winbingo.cpp       // skeleton
  wink.cpp
  wiping.cpp
  witch.cpp
@@ -2673,7 +2718,7 @@
  wrally.cpp
  wwfsstar.cpp
  wyvernf0.cpp
-@@ -1441,7 +1443,7 @@
+@@ -1447,7 +1449,7 @@
  xmen.cpp
  xorworld.cpp
  xtheball.cpp
@@ -2682,7 +2727,7 @@
  xxmissio.cpp
  xybots.cpp
  xyonix.cpp
-@@ -1449,17 +1451,17 @@
+@@ -1455,17 +1457,17 @@
  yiear.cpp
  yunsun16.cpp
  yunsung8.cpp
@@ -2705,7 +2750,7 @@
  zr107.cpp
  zwackery.cpp
  //exceptions + to add - to remove from imported list
-@@ -1473,10 +1475,10 @@
+@@ -1479,10 +1481,10 @@
  -cdimono1
  -cdimono2
  //cps1.cpp
