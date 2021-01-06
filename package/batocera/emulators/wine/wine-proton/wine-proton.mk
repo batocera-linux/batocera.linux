@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-WINE_PROTON_VERSION = 5.13-3-rc2
+WINE_PROTON_VERSION = experimental-wine-5.13-20201218c
 WINE_PROTON_SOURCE = proton-wine-$(WINE_PROTON_VERSION).tar.gz
 WINE_PROTON_SITE = https://github.com/ValveSoftware/wine/archive
 WINE_PROTON_LICENSE = LGPL-2.1+
