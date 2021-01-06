@@ -4,7 +4,7 @@
 #
 ################################################################################
 # Version.: Commits on Jun 13, 2020
-LIBRETRO_81_VERSION = 8724b216da3a85babb10c700b9078e95568cb4b2
+LIBRETRO_81_VERSION = 201399a4c693f53ae3347ac395e578b22f33a639
 LIBRETRO_81_SITE = $(call github,libretro,81-libretro,$(LIBRETRO_81_VERSION))
 LIBRETRO_81_LICENSE = GPLv3
 
