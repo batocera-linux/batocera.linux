@@ -13,12 +13,12 @@ define REDREAM_EXTRACT_CMDS
 endef
 
 define REDREAM_INSTALL_TARGET_CMDS
-	mkdir -p $(TARGET_DIR)/usr/share/redream
-	mkdir -p $(TARGET_DIR)/userdata/system/.config/redream
-	cp -pr $(@D)/target/redream $(TARGET_DIR)/usr/share/redream
-	touch $(TARGET_DIR)/usr/share/redream/redream.cfg
-	ln -s $(TARGET_DIR)/usr/share/redream/redream $(TARGET_DIR)/usr/bin/redream
-	ln -s $(TARGET_DIR)/usr/share/redream/redream.cfg $(TARGET_DIR)/userdata/system/.config/redream/redream.cfg
+	mkdir -p $(TARGET_DIR)/usr/bin
+	cp -pr $(@D)/target/redream $(TARGET_DIR)/usr/bin/redream
+
+	# evmap config
+	mkdir -p $(TARGET_DIR)/usr/share/evmapy
+	cp -prn $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/redream/dreamcast.redream.keys $(TARGET_DIR)/usr/share/evmapy
 endef
 
 $(eval $(generic-package))
