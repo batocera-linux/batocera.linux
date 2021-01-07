@@ -1,0 +1,590 @@
+--- a/src/floppy_ipf.c	2021-01-02 12:26:33.000000000 +0100
++++ b/src/floppy_ipf.c	2021-01-07 18:20:38.159044879 +0100
+@@ -9,10 +9,10 @@
+   IPF files are handled using the capsimage library, which emulates the FDC
+   at low level and allows to read complex protections.
+ 
+-  RAW files made with KryoFlux board or CT RAW dumped with an Amiga are also handled
++  RAW stream files made with KryoFlux board or CT RAW dumped with an Amiga are also handled
+   by the capsimage library.
+ */
+-const char floppy_ipf_fileid[] = "Hatari floppy_ipf.c : " __DATE__ " " __TIME__;
++const char floppy_ipf_fileid[] = "Hatari floppy_ipf.c";
+ 
+ #include "main.h"
+ #include "file.h"
+@@ -26,18 +26,30 @@
+ #include "cycles.h"
+ 
+ #ifdef HAVE_CAPSIMAGE
+-#if CAPSIMAGE_VERSION == 5
+-#include <caps5/CapsLibAll.h>
+-#else
+-#include <caps/fdc.h>
+-#define CAPS_LIB_RELEASE	4
+-#define CAPS_LIB_REVISION	2
++#ifndef __cdecl
++#define __cdecl  /* CAPS headers need this, but do not define it on their own */
+ #endif
++#include <stdint.h>
++#include <caps/CapsLibAll.h>
++#define CapsLong SDWORD
++#define CapsULong UDWORD
+ /* Macro to check release and revision */
+ #define	CAPS_LIB_REL_REV	( CAPS_LIB_RELEASE * 100 + CAPS_LIB_REVISION )
+ #endif
+ 
+ 
++/* To handle RAW stream images with one file per track/side */
++#define	IPF_MAX_TRACK_RAW_STREAM_IMAGE	84				/* track number can be 0 .. 83 */
++#define	IPF_MAX_SIDE_RAW_STREAM_IMAGE	2				/* side number can be 0 or 1 */
++
++struct
++{
++	int		TrackSize;
++	Uint8		*TrackData;
++} IPF_RawStreamImage[ MAX_FLOPPYDRIVES ][ IPF_MAX_TRACK_RAW_STREAM_IMAGE ][ IPF_MAX_SIDE_RAW_STREAM_IMAGE ];
++
++
++
+ typedef struct
+ {
+ #ifdef HAVE_CAPSIMAGE
+@@ -46,27 +58,33 @@
+ 
+ 	struct CapsFdc		Fdc;				/* Fdc state */
+ 	struct CapsDrive 	Drive[ MAX_FLOPPYDRIVES ];	/* Physical drives */
+-	CapsLong		CapsImage[ MAX_FLOPPYDRIVES ];	/* For the IPF disk images */
++	CapsLong		CapsImage[ MAX_FLOPPYDRIVES ];	/* Image Id or -1 if drive empty */
++	CapsLong		CapsImageType[ MAX_FLOPPYDRIVES ]; /* ImageType or -1 if not known */
+ 
+ 	int			Rev_Track[ MAX_FLOPPYDRIVES ];	/* Needed to handle CAPSSetRevolution for type II/III commands */
+ 	int			Rev_Side[ MAX_FLOPPYDRIVES ];
+ 
+ 	bool			DriveEnabled[ MAX_FLOPPYDRIVES ];/* Is drive ON or OFF */
+ 	bool			DoubleSided[ MAX_FLOPPYDRIVES ];/* Is drive double sided or not */
++#endif
+ 
+ 	Sint64			FdcClock;			/* Current value of CyclesGlobalClockCounter */
+-#endif
+ } IPF_STRUCT;
+ 
+ 
+ static IPF_STRUCT	IPF_State;			/* All variables related to the IPF support */
+ 
+ 
++static bool	IPF_Eject_RawStreamImage ( int Drive );
+ #ifdef HAVE_CAPSIMAGE
++static char	*IPF_FilenameFindTrackSide (char *FileName);
++static bool	IPF_Insert_RawStreamImage ( int Drive );
++
+ static void	IPF_CallBack_Trk ( struct CapsFdc *pc , CapsULong State );
+ static void	IPF_CallBack_Irq ( struct CapsFdc *pc , CapsULong State );
+ static void	IPF_CallBack_Drq ( struct CapsFdc *pc , CapsULong State );
+ static void	IPF_Drive_Update_Enable_Side ( void );
++static void	IPF_FDC_LogCommand ( Uint8 Command );
+ #endif
+ 
+ 
+@@ -76,40 +94,56 @@
+ /**
+  * Save/Restore snapshot of local variables('MemorySnapShot_Store' handles type)
+  * We must take care of whether Hatari was compiled with IPF support of not
+- * when saving/restoring snapshots to avoid incompatibilies.
++ * when saving/restoring snapshots to avoid incompatibilities.
+  */
+ void IPF_MemorySnapShot_Capture(bool bSave)
+ {
+ 	int	StructSize;
+ 	int	Drive;
++	int	Track , Side;
++	int	TrackSize;
++	Uint8	*p;
++
+ 
+ 	if ( bSave )					/* Saving snapshot */
+ 	{
+ 		StructSize = sizeof ( IPF_State );	/* 0 if HAVE_CAPSIMAGE is not defined */
+ 		MemorySnapShot_Store(&StructSize, sizeof(StructSize));
+-fprintf ( stderr , "ipf save %d\n" , StructSize );
+ 		if ( StructSize > 0 )
++		{
+ 			MemorySnapShot_Store(&IPF_State, sizeof(IPF_State));
++
++			/* Save the content of IPF_RawStreamImage[] */
++			for ( Drive=0 ; Drive < MAX_FLOPPYDRIVES ; Drive++ )
++				for ( Track=0 ; Track<IPF_MAX_TRACK_RAW_STREAM_IMAGE ; Track++ )
++					for ( Side=0 ; Side<IPF_MAX_SIDE_RAW_STREAM_IMAGE ; Side++ )
++					{
++						TrackSize = IPF_RawStreamImage[ Drive ][ Track ][Side].TrackSize;
++//						fprintf ( stderr , "IPF : save raw stream drive=%d track=%d side=%d : %d\n" , Drive , Track , Side , TrackSize );
++						MemorySnapShot_Store(&TrackSize, sizeof(TrackSize));
++						if ( TrackSize > 0 )
++							MemorySnapShot_Store(IPF_RawStreamImage[ Drive ][ Track ][Side].TrackData, TrackSize);
++					}
++		}
+ 	}
+ 
+ 	else						/* Restoring snapshot */
+ 	{
+ 		MemorySnapShot_Store(&StructSize, sizeof(StructSize));
+-fprintf ( stderr , "ipf load %d\n" , StructSize );
+ 		if ( ( StructSize == 0 ) && ( sizeof ( IPF_State ) > 0 ) )
+ 		{
+-			Log_AlertDlg(LOG_ERROR, "This memory snapshot doesn't include IPF data but this version of Hatari was built with IPF support");
++			Log_AlertDlg(LOG_ERROR, "Hatari built with IPF floppy support, but no IPF data in memory snapshot -> skip");
+ 			return;				/* Continue restoring the rest of the memory snapshot */
+ 		}
+ 		else if ( ( StructSize > 0 ) && ( sizeof ( IPF_State ) == 0 ) )
+ 		{
+-			Log_AlertDlg(LOG_ERROR, "This memory snapshot includes IPF data but this version of Hatari was not built with IPF support");
++			Log_AlertDlg(LOG_ERROR, "Memory snapshot with IPF floppy data, but Hatari built without IPF support -> skip");
+ 			MemorySnapShot_Skip( StructSize );	/* Ignore the IPF data */
+ 			return;				/* Continue restoring the rest of the memory snapshot */
+ 		}
+ 		else if ( ( StructSize > 0 ) && ( StructSize != sizeof ( IPF_State ) ) )
+ 		{
+-			Log_AlertDlg(LOG_ERROR, "This memory snapshot includes IPF data different from the ones handled in this version of Hatari");
++			Log_AlertDlg(LOG_ERROR, "Memory snapshot IPF floppy data incompatible with this Hatari version -> skip");
+ 			MemorySnapShot_Skip( StructSize );	/* Ignore the IPF data */
+ 			return;				/* Continue restoring the rest of the memory snapshot */
+ 		}
+@@ -122,13 +156,13 @@
+ 			/* For IPF structures, we need to update some pointers in Fdc/Drive/CapsImage */
+ 			/* drive : PUBYTE trackbuf, PUDWORD timebuf */
+ 			/* fdc : PCAPSDRIVE driveprc, PCAPSDRIVE drive, CAPSFDCHOOK callback functions */
+-			CAPSFdcInvalidateTrack ( &IPF_State.Fdc , 0 );	/* Invalidate buffered track data for drive 0 */
+-			CAPSFdcInvalidateTrack ( &IPF_State.Fdc , 1 );	/* Invalidate buffered track data for drive 1 */
+-
+ 			IPF_State.Fdc.drive = IPF_State.Drive;		/* Connect drives array to the FDC */
+ 			if ( IPF_State.Fdc.driveprc != NULL )		/* Recompute active drive's pointer */
+ 				IPF_State.Fdc.driveprc = IPF_State.Fdc.drive + IPF_State.Fdc.driveact;
+ 
++			CAPSFdcInvalidateTrack ( &IPF_State.Fdc , 0 );	/* Invalidate buffered track data for drive 0 */
++			CAPSFdcInvalidateTrack ( &IPF_State.Fdc , 1 );	/* Invalidate buffered track data for drive 1 */
++
+ 			/* Set callback functions */
+ 			IPF_State.Fdc.cbirq = IPF_CallBack_Irq;
+ 			IPF_State.Fdc.cbdrq = IPF_CallBack_Drq;
+@@ -145,7 +179,35 @@
+ 						return;
+ 					}
+ 
+-		fprintf ( stderr , "ipf load ok\n" );
++			/* Restore the content of IPF_RawStreamImage[] */
++			/* NOTE  : IPF_Insert above might already have read the raw tracks from disk, */
++			/* so we free all those tracks and read them again from the snapshot instead */
++			/* (not very efficient, but it's a rare case anyway) */
++			for ( Drive=0 ; Drive < MAX_FLOPPYDRIVES ; Drive++ )
++			{
++				IPF_Eject_RawStreamImage ( Drive );
++				for ( Track=0 ; Track<IPF_MAX_TRACK_RAW_STREAM_IMAGE ; Track++ )
++					for ( Side=0 ; Side<IPF_MAX_SIDE_RAW_STREAM_IMAGE ; Side++ )
++					{
++						MemorySnapShot_Store(&TrackSize, sizeof(TrackSize));
++//						fprintf ( stderr , "IPF : restore raw stream drive=%d track=%d side=%d : %d\n" , Drive , Track , Side , TrackSize );
++						IPF_RawStreamImage[ Drive ][ Track ][Side].TrackSize = TrackSize;
++						IPF_RawStreamImage[ Drive ][ Track ][Side].TrackData = NULL;
++						if ( TrackSize > 0 )
++						{
++							p = malloc ( TrackSize );
++							if ( p == NULL )
++							{
++								Log_AlertDlg(LOG_ERROR, "Error restoring IPF raw track drive %d track %d side %d size %d" ,
++									Drive, Track, Side , TrackSize );
++								return;
++							}
++							MemorySnapShot_Store(p, TrackSize);
++							IPF_RawStreamImage[ Drive ][ Track ][Side].TrackData = p;
++						}
++					}
++			}
++			Log_Printf ( LOG_DEBUG , "ipf load ok\n" );
+ 		}
+ 	}
+ }
+@@ -162,16 +224,49 @@
+ {
+ 	return ( File_DoesFileExtensionMatch(pszFileName,".ipf" )
+ 		|| ( bAllowGZ && File_DoesFileExtensionMatch(pszFileName,".ipf.gz") )
+-#if CAPS_LIB_REL_REV >= 501
+ 		|| File_DoesFileExtensionMatch(pszFileName,".raw" )
+ 		|| ( bAllowGZ && File_DoesFileExtensionMatch(pszFileName,".raw.gz") )
+ 		|| File_DoesFileExtensionMatch(pszFileName,".ctr" )
+ 		|| ( bAllowGZ && File_DoesFileExtensionMatch(pszFileName,".ctr.gz") )
+-#endif
+ 		);
+ }
+ 
+ 
++/*
++ * Return a pointer to the part "tt.s.raw" at the end of the filename
++ * (there can be an extra suffix to ignore if the file is compressed).
++ * If we found a string where "tt" and "s" are digits, then we return
++ * a pointer to this string.
++ * If not found, we return NULL
++ */
++#ifdef HAVE_CAPSIMAGE
++static char *IPF_FilenameFindTrackSide (char *FileName)
++{
++	char	ext[] = ".raw";
++	int	len;
++	char	*p;
++
++	len = strlen ( FileName );
++	len -= strlen ( ext );
++
++	while ( len >= 4 )				/* need at least 4 chars for "tt.s" */
++	{
++		if ( strncasecmp ( ext , FileName + len , strlen ( ext ) ) == 0 )
++		{
++			p = FileName + len - 4;
++			if ( isdigit( p[0] ) && isdigit( p[1] )
++			  && ( p[2] == '.' ) && isdigit( p[3] ) )
++				return p;
++		}
++
++		len--;
++	}
++
++	return NULL;
++}
++#endif
++
++
+ /*-----------------------------------------------------------------------*/
+ /**
+  * Load .IPF file into memory, set number of bytes loaded and return a pointer
+@@ -180,7 +275,7 @@
+ Uint8 *IPF_ReadDisk(int Drive, const char *pszFileName, long *pImageSize, int *pImageType)
+ {
+ #ifndef HAVE_CAPSIMAGE
+-	Log_AlertDlg(LOG_ERROR, "This version of Hatari was not built with IPF support, this disk image can't be handled.");
++	Log_AlertDlg(LOG_ERROR, "Hatari built without IPF support -> can't handle floppy image");
+ 	return NULL;
+ 
+ #else
+@@ -257,6 +352,8 @@
+ 
+ 		IPF_State.DriveEnabled[ i ] = true;
+ 		IPF_State.DoubleSided[ i ] = true;
++
++		IPF_State.CapsImageType[ i ] = -1;
+ 	}
+ 
+ 	/* Init FDC with 2 physical drives */
+@@ -309,7 +406,7 @@
+ 
+ 
+ /*
+- * Init the ressources to handle the IPF image inserted into a drive (0=A: 1=B:)
++ * Init the resources to handle the IPF image inserted into a drive (0=A: 1=B:)
+  */
+ bool	IPF_Insert ( int Drive , Uint8 *pImageBuffer , long ImageSize )
+ {
+@@ -319,6 +416,9 @@
+ #else
+ 	CapsLong	ImageId;
+ 	CapsLong	ImageType;
++	const char	*ImageTypeStr;
++	bool		Type_OK;
++
+ 
+ 	ImageId = CAPSAddImage();
+ 	if ( ImageId < 0 )
+@@ -327,29 +427,49 @@
+ 		return false;
+ 	}
+ 
+-#if CAPS_LIB_REL_REV >= 501
+ 	ImageType = CAPSGetImageTypeMemory ( pImageBuffer , ImageSize );
+ 	if ( ImageType == citError )
+ 	{
+ 		fprintf ( stderr , "IPF : error CAPSGetImageTypeMemory\n" );
++		CAPSRemImage ( ImageId ) ;
+ 		return false;
+ 	}
+ 	else if ( ImageType == citUnknown )
+ 	{
+ 		fprintf ( stderr , "IPF : unknown image type\n" );
++		CAPSRemImage ( ImageId ) ;
+ 		return false;
+ 	}
+ 
+-	fprintf ( stderr , "IPF : IPF_Insert drive=%d buf=%p size=%ld imageid=%d type=" , Drive , pImageBuffer , ImageSize , ImageId );
++	Type_OK = true;
+ 	switch ( ImageType ) {
+-		case citIPF:		fprintf ( stderr , "IPF\n" ); break;
+-		case citCTRaw:		fprintf ( stderr , "CT RAW\n" ); break;
+-		case citKFStream:	fprintf ( stderr , "KF STREAM\n" ) ; break;
+-		case citDraft:		fprintf ( stderr , "DRAFT\n" ) ; break;
+-		default :		fprintf ( stderr , "NOT SUPPORTED\n" );
+-					return false;
++		case citIPF:		ImageTypeStr = "IPF"; break;
++		case citCTRaw:		ImageTypeStr = "CT RAW"; break;
++		case citKFStream:	ImageTypeStr = "KF STREAM" ; break;
++		case citDraft:		ImageTypeStr = "DRAFT" ; break;
++		default :		ImageTypeStr = "NOT SUPPORTED\n";
++					Type_OK = false;
++	}
++	fprintf ( stderr , "IPF : IPF_Insert drive=%d buf=%p size=%ld imageid=%d type=%s\n" , Drive , pImageBuffer , ImageSize , ImageId , ImageTypeStr );
++
++	if ( !Type_OK )
++	{
++		CAPSRemImage ( ImageId ) ;
++		return false;
++	}
++
++
++	/* Special case for RAW stream image, we load all the tracks now */
++	if ( ImageType == citKFStream )
++	{
++		if ( IPF_Insert_RawStreamImage ( Drive ) == false )
++		{
++			fprintf ( stderr , "IPF : can't load raw stream files\n" );
++			CAPSRemImage ( ImageId ) ;
++			return false;
++		}
+ 	}
+-#endif
++
+ 
+ 	if ( CAPSLockImageMemory ( ImageId , pImageBuffer , (CapsULong)ImageSize , DI_LOCK_MEMREF ) == imgeOk )
+ 	{
+@@ -396,6 +516,7 @@
+ 
+ 	
+ 	IPF_State.CapsImage[ Drive ] = ImageId;
++	IPF_State.CapsImageType[ Drive ] = ImageType;
+ 
+ 	IPF_State.Drive[ Drive ].diskattr |= CAPSDRIVE_DA_IN;				/* Disk inserted, keep the value for "write protect" */
+ 
+@@ -409,10 +530,32 @@
+ }
+ 
+ 
++/*
++ * Load all the raw stream files for all tracks/sides of a dump.
++ * We use the filename of the raw file in drive 'Drive' as a template
++ * where we replace track and side will all the possible values.
++ */
++#ifdef HAVE_CAPSIMAGE
++static bool	IPF_Insert_RawStreamImage ( int Drive )
++{
++	int	Track , Side;
++	char	TrackFileName[ FILENAME_MAX ];
++	char	*TrackSide_pointer;
++	char	TrackSide_buf[ 4 + 1 ];			/* "tt.s" + \0 */
++	int	TrackCount;
++	int	TrackCount_0 , TrackCount_1;
++	Uint8	*p;
++	long	Size;
++
++
++return true;						/* This function is not used for now, always return true */
++}
++#endif
++
+ 
+ 
+ /*
+- * When ejecting a disk, free the ressources associated with an IPF image
++ * When ejecting a disk, free the resources associated with an IPF image
+  */
+ bool	IPF_Eject ( int Drive )
+ {
+@@ -436,7 +579,12 @@
+ 		return false;
+ 	}
+ 
++	/* Special case for RAW stream image, we must free all the tracks */
++	if ( IPF_State.CapsImageType[ Drive ] == citKFStream )
++		IPF_Eject_RawStreamImage ( Drive );
++
+ 	IPF_State.CapsImage[ Drive ] = -1;
++	IPF_State.CapsImageType[ Drive ] = -1;
+ 
+ 	IPF_State.Drive[ Drive ].diskattr &= ~CAPSDRIVE_DA_IN;
+ 
+@@ -445,6 +593,35 @@
+ }
+ 
+ 
++/*
++ * When ejecting a RAW stream image we must free all the individual tracks
++ */
++static bool	IPF_Eject_RawStreamImage ( int Drive )
++{
++#ifndef HAVE_CAPSIMAGE
++	return true;
++
++#else
++	int	Track , Side;
++
++return true;						/* This function is not used for now, always return true */
++	for ( Track=0 ; Track<IPF_MAX_TRACK_RAW_STREAM_IMAGE ; Track++ )
++		for ( Side=0 ; Side<IPF_MAX_SIDE_RAW_STREAM_IMAGE ; Side++ )
++		{
++			if ( IPF_RawStreamImage[ Drive ][ Track ][Side].TrackData != NULL )
++			{
++				fprintf ( stderr , "IPF : eject raw stream drive=%d track=%d side=%d\n" , Drive , Track , Side );
++				free ( IPF_RawStreamImage[ Drive ][ Track ][Side].TrackData );
++				IPF_RawStreamImage[ Drive ][ Track ][Side].TrackData = NULL;
++				IPF_RawStreamImage[ Drive ][ Track ][Side].TrackSize = 0;
++			}
++		}
++
++	return true;
++#endif
++}
++
++
+ 
+ 
+ /*
+@@ -593,7 +770,6 @@
+ 	else
+ 	        IPF_State.Fdc.drivemax = MAX_FLOPPYDRIVES - 1;		/* Should be 1 */
+ 
+-#if CAPS_LIB_REL_REV >= 501
+ 	for ( i=0 ; i < MAX_FLOPPYDRIVES ; i++ )
+ 	{
+ 		if ( IPF_State.DoubleSided[ i ] )
+@@ -601,7 +777,6 @@
+ 		else
+ 			IPF_State.Drive[ i ].diskattr |= CAPSDRIVE_DA_SS;	/* Single sided */
+ 	}
+-#endif
+ }
+ #endif
+ 
+@@ -657,10 +832,11 @@
+ 	return;						/* This should not be reached (an IPF image can't be inserted without capsimage) */
+ 
+ #else
+-	LOG_TRACE(TRACE_FDC, "fdc ipf write reg=%d data=0x%x VBL=%d HBL=%d\n" , Reg , Byte , nVBLs , nHBL );
+-
++	if ( Reg == 0 )					/* more detailed logs for command register */
++		IPF_FDC_LogCommand ( Byte );
++	else
++		LOG_TRACE(TRACE_FDC, "fdc ipf write reg=%d data=0x%x VBL=%d HBL=%d\n" , Reg , Byte , nVBLs , nHBL );
+ 	
+-#if CAPS_LIB_REL_REV >= 501
+ 	/* In the case of CTR images, we must reset the revolution counter */
+ 	/* when a command access data on disk and track/side changed since last access */
+ 	if ( Reg == 0 )
+@@ -681,7 +857,6 @@
+ 			}
+ 		}
+ 	}
+-#endif
+ 
+ 	IPF_Emulate();					/* Update emulation's state up to this point */
+ 
+@@ -741,6 +916,106 @@
+ 
+ 
+ 
++#ifdef HAVE_CAPSIMAGE
++static void	IPF_FDC_LogCommand ( Uint8 Command )
++{
++#if 0
++	Uint8	Head , Track , Sector , Side , DataReg;
++	int	Drive;
++	int	FrameCycles, HblCounterVideo, LineCycles;
++	char	buf[ 200 ];
++
++
++	Video_GetPosition ( &FrameCycles , &HblCounterVideo , &LineCycles );
++
++	Drive = IPF_State.Fdc.driveact;
++	if ( Drive < 0 )				/* If no drive enabled, use drive O for Head/Side */
++		Drive = 0;
++
++	/* We read directly in the structures, to be sure we don't change emulation's state */
++	Head	= IPF_State.Drive[ Drive ].track;
++	Track 	= IPF_State.Fdc.r_track;
++	Sector	= IPF_State.Fdc.r_sector;
++	DataReg	= IPF_State.Fdc.r_data;
++	Side	= IPF_State.Drive[ Drive ].side;
++
++	if      ( ( Command & 0xf0 ) == 0x00 )						/* Restore */
++		sprintf ( buf , "type I restore spinup=%s verify=%s steprate=%d drive=%d tr=0x%x head_track=0x%x" ,
++			( Command & FDC_COMMAND_BIT_SPIN_UP ) ? "off" : "on" ,
++			( Command & FDC_COMMAND_BIT_VERIFY ) ? "on" : "off" ,
++			FDC_StepRate_ms[ Command & 0x03 ] , Drive , Track , Head );
++
++	else if ( ( Command & 0xf0 ) == 0x10 )						/* Seek */
++		sprintf ( buf , "type I seek dest_track=0x%x spinup=%s verify=%s steprate=%d drive=%d tr=0x%x head_track=0x%x" ,
++			DataReg , ( Command & FDC_COMMAND_BIT_SPIN_UP ) ? "off" : "on" ,
++			( Command & FDC_COMMAND_BIT_VERIFY ) ? "on" : "off" ,
++			FDC_StepRate_ms[ Command & 0x03 ] , Drive , Track , Head );
++
++	else if ( ( Command & 0xe0 ) == 0x20 )						/* Step */
++		sprintf ( buf , "type I step %d spinup=%s verify=%s steprate_ms=%d drive=%d tr=0x%x head_track=0x%x",
++			( IPF_State.Fdc.lineout & CAPSFDC_LO_DIRC ) ? 1 : -1 ,
++			( Command & FDC_COMMAND_BIT_SPIN_UP ) ? "off" : "on" ,
++			( Command & FDC_COMMAND_BIT_VERIFY ) ? "on" : "off" ,
++			FDC_StepRate_ms[ Command & 0x03 ] , Drive , Track , Head );
++
++	else if ( ( Command & 0xe0 ) == 0x40 )						/* Step In */
++		sprintf ( buf , "type I step in spinup=%s verify=%s steprate=%d drive=%d tr=0x%x head_track=0x%x" ,
++			( Command & FDC_COMMAND_BIT_SPIN_UP ) ? "off" : "on" ,
++			( Command & FDC_COMMAND_BIT_VERIFY ) ? "on" : "off" ,
++			FDC_StepRate_ms[ Command & 0x03 ] , Drive , Track , Head );
++
++	else if ( ( Command & 0xe0 ) == 0x60 )						/* Step Out */
++		sprintf ( buf , "type I step out spinup=%s verify=%s steprate=%d drive=%d tr=0x%x head_track=0x%x" ,
++			( Command & FDC_COMMAND_BIT_SPIN_UP ) ? "off" : "on" ,
++			( Command & FDC_COMMAND_BIT_VERIFY ) ? "on" : "off" ,
++			FDC_StepRate_ms[ Command & 0x03 ] , Drive , Track , Head );
++
++	else if ( ( Command & 0xe0 ) == 0x80 )						/* Read Sector */
++		sprintf ( buf , "type II read sector sector=0x%x multi=%s spinup=%s settle=%s tr=0x%x head_track=0x%x"
++			      " side=%d drive=%d dmasector=%d addr=0x%x",
++			Sector, ( Command & FDC_COMMAND_BIT_MULTIPLE_SECTOR ) ? "on" : "off" ,
++			( Command & FDC_COMMAND_BIT_SPIN_UP ) ? "off" : "on" ,
++			( Command & FDC_COMMAND_BIT_HEAD_LOAD ) ? "on" : "off" ,
++			Track , Head , Side , Drive , FDC_DMA_GetSectorCount() , FDC_GetDMAAddress() );
++
++	else if ( ( Command & 0xe0 ) == 0xa0 )						/* Write Sector */
++		sprintf ( buf , "type II write sector sector=0x%x multi=%s spinup=%s settle=%s tr=0x%x head_track=0x%x"
++			      " side=%d drive=%d dmasector=%d addr=0x%x",
++			Sector, ( Command & FDC_COMMAND_BIT_MULTIPLE_SECTOR ) ? "on" : "off" ,
++			( Command & FDC_COMMAND_BIT_SPIN_UP ) ? "off" : "on" ,
++			( Command & FDC_COMMAND_BIT_HEAD_LOAD ) ? "on" : "off" ,
++			Track , Head , Side , Drive , FDC_DMA_GetSectorCount() , FDC_GetDMAAddress() );
++
++	else if ( ( Command & 0xf0 ) == 0xc0 )						/* Read Address */
++		sprintf ( buf , "type III read address spinup=%s settle=%s tr=0x%x head_track=0x%x side=%d drive=%d addr=0x%x" ,
++			( Command & FDC_COMMAND_BIT_SPIN_UP ) ? "off" : "on" ,
++			( Command & FDC_COMMAND_BIT_HEAD_LOAD ) ? "on" : "off" ,
++			Track , Head , Side , Drive , FDC_GetDMAAddress() );
++
++	else if ( ( Command & 0xf0 ) == 0xe0 )						/* Read Track */
++		sprintf ( buf , "type III read track spinup=%s settle=%s tr=0x%x head_track=0x%x side=%d drive=%d addr=0x%x" ,
++			( Command & FDC_COMMAND_BIT_SPIN_UP ) ? "off" : "on" ,
++			( Command & FDC_COMMAND_BIT_HEAD_LOAD ) ? "on" : "off" ,
++			Track , Head , Side , Drive , FDC_GetDMAAddress() );
++
++	else if ( ( Command & 0xf0 ) == 0xf0 )						/* Write Track */
++		sprintf ( buf , "type III write track spinup=%s settle=%s tr=0x%x head_track=0x%x side=%d drive=%d addr=0x%x" ,
++			( Command & FDC_COMMAND_BIT_SPIN_UP ) ? "off" : "on" ,
++			( Command & FDC_COMMAND_BIT_HEAD_LOAD ) ? "on" : "off" ,
++			Track , Head , Side , Drive , FDC_GetDMAAddress() );
++
++	else										/* Force Int */
++		sprintf ( buf , "type IV force int 0x%x irq=%d index=%d" ,
++			Command , ( Command & 0x8 ) >> 3 , ( Command & 0x4 ) >> 2 );
++
++
++	LOG_TRACE(TRACE_FDC, "fdc ipf %s VBL=%d video_cyc=%d %d@%d pc=%x\n" ,
++			buf , nVBLs , FrameCycles, LineCycles, HblCounterVideo , M68000_GetPC() );
++#endif
++}
++#endif
++
++
+ 
+ /*
+  * Run the FDC emulation during NbCycles cycles (relative to the 8MHz FDC's clock)
