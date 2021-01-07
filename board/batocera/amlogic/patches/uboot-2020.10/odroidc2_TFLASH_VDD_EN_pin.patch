@@ -1,0 +1,11 @@
+--- a/arch/arm/dts/meson-gxbb-odroidc2-u-boot.dtsi	2021-01-07 09:19:35.353573969 +0100
++++ b/arch/arm/dts/meson-gxbb-odroidc2-u-boot.dtsi	2021-01-07 09:21:23.970236590 +0100
+@@ -13,3 +13,8 @@
+ &usb1 {
+ 	hnp-srp-disable;
+ };
++
++&tflash_vdd {
++	gpio = <&gpio GPIOY_12 GPIO_OPEN_DRAIN>;
++};
++
