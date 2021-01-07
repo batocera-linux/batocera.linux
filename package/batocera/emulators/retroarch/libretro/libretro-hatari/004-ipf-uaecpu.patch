@@ -1,0 +1,15 @@
+--- a/src/uae-cpu/newcpu.c	2021-01-02 12:26:33.000000000 +0100
++++ b/src/uae-cpu/newcpu.c	2021-01-07 18:16:09.515721017 +0100
+@@ -161,12 +161,6 @@
+ #include "debugcpu.h"
+ #include "68kDisass.h"
+ 
+-#ifdef HAVE_CAPSIMAGE
+-#if CAPSIMAGE_VERSION == 5
+-#include <caps5/CapsLibAll.h>
+-#endif
+-#endif
+-
+ //#define DEBUG_PREFETCH
+ 
+ struct flag_struct regflags;
