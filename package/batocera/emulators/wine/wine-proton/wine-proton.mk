@@ -12,16 +12,11 @@ WINE_PROTON_LICENSE_FILES = COPYING.LIB LICENSE
 WINE_PROTON_DEPENDENCIES = host-bison host-flex host-wine-proton
 HOST_WINE_PROTON_DEPENDENCIES = host-bison host-flex
 
-# Patch Wine Mono version (force to 5.1.0) for now
-define WINE_PROTON_FORCE_WINE_MONO_VERSION
-	$(SED) "s+5.1.1+5.1.0+g" $(@D)/dlls/mscoree/mscoree_private.h
-endef
-
 # cross packages version dependancy check
 # check dependancy with the mono version
 # otherwise, wine doesn't found it
 define WINE_PROTON_HOOK_CHECK_MONO
-	grep -E '^#define WINE_MONO_VERSION "'$(WINE_MONO_VERSION)'"$$' $(@D)/dlls/mscoree/mscoree_private.h
+grep -E '^#define WINE_MONO_VERSION "'$(WINE_MONO_VERSION)'"$$' $(@D)/dlls/mscoree/mscoree_private.h
 endef
 
 # That create folder for install
@@ -29,7 +24,6 @@ define WINE_PROTON_CREATE_WINE_FOLDER
 	mkdir -p $(TARGET_DIR)/usr/wine/proton
 endef
 
-WINE_PROTON_PRE_CONFIGURE_HOOKS += WINE_PROTON_FORCE_WINE_MONO_VERSION
 WINE_PROTON_PRE_CONFIGURE_HOOKS += WINE_PROTON_HOOK_CHECK_MONO
 WINE_PROTON_PRE_CONFIGURE_HOOKS += WINE_PROTON_CREATE_WINE_FOLDER
 

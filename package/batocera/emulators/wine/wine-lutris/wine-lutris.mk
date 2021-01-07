@@ -393,14 +393,14 @@ endif
 # Wine only needs the host tools to be built, so cut-down the
 # build time by building just what we need.
 define HOST_WINE_LUTRIS_BUILD_CMDS
-	$(HOST_MAKE_ENV) $(MAKE) -C $(@D) \
-	  tools \
-	  tools/sfnt2fon \
-	  tools/widl \
-	  tools/winebuild \
-	  tools/winegcc \
-	  tools/wmc \
-	  tools/wrc
+	$(HOST_MAKE_ENV) $(MAKE) -C $(@D)
+	$(HOST_MAKE_ENV) $(MAKE) -C $(@D)/tools
+	$(HOST_MAKE_ENV) $(MAKE) -C $(@D)/tools/sfnt2fon
+	$(HOST_MAKE_ENV) $(MAKE) -C $(@D)/tools/widl
+	$(HOST_MAKE_ENV) $(MAKE) -C $(@D)/tools/winebuild
+	$(HOST_MAKE_ENV) $(MAKE) -C $(@D)/tools/winegcc
+	$(HOST_MAKE_ENV) $(MAKE) -C $(@D)/tools/wmc
+	$(HOST_MAKE_ENV) $(MAKE) -C $(@D)/tools/wrc
 endef
 
 # Wine only needs its host variant to be built, not that it is
