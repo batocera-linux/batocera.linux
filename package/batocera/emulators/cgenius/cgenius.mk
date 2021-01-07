@@ -4,9 +4,8 @@
 #
 ################################################################################
 
-CGENIUS_VERSION = a4d906de6b6b9a517f5a22d33d85467e3bfb8b9e
-CGENIUS_SITE = https://github.com/gerstrong/Commander-Genius
-CGENIUS_SITE_METHOD = git
+CGENIUS_VERSION = v2.7.5
+CGENIUS_SITE = $(call github,gerstrong,Commander-Genius,$(CGENIUS_VERSION))
 
 CGENIUS_DEPENDENCIES = sdl2 sdl2_mixer sdl2_image sdl2_ttf boost
 
@@ -16,5 +15,7 @@ CGENIUS_CONF_OPTS += -DUSE_OPENGL=ON
 else
 CGENIUS_CONF_OPTS += -DUSE_OPENGL=OFF
 endif
+
+CGENIUS_CONF_OPTS += -DCMAKE_BUILD_TYPE=Release
 
 $(eval $(cmake-package))
