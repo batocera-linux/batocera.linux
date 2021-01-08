@@ -291,7 +291,6 @@ menu "Utils"
 endmenu
 
 menu "Libraries"
-  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/capsimg/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/libcapsimage/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/libenet/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/python-autobreadcrumbs/Config.in"
