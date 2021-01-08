@@ -1,33 +1,27 @@
-#!/bin/bash	
+#!/bin/sh
 
-ACTION=$1	
+ACTION="$1"
 
-case "${ACTION}" in	
-	"unlock-volume")
-		echo "obsolete"
-	;;	
+case "${ACTION}" in
+	list)
+		printf '%s\n' auto speakers headphone
+	;;
 
-	"list")	
-		echo "auto"	
-		echo "speakers"
-		echo "headphone"	
-	;;	
+	get)
+		/usr/bin/batocera-settings-get audio.device
+	;;
 
-	"get")	
-		/usr/bin/batocera-settings-get audio.device	
-	;;	
-
-	"set")	
-		MODE=$2	
-		case "${MODE}" in	
-			"auto"|"speakers")	
-				amixer cset name='Playback Path' SPK	
+	set)
+		MODE="$2"
+		case "${MODE}" in
+			auto | speakers)
+				amixer cset name='Playback Path' SPK
 			;;
 
-			"headphone")	
-				amixer cset name='Playback Path' HP	
-			;;	
-		esac	
+			headphone)
+				amixer cset name='Playback Path' HP
+			;;
+		esac
 	;;
 
 	test)
