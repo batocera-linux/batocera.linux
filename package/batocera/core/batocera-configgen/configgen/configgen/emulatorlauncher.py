@@ -42,7 +42,7 @@ from generators.easyrpg.easyrpgGenerator import EasyRPGGenerator
 from generators.redream.redreamGenerator import RedreamGenerator
 from generators.supermodel.supermodelGenerator import SupermodelGenerator
 from generators.xash3d_fwgs.xash3dFwgsGenerator import Xash3dFwgsGenerator
-
+from generators.cgenius.cgeniusGenerator import CGeniusGenerator
 import controllersConfig as controllers
 import signal
 import batoceraFiles
@@ -87,6 +87,7 @@ generators = {
     'redream': RedreamGenerator(),
     'supermodel': SupermodelGenerator(),
     'xash3d_fwgs': Xash3dFwgsGenerator(),
+    'cgenius': CGeniusGenerator(),
 }
 
 def main(args, maxnbplayers):
