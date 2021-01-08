@@ -4,7 +4,7 @@
 #
 ################################################################################
 # Version.: Commits on Nov 10, 2020
-LIBRETRO_GPSP_VERSION = 23b2a55f0d00ff8e4869094c13e2f06453b956c5
+LIBRETRO_GPSP_VERSION = f520876ef6e3c8d13d122a96f658b4a30d90f6de
 LIBRETRO_GPSP_SITE = $(call github,libretro,gpsp,$(LIBRETRO_GPSP_VERSION))
 LIBRETRO_GPSP_LICENSE = GPLv2
 

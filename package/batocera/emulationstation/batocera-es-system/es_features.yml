@@ -79,9 +79,9 @@ libretro:
                             "Off":     disabled
                             "On":      enabled
     beetle-saturn:
-      features: [netplay,         autosave, latency_reduction]
+      features: [netplay,         autosave, latency_reduction, cheevos]
     bluemsx:
-      features: [         rewind, autosave, latency_reduction, padtokeyboard]
+      features: [         rewind, autosave, latency_reduction, padtokeyboard, cheevos]
       cfeatures:
             bluemsx_nospritelimits:
                 prompt:      REDUCE SPRITE FLICKERING
@@ -90,7 +90,7 @@ libretro:
                     "Off": OFF
                     "On":  ON
     bsnes:
-      features: [netplay, rewind, autosave, latency_reduction]
+      features: [netplay, rewind, autosave, latency_reduction, cheevos]
     cap32:
       features: [netplay, rewind, autosave, latency_reduction, padtokeyboard]
       cfeatures:
@@ -115,7 +115,7 @@ libretro:
     daphne:
       features: [                           latency_reduction, padtokeyboard]
     desmume:
-      features: [netplay, rewind, autosave, latency_reduction]
+      features: [netplay, rewind, autosave, latency_reduction, cheevos]
       cfeatures:
             internal_resolution_desmume:
                 prompt:      VIDEO RESOLUTION
@@ -218,7 +218,7 @@ libretro:
                     "scan2x":      scan2x
                     "scan3x":      scan3x
     duckstation:
-      features: [                 autosave, latency_reduction]
+      features: [                 autosave, latency_reduction, cheevos]
       cfeatures:
             duckstation_PatchFastBoot:
                 prompt:      SHOW BIOS BOOTLOGO
@@ -299,7 +299,7 @@ libretro:
       features: []
 
     fbneo:
-      features: [netplay, rewind, autosave, latency_reduction]
+      features: [netplay, rewind, autosave, latency_reduction, cheevos]
       cfeatures:
             fbneo-cpu-speed-adjust:
                 prompt:      CPU CLOCK
@@ -359,7 +359,7 @@ libretro:
                             "Shared":                             shared
                             "Per-game":                           per-game
     fceumm:
-      features: [netplay, rewind, autosave, latency_reduction]
+      features: [netplay, rewind, autosave, latency_reduction, cheevos]
       cfeatures:
             fceumm_nospritelimit:
                 prompt:      REDUCE SPRITE FLICKERING
@@ -530,7 +530,7 @@ libretro:
                     "Off":  disabled
                     "On":   enabled
     gambatte:
-      features: [         rewind, autosave, latency_reduction, colorization]
+      features: [         rewind, autosave, latency_reduction, colorization, cheevos]
       cfeatures:
             gb_bootloader:
                 prompt:      SHOW BIOS BOOTLOGO
@@ -548,7 +548,7 @@ libretro:
                     "LCD Ghosting (Accurate)": lcd_ghosting
                     "LCD Ghosting (Fast)":     lcd_ghosting_fast
     genesisplusgx:
-      features: [netplay, rewind, autosave, latency_reduction]
+      features: [netplay, rewind, autosave, latency_reduction, cheevos]
       cfeatures:
             gpgx_no_sprite_limit:
                 prompt:      REDUCE SPRITE FLICKERING
@@ -663,11 +663,11 @@ libretro:
                             "Off":       disabled
                             "On":        enabled
     gpsp:
-      features: [         rewind, autosave, latency_reduction]
+      features: [         rewind, autosave, latency_reduction, cheevos]
     gw:
       features: [                           latency_reduction]
     handy:
-      features: [netplay, rewind, autosave, latency_reduction]
+      features: [netplay, rewind, autosave, latency_reduction, cheevos]
     hatari:
       features: [                 autosave, latency_reduction, padtokeyboard]
     imame4all:
@@ -796,11 +796,11 @@ libretro:
                     "Arcade Universe BIOS 4.0 (Cheats)":   unibios40
                     "Arcade Universe BIOS 3.3 (Cheats)":   unibios33
     mednafen_lynx:
-      features: [netplay, rewind, autosave, latency_reduction]
+      features: [netplay, rewind, autosave, latency_reduction, cheevos]
     mednafen_ngp:
-      features: [netplay, rewind, autosave, latency_reduction]
+      features: [netplay, rewind, autosave, latency_reduction, cheevos]
     mednafen_psx:
-      features: [                 autosave, latency_reduction]
+      features: [                 autosave, latency_reduction, cheevos]
       cfeatures:
             beetle_psx_skip_bios:
                 prompt:      SHOW BIOS BOOTLOGO
@@ -909,7 +909,7 @@ libretro:
                     #"Justifier":                     516
                     "PlayStation Mouse":             258
     mednafen_supergrafx:
-      features: [netplay, rewind, autosave, latency_reduction]
+      features: [netplay, rewind, autosave, latency_reduction, cheevos]
       cfeatures:
             sgx_nospritelimit:
                 prompt:      REDUCE SPRITE FLICKERING
@@ -918,9 +918,9 @@ libretro:
                     "Off":        disabled
                     "On":         enabled
     mednafen_wswan:
-      features: [netplay, rewind, autosave, latency_reduction]
+      features: [netplay, rewind, autosave, latency_reduction, cheevos]
     mgba:
-      features: [         rewind, autosave, latency_reduction]
+      features: [         rewind, autosave, latency_reduction, cheevos]
       cfeatures:
             skip_bios_mgba:
                 prompt:      SHOW BIOS BOOTLOGO
@@ -1008,7 +1008,7 @@ libretro:
                     "Off":    OFF
                     "On":     ON
     mupen64plus-next:
-      features: [                 autosave]
+      features: [                 autosave, cheevos]
       cfeatures:
             mupen64plus-43screensize:
                 prompt:      VIDEO 4:3 RESOLUTION
@@ -1288,7 +1288,7 @@ libretro:
     o2em:
       features: [         rewind, autosave, latency_reduction]
     opera:
-      features: [netplay, rewind, autosave, latency_reduction]
+      features: [netplay, rewind, autosave, latency_reduction, cheevos]
       cfeatures:
             high_resolution:
                 prompt:      VIDEO RESOLUTION
@@ -1329,7 +1329,7 @@ libretro:
                     "Dinopark Tycoon":   timing_hack3
                     "Microcosm":         timing_hack5
     parallel_n64:
-      features: [                 autosave]
+      features: [                 autosave, cheevos]
       cfeatures:
             screensize:
                 prompt:      VIDEO RESOLUTION
@@ -1381,7 +1381,7 @@ libretro:
                     "Off":        disabled
                     "On":         enabled
     pcsx_rearmed:
-      features: [                 autosave, latency_reduction]
+      features: [                 autosave, latency_reduction, cheevos]
       cfeatures:
             show_bios_bootlogo:
                 prompt:      SHOW BIOS BOOTLOGO
@@ -1448,7 +1448,7 @@ libretro:
                     "NeGcon":                        773
                     "PlayStation Mouse":             258
     picodrive:
-      features: [netplay,         autosave]
+      features: [netplay,         autosave, cheevos]
       cfeatures:
             picodrive_sprlim:
                 prompt:      REDUCE SPRITE FLICKERING
@@ -1471,7 +1471,7 @@ libretro:
     pocketsnes:
       features: [netplay, rewind, autosave, latency_reduction]
     pokemini:
-      features: [         rewind, autosave, latency_reduction]
+      features: [         rewind, autosave, latency_reduction, cheevos]
       cfeatures:
             pokemini_lcdfilter:
                 prompt:      LCD FILTER
@@ -1503,7 +1503,7 @@ libretro:
                     "2240x1400":  2240x1400
                     "2560x1600":  2560x1600
     prosystem:
-      features: [         rewind, autosave, latency_reduction]
+      features: [         rewind, autosave, latency_reduction, cheevos]
     puae:
       features: [         rewind, autosave, padtokeyboard]
       cfeatures:
@@ -1624,7 +1624,7 @@ libretro:
                     "Megadrive (8 Buttons)":     CPSF-MD (8 Buttons)
                     "Super Famicom (8 Buttons)": CPSF-SFC (8 Buttons)
     quasi88:
-      features: [netplay, rewind, autosave, latency_reduction, padtokeyboard]
+      features: [netplay, rewind, autosave, latency_reduction, padtokeyboard, cheevos]
       cfeatures:
             q88_basic_mode:
                 prompt:      PC MODEL
@@ -1656,7 +1656,7 @@ libretro:
     scummvm:
       features: [                           latency_reduction, padtokeyboard]
     snes9x:
-      features: [netplay, rewind, autosave, latency_reduction]
+      features: [netplay, rewind, autosave, latency_reduction, cheevos]
       cfeatures:
             reduce_sprite_flicker:
                 prompt:      REDUCE SPRITE FLICKERING (HACK, UNSTABLE)
@@ -1698,7 +1698,7 @@ libretro:
                     "Merge":      merge
                     "Blur":       blur
     snes9x_next:
-      features: [netplay, rewind, autosave, latency_reduction]
+      features: [netplay, rewind, autosave, latency_reduction, cheevos]
       cfeatures:
             2010_reduce_sprite_flicker:
                 prompt:      REDUCE SPRITE FLICKERING (HACK, UNSTABLE)
@@ -1731,7 +1731,7 @@ libretro:
                     "30 MHz":               30 MHz
                     "40 MHz":               40 MHz
     stella:
-      features: [netplay, rewind, autosave, latency_reduction]
+      features: [netplay, rewind, autosave, latency_reduction, cheevos]
     tgbdual:
       features: [netplay, rewind, autosave, latency_reduction]
     theodore:
@@ -1804,7 +1804,7 @@ libretro:
                     "green/magenta":       green & magenta
                     "yellow/blue":         yellow & blue
     vba-m:
-      features: [         rewind, autosave, latency_reduction]
+      features: [         rewind, autosave, latency_reduction, cheevos]
       systems:
             gb:
                 cfeatures:
@@ -1919,7 +1919,7 @@ libretro:
                             "115": 115
                             "120": 120
     vecx:
-      features: [         rewind, autosave, latency_reduction]
+      features: [         rewind, autosave, latency_reduction, cheevos]
       cfeatures:
             res_multi:
                 prompt:      RESOLUTION MULTIPLIER
@@ -1990,7 +1990,7 @@ libretro:
     vice_xpet:
       features: [         rewind, autosave, latency_reduction, padtokeyboard]
     virtualjaguar:
-      features: [                 autosave, latency_reduction, padtokeyboard]
+      features: [                 autosave, latency_reduction, padtokeyboard, cheevos]
       cfeatures:
             usefastblitter:
                 prompt:      FAST BLITTER (LESS COMPATIBLE)
@@ -2010,6 +2010,10 @@ libretro:
                 choices:
                     "Off":      disabled
                     "On":       enabled
+    x1:
+      features: [         rewind, autosave, padtokeyboard]
+    xash3d_fwgs:
+      features: [ ]
     yabasanshiro:
       features: [                 autosave]
       cfeatures:
@@ -2302,6 +2306,9 @@ solarus:
   features: []
 
 easyrpg:
+  features: []
+
+redream:
   features: []
 
 vice:

@@ -4,7 +4,7 @@
 #
 ################################################################################
 # Version.: Commits on Nov 09, 2020
-LIBRETRO_ATARI800_VERSION = 1661743a9c96c210252815bf8a2a70c3a536a80d
+LIBRETRO_ATARI800_VERSION = 9d2874b98aee8cd4ae79baa3f1fc8948382125a3
 LIBRETRO_ATARI800_SITE = $(call github,libretro,libretro-atari800,$(LIBRETRO_ATARI800_VERSION))
 LIBRETRO_ATARI800_LICENSE = GPL
 

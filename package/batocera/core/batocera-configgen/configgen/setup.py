@@ -4,7 +4,8 @@ from distutils.core import setup
 setup(name='batocera-configgen',
       version='1.0',
       py_modules=['configgen'],
-      packages=['configgen', 
+      packages=[
+        'configgen',
         'configgen.generators', 
         'configgen.generators.kodi', 
         'configgen.generators.libretro', 
@@ -37,6 +38,12 @@ setup(name='batocera-configgen',
         'configgen.generators.hatari',
         'configgen.generators.solarus',
         'configgen.generators.easyrpg',
+        'configgen.generators.redream',
+        'configgen.generators.xash3d_fwgs',
         'configgen.settings',
-        'configgen.utils']
+        'configgen.utils',
+        ],
+        package_data={
+          'configgen.generators.xash3d_fwgs': ['gamepad.cfg'],
+        },
       )

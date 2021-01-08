@@ -4,9 +4,8 @@
 #
 ################################################################################
 
-WINE_LUTRIS_WOW64_32_VERSION = 6.0-rc1
-WINE_LUTRIS_WOW64_32_SOURCE = lutris-$(WINE_LUTRIS_WOW64_32_VERSION).tar.gz
-WINE_LUTRIS_WOW64_32_SITE = https://github.com/lutris/wine/archive
+WINE_LUTRIS_WOW64_32_VERSION = bc4315fa336b0c1fdc4c010ad741c38825dc5b74
+WINE_LUTRIS_WOW64_32_SITE = $(call github,ValveSoftware,wine,$(WINE_LUTRIS_WOW64_32_VERSION))
 WINE_LUTRIS_WOW64_32_LICENSE = LGPL-2.1+
 WINE_LUTRIS_WOW64_32_LICENSE_FILES = COPYING.LIB LICENSE
 WINE_LUTRIS_WOW64_32_DEPENDENCIES = host-bison host-flex host-wine-lutris

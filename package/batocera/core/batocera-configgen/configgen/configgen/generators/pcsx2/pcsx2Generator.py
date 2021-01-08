@@ -45,12 +45,12 @@ class Pcsx2Generator(Generator):
         if isAVX2:
             real_pluginsDir = batoceraFiles.pcsx2Avx2PluginsDir
         commandArray.append("--gs="   + real_pluginsDir + "/libGSdx.so")
-        commandArray.append("--pad="  + real_pluginsDir + "/libonepad-legacy.so")
-        commandArray.append("--cdvd=" + real_pluginsDir + "/libCDVDnull.so")
-        commandArray.append("--usb="  + real_pluginsDir + "/libUSBnull-0.7.0.so")
-        commandArray.append("--fw="   + real_pluginsDir + "/libFWnull-0.7.0.so")
-        commandArray.append("--dev9=" + real_pluginsDir + "/libdev9null-0.5.0.so")
-        commandArray.append("--spu2=" + real_pluginsDir + "/libspu2x-2.0.0.so")
+        #commandArray.append("--pad="  + real_pluginsDir + "/libonepad-legacy.so")
+        #commandArray.append("--cdvd=" + real_pluginsDir + "/libCDVDnull.so")
+        #commandArray.append("--usb="  + real_pluginsDir + "/libUSBnull-0.7.0.so")
+        #commandArray.append("--fw="   + real_pluginsDir + "/libFWnull-0.7.0.so")
+        #commandArray.append("--dev9=" + real_pluginsDir + "/libdev9null-0.5.0.so")
+        #commandArray.append("--spu2=" + real_pluginsDir + "/libspu2x-2.0.0.so")
         
         # arch
         arch = "x86"
@@ -58,9 +58,9 @@ class Pcsx2Generator(Generator):
             arch = content_file.read()
 
         if arch == "x86":
-            return Command.Command(array=commandArray, env={"XDG_CONFIG_HOME":batoceraFiles.CONF})
-        else:
             return Command.Command(array=commandArray, env={"XDG_CONFIG_HOME":batoceraFiles.CONF, "LD_LIBRARY_PATH": "/lib32", "LIBGL_DRIVERS_PATH": "/lib32/dri"})
+        else:
+            return Command.Command(array=commandArray, env={"XDG_CONFIG_HOME":batoceraFiles.CONF})
 
 def getGfxRatioFromConfig(config, gameResolution):
     # 2: 4:3 ; 1: 16:9

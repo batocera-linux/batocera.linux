@@ -1,0 +1,9 @@
+config BR2_PACKAGE_HLSDK_XASH3D_OPFOR
+	bool "Xash3D-FWGS Support Libraries for Half-Life: Opposing Force"
+	depends on BR2_INSTALL_LIBSTDCPP
+	help
+	  Half-Life SDK for Xash3D & GoldSource.
+	
+	  Includes client and server libraries needed to run Half-Life: Opposing Force with Xash3D.
+
+	  https://github.com/FWGS/hlsdk-xash3d/tree/opfor

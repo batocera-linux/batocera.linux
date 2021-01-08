@@ -32,7 +32,7 @@ class CemuGenerator(Generator):
 
         cemuControllers.generateControllerConfig(system, playersControllers, rom)
 
-        commandArray = ["wine64", "/usr/cemu/Cemu.exe", "-g", "z:" + rom, "-m", "z:" + batoceraFiles.SAVES + "/cemu", "-f"]
+        commandArray = ["/usr/wine/lutris/bin/wine64", "/usr/cemu/Cemu.exe", "-g", "z:" + rom, "-m", "z:" + batoceraFiles.SAVES + "/cemu", "-f"]
         return Command.Command(
             array=commandArray,
             env={
