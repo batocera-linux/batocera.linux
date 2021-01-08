@@ -19,6 +19,10 @@ XASH3D_FWGS_CONF_OPTS += --build-type=release \
   --disable-vgui \
   --disable-menu-changegame
 
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86_64),y)
+XASH3D_FWGS_CONF_OPTS += --64bits
+endif
+
 ifeq ($(BR2_PACKAGE_HAS_LIBGL),y)
 XASH3D_FWGS_DEPENDENCIES += libgl
 else
