@@ -625,8 +625,6 @@ config BR2_PACKAGE_BATOCERA_CONSOLE_SYSTEMS
 		select BR2_PACKAGE_BATOCERA_MUPEN64     if !BR2_PACKAGE_BATOCERA_TARGET_RPI1 # mupen64 (n64)
 
 		select BR2_PACKAGE_LIBRETRO_MUPEN64PLUS_NEXT  if !BR2_PACKAGE_BATOCERA_RPI_VCORE            && \
-		                                                 !BR2_PACKAGE_BATOCERA_TARGET_ODROIDC2      && \
-		                                                 !BR2_PACKAGE_BATOCERA_TARGET_ODROIDC4      && \
 		                                                 !BR2_PACKAGE_BATOCERA_TARGET_S905          && \
 		                                                 !BR2_PACKAGE_BATOCERA_TARGET_S912 
 		                                                 # MUPEN64PLUS_NEXT
