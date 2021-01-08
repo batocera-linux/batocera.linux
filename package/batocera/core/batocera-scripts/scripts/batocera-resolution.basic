@@ -5,10 +5,14 @@ shift
 
 FILEMODES="/sys/class/graphics/fb0/modes"
 
-if test -z "${ACTION}"
-then
+f_usage() {
     echo "${0} currentMode" >&2
     echo "${0} currentResolution" >&2
+}
+
+if test -z "${ACTION}"
+then
+    f_usage
     exit 1
 fi
 
@@ -20,7 +24,10 @@ case "${ACTION}" in
     ;;
     "currentMode"|"currentResolution")
         # mode can be different from resolution (ie on rpi)
-	test -e "${FILEMODES}" && head -1 "${FILEMODES}" | sed -e s+'^[^:]:\([0-9]*\)x\([0-9]*\)[a-z]*.*$'+'\1x\2'+
-	;;
+        test -e "${FILEMODES}" && head -1 "${FILEMODES}" | sed -e s+'^[^:]:\([0-9]*\)x\([0-9]*\)[a-z]*.*$'+'\1x\2'+
+        ;;
+    *)
+        f_usage
+        ;;
 esac
 exit 0
