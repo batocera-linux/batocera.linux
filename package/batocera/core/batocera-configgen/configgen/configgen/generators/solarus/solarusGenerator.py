@@ -24,7 +24,7 @@ class SolarusGenerator(Generator):
             nplayer += 1
 
         # player pad
-        SolarusGenerator.padConfig(playersControllers)
+        SolarusGenerator.padConfig(system, playersControllers)
 
         # rom
         commandArray.append(rom)
@@ -32,7 +32,7 @@ class SolarusGenerator(Generator):
         return Command.Command(array=commandArray)
 
     @staticmethod
-    def padConfig(playersControllers):
+    def padConfig(system, playersControllers):
         keymapping = {
             "action": "a",
             "attack": "b",
@@ -49,6 +49,18 @@ class SolarusGenerator(Generator):
             "up": "down",
             "left": "right"
         }
+
+        if system.isOptSet('joystick'):
+            if system.config['joystick'] == "joystick1":
+                keymapping["up"]    = "joystick1up"
+                keymapping["down"]  = "joystick1down"
+                keymapping["left"]  = "joystick1left"
+                keymapping["right"] = "joystick1right"
+            elif system.config['joystick'] == "joystick2":
+                keymapping["up"]    = "joystick2up"
+                keymapping["down"]  = "joystick2down"
+                keymapping["left"]  = "joystick2left"
+                keymapping["right"] = "joystick2right"
 
         configdir = "{}/{}".format(batoceraFiles.CONF, "solarus")
         if not os.path.exists(configdir):
