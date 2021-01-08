@@ -632,8 +632,6 @@ config BR2_PACKAGE_BATOCERA_CONSOLE_SYSTEMS
 		select BR2_PACKAGE_LIBRETRO_PARALLEL_N64      if !BR2_PACKAGE_BATOCERA_RPI_VCORE             && \
 		                                                 !BR2_PACKAGE_BATOCERA_TARGET_RPI3           && \
 		                                                 !BR2_PACKAGE_BATOCERA_TARGET_RPI4           && \
-		                                                 !BR2_PACKAGE_BATOCERA_TARGET_ODROIDC2       && \
-		                                                 !BR2_PACKAGE_BATOCERA_TARGET_ODROIDC4       && \
 		                                                 !BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_ZERO2 && \
 		                                                 !BR2_PACKAGE_BATOCERA_TARGET_S905           && \
 		                                                 !BR2_PACKAGE_BATOCERA_TARGET_S912           && \
