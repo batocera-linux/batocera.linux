@@ -21,7 +21,7 @@ def _rom_dir(game):
 
 
 def _config_dir(game):
-    return '/userdata/system/config/xash3d_fwgs/' + game
+    return '/userdata/system/configs/xash3d_fwgs/' + game
 
 
 def _save_dir(game):
