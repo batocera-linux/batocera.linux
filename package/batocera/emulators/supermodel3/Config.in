@@ -1,7 +1,12 @@
 config BR2_PACKAGE_SUPERMODEL3
-        bool "supermodel3 emulator"
-	depends on BR2_INSTALL_LIBSTDCPP
+        bool "supermodel3"
+        depends on BR2_x86_64
+        depends on BR2_INSTALL_LIBSTDCPP
         select BR2_PACKAGE_SDL2
+          select BR2_PACKAGE_SDL2_NET
+          select BR2_PACKAGE_ZLIB
+        select BR2_PACKAGE_LIBGLEW
+        select BR2_PACKAGE_LIBZIP
 
         help
           A SEGA Model 3 emulator.
