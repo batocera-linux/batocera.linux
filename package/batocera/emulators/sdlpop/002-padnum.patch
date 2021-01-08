@@ -1,0 +1,83 @@
+diff --git a/src/seg000.c b/src/seg000.c
+index 44c8681..d51018c 100644
+--- a/src/seg000.c
++++ b/src/seg000.c
+@@ -28,6 +28,8 @@ dat_type * dathandle;
+ // data:4C08
+ word need_redraw_because_flipped;
+ 
++int joynum = 0;
++
+ void fix_sound_priorities();
+ 
+ // seg000:0000
+@@ -48,6 +50,11 @@ void far pop_main() {
+ 		seed_was_init = 1;
+ 	}
+ 
++	const char* joynumstr = check_param("joynum=");
++	if (joynumstr != NULL) {
++		joynum = atoi(joynumstr+7);
++	}
++
+ 	// debug only: check that the sequence table deobfuscation did not mess things up
+ 	#ifdef CHECK_SEQTABLE_MATCHES_ORIGINAL
+ 	check_seqtable_matches_original();
+@@ -104,7 +111,7 @@ void far pop_main() {
+ 
+ 	current_target_surface = rect_sthg(onscreen_surface_, &screen_rect);
+ 	show_loading();
+-	set_joy_mode();
++	set_joy_mode(joynum);
+ 	cheats_enabled = check_param("megahit") != NULL;
+ #ifdef USE_DEBUG_CHEATS
+ 	debug_cheats_enabled = check_param("debug") != NULL;
+@@ -595,7 +602,7 @@ int __pascal far process_key() {
+ 			if ((sound_flags & sfDigi) && sound_mode == smTandy) {
+ 				answer_text = "JOYSTICK UNAVAILABLE";
+ 			} else {
+-				if (set_joy_mode()) {
++				if (set_joy_mode(joynum)) {
+ 					answer_text = "JOYSTICK MODE";
+ 				} else {
+ 					answer_text = "JOYSTICK NOT FOUND";
+diff --git a/src/seg009.c b/src/seg009.c
+index 591430c..8dd5ced 100644
+--- a/src/seg009.c
++++ b/src/seg009.c
+@@ -830,7 +830,7 @@ void __pascal far draw_image_transp(image_type far *image,image_type far *mask,i
+ }
+ 
+ // seg009:157E
+-int __pascal far set_joy_mode() {
++int __pascal far set_joy_mode(int joynum) {
+ 	// stub
+ 	if (SDL_NumJoysticks() < 1) {
+ 		is_joyst_mode = 0;
+@@ -839,8 +839,8 @@ int __pascal far set_joy_mode() {
+ 			SDL_GameControllerAddMappingsFromFile(gamecontrollerdb_file);
+ 		}
+ 
+-		if (SDL_IsGameController(0)) {
+-			sdl_controller_ = SDL_GameControllerOpen(0);
++		if (SDL_IsGameController(joynum)) {
++			sdl_controller_ = SDL_GameControllerOpen(joynum);
+ 			if (sdl_controller_ == NULL) {
+ 				is_joyst_mode = 0;
+ 			} else {
+@@ -850,13 +850,13 @@ int __pascal far set_joy_mode() {
+ 		// We have a joystick connected, but it's NOT compatible with the SDL_GameController
+ 		// interface, so we resort to the classic SDL_Joystick interface instead
+ 		else {
+-			sdl_joystick_ = SDL_JoystickOpen(0);
++			sdl_joystick_ = SDL_JoystickOpen(joynum);
+ 			is_joyst_mode = 1;
+ 			using_sdl_joystick_interface = 1;
+ 		}
+ 	}
+ 	if (enable_controller_rumble && is_joyst_mode) {
+-		sdl_haptic = SDL_HapticOpen(0);
++		sdl_haptic = SDL_HapticOpen(joynum);
+ 		SDL_HapticRumbleInit(sdl_haptic); // initialize the device for simple rumble
+ 	} else {
+ 		sdl_haptic = NULL;

@@ -863,6 +863,21 @@ cannonball:
   comment_fr: |
     Ajoutez les roms mame de 'OutRun rev. B' (epr-10187.88, epr-10327a.76.. ) dans ce dossier et renommez Cannonball.cannonball.disabled en Cannonball.cannonball.
 
+sdlpop:
+  name:       SdlPop
+  manufacturer: Ports
+  release:
+  hardware: port
+  extensions: [sdlpop]
+  group: ports
+  emulators:
+    sdlpop:
+      sdlpop: { requireAnyOf: [BR2_PACKAGE_SDLPOP] }
+  comment_en: |
+    An open-source port of Prince of Persia, based on the disassembly of the DOS version.
+  comment_fr: |
+    Un port open-source de Prince of Persia basé sur la version DOS.
+
 vectrex:
   name:       Vectrex
   manufacturer: MB

@@ -14,11 +14,13 @@ endef
 
 define REDREAM_INSTALL_TARGET_CMDS
 	mkdir -p $(TARGET_DIR)/usr/bin
+	mkdir -p $(TARGET_DIR)/usr/share/evmapy
+
 	cp -pr $(@D)/target/redream $(TARGET_DIR)/usr/bin/redream
 
 	# evmap config
 	mkdir -p $(TARGET_DIR)/usr/share/evmapy
-	cp -prn $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/redream/dreamcast.redream.keys $(TARGET_DIR)/usr/share/evmapy
+	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/redream/dreamcast.redream.keys $(TARGET_DIR)/usr/share/evmapy
 endef
 
 $(eval $(generic-package))
