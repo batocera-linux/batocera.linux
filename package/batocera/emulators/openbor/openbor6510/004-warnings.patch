@@ -1,0 +1,13 @@
+diff --git a/engine/Makefile b/engine/Makefile
+index 85ab4fe..1325f8d 100644
+--- a/engine/Makefile
++++ b/engine/Makefile
+@@ -459,7 +459,7 @@ OBJS            = $(MAIN)
+ #----------------------------------------------------------------------------------------------------
+ 
+ CFLAGS 	       += $(addprefix -I", $(addsuffix ", $(INCS))) $(ARCHFLAGS) -D$(TARGET_PLATFORM)
+-CFLAGS 	       += -g -Wall -Werror -fsigned-char -std=gnu99
++CFLAGS 	       += -g -fsigned-char -std=gnu99
+ 
+ 
+ ifndef BUILD_DARWIN
