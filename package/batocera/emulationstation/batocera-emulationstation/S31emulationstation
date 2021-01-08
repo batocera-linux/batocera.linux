@@ -1,8 +1,9 @@
 #!/bin/sh
+BOOTCONF="/boot/batocera-boot.conf"
 
 # intel-iris-driver
-if grep -qE "^[ ]*intel-i965-driver[ ]*=[ ]*true[ ]*$" /boot/batocera-boot.conf
-then
+irisdriver="$(/usr/bin/batocera-settings-get -f "$BOOTCONF" intel-i965-driver)"
+if test ! -z "${irisdriver}" -a "${irisdriver}" = true; then
 	# Force use i965 driver through global environment variable
 	export MESA_LOADER_DRIVER_OVERRIDE=i965
 fi
@@ -11,6 +12,8 @@ case "$1" in
 	start)
 		enabled="$(/usr/bin/batocera-settings-get system.es.atstartup)"
 		secured="$(/usr/bin/batocera-settings-get system.es.maxresolution)"
+		bootresolution="$(/usr/bin/batocera-settings-get -f "$BOOTCONF" es.maxresolution)"
+		test ! -z "${bootresolution}" && secured="${bootresolution}"
 		if [ "$enabled" != "0" ];then
 			if test "${secured}" = 0 -o -z "${secured}"
 			then
