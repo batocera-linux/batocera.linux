@@ -13,7 +13,7 @@ get_setting() {
 ## Wine detection
 GAMENAME=$1 
 ROMGAMENAME=$(basename "${GAMENAME}")
-WINE_VERSION="$(get_setting core windows "${ROMGAMENAME}" || echo proton)"
+WINE_VERSION="$(get_setting core windows "${ROMGAMENAME}" || echo lutris)"
 
 # Wine Folder
 wine_folder() {
