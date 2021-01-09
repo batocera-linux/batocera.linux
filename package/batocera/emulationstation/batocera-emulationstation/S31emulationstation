@@ -13,6 +13,11 @@ case "$1" in
 		if [ "$enabled" != "0" ];then
 			batocera-resolution minTomaxResolution-secure
 			settings_lang="$(/usr/bin/batocera-settings-get system.language)"
+			display_rotate="$(/usr/bin/batocera-settings-get display.rotate)"
+
+			EXTRA_OPTS=
+			test -n "${display_rotate}" && EXTRA_OPTS="--screenrotate ${display_rotate}"
+
 			cd /userdata # es need a PWD
 			HOME=/userdata/system LANG="${settings_lang}.UTF-8" %BATOCERA_EMULATIONSTATION_PREFIX% %BATOCERA_EMULATIONSTATION_CMD% %BATOCERA_EMULATIONSTATION_ARGS% %BATOCERA_EMULATIONSTATION_POSTFIX%
 		fi
