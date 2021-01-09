@@ -3,15 +3,14 @@
 # DUCKSTATION
 #
 ################################################################################
-# Version.: Commits on Dec 27, 2020
+# Version.: Commits on Jan 8, 2021
+DUCKSTATION_VERSION = 64fc560314d8f77714c59dd4fa58931215062501
+DUCKSTATION_SITE = https://github.com/stenzek/duckstation.git
 
 DUCKSTATION_DEPENDENCIES = fmt boost ffmpeg sdl2
 DUCKSTATION_SITE_METHOD=git
 DUCKSTATION_GIT_SUBMODULES=YES
 DUCKSTATION_LICENSE = GPLv2
-
-DUCKSTATION_VERSION = a845b2c5f835c25ee972a003c42d385af071766b
-DUCKSTATION_SITE = https://github.com/stenzek/duckstation.git
 
 DUCKSTATION_CONF_OPTS  = -DENABLE_DISCORD_PRESENCE=OFF -DANDROID=OFF -DBUILD_LIBRETRO_CORE=OFF
 DUCKSTATION_CONF_OPTS += -DCMAKE_BUILD_TYPE=Release
@@ -33,9 +32,14 @@ ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86_64),y)
 define DUCKSTATION_INSTALL_TARGET_CMDS
         mkdir -p $(TARGET_DIR)/usr/bin
         mkdir -p $(TARGET_DIR)/usr/lib
+        mkdir -p $(TARGET_DIR)/usr/share/duckstation
 
 	$(INSTALL) -D $(@D)/buildroot-build/bin/duckstation-qt \
 		$(TARGET_DIR)/usr/bin/
+	cp -R $(@D)/buildroot-build/bin/database      $(TARGET_DIR)/usr/share/duckstation/
+	cp -R $(@D)/buildroot-build/bin/inputprofiles $(TARGET_DIR)/usr/share/duckstation/
+	cp -R $(@D)/buildroot-build/bin/shaders       $(TARGET_DIR)/usr/share/duckstation/
+	cp -R $(@D)/buildroot-build/bin/translations  $(TARGET_DIR)/usr/share/duckstation/
 endef
 else
 define DUCKSTATION_INSTALL_TARGET_CMDS
