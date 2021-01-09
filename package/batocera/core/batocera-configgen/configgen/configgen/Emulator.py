@@ -25,6 +25,11 @@ class Emulator():
         systemSettings = recalSettings.loadAll(self.name)
         gameSettings = recalSettings.loadAll(self.name + "[\"" + os.path.basename(rom) + "\"]")
 
+        # add some other options
+        displaySettings = recalSettings.loadAll('display')
+        for opt in displaySettings:
+            self.config["display." + opt] = displaySettings[opt]
+
         # update config
         Emulator.updateConfiguration(self.config, globalSettings)
         Emulator.updateConfiguration(self.config, systemSettings)

@@ -86,7 +86,7 @@ class LibretroGenerator(Generator):
         if configToAppend:
             commandArray.extend(["--appendconfig", "|".join(configToAppend)])
 
-         # Netplay mode
+        # Netplay mode
         if 'netplay.mode' in system.config:
             if system.config['netplay.mode'] == 'host':
                 commandArray.append("--host")
