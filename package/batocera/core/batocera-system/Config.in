@@ -388,10 +388,10 @@ config BR2_PACKAGE_BATOCERA_HOMEBREW_SYSTEMS
 		bool "batocera.linux homebrew systems"
 
 		# OpenBOR
-		#select BR2_PACKAGE_OPENBOR4432          # ALL
-		#select BR2_PACKAGE_OPENBOR6330          # ALL
-		#select BR2_PACKAGE_OPENBOR6412          # ALL
-		#select BR2_PACKAGE_OPENBOR6510          # ALL
+		select BR2_PACKAGE_OPENBOR4432          # ALL
+		select BR2_PACKAGE_OPENBOR6330          # ALL
+		select BR2_PACKAGE_OPENBOR6412          # ALL
+		select BR2_PACKAGE_OPENBOR6510          # ALL
 
 		# Lutro Engine / LÖVE
 		select BR2_PACKAGE_LIBRETRO_LUTRO             # ALL
