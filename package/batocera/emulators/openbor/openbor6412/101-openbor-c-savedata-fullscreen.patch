@@ -1,0 +1,13 @@
+diff --git a/engine/openbor.c.base b/engine/openbor.c
+index c916019..feda717 100644
+--- a/engine/openbor.c
++++ b/engine/openbor.c
+@@ -2446,7 +2446,7 @@ void clearsettings()
+     savedata.logo = 0;
+     savedata.uselog = 1;
+     savedata.debuginfo = 0;
+-    savedata.fullscreen = 0;
++    savedata.fullscreen = 1;
+ 
+ 	#if WII
+     savedata.stretch = 1;
