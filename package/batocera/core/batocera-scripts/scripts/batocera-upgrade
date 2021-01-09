@@ -41,9 +41,20 @@ do_wannaupdate() {
     [ $NET_VER -eq 0 ] && { text="Could not detect version!"; to=15; }
     read -p "${text} Press Y or wait ${to}s to proceed! Press N to break!" -N 1 -t ${to}
     [ $? -gt 128 ] && REPLY=y
-    if [ $REPLY == n ] || [ $REPLY == N ] ; then
+    if [ $REPLY = n ] || [ $REPLY = N ] ; then
         echo; echo "Abort..."
-        exit
+        exit 1
+    fi
+}
+
+do_checkupdatearch() {
+    if ! echo "$1" | grep -q $arch; then
+        read -p "Mismatch in archtype! Press Y or wait 10s to proceed! Press N to break!" -N 1 -t 10
+        [ $? -gt 128 ] && REPLY=y
+        if [ $REPLY = n ] || [ $REPLY = N ] ; then
+            echo; echo "Abort..."
+            exit 1
+        fi
     fi
 }
 
@@ -82,6 +93,7 @@ DWD_HTTP_DIR="${updateurl}/${arch}/${updatetype}/last"
 if test -n "${CUSTOM_URLDIR}"
 then
     DWD_HTTP_DIR="${CUSTOM_URLDIR}"
+    do_checkupdatearch "${CUSTOM_URLDIR}"; echo
 fi
 
 # give user more hints for update in terminal
