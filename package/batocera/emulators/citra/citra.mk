@@ -42,8 +42,6 @@ define CITRA_INSTALL_TARGET_CMDS
         mkdir -p $(TARGET_DIR)/usr/lib
 	$(INSTALL) -D $(@D)/buildroot-build/bin/citra-qt \
 		$(TARGET_DIR)/usr/bin/
-	$(INSTALL) -D $(@D)/buildroot-build/bin/citra \
-		$(TARGET_DIR)/usr/bin/
 endef
 else
 define CITRA_INSTALL_TARGET_CMDS

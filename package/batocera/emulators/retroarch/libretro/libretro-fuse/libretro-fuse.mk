@@ -4,7 +4,7 @@
 #
 ################################################################################
 # Version.: Commits on Oct 27, 2020
-LIBRETRO_FUSE_VERSION = 91939d4865def8b9b6d1e4629c16d305fabf0257
+LIBRETRO_FUSE_VERSION = a7022a87e32a886586e2289d4a0c25ce71a0589a
 LIBRETRO_FUSE_SITE = $(call github,libretro,fuse-libretro,$(LIBRETRO_FUSE_VERSION))
 LIBRETRO_FUSE_LICENSE = GPLv3
 

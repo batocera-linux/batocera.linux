@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-WINE_LUTRIS_VERSION = 5.7-11
+WINE_LUTRIS_VERSION = 6.0-rc1
 WINE_LUTRIS_SOURCE = lutris-$(WINE_LUTRIS_VERSION).tar.gz
 WINE_LUTRIS_SITE = https://github.com/lutris/wine/archive
 WINE_LUTRIS_LICENSE = LGPL-2.1+
@@ -393,14 +393,14 @@ endif
 # Wine only needs the host tools to be built, so cut-down the
 # build time by building just what we need.
 define HOST_WINE_LUTRIS_BUILD_CMDS
-	$(HOST_MAKE_ENV) $(MAKE) -C $(@D) \
-	  tools \
-	  tools/sfnt2fon \
-	  tools/widl \
-	  tools/winebuild \
-	  tools/winegcc \
-	  tools/wmc \
-	  tools/wrc
+	$(HOST_MAKE_ENV) $(MAKE) -C $(@D)
+	$(HOST_MAKE_ENV) $(MAKE) -C $(@D)/tools
+	$(HOST_MAKE_ENV) $(MAKE) -C $(@D)/tools/sfnt2fon
+	$(HOST_MAKE_ENV) $(MAKE) -C $(@D)/tools/widl
+	$(HOST_MAKE_ENV) $(MAKE) -C $(@D)/tools/winebuild
+	$(HOST_MAKE_ENV) $(MAKE) -C $(@D)/tools/winegcc
+	$(HOST_MAKE_ENV) $(MAKE) -C $(@D)/tools/wmc
+	$(HOST_MAKE_ENV) $(MAKE) -C $(@D)/tools/wrc
 endef
 
 # Wine only needs its host variant to be built, not that it is

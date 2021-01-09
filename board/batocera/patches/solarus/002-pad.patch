@@ -1,0 +1,73 @@
+diff --git a/include/solarus/core/Savegame.h b/include/solarus/core/Savegame.h
+index 910d99f..8177ad1 100644
+--- a/include/solarus/core/Savegame.h
++++ b/include/solarus/core/Savegame.h
+@@ -108,6 +108,7 @@ class SOLARUS_API Savegame: public ExportableToLua {
+     bool is_set(const std::string& key) const;
+     void unset(const std::string& key);
+ 
++    bool loadPadFromIni();
+     void set_initial_values();
+     void set_default_keyboard_controls();
+     void set_default_joypad_controls();
+diff --git a/src/core/Savegame.cpp b/src/core/Savegame.cpp
+index 29ef124..d6ca5bb 100644
+--- a/src/core/Savegame.cpp
++++ b/src/core/Savegame.cpp
+@@ -95,6 +95,47 @@ Savegame::Savegame(MainLoop& main_loop, const std::string& file_name):
+   // at this point, but is needed by initialize() when calling item scripts.
+ }
+ 
++#define                MAX_BUFFER_LEN          512
++
++bool Savegame::loadPadFromIni() {
++  FILE *handle = NULL;
++  char path[MAX_BUFFER_LEN] = { "" };
++
++  strcpy(path, "/userdata/system/configs/solarus/pads.ini");
++  handle = fopen(path, "rb");
++
++  if (handle != NULL) {
++    char line[1024] = "";
++
++    while (fgets(line, 1024, handle)) {
++      strtok(line, "\n");
++
++      char* pch = strstr(line, "=");
++      if (pch != NULL) {
++	char key[1024] = "";
++	char value[1024] = "";
++
++	strncpy(key, line, pch - line);
++	strcpy(value, pch + 1);
++
++	if (strcmp(key, "action") == 0) set_string(KEY_JOYPAD_ACTION, value);
++	if (strcmp(key, "attack") == 0) set_string(KEY_JOYPAD_ATTACK, value);
++	if (strcmp(key, "item1" ) == 0) set_string(KEY_JOYPAD_ITEM_1, value);
++	if (strcmp(key, "item2" ) == 0) set_string(KEY_JOYPAD_ITEM_2, value);
++	if (strcmp(key, "pause" ) == 0) set_string(KEY_JOYPAD_PAUSE,  value);
++	if (strcmp(key, "right" ) == 0) set_string(KEY_JOYPAD_RIGHT,  value);
++	if (strcmp(key, "up"    ) == 0) set_string(KEY_JOYPAD_UP,     value);
++	if (strcmp(key, "left"  ) == 0) set_string(KEY_JOYPAD_LEFT,   value);
++	if (strcmp(key, "down"  ) == 0) set_string(KEY_JOYPAD_DOWN,   value);
++      }
++    }
++
++    fclose(handle);
++    return true;
++  }
++  return false;
++}
++
+ /**
+  * \brief Initializes the data from the file or from initial values if the file
+  * does not exist.
+@@ -120,6 +161,8 @@ void Savegame::initialize() {
+     import_from_file();
+   }
+ 
++  loadPadFromIni(); // set batocera pad config
++
+   get_equipment().load_items();
+ }
+ 

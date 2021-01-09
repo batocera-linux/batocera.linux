@@ -274,6 +274,8 @@ dreamcast:
       reicast:        { requireAnyOf: [BR2_PACKAGE_REICAST]          }
     flycast:
       flycast:        { requireAnyOf: [BR2_PACKAGE_FLYCAST]          }
+    redream:
+      redream:        { requireAnyOf: [BR2_PACKAGE_REDREAM]          }
 
 naomi:
   name:       Sega Naomi
@@ -818,8 +820,8 @@ mrboom:
 
 tic80:
   name:       TIC-80
-  manufacturer: Ports
-  release:
+  manufacturer: Fantasy
+  release: 2016
   hardware: console
   extensions: [tic]
   emulators:
@@ -828,13 +830,23 @@ tic80:
 
 pico8:
   name:       Pico-8
-  manufacturer: Ports
-  release:
+  manufacturer: Fantasy
+  release: 2015
   hardware: console
   extensions: [p8, png]
   emulators:
     libretro:
       retro8: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_RETRO8] }
+
+channelf:
+  name:       Channel-F
+  manufacturer: Fairchild
+  release: 1976
+  hardware: console
+  extensions: [zip, rom, bin, chf]
+  emulators:
+    libretro:
+      freechaf: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FREECHAF] }
 
 cannonball:
   name:       Cannonball
@@ -850,6 +862,21 @@ cannonball:
     Add mame 'OutRun rev. B' ROMs (epr-10187.88, epr-10327a.76.. ) in this directory and rename Cannonball.cannonball.disabled to Cannonball.cannonball.
   comment_fr: |
     Ajoutez les roms mame de 'OutRun rev. B' (epr-10187.88, epr-10327a.76.. ) dans ce dossier et renommez Cannonball.cannonball.disabled en Cannonball.cannonball.
+
+sdlpop:
+  name:       SdlPop
+  manufacturer: Ports
+  release:
+  hardware: port
+  extensions: [sdlpop]
+  group: ports
+  emulators:
+    sdlpop:
+      sdlpop: { requireAnyOf: [BR2_PACKAGE_SDLPOP] }
+  comment_en: |
+    An open-source port of Prince of Persia, based on the disassembly of the DOS version.
+  comment_fr: |
+    Un port open-source de Prince of Persia basé sur la version DOS.
 
 vectrex:
   name:       Vectrex
@@ -939,7 +966,7 @@ msx1:
   manufacturer: Microsoft
   release: 1983
   hardware: computer
-  extensions: [dsk, mx1, rom, zip, 7z]
+  extensions: [dsk, mx1, rom, zip, 7z, m3u]
   platform:   msx
   group:      msx
   emulators:
@@ -999,7 +1026,7 @@ msx2:
   manufacturer: Microsoft
   release: 1985
   hardware: computer
-  extensions: [dsk, mx2, rom, zip, 7z]
+  extensions: [dsk, mx2, rom, zip, 7z, m3u]
   platform:   msx
   group:      msx
   emulators:
@@ -1315,6 +1342,16 @@ x68000:
     libretro:
       px68k: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PX68K] }
 
+x1:
+  name:       Sharp X1
+  manufacturer: Sharp
+  release: 1982
+  hardware: computer
+  extensions: [dx1, zip, 2d, 2hd, tfd, d88, 88d, hdm, xdf, dup, cmd, 7z]
+  emulators:
+    libretro:
+      x1: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_XMIL] }
+
 3ds:
   name:       Nintendo 3DS
   manufacturer: Nintendo
@@ -1482,6 +1519,35 @@ windows_installers:
       lutris:  { requireAnyOf: [BR2_PACKAGE_WINE_LUTRIS] }
       proton:  { requireAnyOf: [BR2_PACKAGE_WINE_PROTON] }
 
+xash3d_fwgs:
+  name:       Xash3D-FWGS
+  manufacturer: Ports
+  release:
+  hardware:   port
+  extensions: [game]
+  group: ports
+  emulators:
+    xash3d_fwgs:
+      xash3d_fwgs: { requireAnyOf: [BR2_PACKAGE_XASH3D_FWGS] }
+  comment_en: |
+    Half-Life 1 engine.
+
+    Supports the following games:
+
+    * Half-Life, including Blue Shift and Opposing Force.
+    * Deathmatch Classic.
+    * Several other mods: https://github.com/FWGS/hlsdk-xash3d/blob/mobile_hacks/dlls/moddef.h
+
+    Installation:
+
+    Copy the game's directory from your Steam installation (Steam/steamapps/common/Half-Life/<game data folder>/)
+    to /userdata/roms/xash3d_fwgs/<game folder> and create an empty `<game folder>.game` file in the same directory.
+
+    For Half-Life 1, the game folder is `valve/`.
+
+    Then, download https://github.com/FWGS/xash-extras/releases/latest/download/extras.pak and copy it to:
+    /userdata/roms/xash3d_fwgs/extras.pak.
+
 wiiu:
   name:       Wii U
   manufacturer: Nintendo
@@ -1493,6 +1559,28 @@ wiiu:
   emulators:
     cemu:
       cemu:  { requireAnyOf: [BR2_PACKAGE_CEMU] }
+
+solarus:
+  name:       Solarus
+  manufacturer: Ports
+  release:
+  hardware: port
+  extensions: [zip, solarus]
+  emulators:
+    solarus:
+      solarus: { requireAnyOf: [BR2_PACKAGE_SOLARUS] }
+
+easyrpg:
+  name:       EasyRPG
+  manufacturer: Ports
+  release:
+  hardware: port
+  extensions: [zip, easyrpg]
+  emulators:
+    easyrpg:
+      easyrpg: { requireAnyOf: [BR2_PACKAGE_EASYRPG_PLAYER] }
+    libretro:
+      easyrpg: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_EASYRPG] }
 
 pygame:
   name:       pygame

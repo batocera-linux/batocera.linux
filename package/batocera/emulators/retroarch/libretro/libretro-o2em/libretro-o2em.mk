@@ -4,7 +4,7 @@
 #
 ################################################################################
 # Version.: Commits on Oct 20, 2020
-LIBRETRO_O2EM_VERSION = 422aa466f309ae79074f8195cd5a26fe6fae1007
+LIBRETRO_O2EM_VERSION = ccea0ba660d5a85cf8726c73386fe63baf12705a
 LIBRETRO_O2EM_SITE = $(call github,libretro,libretro-o2em,$(LIBRETRO_O2EM_VERSION))
 LIBRETRO_O2EM_LICENSE = Artistic License
 

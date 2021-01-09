@@ -4,7 +4,7 @@
 #
 ################################################################################
 # Version.: Commits on Oct 18, 2020
-LIBRETRO_BLUEMSX_VERSION = 732701bf9abc5ed2dfb8a27ae867fd289c9a5009
+LIBRETRO_BLUEMSX_VERSION = 5b8718c8bba44ff4adda1bcc575895d342c1ba6a
 LIBRETRO_BLUEMSX_SITE = $(call github,libretro,blueMSX-libretro,$(LIBRETRO_BLUEMSX_VERSION))
 LIBRETRO_BLUEMSX_LICENSE = GPLv2
 

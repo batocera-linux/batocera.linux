@@ -1,0 +1,10 @@
+config BR2_PACKAGE_LIBLCF
+    bool "liblcf"
+    select BR2_PACKAGE_EXPAT
+    select BR2_PACKAGE_ICU
+    help
+      liblcf is a library to handle RPG Maker 2000 and 2003 game data. It can read and write LCF and XML files.
+      
+      liblcf is part of the EasyRPG Project. More information is available at the project website: https://easyrpg.org/
+
+

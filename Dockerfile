@@ -35,6 +35,8 @@ RUN dpkg --add-architecture i386 && \
 		locales \
 		graphviz \
 		python \
+		gcc-multilib \
+		g++-multilib \
 	&& apt clean
 
 # Set locale

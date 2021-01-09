@@ -4,7 +4,7 @@
 #
 ################################################################################
 # Version.: Commits on Oct 27, 2020
-LIBRETRO_HATARI_VERSION = 664ac30180064b7f616330d8ac16adf3dd78be12
+LIBRETRO_HATARI_VERSION = 4398f99dcfc940636db629faadd92f50df569705
 LIBRETRO_HATARI_SITE = $(call github,libretro,hatari,$(LIBRETRO_HATARI_VERSION))
 LIBRETRO_HATARI_DEPENDENCIES = libcapsimage
 LIBRETRO_HATARI_LICENSE = GPLv2

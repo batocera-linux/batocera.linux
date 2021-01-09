@@ -162,11 +162,12 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
 
     # wireless drivers
     select BR2_PACKAGE_RTL8821AU                         if !BR2_PACKAGE_BATOCERA_RPI_VCORE
-    select BR2_PACKAGE_RTL8821CE                         if !BR2_PACKAGE_BATOCERA_RPI_VCORE           && \
-                                                            !BR2_PACKAGE_BATOCERA_TARGET_RPI3         && \
-                                                            !BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA    && \
-                                                            !BR2_PACKAGE_BATOCERA_TARGET_LIBRETECH_H5 && \
-                                                            !BR2_PACKAGE_BATOCERA_TARGET_MIQI         && \
+    select BR2_PACKAGE_RTL8821CE                         if !BR2_PACKAGE_BATOCERA_RPI_VCORE             && \
+                                                            !BR2_PACKAGE_BATOCERA_TARGET_RPI3           && \
+                                                            !BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA      && \
+                                                            !BR2_PACKAGE_BATOCERA_TARGET_LIBRETECH_H5   && \
+                                                            !BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_ZERO2 && \
+                                                            !BR2_PACKAGE_BATOCERA_TARGET_MIQI           && \
                                                             !BR2_PACKAGE_BATOCERA_TARGET_TINKERBOARD
 
     # gpu drivers
@@ -244,6 +245,7 @@ config BR2_TARGET_BATOCERA_IMAGES_DEFINITIONS
 	default "rockchip/rk3399/rock960"     if BR2_PACKAGE_BATOCERA_TARGET_ROCK960
 	default "rockchip/rk3399/rockpro64"   if BR2_PACKAGE_BATOCERA_TARGET_ROCKPRO64
 	default "libretech-h5"         	      if BR2_PACKAGE_BATOCERA_TARGET_LIBRETECH_H5
+	default "orangepi-zero2"              if BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_ZERO2
 	default "odroidxu4"                   if BR2_PACKAGE_BATOCERA_TARGET_XU4
 	default "x86"                  	      if BR2_PACKAGE_BATOCERA_TARGET_X86
 	default "x86"                  	      if BR2_PACKAGE_BATOCERA_TARGET_X86_64
@@ -310,6 +312,9 @@ config BR2_PACKAGE_BATOCERA_TARGET_VIM3
 
 config BR2_PACKAGE_BATOCERA_TARGET_LIBRETECH_H5
         bool "libretech_h5"
+
+config BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_ZERO2
+        bool "orangepi_zero2"
 
 endchoice
 
@@ -392,10 +397,17 @@ config BR2_PACKAGE_BATOCERA_HOMEBREW_SYSTEMS
 		# PyGAME
 		select BR2_PACKAGE_BATOCERA_PYGAME
 
+		# RPG engine : Solarus
+		select BR2_PACKAGE_LUAJIT		# for performance
+		select BR2_PACKAGE_SOLARUS		# engine itself
+
+		# RPG engine : EasyRPG / RPG MAker
+		select BR2_PACKAGE_EASYRPG_PLAYER	# standalone
+		select BR2_PACKAGE_LIBRETRO_EASYRPG	# libretro core
+
 		# Fantasy consoles
 		select BR2_PACKAGE_LIBRETRO_TIC80             # ALL
 		select BR2_PACKAGE_LIBRETRO_RETRO8            # ALL
-
 
 #### Sega Dreamcast, Naomi and Atomiswave ####
 config BR2_PACKAGE_BATOCERA_SEGADC
@@ -417,6 +429,7 @@ config BR2_PACKAGE_BATOCERA_SEGADC
 		                                                 !BR2_PACKAGE_BATOCERA_TARGET_RPI2    && \
 							 !BR2_PACKAGE_BATOCERA_TARGET_X86     && \
 							 !BR2_PACKAGE_BATOCERA_TARGET_S905 
+                select BR2_PACKAGE_REDREAM              if BR2_PACKAGE_BATOCERA_TARGET_X86_64
 
 		help
 		Sega Dreamcast and Naomi/Atomiswave emulation support
@@ -510,7 +523,8 @@ config BR2_PACKAGE_BATOCERA_MSDOS_SYSTEMS
 		select BR2_PACKAGE_DOSBOX_STAGING             if BR2_PACKAGE_BATOCERA_CORES_EXPERIMENTAL # ALL # dos
 
 		select BR2_PACKAGE_LIBRETRO_DOSBOX            if !BR2_PACKAGE_BATOCERA_TARGET_ROCK960     && \
-		                                                 !BR2_PACKAGE_BATOCERA_TARGET_LIBRETECH_H5
+		                                                 !BR2_PACKAGE_BATOCERA_TARGET_LIBRETECH_H5 && \
+		                                                 !BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_ZERO2
 		select BR2_PACKAGE_LIBRETRO_DOSBOX_PURE       # ALL
 
 		help
@@ -537,6 +551,13 @@ config BR2_PACKAGE_BATOCERA_PORTS_SYSTEMS
 
         # MrBoom (Bomberman clone)
         select BR2_PACKAGE_LIBRETRO_MRBOOM            # ALL
+
+	# Prince of Persia
+	select BR2_PACKAGE_SDLPOP
+
+	# Xash3D-FWGS (Half-Life 1)
+	select BR2_PACKAGE_XASH3D_FWGS                # ALL
+
 
 	help
 	Ports
@@ -582,6 +603,7 @@ config BR2_PACKAGE_BATOCERA_COMPUTER_SYSTEMS
 		select BR2_PACKAGE_LIBRETRO_PC88              # ALL
 		select BR2_PACKAGE_LIBRETRO_PC98              # ALL
 		select BR2_PACKAGE_LIBRETRO_PX68K             # ALL
+		select BR2_PACKAGE_LIBRETRO_XMIL              # ALL
 
 	help
 	Old computers
@@ -594,7 +616,6 @@ config BR2_PACKAGE_BATOCERA_RETROARCH
 		select BR2_PACKAGE_LIBRETRO_CHEATS
 		select BR2_PACKAGE_BATOCERA_BEZEL
 		select BR2_PACKAGE_BATOCERA_SHADERS
-		select BR2_PACKAGE_LIBRETRO_IMAGEVIEWER
 
 config BR2_PACKAGE_BATOCERA_CONSOLE_SYSTEMS
 		bool "batocera.linux console emulators/cores"
@@ -603,21 +624,18 @@ config BR2_PACKAGE_BATOCERA_CONSOLE_SYSTEMS
 		select BR2_PACKAGE_BATOCERA_MUPEN64     if !BR2_PACKAGE_BATOCERA_TARGET_RPI1 # mupen64 (n64)
 
 		select BR2_PACKAGE_LIBRETRO_MUPEN64PLUS_NEXT  if !BR2_PACKAGE_BATOCERA_RPI_VCORE            && \
-		                                                 !BR2_PACKAGE_BATOCERA_TARGET_ODROIDC2      && \
-		                                                 !BR2_PACKAGE_BATOCERA_TARGET_ODROIDC4      && \
 		                                                 !BR2_PACKAGE_BATOCERA_TARGET_S905          && \
 		                                                 !BR2_PACKAGE_BATOCERA_TARGET_S912 
 		                                                 # MUPEN64PLUS_NEXT
 
-		select BR2_PACKAGE_LIBRETRO_PARALLEL_N64      if !BR2_PACKAGE_BATOCERA_RPI_VCORE          && \
-		                                                 !BR2_PACKAGE_BATOCERA_TARGET_RPI3        && \
-		                                                 !BR2_PACKAGE_BATOCERA_TARGET_RPI4        && \
-		                                                 !BR2_PACKAGE_BATOCERA_TARGET_ODROIDC2    && \
-		                                                 !BR2_PACKAGE_BATOCERA_TARGET_ODROIDC4    && \
-		                                                 !BR2_PACKAGE_BATOCERA_TARGET_S905     	  && \
-		                                                 !BR2_PACKAGE_BATOCERA_TARGET_S912     	  && \
-		                                                 !BR2_PACKAGE_BATOCERA_TARGET_TINKERBOARD && \
-		                                                 !BR2_PACKAGE_BATOCERA_TARGET_MIQI &&\
+		select BR2_PACKAGE_LIBRETRO_PARALLEL_N64      if !BR2_PACKAGE_BATOCERA_RPI_VCORE             && \
+		                                                 !BR2_PACKAGE_BATOCERA_TARGET_RPI3           && \
+		                                                 !BR2_PACKAGE_BATOCERA_TARGET_RPI4           && \
+		                                                 !BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_ZERO2 && \
+		                                                 !BR2_PACKAGE_BATOCERA_TARGET_S905           && \
+		                                                 !BR2_PACKAGE_BATOCERA_TARGET_S912           && \
+		                                                 !BR2_PACKAGE_BATOCERA_TARGET_TINKERBOARD    && \
+		                                                 !BR2_PACKAGE_BATOCERA_TARGET_MIQI           && \
 		                                                 !BR2_PACKAGE_BATOCERA_TARGET_ROCK960
 		                                                                        # PARALLEL_N64
 
@@ -725,6 +743,9 @@ config BR2_PACKAGE_BATOCERA_CONSOLE_SYSTEMS
 
 		# Atari 7800
 		select BR2_PACKAGE_LIBRETRO_PROSYSTEM         # ALL
+
+		# Fairchild Channel F
+		select BR2_PACKAGE_LIBRETRO_FREECHAF          # ALL
 
 		help
 		  All avaible systems for the selected architecture
@@ -925,6 +946,7 @@ config BR2_PACKAGE_BATOCERA_XORG
        select BR2_PACKAGE_LIBGTK3		            # gtk3 library
        select BR2_PACKAGE_L3AFPAD                           # gtk3 text editor
        select BR2_PACKAGE_PCMANFM                           # file manager
+       select BR2_PACKAGE_GVFS                              if BR2_PACKAGE_PCMANFM # file systems (trash, smb, ... in pcmanfm)
        select BR2_PACKAGE_ADWAITA_ICON_THEME_LIGHT          if BR2_PACKAGE_PCMANFM # theme for file manager
        select BR2_PACKAGE_XTERM                             # terminal
        select BR2_PACKAGE_OPENBOX                           # window manager

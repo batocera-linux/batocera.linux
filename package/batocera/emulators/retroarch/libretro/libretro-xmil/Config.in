@@ -1,0 +1,6 @@
+config BR2_PACKAGE_LIBRETRO_XMIL
+        bool "libretro-xmil"
+	depends on BR2_PACKAGE_RETROARCH
+        help
+          A libretro Sharp X1 emulator
+

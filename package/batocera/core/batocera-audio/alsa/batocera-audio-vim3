@@ -1,34 +1,28 @@
-#!/bin/bash	
+#!/bin/sh
 
-ACTION=$1	
+ACTION="$1"
 
-case "${ACTION}" in	
-	"unlock-volume")
-		echo "obsolete"
-	;;	
+case "${ACTION}" in
+	list)
+		printf '%s\n' auto hdmi custom
+	;;
 
-	"list")	
-		echo "auto"	
-		echo "hdmi"
-		echo "custom"	
-	;;	
+	get)
+		/usr/bin/batocera-settings-get audio.device
+	;;
 
-	"get")	
-		/usr/bin/batocera-settings-get audio.device	
-	;;	
-
-	"set")	
-		MODE=$2	
-		case "${MODE}" in	
-			"auto" | "hdmi")
+	set)
+		MODE="$2"
+		case "${MODE}" in
+			auto | hdmi)
 				# card 0: G12BKHADASVIM3 [G12B-KHADAS-VIM3], device 0: fe.dai-link-0 (*) []
 				sed -e "s;%CARDNO%;0;g" -e "s;%DEVICENO%;0;g" /usr/share/batocera/alsa/asoundrc-dmix+softvol > /userdata/system/.asoundrc
 			;;
 
-			"custom")
+			custom)
 				# do nothing!
 			;;
-		esac	
+		esac
 	;;
 
 	test)

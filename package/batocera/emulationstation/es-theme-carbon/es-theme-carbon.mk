@@ -3,8 +3,8 @@
 # EmulationStation theme "Carbon"
 #
 ################################################################################
-# Version.: Commits on Nov 22, 2020
-ES_THEME_CARBON_VERSION = f338db601a7088ecf19cc2c75dcfe1563f966116
+# Version.: Commits on Jan 8, 2021
+ES_THEME_CARBON_VERSION = 6a87321cadd096c3eff154060e1207fcc7c06480
 ES_THEME_CARBON_SITE = $(call github,fabricecaruso,es-theme-carbon,$(ES_THEME_CARBON_VERSION))
 
 define ES_THEME_CARBON_INSTALL_TARGET_CMDS
