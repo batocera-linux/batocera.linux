@@ -450,7 +450,7 @@ config BR2_PACKAGE_BATOCERA_ARCADE_SYSTEMS
 		                                               # daphne
 
 		# Standalone Sega Model 3 emulator
-		select BR2_PACKAGE_SUPERMODEL3                if BR2_PACKAGE_BATOCERA_TARGET_X86_64
+		select BR2_PACKAGE_SUPERMODEL		      if BR2_PACKAGE_BATOCERA_TARGET_X86_64
 
 		# RetroArch MAME derivatives
 		select BR2_PACKAGE_LIBRETRO_MAME2003_PLUS     # ALL

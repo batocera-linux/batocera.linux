@@ -1617,5 +1617,5 @@ model3:
   hardware: arcade
   extensions: [zip]
   emulators:
-    model3:
-      model3: { requireAnyOf: [BR2_PACKAGE_SUPERMODEL3] }
+    supermodel:
+      supermodel: { requireAnyOf: [BR2_PACKAGE_SUPERMODEL] }

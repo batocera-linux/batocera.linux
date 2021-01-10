@@ -1,5 +1,5 @@
-config BR2_PACKAGE_SUPERMODEL3
-        bool "supermodel3"
+config BR2_PACKAGE_SUPERMODEL
+        bool "supermodel"
         depends on BR2_x86_64
         depends on BR2_INSTALL_LIBSTDCPP
         select BR2_PACKAGE_SDL2

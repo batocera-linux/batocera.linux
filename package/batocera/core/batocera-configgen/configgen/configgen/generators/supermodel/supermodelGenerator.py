@@ -5,7 +5,7 @@ from generators.Generator import Generator
 import controllersConfig
 
 
-class Model3Generator(Generator):
+class SupermodelGenerator(Generator):
 
     def generate(self, system, rom, playersControllers, gameResolution):
         commandArray = ["supermodel", "-fullscreen", "-res=1024,768", rom]
