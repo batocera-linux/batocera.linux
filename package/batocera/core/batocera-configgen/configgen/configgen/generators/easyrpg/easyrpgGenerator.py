@@ -8,7 +8,7 @@ import controllersConfig
 class EasyRPGGenerator(Generator):
 
     def generate(self, system, rom, playersControllers, gameResolution):
-        commandArray = ["easyrpg-player", rom]
+        commandArray = ["easyrpg-player", "--project-path", rom]
         return Command.Command(
             array=commandArray,
             env={
