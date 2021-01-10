@@ -1,0 +1,37 @@
+--- a/Src/Inputs/Inputs.cpp		2020-10-29 23:56:33.442470244 +0100
++++ b/Src/Inputs/Inputs.cpp		2020-10-29 23:59:01.485810018 +0100
+@@ -42,23 +42,23 @@
+ 	// the config file.
+ 	
+ 	// UI Controls  
+-	uiExit             = AddSwitchInput("UIExit",             "Exit UI",               Game::INPUT_UI, "KEY_ESCAPE");
+-	uiReset            = AddSwitchInput("UIReset",            "Reset",                 Game::INPUT_UI, "KEY_ALT+KEY_R");
+-	uiPause            = AddSwitchInput("UIPause",            "Pause",                 Game::INPUT_UI, "KEY_ALT+KEY_P");
++	uiExit             = AddSwitchInput("UIExit",             "Exit UI",               Game::INPUT_COMMON, "NONE");
++	uiReset            = AddSwitchInput("UIReset",            "Reset",                 Game::INPUT_COMMON, "NONE");
++	uiPause            = AddSwitchInput("UIPause",            "Pause",                 Game::INPUT_COMMON, "NONE");
+ 	uiFullScreen       = AddSwitchInput("UIFullScreen",       "Toggle Fullscreen",     Game::INPUT_UI, "KEY_ALT+KEY_RETURN");
+-	uiSaveState        = AddSwitchInput("UISaveState",        "Save State",            Game::INPUT_UI, "KEY_F5");
+-	uiChangeSlot       = AddSwitchInput("UIChangeSlot",       "Change Save Slot",      Game::INPUT_UI, "KEY_F6");
+-	uiLoadState        = AddSwitchInput("UILoadState",        "Load State",            Game::INPUT_UI, "KEY_F7");
+-	uiMusicVolUp	     = AddSwitchInput("UIMusicVolUp",		    "Increase Music Volume", Game::INPUT_UI, "KEY_F10");
+-	uiMusicVolDown	   = AddSwitchInput("UIMusicVolDown",	    "Decrease Music Volume", Game::INPUT_UI, "KEY_F9");
+-	uiSoundVolUp	     = AddSwitchInput("UISoundVolUp",		    "Increase Sound Volume", Game::INPUT_UI, "KEY_F12");
+-	uiSoundVolDown	   = AddSwitchInput("UISoundVolDown",	    "Decrease Sound Volume", Game::INPUT_UI, "KEY_F11");
++	uiSaveState        = AddSwitchInput("UISaveState",        "Save State",            Game::INPUT_COMMON, "NONE");
++	uiChangeSlot       = AddSwitchInput("UIChangeSlot",       "Change Save Slot",      Game::INPUT_COMMON, "NONE");
++	uiLoadState        = AddSwitchInput("UILoadState",        "Load State",            Game::INPUT_COMMON, "NONE");
++	uiMusicVolUp	   = AddSwitchInput("UIMusicVolUp",		  "Increase Music Volume", Game::INPUT_UI, "KEY_F10");
++	uiMusicVolDown	   = AddSwitchInput("UIMusicVolDown",	  "Decrease Music Volume", Game::INPUT_UI, "KEY_F9");
++	uiSoundVolUp	   = AddSwitchInput("UISoundVolUp",		  "Increase Sound Volume", Game::INPUT_UI, "KEY_F12");
++	uiSoundVolDown	   = AddSwitchInput("UISoundVolDown",	  "Decrease Sound Volume", Game::INPUT_UI, "KEY_F11");
+ 	uiClearNVRAM       = AddSwitchInput("UIClearNVRAM",       "Clear NVRAM",           Game::INPUT_UI, "KEY_ALT+KEY_N");
+ 	uiSelectCrosshairs = AddSwitchInput("UISelectCrosshairs", "Select Crosshairs",     Game::INPUT_UI, "KEY_ALT+KEY_I");
+ 	uiToggleFrLimit    = AddSwitchInput("UIToggleFrameLimit", "Toggle Frame Limiting", Game::INPUT_UI, "KEY_ALT+KEY_T");
+ 	uiDumpInpState     = AddSwitchInput("UIDumpInputState",   "Dump Input State",      Game::INPUT_UI, "KEY_ALT+KEY_U");
+ 	uiDumpTimings      = AddSwitchInput("UIDumpTimings",      "Dump Frame Timings",    Game::INPUT_UI, "KEY_ALT+KEY_O");
+-	uiScreenshot       = AddSwitchInput("UIScreenShot",	      "Screenshot",            Game::INPUT_UI, "KEY_ALT+KEY_S");
++	uiScreenshot       = AddSwitchInput("UIScreenShot",	      "Screenshot",            Game::INPUT_COMMON, "NONE");
+ #ifdef SUPERMODEL_DEBUGGER
+ 	uiEnterDebugger    = AddSwitchInput("UIEnterDebugger",    "Enter Debugger",        Game::INPUT_UI, "KEY_ALT+KEY_B");
+ #endif
