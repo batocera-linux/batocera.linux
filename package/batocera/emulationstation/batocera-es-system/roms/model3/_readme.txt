@@ -14,6 +14,7 @@ Game Compatibility:
 Game compatibility can be found here - https://www.supermodel3.com/About.html
 
 The Configuration File:
+-----------------------
 
 The configuration file, Supermodel.ini, located in the Config folder (/userdata/system/configs/model3/), which stores input settings as well as most of what can be set on the command line.
 
