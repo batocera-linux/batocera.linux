@@ -8,7 +8,7 @@ import controllersConfig
 class Model3Generator(Generator):
 
     def generate(self, system, rom, playersControllers, gameResolution):
-        commandArray = ["supermodel", "-fullscreen", rom]
+        commandArray = ["supermodel", "-fullscreen", "-res=1024,768", rom]
         return Command.Command(
             array=commandArray,
             env={
