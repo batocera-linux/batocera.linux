@@ -1,0 +1,31 @@
+diff --git a/src/output.cpp b/src/output.cpp
+index 2b8ef03..86b3739 100644
+--- a/src/output.cpp
++++ b/src/output.cpp
+@@ -60,7 +60,7 @@ namespace {
+ 
+ 	std::ostream& output_time() {
+ 		if (!init) {
+-			LOG_FILE.open(FileFinder::MakePath(Main_Data::GetSavePath(), OUTPUT_FILENAME).c_str(), std::ios_base::out | std::ios_base::app);
++			LOG_FILE.open(FileFinder::MakePath("/userdata/system/configs/easyrpg", OUTPUT_FILENAME).c_str(), std::ios_base::out | std::ios_base::app);
+ 			init = true;
+ 		}
+ 		std::time_t t = std::time(NULL);
+@@ -215,7 +215,7 @@ void Output::Quit() {
+ 	char* buf = new char[log_size];
+ 
+ 	std::ifstream in;
+-	in.open(FileFinder::MakePath(Main_Data::GetSavePath(), OUTPUT_FILENAME).c_str());
++	in.open(FileFinder::MakePath("/userdata/system/configs/easyrpg", OUTPUT_FILENAME).c_str());
+ 	if (!in.bad()) {
+ 		in.seekg(0, std::ios_base::end);
+ 		if (in.tellg() > log_size) {
+@@ -227,7 +227,7 @@ void Output::Quit() {
+ 			in.close();
+ 
+ 			std::ofstream out;
+-			out.open(FileFinder::MakePath(Main_Data::GetSavePath(), OUTPUT_FILENAME).c_str());
++			out.open(FileFinder::MakePath("/userdata/system/configs/easyrpg", OUTPUT_FILENAME).c_str());
+ 			out.write(buf, read);
+ 			out.close();
+ 		}
