@@ -21,7 +21,7 @@ def _rom_dir(game):
 
 
 def _config_dir(game):
-    return '/userdata/system/config/xash3d_fwgs/' + game
+    return '/userdata/system/configs/xash3d_fwgs/' + game
 
 
 def _save_dir(game):
@@ -139,7 +139,8 @@ class Xash3dFwgsGenerator(Generator):
                 os.makedirs(config_dir)
             with open(config_dir + '/custom.cfg', 'w') as f:
                 f.write('\n')
-            os.symlink(config_dir + '/custom.cfg', rom_dir + '/custom.cfg')
+            if not os.path.exists(rom_dir + '/custom.cfg'):
+                os.symlink(config_dir + '/custom.cfg', rom_dir + '/custom.cfg')
 
     def _maybeInitSaveDir(self, game):
         rom_dir = _rom_dir(game)
@@ -147,4 +148,5 @@ class Xash3dFwgsGenerator(Generator):
             save_dir = _save_dir(game)
             if not os.path.exists(save_dir):
                 os.makedirs(save_dir)
-            os.symlink(save_dir, rom_dir + '/save')
+            if not os.path.exists(rom_dir + '/save'):
+                os.symlink(save_dir, rom_dir + '/save')

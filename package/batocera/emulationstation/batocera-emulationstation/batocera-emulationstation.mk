@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-BATOCERA_EMULATIONSTATION_VERSION = 7fdf0da92c19c9e8d78d511653dff04bf5aec3e8
+BATOCERA_EMULATIONSTATION_VERSION = 8dd045511a264c5ac7cb5bfd870c3ca2cda6b09c
 BATOCERA_EMULATIONSTATION_SITE = https://github.com/batocera-linux/batocera-emulationstation
 BATOCERA_EMULATIONSTATION_SITE_METHOD = git
 BATOCERA_EMULATIONSTATION_LICENSE = MIT
@@ -81,7 +81,7 @@ endef
 # default for most of architectures
 BATOCERA_EMULATIONSTATION_PREFIX = SDL_NOMOUSE=1
 BATOCERA_EMULATIONSTATION_CMD = /usr/bin/emulationstation
-BATOCERA_EMULATIONSTATION_ARGS = --no-splash
+BATOCERA_EMULATIONSTATION_ARGS = --no-splash $${EXTRA_OPTS}
 BATOCERA_EMULATIONSTATION_POSTFIX = \&
 
 # on rpi1: dont load ES in background
@@ -91,12 +91,12 @@ endif
 
 # on rpi 1 2 3, the splash with video + es splash is ok
 ifeq ($(BR2_PACKAGE_RPI_USERLAND),y)
-	BATOCERA_EMULATIONSTATION_ARGS =
+	BATOCERA_EMULATIONSTATION_ARGS = $${EXTRA_OPTS}
 endif
 
 # es splash is ok when there is no video
 ifeq ($(BR2_PACKAGE_BATOCERA_SPLASH_IMAGE)$(BR2_PACKAGE_BATOCERA_SPLASH_ROTATE_IMAGE),y)
-	BATOCERA_EMULATIONSTATION_ARGS =
+	BATOCERA_EMULATIONSTATION_ARGS = $${EXTRA_OPTS}
 endif
 
 # # on x86/x86_64: startx runs ES

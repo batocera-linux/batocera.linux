@@ -30,6 +30,7 @@ WINE="${DIR}/${WINE_VERSION}/bin/wine"
 WINE64="${DIR}/${WINE_VERSION}/bin/wine64"
 WINESERVER="${DIR}/${WINE_VERSION}/bin/wineserver"
 MSIEXEC="${DIR}/${WINE_VERSION}/bin/msiexec"
+WINETRICKS="${DIR}/winetricks"
 
 ## Folders
 G_SAVES_DIR="/userdata/saves/windows"
@@ -250,9 +251,17 @@ play_pc() {
 
 trick_wine() {
     GAMENAME=$1
+    if [ -e "${WINETRICKS}" ]; then
+        echo "Winetricks is installed"
+	else
+        echo "Winetricks is downloading"
+        wget -O "${WINETRICKS}" "https://raw.githubusercontent.com/Winetricks/winetricks/master/src/winetricks" &>/dev/null
+        chmod +x "${WINETRICKS}"
+        echo "Winetricks is now installed"
+	fi
     TRICK=$2
     WINEPOINT="${GAMENAME}"
-    WINEPREFIX=${WINEPOINT} winetricks "${TRICK}"
+    WINEPREFIX=${WINEPOINT} "${WINETRICKS}" "${TRICK}"
 }
 
 #play_iso() {

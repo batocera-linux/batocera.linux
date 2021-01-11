@@ -1,0 +1,13 @@
+diff --git a/src/configuration.c b/src/configuration.c
+index d487469..f066bc3 100644
+--- a/src/configuration.c
++++ b/src/configuration.c
+@@ -865,7 +865,7 @@ void Configuration_SetDefault(void)
+ 	/* Set defaults for Rom */
+ 	File_MakePathBuf(ConfigureParams.Rom.szTosImageFileName,
+ 	                 sizeof(ConfigureParams.Rom.szTosImageFileName),
+-	                 Paths_GetDataDir(), "tos", "img");
++	                 "/userdata/bios", "tos", "img");
+ 	ConfigureParams.Rom.bPatchTos = true;
+ 	strcpy(ConfigureParams.Rom.szCartridgeImageFileName, "");
+ 

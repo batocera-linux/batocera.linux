@@ -27,6 +27,7 @@ from generators.amiberry.amiberryGenerator import AmiberryGenerator
 from generators.citra.citraGenerator import CitraGenerator
 from generators.daphne.daphneGenerator import DaphneGenerator
 from generators.cannonball.cannonballGenerator import CannonballGenerator
+from generators.sdlpop.sdlpopGenerator import SdlPopGenerator
 from generators.openbor.openborGenerator import OpenborGenerator
 from generators.wine.wineGenerator import WineGenerator
 from generators.cemu.cemuGenerator import CemuGenerator
@@ -69,6 +70,7 @@ generators = {
     'citra' : CitraGenerator(),
     'daphne' : DaphneGenerator(),
     'cannonball' : CannonballGenerator(),
+    'sdlpop' : SdlPopGenerator(),
     'openbor' : OpenborGenerator(),
     'wine' : WineGenerator(),
     'cemu' : CemuGenerator(),

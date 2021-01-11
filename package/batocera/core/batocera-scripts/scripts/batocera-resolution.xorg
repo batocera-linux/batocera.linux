@@ -3,8 +3,7 @@
 ACTION=$1
 shift
 
-if test -z "${ACTION}"
-then
+f_usage() {
     echo "${0} listModes" >&2
     echo "${0} setMode <MODE>" >&2
     echo "${0} currentMode" >&2
@@ -13,6 +12,11 @@ then
     echo "${0} setOutput <output>" >&2
     echo "${0} minTomaxResolution" >&2
     echo "${0} minTomaxResolution-secure" >&2
+}
+
+if test -z "${ACTION}"
+then
+    f_usage
     exit 1
 fi
 
@@ -58,8 +62,15 @@ case "${ACTION}" in
 	;;
     "minTomaxResolution" | "minTomaxResolution-secure")
 	# minimize resolution because of 4K tv
-	MAXWIDTH=1920
-	MAXHEIGHT=1080
+	MWIDTH=$(echo "$1"x | tr -d [[:blank:]] | cut -dx -f1) # the final added x is for compatibility with v29
+	MHEIGHT=$(echo "$1"x | tr -d [[:blank:]] | cut -dx -f2)
+	if test -n "$MWIDTH" -a -n "$MHEIGHT" -a "$MWIDTH" != 0 -a "$MHEIGHT" != 0; then
+		MAXWIDTH="$MWIDTH"
+		MAXHEIGHT="$MHEIGHT"
+	else
+		MAXWIDTH=1920
+		MAXHEIGHT=1080
+	fi
 	CURRENT_RESOLUTION=$(xrandr --currentResolution)
 	CURRENTWIDTH=$(echo "${CURRENT_RESOLUTION}" | cut -d x -f 1)
 	CURRENTHEIGHT=$(echo "${CURRENT_RESOLUTION}" | cut -d x -f 2)
@@ -85,7 +96,11 @@ case "${ACTION}" in
 		fi
 	    done
 	;;
-	"setDPI")
-	xrandr --dpi $1
+    "setDPI")
+        xrandr --dpi $1
+        ;;
+    *)
+        f_usage
+	;;
 esac
 exit 0
