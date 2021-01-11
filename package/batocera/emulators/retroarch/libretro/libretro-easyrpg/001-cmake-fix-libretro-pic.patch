@@ -1,0 +1,9 @@
+--- a/builds/libretro/CMakeLists.txt	2020-10-03 15:49:32.000000000 +0200
++++ b/builds/libretro/CMakeLists.txt	2021-01-11 18:58:00.038876825 +0100
+@@ -26,3 +26,6 @@
+ endif()
+ 
+ mark_as_advanced(RETRO_COMMON_DIR RETRO_COMMON_DIR_LEN)
++
++set(CMAKE_POSITION_INDEPENDENT_CODE ON)
++set_property(TARGET ${PROJECT_NAME} PROPERTY POSITION_INDEPENDENT_CODE ON)
