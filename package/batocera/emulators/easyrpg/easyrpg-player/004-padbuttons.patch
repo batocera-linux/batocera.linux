@@ -1,0 +1,183 @@
+diff --git a/src/input_buttons_desktop.cpp b/src/input_buttons_desktop.cpp
+index 6aeaa4e..47c6244 100644
+--- a/src/input_buttons_desktop.cpp
++++ b/src/input_buttons_desktop.cpp
+@@ -20,6 +20,45 @@
+ // Headers
+ #include "input_buttons.h"
+ #include "keys.h"
++#include "inireader.h"
++
++Input::Keys::InputKey button2InputKey(int button_index) {
++	switch (button_index) {
++		case 0	: return Input::Keys::JOY_0;
++		case 1	: return Input::Keys::JOY_1;
++		case 2	: return Input::Keys::JOY_2;
++		case 3	: return Input::Keys::JOY_3;
++		case 4	: return Input::Keys::JOY_4;
++		case 5	: return Input::Keys::JOY_5;
++		case 6	: return Input::Keys::JOY_6;
++		case 7	: return Input::Keys::JOY_7;
++		case 8	: return Input::Keys::JOY_8;
++		case 9	: return Input::Keys::JOY_9;
++		case 10	: return Input::Keys::JOY_10;
++		case 11	: return Input::Keys::JOY_11;
++		case 12	: return Input::Keys::JOY_12;
++		case 13	: return Input::Keys::JOY_13;
++		case 14	: return Input::Keys::JOY_14;
++		case 15	: return Input::Keys::JOY_15;
++		case 16	: return Input::Keys::JOY_16;
++		case 17	: return Input::Keys::JOY_17;
++		case 18	: return Input::Keys::JOY_18;
++		case 19	: return Input::Keys::JOY_19;
++		case 20	: return Input::Keys::JOY_20;
++		case 21	: return Input::Keys::JOY_21;
++		case 22	: return Input::Keys::JOY_22;
++		case 23	: return Input::Keys::JOY_23;
++		case 24	: return Input::Keys::JOY_24;
++		case 25	: return Input::Keys::JOY_25;
++		case 26	: return Input::Keys::JOY_23;
++		case 27	: return Input::Keys::JOY_27;
++		case 28	: return Input::Keys::JOY_28;
++		case 29	: return Input::Keys::JOY_29;
++		case 30	: return Input::Keys::JOY_30;
++		case 31	: return Input::Keys::JOY_31;
++		default : return Input::Keys::NONE;
++	}
++}
+ 
+ void Input::InitButtons() {
+ 	buttons.resize(BUTTON_COUNT);
+@@ -93,31 +132,107 @@ void Input::InitButtons() {
+ #endif
+ 
+ #if defined(USE_JOYSTICK) && defined(SUPPORT_JOYSTICK)
+-	// FIXME: Random joystick keys mapping, better to read joystick configuration from .ini
+-	buttons[UP].push_back(Keys::JOY_8);
+-	buttons[DOWN].push_back(Keys::JOY_2);
+-	buttons[LEFT].push_back(Keys::JOY_4);
+-	buttons[RIGHT].push_back(Keys::JOY_6);
+-	buttons[DECISION].push_back(Keys::JOY_1);
+-	buttons[CANCEL].push_back(Keys::JOY_3);
+-	buttons[SHIFT].push_back(Keys::JOY_5);
+-	buttons[N0].push_back(Keys::JOY_10);
+-	buttons[N1].push_back(Keys::JOY_11);
+-	buttons[N2].push_back(Keys::JOY_12);
+-	buttons[N3].push_back(Keys::JOY_13);
+-	buttons[N4].push_back(Keys::JOY_14);
+-	buttons[N5].push_back(Keys::JOY_15);
+-	buttons[N6].push_back(Keys::JOY_16);
+-	buttons[N7].push_back(Keys::JOY_17);
+-	buttons[N8].push_back(Keys::JOY_18);
+-	buttons[N9].push_back(Keys::JOY_19);
+-	buttons[PLUS].push_back(Keys::JOY_20);
+-	buttons[MINUS].push_back(Keys::JOY_21);
+-	buttons[MULTIPLY].push_back(Keys::JOY_22);
+-	buttons[DIVIDE].push_back(Keys::JOY_23);
+-	buttons[PERIOD].push_back(Keys::JOY_24);
+-	buttons[DEBUG_MENU].push_back(Keys::JOY_7);
+-	buttons[DEBUG_THROUGH].push_back(Keys::JOY_9);
++	INIReader ini("/userdata/system/configs/easyrpg/config.ini");
++	std::string num;
++	if (ini.ParseError() != -1) {
++
++	  num = ini.GetString("Joypad", "button_up", "8");
++	  buttons[UP].push_back(button2InputKey(atoi(num.c_str())));
++
++	  num = ini.GetString("Joypad", "button_down", "2");
++	  buttons[DOWN].push_back(button2InputKey(atoi(num.c_str())));
++
++	  num = ini.GetString("Joypad", "button_left", "4");
++	  buttons[LEFT].push_back(button2InputKey(atoi(num.c_str())));
++
++	  num = ini.GetString("Joypad", "button_right", "6");
++	  buttons[RIGHT].push_back(button2InputKey(atoi(num.c_str())));
++
++	  num = ini.GetString("Joypad", "button_action", "1");
++	  buttons[DECISION].push_back(button2InputKey(atoi(num.c_str())));
++
++	  num = ini.GetString("Joypad", "button_cancel", "3");
++	  buttons[CANCEL].push_back(button2InputKey(atoi(num.c_str())));
++
++	  num = ini.GetString("Joypad", "button_shift", "5");
++	  buttons[SHIFT].push_back(button2InputKey(atoi(num.c_str())));
++
++	  num = ini.GetString("Joypad", "button_n0", "10");
++	  buttons[N0].push_back(button2InputKey(atoi(num.c_str())));
++
++	  num = ini.GetString("Joypad", "button_n1", "11");
++	  buttons[N1].push_back(button2InputKey(atoi(num.c_str())));
++
++	  num = ini.GetString("Joypad", "button_n2", "12");
++	  buttons[N2].push_back(button2InputKey(atoi(num.c_str())));
++
++	  num = ini.GetString("Joypad", "button_n3", "13");
++	  buttons[N3].push_back(button2InputKey(atoi(num.c_str())));
++
++	  num = ini.GetString("Joypad", "button_n4", "14");
++	  buttons[N4].push_back(button2InputKey(atoi(num.c_str())));
++
++	  num = ini.GetString("Joypad", "button_n5", "15");
++	  buttons[N5].push_back(button2InputKey(atoi(num.c_str())));
++
++	  num = ini.GetString("Joypad", "button_n6", "16");
++	  buttons[N6].push_back(button2InputKey(atoi(num.c_str())));
++
++	  num = ini.GetString("Joypad", "button_n7", "17");
++	  buttons[N7].push_back(button2InputKey(atoi(num.c_str())));
++
++	  num = ini.GetString("Joypad", "button_n8", "18");
++	  buttons[N8].push_back(button2InputKey(atoi(num.c_str())));
++
++	  num = ini.GetString("Joypad", "button_n9", "19");
++	  buttons[N9].push_back(button2InputKey(atoi(num.c_str())));
++
++	  num = ini.GetString("Joypad", "button_plus", "20");
++	  buttons[PLUS].push_back(button2InputKey(atoi(num.c_str())));
++
++	  num = ini.GetString("Joypad", "button_minus", "21");
++	  buttons[MINUS].push_back(button2InputKey(atoi(num.c_str())));
++
++	  num = ini.GetString("Joypad", "button_multiply", "22");
++	  buttons[MULTIPLY].push_back(button2InputKey(atoi(num.c_str())));
++
++	  num = ini.GetString("Joypad", "button_divide", "23");
++	  buttons[DIVIDE].push_back(button2InputKey(atoi(num.c_str())));
++
++	  num = ini.GetString("Joypad", "button_period", "24");
++	  buttons[PERIOD].push_back(button2InputKey(atoi(num.c_str())));
++
++	  num = ini.GetString("Joypad", "button_debug_menu", "7");
++	  buttons[DEBUG_MENU].push_back(button2InputKey(atoi(num.c_str())));
++
++	  num = ini.GetString("Joypad", "button_debug_through", "9");
++	  buttons[DEBUG_THROUGH].push_back(button2InputKey(atoi(num.c_str())));
++	} else {
++	  buttons[UP].push_back(Keys::JOY_8);
++	  buttons[DOWN].push_back(Keys::JOY_2);
++	  buttons[LEFT].push_back(Keys::JOY_4);
++	  buttons[RIGHT].push_back(Keys::JOY_6);
++	  buttons[DECISION].push_back(Keys::JOY_1);
++	  buttons[CANCEL].push_back(Keys::JOY_3);
++	  buttons[SHIFT].push_back(Keys::JOY_5);
++	  buttons[N0].push_back(Keys::JOY_10);
++	  buttons[N1].push_back(Keys::JOY_11);
++	  buttons[N2].push_back(Keys::JOY_12);
++	  buttons[N3].push_back(Keys::JOY_13);
++	  buttons[N4].push_back(Keys::JOY_14);
++	  buttons[N5].push_back(Keys::JOY_15);
++	  buttons[N6].push_back(Keys::JOY_16);
++	  buttons[N7].push_back(Keys::JOY_17);
++	  buttons[N8].push_back(Keys::JOY_18);
++	  buttons[N9].push_back(Keys::JOY_19);
++	  buttons[PLUS].push_back(Keys::JOY_20);
++	  buttons[MINUS].push_back(Keys::JOY_21);
++	  buttons[MULTIPLY].push_back(Keys::JOY_22);
++	  buttons[DIVIDE].push_back(Keys::JOY_23);
++	  buttons[PERIOD].push_back(Keys::JOY_24);
++	  buttons[DEBUG_MENU].push_back(Keys::JOY_7);
++	  buttons[DEBUG_THROUGH].push_back(Keys::JOY_9);
++	}
+ #endif
+ 
+ #if defined(USE_JOYSTICK_HAT)  && defined(SUPPORT_JOYSTICK_HAT)
