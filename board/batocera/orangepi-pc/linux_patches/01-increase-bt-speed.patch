@@ -1,0 +1,12 @@
+diff --git a/arch/arm/boot/dts/sunxi-bananapi-m2-plus.dtsi b/arch/arm/boot/dts/sunxi-bananapi-m2-plus.dtsi
+index 39263e74fbb5..0ec6109ec625 100644
+--- a/arch/arm/boot/dts/sunxi-bananapi-m2-plus.dtsi
++++ b/arch/arm/boot/dts/sunxi-bananapi-m2-plus.dtsi
+@@ -219,6 +219,7 @@
+ 
+ 	bluetooth {
+ 		compatible = "brcm,bcm43438-bt";
++		max-speed = <1500000>;
+ 		clocks = <&rtc 1>;
+ 		clock-names = "lpo";
+ 		vbat-supply = <&reg_vcc3v3>;
