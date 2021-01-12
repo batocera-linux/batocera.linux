@@ -15,9 +15,9 @@ ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI4),y)
         CANNONBALL_TARGET = sdl2gles_rpi
 else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI3),y)
         CANNONBALL_TARGET = sdl2gles_rpi
-else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86),y)
+else ifeq ($(BR2_x86_i686),y)
         CANNONBALL_TARGET = sdl2gl
-else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86_64),y)
+else ifeq ($(BR2_x86_64),y)
         CANNONBALL_TARGET = sdl2gl
 endif
 

@@ -9,11 +9,11 @@ FLYCAST_SITE = $(call github,flyinghead,flycast,$(FLYCAST_VERSION))
 FLYCAST_LICENSE = GPLv2
 FLYCAST_DEPENDENCIES = sdl2 libpng
 
-ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86_64),y)
+ifeq ($(BR2_x86_64),y)
 	FLYCAST_PLATFORM = x64
 endif
 
-ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86),y)
+ifeq ($(BR2_x86_i686),y)
 	FLYCAST_PLATFORM = x86
 endif
 

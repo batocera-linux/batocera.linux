@@ -33,12 +33,12 @@ ifeq ($(BR2_aarch64),y)
 endif
 
 # x86
-ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86),y)
+ifeq ($(BR2_x86_i686),y)
 	LIBRETRO_PPSSPP_TARGET_ARCH = TARGET_ARCH=86 
 endif
 
 # x86_64
-ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86_64),y)
+ifeq ($(BR2_x86_64),y)
 	LIBRETRO_PPSSPP_TARGET_ARCH = TARGET_ARCH=64
 endif
 

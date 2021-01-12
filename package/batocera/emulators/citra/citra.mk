@@ -36,7 +36,7 @@ CITRA_CONF_OPTS += -DBUILD_SHARED_LIBS=FALSE
 
 CITRA_CONF_ENV += LDFLAGS=-lpthread
 
-ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86_64),y)
+ifeq ($(BR2_x86_64),y)
 define CITRA_INSTALL_TARGET_CMDS
        	mkdir -p $(TARGET_DIR)/usr/bin
         mkdir -p $(TARGET_DIR)/usr/lib

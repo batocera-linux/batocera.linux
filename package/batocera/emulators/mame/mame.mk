@@ -18,7 +18,7 @@ MAME_CFLAGS =
 MAME_JOBS = 8
 
 # x86_64 is desktop linux based on X11 and OpenGL
-ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86_64),y)
+ifeq ($(BR2_x86_64),y)
 MAME_CROSS_ARCH = x86_64
 MAME_TARGET_NAME = mamearcade64
 MAME_CROSS_OPTS += PTR64=1
