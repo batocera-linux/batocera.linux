@@ -1,16 +1,39 @@
 #!/usr/bin/env python
+
 import Command
-import batoceraFiles
 from generators.Generator import Generator
 import controllersConfig
-import shutil
-import os.path
+import os
+
 
 class SupermodelGenerator(Generator):
 
     def generate(self, system, rom, playersControllers, gameResolution):
-        commandArray = ["supermodel", "-legacy3d", "-fullscreen", "-res=1024,768", rom]
-        return Command.Command(array=commandArray, env={'SDL_GAMECONTROLLERCONFIG': controllersConfig.generateSdlGameControllerConfig(playersControllers)})
+        commandArray = ["supermodel", "-fullscreen"]
         
-# Set resolution manually currently - 1024x768 should be fine for most systems.
-# Set -legacy3d for older GPU's - will need to look at an option here too in future.
+        # legacy3d
+        if system.isOptSet("legacy3D") and system.getOptBoolean("legacy3D"):
+            commandArray.append("-legacy3d")
+        
+        # fps
+        if system.isOptSet("wideScreen") and system.getOptBoolean("wideScreen"):
+            commandArray.append("-wide-screen")
+            commandArray.append("-wide-bg")
+
+        # quad rendering
+        if system.isOptSet("quadRendering") and system.getOptBoolean("quadRendering"):
+            commandArray.append("-quad-rendering")
+
+        # resolution
+        resx = str(gameResolution["width"])
+        resy = str(gameResolution["height"])
+        res = "-res={},{}".format(resx, resy)
+        commandArray.append(res)
+
+        commandArray.extend(["-log-output=/userdata/system/logs", rom])
+        
+        return Command.Command(
+            array=commandArray,
+            env={
+                'SDL_GAMECONTROLLERCONFIG': controllersConfig.generateSdlGameControllerConfig(playersControllers)
+                })

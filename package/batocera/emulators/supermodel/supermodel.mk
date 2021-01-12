@@ -21,11 +21,11 @@ endef
 
 define SUPERMODEL_INSTALL_TARGET_CMDS
 	$(INSTALL) -D -m 0755 $(@D)/bin/supermodel $(TARGET_DIR)/usr/bin/supermodel
-	$(INSTALL) -D -m 0644 $(@D)/Config/Games.xml $(TARGET_DIR)/userdata/system/configs/model3/Games.xml
-	$(INSTALL) -D -m 0644 $(@D)/Config/Supermodel.ini $(TARGET_DIR)/userdata/configs/model3/Supermodel.ini
-	mkdir -p $(TARGET_DIR)/userdata/system/configs/model3/NVRAM/
-	mkdir -p $(TARGET_DIR)/userdata/saves/model3/
-	mkdir -p $(TARGET_DIR)/userdata/screenshots/model3/
+	$(INSTALL) -D -m 0644 $(@D)/Config/Games.xml $(TARGET_DIR)/usr/share/batocera/datainit/system/configs/supermodel/Games.xml
+	$(INSTALL) -D -m 0644 $(@D)/Config/Supermodel.ini $(TARGET_DIR)/usr/share/batocera/datainit/system/configs/supermodel/Supermodel.ini.orig
+	mkdir -p $(TARGET_DIR)/usr/share/batocera/datainit/system/configs/supermodel/NVRAM/
+	mkdir -p $(TARGET_DIR)/usr/share/batocera/datainit/saves/supermodel/
+	mkdir -p $(TARGET_DIR)/usr/share/batocera/datainit/screenshots/supermodel/
 endef
 
 define SUPERMODEL_LINE_ENDINGS_FIXUP
@@ -34,6 +34,14 @@ define SUPERMODEL_LINE_ENDINGS_FIXUP
 	sed -i -E -e "s|\r$$||g" $(@D)/Src/Inputs/Inputs.cpp
 endef
 
+define SUPERMODEL_POST_PROCESS
+	mkdir -p $(TARGET_DIR)/usr/share/evmapy
+	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/supermodel/supermodel.keys $(TARGET_DIR)/usr/share/evmapy
+	cp -f $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/supermodel/Supermodel.ini $(TARGET_DIR)/usr/share/batocera/datainit/system/configs/supermodel/Supermodel.ini
+endef
+
 SUPERMODEL_PRE_PATCH_HOOKS += SUPERMODEL_LINE_ENDINGS_FIXUP
+
+SUPERMODEL_POST_INSTALL_TARGET_HOOKS += SUPERMODEL_POST_PROCESS
 
 $(eval $(generic-package))
