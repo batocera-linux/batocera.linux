@@ -1,0 +1,11 @@
+# OpenMW and dependencies
+source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/openmw/openmw/Config.in"
+
+if BR2_PACKAGE_OPENMW
+
+config BR2_OPENMW_ENABLE_LTO
+	bool "compile openmw with LTO"
+	default y
+
+source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/openmw/gl4es-openmw/Config.in"
+endif

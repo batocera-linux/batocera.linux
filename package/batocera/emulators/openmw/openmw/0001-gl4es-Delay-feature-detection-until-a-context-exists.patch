@@ -1,0 +1,153 @@
+From 044e7840726b19bc06b792954b9763238e9661a7 Mon Sep 17 00:00:00 2001
+From: Gleb Mazovetskiy <glex.spb@gmail.com>
+Date: Wed, 27 Jan 2021 00:10:50 +0000
+Subject: [PATCH] gl4es: Delay feature detection until a context exists
+
+gl4es feature detection does not work reliably with EGL.
+
+If a context already exists, gl4es can instead reliably detect
+the underlying GLES features from the context itself.
+
+This requires gl4es to be configured with:
+
+    -DNOEGL=ON -DNO_LOADER=ON -DNO_INIT_CONSTRUCTOR=ON
+
+This also requires gl4es to have this fix: https://github.com/ptitSeb/gl4es/pull/271
+---
+ CMakeLists.txt                           |  5 ++++
+ components/CMakeLists.txt                |  2 +-
+ components/sdlutil/gl4es_init.cpp        | 36 ++++++++++++++++++++++++
+ components/sdlutil/gl4es_init.h          | 13 +++++++++
+ components/sdlutil/sdlgraphicswindow.cpp | 10 ++++++-
+ 5 files changed, 64 insertions(+), 2 deletions(-)
+ create mode 100644 components/sdlutil/gl4es_init.cpp
+ create mode 100644 components/sdlutil/gl4es_init.h
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index fdac00d1e..14820b075 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -16,6 +16,11 @@ endif()
+ # Detect OS
+ include(cmake/OSIdentity.cmake)
+ 
++option(OPENMW_GL4ES_MANUAL_INIT "Manually initialize gl4es. This is more reliable on platforms without a windowing system. Requires gl4es to be configured with -DNOEGL=ON -DNO_LOADER=ON -DNO_INIT_CONSTRUCTOR=ON." OFF)
++if(OPENMW_GL4ES_MANUAL_INIT)
++    add_definitions(-DOPENMW_GL4ES_MANUAL_INIT)
++endif()
++
+ # Apps and tools
+ option(BUILD_OPENMW             "Build OpenMW" ON)
+ option(BUILD_LAUNCHER           "Build Launcher" ON)
+diff --git a/components/CMakeLists.txt b/components/CMakeLists.txt
+index 2120afc1a..95150a597 100644
+--- a/components/CMakeLists.txt
++++ b/components/CMakeLists.txt
+@@ -140,7 +140,7 @@ add_component_dir (fontloader
+     )
+ 
+ add_component_dir (sdlutil
+-    sdlgraphicswindow imagetosurface sdlinputwrapper sdlvideowrapper events sdlcursormanager
++    gl4es_init sdlgraphicswindow imagetosurface sdlinputwrapper sdlvideowrapper events sdlcursormanager
+     )
+ 
+ add_component_dir (version
+diff --git a/components/sdlutil/gl4es_init.cpp b/components/sdlutil/gl4es_init.cpp
+new file mode 100644
+index 000000000..bf9e007b6
+--- /dev/null
++++ b/components/sdlutil/gl4es_init.cpp
+@@ -0,0 +1,36 @@
++// EGL does not work reliably for feature detection.
++// Instead, we initialize gl4es manually.
++#ifdef OPENMW_GL4ES_MANUAL_INIT
++#include "gl4es_init.h"
++
++// For glHint
++#include <GL/gl.h>
++
++extern "C" {
++
++#include <openmw/gl4es/gl4esinit.h>
++#include <openmw/gl4es/gl4eshint.h>
++
++static SDL_Window *gWindow;
++
++void openmw_gl4es_GetMainFBSize(int *width, int *height)
++{
++    SDL_GetWindowSize(gWindow, width, height);
++}
++
++void openmw_gl4es_init(SDL_Window *window)
++{
++    gWindow = window;
++    set_getprocaddress(SDL_GL_GetProcAddress);
++    set_getmainfbsize(openmw_gl4es_GetMainFBSize);
++    initialize_gl4es();
++
++    // merge glBegin/glEnd in beams and console
++    glHint(GL_BEGINEND_HINT_GL4ES, 1);
++    // dxt unpacked to 16-bit looks ugly
++    glHint(GL_AVOID16BITS_HINT_GL4ES, 1);
++}
++
++}  // extern "C"
++
++#endif  // OPENMW_GL4ES_MANUAL_INIT
+diff --git a/components/sdlutil/gl4es_init.h b/components/sdlutil/gl4es_init.h
+new file mode 100644
+index 000000000..11371e7ae
+--- /dev/null
++++ b/components/sdlutil/gl4es_init.h
+@@ -0,0 +1,13 @@
++#ifndef OPENMW_COMPONENTS_SDLUTIL_GL4ES_INIT_H
++#define OPENMW_COMPONENTS_SDLUTIL_GL4ES_INIT_H
++#ifdef OPENMW_GL4ES_MANUAL_INIT
++#include <SDL_video.h>
++
++// Must be called once SDL video mode has been set,
++// which creates a context.
++//
++// GL4ES can then query the context for features and extensions.
++extern "C" void openmw_gl4es_init(SDL_Window *window);
++
++#endif  // OPENMW_GL4ES_MANUAL_INIT
++#endif  // OPENMW_COMPONENTS_SDLUTIL_GL4ES_INIT_H
+diff --git a/components/sdlutil/sdlgraphicswindow.cpp b/components/sdlutil/sdlgraphicswindow.cpp
+index ad7ecd9ae..43284c216 100644
+--- a/components/sdlutil/sdlgraphicswindow.cpp
++++ b/components/sdlutil/sdlgraphicswindow.cpp
+@@ -2,6 +2,10 @@
+ 
+ #include <SDL_video.h>
+ 
++#ifdef OPENMW_GL4ES_MANUAL_INIT
++#include "gl4es_init.h"
++#endif
++
+ namespace SDLUtil
+ {
+ 
+@@ -91,7 +95,7 @@ void GraphicsWindowSDL2::init()
+     SDL_Window *oldWin = SDL_GL_GetCurrentWindow();
+     SDL_GLContext oldCtx = SDL_GL_GetCurrentContext();
+    
+-#if defined(ANDROID)
++#if defined(ANDROID) || defined(OPENMW_GL4ES_MANUAL_INIT)
+     int major = 1;
+     int minor = 1;
+     char *ver = getenv("OPENMW_GLES_VERSION");
+@@ -116,6 +120,10 @@ void GraphicsWindowSDL2::init()
+         return;
+     }
+ 
++#ifdef OPENMW_GL4ES_MANUAL_INIT
++    openmw_gl4es_init(mWindow);
++#endif
++
+     setSwapInterval(_traits->vsync);
+ 
+     // Update traits with what we've actually been given
+-- 
+2.27.0
+

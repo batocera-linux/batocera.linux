@@ -49,6 +49,7 @@ from generators.ruffle.ruffleGenerator import RuffleGenerator
 from generators.duckstation.duckstationGenerator import DuckstationGenerator
 from generators.drastic.drasticGenerator import DrasticGenerator
 from generators.xemu.xemuGenerator import XemuGenerator
+from generators.openmw.openmwGenerator import OpenMWGenerator
 
 import controllersConfig as controllers
 import signal
@@ -101,6 +102,7 @@ generators = {
     'duckstation': DuckstationGenerator(),
     'drastic': DrasticGenerator(),
     'xemu': XemuGenerator(),
+    'openmw': OpenMWGenerator(),
 }
 
 def main(args, maxnbplayers):

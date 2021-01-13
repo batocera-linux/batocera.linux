@@ -1,0 +1,27 @@
+From 5bf0e3af5eeaca7e3a9ff0427d968ece2d1c8f70 Mon Sep 17 00:00:00 2001
+From: Gleb Mazovetskiy <glex.spb@gmail.com>
+Date: Wed, 13 Jan 2021 03:45:34 +0000
+Subject: [PATCH] dont-detect-os-identity
+
+---
+ CMakeLists.txt | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 4a615e843..5daa630dd 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -3,8 +3,8 @@ cmake_minimum_required(VERSION 3.1.0)
+ set(CMAKE_CXX_STANDARD 17)
+ set(CMAKE_CXX_STANDARD_REQUIRED ON)
+ 
+-# Detect OS
+-include(cmake/OSIdentity.cmake)
++# DO NOT Detect OS
++# include(cmake/OSIdentity.cmake)
+ 
+ # for link time optimization, remove if cmake version is >= 3.9
+ if(POLICY CMP0069)
+-- 
+2.27.0
+
