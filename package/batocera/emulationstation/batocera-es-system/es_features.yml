@@ -182,7 +182,28 @@ libretro:
                     "8":   8
                     "9":   9
     melonds:
-      features: [         autosave, latency_reduction]
+      features: [                 autosave, latency_reduction]
+      cfeatures:
+            melonds_boot_directly:
+                prompt:      BOOT GAME DIRECTLY
+                description: Show DS System menu to configure options (language)
+                choices:
+                    "Off": disabled
+                    "On":  enabled
+            melonds_screen_layout:
+                prompt:      SCREEN LAYOUT
+                description: Allows you to arrange the DS screens
+                choices:
+                    "top/bottom":            Top/Bottom
+                    "bottom/top":            Bottom/Top
+                    "left/right":            Left/Right
+                    "right/left":            Right/Left
+                    "top only":              Top Only
+                    "bottom only":           Bottom Only
+                    "hybrid/top ratio 2":    Hybrid/Top-Ratio2
+                    "hybrid/top ratio 3":    Hybrid/Top-Ratio3
+                    "hybrid/bottom ratio 2": Hybrid/Bottom-Ratio2
+                    "hybrid/bottom ratio 3": Hybrid/Bottom-Ratio3
     devilutionx:
       features: [ ]
     dolphin:

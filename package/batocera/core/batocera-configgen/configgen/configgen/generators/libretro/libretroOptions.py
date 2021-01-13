@@ -516,6 +516,35 @@ def generateCoreSettings(coreSettings, system, rom):
         else:
             coreSettings.save('desmume_screens_layout', '"top/bottom"')
 
+    if (system.config['core'] == 'melonds'):
+        # Enable threaded rendering
+        coreSettings.save('melonds_threaded_renderer', '"enabled"')
+        # Emulate Stylus on Right Stick
+        coreSettings.save('melonds_touch_mode',        '"Joystick"')
+        # Boot game directly
+        if system.isOptSet('melonds_boot_directly'):
+            coreSettings.save('melonds_boot_directly', system.config['melonds_boot_directly'])
+        else:
+            coreSettings.save('melonds_boot_directly', '"enabled"')
+        # Screen Layout + Hybrid Ratio
+        coreSettings.save('melonds_hybrid_ratio', '"2"')
+        if system.isOptSet('melonds_screen_layout'):
+            if system.config['melonds_screen_layout'] == "Hybrid/Top-Ratio2":
+                coreSettings.save('melonds_screen_layout', '"Hybrid/Top"')
+            elif system.config['melonds_screen_layout'] == "Hybrid/Top-Ratio3":
+                coreSettings.save('melonds_screen_layout', '"Hybrid/Top"')
+                coreSettings.save('melonds_hybrid_ratio',  '"3"')
+            elif system.config['melonds_screen_layout'] == "Hybrid/Bottom-Ratio2":
+                coreSettings.save('melonds_screen_layout', '"Hybrid/Bottom"')
+            elif system.config['melonds_screen_layout'] == "Hybrid/Bottom-Ratio3":
+                coreSettings.save('melonds_screen_layout', '"Hybrid/Bottom"')
+                coreSettings.save('melonds_hybrid_ratio',  '"3"')
+            else
+                coreSettings.save('melonds_screen_layout', system.config['melonds_screen_layout'])
+        else:
+            coreSettings.save('melonds_screen_layout',     '"Top/Bottom"')
+
+
     # Nintendo Gameboy (Dual Screen) / GB Color (Dual Screen) 
     if (system.config['core'] == 'tgbdual'):
         # Emulates two Game Boy units
