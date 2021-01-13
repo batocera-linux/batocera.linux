@@ -4,7 +4,7 @@
 #
 ################################################################################
 # Version.: Commits on Oct 20, 2020
-LIBRETRO_NXENGINE_VERSION = 2efb7d3f90c509dad104a9cd024051b4f3c6c365
+LIBRETRO_NXENGINE_VERSION = 5831e4876ab92b1771e34b66589c33895d3d3cb8
 LIBRETRO_NXENGINE_SITE = $(call github,libretro,nxengine-libretro,$(LIBRETRO_NXENGINE_VERSION))
 LIBRETRO_NXENGINE_LICENSE = GPLv3
 

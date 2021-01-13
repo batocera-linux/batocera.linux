@@ -59,5 +59,10 @@ ulimit -S -c unlimited emulationstation
 # dbus launch is required for the gio/gvfs/trash:///...
 eval `dbus-launch --sh-syntax --exit-with-session`
 
+# rotation
+display_rotate="$(/usr/bin/batocera-settings-get display.rotate)"
+EXTRA_OPTS=
+test -n "${display_rotate}" && EXTRA_OPTS="--screenrotate ${display_rotate}"
+
 cd /userdata # es needs a PWD
-openbox --config-file /etc/openbox/rc.xml --startup "emulationstation --windowed"
+openbox --config-file /etc/openbox/rc.xml --startup "emulationstation --windowed ${EXTRA_OPTS}"

@@ -10,7 +10,7 @@ start_alsa() {
 
 stop_alsa() {
 	printf "Stopping alsa: "
-	mount -o remount,rw /boot
+	mount -o remount,rw,sync /boot
 	alsactl store -f /boot/asound.state
 	if [ -f /userdata/system/.asoundrc ]; then
 		cp /userdata/system/.asoundrc /boot/asoundrc

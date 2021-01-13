@@ -1,0 +1,21 @@
+diff --git a/src/sdl2_ui.cpp b/src/sdl2_ui.cpp
+index 45ea8f5..d36ad25 100644
+--- a/src/sdl2_ui.cpp
++++ b/src/sdl2_ui.cpp
+@@ -179,7 +179,15 @@ Sdl2Ui::Sdl2Ui(long width, long height, bool fullscreen, int zoom) :
+ 	}
+ 
+ 	SDL_JoystickEventState(1);
+-	SDL_JoystickOpen(0);
++
++	// find which joystick to open
++	int joynum = 0;
++	INIReader ini("/userdata/system/configs/easyrpg/config.ini");
++	if (ini.ParseError() != -1) {
++	  std::string title = ini.GetString("Joypad", "number", "0");
++	  joynum = atoi(title.c_str());
++	}
++	SDL_JoystickOpen(joynum);
+ #endif
+ 
+ #if defined(USE_MOUSE) && defined(SUPPORT_MOUSE)

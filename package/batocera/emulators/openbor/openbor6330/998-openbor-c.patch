@@ -1,0 +1,30 @@
+diff --git a/engine/openbor.c.base b/engine/openbor.c
+index 1e73b69..14fb2b4 100644
+--- a/engine/openbor.c
++++ b/engine/openbor.c
+@@ -2409,7 +2409,7 @@ void clearsettings()
+     savedata.logo = 0;
+     savedata.uselog = 1;
+     savedata.debuginfo = 0;
+-    savedata.fullscreen = 0;
++    savedata.fullscreen = 1; // FCA : default to fullscreen
+     savedata.stretch = 0;
+ 
+     savedata.swfilter = 0;
+@@ -2507,7 +2507,6 @@ void saveToIni()
+ 	fprintf(handle, "debuginfo=%i\n", savedata.debuginfo);
+ 	fprintf(handle, "fullscreen=%i\n", savedata.fullscreen);
+ 	fprintf(handle, "stretch=%i\n", savedata.stretch);
+-	fprintf(handle, "vsync=%i\n", savedata.vsync);
+ #if SDL
+ 	fprintf(handle, "usegl=%i\n", savedata.usegl);
+ 	fprintf(handle, "hwscale=%f\n", savedata.hwscale);
+@@ -2613,8 +2612,6 @@ bool loadfromIni()
+ 					savedata.fullscreen = atoi(value);
+ 				if (strcmp(key, "stretch") == 0)
+ 					savedata.stretch = atoi(value);
+-				if (strcmp(key, "vsync") == 0)
+-					savedata.vsync = atoi(value);
+ #if SDL
+ 				if (strcmp(key, "usegl") == 0)
+ 					savedata.usegl = atoi(value);

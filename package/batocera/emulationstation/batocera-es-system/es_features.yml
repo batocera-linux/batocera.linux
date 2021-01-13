@@ -181,6 +181,8 @@ libretro:
                     "7":   7
                     "8":   8
                     "9":   9
+    melonds:
+      features: [         autosave, latency_reduction]
     devilutionx:
       features: [ ]
     dolphin:
@@ -2307,6 +2309,22 @@ solarus:
 
 easyrpg:
   features: []
+  cfeatures:
+        testplay:
+            prompt: TEST PLAY
+            description: test play mode
+            choices:
+                "Off": 0
+                "On":  1
+        encoding:
+            prompt: ENCODING
+            description: game encoding
+            choices:
+              Western European: 1252
+              Windows-1251: 1251
+              Windows-1250: 1250
+              Shift-JIS: 932
+              Big5: 950
 
 redream:
   features: []

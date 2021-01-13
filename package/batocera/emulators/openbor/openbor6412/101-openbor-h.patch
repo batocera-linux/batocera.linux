@@ -1,0 +1,13 @@
+--- a/engine/openbor.h	2021-01-09 12:13:04.330129976 +0100
++++ b/engine/openbor.h	2021-01-09 12:13:40.230128756 +0100
+@@ -300,10 +300,6 @@
+ 
+     FLAG_ESC			= 0x00000001,
+     FLAG_START			= 0x00000002,
+-    FLAG_MOVELEFT		= 0x00000004,
+-    FLAG_MOVERIGHT		= 0x00000008,
+-    FLAG_MOVEUP		    = 0x00000010,
+-    FLAG_MOVEDOWN		= 0x00000020,
+     FLAG_PADLEFT               = (1 << 2), // FCANEW
+     FLAG_PADRIGHT              = (1 << 3), // FCANEW
+     FLAG_PADUP             = (1 << 4), // FCANEW
