@@ -1571,7 +1571,7 @@ solarus:
   extensions: [zip, solarus]
   emulators:
     solarus:
-      solarus: { requireAnyOf: [BR2_PACKAGE_SOLARUS] }
+      solarus: { requireAnyOf: [BR2_PACKAGE_SOLARUS_ENGINE] }
 
 easyrpg:
   name:       EasyRPG
