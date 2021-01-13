@@ -3,8 +3,8 @@
 # LIBRETRO HANDY
 #
 ################################################################################
-# Version.: Commits on Oct 19, 2020
-LIBRETRO_HANDY_VERSION = 1662ce61937988312347378103961b6aecc7e9f4
+# Version.: Commits on Jan 13, 2021
+LIBRETRO_HANDY_VERSION = 74ff60b3225706f470c26d7aa027cfe7035eb30c
 LIBRETRO_HANDY_SITE = $(call github,libretro,libretro-handy,$(LIBRETRO_HANDY_VERSION))
 LIBRETRO_HANDY_LICENSE = Zlib
 
