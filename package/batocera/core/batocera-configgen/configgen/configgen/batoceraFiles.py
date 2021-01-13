@@ -158,5 +158,5 @@ rpcs3config = CONF + '/rpcs3/config.yml'
 rpcs3configInput = CONF + '/rpcs3/config_input.yml'
 rpcs3configevdev = CONF + '/rpcs3/InputConfigs/Evdev/Default Profile.yml'
 
-supermodelCustom = CONF + '/model3'
+supermodelCustom = CONF + '/supermodel'
 supermodelIni = supermodelCustom + '/Supermodel.ini'
