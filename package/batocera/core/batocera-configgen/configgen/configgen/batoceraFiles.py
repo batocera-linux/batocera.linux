@@ -39,6 +39,7 @@ batoceraBins = {'dosbox'         : '/usr/bin/dosbox'
               , 'rpcs3'          : '/usr/bin/rpcs3'
               , 'mame'           : '/usr/bin/mame/mamearcade64'
               , 'hatari'         : '/usr/bin/hatari'
+              , 'supermodel'     : '/usr/bin/supermodel'
 }
 
 
@@ -156,3 +157,6 @@ rpcs3CurrentConfig = CONF + '/rpcs3/GuiConfigs/CurrentSettings.ini'
 rpcs3config = CONF + '/rpcs3/config.yml'
 rpcs3configInput = CONF + '/rpcs3/config_input.yml'
 rpcs3configevdev = CONF + '/rpcs3/InputConfigs/Evdev/Default Profile.yml'
+
+supermodelCustom = CONF + '/supermodel'
+supermodelIni = supermodelCustom + '/Supermodel.ini'

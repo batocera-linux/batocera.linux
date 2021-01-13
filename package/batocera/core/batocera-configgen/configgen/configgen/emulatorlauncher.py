@@ -40,7 +40,9 @@ from generators.hatari.hatariGenerator import HatariGenerator
 from generators.solarus.solarusGenerator import SolarusGenerator
 from generators.easyrpg.easyrpgGenerator import EasyRPGGenerator
 from generators.redream.redreamGenerator import RedreamGenerator
+from generators.supermodel.supermodelGenerator import SupermodelGenerator
 from generators.xash3d_fwgs.xash3dFwgsGenerator import Xash3dFwgsGenerator
+
 import controllersConfig as controllers
 import signal
 import batoceraFiles
@@ -83,6 +85,7 @@ generators = {
     'solarus': SolarusGenerator(),
     'easyrpg': EasyRPGGenerator(),
     'redream': RedreamGenerator(),
+    'supermodel': SupermodelGenerator(),
     'xash3d_fwgs': Xash3dFwgsGenerator(),
 }
 

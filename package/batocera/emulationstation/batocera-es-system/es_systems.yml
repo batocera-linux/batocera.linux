@@ -1612,3 +1612,13 @@ imageviewer:
   emulators:
     libretro:
       imageviewer: { requireAnyOf: [] }
+      
+model3:
+  name:       Sega Model 3
+  manufacturer: Sega
+  release: 1996
+  hardware: arcade
+  extensions: [zip]
+  emulators:
+    supermodel:
+      supermodel: { requireAnyOf: [BR2_PACKAGE_SUPERMODEL] }

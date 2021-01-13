@@ -2328,6 +2328,28 @@ easyrpg:
 
 redream:
   features: []
+  
+supermodel:
+  features: []
+  cfeatures:
+        legacy3D:
+            prompt: LEGACY 3D
+            description: Enable legacy 3D engine for older GPUs
+            choices:
+                "Off": 0
+                "On":  1
+        quadRendering:
+            prompt: QUAD RENDERING
+            description: Enable proper quad rendering. For higher end systems.
+            choices:
+                "Off": 0
+                "On":  1
+        wideScreen:
+            prompt: ENABLE WIDESCREEN
+            description: Enable widescreen. Note - may cause rendering issues.
+            choices:
+                "Off": 0
+                "On":  1          
 
 vice:
   features: [ratio, padtokeyboard]

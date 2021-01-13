@@ -1,0 +1,18 @@
+config BR2_PACKAGE_SUPERMODEL
+        bool "supermodel"
+        depends on BR2_x86_64
+        depends on BR2_INSTALL_LIBSTDCPP
+        select BR2_PACKAGE_SDL2
+          select BR2_PACKAGE_SDL2_NET
+          select BR2_PACKAGE_ZLIB
+        select BR2_PACKAGE_LIBGLEW
+        select BR2_PACKAGE_LIBZIP
+
+        help
+          Supermodel is a SEGA Model 3 emulator that uses the SDL-Library.
+
+	  http://www.supermodel3.com
+	  source: https://sourceforge.net/p/model3emu/
+
+comment "SUPERMODEL needs a toolchain w/ C++"
+	depends on !BR2_INSTALL_LIBSTDCPP
