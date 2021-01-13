@@ -529,15 +529,15 @@ def generateCoreSettings(coreSettings, system, rom):
         # Screen Layout + Hybrid Ratio
         coreSettings.save('melonds_hybrid_ratio', '"2"')
         if system.isOptSet('melonds_screen_layout'):
-            if system.config['melonds_screen_layout'] == "Hybrid/Top-Ratio2":
-                coreSettings.save('melonds_screen_layout', '"Hybrid/Top"')
-            elif system.config['melonds_screen_layout'] == "Hybrid/Top-Ratio3":
-                coreSettings.save('melonds_screen_layout', '"Hybrid/Top"')
+            if system.config['melonds_screen_layout']   == "Hybrid Top-Ratio2":
+                coreSettings.save('melonds_screen_layout', '"Hybrid Top"')
+            elif system.config['melonds_screen_layout'] == "Hybrid Top-Ratio3":
+                coreSettings.save('melonds_screen_layout', '"Hybrid Top"')
                 coreSettings.save('melonds_hybrid_ratio',  '"3"')
-            elif system.config['melonds_screen_layout'] == "Hybrid/Bottom-Ratio2":
-                coreSettings.save('melonds_screen_layout', '"Hybrid/Bottom"')
-            elif system.config['melonds_screen_layout'] == "Hybrid/Bottom-Ratio3":
-                coreSettings.save('melonds_screen_layout', '"Hybrid/Bottom"')
+            elif system.config['melonds_screen_layout'] == "Hybrid Bottom-Ratio2":
+                coreSettings.save('melonds_screen_layout', '"Hybrid Bottom"')
+            elif system.config['melonds_screen_layout'] == "Hybrid Bottom-Ratio3":
+                coreSettings.save('melonds_screen_layout', '"Hybrid Bottom"')
                 coreSettings.save('melonds_hybrid_ratio',  '"3"')
             else:
                 coreSettings.save('melonds_screen_layout', system.config['melonds_screen_layout'])
