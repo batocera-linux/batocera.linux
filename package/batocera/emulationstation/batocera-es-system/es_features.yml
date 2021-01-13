@@ -185,8 +185,8 @@ libretro:
       features: [                 autosave, latency_reduction]
       cfeatures:
             melonds_boot_directly:
-                prompt:      BOOT GAME DIRECTLY
-                description: Show DS System menu to configure options (language)
+                prompt:      SKIP DS SYSTEM MENU
+                description: Use it to configure options like time and language
                 choices:
                     "Off": disabled
                     "On":  enabled
