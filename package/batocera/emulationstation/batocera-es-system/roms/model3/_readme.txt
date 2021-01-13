@@ -16,7 +16,7 @@ Game compatibility can be found here - https://www.supermodel3.com/About.html
 The Configuration File:
 -----------------------
 
-The configuration file, Supermodel.ini, located in the Config folder (/userdata/system/configs/model3/), which stores input settings as well as most of what can be set on the command line.
+The configuration file, Supermodel.ini, located in the Config folder (/system/configs/supermodel/), which stores input settings as well as most of what can be set on the command line.
 
 Audio:
 ------
@@ -28,12 +28,17 @@ Save States And Non-Volatile Memory:
 ------------------------------------
 
 Save states are fully supported. Up to 10 different slots can be selected with keyboard - F6. To save and restore states, press F5 and F7.
-State files are saved in the Saves folder (/userdata/saves/model3/), which must exist in order for save operations to succeed.
+State files are saved in the Saves folder (/saves/supermodel/), which must exist in order for save operations to succeed.
 Non-volatile memory (NVRAM) consists of battery-backed backup RAM (typically used for high score data) and an EEPROM (machine settings).
-It is saved to the NVRAM folder (/userdata/system/configs/model3/NVRAM/) each time Supermodel exits and is re-loaded at start-up.
+It is saved to the NVRAM folder (/system/configs/supermodel/NVRAM/) each time Supermodel exits and is re-loaded at start-up.
 Save states will also save and overwrite NVRAM data.
 If you alter any machine settings, loading an earlier state will return them to their former configuration.
 Be sure to save these files for future use.
+
+Emulation Exit
+--------------
+
+Configuration is set as Select & Start controller buttons.
 
 Troubleshooting:
 ----------------

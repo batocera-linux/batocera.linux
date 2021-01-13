@@ -37,3 +37,4 @@ class SupermodelGenerator(Generator):
             env={
                 'SDL_GAMECONTROLLERCONFIG': controllersConfig.generateSdlGameControllerConfig(playersControllers)
                 })
+                
