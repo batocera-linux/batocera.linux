@@ -3,8 +3,8 @@
 # MELONDS
 #
 ################################################################################
-# Version.: Commits on Jan 07, 2021
-LIBRETRO_MELONDS_VERSION = 79b6c67a546faf6879b73fda46b5faec49bd8206
+# Version.: Commits on Jan 16, 2021
+LIBRETRO_MELONDS_VERSION = 12339cca251b3ffb105fa270a1aefe93ba44a5c2
 LIBRETRO_MELONDS_SITE = $(call github,libretro,melonds,$(LIBRETRO_MELONDS_VERSION))
 LIBRETRO_MELONDS_LICENSE = GPLv2
 LIBRETRO_MELONDS_DEPENDENCIES = libpcap
@@ -22,6 +22,10 @@ endif
 
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_ODROIDN2)$(BR2_PACKAGE_BATOCERA_TARGET_VIM3),y)
 	LIBRETRO_MELONDS_PLATFORM = odroidn2
+endif
+
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_ZERO2),y)
+	LIBRETRO_MELONDS_PLATFORM = orangepizero2
 endif
 
 ifeq ($(BR2_aarch64),y)
