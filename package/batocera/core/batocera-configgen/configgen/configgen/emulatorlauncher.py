@@ -43,6 +43,8 @@ from generators.redream.redreamGenerator import RedreamGenerator
 from generators.supermodel.supermodelGenerator import SupermodelGenerator
 from generators.xash3d_fwgs.xash3dFwgsGenerator import Xash3dFwgsGenerator
 from generators.tsugaru.tsugaruGenerator import TsugaruGenerator
+from generators.lightspark.lightsparkGenerator import LightsparkGenerator
+from generators.ruffle.ruffleGenerator import RuffleGenerator
 
 import controllersConfig as controllers
 import signal
@@ -89,6 +91,8 @@ generators = {
     'supermodel': SupermodelGenerator(),
     'xash3d_fwgs': Xash3dFwgsGenerator(),
     'tsugaru': TsugaruGenerator(),
+    'lightspark': LightsparkGenerator(),
+    'ruffle': RuffleGenerator(),
 }
 
 def main(args, maxnbplayers):

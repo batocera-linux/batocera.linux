@@ -1696,3 +1696,15 @@ model3:
   emulators:
     supermodel:
       supermodel: { requireAnyOf: [BR2_PACKAGE_SUPERMODEL] }
+
+flash:
+  name:       Adobe Flash Player
+  manufacturer: Adobe
+  release: 1996
+  hardware: port
+  extensions: [swf]
+  emulators:
+    lightspark:
+      lightspark: { requireAnyOf: [BR2_PACKAGE_LIGHTSPARK] }
+    ruffle:
+      ruffle: { requireAnyOf: [BR2_PACKAGE_RUFFLE] }
