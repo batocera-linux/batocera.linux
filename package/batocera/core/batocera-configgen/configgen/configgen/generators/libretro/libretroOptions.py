@@ -539,7 +539,7 @@ def generateCoreSettings(coreSettings, system, rom):
             elif system.config['melonds_screen_layout'] == "Hybrid/Bottom-Ratio3":
                 coreSettings.save('melonds_screen_layout', '"Hybrid/Bottom"')
                 coreSettings.save('melonds_hybrid_ratio',  '"3"')
-            else
+            else:
                 coreSettings.save('melonds_screen_layout', system.config['melonds_screen_layout'])
         else:
             coreSettings.save('melonds_screen_layout',     '"Top/Bottom"')
