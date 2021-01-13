@@ -52,10 +52,12 @@ setup(name='batocera-configgen',
         'configgen.generators.xemu',
         'configgen.generators.cgenius',
         'configgen.generators.flatpak',
+        'configgen.generators.openmw',
         'configgen.settings',
         'configgen.utils',
         ],
         package_data={
           'configgen.generators.xash3d_fwgs': ['gamepad.cfg'],
+          'configgen.generators.openmw': ['morrowind-openmw.cfg'],
         },
       )

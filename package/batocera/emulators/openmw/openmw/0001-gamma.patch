@@ -1,0 +1,69 @@
+# https://gitlab.com/OpenMW/openmw-android/-/blob/841887fc55bccb75f9de6a968035bbcd8aaca0ac/buildscripts/patches/openmw/gamma.patch
+
+diff --git a/apps/openmw/mwrender/renderingmanager.cpp b/apps/openmw/mwrender/renderingmanager.cpp
+index 964aaa9de..3c221514b 100644
+--- a/apps/openmw/mwrender/renderingmanager.cpp
++++ b/apps/openmw/mwrender/renderingmanager.cpp
+@@ -78,6 +78,32 @@ namespace
+     float DLInteriorFogEnd;
+ }
+ 
++namespace {
++    class GammaCorrection : public osg::StateAttribute
++    {
++        public :
++            GammaCorrection() : gamma(0) {}
++            GammaCorrection(float gamma_) : gamma(gamma_) {}
++            GammaCorrection(const GammaCorrection& copy,const osg::CopyOp& copyop=osg::CopyOp::SHALLOW_COPY)
++                : osg::StateAttribute(copy,copyop), gamma(copy.gamma) {}
++
++            META_StateAttribute(, GammaCorrection, (osg::StateAttribute::Type)123)
++
++            /** Return -1 if *this < *rhs, 0 if *this==*rhs, 1 if *this>*rhs. */
++            virtual int compare(const StateAttribute& sa) const
++            {
++                throw std::runtime_error("");
++            }
++
++            virtual void apply(osg::State& state) const {
++                glLightModelfv(0x4242,&gamma);
++            }
++
++        private:
++            float gamma;
++    };
++}
++
+ namespace MWRender
+ {
+ 
+@@ -106,6 +132,19 @@ namespace MWRender
+             }
+             else
+                 stateset->removeAttribute(osg::StateAttribute::POLYGONMODE);
++
++            {
++                static bool init = false;
++                static float gamma = 0;
++                if (!init) {
++                    const char *s = getenv("OPENMW_GAMMA");
++                    if (s)
++                        gamma = atof(s);
++                    init = true;
++                }
++                osg::ref_ptr<GammaCorrection> gammaAttribute = new GammaCorrection(gamma);
++                stateset->setAttribute(gammaAttribute);
++            }
+         }
+ 
+         virtual void apply(osg::StateSet* stateset, osg::NodeVisitor*)
+@@ -316,6 +355,9 @@ namespace MWRender
+ 
+         mCamera.reset(new Camera(mViewer->getCamera()));
+ 
++        osg::ref_ptr<GammaCorrection> gamma = new GammaCorrection(1.0);
++        mViewer->getCamera()->getOrCreateStateSet()->setAttribute(gamma);
++
+         mViewer->setLightingMode(osgViewer::View::NO_LIGHT);
+ 
+         osg::ref_ptr<osg::LightSource> source = new osg::LightSource;

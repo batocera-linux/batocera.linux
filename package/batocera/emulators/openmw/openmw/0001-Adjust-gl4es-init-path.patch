@@ -1,0 +1,27 @@
+From f8c8dd501f4fa42b7f6e1e74a43563e57176572a Mon Sep 17 00:00:00 2001
+From: Gleb Mazovetskiy <glex.spb@gmail.com>
+Date: Tue, 13 Apr 2021 05:37:08 +0100
+Subject: [PATCH] Adjust gl4es init path
+
+---
+ components/sdlutil/gl4es_init.cpp | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/components/sdlutil/gl4es_init.cpp b/components/sdlutil/gl4es_init.cpp
+index bf9e007b6..1fef18f4a 100644
+--- a/components/sdlutil/gl4es_init.cpp
++++ b/components/sdlutil/gl4es_init.cpp
+@@ -8,8 +8,8 @@
+ 
+ extern "C" {
+ 
+-#include <gl4es/gl4esinit.h>
+-#include <gl4es/gl4eshint.h>
++#include <openmw/gl4es/gl4esinit.h>
++#include <openmw/gl4es/gl4eshint.h>
+ 
+ static SDL_Window *gWindow;
+ 
+-- 
+2.27.0
+

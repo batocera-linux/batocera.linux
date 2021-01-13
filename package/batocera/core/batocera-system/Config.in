@@ -629,6 +629,9 @@ config BR2_PACKAGE_BATOCERA_PORTS_SYSTEMS
 	# Commander Genius (Commander Keen series)
 	#select BR2_PACKAGE_CGENIUS                 # ALL
 
+	# OpenMW (Morrowind)
+	select BR2_PACKAGE_OPENMW                     # ALL
+
 	help
 		Ports
 

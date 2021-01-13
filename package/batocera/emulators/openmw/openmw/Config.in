@@ -1,0 +1,26 @@
+config BR2_PACKAGE_OPENMW
+	bool "OpenMW Morrowind Engine"
+	select BR2_PACKAGE_BOOST
+	select BR2_PACKAGE_BOOST_FILESYSTEM
+	select BR2_PACKAGE_BOOST_IOSTREAMS
+	select BR2_PACKAGE_BOOST_PROGRAM_OPTIONS
+	select BR2_PACKAGE_BOOST_SYSTEM
+	select BR2_PACKAGE_FFMPEG
+	select BR2_PACKAGE_FFMPEG_AVRESAMPLE
+	select BR2_PACKAGE_FFMPEG_SWSCALE
+	select BR2_PACKAGE_FONTCONFIG
+	select BR2_PACKAGE_FREETYPE
+	select BR2_PACKAGE_JPEG
+	select BR2_PACKAGE_LIBPNG
+	select BR2_PACKAGE_LZ4
+	select BR2_PACKAGE_OPENAL
+	select BR2_PACKAGE_SDL2
+
+	select BR2_PACKAGE_GL4ES_OPENMW if !BR2_PACKAGE_HAS_LIBGL
+
+	depends on BR2_INSTALL_LIBSTDCPP
+	depends on BR2_PACKAGE_HAS_LIBGL || BR2_PACKAGE_HAS_LIBGLES
+	help
+	  OpenMW is an open-source open-world RPG game engine that supports playing Morrowind.
+
+	  https://gitlab.com/OpenMW/openmw

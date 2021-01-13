@@ -1,0 +1,50 @@
+# From https://gitlab.com/OpenMW/openmw-android/-/blob/841887fc55bccb75f9de6a968035bbcd8aaca0ac/buildscripts/patches/gl4es/gamma.patch
+commit bc40a4836c9d915909eafb7906ca7812259380ba
+Author: Ilya Zhuravlev <whatever@xyz.is>
+Date:   Sun Aug 30 18:05:49 2020 -0400
+
+    Add a shader hack to allow modifying gamma value
+
+diff --git a/src/gl/fpe.h b/src/gl/fpe.h
+index e4ceb9c..2022808 100755
+--- a/src/gl/fpe.h
++++ b/src/gl/fpe.h
+@@ -187,6 +187,7 @@ typedef struct fpe_state_s {
+     unsigned int fragment_prg_enable:1;  // if fragment program is enabled
+     uint16_t     vertex_prg_id;          // Id of vertex program currently binded (0 most of the time), 16bits is more than enough...
+     uint16_t     fragment_prg_id;        // Id of fragment program currently binded (0 most of the time)
++    int16_t gamma;
+ }__attribute__((packed)) fpe_state_t;
+ 
+ typedef struct fpe_fpe_s {
+diff --git a/src/gl/fpe_shader.c b/src/gl/fpe_shader.c
+index dd6ad8d..c716710 100755
+--- a/src/gl/fpe_shader.c
++++ b/src/gl/fpe_shader.c
+@@ -1381,6 +1381,11 @@ const char* const* fpe_FragmentShader(shaderconv_need_t* need, fpe_state_t *stat
+         #endif
+     }
+ 
++    if (state->gamma) {
++        sprintf(buff, "fColor.rgb = pow(fColor.rgb, vec3(1.0 / %.3f));\n", state->gamma / 100.0);
++        ShadAppend(buff);
++    }
++
+     //done
+     ShadAppend("gl_FragColor = fColor;\n");
+     ShadAppend("}");
+diff --git a/src/gl/light.c b/src/gl/light.c
+index 54aeb4f..1f114a9 100755
+--- a/src/gl/light.c
++++ b/src/gl/light.c
+@@ -77,6 +77,10 @@ void gl4es_glLightModelfv(GLenum pname, const GLfloat* params) {
+             return;
+         } else gl4es_flush();
+     switch (pname) {
++        case 0x4242:
++            if (glstate->fpe_state)
++                glstate->fpe_state->gamma = params[0] * 100;
++            return;
+         case GL_LIGHT_MODEL_AMBIENT:
+             if(memcmp(glstate->light.ambient, params, 4*sizeof(GLfloat))==0) {
+                 noerrorShim();
