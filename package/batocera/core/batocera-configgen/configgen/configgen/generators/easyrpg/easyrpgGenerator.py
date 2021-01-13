@@ -48,7 +48,7 @@ class EasyRPGGenerator(Generator):
             "button_left": None,
             "button_right": None,
             "button_action": "a",
-            "button_cancel": "y",
+            "button_cancel": "b",
             "button_shift": "pageup",
             "button_n0": None,
             "button_n1": None,
