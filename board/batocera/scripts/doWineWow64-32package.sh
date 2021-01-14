@@ -116,6 +116,10 @@ cp -pr "${G_TARGETDIR}/usr/share/gstreamer-1.0/"* "${TMPOUT}/usr/share/gstreamer
 cp -p "${G_TARGETDIR}/usr/lib/libEGL_mesa"* "${TMPOUT}/lib32" || exit 1
 cp -p "${G_TARGETDIR}/usr/lib/libGLX_mesa"* "${TMPOUT}/lib32" || exit 1
 #"${G_TARGETDIR}/usr/lib/pulseaudio/"*.so
+
+# add .so for lutris
+(cd "${G_TARGETDIR}/usr/wine/lutris/lib" && ln -s libwine.so.1 libwine.so) || exit 1
+
 for BIN in \
 "${G_TARGETDIR}/usr/wine/lutris/bin/wine" \
 "${G_TARGETDIR}/usr/wine/proton/bin/wine" \
