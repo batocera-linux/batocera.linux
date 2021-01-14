@@ -1,0 +1,48 @@
+From 4fc69bbf4cd6228fd9e64771db1357d2f30ea041 Mon Sep 17 00:00:00 2001
+From: Gleb Mazovetskiy <glex.spb@gmail.com>
+Date: Thu, 14 Jan 2021 02:42:08 +0000
+Subject: [PATCH] Fix anim_list and model_cache definitions
+
+---
+ engine/openbor.c | 2 ++
+ engine/openbor.h | 4 ++--
+ 2 files changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/engine/openbor.c b/engine/openbor.c
+index e4b1c667..8277d2d6 100644
+--- a/engine/openbor.c
++++ b/engine/openbor.c
+@@ -35,6 +35,8 @@ s_savedata savedata;
+ /////////////////////////////////////////////////////////////////////////////
+ 
+ a_playrecstatus *playrecstatus = NULL;
++s_anim_list *anim_list = NULL;
++s_modelcache *model_cache = NULL;
+ 
+ s_set_entry *levelsets = NULL;
+ int        num_difficulties;
+diff --git a/engine/openbor.h b/engine/openbor.h
+index 2a81499c..23d4f6f6 100644
+--- a/engine/openbor.h
++++ b/engine/openbor.h
+@@ -1893,7 +1893,7 @@ struct animlist
+     struct animlist *next;
+ };
+ typedef struct animlist s_anim_list;
+-s_anim_list *anim_list;
++extern s_anim_list *anim_list;
+ 
+ typedef struct
+ {
+@@ -2228,7 +2228,7 @@ typedef struct
+     int loadflag;
+     int selectable;
+ } s_modelcache;
+-s_modelcache *model_cache;
++extern s_modelcache *model_cache;
+ 
+ // Caskey, Damon V.
+ // 2013-12-08
+-- 
+2.27.0
+
