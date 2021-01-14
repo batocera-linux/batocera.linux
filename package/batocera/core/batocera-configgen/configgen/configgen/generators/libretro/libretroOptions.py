@@ -137,52 +137,66 @@ def generateCoreSettings(coreSettings, system, rom):
     if (system.config['core'] == 'puae'):
         # Show Video Options
         coreSettings.save('puae_video_options_display ', '"enabled"')
-        # Video Resolution
-        if system.isOptSet('video_resolution'):
-            coreSettings.save('puae_video_resolution', system.config['video_resolution'])
+        # Amiga Model
+        if system.isOptSet('puae_model'):
+            coreSettings.save('puae_model', system.config['puae_model'])
         else:
-            coreSettings.save('puae_video_resolution', '"auto"')
-        # Zoom Mode    
-        if system.isOptSet('zoom_mode'):
-            coreSettings.save('puae_zoom_mode', system.config['zoom_mode'])
-        else:
-            coreSettings.save('puae_zoom_mode', '"auto"')
+            coreSettings.save('puae_model', '"auto"')
         # Standard Video    
         if system.isOptSet('video_standard'):
             coreSettings.save('puae_video_standard', system.config['video_standard'])
         else:
             coreSettings.save('puae_video_standard', '"PAL"')
-        # 2P Gamepad Mapping (Keyrah)
-        if system.isOptSet('keyrah_mapping'):
-            coreSettings.save('puae_keyrah_keypad_mappings', system.config['keyrah_mapping'])
+        # Video Resolution
+        if system.isOptSet('video_resolution'):
+            coreSettings.save('puae_video_resolution', system.config['video_resolution'])
         else:
-            coreSettings.save('puae_keyrah_keypad_mappings', '"enabled"')
-        # Mouse Speed    
-        if system.isOptSet('mouse_speed'):
-            coreSettings.save('puae_mouse_speed', system.config['mouse_speed'])
-        else:
-            coreSettings.save('puae_mouse_speed', '"200"')
-        # Whdload Launcher
-        if system.isOptSet('whdload'):
-            coreSettings.save('puae_use_whdload_prefs', system.config['whdload'])
-        else:
-            coreSettings.save('puae_use_whdload_prefs', '"config"')
-        # Jump on B
-        if system.isOptSet('pad_options'):
-            coreSettings.save('puae_retropad_options', system.config['pad_options'])
-        else:
-            coreSettings.save('puae_retropad_options', '"jump"')
-        # Disable Emulator Joystick for Pad2Key
-        if system.isOptSet('disable_joystick'):
-            coreSettings.save('puae_physical_keyboard_pass_through', system.config['disable_joystick'])
-        else:
-            coreSettings.save('puae_physical_keyboard_pass_through', '"disabled"')
+            coreSettings.save('puae_video_resolution', '"auto"')
         # Frameskip
         if system.isOptSet('gfx_framerate'):
             coreSettings.save('puae_gfx_framerate', system.config['gfx_framerate'])
         else:
             coreSettings.save('puae_gfx_framerate', '"disabled"')
-    
+        # Mouse Speed    
+        if system.isOptSet('mouse_speed'):
+            coreSettings.save('puae_mouse_speed', system.config['mouse_speed'])
+        else:
+            coreSettings.save('puae_mouse_speed', '"200"')
+
+        if (system.name == 'amiga500') or (system.name == 'amiga1200'):
+            # Zoom Mode    
+            if system.isOptSet('zoom_mode'):
+                coreSettings.save('puae_zoom_mode', system.config['zoom_mode'])
+            else:
+                coreSettings.save('puae_zoom_mode', '"auto"')
+            # 2P Gamepad Mapping (Keyrah)
+            if system.isOptSet('keyrah_mapping'):
+                coreSettings.save('puae_keyrah_keypad_mappings', system.config['keyrah_mapping'])
+            else:
+                coreSettings.save('puae_keyrah_keypad_mappings', '"enabled"')
+            # Whdload Launcher
+            if system.isOptSet('whdload'):
+                coreSettings.save('puae_use_whdload_prefs', system.config['whdload'])
+            else:
+                coreSettings.save('puae_use_whdload_prefs', '"config"')
+            # Jump on B
+            if system.isOptSet('pad_options'):
+                coreSettings.save('puae_retropad_options', system.config['pad_options'])
+            else:
+                coreSettings.save('puae_retropad_options', '"jump"')
+            # Disable Emulator Joystick for Pad2Key
+            if system.isOptSet('disable_joystick'):
+                coreSettings.save('puae_physical_keyboard_pass_through', system.config['disable_joystick'])
+            else:
+                coreSettings.save('puae_physical_keyboard_pass_through', '"disabled"')
+
+        if system.name == 'amigacd32':
+            # Jump on A (Blue)
+            if system.isOptSet('puae_cd32pad_options'):
+                coreSettings.save('puae_cd32pad_options', system.config['puae_cd32pad_options'])
+            else:
+                coreSettings.save('puae_cd32pad_options', '"disabled"')
+
     # Magnavox - Odyssey2 / Phillips Videopac+
     if (system.config['core'] == 'o2em'):
         # Virtual keyboard transparency
@@ -540,7 +554,7 @@ def generateCoreSettings(coreSettings, system, rom):
                 coreSettings.save('melonds_screen_layout', '"Hybrid Bottom"')
                 coreSettings.save('melonds_hybrid_ratio',  '"3"')
             else:
-                coreSettings.save('melonds_screen_layout', system.config['melonds_screen_layout'])
+                coreSettings.save('melonds_screen_layout', '"' + system.config['melonds_screen_layout'] + '"')
         else:
             coreSettings.save('melonds_screen_layout',     '"Top/Bottom"')
 

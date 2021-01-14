@@ -153,14 +153,19 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
     if(system.config['core'] in coreToP2Device):
         retroarchConfig['input_libretro_device_p2'] = coreToP2Device[system.config['core']]
 
-    if len(controllers) > 2 and (system.config['core'] == 'snes9x_next' or system.config['core'] == 'snes9x'):
-        retroarchConfig['input_libretro_device_p2'] = '257'
+    ## AMICA CD32
+    if system.config['core'] == 'puae' and system.name == 'amigacd32':
+        retroarchConfig['input_libretro_device_p1'] = '517'     # CD 32 Pad
 
     ## BlueMSX choices by System
     if(system.name in systemToBluemsx):
         if system.config['core'] == 'bluemsx':
             retroarchConfig['input_libretro_device_p1'] = systemToP1Device[system.name]
             retroarchConfig['input_libretro_device_p2'] = systemToP2Device[system.name]
+
+    ## TODO: SNES controller
+    if len(controllers) > 2 and (system.config['core'] == 'snes9x_next' or system.config['core'] == 'snes9x'):
+        retroarchConfig['input_libretro_device_p2'] = '257'
 
     ## PlayStation controller
     if (system.config['core'] == 'mednafen_psx'):               # Madnafen

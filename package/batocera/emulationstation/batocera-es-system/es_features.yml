@@ -1530,6 +1530,24 @@ libretro:
     puae:
       features: [         rewind, autosave, padtokeyboard]
       cfeatures:
+            puae_model:
+                prompt:      AMIGA MODEL
+                description: Force a specific model and prevent tags detection
+                choices:
+                    "Automatic":                       auto
+                    "A500 (512KB Chip + 512KB Slow)":  A500
+                    "A500+ (1MB Chip)":                A500PLUS
+                    "A600 (2MB Chip + 8MB Fast)":      A600
+                    "A1200 (2MB Chip + 8MB Fast)":     A1200
+                    "A4000/040 (2MB Chip + 8MB Fast)": A4040
+                    "CDTV (1MB Chip)":                 CDTV
+                    "CD32 (2MB Chip + 8MB Fast)":      CD32FR
+            video_standard:
+                prompt:      VIDEO STANDARD
+                description: Switch frequency and resolution by region
+                choices:
+                    "PAL 50Hz - 288/576px":  PAL
+                    "NTSC 60Hz - 240/480px": NTSC
             video_resolution:
                 prompt:      VIDEO RESOLUTION
                 description: Increase video to Hi Resolution
@@ -1537,26 +1555,13 @@ libretro:
                     "360p":       lores
                     "720p":       hires
                     "1440p":      superhires
-            video_standard:
-                prompt:      VIDEO STANDARD
-                description: Switch frequency and resolution by region
-                choices:
-                    "PAL 50Hz - 288/576px":        PAL
-                    "NTSC 60Hz - 240/480px":       NTSC
-            zoom_mode:
-                prompt:      ZOOM MODE
-                description: Crops the borders to fit various host screens
-                choices:
-                    "Off":        none
-                    "medium":     medium
-                    "large":      large
-                    "larger":     larger
-            keyrah_mapping:
-                prompt:      2P GAMEPAD MAPPING (KEYRAH)
-                description: Keypad to joyport mappings for 2 players
+            gfx_framerate:
+                prompt:      FRAMESKIP
+                description: Skip frames to improve performance (Smoothless)
                 choices:
                     "Off":        disabled
-                    "On":         enabled
+                    "1":          1
+                    "2":          2
             mouse_speed:
                 prompt:      MOUSE SPEED
                 description: Affects mouse speed globally.
@@ -1568,31 +1573,83 @@ libretro:
                     "150%":       150
                     "170%":       170
                     "200%":       200
-            whdload:
-                prompt:      WHDLOAD LAUNCHER
-                description: Enable launching pre-installed WHDLoad installs
-                choices:
-                    "Off":        disabled
-                    "On":         config
-            pad_options:
-                prompt:      JUMP ON B
-                description: Makes second fire button press up
-                choices:
-                    "Off":        disabled
-                    "On":         jump
-            disable_joystick:
-                prompt:      DISABLE EMULATOR JOYSTICK
-                description: Passes all physical keyboard events for Pad2Key
-                choices:
-                    "Off":        disabled
-                    "On":         enabled
-            gfx_framerate:
-                prompt:      FRAMESKIP
-                description: Skip frames to improve performance (Smoothless)
-                choices:
-                    "Off":        disabled
-                    "1":          1
-                    "2":          2
+      systems:
+            amiga500:
+                cfeatures:
+                    zoom_mode:
+                        prompt:      ZOOM MODE
+                        description: Crops the borders to fit various host screens
+                        choices:
+                            "Off":    none
+                            "medium": medium
+                            "large":  large
+                            "larger": larger
+                    keyrah_mapping:
+                        prompt:      2P GAMEPAD MAPPING (KEYRAH)
+                        description: Keypad to joyport mappings for 2 players
+                        choices:
+                            "Off":    disabled
+                            "On":     enabled
+                    whdload:
+                        prompt:      WHDLOAD LAUNCHER
+                        description: Enable launching pre-installed WHDLoad installs
+                        choices:
+                            "Off":    disabled
+                            "On":     config
+                    pad_options:
+                        prompt:      JUMP ON B
+                        description: Makes second fire button press up
+                        choices:
+                            "Off":    disabled
+                            "On":     jump
+                    disable_joystick:
+                        prompt:      DISABLE EMULATOR JOYSTICK
+                        description: Passes all physical keyboard events for Pad2Key
+                        choices:
+                            "Off":    disabled
+                            "On":     enabled
+            amiga1200:
+                cfeatures:
+                    zoom_mode:
+                        prompt:      ZOOM MODE
+                        description: Crops the borders to fit various host screens
+                        choices:
+                            "Off":    none
+                            "medium": medium
+                            "large":  large
+                            "larger": larger
+                    keyrah_mapping:
+                        prompt:      2P GAMEPAD MAPPING (KEYRAH)
+                        description: Keypad to joyport mappings for 2 players
+                        choices:
+                            "Off":    disabled
+                            "On":     enabled
+                    whdload:
+                        prompt:      WHDLOAD LAUNCHER
+                        description: Enable launching pre-installed WHDLoad installs
+                        choices:
+                            "Off":    disabled
+                            "On":     config
+                    pad_options:
+                        prompt:      JUMP ON B
+                        description: Makes second fire button press up
+                        choices:
+                            "Off":    disabled
+                            "On":     jump
+                    disable_joystick:
+                        prompt:      DISABLE EMULATOR JOYSTICK
+                        description: Passes all physical keyboard events for Pad2Key
+                        choices:
+                            "Off":    disabled
+                            "On":     enabled
+            amigacd32:
+                cfeatures:
+                    puae_cd32pad_options:
+                        prompt:      JUMP ON A
+                        description: Makes Blue button press Up
+                        choices:
+                            "Off":    disabled
+                            "On":     jump
     px68k:
       features: [                           latency_reduction, padtokeyboard]
       cfeatures:
