@@ -20,10 +20,12 @@ define SUPERMODEL_BUILD_CMDS
 endef
 
 define SUPERMODEL_INSTALL_TARGET_CMDS
-	mkdir -p $(TARGET_DIR)/usr/share/supermodel
+	mkdir -p $(TARGET_DIR)/userdata/system/configs/supermodel/NVRAM/
 	$(INSTALL) -D -m 0755 $(@D)/bin/supermodel $(TARGET_DIR)/usr/bin/supermodel
-	$(INSTALL) -D -m 0644 $(@D)/Config/Games.xml $(TARGET_DIR)/usr/share/supermodel/Games.xml
-	$(INSTALL) -D -m 0644 $(@D)/Config/Supermodel.ini $(TARGET_DIR)/usr/share/supermodel/Supermodel.ini.template
+	$(INSTALL) -D -m 0644 $(@D)/Config/Games.xml $(TARGET_DIR)/userdata/system/configs/supermodel/Games.xml
+	$(INSTALL) -D -m 0644 $(@D)/Config/Supermodel.ini $(TARGET_DIR)/userdata/system/configs/supermodel/Supermodel.ini.orig
+	mkdir -p $(TARGET_DIR)/userdata/saves/supermodel/
+	mkdir -p $(TARGET_DIR)/userdata/screenshots/supermodel/
 endef
 
 define SUPERMODEL_LINE_ENDINGS_FIXUP
@@ -33,9 +35,9 @@ define SUPERMODEL_LINE_ENDINGS_FIXUP
 endef
 
 define SUPERMODEL_POST_PROCESS
-	mkdir -p $(TARGET_DIR)/usr/share/evmapy $(TARGET_DIR)/usr/share/supermodel
-	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/supermodel/model3.supermodel.keys $(TARGET_DIR)/usr/share/evmapy
-        cp -pr $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/supermodel/NVRAM $(TARGET_DIR)/usr/share/supermodel
+	# Supermodel.ini to be handled by configgen soon
+	cp -f $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/supermodel/Supermodel.ini $(TARGET_DIR)/userdata/system/configs/supermodel/Supermodel.ini
+	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/supermodel/NVRAM $(TARGET_DIR)/userdata/system/configs/supermodel/NVRAM/
 endef
 
 SUPERMODEL_PRE_PATCH_HOOKS += SUPERMODEL_LINE_ENDINGS_FIXUP
