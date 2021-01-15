@@ -2414,8 +2414,13 @@ supermodel:
             prompt: 3D ENGINE
             description: Enable legacy or new 3D engine. Choose legacy for older GPUs.
             choices:
+<<<<<<< HEAD
                 "Legacy3D": legacy3d
                 "New3D": new3d
+=======
+                "Legacy3D":     legacy3d
+                "New3D":        new3d
+>>>>>>> 0c8bb33556... Tweak the 3D engine option
         quadRendering:
             prompt: QUAD RENDERING
             description: Enable proper quad rendering. For higher end systems.
