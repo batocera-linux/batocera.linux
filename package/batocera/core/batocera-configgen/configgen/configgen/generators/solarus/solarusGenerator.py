@@ -68,7 +68,6 @@ class SolarusGenerator(Generator):
                         par[row[0].strip()] = row[1].strip()
                     except:
                         continue
-                settings.close()
             except:
                 pass
         except:
