@@ -160,3 +160,7 @@ rpcs3configevdev = CONF + '/rpcs3/InputConfigs/Evdev/Default Profile.yml'
 
 supermodelCustom = CONF + '/supermodel'
 supermodelIni = supermodelCustom + '/Supermodel.ini'
+supermodelGames = supermodelCustom + '/Games.xml'
+supermodelSaves = SAVES + '/supermodel'
+supermodelScreenshot = SCREENSHOTS + '/supermodel'
+supermodelNVRAM = supermodelCustom + '/NVRAM/'
