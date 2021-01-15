@@ -247,6 +247,7 @@ config BR2_TARGET_BATOCERA_IMAGES_DEFINITIONS
 	default "rockchip/rk3399/rockpro64"   if BR2_PACKAGE_BATOCERA_TARGET_ROCKPRO64
 	default "libretech-h5"         	      if BR2_PACKAGE_BATOCERA_TARGET_LIBRETECH_H5
 	default "orangepi-zero2"              if BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_ZERO2
+	default "orangepi-pc"                 if BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_PC
 	default "odroidxu4"                   if BR2_PACKAGE_BATOCERA_TARGET_XU4
 	default "x86"                  	      if BR2_PACKAGE_BATOCERA_TARGET_X86
 	default "x86"                  	      if BR2_PACKAGE_BATOCERA_TARGET_X86_64
@@ -405,7 +406,7 @@ config BR2_PACKAGE_BATOCERA_HOMEBREW_SYSTEMS
 
 		# RPG engine : Solarus
 		select BR2_PACKAGE_LUAJIT		# for performance
-		select BR2_PACKAGE_SOLARUS		# engine itself
+		select BR2_PACKAGE_SOLARUS_ENGINE	# engine itself
 
 		# RPG engine : EasyRPG / RPG MAker
 		select BR2_PACKAGE_EASYRPG_PLAYER	# standalone
