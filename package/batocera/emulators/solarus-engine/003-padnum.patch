@@ -36,12 +36,12 @@ index cb8330e..5b810a8 100644
    initialized = true;
  
    // Initialize text events.
-@@ -938,7 +946,7 @@ void InputEvent::set_joypad_enabled(bool joypad_enabled) {
- 
-     if (joypad_enabled && SDL_NumJoysticks() > 0) {
+@@ -967,7 +967,7 @@ void InputEvent::set_joypad_enabled(bool joypad_enabled) {
          SDL_InitSubSystem(SDL_INIT_JOYSTICK);
--        joystick = SDL_JoystickOpen(0);
-+        joystick = SDL_JoystickOpen(joypad_num);
+         SDL_JoystickEventState(SDL_ENABLE);
+         if(SDL_NumJoysticks() > 0) {
+-          joystick = SDL_JoystickOpen(0);
++          joystick = SDL_JoystickOpen(joypad_num);
+         }
      }
      else {
-       SDL_JoystickEventState(SDL_IGNORE);

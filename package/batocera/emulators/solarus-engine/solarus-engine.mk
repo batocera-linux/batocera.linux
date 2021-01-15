@@ -3,11 +3,9 @@
 # solarus-engine
 #
 ################################################################################
-
-SOLARUS_ENGINE_VERSION = 1.6.4
-SOLARUS_ENGINE_SITE = \
-	https://gitlab.com/solarus-games/solarus/-/archive/v$(SOLARUS_ENGINE_VERSION)
-SOLARUS_ENGINE_SOURCE = solarus-v$(SOLARUS_ENGINE_VERSION).tar.bz2
+SOLARUS_ENGINE_VERSION = cc580fb399f720e241754ecc7817ce5d551d74d0
+SOLARUS_ENGINE_SITE = https://gitlab.com/solarus-games/solarus
+SOLARUS_ENGINE_SITE_METHOD=git
 
 SOLARUS_ENGINE_LICENSE = GPL-3.0 (code), CC-BY-SA-4.0 (Solarus logos and icons), \
 	CC-BY-SA-3.0 (GUI icons)

@@ -6,6 +6,8 @@ import controllersConfig
 import batoceraFiles
 import codecs
 import os
+import zipfile
+from utils.logger import eslog
 
 class SolarusGenerator(Generator):
 
@@ -26,10 +28,61 @@ class SolarusGenerator(Generator):
         # player pad
         SolarusGenerator.padConfig(system, playersControllers)
 
+        # saves (for first run, needs init on RPi4 at least)
+        romName = os.path.basename(rom)
+        try:
+            with zipfile.ZipFile(rom, 'r') as zip:
+                zip.extract('quest.dat','/tmp')
+                eslog.log("Extracting {}".format(romName))
+        except:
+            eslog.log("Failing {} extraction".format(romName))
+            return
+        qst = dict()
+        quest = open('/tmp/quest.dat', 'r')
+        qlines = quest.readlines()
+        for l in qlines:
+            try:
+                row = l.strip().split("=")
+                qst[row[0].strip()] = row[1].strip('", ')
+            except:
+                continue
+        quest.close()
+        try:
+            folder=qst['write_dir']
+        except:
+            folder=''
+        cfg = batoceraFiles.solarusSaves+'/{}'.format(folder)
+        eslog.log("Solarus save folder: {}".format(cfg))
+        try:
+            os.makedirs(cfg)
+        except:
+            pass # save folder already exists
+        par = dict()
+        try:
+            settings = open(cfg+'/settings.dat', 'r+')
+            try:
+                slines = settings.readlines()
+                for l in slines:
+                    try:
+                        row = l.strip().split("=")
+                        par[row[0].strip()] = row[1].strip()
+                    except:
+                        continue
+                settings.close()
+            except:
+                pass
+        except:
+            settings = open(cfg+'/settings.dat', 'w')
+        if not 'fullscreen' in par.keys():
+            eslog.log("Initializing solarus settings in {}".format(cfg+'/settings.dat'))
+            settings.write("fullscreen = true")
+        settings.close()
+
         # rom
         commandArray.append(rom)
 
-        return Command.Command(array=commandArray)
+        return Command.Command(array=commandArray, env={
+                'SDL_VIDEO_MINIMIZE_ON_FOCUS_LOSS': '0' })
 
     @staticmethod
     def padConfig(system, playersControllers):
