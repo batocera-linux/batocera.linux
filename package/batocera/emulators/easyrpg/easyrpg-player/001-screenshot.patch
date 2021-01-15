@@ -1,0 +1,15 @@
+diff --git a/src/output.cpp b/src/output.cpp
+index fd7a409..2b8ef03 100644
+--- a/src/output.cpp
++++ b/src/output.cpp
+@@ -240,8 +240,8 @@ bool Output::TakeScreenshot() {
+ 	int index = 0;
+ 	std::string p;
+ 	do {
+-		p = FileFinder::MakePath(Main_Data::GetSavePath(),
+-								 "screenshot_"
++		p = FileFinder::MakePath("/userdata/screenshots/",
++								 "easyrpg_"
+ 								 + std::to_string(index++)
+ 								 + ".png");
+ 	} while(FileFinder::Exists(p));

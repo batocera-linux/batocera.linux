@@ -1,0 +1,37 @@
+diff --git a/Makefile.orig b/Makefile
+index e2dc66e..febf79b 100644
+--- a/Makefile
++++ b/Makefile
+@@ -209,6 +209,32 @@ else ifeq ($(platform), rpi4_64)
+    HAVE_THREADS=1
+    JIT_ARCH=aarch64
+ 
++# Odroid C4
++else ifeq ($(platform), odroidc4)
++   EXT ?= so
++   CPUFLAGS += -mcpu=cortex-a55 -mtune=cortex-a55
++   HAVE_NEON = 1
++   TARGET := $(TARGET_NAME)_libretro.$(EXT)
++   fpic := -fPIC
++   SHARED := -shared -Wl,--version-script=$(CORE_DIR)/link.T -Wl,--no-undefined
++   LIBS +=-lpthread -lGLESv2
++   HAVE_OPENGLES3=1
++   HAVE_THREADS=1
++   JIT_ARCH=aarch64
++
++# Odroid N2 / VIM3
++else ifeq ($(platform), odroidn2)
++   EXT ?= so
++   CPUFLAGS += -mcpu=cortex-a73 -mtune=cortex-a73.cortex-a53
++   HAVE_NEON = 1
++   TARGET := $(TARGET_NAME)_libretro.$(EXT)
++   fpic := -fPIC
++   SHARED := -shared -Wl,--version-script=$(CORE_DIR)/link.T -Wl,--no-undefined
++   LIBS +=-lpthread -lGLESv2
++   HAVE_OPENGLES3=1
++   HAVE_THREADS=1
++   JIT_ARCH=aarch64
++
+ # Windows MSVC 2017 all architectures
+ else ifneq (,$(findstring windows_msvc2017,$(platform)))
+ 

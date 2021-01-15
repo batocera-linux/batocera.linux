@@ -99,6 +99,19 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
     retroarchConfig['menu_show_restart_retroarch'] = 'false'    # this option messes everything up on Batocera if ever clicked
     retroarchConfig['video_driver'] = '"gl"'                    # needed for the ozone menu
 
+    if system.isOptSet("display.rotate"):
+        # 0 => 0 ; 1 => 270; 2 => 180 ; 3 => 90
+        if system.config["display.rotate"] == "0":
+            retroarchConfig['video_rotation'] = "0"
+        elif system.config["display.rotate"] == "1":
+            retroarchConfig['video_rotation'] = "3"
+        elif system.config["display.rotate"] == "2":
+            retroarchConfig['video_rotation'] = "2"
+        elif system.config["display.rotate"] == "3":
+            retroarchConfig['video_rotation'] = "1"
+    else:
+        retroarchConfig['video_rotation'] = '0'
+
     if system.isOptSet("gfxbackend") and system.config["gfxbackend"] == "vulkan":
         retroarchConfig['video_driver'] = '"vulkan"'
 
@@ -140,14 +153,19 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
     if(system.config['core'] in coreToP2Device):
         retroarchConfig['input_libretro_device_p2'] = coreToP2Device[system.config['core']]
 
-    if len(controllers) > 2 and (system.config['core'] == 'snes9x_next' or system.config['core'] == 'snes9x'):
-        retroarchConfig['input_libretro_device_p2'] = '257'
+    ## AMICA CD32
+    if system.config['core'] == 'puae' and system.name == 'amigacd32':
+        retroarchConfig['input_libretro_device_p1'] = '517'     # CD 32 Pad
 
     ## BlueMSX choices by System
     if(system.name in systemToBluemsx):
         if system.config['core'] == 'bluemsx':
             retroarchConfig['input_libretro_device_p1'] = systemToP1Device[system.name]
             retroarchConfig['input_libretro_device_p2'] = systemToP2Device[system.name]
+
+    ## TODO: SNES controller
+    if len(controllers) > 2 and (system.config['core'] == 'snes9x_next' or system.config['core'] == 'snes9x'):
+        retroarchConfig['input_libretro_device_p2'] = '257'
 
     ## PlayStation controller
     if (system.config['core'] == 'mednafen_psx'):               # Madnafen

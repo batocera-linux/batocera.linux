@@ -227,6 +227,7 @@ nds:
   emulators:
     libretro:
       desmume: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_DESMUME] }
+      melonds: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MELONDS] }
     melonds:
       melonds: { requireAnyOf: [BR2_PACKAGE_MELONDS] }
 
@@ -1372,8 +1373,10 @@ openbor:
   extensions: [pak]
   emulators:
     openbor:
-      openbor: { requireAnyOf: [BR2_PACKAGE_OPENBOR] }
       openbor4432: { requireAnyOf: [BR2_PACKAGE_OPENBOR4432] }
+      openbor6330: { requireAnyOf: [BR2_PACKAGE_OPENBOR6330] }
+      openbor6412: { requireAnyOf: [BR2_PACKAGE_OPENBOR6412] }
+      openbor6510: { requireAnyOf: [BR2_PACKAGE_OPENBOR6510] }
 
 satellaview:
   name:       Satellaview
@@ -1568,7 +1571,7 @@ solarus:
   extensions: [zip, solarus]
   emulators:
     solarus:
-      solarus: { requireAnyOf: [BR2_PACKAGE_SOLARUS] }
+      solarus: { requireAnyOf: [BR2_PACKAGE_SOLARUS_ENGINE] }
 
 easyrpg:
   name:       EasyRPG
@@ -1609,3 +1612,13 @@ imageviewer:
   emulators:
     libretro:
       imageviewer: { requireAnyOf: [] }
+      
+model3:
+  name:       Sega Model 3
+  manufacturer: Sega
+  release: 1996
+  hardware: arcade
+  extensions: [zip]
+  emulators:
+    supermodel:
+      supermodel: { requireAnyOf: [BR2_PACKAGE_SUPERMODEL] }

@@ -63,7 +63,6 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
     select BR2_TARGET_BATOCERA_IMAGES_DEFINITIONS
     select BR2_PACKAGE_BATOCERA_INITRAMFS                # initramfs to boot the system
     select BR2_PACKAGE_BASH                              # bash shell, used as the interactive shell
-    select BR2_SYSTEM_BIN_SH_DASH                        # /bin/sh implementation
     select BR2_PACKAGE_RNG_TOOLS                         # system entropy
     select BR2_PACKAGE_BATOCERA_EMULATIONSTATION         # emulationstation
     select BR2_PACKAGE_ES_THEME_CARBON                   # emulationstation theme
@@ -161,14 +160,16 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
     select BR2_PACKAGE_BATOCERA_VULKAN			 if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY || BR2_PACKAGE_BATOCERA_TARGET_RPI4
 
     # wireless drivers
-    select BR2_PACKAGE_RTL8821AU                         if !BR2_PACKAGE_BATOCERA_RPI_VCORE
+    select BR2_PACKAGE_RTL8821AU                         if !BR2_PACKAGE_BATOCERA_RPI_VCORE             && \
+                                                            !BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_PC
     select BR2_PACKAGE_RTL8821CE                         if !BR2_PACKAGE_BATOCERA_RPI_VCORE             && \
                                                             !BR2_PACKAGE_BATOCERA_TARGET_RPI3           && \
                                                             !BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA      && \
                                                             !BR2_PACKAGE_BATOCERA_TARGET_LIBRETECH_H5   && \
                                                             !BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_ZERO2 && \
                                                             !BR2_PACKAGE_BATOCERA_TARGET_MIQI           && \
-                                                            !BR2_PACKAGE_BATOCERA_TARGET_TINKERBOARD
+                                                            !BR2_PACKAGE_BATOCERA_TARGET_TINKERBOARD    && \
+                                                            !BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_PC
 
     # gpu drivers
     select BR2_PACKAGE_BATOCERA_GPU_X86			 if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
@@ -246,6 +247,7 @@ config BR2_TARGET_BATOCERA_IMAGES_DEFINITIONS
 	default "rockchip/rk3399/rockpro64"   if BR2_PACKAGE_BATOCERA_TARGET_ROCKPRO64
 	default "libretech-h5"         	      if BR2_PACKAGE_BATOCERA_TARGET_LIBRETECH_H5
 	default "orangepi-zero2"              if BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_ZERO2
+	default "orangepi-pc"                 if BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_PC
 	default "odroidxu4"                   if BR2_PACKAGE_BATOCERA_TARGET_XU4
 	default "x86"                  	      if BR2_PACKAGE_BATOCERA_TARGET_X86
 	default "x86"                  	      if BR2_PACKAGE_BATOCERA_TARGET_X86_64
@@ -315,6 +317,9 @@ config BR2_PACKAGE_BATOCERA_TARGET_LIBRETECH_H5
 
 config BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_ZERO2
         bool "orangepi_zero2"
+
+config BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_PC
+        bool "orangepi_pc"
 
 endchoice
 
@@ -388,8 +393,10 @@ config BR2_PACKAGE_BATOCERA_HOMEBREW_SYSTEMS
 		bool "batocera.linux homebrew systems"
 
 		# OpenBOR
-		select BR2_PACKAGE_OPENBOR              # ALL
 		select BR2_PACKAGE_OPENBOR4432          # ALL
+		select BR2_PACKAGE_OPENBOR6330          # ALL
+		select BR2_PACKAGE_OPENBOR6412          # ALL
+		select BR2_PACKAGE_OPENBOR6510          # ALL
 
 		# Lutro Engine / LÖVE
 		select BR2_PACKAGE_LIBRETRO_LUTRO             # ALL
@@ -399,7 +406,7 @@ config BR2_PACKAGE_BATOCERA_HOMEBREW_SYSTEMS
 
 		# RPG engine : Solarus
 		select BR2_PACKAGE_LUAJIT		# for performance
-		select BR2_PACKAGE_SOLARUS		# engine itself
+		select BR2_PACKAGE_SOLARUS_ENGINE	# engine itself
 
 		# RPG engine : EasyRPG / RPG MAker
 		select BR2_PACKAGE_EASYRPG_PLAYER	# standalone
@@ -450,7 +457,7 @@ config BR2_PACKAGE_BATOCERA_ARCADE_SYSTEMS
 		                                               # daphne
 
 		# Standalone Sega Model 3 emulator
-		select BR2_PACKAGE_SUPERMODEL3                if BR2_PACKAGE_BATOCERA_CORES_EXPERIMENTAL && BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
+		select BR2_PACKAGE_SUPERMODEL		      if BR2_PACKAGE_BATOCERA_TARGET_X86_64
 
 		# RetroArch MAME derivatives
 		select BR2_PACKAGE_LIBRETRO_MAME2003_PLUS     # ALL
@@ -478,6 +485,11 @@ config BR2_PACKAGE_BATOCERA_HANDHELD_SYSTEMS
 
 		# NDS
 		select BR2_PACKAGE_LIBRETRO_DESMUME     if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
+                select BR2_PACKAGE_LIBRETRO_MELONDS     if BR2_PACKAGE_BATOCERA_TARGET_X86_64 || \
+							   BR2_PACKAGE_BATOCERA_TARGET_RPI4 || \
+							   BR2_PACKAGE_BATOCERA_TARGET_ODROIDC4 || \
+							   BR2_PACKAGE_BATOCERA_TARGET_ODROIDN2 || \
+							   BR2_PACKAGE_BATOCERA_TARGET_VIM3 # no JIT on 32-bit x86/ARM
 		select BR2_PACKAGE_MELONDS              if BR2_PACKAGE_BATOCERA_CORES_EXPERIMENTAL && BR2_PACKAGE_BATOCERA_TARGET_X86_64
 
 		# 3DS
@@ -514,16 +526,18 @@ config BR2_PACKAGE_BATOCERA_HANDHELD_SYSTEMS
 config BR2_PACKAGE_BATOCERA_MSDOS_SYSTEMS
 		bool "batocera.linux MS/DOS emulation packages"
 
-		select BR2_PACKAGE_DOSBOX               # ALL # dos
+		select BR2_PACKAGE_DOSBOX               # ALL
 
 		select BR2_PACKAGE_DOSBOX_X             if !BR2_PACKAGE_BATOCERA_TARGET_ROCK960    && \
 		                                           !BR2_PACKAGE_BATOCERA_RPI_VCORE         && \
+		                                           !BR2_PACKAGE_BATOCERA_TARGET_RPI3       && \
 		                                           !BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA
 		                                           # dos
-		select BR2_PACKAGE_DOSBOX_STAGING             if BR2_PACKAGE_BATOCERA_CORES_EXPERIMENTAL # ALL # dos
+		select BR2_PACKAGE_DOSBOX_STAGING      # ALL 
 
-		select BR2_PACKAGE_LIBRETRO_DOSBOX            if !BR2_PACKAGE_BATOCERA_TARGET_ROCK960     && \
-		                                                 !BR2_PACKAGE_BATOCERA_TARGET_LIBRETECH_H5 && \
+		select BR2_PACKAGE_LIBRETRO_DOSBOX            if !BR2_PACKAGE_BATOCERA_TARGET_RPI3           && \
+		                                                 !BR2_PACKAGE_BATOCERA_TARGET_ROCK960        && \
+		                                                 !BR2_PACKAGE_BATOCERA_TARGET_LIBRETECH_H5   && \
 		                                                 !BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_ZERO2
 		select BR2_PACKAGE_LIBRETRO_DOSBOX_PURE       # ALL
 
@@ -647,11 +661,8 @@ config BR2_PACKAGE_BATOCERA_CONSOLE_SYSTEMS
 		select BR2_PACKAGE_LIBRETRO_PCSX              if !BR2_PACKAGE_BATOCERA_TARGET_RPI1 # PCSX
 		select BR2_PACKAGE_LIBRETRO_BEETLE_PSX        if !BR2_PACKAGE_BATOCERA_RPI_VCORE && \
 		                                             !BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA
-		select BR2_PACKAGE_LIBRETRO_DUCKSTATION	      if  BR2_PACKAGE_BATOCERA_TARGET_X86_64   || \
-							          BR2_PACKAGE_BATOCERA_TARGET_ODROIDC4 || \
-							          BR2_PACKAGE_BATOCERA_TARGET_LIBRETECH_H5 || \
-							          BR2_PACKAGE_BATOCERA_TARGET_ODROIDN2 || \
-							          BR2_PACKAGE_BATOCERA_TARGET_VIM3
+		select BR2_PACKAGE_LIBRETRO_DUCKSTATION	      if  !BR2_PACKAGE_BATOCERA_TARGET_X86 && \
+								  !BR2_PACKAGE_BATOCERA_RPI_VCORE
 
 
 		# Saturn
