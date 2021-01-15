@@ -2332,12 +2332,12 @@ redream:
 supermodel:
   features: []
   cfeatures:
-        legacy3D:
-            prompt: LEGACY 3D
-            description: Enable legacy 3D engine for older GPUs
+        engine3D:
+            prompt: 3D ENGINE
+            description: Enable legacy or new 3D engine. Choose legacy for older GPUs.
             choices:
-                "Off": 0
-                "On":  1
+                "Legacy3D":     legacy3d
+                "New3D":        new3d
         quadRendering:
             prompt: QUAD RENDERING
             description: Enable proper quad rendering. For higher end systems.
