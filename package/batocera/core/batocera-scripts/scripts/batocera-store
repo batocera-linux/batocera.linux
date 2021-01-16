@@ -38,7 +38,6 @@ do_getPer() {
 	done
 }
 
-
 do_clean () {
 	if ! lsof | grep ${DB_FILE}; then
 		rm -f ${DB_FILE}
@@ -46,7 +45,7 @@ do_clean () {
 }
 
 ACTION=$1
-shift
+PKG=$2
 do_clean #Delete db.lck file if it's NOT in usage
 
 #Started from Terminal/SSH or from Emulationstation?
@@ -54,7 +53,6 @@ do_clean #Delete db.lck file if it's NOT in usage
 
 case "${ACTION}" in
     "install")
-	PKG=$1
 	# TERMINAL DOWNLOAD
 	if [ $TERMINAL -eq 1 ]; then
 		pacman --noconfirm -Sw "${PKG}"
@@ -97,7 +95,6 @@ case "${ACTION}" in
 	exit ${RET}
 	;;
     "remove")
-	PKG=$1
 	pacman --noconfirm -R "${PKG}"
 	exit $?
 	;;
