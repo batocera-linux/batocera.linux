@@ -52,7 +52,7 @@
 -static const char s_configFilePath[] = { "Config/Supermodel.ini" };
 -static const char s_gameXMLFilePath[] = { "Config/Games.xml" };
 +static const char s_configFilePath[] = { "/userdata/system/configs/supermodel/Supermodel.ini" };
-+static const char s_gameXMLFilePath[] = { "/userdata/system/configs/supermodel/Games.xml" };
++static const char s_gameXMLFilePath[] = { "/usr/share/supermodel/Games.xml" };
  
  // Create and configure inputs
  static bool ConfigureInputs(CInputs *Inputs, Util::Config::Node *fileConfig, Util::Config::Node *runtimeConfig, const Game &game, bool configure)
