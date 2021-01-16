@@ -1,11 +1,10 @@
---- a/Makefile	2020-08-10 13:00:41.230212722 +0200
-+++ b/Makefile	2020-08-10 13:00:52.122427610 +0200
-@@ -246,7 +246,7 @@
+--- a/Makefile	2021-01-16 21:03:04.513008066 +0100
++++ b/Makefile	2021-01-16 21:03:39.809673484 +0100
+@@ -266,7 +266,6 @@
  	fpic := -fPIC
  	LDFLAGS += $(fpic) -shared -Wl,--version-script=link.T
  	CFLAGS += -Ofast \
 -	-flto=4 -fwhole-program -fuse-linker-plugin \
-+	\
  	-fdata-sections -ffunction-sections -Wl,--gc-sections \
  	-fno-stack-protector -fno-ident -fomit-frame-pointer \
  	-falign-functions=1 -falign-jumps=1 -falign-loops=1 \
