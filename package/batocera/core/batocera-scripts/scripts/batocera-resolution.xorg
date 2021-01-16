@@ -1,8 +1,5 @@
 #!/bin/sh
 
-ACTION=$1
-shift
-
 f_usage() {
     echo "${0} listModes" >&2
     echo "${0} setMode <MODE>" >&2
@@ -14,11 +11,13 @@ f_usage() {
     echo "${0} minTomaxResolution-secure" >&2
 }
 
-if test -z "${ACTION}"
-then
-    f_usage
-    exit 1
+if [ $# -eq 0 ]; then
+	f_usage
+	exit 1
 fi
+
+ACTION=$1
+shift
 
 case "${ACTION}" in
     "listModes")
@@ -99,8 +98,9 @@ case "${ACTION}" in
     "setDPI")
         xrandr --dpi $1
         ;;
-    *)
-        f_usage
-	;;
+	*)
+		f_usage
+		>&2 echo "error: invalid command ${ACTION}"
+		exit 1
 esac
 exit 0
