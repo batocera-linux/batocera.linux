@@ -114,6 +114,8 @@ fsuaeSaves = SAVES + "/amiga"
 
 scummvmSaves = SAVES + '/scummvm'
 
+solarusSaves = SAVES + '/solarus'
+
 viceConfig = CONF + "/vice"
 
 overlaySystem = "/usr/share/batocera/datainit/decorations"
