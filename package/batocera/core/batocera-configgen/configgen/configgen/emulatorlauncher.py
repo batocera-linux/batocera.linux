@@ -113,8 +113,10 @@ def main(args, maxnbplayers):
 
     if args.emulator is not None:
         system.config["emulator"] = args.emulator
+        self.config["emulator-forced"] = True
     if args.core is not None:
         system.config["core"] = args.core
+        self.config["core-forced"] = True
 
     eslog.debug("Settings: {}".format(system.config))
     if "emulator" in system.config and "core" in system.config:
