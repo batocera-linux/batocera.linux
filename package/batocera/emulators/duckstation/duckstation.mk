@@ -3,8 +3,8 @@
 # DUCKSTATION
 #
 ################################################################################
-# Version.: Commits on Jan 10, 2021
-DUCKSTATION_VERSION = bc6444b6ff180182904d7f09271e6fd885f38379
+# Version.: Commits on Jan 16, 2021
+DUCKSTATION_VERSION = 9da35be0a8cb799cbf07d1ab2eff148982dd3ad2
 DUCKSTATION_SITE = https://github.com/stenzek/duckstation.git
 
 DUCKSTATION_DEPENDENCIES = fmt boost ffmpeg
