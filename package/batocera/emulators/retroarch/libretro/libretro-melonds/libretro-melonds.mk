@@ -4,7 +4,7 @@
 #
 ################################################################################
 # Version.: Commits on Jan 16, 2021
-LIBRETRO_MELONDS_VERSION = 12339cca251b3ffb105fa270a1aefe93ba44a5c2
+LIBRETRO_MELONDS_VERSION = bc8acea61e97f47a09f52c3890ad9df70cfa7eb7
 LIBRETRO_MELONDS_SITE = $(call github,libretro,melonds,$(LIBRETRO_MELONDS_VERSION))
 LIBRETRO_MELONDS_LICENSE = GPLv2
 LIBRETRO_MELONDS_DEPENDENCIES = libpcap
