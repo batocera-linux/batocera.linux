@@ -734,7 +734,7 @@ libretro:
                     "150":            150
             mame_altres:
                 prompt:      VIDEO RESOLUTION
-                description: Increase video to Highter Resolution
+                description: Increase video to Higher Resolution
                 choices:
                     "640x480":        640x480
                     "800x600":        800x600
@@ -2470,6 +2470,12 @@ mame:
                 "HQ2X":          hq2x
                 "HQ3X":          hq3x
                 "HQ4X":          hq4x
+        switchres:
+            prompt:      CRT SWITCHRES
+            description: CRT monitor SwitchRes support
+            choices:
+                "Off":         false
+                "On":          true
 
 wine:
   features: [padtokeyboard]
