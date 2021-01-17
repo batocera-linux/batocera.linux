@@ -4,7 +4,7 @@
 #
 ################################################################################
 # Version.: 
-OPENBOR6510_VERSION = ecce29b95700468aa3401915625dac2d56e4ca60
+OPENBOR6510_VERSION = v6510-dev
 OPENBOR6510_SITE = $(call github,DCurrent,openbor,$(OPENBOR6510_VERSION))
 OPENBOR6510_LICENSE = BSD
 
