@@ -110,7 +110,7 @@ class MameGenerator(Generator):
 	if system.isOptSet("switchres") and system.config["switchres"] == "true":
 		commandArray += [ "-modeline_generation", "1" ]
 		commandArray += [ "-changeres", "1" ]
-	else
+	else:
 		commandArray += [ "-modeline_generation", "0" ]
 		commandArray += [ "-changeres", "0" ]
 
