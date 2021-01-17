@@ -43,9 +43,9 @@ class Emulator():
         # forced emulators ?
         self.config["emulator-forced"] = False
         self.config["core-forced"] = False
-        if system_emulator != self.config["emulator"]:
+        if "emulator" in globalSettings or "emulator" in systemSettings or "emulator" in gameSettings:
             self.config["emulator-forced"] = True
-        if system_core != self.config["core"]:
+        if "core" in globalSettings or "core" in systemSettings or "core" in gameSettings:
             self.config["core-forced"] = True
 
         # update renderconfig

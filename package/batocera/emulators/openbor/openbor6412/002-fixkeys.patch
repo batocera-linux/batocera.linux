@@ -28,7 +28,7 @@ index 44eb88b..133f1ed 100644
 +	char path[MAX_BUFFER_LEN] = { "" };
 +
 +#if !WIN
-+	strcpy(path, "/userdata/system/configs/openbor/config.ini");
++	strcpy(path, "/userdata/system/configs/openbor/config6412.ini");
 +	handle = fopen(path, "wb");
 +#endif
 +
@@ -100,7 +100,7 @@ index 44eb88b..133f1ed 100644
 +	char path[MAX_BUFFER_LEN] = { "" };
 +
 +#if !WIN
-+	strcpy(path, "/userdata/system/configs/openbor/config.ini");
++	strcpy(path, "/userdata/system/configs/openbor/config6412.ini");
 +	handle = fopen(path, "rb");
 +#endif
 +
