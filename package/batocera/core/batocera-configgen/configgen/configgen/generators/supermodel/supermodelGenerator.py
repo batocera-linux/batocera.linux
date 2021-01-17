@@ -14,8 +14,10 @@ class SupermodelGenerator(Generator):
         commandArray = ["supermodel", "-fullscreen"]
         
         # legacy3d
-        if system.isOptSet("legacy3D") and system.getOptBoolean("legacy3D"):
+        if system.isOptSet("engine3D") and system.config["engine3D"] == "legacy3d":
             commandArray.append("-legacy3d")
+        else:
+            commandArray.append("-new3d")
         
         # fps
         if system.isOptSet("wideScreen") and system.getOptBoolean("wideScreen"):
