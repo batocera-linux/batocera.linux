@@ -115,6 +115,7 @@ cp -pr "${G_TARGETDIR}/usr/share/gstreamer-1.0/"* "${TMPOUT}/usr/share/gstreamer
 #ln -s /lib32/pulseaudio "${TMPOUT}/usr/lib/pulseaudio" || exit 1
 cp -p "${G_TARGETDIR}/usr/lib/libEGL_mesa"* "${TMPOUT}/lib32" || exit 1
 cp -p "${G_TARGETDIR}/usr/lib/libGLX_mesa"* "${TMPOUT}/lib32" || exit 1
+cp -p "${G_TARGETDIR}/usr/lib/libGL.so"* "${TMPOUT}/lib32" || exit 1
 #"${G_TARGETDIR}/usr/lib/pulseaudio/"*.so
 
 # add .so for lutris
