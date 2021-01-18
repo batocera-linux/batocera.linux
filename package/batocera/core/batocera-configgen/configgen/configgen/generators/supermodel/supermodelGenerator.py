@@ -7,6 +7,7 @@ import os
 import ConfigParser
 import io
 import re
+from distutils.dir_util import copy_tree
 
 class SupermodelGenerator(Generator):
 
@@ -19,7 +20,7 @@ class SupermodelGenerator(Generator):
         else:
             commandArray.append("-new3d")
         
-        # fps
+        # widescreen
         if system.isOptSet("wideScreen") and system.getOptBoolean("wideScreen"):
             commandArray.append("-wide-screen")
             commandArray.append("-wide-bg")
@@ -34,10 +35,22 @@ class SupermodelGenerator(Generator):
         # logs
         commandArray.extend(["-log-output=/userdata/system/logs", rom])
 
+        # nvram
+        nvramDirectory()
+
         # config
         configPadsIni(playersControllers)
 
         return Command.Command(array=commandArray)
+
+def nvramDirectory():
+    nvramSrcDir = "/usr/share/supermodel/NVRAM"
+    nvramDestDir = "/userdata/system/configs/supermodel/NVRAM"
+    if not os.path.exists(nvramDestDir):
+        os.makedirs(os.path.dirname(nvramDestDir))
+        copy_tree(nvramSrcDir, nvramDestDir)
+    else:
+        return None
 
 def configPadsIni(playersControllers):
     templateFile = "/usr/share/supermodel/Supermodel.ini.template"
