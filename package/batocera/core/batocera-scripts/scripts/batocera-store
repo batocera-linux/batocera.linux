@@ -7,6 +7,17 @@
 DEST_PKG=/userdata/system/pacman/pkg
 DB_FILE=/userdata/system/pacman/db/db.lck
 
+do_help() {
+	echo "$0 install <package>" >&2
+	echo "$0 remove  <package>" >&2
+	echo "$0 list" >&2
+	echo "$0 list-repositories" >&2
+	echo "$0 clean" >&2
+	echo "$0 clean-all" >&2
+	echo "$0 refresh" >&2
+	echo "$0 update" >&2
+}
+
 # Just a work meter - better than some static output
 do_bepatient() {
 	local COUNT=0
@@ -43,6 +54,11 @@ do_clean () {
 		rm -f ${DB_FILE}
 	fi
 }
+
+if [ $# -eq 0 ]; then
+	do_help
+	exit 1
+fi
 
 ACTION=$1
 PKG=$2
@@ -168,13 +184,7 @@ case "${ACTION}" in
 	) | python
 	     exit $?
 	;;
-    *)
-	echo "${0} install <package>" >&2
-	echo "${0} remove  <package>" >&2
-	echo "${0} list" >&2
-	echo "${0} list-repositories" >&2
-	echo "${0} clean" >&2
-	echo "${0} clean-all" >&2
-	echo "${0} refresh" >&2
-	echo "${0} update" >&2
+	*)
+		do_help
+		exit 1
 esac
