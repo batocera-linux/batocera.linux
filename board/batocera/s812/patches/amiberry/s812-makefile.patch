@@ -1,0 +1,22 @@
+diff --git a/Makefile b/Makefile
+index 4872239e..8468d9fa 100644
+--- a/Makefile
++++ b/Makefile
+@@ -69,6 +69,17 @@ else ifeq ($(PLATFORM),orangepi-pc)
+         MORE_CFLAGS += -fomit-frame-pointer
+     endif
+ 
++# Amlogic S812 (SDL2)
++else ifeq ($(PLATFORM),s812)
++    CPUFLAGS = -mcpu=cortex-a9 -mfpu=neon-vfpv3 -mfloat-abi=hard
++    CPPFLAGS += -DARMV6_ASSEMBLY -D_FILE_OFFSET_BITS=64 -DARMV6T2 -DUSE_ARMNEON -DARM_HAS_DIV -DUSE_RENDER_THREAD
++    HAVE_NEON = 1
++    ifdef DEBUG
++	    # Otherwise we'll get compilation errors, check https://tls.mbed.org/kb/development/arm-thumb-error-r7-cannot-be-used-in-asm-here
++	    # quote: The assembly code in bn_mul.h is optimized for the ARM platform and uses some registers, including r7 to efficiently do an operation. GCC also uses r7 as the frame pointer under ARM Thumb assembly.
++        MORE_CFLAGS += -fomit-frame-pointer
++    endif
++
+ # Odroid XU4 (SDL2)
+ else ifeq ($(PLATFORM),xu4)
+     CPUFLAGS += -mcpu=cortex-a15 -mfpu=neon-vfpv4
