@@ -103,17 +103,14 @@ def configPadsIni(playersControllers):
         targetConfig.write(configfile)
 
 def transformValue(value, playersControllers, mapping):
-    print ("transformValue {}", value)
     if value[0] == '"' and value[-1] == '"':
         newvalue = ""
         for elt in value[1:-1].split(","):
             newelt = transformElement(elt, playersControllers, mapping)
-            print ("newelt {}", newelt)
             if newelt is not None:
                 if newvalue != "":
                     newvalue = newvalue + ","
                 newvalue = newvalue + newelt
-                print ("newvalue {}", newvalue)
         return '"' + newvalue + '"'
     else:
         # integers
