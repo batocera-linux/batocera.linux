@@ -248,6 +248,7 @@ config BR2_TARGET_BATOCERA_IMAGES_DEFINITIONS
 	default "libretech-h5"         	      if BR2_PACKAGE_BATOCERA_TARGET_LIBRETECH_H5
 	default "orangepi-zero2"              if BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_ZERO2
 	default "orangepi-pc"                 if BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_PC
+	default "s812"                        if BR2_PACKAGE_BATOCERA_TARGET_S812
 	default "odroidxu4"                   if BR2_PACKAGE_BATOCERA_TARGET_XU4
 	default "x86"                  	      if BR2_PACKAGE_BATOCERA_TARGET_X86
 	default "x86"                  	      if BR2_PACKAGE_BATOCERA_TARGET_X86_64
@@ -320,6 +321,9 @@ config BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_ZERO2
 
 config BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_PC
         bool "orangepi_pc"
+
+config BR2_PACKAGE_BATOCERA_TARGET_S812
+        bool "s812"
 
 endchoice
 
