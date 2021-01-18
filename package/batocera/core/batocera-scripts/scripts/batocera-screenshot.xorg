@@ -1,7 +1,8 @@
 #!/bin/sh
 
+export DISPLAY=:0.0
+OUTPUT="/userdata/screenshots/screenshot-$(date +%Y.%m.%d-%Hh%M.%S).jpg"
 mkdir -p /userdata/screenshots || exit 1
 
-FILE=/userdata/screenshots/screenshot-$(date +%Y-%m-%d_%Hh%M%S).jpg
-DISPLAY=:0.0 ffmpeg -f x11grab -i :0.0 -vframes 1 "${FILE}" 2>/dev/null || exit 1
-echo "${FILE}"
+ffmpeg -f x11grab -i :0.0 -vframes 1 "${OUTPUT}" 2>/dev/null || exit 1
+echo "${OUTPUT}"
