@@ -1,0 +1,132 @@
+From c70f04352cf4b75b8ca8239e028eb6f16a19ad50 Mon Sep 17 00:00:00 2001
+From: Romain TISSERAND <romain.tisserand@gmail.com>
+Date: Mon, 16 Nov 2020 21:37:37 +0100
+Subject: [PATCH] Cleanup whole hack
+
+---
+ 3rdparty/bgfx/src/glcontext_sdl2.cpp | 26 ++++++++------------------
+ src/osd/modules/render/drawbgfx.cpp  |  8 ++++++--
+ src/osd/sdl/window.cpp               | 14 --------------
+ 3 files changed, 14 insertions(+), 34 deletions(-)
+
+diff --git a/3rdparty/bgfx/src/glcontext_sdl2.cpp b/3rdparty/bgfx/src/glcontext_sdl2.cpp
+index f793e197f2d..b5422b9b418 100644
+--- a/3rdparty/bgfx/src/glcontext_sdl2.cpp
++++ b/3rdparty/bgfx/src/glcontext_sdl2.cpp
+@@ -21,9 +21,9 @@ namespace bgfx { namespace gl
+ 		SwapChainGL(SDL_Window* _window, SDL_GLContext _context)
+ 			: m_window(_window)
+ 		{
+-			SDL_GL_SetAttribute(SDL_GL_SHARE_WITH_CURRENT_CONTEXT, 1);
++			//SDL_GL_SetAttribute(SDL_GL_SHARE_WITH_CURRENT_CONTEXT, 1);
+ 			m_context = SDL_GL_CreateContext(m_window);
+-			SDL_GL_SetAttribute(SDL_GL_SHARE_WITH_CURRENT_CONTEXT, 0);
++			//SDL_GL_SetAttribute(SDL_GL_SHARE_WITH_CURRENT_CONTEXT, 0);
+ 			BX_CHECK(NULL != m_context, "Create swap chain failed: %s", SDL_GetError() );
+ 
+ 			makeCurrent();
+@@ -37,7 +37,6 @@ namespace bgfx { namespace gl
+ 
+ 		~SwapChainGL()
+ 		{
+-            		//EGLSurface defaultSurface = eglGetCurrentSurface(EGL_DRAW);
+             		SDL_GLContext defaultContext = SDL_GL_GetCurrentContext();
+ 			SDL_GL_MakeCurrent(m_window, 0);
+ 			SDL_GL_DeleteContext(m_context);
+@@ -63,12 +62,14 @@ namespace bgfx { namespace gl
+ 		BX_UNUSED(_width, _height);
+ 		m_window = (SDL_Window*)g_platformData.nwh;
+ 		BGFX_FATAL(m_window != NULL, Fatal::UnableToInitialize, "Failed to retrieve SDL2/GLES window");
+-		SDL_GL_SetAttribute(SDL_GL_SHARE_WITH_CURRENT_CONTEXT, 1);
++
++		//SDL_GL_SetAttribute(SDL_GL_SHARE_WITH_CURRENT_CONTEXT, 1);
+ 		m_context = SDL_GL_CreateContext(m_window);
+ 		BGFX_FATAL(m_context != NULL, Fatal::UnableToInitialize, "Failed to create context.");
+ 		int success = SDL_GL_MakeCurrent(m_window, m_context);
+-		if (success != 0)
+-			BX_TRACE("cannot set sdl/gl context %s", SDL_GetError());
++		BGFX_FATAL(success == 0, Fatal::UnableToInitialize, "Failed to set SDL/GL context");
++		//SDL_GL_SetAttribute(SDL_GL_SHARE_WITH_CURRENT_CONTEXT, 0);
++
+ 		m_current = NULL;
+ 		SDL_GL_SetSwapInterval(0);
+ 		import();
+@@ -87,15 +88,11 @@ namespace bgfx { namespace gl
+ 
+ 	void GlContext::resize(uint32_t _width, uint32_t _height, uint32_t _flags)
+ 	{
+-#	if BX_PLATFORM_EMSCRIPTEN
+-		EMSCRIPTEN_CHECK(emscripten_set_canvas_element_size(HTML5_TARGET_CANVAS_SELECTOR, _width, _height) );
+-#	else
+ 		if (NULL != m_window)
+ 		{
+ 			SDL_SetWindowSize(m_window, _width, _height);
+ 		}
+ 		BX_UNUSED(_width, _height);
+-#	endif // BX_PLATFORM_*
+ 
+ 		if (NULL != m_window)
+ 		{
+@@ -106,14 +103,7 @@ namespace bgfx { namespace gl
+ 
+ 	uint64_t GlContext::getCaps() const
+ 	{
+-		return BX_ENABLED(0
+-						| BX_PLATFORM_LINUX
+-						| BX_PLATFORM_WINDOWS
+-						| BX_PLATFORM_ANDROID
+-						)
+-			? BGFX_CAPS_SWAP_CHAIN
+-			: 0
+-			;
++		return BGFX_CAPS_SWAP_CHAIN;
+ 	}
+ 
+ 	SwapChainGL* GlContext::createSwapChain(void* _nwh)
+diff --git a/src/osd/modules/render/drawbgfx.cpp b/src/osd/modules/render/drawbgfx.cpp
+index 925fd3042c0..443a0e5336d 100644
+--- a/src/osd/modules/render/drawbgfx.cpp
++++ b/src/osd/modules/render/drawbgfx.cpp
+@@ -184,8 +188,8 @@ static void* sdlNativeWindowHandle(SDL_Window* _window)
+ inline bool sdlSetWindow(SDL_Window* _window)
+ {
+ 	bgfx::PlatformData pd;
+-	pd.nwh          = (void*)SDL_GL_GetCurrentWindow();
+-	pd.ndt          = (void*)SDL_GL_GetCurrentContext();
++	pd.nwh          = _window;
++	pd.ndt          = NULL;
+ 	pd.context      = NULL;
+ 	pd.backBuffer   = NULL;
+ 	pd.backBufferDS = NULL;
+diff --git a/src/osd/sdl/window.cpp b/src/osd/sdl/window.cpp
+index 814503f8427..2ad76099664 100644
+--- a/src/osd/sdl/window.cpp
++++ b/src/osd/sdl/window.cpp
+@@ -711,7 +711,6 @@ int sdl_window_info::complete_create()
+                 SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
+                 SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
+                 SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+-		SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
+ 		m_extra_flags = SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN;
+ 	}
+ 	//else
+@@ -764,19 +763,6 @@ int sdl_window_info::complete_create()
+ 		return 1;
+ 	}
+ 
+-	SDL_GL_SetAttribute(SDL_GL_SHARE_WITH_CURRENT_CONTEXT, 1);
+-        SDL_GLContext context = SDL_GL_CreateContext(sdlwindow);
+-	if (context == nullptr )
+-	{
+-		osd_printf_error("GL context creation failed: %s\n", SDL_GetError());
+-		return 1;
+-	}
+-	if (SDL_GL_MakeCurrent(sdlwindow, context) < 0)
+-	{
+-		osd_printf_error("GL context setup failed: %s\n", SDL_GetError());
+-		return 1;
+-	}
+-
+ 	set_platform_window(sdlwindow);
+ 
+ 	if (fullscreen() && video_config.switchres)
