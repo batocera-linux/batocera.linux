@@ -20,7 +20,7 @@ class SupermodelGenerator(Generator):
         else:
             commandArray.append("-new3d")
         
-        # fps
+        # widescreen
         if system.isOptSet("wideScreen") and system.getOptBoolean("wideScreen"):
             commandArray.append("-wide-screen")
             commandArray.append("-wide-bg")
@@ -45,7 +45,7 @@ class SupermodelGenerator(Generator):
 
 def copy_nvram_files():
     sourceDir = "/usr/share/supermodel/NVRAM"
-    targetDir = "/userdata/system/configs/supermodel/NVRAM"
+    targetDir = "/userdata/saves/supermodel/NVRAM"
     if not os.path.exists(targetDir):
         os.makedirs(targetDir)
 
