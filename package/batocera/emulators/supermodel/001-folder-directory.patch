@@ -32,7 +32,7 @@
    CBlockFile  NVRAM;
  
 -  std::string file_path = Util::Format() << "NVRAM/" << Model3->GetGame().name << ".nv";
-+  std::string file_path = Util::Format() << "/userdata/system/configs/supermodel/NVRAM/" << Model3->GetGame().name << ".nv";
++  std::string file_path = Util::Format() << "/usr/share/supermodel/NVRAM/" << Model3->GetGame().name << ".nv";
    if (OKAY != NVRAM.Create(file_path, "Supermodel NVRAM State", "Supermodel Version " SUPERMODEL_VERSION))
    {
      ErrorLog("Unable to save NVRAM to '%s'. Make sure directory exists!", file_path.c_str());
@@ -41,7 +41,7 @@
  
    // Generate file path
 -  std::string file_path = Util::Format() << "NVRAM/" << Model3->GetGame().name << ".nv";
-+  std::string file_path = Util::Format() << "/userdata/system/configs/supermodel/NVRAM/" << Model3->GetGame().name << ".nv";
++  std::string file_path = Util::Format() << "/usr/share/supermodel/NVRAM/" << Model3->GetGame().name << ".nv";
  
    // Open and check to make sure format is correct
    if (OKAY != NVRAM.Load(file_path))
