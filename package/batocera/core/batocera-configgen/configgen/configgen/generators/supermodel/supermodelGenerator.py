@@ -7,6 +7,7 @@ import os
 import ConfigParser
 import io
 import re
+from shutil import copyfile
 
 class SupermodelGenerator(Generator):
 
@@ -34,10 +35,26 @@ class SupermodelGenerator(Generator):
         # logs
         commandArray.extend(["-log-output=/userdata/system/logs", rom])
 
+        # copy nvram files
+        copy_nvram_files()
+
         # config
         configPadsIni(playersControllers)
 
         return Command.Command(array=commandArray)
+
+def copy_nvram_files():
+    sourceDir = "/usr/share/supermodel/NVRAM"
+    targetDir = "/userdata/system/configs/supermodel/NVRAM"
+    if not os.path.exists(targetDir):
+        os.makedirs(targetDir)
+
+    # create nv files which are in source and not in target
+    for file in os.listdir(sourceDir):
+        extension = os.path.splitext(file)[1][1:]
+        if extension == "nv":
+            if not os.path.exists(targetDir + "/" + file):
+                copyfile(sourceDir + "/" + file, targetDir + "/" + file)
 
 def configPadsIni(playersControllers):
     templateFile = "/usr/share/supermodel/Supermodel.ini.template"
