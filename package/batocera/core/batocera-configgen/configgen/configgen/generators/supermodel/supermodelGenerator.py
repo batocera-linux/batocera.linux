@@ -29,11 +29,15 @@ class SupermodelGenerator(Generator):
         if system.isOptSet("quadRendering") and system.getOptBoolean("quadRendering"):
             commandArray.append("-quad-rendering")
 
+        # crosshairs
+        if system.isOptSet("crosshairs"):
+            commandArray.append("-crosshairs={}".format(system.config["crosshairs"]))
+
         # resolution
         commandArray.append("-res={},{}".format(gameResolution["width"], gameResolution["height"]))
 
         # logs
-        commandArray.extend(["-log-output=/userdata/system/logs", rom])
+        commandArray.extend(["-log-output=/userdata/system/logs/Supermodel.log", rom])
 
         # copy nvram files
         copy_nvram_files()
