@@ -90,7 +90,7 @@ def configPadsIni(playersControllers):
     targetConfig = ConfigParser.ConfigParser()
     # To prevent ConfigParser from converting to lower case
     targetConfig.optionxform = str
-
+    
     for section in templateConfig.sections():
         targetConfig.add_section(section)
         for key, value in templateConfig.items(section):
@@ -154,7 +154,7 @@ def input2input(playersControllers, player, joynum, button, axisside = None):
     if (player) in playersControllers:
         pad = playersControllers[(player)]
         if button in pad.inputs:
-            input = pad.inputs[button]
+            input = pad.inputs[button]  
             if input.type == "button":
                 return "JOY{}_BUTTON{}".format(joynum+1, int(input.id)+1)
             elif input.type == "hat":
@@ -179,6 +179,16 @@ def input2input(playersControllers, player, joynum, button, axisside = None):
                             sidestr = "_POS"
                         else:
                             sidestr = "_NEG"
+
+                # workarond for sanwa style controllers
+                if button == "up":
+                    return "JOY{}_UP".format(joynum+1)
+                elif button == "down":
+                    return "JOY{}_DOWN".format(joynum+1)
+                elif button == "left":
+                    return "JOY{}_LEFT".format(joynum+1)
+                elif button == "right":
+                    return "JOY{}_RIGHT".format(joynum+1)                                   
 
                 if button == "joystick1left":
                     return "JOY{}_XAXIS{}".format(joynum+1, sidestr)
