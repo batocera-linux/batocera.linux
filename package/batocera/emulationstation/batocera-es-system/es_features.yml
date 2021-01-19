@@ -977,7 +977,6 @@ libretro:
                     color_correction:
                         prompt:      COLOR CORRECTION
                         description: Adjusts output colors to feel real hardware
-                        description: 
                         choices:
                             "Off": OFF
                             "On":  GBC
@@ -1819,8 +1818,7 @@ libretro:
     tic80:
       features: [                           latency_reduction, padtokeyboard]
     tyrquake:
-      features: [                           latency_reduction, padtokeyboard]
-      features: [         rewind, autosave]
+      features: [rewind, autosave, latency_reduction, padtokeyboard]
       cfeatures:
             tyrquake_resolution:
                 prompt:      VIDEO RESOLUTION
@@ -2340,7 +2338,6 @@ pcsx2:
         align_sprite:
             prompt:      ALIGN SPRITE (HACK)
             description: Remove lines in Internal Resolution (Soul Calibur)
-            description: 
             choices:
                 "Off": 0
                 "On":  1
@@ -2381,9 +2378,6 @@ rpcs3:
 
 scummvm:
   features: [ratio, padtokeyboard]
-
-solarus:
-  features: []
 
 easyrpg:
   features: []
@@ -2517,6 +2511,7 @@ wine:
                 "Off": 0
                 "On":  1
 solarus:
+  features: []
   cfeatures:
         joystick:
             prompt: JOYSTICK
