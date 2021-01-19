@@ -23,7 +23,7 @@ ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI3),y)
 endif
 
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_S812),y)
-        LIBRETRO_PCSX_PLATFORM = armv
+        LIBRETRO_PCSX_PLATFORM = armv cortexa9 neon hardfloat
 endif
 
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI4),y)
