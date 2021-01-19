@@ -133,6 +133,7 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
     select BR2_PACKAGE_LIRC_TOOLS                        # lirc (remote control)
     select BR2_PACKAGE_LIBCEC                            # libcec
     select BR2_PACKAGE_EDID_DECODE			 # edid monitor/tv support
+    select BR2_PACKAGE_READ_EDID			 # edid monitor/tv support
     select BR2_PACKAGE_XOW                               if !BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA && \
                                                             !BR2_PACKAGE_BATOCERA_TARGET_ROCKPRO64
                                                          # xbox receiver (require linux >= 4.5)
