@@ -27,6 +27,7 @@ from generators.amiberry.amiberryGenerator import AmiberryGenerator
 from generators.citra.citraGenerator import CitraGenerator
 from generators.daphne.daphneGenerator import DaphneGenerator
 from generators.cannonball.cannonballGenerator import CannonballGenerator
+from generators.sdlpop.sdlpopGenerator import SdlPopGenerator
 from generators.openbor.openborGenerator import OpenborGenerator
 from generators.wine.wineGenerator import WineGenerator
 from generators.cemu.cemuGenerator import CemuGenerator
@@ -37,6 +38,11 @@ from generators.mame.mameGenerator import MameGenerator
 from generators.devilutionx.devilutionxGenerator import DevilutionXGenerator
 from generators.hatari.hatariGenerator import HatariGenerator
 from generators.solarus.solarusGenerator import SolarusGenerator
+from generators.easyrpg.easyrpgGenerator import EasyRPGGenerator
+from generators.redream.redreamGenerator import RedreamGenerator
+from generators.supermodel.supermodelGenerator import SupermodelGenerator
+from generators.xash3d_fwgs.xash3dFwgsGenerator import Xash3dFwgsGenerator
+
 import controllersConfig as controllers
 import signal
 import batoceraFiles
@@ -66,6 +72,7 @@ generators = {
     'citra' : CitraGenerator(),
     'daphne' : DaphneGenerator(),
     'cannonball' : CannonballGenerator(),
+    'sdlpop' : SdlPopGenerator(),
     'openbor' : OpenborGenerator(),
     'wine' : WineGenerator(),
     'cemu' : CemuGenerator(),
@@ -76,6 +83,10 @@ generators = {
     'devilutionx': DevilutionXGenerator(),
     'hatari': HatariGenerator(),
     'solarus': SolarusGenerator(),
+    'easyrpg': EasyRPGGenerator(),
+    'redream': RedreamGenerator(),
+    'supermodel': SupermodelGenerator(),
+    'xash3d_fwgs': Xash3dFwgsGenerator(),
 }
 
 def main(args, maxnbplayers):
@@ -100,14 +111,12 @@ def main(args, maxnbplayers):
     eslog.log("Running system: {}".format(systemName))
     system = Emulator(systemName, args.rom)
 
-    system.config["emulator-forced"] = False
-    system.config["core-forced"]     = False
     if args.emulator is not None:
         system.config["emulator"] = args.emulator
-        system.config["emulator-forced"] = True # tip to indicated that the emulator was forced
+        self.config["emulator-forced"] = True
     if args.core is not None:
         system.config["core"] = args.core
-        system.config["core-forced"] = True
+        self.config["core-forced"] = True
 
     eslog.debug("Settings: {}".format(system.config))
     if "emulator" in system.config and "core" in system.config:

@@ -1,0 +1,20 @@
+--- a/sources/src/caps/caps.c	2021-01-18 17:17:04.923761645 +0100
++++ b/sources/src/caps/caps.c	2021-01-18 17:18:49.007091579 +0100
+@@ -36,7 +36,7 @@
+ #ifdef _WIN32
+ #define CAPSLIB_NAME    "capsimg.dll"
+ #else
+-#define CAPSLIB_NAME    "capsimg.so"
++#define CAPSLIB_NAME    "libcapsimage.so.5"
+ #endif
+ 
+ /*
+@@ -72,7 +72,7 @@
+     /* This could be done more elegantly ;-) */
+ 
+ #ifdef __LIBRETRO__
+-    snprintf(CAPSLIB_PATH, RETRO_PATH_MAX, "%s%c%s", retro_system_directory, DIR_SEP_CHR, CAPSLIB_NAME);
++    snprintf(CAPSLIB_PATH, RETRO_PATH_MAX, "%s%c%s", "/usr/lib", DIR_SEP_CHR, CAPSLIB_NAME);
+     if (!path_is_valid(CAPSLIB_PATH))
+         snprintf(CAPSLIB_PATH, RETRO_PATH_MAX, "%s", CAPSLIB_NAME);
+     if (!path_is_valid(CAPSLIB_PATH))

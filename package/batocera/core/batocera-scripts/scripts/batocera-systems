@@ -18,7 +18,62 @@ systems = {
                                                                     { "md5": "a3e8d617c95d08031fe1b20d541434b2", "file": "bios/ATARIOSB.ROM"} ] },
 
     # https://github.com/libretro/libretro-super/blob/master/dist/info/hatari_libretro.info
-    "atarist": { "name": "Atari ST", "biosFiles": [ { "md5": "c1c57ce48e8ee4135885cee9e63a68a2", "file": "bios/tos.img"} ] },
+    "atarist": { "name": "Atari ST", "biosFiles": [ { "md5": "c1c57ce48e8ee4135885cee9e63a68a2", "file": "bios/tos.img"}, # TOS 1.02 US
+						    # Atari ST / STf / STfm
+						    { "md5": "25789a649faff0a1176dc7d9b98105c0", "file": "bios/tos100fr.img"},
+						    { "md5": "c87a52c277f7952b41c639fc7bf0a43b", "file": "bios/tos100uk.img"},
+						    { "md5": "d0f682ee6237497004339fb02172638b", "file": "bios/tos100us.img"},
+
+						    { "md5": "a622cc35d8d78703905592dfaa4d2ccb", "file": "bios/tos102de.img"},
+						    { "md5": "d6521785627d20c51edc566808a6bf28", "file": "bios/tos102fr.img"},
+						    { "md5": "b2a8570de2e850c5acf81cb80512d9f6", "file": "bios/tos102uk.img"},
+						    #{ "md5": "c1c57ce48e8ee4135885cee9e63a68a2", "file": "bios/tos102us.img"},
+
+						    { "md5": "41b7dae4e24735f330b63ad923a0bfbc", "file": "bios/tos104de.img"},
+						    { "md5": "143343f7b8e0b1162af206fe8f46b002", "file": "bios/tos104es.img"},
+						    { "md5": "0087e2707c57efa2106a0aa7576655c0", "file": "bios/tos104fr.img"},
+						    #{ "md5": "52248cc70ae48b3050e197e270917130", "file": "bios/tos104nl.img"},
+						    #{ "md5": "7c040857bdcfcd7d748ca82205463efa", "file": "bios/tos104se.img"},
+						    { "md5": "036c5ae4f885cbf62c9bed651c6c58a8", "file": "bios/tos104uk.img"},
+						    { "md5": "736adb2dc835df4d323191fdc8926cc9", "file": "bios/tos104us.img"},
+
+						    # Atari STe
+						    { "md5": "992bac38e01633a529121a2a65f0779e", "file": "bios/tos106de.img"},
+						    { "md5": "30f69d70fe7c210300ed83f991b12de9", "file": "bios/tos106es.img"},
+						    { "md5": "bc7b224d0dc3f0cc14c8897db89c5787", "file": "bios/tos106fr.img"},
+						    { "md5": "6033f2b9364edfed321c6931a8181fd2", "file": "bios/tos106uk.img"},
+						    { "md5": "a0982e760f9807d82667ff5a69e78f6b", "file": "bios/tos106us.img"},
+
+						    { "md5": "94a75c1c65408d9f974b0463e15a3b11", "file": "bios/tos162de.img"},
+						    { "md5": "ed5fbaabe0219092df74c6c14cea3f8e", "file": "bios/tos162fr.img"},
+						    #{ "md5": "6f9471098a521214fad1e2c6f2dd3d08", "file": "bios/tos162se.img"},
+						    { "md5": "1cbc4f55295e469fc8cd72b7efdea1da", "file": "bios/tos162uk.img"},
+						    { "md5": "febb00ba8784798293a7ae709a1dafcb", "file": "bios/tos162us.img"},
+
+						    # Atari Mega STe
+						    { "md5": "7aeabdc25f8134590e25643a405210ca", "file": "bios/tos205de.img"},
+						    { "md5": "7449b131681f1dfe62ebed1392847057", "file": "bios/tos205es.img"},
+						    { "md5": "61b620ad951815a25cb37895c81a947c", "file": "bios/tos205fr.img"},
+						    { "md5": "7e87d8fe7e24e0b4c55ad1b7955beae3", "file": "bios/tos205it.img"},
+						    #{ "md5": "1c92855316a33faee602b8007f22d2cb", "file": "bios/tos205se.img"},
+						    { "md5": "7cdd45b6aac66a21bfb357d9334e46db", "file": "bios/tos205us.img"},
+
+						    { "md5": "0604dbb85928f0598d04144a8b554bbe", "file": "bios/tos206de.img"},
+						    { "md5": "b2873004a408b8db36321f98daafa251", "file": "bios/tos206fr.img"},
+						    { "md5": "4a0d4f282c3f2a0196681adf88862dd4", "file": "bios/tos206.img"},
+						    #{ "md5": "332fe3803a7e20cd625b27a69f07ae69", "file": "bios/tos206ru.img"},
+						    #{ "md5": "a7dc40dc5c1086bce1a8f3d44fd29051", "file": "bios/tos206se.img"},
+						    { "md5": "e690bec90d902024beed549d22150755", "file": "bios/tos206uk.img"},
+						    { "md5": "c9093f27159e7d13ac0d1501a95e53d4", "file": "bios/tos206us.img"},
+
+						    # Atari TT
+						    { "md5": "066f39a7ea5789d5afd59dd7b3104fa6", "file": "bios/tos306de.img"},
+						    { "md5": "dd1010ec566efbd71047d6c4919feba5", "file": "bios/tos306uk.img"},
+
+						    # Atari Falcon
+						    { "md5": "ed2647936ce4bd283c4d7dfd7ae09d1c", "file": "bios/tos400.img"},
+						    { "md5": "9e880168d0a004f7f5e852be758f39e4", "file": "bios/tos402.img"},
+						    { "md5": "e5ea0f216fb446f1c4a4f476bc5f03d4", "file": "bios/tos404.img"} ] },
 
     # https://docs.libretro.com/library/beetle_handy/#bios
     "lynx": { "name": "Lynx", "biosFiles": [ { "md5": "fcd403db69f54290b51035d82f835e7b", "file": "bios/lynxboot.img"} ] },
@@ -73,7 +128,7 @@ systems = {
     "segacd":       { "name": "Sega CD", "biosFiles":     [ { "md5": "e66fa1dc5820d254611fdcdba0662372", "file": "bios/bios_CD_E.bin"   },
                                                             { "md5": "854b9150240a198070150e4566ae1290", "file": "bios/bios_CD_U.bin" 	},
                                                             { "md5": "278a9397d192149e84e820ac621a8edd", "file": "bios/bios_CD_J.bin" 	} ] },
-    
+
     # https://docs.libretro.com/library/beetle_saturn/#bios
     # https://github.com/libretro/libretro-super/blob/master/dist/info/yabasanshiro_libretro.info
     "saturn":       { "name": "Sega Saturn", "biosFiles": [ { "md5": "85ec9ca47d8f6807718151cbcca8b964", "file": "bios/sega_101.bin"	 },
@@ -99,7 +154,7 @@ systems = {
                                             { "md5": "9a9e8ed7668e6adfc8f7766c08ab9cd0", "file": "bios/EROM.BIN" 	  },
                                             { "md5": "44552702b05697a14ccbe2ca22ee7139", "file": "bios/rom1.bin" 	  },
                                             { "md5": "b406d05922dac2eaf3c2e68157b1b468", "file": "bios/ROM2.BIN" 	  } ] },
-	
+
     # https://www.playstation.com/en-us/support/system-updates/ps3/
     "ps3": { "name": "PS3", "biosFiles": [  { "md5": "03373a581934f0d2b796156d2fb28b39", "file": "bios/PS3UPDAT.PUP" } ] },
 
@@ -107,10 +162,21 @@ systems = {
     # https://docs.libretro.com/library/fceumm/#bios
     "fds":         { "name": "Nintendo Family Computer Disk System", "biosFiles": [ { "md5": "ca30b50f880eb660a320674ed365ef7a", "file": "bios/disksys.rom" } ] },
 
+    # https://docs.libretro.com/library/melonds/#bios
+    "nds": { "name": "Nintendo DS", "biosFiles": [  { "md5": "145eaef5bd3037cbc247c213bb3da1b3", "file": "bios/firmware.bin" },
+                                            { "md5": "df692a80a5b1bc90728bc3dfc76cd948", "file": "bios/bios7.bin" },
+                                            { "md5": "a392174eb3e572fed6447e956bde4b25", "file": "bios/bios9.bin" } ] },
+
+    # https://docs.libretro.com/library/mgba/#bios
+    "gba": { "name": "Nintendo Gameboy Advance", "biosFiles": [  { "md5": "a860e8c0b6d573d191e4ec7db1b1e4f6", "file": "bios/gba_bios.bin" },
+                                            { "md5": "32fbbd84168d3482956eb3c5051637f5", "file": "bios/gb_bios.bin" }, # Optional
+                                            { "md5": "dbfce9db9deaa2567f6a84fde55f9680", "file": "bios/gbc_bios.bin" }, # Optional
+                                            { "md5": "d574d4f9c12f305074798f54c091a8b4", "file": "bios/sgb_bios.bin" } ] }, # Optional
+
     # https://docs.libretro.com/library/snes9x/#bios
     "satellaview": { "name": "Satellaview", "biosFiles": [ { "md5": "96cf17bf589fcbfa6f8de2dc84f19fa2", "file": "bios/BS-X.bin"   } ] },
     "sufami":      { "name": "Sufami", "biosFiles":      [ { "md5": "d3a44ba7d42a74d3ac58cb9c14c6a5ca", "file": "bios/STBIOS.bin" } ] },
-    
+
     # ---------- Microsoft ---------- #
     # https://docs.libretro.com/library/fmsx/#bios
     "msx": { "name": "MSX", "biosFiles": [  { "md5": "364a1a579fe5cb8dba54519bcfcdac0d", "file": "bios/MSX.ROM"      },
@@ -160,6 +226,15 @@ systems = {
                                                             { "md5": "caf90f22197aed6f14c471c21e64658d", "file": "bios/np2kai/SOUND.ROM"},
                                                             { "md5": "e9fc3890963b12cf15d0a2eea5815b72", "file": "bios/np2kai/ITF.ROM"  },
                                                             { "md5": "7da1e5b7c482d4108d22a5b09631d967", "file": "bios/np2kai/font.bmp" } ] },
+    # ---------- Fairchild ChannelF ---------- #
+    # https://github.com/libretro/FreeChaF/blob/master/README.md#bios
+    "channelf":  { "name": "Fairchild ChannelF", "biosFiles": [   { "md5": "ac9804d4c0e9d07e33472e3726ed15c3", "file": "bios/sl31253.bin" },
+                                                                   { "md5": "da98f4bb3242ab80d76629021bb27585", "file": "bios/sl31254.bin" },
+                                                                   { "md5": "95d339631d867c8f1d15a5f2ec26069d", "file": "bios/sl90025.bin" } ] },
+    # ---------- Sharp X1 ---------- #
+    # https://github.com/libretro/xmil-libretro/blob/master/README.MD
+    "x1":  { "name": "Sharp X1", "biosFiles": [   { "md5": "eeeea1cd29c6e0e8b094790ae969bfa7", "file": "bios/xmil/IPLROM.X1" },
+                                                  { "md5": "56c28adcf1f3a2f87cf3d57c378013f5", "file": "bios/xmil/iplrom.x1t" } ] },
 }
 
 class BiosStatus:

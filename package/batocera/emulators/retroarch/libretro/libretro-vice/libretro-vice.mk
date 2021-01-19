@@ -4,13 +4,13 @@
 #
 ################################################################################
 # Version.: Commits on Nov 16, 2020
-LIBRETRO_VICE_VERSION = e9055d580573036c2476da3832a673165675bc66
+LIBRETRO_VICE_VERSION = cafe09b3b465dbf4c36e41ce1ffd3e0a8c9ef58c
 LIBRETRO_VICE_SITE = $(call github,libretro,vice-libretro,$(LIBRETRO_VICE_VERSION))
 LIBRETRO_VICE_LICENSE = GPLv2
 
 LIBRETRO_VICE_PLATFORM = $(LIBRETRO_PLATFORM)
 
-ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI3),y)
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI3)$(BR2_PACKAGE_BATOCERA_TARGET_S812),y)
 	LIBRETRO_VICE_PLATFORM = armv neon
 endif
 

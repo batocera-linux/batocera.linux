@@ -3,8 +3,8 @@
 # OPERA
 #
 ################################################################################
-# Version.: Commits on Nov 10, 2020
-LIBRETRO_OPERA_VERSION = 72065518b692e0fdcf2dab547a346c3bfb09291c
+# Version.: Commits on Jan 13, 2021
+LIBRETRO_OPERA_VERSION = 326e59a493bb8cb5ff41f32deb89724a3b7b2a80
 LIBRETRO_OPERA_SITE = $(call github,libretro,opera-libretro,$(LIBRETRO_OPERA_VERSION))
 LIBRETRO_OPERA_LICENSE = LGPL/Non-commercial
 

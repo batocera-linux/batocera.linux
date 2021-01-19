@@ -227,6 +227,7 @@ nds:
   emulators:
     libretro:
       desmume: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_DESMUME] }
+      melonds: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MELONDS] }
     melonds:
       melonds: { requireAnyOf: [BR2_PACKAGE_MELONDS] }
 
@@ -274,6 +275,8 @@ dreamcast:
       reicast:        { requireAnyOf: [BR2_PACKAGE_REICAST]          }
     flycast:
       flycast:        { requireAnyOf: [BR2_PACKAGE_FLYCAST]          }
+    redream:
+      redream:        { requireAnyOf: [BR2_PACKAGE_REDREAM]          }
 
 naomi:
   name:       Sega Naomi
@@ -376,7 +379,7 @@ psp:
   extensions: [iso, cso, pbp]
   emulators:
     ppsspp:
-      ppsspp: { requireAnyOf: [BR2_PACKAGE_PPSSPP, BR2_PACKAGE_PPSSPP15]  }
+      ppsspp: { requireAnyOf: [BR2_PACKAGE_PPSSPP]  }
     libretro:
       ppsspp:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PPSSPP] }
 
@@ -818,8 +821,8 @@ mrboom:
 
 tic80:
   name:       TIC-80
-  manufacturer: Ports
-  release:
+  manufacturer: Fantasy
+  release: 2016
   hardware: console
   extensions: [tic]
   emulators:
@@ -828,13 +831,23 @@ tic80:
 
 pico8:
   name:       Pico-8
-  manufacturer: Ports
-  release:
+  manufacturer: Fantasy
+  release: 2015
   hardware: console
   extensions: [p8, png]
   emulators:
     libretro:
       retro8: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_RETRO8] }
+
+channelf:
+  name:       Channel-F
+  manufacturer: Fairchild
+  release: 1976
+  hardware: console
+  extensions: [zip, rom, bin, chf]
+  emulators:
+    libretro:
+      freechaf: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FREECHAF] }
 
 cannonball:
   name:       Cannonball
@@ -850,6 +863,21 @@ cannonball:
     Add mame 'OutRun rev. B' ROMs (epr-10187.88, epr-10327a.76.. ) in this directory and rename Cannonball.cannonball.disabled to Cannonball.cannonball.
   comment_fr: |
     Ajoutez les roms mame de 'OutRun rev. B' (epr-10187.88, epr-10327a.76.. ) dans ce dossier et renommez Cannonball.cannonball.disabled en Cannonball.cannonball.
+
+sdlpop:
+  name:       SdlPop
+  manufacturer: Ports
+  release:
+  hardware: port
+  extensions: [sdlpop]
+  group: ports
+  emulators:
+    sdlpop:
+      sdlpop: { requireAnyOf: [BR2_PACKAGE_SDLPOP] }
+  comment_en: |
+    An open-source port of Prince of Persia, based on the disassembly of the DOS version.
+  comment_fr: |
+    Un port open-source de Prince of Persia basé sur la version DOS.
 
 vectrex:
   name:       Vectrex
@@ -939,7 +967,7 @@ msx1:
   manufacturer: Microsoft
   release: 1983
   hardware: computer
-  extensions: [dsk, mx1, rom, zip, 7z]
+  extensions: [dsk, mx1, rom, zip, 7z, m3u]
   platform:   msx
   group:      msx
   emulators:
@@ -999,7 +1027,7 @@ msx2:
   manufacturer: Microsoft
   release: 1985
   hardware: computer
-  extensions: [dsk, mx2, rom, zip, 7z]
+  extensions: [dsk, mx2, rom, zip, 7z, m3u]
   platform:   msx
   group:      msx
   emulators:
@@ -1058,6 +1086,66 @@ msx2+:
   name:       MSX2+
   manufacturer: Microsoft
   release: 1988
+  hardware: computer
+  extensions: [dsk, mx2, rom, zip, 7z]
+  platform:   msx
+  group:      msx
+  emulators:
+    libretro:
+      bluemsx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BLUEMSX] }
+  comment_en: |
+    ## BIOS ##
+
+    - BlueMSX (DEFAULT) :
+    You must download the BlueMSX standalone version, available to this adresse: http://bluemsx.msxblue.com/rel_download/blueMSXv282full.zip
+    Then extract the "Databases" and "Machines" folders and add them to the bios folder.
+
+    - FMSX :
+    You must have these following files, available with fmsx distribution, in the bios folder:
+    CARTS.SHA
+    CYRILLIC.FNT
+    DISK.ROM
+    FMPAC.ROM
+    FMPAC16.ROM
+    ITALIC.FNT
+    KANJI.ROM
+    MSX.ROM
+    MSX2.ROM
+    MSX2EXT.ROM
+    MSX2P.ROM
+    MSX2PEXT.ROM
+    MSXDOS2.ROM
+    PAINTER.ROM
+    RS232.ROM
+  comment_fr: |
+    ## BIOS ##
+
+    - Emulateur BlueMSX (choix initial) :
+    Vous devez télécharger la version standalone de l'émulateur BlueMSX disponible à l'adresse suivante: http://bluemsx.msxblue.com/rel_download/blueMSXv282full.zip
+    Puis extraire de ce dernier, les répertoire "Databases" et "Machines" et les ajouter dans le répertoire bios.
+
+    - Emulateur FMSX :
+    Vous devez avoir les fichiers fournis avec la distribution de fmsx suivant dans le dossier bios:
+    CARTS.SHA
+    CYRILLIC.FNT
+    DISK.ROM
+    FMPAC.ROM
+    FMPAC16.ROM
+    ITALIC.FNT
+    KANJI.ROM
+    MSX.ROM
+    MSX2.ROM
+    MSX2EXT.ROM
+    MSX2P.ROM
+    MSX2PEXT.ROM
+    MSXDOS2.ROM
+    PAINTER.ROM
+    RS232.ROM
+
+msxturbor:
+  name:       MSX Turbo-R
+  manufacturer: Microsoft
+  release: 1990
   hardware: computer
   extensions: [dsk, mx2, rom, zip, 7z]
   platform:   msx
@@ -1315,6 +1403,16 @@ x68000:
     libretro:
       px68k: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PX68K] }
 
+x1:
+  name:       Sharp X1
+  manufacturer: Sharp
+  release: 1982
+  hardware: computer
+  extensions: [dx1, zip, 2d, 2hd, tfd, d88, 88d, hdm, xdf, dup, cmd, 7z]
+  emulators:
+    libretro:
+      x1: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_XMIL] }
+
 3ds:
   name:       Nintendo 3DS
   manufacturer: Nintendo
@@ -1335,8 +1433,10 @@ openbor:
   extensions: [pak]
   emulators:
     openbor:
-      openbor: { requireAnyOf: [BR2_PACKAGE_OPENBOR] }
       openbor4432: { requireAnyOf: [BR2_PACKAGE_OPENBOR4432] }
+      openbor6330: { requireAnyOf: [BR2_PACKAGE_OPENBOR6330] }
+      openbor6412: { requireAnyOf: [BR2_PACKAGE_OPENBOR6412] }
+      openbor6510: { requireAnyOf: [BR2_PACKAGE_OPENBOR6510] }
 
 satellaview:
   name:       Satellaview
@@ -1482,6 +1582,35 @@ windows_installers:
       lutris:  { requireAnyOf: [BR2_PACKAGE_WINE_LUTRIS] }
       proton:  { requireAnyOf: [BR2_PACKAGE_WINE_PROTON] }
 
+xash3d_fwgs:
+  name:       Xash3D-FWGS
+  manufacturer: Ports
+  release:
+  hardware:   port
+  extensions: [game]
+  group: ports
+  emulators:
+    xash3d_fwgs:
+      xash3d_fwgs: { requireAnyOf: [BR2_PACKAGE_XASH3D_FWGS] }
+  comment_en: |
+    Half-Life 1 engine.
+
+    Supports the following games:
+
+    * Half-Life, including Blue Shift and Opposing Force.
+    * Deathmatch Classic.
+    * Several other mods: https://github.com/FWGS/hlsdk-xash3d/blob/mobile_hacks/dlls/moddef.h
+
+    Installation:
+
+    Copy the game's directory from your Steam installation (Steam/steamapps/common/Half-Life/<game data folder>/)
+    to /userdata/roms/xash3d_fwgs/<game folder> and create an empty `<game folder>.game` file in the same directory.
+
+    For Half-Life 1, the game folder is `valve/`.
+
+    Then, download https://github.com/FWGS/xash-extras/releases/latest/download/extras.pak and copy it to:
+    /userdata/roms/xash3d_fwgs/extras.pak.
+
 wiiu:
   name:       Wii U
   manufacturer: Nintendo
@@ -1502,7 +1631,19 @@ solarus:
   extensions: [zip, solarus]
   emulators:
     solarus:
-      solarus: { requireAnyOf: [BR2_PACKAGE_SOLARUS] }
+      solarus: { requireAnyOf: [BR2_PACKAGE_SOLARUS_ENGINE] }
+
+easyrpg:
+  name:       EasyRPG
+  manufacturer: Ports
+  release:
+  hardware: port
+  extensions: [zip, easyrpg]
+  emulators:
+    easyrpg:
+      easyrpg: { requireAnyOf: [BR2_PACKAGE_EASYRPG_PLAYER] }
+    libretro:
+      easyrpg: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_EASYRPG] }
 
 pygame:
   name:       pygame
@@ -1531,3 +1672,13 @@ imageviewer:
   emulators:
     libretro:
       imageviewer: { requireAnyOf: [] }
+      
+model3:
+  name:       Sega Model 3
+  manufacturer: Sega
+  release: 1996
+  hardware: arcade
+  extensions: [zip]
+  emulators:
+    supermodel:
+      supermodel: { requireAnyOf: [BR2_PACKAGE_SUPERMODEL] }

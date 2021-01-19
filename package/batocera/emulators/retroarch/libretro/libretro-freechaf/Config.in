@@ -1,0 +1,6 @@
+config BR2_PACKAGE_LIBRETRO_FREECHAF
+        bool "libretro-freechaf"
+	depends on BR2_PACKAGE_RETROARCH
+        help
+          A libretro Fairchild ChannelF emulator
+

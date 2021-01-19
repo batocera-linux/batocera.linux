@@ -3,12 +3,16 @@
 # LIBRETRO THEODORE
 #
 ################################################################################
-# Version.: Commits on May 22, 2020
-LIBRETRO_THEODORE_VERSION = v3.1
+# Version.: Commits on Jan 13, 2021
+LIBRETRO_THEODORE_VERSION = 32fe378b23ba3acb1b38fdf2954fc33fa323b2fe
 LIBRETRO_THEODORE_SITE = $(call github,Zlika,theodore,$(LIBRETRO_THEODORE_VERSION))
 LIBRETRO_THEODORE_LICENSE = GPLv3
 
 LIBRETRO_THEODORE_PLATFORM = $(LIBRETRO_PLATFORM)
+
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_S812),y)
+        LIBRETRO_THEODORE_PLATFORM = armv
+endif
 
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI3),y)
 	LIBRETRO_THEODORE_PLATFORM = rpi3

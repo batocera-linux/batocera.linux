@@ -7,6 +7,7 @@ import openborControllers
 import os
 import re
 from settings.unixSettings import UnixSettings
+from utils.logger import eslog
 
 class OpenborGenerator(Generator):
 
@@ -24,11 +25,18 @@ class OpenborGenerator(Generator):
         core = system.config['core']
         if system.config["core-forced"] == False:
             core = OpenborGenerator.guessCore(rom)
+        eslog.log("core taken is {}".format(core))
 
         # config file
-        configfilename = "config.ini"
+        configfilename = "config6510.ini"
         if core == "openbor4432":
             configfilename = "config4432.ini"
+        elif core == "openbor6330":
+            configfilename = "config6330.ini"
+        elif core == "openbor6412":
+            configfilename = "config6412.ini"
+        elif core == "openbor6510":
+            configfilename = "config6510.ini"
 
         config = UnixSettings(configDir + "/" + configfilename, separator='')
 
@@ -60,17 +68,27 @@ class OpenborGenerator(Generator):
     def executeCore(core, rom):
         if core == "openbor4432":
             commandArray = ["OpenBOR4432", rom]
+        elif core == "openbor6330":
+            commandArray = ["OpenBOR6330", rom]
+        elif core == "openbor6412":
+            commandArray = ["OpenBOR6412", rom]
+        elif core == "openbor6510":
+            commandArray = ["OpenBOR6510", rom]
         else:
-            commandArray = ["OpenBOR", rom]
+            commandArray = ["OpenBOR6510", rom]
         return Command.Command(array=commandArray)
 
     @staticmethod
     def guessCore(rom):
         versionstr = re.search(r'\[.*([0-9]{4})\]+', os.path.basename(rom))
         if versionstr == None:
-            return "openbor"
+            return "openbor6510"
         version = int(versionstr.group(1))
 
         if version < 6000:
             return "openbor4432"
-        return "openbor"
+        if version < 6400:
+            return "openbor6330"
+        if version < 6500:
+            return "openbor6412"
+        return "openbor6510"

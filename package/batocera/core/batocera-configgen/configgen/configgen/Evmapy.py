@@ -33,7 +33,7 @@ class Evmapy():
                 #"/userdata/system/configs/evmapy/{}.{}.keys" .format (system, emulator),
                 "/userdata/system/configs/evmapy/{}.keys" .format (system),
                 #"/usr/share/evmapy/{}.{}.{}.keys" .format (system, emulator, core),
-                #"/usr/share/evmapy/{}.{}.keys" .format (system, emulator),
+                "/usr/share/evmapy/{}.{}.keys" .format (system, emulator),
                 "/usr/share/evmapy/{}.keys" .format (system)
         ]:
             if os.path.exists(keysfile) and not (os.path.isdir(rom) and keysfile == "{}.keys" .format (rom)): # "{}.keys" .format (rom) is forbidden for directories, it must be inside

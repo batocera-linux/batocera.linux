@@ -1,0 +1,8 @@
+config BR2_PACKAGE_REDREAM
+	bool "redream"
+        depends on BR2_x86_64
+	help
+          Redream
+          Is a dreamcast emulateur for windows / mac / linux.
+
+          https://redream.io

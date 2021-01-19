@@ -21,7 +21,7 @@ index b533bb6..af4e7ca 100755
  CFLAGS += -fsigned-char -D__LIBRETRO__ -fno-builtin
  
 +ifeq ($(IPFSUPPORT), 1)
-+    PLATFLAGS += -DHAVE_CAPSIMAGE=1
++    PLATFLAGS += -DHAVE_CAPSIMAGE=1 -DCAPSIMAGE_VERSION=5 -D__cdecl= 
 +endif
 +
  CFLAGS   += $(fpic) $(PLATFLAGS)
@@ -32,7 +32,7 @@ index b533bb6..af4e7ca 100755
  all: $(TARGET)
  
 +ifeq ($(IPFSUPPORT), 1)
-+    INCFLAGS += -I$(STAGING_DIR)/usr/lib/capsimage
++    INCFLAGS += -I$(STAGING_DIR)/usr/include
 +endif
 +
  $(TARGET): $(OBJECTS)

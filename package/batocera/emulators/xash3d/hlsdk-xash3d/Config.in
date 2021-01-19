@@ -1,0 +1,13 @@
+config BR2_PACKAGE_HLSDK_XASH3D
+	bool "Xash3D-FWGS Support Libraries for Half-Life"
+	depends on BR2_INSTALL_LIBSTDCPP
+	help
+	  Half-Life SDK for Xash3D & GoldSource.
+	
+	  Includes client and server libraries needed to run Half-Life with Xash3D.
+
+	  Provides support for several Half-Life-based mods, including the ones listed here:
+
+	  https://github.com/FWGS/hlsdk-xash3d/blob/mobile_hacks/dlls/moddef.h
+
+	  https://github.com/FWGS/hlsdk-xash3d

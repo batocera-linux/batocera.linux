@@ -33,7 +33,7 @@ def generateCoreSettings(coreSettings, system, rom):
             if system.isOptSet('atari800_system'):
                 coreSettings.save('atari800_system', '"' + system.config['atari800_system'] + '"')
             else:
-                coreSettings.save('atari800_system', '"130XE (128K)"')
+                coreSettings.save('atari800_system', '"800XL (64K)"')
             # Video Standard
             if system.isOptSet('atari800_ntscpal'):
                 coreSettings.save('atari800_ntscpal', system.config['atari800_ntscpal'])
@@ -53,13 +53,15 @@ def generateCoreSettings(coreSettings, system, rom):
             if system.isOptSet('atari800_resolution'):
                 coreSettings.save('atari800_resolution', system.config['atari800_resolution'])
             else:
-                coreSettings.save('atari800_resolution', '"336x240"')
+                coreSettings.save('atari800_resolution', '"400x300"')
             
             # WARNING: Now we must stop to use "atari800.cfg" because core options crush them
 
         else:
             # Select Atari 5200
             coreSettings.save('atari800_system', '"5200"')
+            # Autodetect A5200 CartType (Off/On)
+            coreSettings.save('atari800_CartType', '"enabled"')
             # Joy Hack (for robotron)
             if system.isOptSet('atari800_opt2'):
                 coreSettings.save('atari800_opt2', system.config['atari800_opt2'])
@@ -135,52 +137,66 @@ def generateCoreSettings(coreSettings, system, rom):
     if (system.config['core'] == 'puae'):
         # Show Video Options
         coreSettings.save('puae_video_options_display ', '"enabled"')
-        # Video Resolution
-        if system.isOptSet('video_resolution'):
-            coreSettings.save('puae_video_resolution', system.config['video_resolution'])
+        # Amiga Model
+        if system.isOptSet('puae_model'):
+            coreSettings.save('puae_model', system.config['puae_model'])
         else:
-            coreSettings.save('puae_video_resolution', '"auto"')
-        # Zoom Mode    
-        if system.isOptSet('zoom_mode'):
-            coreSettings.save('puae_zoom_mode', system.config['zoom_mode'])
-        else:
-            coreSettings.save('puae_zoom_mode', '"auto"')
+            coreSettings.save('puae_model', '"auto"')
         # Standard Video    
         if system.isOptSet('video_standard'):
             coreSettings.save('puae_video_standard', system.config['video_standard'])
         else:
             coreSettings.save('puae_video_standard', '"PAL"')
-        # 2P Gamepad Mapping (Keyrah)
-        if system.isOptSet('keyrah_mapping'):
-            coreSettings.save('puae_keyrah_keypad_mappings', system.config['keyrah_mapping'])
+        # Video Resolution
+        if system.isOptSet('video_resolution'):
+            coreSettings.save('puae_video_resolution', system.config['video_resolution'])
         else:
-            coreSettings.save('puae_keyrah_keypad_mappings', '"enabled"')
-        # Mouse Speed    
-        if system.isOptSet('mouse_speed'):
-            coreSettings.save('puae_mouse_speed', system.config['mouse_speed'])
-        else:
-            coreSettings.save('puae_mouse_speed', '"200"')
-        # Whdload Launcher
-        if system.isOptSet('whdload'):
-            coreSettings.save('puae_use_whdload_prefs', system.config['whdload'])
-        else:
-            coreSettings.save('puae_use_whdload_prefs', '"config"')
-        # Jump on B
-        if system.isOptSet('pad_options'):
-            coreSettings.save('puae_retropad_options', system.config['pad_options'])
-        else:
-            coreSettings.save('puae_retropad_options', '"jump"')
-        # Disable Emulator Joystick for Pad2Key
-        if system.isOptSet('disable_joystick'):
-            coreSettings.save('puae_physical_keyboard_pass_through', system.config['disable_joystick'])
-        else:
-            coreSettings.save('puae_physical_keyboard_pass_through', '"disabled"')
+            coreSettings.save('puae_video_resolution', '"auto"')
         # Frameskip
         if system.isOptSet('gfx_framerate'):
             coreSettings.save('puae_gfx_framerate', system.config['gfx_framerate'])
         else:
             coreSettings.save('puae_gfx_framerate', '"disabled"')
-    
+        # Mouse Speed    
+        if system.isOptSet('mouse_speed'):
+            coreSettings.save('puae_mouse_speed', system.config['mouse_speed'])
+        else:
+            coreSettings.save('puae_mouse_speed', '"200"')
+
+        if (system.name == 'amiga500') or (system.name == 'amiga1200'):
+            # Zoom Mode    
+            if system.isOptSet('zoom_mode'):
+                coreSettings.save('puae_zoom_mode', system.config['zoom_mode'])
+            else:
+                coreSettings.save('puae_zoom_mode', '"auto"')
+            # 2P Gamepad Mapping (Keyrah)
+            if system.isOptSet('keyrah_mapping'):
+                coreSettings.save('puae_keyrah_keypad_mappings', system.config['keyrah_mapping'])
+            else:
+                coreSettings.save('puae_keyrah_keypad_mappings', '"enabled"')
+            # Whdload Launcher
+            if system.isOptSet('whdload'):
+                coreSettings.save('puae_use_whdload_prefs', system.config['whdload'])
+            else:
+                coreSettings.save('puae_use_whdload_prefs', '"config"')
+            # Jump on B
+            if system.isOptSet('pad_options'):
+                coreSettings.save('puae_retropad_options', system.config['pad_options'])
+            else:
+                coreSettings.save('puae_retropad_options', '"jump"')
+            # Disable Emulator Joystick for Pad2Key
+            if system.isOptSet('disable_joystick'):
+                coreSettings.save('puae_physical_keyboard_pass_through', system.config['disable_joystick'])
+            else:
+                coreSettings.save('puae_physical_keyboard_pass_through', '"disabled"')
+
+        if system.name == 'amigacd32':
+            # Jump on A (Blue)
+            if system.isOptSet('puae_cd32pad_options'):
+                coreSettings.save('puae_cd32pad_options', system.config['puae_cd32pad_options'])
+            else:
+                coreSettings.save('puae_cd32pad_options', '"disabled"')
+
     # Magnavox - Odyssey2 / Phillips Videopac+
     if (system.config['core'] == 'o2em'):
         # Virtual keyboard transparency
@@ -513,6 +529,35 @@ def generateCoreSettings(coreSettings, system, rom):
             coreSettings.save('desmume_screens_layout', '"' + system.config['screens_layout'] + '"')
         else:
             coreSettings.save('desmume_screens_layout', '"top/bottom"')
+
+    if (system.config['core'] == 'melonds'):
+        # Enable threaded rendering
+        coreSettings.save('melonds_threaded_renderer', '"enabled"')
+        # Emulate Stylus on Right Stick
+        coreSettings.save('melonds_touch_mode',        '"Joystick"')
+        # Boot game directly
+        if system.isOptSet('melonds_boot_directly'):
+            coreSettings.save('melonds_boot_directly', system.config['melonds_boot_directly'])
+        else:
+            coreSettings.save('melonds_boot_directly', '"enabled"')
+        # Screen Layout + Hybrid Ratio
+        coreSettings.save('melonds_hybrid_ratio', '"2"')
+        if system.isOptSet('melonds_screen_layout'):
+            if system.config['melonds_screen_layout']   == "Hybrid Top-Ratio2":
+                coreSettings.save('melonds_screen_layout', '"Hybrid Top"')
+            elif system.config['melonds_screen_layout'] == "Hybrid Top-Ratio3":
+                coreSettings.save('melonds_screen_layout', '"Hybrid Top"')
+                coreSettings.save('melonds_hybrid_ratio',  '"3"')
+            elif system.config['melonds_screen_layout'] == "Hybrid Bottom-Ratio2":
+                coreSettings.save('melonds_screen_layout', '"Hybrid Bottom"')
+            elif system.config['melonds_screen_layout'] == "Hybrid Bottom-Ratio3":
+                coreSettings.save('melonds_screen_layout', '"Hybrid Bottom"')
+                coreSettings.save('melonds_hybrid_ratio',  '"3"')
+            else:
+                coreSettings.save('melonds_screen_layout', '"' + system.config['melonds_screen_layout'] + '"')
+        else:
+            coreSettings.save('melonds_screen_layout',     '"Top/Bottom"')
+
 
     # Nintendo Gameboy (Dual Screen) / GB Color (Dual Screen) 
     if (system.config['core'] == 'tgbdual'):

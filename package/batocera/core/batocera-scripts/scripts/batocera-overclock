@@ -1,6 +1,11 @@
-#!/bin/bash
+#!/bin/sh
 
-ARCH=$(cat /usr/share/batocera/batocera.arch)
+f_usage() {
+	echo "$0 list" >&2
+	echo "$0 set <VALUE>" >&2
+}
+
+ARCH="$(cat /usr/share/batocera/batocera.arch)"
 GRPICONFFILE="/boot/config.txt"
 GODROIDCONFFILE="/boot/config.ini"
 
@@ -252,6 +257,11 @@ setValue() {
     esac
 }
 
+if [ $# -eq 0 ]; then
+	f_usage
+	exit 1
+fi
+
 ACTION=$1
 shift
 
@@ -268,6 +278,10 @@ case "${ACTION}" in
 	then
 	    exit 1
 	fi
+	*)
+		f_usage
+		>&2 echo "error: invalid command ${ACTION}"
+		exit 1
 esac
 
 exit 0

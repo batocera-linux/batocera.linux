@@ -115,7 +115,19 @@ cp -pr "${G_TARGETDIR}/usr/share/gstreamer-1.0/"* "${TMPOUT}/usr/share/gstreamer
 #ln -s /lib32/pulseaudio "${TMPOUT}/usr/lib/pulseaudio" || exit 1
 cp -p "${G_TARGETDIR}/usr/lib/libEGL_mesa"* "${TMPOUT}/lib32" || exit 1
 cp -p "${G_TARGETDIR}/usr/lib/libGLX_mesa"* "${TMPOUT}/lib32" || exit 1
+cp -p "${G_TARGETDIR}/usr/lib/libGL.so"* "${TMPOUT}/lib32" || exit 1
+cp -p "${G_TARGETDIR}/usr/lib/libGLX.so"* "${TMPOUT}/lib32" || exit 1
+cp -p "${G_TARGETDIR}/usr/lib/libGLdispatch.so"* "${TMPOUT}/lib32" || exit 1
+cp -p "${G_TARGETDIR}/usr/lib/libxatracker.so"* "${TMPOUT}/lib32" || exit 1
+cp -p "${G_TARGETDIR}/usr/lib/libXrandr.so"* "${TMPOUT}/lib32" || exit 1
+cp -p "${G_TARGETDIR}/usr/lib/libXft.so"* "${TMPOUT}/lib32" || exit 1
+cp -p "${G_TARGETDIR}/usr/lib/libXi.so"* "${TMPOUT}/lib32" || exit 1
+cp -p "${G_TARGETDIR}/usr/lib/libXinerama.so"* "${TMPOUT}/lib32" || exit 1
 #"${G_TARGETDIR}/usr/lib/pulseaudio/"*.so
+
+# add .so for lutris
+(cd "${G_TARGETDIR}/usr/wine/lutris/lib" && ln -sf libwine.so.1 libwine.so) || exit 1
+
 for BIN in \
 "${G_TARGETDIR}/usr/wine/lutris/bin/wine" \
 "${G_TARGETDIR}/usr/wine/proton/bin/wine" \
@@ -126,6 +138,14 @@ for BIN in \
 "${G_TARGETDIR}/usr/lib/gstreamer-1.0/"*.so \
 "${G_TARGETDIR}/usr/lib/libEGL_mesa"* \
 "${G_TARGETDIR}/usr/lib/libGLX_mesa"* \
+"${G_TARGETDIR}/usr/lib/libGL"* \
+"${G_TARGETDIR}/usr/lib/libGLX"* \
+"${G_TARGETDIR}/usr/lib/libGLdispatch"* \
+"${G_TARGETDIR}/usr/lib/libxatracker"* \
+"${G_TARGETDIR}/usr/lib/libXrandr"* \
+"${G_TARGETDIR}/usr/lib/libXft"* \
+"${G_TARGETDIR}/usr/lib/libXi"* \
+"${G_TARGETDIR}/usr/lib/libXinerama"* \
 "${G_TARGETDIR}/usr/lib/libncurses.so"* \
 "${G_TARGETDIR}/usr/lib/libmspack.so"* \
 "${G_TARGETDIR}/usr/lib/libdbus"*"so"* \

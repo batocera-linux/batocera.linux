@@ -111,6 +111,9 @@ msx2:
 msx2+:
   emulator: libretro
   core:     bluemsx
+msxturbor:
+  emulator: libretro
+  core:     bluemsx
 amiga500:
   emulator: fsuae
   core:     A500
@@ -229,6 +232,9 @@ mrboom:
 cannonball:
   emulator: cannonball
   core:     cannonball
+sdlpop:
+  emulator: sdlpop
+  core:     sdlpop
 psx:
   emulator: libretro
   core:     pcsx_rearmed
@@ -292,7 +298,7 @@ tyrquake:
   core:     tyrquake
 openbor:
   emulator: openbor
-  core:     openbor
+  core:     openbor6412
   options:
     ratio: 0
     filter: 0
@@ -319,9 +325,21 @@ pico8:
   core:     retro8
   options:
     ratio: 1/1
+channelf:
+  emulator: libretro
+  core:     freechaf
+x1:
+  emulator: libretro
+  core:     x1
 devilutionx:
   emulator: devilutionx
   core:     devilutionx
 solarus:
   emulator: solarus
   core:     solarus
+easyrpg:
+  emulator: easyrpg
+  core:     easyrpg
+xash3d_fwgs:
+  emulator: xash3d_fwgs
+  core:     xash3d_fwgs

@@ -1,21 +1,40 @@
 2021/XX/XX - batocera.linux 30
 	* odroid go super support
+	* Orange Pi PC support (Allwinner H3)
+	* add: MelonDS libretro core on (x86_64/ RPI4/ Odroid C4/ Odroid N2/ VIM3)
+	* add: Sega Model 3 support via Supermodel emulator (x864_64 for now)
+	* add: SDLPoP (Prince of Persia)
 	* add: DevilutionX (Diablo 1)
+	* add: Xash3D-FWGS (Half-Life 1).
+	  - Currently supports the following games:
+	  - Half-Life, including Blue Shift and Opposing Force.
+	  - Deathmatch Classic.
+	  - Several mods (https://github.com/FWGS/hlsdk-xash3d/blob/mobile_hacks/dlls/moddef.h)
 	* add: Solarus (RPG game engine)
+	* add: EasyRPG (RPG Maker engine) both standalone and libretro core
 	* add: MAME (standalone) 0.227 with ARCADE64 filter list and GroovyMame 15 kHz patches
 	* add: Dosbox-Pure libretro core
+	* add: Fairchild Channel-F
+	* add: Sharp X1
+	* add: Redream for x86_64
 	* add: Kernel 15 kHz patch
 	* add: Pi 400 support
 	* add: Wine Proton (For more compatibility)
+	* add: New RetroAchievements screen in EmulationStation
+	* add: Option to scrape game maps from screenscraper
   * add: sound when a RetroAchievement is unlocked
 	* bump: many libretro cores
-	* bump: FAudio (Wine) to 20.12
+	* bump: FAudio (Wine) to 21.01
 	* bump: Dosbox-X to 0.83.9
-	* bump: Linux 5.10 LTS kernel series for x86, x86_64 and some aarch64 boards
+	* bump: Linux 5.10.x LTS kernel series for x86, x86_64 and mainline supported aarch64 & arm SOC's
 	* bump: DXVK (Wine) to 1.7.3
 	* bump: VKD3D-Proton (Wine) to 2.1
-	* bump: Mesa3D to 20.3.2
-	* bump: Cemu to 1.22.3
+	* bump: Mesa3D to 20.3.3
+	* bump: Pygame to 2.0.1
+	* bump: Cemu to 1.22.4
+	* bump: RPCS3 to 0.0.14
+	* bump: PCSX2
+	* fix: USB boot on RPi3 and RPi4
 	* fix: set mac eth addr for vim3
 	* fix: trash on file manager
 

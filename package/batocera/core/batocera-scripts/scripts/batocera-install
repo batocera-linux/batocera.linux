@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 updateurl="https://updates.batocera.org"
 
@@ -7,16 +7,21 @@ settingsupdateurl="$(/usr/bin/batocera-settings-get updates.url)"
 test -n "${settingsupdateurl}" && updateurl="${settingsupdateurl}"
 
 IMGFOLDER="/userdata/system/installs"
-ACTION=$1
-shift
 
 do_help() {
-    PROG=$1
-    echo "${PROG} listDisks" >&2
-    echo "${PROG} listArchs" >&2
-    echo "${PROG} listFiles" >&2
-    echo "${PROG} install <disk> <arch|file>" >&2
+	echo "$0 listDisks" >&2
+	echo "$0 listArchs" >&2
+	echo "$0 listFiles" >&2
+	echo "$0 install <disk> <arch|file>" >&2
 }
+
+if [ $# -eq 0 ]; then
+	do_help
+	exit 1
+fi
+
+ACTION=$1
+shift
 
 determine_part_prefix() {
     # /dev/mmcblk0p3 => /dev/mmcblk0
@@ -228,7 +233,9 @@ case "${ACTION}" in
 	    exit 1
 	fi
 	;;
-    *)
-	do_help "${0}"
+	*)
+		do_help
+		>&2 echo "error: invalid command ${ACTION}"
+		exit 1
 esac
 exit 0

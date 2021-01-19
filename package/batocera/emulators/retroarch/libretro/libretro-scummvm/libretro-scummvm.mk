@@ -4,7 +4,7 @@
 #
 ################################################################################
 # VERSION.: Commits on Oct 07, 2020
-LIBRETRO_SCUMMVM_VERSION = ac694d0e0296d40b25ccf022b403fd3c4ac3de17
+LIBRETRO_SCUMMVM_VERSION = 80817812b904518bb24db345fd5a52f8d5f01ec3
 LIBRETRO_SCUMMVM_SITE = $(call github,libretro,scummvm,$(LIBRETRO_SCUMMVM_VERSION))
 LIBRETRO_SCUMMVM_LICENSE = GPLv2
 
@@ -12,6 +12,10 @@ LIBRETRO_SCUMMVM_PLATFORM = $(LIBRETRO_PLATFORM)
 
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI3),y)
         LIBRETRO_SCUMMVM_PLATFORM = rpi3
+endif
+
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_S812),y)
+        LIBRETRO_SCUMMVM_PLATFORM = armv cortexa9 neon hardfloat
 endif
 
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI4),y)

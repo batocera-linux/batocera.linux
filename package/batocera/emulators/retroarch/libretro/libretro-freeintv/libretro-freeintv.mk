@@ -4,7 +4,7 @@
 #
 ################################################################################
 # Version.: Commits on Oct 18, 2020
-LIBRETRO_FREEINTV_VERSION = 2382e9b1587a6dd1211d053bd72deba4a3f9f26b
+LIBRETRO_FREEINTV_VERSION = 13f8040656a4e543e0f5165f995ff94b6f05eb7d
 LIBRETRO_FREEINTV_SITE = $(call github,libretro,freeintv,$(LIBRETRO_FREEINTV_VERSION))
 LIBRETRO_FREEINTV_LICENSE = GPLv3
 

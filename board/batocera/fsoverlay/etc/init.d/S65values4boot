@@ -19,7 +19,7 @@ done
 
 if [ $# -gt 0 ]
 then
-    mount -o remount,rw /boot
+    mount -o remount,rw,sync /boot
     /usr/bin/batocera-settings-set -f /boot/batocera-boot.conf "$@"
     mount -o remount,ro /boot
 fi
