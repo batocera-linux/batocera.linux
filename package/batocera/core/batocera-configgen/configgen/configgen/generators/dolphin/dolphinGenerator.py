@@ -92,7 +92,7 @@ class DolphinGenerator(Generator):
             dolphinSettings.set("Core", "MMU", '"False"')
 
         # Backend - Default OpenGL
-        if system.isOptSet("gfxbackend") and system.getOptBoolean("gfxbackend") == 'Vulkan':
+        if system.isOptSet("gfxbackend") and system.config["gfxbackend"] == 'Vulkan':
             dolphinSettings.set("Core", "GFXBackend", '"Vulkan"')
         else:
             dolphinSettings.set("Core", "GFXBackend", '"OGL"')
