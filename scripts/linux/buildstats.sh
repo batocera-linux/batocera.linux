@@ -43,7 +43,7 @@ ls ${BRDIR}/output/images/batocera/*.xz ${BRDIR}/output/images/batocera/images/*
     while read FILE
     do
 	FILENAME=$(basename "${FILE}")
-	echo "<li>""<a href=\"${FILENAME}\">${FILENAME}</a></li>"
+	echo "<li>""<a href=\"images/${FILENAME}\">${FILENAME}</a></li>"
     done
 echo "</ul>"
 
