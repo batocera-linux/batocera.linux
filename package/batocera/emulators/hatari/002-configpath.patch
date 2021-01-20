@@ -1,0 +1,15 @@
+diff --git a/src/paths.c b/src/paths.c
+index 7548115..f37fc7a 100644
+--- a/src/paths.c
++++ b/src/paths.c
+@@ -209,6 +209,10 @@ static void Paths_InitHomeDirs(void)
+ {
+ 	char *psHome;
+ 
++	sUserHomeDir   = "/userdata/system/configs/hatari";
++	sHatariHomeDir = "/userdata/system/configs/hatari";
++	return;
++
+ 	psHome = getenv("HOME");
+ 	if (psHome)
+ 	{

@@ -2277,6 +2277,42 @@ fsuae:
 
 hatari:
   features: []
+  cfeatures:
+        model:
+            prompt:      MODEL
+            description: Machine model
+            choices:
+                "520 ST / AUTO":     520st_auto
+                "520 ST / TOS 1.00": 520st_100
+                "520 ST / TOS 1.02": 520st_102
+                "520 ST / TOS 1.04": 520st_104
+                "1040 STE / AUTO":   1040ste_auto
+                "1040 STE / 1.06":   1040ste_106
+                "1040 STE / 1.62":   1040ste_162
+                "Mega STE / AUTO":   megaste_auto
+                "Mega STE / 2.05":   megaste_205
+                "Mega STE / 2.06":   megaste_206
+        language:
+            prompt:      LANGUAGE
+            description: tos language
+            choices:
+                DE: de
+                ES: es
+                FR: fr
+                IT: it
+                NL: nl
+                RU: ru
+                SE: se
+                UK: uk
+                US: us
+        ram:
+            prompt:      RAM
+            description: ram memory size
+            choices:
+                520K:   0
+                1M:     1
+                2M:     2
+                4M:     4
 
 linapple:
   features: [ratio, padtokeyboard]
