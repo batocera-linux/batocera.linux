@@ -1,0 +1,14 @@
+--- a/CMakeLists.txt	2021-01-20 13:58:10.677709143 +0100
++++ b/CMakeLists.txt	2021-01-20 14:00:13.081038084 +0100
+@@ -3,6 +3,11 @@
+ 
+ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR})
+ 
++# Fix GCC10 not compiling
++set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fcommon")
++set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fcommon")
++set(CMAKE_CXX_FLAGS "${CMAKE_LD_FLAGS} -fcommon")
++
+ find_package(Kodi REQUIRED)
+ 
+ include_directories(${PROJECT_SOURCE_DIR}/lib # Do this first for override of <kodi/tools/DllHelper.h> with own (until kodi itself is changed to)
