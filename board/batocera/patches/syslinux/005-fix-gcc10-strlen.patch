@@ -1,0 +1,18 @@
+--- a/dos/string.h	2021-01-20 19:01:56.867041278 +0100
++++ b/dos/string.h	2021-01-20 19:03:45.177037328 +0100
+@@ -10,7 +10,14 @@
+ #define memmove(a,b,c)	__builtin_memmove(a,b,c)
+ #define memset(a,b,c)	__builtin_memset(a,b,c)
+ #define strcpy(a,b)	__builtin_strcpy(a,b)
+-#define strlen(a)	__builtin_strlen(a)
++
++static inline int strlen(const char *s)
++{
++    const char *ss = s;
++    while (*ss)
++        ss++;
++    return ss - s;
++}
+ 
+ /* This only returns true or false */
+ static inline int memcmp(const void *__m1, const void *__m2, unsigned int __n)
