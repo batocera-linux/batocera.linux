@@ -15,16 +15,19 @@ TARGET_DIR=$5
 BATOCERA_BINARIES_DIR=$6
 
 mkdir -p "${BATOCERA_BINARIES_DIR}/boot/boot"     || exit 1
-mkdir -p "${BATOCERA_BINARIES_DIR}/boot/extlinux" || exit 1
 
-cp "${BINARIES_DIR}/zImage"           "${BATOCERA_BINARIES_DIR}/boot/boot/linux"           || exit 1
-cp "${BINARIES_DIR}/initrd.gz"       "${BATOCERA_BINARIES_DIR}/boot/boot/initrd.gz"       || exit 1
+cp "${BINARIES_DIR}/uImage"           "${BATOCERA_BINARIES_DIR}/boot/boot/uImage"           || exit 1
+cp "${BINARIES_DIR}/uInitrd"       "${BATOCERA_BINARIES_DIR}/boot/boot/uInitrd"       || exit 1
 cp "${BINARIES_DIR}/rootfs.squashfs" "${BATOCERA_BINARIES_DIR}/boot/boot/batocera.update" || exit 1
 
 cp "${BINARIES_DIR}/meson8m2-mxiii.dtb" "${BATOCERA_BINARIES_DIR}/boot/boot/"     || exit 1
 cp "${BINARIES_DIR}/meson8m2-mxiii-plus.dtb" "${BATOCERA_BINARIES_DIR}/boot/boot/"     || exit 1
 cp "${BINARIES_DIR}/meson8m2-m8s.dtb" "${BATOCERA_BINARIES_DIR}/boot/boot/"     || exit 1
 cp "${BINARIES_DIR}/meson8-minix-neo-x8.dtb" "${BATOCERA_BINARIES_DIR}/boot/boot/"     || exit 1
-cp "${BOARD_DIR}/boot/extlinux.conf"          "${BATOCERA_BINARIES_DIR}/boot/extlinux/" || exit 1
+
+"${HOST_DIR}/bin/mkimage" -C none -A arm -T script -d "${BOARD_DIR}/boot/s805_autoscript.cmd" "${BATOCERA_BINARIES_DIR}/boot/s805_autoscript" || exit 1
+"${HOST_DIR}/bin/mkimage" -C none -A arm -T script -d "${BOARD_DIR}/boot/aml_autoscript.scr"  "${BATOCERA_BINARIES_DIR}/boot/aml_autoscript"  || exit 1
+cp "${BOARD_DIR}/boot/uEnv.txt" "${BATOCERA_BINARIES_DIR}/boot/uEnv.txt" || exit 1
+cp "${BOARD_DIR}/boot/aml_autoscript.zip" "${BATOCERA_BINARIES_DIR}/boot" || exit 1
 
 exit 0
