@@ -2459,7 +2459,21 @@ supermodel:
             description: Enable widescreen. Note - may cause rendering issues.
             choices:
                 "Off": 0
-                "On":  1          
+                "On":  1
+        crosshairs:
+            prompt: CROSSHAIRS
+            description: Enable crosshairs in shooting games for appropriate players.
+            choices:
+                "None": 0
+                "P1 only": 1
+                "P2 only": 2
+                "P1 & P2": 3
+        forceFeedback:
+            prompt: ENABLE FORCE FEEDBACK
+            description: Enable force feedback for supported controllers with Linux drivers.
+            choices:
+                "Off": 0
+                "On":  1           
 
 vice:
   features: [ratio, padtokeyboard]
