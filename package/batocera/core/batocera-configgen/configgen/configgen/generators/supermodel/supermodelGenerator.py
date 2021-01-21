@@ -61,10 +61,6 @@ def configPadsIni(playersControllers):
     targetFile = "/userdata/system/configs/supermodel/Supermodel.ini"
 
     mapping = {
-        "up":    "up",
-        "down":  "down",
-        "left":  "left",
-        "right": "right",
         "button1": "y",
         "button2": "b",
         "button3": "a",
@@ -121,21 +117,27 @@ def transformValue(value, playersControllers, mapping):
         return value
 
 def transformElement(elt, playersControllers, mapping):
+    # Docs/README.txt
+    # JOY1_LEFT  is the same as JOY1_XAXIS_NEG
+    # JOY1_RIGHT is the same as JOY1_XAXIS_POS
+    # JOY1_UP    is the same as JOY1_YAXIS_NEG
+    # JOY1_DOWN  is the same as JOY1_YAXIS_POS
+
     matches = re.search("^JOY([12])_BUTTON([0-9]*)$", elt)
     if matches:
         return input2input(playersControllers, matches.group(1), joy2realjoyid(playersControllers, matches.group(1)), mapping["button" + matches.group(2)])
     matches = re.search("^JOY([12])_UP$", elt)
     if matches:
-        return input2input(playersControllers, matches.group(1), joy2realjoyid(playersControllers, matches.group(1)), mapping["up"])
+        return input2input(playersControllers, matches.group(1), joy2realjoyid(playersControllers, matches.group(1)), mapping["axisY"], -1)
     matches = re.search("^JOY([12])_DOWN$", elt)
     if matches:
-        return input2input(playersControllers, matches.group(1), joy2realjoyid(playersControllers, matches.group(1)), mapping["down"])
+        return input2input(playersControllers, matches.group(1), joy2realjoyid(playersControllers, matches.group(1)), mapping["axisY"], 1)
     matches = re.search("^JOY([12])_LEFT$", elt)
     if matches:
-        return input2input(playersControllers, matches.group(1), joy2realjoyid(playersControllers, matches.group(1)), mapping["left"])
+        return input2input(playersControllers, matches.group(1), joy2realjoyid(playersControllers, matches.group(1)), mapping["axisX"], -1)
     matches = re.search("^JOY([12])_RIGHT$", elt)
     if matches:
-        return input2input(playersControllers, matches.group(1), joy2realjoyid(playersControllers, matches.group(1)), mapping["right"])
+        return input2input(playersControllers, matches.group(1), joy2realjoyid(playersControllers, matches.group(1)), mapping["axisX"], 1)
     matches = re.search("^JOY([12])_(R?[XY])AXIS$", elt)
     if matches:
         return input2input(playersControllers, matches.group(1), joy2realjoyid(playersControllers, matches.group(1)), mapping["axis" + matches.group(2)])
