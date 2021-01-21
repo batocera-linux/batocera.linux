@@ -616,6 +616,7 @@ config BR2_PACKAGE_BATOCERA_COMPUTER_SYSTEMS
 
 		# MSX range
 		select BR2_PACKAGE_LIBRETRO_BLUEMSX           # ALL
+                select BR2_PACKAGE_LIBRETRO_FMSX              # ALL
 
 		# Thomson 8-bit
 		select BR2_PACKAGE_LIBRETRO_THEODORE          # ALL

@@ -967,12 +967,13 @@ msx1:
   manufacturer: Microsoft
   release: 1983
   hardware: computer
-  extensions: [dsk, mx1, rom, zip, 7z, m3u]
+  extensions: [dsk, mx1, rom, zip, 7z, cas, m3u]
   platform:   msx
   group:      msx
   emulators:
     libretro:
       bluemsx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BLUEMSX] }
+      fmsx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FMSX] }
   comment_en: |
     ## BIOS ##
 
@@ -1027,12 +1028,13 @@ msx2:
   manufacturer: Microsoft
   release: 1985
   hardware: computer
-  extensions: [dsk, mx2, rom, zip, 7z, m3u]
+  extensions: [dsk, mx2, rom, zip, 7z, cas, m3u]
   platform:   msx
   group:      msx
   emulators:
     libretro:
       bluemsx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BLUEMSX] }
+      fmsx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FMSX] }
   comment_en: |
     ## BIOS ##
 
@@ -1087,12 +1089,13 @@ msx2+:
   manufacturer: Microsoft
   release: 1988
   hardware: computer
-  extensions: [dsk, mx2, rom, zip, 7z]
+  extensions: [dsk, mx2, rom, zip, 7z, cas, m3u]
   platform:   msx
   group:      msx
   emulators:
     libretro:
       bluemsx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BLUEMSX] }
+      fmsx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FMSX] }
   comment_en: |
     ## BIOS ##
 
