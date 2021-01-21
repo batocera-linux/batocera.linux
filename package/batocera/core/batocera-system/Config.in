@@ -644,21 +644,18 @@ config BR2_PACKAGE_BATOCERA_CONSOLE_SYSTEMS
 		# Nintendo 64
 		select BR2_PACKAGE_BATOCERA_MUPEN64     if !BR2_PACKAGE_BATOCERA_TARGET_RPI1 # mupen64 (n64)
 
-		select BR2_PACKAGE_LIBRETRO_MUPEN64PLUS_NEXT  if !BR2_PACKAGE_BATOCERA_RPI_VCORE            && \
-		                                                 !BR2_PACKAGE_BATOCERA_TARGET_S905          && \
-		                                                 !BR2_PACKAGE_BATOCERA_TARGET_S912 
+		select BR2_PACKAGE_LIBRETRO_MUPEN64PLUS_NEXT  if !BR2_PACKAGE_BATOCERA_RPI_VCORE
 		                                                 # MUPEN64PLUS_NEXT
 
-		select BR2_PACKAGE_LIBRETRO_PARALLEL_N64      if !BR2_PACKAGE_BATOCERA_RPI_VCORE             && \
-		                                                 !BR2_PACKAGE_BATOCERA_TARGET_RPI3           && \
-		                                                 !BR2_PACKAGE_BATOCERA_TARGET_RPI4           && \
-		                                                 !BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_ZERO2 && \
-		                                                 !BR2_PACKAGE_BATOCERA_TARGET_S905           && \
-		                                                 !BR2_PACKAGE_BATOCERA_TARGET_S912           && \
-		                                                 !BR2_PACKAGE_BATOCERA_TARGET_TINKERBOARD    && \
-		                                                 !BR2_PACKAGE_BATOCERA_TARGET_MIQI           && \
-		                                                 !BR2_PACKAGE_BATOCERA_TARGET_ROCK960
-		                                                                        # PARALLEL_N64
+		select BR2_PACKAGE_LIBRETRO_PARALLEL_N64      if BR2_PACKAGE_BATOCERA_TARGET_X86_64 ||
+								 BR2_PACKAGE_BATOCERA_TARGET_TINKERBOARD ||
+								 BR2_PACKAGE_BATOCERA_TARGET_MIQI ||
+								 BR2_PACKAGE_BATOCERA_TARGET_ROCKPRO64 ||
+								 BR2_PACKAGE_BATOCERA_TARGET_S912 ||
+								 BR2_PACKAGE_BATOCERA_TARGET_XU4 ||
+								 BR2_PACKAGE_BATOCERA_TARGET_ODROIDN2 ||
+								 BR2_PACKAGE_BATOCERA_TARGET_VIM3 
+                                                                 # PARALLEL_N64
 
 		# Dreamcast
 		select BR2_PACKAGE_BATOCERA_SEGADC
