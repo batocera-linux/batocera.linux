@@ -25,7 +25,7 @@ createOverlayIfNeeded() {
 
 # the overlay is saved on /boot, make it rw
 echo "Making /boot writable..."
-if ! mount -o remount,rw,sync /boot
+if ! mount -o remount,rw /boot
 then
     exit 1
 fi
@@ -50,7 +50,7 @@ fi
 
 # mount it
 echo "Mounting the overlay file..."
-if ! mount -o rw,sync "${OVERLAYFILE}" "${OVERLAYMOUNT}"
+if ! mount -o rw "${OVERLAYFILE}" "${OVERLAYMOUNT}"
 then
     mount -o remount,ro /boot
     exit 1
