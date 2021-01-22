@@ -31,6 +31,7 @@ WINE64="${DIR}/${WINE_VERSION}/bin/wine64"
 WINESERVER="${DIR}/${WINE_VERSION}/bin/wineserver"
 MSIEXEC="${DIR}/${WINE_VERSION}/bin/msiexec"
 WINETRICKS="${DIR}/winetricks"
+MF_INSTALL="${DIR}/mf/mf-install.sh"
 
 ## Folders
 G_SAVES_DIR="/userdata/saves/windows"
@@ -87,6 +88,24 @@ wine_options() {
     test "${PBA}" = 1 && PBA_ENABLE=1
     
     setxkbmap "${KEYBOARD}"
+}
+
+mf_install() {
+    WINEPREFIX=$1
+    MF="$(get_setting mf windows "${ROMGAMENAME}")"
+
+    if test "${MF}" = 1
+    then
+    if test -e "/userdata/system/wine/mf"
+    then
+        chmod +x "${MF_INSTALL}" || return 1
+        WINEPREFIX="${WINEPREFIX}" "${MF_INSTALL}" || return 1
+    else
+        WINEPREFIX="${WINEPREFIX}" "${MF_INSTALL}" || return 1
+    fi
+    fi
+
+    return 0
 }
 
 dxvk_install() {
@@ -227,6 +246,7 @@ play_wine() {
     WINEPOINT="${GAMENAME}"
 
     wine_options
+    mf_install "${WINEPOINT}" || return 1
     dxvk_install "${WINEPOINT}" || return 1
     WINE_CMD=$(getWine_var "${WINEPOINT}" "CMD" "explorer")
     WINE_DIR=$(getWine_var "${WINEPOINT}" "DIR" "")
@@ -240,6 +260,7 @@ play_pc() {
     
     wine_options
     createWineDirectory "${WINEPOINT}" || return 1
+    mf_install "${WINEPOINT}" || return 1
     sandboxing_prefix "${WINEPOINT}" || return 1
     dxvk_install "${WINEPOINT}" || return 1
 
@@ -277,6 +298,7 @@ play_exe() {
 
     wine_options
     createWineDirectory "${WINEPOINT}" || return 1
+    mf_install "${WINEPOINT}" || return 1
     sandboxing_prefix "${WINEPOINT}" || return 1
     dxvk_install "${WINEPOINT}" || return 1
 
@@ -295,6 +317,7 @@ play_winetgz() {
 	(cd "${WINEPOINT}" && gunzip -c "${GAMENAME}" | tar xf -) || return 1
     fi
 
+    mf_install "${WINEPOINT}" || return 1
     dxvk_install "${WINEPOINT}" || return 1
 
     WINE_CMD=$(getWine_var "${WINEPOINT}" "CMD" "explorer")
@@ -334,6 +357,7 @@ play_squashfs() {
 	return 1
     fi
 
+    mf_install "${WINEPOINT}" || return 1
     dxvk_install "${WINEPOINT}" || return 1
 
     WINE_CMD=$(getWine_var "${WINEPOINT}" "CMD" "explorer")
