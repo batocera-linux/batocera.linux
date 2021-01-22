@@ -1,0 +1,6 @@
+#!/bin/sh
+
+if test "${1}" = start
+then
+    vulkaninfo --no-extensions --json | jq -r ".VkPhysicalDeviceProperties.apiVersion" > /var/run/vulkaninfo.version & # it can take some seconds, so i add a &
+fi
