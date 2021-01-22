@@ -39,7 +39,8 @@ cat ${BRDIR}/output/images/batocera/batocera.version
 echo "</h1>"
 echo "<h2>Files</h2>"
 echo "<ul>"
-ls ${BRDIR}/output/images/batocera/*.xz ${BRDIR}/output/images/batocera/images/*.gz |
+echo "<li>""<a href=\"boot.tar.xz\">boot.tar.xz</a></li>"
+ls ${BRDIR}/output/images/batocera/images/*.gz |
     while read FILE
     do
 	FILENAME=$(basename "${FILE}")
