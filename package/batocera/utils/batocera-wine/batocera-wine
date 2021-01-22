@@ -100,8 +100,10 @@ mf_install() {
     then
         chmod +x "${MF_INSTALL}" || return 1
         WINEPREFIX="${WINEPREFIX}" "${MF_INSTALL}" || return 1
+        /usr/bin/batocera-settings-set "windows[\"${ROMGAMENAME}\"].mf" 0
     else
         WINEPREFIX="${WINEPREFIX}" "${MF_INSTALL}" || return 1
+        /usr/bin/batocera-settings-set "windows[\"${ROMGAMENAME}\"].mf" 0
     fi
     fi
 
