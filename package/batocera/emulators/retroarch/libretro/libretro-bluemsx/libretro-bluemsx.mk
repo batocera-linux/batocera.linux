@@ -26,6 +26,7 @@ define LIBRETRO_BLUEMSX_INSTALL_TARGET_CMDS
 	$(INSTALL) -D $(@D)/bluemsx_libretro.so \
 		$(TARGET_DIR)/usr/lib/libretro/bluemsx_libretro.so
 
+	mkdir -p $(TARGET_DIR)/usr/share/batocera/datainit/bios
 	cp -pr $(@D)/system/bluemsx/* \
 		$(TARGET_DIR)/usr/share/batocera/datainit/bios
 endef
