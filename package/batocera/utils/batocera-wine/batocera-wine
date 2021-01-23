@@ -10,10 +10,11 @@ get_setting() {
     /usr/bin/batocera-settings-get "$2[\"$3\"].$1" "$2.$1" "global.$1"
 }
 
+set_globals() {
 ## Wine detection
 GAMENAME=$1 
 ROMGAMENAME=$(basename "${GAMENAME}")
-WINE_VERSION="$(get_setting core windows "${ROMGAMENAME}" || echo proton)"
+WINE_VERSION="$(get_setting core "${SYSTEM}" "${ROMGAMENAME}" || echo proton)"
 
 # Wine Folder
 wine_folder() {
@@ -34,8 +35,8 @@ WINETRICKS="${DIR}/winetricks"
 MF_INSTALL="${DIR}/mf/mf-install.sh"
 
 ## Folders
-G_SAVES_DIR="/userdata/saves/windows"
-G_ROMS_DIR="/userdata/roms/windows"
+G_SAVES_DIR="/userdata/saves/${SYSTEM}"
+G_ROMS_DIR="/userdata/roms/${SYSTEM}"
 
 ## Export Wine libs
 PATH=$PATH:PATH=$PATH:${DIR}/${WINE_VERSION}/bin
@@ -43,14 +44,15 @@ export LD_LIBRARY_PATH="/lib32:${DIR}/${WINE_VERSION}/lib/wine:/lib:/usr/lib:${D
 export GST_PLUGIN_PATH="/lib32/gstreamer-1.0:/usr/lib/gstreamer-1.0"
 export LIBGL_DRIVERS_PATH="/lib32/dri:/usr/lib/dri"
 export WINEDLLPATH="${DIR}/${WINE_VERSION}/lib/wine/fakedlls:${DIR}/${WINE_VERSION}/lib64/wine/fakedlls"
+}
 
 usage() {
-    echo "${1} play    	     <game>.iso"             >&2
-    echo "${1} play    	     <game>.exe"             >&2
-    echo "${1} play    	     <game>.pc"              >&2
-    echo "${1} play    	     <game>.wine"            >&2
-    echo "${1} play    	     <game>.wsquashfs"       >&2
-    echo "${1} play    	     <game>.wtgz"            >&2
+    echo "${1} windows play   	     <game>.iso"             >&2
+    echo "${1} windows play   	     <game>.exe"             >&2
+    echo "${1} ${SYSTEM} play   	 <game>.pc"              >&2
+    echo "${1} windows play   	     <game>.wine"            >&2
+    echo "${1} windows play   	     <game>.wsquashfs"       >&2
+    echo "${1} windows play   	     <game>.wtgz"            >&2
     echo "${1} install 	     <game>.iso"             >&2
     echo "${1} install 	     <game>.exe"             >&2
     echo "${1} tricks  	     <game>.wine directplay" >&2
@@ -67,12 +69,12 @@ waitWineServer() {
 }
 
 wine_options() {
-    ESYNC="$(get_setting esync windows "${ROMGAMENAME}")"
-    FSYNC="$(get_setting fsync windows "${ROMGAMENAME}")"
-    PBA="$(get_setting pba windows "${ROMGAMENAME}")"
+    ESYNC="$(get_setting esync "${SYSTEM}" "${ROMGAMENAME}")"
+    FSYNC="$(get_setting fsync "${SYSTEM}" "${ROMGAMENAME}")"
+    PBA="$(get_setting pba "${SYSTEM}" "${ROMGAMENAME}")"
     KEYBOARD="$(/usr/bin/batocera-settings-get system.kblayout)"
-    VIRTUAL_DESKTOP="$(get_setting virtual_desktop windows "${ROMGAMENAME}")"
-    VIRTUAL_DESKTOP_SIZE="$(get_setting videomode windows "${ROMGAMENAME}" || batocera-resolution currentResolution)"
+    VIRTUAL_DESKTOP="$(get_setting virtual_desktop "${SYSTEM}" "${ROMGAMENAME}")"
+    VIRTUAL_DESKTOP_SIZE="$(get_setting videomode "${SYSTEM}" "${ROMGAMENAME}" || batocera-resolution currentResolution)"
 
     if [ "${VIRTUAL_DESKTOP}" = 1 ]; then
 	VDESKTOP="explorer /desktop=Wine,${VIRTUAL_DESKTOP_SIZE}"
@@ -92,7 +94,7 @@ wine_options() {
 
 mf_install() {
     WINEPREFIX=$1
-    MF="$(get_setting mf windows "${ROMGAMENAME}")"
+    MF="$(get_setting mf "${SYSTEM}" "${ROMGAMENAME}")"
 
     if test "${MF}" = 1
     then
@@ -100,10 +102,10 @@ mf_install() {
     then
         chmod +x "${MF_INSTALL}" || return 1
         WINEPREFIX="${WINEPREFIX}" "${MF_INSTALL}" || return 1
-        /usr/bin/batocera-settings-set "windows[\"${ROMGAMENAME}\"].mf" 0
+        /usr/bin/batocera-settings-set "${SYSTEM}[\"${ROMGAMENAME}\"].mf" 0
     else
         WINEPREFIX="${WINEPREFIX}" "${MF_INSTALL}" || return 1
-        /usr/bin/batocera-settings-set "windows[\"${ROMGAMENAME}\"].mf" 0
+        /usr/bin/batocera-settings-set "${SYSTEM}[\"${ROMGAMENAME}\"].mf" 0
     fi
     fi
 
@@ -118,8 +120,8 @@ dxvk_install() {
     # install dxvk only on system where it is available (aka, not x86)
     test -e "/usr/wine/dxvk" || return 0
 
-    DXVK="$(get_setting dxvk windows "${ROMGAMENAME}")"
-    DXVK_HUD="$(get_setting dxvk_hud windows "${ROMGAMENAME}")"
+    DXVK="$(get_setting dxvk "${SYSTEM}" "${ROMGAMENAME}")"
+    DXVK_HUD="$(get_setting dxvk_hud "${SYSTEM}" "${ROMGAMENAME}")"
 
     if test "${DXVK_HUD}" = 1
     then
@@ -487,8 +489,10 @@ trap "unclutter-remote -h" INT QUIT TERM
 G_RESCUR=$(batocera-resolution currentMode)
 
 case "${ACTION}" in
-    "play")
+    "windows-play")
+	SYSTEM=windows
 	GAMENAME=$1
+    set_globals "$@"
 	GAMEEXT=$(gameext "${GAMENAME}")
 	case "${GAMEEXT}" in
 	    "wine")
@@ -514,8 +518,23 @@ case "${ACTION}" in
 		cleanAndExit 1
 	esac
 	;;
+    "mugen-play")
+	SYSTEM=mugen
+	GAMENAME=$1
+    set_globals "$@"
+	GAMEEXT=$(gameext "${GAMENAME}")
+	case "${GAMEEXT}" in
+	    "pc")
+		play_pc "${GAMENAME}" || cleanAndExit 1
+		;;
+	    *)
+		echo "unknown extension ${GAMEEXT}" >&2
+		cleanAndExit 1
+	esac
+	;;
     "install")
 	GAMENAME=$1
+    set_globals "$@"
     	GAMEEXT=$(gameext "${GAMENAME}")
 	case "${GAMEEXT}" in
 	    "exe")
@@ -534,6 +553,7 @@ case "${ACTION}" in
 	;;
     "tricks")
 	GAMENAME=$1
+    set_globals "$@"
 	TRICK=$2
     	GAMEEXT=$(gameext "${GAMENAME}")
 	case "${GAMEEXT}" in
@@ -544,10 +564,12 @@ case "${ACTION}" in
 	;;
     "wine2squashfs")
 	GAMENAME=$1
+    set_globals "$@"
 	wine2squashfs "${GAMENAME}" || exit 1
 	;;
     "wine2winetgz")
 	GAMENAME=$1
+    set_globals "$@"
 	wine2winetgz "${GAMENAME}" || exit 1
 	;;
     *)

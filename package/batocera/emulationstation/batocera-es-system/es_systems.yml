@@ -1696,3 +1696,14 @@ model3:
   emulators:
     supermodel:
       supermodel: { requireAnyOf: [BR2_PACKAGE_SUPERMODEL] }
+
+mugen:
+  name:       MUGEN
+  manufacturer: Elecbyte
+  release: 1999
+  hardware: port
+  extensions: [pc]
+  emulators:
+    mugen:
+      lutris:  { requireAnyOf: [BR2_PACKAGE_WINE_LUTRIS] }
+      proton:  { requireAnyOf: [BR2_PACKAGE_WINE_PROTON] }

@@ -43,6 +43,7 @@ from generators.redream.redreamGenerator import RedreamGenerator
 from generators.supermodel.supermodelGenerator import SupermodelGenerator
 from generators.xash3d_fwgs.xash3dFwgsGenerator import Xash3dFwgsGenerator
 from generators.tsugaru.tsugaruGenerator import TsugaruGenerator
+from generators.mugen.mugenGenerator import MugenGenerator
 
 import controllersConfig as controllers
 import signal
