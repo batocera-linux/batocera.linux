@@ -108,11 +108,11 @@ class MameGenerator(Generator):
 
 	# CRT / SwitchRes support
 	if system.isOptSet("switchres") and system.config["switchres"] == "true":
-		commandArray += [ "-modeline_generation", "1" ]
-		commandArray += [ "-changeres", "1" ]
+		commandArray += [ "-modeline_generation" ]
+		commandArray += [ "-changeres" ]
 	else:
-		commandArray += [ "-modeline_generation", "0" ]
-		commandArray += [ "-changeres", "0" ]
+		commandArray += [ "-nomodeline_generation" ]
+		commandArray += [ "-nochangeres" ]
 
 	# Finally we pass game name
 	commandArray += [ romBasename ]
