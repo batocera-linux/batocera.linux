@@ -24,7 +24,7 @@ PACKAGES_MUPEN="mupen64plus-audio-sdl mupen64plus-core mupen64plus-gles2 mupen64
 PACKAGES_EMULATORS="amiberry cannonball cemu cemu-hook cemutil citra daphne devilutionx dolphin-emu dosbox dosbox-staging dosbox-x duckstation flycast fsuae linapple mame
 					melonds moonlight-embedded openbor pcsx2 pcsx2_avx2 ppsspp python-pygame2 reicast rpcs3 scummvm supermodel3 vice yuzu"
 
-PACKAGES_WINE="dxvk faudio vkd3d vkd3d-proton wine-lutris wine-lutris-wow64_32 wine-mono"
+PACKAGES_WINE="dxvk mf faudio vkd3d vkd3d-proton wine-lutris wine-lutris-wow64_32 wine-mono"
 
 PACKAGES_CONTROLLERS="db9_gpio_rpi gamecon_gpio_rpi mk_arcade_joystick_rpi qtsixa qtsixa-shanwan retrogame xarcade2jstick xboxdrv"
 

@@ -14,10 +14,10 @@ endef
 
 define MF_INSTALL_TARGET_CMDS
 	mkdir -p $(TARGET_DIR)/usr/wine/mf
-	$(INSTALL) -D $(@D)/mf-install.sh $(TARGET_DIR)/usr/wine/mf-install.sh
-	cp -pr $(@D)/*.reg $(TARGET_DIR)/usr/wine/mf/
-	cp -pr $(@D)/syswow32 $(TARGET_DIR)/usr/wine/mf/
-	cp -pr $(@D)/syswow64 $(TARGET_DIR)/usr/wine/mf/
+	$(INSTALL) -D $(@D)/target/mf-install-$(MF_VERSION)/mf-install.sh $(TARGET_DIR)/usr/wine/mf/mf-install.sh
+	cp -pr $(@D)/target/mf-install-$(MF_VERSION)/*.reg $(TARGET_DIR)/usr/wine/mf/
+	cp -pr $(@D)/target/mf-install-$(MF_VERSION)/system32 $(TARGET_DIR)/usr/wine/mf/
+	cp -pr $(@D)/target/mf-install-$(MF_VERSION)/syswow64 $(TARGET_DIR)/usr/wine/mf/
 endef
 
 $(eval $(generic-package))
