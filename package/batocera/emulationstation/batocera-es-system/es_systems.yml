@@ -1524,6 +1524,17 @@ pc98:
     libretro:
       np2kai:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PC98] }
 
+fmtowns:
+  name:       Fujistu FM-TOWNS
+  manufacturer: Fujistu
+  release: 1987
+  hardware: computer
+  extensions: [bin, m3u]
+  platform:   fmtowns
+  emulators:
+    tsugaru:
+      tsugaru:  { requireAnyOf: [BR2_PACKAGE_TSUGARU] }
+
 lightgun:
   name:       Light Gun
   manufacturer: Misc. System

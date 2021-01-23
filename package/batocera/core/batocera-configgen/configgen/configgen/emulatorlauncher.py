@@ -42,6 +42,7 @@ from generators.easyrpg.easyrpgGenerator import EasyRPGGenerator
 from generators.redream.redreamGenerator import RedreamGenerator
 from generators.supermodel.supermodelGenerator import SupermodelGenerator
 from generators.xash3d_fwgs.xash3dFwgsGenerator import Xash3dFwgsGenerator
+from generators.tsugaru.tsugaruGenerator import TsugaruGenerator
 
 import controllersConfig as controllers
 import signal
@@ -87,6 +88,7 @@ generators = {
     'redream': RedreamGenerator(),
     'supermodel': SupermodelGenerator(),
     'xash3d_fwgs': Xash3dFwgsGenerator(),
+    'tsugaru': TsugaruGenerator(),
 }
 
 def main(args, maxnbplayers):
