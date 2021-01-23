@@ -40,6 +40,7 @@ batoceraBins = {'dosbox'         : '/usr/bin/dosbox'
               , 'mame'           : '/usr/bin/mame/mamearcade64'
               , 'hatari'         : '/usr/bin/hatari'
               , 'supermodel'     : '/usr/bin/supermodel'
+              , 'tsugaru'        : '/usr/bin/Tsugaru_CUI'
 }
 
 
