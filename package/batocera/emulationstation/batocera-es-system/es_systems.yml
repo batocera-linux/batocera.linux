@@ -1704,8 +1704,9 @@ mugen:
   hardware: port
   extensions: [pc]
   emulators:
-    mugen:
+    lutris:
       lutris:  { requireAnyOf: [BR2_PACKAGE_WINE_LUTRIS] }
+    proton:
       proton:  { requireAnyOf: [BR2_PACKAGE_WINE_PROTON] }
 
 flash:

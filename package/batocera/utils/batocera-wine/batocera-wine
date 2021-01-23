@@ -12,7 +12,6 @@ get_setting() {
     /usr/bin/batocera-settings-get "$2[\"$3\"].$1" "$2.$1" "global.$1"
 }
 
-set_globals() {
 ## Wine detection
 GAMENAME=$1 
 ROMGAMENAME=$(basename "${GAMENAME}")
@@ -46,7 +45,6 @@ export LD_LIBRARY_PATH="/lib32:${DIR}/${WINE_VERSION}/lib/wine:/lib:/usr/lib:${D
 export GST_PLUGIN_PATH="/lib32/gstreamer-1.0:/usr/lib/gstreamer-1.0"
 export LIBGL_DRIVERS_PATH="/lib32/dri:/usr/lib/dri"
 export WINEDLLPATH="${DIR}/${WINE_VERSION}/lib/wine/fakedlls:${DIR}/${WINE_VERSION}/lib64/wine/fakedlls"
-}
 
 usage() {
     echo "${1} windows play    	     <game>.iso"             >&2
@@ -491,10 +489,8 @@ trap "unclutter-remote -h" INT QUIT TERM
 G_RESCUR=$(batocera-resolution currentMode)
 
 case "${ACTION}" in
-    "windows-play")
-	SYSTEM=windows
+    "play")
 	GAMENAME=$1
-    set_globals "$@"
 	GAMEEXT=$(gameext "${GAMENAME}")
 	case "${GAMEEXT}" in
 	    "wine")
@@ -520,23 +516,8 @@ case "${ACTION}" in
 		cleanAndExit 1
 	esac
 	;;
-    "mugen-play")
-	SYSTEM=mugen
-	GAMENAME=$1
-    set_globals "$@"
-	GAMEEXT=$(gameext "${GAMENAME}")
-	case "${GAMEEXT}" in
-	    "pc")
-		play_pc "${GAMENAME}" || cleanAndExit 1
-		;;
-	    *)
-		echo "unknown extension ${GAMEEXT}" >&2
-		cleanAndExit 1
-	esac
-	;;
     "install")
 	GAMENAME=$1
-    set_globals "$@"
     	GAMEEXT=$(gameext "${GAMENAME}")
 	case "${GAMEEXT}" in
 	    "exe")
@@ -555,7 +536,6 @@ case "${ACTION}" in
 	;;
     "tricks")
 	GAMENAME=$1
-    set_globals "$@"
 	TRICK=$2
     	GAMEEXT=$(gameext "${GAMENAME}")
 	case "${GAMEEXT}" in
@@ -566,12 +546,10 @@ case "${ACTION}" in
 	;;
     "wine2squashfs")
 	GAMENAME=$1
-    set_globals "$@"
 	wine2squashfs "${GAMENAME}" || exit 1
 	;;
     "wine2winetgz")
 	GAMENAME=$1
-    set_globals "$@"
 	wine2winetgz "${GAMENAME}" || exit 1
 	;;
     *)
