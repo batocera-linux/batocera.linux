@@ -1,0 +1,11 @@
+--- a/src/externals/fssimplewindow/src/CMakeLists.txt	2021-01-23 11:47:04.714334478 +0100
++++ b/src/externals/fssimplewindow/src/CMakeLists.txt	2021-01-23 11:47:14.307667439 +0100
+@@ -55,7 +55,7 @@
+ cmake_minimum_required(VERSION 3.0.0)
+ if("${CMAKE_CURRENT_SOURCE_DIR}" MATCHES "^${CMAKE_SOURCE_DIR}" AND
+    "${CMAKE_BINARY_DIR}" MATCHES "^${CMAKE_SOURCE_DIR}")
+-	message(FATAL_ERROR "In-source build prohibited.\nClear cache and Start cmake from somewhere else.")
++	# message(FATAL_ERROR "In-source build prohibited.\nClear cache and Start cmake from somewhere else.")
+ 	# First condition is to allow inclusion of the project from outside CMake project with
+ 	# explicit binary-directory specification.   eg. add_subdirectory from Android CMakeLists.txt
+ endif()
