@@ -20,8 +20,8 @@ index 0127d63..3d9f281 100755
 +	HAVE_NEON = 1
 +	ARCH = arm
 +	LDFLAGS += -marm -mcpu=cortex-a35 -mfpu=neon-fp-armv8 -mfloat-abi=hard -Ofast -flto -fuse-linker-plugin
++   PLATFLAGS := -DLSB_FIRST -DALIGN_DWORD
 +#######################################
-+
  else ifeq ($(platform), osx)
  	TARGET := $(TARGET_NAME)_libretro.dylib
     fpic := -fPIC
