@@ -35,8 +35,8 @@ define FLYCAST_BUILD_CMDS
 endef
 
 define FLYCAST_INSTALL_TARGET_CMDS
-	$(INSTALL) -D -m 0755 $(@D)/shell/linux/reicast.elf \
-		$(TARGET_DIR)/usr/bin/flycast.elf
+	$(INSTALL) -D -m 0755 $(@D)/shell/linux/nosym-reicast.elf \
+		$(TARGET_DIR)/usr/bin/flycast
 endef
 
 $(eval $(generic-package))
