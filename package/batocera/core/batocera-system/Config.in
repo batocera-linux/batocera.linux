@@ -164,6 +164,8 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
     # wireless drivers
     select BR2_PACKAGE_RTL8821AU                         if !BR2_PACKAGE_BATOCERA_RPI_VCORE             && \
                                                             !BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_PC
+    select BR2_PACKAGE_RTL8192EU                         if !BR2_PACKAGE_BATOCERA_RPI_VCORE             && \
+                                                            !BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_PC
     select BR2_PACKAGE_RTL8821CE                         if !BR2_PACKAGE_BATOCERA_RPI_VCORE             && \
                                                             !BR2_PACKAGE_BATOCERA_TARGET_S812           && \
                                                             !BR2_PACKAGE_BATOCERA_TARGET_RPI3           && \
