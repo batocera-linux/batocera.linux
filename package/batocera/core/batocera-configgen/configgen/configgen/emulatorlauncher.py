@@ -182,6 +182,12 @@ def main(args, maxnbplayers):
         if args.netplayport is not None:
             system.config["netplay.server.port"] = args.netplayport
 
+        # autosave arguments
+        if args.state_slot is not None:
+            system.config["state_slot"] = args.state_slot
+        if args.autosave is not None:
+            system.config["autosave"] = args.autosave
+
         # run a script before emulator starts
         callExternalScripts("/usr/share/batocera/configgen/scripts", "gameStart", [systemName, system.config['emulator'], effectiveCore, effectiveRom])
         callExternalScripts("/userdata/system/scripts", "gameStart", [systemName, system.config['emulator'], effectiveCore, effectiveRom])
