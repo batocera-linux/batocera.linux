@@ -18,7 +18,62 @@ systems = {
                                                                     { "md5": "a3e8d617c95d08031fe1b20d541434b2", "file": "bios/ATARIOSB.ROM"} ] },
 
     # https://github.com/libretro/libretro-super/blob/master/dist/info/hatari_libretro.info
-    "atarist": { "name": "Atari ST", "biosFiles": [ { "md5": "c1c57ce48e8ee4135885cee9e63a68a2", "file": "bios/tos.img"} ] },
+    "atarist": { "name": "Atari ST", "biosFiles": [ { "md5": "c1c57ce48e8ee4135885cee9e63a68a2", "file": "bios/tos.img"}, # TOS 1.02 US
+						    # Atari ST / STf / STfm
+						    { "md5": "25789a649faff0a1176dc7d9b98105c0", "file": "bios/tos100fr.img"},
+						    { "md5": "c87a52c277f7952b41c639fc7bf0a43b", "file": "bios/tos100uk.img"},
+						    { "md5": "d0f682ee6237497004339fb02172638b", "file": "bios/tos100us.img"},
+
+						    { "md5": "a622cc35d8d78703905592dfaa4d2ccb", "file": "bios/tos102de.img"},
+						    { "md5": "d6521785627d20c51edc566808a6bf28", "file": "bios/tos102fr.img"},
+						    { "md5": "b2a8570de2e850c5acf81cb80512d9f6", "file": "bios/tos102uk.img"},
+						    #{ "md5": "c1c57ce48e8ee4135885cee9e63a68a2", "file": "bios/tos102us.img"},
+
+						    { "md5": "41b7dae4e24735f330b63ad923a0bfbc", "file": "bios/tos104de.img"},
+						    { "md5": "143343f7b8e0b1162af206fe8f46b002", "file": "bios/tos104es.img"},
+						    { "md5": "0087e2707c57efa2106a0aa7576655c0", "file": "bios/tos104fr.img"},
+						    #{ "md5": "52248cc70ae48b3050e197e270917130", "file": "bios/tos104nl.img"},
+						    #{ "md5": "7c040857bdcfcd7d748ca82205463efa", "file": "bios/tos104se.img"},
+						    { "md5": "036c5ae4f885cbf62c9bed651c6c58a8", "file": "bios/tos104uk.img"},
+						    { "md5": "736adb2dc835df4d323191fdc8926cc9", "file": "bios/tos104us.img"},
+
+						    # Atari STe
+						    { "md5": "992bac38e01633a529121a2a65f0779e", "file": "bios/tos106de.img"},
+						    { "md5": "30f69d70fe7c210300ed83f991b12de9", "file": "bios/tos106es.img"},
+						    { "md5": "bc7b224d0dc3f0cc14c8897db89c5787", "file": "bios/tos106fr.img"},
+						    { "md5": "6033f2b9364edfed321c6931a8181fd2", "file": "bios/tos106uk.img"},
+						    { "md5": "a0982e760f9807d82667ff5a69e78f6b", "file": "bios/tos106us.img"},
+
+						    { "md5": "94a75c1c65408d9f974b0463e15a3b11", "file": "bios/tos162de.img"},
+						    { "md5": "ed5fbaabe0219092df74c6c14cea3f8e", "file": "bios/tos162fr.img"},
+						    #{ "md5": "6f9471098a521214fad1e2c6f2dd3d08", "file": "bios/tos162se.img"},
+						    { "md5": "1cbc4f55295e469fc8cd72b7efdea1da", "file": "bios/tos162uk.img"},
+						    { "md5": "febb00ba8784798293a7ae709a1dafcb", "file": "bios/tos162us.img"},
+
+						    # Atari Mega STe
+						    { "md5": "7aeabdc25f8134590e25643a405210ca", "file": "bios/tos205de.img"},
+						    { "md5": "7449b131681f1dfe62ebed1392847057", "file": "bios/tos205es.img"},
+						    { "md5": "61b620ad951815a25cb37895c81a947c", "file": "bios/tos205fr.img"},
+						    { "md5": "7e87d8fe7e24e0b4c55ad1b7955beae3", "file": "bios/tos205it.img"},
+						    #{ "md5": "1c92855316a33faee602b8007f22d2cb", "file": "bios/tos205se.img"},
+						    { "md5": "7cdd45b6aac66a21bfb357d9334e46db", "file": "bios/tos205us.img"},
+
+						    { "md5": "0604dbb85928f0598d04144a8b554bbe", "file": "bios/tos206de.img"},
+						    { "md5": "b2873004a408b8db36321f98daafa251", "file": "bios/tos206fr.img"},
+						    { "md5": "4a0d4f282c3f2a0196681adf88862dd4", "file": "bios/tos206.img"},
+						    #{ "md5": "332fe3803a7e20cd625b27a69f07ae69", "file": "bios/tos206ru.img"},
+						    #{ "md5": "a7dc40dc5c1086bce1a8f3d44fd29051", "file": "bios/tos206se.img"},
+						    { "md5": "e690bec90d902024beed549d22150755", "file": "bios/tos206uk.img"},
+						    { "md5": "c9093f27159e7d13ac0d1501a95e53d4", "file": "bios/tos206us.img"},
+
+						    # Atari TT
+						    { "md5": "066f39a7ea5789d5afd59dd7b3104fa6", "file": "bios/tos306de.img"},
+						    { "md5": "dd1010ec566efbd71047d6c4919feba5", "file": "bios/tos306uk.img"},
+
+						    # Atari Falcon
+						    { "md5": "ed2647936ce4bd283c4d7dfd7ae09d1c", "file": "bios/tos400.img"},
+						    { "md5": "9e880168d0a004f7f5e852be758f39e4", "file": "bios/tos402.img"},
+						    { "md5": "e5ea0f216fb446f1c4a4f476bc5f03d4", "file": "bios/tos404.img"} ] },
 
     # https://docs.libretro.com/library/beetle_handy/#bios
     "lynx": { "name": "Lynx", "biosFiles": [ { "md5": "fcd403db69f54290b51035d82f835e7b", "file": "bios/lynxboot.img"} ] },
@@ -180,6 +235,14 @@ systems = {
     # https://github.com/libretro/xmil-libretro/blob/master/README.MD
     "x1":  { "name": "Sharp X1", "biosFiles": [   { "md5": "eeeea1cd29c6e0e8b094790ae969bfa7", "file": "bios/xmil/IPLROM.X1" },
                                                   { "md5": "56c28adcf1f3a2f87cf3d57c378013f5", "file": "bios/xmil/iplrom.x1t" } ] },
+
+    # ---------- Fujistu FM-Towns ---------- #
+    # https://github.com/captainys/TOWNSEMU
+    "fmtowns":  { "name": "Fujistu FM-Towns", "biosFiles": [  { "md5": "8fa4e553f28cfc0c30a0a1e589799942", "file": "bios/fmtowns/FMT_DIC.ROM" },
+							      { "md5": "0585b19930d4a7f4c71bcc8a33746588", "file": "bios/fmtowns/FMT_DOS.ROM" },
+							      { "md5": "ac0c7021e9bf48ca84b51ab651169a88", "file": "bios/fmtowns/FMT_F20.ROM" },
+							      { "md5": "b91300e55b70227ce98b59c5f02fa8dd", "file": "bios/fmtowns/FMT_FNT.ROM" },
+							      { "md5": "86fb6f7280689259f0ca839dd3dd6cde", "file": "bios/fmtowns/FMT_SYS.ROM" } ] },
 }
 
 class BiosStatus:

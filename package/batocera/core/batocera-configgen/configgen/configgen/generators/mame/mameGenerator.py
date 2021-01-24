@@ -106,6 +106,14 @@ class MameGenerator(Generator):
 	if system.isOptSet("rotation") and system.config["rotation"] == "autorol":
 		commandArray += [ "-autorol" ]
 
+	# CRT / SwitchRes support
+	if system.isOptSet("switchres") and system.config["switchres"] == "true":
+		commandArray += [ "-modeline_generation" ]
+		commandArray += [ "-changeres" ]
+	else:
+		commandArray += [ "-nomodeline_generation" ]
+		commandArray += [ "-nochangeres" ]
+
 	# Finally we pass game name
 	commandArray += [ romBasename ]
 

@@ -40,6 +40,7 @@ batoceraBins = {'dosbox'         : '/usr/bin/dosbox'
               , 'mame'           : '/usr/bin/mame/mamearcade64'
               , 'hatari'         : '/usr/bin/hatari'
               , 'supermodel'     : '/usr/bin/supermodel'
+              , 'tsugaru'        : '/usr/bin/Tsugaru_CUI'
 }
 
 
@@ -113,6 +114,8 @@ fsuaeConfig = CONF + "/fs-uae"
 fsuaeSaves = SAVES + "/amiga"
 
 scummvmSaves = SAVES + '/scummvm'
+
+solarusSaves = SAVES + '/solarus'
 
 viceConfig = CONF + "/vice"
 

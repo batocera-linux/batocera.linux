@@ -3,8 +3,8 @@
 # BEETLE_PCFX
 #
 ################################################################################
-# Version.: Commits on Nov 10, 2020
-LIBRETRO_BEETLE_PCFX_VERSION = b5648f60681e481b5729ebc76608a41c6c709f8f
+# Version.: Commits on Jan 13, 2021
+LIBRETRO_BEETLE_PCFX_VERSION = 4eec3addc83f4dc09ca43783cc8fd333ecb26c21
 LIBRETRO_BEETLE_PCFX_SITE = $(call github,libretro,beetle-pcfx-libretro,$(LIBRETRO_BEETLE_PCFX_VERSION))
 LIBRETRO_BEETLE_PCFX_LICENSE = GPLv2
 
@@ -23,6 +23,10 @@ endif
 
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_ODROIDC4),y)
 	LIBRETRO_BEETLE_PCFX_PLATFORM = SM1
+endif
+
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_S812),y)
+        LIBRETRO_BEETLE_PCFX_PLATFORM = armv
 endif
 
 define LIBRETRO_BEETLE_PCFX_BUILD_CMDS

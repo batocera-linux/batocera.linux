@@ -4,11 +4,9 @@
 #
 ################################################################################
 
-# Master at https://github.com/FWGS/xash3d-fwgs/commit/11194f339d0fe1a9fb522d466b0b80075f172e6a + the following PR:
-# * https://github.com/FWGS/mainui_cpp/pull/40 - Add gamepad button mappings (mainui_cpp submodule PR)
-
-XASH3D_FWGS_VERSION = a0ca945
-XASH3D_FWGS_SITE = https://github.com/glebm/xash3d-fwgs.git
+# Master on 16 Jan 2021.
+XASH3D_FWGS_VERSION = 63c4b27
+XASH3D_FWGS_SITE = https://github.com/FWGS/xash3d-fwgs.git
 XASH3D_FWGS_SITE_METHOD = git
 XASH3D_FWGS_GIT_SUBMODULES = yes
 XASH3D_LICENSE = GPL-3.0+

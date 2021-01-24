@@ -212,8 +212,6 @@ define BATOCERA_NVIDIA_DRIVER_INSTALL_TARGET_CMDS
 	$(BATOCERA_NVIDIA_DRIVER_INSTALL_KERNEL_MODULE)
 
 # batocera install files needed by Vulkan
-	$(INSTALL) -D -m 0644 $(@D)/nvidia_icd.json \
-		$(TARGET_DIR)/usr/share/vulkan/icd.d/nvidia_icd.json
 	$(INSTALL) -D -m 0644 $(@D)/nvidia_layers.json \
 		$(TARGET_DIR)/usr/share/vulkan/implicit_layer.d/nvidia_layers.json
 
@@ -235,6 +233,9 @@ endef
 
 define BATOCERA_NVIDIA_DRIVER_VULKANJSON_X86_64
 	$(INSTALL) -D -m 0644 $(@D)/nvidia_icd.json $(TARGET_DIR)/usr/share/vulkan/icd.d/nvidia_icd.x86_64.json
+        sed -i -e s+'"library_path": "libGLX_nvidia'+'"library_path": "/usr/lib/libGLX_nvidia'+ $(TARGET_DIR)/usr/share/vulkan/icd.d/nvidia_icd.x86_64.json
+	$(INSTALL) -D -m 0644 $(@D)/nvidia_icd.json $(TARGET_DIR)/usr/share/vulkan/icd.d/nvidia_icd.i686.json
+        sed -i -e s+'"library_path": "libGLX_nvidia'+'"library_path": "/lib32/libGLX_nvidia'+ $(TARGET_DIR)/usr/share/vulkan/icd.d/nvidia_icd.i686.json
 endef
 
 define BATOCERA_NVIDIA_DRIVER_VULKANJSON_X86

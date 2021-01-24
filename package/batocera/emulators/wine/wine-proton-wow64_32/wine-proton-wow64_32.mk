@@ -4,11 +4,9 @@
 #
 ################################################################################
 
-WINE_PROTON_WOW64_32_VERSION = 5.13-3-rc2
-WINE_PROTON_WOW64_32_SOURCE = proton-wine-$(WINE_PROTON_WOW64_32_VERSION).tar.gz
-WINE_PROTON_WOW64_32_SITE = https://github.com/ValveSoftware/wine/archive
+WINE_PROTON_WOW64_32_VERSION = 2117f849363107537dfc954451ed96237b5b3f9d
+WINE_PROTON_WOW64_32_SITE = $(call github,ValveSoftware,wine,$(WINE_PROTON_WOW64_32_VERSION))
 WINE_PROTON_WOW64_32_LICENSE = LGPL-2.1+
-WINE_PROTON_WOW64_32_LICENSE_FILES = COPYING.LIB LICENSE
 WINE_PROTON_WOW64_32_DEPENDENCIES = host-bison host-flex host-wine-proton
 HOST_WINE_PROTON_WOW64_32_DEPENDENCIES = host-bison host-flex
 

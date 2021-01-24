@@ -4,11 +4,9 @@
 #
 ################################################################################
 
-WINE_LUTRIS_VERSION = 6.0-rc1
-WINE_LUTRIS_SOURCE = lutris-$(WINE_LUTRIS_VERSION).tar.gz
-WINE_LUTRIS_SITE = https://github.com/lutris/wine/archive
+WINE_LUTRIS_VERSION = f0df5a3e9d112998a64b5ddfee48442367cc38d5
+WINE_LUTRIS_SITE = $(call github,lutris,wine,$(WINE_LUTRIS_VERSION))
 WINE_LUTRIS_LICENSE = LGPL-2.1+
-WINE_LUTRIS_LICENSE_FILES = COPYING.LIB LICENSE
 WINE_LUTRIS_DEPENDENCIES = host-bison host-flex host-wine-lutris
 HOST_WINE_LUTRIS_DEPENDENCIES = host-bison host-flex
 

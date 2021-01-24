@@ -63,6 +63,7 @@ menu "System"
 
   menu "Network"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/network/rtl8821ce/Config.in"
+    source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/network/rtl8192eu/Config.in"
   endmenu
 
   menu "Device trees"
@@ -177,6 +178,7 @@ menu "Emulators"
       source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/retroarch/libretro/libretro-easyrpg/Config.in"
       source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/retroarch/libretro/libretro-melonds/Config.in"
       source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/retroarch/libretro/libretro-xmil/Config.in"
+      source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/retroarch/libretro/libretro-fmsx/Config.in"
      endmenu
   endmenu
 
@@ -227,7 +229,6 @@ menu "Emulators"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/wine-x86/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/rpcs3/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/ppsspp/Config.in"
-  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/ppsspp15/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/reicast/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/flycast/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/scummvm/Config.in"
@@ -241,6 +242,7 @@ menu "Emulators"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/openbor/openbor6510/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/wine/faudio/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/wine/dxvk/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/wine/mf/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/wine/vkd3d-proton/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/wine/vkd3d/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/wine/wine-mono/Config.in"
@@ -249,6 +251,7 @@ menu "Emulators"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/easyrpg/easyrpg-player/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/solarus-engine/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/redream/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/tsugaru/Config.in"
 endmenu
 
 menu "Kodi"
@@ -291,6 +294,7 @@ menu "Utils"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/utils/evmapy/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/utils/evmapy-system-config/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/utils/l3afpad/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/utils/switchres/Config.in"
 endmenu
 
 menu "Libraries"

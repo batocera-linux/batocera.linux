@@ -1,0 +1,14 @@
+config BR2_PACKAGE_MF
+	bool "mf"
+        depends on BR2_i386 || BR2_x86_64
+	# Wine unconditionally builds shared libraries
+	depends on !BR2_STATIC_LIBS
+	depends on BR2_PACKAGE_SPIRV_HEADERS
+	help
+          MF
+          A Media Foundation workaround for Wine.
+
+          https://github.com/z0z0z/mf-install
+
+comment "dxvk needs a toolchain w/ dynamic library"
+	depends on BR2_STATIC_LIBS

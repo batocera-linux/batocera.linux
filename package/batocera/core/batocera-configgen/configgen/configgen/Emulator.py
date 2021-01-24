@@ -19,6 +19,9 @@ class Emulator():
             eslog.log("no emulator defined. exiting.")
             raise Exception("No emulator found")
 
+        system_emulator = self.config["emulator"]
+        system_core     = self.config["core"]
+
         # load configuration from batocera.conf
         recalSettings = UnixSettings(batoceraFiles.batoceraConf)
         globalSettings = recalSettings.loadAll('global')
@@ -36,6 +39,14 @@ class Emulator():
         Emulator.updateConfiguration(self.config, gameSettings)
         self.updateFromESSettings()
         eslog.log("uimode: {}".format(self.config['uimode']))
+
+        # forced emulators ?
+        self.config["emulator-forced"] = False
+        self.config["core-forced"] = False
+        if "emulator" in globalSettings or "emulator" in systemSettings or "emulator" in gameSettings:
+            self.config["emulator-forced"] = True
+        if "core" in globalSettings or "core" in systemSettings or "core" in gameSettings:
+            self.config["core-forced"] = True
 
         # update renderconfig
         self.renderconfig = {}

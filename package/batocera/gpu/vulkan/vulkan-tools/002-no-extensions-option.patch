@@ -1,0 +1,54 @@
+diff --git a/vulkaninfo/vulkaninfo.cpp b/vulkaninfo/vulkaninfo.cpp
+index 3c7107b..c7fed51 100644
+--- a/vulkaninfo/vulkaninfo.cpp
++++ b/vulkaninfo/vulkaninfo.cpp
+@@ -878,6 +878,7 @@ int main(int argc, char **argv) {
+ 
+     uint32_t selected_gpu = 0;
+     bool show_formats = false;
++    bool no_extensions = false;
+     char *output_path = nullptr;
+ 
+     // Combinations of output: html only, html AND json, json only, human readable only
+@@ -912,6 +913,8 @@ int main(int argc, char **argv) {
+             html_output = true;
+         } else if (strcmp(argv[i], "--show-formats") == 0) {
+             show_formats = true;
++	} else if (strcmp(argv[i], "--no-extensions") == 0) {
++	  no_extensions = true;
+         } else if (strcmp(argv[i], "--help") == 0 || strcmp(argv[i], "-h") == 0) {
+             print_usage(argv[0]);
+             return 1;
+@@ -929,7 +932,7 @@ int main(int argc, char **argv) {
+ 
+     // if any essential vulkan call fails, it throws an exception
+     try {
+-        AppInstance instance = {};
++        AppInstance instance(no_extensions);
+         SetupWindowExtensions(instance);
+ 
+         auto pNext_chains = get_chain_infos();
+diff --git a/vulkaninfo/vulkaninfo.h b/vulkaninfo/vulkaninfo.h
+index d47f7fb..2da4b6b 100644
+--- a/vulkaninfo/vulkaninfo.h
++++ b/vulkaninfo/vulkaninfo.h
+@@ -622,7 +622,7 @@ struct AppInstance {
+ #ifdef VK_USE_PLATFORM_ANDROID_KHR  // TODO
+     ANativeWindow *window;
+ #endif
+-    AppInstance() {
++    AppInstance(bool no_extensions) {
+         VkResult dllErr = dll.Initialize();
+         if (dllErr != VK_SUCCESS) {
+             THROW_ERR("Failed to initialize: Vulkan loader is not installed, not found, or failed to load.");
+@@ -641,7 +641,9 @@ struct AppInstance {
+         if (patch_version == 0) patch_version = VK_VERSION_PATCH(VK_HEADER_VERSION);
+         vk_version = {VK_VERSION_MAJOR(instance_version), VK_VERSION_MINOR(instance_version), patch_version};
+ 
+-        AppGetInstanceExtensions();
++	if(!no_extensions) {
++	  AppGetInstanceExtensions();
++	}
+ 
+         const VkDebugReportCallbackCreateInfoEXT dbg_info = {VK_STRUCTURE_TYPE_DEBUG_REPORT_CALLBACK_CREATE_INFO_EXT, nullptr,
+                                                              VK_DEBUG_REPORT_ERROR_BIT_EXT | VK_DEBUG_REPORT_WARNING_BIT_EXT,

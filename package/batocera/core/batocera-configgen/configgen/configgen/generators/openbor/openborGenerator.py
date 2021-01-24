@@ -7,6 +7,7 @@ import openborControllers
 import os
 import re
 from settings.unixSettings import UnixSettings
+from utils.logger import eslog
 
 class OpenborGenerator(Generator):
 
@@ -24,16 +25,17 @@ class OpenborGenerator(Generator):
         core = system.config['core']
         if system.config["core-forced"] == False:
             core = OpenborGenerator.guessCore(rom)
+        eslog.log("core taken is {}".format(core))
 
         # config file
         configfilename = "config6510.ini"
         if core == "openbor4432":
             configfilename = "config4432.ini"
-        if core == "openbor6330":
+        elif core == "openbor6330":
             configfilename = "config6330.ini"
-        if core == "openbor6412":
+        elif core == "openbor6412":
             configfilename = "config6412.ini"
-        if core == "openbor6510":
+        elif core == "openbor6510":
             configfilename = "config6510.ini"
 
         config = UnixSettings(configDir + "/" + configfilename, separator='')
@@ -66,11 +68,11 @@ class OpenborGenerator(Generator):
     def executeCore(core, rom):
         if core == "openbor4432":
             commandArray = ["OpenBOR4432", rom]
-        if core == "openbor6330":
+        elif core == "openbor6330":
             commandArray = ["OpenBOR6330", rom]
-        if core == "openbor6412":
+        elif core == "openbor6412":
             commandArray = ["OpenBOR6412", rom]
-        if core == "openbor6510":
+        elif core == "openbor6510":
             commandArray = ["OpenBOR6510", rom]
         else:
             commandArray = ["OpenBOR6510", rom]

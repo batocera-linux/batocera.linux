@@ -7,6 +7,17 @@
 DEST_PKG=/userdata/system/pacman/pkg
 DB_FILE=/userdata/system/pacman/db/db.lck
 
+do_help() {
+	echo "$0 install <package>" >&2
+	echo "$0 remove  <package>" >&2
+	echo "$0 list" >&2
+	echo "$0 list-repositories" >&2
+	echo "$0 clean" >&2
+	echo "$0 clean-all" >&2
+	echo "$0 refresh" >&2
+	echo "$0 update" >&2
+}
+
 # Just a work meter - better than some static output
 do_bepatient() {
 	local COUNT=0
@@ -38,15 +49,19 @@ do_getPer() {
 	done
 }
 
-
 do_clean () {
 	if ! lsof | grep ${DB_FILE}; then
 		rm -f ${DB_FILE}
 	fi
 }
 
+if [ $# -eq 0 ]; then
+	do_help
+	exit 1
+fi
+
 ACTION=$1
-shift
+PKG=$2
 do_clean #Delete db.lck file if it's NOT in usage
 
 #Started from Terminal/SSH or from Emulationstation?
@@ -54,7 +69,6 @@ do_clean #Delete db.lck file if it's NOT in usage
 
 case "${ACTION}" in
     "install")
-	PKG=$1
 	# TERMINAL DOWNLOAD
 	if [ $TERMINAL -eq 1 ]; then
 		pacman --noconfirm -Sw "${PKG}"
@@ -97,7 +111,6 @@ case "${ACTION}" in
 	exit ${RET}
 	;;
     "remove")
-	PKG=$1
 	pacman --noconfirm -R "${PKG}"
 	exit $?
 	;;
@@ -171,13 +184,7 @@ case "${ACTION}" in
 	) | python
 	     exit $?
 	;;
-    *)
-	echo "${0} install <package>" >&2
-	echo "${0} remove  <package>" >&2
-	echo "${0} list" >&2
-	echo "${0} list-repositories" >&2
-	echo "${0} clean" >&2
-	echo "${0} clean-all" >&2
-	echo "${0} refresh" >&2
-	echo "${0} update" >&2
+	*)
+		do_help
+		exit 1
 esac

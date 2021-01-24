@@ -42,6 +42,7 @@ from generators.easyrpg.easyrpgGenerator import EasyRPGGenerator
 from generators.redream.redreamGenerator import RedreamGenerator
 from generators.supermodel.supermodelGenerator import SupermodelGenerator
 from generators.xash3d_fwgs.xash3dFwgsGenerator import Xash3dFwgsGenerator
+from generators.tsugaru.tsugaruGenerator import TsugaruGenerator
 
 import controllersConfig as controllers
 import signal
@@ -87,6 +88,7 @@ generators = {
     'redream': RedreamGenerator(),
     'supermodel': SupermodelGenerator(),
     'xash3d_fwgs': Xash3dFwgsGenerator(),
+    'tsugaru': TsugaruGenerator(),
 }
 
 def main(args, maxnbplayers):
@@ -111,14 +113,12 @@ def main(args, maxnbplayers):
     eslog.log("Running system: {}".format(systemName))
     system = Emulator(systemName, args.rom)
 
-    system.config["emulator-forced"] = False
-    system.config["core-forced"]     = False
     if args.emulator is not None:
         system.config["emulator"] = args.emulator
-        system.config["emulator-forced"] = True # tip to indicated that the emulator was forced
+        self.config["emulator-forced"] = True
     if args.core is not None:
         system.config["core"] = args.core
-        system.config["core-forced"] = True
+        self.config["core-forced"] = True
 
     eslog.debug("Settings: {}".format(system.config))
     if "emulator" in system.config and "core" in system.config:
@@ -181,6 +181,12 @@ def main(args, maxnbplayers):
             system.config["netplay.server.ip"] = args.netplayip
         if args.netplayport is not None:
             system.config["netplay.server.port"] = args.netplayport
+
+        # autosave arguments
+        if args.state_slot is not None:
+            system.config["state_slot"] = args.state_slot
+        if args.autosave is not None:
+            system.config["autosave"] = args.autosave
 
         # run a script before emulator starts
         callExternalScripts("/usr/share/batocera/configgen/scripts", "gameStart", [systemName, system.config['emulator'], effectiveCore, effectiveRom])
@@ -269,6 +275,8 @@ if __name__ == '__main__':
     parser.add_argument("-netplaypass", help="enable spectator mode", type=str, required=False)
     parser.add_argument("-netplayip", help="remote ip", type=str, required=False)
     parser.add_argument("-netplayport", help="remote port", type=str, required=False)
+    parser.add_argument("-state_slot", help="state slot", type=str, required=False)
+    parser.add_argument("-autosave", help="autosave", type=str, required=False)
 
     args = parser.parse_args()
     try:

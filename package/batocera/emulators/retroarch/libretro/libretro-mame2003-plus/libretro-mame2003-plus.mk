@@ -3,8 +3,8 @@
 # MAME2003 PLUS
 #
 ################################################################################
-# Version.: Commits on Jan 1, 2020
-LIBRETRO_MAME2003_PLUS_VERSION = 5fcdd8ffbb6c6d04b1e5525e19c217867252c8bf
+# Version.: Commits on Jan 16, 2021
+LIBRETRO_MAME2003_PLUS_VERSION = c1741ede899574d2153551c1d51550e176d5d6f5
 LIBRETRO_MAME2003_PLUS_SITE = $(call github,libretro,mame2003-plus-libretro,$(LIBRETRO_MAME2003_PLUS_VERSION))
 LIBRETRO_MAME2003_PLUS_LICENSE = MAME
 
@@ -20,6 +20,10 @@ endif
 
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA),y)
 	LIBRETRO_MAME2003_PLUS_PLATFORM = classic_armv8_a35
+endif
+
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_S812),y)
+    LIBRETRO_MAME2003_PLUS_PLATFORM = s812
 endif
 
 define LIBRETRO_MAME2003_PLUS_BUILD_CMDS

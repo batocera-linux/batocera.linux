@@ -38,10 +38,17 @@ define LIBCAPSIMAGE_INSTALL_STAGING_CMDS
 endef
 
 define LIBCAPSIMAGE_INSTALL_TARGET_CMDS
-	mkdir -p $(STAGING_DIR)/usr/lib/capsimage
+	# Target generic install
+	mkdir -p $(TARGET_DIR)/usr/lib/capsimage
 	cp $(@D)/capsimg_source_linux_macosx/CAPSImg/libcapsimage.so.5.1 \
 		$(TARGET_DIR)/usr/lib
 	ln -sf /usr/lib/libcapsimage.so.5.1 $(TARGET_DIR)/usr/lib/libcapsimage.so.5
+
+	# FS-UAE specific install
+	mkdir -p $(TARGET_DIR)/usr/share/fs-uae/Plugins
+	ln -sf /usr/lib/libcapsimage.so.5.1 \
+		$(TARGET_DIR)/usr/share/fs-uae/Plugins/capsimg.so
+        echo "$(CAPSIMG_VERSION)" > $(TARGET_DIR)/usr/share/fs-uae/Plugins/Version.txt
 endef
 
 define LIBCAPSIMAGE_PRE_CONFIGURE_FIXUP

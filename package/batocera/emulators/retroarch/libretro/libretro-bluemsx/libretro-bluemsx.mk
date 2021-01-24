@@ -3,8 +3,8 @@
 # BLUEMSX
 #
 ################################################################################
-# Version.: Commits on Oct 18, 2020
-LIBRETRO_BLUEMSX_VERSION = 5b8718c8bba44ff4adda1bcc575895d342c1ba6a
+# Version.: Commits on Jan 19, 2021
+LIBRETRO_BLUEMSX_VERSION = e3d579e554fdb564d49d97d93ba37e8952075048
 LIBRETRO_BLUEMSX_SITE = $(call github,libretro,blueMSX-libretro,$(LIBRETRO_BLUEMSX_VERSION))
 LIBRETRO_BLUEMSX_LICENSE = GPLv2
 
@@ -26,7 +26,8 @@ define LIBRETRO_BLUEMSX_INSTALL_TARGET_CMDS
 	$(INSTALL) -D $(@D)/bluemsx_libretro.so \
 		$(TARGET_DIR)/usr/lib/libretro/bluemsx_libretro.so
 
-	cp -pr $(@D)/system/bluemsx/ \
+	mkdir -p $(TARGET_DIR)/usr/share/batocera/datainit/bios/bluemsx
+	cp -pr $(@D)/system/bluemsx/* \
 		$(TARGET_DIR)/usr/share/batocera/datainit/bios
 endef
 

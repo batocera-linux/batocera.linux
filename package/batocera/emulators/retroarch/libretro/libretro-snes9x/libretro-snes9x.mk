@@ -3,9 +3,9 @@
 # SNES9X
 #
 ################################################################################
-# Version.: Commits on Nov 04, 2020
-LIBRETRO_SNES9X_VERSION = f7c6625d67f8a8cbb2999aaf4d4b31fa5d874015
-LIBRETRO_SNES9X_SITE = $(call github,snes9xgit,snes9x,$(LIBRETRO_SNES9X_VERSION))
+# Version.: Commits on Jan 14, 2020
+LIBRETRO_SNES9X_VERSION = 762a38b5148e3a0bec6a8659d330d13526284cb8
+LIBRETRO_SNES9X_SITE = $(call github,libretro,snes9x,$(LIBRETRO_SNES9X_VERSION))
 LIBRETRO_SNES9X_LICENSE = Non-commercial
 
 LIBRETRO_SNES9X_PLATFORM = $(LIBRETRO_PLATFORM)
