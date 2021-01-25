@@ -1707,3 +1707,15 @@ mugen:
     mugen:
       lutris:  { requireAnyOf: [BR2_PACKAGE_WINE_LUTRIS] }
       proton:  { requireAnyOf: [BR2_PACKAGE_WINE_PROTON] }
+
+flash:
+  name:       Adobe Flash Player
+  manufacturer: Adobe
+  release: 1996
+  hardware: port
+  extensions: [swf]
+  emulators:
+    lightspark:
+      lightspark: { requireAnyOf: [BR2_PACKAGE_LIGHTSPARK] }
+    ruffle:
+      ruffle: { requireAnyOf: [BR2_PACKAGE_RUFFLE] }

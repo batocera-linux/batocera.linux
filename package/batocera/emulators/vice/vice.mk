@@ -6,7 +6,7 @@
 # Version.: Dec 24, 2020
 VICE_VERSION = 3.5
 VICE_SOURCE = vice-$(VICE_VERSION).tar.gz
-VICE_SITE = https://freefr.dl.sourceforge.net/project/vice-emu/releases
+VICE_SITE = https://sourceforge.net/projects/vice-emu/files/releases
 VICE_LICENSE = GPLv2
 VICE_DEPENDENCIES = ffmpeg sdl2 libpng giflib zlib lame alsa-lib jpeg host-xa host-dos2unix
 

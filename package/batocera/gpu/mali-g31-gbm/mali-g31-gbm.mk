@@ -3,53 +3,25 @@
 # mali-g31-gbm
 #
 ################################################################################
-# Version.: Commits on Apr 2, 2020
-MALI_G31_GBM_VERSION = 8867101e509ec9e99c2330b1dbd9830ec9350ffe
+# Version.: Commits on Jan 19, 2021
+MALI_G31_GBM_VERSION = 55b5d650efc98db2ce2e7a170111a71cf0e2c239
 MALI_G31_GBM_SITE = $(call github,rockchip-linux,libmali,$(MALI_G31_GBM_VERSION))
 
 MALI_G31_GBM_INSTALL_STAGING = YES
 MALI_G31_GBM_PROVIDES = libegl libgles
 
-define MALI_G31_GBM_INSTALL_STAGING_CMDS
-	mkdir -p $(STAGING_DIR)/usr/lib/pkgconfig
+MALI_G31_GBM_CONF_OPTS = \
+	-Dplatform=gbm \
+	-Dgpu=bifrost-g31 \
+	-Dversion=rxp0
 
-	cp $(@D)/lib/arm-linux-gnueabihf/libmali-bifrost-g31-rxp0-gbm.so \
-		$(STAGING_DIR)/usr/lib/libmali.so
-
-	(cd $(STAGING_DIR)/usr/lib && ln -sf libmali.so libMali.so)
-	(cd $(STAGING_DIR)/usr/lib && ln -sf libmali.so libEGL.so)
-	(cd $(STAGING_DIR)/usr/lib && ln -sf libmali.so libEGL.so.1)
-	(cd $(STAGING_DIR)/usr/lib && ln -sf libmali.so libGLESv1_CM.so)
-	(cd $(STAGING_DIR)/usr/lib && ln -sf libmali.so libGLESv1_CM.so.1)
-	(cd $(STAGING_DIR)/usr/lib && ln -sf libmali.so libGLESv2.so)
-	(cd $(STAGING_DIR)/usr/lib && ln -sf libmali.so libGLESv2.so.2)
-	(cd $(STAGING_DIR)/usr/lib && ln -sf libmali.so libgbm.so)
-
-	cp -pr $(@D)/include    $(STAGING_DIR)/usr
-	cp $(@D)/include/gbm.h 	$(STAGING_DIR)/usr/include/gbm.h
-
-	for X in gbm egl glesv2; \
-	do \
-		cp $(@D)/pkgconfig/$${X}.pc.cmake                	$(STAGING_DIR)/usr/lib/pkgconfig/$${X}.pc; \
-		sed -i -e s+@CMAKE_INSTALL_INCLUDEDIR@+include+g 	$(STAGING_DIR)/usr/lib/pkgconfig/$${X}.pc; \
-		sed -i -e s+@CMAKE_INSTALL_LIBDIR@+lib+g         	$(STAGING_DIR)/usr/lib/pkgconfig/$${X}.pc; \
-	done
+ifneq ($(BR2_PACKAGE_MESA3D),y)
+# See https://github.com/rockchip-linux/libmali/issues/66
+define MALI_G31_GBM_COPY_KHRPLATFORM_STAGING
+	cp $(STAGING_DIR)/usr/include/KHR/mali_khrplatform.h \
+		$(STAGING_DIR)/usr/include/KHR/khrplatform.h
 endef
+MALI_G31_GBM_POST_INSTALL_STAGING_HOOKS += MALI_G31_GBM_COPY_KHRPLATFORM_STAGING
+endif
 
-define MALI_G31_GBM_INSTALL_TARGET_CMDS
-	mkdir -p $(TARGET_DIR)/usr/lib
-
-	cp $(@D)/lib/arm-linux-gnueabihf/libmali-bifrost-g31-rxp0-gbm.so \
-		$(TARGET_DIR)/usr/lib/libmali.so
-
-	(cd $(TARGET_DIR)/usr/lib && ln -sf libmali.so libMali.so)
-	(cd $(TARGET_DIR)/usr/lib && ln -sf libmali.so libEGL.so)
-	(cd $(TARGET_DIR)/usr/lib && ln -sf libmali.so libEGL.so.1)
-	(cd $(TARGET_DIR)/usr/lib && ln -sf libmali.so libGLESv1_CM.so)
-	(cd $(TARGET_DIR)/usr/lib && ln -sf libmali.so libGLESv1_CM.so.1)
-	(cd $(TARGET_DIR)/usr/lib && ln -sf libmali.so libGLESv2.so)
-	(cd $(TARGET_DIR)/usr/lib && ln -sf libmali.so libGLESv2.so.2)
-	(cd $(TARGET_DIR)/usr/lib && ln -sf libmali.so libgbm.so)
-endef
-
-$(eval $(generic-package))
+$(eval $(meson-package))

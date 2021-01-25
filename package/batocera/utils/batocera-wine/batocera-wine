@@ -2,7 +2,9 @@
 
 set -x
 
-ACTION=$1
+SYSTEM=$1
+ACTION=$2
+shift
 shift
 
 # Arguments: key, system, game
@@ -47,17 +49,17 @@ export WINEDLLPATH="${DIR}/${WINE_VERSION}/lib/wine/fakedlls:${DIR}/${WINE_VERSI
 }
 
 usage() {
-    echo "${1} windows play   	     <game>.iso"             >&2
-    echo "${1} windows play   	     <game>.exe"             >&2
-    echo "${1} ${SYSTEM} play   	 <game>.pc"              >&2
-    echo "${1} windows play   	     <game>.wine"            >&2
-    echo "${1} windows play   	     <game>.wsquashfs"       >&2
-    echo "${1} windows play   	     <game>.wtgz"            >&2
-    echo "${1} install 	     <game>.iso"             >&2
-    echo "${1} install 	     <game>.exe"             >&2
-    echo "${1} tricks  	     <game>.wine directplay" >&2
-    echo "${1} wine2squashfs <game.wine>"            >&2
-    echo "${1} wine2winetgz  <game.wine>"            >&2
+    echo "${1} windows play    	     <game>.iso"             >&2
+    echo "${1} windows play    	     <game>.exe"             >&2
+    echo "${1} windows play    	     <game>.pc"              >&2
+    echo "${1} windows play    	     <game>.wine"            >&2
+    echo "${1} windows play    	     <game>.wsquashfs"       >&2
+    echo "${1} windows play    	     <game>.wtgz"            >&2
+    echo "${1} windows install 	     <game>.iso"             >&2
+    echo "${1} windows install 	     <game>.exe"             >&2
+    echo "${1} windows tricks  	     <game>.wine directplay" >&2
+    echo "${1} windows wine2squashfs <game.wine>"            >&2
+    echo "${1} windows wine2winetgz  <game.wine>"            >&2
 }
 
 waitWineServer() {
@@ -120,8 +122,8 @@ dxvk_install() {
     # install dxvk only on system where it is available (aka, not x86)
     test -e "/usr/wine/dxvk" || return 0
 
-    DXVK="$(get_setting dxvk "${SYSTEM}" "${ROMGAMENAME}")"
-    DXVK_HUD="$(get_setting dxvk_hud "${SYSTEM}" "${ROMGAMENAME}")"
+    DXVK=$(get_setting dxvk "${SYSTEM}" "${ROMGAMENAME}")
+    DXVK_HUD=$(get_setting dxvk_hud "${SYSTEM}" "${ROMGAMENAME}")
 
     if test "${DXVK_HUD}" = 1
     then

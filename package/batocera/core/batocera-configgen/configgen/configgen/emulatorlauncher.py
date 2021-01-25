@@ -44,6 +44,8 @@ from generators.supermodel.supermodelGenerator import SupermodelGenerator
 from generators.xash3d_fwgs.xash3dFwgsGenerator import Xash3dFwgsGenerator
 from generators.tsugaru.tsugaruGenerator import TsugaruGenerator
 from generators.mugen.mugenGenerator import MugenGenerator
+from generators.lightspark.lightsparkGenerator import LightsparkGenerator
+from generators.ruffle.ruffleGenerator import RuffleGenerator
 
 import controllersConfig as controllers
 import signal
@@ -90,6 +92,9 @@ generators = {
     'supermodel': SupermodelGenerator(),
     'xash3d_fwgs': Xash3dFwgsGenerator(),
     'tsugaru': TsugaruGenerator(),
+    'mugen': MugenGenerator(),
+    'lightspark': LightsparkGenerator(),
+    'ruffle': RuffleGenerator(),
 }
 
 def main(args, maxnbplayers):
@@ -182,6 +187,12 @@ def main(args, maxnbplayers):
             system.config["netplay.server.ip"] = args.netplayip
         if args.netplayport is not None:
             system.config["netplay.server.port"] = args.netplayport
+
+        # autosave arguments
+        if args.state_slot is not None:
+            system.config["state_slot"] = args.state_slot
+        if args.autosave is not None:
+            system.config["autosave"] = args.autosave
 
         # run a script before emulator starts
         callExternalScripts("/usr/share/batocera/configgen/scripts", "gameStart", [systemName, system.config['emulator'], effectiveCore, effectiveRom])
