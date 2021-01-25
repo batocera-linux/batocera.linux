@@ -120,8 +120,8 @@ dxvk_install() {
     # install dxvk only on system where it is available (aka, not x86)
     test -e "/usr/wine/dxvk" || return 0
 
-    DXVK=$(get_setting dxvk "${SYSTEM}" "${ROMGAMENAME}")
-    DXVK_HUD=$(get_setting dxvk_hud "${SYSTEM}" "${ROMGAMENAME}")
+    DXVK="$(get_setting dxvk "${SYSTEM}" "${ROMGAMENAME}")"
+    DXVK_HUD="$(get_setting dxvk_hud "${SYSTEM}" "${ROMGAMENAME}")"
 
     if test "${DXVK_HUD}" = 1
     then
