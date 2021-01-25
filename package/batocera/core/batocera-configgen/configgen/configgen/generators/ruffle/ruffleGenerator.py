@@ -10,7 +10,4 @@ class RuffleGenerator(Generator):
     def generate(self, system, rom, playersControllers, gameResolution):
         commandArray = ["ruffle", rom]
         return Command.Command(
-            array=commandArray,
-            env={
-                'SDL_GAMECONTROLLERCONFIG': controllersConfig.generateSdlGameControllerConfig(playersControllers)
-            })
+            array=commandArray)

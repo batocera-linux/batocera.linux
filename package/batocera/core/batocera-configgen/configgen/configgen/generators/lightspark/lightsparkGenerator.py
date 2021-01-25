@@ -10,7 +10,4 @@ class LightsparkGenerator(Generator):
     def generate(self, system, rom, playersControllers, gameResolution):
         commandArray = ["lightspark", "-s", "local-with-networking", rom]
         return Command.Command(
-            array=commandArray,
-            env={
-                'SDL_GAMECONTROLLERCONFIG': controllersConfig.generateSdlGameControllerConfig(playersControllers)
-            })
+            array=commandArray)
