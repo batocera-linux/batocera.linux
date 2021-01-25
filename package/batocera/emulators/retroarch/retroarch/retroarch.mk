@@ -218,6 +218,10 @@ ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI4),y)
 	LIBRETRO_PLATFORM += rpi4
 endif
 
-ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA),y)
-	LIBRETRO_PLATFORM += classic_armv8_a35
+ifeq ($(BR2_aarch64),y)
+LIBRETRO_PLATFORM += arm64
+endif
+
+ifeq ($(BR2_cortex_a35)$(BR2_arm),yy)
+LIBRETRO_PLATFORM += classic_armv8_a35
 endif
