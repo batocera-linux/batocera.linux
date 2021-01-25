@@ -6,7 +6,7 @@ import re
 import time
 import subprocess
 import json
-from logger import eslog
+from .logger import eslog
 
 # Set a specific video mode
 def changeMode(videomode):

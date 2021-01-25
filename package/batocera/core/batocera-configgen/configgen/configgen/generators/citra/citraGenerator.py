@@ -5,7 +5,7 @@ import batoceraFiles
 from generators.Generator import Generator
 import shutil
 import os
-import ConfigParser
+import configparser
 
 class CitraGenerator(Generator):
 
@@ -43,7 +43,7 @@ class CitraGenerator(Generator):
         }
 
         # ini file
-        citraConfig = ConfigParser.RawConfigParser()
+        citraConfig = configparser.RawConfigParser()
         if os.path.exists(citraConfigFile):
             citraConfig.read(citraConfigFile)
 

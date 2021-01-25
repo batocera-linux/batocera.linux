@@ -2,7 +2,7 @@
 
 from generators.Generator import Generator
 import batoceraFiles
-import cannonballControllers
+from . import cannonballControllers
 import os
 from xml.dom import minidom
 import codecs

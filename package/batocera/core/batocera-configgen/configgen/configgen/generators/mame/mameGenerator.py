@@ -8,7 +8,7 @@ import os
 from utils.logger import eslog
 from os import path
 from os import environ
-import ConfigParser
+import configparser
 
 class MameGenerator(Generator):
 

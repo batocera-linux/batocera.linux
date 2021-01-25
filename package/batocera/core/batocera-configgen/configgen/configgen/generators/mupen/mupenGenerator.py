@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 import Command
-import mupenConfig
-import mupenControllers
+from . import mupenConfig
+from . import mupenControllers
 import batoceraFiles
 from generators.Generator import Generator
-import ConfigParser
+import configparser
 import os
 
 class MupenGenerator(Generator):
@@ -12,7 +12,7 @@ class MupenGenerator(Generator):
     def generate(self, system, rom, playersControllers, gameResolution):
 
         # read the configuration file
-        iniConfig = ConfigParser.ConfigParser()
+        iniConfig = configparser.ConfigParser()
         # To prevent ConfigParser from converting to lower case
         iniConfig.optionxform = str
         if os.path.exists(batoceraFiles.mupenCustom):

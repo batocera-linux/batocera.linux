@@ -7,7 +7,7 @@ from os.path import dirname
 from os.path import isdir
 from os.path import isfile
 import glob
-import ConfigParser
+import configparser
 
 class DosBoxxGenerator(Generator):
 
@@ -22,7 +22,7 @@ class DosBoxxGenerator(Generator):
             configFile = gameConfFile
 
         # configuration file
-        iniSettings = ConfigParser.ConfigParser()
+        iniSettings = configparser.ConfigParser()
         # To prevent ConfigParser from converting to lower case
         iniSettings.optionxform = str
 

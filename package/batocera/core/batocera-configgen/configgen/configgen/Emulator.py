@@ -1,10 +1,10 @@
 import sys
 import os
-import batoceraFiles
-from settings.unixSettings import UnixSettings
+from . import batoceraFiles
+from .settings.unixSettings import UnixSettings
 import xml.etree.ElementTree as ET
 import shlex
-from utils.logger import eslog
+from .utils.logger import eslog
 import yaml
 import collections
 
@@ -76,7 +76,7 @@ class Emulator():
         :param merge_dct: dct merged into dct
         :return: None
         """
-        for k, v in merge_dct.iteritems():
+        for k,v in merge_dct.items()
             if (k in dct and isinstance(dct[k], dict) and isinstance(merge_dct[k], collections.Mapping)):
                 Emulator.dict_merge(dct[k], merge_dct[k])
             else:
@@ -124,9 +124,9 @@ class Emulator():
 
     def getOptBoolean(self, key):
         if key in self.config:
-            if unicode(self.config[key]) == u'1':
+            if str(self.config[key]) == '1':
                 return True
-            if unicode(self.config[key]) == u'true':
+            if str(self.config[key]) == 'true':
                 return True
             if self.config[key] == True:
                 return True

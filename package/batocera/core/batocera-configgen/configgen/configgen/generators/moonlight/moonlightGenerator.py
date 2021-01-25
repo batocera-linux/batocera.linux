@@ -2,7 +2,7 @@
 import Command
 import controllersConfig
 import batoceraFiles
-import moonlightConfig
+from . import moonlightConfig
 from generators.Generator import Generator
 import shutil
 import os.path

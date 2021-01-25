@@ -3,7 +3,7 @@
 # -*- coding: utf-8 -*-
 import sys
 import os
-import ConfigParser
+import configparser
 import batoceraFiles
 
 import batoceraFiles
@@ -115,7 +115,7 @@ ppssppMapping =  { 'a' :             {'button': 'Circle'},
 def generateControllerConfig(controller):
 	# Set config file name
 	configFileName = batoceraFiles.ppssppControlsIni
-	Config = ConfigParser.ConfigParser()
+	Config = configparser.ConfigParser()
 	Config.optionxform = str
 	# We need to read the default file as PPSSPP needs the keyboard defs ine the controlls.ini file otherwise the GYUI won't repond
 	Config.read(batoceraFiles.ppssppControlsInit)
@@ -147,7 +147,7 @@ def generateControllerConfig(controller):
 			pspcode = axisToCode(nkAxisId, int(input.value))
 			val = "{}-{}".format( DEVICE_ID_PAD_0 + padnum, pspcode )
 			val = optionValue(Config, section, var, val)
-			print "Adding {} to {}".format(var, val)
+			print(("Adding {} to {}".format(var, val)))
 			Config.set(section, var, val)
 			
 			# Skip the rest if it's an axis dpad

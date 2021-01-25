@@ -65,7 +65,7 @@ class AmiberryGenerator(Generator):
                 playerInputFilename = batoceraFiles.amiberryRetroarchInputsDir + "/" + padfilename + ".cfg"
                 with open(batoceraFiles.amiberryRetroarchCustom) as infile, open(playerInputFilename, 'w') as outfile:
                     for line in infile:
-                        for src, target in replacements.iteritems():
+                        for src, target in list(replacements.items()):
                             newline = line.replace(src, target)
                             if not newline.isspace():
                                 outfile.write(newline)

@@ -7,7 +7,7 @@ from os import path
 import codecs
 from Emulator import Emulator
 from utils.logger import eslog
-import ConfigParser
+import configparser
 import json
 
 # Create the controller configuration file
@@ -51,7 +51,7 @@ def generateControllerConfig(system, playersControllers, rom):
     nplayer = 0
 
     for playercontroller, pad in sorted(playersControllers.items()):
-        cemuSettings = ConfigParser.ConfigParser()
+        cemuSettings = configparser.ConfigParser()
         cemuSettings.optionxform = str
 
         #Add Default Sections

@@ -4,7 +4,7 @@ import batoceraFiles
 import zipfile
 import shutil
 from generators.Generator import Generator
-import fsuaeControllers
+from . import fsuaeControllers
 from os import path
 
 class FsuaeGenerator(Generator):
@@ -71,7 +71,7 @@ class FsuaeGenerator(Generator):
                 if (d.endswith("ipf") or d.endswith("adf") or d.endswith("dms") or d.endswith("adz")):
                     diskNames.append(name)
 
-            print("Amount of disks in zip " + str(len(diskNames)))
+            print('Amount of disks in zip', len(diskNames))
 
         # if 2+ files, we have a multidisk ZIP (0=no zip)
         if (len(diskNames) > 1):

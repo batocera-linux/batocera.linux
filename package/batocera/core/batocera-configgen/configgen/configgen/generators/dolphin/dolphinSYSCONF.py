@@ -72,7 +72,7 @@ def readWriteEntry(f, setval):
             raise Exception("unknown type {} : %{}%".format(itemType))
 
     if not setval or itemName in setval:
-        print('{:12s} = {}'.format(itemName, itemValue))
+        print(('{:12s} = {}'.format(itemName, itemValue)))
 
 def readWriteFile(filepath, setval):
     # open in read read/write depending of the action

@@ -8,7 +8,7 @@ class Command:
     def __str__(self):
         str = list()
 
-        for varName, varValue in self.env.items():
+        for varName, varValue in list(self.env.items()):
             str.append("%s=%s" % (varName, varValue))
             
         for value in self.array:
