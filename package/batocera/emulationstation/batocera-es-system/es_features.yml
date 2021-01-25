@@ -2571,6 +2571,7 @@ wine:
             choices:
                 "Off": 0
                 "On":  1
+
 solarus:
   features: []
   cfeatures:
@@ -2581,7 +2582,12 @@ solarus:
               Normal: normal
               Joystick1: joystick1
               Joystick2: joystick2
+
+mugen:
+  features: [padtokeyboard]
+
 ruffle:
   features: [padtokeyboard]
+
 lightspark:
   features: [padtokeyboard]
