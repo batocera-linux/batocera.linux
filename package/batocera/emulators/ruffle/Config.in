@@ -1,0 +1,9 @@
+config BR2_PACKAGE_RUFFLE
+	bool "ruffle"
+	select BR2_PACKAGE_HOST_RUSTC
+    select BR2_PACKAGE_OPENSSL
+	help
+          Ruffle
+          Flash emulator for windows / mac / linux.
+
+          https://ruffle.rs/

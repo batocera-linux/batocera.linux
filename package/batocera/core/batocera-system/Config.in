@@ -374,6 +374,7 @@ config BR2_PACKAGE_BATOCERA_ALL_SYSTEMS
 		select BR2_PACKAGE_BATOCERA_WINE_SYSTEMS
 		select BR2_PACKAGE_BATOCERA_GAMESTREAM_SYSTEMS
 		select BR2_PACKAGE_BATOCERA_PORTS_SYSTEMS
+		select BR2_PACKAGE_BATOCERA_FLASH_SYSTEMS
 
 		help
 		batocera.linux all supported emulation systems
@@ -385,6 +386,14 @@ config BR2_PACKAGE_BATOCERA_WINE_SYSTEMS
 		# Wine (windows) layer
 		select BR2_PACKAGE_BATOCERA_WINE              if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
 		select BR2_PACKAGE_WINE_X86                   if BR2_PACKAGE_BATOCERA_TARGET_X86_64
+
+#### Flash Player ####
+config BR2_PACKAGE_BATOCERA_FLASH_SYSTEMS
+		bool "batocera.linux Flash support"
+
+		# Flash Player Emulator
+		select BR2_PACKAGE_RUFFLE                       if BR2_PACKAGE_BATOCERA_TARGET_X86_64 # depends on X11
+		select BR2_PACKAGE_LIGHTSPARK                   if BR2_PACKAGE_BATOCERA_TARGET_X86_64 # depends on X11
 
 #### Moonlight / Gamestream ####
 config BR2_PACKAGE_BATOCERA_GAMESTREAM_SYSTEMS
