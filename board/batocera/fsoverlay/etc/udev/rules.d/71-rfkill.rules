@@ -1,0 +1,2 @@
+# make sure radio is on for hotplugged ifaces or slow to start nics
+KERNEL=="rfkill?", SUBSYSTEM=="rfkill", ATTR{type}=="wlan", ATTR{state}="1"
