@@ -15,7 +15,7 @@ class MugenGenerator(Generator):
                 "SDL_GAMECONTROLLERCONFIG": controllersConfig.generateSdlGameControllerConfig(playersControllers),
             })
 
-        config = UnixSettings(rom + "/data + mugen.cfg, separator='')
+        config = UnixSettings(rom + "/data/" + "mugen.cfg", separator='')
 
         # general
         config.save("FullScreen", "1")
