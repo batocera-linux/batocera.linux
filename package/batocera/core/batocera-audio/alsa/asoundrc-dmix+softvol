@@ -2,30 +2,41 @@
 # dmix + softvol
 
 pcm.!default {
-	type            plug
-	slave.pcm       "softvol"
-}
-
-ctl.!default {
-	type            hw 
-	card            %CARDNO%
-}
-
-pcm.ddmix {
-	ipc_key         1024
-	type            dmix
-	slave {
-		pcm         "hw:%CARDNO%,%DEVICENO%"
-	}
+	type plug
+	slave.pcm "softvol"
 }
 
 pcm.softvol {
-	type            softvol
-	slave {
-		pcm         "ddmix"
-	}
+	type softvol
+	slave.pcm "dmixer"
 	control {
-		name        "Master"
-		card        %CARDNO%
+		name "Master"
+		card %CARDNO%
 	}
 }
+
+pcm.dmixer  {
+	type asym
+	capture.pcm "hw:%CARDNO%,%DEVICENO%"
+	playback.pcm {
+		type dmix
+		ipc_key 1024
+		ipc_perm 0660
+		ipc_gid audio
+		slave {
+			channels 2
+			pcm "hw:%CARDNO%,%DEVICENO%"
+			period_time 0
+			period_size 1024
+			buffer_size 8192
+			rate 44100
+		}
+		bindings {
+			0 0
+			1 1
+		}
+	}
+}
+
+ctl.!default { type hw card %CARDNO% }
+
