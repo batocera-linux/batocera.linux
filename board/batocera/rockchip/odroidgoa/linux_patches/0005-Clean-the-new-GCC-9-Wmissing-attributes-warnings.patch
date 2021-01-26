@@ -1,0 +1,57 @@
+From 29d83afefdcd388e342ef73ecd7c9afaf4b30186 Mon Sep 17 00:00:00 2001
+From: Gleb Mazovetskiy <glex.spb@gmail.com>
+Date: Mon, 25 Jan 2021 01:06:04 +0000
+Subject: [PATCH 05/12] Clean the new GCC 9 -Wmissing-attributes warnings
+
+Backport https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=0b999ae3614d09d97a1575936bcee884f912b10e
+
+Signed-off-by: Gleb Mazovetskiy <glex.spb@gmail.com>
+---
+ include/linux/compiler.h | 10 ++++++++++
+ include/linux/module.h   |  4 ++--
+ 2 files changed, 12 insertions(+), 2 deletions(-)
+
+diff --git a/include/linux/compiler.h b/include/linux/compiler.h
+index ed772311ec1f..798f1fac3961 100644
+--- a/include/linux/compiler.h
++++ b/include/linux/compiler.h
+@@ -422,6 +422,16 @@ static __always_inline void __write_once_size(volatile void *p, void *res, int s
+ #define __visible
+ #endif
+ 
++#if defined __has_attribute
++# if __has_attribute (__copy__)
++#  define __copy(symbol)                 __attribute__((__copy__(symbol)))
++# else
++#  define __copy(symbol)
++# endif
++#else
++#  define __copy(symbol)
++#endif
++
+ /*
+  * Assume alignment of return value.
+  */
+diff --git a/include/linux/module.h b/include/linux/module.h
+index d79e1e55c1d4..4b29f51443f8 100644
+--- a/include/linux/module.h
++++ b/include/linux/module.h
+@@ -127,13 +127,13 @@ extern void cleanup_module(void);
+ #define module_init(initfn)					\
+ 	static inline initcall_t __maybe_unused __inittest(void)		\
+ 	{ return initfn; }					\
+-	int init_module(void) __attribute__((alias(#initfn)));
++	int init_module(void) __copy(initfn) __attribute__((alias(#initfn)));
+ 
+ /* This is only required if you want to be unloadable. */
+ #define module_exit(exitfn)					\
+ 	static inline exitcall_t __maybe_unused __exittest(void)		\
+ 	{ return exitfn; }					\
+-	void cleanup_module(void) __attribute__((alias(#exitfn)));
++	void cleanup_module(void) __copy(exitfn) __attribute__((alias(#exitfn)));
+ 
+ #endif
+ 
+-- 
+2.27.0
+
