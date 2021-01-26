@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-BATOCERA_SCRIPTS_VERSION = 2
+BATOCERA_SCRIPTS_VERSION = 3
 BATOCERA_SCRIPTS_LICENSE = GPL
 BATOCERA_SCRIPTS_DEPENDENCIES = pciutils
 BATOCERA_SCRIPTS_SOURCE=
