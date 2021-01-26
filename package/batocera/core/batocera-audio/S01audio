@@ -5,6 +5,10 @@
 
 start_alsa() {
 	printf "Starting alsa: "
+	mode=$(/usr/bin/batocera-audio get)
+	if ! test -z "${mode}"; then
+		/usr/bin/batocera-audio set ${mode} >/dev/null 2>&1
+	fi
 	echo "OK"
 }
 
