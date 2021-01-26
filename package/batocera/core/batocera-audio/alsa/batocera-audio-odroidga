@@ -15,10 +15,12 @@ case "${ACTION}" in
 		MODE="$2"
 		case "${MODE}" in
 			auto | speakers)
+				sed -e "s;%CARDNO%;0;g" -e "s;%DEVICENO%;0;g" /usr/share/batocera/alsa/asoundrc-dmix+softvol > /userdata/system/.asoundrc
 				amixer cset name='Playback Path' SPK
 			;;
 
 			headphone)
+				sed -e "s;%CARDNO%;0;g" -e "s;%DEVICENO%;0;g" /usr/share/batocera/alsa/asoundrc-dmix+softvol > /userdata/system/.asoundrc
 				amixer cset name='Playback Path' HP
 			;;
 		esac
