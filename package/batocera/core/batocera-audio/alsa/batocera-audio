@@ -30,10 +30,7 @@ case "${ACTION}" in
 				if echo "${MODE}" | grep -qE '^[0-9]*,[0-9]* '; then
 					cardnb="$(echo "${MODE}" | sed -e s+'^\([0-9]*\),.*$'+'\1'+)"
 					devicenb="$(echo "${MODE}" | sed -e s+'^[0-9]*,\([0-9]*\) .*$'+'\1'+)"
-					cat > /userdata/system/.asoundrc <<-EOF
-						pcm.!default { type plug slave { pcm "hw:${cardnb},${devicenb}" } }
-						ctl.!default { type hw card ${cardnb} }
-					EOF
+					sed -e "s;%CARDNO%;${cardnb};g" -e "s;%DEVICENO%;${devicenb};g" /usr/share/batocera/alsa/asoundrc-dmix+softvol > /userdata/system/.asoundrc
 				fi
 			;;
 		esac
