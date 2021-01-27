@@ -2585,6 +2585,31 @@ solarus:
 
 mugen:
   features: [padtokeyboard]
+  cfeatures:
+        esync:
+            prompt:      ESYNC
+            description: Can increase performance for games that stress CPU
+            choices:
+                "Off": 0
+                "On":  1
+        fsync:
+            prompt:      FSYNC
+            description: Can improving frame rates and responsiveness
+            choices:
+                "Off": 0
+                "On":  1
+        pba:
+            prompt:      PBA
+            description: Vastly improving the speed of buffer maps
+            choices:
+                "Off": 0
+                "On":  1
+        virtual_desktop:
+            prompt:      VIRTUAL DESKTOP
+            description: Define the resolution and a new dedicated window
+            choices:
+                "Off": 0
+                "On":  1
 
 ruffle:
   features: [padtokeyboard]
