@@ -53,6 +53,8 @@ class Pcsx2Generator(Generator):
         env["XDG_CONFIG_HOME"] = batoceraFiles.CONF
         env["SDL_GAMECONTROLLERCONFIG"] = controllersConfig.generateSdlGameControllerConfig(playersControllers)
 
+        env["SDL_PADSORDERCONFIG"] = controllersConfig.generateSdlGameControllerPadsOrderConfig(playersControllers)
+
         if arch == "x86":
             env["LD_LIBRARY_PATH"]    = "/lib32"
             env["LIBGL_DRIVERS_PATH"] = "/lib32/dri"
