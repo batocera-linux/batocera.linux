@@ -4,7 +4,7 @@
 #
 ################################################################################
 # Version.: Commits on Jan 2, 2021
-LIBRETRO_PARALLEL_N64_VERSION = 704b2cb4874fe01bc58467d1930c2a4fa5df777c
+LIBRETRO_PARALLEL_N64_VERSION = 6e26fbbc5a85f9613a01c1880142add81d618e19
 LIBRETRO_PARALLEL_N64_SITE = $(call github,libretro,parallel-n64,$(LIBRETRO_PARALLEL_N64_VERSION))
 LIBRETRO_PARALLEL_N64_LICENSE = GPLv2
 
