@@ -2,7 +2,6 @@
 
 from generators.Generator import Generator
 import batoceraFiles
-import pcsx2Controllers
 import Command
 import os
 from settings.unixSettings import UnixSettings
