@@ -3,6 +3,7 @@ config BR2_PACKAGE_MALI_T760
 	depends on BR2_arm
 	select BR2_PACKAGE_HAS_LIBEGL
 	select BR2_PACKAGE_HAS_LIBGLES
+	select BR2_PACKAGE_HAS_LIBMALI
 
 if BR2_PACKAGE_MALI_T760
 
@@ -10,6 +11,9 @@ config BR2_PACKAGE_PROVIDES_LIBEGL
 	default "mali-T760"
 
 config BR2_PACKAGE_PROVIDES_LIBGLES
+	default "mali-T760"
+
+config BR2_PACKAGE_PROVIDES_LIBMALI
 	default "mali-T760"
 
 endif
