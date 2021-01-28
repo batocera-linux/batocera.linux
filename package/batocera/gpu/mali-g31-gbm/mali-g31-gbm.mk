@@ -9,7 +9,7 @@ MALI_G31_GBM_VERSION = 23dbb929bd339a6c9d8f6dc5ce348f60244cc040
 MALI_G31_GBM_SITE = $(call github,rockchip-linux,libmali,$(MALI_G31_GBM_VERSION))
 
 MALI_G31_GBM_INSTALL_STAGING = YES
-MALI_G31_GBM_PROVIDES = libegl libgles
+MALI_G31_GBM_PROVIDES = libegl libgles libmali
 
 MALI_G31_GBM_CONF_OPTS = \
 	-Dplatform=gbm \
