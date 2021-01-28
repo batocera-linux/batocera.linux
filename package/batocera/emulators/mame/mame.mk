@@ -138,7 +138,7 @@ define MAME_INSTALL_TARGET_CMDS
 	mkdir -p $(TARGET_DIR)/usr/bin/mame/language
 	mkdir -p $(TARGET_DIR)/usr/bin/mame/roms
 
-	# MAME binary and default distro
+	# Install binaries and default distro
         $(INSTALL) -D $(@D)/mamearcade64	$(TARGET_DIR)/usr/bin/mame/mamearcade
         $(INSTALL) -D $(@D)/mamebatocera64	$(TARGET_DIR)/usr/bin/mame/mamemess
         cp $(@D)/COPYING			$(TARGET_DIR)/usr/bin/mame/
@@ -183,6 +183,16 @@ define MAME_INSTALL_TARGET_CMDS
 
 	# Delete useless hash softlist files
 	rm -Rf $(TARGET_DIR)/usr/bin/mame/hash/vgmplay.xml
+	rm -Rf $(TARGET_DIR)/usr/bin/mame/hash/amigaocs_flop.xml
+	rm -Rf $(TARGET_DIR)/usr/bin/mame/hash/dc.xml
+	rm -Rf $(TARGET_DIR)/usr/bin/mame/hash/gameboy.xml
+	rm -Rf $(TARGET_DIR)/usr/bin/mame/hash/gba.xml
+	rm -Rf $(TARGET_DIR)/usr/bin/mame/hash/gbcolor.xml
+	rm -Rf $(TARGET_DIR)/usr/bin/mame/hash/megadriv.xml
+	rm -Rf $(TARGET_DIR)/usr/bin/mame/hash/nes.hsi
+	rm -Rf $(TARGET_DIR)/usr/bin/mame/hash/nes.xml
+	rm -Rf $(TARGET_DIR)/usr/bin/mame/hash/psx.xml
+	rm -Rf $(TARGET_DIR)/usr/bin/mame/hash/snes.xml
 endef
 
 $(eval $(generic-package))
