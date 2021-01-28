@@ -1,0 +1,17 @@
+config BR2_PACKAGE_MALI_T860
+	bool "MALI_T860"
+	depends on BR2_aarch64 || BR2_arm
+	select BR2_PACKAGE_HAS_LIBEGL
+	select BR2_PACKAGE_HAS_LIBGLES
+
+if BR2_PACKAGE_MALI_T860
+
+config BR2_PACKAGE_PROVIDES_LIBEGL
+	default "mali-T860"
+
+config BR2_PACKAGE_PROVIDES_LIBGLES
+	default "mali-T860"
+
+endif
+
+comment "mali-T860"
