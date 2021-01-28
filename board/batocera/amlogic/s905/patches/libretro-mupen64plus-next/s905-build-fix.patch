@@ -1,0 +1,15 @@
+diff --git a/Makefile b/Makefile
+index 7644ccb..d4d80de 100644
+--- a/Makefile
++++ b/Makefile
+@@ -308,9 +308,7 @@ else ifneq (,$(findstring amlogic,$(platform)))
+    LDFLAGS += -shared -Wl,--version-script=$(LIBRETRO_DIR)/link.T -Wl,--no-undefined -ldl
+    GLES = 1
+    GL_LIB := -lGLESv2
+-   CPUFLAGS += -marm -mfloat-abi=hard -mfpu=neon
+-   HAVE_NEON = 1
+-   WITH_DYNAREC=arm
++   WITH_DYNAREC= aarch64
+    COREFLAGS += -DUSE_GENERIC_GLESV2 -DOS_LINUX
+    CPUFLAGS += -march=armv8-a -mcpu=cortex-a53 -mtune=cortex-a53
+ 
