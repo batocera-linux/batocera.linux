@@ -1,0 +1,280 @@
+From 7835b025c50cd1f6ee8b20a5b329e0929a20a805 Mon Sep 17 00:00:00 2001
+From: Demetris Ierokipides <ierokipides.dem@gmail.com>
+Date: Tue, 26 Jan 2021 14:40:28 +0200
+Subject: [PATCH] Revert "Rename khrplatform.h to mali_khrplatform.h"
+
+This reverts commit 83f8b828ef2d4272fe7b2133d8da9cd7f554ed54.
+---
+ include/EGL/egl.h                                 |  2 +-
+ include/EGL/eglplatform.h                         |  6 +++---
+ include/FBDEV/egl.h                               |  2 +-
+ include/FBDEV/eglplatform.h                       |  6 +++---
+ include/GLES/gl.h                                 |  2 +-
+ include/GLES/glplatform.h                         |  4 ++--
+ include/GLES2/gl2.h                               |  2 +-
+ include/GLES2/gl2platform.h                       |  4 ++--
+ include/GLES3/gl3.h                               |  2 +-
+ include/GLES3/gl31.h                              |  2 +-
+ include/GLES3/gl32.h                              |  2 +-
+ include/GLES3/gl3platform.h                       |  4 ++--
+ include/KHR/{mali_khrplatform.h => khrplatform.h} | 12 ++++++------
+ 13 files changed, 25 insertions(+), 25 deletions(-)
+ rename include/KHR/{mali_khrplatform.h => khrplatform.h} (96%)
+
+diff --git a/include/EGL/egl.h b/include/EGL/egl.h
+index daa1858..40c04df 100644
+--- a/include/EGL/egl.h
++++ b/include/EGL/egl.h
+@@ -57,7 +57,7 @@ extern "C" {
+ #define EGL_VERSION_1_0 1
+ typedef unsigned int EGLBoolean;
+ typedef void *EGLDisplay;
+-#include <KHR/mali_khrplatform.h>
++#include <KHR/khrplatform.h>
+ #include <EGL/eglplatform.h>
+ typedef void *EGLConfig;
+ typedef void *EGLSurface;
+diff --git a/include/EGL/eglplatform.h b/include/EGL/eglplatform.h
+index 0f5186e..184e204 100644
+--- a/include/EGL/eglplatform.h
++++ b/include/EGL/eglplatform.h
+@@ -27,14 +27,14 @@
+ /* Platform-specific types and definitions for egl.h
+  * $Revision: 30994 $ on $Date: 2015-04-30 13:36:48 -0700 (Thu, 30 Apr 2015) $
+  *
+- * Adopters may modify mali_khrplatform.h and this file to suit their platform.
++ * Adopters may modify khrplatform.h and this file to suit their platform.
+  * You are encouraged to submit all modifications to the Khronos group so that
+  * they can be included in future versions of this file.  Please submit changes
+  * by sending them to the public Khronos Bugzilla (http://khronos.org/bugzilla)
+  * by filing a bug against product "EGL" component "Registry".
+  */
+ 
+-#include <KHR/mali_khrplatform.h>
++#include <KHR/khrplatform.h>
+ 
+ /* Macros used in EGL function prototype declarations.
+  *
+@@ -43,7 +43,7 @@
+  * EGLAPI return-type EGLAPIENTRY eglFunction(arguments);
+  * typedef return-type (EXPAPIENTRYP PFNEGLFUNCTIONPROC) (arguments);
+  *
+- * KHRONOS_APICALL and KHRONOS_APIENTRY are defined in KHR/mali_khrplatform.h
++ * KHRONOS_APICALL and KHRONOS_APIENTRY are defined in KHR/khrplatform.h
+  */
+ 
+ #ifndef EGLAPI
+diff --git a/include/FBDEV/egl.h b/include/FBDEV/egl.h
+index 05c72ea..93a2187 100644
+--- a/include/FBDEV/egl.h
++++ b/include/FBDEV/egl.h
+@@ -53,7 +53,7 @@ extern "C" {
+ #define EGL_VERSION_1_0 1
+ typedef unsigned int EGLBoolean;
+ typedef void *EGLDisplay;
+-#include <KHR/mali_khrplatform.h>
++#include <KHR/khrplatform.h>
+ #include <EGL/eglplatform.h>
+ typedef void *EGLConfig;
+ typedef void *EGLSurface;
+diff --git a/include/FBDEV/eglplatform.h b/include/FBDEV/eglplatform.h
+index 8e9a37a..9269096 100644
+--- a/include/FBDEV/eglplatform.h
++++ b/include/FBDEV/eglplatform.h
+@@ -27,14 +27,14 @@
+ /* Platform-specific types and definitions for egl.h
+  * $Revision: 30994 $ on $Date: 2015-04-30 13:36:48 -0700 (Thu, 30 Apr 2015) $
+  *
+- * Adopters may modify mali_khrplatform.h and this file to suit their platform.
++ * Adopters may modify khrplatform.h and this file to suit their platform.
+  * You are encouraged to submit all modifications to the Khronos group so that
+  * they can be included in future versions of this file.  Please submit changes
+  * by sending them to the public Khronos Bugzilla (http://khronos.org/bugzilla)
+  * by filing a bug against product "EGL" component "Registry".
+  */
+ 
+-#include <KHR/mali_khrplatform.h>
++#include <KHR/khrplatform.h>
+ 
+ /* Macros used in EGL function prototype declarations.
+  *
+@@ -43,7 +43,7 @@
+  * EGLAPI return-type EGLAPIENTRY eglFunction(arguments);
+  * typedef return-type (EXPAPIENTRYP PFNEGLFUNCTIONPROC) (arguments);
+  *
+- * KHRONOS_APICALL and KHRONOS_APIENTRY are defined in KHR/mali_khrplatform.h
++ * KHRONOS_APICALL and KHRONOS_APIENTRY are defined in KHR/khrplatform.h
+  */
+ 
+ #ifndef EGLAPI
+diff --git a/include/GLES/gl.h b/include/GLES/gl.h
+index 7833cd0..037643f 100644
+--- a/include/GLES/gl.h
++++ b/include/GLES/gl.h
+@@ -50,7 +50,7 @@ extern "C" {
+ 
+ #ifndef GL_VERSION_ES_CM_1_0
+ #define GL_VERSION_ES_CM_1_0 1
+-#include <KHR/mali_khrplatform.h>
++#include <KHR/khrplatform.h>
+ 
+ typedef char             GLchar;
+ 
+diff --git a/include/GLES/glplatform.h b/include/GLES/glplatform.h
+index f63d597..16060a9 100644
+--- a/include/GLES/glplatform.h
++++ b/include/GLES/glplatform.h
+@@ -19,13 +19,13 @@
+ 
+ /* Platform-specific types and definitions for OpenGL ES 1.X  gl.h
+  *
+- * Adopters may modify mali_khrplatform.h and this file to suit their platform.
++ * Adopters may modify khrplatform.h and this file to suit their platform.
+  * Please contribute modifications back to Khronos as pull requests on the
+  * public github repository:
+  *      https://github.com/KhronosGroup/OpenGL-Registry
+  */
+ 
+-#include <KHR/mali_khrplatform.h>
++#include <KHR/khrplatform.h>
+ 
+ #ifndef GL_API
+ #define GL_API      KHRONOS_APICALL
+diff --git a/include/GLES2/gl2.h b/include/GLES2/gl2.h
+index 09d7142..5a31db0 100644
+--- a/include/GLES2/gl2.h
++++ b/include/GLES2/gl2.h
+@@ -58,7 +58,7 @@ extern "C" {
+ 
+ #ifndef GL_ES_VERSION_2_0
+ #define GL_ES_VERSION_2_0 1
+-#include <KHR/mali_khrplatform.h>
++#include <KHR/khrplatform.h>
+ typedef khronos_int8_t GLbyte;
+ typedef khronos_float_t GLclampf;
+ typedef khronos_int32_t GLfixed;
+diff --git a/include/GLES2/gl2platform.h b/include/GLES2/gl2platform.h
+index 720c341..eb318dc 100644
+--- a/include/GLES2/gl2platform.h
++++ b/include/GLES2/gl2platform.h
+@@ -19,13 +19,13 @@
+ 
+ /* Platform-specific types and definitions for OpenGL ES 2.X  gl2.h
+  *
+- * Adopters may modify mali_khrplatform.h and this file to suit their platform.
++ * Adopters may modify khrplatform.h and this file to suit their platform.
+  * Please contribute modifications back to Khronos as pull requests on the
+  * public github repository:
+  *      https://github.com/KhronosGroup/OpenGL-Registry
+  */
+ 
+-#include <KHR/mali_khrplatform.h>
++#include <KHR/khrplatform.h>
+ 
+ #ifndef GL_APICALL
+ #define GL_APICALL  KHRONOS_APICALL
+diff --git a/include/GLES3/gl3.h b/include/GLES3/gl3.h
+index 410795b..c5ca81a 100644
+--- a/include/GLES3/gl3.h
++++ b/include/GLES3/gl3.h
+@@ -58,7 +58,7 @@ extern "C" {
+ 
+ #ifndef GL_ES_VERSION_2_0
+ #define GL_ES_VERSION_2_0 1
+-#include <KHR/mali_khrplatform.h>
++#include <KHR/khrplatform.h>
+ typedef khronos_int8_t GLbyte;
+ typedef khronos_float_t GLclampf;
+ typedef khronos_int32_t GLfixed;
+diff --git a/include/GLES3/gl31.h b/include/GLES3/gl31.h
+index 6772862..4806181 100644
+--- a/include/GLES3/gl31.h
++++ b/include/GLES3/gl31.h
+@@ -60,7 +60,7 @@ extern "C" {
+ 
+ #ifndef GL_ES_VERSION_2_0
+ #define GL_ES_VERSION_2_0 1
+-#include <KHR/mali_khrplatform.h>
++#include <KHR/khrplatform.h>
+ typedef khronos_int8_t GLbyte;
+ typedef khronos_float_t GLclampf;
+ typedef khronos_int32_t GLfixed;
+diff --git a/include/GLES3/gl32.h b/include/GLES3/gl32.h
+index bddf6f0..a1af7c6 100644
+--- a/include/GLES3/gl32.h
++++ b/include/GLES3/gl32.h
+@@ -60,7 +60,7 @@ extern "C" {
+ 
+ #ifndef GL_ES_VERSION_2_0
+ #define GL_ES_VERSION_2_0 1
+-#include <KHR/mali_khrplatform.h>
++#include <KHR/khrplatform.h>
+ typedef khronos_int8_t GLbyte;
+ typedef khronos_float_t GLclampf;
+ typedef khronos_int32_t GLfixed;
+diff --git a/include/GLES3/gl3platform.h b/include/GLES3/gl3platform.h
+index d83147f..ca9d7a6 100644
+--- a/include/GLES3/gl3platform.h
++++ b/include/GLES3/gl3platform.h
+@@ -19,13 +19,13 @@
+ 
+ /* Platform-specific types and definitions for OpenGL ES 3.X  gl3.h
+  *
+- * Adopters may modify mali_khrplatform.h and this file to suit their platform.
++ * Adopters may modify khrplatform.h and this file to suit their platform.
+  * Please contribute modifications back to Khronos as pull requests on the
+  * public github repository:
+  *      https://github.com/KhronosGroup/OpenGL-Registry
+  */
+ 
+-#include <KHR/mali_khrplatform.h>
++#include <KHR/khrplatform.h>
+ 
+ #ifndef GL_APICALL
+ #define GL_APICALL  KHRONOS_APICALL
+diff --git a/include/KHR/mali_khrplatform.h b/include/KHR/khrplatform.h
+similarity index 96%
+rename from include/KHR/mali_khrplatform.h
+rename to include/KHR/khrplatform.h
+index b7c5f8c..5b55ea2 100644
+--- a/include/KHR/mali_khrplatform.h
++++ b/include/KHR/khrplatform.h
+@@ -26,9 +26,9 @@
+ 
+ /* Khronos platform-specific types and definitions.
+  *
+- * The master copy of mali_khrplatform.h is maintained in the Khronos EGL
++ * The master copy of khrplatform.h is maintained in the Khronos EGL
+  * Registry repository at https://github.com/KhronosGroup/EGL-Registry
+- * The last semantic modification to mali_khrplatform.h was at commit ID:
++ * The last semantic modification to khrplatform.h was at commit ID:
+  *      67a3e0864c2d75ea5287b9f3d2eb74a745936692
+  *
+  * Adopters may modify this file to suit their platform. Adopters are
+@@ -43,12 +43,12 @@
+  *    http://www.khronos.org/registry/implementers_guide.pdf
+  *
+  * This file should be included as
+- *        #include <KHR/mali_khrplatform.h>
++ *        #include <KHR/khrplatform.h>
+  * by Khronos client API header files that use its types and defines.
+  *
+- * The types in mali_khrplatform.h should only be used to define API-specific types.
++ * The types in khrplatform.h should only be used to define API-specific types.
+  *
+- * Types defined in mali_khrplatform.h:
++ * Types defined in khrplatform.h:
+  *    khronos_int8_t              signed   8  bit
+  *    khronos_uint8_t             unsigned 8  bit
+  *    khronos_int16_t             signed   16 bit
+@@ -71,7 +71,7 @@
+  *      an enum. Client APIs which use an integer or other type for
+  *      booleans cannot use this as the base type for their boolean.
+  *
+- * Tokens defined in mali_khrplatform.h:
++ * Tokens defined in khrplatform.h:
+  *
+  *    KHRONOS_FALSE, KHRONOS_TRUE Enumerated boolean false/true values.
+  *
+-- 
+2.25.1

@@ -55,11 +55,13 @@ endif
 
 # rockchip
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_ROCKCHIP_ANY),y)
+ifneq ($(BR2_aarch64),y)
 	PPSSPP_CONF_OPTS += \
 		-DANDROID=OFF -DWIN32=OFF -DAPPLE=OFF \
 		-DUSE_SYSTEM_FFMPEG=ON -DCMAKE_CROSSCOMPILING=ON \
 		-DUSING_EGL=OFF \
 		-DUSING_QT_UI=OFF -DUNITTEST=OFF -DSIMULATOR=OFF -DHEADLESS=OFF
+endif
 
 	# In order to support the custom resolution patch, permissive compile is needed
 	PPSSPP_CONF_OPTS += -DCMAKE_CXX_FLAGS="$(COMPILER_COMMONS_CXXFLAGS_EXE) -fpermissive"
@@ -67,6 +69,10 @@ else
 	ifeq ($(BR2_arm),y)
 		PPSSPP_CONF_OPTS += -DUSING_EGL=ON
 	endif
+endif
+
+ifeq ($(BR2_PACKAGE_HAS_LIBMALI),y)
+PPSSPP_CONF_OPTS += -DCMAKE_EXE_LINKER_FLAGS=-lmali -DCMAKE_SHARED_LINKER_FLAGS=-lmali
 endif
 
 # rpi1 / rpi2 /rp3

@@ -42,7 +42,7 @@ case $1 in
 
         # If the timer for picture is active then kill this PID to avoid
         # unwanted behaviour in splash_autoplay
-        [ $PID = $(pgrep -f "sleep infinity") ] && picture=1 || picture=0
+        [ "$PID" = "$(pgrep -f "sleep infinity")" ] && picture=1 || picture=0
 
         # Read Config and set some defaults
         splash_setting="$(/usr/bin/batocera-settings-get splash.screen.length)"
@@ -89,7 +89,7 @@ case $1 in
         [ "$($RSYNC | grep -e '^\*deleting' -e '^>f++++++')" ] || exit 0
 
         #Check filesize of /userdata/splash and set a directory size limit (256MB*1024kB)
-        [ $(du -s $SPLASHUSER | awk '{print $1}') -lt 262144 ] || exit 1
+        [ "$(du -s $SPLASHUSER | awk '{print $1}')" -lt 262144 ] || exit 1
 
         RSYNC="rsync --modify-window=2 -ti --dirs --delete $SPLASHUSER $SPLASHBOOT"
         mount -o remount,rw /boot

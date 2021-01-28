@@ -26,6 +26,10 @@ ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_ROCKPRO64),y)
 	LIBRETRO_PC98_PLATFORM = RK3399
 endif
 
+ifeq ($(BR2_aarch64),y)
+LIBRETRO_PC98_PLATFORM = unix
+endif
+
 define LIBRETRO_PC98_BUILD_CMDS
 	$(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" -C $(@D)/sdl2/ -f Makefile.libretro platform="$(LIBRETRO_PC98_PLATFORM)"
 endef

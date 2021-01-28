@@ -163,9 +163,11 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
 
     # wireless drivers
     select BR2_PACKAGE_RTL8821AU                         if !BR2_PACKAGE_BATOCERA_RPI_VCORE             && \
-                                                            !BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_PC
+                                                            !BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_PC    && \
+                                                            !BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA
     select BR2_PACKAGE_RTL8192EU                         if !BR2_PACKAGE_BATOCERA_RPI_VCORE             && \
-                                                            !BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_PC
+                                                            !BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_PC    && \
+                                                            !BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA
     select BR2_PACKAGE_RTL8821CE                         if !BR2_PACKAGE_BATOCERA_RPI_VCORE             && \
                                                             !BR2_PACKAGE_BATOCERA_TARGET_S812           && \
                                                             !BR2_PACKAGE_BATOCERA_TARGET_RPI3           && \
@@ -174,7 +176,8 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
                                                             !BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_ZERO2 && \
                                                             !BR2_PACKAGE_BATOCERA_TARGET_MIQI           && \
                                                             !BR2_PACKAGE_BATOCERA_TARGET_TINKERBOARD    && \
-                                                            !BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_PC
+                                                            !BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_PC    && \
+                                                            !BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA
 
     # gpu drivers
     select BR2_PACKAGE_BATOCERA_GPU_X86			 if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
@@ -371,6 +374,7 @@ config BR2_PACKAGE_BATOCERA_ALL_SYSTEMS
 		select BR2_PACKAGE_BATOCERA_WINE_SYSTEMS
 		select BR2_PACKAGE_BATOCERA_GAMESTREAM_SYSTEMS
 		select BR2_PACKAGE_BATOCERA_PORTS_SYSTEMS
+		select BR2_PACKAGE_BATOCERA_FLASH_SYSTEMS
 
 		help
 		batocera.linux all supported emulation systems
@@ -382,6 +386,14 @@ config BR2_PACKAGE_BATOCERA_WINE_SYSTEMS
 		# Wine (windows) layer
 		select BR2_PACKAGE_BATOCERA_WINE              if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
 		select BR2_PACKAGE_WINE_X86                   if BR2_PACKAGE_BATOCERA_TARGET_X86_64
+
+#### Flash Player ####
+config BR2_PACKAGE_BATOCERA_FLASH_SYSTEMS
+		bool "batocera.linux Flash support"
+
+		# Flash Player Emulator
+		select BR2_PACKAGE_RUFFLE                       if BR2_PACKAGE_BATOCERA_TARGET_X86_64 # depends on X11
+		select BR2_PACKAGE_LIGHTSPARK                   if BR2_PACKAGE_BATOCERA_TARGET_X86_64 # depends on X11
 
 #### Moonlight / Gamestream ####
 config BR2_PACKAGE_BATOCERA_GAMESTREAM_SYSTEMS
@@ -474,7 +486,6 @@ config BR2_PACKAGE_BATOCERA_ARCADE_SYSTEMS
 		select BR2_PACKAGE_LIBRETRO_IMAME             if BR2_PACKAGE_BATOCERA_RPI_VCORE # IMAME
 		select BR2_PACKAGE_LIBRETRO_MAME2010          if !BR2_PACKAGE_BATOCERA_TARGET_RPI1 && !BR2_PACKAGE_BATOCERA_TARGET_S812 # MAME2010
 		select BR2_PACKAGE_LIBRETRO_MAME              if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY || BR2_PACKAGE_BATOCERA_TARGET_ROCKPRO64 || BR2_PACKAGE_BATOCERA_TARGET_TINKERBOARD || BR2_PACKAGE_BATOCERA_TARGET_MIQI || BR2_PACKAGE_BATOCERA_TARGET_ODROIDN2 || BR2_PACKAGE_BATOCERA_TARGET_XU4 || BR2_PACKAGE_BATOCERA_TARGET_ROCK960 || BR2_PACKAGE_BATOCERA_TARGET_VIM3 || BR2_PACKAGE_BATOCERA_TARGET_LIBRETECH_H5
-		select BR2_PACKAGE_LIBRETRO_HBMAME            if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY || BR2_PACKAGE_BATOCERA_TARGET_ODROIDN2
 		select BR2_PACKAGE_MAME			      if BR2_PACKAGE_BATOCERA_TARGET_X86_64
 
 		help
@@ -599,9 +610,8 @@ config BR2_PACKAGE_BATOCERA_COMPUTER_SYSTEMS
 		select BR2_PACKAGE_LINAPPLE             if !BR2_PACKAGE_SDL2_KMSDRM # apple II (sdl1 doesn't support kmsdrm)
 
 		# Commodore Amiga
-		select BR2_PACKAGE_AMIBERRY             if !BR2_PACKAGE_BATOCERA_TARGET_X86_ANY && \
-						   !BR2_PACKAGE_BATOCERA_TARGET_S905
-		                                           # amiga
+		select BR2_PACKAGE_AMIBERRY             if !BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
+		                                              # amiga
 
 		select BR2_PACKAGE_FSUAE                if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
 		select BR2_PACKAGE_LIBRETRO_PUAE              # ALL
@@ -789,8 +799,9 @@ config BR2_PACKAGE_BATOCERA_MUPEN64
                                                            BR2_PACKAGE_BATOCERA_TARGET_ROCKCHIP_ANY
                                                            # GLIDEN64
 
-        select BR2_PACKAGE_MUPEN64PLUS_GLES2            if BR2_PACKAGE_BATOCERA_RPI_VCORE           || \
-                                                           BR2_PACKAGE_BATOCERA_TARGET_ROCKCHIP_ANY
+        select BR2_PACKAGE_MUPEN64PLUS_GLES2            if !BR2_aarch64 && ( \
+                                                           BR2_PACKAGE_BATOCERA_RPI_VCORE           || \
+                                                           BR2_PACKAGE_BATOCERA_TARGET_ROCKCHIP_ANY)
                                                            # GLES2
 
         select BR2_PACKAGE_MUPEN64PLUS_V20_GLIDEN64     if BR2_PACKAGE_BATOCERA_RPI_VCORE

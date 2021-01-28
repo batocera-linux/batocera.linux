@@ -201,3 +201,11 @@ def writeSDLGameDBAllControllers(controllers, outputFile = "/tmp/gamecontrollerd
     with open(outputFile, "w") as text_file:
         text_file.write(generateSdlGameControllerConfig(controllers).encode("utf-8"))
     return outputFile
+
+def generateSdlGameControllerPadsOrderConfig(controllers):
+    res = ""
+    for idx, controller in controllers.iteritems():
+        if res != "":
+            res = res + ";"
+        res = res + str(controller.index)
+    return res

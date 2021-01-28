@@ -31,6 +31,6 @@ echo "root:${SHADOWPASSWD}:::::::" > /run/batocera.shadow
 
 # secure samba
 mkdir -p "/var/lib/samba/private"
-echo -ne "$MASTERPASSWD\n$MASTERPASSWD\n" | smbpasswd -a -s root > /dev/null
+printf "$MASTERPASSWD\n$MASTERPASSWD\n" | smbpasswd -a -s root > /dev/null
 
 echo "done."

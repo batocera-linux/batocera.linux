@@ -2,7 +2,6 @@
 
 from generators.Generator import Generator
 import batoceraFiles
-import pcsx2Controllers
 import Command
 import os
 from settings.unixSettings import UnixSettings
@@ -10,14 +9,13 @@ import re
 import ConfigParser
 import StringIO
 import io
+import controllersConfig
 
 class Pcsx2Generator(Generator):
 
     def generate(self, system, rom, playersControllers, gameResolution):
         isAVX2 = checkAvx2()
         
-        pcsx2Controllers.generateControllerConfig(system, playersControllers, rom)
-
         # config files
         configureReg(batoceraFiles.pcsx2ConfigDir)
         configureUI(batoceraFiles.pcsx2ConfigDir, batoceraFiles.BIOS, system.config, gameResolution)
@@ -45,22 +43,23 @@ class Pcsx2Generator(Generator):
         if isAVX2:
             real_pluginsDir = batoceraFiles.pcsx2Avx2PluginsDir
         commandArray.append("--gs="   + real_pluginsDir + "/libGSdx.so")
-        #commandArray.append("--pad="  + real_pluginsDir + "/libonepad-legacy.so")
-        #commandArray.append("--cdvd=" + real_pluginsDir + "/libCDVDnull.so")
-        #commandArray.append("--usb="  + real_pluginsDir + "/libUSBnull-0.7.0.so")
-        #commandArray.append("--fw="   + real_pluginsDir + "/libFWnull-0.7.0.so")
-        #commandArray.append("--dev9=" + real_pluginsDir + "/libdev9null-0.5.0.so")
-        #commandArray.append("--spu2=" + real_pluginsDir + "/libspu2x-2.0.0.so")
         
         # arch
         arch = "x86"
         with open('/usr/share/batocera/batocera.arch', 'r') as content_file:
             arch = content_file.read()
 
+        env = {}
+        env["XDG_CONFIG_HOME"] = batoceraFiles.CONF
+        env["SDL_GAMECONTROLLERCONFIG"] = controllersConfig.generateSdlGameControllerConfig(playersControllers)
+
+        env["SDL_PADSORDERCONFIG"] = controllersConfig.generateSdlGameControllerPadsOrderConfig(playersControllers)
+
         if arch == "x86":
-            return Command.Command(array=commandArray, env={"XDG_CONFIG_HOME":batoceraFiles.CONF, "LD_LIBRARY_PATH": "/lib32", "LIBGL_DRIVERS_PATH": "/lib32/dri"})
-        else:
-            return Command.Command(array=commandArray, env={"XDG_CONFIG_HOME":batoceraFiles.CONF})
+            env["LD_LIBRARY_PATH"]    = "/lib32"
+            env["LIBGL_DRIVERS_PATH"] = "/lib32/dri"
+
+        return Command.Command(array=commandArray, env=env)
 
 def getGfxRatioFromConfig(config, gameResolution):
     # 2: 4:3 ; 1: 16:9

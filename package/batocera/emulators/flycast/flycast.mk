@@ -18,8 +18,17 @@ ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86),y)
 endif
 
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_ROCKCHIP_ANY),y)
+ifeq ($(BR2_ARCH_IS_64),y)
+	FLYCAST_PLATFORM = arm64
+	FLYCAST_EXTRA_ARGS += USE_GLES=1
+else
 	FLYCAST_PLATFORM = rockchip
+endif
 	FLYCAST_EXTRA_ARGS += USE_SDL=1 USE_SDLAUDIO=1
+endif
+
+ifeq ($(BR2_PACKAGE_HAS_LIBMALI),y)
+FLYCAST_EXTRA_ARGS += EXTRAFLAGS=-Wl,-lmali
 endif
 
 define FLYCAST_UPDATE_INCLUDES
@@ -35,8 +44,8 @@ define FLYCAST_BUILD_CMDS
 endef
 
 define FLYCAST_INSTALL_TARGET_CMDS
-	$(INSTALL) -D -m 0755 $(@D)/shell/linux/reicast.elf \
-		$(TARGET_DIR)/usr/bin/flycast.elf
+	$(INSTALL) -D -m 0755 $(@D)/shell/linux/nosym-reicast.elf \
+		$(TARGET_DIR)/usr/bin/flycast
 endef
 
 $(eval $(generic-package))

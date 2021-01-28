@@ -3,8 +3,8 @@
 # xmil - Sharp X1 emulator
 #
 ################################################################################
-# Version.: Commits on Jan 2, 2021
-LIBRETRO_XMIL_VERSION = 257d5e8c49f82b9bf32217289a681ccccc3c78fc 
+# Version.: Commits on Jan 8, 2021
+LIBRETRO_XMIL_VERSION = ceb72fc953207cb9f83a0862b76f2d7f40c84974
 LIBRETRO_XMIL_SITE_METHOD=git
 LIBRETRO_XMIL_SITE=https://github.com/libretro/xmil-libretro
 LIBRETRO_XMIL_GIT_SUBMODULES=YES

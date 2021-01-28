@@ -17,6 +17,7 @@ ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_S812),y)
 endif
 
 ifeq ($(BR2_aarch64),y)
+	LIBRETRO_FMSX_PLATFORM = unix
 	LIBRETRO_FMSX_EXTRA_ARGS += ARCH=arm64
 endif
 

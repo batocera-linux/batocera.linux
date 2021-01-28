@@ -18,8 +18,11 @@ fi
 # WLAN enabled?
 settingsWlan="$(/usr/bin/batocera-settings-get -f "$BATOCONF" wifi.enabled)"
 if [ "$settingsWlan" != "1" ];then
+    connmanctl disable wifi 2>/dev/null
     exit 0
 fi
+
+printf "Starting wifi: "
 
 batocera_wifi_configure() {
     X=$1
@@ -44,20 +47,19 @@ batocera_wifi_configure() {
 		Passphrase=${settings_key}
 	_EOF_
 
-    connmanctl enable wifi || return 1
-    connmanctl scan   wifi || return 1
+    connmanctl enable wifi 2>/dev/null || return 1
+    connmanctl scan wifi   2>/dev/null || return 1
     return 0
 
     fi
 }
-
-# Start wifi configuration
-# Soft unblock wifi
-rfkill unblock wifi
 
 for i in 1 2 3 .hidden
 do
     batocera_wifi_configure $i &
     ret=$?
 done
+
+echo "done."
+
 exit $ret
