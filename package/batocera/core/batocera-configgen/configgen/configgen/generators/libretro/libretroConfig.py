@@ -252,6 +252,12 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
           if system.isOptSet('secondinstance') and system.getOptBoolean('secondinstance') == True:
               retroarchConfig['run_ahead_secondary_instance'] = 'true'
 
+    if system.isOptSet("retroachievements_sound") and system.config["retroachievements_sound"] != "none":
+        retroarchConfig['cheevos_unlock_sound_enable'] = 'true'
+        retroarchConfig['cheevos_unlock_sound'] = system.config["retroachievements_sound"]
+    else:
+        retroarchConfig['cheevos_unlock_sound_enable'] = 'false'
+
     # Autosave option
     if system.isOptSet('autosave') and system.getOptBoolean('autosave') == True:
         retroarchConfig['savestate_auto_save'] = 'true'
