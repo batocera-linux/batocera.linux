@@ -4,7 +4,7 @@
 #
 ################################################################################
 # VERSION.: Commits on Oct 07, 2020
-LIBRETRO_SCUMMVM_VERSION = 80817812b904518bb24db345fd5a52f8d5f01ec3
+LIBRETRO_SCUMMVM_VERSION = cdbf1ce32931022cefb3e4cb2a965d70b3dc723a
 LIBRETRO_SCUMMVM_SITE = $(call github,libretro,scummvm,$(LIBRETRO_SCUMMVM_VERSION))
 LIBRETRO_SCUMMVM_LICENSE = GPLv2
 
