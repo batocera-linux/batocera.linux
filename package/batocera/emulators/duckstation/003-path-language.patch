@@ -1,0 +1,13 @@
+diff --git a/src/duckstation-qt/qthostinterface.cpp b/src/duckstation-qt/qthostinterface.cpp
+index 3c99596..54d0f98 100644
+--- a/src/duckstation-qt/qthostinterface.cpp
++++ b/src/duckstation-qt/qthostinterface.cpp
+@@ -120,7 +120,7 @@ void QtHostInterface::installTranslator()
+     return;
+ 
+   const QString path =
+-    QStringLiteral("%1/translations/duckstation-qt_%3.qm").arg(qApp->applicationDirPath()).arg(language.c_str());
++    QStringLiteral("%1/translations/duckstation-qt_%3.qm").arg("/usr/share/duckstation").arg(language.c_str());
+   if (!QFile::exists(path))
+   {
+     QMessageBox::warning(

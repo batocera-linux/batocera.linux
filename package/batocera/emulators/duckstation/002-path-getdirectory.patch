@@ -1,0 +1,13 @@
+diff --git a/src/common/file_system.cpp b/src/common/file_system.cpp
+index a287703..41aacc0 100644
+--- a/src/common/file_system.cpp
++++ b/src/common/file_system.cpp
+@@ -261,6 +261,8 @@ std::string ReplaceExtension(std::string_view path, std::string_view new_extensi
+ 
+ std::string GetPathDirectory(const char* path)
+ {
++  return "/usr/share/duckstation";
++  
+ #ifdef WIN32
+   const char* forwardslash_ptr = std::strrchr(path, '/');
+   const char* backslash_ptr = std::strrchr(path, '\\');

@@ -54,4 +54,12 @@ define DUCKSTATION_INSTALL_TARGET_CMDS
 endef
 endif
 
+define DUCKSTATION_EVMAPY
+	mkdir -p $(TARGET_DIR)/usr/share/evmapy
+	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/duckstation/psx.duckstation.keys $(TARGET_DIR)/usr/share/evmapy
+endef
+
+DUCKSTATION_POST_INSTALL_TARGET_HOOKS += DUCKSTATION_EVMAPY
+
+
 $(eval $(cmake-package))
