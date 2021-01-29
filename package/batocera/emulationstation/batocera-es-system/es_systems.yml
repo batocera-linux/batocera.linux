@@ -536,7 +536,7 @@ devilutionx:
 fbneo:
   name:       Final Burn Neo
   manufacturer: Arcade
-  release:
+  release: 2019
   hardware: arcade
   extensions: [zip, 7z]
   platform:   arcade
@@ -555,7 +555,7 @@ fbneo:
 mame:
   name:       Mame
   manufacturer: Arcade
-  release:
+  release: 1997
   hardware: arcade
   extensions: [zip, 7z]
   platform:   arcade
@@ -1484,7 +1484,7 @@ gx4000:
 daphne:
   name:       Daphne
   manufacturer: Arcade
-  release:
+  release: 1983
   hardware: arcade
   extensions: [daphne]
   platform:   daphne, arcade
@@ -1693,6 +1693,7 @@ model3:
   release: 1996
   hardware: arcade
   extensions: [zip]
+  platform: model3, arcade
   emulators:
     supermodel:
       supermodel: { requireAnyOf: [BR2_PACKAGE_SUPERMODEL] }
