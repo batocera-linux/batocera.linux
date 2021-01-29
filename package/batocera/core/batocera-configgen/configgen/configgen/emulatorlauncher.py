@@ -46,6 +46,7 @@ from generators.tsugaru.tsugaruGenerator import TsugaruGenerator
 from generators.mugen.mugenGenerator import MugenGenerator
 from generators.lightspark.lightsparkGenerator import LightsparkGenerator
 from generators.ruffle.ruffleGenerator import RuffleGenerator
+from generators.duckstation.duckstationGenerator import DuckstationGenerator
 
 import controllersConfig as controllers
 import signal
@@ -95,6 +96,7 @@ generators = {
     'mugen': MugenGenerator(),
     'lightspark': LightsparkGenerator(),
     'ruffle': RuffleGenerator(),
+    'duckstation': DuckstationGenerator(),
 }
 
 def main(args, maxnbplayers):
