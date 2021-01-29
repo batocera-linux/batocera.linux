@@ -1,0 +1,87 @@
+diff --git a/configuration.c b/configuration.c
+index 8457c58..de914f0 100644
+--- a/configuration.c
++++ b/configuration.c
+@@ -1200,6 +1200,7 @@ static struct config_array_setting *populate_settings_array(settings_t *settings
+ #ifdef HAVE_CHEEVOS
+    SETTING_ARRAY("cheevos_username",         settings->arrays.cheevos_username, false, NULL, true);
+    SETTING_ARRAY("cheevos_password",         settings->arrays.cheevos_password, false, NULL, true);
++   SETTING_ARRAY("cheevos_unlock_sound",     settings->arrays.cheevos_unlock_sound, false, NULL, true);
+    SETTING_ARRAY("cheevos_token",            settings->arrays.cheevos_token, false, NULL, true);
+ #endif
+    SETTING_ARRAY("video_context_driver",     settings->arrays.video_context_driver,   false, NULL, true);
+@@ -2280,6 +2281,7 @@ void config_set_defaults(void *data)
+ #ifdef HAVE_CHEEVOS
+    *settings->arrays.cheevos_username                 = '\0';
+    *settings->arrays.cheevos_password                 = '\0';
++   *settings->arrays.cheevos_unlock_sound             = '\0';
+    *settings->arrays.cheevos_token                    = '\0';
+ #endif
+ 
+diff --git a/configuration.h b/configuration.h
+index d9972b3..7f1df06 100644
+--- a/configuration.h
++++ b/configuration.h
+@@ -670,6 +670,7 @@ typedef struct settings
+       char menu_driver[32];
+       char cheevos_username[32];
+       char cheevos_password[32];
++      char cheevos_unlock_sound[128];
+       char cheevos_token[32];
+       char video_context_driver[32];
+       char audio_driver[32];
+diff --git a/retroarch.c b/retroarch.c
+index 3d2469e..4e3d69a 100644
+--- a/retroarch.c
++++ b/retroarch.c
+@@ -30237,20 +30237,8 @@ void audio_driver_load_system_sounds(void)
+    if (!audio_enable_menu && !audio_enable_cheevo_unlock)
+       goto end;
+ 
+-   sounds_path = (char*)malloc(PATH_MAX_LENGTH * sizeof(char));
+-   sounds_fallback_path = (char*)malloc(PATH_MAX_LENGTH * sizeof(char));
+-   sounds_path[0] = sounds_fallback_path[0] = '\0';
+-
+-   fill_pathname_join(
+-         sounds_fallback_path,
+-         dir_assets,
+-         "sounds",
+-         PATH_MAX_LENGTH);
+-
+-   fill_pathname_application_special(
+-         sounds_path,
+-         PATH_MAX_LENGTH,
+-         APPLICATION_SPECIAL_DIRECTORY_ASSETS_SOUNDS);
++   sounds_path = "/usr/share/libretro/assets/sounds";
++   sounds_fallback_path = "/userdata/sounds/retroachievements";
+ 
+    list = dir_list_new(sounds_path, MENU_SOUND_FORMATS, false, false, false, false);
+    list_fallback = dir_list_new(sounds_fallback_path, MENU_SOUND_FORMATS, false, false, false, false);
+@@ -30295,8 +30283,14 @@ void audio_driver_load_system_sounds(void)
+             path_notice = path;
+          else if (string_is_equal_noncase(basename_noext, "bgm"))
+             path_bgm = path;
+-         else if (string_is_equal_noncase(basename_noext, "unlock"))
+-            path_cheevo_unlock = path;
++         else
++	   if(string_is_empty(settings->arrays.cheevos_unlock_sound)) {
++	     if (string_is_equal_noncase(basename_noext, "unlock"))
++	       path_cheevo_unlock = path;
++	   } else {
++	     if (string_is_equal_noncase(basename_noext, settings->arrays.cheevos_unlock_sound))
++	       path_cheevo_unlock = path;
++	   }
+       }
+    }
+ 
+@@ -30316,10 +30310,6 @@ end:
+       string_list_free(list);
+    if (list_fallback)
+       string_list_free(list_fallback);
+-   if (sounds_path)
+-      free(sounds_path);
+-   if (sounds_fallback_path)
+-      free(sounds_fallback_path);
+    if (basename_noext)
+       free(basename_noext);
+ }

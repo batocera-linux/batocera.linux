@@ -252,32 +252,10 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
           if system.isOptSet('secondinstance') and system.getOptBoolean('secondinstance') == True:
               retroarchConfig['run_ahead_secondary_instance'] = 'true'
 
-    if system.isOptSet("retroachievements_sound"):
-        if system.config["retroachievements_sound"] == "none" or system.config["retroachievements_sound"] == None :
-            try:
-                os.remove(batoceraFiles.rasoundsSystem + "/unlock.ogg")
-            except OSError:
-                pass
-            retroarchConfig['cheevos_unlock_sound_enable'] = 'false'
-        elif os.path.exists(batoceraFiles.rasoundsUser + "/" + system.config["retroachievements_sound"]):
-            try:
-                os.remove(batoceraFiles.rasoundsSystem + "/unlock.ogg")
-            except OSError:
-                pass
-            os.symlink(batoceraFiles.rasoundsUser + "/" + system.config["retroachievements_sound"], batoceraFiles.rasoundsSystem + "/unlock.ogg")
-            retroarchConfig['cheevos_unlock_sound_enable'] = 'true'
-        elif os.path.exists(batoceraFiles.rasoundsSystem + "/" + system.config["retroachievements_sound"]):
-            try:
-                os.remove(batoceraFiles.rasoundsSystem + "/unlock.ogg")
-            except OSError:
-                pass
-            os.symlink(batoceraFiles.rasoundsSystem + "/" + system.config["retroachievements_sound"], batoceraFiles.rasoundsSystem + "/unlock.ogg")
-            retroarchConfig['cheevos_unlock_sound_enable'] = 'true'
+    if system.isOptSet("retroachievements_sound") and system.config["retroachievements_sound"] != "none":
+        retroarchConfig['cheevos_unlock_sound_enable'] = 'true'
+        retroarchConfig['cheevos_unlock_sound'] = system.config["retroachievements_sound"]
     else:
-        try:
-            os.remove(batoceraFiles.rasoundsSystem + "/unlock.ogg")
-        except OSError:
-            pass
         retroarchConfig['cheevos_unlock_sound_enable'] = 'false'
 
     # Autosave option
