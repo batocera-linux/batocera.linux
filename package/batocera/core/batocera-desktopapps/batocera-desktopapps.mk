@@ -24,6 +24,13 @@ ifeq ($(BR2_PACKAGE_DOLPHIN_EMU),y)
   BATOCERA_DESKTOPAPPS_ICONS   += dolphin.png
 endif
 
+# duckstation
+ifeq ($(BR2_PACKAGE_DUCKSTATION),y)
+  BATOCERA_DESKTOPAPPS_SCRIPTS += batocera-config-duckstation
+  BATOCERA_DESKTOPAPPS_APPS    += duckstation-config.desktop
+  BATOCERA_DESKTOPAPPS_ICONS   += duckstation.png
+endif
+
 # retroarch
 ifeq ($(BR2_PACKAGE_RETROARCH),y)
   BATOCERA_DESKTOPAPPS_SCRIPTS += batocera-config-retroarch

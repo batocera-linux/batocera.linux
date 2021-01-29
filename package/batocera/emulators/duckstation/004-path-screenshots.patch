@@ -1,0 +1,23 @@
+diff --git a/src/frontend-common/common_host_interface.cpp b/src/frontend-common/common_host_interface.cpp
+index ace5804..acee3f0 100644
+--- a/src/frontend-common/common_host_interface.cpp
++++ b/src/frontend-common/common_host_interface.cpp
+@@ -2474,17 +2474,8 @@ bool CommonHostInterface::SaveScreenshot(const char* filename /* = nullptr */, b
+   {
+     const auto& code = System::GetRunningCode();
+     const char* extension = "png";
+-    if (code.empty())
+-    {
+-      auto_filename = GetUserDirectoryRelativePath("screenshots" FS_OSPATH_SEPARATOR_STR "%s.%s",
+-                                                   GetTimestampStringForFileName().GetCharArray(), extension);
+-    }
+-    else
+-    {
+-      auto_filename = GetUserDirectoryRelativePath("screenshots" FS_OSPATH_SEPARATOR_STR "%s_%s.%s", code.c_str(),
+-                                                   GetTimestampStringForFileName().GetCharArray(), extension);
+-    }
+ 
++    auto_filename = std::string("/userdata/screenshots/") + GetTimestampStringForFileName().GetCharArray() + "." + extension;
+     filename = auto_filename.c_str();
+   }
+ 
