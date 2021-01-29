@@ -15,7 +15,8 @@ class Pcsx2Generator(Generator):
 
     def generate(self, system, rom, playersControllers, gameResolution):
         isAVX2 = checkAvx2()
-        
+        sseLib = checkSseLib(isAVX2)
+
         # config files
         configureReg(batoceraFiles.pcsx2ConfigDir)
         configureUI(batoceraFiles.pcsx2ConfigDir, batoceraFiles.BIOS, system.config, gameResolution)
@@ -42,7 +43,7 @@ class Pcsx2Generator(Generator):
         real_pluginsDir = batoceraFiles.pcsx2PluginsDir
         if isAVX2:
             real_pluginsDir = batoceraFiles.pcsx2Avx2PluginsDir
-        commandArray.append("--gs="   + real_pluginsDir + "/libGSdx.so")
+        commandArray.append("--gs="   + real_pluginsDir + "/" + sseLib)
         
         # arch
         arch = "x86"
@@ -256,3 +257,10 @@ def checkAvx2():
         if re.match("^flags[\t ]*:.* avx2", line):
             return True
     return False
+
+def checkSseLib(isAVX2):
+    if not isAVX2:
+        for line in open("/proc/cpuinfo").readlines():
+            if re.match("^flags[\t ]*:.* sse4_1", line) and re.match("^flags[\t ]*:.* sse4_2", line):
+                return "libGSdx-SSE4.so"
+    return "libGSdx.so"
