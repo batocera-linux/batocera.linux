@@ -689,9 +689,11 @@ config BR2_PACKAGE_BATOCERA_CONSOLE_SYSTEMS
 		select BR2_PACKAGE_LIBRETRO_YABASANSHIRO      if !BR2_PACKAGE_BATOCERA_RPI_VCORE        && \
 		                                                 !BR2_PACKAGE_BATOCERA_TARGET_RPI3      && \
 		                                                 !BR2_PACKAGE_BATOCERA_TARGET_ODROIDC2  && \
-                                                                 !BR2_PACKAGE_BATOCERA_TARGET_S812      && \
-                                                                 !BR2_PACKAGE_BATOCERA_TARGET_ROCK960      && \
+                                                         !BR2_PACKAGE_BATOCERA_TARGET_S812      && \
+                                                         !BR2_PACKAGE_BATOCERA_TARGET_ROCK960   && \
 		                                                 !BR2_PACKAGE_BATOCERA_TARGET_S905      && \
+                                                         !BR2_PACKAGE_BATOCERA_TARGET_MIQI      && \
+                                                         !BR2_PACKAGE_BATOCERA_TARGET_TINKERBOARD && \
 		                                                 !BR2_PACKAGE_BATOCERA_TARGET_S912
 
 		# Gamecube / Wii
