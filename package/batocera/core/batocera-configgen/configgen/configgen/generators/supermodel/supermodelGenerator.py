@@ -69,6 +69,10 @@ def configPadsIni(playersControllers):
     targetFile = "/userdata/system/configs/supermodel/Supermodel.ini"
 
     mapping = {
+        "up":    "up",	
+        "down":  "down",	
+        "left":  "left",	
+        "right": "right",
         "button1": "y",
         "button2": "b",
         "button3": "a",
@@ -136,16 +140,16 @@ def transformElement(elt, playersControllers, mapping):
         return input2input(playersControllers, matches.group(1), joy2realjoyid(playersControllers, matches.group(1)), mapping["button" + matches.group(2)])
     matches = re.search("^JOY([12])_UP$", elt)
     if matches:
-        return input2input(playersControllers, matches.group(1), joy2realjoyid(playersControllers, matches.group(1)), mapping["axisY"], -1)
+        return input2input(playersControllers, matches.group(1), joy2realjoyid(playersControllers, matches.group(1)), mapping["up"])
     matches = re.search("^JOY([12])_DOWN$", elt)
     if matches:
-        return input2input(playersControllers, matches.group(1), joy2realjoyid(playersControllers, matches.group(1)), mapping["axisY"], 1)
+        return input2input(playersControllers, matches.group(1), joy2realjoyid(playersControllers, matches.group(1)), mapping["down"])
     matches = re.search("^JOY([12])_LEFT$", elt)
     if matches:
-        return input2input(playersControllers, matches.group(1), joy2realjoyid(playersControllers, matches.group(1)), mapping["axisX"], -1)
+        return input2input(playersControllers, matches.group(1), joy2realjoyid(playersControllers, matches.group(1)), mapping["left"])
     matches = re.search("^JOY([12])_RIGHT$", elt)
     if matches:
-        return input2input(playersControllers, matches.group(1), joy2realjoyid(playersControllers, matches.group(1)), mapping["axisX"], 1)
+        return input2input(playersControllers, matches.group(1), joy2realjoyid(playersControllers, matches.group(1)), mapping["right"])
     matches = re.search("^JOY([12])_(R?[XY])AXIS$", elt)
     if matches:
         return input2input(playersControllers, matches.group(1), joy2realjoyid(playersControllers, matches.group(1)), mapping["axis" + matches.group(2)])
