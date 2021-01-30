@@ -4,10 +4,16 @@
 #
 ################################################################################
 # Version.: Commits on Jan 29, 2021
+#LIBRETRO_TIC80_VERSION = acddaaad3ae5f5f403db9f1a69872697fb49efb5
+#LIBRETRO_TIC80_SITE = https://github.com/nesbox/TIC-80.git
+#LIBRETRO_TIC80_SITE_METHOD=git
+#LIBRETRO_TIC80_GIT_SUBMODULES=YES
+
+# temporary access
 LIBRETRO_TIC80_VERSION = acddaaad3ae5f5f403db9f1a69872697fb49efb5
-LIBRETRO_TIC80_SITE = https://github.com/nesbox/TIC-80.git
-LIBRETRO_TIC80_SITE_METHOD=git
-LIBRETRO_TIC80_GIT_SUBMODULES=YES
+LIBRETRO_TIC80_SOURCE = TIC-80-$(LIBRETRO_TIC80_VERSION).tar.gz
+LIBRETRO_TIC80_SITE = https://batocera.org/packages
+
 LIBRETRO_TIC80_LICENSE = MIT
 LIBRETRO_TIC80_PLATFORM = $(LIBRETRO_PLATFORM)
 
