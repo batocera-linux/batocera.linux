@@ -87,6 +87,13 @@ ifeq ($(BR2_PACKAGE_CEMU),y)
   BATOCERA_DESKTOPAPPS_ICONS   += cemu.png
 endif
 
+# model2emu
+ifeq ($(BR2_PACKAGE_MODEL2EMU),y)
+  BATOCERA_DESKTOPAPPS_SCRIPTS += batocera-config-model2emu
+  BATOCERA_DESKTOPAPPS_APPS    += model2emu-config.desktop
+  BATOCERA_DESKTOPAPPS_ICONS   += model2emu.png
+endif
+
 define BATOCERA_DESKTOPAPPS_INSTALL_TARGET_CMDS
 	# scripts
 	mkdir -p $(TARGET_DIR)/usr/bin
