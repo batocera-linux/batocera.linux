@@ -1,0 +1,24 @@
+--- EMULATOR.INI	2014-01-01 13:06:16.000000000 +1000
++++ EMULATOR_NEW.INI	2021-01-30 20:02:08.445790247 +1000
+@@ -6,7 +6,7 @@
+ ;ROMS subdirectory in the same folder than the exe is always scanned when searching for roms
+ ;(remove the ; form Dir1)
+ [RomDirs]
+-;Dir1=c:\Model2\roms
++Dir1=/userdata/roms/model2
+ 
+ 
+ [Renderer]
+@@ -36,10 +36,10 @@
+ 
+ 
+ ;These options are configured from menus so don't touch
+-FullMode=0	
++FullMode=1	
+ Sound=1
+ Frameskip=-1
+-AutoFull=0
++AutoFull=1
+ Filter=20373472
+ 
+ 
