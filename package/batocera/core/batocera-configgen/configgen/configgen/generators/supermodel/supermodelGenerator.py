@@ -194,6 +194,16 @@ def input2input(playersControllers, player, joynum, button, axisside = None):
                         else:
                             sidestr = "_NEG"
 
+                # workarond for sanwa style controllers	
+                if button == "up":	
+                    return "JOY{}_UP".format(joynum+1)	
+                elif button == "down":	
+                    return "JOY{}_DOWN".format(joynum+1)	
+                elif button == "left":	
+                    return "JOY{}_LEFT".format(joynum+1)	
+                elif button == "right":	
+                    return "JOY{}_RIGHT".format(joynum+1)
+
                 if button == "joystick1left":
                     return "JOY{}_XAXIS{}".format(joynum+1, sidestr)
                 elif button == "joystick1up":
