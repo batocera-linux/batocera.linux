@@ -4,10 +4,12 @@
 #
 ################################################################################
 
-MODEL2EMU_SOURCE = http://nebula.emulatronia.com/files/m2emulator.zip
+# version 1.1a - closed source, not developed since 2014
+MODEL2EMU_SOURCE = m2emulator.zip
+MODEL2EMU_SITE = http://nebula.emulatronia.com/files
 
 define MODEL2EMU_EXTRACT_CMDS
-	mkdir -p $(@D)/target && cd $(@D)/target && unzip $(DL_DIR)/$(MODEL2EMU_DL_SUBDIR)/$(MODEL2EMU_SOURCE)
+	mkdir -p $(@D)/target && cd $(@D)/target && unzip -x $(DL_DIR)/$(MODEL2EMU_DL_SUBDIR)/$(MODEL2EMU_SOURCE)
 endef
 
 define MODEL2EMU_INSTALL_TARGET_CMDS
@@ -17,6 +19,9 @@ define MODEL2EMU_INSTALL_TARGET_CMDS
 	# config directories
 	mkdir -p $(TARGET_DIR)/usr/model2emu/NVDATA
 	mkdir -p $(TARGET_DIR)/usr/model2emu/CFG
+	# symbolic links
+	ln -sf /userdata/saves/model2emu/NVDATA/ $(TARGET_DIR)/usr/model2emu/NVDATA
+	ln -sf /userdata/system/configs/model2emu/CFG/ $(TARGET_DIR)/usr/model2emu/CFG
 
 	# evmap config
 	mkdir -p $(TARGET_DIR)/usr/share/evmapy

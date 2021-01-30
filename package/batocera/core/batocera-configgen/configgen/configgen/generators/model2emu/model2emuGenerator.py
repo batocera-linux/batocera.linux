@@ -10,7 +10,7 @@ class Model2EmuGenerator(Generator):
 
     def generate(self, system, rom, playersControllers, gameResolution):
 
-        commandArray = ["/usr/wine/lutris/bin/wine", "/usr/model2emu/EMULATOR.exe"]
+        commandArray = ["/usr/wine/proton/bin/wine", "/usr/model2emu/EMULATOR.exe"]
         
         # resolution
         commandArray.append("-res={},{}".format(gameResolution["width"], gameResolution["height"]))
