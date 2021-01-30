@@ -110,12 +110,19 @@ def configureVM(config_directory, system):
         pcsx2VMConfig.set("EmuCore/GS","VsyncQueueSize", "2")
         pcsx2VMConfig.set("EmuCore/GS","FrameLimitEnable", "1")
         pcsx2VMConfig.set("EmuCore/GS","SynchronousMTGS", "disabled")
-        pcsx2VMConfig.set("EmuCore/GS","FrameSkipEnable", "disabled")   
+        pcsx2VMConfig.set("EmuCore/GS","FrameSkipEnable", "disabled")
         pcsx2VMConfig.set("EmuCore/GS","LimitScalar", "1.00")
-        pcsx2VMConfig.set("EmuCore/GS","FramerateNTSC", "59.94")    
-        pcsx2VMConfig.set("EmuCore/GS","FrameratePAL", "50")   
+        pcsx2VMConfig.set("EmuCore/GS","FramerateNTSC", "59.94")
+        pcsx2VMConfig.set("EmuCore/GS","FrameratePAL", "50")
         pcsx2VMConfig.set("EmuCore/GS","FramesToDraw", "2")
-        pcsx2VMConfig.set("EmuCore/GS","FramesToSkip", "2")      
+        pcsx2VMConfig.set("EmuCore/GS","FramesToSkip", "2")
+
+    if not pcsx2VMConfig.has_section("EmuCore"):
+        pcsx2VMConfig.add_section("EmuCore")
+
+    # enable multitap
+    pcsx2VMConfig.set("EmuCore","MultitapPort0_Enabled", "enabled")
+    pcsx2VMConfig.set("EmuCore","MultitapPort1_Enabled", "enabled")
 
     if system.isOptSet('vsync'):
         pcsx2VMConfig.set("EmuCore/GS","VsyncEnable", system.config["vsync"])
