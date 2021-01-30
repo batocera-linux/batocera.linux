@@ -12,17 +12,20 @@
 # 20200410 Fix : Support for daphne did not work
 # 20200708 Fix : Default bezel was never copied
 # 20200709 Add : Progress count (started from Terminal/SSH vs ES)
+# 20210130 Add : Take bezels by systems from TheBezelProjet Github (Batocera 30+)
+#
 
-readonly VERSION="20200410"
+readonly VERSION="20210130"
 readonly TITLE="the BezelProject for BATOCERA"
 readonly LOGS_DIR="/userdata/system/logs"
 readonly DECORATION_DIR="/userdata/decorations"
 readonly ROMS_DIR="/userdata/roms"
 readonly BEZELPROJECT_DIR="thebezelproject"
-readonly BEZELPROJECT_GAMES_DIR="thebezelproject/games"
+readonly BEZELPROJECT_GAMES_DIR="$BEZELPROJECT_DIR/games"
+readonly BEZELPROJECT_SYSTEMS_DIR="$BEZELPROJECT_DIR/systems"
 readonly DEFAULT_BEZEL_URL="https://updates.batocera.org/thebezelproject"
-readonly SYSTEMS_LIST="https://updates.batocera.org/bezels.txt"
-readonly LOCAL_SYSTEMS_LIST="/userdata/system/bezels.txt"
+readonly SYSTEMS_LIST="https://updates.batocera.org/tbp_systems.txt"
+readonly LOCAL_SYSTEMS_LIST="/userdata/system/tbp_systems.txt"
 readonly INDEX_LIST="https://updates.batocera.org/thebezelproject/tbp_"
 readonly LOCAL_INDEX_LIST="/userdata/system/thebezelproject/tbp_"
 readonly TMP_SYSTEMS_LIST=`mktemp`
@@ -31,16 +34,16 @@ readonly TMP_PROGRESS_COUNT=`mktemp`
 readonly MAX_NB_WARNING=10
 NB_WARNING=0
 
-# tbp_list.txt must be a plain text file with the format
-# 'bezel_name https://githubURL' (spaces or tabs)
-# Example of tbp_list.txt file:
-# fba https://github.com/thebezelproject/bezelproject-MAME
-# snes https://github.com/thebezelproject/bezelproject-SNES
+# tbp_systems.txt must be a plain text file with the format
+# 'system github_repository bezels_path system_bezel_file' (spaces or tabs)
+# Example of tbp_systems.txt file:
+# fbneo https://github.com/thebezelproject/bezelproject-MAME MAME MAME-Horizontal.cfg
+# snes https://github.com/thebezelproject/bezelproject-SNES SNES Super-Nintendo-Entertainment-System.png
 
 # tbp_<system_name>.txt is a plain text file with the format
 # 'md5 rom_name' for each rom_name.png (spaces or tabs)
 # An external script generates this file for each Batocera system
-# available in the BezelProject (with monthly update)
+# available in the BezelProject (with monthly update, i hope)
 # Example of tbp_snes.txt file:
 # 29aa1cf6a91c472fd0e2db50ebf38 2020 Super Baseball (USA).png
 
@@ -100,7 +103,7 @@ function get_per() {
 		do
 				curval=$(cat  "$TMP_PROGRESS_COUNT")
 		 		local per=$(expr "$curval" '*' 100 / "$roms_filescount")
-		 		record "Installing bezels for $system_name >>> $per%" "2"
+		 		record "[$system_name] Installing bezels >>> $per%" "2"
 				sleep 2
 		done
 }
@@ -150,41 +153,47 @@ function list() {
 		local system_name
 		local url
 		local path
-		record "* List"
-		record "Path to games bezels $DECORATION_DIR"/"$BEZELPROJECT_GAMES_DIR"
+		local file
 
-		# create temporary files for systems list
+		record "* List"
+		record "Path to games bezels $DECORATION_DIR/$BEZELPROJECT_GAMES_DIR"
+		record "Path to systems bezels $DECORATION_DIR/$BEZELPROJECT_SYSTEMS_DIR"
+
+		# create temporary file for systems list
 		if [ -f $LOCAL_SYSTEMS_LIST ]; then
 				record "File for local systems list $LOCAL_SYSTEMS_LIST"
 				cp -f "$LOCAL_SYSTEMS_LIST" "$TMP_SYSTEMS_LIST"
 		else
 				record "File for systems list $SYSTEMS_LIST"
-				curl -sfL "$SYSTEMS_LIST" -o "$TMP_SYSTEMS_LIST"
-				if [ "$?" -ne 0 ]; then
-						record "Error : file $SYSTEMS_LIST could not be downloaded" "1"
+				url2="$SYSTEMS_LIST"
+				# check header only for HTTP 200 (OK)
+				if [[ $(curl -sIL "$url2" | head -n 1 | grep "200") ]]; then
+						curl -sfL "$url2" -o "$TMP_SYSTEMS_LIST"
+				else
+ 						record "Error : file $(basename $url2) could not be downloaded from $(dirname $url2)" "1"
 						return 1
 				fi
 		fi
 
 		# read systems list from configuration file
-		while IFS=$'  \t' read system_name url path ; do
+		while IFS=$'  \t' read system_name url path file; do
 				[ -z "$system_name" ] && continue
+				# Is this line a comment ?
+				[ "$system_name" = "#" ] && continue
+				# check if roms/<system> directory exists
+				if [ ! -d "$ROMS_DIR/$system_name" ]; then continue; fi
 				let systems_count+=1
 				record "System #$systems_count $system_name"
-				# check if a system is affected to a ROMs director
-				[ "$system_name" = "?" ] && continue
-				# check if roms/<system> directory exists
-				if [ ! -d "$ROMS_DIR"/"$system_name" ]; then continue; fi
 				# there is at least one ROM in the roms/<system_name> directory
-				roms_filescount=$(files_count "$ROMS_DIR"/"$system_name")
+				roms_filescount=$(files_count "$ROMS_DIR/$system_name")
 				if [ "$roms_filescount" -eq 0 ]; then continue; fi
 				let systems_available+=1
 				# check if url is valid and returns [A] or [?]
 				ia=$(check_url "$url")
 				# if games/<system_name> directory exists, then we assume the bezels are already installed
-				if [ -d "$DECORATION_DIR"/"$BEZELPROJECT_GAMES_DIR"/"$system_name" ]; then ia="[I]"; fi
+				if [ -d "$DECORATION_DIR/$BEZELPROJECT_GAMES_DIR/$system_name" ]; then ia="[I]"; fi
 				record "$ia $system_name - $url" "2"
-				record "$ia $system_name - $url - $path"
+				record "$ia $system_name - $url - $path - $file"
 		done < "$TMP_SYSTEMS_LIST"
 		record "There are $systems_count systems ($systems_available availables)"
 		rm "$TMP_SYSTEMS_LIST"
@@ -222,33 +231,40 @@ function install() {
 
 		local system_name
 		local url
+		local url2
 		local path
+		local git_path
+		local file
 
 		record "* Install"
-		record "Path to games bezels $DECORATION_DIR"/"$BEZELPROJECT_GAMES_DIR"
-		
+		record "Path to games bezels $DECORATION_DIR/$BEZELPROJECT_GAMES_DIR"
+		record "Path to systems bezels $DECORATION_DIR/$BEZELPROJECT_SYSTEMS_DIR"
+
 		# started from Terminal/SSH or from ES ?
 		[ -t 1 ] && TERMINAL=1 || TERMINAL=0
 
-		# create temporary files for systems list
+		# create temporary file for systems list
 		if [ -f $LOCAL_SYSTEMS_LIST ]; then
 				record "File for local systems list $LOCAL_SYSTEMS_LIST"
 				cp -f "$LOCAL_SYSTEMS_LIST" "$TMP_SYSTEMS_LIST"
 		else
 				record "File for systems list $SYSTEMS_LIST"
-				curl -sfL "$SYSTEMS_LIST" -o "$TMP_SYSTEMS_LIST"
-				if [ "$?" -ne 0 ]; then
-						record "Error : file $SYSTEMS_LIST could not be downloaded" "1"
+				url2="$SYSTEMS_LIST"
+				# check header only for HTTP 200 (OK)
+				if [[ $(curl -sIL "$url2" | head -n 1 | grep "200") ]]; then
+						curl -sfL "$url2" -o "$TMP_SYSTEMS_LIST"
+				else
+ 						record "Error : file $(basename $url2) could not be downloaded from $(dirname $url2)" "1"
 						return 1
 				fi
 		fi
 
 		# read systems list from configuration file
-		while IFS=$'  \t' read system_name url path ; do
+		while IFS=$'  \t' read system_name url path file; do
 				[ -z "$system_name" ] && continue
+				# Is this line a comment ?
+				[ "$system_name" = "#" ] && continue
 				let systems_count+=1
-				# check if a system is affected to a ROMs director
-				[ "$system_name" = "?" ] && continue
 				# have we found the system we want to install ?
 				[ "$system_name" != "$system_to_install" ] && continue
 				# check if url is valid and return [A] else [?]
@@ -271,50 +287,70 @@ function install() {
 		fi
 
 		# check if roms/<system_name> directory exists
-		if [ ! -d "$ROMS_DIR"/"$system_to_install" ]; then
+		if [ ! -d "$ROMS_DIR/$system_to_install" ]; then
 				record "Error : ROMs directory for system $system_to_install could not be found" "1"
 				return 1
 		fi
 
 		# check that there is at least one ROM in roms/<system_name> directory
-		roms_filescount=$(files_count "$ROMS_DIR"/"$system_to_install")
-		record "Found $roms_filescount ROMs in $ROMS_DIR"/"$system_to_install"
+		roms_filescount=$(files_count "$ROMS_DIR/$system_to_install")
+		record "Found $roms_filescount ROMs in $ROMS_DIR/$system_to_install"
 		if [ "$roms_filescount" -eq 0 ]; then
 				record "Error : ROMs directory for system $system_to_install is empty" "1"
 				return 1
 		fi
 
 		# if it doesn't already exist, create the games bezels directory
-		if [ ! -d "$DECORATION_DIR"/"$BEZELPROJECT_GAMES_DIR"/"$system_to_install" ]; then
-				record "Creating $DECORATION_DIR"/"$BEZELPROJECT_GAMES_DIR"/"$system_to_install"
-				mkdir -p "$DECORATION_DIR"/"$BEZELPROJECT_GAMES_DIR"/"$system_to_install"
+		if [ ! -d "$DECORATION_DIR/$BEZELPROJECT_GAMES_DIR/$system_to_install" ]; then
+				record "Creating $DECORATION_DIR/$BEZELPROJECT_GAMES_DIR/$system_to_install"
+				mkdir -p "$DECORATION_DIR/$BEZELPROJECT_GAMES_DIR/$system_to_install"
 		else
-				record "Directory $DECORATION_DIR"/"$BEZELPROJECT_GAMES_DIR"/"$system_to_install already exist"
+				record "Directory $DECORATION_DIR/$BEZELPROJECT_GAMES_DIR/$system_to_install already exist"
 		fi
 
-		# create temporary files for index list
+		# if it doesn't already exist, create the systems bezels directory
+		if [ ! -d "$DECORATION_DIR/$BEZELPROJECT_SYSTEMS_DIR" ]; then
+				record "Creating $DECORATION_DIR/$BEZELPROJECT_SYSTEMS_DIR"
+				mkdir -p "$DECORATION_DIR/$BEZELPROJECT_SYSTEMS_DIR"
+		else
+				record "Directory $DECORATION_DIR/$BEZELPROJECT_SYSTEMS_DIR already exist"
+		fi
+
+		# create temporary file for index list
 		if [ -f "$LOCAL_INDEX_LIST$system_to_install.txt" ]; then
 				record "File for local index list $LOCAL_INDEX_LIST$system_to_install.txt"
 				cp -f "$LOCAL_INDEX_LIST$system_to_install.txt" "$TMP_INDEX_LIST"
 		else
 				record "File for index list $INDEX_LIST$system_to_install.txt"
-				curl -sfL "$INDEX_LIST$system_to_install.txt" -o "$TMP_INDEX_LIST"
-				if [ "$?" -ne 0 ]; then
-						record "Error : file $INDEX_LIST$system_to_install.txt could not be downloaded" "1"
+				url2="$INDEX_LIST$system_to_install.txt"
+				# check header only for HTTP 200 (OK)
+				if [[ $(curl -sIL "$url2" | head -n 1 | grep "200") ]]; then
+						curl -sfL "$url2" -o "$TMP_INDEX_LIST"
+				else
+ 						record "Error : file $(basename $url2) could not be downloaded from $(dirname $url2)" "1"
 						return 1
 				fi
+		fi
+
+		# does the path contains arcade bezels ?
+		if [ "$path" = "ArcadeBezels" ]; then
+				git_path="/raw/master/retroarch/overlay/ArcadeBezels/"
+		else
+				git_path="/raw/master/retroarch/overlay/GameBezels/$path/"
 		fi
 
 		# extract git_name from the url
 		git_name=$(git_name "$url")
 		record "URL : $url"
-		record "Git name : $git_name"
-		record "Git path : $path"
-		record "Installing games bezels for $roms_filescount ROMs..." "1"
+		record "Git repository : $git_name"
+		record "Git bezels path : $git_path"
+		record "Git default bezel file : $file"
+		record "[$system_to_install] $roms_filescount ROMs found" "1"
 
 		# support for daphne : there is a sub-folder called roms we want to parse
-		[[ $(grep "daphne" <<< "$system_to_install") && -d "$ROMS_DIR"/"$system_to_install"/roms ]] && daphne="/roms"
+		[[ $(grep "daphne" <<< "$system_to_install") && -d "$ROMS_DIR/$system_to_install/roms" ]] && daphne="/roms"
 
+#TERMINAL=0
 		if [  "$TERMINAL" -eq 0 ]; then
 				# start job process (for background refresh)
 				echo "0" > "$TMP_PROGRESS_COUNT"
@@ -342,7 +378,7 @@ function install() {
 				# *********************************************
 				# parse index file for maching rom_name
 				matching_rom=0
-				while IFS=$'  \t' read index_bezel_md5 index_bezel_name ; do
+				while IFS=$'  \t' read index_bezel_md5 index_bezel_name; do
 						[ -z "$index_bezel_name" ] && continue
 						index_ext="${index_bezel_name##*.}"
 						index_no_ext="${index_bezel_name%.*}"
@@ -356,16 +392,16 @@ function install() {
 
 								# *************************************************
 								# does the bezel for this game already exist ?
-								if [ -f "$DECORATION_DIR"/"$BEZELPROJECT_GAMES_DIR"/"$system_to_install"/"$rom_no_ext.$index_ext" ]; then
+								if [ -f "$DECORATION_DIR/$BEZELPROJECT_GAMES_DIR/$system_to_install/$rom_no_ext.$index_ext" ]; then
 
 										# ********************************************************************
 										# Check MD5, in case the bezel has been modified/updated ?
 										if [ $OS = "Darwin" ]; then
-												# MacOS X Version
-												bezel_md5=$(md5 -q "$DECORATION_DIR"/"$BEZELPROJECT_GAMES_DIR"/"$system_to_install"/"$rom_no_ext.$index_ext")
+												# MacOS X version
+												bezel_md5=$(md5 -q "$DECORATION_DIR/$BEZELPROJECT_GAMES_DIR/$system_to_install/$rom_no_ext.$index_ext")
 										else
 												# Busybox version
-												bezel_md5=$(md5sum "$DECORATION_DIR"/"$BEZELPROJECT_GAMES_DIR"/"$system_to_install"/"$rom_no_ext.$index_ext" | cut -d ' ' -f 1)
+												bezel_md5=$(md5sum "$DECORATION_DIR/$BEZELPROJECT_GAMES_DIR/$system_to_install/$rom_no_ext.$index_ext" | cut -d ' ' -f 1)
 										fi
 
 										if [ "$bezel_md5" != "$index_bezel_md5" ]; then
@@ -374,7 +410,7 @@ function install() {
 												# replace all spaces with %20 for url request
 												formated_index_bezel_name=${index_bezel_name// /%20}
 												let bezels_installed+=1
-												curl -sfL "$url"/raw/master/"$path"/"$formated_index_bezel_name" -o "$DECORATION_DIR"/"$BEZELPROJECT_GAMES_DIR"/"$system_to_install"/"$rom_no_ext.$index_ext"
+												curl -sfL "$ur$git_path$formated_index_bezel_name" -o "$DECORATION_DIR/$BEZELPROJECT_GAMES_DIR/$system_to_install/$rom_no_ext.$index_ext"
 												if [ "$?" -ne 0 ]; then
 														record "Warning : file $index_bezel_name could not be downloaded from $url"
 														let NB_WARNING+=1
@@ -390,15 +426,18 @@ function install() {
 											# replace all spaces with %20 for url request
 											formated_index_bezel_name=${index_bezel_name// /%20}
 											let bezels_installed+=1
-											curl -sfL "$url"/raw/master/"$path"/"$formated_index_bezel_name" -o "$DECORATION_DIR"/"$BEZELPROJECT_GAMES_DIR"/"$system_to_install"/"$rom_no_ext.$index_ext"
+											curl -sfL "$url$git_path$formated_index_bezel_name" -o "$DECORATION_DIR/$BEZELPROJECT_GAMES_DIR/$system_to_install/$rom_no_ext.$index_ext"
 											if [ "$?" -ne 0 ]; then
 													record "Warning : file $index_bezel_name could not be downloaded from $url"
 													let NB_WARNING+=1
 											fi
 								fi
+
 								# break loop from index (we found a match, go to next ROM)
 								break
+
 						fi
+
 				done < "$TMP_INDEX_LIST"
 
 				# NOT MATCHING
@@ -411,13 +450,13 @@ function install() {
 						record "Error : too many warning ("$MAX_NB_WARNING") while downloading files, exiting..." "1"
 						break
 				fi
-				
+
 				# show one line progress count on Terminal/SSH only
 				if [  "$TERMINAL" -ne 0 ]; then
- 						echo -ne  "Installing bezels for $system_to_install $roms_count / $roms_filescount\r"
+ 						echo -ne  "[$system_to_install] Installing bezel $roms_count / $roms_filescount\r"
 				fi
-				
-		done < <(find "$ROMS_DIR"/"$system_to_install$daphne" -maxdepth 1 -type f -iname "[!._]*" -and ! -iname "gamelist*")
+
+		done < <(find "$ROMS_DIR/$system_to_install$daphne" -maxdepth 1 -type f -iname "[!._]*" -and ! -iname "gamelist*")
 		rm "$TMP_INDEX_LIST"
 
 		if [  "$TERMINAL" -eq 0 ]; then
@@ -431,29 +470,42 @@ function install() {
 				sync
 				return 1
 		fi
-		record "$bezels_installed bezels for system $system_to_install ($roms_count ROMs) were installed/modified" "1"
 
-		# install default bezel (i.e. system not supported in TheBezelProject)
-		record "Installing default bezel" "1"
-		if [ -d "$DECORATION_DIR"/"$BEZELPROJECT_DIR" ]; then
-				url="$DEFAULT_BEZEL_URL"/default.png
-				# check header only for HTTP 200 (OK)
-				if [[ $(curl -sIL "$url" | head -n 1 | grep "200") ]]; then
-						curl -sfL "$url" -o "$DECORATION_DIR"/"$BEZELPROJECT_DIR"/default.png
-				else
-						record "Warning : file $(basename $url) could not be downloaded from $(dirname $url)"
+		# summary (only show on stdout if started from Terminal/SSH)
+		record "[$system_to_install] $bezels_installed bezels ($roms_count ROMs) were installed/modified" "$TERMINAL"
+
+		# install system bezel (i.e. system bezel from TheBezelProject)
+		record "[$system_to_install] Installing system bezel" "1"
+		if [ -d "$DECORATION_DIR/$BEZELPROJECT_SYSTEMS_DIR" ]; then
+				git_path="/raw/master/retroarch/overlay/"
+				curl -sfL "$url$git_path$file" -o "$DECORATION_DIR/$BEZELPROJECT_SYSTEMS_DIR/$system_to_install.png"
+				if [ "$?" -ne 0 ]; then
+						record "Warning : file $file could not be downloaded from $url"
 				fi
-				url="$DEFAULT_BEZEL_URL"/default.info
+		fi
+
+		# install default bezel (i.e default bezel from BATOCERA website)
+		record "[$system_to_install] Installing default bezel" "1"
+		if [ -d "$DECORATION_DIR/$BEZELPROJECT_DIR" ]; then
+				url2="$DEFAULT_BEZEL_URL/default.png"
 				# check header only for HTTP 200 (OK)
-				if [[ $(curl -sIL "$url" | head -n 1 | grep "200") ]]; then
-						curl -sfL "$url" -o "$DECORATION_DIR"/"$BEZELPROJECT_DIR"/default.info
+				if [[ $(curl -sIL "$url2" | head -n 1 | grep "200") ]]; then
+						curl -sfL "$url2" -o "$DECORATION_DIR/$BEZELPROJECT_DIR/default.png"
 				else
-						record "Warning : file $(basename $url) could not be downloaded from $(dirname $url)"
+						record "Warning : file $(basename $url2) could not be downloaded from $(dirname $url2)"
+				fi
+				url2="$DEFAULT_BEZEL_URL/default.info"
+				# check header only for HTTP 200 (OK)
+				if [[ $(curl -sIL "$url2" | head -n 1 | grep "200") ]]; then
+						curl -sfL "$url2" -o "$DECORATION_DIR/$BEZELPROJECT_DIR/default.info"
+				else
+						record "Warning : file $(basename $url2) could not be downloaded from $(dirname $url2)"
 				fi
 		fi
 
 		# sync disk
 		sync
+
 		return 0
 }
 
@@ -465,30 +517,38 @@ function remove() {
 		#  do you want to remove all bezels from TheBezelProject ?
 		record "* Remove"
 		if [ "$system_name" = "all" ]; then
-				if [ -d "$DECORATION_DIR"/"$BEZELPROJECT_DIR" ]; then
+				if [ -d "$DECORATION_DIR/$BEZELPROJECT_DIR" ]; then
 						read -p "Do you wish to remove all bezels from TheBezelProject ? " yn
 						if [[ "$yn" = "y" || "$yn" = "Y" ]]; then
-								rm -rf "$DECORATION_DIR"/"$BEZELPROJECT_DIR"
-								record "Deleting : $DECORATION_DIR"/"$BEZELPROJECT_DIR"
+								# all TheBezelProject sub-directories
+								rm -rf "$DECORATION_DIR/$BEZELPROJECT_DIR"
+								record "Deleting directory : $DECORATION_DIR/$BEZELPROJECT_DIR"
 						fi
-						else
-								record "Error : bezels directory $DECORATION_DIR"/"$BEZELPROJECT_DIR is not valid" "1"
+				else
+								record "Error : bezels directory $DECORATION_DIR/$BEZELPROJECT_DIR is not valid" "1"
 								return 1
-					fi
+				fi
 		else
 				# check if games/<system> directory exists
-				if [ ! -d "$DECORATION_DIR"/"$BEZELPROJECT_GAMES_DIR"/"$system_name" ]; then
+				if [ ! -d "$DECORATION_DIR/$BEZELPROJECT_GAMES_DIR/$system_name" ]; then
 						record "Error : bezels for system $system_name could not be found" "1"
 						return 1
 				else
-						rm -rf "$DECORATION_DIR"/"$BEZELPROJECT_GAMES_DIR"/"$system_name"
-						record "Deleting : $DECORATION_DIR"/"$BEZELPROJECT_GAMES_DIR"/"$system_name"
- 						rm -f "$DECORATION_DIR"/"$BEZELPROJECT_DIR"/default.*
- 						record "Deleting : $DECORATION_DIR"/"$BEZELPROJECT_DIR"/default.*
+						# games bezels
+						rm -rf "$DECORATION_DIR/$BEZELPROJECT_GAMES_DIR/$system_name"
+						record "Deleting directory : $DECORATION_DIR/$BEZELPROJECT_GAMES_DIR/$system_name"
+						# system bezels
+						rm -f "$DECORATION_DIR/$BEZELPROJECT_SYSTEMS_DIR/$system_name.png"
+						record "Deleting file : $DECORATION_DIR/$BEZELPROJECT_SYSTEMS_DIR/$system_name.png"
+						# default bezel
+ 						rm -f "$DECORATION_DIR/$BEZELPROJECT_DIR/default.*"
+ 						record "Deleting files : $DECORATION_DIR/$BEZELPROJECT_DIR/default.*"
 				fi
 		fi
+
 		# sync disk
 		sync
+
 		return 0
 }
 
