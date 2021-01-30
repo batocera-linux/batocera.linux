@@ -16,8 +16,8 @@ class Model2EmuGenerator(Generator):
         commandArray.append("-res={},{}".format(gameResolution["width"], gameResolution["height"]))
         
         # simplify the rom name (strip the directory & extension)
-        romname = rom.replace("/userdata/roms/model2/")
-        smplromname = romname.replace(".zip")
+        romname = rom.replace("/userdata/roms/model2/", "")
+        smplromname = romname.replace(".zip", "")
 
         commandArray.extend(["-fullscreen", smplromname])
 
