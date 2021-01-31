@@ -1684,10 +1684,8 @@ imageviewer:
   hardware: system
   extensions: [jpg, jpeg, png, bmp, psd, tga, gif, hdr, pic, ppm, pgm, mkv, pdf, mp4, avi]
   path:       /userdata/screenshots
-  platform:   ignore
-  emulators:
-    libretro:
-      imageviewer: { requireAnyOf: [] }
+  platform:   imageviewer
+  force:      True
 
 library:
   name:       Library
@@ -1697,9 +1695,7 @@ library:
   extensions: [jpg jpeg png bmp psd tga gif hdr pic ppm pgm mkv avi mp4 pdf cbz]
   path:       /userdata/library
   platform:   imageviewer
-  emulators:
-    libretro:
-      imageviewer: { requireAnyOf: [] }
+  force:      True
 
 model3:
   name:       Sega Model 3
