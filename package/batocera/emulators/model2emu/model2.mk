@@ -20,8 +20,10 @@ define MODEL2EMU_INSTALL_TARGET_CMDS
 	mkdir -p $(TARGET_DIR)/usr/model2emu/NVDATA
 	mkdir -p $(TARGET_DIR)/usr/model2emu/CFG
 	# symbolic links
-	ln -sf /userdata/saves/model2emu/NVDATA/ $(TARGET_DIR)/usr/model2emu/NVDATA
-	ln -sf /userdata/system/configs/model2emu/CFG/ $(TARGET_DIR)/usr/model2emu/CFG
+	mkdir -p /userdata/saves/model2/NVDATA
+	mkdir -p /userdata/system/configs/model2emu/CFG
+	ln -sf /userdata/saves/model2/NVDATA $(TARGET_DIR)/usr/model2emu/NVDATA
+	ln -sf /userdata/system/configs/model2emu/CFG $(TARGET_DIR)/usr/model2emu/CFG
 
 	# evmap config
 	mkdir -p $(TARGET_DIR)/usr/share/evmapy
