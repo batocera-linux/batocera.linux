@@ -81,7 +81,7 @@ class Rpcs3Generator(Generator):
         rpcs3ymlconfig["Core"]['Lower SPU thread priority'] = False
         rpcs3ymlconfig["Core"]['SPU Cache'] = False
         rpcs3ymlconfig["Core"]['PPU LLVM Accurate Vector NaN values'] = True     
- 
+        rpcs3ymlconfig["Video"]['Aspect ratio'] = 16:9
         rpcs3ymlconfig["Video"]['Frame limit'] = 60
 
         # gfx backend
