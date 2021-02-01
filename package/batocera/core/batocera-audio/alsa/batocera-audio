@@ -34,6 +34,7 @@ case "${ACTION}" in
 						pcm.!default { type plug slave { pcm "hw:${cardnb},${devicenb}" } }
 						ctl.!default { type hw card ${cardnb} }
 					EOF
+					sync # give less chance for a corruption
 				fi
 			;;
 		esac
