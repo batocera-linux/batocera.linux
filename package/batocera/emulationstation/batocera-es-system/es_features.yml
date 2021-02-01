@@ -2365,6 +2365,14 @@ openbor:
 pcsx2:
   features: [ratio, fullboot, internal_resolution]
   cfeatures:
+        multitap:
+            prompt:      ENABLE MULTITAP
+            description: Allowing up to 8 players support in games
+            choices:
+                "Off":              disabled
+                "Port1":            port1
+                "Port2":            port2
+                "Port1+2":          port12
         anisotropic_filtering:
             prompt:      ANISOTROPIC FILTERING
             description: Enhance the quality with on perspective textures
