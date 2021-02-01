@@ -121,8 +121,19 @@ def configureVM(config_directory, system):
         pcsx2VMConfig.add_section("EmuCore")
 
     # enable multitap
-    pcsx2VMConfig.set("EmuCore","MultitapPort0_Enabled", "enabled")
-    pcsx2VMConfig.set("EmuCore","MultitapPort1_Enabled", "enabled")
+    if system.isOptSet('multitap') and system.config['multitap'] != 'disabled':
+        if system.config['multitap'] == 'port1':
+            pcsx2VMConfig.set("EmuCore","MultitapPort0_Enabled", "enabled")
+            pcsx2VMConfig.set("EmuCore","MultitapPort1_Enabled", "disabled")
+        elif system.config['multitap'] == 'port2':
+            pcsx2VMConfig.set("EmuCore","MultitapPort0_Enabled", "disabled")
+            pcsx2VMConfig.set("EmuCore","MultitapPort1_Enabled", "enabled")
+        elif system.config['multitap'] == 'port12':
+            pcsx2VMConfig.set("EmuCore","MultitapPort0_Enabled", "enabled")
+            pcsx2VMConfig.set("EmuCore","MultitapPort1_Enabled", "enabled")
+    else:
+        pcsx2VMConfig.set("EmuCore","MultitapPort0_Enabled", "disabled")
+        pcsx2VMConfig.set("EmuCore","MultitapPort1_Enabled", "disabled")
 
     if system.isOptSet('vsync'):
         pcsx2VMConfig.set("EmuCore/GS","VsyncEnable", system.config["vsync"])
