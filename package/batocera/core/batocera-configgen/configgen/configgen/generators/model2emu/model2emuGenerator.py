@@ -10,7 +10,11 @@ class Model2EmuGenerator(Generator):
 
     def generate(self, system, rom, playersControllers, gameResolution):
 
-        commandArray = ["/usr/wine/proton/bin/wine", "/usr/model2emu/EMULATOR.exe"]
+        # todo - add some logic before calling if winetricks has already installed these libraries in the bottle
+        env WINE=/usr/wine/lutris/bin/wine /usr/wine/winetricks d3dcompiler_42 d3dx9_42
+        
+        # what version of wine should we be using?
+        commandArray = ["/usr/wine/lutris/bin/wine", "/usr/model2emu/EMULATOR.exe"]
         
         # resolution
         commandArray.append("-res={},{}".format(gameResolution["width"], gameResolution["height"]))
@@ -24,5 +28,9 @@ class Model2EmuGenerator(Generator):
         return Command.Command(
             array=commandArray,
             env={
+                "WINEPREFIX": "/userdata/saves/model2",
+                "vblank_mode": "0",
                 'SDL_GAMECONTROLLERCONFIG': controllersConfig.generateSdlGameControllerConfig(playersControllers)
             })
+
+    

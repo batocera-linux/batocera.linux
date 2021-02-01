@@ -2,6 +2,6 @@
 
 export DISPLAY=:0.0
 
-PATH=$PATH:PATH=$PATH:/usr/wine/proton/bin
+PATH=$PATH:PATH=$PATH:/usr/wine/lutris/bin
 
-wine /usr/model2emu/EMULATOR.EXE
+WINEPREFIX=/userdata/saves/model2 wine /usr/model2emu/EMULATOR.EXE
