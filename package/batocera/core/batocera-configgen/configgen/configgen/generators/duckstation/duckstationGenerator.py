@@ -58,6 +58,11 @@ class DuckstationGenerator(Generator):
         else:
             settings.set("GPU", "Renderer", "OpenGL")
 
+        # console
+        if not settings.has_section("Console"):
+            settings.add_section("Console")
+        settings.set("Console", "Region", "Auto")
+            
         # internal resolution
         if system.isOptSet('internalresolution'):
             settings.set("GPU", "ResolutionScale", system.config["internalresolution"])
