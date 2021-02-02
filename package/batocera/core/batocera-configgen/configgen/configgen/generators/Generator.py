@@ -10,3 +10,6 @@ class Generator(object):
 
     def getResolutionMode(self, config):
         return config['videomode']
+
+    def getMouseMode(self, config):
+        return False

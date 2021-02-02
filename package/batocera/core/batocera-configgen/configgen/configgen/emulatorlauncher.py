@@ -140,6 +140,7 @@ def main(args, maxnbplayers):
     systemMode = videoMode.getCurrentMode()
 
     resolutionChanged = False
+    mouseChanged = False
     exitCode = -1
     try:
         # lower the resolution if mode is auto
@@ -196,6 +197,10 @@ def main(args, maxnbplayers):
         if args.autosave is not None:
             system.config["autosave"] = args.autosave
 
+        if generators[system.config['emulator']].getMouseMode(system.config):
+            mouseChanged = True
+            videoMode.changeMouse(True)
+
         # run a script before emulator starts
         callExternalScripts("/usr/share/batocera/configgen/scripts", "gameStart", [systemName, system.config['emulator'], effectiveCore, effectiveRom])
         callExternalScripts("/userdata/system/scripts", "gameStart", [systemName, system.config['emulator'], effectiveCore, effectiveRom])
@@ -218,6 +223,13 @@ def main(args, maxnbplayers):
                 videoMode.changeMode(systemMode)
             except Exception:
                 pass # don't fail
+
+        if mouseChanged:
+            try:
+                videoMode.changeMouse(False)
+            except Exception:
+                pass # don't fail
+
     # exit
     return exitCode
 
