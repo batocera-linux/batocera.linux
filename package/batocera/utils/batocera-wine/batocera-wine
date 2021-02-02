@@ -72,6 +72,7 @@ wine_options() {
     ESYNC="$(get_setting esync "${SYSTEM}" "${ROMGAMENAME}")"
     FSYNC="$(get_setting fsync "${SYSTEM}" "${ROMGAMENAME}")"
     PBA="$(get_setting pba "${SYSTEM}" "${ROMGAMENAME}")"
+    FSTYPE=$(mount | grep "/userdata" | awk '{print $5}')
     KEYBOARD="$(/usr/bin/batocera-settings-get system.kblayout)"
     VIRTUAL_DESKTOP="$(get_setting virtual_desktop "${SYSTEM}" "${ROMGAMENAME}")"
     VIRTUAL_DESKTOP_SIZE="$(get_setting videomode "${SYSTEM}" "${ROMGAMENAME}" || batocera-resolution currentResolution)"
@@ -88,6 +89,17 @@ wine_options() {
 
     export PBA_ENABLE=0
     test "${PBA}" = 1 && PBA_ENABLE=1
+
+    if [ "${FSTYPE}" = ntfs ]; then
+	export NTFS_MODE=1
+    fi
+    
+    export STAGING_SHARED_MEMORY=1
+    export ULIMIT_SIZE=1000000
+
+    if ! ulimit -n "${ULIMIT_SIZE}" 2>/dev/null; then
+	export WINEESYNC=0
+    fi
     
     setxkbmap "${KEYBOARD}"
 }
@@ -107,6 +119,19 @@ mf_install() {
         WINEPREFIX="${WINEPREFIX}" "${MF_INSTALL}" || return 1
         /usr/bin/batocera-settings-set "${SYSTEM}[\"${ROMGAMENAME}\"].mf" 0
     fi
+    fi
+
+    return 0
+}
+
+reg_install() {
+    if test -e "/userdata/system/wine/regs"; then
+        echo "Importing registry files"
+
+        for file in /userdata/system/wine/regs/*.reg; do
+            "${WINE}" regedit "${file}" &>/dev/null || return 1
+            "${WINE64}" regedit "${file}" &>/dev/null || return 1
+        done
     fi
 
     return 0
@@ -149,6 +174,7 @@ dxvk_install() {
 
     if test "${DXVK}" = 1
     then
+	export DXVK_ASYNC=1
 	export WINEDLLOVERRIDES="${WINEDLLOVERRIDES};dxgi,d3d9,d3d10,d3d10_1,d3d10core,d3d11,d3d12=n;nvapi64,nvapi="
     else
 	export WINEDLLOVERRIDES="${WINEDLLOVERRIDES};dxgi,d3d9,d3d10,d3d10_1,d3d10core,d3d11,d3d12=b"
@@ -211,7 +237,7 @@ createWineDirectory() {
     # please wait screen
     bsod-wine&
     BSODPID=$!
-  
+
     mkdir -p "${WINEPREFIX}" || return 1
 
     if ! WINEPREFIX=${WINEPREFIX} ${WINE} hostname
@@ -251,6 +277,7 @@ play_wine() {
 
     wine_options
     mf_install "${WINEPOINT}" || return 1
+    reg_install "${WINEPOINT}" || return 1
     dxvk_install "${WINEPOINT}" || return 1
     WINE_CMD=$(getWine_var "${WINEPOINT}" "CMD" "explorer")
     WINE_DIR=$(getWine_var "${WINEPOINT}" "DIR" "")
@@ -265,6 +292,7 @@ play_pc() {
     wine_options
     createWineDirectory "${WINEPOINT}" || return 1
     mf_install "${WINEPOINT}" || return 1
+    reg_install "${WINEPOINT}" || return 1
     sandboxing_prefix "${WINEPOINT}" || return 1
     dxvk_install "${WINEPOINT}" || return 1
 
@@ -303,6 +331,7 @@ play_exe() {
     wine_options
     createWineDirectory "${WINEPOINT}" || return 1
     mf_install "${WINEPOINT}" || return 1
+    reg_install "${WINEPOINT}" || return 1
     sandboxing_prefix "${WINEPOINT}" || return 1
     dxvk_install "${WINEPOINT}" || return 1
 
@@ -322,6 +351,7 @@ play_winetgz() {
     fi
 
     mf_install "${WINEPOINT}" || return 1
+    reg_install "${WINEPOINT}" || return 1
     dxvk_install "${WINEPOINT}" || return 1
 
     WINE_CMD=$(getWine_var "${WINEPOINT}" "CMD" "explorer")
