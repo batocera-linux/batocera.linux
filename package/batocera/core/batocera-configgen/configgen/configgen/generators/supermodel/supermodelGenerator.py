@@ -87,6 +87,11 @@ def configPadsIni(playersControllers):
         "axisRZ": None
     }
 
+    mapping_fallback = {
+        "axisX": "left",
+        "axisY": "up"
+    }
+
     # template
     templateConfig = ConfigParser.ConfigParser()
     # To prevent ConfigParser from converting to lower case
@@ -102,7 +107,7 @@ def configPadsIni(playersControllers):
     for section in templateConfig.sections():
         targetConfig.add_section(section)
         for key, value in templateConfig.items(section):
-            targetConfig.set(section, key, transformValue(value, playersControllers, mapping))
+            targetConfig.set(section, key, transformValue(value, playersControllers, mapping, mapping_fallback))
 
     # save the ini file
     if not os.path.exists(os.path.dirname(targetFile)):
@@ -110,11 +115,11 @@ def configPadsIni(playersControllers):
     with open(targetFile, 'w') as configfile:
         targetConfig.write(configfile)
 
-def transformValue(value, playersControllers, mapping):
+def transformValue(value, playersControllers, mapping, mapping_fallback):
     if value[0] == '"' and value[-1] == '"':
         newvalue = ""
         for elt in value[1:-1].split(","):
-            newelt = transformElement(elt, playersControllers, mapping)
+            newelt = transformElement(elt, playersControllers, mapping, mapping_fallback)
             if newelt is not None:
                 if newvalue != "":
                     newvalue = newvalue + ","
@@ -124,7 +129,7 @@ def transformValue(value, playersControllers, mapping):
         # integers
         return value
 
-def transformElement(elt, playersControllers, mapping):
+def transformElement(elt, playersControllers, mapping, mapping_fallback):
     # Docs/README.txt
     # JOY1_LEFT  is the same as JOY1_XAXIS_NEG
     # JOY1_RIGHT is the same as JOY1_XAXIS_POS
@@ -136,16 +141,20 @@ def transformElement(elt, playersControllers, mapping):
         return input2input(playersControllers, matches.group(1), joy2realjoyid(playersControllers, matches.group(1)), mapping["button" + matches.group(2)])
     matches = re.search("^JOY([12])_UP$", elt)
     if matches:
-        return input2input(playersControllers, matches.group(1), joy2realjoyid(playersControllers, matches.group(1)), mapping["axisY"], -1)
+        mp = getMappingKeyIncludingFallback(playersControllers, matches.group(1), "axisY", mapping, mapping_fallback)
+        return input2input(playersControllers, matches.group(1), joy2realjoyid(playersControllers, matches.group(1)), mp, -1)
     matches = re.search("^JOY([12])_DOWN$", elt)
     if matches:
-        return input2input(playersControllers, matches.group(1), joy2realjoyid(playersControllers, matches.group(1)), mapping["axisY"], 1)
+        mp = getMappingKeyIncludingFallback(playersControllers, matches.group(1), "axisY", mapping, mapping_fallback)
+        return input2input(playersControllers, matches.group(1), joy2realjoyid(playersControllers, matches.group(1)), mp, 1)
     matches = re.search("^JOY([12])_LEFT$", elt)
     if matches:
-        return input2input(playersControllers, matches.group(1), joy2realjoyid(playersControllers, matches.group(1)), mapping["axisX"], -1)
+        mp = getMappingKeyIncludingFallback(playersControllers, matches.group(1), "axisX", mapping, mapping_fallback)
+        return input2input(playersControllers, matches.group(1), joy2realjoyid(playersControllers, matches.group(1)), mp, -1)
     matches = re.search("^JOY([12])_RIGHT$", elt)
     if matches:
-        return input2input(playersControllers, matches.group(1), joy2realjoyid(playersControllers, matches.group(1)), mapping["axisX"], 1)
+        mp = getMappingKeyIncludingFallback(playersControllers, matches.group(1), "axisX", mapping, mapping_fallback)
+        return input2input(playersControllers, matches.group(1), joy2realjoyid(playersControllers, matches.group(1)), mp, 1)
     matches = re.search("^JOY([12])_(R?[XY])AXIS$", elt)
     if matches:
         return input2input(playersControllers, matches.group(1), joy2realjoyid(playersControllers, matches.group(1)), mapping["axis" + matches.group(2)])
@@ -158,6 +167,13 @@ def transformElement(elt, playersControllers, mapping):
     if matches:
         return None
     return elt
+
+def getMappingKeyIncludingFallback(playersControllers, padnum, key, mapping, mapping_fallback):
+    if padnum in playersControllers:
+        if key not in mapping or (key in mapping and mapping[key] not in playersControllers[padnum].inputs):
+            if key in mapping_fallback and mapping_fallback[key] in playersControllers[padnum].inputs:
+                return mapping_fallback[key]
+    return mapping[key]
 
 def joy2realjoyid(playersControllers, joy):
     if joy in playersControllers:
@@ -194,9 +210,9 @@ def input2input(playersControllers, player, joynum, button, axisside = None):
                         else:
                             sidestr = "_NEG"
 
-                if button == "joystick1left":
+                if button == "joystick1left" or button == "left":
                     return "JOY{}_XAXIS{}".format(joynum+1, sidestr)
-                elif button == "joystick1up":
+                elif button == "joystick1up" or button == "up":
                     return "JOY{}_YAXIS{}".format(joynum+1, sidestr)
                 elif button == "joystick2left":
                     return "JOY{}_RXAXIS{}".format(joynum+1, sidestr)
