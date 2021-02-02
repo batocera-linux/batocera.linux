@@ -68,11 +68,36 @@ waitWineServer() {
     done
 }
 
+# find the first existing parent dir of a existing or non existing directory
+getTopExistingDir() {
+    if test -e "${1}"
+       then
+	   echo "${1}"
+    else
+	PARENTDIR=$(dirname "${1}")
+	getTopExistingDir "${PARENTDIR}"
+    fi
+}
+
+# find the fs type or an existing directory
+getFSDir() {
+    df -P "${1}"  | tail -1 | cut -d' ' -f 1 | xargs blkid | sed -e s+"^.*TYPE=\"\(.*\)\"$"+'\1'+
+}
+
+getFSWine() {
+    WINETOPDIR=$(getTopExistingDir "${1}")
+    FSWINEPOINT=$(getFSDir "${WINETOPDIR}")
+    LFSTYPE=""
+    test -e "${FSWINEPOINT}" && LFSTYPE=$(mount | grep -E "^${FSWINEPOINT}" | awk '{print $5}')
+    echo "${LFSTYPE}"
+}
+
 wine_options() {
+    WINEPOINT=$1
     ESYNC="$(get_setting esync "${SYSTEM}" "${ROMGAMENAME}")"
     FSYNC="$(get_setting fsync "${SYSTEM}" "${ROMGAMENAME}")"
     PBA="$(get_setting pba "${SYSTEM}" "${ROMGAMENAME}")"
-    FSTYPE=$(mount | grep "/userdata" | awk '{print $5}')
+    FSTYPE=$(getFSWine "${WINEPOINT}")
     KEYBOARD="$(/usr/bin/batocera-settings-get system.kblayout)"
     VIRTUAL_DESKTOP="$(get_setting virtual_desktop "${SYSTEM}" "${ROMGAMENAME}")"
     VIRTUAL_DESKTOP_SIZE="$(get_setting videomode "${SYSTEM}" "${ROMGAMENAME}" || batocera-resolution currentResolution)"
@@ -275,7 +300,7 @@ play_wine() {
     GAMENAME=$1
     WINEPOINT="${GAMENAME}"
 
-    wine_options
+    wine_options "${WINEPOINT}"
     mf_install "${WINEPOINT}" || return 1
     reg_install "${WINEPOINT}" || return 1
     dxvk_install "${WINEPOINT}" || return 1
@@ -289,7 +314,7 @@ play_pc() {
     GAMENAME=$1
     WINEPOINT="${G_SAVES_DIR}/${WINE_VERSION}/"$(basename "${GAMENAME}")".wine"
     
-    wine_options
+    wine_options "${WINEPOINT}"
     createWineDirectory "${WINEPOINT}" || return 1
     mf_install "${WINEPOINT}" || return 1
     reg_install "${WINEPOINT}" || return 1
@@ -328,7 +353,7 @@ play_exe() {
     GAMEDIR=$(dirname "${GAMENAME}")
     GAMEEXE=$(basename "${GAMENAME}")
 
-    wine_options
+    wine_options "${WINEPOINT}"
     createWineDirectory "${WINEPOINT}" || return 1
     mf_install "${WINEPOINT}" || return 1
     reg_install "${WINEPOINT}" || return 1
@@ -341,9 +366,9 @@ play_exe() {
 
 play_winetgz() {
     GAMENAME=$1
-
-    wine_options
     WINEPOINT="${G_SAVES_DIR}/"$(basename "${GAMENAME}")".wine"
+
+    wine_options "${WINEPOINT}"
     if ! test -e "${WINEPOINT}"
     then
 	mkdir -p "${WINEPOINT}" || return 1
@@ -362,9 +387,9 @@ play_winetgz() {
 
 play_squashfs() {
     GAMENAME=$1
-    wine_options
     BASEGAMENAME=$(basename "${GAMENAME}")
     WINEPOINT="/var/run/wine/${BASEGAMENAME}"
+    wine_options "${WINEPOINT}"
     SQUASHFSPOINT="/var/run/wine/squashfs_${BASEGAMENAME}"
     SAVEPOINT="${G_SAVES_DIR}/${BASEGAMENAME}"
     WORKPOINT="${G_SAVES_DIR}/${BASEGAMENAME}.work"
