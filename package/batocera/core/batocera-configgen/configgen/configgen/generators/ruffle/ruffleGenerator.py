@@ -11,3 +11,6 @@ class RuffleGenerator(Generator):
         commandArray = ["ruffle", rom]
         return Command.Command(
             array=commandArray)
+
+    def getMouseMode(self, config):
+        return True

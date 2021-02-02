@@ -11,3 +11,6 @@ class LightsparkGenerator(Generator):
         commandArray = ["lightspark", "-s", "local-with-networking", rom]
         return Command.Command(
             array=commandArray)
+
+    def getMouseMode(self, config):
+        return True

@@ -470,8 +470,6 @@ gameext() {
 }
 
 cleanAndExit() {
-    unclutter-remote -h
-
     RESNEW=$(batocera-resolution currentMode)
     if test "${RESNEW}" != "${G_RESCUR}"
     then
@@ -481,10 +479,6 @@ cleanAndExit() {
     exit "${1}"
     # TODO : unmount always, trap, later
 }
-
-# show the mouse
-unclutter-remote -s
-trap "unclutter-remote -h" INT QUIT TERM
 
 G_RESCUR=$(batocera-resolution currentMode)
 

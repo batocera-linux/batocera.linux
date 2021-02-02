@@ -19,3 +19,6 @@ class WineGenerator(Generator):
             })
 
         raise Exception("invalid system " + system.name)
+
+    def getMouseMode(self, config):
+        return True
