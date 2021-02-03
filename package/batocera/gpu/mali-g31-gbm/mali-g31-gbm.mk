@@ -30,13 +30,17 @@ define MALI_G31_GBM_RK3326_VULKAN_DRIVER_TARGET_32
 	cd $(@D) && \
 	wget https://dn.odroid.com/RK3326/ODROID-GO-Advance/rk3326_r13p0_gbm_with_vulkan_and_cl.zip && \
 	unzip rk3326_r13p0_gbm_with_vulkan_and_cl.zip && \
-	cp $(@D)/libmali.so_rk3326_gbm_arm32_r13p0_with_vulkan_and_cl $(TARGET_DIR)/usr/lib/libmali-bifrost-g31-rxp0-gbm.so
+	cp $(@D)/libmali.so_rk3326_gbm_arm32_r13p0_with_vulkan_and_cl $(TARGET_DIR)/usr/lib/libmali-bifrost-g31-rxp0-gbm.so && \
+	ln -s /usr/lib/libmali-bifrost-g31-rxp0-gbm.so  $(TARGET_DIR)/usr/lib/libvulkan.so && \
+	ln -s /usr/lib/libmali-bifrost-g31-rxp0-gbm.so  $(TARGET_DIR)/usr/lib/libvulkan.so.1
 endef
 define MALI_G31_GBM_RK3326_VULKAN_DRIVER_TARGET_64
 	cd $(@D) && \
 	wget https://dn.odroid.com/RK3326/ODROID-GO-Advance/rk3326_r13p0_gbm_with_vulkan_and_cl.zip && \
 	unzip rk3326_r13p0_gbm_with_vulkan_and_cl.zip && \
-	cp $(@D)/libmali.so_rk3326_gbm_arm64_r13p0_with_vulkan_and_cl $(TARGET_DIR)/usr/lib/libmali-bifrost-g31-rxp0-gbm.so
+	cp $(@D)/libmali.so_rk3326_gbm_arm64_r13p0_with_vulkan_and_cl $(TARGET_DIR)/usr/lib/libmali-bifrost-g31-rxp0-gbm.so && \
+	ln -s /usr/lib/libmali-bifrost-g31-rxp0-gbm.so  $(TARGET_DIR)/usr/lib/libvulkan.so && \
+	ln -s /usr/lib/libmali-bifrost-g31-rxp0-gbm.so  $(TARGET_DIR)/usr/lib/libvulkan.so.1
 endef
 ifeq ($(BR2_arm),y)
 MALI_G31_GBM_POST_INSTALL_TARGET_HOOKS += MALI_G31_GBM_RK3326_VULKAN_DRIVER_TARGET_32
