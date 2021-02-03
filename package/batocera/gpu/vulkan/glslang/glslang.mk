@@ -7,7 +7,7 @@
 GLSLANG_VERSION = c594de23cdd790d64ad5f9c8b059baae0ee2941d
 GLSLANG_SITE =  https://github.com/KhronosGroup/glslang
 GLSLANG_SITE_METHOD=git
-GLSLANG_DEPENDENCIES = mesa3d vulkan-headers vulkan-loader
+GLSLANG_DEPENDENCIES = vulkan-headers vulkan-loader
 GLSLANG_INSTALL_STAGING = YES
 GLSLANG_SUPPORTS_IN_SOURCE_BUILD = NO
 
