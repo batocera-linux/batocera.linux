@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-SUPERMODEL_VERSION = r845
+SUPERMODEL_VERSION = r846
 SUPERMODEL_SITE = https://svn.code.sf.net/p/model3emu/code/trunk
 SUPERMODEL_SITE_METHOD=svn
 SUPERMODEL_DEPENDENCIES = sdl2 zlib libglew libzip sdl2_net
