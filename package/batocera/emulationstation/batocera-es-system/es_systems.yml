@@ -112,7 +112,7 @@ amigacd32:
   manufacturer: Commodore
   release: 1994
   hardware: console
-  extensions: [iso, cue, lha]
+  extensions: [iso, cue, lha, chd]
   emulators:
     fsuae:
       CD32:   { requireAnyOf: [BR2_PACKAGE_FSUAE]         }
@@ -126,7 +126,7 @@ amigacdtv:
   manufacturer: Commodore
   release: 1991
   hardware: console
-  extensions: [bin, cue, iso]
+  extensions: [bin, cue, iso, chd]
   emulators:
     fsuae:
       CDTV:   { requireAnyOf: [BR2_PACKAGE_FSUAE]         }
