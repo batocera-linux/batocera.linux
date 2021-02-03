@@ -22,6 +22,10 @@ ifeq ($(ARCH),arm)
 VULKAN_SAMPLES_INSTALL_ARCH = armv8l
 endif
 
+ifeq ($(BR2_PACKAGE_MESA3D),y)
+VULKAN_SAMPLES_DEPENDENCIES += mesa3d
+endif
+
 define VULKAN_SAMPLES_INSTALL_TARGET_CMDS
 	$(INSTALL) -D -m 0755 $(@D)/buildroot-build/app/bin/Release/$(VULKAN_SAMPLES_INSTALL_ARCH)/vulkan_samples $(TARGET_DIR)/usr/bin/vulkan_samples
 endef
