@@ -259,7 +259,7 @@ if [ "$compressenabled" = "1" ]
 then
     if grep -qE "^/dev/[^ ]* /userdata btrfs.*$" /proc/mounts
     then
-        mount -o remount,compress /userdata || exit 1
+        mount -o remount,compress-force=zstd /userdata || exit 1
     fi
 fi
 
