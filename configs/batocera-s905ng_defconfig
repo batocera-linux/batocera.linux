@@ -39,7 +39,7 @@ BR2_LINUX_KERNEL_USE_CUSTOM_CONFIG=y
 BR2_LINUX_KERNEL_CUSTOM_CONFIG_FILE="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/amlogic/linux-meson64-current.config"
 BR2_LINUX_KERNEL_CONFIG_FRAGMENT_FILES="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/amlogic/s905ng/linux-defconfig-fragment.config"
 BR2_LINUX_KERNEL_DTS_SUPPORT=y
-BR2_LINUX_KERNEL_INTREE_DTS_NAME="amlogic/meson-a1-ad401 amlogic/meson-axg-s400 amlogic/meson-g12a-sei510 amlogic/meson-g12a-u200 amlogic/meson-g12a-x96-max amlogic/meson-g12b-a311d-khadas-vim3 amlogic/meson-g12b-gtking amlogic/meson-g12b-gtking-pro amlogic/meson-g12b-odroid-n2 amlogic/meson-g12b-odroid-n2-plus amlogic/meson-g12b-s922x-khadas-vim3 amlogic/meson-g12b-ugoos-am6 amlogic/meson-sm1-khadas-vim3l amlogic/meson-sm1-odroid-c4 amlogic/meson-sm1-sei610"
+BR2_LINUX_KERNEL_INTREE_DTS_NAME="amlogic/meson-sm1-x96-max-plus amlogic/meson-sm1-hk1box-vontar-x3 amlogic/meson-a1-ad401 amlogic/meson-axg-s400 amlogic/meson-g12a-sei510 amlogic/meson-g12a-u200 amlogic/meson-g12a-x96-max amlogic/meson-g12b-a311d-khadas-vim3 amlogic/meson-g12b-gtking amlogic/meson-g12b-gtking-pro amlogic/meson-g12b-odroid-n2 amlogic/meson-g12b-odroid-n2-plus amlogic/meson-g12b-s922x-khadas-vim3 amlogic/meson-g12b-ugoos-am6 amlogic/meson-sm1-khadas-vim3l amlogic/meson-sm1-odroid-c4 amlogic/meson-sm1-sei610"
 BR2_LINUX_KERNEL_NEEDS_HOST_OPENSSL=y
 
 # System
