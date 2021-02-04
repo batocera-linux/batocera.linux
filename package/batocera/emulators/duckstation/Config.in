@@ -13,6 +13,8 @@ config BR2_PACKAGE_DUCKSTATION
     select BR2_PACKAGE_BOOST
     select BR2_PACKAGE_FFMPEG  
     select BR2_PACKAGE_SDL2
+    select BR2_PACKAGE_LIBEVDEV
+    select BR2_PACKAGE_LIBDRM
     help
       DuckStation - PlayStation 1, aka. PSX Emulator
 
