@@ -10,7 +10,7 @@ from os import environ
 class DuckstationGenerator(Generator):
 
     def generate(self, system, rom, playersControllers, gameResolution):
-        commandArray = ["duckstation-qt", "-batch", "-fullscreen", "--", rom ]
+        commandArray = ["duckstation", "-batch", "-fullscreen", "--", rom ]
 
         settings = ConfigParser.ConfigParser()
         # To prevent ConfigParser from converting to lower case
