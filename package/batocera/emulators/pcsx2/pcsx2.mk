@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-PCSX2_VERSION = 5b5b9cc6c951596ed5d3e0ed37143403a7dda318
+PCSX2_VERSION = 0ec98e32d47d40742742f66fbb7ddf17070acf41
 PCSX2_SITE = $(call github,pcsx2,pcsx2,$(PCSX2_VERSION))
 PCSX2_LICENSE = GPLv2 GPLv3 LGPLv2.1 LGPLv3
 PCSX2_DEPENDENCIES = xserver_xorg-server alsa-lib freetype zlib libpng wxwidgets libaio portaudio libsoundtouch sdl2 libpcap yaml-cpp libgtk3 libsamplerate
