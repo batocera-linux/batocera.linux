@@ -1,0 +1,15 @@
+diff --git a/Makefile b/Makefile
+index 6cb4526..e240238 100644
+--- a/Makefile
++++ b/Makefile
+@@ -484,8 +484,8 @@ endif
+ endif
+ 
+ # set C/C++ standard to use
+-CFLAGS += -std=gnu11 -D_CRT_SECURE_NO_WARNINGS
+-CXXFLAGS += -std=gnu++11 -D_CRT_SECURE_NO_WARNINGS
++CFLAGS += -std=gnu11 -D__GBM__ -D_CRT_SECURE_NO_WARNINGS
++CXXFLAGS += -std=gnu++11 -D__GBM__ -D_CRT_SECURE_NO_WARNINGS
+ 
+ ifeq ($(HAVE_LTCG),1)
+    CPUFLAGS += -flto

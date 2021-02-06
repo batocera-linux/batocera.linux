@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-ADWAITA_ICON_THEME_LIGHT_VERSION_MAJOR = 3.37
+ADWAITA_ICON_THEME_LIGHT_VERSION_MAJOR = 3.38
 ADWAITA_ICON_THEME_LIGHT_VERSION = $(ADWAITA_ICON_THEME_LIGHT_VERSION_MAJOR).2
 ADWAITA_ICON_THEME_LIGHT_SITE = http://ftp.gnome.org/pub/gnome/sources/adwaita-icon-theme/$(ADWAITA_ICON_THEME_LIGHT_VERSION_MAJOR)
 ADWAITA_ICON_THEME_LIGHT_SOURCE = adwaita-icon-theme-$(ADWAITA_ICON_THEME_LIGHT_VERSION).tar.xz
