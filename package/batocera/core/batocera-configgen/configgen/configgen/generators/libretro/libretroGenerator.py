@@ -48,7 +48,11 @@ class LibretroGenerator(Generator):
         if system.name == 'neogeocd' and system.config['core'] == "fbneo":
             commandArray = [batoceraFiles.batoceraBins[system.config['emulator']], "-L", retroarchCore, "--subsystem", "neocd", "--config", system.config['configfile']]
         elif system.name == 'dos':
-            commandArray = [batoceraFiles.batoceraBins[system.config['emulator']], "-L", retroarchCore, "--config", system.config['configfile'], rom + "/dosbox.bat"]
+            romDOSName = os.path.splitext(romName)[0]
+            if os.path.isfile(os.path.join(rom, romDOSName + ".bat")):
+                commandArray = [batoceraFiles.batoceraBins[system.config['emulator']], "-L", retroarchCore, "--config", system.config['configfile'], os.path.join(rom, romDOSName + ".bat")]
+            else:
+                commandArray = [batoceraFiles.batoceraBins[system.config['emulator']], "-L", retroarchCore, "--config", system.config['configfile'], rom + "/dosbox.bat"]
         else:
             commandArray = [batoceraFiles.batoceraBins[system.config['emulator']], "-L", retroarchCore, "--config", system.config['configfile']]
 
