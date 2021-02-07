@@ -31,12 +31,19 @@ endif
 MALI_G31_GBM_TARGET_SO = $(TARGET_DIR)/usr/lib/libmali-bifrost-g31-r13p0-gbm-with-vulkan-and-opencl.so
 
 define MALI_G31_GBM_RK3326_INSTALL
+	# Replace driver with HardKernel one
 	$(UNZIP) -ob $(MALI_G31_GBM_DL_DIR)/rk3326_r13p0_gbm_with_vulkan_and_cl.zip $(MALI_G31_GBM_RK3326_BLOB) -d $(@D)
 	$(INSTALL) -D -m 0755 $(@D)/$(MALI_G31_GBM_RK3326_BLOB) $(MALI_G31_GBM_TARGET_SO)
 	rm -f $(TARGET_DIR)/usr/lib/libmali-bifrost-g31-rxp0-gbm.so $(TARGET_DIR)/usr/lib/libmali.so.1.9.0
 	ln -sfr $(MALI_G31_GBM_TARGET_SO) $(TARGET_DIR)/usr/lib/libmali.so.1.9.0
-	ln -sfr $(MALI_G31_GBM_TARGET_SO) $(TARGET_DIR)/usr/lib/libvulkan.so.1
-	ln -sf libvulkan.so.1 $(TARGET_DIR)/usr/lib/libvulkan.so
+	
+	# Install Vulkan driver as ICD through vulkan-loader
+	mkdir -p $(TARGET_DIR)/usr/share/vulkan/icd.d
+	$(INSTALL) -D -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/gpu/mali-g31-gbm/mali_icd.json $(TARGET_DIR)/usr/share/vulkan/icd.d/
+
+	# Ugly workaround to fix duckstation compilation
+	rm $(STAGING_DIR)/usr/lib/libEGL.so
+	ln -sfr $(STAGING_DIR)/usr/lib/libmali.so $(STAGING_DIR)/usr/lib/libEGL.so
 endef
 
 MALI_G31_GBM_POST_INSTALL_TARGET_HOOKS += MALI_G31_GBM_RK3326_INSTALL
