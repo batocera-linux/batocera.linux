@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-RTL8192EU_VERSION = faf68bbf82623335e7997a473f9222751e275927
+RTL8192EU_VERSION = 7e8858e0dfc10c025c8d114330f6c7d0353b4819
 RTL8192EU_SITE = $(call github,Mange,rtl8192eu-linux-driver,$(RTL8192EU_VERSION))
 RTL8192EU_LICENSE = GPL-2.0
 RTL8192EU_LICENSE_FILES = LICENSE
