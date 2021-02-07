@@ -1,0 +1,24 @@
+--- a/CMakeLists.txt	2021-02-07 21:30:35.072872239 +0100
++++ b/CMakeLists.txt	2021-02-07 21:29:59.792871507 +0100
+@@ -144,7 +144,9 @@
+     target_sources(moonlight PRIVATE ./src/video/sdl.c ./src/audio/sdl.c ./src/input/sdl.c)
+     target_include_directories(moonlight PRIVATE ${SDL_INCLUDE_DIRS})
+     target_link_libraries(moonlight ${SDL_LIBRARIES})
+-    target_link_libraries(moonlight ${ROCKCHIP_LIBRARIES})
++    if(ROCKCHIP_FOUND)
++        target_link_libraries(moonlight ${ROCKCHIP_LIBRARIES})
++    endif()
+   endif()
+   if(X11_FOUND)
+     list(APPEND MOONLIGHT_DEFINITIONS HAVE_X11)
+--- a/CMakeLists.txt      2021-02-07 21:34:32.829543799 +0100
++++ b/CMakeLists.txt      2021-02-07 21:35:59.296212255 +0100
+@@ -198,7 +198,7 @@
+
+ configure_file("./src/configuration.h.in" "${PROJECT_BINARY_DIR}/configuration.h")
+
+-set_property(SOURCE ${MyFiles} PROPERTY COMPILE_FLAGS "-std=gnu99 -march=armv8-a+crc+simd+fp -mtune=cortex-a35 -ffast-math")
++set_property(SOURCE ${MyFiles} PROPERTY COMPILE_FLAGS "-std=gnu99 -ffast-math")
+ set_property(TARGET moonlight PROPERTY COMPILE_DEFINITIONS ${MOONLIGHT_DEFINITIONS})
+ target_include_directories(moonlight PRIVATE ${GAMESTREAM_INCLUDE_DIR} ${MOONLIGHT_COMMON_INCLUDE_DIR} ${OPUS_INCLUDE_DIRS} ${EVDEV_INCLUDE_DIRS} ${UDEV_INCLUDE_DIRS})
+ target_link_libraries(moonlight ${EVDEV_LIBRARIES} ${OPUS_LIBRARY} ${UDEV_LIBRARIES} ${CMAKE_DL_LIBS})
