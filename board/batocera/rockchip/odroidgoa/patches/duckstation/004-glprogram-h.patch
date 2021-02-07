@@ -1,0 +1,19 @@
+--- a/src/common/gl/program.h	2021-02-07 14:35:10.465705626 +0100
++++ b/src/common/gl/program.h	2021-02-07 14:35:36.519039466 +0100
+@@ -40,6 +40,7 @@
+   void Destroy();
+ 
+   int RegisterUniform(const char* name);
++  GLint GetUniformLocation(int index) const { return m_uniform_locations[index]; }
+   void Uniform1ui(int index, u32 x) const;
+   void Uniform2ui(int index, u32 x, u32 y) const;
+   void Uniform3ui(int index, u32 x, u32 y, u32 z) const;
+@@ -97,6 +98,6 @@
+   GLuint m_fragment_shader_id = 0;
+ 
+   std::vector<GLint> m_uniform_locations;
+-};
++}; // namespace GL
+ 
+ } // namespace GL
+\ Pas de fin de ligne à la fin du fichier
