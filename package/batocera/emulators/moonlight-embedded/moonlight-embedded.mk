@@ -3,8 +3,8 @@
 # moonlight-embedded
 #
 ################################################################################
-# Version.: Commits on March 10, 2020
-MOONLIGHT_EMBEDDED_VERSION = v2.4.11
+# Version.: Commits on January 13, 2021
+MOONLIGHT_EMBEDDED_VERSION = b07e022065340888ed414a42e4f72b1b8f424dcd
 MOONLIGHT_EMBEDDED_SITE = https://github.com/irtimmer/moonlight-embedded.git
 MOONLIGHT_EMBEDDED_SITE_METHOD = git
 MOONLIGHT_EMBEDDED_GIT_SUBMODULES=y
@@ -17,7 +17,7 @@ ifeq ($(BR2_PACKAGE_RPI_USERLAND),y)
 	MOONLIGHT_EMBEDDED_DEPENDENCIES += rpi-userland
 endif
 
-ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_ROCKPRO64),y)
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_ROCKPRO64)$(BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA),y)
 	MOONLIGHT_EMBEDDED_DEPENDENCIES += rockchip-mpp
 endif
 
