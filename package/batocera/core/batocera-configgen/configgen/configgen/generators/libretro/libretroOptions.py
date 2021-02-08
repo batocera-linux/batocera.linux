@@ -142,6 +142,26 @@ def generateCoreSettings(coreSettings, system, rom):
             coreSettings.save('puae_model', system.config['puae_model'])
         else:
             coreSettings.save('puae_model', '"auto"')
+        # CPU Compatibility
+        if system.isOptSet('cpu_compatibility'):
+            coreSettings.save('puae_cpu_compatibility', system.config['cpu_compatibility'])
+        else:
+            coreSettings.save('puae_cpu_compatibility', '"normal"')
+        # CPU Multiplier (Overclock)
+        if system.isOptSet('cpu_throttle'):
+            coreSettings.save('puae_cpu_throttle', system.config['cpu_throttle'])
+            coreSettings.save('puae_cpu_multiplier', '"0"')
+        else:
+            coreSettings.save('puae_cpu_throttle', '"0.0"')
+            coreSettings.save('puae_cpu_multiplier', '"0"')
+        # CPU Cycle Exact Speed (Overclock)
+        if system.isOptSet('cpu_compatibility') and system.config['cpu_compatibility'] == 'exact':
+            if system.isOptSet('cpu_multiplier'):
+                coreSettings.save('puae_cpu_throttle', '"0.0"')
+                coreSettings.save('puae_cpu_multiplier', system.config['cpu_multiplier'])
+            else:
+                coreSettings.save('puae_cpu_throttle', '"0.0"')
+                coreSettings.save('puae_cpu_multiplier', '"0"')
         # Standard Video    
         if system.isOptSet('video_standard'):
             coreSettings.save('puae_video_standard', system.config['video_standard'])
@@ -164,6 +184,11 @@ def generateCoreSettings(coreSettings, system, rom):
             coreSettings.save('puae_mouse_speed', '"200"')
 
         if (system.name == 'amiga500') or (system.name == 'amiga1200'):
+            # Floppy Turbo Speed
+            if system.isOptSet('puae_floppy_speed'):
+                coreSettings.save('puae_floppy_speed', system.config['puae_floppy_speed'])
+            else:
+                coreSettings.save('puae_floppy_speed', '"100"')
             # Zoom Mode    
             if system.isOptSet('zoom_mode'):
                 coreSettings.save('puae_zoom_mode', system.config['zoom_mode'])
@@ -190,6 +215,18 @@ def generateCoreSettings(coreSettings, system, rom):
             else:
                 coreSettings.save('puae_physical_keyboard_pass_through', '"disabled"')
 
+        if system.name == 'amigacd32' or (system.name == 'amigacdtv'):
+            # Boot animation first inserting CD
+            if system.isOptSet('puae_cd_startup_delayed_insert'):
+                coreSettings.save('puae_cd_startup_delayed_insert', system.config['puae_cd_startup_delayed_insert'])
+            else:
+                coreSettings.save('puae_cd_startup_delayed_insert', '"enabled"')
+            # CD Turbo Speed
+            if system.isOptSet('puae_cd_speed'):
+                coreSettings.save('puae_cd_speed', system.config['puae_cd_speed'])
+            else:
+                coreSettings.save('puae_cd_speed', '"100"')
+		    
         if system.name == 'amigacd32':
             # Jump on A (Blue)
             if system.isOptSet('puae_cd32pad_options'):
