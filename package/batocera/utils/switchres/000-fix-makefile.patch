@@ -1,0 +1,36 @@
+diff --git a/makefile b/makefile
+index 287aa0a..ebc2902 100644
+--- a/makefile
++++ b/makefile
+@@ -13,7 +13,8 @@ AR ?= ar
+ LDFLAGS = -shared
+ FINAL_CXX=$(CROSS_COMPILE)$(CXX)
+ FINAL_AR=$(CROSS_COMPILE)$(AR)
+-CPPFLAGS = -O3 -Wall -Wextra
++CPPFLAGS ?= 
++CPPFLAGS += -O3 -Wall -Wextra
+ 
+ PKG_CONFIG=pkg-config
+ INSTALL=install
+@@ -21,17 +22,16 @@ SED=sed
+ 
+ DESTDIR ?=
+ PREFIX ?= /usr
+-INCDIR = $(DESTDIR)$(PREFIX)/include
+-LIBDIR = $(DESTDIR)$(PREFIX)/lib
+-BINDIR = $(DESTDIR)$(PREFIX)/bin
++INCDIR = $(PREFIX)/include/libdrm
++LIBDIR = $(PREFIX)/lib
++BINDIR = $(PREFIX)/bin
+ PKGDIR = $(LIBDIR)/pkgconfig
+ 
+ # Linux
+ ifeq  ($(PLATFORM),Linux)
+ EXTRA_LIBS = libdrm
+-CPPFLAGS += $(shell $(PKG_CONFIG) --cflags $(EXTRA_LIBS))
+ SRC += display_linux.cpp custom_video_xrandr.cpp custom_video_drmkms.cpp
+-CPPFLAGS += -fPIC
++CPPFLAGS += -fPIC -I$(INCDIR)
+ LIBS = -ldl
+ REMOVE = rm -f 
+ STATIC_LIB_EXT = a
