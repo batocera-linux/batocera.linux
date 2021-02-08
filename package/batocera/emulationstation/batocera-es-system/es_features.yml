@@ -1543,6 +1543,49 @@ libretro:
                     "A4000/040 (2MB Chip + 8MB Fast)": A4040
                     "CDTV (1MB Chip)":                 CDTV
                     "CD32 (2MB Chip + 8MB Fast)":      CD32FR
+            cpu_compatibility:
+                prompt:      CPU COMPATIBILITY
+                description: Help games which are too quick or that have bugs
+                choices:
+                    "Normal":          normal
+                    "More compatible": compatible
+                    "Cycle-exact":     exact
+            cpu_multiplier:
+                prompt:      CPU MULTIPLIER (OVERCLOCK)
+                description: Works with 'Cycle-exact' mode and for a few games
+                choices:
+                    "Default by model":        0
+                    " 3.54 MHz":               1
+                    " 7.09 MHz (A500 speed)":  2
+                    "14.18 MHz (A1200 speed)": 4
+                    "28.37 MHz":               8
+                    "35.46 MHz":               10
+                    "42.56 MHz":               12
+                    "56.75 MHz":               16
+            cpu_throttle:
+                prompt:      CPU SPEED (OVERCLOCK)
+                description: Ignored with 'Cycle-exact'
+                choices:
+                    "-90%":    -900.0
+                    "-80%":    -800.0
+                    "-70%":    -700.0
+                    "-60%":    -600.0
+                    "-50%":    -500.0
+                    "-40%":    -400.0
+                    "-30%":    -300.0
+                    "-20%":    -200.0
+                    "-10%":    -100.0
+                    "Default": 0.0
+                    "+100%":   1000.0
+                    "+200%":   2000.0
+                    "+300%":   3000.0
+                    "+400%":   4000.0
+                    "+500%":   5000.0
+                    "+600%":   6000.0
+                    "+700%":   7000.0
+                    "+800%%":  8000.0
+                    "+900%":   9000.0
+                    "+1000%":  10000.0
             video_standard:
                 prompt:      VIDEO STANDARD
                 description: Switch frequency and resolution by region
@@ -1611,6 +1654,12 @@ libretro:
                             "On":     enabled
             amiga1200:
                 cfeatures:
+                    puae_floppy_speed:
+                        prompt:      FLOPPY TURBO SPEED
+                        description: Remove loading but can add possible glitches/crash
+                        choices:
+                            "Off":    100
+                            "On":     0
                     zoom_mode:
                         prompt:      ZOOM MODE
                         description: Crops the borders to fit various host screens
@@ -1645,12 +1694,39 @@ libretro:
                             "On":     enabled
             amigacd32:
                 cfeatures:
+                    puae_cd_startup_delayed_insert:
+                        prompt:      BOOT ANIMATION FIRST
+                        description: Inserts CD during boot animation prevent loading fail
+                        choices:
+                            "Off":    disabled
+                            "On":     enabled
+                    puae_cd_speed:
+                        prompt:      CD TURBO SPEED
+                        description: Remove loading but can add possible glitches/crash
+                        choices:
+                            "Off":    100
+                            "On":     0
                     puae_cd32pad_options:
                         prompt:      JUMP ON A
                         description: Makes Blue button press Up
                         choices:
                             "Off":    disabled
                             "On":     jump
+            amigacdtv:
+                cfeatures:
+                    puae_cd_startup_delayed_insert:
+                        prompt:      BOOT ANIMATION FIRST
+                        description: Inserts CD during boot animation prevent loading fail
+                        choices:
+                            "Off":    disabled
+                            "On":     enabled
+                    puae_cd_speed:
+                        prompt:      CD TURBO SPEED
+                        description: Remove loading but can add possible glitches/crash
+                        choices:
+                            "Off":    100
+                            "On":     0
+
     px68k:
       features: [latency_reduction, padtokeyboard]
       cfeatures:
