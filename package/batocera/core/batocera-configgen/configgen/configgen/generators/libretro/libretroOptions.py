@@ -220,7 +220,7 @@ def generateCoreSettings(coreSettings, system, rom):
             if system.isOptSet('puae_cd_startup_delayed_insert'):
                 coreSettings.save('puae_cd_startup_delayed_insert', system.config['puae_cd_startup_delayed_insert'])
             else:
-                coreSettings.save('puae_cd_startup_delayed_insert', '"enabled"')
+                coreSettings.save('puae_cd_startup_delayed_insert', '"disabled"')
             # CD Turbo Speed
             if system.isOptSet('puae_cd_speed'):
                 coreSettings.save('puae_cd_speed', system.config['puae_cd_speed'])
