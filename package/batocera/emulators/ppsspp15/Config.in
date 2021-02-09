@@ -1,0 +1,8 @@
+config BR2_PACKAGE_PPSSPP15
+	bool "ppsspp15"
+	select BR2_PACKAGE_SDL2
+	select BR2_PACKAGE_LIBZIP
+	select BR2_PACKAGE_FFMPEG_SWSCALE
+    help
+      A  PSP emulator
+
