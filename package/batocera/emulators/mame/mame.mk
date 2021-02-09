@@ -90,39 +90,39 @@ define MAME_BUILD_CMDS
 	TOOLS=1
 
 	# Compile emulation target (MESS)
-	cd $(@D); \
-	PATH="$(HOST_DIR)/bin:$$PATH" \
-	SYSROOT="$(STAGING_DIR)" \
-	CFLAGS="--sysroot=$(STAGING_DIR) $(MAME_CFLAGS)"   \
-	LDFLAGS="--sysroot=$(STAGING_DIR)"  MPARAM="" \
-	PKG_CONFIG="$(HOST_DIR)/usr/bin/pkg-config --define-prefix" \
-	PKG_CONFIG_PATH="$(STAGING_DIR)/usr/lib/pkgconfig" \
-	$(MAKE) -j$(MAME_JOBS) TARGETOS=linux OSD=sdl \
-	TARGET=mame \
-	SUBTARGET=batocera \
-	OVERRIDE_CC="$(TARGET_CC)" \
-	OVERRIDE_CXX="$(TARGET_CXX)" \
-	OVERRIDE_LD="$(TARGET_LD)" \
-	OVERRIDE_AR="$(TARGET_AR)" \
-	OVERRIDE_STRIP="$(TARGET_STRIP)" \
-	CROSS_BUILD=1 \
-	CROSS_ARCH="$(MAME_CROSS_ARCH)" \
-	$(MAME_CROSS_OPTS) \
-	NO_USE_PORTAUDIO=1 \
-	USE_SYSTEM_LIB_ZLIB=1 \
-	USE_SYSTEM_LIB_JPEG=1 \
-	USE_SYSTEM_LIB_FLAC=1 \
-	USE_SYSTEM_LIB_SQLITE3=1 \
-	USE_SYSTEM_LIB_RAPIDJSON=1 \
-	OPENMP=1 \
-	SDL_INSTALL_ROOT="$(STAGING_DIR)/usr" USE_LIBSDL=1 \
-	USE_QTDEBUG=0 DEBUG=0 IGNORE_GIT=1 \
-	REGENIE=1 \
-	LDOPTS="-lasound -lfontconfig" \
-	VERBOSE=1 \
-	SYMBOLS=0 \
-	STRIP_SYMBOLS=1 \
-	TOOLS=1
+	#cd $(@D); \
+	#PATH="$(HOST_DIR)/bin:$$PATH" \
+	#SYSROOT="$(STAGING_DIR)" \
+	#CFLAGS="--sysroot=$(STAGING_DIR) $(MAME_CFLAGS)"   \
+	#LDFLAGS="--sysroot=$(STAGING_DIR)"  MPARAM="" \
+	#PKG_CONFIG="$(HOST_DIR)/usr/bin/pkg-config --define-prefix" \
+	#PKG_CONFIG_PATH="$(STAGING_DIR)/usr/lib/pkgconfig" \
+	#$(MAKE) -j$(MAME_JOBS) TARGETOS=linux OSD=sdl \
+	#TARGET=mame \
+	#SUBTARGET=batocera \
+	#OVERRIDE_CC="$(TARGET_CC)" \
+	#OVERRIDE_CXX="$(TARGET_CXX)" \
+	#OVERRIDE_LD="$(TARGET_LD)" \
+	#OVERRIDE_AR="$(TARGET_AR)" \
+	#OVERRIDE_STRIP="$(TARGET_STRIP)" \
+	#CROSS_BUILD=1 \
+	#CROSS_ARCH="$(MAME_CROSS_ARCH)" \
+	#$(MAME_CROSS_OPTS) \
+	#NO_USE_PORTAUDIO=1 \
+	#USE_SYSTEM_LIB_ZLIB=1 \
+	#USE_SYSTEM_LIB_JPEG=1 \
+	#USE_SYSTEM_LIB_FLAC=1 \
+	#USE_SYSTEM_LIB_SQLITE3=1 \
+	#USE_SYSTEM_LIB_RAPIDJSON=1 \
+	#OPENMP=1 \
+	#SDL_INSTALL_ROOT="$(STAGING_DIR)/usr" USE_LIBSDL=1 \
+	#USE_QTDEBUG=0 DEBUG=0 IGNORE_GIT=1 \
+	#REGENIE=1 \
+	#LDOPTS="-lasound -lfontconfig" \
+	#VERBOSE=1 \
+	#SYMBOLS=0 \
+	#STRIP_SYMBOLS=1 \
+	#TOOLS=1
 endef
 
 define MAME_INSTALL_TARGET_CMDS
@@ -140,13 +140,13 @@ define MAME_INSTALL_TARGET_CMDS
 
 	# Install binaries and default distro
         $(INSTALL) -D $(@D)/mamearcade64	$(TARGET_DIR)/usr/bin/mame/mamearcade
-        $(INSTALL) -D $(@D)/mamebatocera64	$(TARGET_DIR)/usr/bin/mame/mamemess
+        #$(INSTALL) -D $(@D)/mamebatocera64	$(TARGET_DIR)/usr/bin/mame/mamemess
         cp $(@D)/COPYING			$(TARGET_DIR)/usr/bin/mame/
         cp $(@D)/README.md			$(TARGET_DIR)/usr/bin/mame/
         cp $(@D)/uismall.bdf			$(TARGET_DIR)/usr/bin/mame/
 	cp -R $(@D)/artwork			$(TARGET_DIR)/usr/bin/mame/
 	cp -R $(@D)/bgfx			$(TARGET_DIR)/usr/bin/mame/
-	cp -R $(@D)/hash			$(TARGET_DIR)/usr/bin/mame/
+	#cp -R $(@D)/hash			$(TARGET_DIR)/usr/bin/mame/
 	cp -R $(@D)/hlsl			$(TARGET_DIR)/usr/bin/mame/
 	cp -R $(@D)/ini				$(TARGET_DIR)/usr/bin/mame/
 	cp -R $(@D)/keymaps			$(TARGET_DIR)/usr/bin/mame/
@@ -182,17 +182,17 @@ define MAME_INSTALL_TARGET_CMDS
 	rm -Rf $(TARGET_DIR)/usr/bin/mame/bgfx/shaders/dx9/
 
 	# Delete useless hash softlist files
-	rm -Rf $(TARGET_DIR)/usr/bin/mame/hash/vgmplay.xml
-	rm -Rf $(TARGET_DIR)/usr/bin/mame/hash/amigaocs_flop.xml
-	rm -Rf $(TARGET_DIR)/usr/bin/mame/hash/dc.xml
-	rm -Rf $(TARGET_DIR)/usr/bin/mame/hash/gameboy.xml
-	rm -Rf $(TARGET_DIR)/usr/bin/mame/hash/gba.xml
-	rm -Rf $(TARGET_DIR)/usr/bin/mame/hash/gbcolor.xml
-	rm -Rf $(TARGET_DIR)/usr/bin/mame/hash/megadriv.xml
-	rm -Rf $(TARGET_DIR)/usr/bin/mame/hash/nes.hsi
-	rm -Rf $(TARGET_DIR)/usr/bin/mame/hash/nes.xml
-	rm -Rf $(TARGET_DIR)/usr/bin/mame/hash/psx.xml
-	rm -Rf $(TARGET_DIR)/usr/bin/mame/hash/snes.xml
+	#rm -Rf $(TARGET_DIR)/usr/bin/mame/hash/vgmplay.xml
+	#rm -Rf $(TARGET_DIR)/usr/bin/mame/hash/amigaocs_flop.xml
+	#rm -Rf $(TARGET_DIR)/usr/bin/mame/hash/dc.xml
+	#rm -Rf $(TARGET_DIR)/usr/bin/mame/hash/gameboy.xml
+	#rm -Rf $(TARGET_DIR)/usr/bin/mame/hash/gba.xml
+	#rm -Rf $(TARGET_DIR)/usr/bin/mame/hash/gbcolor.xml
+	#rm -Rf $(TARGET_DIR)/usr/bin/mame/hash/megadriv.xml
+	#rm -Rf $(TARGET_DIR)/usr/bin/mame/hash/nes.hsi
+	#rm -Rf $(TARGET_DIR)/usr/bin/mame/hash/nes.xml
+	#rm -Rf $(TARGET_DIR)/usr/bin/mame/hash/psx.xml
+	#rm -Rf $(TARGET_DIR)/usr/bin/mame/hash/snes.xml
 endef
 
 $(eval $(generic-package))
