@@ -29,7 +29,6 @@ endif
 
 ifeq ($(BR2_PACKAGE_HAS_LIBEGL),y)
 DUCKSTATION_CONF_OPTS += -DUSE_EGL=ON
-DUCKSTATION_POST_INSTALL_TARGET_HOOKS += DUCKSTATION_PATCHELF_GBM_EGL
 else
 DUCKSTATION_CONF_OPTS += -DUSE_EGL=OFF
 endif
@@ -39,11 +38,6 @@ DUCKSTATION_CONF_ENV += LDFLAGS=-lpthread
 
 # Should be set when the package cannot be built inside the source tree but needs a separate build directory.
 DUCKSTATION_SUPPORTS_IN_SOURCE_BUILD = NO
-
-define DUCKSTATION_PATCHELF_GBM_EGL
-	$(HOST_DIR)/bin/patchelf --replace-needed $(STAGING_DIR)/usr/lib/libgbm.so libgbm.so $(TARGET_DIR)/usr/bin/duckstation
-	$(HOST_DIR)/bin/patchelf --replace-needed $(STAGING_DIR)/usr/lib/libEGL.so libEGL.so $(TARGET_DIR)/usr/bin/duckstation
-endef
 
 define DUCKSTATION_INSTALL_TARGET_CMDS
         mkdir -p $(TARGET_DIR)/usr/bin
