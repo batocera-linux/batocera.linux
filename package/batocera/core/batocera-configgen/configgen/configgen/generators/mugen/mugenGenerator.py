@@ -3,24 +3,38 @@
 from generators.Generator import Generator
 import Command
 import os
-from os import path
 import controllersConfig
+import ConfigParser
 
 class MugenGenerator(Generator):
 
     def generate(self, system, rom, playersControllers, gameResolution):
-        if system.name == "mugen":
-            commandArray = ["batocera-wine", "mugen", "play", rom]
-            return Command.Command(array=commandArray,env={
-                "SDL_GAMECONTROLLERCONFIG": controllersConfig.generateSdlGameControllerConfig(playersControllers),
-            })
 
-        config = UnixSettings(rom + "/data/" + "mugen.cfg", separator='')
+        settings = ConfigParser.ConfigParser()
+        # To prevent ConfigParser from converting to lower case
+        settings.optionxform = str
+        settings_path = rom + "/mugen/mugen.cfg"
+        if os.path.exists(settings_path):
+            settings.read(settings_path)
 
-        # general
-        config.save("FullScreen", "1")
-        config.save("GameWidth", "1920")
-        config.save("GameHeight", "1080")
-        config.save("Language", "en")
+        if not settings.has_section("Video"):
+            settings.add_section("Video")
+        settings.set("Video", "FullScreen", "1")
+        #settings.set("Video", "Width",  gameResolution["width"])
+        #settings.set("Video", "Height", gameResolution["height"])
 
-        raise Exception("invalid system " + system.name)
+        if not settings.has_section("Config"):
+            settings.add_section("Config")
+        #settings.set("Config", "GameWidth",  gameResolution["width"])
+        #settings.set("Config", "GameHeight", gameResolution["height"])
+        settings.set("Config", "Language", "en")
+
+        # Save config
+        if not os.path.exists(os.path.dirname(settings_path)):
+            os.makedirs(os.path.dirname(settings_path))
+
+        with open(settings_path, 'w') as configfile:
+            settings.write(configfile)
+
+        commandArray = ["batocera-wine", "mugen", "play", rom]
+        return Command.Command(array=commandArray, env={ "SDL_GAMECONTROLLERCONFIG": controllersConfig.generateSdlGameControllerConfig(playersControllers) })
