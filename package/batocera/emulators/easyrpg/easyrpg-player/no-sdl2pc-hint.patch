@@ -1,0 +1,13 @@
+diff --git a/builds/cmake/Modules/FindSDL2.cmake b/builds/cmake/Modules/FindSDL2.cmake
+index 945463f..16195af 100644
+--- a/builds/cmake/Modules/FindSDL2.cmake
++++ b/builds/cmake/Modules/FindSDL2.cmake
+@@ -55,7 +55,7 @@ find_package(PkgConfig QUIET)
+ set(SDL2_INCLUDE_HINTS)
+ set(SDL2_LIB_HINTS)
+ if(PKG_CONFIG_FOUND)
+-	pkg_search_module(SDL2PC QUIET sdl2)
++	#pkg_search_module(SDL2PC QUIET sdl2)
+ 	if(SDL2PC_INCLUDE_DIRS)
+ 		set(SDL2_INCLUDE_HINTS ${SDL2PC_INCLUDE_DIRS})
+ 	endif()
