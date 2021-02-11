@@ -25,6 +25,10 @@ class DuckstationGenerator(Generator):
         settings.set("Main", "SettingsVersion", "3") # probably to be updated in the future
         settings.set("Main", "Language", getLangFromEnvironment())
 
+        # controller backend
+        if system.isOptSet('duckstationControllerBackend') and system.getOptString('duckstationControllerBackend')!='auto':
+          settings.set("Main","ControllerBackend", system.getOptString('duckstationControllerBackend'))
+
         # bios
         if not settings.has_section("BIOS"):
             settings.add_section("BIOS")
