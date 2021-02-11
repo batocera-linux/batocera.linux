@@ -9,7 +9,7 @@ default:
     rewind:         false
     bezel:          default
     forceNoBezel:   false
-
+    duckstationControllerBackend: evdev
 nes:
   emulator: libretro
   core:     fceumm

@@ -132,6 +132,12 @@ class Emulator():
                 return True
         return False
 
+    def getOptString(self, key):
+        if key in self.config:
+            if self.config[key]:
+                return self.config[key]
+        return ""
+
     @staticmethod
     def updateConfiguration(config, settings):
         # ignore all values "default", "auto", "" to take the system value instead
