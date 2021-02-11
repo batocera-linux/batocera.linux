@@ -13,6 +13,9 @@ config BR2_PACKAGE_PROVIDES_LIBEGL
 config BR2_PACKAGE_PROVIDES_LIBGLES
 	default "mali-g52"
 
+config BR2_PACKAGE_PROVIDES_LIBMALI
+        default "mali-g52"
+
 endif
 
 comment "mali-g52"
