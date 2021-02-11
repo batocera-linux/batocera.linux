@@ -278,6 +278,7 @@ case "${ACTION}" in
 	then
 	    exit 1
 	fi
+	;;
 	*)
 		f_usage
 		>&2 echo "error: invalid command ${ACTION}"
