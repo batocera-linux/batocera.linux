@@ -2,6 +2,9 @@
 # http://rpf.io/configtxt
 # Some settings may impact device functionality. See link above for details
 
+# sets the initial CEC name of the device
+cec_osd_name=batocera
+
 # uncomment if you get no picture on HDMI for a default "safe" mode
 #hdmi_safe=1
 
@@ -23,7 +26,7 @@ disable_overscan=1
 #framebuffer_height=720
 
 # uncomment if hdmi display is not detected and composite is being output
-hdmi_force_hotplug=1
+#hdmi_force_hotplug=1
 
 # uncomment to force a specific HDMI mode (this will force VGA)
 #hdmi_group=1
@@ -31,11 +34,11 @@ hdmi_force_hotplug=1
 
 # uncomment to force a HDMI mode rather than DVI. This can make audio work in
 # DMT (computer monitor) modes
-hdmi_drive=2
+#hdmi_drive=2
 
 # uncomment to increase signal to HDMI, if you have interference, blanking, or
 # no display
-config_hdmi_boost=0
+#config_hdmi_boost=4
 
 # if you plug your tv at the same time as your rpi and that the rpi switches from the hdmi or give a low resolution because tv had no enough time to initialize it
 boot_delay=3
@@ -46,6 +49,9 @@ boot_delay=3
 # uncomment if you have slow sound issues on composite output
 #audio_pwm_mode=0
 
+# uncomment for lirc-rpi
+#dtoverlay=lirc-rpi
+
 #uncomment to overclock the arm. 700 MHz is the default.
 #arm_freq=800
 
@@ -53,11 +59,10 @@ boot_delay=3
 disable_splash=1
 
 # Overclock
-gpu_mem_256=128
-gpu_mem_512=256
-gpu_mem_1024=384
-
-avoid_safe_mode=1
+# https://www.raspberrypi.org/documentation/configuration/config-txt/memory.md
+#gpu_mem_256=128
+#gpu_mem_512=256
+#gpu_mem_1024=512
 
 kernel=boot/linux
 initramfs boot/initrd.gz
@@ -72,7 +77,6 @@ initramfs boot/initrd.gz
 #dtparam=spi=on
 
 # Uncomment this to enable infrared communication.
-#dtoverlay=lirc-rpi
 #dtoverlay=gpio-ir,gpio_pin=17
 #dtoverlay=gpio-ir-tx,gpio_pin=18
 
@@ -80,3 +84,7 @@ initramfs boot/initrd.gz
 
 # Enable audio (loads snd_bcm2835)
 dtparam=audio=on
+
+[rpi3]
+# Enable DRM VC4 V3D driver on top of the dispmanx display stack
+#dtoverlay=vc4-kms-v3d
