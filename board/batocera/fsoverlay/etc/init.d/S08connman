@@ -73,7 +73,8 @@ case "$1" in
 		    connmanctl state 2>/dev/null | grep -qE '^[ ]*State[ ]='
 		done
 
-		wifi_enable
+		# can be done detached
+		wifi_enable &
 
 		echo "done."
 		;;
