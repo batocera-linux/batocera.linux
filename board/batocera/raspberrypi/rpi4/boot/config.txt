@@ -62,11 +62,10 @@ boot_delay=3
 disable_splash=1
 
 # Overclock
-gpu_mem_256=128
-gpu_mem_512=256
-gpu_mem_1024=384
-
-avoid_safe_mode=1
+# https://www.raspberrypi.org/documentation/configuration/config-txt/memory.md
+#gpu_mem_256=128
+#gpu_mem_512=256
+#gpu_mem_1024=512
 
 kernel=boot/linux
 initramfs boot/initrd.gz
@@ -89,7 +88,6 @@ initramfs boot/initrd.gz
 # Enable audio (loads snd_bcm2835)
 dtparam=audio=on
 
-# Enable DRM VC4 V3D driver on top of the dispmanx display stack
 [rpi4]
+# Enable DRM VC4 V3D driver on top of the dispmanx display stack
 dtoverlay=vc4-kms-v3d-pi4,noaudio
-
