@@ -33,7 +33,7 @@ ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_ODROIDC2)$(BR2_PACKAGE_BATOCERA_TARGET_LIBRE
 DOSBOX_STAGING_CFLAGS   += -march=armv8-a+crc -mtune=cortex-a53
 DOSBOX_STAGING_CXXFLAGS += -march=armv8-a+crc -mtune=cortex-a53
 endif
-ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_ODROIDC4),y)
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_ODROIDC4)$(BR2_PACKAGE_BATOCERA_TARGET_S905GEN3),y)
 DOSBOX_STAGING_CFLAGS   += -march=armv8-a+crc -mtune=cortex-a55
 DOSBOX_STAGING_CXXFLAGS += -march=armv8-a+crc -mtune=cortex-a55
 endif
