@@ -5,6 +5,9 @@
 # 64-bit mode
 arm_64bit=1
 
+# sets the initial CEC name of the device
+cec_osd_name=batocera
+
 # uncomment if you get no picture on HDMI for a default "safe" mode
 #hdmi_safe=1
 
@@ -34,7 +37,7 @@ disable_overscan=1
 
 # uncomment to force a HDMI mode rather than DVI. This can make audio work in
 # DMT (computer monitor) modes
-hdmi_drive=2
+#hdmi_drive=2
 
 # uncomment to increase signal to HDMI, if you have interference, blanking, or
 # no display
@@ -87,5 +90,6 @@ initramfs boot/initrd.gz
 dtparam=audio=on
 
 # Enable DRM VC4 V3D driver on top of the dispmanx display stack
-dtoverlay=vc4-fkms-v3d
+[rpi4]
+dtoverlay=vc4-kms-v3d-pi4,noaudio
 
