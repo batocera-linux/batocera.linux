@@ -2,6 +2,5 @@
 
 if test "$1" = "start"
 then
-    amixer sset 'HDMI CTRL SRC' 'I2S'
-    amixer sset 'HDMI CTRL SRC' 'on'
+    amixer sset HDMI CTRL SRC I2S
 fi
