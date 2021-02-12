@@ -24,6 +24,7 @@ class DuckstationGenerator(Generator):
             settings.add_section("Main")
         settings.set("Main", "SettingsVersion", "3") # probably to be updated in the future
         settings.set("Main", "Language", getLangFromEnvironment())
+        settings.set("Main", "ConfirmPowerOff", "false")
 
         # controller backend
         if system.isOptSet('duckstationControllerBackend') and system.getOptString('duckstationControllerBackend')!='auto':
