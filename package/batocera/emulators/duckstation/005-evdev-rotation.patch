@@ -1,7 +1,29 @@
-diff -u -r ./src/core/host_display.cpp ../duckstation-oga/duckstation/src/core/host_display.cpp
---- a/src/core/host_display.cpp	2021-02-07 14:35:10.475705627 +0100
-+++ b/src/core/host_display.cpp	2021-02-07 14:35:36.529039464 +0100
-@@ -91,6 +91,11 @@
+diff --git a/src/common/gl/program.h b/src/common/gl/program.h
+index d877a462..3fa9a7a7 100644
+--- a/src/common/gl/program.h
++++ b/src/common/gl/program.h
+@@ -40,6 +40,7 @@ public:
+   void Destroy();
+ 
+   int RegisterUniform(const char* name);
++  GLint GetUniformLocation(int index) const { return m_uniform_locations[index]; }
+   void Uniform1ui(int index, u32 x) const;
+   void Uniform2ui(int index, u32 x, u32 y) const;
+   void Uniform3ui(int index, u32 x, u32 y, u32 z) const;
+@@ -97,6 +98,6 @@ private:
+   GLuint m_fragment_shader_id = 0;
+ 
+   std::vector<GLint> m_uniform_locations;
+-};
++}; // namespace GL
+ 
+ } // namespace GL
+\ No newline at end of file
+diff --git a/src/core/host_display.cpp b/src/core/host_display.cpp
+index 9d8758ba..4d9511b0 100644
+--- a/src/core/host_display.cpp
++++ b/src/core/host_display.cpp
+@@ -91,6 +91,11 @@ bool HostDisplay::GetHostRefreshRate(float* refresh_rate)
    return g_host_interface->GetMainDisplayRefreshRate(refresh_rate);
  }
  
@@ -13,10 +35,11 @@ diff -u -r ./src/core/host_display.cpp ../duckstation-oga/duckstation/src/core/h
  void HostDisplay::SetSoftwareCursor(std::unique_ptr<HostDisplayTexture> texture, float scale /*= 1.0f*/)
  {
    m_cursor_texture = std::move(texture);
-diff -u -r ./src/core/host_display.h ../duckstation-oga/duckstation/src/core/host_display.h
---- a/src/core/host_display.h	2021-02-07 14:35:10.475705627 +0100
-+++ b/src/core/host_display.h	2021-02-07 14:35:36.529039464 +0100
-@@ -52,6 +52,15 @@
+diff --git a/src/core/host_display.h b/src/core/host_display.h
+index 69a28531..3a30e10c 100644
+--- a/src/core/host_display.h
++++ b/src/core/host_display.h
+@@ -52,6 +52,15 @@ public:
      RightOrBottom
    };
  
@@ -32,7 +55,7 @@ diff -u -r ./src/core/host_display.h ../duckstation-oga/duckstation/src/core/hos
    virtual ~HostDisplay();
  
    ALWAYS_INLINE s32 GetWindowWidth() const { return static_cast<s32>(m_window_info.surface_width); }
-@@ -182,6 +191,7 @@
+@@ -182,6 +191,7 @@ public:
    virtual bool SetDisplayPixels(HostDisplayPixelFormat format, u32 width, u32 height, const void* buffer, u32 pitch);
  
    virtual bool GetHostRefreshRate(float* refresh_rate);
@@ -40,7 +63,7 @@ diff -u -r ./src/core/host_display.h ../duckstation-oga/duckstation/src/core/hos
  
    void SetDisplayLinearFiltering(bool enabled) { m_display_linear_filtering = enabled; }
    void SetDisplayTopMargin(s32 height) { m_display_top_margin = height; }
-@@ -260,6 +270,7 @@
+@@ -260,6 +270,7 @@ protected:
  
    s32 m_display_top_margin = 0;
    Alignment m_display_alignment = Alignment::Center;
@@ -48,116 +71,11 @@ diff -u -r ./src/core/host_display.h ../duckstation-oga/duckstation/src/core/hos
  
    std::unique_ptr<HostDisplayTexture> m_cursor_texture;
    float m_cursor_texture_scale = 1.0f;
-diff -u -r ./src/duckstation-nogui/nogui_host_interface.cpp ../duckstation-oga/duckstation/src/duckstation-nogui/nogui_host_interface.cpp
---- a/src/duckstation-nogui/nogui_host_interface.cpp	2021-02-07 14:35:10.482372293 +0100
-+++ b/src/duckstation-nogui/nogui_host_interface.cpp	2021-02-07 14:35:36.532372800 +0100
-@@ -209,6 +209,8 @@
-     return false;
-   }
- 
-+  m_display->SetDisplayRotation(HostDisplay::Rotation::R270Degrees);
-+
-   if (!m_display->CreateImGuiContext() ||
-       (m_fullscreen_ui_enabled && !FullscreenUI::Initialize(this, m_settings_interface.get())) ||
-       !m_display->UpdateImGuiFontTexture())
-diff -u -r ./src/duckstation-qt/qthostinterface.cpp ../duckstation-oga/duckstation/src/duckstation-qt/qthostinterface.cpp
---- a/src/duckstation-qt/qthostinterface.cpp	2021-02-07 14:35:10.485705625 +0100
-+++ b/src/duckstation-qt/qthostinterface.cpp	2021-02-07 14:35:36.539039466 +0100
-@@ -524,7 +524,6 @@
- 
-   connectDisplaySignals(display_widget);
-   m_is_exclusive_fullscreen = m_display->IsFullscreen();
--  ImGui::NewFrame();
-   return true;
- }
- 
-@@ -1474,10 +1473,10 @@
- 
- void QtHostInterface::renderDisplay()
- {
-+  ImGui::NewFrame();
-   DrawImGuiWindows();
--
-   m_display->Render();
--  ImGui::NewFrame();
-+  ImGui::EndFrame();
- }
- 
- void QtHostInterface::wakeThread()
-diff -u -r ./src/frontend-common/CMakeLists.txt ../duckstation-oga/duckstation/src/frontend-common/CMakeLists.txt
---- a/src/frontend-common/CMakeLists.txt	2021-02-07 14:35:10.502372292 +0100
-+++ b/src/frontend-common/CMakeLists.txt	2021-02-07 14:35:36.555706133 +0100
-@@ -75,6 +75,17 @@
-   endif()
- endif()
- 
-+if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
-+  find_package(LIBEVDEV REQUIRED)
-+  target_compile_definitions(frontend-common PUBLIC "-DWITH_EVDEV=1")
-+  target_include_directories(frontend-common PRIVATE ${LIBEVDEV_INCLUDE_DIRS})
-+  target_link_libraries(frontend-common PRIVATE ${LIBEVDEV_LIBRARIES})
-+  target_sources(frontend-common PRIVATE
-+    evdev_controller_interface.cpp
-+    evdev_controller_interface.h
-+  )
-+endif()
-+
- if(ENABLE_DISCORD_PRESENCE)
-   target_compile_definitions(frontend-common PUBLIC -DWITH_DISCORD_PRESENCE=1)
-   target_link_libraries(frontend-common PRIVATE discord-rpc)
-diff -u -r ./src/frontend-common/controller_interface.cpp ../duckstation-oga/duckstation/src/frontend-common/controller_interface.cpp
---- a/src/frontend-common/controller_interface.cpp	2021-02-07 14:35:10.502372292 +0100
-+++ b/src/frontend-common/controller_interface.cpp	2021-02-07 14:35:36.555706133 +0100
-@@ -95,6 +95,9 @@
-   // Deliberately not translated as it's not exposed to users.
-   "Android",
- #endif
-+#ifdef WITH_EVDEV
-+  TRANSLATABLE("ControllerInterface", "Evdev"),
-+#endif
- }};
- 
- std::optional<ControllerInterface::Backend> ControllerInterface::ParseBackendName(const char* name)
-@@ -132,6 +135,9 @@
- #include "dinput_controller_interface.h"
- #include "xinput_controller_interface.h"
- #endif
-+#ifdef WITH_EVDEV
-+#include "evdev_controller_interface.h"
-+#endif
- 
- std::unique_ptr<ControllerInterface> ControllerInterface::Create(Backend type)
- {
-@@ -145,6 +151,10 @@
-   if (type == Backend::DInput)
-     return std::make_unique<DInputControllerInterface>();
- #endif
-+#ifdef WITH_EVDEV
-+  if (type == Backend::Evdev)
-+    return std::make_unique<EvdevControllerInterface>();
-+#endif
- 
-   return {};
- }
-diff -u -r ./src/frontend-common/controller_interface.h ../duckstation-oga/duckstation/src/frontend-common/controller_interface.h
---- a/src/frontend-common/controller_interface.h	2021-02-07 14:35:10.502372292 +0100
-+++ b/src/frontend-common/controller_interface.h	2021-02-07 14:35:36.555706133 +0100
-@@ -27,6 +27,9 @@
- #ifdef ANDROID
-     Android,
- #endif
-+#ifdef WITH_EVDEV
-+    Evdev,
-+#endif
-     Count
-   };
- 
-Seulement dans ../duckstation-oga/duckstation/src/frontend-common: evdev_controller_interface.cpp
-Seulement dans ../duckstation-oga/duckstation/src/frontend-common: evdev_controller_interface.h
-diff -u -r ./src/frontend-common/opengl_host_display.cpp ../duckstation-oga/duckstation/src/frontend-common/opengl_host_display.cpp
---- a/src/frontend-common/opengl_host_display.cpp	2021-02-07 14:35:10.509038961 +0100
-+++ b/src/frontend-common/opengl_host_display.cpp	2021-02-07 14:35:36.562372800 +0100
-@@ -185,6 +185,77 @@
+diff --git a/src/frontend-common/opengl_host_display.cpp b/src/frontend-common/opengl_host_display.cpp
+index de0bd3ea..dd265293 100644
+--- a/src/frontend-common/opengl_host_display.cpp
++++ b/src/frontend-common/opengl_host_display.cpp
+@@ -185,6 +185,77 @@ void OpenGLHostDisplay::UpdateDisplayPixelsTextureFilter()
    m_display_texture_is_linear_filtered = m_display_linear_filtering;
  }
  
@@ -235,16 +153,7 @@ diff -u -r ./src/frontend-common/opengl_host_display.cpp ../duckstation-oga/duck
  bool OpenGLHostDisplay::SupportsDisplayPixelFormat(HostDisplayPixelFormat format) const
  {
    return (std::get<0>(s_display_pixel_format_mapping[static_cast<u32>(format)]) != static_cast<GLenum>(0));
-@@ -397,7 +468,7 @@
-     glGetIntegerv(GL_UNIFORM_BUFFER_OFFSET_ALIGNMENT, reinterpret_cast<GLint*>(&m_uniform_buffer_alignment));
- 
-   // Doubt GLES2 drivers will support PBOs efficiently.
--  m_use_pbo_for_pixels = m_use_gles2_draw_path;
-+  m_use_pbo_for_pixels = !m_use_gles2_draw_path;
-   if (m_gl_context->IsGLES())
-   {
-     // Adreno seems to corrupt textures through PBOs...
-@@ -417,7 +488,7 @@
+@@ -417,7 +488,7 @@ bool OpenGLHostDisplay::InitializeRenderDevice(std::string_view shader_cache_dir
        glDebugMessageCallback(GLDebugCallback, nullptr);
  
      glEnable(GL_DEBUG_OUTPUT);
@@ -253,7 +162,7 @@ diff -u -r ./src/frontend-common/opengl_host_display.cpp ../duckstation-oga/duck
    }
  
    if (!CreateResources())
-@@ -476,6 +547,7 @@
+@@ -476,6 +547,7 @@ bool OpenGLHostDisplay::ChangeRenderWindow(const WindowInfo& new_wi)
      ImGui::GetIO().DisplaySize.y = static_cast<float>(m_window_info.surface_height);
    }
  
@@ -261,7 +170,7 @@ diff -u -r ./src/frontend-common/opengl_host_display.cpp ../duckstation-oga/duck
    return true;
  }
  
-@@ -493,6 +565,8 @@
+@@ -493,6 +565,8 @@ void OpenGLHostDisplay::ResizeRenderWindow(s32 new_window_width, s32 new_window_
      ImGui::GetIO().DisplaySize.x = static_cast<float>(m_window_info.surface_width);
      ImGui::GetIO().DisplaySize.y = static_cast<float>(m_window_info.surface_height);
    }
@@ -270,7 +179,7 @@ diff -u -r ./src/frontend-common/opengl_host_display.cpp ../duckstation-oga/duck
  }
  
  bool OpenGLHostDisplay::SupportsFullscreen() const
-@@ -544,12 +618,17 @@
+@@ -544,12 +618,17 @@ bool OpenGLHostDisplay::CreateResources()
    {
      static constexpr char fullscreen_quad_vertex_shader[] = R"(
  uniform vec4 u_src_rect;
@@ -289,7 +198,7 @@ diff -u -r ./src/frontend-common/opengl_host_display.cpp ../duckstation-oga/duck
    gl_Position = vec4(pos * vec2(2.0f, -2.0f) + vec2(-1.0f, 1.0f), 0.0f, 1.0f);
  }
  )";
-@@ -601,12 +680,14 @@
+@@ -601,12 +680,14 @@ void main()
  
      m_display_program.Bind();
      m_display_program.RegisterUniform("u_src_rect");
@@ -306,7 +215,7 @@ diff -u -r ./src/frontend-common/opengl_host_display.cpp ../duckstation-oga/duck
  
      glGenVertexArrays(1, &m_display_vao);
  
-@@ -733,7 +814,7 @@
+@@ -733,7 +814,7 @@ bool OpenGLHostDisplay::Render()
    }
  
    glDisable(GL_SCISSOR_TEST);
@@ -315,7 +224,7 @@ diff -u -r ./src/frontend-common/opengl_host_display.cpp ../duckstation-oga/duck
    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
    glClear(GL_COLOR_BUFFER_BIT);
  
-@@ -744,6 +825,12 @@
+@@ -744,6 +825,12 @@ bool OpenGLHostDisplay::Render()
  
    RenderSoftwareCursor();
  
@@ -328,7 +237,7 @@ diff -u -r ./src/frontend-common/opengl_host_display.cpp ../duckstation-oga/duck
    m_gl_context->SwapBuffers();
    return true;
  }
-@@ -775,6 +862,13 @@
+@@ -775,6 +862,13 @@ void OpenGLHostDisplay::RenderDisplay()
                  m_display_texture_view_width, m_display_texture_view_height, m_display_linear_filtering);
  }
  
@@ -342,7 +251,7 @@ diff -u -r ./src/frontend-common/opengl_host_display.cpp ../duckstation-oga/duck
  static void DrawFullscreenQuadES2(s32 tex_view_x, s32 tex_view_y, s32 tex_view_width, s32 tex_view_height,
                                    s32 tex_width, s32 tex_height)
  {
-@@ -822,6 +916,8 @@
+@@ -822,6 +916,8 @@ void OpenGLHostDisplay::RenderDisplay(s32 left, s32 bottom, s32 width, s32 heigh
        (static_cast<float>(texture_view_y) + (position_adjust * flip_adjust)) / static_cast<float>(texture_height),
        (static_cast<float>(texture_view_width) - size_adjust) / static_cast<float>(texture_width),
        (static_cast<float>(texture_view_height) - (size_adjust * flip_adjust)) / static_cast<float>(texture_height));
@@ -351,7 +260,7 @@ diff -u -r ./src/frontend-common/opengl_host_display.cpp ../duckstation-oga/duck
      glBindSampler(0, linear_filter ? m_display_linear_sampler : m_display_nearest_sampler);
      glBindVertexArray(m_display_vao);
      glDrawArrays(GL_TRIANGLES, 0, 3);
-@@ -837,6 +933,30 @@
+@@ -837,6 +933,30 @@ void OpenGLHostDisplay::RenderDisplay(s32 left, s32 bottom, s32 width, s32 heigh
    }
  }
  
@@ -382,10 +291,11 @@ diff -u -r ./src/frontend-common/opengl_host_display.cpp ../duckstation-oga/duck
  void OpenGLHostDisplay::RenderSoftwareCursor()
  {
    if (!HasSoftwareCursor())
-diff -u -r ./src/frontend-common/opengl_host_display.h ../duckstation-oga/duckstation/src/frontend-common/opengl_host_display.h
---- a/src/frontend-common/opengl_host_display.h	2021-02-07 14:35:10.509038961 +0100
-+++ b/src/frontend-common/opengl_host_display.h	2021-02-07 14:35:36.562372800 +0100
-@@ -48,6 +48,8 @@
+diff --git a/src/frontend-common/opengl_host_display.h b/src/frontend-common/opengl_host_display.h
+index 10493cdd..5d03ba94 100644
+--- a/src/frontend-common/opengl_host_display.h
++++ b/src/frontend-common/opengl_host_display.h
+@@ -48,6 +48,8 @@ public:
  
    virtual bool SetPostProcessingChain(const std::string_view& config) override;
  
@@ -394,7 +304,7 @@ diff -u -r ./src/frontend-common/opengl_host_display.h ../duckstation-oga/duckst
    std::unique_ptr<HostDisplayTexture> CreateTexture(u32 width, u32 height, u32 layers, u32 levels, u32 samples,
                                                      HostDisplayPixelFormat format, const void* data, u32 data_stride,
                                                      bool dynamic = false) override;
-@@ -78,6 +80,8 @@
+@@ -78,6 +80,8 @@ protected:
  
    void BindDisplayPixelsTexture();
    void UpdateDisplayPixelsTextureFilter();
@@ -403,7 +313,7 @@ diff -u -r ./src/frontend-common/opengl_host_display.h ../duckstation-oga/duckst
  
    void RenderDisplay();
    void RenderImGui();
-@@ -115,6 +119,9 @@
+@@ -115,6 +119,9 @@ protected:
    u32 m_display_pixels_texture_pbo_map_size = 0;
    std::vector<u8> m_gles_pixels_repack_buffer;
  
@@ -413,4 +323,3 @@ diff -u -r ./src/frontend-common/opengl_host_display.h ../duckstation-oga/duckst
    PostProcessingChain m_post_processing_chain;
    GL::Texture m_post_processing_input_texture;
    std::unique_ptr<GL::StreamBuffer> m_post_processing_ubo;
-Seulement dans .: temp-oga.patch
