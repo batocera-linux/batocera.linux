@@ -13,20 +13,20 @@ class MugenGenerator(Generator):
         settings = ConfigParser.ConfigParser()
         # To prevent ConfigParser from converting to lower case
         settings.optionxform = str
-        settings_path = rom + "/mugen/mugen.cfg"
+        settings_path = rom + "/data/mugen.cfg"
         if os.path.exists(settings_path):
             settings.read(settings_path)
 
         if not settings.has_section("Video"):
             settings.add_section("Video")
         settings.set("Video", "FullScreen", "1")
-        #settings.set("Video", "Width",  gameResolution["width"])
-        #settings.set("Video", "Height", gameResolution["height"])
+        settings.set("Video", "Width",  gameResolution["width"])
+        settings.set("Video", "Height", gameResolution["height"])
 
         if not settings.has_section("Config"):
             settings.add_section("Config")
-        #settings.set("Config", "GameWidth",  gameResolution["width"])
-        #settings.set("Config", "GameHeight", gameResolution["height"])
+        settings.set("Config", "GameWidth",  gameResolution["width"])
+        settings.set("Config", "GameHeight", gameResolution["height"])
         settings.set("Config", "Language", "en")
 
         # Save config
