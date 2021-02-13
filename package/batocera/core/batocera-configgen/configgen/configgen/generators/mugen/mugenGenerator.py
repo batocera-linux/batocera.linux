@@ -4,37 +4,29 @@ from generators.Generator import Generator
 import Command
 import os
 import controllersConfig
-import ConfigParser
+import re
 
 class MugenGenerator(Generator):
 
     def generate(self, system, rom, playersControllers, gameResolution):
 
-        settings = ConfigParser.ConfigParser()
-        # To prevent ConfigParser from converting to lower case
-        settings.optionxform = str
-        settings_path = rom + "/mugen/mugen.cfg"
-        if os.path.exists(settings_path):
-            settings.read(settings_path)
+        # Open config
+        settings_path = rom + "/data/mugen.cfg"
+        with open(settings_path, 'r') as f:
+            contents = f.read()
 
-        if not settings.has_section("Video"):
-            settings.add_section("Video")
-        settings.set("Video", "FullScreen", "1")
-        #settings.set("Video", "Width",  gameResolution["width"])
-        #settings.set("Video", "Height", gameResolution["height"])
-
-        if not settings.has_section("Config"):
-            settings.add_section("Config")
-        #settings.set("Config", "GameWidth",  gameResolution["width"])
-        #settings.set("Config", "GameHeight", gameResolution["height"])
-        settings.set("Config", "Language", "en")
-
+        # Fix Parser issue
+        contents = re.sub(r'.;', ';', contents)
+        # Change FullScreen to 1
+        contents = re.sub(r'FullScreen\s*=\s*0', 'FullScreen = 1', contents)
+        # Change GameWidth to Native resolution
+        contents = re.sub(r'GameWidth\s*=\s*[1-9][0-9]*', 'GameWidth = {0}'.format(gameResolution["width"]), contents)
+        # Change GameHeight to Native resolution
+        contents = re.sub(r'GameHeight\s*=\s*[1-9][0-9]*', 'GameHeight = {0}'.format(gameResolution["height"]), contents)
+        
         # Save config
-        if not os.path.exists(os.path.dirname(settings_path)):
-            os.makedirs(os.path.dirname(settings_path))
-
-        with open(settings_path, 'w') as configfile:
-            settings.write(configfile)
+        with open(settings_path, 'w') as f:
+            f.write(contents)
 
         commandArray = ["batocera-wine", "mugen", "play", rom]
         return Command.Command(array=commandArray, env={ "SDL_GAMECONTROLLERCONFIG": controllersConfig.generateSdlGameControllerConfig(playersControllers) })
