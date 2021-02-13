@@ -3,8 +3,8 @@
 # DUCKSTATION
 #
 ################################################################################
-# Version.: Commits on Feb 06, 2021
-DUCKSTATION_VERSION = ccc25fc13157f58f3accf97ef68d2cb4cd2443b7
+# Version.: Commits on Feb 12, 2021
+DUCKSTATION_VERSION = eabda2979cedae1d5405106a04e1bf3518ad70a1
 DUCKSTATION_SITE = https://github.com/stenzek/duckstation.git
 
 DUCKSTATION_DEPENDENCIES = fmt boost ffmpeg
@@ -29,6 +29,9 @@ endif
 
 ifeq ($(BR2_PACKAGE_HAS_LIBEGL),y)
 DUCKSTATION_CONF_OPTS += -DUSE_EGL=ON
+ifeq ($(BR2_PACKAGE_HAS_LIBMALI),y)
+DUCKSTATION_CONF_OPTS += -DUSE_MALI=ON
+endif
 else
 DUCKSTATION_CONF_OPTS += -DUSE_EGL=OFF
 endif
