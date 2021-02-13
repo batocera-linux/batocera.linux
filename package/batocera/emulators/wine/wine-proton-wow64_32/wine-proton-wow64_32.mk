@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-WINE_PROTON_WOW64_32_VERSION = 2117f849363107537dfc954451ed96237b5b3f9d
+WINE_PROTON_WOW64_32_VERSION = proton-wine-5.13-6
 WINE_PROTON_WOW64_32_SITE = $(call github,ValveSoftware,wine,$(WINE_PROTON_WOW64_32_VERSION))
 WINE_PROTON_WOW64_32_LICENSE = LGPL-2.1+
 WINE_PROTON_WOW64_32_DEPENDENCIES = host-bison host-flex host-wine-proton
