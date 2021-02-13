@@ -181,6 +181,10 @@ ifeq ($(BR2_arm),y)
 		LIBRETRO_PLATFORM += armv7
 	endif
 
+	ifeq ($(BR2_cortex_a9),y)
+		LIBRETRO_PLATFORM += armv7
+	endif
+
 	ifeq ($(BR2_cortex_a15),y)
 		LIBRETRO_PLATFORM += armv7
 	endif
