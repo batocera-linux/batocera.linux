@@ -242,6 +242,129 @@ libretro:
                     "rgb3x":       rgb3x
                     "scan2x":      scan2x
                     "scan3x":      scan3x
+    dosbox_pure:
+      features: [latency_reduction, padtokeyboard]
+      cfeatures:
+            pure_cpu_type:
+                prompt:      CPU TYPE
+                description: Select the fine CPU type for your game
+                choices:
+                    "Auto (compatible by game)": auto
+                    "386":                       386
+                    "386 (slow)":                386_slow
+                    "386 (prefetch)":            386_prefetch
+                    "486 (slow)":                486_slow
+                    "Pentium (slow)":            pentium_slow
+            pure_cpu_core:
+                prompt:      CPU CORE METHOD
+                description: Choose an accurate or fastest method
+                choices:
+                    "Auto (optimized)":                             auto
+                    "Dynamic (fast)":                               dynamic
+                    "Normal (interpreter)":                         normal
+                    "Simple (interpreter for old real-mode games)": simple
+            pure_cycles:
+                prompt:      CPU EMULATED PERFORMANCE
+                description: Select CPU cycles by model. Use with caution
+                choices:
+                    "Automatic (detect cycles needed)": auto
+                    "MAX (as many as possible)":        max
+                    "8086/8088, 4.77MHz (315 cps)":     315
+                    "286, 6MHz (1320 cps)":             1320
+                    "286, 12.5MHz (2750 cps)":          2750
+                    "386, 20MHz (4720 cps)":            4720
+                    "386DX, 33MHz (7800 cps)":          7800
+                    "486DX, 33MHz (13400 cps)":         13400
+                    "486DX2, 66MHz (26800 cps)":        26800
+                    "Pentium, 100MHz (77000 cps)":      77000
+                    "Pentium II, 300MHz (200000 cps)":  200000
+                    "Pentium III, 600MHz (500000 cps)": 500000
+                    "AMD Athlon, 1.2GHz (1000000 cps)": 1000000
+            pure_memory_size:
+                prompt:      RAM SIZE
+                description: The amount of RAM for the emulated machine
+                choices:
+                    "No EMS/XMS":           none
+                    "4MB":                  4
+                    "8MB":                  8
+                    "16MB":                 16
+                    "24MB":                 24
+                    "32MB":                 32
+                    "48MB":                 48
+                    "64MB":                 64
+            pure_machine:
+                prompt:      GRAPHICS CHIP TYPE
+                description: Video card graphic chip type
+                choices:
+                    "SVGA":                 svga
+                    "VGA":                  vga
+                    "EGA":                  ega
+                    "CGA":                  cga
+                    "Tandy":                tandy
+                    "Hercules":             hercules
+                    "PCjr":                 pcjr
+            pure_keyboard_layout:
+                prompt:      KEYBOARD LAYOUT
+                description: Select physical keyboard layout (not On Screen)
+                choices:
+                    "US":                   us
+                    "UK":                   uk
+                    "Brazil":               br
+                    "Croatia":              hr
+                    "Czech Republic":       cz243
+                    "Denmark":              dk
+                    "Finland":              su
+                    "France":               fr
+                    "Germany":              gr
+                    "Greece":               gk
+                    "Hungary":              hu
+                    "Iceland":              is161
+                    "Italy":                it
+                    "Netherlands":          nl
+                    "Norway":               "no"
+                    "Poland":               pl
+                    "Portugal":             po
+                    "Russia":               ru
+                    "Slovakia":             sk
+                    "Slovenia":             si
+                    "Spain":                sp
+                    "Sweden":               sv
+                    "Switzerland (German)": sg
+                    "Switzerland (French)": sf
+                    "Turkey":               tr
+            pure_savestate:
+                prompt:      SAVESTATE / REWIND
+                description: Enable or not Savestate and Rewind support
+                choices:
+                    "On":                     on
+                    "On with rewind support": rewind
+                    "Off":                    disabled
+            pure_auto_mapping:
+                prompt:      AUTOMATIC GAMEPAD MAPPING
+                description: Apply a gamepad mapping scheme for selected game
+                choices:
+                    "On":                             "true"
+                    "On with game detection message": notify
+                    "Off":                            "false"
+            pure_joystick_analog_deadzone:
+                prompt:      JOYSTICK ANALOG DEADZONE
+                description: Set the deadzone of the joystick analog sticks
+                choices:
+                    "0%":                  0
+                    "5%":                  5
+                    "10%":                 10
+                    "15%":                 15
+                    "20%":                 20
+                    "25%":                 25
+                    "30%":                 30
+                    "35%":                 35
+                    "40%":                 40
+            pure_joystick_timed:
+                prompt:      JOYSTICK TIMED INTERVAL
+                description: Enable timed intervals for joystick axes if drifts
+                choices:
+                    "On":                  "true"
+                    "Off":                 "false"
     duckstation:
       features: [autosave, latency_reduction, cheevos]
       cfeatures:
@@ -1812,6 +1935,36 @@ libretro:
       features: [latency_reduction]
     scummvm:
       features: [latency_reduction, padtokeyboard]
+      cfeatures:
+            scummvm_analog_deadzone:
+                prompt:      ANALOG DEADZONE
+                description: Used to eliminate cursor drift/unwanted input
+                choices:
+                    "15%":        15
+                    "20%":        20
+                    "25%":        25
+                    "30%":        30
+                    "0%":         0
+                    "5%":         5
+                    "10%":        10
+            scummvm_gamepad_cursor_speed:
+                prompt:      GAMEPAD CURSOR SPEED
+                description: For high definition 640x480 games set the Speed to 2.0
+                choices:
+                    "1.0":        1.0
+                    "1.5":        1.5
+                    "2.0":        2.0
+                    "2.5":        2.5
+                    "3.0":        3.0
+                    "0.25":       0.25
+                    "0.5":        0.5
+                    "0.75":       0.75
+            scummvm_speed_hack:
+                prompt:      SPEED HACK (SAFE)
+                description: Reduces the CPU requirements for low power hardware
+                choices:
+                    "Off":        disabled
+                    "On":         enabled
     snes9x:
       features: [netplay, rewind, autosave, latency_reduction, cheevos]
       cfeatures:

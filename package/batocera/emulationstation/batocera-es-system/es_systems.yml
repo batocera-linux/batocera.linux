@@ -472,18 +472,18 @@ dos:
   manufacturer: Microsoft
   release: 1981
   hardware: computer
-  extensions: [pc, dos]
+  extensions: [pc, dos, zip]
   theme:      pc
   platform:   pc
   emulators:
     dosbox:
-      dosbox:           { requireAnyOf: [BR2_PACKAGE_DOSBOX]          }
+      dosbox:           { requireAnyOf: [BR2_PACKAGE_DOSBOX], incompatible_extensions: [zip] }
     dosbox_staging:
-      dosbox_staging:   { requireAnyOf: [BR2_PACKAGE_DOSBOX_STAGING]  }
+      dosbox_staging:   { requireAnyOf: [BR2_PACKAGE_DOSBOX_STAGING], incompatible_extensions: [zip] }
     dosboxx:
-      dosbox-x:         { requireAnyOf: [BR2_PACKAGE_DOSBOX_X]        }
+      dosbox-x:         { requireAnyOf: [BR2_PACKAGE_DOSBOX_X], incompatible_extensions: [zip] }
     libretro:
-      dosbox:           { requireAnyOf: [BR2_PACKAGE_LIBRETRO_DOSBOX] }
+      dosbox:           { requireAnyOf: [BR2_PACKAGE_LIBRETRO_DOSBOX], incompatible_extensions: [zip] }
       dosbox_pure:      { requireAnyOf: [BR2_PACKAGE_LIBRETRO_DOSBOX_PURE] }
   comment_en: |
     Each game (files) must be placed its own directory having the ".pc .dos" extension.
@@ -496,7 +496,9 @@ dos:
     miniputt.pc/MP.EXE
 
     WHere dosbox.bat contains: MP.EXE
-
+    
+    With pure-dosbox you can also use zip files.
+    
     To quit a game, press CTRL + F9.
 
     Games files are available on myabandonware:
@@ -512,7 +514,9 @@ dos:
     miniputt.pc/MP.EXE
 
     Et dosbox.bat contient: MP.EXE
-
+    
+    Avec pure-dosbox vous pouvez aussi utiliser des fichiers zip. 
+    
     Pour quitter un jeu, appuyer sur CTRL + F9.
 
     Les jeux DOS sont disponibles sur myabandonware:
