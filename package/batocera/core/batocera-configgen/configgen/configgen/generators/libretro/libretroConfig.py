@@ -238,6 +238,8 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
     if system.isOptSet('rewind') and system.getOptBoolean('rewind') == True:
         if(not system.name in systemNoRewind):
             retroarchConfig['rewind_enable'] = 'true'
+        else:
+            retroarchConfig['rewind_enable'] = 'false'
     else:
         retroarchConfig['rewind_enable'] = 'false'
 
