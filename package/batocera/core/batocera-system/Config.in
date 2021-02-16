@@ -178,6 +178,9 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
                                                             !BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_PC    && \
                                                             !BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA
 
+    # s905 tv-box firmwares
+    select BR2_PACKAGE_FIRMWARE_WLAN_AML		 if BR2_PACKAGE_BATOCERA_TARGET_S905GEN3 
+
     # gpu drivers
     select BR2_PACKAGE_BATOCERA_GPU_X86			 if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
 
