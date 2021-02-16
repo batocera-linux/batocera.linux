@@ -1,0 +1,190 @@
+From dcbee7cda6faea688605ed24c2548187cb55f60a Mon Sep 17 00:00:00 2001
+From: AJR <ajrhacker@users.noreply.github.com>
+Date: Tue, 28 Jul 2020 20:33:25 -0400
+Subject: [PATCH] Fix SOL2 build on GCC 10.2 by working around overload
+ resolution problem
+
+---
+ 3rdparty/sol2/sol/container_usertype_metatable.hpp |  4 ++--
+ 3rdparty/sol2/sol/function_types.hpp               | 12 ++++++------
+ 3rdparty/sol2/sol/object.hpp                       |  4 ++--
+ 3rdparty/sol2/sol/simple_usertype_metatable.hpp    |  2 +-
+ 3rdparty/sol2/sol/stack_core.hpp                   |  6 +++---
+ 3rdparty/sol2/sol/stack_push.hpp                   |  6 +++---
+ 3rdparty/sol2/sol/usertype_metatable.hpp           |  2 +-
+ 7 files changed, 18 insertions(+), 18 deletions(-)
+
+diff --git a/3rdparty/sol2/sol/container_usertype_metatable.hpp b/3rdparty/sol2/sol/container_usertype_metatable.hpp
+index fc5d6894f95..9e1b67b7506 100644
+--- a/3rdparty/sol2/sol/container_usertype_metatable.hpp
++++ b/3rdparty/sol2/sol/container_usertype_metatable.hpp
+@@ -273,7 +273,7 @@ namespace sol {
+ 			auto& src = get_src(L);
+ 			using std::begin;
+ 			stack::push(L, pairs_next_call);
+-			stack::push<user<iter>>(L, src, begin(src));
++			stack::push_specific<user<iter>>(L, src, begin(src));
+ 			stack::push(L, 1);
+ 			return 3;
+ 		}
+@@ -296,7 +296,7 @@ namespace sol {
+ 			auto& src = get_src(L);
+ 			using std::begin;
+ 			stack::push(L, pairs_next_call);
+-			stack::push<user<iter>>(L, src, begin(src));
++			stack::push_specific<user<iter>>(L, src, begin(src));
+ 			stack::push(L, 0);
+ 			return 3;
+ 		}
+diff --git a/3rdparty/sol2/sol/function_types.hpp b/3rdparty/sol2/sol/function_types.hpp
+index 7c76b8d6ed0..67b0c7163ba 100644
+--- a/3rdparty/sol2/sol/function_types.hpp
++++ b/3rdparty/sol2/sol/function_types.hpp
+@@ -165,7 +165,7 @@ namespace sol {
+ 			static void set_fx(lua_State* L, Args&&... args) {
+ 				lua_CFunction freefunc = function_detail::call<meta::unqualified_t<Fx>>;
+ 
+-				stack::push<user<Fx>>(L, std::forward<Args>(args)...);
++				stack::push_specific<user<Fx>>(L, std::forward<Args>(args)...);
+ 				stack::push(L, c_closure(freefunc, 1));
+ 			}
+ 
+@@ -181,7 +181,7 @@ namespace sol {
+ 		struct pusher<function_arguments<T, Args...>> {
+ 			template <std::size_t... I, typename FP>
+ 			static int push_func(std::index_sequence<I...>, lua_State* L, FP&& fp) {
+-				return stack::push<T>(L, detail::forward_get<I>(fp.arguments)...);
++				return stack::push_specific<T>(L, detail::forward_get<I>(fp.arguments)...);
+ 			}
+ 
+ 			static int push(lua_State* L, const function_arguments<T, Args...>& fp) {
+@@ -235,13 +235,13 @@ namespace sol {
+ 		struct pusher<protect_t<T>> {
+ 			static int push(lua_State* L, protect_t<T>&& pw) {
+ 				lua_CFunction cf = call_detail::call_user<void, false, false, protect_t<T>>;
+-				int closures = stack::push<user<protect_t<T>>>(L, std::move(pw.value));
++				int closures = stack::push_specific<user<protect_t<T>>>(L, std::move(pw.value));
+ 				return stack::push(L, c_closure(cf, closures));
+ 			}
+ 
+ 			static int push(lua_State* L, const protect_t<T>& pw) {
+ 				lua_CFunction cf = call_detail::call_user<void, false, false, protect_t<T>>;
+-				int closures = stack::push<user<protect_t<T>>>(L, pw.value);
++				int closures = stack::push_specific<user<protect_t<T>>>(L, pw.value);
+ 				return stack::push(L, c_closure(cf, closures));
+ 			}
+ 		};
+@@ -314,7 +314,7 @@ namespace sol {
+ 			template <typename C>
+ 			static int push(lua_State* L, C&& c) {
+ 				lua_CFunction cf = call_detail::call_user<T, false, false, constructor_wrapper<Fxs...>>;
+-				int closures = stack::push<user<constructor_wrapper<Fxs...>>>(L, std::forward<C>(c));
++				int closures = stack::push_specific<user<constructor_wrapper<Fxs...>>>(L, std::forward<C>(c));
+ 				return stack::push(L, c_closure(cf, closures));
+ 			}
+ 		};
+@@ -331,7 +331,7 @@ namespace sol {
+ 		struct pusher<detail::tagged<T, destructor_wrapper<Fx>>> {
+ 			static int push(lua_State* L, destructor_wrapper<Fx> c) {
+ 				lua_CFunction cf = call_detail::call_user<T, false, false, destructor_wrapper<Fx>>;
+-				int closures = stack::push<user<T>>(L, std::move(c));
++				int closures = stack::push_specific<user<T>>(L, std::move(c));
+ 				return stack::push(L, c_closure(cf, closures));
+ 			}
+ 		};
+diff --git a/3rdparty/sol2/sol/object.hpp b/3rdparty/sol2/sol/object.hpp
+index 3b69a6675ac..ab6e41854a1 100644
+--- a/3rdparty/sol2/sol/object.hpp
++++ b/3rdparty/sol2/sol/object.hpp
+@@ -43,7 +43,7 @@ namespace sol {
+ 
+ 	template <typename T, typename R = reference, bool should_pop = !std::is_base_of<stack_reference, R>::value, typename... Args>
+ 	R make_reference(lua_State* L, Args&&... args) {
+-		int backpedal = stack::push<T>(L, std::forward<Args>(args)...);
++		int backpedal = stack::push_specific<T>(L, std::forward<Args>(args)...);
+ 		R r = stack::get<R>(L, -backpedal);
+ 		if (should_pop) {
+ 			lua_pop(L, backpedal);
+@@ -99,7 +99,7 @@ namespace sol {
+ 		basic_object(lua_State* L, int index = -1) noexcept : base_t(L, index) {}
+ 		basic_object(lua_State* L, ref_index index) noexcept : base_t(L, index) {}
+ 		template <typename T, typename... Args>
+-		basic_object(lua_State* L, in_place_type_t<T>, Args&&... args) noexcept : basic_object(std::integral_constant<bool, !std::is_base_of<stack_reference, base_t>::value>(), L, -stack::push<T>(L, std::forward<Args>(args)...)) {}
++		basic_object(lua_State* L, in_place_type_t<T>, Args&&... args) noexcept : basic_object(std::integral_constant<bool, !std::is_base_of<stack_reference, base_t>::value>(), L, -stack::push_specific<T>(L, std::forward<Args>(args)...)) {}
+ 		template <typename T, typename... Args>
+ 		basic_object(lua_State* L, in_place_t, T&& arg, Args&&... args) noexcept : basic_object(L, in_place<T>, std::forward<T>(arg), std::forward<Args>(args)...) {}
+ 		basic_object& operator=(const basic_object&) = default;
+diff --git a/3rdparty/sol2/sol/simple_usertype_metatable.hpp b/3rdparty/sol2/sol/simple_usertype_metatable.hpp
+index 7570a32960b..c2db29a09df 100644
+--- a/3rdparty/sol2/sol/simple_usertype_metatable.hpp
++++ b/3rdparty/sol2/sol/simple_usertype_metatable.hpp
+@@ -366,7 +366,7 @@ namespace sol {
+ 				++uniqueness;
+ 
+ 				const char* gcmetakey = &usertype_traits<T>::gc_table()[0];
+-				stack::push<user<usertype_detail::simple_map>>(L, metatable_key, uniquegcmetakey, &usertype_traits<T>::metatable()[0], 
++				stack::push_specific<user<usertype_detail::simple_map>>(L, metatable_key, uniquegcmetakey, &usertype_traits<T>::metatable()[0], 
+ 					umx.indexbaseclasspropogation, umx.newindexbaseclasspropogation, 
+ 					std::move(umx.varmap), std::move(umx.registrations)
+ 				);
+diff --git a/3rdparty/sol2/sol/stack_core.hpp b/3rdparty/sol2/sol/stack_core.hpp
+index 2675e02e50b..5eceaeaf90b 100644
+--- a/3rdparty/sol2/sol/stack_core.hpp
++++ b/3rdparty/sol2/sol/stack_core.hpp
+@@ -173,9 +173,9 @@ namespace sol {
+ 			return pusher<meta::unqualified_t<T>>{}.push(L, std::forward<T>(t), std::forward<Args>(args)...);
+ 		}
+ 
+-		// overload allows to use a pusher of a specific type, but pass in any kind of args
+-		template<typename T, typename Arg, typename... Args, typename = std::enable_if_t<!std::is_same<T, Arg>::value>>
+-		inline int push(lua_State* L, Arg&& arg, Args&&... args) {
++		// allow a pusher of a specific type, but pass in any kind of args
++		template<typename T, typename Arg, typename... Args>
++		inline int push_specific(lua_State* L, Arg&& arg, Args&&... args) {
+ 			return pusher<meta::unqualified_t<T>>{}.push(L, std::forward<Arg>(arg), std::forward<Args>(args)...);
+ 		}
+ 
+diff --git a/3rdparty/sol2/sol/stack_push.hpp b/3rdparty/sol2/sol/stack_push.hpp
+index 9a839107fde..6e407cceb84 100644
+--- a/3rdparty/sol2/sol/stack_push.hpp
++++ b/3rdparty/sol2/sol/stack_push.hpp
+@@ -546,7 +546,7 @@ namespace sol {
+ 			}
+ 
+ 			static int push(lua_State* L, const wchar_t(&str)[N], std::size_t sz) {
+-				return stack::push<const wchar_t*>(L, str, str + sz);
++				return stack::push_specific<const wchar_t*>(L, str, str + sz);
+ 			}
+ 		};
+ 
+@@ -557,7 +557,7 @@ namespace sol {
+ 			}
+ 
+ 			static int push(lua_State* L, const char16_t(&str)[N], std::size_t sz) {
+-				return stack::push<const char16_t*>(L, str, str + sz);
++				return stack::push_specific<const char16_t*>(L, str, str + sz);
+ 			}
+ 		};
+ 
+@@ -568,7 +568,7 @@ namespace sol {
+ 			}
+ 
+ 			static int push(lua_State* L, const char32_t(&str)[N], std::size_t sz) {
+-				return stack::push<const char32_t*>(L, str, str + sz);
++				return stack::push_specific<const char32_t*>(L, str, str + sz);
+ 			}
+ 		};
+ 
+diff --git a/3rdparty/sol2/sol/usertype_metatable.hpp b/3rdparty/sol2/sol/usertype_metatable.hpp
+index 37693227a75..b496d388010 100644
+--- a/3rdparty/sol2/sol/usertype_metatable.hpp
++++ b/3rdparty/sol2/sol/usertype_metatable.hpp
+@@ -489,7 +489,7 @@ namespace sol {
+ 				const char* gcmetakey = &usertype_traits<T>::gc_table()[0];
+ 				// Make sure userdata's memory is properly in lua first,
+ 				// otherwise all the light userdata we make later will become invalid
+-				stack::push<user<umt_t>>(L, metatable_key, uniquegcmetakey, std::move(umx));
++				stack::push_specific<user<umt_t>>(L, metatable_key, uniquegcmetakey, std::move(umx));
+ 				// Create the top level thing that will act as our deleter later on
+ 				stack_reference umt(L, -1);
+ 				stack::set_field<true>(L, gcmetakey, umt);
