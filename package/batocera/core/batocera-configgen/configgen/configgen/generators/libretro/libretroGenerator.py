@@ -43,10 +43,11 @@ class LibretroGenerator(Generator):
         retroarchCore = batoceraFiles.retroarchCores + system.config['core'] + batoceraFiles.libretroExt
         romName = os.path.basename(rom)
 
-        # the command to run
+        # The command to run
         # For the NeoGeo CD (lr-fbneo) it is necessary to add the parameter: --subsystem neocd
         if system.name == 'neogeocd' and system.config['core'] == "fbneo":
             commandArray = [batoceraFiles.batoceraBins[system.config['emulator']], "-L", retroarchCore, "--subsystem", "neocd", "--config", system.config['configfile']]
+        # Dosbox: To support .pc / .dos directories for PURE
         elif system.name == 'dos':
             romDOSName = os.path.splitext(romName)[0]
             if os.path.isfile(os.path.join(rom, romDOSName + ".bat")):
@@ -57,6 +58,7 @@ class LibretroGenerator(Generator):
             commandArray = [batoceraFiles.batoceraBins[system.config['emulator']], "-L", retroarchCore, "--config", system.config['configfile']]
 
         configToAppend = []
+
 
         # Custom configs - per core
         customCfg = "{}/{}.cfg".format(batoceraFiles.retroarchRoot, system.name)
@@ -109,7 +111,7 @@ class LibretroGenerator(Generator):
             romName = os.path.splitext(os.path.basename(rom))[0]
             rom = batoceraFiles.daphneDatadir + '/roms/' + romName +'.zip'
         
-        if system.name == 'dos':
+        if system.name == 'dos' and system.config['core'] == "dosbox":
             rom = 'set ROOT=' + rom
 
         if system.name == 'scummvm':

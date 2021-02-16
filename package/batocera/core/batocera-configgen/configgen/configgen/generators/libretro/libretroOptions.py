@@ -53,7 +53,7 @@ def generateCoreSettings(coreSettings, system, rom):
             if system.isOptSet('atari800_resolution'):
                 coreSettings.save('atari800_resolution', system.config['atari800_resolution'])
             else:
-                coreSettings.save('atari800_resolution', '"400x300"')
+                coreSettings.save('atari800_resolution', '""') # Default : 336x240
             
             # WARNING: Now we must stop to use "atari800.cfg" because core options crush them
 
@@ -337,6 +337,58 @@ def generateCoreSettings(coreSettings, system, rom):
             coreSettings.save('dosbox_svn_scaler', system.config['filter'])
         else:
             coreSettings.save('dosbox_svn_scaler', '"none"')
+
+    if (system.config['core'] == 'dosbox_pure'):
+        # CPU Type
+        if system.isOptSet('pure_cpu_type'):
+            coreSettings.save('dosbox_pure_cpu_type', system.config['pure_cpu_type'])
+        else:
+            coreSettings.save('dosbox_pure_cpu_type', '"auto"')
+        # CPU Core
+        if system.isOptSet('pure_cpu_core'):
+            coreSettings.save('dosbox_pure_cpu_core', system.config['pure_cpu_core'])
+        else:
+            coreSettings.save('dosbox_pure_cpu_core', '"auto"')
+        # Emulated performance (CPU Cycles)
+        if system.isOptSet('pure_cycles'):
+            coreSettings.save('dosbox_pure_cycles', system.config['pure_cycles'])
+        else:
+            coreSettings.save('dosbox_pure_cycles', '"auto"')
+        # Graphics Chip type
+        if system.isOptSet('pure_machine'):
+            coreSettings.save('dosbox_pure_machine', system.config['pure_machine'])
+        else:
+            coreSettings.save('dosbox_pure_machine', '"svga"')
+        # Memory size
+        if system.isOptSet('pure_memory_size'):
+            coreSettings.save('dosbox_pure_memory_size', system.config['pure_memory_size'])
+        else:
+            coreSettings.save('dosbox_pure_memory_size', '"16"')
+        # Save state
+        if system.isOptSet('pure_savestate'):
+            coreSettings.save('dosbox_pure_savestate', system.config['pure_savestate'])
+        else:
+            coreSettings.save('dosbox_pure_savestate', '"on"')
+        # Keyboard Layout
+        if system.isOptSet('pure_keyboard_layout'):
+            coreSettings.save('dosbox_pure_keyboard_layout', system.config['pure_keyboard_layout'])
+        else:
+            coreSettings.save('dosbox_pure_keyboard_layout', '"us"')
+        # Automatic Gamepad Mapping
+        if system.isOptSet('pure_auto_mapping'):
+            coreSettings.save('dosbox_pure_auto_mapping', system.config['pure_auto_mapping'])
+        else:
+            coreSettings.save('dosbox_pure_auto_mapping', '"true"')
+        # Joystick Analog Deadzone
+        if system.isOptSet('pure_joystick_analog_deadzone'):
+            coreSettings.save('dosbox_pure_joystick_analog_deadzone', system.config['pure_joystick_analog_deadzone'])
+        else:
+            coreSettings.save('dosbox_pure_joystick_analog_deadzone', '"15"')
+        # Enable Joystick Timed Intervals
+        if system.isOptSet('pure_joystick_timed'):
+            coreSettings.save('dosbox_pure_joystick_timed', system.config['pure_joystick_timed'])
+        else:
+            coreSettings.save('dosbox_pure_joystick_timed', '"true"')
 
     # Microsoft MSX and Colecovision
     if (system.config['core'] == 'bluemsx'):
@@ -873,7 +925,23 @@ def generateCoreSettings(coreSettings, system, rom):
             elif system.config['game_fixes_opera'] == 'timing_hack6':
                 coreSettings.save('opera_hack_timing_6',        '"enabled"')
 
-    # TODO: Add ScummVM CORE Options
+    # ScummVM CORE Options
+    if (system.config['core'] == 'scummvm'):
+        # Analog Deadzone
+        if system.isOptSet('scummvm_analog_deadzone'):
+            coreSettings.save('scummvm_analog_deadzone', system.config['scummvm_analog_deadzone'])
+        else:
+            coreSettings.save('scummvm_analog_deadzone', '"15"')
+        # Gamepad Cursor Speed
+        if system.isOptSet('scummvm_gamepad_cursor_speed'):
+            coreSettings.save('scummvm_gamepad_cursor_speed', system.config['scummvm_gamepad_cursor_speed'])
+        else:
+            coreSettings.save('scummvm_gamepad_cursor_speed', '"1.0"')
+        # Speed Hack (safe)
+        if system.isOptSet('scummvm_speed_hack'):
+            coreSettings.save('scummvm_speed_hack', system.config['scummvm_speed_hack'])
+        else:
+            coreSettings.save('scummvm_speed_hack', '"enabled"')
 
     # Sega Dreamcast / Atomiswave / Naomi
     if (system.config['core'] == 'flycast'):
