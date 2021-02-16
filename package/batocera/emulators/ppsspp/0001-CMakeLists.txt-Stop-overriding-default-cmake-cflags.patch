@@ -1,0 +1,35 @@
+From aea2cac370ea279f1dc90d725f81fb74b5d6db05 Mon Sep 17 00:00:00 2001
+From: Gleb Mazovetskiy <glex.spb@gmail.com>
+Date: Thu, 28 Jan 2021 23:55:23 +0000
+Subject: [PATCH] CMakeLists.txt: Stop overriding default cmake cflags
+
+There doesn't seem to be a specific reason for PPSSPP to override
+default c(xx)flags, making it difficult for user / build environment
+to override them.
+---
+ CMakeLists.txt | 9 +--------
+ 1 file changed, 1 insertion(+), 8 deletions(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 8c15dcb9b..8f1742c95 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -279,14 +279,7 @@ if(NOT MSVC)
+ 		add_definitions(-DUSE_ADDRESS_SANITIZER)
+ 	endif()
+ 
+-	set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g -D_DEBUG")
+-	set(CMAKE_CXX_FLAGS_MINSIZEREL "${CMAKE_CXX_FLAGS_MINSIZEREL} -Os -D_NDEBUG")
+-	set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O2 -D_NDEBUG")
+-	set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} -O2 -g -D_NDEBUG")
+-	set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -g -D_DEBUG")
+-	set(CMAKE_C_FLAGS_MINSIZEREL "${CMAKE_C_FLAGS_MINSIZEREL} -Os -D_NDEBUG")
+-	set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -O2 -D_NDEBUG")
+-	set(CMAKE_C_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_RELWITHDEBINFO} -O2 -g -D_NDEBUG")
++	add_compile_definitions($<IF:$<CONFIG:Debug>,_DEBUG,_NDEBUG>)
+ 	#TODO: Remove this and include the file properly everywhere it makes sense
+ 	# First step is too use the macros everywhere
+ 	# Second step is to remove the compatibility defines
+-- 
+2.27.0
+
