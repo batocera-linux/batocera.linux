@@ -31,13 +31,13 @@ class MugenGenerator(Generator):
         if not settings.has_section("Video"):
             settings.add_section("Video")
         settings.set("Video", "FullScreen", "1")
-        #settings.set("Video", "Width",  gameResolution["width"])
-        #settings.set("Video", "Height", gameResolution["height"])
+        settings.set("Video", "Width",  gameResolution["width"])
+        settings.set("Video", "Height", gameResolution["height"])
 
         if not settings.has_section("Config"):
             settings.add_section("Config")
-        #settings.set("Config", "GameWidth",  gameResolution["width"])
-        #settings.set("Config", "GameHeight", gameResolution["height"])
+        settings.set("Config", "GameWidth",  gameResolution["width"])
+        settings.set("Config", "GameHeight", gameResolution["height"])
         settings.set("Config", "Language", "en")
 
         # Save config
