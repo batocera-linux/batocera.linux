@@ -3,12 +3,6 @@ default:
     video_threaded: true
     videomode:      CEA 4 HDMI
 
-snes:
-  emulator: libretro
-  core:     snes9x_next
-n64:
-  options:
-    videomode: DMT 4 HDMI
 amiga500:
   emulator: amiberry
   core:     A500
@@ -24,3 +18,9 @@ mastersystem:
 megadrive:
   emulator: libretro
   core:     picodrive
+n64:
+  options:
+    videomode: DMT 4 HDMI
+snes:
+  emulator: libretro
+  core:     snes9x_next
