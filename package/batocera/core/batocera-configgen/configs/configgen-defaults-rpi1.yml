@@ -4,15 +4,6 @@ default:
     video_threaded: true
     smooth:         false
     
-snes:
-  emulator: libretro
-  core:     pocketsnes
-gba:
-  emulator: libretro
-  core:     gpsp
-mame:
-  emulator: libretro
-  core:     imame4all
 amiga500:
   emulator: amiberry
   core:     A500
@@ -22,12 +13,21 @@ amiga1200:
 amigacd32:
   emulator: amiberry
   core:     CD32
+dos:
+  emulator: dosbox
+  core:     dosbox
+gba:
+  emulator: libretro
+  core:     gpsp
+mame:
+  emulator: libretro
+  core:     imame4all
 mastersystem:
   emulator: libretro
   core:     picodrive
 megadrive:
   emulator: libretro
   core:     picodrive
-dos:
-  emulator: dosbox
-  core: dosbox
+snes:
+  emulator: libretro
+  core:     pocketsnes

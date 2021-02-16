@@ -11,7 +11,7 @@ default:
 
 n64:
   emulator: mupen64plus
-  core: glide64mk2
+  core:     glide64mk2
   options:
     mupen64plus.Video-Glide64mk2.aspect: 2
     mupen64plus.Video-General.Rotate: 0 # for people upgrading
@@ -19,12 +19,4 @@ psp:
   options:
     frameskip: true
     ppsspp.General.InternalScreenRotation: 0 # for people upgrading
-amiga500:
-  emulator: amiberry
-  core:     A500
-amiga1200:
-  emulator: amiberry
-  core:     A1200
-amigacd32:
-  emulator: amiberry
-  core:     CD32
+
