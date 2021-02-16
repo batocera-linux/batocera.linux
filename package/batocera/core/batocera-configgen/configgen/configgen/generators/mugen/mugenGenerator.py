@@ -5,16 +5,27 @@ import Command
 import os
 import controllersConfig
 import ConfigParser
+import re
 
 class MugenGenerator(Generator):
+
+    @staticmethod
+    def cleanMugenCfg(path):
+        with open(path, 'r') as f:
+            contents = f.read()
+
+        contents = re.sub(r'^[ ]*;', ';', contents, 0, re.MULTILINE)
+        with open(path, 'w') as f:
+            f.write(contents)
 
     def generate(self, system, rom, playersControllers, gameResolution):
 
         settings = ConfigParser.ConfigParser()
         # To prevent ConfigParser from converting to lower case
         settings.optionxform = str
-        settings_path = rom + "/mugen/mugen.cfg"
+        settings_path = rom + "/data/mugen.cfg"
         if os.path.exists(settings_path):
+            MugenGenerator.cleanMugenCfg(settings_path)
             settings.read(settings_path)
 
         if not settings.has_section("Video"):
