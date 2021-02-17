@@ -1,0 +1,13 @@
+--- a/crypto/aegis128-neon-inner.c	2021-01-21 09:00:07.571840102 +0100
++++ b/crypto/aegis128-neon-inner.c	2021-01-21 09:00:52.938505078 +0100
+@@ -148,8 +148,8 @@
+ 		kiv,
+ 		vld1q_u8(const1),
+ 		vld1q_u8(const0),
+-		k ^ vld1q_u8(const0),
+-		k ^ vld1q_u8(const1),
++		(uint8x16_t) (k ^ vld1q_u8(const0)),
++		(uint8x16_t) (k ^ vld1q_u8(const1)),
+ 	}};
+ 	int i;
+ 
