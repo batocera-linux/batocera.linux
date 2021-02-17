@@ -232,6 +232,7 @@ config BR2_PACKAGE_BATOCERA_DEBUG
     select BR2_PACKAGE_STRACE           
     select BR2_PACKAGE_GDB              
     select BR2_PACKAGE_GDB_DEBUGGER     
+    select BR2_PACKAGE_LINUX_TOOLS_PERF
     select BR2_PACKAGE_VULKAN_SAMPLES  if BR2_PACKAGE_BATOCERA_VULKAN
 
     help
