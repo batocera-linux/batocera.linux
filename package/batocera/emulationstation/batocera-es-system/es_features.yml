@@ -2661,6 +2661,12 @@ rpcs3:
             choices:
                 "OpenGL":   OpenGL
                 "Vulkan":   Vulkan
+        ratio:
+            prompt:      ASPECT RATIO
+            description: Choose your ratio
+            choices:
+                "4/3":   4:3
+                "16/9":   16:9
 
 scummvm:
   features: [ratio, padtokeyboard]
