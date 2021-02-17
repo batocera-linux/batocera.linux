@@ -436,6 +436,7 @@ config BR2_PACKAGE_BATOCERA_HOMEBREW_SYSTEMS
 
 		# RPG engine : Solarus
 		select BR2_PACKAGE_LUAJIT if !BR2_aarch64 # for performance
+		select BR2_PACKAGE_LUA    if  BR2_aarch64
 		select BR2_PACKAGE_SOLARUS_ENGINE	  # engine itself
 
 		# RPG engine : EasyRPG / RPG MAker
