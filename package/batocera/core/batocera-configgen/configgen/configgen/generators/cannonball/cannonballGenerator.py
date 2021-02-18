@@ -53,7 +53,7 @@ class CannonballGenerator(Generator):
         cannonballControllers.generateControllerConfig(config, xml_root, playersControllers)
 
         # save the config file
-        cannonballXml = open(configFile, "w")
+        #cannonballXml = open(configFile, "w")
         # TODO: python 3 - workawround to encode files in utf-8
         cannonballXml = codecs.open(configFile, "w", "utf-8")
         dom_string = os.linesep.join([s for s in config.toprettyxml().splitlines() if s.strip()]) # remove ugly empty lines while minicom adds them...

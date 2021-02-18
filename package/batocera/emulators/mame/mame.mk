@@ -195,4 +195,11 @@ define MAME_INSTALL_TARGET_CMDS
 	#rm -Rf $(TARGET_DIR)/usr/bin/mame/hash/snes.xml
 endef
 
+define MAME_EVMAPY
+	mkdir -p $(TARGET_DIR)/usr/share/evmapy
+	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/mame/mame.mame.keys $(TARGET_DIR)/usr/share/evmapy
+endef
+
+MAME_POST_INSTALL_TARGET_HOOKS += MAME_EVMAPY
+
 $(eval $(generic-package))
