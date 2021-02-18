@@ -141,7 +141,17 @@ def generateCoreSettings(coreSettings, system, rom):
         if system.isOptSet('puae_model'):
             coreSettings.save('puae_model', system.config['puae_model'])
         else:
-            coreSettings.save('puae_model', '"auto"')
+            if system.name == 'amiga500':
+                coreSettings.save('puae_model', '"A500"')
+            elif system.name == 'amiga1200':
+                coreSettings.save('puae_model', '"A1200"')
+            elif system.name == 'amigacd32':
+                coreSettings.save('puae_model', '"CD32FR"')
+            elif (system.name == 'amigacdtv'):
+                coreSettings.save('puae_model', '"CDTV"')
+            else:
+                coreSettings.save('puae_model', '"auto"')
+
         # CPU Compatibility
         if system.isOptSet('cpu_compatibility'):
             coreSettings.save('puae_cpu_compatibility', system.config['cpu_compatibility'])
