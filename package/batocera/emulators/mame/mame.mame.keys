@@ -1,0 +1,66 @@
+{
+    "actions_player1": [
+	{
+            "trigger": ["hotkey", "start"],
+            "type": "key",
+            "target": [ "KEY_ESC" ]
+	},
+	{
+            "trigger": ["hotkey", "b"],
+            "type": "key",
+            "target": [ "KEY_TAB" ]
+	},
+	{
+            "trigger": ["select"],
+            "type": "key",
+            "target": [ "KEY_5" ]
+	},
+        {
+            "trigger": ["start"],
+            "type": "key",
+            "target": [ "KEY_1" ]
+        },
+	{
+            "trigger": ["hotkey", "x"],
+            "type": "key",
+            "target": [ "KEY_F7" ]
+	},
+	{
+            "trigger": ["hotkey", "y"],
+            "type": "key",
+            "target": [ "KEY_LEFTSHIFT", "KEY_F7" ]
+	},
+	{
+            "trigger": ["hotkey", "pageup"],
+            "type": "key",
+            "target": [ "KEY_F12" ]
+	},
+	{
+            "trigger": ["hotkey", "right"],
+            "type": "key",
+            "target": [ "KEY_PAGEDOWN" ]
+	}
+
+    ],
+    "actions_player2": [
+        {
+            "trigger": ["start"],
+            "type": "key",
+            "target": [ "KEY_2" ]
+        }
+    ],
+    "actions_player3": [
+        {
+            "trigger": ["start"],
+            "type": "key",
+            "target": [ "KEY_3" ]
+        }
+    ],
+    "actions_player4": [
+        {
+            "trigger": ["start"],
+            "type": "key",
+            "target": [ "KEY_4" ]
+        }
+    ]
+}
