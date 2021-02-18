@@ -27,8 +27,7 @@ class DuckstationGenerator(Generator):
         settings.set("Main", "ConfirmPowerOff", "false")
 
         # controller backend
-        if system.isOptSet('duckstationControllerBackend') and system.getOptString('duckstationControllerBackend')!='auto':
-          settings.set("Main","ControllerBackend", system.getOptString('duckstationControllerBackend'))
+        settings.set("Main","ControllerBackend", "SDL")
 
         # bios
         if not settings.has_section("BIOS"):
