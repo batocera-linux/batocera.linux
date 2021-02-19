@@ -25,12 +25,32 @@
 	* add: Pi 400 support
 	* add: Wine Proton (For more compatibility)
 	* add: MF (For Wine more games compatibility)
-	* add: New RetroAchievements screen in EmulationStation
-	* add: Option to scrape game maps from screenscraper
-	* add: New Arcade scraper (ArcadeDB)
 	* add: New systems supported by theBezelProject
 	* add: Cymraeg language (cy_GB)
 	* add: pcsx2 (ps2) up to 8 players
+	* es: Rewritten RetroAchievements :
+	  - Rewritten user RetroAchievements screen
+	  - Launch games from RetroAchievements screen
+	  - New per game RetroAchievements screen
+	  - Add RetroAchievements auto collection
+	  - Add RetroAchievements filter ( for searches & custom collections )
+	  - Add RetroAchievements icon in gamelists
+	  - Full indexation of games hashes	  
+	* es: Add SaveState manager for libretro cores supporting save states.
+	  - Add SHOW SAVE SNAPSHOTS to AUTO SAVE/LOAD option : This value allows to always open the savestate manager before launching a game
+	* es: Scrapers : 
+	  - Add ArcadeDB scraper
+	  - Screenscaper : Add "map" & "box background" option 
+	  - TheGamesDB scraper : Add scrap of screenshots, fanarts, wheels, boxes backgrounds & titleshots
+	  - Manual scraping : Show results from all available scrapers
+	* es: ImageViewer : Add "zoomable" mode for pages & maps
+	* es: ImageViewer : Add support for Cbz format + Add preview of Cbz files in imageviewer gamelists.
+	* es: ImageViewer : Add "Library" system. This systems is designed to contain cbz ( or pdf ) files of magazines & books.
+	* es: Add "Vertical Arcade" auto-collection + Vertical game filter
+	* es: Add a notification when a new controller is connected / disconnected
+	* es: Load custom additionnal/replacement config files from es_systems_*.cfg files
+	* es: Rewritten md5 / crc calculations for zip files ( using internal zip library )
+	* es: OpenGLES 2.0 support ( for boards supporting it )
 	* bump: many libretro cores
 	* bump: FAudio (Wine) to 21.01
 	* bump: Dosbox-X to 0.83.9
