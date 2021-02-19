@@ -351,19 +351,28 @@ def generateCoreSettings(coreSettings, system, rom):
     if (system.config['core'] == 'dosbox_pure'):
         # CPU Type
         if system.isOptSet('pure_cpu_type'):
-            coreSettings.save('dosbox_pure_cpu_type', system.config['pure_cpu_type'])
+            if system.config['pure_cpu_type'] == "automatic":
+                coreSettings.save('dosbox_pure_cpu_type', '"auto"')
+            else:
+                coreSettings.save('dosbox_pure_cpu_type', system.config['pure_cpu_type'])
         else:
-            coreSettings.save('dosbox_pure_cpu_type', '"auto"')
+            coreSettings.save('dosbox_pure_cpu_type', '')
         # CPU Core
         if system.isOptSet('pure_cpu_core'):
-            coreSettings.save('dosbox_pure_cpu_core', system.config['pure_cpu_core'])
+            if system.config['pure_cpu_core'] == "automatic":
+                coreSettings.save('dosbox_pure_cpu_core', '"auto"')
+            else:
+                coreSettings.save('dosbox_pure_cpu_core', system.config['pure_cpu_core'])
         else:
-            coreSettings.save('dosbox_pure_cpu_core', '"auto"')
+            coreSettings.save('dosbox_pure_cpu_core', '')
         # Emulated performance (CPU Cycles)
         if system.isOptSet('pure_cycles'):
-            coreSettings.save('dosbox_pure_cycles', system.config['pure_cycles'])
+            if system.config['pure_cycles'] == "automatic":
+                coreSettings.save('dosbox_pure_cycles', '"auto"')
+            else:
+                coreSettings.save('dosbox_pure_cycles', system.config['pure_cycles'])
         else:
-            coreSettings.save('dosbox_pure_cycles', '"auto"')
+            coreSettings.save('dosbox_pure_cycles', '')
         # Graphics Chip type
         if system.isOptSet('pure_machine'):
             coreSettings.save('dosbox_pure_machine', system.config['pure_machine'])
@@ -798,9 +807,12 @@ def generateCoreSettings(coreSettings, system, rom):
             coreSettings.save('nestopia_overclock', '"1x"')
         # 4 Player Adapter
         if system.isOptSet('nestopia_select_adapter'):
-            coreSettings.save('nestopia_select_adapter', system.config['nestopia_select_adapter'])
+            if system.config['nestopia_select_adapter'] == "autodetect":
+                coreSettings.save('nestopia_select_adapter', '"auto"')
+            else:
+                coreSettings.save('nestopia_select_adapter', system.config['nestopia_select_adapter'])
         else:
-            coreSettings.save('nestopia_select_adapter', '"auto"')
+            coreSettings.save('nestopia_select_adapter', '')
 
     if (system.config['core'] == 'fceumm'):
         # Reduce Sprite Flickering

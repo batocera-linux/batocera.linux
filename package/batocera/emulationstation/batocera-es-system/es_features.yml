@@ -249,7 +249,7 @@ libretro:
                 prompt:      CPU TYPE
                 description: Select the fine CPU type for your game
                 choices:
-                    "Auto (compatible by game)": auto
+                    "Auto (compatible by game)": automatic
                     "386":                       386
                     "386 (slow)":                386_slow
                     "386 (prefetch)":            386_prefetch
@@ -259,7 +259,7 @@ libretro:
                 prompt:      CPU CORE METHOD
                 description: Choose an accurate or fastest method
                 choices:
-                    "Auto (optimized)":                             auto
+                    "Auto (optimized)":                             automatic
                     "Dynamic (fast)":                               dynamic
                     "Normal (interpreter)":                         normal
                     "Simple (interpreter for old real-mode games)": simple
@@ -267,7 +267,7 @@ libretro:
                 prompt:      CPU EMULATED PERFORMANCE
                 description: Select CPU cycles by model. Use with caution
                 choices:
-                    "Automatic (detect cycles needed)": auto
+                    "Automatic (detect cycles needed)": automatic
                     "MAX (as many as possible)":        max
                     "8086/8088, 4.77MHz (315 cps)":     315
                     "286, 6MHz (1320 cps)":             1320
@@ -1298,7 +1298,7 @@ libretro:
                 prompt:      4 PLAYER ADAPTER
                 description: Manually select a 4 Player Adapter for some games
                 choices:
-                    "Autodetect":           auto
+                    "Autodetect":           autodetect
                     "ntsc":                 ntsc
                     "famicom":              famicom
     np2kai:
