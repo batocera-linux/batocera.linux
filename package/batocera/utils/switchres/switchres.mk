@@ -3,11 +3,11 @@
 # SwitchRes
 #
 ################################################################################
-
-SWITCHRES_VERSION = 904763355437612644697c6a9e91eb32ef383463
+# Version: Commits from Feb 20th, 2021
+SWITCHRES_VERSION = 85354149f8c175d09fa0b96b319e3e5d7da3853d
 SWITCHRES_SITE = $(call github,antonioginer,switchres,$(SWITCHRES_VERSION))
 
-SWITCHRES_DEPENDENCIES = libdrm
+SWITCHRES_DEPENDENCIES = libdrm xserver_xorg-server
 SWITCHRES_INSTALL_STAGING = YES
 
 define SWITCHRES_BUILD_CMDS
