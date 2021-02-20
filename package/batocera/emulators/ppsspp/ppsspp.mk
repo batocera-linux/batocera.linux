@@ -21,8 +21,10 @@ PPSSPP_TARGET_CFLAGS = $(TARGET_CFLAGS)
 
 ifeq ($(BR2_PACKAGE_QT5),y)
 PPSSPP_CONF_OPTS += -DUSING_QT_UI=ON
+PPSSPP_TARGET_BINARY = PPSSPPQt
 else
 PPSSPP_CONF_OPTS += -DUSING_QT_UI=OFF
+PPSSPP_TARGET_BINARY = PPSSPPSDL
 endif
 
 # make sure to select glvnd and depends on glew / glu because of X11 desktop GL
@@ -114,7 +116,7 @@ PPSSPP_PRE_CONFIGURE_HOOKS += PPSSPP_UPDATE_INCLUDES
 
 define PPSSPP_INSTALL_TARGET_CMDS
 	mkdir -p $(TARGET_DIR)/usr/bin
-	$(INSTALL) -D -m 0755 $(@D)/PPSSPPSDL $(TARGET_DIR)/usr/bin
+	$(INSTALL) -D -m 0755 $(@D)/$(PPSSPP_TARGET_BINARY) $(TARGET_DIR)/usr/bin/PPSSPP
 	mkdir -p $(TARGET_DIR)/usr/share/ppsspp
 	cp -R $(@D)/assets $(TARGET_DIR)/usr/share/ppsspp/PPSSPP
 endef
