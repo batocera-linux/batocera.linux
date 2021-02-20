@@ -4,10 +4,10 @@
 #
 ################################################################################
 
-PCSX2_AVX2_VERSION = 7187b883b07cf5d89ee63b22ed19dd907df5e83d
+PCSX2_AVX2_VERSION = c59f1bfea6a1efbc91daf9bb6c11b4ee3a7d69bd
 PCSX2_AVX2_SITE = $(call github,pcsx2,pcsx2,$(PCSX2_AVX2_VERSION))
 PCSX2_AVX2_LICENSE = GPLv2 GPLv3 LGPLv2.1 LGPLv3
-PCSX2_AVX2_DEPENDENCIES = xserver_xorg-server alsa-lib freetype zlib libpng wxwidgets libaio portaudio libsoundtouch sdl2 libpcap yaml-cpp libgtk3 libsamplerate
+PCSX2_AVX2_DEPENDENCIES = xserver_xorg-server alsa-lib freetype zlib libpng wxwidgets libaio portaudio libsoundtouch sdl2 libpcap yaml-cpp libgtk3 libsamplerate fmt
 
 PCSX2_AVX2_CONF_OPTS += -DCMAKE_BUILD_TYPE=Release
 PCSX2_AVX2_CONF_OPTS += -DXDG_STD=TRUE
