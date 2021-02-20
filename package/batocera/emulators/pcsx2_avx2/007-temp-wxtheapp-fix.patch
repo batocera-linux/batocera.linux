@@ -1,0 +1,23 @@
+From 2e8e06176c4b64fb700281f8a35f028284623afc Mon Sep 17 00:00:00 2001
+From: Romain TISSERAND <romain.tisserand@gmail.com>
+Date: Sat, 20 Feb 2021 13:08:40 +0100
+Subject: [PATCH] Fix Linux build not compiling afer commit
+ a37e62337dea943de65571baa88349dc50065622 Missing include leads to wxTheApp
+ macro not being defined and throw errors (GCC 10, Linux x86_64)
+
+---
+ common/include/PS2Eext.h | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/common/include/PS2Eext.h b/common/include/PS2Eext.h
+index 4f4bbbcc18..dfa854c1ea 100644
+--- a/common/include/PS2Eext.h
++++ b/common/include/PS2Eext.h
+@@ -37,6 +37,7 @@
+ 
+ #include <cstring>
+ #include <wx/msgdlg.h>
++#include <wx/app.h>
+ 
+ #define EXPORT_C_(type) extern "C" __attribute__((stdcall, externally_visible, visibility("default"))) type
+ 
