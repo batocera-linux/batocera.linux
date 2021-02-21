@@ -1681,14 +1681,12 @@ index 00000000000..b8615cf7e67
 +
 +  egl_ctx_data_t* m_egl;
 +};
-diff --git a/Source/Core/Common/WindowSystemInfo.h b/Source/Core/Common/WindowSystemInfo.h
-index 244a985cdfe..5bb9704a18d 100644
---- a/Source/Core/Common/WindowSystemInfo.h
-+++ b/Source/Core/Common/WindowSystemInfo.h
-@@ -13,6 +13,7 @@ enum class WindowSystemType
-   X11,
+--- a/Source/Core/Common/WindowSystemInfo.h	2021-02-21 20:51:42.393957185 +0100
++++ b/Source/Core/Common/WindowSystemInfo.h	2021-02-21 20:51:50.440623503 +0100
+@@ -14,6 +14,7 @@
    Wayland,
    FBDev,
+   Haiku,
 +  DRM
  };
  
