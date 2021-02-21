@@ -301,6 +301,7 @@ menu "Utils"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/utils/evmapy-system-config/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/utils/l3afpad/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/utils/switchres/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/utils/flatpak/Config.in"
 endmenu
 
 menu "Libraries"
@@ -317,6 +318,7 @@ menu "Libraries"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/catch2/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/libxmp/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/wildmidi/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/appstream-glib/Config.in"
 endmenu
 
 endmenu
