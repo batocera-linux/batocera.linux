@@ -50,6 +50,7 @@ define DUCKSTATION_INSTALL_TARGET_CMDS
 	$(INSTALL) -D $(@D)/buildroot-build/bin/$(DUCKSTATION_BINARY) \
 		$(TARGET_DIR)/usr/bin/duckstation
 	cp -R $(@D)/buildroot-build/bin/database      $(TARGET_DIR)/usr/share/duckstation/
+	rm -f $(TARGET_DIR)/usr/share/duckstation/database/gamecontrollerdb.txt
 	cp -R $(@D)/buildroot-build/bin/inputprofiles $(TARGET_DIR)/usr/share/duckstation/
 	cp -R $(@D)/buildroot-build/bin/resources     $(TARGET_DIR)/usr/share/duckstation/
 	cp -R $(@D)/buildroot-build/bin/shaders       $(TARGET_DIR)/usr/share/duckstation/
