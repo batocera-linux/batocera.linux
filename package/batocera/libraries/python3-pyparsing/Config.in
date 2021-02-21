@@ -1,0 +1,10 @@
+config BR2_PACKAGE_PYTHON3_PYPARSING
+	bool "python3-pyparsing"
+	help
+	  The pyparsing module is an alternative approach to creating
+	  and executing simple grammars, vs. the traditional lex/yacc
+	  approach, or the use of regular expressions. The pyparsing
+	  module provides a library of classes that client code uses
+	  to construct the grammar directly in Python code.
+
+	  https://github.com/pyparsing/pyparsing/

@@ -1,0 +1,9 @@
+config BR2_PACKAGE_APPSTREAM_GLIB
+	bool "appstream-glib"
+	select BR2_PACKAGE_LIBGTK3
+	select BR2_PACKAGE_RPM
+	select BR2_PACKAGE_LIBYAML
+	select BR2_PACKAGE_JSON_GLIB
+
+	help 
+	appstream-glib library
