@@ -20,16 +20,16 @@ libretro:
                 prompt:      COLORISATION
                 description: Enable the Chroma 81 interface
                 choices:
-                    "Automatic": automatic
-                    "Off":       disabled
-                    "On":        enabled
+                    "Autodetect":  automatic
+                    "Off":         disabled
+                    "On (forced)": enabled
             81_highres:
                 prompt:      HIGH RESOLUTION
                 description: Enables WRX high resolution module
                 choices:
-                    "Automatic": automatic
-                    "Off":       none
-                    "On":        WRX
+                    "Autodetect":  automatic
+                    "Off":         none
+                    "On (forced)": WRX
     atari800:
       features: [latency_reduction, padtokeyboard]
       systems:
@@ -242,6 +242,20 @@ libretro:
                     "rgb3x":       rgb3x
                     "scan2x":      scan2x
                     "scan3x":      scan3x
+            controller1_dosbox:
+                prompt:      CONTROLLER 1 TYPE
+                description: Select Keyboard, Joystick or Gamepad mode
+                choices:
+                    "Gamepad (D-pad, 2 Buttons)":   1
+                    "Keyboard + Mouse":             3
+                    "Joystick (2 Axes, 2 Buttons)": 517
+            controller2_dosbox:
+                prompt:      CONTROLLER 2 TYPE
+                description: Select Keyboard, Joystick or Gamepad mode
+                choices:
+                    "Gamepad (D-pad, 2 Buttons)":   1
+                    "Keyboard + Mouse":             3
+                    "Joystick (2 Axes, 2 Buttons)": 517
     dosbox_pure:
       features: [latency_reduction, padtokeyboard]
       cfeatures:
@@ -249,17 +263,17 @@ libretro:
                 prompt:      CPU TYPE
                 description: Select the fine CPU type for your game
                 choices:
-                    "Auto (compatible by game)": auto
-                    "386":                       386
-                    "386 (slow)":                386_slow
-                    "386 (prefetch)":            386_prefetch
-                    "486 (slow)":                486_slow
-                    "Pentium (slow)":            pentium_slow
+                    "Autodetect (Compatible)": automatic
+                    "386":                     386
+                    "386 (slow)":              386_slow
+                    "386 (prefetch)":          386_prefetch
+                    "486 (slow)":              486_slow
+                    "Pentium (slow)":          pentium_slow
             pure_cpu_core:
                 prompt:      CPU CORE METHOD
                 description: Choose an accurate or fastest method
                 choices:
-                    "Auto (optimized)":                             auto
+                    "Optimized (auto)":                             automatic
                     "Dynamic (fast)":                               dynamic
                     "Normal (interpreter)":                         normal
                     "Simple (interpreter for old real-mode games)": simple
@@ -267,7 +281,7 @@ libretro:
                 prompt:      CPU EMULATED PERFORMANCE
                 description: Select CPU cycles by model. Use with caution
                 choices:
-                    "Automatic (detect cycles needed)": auto
+                    "Autodetect (Compatible)":          automatic
                     "MAX (as many as possible)":        max
                     "8086/8088, 4.77MHz (315 cps)":     315
                     "286, 6MHz (1320 cps)":             1320
@@ -340,7 +354,7 @@ libretro:
                     "On with rewind support": rewind
                     "Off":                    disabled
             pure_auto_mapping:
-                prompt:      AUTOMATIC GAMEPAD MAPPING
+                prompt:      GAMEPAD AUTOMATIC MAPPING
                 description: Apply a gamepad mapping scheme for selected game
                 choices:
                     "On":                             "true"
@@ -365,6 +379,32 @@ libretro:
                 choices:
                     "On":                  "true"
                     "Off":                 "false"
+            controller1_dosbox_pure:
+                prompt:      CONTROLLER 1 TYPE
+                description: Select Keyboard, Joysticks or Gravis GamePad mode
+                choices:
+                    "Gravis GamePad (D-pad, 4 Buttons)":                    1
+                    "Generic Keyboard Binding":                             257
+                    "Keyboard + Mouse (Left Analog)":                       513
+                    "Keyboard + Mouse (Right Analog)":                      769
+                    "First Joystick (2 Axes, 2 Buttons)":                   1281
+                    # "Second Joystick (2 Axes, 2 Buttons)":                  1537
+                    "ThrustMaster Flight Stick (3 Axes, 4 Buttons, 1 Hat)": 1793
+                    "Both DOS Joysticks (4 Axes, 4 Buttons)":               2049
+                    "Custom Keyboard Bindings (best for Batocera Pad2Key)": 3
+            controller2_dosbox_pure:
+                prompt:      CONTROLLER 2 TYPE
+                description: Select Keyboard, Joysticks or Gravis GamePad mode
+                choices:
+                    "Gravis GamePad (D-pad, 4 Buttons)":                    1
+                    "Generic Keyboard Binding":                             257
+                    "Keyboard + Mouse (Left Analog)":                       513
+                    "Keyboard + Mouse (Right Analog)":                      769
+                    # "First Joystick (2 Axes, 2 Buttons)":                   1281
+                    "Second Joystick (2 Axes, 2 Buttons)":                  1537
+                    "ThrustMaster Flight Stick (3 Axes, 4 Buttons, 1 Hat)": 1793
+                    "Both DOS Joysticks (4 Axes, 4 Buttons)":               2049
+                    "Custom Keyboard Bindings (best for Batocera Pad2Key)": 3
     duckstation:
       features: [autosave, latency_reduction, cheevos]
       cfeatures:
@@ -763,9 +803,9 @@ libretro:
                         prompt:      FM CHIP (YM2413)
                         description: Enhanced sound output support for compatible games
                         choices:
-                            "Automatic":  automatic
-                            "Off":        disabled
-                            "On":         enabled
+                            "Autodetect":  automatic
+                            "Off":         disabled
+                            "On (forced)": enabled
                     gun_cursor_ms:
                         prompt:      SHOW LIGHTGUN CROSSHAIR
                         description: Shows crosshairs for Light Phaser device
@@ -1298,7 +1338,7 @@ libretro:
                 prompt:      4 PLAYER ADAPTER
                 description: Manually select a 4 Player Adapter for some games
                 choices:
-                    "Autodetect":           auto
+                    "Autodetect":           automatic
                     "ntsc":                 ntsc
                     "famicom":              famicom
     np2kai:
@@ -1658,7 +1698,7 @@ libretro:
                 prompt:      AMIGA MODEL
                 description: Force a specific model and prevent tags detection
                 choices:
-                    "Automatic":                       auto
+                    "Autodetect (by game name tag)":   automatic
                     "A500 (512KB Chip + 512KB Slow)":  A500
                     "A500+ (1MB Chip)":                A500PLUS
                     "A600 (2MB Chip + 8MB Fast)":      A600
@@ -2065,7 +2105,7 @@ libretro:
                 prompt:      FRAMERATE
                 description: Modify framerate
                 choices:
-                    "Automatic":  Automatic
+                    "Automatic":  automatic
                     "10fps":      10fps
                     "15fps":      15fps
                     "20fps":      20fps
@@ -2446,7 +2486,7 @@ dolphin:
                 "On":  1
         enable_fastdisc:
             prompt:      FAST DISK SPEED
-            description: Speed up disc speed to remoe any loading
+            description: Speed up disc speed to remove any loading
             choices:
                 "Off": 0
                 "On":  1
@@ -2744,19 +2784,12 @@ mame:
             prompt:      BGFX BACKEND
             description: Choose your graphics API
             choices:
-                "Automatic":     auto
+                "Autodetect":    automatic
                 "OpenGL":        opengl
                 "OpenGLES":      gles
                 "Vulkan":        vulkan
-        rotation:
-            prompt:      TATE MODE
-            description: Rotating display to vertical mode rendering
-            choices:
-                "Disabled":      null
-                "Rotate 90":     autoror
-                "Rotate 270":    autorol
         bgfxshaders:
-            prompt:      VIDEO FILTER
+            prompt:      BGFX VIDEO FILTER
             description: Apply to achieve some kind of visual effect
             choices:
                 "None":          null
@@ -2771,8 +2804,15 @@ mame:
             prompt:      CRT SWITCHRES
             description: CRT monitor SwitchRes support
             choices:
-                "Off":         false
-                "On":          true
+                "Off":           false
+                "On":            true
+        rotation:
+            prompt:      TATE MODE
+            description: Rotating display to vertical mode rendering
+            choices:
+                "Disabled":      null
+                "Rotate 90":     autoror
+                "Rotate 270":    autorol
 
 wine:
   features: [padtokeyboard]
