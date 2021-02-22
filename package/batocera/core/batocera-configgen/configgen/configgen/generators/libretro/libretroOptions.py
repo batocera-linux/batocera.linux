@@ -138,7 +138,7 @@ def generateCoreSettings(coreSettings, system, rom):
         # Show Video Options
         coreSettings.save('puae_video_options_display ', '"enabled"')
         # Amiga Model
-        if system.isOptSet('puae_model'):
+        if system.isOptSet('puae_model') and system.config['puae_model'] != 'automatic':
             coreSettings.save('puae_model', system.config['puae_model'])
         else:
             if system.name == 'amiga500':
@@ -181,7 +181,7 @@ def generateCoreSettings(coreSettings, system, rom):
         if system.isOptSet('video_resolution'):
             coreSettings.save('puae_video_resolution', system.config['video_resolution'])
         else:
-            coreSettings.save('puae_video_resolution', '"auto"')
+            coreSettings.save('puae_video_resolution', '"hires"')
         # Frameskip
         if system.isOptSet('gfx_framerate'):
             coreSettings.save('puae_gfx_framerate', system.config['gfx_framerate'])
@@ -203,7 +203,7 @@ def generateCoreSettings(coreSettings, system, rom):
             if system.isOptSet('zoom_mode'):
                 coreSettings.save('puae_zoom_mode', system.config['zoom_mode'])
             else:
-                coreSettings.save('puae_zoom_mode', '"auto"')
+                coreSettings.save('puae_zoom_mode', '"none"')
             # 2P Gamepad Mapping (Keyrah)
             if system.isOptSet('keyrah_mapping'):
                 coreSettings.save('puae_keyrah_keypad_mappings', system.config['keyrah_mapping'])
@@ -350,17 +350,17 @@ def generateCoreSettings(coreSettings, system, rom):
 
     if (system.config['core'] == 'dosbox_pure'):
         # CPU Type
-        if system.isOptSet('pure_cpu_type'):
+        if system.isOptSet('pure_cpu_type') and system.config['pure_cpu_type'] != "automatic":
             coreSettings.save('dosbox_pure_cpu_type', system.config['pure_cpu_type'])
         else:
             coreSettings.save('dosbox_pure_cpu_type', '"auto"')
         # CPU Core
-        if system.isOptSet('pure_cpu_core'):
+        if system.isOptSet('pure_cpu_core') and system.config['pure_cpu_core'] != "automatic":
             coreSettings.save('dosbox_pure_cpu_core', system.config['pure_cpu_core'])
         else:
             coreSettings.save('dosbox_pure_cpu_core', '"auto"')
         # Emulated performance (CPU Cycles)
-        if system.isOptSet('pure_cycles'):
+        if system.isOptSet('pure_cycles') and system.config['pure_cycles'] != "automatic":
             coreSettings.save('dosbox_pure_cycles', system.config['pure_cycles'])
         else:
             coreSettings.save('dosbox_pure_cycles', '"auto"')
@@ -797,7 +797,7 @@ def generateCoreSettings(coreSettings, system, rom):
         else:
             coreSettings.save('nestopia_overclock', '"1x"')
         # 4 Player Adapter
-        if system.isOptSet('nestopia_select_adapter'):
+        if system.isOptSet('nestopia_select_adapter') and system.config['nestopia_select_adapter'] != "automatic":
             coreSettings.save('nestopia_select_adapter', system.config['nestopia_select_adapter'])
         else:
             coreSettings.save('nestopia_select_adapter', '"auto"')
@@ -1046,7 +1046,7 @@ def generateCoreSettings(coreSettings, system, rom):
 
         # system.name == 'mastersystem'
         # Master System FM (YM2413)
-        if system.isOptSet('ym2413'):
+        if system.isOptSet('ym2413') and system.config['ym2413'] != "automatic":
             coreSettings.save('genesis_plus_gx_ym2413', system.config['ym2413'])
         else:
             coreSettings.save('genesis_plus_gx_ym2413', '"auto"')
@@ -1149,12 +1149,18 @@ def generateCoreSettings(coreSettings, system, rom):
         coreSettings.save('81_sound',     '"Zon X-81"')
         # Colorisation (Chroma 81)
         if system.isOptSet('81_chroma_81'):
-            coreSettings.save('81_chroma_81', system.config['81_chroma_81'])
+            if system.config['81_chroma_81'] == "automatic":
+                coreSettings.save('81_chroma_81', '"auto"')
+            else:
+                coreSettings.save('81_chroma_81', system.config['81_chroma_81'])
         else:
             coreSettings.save('81_chroma_81', '"enabled"')
         # High Resolution
         if system.isOptSet('81_highres'):
-            coreSettings.save('81_highres', system.config['81_highres'])
+            if system.config['81_highres'] == "automatic":
+                coreSettings.save('81_highres', '"auto"')
+            else:
+                coreSettings.save('81_highres', system.config['81_highres'])
         else:
             coreSettings.save('81_highres', '"WRX"')
 
@@ -1425,7 +1431,7 @@ def generateCoreSettings(coreSettings, system, rom):
         else:
             coreSettings.save('tyrquake_resolution', '"640x480"')
         # Frame rate
-        if system.isOptSet('tyrquake_framerate'):
+        if system.isOptSet('tyrquake_framerate') and system.config['tyrquake_framerate'] != "automatic":
             coreSettings.save('tyrquake_framerate', system.config['tyrquake_framerate'])
         else:
             coreSettings.save('tyrquake_framerate', '"Auto"')

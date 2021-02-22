@@ -201,6 +201,26 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
         else:
             retroarchConfig['input_libretro_device_p2'] = '769'
 
+    ## MS-DOS controller
+    if (system.config['core'] == 'dosbox'):                     # Dosbox
+        if system.isOptSet('controller1_dosbox'):
+            retroarchConfig['input_libretro_device_p1'] = system.config['controller1_dosbox']
+        else
+            retroarchConfig['input_libretro_device_p1'] = '1'
+        if system.isOptSet('controller2_dosbox'):
+            retroarchConfig['input_libretro_device_p2'] = system.config['controller2_dosbox']
+        else
+            retroarchConfig['input_libretro_device_p2'] = '1'
+    if (system.config['core'] == 'dosbox_pure'):               # Dosbox-Pure
+        if system.isOptSet('controller1_dosbox_pure'):
+            retroarchConfig['input_libretro_device_p1'] = system.config['controller1_dosbox_pure']
+        else
+            retroarchConfig['input_libretro_device_p1'] = '1'
+        if system.isOptSet('controller2_dosbox_pure'):
+            retroarchConfig['input_libretro_device_p2'] = system.config['controller2_dosbox_pure']
+        else
+            retroarchConfig['input_libretro_device_p2'] = '1'
+
 
     # Smooth option
     if system.isOptSet('smooth') and system.getOptBoolean('smooth') == True:
@@ -352,6 +372,12 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
         if system.config['netplay.mode'] == 'host':
             retroarchConfig['netplay_password'] = '"' + systemConfig.get("netplay.password", "") + '"'
             retroarchConfig['netplay_spectate_password'] = '"' + systemConfig.get("netplay.spectatepassword", "") + '"'
+
+        # Netplay hide the gameplay
+        if system.isOptSet('netplay_public_announce') and system.getOptBoolean('netplay_public_announce') == False:
+            retroarchConfig['netplay_public_announce'] = 'false'
+        else:
+            retroarchConfig['netplay_public_announce'] = 'true'
 
         # Enable or disable server spectator mode
         if system.isOptSet('netplay.spectator') and system.getOptBoolean('netplay.spectator') == True:
