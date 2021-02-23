@@ -1,0 +1,55 @@
+diff --git a/shell/linux/Makefile b/shell/linux/Makefile
+index 9bcc026b..43cb5e1a 100644
+--- a/shell/linux/Makefile
++++ b/shell/linux/Makefile
+@@ -208,6 +208,50 @@ else ifneq (,$(findstring pandora,$(platform)))
+     ASFLAGS += -march=armv7-a -mfpu=neon -mfloat-abi=softfp
+     CFLAGS += -D TARGET_PANDORA  -D WEIRD_SLOWNESS -fsingle-precision-constant
+ 
++# ODROID c2 aarch64
++else ifneq (,$(findstring odroidc2,$(platform)))
++    NOT_ARM := 1
++    ARM64_REC := 1
++    ISARM64 := 1
++    USE_GLES := 1
++    USE_SDL := 1
++    MFLAGS += -mcpu=cortex-a53 -mtune=cortex-a53
++    CFLAGS += -fno-builtin-sqrtf -fpermissive -DEGL_NO_X11 -DARM_HARDFP -fsingle-precision-constant
++    CXXFLAGS += -fexceptions
++
++# ODROID c4 aarch64
++else ifneq (,$(findstring odroidc4,$(platform)))
++    NOT_ARM := 1
++    ARM64_REC := 1
++    ISARM64 := 1
++    USE_GLES := 1
++    USE_SDL := 1
++    MFLAGS += -mcpu=cortex-a55 -mtune=cortex-a55
++    CFLAGS += -fno-builtin-sqrtf -fpermissive -DGLES3 -DEGL_NO_X11
++    CXXFLAGS += -fexceptions
++
++# ODROID n2 aarch64
++else ifneq (,$(findstring odroidn2,$(platform)))
++    NOT_ARM := 1
++    ARM64_REC := 1
++    ISARM64 := 1
++    USE_GLES := 1
++    USE_SDL := 1
++    CFLAGS += -fno-builtin-sqrtf -fpermissive -DGLES3 -DEGL_NO_X11
++    CXXFLAGS += -fexceptions
++
++# Raspberry Pi 4 aarch64 + mesa vulkan
++else ifneq (,$(findstring rpi4-mesa,$(platform)))
++    NOT_ARM := 1
++    ARM64_REC := 1
++    ISARM64 := 1
++    USE_GLES := 1
++    USE_SDL := 1
++    USE_VULKAN := 1
++    MFLAGS += -mcpu=cortex-a72 -mtune=cortex-a72
++    CFLAGS += -fno-builtin-sqrtf -fpermissive -DGLES3 -DEGL_NO_X11 
++    CXXFLAGS += -fexceptions
++
+ # ODROIDs
+ else ifneq (,$(findstring odroid,$(platform)))
+     MFLAGS += -marm -mfpu=neon -mfloat-abi=hard -funroll-loops
