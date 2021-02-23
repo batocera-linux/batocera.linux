@@ -6,7 +6,7 @@
 # Version.: Release 0.228
 MAME_VERSION = mame0228
 MAME_SITE = $(call github,mamedev,mame,$(MAME_VERSION))
-MAME_DEPENDENCIES = sdl2 zlib libpng fontconfig sqlite jpeg flac rapidjson
+MAME_DEPENDENCIES = sdl2 zlib libpng fontconfig sqlite jpeg flac rapidjson expat glm
 MAME_LICENSE = MAME
 
 MAME_CROSS_ARCH = unknown
@@ -58,16 +58,17 @@ define MAME_BUILD_CMDS
 	cd $(@D); \
 	PATH="$(HOST_DIR)/bin:$$PATH" \
 	SYSROOT="$(STAGING_DIR)" \
-	CFLAGS="--sysroot=$(STAGING_DIR) $(MAME_CFLAGS)"   \
+	CFLAGS="--sysroot=$(STAGING_DIR) $(MAME_CFLAGS) -fpch-preprocess"   \
+	CCACHE_SLOPPINESS="pch_defines,time_macros,include_file_mtime,include_file_ctime" \
 	LDFLAGS="--sysroot=$(STAGING_DIR)"  MPARAM="" \
 	PKG_CONFIG="$(HOST_DIR)/usr/bin/pkg-config --define-prefix" \
 	PKG_CONFIG_PATH="$(STAGING_DIR)/usr/lib/pkgconfig" \
 	$(MAKE) -j$(MAME_JOBS) TARGETOS=linux OSD=sdl \
 	TARGET=mame \
 	SUBTARGET=arcade \
-	OVERRIDE_CC="$(TARGET_CC)" \
-	OVERRIDE_CXX="$(TARGET_CXX)" \
-	OVERRIDE_LD="$(TARGET_LD)" \
+	OVERRIDE_CC="$(CCACHE) $(TARGET_CC)" \
+	OVERRIDE_CXX="$(CCACHE) $(TARGET_CXX)" \
+	OVERRIDE_LD="$(CCACHE) $(TARGET_LD)" \
 	OVERRIDE_AR="$(TARGET_AR)" \
 	OVERRIDE_STRIP="$(TARGET_STRIP)" \
 	CROSS_BUILD=1 \
@@ -79,12 +80,14 @@ define MAME_BUILD_CMDS
 	USE_SYSTEM_LIB_FLAC=1 \
 	USE_SYSTEM_LIB_SQLITE3=1 \
 	USE_SYSTEM_LIB_RAPIDJSON=1 \
+	USE_SYSTEM_LIB_EXPAT=1 \
+	USE_SYSTEM_LIB_GLM=1 \
 	OPENMP=1 \
 	SDL_INSTALL_ROOT="$(STAGING_DIR)/usr" USE_LIBSDL=1 \
 	USE_QTDEBUG=0 DEBUG=0 IGNORE_GIT=1 \
 	REGENIE=1 \
 	LDOPTS="-lasound -lfontconfig" \
-	VERBOSE=1 \
+	VERBOSE=0 \
 	SYMBOLS=0 \
 	STRIP_SYMBOLS=1 \
 	TOOLS=1
