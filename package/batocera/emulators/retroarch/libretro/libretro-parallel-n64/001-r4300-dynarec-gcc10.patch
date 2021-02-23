@@ -1,0 +1,12 @@
+--- a/mupen64plus-core/src/r4300/r4300.c	2021-02-23 21:39:03.724169589 +0100
++++ b/mupen64plus-core/src/r4300/r4300.c	2021-02-23 21:39:16.724169163 +0100
+@@ -50,8 +50,8 @@
+ unsigned int r4300emu = 0;
+ unsigned int count_per_op = COUNT_PER_OP_DEFAULT;
+ unsigned int llbit;
+-int stop;
+ #if NEW_DYNAREC < NEW_DYNAREC_ARM
++int stop;
+ int64_t reg[32], hi, lo;
+ uint32_t next_interrupt;
+ struct precomp_instr *PC;
