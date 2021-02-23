@@ -462,7 +462,7 @@ config BR2_PACKAGE_BATOCERA_SEGADC
 		#                                           !BR2_PACKAGE_BATOCERA_TARGET_VIM3
 
 		# Dreamcast / Naomi / Atomiswave emulation
-		select BR2_PACKAGE_FLYCAST              if BR2_PACKAGE_BATOCERA_TARGET_X86_64 || BR2_PACKAGE_BATOCERA_TARGET_ROCKCHIP_ANY
+		select BR2_PACKAGE_FLYCAST              if !BR2_PACKAGE_BATOCERA_TARGET_RPI_VCORE
 		select BR2_PACKAGE_LIBRETRO_FLYCAST           if !BR2_PACKAGE_BATOCERA_TARGET_RPI1    && \
 		                                                 !BR2_PACKAGE_BATOCERA_TARGET_RPI2    && \
 							 !BR2_PACKAGE_BATOCERA_TARGET_X86     && \
