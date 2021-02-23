@@ -76,38 +76,36 @@ class MameGenerator(Generator):
 		# BGFX backend
 		if system.isOptSet("bgfxbackend") and system.config["bgfxbackend"] == "opengl":
 			commandArray += [ "-bgfx_backend", "opengl" ]
-		if system.isOptSet("bgfxbackend") and system.config["bgfxbackend"] == "gles":
+		elif system.isOptSet("bgfxbackend") and system.config["bgfxbackend"] == "gles":
 			commandArray += [ "-bgfx_backend", "gles" ]
-		if system.isOptSet("bgfxbackend") and system.config["bgfxbackend"] == "vulkan":
+		elif system.isOptSet("bgfxbackend") and system.config["bgfxbackend"] == "vulkan":
 			commandArray += [ "-bgfx_backend", "vulkan" ]
+        else
+            commandArray += [ "-bgfx_backend", "auto" ]
 
 		# BGFX shaders effects
 		if system.isOptSet("bgfxshaders") and system.config["bgfxshaders"] == "crt-geom":
 			commandArray += [ "-bgfx_screen_chains", "crt-geom" ]
-		if system.isOptSet("bgfxshaders") and system.config["bgfxshaders"] == "crt-geom-deluxe":
+		elif system.isOptSet("bgfxshaders") and system.config["bgfxshaders"] == "crt-geom-deluxe":
 			commandArray += [ "-bgfx_screen_chains", "crt-geom-deluxe" ]
-		if system.isOptSet("bgfxshaders") and system.config["bgfxshaders"] == "eagle":
+		elif system.isOptSet("bgfxshaders") and system.config["bgfxshaders"] == "eagle":
 			commandArray += [ "-bgfx_screen_chains", "eagle" ]
-		if system.isOptSet("bgfxshaders") and system.config["bgfxshaders"] == "hlsl":
+		elif system.isOptSet("bgfxshaders") and system.config["bgfxshaders"] == "hlsl":
 			commandArray += [ "-bgfx_screen_chains", "hlsl" ]
-		if system.isOptSet("bgfxshaders") and system.config["bgfxshaders"] == "hq2x":
+		elif system.isOptSet("bgfxshaders") and system.config["bgfxshaders"] == "hq2x":
 			commandArray += [ "-bgfx_screen_chains", "hq2x" ]
-		if system.isOptSet("bgfxshaders") and system.config["bgfxshaders"] == "hq3x":
+		elif system.isOptSet("bgfxshaders") and system.config["bgfxshaders"] == "hq3x":
 			commandArray += [ "-bgfx_screen_chains", "hq3x" ]
-		if system.isOptSet("bgfxshaders") and system.config["bgfxshaders"] == "hq4x":
+		elif system.isOptSet("bgfxshaders") and system.config["bgfxshaders"] == "hq4x":
 			commandArray += [ "-bgfx_screen_chains", "hq4x" ]
+        else
+            commandArray += [ "-bgfx_screen_chains", "" ]
 
 	# Other video modes
-	if system.isOptSet("video") and system.config["video"] == "accel":
+	elif system.isOptSet("video") and system.config["video"] == "accel":
 		commandArray += ["-video", "accel" ]
-	if system.isOptSet("video") and system.config["video"] == "opengl":
+	else # if system.isOptSet("video") and system.config["video"] == "opengl":
 		commandArray += [ "-video", "opengl" ]
-
-	# Rotation / TATE options
-	if system.isOptSet("rotation") and system.config["rotation"] == "autoror":
-		commandArray += [ "-autoror" ]
-	if system.isOptSet("rotation") and system.config["rotation"] == "autorol":
-		commandArray += [ "-autorol" ]
 
 	# CRT / SwitchRes support
 	if system.isOptSet("switchres") and system.config["switchres"] == "true":
@@ -117,10 +115,18 @@ class MameGenerator(Generator):
 		commandArray += [ "-nomodeline_generation" ]
 		commandArray += [ "-nochangeres" ]
 
+	# Rotation / TATE options
+	if system.isOptSet("rotation") and system.config["rotation"] == "autoror":
+		commandArray += [ "-autoror" ]
+	elif system.isOptSet("rotation") and system.config["rotation"] == "autorol":
+		commandArray += [ "-autorol" ]
+    else
+        commandArray += [ "" ]
+
 	# Finally we pass game name
 	commandArray += [ romBasename ]
 
-        # config file
+        # Config file
         config = minidom.Document()
         configFile = "/userdata/system/configs/mame/default.cfg"
         if os.path.exists(configFile):
@@ -131,7 +137,7 @@ class MameGenerator(Generator):
 
         MameGenerator.generatePadsConfig(config, playersControllers)
 
-        # save the config file
+        # Save the config file
         #mameXml = open(configFile, "w")
         # TODO: python 3 - workawround to encode files in utf-8
         mameXml = codecs.open(configFile, "w", "utf-8")
