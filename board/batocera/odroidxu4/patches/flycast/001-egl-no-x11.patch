@@ -1,0 +1,13 @@
+diff --git a/shell/linux/Makefile b/shell/linux/Makefile
+index 9bcc026b..82d424b3 100644
+--- a/shell/linux/Makefile
++++ b/shell/linux/Makefile
+@@ -223,7 +223,7 @@ else ifneq (,$(findstring odroid,$(platform)))
+     ifneq (,$(findstring odroidxu3,$(platform)))
+         MFLAGS += -march=armv7ve -mcpu=cortex-a15 -mtune=cortex-a15.cortex-a7 -mfpu=neon-vfpv4 -mvectorize-with-neon-quad
+         ASFLAGS += -march=armv7ve
+-		CFLAGS += -DGLES3
++		CFLAGS += -DGLES3 -DEGL_NO_X11=1
+     # Other ODROIDs
+     else
+         MFLAGS += -march=armv7-a
