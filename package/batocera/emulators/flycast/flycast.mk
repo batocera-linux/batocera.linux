@@ -4,10 +4,10 @@
 #
 ################################################################################
 # Version.: Commits on Oct 10, 2020
-FLYCAST_VERSION = 7697d37ec69a7f00920955a5fc3e70bf246b2e22
+FLYCAST_VERSION = c6389de3b39bac7754d4d53604f1f46ad3bcbf97
 FLYCAST_SITE = $(call github,flyinghead,flycast,$(FLYCAST_VERSION))
 FLYCAST_LICENSE = GPLv2
-FLYCAST_DEPENDENCIES = sdl2 libpng
+FLYCAST_DEPENDENCIES = sdl2 libpng libzip
 
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86_64),y)
 	FLYCAST_PLATFORM = x64
