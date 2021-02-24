@@ -205,20 +205,20 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
     if (system.config['core'] == 'dosbox'):                     # Dosbox
         if system.isOptSet('controller1_dosbox'):
             retroarchConfig['input_libretro_device_p1'] = system.config['controller1_dosbox']
-        else
+        else:
             retroarchConfig['input_libretro_device_p1'] = '1'
         if system.isOptSet('controller2_dosbox'):
             retroarchConfig['input_libretro_device_p2'] = system.config['controller2_dosbox']
-        else
+        else:
             retroarchConfig['input_libretro_device_p2'] = '1'
     if (system.config['core'] == 'dosbox_pure'):               # Dosbox-Pure
         if system.isOptSet('controller1_dosbox_pure'):
             retroarchConfig['input_libretro_device_p1'] = system.config['controller1_dosbox_pure']
-        else
+        else:
             retroarchConfig['input_libretro_device_p1'] = '1'
         if system.isOptSet('controller2_dosbox_pure'):
             retroarchConfig['input_libretro_device_p2'] = system.config['controller2_dosbox_pure']
-        else
+        else:
             retroarchConfig['input_libretro_device_p2'] = '1'
 
 
