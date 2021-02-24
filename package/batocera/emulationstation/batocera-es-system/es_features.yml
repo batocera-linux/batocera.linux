@@ -599,6 +599,13 @@ libretro:
                     "disabled":             disabled
                     "2x-Postrender":        2x-Postrender
                     "2x-VBlank":            2x-VBlank
+            controller1_nes:
+                prompt:      CONTROLLER 1 TYPE
+                description: Select NES Gamepad or Gun (must use a mouse)
+                choices:
+                    "Autodetect":           1
+                    "NES Gamepad":          513
+                    "NES Zapper":           258
     flycast:
       features: [autosave]
       cfeatures:
@@ -1339,8 +1346,8 @@ libretro:
                 description: Manually select a 4 Player Adapter for some games
                 choices:
                     "Autodetect":           automatic
-                    "ntsc":                 ntsc
-                    "famicom":              famicom
+                    "NTSC (NES)":           ntsc
+                    "Famicom (FDS)":        famicom
     np2kai:
       features: [netplay, rewind, autosave, padtokeyboard]
       cfeatures:
@@ -1547,17 +1554,29 @@ libretro:
                 prompt:      REDUCE SPRITE FLICKERING
                 description: Remove 16-sprites-per-scanline hardware limit
                 choices:
-                    "Off":        disabled
-                    "On":         enabled
+                    "Off":         disabled
+                    "On":          enabled
+            controller1_pce:
+                prompt:      CONTROLLER 1 TYPE
+                description: Select PCE Joypad or Mouse
+                choices:
+                    "PCE Joypad": 1
+                    "PCE Mouse":  2
     pce_fast:
       features: [netplay, rewind, autosave, latency_reduction]
       cfeatures:
-            sgx_nospritelimit:
+            pce_nospritelimit:
                 prompt:      REDUCE SPRITE FLICKERING
                 description: Remove 16-sprites-per-scanline hardware limit
                 choices:
                     "Off":        disabled
                     "On":         enabled
+            controller1_pce:
+                prompt:      CONTROLLER 1 TYPE
+                description: Select PCE Joypad or Mouse
+                choices:
+                    "PCE Joypad": 1
+                    "PCE Mouse":  2
     pcfx:
       features: [netplay, rewind, autosave, latency_reduction]
       cfeatures:
@@ -2047,6 +2066,22 @@ libretro:
                     "Off":        disabled
                     "Merge":      merge
                     "Blur":       blur
+            controller1_snes9x:
+                prompt:      CONTROLLER 1 TYPE
+                description: Select SNES Gamepad or Mouse
+                choices:
+                    "SNES Gamepad":     1
+                    "SNES Mouse":       2
+            controller2_snes9x:
+                prompt:      CONTROLLER 2 TYPE
+                description: Select SNES Gamepad, Mouse, Multitap or Guns
+                choices:
+                    "SNES Gamepad":     1
+                    "SNES Mouse":       2
+                    "SNES Multitap":    257
+                    "Super Scope":      260
+                    "Konami Justifier": 516
+                    "M.A.C.S. Rifle":   1028
     snes9x_next:
       features: [netplay, rewind, autosave, latency_reduction, cheevos]
       cfeatures:
@@ -2080,6 +2115,22 @@ libretro:
                     "20 MHz":               20 MHz
                     "30 MHz":               30 MHz
                     "40 MHz":               40 MHz
+            controller1_snes9x_next:
+                prompt:      CONTROLLER 1 TYPE
+                description: Select SNES Gamepad or Mouse
+                choices:
+                    "SNES Gamepad":           1
+                    "SNES Mouse":             2
+            controller2_snes9x_next:
+                prompt:      CONTROLLER 2 TYPE
+                description: Select SNES Gamepad, Mouse, Multitap or Guns
+                choices:
+                    "SNES Gamepad":           1
+                    "SNES Mouse":             2
+                    "SNES Multitap":          257
+                    "Super Scope":            260
+                    "Konami Justifier":       516
+                    "Dual Konami Justifiers": 772
     stella:
       features: [netplay, rewind, autosave, latency_reduction, cheevos]
     tgbdual:
@@ -2576,23 +2627,23 @@ hatari:
             prompt:      LANGUAGE
             description: tos language
             choices:
-                DE: de
-                ES: es
-                FR: fr
-                IT: it
-                NL: nl
-                RU: ru
-                SE: se
-                UK: uk
-                US: us
+                DE:                  de
+                ES:                  es
+                FR:                  fr
+                IT:                  it
+                NL:                  nl
+                RU:                  ru
+                SE:                  se
+                UK:                  uk
+                US:                  us
         ram:
             prompt:      RAM
             description: ram memory size
             choices:
-                520K:   0
-                1M:     1
-                2M:     2
-                4M:     4
+                520K:                0
+                1M:                  1
+                2M:                  2
+                4M:                  4
 
 linapple:
   features: [ratio, padtokeyboard]
@@ -2638,41 +2689,41 @@ pcsx2:
             prompt:      ENABLE MULTITAP
             description: Allowing up to 8 players support in games
             choices:
-                "Off":              disabled
-                "Port1":            port1
-                "Port2":            port2
-                "Port1+2":          port12
+                "Off":      disabled
+                "Port1":    port1
+                "Port2":    port2
+                "Port1+2":  port12
         anisotropic_filtering:
             prompt:      ANISOTROPIC FILTERING
             description: Enhance the quality with on perspective textures
             choices:
-                "Off": 0
-                "2x":  2
-                "4x":  4
-                "8x":  8
-                "16x": 16
+                "Off":      0
+                "2x":       2
+                "4x":       4
+                "8x":       8
+                "16x":      16
         skipdraw:
             prompt:      SKIPDRAW HACK
             description: Skip frames to improve performance (Smoothless)
             choices:
-                "Off": 0
-                "1":   1
-                "2":   2
-                "3":   3
-                "4":   4
-                "5":   5
+                "Off":      0
+                "1":        1
+                "2":        2
+                "3":        3
+                "4":        4
+                "5":        5
         align_sprite:
             prompt:      ALIGN SPRITE (HACK)
             description: Remove lines in Internal Resolution (Soul Calibur)
             choices:
-                "Off": 0
-                "On":  1
+                "Off":      0
+                "On":       1
         vsync:
             prompt:      VSYNC
             description: Fix the heavy screen tearing in games (heavy CPU)
             choices:
-                "Off": 0
-                "On":  1
+                "Off":      0
+                "On":       1
 
 ppsspp:
   features: [rewind, ratio, internal_resolution]
@@ -2681,8 +2732,13 @@ ppsspp:
             prompt:      FRAME SKIP
             description: Skip frames to improve performance (Smoothless)
             choices:
-                "Off": 0
-                "On":  1
+                "Off":        0
+                "Autodetect": automatic
+                "1":          1
+                "2":          2
+                "3":          3
+                "4":          4
+                "5":          5
 reicast:
   features: [ratio]
 
@@ -2709,20 +2765,20 @@ easyrpg:
   features: []
   cfeatures:
         testplay:
-            prompt: TEST PLAY
+            prompt:      TEST PLAY
             description: test play mode
             choices:
-                "Off": 0
-                "On":  1
+                "Off":          0
+                "On":           1
         encoding:
-            prompt: ENCODING
+            prompt:      ENCODING
             description: game encoding
             choices:
               Western European: 1252
-              Windows-1251: 1251
-              Windows-1250: 1250
-              Shift-JIS: 932
-              Big5: 950
+              Windows-1251:     1251
+              Windows-1250:     1250
+              Shift-JIS:        932
+              Big5:             950
 
 redream:
   features: []
@@ -2731,37 +2787,37 @@ supermodel:
   features: []
   cfeatures:
         engine3D:
-            prompt: 3D ENGINE
+            prompt:      3D ENGINE
             description: Enable legacy or new 3D engine. Choose legacy for older GPUs.
             choices:
                 "Legacy3D": legacy3d
-                "New3D": new3d
+                "New3D":    new3d
         quadRendering:
-            prompt: QUAD RENDERING
+            prompt:      QUAD RENDERING
             description: Enable proper quad rendering. For higher end systems.
             choices:
-                "Off": 0
-                "On":  1
+                "Off":      0
+                "On":       1
         wideScreen:
-            prompt: ENABLE WIDESCREEN
+            prompt:      ENABLE WIDESCREEN
             description: Enable widescreen. Note - may cause rendering issues.
             choices:
-                "Off": 0
-                "On":  1
+                "Off":      0
+                "On":       1
         crosshairs:
-            prompt: CROSSHAIRS
+            prompt:      CROSSHAIRS
             description: Enable crosshairs in shooting games for appropriate players.
             choices:
-                "None": 0
-                "P1 only": 1
-                "P2 only": 2
-                "P1 & P2": 3
+                "None":     0
+                "P1 only":  1
+                "P2 only":  2
+                "P1 & P2":  3
         forceFeedback:
-            prompt: ENABLE FORCE FEEDBACK
+            prompt:      ENABLE FORCE FEEDBACK
             description: Enable force feedback for supported controllers with Linux drivers.
             choices:
-                "Off": 0
-                "On":  1           
+                "Off":      0
+                "On":       1
 
 vice:
   features: [ratio, padtokeyboard]
@@ -2776,43 +2832,44 @@ mame:
             prompt:      GRAPHICS BACKEND
             description: Choose your graphics rendering
             choices:
-                "BGFX":          bgfx
-                "Accel":         accel
-                "OpenGL":        opengl
+                "BGFX":            bgfx
+                "Accel":           accel
+                "OpenGL":          opengl
         bgfxbackend:
             archs_include: [x86, x86_64, rpi4]
             prompt:      BGFX BACKEND
             description: Choose your graphics API
             choices:
-                "Autodetect":    automatic
-                "OpenGL":        opengl
-                "OpenGLES":      gles
-                "Vulkan":        vulkan
+                "MAME Detect":     automatic
+                "OpenGL":          opengl
+                "OpenGL ES":       gles
+                "Vulkan":          vulkan
         bgfxshaders:
             prompt:      BGFX VIDEO FILTER
             description: Apply to achieve some kind of visual effect
             choices:
-                "None":          null
-                "CrtGeom":       crt-geom
-                "CrtGeomDeluxe": crt-geom-deluxe
-                "SuperEagle":    eagle
-                "HLSL":          hlsl
-                "HQ2X":          hq2x
-                "HQ3X":          hq3x
-                "HQ4X":          hq4x
+                "Off":             null
+                "Bilinear":        default
+                "CRT Geom":        crt-geom
+                "CRT Geom Deluxe": crt-geom-deluxe
+                "Super Eagle":     eagle
+                "HLSL":            hlsl
+                "HQ2X":            hq2x
+                "HQ3X":            hq3x
+                "HQ4X":            hq4x
         switchres:
             prompt:      CRT SWITCHRES
             description: CRT monitor SwitchRes support
             choices:
-                "Off":           false
-                "On":            true
+                "Off":             0
+                "On":              1
         rotation:
             prompt:      TATE MODE
             description: Rotating display to vertical mode rendering
             choices:
-                "Disabled":      null
-                "Rotate 90":     autoror
-                "Rotate 270":    autorol
+                "Off":             null
+                "Rotate 90":       autoror
+                "Rotate 270":      autorol
 
 wine:
   features: [padtokeyboard]
@@ -2864,10 +2921,10 @@ solarus:
   features: []
   cfeatures:
         joystick:
-            prompt: JOYSTICK
+            prompt:      JOYSTICK
             description: pad to control the player
             choices:
-              Normal: normal
+              Normal:    normal
               Joystick1: joystick1
               Joystick2: joystick2
 

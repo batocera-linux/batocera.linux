@@ -43,17 +43,22 @@ class LibretroGenerator(Generator):
         retroarchCore = batoceraFiles.retroarchCores + system.config['core'] + batoceraFiles.libretroExt
         romName = os.path.basename(rom)
 
+
         # The command to run
         # For the NeoGeo CD (lr-fbneo) it is necessary to add the parameter: --subsystem neocd
         if system.name == 'neogeocd' and system.config['core'] == "fbneo":
             commandArray = [batoceraFiles.batoceraBins[system.config['emulator']], "-L", retroarchCore, "--subsystem", "neocd", "--config", system.config['configfile']]
-        # Dosbox: To support .pc / .dos directories for PURE
+        # PURE zip games uses the same commandarray of all cores. .pc and .rom  uses owns
         elif system.name == 'dos':
             romDOSName = os.path.splitext(romName)[0]
-            if os.path.isfile(os.path.join(rom, romDOSName + ".bat")):
-                commandArray = [batoceraFiles.batoceraBins[system.config['emulator']], "-L", retroarchCore, "--config", system.config['configfile'], os.path.join(rom, romDOSName + ".bat")]
+            romDOSName, romExtension = os.path.splitext(romName)
+            if romExtension == '.dos' or romExtension == '.pc':
+                if os.path.isfile(os.path.join(rom, romDOSName + ".bat")):
+                    commandArray = [batoceraFiles.batoceraBins[system.config['emulator']], "-L", retroarchCore, "--config", system.config['configfile'], os.path.join(rom, romDOSName + ".bat")]
+                else:
+                    commandArray = [batoceraFiles.batoceraBins[system.config['emulator']], "-L", retroarchCore, "--config", system.config['configfile'], rom + "/dosbox.bat"]
             else:
-                commandArray = [batoceraFiles.batoceraBins[system.config['emulator']], "-L", retroarchCore, "--config", system.config['configfile'], rom + "/dosbox.bat"]
+                commandArray = [batoceraFiles.batoceraBins[system.config['emulator']], "-L", retroarchCore, "--config", system.config['configfile']]
         else:
             commandArray = [batoceraFiles.batoceraBins[system.config['emulator']], "-L", retroarchCore, "--config", system.config['configfile']]
 

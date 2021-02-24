@@ -38,29 +38,31 @@ def createPPSSPPConfig(iniConfig, system):
     else:
         iniConfig.set("Graphics", "ShowFPSCounter", "0")
 
-    # Performances
-    if system.isOptSet('frameskip') and system.getOptBoolean('frameskip') == True:
-        iniConfig.set("Graphics", "FrameSkip",  "1")
+    # Frameskip
+    iniConfig.set("Graphics", "FrameSkipType", "0") # Use number and not pourcent
+    iniConfig.set("Graphics", "AutoFrameSkip", "False")
+    if system.isOptSet("frameskip") and system.config["frameskip"] != 0:
+        if system.config["frameskip"] == "automatic":
+            iniConfig.set("Graphics", "AutoFrameSkip", "True")
+            iniConfig.set("Graphics", "FrameSkip",     "1")
+        else:
+            iniConfig.set("Graphics", "FrameSkip", system.config["frameskip"])
     else:
-        iniConfig.set("Graphics", "FrameSkip", "0")
+        iniConfig.set("Graphics", "FrameSkip",     "0")
 
-    if system.isOptSet('frameskiptype'):
-        iniConfig.set("Graphics", "FrameSkipType", system.config["frameskiptype"])
-    else:
-        iniConfig.set("Graphics", "FrameSkipType",  "0")
-
+    # Internal Resolution
     if system.isOptSet('internalresolution'):
         iniConfig.set("Graphics", "InternalResolution", system.config["internalresolution"])
     else:
         iniConfig.set("Graphics", "InternalResolution", "1")
 
-    # rewinding
+    # Rewinding
     if system.isOptSet('rewind') and system.getOptBoolean('rewind') == True:
         iniConfig.set("General", "RewindFlipFrequency", "300") # 300 = every 5 seconds
     else:
         iniConfig.set("General", "RewindFlipFrequency",  "0")
 
-    # custom : allow the user to configure directly mupen64plus.cfg via batocera.conf via lines like : n64.mupen64plus.section.option=value
+    # Custom : allow the user to configure directly mupen64plus.cfg via batocera.conf via lines like : n64.mupen64plus.section.option=value
     for user_config in system.config:
         if user_config[:7] == "ppsspp.":
             section_option = user_config[7:]
