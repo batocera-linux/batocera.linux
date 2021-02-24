@@ -1,4 +1,9 @@
 2021/XX/XX - batocera.linux 30
+        * warning : rpi4 is now running in 64 bits mode.
+                    you cannot upgrade from 29 without doing a simple manual action.
+                    To upgrade from 29 and before :
+                      1. go in the upgrade menu, choose beta and upgrade (behind, this is the stable version, but we want to be sure you'll do action 2).
+                      2. put you sdcard into a pc. remove the file config.txt. rename config64.txt to config.txt.
 	* odroid go super support
 	* Orange Pi PC support (Allwinner H3)
 	* add: MelonDS libretro core on (x86_64/ RPI4/ Odroid C4/ Odroid N2/ VIM3)
@@ -35,12 +40,12 @@
 	  - Add RetroAchievements auto collection
 	  - Add RetroAchievements filter ( for searches & custom collections )
 	  - Add RetroAchievements icon in gamelists
-	  - Full indexation of games hashes	  
+	  - Full indexation of games hashes
 	* es: Add SaveState manager for libretro cores supporting save states.
 	  - Add SHOW SAVE SNAPSHOTS to AUTO SAVE/LOAD option : This value allows to always open the savestate manager before launching a game
-	* es: Scrapers : 
+	* es: Scrapers :
 	  - Add ArcadeDB scraper
-	  - Screenscaper : Add "map" & "box background" option 
+	  - Screenscaper : Add "map" & "box background" option
 	  - TheGamesDB scraper : Add scrap of screenshots, fanarts, wheels, boxes backgrounds & titleshots
 	  - Manual scraping : Show results from all available scrapers
 	* es: ImageViewer : Add "zoomable" mode for pages & maps
