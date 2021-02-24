@@ -157,7 +157,7 @@ def generateControllerConfig_gamecube(system, playersControllers,rom):
     gamecubeMapping = {
         'y':            'Buttons/B',     'b':             'Buttons/A',
         'x':            'Buttons/Y',     'a':             'Buttons/X',
-        'pageup':       'Buttons/Z',     'start':         'Buttons/Start',
+        'pagedown':     'Buttons/Z',     'start':         'Buttons/Start',
         'l2':           'Triggers/L',    'r2':            'Triggers/R',
         'up': 'D-Pad/Up', 'down': 'D-Pad/Down', 'left': 'D-Pad/Left', 'right': 'D-Pad/Right',
         'joystick1up':  'Main Stick/Up', 'joystick1left': 'Main Stick/Left',

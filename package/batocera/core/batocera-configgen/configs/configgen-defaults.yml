@@ -57,14 +57,17 @@ atomiswave:
   emulator: libretro
   core:     flycast
 c64:
-  emulator: vice
-  core:     x64
+  emulator: libretro
+  core:     vice_x64
+cplus4:
+  emulator: libretro
+  core:     vice_xplus4
 c128:
-  emulator: vice
-  core:     x128
+  emulator: libretro
+  core:     vice_x128
 c20:
-  emulator: vice
-  core:     xvic
+  emulator: libretro
+  core:     vice_xvic
 cannonball:
   emulator: cannonball
   core:     cannonball
@@ -246,8 +249,8 @@ pcfx:
   emulator: libretro
   core:     pcfx
 pet:
-  emulator: vice
-  core:     xpet
+  emulator: libretro
+  core:     vice_xpet
 pico8:
   emulator: libretro
   core:     retro8
@@ -304,6 +307,9 @@ sufami:
   emulator: libretro
   core:     snes9x
 snes:
+  emulator: libretro
+  core:     snes9x
+snes-msu1:
   emulator: libretro
   core:     snes9x
 supergrafx:

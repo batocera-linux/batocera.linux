@@ -171,7 +171,7 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
             retroarchConfig['input_libretro_device_p1'] = system.config['controller1_snes9x_next']
         else:
             retroarchConfig['input_libretro_device_p1'] = '1'
-
+        # Player 2
         if system.isOptSet('controller2_snes9x'):
             retroarchConfig['input_libretro_device_p2'] = system.config['controller2_snes9x']
         elif system.isOptSet('controller2_snes9x_next'):
@@ -180,6 +180,11 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
             retroarchConfig['input_libretro_device_p2'] = '257'
         else:
             retroarchConfig['input_libretro_device_p2'] = '1'
+        # Player 3
+        if system.isOptSet('Controller3_snes9x'):
+            retroarchConfig['input_libretro_device_p3'] = system.config['Controller3_snes9x']
+        else:
+            retroarchConfig['input_libretro_device_p3'] = '1'
 
     ## NES controller
     if system.config['core'] == 'fceumm':
@@ -187,6 +192,10 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
             retroarchConfig['input_libretro_device_p1'] = system.config['controller1_nes']
         else:
             retroarchConfig['input_libretro_device_p1'] = '1'
+        if system.isOptSet('controller2_nes'):
+            retroarchConfig['input_libretro_device_p2'] = system.config['controller2_nes']
+        else:
+            retroarchConfig['input_libretro_device_p2'] = '1'
 
     ## PlayStation controller
     if (system.config['core'] == 'mednafen_psx'):               # Madnafen
@@ -199,6 +208,25 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
             retroarchConfig['input_libretro_device_p1'] = system.config['controller1_pcsx']
         if system.isOptSet('controller2_pcsx'):
             retroarchConfig['input_libretro_device_p2'] = system.config['controller2_pcsx']
+
+    ## Sega Dreamcast controller
+    if system.config['core'] == 'flycast':
+        if system.isOptSet('controller1_dc'):
+            retroarchConfig['input_libretro_device_p1'] = system.config['controller1_dc']
+        else:
+            retroarchConfig['input_libretro_device_p1'] = '1'
+        if system.isOptSet('controller2_dc'):
+            retroarchConfig['input_libretro_device_p2'] = system.config['controller2_dc']
+        else:
+            retroarchConfig['input_libretro_device_p2'] = '1'
+        if system.isOptSet('controller3_dc'):
+            retroarchConfig['input_libretro_device_p3'] = system.config['controller3_dc']
+        else:
+            retroarchConfig['input_libretro_device_p3'] = '1'
+        if system.isOptSet('controller4_dc'):
+            retroarchConfig['input_libretro_device_p4'] = system.config['controller4_dc']
+        else:
+            retroarchConfig['input_libretro_device_p4'] = '1'
 
     ## Sega Megadrive controller
     if system.config['core'] == 'genesisplusgx' and system.name == 'megadrive':

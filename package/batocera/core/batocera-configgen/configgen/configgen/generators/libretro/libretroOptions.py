@@ -141,15 +141,14 @@ def generateCoreSettings(coreSettings, system, rom):
         if system.isOptSet('puae_model') and system.config['puae_model'] != 'automatic':
             coreSettings.save('puae_model', system.config['puae_model'])
         else:
-            if system.name == 'amiga500':
-                coreSettings.save('puae_model', '"A500"')
-            elif system.name == 'amiga1200':
+            if system.name == 'amiga1200':
                 coreSettings.save('puae_model', '"A1200"')
             elif system.name == 'amigacd32':
                 coreSettings.save('puae_model', '"CD32FR"')
             elif (system.name == 'amigacdtv'):
                 coreSettings.save('puae_model', '"CDTV"')
             else:
+                # Will default to A500 when booting floppy disks, A600 when booting hard drives
                 coreSettings.save('puae_model', '"auto"')
 
         # CPU Compatibility
@@ -772,15 +771,17 @@ def generateCoreSettings(coreSettings, system, rom):
 
     # Nintendo NES / Famicom Disk System
     if (system.config['core'] == 'nestopia'):
+        # Nestopia Mouse mode for Zapper
+        coreSettings.save('nestopia_zapper_device', '"mouse"')
         # Reduce Sprite Flickering
         if system.isOptSet('nestopia_nospritelimit') and system.config['nestopia_nospritelimit'] == "disabled":
             coreSettings.save('nestopia_nospritelimit', '"disabled"')
-            coreSettings.save('nestopia_overscan_h', '"disabled"')
-            coreSettings.save('nestopia_overscan_v', '"disabled"')
+            coreSettings.save('nestopia_overscan_h',    '"disabled"')
+            coreSettings.save('nestopia_overscan_v',    '"disabled"')
         else:
-            coreSettings.save('fceumm_nospritelimit', '"enabled"')
-            coreSettings.save('nestopia_overscan_h', '"enabled"')
-            coreSettings.save('nestopia_overscan_v', '"enabled"')
+            coreSettings.save('nestopia_nospritelimit', '"enabled"')
+            coreSettings.save('nestopia_overscan_h',    '"enabled"')
+            coreSettings.save('nestopia_overscan_v',    '"enabled"')
         # Palette Choice
         if system.isOptSet('nestopia_palette'):
             coreSettings.save('nestopia_palette', system.config['nestopia_palette'])
@@ -803,15 +804,17 @@ def generateCoreSettings(coreSettings, system, rom):
             coreSettings.save('nestopia_select_adapter', '"auto"')
 
     if (system.config['core'] == 'fceumm'):
+        # FCEumm Mouse mode for Zapper
+        coreSettings.save('fceumm_zapper_mode', '"mouse"')
         # Reduce Sprite Flickering
         if system.isOptSet('fceumm_nospritelimit') and system.config['fceumm_nospritelimit'] == "disabled":
             coreSettings.save('fceumm_nospritelimit', '"disabled"')
-            coreSettings.save('fceumm_overscan_h', '"disabled"')
-            coreSettings.save('fceumm_overscan_v', '"disabled"')
+            coreSettings.save('fceumm_overscan_h',    '"disabled"')
+            coreSettings.save('fceumm_overscan_v',    '"disabled"')
         else:
             coreSettings.save('fceumm_nospritelimit', '"enabled"')
-            coreSettings.save('fceumm_overscan_h', '"enabled"')
-            coreSettings.save('fceumm_overscan_v', '"enabled"')
+            coreSettings.save('fceumm_overscan_h',    '"enabled"')
+            coreSettings.save('fceumm_overscan_v',    '"enabled"')
         # Palette Choice
         if system.isOptSet('fceumm_palette'):
             coreSettings.save('fceumm_palette', system.config['fceumm_palette'])
@@ -1245,7 +1248,7 @@ def generateCoreSettings(coreSettings, system, rom):
         if system.isOptSet('beetle_psx_cpu_freq_scale'):
             coreSettings.save('beetle_psx_cpu_freq_scale', system.config['beetle_psx_cpu_freq_scale'])
         else:
-            coreSettings.save('beetle_psx_cpu_freq_scale', '"100%(native)"')
+            coreSettings.save('beetle_psx_cpu_freq_scale', '"110%"') # If not 110% NO options are working!
         # Show official Bootlogo
         if system.isOptSet('beetle_psx_skip_bios'):
             coreSettings.save('beetle_psx_skip_bios', system.config['beetle_psx_skip_bios'])
