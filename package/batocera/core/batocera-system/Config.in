@@ -27,6 +27,22 @@ config BR2_PACKAGE_BATOCERA_CORES_STILL_COMMERCIALIZED
 bool "batocera is limited to abandonned systems"
 
 ##########################################
+config BR2_PACKAGE_BATOCERA_MUSIC_SUPPORT
+	bool "batocera.linux music formats support"
+
+    # MIDI
+    select BR2_PACKAGE_FLUIDSYNTH
+    select BR2_PACKAGE_FLUID_SOUNDFONT
+
+    # Modules
+    select BR2_PACKAGE_LIBMODPLUG
+    select BR2_PACKAGE_LIBXMP
+
+    # MP3
+    select BR2_PACKAGE_LIBMAD
+
+    help
+    Music support packages (MIDI, MOD, S3M, XM, ....)
 
 config BR2_PACKAGE_BATOCERA_VULKAN
 	bool "batocera.linux Vulkan support"
@@ -157,6 +173,9 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
 
     # irq balancing
     select BR2_PACKAGE_IRQBALANCE
+
+    # music support
+    select BR2_PACKAGE_BATOCERA_MUSIC_SUPPORT
 
     # vulkan
     select BR2_PACKAGE_BATOCERA_VULKAN			 if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY || BR2_PACKAGE_BATOCERA_TARGET_RPI4 || BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA
