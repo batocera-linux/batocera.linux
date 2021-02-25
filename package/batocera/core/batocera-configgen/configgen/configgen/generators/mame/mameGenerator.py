@@ -16,117 +16,99 @@ class MameGenerator(Generator):
 
     def generate(self, system, rom, playersControllers, gameResolution):
 
-	# Extract "<romfile.zip>"
+        # Extract "<romfile.zip>"
         romBasename = path.basename(rom)
         romDirname  = path.dirname(rom)
 
-	# Generate userdata folders if needed
+        # Generate userdata folders if needed
         if not os.path.exists("/userdata/system/configs/mame/"):
-	    os.makedirs("/userdata/system/configs/mame/")
-	if not os.path.exists("/userdata/saves/mame/"):
-	    os.makedirs("/userdata/saves/mame/")
-	if not os.path.exists("/userdata/saves/mame/nvram/"):
-	    os.makedirs("/userdata/saves/mame/nvram")
-	if not os.path.exists("/userdata/saves/mame/cfg/"):
-	    os.makedirs("/userdata/saves/mame/cfg/")
-	if not os.path.exists("/userdata/saves/mame/input/"):
-	    os.makedirs("/userdata/saves/mame/input/")
-	if not os.path.exists("/userdata/saves/mame/state/"):
-	    os.makedirs("/userdata/saves/mame/state/")
-	if not os.path.exists("/userdata/saves/mame/diff/"):
-	    os.makedirs("/userdata/saves/mame/diff/")
-	if not os.path.exists("/userdata/saves/mame/comments/"):
-	    os.makedirs("/userdata/saves/mame/comments/")
+            os.makedirs("/userdata/system/configs/mame/")
+        if not os.path.exists("/userdata/saves/mame/"):
+            os.makedirs("/userdata/saves/mame/")
+        if not os.path.exists("/userdata/saves/mame/nvram/"):
+            os.makedirs("/userdata/saves/mame/nvram")
+        if not os.path.exists("/userdata/saves/mame/cfg/"):
+            os.makedirs("/userdata/saves/mame/cfg/")
+        if not os.path.exists("/userdata/saves/mame/input/"):
+            os.makedirs("/userdata/saves/mame/input/")
+        if not os.path.exists("/userdata/saves/mame/state/"):
+            os.makedirs("/userdata/saves/mame/state/")
+        if not os.path.exists("/userdata/saves/mame/diff/"):
+            os.makedirs("/userdata/saves/mame/diff/")
+        if not os.path.exists("/userdata/saves/mame/comments/"):
+            os.makedirs("/userdata/saves/mame/comments/")
 
-	# MAME options used here are explained as it's not always straightforward
-	# A lot more options can be configured, just run mame -showusage and have a look
-        commandArray = [ batoceraFiles.batoceraBins[system.config['emulator']] ]
-	commandArray += [ "-skip_gameinfo" ]
-	commandArray += [ "-rompath",      romDirname ]
+        # MAME options used here are explained as it's not always straightforward
+        # A lot more options can be configured, just run mame -showusage and have a look
+        commandArray =  [ batoceraFiles.batoceraBins[system.config['emulator']] ]
+        commandArray += [ "-skip_gameinfo" ]
+        commandArray += [ "-rompath",      romDirname ]
 
-	# MAME various paths we can probably do better
-	commandArray += [ "-bgfx_path",    "/usr/bin/mame/bgfx/" ]          # Core bgfx files can be left on ROM filesystem
-	commandArray += [ "-fontpath",     "/usr/bin/mame/" ]	            # Fonts can be left on ROM filesystem
-	commandArray += [ "-languagepath", "/usr/bin/mame/language/" ]      # Translations can be left on ROM filesystem
-	commandArray += [ "-cheatpath",    "/userdata/cheats/mame/" ]       # Should this point to path or cheat.7z file ?
-	commandArray += [ "-samplepath",   "/userdata/bios/mame/samples/" ] # Current batocera storage location for MAME samples
-	commandArray += [ "-artpath",	   "/usr/bin/mame/artwork/" ]       # This should be on /userdata but we need to copy "base" files onto /userdata partition
+        # MAME various paths we can probably do better
+        commandArray += [ "-bgfx_path",    "/usr/bin/mame/bgfx/" ]          # Core bgfx files can be left on ROM filesystem
+        commandArray += [ "-fontpath",     "/usr/bin/mame/" ]               # Fonts can be left on ROM filesystem
+        commandArray += [ "-languagepath", "/usr/bin/mame/language/" ]      # Translations can be left on ROM filesystem
+        commandArray += [ "-cheatpath",    "/userdata/cheats/mame/" ]       # Should this point to path or cheat.7z file ?
+        commandArray += [ "-samplepath",   "/userdata/bios/mame/samples/" ] # Current batocera storage location for MAME samples
+        commandArray += [ "-artpath",       "/usr/bin/mame/artwork/" ]      # This should be on /userdata but we need to copy "base" files onto /userdata partition
 
-	# MAME saves a lot of stuff, we need to map this on /userdata/saves/mame/<subfolder> for each one
-	commandArray += [ "-nvram_directory" ,    "/userdata/saves/mame/nvram/" ]
-	commandArray += [ "-cfg_directory"   ,    "/userdata/system/configs/mame/" ]
-	commandArray += [ "-input_directory" ,    "/userdata/saves/mame/input/" ]
-	commandArray += [ "-state_directory" ,    "/userdata/saves/mame/state/" ]
-	commandArray += [ "-snapshot_directory" , "/userdata/screenshots/" ]
-	commandArray += [ "-diff_directory" ,     "/userdata/saves/mame/diff/" ]
-	commandArray += ["-comment_directory",   "/userdata/saves/mame/comments/" ]
+        # MAME saves a lot of stuff, we need to map this on /userdata/saves/mame/<subfolder> for each one
+        commandArray += [ "-nvram_directory" ,    "/userdata/saves/mame/nvram/" ]
+        commandArray += [ "-cfg_directory"   ,    "/userdata/system/configs/mame/" ]
+        commandArray += [ "-input_directory" ,    "/userdata/saves/mame/input/" ]
+        commandArray += [ "-state_directory" ,    "/userdata/saves/mame/state/" ]
+        commandArray += [ "-snapshot_directory" , "/userdata/screenshots/" ]
+        commandArray += [ "-diff_directory" ,     "/userdata/saves/mame/diff/" ]
+        commandArray += [ "-comment_directory",   "/userdata/saves/mame/comments/" ]
 
-	# TODO These paths are not handled yet
-	# TODO -homepath            path to base folder for plugin data (read/write)
-	# TODO -ctrlrpath           path to controller definitions
-	# TODO -inipath             path to ini files
-	# TODO -crosshairpath       path to crosshair files
-	# TODO -pluginspath         path to plugin files
-	# TODO -swpath              path to loose software
+        # TODO These paths are not handled yet
+        # TODO -homepath            path to base folder for plugin data (read/write)
+        # TODO -ctrlrpath           path to controller definitions
+        # TODO -inipath             path to ini files
+        # TODO -crosshairpath       path to crosshair files
+        # TODO -pluginspath         path to plugin files
+        # TODO -swpath              path to loose software
 
-	# BGFX video engine
-	if system.isOptSet("video") and system.config["video"] == "bgfx":
-		commandArray += [ "-video", "bgfx" ]
+        # BGFX video engine : https://docs.mamedev.org/advanced/bgfx.html
+        if system.isOptSet("video") and system.config["video"] == "bgfx":
+            commandArray += [ "-video", "bgfx" ]
 
-		# BGFX backend
-		if system.isOptSet("bgfxbackend") and system.config["bgfxbackend"] == "opengl":
-			commandArray += [ "-bgfx_backend", "opengl" ]
-		elif system.isOptSet("bgfxbackend") and system.config["bgfxbackend"] == "gles":
-			commandArray += [ "-bgfx_backend", "gles" ]
-		elif system.isOptSet("bgfxbackend") and system.config["bgfxbackend"] == "vulkan":
-			commandArray += [ "-bgfx_backend", "vulkan" ]
-        else
-            commandArray += [ "-bgfx_backend", "auto" ]
+            # BGFX backend
+            if system.isOptSet("bgfxbackend") and system.config['bgfxbackend'] != 'automatic':
+                commandArray += [ "-bgfx_backend", system.config['bgfxbackend'] ]
+            else:
+                commandArray += [ "-bgfx_backend", "auto" ]
 
-		# BGFX shaders effects
-		if system.isOptSet("bgfxshaders") and system.config["bgfxshaders"] == "crt-geom":
-			commandArray += [ "-bgfx_screen_chains", "crt-geom" ]
-		elif system.isOptSet("bgfxshaders") and system.config["bgfxshaders"] == "crt-geom-deluxe":
-			commandArray += [ "-bgfx_screen_chains", "crt-geom-deluxe" ]
-		elif system.isOptSet("bgfxshaders") and system.config["bgfxshaders"] == "eagle":
-			commandArray += [ "-bgfx_screen_chains", "eagle" ]
-		elif system.isOptSet("bgfxshaders") and system.config["bgfxshaders"] == "hlsl":
-			commandArray += [ "-bgfx_screen_chains", "hlsl" ]
-		elif system.isOptSet("bgfxshaders") and system.config["bgfxshaders"] == "hq2x":
-			commandArray += [ "-bgfx_screen_chains", "hq2x" ]
-		elif system.isOptSet("bgfxshaders") and system.config["bgfxshaders"] == "hq3x":
-			commandArray += [ "-bgfx_screen_chains", "hq3x" ]
-		elif system.isOptSet("bgfxshaders") and system.config["bgfxshaders"] == "hq4x":
-			commandArray += [ "-bgfx_screen_chains", "hq4x" ]
-        else
-            commandArray += [ "-bgfx_screen_chains", "" ]
+            # BGFX shaders effects
+            if system.isOptSet("bgfxshaders") and system.config['bgfxshaders'] != 'default':
+                commandArray += [ "-bgfx_screen_chains", system.config['bgfxshaders'] ]
+            else:
+                commandArray += [ "-bgfx_screen_chains", "default" ]
 
-	# Other video modes
-	elif system.isOptSet("video") and system.config["video"] == "accel":
-		commandArray += ["-video", "accel" ]
-	else # if system.isOptSet("video") and system.config["video"] == "opengl":
-		commandArray += [ "-video", "opengl" ]
+        # Other video modes
+        elif system.isOptSet("video") and system.config["video"] == "accel":
+            commandArray += ["-video", "accel" ]
+        else:
+            commandArray += [ "-video", "opengl" ]
 
-	# CRT / SwitchRes support
-	if system.isOptSet("switchres") and system.config["switchres"] == "true":
-		commandArray += [ "-modeline_generation" ]
-		commandArray += [ "-changeres" ]
-	else:
-		commandArray += [ "-nomodeline_generation" ]
-		commandArray += [ "-nochangeres" ]
+        # CRT / SwitchRes support
+        if system.isOptSet("switchres") and system.getOptBoolean("switchres"):
+            commandArray += [ "-modeline_generation" ]
+            commandArray += [ "-changeres" ]
+        else:
+            commandArray += [ "-nomodeline_generation" ]
+            commandArray += [ "-nochangeres" ]
 
-	# Rotation / TATE options
-	if system.isOptSet("rotation") and system.config["rotation"] == "autoror":
-		commandArray += [ "-autoror" ]
-	elif system.isOptSet("rotation") and system.config["rotation"] == "autorol":
-		commandArray += [ "-autorol" ]
-    else
-        commandArray += [ "" ]
+        # Rotation / TATE options
+        if system.isOptSet("rotation") and system.config["rotation"] == "autoror":
+            commandArray += [ "-autoror" ]
+        if system.isOptSet("rotation") and system.config["rotation"] == "autorol":
+            commandArray += [ "-autorol" ]
 
-	# Finally we pass game name
-	commandArray += [ romBasename ]
+        # Finally we pass game name
+        commandArray += [ romBasename ]
 
-        # Config file
+        # config file
         config = minidom.Document()
         configFile = "/userdata/system/configs/mame/default.cfg"
         if os.path.exists(configFile):
@@ -137,7 +119,7 @@ class MameGenerator(Generator):
 
         MameGenerator.generatePadsConfig(config, playersControllers)
 
-        # Save the config file
+        # save the config file
         #mameXml = open(configFile, "w")
         # TODO: python 3 - workawround to encode files in utf-8
         mameXml = codecs.open(configFile, "w", "utf-8")

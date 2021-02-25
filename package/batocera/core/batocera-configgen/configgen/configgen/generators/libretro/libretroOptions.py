@@ -425,7 +425,7 @@ def generateCoreSettings(coreSettings, system, rom):
             coreSettings.save('bluemsx_nospritelimits', '"ON"')
 
     # Nec PC Engine / CD
-    if system.config['core'] == 'pce_fast':
+    if system.config['core'] == 'pce' or system.config['core'] == 'pce_fast':
         # Remove 16-sprites-per-scanline hardware limit
         if system.isOptSet('pce_nospritelimit'):
             coreSettings.save('pce_nospritelimit', system.config['pce_nospritelimit'])

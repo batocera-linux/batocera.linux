@@ -163,9 +163,30 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
             retroarchConfig['input_libretro_device_p1'] = systemToP1Device[system.name]
             retroarchConfig['input_libretro_device_p2'] = systemToP2Device[system.name]
 
-    ## TODO: SNES controller
-    if len(controllers) > 2 and (system.config['core'] == 'snes9x_next' or system.config['core'] == 'snes9x'):
-        retroarchConfig['input_libretro_device_p2'] = '257'
+    ## SNES9x and SNES9x_next (2010) controller
+    if system.config['core'] == 'snes9x' or system.config['core'] == 'snes9x_next':
+        if system.isOptSet('controller1_snes9x'):
+            retroarchConfig['input_libretro_device_p1'] = system.config['controller1_snes9x']
+        elif system.isOptSet('controller1_snes9x_next'):
+            retroarchConfig['input_libretro_device_p1'] = system.config['controller1_snes9x_next']
+        else:
+            retroarchConfig['input_libretro_device_p1'] = '1'
+
+        if system.isOptSet('controller2_snes9x'):
+            retroarchConfig['input_libretro_device_p2'] = system.config['controller2_snes9x']
+        elif system.isOptSet('controller2_snes9x_next'):
+            retroarchConfig['input_libretro_device_p2'] = system.config['controller2_snes9x_next']
+        elif len(controllers) > 2:                              # More than 2 controller connected
+            retroarchConfig['input_libretro_device_p2'] = '257'
+        else:
+            retroarchConfig['input_libretro_device_p2'] = '1'
+
+    ## NES controller
+    if system.config['core'] == 'fceumm':
+        if system.isOptSet('controller1_nes'):
+            retroarchConfig['input_libretro_device_p1'] = system.config['controller1_nes']
+        else:
+            retroarchConfig['input_libretro_device_p1'] = '1'
 
     ## PlayStation controller
     if (system.config['core'] == 'mednafen_psx'):               # Madnafen
@@ -200,6 +221,13 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
             retroarchConfig['input_libretro_device_p2'] = system.config['controller2_ms']
         else:
             retroarchConfig['input_libretro_device_p2'] = '769'
+
+    ## NEC PCEngine controller
+    if system.config['core'] == 'pce' or system.config['core'] == 'pce_fast':
+        if system.isOptSet('controller1_pce'):
+            retroarchConfig['input_libretro_device_p1'] = system.config['controller1_pce']
+        else:
+            retroarchConfig['input_libretro_device_p1'] = '1'
 
     ## MS-DOS controller
     if (system.config['core'] == 'dosbox'):                     # Dosbox
