@@ -4,7 +4,7 @@
 #
 ################################################################################
 # Version.: Commits on Oct 10, 2020
-FLYCAST_VERSION = c6389de3b39bac7754d4d53604f1f46ad3bcbf97
+FLYCAST_VERSION = bbcfc8354a5281b612553b3d4e2051e69c3d15b2
 FLYCAST_SITE = $(call github,flyinghead,flycast,$(FLYCAST_VERSION))
 FLYCAST_LICENSE = GPLv2
 FLYCAST_DEPENDENCIES = sdl2 libpng libzip
