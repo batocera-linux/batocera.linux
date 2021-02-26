@@ -230,6 +230,8 @@ nds:
       melonds: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MELONDS] }
     melonds:
       melonds: { requireAnyOf: [BR2_PACKAGE_MELONDS] }
+    drastic:
+      drastic: { requireAnyOf: [BR2_PACKAGE_DRASTIC] }
 
 fds:
   name:       Family Computer Disk System
