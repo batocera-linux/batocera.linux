@@ -4,7 +4,7 @@
 #
 ################################################################################
 # Version: Commits on Jan 31, 2021 (0.228)
-LIBRETRO_MAME_VERSION =  7749ede99e257e3ad3887535e49f953d85379101
+LIBRETRO_MAME_VERSION =  4b1001771c0394b6cb9f54c19f7d11aeaf0821dd
 LIBRETRO_MAME_SITE = $(call github,libretro,mame,$(LIBRETRO_MAME_VERSION))
 LIBRETRO_MAME_LICENSE = MAME
 # install in staging for debugging (gdb)
