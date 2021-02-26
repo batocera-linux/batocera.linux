@@ -100,7 +100,7 @@ test $? -eq 0 || exit 1
 size=$(echo "$headers" | grep "Content-Length: " | tail -1 | sed -e s+'^Content-Length: \([0-9]*\).*$'+'\1'+) # take the last one in case of redirection
 size=$((size / 1024 / 1024))
 test $? -eq 0 || exit 1
-echo "need to download ${size}mB"
+echo "need to download ${size}mb"
 
 # check free space on fs
 for fs in /userdata /boot

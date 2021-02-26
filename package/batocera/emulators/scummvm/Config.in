@@ -5,7 +5,6 @@ config BR2_PACKAGE_SCUMMVM
 	select BR2_PACKAGE_LIBMPEG2
 	select BR2_PACKAGE_JPEG
 	select BR2_PACKAGE_LIBOGG
-
         select BR2_PACKAGE_LIBVORBIS
         select BR2_PACKAGE_FLAC
         select BR2_PACKAGE_LIBMAD
@@ -13,8 +12,8 @@ config BR2_PACKAGE_SCUMMVM
         select BR2_PACKAGE_LIBTHEORA
         select BR2_PACKAGE_FAAD2
         select BR2_PACKAGE_FREETYPE
-
 	select BR2_PACKAGE_ZLIB  
+	depends on BR2_PACKAGE_FLUIDSYNTH
 
         help
 		ScummVM point and click 
