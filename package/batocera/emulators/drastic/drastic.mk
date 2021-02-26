@@ -12,10 +12,17 @@ define DRASTIC_EXTRACT_CMDS
 	mkdir -p $(@D)/target && cd $(@D)/target && tar xf $(DL_DIR)/$(DRASTIC_DL_SUBDIR)/$(DRASTIC_SOURCE)
 endef
 
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI4)$(BR2_PACKAGE_BATOCERA_TARGET_ODROIDN2)$(BR2_PACKAGE_BATOCERA_TARGET_VIM3),y)
+DRASTIC_BINARYFILE=drastic_n2
+else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA),y)
+DRASTIC_BINARYFILE=drastic_oga
+endif
+
 define DRASTIC_INSTALL_TARGET_CMDS
 	mkdir -p $(TARGET_DIR)/usr/share/
 	mkdir -p $(TARGET_DIR)/usr/share/evmapy
 
+	install -m 0755 $(@D)/target/$(DRASTIC_BINARYFILE) $(TARGET_DIR)/usr/bin/drastic
 	cp -pr $(@D)/target/drastic $(TARGET_DIR)/usr/share/drastic
 
 	# evmap config
