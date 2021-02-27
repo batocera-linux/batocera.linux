@@ -142,8 +142,8 @@ define MAME_INSTALL_TARGET_CMDS
 	mkdir -p $(TARGET_DIR)/usr/bin/mame/roms
 
 	# Install binaries and default distro
-        $(INSTALL) -D $(@D)/mamearcade		$(TARGET_DIR)/usr/bin/mame/mamearcade
-        $(INSTALL) -D $(@D)/mamebatocera	$(TARGET_DIR)/usr/bin/mame/mamemess
+        $(INSTALL) -D $(@D)/mamearcade		$(TARGET_DIR)/usr/bin/mame/mame
+        $(INSTALL) -D $(@D)/mess		$(TARGET_DIR)/usr/bin/mame/mess
         cp $(@D)/COPYING			$(TARGET_DIR)/usr/bin/mame/
         cp $(@D)/README.md			$(TARGET_DIR)/usr/bin/mame/
         cp $(@D)/uismall.bdf			$(TARGET_DIR)/usr/bin/mame/
