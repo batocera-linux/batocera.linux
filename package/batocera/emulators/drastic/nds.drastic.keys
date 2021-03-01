@@ -1,9 +1,164 @@
 {
     "actions_player1": [
-	{
+    {
+            "trigger": ["joystick1up"],
+            "type": "key",
+            "target": [ "KEY_UP" ],
+            "description": "Joy2Pad Up"
+    },
+    {
+            "trigger": ["joystick1down"],
+            "type": "key",
+            "target": [ "KEY_DOWN" ],
+            "description": "Joy2Pad Down"
+    },
+    {
+            "trigger": ["joystick1left"],
+            "type": "key",
+            "target": [ "KEY_LEFT" ],
+            "description": "Joy2Pad Left"
+    },
+    {
+            "trigger": ["joystick1right"],
+            "type": "key",
+            "target": [ "KEY_RIGHT" ],
+            "description": "Joy2Pad Right"
+    },
+    {
+            "trigger": ["up"],
+            "type": "key",
+            "target": [ "KEY_UP" ],
+            "description": "Hat Up"
+    },
+    {
+            "trigger": ["down"],
+            "type": "key",
+            "target": [ "KEY_DOWN" ],
+            "description": "Hat Down"
+    },
+    {
+            "trigger": ["left"],
+            "type": "key",
+            "target": [ "KEY_LEFT" ],
+            "description": "Hat Left"
+    },
+    {
+            "trigger": ["right"],
+            "type": "key",
+            "target": [ "KEY_RIGHT" ],
+            "description": "Hat Right"
+    },
+    {
+            "trigger": ["a"],
+            "type": "key",
+            "target": [ "KEY_E" ],
+            "description": "Button A"
+    },
+    {
+            "trigger": ["b"],
+            "type": "key",
+            "target": [ "KEY_R" ],
+            "description": "Button B"
+    },
+    {
+            "trigger": ["x"],
+            "type": "key",
+            "target": [ "KEY_D" ],
+            "description": "Button X"
+    },
+    {
+            "trigger": ["y"],
+            "type": "key",
+            "target": [ "KEY_F" ],
+            "description": "Button Y"
+    },
+    {
+            "trigger": ["start"],
+            "type": "key",
+            "target": [ "KEY_ENTER" ],
+            "description": "Button Start"
+    },
+    {
+            "trigger": ["select"],
+            "type": "key",
+            "target": [ "KEY_SPACE" ],
+            "description": "Button Select"
+    },
+    {
+            "trigger": ["pageup"],
+            "type": "key",
+            "target": [ "KEY_C" ],
+            "description": "Button L"
+    },
+    {
+            "trigger": ["pagedown"],
+            "type": "key",
+            "target": [ "KEY_V" ],
+            "description": "Button R"
+    },
+    {
+            "trigger": ["l2"],
+            "type": "key",
+            "target": [ "KEY_F3" ],
+            "description": "Disposition A"
+    },
+    {
+            "trigger": ["r2"],
+            "type": "key",
+            "target": [ "KEY_F4" ],
+            "description": "Disposition B"
+    },
+    {
+            "trigger": ["l3"],
+            "type": "key",
+            "target": [ "KEY_Y" ],
+            "description": "Microphone"
+    },
+    {
+            "trigger": "joystick2",
+            "type": "mouse"
+    },
+    {
+            "trigger": ["r3"],
+            "type": "key",
+            "target": [ "BTN_LEFT" ],
+            "description": "TouchScreen"
+    },
+    {
             "trigger": ["hotkey", "start"],
             "type": "key",
-            "target": [ "KEY_LEFTALT", "KEY_F4" ]
-	}
+            "target": [ "KEY_F12" ],
+            "description": "Exit Drastic"
+    },
+    {
+            "trigger": ["hotkey", "y"],
+            "type": "key",
+            "target": [ "KEY_F5" ],
+            "description": "Save State"
+    },
+    {
+            "trigger": ["hotkey", "x"],
+            "type": "key",
+            "target": [ "KEY_F7" ],
+            "description": "Load State"
+    },
+    {
+            "trigger": ["hotkey", "down"],
+            "type": "key",
+            "target": [ "KEY_F2" ],
+            "description": "Swap Screens"
+    },
+    {
+            "trigger": ["hotkey", "b"],
+            "type": "key",
+            "target": [ "KEY_F1" ],
+            "description": "QuickMenu"
+    },
+    {
+            "trigger": ["hotkey", "right"],
+            "type": "key",
+            "target": [ "KEY_TAB" ],
+            "description": "FastForward"
+    }
     ]
 }
