@@ -3897,6 +3897,25 @@ lightspark:
 
 drastic:
   features: []
+  cfeatures:
+        drastic_hires:
+            prompt:      HI-RES
+            description: Greatly Improve 3D Models
+            choices:
+                "Off": 0
+                "On":  1
+        drastic_threaded:
+            prompt:      THREADED 3D
+            description: Improves perf in 3D - can cause glitches
+            choices:
+                "Off": 0
+                "On":  1
+        drastic_fix2d:
+            prompt:      FIX 2D SCREEN
+            description: Fix main 2D Screen to Follow Action
+            choices:
+                "Off": 0
+                "On":  1
 
 xemu:
   features: []
