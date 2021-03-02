@@ -4,7 +4,7 @@ RUN="/usr/bin/rpi_gpioswitch"
 BTD_PID=$(pgrep -f "/bin/bash $RUN")
 
 #Add new devices here and modify /usr/bin/rpi_gpioswitch, too
-devices="ATX_RASPI_R2_6 REMOTEPIBOARD_2003 REMOTEPIBOARD_2005 MAUSBERRY ONOFFSHIM RETROFLAG \
+devices="ATX_RASPI_R2_6 REMOTEPIBOARD_2003 REMOTEPIBOARD_2005 MAUSBERRY ONOFFSHIM POWERHAT RETROFLAG \
          RETROFLAG_ADV RETROFLAG_GPI KINTARO PIN56ONOFF PIN56PUSH PIN356ONOFFRESET ARGONONE"
 
 # Read current config, if no key is set in batocera.conf then try to use

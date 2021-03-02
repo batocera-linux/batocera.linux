@@ -16,6 +16,7 @@
 #v1.6 - add ARGONONE for Rpi4 Argon One case fan control - @lbrpdx
 #v1.7 - add NESPI4 support - @lala
 #v1.8 - removed Witty-Pi (WiringPi package is not anymore!)
+#v1.9 - add POWERHAT for Rpi4 OneNineDesign case variants - @dmanlfc
 #by cyperghost 11.11.2019
 
 #dialog for selecting your switch or power device
@@ -34,6 +35,7 @@ function powerdevice_dialog()
                   KINTARO "SNES style case from SuperKuma aka ROSHAMBO" \
                   MAUSBERRY "A neat power device from Mausberry circuits" \
                   ONOFFSHIM "The cheapest power device from Pimoroni" \
+                  POWERHAT "Another cheap power device from OneNineDesign" \
                   REMOTEPIBOARD_2003 "Any remote control as pswitch v2013" \
                   REMOTEPIBOARD_2005 "Any remote control as pswitch v2015" \
                   ATX_RASPI_R2_6 "ATXRaspi is a smart power controller SBC" \
@@ -181,6 +183,33 @@ function onoffshim_stop()
 {
     # Cleanup GPIO init, default Button command (GPIO 17)
     echo "$1" > /sys/class/gpio/unexport
+}
+
+# https://www.raspberrypiplastics.com/power-hat-board
+# aka MultiComp Pro Raspberry Pi 4 case
+function powerhat_start()
+{
+    #Check if dtooverlay is setted in /boot/config.txt
+    #This is needed to do proper restarts/shutdowns  
+    # (GPIO18 default)
+    if ! grep -q "^dtoverlay=gpio-poweroff,gpiopin=$1,active_low=0" "/boot/config.txt"; then
+        mount -o remount,rw /boot
+        echo "" >> "/boot/config.txt"
+        echo "[powerhat]" >> "/boot/config.txt"
+        echo "dtoverlay=gpio-poweroff,gpiopin=$1,active_low=0" >> "/boot/config.txt"
+    fi
+
+    # This is Button command (GPIO17 default)
+    if ! grep -q "^dtoverlay=gpio-shutdown,gpiopin=$2,active_low=1,gpio_pull=up" "/boot/config.txt"; then
+        mount -o remount,rw /boot
+        echo "dtoverlay=gpio-shutdown,gpiopin=$2,active_low=1,gpio_pull=up" >> "/boot/config.txt"
+    fi
+}
+
+function powerhat_stop()
+{
+    # Do nothing to GPIO, handled by power hat
+    echo "had 'power hat' shutdown"
 }
 
 # http://www.msldigital.com/pages/support-for-remotepi-board-2013
@@ -383,6 +412,9 @@ case "$CONFVALUE" in
     ;;
     "ONOFFSHIM")
         onoffshim_$1 17 4
+    ;;
+    "POWERHAT")
+        powerhat_$1 18 17
     ;;
     "REMOTEPIBOARD_2003")
         msldigital_$1 22
