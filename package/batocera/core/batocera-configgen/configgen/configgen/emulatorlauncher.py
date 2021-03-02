@@ -48,7 +48,7 @@ from generators.lightspark.lightsparkGenerator import LightsparkGenerator
 from generators.ruffle.ruffleGenerator import RuffleGenerator
 from generators.duckstation.duckstationGenerator import DuckstationGenerator
 from generators.drastic.drasticGenerator import DrasticGenerator
-
+from generators.cgenius.cgeniusGenerator import CGeniusGenerator
 import controllersConfig as controllers
 import signal
 import batoceraFiles
@@ -99,6 +99,7 @@ generators = {
     'ruffle': RuffleGenerator(),
     'duckstation': DuckstationGenerator(),
     'drastic': DrasticGenerator(),
+    'cgenius': CGeniusGenerator(),
 }
 
 def main(args, maxnbplayers):

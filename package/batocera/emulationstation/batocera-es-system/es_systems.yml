@@ -1667,6 +1667,16 @@ easyrpg:
     libretro:
       easyrpg: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_EASYRPG] }
 
+cgenius:
+  name:       Commander Genius
+  manufacturer: Ports
+  release:
+  hardware: port
+  extensions: [zip]
+  emulators:
+    cgenius:
+      cgenius: { requireAnyOf: [BR2_PACKAGE_CGENIUS] }
+
 pygame:
   name:       pygame
   manufacturer: pygame
