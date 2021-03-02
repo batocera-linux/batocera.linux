@@ -36,7 +36,6 @@ menu "System"
 
   menu "Arch"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/arch/firmware-rockpro64/Config.in"
-    source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/arch/firmware_nonfree_rpi/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/arch/firmware-wlan-aml/Config.in"
   endmenu
 
