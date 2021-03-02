@@ -3,7 +3,7 @@
 # Batocera splash
 #
 ################################################################################
-BATOCERA_SPLASH_VERSION = 4
+BATOCERA_SPLASH_VERSION = 5
 BATOCERA_SPLASH_SOURCE=
 BATOCERA_SYSTEM_GIT_VERSION = $(shell git log -n 1 --pretty=format:"%h")
 
