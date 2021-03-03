@@ -83,6 +83,12 @@ class Rpcs3Generator(Generator):
         rpcs3ymlconfig["Core"]['PPU LLVM Accurate Vector NaN values'] = True     
  
         rpcs3ymlconfig["Video"]['Frame limit'] = 60
+        
+        # Aspect Ratio
+        if system.isOptSet("ratio"):
+            rpcs3ymlconfig["Video"]['Aspect ratio'] = system.config["ratio"]
+        else:
+            rpcs3ymlconfig["Video"]['Aspect ratio'] = '' # 16:9
 
         # gfx backend
         if system.isOptSet("gfxbackend"):
