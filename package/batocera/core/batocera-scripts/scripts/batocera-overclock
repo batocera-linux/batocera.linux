@@ -31,7 +31,7 @@ doList() {
 	    echo "none NONE"
 	    echo "high HIGH (950Mhz)"
 	    echo "turbo TURBO (1000Mhz)"
-	    echo "extrem EXTREM (1100Mhz)"
+	    echo "extreme EXTREME (1100Mhz)"
 	;;
 	"rpi2")
 	    echo "none NONE (900Mhz)"
@@ -41,18 +41,20 @@ doList() {
 	    echo "none NONE (1200Mhz)"
 	    echo "high HIGH (1300Mhz)"
 	    echo "turbo TURBO (1325Mhz)"
-	    echo "extrem EXTREM (1350Mhz)"
+	    echo "extreme EXTREME (1350Mhz)"
 	    ;;
 	"rpi3+")
 	    echo "none NONE (1400Mhz)"
 	    echo "high HIGH (1425Mhz)"
 	    echo "turbo TURBO (1450Mhz)"
-	    echo "extrem EXTREM (1500Mhz)"
+	    echo "extreme EXTREME (1500Mhz)"
 	    ;;
 	"rpi4")
 	    echo "none NONE (1500Mhz)"
-	    echo "high HIGH (1700Mhz)"
-	    echo "turbo TURBO (1750Mhz)"
+	    echo "high HIGH (HEATSINK - 1700Mhz)"
+	    echo "turbo TURBO (HEATSINK - 1800Mhz)"
+		echo "extreme EXTREME (HEATSINK & FAN 1950Mhz)"
+		echo "ruinsane INSANE (HEATSINK & FAN 2100Mhz)"
 	    ;;
 	"odroidn2")
 	    MODEL=$(cat /sys/firmware/devicetree/base/model)
@@ -60,7 +62,7 @@ doList() {
 	    then
 		echo "none NONE (2200Mhz)"
 		echo "high HIGH (2300Mhz)"
-		echo "extrem EXTREM (2400Mhz)"
+		echo "extreme EXTREME (2400Mhz)"
 	    fi
 	    ;;
 	*)
@@ -187,7 +189,7 @@ setValue() {
 		"turbo")
 		    setValue_rpiPutVars 1000 500 600 0 6 0 250
 		    ;;
-		"extrem")
+		"extreme")
 		    setValue_rpiPutVars 1100 550 600 1 8 6 250
 		    ;;
 	    esac
@@ -213,7 +215,7 @@ setValue() {
 		"turbo")
 		    setValue_rpiPutVars 1325 525 520 0 4 4 500
 		    ;;
-		"extrem")
+		"extreme")
 		    setValue_rpiPutVars 1350 550 550 1 4 5 525
 		    ;;
 	    esac
@@ -229,7 +231,7 @@ setValue() {
 		"turbo")
 		    setValue_rpiPutVars 1450 525 520 0 4 4 500
 		    ;;
-		"extrem")
+		"extreme")
 		    setValue_rpiPutVars 1500 550 550 1 4 5 525
 		    ;;
 	    esac
@@ -243,8 +245,13 @@ setValue() {
 		    setValue_rpi4PutVars 2 1700 500
 		    ;;
 		"turbo")
-		    setValue_rpi4PutVars 4 1750 600
+		    setValue_rpi4PutVars 3 1800 600
 		    ;;
+		"extreme")
+		    setValue_rpi4PutVars 5 1950 700
+			;;
+		"ruinsane")
+		    setValue_rpi4PutVars 6 2100 750		
 	    esac
 	    ;;
 	"odroidn2")

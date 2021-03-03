@@ -23,7 +23,7 @@ then
     case "${MODEL}" in
 	"Hardkernel ODROID-N2Plus")
 	    case "${OVALUE}" in
-		"extrem")
+		"extreme")
 		    do_overclock_n2plus 2016000 2400000
 		    ;;
 		"high")
