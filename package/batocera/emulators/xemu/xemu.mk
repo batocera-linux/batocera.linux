@@ -10,7 +10,7 @@ XEMU_SITE = https://github.com/mborgerson/xemu.git
 XEMU_SITE_METHOD=git
 XEMU_GIT_SUBMODULES=YES
 XEMU_LICENSE = GPLv2
-XEMU_DEPENDENCIES =
+XEMU_DEPENDENCIES = sdl2
 
 XEMU_CONF_ENV += PATH="/x86_64/host/x86_64-buildroot-linux-gnu/sysroot/usr/bin:$$PATH"
 
@@ -89,6 +89,15 @@ define XEMU_BUILD_CMDS
                 PREFIX="/x86_64/host/x86_64-buildroot-linux-gnu/sysroot/" \
                 PKG_CONFIG="/x86_64/host/x86_64-buildroot-linux-gnu/sysroot/usr/bin/pkg-config" \
 		$(MAKE) -C $(@D) V=1
+endef
+
+define XEMU_INSTALL_TARGET_CMDS
+	# Binaries
+	cp $(@D)/i386-softmmu/qemu-system-i386 $(TARGET_DIR)/usr/bin/xemu
+
+	# XEmu app data
+	mkdir -p $(TARGET_DIR)/usr/share/xemu/data
+	cp $(@D)/data/* $(TARGET_DIR)/usr/share/xemu/data/
 endef
 
 $(eval $(autotools-package))
