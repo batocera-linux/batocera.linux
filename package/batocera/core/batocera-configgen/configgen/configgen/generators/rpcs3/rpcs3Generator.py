@@ -90,7 +90,7 @@ class Rpcs3Generator(Generator):
         else:
             rpcs3ymlconfig["Video"]['Renderer'] = 'OpenGL' # Vulkan
 
-        rpcs3ymlconfig["Audio"]['Renderer'] = 'ALSA'
+        rpcs3ymlconfig["Audio"]['Renderer'] = 'FAudio' # ALSA does not support buffering so we have sound cuts ex: Rayman Origin
         rpcs3ymlconfig["Audio"]['Audio Channels'] = 'Downmix to Stereo'
         
         rpcs3ymlconfig["Miscellaneous"]['Exit RPCS3 when process finishes'] = True
