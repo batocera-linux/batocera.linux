@@ -41,6 +41,7 @@ batoceraBins = {'dosbox'         : '/usr/bin/dosbox'
               , 'hatari'         : '/usr/bin/hatari'
               , 'supermodel'     : '/usr/bin/supermodel'
               , 'tsugaru'        : '/usr/bin/Tsugaru_CUI'
+              , 'xemu'           : '/usr/bin/xemu'
 }
 
 
@@ -163,3 +164,5 @@ rpcs3configevdev = CONF + '/rpcs3/InputConfigs/Evdev/Default Profile.yml'
 
 supermodelCustom = CONF + '/supermodel'
 supermodelIni = supermodelCustom + '/Supermodel.ini'
+
+xemuConfig = CONF + '/xemu/xemu.ini'
