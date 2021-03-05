@@ -48,6 +48,7 @@ from generators.lightspark.lightsparkGenerator import LightsparkGenerator
 from generators.ruffle.ruffleGenerator import RuffleGenerator
 from generators.duckstation.duckstationGenerator import DuckstationGenerator
 from generators.drastic.drasticGenerator import DrasticGenerator
+from generators.xemu.xemuGenerator import XemuGenerator
 
 import controllersConfig as controllers
 import signal
@@ -99,6 +100,7 @@ generators = {
     'ruffle': RuffleGenerator(),
     'duckstation': DuckstationGenerator(),
     'drastic': DrasticGenerator(),
+    'xemu': XemuGenerator(),
 }
 
 def main(args, maxnbplayers):
