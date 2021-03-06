@@ -1322,6 +1322,34 @@ libretro:
                     "4xBRZ":      4xBRZ
                     "5xBRZ":      5xBRZ
                     "6xBRZ":      6xBRZ
+            mupen64plus-pak1:
+                prompt:      CONTROLLER PAK 1
+                description: Select player 1 Memory or Rumble pack
+                choices:
+                    "Off":         none
+                    "memory":      memory
+                    "rumble":      rumble
+            mupen64plus-pak2:
+                prompt:      CONTROLLER PAK 2
+                description: Select player 1 Memory or Rumble pack
+                choices:
+                    "Off":         none
+                    "memory":      memory
+                    "rumble":      rumble
+            mupen64plus-pak3:
+                prompt:      CONTROLLER PAK 3
+                description: Select player 1 Memory or Rumble pack
+                choices:
+                    "Off":         none
+                    "memory":      memory
+                    "rumble":      rumble
+            mupen64plus-pak4:
+                prompt:      CONTROLLER PAK 4
+                description: Select player 1 Memory or Rumble pack
+                choices:
+                    "Off":         none
+                    "memory":      memory
+                    "rumble":      rumble
     neocd:
       features: [rewind, autosave]
       cfeatures:
@@ -1567,7 +1595,7 @@ libretro:
     parallel_n64:
       features: [autosave, cheevos]
       cfeatures:
-            screensize:
+            parallel-n64-screensize:
                 prompt:      VIDEO RESOLUTION
                 description: Improve the fidelity of 3D models (unaffect 2D)
                 choices:
@@ -1581,7 +1609,13 @@ libretro:
                     "2240x1680": 2240x1680
                     "2880x2160": 2880x2160
                     "5760x4320": 5760x4320
-            filtering:
+            parallel-n64-aspectratiohint:
+                prompt:      WIDESCREEN
+                description: Break aspect ratio and strech image
+                choices:
+                    "Off":   normal
+                    "On":    widescreen
+            parallel-n64-filtering:
                 prompt:      TEXTURE FILTERING
                 description: Smooths out textures on 3D objetcs
                 choices:
@@ -1589,6 +1623,40 @@ libretro:
                     "N64 3-point": N64 3-point
                     "Bilinear":    bilinear
                     "Nearest":     nearest
+            parallel-n64-framerate:
+                prompt:      FRAMERATE
+                description: Fullspeed can break some games
+                choices:
+                    "fullspeed":   fullspeed
+                    "original":    original
+            parallel-n64-pak1:
+                prompt:      CONTROLLER PAK 1
+                description: Select player 1 Memory or Rumble pack
+                choices:
+                    "Off":         none
+                    "memory":      memory
+                    "rumble":      rumble
+            parallel-n64-pak2:
+                prompt:      CONTROLLER PAK 2
+                description: Select player 1 Memory or Rumble pack
+                choices:
+                    "Off":         none
+                    "memory":      memory
+                    "rumble":      rumble
+            parallel-n64-pak3:
+                prompt:      CONTROLLER PAK 3
+                description: Select player 1 Memory or Rumble pack
+                choices:
+                    "Off":         none
+                    "memory":      memory
+                    "rumble":      rumble
+            parallel-n64-pak4:
+                prompt:      CONTROLLER PAK 4
+                description: Select player 1 Memory or Rumble pack
+                choices:
+                    "Off":         none
+                    "memory":      memory
+                    "rumble":      rumble
     pce:
       features: [netplay, rewind, autosave, latency_reduction]
       cfeatures:
@@ -2754,6 +2822,7 @@ mupen64plus:
   features: [ratio]
 
 openbor:
+  features: []
   cfeatures:
     ratio:
       prompt:      SCREEN RATIO
@@ -2862,13 +2931,13 @@ easyrpg:
   cfeatures:
         testplay:
             prompt:      TEST PLAY
-            description: test play mode
+            description: Test play mode
             choices:
                 "Off":          0
                 "On":           1
         encoding:
             prompt:      ENCODING
-            description: game encoding
+            description: Game encoding
             choices:
               Western European: 1252
               Windows-1251:     1251
@@ -3018,11 +3087,11 @@ solarus:
   cfeatures:
         joystick:
             prompt:      JOYSTICK
-            description: pad to control the player
+            description: Pad to control the player
             choices:
-              Normal:    normal
-              Joystick1: joystick1
-              Joystick2: joystick2
+              Normal:     normal
+              Joystick 1: joystick1
+              Joystick 2: joystick2
 
 mugen:
   features: [padtokeyboard]

@@ -580,18 +580,80 @@ def generateCoreSettings(coreSettings, system, rom):
             coreSettings.save('mupen64plus-txEnhancementMode', '"' + system.config['mupen64plus-txEnhancementMode'] + '"')
         else:
             coreSettings.save('mupen64plus-txEnhancementMode', '"None"')
+        # Controller Pak 1
+        if system.isOptSet('mupen64plus-pak1'):
+            coreSettings.save('mupen64plus-pak1', system.config['mupen64plus-pak1'])
+        else:
+            coreSettings.save('mupen64plus-pak1', '"memory"')
+        # Controller Pak 2
+        if system.isOptSet('mupen64plus-pak2'):
+            coreSettings.save('mupen64plus-pak2', system.config['mupen64plus-pak2'])
+        else:
+            coreSettings.save('mupen64plus-pak2', '"none"')
+        # Controller Pak 3
+        if system.isOptSet('mupen64plus-pak3'):
+            coreSettings.save('mupen64plus-pak3', system.config['mupen64plus-pak3'])
+        else:
+            coreSettings.save('mupen64plus-pak3', '"none"')
+        # Controller Pak 4
+        if system.isOptSet('mupen64plus-pak4'):
+            coreSettings.save('mupen64plus-pak4', system.config['mupen64plus-pak4'])
+        else:
+            coreSettings.save('mupen64plus-pak4', '"none"')
 
     if (system.config['core'] == 'parallel_n64'):
+        coreSettings.save('parallel-n64-64dd-hardware', '"disabled"')
+        coreSettings.save('parallel-n64-boot-device',   '"Default"')
+
         # Video Resolution
-        if system.isOptSet('screensize'):
-            coreSettings.save('parallel-n64-screensize', system.config['screensize'])
+        if system.isOptSet('parallel-n64-screensize'):
+            coreSettings.save('parallel-n64-screensize', system.config['parallel-n64-screensize'])
         else:
             coreSettings.save('parallel-n64-screensize', '"320x240"')
+        # Widescreen Hack
+        # Increases from 4:3 to 16:9 in 3D games (bad for 2D)
+        if system.isOptSet('parallel-n64-aspectratiohint') and system.isOptSet('ratio') and system.isOptSet('bezel') and system.config['parallel-n64-aspectratiohint'] == 'widescreen' and system.config["ratio"] == "16/9" and system.config["bezel"] == "none":
+            coreSettings.save('parallel-n64-aspectratiohint', '"widescreen"')
+        else:
+            coreSettings.save('parallel-n64-aspectratiohint', '"normal"')
         # Texture Filtering
-        if system.isOptSet('filtering'):
-            coreSettings.save('parallel-n64-filtering', system.config['filtering'])
+        if system.isOptSet('parallel-n64-filtering'):
+            coreSettings.save('parallel-n64-filtering', system.config['parallel-n64-filtering'])
         else:
             coreSettings.save('parallel-n64-filtering', '"automatic"')
+        # Framerate
+        if system.isOptSet('parallel-n64-framerate'):
+            coreSettings.save('parallel-n64-framerate', system.config['parallel-n64-framerate'])
+        else:
+            coreSettings.save('parallel-n64-framerate', '"automatic"')
+        # Controller Pak 1
+        if system.isOptSet('parallel-n64-pak1'):
+            coreSettings.save('parallel-n64-pak1', system.config['parallel-n64-pak1'])
+        else:
+            coreSettings.save('parallel-n64-pak1', '"memory"')
+        # Controller Pak 2
+        if system.isOptSet('parallel-n64-pak2'):
+            coreSettings.save('parallel-n64-pak2', system.config['parallel-n64-pak2'])
+        else:
+            coreSettings.save('parallel-n64-pak2', '"none"')
+        # Controller Pak 3
+        if system.isOptSet('parallel-n64-pak3'):
+            coreSettings.save('parallel-n64-pak3', system.config['parallel-n64-pak3'])
+        else:
+            coreSettings.save('parallel-n64-pak3', '"none"')
+        # Controller Pak 4
+        if system.isOptSet('parallel-n64-pak4'):
+            coreSettings.save('parallel-n64-pak4', system.config['parallel-n64-pak4'])
+        else:
+            coreSettings.save('parallel-n64-pak4', '"none"')
+
+        # Nintendo 64-DD
+        if (system.name == 'n64dd'):
+            # 64DD Hardware
+            coreSettings.save('parallel-n64-64dd-hardware', '"enabled"')
+            # Boot device
+            coreSettings.save('parallel-n64-boot-device',   '"64DD IPL"')
+
 
     # Nintendo DS
     if (system.config['core'] == 'desmume'):
