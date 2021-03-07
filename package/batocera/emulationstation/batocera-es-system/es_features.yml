@@ -606,6 +606,14 @@ libretro:
                     "Autodetect":           1
                     "NES Gamepad":          513
                     "NES Zapper":           258
+            controller2_nes:
+                prompt:      CONTROLLER 2 TYPE
+                description: Select NES Gamepad, Paddle or Gun (must use a mouse)
+                choices:
+                    "Autodetect":           1
+                    "NES Gamepad":          513
+                    "NES Zapper":           258
+                    "Arkanoid paddle":      514
     flycast:
       features: [autosave]
       cfeatures:
@@ -694,6 +702,38 @@ libretro:
                 choices:
                     "Off": disabled
                     "On":  enabled
+            controller1_dc:
+                prompt:      CONTROLLER 1 TYPE
+                description: Select Gamepad, Keyboard, Mouse or Light Gun
+                choices:
+                    "Gamepad":   1
+                    "Keyboard":  3
+                    "Mouse":     2
+                    "Light Gun": 4
+            controller2_dc:
+                prompt:      CONTROLLER 2 TYPE
+                description: Select Gamepad, Keyboard, Mouse or Light Gun
+                choices:
+                    "Gamepad":   1
+                    "Keyboard":  3
+                    "Mouse":     2
+                    "Light Gun": 4
+            controller3_dc:
+                prompt:      CONTROLLER 3 TYPE
+                description: Select Gamepad, Keyboard, Mouse or Light Gun
+                choices:
+                    "Gamepad":   1
+                    "Keyboard":  3
+                    "Mouse":     2
+                    "Light Gun": 4
+            controller4_dc:
+                prompt:      CONTROLLER 4 TYPE
+                description: Select Gamepad, Keyboard, Mouse or Light Gun
+                choices:
+                    "Gamepad":   1
+                    "Keyboard":  3
+                    "Mouse":     2
+                    "Light Gun": 4
       systems:
             atomiswave:
                 cfeatures:
@@ -784,7 +824,7 @@ libretro:
                             "Mouse":                         2
                     controller2_md:
                         prompt:      CONTROLLER 2 TYPE
-                        description: Select 3 or 6 button controller, mouse or Multitap
+                        description: Select controller, Multitap, mouse or Gun
                         choices:
                             #"None":                          0
                             "Joypad Auto":                   1
@@ -796,6 +836,8 @@ libretro:
                             "Joypad 6 Button + Teamplayer":  1793
                             #"XE-1AP":                        773
                             "Mouse":                         2
+                            "Menacer Light Gun":             516
+                            "Konami Justifiers":             772
             mastersystem:
                 cfeatures:
                     gpgx_blargg_filter_ms:
@@ -1280,6 +1322,34 @@ libretro:
                     "4xBRZ":      4xBRZ
                     "5xBRZ":      5xBRZ
                     "6xBRZ":      6xBRZ
+            mupen64plus-pak1:
+                prompt:      CONTROLLER PAK 1
+                description: Select player 1 Memory or Rumble pack
+                choices:
+                    "Off":         none
+                    "memory":      memory
+                    "rumble":      rumble
+            mupen64plus-pak2:
+                prompt:      CONTROLLER PAK 2
+                description: Select player 1 Memory or Rumble pack
+                choices:
+                    "Off":         none
+                    "memory":      memory
+                    "rumble":      rumble
+            mupen64plus-pak3:
+                prompt:      CONTROLLER PAK 3
+                description: Select player 1 Memory or Rumble pack
+                choices:
+                    "Off":         none
+                    "memory":      memory
+                    "rumble":      rumble
+            mupen64plus-pak4:
+                prompt:      CONTROLLER PAK 4
+                description: Select player 1 Memory or Rumble pack
+                choices:
+                    "Off":         none
+                    "memory":      memory
+                    "rumble":      rumble
     neocd:
       features: [rewind, autosave]
       cfeatures:
@@ -1525,7 +1595,7 @@ libretro:
     parallel_n64:
       features: [autosave, cheevos]
       cfeatures:
-            screensize:
+            parallel-n64-screensize:
                 prompt:      VIDEO RESOLUTION
                 description: Improve the fidelity of 3D models (unaffect 2D)
                 choices:
@@ -1539,7 +1609,13 @@ libretro:
                     "2240x1680": 2240x1680
                     "2880x2160": 2880x2160
                     "5760x4320": 5760x4320
-            filtering:
+            parallel-n64-aspectratiohint:
+                prompt:      WIDESCREEN
+                description: Break aspect ratio and strech image
+                choices:
+                    "Off":   normal
+                    "On":    widescreen
+            parallel-n64-filtering:
                 prompt:      TEXTURE FILTERING
                 description: Smooths out textures on 3D objetcs
                 choices:
@@ -1547,6 +1623,40 @@ libretro:
                     "N64 3-point": N64 3-point
                     "Bilinear":    bilinear
                     "Nearest":     nearest
+            parallel-n64-framerate:
+                prompt:      FRAMERATE
+                description: Fullspeed can break some games
+                choices:
+                    "fullspeed":   fullspeed
+                    "original":    original
+            parallel-n64-pak1:
+                prompt:      CONTROLLER PAK 1
+                description: Select player 1 Memory or Rumble pack
+                choices:
+                    "Off":         none
+                    "memory":      memory
+                    "rumble":      rumble
+            parallel-n64-pak2:
+                prompt:      CONTROLLER PAK 2
+                description: Select player 1 Memory or Rumble pack
+                choices:
+                    "Off":         none
+                    "memory":      memory
+                    "rumble":      rumble
+            parallel-n64-pak3:
+                prompt:      CONTROLLER PAK 3
+                description: Select player 1 Memory or Rumble pack
+                choices:
+                    "Off":         none
+                    "memory":      memory
+                    "rumble":      rumble
+            parallel-n64-pak4:
+                prompt:      CONTROLLER PAK 4
+                description: Select player 1 Memory or Rumble pack
+                choices:
+                    "Off":         none
+                    "memory":      memory
+                    "rumble":      rumble
     pce:
       features: [netplay, rewind, autosave, latency_reduction]
       cfeatures:
@@ -2082,6 +2192,12 @@ libretro:
                     "Super Scope":      260
                     "Konami Justifier": 516
                     "M.A.C.S. Rifle":   1028
+            controller3_snes9x:
+                prompt:      CONTROLLER 3 TYPE
+                description: Select SNES Gamepad or Justifier for Player 2
+                choices:
+                    "SNES Gamepad":          1
+                    "Konami Justifier (P2)": 772
     snes9x_next:
       features: [netplay, rewind, autosave, latency_reduction, cheevos]
       cfeatures:
@@ -2381,6 +2497,54 @@ libretro:
                     "On":               enabled
     vice_x64sc:
       features: [rewind, autosave, latency_reduction, padtokeyboard]
+      cfeatures:
+            external_palette:
+                prompt:      EXTERNAL PALETTE
+                description: Choose the most accurate colors
+                choices:
+                    "default":          default
+                    "colodore":         colodore
+                    "pepto-pal":        pepto-pal
+                    "pepto-ntsc":       pepto-ntsc
+                    "pepto-ntsc-sony":  pepto-ntsc-sony
+                    "cjam":             cjam
+                    "c64hq":            c64hq
+                    "c64s":             c64s
+                    "ccs64":            ccs64
+                    "community-colors": community-colors
+                    "deekay":           deekay
+                    "frodo":            frodo
+                    "godot":            godot
+                    "pc64":             pc64
+                    "ptoing":           ptoing
+                    "rgb":              rgb
+                    "vice":             vice
+            aspect_ratio:
+                prompt:      ASPECT RATIO
+                description: Switch frequency and resolution by region
+                choices:
+                    "PAL 50Hz - 312/576px":     pal
+                    "NTSC 60Hz - 262/492px":    ntsc
+            zoom_mode_c64:
+                prompt:      ZOOM MODE
+                description: Crops the borders to fit various host screens
+                choices:
+                    "Off":              none
+                    "small":            small
+                    "medium":           medium
+                    "maximum":          maximum
+            JoyPort:
+                prompt:      JOYSTICK PORT
+                description: Choose to use Joystick on port 1 or 2
+                choices:
+                    "Port 1":           Port 1
+                    "Port 2":           Port 2
+            keyboard_pass_through:
+                prompt:      KEYBOARD PASS-THROUGH
+                description: Passes all physical keyboard events for Pad2Key
+                choices:
+                    "Off":              disabled
+                    "On":               enabled
     vice_xplus4:
       features: [rewind, autosave, latency_reduction, padtokeyboard]
     vice_x128:
@@ -2607,7 +2771,7 @@ fsuae:
   features: [ratio, padtokeyboard]
 
 hatari:
-  features: []
+  features: [padtokeyboard]
   cfeatures:
         model:
             prompt:      MODEL
@@ -2625,7 +2789,7 @@ hatari:
                 "Mega STE / 2.06":   megaste_206
         language:
             prompt:      LANGUAGE
-            description: tos language
+            description: TOS languages
             choices:
                 DE:                  de
                 ES:                  es
@@ -2638,7 +2802,7 @@ hatari:
                 US:                  us
         ram:
             prompt:      RAM
-            description: ram memory size
+            description: RAM memory size
             choices:
                 520K:                0
                 1M:                  1
@@ -2658,6 +2822,7 @@ mupen64plus:
   features: [ratio]
 
 openbor:
+  features: []
   cfeatures:
     ratio:
       prompt:      SCREEN RATIO
@@ -2766,13 +2931,13 @@ easyrpg:
   cfeatures:
         testplay:
             prompt:      TEST PLAY
-            description: test play mode
+            description: Test play mode
             choices:
                 "Off":          0
                 "On":           1
         encoding:
             prompt:      ENCODING
-            description: game encoding
+            description: Game encoding
             choices:
               Western European: 1252
               Windows-1251:     1251
@@ -2800,7 +2965,7 @@ supermodel:
                 "On":       1
         wideScreen:
             prompt:      ENABLE WIDESCREEN
-            description: Enable widescreen. Note - may cause rendering issues.
+            description: Enable widescreen may cause rendering issues
             choices:
                 "Off":      0
                 "On":       1
@@ -2922,11 +3087,11 @@ solarus:
   cfeatures:
         joystick:
             prompt:      JOYSTICK
-            description: pad to control the player
+            description: Pad to control the player
             choices:
-              Normal:    normal
-              Joystick1: joystick1
-              Joystick2: joystick2
+              Normal:     normal
+              Joystick 1: joystick1
+              Joystick 2: joystick2
 
 mugen:
   features: [padtokeyboard]

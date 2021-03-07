@@ -20,19 +20,37 @@ typetoname = {'button': 'btn', 'hat': 'btn', 'axis': 'axis', 'key': 'key'}
 # Map an emulationstation input hat to the corresponding retroarch hat value
 hatstoname = {'1': 'up', '2': 'right', '4': 'down', '8': 'left'}
 
+# Systems to swap Disc/CD : Atari ST / Amstrad CPC / AMIGA 500 1200 / DOS / MSX / PC98 / X68000 / Commodore 64 128 Plus4 | Dreamcast / PSX / Saturn / SegaCD / 3DO
+# Systems with internal mapping : PC88 / FDS | No multi-disc support : opera / yabasanshiro | No m3u support : PicoDrive
+coreWithSwapSupport = {'hatari', 'cap32', 'bluemsx', 'dosbox', 'dosbox_pure', 'flycast', 'np2kai', 'puae', 'px68k', 'vice_x64', 'vice_x64sc', 'vice_xplus4', 'vice_x128', 'pcsx_rearmed', 'duckstation', 'mednafen_psx', 'beetle-saturn', 'genesisplusgx'};
+systemToSwapDisable = {'amigacd32', 'amigacdtv', 'naomi', 'atomiswave', 'megadrive', 'mastersystem', 'gamegear'}
+
 # Write a configuration for a specified controller
 # Warning, function used by amiberry because it reads the same retroarch formatting
 def writeControllersConfig(retroconfig, system, controllers):
     # Map buttons to the corresponding retroarch specials keys
-    retroarchspecials = {'x': 'load_state', 'y': 'save_state', 'pageup': 'screenshot', \
-                         'start': 'exit_emulator', 'up': 'state_slot_increase', \
-                         'down': 'state_slot_decrease', 'left': 'rewind', 'right': 'hold_fast_forward', \
-                         'l2': 'shader_prev', 'r2': 'shader_next', 'a': 'reset', 'pagedown': 'ai_service'}
-    retroarchspecials['b'] = 'menu_toggle'
+    retroarchspecials = {'x': 'load_state', 'y': 'save_state', 'a': 'reset', 'start': 'exit_emulator', \
+                         'up': 'state_slot_increase', 'down': 'state_slot_decrease', 'left': 'rewind', 'right': 'hold_fast_forward', \
+                         'pageup': 'screenshot', 'pagedown': 'ai_service', 'l2': 'shader_prev', 'r2': 'shader_next'}
+    retroarchspecials["b"] = "menu_toggle"
 
-    cleanControllerConfig(retroconfig, controllers, retroarchspecials)
+    # Some input adaptations for some systems with swap Disc/CD
+    if (system.config['core'] in coreWithSwapSupport) and (system.name not in systemToSwapDisable):
+        retroarchspecials["pageup"] = "disk_eject_toggle"
+        retroarchspecials["l2"] =     "disk_prev"
+        retroarchspecials["r2"] =     "disk_next"
+        retroarchspecials["l3"] =     "screenshot"
 
-    # no menu in non full uimode
+    # Full special features list to disable
+    retroarchFullSpecial = {'1':  'state_slot_increase', '2':  'load_state',        '3': 'save_state', \
+                            '4':  'state_slot_decrease', '5':  'reset',             '6': 'exit_emulator', \
+                            '7':  'rewind',              '8':  'hold_fast_forward', '9': 'screenshot', \
+                            '10': 'disk_prev',           '11': 'disk_next',         '12': 'disk_eject_toggle', \
+                            '13': 'shader_prev',         '14': 'shader_next',       '15': 'ai_service', \
+                            '16': 'menu_toggle'}
+    cleanControllerConfig(retroconfig, controllers, retroarchFullSpecial)
+
+    # No menu in non full uimode
     if system.config["uimode"] != "Full":
         del retroarchspecials['b']
 
@@ -40,7 +58,7 @@ def writeControllersConfig(retroconfig, system, controllers):
         writeControllerConfig(retroconfig, controllers[controller], controller, system, retroarchspecials)
     writeHotKeyConfig(retroconfig, controllers)
 
-# remove all controller configurations
+# Remove all controller configurations
 def cleanControllerConfig(retroconfig, controllers, retroarchspecials):
     retroconfig.disableAll('input_player')
     for specialkey in retroarchspecials:
@@ -71,9 +89,12 @@ def generateControllerConfig(controller, retroarchspecials, system):
                      'pageup': 'l', 'pagedown': 'r', 'l2': 'l2', 'r2': 'r2', \
                      'l3': 'l3', 'r3': 'r3', \
                      'start': 'start', 'select': 'select'}
+    retroarchGunbtns = {'a': 'aux_a', 'b': 'aux_b', 'y': 'aux_c', \
+                        'pageup': 'offscreen_shot', 'pagedown': 'trigger', \
+                        'start': 'start', 'select': 'select'}
 
-    # some input adaptations for some cores...
-    # z is important, in case l2 (z) is not available for this pad, use l1
+    # Some input adaptations for some cores...
+    # Z is important, in case l2 (z) is not available for this pad, use l1
     if system.name == "n64":
         if 'r2' not in controller.inputs:
             retroarchbtns["pageup"] = "l2"
@@ -87,11 +108,20 @@ def generateControllerConfig(controller, retroarchspecials, system):
             input = controller.inputs[btnkey]
             config['input_player%s_%s_%s' % (controller.player, btnvalue, typetoname[input.type])] = getConfigValue(
                 input)
+    for btnkey in retroarchGunbtns: # Gun Mapping
+        btnvalue = retroarchGunbtns[btnkey]
+        if btnkey in controller.inputs:
+            input = controller.inputs[btnkey]
+            config['input_player%s_gun_%s_%s' % (controller.player, btnvalue, typetoname[input.type])] = getConfigValue(
+                input)
     for dirkey in retroarchdirs:
         dirvalue = retroarchdirs[dirkey]
         if dirkey in controller.inputs:
             input = controller.inputs[dirkey]
             config['input_player%s_%s_%s' % (controller.player, dirvalue, typetoname[input.type])] = getConfigValue(
+                input)
+            # Gun Mapping
+            config['input_player%s_gun_dpad_%s_%s' % (controller.player, dirvalue, typetoname[input.type])] = getConfigValue(
                 input)
     for jskey in retroarchjoysticks:
         jsvalue = retroarchjoysticks[jskey]
@@ -130,7 +160,7 @@ def getConfigValue(input):
     if input.type == 'key':
         return input.id
 
-# return the retroarch analog_dpad_mode
+# Return the retroarch analog_dpad_mode
 def getAnalogMode(controller, system):
     # don't enable analog as hat mode for some systems
     if system.name == 'n64' or system.name == 'dreamcast' or system.name == '3ds':

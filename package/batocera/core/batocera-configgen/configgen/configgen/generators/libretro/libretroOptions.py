@@ -141,15 +141,14 @@ def generateCoreSettings(coreSettings, system, rom):
         if system.isOptSet('puae_model') and system.config['puae_model'] != 'automatic':
             coreSettings.save('puae_model', system.config['puae_model'])
         else:
-            if system.name == 'amiga500':
-                coreSettings.save('puae_model', '"A500"')
-            elif system.name == 'amiga1200':
+            if system.name == 'amiga1200':
                 coreSettings.save('puae_model', '"A1200"')
             elif system.name == 'amigacd32':
                 coreSettings.save('puae_model', '"CD32FR"')
             elif (system.name == 'amigacdtv'):
                 coreSettings.save('puae_model', '"CDTV"')
             else:
+                # Will default to A500 when booting floppy disks, A600 when booting hard drives
                 coreSettings.save('puae_model', '"auto"')
 
         # CPU Compatibility
@@ -581,18 +580,80 @@ def generateCoreSettings(coreSettings, system, rom):
             coreSettings.save('mupen64plus-txEnhancementMode', '"' + system.config['mupen64plus-txEnhancementMode'] + '"')
         else:
             coreSettings.save('mupen64plus-txEnhancementMode', '"None"')
+        # Controller Pak 1
+        if system.isOptSet('mupen64plus-pak1'):
+            coreSettings.save('mupen64plus-pak1', system.config['mupen64plus-pak1'])
+        else:
+            coreSettings.save('mupen64plus-pak1', '"memory"')
+        # Controller Pak 2
+        if system.isOptSet('mupen64plus-pak2'):
+            coreSettings.save('mupen64plus-pak2', system.config['mupen64plus-pak2'])
+        else:
+            coreSettings.save('mupen64plus-pak2', '"none"')
+        # Controller Pak 3
+        if system.isOptSet('mupen64plus-pak3'):
+            coreSettings.save('mupen64plus-pak3', system.config['mupen64plus-pak3'])
+        else:
+            coreSettings.save('mupen64plus-pak3', '"none"')
+        # Controller Pak 4
+        if system.isOptSet('mupen64plus-pak4'):
+            coreSettings.save('mupen64plus-pak4', system.config['mupen64plus-pak4'])
+        else:
+            coreSettings.save('mupen64plus-pak4', '"none"')
 
     if (system.config['core'] == 'parallel_n64'):
+        coreSettings.save('parallel-n64-64dd-hardware', '"disabled"')
+        coreSettings.save('parallel-n64-boot-device',   '"Default"')
+
         # Video Resolution
-        if system.isOptSet('screensize'):
-            coreSettings.save('parallel-n64-screensize', system.config['screensize'])
+        if system.isOptSet('parallel-n64-screensize'):
+            coreSettings.save('parallel-n64-screensize', system.config['parallel-n64-screensize'])
         else:
             coreSettings.save('parallel-n64-screensize', '"320x240"')
+        # Widescreen Hack
+        # Increases from 4:3 to 16:9 in 3D games (bad for 2D)
+        if system.isOptSet('parallel-n64-aspectratiohint') and system.isOptSet('ratio') and system.isOptSet('bezel') and system.config['parallel-n64-aspectratiohint'] == 'widescreen' and system.config["ratio"] == "16/9" and system.config["bezel"] == "none":
+            coreSettings.save('parallel-n64-aspectratiohint', '"widescreen"')
+        else:
+            coreSettings.save('parallel-n64-aspectratiohint', '"normal"')
         # Texture Filtering
-        if system.isOptSet('filtering'):
-            coreSettings.save('parallel-n64-filtering', system.config['filtering'])
+        if system.isOptSet('parallel-n64-filtering'):
+            coreSettings.save('parallel-n64-filtering', system.config['parallel-n64-filtering'])
         else:
             coreSettings.save('parallel-n64-filtering', '"automatic"')
+        # Framerate
+        if system.isOptSet('parallel-n64-framerate'):
+            coreSettings.save('parallel-n64-framerate', system.config['parallel-n64-framerate'])
+        else:
+            coreSettings.save('parallel-n64-framerate', '"automatic"')
+        # Controller Pak 1
+        if system.isOptSet('parallel-n64-pak1'):
+            coreSettings.save('parallel-n64-pak1', system.config['parallel-n64-pak1'])
+        else:
+            coreSettings.save('parallel-n64-pak1', '"memory"')
+        # Controller Pak 2
+        if system.isOptSet('parallel-n64-pak2'):
+            coreSettings.save('parallel-n64-pak2', system.config['parallel-n64-pak2'])
+        else:
+            coreSettings.save('parallel-n64-pak2', '"none"')
+        # Controller Pak 3
+        if system.isOptSet('parallel-n64-pak3'):
+            coreSettings.save('parallel-n64-pak3', system.config['parallel-n64-pak3'])
+        else:
+            coreSettings.save('parallel-n64-pak3', '"none"')
+        # Controller Pak 4
+        if system.isOptSet('parallel-n64-pak4'):
+            coreSettings.save('parallel-n64-pak4', system.config['parallel-n64-pak4'])
+        else:
+            coreSettings.save('parallel-n64-pak4', '"none"')
+
+        # Nintendo 64-DD
+        if (system.name == 'n64dd'):
+            # 64DD Hardware
+            coreSettings.save('parallel-n64-64dd-hardware', '"enabled"')
+            # Boot device
+            coreSettings.save('parallel-n64-boot-device',   '"64DD IPL"')
+
 
     # Nintendo DS
     if (system.config['core'] == 'desmume'):
@@ -772,15 +833,17 @@ def generateCoreSettings(coreSettings, system, rom):
 
     # Nintendo NES / Famicom Disk System
     if (system.config['core'] == 'nestopia'):
+        # Nestopia Mouse mode for Zapper
+        coreSettings.save('nestopia_zapper_device', '"mouse"')
         # Reduce Sprite Flickering
         if system.isOptSet('nestopia_nospritelimit') and system.config['nestopia_nospritelimit'] == "disabled":
             coreSettings.save('nestopia_nospritelimit', '"disabled"')
-            coreSettings.save('nestopia_overscan_h', '"disabled"')
-            coreSettings.save('nestopia_overscan_v', '"disabled"')
+            coreSettings.save('nestopia_overscan_h',    '"disabled"')
+            coreSettings.save('nestopia_overscan_v',    '"disabled"')
         else:
-            coreSettings.save('fceumm_nospritelimit', '"enabled"')
-            coreSettings.save('nestopia_overscan_h', '"enabled"')
-            coreSettings.save('nestopia_overscan_v', '"enabled"')
+            coreSettings.save('nestopia_nospritelimit', '"enabled"')
+            coreSettings.save('nestopia_overscan_h',    '"enabled"')
+            coreSettings.save('nestopia_overscan_v',    '"enabled"')
         # Palette Choice
         if system.isOptSet('nestopia_palette'):
             coreSettings.save('nestopia_palette', system.config['nestopia_palette'])
@@ -803,15 +866,17 @@ def generateCoreSettings(coreSettings, system, rom):
             coreSettings.save('nestopia_select_adapter', '"auto"')
 
     if (system.config['core'] == 'fceumm'):
+        # FCEumm Mouse mode for Zapper
+        coreSettings.save('fceumm_zapper_mode', '"mouse"')
         # Reduce Sprite Flickering
         if system.isOptSet('fceumm_nospritelimit') and system.config['fceumm_nospritelimit'] == "disabled":
             coreSettings.save('fceumm_nospritelimit', '"disabled"')
-            coreSettings.save('fceumm_overscan_h', '"disabled"')
-            coreSettings.save('fceumm_overscan_v', '"disabled"')
+            coreSettings.save('fceumm_overscan_h',    '"disabled"')
+            coreSettings.save('fceumm_overscan_v',    '"disabled"')
         else:
             coreSettings.save('fceumm_nospritelimit', '"enabled"')
-            coreSettings.save('fceumm_overscan_h', '"enabled"')
-            coreSettings.save('fceumm_overscan_v', '"enabled"')
+            coreSettings.save('fceumm_overscan_h',    '"enabled"')
+            coreSettings.save('fceumm_overscan_v',    '"enabled"')
         # Palette Choice
         if system.isOptSet('fceumm_palette'):
             coreSettings.save('fceumm_palette', system.config['fceumm_palette'])
@@ -1245,7 +1310,7 @@ def generateCoreSettings(coreSettings, system, rom):
         if system.isOptSet('beetle_psx_cpu_freq_scale'):
             coreSettings.save('beetle_psx_cpu_freq_scale', system.config['beetle_psx_cpu_freq_scale'])
         else:
-            coreSettings.save('beetle_psx_cpu_freq_scale', '"100%(native)"')
+            coreSettings.save('beetle_psx_cpu_freq_scale', '"110%"') # If not 110% NO options are working!
         # Show official Bootlogo
         if system.isOptSet('beetle_psx_skip_bios'):
             coreSettings.save('beetle_psx_skip_bios', system.config['beetle_psx_skip_bios'])
