@@ -26,8 +26,7 @@ class XemuGenerator(Generator):
 
         # the command to run
         commandArray = [batoceraFiles.batoceraBins[system.config['emulator']]]
-        commandArray.append("-config_path")
-        commandArray.append(batoceraFiles.xemuConfig)
+        commandArray.extend(["-config_path", batoceraFiles.xemuConfig])
 
         env = {}
         env["XDG_CONFIG_HOME"] = batoceraFiles.CONF
