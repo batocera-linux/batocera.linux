@@ -98,6 +98,7 @@ define XEMU_INSTALL_TARGET_CMDS
 	# XEmu app data
 	mkdir -p $(TARGET_DIR)/usr/share/xemu/data
 	cp $(@D)/data/* $(TARGET_DIR)/usr/share/xemu/data/
+	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/xemu/xbox_hdd.qcow2 $(TARGET_DIR)/usr/share/xemu/data
 endef
 
 define XEMU_EVMAPY
