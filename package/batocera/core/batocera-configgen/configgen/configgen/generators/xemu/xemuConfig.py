@@ -8,7 +8,7 @@ import settings
 from Emulator import Emulator
 import ConfigParser
 
-def writeIniFile(system, rom):
+def writeIniFile(system, rom, playersControllers):
     iniConfig = ConfigParser.ConfigParser()
     # To prevent ConfigParser from converting to lower case
     iniConfig.optionxform = str
@@ -19,14 +19,14 @@ def writeIniFile(system, rom):
         except:
             pass
 
-    createXemuConfig(iniConfig, system, rom)
+    createXemuConfig(iniConfig, system, rom, playersControllers)
     # save the ini file
     if not os.path.exists(os.path.dirname(batoceraFiles.xemuConfig)):
         os.makedirs(os.path.dirname(batoceraFiles.xemuConfig))
     with open(batoceraFiles.xemuConfig, 'w') as configfile:
         iniConfig.write(configfile)
 
-def createXemuConfig(iniConfig, system, rom):
+def createXemuConfig(iniConfig, system, rom, playersControllers):
     # Create INI sections
     if not iniConfig.has_section("system"):
         iniConfig.add_section("system")
@@ -44,8 +44,8 @@ def createXemuConfig(iniConfig, system, rom):
     # Fill system section
     iniConfig.set("system", "flash_path", "/userdata/bios/Complex_4627.bin")
     iniConfig.set("system", "bootrom_path", "/userdata/bios/mcpx_1.0.bin")
-    iniConfig.set("system", "hdd_path", "/userdata/bios/xbox_hdd.qcow2")
-    iniConfig.set("system", "eeprom_path", "/userdata/xemu_eeprom.bin")
+    iniConfig.set("system", "hdd_path", "/userdata/saves/xbox/xbox_hdd.qcow2")
+    iniConfig.set("system", "eeprom_path", "/userdata/saves/xbox/xemu_eeprom.bin")
     iniConfig.set("system", "dvd_path", rom)
     iniConfig.set("system", "memory", "64")
     iniConfig.set("system", "shortanim", "false")
@@ -58,10 +58,14 @@ def createXemuConfig(iniConfig, system, rom):
     iniConfig.set("display", "ui_scale", "1")
 
     # Fill input section
-    iniConfig.set("input", "controller_1_guid", "")
-    iniConfig.set("input", "controller_2_guid", "")
-    iniConfig.set("input", "controller_3_guid", "")
-    iniConfig.set("input", "controller_4_guid", "")
+    # first, clear
+    for i in range(1,5):
+        iniConfig.set("input", "controller_{}_guid".format(i), "")
+    nplayer = 1
+    for playercontroller, pad in sorted(playersControllers.items()):
+        if nplayer <= 4:
+            iniConfig.set("input", "controller_{}_guid".format(nplayer), pad.guid)
+        nplayer = nplayer + 1
 
     # Fill network section
     iniConfig.set("network", "enabled", "false")
