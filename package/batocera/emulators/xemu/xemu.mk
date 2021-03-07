@@ -100,4 +100,11 @@ define XEMU_INSTALL_TARGET_CMDS
 	cp $(@D)/data/* $(TARGET_DIR)/usr/share/xemu/data/
 endef
 
+define XEMU_EVMAPY
+	mkdir -p $(TARGET_DIR)/usr/share/evmapy
+	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/xemu/xbox.xemu.keys $(TARGET_DIR)/usr/share/evmapy
+endef
+
+XEMU_POST_INSTALL_TARGET_HOOKS += XEMU_EVMAPY
+
 $(eval $(autotools-package))
