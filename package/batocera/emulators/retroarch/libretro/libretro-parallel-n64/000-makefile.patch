@@ -34,11 +34,11 @@ index 3269005..a215089 100644
 +   ifneq (,$(findstring rockpro64,$(platform)))
 +      GLES = 1
 +      GL_LIB := -lGLESv2
-+      CPUFLAGS += -DNO_ASM -DARM -D__arm__ -DARM_ASM -D__NEON_OPT -DNOSSE -DARM_FIX
-+     CPUFLAGS += -marm -mfloat-abi=hard -mfpu=neon
++      CPUFLAGS += -DNO_ASM -DARM -DARM_ASM -DDONT_WANT_ARM_OPTIMIZATIONS -DARM_FIX -DCLASSIC -DARM64
++ #    CPUFLAGS += -marm -mfloat-abi=hard -mfpu=neon
 +      HAVE_NEON = 1
-+      WITH_DYNAREC=arm
-+      CPUFLAGS += -march=armv7ve -mcpu=cortex-a72 -mtune=cortex-a72.cortex-a53
++      WITH_DYNAREC=aarch64
++      CPUFLAGS += -D__NEON_OPT -march=armv8-a+crc -mcpu=cortex-a72 -mtune=cortex-a72.cortex-a53
 +   endif
 +
 +   # ODROIDN2

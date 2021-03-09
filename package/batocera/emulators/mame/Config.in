@@ -8,6 +8,8 @@ config BR2_PACKAGE_MAME
         select BR2_PACKAGE_SQLITE
 	select BR2_PACKAGE_FONTCONFIG
 	select BR2_PACKAGE_RAPIDJSON
+	select BR2_PACKAGE_EXPAT
+	select BR2_PACKAGE_GLM
 
 	help
 	  MAME emulator standalone package

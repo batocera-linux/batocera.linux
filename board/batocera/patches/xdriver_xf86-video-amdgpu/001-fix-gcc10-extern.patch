@@ -1,0 +1,11 @@
+--- a/src/drmmode_display.h	2021-01-20 16:04:46.727427951 +0100
++++ b/src/drmmode_display.h	2021-01-20 16:04:53.550761020 +0100
+@@ -289,7 +289,7 @@
+ 			 uint64_t *ust, uint32_t *result_seq);
+ 
+ 
+-miPointerSpriteFuncRec drmmode_sprite_funcs;
++extern miPointerSpriteFuncRec drmmode_sprite_funcs;
+ 
+ 
+ #endif

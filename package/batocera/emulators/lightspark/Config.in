@@ -1,0 +1,17 @@
+config BR2_PACKAGE_LIGHTSPARK
+	bool "lightspark"
+	depends on BR2_PACKAGE_FREETYPE
+	depends on BR2_PACKAGE_PCRE
+	depends on BR2_PACKAGE_JPEG
+	depends on BR2_PACKAGE_LIBPNG
+	depends on BR2_PACKAGE_SDL2
+	depends on BR2_PACKAGE_SDL2_MIXER
+	depends on BR2_PACKAGE_CAIRO
+	depends on BR2_PACKAGE_FFMPEG
+	depends on BR2_PACKAGE_LIBCURL
+
+	help
+          LightSpark
+          Flash emulator for windows / mac / linux.
+
+          https://github.com/lightspark/lightspark

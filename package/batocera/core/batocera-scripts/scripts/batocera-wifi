@@ -6,7 +6,7 @@ do_help() {
 }
 
 do_list() {
-    connmanctl services | sed 's/^...[ ]*//' | awk -F '[ ]*[ ]wifi_[[:alnum:]]*_' '{if (NF==2) print $1}'
+    connmanctl services | sed 's/^...[ ]*//' | awk -F '[ ]*[ ]wifi_[[:alnum:]]*_' '{if (NF==2) print $1}' | sort -u # remove duplicates (a single wifi can appear under 2 interfaces)
 }
 
 do_scanlist() {

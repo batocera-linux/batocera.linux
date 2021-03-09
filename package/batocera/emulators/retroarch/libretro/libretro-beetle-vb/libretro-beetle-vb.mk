@@ -4,18 +4,16 @@
 #
 ################################################################################
 # Version.: Commits on Jan 13, 2021
-LIBRETRO_BEETLE_VB_VERSION = cf0cbc90ceb64b041c85d505814ff89eead4aba9
+LIBRETRO_BEETLE_VB_VERSION = 2999cceaeb04afb0e2d62b5c1e212f279d07001e
 LIBRETRO_BEETLE_VB_SITE = $(call github,libretro,beetle-vb-libretro,$(LIBRETRO_BEETLE_VB_VERSION))
 LIBRETRO_BEETLE_VB_LICENSE = GPLv2
 
 LIBRETRO_BEETLE_VB_PLATFORM = $(LIBRETRO_PLATFORM)
 
-ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA),y)
-	LIBRETRO_BEETLE_VB_PLATFORM = classic_armv8_a35
-endif
-
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI4),y)
-	LIBRETRO_BEETLE_VB_PLATFORM = rpi4_64
+LIBRETRO_BEETLE_VB_PLATFORM = rpi4_64
+else ifeq ($(BR2_aarch64),y)
+LIBRETRO_BEETLE_VB_PLATFORM = unix
 endif
 
 define LIBRETRO_BEETLE_VB_BUILD_CMDS

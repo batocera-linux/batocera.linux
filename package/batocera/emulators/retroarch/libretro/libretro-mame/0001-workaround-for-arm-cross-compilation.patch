@@ -184,19 +184,6 @@ index 7969d7852a..41212bcb6a 100644
  		prctl(PR_SET_NAME,_name, 0, 0, 0);
  #elif BX_PLATFORM_BSD
  #	if defined(__NetBSD__)
-diff --git a/makefile b/makefile
-index c30a159844..86e13567a6 100644
---- a/makefile
-+++ b/makefile
-@@ -341,7 +341,7 @@ WINDRES  := $(word 1,$(TOOLCHAIN) i686-w64-mingw32-)windres
- endif
- endif
- 
--ifeq ($(findstring arm,$(UNAME)),arm)
-+ifeq ($(findstring arm,$(PLATFORM)),arm)
- ARCHITECTURE :=
- ifndef NOASM
- 	NOASM := 1
 -- 
 2.21.0 (Apple Git-120)
 

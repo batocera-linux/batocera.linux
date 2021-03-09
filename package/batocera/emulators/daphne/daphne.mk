@@ -3,8 +3,8 @@
 # Hypseus is a fork of Daphne
 #
 ################################################################################
-# Version.: Commits on Mar 29, 2019
-DAPHNE_VERSION = 41fc33edaa8273cbf1ad807b57d8c2a7ae143351
+# Version.: Release on Feb 26, 2021
+DAPHNE_VERSION = v1.3.0
 DAPHNE_SITE = https://github.com/btolab/hypseus.git
 DAPHNE_SITE_METHOD=git
 DAPHNE_LICENSE = GPLv3

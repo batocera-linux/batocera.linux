@@ -41,3 +41,12 @@ def checkModeExists(videomode):
                 return True
         eslog.error("invalid video mode {}".format(videomode))
         return False
+
+def changeMouse(mode):
+    eslog.log("changeMouseMode({})".format(mode))
+    if mode:
+        cmd = "unclutter-remote -s"
+    else:
+        cmd = "unclutter-remote -h"
+    proc = subprocess.Popen([cmd], stdout=subprocess.PIPE, shell=True)
+    (out, err) = proc.communicate()

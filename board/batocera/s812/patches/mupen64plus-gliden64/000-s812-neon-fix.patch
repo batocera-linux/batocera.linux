@@ -1,0 +1,17 @@
+--- a/src/CMakeLists.txt	2021-02-12 22:01:37.966334667 +0100
++++ b/src/CMakeLists.txt	2021-02-12 22:02:55.706331902 +0100
+@@ -465,12 +465,12 @@
+     message("Found compiler version " ${G++_VERSION})
+     message(SEND_ERROR "You need at least Clang 3.3 to compile GLideN64!")
+   endif()
+-  set(GCC_CPP11_COMPILE_FLAGS "-std=c++11")
++  set(GCC_CPP11_COMPILE_FLAGS "-std=c++11 -mfpu=neon")
+   set( CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} ${GCC_CPP11_COMPILE_FLAGS}" )
+   if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+     set(GCC_STATIC_LINK_FLAGS "-static-libgcc")
+   endif()
+-  set( CMAKE_SHARED_LINKER_FLAGS  "${CMAKE_SHARED_LINKER_FLAGS} ${GCC_STATIC_LINK_FLAGS}" )
++  set( CMAKE_SHARED_LINKER_FLAGS  "${CMAKE_SHARED_LINKER_FLAGS} ${GCC_STATIC_LINK_FLAGS} -mfpu=neon" )
+ endif()
+ 
+ set(CMAKE_CXX_STANDARD 11)

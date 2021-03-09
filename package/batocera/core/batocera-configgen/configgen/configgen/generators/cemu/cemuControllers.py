@@ -126,6 +126,7 @@ def generateControllerConfig(system, playersControllers, rom):
             cemuSettings.set("Controller", 22 + addIndex, "button_10000000000")   # RStick Down
             cemuSettings.set("Controller", 23 + addIndex, "button_8000000000")   # RStick Left
             cemuSettings.set("Controller", 24 + addIndex, "button_200000000")   # RStick Right
+            cemuSettings.set("Controller", 25 + addIndex, "button_100")   # Blow Mic
 
 
         configFileName = "{}/{}".format(batoceraFiles.CONF + "/cemu/controllerProfiles/", "controller" + str(nplayer) + ".txt")

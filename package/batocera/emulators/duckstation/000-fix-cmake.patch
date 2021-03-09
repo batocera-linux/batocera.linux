@@ -1,0 +1,112 @@
+diff -u -r /home/romain/duckstation/CMakeLists.txt ./CMakeLists.txt
+--- /home/romain/duckstation/CMakeLists.txt	2021-02-13 00:29:48.693304818 +0100
++++ ./CMakeLists.txt	2021-02-13 00:52:42.082500283 +0100
+@@ -35,6 +35,7 @@
+ endif()
+ if(LINUX OR ANDROID)
+   option(USE_EGL "Support EGL OpenGL context creation" ON)
++  option(USE_MALI "Link with libmali for EGL support" OFF)
+ endif()
+ if(LINUX AND NOT ANDROID)
+   option(USE_DRMKMS "Support DRM/KMS display and contexts" OFF)
+@@ -193,7 +194,7 @@
+   set(CPU_ARCH "x86")
+ elseif(${CMAKE_SYSTEM_PROCESSOR} STREQUAL "aarch64")
+   set(CPU_ARCH "aarch64")
+-elseif(${CMAKE_SYSTEM_PROCESSOR} STREQUAL "arm" OR ${CMAKE_SYSTEM_PROCESSOR} STREQUAL "armv7-a" OR ${CMAKE_SYSTEM_PROCESSOR} STREQUAL "armv7l")
++elseif(${CMAKE_SYSTEM_PROCESSOR} STREQUAL "arm" OR ${CMAKE_SYSTEM_PROCESSOR} STREQUAL "armv7-a" OR ${CMAKE_SYSTEM_PROCESSOR} STREQUAL "armv7l" OR ${CMAKE_SYSTEM_PROCESSOR} STREQUAL "armv8l")
+   set(CPU_ARCH "aarch32")
+   if(ANDROID)
+     # Force ARM mode, since apparently ANDROID_ARM_MODE isn't working..
+diff -u -r /home/romain/duckstation/CMakeModules/FindEGL.cmake ./CMakeModules/FindEGL.cmake
+--- /home/romain/duckstation/CMakeModules/FindEGL.cmake	2021-02-13 00:29:48.693304818 +0100
++++ ./CMakeModules/FindEGL.cmake	2021-02-13 00:45:35.564462969 +0100
+@@ -86,6 +86,17 @@
+         ${PKG_EGL_LIBRARY_DIRS}
+ )
+ 
++if(USE_MALI)
++pkg_check_modules(PKG_MALI QUIET mali)
++find_library(MALI_LIBRARY
++    NAMES
++        mali
++    HINTS
++        ${PKG_MALI_LIBRARY_DIRS}
++)
++endif()
++
++
+ # NB: We do *not* use the version information from pkg-config, as that
+ #     is the implementation version (eg: the Mesa version)
+ if(EGL_INCLUDE_DIR)
+@@ -117,7 +128,11 @@
+ 
+ cmake_push_check_state(RESET)
+ list(APPEND CMAKE_REQUIRED_LIBRARIES "${EGL_LIBRARY}")
++if(USE_MALI)
++list(APPEND CMAKE_REQUIRED_LIBRARIES "${MALI_LIBRARY}")
++endif()
+ list(APPEND CMAKE_REQUIRED_INCLUDES "${EGL_INCLUDE_DIR}")
++list(APPEND CMAKE_REQUIRED_DEFINITIONS "-DEGL_NO_X11")
+ 
+ check_cxx_source_compiles("
+ #include <EGL/egl.h>
+@@ -161,7 +176,11 @@
+ mark_as_advanced(EGL_LIBRARY EGL_INCLUDE_DIR HAVE_EGL)
+ 
+ # compatibility variables
++if (USE_MALI)
++set(EGL_LIBRARIES ${EGL_LIBRARY} ${MALI_LIBRARY})
++else()
+ set(EGL_LIBRARIES ${EGL_LIBRARY})
++endif()
+ set(EGL_INCLUDE_DIRS ${EGL_INCLUDE_DIR})
+ set(EGL_VERSION_STRING ${EGL_VERSION})
+ 
+Seulement dans ./CMakeModules: FindEGL.cmake.orig
+diff -u -r /home/romain/duckstation/dep/glad/CMakeLists.txt ./dep/glad/CMakeLists.txt
+--- /home/romain/duckstation/dep/glad/CMakeLists.txt	2021-02-13 00:29:48.765302377 +0100
++++ ./dep/glad/CMakeLists.txt	2021-02-13 00:42:20.848512028 +0100
+@@ -17,8 +17,9 @@
+   target_sources(glad PRIVATE src/glad_wgl.c)
+ else()
+   if(USE_EGL)
++    target_compile_definitions(glad PRIVATE -DEGL_NO_X11)
+     target_sources(glad PRIVATE src/glad_egl.c)
+-    target_link_libraries(glad PRIVATE EGL::EGL)
++    target_link_libraries(glad PRIVATE EGL)
+   endif()
+   if(USE_X11)
+     target_sources(glad PRIVATE src/glad_glx.c)
+diff -u -r /home/romain/duckstation/src/common/CMakeLists.txt ./src/common/CMakeLists.txt
+--- /home/romain/duckstation/src/common/CMakeLists.txt	2021-02-13 00:29:48.885298307 +0100
++++ ./src/common/CMakeLists.txt	2021-02-13 00:42:20.848512028 +0100
+@@ -175,12 +175,13 @@
+     )
+   endif()
+   if(USE_DRMKMS)
++    target_compile_definitions(common PRIVATE "-DEGL_NO_X11=1")
+     target_compile_definitions(common PRIVATE "-DUSE_GBM=1")
+     target_sources(common PRIVATE
+       gl/context_egl_gbm.cpp
+       gl/context_egl_gbm.h
+     )
+-    target_link_libraries(common PUBLIC GBM::GBM)
++    target_link_libraries(common PUBLIC gbm EGL)
+   endif()
+ endif()
+ 
+diff -u -r /home/romain/duckstation/src/duckstation-nogui/CMakeLists.txt ./src/duckstation-nogui/CMakeLists.txt
+--- /home/romain/duckstation/src/duckstation-nogui/CMakeLists.txt	2021-02-13 00:29:48.901297765 +0100
++++ ./src/duckstation-nogui/CMakeLists.txt	2021-02-13 00:56:19.913224314 +0100
+@@ -29,6 +29,10 @@
+   target_compile_definitions(duckstation-nogui PRIVATE "-DUSE_LIBEVDEV=1")
+   target_include_directories(duckstation-nogui PRIVATE ${LIBEVDEV_INCLUDE_DIRS})
+   target_link_libraries(duckstation-nogui PRIVATE ${LIBEVDEV_LIBRARIES})
++if (USE_MALI)
++  target_link_libraries(duckstation-nogui PRIVATE ${MALI_LIBRARY})
++endif()
++
+ endif()
+ 
+ if(WIN32)

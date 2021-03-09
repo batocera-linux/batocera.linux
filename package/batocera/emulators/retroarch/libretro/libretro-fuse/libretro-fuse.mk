@@ -4,7 +4,7 @@
 #
 ################################################################################
 # Version.: Commits on Jan 13, 2021
-LIBRETRO_FUSE_VERSION = 48e978a2f51a665adf06a081a807ad2b0ef19823
+LIBRETRO_FUSE_VERSION = 8b51f87d88d609a5c440e447a709b67798b92a2a
 LIBRETRO_FUSE_SITE = $(call github,libretro,fuse-libretro,$(LIBRETRO_FUSE_VERSION))
 LIBRETRO_FUSE_LICENSE = GPLv3
 
@@ -12,10 +12,6 @@ LIBRETRO_FUSE_PLATFORM = $(LIBRETRO_PLATFORM)
 
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI3),y)
 	LIBRETRO_FUSE_PLATFORM = rpi3
-endif
-
-ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA),y)
-	LIBRETRO_FUSE_PLATFORM = classic_armv8_a35
 endif
 
 define LIBRETRO_FUSE_BUILD_CMDS

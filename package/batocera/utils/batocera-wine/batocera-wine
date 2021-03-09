@@ -2,7 +2,9 @@
 
 set -x
 
-ACTION=$1
+SYSTEM=$1
+ACTION=$2
+shift
 shift
 
 # Arguments: key, system, game
@@ -13,7 +15,7 @@ get_setting() {
 ## Wine detection
 GAMENAME=$1 
 ROMGAMENAME=$(basename "${GAMENAME}")
-WINE_VERSION="$(get_setting core windows "${ROMGAMENAME}" || echo proton)"
+WINE_VERSION="$(get_setting core "${SYSTEM}" "${ROMGAMENAME}" || echo proton)"
 
 # Wine Folder
 wine_folder() {
@@ -31,10 +33,11 @@ WINE64="${DIR}/${WINE_VERSION}/bin/wine64"
 WINESERVER="${DIR}/${WINE_VERSION}/bin/wineserver"
 MSIEXEC="${DIR}/${WINE_VERSION}/bin/msiexec"
 WINETRICKS="${DIR}/winetricks"
+MF_INSTALL="${DIR}/mf/mf-install.sh"
 
 ## Folders
-G_SAVES_DIR="/userdata/saves/windows"
-G_ROMS_DIR="/userdata/roms/windows"
+G_SAVES_DIR="/userdata/saves/${SYSTEM}"
+G_ROMS_DIR="/userdata/roms/${SYSTEM}"
 
 ## Export Wine libs
 PATH=$PATH:PATH=$PATH:${DIR}/${WINE_VERSION}/bin
@@ -44,17 +47,17 @@ export LIBGL_DRIVERS_PATH="/lib32/dri:/usr/lib/dri"
 export WINEDLLPATH="${DIR}/${WINE_VERSION}/lib/wine/fakedlls:${DIR}/${WINE_VERSION}/lib64/wine/fakedlls"
 
 usage() {
-    echo "${1} play    	     <game>.iso"             >&2
-    echo "${1} play    	     <game>.exe"             >&2
-    echo "${1} play    	     <game>.pc"              >&2
-    echo "${1} play    	     <game>.wine"            >&2
-    echo "${1} play    	     <game>.wsquashfs"       >&2
-    echo "${1} play    	     <game>.wtgz"            >&2
-    echo "${1} install 	     <game>.iso"             >&2
-    echo "${1} install 	     <game>.exe"             >&2
-    echo "${1} tricks  	     <game>.wine directplay" >&2
-    echo "${1} wine2squashfs <game.wine>"            >&2
-    echo "${1} wine2winetgz  <game.wine>"            >&2
+    echo "${1} windows play    	     <game>.iso"             >&2
+    echo "${1} windows play    	     <game>.exe"             >&2
+    echo "${1} windows play    	     <game>.pc"              >&2
+    echo "${1} windows play    	     <game>.wine"            >&2
+    echo "${1} windows play    	     <game>.wsquashfs"       >&2
+    echo "${1} windows play    	     <game>.wtgz"            >&2
+    echo "${1} windows install 	     <game>.iso"             >&2
+    echo "${1} windows install 	     <game>.exe"             >&2
+    echo "${1} windows tricks  	     <game>.wine directplay" >&2
+    echo "${1} windows wine2squashfs <game.wine>"            >&2
+    echo "${1} windows wine2winetgz  <game.wine>"            >&2
 }
 
 waitWineServer() {
@@ -65,13 +68,39 @@ waitWineServer() {
     done
 }
 
+# find the first existing parent dir of a existing or non existing directory
+getTopExistingDir() {
+    if test -e "${1}"
+       then
+	   echo "${1}"
+    else
+	PARENTDIR=$(dirname "${1}")
+	getTopExistingDir "${PARENTDIR}"
+    fi
+}
+
+# find the fs type or an existing directory
+getFSDir() {
+    df -P "${1}"  | tail -1 | cut -d' ' -f 1 | xargs blkid | sed -e s+"^.*TYPE=\"\(.*\)\"$"+'\1'+
+}
+
+getFSWine() {
+    WINETOPDIR=$(getTopExistingDir "${1}")
+    FSWINEPOINT=$(getFSDir "${WINETOPDIR}")
+    LFSTYPE=""
+    test -e "${FSWINEPOINT}" && LFSTYPE=$(mount | grep -E "^${FSWINEPOINT}" | awk '{print $5}')
+    echo "${LFSTYPE}"
+}
+
 wine_options() {
-    ESYNC="$(get_setting esync windows "${ROMGAMENAME}")"
-    FSYNC="$(get_setting fsync windows "${ROMGAMENAME}")"
-    PBA="$(get_setting pba windows "${ROMGAMENAME}")"
+    WINEPOINT=$1
+    ESYNC="$(get_setting esync "${SYSTEM}" "${ROMGAMENAME}")"
+    FSYNC="$(get_setting fsync "${SYSTEM}" "${ROMGAMENAME}")"
+    PBA="$(get_setting pba "${SYSTEM}" "${ROMGAMENAME}")"
+    FSTYPE=$(getFSWine "${WINEPOINT}")
     KEYBOARD="$(/usr/bin/batocera-settings-get system.kblayout)"
-    VIRTUAL_DESKTOP="$(get_setting virtual_desktop windows "${ROMGAMENAME}")"
-    VIRTUAL_DESKTOP_SIZE="$(get_setting videomode windows "${ROMGAMENAME}" || batocera-resolution currentResolution)"
+    VIRTUAL_DESKTOP="$(get_setting virtual_desktop "${SYSTEM}" "${ROMGAMENAME}")"
+    VIRTUAL_DESKTOP_SIZE="$(get_setting videomode "${SYSTEM}" "${ROMGAMENAME}" || batocera-resolution currentResolution)"
 
     if [ "${VIRTUAL_DESKTOP}" = 1 ]; then
 	VDESKTOP="explorer /desktop=Wine,${VIRTUAL_DESKTOP_SIZE}"
@@ -85,8 +114,52 @@ wine_options() {
 
     export PBA_ENABLE=0
     test "${PBA}" = 1 && PBA_ENABLE=1
+
+    if [ "${FSTYPE}" = ntfs ]; then
+	export NTFS_MODE=1
+    fi
+    
+    export STAGING_SHARED_MEMORY=1
+    export ULIMIT_SIZE=1000000
+
+    if ! ulimit -n "${ULIMIT_SIZE}" 2>/dev/null; then
+	export WINEESYNC=0
+    fi
     
     setxkbmap "${KEYBOARD}"
+}
+
+mf_install() {
+    WINEPREFIX=$1
+    MF="$(get_setting mf "${SYSTEM}" "${ROMGAMENAME}")"
+
+    if test "${MF}" = 1
+    then
+    if test -e "/userdata/system/wine/mf"
+    then
+        chmod +x "${MF_INSTALL}" || return 1
+        WINEPREFIX="${WINEPREFIX}" "${MF_INSTALL}" || return 1
+        /usr/bin/batocera-settings-set "${SYSTEM}[\"${ROMGAMENAME}\"].mf" 0
+    else
+        WINEPREFIX="${WINEPREFIX}" "${MF_INSTALL}" || return 1
+        /usr/bin/batocera-settings-set "${SYSTEM}[\"${ROMGAMENAME}\"].mf" 0
+    fi
+    fi
+
+    return 0
+}
+
+reg_install() {
+    if test -e "/userdata/system/wine/regs"; then
+        echo "Importing registry files"
+
+        for file in /userdata/system/wine/regs/*.reg; do
+            "${WINE}" regedit "${file}" &>/dev/null || return 1
+            "${WINE64}" regedit "${file}" &>/dev/null || return 1
+        done
+    fi
+
+    return 0
 }
 
 dxvk_install() {
@@ -97,8 +170,8 @@ dxvk_install() {
     # install dxvk only on system where it is available (aka, not x86)
     test -e "/usr/wine/dxvk" || return 0
 
-    DXVK="$(get_setting dxvk windows "${ROMGAMENAME}")"
-    DXVK_HUD="$(get_setting dxvk_hud windows "${ROMGAMENAME}")"
+    DXVK=$(get_setting dxvk "${SYSTEM}" "${ROMGAMENAME}")
+    DXVK_HUD=$(get_setting dxvk_hud "${SYSTEM}" "${ROMGAMENAME}")
 
     if test "${DXVK_HUD}" = 1
     then
@@ -126,6 +199,7 @@ dxvk_install() {
 
     if test "${DXVK}" = 1
     then
+	export DXVK_ASYNC=1
 	export WINEDLLOVERRIDES="${WINEDLLOVERRIDES};dxgi,d3d9,d3d10,d3d10_1,d3d10core,d3d11,d3d12=n;nvapi64,nvapi="
     else
 	export WINEDLLOVERRIDES="${WINEDLLOVERRIDES};dxgi,d3d9,d3d10,d3d10_1,d3d10core,d3d11,d3d12=b"
@@ -188,7 +262,7 @@ createWineDirectory() {
     # please wait screen
     bsod-wine&
     BSODPID=$!
-  
+
     mkdir -p "${WINEPREFIX}" || return 1
 
     if ! WINEPREFIX=${WINEPREFIX} ${WINE} hostname
@@ -226,7 +300,9 @@ play_wine() {
     GAMENAME=$1
     WINEPOINT="${GAMENAME}"
 
-    wine_options
+    wine_options "${WINEPOINT}"
+    mf_install "${WINEPOINT}" || return 1
+    reg_install "${WINEPOINT}" || return 1
     dxvk_install "${WINEPOINT}" || return 1
     WINE_CMD=$(getWine_var "${WINEPOINT}" "CMD" "explorer")
     WINE_DIR=$(getWine_var "${WINEPOINT}" "DIR" "")
@@ -238,8 +314,10 @@ play_pc() {
     GAMENAME=$1
     WINEPOINT="${G_SAVES_DIR}/${WINE_VERSION}/"$(basename "${GAMENAME}")".wine"
     
-    wine_options
+    wine_options "${WINEPOINT}"
     createWineDirectory "${WINEPOINT}" || return 1
+    mf_install "${WINEPOINT}" || return 1
+    reg_install "${WINEPOINT}" || return 1
     sandboxing_prefix "${WINEPOINT}" || return 1
     dxvk_install "${WINEPOINT}" || return 1
 
@@ -275,8 +353,10 @@ play_exe() {
     GAMEDIR=$(dirname "${GAMENAME}")
     GAMEEXE=$(basename "${GAMENAME}")
 
-    wine_options
+    wine_options "${WINEPOINT}"
     createWineDirectory "${WINEPOINT}" || return 1
+    mf_install "${WINEPOINT}" || return 1
+    reg_install "${WINEPOINT}" || return 1
     sandboxing_prefix "${WINEPOINT}" || return 1
     dxvk_install "${WINEPOINT}" || return 1
 
@@ -286,15 +366,17 @@ play_exe() {
 
 play_winetgz() {
     GAMENAME=$1
-
-    wine_options
     WINEPOINT="${G_SAVES_DIR}/"$(basename "${GAMENAME}")".wine"
+
+    wine_options "${WINEPOINT}"
     if ! test -e "${WINEPOINT}"
     then
 	mkdir -p "${WINEPOINT}" || return 1
 	(cd "${WINEPOINT}" && gunzip -c "${GAMENAME}" | tar xf -) || return 1
     fi
 
+    mf_install "${WINEPOINT}" || return 1
+    reg_install "${WINEPOINT}" || return 1
     dxvk_install "${WINEPOINT}" || return 1
 
     WINE_CMD=$(getWine_var "${WINEPOINT}" "CMD" "explorer")
@@ -305,9 +387,9 @@ play_winetgz() {
 
 play_squashfs() {
     GAMENAME=$1
-    wine_options
     BASEGAMENAME=$(basename "${GAMENAME}")
     WINEPOINT="/var/run/wine/${BASEGAMENAME}"
+    wine_options "${WINEPOINT}"
     SQUASHFSPOINT="/var/run/wine/squashfs_${BASEGAMENAME}"
     SAVEPOINT="${G_SAVES_DIR}/${BASEGAMENAME}"
     WORKPOINT="${G_SAVES_DIR}/${BASEGAMENAME}.work"
@@ -334,6 +416,7 @@ play_squashfs() {
 	return 1
     fi
 
+    mf_install "${WINEPOINT}" || return 1
     dxvk_install "${WINEPOINT}" || return 1
 
     WINE_CMD=$(getWine_var "${WINEPOINT}" "CMD" "explorer")
@@ -442,8 +525,6 @@ gameext() {
 }
 
 cleanAndExit() {
-    unclutter-remote -h
-
     RESNEW=$(batocera-resolution currentMode)
     if test "${RESNEW}" != "${G_RESCUR}"
     then
@@ -453,10 +534,6 @@ cleanAndExit() {
     exit "${1}"
     # TODO : unmount always, trap, later
 }
-
-# show the mouse
-unclutter-remote -s
-trap "unclutter-remote -h" INT QUIT TERM
 
 G_RESCUR=$(batocera-resolution currentMode)
 

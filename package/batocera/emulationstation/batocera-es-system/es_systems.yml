@@ -4,10 +4,22 @@ snes:
   release: 1990
   hardware: console
   extensions: [smc, fig, sfc, gd3, gd7, dx2, bsx, swc, zip, 7z]
+  group:      snes
   emulators:
     libretro:
       pocketsnes:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_POCKETSNES] }
       snes9x_next: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_SNES9X_NEXT] }
+      snes9x:      { requireAnyOf: [BR2_PACKAGE_LIBRETRO_SNES9X] }
+      bsnes:       { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BSNES] }
+
+snes-msu1:
+  name:       Super Disc System (MSU1)
+  manufacturer: Nintendo
+  release: 1991
+  hardware: console
+  extensions: [smc, sfc]
+  emulators:
+    libretro:
       snes9x:      { requireAnyOf: [BR2_PACKAGE_LIBRETRO_SNES9X] }
       bsnes:       { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BSNES] }
 
@@ -16,17 +28,30 @@ c64:
   manufacturer: Commodore
   release: 1982
   hardware: computer
-  extensions: [d64, zip, 7z]
+  extensions: [d64, d81, crt, prg, tap, t64, m3u, zip, 7z]
   platform:   c64
+  group:      c64
   emulators:
     vice:
-      x64:         { requireAnyOf: [BR2_PACKAGE_VICE]          }
-      x64dtv:      { requireAnyOf: [BR2_PACKAGE_VICE]          }
-      xscpu64:     { requireAnyOf: [BR2_PACKAGE_VICE]          }
-      xplus4:      { requireAnyOf: [BR2_PACKAGE_VICE]          }
+      x64:         { requireAnyOf: [BR2_PACKAGE_VICE], incompatible_extensions: [m3u,7z] }
+      x64dtv:      { requireAnyOf: [BR2_PACKAGE_VICE], incompatible_extensions: [m3u,7z] }
+      xscpu64:     { requireAnyOf: [BR2_PACKAGE_VICE], incompatible_extensions: [m3u,7z] }
     libretro:
       vice_x64:    { requireAnyOf: [BR2_PACKAGE_LIBRETRO_VICE] }
       vice_x64sc:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_VICE] }
+
+cplus4:
+  name:       Commodore Plus4
+  manufacturer: Commodore
+  release: 1984
+  hardware: computer
+  extensions: [d64, prg, tap, m3u, zip, 7z]
+  platform:   c64
+  group:      c64
+  emulators:
+    vice:
+      xplus4:      { requireAnyOf: [BR2_PACKAGE_VICE], incompatible_extensions: [m3u,7z] }
+    libretro:
       vice_xplus4: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_VICE] }
 
 c128:
@@ -34,11 +59,11 @@ c128:
   manufacturer: Commodore
   release: 1985
   hardware: computer
-  extensions: [d64, d81, prg, lnx, zip]
+  extensions: [d64, d81, prg, lnx, m3u, zip, 7z]
   platform:   c64
   emulators:
     vice:
-      x128:          { requireAnyOf: [BR2_PACKAGE_VICE] }
+      x128:          { requireAnyOf: [BR2_PACKAGE_VICE], incompatible_extensions: [m3u,7z] }
     libretro:
       vice_x128:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_VICE] }
 
@@ -47,11 +72,11 @@ c20:
   manufacturer: Commodore
   release: 1980
   hardware: computer
-  extensions: [a0, b0, crt, d64, d81, prg, tap, t64, zip]
+  extensions: [a0, b0, crt, d64, d81, prg, tap, t64, m3u, zip, 7z]
   platform:   c64
   emulators:
     vice:
-      xvic:       { requireAnyOf: [BR2_PACKAGE_VICE] }
+      xvic:      { requireAnyOf: [BR2_PACKAGE_VICE], incompatible_extensions: [m3u,7z] }
     libretro:
       vice_xvic: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_VICE] }
 
@@ -60,11 +85,11 @@ pet:
   manufacturer: Commodore
   release: 1977
   hardware: computer
-  extensions: [a0, b0, crt, d64, d81, prg, tap, t64, zip]
+  extensions: [a0, b0, crt, d64, d81, prg, tap, t64, m3u, zip, 7z]
   platform:   c64
   emulators:
     vice:
-      xpet:       { requireAnyOf: [BR2_PACKAGE_VICE] }
+      xpet:      { requireAnyOf: [BR2_PACKAGE_VICE], incompatible_extensions: [m3u,7z] }
     libretro:
       vice_xpet: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_VICE] }
 
@@ -73,7 +98,7 @@ amiga500:
   manufacturer: Commodore
   release: 1987
   hardware: computer
-  extensions: [zip, adf, uae, ipf, dms, dmz, adz, lha, hdf, exe]
+  extensions: [adf, uae, ipf, dms, dmz, adz, lha, hdf, exe, m3u, zip]
   platform:   amiga
   group:      amiga
   emulators:
@@ -84,8 +109,8 @@ amiga500:
       A1000:  { requireAnyOf: [BR2_PACKAGE_FSUAE]         }
       A3000:  { requireAnyOf: [BR2_PACKAGE_FSUAE]         }
     amiberry:
-      A500:   { requireAnyOf: [BR2_PACKAGE_AMIBERRY]      }
-      A500+:  { requireAnyOf: [BR2_PACKAGE_AMIBERRY]      }
+      A500:   { requireAnyOf: [BR2_PACKAGE_AMIBERRY], incompatible_extensions: [m3u] }
+      A500+:  { requireAnyOf: [BR2_PACKAGE_AMIBERRY], incompatible_extensions: [m3u] }
     libretro:
       puae:   { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PUAE] }
 
@@ -94,7 +119,7 @@ amiga1200:
   manufacturer: Commodore
   release: 1992
   hardware: computer
-  extensions: [zip, adf, uae, ipf, dms, dmz, adz, lha, hdf, exe]
+  extensions: [adf, uae, ipf, dms, dmz, adz, lha, hdf, exe, m3u, zip]
   platform:   amiga
   group:      amiga
   emulators:
@@ -102,8 +127,8 @@ amiga1200:
       A1200:  { requireAnyOf: [BR2_PACKAGE_FSUAE]         }
       A4000:  { requireAnyOf: [BR2_PACKAGE_FSUAE]         }
     amiberry:
-      A1200:  { requireAnyOf: [BR2_PACKAGE_AMIBERRY]      }
-      A4000:  { requireAnyOf: [BR2_PACKAGE_AMIBERRY]      }
+      A1200:  { requireAnyOf: [BR2_PACKAGE_AMIBERRY], incompatible_extensions: [m3u] }
+      A4000:  { requireAnyOf: [BR2_PACKAGE_AMIBERRY], incompatible_extensions: [m3u] }
     libretro:
       puae:   { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PUAE] }
 
@@ -112,12 +137,12 @@ amigacd32:
   manufacturer: Commodore
   release: 1994
   hardware: console
-  extensions: [iso, cue, lha]
+  extensions: [bin, cue, iso, chd]
   emulators:
     fsuae:
       CD32:   { requireAnyOf: [BR2_PACKAGE_FSUAE]         }
     amiberry:
-      CD32:   { requireAnyOf: [BR2_PACKAGE_AMIBERRY]      }
+      CD32:   { requireAnyOf: [BR2_PACKAGE_AMIBERRY], incompatible_extensions: [chd] }
     libretro:
       puae:   { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PUAE] }
 
@@ -126,7 +151,7 @@ amigacdtv:
   manufacturer: Commodore
   release: 1991
   hardware: console
-  extensions: [bin, cue, iso]
+  extensions: [bin, cue, iso, chd]
   emulators:
     fsuae:
       CDTV:   { requireAnyOf: [BR2_PACKAGE_FSUAE]         }
@@ -139,6 +164,7 @@ nes:
   release: 1983
   hardware: console
   extensions: [nes, unif, unf, zip, 7z]
+  group:      nes
   emulators:
     libretro:
       fceumm:   { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FCEUMM] }
@@ -150,6 +176,22 @@ n64:
   release: 1996
   hardware: console
   extensions: [z64, n64, v64, zip, 7z]
+  emulators:
+    mupen64plus:
+      gliden64:   { requireAnyOf: [BR2_PACKAGE_MUPEN64PLUS_GLIDEN64, BR2_PACKAGE_MUPEN64PLUS_V20_GLIDEN64] }
+      glide64mk2: { requireAnyOf: [BR2_PACKAGE_MUPEN64PLUS_VIDEO_GLIDE64MK2]  }
+      rice:       { requireAnyOf: [BR2_PACKAGE_MUPEN64PLUS_VIDEO_RICE]        }
+      n64:        { requireAnyOf: [BR2_PACKAGE_MUPEN64PLUS_GLES2]             }
+    libretro:
+      mupen64plus-next: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MUPEN64PLUS_NEXT] }
+      parallel_n64:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PARALLEL_N64] }
+
+n64dd:
+  name:       Nintendo 64 Disk Drive
+  manufacturer: Nintendo
+  release: 1999
+  hardware: console
+  extensions: [z64, n64, zip, 7z] # ndd, d64 : Not supported yet
   emulators:
     mupen64plus:
       gliden64:   { requireAnyOf: [BR2_PACKAGE_MUPEN64PLUS_GLIDEN64, BR2_PACKAGE_MUPEN64PLUS_V20_GLIDEN64] }
@@ -230,6 +272,8 @@ nds:
       melonds: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MELONDS] }
     melonds:
       melonds: { requireAnyOf: [BR2_PACKAGE_MELONDS] }
+    drastic:
+      drastic: { requireAnyOf: [BR2_PACKAGE_DRASTIC] }
 
 fds:
   name:       Family Computer Disk System
@@ -237,6 +281,7 @@ fds:
   release: 1986
   hardware: console
   extensions: [fds, zip, 7z]
+  group:      nes
   emulators:
     libretro:
       fceumm:   { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FCEUMM] }
@@ -311,6 +356,7 @@ megadrive:
   hardware: console
   extensions: [bin, gen, md, sg, smd, zip, 7z]
   platform:   genesis, megadrive
+  group:      megadrive
   emulators:
     libretro:
       genesisplusgx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GENESISPLUSGX] }
@@ -322,11 +368,11 @@ segacd:
   manufacturer: Sega
   release: 1991
   hardware: console
-  extensions: [chd, cue, iso]
+  extensions: [cue, iso, chd, m3u]
   emulators:
     libretro:
       genesisplusgx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GENESISPLUSGX] }
-      picodrive:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PICODRIVE], incompatible_extensions: [chd] }
+      picodrive:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PICODRIVE], incompatible_extensions: [chd, m3u] }
 
 sega32x:
   name:       Sega 32x
@@ -334,6 +380,7 @@ sega32x:
   release: 1994
   hardware: console
   extensions: [32x, smd, bin, md, zip, 7z]
+  group:      megadrive
   emulators:
     libretro:
       picodrive: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PICODRIVE] }
@@ -379,7 +426,7 @@ psp:
   extensions: [iso, cso, pbp]
   emulators:
     ppsspp:
-      ppsspp: { requireAnyOf: [BR2_PACKAGE_PPSSPP]  }
+      ppsspp: { requireAnyOf: [BR2_PACKAGE_PPSSPP, BR2_PACKAGE_PPSSPP15]  }
     libretro:
       ppsspp:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PPSSPP] }
 
@@ -394,6 +441,8 @@ psx:
       pcsx_rearmed: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PCSX] }
       duckstation:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_DUCKSTATION], incompatible_extensions: [pbp] }
       mednafen_psx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BEETLE_PSX] }
+    duckstation:
+      duckstation: { requireAnyOf: [BR2_PACKAGE_DUCKSTATION]  }
 
 pcengine:
   name:       PC Engine
@@ -470,18 +519,18 @@ dos:
   manufacturer: Microsoft
   release: 1981
   hardware: computer
-  extensions: [pc, dos]
+  extensions: [pc, dos, zip]
   theme:      pc
   platform:   pc
   emulators:
     dosbox:
-      dosbox:           { requireAnyOf: [BR2_PACKAGE_DOSBOX]          }
+      dosbox:           { requireAnyOf: [BR2_PACKAGE_DOSBOX], incompatible_extensions: [zip] }
     dosbox_staging:
-      dosbox_staging:   { requireAnyOf: [BR2_PACKAGE_DOSBOX_STAGING]  }
+      dosbox_staging:   { requireAnyOf: [BR2_PACKAGE_DOSBOX_STAGING], incompatible_extensions: [zip] }
     dosboxx:
-      dosbox-x:         { requireAnyOf: [BR2_PACKAGE_DOSBOX_X]        }
+      dosbox-x:         { requireAnyOf: [BR2_PACKAGE_DOSBOX_X], incompatible_extensions: [zip] }
     libretro:
-      dosbox:           { requireAnyOf: [BR2_PACKAGE_LIBRETRO_DOSBOX] }
+      dosbox:           { requireAnyOf: [BR2_PACKAGE_LIBRETRO_DOSBOX], incompatible_extensions: [zip] }
       dosbox_pure:      { requireAnyOf: [BR2_PACKAGE_LIBRETRO_DOSBOX_PURE] }
   comment_en: |
     Each game (files) must be placed its own directory having the ".pc .dos" extension.
@@ -494,7 +543,9 @@ dos:
     miniputt.pc/MP.EXE
 
     WHere dosbox.bat contains: MP.EXE
-
+    
+    With pure-dosbox you can also use zip files.
+    
     To quit a game, press CTRL + F9.
 
     Games files are available on myabandonware:
@@ -510,7 +561,9 @@ dos:
     miniputt.pc/MP.EXE
 
     Et dosbox.bat contient: MP.EXE
-
+    
+    Avec pure-dosbox vous pouvez aussi utiliser des fichiers zip. 
+    
     Pour quitter un jeu, appuyer sur CTRL + F9.
 
     Les jeux DOS sont disponibles sur myabandonware:
@@ -536,7 +589,7 @@ devilutionx:
 fbneo:
   name:       Final Burn Neo
   manufacturer: Arcade
-  release:
+  release: 2019
   hardware: arcade
   extensions: [zip, 7z]
   platform:   arcade
@@ -555,7 +608,7 @@ fbneo:
 mame:
   name:       Mame
   manufacturer: Arcade
-  release:
+  release: 1997
   hardware: arcade
   extensions: [zip, 7z]
   platform:   arcade
@@ -967,12 +1020,13 @@ msx1:
   manufacturer: Microsoft
   release: 1983
   hardware: computer
-  extensions: [dsk, mx1, rom, zip, 7z, m3u]
+  extensions: [dsk, mx1, rom, zip, 7z, cas, m3u]
   platform:   msx
   group:      msx
   emulators:
     libretro:
       bluemsx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BLUEMSX] }
+      fmsx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FMSX] }
   comment_en: |
     ## BIOS ##
 
@@ -1027,12 +1081,13 @@ msx2:
   manufacturer: Microsoft
   release: 1985
   hardware: computer
-  extensions: [dsk, mx2, rom, zip, 7z, m3u]
+  extensions: [dsk, mx2, rom, zip, 7z, cas, m3u]
   platform:   msx
   group:      msx
   emulators:
     libretro:
       bluemsx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BLUEMSX] }
+      fmsx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FMSX] }
   comment_en: |
     ## BIOS ##
 
@@ -1087,12 +1142,13 @@ msx2+:
   manufacturer: Microsoft
   release: 1988
   hardware: computer
-  extensions: [dsk, mx2, rom, zip, 7z]
+  extensions: [dsk, mx2, rom, zip, 7z, cas, m3u]
   platform:   msx
   group:      msx
   emulators:
     libretro:
       bluemsx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BLUEMSX] }
+      fmsx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FMSX] }
   comment_en: |
     ## BIOS ##
 
@@ -1444,6 +1500,7 @@ satellaview:
   release: 1995
   hardware: console
   extensions: [bs, smc, sfc, zip, 7z]
+  group:      snes
   emulators:
     libretro:
       snes9x: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_SNES9X] }
@@ -1454,6 +1511,7 @@ sufami:
   release: 1996
   hardware: console
   extensions: [st, fig, bs, smc, sfc, zip, 7z]
+  group:      snes
   emulators:
     libretro:
       snes9x: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_SNES9X] }
@@ -1481,7 +1539,7 @@ gx4000:
 daphne:
   name:       Daphne
   manufacturer: Arcade
-  release:
+  release: 1983
   hardware: arcade
   extensions: [daphne]
   platform:   daphne, arcade
@@ -1515,11 +1573,22 @@ pc98:
   manufacturer: NEC
   release: 1982
   hardware: computer
-  extensions: [d98, zip, 98d, fdi, fdd, 2hd, tfd, d88, 88d, hdm, xdf, dup, cmd, hdi, thd, nhd, hdd, hdn]
+  extensions: [d98, zip, 98d, fdi, fdd, 2hd, tfd, d88, 88d, hdm, xdf, dup, cmd, hdi, thd, nhd, hdd, hdn, m3u]
   platform:   pc98
   emulators:
     libretro:
       np2kai:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PC98] }
+
+fmtowns:
+  name:       Fujistu FM-TOWNS
+  manufacturer: Fujistu
+  release: 1987
+  hardware: computer
+  extensions: [bin, m3u, cue, d88, d77, xdf, iso]
+  platform:   fmtowns
+  emulators:
+    tsugaru:
+      tsugaru:  { requireAnyOf: [BR2_PACKAGE_TSUGARU] }
 
 lightgun:
   name:       Light Gun
@@ -1625,8 +1694,8 @@ wiiu:
 
 solarus:
   name:       Solarus
-  manufacturer: Ports
-  release:
+  manufacturer: Solarus Team
+  release: 2011
   hardware: port
   extensions: [zip, solarus]
   emulators:
@@ -1635,8 +1704,8 @@ solarus:
 
 easyrpg:
   name:       EasyRPG
-  manufacturer: Ports
-  release:
+  manufacturer: EasyRPG Team
+  release: 2000
   hardware: port
   extensions: [zip, easyrpg]
   emulators:
@@ -1646,8 +1715,8 @@ easyrpg:
       easyrpg: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_EASYRPG] }
 
 pygame:
-  name:       pygame
-  manufacturer: pygame
+  name:       Pygame
+  manufacturer: Pygame Team
   release: 2000
   hardware: library
   extensions: [pygame]
@@ -1668,17 +1737,60 @@ imageviewer:
   hardware: system
   extensions: [jpg, jpeg, png, bmp, psd, tga, gif, hdr, pic, ppm, pgm, mkv, pdf, mp4, avi]
   path:       /userdata/screenshots
-  platform:   ignore
-  emulators:
-    libretro:
-      imageviewer: { requireAnyOf: [] }
-      
+  platform:   imageviewer
+  force:      True
+
+library:
+  name:       Library
+  manufacturer: Misc. System
+  release:
+  hardware: system
+  extensions: [jpg, jpeg, png, bmp, psd, tga, gif, hdr, pic, ppm, pgm, mkv, pdf, mp4, avi, cbz]
+  path:       /userdata/library
+  platform:   imageviewer
+  force:      True
+
 model3:
   name:       Sega Model 3
   manufacturer: Sega
   release: 1996
   hardware: arcade
   extensions: [zip]
+  platform: model3, arcade
   emulators:
     supermodel:
       supermodel: { requireAnyOf: [BR2_PACKAGE_SUPERMODEL] }
+
+mugen:
+  name:       MUGEN
+  manufacturer: Elecbyte
+  release: 1999
+  hardware: port
+  extensions: [pc]
+  emulators:
+    mugen:
+      lutris:  { requireAnyOf: [BR2_PACKAGE_WINE_LUTRIS] }
+    mugen:
+      proton:  { requireAnyOf: [BR2_PACKAGE_WINE_PROTON] }
+
+flash:
+  name:       Adobe Flash Player
+  manufacturer: Adobe
+  release: 1996
+  hardware: port
+  extensions: [swf]
+  emulators:
+    lightspark:
+      lightspark: { requireAnyOf: [BR2_PACKAGE_LIGHTSPARK] }
+    ruffle:
+      ruffle: { requireAnyOf: [BR2_PACKAGE_RUFFLE] }
+
+xbox:
+  name:       Microsoft XBOX
+  manufacturer: Microsoft
+  release: 2003
+  hardware: console
+  extensions: [iso]
+  emulators:
+    xemu:
+      xemu: { requireAnyOf: [BR2_PACKAGE_XEMU] }

@@ -3,17 +3,9 @@ default:
     video_threaded: true
 
 n64:
-  emulator: mupen64plus
-  core: glide64mk2
+  options:
+    videomode: DMT 4 HDMI
 psp:
   options:
-    frameskip: true
-amiga500:
-  emulator: amiberry
-  core:     A500
-amiga1200:
-  emulator: amiberry
-  core:     A1200
-amigacd32:
-  emulator: amiberry
-  core:     CD32
+    frameskip: 1
+    videomode: DMT 4 HDMI

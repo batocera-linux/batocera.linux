@@ -3,19 +3,17 @@
 # ZX81
 #
 ################################################################################
-# Version.: Commits on Jan 15, 2021
-LIBRETRO_81_VERSION = 3005933701c109d31dba52d8d4fcc4bfb952f0ff
+# Version.: Commits on Feb 20, 2021
+LIBRETRO_81_VERSION = 9b21e1b38eb31b749dfc7ca8c9996fc54b0d13ff
 LIBRETRO_81_SITE = $(call github,libretro,81-libretro,$(LIBRETRO_81_VERSION))
 LIBRETRO_81_LICENSE = GPLv3
 
 LIBRETRO_81_PLATFORM = $(LIBRETRO_PLATFORM)
 
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI3),y)
-	LIBRETRO_81_PLATFORM = armv neon
-endif
-
-ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA),y)
-	LIBRETRO_81_PLATFORM = classic_armv8_a35
+LIBRETRO_81_PLATFORM = armv neon
+else ifeq ($(BR2_aarch64),y)
+LIBRETRO_81_PLATFORM = unix
 endif
 
 define LIBRETRO_81_BUILD_CMDS

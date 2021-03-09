@@ -1,0 +1,10 @@
+--- a/gpxe/src/arch/i386/Makefile	2021-01-20 18:52:47.687061441 +0100
++++ b/gpxe/src/arch/i386/Makefile	2021-01-20 18:52:55.443727830 +0100
+@@ -1,6 +1,6 @@
+ # Force i386-only instructions
+ #
+-CFLAGS		+= -march=i386
++CFLAGS		+= -march=i386 -fcommon
+ 
+ # Code size reduction.
+ #

@@ -53,7 +53,7 @@ def generateCoreSettings(coreSettings, system, rom):
             if system.isOptSet('atari800_resolution'):
                 coreSettings.save('atari800_resolution', system.config['atari800_resolution'])
             else:
-                coreSettings.save('atari800_resolution', '"400x300"')
+                coreSettings.save('atari800_resolution', '""') # Default : 336x240
             
             # WARNING: Now we must stop to use "atari800.cfg" because core options crush them
 
@@ -138,10 +138,39 @@ def generateCoreSettings(coreSettings, system, rom):
         # Show Video Options
         coreSettings.save('puae_video_options_display ', '"enabled"')
         # Amiga Model
-        if system.isOptSet('puae_model'):
+        if system.isOptSet('puae_model') and system.config['puae_model'] != 'automatic':
             coreSettings.save('puae_model', system.config['puae_model'])
         else:
-            coreSettings.save('puae_model', '"auto"')
+            if system.name == 'amiga1200':
+                coreSettings.save('puae_model', '"A1200"')
+            elif system.name == 'amigacd32':
+                coreSettings.save('puae_model', '"CD32FR"')
+            elif (system.name == 'amigacdtv'):
+                coreSettings.save('puae_model', '"CDTV"')
+            else:
+                # Will default to A500 when booting floppy disks, A600 when booting hard drives
+                coreSettings.save('puae_model', '"auto"')
+
+        # CPU Compatibility
+        if system.isOptSet('cpu_compatibility'):
+            coreSettings.save('puae_cpu_compatibility', system.config['cpu_compatibility'])
+        else:
+            coreSettings.save('puae_cpu_compatibility', '"normal"')
+        # CPU Multiplier (Overclock)
+        if system.isOptSet('cpu_throttle'):
+            coreSettings.save('puae_cpu_throttle', system.config['cpu_throttle'])
+            coreSettings.save('puae_cpu_multiplier', '"0"')
+        else:
+            coreSettings.save('puae_cpu_throttle', '"0.0"')
+            coreSettings.save('puae_cpu_multiplier', '"0"')
+        # CPU Cycle Exact Speed (Overclock)
+        if system.isOptSet('cpu_compatibility') and system.config['cpu_compatibility'] == 'exact':
+            if system.isOptSet('cpu_multiplier'):
+                coreSettings.save('puae_cpu_throttle', '"0.0"')
+                coreSettings.save('puae_cpu_multiplier', system.config['cpu_multiplier'])
+            else:
+                coreSettings.save('puae_cpu_throttle', '"0.0"')
+                coreSettings.save('puae_cpu_multiplier', '"0"')
         # Standard Video    
         if system.isOptSet('video_standard'):
             coreSettings.save('puae_video_standard', system.config['video_standard'])
@@ -151,7 +180,7 @@ def generateCoreSettings(coreSettings, system, rom):
         if system.isOptSet('video_resolution'):
             coreSettings.save('puae_video_resolution', system.config['video_resolution'])
         else:
-            coreSettings.save('puae_video_resolution', '"auto"')
+            coreSettings.save('puae_video_resolution', '"hires"')
         # Frameskip
         if system.isOptSet('gfx_framerate'):
             coreSettings.save('puae_gfx_framerate', system.config['gfx_framerate'])
@@ -164,11 +193,16 @@ def generateCoreSettings(coreSettings, system, rom):
             coreSettings.save('puae_mouse_speed', '"200"')
 
         if (system.name == 'amiga500') or (system.name == 'amiga1200'):
+            # Floppy Turbo Speed
+            if system.isOptSet('puae_floppy_speed'):
+                coreSettings.save('puae_floppy_speed', system.config['puae_floppy_speed'])
+            else:
+                coreSettings.save('puae_floppy_speed', '"100"')
             # Zoom Mode    
             if system.isOptSet('zoom_mode'):
                 coreSettings.save('puae_zoom_mode', system.config['zoom_mode'])
             else:
-                coreSettings.save('puae_zoom_mode', '"auto"')
+                coreSettings.save('puae_zoom_mode', '"none"')
             # 2P Gamepad Mapping (Keyrah)
             if system.isOptSet('keyrah_mapping'):
                 coreSettings.save('puae_keyrah_keypad_mappings', system.config['keyrah_mapping'])
@@ -190,6 +224,18 @@ def generateCoreSettings(coreSettings, system, rom):
             else:
                 coreSettings.save('puae_physical_keyboard_pass_through', '"disabled"')
 
+        if system.name == 'amigacd32' or (system.name == 'amigacdtv'):
+            # Boot animation first inserting CD
+            if system.isOptSet('puae_cd_startup_delayed_insert'):
+                coreSettings.save('puae_cd_startup_delayed_insert', system.config['puae_cd_startup_delayed_insert'])
+            else:
+                coreSettings.save('puae_cd_startup_delayed_insert', '"disabled"')
+            # CD Turbo Speed
+            if system.isOptSet('puae_cd_speed'):
+                coreSettings.save('puae_cd_speed', system.config['puae_cd_speed'])
+            else:
+                coreSettings.save('puae_cd_speed', '"100"')
+		    
         if system.name == 'amigacd32':
             # Jump on A (Blue)
             if system.isOptSet('puae_cd32pad_options'):
@@ -301,6 +347,58 @@ def generateCoreSettings(coreSettings, system, rom):
         else:
             coreSettings.save('dosbox_svn_scaler', '"none"')
 
+    if (system.config['core'] == 'dosbox_pure'):
+        # CPU Type
+        if system.isOptSet('pure_cpu_type') and system.config['pure_cpu_type'] != "automatic":
+            coreSettings.save('dosbox_pure_cpu_type', system.config['pure_cpu_type'])
+        else:
+            coreSettings.save('dosbox_pure_cpu_type', '"auto"')
+        # CPU Core
+        if system.isOptSet('pure_cpu_core') and system.config['pure_cpu_core'] != "automatic":
+            coreSettings.save('dosbox_pure_cpu_core', system.config['pure_cpu_core'])
+        else:
+            coreSettings.save('dosbox_pure_cpu_core', '"auto"')
+        # Emulated performance (CPU Cycles)
+        if system.isOptSet('pure_cycles') and system.config['pure_cycles'] != "automatic":
+            coreSettings.save('dosbox_pure_cycles', system.config['pure_cycles'])
+        else:
+            coreSettings.save('dosbox_pure_cycles', '"auto"')
+        # Graphics Chip type
+        if system.isOptSet('pure_machine'):
+            coreSettings.save('dosbox_pure_machine', system.config['pure_machine'])
+        else:
+            coreSettings.save('dosbox_pure_machine', '"svga"')
+        # Memory size
+        if system.isOptSet('pure_memory_size'):
+            coreSettings.save('dosbox_pure_memory_size', system.config['pure_memory_size'])
+        else:
+            coreSettings.save('dosbox_pure_memory_size', '"16"')
+        # Save state
+        if system.isOptSet('pure_savestate'):
+            coreSettings.save('dosbox_pure_savestate', system.config['pure_savestate'])
+        else:
+            coreSettings.save('dosbox_pure_savestate', '"on"')
+        # Keyboard Layout
+        if system.isOptSet('pure_keyboard_layout'):
+            coreSettings.save('dosbox_pure_keyboard_layout', system.config['pure_keyboard_layout'])
+        else:
+            coreSettings.save('dosbox_pure_keyboard_layout', '"us"')
+        # Automatic Gamepad Mapping
+        if system.isOptSet('pure_auto_mapping'):
+            coreSettings.save('dosbox_pure_auto_mapping', system.config['pure_auto_mapping'])
+        else:
+            coreSettings.save('dosbox_pure_auto_mapping', '"true"')
+        # Joystick Analog Deadzone
+        if system.isOptSet('pure_joystick_analog_deadzone'):
+            coreSettings.save('dosbox_pure_joystick_analog_deadzone', system.config['pure_joystick_analog_deadzone'])
+        else:
+            coreSettings.save('dosbox_pure_joystick_analog_deadzone', '"15"')
+        # Enable Joystick Timed Intervals
+        if system.isOptSet('pure_joystick_timed'):
+            coreSettings.save('dosbox_pure_joystick_timed', system.config['pure_joystick_timed'])
+        else:
+            coreSettings.save('dosbox_pure_joystick_timed', '"true"')
+
     # Microsoft MSX and Colecovision
     if (system.config['core'] == 'bluemsx'):
         # Auto Select Core
@@ -326,7 +424,7 @@ def generateCoreSettings(coreSettings, system, rom):
             coreSettings.save('bluemsx_nospritelimits', '"ON"')
 
     # Nec PC Engine / CD
-    if system.config['core'] == 'pce_fast':
+    if system.config['core'] == 'pce' or system.config['core'] == 'pce_fast':
         # Remove 16-sprites-per-scanline hardware limit
         if system.isOptSet('pce_nospritelimit'):
             coreSettings.save('pce_nospritelimit', system.config['pce_nospritelimit'])
@@ -482,18 +580,80 @@ def generateCoreSettings(coreSettings, system, rom):
             coreSettings.save('mupen64plus-txEnhancementMode', '"' + system.config['mupen64plus-txEnhancementMode'] + '"')
         else:
             coreSettings.save('mupen64plus-txEnhancementMode', '"None"')
+        # Controller Pak 1
+        if system.isOptSet('mupen64plus-pak1'):
+            coreSettings.save('mupen64plus-pak1', system.config['mupen64plus-pak1'])
+        else:
+            coreSettings.save('mupen64plus-pak1', '"memory"')
+        # Controller Pak 2
+        if system.isOptSet('mupen64plus-pak2'):
+            coreSettings.save('mupen64plus-pak2', system.config['mupen64plus-pak2'])
+        else:
+            coreSettings.save('mupen64plus-pak2', '"none"')
+        # Controller Pak 3
+        if system.isOptSet('mupen64plus-pak3'):
+            coreSettings.save('mupen64plus-pak3', system.config['mupen64plus-pak3'])
+        else:
+            coreSettings.save('mupen64plus-pak3', '"none"')
+        # Controller Pak 4
+        if system.isOptSet('mupen64plus-pak4'):
+            coreSettings.save('mupen64plus-pak4', system.config['mupen64plus-pak4'])
+        else:
+            coreSettings.save('mupen64plus-pak4', '"none"')
 
     if (system.config['core'] == 'parallel_n64'):
+        coreSettings.save('parallel-n64-64dd-hardware', '"disabled"')
+        coreSettings.save('parallel-n64-boot-device',   '"Default"')
+
         # Video Resolution
-        if system.isOptSet('screensize'):
-            coreSettings.save('parallel-n64-screensize', system.config['screensize'])
+        if system.isOptSet('parallel-n64-screensize'):
+            coreSettings.save('parallel-n64-screensize', system.config['parallel-n64-screensize'])
         else:
             coreSettings.save('parallel-n64-screensize', '"320x240"')
+        # Widescreen Hack
+        # Increases from 4:3 to 16:9 in 3D games (bad for 2D)
+        if system.isOptSet('parallel-n64-aspectratiohint') and system.isOptSet('ratio') and system.isOptSet('bezel') and system.config['parallel-n64-aspectratiohint'] == 'widescreen' and system.config["ratio"] == "16/9" and system.config["bezel"] == "none":
+            coreSettings.save('parallel-n64-aspectratiohint', '"widescreen"')
+        else:
+            coreSettings.save('parallel-n64-aspectratiohint', '"normal"')
         # Texture Filtering
-        if system.isOptSet('filtering'):
-            coreSettings.save('parallel-n64-filtering', system.config['filtering'])
+        if system.isOptSet('parallel-n64-filtering'):
+            coreSettings.save('parallel-n64-filtering', system.config['parallel-n64-filtering'])
         else:
             coreSettings.save('parallel-n64-filtering', '"automatic"')
+        # Framerate
+        if system.isOptSet('parallel-n64-framerate'):
+            coreSettings.save('parallel-n64-framerate', system.config['parallel-n64-framerate'])
+        else:
+            coreSettings.save('parallel-n64-framerate', '"automatic"')
+        # Controller Pak 1
+        if system.isOptSet('parallel-n64-pak1'):
+            coreSettings.save('parallel-n64-pak1', system.config['parallel-n64-pak1'])
+        else:
+            coreSettings.save('parallel-n64-pak1', '"memory"')
+        # Controller Pak 2
+        if system.isOptSet('parallel-n64-pak2'):
+            coreSettings.save('parallel-n64-pak2', system.config['parallel-n64-pak2'])
+        else:
+            coreSettings.save('parallel-n64-pak2', '"none"')
+        # Controller Pak 3
+        if system.isOptSet('parallel-n64-pak3'):
+            coreSettings.save('parallel-n64-pak3', system.config['parallel-n64-pak3'])
+        else:
+            coreSettings.save('parallel-n64-pak3', '"none"')
+        # Controller Pak 4
+        if system.isOptSet('parallel-n64-pak4'):
+            coreSettings.save('parallel-n64-pak4', system.config['parallel-n64-pak4'])
+        else:
+            coreSettings.save('parallel-n64-pak4', '"none"')
+
+        # Nintendo 64-DD
+        if (system.name == 'n64dd'):
+            # 64DD Hardware
+            coreSettings.save('parallel-n64-64dd-hardware', '"enabled"')
+            # Boot device
+            coreSettings.save('parallel-n64-boot-device',   '"64DD IPL"')
+
 
     # Nintendo DS
     if (system.config['core'] == 'desmume'):
@@ -673,15 +833,17 @@ def generateCoreSettings(coreSettings, system, rom):
 
     # Nintendo NES / Famicom Disk System
     if (system.config['core'] == 'nestopia'):
+        # Nestopia Mouse mode for Zapper
+        coreSettings.save('nestopia_zapper_device', '"mouse"')
         # Reduce Sprite Flickering
         if system.isOptSet('nestopia_nospritelimit') and system.config['nestopia_nospritelimit'] == "disabled":
             coreSettings.save('nestopia_nospritelimit', '"disabled"')
-            coreSettings.save('nestopia_overscan_h', '"disabled"')
-            coreSettings.save('nestopia_overscan_v', '"disabled"')
+            coreSettings.save('nestopia_overscan_h',    '"disabled"')
+            coreSettings.save('nestopia_overscan_v',    '"disabled"')
         else:
-            coreSettings.save('fceumm_nospritelimit', '"enabled"')
-            coreSettings.save('nestopia_overscan_h', '"enabled"')
-            coreSettings.save('nestopia_overscan_v', '"enabled"')
+            coreSettings.save('nestopia_nospritelimit', '"enabled"')
+            coreSettings.save('nestopia_overscan_h',    '"enabled"')
+            coreSettings.save('nestopia_overscan_v',    '"enabled"')
         # Palette Choice
         if system.isOptSet('nestopia_palette'):
             coreSettings.save('nestopia_palette', system.config['nestopia_palette'])
@@ -698,21 +860,23 @@ def generateCoreSettings(coreSettings, system, rom):
         else:
             coreSettings.save('nestopia_overclock', '"1x"')
         # 4 Player Adapter
-        if system.isOptSet('nestopia_select_adapter'):
+        if system.isOptSet('nestopia_select_adapter') and system.config['nestopia_select_adapter'] != "automatic":
             coreSettings.save('nestopia_select_adapter', system.config['nestopia_select_adapter'])
         else:
             coreSettings.save('nestopia_select_adapter', '"auto"')
 
     if (system.config['core'] == 'fceumm'):
+        # FCEumm Mouse mode for Zapper
+        coreSettings.save('fceumm_zapper_mode', '"mouse"')
         # Reduce Sprite Flickering
         if system.isOptSet('fceumm_nospritelimit') and system.config['fceumm_nospritelimit'] == "disabled":
             coreSettings.save('fceumm_nospritelimit', '"disabled"')
-            coreSettings.save('fceumm_overscan_h', '"disabled"')
-            coreSettings.save('fceumm_overscan_v', '"disabled"')
+            coreSettings.save('fceumm_overscan_h',    '"disabled"')
+            coreSettings.save('fceumm_overscan_v',    '"disabled"')
         else:
             coreSettings.save('fceumm_nospritelimit', '"enabled"')
-            coreSettings.save('fceumm_overscan_h', '"enabled"')
-            coreSettings.save('fceumm_overscan_v', '"enabled"')
+            coreSettings.save('fceumm_overscan_h',    '"enabled"')
+            coreSettings.save('fceumm_overscan_v',    '"enabled"')
         # Palette Choice
         if system.isOptSet('fceumm_palette'):
             coreSettings.save('fceumm_palette', system.config['fceumm_palette'])
@@ -836,7 +1000,23 @@ def generateCoreSettings(coreSettings, system, rom):
             elif system.config['game_fixes_opera'] == 'timing_hack6':
                 coreSettings.save('opera_hack_timing_6',        '"enabled"')
 
-    # TODO: Add ScummVM CORE Options
+    # ScummVM CORE Options
+    if (system.config['core'] == 'scummvm'):
+        # Analog Deadzone
+        if system.isOptSet('scummvm_analog_deadzone'):
+            coreSettings.save('scummvm_analog_deadzone', system.config['scummvm_analog_deadzone'])
+        else:
+            coreSettings.save('scummvm_analog_deadzone', '"15"')
+        # Gamepad Cursor Speed
+        if system.isOptSet('scummvm_gamepad_cursor_speed'):
+            coreSettings.save('scummvm_gamepad_cursor_speed', system.config['scummvm_gamepad_cursor_speed'])
+        else:
+            coreSettings.save('scummvm_gamepad_cursor_speed', '"1.0"')
+        # Speed Hack (safe)
+        if system.isOptSet('scummvm_speed_hack'):
+            coreSettings.save('scummvm_speed_hack', system.config['scummvm_speed_hack'])
+        else:
+            coreSettings.save('scummvm_speed_hack', '"enabled"')
 
     # Sega Dreamcast / Atomiswave / Naomi
     if (system.config['core'] == 'flycast'):
@@ -931,7 +1111,7 @@ def generateCoreSettings(coreSettings, system, rom):
 
         # system.name == 'mastersystem'
         # Master System FM (YM2413)
-        if system.isOptSet('ym2413'):
+        if system.isOptSet('ym2413') and system.config['ym2413'] != "automatic":
             coreSettings.save('genesis_plus_gx_ym2413', system.config['ym2413'])
         else:
             coreSettings.save('genesis_plus_gx_ym2413', '"auto"')
@@ -1034,12 +1214,18 @@ def generateCoreSettings(coreSettings, system, rom):
         coreSettings.save('81_sound',     '"Zon X-81"')
         # Colorisation (Chroma 81)
         if system.isOptSet('81_chroma_81'):
-            coreSettings.save('81_chroma_81', system.config['81_chroma_81'])
+            if system.config['81_chroma_81'] == "automatic":
+                coreSettings.save('81_chroma_81', '"auto"')
+            else:
+                coreSettings.save('81_chroma_81', system.config['81_chroma_81'])
         else:
             coreSettings.save('81_chroma_81', '"enabled"')
         # High Resolution
         if system.isOptSet('81_highres'):
-            coreSettings.save('81_highres', system.config['81_highres'])
+            if system.config['81_highres'] == "automatic":
+                coreSettings.save('81_highres', '"auto"')
+            else:
+                coreSettings.save('81_highres', system.config['81_highres'])
         else:
             coreSettings.save('81_highres', '"WRX"')
 
@@ -1124,7 +1310,7 @@ def generateCoreSettings(coreSettings, system, rom):
         if system.isOptSet('beetle_psx_cpu_freq_scale'):
             coreSettings.save('beetle_psx_cpu_freq_scale', system.config['beetle_psx_cpu_freq_scale'])
         else:
-            coreSettings.save('beetle_psx_cpu_freq_scale', '"100%(native)"')
+            coreSettings.save('beetle_psx_cpu_freq_scale', '"110%"') # If not 110% NO options are working!
         # Show official Bootlogo
         if system.isOptSet('beetle_psx_skip_bios'):
             coreSettings.save('beetle_psx_skip_bios', system.config['beetle_psx_skip_bios'])
@@ -1310,7 +1496,7 @@ def generateCoreSettings(coreSettings, system, rom):
         else:
             coreSettings.save('tyrquake_resolution', '"640x480"')
         # Frame rate
-        if system.isOptSet('tyrquake_framerate'):
+        if system.isOptSet('tyrquake_framerate') and system.config['tyrquake_framerate'] != "automatic":
             coreSettings.save('tyrquake_framerate', system.config['tyrquake_framerate'])
         else:
             coreSettings.save('tyrquake_framerate', '"Auto"')

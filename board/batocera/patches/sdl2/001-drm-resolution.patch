@@ -1,5 +1,5 @@
 diff --git a/src/video/kmsdrm/SDL_kmsdrmvideo.c b/src/video/kmsdrm/SDL_kmsdrmvideo.c
-index 459f965..7ff9bf6 100644
+index 601379d..782557c 100644
 --- a/src/video/kmsdrm/SDL_kmsdrmvideo.c
 +++ b/src/video/kmsdrm/SDL_kmsdrmvideo.c
 @@ -540,6 +540,24 @@ KMSDRM_VideoInit(_THIS)
@@ -27,35 +27,32 @@ index 459f965..7ff9bf6 100644
      SDL_LogDebug(SDL_LOG_CATEGORY_VIDEO, "Found encoder %d.", encoder->encoder_id);
  
      /* Try to find a CRTC connected to this encoder */
-diff --git a/src/video/kmsdrm/SDL_kmsdrmopengles.c b/src/video/kmsdrm/SDL_kmsdrmopengles.c
-index ae4b358..cf59478 100644
---- a/src/video/kmsdrm/SDL_kmsdrmopengles.c
-+++ b/src/video/kmsdrm/SDL_kmsdrmopengles.c
-@@ -113,8 +113,25 @@ KMSDRM_GLES_SwapWindow(_THIS, SDL_Window * window) {
-         /* On the first swap, immediately present the new front buffer. Before
-            drmModePageFlip can be used the CRTC has to be configured to use
-            the current connector and mode with drmModeSetCrtc */
--        ret = KMSDRM_drmModeSetCrtc(viddata->drm_fd, dispdata->crtc_id, fb_info->fb_id, 0,
--                                    0, &dispdata->conn->connector_id, 1, &dispdata->mode);
-+      // batocera - set resolution
-+      {
-+	FILE* fdDrmMode;
-+	int drmMode;
-+	int ret;
-+	if((fdDrmMode = fopen("/var/run/drmMode", "r")) != NULL) {
-+	  if(fscanf(fdDrmMode, "%i", &drmMode) == 1) {
-+	    if(drmMode>=0 && drmMode<dispdata->conn->count_modes) {
-+	      drmModeCrtc *pcrtc = KMSDRM_drmModeGetCrtc(viddata->drm_fd, dispdata->crtc_id);
-+	      if(pcrtc != NULL) {
-+		{FILE* fd=fopen("/tmp/nae.log", "a"); fprintf(fd, "B2 %i\n", drmMode); fclose(fd); }
-+		ret = KMSDRM_drmModeSetCrtc(viddata->drm_fd, dispdata->crtc_id, fb_info->fb_id, 0, 0, &dispdata->conn->connector_id, 1, &dispdata->conn->modes[drmMode]);
-+	      }
-+	    }
-+	  }
-+	  fclose(fdDrmMode);
-+	}
-+      }
-+      //
+@@ -692,8 +710,27 @@ KMSDRM_GetDisplayModes(_THIS, SDL_VideoDisplay * display)
+     drmModeConnector *conn = dispdata->conn;
+     SDL_DisplayMode mode;
  
-         if (ret) {
-           SDL_LogError(SDL_LOG_CATEGORY_VIDEO, "Could not configure CRTC");
++    // batocera
++    int wantedMode = 0;
++    {
++      FILE* fdDrmMode;
++      int drmMode;
++      if((fdDrmMode = fopen("/var/run/drmMode", "r")) != NULL) {
++	if(fscanf(fdDrmMode, "%i", &drmMode) == 1) {
++	  if(drmMode>=0 && drmMode<dispdata->conn->count_modes) {
++	    wantedMode = drmMode;
++	  }
++	}
++	fclose(fdDrmMode);
++      }
++    }
++    //
++
+     for (int i = 0; i < conn->count_modes; i++) {
+-        SDL_DisplayModeData *modedata = SDL_calloc(1, sizeof(SDL_DisplayModeData));
++        SDL_DisplayModeData *modedata;
++        if(i != wantedMode) continue; // batocera
++
++        modedata = SDL_calloc(1, sizeof(SDL_DisplayModeData));
+ 
+         if (modedata) {
+           modedata->mode_index = i;

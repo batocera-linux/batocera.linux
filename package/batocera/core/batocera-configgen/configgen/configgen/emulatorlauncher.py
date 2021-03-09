@@ -42,6 +42,13 @@ from generators.easyrpg.easyrpgGenerator import EasyRPGGenerator
 from generators.redream.redreamGenerator import RedreamGenerator
 from generators.supermodel.supermodelGenerator import SupermodelGenerator
 from generators.xash3d_fwgs.xash3dFwgsGenerator import Xash3dFwgsGenerator
+from generators.tsugaru.tsugaruGenerator import TsugaruGenerator
+from generators.mugen.mugenGenerator import MugenGenerator
+from generators.lightspark.lightsparkGenerator import LightsparkGenerator
+from generators.ruffle.ruffleGenerator import RuffleGenerator
+from generators.duckstation.duckstationGenerator import DuckstationGenerator
+from generators.drastic.drasticGenerator import DrasticGenerator
+from generators.xemu.xemuGenerator import XemuGenerator
 
 import controllersConfig as controllers
 import signal
@@ -87,6 +94,13 @@ generators = {
     'redream': RedreamGenerator(),
     'supermodel': SupermodelGenerator(),
     'xash3d_fwgs': Xash3dFwgsGenerator(),
+    'tsugaru': TsugaruGenerator(),
+    'mugen': MugenGenerator(),
+    'lightspark': LightsparkGenerator(),
+    'ruffle': RuffleGenerator(),
+    'duckstation': DuckstationGenerator(),
+    'drastic': DrasticGenerator(),
+    'xemu': XemuGenerator(),
 }
 
 def main(args, maxnbplayers):
@@ -130,6 +144,7 @@ def main(args, maxnbplayers):
     systemMode = videoMode.getCurrentMode()
 
     resolutionChanged = False
+    mouseChanged = False
     exitCode = -1
     try:
         # lower the resolution if mode is auto
@@ -180,6 +195,16 @@ def main(args, maxnbplayers):
         if args.netplayport is not None:
             system.config["netplay.server.port"] = args.netplayport
 
+        # autosave arguments
+        if args.state_slot is not None:
+            system.config["state_slot"] = args.state_slot
+        if args.autosave is not None:
+            system.config["autosave"] = args.autosave
+
+        if generators[system.config['emulator']].getMouseMode(system.config):
+            mouseChanged = True
+            videoMode.changeMouse(True)
+
         # run a script before emulator starts
         callExternalScripts("/usr/share/batocera/configgen/scripts", "gameStart", [systemName, system.config['emulator'], effectiveCore, effectiveRom])
         callExternalScripts("/userdata/system/scripts", "gameStart", [systemName, system.config['emulator'], effectiveCore, effectiveRom])
@@ -202,6 +227,13 @@ def main(args, maxnbplayers):
                 videoMode.changeMode(systemMode)
             except Exception:
                 pass # don't fail
+
+        if mouseChanged:
+            try:
+                videoMode.changeMouse(False)
+            except Exception:
+                pass # don't fail
+
     # exit
     return exitCode
 

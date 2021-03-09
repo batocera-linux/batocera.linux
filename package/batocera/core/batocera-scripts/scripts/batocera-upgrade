@@ -41,7 +41,7 @@ do_wannaupdate() {
     [ $NET_VER -eq 0 ] && { text="Could not detect version!"; to=15; }
     read -p "${text} Press Y or wait ${to}s to proceed! Press N to break!" -N 1 -t ${to}
     [ $? -gt 128 ] && REPLY=y
-    if [ $REPLY == n ] || [ $REPLY == N ] ; then
+    if [ "$REPLY" == n ] || [ "$REPLY" == N ] ; then
         echo; echo "Abort..."
         exit
     fi
@@ -100,7 +100,7 @@ test $? -eq 0 || exit 1
 size=$(echo "$headers" | grep "Content-Length: " | tail -1 | sed -e s+'^Content-Length: \([0-9]*\).*$'+'\1'+) # take the last one in case of redirection
 size=$((size / 1024 / 1024))
 test $? -eq 0 || exit 1
-echo "need to download ${size}mB"
+echo "need to download ${size}mb"
 
 # check free space on fs
 for fs in /userdata /boot

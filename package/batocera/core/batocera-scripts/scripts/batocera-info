@@ -110,9 +110,9 @@ if [[ "${FULL_DISPLAY}" != 0 ]]; then
 	fi
 
 	# VULKAN
-	if test -e /usr/bin/vulkaninfo
+	if test -e /var/run/vulkaninfo.version
 	then
-	    APIVERSION=$(vulkaninfo --json 2>/dev/null | jq -r ".VkPhysicalDeviceProperties.apiVersion" 2>/dev/null)
+	    APIVERSION=$(cat /var/run/vulkaninfo.version)
 	    if test -n "${APIVERSION}"
 	    then
 		let "APIVERSION_MAJOR=${APIVERSION} >> 22"

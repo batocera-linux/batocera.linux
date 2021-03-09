@@ -4,10 +4,10 @@
 #
 ################################################################################
 
-PCSX2_VERSION = b8858663f421f23146d6f4670ff64bd3e267558d
+PCSX2_VERSION = 7512c01ca6ff861a1dc70066345ccbcb31445061
 PCSX2_SITE = $(call github,pcsx2,pcsx2,$(PCSX2_VERSION))
 PCSX2_LICENSE = GPLv2 GPLv3 LGPLv2.1 LGPLv3
-PCSX2_DEPENDENCIES = xserver_xorg-server alsa-lib freetype zlib libpng wxwidgets libaio portaudio libsoundtouch sdl2 libpcap yaml-cpp libgtk3
+PCSX2_DEPENDENCIES = xserver_xorg-server alsa-lib freetype zlib libpng wxwidgets libaio portaudio libsoundtouch sdl2 libpcap yaml-cpp libgtk3 libsamplerate fmt
 
 PCSX2_CONF_OPTS += -DCMAKE_BUILD_TYPE=Release
 PCSX2_CONF_OPTS += -DXDG_STD=TRUE
@@ -34,5 +34,12 @@ define PCSX2_INSTALL_TARGET_CMDS
         mkdir -p $(TARGET_DIR)/usr/PCSX/bin/plugins
 	cp -pr $(@D)/plugins/*/*.so $(TARGET_DIR)/usr/PCSX/bin/plugins
 endef
+
+define PCSX2_EVMAPY
+	mkdir -p $(TARGET_DIR)/usr/share/evmapy
+	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/pcsx2/ps2.pcsx2.keys $(TARGET_DIR)/usr/share/evmapy
+endef
+
+PCSX2_POST_INSTALL_TARGET_HOOKS += PCSX2_EVMAPY
 
 $(eval $(cmake-package))

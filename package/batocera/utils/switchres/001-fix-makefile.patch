@@ -1,0 +1,21 @@
+--- a/makefile	2021-02-08 13:34:55.020707062 +0100
++++ b/makefile	2021-02-08 13:35:37.507374725 +0100
+@@ -10,7 +10,8 @@
+ CROSS_COMPILE ?=
+ CXX ?= g++
+ AR ?= ar
+-LDFLAGS = -shared
++LDFLAGS ?=
++LDFLAGS += -shared
+ FINAL_CXX=$(CROSS_COMPILE)$(CXX)
+ FINAL_AR=$(CROSS_COMPILE)$(AR)
+ CPPFLAGS ?= 
+@@ -32,7 +33,7 @@
+ EXTRA_LIBS = libdrm
+ SRC += display_linux.cpp custom_video_xrandr.cpp custom_video_drmkms.cpp
+ CPPFLAGS += -fPIC -I$(INCDIR)
+-LIBS = -ldl
++LIBS = -ldl -lm -lrt -lstdc++
+ REMOVE = rm -f 
+ STATIC_LIB_EXT = a
+ DYNAMIC_LIB_EXT = so

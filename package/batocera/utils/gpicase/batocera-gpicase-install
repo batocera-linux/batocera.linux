@@ -1,14 +1,8 @@
 #!/bin/sh
 
-if grep '^include [ ]*gpicase\.txt' /boot/config.txt; then
-    exit 0
-fi
+CONFIGFILE=/boot/config.txt
 
-mount -o remount,rw /boot
-
-cat <<'BOOTCONFIG' > /boot/gpicase.txt
-# ====== GPi Case setup
-# WARNING: EDITING THIS FILE MAY RESULT IN BOOT FAILURE
+setup="# ====== GPi Case setup section =====
 dtoverlay=dpi24_gpicase
 dtoverlay=pwm-audio-pi-zero_gpicase
 display_rotate=1
@@ -28,13 +22,28 @@ hdmi_timings=240 1 38 10 20 320 1 20 4 4 0 0 0 60 0 6400000 1
 dtoverlay=pwm-2chan_gpicase,pin=18,func=2,pin2=19,func2=2
 disable_pvt=1
 disable_audio_dither=1
-BOOTCONFIG
+# ====== GPi Case toggle section =====
+# This will preserve always the default GPi settings if enabled, needed if some values were wrong setted by user"
 
-cat <<'BOOTCONFIG' > /boot/config.txt
-# WARNING: DO NOT REMOVE THIS LINE:
-include gpicase.txt
+    CONFIGMODIFIED=0
 
-BOOTCONFIG
+    echo "${setup}" | (
+	while read LINE
+	do
+	    if ! grep -qE "^${LINE}$" "${CONFIGFILE}"
+	    then
+		test "${CONFIGMODIFIED}" = 0 && mount -o remount,rw /boot
+		echo "${LINE}" >> "${CONFIGFILE}"
+		CONFIGMODIFIED=1
+	    fi
+	done
 
-echo '/boot/gpicase.txt written, rebooting now...'
-shutdown -r now
+	#Reboot if there was a change in line
+	if test "${CONFIGMODIFIED}" = 1
+	then
+            echo "Rebooting now..."
+            shutdown -r now
+	fi
+    )
+
+exit 0

@@ -1,0 +1,7 @@
+#!/bin/sh
+
+# SPDX-License-Identifier: GPL-2.0
+# Copyright (C) 2018-present Team LibreELEC (https://libreelec.tv)
+
+TEMP="$(cat /sys/class/hwmon/hwmon0/temp1_input)"
+echo "$(( $TEMP / 1000 )) C"

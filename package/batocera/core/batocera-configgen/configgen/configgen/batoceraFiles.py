@@ -26,7 +26,7 @@ batoceraBins = {'dosbox'         : '/usr/bin/dosbox'
               , 'mupen64plus'    : '/usr/bin/mupen64plus'
               , 'ppsspp'         : '/usr/bin/PPSSPPSDL'
               , 'reicast'        : '/usr/bin/reicast.elf'
-              , 'flycast'        : '/usr/bin/flycast.elf'
+              , 'flycast'        : '/usr/bin/flycast'
               , 'scummvm'        : '/usr/bin/scummvm'
               , 'vice'           : '/usr/bin/'
               , 'fsuae'          : '/usr/bin/fs-uae'
@@ -37,9 +37,11 @@ batoceraBins = {'dosbox'         : '/usr/bin/dosbox'
               , 'daphne'         : '/usr/bin/hypseus'
               , 'melonds'        : '/usr/bin/melonDS'
               , 'rpcs3'          : '/usr/bin/rpcs3'
-              , 'mame'           : '/usr/bin/mame/mamearcade64'
+              , 'mame'           : '/usr/bin/mame/mamearcade'
               , 'hatari'         : '/usr/bin/hatari'
               , 'supermodel'     : '/usr/bin/supermodel'
+              , 'tsugaru'        : '/usr/bin/Tsugaru_CUI'
+              , 'xemu'           : '/usr/bin/xemu'
 }
 
 
@@ -162,3 +164,5 @@ rpcs3configevdev = CONF + '/rpcs3/InputConfigs/Evdev/Default Profile.yml'
 
 supermodelCustom = CONF + '/supermodel'
 supermodelIni = supermodelCustom + '/Supermodel.ini'
+
+xemuConfig = CONF + '/xemu/xemu.ini'

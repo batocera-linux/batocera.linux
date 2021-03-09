@@ -1,0 +1,35 @@
+diff --git a/softmmu/vl.c b/softmmu/vl.c
+index 4ab4a4f..fe3040c 100644
+--- a/softmmu/vl.c
++++ b/softmmu/vl.c
+@@ -2995,19 +2995,19 @@ void qemu_init(int argc, char **argv, char **envp)
+     if (strlen(eeprom_path) > 0) {
+         int eeprom_size = get_image_size(eeprom_path);
+         if (eeprom_size < 0) {
+-            char *msg = g_strdup_printf("Failed to open EEPROM file '%s'.\n\n"
+-                "Automatically generating a new one instead. "
+-                "Please check machine settings for the new path and move if desired.", eeprom_path);
+-            xemu_queue_error_message(msg);
+-            g_free(msg);
++            //char *msg = g_strdup_printf("Failed to open EEPROM file '%s'.\n\n"
++            //    "Automatically generating a new one instead. "
++            //    "Please check machine settings for the new path and move if desired.", eeprom_path);
++            //xemu_queue_error_message(msg);
++            //g_free(msg);
+             eeprom_path = "";
+         } else if (eeprom_size != 256) {
+-            char *msg = g_strdup_printf(
+-                "Invalid EEPROM file '%s' size of %d; should be 256 bytes.\n\n"
+-                "Automatically generating a new one instead. "
+-                "Please check machine settings for the new path and move if desired.", eeprom_path, eeprom_size);
+-            xemu_queue_error_message(msg);
+-            g_free(msg);
++            //char *msg = g_strdup_printf(
++            //    "Invalid EEPROM file '%s' size of %d; should be 256 bytes.\n\n"
++            //    "Automatically generating a new one instead. "
++            //    "Please check machine settings for the new path and move if desired.", eeprom_path, eeprom_size);
++            //xemu_queue_error_message(msg);
++            //g_free(msg);
+             eeprom_path = "";
+         } else {
+             fake_argv[fake_argc++] = strdup("-device");

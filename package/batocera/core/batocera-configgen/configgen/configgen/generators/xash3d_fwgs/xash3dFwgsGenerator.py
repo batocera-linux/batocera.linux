@@ -111,6 +111,10 @@ class Xash3dFwgsGenerator(Generator):
         commandArray.append('+showfps')
         commandArray.append('1' if system.getOptBoolean('showFPS') == True else '0')
 
+        # https://github.com/FWGS/xash3d-fwgs/issues/307
+        commandArray.append('+sv_validate_changelevel')
+        commandArray.append('0')
+
         self._maybeInitConfig(game)
         self._maybeInitSaveDir(game)
 

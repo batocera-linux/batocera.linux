@@ -4,7 +4,7 @@
 #
 ################################################################################
 # Version.: Commits on Dec 03, 2020
-LIBRETRO_BLASTEM_VERSION = ba5d206dcfea
+LIBRETRO_BLASTEM_VERSION = 8b2ef428d1aa
 LIBRETRO_BLASTEM_SOURCE = $(LIBRETRO_BLASTEM_VERSION).tar.gz
 LIBRETRO_BLASTEM_SITE = https://www.retrodev.com/repos/blastem/archive
 

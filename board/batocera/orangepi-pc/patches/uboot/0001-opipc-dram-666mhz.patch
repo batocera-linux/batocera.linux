@@ -1,0 +1,13 @@
+diff --git a/configs/orangepi_pc_defconfig b/configs/orangepi_pc_defconfig
+index 995cfeaf..7165095e 100644
+--- a/configs/orangepi_pc_defconfig
++++ b/configs/orangepi_pc_defconfig
+@@ -2,7 +2,7 @@ CONFIG_ARM=y
+ CONFIG_ARCH_SUNXI=y
+ CONFIG_SPL=y
+ CONFIG_MACH_SUN8I_H3=y
+-CONFIG_DRAM_CLK=624
++CONFIG_DRAM_CLK=666
+ CONFIG_DEFAULT_DEVICE_TREE="sun8i-h3-orangepi-pc"
+ # CONFIG_SYS_MALLOC_CLEAR_ON_INIT is not set
+ CONFIG_SPL_I2C_SUPPORT=y

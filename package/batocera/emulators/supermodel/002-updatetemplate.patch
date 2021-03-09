@@ -1,141 +1,30 @@
 diff --git a/Config/Supermodel.ini b/Config/Supermodel.ini
-index 9d8a4d2..d4bb8d6 100644
+index 9d8a4d2..4c9d042 100644
 --- a/Config/Supermodel.ini
 +++ b/Config/Supermodel.ini
-@@ -2,6 +2,8 @@
- ;; Supermodel Configuration File
- ;; Default settings for Version 0.3a.
- ;;
-+;; Modified for Batocera
-+;;
-  
- 
- ;
-@@ -85,8 +87,8 @@ InputLongPass2 = "JOY2_BUTTON2"
- InputShoot2 = "JOY2_BUTTON3"
- 
- ; Steering wheel
--InputSteeringLeft = "KEY_LEFT"      ; digital, turn wheel left
--InputSteeringRight = "KEY_RIGHT"    ; digital, turn wheel right
-+InputSteeringLeft = "KEY_LEFT,JOY1_LEFT"      ; digital, turn wheel left
-+InputSteeringRight = "KEY_RIGHT,JOY1_RIGHT"    ; digital, turn wheel right
- InputSteering = "JOY1_XAXIS"        ; analog, full steering range
- 
- ; Pedals
-@@ -147,10 +149,10 @@ InputTwinJoyTurbo1 = "KEY_Z,JOY1_BUTTON7"
- InputTwinJoyTurbo2 = "KEY_X,JOY1_BUTTON8"
- 
- ; Analog joystick (Star Wars Trilogy)
--InputAnalogJoyLeft = "KEY_LEFT"             ; digital, move left
--InputAnalogJoyRight = "KEY_RIGHT"           ; digital, move right
--InputAnalogJoyUp = "KEY_UP"                 ; digital, move up
--InputAnalogJoyDown = "KEY_DOWN"             ; digital, move down
-+InputAnalogJoyLeft = "KEY_LEFT,JOY1_LEFT"             ; digital, move left
-+InputAnalogJoyRight = "KEY_RIGHT,JOY1_RIGHT"           ; digital, move right
-+InputAnalogJoyUp = "KEY_UP,JOY1_UP"                 ; digital, move up
-+InputAnalogJoyDown = "KEY_DOWN,JOY1_DOWN"             ; digital, move down
- InputAnalogJoyX = "JOY_XAXIS,MOUSE_XAXIS"   ; analog, full X axis
- InputAnalogJoyY = "JOY_YAXIS,MOUSE_YAXIS"   ; analog, full Y axis
+@@ -151,8 +151,8 @@ InputAnalogJoyLeft = "KEY_LEFT"             ; digital, move left
+ InputAnalogJoyRight = "KEY_RIGHT"           ; digital, move right
+ InputAnalogJoyUp = "KEY_UP"                 ; digital, move up
+ InputAnalogJoyDown = "KEY_DOWN"             ; digital, move down
+-InputAnalogJoyX = "JOY_XAXIS,MOUSE_XAXIS"   ; analog, full X axis
+-InputAnalogJoyY = "JOY_YAXIS,MOUSE_YAXIS"   ; analog, full Y axis
++InputAnalogJoyX = "JOY_XAXIS_INV,MOUSE_XAXIS_INV"   ; analog, full X axis
++InputAnalogJoyY = "JOY_YAXIS_INV,MOUSE_YAXIS_INV"   ; analog, full Y axis
  InputAnalogJoyTrigger = "KEY_A,JOY_BUTTON1,MOUSE_LEFT_BUTTON"
-@@ -159,19 +161,19 @@ InputAnalogJoyTrigger2 = "KEY_D,JOY_BUTTON2"
- InputAnalogJoyEvent2 = "NONE"
- 
- ; Light guns (Lost World)
--InputGunLeft = "KEY_LEFT"               ; digital, move gun left
--InputGunRight = "KEY_RIGHT"             ; digital, move gun right
--InputGunUp = "KEY_UP"                   ; digital, move gun up
--InputGunDown = "KEY_DOWN"               ; digital, move gun down
-+InputGunLeft = "KEY_LEFT,JOY1_LEFT"               ; digital, move gun left
-+InputGunRight = "KEY_RIGHT,JOY1_RIGHT"             ; digital, move gun right
-+InputGunUp = "KEY_UP,JOY1_UP"                   ; digital, move gun up
-+InputGunDown = "KEY_DOWN,JOY1_DOWN"               ; digital, move gun down
- InputGunX = "MOUSE_XAXIS,JOY1_XAXIS"    ; analog, full X axis
- InputGunY = "MOUSE_YAXIS,JOY1_YAXIS"    ; analog, full Y axis
- InputTrigger = "KEY_A,JOY1_BUTTON1,MOUSE_LEFT_BUTTON"
- InputOffscreen = "KEY_S,JOY1_BUTTON2,MOUSE_RIGHT_BUTTON"    ; point off-screen
- InputAutoTrigger = 0                    ; automatic reload when off-screen
--InputGunLeft2 = "NONE"
--InputGunRight2 = "NONE"
--InputGunUp2 = "NONE"
--InputGunDown2 = "NONE"
-+InputGunLeft2 = "JOY2_LEFT"
-+InputGunRight2 = "JOY2_RIGHT"
-+InputGunUp2 = "JOY2_UP"
-+InputGunDown2 = "JOY2_DOWN"
- InputGunX2 = "JOY2_XAXIS"
- InputGunY2 = "JOY2_YAXIS"
- InputTrigger2 = "JOY2_BUTTON1"
-@@ -179,28 +181,28 @@ InputOffscreen2 = "JOY2_BUTTON2"
- InputAutoTrigger2 = 0
- 
- ; Analog guns (Ocean Hunter, LA Machineguns)
--InputAnalogGunLeft = "KEY_LEFT"               ; digital, move gun left
--InputAnalogGunRight = "KEY_RIGHT"             ; digital, move gun right
--InputAnalogGunUp = "KEY_UP"                   ; digital, move gun up
--InputAnalogGunDown = "KEY_DOWN"               ; digital, move gun down
-+InputAnalogGunLeft = "KEY_LEFT,JOY1_LEFT"               ; digital, move gun left
-+InputAnalogGunRight = "KEY_RIGHT,JOY1_RIGHT"             ; digital, move gun right
-+InputAnalogGunUp = "KEY_UP,JOY1_UP"                   ; digital, move gun up
-+InputAnalogGunDown = "KEY_DOWN,JOY1_DOWN"               ; digital, move gun down
- InputAnalogGunX = "MOUSE_XAXIS,JOY1_XAXIS"    ; analog, full X axis
- InputAnalogGunY = "MOUSE_YAXIS,JOY1_YAXIS"    ; analog, full Y axis
- InputAnalogTriggerLeft = "KEY_A,JOY1_BUTTON1,MOUSE_LEFT_BUTTON"
- InputAnalogTriggerRight = "KEY_S,JOY1_BUTTON2,MOUSE_RIGHT_BUTTON"
--InputAnalogGunLeft2 = "NONE"
--InputAnalogGunRight2 = "NONE"
--InputAnalogGunUp2 = "NONE"
--InputAnalogGunDown2 = "NONE"
+ InputAnalogJoyEvent = "KEY_S,JOY_BUTTON2,MOUSE_RIGHT_BUTTON"
+ InputAnalogJoyTrigger2 = "KEY_D,JOY_BUTTON2"
+@@ -191,10 +191,10 @@ InputAnalogGunLeft2 = "NONE"
+ InputAnalogGunRight2 = "NONE"
+ InputAnalogGunUp2 = "NONE"
+ InputAnalogGunDown2 = "NONE"
 -InputAnalogGunX2 = "NONE"
 -InputAnalogGunY2 = "NONE"
 -InputAnalogTriggerLeft2 = "NONE"
 -InputAnalogTriggerRight2 = "NONE"
-+InputAnalogGunLeft2 = "JOY2_LEFT"
-+InputAnalogGunRight2 = "JOY2_RIGHT"
-+InputAnalogGunUp2 = "JOY2_UP"
-+InputAnalogGunDown2 = "JOY2_DOWN"
 +InputAnalogGunX2 = "JOY2_XAXIS"
 +InputAnalogGunY2 = "JOY2_YAXIS"
 +InputAnalogTriggerLeft2 = "JOY2_BUTTON1"
 +InputAnalogTriggerRight2 = "JOY2_BUTTON2"
  
  ; Ski Champ controls
--InputSkiLeft = "KEY_LEFT"
--InputSkiRight = "KEY_RIGHT"
--InputSkiUp = "KEY_UP"
--InputSkiDown = "KEY_DOWN"
-+InputSkiLeft = "KEY_LEFT,JOY1_LEFT"
-+InputSkiRight = "KEY_RIGHT,JOY1_RIGHT"
-+InputSkiUp = "KEY_UP,JOY1_UP"
-+InputSkiDown = "KEY_DOWN,JOY1_DOWN"
- InputSkiX = "JOY1_XAXIS"
- InputSkiY = "JOY1_YAXIS"
- InputSkiPollLeft = "KEY_A,JOY1_BUTTON1"
-@@ -210,20 +212,20 @@ InputSkiSelect2 = "KEY_W,JOY1_BUTTON4"
- InputSkiSelect3 = "KEY_E,JOY1_BUTTON5"
- 
- ; Magical Truck Adventure controls
--InputMagicalLeverUp1 = "KEY_UP"
--InputMagicalLeverDown1 = "KEY_DOWN"
--InputMagicalLeverUp2 = "NONE"
--InputMagicalLeverDown2 = "NONE"
-+InputMagicalLeverUp1 = "KEY_UP,JOY1_UP"
-+InputMagicalLeverDown1 = "KEY_DOWN,JOY1_DOWN"
-+InputMagicalLeverUp2 = "JOY2_UP"
-+InputMagicalLeverDown2 = "JOY2_DOWN"
- InputMagicalLever1 = "JOY1_YAXIS"
- InputMagicalLever2 = "JOY2_YAXIS"
- InputMagicalPedal1 = "KEY_A,JOY1_BUTTON1"
- InputMagicalPedal2 = "KEY_S,JOY2_BUTTON1"
- 
- ; Sega Bass Fishing / Get Bass controls
--InputFishingRodLeft = "KEY_LEFT"
--InputFishingRodRight = "KEY_RIGHT"
--InputFishingRodUp = "KEY_UP"
--InputFishingRodDown = "KEY_DOWN"
-+InputFishingRodLeft = "KEY_LEFT,JOY1_LEFT"
-+InputFishingRodRight = "KEY_RIGHT,JOY1_RIGHT"
-+InputFishingRodUp = "KEY_UP,JOY1_UP"
-+InputFishingRodDown = "KEY_DOWN,JOY1_DOWN"
- InputFishingStickLeft = "KEY_A"
- InputFishingStickRight = "KEY_D"
- InputFishingStickUp = "KEY_W"
+ InputSkiLeft = "KEY_LEFT"

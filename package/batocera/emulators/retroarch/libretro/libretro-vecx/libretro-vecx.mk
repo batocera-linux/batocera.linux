@@ -4,7 +4,7 @@
 #
 ################################################################################
 # Version.: Commits on Oct 18, 2020
-LIBRETRO_VECX_VERSION = 98bd64b66923f4fc93eb6831f79c4119150bbe80
+LIBRETRO_VECX_VERSION = 9af0702bce5da0341b2c703e750be8dd64dd4cf1
 LIBRETRO_VECX_SITE = $(call github,libretro,libretro-vecx,$(LIBRETRO_VECX_VERSION))
 LIBRETRO_VECX_LICENSE = GPLv2|LGPLv2.1
 
@@ -22,7 +22,15 @@ endif
 
 LIBRETRO_VECX_PLATFORM = $(LIBRETRO_PLATFORM)
 
-ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI4)$(BR2_PACKAGE_BATOCERA_TARGET_RPI3),y)
+ifeq ($(BR2_aarch64),y)
+	LIBRETRO_VECX_PLATFORM = unix
+endif
+
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI3),y)
+	LIBRETRO_VECX_PLATFORM = rpi
+endif
+
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI4),y)
 	LIBRETRO_VECX_PLATFORM = rpi-mesa
 endif
 
@@ -30,8 +38,8 @@ ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_S812),y)
         LIBRETRO_VECX_PLATFORM = armv
 endif
 
-ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA),y)
-	LIBRETRO_VECX_PLATFORM = classic_armv8_a35
+ifeq ($(BR2_PACKAGE_HAS_LIBMALI),y)
+        LIBRETRO_VECX_PLATFORM = unix
 endif
 
 LIBRETRO_VECX_MAKE_OPTS += platform="$(LIBRETRO_VECX_PLATFORM)"

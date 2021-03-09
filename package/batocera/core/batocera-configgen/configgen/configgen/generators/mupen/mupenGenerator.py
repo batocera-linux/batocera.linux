@@ -11,7 +11,7 @@ class MupenGenerator(Generator):
 
     def generate(self, system, rom, playersControllers, gameResolution):
 
-        # read the configuration file
+        # Read the configuration file
         iniConfig = ConfigParser.ConfigParser()
         # To prevent ConfigParser from converting to lower case
         iniConfig.optionxform = str
@@ -21,13 +21,13 @@ class MupenGenerator(Generator):
         mupenConfig.setMupenConfig(iniConfig, system, playersControllers, gameResolution)
         mupenControllers.setControllersConfig(iniConfig, playersControllers, system.config)
 
-        # save the ini file
+        # Save the ini file
         if not os.path.exists(os.path.dirname(batoceraFiles.mupenCustom)):
             os.makedirs(os.path.dirname(batoceraFiles.mupenCustom))
         with open(batoceraFiles.mupenCustom, 'w') as configfile:
             iniConfig.write(configfile)
 
-        # command
+        # Command
         commandArray = [batoceraFiles.batoceraBins[system.config['emulator']], "--corelib", "/usr/lib/libmupen64plus.so.2.0.0", "--gfx", "/usr/lib/mupen64plus/mupen64plus-video-{}.so".format(system.config['core']), "--configdir", batoceraFiles.mupenConf, "--datadir", batoceraFiles.mupenConf]
         commandArray.append(rom)
 

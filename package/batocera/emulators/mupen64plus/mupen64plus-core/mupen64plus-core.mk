@@ -3,8 +3,8 @@
 # mupen64plus core
 #
 ################################################################################
-# Version.: Commits on Jan 02, 2021
-MUPEN64PLUS_CORE_VERSION = af812317fe99c51184d02981939d147e73dd07cc
+# Version.: Commits on Feb 19, 2021
+MUPEN64PLUS_CORE_VERSION = 9f6a9776a7b6912f124e02c5be6dfdce4ea2c132
 MUPEN64PLUS_CORE_SITE = $(call github,mupen64plus,mupen64plus-core,$(MUPEN64PLUS_CORE_VERSION))
 MUPEN64PLUS_CORE_LICENSE = GPLv2
 MUPEN64PLUS_CORE_DEPENDENCIES = sdl2 alsa-lib freetype dejavu
@@ -40,7 +40,7 @@ ifeq ($(BR2_aarch64),y)
 	MUPEN64PLUS_PARAMS += VFP_HARD=1
 endif
 
-ifeq ($(BR2_ARM_CPU_HAS_NEON),y)
+ifeq ($(BR2_arm)$(BR2_ARM_CPU_HAS_NEON),yy)
 	MUPEN64PLUS_CORE_CPUFLAGS += -marm -DNO_ASM -DARM -D__arm__ -DARM_ASM -D__NEON_OPT -DNOSSE
 	MUPEN64PLUS_GL_CFLAGS += -D__ARM_NEON__ -D__NEON_OPT -ftree-vectorize -mvectorize-with-neon-quad -ftree-vectorizer-verbose=2 -funsafe-math-optimizations -fno-finite-math-only
 
