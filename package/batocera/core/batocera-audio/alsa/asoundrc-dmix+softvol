@@ -3,7 +3,16 @@
 
 pcm.!default {
 	type plug
+	slave.pcm "softvol"
+}
+
+pcm.softvol {
+	type softvol
 	slave.pcm "dmixer"
+	control {
+		name "Master"
+		card %CARDNO%
+	}
 }
 
 pcm.dmixer  {
