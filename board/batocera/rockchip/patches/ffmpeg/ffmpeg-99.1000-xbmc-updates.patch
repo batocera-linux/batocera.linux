@@ -190,31 +190,3 @@ index 32416112bfd..dfae5004448 100644
  #endif
  
 
-From f6ae50a5f24006d1bc75f03ae11853dd77d0b8d3 Mon Sep 17 00:00:00 2001
-From: Rainer Hochecker <fernetmenta@online.de>
-Date: Sat, 26 Jan 2019 19:48:35 +0100
-Subject: [PATCH 6/6] avcodec/vaapi_h264: skip decode if pic has no slices
-
-This fixes / workarounds https://bugs.freedesktop.org/show_bug.cgi?id=105368.
-It was hit frequently when watching h264 channels received via DVB-X.
-Corresponding kodi bug: https://github.com/xbmc/xbmc/issues/15704
----
- libavcodec/vaapi_h264.c | 5 +++++
- 1 file changed, 5 insertions(+)
-
-diff --git a/libavcodec/vaapi_h264.c b/libavcodec/vaapi_h264.c
-index 9332aa6f310..d4494beebf8 100644
---- a/libavcodec/vaapi_h264.c
-+++ b/libavcodec/vaapi_h264.c
-@@ -314,6 +314,11 @@ static int vaapi_h264_end_frame(AVCodecContext *avctx)
-     H264SliceContext *sl = &h->slice_ctx[0];
-     int ret;
- 
-+    if (pic->nb_slices == 0) {
-+        ret = AVERROR_INVALIDDATA;
-+        goto finish;
-+    }
-+
-     ret = ff_vaapi_decode_issue(avctx, pic);
-     if (ret < 0)
-         goto finish;
