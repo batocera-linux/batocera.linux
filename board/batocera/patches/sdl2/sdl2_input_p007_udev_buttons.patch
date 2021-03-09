@@ -1,0 +1,19 @@
+--- a/src/joystick/linux/SDL_sysjoystick.c	2021-03-08 21:51:42.226895612 +0100
++++ b/src/joystick/linux/SDL_sysjoystick.c	2021-03-09 22:00:24.868600939 +0100
+@@ -870,16 +870,6 @@
+                 ++joystick->nbuttons;
+             }
+         }
+-        for (i = 0; i < BTN_JOYSTICK; ++i) {
+-            if (test_bit(i, keybit)) {
+-#ifdef DEBUG_INPUT_EVENTS
+-                printf("Joystick has button: 0x%x\n", i);
+-#endif
+-                joystick->hwdata->key_map[i] = joystick->nbuttons;
+-                joystick->hwdata->has_key[i] = SDL_TRUE;
+-                ++joystick->nbuttons;
+-            }
+-        }
+         for (i = 0; i < ABS_MISC; ++i) {
+             /* Skip hats */
+             if (i == ABS_HAT0X) {
