@@ -1,0 +1,27 @@
+# https://github.com/ptitSeb/gl4es/pull/237/commits/57a41f68a7b7950fff709779fabbfdff61c50d01
+From 57a41f68a7b7950fff709779fabbfdff61c50d01 Mon Sep 17 00:00:00 2001
+From: Paul Cercueil <paul@crapouillou.net>
+Date: Tue, 27 Oct 2020 19:06:15 +0000
+Subject: [PATCH] CMake: Set -DEGL_NO_X11 if NOX11
+
+If we don't want to build for X11, set the EGL_NO_X11 macro. This
+ensures that we can build the library for a system that does not even
+have X11 headers.
+
+Signed-off-by: Paul Cercueil <paul@crapouillou.net>
+---
+ CMakeLists.txt | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 15099d89..1feeb344 100755
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -107,6 +107,7 @@ endif()
+ 
+ #NOX11
+ if(NOX11)
++    add_definitions(-DEGL_NO_X11)
+     add_definitions(-DNOX11)
+ endif()
+ 

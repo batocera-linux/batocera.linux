@@ -1,0 +1,75 @@
+From d80d02aa1bfd761ac89c0f08b036ef6e95e1953b Mon Sep 17 00:00:00 2001
+From: Gleb Mazovetskiy <glex.spb@gmail.com>
+Date: Wed, 27 Jan 2021 04:51:45 +0000
+Subject: [PATCH] Fixup public functions
+
+1. Add `__attribute__((visibility("default")))` to all public functions.
+2. Expose `close_gl4es()`.
+3. Make public header C++-compatible.
+---
+ include/gl4esinit.h | 13 ++++++++++++-
+ src/gl/gl_lookup.c  |  1 +
+ src/gl/init.c       |  2 ++
+ 3 files changed, 15 insertions(+), 1 deletion(-)
+
+diff --git a/include/gl4esinit.h b/include/gl4esinit.h
+index fd91ebc..c7a410f 100644
+--- a/include/gl4esinit.h
++++ b/include/gl4esinit.h
+@@ -2,12 +2,23 @@
+ #ifndef _GL4ESINCLUDE_INIT_H_
+ #define _GL4ESINCLUDE_INIT_H_
+ 
++#ifdef __cplusplus
++extern "C" {
++#endif
++
+ // set driver GetProcAddress implementation. required for hardext detection with NOEGL or when loader is disabled
+ void set_getprocaddress(void *(*new_proc_address)(const char *));
+ // reguired with NOEGL
+ void set_getmainfbsize(void (*new_getMainFBSize)(int* width, int* height));
+-// do this before any GL calls if init constructors disabled
++// do this before any GL calls if init constructors are disabled.
+ void initialize_gl4es(void);
++// do this to uninitialize GL4ES if init constructors are disabled.
++void close_gl4es();
+ // wrapped GetProcAddress
+ void *gl4es_GetProcAddress(const char *name);
++
++#ifdef __cplusplus
++}
++#endif
++
+ #endif
+diff --git a/src/gl/gl_lookup.c b/src/gl/gl_lookup.c
+index c981c11..6d0196c 100644
+--- a/src/gl/gl_lookup.c
++++ b/src/gl/gl_lookup.c
+@@ -28,6 +28,7 @@ void gl4es_Stub(void *x, ...) {
+     return;
+ }
+ 
++__attribute__((visibility("default")))
+ void *gl4es_GetProcAddress(const char *name) {
+     DBG(printf("glGetProcAddress(\"%s\")", name);)
+     // generated gles wrappers
+diff --git a/src/gl/init.c b/src/gl/init.c
+index a233f40..cc47cf0 100644
+--- a/src/gl/init.c
++++ b/src/gl/init.c
+@@ -52,10 +52,12 @@ void glx_init();
+ 
+ static int inited = 0;
+ 
++__attribute__((visibility("default")))
+ void set_getmainfbsize(void (*new_getMainFBSize)(int* w, int* h)) {
+     gl4es_getMainFBSize = (void*)new_getMainFBSize;
+ }
+ 
++__attribute__((visibility("default")))
+ void set_getprocaddress(void *(*new_proc_address)(const char *)) {
+     gles_getProcAddress = new_proc_address;
+ }
+-- 
+2.27.0
+

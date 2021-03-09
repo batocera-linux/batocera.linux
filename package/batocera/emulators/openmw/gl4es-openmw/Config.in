@@ -1,0 +1,12 @@
+config BR2_PACKAGE_GL4ES_OPENMW
+	# (hidden package) A version of gl4es for the OpenMW Morrowind Engine
+	bool
+
+	depends on BR2_PACKAGE_HAS_LIBGLES
+	help
+	  GL4ES provides OpenGL for GLES Hardware.
+
+	  This version is known to work with OpenMW and is patched to allow gamma adjustement.
+	  Based on https://gitlab.com/OpenMW/openmw-android/-/tree/841887fc55bccb75f9de6a968035bbcd8aaca0ac/.
+
+	  https://github.com/ptitSeb/gl4es/
