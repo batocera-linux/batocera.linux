@@ -12,6 +12,8 @@ XEMU_GIT_SUBMODULES=YES
 XEMU_LICENSE = GPLv2
 XEMU_DEPENDENCIES = sdl2
 
+XEMU_EXTRA_DOWNLOADS = https://github.com/mborgerson/xemu-hdd-image/releases/download/1.0/xbox_hdd.qcow2.zip
+
 XEMU_CONF_ENV += PATH="/x86_64/host/x86_64-buildroot-linux-gnu/sysroot/usr/bin:$$PATH"
 
 XEMU_CONF_OPTS += --target-list=i386-softmmu
@@ -98,7 +100,7 @@ define XEMU_INSTALL_TARGET_CMDS
 	# XEmu app data
 	mkdir -p $(TARGET_DIR)/usr/share/xemu/data
 	cp $(@D)/data/* $(TARGET_DIR)/usr/share/xemu/data/
-	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/xemu/xbox_hdd.qcow2 $(TARGET_DIR)/usr/share/xemu/data
+	$(UNZIP) -ob $(XEMU_DL_DIR)/xbox_hdd.qcow2.zip xbox_hdd.qcow2 -d $(TARGET_DIR)/usr/share/xemu/data
 endef
 
 define XEMU_EVMAPY
