@@ -1,0 +1,361 @@
+diff -u -r a/Makefile.in b/Makefile.in
+--- a/Makefile.in	2020-12-21 18:44:36.000000000 +0100
++++ b/Makefile.in	2021-03-10 21:41:29.146567837 +0100
+@@ -22,7 +22,7 @@
+ INCLUDE = @INCLUDE@
+ CFLAGS  = @BUILD_CFLAGS@
+ EXTRA_CFLAGS = @EXTRA_CFLAGS@
+-LDFLAGS = @BUILD_LDFLAGS@
++LDFLAGS = @BUILD_LDFLAGS@ -lrga
+ EXTRA_LDFLAGS = @EXTRA_LDFLAGS@
+ LIBTOOL = @LIBTOOL@
+ INSTALL = @INSTALL@
+diff -u -r a/src/video/kmsdrm/SDL_kmsdrmopengles.c b/src/video/kmsdrm/SDL_kmsdrmopengles.c
+--- a/src/video/kmsdrm/SDL_kmsdrmopengles.c	2020-12-21 18:44:36.000000000 +0100
++++ b/src/video/kmsdrm/SDL_kmsdrmopengles.c	2021-03-10 21:56:35.469889554 +0100
+@@ -45,6 +45,9 @@
+ #define EGL_NO_NATIVE_FENCE_FD_ANDROID    -1
+ #endif
+ 
++extern rga_info_t src_info;
++extern rga_info_t dst_info;
++
+ /* EGL implementation of SDL OpenGL support */
+ 
+ void
+@@ -128,6 +131,8 @@
+     SDL_DisplayData *dispdata = (SDL_DisplayData *) SDL_GetDisplayForWindow(window)->driverdata;
+     KMSDRM_FBInfo *fb;
+     KMSDRM_PlaneInfo info = {0};
++    struct gbm_bo* rga_buffer = NULL;
++    SDL_VideoData *viddata = NULL;
+ 
+     /******************************************************************/
+     /* Create the GPU-side FENCE OBJECT. It will be inserted into the */
+@@ -175,7 +180,27 @@
+     if (!windata->next_bo) {
+         return SDL_SetError("Failed to lock frontbuffer");
+     }
+-    fb = KMSDRM_FBFromBO(_this, windata->next_bo);
++
++    if (src_info.fd) {
++        close(src_info.fd);
++    }
++    viddata = (SDL_VideoData *)_this->driverdata;    
++    src_info.fd = KMSDRM_gbm_bo_get_fd(windata->next_bo);
++    dst_info.fd = viddata->rga_buffer_prime_fds[viddata->rga_buffer_index];
++    if (c_RkRgaBlit(&src_info, &dst_info, NULL) < 0) {
++        SDL_LogError(SDL_LOG_CATEGORY_VIDEO,
++                        "Failed to rga blit\n");
++    }
++
++    rga_buffer = viddata->rga_buffers[viddata->rga_buffer_index];
++    fb = KMSDRM_FBFromBO(_this, rga_buffer);
++    if (!fb) {
++        return 0;
++    }
++ 
++    viddata->rga_buffer_index = (viddata->rga_buffer_index + 1) % RGA_BUFFERS_MAX;
++
++
+     if (!fb) {
+         return SDL_SetError("Failed to get a new framebuffer from BO");
+     }
+@@ -282,6 +307,8 @@
+     SDL_DisplayData *dispdata = (SDL_DisplayData *) SDL_GetDisplayForWindow(window)->driverdata;
+     KMSDRM_FBInfo *fb;
+     KMSDRM_PlaneInfo info = {0};
++    struct gbm_bo* rga_buffer = NULL;
++    SDL_VideoData *viddata = NULL;
+ 
+     /****************************************************************************************************/
+     /* In double-buffer mode, atomic_commit will always be synchronous/blocking (ie: won't return until */
+@@ -303,7 +330,19 @@
+     if (!windata->next_bo) {
+         return SDL_SetError("Failed to lock frontbuffer");
+     }
+-    fb = KMSDRM_FBFromBO(_this, windata->next_bo);
++    if (src_info.fd) {
++        close(src_info.fd);
++    }
++    viddata = (SDL_VideoData *)_this->driverdata;    
++    src_info.fd = KMSDRM_gbm_bo_get_fd(windata->next_bo);
++    dst_info.fd = viddata->rga_buffer_prime_fds[viddata->rga_buffer_index];
++    if (c_RkRgaBlit(&src_info, &dst_info, NULL) < 0) {
++        SDL_LogError(SDL_LOG_CATEGORY_VIDEO,
++                        "Failed to rga blit\n");
++    }
++
++    rga_buffer = viddata->rga_buffers[viddata->rga_buffer_index];
++    fb = KMSDRM_FBFromBO(_this, rga_buffer);
+     if (!fb) {
+         return SDL_SetError("Failed to get a new framebuffer BO");
+     }
+diff -u -r a/src/video/kmsdrm/SDL_kmsdrmsym.h b/src/video/kmsdrm/SDL_kmsdrmsym.h
+--- a/src/video/kmsdrm/SDL_kmsdrmsym.h	2020-12-21 18:44:36.000000000 +0100
++++ b/src/video/kmsdrm/SDL_kmsdrmsym.h	2021-03-10 21:52:45.276559083 +0100
+@@ -117,6 +117,7 @@
+ SDL_KMSDRM_SYM(struct gbm_bo *,gbm_surface_lock_front_buffer,(struct gbm_surface *surf))
+ SDL_KMSDRM_SYM(void,gbm_surface_release_buffer,(struct gbm_surface *surf, struct gbm_bo *bo))
+ 
++SDL_KMSDRM_SYM(int,gbm_bo_get_fd,(struct gbm_bo *bo))
+ 
+ #undef SDL_KMSDRM_MODULE
+ #undef SDL_KMSDRM_SYM
+diff -u -r a/src/video/kmsdrm/SDL_kmsdrmvideo.c b/src/video/kmsdrm/SDL_kmsdrmvideo.c
+--- a/src/video/kmsdrm/SDL_kmsdrmvideo.c	2020-12-21 18:44:36.000000000 +0100
++++ b/src/video/kmsdrm/SDL_kmsdrmvideo.c	2021-03-10 22:22:28.149869931 +0100
+@@ -42,6 +42,7 @@
+ #include "SDL_kmsdrmmouse.h"
+ #include "SDL_kmsdrmdyn.h"
+ #include "SDL_kmsdrmvulkan.h"
++#include <sys/ioctl.h>
+ #include <sys/stat.h>
+ #include <dirent.h>
+ #include <errno.h>
+@@ -68,6 +69,9 @@
+     return 0;
+ }
+ 
++rga_info_t src_info = {0};
++rga_info_t dst_info = {0};
++
+ static int
+ check_modesetting(int devindex)
+ {
+@@ -116,6 +120,47 @@
+     return available;
+ }
+ 
++static void
++KMSDRM_InitRotateBuffer(_THIS, int frameWidth, int frameHeight)
++{
++    int l_frameHeight;
++    SDL_VideoData *viddata = ((SDL_VideoData *)_this->driverdata);
++
++    // initialize 2D raster graphic acceleration unit (RGA)
++    c_RkRgaInit();
++
++    l_frameHeight = frameHeight;
++    if(l_frameHeight % 32 != 0) {
++      l_frameHeight = (frameHeight + 32) & (~31);
++    }
++
++    // create buffers for RGA with adjusted stride
++    for (int i = 0; i < RGA_BUFFERS_MAX; ++i)
++    {
++        viddata->rga_buffers[i] = KMSDRM_gbm_bo_create(viddata->gbm_dev,
++              frameWidth, l_frameHeight,
++              GBM_FORMAT_XRGB8888, GBM_BO_USE_SCANOUT | GBM_BO_USE_RENDERING);
++        assert(viddata->rga_buffers[i]);
++
++        viddata->rga_buffer_prime_fds[i] = KMSDRM_gbm_bo_get_fd(viddata->rga_buffers[i]);
++    }
++    viddata->rga_buffer_index = 0;
++
++    // setup rotation
++    src_info.fd = -1;
++    src_info.mmuFlag = 1;
++    src_info.rotation = HAL_TRANSFORM_ROT_270;
++
++    // swap width and height and adjust stride here because our source buffer is 480x854
++    rga_set_rect(&src_info.rect, 0, 0, frameHeight, frameWidth, l_frameHeight, frameWidth, RK_FORMAT_BGRA_8888);
++
++    dst_info.fd = -1;
++    dst_info.mmuFlag = 1;
++
++    rga_set_rect(&dst_info.rect, 0, 0, frameWidth, frameHeight, frameWidth, frameHeight, RK_FORMAT_BGRA_8888);
++}
++
++
+ static unsigned int get_dricount(void)
+ {
+     unsigned int devcount = 0;
+@@ -775,12 +820,12 @@
+     display_mm_width = dispdata->connector->connector->mmWidth;
+     display_mm_height = dispdata->connector->connector->mmHeight;
+ 
+-    w = dispdata->mode.hdisplay;
+-    h = dispdata->mode.vdisplay;
++    w = dispdata->mode.vdisplay;
++    h = dispdata->mode.hdisplay;
+ 
+-    *hdpi = display_mm_width ? (((float) w) * 25.4f / display_mm_width) : 0.0f;
+-    *vdpi = display_mm_height ? (((float) h) * 25.4f / display_mm_height) : 0.0f;
+-    *ddpi = SDL_ComputeDiagonalDPI(w, h, ((float) display_mm_width) / 25.4f,((float) display_mm_height) / 25.4f);
++    *hdpi = display_mm_height ? (((float) h) * 25.4f / display_mm_height) : 0.0f;
++    *vdpi = display_mm_width ? (((float) w) * 25.4f / display_mm_width) : 0.0f;
++    *ddpi = SDL_ComputeDiagonalDPI(w, h, ((float) display_mm_height) / 25.4f, ((float) display_mm_width) / 25.4f);
+ 
+     return 0;
+ }
+@@ -1340,10 +1385,10 @@
+     plane_info.plane = dispdata->display_plane;
+     plane_info.crtc_id = dispdata->crtc->crtc->crtc_id;
+     plane_info.fb_id = dispdata->crtc->crtc->buffer_id;
+-    plane_info.src_w = dispdata->mode.hdisplay;
+-    plane_info.src_h = dispdata->mode.vdisplay;
+-    plane_info.crtc_w = dispdata->mode.hdisplay;
+-    plane_info.crtc_h = dispdata->mode.vdisplay;
++    plane_info.src_w = dispdata->mode.vdisplay;
++    plane_info.src_h = dispdata->mode.hdisplay;
++    plane_info.crtc_w = dispdata->mode.vdisplay;
++    plane_info.crtc_h = dispdata->mode.hdisplay;
+ 
+     drm_atomic_set_plane_props(&plane_info);
+ 
+@@ -1414,11 +1459,11 @@
+     if (((window->flags & SDL_WINDOW_FULLSCREEN_DESKTOP) == SDL_WINDOW_FULLSCREEN_DESKTOP) ||
+        ((window->flags & SDL_WINDOW_FULLSCREEN) == SDL_WINDOW_FULLSCREEN)) {
+ 
+-        width = dispdata->mode.hdisplay;
+-        height = dispdata->mode.vdisplay;
++        width = dispdata->mode.vdisplay;
++        height = dispdata->mode.hdisplay;
+     } else {
+-        width = window->w;
+-        height = window->h;
++        width = window->h;
++        height = window->w;
+     }
+ 
+     if (!KMSDRM_gbm_device_is_format_supported(viddata->gbm_dev, surface_fmt, surface_flags)) {
+@@ -1510,6 +1555,15 @@
+     /*********************************************************************/
+     window->driverdata = NULL;
+     SDL_free(windata);
++
++    for (int i = 0; i < RGA_BUFFERS_MAX; ++i) {
++        close(viddata->rga_buffer_prime_fds[i]);
++    }
++    if (src_info.fd) {
++        close(src_info.fd);
++    }
++    c_RkRgaDeInit();
++
+ }
+ 
+ /*****************************************************************************/
+@@ -1527,10 +1581,10 @@
+     if (((window->flags & SDL_WINDOW_FULLSCREEN_DESKTOP) == SDL_WINDOW_FULLSCREEN_DESKTOP) ||
+        ((window->flags & SDL_WINDOW_FULLSCREEN) == SDL_WINDOW_FULLSCREEN)) {
+ 
+-        windata->src_w = dispdata->mode.hdisplay;
+-        windata->src_h = dispdata->mode.vdisplay;
+-        windata->output_w = dispdata->mode.hdisplay;
+-        windata->output_h = dispdata->mode.vdisplay;
++        windata->src_w = dispdata->mode.vdisplay;
++        windata->src_h = dispdata->mode.hdisplay;
++        windata->output_w = dispdata->mode.vdisplay;
++        windata->output_h = dispdata->mode.hdisplay;
+         windata->output_x = 0;
+ 
+     } else {
+@@ -1538,10 +1592,10 @@
+         /* Normal non-fullscreen windows are scaled using the CRTC,
+            so get output (CRTC) size and position, for AR correction. */
+         ratio = (float)window->w / (float)window->h;
+-        windata->src_w = window->w;
+-        windata->src_h = window->h;
+-        windata->output_w = dispdata->mode.vdisplay * ratio;
+-        windata->output_h = dispdata->mode.vdisplay;
++        windata->src_w = window->h;
++        windata->src_h = window->w;
++        windata->output_w = dispdata->mode.vdisplay;
++        windata->output_h = dispdata->mode.vdisplay * ratio;
+         windata->output_x = (dispdata->mode.hdisplay - windata->output_w) / 2;
+ 
+     }
+@@ -1593,8 +1647,8 @@
+     /* Setup the single display that's available.
+        There's no problem with it being still incomplete. */
+     display.driverdata = dispdata;
+-    display.desktop_mode.w = dispdata->mode.hdisplay;
+-    display.desktop_mode.h = dispdata->mode.vdisplay;
++    display.desktop_mode.w = dispdata->mode.vdisplay;
++    display.desktop_mode.h = dispdata->mode.hdisplay;
+     display.desktop_mode.refresh_rate = dispdata->mode.vrefresh;
+     display.desktop_mode.format = SDL_PIXELFORMAT_ARGB8888;
+     display.current_mode = display.desktop_mode;
+@@ -1685,8 +1739,8 @@
+ 
+         modedata->mode_index = i;
+ 
+-        mode.w = conn->modes[i].hdisplay;
+-        mode.h = conn->modes[i].vdisplay;
++        mode.w = conn->modes[i].vdisplay;
++        mode.h = conn->modes[i].hdisplay;
+         mode.refresh_rate = conn->modes[i].vrefresh;
+         mode.format = SDL_PIXELFORMAT_ARGB8888;
+         mode.driverdata = modedata;
+@@ -1738,6 +1792,7 @@
+ KMSDRM_CreateWindow(_THIS, SDL_Window * window)
+ {
+     SDL_WindowData *windata = NULL;
++    SDL_DisplayData *data = NULL;
+     SDL_VideoData *viddata = (SDL_VideoData *)_this->driverdata;
+     SDL_VideoDisplay *display = SDL_GetDisplayForWindow(window);
+     SDL_DisplayData *dispdata = display->driverdata;
+@@ -1788,19 +1843,19 @@
+     if (((window->flags & SDL_WINDOW_FULLSCREEN_DESKTOP) == SDL_WINDOW_FULLSCREEN_DESKTOP) ||
+        ((window->flags & SDL_WINDOW_FULLSCREEN) == SDL_WINDOW_FULLSCREEN))
+     {
+-        windata->src_w = dispdata->mode.hdisplay;
+-        windata->src_h = dispdata->mode.vdisplay;
+-        windata->output_w = dispdata->mode.hdisplay;
+-        windata->output_h = dispdata->mode.vdisplay;
++        windata->src_w = dispdata->mode.vdisplay;
++        windata->src_h = dispdata->mode.hdisplay;
++        windata->output_w = dispdata->mode.vdisplay;
++        windata->output_h = dispdata->mode.hdisplay;
+         windata->output_x = 0;
+     } else {
+         /* Normal non-fullscreen windows are scaled using the CRTC,
+            so get output (CRTC) size and position, for AR correction. */
+         ratio = (float)window->w / (float)window->h;
+-        windata->src_w = window->w;
+-        windata->src_h = window->h;
+-        windata->output_w = dispdata->mode.vdisplay * ratio;
+-        windata->output_h = dispdata->mode.vdisplay;
++        windata->src_w = window->h;
++        windata->src_h = window->w;
++        windata->output_w = dispdata->mode.vdisplay;
++        windata->output_h = dispdata->mode.vdisplay * ratio;
+         windata->output_x = (dispdata->mode.hdisplay - windata->output_w) / 2;
+     }
+ 
+@@ -1835,6 +1890,9 @@
+ 
+     viddata->windows[viddata->num_windows++] = window;
+ 
++    data = (SDL_DisplayData *) SDL_GetDisplayForWindow(window)->driverdata;
++    KMSDRM_InitRotateBuffer(_this, data->mode.hdisplay, data->mode.vdisplay);
++
+     /* Focus on the newly created window */
+     SDL_SetMouseFocus(window);
+     SDL_SetKeyboardFocus(window);
+diff -u -r a/src/video/kmsdrm/SDL_kmsdrmvideo.h b/src/video/kmsdrm/SDL_kmsdrmvideo.h
+--- a/src/video/kmsdrm/SDL_kmsdrmvideo.h	2020-12-21 18:44:36.000000000 +0100
++++ b/src/video/kmsdrm/SDL_kmsdrmvideo.h	2021-03-10 22:20:24.029871519 +0100
+@@ -38,6 +38,10 @@
+ #include <EGL/egl.h>
+ #include <EGL/eglext.h>
+ #endif
++#include <rga/RgaApi.h>
++#include <assert.h>
++
++#define RGA_BUFFERS_MAX (3)
+ 
+ /****************************************************************************************/
+ /* Driverdata pointers are void struct* used to store backend-specific variables        */
+@@ -57,6 +61,10 @@
+     unsigned int max_windows;
+     unsigned int num_windows;
+ 
++    struct gbm_bo* rga_buffers[RGA_BUFFERS_MAX];
++    int rga_buffer_prime_fds[RGA_BUFFERS_MAX];
++    int rga_buffer_index;
++
+     SDL_bool video_init;        /* Has VideoInit succeeded? */
+ 
+ } SDL_VideoData;
