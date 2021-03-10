@@ -131,8 +131,10 @@ def main(args, maxnbplayers):
     if args.core is not None:
         system.config["core"] = args.core
         self.config["core-forced"] = True
-
-    eslog.debug("Settings: {}".format(system.config))
+    debugDisplay = system.config.copy()
+    if "retroachievements.password" in debugDisplay:
+        debugDisplay["retroachievements.password"] = "***"
+    eslog.debug("Settings: {}".format(debugDisplay))
     if "emulator" in system.config and "core" in system.config:
         eslog.log("emulator: {}, core: {}".format(system.config["emulator"], system.config["core"]))
     else:
