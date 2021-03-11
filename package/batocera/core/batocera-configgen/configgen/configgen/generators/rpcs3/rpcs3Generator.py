@@ -54,12 +54,14 @@ class Rpcs3Generator(Generator):
             os.makedirs(os.path.dirname(batoceraFiles.rpcs3config))    
 
         # Generate a default config if it doesn't exist otherwise just open the existing
+        rpcs3ymlconfig = {}
         if os.path.isfile(batoceraFiles.rpcs3config):
             with open(batoceraFiles.rpcs3config, 'r') as stream:
                 rpcs3ymlconfig = yaml.load(stream)
-        else:
+
+        if rpcs3ymlconfig is None: # in case the file is empty
             rpcs3ymlconfig = {}
-            
+
         # Add Node Core
         if "Core" not in rpcs3ymlconfig:
             rpcs3ymlconfig["Core"] = {}
