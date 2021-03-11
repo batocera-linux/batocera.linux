@@ -90,12 +90,13 @@ case "${ACTION}" in
 
 		# Download package now, send pacman in background and silence
 		pacman --noconfirm -Sw "${PKG}" 2>&1 >/dev/null &
-		RET=$?; PID=$!
+		PID=$!
 		# The .part is needed, check if file is already present
-		# Donwload loop with real size
+		# Download loop with real size
 		do_getPer "${DEST_PKG}/${FILE}.part" "$SIZE"
-
-
+		# Get background 'pacman' return
+		wait "$PID"
+		RET=$?
 		if [ ${RET} -eq 0 ]; then
 			# Install package directly (without Sync)
 			pacman --noconfirm -S "${PKG}" 2>&1 >/dev/null &
