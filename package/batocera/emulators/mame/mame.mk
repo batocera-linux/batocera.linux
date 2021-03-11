@@ -3,8 +3,8 @@
 # MAME
 #
 ################################################################################
-# Version.: Release 0.228
-MAME_VERSION = mame0228
+# Version.: Release 0.229
+MAME_VERSION = mame0229
 MAME_SITE = $(call github,mamedev,mame,$(MAME_VERSION))
 MAME_DEPENDENCIES = sdl2 zlib libpng fontconfig sqlite jpeg flac rapidjson expat glm
 MAME_LICENSE = MAME
@@ -101,7 +101,7 @@ define MAME_BUILD_CMDS
 	PKG_CONFIG_PATH="$(STAGING_DIR)/usr/lib/pkgconfig" \
 	$(MAKE) -j$(MAME_JOBS) TARGETOS=linux OSD=sdl \
 	TARGET=mame \
-	SUBTARGET=batocera \
+	SUBTARGET=mess \
 	OVERRIDE_CC="$(CCACHE) $(TARGET_CC)" \
 	OVERRIDE_CXX="$(CCACHE) $(TARGET_CXX)" \
 	OVERRIDE_LD="$(CCACHE) $(TARGET_LD)" \
@@ -142,8 +142,8 @@ define MAME_INSTALL_TARGET_CMDS
 	mkdir -p $(TARGET_DIR)/usr/bin/mame/roms
 
 	# Install binaries and default distro
-        $(INSTALL) -D $(@D)/mamearcade64	$(TARGET_DIR)/usr/bin/mame/mamearcade
-        $(INSTALL) -D $(@D)/mamebatocera64	$(TARGET_DIR)/usr/bin/mame/mamemess
+        $(INSTALL) -D $(@D)/mamearcade		$(TARGET_DIR)/usr/bin/mame/mame
+        $(INSTALL) -D $(@D)/mess		$(TARGET_DIR)/usr/bin/mame/mess
         cp $(@D)/COPYING			$(TARGET_DIR)/usr/bin/mame/
         cp $(@D)/README.md			$(TARGET_DIR)/usr/bin/mame/
         cp $(@D)/uismall.bdf			$(TARGET_DIR)/usr/bin/mame/
