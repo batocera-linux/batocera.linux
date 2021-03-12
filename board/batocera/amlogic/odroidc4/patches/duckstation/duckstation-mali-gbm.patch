@@ -1,0 +1,11 @@
+--- a/CMakeModules/FindGBM.cmake	2021-03-12 22:54:19.643993058 +0100
++++ b/CMakeModules/FindGBM.cmake	2021-03-12 22:54:05.763993263 +0100
+@@ -32,7 +32,7 @@
+                                   VERSION_VAR GBM_VERSION)
+ 
+ include(CheckCSourceCompiles)
+-set(CMAKE_REQUIRED_LIBRARIES ${GBM_LIBRARY})
++set(CMAKE_REQUIRED_LIBRARIES ${GBM_LIBRARY} mali)
+ check_c_source_compiles("#include <gbm.h>
+ 
+                          int main()
