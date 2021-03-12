@@ -10,18 +10,25 @@ MALI_G52_INSTALL_STAGING = YES
 MALI_G52_PROVIDES = libegl libgles libmali
 MALI_G52_DEPENDENCIES = mali-bifrost-module
 
-MALI_BLOB_FILENAME = libmali-bifrost-g52-r16p0-gbm.so
+MALI_G52_BLOB_FILENAME = libmali-bifrost-g52-r16p0-gbm.so
 
 ifeq ($(BR2_arm),y)
-MALI_BLOB = $(@D)/lib/arm-linux-gnueabihf/$(MALI_BLOB_FILENAME)
+MALI_G52_ARCH="arm-linux-gnueabihf"
 else
-MALI_BLOB = $(@D)/lib/aarch64-linux-gnu/$(MALI_BLOB_FILENAME)
+MALI_G52_ARCH="aarch64-linux-gnu"
 endif
+
+# We need to build the gbm wrapper
+define MALI_G52_BUILD_CMDS
+	cd $(@D)/src
+	$(TARGET_CC) $(@D)/src/gbm.c -I$(STAGING_DIR)/usr/include/libdrm -L$(STAGING_DIR)/usr/lib -I$(@D)/include -ldrm -fPIC -shared -o $(@D)/libgbm.so
+endef
 
 define MALI_G52_INSTALL_STAGING_CMDS
 	mkdir -p $(STAGING_DIR)/usr/lib/pkgconfig
 
-	cp $(MALI_BLOB) $(STAGING_DIR)/usr/lib/libmali.so
+	cp $(@D)/lib/$(MALI_G52_ARCH)/$(MALI_G52_BLOB_FILENAME) $(STAGING_DIR)/usr/lib/libmali.so
+	cp $(@D)/libgbm.so $(STAGING_DIR)/usr/lib/libgbm.so
 
 	(cd $(STAGING_DIR)/usr/lib && ln -sf libmali.so libMali.so)
 	(cd $(STAGING_DIR)/usr/lib && ln -sf libmali.so libEGL.so)
@@ -30,10 +37,12 @@ define MALI_G52_INSTALL_STAGING_CMDS
 	(cd $(STAGING_DIR)/usr/lib && ln -sf libmali.so libGLESv1_CM.so.1)
 	(cd $(STAGING_DIR)/usr/lib && ln -sf libmali.so libGLESv2.so)
 	(cd $(STAGING_DIR)/usr/lib && ln -sf libmali.so libGLESv2.so.2)
-	(cd $(STAGING_DIR)/usr/lib && ln -sf libmali.so libgbm.so)
-
+	
 	cp -pr $(@D)/include    $(STAGING_DIR)/usr
-	cp $(@D)/include/gbm.h 	$(STAGING_DIR)/usr/include/gbm.h
+
+	# Use GBM wrapper
+	cp $(@D)/src/gbm.h 	$(STAGING_DIR)/usr/include/gbm.h
+	cp $(@D)/src/gbm.pc.cmake $(@D)/pkgconfig/gbm.pc.cmake
 
 	for X in gbm egl glesv1_cm glesv2; \
 	do \
@@ -46,7 +55,8 @@ endef
 define MALI_G52_INSTALL_TARGET_CMDS
 	mkdir -p $(TARGET_DIR)/usr/lib
 
-	cp $(MALI_BLOB) $(TARGET_DIR)/usr/lib/libmali.so
+	cp $(@D)/lib/$(MALI_G52_ARCH)/$(MALI_G52_BLOB_FILENAME) $(TARGET_DIR)/usr/lib/libmali.so
+	cp $(@D)/libgbm.so $(TARGET_DIR)/usr/lib/libgbm.so
 
 	(cd $(TARGET_DIR)/usr/lib && ln -sf libmali.so libMali.so)
 	(cd $(TARGET_DIR)/usr/lib && ln -sf libmali.so libEGL.so)
@@ -55,7 +65,6 @@ define MALI_G52_INSTALL_TARGET_CMDS
 	(cd $(TARGET_DIR)/usr/lib && ln -sf libmali.so libGLESv1_CM.so.1)
 	(cd $(TARGET_DIR)/usr/lib && ln -sf libmali.so libGLESv2.so)
 	(cd $(TARGET_DIR)/usr/lib && ln -sf libmali.so libGLESv2.so.2)
-	(cd $(TARGET_DIR)/usr/lib && ln -sf libmali.so libgbm.so)
 endef
 
 $(eval $(generic-package))
