@@ -91,7 +91,8 @@ mountNetwork() {
     # /boot/batocera-boot.conf examples :
     # sharedevice=NETWORK
     #
-    # Basic commands : sharenetwork_<nfs|smb><[0-9]>=<SHARE|ROMS|SAVES|BIOS>@<host>:<remote directory>:<mount options>
+    # Basic commands : sharenetwork_<nfs|smb><[0-9]>=<DIR>@<host>:<remote directory>:<mount options>
+    # Where <DIR> can be one of SHARE|ROMS|SAVES|BIOS|MUSIC|DECORATIONS|SCREENSHOTS|THEMES|CHEATS|SOUNDS|LIBRARY|SPLASH
     #
     # sharenetwork_nfs1=SHARE@192.168.0.1:/Documents/batocera
     # or
@@ -143,6 +144,30 @@ mountNetwork() {
                         ;;
                         "BIOS")
                             CMD_TDIR="/userdata/bios"
+                        ;;
+                        "MUSIC")
+                            CMD_TDIR="/userdata/music"
+                        ;;
+                        "DECORATIONS")
+                            CMD_TDIR="/userdata/decorations"
+                        ;;
+                        "SCREENSHOTS")
+                            CMD_TDIR="/userdata/screenshots"
+                        ;;
+                        "THEMES")
+                            CMD_TDIR="/userdata/themes"
+                        ;;
+                        "CHEATS")
+                            CMD_TDIR="/userdata/cheats"
+                        ;;
+                        "SOUNDS")
+                            CMD_TDIR="/userdata/sounds"
+                        ;;
+                        "LIBRARY")
+                            CMD_TDIR="/userdata/library"
+                        ;;
+                        "SPLASH")
+                            CMD_TDIR="/userdata/splash"
                         ;;
                     esac
 
