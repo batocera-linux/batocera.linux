@@ -196,7 +196,7 @@ do_install() {
 
     # install
     echo "zcat \"${INSIMG}\" | dd of=\"/dev/${INSDISK}\" bs=40M"
-    echo "writting the disk ${INSDISK}, please wait..."
+    echo "writing to disk ${INSDISK}, please wait..."
     if ! zcat "${INSIMG}" | dd of="/dev/${INSDISK}" bs=40M
     then
 	return 1
