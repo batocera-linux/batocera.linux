@@ -189,21 +189,6 @@ diff -u -r a/src/video/kmsdrm/SDL_kmsdrmvideo.c b/src/video/kmsdrm/SDL_kmsdrmvid
  
      return 0;
  }
-@@ -1340,10 +1385,10 @@
-     plane_info.plane = dispdata->display_plane;
-     plane_info.crtc_id = dispdata->crtc->crtc->crtc_id;
-     plane_info.fb_id = dispdata->crtc->crtc->buffer_id;
--    plane_info.src_w = dispdata->mode.hdisplay;
--    plane_info.src_h = dispdata->mode.vdisplay;
--    plane_info.crtc_w = dispdata->mode.hdisplay;
--    plane_info.crtc_h = dispdata->mode.vdisplay;
-+    plane_info.src_w = dispdata->mode.vdisplay;
-+    plane_info.src_h = dispdata->mode.hdisplay;
-+    plane_info.crtc_w = dispdata->mode.vdisplay;
-+    plane_info.crtc_h = dispdata->mode.hdisplay;
- 
-     drm_atomic_set_plane_props(&plane_info);
- 
 @@ -1414,11 +1459,11 @@
      if (((window->flags & SDL_WINDOW_FULLSCREEN_DESKTOP) == SDL_WINDOW_FULLSCREEN_DESKTOP) ||
         ((window->flags & SDL_WINDOW_FULLSCREEN) == SDL_WINDOW_FULLSCREEN)) {
@@ -236,36 +221,6 @@ diff -u -r a/src/video/kmsdrm/SDL_kmsdrmvideo.c b/src/video/kmsdrm/SDL_kmsdrmvid
  }
  
  /*****************************************************************************/
-@@ -1527,10 +1581,10 @@
-     if (((window->flags & SDL_WINDOW_FULLSCREEN_DESKTOP) == SDL_WINDOW_FULLSCREEN_DESKTOP) ||
-        ((window->flags & SDL_WINDOW_FULLSCREEN) == SDL_WINDOW_FULLSCREEN)) {
- 
--        windata->src_w = dispdata->mode.hdisplay;
--        windata->src_h = dispdata->mode.vdisplay;
--        windata->output_w = dispdata->mode.hdisplay;
--        windata->output_h = dispdata->mode.vdisplay;
-+        windata->src_w = dispdata->mode.vdisplay;
-+        windata->src_h = dispdata->mode.hdisplay;
-+        windata->output_w = dispdata->mode.vdisplay;
-+        windata->output_h = dispdata->mode.hdisplay;
-         windata->output_x = 0;
- 
-     } else {
-@@ -1538,10 +1592,10 @@
-         /* Normal non-fullscreen windows are scaled using the CRTC,
-            so get output (CRTC) size and position, for AR correction. */
-         ratio = (float)window->w / (float)window->h;
--        windata->src_w = window->w;
--        windata->src_h = window->h;
--        windata->output_w = dispdata->mode.vdisplay * ratio;
--        windata->output_h = dispdata->mode.vdisplay;
-+        windata->src_w = window->h;
-+        windata->src_h = window->w;
-+        windata->output_w = dispdata->mode.vdisplay;
-+        windata->output_h = dispdata->mode.vdisplay * ratio;
-         windata->output_x = (dispdata->mode.hdisplay - windata->output_w) / 2;
- 
-     }
 @@ -1593,8 +1647,8 @@
      /* Setup the single display that's available.
         There's no problem with it being still incomplete. */
