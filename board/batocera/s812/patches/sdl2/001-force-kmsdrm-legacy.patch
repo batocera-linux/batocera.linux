@@ -1,0 +1,10 @@
+--- a/src/video/SDL_video.c	2021-03-13 23:56:52.682656805 +0100
++++ b/src/video/SDL_video.c	2021-03-13 23:57:03.129323317 +0100
+@@ -95,7 +95,6 @@
+     &PSP_bootstrap,
+ #endif
+ #if SDL_VIDEO_DRIVER_KMSDRM
+-    &KMSDRM_bootstrap,
+     &KMSDRM_LEGACY_bootstrap,
+ #endif
+ #if SDL_VIDEO_DRIVER_RPI
