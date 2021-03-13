@@ -54,7 +54,7 @@ def createXemuConfig(iniConfig, system, rom, playersControllers):
     iniConfig.set("audio", "use_dsp", "false")
 
     # Fill display section
-    iniConfig.set("display", "scale", "scale")
+    iniConfig.set("display", "scale", "stretch")
     iniConfig.set("display", "ui_scale", "1")
 
     # Fill input section
