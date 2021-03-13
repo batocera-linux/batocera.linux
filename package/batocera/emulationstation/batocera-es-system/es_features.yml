@@ -3132,3 +3132,11 @@ drastic:
 
 xemu:
   features: []
+  cfeatures:
+        scaling:
+            prompt:      SCALING MODE
+            description: Choose your mode
+            choices:
+                "Center":   center
+                "Scale":   scale
+                "Stretch":   stretch
