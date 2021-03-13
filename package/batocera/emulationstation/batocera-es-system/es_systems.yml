@@ -506,6 +506,8 @@ scummvm:
 
     Short game names can be found at http://scummvm.org/compatibility/
     For example, for "Broken Sword" create the file "Broken Sword/sword1.scummvm"
+
+    Find the documentation here: https://wiki.batocera.org/emulators:scummvm
   comment_fr: |
     Placez les dossiers de jeux scummvm dans ce dossier.
 
@@ -513,6 +515,8 @@ scummvm:
 
     Vous trouverez les noms courts a l'adresse : http://scummvm.org/compatibility/
     Par exemple pour "Les Chevaliers de Baphomet" creez le fichier "Les Chevaliers de Baphomet/sword1.scummvm"
+
+    Trouvez la documentation ici: https://wiki.batocera.org/emulators:scummvm
 
 dos:
   name:       Dos (x86)
@@ -550,6 +554,8 @@ dos:
 
     Games files are available on myabandonware:
     http://www.myabandonware.com/browse/platform/dos/
+
+    You can find the dos documentation for Batocera there : https://wiki.batocera.org/emulators:dos
   comment_fr: |
     Chaque jeu (fichiers) doit être contenu dans un dossier ayant l'extension ".pc .dos".
     Dans chaque dossier, un fichier dosbox.bat doit comporter la ligne de commande pour lancer le jeu.
@@ -568,6 +574,8 @@ dos:
 
     Les jeux DOS sont disponibles sur myabandonware:
     http://www.myabandonware.com/browse/platform/dos/
+
+    La doc dos pour Batocera se trouve à cet endroit : https://wiki.batocera.org/emulators:dos
 
 devilutionx:
   name:       DevilutionX
@@ -599,13 +607,17 @@ fbneo:
     libretro:
       fbneo:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FBNEO] }
   comment_en: |
-    ROMs version must be 0.2.97.44
+    ROMs must come from the FBNeo romset version 1.0.0.0
 
-    The file fbneo_029671_od_release_10_working_roms.dat may be used to check ROMs with clrmamepro available at http://mamedev.emulab.it/clrmamepro/
+    The file FinalBurn Neo (ClrMame Pro XML, Arcade only).dat in bios/FBNeo may be used to check ROMs with clrmamepro available at http://mamedev.emulab.it/clrmamepro/
+
+    You can find the arcade documentation there: https://wiki.batocera.org/arcade
   comment_fr: |
-    La version des ROMs doit être 0.2.97.44
+    Les ROMs doivent provenir du romset 1.0.0.0
 
-    Le fichier fbneo_029671_od_release_10_working_roms.dat peut servir à valider les ROMs avec clrmamepro disponible sur http://mamedev.emulab.it/clrmamepro/
+    Le fichier FinalBurn Neo (ClrMame Pro XML, Arcade only).dat dans bios/FBNeo peut servir à valider les ROMs avec clrmamepro disponible sur http://mamedev.emulab.it/clrmamepro/
+
+    Vous pouvez trouver la doc arcade là : https://wiki.batocera.org/arcade
 
 mame:
   name:       Mame
@@ -625,17 +637,27 @@ mame:
       mame:         { requireAnyOf: [BR2_PACKAGE_MAME]                    }
 
   comment_en: |
-    The system uses libretro mame2003 as default core: compatible ROMs must come from set 0.78
-    The libretro core imame4all, based on MAME v0.37b5, is also included.
+    The system uses libretro mame2003+ as default core: compatible ROMs must come from set 0.78+
+    Depending on your hardawre, other mame cores are included :
+      - latest mame core (0.228 currently)
+      - imame4all based on 0.37b5 romset
+      - mame2010 based on 0.139 romset
 
     Special files for mame2003 core:
     - Add your samples files in /userdata/bios/mame2003/samples/
-  comment_fr: |
-    Le système utilise le core libretro mame2003 implicitement: Les ROMs compatibles doivent provenir du set 0.78
-    Le core imame4all, basé sur MAME v0.37b5 est également disponible.
 
-    Fichiers spéciaux pour le core mame2003 :
+    You can find the arcade documentation there: https://wiki.batocera.org/arcade
+  comment_fr: |
+    Le système utilise le core libretro mame2003+ par défaut: Les ROMs compatibles doivent provenir du set 0.78+
+    D'autres cores mame sont également inclus:
+          - le dernier core mame  (0.228 à l'heure actuelle)
+          - imame4all utilisant le romset 0.37b5
+          - mame2010 utilisant le romset 0.139
+
+    Fichiers spéciaux pour le core mame2003+ :
     - Ajoutez vos fichiers samples dans le répertoire /userdata/bios/mame2003/samples/
+
+    Vous pouvez trouver la doc arcade là : https://wiki.batocera.org/arcade
 
 hbmame:
   name:       HBMame
@@ -883,6 +905,10 @@ tic80:
   emulators:
     libretro:
       tic80: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_TIC80] }
+  comment_en: |
+    Find the documentation here: https://wiki.batocera.org/emulators:tic-80
+  comment_fr: |
+    Trouvez la documentation ici: https://wiki.batocera.org/emulators:tic-80
 
 pico8:
   name:       Pico-8
@@ -893,6 +919,10 @@ pico8:
   emulators:
     libretro:
       retro8: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_RETRO8] }
+  comment_en: |
+    Find the documentation here: https://wiki.batocera.org/emulators:pico-8
+  comment_fr: |
+    Trouvez la documentation ici: https://wiki.batocera.org/emulators:pico-8
 
 channelf:
   name:       Channel-F
@@ -1331,6 +1361,10 @@ moonlight:
   emulators:
     moonlight:
       moonlight: { requireAnyOf: [BR2_PACKAGE_MOONLIGHT_EMBEDDED] }
+  comment_en: |
+    Find the documentation here: https://wiki.batocera.org/emulators:moonlight
+  comment_fr: |
+    Trouvez la documentation ici: https://wiki.batocera.org/emulators:moonlight
 
 apple2:
   name:       Apple II
@@ -1396,12 +1430,16 @@ wii:
         for example, to play mariokart wii, rename it mario_kart.side.ti.iso (to get the tilt on the first axis and infrared on the 2nd one (ti))
         for example, to play mario galaxy, rename it mario_galaxy.ni.iso (got get the nunchuk on the first axis and infrared on the 2nd one (ni))
     To use custom textures, put them in /userdata/saves/dolphin-emu/Load/Textures/<game id>.
+
+    Find the documentation here: https://wiki.batocera.org/emulators:wii
   comment_fr: |
     Pour utiliser une wiimote virtuelle en mode horizontal, il faut rajouter ".side." dans le nom du fichier (par exemple ".side.iso").
     Vous pouvez également choisir quels axes contrôler parmi i(nfra rouge), s(wing), t(ilt) ou n(unchuk) :
         par exemple, pour jouer à mariokart wii, renommer le jeu en mario_kart.side.ti.iso (vous aurez le tilt sur le 1er axe et l'infrarouge sur le 2e (ti))
         par exemple, pour jouer à mario galaxy, renommer le jeu en mario_galaxy.ni.iso (vous aurez le nunchuk sur le 1er axe et l'infrarouge sur le 2e (ni))
     Mettez les textures personnalisées dans /userdata/saves/dolphin-emu/Load/Textures/<game id>.
+
+    Trouvez la documentation ici: https://wiki.batocera.org/emulators:wii
 
 ps2:
   name:       Sony Playstation 2
@@ -1412,6 +1450,10 @@ ps2:
   emulators:
     pcsx2:
       pcsx2: { requireAnyOf: [BR2_PACKAGE_PCSX2, BR2_PACKAGE_PCSX2_AVX2, BR2_PACKAGE_PCSX2_X86] }
+  comment_en: |
+    Find the documentation here: https://wiki.batocera.org/emulators:playstation_2
+  comment_fr: |
+    Trouvez la documentation ici: https://wiki.batocera.org/emulators:playstation_2
 
 ps3:
   name:       Sony Playstation 3
@@ -1426,10 +1468,14 @@ ps3:
     You must first load the firmware by running rpcs3-config from menu>f1>Applications then File>Install firmware.
     PS3 roms are directories must be renamed to end with .ps3.
     First time you load a game, it takes time (a progress bar is visible). It doesn't happen next times.
+
+    Find the documentation here : https://wiki.batocera.org/emulators:playstation_3
   comment_fr: |
     Vous devez préalablement charger le firmware en lançant rpcs3-config depuis menu>f1>Applications puis File>Install firmware.
     Les roms ps3 sont des dossiers ; ils doivent être renommés pour terminer par .ps3
     La première fois que vous chargez un jeu, cela met du temps (une barre de progression est visible). Cela ne se produit pas les fois suivantes.
+
+    Trouvez la documentation ici : https://wiki.batocera.org/emulators:playstation_3
 
 3do:
   name:       3DO Interactive Multiplayer
@@ -1607,10 +1653,14 @@ lightgun:
           Here are MAME games that can be played with a light gun, recognised as a mouse in MAME.
           An example of a working setup is to use a DolphinBar in 'mode 2' (keyboard and mouse game) with a Wiimote as the gun.
           If you have more than one mouse installed, the DolphinBar / Wiimote should be seen as one of the first two mouses.
+
+          Find the documentation here : https://wiki.batocera.org/emulators:lightgun_games
   comment_fr: |
           Placez ici les jeux MAME qui peuvent se jouer au lightgun, reconnu comme une souris sous MAME.
           Un exemple de setup qui fonctionne est si vous utilisez une DolphinBar en 'mode 2' (mode jeu clavier/souris) avec une Wiimote comme flingue.
           Si vous avez plus d'une souris installee, assurez-vous que la DolphinBar / Wiimote soit reconnue comme une des deux premieres.
+
+          Vous pouvez trouver la documentation ici: https://wiki.batocera.org/emulators:lightgun_games
 
 ports:
   name:       Ports
@@ -1639,6 +1689,10 @@ windows:
     wine:
       lutris:  { requireAnyOf: [BR2_PACKAGE_WINE_LUTRIS] }
       proton:  { requireAnyOf: [BR2_PACKAGE_WINE_PROTON] }
+  comment_en: |
+    Find the documentation here: https://wiki.batocera.org/emulators:windows32_windows64
+  comment_fr: |
+    Trouvez la documentation ici: https://wiki.batocera.org/emulators:windows32_windows64
 
 windows_installers:
   name:       Install a new Windows game
@@ -1693,6 +1747,10 @@ wiiu:
   emulators:
     cemu:
       cemu:  { requireAnyOf: [BR2_PACKAGE_CEMU] }
+  comment_en: |
+    Find the documentation here: https://wiki.batocera.org/emulators:wiiu
+  comment_fr: |
+    Trouvez la documentation ici: https://wiki.batocera.org/emulators:wiiu
 
 solarus:
   name:       Solarus
