@@ -1,0 +1,11 @@
+config BR2_PACKAGE_SDL12_COMPAT
+    bool "sdl12-compat"
+    select BR2_PACKAGE_LIBSDL2
+    select BR2_PACKAGE_LIBSDL
+
+    help
+      SDL 1.2 to 2.0 compatibility layer
+
+      https://github.com/libsdl-org/sdl12-compat
+
+

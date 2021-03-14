@@ -7,7 +7,7 @@
 LINAPPLE_VERSION = c93579fc7e71d3bd339079338cd9b2f05916828c
 LINAPPLE_SITE = $(call github,linappleii,linapple,$(LINAPPLE_VERSION))
 LINAPPLE_LICENSE = GPLv2
-LINAPPLE_DEPENDENCIES = sdl sdl_image libcurl zlib libzip
+LINAPPLE_DEPENDENCIES = sdl sdl_image sdl12-compat libcurl zlib libzip
 
 ifeq ($(BR2_PACKAGE_RPI_USERLAND),y)
 	LINAPPLE_DEPENDENCIES += rpi-userland

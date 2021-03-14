@@ -643,7 +643,7 @@ config BR2_PACKAGE_BATOCERA_COMPUTER_SYSTEMS
                                                            !BR2_PACKAGE_BATOCERA_TARGET_RPI2
 
 		# Apple II computers range
-		select BR2_PACKAGE_LINAPPLE             if !BR2_PACKAGE_SDL2_KMSDRM # apple II (sdl1 doesn't support kmsdrm)
+		select BR2_PACKAGE_LINAPPLE             # ALL
 
 		# Commodore Amiga
 		select BR2_PACKAGE_AMIBERRY             if !BR2_PACKAGE_BATOCERA_TARGET_X86_ANY

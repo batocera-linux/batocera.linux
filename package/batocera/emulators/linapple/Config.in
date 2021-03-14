@@ -8,6 +8,8 @@ config BR2_PACKAGE_LINAPPLE
 	select BR2_PACKAGE_LIBCURL
 	select BR2_PACKAGE_ZLIB
 	select BR2_PACKAGE_LIBZIP
+	select BR2_PACKAGE_SDL12_COMPAT
+
 	help
 	  LinApple is an emulator for Apple II, Apple II+, Apple //e, and Enhanced Apple //e computers.
 
