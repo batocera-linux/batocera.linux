@@ -25,6 +25,9 @@ define BATOCERA_BEZEL_INSTALL_TARGET_CMDS
 		> $(TARGET_DIR)/usr/share/batocera/datainit/decorations/readme.txt
 	echo "https://batocera.org/wiki/doku.php?id=en:customize_decorations_bezels" \
 		>> $(TARGET_DIR)/usr/share/batocera/datainit/decorations/readme.txt
+	echo "You can put zip standalone bezels here too." \
+		>> $(TARGET_DIR)/usr/share/batocera/datainit/decorations/readme.txt
+
 endef
 
 $(eval $(generic-package))

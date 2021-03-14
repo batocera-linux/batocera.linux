@@ -9,7 +9,7 @@ from settings.unixSettings import UnixSettings
 import json
 from utils.logger import eslog
 from PIL import Image, ImageOps
-import struct
+import utils.bezels as bezelsUtil
 
 sys.path.append(
     os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
@@ -51,21 +51,6 @@ systemNetplayModes = {'host', 'client', 'spectator'}
 
 def writeLibretroConfig(retroconfig, system, controllers, rom, bezel, gameResolution):
     writeLibretroConfigToFile(retroconfig, createLibretroConfig(system, controllers, rom, bezel, gameResolution))
-
-# Much faster than PIL Image.size
-def fast_image_size(image_file):
-    if not os.path.exists(image_file):
-        return -1, -1
-    with open(image_file, 'rb') as fhandle:
-        head = fhandle.read(32)
-        if len(head) != 32:
-           # corrupted header, or not a PNG
-           return -1, -1
-        check = struct.unpack('>i', head[4:8])[0]
-        if check != 0x0d0a1a0a:
-           # Not a PNG
-           return -1, -1
-        return struct.unpack('>ii', head[16:24]) #image width, height
 
 # Take a system, and returns a dict of retroarch.cfg compatible parameters
 def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
@@ -528,49 +513,13 @@ def writeBezelConfig(bezel, retroarchConfig, systemName, rom, gameResolution, be
     if bezel is None:
         return
 
-    # by order choose :
-    # rom name in the system subfolder of the user directory (gb/mario.png)
-    # rom name in the system subfolder of the system directory (gb/mario.png)
-    # rom name in the user directory (mario.png)
-    # rom name in the system directory (mario.png)
-    # system name in the user directory (gb.png)
-    # system name in the system directory (gb.png)
-    # default name (default.png)
-    # else return
-    romBase = os.path.splitext(os.path.basename(rom))[0] # filename without extension
-    overlay_info_file = batoceraFiles.overlayUser + "/" + bezel + "/games/" + systemName + "/" + romBase + ".info"
-    overlay_png_file  = batoceraFiles.overlayUser + "/" + bezel + "/games/" + systemName + "/" + romBase + ".png"
-    bezel_game = True
-    if not os.path.exists(overlay_png_file):
-        overlay_info_file = batoceraFiles.overlaySystem + "/" + bezel + "/games/" + systemName + "/" + romBase + ".info"
-        overlay_png_file  = batoceraFiles.overlaySystem + "/" + bezel + "/games/" + systemName + "/" + romBase + ".png"
-        bezel_game = True
-        if not os.path.exists(overlay_png_file):
-            overlay_info_file = batoceraFiles.overlayUser + "/" + bezel + "/games/" + romBase + ".info"
-            overlay_png_file  = batoceraFiles.overlayUser + "/" + bezel + "/games/" + romBase + ".png"
-            bezel_game = True
-            if not os.path.exists(overlay_png_file):
-                overlay_info_file = batoceraFiles.overlaySystem + "/" + bezel + "/games/" + romBase + ".info"
-                overlay_png_file  = batoceraFiles.overlaySystem + "/" + bezel + "/games/" + romBase + ".png"
-                bezel_game = True
-                if not os.path.exists(overlay_png_file):
-                    overlay_info_file = batoceraFiles.overlayUser + "/" + bezel + "/systems/" + systemName + ".info"
-                    overlay_png_file  = batoceraFiles.overlayUser + "/" + bezel + "/systems/" + systemName + ".png"
-                    bezel_game = False
-                    if not os.path.exists(overlay_png_file):
-                        overlay_info_file = batoceraFiles.overlaySystem + "/" + bezel + "/systems/" + systemName + ".info"
-                        overlay_png_file  = batoceraFiles.overlaySystem + "/" + bezel + "/systems/" + systemName + ".png"
-                        bezel_game = False
-                        if not os.path.exists(overlay_png_file):
-                            overlay_info_file = batoceraFiles.overlayUser + "/" + bezel + "/default.info"
-                            overlay_png_file  = batoceraFiles.overlayUser + "/" + bezel + "/default.png"
-                            bezel_game = True
-                            if not os.path.exists(overlay_png_file):
-                                overlay_info_file = batoceraFiles.overlaySystem + "/" + bezel + "/default.info"
-                                overlay_png_file  = batoceraFiles.overlaySystem + "/" + bezel + "/default.png"
-                                bezel_game = True
-                                if not os.path.exists(overlay_png_file):
-                                    return
+    bz_infos = bezelsUtil.getBezelInfos(rom, bezel, systemName)
+    if bz_infos is None:
+        return
+
+    overlay_info_file = bz_infos["info"]
+    overlay_png_file  = bz_infos["png"]
+    bezel_game  = bz_infos["specific_to_game"]
 
     # only the png file is mandatory
     if os.path.exists(overlay_info_file):
@@ -604,7 +553,7 @@ def writeBezelConfig(bezel, retroarchConfig, systemName, rom, gameResolution, be
             # No info on the bezel, let's get the bezel image width and height and apply the
             # ratios from usual 16:9 1920x1080 bezels (example: theBezelProject)
             try:
-                infos["width"], infos["height"] = fast_image_size(overlay_png_file)
+                infos["width"], infos["height"] = bezelsUtil.fast_image_size(overlay_png_file)
                 infos["top"]    = int(infos["height"] * 2 / 1080)
                 infos["left"]   = int(infos["width"] * 241 / 1920) # 241 = (1920 - (1920 / (4:3))) / 2 + 1 pixel = where viewport start
                 infos["bottom"] = int(infos["height"] * 2 / 1080)
@@ -660,7 +609,7 @@ def writeBezelConfig(bezel, retroarchConfig, systemName, rom, gameResolution, be
                     if os.path.getmtime(output_png_file) < os.path.getmtime(overlay_png_file):
                         create_new_bezel_file = True
             # fast way of checking the size of a png
-            oldwidth, oldheight = fast_image_size(output_png_file)
+            oldwidth, oldheight = bezelsUtil.fast_image_size(output_png_file)
             if (oldwidth != gameResolution["width"] or oldheight != gameResolution["height"]):
                 create_new_bezel_file = True
 
