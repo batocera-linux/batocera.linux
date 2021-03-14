@@ -49,6 +49,7 @@ from generators.ruffle.ruffleGenerator import RuffleGenerator
 from generators.duckstation.duckstationGenerator import DuckstationGenerator
 from generators.drastic.drasticGenerator import DrasticGenerator
 from generators.xemu.xemuGenerator import XemuGenerator
+from generators.cgenius.cgeniusGenerator import CGeniusGenerator
 
 import controllersConfig as controllers
 import signal
@@ -94,6 +95,7 @@ generators = {
     'redream': RedreamGenerator(),
     'supermodel': SupermodelGenerator(),
     'xash3d_fwgs': Xash3dFwgsGenerator(),
+<<<<<<< HEAD
     'tsugaru': TsugaruGenerator(),
     'mugen': MugenGenerator(),
     'lightspark': LightsparkGenerator(),
@@ -101,6 +103,9 @@ generators = {
     'duckstation': DuckstationGenerator(),
     'drastic': DrasticGenerator(),
     'xemu': XemuGenerator(),
+=======
+    'cgenius': CGeniusGenerator(),
+>>>>>>> WIP Commander Genius ES integration (need to adjust paths in CMake package)
 }
 
 def main(args, maxnbplayers):
