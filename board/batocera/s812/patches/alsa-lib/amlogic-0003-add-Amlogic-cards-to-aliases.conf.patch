@@ -1,0 +1,71 @@
+From b22476f67deae9b0daf69516e7b94f64e7acc895 Mon Sep 17 00:00:00 2001
+From: chewitt <christianshewitt@gmail.com>
+Date: Thu, 14 May 2020 13:32:26 +0000
+Subject: [PATCH 3/3] WIP: add Amlogic cards to aliases.conf
+
+---
+ src/conf/cards/aliases.conf | 48 +++++++++++++++++++++++++++++++++++++
+ 1 file changed, 48 insertions(+)
+
+diff --git a/src/conf/cards/aliases.conf b/src/conf/cards/aliases.conf
+index 18a920f4..14dedb63 100644
+--- a/src/conf/cards/aliases.conf
++++ b/src/conf/cards/aliases.conf
+@@ -58,6 +58,54 @@ CMI8787 cards.CMI8788
+ pistachio cards.pistachio-card
+ VC4-HDMI cards.vc4-hdmi
+ 
++# Amlogic HDMI
++A95XF3-AIR cards.AMLOGIC-HDMI
++GSKING-X cards.AMLOGIC-HDMI
++GTKING-PRO cards.AMLOGIC-HDMI
++H96-MAX cards.AMLOGIC-HDMI
++KHADAS-VIM cards.AMLOGIC-HDMI
++KHADAS-VIM2 cards.AMLOGIC-HDMI
++KHADAS-VIM3 cards.AMLOGIC-HDMI
++LIBRETECH-AC cards.AMLOGIC-HDMI
++LIBRETECH-CC cards.AMLOGIC-HDMI
++LIBRETECH-PC cards.AMLOGIC-HDMI
++NANOPI-K2 cards.AMLOGIC-HDMI
++NEXBOX-A95X cards.AMLOGIC-HDMI
++ODROID-C2 cards.AMLOGIC-HDMI
++ODROID-C4 cards.AMLOGIC-HDMI
++ODROID-HC4 cards.AMLOGIC-HDMI
++ODROID-N2 cards.AMLOGIC-HDMI
++SEI510 cards.AMLOGIC-HDMI
++SEI610 cards.AMLOGIC-HDMI
++WETEK-HUB cards.AMLOGIC-HDMI
++X96-AIR cards.AMLOGIC-HDMI
++
++# Amlogic HDMI-SPDIF
++GTKING cards.AMLOGIC-HDMI-SPDIF
++P230-Q200 cards.AMLOGIC-HDMI-SPDIF
++UGOOS-AM6 cards.AMLOGIC-HDMI-SPDIF
++WETEK-CORE2 cards.AMLOGIC-HDMI-SPDIF
++WETEK-PLAY2 cards.AMLOGIC-HDMI-SPDIF
++X96-MAX cards.AMLOGIC-HDMI-SPDIF
++
++# Not Upstream Cards
++P200 cards.AMLOGIC-HDMI-SPDIF
++P201 cards.AMLOGIC-HDMI
++P212 cards.AMLOGIC-HDMI
++VEGA-S95 cards.AMLOGIC-HDMI-SPDIF
++NEXBOX-A1 cards.AMLOGIC-HDMI-SPDIF
++RBOX-PRO cards.AMLOGIC-HDMI-SPDIF
++U200 cards.AMLOGIC-HDMI-SPDIF
++TANIX-TX5MAX cards.AMLOGIC-HDMI-SPDIF
++KHADAS-VIM3L cards.AMLOGIC-HDMI
++
++# Meson 8 Cards
++EC100 cards.AMLOGIC-HDMI
++ODROID-C1 cards.AMLOGIC-HDMI
++M8S cards.AMLOGIC-HDMI-SPDIF
++MXIII cards.AMLOGIC-HDMI-SPDIF
++WETEK-CORE cards.AMLOGIC-HDMI-SPDIF
++
+ <confdir:pcm/default.conf>
+ <confdir:pcm/dmix.conf>
+ <confdir:pcm/dsnoop.conf>
+-- 
+2.17.1
+

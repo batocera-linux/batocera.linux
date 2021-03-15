@@ -1,0 +1,25 @@
+From 515f49934ea4b552cda1661aa5ac03f1d5874777 Mon Sep 17 00:00:00 2001
+From: chewitt <christianshewitt@gmail.com>
+Date: Fri, 15 May 2020 06:12:43 +0000
+Subject: [PATCH 2/3] WIP: add Amlogic cards to Makefile.am
+
+---
+ src/conf/cards/Makefile.am | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/src/conf/cards/Makefile.am b/src/conf/cards/Makefile.am
+index 00999f01..80f7ba6b 100644
+--- a/src/conf/cards/Makefile.am
++++ b/src/conf/cards/Makefile.am
+@@ -2,6 +2,8 @@ alsaconfigdir = @ALSA_CONFIG_DIR@
+ alsadir = $(alsaconfigdir)/cards
+ cfg_files = aliases.conf \
+ 	AACI.conf \
++	AMLOGIC-HDMI.conf \
++	AMLOGIC-HDMI-SPDIF.conf \
+ 	ATIIXP.conf \
+ 	ATIIXP-SPDMA.conf \
+ 	ATIIXP-MODEM.conf \
+-- 
+2.17.1
+
