@@ -1,0 +1,11 @@
+--- a/src/main.conf	2021-02-22 21:26:59.000000000 +0100
++++ b/src/main.conf	2021-03-15 18:27:52.540388129 +0100
+@@ -75,7 +75,7 @@
+ # Specify the policy to the JUST-WORKS repairing initiated by peer
+ # Possible values: "never", "confirm", "always"
+ # Defaults to "never"
+-#JustWorksRepairing = never
++JustWorksRepairing = always
+ 
+ # How long to keep temporary devices around
+ # The value is in seconds. Default is 30.
