@@ -1,6 +1,8 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 import xml.etree.ElementTree as ET
-import batoceraFiles
+from . import batoceraFiles
 
 esInputs = batoceraFiles.esInputs
 
@@ -192,7 +194,7 @@ def _keyToSdlGameControllerConfig(keyname, name, type, id, value=None):
 
 def generateSdlGameControllerConfig(controllers):
     configs = []
-    for idx, controller in controllers.iteritems():
+    for idx, controller in controllers.items():
         configs.append(controller.generateSDLGameDBLine())
     return "\n".join(configs)
 
@@ -204,7 +206,7 @@ def writeSDLGameDBAllControllers(controllers, outputFile = "/tmp/gamecontrollerd
 
 def generateSdlGameControllerPadsOrderConfig(controllers):
     res = ""
-    for idx, controller in controllers.iteritems():
+    for idx, controller in controllers.items():
         if res != "":
             res = res + ";"
         res = res + str(controller.index)

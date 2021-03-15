@@ -1,11 +1,12 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
 import Command
 from generators.Generator import Generator
 import controllersConfig
 from utils.logger import eslog
 import os
-import ConfigParser
+import configparser
 import batoceraFiles
 
 class TsugaruGenerator(Generator):

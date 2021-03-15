@@ -1,9 +1,10 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
 import Command
 import batoceraFiles
 from generators.Generator import Generator
-import openborControllers
+from . import openborControllers
 import os
 import re
 from settings.unixSettings import UnixSettings

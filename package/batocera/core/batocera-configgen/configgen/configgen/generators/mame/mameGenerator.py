@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
 from generators.Generator import Generator
 import batoceraFiles
@@ -8,7 +9,7 @@ import os
 from utils.logger import eslog
 from os import path
 from os import environ
-import ConfigParser
+import configparser
 from xml.dom import minidom
 import codecs
 import shutil

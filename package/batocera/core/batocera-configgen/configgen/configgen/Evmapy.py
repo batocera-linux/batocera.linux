@@ -1,10 +1,11 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
 import subprocess
 import json
 import re
 import os
-from utils.logger import eslog
+from .utils.logger import eslog
 import evdev
 
 class Evmapy():

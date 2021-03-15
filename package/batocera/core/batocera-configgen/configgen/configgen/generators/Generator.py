@@ -1,9 +1,10 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 from abc import ABCMeta, abstractmethod
 
 
-class Generator(object):
-    __metaclass__ = ABCMeta
-
+class Generator(object, metaclass=ABCMeta):
     @abstractmethod
     def generate(self, system, rom, playersControllers, gameResolution):
         pass

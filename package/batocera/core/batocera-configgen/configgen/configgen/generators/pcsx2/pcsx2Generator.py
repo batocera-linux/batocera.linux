@@ -6,8 +6,8 @@ import Command
 import os
 from settings.unixSettings import UnixSettings
 import re
-import ConfigParser
-import StringIO
+import configparser
+import io
 import io
 import controllersConfig
 
@@ -97,7 +97,7 @@ def configureVM(config_directory, system):
         f.close()
     
     # this file looks like a .ini
-    pcsx2VMConfig = ConfigParser.ConfigParser()
+    pcsx2VMConfig = configparser.ConfigParser()
     # To prevent ConfigParser from converting to lower case
     pcsx2VMConfig.optionxform = str   
     
@@ -213,12 +213,12 @@ def configureUI(config_directory, bios_directory, system_config, gameResolution)
     resolution = getGfxRatioFromConfig(system_config, gameResolution)
 
     # this file looks like a .ini, but no, it miss the first section name...
-    iniConfig = ConfigParser.ConfigParser()
+    iniConfig = configparser.ConfigParser()
     # To prevent ConfigParser from converting to lower case
     iniConfig.optionxform = str
     if os.path.exists(configFileName):
         try:
-            file = StringIO.StringIO()
+            file = io.StringIO()
             # fake an initial section, because pcsx2 doesn't put one
             file.write('[NO_SECTION]\n')
             file.write(io.open(configFileName, encoding='utf_8_sig').read())

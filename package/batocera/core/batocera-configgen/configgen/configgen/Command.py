@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
 class Command:
     def __init__(self, array, env=dict()):
@@ -8,7 +9,7 @@ class Command:
     def __str__(self):
         str = list()
 
-        for varName, varValue in self.env.items():
+        for varName, varValue in list(self.env.items()):
             str.append("%s=%s" % (varName, varValue))
             
         for value in self.array:

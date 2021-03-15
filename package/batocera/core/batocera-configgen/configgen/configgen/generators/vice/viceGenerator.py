@@ -1,9 +1,11 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 import Command
 import batoceraFiles
 from generators.Generator import Generator
-import viceConfig
-import viceControllers
+from . import viceConfig
+from . import viceControllers
 import os.path
 import glob
 

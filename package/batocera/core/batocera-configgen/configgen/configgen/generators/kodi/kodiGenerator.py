@@ -1,8 +1,10 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 import Command
 import batoceraFiles
 from generators.Generator import Generator
-import kodiConfig
+from . import kodiConfig
 
 class KodiGenerator(Generator):
     

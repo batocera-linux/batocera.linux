@@ -1,8 +1,10 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 import sys
 import os
 import batoceraFiles
-import libretroOptions
+from . import libretroOptions
 from Emulator import Emulator
 import settings
 from settings.unixSettings import UnixSettings
@@ -16,7 +18,7 @@ sys.path.append(
 
 # return true if the option is considered defined
 def defined(key, dict):
-    return key in dict and isinstance(dict[key], basestring) and len(dict[key]) > 0
+    return key in dict and isinstance(dict[key], str) and len(dict[key]) > 0
 
 
 # Warning the values in the array must be exactly at the same index than

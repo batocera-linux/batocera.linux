@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 #
 # - Generates the es_systems.cfg file
 # - Generates roms folder and emulators folders
@@ -16,7 +19,7 @@ class SortedListEncoder(json.JSONEncoder):
             if isinstance(item, list):
                 return sorted(sort_lists(i) for i in item)
             elif isinstance(item, dict):
-                return {k: sort_lists(v) for k, v in item.items()}
+                return {k: sort_lists(v) for k, v in list(item.items())}
             else:
                 return item
         return super(SortedListEncoder, self).encode(sort_lists(obj))
@@ -69,7 +72,7 @@ class EsSystemConf:
                     result_systems[system] = emulators
             result_archs[arch] = result_systems
 
-        print(json.dumps(result_archs, indent=2, sort_keys=True, cls=SortedListEncoder))
+        print((json.dumps(result_archs, indent=2, sort_keys=True, cls=SortedListEncoder)))
 
     # Loads the .config file
     @staticmethod

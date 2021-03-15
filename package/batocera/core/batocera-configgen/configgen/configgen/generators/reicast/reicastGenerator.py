@@ -1,11 +1,9 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
 import Command
-#~ import flycastControllers
+#~ import reicastControllers
 import batoceraFiles
 from generators.Generator import Generator
-from . import flycastControllers
+from . import reicastControllers
 import shutil
 import os.path
 import configparser
@@ -14,7 +12,7 @@ from os.path import dirname
 from os.path import isdir
 from os.path import isfile
 
-class FlycastGenerator(Generator):
+class ReicastGenerator(Generator):
 
     # Main entry of the module
     # Configure fba and return a command
@@ -22,9 +20,9 @@ class FlycastGenerator(Generator):
         # Write emu.cfg to map joysticks, init with the default emu.cfg
         Config = configparser.ConfigParser()
         Config.optionxform = str
-        if os.path.exists(batoceraFiles.flycastConfig):
+        if os.path.exists(batoceraFiles.reicastConfig):
             try:
-                Config.read(batoceraFiles.flycastConfig)
+                Config.read(batoceraFiles.reicastConfig)
             except:
                 pass # give up the file
         
@@ -42,7 +40,7 @@ class FlycastGenerator(Generator):
             eventNum = controller.dev.replace('/dev/input/event', '')
             
             # Write its mapping file
-            controllerConfigFile = flycastControllers.generateControllerConfig(controller)
+            controllerConfigFile = reicastControllers.generateControllerConfig(controller)
             
             # set the evdev_device_id_X
             Config.set("input", 'evdev_device_id_' + controller.player, eventNum)
@@ -66,9 +64,9 @@ class FlycastGenerator(Generator):
         else:
             Config.set("config", "rend.WideScreen", "0")
 
-        # custom : allow the user to configure directly emu.cfg via batocera.conf via lines like : dreamcast.flycast.section.option=value
+        # custom : allow the user to configure directly emu.cfg via batocera.conf via lines like : dreamcast.reicast.section.option=value
         for user_config in system.config:
-            if user_config[:8] == "flycast.":
+            if user_config[:8] == "reicast.":
                 section_option = user_config[8:]
                 section_option_splitter = section_option.find(".")
                 custom_section = section_option[:section_option_splitter]
@@ -78,30 +76,30 @@ class FlycastGenerator(Generator):
                 Config.set(custom_section, custom_option, system.config[user_config])
 
         ### update the configuration file
-        if not os.path.exists(os.path.dirname(batoceraFiles.flycastConfig)):
-            os.makedirs(os.path.dirname(batoceraFiles.flycastConfig))
-        with open(batoceraFiles.flycastConfig, 'w+') as cfgfile:
+        if not os.path.exists(os.path.dirname(batoceraFiles.reicastConfig)):
+            os.makedirs(os.path.dirname(batoceraFiles.reicastConfig))
+        with open(batoceraFiles.reicastConfig, 'w+') as cfgfile:
             Config.write(cfgfile)        
             cfgfile.close()
             
         # internal config
         # vmuA1
-        if not isfile(batoceraFiles.flycastVMUA1):
-            if not isdir(dirname(batoceraFiles.flycastVMUA1)):
-                os.mkdir(dirname(batoceraFiles.flycastVMUA1))
-            copyfile(batoceraFiles.flycastVMUBlank, batoceraFiles.flycastVMUA1)
+        if not isfile(batoceraFiles.reicastVMUA1):
+            if not isdir(dirname(batoceraFiles.reicastVMUA1)):
+                os.mkdir(dirname(batoceraFiles.reicastVMUA1))
+            copyfile(batoceraFiles.reicastVMUBlank, batoceraFiles.reicastVMUA1)
         # vmuA2
-        if not isfile(batoceraFiles.flycastVMUA2):
-            if not isdir(dirname(batoceraFiles.flycastVMUA2)):
-                os.mkdir(dirname(batoceraFiles.flycastVMUA2))
-            copyfile(batoceraFiles.flycastVMUBlank, batoceraFiles.flycastVMUA2)
+        if not isfile(batoceraFiles.reicastVMUA2):
+            if not isdir(dirname(batoceraFiles.reicastVMUA2)):
+                os.mkdir(dirname(batoceraFiles.reicastVMUA2))
+            copyfile(batoceraFiles.reicastVMUBlank, batoceraFiles.reicastVMUA2)
 
         # the command to run  
         commandArray = [batoceraFiles.batoceraBins[system.config['emulator']]]
         commandArray.append(rom)
-        # Here is the trick to make flycast find files :
+        # Here is the trick to make reicast find files :
         # emu.cfg is in $XDG_CONFIG_DIRS or $XDG_CONFIG_HOME. The latter is better
         # VMU will be in $XDG_DATA_HOME because it needs rw access -> /userdata/saves/dreamcast
         # BIOS will be in $XDG_DATA_DIRS
         # controller cfg files are set with an absolute path, so no worry
-        return Command.Command(array=commandArray, env={"XDG_CONFIG_HOME":batoceraFiles.CONF, "XDG_DATA_HOME":batoceraFiles.flycastSaves, "XDG_DATA_DIRS":batoceraFiles.flycastBios})
+        return Command.Command(array=commandArray, env={"XDG_CONFIG_HOME":batoceraFiles.CONF, "XDG_DATA_HOME":batoceraFiles.reicastSaves, "XDG_DATA_DIRS":batoceraFiles.reicastBios})

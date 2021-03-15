@@ -13,26 +13,24 @@ sys.path.append(
 import batoceraFiles
 
 
-flycastMapping = { 'a' :             {'button': 'btn_b'},
+reicastMapping = { 'a' :             {'button': 'btn_b'},
                    'b' :             {'button': 'btn_a'},
                    'x' :             {'button': 'btn_y'},
                    'y' :             {'button': 'btn_x'},
-                   'select':         {'button': 'btn_d'},
                    'start' :         {'button': 'btn_start'},
                    'hotkey' :        {'button': 'btn_escape'},
                    'pageup' :        {'axis': 'axis_trigger_left',  'button': 'btn_trigger_left'},
                    'pagedown' :      {'axis': 'axis_trigger_right', 'button': 'btn_trigger_right'},
                    'joystick1left' : {'axis': 'axis_x'},
                    'joystick1up' :   {'axis': 'axis_y'},
-                   'joystick2left' : {'axis': 'axis_right_x'},
-                   'joystick2up' :   {'axis': 'axis_right_y'},
                    # The DPAD can be an axis (for gpio sticks for example) or a hat
                    'left' :          {'hat': 'axis_dpad1_x', 'axis': 'axis_x', 'button': 'btn_dpad1_left'},
                    'up' :            {'hat': 'axis_dpad1_y', 'axis': 'axis_y', 'button': 'btn_dpad1_up'},
                    'right' :         {'button': 'btn_dpad1_right'},
                    'down' :          {'button': 'btn_dpad1_down'},
+# We are only interested in L2/R2 if they are axis, to have real dreamcasttriggers
                    'r2' :            {'axis':  'axis_trigger_right', 'button': 'btn_trigger_right'},
-                   'l2' :            {'axis': 'axis_trigger_left', 'button': 'btn_trigger_left'}
+                   'l2' :            {'axis': 'axis_trigger_left',  'button': 'btn_trigger_left'}
 }
 
 sections = { 'emulator' : ['mapping_name', 'btn_escape'],
@@ -46,7 +44,7 @@ sections = { 'emulator' : ['mapping_name', 'btn_escape'],
 # returns its name
 def generateControllerConfig(controller):
     # Set config file name
-    configFileName = "{}/evdev_{}.cfg".format(batoceraFiles.flycastMapping,controller.realName)
+    configFileName = "{}/evdev_{}.cfg".format(batoceraFiles.reicastMapping,controller.realName)
     Config = configparser.ConfigParser()
 
     if not os.path.exists(os.path.dirname(configFileName)):
@@ -60,26 +58,25 @@ def generateControllerConfig(controller):
 
     # Add controller name
     Config.set("emulator", "mapping_name", controller.realName)
-    
+
     l2_r2_flag = False
     if 'r2' in controller.inputs:
         l2_r2_flag = True
+        
     # Parse controller inputs
     for index in controller.inputs:
         input = controller.inputs[index]
-        
-        if input.name not in flycastMapping:
+        if input.name not in reicastMapping:
             continue
-        if input.type not in flycastMapping[input.name]:
+        if input.type not in reicastMapping[input.name]:
             continue
-        var = flycastMapping[input.name][input.type]
-        eslog.log("Var: {}".format(var))
+        var = reicastMapping[input.name][input.type]
         for i in sections:
             if var in sections[i]:
                 section = i
                 break
 
-        # Sadly, we don't get the right axis code for Y hats. So, dirty hack time
+		# Sadly, we don't get the right axis code for Y hats. So, dirty hack time
         if not (l2_r2_flag and (input.name == 'pageup' or input.name == 'pagedown')):
             if input.code is not None:
                 code = input.code
@@ -99,3 +96,4 @@ def generateControllerConfig(controller):
     Config.write(cfgfile)
     cfgfile.close()
     return configFileName
+

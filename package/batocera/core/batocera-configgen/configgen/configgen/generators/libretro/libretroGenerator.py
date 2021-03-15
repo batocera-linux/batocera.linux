@@ -1,9 +1,11 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 import Command
-import libretroControllers
+from . import libretroControllers
 import batoceraFiles
-import libretroConfig
-import libretroRetroarchCustom
+from . import libretroConfig
+from . import libretroRetroarchCustom
 import shutil
 from generators.Generator import Generator
 import os.path

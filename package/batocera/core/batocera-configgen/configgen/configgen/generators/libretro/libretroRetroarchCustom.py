@@ -1,8 +1,10 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 import sys
 import os
 import batoceraFiles
-import ConfigParser
+import configparser
 from settings.unixSettings import UnixSettings
 
 def generateRetroarchCustom():

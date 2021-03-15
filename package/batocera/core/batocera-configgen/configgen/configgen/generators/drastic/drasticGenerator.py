@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
 import Command
 from generators.Generator import Generator
@@ -15,7 +16,7 @@ class DrasticGenerator(Generator):
             os.makedirs(configdir)
 
         copyfile("/usr/bin/drastic", configdir + "/drastic")
-        os.chmod(configdir + "/drastic", 0o0775)
+        os.chmod(configdir + "/drastic", 0o775)
 
         commandArray = [configdir + "/drastic", rom]
         return Command.Command(

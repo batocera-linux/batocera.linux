@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
 import Command
 from generators.Generator import Generator
@@ -72,7 +73,7 @@ class SolarusGenerator(Generator):
                 pass
         except:
             settings = open(cfg+'/settings.dat', 'w')
-        if not 'fullscreen' in par.keys():
+        if not 'fullscreen' in list(par.keys()):
             eslog.log("Initializing solarus settings in {}".format(cfg+'/settings.dat'))
             settings.write("fullscreen = true")
         settings.close()

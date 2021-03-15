@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
 from generators.Generator import Generator
 import Command
@@ -8,7 +9,7 @@ import batoceraFiles
 from xml.dom import minidom
 import codecs
 import controllersConfig
-import cemuControllers
+from . import cemuControllers
 from shutil import copyfile
 
 class CemuGenerator(Generator):

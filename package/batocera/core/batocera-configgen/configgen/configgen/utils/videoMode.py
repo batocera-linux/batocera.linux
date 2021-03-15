@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 import os
 import sys
 import batoceraFiles
@@ -6,7 +8,7 @@ import re
 import time
 import subprocess
 import json
-from logger import eslog
+from .logger import eslog
 
 # Set a specific video mode
 def changeMode(videomode):

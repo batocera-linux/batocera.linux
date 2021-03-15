@@ -1,13 +1,15 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 import Command
 import batoceraFiles
 from generators.Generator import Generator
-import dolphinControllers
-import dolphinSYSCONF
+from . import dolphinControllers
+from . import dolphinSYSCONF
 import shutil
 import os.path
 from os import environ
-import ConfigParser
+import configparser
 
 class DolphinGenerator(Generator):
 
@@ -23,7 +25,7 @@ class DolphinGenerator(Generator):
 
         ## dolphin.ini ##
 
-        dolphinSettings = ConfigParser.ConfigParser()
+        dolphinSettings = configparser.ConfigParser()
         # To prevent ConfigParser from converting to lower case
         dolphinSettings.optionxform = str
         if os.path.exists(batoceraFiles.dolphinIni):
@@ -112,7 +114,7 @@ class DolphinGenerator(Generator):
 
         ## gfx.ini ##
 
-        dolphinGFXSettings = ConfigParser.ConfigParser()
+        dolphinGFXSettings = configparser.ConfigParser()
         # To prevent ConfigParser from converting to lower case
         dolphinGFXSettings.optionxform = str
         dolphinGFXSettings.read(batoceraFiles.dolphinGfxIni)

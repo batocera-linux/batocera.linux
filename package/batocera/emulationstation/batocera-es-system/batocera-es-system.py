@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 #
 # - Generates the es_systems.cfg file
 # - Generates roms folder and emulators folders

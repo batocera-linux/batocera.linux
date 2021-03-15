@@ -55,7 +55,7 @@ while True:
 		if(GPIO.input(POWER) == "1" and IGNORE_PWR_OFF == True):
 			IGNORE_PWR_OFF = False
 		if(GPIO.input(POWER) == "0" and IGNORE_PWR_OFF == False):
-			if(''.join(filter(lambda c: c in string.printable, subprocess.check_output("cat /sys/firmware/devicetree/base/rockchip-suspend/status", shell=True).strip())).lower() == "okay"):
+			if(''.join([c for c in subprocess.check_output("cat /sys/firmware/devicetree/base/rockchip-suspend/status", shell=True).strip() if c in string.printable]).lower() == "okay"):
 				print("Suspending...")
 				GPIO.output(LED, GPIO.LOW)
 				GPIO.output(FAN, GPIO.LOW)
