@@ -1,0 +1,11 @@
+--- a/src/main.conf	2021-03-15 18:35:00.040381793 +0100
++++ b/src/main.conf	2021-03-15 18:37:02.500379977 +0100
+@@ -235,7 +235,7 @@
+ # AutoEnable defines option to enable all controllers when they are found.
+ # This includes adapters present on start as well as adapters that are plugged
+ # in later on. Defaults to 'false'.
+-#AutoEnable=false
++AutoEnable=true
+ 
+ # Audio devices that were disconnected due to suspend will be reconnected on
+ # resume. ResumeDelay determines the delay between when the controller
