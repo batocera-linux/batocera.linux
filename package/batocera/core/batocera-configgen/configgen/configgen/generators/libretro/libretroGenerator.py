@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 import Command
-import libretroControllers
+from . import libretroControllers
 import batoceraFiles
-import libretroConfig
-import libretroRetroarchCustom
+from . import libretroConfig
+from . import libretroRetroarchCustom
 import shutil
 from generators.Generator import Generator
 import os.path

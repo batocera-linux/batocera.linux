@@ -3,7 +3,7 @@
 import Command
 import batoceraFiles
 from generators.Generator import Generator
-import daphneControllers
+from . import daphneControllers
 import shutil
 import os
 

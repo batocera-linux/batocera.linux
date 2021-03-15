@@ -178,5 +178,5 @@ if len(sys.argv)>1:
 else:
         temp = open("/sys/class/thermal/thermal_zone0/temp","r").readline()
         val = float(int(temp)/1000)
-        print ("Temp: {}C".format(val))
+        print(("Temp: {}C".format(val)))
 

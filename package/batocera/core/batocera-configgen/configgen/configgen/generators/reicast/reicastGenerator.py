@@ -3,10 +3,10 @@ import Command
 #~ import reicastControllers
 import batoceraFiles
 from generators.Generator import Generator
-import reicastControllers
+from . import reicastControllers
 import shutil
 import os.path
-import ConfigParser
+import configparser
 from shutil import copyfile
 from os.path import dirname
 from os.path import isdir
@@ -18,7 +18,7 @@ class ReicastGenerator(Generator):
     # Configure fba and return a command
     def generate(self, system, rom, playersControllers, gameResolution):
         # Write emu.cfg to map joysticks, init with the default emu.cfg
-        Config = ConfigParser.ConfigParser()
+        Config = configparser.ConfigParser()
         Config.optionxform = str
         if os.path.exists(batoceraFiles.reicastConfig):
             try:

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import sys
 import os
-import ConfigParser
+import configparser
 from settings.unixSettings import UnixSettings
 import batoceraFiles
 
@@ -1529,7 +1529,7 @@ def generateCoreSettings(coreSettings, system, rom):
     coreSettings.write()
 
 def generateHatariConf(hatariConf):
-    hatariConfig = ConfigParser.ConfigParser()
+    hatariConfig = configparser.ConfigParser()
     # To prevent ConfigParser from converting to lower case
     hatariConfig.optionxform = str
     if os.path.exists(hatariConf):

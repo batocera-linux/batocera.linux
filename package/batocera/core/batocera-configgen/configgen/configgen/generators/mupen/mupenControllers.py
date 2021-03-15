@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import os
-import ConfigParser
+import configparser
 from controllersConfig import Input
 from xml.dom import minidom
 
@@ -73,10 +73,10 @@ def defineControllerKeys(controller, systemconfig):
         # the input.xml adds 2 directions per joystick, ES handles just 1
         fakeSticks = { 'joystick2up' : 'joystick2down', 'joystick2left' : 'joystick2right'}
         # Cheat on the controller
-        for realStick, fakeStick in fakeSticks.iteritems():
+        for realStick, fakeStick in fakeSticks.items():
                 if realStick in controller.inputs:
                     if controller.inputs[realStick].type == "axis":
-                        print fakeStick + "-> " + realStick
+                        print(fakeStick + "-> " + realStick)
                         inputVar =  Input(fakeStick
                                         , controller.inputs[realStick].type
                                         , controller.inputs[realStick].id
@@ -110,7 +110,7 @@ def setControllerLine(mupenmapping, input, mupenSettingName):
                     value = "hat({} {})".format(input.id, mupenHatToAxis[input.value])
         elif inputType == 'axis':
                 # Generic case for joystick1up and joystick1left
-                if mupenSettingName in mupenDoubleAxis.values():
+                if mupenSettingName in list(mupenDoubleAxis.values()):
                         # X axis : value = -1 for left, +1 for right
                         # Y axis : value = -1 for up, +1 for down
                         # we configure only left and down to not configure 2 times each axis

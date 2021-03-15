@@ -4,7 +4,7 @@
 import batoceraFiles
 import os
 from Emulator import Emulator
-import ConfigParser
+import configparser
 
 viceJoystick = {
             "up":               "0 1 # 1 1 1",
@@ -54,7 +54,7 @@ def generateControllerConfig(viceConfigFile, playersControllers):
             # joystick2up
             listVice.append("0 0 9 2 0 7")
             
-            for indexName, indexValue in viceJoystick.items():
+            for indexName, indexValue in list(viceJoystick.items()):
                 listVice.append(indexValue.replace('#', pad.inputs[indexName].id, 1))
             nplayer += 1
 

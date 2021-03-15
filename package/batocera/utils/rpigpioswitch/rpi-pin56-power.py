@@ -10,7 +10,7 @@ GPIO.setmode(GPIO.BCM)                              # BCM mode
 GPIO.setup(3, GPIO.IN, pull_up_down=GPIO.PUD_UP)    # GPIO on pin 5 is the GPIO 3 in BCM mode
 
 def shutdownBatocera(channel):
-    print 'shutdownBatocera'
+    print('shutdownBatocera')
     os.system('shutdown -h now')
     #os.system('batocera-es-swissknife --shutdown')
 

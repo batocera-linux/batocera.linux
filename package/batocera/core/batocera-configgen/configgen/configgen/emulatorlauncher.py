@@ -4,60 +4,60 @@ import argparse
 import time
 import sys
 from sys import exit
-from Emulator import Emulator
-from Evmapy import Evmapy
-import generators
-from generators.kodi.kodiGenerator import KodiGenerator
-from generators.linapple.linappleGenerator import LinappleGenerator
-from generators.libretro.libretroGenerator import LibretroGenerator
-from generators.moonlight.moonlightGenerator import MoonlightGenerator
-from generators.mupen.mupenGenerator import MupenGenerator
-from generators.ppsspp.ppssppGenerator import PPSSPPGenerator
-from generators.reicast.reicastGenerator import ReicastGenerator
-from generators.flycast.flycastGenerator import FlycastGenerator
-from generators.dolphin.dolphinGenerator import DolphinGenerator
-from generators.pcsx2.pcsx2Generator import Pcsx2Generator
-from generators.scummvm.scummvmGenerator import ScummVMGenerator
-from generators.dosbox.dosboxGenerator import DosBoxGenerator
-from generators.dosboxstaging.dosboxstagingGenerator import DosBoxStagingGenerator
-from generators.dosboxx.dosboxxGenerator import DosBoxxGenerator
-from generators.vice.viceGenerator import ViceGenerator
-from generators.fsuae.fsuaeGenerator import FsuaeGenerator
-from generators.amiberry.amiberryGenerator import AmiberryGenerator
-from generators.citra.citraGenerator import CitraGenerator
-from generators.daphne.daphneGenerator import DaphneGenerator
-from generators.cannonball.cannonballGenerator import CannonballGenerator
-from generators.sdlpop.sdlpopGenerator import SdlPopGenerator
-from generators.openbor.openborGenerator import OpenborGenerator
-from generators.wine.wineGenerator import WineGenerator
-from generators.cemu.cemuGenerator import CemuGenerator
-from generators.melonds.melondsGenerator import MelonDSGenerator
-from generators.rpcs3.rpcs3Generator import Rpcs3Generator
-from generators.pygame.pygameGenerator import PygameGenerator
-from generators.mame.mameGenerator import MameGenerator
-from generators.devilutionx.devilutionxGenerator import DevilutionXGenerator
-from generators.hatari.hatariGenerator import HatariGenerator
-from generators.solarus.solarusGenerator import SolarusGenerator
-from generators.easyrpg.easyrpgGenerator import EasyRPGGenerator
-from generators.redream.redreamGenerator import RedreamGenerator
-from generators.supermodel.supermodelGenerator import SupermodelGenerator
-from generators.xash3d_fwgs.xash3dFwgsGenerator import Xash3dFwgsGenerator
-from generators.tsugaru.tsugaruGenerator import TsugaruGenerator
-from generators.mugen.mugenGenerator import MugenGenerator
-from generators.lightspark.lightsparkGenerator import LightsparkGenerator
-from generators.ruffle.ruffleGenerator import RuffleGenerator
-from generators.duckstation.duckstationGenerator import DuckstationGenerator
-from generators.drastic.drasticGenerator import DrasticGenerator
-from generators.xemu.xemuGenerator import XemuGenerator
-from generators.cgenius.cgeniusGenerator import CGeniusGenerator
+from .Emulator import Emulator
+from .Evmapy import Evmapy
+from . import generators
+from .generators.kodi.kodiGenerator import KodiGenerator
+from .generators.linapple.linappleGenerator import LinappleGenerator
+from .generators.libretro.libretroGenerator import LibretroGenerator
+from .generators.moonlight.moonlightGenerator import MoonlightGenerator
+from .generators.mupen.mupenGenerator import MupenGenerator
+from .generators.ppsspp.ppssppGenerator import PPSSPPGenerator
+from .generators.reicast.reicastGenerator import ReicastGenerator
+from .generators.flycast.flycastGenerator import FlycastGenerator
+from .generators.dolphin.dolphinGenerator import DolphinGenerator
+from .generators.pcsx2.pcsx2Generator import Pcsx2Generator
+from .generators.scummvm.scummvmGenerator import ScummVMGenerator
+from .generators.dosbox.dosboxGenerator import DosBoxGenerator
+from .generators.dosboxstaging.dosboxstagingGenerator import DosBoxStagingGenerator
+from .generators.dosboxx.dosboxxGenerator import DosBoxxGenerator
+from .generators.vice.viceGenerator import ViceGenerator
+from .generators.fsuae.fsuaeGenerator import FsuaeGenerator
+from .generators.amiberry.amiberryGenerator import AmiberryGenerator
+from .generators.citra.citraGenerator import CitraGenerator
+from .generators.daphne.daphneGenerator import DaphneGenerator
+from .generators.cannonball.cannonballGenerator import CannonballGenerator
+from .generators.sdlpop.sdlpopGenerator import SdlPopGenerator
+from .generators.openbor.openborGenerator import OpenborGenerator
+from .generators.wine.wineGenerator import WineGenerator
+from .generators.cemu.cemuGenerator import CemuGenerator
+from .generators.melonds.melondsGenerator import MelonDSGenerator
+from .generators.rpcs3.rpcs3Generator import Rpcs3Generator
+from .generators.pygame.pygameGenerator import PygameGenerator
+from .generators.mame.mameGenerator import MameGenerator
+from .generators.devilutionx.devilutionxGenerator import DevilutionXGenerator
+from .generators.hatari.hatariGenerator import HatariGenerator
+from .generators.solarus.solarusGenerator import SolarusGenerator
+from .generators.easyrpg.easyrpgGenerator import EasyRPGGenerator
+from .generators.redream.redreamGenerator import RedreamGenerator
+from .generators.supermodel.supermodelGenerator import SupermodelGenerator
+from .generators.xash3d_fwgs.xash3dFwgsGenerator import Xash3dFwgsGenerator
+from .generators.tsugaru.tsugaruGenerator import TsugaruGenerator
+from .generators.mugen.mugenGenerator import MugenGenerator
+from .generators.lightspark.lightsparkGenerator import LightsparkGenerator
+from .generators.ruffle.ruffleGenerator import RuffleGenerator
+from .generators.duckstation.duckstationGenerator import DuckstationGenerator
+from .generators.drastic.drasticGenerator import DrasticGenerator
+from .generators.xemu.xemuGenerator import XemuGenerator
+from .generators.cgenius.cgeniusGenerator import CGeniusGenerator
 
-import controllersConfig as controllers
+from . import controllersConfig as controllers
 import signal
-import batoceraFiles
+from . import batoceraFiles
 import os
 import subprocess
-import utils.videoMode as videoMode
-from utils.logger import eslog
+from . import utils.videoMode as videoMode
+from .utils.logger import eslog
 
 generators = {
     'kodi': KodiGenerator(),

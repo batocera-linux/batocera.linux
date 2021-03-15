@@ -5,8 +5,8 @@ import Command
 import batoceraFiles
 import shutil
 import os.path
-import linappleConfig
-import ConfigParser
+from . import linappleConfig
+import configparser
 from shutil import copyfile
 from os.path import dirname
 from os.path import isdir
