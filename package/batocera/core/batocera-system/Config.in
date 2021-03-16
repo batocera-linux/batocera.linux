@@ -476,17 +476,6 @@ config BR2_PACKAGE_BATOCERA_HOMEBREW_SYSTEMS
 config BR2_PACKAGE_BATOCERA_SEGADC
 		bool "batocera.linux dreamcast/naomi/atomiswave emulators/cores"
 
-		#select BR2_PACKAGE_REICAST              if !BR2_PACKAGE_BATOCERA_TARGET_RPI1         && \
-		#                                           !BR2_PACKAGE_BATOCERA_TARGET_RPI2         && \
-                #                                           !BR2_PACKAGE_BATOCERA_TARGET_RPI3         && \
-		#                                           !BR2_PACKAGE_BATOCERA_TARGET_S912         && \
-		#                                           !BR2_PACKAGE_BATOCERA_TARGET_ODROIDC2     && \
-		#                                           !BR2_PACKAGE_BATOCERA_TARGET_ODROIDC4     && \
-		#                                           !BR2_PACKAGE_BATOCERA_TARGET_ODROIDN2     && \
-		#                                           !BR2_PACKAGE_BATOCERA_TARGET_S905         && \
-		#                                           !BR2_PACKAGE_BATOCERA_TARGET_LIBRETECH_H5 && \
-		#                                           !BR2_PACKAGE_BATOCERA_TARGET_VIM3
-
 		# Dreamcast / Naomi / Atomiswave emulation
 		select BR2_PACKAGE_FLYCAST              if !BR2_PACKAGE_BATOCERA_TARGET_RPI1 && !BR2_PACKAGE_BATOCERA_TARGET_RPI2
 		select BR2_PACKAGE_LIBRETRO_FLYCAST      if !BR2_PACKAGE_BATOCERA_TARGET_RPI1 && !BR2_PACKAGE_BATOCERA_TARGET_RPI2
