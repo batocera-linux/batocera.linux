@@ -1,6 +1,6 @@
 config BR2_PACKAGE_BATOCERA_CONFIGGEN
         bool "batocera configgen"
-	select BR2_PACKAGE_PYTHON
+	select BR2_PACKAGE_PYTHON3
 	select BR2_PACKAGE_PYTHON_PYYAML
 	select BR2_PACKAGE_PYTHON_PILLOW
         help
