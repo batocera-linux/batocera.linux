@@ -106,7 +106,7 @@ index de330ab..cda1b18 100644
  
  /* vi: set ts=4 sw=4 expandtab: */
 diff --git a/src/joystick/linux/SDL_sysjoystick.c b/src/joystick/linux/SDL_sysjoystick.c
-index 3a93420..ecabe7e 100644
+index 817db5f..353bfa1 100644
 --- a/src/joystick/linux/SDL_sysjoystick.c
 +++ b/src/joystick/linux/SDL_sysjoystick.c
 @@ -845,6 +845,16 @@ ConfigJoystick(SDL_Joystick *joystick, int fd)
@@ -134,7 +134,7 @@ index 3a93420..ecabe7e 100644
      joystick->hwdata->item = item;
      joystick->hwdata->guid = item->guid;
      joystick->hwdata->effect.id = -1;
-@@ -1582,6 +1593,60 @@ SDL_JoystickDriver SDL_LINUX_JoystickDriver =
+@@ -1585,6 +1596,63 @@ SDL_JoystickDriver SDL_LINUX_JoystickDriver =
      LINUX_JoystickGetGamepadMapping
  };
  
@@ -155,6 +155,7 @@ index 3a93420..ecabe7e 100644
 +  int i;
 +  SDL_joylist_item* joystick = JoystickByDevIndex(SDL_JoystickGetDeviceIndexFromInstanceID(device_instance_id));
 +  if(joystick == NULL) return -1;
++  if(joystick->hwdata == NULL) return -1;
 +
 +  for(i=0; i<KEY_MAX; i++) {
 +    if(((int)joystick->hwdata->key_map[i]) == button) {
@@ -169,6 +170,7 @@ index 3a93420..ecabe7e 100644
 +  int i;
 +  SDL_joylist_item* joystick = JoystickByDevIndex(SDL_JoystickGetDeviceIndexFromInstanceID(device_instance_id));
 +  if(joystick == NULL) return -1;
++  if(joystick->hwdata == NULL) return -1;
 +
 +  for(i=0; i<ABS_MAX; i++) {
 +    if(((int)joystick->hwdata->abs_map[i]) == axis) {
@@ -183,6 +185,7 @@ index 3a93420..ecabe7e 100644
 +  int i;
 +  SDL_joylist_item* joystick = JoystickByDevIndex(SDL_JoystickGetDeviceIndexFromInstanceID(device_instance_id));
 +  if(joystick == NULL) return -1;
++  if(joystick->hwdata == NULL) return -1;
 +
 +  for(i=0; i<ABS_MAX; i++) {
 +    if(((int)joystick->hwdata->hat_map[i]) == hat) {
