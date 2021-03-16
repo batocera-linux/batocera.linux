@@ -44,4 +44,4 @@
 +	install -m 755 $(BINDIR)/sixad-raw $(DESTDIR)/usr/sixad/$(INSTALLDIR)/
  	install -m 755 sixad-dbus-blocker $(DESTDIR)/usr/sbin/
  
- ifeq "$(wildcard /usr/bin/python2 )" ""
+ ifeq "$(wildcard /usr/bin/python3 )" ""
