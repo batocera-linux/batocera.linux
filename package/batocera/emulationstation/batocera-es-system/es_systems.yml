@@ -1767,12 +1767,14 @@ easyrpg:
   manufacturer: EasyRPG Team
   release: 2000
   hardware: port
-  extensions: [zip, easyrpg]
+  extensions: [easyrpg]
   emulators:
     easyrpg:
       easyrpg: { requireAnyOf: [BR2_PACKAGE_EASYRPG_PLAYER] }
     libretro:
       easyrpg: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_EASYRPG] }
+  comment_en: |
+          The EasyRPG engine supports RPG Maker 2000 and 2003 games, you have to put the game's entire folder inside, and add .easyrpg to it's name the game folder is the one containing the RPG_RT.ldb file.
 
 cgenius:
   name:       Commander Genius
