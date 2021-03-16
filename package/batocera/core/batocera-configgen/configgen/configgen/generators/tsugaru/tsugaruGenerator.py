@@ -16,6 +16,6 @@ class TsugaruGenerator(Generator):
         commandArray = ["/usr/bin/Tsugaru_CUI", "/userdata/bios/fmtowns"]
 
 	# Floppy (A) options
-	commandArray += ["-FD0", rom]
+        commandArray += ["-FD0", rom]
 
         return Command.Command(array=commandArray)

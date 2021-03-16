@@ -76,7 +76,7 @@ def defineControllerKeys(controller, systemconfig):
         for realStick, fakeStick in fakeSticks.iteritems():
                 if realStick in controller.inputs:
                     if controller.inputs[realStick].type == "axis":
-                        print fakeStick + "-> " + realStick
+                        print(fakeStick + "-> " + realStick)
                         inputVar =  Input(fakeStick
                                         , controller.inputs[realStick].type
                                         , controller.inputs[realStick].id

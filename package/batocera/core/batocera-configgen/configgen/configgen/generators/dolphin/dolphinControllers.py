@@ -285,8 +285,8 @@ def generateControllerConfig_any(system, playersControllers, filename, anyDefKey
         # Apply replacements
         if anyReplacements is not None:
             for x in anyReplacements:
-            	if x not in pad.inputs and x in currentMapping:
-            	    currentMapping[anyReplacements[x]] = currentMapping[x]
+                if x not in pad.inputs and x in currentMapping:
+                    currentMapping[anyReplacements[x]] = currentMapping[x]
                     if x == "joystick1up":
                         currentMapping[anyReplacements["joystick1down"]] = anyReverseAxes[currentMapping["joystick1up"]]
                     if x == "joystick1left":

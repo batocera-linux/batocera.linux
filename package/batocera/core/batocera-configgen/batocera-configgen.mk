@@ -7,7 +7,7 @@
 BATOCERA_CONFIGGEN_VERSION = 1.4
 BATOCERA_CONFIGGEN_LICENSE = GPL
 BATOCERA_CONFIGGEN_SOURCE=
-BATOCERA_CONFIGGEN_DEPENDENCIES = python python-pyyaml
+BATOCERA_CONFIGGEN_DEPENDENCIES = python3 python-pyyaml
 BATOCERA_CONFIGGEN_INSTALL_STAGING = YES
 
 define BATOCERA_CONFIGGEN_EXTRACT_CMDS
@@ -70,7 +70,7 @@ endef
 
 define BATOCERA_CONFIGGEN_CONFIGS
 	mkdir -p $(TARGET_DIR)/usr/share/batocera/configgen
-	cp -pr $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-configgen/datainit $(TARGET_DIR)/usr/lib/python2.7/site-packages/configgen/
+	cp -pr $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-configgen/datainit $(TARGET_DIR)/usr/lib/python3.9/site-packages/configgen/
 	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-configgen/configs/configgen-defaults.yml $(TARGET_DIR)/usr/share/batocera/configgen/configgen-defaults.yml
 	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-configgen/configs/configgen-defaults-$(BATOCERA_CONFIGGEN_SYSTEM).yml $(TARGET_DIR)/usr/share/batocera/configgen/configgen-defaults-arch.yml
 endef

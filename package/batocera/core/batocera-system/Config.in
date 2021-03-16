@@ -877,10 +877,11 @@ config BR2_PACKAGE_BATOCERA_MUPEN64
         help
           Mupen64
 
-config BR2_PACKAGE_BATOCERA_KODI18
-       bool "batocera.linux Kodi18 packages selection"
+config BR2_PACKAGE_BATOCERA_KODI19
+       bool "batocera.linux Kodi19 packages selection"
        default n
        select BR2_PACKAGE_KODI             # kodi
+       select BR2_PACKAGE_PYTHON3	   # kodi19 is based on python3
        select BR2_PACKAGE_PYTHON_PYOPENSSL  # used by some kodi plugins
        select BR2_PACKAGE_X264              # decoder
        select BR2_PACKAGE_X265              # decoder

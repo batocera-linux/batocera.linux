@@ -320,8 +320,8 @@ class MameGenerator(Generator):
 
     @staticmethod
     def getMameMachineSize(machine, tmpdir):
-	proc = subprocess.Popen(["/usr/bin/mame/mame", "-listxml", machine], stdout=subprocess.PIPE)
-	(out, err) = proc.communicate()
+        proc = subprocess.Popen(["/usr/bin/mame/mame", "-listxml", machine], stdout=subprocess.PIPE)
+        (out, err) = proc.communicate()
         exitcode = proc.returncode
 
         if exitcode != 0:
