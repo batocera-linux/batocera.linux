@@ -1,0 +1,12 @@
+diff --git a/configure b/configure
+index 0da351e..37cb07a 100755
+--- a/configure
++++ b/configure
+@@ -24347,6 +24347,7 @@ if test "${enable_hidapi+set}" = set; then :
+ else
+   enable_hidapi=yes
+ fi
++enable_hidapi=no
+ 
+     # Check whether --enable-hidapi-libusb was given.
+ if test "${enable_hidapi_libusb+set}" = set; then :
