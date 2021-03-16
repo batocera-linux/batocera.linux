@@ -187,7 +187,7 @@ def _keyToSdlGameControllerConfig(keyname, name, type, id, value=None):
     elif type == 'key':
         return None
     else:
-        raise ValueError, 'unknown key type: {!r}'.format(type)
+        raise ValueError('unknown key type: {!r}'.format(type))
 
 
 def generateSdlGameControllerConfig(controllers):

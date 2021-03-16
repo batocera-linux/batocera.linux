@@ -13,15 +13,15 @@ class Evmapy():
 
     @staticmethod
     def start(system, emulator, core, rom, playersControllers):
-	if Evmapy.__prepare(system, emulator, core, rom, playersControllers):
+        if Evmapy.__prepare(system, emulator, core, rom, playersControllers):
             Evmapy.__started = True
-	    subprocess.call(["batocera-evmapy", "start"])
+        subprocess.call(["batocera-evmapy", "start"])
 
     @staticmethod
     def stop():
         if Evmapy.__started:
             Evmapy.__started = False
-	    subprocess.call(["batocera-evmapy", "stop"])
+        subprocess.call(["batocera-evmapy", "stop"])
 
     @staticmethod
     def __prepare(system, emulator, core, rom, playersControllers):

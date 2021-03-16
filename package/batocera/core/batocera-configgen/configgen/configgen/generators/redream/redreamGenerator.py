@@ -15,7 +15,7 @@ class RedreamGenerator(Generator):
             os.makedirs(configdir)
 
         copyfile("/usr/bin/redream", configdir + "/redream")
-        os.chmod(configdir + "/redream", 0775)
+        os.chmod(configdir + "/redream", 0o0775)
 
         commandArray = [configdir + "/redream", rom]
         return Command.Command(

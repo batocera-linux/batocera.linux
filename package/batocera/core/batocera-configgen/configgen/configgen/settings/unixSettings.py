@@ -32,7 +32,7 @@ class UnixSettings():
             file.seek(0, os.SEEK_SET)
 
             self.config.readfp(file)
-        except IOError, e:
+        except IOError(e):
             eslog.debug(str(e))
 
     def write(self):
@@ -51,7 +51,7 @@ class UnixSettings():
         try:
             eslog.debug("Looking for {0} in {1}".format(name, self.settingsFile))
             return self.config.get('DEFAULT', name, default)
-        except ConfigParser.NoOptionError, e:
+        except ConfigParser.NoOptionError(e):
             return None
 
     def save(self, name, value):

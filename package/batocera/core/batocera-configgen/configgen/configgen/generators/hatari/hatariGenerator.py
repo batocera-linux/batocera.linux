@@ -44,7 +44,7 @@ class HatariGenerator(Generator):
         if system.isOptSet("language"):
             toslang = system.config["language"]
 
-	commandArray += ["--machine", machine]
+        commandArray += ["--machine", machine]
         biosdir = "/userdata/bios"
         tos = HatariGenerator.findBestTos(biosdir, machine, tosversion, toslang)
         commandArray += [ "--tos", "{}/{}".format(biosdir, tos)]
@@ -53,13 +53,13 @@ class HatariGenerator(Generator):
         memorysize = 0
         if system.isOptSet("ram"):
             memorysize = system.config["ram"]
-	commandArray += ["--memsize", str(memorysize)]
+        commandArray += ["--memsize", str(memorysize)]
 
 	# Floppy (A) options
-	commandArray += ["--disk-a", rom]
+        commandArray += ["--disk-a", rom]
 
 	# Floppy (B) options
-	commandArray += ["--drive-b", "off"]
+        commandArray += ["--drive-b", "off"]
 
         # config file
         HatariGenerator.generateConfig(system, playersControllers)
