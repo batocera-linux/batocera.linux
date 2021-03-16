@@ -2830,8 +2830,17 @@ moonlight:
 mupen64plus:
   features: [ratio]
   cfeatures:
-        # Video-Rice
-        # https://github.com/mupen64plus/mupen64plus-video-rice/blob/7ce0bf039ecf0534e633db46fc4904fcfde0c2ce/src/Config.cpp
+        mupen64plus_frameskip::
+            prompt:      FRAME SKIP
+            description: Skip frames to improve performance (Smoothless)
+            choices:
+                "Off":                  0
+                "Autodetect":           automatic
+                "1":                    1
+                "2":                    2
+                "3":                    3
+                "4":                    4
+                "5":                    5
         mupen64plus_Mipmapping::
             prompt:      TEXTURES MIP-MAPPING (BLUR)
             description: Smooths out textures on 3D objetcs
@@ -2849,7 +2858,7 @@ mupen64plus:
                 "4x":                   4
                 "8x":                   8
                 "16x":                  16
-        mupen64plus_MultiSampling::
+        mupen64plus_AntiAliasing::
             prompt:      ANTI-ALIASING (MSAA)
             description: Smooth out jagged edges on 3D objetcs polygons
             choices:
@@ -2860,7 +2869,7 @@ mupen64plus:
                 "16x":                  16
         mupen64plus_TextureEnhancement::
             prompt:      TEXTURE ENHANCEMENT (XBRZ)
-            description: Scales up a nearest-neighbor version of the texture
+            description: Only for RICE video plugin # Scales up a nearest-neighbor version of the texture
             choices:
                 "Off":                  0
                 "2X":                   1
@@ -2876,38 +2885,14 @@ mupen64plus:
             prompt:      HIRES TEXTURES
             description: Permit to use HD Texture Pack
             choices:
-                "On":                  "True"
-                "Off":                 "False"
-        # Video-Glide64mk2
-        # https://github.com/mupen64plus/mupen64plus-video-glide64mk2/blob/aecf15ec2044c593b0505bd052270bd662902e08/src/Glide64/Main.cpp
-        mupen64plus_frameskip::
-            prompt:      FRAME SKIP
-            description: Skip frames to improve performance (Smoothless)
+                "Off":                  "False"
+                "On":                   "True"
+        mupen64plus_DisableExtraMem::
+            prompt:      4MB EXPANSION RAM PACK
+            description: Disable may be necessary for some games
             choices:
-                "Off":                  0
-                "Autodetect":           automatic
-                "1":                    1
-                "2":                    2
-                "3":                    3
-                "4":                    4
-                "5":                    5
-        mupen64plus_filtering::
-            prompt:      TEXTURE FILTERING (BLUR)
-            description: Smooths out textures on 3D objetcs
-            choices:
-                "Game default":         -1
-                "Automatic":            0
-                "Force bilinear":       1
-                "Force point sampled":  2
-        mupen64plus_Anisotropic::
-            prompt:      ANISOTROPIC FILTERING
-            description: Enhance perspective textures (use Mipmapping)
-            choices:
-                "Off":                  0
-                "2x":                   2
-                "4x":                   4
-                "8x":                   8
-                "16x":                  16
+                "Off":                  "False"
+                "On":                   "True"
 
 openbor:
   features: []
