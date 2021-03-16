@@ -45,13 +45,6 @@ ifeq ($(BR2_PACKAGE_PPSSPP),y)
   BATOCERA_DESKTOPAPPS_ICONS   += ppsspp.png
 endif
 
-# reicast
-ifeq ($(BR2_PACKAGE_REICAST),y)
-  BATOCERA_DESKTOPAPPS_SCRIPTS += batocera-config-reicast
-  BATOCERA_DESKTOPAPPS_APPS    += reicast-config.desktop
-  BATOCERA_DESKTOPAPPS_ICONS   += reicast.png
-endif
-
 # flycast
 ifeq ($(BR2_PACKAGE_FLYCAST),y)
   BATOCERA_DESKTOPAPPS_SCRIPTS += batocera-config-flycast
