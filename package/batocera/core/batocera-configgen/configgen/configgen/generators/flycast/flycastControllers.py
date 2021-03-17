@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 import sys
 import os
-import ConfigParser
+import configparser
 import batoceraFiles
 from utils.logger import eslog
 
@@ -46,7 +46,7 @@ sections = { 'emulator' : ['mapping_name', 'btn_escape'],
 def generateControllerConfig(controller):
     # Set config file name
     configFileName = "{}/evdev_{}.cfg".format(batoceraFiles.flycastMapping,controller.realName)
-    Config = ConfigParser.ConfigParser()
+    Config = configparser.ConfigParser()
 
     if not os.path.exists(os.path.dirname(configFileName)):
         os.makedirs(os.path.dirname(configFileName))

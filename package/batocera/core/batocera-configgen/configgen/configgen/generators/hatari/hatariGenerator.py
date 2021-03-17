@@ -5,7 +5,7 @@ from generators.Generator import Generator
 import controllersConfig
 from utils.logger import eslog
 import os
-import ConfigParser
+import configparser
 import batoceraFiles
 
 class HatariGenerator(Generator):
@@ -68,7 +68,7 @@ class HatariGenerator(Generator):
 
     @staticmethod
     def generateConfig(system, playersControllers):
-        config = ConfigParser.ConfigParser()
+        config = configparser.ConfigParser()
         # To prevent ConfigParser from converting to lower case
         config.optionxform = str
 

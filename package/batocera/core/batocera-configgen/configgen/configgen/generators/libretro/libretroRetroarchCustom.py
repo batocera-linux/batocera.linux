@@ -2,7 +2,7 @@
 import sys
 import os
 import batoceraFiles
-import ConfigParser
+import configparser
 from settings.unixSettings import UnixSettings
 
 def generateRetroarchCustom():

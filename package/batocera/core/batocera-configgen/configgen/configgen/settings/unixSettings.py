@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
-import ConfigParser
-import StringIO
+import configparser
 import os
 import re
 import io
@@ -19,20 +18,20 @@ class UnixSettings():
 
         # use ConfigParser as backend.
         eslog.debug("Creating parser for {0}".format(self.settingsFile))
-        self.config = ConfigParser.ConfigParser()
+        self.config = configparser.ConfigParser()
         # To prevent ConfigParser from converting to lower case
         self.config.optionxform = str
 
         try:
             # TODO: remove me when we migrate to Python 3
             # pretend where have a [DEFAULT] section
-            file = StringIO.StringIO()
+            file = io.StringIO()
             file.write('[DEFAULT]\n')
             file.write(io.open(self.settingsFile, encoding='utf_8_sig').read())
             file.seek(0, os.SEEK_SET)
 
             self.config.readfp(file)
-        except IOError(e):
+        except IOError as e:
             eslog.debug(str(e))
 
     def write(self):
@@ -51,13 +50,13 @@ class UnixSettings():
         try:
             eslog.debug("Looking for {0} in {1}".format(name, self.settingsFile))
             return self.config.get('DEFAULT', name, default)
-        except ConfigParser.NoOptionError(e):
+        except configparser.NoOptionError as e:
             return None
 
     def save(self, name, value):
         eslog.debug("Writing {0} = {1} to {2}".format(name, value, self.settingsFile))
         # TODO: do we need proper section support? PSP config is an ini file
-        self.config.set('DEFAULT', name, str(value))
+        self.config.set('DEFAULT', name, str(value).replace('%', '%%'))
 
     def disable(self, name):
         # unused?

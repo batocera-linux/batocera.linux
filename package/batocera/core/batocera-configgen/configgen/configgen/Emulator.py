@@ -76,7 +76,7 @@ class Emulator():
         :param merge_dct: dct merged into dct
         :return: None
         """
-        for k, v in merge_dct.iteritems():
+        for k, v in merge_dct.items():
             if (k in dct and isinstance(dct[k], dict) and isinstance(merge_dct[k], collections.Mapping)):
                 Emulator.dict_merge(dct[k], merge_dct[k])
             else:
@@ -84,11 +84,13 @@ class Emulator():
 
     @staticmethod
     def get_generic_config(system, defaultyml, defaultarchyml):
-        systems_default = yaml.load(file(defaultyml, "r"), Loader=yaml.FullLoader)
+        with open(defaultyml, 'r') as f:
+            systems_default = yaml.load(f, Loader=yaml.FullLoader)
 
         systems_default_arch = {}
         if os.path.exists(defaultarchyml):
-            systems_default_arch = yaml.load(file(defaultarchyml, "r"), Loader=yaml.FullLoader)
+            with open(defaultarchyml, 'r') as f:
+                systems_default_arch = yaml.load(f, Loader=yaml.FullLoader)
         dict_all = {}
 
         if "default" in systems_default:
@@ -124,9 +126,9 @@ class Emulator():
 
     def getOptBoolean(self, key):
         if key in self.config:
-            if unicode(self.config[key]) == u'1':
+            if self.config[key] == '1':
                 return True
-            if unicode(self.config[key]) == u'true':
+            if self.config[key] == 'true':
                 return True
             if self.config[key] == True:
                 return True

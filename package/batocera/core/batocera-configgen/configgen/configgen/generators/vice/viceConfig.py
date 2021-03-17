@@ -3,7 +3,7 @@
 import batoceraFiles
 import os
 from Emulator import Emulator
-import ConfigParser
+import configparser
 
 def setViceConfig(viceConfigFile, system):
     
@@ -15,7 +15,7 @@ def setViceConfig(viceConfigFile, system):
             os.makedirs(os.path.dirname(viceConfigRC))
 
     # config file
-    viceConfig = ConfigParser.RawConfigParser()
+    viceConfig = configparser.RawConfigParser()
     viceConfig.optionxform=str
     
     if os.path.exists(viceConfigRC):

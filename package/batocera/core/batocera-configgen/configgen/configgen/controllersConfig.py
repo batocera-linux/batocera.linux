@@ -92,9 +92,6 @@ def loadControllerConfig(controllersInput):
 
 def findBestControllerConfig(controllers, x, pxguid, pxindex, pxname, pxdev, pxnbbuttons, pxnbhats, pxnbaxes):
     # when there will have more joysticks, use hash tables
-    # TODO: python3 - workawround for names with utf-8 chars
-    if (pxname != None):
-        pxname = pxname.decode('utf-8')
     for controllerGUID in controllers:
         controller = controllers[controllerGUID]
         if controller.guid == pxguid and controller.configName == pxname:
@@ -192,7 +189,7 @@ def _keyToSdlGameControllerConfig(keyname, name, type, id, value=None):
 
 def generateSdlGameControllerConfig(controllers):
     configs = []
-    for idx, controller in controllers.iteritems():
+    for idx, controller in controllers.items():
         configs.append(controller.generateSDLGameDBLine())
     return "\n".join(configs)
 
@@ -204,7 +201,7 @@ def writeSDLGameDBAllControllers(controllers, outputFile = "/tmp/gamecontrollerd
 
 def generateSdlGameControllerPadsOrderConfig(controllers):
     res = ""
-    for idx, controller in controllers.iteritems():
+    for idx, controller in controllers.items():
         if res != "":
             res = res + ";"
         res = res + str(controller.index)

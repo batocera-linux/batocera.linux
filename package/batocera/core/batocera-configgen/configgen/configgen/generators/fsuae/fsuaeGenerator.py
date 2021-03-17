@@ -1,11 +1,12 @@
 #!/usr/bin/env python
+
 import Command
 import batoceraFiles
 import zipfile
 import shutil
 from generators.Generator import Generator
-import fsuaeControllers
 from os import path
+from . import fsuaeControllers
 
 class FsuaeGenerator(Generator):
 

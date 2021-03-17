@@ -3,7 +3,7 @@
 from generators.Generator import Generator
 import Command
 import batoceraFiles
-import ConfigParser
+import configparser
 import os.path
 from os import environ
 
@@ -12,7 +12,7 @@ class DuckstationGenerator(Generator):
     def generate(self, system, rom, playersControllers, gameResolution):
         commandArray = ["duckstation", "-batch", "-fullscreen", "--", rom ]
 
-        settings = ConfigParser.ConfigParser()
+        settings = configparser.ConfigParser()
         # To prevent ConfigParser from converting to lower case
         settings.optionxform = str
         settings_path = batoceraFiles.SAVES + "/duckstation/settings.ini"
