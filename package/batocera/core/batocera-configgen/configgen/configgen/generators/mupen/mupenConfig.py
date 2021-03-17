@@ -29,8 +29,8 @@ def setMupenConfig(iniConfig, system, controllers, gameResolution):
     if not iniConfig.has_section("Video-General"):
         iniConfig.add_section("Video-General")
     iniConfig.set("Video-General", "Version", "1")
-    iniConfig.set("Video-General", "ScreenWidth",  gameResolution["width"])
-    iniConfig.set("Video-General", "ScreenHeight", gameResolution["height"])
+    iniConfig.set("Video-General", "ScreenWidth",  str(gameResolution["width"]))
+    iniConfig.set("Video-General", "ScreenHeight", str(gameResolution["height"]))
     iniConfig.set("Video-General", "VerticalSync", "True")
     
     # Graphic Plugins
