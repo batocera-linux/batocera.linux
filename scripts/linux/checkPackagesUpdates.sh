@@ -21,7 +21,7 @@ PACKAGES_LIBRETRO="libretro-81 libretro-atari800 libretro-beetle-lynx libretro-b
 PACKAGES_MUPEN="mupen64plus-audio-sdl mupen64plus-core mupen64plus-gles2 mupen64plus-gliden64 mupen64plus-input-sdl mupen64plus-omx
 				mupen64plus-rsphle mupen64plus-uiconsole mupen64plus-video-glide64mk2 mupen64plus-video-rice"
 
-PACKAGES_EMULATORS="amiberry cannonball cemu cemu-hook cemutil citra daphne devilutionx dolphin-emu dosbox dosbox-staging dosbox-x duckstation flycast fsuae linapple mame
+PACKAGES_EMULATORS="amiberry cannonball cemu cemu-hook cemutil citra daphne devilutionx dolphin-emu dosbox dosbox-x duckstation flycast fsuae linapple mame
 					melonds moonlight-embedded openbor pcsx2 pcsx2_avx2 ppsspp python-pygame2 rpcs3 scummvm supermodel3 vice yuzu"
 
 PACKAGES_WINE="dxvk mf faudio vkd3d vkd3d-proton wine-lutris wine-lutris-wow64_32 wine-mono"

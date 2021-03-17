@@ -527,8 +527,6 @@ dos:
   emulators:
     dosbox:
       dosbox:           { requireAnyOf: [BR2_PACKAGE_DOSBOX], incompatible_extensions: [zip] }
-    dosbox_staging:
-      dosbox_staging:   { requireAnyOf: [BR2_PACKAGE_DOSBOX_STAGING], incompatible_extensions: [zip] }
     dosboxx:
       dosbox-x:         { requireAnyOf: [BR2_PACKAGE_DOSBOX_X], incompatible_extensions: [zip] }
     libretro:
