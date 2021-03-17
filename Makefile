@@ -97,6 +97,19 @@ dl-dir:
 		$(DOCKER_REPO)/$(IMAGE_NAME) \
 		make O=/$* BR2_EXTERNAL=/build -C /build/buildroot $(CMD)
 
+%-graph-depends: batocera-docker-image %-config ccache-dir dl-dir
+	@docker run -it --rm \
+		-v $(PROJECT_DIR):/build \
+		-v $(DL_DIR):/build/buildroot/dl \
+		-v $(OUTPUT_DIR)/$*:/$* \
+		-v $(CCACHE_DIR):/home/$(USER)/.buildroot-ccache \
+		-u $(UID):$(GID) \
+		-v /etc/passwd:/etc/passwd:ro \
+		-v /etc/group:/etc/group:ro \
+		$(DOCKER_OPTS) \
+		$(DOCKER_REPO)/$(IMAGE_NAME) \
+		make O=/$* BR2_EXTERNAL=/build BR2_GRAPH_OUT=svg -C /build/buildroot graph-depends
+
 %-shell: batocera-docker-image output-dir-%
 	@docker run -it --rm \
 		-v $(PROJECT_DIR):/build \
