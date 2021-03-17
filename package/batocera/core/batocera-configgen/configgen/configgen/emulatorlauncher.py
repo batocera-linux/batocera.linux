@@ -13,7 +13,6 @@ from generators.libretro.libretroGenerator import LibretroGenerator
 from generators.moonlight.moonlightGenerator import MoonlightGenerator
 from generators.mupen.mupenGenerator import MupenGenerator
 from generators.ppsspp.ppssppGenerator import PPSSPPGenerator
-from generators.reicast.reicastGenerator import ReicastGenerator
 from generators.flycast.flycastGenerator import FlycastGenerator
 from generators.dolphin.dolphinGenerator import DolphinGenerator
 from generators.pcsx2.pcsx2Generator import Pcsx2Generator
@@ -72,7 +71,6 @@ generators = {
     'vice': ViceGenerator(),
     'fsuae': FsuaeGenerator(),
     'amiberry': AmiberryGenerator(),
-    'reicast': ReicastGenerator(),
     'flycast': FlycastGenerator(),
     'dolphin': DolphinGenerator(),
     'pcsx2': Pcsx2Generator(),
