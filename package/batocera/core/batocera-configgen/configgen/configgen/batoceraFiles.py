@@ -25,7 +25,6 @@ batoceraBins = {'dosbox'         : '/usr/bin/dosbox'
               , 'moonlight'      : '/usr/bin/moonlight'
               , 'mupen64plus'    : '/usr/bin/mupen64plus'
               , 'ppsspp'         : '/usr/bin/PPSSPPSDL'
-              , 'reicast'        : '/usr/bin/reicast.elf'
               , 'flycast'        : '/usr/bin/flycast'
               , 'scummvm'        : '/usr/bin/scummvm'
               , 'vice'           : '/usr/bin/'
@@ -71,15 +70,6 @@ moonlightMapping[1] = moonlightCustom + '/mappingP1.conf'
 moonlightMapping[2] = moonlightCustom + '/mappingP2.conf'
 moonlightMapping[3] = moonlightCustom + '/mappingP3.conf'
 moonlightMapping[4] = moonlightCustom + '/mappingP4.conf'
-
-reicastCustom = CONF + '/reicast'
-reicastMapping = reicastCustom + '/mappings'
-reicastConfig = reicastCustom + '/emu.cfg'
-reicastSaves = SAVES + '/dreamcast'
-reicastBios = BIOS
-reicastVMUBlank = '/usr/lib/python3.9/site-packages/configgen/datainit/dreamcast/vmu_save_blank.bin'
-reicastVMUA1 = reicastSaves + '/reicast/vmu_save_A1.bin'
-reicastVMUA2 = reicastSaves + '/reicast/vmu_save_A2.bin'
 
 dolphinConfig  = CONF + "/dolphin-emu"
 dolphinData    = SAVES + "/dolphin-emu"
