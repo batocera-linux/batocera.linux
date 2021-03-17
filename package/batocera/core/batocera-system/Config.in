@@ -1,23 +1,23 @@
 
 ##### define variables to use in this file
 if BR2_PACKAGE_BATOCERA_RPI_VCORE || BR2_PACKAGE_BATOCERA_RPI_MESA3D
-   config BR2_PACKAGE_BATOCERA_RPI_ANY
-        bool "any rpi"
-        default y
+	config BR2_PACKAGE_BATOCERA_RPI_ANY
+	bool "any rpi"
+	default y
 endif
 
 if BR2_PACKAGE_BATOCERA_TARGET_X86 || BR2_PACKAGE_BATOCERA_TARGET_X86_64
-   config BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
-        bool "any x86 or x86_64"
-        default y
+	config BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
+	bool "any x86 or x86_64"
+	default y
 endif
 
 if BR2_PACKAGE_BATOCERA_TARGET_ROCKPRO64 || BR2_PACKAGE_BATOCERA_TARGET_ROCK960 || BR2_PACKAGE_BATOCERA_TARGET_TINKERBOARD || BR2_PACKAGE_BATOCERA_TARGET_MIQI || BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA
-   config BR2_PACKAGE_BATOCERA_TARGET_ROCKCHIP_ANY
-        bool "rockchip_targets"
-        default y
-        help
-           Selected when a Rockchip platform is being built
+	config BR2_PACKAGE_BATOCERA_TARGET_ROCKCHIP_ANY
+	bool "rockchip_targets"
+	default y
+	help
+		Selected when a Rockchip platform is being built
 endif
 
 config BR2_PACKAGE_BATOCERA_CORES_EXPERIMENTAL
@@ -30,1059 +30,1082 @@ bool "batocera is limited to abandonned systems"
 config BR2_PACKAGE_BATOCERA_MUSIC_SUPPORT
 	bool "batocera.linux music formats support"
 
-    # MIDI
-    select BR2_PACKAGE_FLUIDSYNTH
-    select BR2_PACKAGE_FLUID_SOUNDFONT
+	# MIDI
+	select BR2_PACKAGE_FLUIDSYNTH
+	select BR2_PACKAGE_FLUID_SOUNDFONT
 
-    # Modules
-    select BR2_PACKAGE_LIBMODPLUG
-    select BR2_PACKAGE_LIBXMP
+	# Modules
+	select BR2_PACKAGE_LIBMODPLUG
+	select BR2_PACKAGE_LIBXMP
 
-    # MP3
-    select BR2_PACKAGE_LIBMAD
+	# MP3
+	select BR2_PACKAGE_LIBMAD
 
-    help
-    Music support packages (MIDI, MOD, S3M, XM, ....)
+	help
+		Music support packages (MIDI, MOD, S3M, XM, ....)
 
 config BR2_PACKAGE_BATOCERA_VULKAN
 	bool "batocera.linux Vulkan support"
 
-    # host-python3+ssl for building vulkan-tools
-    select BR2_PACKAGE_HOST_PYTHON3			 
-    select BR2_PACKAGE_HOST_PYTHON3_SSL 
+	# host-python3+ssl for building vulkan-tools
+	select BR2_PACKAGE_HOST_PYTHON3			 
+	select BR2_PACKAGE_HOST_PYTHON3_SSL 
 
-    # Wayland is required as a dependency by buildroot
-    select BR2_PACKAGE_WAYLAND				
+	# Wayland is required as a dependency by buildroot
+	select BR2_PACKAGE_WAYLAND				
 
-    # Vulkan headers, loaders, SPIR-V, glsLang
-    select BR2_PACKAGE_VULKAN_HEADERS
-    select BR2_PACKAGE_VULKAN_LOADER
-    select BR2_PACKAGE_SPIRV_HEADERS
-    select BR2_PACKAGE_GLSLANG
-    select BR2_PACKAGE_VULKAN_TOOLS
+	# Vulkan headers, loaders, SPIR-V, glsLang
+	select BR2_PACKAGE_VULKAN_HEADERS
+	select BR2_PACKAGE_VULKAN_LOADER
+	select BR2_PACKAGE_SPIRV_HEADERS
+	select BR2_PACKAGE_GLSLANG
+	select BR2_PACKAGE_VULKAN_TOOLS
 
-    # Vulkan shaders for RetroArch
-    select BR2_PACKAGE_SLANG_SHADERS if BR2_PACKAGE_RETROARCH
+	# Vulkan shaders for RetroArch
+	select BR2_PACKAGE_SLANG_SHADERS if BR2_PACKAGE_RETROARCH
 
-    # Vulkan mesa drivers
-    select BR2_PACKAGE_MESA3D_VULKAN_DRIVER_INTEL               if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
-    select BR2_PACKAGE_MESA3D_VULKAN_DRIVER_AMD	                if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
-    select BR2_PACKAGE_MESA3D_VULKAN_DRIVER_BROADCOM            if BR2_PACKAGE_BATOCERA_TARGET_RPI4
+	# Vulkan mesa drivers
+	select BR2_PACKAGE_MESA3D_VULKAN_DRIVER_INTEL		if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
+	select BR2_PACKAGE_MESA3D_VULKAN_DRIVER_AMD		if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
+	select BR2_PACKAGE_MESA3D_VULKAN_DRIVER_BROADCOM	if BR2_PACKAGE_BATOCERA_TARGET_RPI4
 
 	help
-	Vulkan support for batocera.linux
+		Vulkan support for batocera.linux
 
 config BR2_PACKAGE_BATOCERA_SYSTEM
-    bool "batocera.linux minimal"
+	bool "batocera.linux minimal"
 
-    # minimal system required packages
-    select BR2_TARGET_BATOCERA_IMAGES_DEFINITIONS
-    select BR2_PACKAGE_BATOCERA_INITRAMFS                # initramfs to boot the system
-    select BR2_PACKAGE_BASH                              # bash shell, used as the interactive shell
-    select BR2_PACKAGE_RNG_TOOLS                         # system entropy
-    select BR2_PACKAGE_BATOCERA_EMULATIONSTATION         # emulationstation
-    select BR2_PACKAGE_ES_THEME_CARBON                   # emulationstation theme
-    select BR2_PACKAGE_ES_BACKGROUND_MUSICS              # emulationstation musics
-    select BR2_PACKAGE_BATOCERA_ES_SYSTEM                # emulation station es_systems.cfg generator + default roms
-    select BR2_PACKAGE_BATOCERA_CONFIGGEN                # emulation station external command launcher
-    select BR2_PACKAGE_BATOCERA_TRIGGERHAPPY             # multimedia/power buttons
-    select BR2_PACKAGE_XOSD                              if BR2_PACKAGE_XSERVER_XORG_SERVER # osd information displaying
-    select BR2_PACKAGE_CIFS_UTILS                        # required for boot mounts
-    select BR2_PACKAGE_BATOCERA_IMAGE                    # tools to generate batocera image
-    select BR2_TARGET_ROOTFS_SQUASHFS                    # tool to generate the target image
-    select BR2_PACKAGE_DOSFSTOOLS                        # fat
-    select BR2_PACKAGE_DOSFSTOOLS_FSCK_FAT               # fat
-    select BR2_PACKAGE_DOSFSTOOLS_MKFS_FAT               # fat
-    select BR2_PACKAGE_EXFAT                             # exfat
-    select BR2_PACKAGE_EXFAT_UTILS                       # exfat
-    select BR2_PACKAGE_E2FSPROGS                         # ext4
-    select BR2_PACKAGE_NTFS_3G                           # ntfs
-    select BR2_PACKAGE_NTFS_3G_NTFSPROGS                 # ntfs
-    select BR2_PACKAGE_BTRFS_PROGS                       # btrfs
-    select BR2_PACKAGE_WINBTRFS                          # btrfs
-    select BR2_PACKAGE_CONNMAN                           # network manager
-    select BR2_PACKAGE_CONNMAN_WIFI                      # network manager
-    select BR2_PACKAGE_CONNMAN_CLIENT                    # network manager
-    select BR2_PACKAGE_WPA_SUPPLICANT                    # wifi
-    select BR2_PACKAGE_WPA_SUPPLICANT_CLI                # wifi
-    select BR2_PACKAGE_WPA_SUPPLICANT_DBUS_INTROSPECTION # wifi
-    select BR2_PACKAGE_DROPBEAR                          # ssh server
-    select BR2_PACKAGE_PM_UTILS # suspend
-    select BR2_PACKAGE_QTSIXA_SHANWAN                    # ps3 pad
-    select BR2_PACKAGE_XARCADE2JSTICK                    # keyboard events of the Xarcade Tankstick
-    select BR2_PACKAGE_UTIL_LINUX_LIBMOUNT               # for util-linux compilation to work (so, may be removed in the future)
-    select BR2_PACKAGE_DBUS_PYTHON                       # required for bluetooth scripts
-    # Deprecated, which what library should we replace ?
-    select BR2_PACKAGE_PARTED                            # partition management (for the first boot)
-    select BR2_PACKAGE_USBMOUNT                          # usb key/sd card mounter
-    select BR2_PACKAGE_USBUTILS                          # usb key/sd card tools
-    select BR2_PACKAGE_BATOCERA_SPLASH                   # boot splash
-    select BR2_PACKAGE_BATOCERA_SCRIPTS                  # batocera scripts
-    select BR2_PACKAGE_BATOCERA_SETTINGS                 # batocera-settings-get/set
-    select BR2_PACKAGE_BATOCERA_AUDIO                    # batocera audio
-    select BR2_PACKAGE_BATOCERA_BLUETOOTH                # batocera bluetooth
-    select BR2_PACKAGE_BATOCERA_NOTICE                   # boot pdf notice
-    select BR2_PACKAGE_WGET                              # download tools
-    select BR2_PACKAGE_LIBCURL_CURL                      # download tools
-    select BR2_PACKAGE_CA_CERTIFICATES                   # ssl certificates
-    select BR2_PACKAGE_LIBRGA                            if BR2_PACKAGE_BATOCERA_TARGET_ROCKCHIP_ANY # Used for screen rotation (SDL, Retroarch, Moonlight)
+	# minimal system required packages
+	select BR2_TARGET_BATOCERA_IMAGES_DEFINITIONS
+	select BR2_PACKAGE_BATOCERA_INITRAMFS			# initramfs to boot the system
+	select BR2_PACKAGE_BASH					# bash shell, used as the interactive shell
+	select BR2_PACKAGE_RNG_TOOLS				# system entropy
+	select BR2_PACKAGE_BATOCERA_EMULATIONSTATION		# emulationstation
+	select BR2_PACKAGE_ES_THEME_CARBON			# emulationstation theme
+	select BR2_PACKAGE_ES_BACKGROUND_MUSICS			# emulationstation musics
+	select BR2_PACKAGE_BATOCERA_ES_SYSTEM			# emulation station es_systems.cfg generator + default roms
+	select BR2_PACKAGE_BATOCERA_CONFIGGEN			# emulation station external command launcher
+	select BR2_PACKAGE_BATOCERA_TRIGGERHAPPY		# multimedia/power buttons
+	select BR2_PACKAGE_XOSD					if BR2_PACKAGE_XSERVER_XORG_SERVER # osd information displaying
+	select BR2_PACKAGE_CIFS_UTILS				# required for boot mounts
+	select BR2_PACKAGE_BATOCERA_IMAGE			# tools to generate batocera image
+	select BR2_TARGET_ROOTFS_SQUASHFS			# tool to generate the target image
+	select BR2_PACKAGE_DOSFSTOOLS				# fat
+	select BR2_PACKAGE_DOSFSTOOLS_FSCK_FAT			# fat
+	select BR2_PACKAGE_DOSFSTOOLS_MKFS_FAT			# fat
+	select BR2_PACKAGE_EXFAT				# exfat
+	select BR2_PACKAGE_EXFAT_UTILS				# exfat
+	select BR2_PACKAGE_E2FSPROGS				# ext4
+	select BR2_PACKAGE_NTFS_3G				# ntfs
+	select BR2_PACKAGE_NTFS_3G_NTFSPROGS			# ntfs
+	select BR2_PACKAGE_BTRFS_PROGS				# btrfs
+	select BR2_PACKAGE_WINBTRFS				# btrfs
+	select BR2_PACKAGE_CONNMAN				# network manager
+	select BR2_PACKAGE_CONNMAN_WIFI				# network manager
+	select BR2_PACKAGE_CONNMAN_CLIENT			# network manager
+	select BR2_PACKAGE_WPA_SUPPLICANT			# wifi
+	select BR2_PACKAGE_WPA_SUPPLICANT_CLI			# wifi
+	select BR2_PACKAGE_WPA_SUPPLICANT_DBUS_INTROSPECTION	# wifi
+	select BR2_PACKAGE_DROPBEAR				# ssh server
+	select BR2_PACKAGE_PM_UTILS				# suspend
+	select BR2_PACKAGE_QTSIXA_SHANWAN			# ps3 pad
+	select BR2_PACKAGE_XARCADE2JSTICK			# keyboard events of the Xarcade Tankstick
+	select BR2_PACKAGE_UTIL_LINUX_LIBMOUNT			# for util-linux compilation to work (so, may be removed in the future)
+	select BR2_PACKAGE_DBUS_PYTHON				# required for bluetooth scripts
+	
+	# Deprecated, which what library should we replace ?
+	select BR2_PACKAGE_PARTED				# partition management (for the first boot)
+	select BR2_PACKAGE_USBMOUNT				# usb key/sd card mounter
+	select BR2_PACKAGE_USBUTILS				# usb key/sd card tools
+	select BR2_PACKAGE_BATOCERA_SPLASH			# boot splash
+	select BR2_PACKAGE_BATOCERA_SCRIPTS			# batocera scripts
+	select BR2_PACKAGE_BATOCERA_SETTINGS			# batocera-settings-get/set
+	select BR2_PACKAGE_BATOCERA_AUDIO			# batocera audio
+	select BR2_PACKAGE_BATOCERA_BLUETOOTH			# batocera bluetooth
+	select BR2_PACKAGE_BATOCERA_NOTICE			# boot pdf notice
+	select BR2_PACKAGE_WGET					# download tools
+	select BR2_PACKAGE_LIBCURL_CURL				# download tools
+	select BR2_PACKAGE_CA_CERTIFICATES			# ssl certificates
+	select BR2_PACKAGE_LIBRGA				if BR2_PACKAGE_BATOCERA_TARGET_ROCKCHIP_ANY # Used for screen rotation (SDL, Retroarch, Moonlight)
 
-    select BR2_PACKAGE_SDL2_OPENGLES                     # ALL
+	select BR2_PACKAGE_SDL2_OPENGLES			# ALL
+	select BR2_PACKAGE_SDL2_KMSDRM				if !BR2_PACKAGE_BATOCERA_RPI_VCORE
+	select BR2_PACKAGE_LIBDRM				if !BR2_PACKAGE_BATOCERA_RPI_VCORE
+	select BR2_PACKAGE_BATOCERA_DRMINFO			if BR2_PACKAGE_LIBDRM
+	select BR2_PACKAGE_LIRC_TOOLS				# lirc (remote control)
+	select BR2_PACKAGE_LIBCEC				# libcec
+	select BR2_PACKAGE_EDID_DECODE				# edid monitor/tv support
+	select BR2_PACKAGE_READ_EDID				# edid monitor/tv support
+	select BR2_PACKAGE_XOW					if !BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA && !BR2_PACKAGE_BATOCERA_TARGET_ROCKPRO64 # xbox receiver (require linux >= 4.5)
+	select BR2_SYSTEM_ENABLE_NLS				# locales
+	select BR2_PACKAGE_ACPID				if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
+	select BR2_PACKAGE_AVAHI				# service discovery on local network
+	select BR2_PACKAGE_AVAHI_DAEMON				# ping batocera.local
+	select BR2_PACKAGE_AVAHI_LIBDNSSD_COMPATIBILITY		# bonjour
+	select BR2_PACKAGE_NTP
+	select BR2_PACKAGE_RSYNC
+	select BR2_PACKAGE_SAMBA4				# samba
+	select BR2_PACKAGE_LIBOPENSSL_BIN			# required to encode the wifi password
+	select BR2_PACKAGE_KBD					# loadkeys
+	select BR2_PACKAGE_XKEYBOARD_CONFIG			if BR2_PACKAGE_LIBXKBCOMMON # requirement for xkb to work, xkb is used by kodi, even without x for the keyboard
+	select BR2_PACKAGE_GESFTPSERVER				# required to access folders via sftp and should be replaced by openssh
+	select BR2_PACKAGE_GPTFDISK				# fs resize
+	select BR2_PACKAGE_GPTFDISK_SGDISK			# fs resize
+	select BR2_PACKAGE_E2FSPROGS				# fs resize
+	select BR2_PACKAGE_E2FSPROGS_RESIZE2FS			# fs resize
+	select BR2_PACKAGE_PACMAN				# pacman package manager
+	select BR2_PACKAGE_FLATPAK				if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY # flatpak app packaging system
 
-    select BR2_PACKAGE_SDL2_KMSDRM                       if !BR2_PACKAGE_BATOCERA_RPI_VCORE
+	# RaspberryPi Firmwares
+	select BR2_PACKAGE_RPI_FIRMWARE				if BR2_PACKAGE_BATOCERA_RPI_ANY # rpi firmwares
+	select BR2_PACKAGE_RPI_WIFI_FIRMWARE			if BR2_PACKAGE_BATOCERA_RPI_ANY # rpi wifi firmware
+	select BR2_PACKAGE_RPI_BT_FIRMWARE			if BR2_PACKAGE_BATOCERA_RPI_ANY # rpi bluetooth firmware
 
-    select BR2_PACKAGE_LIBDRM                            if !BR2_PACKAGE_BATOCERA_RPI_VCORE
+	# Case
+	select BR2_PACKAGE_GPICASE				if BR2_PACKAGE_BATOCERA_TARGET_RPI1 # retroflag gpicase
+	select BR2_PACKAGE_ROSHAMBO_CASE			if BR2_PACKAGE_BATOCERA_TARGET_ROCKPRO64 # roshambo case
+	select BR2_PACKAGE_RPIGPIOSWITCH			if BR2_PACKAGE_BATOCERA_RPI_ANY # gpio switchs
+	select BR2_PACKAGE_RETROGAME				if BR2_PACKAGE_BATOCERA_RPI_ANY # gpio pads
 
-    select BR2_PACKAGE_BATOCERA_DRMINFO                  if BR2_PACKAGE_LIBDRM
+	# irq balancing
+	select BR2_PACKAGE_IRQBALANCE
 
-    select BR2_PACKAGE_LIRC_TOOLS                        # lirc (remote control)
-    select BR2_PACKAGE_LIBCEC                            # libcec
-    select BR2_PACKAGE_EDID_DECODE			 # edid monitor/tv support
-    select BR2_PACKAGE_READ_EDID			 # edid monitor/tv support
-    select BR2_PACKAGE_XOW                               if !BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA && \
-                                                            !BR2_PACKAGE_BATOCERA_TARGET_ROCKPRO64
-                                                         # xbox receiver (require linux >= 4.5)
-    select BR2_SYSTEM_ENABLE_NLS                         # locales
-    select BR2_PACKAGE_ACPID                             if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
-    select BR2_PACKAGE_AVAHI                             # service discovery on local network
-    select BR2_PACKAGE_AVAHI_DAEMON                      # ping batocera.local
-    select BR2_PACKAGE_AVAHI_LIBDNSSD_COMPATIBILITY      # bonjour
-    select BR2_PACKAGE_NTP
-    select BR2_PACKAGE_RSYNC
-    select BR2_PACKAGE_SAMBA4                            # samba
-    select BR2_PACKAGE_LIBOPENSSL_BIN                    # required to encode the wifi password
-    select BR2_PACKAGE_KBD                               # loadkeys
-    select BR2_PACKAGE_XKEYBOARD_CONFIG if BR2_PACKAGE_LIBXKBCOMMON # requirement for xkb to work, xkb is used by kodi, even without x for the keyboard
-    select BR2_PACKAGE_GESFTPSERVER                      # required to access folders via sftp and should be replaced by openssh
-    select BR2_PACKAGE_GPTFDISK                          # fs resize
-    select BR2_PACKAGE_GPTFDISK_SGDISK                   # fs resize
-    select BR2_PACKAGE_E2FSPROGS                         # fs resize
-    select BR2_PACKAGE_E2FSPROGS_RESIZE2FS               # fs resize
-    select BR2_PACKAGE_PACMAN                            # pacman package manager
-    select BR2_PACKAGE_FLATPAK				 if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY # flatpak app packaging system
+	# music support
+	select BR2_PACKAGE_BATOCERA_MUSIC_SUPPORT
 
-    # RaspberryPi Firmwares
-    select BR2_PACKAGE_RPI_FIRMWARE                      if BR2_PACKAGE_BATOCERA_RPI_ANY # rpi firmwares
-    select BR2_PACKAGE_RPI_WIFI_FIRMWARE                 if BR2_PACKAGE_BATOCERA_RPI_ANY # rpi wifi firmware
-    select BR2_PACKAGE_RPI_BT_FIRMWARE                   if BR2_PACKAGE_BATOCERA_RPI_ANY # rpi bluetooth firmware
-    
-    # Case
-    select BR2_PACKAGE_GPICASE                           if BR2_PACKAGE_BATOCERA_TARGET_RPI1 # retroflag gpicase
-    select BR2_PACKAGE_ROSHAMBO_CASE                     if BR2_PACKAGE_BATOCERA_TARGET_ROCKPRO64 # roshambo case
-    select BR2_PACKAGE_RPIGPIOSWITCH                     if BR2_PACKAGE_BATOCERA_RPI_ANY # gpio switchs
-    select BR2_PACKAGE_RETROGAME                         if BR2_PACKAGE_BATOCERA_RPI_ANY # gpio pads
+	# vulkan
+	select BR2_PACKAGE_BATOCERA_VULKAN	if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY	|| \
+						BR2_PACKAGE_BATOCERA_TARGET_RPI4	|| \
+						BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA
 
-    # irq balancing
-    select BR2_PACKAGE_IRQBALANCE
+	# wireless drivers
+	select BR2_PACKAGE_RTL8821AU		if !BR2_PACKAGE_BATOCERA_TARGET_RPI1		&& \
+						!BR2_PACKAGE_BATOCERA_TARGET_RPI2		&& \
+						!BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_PC	&& \
+						!BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA
 
-    # music support
-    select BR2_PACKAGE_BATOCERA_MUSIC_SUPPORT
+	# do NOT remove this one for OGA
+	select BR2_PACKAGE_RTL8192EU		if !BR2_PACKAGE_BATOCERA_TARGET_RPI1		&& \
+						!BR2_PACKAGE_BATOCERA_TARGET_RPI2		&& \
+						!BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_PC
 
-    # vulkan
-    select BR2_PACKAGE_BATOCERA_VULKAN			 if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY || BR2_PACKAGE_BATOCERA_TARGET_RPI4 || BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA
+	select BR2_PACKAGE_RTL8821CE		if !BR2_PACKAGE_BATOCERA_TARGET_RPI1		&& \
+						!BR2_PACKAGE_BATOCERA_TARGET_RPI2		&& \
+						!BR2_PACKAGE_BATOCERA_TARGET_RPI3		&& \
+						!BR2_PACKAGE_BATOCERA_TARGET_S812		&& \
+						!BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA		&& \
+						!BR2_PACKAGE_BATOCERA_TARGET_LIBRETECH_H5	&& \
+						!BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_ZERO2	&& \
+						!BR2_PACKAGE_BATOCERA_TARGET_MIQI		&& \
+						!BR2_PACKAGE_BATOCERA_TARGET_TINKERBOARD	&& \
+						!BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_PC	&& \
+						!BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA
 
-    # wireless drivers
-    select BR2_PACKAGE_RTL8821AU                         if !BR2_PACKAGE_BATOCERA_TARGET_RPI1           && \
-                                                            !BR2_PACKAGE_BATOCERA_TARGET_RPI2           && \
-                                                            !BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_PC    && \
-                                                            !BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA
-    # do NOT remove this one for OGA
-    select BR2_PACKAGE_RTL8192EU                         if !BR2_PACKAGE_BATOCERA_TARGET_RPI1           && \
-                                                            !BR2_PACKAGE_BATOCERA_TARGET_RPI2           && \
-                                                            !BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_PC
-    select BR2_PACKAGE_RTL8821CE                         if !BR2_PACKAGE_BATOCERA_TARGET_RPI1           && \
-                                                            !BR2_PACKAGE_BATOCERA_TARGET_RPI2           && \
-                                                            !BR2_PACKAGE_BATOCERA_TARGET_RPI3           && \
-                                                            !BR2_PACKAGE_BATOCERA_TARGET_S812           && \
-                                                            !BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA      && \
-                                                            !BR2_PACKAGE_BATOCERA_TARGET_LIBRETECH_H5   && \
-                                                            !BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_ZERO2 && \
-                                                            !BR2_PACKAGE_BATOCERA_TARGET_MIQI           && \
-                                                            !BR2_PACKAGE_BATOCERA_TARGET_TINKERBOARD    && \
-                                                            !BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_PC    && \
-                                                            !BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA
+	# s905 tv-box firmwares
+	select BR2_PACKAGE_FIRMWARE_WLAN_AML	if BR2_PACKAGE_BATOCERA_TARGET_S905GEN3 
 
-    # s905 tv-box firmwares
-    select BR2_PACKAGE_FIRMWARE_WLAN_AML		 if BR2_PACKAGE_BATOCERA_TARGET_S905GEN3 
+	# gpu drivers
+	select BR2_PACKAGE_BATOCERA_GPU_X86	if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
 
-    # gpu drivers
-    select BR2_PACKAGE_BATOCERA_GPU_X86			 if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
+	# xorg
+	select BR2_PACKAGE_BATOCERA_XORG	if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
 
-    # xorg
-    select BR2_PACKAGE_BATOCERA_XORG                     if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
+	# compression tools
+	select BR2_PACKAGE_UNZIP		# for /userdata/system/upgrade/share.zip
+	select BR2_PACKAGE_XZ			# for updates
+	select BR2_PACKAGE_ZSTD			# for btrfs compression
 
-    # compression tools
-    select BR2_PACKAGE_UNZIP                             # for /userdata/system/upgrade/share.zip
-    select BR2_PACKAGE_XZ                                # for updates
-    select BR2_PACKAGE_ZSTD                              # for btrfs compression
+	# script tool
+	select BR2_PACKAGE_DIALOG
 
-    # script tool
-    select BR2_PACKAGE_DIALOG
+	# tools
+	select BR2_PACKAGE_I2C_TOOLS
+	select BR2_PACKAGE_MDADM # RAID
+	select BR2_PACKAGE_MC
+	select BR2_PACKAGE_FDUPES
 
-    # tools
-    select BR2_PACKAGE_I2C_TOOLS
-    select BR2_PACKAGE_MDADM # RAID
-    select BR2_PACKAGE_MC
-    select BR2_PACKAGE_FDUPES
+	# gpio controllers
+	select BR2_PACKAGE_DB9_GPIO_RPI			if BR2_PACKAGE_BATOCERA_RPI_ANY
+	select BR2_PACKAGE_GAMECON_GPIO_RPI		if BR2_PACKAGE_BATOCERA_RPI_ANY
+	select BR2_PACKAGE_MK_ARCADE_JOYSTICK_RPI	if BR2_PACKAGE_BATOCERA_RPI_ANY
 
-    # gpio controllers
-    select BR2_PACKAGE_DB9_GPIO_RPI                 if BR2_PACKAGE_BATOCERA_RPI_ANY
-    select BR2_PACKAGE_GAMECON_GPIO_RPI             if BR2_PACKAGE_BATOCERA_RPI_ANY
-    select BR2_PACKAGE_MK_ARCADE_JOYSTICK_RPI       if BR2_PACKAGE_BATOCERA_RPI_ANY
+	# joy 2 pad
+	select BR2_PACKAGE_EVMAPY
+	select BR2_PACKAGE_EVMAPY_SYSTEM_CONFIG
 
-    # joy 2 pad
-    select BR2_PACKAGE_EVMAPY
-    select BR2_PACKAGE_EVMAPY_SYSTEM_CONFIG
+	# required gcc flags
+	# required for different emulators, i suggest to enable it always to not have different behavior depending on boards
+	select BR2_GCC_ENABLE_OPENMP
 
-    # required gcc flags
-    # required for different emulators, i suggest to enable it always to not have different behavior depending on boards
-    select BR2_GCC_ENABLE_OPENMP
-
-    help
-      Install the batocera.linux system files
+	help
+    	Install the batocera.linux system files
 
 config BR2_PACKAGE_BATOCERA_DEV
-    bool "add dev options"
+	bool "add dev options"
 
-    select BR2_PACKAGE_TMUX             
-    select BR2_PACKAGE_X11VNC           if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
+	select BR2_PACKAGE_TMUX             
+	select BR2_PACKAGE_X11VNC	if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
 
-    help
-      Install dev packages for batocera.linux
+	help
+		Install dev packages for batocera.linux
 
 config BR2_PACKAGE_BATOCERA_DEBUG
-    bool "add debug options"
+	bool "add debug options"
 
-    select BR2_PACKAGE_STRACE           
-    select BR2_PACKAGE_GDB              
-    select BR2_PACKAGE_GDB_DEBUGGER     
-    select BR2_PACKAGE_LINUX_TOOLS_PERF
-    select BR2_PACKAGE_VULKAN_SAMPLES  if BR2_PACKAGE_BATOCERA_VULKAN
+	select BR2_PACKAGE_STRACE           
+	select BR2_PACKAGE_GDB              
+	select BR2_PACKAGE_GDB_DEBUGGER     
+	select BR2_PACKAGE_LINUX_TOOLS_PERF
+	select BR2_PACKAGE_VULKAN_SAMPLES	if BR2_PACKAGE_BATOCERA_VULKAN
 
-    help
-      Install debug packages for batocera.linux
+	help
+		Install debug packages for batocera.linux
 
 config BR2_TARGET_BATOCERA_IMAGES_DEFINITIONS
-    bool "target images definitions"
-    config BR2_TARGET_BATOCERA_IMAGES
-        string "target images"
-	default "amlogic/odroidc2"            if BR2_PACKAGE_BATOCERA_TARGET_ODROIDC2
-	default "amlogic/odroidc4"            if BR2_PACKAGE_BATOCERA_TARGET_ODROIDC4
-        default "amlogic/odroidn2"            if BR2_PACKAGE_BATOCERA_TARGET_ODROIDN2
-	default "amlogic/s905"                if BR2_PACKAGE_BATOCERA_TARGET_S905
-	default "amlogic/s905gen3"            if BR2_PACKAGE_BATOCERA_TARGET_S905GEN3
-	default "amlogic/s912"                if BR2_PACKAGE_BATOCERA_TARGET_S912
-        default "amlogic/vim3"                if BR2_PACKAGE_BATOCERA_TARGET_VIM3
-	default "raspberrypi/rpi"             if BR2_PACKAGE_BATOCERA_TARGET_RPI1
-	default "raspberrypi/rpi"             if BR2_PACKAGE_BATOCERA_TARGET_RPI2
-	default "raspberrypi/rpi3"            if BR2_PACKAGE_BATOCERA_TARGET_RPI3
-	default "raspberrypi/rpi4"            if BR2_PACKAGE_BATOCERA_TARGET_RPI4
-	default "rockchip/odroidgoa"          if BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA
-	default "rockchip/rk3288/miqi"        if BR2_PACKAGE_BATOCERA_TARGET_MIQI
-	default "rockchip/rk3288/tinkerboard" if BR2_PACKAGE_BATOCERA_TARGET_TINKERBOARD
-	default "rockchip/rk3399/rock960"     if BR2_PACKAGE_BATOCERA_TARGET_ROCK960
-	default "rockchip/rk3399/rockpro64"   if BR2_PACKAGE_BATOCERA_TARGET_ROCKPRO64
-	default "libretech-h5"                if BR2_PACKAGE_BATOCERA_TARGET_LIBRETECH_H5
-	default "orangepi-zero2"              if BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_ZERO2
-	default "orangepi-pc"                 if BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_PC
-	default "s812"                        if BR2_PACKAGE_BATOCERA_TARGET_S812
-	default "odroidxu4"                   if BR2_PACKAGE_BATOCERA_TARGET_XU4
-	default "x86"                         if BR2_PACKAGE_BATOCERA_TARGET_X86
-	default "x86"                         if BR2_PACKAGE_BATOCERA_TARGET_X86_64
+	bool "target images definitions"
+	config BR2_TARGET_BATOCERA_IMAGES
+	string "target images"
+	default "amlogic/odroidc2"		if BR2_PACKAGE_BATOCERA_TARGET_ODROIDC2
+	default "amlogic/odroidc4"		if BR2_PACKAGE_BATOCERA_TARGET_ODROIDC4
+	default "amlogic/odroidn2"		if BR2_PACKAGE_BATOCERA_TARGET_ODROIDN2
+	default "amlogic/s905"			if BR2_PACKAGE_BATOCERA_TARGET_S905
+	default "amlogic/s905gen3"		if BR2_PACKAGE_BATOCERA_TARGET_S905GEN3
+	default "amlogic/s912"			if BR2_PACKAGE_BATOCERA_TARGET_S912
+	default "amlogic/vim3"			if BR2_PACKAGE_BATOCERA_TARGET_VIM3
+	default "raspberrypi/rpi"		if BR2_PACKAGE_BATOCERA_TARGET_RPI1
+	default "raspberrypi/rpi"		if BR2_PACKAGE_BATOCERA_TARGET_RPI2
+	default "raspberrypi/rpi3"		if BR2_PACKAGE_BATOCERA_TARGET_RPI3
+	default "raspberrypi/rpi4"		if BR2_PACKAGE_BATOCERA_TARGET_RPI4
+	default "rockchip/odroidgoa"		if BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA
+	default "rockchip/rk3288/miqi"		if BR2_PACKAGE_BATOCERA_TARGET_MIQI
+	default "rockchip/rk3288/tinkerboard"	if BR2_PACKAGE_BATOCERA_TARGET_TINKERBOARD
+	default "rockchip/rk3399/rock960"	if BR2_PACKAGE_BATOCERA_TARGET_ROCK960
+	default "rockchip/rk3399/rockpro64"	if BR2_PACKAGE_BATOCERA_TARGET_ROCKPRO64
+	default "libretech-h5"			if BR2_PACKAGE_BATOCERA_TARGET_LIBRETECH_H5
+	default "orangepi-zero2"		if BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_ZERO2
+	default "orangepi-pc"			if BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_PC
+	default "s812"				if BR2_PACKAGE_BATOCERA_TARGET_S812
+	default "odroidxu4"			if BR2_PACKAGE_BATOCERA_TARGET_XU4
+	default "x86"				if BR2_PACKAGE_BATOCERA_TARGET_X86
+	default "x86"				if BR2_PACKAGE_BATOCERA_TARGET_X86_64
 
 choice
-        prompt "batocera.linux target"
-        default BR2_PACKAGE_BATOCERA_TARGET_RPI2
-        help
-          Select batocera.linux target hardware
+	prompt "batocera.linux target"
+	default BR2_PACKAGE_BATOCERA_TARGET_RPI2
+	help
+		Select batocera.linux target hardware
 
 config BR2_PACKAGE_BATOCERA_TARGET_RPI1
-        bool "rpi1"
+	bool "rpi1"
 
 config BR2_PACKAGE_BATOCERA_TARGET_RPI2
-        bool "rpi2"
+	bool "rpi2"
 
 config BR2_PACKAGE_BATOCERA_TARGET_RPI3
-        bool "rpi3"
+	bool "rpi3"
 
 config BR2_PACKAGE_BATOCERA_TARGET_RPI4
-        bool "rpi4"
+	bool "rpi4"
 
 config BR2_PACKAGE_BATOCERA_TARGET_XU4
-        bool "xu4"
+	bool "xu4"
 
 config BR2_PACKAGE_BATOCERA_TARGET_ODROIDN2
-        bool "odroidn2"
+	bool "odroidn2"
 
 config BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA
-        bool "odroidgoa"
+	bool "odroidgoa"
 
 config BR2_PACKAGE_BATOCERA_TARGET_ODROIDC2
-        bool "odroidc2"
+	bool "odroidc2"
 
 config BR2_PACKAGE_BATOCERA_TARGET_ODROIDC4
-        bool "odroidc4"
+	bool "odroidc4"
 
 config BR2_PACKAGE_BATOCERA_TARGET_S905
-        bool "s905"
+	bool "s905"
 
 config BR2_PACKAGE_BATOCERA_TARGET_S905GEN3
-        bool "s905gen3"
+	bool "s905gen3"
 
 config BR2_PACKAGE_BATOCERA_TARGET_S912
-        bool "s912"
+	bool "s912"
 
 config BR2_PACKAGE_BATOCERA_TARGET_X86
-        bool "x86"
+	bool "x86"
 
 config BR2_PACKAGE_BATOCERA_TARGET_X86_64
-        bool "x86_64"
+	bool "x86_64"
 
 config BR2_PACKAGE_BATOCERA_TARGET_ROCKPRO64
-        bool "rock64pro"
+	bool "rock64pro"
 
 config BR2_PACKAGE_BATOCERA_TARGET_ROCK960
-        bool "rock960"
+	bool "rock960"
 
 config BR2_PACKAGE_BATOCERA_TARGET_TINKERBOARD
-        bool "tinkerboard"
+	bool "tinkerboard"
 
 config BR2_PACKAGE_BATOCERA_TARGET_MIQI
-        bool "miqi"
+	bool "miqi"
 
 config BR2_PACKAGE_BATOCERA_TARGET_VIM3
-        bool "vim3"
+	bool "vim3"
 
 config BR2_PACKAGE_BATOCERA_TARGET_LIBRETECH_H5
-        bool "libretech_h5"
+	bool "libretech_h5"
 
 config BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_ZERO2
-        bool "orangepi_zero2"
+	bool "orangepi_zero2"
 
 config BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_PC
-        bool "orangepi_pc"
+	bool "orangepi_pc"
 
 config BR2_PACKAGE_BATOCERA_TARGET_S812
-        bool "s812"
+	bool "s812"
 
 endchoice
 
 config BR2_PACKAGE_BATOCERA_EXTRAS
-       bool "batocera.linux tools packages selection"
+	bool "batocera.linux tools packages selection"
 
-       help
-        Tools to extends the batocera system (but not required)
+	help
+		Tools to extends the batocera system (but not required)
 
 config BR2_PACKAGE_BATOCERA_TOOLS
-       bool "batocera.linux system tools packages selection"
-       select BR2_PACKAGE_JSTEST2 # joysticks tester
-       select BR2_PACKAGE_EVTEST  # joysticks tester
-       select BR2_PACKAGE_VIM     # basic vi emulator
-       select BR2_PACKAGE_NANO    # basic nano emulator
-       select BR2_PACKAGE_ZIP     # zip tool
-       select BR2_PACKAGE_P7ZIP   # zip tool
-       select BR2_PACKAGE_HTOP    # multi-cpus usage
-       select BR2_PACKAGE_FFMPEG_XCBGRAB if BR2_PACKAGE_XORG7
-       select BR2_PACKAGE_SWITCHRES if BR2_PACKAGE_XORG7 # switchres 15kHz
+	bool "batocera.linux system tools packages selection"
 
-       help
-        System tools
+	select BR2_PACKAGE_JSTEST2		# joysticks tester
+	select BR2_PACKAGE_EVTEST		# joysticks tester
+	select BR2_PACKAGE_VIM			# basic vi emulator
+	select BR2_PACKAGE_NANO			# basic nano emulator
+	select BR2_PACKAGE_ZIP			# zip tool
+	select BR2_PACKAGE_P7ZIP		# zip tool
+	select BR2_PACKAGE_HTOP			# multi-cpus usage
+	select BR2_PACKAGE_FFMPEG_XCBGRAB	if BR2_PACKAGE_XORG7
+	select BR2_PACKAGE_SWITCHRES		if BR2_PACKAGE_XORG7 # switchres 15kHz
+
+	help
+		System tools
 
 #### systems ####
 config BR2_PACKAGE_BATOCERA_ALL_SYSTEMS
-		bool "batocera.linux all emulators packages selection"
+	bool "batocera.linux all emulators packages selection"
 
-		# RetroArch frontend and core data
-		select BR2_PACKAGE_BATOCERA_RETROARCH
-		select BR2_PACKAGE_BATOCERA_RETROACHIEVEMENTS_SOUNDS
+	# RetroArch frontend and core data
+	select BR2_PACKAGE_BATOCERA_RETROARCH
+	select BR2_PACKAGE_BATOCERA_RETROACHIEVEMENTS_SOUNDS
 
-		# Include other systems
-		select BR2_PACKAGE_BATOCERA_ARCADE_SYSTEMS
-		select BR2_PACKAGE_BATOCERA_CONSOLE_SYSTEMS
-		select BR2_PACKAGE_BATOCERA_HANDHELD_SYSTEMS
-		select BR2_PACKAGE_BATOCERA_COMPUTER_SYSTEMS
-		select BR2_PACKAGE_BATOCERA_MSDOS_SYSTEMS
-		select BR2_PACKAGE_BATOCERA_SCUMMVM_SYSTEMS
-		select BR2_PACKAGE_BATOCERA_HOMEBREW_SYSTEMS
-		select BR2_PACKAGE_BATOCERA_WINE_SYSTEMS
-		select BR2_PACKAGE_BATOCERA_GAMESTREAM_SYSTEMS
-		select BR2_PACKAGE_BATOCERA_PORTS_SYSTEMS
-		select BR2_PACKAGE_BATOCERA_FLASH_SYSTEMS
+	# Include other systems
+	select BR2_PACKAGE_BATOCERA_ARCADE_SYSTEMS
+	select BR2_PACKAGE_BATOCERA_CONSOLE_SYSTEMS
+	select BR2_PACKAGE_BATOCERA_HANDHELD_SYSTEMS
+	select BR2_PACKAGE_BATOCERA_COMPUTER_SYSTEMS
+	select BR2_PACKAGE_BATOCERA_MSDOS_SYSTEMS
+	select BR2_PACKAGE_BATOCERA_SCUMMVM_SYSTEMS
+	select BR2_PACKAGE_BATOCERA_HOMEBREW_SYSTEMS
+	select BR2_PACKAGE_BATOCERA_WINE_SYSTEMS
+	select BR2_PACKAGE_BATOCERA_GAMESTREAM_SYSTEMS
+	select BR2_PACKAGE_BATOCERA_PORTS_SYSTEMS
+	select BR2_PACKAGE_BATOCERA_FLASH_SYSTEMS
 
-		help
+	help
 		batocera.linux all supported emulation systems
 
 #### Wine Layer ####
 config BR2_PACKAGE_BATOCERA_WINE_SYSTEMS
-		bool "batocera.linux Wine support"
+	bool "batocera.linux Wine support"
 
-		# Wine (windows) layer
-		select BR2_PACKAGE_BATOCERA_WINE              if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
-		select BR2_PACKAGE_WINE_X86                   if BR2_PACKAGE_BATOCERA_TARGET_X86_64
+	# Wine (windows) layer
+	select BR2_PACKAGE_BATOCERA_WINE		if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
+	select BR2_PACKAGE_WINE_X86			if BR2_PACKAGE_BATOCERA_TARGET_X86_64
 
 #### Flash Player ####
 config BR2_PACKAGE_BATOCERA_FLASH_SYSTEMS
-		bool "batocera.linux Flash support"
+	bool "batocera.linux Flash support"
 
-		# Flash Player Emulator
-		select BR2_PACKAGE_RUFFLE                       if BR2_PACKAGE_BATOCERA_TARGET_X86_64 # depends on X11
-		select BR2_PACKAGE_LIGHTSPARK                   if BR2_PACKAGE_BATOCERA_TARGET_X86_64 # depends on X11
+	# Flash Player Emulator
+	select BR2_PACKAGE_RUFFLE			if BR2_PACKAGE_BATOCERA_TARGET_X86_64 # depends on X11
+	select BR2_PACKAGE_LIGHTSPARK			if BR2_PACKAGE_BATOCERA_TARGET_X86_64 # depends on X11
 
 #### Moonlight / Gamestream ####
 config BR2_PACKAGE_BATOCERA_GAMESTREAM_SYSTEMS
-		bool "batocera.linux game streaming support"
+	bool "batocera.linux game streaming support"
 
-		# Game streaming
-		select BR2_PACKAGE_MOONLIGHT_EMBEDDED   # moonlight
+	# Game streaming
+	select BR2_PACKAGE_MOONLIGHT_EMBEDDED	# moonlight
 
 #### ScummVM ####
 config BR2_PACKAGE_BATOCERA_SCUMMVM_SYSTEMS
-		bool "batocera.linux ScummVM emulators/cores"
+	bool "batocera.linux ScummVM emulators/cores"
 
-		# ScummVM
-		select BR2_PACKAGE_SCUMMVM              # ALL # scummvm
-		select BR2_PACKAGE_LIBRETRO_SCUMMVM           # ALL
+	# ScummVM
+	select BR2_PACKAGE_SCUMMVM		# ALL # scummvm
+	select BR2_PACKAGE_LIBRETRO_SCUMMVM	# ALL
 
 #### Homebrew ####
 config BR2_PACKAGE_BATOCERA_HOMEBREW_SYSTEMS
-		bool "batocera.linux homebrew systems"
+	bool "batocera.linux homebrew systems"
 
-		# OpenBOR
-		select BR2_PACKAGE_OPENBOR4432          # ALL
-		select BR2_PACKAGE_OPENBOR6330          # ALL
-		select BR2_PACKAGE_OPENBOR6412          # ALL
-		select BR2_PACKAGE_OPENBOR6510          # ALL
+	# OpenBOR
+	select BR2_PACKAGE_OPENBOR4432	# ALL
+	select BR2_PACKAGE_OPENBOR6330	# ALL
+	select BR2_PACKAGE_OPENBOR6412	# ALL
+	select BR2_PACKAGE_OPENBOR6510	# ALL
 
-		# Lutro Engine / LÖVE
-		select BR2_PACKAGE_LIBRETRO_LUTRO             # ALL
+	# Lutro Engine / LÖVE
+	select BR2_PACKAGE_LIBRETRO_LUTRO	# ALL
 
-		# PyGAME
-		select BR2_PACKAGE_BATOCERA_PYGAME
+	# PyGAME
+	select BR2_PACKAGE_BATOCERA_PYGAME
 
-		# RPG engine : Solarus
-		select BR2_PACKAGE_LUAJIT if !BR2_aarch64 # for performance
-		select BR2_PACKAGE_LUA    if  BR2_aarch64
-		select BR2_PACKAGE_SOLARUS_ENGINE	  # engine itself
+	# RPG engine : Solarus
+	select BR2_PACKAGE_LUAJIT		if !BR2_aarch64 # for performance
+	select BR2_PACKAGE_LUA			if  BR2_aarch64
+	select BR2_PACKAGE_SOLARUS_ENGINE	# engine itself
 
-		# RPG engine : EasyRPG / RPG MAker
-		select BR2_PACKAGE_EASYRPG_PLAYER	# standalone
-		select BR2_PACKAGE_LIBRETRO_EASYRPG	# libretro core
+	# RPG engine : EasyRPG / RPG MAker
+	select BR2_PACKAGE_EASYRPG_PLAYER	# standalone
+	select BR2_PACKAGE_LIBRETRO_EASYRPG	# libretro core
 
-		# Fantasy consoles
-		select BR2_PACKAGE_LIBRETRO_TIC80             # ALL
-		select BR2_PACKAGE_LIBRETRO_RETRO8            # ALL
+	# Fantasy consoles
+	select BR2_PACKAGE_LIBRETRO_TIC80	# ALL
+	select BR2_PACKAGE_LIBRETRO_RETRO8	# ALL
 
 #### Sega Dreamcast, Naomi and Atomiswave ####
 config BR2_PACKAGE_BATOCERA_SEGADC
-		bool "batocera.linux dreamcast/naomi/atomiswave emulators/cores"
+	bool "batocera.linux dreamcast/naomi/atomiswave emulators/cores"
 
-		# Dreamcast / Naomi / Atomiswave emulation
-		select BR2_PACKAGE_FLYCAST              if !BR2_PACKAGE_BATOCERA_TARGET_RPI1 && !BR2_PACKAGE_BATOCERA_TARGET_RPI2
-		select BR2_PACKAGE_LIBRETRO_FLYCAST      if !BR2_PACKAGE_BATOCERA_TARGET_RPI1 && !BR2_PACKAGE_BATOCERA_TARGET_RPI2
-                select BR2_PACKAGE_REDREAM              if BR2_PACKAGE_BATOCERA_TARGET_X86_64
+	# Dreamcast / Naomi / Atomiswave emulation
+	select BR2_PACKAGE_FLYCAST		if !BR2_PACKAGE_BATOCERA_TARGET_RPI1 && !BR2_PACKAGE_BATOCERA_TARGET_RPI2
+	select BR2_PACKAGE_LIBRETRO_FLYCAST	if !BR2_PACKAGE_BATOCERA_TARGET_RPI1 && !BR2_PACKAGE_BATOCERA_TARGET_RPI2
+	select BR2_PACKAGE_REDREAM		if BR2_PACKAGE_BATOCERA_TARGET_X86_64
 
-		help
+	help
 		Sega Dreamcast and Naomi/Atomiswave emulation support
 
 #### Arcade cores ####
 config BR2_PACKAGE_BATOCERA_ARCADE_SYSTEMS
-		bool "batocera.linux arcade emulators packages selection"
+	bool "batocera.linux arcade emulators packages selection"
 
-		# Final Burn NEO
-		select BR2_PACKAGE_LIBRETRO_FBNEO             # ALL
+	# Final Burn NEO
+	select BR2_PACKAGE_LIBRETRO_FBNEO		# ALL
 
-		# Naomi and Atomiswave
-		select BR2_PACKAGE_BATOCERA_SEGADC
+	# Naomi and Atomiswave
+	select BR2_PACKAGE_BATOCERA_SEGADC
 
-		# Laserdic emulation
-		select BR2_PACKAGE_DAPHNE               if !BR2_PACKAGE_BATOCERA_TARGET_RPI1 && \
-		                                           !BR2_PACKAGE_BATOCERA_TARGET_RPI2
-		                                               # daphne
+	# Laserdic emulation
+	select BR2_PACKAGE_DAPHNE			if !BR2_PACKAGE_BATOCERA_TARGET_RPI1 && !BR2_PACKAGE_BATOCERA_TARGET_RPI2 # daphne
 
-		# Standalone Sega Model 3 emulator
-		select BR2_PACKAGE_SUPERMODEL		      if BR2_PACKAGE_BATOCERA_TARGET_X86_64
+	# Standalone Sega Model 3 emulator
+	select BR2_PACKAGE_SUPERMODEL			if BR2_PACKAGE_BATOCERA_TARGET_X86_64
 
-		# RetroArch MAME derivatives
-		select BR2_PACKAGE_LIBRETRO_MAME2003_PLUS     # ALL
-		select BR2_PACKAGE_LIBRETRO_IMAME             if BR2_PACKAGE_BATOCERA_TARGET_RPI1 || BR2_PACKAGE_BATOCERA_TARGET_RPI2 # IMAME
-		select BR2_PACKAGE_LIBRETRO_MAME2010          if !BR2_PACKAGE_BATOCERA_TARGET_RPI1 && !BR2_PACKAGE_BATOCERA_TARGET_S812 # MAME2010
-		select BR2_PACKAGE_LIBRETRO_MAME              if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY || BR2_PACKAGE_BATOCERA_TARGET_ROCKPRO64 || BR2_PACKAGE_BATOCERA_TARGET_TINKERBOARD || BR2_PACKAGE_BATOCERA_TARGET_MIQI || BR2_PACKAGE_BATOCERA_TARGET_ODROIDN2 || BR2_PACKAGE_BATOCERA_TARGET_XU4 || BR2_PACKAGE_BATOCERA_TARGET_ROCK960 || BR2_PACKAGE_BATOCERA_TARGET_VIM3 || BR2_PACKAGE_BATOCERA_TARGET_LIBRETECH_H5 || BR2_PACKAGE_BATOCERA_TARGET_S812
-		select BR2_PACKAGE_MAME			      if BR2_PACKAGE_BATOCERA_TARGET_X86_64
+	# RetroArch MAME derivatives
+	select BR2_PACKAGE_LIBRETRO_MAME2003_PLUS	# ALL
+	select BR2_PACKAGE_LIBRETRO_IMAME		if BR2_PACKAGE_BATOCERA_TARGET_RPI1 || BR2_PACKAGE_BATOCERA_TARGET_RPI2 # IMAME
+	select BR2_PACKAGE_LIBRETRO_MAME2010		if !BR2_PACKAGE_BATOCERA_TARGET_RPI1 && !BR2_PACKAGE_BATOCERA_TARGET_S812 # MAME2010
+	select BR2_PACKAGE_MAME				if BR2_PACKAGE_BATOCERA_TARGET_X86_64
 
-		help
+	select BR2_PACKAGE_LIBRETRO_MAME		if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY		|| \
+							BR2_PACKAGE_BATOCERA_TARGET_ROCKPRO64		|| \
+							BR2_PACKAGE_BATOCERA_TARGET_TINKERBOARD		|| \
+							BR2_PACKAGE_BATOCERA_TARGET_MIQI		|| \
+							BR2_PACKAGE_BATOCERA_TARGET_ODROIDN2		|| \
+							BR2_PACKAGE_BATOCERA_TARGET_XU4			|| \
+							BR2_PACKAGE_BATOCERA_TARGET_ROCK960		|| \
+							BR2_PACKAGE_BATOCERA_TARGET_VIM3		|| \
+							BR2_PACKAGE_BATOCERA_TARGET_LIBRETECH_H5	|| \
+							BR2_PACKAGE_BATOCERA_TARGET_S812
+													
+	
+
+	help
 		Arcade cores/emulators
 
 #### Handheld consoles ####
 config BR2_PACKAGE_BATOCERA_HANDHELD_SYSTEMS
-		bool "batocera.linux handheld emulation packages"
+	bool "batocera.linux handheld emulation packages"
 
-		# Gameboy / Gameboy Color
-		select BR2_PACKAGE_LIBRETRO_GAMBATTE          # ALL
-		select BR2_PACKAGE_LIBRETRO_TGBDUAL           # ALL
+	# Gameboy / Gameboy Color
+	select BR2_PACKAGE_LIBRETRO_GAMBATTE		# ALL
+	select BR2_PACKAGE_LIBRETRO_TGBDUAL		# ALL
 
-		# GBA
-		select BR2_PACKAGE_LIBRETRO_MGBA              # ALL
-		select BR2_PACKAGE_LIBRETRO_VBA_M             # ALL
-		select BR2_PACKAGE_LIBRETRO_GPSP              if BR2_PACKAGE_BATOCERA_TARGET_RPI1 # for slow machines
+	# GBA
+	select BR2_PACKAGE_LIBRETRO_MGBA		# ALL
+	select BR2_PACKAGE_LIBRETRO_VBA_M		# ALL
+	select BR2_PACKAGE_LIBRETRO_GPSP		if BR2_PACKAGE_BATOCERA_TARGET_RPI1 # for slow machines
 
-		# NDS
-		select BR2_PACKAGE_LIBRETRO_DESMUME     if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
-		select BR2_PACKAGE_LIBRETRO_MELONDS     if BR2_PACKAGE_BATOCERA_TARGET_X86_64 || \
-							   BR2_PACKAGE_BATOCERA_TARGET_RPI4 || \
-							   BR2_PACKAGE_BATOCERA_TARGET_ODROIDC4 || \
-							   BR2_PACKAGE_BATOCERA_TARGET_ODROIDN2 || \
-							   BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA || \
-							   BR2_PACKAGE_BATOCERA_TARGET_VIM3 # no JIT on 32-bit x86/ARM
-		select BR2_PACKAGE_DRASTIC              if BR2_PACKAGE_BATOCERA_TARGET_RPI4 || \
-							   BR2_PACKAGE_BATOCERA_TARGET_ODROIDN2 || \
-							   BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA || \
-							   BR2_PACKAGE_BATOCERA_TARGET_VIM3
-		select BR2_PACKAGE_MELONDS              if BR2_PACKAGE_BATOCERA_CORES_EXPERIMENTAL && BR2_PACKAGE_BATOCERA_TARGET_X86_64
+	# NDS
+	select BR2_PACKAGE_LIBRETRO_DESMUME		if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
 
-		# 3DS
-		select BR2_PACKAGE_CITRA                if BR2_PACKAGE_BATOCERA_TARGET_X86_64
-		select BR2_PACKAGE_LIBRETRO_CITRA       if BR2_PACKAGE_BATOCERA_TARGET_X86_64
+	select BR2_PACKAGE_LIBRETRO_MELONDS		if BR2_PACKAGE_BATOCERA_TARGET_X86_64	|| \
+							BR2_PACKAGE_BATOCERA_TARGET_RPI4	|| \
+							BR2_PACKAGE_BATOCERA_TARGET_ODROIDC4	|| \
+							BR2_PACKAGE_BATOCERA_TARGET_ODROIDN2	|| \
+							BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA	|| \
+							BR2_PACKAGE_BATOCERA_TARGET_VIM3	# no JIT on 32-bit x86/ARM
 
-		# PSP
-		select BR2_PACKAGE_PPSSPP               if !BR2_PACKAGE_BATOCERA_TARGET_RPI1 && !BR2_PACKAGE_BATOCERA_TARGET_RPI2 && !BR2_PACKAGE_BATOCERA_TARGET_RPI3
-		select BR2_PACKAGE_LIBRETRO_PPSSPP      if !BR2_PACKAGE_BATOCERA_TARGET_RPI1 && !BR2_PACKAGE_BATOCERA_TARGET_RPI2 && !BR2_PACKAGE_BATOCERA_TARGET_RPI3
-                select BR2_PACKAGE_PPSSPP15             if BR2_PACKAGE_BATOCERA_TARGET_RPI3
+	select BR2_PACKAGE_DRASTIC			if BR2_PACKAGE_BATOCERA_TARGET_RPI4	|| \
+							BR2_PACKAGE_BATOCERA_TARGET_ODROIDN2	|| \
+							BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA	||\
+							BR2_PACKAGE_BATOCERA_TARGET_VIM3
 
-		# Neo Geo Pocket
-		select BR2_PACKAGE_LIBRETRO_BEETLE_NGP        # ALL
+	select BR2_PACKAGE_MELONDS			if BR2_PACKAGE_BATOCERA_CORES_EXPERIMENTAL && BR2_PACKAGE_BATOCERA_TARGET_X86_64
 
-		# Atari Lynx
-		select BR2_PACKAGE_LIBRETRO_BEETLE_LYNX       # ALL
-		select BR2_PACKAGE_LIBRETRO_HANDY             # ALL
+	# 3DS
+	select BR2_PACKAGE_CITRA			if BR2_PACKAGE_BATOCERA_TARGET_X86_64
+	select BR2_PACKAGE_LIBRETRO_CITRA		if BR2_PACKAGE_BATOCERA_TARGET_X86_64
 
-		# Wonderswan
-		select BR2_PACKAGE_LIBRETRO_BEETLE_WSWAN      # ALL
+	# PSP
+	select BR2_PACKAGE_PPSSPP			if !BR2_PACKAGE_BATOCERA_TARGET_RPI1 && !BR2_PACKAGE_BATOCERA_TARGET_RPI2 && !BR2_PACKAGE_BATOCERA_TARGET_RPI3
+	select BR2_PACKAGE_LIBRETRO_PPSSPP		if !BR2_PACKAGE_BATOCERA_TARGET_RPI1 && !BR2_PACKAGE_BATOCERA_TARGET_RPI2 && !BR2_PACKAGE_BATOCERA_TARGET_RPI3
+	select BR2_PACKAGE_PPSSPP15			if BR2_PACKAGE_BATOCERA_TARGET_RPI3
 
-		# Pokemon Mini
-		select BR2_PACKAGE_LIBRETRO_POKEMINI          # ALL
+	# Neo Geo Pocket
+	select BR2_PACKAGE_LIBRETRO_BEETLE_NGP		# ALL
 
-		# Game and Watch
-		select BR2_PACKAGE_LIBRETRO_GW                # ALL
+	# Atari Lynx
+	select BR2_PACKAGE_LIBRETRO_BEETLE_LYNX		# ALL
+	select BR2_PACKAGE_LIBRETRO_HANDY		# ALL
 
-		# Nintendo Switch
-		select BR2_PACKAGE_YUZU                       if BR2_PACKAGE_BATOCERA_CORES_EXPERIMENTAL && BR2_PACKAGE_BATOCERA_TARGET_X86_64 && BR2_PACKAGE_BATOCERA_CORES_STILL_COMMERCIALIZED
+	# Wonderswan
+	select BR2_PACKAGE_LIBRETRO_BEETLE_WSWAN	# ALL
 
-		help
+	# Pokemon Mini
+	select BR2_PACKAGE_LIBRETRO_POKEMINI		# ALL
+
+	# Game and Watch
+	select BR2_PACKAGE_LIBRETRO_GW			# ALL
+
+	# Nintendo Switch
+	select BR2_PACKAGE_YUZU				if BR2_PACKAGE_BATOCERA_CORES_EXPERIMENTAL && BR2_PACKAGE_BATOCERA_TARGET_X86_64 && BR2_PACKAGE_BATOCERA_CORES_STILL_COMMERCIALIZED
+
+	help
 		Handheld cores/emulators
 
 #### MSDOS emulation ####
 config BR2_PACKAGE_BATOCERA_MSDOS_SYSTEMS
-		bool "batocera.linux MS/DOS emulation packages"
+	bool "batocera.linux MS/DOS emulation packages"
 
-		select BR2_PACKAGE_DOSBOX               # ALL
+	select BR2_PACKAGE_DOSBOX			# ALL
 
-		select BR2_PACKAGE_DOSBOX_X             if !BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA       && \
-		                                           !BR2_PACKAGE_BATOCERA_TARGET_RPI1            && \
-                                                           !BR2_PACKAGE_BATOCERA_TARGET_RPI2            && \
-                                                           !BR2_PACKAGE_BATOCERA_TARGET_RPI3
-		                                           
-		                                           # dos
-		select BR2_PACKAGE_DOSBOX_STAGING      # ALL 
+	select BR2_PACKAGE_DOSBOX_X			if !BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA	&& \
+							!BR2_PACKAGE_BATOCERA_TARGET_RPI1		&& \
+							!BR2_PACKAGE_BATOCERA_TARGET_RPI2		&& \
+							!BR2_PACKAGE_BATOCERA_TARGET_RPI3		# dos
 
-		select BR2_PACKAGE_LIBRETRO_DOSBOX            if !BR2_PACKAGE_BATOCERA_TARGET_RPI1              && \
-                                                                 !BR2_PACKAGE_BATOCERA_TARGET_RPI2              && \
-                                                                 !BR2_PACKAGE_BATOCERA_TARGET_RPI3              && \
-		                                                 !BR2_PACKAGE_BATOCERA_TARGET_LIBRETECH_H5      && \
-		                                                 !BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_ZERO2
-		select BR2_PACKAGE_LIBRETRO_DOSBOX_PURE       # ALL
+	select BR2_PACKAGE_DOSBOX_STAGING		# ALL 
 
-		help
+	select BR2_PACKAGE_LIBRETRO_DOSBOX		if !BR2_PACKAGE_BATOCERA_TARGET_RPI1		&& \
+							!BR2_PACKAGE_BATOCERA_TARGET_RPI2		&& \
+							!BR2_PACKAGE_BATOCERA_TARGET_RPI3		&& \
+							!BR2_PACKAGE_BATOCERA_TARGET_LIBRETECH_H5	&& \
+							!BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_ZERO2
+
+	select BR2_PACKAGE_LIBRETRO_DOSBOX_PURE		# ALL
+
+	help
 		MS/DOS cores/emulators
 
 #### Linux / Libretro ports ####
 config BR2_PACKAGE_BATOCERA_PORTS_SYSTEMS
 	bool "batocera.linux ports packages"
 
-		# DevilutionX (Diablo 1)
-        select BR2_PACKAGE_DEVILUTIONX          # ALL 
+	# DevilutionX (Diablo 1)
+	select BR2_PACKAGE_DEVILUTIONX			# ALL 
 
-        # Cannonball (OutRun)
-        select BR2_PACKAGE_CANNONBALL           # ALL
+	# Cannonball (OutRun)
+	select BR2_PACKAGE_CANNONBALL			# ALL
 
-        # PrBoom (Doom)
-        select BR2_PACKAGE_LIBRETRO_PRBOOM            # ALL
+	# PrBoom (Doom)
+	select BR2_PACKAGE_LIBRETRO_PRBOOM		# ALL
 
-        # TyrQuake (Quake 1)
-        select BR2_PACKAGE_LIBRETRO_TYRQUAKE          # ALL
+	# TyrQuake (Quake 1)
+	select BR2_PACKAGE_LIBRETRO_TYRQUAKE		# ALL
 
-        # NxEngine (Cave Story)
-        select BR2_PACKAGE_LIBRETRO_NXENGINE          # ALL
+	# NxEngine (Cave Story)
+	select BR2_PACKAGE_LIBRETRO_NXENGINE		# ALL
 
-        # MrBoom (Bomberman clone)
-        select BR2_PACKAGE_LIBRETRO_MRBOOM            # ALL
+	# MrBoom (Bomberman clone)
+	select BR2_PACKAGE_LIBRETRO_MRBOOM		# ALL
 
 	# Prince of Persia
 	select BR2_PACKAGE_SDLPOP
 
 	# Xash3D-FWGS (Half-Life 1)
-	select BR2_PACKAGE_XASH3D_FWGS                # ALL
+	select BR2_PACKAGE_XASH3D_FWGS			# ALL
 
 	# Commander Genius (Commander Keen series)
 	select BR2_PACKAGE_CGENIUS
 
 	help
-	Ports
+		Ports
 
 #### Vintage computer systems ####
 config BR2_PACKAGE_BATOCERA_COMPUTER_SYSTEMS
-		bool "batocera.linux vintage computers emulation packages"
+	bool "batocera.linux vintage computers emulation packages"
 
-		# Commodore 64/128/VIC20/PET/Plus4
-		select BR2_PACKAGE_VICE                 # ALL
-		select BR2_PACKAGE_LIBRETRO_VICE        if !BR2_PACKAGE_BATOCERA_TARGET_RPI1    && \
-                                                           !BR2_PACKAGE_BATOCERA_TARGET_RPI2
+	# Commodore 64/128/VIC20/PET/Plus4
+	select BR2_PACKAGE_VICE				# ALL
+	select BR2_PACKAGE_LIBRETRO_VICE		if !BR2_PACKAGE_BATOCERA_TARGET_RPI1 && !BR2_PACKAGE_BATOCERA_TARGET_RPI2
 
-		# Apple II computers range
-		select BR2_PACKAGE_LINAPPLE             if !BR2_PACKAGE_SDL2_KMSDRM # apple II (sdl1 doesn't support kmsdrm)
+	# Apple II computers range
+	select BR2_PACKAGE_LINAPPLE			if !BR2_PACKAGE_SDL2_KMSDRM # apple II (sdl1 doesn't support kmsdrm)
 
-		# Commodore Amiga
-		select BR2_PACKAGE_AMIBERRY             if !BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
-		select BR2_PACKAGE_FSUAE                if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
-		select BR2_PACKAGE_LIBRETRO_PUAE              # ALL
+	# Commodore Amiga
+	select BR2_PACKAGE_AMIBERRY			if !BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
+	select BR2_PACKAGE_FSUAE			if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
+	select BR2_PACKAGE_LIBRETRO_PUAE		# ALL
 
-		# Atari 800 computers
-		select BR2_PACKAGE_LIBRETRO_ATARI800          # ALL
+	# Atari 800 computers
+	select BR2_PACKAGE_LIBRETRO_ATARI800		# ALL
 
-		# Sinclair ZX Spectrum
-		select BR2_PACKAGE_LIBRETRO_FUSE              # ALL
+	# Sinclair ZX Spectrum
+	select BR2_PACKAGE_LIBRETRO_FUSE		# ALL
 
-		# Amstrad CPC
-		select BR2_PACKAGE_LIBRETRO_CAP32             # ALL
-		select BR2_PACKAGE_LIBRETRO_81                # ALL
+	# Amstrad CPC
+	select BR2_PACKAGE_LIBRETRO_CAP32		# ALL
+	select BR2_PACKAGE_LIBRETRO_81			# ALL
 
-		# Atari ST/TT/Falcon
-		select BR2_PACKAGE_HATARI                     # ALL
-		select BR2_PACKAGE_LIBRETRO_HATARI            # ALL
+	# Atari ST/TT/Falcon
+	select BR2_PACKAGE_HATARI			# ALL
+	select BR2_PACKAGE_LIBRETRO_HATARI		# ALL
 
-		# MSX range
-		select BR2_PACKAGE_LIBRETRO_BLUEMSX           # ALL
-                select BR2_PACKAGE_LIBRETRO_FMSX              # ALL
+	# MSX range
+	select BR2_PACKAGE_LIBRETRO_BLUEMSX		# ALL
+	select BR2_PACKAGE_LIBRETRO_FMSX		# ALL
 
-		# Thomson 8-bit
-		select BR2_PACKAGE_LIBRETRO_THEODORE          # ALL
+	# Thomson 8-bit
+	select BR2_PACKAGE_LIBRETRO_THEODORE		# ALL
 
-		# Japanese PC clones
-		select BR2_PACKAGE_LIBRETRO_PC88              # ALL
-		select BR2_PACKAGE_LIBRETRO_PC98              # ALL
+	# Japanese PC clones
+	select BR2_PACKAGE_LIBRETRO_PC88		# ALL
+	select BR2_PACKAGE_LIBRETRO_PC98		# ALL
 
-		# Sharp X68000 computer
-		select BR2_PACKAGE_LIBRETRO_PX68K             # ALL
+	# Sharp X68000 computer
+	select BR2_PACKAGE_LIBRETRO_PX68K		# ALL
 
-		# Sharp X1 computer
-		select BR2_PACKAGE_LIBRETRO_XMIL              # ALL
+	# Sharp X1 computer
+	select BR2_PACKAGE_LIBRETRO_XMIL		# ALL
 
-		# Fujistu FM-Towns computers range
-		select BR2_PACKAGE_TSUGARU             if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY # FMTowns
+	# Fujistu FM-Towns computers range
+	select BR2_PACKAGE_TSUGARU			if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY # FMTowns
 
 	help
-	Old computers
+		Old computers
 
 config BR2_PACKAGE_BATOCERA_RETROARCH
-		bool "batocera.linux RetroArch frontend and integration"
+	bool "batocera.linux RetroArch frontend and integration"
 
-		# RetroArch frontend and core data
-		select BR2_PACKAGE_RETROARCH
-		select BR2_PACKAGE_LIBRETRO_CHEATS
-		select BR2_PACKAGE_BATOCERA_BEZEL
-		select BR2_PACKAGE_BATOCERA_SHADERS
+	# RetroArch frontend and core data
+	select BR2_PACKAGE_RETROARCH
+	select BR2_PACKAGE_LIBRETRO_CHEATS
+	select BR2_PACKAGE_BATOCERA_BEZEL
+	select BR2_PACKAGE_BATOCERA_SHADERS
 
 config BR2_PACKAGE_BATOCERA_CONSOLE_SYSTEMS
-		bool "batocera.linux console emulators/cores"
+	bool "batocera.linux console emulators/cores"
 
-		# Nintendo 64
-		select BR2_PACKAGE_BATOCERA_MUPEN64     if !BR2_PACKAGE_BATOCERA_TARGET_RPI1 # mupen64 (n64)
+	# Nintendo 64
+	select BR2_PACKAGE_BATOCERA_MUPEN64		if !BR2_PACKAGE_BATOCERA_TARGET_RPI1 # mupen64 (n64)
 
-		select BR2_PACKAGE_LIBRETRO_MUPEN64PLUS_NEXT  if !BR2_PACKAGE_BATOCERA_TARGET_RPI1            && \
-                                                                 !BR2_PACKAGE_BATOCERA_TARGET_RPI2            && \
-                                                                 !BR2_PACKAGE_BATOCERA_TARGET_RPI3
-		                                                 # MUPEN64PLUS_NEXT
+	select BR2_PACKAGE_LIBRETRO_MUPEN64PLUS_NEXT	if !BR2_PACKAGE_BATOCERA_TARGET_RPI1	&& \
+							!BR2_PACKAGE_BATOCERA_TARGET_RPI2	&& \
+							!BR2_PACKAGE_BATOCERA_TARGET_RPI3
 
-		select BR2_PACKAGE_LIBRETRO_PARALLEL_N64      if BR2_PACKAGE_BATOCERA_TARGET_X86_64       || \
-								 BR2_PACKAGE_BATOCERA_TARGET_TINKERBOARD  || \
-								 BR2_PACKAGE_BATOCERA_TARGET_MIQI         || \
-								 BR2_PACKAGE_BATOCERA_TARGET_S912         || \
-								 BR2_PACKAGE_BATOCERA_TARGET_XU4          || \
-								 BR2_PACKAGE_BATOCERA_TARGET_ODROIDN2     || \
-								 BR2_PACKAGE_BATOCERA_TARGET_VIM3 
-                                                                 # PARALLEL_N64
+	select BR2_PACKAGE_LIBRETRO_PARALLEL_N64	if BR2_PACKAGE_BATOCERA_TARGET_X86_64	|| \
+							BR2_PACKAGE_BATOCERA_TARGET_TINKERBOARD	|| \
+							BR2_PACKAGE_BATOCERA_TARGET_MIQI	|| \
+							BR2_PACKAGE_BATOCERA_TARGET_S912	|| \
+							BR2_PACKAGE_BATOCERA_TARGET_XU4		|| \
+							BR2_PACKAGE_BATOCERA_TARGET_ODROIDN2	|| \
+							BR2_PACKAGE_BATOCERA_TARGET_VIM3
 
-		# Dreamcast
-		select BR2_PACKAGE_BATOCERA_SEGADC
+	# Dreamcast
+	select BR2_PACKAGE_BATOCERA_SEGADC
 
-		# PSX
-		select BR2_PACKAGE_DUCKSTATION	              if  !BR2_PACKAGE_BATOCERA_TARGET_X86      && \
-								  !BR2_PACKAGE_BATOCERA_TARGET_RPI1     && \
-                                                                  !BR2_PACKAGE_BATOCERA_TARGET_RPI2     && \
-                                                                  !BR2_PACKAGE_BATOCERA_TARGET_RPI3
-		select BR2_PACKAGE_LIBRETRO_DUCKSTATION	      if  !BR2_PACKAGE_BATOCERA_TARGET_X86      && \
-								  !BR2_PACKAGE_BATOCERA_TARGET_RPI1     && \
-                                                                  !BR2_PACKAGE_BATOCERA_TARGET_RPI2     && \
-                                                                  !BR2_PACKAGE_BATOCERA_TARGET_RPI3
-		select BR2_PACKAGE_LIBRETRO_PCSX              if !BR2_PACKAGE_BATOCERA_TARGET_RPI1 # PCSX
-		select BR2_PACKAGE_LIBRETRO_BEETLE_PSX        if !BR2_PACKAGE_BATOCERA_TARGET_RPI1      && \
-                                                                 !BR2_PACKAGE_BATOCERA_TARGET_RPI2      && \
-                                                                 !BR2_PACKAGE_BATOCERA_TARGET_RPI3      && \
-		                                             !BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA
+	# PSX
+	select BR2_PACKAGE_DUCKSTATION			if !BR2_PACKAGE_BATOCERA_TARGET_X86	&& \
+							!BR2_PACKAGE_BATOCERA_TARGET_RPI1	&& \
+							!BR2_PACKAGE_BATOCERA_TARGET_RPI2	&& \
+							!BR2_PACKAGE_BATOCERA_TARGET_RPI3
 
+	select BR2_PACKAGE_LIBRETRO_DUCKSTATION		if !BR2_PACKAGE_BATOCERA_TARGET_X86	&& \
+							!BR2_PACKAGE_BATOCERA_TARGET_RPI1	&& \
+							!BR2_PACKAGE_BATOCERA_TARGET_RPI2	&& \
+							!BR2_PACKAGE_BATOCERA_TARGET_RPI3
 
-		# Saturn
-		select BR2_PACKAGE_LIBRETRO_BEETLE_SATURN     if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
-		select BR2_PACKAGE_LIBRETRO_KRONOS            if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
-		select BR2_PACKAGE_LIBRETRO_YABASANSHIRO      if !BR2_PACKAGE_BATOCERA_TARGET_RPI1      && \
-                                                                 !BR2_PACKAGE_BATOCERA_TARGET_RPI2      && \
-                                                                 !BR2_PACKAGE_BATOCERA_TARGET_RPI3      && \
-		                                                 !BR2_PACKAGE_BATOCERA_TARGET_ODROIDC2  && \
-                                                         !BR2_PACKAGE_BATOCERA_TARGET_S812      && \
-                                                         !BR2_PACKAGE_BATOCERA_TARGET_ROCK960   && \
-		                                                 !BR2_PACKAGE_BATOCERA_TARGET_S905      && \
-                                                         !BR2_PACKAGE_BATOCERA_TARGET_MIQI      && \
-                                                         !BR2_PACKAGE_BATOCERA_TARGET_TINKERBOARD && \
-		                                                 !BR2_PACKAGE_BATOCERA_TARGET_S912
+	select BR2_PACKAGE_LIBRETRO_PCSX		if !BR2_PACKAGE_BATOCERA_TARGET_RPI1
 
-		# Gamecube / Wii
-		select BR2_PACKAGE_DOLPHIN_EMU          if BR2_PACKAGE_BATOCERA_TARGET_X86_64   || \
-						   BR2_PACKAGE_BATOCERA_TARGET_ODROIDN2 || \
-						   BR2_PACKAGE_BATOCERA_TARGET_VIM3
-		select BR2_PACKAGE_LIBRETRO_DOLPHIN           if BR2_PACKAGE_BATOCERA_CORES_EXPERIMENTAL && \
-							 ( BR2_PACKAGE_BATOCERA_TARGET_X86_64   || \
-						           BR2_PACKAGE_BATOCERA_TARGET_ODROIDN2 || \
-						           BR2_PACKAGE_BATOCERA_TARGET_VIM3 )
+	select BR2_PACKAGE_LIBRETRO_BEETLE_PSX		if !BR2_PACKAGE_BATOCERA_TARGET_RPI1	&& \
+							!BR2_PACKAGE_BATOCERA_TARGET_RPI2	&& \
+							!BR2_PACKAGE_BATOCERA_TARGET_RPI3	&& \
+							!BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA
 
 
-		# Microsoft XBOX
-		select BR2_PACKAGE_XEMU			if BR2_PACKAGE_BATOCERA_TARGET_X86_64
+	# Saturn
+	select BR2_PACKAGE_LIBRETRO_BEETLE_SATURN	if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
 
-		# Sony PS2
-		select BR2_PACKAGE_PCSX2                if BR2_PACKAGE_BATOCERA_TARGET_X86_64
-		select BR2_PACKAGE_PCSX2_AVX2           if BR2_PACKAGE_BATOCERA_TARGET_X86_64
+	select BR2_PACKAGE_LIBRETRO_KRONOS		if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
 
-		# Sony PS3
-		select BR2_PACKAGE_RPCS3                      if BR2_PACKAGE_BATOCERA_TARGET_X86_64
+	select BR2_PACKAGE_LIBRETRO_YABASANSHIRO	if !BR2_PACKAGE_BATOCERA_TARGET_RPI1		&& \
+							!BR2_PACKAGE_BATOCERA_TARGET_RPI2		&& \
+							!BR2_PACKAGE_BATOCERA_TARGET_RPI3		&& \
+							!BR2_PACKAGE_BATOCERA_TARGET_ODROIDC2		&& \
+							!BR2_PACKAGE_BATOCERA_TARGET_S812		&& \
+							!BR2_PACKAGE_BATOCERA_TARGET_ROCK960		&& \
+							!BR2_PACKAGE_BATOCERA_TARGET_S905		&& \
+							!BR2_PACKAGE_BATOCERA_TARGET_MIQI		&& \
+							!BR2_PACKAGE_BATOCERA_TARGET_TINKERBOARD	&& \
+							!BR2_PACKAGE_BATOCERA_TARGET_S912
 
-		# Wii U (requires Wine layer)
-		select BR2_PACKAGE_CEMU                       if BR2_PACKAGE_BATOCERA_TARGET_X86_64 && BR2_PACKAGE_BATOCERA_WINE_SYSTEMS
+	# Gamecube / Wii
+	select BR2_PACKAGE_DOLPHIN_EMU			if BR2_PACKAGE_BATOCERA_TARGET_X86_64	|| \
+							BR2_PACKAGE_BATOCERA_TARGET_ODROIDN2	|| \
+							BR2_PACKAGE_BATOCERA_TARGET_VIM3
 
-		# Panasonic 3DO
-		select BR2_PACKAGE_LIBRETRO_OPERA             if !BR2_PACKAGE_BATOCERA_TARGET_RPI1      && \
-                                                                 !BR2_PACKAGE_BATOCERA_TARGET_RPI2      && \
-                                                                 !BR2_PACKAGE_BATOCERA_TARGET_RPI3      && \
-		                                                 !BR2_PACKAGE_BATOCERA_TARGET_ODROIDC2  && \
-		                                                 !BR2_PACKAGE_BATOCERA_TARGET_ODROIDC4  && \
-		                                                 !BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA
-		                                                 # OPERA
+	select BR2_PACKAGE_LIBRETRO_DOLPHIN		if BR2_PACKAGE_BATOCERA_CORES_EXPERIMENTAL	&& \
+							( BR2_PACKAGE_BATOCERA_TARGET_X86_64		|| \
+							BR2_PACKAGE_BATOCERA_TARGET_ODROIDN2		|| \
+							BR2_PACKAGE_BATOCERA_TARGET_VIM3 )
 
-		# Atari Jaguar
-		select BR2_PACKAGE_LIBRETRO_VIRTUALJAGUAR     if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY || BR2_PACKAGE_BATOCERA_TARGET_ODROIDN2 # VIRTUALJAGUAR
 
-		# NEC PC-FX
-		select BR2_PACKAGE_LIBRETRO_BEETLE_PCFX       if !BR2_PACKAGE_BATOCERA_TARGET_RPI1              && \
-                                                                 !BR2_PACKAGE_BATOCERA_TARGET_RPI2              && \
-                                                                 !BR2_PACKAGE_BATOCERA_TARGET_RPI3              && \
-		                                                 !BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA         && \
-		                                                 !BR2_PACKAGE_BATOCERA_TARGET_S905              && \
-		                                                 !BR2_PACKAGE_BATOCERA_TARGET_VIM3              && \
-		                                                 !BR2_PACKAGE_BATOCERA_TARGET_LIBRETECH_H5      && \
-		                                                 !BR2_PACKAGE_BATOCERA_TARGET_S912
-		                                                 # PCFX
+	# Microsoft XBOX
+	select BR2_PACKAGE_XEMU				if BR2_PACKAGE_BATOCERA_TARGET_X86_64
 
-		# SNK Neo Geo CD
-		select BR2_PACKAGE_LIBRETRO_NEOCD             # ALL 
+	# Sony PS2
+	select BR2_PACKAGE_PCSX2			if BR2_PACKAGE_BATOCERA_TARGET_X86_64
+	select BR2_PACKAGE_PCSX2_AVX2			if BR2_PACKAGE_BATOCERA_TARGET_X86_64
 
-		# Nintendo Virtual Boy
-		select BR2_PACKAGE_LIBRETRO_BEETLE_VB         # ALL
+	# Sony PS3
+	select BR2_PACKAGE_RPCS3			if BR2_PACKAGE_BATOCERA_TARGET_X86_64
 
-		# Sega 8-bit/16-range (Mark III / Master System, Game Gear, Genesis / Megadrive, SegaCD / MegaCD, 32X)
-		select BR2_PACKAGE_LIBRETRO_PICODRIVE         # ALL
-		select BR2_PACKAGE_LIBRETRO_GENESISPLUSGX     # ALL
-		select BR2_PACKAGE_LIBRETRO_BLASTEM           if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
+	# Wii U (requires Wine layer)
+	select BR2_PACKAGE_CEMU				if BR2_PACKAGE_BATOCERA_TARGET_X86_64 && \
+							BR2_PACKAGE_BATOCERA_WINE_SYSTEMS
 
-		# Atari 2600
-		select BR2_PACKAGE_LIBRETRO_STELLA            # ALL
+	# Panasonic 3DO
+	select BR2_PACKAGE_LIBRETRO_OPERA		if !BR2_PACKAGE_BATOCERA_TARGET_RPI1	&& \
+							!BR2_PACKAGE_BATOCERA_TARGET_RPI2	&& \
+							!BR2_PACKAGE_BATOCERA_TARGET_RPI3	&& \
+							!BR2_PACKAGE_BATOCERA_TARGET_ODROIDC2	&& \
+							!BR2_PACKAGE_BATOCERA_TARGET_ODROIDC4	&& \
+							!BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA
 
-		# NEC PC-Engine / TurboGrafx / SuperGrafx range
-		select BR2_PACKAGE_LIBRETRO_BEETLE_PCE        if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY # BEETLE PCE (Accurate)
-		select BR2_PACKAGE_LIBRETRO_BEETLE_PCE_FAST   # ALL
-		select BR2_PACKAGE_LIBRETRO_BEETLE_SUPERGRAFX # ALL
 
-		# Vectrex
-		select BR2_PACKAGE_LIBRETRO_VECX              # ALL
+	# Atari Jaguar
+	select BR2_PACKAGE_LIBRETRO_VIRTUALJAGUAR	if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY || \
+							BR2_PACKAGE_BATOCERA_TARGET_ODROIDN2
 
-		# Magnavox Odyssey
-		select BR2_PACKAGE_LIBRETRO_O2EM              # ALL
+	# NEC PC-FX
+	select BR2_PACKAGE_LIBRETRO_BEETLE_PCFX		if !BR2_PACKAGE_BATOCERA_TARGET_RPI1		&& \
+							!BR2_PACKAGE_BATOCERA_TARGET_RPI2		&& \
+							!BR2_PACKAGE_BATOCERA_TARGET_RPI3		&& \
+							!BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA		&& \
+							!BR2_PACKAGE_BATOCERA_TARGET_S905		&& \
+							!BR2_PACKAGE_BATOCERA_TARGET_VIM3		&& \
+							!BR2_PACKAGE_BATOCERA_TARGET_LIBRETECH_H5	&& \
+							!BR2_PACKAGE_BATOCERA_TARGET_S912
 
-		# Intellivision
-		select BR2_PACKAGE_LIBRETRO_FREEINTV          # ALL
 
-		# Nintendo NES / Famicom
-		select BR2_PACKAGE_LIBRETRO_FCEUMM            # ALL
-		select BR2_PACKAGE_LIBRETRO_NESTOPIA          # ALL
+	# SNK Neo Geo CD
+	select BR2_PACKAGE_LIBRETRO_NEOCD		# ALL 
 
-		# Super Nintendo / Super Famicom
-		select BR2_PACKAGE_LIBRETRO_SNES9X            # ALL
-		select BR2_PACKAGE_LIBRETRO_SNES9X_NEXT       # ALL
-		select BR2_PACKAGE_LIBRETRO_POCKETSNES        if BR2_PACKAGE_BATOCERA_TARGET_RPI1 || BR2_PACKAGE_BATOCERA_TARGET_RPI2 # POCKETSNES
-		select BR2_PACKAGE_LIBRETRO_BSNES             if BR2_PACKAGE_BATOCERA_TARGET_X86_64 # BSNES
+	# Nintendo Virtual Boy
+	select BR2_PACKAGE_LIBRETRO_BEETLE_VB		# ALL
 
-		# Atari 7800
-		select BR2_PACKAGE_LIBRETRO_PROSYSTEM         # ALL
+	# Sega 8-bit/16-range (Mark III / Master System, Game Gear, Genesis / Megadrive, SegaCD / MegaCD, 32X)
+	select BR2_PACKAGE_LIBRETRO_PICODRIVE		# ALL
+	select BR2_PACKAGE_LIBRETRO_GENESISPLUSGX	# ALL
+	select BR2_PACKAGE_LIBRETRO_BLASTEM		if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
 
-		# Fairchild Channel F
-		select BR2_PACKAGE_LIBRETRO_FREECHAF          # ALL
+	# Atari 2600
+	select BR2_PACKAGE_LIBRETRO_STELLA		# ALL
 
-		help
-		  All avaible systems for the selected architecture
+	# NEC PC-Engine / TurboGrafx / SuperGrafx range
+	select BR2_PACKAGE_LIBRETRO_BEETLE_PCE		if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
+	select BR2_PACKAGE_LIBRETRO_BEETLE_PCE_FAST	# ALL
+	select BR2_PACKAGE_LIBRETRO_BEETLE_SUPERGRAFX	# ALL
+
+	# Vectrex
+	select BR2_PACKAGE_LIBRETRO_VECX		# ALL
+
+	# Magnavox Odyssey
+	select BR2_PACKAGE_LIBRETRO_O2EM		# ALL
+
+	# Intellivision
+	select BR2_PACKAGE_LIBRETRO_FREEINTV		# ALL
+
+	# Nintendo NES / Famicom
+	select BR2_PACKAGE_LIBRETRO_FCEUMM		# ALL
+	select BR2_PACKAGE_LIBRETRO_NESTOPIA		# ALL
+
+	# Super Nintendo / Super Famicom
+	select BR2_PACKAGE_LIBRETRO_SNES9X		# ALL
+	select BR2_PACKAGE_LIBRETRO_SNES9X_NEXT		# ALL
+	select BR2_PACKAGE_LIBRETRO_POCKETSNES		if BR2_PACKAGE_BATOCERA_TARGET_RPI1 || \
+							BR2_PACKAGE_BATOCERA_TARGET_RPI2
+
+	select BR2_PACKAGE_LIBRETRO_BSNES		if BR2_PACKAGE_BATOCERA_TARGET_X86_64
+
+	# Atari 7800
+	select BR2_PACKAGE_LIBRETRO_PROSYSTEM		# ALL
+
+	# Fairchild Channel F
+	select BR2_PACKAGE_LIBRETRO_FREECHAF		# ALL
+
+	help
+		All avaible systems for the selected architecture
 
 config BR2_PACKAGE_BATOCERA_MUPEN64
-        bool "batocera.linux Mupen64 packages selection"
+	bool "batocera.linux Mupen64 packages selection"
 
-        select BR2_PACKAGE_MUPEN64PLUS_CORE
-        select BR2_PACKAGE_MUPEN64PLUS_UICONSOLE
-        select BR2_PACKAGE_MUPEN64PLUS_INPUT_SDL
-        select BR2_PACKAGE_MUPEN64PLUS_AUDIO_SDL
-        select BR2_PACKAGE_MUPEN64PLUS_RSPHLE
-        select BR2_PACKAGE_MUPEN64PLUS_OMX              if BR2_PACKAGE_BATOCERA_TARGET_RPI1 || BR2_PACKAGE_BATOCERA_TARGET_RPI2 # rpi audio
+	select BR2_PACKAGE_MUPEN64PLUS_CORE
+	select BR2_PACKAGE_MUPEN64PLUS_UICONSOLE
+	select BR2_PACKAGE_MUPEN64PLUS_INPUT_SDL
+	select BR2_PACKAGE_MUPEN64PLUS_AUDIO_SDL
+	select BR2_PACKAGE_MUPEN64PLUS_RSPHLE
+	select BR2_PACKAGE_MUPEN64PLUS_OMX		if BR2_PACKAGE_BATOCERA_TARGET_RPI1	|| \
+							BR2_PACKAGE_BATOCERA_TARGET_RPI2	# rpi audio
 
-        select BR2_PACKAGE_MUPEN64PLUS_GLIDEN64         if !BR2_PACKAGE_BATOCERA_TARGET_RPI1            && \
-                                                           !BR2_PACKAGE_BATOCERA_TARGET_RPI2            && \
-                                                           !BR2_PACKAGE_BATOCERA_TARGET_RPI3 # GLIDEN64
+	select BR2_PACKAGE_MUPEN64PLUS_GLIDEN64		if !BR2_PACKAGE_BATOCERA_TARGET_RPI1	&& \
+							!BR2_PACKAGE_BATOCERA_TARGET_RPI2	&& \
+							!BR2_PACKAGE_BATOCERA_TARGET_RPI3
 
-        select BR2_PACKAGE_MUPEN64PLUS_GLES2            if !BR2_aarch64 && ( \
-                                                           BR2_PACKAGE_BATOCERA_TARGET_RPI1           || \
-                                                           BR2_PACKAGE_BATOCERA_TARGET_RPI2           || \
-                                                           BR2_PACKAGE_BATOCERA_TARGET_RPI3           || \
-                                                           BR2_PACKAGE_BATOCERA_TARGET_ROCKCHIP_ANY)
-                                                           # GLES2
+	select BR2_PACKAGE_MUPEN64PLUS_GLES2		if !BR2_aarch64 && \
+							( BR2_PACKAGE_BATOCERA_TARGET_RPI1		|| \
+							BR2_PACKAGE_BATOCERA_TARGET_RPI2		|| \
+							BR2_PACKAGE_BATOCERA_TARGET_RPI3		|| \
+							BR2_PACKAGE_BATOCERA_TARGET_ROCKCHIP_ANY )
 
-        select BR2_PACKAGE_MUPEN64PLUS_V20_GLIDEN64     if BR2_PACKAGE_BATOCERA_TARGET_RPI1 || BR2_PACKAGE_BATOCERA_TARGET_RPI2 || BR2_PACKAGE_BATOCERA_TARGET_RPI3
 
-        select BR2_PACKAGE_MUPEN64PLUS_VIDEO_GLIDE64MK2 if !BR2_PACKAGE_BATOCERA_TARGET_RPI1            && \
-                                                           !BR2_PACKAGE_BATOCERA_TARGET_RPI2            && \
-                                                           !BR2_PACKAGE_BATOCERA_TARGET_RPI3 # GLIDE64MK2
+	select BR2_PACKAGE_MUPEN64PLUS_V20_GLIDEN64	if BR2_PACKAGE_BATOCERA_TARGET_RPI1	|| \
+							BR2_PACKAGE_BATOCERA_TARGET_RPI2	|| \
+							BR2_PACKAGE_BATOCERA_TARGET_RPI3
 
-        select BR2_PACKAGE_MUPEN64PLUS_VIDEO_RICE       if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY || \
-                                                           BR2_PACKAGE_BATOCERA_TARGET_ROCKCHIP_ANY
-                                                           # RICE
-        help
-          Mupen64
+	select BR2_PACKAGE_MUPEN64PLUS_VIDEO_GLIDE64MK2	if !BR2_PACKAGE_BATOCERA_TARGET_RPI1	&& \
+							!BR2_PACKAGE_BATOCERA_TARGET_RPI2	&& \
+							!BR2_PACKAGE_BATOCERA_TARGET_RPI3
+
+	select BR2_PACKAGE_MUPEN64PLUS_VIDEO_RICE	if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY	|| \
+							BR2_PACKAGE_BATOCERA_TARGET_ROCKCHIP_ANY
+
+	help
+	  Mupen64
 
 config BR2_PACKAGE_BATOCERA_KODI19
-       bool "batocera.linux Kodi19 packages selection"
-       default n
-       select BR2_PACKAGE_KODI             # kodi
-       select BR2_PACKAGE_PYTHON3	   # kodi19 is based on python3
-       select BR2_PACKAGE_PYTHON_PYOPENSSL  # used by some kodi plugins
-       select BR2_PACKAGE_X264              # decoder
-       select BR2_PACKAGE_X265              # decoder
-       select BR2_PACKAGE_LIBAACS           # decoder
-       select BR2_PACKAGE_LIBDVDCSS         # decoder
-       select BR2_PACKAGE_GNUTLS            # https streams
+	bool "batocera.linux Kodi19 packages selection"
+	default n
+	select BR2_PACKAGE_KODI				# kodi
+	select BR2_PACKAGE_PYTHON3			# kodi19 is based on python3
+	select BR2_PACKAGE_PYTHON_PYOPENSSL		# used by some kodi plugins
+	select BR2_PACKAGE_X264				# decoder
+	select BR2_PACKAGE_X265				# decoder
+	select BR2_PACKAGE_LIBAACS			# decoder
+	select BR2_PACKAGE_LIBDVDCSS			# decoder
+	select BR2_PACKAGE_GNUTLS			# https streams
 
-       # VPN support
-       select BR2_PACKAGE_OPENVPN
+	# VPN support
+	select BR2_PACKAGE_OPENVPN
 
-       # Kodi game controllers
-       select BR2_PACKAGE_KODI_PERIPHERAL_JOYSTICK		# joysticks for kodi
-       select BR2_PACKAGE_KODI_PERIPHERAL_XARCADE               # xarcade for kodi
+	# Kodi game controllers
+	select BR2_PACKAGE_KODI_PERIPHERAL_JOYSTICK	# joysticks for kodi
+	select BR2_PACKAGE_KODI_PERIPHERAL_XARCADE	# xarcade for kodi
 
-       # Rockchip ffmpeg playback package
-       select BR2_PACKAGE_ROCKCHIP_MPP      if BR2_PACKAGE_BATOCERA_TARGET_ROCKCHIP_ANY
+	# Rockchip ffmpeg playback package
+	select BR2_PACKAGE_ROCKCHIP_MPP			if BR2_PACKAGE_BATOCERA_TARGET_ROCKCHIP_ANY
 
-       # ffmpeg enabler that i'm not sure it has an impact on kodi
-       select BR2_PACKAGE_FFMPEG_GPL        # video recording
-       select BR2_PACKAGE_FFMPEG_AVRESAMPLE # audio resampler
-       select BR2_PACKAGE_LIBCDIO_PARANOIA  # cd-audio
-       select BR2_PACKAGE_LIBOPENH264       # openh264
+	# ffmpeg enabler that i'm not sure it has an impact on kodi
+	select BR2_PACKAGE_FFMPEG_GPL			# video recording
+	select BR2_PACKAGE_FFMPEG_AVRESAMPLE		# audio resampler
+	select BR2_PACKAGE_LIBCDIO_PARANOIA		# cd-audio
+	select BR2_PACKAGE_LIBOPENH264			# openh264
 
-       # kodi languages
-       select BR2_PACKAGE_KODI18_RESOURCE_LANGUAGE_DE_DE
-       select BR2_PACKAGE_KODI18_RESOURCE_LANGUAGE_ES_ES
-       select BR2_PACKAGE_KODI18_RESOURCE_LANGUAGE_EU_ES
-       select BR2_PACKAGE_KODI18_RESOURCE_LANGUAGE_FR_FR
-       select BR2_PACKAGE_KODI18_RESOURCE_LANGUAGE_IT_IT
-       select BR2_PACKAGE_KODI18_RESOURCE_LANGUAGE_PT_BR
-       select BR2_PACKAGE_KODI18_RESOURCE_LANGUAGE_SV_SE
-       select BR2_PACKAGE_KODI18_RESOURCE_LANGUAGE_TR_TR
-       select BR2_PACKAGE_KODI18_RESOURCE_LANGUAGE_ZH_CN
+	# kodi languages
+	select BR2_PACKAGE_KODI18_RESOURCE_LANGUAGE_DE_DE
+	select BR2_PACKAGE_KODI18_RESOURCE_LANGUAGE_ES_ES
+	select BR2_PACKAGE_KODI18_RESOURCE_LANGUAGE_EU_ES
+	select BR2_PACKAGE_KODI18_RESOURCE_LANGUAGE_FR_FR
+	select BR2_PACKAGE_KODI18_RESOURCE_LANGUAGE_IT_IT
+	select BR2_PACKAGE_KODI18_RESOURCE_LANGUAGE_PT_BR
+	select BR2_PACKAGE_KODI18_RESOURCE_LANGUAGE_SV_SE
+	select BR2_PACKAGE_KODI18_RESOURCE_LANGUAGE_TR_TR
+	select BR2_PACKAGE_KODI18_RESOURCE_LANGUAGE_ZH_CN
 
-       # packages for kodi
-       select BR2_PACKAGE_MYSQL
+	# packages for kodi
+	select BR2_PACKAGE_MYSQL
 
-       # default kodi packages for batocera
-       select BR2_PACKAGE_KODI_MYSQL
-       select BR2_PACKAGE_KODI_ALSA_LIB
-       select BR2_PACKAGE_KODI_AVAHI
-       select BR2_PACKAGE_KODI_DBUS
-       select BR2_PACKAGE_KODI_LIBCEC
-       select BR2_PACKAGE_KODI_LIBMICROHTTPD
-       select BR2_PACKAGE_KODI_LIBNFS
-       select BR2_PACKAGE_KODI_LIBSHAIRPLAY
-       select BR2_PACKAGE_KODI_LIBSMBCLIENT
-       select BR2_PACKAGE_KODI_VFS_SFTP
-       select BR2_PACKAGE_KODI_LIBVA          if BR2_PACKAGE_XORG7 && BR2_PACKAGE_KODI_PLATFORM_X11_OPENGL
-       select BR2_PACKAGE_KODI_LIBVDPAU       if BR2_PACKAGE_XORG7 && BR2_PACKAGE_KODI_PLATFORM_X11_OPENGL
+	# default kodi packages for batocera
+	select BR2_PACKAGE_KODI_MYSQL
+	select BR2_PACKAGE_KODI_ALSA_LIB
+	select BR2_PACKAGE_KODI_AVAHI
+	select BR2_PACKAGE_KODI_DBUS
+	select BR2_PACKAGE_KODI_LIBCEC
+	select BR2_PACKAGE_KODI_LIBMICROHTTPD
+	select BR2_PACKAGE_KODI_LIBNFS
+	select BR2_PACKAGE_KODI_LIBSHAIRPLAY
+	select BR2_PACKAGE_KODI_LIBSMBCLIENT
+	select BR2_PACKAGE_KODI_VFS_SFTP
+	select BR2_PACKAGE_KODI_LIBVA		if BR2_PACKAGE_XORG7 && BR2_PACKAGE_KODI_PLATFORM_X11_OPENGL
+	select BR2_PACKAGE_KODI_LIBVDPAU	if BR2_PACKAGE_XORG7 && BR2_PACKAGE_KODI_PLATFORM_X11_OPENGL
 
-       select BR2_PACKAGE_KODI_AUDIODECODER_MODPLUG
-       select BR2_PACKAGE_KODI_AUDIODECODER_NOSEFART
-       select BR2_PACKAGE_KODI_AUDIODECODER_SIDPLAY
-       select BR2_PACKAGE_KODI_AUDIODECODER_SNESAPU
-       select BR2_PACKAGE_KODI_AUDIODECODER_STSOUND
-       select BR2_PACKAGE_KODI_AUDIODECODER_TIMIDITY
-       select BR2_PACKAGE_KODI_AUDIODECODER_VGMSTREAM
-       select BR2_PACKAGE_KODI_AUDIOENCODER_FLAC
-       select BR2_PACKAGE_KODI_AUDIOENCODER_LAME
-       select BR2_PACKAGE_KODI_AUDIOENCODER_VORBIS
-       select BR2_PACKAGE_KODI_AUDIOENCODER_WAV
-       select BR2_PACKAGE_KODI_INPUTSTREAM_ADAPTIVE
-       select BR2_PACKAGE_KODI_INPUTSTREAM_RTMP
-       select BR2_PACKAGE_KODI_PVR_ARGUSTV
-       select BR2_PACKAGE_KODI_PVR_DVBLINK
-       select BR2_PACKAGE_KODI_PVR_DVBVIEWER
-       select BR2_PACKAGE_KODI_PVR_FILMON
-       select BR2_PACKAGE_KODI_PVR_HDHOMERUN
-       select BR2_PACKAGE_KODI_PVR_HTS
-       select BR2_PACKAGE_KODI_PVR_IPTVSIMPLE
-       select BR2_PACKAGE_KODI_PVR_MEDIAPORTAL_TVSERVER
-       select BR2_PACKAGE_KODI_PVR_MYTHTV
-       select BR2_PACKAGE_KODI_PVR_NEXTPVR
-       select BR2_PACKAGE_KODI_PVR_NJOY
-       select BR2_PACKAGE_KODI_PVR_PCTV
-       select BR2_PACKAGE_KODI_PVR_STALKER
-       select BR2_PACKAGE_KODI_PVR_VBOX
-       select BR2_PACKAGE_KODI_PVR_VDR_VNSI
-       select BR2_PACKAGE_KODI_PVR_VUPLUS
-       select BR2_PACKAGE_KODI_PVR_WMC
-       select BR2_PACKAGE_KODI_UPNP
-       select BR2_PACKAGE_KODI_LIBBLURAY
+	select BR2_PACKAGE_KODI_AUDIODECODER_MODPLUG
+	select BR2_PACKAGE_KODI_AUDIODECODER_NOSEFART
+	select BR2_PACKAGE_KODI_AUDIODECODER_SIDPLAY
+	select BR2_PACKAGE_KODI_AUDIODECODER_SNESAPU
+	select BR2_PACKAGE_KODI_AUDIODECODER_STSOUND
+	select BR2_PACKAGE_KODI_AUDIODECODER_TIMIDITY
+	select BR2_PACKAGE_KODI_AUDIODECODER_VGMSTREAM
+	select BR2_PACKAGE_KODI_AUDIOENCODER_FLAC
+	select BR2_PACKAGE_KODI_AUDIOENCODER_LAME
+	select BR2_PACKAGE_KODI_AUDIOENCODER_VORBIS
+	select BR2_PACKAGE_KODI_AUDIOENCODER_WAV
+	select BR2_PACKAGE_KODI_INPUTSTREAM_ADAPTIVE
+	select BR2_PACKAGE_KODI_INPUTSTREAM_RTMP
+	select BR2_PACKAGE_KODI_PVR_ARGUSTV
+	select BR2_PACKAGE_KODI_PVR_DVBLINK
+	select BR2_PACKAGE_KODI_PVR_DVBVIEWER
+	select BR2_PACKAGE_KODI_PVR_FILMON
+	select BR2_PACKAGE_KODI_PVR_HDHOMERUN
+	select BR2_PACKAGE_KODI_PVR_HTS
+	select BR2_PACKAGE_KODI_PVR_IPTVSIMPLE
+	select BR2_PACKAGE_KODI_PVR_MEDIAPORTAL_TVSERVER
+	select BR2_PACKAGE_KODI_PVR_MYTHTV
+	select BR2_PACKAGE_KODI_PVR_NEXTPVR
+	select BR2_PACKAGE_KODI_PVR_NJOY
+	select BR2_PACKAGE_KODI_PVR_PCTV
+	select BR2_PACKAGE_KODI_PVR_STALKER
+	select BR2_PACKAGE_KODI_PVR_VBOX
+	select BR2_PACKAGE_KODI_PVR_VDR_VNSI
+	select BR2_PACKAGE_KODI_PVR_VUPLUS
+	select BR2_PACKAGE_KODI_PVR_WMC
+	select BR2_PACKAGE_KODI_UPNP
+	select BR2_PACKAGE_KODI_LIBBLURAY
 
-       #
-       #
-       select BR2_PACKAGE_KODI_SUPERREPO_REPOSITORIES
-       #select BR2_PACKAGE_KODI_SUPERREPO_ALL
+	#
+	#
+	select BR2_PACKAGE_KODI_SUPERREPO_REPOSITORIES
+	#select BR2_PACKAGE_KODI_SUPERREPO_ALL
 
-       select BR2_PACKAGE_KODI18_PLUGIN_VIDEO_FILMON
-       select BR2_PACKAGE_PYTHON_PYCRYPTODOMEX # some plugin like netflix need it
-       select BR2_PACKAGE_LIBNSS
+	select BR2_PACKAGE_KODI18_PLUGIN_VIDEO_FILMON
+	select BR2_PACKAGE_PYTHON_PYCRYPTODOMEX # some plugin like netflix need it
+	select BR2_PACKAGE_LIBNSS
 
-       # GBM
-       select BR2_PACKAGE_KODI_GBM                                      if BR2_PACKAGE_BATOCERA_TARGET_XU4       || \
-									   BR2_PACKAGE_BATOCERA_TARGET_ODROIDN2  || \
-                                                                           BR2_PACKAGE_BATOCERA_TARGET_LIBRETECH_H5  || \
-                                                                           BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_PC  || \
-                                                                           BR2_PACKAGE_BATOCERA_TARGET_S812  || \
-                                                                           BR2_PACKAGE_BATOCERA_TARGET_TINKERBOARD  || \
-                                                                           BR2_PACKAGE_BATOCERA_TARGET_MIQI  || \
-									   BR2_PACKAGE_BATOCERA_TARGET_ROCKPRO64 || \
-									   BR2_PACKAGE_BATOCERA_TARGET_ROCK960   || \
-									   BR2_PACKAGE_BATOCERA_TARGET_ODROIDC4
+	# GBM
+	select BR2_PACKAGE_KODI_GBM		if BR2_PACKAGE_BATOCERA_TARGET_XU4		|| \
+						BR2_PACKAGE_BATOCERA_TARGET_ODROIDN2		|| \
+						BR2_PACKAGE_BATOCERA_TARGET_LIBRETECH_H5	|| \
+						BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_PC		|| \
+						BR2_PACKAGE_BATOCERA_TARGET_S812		|| \
+						BR2_PACKAGE_BATOCERA_TARGET_TINKERBOARD		|| \
+						BR2_PACKAGE_BATOCERA_TARGET_MIQI		|| \
+						BR2_PACKAGE_BATOCERA_TARGET_ROCKPRO64		|| \
+						BR2_PACKAGE_BATOCERA_TARGET_ROCK960		|| \
+						BR2_PACKAGE_BATOCERA_TARGET_ODROIDC4
 
 config BR2_PACKAGE_BATOCERA_RPI_VCORE
-        bool "batocera.linux support vcore RPI"
+	bool "batocera.linux support vcore RPI"
 
-        select BR2_PACKAGE_RPI_USERLAND
-        select BR2_PACKAGE_RASPI2PNG # screenshots
+	select BR2_PACKAGE_RPI_USERLAND
+	select BR2_PACKAGE_RASPI2PNG # screenshots
 
 config BR2_PACKAGE_BATOCERA_RPI_MESA3D
-        bool "batocera.linux driver mesa RPI"
+	bool "batocera.linux driver mesa RPI"
 
-        select BR2_PACKAGE_MESA3D
-        select BR2_PACKAGE_MESA3D_GALLIUM_DRIVER_KMSRO
-        select BR2_PACKAGE_MESA3D_GALLIUM_DRIVER_VC4
-        select BR2_PACKAGE_MESA3D_GALLIUM_DRIVER_V3D
-        select BR2_PACKAGE_MESA3D_OPENGL_ES
-        select BR2_PACKAGE_MESA3D_GBM
+	select BR2_PACKAGE_MESA3D
+	select BR2_PACKAGE_MESA3D_GALLIUM_DRIVER_KMSRO
+	select BR2_PACKAGE_MESA3D_GALLIUM_DRIVER_VC4
+	select BR2_PACKAGE_MESA3D_GALLIUM_DRIVER_V3D
+	select BR2_PACKAGE_MESA3D_OPENGL_ES
+	select BR2_PACKAGE_MESA3D_GBM
 
 config BR2_PACKAGE_BATOCERA_LINUX_FIRMWARES
-       bool "batocera.linux Firmwares packages selection"
+	bool "batocera.linux Firmwares packages selection"
 
-       select BR2_PACKAGE_ALLLINUXFIRMWARES
+	select BR2_PACKAGE_ALLLINUXFIRMWARES
 
-       # common firmwares
-       select BR2_PACKAGE_UX500_FIRMWARE
-       select BR2_PACKAGE_WILC1000_FIRMWARE
-       select BR2_PACKAGE_ZD1211_FIRMWARE
-       select BR2_PACKAGE_B43_FIRMWARE
+	# common firmwares
+	select BR2_PACKAGE_UX500_FIRMWARE
+	select BR2_PACKAGE_WILC1000_FIRMWARE
+	select BR2_PACKAGE_ZD1211_FIRMWARE
+	select BR2_PACKAGE_B43_FIRMWARE
 
-       # x86 (maybe some firmware could be for all, to be checked)
-       select BR2_PACKAGE_WILINK_BT_FIRMWARE if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
+	# x86 (maybe some firmware could be for all, to be checked)
+	select BR2_PACKAGE_WILINK_BT_FIRMWARE	if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
 
 
 config BR2_PACKAGE_BATOCERA_XORG
-       bool "batocera.linux xorgs packages selection"
+	bool "batocera.linux xorgs packages selection"
 
-       select BR2_PACKAGE_XORG7
-       select BR2_PACKAGE_XSERVER_XORG_SERVER
+	select BR2_PACKAGE_XORG7
+	select BR2_PACKAGE_XSERVER_XORG_SERVER
 
-       # xwayland based architecture (no more ddx drivers)
-       select BR2_PACKAGE_LIBEPOXY    # required to enable xorg glamor
-       select BR2_PACKAGE_WAYLAND_PROTOCOLS
-       select BR2_PACKAGE_XLIB_LIBXCOMPOSITE
+	# xwayland based architecture (no more ddx drivers)
+	select BR2_PACKAGE_LIBEPOXY		# required to enable xorg glamor
+	select BR2_PACKAGE_WAYLAND_PROTOCOLS
+	select BR2_PACKAGE_XLIB_LIBXCOMPOSITE
 
-       # drivers
-       select BR2_PACKAGE_XDRIVER_XF86_INPUT_EVDEV
-       select BR2_PACKAGE_XDRIVER_XF86_INPUT_KEYBOARD
-       select BR2_PACKAGE_XDRIVER_XF86_INPUT_LIBINPUT
+	# drivers
+	select BR2_PACKAGE_XDRIVER_XF86_INPUT_EVDEV
+	select BR2_PACKAGE_XDRIVER_XF86_INPUT_KEYBOARD
+	select BR2_PACKAGE_XDRIVER_XF86_INPUT_LIBINPUT
 
-       # GPU drivers (needed for old Nvidia&AMD cards for edid handshake with display)
-       select BR2_PACKAGE_XDRIVER_XF86_VIDEO_AMDGPU
-       select BR2_PACKAGE_XDRIVER_XF86_VIDEO_ATI
-       select BR2_PACKAGE_XDRIVER_XF86_VIDEO_NOUVEAU
-       select BR2_PACKAGE_XDRIVER_XF86_INTEL
-       select BR2_PACKAGE_BATOCERA_NVIDIA_DRIVER_XORG   if BR2_PACKAGE_BATOCERA_TARGET_X86_64
+	# GPU drivers (needed for old Nvidia&AMD cards for edid handshake with display)
+	select BR2_PACKAGE_XDRIVER_XF86_VIDEO_AMDGPU
+	select BR2_PACKAGE_XDRIVER_XF86_VIDEO_ATI
+	select BR2_PACKAGE_XDRIVER_XF86_VIDEO_NOUVEAU
+	select BR2_PACKAGE_XDRIVER_XF86_INTEL
+	select BR2_PACKAGE_BATOCERA_NVIDIA_DRIVER_XORG	if BR2_PACKAGE_BATOCERA_TARGET_X86_64
 
-       # applications
-       select BR2_PACKAGE_XAPP_SETXKBMAP
-       select BR2_PACKAGE_XAPP_XEV
-       select BR2_PACKAGE_XAPP_XINIT
-       select BR2_PACKAGE_XAPP_XINPUT
-       select BR2_PACKAGE_XAPP_XRANDR # required for resolution manipulation
-       select BR2_PACKAGE_XAPP_XSET   # X11 Xset command
+	# applications
+	select BR2_PACKAGE_XAPP_SETXKBMAP
+	select BR2_PACKAGE_XAPP_XEV
+	select BR2_PACKAGE_XAPP_XINIT
+	select BR2_PACKAGE_XAPP_XINPUT
+	select BR2_PACKAGE_XAPP_XRANDR # required for resolution manipulation
+	select BR2_PACKAGE_XAPP_XSET   # X11 Xset command
 
-       select BR2_PACKAGE_BATOCERA_DESKTOPAPPS              # batocera applications config and scripts
-       select BR2_PACKAGE_LIBGTK3		            # gtk3 library
-       select BR2_PACKAGE_L3AFPAD                           # gtk3 text editor
-       select BR2_PACKAGE_PCMANFM                           # file manager
-       select BR2_PACKAGE_GVFS                              if BR2_PACKAGE_PCMANFM # file systems (trash, smb, ... in pcmanfm)
-       select BR2_PACKAGE_ADWAITA_ICON_THEME_LIGHT          if BR2_PACKAGE_PCMANFM # theme for file manager
-       select BR2_PACKAGE_XTERM                             # terminal
-       select BR2_PACKAGE_OPENBOX                           # window manager
-       select BR2_PACKAGE_UNCLUTTER                         # hide mouse
+	select BR2_PACKAGE_BATOCERA_DESKTOPAPPS			# batocera applications config and scripts
+	select BR2_PACKAGE_LIBGTK3				# gtk3 library
+	select BR2_PACKAGE_L3AFPAD				# gtk3 text editor
+	select BR2_PACKAGE_PCMANFM				# file manager
+	select BR2_PACKAGE_GVFS					if BR2_PACKAGE_PCMANFM # file systems (trash, smb, ... in pcmanfm)
+	select BR2_PACKAGE_ADWAITA_ICON_THEME_LIGHT		if BR2_PACKAGE_PCMANFM # theme for file manager
+	select BR2_PACKAGE_XTERM				# terminal
+	select BR2_PACKAGE_OPENBOX				# window manager
+	select BR2_PACKAGE_UNCLUTTER				# hide mouse
 
 
 config BR2_PACKAGE_BATOCERA_GPU_X86
-       bool "batocera.linux GPU support for x86 platform"
+	bool "batocera.linux GPU support for x86 platform"
 
-       # nvidia
-       select BR2_PACKAGE_LIBGLVND             if BR2_PACKAGE_BATOCERA_TARGET_X86    # already set by nvidia for x86_64, but required on x86 for pcsx2
-       select BR2_PACKAGE_BATOCERA_NVIDIA_DRIVER        if BR2_PACKAGE_BATOCERA_TARGET_X86_64
-       select BR2_PACKAGE_BATOCERA_NVIDIA_DRIVER_MODULE if BR2_PACKAGE_BATOCERA_TARGET_X86_64
+	# nvidia
+	select BR2_PACKAGE_LIBGLVND				if BR2_PACKAGE_BATOCERA_TARGET_X86    # already set by nvidia for x86_64, but required on x86 for pcsx2
+	select BR2_PACKAGE_BATOCERA_NVIDIA_DRIVER		if BR2_PACKAGE_BATOCERA_TARGET_X86_64
+	select BR2_PACKAGE_BATOCERA_NVIDIA_DRIVER_MODULE	if BR2_PACKAGE_BATOCERA_TARGET_X86_64
 
-       # mesa
-       select BR2_PACKAGE_MESA3D
-       select BR2_PACKAGE_MESA3D_DRI_DRIVER_I915			if  BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
-       select BR2_PACKAGE_MESA3D_DRI_DRIVER_I965			if  BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
-       select BR2_PACKAGE_MESA3D_GALLIUM_DRIVER_SWRAST		
-       select BR2_PACKAGE_MESA3D_GALLIUM_DRIVER_SVGA		
-       select BR2_PACKAGE_MESA3D_GALLIUM_DRIVER_ETNAVIV		if !BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
-       select BR2_PACKAGE_MESA3D_GALLIUM_DRIVER_IRIS		if  BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
-       select BR2_PACKAGE_MESA3D_GALLIUM_DRIVER_NOUVEAU		if  BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
-       select BR2_PACKAGE_MESA3D_GALLIUM_DRIVER_KMSRO		if !BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
-       select BR2_PACKAGE_MESA3D_GALLIUM_DRIVER_LIMA		if !BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
-       select BR2_PACKAGE_MESA3D_GALLIUM_DRIVER_PANFROST	if !BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
-       select BR2_PACKAGE_MESA3D_GALLIUM_DRIVER_R600		if  BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
-       select BR2_PACKAGE_MESA3D_GALLIUM_DRIVER_RADEONSI	if  BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
-       #select BR2_PACKAGE_MESA3D_GALLIUM_DRIVER_FREEDRENO   if !BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
-       select BR2_PACKAGE_MESA3D_GALLIUM_DRIVER_VIRGL		if  BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
-       select BR2_PACKAGE_MESA3D_GALLIUM_DRIVER_TEGRA		if !BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
-       select BR2_PACKAGE_MESA3D_GALLIUM_DRIVER_R300		if  BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
-       select BR2_PACKAGE_MESA3D_OPENGL_ES
-       select BR2_PACKAGE_MESA3D_OPENGL_EGL
-       select BR2_PACKAGE_MESA3D_OPENGL_GLX			if  BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
-       select BR2_PACKAGE_MESA3D_LLVM
-       select BR2_PACKAGE_MESA3D_DEMOS
+	# mesa
+	select BR2_PACKAGE_MESA3D
+	select BR2_PACKAGE_MESA3D_DRI_DRIVER_I915		if  BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
+	select BR2_PACKAGE_MESA3D_DRI_DRIVER_I965		if  BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
+	select BR2_PACKAGE_MESA3D_GALLIUM_DRIVER_SWRAST		
+	select BR2_PACKAGE_MESA3D_GALLIUM_DRIVER_SVGA		
+	select BR2_PACKAGE_MESA3D_GALLIUM_DRIVER_ETNAVIV	if !BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
+	select BR2_PACKAGE_MESA3D_GALLIUM_DRIVER_IRIS		if  BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
+	select BR2_PACKAGE_MESA3D_GALLIUM_DRIVER_NOUVEAU	if  BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
+	select BR2_PACKAGE_MESA3D_GALLIUM_DRIVER_KMSRO		if !BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
+	select BR2_PACKAGE_MESA3D_GALLIUM_DRIVER_LIMA		if !BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
+	select BR2_PACKAGE_MESA3D_GALLIUM_DRIVER_PANFROST	if !BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
+	select BR2_PACKAGE_MESA3D_GALLIUM_DRIVER_R600		if  BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
+	select BR2_PACKAGE_MESA3D_GALLIUM_DRIVER_RADEONSI	if  BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
+	#select BR2_PACKAGE_MESA3D_GALLIUM_DRIVER_FREEDRENO	if !BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
+	select BR2_PACKAGE_MESA3D_GALLIUM_DRIVER_VIRGL		if  BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
+	select BR2_PACKAGE_MESA3D_GALLIUM_DRIVER_TEGRA		if !BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
+	select BR2_PACKAGE_MESA3D_GALLIUM_DRIVER_R300		if  BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
+	select BR2_PACKAGE_MESA3D_OPENGL_ES
+	select BR2_PACKAGE_MESA3D_OPENGL_EGL
+	select BR2_PACKAGE_MESA3D_OPENGL_GLX			if  BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
+	select BR2_PACKAGE_MESA3D_LLVM
+	select BR2_PACKAGE_MESA3D_DEMOS
 
 ### ### ###
