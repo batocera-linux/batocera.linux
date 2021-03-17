@@ -8,18 +8,10 @@ import os
 from utils.logger import eslog
 from os import path
 from os import environ
-import ConfigParser
+import configparser
 import yaml
 import json
-import rpcs3Controllers
-
-from yaml.dumper import Dumper
-from yaml.representer import SafeRepresenter
-
-class KludgeDumper(Dumper):
-    pass
-KludgeDumper.add_representer(str, SafeRepresenter.represent_str)
-KludgeDumper.add_representer(unicode, SafeRepresenter.represent_unicode)
+from . import rpcs3Controllers
 
 class Rpcs3Generator(Generator):
 
@@ -33,7 +25,7 @@ class Rpcs3Generator(Generator):
             
         # Generates CurrentSettings.ini with values to disable prompts on first run
         
-        rpcsCurrentSettings = ConfigParser.ConfigParser()
+        rpcsCurrentSettings = configparser.ConfigParser()
         # To prevent ConfigParser from converting to lower case
         rpcsCurrentSettings.optionxform = str
         if os.path.exists(batoceraFiles.rpcs3CurrentConfig):

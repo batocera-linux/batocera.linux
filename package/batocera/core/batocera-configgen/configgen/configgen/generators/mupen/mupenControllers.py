@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import os
-import ConfigParser
+import configparser
 from controllersConfig import Input
 from xml.dom import minidom
 
@@ -73,7 +73,7 @@ def defineControllerKeys(controller, systemconfig):
         # the input.xml adds 2 directions per joystick, ES handles just 1
         fakeSticks = { 'joystick2up' : 'joystick2down', 'joystick2left' : 'joystick2right'}
         # Cheat on the controller
-        for realStick, fakeStick in fakeSticks.iteritems():
+        for realStick, fakeStick in fakeSticks.items():
                 if realStick in controller.inputs:
                     if controller.inputs[realStick].type == "axis":
                         print(fakeStick + "-> " + realStick)

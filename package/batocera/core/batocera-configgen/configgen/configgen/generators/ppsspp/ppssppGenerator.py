@@ -3,13 +3,13 @@ import Command
 #~ import reicastControllers
 import batoceraFiles
 from generators.Generator import Generator
-import ppssppConfig
-import ppssppControllers
 import shutil
 import os.path
-import ConfigParser
+import configparser
 # TODO: python3 - delete me!
 import codecs
+from . import ppssppConfig
+from . import ppssppControllers
 
 class PPSSPPGenerator(Generator):
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import cannonballGenerator
+from . import cannonballGenerator
 
 cannonballJoystick = {
     "b": "acc",
