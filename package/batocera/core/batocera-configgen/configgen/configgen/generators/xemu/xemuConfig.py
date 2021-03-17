@@ -6,10 +6,10 @@ import io
 import batoceraFiles
 import settings
 from Emulator import Emulator
-import ConfigParser
+import configparser
 
 def writeIniFile(system, rom, playersControllers):
-    iniConfig = ConfigParser.ConfigParser()
+    iniConfig = configparser.ConfigParser()
     # To prevent ConfigParser from converting to lower case
     iniConfig.optionxform = str
     if os.path.exists(batoceraFiles.xemuConfig):

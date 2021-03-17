@@ -2,12 +2,12 @@
 
 from generators.Generator import Generator
 import batoceraFiles
-import cannonballControllers
 import os
 from xml.dom import minidom
 import codecs
 import Command
 from utils.logger import eslog
+from . import cannonballControllers
 
 class CannonballGenerator(Generator):
 

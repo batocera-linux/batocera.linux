@@ -3,11 +3,11 @@
 import Command
 import batoceraFiles
 from generators.Generator import Generator
-import openborControllers
 import os
 import re
 from settings.unixSettings import UnixSettings
 from utils.logger import eslog
+from . import openborControllers
 
 class OpenborGenerator(Generator):
 

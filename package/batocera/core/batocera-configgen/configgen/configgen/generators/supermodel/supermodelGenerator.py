@@ -4,7 +4,7 @@ import Command
 from generators.Generator import Generator
 import controllersConfig
 import os
-import ConfigParser
+import configparser
 import io
 import re
 from shutil import copyfile
@@ -93,14 +93,14 @@ def configPadsIni(playersControllers):
     }
 
     # template
-    templateConfig = ConfigParser.ConfigParser()
+    templateConfig = configparser.ConfigParser()
     # To prevent ConfigParser from converting to lower case
     templateConfig.optionxform = str
     with io.open(templateFile, 'r', encoding='utf_8_sig') as fp:
         templateConfig.readfp(fp)
 
     # target
-    targetConfig = ConfigParser.ConfigParser()
+    targetConfig = configparser.ConfigParser()
     # To prevent ConfigParser from converting to lower case
     targetConfig.optionxform = str
 

@@ -3,9 +3,9 @@
 import Command
 import batoceraFiles
 from generators.Generator import Generator
-import daphneControllers
 import shutil
 import os
+from . import daphneControllers
 
 class DaphneGenerator(Generator):
 

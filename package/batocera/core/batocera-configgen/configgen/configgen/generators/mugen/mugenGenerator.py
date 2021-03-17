@@ -4,7 +4,7 @@ from generators.Generator import Generator
 import Command
 import os
 import controllersConfig
-import ConfigParser
+import configparser
 import re
 
 class MugenGenerator(Generator):
@@ -20,7 +20,7 @@ class MugenGenerator(Generator):
 
     def generate(self, system, rom, playersControllers, gameResolution):
 
-        settings = ConfigParser.ConfigParser()
+        settings = configparser.ConfigParser()
         # To prevent ConfigParser from converting to lower case
         settings.optionxform = str
         settings_path = rom + "/data/mugen.cfg"

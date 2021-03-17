@@ -8,8 +8,8 @@ import batoceraFiles
 from xml.dom import minidom
 import codecs
 import controllersConfig
-import cemuControllers
 from shutil import copyfile
+from . import cemuControllers
 
 class CemuGenerator(Generator):
 

@@ -4,7 +4,7 @@
 import batoceraFiles
 import os
 from Emulator import Emulator
-import ConfigParser
+import configparser
 
 viceJoystick = {
             "up":               "0 1 # 1 1 1",

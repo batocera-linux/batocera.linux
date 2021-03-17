@@ -4,7 +4,7 @@
 import batoceraFiles
 import os
 from Emulator import Emulator
-import ConfigParser
+import configparser
 
 daphneKeyboard = {
                     "KEY_UP":           "1073741906 0",
@@ -59,7 +59,7 @@ daphneJoystick = {
 # Create the controller configuration file
 def generateControllerConfig(daphneConfigFile, playersControllers):
     # ini file
-    daphneConfig = ConfigParser.RawConfigParser()
+    daphneConfig = configparser.RawConfigParser()
     if os.path.exists(daphneConfigFile):
         daphneConfig.read(daphneConfigFile)
 
