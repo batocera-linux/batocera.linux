@@ -532,7 +532,6 @@ dos:
     dosboxx:
       dosbox-x:         { requireAnyOf: [BR2_PACKAGE_DOSBOX_X], incompatible_extensions: [zip] }
     libretro:
-      dosbox:           { requireAnyOf: [BR2_PACKAGE_LIBRETRO_DOSBOX], incompatible_extensions: [zip] }
       dosbox_pure:      { requireAnyOf: [BR2_PACKAGE_LIBRETRO_DOSBOX_PURE] }
   comment_en: |
     Each game (files) must be placed its own directory having the ".pc .dos" extension.
