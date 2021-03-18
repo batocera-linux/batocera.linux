@@ -23,7 +23,7 @@ class DolphinGenerator(Generator):
 
         ## dolphin.ini ##
 
-        dolphinSettings = configparser.ConfigParser()
+        dolphinSettings = configparser.ConfigParser(interpolation=None)
         # To prevent ConfigParser from converting to lower case
         dolphinSettings.optionxform = str
         if os.path.exists(batoceraFiles.dolphinIni):
@@ -112,7 +112,7 @@ class DolphinGenerator(Generator):
 
         ## gfx.ini ##
 
-        dolphinGFXSettings = configparser.ConfigParser()
+        dolphinGFXSettings = configparser.ConfigParser(interpolation=None)
         # To prevent ConfigParser from converting to lower case
         dolphinGFXSettings.optionxform = str
         dolphinGFXSettings.read(batoceraFiles.dolphinGfxIni)

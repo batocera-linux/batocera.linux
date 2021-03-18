@@ -113,7 +113,7 @@ ppssppMapping =  { 'a' :             {'button': 'Circle'},
 def generateControllerConfig(controller):
     # Set config file name
     configFileName = batoceraFiles.ppssppControlsIni
-    Config = configparser.ConfigParser()
+    Config = configparser.ConfigParser(interpolation=None)
     Config.optionxform = str
     # We need to read the default file as PPSSPP needs the keyboard defs ine the controlls.ini file otherwise the GYUI won't repond
     Config.read(batoceraFiles.ppssppControlsInit)

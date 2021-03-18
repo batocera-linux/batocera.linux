@@ -18,7 +18,7 @@ class FlycastGenerator(Generator):
     # Configure fba and return a command
     def generate(self, system, rom, playersControllers, gameResolution):
         # Write emu.cfg to map joysticks, init with the default emu.cfg
-        Config = configparser.ConfigParser()
+        Config = configparser.ConfigParser(interpolation=None)
         Config.optionxform = str
         if os.path.exists(batoceraFiles.flycastConfig):
             try:
