@@ -120,9 +120,6 @@ class LibretroGenerator(Generator):
         if system.name == 'easyrpg' and system.config['core'] == "easyrpg":
             rom = rom + '/RPG_RT.ldb'
         
-        if system.name == 'dos' and system.config['core'] == "dosbox":
-            rom = 'set ROOT=' + rom
-
         if system.name == 'scummvm':
             rom = os.path.dirname(rom) + '/' + romName[0:-8]
         
