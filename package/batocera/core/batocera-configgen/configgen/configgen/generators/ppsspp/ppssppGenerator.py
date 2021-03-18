@@ -41,7 +41,7 @@ class PPSSPPGenerator(Generator):
 
         # The next line is a reminder on how to quit PPSSPP with just the HK
         #commandArray = [batoceraFiles.batoceraBins[system.config['emulator']], rom, "--escape-exit"]
-        return Command.Command(array=commandArray, env={"XDG_CONFIG_HOME":batoceraFiles.CONF, "PPSSPP_GAME_CONTROLLER_DB_PATH": batoceraFiles.ppssppControls})
+        return Command.Command(array=commandArray, env={"XDG_CONFIG_HOME":batoceraFiles.CONF, "QT_QPA_PLATFORM":"xcb", "PPSSPP_GAME_CONTROLLER_DB_PATH": batoceraFiles.ppssppControls})
 
     @staticmethod
     def isLowResolution(gameResolution):

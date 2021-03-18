@@ -1511,7 +1511,7 @@ def generateCoreSettings(coreSettings, system, rom):
     coreSettings.write()
 
 def generateHatariConf(hatariConf):
-    hatariConfig = configparser.ConfigParser()
+    hatariConfig = configparser.ConfigParser(interpolation=None)
     # To prevent ConfigParser from converting to lower case
     hatariConfig.optionxform = str
     if os.path.exists(hatariConf):

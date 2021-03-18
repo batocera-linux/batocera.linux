@@ -93,14 +93,14 @@ def configPadsIni(playersControllers):
     }
 
     # template
-    templateConfig = configparser.ConfigParser()
+    templateConfig = configparser.ConfigParser(interpolation=None)
     # To prevent ConfigParser from converting to lower case
     templateConfig.optionxform = str
     with io.open(templateFile, 'r', encoding='utf_8_sig') as fp:
         templateConfig.readfp(fp)
 
     # target
-    targetConfig = configparser.ConfigParser()
+    targetConfig = configparser.ConfigParser(interpolation=None)
     # To prevent ConfigParser from converting to lower case
     targetConfig.optionxform = str
 

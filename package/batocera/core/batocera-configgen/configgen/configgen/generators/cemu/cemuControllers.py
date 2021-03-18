@@ -51,7 +51,7 @@ def generateControllerConfig(system, playersControllers, rom):
     nplayer = 0
 
     for playercontroller, pad in sorted(playersControllers.items()):
-        cemuSettings = configparser.ConfigParser()
+        cemuSettings = configparser.ConfigParser(interpolation=None)
         cemuSettings.optionxform = str
 
         #Add Default Sections

@@ -12,7 +12,7 @@ class MupenGenerator(Generator):
     def generate(self, system, rom, playersControllers, gameResolution):
 
         # Read the configuration file
-        iniConfig = configparser.ConfigParser()
+        iniConfig = configparser.ConfigParser(interpolation=None)
         # To prevent ConfigParser from converting to lower case
         iniConfig.optionxform = str
         if os.path.exists(batoceraFiles.mupenCustom):
