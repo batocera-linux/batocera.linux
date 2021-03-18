@@ -37,30 +37,6 @@ Fix X11 reference when building without it
 Add rockchip platform
 Use "/opt/vc" as include path so the buildroot package replaces it with the correct staging folder
 Also include libdrm and gbm for compatibility with resolution switcher, otherwise not needed
---- a/shell/linux/Makefile
-+++ b/shell/linux/Makefile
-@@ -209,6 +223,20 @@ else ifneq (,$(findstring odroid,$(platform)))
-         endif
-     endif
- 
-+# ROCKCHIP
-+else ifneq (,$(findstring rockchip,$(platform)))
-+    MFLAGS += -marm -march=armv8-a+crc -mfpu=neon -mfloat-abi=hard -funroll-loops -mtune=cortex-a53
-+    ASFLAGS += -march=armv8-a+crc -mfpu=neon -mfloat-abi=hard
-+    CXXFLAGS += -fexceptions
-+    CFLAGS += -D TARGET_LINUX_ARMv8 -DARM_HARDFP -fsingle-precision-constant -DPNG_ARM_NEON=1 -DPNG_ARM_NEON_OPT=1 -DMESA_EGL_NO_X11_HEADERS=1 -DEGL_NO_X11=1 -fpermissive -fno-builtin-sqrtf
-+    INCS +=  -I/opt/vc/include/ -I/opt/vc/include/libdrm
-+    LIBS += -lpng -lz -ldrm -lGLESv2
-+    USE_GLES := 1
-+    USE_EVDEV := 1
-+    USE_UDEV := 1
-+    FOR_LINUX := 1
-+    ISARM64 := 1
-+
- # GCW Zero
- else ifneq (,$(findstring gcwz,$(platform)))
-     NOT_ARM := 1
-
 Don't include khronos, use system files
 --- a/shell/linux/Makefile
 +++ b/shell/linux/Makefile
