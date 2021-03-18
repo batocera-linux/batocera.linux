@@ -1,0 +1,21 @@
+--- a/shell/linux/Makefile	2021-03-18 09:57:14.477028894 +0100
++++ b/shell/linux/Makefile	2021-03-18 09:59:23.987026974 +0100
+@@ -308,15 +308,16 @@
+     MFLAGS += -marm -march=armv8-a+crc -mfpu=neon -mfloat-abi=hard -funroll-loops -mtune=cortex-a53
+     ASFLAGS += -march=armv8-a+crc -mfpu=neon -mfloat-abi=hard
+     CXXFLAGS += -fexceptions
+-    CFLAGS += -fsingle-precision-constant -DMESA_EGL_NO_X11_HEADERS=1 -DEGL_NO_X11=1 -fpermissive -fno-builtin-sqrtf
++    CFLAGS += -D TARGET_LINUX_ARMv8 -DARM_HARDFP -fsingle-precision-constant -DPNG_ARM_NEON=1 -DPNG_ARM_NEON_OPT=1 -DMESA_EGL_NO_X11_HEADERS=1 -DEGL_NO_X11=1 -fpermissive -fno-builtin-sqrtf
+     INCS +=  -I/opt/vc/include/ -I/opt/vc/include/libdrm
+-    LIBS += -ldrm -lGLESv2
++    LIBS += -lpng -lz -ldrm -lGLESv2
+     USE_GLES := 1
+     USE_EVDEV := 1
+     USE_UDEV := 1
+     FOR_LINUX := 1
+     ISARM64 := 1
+ 
++
+ # Vero4K
+ else ifneq (,$(findstring vero4k,$(platform)))
+     MFLAGS += -marm -march=armv8-a+crc -mtune=cortex-a53 -mfloat-abi=hard -funsafe-math-optimizations -funroll-loops
