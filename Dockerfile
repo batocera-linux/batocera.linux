@@ -10,6 +10,7 @@ RUN dpkg --add-architecture i386 && \
 		libncurses6 \
 		libncurses-dev \
 		libssl-dev \
+		libsdl2-dev \
 		mercurial \
 		texinfo \
 		zip \
