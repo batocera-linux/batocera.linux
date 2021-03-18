@@ -2,7 +2,7 @@ FROM ubuntu:20.10
 ARG DEBIAN_FRONTEND=noninteractive
 RUN dpkg --add-architecture i386 && \
 	apt-get update && \
-	apt-get install -y --no-install-recommends -o APT::Immediate-Configure=0 libc6:i386 \
+	apt-get install -y -o APT::Immediate-Configure=0 libc6:i386 \
 		libncurses6:i386 \
 		libstdc++6:i386 \
 		build-essential \
