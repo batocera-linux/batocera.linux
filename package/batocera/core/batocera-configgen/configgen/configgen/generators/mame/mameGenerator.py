@@ -329,7 +329,7 @@ class MameGenerator(Generator):
 
         infofile = tmpdir + "/infos.xml"
         f = open(infofile, "w")
-        f.write(out)
+        f.write(out.decode())
         f.close()
 
         infos = minidom.parse(infofile)
