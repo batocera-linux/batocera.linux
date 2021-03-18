@@ -15,7 +15,7 @@ def setViceConfig(viceConfigFile, system):
             os.makedirs(os.path.dirname(viceConfigRC))
 
     # config file
-    viceConfig = configparser.RawConfigParser()
+    viceConfig = configparser.RawConfigParser(interpolation=None)
     viceConfig.optionxform=str
     
     if os.path.exists(viceConfigRC):

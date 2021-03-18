@@ -12,7 +12,7 @@ class DuckstationGenerator(Generator):
     def generate(self, system, rom, playersControllers, gameResolution):
         commandArray = ["duckstation", "-batch", "-fullscreen", "--", rom ]
 
-        settings = configparser.ConfigParser()
+        settings = configparser.ConfigParser(interpolation=None)
         # To prevent ConfigParser from converting to lower case
         settings.optionxform = str
         settings_path = batoceraFiles.SAVES + "/duckstation/settings.ini"

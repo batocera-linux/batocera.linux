@@ -25,7 +25,7 @@ class Rpcs3Generator(Generator):
             
         # Generates CurrentSettings.ini with values to disable prompts on first run
         
-        rpcsCurrentSettings = configparser.ConfigParser()
+        rpcsCurrentSettings = configparser.ConfigParser(interpolation=None)
         # To prevent ConfigParser from converting to lower case
         rpcsCurrentSettings.optionxform = str
         if os.path.exists(batoceraFiles.rpcs3CurrentConfig):

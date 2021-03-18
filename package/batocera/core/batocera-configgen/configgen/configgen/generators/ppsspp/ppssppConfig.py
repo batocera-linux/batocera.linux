@@ -9,7 +9,7 @@ from Emulator import Emulator
 import configparser
 
 def writePPSSPPConfig(system):
-    iniConfig = configparser.ConfigParser()
+    iniConfig = configparser.ConfigParser(interpolation=None)
     # To prevent ConfigParser from converting to lower case
     iniConfig.optionxform = str
     if os.path.exists(batoceraFiles.ppssppConfig):

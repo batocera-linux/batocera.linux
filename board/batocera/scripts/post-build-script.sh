@@ -39,6 +39,9 @@ rm -f "${TARGET_DIR}/etc/init.d/S40xorg" || exit 1
 # remove the S10triggerhappy
 rm -f "${TARGET_DIR}/etc/init.d/S10triggerhappy" || exit 1
 
+# remove the S40bluetooth
+rm -f "${TARGET_DIR}/etc/init.d/S40bluetooth" || exit 1
+
 # we want an empty boot directory (grub installation copy some files in the target boot directory)
 rm -rf "${TARGET_DIR}/boot/grub" || exit 1
 

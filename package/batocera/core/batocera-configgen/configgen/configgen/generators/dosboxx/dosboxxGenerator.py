@@ -22,7 +22,7 @@ class DosBoxxGenerator(Generator):
             configFile = gameConfFile
 
         # configuration file
-        iniSettings = configparser.ConfigParser()
+        iniSettings = configparser.ConfigParser(interpolation=None)
         # To prevent ConfigParser from converting to lower case
         iniSettings.optionxform = str
 

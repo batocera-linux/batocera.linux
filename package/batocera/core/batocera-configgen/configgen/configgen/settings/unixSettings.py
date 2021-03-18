@@ -18,7 +18,7 @@ class UnixSettings():
 
         # use ConfigParser as backend.
         eslog.debug("Creating parser for {0}".format(self.settingsFile))
-        self.config = configparser.ConfigParser()
+        self.config = configparser.ConfigParser(interpolation=None)
         # To prevent ConfigParser from converting to lower case
         self.config.optionxform = str
 
@@ -56,7 +56,7 @@ class UnixSettings():
     def save(self, name, value):
         eslog.debug("Writing {0} = {1} to {2}".format(name, value, self.settingsFile))
         # TODO: do we need proper section support? PSP config is an ini file
-        self.config.set('DEFAULT', name, str(value).replace('%', '%%'))
+        self.config.set('DEFAULT', name, str(value))
 
     def disable(self, name):
         # unused?

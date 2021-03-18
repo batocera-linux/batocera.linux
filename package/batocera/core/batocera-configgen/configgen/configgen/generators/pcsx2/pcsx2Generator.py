@@ -96,7 +96,7 @@ def configureVM(config_directory, system):
         f.close()
     
     # this file looks like a .ini
-    pcsx2VMConfig = configparser.ConfigParser()
+    pcsx2VMConfig = configparser.ConfigParser(interpolation=None)
     # To prevent ConfigParser from converting to lower case
     pcsx2VMConfig.optionxform = str   
     
@@ -212,7 +212,7 @@ def configureUI(config_directory, bios_directory, system_config, gameResolution)
     resolution = getGfxRatioFromConfig(system_config, gameResolution)
 
     # this file looks like a .ini, but no, it miss the first section name...
-    iniConfig = configparser.ConfigParser()
+    iniConfig = configparser.ConfigParser(interpolation=None)
     # To prevent ConfigParser from converting to lower case
     iniConfig.optionxform = str
     if os.path.exists(configFileName):

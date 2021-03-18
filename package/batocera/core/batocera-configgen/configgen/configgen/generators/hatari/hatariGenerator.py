@@ -68,7 +68,7 @@ class HatariGenerator(Generator):
 
     @staticmethod
     def generateConfig(system, playersControllers):
-        config = configparser.ConfigParser()
+        config = configparser.ConfigParser(interpolation=None)
         # To prevent ConfigParser from converting to lower case
         config.optionxform = str
 
