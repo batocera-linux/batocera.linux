@@ -82,8 +82,8 @@ class DolphinGenerator(Generator):
             dolphinSettings.set("Core", "SyncGPU", '"False"')
 
         # Language (for gamecube at least)
-        dolphinSettings.set("Core", "SelectedLanguage", getGameCubeLangFromEnvironment())
-        dolphinSettings.set("Core", "GameCubeLanguage", getGameCubeLangFromEnvironment())
+        dolphinSettings.set("Core", "SelectedLanguage", str(getGameCubeLangFromEnvironment()))
+        dolphinSettings.set("Core", "GameCubeLanguage", str(getGameCubeLangFromEnvironment()))
 
         # Enable MMU
         if system.isOptSet("enable_mmu") and system.getOptBoolean("enable_mmu"):
@@ -127,7 +127,7 @@ class DolphinGenerator(Generator):
         if not dolphinGFXSettings.has_section("Hardware"):
             dolphinGFXSettings.add_section("Hardware")  
             
-        dolphinGFXSettings.set("Settings", "AspectRatio", getGfxRatioFromConfig(system.config, gameResolution))
+        dolphinGFXSettings.set("Settings", "AspectRatio", str(getGfxRatioFromConfig(system.config, gameResolution)))
 
         # Show fps
         if system.isOptSet("showFPS") and system.getOptBoolean("showFPS"):
@@ -189,7 +189,7 @@ class DolphinGenerator(Generator):
 
         # VSync
         if system.isOptSet('vsync'):
-            dolphinGFXSettings.set("Hardware", "VSync", system.getOptBoolean('vsync'))
+            dolphinGFXSettings.set("Hardware", "VSync", str(system.getOptBoolean('vsync')))
         else:
             dolphinGFXSettings.set("Hardware", "VSync", '"True"')
 
