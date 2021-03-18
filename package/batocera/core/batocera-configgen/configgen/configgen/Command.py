@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
 class Command:
     def __init__(self, array, env=dict()):

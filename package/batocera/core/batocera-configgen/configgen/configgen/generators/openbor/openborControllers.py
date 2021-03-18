@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 from utils.logger import eslog
 
 def generateControllerConfig(config, playersControllers, core):
