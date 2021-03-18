@@ -1,8 +1,8 @@
 FROM ubuntu:20.10
 ARG DEBIAN_FRONTEND=noninteractive
 RUN dpkg --add-architecture i386 && \
-	apt update && \
-	apt install -y -o APT::Immediate-Configure=0 libc6:i386 \
+	apt-get update && \
+	apt-get install -y --no-install-recommends -o APT::Immediate-Configure=0 libc6:i386 \
 		libncurses6:i386 \
 		libstdc++6:i386 \
 		build-essential \
@@ -37,7 +37,8 @@ RUN dpkg --add-architecture i386 && \
 		python \
 		gcc-multilib \
 		g++-multilib \
-	&& apt clean
+	&& apt-get clean \
+	&& rm -rf /var/lib/apt/lists/*
 
 # Set locale
 RUN sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen && \
