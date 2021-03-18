@@ -1,0 +1,10 @@
+--- a/xbmc/addons/kodi-dev-kit/include/kodi/gui/gl/GL.h	2021-03-18 20:40:00.919793852 +0100
++++ b/xbmc/addons/kodi-dev-kit/include/kodi/gui/gl/GL.h	2021-03-18 20:40:07.569793748 +0100
+@@ -95,7 +95,6 @@
+ #else
+ #if HAS_GLES == 3
+ #include <GLES3/gl3.h>
+-#include <GLES3/gl3ext.h>
+ #else
+ #include <GLES2/gl2.h>
+ #include <GLES2/gl2ext.h>
