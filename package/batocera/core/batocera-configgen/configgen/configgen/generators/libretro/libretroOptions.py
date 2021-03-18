@@ -329,24 +329,6 @@ def generateCoreSettings(coreSettings, system, rom):
             coreSettings.save('vecx_res_multi', '"1"')
 
     # Microsoft DOS
-    if (system.config['core'] == 'dosbox'):
-        # Active PC Speaker
-        coreSettings.save('dosbox_svn_pcspeaker', '"true"')
-        # Show Advenced Options
-        coreSettings.save('dosbox_svn_adv_options', '"true"')
-        # CPU Cycles Auto (must use 'bat' files for specific games)
-        coreSettings.save('dosbox_svn_cpu_cycles_mode', '"auto"')
-        # Timing Mode (FPS)
-        if system.isOptSet('core_timing'):
-            coreSettings.save('dosbox_svn_core_timing', system.config['core_timing'])
-        else:
-            coreSettings.save('dosbox_svn_core_timing', '"external"')
-        # Video Filter
-        if system.isOptSet('filter'):
-            coreSettings.save('dosbox_svn_scaler', system.config['filter'])
-        else:
-            coreSettings.save('dosbox_svn_scaler', '"none"')
-
     if (system.config['core'] == 'dosbox_pure'):
         # CPU Type
         if system.isOptSet('pure_cpu_type') and system.config['pure_cpu_type'] != "automatic":
