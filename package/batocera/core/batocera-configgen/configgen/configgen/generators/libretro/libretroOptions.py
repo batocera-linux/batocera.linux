@@ -1002,6 +1002,11 @@ def generateCoreSettings(coreSettings, system, rom):
 
     # Sega Dreamcast / Atomiswave / Naomi
     if (system.config['core'] == 'flycast'):
+        # Synchronous rendering
+        if system.isOptSet('reicast_synchronous_rendering'):
+            coreSettings.save('reicast_synchronous_rendering', system.config['reicast_synchronous_rendering'])
+        else:
+            coreSettings.save('reicast_synchronous_rendering', '"enabled"')
         # Threaded Rendering
         coreSettings.save('reicast_threaded_rendering',  '"enabled"')
         # Enable controller force feedback
