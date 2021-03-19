@@ -46,22 +46,10 @@ class UnixSettings():
             eslog.debug("Wrong value detected (after % char maybe?), ignoring.")
         fp.close()
 
-    def load(self, name, default=None):
-        try:
-            eslog.debug("Looking for {0} in {1}".format(name, self.settingsFile))
-            return self.config.get('DEFAULT', name, default)
-        except configparser.NoOptionError as e:
-            return None
-
     def save(self, name, value):
         eslog.debug("Writing {0} = {1} to {2}".format(name, value, self.settingsFile))
         # TODO: do we need proper section support? PSP config is an ini file
         self.config.set('DEFAULT', name, str(value))
-
-    def disable(self, name):
-        # unused?
-        raise Exception
-        self.config.remove(name)
 
     def disableAll(self, name):
         eslog.debug("Disabling {0} from {1}".format(name, self.settingsFile))

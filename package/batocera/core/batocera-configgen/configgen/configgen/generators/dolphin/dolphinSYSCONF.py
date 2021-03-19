@@ -47,7 +47,7 @@ def readWriteEntry(f, setval):
             itemValue = setval[itemName]
             writeInt8(f, itemValue)
         else:
-            raise Exception("not writable type {} : %{}%".format(itemType))
+            raise Exception("not writable type {}".format(itemType))
     else:
         if itemType == 1: # big array
             dataSize = readBEInt16(f) + 1
@@ -69,7 +69,7 @@ def readWriteEntry(f, setval):
         elif itemType == 7: # bool
             itemValue = readInt8(f)
         else:
-            raise Exception("unknown type {} : %{}%".format(itemType))
+            raise Exception("unknown type {}".format(itemType))
 
     if not setval or itemName in setval:
         print('{:12s} = {}'.format(itemName, itemValue))
