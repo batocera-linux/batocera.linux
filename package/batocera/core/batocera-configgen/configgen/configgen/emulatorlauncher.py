@@ -127,10 +127,10 @@ def main(args, maxnbplayers):
 
     if args.emulator is not None:
         system.config["emulator"] = args.emulator
-        self.config["emulator-forced"] = True
+        system.config["emulator-forced"] = True
     if args.core is not None:
         system.config["core"] = args.core
-        self.config["core-forced"] = True
+        system.config["core-forced"] = True
     debugDisplay = system.config.copy()
     if "retroachievements.password" in debugDisplay:
         debugDisplay["retroachievements.password"] = "***"
