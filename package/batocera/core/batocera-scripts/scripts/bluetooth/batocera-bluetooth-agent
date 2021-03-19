@@ -1,20 +1,17 @@
 #!/usr/bin/python
 
-from __future__ import absolute_import, print_function, unicode_literals
+from __future__ import absolute_import, print_function
 
 from optparse import OptionParser, make_option
 import dbus
 import dbus.service
 import dbus.mainloop.glib
-try:
-  from gi.repository import GObject
-except ImportError:
-  import gobject as GObject
 import bluezutils
 import time
 import os
 import logging
 import signal
+from gi.repository import GLib
 
 AGENT_INTERFACE = 'org.bluez.Agent1'
 
@@ -51,7 +48,7 @@ def connect_device(path, address, properties, forceConnect):
   # Get the adapter name and bt mac
   for key, value in properties.items():
     if type(value) is dbus.String:
-      value = unicode(value).encode('ascii', 'replace')
+      value = value.encode('ascii', 'replace')
     rproperties[key] = value
 
   trusted   = rproperties["Trusted"]
@@ -146,40 +143,40 @@ def doConnect(address, devName, shortDevName):
 def getDevName(properties):
   #devName = properties["Name"] + " (" + properties["Address"] + ", " + properties["Icon"] + ")"
   #devStatus = "Trusted=" + str(properties["Trusted"]) + ", paired=" + str(properties["Paired"]) + ", connected=" + str(properties["Connected"]), ", blocked=" + str(properties["Blocked"])
-  #devTech = "legacyPairing: " + str(properties["LegacyPairing"]) # + ", RSSI: " + unicode(properties["RSSI"])
+  #devTech = "legacyPairing: " + str(properties["LegacyPairing"]) # + ", RSSI: " + properties["RSSI"]
 
   if "Name" in properties and "Address" in properties and "Icon" in properties:
-    return properties["Name"] + " (" + properties["Address"] + ", " + properties["Icon"] + ")"
+    return str(properties["Name"]) + " (" + str(properties["Address"]) + ", " + str(properties["Icon"]) + ")"
 
   if "Name" in properties and "Address" in properties:
-    return properties["Name"] + " (" + properties["Address"] + ")"
+    return str(properties["Name"]) + " (" + str(properties["Address"]) + ")"
 
   if "Name" in properties and "Icon" in properties:
-    return properties["Name"] + " (" + properties["Icon"] + ")"
+    return str(properties["Name"]) + " (" + str(properties["Icon"]) + ")"
 
   if "Name" in properties:
-    return properties["Name"]
+    return str(properties["Name"])
 
   if "Address" in properties and "Icon" in properties:
-    return properties["Address"] + " (" + properties["Icon"] + ")"
+    return str(properties["Address"]) + " (" + str(properties["Icon"]) + ")"
 
   if "Address" in properties:
-    return properties["Address"]
+    return str(properties["Address"])
 
   if "Icon" in properties:
-    return properties["Icon"]
+    return str(properties["Icon"])
 
   return "unknown"
 
 def getShortDevName(properties):
   if "Name" in properties:
-    return properties["Name"]
+    return str(properties["Name"])
 
   if "Address" in properties:
-    return properties["Address"]
+    return str(properties["Address"])
 
   if "Icon" in properties:
-    return properties["Icon"]
+    return str(properties["Icon"])
 
   return "unknown"
 
@@ -194,7 +191,7 @@ def interfaces_added(path, interfaces):
   properties = interfaces["org.bluez.Device1"]
 
   if path in gdevices:
-    gdevices[path] = dict(gdevices[path].items() + properties.items())
+    gdevices[path] = merge2dicts(gdevices[path], properties)
   else:
     gdevices[path] = properties
 
@@ -208,7 +205,7 @@ def properties_changed(interface, changed, invalidated, path):
     return
 
   if path in gdevices:
-    gdevices[path] = dict(gdevices[path].items() + changed.items())
+    gdevices[path] = merge2dicts(gdevices[path], changed)
   else:
     gdevices[path] = changed
 
@@ -231,6 +228,11 @@ def properties_changed(interface, changed, invalidated, path):
 
   if "Address" in gdevices[path]:
     connect_device(path, gdevices[path]["Address"], gdevices[path], False)
+
+def merge2dicts(d1, d2):
+  res = d1.copy()
+  res.update(d2)
+  return res
 
 def user_signal_start_discovery(signum, frame):
   global gdiscovering
@@ -357,5 +359,5 @@ if __name__ == '__main__':
   signal.signal(signal.SIGUSR1, user_signal_start_discovery)
   signal.signal(signal.SIGUSR2, user_signal_stop_discovery)
   
-  mainloop = GObject.MainLoop()
+  mainloop = GLib.MainLoop()
   mainloop.run()
