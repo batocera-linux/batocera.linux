@@ -60,8 +60,6 @@ mupenSaves = SAVES + "/n64"
 mupenMappingUser    = mupenConf + 'input.xml'
 mupenMappingSystem  = '/usr/share/batocera/datainit/system/configs/mupen64/input.xml'
 
-kodiJoystick = HOME + '/.kodi/userdata/addon_data/peripheral.joystick/resources/buttonmaps/xml/linux/batocera_{}.xml'
-
 moonlightCustom = CONF+'/moonlight'
 moonlightConfigFile = moonlightCustom + '/moonlight.conf'
 moonlightGamelist = moonlightCustom + '/gamelist.txt'
