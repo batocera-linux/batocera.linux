@@ -53,8 +53,9 @@ def writeKodiConfigs(kodiJoystick, currentControllers):
 
         xmldevice = config.createElement('device')
         xmldevice.attributes["name"] = cur.configName
-        xmldevice.attributes["provider"] = "udev"
-        xmldevice.attributes["vid"], xmldevice.attributes["pid"] = vidpid(cur.guid)
+        xmldevice.attributes["provider"] = "linux"
+        #xmldevice.attributes["provider"] = "udev"
+        #xmldevice.attributes["vid"], xmldevice.attributes["pid"] = vidpid(cur.guid)
         xmldevice.attributes["buttoncount"] = cur.nbbuttons
         xmldevice.attributes["axiscount"] = str(2*int(cur.nbhats) + int(cur.nbaxes))
         xmlbuttonmap.appendChild(xmldevice)
@@ -123,11 +124,23 @@ def writeKodiConfig(controllersFromES):
     # or this allows people to plug the last used joystick
     if len(controllersFromES) == 0:
         return
-    kodiJoystick = batoceraFiles.HOME + '/.kodi/userdata/addon_data/peripheral.joystick/resources/buttonmaps/xml/udev/batocera_{}.xml'
+    provider = "linux"
+    #provider = "udev"
+    kodiJoystick = batoceraFiles.HOME + '/.kodi/userdata/addon_data/peripheral.joystick/resources/buttonmaps/xml/" + provider + "/batocera_{}.xml'
     directory = os.path.dirname(kodiJoystick)
     if not os.path.exists(directory):
         os.makedirs(directory)
     writeKodiConfigs(kodiJoystick, controllersFromES)
+
+    # force the udev plugin
+    directory = batoceraFiles.HOME + "/.kodi/userdata/addon_data/peripheral.joystick"
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+    with open(directory + "/settings.xml", "w") as f:
+        f.write("<settings version=\"2\">")
+        f.write("<setting id=\"driver_linux\">0</setting>")
+        f.write("</settings>")
+        f.close()
 
 def vidpid(guid):
   return guid[10:12]+guid[8:10], guid[18:20]+guid[16:18]
