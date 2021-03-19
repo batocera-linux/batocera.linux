@@ -617,6 +617,12 @@ libretro:
     flycast:
       features: [autosave]
       cfeatures:
+            reicast_synchronous_rendering:
+                prompt:      SYNCHRONOUS RENDERING
+                description: Wait for the GPU to render frames instead of skipping
+                choices:
+                    "Off": disabled 
+                    "On": enabled
             reicast_internal_resolution:
                 prompt:      VIDEO RESOLUTION
                 description: Improve the fidelity of 3D models (unaffect 2D)
