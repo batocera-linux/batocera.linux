@@ -109,9 +109,9 @@ case "${ACTION}" in
 	do_stoptrust
 	;;
     "remove")
-	if test $# = 1
+	if test $# = 2
 	then
-	    do_remove "${1}" || exit 1
+	    do_remove "${2}" || exit 1
 	else
 	    do_help "${0}"
 	    exit 1
