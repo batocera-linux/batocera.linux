@@ -1,0 +1,27 @@
+diff --git a/xbmc/Application.cpp b/xbmc/Application.cpp
+index daf96d7..78b4c1a 100644
+--- a/xbmc/Application.cpp
++++ b/xbmc/Application.cpp
+@@ -4095,7 +4095,8 @@ bool CApplication::OnMessage(CGUIMessage& message)
+       return true;
+ 
+   case GUI_MSG_PLAYBACK_ERROR:
+-    HELPERS::ShowOKDialogText(CVariant{16026}, CVariant{16027});
++    // hide unsupportable message even when we don't case the cause
++    //HELPERS::ShowOKDialogText(CVariant{16026}, CVariant{16027});
+     return true;
+ 
+   case GUI_MSG_PLAYLISTPLAYER_STARTED:
+diff --git a/xbmc/platform/linux/PlatformLinux.h b/xbmc/platform/linux/PlatformLinux.h
+index c45d411..95c68bd 100644
+--- a/xbmc/platform/linux/PlatformLinux.h
++++ b/xbmc/platform/linux/PlatformLinux.h
+@@ -21,7 +21,7 @@ public:
+   ~CPlatformLinux() override = default;
+ 
+   bool Init() override;
+-  bool IsConfigureAddonsAtStartupEnabled() override { return true; };
++  bool IsConfigureAddonsAtStartupEnabled() override { return false; };
+ 
+ private:
+   std::unique_ptr<OPTIONALS::CLircContainer, OPTIONALS::delete_CLircContainer> m_lirc;
