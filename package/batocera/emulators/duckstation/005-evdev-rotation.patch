@@ -215,15 +215,15 @@ index de0bd3ea..dd265293 100644
  
      glGenVertexArrays(1, &m_display_vao);
  
-@@ -733,7 +814,7 @@ bool OpenGLHostDisplay::Render()
+@@ -830,7 +830,7 @@
+     return false;
    }
  
-   glDisable(GL_SCISSOR_TEST);
 -  glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 +  glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_display_rotation_framebuffer_fbo);
    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
    glClear(GL_COLOR_BUFFER_BIT);
- 
+
 @@ -744,6 +825,12 @@ bool OpenGLHostDisplay::Render()
  
    RenderSoftwareCursor();
