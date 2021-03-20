@@ -112,11 +112,6 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
 	select BR2_PACKAGE_XARCADE2JSTICK			# keyboard events of the Xarcade Tankstick
 	select BR2_PACKAGE_UTIL_LINUX_LIBMOUNT			# for util-linux compilation to work (so, may be removed in the future)
 
-	# Python
-	select BR2_PACKAGE_PYTHON_GOBJECT
-	select BR2_PACKAGE_PYTHON_PSUTIL
-	select BR2_PACKAGE_DBUS_PYTHON				# required for bluetooth scripts
-	
 	# Deprecated, which what library should we replace ?
 	select BR2_PACKAGE_PARTED				# partition management (for the first boot)
 	select BR2_PACKAGE_USBMOUNT				# usb key/sd card mounter
