@@ -18,7 +18,7 @@ class UnixSettings():
 
         # use ConfigParser as backend.
         eslog.debug("Creating parser for {0}".format(self.settingsFile))
-        self.config = configparser.ConfigParser(interpolation=None)
+        self.config = configparser.ConfigParser(interpolation=None, strict=False) # strict=False to allow to read duplicates set by users
         # To prevent ConfigParser from converting to lower case
         self.config.optionxform = str
 
