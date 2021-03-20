@@ -1,13 +1,11 @@
-diff --git a/src/duckstation-nogui/nogui_host_interface.cpp b/src/duckstation-nogui/nogui_host_interface.cpp
-index 45c88625..bb938df2 100644
---- a/src/duckstation-nogui/nogui_host_interface.cpp
-+++ b/src/duckstation-nogui/nogui_host_interface.cpp
-@@ -209,6 +209,8 @@ bool NoGUIHostInterface::CreateDisplay()
-     return false;
+--- a/src/duckstation-nogui/nogui_host_interface.cpp	2021-03-20 11:04:18.160112725 +0100
++++ b/src/duckstation-nogui/nogui_host_interface.cpp	2021-03-20 11:05:03.713444361 +0100
+@@ -111,6 +111,8 @@
+ #endif
    }
  
 +  m_display->SetDisplayRotation(HostDisplay::Rotation::R270Degrees);
 +
-   if (!m_display->CreateImGuiContext() ||
-       (m_fullscreen_ui_enabled && !FullscreenUI::Initialize(this, m_settings_interface.get())) ||
-       !m_display->UpdateImGuiFontTexture())
+   if (!m_display->CreateRenderDevice(wi.value(), g_settings.gpu_adapter, g_settings.gpu_use_debug_device,
+                                      g_settings.gpu_threaded_presentation) ||
+       !m_display->InitializeRenderDevice(GetShaderCacheBasePath(), g_settings.gpu_use_debug_device,
