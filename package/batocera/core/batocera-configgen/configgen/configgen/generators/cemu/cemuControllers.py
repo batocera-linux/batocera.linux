@@ -61,7 +61,7 @@ def generateControllerConfig(system, playersControllers, rom):
             cemuSettings.add_section("Controller")
 
         cemuSettings.set("General", "api", "XInput")
-        cemuSettings.set("General", "controller", nplayer)
+        cemuSettings.set("General", "controller", str(nplayer))
 
         if (system.isOptSet('emulatedwiimotes') and system.getOptBoolean('emulatedwiimotes') == True):
             cemuSettings.set("General", "emulate", "Wiimote")
@@ -112,21 +112,21 @@ def generateControllerConfig(system, playersControllers, rom):
             cemuSettings.set("Controller", "8", "button_800000000")    # R2
             cemuSettings.set("Controller", "9", "button_40")    # Start
             cemuSettings.set("Controller", "10", "button_80")   # Select
-            cemuSettings.set("Controller", 11 + addIndex, "button_4000000")   # Up
-            cemuSettings.set("Controller", 12 + addIndex, "button_8000000")   # Down
-            cemuSettings.set("Controller", 13 + addIndex, "button_10000000")   # Left
-            cemuSettings.set("Controller", 14 + addIndex, "button_20000000")   # Right
-            cemuSettings.set("Controller", 15 + addIndex, "button_100")   # LStick Click
-            cemuSettings.set("Controller", 16 + addIndex, "button_200")   # RStick Click
-            cemuSettings.set("Controller", 17 + addIndex, "button_80000000")   # LStick Up
-            cemuSettings.set("Controller", 18 + addIndex, "button_2000000000")   # LStick Down
-            cemuSettings.set("Controller", 19 + addIndex, "button_1000000000")   # LStick Left
-            cemuSettings.set("Controller", 20 + addIndex, "button_40000000")   # LStick Right
-            cemuSettings.set("Controller", 21 + addIndex, "button_400000000")   # RStick Up
-            cemuSettings.set("Controller", 22 + addIndex, "button_10000000000")   # RStick Down
-            cemuSettings.set("Controller", 23 + addIndex, "button_8000000000")   # RStick Left
-            cemuSettings.set("Controller", 24 + addIndex, "button_200000000")   # RStick Right
-            cemuSettings.set("Controller", 25 + addIndex, "button_100")   # Blow Mic
+            cemuSettings.set("Controller", str(11 + addIndex), "button_4000000")   # Up
+            cemuSettings.set("Controller", str(12 + addIndex), "button_8000000")   # Down
+            cemuSettings.set("Controller", str(13 + addIndex), "button_10000000")   # Left
+            cemuSettings.set("Controller", str(14 + addIndex), "button_20000000")   # Right
+            cemuSettings.set("Controller", str(15 + addIndex), "button_100")   # LStick Click
+            cemuSettings.set("Controller", str(16 + addIndex), "button_200")   # RStick Click
+            cemuSettings.set("Controller", str(17 + addIndex), "button_80000000")   # LStick Up
+            cemuSettings.set("Controller", str(18 + addIndex), "button_2000000000")   # LStick Down
+            cemuSettings.set("Controller", str(19 + addIndex), "button_1000000000")   # LStick Left
+            cemuSettings.set("Controller", str(20 + addIndex), "button_40000000")   # LStick Right
+            cemuSettings.set("Controller", str(21 + addIndex), "button_400000000")   # RStick Up
+            cemuSettings.set("Controller", str(22 + addIndex), "button_10000000000")   # RStick Down
+            cemuSettings.set("Controller", str(23 + addIndex), "button_8000000000")   # RStick Left
+            cemuSettings.set("Controller", str(24 + addIndex), "button_200000000")   # RStick Right
+            cemuSettings.set("Controller", str(25 + addIndex), "button_100")   # Blow Mic
 
 
         configFileName = "{}/{}".format(batoceraFiles.CONF + "/cemu/controllerProfiles/", "controller" + str(nplayer) + ".txt")
