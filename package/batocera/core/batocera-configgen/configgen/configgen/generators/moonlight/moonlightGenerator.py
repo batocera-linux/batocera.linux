@@ -30,6 +30,7 @@ class MoonlightGenerator(Generator):
         romName = os.path.splitext(os.path.basename(rom))[0]
         # find the real game name
         f = open(batoceraFiles.moonlightGamelist, 'r')
+        gfeGame = None
         for line in f:
             try:
                 gfeRom, gfeGame, confFile = line.rstrip().split(';')
