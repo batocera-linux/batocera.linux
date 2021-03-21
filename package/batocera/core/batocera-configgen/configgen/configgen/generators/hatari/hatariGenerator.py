@@ -99,21 +99,21 @@ class HatariGenerator(Generator):
                 section = "Joystick" + str(nplayer)
                 if not config.has_section(section):
                     config.add_section(section)
-                config.set(section, "nJoyId", pad.index)
+                config.set(section, "nJoyId", str(pad.index))
                 config.set(section, "nJoystickMode", "1")
 
                 if padMapping[1] in pad.inputs:
-                    config.set(section, "nButton1", pad.inputs[padMapping[1]].id)
+                    config.set(section, "nButton1", str(pad.inputs[padMapping[1]].id))
                 else:
-                    config.set(section, "nButton1", 0)
+                    config.set(section, "nButton1", "0")
                 if padMapping[2] in pad.inputs:
-                    config.set(section, "nButton2", pad.inputs[padMapping[2]].id)
+                    config.set(section, "nButton2", str(pad.inputs[padMapping[2]].id))
                 else:
-                    config.set(section, "nButton2", 1)
+                    config.set(section, "nButton2", "1")
                 if padMapping[3] in pad.inputs:
-                    config.set(section, "nButton3", pad.inputs[padMapping[3]].id)
+                    config.set(section, "nButton3", str(pad.inputs[padMapping[3]].id))
                 else:
-                    config.set(section, "nButton3", 2)
+                    config.set(section, "nButton3", "2")
             nplayer += 1
 
         # Log
