@@ -43,7 +43,7 @@ class CitraGenerator(Generator):
         }
 
         # ini file
-        citraConfig = configparser.RawConfigParser()
+        citraConfig = configparser.RawConfigParser(strict=False)
         if os.path.exists(citraConfigFile):
             citraConfig.read(citraConfigFile)
 
