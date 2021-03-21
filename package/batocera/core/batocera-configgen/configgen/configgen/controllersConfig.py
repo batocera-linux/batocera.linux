@@ -196,7 +196,7 @@ def generateSdlGameControllerConfig(controllers):
 
 def writeSDLGameDBAllControllers(controllers, outputFile = "/tmp/gamecontrollerdb.txt"):
     with open(outputFile, "w") as text_file:
-        text_file.write(generateSdlGameControllerConfig(controllers).encode("utf-8"))
+        text_file.write(generateSdlGameControllerConfig(controllers))
     return outputFile
 
 def generateSdlGameControllerPadsOrderConfig(controllers):
