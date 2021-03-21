@@ -30,7 +30,7 @@ class FlycastGenerator(Generator):
             Config.add_section("input")
         # For each pad detected
         for index in range(len(playersControllers), 4):
-            Config.set("input", 'evdev_device_id_' + str(index+1), -1)
+            Config.set("input", 'evdev_device_id_' + str(index+1), "-1")
             Config.set("input", 'evdev_mapping_' + str(index+1), "")
 
         for index in playersControllers:
@@ -51,7 +51,7 @@ class FlycastGenerator(Generator):
         if not Config.has_section("players"):
             Config.add_section("players")
         # number of players
-        Config.set("players", 'nb', len(playersControllers))
+        Config.set("players", 'nb', str(len(playersControllers)))
 
         if not Config.has_section("config"):
             Config.add_section("config")
