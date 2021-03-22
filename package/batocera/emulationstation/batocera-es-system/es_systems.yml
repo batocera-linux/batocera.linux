@@ -1443,7 +1443,7 @@ ps2:
   manufacturer: Sony
   release: 2000
   hardware: console
-  extensions: [iso, mdf, nrg, bin, img, dump, gz, cso]
+  extensions: [iso, mdf, nrg, bin, img, dump, gz, cso, chd]
   emulators:
     pcsx2:
       pcsx2: { requireAnyOf: [BR2_PACKAGE_PCSX2, BR2_PACKAGE_PCSX2_AVX2, BR2_PACKAGE_PCSX2_X86] }
