@@ -1,0 +1,6 @@
+#!/bin/bash
+
+# keycode  59 = F1               F13              Console_13      
+#	alt	keycode  59 = Console_1       # disable these lines
+#	control	alt	keycode  59 = Console_1  
+dumpkeys | grep -vE "^[ "$'\t'"]*alt[ "$'\t'"]*keycode[ "$'\t'"]*[0*9]*[ "$'\t'"]*[0-9]*[ "$'\t'"]=[ "$'\t'"]Console_[0-9]*[ "$'\t'"]*$" | loadkeys
