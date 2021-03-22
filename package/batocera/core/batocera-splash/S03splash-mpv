@@ -42,7 +42,8 @@ do_videostart ()
     then
         mpv_opt=--no-audio
     fi
-    /usr/bin/mpv --really-quiet -fs --no-config $mpv_opt "$video" &
+    # it should be drm everywhere (including for x86_64 while it is on fb) -- only rpi doesn't use drm and it doesn't use this boot splash script
+    /usr/bin/mpv --really-quiet -fs --no-config --vo=drm $mpv_opt "$video" &
     wait $!
 }
 
