@@ -6,12 +6,14 @@
 # 20200528 - Initial revision
 # 20201104 - Update groups, support mutiple archs
 # 20210113 - Update groups with Batocera v30
+# 20210322 - Switched to zstd (instead of xz)
 # 
 INFO=.PKGINFO
 BATOEXEC=.BATOEXEC
 BATOEXEC_PATH=./userdata/system/pacman/batoexec/
 COMMENT_CHAR_SEARCH="[#|;]"
 COMMENT_CHAR="#"
+FORCE=0
 
 ### These parameters need to be fulfilled:
 # pkgname = bezels-default-glazed
@@ -42,7 +44,7 @@ function get_config() {
 	val="$(grep -E -m1 "^\s*$1\s*=" $INFO)"
 	ret=$?
 	if [[ $ret -eq 1 ]]; then 
-		val="$(grep -E -m1 "^$COMMENT_CHAR_SEARCH\s*$1\s*=" $INFO)"
+		val="$(grep -E -m1 "^$COMMENT_CHAR_SEARCH\s*$1\s*=\s*" $INFO)"
 		ret=$?
 		[[ $ret -eq 0 ]] && val=$COMMENT_CHAR
 	else
@@ -79,10 +81,9 @@ function check_optional_argument() {
 	[[ "$val" == "$COMMENT_CHAR" ]] && write_argument "$vinput" "$default"
 }
 
-
 function set_config() {
 	# search for first key.name at beginning of line and write value to it
-	sed -i "1,/^\(\s*$1\s*=\).*/s^^\1 $2^" "$INFO"
+	sed -i "1,/^\(\s*$1\s*=\).*/s^^$1 = $2^" "$INFO"
 }
 
 function uncomment_config() {
@@ -101,32 +102,54 @@ function write_argument() {
 	elif [[ -z "$val" && $ret -eq 1 ]]; then
 		# add this new parameter
 		echo "$keyvalue = $newvalue" >> "$INFO"
-	elif [[ "$val" != "$newvalue" ]]; then
+	else
 		set_config "$keyvalue" "$newvalue"
 	fi
 }
 
 function sanitize_info() {
-	TMPFILE=$(mktemp)
-	sed -e 's/[[:blank:]]*$//' "$INFO" > "$TMPFILE"
-	mv -f "$TMPFILE" "$INFO"
+	# pacman needs a space before and after "="
+	sed -i 's/\([^ ]\)=/\1 =/;s/=\([^ ]\)/= \1/;s/[[:blank:]]*$//' "$INFO"
 }
 
 function make_pkg() {
-	pk=../"$1".pkg.tar.xz
+	pk=../"$1".pkg.tar.zst
+	[[ "$FORCE" -eq 1 ]] && rm -f "$pk"
 	[[ -f "$pk" ]] && echo "ERROR: file $pk already exists. Aborting." && exit 1
 	echo "Creating package $pk ..."
 	if [ -e "$BATOEXEC" ]; then
-	    tar -cf - "$INFO" "$BATOEXEC" * | xz -c -z - > "$pk"
+	    tar -cf - "$INFO" "$BATOEXEC" * | zstd -c --rsyncable - -o "$pk"
 	else
-	    tar -cf - "$INFO" * | xz -c -z - > "$pk"
+	    tar -cf - "$INFO" * | zstd -c --rsyncable - -o "$pk"
 	fi
 	ret=$?
 	[[ $ret -eq 0 ]] && echo "SUCCESS: package $pk correctly generated" && exit 0
 }
 
+function print_help() {
+cat << EOF
+batocera-makepkg: makes a pacman package for a Batocera system.
+usage:
+batocera-makepkg [-f] [-h] [PKGINFO_FILE]
+  -f : force overwrite output package
+  -h : describes available options
+  [PKGINFO_FILE] : if not provided, use .PKGINFO
+EOF
+exit
+}
+
 function main() {
 	    # New PKGINFO file passed as an argument
+	    while :; do
+		    case $1 in
+			    -h|--help) print_help
+				    ;;
+			    -f|--force) FORCE=1
+				    ;;
+			    *) break
+		    esac
+		    shift
+	    done
 	    CONFIGFILE="$1"
 	    [[ -f "$CONFIGFILE" ]] && cp "$CONFIGFILE" "$INFO"
 	    [[ -f "$INFO" ]] || { echo "ERROR: File not found: $INFO or no argument given." >&2; exit 1; }
