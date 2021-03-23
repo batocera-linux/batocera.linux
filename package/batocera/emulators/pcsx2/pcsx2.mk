@@ -5,9 +5,12 @@
 ################################################################################
 
 PCSX2_VERSION = b436898d2aa52c477269769bfde66017f2f847c2
-PCSX2_SITE = $(call github,pcsx2,pcsx2,$(PCSX2_VERSION))
+PCSX2_SITE = https://github.com/pcsx2/pcsx2.git
 PCSX2_LICENSE = GPLv2 GPLv3 LGPLv2.1 LGPLv3
 PCSX2_DEPENDENCIES = xserver_xorg-server alsa-lib freetype zlib libpng wxwidgets libaio portaudio libsoundtouch sdl2 libpcap yaml-cpp libgtk3 libsamplerate fmt
+
+PCSX2_SITE_METHOD = git
+PCSX2_GIT_SUBMODULES = YES
 
 PCSX2_CONF_OPTS += -DCMAKE_BUILD_TYPE=Release
 PCSX2_CONF_OPTS += -DXDG_STD=TRUE
