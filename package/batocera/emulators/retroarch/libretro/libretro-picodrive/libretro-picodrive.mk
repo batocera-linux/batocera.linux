@@ -3,8 +3,8 @@
 # libretro-picodrive
 #
 ################################################################################
-# Version.: Release on Jan 13, 2021
-LIBRETRO_PICODRIVE_VERSION = 51d48b9e9835fdec1fe46e9821e09de97100f646
+# Version.: Commits on Mar 22, 2021
+LIBRETRO_PICODRIVE_VERSION = bcc34f2cf8f0ca044676ffb55e0d8de1361d10be
 LIBRETRO_PICODRIVE_SITE = https://github.com/irixxxx/picodrive.git
 LIBRETRO_PICODRIVE_SITE_METHOD=git
 LIBRETRO_PICODRIVE_GIT_SUBMODULES=YES
@@ -22,7 +22,7 @@ ifeq ($(BR2_aarch64),y)
 endif
 
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86_ANY),y)
-  LIBRETRO_PICODRIVE_PLATFORM = x86
+  LIBRETRO_PICODRIVE_PLATFORM = unix
 endif
 
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI3)$(BR2_PACKAGE_BATOCERA_TARGET_S812),y)
@@ -34,7 +34,7 @@ endif
 define LIBRETRO_PICODRIVE_BUILD_CMDS
 	$(MAKE) -C $(@D)/cpu/cyclone CONFIG_FILE=$(@D)/cpu/cyclone_config.h
 	# force -j 1 to avoid parallel issues in the makefile
-	$(TARGET_CONFIGURE_OPTS) $(MAKE) -j 1 CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" -C  $(@D) -f Makefile.libretro platform="$(LIBRETRO_PICODRIVE_PLATFORM)"
+	cd $(@D) && $(TARGET_CONFIGURE_OPTS) $(MAKE) -j 1 CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" -C  $(@D) -f Makefile.libretro platform="$(LIBRETRO_PICODRIVE_PLATFORM)"
 endef
 
 define LIBRETRO_PICODRIVE_INSTALL_TARGET_CMDS
