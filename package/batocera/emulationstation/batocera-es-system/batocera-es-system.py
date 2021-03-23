@@ -124,11 +124,11 @@ class EsSystemConf:
         systemTxt += "        <manufacturer>%s</manufacturer>\n" % (data["manufacturer"])
         systemTxt += "        <release>%s</release>\n" % (data["release"])
         systemTxt += "        <hardware>%s</hardware>\n" % (data["hardware"])
-        if pathValue != "":
-            systemTxt += "        <path>%s</path>\n"           % (pathValue)
         if listExtensions != "":
+            if pathValue != "":
+                systemTxt += "        <path>%s</path>\n"           % (pathValue)
             systemTxt += "        <extension>%s</extension>\n" % (listExtensions)
-        systemTxt += "        <command>%s</command>\n"     % (command)
+            systemTxt += "        <command>%s</command>\n"     % (command)
         if platformValue != "":
             systemTxt += "        <platform>%s</platform>\n"   % (platformValue)
         systemTxt += "        <theme>%s</theme>\n"         % (EsSystemConf.themeName(system, data))
