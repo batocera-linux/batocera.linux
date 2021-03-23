@@ -37,8 +37,7 @@ RUN dpkg --add-architecture i386 && \
 		python \
 		gcc-multilib \
 		g++-multilib \
-	&& apt-get clean \
-	&& rm -rf /var/lib/apt/lists/*
+	&& apt-get clean
 
 # Set locale
 RUN sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen && \
