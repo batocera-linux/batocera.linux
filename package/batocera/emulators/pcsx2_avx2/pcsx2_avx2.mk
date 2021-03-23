@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-PCSX2_AVX2_VERSION = 7512c01ca6ff861a1dc70066345ccbcb31445061
+PCSX2_AVX2_VERSION = b436898d2aa52c477269769bfde66017f2f847c2
 PCSX2_AVX2_SITE = $(call github,pcsx2,pcsx2,$(PCSX2_AVX2_VERSION))
 PCSX2_AVX2_LICENSE = GPLv2 GPLv3 LGPLv2.1 LGPLv3
 PCSX2_AVX2_DEPENDENCIES = xserver_xorg-server alsa-lib freetype zlib libpng wxwidgets libaio portaudio libsoundtouch sdl2 libpcap yaml-cpp libgtk3 libsamplerate fmt
