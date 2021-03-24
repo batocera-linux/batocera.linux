@@ -9,9 +9,9 @@ import os
 import sys
 import re
 import subprocess
-import httplib
+import httplib2
 import xml.etree.ElementTree as ET
-ES_SERVER="127.0.0.1:1234"
+ES_SERVER="http://127.0.0.1:1234"
 
 ########
 # Parse the command file BATOEXEC
@@ -51,15 +51,16 @@ def gamelist_xml_es(system, data, mode):
     headers = {"Content-type": "application/x-www-form-urlencoded",\
                "Accept": "text/plain"}
     try:
-        cnx=httplib.HTTPConnection(ES_SERVER)
+        cnx=httplib2.Http()
+        resp, content = cnx.request(ES_SERVER)
     except:
         print ("ERROR: Is EmulationStation running? Impossible to connect to " + ES_SERVER)
         return (1)
     try:
         if (mode in 'install'):
-            cnx.request("POST", "/addgames/" + str(system).strip(), body=body, headers=headers)
+            cnx.request(ES_SERVER + "/addgames/" + str(system).strip(), method="POST", body=body, headers=headers)
         elif (mode in 'uninstall'):
-            cnx.request("POST", "/removegames/" + str(system).strip(), body=body, headers=headers)
+            cnx.request(ES_SERVER + "/removegames/" + str(system).strip(), method="POST", body=body, headers=headers)
         res=cnx.getresponse()
         rout=res.read()
         if (res.status != 200):
