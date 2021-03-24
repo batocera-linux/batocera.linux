@@ -102,6 +102,7 @@ class MameGenerator(Generator):
         else:
             commandArray += [ "-nomodeline_generation" ]
             commandArray += [ "-nochangeres" ]
+            commandArray += [ "-noswitchres" ]
 
         # Rotation / TATE options
         if system.isOptSet("rotation") and system.config["rotation"] == "autoror":
