@@ -554,9 +554,7 @@ def writeBezelConfig(bezel, retroarchConfig, systemName, rom, gameResolution, be
                 pass # outch, no ratio will be applied.
         if gameResolution["width"] == infos["width"] and gameResolution["height"] == infos["height"]:
             bezelNeedAdaptation = False
-            retroarchConfig['aspect_ratio_index'] = str(ratioIndexes.index("core"))
-        else:
-            retroarchConfig['aspect_ratio_index'] = str(ratioIndexes.index("custom")) # overwritten from the beginning of this file
+        retroarchConfig['aspect_ratio_index'] = str(ratioIndexes.index("core"))
 
     retroarchConfig['input_overlay_enable']       = "true"
     retroarchConfig['input_overlay_scale']        = "1.0"
