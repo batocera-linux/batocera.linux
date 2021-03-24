@@ -13,9 +13,7 @@ MALI_BIFROST_MODULE_MODULE_MAKE_OPTS = \
 	CONFIG_MALI_MIDGARD=m \
 	CONFIG_MALI_PLATFORM_NAME=meson \
 	CONFIG_MALI_PLATFORM_POWER_DOWN_ONLY=y \
-	KVER=$(LINUX_VERSION_PROBED) \
-	KSRC=$(LINUX_DIR) \
-		NOSTDINC_FLAGS=-I$(@D)/driver/product/kernel/include
+	NOSTDINC_FLAGS=-I$(@D)/driver/product/kernel/include
 
 MALI_BIFROST_MODULE_MODULE_SUBDIRS = driver/product/kernel/drivers/gpu/arm
 
