@@ -1,6 +1,8 @@
 config BR2_PACKAGE_FDUPES
 	bool "FDUPES"
+	depends on  BR2_PACKAGE_NCURSES
+
 	help
 	  Command line tool to find duplicate files
 
-          https://github.com/adrianlopezroche/fdupes
+	  https://github.com/adrianlopezroche/fdupes
