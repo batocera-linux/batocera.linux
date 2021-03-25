@@ -1,0 +1,13 @@
+diff --git a/app/flatpak-main.c b/app/flatpak-main.c
+index e8ec2e4..23c5788 100644
+--- a/app/flatpak-main.c
++++ b/app/flatpak-main.c
+@@ -914,6 +914,8 @@ main (int    argc,
+   int ret;
+   struct sigaction action;
+ 
++  putenv("HOME=/userdata/saves/flatpak/data");
++
+   /* The child repo shared between the client process and the
+      system-helper really needs to support creating files that
+      are readable by others, so override the umask to 022.

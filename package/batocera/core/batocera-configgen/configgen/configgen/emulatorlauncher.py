@@ -49,6 +49,7 @@ from generators.duckstation.duckstationGenerator import DuckstationGenerator
 from generators.drastic.drasticGenerator import DrasticGenerator
 from generators.xemu.xemuGenerator import XemuGenerator
 from generators.cgenius.cgeniusGenerator import CGeniusGenerator
+from generators.flatpak.flatpakGenerator import FlatpakGenerator
 
 import controllersConfig as controllers
 import signal
@@ -101,6 +102,7 @@ generators = {
     'drastic': DrasticGenerator(),
     'xemu': XemuGenerator(),
     'cgenius': CGeniusGenerator(),
+    'flatpak': FlatpakGenerator(),
 }
 
 def main(args, maxnbplayers):
