@@ -5,7 +5,7 @@
 ################################################################################
 XOW_VERSION = cd271644ead198dcbfeafd3c3411092850adfd3a
 XOW_SITE = $(call github,medusalix,xow,$(XOW_VERSION))
-XOW_DEPENDENCIES = host-libcurl host-cabextract
+XOW_DEPENDENCIES = host-libcurl host-cabextract libusb
 
 define XOW_BUILD_CMDS
 	$(TARGET_CONFIGURE_OPTS) $(MAKE) CC="$(TARGET_CC)" -C  $(@D)
