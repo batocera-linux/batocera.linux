@@ -1,0 +1,16 @@
+#!/bin/sh
+
+mkdir -p /userdata/roms/flatpak || exit 1
+
+# remove the existing application
+find /userdata/roms/flatpak -type f -name "*.flatpak" | while read X
+do
+  rm -f "${X}"
+done
+
+# create the applications
+flatpak list --app --columns=app,name | while read X Y
+do
+	echo "${Y}"
+	echo "${X}" > "/userdata/roms/flatpak/${Y}.flatpak"
+done
