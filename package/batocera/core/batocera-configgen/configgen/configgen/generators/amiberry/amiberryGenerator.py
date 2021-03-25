@@ -19,7 +19,7 @@ class AmiberryGenerator(Generator):
             os.makedirs(dirname(batoceraFiles.amiberryRetroarchCustom))
         
         romType = self.getRomType(rom)
-        eslog.log("romType"+romType)
+        eslog.log("romType: "+romType)
         if romType != 'UNKNOWN' :           
             commandArray = [ batoceraFiles.batoceraBins[system.config['emulator']], "-G" ]
             if romType != 'WHDL' :
@@ -95,6 +95,8 @@ class AmiberryGenerator(Generator):
 
             os.chdir("/usr/share/amiberry")
             return Command.Command(array=commandArray)
+        # otherwise, unknown format
+        return Command.Command(array=[])
 
     def floppiesFromRom(self, rom):
         floppies = []
@@ -156,6 +158,9 @@ class AmiberryGenerator(Generator):
                         extension = os.path.splitext(zipfilename)[1][1:]
                         if extension == "info":
                             return 'WHDL'
+                        elif extension == 'lha' :
+                            eslog.log("Amiberry doesn't support .lha inside a .zip")
+                            return 'UNKNOWN'
                         elif extension == 'adf' :
                             return 'DISK'
             # no info or adf file found
