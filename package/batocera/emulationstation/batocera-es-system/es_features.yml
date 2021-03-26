@@ -2937,13 +2937,13 @@ easyrpg:
   cfeatures:
         testplay:
             prompt:      TEST PLAY
-            description: Test play mode
+            description: Enable debug menu and walk through walls button
             choices:
                 "Off":          0
                 "On":           1
         encoding:
             prompt:      ENCODING
-            description: Game encoding
+            description: Needed by some games to use special characters
             choices:
               Western European: 1252
               Windows-1251:     1251
