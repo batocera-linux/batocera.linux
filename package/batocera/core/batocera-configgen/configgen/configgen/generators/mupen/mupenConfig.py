@@ -77,7 +77,7 @@ def setMupenConfig(iniConfig, system, controllers, gameResolution):
                 custom_option = section_option[section_option_splitter+1:]
                 if not iniConfig.has_section(custom_section):
                     iniConfig.add_section(custom_section)
-                iniConfig.set(custom_section, custom_option, system.config[user_config])
+                iniConfig.set(custom_section, custom_option, str(system.config[user_config]))
 
 def setHotKeyConfig(iniConfig, controllers):
     if not iniConfig.has_section("CoreEvents"):

@@ -46,13 +46,13 @@ def createPPSSPPConfig(iniConfig, system):
             iniConfig.set("Graphics", "AutoFrameSkip", "True")
             iniConfig.set("Graphics", "FrameSkip",     "1")
         else:
-            iniConfig.set("Graphics", "FrameSkip", system.config["frameskip"])
+            iniConfig.set("Graphics", "FrameSkip", str(system.config["frameskip"]))
     else:
         iniConfig.set("Graphics", "FrameSkip",     "0")
 
     # Internal Resolution
     if system.isOptSet('internalresolution'):
-        iniConfig.set("Graphics", "InternalResolution", system.config["internalresolution"])
+        iniConfig.set("Graphics", "InternalResolution", str(system.config["internalresolution"]))
     else:
         iniConfig.set("Graphics", "InternalResolution", "1")
 
@@ -62,7 +62,7 @@ def createPPSSPPConfig(iniConfig, system):
     else:
         iniConfig.set("General", "RewindFlipFrequency",  "0")
 
-    # Custom : allow the user to configure directly mupen64plus.cfg via batocera.conf via lines like : n64.mupen64plus.section.option=value
+    # Custom : allow the user to configure directly PPSSPP via batocera.conf via lines like : ppsspp.section.option=value
     for user_config in system.config:
         if user_config[:7] == "ppsspp.":
             section_option = user_config[7:]
@@ -71,4 +71,4 @@ def createPPSSPPConfig(iniConfig, system):
             custom_option = section_option[section_option_splitter+1:]
             if not iniConfig.has_section(custom_section):
                 iniConfig.add_section(custom_section)
-            iniConfig.set(custom_section, custom_option, system.config[user_config])
+            iniConfig.set(custom_section, custom_option, str(system.config[user_config]))
