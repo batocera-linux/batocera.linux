@@ -1890,7 +1890,7 @@ flatpak:
           Play games (and programs) from https://flathub.org.
           Programs must be installed from command line.
           Example:
-          flatpak install https://dl.flathub.org/repo/appstream/org.tuxfamily.XMoto.flatpakref
+          flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
           flatpak search xmoto
           flatpak install xmoto
           then, run batocera-flatpak-update to update the roms directory according to your installed applications.
