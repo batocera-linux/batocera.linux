@@ -8,7 +8,7 @@ OPENBOR6330_VERSION = v6330
 OPENBOR6330_SITE = $(call github,DCurrent,openbor,$(OPENBOR6330_VERSION))
 OPENBOR6330_LICENSE = BSD
 
-OPENBOR6330_DEPENDENCIES = libvpx sdl2 libpng libogg libvorbis host-yasm
+OPENBOR6330_DEPENDENCIES = libvpx sdl2 libpng libogg libvorbis host-yasm sdl2_gfx
 
 OPENBOR6330_EXTRAOPTS=""
 
