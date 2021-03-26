@@ -11,7 +11,8 @@ RTL8821CE_LICENSE_FILES = LICENSE
 
 RTL8821CE_MODULE_MAKE_OPTS = \
 	CONFIG_RTL8821CE=m \
-	KVER=$(LINUX_VERSION_PROBED) \
+# batocera: setting KVER breaks top level parallelization
+	# KVER=$(LINUX_VERSION_PROBED)
 	USER_EXTRA_CFLAGS="-DCONFIG_$(call qstrip,$(BR2_ENDIAN))_ENDIAN \
 		-Wno-error"
 
