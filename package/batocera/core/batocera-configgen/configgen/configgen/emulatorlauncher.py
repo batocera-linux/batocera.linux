@@ -260,8 +260,11 @@ def runCommand(command):
     eslog.log("command: {}".format(str(command)))
     eslog.log("command: {}".format(str(command.array)))
     eslog.log("env: {}".format(str(command.env)))
-    proc = subprocess.Popen(command.array, env=command.env, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     exitcode = -1
+    if command.array:
+        proc = subprocess.Popen(command.array, env=command.env, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    else:
+        return exitcode
     try:
         out, err = proc.communicate()
         exitcode = proc.returncode
