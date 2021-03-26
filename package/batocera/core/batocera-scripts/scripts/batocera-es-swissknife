@@ -128,22 +128,22 @@ case ${1,,} in
             ret=1
         fi
 
-        if [[ -f /usr/share/batocera/batocera.arch ]]; then
-            ARCH=$(cat /usr/share/batocera/batocera.arch)
+        if [[ -f /boot/boot/batocera.board ]]; then
+            BOARD=$(cat /boot/boot/batocera.board)
             ret=$?
         else
-            ARCH="UNKNOWN"
+            BOARD="UNKNOWN"
             ret=1
         fi
 
         if [[ "${1,,}" == "--update" && $ret -eq 0 ]]; then
-            URL="https://updates.batocera.org/$ARCH/$BRANCH/last/batocera.version"
+            URL="https://updates.batocera.org/$BOARD/$BRANCH/last/batocera.version"
             NET_VERSION=$(wget -q -O - "$URL")
             [[ $? -eq 0 ]] || NET_VERSION="Connection failed!"
             echo "Webversion:  $NET_VERSION"
             echo "Update URL:  $(dirname $URL)"
             echo "Branch:      ${BRANCH^^}-branch searched"
-            echo "Used arch:   $ARCH"
+            echo "Used arch:   $BOARD"
             echo "Installed:   $VER"
             if [[ $(version_update "$VER") -lt $(version_update "$NET_VERSION") ]]; then
                 echo "Status:      Possible Update found!"
@@ -154,7 +154,7 @@ case ${1,,} in
             fi
         else
             [[ ${1,,} == "--version" ]] && echo "$VER"
-            [[ ${1,,} == "--arch" ]] && echo "$ARCH"
+            [[ ${1,,} == "--arch" ]] && echo "$BOARD"
         fi
         exit $ret
     ;;

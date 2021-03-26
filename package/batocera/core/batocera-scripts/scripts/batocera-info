@@ -34,7 +34,7 @@ getCpu() {
     cat "${CPU}/cpufreq/scaling_max_freq"
 }
 
-V_ARCH=$(cat /usr/share/batocera/batocera.arch)
+V_BOARD=$(cat /boot/boot/batocera.board)
 V_CPUNB=$(grep -E $'^processor\t:' /proc/cpuinfo | wc -l)
 V_CPUMODEL1=$(grep -E $'^model name\t:' /proc/cpuinfo | head -1 | sed -e s+'^model name\t: '++)
 V_SYSTEM=$(uname -rs)
@@ -83,14 +83,14 @@ then
     echo "Temperature: ${TEMPE}°C"
 fi
 
-echo "Architecture: ${V_ARCH}"
+echo "Architecture: ${V_BOARD}"
 if test -e /sys/firmware/devicetree/base/model
 then
     DTMODEL=$(tr -d '\0' </sys/firmware/devicetree/base/model)
     echo "Model: ${DTMODEL}"
 fi
 
-if echo "${V_ARCH}" | grep -qE "^rpi[0-9]$"
+if echo "${V_BOARD}" | grep -qE "^rpi[0-9]$"
 then
     REVISION=$(grep -E $'^Revision\t:' /proc/cpuinfo | head -1 | sed -e s+'^Revision\t: '++)
     test -n "${REVISION}" && echo "Revision: ${REVISION}"
@@ -105,7 +105,7 @@ echo "Available memory: ${MEM_AVAILABLE_MB}/${MEM_TOTAL_MB} MB"
 
 if [[ "${FULL_DISPLAY}" != 0 ]]; then
 	# OPENGL
-	if test "${V_ARCH}" = "x86" -o "${V_ARCH}" = "x86_64"
+	if test "${V_BOARD}" = "x86" -o "${V_BOARD}" = "x86_64"
 	then
 	    V_OPENGLVERSION=$(DISPLAY=:0.0 glxinfo 2>/dev/null | grep -E '^OpenGL core profile version string:' | sed -e s+'^OpenGL core profile version string:[ ]*'++)
 	    if test -z "${V_OPENGLVERSION}"

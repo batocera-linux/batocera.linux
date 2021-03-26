@@ -64,8 +64,8 @@ echo "Starting the upgrade..."
 
 updateurl="https://updates.batocera.org"
 
-arch=$(cat /usr/share/batocera/batocera.arch)
-test "${arch}" = "rpi4" && arch=rpi464 # "temporarly" download on rpi464 for rpi4
+board=$(cat /boot/boot/batocera.board)
+test "${board}" = "rpi4" && board=rpi464 # "temporarly" download on rpi464 for rpi4
 
 updatetype="$(/usr/bin/batocera-settings-get updates.type)"
 settingsupdateurl="$(/usr/bin/batocera-settings-get updates.url)"
@@ -77,7 +77,7 @@ test -n "${settingsupdateurl}" && updateurl="${settingsupdateurl}"
 test "${updatetype}" != "stable" -a "${updatetype}" != "unstable" -a "${updatetype}" != "beta" && updatetype="stable"
 
 # custom the url directory
-DWD_HTTP_DIR="${updateurl}/${arch}/${updatetype}/last"
+DWD_HTTP_DIR="${updateurl}/${board}/${updatetype}/last"
 
 if test -n "${CUSTOM_URLDIR}"
 then
