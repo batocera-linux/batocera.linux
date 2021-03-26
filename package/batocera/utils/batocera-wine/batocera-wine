@@ -28,6 +28,7 @@ fi
 
 ## Wine executables
 DIR="$(wine_folder)"
+USER_DIR="/userdata/system/wine"
 WINE="${DIR}/${WINE_VERSION}/bin/wine"
 WINE64="${DIR}/${WINE_VERSION}/bin/wine64"
 WINESERVER="${DIR}/${WINE_VERSION}/bin/wineserver"
@@ -68,36 +69,11 @@ waitWineServer() {
     done
 }
 
-# find the first existing parent dir of a existing or non existing directory
-getTopExistingDir() {
-    if test -e "${1}"
-       then
-	   echo "${1}"
-    else
-	PARENTDIR=$(dirname "${1}")
-	getTopExistingDir "${PARENTDIR}"
-    fi
-}
-
-# find the fs type or an existing directory
-getFSDir() {
-    df -P "${1}"  | tail -1 | cut -d' ' -f 1 | xargs blkid | sed -e s+"^.*TYPE=\"\(.*\)\"$"+'\1'+
-}
-
-getFSWine() {
-    WINETOPDIR=$(getTopExistingDir "${1}")
-    FSWINEPOINT=$(getFSDir "${WINETOPDIR}")
-    LFSTYPE=""
-    test -e "${FSWINEPOINT}" && LFSTYPE=$(mount | grep -E "^${FSWINEPOINT}" | awk '{print $5}')
-    echo "${LFSTYPE}"
-}
-
 wine_options() {
     WINEPOINT=$1
     ESYNC="$(get_setting esync "${SYSTEM}" "${ROMGAMENAME}")"
     FSYNC="$(get_setting fsync "${SYSTEM}" "${ROMGAMENAME}")"
     PBA="$(get_setting pba "${SYSTEM}" "${ROMGAMENAME}")"
-    FSTYPE=$(getFSWine "${WINEPOINT}")
     KEYBOARD="$(/usr/bin/batocera-settings-get system.kblayout)"
     VIRTUAL_DESKTOP="$(get_setting virtual_desktop "${SYSTEM}" "${ROMGAMENAME}")"
     VIRTUAL_DESKTOP_SIZE="$(get_setting videomode "${SYSTEM}" "${ROMGAMENAME}" || batocera-resolution currentResolution)"
@@ -115,10 +91,6 @@ wine_options() {
     export PBA_ENABLE=0
     test "${PBA}" = 1 && PBA_ENABLE=1
 
-    if [ "${FSTYPE}" = ntfs ]; then
-	export NTFS_MODE=1
-    fi
-    
     export STAGING_SHARED_MEMORY=1
     export ULIMIT_SIZE=1000000
 
@@ -149,13 +121,89 @@ mf_install() {
     return 0
 }
 
+redist_install() {
+WINEPREFIX=$1
+if test -e "${USER_DIR}/exe"; then
+
+		for file in ${USER_DIR}/exe/*.exe; do
+			echo "Executing file $file"
+			
+		case "$file" in
+
+  		"${USER_DIR}/exe/DXSETUP.exe" | "${USER_DIR}/exe/dxsetup.exe")
+    		WINEPREFIX=${WINEPOINT} "$WINE" "$file" /silent &>/dev/null || return 1
+			"$WINESERVER" -w
+			;;
+
+		"${USER_DIR}/exe/vcredist_x64_2005.exe" | "${USER_DIR}/exe/vcredist_x86_2005.exe")
+    		WINEPREFIX=${WINEPOINT} "$WINE" "$file" /q &>/dev/null || return 1
+			"$WINESERVER" -w
+    		;;
+
+  		"${USER_DIR}/exe/vcredist_x64_2008.exe" | "${USER_DIR}/exe/vcredist_x86_2008.exe")
+    		WINEPREFIX=${WINEPOINT} "$WINE" "$file" /quiet /qn /norestart &>/dev/null || return 1
+			"$WINESERVER" -w
+    		;;
+
+  		"${USER_DIR}/exe/vcredist_x64_2010.exe" | "${USER_DIR}/exe/vcredist_x86_2010.exe")
+    		WINEPREFIX=${WINEPOINT} "$WINE" "$file" /quiet /qn /norestart &>/dev/null || return 1
+			"$WINESERVER" -w
+    		;;
+
+		"${USER_DIR}/exe/vcredist_x64_2012.exe" | "${USER_DIR}/exe/vcredist_x86_2012.exe")
+    		WINEPREFIX=${WINEPOINT} "$WINE" "$file" /quiet /qn /norestart &>/dev/null || return 1
+			"$WINESERVER" -w
+    		;;
+
+		"${USER_DIR}/exe/vcredist_x64_2013.exe" | "${USER_DIR}/exe/vcredist_x86_2013.exe")
+    		WINEPREFIX=${WINEPOINT} "$WINE" "$file" /quiet /qn /norestart &>/dev/null || return 1
+			"$WINESERVER" -w
+    		;;
+
+		"${USER_DIR}/exe/vcredist_x64_2015.exe" | "${USER_DIR}/exe/vcredist_x86_2015.exe")
+    		WINEPREFIX=${WINEPOINT} "$WINE" "$file" /quiet /qn /norestart &>/dev/null || return 1
+			"$WINESERVER" -w
+    		;;
+
+		"${USER_DIR}/exe/vcredist_x64_2017.exe" | "${USER_DIR}/exe/vcredist_x86_2017.exe")
+    		WINEPREFIX=${WINEPOINT} "$WINE" "$file" /quiet /qn /norestart &>/dev/null || return 1
+			"$WINESERVER" -w
+    		;;
+
+		"${USER_DIR}/exe/vcredist_x64_2019.exe" | "${USER_DIR}/exe/vcredist_x86_2019.exe")
+    		WINEPREFIX=${WINEPOINT} "$WINE" "$file" /quiet /qn /norestart &>/dev/null || return 1
+			"$WINESERVER" -w
+    		;;
+
+		"${USER_DIR}/exe/vcredist_x64_2015_2019.exe" | "${USER_DIR}/exe/vcredist_x86_2015_2019.exe")
+    		WINEPREFIX=${WINEPOINT} "$WINE" "$file" /quiet /qn /norestart &>/dev/null || return 1
+			"$WINESERVER" -w
+    		;;
+
+		"${USER_DIR}/exe/oalinst.exe")
+    		WINEPREFIX=${WINEPOINT} "$WINE" "$file" /s &>/dev/null
+			"$WINESERVER" -w
+    		;;
+
+  		*)
+    		WINEPREFIX=${WINEPOINT} "$WINE" "$file" &>/dev/null
+			"$WINESERVER" -w
+    		;;
+		esac
+		done
+fi
+
+    return 0
+}
+
 reg_install() {
-    if test -e "/userdata/system/wine/regs"; then
+WINEPREFIX=$1
+    if test -e "${USER_DIR}/regs"; then
         echo "Importing registry files"
 
         for file in /userdata/system/wine/regs/*.reg; do
-            "${WINE}" regedit "${file}" &>/dev/null || return 1
-            "${WINE64}" regedit "${file}" &>/dev/null || return 1
+            WINEPREFIX=${WINEPOINT} "${WINE}" regedit "${file}" &>/dev/null || return 1
+            WINEPREFIX=${WINEPOINT} "${WINE64}" regedit "${file}" &>/dev/null || return 1
         done
     fi
 
@@ -302,6 +350,7 @@ play_wine() {
 
     wine_options "${WINEPOINT}"
     mf_install "${WINEPOINT}" || return 1
+    redist_install "${WINEPOINT}" || return 1
     reg_install "${WINEPOINT}" || return 1
     dxvk_install "${WINEPOINT}" || return 1
     WINE_CMD=$(getWine_var "${WINEPOINT}" "CMD" "explorer")
@@ -317,6 +366,7 @@ play_pc() {
     wine_options "${WINEPOINT}"
     createWineDirectory "${WINEPOINT}" || return 1
     mf_install "${WINEPOINT}" || return 1
+    redist_install "${WINEPOINT}" || return 1
     reg_install "${WINEPOINT}" || return 1
     sandboxing_prefix "${WINEPOINT}" || return 1
     dxvk_install "${WINEPOINT}" || return 1
@@ -356,6 +406,7 @@ play_exe() {
     wine_options "${WINEPOINT}"
     createWineDirectory "${WINEPOINT}" || return 1
     mf_install "${WINEPOINT}" || return 1
+    redist_install "${WINEPOINT}" || return 1
     reg_install "${WINEPOINT}" || return 1
     sandboxing_prefix "${WINEPOINT}" || return 1
     dxvk_install "${WINEPOINT}" || return 1
@@ -375,6 +426,7 @@ play_winetgz() {
 	(cd "${WINEPOINT}" && gunzip -c "${GAMENAME}" | tar xf -) || return 1
     fi
 
+    redist_install "${WINEPOINT}" || return 1
     mf_install "${WINEPOINT}" || return 1
     reg_install "${WINEPOINT}" || return 1
     dxvk_install "${WINEPOINT}" || return 1
