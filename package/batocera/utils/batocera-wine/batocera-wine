@@ -125,73 +125,91 @@ redist_install() {
 WINEPREFIX=$1
 if test -e "${USER_DIR}/exe"; then
 
-		for file in ${USER_DIR}/exe/*.exe; do
+        for file in ${USER_DIR}/exe/*.exe; do
 			echo "Executing file $file"
 			
-		case "$file" in
+		case "${file}" in
 
   		"${USER_DIR}/exe/DXSETUP.exe" | "${USER_DIR}/exe/dxsetup.exe")
-    		WINEPREFIX=${WINEPOINT} "$WINE" "$file" /silent &>/dev/null || return 1
-			"$WINESERVER" -w
+    		WINEPREFIX=${WINEPOINT} "${WINE}" "${file}" /silent &>/dev/null || return 1
+			"${WINESERVER}" -w
 			;;
 
 		"${USER_DIR}/exe/vcredist_x64_2005.exe" | "${USER_DIR}/exe/vcredist_x86_2005.exe")
-    		WINEPREFIX=${WINEPOINT} "$WINE" "$file" /q &>/dev/null || return 1
-			"$WINESERVER" -w
+    		WINEPREFIX=${WINEPOINT} "${WINE}" "${file}" /q &>/dev/null || return 1
+			"${WINESERVER}" -w
     		;;
 
   		"${USER_DIR}/exe/vcredist_x64_2008.exe" | "${USER_DIR}/exe/vcredist_x86_2008.exe")
-    		WINEPREFIX=${WINEPOINT} "$WINE" "$file" /quiet /qn /norestart &>/dev/null || return 1
-			"$WINESERVER" -w
+    		WINEPREFIX=${WINEPOINT} "${WINE}" "${file}" /quiet /qn /norestart &>/dev/null || return 1
+			"${WINESERVER}" -w
     		;;
 
   		"${USER_DIR}/exe/vcredist_x64_2010.exe" | "${USER_DIR}/exe/vcredist_x86_2010.exe")
-    		WINEPREFIX=${WINEPOINT} "$WINE" "$file" /quiet /qn /norestart &>/dev/null || return 1
-			"$WINESERVER" -w
+    		WINEPREFIX=${WINEPOINT} "${WINE}" "${file}" /quiet /qn /norestart &>/dev/null || return 1
+			"${WINESERVER}" -w
     		;;
 
 		"${USER_DIR}/exe/vcredist_x64_2012.exe" | "${USER_DIR}/exe/vcredist_x86_2012.exe")
-    		WINEPREFIX=${WINEPOINT} "$WINE" "$file" /quiet /qn /norestart &>/dev/null || return 1
-			"$WINESERVER" -w
+    		WINEPREFIX=${WINEPOINT} "${WINE}" "${file}" /quiet /qn /norestart &>/dev/null || return 1
+			"${WINESERVER}" -w
     		;;
 
 		"${USER_DIR}/exe/vcredist_x64_2013.exe" | "${USER_DIR}/exe/vcredist_x86_2013.exe")
-    		WINEPREFIX=${WINEPOINT} "$WINE" "$file" /quiet /qn /norestart &>/dev/null || return 1
-			"$WINESERVER" -w
+    		WINEPREFIX=${WINEPOINT} "${WINE}" "${file}" /quiet /qn /norestart &>/dev/null || return 1
+			"${WINESERVER}" -w
     		;;
 
 		"${USER_DIR}/exe/vcredist_x64_2015.exe" | "${USER_DIR}/exe/vcredist_x86_2015.exe")
-    		WINEPREFIX=${WINEPOINT} "$WINE" "$file" /quiet /qn /norestart &>/dev/null || return 1
-			"$WINESERVER" -w
+    		WINEPREFIX=${WINEPOINT} "${WINE}" "${file}" /quiet /qn /norestart &>/dev/null || return 1
+			"${WINESERVER}" -w
     		;;
 
 		"${USER_DIR}/exe/vcredist_x64_2017.exe" | "${USER_DIR}/exe/vcredist_x86_2017.exe")
-    		WINEPREFIX=${WINEPOINT} "$WINE" "$file" /quiet /qn /norestart &>/dev/null || return 1
-			"$WINESERVER" -w
+    		WINEPREFIX=${WINEPOINT} "${WINE}" "${file}" /quiet /qn /norestart &>/dev/null || return 1
+			"${WINESERVER}" -w
     		;;
 
 		"${USER_DIR}/exe/vcredist_x64_2019.exe" | "${USER_DIR}/exe/vcredist_x86_2019.exe")
-    		WINEPREFIX=${WINEPOINT} "$WINE" "$file" /quiet /qn /norestart &>/dev/null || return 1
-			"$WINESERVER" -w
+    		WINEPREFIX=${WINEPOINT} "${WINE}" "${file}" /quiet /qn /norestart &>/dev/null || return 1
+			"${WINESERVER}" -w
     		;;
 
 		"${USER_DIR}/exe/vcredist_x64_2015_2019.exe" | "${USER_DIR}/exe/vcredist_x86_2015_2019.exe")
-    		WINEPREFIX=${WINEPOINT} "$WINE" "$file" /quiet /qn /norestart &>/dev/null || return 1
-			"$WINESERVER" -w
+    		WINEPREFIX=${WINEPOINT} "${WINE}" "${file}" /quiet /qn /norestart &>/dev/null || return 1
+			"${WINESERVER}" -w
     		;;
 
 		"${USER_DIR}/exe/oalinst.exe")
-    		WINEPREFIX=${WINEPOINT} "$WINE" "$file" /s &>/dev/null
-			"$WINESERVER" -w
+    		WINEPREFIX=${WINEPOINT} "${WINE}" "${file}" /s &>/dev/null
+			"${WINESERVER}" -w
     		;;
 
   		*)
-    		WINEPREFIX=${WINEPOINT} "$WINE" "$file" &>/dev/null
-			"$WINESERVER" -w
+    		WINEPREFIX=${WINEPOINT} "${WINE}" "${file}" &>/dev/null
+			"${WINESERVER}" -w
     		;;
 		esac
 		done
+
+        mv "${USER_DIR}/exe" "${USER_DIR}/exe.bak" || return 1
 fi
+
+    return 0
+}
+
+msi_install() {
+WINEPREFIX=$1
+    if test -e "${USER_DIR}/msi"; then
+
+        for file in ${USER_DIR}/msi/*.msi; do
+            echo "Executing file $file"
+            WINEPREFIX=${WINEPOINT} "${MSIEXEC}" -i "${file}" /quiet /qn /norestart &>/dev/null || return 1
+            "${WINESERVER}" -w
+        done
+
+        mv "${USER_DIR}/msi" "${USER_DIR}/msi.bak" || return 1
+    fi
 
     return 0
 }
@@ -199,12 +217,14 @@ fi
 reg_install() {
 WINEPREFIX=$1
     if test -e "${USER_DIR}/regs"; then
-        echo "Importing registry files"
 
-        for file in /userdata/system/wine/regs/*.reg; do
+        for file in ${USER_DIR}/regs/*.reg; do
+            echo "Importing registry $file"
             WINEPREFIX=${WINEPOINT} "${WINE}" regedit "${file}" &>/dev/null || return 1
             WINEPREFIX=${WINEPOINT} "${WINE64}" regedit "${file}" &>/dev/null || return 1
         done
+
+        mv "${USER_DIR}/regs" "${USER_DIR}/regs.bak" || return 1
     fi
 
     return 0
@@ -349,9 +369,10 @@ play_wine() {
     WINEPOINT="${GAMENAME}"
 
     wine_options "${WINEPOINT}"
-    mf_install "${WINEPOINT}" || return 1
     redist_install "${WINEPOINT}" || return 1
+    msi_install "${WINEPOINT}" || return 1
     reg_install "${WINEPOINT}" || return 1
+    mf_install "${WINEPOINT}" || return 1
     dxvk_install "${WINEPOINT}" || return 1
     WINE_CMD=$(getWine_var "${WINEPOINT}" "CMD" "explorer")
     WINE_DIR=$(getWine_var "${WINEPOINT}" "DIR" "")
@@ -365,9 +386,10 @@ play_pc() {
     
     wine_options "${WINEPOINT}"
     createWineDirectory "${WINEPOINT}" || return 1
-    mf_install "${WINEPOINT}" || return 1
     redist_install "${WINEPOINT}" || return 1
+    msi_install "${WINEPOINT}" || return 1
     reg_install "${WINEPOINT}" || return 1
+    mf_install "${WINEPOINT}" || return 1
     sandboxing_prefix "${WINEPOINT}" || return 1
     dxvk_install "${WINEPOINT}" || return 1
 
@@ -405,9 +427,10 @@ play_exe() {
 
     wine_options "${WINEPOINT}"
     createWineDirectory "${WINEPOINT}" || return 1
-    mf_install "${WINEPOINT}" || return 1
     redist_install "${WINEPOINT}" || return 1
+    msi_install "${WINEPOINT}" || return 1
     reg_install "${WINEPOINT}" || return 1
+    mf_install "${WINEPOINT}" || return 1
     sandboxing_prefix "${WINEPOINT}" || return 1
     dxvk_install "${WINEPOINT}" || return 1
 
@@ -427,8 +450,9 @@ play_winetgz() {
     fi
 
     redist_install "${WINEPOINT}" || return 1
-    mf_install "${WINEPOINT}" || return 1
+    msi_install "${WINEPOINT}" || return 1
     reg_install "${WINEPOINT}" || return 1
+    mf_install "${WINEPOINT}" || return 1
     dxvk_install "${WINEPOINT}" || return 1
 
     WINE_CMD=$(getWine_var "${WINEPOINT}" "CMD" "explorer")
