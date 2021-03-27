@@ -105,11 +105,11 @@ class Evmapy():
                                 elif input.name == "up":
                                     axisId   = "BASE"
                                     axisName = "Y"
-                                    absbasey_positive =  input.value >= 0
+                                    absbasey_positive =  int(input.value) >= 0
                                 elif input.name == "left":
                                     axisId   = "BASE"
                                     axisName = "X"
-                                    absbasex_positive = input.value >= 0
+                                    absbasex_positive = int(input.value) >= 0
 
                                 if axisId in ["0", "1", "BASE"] and axisName in ["X", "Y"] and input.code is not None:
                                     axisMin, axisMax = Evmapy.__getPadMinMaxAxis(pad.dev, int(input.code))
