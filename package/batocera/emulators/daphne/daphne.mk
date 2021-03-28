@@ -1,11 +1,11 @@
 ################################################################################
 #
-# Hypseus is a fork of Daphne
+# Hypseus + Singe (a fork of Daphne)
 #
 ################################################################################
-# Version.: Release on Feb 26, 2021
-DAPHNE_VERSION = v1.3.0
-DAPHNE_SITE = https://github.com/btolab/hypseus.git
+# Version.: Release on March 27, 2021
+DAPHNE_VERSION = 2.0.2
+DAPHNE_SITE = https://github.com/DirtBagXon/hypseus-singe
 DAPHNE_SITE_METHOD=git
 DAPHNE_LICENSE = GPLv3
 DAPHNE_DEPENDENCIES = sdl2 sdl2_image sdl2_ttf zlib libogg libvorbis libmpeg2
