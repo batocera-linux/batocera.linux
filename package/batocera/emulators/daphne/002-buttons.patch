@@ -1,0 +1,112 @@
+--- a/src/io/input.cpp	2021-03-28 12:16:03.713763161 +0200
++++ b/src/io/input.cpp	2021-03-28 12:20:19.717101935 +0200
+@@ -111,33 +111,48 @@
+     {SDLK_ESCAPE, SDLK_q},    // Quit DAPHNE
+     {SDLK_p, 0},                      // pause game
+     {SDLK_BACKQUOTE, 0},                  // toggle console (TODO)
+-    {SDLK_t, 0},                      // Tilt/Slam switch
++    {SDLK_t, 0}                      // Tilt/Slam switch
+ };
+ 
+ ////////////
+ 
+-// added by Russ
+-// global button mapping array. just hardcoded room for 10 buttons max
+-int joystick_buttons_map[18] = {
+-    -1, // button 0
+-    -1, // button 1
+-    -1, // button 2
+-    -1, // button 3
+-    -1, // button 4
+-    -1, // button 5
+-    -1, // button 6
+-    -1, // button 7
+-    -1, // button 8
+-    -1, // button 9
+-    -1, // button 10
+-    -1, // button 11
+-    -1, // button 12
+-    -1, // button 13
+-    -1, // button 14
+-    -1, // button 15
+-    -1, // button 16
+-    -1  // button 17
++// default joystick buttons assignments, in case .ini file is missing
++// Two values defined: 1st=joystick index (0=1st joystick), 2nd=button index (0=not defined)
++// NOTE : These are in a specific order, corresponding to the enum in hypseus.h
++int g_joy_btn_defs[SWITCH_COUNT][2] = {
++    {0, 0}, // up
++    {0, 0}, // left
++    {0, 0}, // down
++    {0, 0}, // right
++    {0, 6}, // 1 player start
++    {0, 0}, // 2 player start
++    {0, 1}, // action button 1
++    {0, 2}, // action button 2
++    {0, 3}, // action button 3
++    {0, 5}, // coin chute left
++    {0, 0}, // coin chute right
++    {0, 0}, // skill easy
++    {0, 0}, // skill medium
++    {0, 0}, // skill hard
++    {0, 0}, // service coin
++    {0, 0}, // test mode
++    {0, 0}, // reset cpu
++    {0, 0}, // take screenshot
++    {0, 0}, // Quit DAPHNE
++    {0, 0}, // pause game
++    {0, 0}, // toggle console (TODO)
++    {0, 0}  // Tilt/Slam switch
+ };
++// default joystick axis assignments, in case .ini file is missing
++// Three values defined: 1st=joystick index (0=1st joystick), 2nd=axis index (0=not defined), 3rd=direction (-1/1, 0=not defined)
++// Only first four switch defined (SWITCH_UP to SWITCH_RIGHT)
++int g_joy_axs_defs[SWITCH_START1][3] = {
++    {0, 2, -1}, // up
++    {0, 1, -1}, // left
++    {0, 2, 1},  // down
++    {0, 1, 1}   // right
++};
++ 
+ 
+ // Mouse button to key mappings
+ // Added by ScottD for Singe
+@@ -182,7 +182,6 @@
+
+     // find where the keymap ini file is (if the file doesn't exist, this string will be empty)
+     string strDapInput = g_homedir.find_file(g_inputini_file.c_str(), true);
+-    int max_buttons = (int) (sizeof(joystick_buttons_map) / sizeof(int));
+     io = mpo_open(strDapInput.c_str(), MPO_OPEN_READONLY);
+     if (io) {
+         LOGD << "Remapping input ...";
+@@ -221,15 +236,22 @@
+                                             g_key_defs[i][0] = val1;
+                                             g_key_defs[i][1] = val2;
+ 
+-                                            // if zero then no mapping
+-                                            // necessary, just use default, if
+-                                            // any
+-                                            if ( val3 -1  < max_buttons)
+-                                            {
+-                                               if (val3 > 0 ) joystick_buttons_map[val3 - 1] = i;
++                                            // joystick buttons:
++                                            // if zero, use default
++                                            // if not: hundreds=joystick index, units=button index
++                                            if (val3 > 0) {
++                                                g_joy_btn_defs[i][0] = (val3 / 100);
++                                                g_joy_btn_defs[i][1] = (val3 % 100);
++                                            }
++                                            // joystick axis:
++                                            // if zero, use default
++                                            // if not: hundreds=joystick index, units=axis index, sign=direction
++                                            if (val4 != 0) {
++                                                g_joy_axs_defs[i][0] = abs(val4 / 100);
++                                                g_joy_axs_defs[i][1] = abs(val4 % 100);
++                                                g_joy_axs_defs[i][2] = (val4 == 0)?0:((val4 < 0)?-1:1);
+                                             }
+-                                               else printf("Support for only %d joystick buttons. Unable to map button %d, check hypinput.ini\n",
+-							       max_buttons, val3 - 1 );
++
+                                             found_match = true;
+                                             break;
+                                         }
