@@ -15,6 +15,67 @@ Signed-off-by: Laurent Merckx <laurent-merckx@skynet.be>
  bool g_use_joystick      = true;  // use a joystick by default
  bool g_alt_pressed       = false; // whether the ALT key is presssed (for ALT-Enter
                                    // combo)
+@@ -107,24 +106,46 @@ int g_key_defs[SWITCH_COUNT][2] = {
+     {SDLK_ESCAPE, SDLK_q},    // Quit DAPHNE
+     {SDLK_p, 0},                      // pause game
+     {SDLK_BACKQUOTE, 0},                  // toggle console (TODO)
+-    {SDLK_t, 0},                      // Tilt/Slam switch
++    {SDLK_t, 0}                       // Tilt/Slam switch
+ };
+ 
+ ////////////
+ 
+-// added by Russ
+-// global button mapping array. just hardcoded room for 10 buttons max
+-int joystick_buttons_map[10] = {
+-    SWITCH_BUTTON1, // button 1
+-    SWITCH_BUTTON2, // button 2
+-    SWITCH_BUTTON3, // button 3
+-    SWITCH_BUTTON1, // button 4
+-    SWITCH_COIN1,   // button 5
+-    SWITCH_START1,  // button 6
+-    SWITCH_BUTTON1, // button 7
+-    SWITCH_BUTTON1, // button 8
+-    SWITCH_BUTTON1, // button 9
+-    SWITCH_BUTTON1, // button 10
++// default joystick buttons assignments, in case .ini file is missing
++// Two values defined: 1st=joystick index (0=1st joystick), 2nd=button index (0=not defined)
++// NOTE : These are in a specific order, corresponding to the enum in hypseus.h
++int g_joy_btn_defs[SWITCH_COUNT][2] = {
++    {0, 0}, // up
++    {0, 0}, // left
++    {0, 0}, // down
++    {0, 0}, // right
++    {0, 6}, // 1 player start
++    {0, 0}, // 2 player start
++    {0, 1}, // action button 1
++    {0, 2}, // action button 2
++    {0, 3}, // action button 3
++    {0, 5}, // coin chute left
++    {0, 0}, // coin chute right
++    {0, 0}, // skill easy
++    {0, 0}, // skill medium
++    {0, 0}, // skill hard
++    {0, 0}, // service coin
++    {0, 0}, // test mode
++    {0, 0}, // reset cpu
++    {0, 0}, // take screenshot
++    {0, 0}, // Quit DAPHNE
++    {0, 0}, // pause game
++    {0, 0}, // toggle console (TODO)
++    {0, 0}  // Tilt/Slam switch
++};
++// default joystick axis assignments, in case .ini file is missing
++// Three values defined: 1st=joystick index (0=1st joystick), 2nd=axis index (0=not defined), 3rd=direction (-1/1, 0=not defined)
++// Only first four switch defined (SWITCH_UP to SWITCH_RIGHT)
++int g_joy_axs_defs[SWITCH_START1][3] = {
++    {0, 2, -1}, // up
++    {0, 1, -1}, // left
++    {0, 2, 1},  // down
++    {0, 1, 1}   // right
+ };
+ 
+ // Mouse button to key mappings
 @@ -143,8 +164,8 @@ void CFG_Keys()
  {
      struct mpo_io *io;
@@ -37,6 +98,34 @@ Signed-off-by: Laurent Merckx <laurent-merckx@skynet.be>
                                      corrupt_file = false; // looks like we're
                                                            // good
  
+@@ -200,11 +225,22 @@ void CFG_Keys()
+                                             g_key_defs[i][0] = val1;
+                                             g_key_defs[i][1] = val2;
+ 
+-                                            // if zero then no mapping
+-                                            // necessary, just use default, if
+-                                            // any
+-                                            if (val3 > 0)
+-                                                joystick_buttons_map[val3 - 1] = i;
++                                            // joystick buttons:
++                                            // if zero, use default
++                                            // if not: hundreds=joystick index, units=button index
++                                            if (val3 > 0) {
++                                                g_joy_btn_defs[i][0] = (val3 / 100);
++                                                g_joy_btn_defs[i][1] = (val3 % 100);
++                                            }
++                                            // joystick axis:
++                                            // if zero, use default
++                                            // if not: hundreds=joystick index, units=axis index, sign=direction
++                                            if (val4 != 0) {
++                                                g_joy_axs_defs[i][0] = abs(val4 / 100);
++                                                g_joy_axs_defs[i][1] = abs(val4 % 100);
++                                                g_joy_axs_defs[i][2] = (val4 == 0)?0:((val4 < 0)?-1:1);
++                                            }
++
+                                             found_match                        = true;
+                                             break;
+                                         }
 @@ -263,20 +299,17 @@ int SDL_input_init()
      if (SDL_InitSubSystem(SDL_INIT_JOYSTICK) >= 0) {
          // if joystick usage is enabled
