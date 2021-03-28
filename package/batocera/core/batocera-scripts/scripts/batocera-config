@@ -12,7 +12,7 @@ extra1="$3"
 extra2="$4"
 extra3="$5"
 extra4="$6"
-arch=`cat /usr/share/batocera/batocera.arch`
+board=`cat /boot/boot/batocera.board`
 
 updateurl="https://updates.batocera.org"
 
@@ -186,8 +186,8 @@ if [ "$command" = "canupdate" ];then
 	    updateurl="${settingsupdateurl}"
 	fi
 
-	#echo "Update url: ${updateurl}/${arch}/${updatetype}/last"
-	available=`wget -qO- ${updateurl}/${arch}/${updatetype}/last/batocera.version`
+	#echo "Update url: ${updateurl}/${board}/${updatetype}/last"
+	available=`wget -qO- ${updateurl}/${board}/${updatetype}/last/batocera.version`
 	if [ "$?" != "0" ];then
 	        echo "Unable to access the url" >&2
 		exit 2

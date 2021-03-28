@@ -27,12 +27,9 @@ fi
 if echo "${BATOCERA_IMAGES_TARGETS}" | grep -qE '^[^ ]*$'
 then
     # single board directory
-    COMMON_PARENT_DIR=${BATOCERA_IMAGES_TARGETS}
     IMGMODE=single
 else
     # when there are several one, the first one is the common directory where to find the create-boot-script.sh directory
-    COMMON_PARENT_DIR=$(echo "${BATOCERA_IMAGES_TARGETS}" | cut -d ' ' -f 1)
-    BATOCERA_IMAGES_TARGETS=$(echo "${BATOCERA_IMAGES_TARGETS}" | cut -d ' ' -f 2-)
     IMGMODE=multi
 fi
 
@@ -43,34 +40,41 @@ then
 fi
 mkdir -p "${BATOCERA_BINARIES_DIR}/images" || exit 1
 
-#### prepare the boot dir ######
-BATOCERA_POST_IMAGE_SCRIPT="${BR2_EXTERNAL_BATOCERA_PATH}/board/batocera/${COMMON_PARENT_DIR}/create-boot-script.sh"
-bash "${BATOCERA_POST_IMAGE_SCRIPT}" "${HOST_DIR}" "${BR2_EXTERNAL_BATOCERA_PATH}/board/batocera/${COMMON_PARENT_DIR}" "${BUILD_DIR}" "${BINARIES_DIR}" "${TARGET_DIR}" "${BATOCERA_BINARIES_DIR}" || exit 1
-# add some common files
-cp -pr "${BINARIES_DIR}/tools"              "${BATOCERA_BINARIES_DIR}/boot/" || exit 1
-cp     "${BINARIES_DIR}/batocera-boot.conf" "${BATOCERA_BINARIES_DIR}/boot/" || exit 1
-
-#### boot.tar.xz ###############
-echo "creating boot.tar.xz"
-(cd "${BATOCERA_BINARIES_DIR}/boot" && tar -I "xz -T0" -cf "${BATOCERA_BINARIES_DIR}/boot.tar.xz" *) || exit 1
-
 ##### build images #############
 SUFFIXVERSION=$(cat "${TARGET_DIR}/usr/share/batocera/batocera.version" | sed -e s+'^\([0-9\.]*\).*$'+'\1'+) # xx.yy version
 SUFFIXDATE=$(date +%Y%m%d)
-# rename the squashfs : the .update is the version that will be renamed at boot to replace the old version
-mv "${BATOCERA_BINARIES_DIR}/boot/boot/batocera.update" "${BATOCERA_BINARIES_DIR}/boot/boot/batocera" || exit 1
 
 #### build the images ###########
 for BATOCERA_PATHSUBTARGET in ${BATOCERA_IMAGES_TARGETS}
 do
     BATOCERA_SUBTARGET=$(basename "${BATOCERA_PATHSUBTARGET}")
+
+    #### prepare the boot dir ######
+    BOOTNAMEDDIR="${BATOCERA_BINARIES_DIR}/boot_${BATOCERA_SUBTARGET}"
+    rm -rf "${BOOTNAMEDDIR}" || exit 1 # remove in case or rerun
+    BATOCERA_POST_IMAGE_SCRIPT="${BR2_EXTERNAL_BATOCERA_PATH}/board/batocera/${BATOCERA_PATHSUBTARGET}/create-boot-script.sh"
+    bash "${BATOCERA_POST_IMAGE_SCRIPT}" "${HOST_DIR}" "${BR2_EXTERNAL_BATOCERA_PATH}/board/batocera/${BATOCERA_PATHSUBTARGET}" "${BUILD_DIR}" "${BINARIES_DIR}" "${TARGET_DIR}" "${BATOCERA_BINARIES_DIR}" || exit 1
+    # add some common files
+    cp -pr "${BINARIES_DIR}/tools"              "${BATOCERA_BINARIES_DIR}/boot/" || exit 1
+    cp     "${BINARIES_DIR}/batocera-boot.conf" "${BATOCERA_BINARIES_DIR}/boot/" || exit 1
+    echo   "${BATOCERA_SUBTARGET}" > "${BATOCERA_BINARIES_DIR}/boot/boot/batocera.board" || exit 1
+
+    #### boot.tar.xz ###############
+    echo "creating images/${BATOCERA_SUBTARGET}/boot.tar.xz"
+    mkdir -p "${BATOCERA_BINARIES_DIR}/images/${BATOCERA_SUBTARGET}" || exit 1
+    (cd "${BATOCERA_BINARIES_DIR}/boot" && tar -I "xz -T0" -cf "${BATOCERA_BINARIES_DIR}/images/${BATOCERA_SUBTARGET}/boot.tar.xz" *) || exit 1
+    
+    # rename the squashfs : the .update is the version that will be renamed at boot to replace the old version
+    mv "${BATOCERA_BINARIES_DIR}/boot/boot/batocera.update" "${BATOCERA_BINARIES_DIR}/boot/boot/batocera" || exit 1
+
+    # create *.img
     if test "${IMGMODE}" = "multi"
     then
-	BATOCERAIMG="${BATOCERA_BINARIES_DIR}/images/batocera-${BATOCERA_LOWER_TARGET}-${BATOCERA_SUBTARGET}-${SUFFIXVERSION}-${SUFFIXDATE}.img"
+	BATOCERAIMG="${BATOCERA_BINARIES_DIR}/images/${BATOCERA_SUBTARGET}/batocera-${BATOCERA_LOWER_TARGET}-${BATOCERA_SUBTARGET}-${SUFFIXVERSION}-${SUFFIXDATE}.img"
     else
-	BATOCERAIMG="${BATOCERA_BINARIES_DIR}/images/batocera-${BATOCERA_LOWER_TARGET}-${SUFFIXVERSION}-${SUFFIXDATE}.img"
+	BATOCERAIMG="${BATOCERA_BINARIES_DIR}/images/${BATOCERA_SUBTARGET}/batocera-${BATOCERA_LOWER_TARGET}-${SUFFIXVERSION}-${SUFFIXDATE}.img"
     fi
-    echo "creating image ${BATOCERA_IMG}..." >&2
+    echo "creating images/${BATOCERA_SUBTARGET}/"$(basename "${BATOCERAIMG}")"..." >&2
     rm -rf "${GENIMAGE_TMP}" || exit 1
     GENIMAGEDIR="${BR2_EXTERNAL_BATOCERA_PATH}/board/batocera/${BATOCERA_PATHSUBTARGET}"
     GENIMAGEFILE="${GENIMAGEDIR}/genimage.cfg"
@@ -96,10 +100,13 @@ do
     rm -f "${BATOCERA_BINARIES_DIR}/userdata.ext4" || exit 1
     mv "${BATOCERA_BINARIES_DIR}/batocera.img" "${BATOCERAIMG}" || exit 1
     gzip "${BATOCERAIMG}" || exit 1
+
+    # rename the boot to boot_arch
+    mv "${BATOCERA_BINARIES_DIR}/boot" "${BOOTNAMEDDIR}" || exit 1
 done
 
 #### md5 #######################
-for FILE in "${BATOCERA_BINARIES_DIR}/boot.tar.xz" "${BATOCERA_BINARIES_DIR}/images/batocera-"*".img.gz"
+for FILE in "${BATOCERA_BINARIES_DIR}/images/"*"/boot.tar.xz" "${BATOCERA_BINARIES_DIR}/images/"*"/batocera-"*".img.gz"
 do
     echo "creating ${FILE}.md5"
     CKS=$(md5sum "${FILE}" | sed -e s+'^\([^ ]*\) .*$'+'\1'+)

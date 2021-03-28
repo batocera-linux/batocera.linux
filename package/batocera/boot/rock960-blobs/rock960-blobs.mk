@@ -9,8 +9,8 @@ ROCK960_BLOBS_SITE = https://github.com/Multi-Retropie/rock960-blobs.git
 ROCK960_BLOBS_SITE_METHOD=git
 
 define ROCK960_BLOBS_INSTALL_TARGET_CMDS
-	cp $(@D)/idbloader.img $(BINARIES_DIR)/
-	cp $(@D)/u-boot.itb $(BINARIES_DIR)/
+	cp $(@D)/idbloader.img $(BINARIES_DIR)/idbloader-rock960.img
+	cp $(@D)/u-boot.itb $(BINARIES_DIR)/u-boot-rock960.itb
 endef
 
 $(eval $(generic-package))
