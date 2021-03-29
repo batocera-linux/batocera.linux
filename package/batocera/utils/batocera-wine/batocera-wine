@@ -582,7 +582,7 @@ wine2squashfs() {
     GAMEDIR="${GAMENAME}"
     SQUASHFSFILE=$(echo "${G_ROMS_DIR}/${BASEGAMENAME}.squashfs" | sed -e s+"\.wine\.squashfs$"+".wsquashfs"+)
     
-    mksquashfs "${GAMEDIR}" "${SQUASHFSFILE}" || return 1
+    mksquashfs "${GAMEDIR}" "${SQUASHFSFILE}" -comp zstd || return 1
     return 0
 }
 
