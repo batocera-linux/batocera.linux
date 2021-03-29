@@ -19,7 +19,7 @@ class CemuGenerator(Generator):
         if not path.isdir(batoceraFiles.CONF + "/cemu"):
             os.mkdir(batoceraFiles.CONF + "/cemu")
 
-        for folder in ["shaderCache", "controllerProfiles", "gameProfiles", "graphicPacks"]:
+        for folder in ["shaderCache", "controllerProfiles", "gameProfiles", "graphicPacks", "gameProfiles"]:
             if not path.isdir(batoceraFiles.CONF + "/cemu/" + folder):
                 os.mkdir(batoceraFiles.CONF + "/cemu/" + folder)
 
