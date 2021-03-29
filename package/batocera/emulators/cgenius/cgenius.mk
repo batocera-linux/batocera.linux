@@ -7,12 +7,12 @@
 CGENIUS_VERSION = v2.7.8
 CGENIUS_SITE = $(call github,gerstrong,Commander-Genius,$(CGENIUS_VERSION))
 
-CGENIUS_DEPENDENCIES = sdl2 sdl2_mixer sdl2_image sdl2_ttf boost
+CGENIUS_DEPENDENCIES = sdl2 sdl2_mixer sdl2_image sdl2_ttf boost libcurl
 
 # No OpenGL ES support
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86_ANY),y)
 CGENIUS_CONF_OPTS += -DUSE_OPENGL=ON
-else
+else	
 CGENIUS_CONF_OPTS += -DUSE_OPENGL=OFF
 endif
 
