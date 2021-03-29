@@ -1,0 +1,40 @@
+--- a/src/CMakeLists.txt	2021-03-29 15:33:17.456186927 +0200
++++ b/src/CMakeLists.txt	2021-03-29 15:34:29.179517822 +0200
+@@ -34,7 +34,6 @@
+ 
+ include(BuildSupport)
+ include(GNUInstallDirs)
+-include(GetGitRevisionDescription)
+ include(InstallRequiredSystemLibraries)
+ include(FindPkgConfig)
+ include(ExternalProject)
+@@ -49,25 +48,10 @@
+ 
+ message(STATUS "Target: ${CMAKE_SYSTEM_NAME} ${CMAKE_TARGET_ARCHITECTURES}")
+ 
+-git_describe(VER_TAG --tags --abbrev=0)
+-if("${VER_TAG}" MATCHES "-NOTFOUND")
+-    set(VER_TAG  ${PKG_VERSION})
+-    set(VER_GIT_COUNT "0")
+-else()
+-    git_revlist(VER_GIT_COUNT --count ${VER_TAG}..HEAD)
+-endif()
+-string(REGEX REPLACE "^v" "" RESULT ${VER_TAG})
+-string(REGEX REPLACE "[-\\.]" ";" RESULT ${RESULT})
+-list(GET RESULT 0 VER_MAJOR)
+-list(GET RESULT 1 VER_MINOR)
+-list(GET RESULT 2 VER_PATCH)
+-if(NOT "${VER_GIT_COUNT}" EQUAL "0")
+-    set(VER_TAG "${VER_TAG}-${VER_GIT_COUNT}")
+-endif()
+-git_describe(VER_GIT_DIRTY --always --dirty)
+-if("${VER_GIT_DIRTY}" MATCHES "-dirty")
+-    set(VER_TAG "${VER_TAG}-dirty")
+-endif()
++set (VER_TAG "batocera")
++set (VER_MAJOR 2)
++set (VER_MINOR 1)
++set (VER_PATCH 0)
+ message(STATUS "Version: ${VER_TAG}")
+ 
+ include_directories(
