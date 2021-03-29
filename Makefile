@@ -26,7 +26,6 @@ IMAGE_NAME  := batocera.linux-build
 TARGETS := $(sort $(shell find $(PROJECT_DIR)/configs/ -name 'b*' | sed -n 's/.*\/batocera-\(.*\)_defconfig/\1/p'))
 UID  := $(shell id -u)
 GID  := $(shell id -g)
-USER := $(shell whoami)
 
 $(if $(shell which docker 2>/dev/null),, $(error "docker not found!"))
 
@@ -106,7 +105,7 @@ dl-dir:
 		-v $(PROJECT_DIR):/build \
 		-v $(DL_DIR):/build/buildroot/dl \
 		-v $(OUTPUT_DIR)/$*:/$* \
-		-v $(CCACHE_DIR):/home/$(USER)/.buildroot-ccache \
+		-v $(CCACHE_DIR):$(HOME)/.buildroot-ccache \
 		-u $(UID):$(GID) \
 		-v /etc/passwd:/etc/passwd:ro \
 		-v /etc/group:/etc/group:ro \
@@ -119,7 +118,7 @@ dl-dir:
 		-v $(PROJECT_DIR):/build \
 		-v $(DL_DIR):/build/buildroot/dl \
 		-v $(OUTPUT_DIR)/$*:/$* \
-		-v $(CCACHE_DIR):/home/$(USER)/.buildroot-ccache \
+		-v $(CCACHE_DIR):$(HOME)/.buildroot-ccache \
 		-u $(UID):$(GID) \
 		-v /etc/passwd:/etc/passwd:ro \
 		-v /etc/group:/etc/group:ro \
@@ -133,11 +132,12 @@ dl-dir:
 		-v $(PROJECT_DIR):/build \
 		-v $(DL_DIR):/build/buildroot/dl \
 		-v $(OUTPUT_DIR)/$*:/$* -w /$* \
-		-v $(CCACHE_DIR):/home/$(USER)/.buildroot-ccache \
+		-v $(CCACHE_DIR):$(HOME)/.buildroot-ccache \
 		-u $(UID):$(GID) \
 		$(DOCKER_OPTS) \
 		-v /etc/passwd:/etc/passwd:ro \
 		-v /etc/group:/etc/group:ro \
+		-w "/build/output/"$* \
 		$(DOCKER_REPO)/$(IMAGE_NAME)
 
 %-cleanbuild: %-clean %-build
