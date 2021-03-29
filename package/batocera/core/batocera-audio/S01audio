@@ -25,17 +25,32 @@ stop_alsa() {
 	echo "OK"
 }
 
+start_pulse() {
+	printf "Starting pulseaudio: "
+	umask 077
+	start-stop-daemon -S -b -m -p /var/run/pulse.pid -x \
+		/usr/bin/pulseaudio -- \
+		--exit-idle-time=-1
+	echo "OK"
+}
+
+stop_pulse() {
+	printf "Stopping pulseaudio: "
+	start-stop-daemon -K -p /var/run/pulse.pid
+	echo "OK"
+}
+
 restart() {
-	stop_alsa
-	start_alsa
+	stop_pulse
+	start_pulse
 }
 
 case "$1" in
  	start)
-		start_alsa
+		start_pulse
 	;;
  	stop)
-		stop_alsa
+		stop_pulse
 	;;
  	restart|reload)
 		restart

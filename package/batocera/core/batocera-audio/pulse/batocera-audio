@@ -1,0 +1,58 @@
+#!/bin/sh
+
+ACTION="$1"
+
+case "${ACTION}" in
+	list)
+		printf '%s\n' auto custom
+		#pactl list sinks | grep alsa.long_card_name | awk '$1 == "alsa.long_card_name" {gsub(/"/, "", $3); print NR-1 " " $3}'
+		LANG=C aplay -l | grep -E '^card [0-9]*:' | sed -e s+'^card \([0-9]*\): \(.*\), device \([0-9]*\): [^\[]* \[\([^]]*\)].*$'+'\1,\3 \4 \2'+
+	;;
+
+	get)
+		/usr/bin/batocera-settings-get audio.device
+	;;
+
+	set)
+		MODE="$2"
+		case "${MODE}" in
+			# auto: no .asoundrc
+			# custom: don't touch .asoundrc
+			# any other, create .asoundrc
+			auto)
+				rm -f /userdata/system/.asoundrc
+			;;
+
+			custom)
+				# do nothing!
+			;;
+
+			*)
+				if echo "${MODE}" | grep -qE '^[0-9]*,[0-9]* '; then
+					cardnb="$(echo "${MODE}" | sed -e s+'^\([0-9]*\),.*$'+'\1'+)"
+					devicenb="$(echo "${MODE}" | sed -e s+'^[0-9]*,\([0-9]*\) .*$'+'\1'+)"
+					sed -e "s;%CARDNO%;${cardnb};g" -e "s;%DEVICENO%;${devicenb};g" /usr/share/batocera/alsa/asoundrc-dmix+softvol > /userdata/system/.asoundrc
+				fi
+				# any other: set default sink in pulseadio user file
+                #ALSA_DEV=$2
+                #if [ "${ALSA_DEV}" = "custom" ]; then
+                #    exit 0
+                #fi
+                #if [ "${ALSA_DEV}" = "auto" ]; then
+                #    ALSA_DEV=$(get_default_card)
+                #fi
+                # get sink_id
+                #SINK_ID=${ALSA_DEV:0:1}
+                #PULSE_RUNTIME_PATH=/tmp/pulse pacmd set-default-sink ${SINK_ID}
+                # re-route all apps to new sink
+                 #for APP in $(PULSE_RUNTIME_PATH=/tmp/pulse pacmd list-sink-inputs | awk '$1 == "index:" {print $2}'); do
+                #    PULSE_RUNTIME_PATH=/tmp/pulse pacmd move-sink-input ${APP} ${SINK_ID} &>/dev/null
+                #done
+			;;
+		esac
+	;;
+
+	test)
+		aplay "/usr/share/sounds/Mallet.wav"
+	;;
+esac

@@ -8,7 +8,7 @@ BATOCERA_AUDIO_VERSION = 5
 BATOCERA_AUDIO_LICENSE = GPL
 BATOCERA_AUDIO_DEPENDENCIES = alsa-lib
 BATOCERA_AUDIO_SOURCE=
-BATOCERA_AUDIO_DEPENDENCIES += alsa-plugins
+BATOCERA_AUDIO_DEPENDENCIES += pulseaudio alsa-plugins
 
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA),y)
 ALSA_SUFFIX = "-odroidga"
@@ -40,7 +40,7 @@ define BATOCERA_AUDIO_INSTALL_TARGET_CMDS
 		$(TARGET_DIR)/etc/udev/rules.d/90-alsa-setup.rules
 	install -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-audio/soundconfig \
 		$(TARGET_DIR)/usr/bin/soundconfig
-	install -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-audio/alsa/batocera-audio$(ALSA_SUFFIX) \
+	install -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-audio/pulse/batocera-audio$(ALSA_SUFFIX) \
 		$(TARGET_DIR)/usr/bin/batocera-audio
 endef
 

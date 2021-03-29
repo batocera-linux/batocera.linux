@@ -1,0 +1,55 @@
+--- pulseaudio-14.2/src/pulsecore/core-util.c
++++ pulseaudio-14.2/src/pulsecore/core-util.c
+@@ -1510,23 +1510,7 @@ char *pa_get_state_dir(void) {
+ 
+ char *pa_get_home_dir_malloc(void) {
+     char *homedir;
+-    size_t allocated = 128;
+-
+-    for (;;) {
+-        homedir = pa_xmalloc(allocated);
+-
+-        if (!pa_get_home_dir(homedir, allocated)) {
+-            pa_xfree(homedir);
+-            return NULL;
+-        }
+-
+-        if (strlen(homedir) < allocated - 1)
+-            break;
+-
+-        pa_xfree(homedir);
+-        allocated *= 2;
+-    }
+-
++    homedir = pa_sprintf_malloc(PA_PATH_SEP "overlay");
+     return homedir;
+ }
+ 
+@@ -1553,17 +1537,11 @@ int pa_get_config_home_dir(char **_r) {
+ 
+     pa_assert(_r);
+ 
+-    e = getenv("XDG_CONFIG_HOME");
+-    if (e && *e) {
+-        *_r = pa_sprintf_malloc("%s" PA_PATH_SEP "pulse", e);
+-        return 0;
+-    }
+-
+     home_dir = pa_get_home_dir_malloc();
+     if (!home_dir)
+         return -PA_ERR_NOENTITY;
+ 
+-    *_r = pa_sprintf_malloc("%s" PA_PATH_SEP ".config" PA_PATH_SEP "pulse", home_dir);
++    *_r = pa_sprintf_malloc("%s" PA_PATH_SEP ".configs" PA_PATH_SEP "pulse", home_dir);
+     pa_xfree(home_dir);
+     return 0;
+ }
+@@ -1894,7 +1872,7 @@ FILE *pa_open_config_file(const char *global, const char *local, const char *env
+             f = pa_fopen_cloexec(fn, "r");
+             if (!f) {
+                 free(lfn);
+-                fn = lfn = pa_sprintf_malloc("%s" PA_PATH_SEP ".config/pulse" PA_PATH_SEP "%s", h, local);
++                fn = lfn = pa_sprintf_malloc("%s" PA_PATH_SEP ".configs/pulse" PA_PATH_SEP "%s", h, local);
+                 f = pa_fopen_cloexec(fn, "r");
+             }
+             pa_xfree(h);
