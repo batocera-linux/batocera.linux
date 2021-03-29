@@ -10,8 +10,12 @@
 # from the root device partition the partitions can be determined
 # the root partition is not always /dev/mmcblk0p1, mainly in case you boot from an usb stick or a hard drive
 
+determine_X_part() {
+    grep -E "^[^ ]* ${1} " /proc/mounts | cut -d ' ' -f 1
+}
+
 determine_boot_part() {
-    grep -E '^[^ ]* /boot ' /proc/mounts | cut -d ' ' -f 1
+    determine_X_part "/boot"
 }
 
 determine_default_share_part() {
@@ -26,6 +30,10 @@ determine_default_share_part() {
 
     XSHARE=$(expr ${XBOOT} + 1)
     echo "${BOOTPART}" | sed -e s+"${XBOOT}$"+"${XSHARE}"+
+}
+
+determine_share_part() {
+    determine_X_part "/userdata"
 }
 
 determine_part_prefix() {
@@ -66,6 +74,10 @@ case "${PARTNAME}" in
 	determine_default_share_part
 	;;
 
+    "share")
+	determine_share_part
+	;;
+
     "prefix")
 	determine_part_prefix "$2"
 	;;
@@ -78,6 +90,7 @@ case "${PARTNAME}" in
 	echo "${0} <boot|share_internal|prefix x|previous x>" >&2
 	echo "  boot: the batocera.linux boot partition" >&2
 	echo "  share_internal: the batocera.linux share internal partition " >&2
+	echo "  share: the batocera.linux share partition " >&2
 	echo "  prefix x: the disk of the partition x (without the partition number)" >&2
 	echo "  previous x: the partition before x on the same disk" >&2
 	exit 1

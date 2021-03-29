@@ -45,7 +45,7 @@ let V_CPUMINFREQ=${V_CPUMINFREQ}/1000
 let V_CPUMAXFREQ=${V_CPUMAXFREQ}/1000
 
 # userdata type
-INTERNALDEVICE=$(batocera-part "share_internal")
+INTERNALDEVICE=$(batocera-part "share")
 INTERNALDEVICETYPE=$(blkid "${INTERNALDEVICE}" | sed -e s+'^.* TYPE="\([^"]*\)\".*'+'\1'+)
 echo "Disk format: ${INTERNALDEVICETYPE}"
 
