@@ -107,39 +107,6 @@ index 4e76c2cf..d4ef4993 100644
  	}
  
  	if (nowide::getenv("XDG_CONFIG_DIRS") != NULL)
-@@ -257,13 +244,11 @@ std::vector<std::string> find_system_config_dirs()
- 		while(n != std::string::npos)
- 		{
- 			dirs.push_back(s.substr(pos, n-pos) + "/flycast/");
--			dirs.push_back(s.substr(pos, n-pos) + "/reicast/");
- 			pos = n + 1;
- 			n = s.find(':', pos);
- 		}
- 		// Separator not found
- 		dirs.push_back(s.substr(pos) + "/flycast/");
--		dirs.push_back(s.substr(pos) + "/reicast/");
- 	}
- 	else
- 	{
-@@ -277,17 +262,13 @@ std::vector<std::string> find_system_config_dirs()
- 
- // Find a file in the user data directories.
- // The following folders are checked in this order:
--// $HOME/.reicast/data
-+// $HOME/.flycast/data
- // $HOME/.local/share/flycast
--// $HOME/.local/share/reicast
- // if XDG_DATA_DIRS is defined:
- //   <$XDG_DATA_DIRS>/flycast
--//   <$XDG_DATA_DIRS>/reicast
- // else
- //   /usr/local/share/flycast
- //   /usr/share/flycast
--//   /usr/local/share/reicast
--//   /usr/share/reicast
- // ./data
- std::vector<std::string> find_system_data_dirs()
- {
 @@ -296,8 +277,8 @@ std::vector<std::string> find_system_data_dirs()
  	std::string xdg_home;
  	if (nowide::getenv("HOME") != NULL)
@@ -161,27 +128,6 @@ index 4e76c2cf..d4ef4993 100644
  	}
  
  	if (nowide::getenv("XDG_DATA_DIRS") != NULL)
-@@ -320,20 +300,16 @@ std::vector<std::string> find_system_data_dirs()
- 		while(n != std::string::npos)
- 		{
- 			dirs.push_back(s.substr(pos, n-pos) + "/flycast/");
--			dirs.push_back(s.substr(pos, n-pos) + "/reicast/");
- 			pos = n + 1;
- 			n = s.find(':', pos);
- 		}
- 		// Separator not found
- 		dirs.push_back(s.substr(pos) + "/flycast/");
--		dirs.push_back(s.substr(pos) + "/reicast/");
- 	}
- 	else
- 	{
- 		dirs.push_back("/usr/local/share/flycast/");
- 		dirs.push_back("/usr/share/flycast/");
--		dirs.push_back("/usr/local/share/reicast/");
--		dirs.push_back("/usr/share/reicast/");
- 	}
- 	dirs.push_back("./");
- 	dirs.push_back("data/");
 @@ -368,7 +344,7 @@ int main(int argc, char* argv[])
  	settings.profile.run_counts=0;
  

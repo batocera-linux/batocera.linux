@@ -1,0 +1,44 @@
+--- a/core/linux-dist/main.cpp	2021-03-30 13:02:01.121665048 +0200
++++ b/core/linux-dist/main.cpp	2021-03-30 13:02:35.940737322 +0200
+@@ -255,7 +255,6 @@
+ 	{
+ 		std::string path = (std::string)nowide::getenv("XDG_CONFIG_DIRS");
+ 		addDirectoriesFromPath(dirs, path, "/flycast/");
+-		addDirectoriesFromPath(dirs, path, "/reicast/");
+ 	}
+ 	else
+ 	{
+@@ -269,17 +268,13 @@
+ 
+ // Find a file in the user data directories.
+ // The following folders are checked in this order:
+-// $HOME/.reicast/data
++// $HOME/.flycast/data
+ // $HOME/.local/share/flycast
+-// $HOME/.local/share/reicast
+ // if XDG_DATA_DIRS is defined:
+ //   <$XDG_DATA_DIRS>/flycast
+-//   <$XDG_DATA_DIRS>/reicast
+ // else
+ //   /usr/local/share/flycast
+ //   /usr/share/flycast
+-//   /usr/local/share/reicast
+-//   /usr/share/reicast
+ // <$FLYCAST_BIOS_PATH>
+ // ./
+ // ./data
+@@ -309,14 +304,11 @@
+ 		std::string path = (std::string)nowide::getenv("XDG_DATA_DIRS");
+ 
+ 		addDirectoriesFromPath(dirs, path, "/flycast/");
+-		addDirectoriesFromPath(dirs, path, "/reicast/");
+ 	}
+ 	else
+ 	{
+ 		dirs.push_back("/usr/local/share/flycast/");
+ 		dirs.push_back("/usr/share/flycast/");
+-		dirs.push_back("/usr/local/share/reicast/");
+-		dirs.push_back("/usr/share/reicast/");
+ 	}
+ 	if (nowide::getenv("FLYCAST_BIOS_PATH") != NULL)
+ 	{
