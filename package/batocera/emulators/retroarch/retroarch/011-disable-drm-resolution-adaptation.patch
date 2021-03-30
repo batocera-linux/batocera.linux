@@ -1,0 +1,63 @@
+--- a/gfx/drivers_context/drm_ctx.c	2021-03-28 22:43:18.000000000 +0200
++++ b/gfx/drivers_context/drm_ctx.c	2021-03-30 23:54:32.741259232 +0200
+@@ -701,6 +701,8 @@
+    settings_t *settings        = config_get_ptr();
+    unsigned black_frame_insertion  = settings->uints.video_black_frame_insertion;
+    float video_refresh_rate    = settings->floats.video_refresh_rate;
++   FILE* fdDrmMode;
++   int drmMode;
+ 
+    if (!drm)
+       return false;
+@@ -715,41 +717,16 @@
+    /* Find desired video mode, and use that.
+     * If not fullscreen, we get desired windowed size,
+     * which is not appropriate. */
+-   if ((width == 0 && height == 0) || !fullscreen)
+-      g_drm_mode = &g_drm_connector->modes[0];
+-   else
+-   {
+-      /* check if custom hdmi timings were asked */
+-      if(gfx_ctx_crt_switch_mode.vdisplay > 0)
+-      {
+-         RARCH_LOG("[DRM]: custom mode requested: %s\n", gfx_ctx_crt_switch_mode.name);
+-         g_drm_mode = &gfx_ctx_crt_switch_mode;
+-      }
+-      else
+-      {
+-         /* Try to match refresh_rate as closely as possible.
+-          *
+-          * Lower resolutions tend to have multiple supported
+-          * refresh rates as well.
+-          */
+-         float minimum_fps_diff = 0.0f;
+-
+-         /* Find best match. */
+-         for (i = 0; i < g_drm_connector->count_modes; i++) {
+-            float diff;
+-            if (width != g_drm_connector->modes[i].hdisplay ||
+-               height != g_drm_connector->modes[i].vdisplay)
+-               continue;
+-
+-            diff = fabsf(refresh_mod * g_drm_connector->modes[i].vrefresh
+-                            - video_refresh_rate);
+-
+-            if (!g_drm_mode || diff < minimum_fps_diff) {
+-               g_drm_mode = &g_drm_connector->modes[i];
+-               minimum_fps_diff = diff;
+-            }
+-         }
+-      }
++   //if ((width == 0 && height == 0) || !fullscreen)
++   g_drm_mode = &g_drm_connector->modes[0];
++   // batocera - set resolution
++   if((fdDrmMode = fopen("/var/run/drmMode", "r")) != NULL) {
++     if(fscanf(fdDrmMode, "%i", &drmMode) == 1) {
++       if(drmMode>=0 && drmMode<g_drm_connector->count_modes) {
++   g_drm_mode = &g_drm_connector->modes[drmMode];
++       }
++     }
++     fclose(fdDrmMode);
+    }
+ 
+    if (!g_drm_mode)
