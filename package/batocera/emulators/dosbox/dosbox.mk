@@ -6,7 +6,7 @@
 # Version.: Commits on Jan 08, 2020
 DOSBOX_VERSION = 411481d3c760a7f25bc530c97da7ae008e63e0ad
 DOSBOX_SITE = $(call github,duganchen,dosbox,$(DOSBOX_VERSION))
-DOSBOX_DEPENDENCIES = sdl2 sdl2_net sdl_sound zlib libpng libogg libvorbis libglu
+DOSBOX_DEPENDENCIES = sdl2 sdl2_net sdl_sound zlib libpng libogg libvorbis libglu libglew
 DOSBOX_LICENSE = GPLv2
 
 define DOSBOX_CONFIGURE_CMDS
