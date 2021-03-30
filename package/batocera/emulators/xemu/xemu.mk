@@ -10,7 +10,7 @@ XEMU_SITE = https://github.com/mborgerson/xemu.git
 XEMU_SITE_METHOD=git
 XEMU_GIT_SUBMODULES=YES
 XEMU_LICENSE = GPLv2
-XEMU_DEPENDENCIES = sdl2
+XEMU_DEPENDENCIES = sdl2 libgtk3 libsamplerate libglu
 
 XEMU_EXTRA_DOWNLOADS = https://github.com/mborgerson/xemu-hdd-image/releases/download/1.0/xbox_hdd.qcow2.zip
 
@@ -87,9 +87,9 @@ define XEMU_BUILD_CMDS
 	$(TARGET_CONFIGURE_OPTS) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" \
 		CC_FOR_BUILD="$(TARGET_CC)" GCC_FOR_BUILD="$(TARGET_CC)" \
 		CXX_FOR_BUILD="$(TARGET_CXX)" LD_FOR_BUILD="$(TARGET_LD)" \
-                CROSS_COMPILE="$(STAGING_DIR)/usr/bin/" \
-                PREFIX="/x86_64/host/x86_64-buildroot-linux-gnu/sysroot/" \
-                PKG_CONFIG="/x86_64/host/x86_64-buildroot-linux-gnu/sysroot/usr/bin/pkg-config" \
+		CROSS_COMPILE="$(STAGING_DIR)/usr/bin/" \
+		PREFIX="/x86_64/host/x86_64-buildroot-linux-gnu/sysroot/" \
+		PKG_CONFIG="/x86_64/host/x86_64-buildroot-linux-gnu/sysroot/usr/bin/pkg-config" \
 		$(MAKE) -C $(@D) V=1
 endef
 

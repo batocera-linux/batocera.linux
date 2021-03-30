@@ -1,7 +1,10 @@
 config BR2_PACKAGE_XEMU
-        bool "xemu"
+	bool "xemu"
 	depends on BR2_TOOLCHAIN_GCC_AT_LEAST_8
+	select BR2_PACKAGE_LIBGLU
 	select BR2_PACKAGE_SDL2
+	select BR2_PACKAGE_LIBGTK3
+	select BR2_PACKAGE_LIBSAMPLERATE
 
-        help
-          Xbox (og) emulator based on QEMU
+	help
+	  Xbox (og) emulator based on QEMU
