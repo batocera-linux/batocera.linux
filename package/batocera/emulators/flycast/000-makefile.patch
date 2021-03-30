@@ -9,15 +9,16 @@
      CXXFLAGS += -fexceptions
  
  # Generic 32 bit ARMhf (a.k.a. ARMv7h)
-@@ -157,7 +157,7 @@
+@@ -155,7 +155,8 @@
          MFLAGS += -mfpu=neon
          ASFLAGS += -mfpu=neon
      endif
--    CFLAGS += -DARM_HARDFP -fsingle-precision-constant
+-    USE_GLES := 1
 +    CFLAGS += -DARM_HARDFP -fsingle-precision-constant -DEGL_NO_X11
-     USE_GLES := 1
++  USE_GLES := 1
  
  # LinCPP
+ else ifneq (,$(findstring lincpp,$(platform)))
 @@ -168,6 +168,17 @@
      CFLAGS += -D TARGET_NO_JIT
      CXXFLAGS += -fexceptions -std=gnu++11
