@@ -1,0 +1,20 @@
+--- a/retroarch.c	2021-03-30 23:43:33.286169660 +0200
++++ b/retroarch.c	2021-03-30 23:45:40.041041465 +0200
+@@ -2554,7 +2554,7 @@
+                   entry->label, entry->type, i, entry->entry_idx);
+          break;
+       case MENU_ACTION_SEARCH:
+-         menu_input_dialog_start_search();
++         //menu_input_dialog_start_search();
+          break;
+       case MENU_ACTION_SCAN:
+          if (cbs && cbs->action_scan)
+@@ -7468,6 +7468,8 @@
+          sizeof(frontend_architecture));
+    strlcat(frontend_architecture, frontend_architecture_tmp,
+          sizeof(frontend_architecture));
++   strlcat(frontend_architecture, "@BATOCERA",
++         sizeof(frontend_architecture));
+ 
+ #ifdef HAVE_DISCORD
+    if (discord_is_ready())
