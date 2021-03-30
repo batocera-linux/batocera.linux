@@ -6,7 +6,7 @@
 # Version.: Commits on Jan 25, 2021
 TSUGARU_VERSION = v20210327
 TSUGARU_SITE = $(call github,captainys,TOWNSEMU,$(TSUGARU_VERSION))
-TSUGARU_DEPENDENCIES = 
+TSUGARU_DEPENDENCIES = xlib_libX11 libglu
 TSUGARU_LICENSE = GPLv2
 
 # CMakeLists.txt in src subfolder
