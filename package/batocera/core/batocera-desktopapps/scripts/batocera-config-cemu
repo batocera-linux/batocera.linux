@@ -5,15 +5,7 @@ then
     export DISPLAY=:0.0
 fi
 
-PATH=$PATH:PATH=$PATH:/usr/wine/proton/bin
+PATH=$PATH:PATH=$PATH:/usr/wine/lutris/bin
+WINEPREFIX=/userdata/saves/cemu wine64 /userdata/system/configs/cemu/Cemu.exe -m z:/userdata/saves/cemu
 
-if test -e /userdata/system/configs/cemu/settings.xml
-then
-    cp /userdata/system/configs/cemu/settings.xml /usr/cemu/settings.xml || exit 1
-fi
-WINEPREFIX=/userdata/saves/cemu wine64 /usr/cemu/Cemu.exe -m z:/userdata/saves/cemu
-if test -e /usr/cemu/settings.xml
-then
-    cp /usr/cemu/settings.xml /userdata/system/configs/cemu/settings.xml || exit 1
-fi
 exit 0
