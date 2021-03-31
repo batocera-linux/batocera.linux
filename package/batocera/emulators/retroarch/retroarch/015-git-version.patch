@@ -1,0 +1,11 @@
+--- a/retroarch.c	2021-03-29 11:30:18.558837411 +0200
++++ b/retroarch.c	2021-03-29 11:30:46.785504688 +0200
+@@ -19,6 +19,8 @@
+  *  If not, see <http://www.gnu.org/licenses/>.
+  */
+ 
++const char retroarch_git_version[] = "v1.9.1-batocera";
++
+ #ifdef _WIN32
+ #ifdef _XBOX
+ #include <xtl.h>
