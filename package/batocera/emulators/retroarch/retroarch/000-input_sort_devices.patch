@@ -1,8 +1,6 @@
-diff --git a/input/drivers_joypad/udev_joypad.c b/input/drivers_joypad/udev_joypad.c
-index 98bde28..9f221f4 100644
---- a/input/drivers_joypad/udev_joypad.c
-+++ b/input/drivers_joypad/udev_joypad.c
-@@ -529,6 +529,59 @@ static void udev_joypad_poll(void)
+--- a/input/drivers_joypad/udev_joypad.c	2021-03-30 23:38:13.099117915 +0200
++++ b/input/drivers_joypad/udev_joypad.c	2021-03-30 23:37:51.842668196 +0200
+@@ -536,6 +536,60 @@
     }
  }
  
@@ -15,7 +13,7 @@ index 98bde28..9f221f4 100644
 +
 +  for(n=0; n<strlen(s); n++) {
 +    if(!(s[n] == '0' || s[n] == '1' || s[n] == '2' || s[n] == '3' || s[n] == '4' ||
-+	 s[n] == '5' || s[n] == '6' || s[n] == '7' || s[n] == '8' || s[n] == '9'))
++         s[n] == '5' || s[n] == '6' || s[n] == '7' || s[n] == '8' || s[n] == '9'))
 +      return 0;
 +  }
 +  return 1;
@@ -59,14 +57,16 @@ index 98bde28..9f221f4 100644
 +   return strcmp_events(aa->devnode, bb->devnode);
 +}
 +
- static bool udev_joypad_init(void *data)
++
+ static void *udev_joypad_init(void *data)
  {
     unsigned i;
-@@ -563,12 +616,32 @@ static bool udev_joypad_init(void *data)
+@@ -568,12 +622,33 @@
     udev_enumerate_scan_devices(enumerate);
     devs = udev_enumerate_get_list_entry(enumerate);
  
 -   udev_list_entry_foreach(item, devs)
++
 +   for (item = devs; item; item = udev_list_entry_get_next(item))
     {
        const char         *name = udev_list_entry_get_name(item);

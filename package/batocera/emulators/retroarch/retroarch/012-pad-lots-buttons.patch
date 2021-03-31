@@ -1,12 +1,10 @@
-diff --git a/input/drivers_joypad/udev_joypad.c b/input/drivers_joypad/udev_joypad.c
-index c93273a..4d98a45 100644
---- a/input/drivers_joypad/udev_joypad.c
-+++ b/input/drivers_joypad/udev_joypad.c
+--- a/input/drivers_joypad/udev_joypad.c	2021-03-29 15:48:26.882822501 +0200
++++ b/input/drivers_joypad/udev_joypad.c	2021-03-29 15:48:39.249488731 +0200
 @@ -49,7 +49,7 @@
   * Code adapted from SDL 2.0's implementation.
   */
  
--#define UDEV_NUM_BUTTONS 32
+-#define UDEV_NUM_BUTTONS 64
 +#define UDEV_NUM_BUTTONS 512
  #define NUM_AXES 32
  
