@@ -4,7 +4,7 @@
 #
 ################################################################################
 # Version.: Commits on Jan 13, 2020
-COMMON_SHADERS_VERSION = d6aa6fbea5ba63764fa67113e2f7a97ae3ad2703
+COMMON_SHADERS_VERSION = 55e401834b732e62c34411321c4ffd82524345d4
 COMMON_SHADERS_SITE = $(call github,libretro,common-shaders,$(COMMON_SHADERS_VERSION))
 COMMON_SHADERS_LICENSE = GPL
 
