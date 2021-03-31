@@ -108,10 +108,10 @@ rpi3:
     mupen64plus:
       gliden64:
         flags: [slow_games]
-odroidn2:
+s922x:
   megadrive:
     libretro:
-      genesisplusgx: &odroidn2_megadrive
+      genesisplusgx: &s922x_megadrive
         explanation: |
           On  odroid n2, genesisplusgx crashes with some games (for example at the begining of Altered Beast).
-      picodrive: *odroidn2_megadrive
+      picodrive: *s922x_megadrive
