@@ -8,12 +8,16 @@ import batoceraFiles
 from xml.dom import minidom
 import codecs
 import controllersConfig
+import shutil
 from shutil import copyfile
 from . import cemuControllers
 
 class CemuGenerator(Generator):
 
     def generate(self, system, rom, playersControllers, gameResolution):
+        configdir = "/userdata/system/configs/cemu/gameProfiles"
+        if not os.path.exists(configdir):
+            shutil.copytree("/usr/cemu/gameProfiles", configdir)
         if not path.isdir(batoceraFiles.BIOS + "/cemu"):
             os.mkdir(batoceraFiles.BIOS + "/cemu")
         if not path.isdir(batoceraFiles.CONF + "/cemu"):
@@ -28,11 +32,12 @@ class CemuGenerator(Generator):
 
         CemuGenerator.CemuConfig(batoceraFiles.CONF + "/cemu/settings.xml", system)
         # copy the file from where cemu reads it
-        copyfile(batoceraFiles.CONF + "/cemu/settings.xml", "/usr/cemu/settings.xml")
+        copyfile("/userdata/bios/cemu/keys.txt", "/userdata/system/configs/cemu/keys.txt")
+        copyfile("/usr/cemu/Cemu.exe", "/userdata/system/configs/cemu/Cemu.exe")
 
         cemuControllers.generateControllerConfig(system, playersControllers, rom)
 
-        commandArray = ["/usr/wine/lutris/bin/wine64", "/usr/cemu/Cemu.exe", "-g", "z:" + rom, "-m", "z:" + batoceraFiles.SAVES + "/cemu", "-f"]
+        commandArray = ["/usr/wine/lutris/bin/wine64", "/userdata/system/configs/cemu/Cemu.exe", "-g", "z:" + rom, "-m", "z:" + batoceraFiles.SAVES + "/cemu", "-f"]
         return Command.Command(
             array=commandArray,
             env={

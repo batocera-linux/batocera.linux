@@ -17,22 +17,9 @@ define CEMU_INSTALL_TARGET_CMDS
 	mkdir -p $(TARGET_DIR)/usr/cemu/
 	cp -prn $(@D)/cemu_$(CEMU_VERSION)/{Cemu.exe,gameProfiles,resources} $(TARGET_DIR)/usr/cemu/
 
-	# settings - can't be a link while cemu remove it
-	#ln -sf /userdata/system/configs/cemu/settings.xml $(TARGET_DIR)/usr/cemu/settings.xml
-
 	# keys.txt
 	mkdir -p $(TARGET_DIR)/usr/share/batocera/datainit/bios/cemu
 	touch $(TARGET_DIR)/usr/share/batocera/datainit/bios/cemu/keys.txt
-	ln -sf /userdata/bios/cemu/keys.txt $(TARGET_DIR)/usr/cemu/keys.txt
-
-	# logs
-	ln -sf /userdata/system/configs/cemu/log.txt $(TARGET_DIR)/usr/cemu/log.txt
-
-	# subdirs config
-	ln -sf /userdata/system/configs/cemu/shaderCache $(TARGET_DIR)/usr/cemu/shaderCache
-	ln -sf /userdata/system/configs/cemu/controllerProfiles $(TARGET_DIR)/usr/cemu/controllerProfiles
-	ln -sf /userdata/system/configs/cemu/graphicPacks $(TARGET_DIR)/usr/cemu/graphicPacks
-	ln -sf /userdata/system/configs/cemu/gameProfiles $(TARGET_DIR)/usr/cemu/gameProfiles
 	
 	#evmap config
 	mkdir -p $(TARGET_DIR)/usr/share/evmapy
