@@ -131,13 +131,13 @@ dl-dir:
 	@docker run -t --init --rm \
 		-v $(PROJECT_DIR):/build \
 		-v $(DL_DIR):/build/buildroot/dl \
-		-v $(OUTPUT_DIR)/$*:/$* -w /$* \
+		-v $(OUTPUT_DIR)/$*:/$* \
+		-w /$* \
 		-v $(CCACHE_DIR):$(HOME)/.buildroot-ccache \
 		-u $(UID):$(GID) \
 		$(DOCKER_OPTS) \
 		-v /etc/passwd:/etc/passwd:ro \
 		-v /etc/group:/etc/group:ro \
-		-w "/build/output/"$* \
 		$(DOCKER_REPO)/$(IMAGE_NAME)
 
 %-cleanbuild: %-clean %-build
