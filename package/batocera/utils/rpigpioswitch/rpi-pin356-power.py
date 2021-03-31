@@ -14,13 +14,13 @@ GPIO.setup(4, GPIO.OUT)                                 # LED         - GPIO on 
 GPIO.output(4, GPIO.HIGH)                               # Turn on LED
 
 def shutdownBatocera(channel):
-    print 'shutdownBatocera'
+    print ('shutdownBatocera')
     os.system('(sleep 2; shutdown -h now) &')
     #os.system('batocera-es-swissknife --shutdown &')
     blinkLED()
     
 def exitAllBatoceraEmulator(channel):
-    print 'exitAllBatoceraEmulator'
+    print ('exitAllBatoceraEmulator')
     os.system('killall -9 retroarch PPSSPPSDL reicast.elf mupen64plus linapple x64 scummvm dosbox vice amiberry fsuae dolphin-emu')
     #os.system('batocera-es-swissknife --emukill')
 
