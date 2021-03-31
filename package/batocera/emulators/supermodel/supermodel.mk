@@ -7,7 +7,7 @@
 SUPERMODEL_VERSION = r856
 SUPERMODEL_SITE = https://svn.code.sf.net/p/model3emu/code/trunk
 SUPERMODEL_SITE_METHOD=svn
-SUPERMODEL_DEPENDENCIES = sdl2 zlib libglew libzip sdl2_net
+SUPERMODEL_DEPENDENCIES = sdl2 zlib libglew libzip sdl2_net libglu
 SUPERMODEL_LICENSE = GPLv3
 
 define SUPERMODEL_BUILD_CMDS
