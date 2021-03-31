@@ -1,9 +1,15 @@
-#!/bin/sh
+#!/bin/bash
 
 DAEMON="splash"
 
 soundDisabled() {
     grep -qE "^[ ]*splash.screen.sound[ ]*=[ ]*0[ ]*$" /boot/batocera-boot.conf
+}
+
+do_angels_conversion ()
+{
+    [[ $1 -lt 0 || $1 -gt 3 ]] && echo 0 || echo $(($1*90))
+    return $?
 }
 
 do_start ()
@@ -37,13 +43,21 @@ do_imagestart()
 do_videostart ()
 {
     video="$1"
-    mpv_opt=
+    mpv_audio=
     if soundDisabled
     then
-        mpv_opt=--no-audio
+        mpv_audio=--no-audio
     fi
+
+    mpv_video=
+    video_rotation=$(batocera-settings-get -f /boot/batocera-boot.conf splash.video.rotation)
+    if [[ $? -eq 0 ]]; then
+        video_rotation=$(do_angels_conversion $video_rotation)
+        [[ $? -eq 0 ]] && mpv_video=--video-rotate=${video_rotation}
+    fi
+
     # it should be drm everywhere (including for x86_64 while it is on fb) -- only rpi doesn't use drm and it doesn't use this boot splash script
-    /usr/bin/mpv --really-quiet -fs --no-config %PLAYER_OPTIONS% $mpv_opt "$video" &
+    /usr/bin/mpv --really-quiet -fs --no-config %PLAYER_OPTIONS% $mpv_audio $mpv_video "$video" &
     wait $!
 }
 
