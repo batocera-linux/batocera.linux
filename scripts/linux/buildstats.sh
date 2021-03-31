@@ -10,8 +10,8 @@ then
     exit 1
 fi
 
-BRDIR="${1}"
-ESDIR="${BRDIR}/output/build/"$(ls -t "${BRDIR}/output/build" | grep -E "^batocera-emulationstation-" | head -1)
+BROUTPUTDIR="${1}"
+ESDIR="${BROUTPUTDIR}/build/"$(ls -t "${BROUTPUTDIR}/build" | grep -E "^batocera-emulationstation-" | head -1)
 
 GENDATE=$(date "+%Y/%m/%d %H:%m:%S")
 
@@ -35,16 +35,16 @@ th, td {
 echo '<body>'
 
 echo -n "<h1>"
-cat ${BRDIR}/output/images/batocera/batocera.version
+cat ${BROUTPUTDIR}/images/batocera/batocera.version
 echo "</h1>"
 echo "<h2>Files</h2>"
 echo "<ul>"
 echo "<li>""<a href=\"boot.tar.xz\">boot.tar.xz</a></li>"
-ls ${BRDIR}/output/images/batocera/images/*.gz |
+ls ${BROUTPUTDIR}/images/batocera/images/*/*.gz |
     while read FILE
     do
 	FILENAME=$(basename "${FILE}")
-	echo "<li>""<a href=\"images/${FILENAME}\">${FILENAME}</a></li>"
+	echo "<li>""<a href=\"${FILENAME}\">${FILENAME}</a></li>"
     done
 echo "</ul>"
 
