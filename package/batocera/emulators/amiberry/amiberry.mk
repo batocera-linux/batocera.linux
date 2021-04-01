@@ -3,7 +3,7 @@
 # AMIBERRY
 #
 ################################################################################
-# Version.: Release on Sep 17, 2020
+# Version.: Release on Apr 1, 2021
 AMIBERRY_VERSION = v4.0
 AMIBERRY_SITE = $(call github,midwan,amiberry,$(AMIBERRY_VERSION))
 AMIBERRY_LICENSE = GPLv3
