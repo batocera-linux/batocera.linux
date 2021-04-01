@@ -97,33 +97,26 @@ Signed-off-by: Laurent Merckx <laurent-merckx@skynet.be>
                  break;
              }
          }
-@@ -562,50 +594,37 @@ void process_keyup(SDL_Keycode key)
- // processes movements of the joystick
- void process_joystick_motion(SDL_Event *event)
- {
-+    static int x_axis_in_use = 0;
-+    static int y_axis_in_use = 0;
+@@ -586,46 +606,34 @@
+     static int x_axis_in_use = 0; // true if joystick is left or right
+     static int y_axis_in_use = 0; // true if joystick is up or down
  
--    static int x_axis_in_use = 0; // true if joystick is left or right
--    static int y_axis_in_use = 0; // true if joystick is up or down
--
 -    // if they are moving along the verticle axis
 -    if (event->jaxis.axis == 1) {
 -        // if they're moving up
 -        if (event->jaxis.value < -JOY_AXIS_MID) {
 -            input_enable(SWITCH_UP);
 -            y_axis_in_use = 1;
--        }
--        // if they're moving down
--        else if (event->jaxis.value > JOY_AXIS_MID) {
--            input_enable(SWITCH_DOWN);
 +    // loop through map and find corresponding action
 +    int key = -1;
 +    for (int i = 0; i < SWITCH_START1; i++) {
 +        if (event->jaxis.which == g_joy_axs_defs[i][0] && event->jaxis.axis == g_joy_axs_defs[i][1]-1 && ((event->jaxis.value < 0)?-1:1) == g_joy_axs_defs[i][2]) {
 +            key = i;
 +            break;
-+        }
+         }
+-        // if they're moving down
+-        else if (event->jaxis.value > JOY_AXIS_MID) {
+-            input_enable(SWITCH_DOWN);
 +    }
 +    if (key == -1) return;
 +
@@ -147,7 +140,7 @@ Signed-off-by: Laurent Merckx <laurent-merckx@skynet.be>
 -    } // end verticle axis
 -
 -    // horizontal axis
--    else {
+-    else if (event->jaxis.axis == 0) {
 -        // if they're moving right
 -        if (event->jaxis.value > JOY_AXIS_MID) {
 -            input_enable(SWITCH_RIGHT);
