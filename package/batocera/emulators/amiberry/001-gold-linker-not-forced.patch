@@ -1,0 +1,18 @@
+--- a/Makefile	2021-04-01 19:48:04.216233504 +0200
++++ b/Makefile	2021-04-01 19:48:10.742899926 +0200
+@@ -11,7 +11,7 @@
+ CPPFLAGS = -MD -MT $@ -MF $(@:%.o=%.d) $(SDL_CFLAGS) -Iexternal/libguisan/include -Isrc -Isrc/osdep -Isrc/threaddep -Isrc/include -Isrc/archivers -DAMIBERRY
+ #CPPFLAGS = -MD -MT $@ -MF $(@:%.o=%.d) $(SDL_CFLAGS) -Iexternal/libguisan/include -Isrc -Isrc/osdep -Isrc/threaddep -Isrc/include -Isrc/archivers -DAMIBERRY -D_FILE_OFFSET_BITS=64
+ CFLAGS=-pipe -Wno-shift-overflow -Wno-narrowing
+-LDFLAGS = $(SDL_LDFLAGS) -lSDL2_image -lSDL2_ttf -lguisan -Lexternal/libguisan/lib -fuse-ld=gold -Wl,-O1 -Wl,--hash-style=gnu -Wl,--as-needed -lpthread -lz -lpng -lrt -lFLAC -lmpg123 -ldl -lmpeg2convert -lmpeg2
++LDFLAGS = $(SDL_LDFLAGS) -lSDL2_image -lSDL2_ttf -lguisan -Lexternal/libguisan/lib -Wl,-O1 -Wl,--hash-style=gnu -Wl,--as-needed -lpthread -lz -lpng -lrt -lFLAC -lmpg123 -ldl -lmpeg2convert -lmpeg2
+ 
+ ifndef DEBUG
+ 	CFLAGS += -Ofast
+@@ -498,4 +498,4 @@
+ guisan:
+ 	$(MAKE) -C external/libguisan
+ 	
+--include $(DEPS)
+\ Pas de fin de ligne à la fin du fichier
++-include $(DEPS)
