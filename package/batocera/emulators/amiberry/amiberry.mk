@@ -3,8 +3,8 @@
 # AMIBERRY
 #
 ################################################################################
-# Version.: Release on Sep 17, 2020
-AMIBERRY_VERSION = v3.3
+# Version.: Release on Apr 1, 2021
+AMIBERRY_VERSION = v4.0
 AMIBERRY_SITE = $(call github,midwan,amiberry,$(AMIBERRY_VERSION))
 AMIBERRY_LICENSE = GPLv3
 AMIBERRY_DEPENDENCIES = sdl2 sdl2_image sdl2_ttf mpg123 libxml2 libmpeg2 flac
@@ -24,7 +24,7 @@ else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI1),y)
 else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_XU4),y)
 	AMIBERRY_BATOCERA_SYSTEM=xu4
 else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_ODROIDN2)$(BR2_PACKAGE_BATOCERA_TARGET_VIM3),y)
-	AMIBERRY_BATOCERA_SYSTEM=n2
+	AMIBERRY_BATOCERA_SYSTEM=AMLG12B
 else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_LIBRETECH_H5),y)
         AMIBERRY_BATOCERA_SYSTEM=lePotato
 else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_ZERO2),y)
@@ -66,6 +66,7 @@ define AMIBERRY_BUILD_CMDS
 		CXX="$(TARGET_CXX)" \
 		CC="$(TARGET_CC)" \
 		AS="$(TARGET_CC)" \
+		LD="$(TARGET_LD)" \
 		STRIP="$(TARGET_STRIP)" \
         SDL_CONFIG=$(STAGING_DIR)/usr/bin/sdl2-config \
 		-C $(@D) \
