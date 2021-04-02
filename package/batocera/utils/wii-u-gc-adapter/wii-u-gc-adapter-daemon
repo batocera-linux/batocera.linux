@@ -1,0 +1,4 @@
+#!/bin/bash
+
+killall wii-u-gc-adapter
+nohup /usr/bin/wii-u-gc-adapter >/dev/null 2>/dev/null &
