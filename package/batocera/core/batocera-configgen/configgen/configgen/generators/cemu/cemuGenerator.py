@@ -15,15 +15,21 @@ from . import cemuControllers
 class CemuGenerator(Generator):
 
     def generate(self, system, rom, playersControllers, gameResolution):
-        configdir = "/userdata/system/configs/cemu/gameProfiles"
-        if not os.path.exists(configdir):
-            shutil.copytree("/usr/cemu/gameProfiles", configdir)
+        game_dir = "/userdata/system/configs/cemu/gameProfiles"
+        shader_dir = "/userdata/system/configs/cemu/shaderCache"
+        resources_dir = "/userdata/system/configs/cemu/resources"
         if not path.isdir(batoceraFiles.BIOS + "/cemu"):
             os.mkdir(batoceraFiles.BIOS + "/cemu")
         if not path.isdir(batoceraFiles.CONF + "/cemu"):
             os.mkdir(batoceraFiles.CONF + "/cemu")
+        if not os.path.exists(game_dir):
+            shutil.copytree("/usr/cemu/gameProfiles", game_dir)
+        if not os.path.exists(shader_dir):
+            shutil.copytree("/usr/cemu/shaderCache", shader_dir)
+        if not os.path.exists(resources_dir):
+            shutil.copytree("/usr/cemu/resources", resources_dir)
 
-        for folder in ["shaderCache", "controllerProfiles", "gameProfiles", "graphicPacks", "gameProfiles"]:
+        for folder in ["controllerProfiles", "graphicPacks"]:
             if not path.isdir(batoceraFiles.CONF + "/cemu/" + folder):
                 os.mkdir(batoceraFiles.CONF + "/cemu/" + folder)
 
