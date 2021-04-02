@@ -5,7 +5,7 @@ cd /batocera/archs/common || exit 1
 SEARCHDIR="./run/current"
 LOGDIR="./run/logs"
 ACTIONSDIR="./run/actions"
-ALLARCHS="odroidgoa odroidn2 odroidxu4 odroidc2 odroidc4 rpi1 rpi2 rpi3 rpi4 x86 x86_64 s905 s912 rk3399 tinkerboard vim3 libretech-h5 miqi orangepi-pc"
+ALLARCHS="odroidgoa s922x odroidxu4 odroidc2 odroidc4 rpi1 rpi2 rpi3 rpi4 x86 x86_64 s905 s912 rk3399 tinkerboard libretech-h5 miqi orangepi-pc"
 
 export BATCH_MODE=1
 
@@ -25,53 +25,55 @@ do_push() {
     ftptarget=$1
     arch=$2
 
-    # hack during the time the rpi4 is 32 bits
-    remotearchdir=${arch}
-    if test "${arch}" = rpi4
-    then
-	remotearchdir=rpi464
-    fi
+    BOARDS=$(ls "output/${arch}/images/batocera/images")
 
-    case "${ftptarget}" in
-	"beta")
-	    echo_msg "${arch}" "pusing ${ftptarget}..."
-	    lftp ftp://"${FTPBATOCERA}" -e "set ssl:verify-certificate false; mirror -R -i boot.tar.xz -i batocera.version -e output/${arch}/images/batocera/images/${arch} /public_html/upgrades/${remotearchdir}/beta/last ; quit"
-	    rsync -a --delete "output/${arch}/images/batocera/images/${arch}/" "batocera@mirrors.o2switch.fr:/opt/www/batocera/${remotearchdir}/beta/last/"
-	    rsync -a          "output/${arch}/images/batocera/html/" "batocera@mirrors.o2switch.fr:/opt/www/batocera/${remotearchdir}/beta/last/"
-	    ;;
-	"rc")
-	    # pushing beta
-	    echo_msg "${arch}" "pusing beta*..."
-	    lftp ftp://"${FTPBATOCERA}" -e "set ssl:verify-certificate false; mirror -R -i boot.tar.xz -i batocera.version -e output/${arch}/images/batocera/images/${arch} /public_html/upgrades/${remotearchdir}/beta/last ; quit"
-	    rsync -a --delete "output/${arch}/images/batocera/images/${arch}/" "batocera@mirrors.o2switch.fr:/opt/www/batocera/${remotearchdir}/beta/last/"
-	    rsync -a --delete "output/${arch}/images/batocera/html/" "batocera@mirrors.o2switch.fr:/opt/www/batocera/${remotearchdir}/beta/last/"
-	    
-	    # pushing rc
-	    echo_msg "${arch}" "pusing ${ftptarget}..."
-	    lftp ftp://"${FTPBATOCERA}" -e "set ssl:verify-certificate false; mirror -R -i boot.tar.xz -i batocera.version -e output/${arch}/images/batocera/images/${arch} /public_html/upgrades/${remotearchdir}/stable/rc ; quit"
-	    rsync -a --delete "output/${arch}/images/batocera/images/${arch}/" "batocera@mirrors.o2switch.fr:/opt/www/batocera/${remotearchdir}/stable/rc/"
-	    rsync -a          "output/${arch}/images/batocera/html/" "batocera@mirrors.o2switch.fr:/opt/www/batocera/${remotearchdir}/stable/rc/"
-	    ;;
-	"unstable")
-	    echo_msg "${arch}" "pusing ${ftptarget}..."
-	    lftp ftp://"${FTPBATOCERA}" -e "set ssl:verify-certificate false; mirror -R -i boot.tar.xz -i batocera.version -e output/${arch}/images/batocera/images/${arch} /public_html/upgrades/${remotearchdir}/unstable/last ; quit"
-	    rsync -a --delete "output/${arch}/images/batocera/images/${arch}/" "batocera@mirrors.o2switch.fr:/opt/www/batocera/${remotearchdir}/unstable/rc/last/"
-	    rsync -a          "output/${arch}/images/batocera/html/" "batocera@mirrors.o2switch.fr:/opt/www/batocera/${remotearchdir}/unstable/rc/last/"
-	    ;;
-	*)
-	    echo_msg "${arch}" "invalid ftp target" >&2
-	    return 1
-    esac
+    for board in ${BOARDS}
+    do
+	# hack during the time the rpi4 is 32 bits
+	remoteboarddir=${board}
+	test "${board}" = rpi4 && remoteboarddir=rpi464
+
+	case "${ftptarget}" in
+	    "beta")
+		echo_msg "${arch}" "pusing ${board} on ${ftptarget}..."
+		lftp ftp://"${FTPBATOCERA}" -e "set ssl:verify-certificate false; mirror -R -i boot.tar.xz -i batocera.version -e output/${arch}/images/batocera/images/${board} /public_html/upgrades/${remoteboarddir}/beta/last ; quit"
+		rsync -a --delete "output/${arch}/images/batocera/images/${board}/" "batocera@mirrors.o2switch.fr:/opt/www/batocera/${remoteboarddir}/beta/last/"
+		;;
+	    "rc")
+		# pushing beta
+		echo_msg "${arch}" "pusing ${board} on beta*..."
+		lftp ftp://"${FTPBATOCERA}" -e "set ssl:verify-certificate false; mirror -R -i boot.tar.xz -i batocera.version -e output/${arch}/images/batocera/images/${board} /public_html/upgrades/${remoteboarddir}/beta/last ; quit"
+		rsync -a --delete "output/${arch}/images/batocera/images/${board}/" "batocera@mirrors.o2switch.fr:/opt/www/batocera/${remoteboarddir}/beta/last/"
+		
+		# pushing rc
+		echo_msg "${arch}" "pusing ${board} on ${ftptarget}..."
+		lftp ftp://"${FTPBATOCERA}" -e "set ssl:verify-certificate false; mirror -R -i boot.tar.xz -i batocera.version -e output/${arch}/images/batocera/images/${board} /public_html/upgrades/${remoteboarddir}/stable/rc ; quit"
+		rsync -a --delete "output/${arch}/images/batocera/images/${board}/" "batocera@mirrors.o2switch.fr:/opt/www/batocera/${remoteboarddir}/stable/rc/"
+		;;
+	    "unstable")
+		echo_msg "${arch}" "pusing ${board} on ${ftptarget}..."
+		lftp ftp://"${FTPBATOCERA}" -e "set ssl:verify-certificate false; mirror -R -i boot.tar.xz -i batocera.version -e output/${arch}/images/batocera/images/${board} /public_html/upgrades/${remoteboarddir}/unstable/last ; quit"
+		rsync -a --delete "output/${arch}/images/batocera/images/${board}/" "batocera@mirrors.o2switch.fr:/opt/www/batocera/${remoteboarddir}/unstable/rc/last/"
+		;;
+	    *)
+		echo_msg "${arch}" "invalid ftp target" >&2
+		return 1
+	esac
+    done
 }
 
 do_html() {
     arch=$1
 
-    mkdir -p "output/${arch}/images/batocera/html" || return 1
-    cp "output/${arch}/images/batocera/index.html"                  "output/${arch}/images/batocera/html" || return 1
-    cp "output/${arch}/images/batocera/batocera_systemsReport.html" "output/${arch}/images/batocera/html" || return 1
-    cp "output/${arch}/images/batocera/batocera_systemsReport.json" "output/${arch}/images/batocera/html" || return 1
-    (docker run --rm --name "${arch}_html_"$(date "+%Y%m%d_%H%M%S") -v $PWD:/build batoceralinux/batocera.linux-build /bin/bash -c "/build/scripts/linux/buildstats.sh /build/output/${arch} > /build/output/${arch}/images/batocera/html/index.html")
+    BOARDS=$(ls "output/${arch}/images/batocera/images")
+
+    for board in ${BOARDS}
+    do
+        mkdir -p "output/${arch}/images/batocera/images/${board}/" || return 1
+	cp "output/${arch}/images/batocera/batocera_systemsReport.html" "output/${arch}/images/batocera/images/${board}/" || return 1
+	cp "output/${arch}/images/batocera/batocera_systemsReport.json" "output/${arch}/images/batocera/images/${board}/" || return 1
+	(docker run --rm --name "${arch}_html_"$(date "+%Y%m%d_%H%M%S") -v $PWD:/build batoceralinux/batocera.linux-build /bin/bash -c "/build/scripts/linux/buildstats.sh /build/output/${arch} ${board} > /build/output/${arch}/images/batocera/images/${board}/index.html")
+    done
 }
 
 # wakeonlan b4:b5:2f:cb:74:07

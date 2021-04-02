@@ -1,16 +1,17 @@
 #!/bin/bash
 
 print_usage() {
-    echo "${1}"" <buildroot directory>"
+    echo "${1}"" <buildroot directory> <board>"
 }
 
-if test $# -ne 1
+if test $# -ne 2
 then
     print_usage "${0}"
     exit 1
 fi
 
 BROUTPUTDIR="${1}"
+BOARD="${2}"
 ESDIR="${BROUTPUTDIR}/build/"$(ls -t "${BROUTPUTDIR}/build" | grep -E "^batocera-emulationstation-" | head -1)
 
 GENDATE=$(date "+%Y/%m/%d %H:%m:%S")
@@ -35,12 +36,13 @@ th, td {
 echo '<body>'
 
 echo -n "<h1>"
-cat ${BROUTPUTDIR}/images/batocera/batocera.version
+echo -n "${BOARD} - "
+cat "${BROUTPUTDIR}/images/batocera/batocera.version"
 echo "</h1>"
 echo "<h2>Files</h2>"
 echo "<ul>"
 echo "<li>""<a href=\"boot.tar.xz\">boot.tar.xz</a></li>"
-ls ${BROUTPUTDIR}/images/batocera/images/*/*.gz |
+ls "${BROUTPUTDIR}/images/batocera/images/${BOARD}/"*.gz |
     while read FILE
     do
 	FILENAME=$(basename "${FILE}")
