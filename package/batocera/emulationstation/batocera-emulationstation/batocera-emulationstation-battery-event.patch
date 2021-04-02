@@ -1,0 +1,13 @@
+diff --git a/es-core/src/InputManager.cpp b/es-core/src/InputManager.cpp
+index 98a48f1..8c4b930 100644
+--- a/es-core/src/InputManager.cpp
++++ b/es-core/src/InputManager.cpp
+@@ -721,7 +721,7 @@ void InputManager::updateBatteryLevel(int id, std::string device, int level)
+ 		InputConfig* config = getInputConfigByDevice(joy.first);
+ 		if (config != NULL && config->isConfigured())
+ 		{
+-			if (Utils::String::compareIgnoreCase(config->getDeviceGUIDString(), device) == 0)
++			if (device == SDL_JoystickDevicePathById(config->getDeviceId()))
+ 			{
+ 				config->updateBatteryLevel(level);
+ 				changed = true;
