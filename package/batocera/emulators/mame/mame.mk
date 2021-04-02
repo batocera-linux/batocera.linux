@@ -41,7 +41,7 @@ ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_ODROIDC4),y)
 MAME_CFLAGS += -mcpu=cortex-a55 -mtune=cortex-a55
 endif
 
-ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_ODROIDN2)$(BR2_PACKAGE_BATOCERA_TARGET_VIM3),y)
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_S922X),y)
 MAME_CFLAGS += -mcpu=cortex-a73 -mtune=cortex-a73.cortex-a53
 endif
 

@@ -56,7 +56,7 @@ doList() {
 		echo "extreme EXTREME (HEATSINK & FAN 1950Mhz)"
 		echo "ruinsane INSANE (HEATSINK & FAN 2100Mhz)"
 	    ;;
-	"odroidn2")
+	"s922x")
 	    MODEL=$(cat /sys/firmware/devicetree/base/model)
 	    if test "${MODEL}" = "Hardkernel ODROID-N2Plus"
 	    then
@@ -254,7 +254,7 @@ setValue() {
 		    setValue_rpi4PutVars 6 2100 750		
 	    esac
 	    ;;
-	"odroidn2")
+	"s922x")
 	    MODEL=$(cat /sys/firmware/devicetree/base/model)
 	    if test "${MODEL}" = "Hardkernel ODROID-N2Plus"
 	    then

@@ -37,7 +37,7 @@ ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_ODROIDC4)$(BR2_PACKAGE_BATOCERA_TARGET_S905G
 DOSBOX_STAGING_CFLAGS   += -march=armv8-a+crc -mtune=cortex-a55
 DOSBOX_STAGING_CXXFLAGS += -march=armv8-a+crc -mtune=cortex-a55
 endif
-ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_ODROIDN2)$(BR2_PACKAGE_BATOCERA_TARGET_VIM3),y)
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_S922X),y)
 DOSBOX_STAGING_CFLAGS   += -march=armv8-a+crc -mcpu=cortex-a73 -mtune=cortex-a73.cortex-a53
 DOSBOX_STAGING_CXXFLAGS += -march=armv8-a+crc -mcpu=cortex-a73 -mtune=cortex-a73.cortex-a53
 endif
