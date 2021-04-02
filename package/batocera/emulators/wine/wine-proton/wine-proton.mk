@@ -4,18 +4,11 @@
 #
 ################################################################################
 
-WINE_PROTON_VERSION = proton-wine-5.13-6
+WINE_PROTON_VERSION = proton_6.3
 WINE_PROTON_SITE = $(call github,ValveSoftware,wine,$(WINE_PROTON_VERSION))
 WINE_PROTON_LICENSE = LGPL-2.1+
 WINE_PROTON_DEPENDENCIES = host-bison host-flex host-wine-proton
 HOST_WINE_PROTON_DEPENDENCIES = host-bison host-flex
-
-# cross packages version dependancy check
-# check dependancy with the mono version
-# otherwise, wine doesn't found it
-define WINE_PROTON_HOOK_CHECK_MONO
-grep -E '^#define WINE_MONO_VERSION "'$(WINE_MONO_VERSION)'"$$' $(@D)/dlls/mscoree/mscoree_private.h
-endef
 
 # That create folder for install
 define WINE_PROTON_CREATE_WINE_FOLDER
@@ -391,14 +384,14 @@ endif
 # Wine only needs the host tools to be built, so cut-down the
 # build time by building just what we need.
 define HOST_WINE_PROTON_BUILD_CMDS
-	$(HOST_MAKE_ENV) $(MAKE) -C $(@D) \
-	  tools \
-	  tools/sfnt2fon \
-	  tools/widl \
-	  tools/winebuild \
-	  tools/winegcc \
-	  tools/wmc \
-	  tools/wrc
+        $(HOST_MAKE_ENV) $(MAKE) -C $(@D)
+        $(HOST_MAKE_ENV) $(MAKE) -C $(@D)/tools
+        $(HOST_MAKE_ENV) $(MAKE) -C $(@D)/tools/sfnt2fon
+        $(HOST_MAKE_ENV) $(MAKE) -C $(@D)/tools/widl
+        $(HOST_MAKE_ENV) $(MAKE) -C $(@D)/tools/winebuild
+        $(HOST_MAKE_ENV) $(MAKE) -C $(@D)/tools/winegcc
+        $(HOST_MAKE_ENV) $(MAKE) -C $(@D)/tools/wmc
+        $(HOST_MAKE_ENV) $(MAKE) -C $(@D)/tools/wrc
 endef
 
 # Wine only needs its host variant to be built, not that it is
