@@ -1,19 +1,21 @@
---- a/src/cmake/modules/BuildLibMPEG2.cmake	2021-02-26 23:58:06.995992417 +0100
-+++ b/src/cmake/modules/BuildLibMPEG2.cmake	2021-02-26 23:58:26.259325030 +0100
+diff --git a/src/cmake/modules/BuildLibMPEG2.cmake b/src/cmake/modules/BuildLibMPEG2.cmake
+index 2fd5c2d..72b1e0e 100644
+--- a/src/cmake/modules/BuildLibMPEG2.cmake
++++ b/src/cmake/modules/BuildLibMPEG2.cmake
 @@ -1,6 +1,6 @@
  macro( build_libmpeg2 )
-
+ 
 -if( CMAKE_CROSS_COMPILING )
 +if( CMAKE_CROSSCOMPILING )
      string( REGEX MATCH "([-A-Za-z0-9\\._]+)-(gcc|cc)$" RESULT ${CMAKE_C_COMPILER} )
      string( REGEX REPLACE "-(gcc|cc)$" "" RESULT ${RESULT} )
      set( CONFIGURE_ARGS "--host=${RESULT}" )
-@@ -8,7 +8,8 @@
+@@ -8,7 +8,8 @@ endif()
  
  externalproject_add( libmpeg2
  	PREFIX ${CMAKE_CURRENT_BINARY_DIR}/3rdparty
--	URL https://github.com/btolab/libmpeg2/archive/master.zip
-+	GIT_REPOSITORY https://github.com/btolab/libmpeg2.git
+-	URL https://github.com/DirtBagXon/libmpeg/raw/master/libmpeg2-master.tgz
++   GIT_REPOSITORY https://github.com/btolab/libmpeg2.git
 +	GIT_TAG master
  	CONFIGURE_COMMAND autoreconf -f -i && <SOURCE_DIR>/configure ${CONFIGURE_ARGS} --prefix=${CMAKE_CURRENT_BINARY_DIR}/3rdparty --disable-shared --enable-static --disable-sdl
  	BUILD_IN_SOURCE 1
