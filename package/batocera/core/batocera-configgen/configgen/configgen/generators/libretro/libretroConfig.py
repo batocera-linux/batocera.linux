@@ -434,8 +434,8 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
     if isLowResolution(gameResolution):
         retroarchConfig['video_font_size'] = '12'
         retroarchConfig['menu_driver'] = 'rgui'
-        retroarchConfig['width']  = gameResolution["width"]  *2 # on low resolution, higher values for width and height makes a nicer image (640x480 on the gpi case)
-        retroarchConfig['height'] = gameResolution["height"] *2 # default value
+        retroarchConfig['video_fullscreen_x']  = gameResolution["width"]  *2 # on low resolution, higher values for width and height makes a nicer image (640x480 on the gpi case)
+        retroarchConfig['video_fullscreen_y'] = gameResolution["height"] *2 # default value
         retroarchConfig['menu_linear_filter'] = 'true'
         retroarchConfig['rgui_aspect_ratio'] = '0'
         retroarchConfig['rgui_aspect_ratio_lock'] = '3'
@@ -444,8 +444,8 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
         retroarchConfig['menu_driver'] = 'ozone'
         # force the assets directory while it was wrong in some beta versions
         retroarchConfig['assets_directory'] = '/usr/share/libretro/assets'
-        retroarchConfig['width']  = gameResolution["width"]  # default value
-        retroarchConfig['height'] = gameResolution["height"] # default value
+        retroarchConfig['video_fullscreen_x']  = gameResolution["width"]  # default value
+        retroarchConfig['video_fullscreen_y'] = gameResolution["height"] # default value
 
     # AI option (service for game translations)
     if system.isOptSet('ai_service_enabled') and system.getOptBoolean('ai_service_enabled') == True:
