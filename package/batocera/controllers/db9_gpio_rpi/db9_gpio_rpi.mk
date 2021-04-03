@@ -3,7 +3,8 @@
 # DB9_GPIO_RPI
 #
 ################################################################################
-DB9_GPIO_RPI_VERSION = c21faee29e42696722a953a8eee9093a223f1408
+# Version.: Commits on Feb 1, 2021
+DB9_GPIO_RPI_VERSION = a3c16921a812ec2cf24a043a184cf445813bac08
 DB9_GPIO_RPI_SITE = $(call github,marqs85,db9_gpio_rpi,$(DB9_GPIO_RPI_VERSION))
 
 # Needed because can't pass cflags to cc
