@@ -19,11 +19,11 @@ megadrive:
   emulator: libretro
   core:     picodrive
 n64:
-  emulator: mupen64plus
-  core:     n64
+  options:
+    videomode: DMT 4 HDMI
 n64dd:
-  emulator: mupen64plus
-  core:     n64
+  options:
+    videomode: DMT 4 HDMI
 snes:
   emulator: libretro
   core:     snes9x_next
