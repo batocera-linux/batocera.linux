@@ -1,7 +1,11 @@
 n64:
-  options:
-    videomode: DMT 4 HDMI
+  emulator: mupen64plus
+  core:     n64
+n64dd:
+  emulator: mupen64plus
+  core:     n64
 psp:
   options:
     frameskip: 1
     videomode: DMT 4 HDMI
+    
