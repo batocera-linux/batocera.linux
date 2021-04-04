@@ -63,7 +63,7 @@ def generateRetroarchCustom():
     retroarchSettings.save('rgui_show_start_screen',            '"false"')
 
     # Enable usage of OSD messages (Text messages not in badge)
-    retroarchSettings.save('video_font_enable',                 '"false"')
+    retroarchSettings.save('video_font_enable',                 '"true"')
 
     # Take a screenshot of the savestate
     retroarchSettings.save('savestate_thumbnail_enable',        '"true"')
