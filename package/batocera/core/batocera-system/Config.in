@@ -289,7 +289,7 @@ config BR2_TARGET_BATOCERA_IMAGES_DEFINITIONS
 	default "s812"				if BR2_PACKAGE_BATOCERA_TARGET_S812
 	default "odroidxu4"			if BR2_PACKAGE_BATOCERA_TARGET_XU4
 	default "x86"				if BR2_PACKAGE_BATOCERA_TARGET_X86
-	default "x86"				if BR2_PACKAGE_BATOCERA_TARGET_X86_64
+	default "x86_64"			if BR2_PACKAGE_BATOCERA_TARGET_X86_64
 
 choice
 	prompt "batocera.linux target"
