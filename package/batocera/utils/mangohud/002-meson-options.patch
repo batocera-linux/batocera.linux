@@ -1,0 +1,7 @@
+--- a/meson_options.txt	2021-04-05 00:03:12.976594154 +0200
++++ b/meson_options.txt	2021-04-05 00:03:59.348827304 +0200
+@@ -10,3 +10,4 @@
+ option('with_wayland', type : 'feature', value : 'disabled')
+ option('with_dbus', type : 'feature', value : 'enabled')
+ option('with_dlsym', type : 'feature', value : 'disabled')
++option('vkdatadir', type : 'string', value : '')

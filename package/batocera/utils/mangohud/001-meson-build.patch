@@ -1,0 +1,11 @@
+--- a/meson.build	2021-04-05 00:03:04.665273202 +0200
++++ b/meson.build	2021-04-05 00:03:38.610507540 +0200
+@@ -183,7 +183,7 @@
+ endif
+ 
+ if dep_vulkan.found()
+-  datadir = get_option('datadir')
++  datadir = get_option('vkdatadir')
+   if not datadir.startswith('/')
+     datadir = get_option('prefix') / datadir
+   endif
