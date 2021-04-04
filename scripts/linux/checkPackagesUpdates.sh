@@ -18,7 +18,7 @@ PACKAGES_LIBRETRO="libretro-81 libretro-atari800 libretro-beetle-lynx libretro-b
 					libretro-prosystem libretro-puae libretro-px68k libretro-scummvm libretro-snes9x libretro-snes9x-next libretro-stella libretro-tgbdual
 					libretro-theodore libretro-tic80 libretro-tyrquake libretro-vba-m libretro-vecx"					
 
-PACKAGES_MUPEN="mupen64plus-audio-sdl mupen64plus-core mupen64plus-gles2 mupen64plus-gliden64 mupen64plus-input-sdl mupen64plus-omx
+PACKAGES_MUPEN="mupen64plus-audio-sdl mupen64plus-core mupen64plus-gles2 mupen64plus-gliden64 mupen64plus-input-sdl
 				mupen64plus-rsphle mupen64plus-uiconsole mupen64plus-video-glide64mk2 mupen64plus-video-rice"
 
 PACKAGES_EMULATORS="amiberry cannonball cemu cemu-hook cemutil citra daphne devilutionx dolphin-emu dosbox dosbox-staging dosbox-x duckstation flycast fsuae linapple mame
