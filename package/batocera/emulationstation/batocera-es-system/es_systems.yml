@@ -1851,8 +1851,17 @@ mugen:
   emulators:
     mugen:
       lutris:  { requireAnyOf: [BR2_PACKAGE_WINE_LUTRIS] }
-    mugen:
       proton:  { requireAnyOf: [BR2_PACKAGE_WINE_PROTON] }
+
+fpinball:
+  name:       Future Pinball
+  manufacturer: Christopher Leathley
+  release: 2005
+  hardware: port
+  extensions: [fpt]
+  emulators:
+    fpinball:
+      fpinball:  { requireAnyOf: [BR2_PACKAGE_FPINBALL] }
 
 flash:
   name:       Adobe Flash Player

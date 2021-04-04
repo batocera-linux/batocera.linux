@@ -43,6 +43,7 @@ from generators.supermodel.supermodelGenerator import SupermodelGenerator
 from generators.xash3d_fwgs.xash3dFwgsGenerator import Xash3dFwgsGenerator
 from generators.tsugaru.tsugaruGenerator import TsugaruGenerator
 from generators.mugen.mugenGenerator import MugenGenerator
+from generators.fpinball.fpinballGenerator import FpinballGenerator
 from generators.lightspark.lightsparkGenerator import LightsparkGenerator
 from generators.ruffle.ruffleGenerator import RuffleGenerator
 from generators.duckstation.duckstationGenerator import DuckstationGenerator
@@ -96,6 +97,7 @@ generators = {
     'xash3d_fwgs': Xash3dFwgsGenerator(),
     'tsugaru': TsugaruGenerator(),
     'mugen': MugenGenerator(),
+    'fpinball': FpinballGenerator(),
     'lightspark': LightsparkGenerator(),
     'ruffle': RuffleGenerator(),
     'duckstation': DuckstationGenerator(),

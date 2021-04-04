@@ -1,0 +1,10 @@
+#!/bin/bash
+
+if test -z "${DISPLAY}"
+then
+    export DISPLAY=:0.0
+fi
+
+LD_LIBRARY_PATH=/lib32:/usr/wine/lutris/lib/wine LIBGL_DRIVERS_PATH=/lib32/dri WINEPREFIX=/userdata/saves/fpinball /usr/wine/lutris/bin/wine "/usr/fpinball/Future Pinball.exe"
+
+exit 0
