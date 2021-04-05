@@ -3,8 +3,8 @@
 # BEETLE_VB
 #
 ################################################################################
-# Version.: Commits on Jan 13, 2021
-LIBRETRO_BEETLE_VB_VERSION = 2999cceaeb04afb0e2d62b5c1e212f279d07001e
+# Version.: Commits on Mar 27, 2021
+LIBRETRO_BEETLE_VB_VERSION = 007928576a64f7d3adcd504881f8582eba3b8b19
 LIBRETRO_BEETLE_VB_SITE = $(call github,libretro,beetle-vb-libretro,$(LIBRETRO_BEETLE_VB_VERSION))
 LIBRETRO_BEETLE_VB_LICENSE = GPLv2
 
