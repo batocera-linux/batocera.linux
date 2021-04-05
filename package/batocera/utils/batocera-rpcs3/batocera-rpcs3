@@ -1,0 +1,96 @@
+#!/bin/bash
+
+set -x
+
+SYSTEM=$1
+ACTION=$2
+shift
+shift
+
+## Wine detection
+GAMENAME=$1 
+ROMGAMENAME=$(basename "${GAMENAME}")
+
+## RPCS3 executables
+RPCS3="/usr/bin/rpcs3"
+CONFIG="--config /userdata/system/configs/rpcs3/config.yml"
+
+usage() {
+    echo "${1} ps3 play          <game>.rsquashfs"       >&2
+    echo "${1} ps3 ps32squashfs  <game.ps3>"            >&2
+}
+
+play_squashfs() {
+    GAMENAME=$1
+    BASEGAMENAME=$(basename "${GAMENAME}")
+    SQUASHFSPOINT="/var/run/ps3/squashfs_${BASEGAMENAME}"
+
+    mkdir -p "${SQUASHFSPOINT}" || return 1
+    if ! mount "${GAMENAME}" "${SQUASHFSPOINT}"
+    then
+	rmdir "${SQUASHFSPOINT}"
+	return 1
+    fi
+
+    export XDG_RUNTIME_DIR=/userdata/system/configs/
+    export XDG_CONFIG_HOME=/userdata/system/configs/
+    export XDG_CACHE_HOME=/userdata/saves/
+    export QT_QPA_PLATFORM=xcb
+    (eval "${RPCS3} ${CONFIG}" "${SQUASHFSPOINT}/PS3_GAME/USRDIR/EBOOT.BIN")
+
+    # try to clean the cdrom
+    umount "${SQUASHFSPOINT}"
+    rmdir "${SQUASHFSPOINT}"
+}
+
+ps32squashfs() {
+    GAMENAME=$1
+    BASEGAMENAME=$(basename "${GAMENAME}")
+    GAMEDIR="${GAMENAME}"
+    SQUASHFSFILE=$(echo "${G_ROMS_DIR}/${BASEGAMENAME}.squashfs" | sed -e s+"\.ps3\.squashfs$"+".rsquashfs"+)
+    
+    mksquashfs "${GAMEDIR}" "${SQUASHFSFILE}" -comp zstd || return 1
+    return 0
+}
+
+gameext() {
+    echo "${1}" | sed -e s+"^.*\.\([^\.]*\)$"+"\1"+ | tr A-Z a-z
+}
+
+cleanAndExit() {
+    RESNEW=$(batocera-resolution currentMode)
+    if test "${RESNEW}" != "${G_RESCUR}"
+    then
+	batocera-resolution setMode "${G_RESCUR}"
+    fi
+    
+    exit "${1}"
+    # TODO : unmount always, trap, later
+}
+
+G_RESCUR=$(batocera-resolution currentMode)
+
+case "${ACTION}" in
+    "play")
+	GAMENAME=$1
+	GAMEEXT=$(gameext "${GAMENAME}")
+	case "${GAMEEXT}" in
+	    "rsquashfs")
+		play_squashfs "${GAMENAME}" || cleanAndExit 1
+		;;
+	    *)
+		echo "unknown extension ${GAMEEXT}" >&2
+		cleanAndExit 1
+	esac
+	;;
+    "ps32squashfs")
+	GAMENAME=$1
+	ps32squashfs "${GAMENAME}" || exit 1
+	;;
+    *)
+	set +x
+	echo "unknown action ${ACTION}" >&2
+	usage "${0}"
+	cleanAndExit 1
+esac
+cleanAndExit 0

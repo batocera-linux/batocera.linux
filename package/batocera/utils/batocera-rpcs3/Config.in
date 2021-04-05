@@ -1,0 +1,5 @@
+config BR2_PACKAGE_BATOCERA_RPCS3
+	bool "batocera-rpcs3"
+	depends on BR2_PACKAGE_RPCS3
+	help
+	  batocera-rpcs3 is a helper for run ps3 games
