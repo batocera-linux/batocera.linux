@@ -160,6 +160,7 @@ do
 done
 
 # dynanically loaded libs
+cp -pr "${G_TARGETDIR}/usr/lib/libjpeg.so"* "${TMPOUT}/lib32/" || exit 1
 cp -pr "${G_TARGETDIR}/usr/lib/libncurses.so"* "${TMPOUT}/lib32/" || exit 1
 cp -pr "${G_TARGETDIR}/usr/lib/libmspack.so"*  "${TMPOUT}/lib32/" || exit 1
 cp -pr "${G_TARGETDIR}/usr/lib/libdbus"*"so"*  "${TMPOUT}/lib32/" || exit 1
