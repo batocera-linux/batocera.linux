@@ -1916,3 +1916,14 @@ watara:
   emulators:
     libretro:
       potator: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_WATARA] }
+
+model2:
+  name:       Sega Model 2
+  manufacturer: Sega
+  release: 1993
+  hardware: arcade
+  extensions: [zip]
+  platform: model2, arcade
+  emulators:
+    model2emu:
+      model2emu: { requireAnyOf: [BR2_PACKAGE_MODEL2EMU] }
