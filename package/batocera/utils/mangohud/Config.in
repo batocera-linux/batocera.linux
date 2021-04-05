@@ -1,0 +1,9 @@
+config BR2_PACKAGE_MANGOHUD
+	bool "mangohud"
+	depends on BR2_PACKAGE_LIBDRM
+        depends on BR2_PACKAGE_XORG7
+	depends on BR2_PACKAGE_VULKAN_HEADERS
+	help
+	  Command line tool for injecting HUD / overlay in GL/Vulkan apps
+
+          https://github.com/flightlessmango/MangoHud
