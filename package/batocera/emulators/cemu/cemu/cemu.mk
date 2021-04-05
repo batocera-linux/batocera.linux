@@ -15,7 +15,7 @@ endef
 
 define CEMU_INSTALL_TARGET_CMDS
 	mkdir -p $(TARGET_DIR)/usr/cemu/
-	cp -prn $(@D)/cemu_$(CEMU_VERSION)/{Cemu.exe,gameProfiles,resources} $(TARGET_DIR)/usr/cemu/
+	cp -prn $(@D)/cemu_$(CEMU_VERSION)/{Cemu.exe,shaderCache,gameProfiles,resources} $(TARGET_DIR)/usr/cemu/
 
 	# keys.txt
 	mkdir -p $(TARGET_DIR)/usr/share/batocera/datainit/bios/cemu
