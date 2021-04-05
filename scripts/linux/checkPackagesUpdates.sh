@@ -96,7 +96,8 @@ PACKAGES_MUPEN="mupen64plus-audio-sdl
 				mupen64plus-rsphle
 				mupen64plus-uiconsole
 				mupen64plus-video-glide64mk2
-				mupen64plus-video-rice"
+				mupen64plus-video-rice
+				mupen64plus-omx"
 
 PACKAGES_EMULATORS="amiberry
 					cannonball
