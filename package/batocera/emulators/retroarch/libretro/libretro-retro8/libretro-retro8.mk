@@ -3,8 +3,8 @@
 # Retro8 - Pico-8 emulator
 #
 ################################################################################
-# Version.: Commits on Mar 12, 2021
-LIBRETRO_RETRO8_VERSION = 97ce837e7b53b527c452d5fdf657d667f47a3037
+# Version.: Commits on Mar 28, 2021
+LIBRETRO_RETRO8_VERSION = 1e7d61b23a6d81bb85f0b79fc14881d643a02bb5
 LIBRETRO_RETRO8_SITE = $(call github,jakz,retro8,$(LIBRETRO_RETRO8_VERSION))
 LIBRETRO_RETRO8_LICENSE = GPLv3.0
 

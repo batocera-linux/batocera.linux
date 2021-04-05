@@ -3,7 +3,7 @@
 # VBA-M
 #
 ################################################################################
-# Version.: Commits on Oct 19, 2020
+# Version.: Commits on Fab 27, 2021
 LIBRETRO_VBA_M_VERSION = e55ed5c0f49757652fbe0ee82e74da42e8e4d856
 LIBRETRO_VBA_M_SITE = $(call github,visualboyadvance-m,visualboyadvance-m,$(LIBRETRO_VBA_M_VERSION))
 
