@@ -1,16 +1,16 @@
 diff --git a/configuration.c b/configuration.c
-index 8457c58..de914f0 100644
+index 82f2c32..a25db0b 100644
 --- a/configuration.c
 +++ b/configuration.c
-@@ -1200,6 +1200,7 @@ static struct config_array_setting *populate_settings_array(settings_t *settings
+@@ -1219,6 +1219,7 @@ static struct config_array_setting *populate_settings_array(settings_t *settings
  #ifdef HAVE_CHEEVOS
     SETTING_ARRAY("cheevos_username",         settings->arrays.cheevos_username, false, NULL, true);
     SETTING_ARRAY("cheevos_password",         settings->arrays.cheevos_password, false, NULL, true);
 +   SETTING_ARRAY("cheevos_unlock_sound",     settings->arrays.cheevos_unlock_sound, false, NULL, true);
     SETTING_ARRAY("cheevos_token",            settings->arrays.cheevos_token, false, NULL, true);
+    SETTING_ARRAY("cheevos_leaderboards_enable", settings->arrays.cheevos_leaderboards_enable, true, "false", true);
  #endif
-    SETTING_ARRAY("video_context_driver",     settings->arrays.video_context_driver,   false, NULL, true);
-@@ -2280,6 +2281,7 @@ void config_set_defaults(void *data)
+@@ -2352,6 +2353,7 @@ void config_set_defaults(void *data)
  #ifdef HAVE_CHEEVOS
     *settings->arrays.cheevos_username                 = '\0';
     *settings->arrays.cheevos_password                 = '\0';
@@ -19,45 +19,54 @@ index 8457c58..de914f0 100644
  #endif
  
 diff --git a/configuration.h b/configuration.h
-index d9972b3..7f1df06 100644
+index 660d2db..4e7b880 100644
 --- a/configuration.h
 +++ b/configuration.h
-@@ -670,6 +670,7 @@ typedef struct settings
+@@ -347,6 +347,7 @@ typedef struct settings
        char menu_driver[32];
        char cheevos_username[32];
-       char cheevos_password[32];
+       char cheevos_password[256];
 +      char cheevos_unlock_sound[128];
        char cheevos_token[32];
+       char cheevos_leaderboards_enable[32];
        char video_context_driver[32];
-       char audio_driver[32];
 diff --git a/retroarch.c b/retroarch.c
-index 3d2469e..4e3d69a 100644
+index ef6c27d..a4511c6 100644
 --- a/retroarch.c
 +++ b/retroarch.c
-@@ -30237,20 +30237,8 @@ void audio_driver_load_system_sounds(void)
+@@ -28858,8 +28858,8 @@ static void audio_driver_load_menu_bgm_callback(retro_task_t *task,
+ 
+ void audio_driver_load_system_sounds(void)
+ {
+-   char sounds_path[PATH_MAX_LENGTH];
+-   char sounds_fallback_path[PATH_MAX_LENGTH];
++   char* sounds_path = "/usr/share/libretro/assets/sounds";
++   char* sounds_fallback_path = "/userdata/sounds/retroachievements";
+    char basename_noext[PATH_MAX_LENGTH];
+    struct rarch_state *p_rarch           = &rarch_st;
+    settings_t *settings                  = p_rarch->configuration_settings;
+@@ -28882,20 +28882,6 @@ void audio_driver_load_system_sounds(void)
     if (!audio_enable_menu && !audio_enable_cheevo_unlock)
        goto end;
  
--   sounds_path = (char*)malloc(PATH_MAX_LENGTH * sizeof(char));
--   sounds_fallback_path = (char*)malloc(PATH_MAX_LENGTH * sizeof(char));
--   sounds_path[0] = sounds_fallback_path[0] = '\0';
+-   sounds_path[0] = sounds_fallback_path[0] = 
+-                          basename_noext[0] ='\0';
 -
 -   fill_pathname_join(
 -         sounds_fallback_path,
 -         dir_assets,
 -         "sounds",
--         PATH_MAX_LENGTH);
+-         sizeof(sounds_fallback_path));
 -
 -   fill_pathname_application_special(
 -         sounds_path,
--         PATH_MAX_LENGTH,
+-         sizeof(sounds_path),
 -         APPLICATION_SPECIAL_DIRECTORY_ASSETS_SOUNDS);
-+   sounds_path = "/usr/share/libretro/assets/sounds";
-+   sounds_fallback_path = "/userdata/sounds/retroachievements";
- 
-    list = dir_list_new(sounds_path, MENU_SOUND_FORMATS, false, false, false, false);
+-
+    list          = dir_list_new(sounds_path, MENU_SOUND_FORMATS, false, false, false, false);
     list_fallback = dir_list_new(sounds_fallback_path, MENU_SOUND_FORMATS, false, false, false, false);
-@@ -30295,8 +30283,14 @@ void audio_driver_load_system_sounds(void)
+ 
+@@ -28938,8 +28924,14 @@ void audio_driver_load_system_sounds(void)
              path_notice = path;
           else if (string_is_equal_noncase(basename_noext, "bgm"))
              path_bgm = path;
@@ -74,14 +83,3 @@ index 3d2469e..4e3d69a 100644
        }
     }
  
-@@ -30316,10 +30310,6 @@ end:
-       string_list_free(list);
-    if (list_fallback)
-       string_list_free(list_fallback);
--   if (sounds_path)
--      free(sounds_path);
--   if (sounds_fallback_path)
--      free(sounds_fallback_path);
-    if (basename_noext)
-       free(basename_noext);
- }
