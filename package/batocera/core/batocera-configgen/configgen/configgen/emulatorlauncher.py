@@ -270,8 +270,8 @@ def runCommand(command):
     try:
         out, err = proc.communicate()
         exitcode = proc.returncode
-        sys.stdout.write(out)
-        sys.stderr.write(err)
+        sys.stdout.write(out.decode())
+        sys.stderr.write(err.decode())
     except:
         eslog.log("emulator exited")
 
