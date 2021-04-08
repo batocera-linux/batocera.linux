@@ -1,6 +1,9 @@
 #!/bin/sh
 
-mkdir -p /userdata/roms/flatpak || exit 1
+mkdir -p /userdata/roms/flatpak/data || exit 1
+
+# this directory is required to start flatpak (i don't know why)
+mkdir -p /userdata/saves/flatpak/data/.cache/.flatpak-helper/monitor || exit 1
 
 # remove the existing application
 find /userdata/roms/flatpak -type f -name "*.flatpak" | while read X
@@ -14,3 +17,6 @@ do
 	echo "${Y}"
 	echo "${X}" > "/userdata/roms/flatpak/${Y}.flatpak"
 done
+
+# fix rights (the package installation create some files)
+chown -R batocera:batocera /userdata/saves/flatpak/data || exit 1
