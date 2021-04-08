@@ -20,6 +20,12 @@ def setMupenConfig(iniConfig, system, controllers, gameResolution):
     iniConfig.set("Core", "SharedDataPath", batoceraFiles.mupenConf)
     # TODO : Miss Mupen64Plus\hires_texture
 
+    # 4MB RAM Extention Pack
+    if system.isOptSet("mupen64plus_DisableExtraMem") and system.config["mupen64plus_DisableExtraMem"] == '=True':
+        iniConfig.set("Core", "DisableExtraMem", "True")
+    else:
+        iniConfig.set("Core", "DisableExtraMem", "False")        # Disable 4MB expansion RAM pack. May be necessary for some games
+
     # Disable AUDIO_SYNC while it causes issues
     if not iniConfig.has_section("Audio-SDL"):
         iniConfig.add_section("Audio-SDL")
@@ -47,7 +53,7 @@ def setMupenConfig(iniConfig, system, controllers, gameResolution):
     iniConfig.set("Video-Rice", "Version", "1")
     iniConfig.set("Video-Glide64mk2", "Version", "1")
 
-    # Widescreen Mode (Not available for RICE)
+    # Widescreen Mode -> ONLY for GLIDE64 & MK2
     if system.config["ratio"] == "16/9":
         # Glide64mk2.: Adjust screen aspect for wide screen mode: -1=Game default, 0=disable. 1=enable
         # Glide64mk2.: Aspect ratio: -1=Game default, 0=Force 4:3, 1=Force 16:9, 2=Stretch, 3=Original
@@ -60,9 +66,81 @@ def setMupenConfig(iniConfig, system, controllers, gameResolution):
         iniConfig.set("Video-Glide64mk2", "aspect", "-1")
         iniConfig.set("Video-GLideN64",   "AspectRatio", "1")
 
+    # Textures Mip-Mapping (Filtering)
+    if system.isOptSet("mupen64plus_Mipmapping") and system.config["mupen64plus_Mipmapping"] != 0:
+        if system.config["mupen64plus_Mipmapping"] == "1":
+            iniConfig.set("Video-Rice",       "Mipmapping", "1")
+            iniConfig.set("Video-Glide64mk2", "filtering",  "0")
+        elif system.config["mupen64plus_Mipmapping"] == "2":
+            iniConfig.set("Video-Rice",       "Mipmapping", "2")
+            iniConfig.set("Video-Glide64mk2", "filtering",  "1")
+        else:
+            iniConfig.set("Video-Rice",       "Mipmapping", "3")
+            iniConfig.set("Video-Glide64mk2", "filtering",  "2")
+    else:
+        iniConfig.set("Video-Rice",       "Mipmapping", "0")     # 0=no, 1=nearest, 2=bilinear, 3=trilinear
+        iniConfig.set("Video-Glide64mk2", "filtering", "-1")     # -1=Game default, 0=automatic, 1=force bilinear, 2=force point sampled
+
+    # Anisotropic Filtering
+    if system.isOptSet("mupen64plus_Anisotropic") and system.config["mupen64plus_Anisotropic"] != 0:
+        iniConfig.set("Video-Rice", "AnisotropicFiltering", system.config["mupen64plus_Anisotropic"])
+        iniConfig.set("Video-Glide64mk2", "wrpAnisotropic", system.config["mupen64plus_Anisotropic"])
+    else:
+        iniConfig.set("Video-Rice", "AnisotropicFiltering", "0") # Enable/Disable Anisotropic Filtering for Mipmapping (0=no filtering, 2-16=quality).
+                                                                 # This is uneffective if Mipmapping is false.
+        iniConfig.set("Video-Glide64mk2", "wrpAnisotropic", "1") # Wrapper Anisotropic Filtering
+
+    # Anti-aliasing MSAA
+    if system.isOptSet("mupen64plus_AntiAliasing") and system.config["mupen64plus_AntiAliasing"] != 0:
+        iniConfig.set("Video-Rice",       "MultiSampling",   system.config["mupen64plus_AntiAliasing"])
+        iniConfig.set("Video-Glide64mk2", "wrpAntiAliasing", system.config["mupen64plus_AntiAliasing"])
+    else:
+        iniConfig.set("Video-Rice",       "MultiSampling",   "0") # 0=off, 2, 4, 8, 16=quality
+        iniConfig.set("Video-Glide64mk2", "wrpAntiAliasing", "0") # Enable full-scene anti-aliasing by setting this to a value greater than 1
+
+    # Hires textures
+    if system.isOptSet("mupen64plus_LoadHiResTextures") and system.config["mupen64plus_LoadHiResTextures"] == '=True':
+        iniConfig.set("Video-Rice", "LoadHiResTextures", "True")
+        iniConfig.set("Video-Glide64mk2", "ghq_hirs",    "1")
+    else:
+        iniConfig.set("Video-Rice", "LoadHiResTextures", "False")
+        iniConfig.set("Video-Glide64mk2", "ghq_hirs",    "0")    # Hi-res texture pack format (0 for none, 1 for Rice)
+
+
+    # Texture Enhencement XBRZ -> ONLY for RICE
+    if system.isOptSet("mupen64plus_TextureEnhancement") and system.config["mupen64plus_TextureEnhancement"] != 0:
+        iniConfig.set("Video-Rice", "TextureEnhancement", system.config["mupen64plus_TextureEnhancement"])
+    else:
+        iniConfig.set("Video-Rice", "TextureEnhancement", "0")   # 0=None, 1=2X, 2=2XSAI, 3=HQ2X, 4=LQ2X, 5=HQ4X, 6=Sharpen, 7=Sharpen More, 8=External, 9=Mirrored
+
+
+    # Frameskip -> ONLY for GLIDE64MK2
+    iniConfig.set("Video-Glide64mk2", "autoframeskip", "0")
+    if system.isOptSet("mupen64plus_frameskip") and system.config["mupen64plus_frameskip"] != 0:
+        if system.config["mupen64plus_frameskip"] == "=automatic":
+            # If true, skip up to maxframeskip frames to maintain clock schedule; if false, skip exactly maxframeskip frames
+            iniConfig.set("Video-Glide64mk2", "autoframeskip", "1")
+            iniConfig.set("Video-Glide64mk2", "maxframeskip",  "5")
+        else:
+            # If autoframeskip is false, skip exactly this many frames
+            iniConfig.set("Video-Glide64mk2", "maxframeskip", system.config["mupen64plus_frameskip"])
+    else:
+        iniConfig.set("Video-Glide64mk2", "maxframeskip", "0")
+
+    # 64DD
+    if not iniConfig.has_section("64DD"):
+        iniConfig.add_section("64DD")
+    # Filename of the 64DD IPL ROM
+    if (system.name == 'n64dd'):
+        iniConfig.set("64DD", "IPL-ROM", batoceraFiles.BIOS + "/64DD_IPL.bin")
+    else:
+        iniConfig.set("64DD", "IPL-ROM", "")
+    iniConfig.set("64DD", "Disk", "")
+    
+
     # Display FPS
     if system.config['showFPS'] == 'true':
-        iniConfig.set("Video-Rice",      "ShowFPS",  "True")
+        iniConfig.set("Video-Rice",       "ShowFPS",  "True")
         iniConfig.set("Video-Glide64mk2", "show_fps", "4")
     else:
         iniConfig.set("Video-Rice",       "ShowFPS",  "False")

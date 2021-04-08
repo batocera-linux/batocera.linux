@@ -485,7 +485,6 @@ libretro:
                     "NeGcon":                        NeGcon
     easyrpg:
       features: []
-
     fbneo:
       features: [netplay, rewind, autosave, latency_reduction, cheevos]
       cfeatures:
@@ -1495,8 +1494,8 @@ libretro:
                 description: (Off) will show Black Scanline in older games (Graphically designed to use scanlines)
                 choices:
                     "Full 255 lines": Full 255 lines
-                    "Off":            OFF
-                    "On":             ON
+                    "Off":       OFF
+                    "On":        ON
             np2kai_realpal:
                 prompt:      REAL PALETTES
                 description: Some games only working correctly with this (Apros)
@@ -2601,10 +2600,10 @@ libretro:
                 prompt:      ENABLE MULTITAP
                 description: Allowing 7-12 player support in games
                 choices:
-                    "Off":              disabled
-                    "Port1":            port1
-                    "Port2":            port2
-                    "Port1+2":          port12
+                    "Off":      disabled
+                    "Port1":    port1
+                    "Port2":    port2
+                    "Port1+2":  port12
 
 # Standalones
 
@@ -2829,32 +2828,96 @@ moonlight:
 
 mupen64plus:
   features: [ratio]
+  cfeatures:
+        mupen64plus_frameskip:
+            prompt:      FRAME SKIP [GL64MK2 ONLY]
+            description: Skip frames to improve performance (Smoothless)
+            choices:
+                "Off":                  0
+                "Autodetect":           automatic
+                "1":                    1
+                "2":                    2
+                "3":                    3
+                "4":                    4
+                "5":                    5
+        mupen64plus_Mipmapping:
+            prompt:      TEXTURES MIP-MAPPING (BLUR)
+            description: Smooths out textures on 3D objetcs
+            choices:
+                "Off":                  0
+                "nearest":              1
+                "bilinear":             2
+                "trilinear":            3
+        mupen64plus_Anisotropic:
+            prompt:      ANISOTROPIC FILTERING
+            description: Enhance perspective textures (use Mipmapping)
+            choices:
+                "Off":                  0
+                "2x":                   2
+                "4x":                   4
+                "8x":                   8
+                "16x":                  16
+        mupen64plus_AntiAliasing:
+            prompt:      ANTI-ALIASING (MSAA)
+            description: Smooth out jagged edges on 3D objetcs polygons
+            choices:
+                "Off":                  0
+                "2x":                   2
+                "4x":                   4
+                "8x":                   8
+                "16x":                  16
+        mupen64plus_TextureEnhancement:
+            prompt:      TEXTURE ENHANCEMENT (XBRZ) [RICE ONLY]
+            description: Scales up a nearest-neighbor version of the texture
+            choices:
+                "Off":                  0
+                "2X":                   1
+                "2XSAI":                2
+                "HQ2X":                 3
+                "LQ2X":                 4
+                "HQ4X":                 5
+                "Sharpen":              6
+                "Sharpen More":         7
+                "External":             8
+                "Mirrored":             9
+        mupen64plus_LoadHiResTextures:
+            prompt:      HIRES TEXTURES
+            description: Permit to use HD Texture Pack
+            choices:
+                "Off":                  "False"
+                "On":                   "True"
+        mupen64plus_DisableExtraMem:
+            prompt:      4MB EXPANSION RAM PACK
+            description: Disable may be necessary for some games
+            choices:
+                "Off":                  "False"
+                "On":                   "True"
 
 openbor:
   features: []
   cfeatures:
-    ratio:
-      prompt:      SCREEN RATIO
-      description: Stretch games to Full Screen but distorted
-      choices:
-        "Normal":         0
-        "Stretch":        1
-    filter:
-      prompt:      VIDEO FILTER
-      description: Apply to achieve some kind of visual effect
-      choices:
-        "Simple 2x":      0
-        "Bilinear":       1
-        "2xSaI":          2
-        "Super 2xSaI":    3
-        "Super Eagle":    4
-        "Advance Mame2x": 5
-        "Lq2x":           6
-        "Hq2x":           7
-        "ScanLines":      8
-        "ScanLines TV":   9
-        "TV 2x":          10
-        "Dot Matrix":     11
+        ratio:
+            prompt:      SCREEN RATIO
+            description: Stretch games to Full Screen but distorted
+            choices:
+                "Normal":         0
+                "Stretch":        1
+        filter:
+            prompt:      VIDEO FILTER
+            description: Apply to achieve some kind of visual effect
+            choices:
+                "Simple 2x":      0
+                "Bilinear":       1
+                "2xSaI":          2
+                "Super 2xSaI":    3
+                "Super Eagle":    4
+                "Advance Mame2x": 5
+                "Lq2x":           6
+                "Hq2x":           7
+                "ScanLines":      8
+                "ScanLines TV":   9
+                "TV 2x":          10
+                "Dot Matrix":     11
 
 pcsx2:
   features: [ratio, fullboot, internal_resolution]
@@ -2913,6 +2976,7 @@ ppsspp:
                 "3":          3
                 "4":          4
                 "5":          5
+
 reicast:
   features: [ratio]
 
@@ -2942,17 +3006,23 @@ easyrpg:
             prompt:      TEST PLAY
             description: Enable debug menu and walk through walls button
             choices:
-                "Off":          0
-                "On":           1
+                "Off":                           0
+                "On":                            1
         encoding:
-            prompt:      ENCODING
+            prompt:      GAME REGION (ENCODING)
             description: Needed by some games to use special characters
             choices:
-              Western European: 1252
-              Windows-1251:     1251
-              Windows-1250:     1250
-              Shift-JIS:        932
-              Big5:             950
+                "Autodetect (Recommended)":      autodetect
+                "European (Western)":            1252
+                "European (Cent/East) [W-1250]": 1250
+                "Japanese [Shift-JIS]":          932
+                "Cyrillic [Windows-1251]":       1251
+                "Korean":                        949
+                "Chinese (Simplified)":          936
+                "Chinese (Traditional) [Big5]":  950
+                "Greek":                         1253
+                "Turkish":                       1254
+                "Baltic":                        1257
 
 redream:
   features: []
@@ -3098,12 +3168,12 @@ solarus:
   features: []
   cfeatures:
         joystick:
-            prompt:      JOYSTICK
-            description: Pad to control the player
+            prompt:      CONTROL CHOICE
+            description: Choose which pad to control your hero
             choices:
-              Normal:     normal
-              Joystick 1: joystick1
-              Joystick 2: joystick2
+                "Joypad":           normal
+                "Left Joystick":    joystick1
+                "Right Joystick":   joystick2
 
 mugen:
   features: [padtokeyboard]
@@ -3147,8 +3217,8 @@ xemu:
   cfeatures:
         scaling:
             prompt:      SCALING MODE
-            description: Choose your mode
+            description: Stretch, scale or not your game screen
             choices:
                 "Center":   center
-                "Scale":   scale
-                "Stretch":   stretch
+                "Scale":    scale
+                "Stretch":  stretch
