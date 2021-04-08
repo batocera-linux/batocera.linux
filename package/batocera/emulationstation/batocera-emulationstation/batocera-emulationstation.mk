@@ -83,8 +83,8 @@ ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI1),y)
 	BATOCERA_EMULATIONSTATION_POSTFIX = \& sleep 5
 endif
 
-# on rpi 1 2 3, the splash with video + es splash is ok
-ifeq ($(BR2_PACKAGE_RPI_USERLAND),y)
+# on rpi 1 2 3 4, the splash with video + es splash is ok
+ifeq ($(BR2_PACKAGE_BATOCERA_RPI_ANY),y)
 	BATOCERA_EMULATIONSTATION_ARGS = $${EXTRA_OPTS}
 endif
 
