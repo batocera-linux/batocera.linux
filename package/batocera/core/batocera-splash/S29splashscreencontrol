@@ -50,13 +50,13 @@ case $1 in
         [ $splash_setting = auto -a $(echo $ARCH | cut -c 1-3) = rpi ] && splash_setting=$ARCH
 
         case $splash_setting in
-            rpi1|rpi2)
+            rpi1)
                 # Standard BATOCERA setting, for Pi platform
                 # A video splash will be displayed ~16s on Pi3 platform you'll smoothly boot into ES
                 #
                 splash_default_rpi &
             ;;
-            auto|rpi3|rpi4)
+            auto|rpi2|rpi3|rpi4)
                 # Play video as long as possible, ideal for fast boards
                 #
                 [ $picture -eq 0 ] && splash_autoplay
