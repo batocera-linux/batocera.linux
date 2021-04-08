@@ -11,7 +11,8 @@ class FlatpakGenerator(Generator):
         with open(rom) as f:
             romId = str.strip(f.read())
 
-        commandArray = ["flatpak", "run", romId]
+        # the directory monitor must exist and all the dirs must be owned by batocera
+        commandArray = ["su", "batocera", "-c",  "flatpak run " + romId]
         return Command.Command(array=commandArray)
 
     def getMouseMode(self, config):
