@@ -11,25 +11,27 @@ class EasyRPGGenerator(Generator):
     def generate(self, system, rom, playersControllers, gameResolution):
         commandArray = ["easyrpg-player"]
 
-        # fps
+        # FPS
         if system.isOptSet("showFPS") and system.getOptBoolean("showFPS"):
             commandArray.append("--show-fps")
 
-        # debug
+        # Test Play (Debug Mode)
         if system.isOptSet('testplay') and system.getOptBoolean("testplay"):
             commandArray.append("--test-play")
 
-        # encoding
-        if system.isOptSet('encoding'):
+        # Game Region (Encoding)
+        if system.isOptSet('encoding') and system.config["encoding"] != 'autodetect':
             commandArray.extend(["--encoding", system.config["encoding"]])
+        else:
+            commandArray.extend(["--encoding", "auto"])
 
-        # save directory
+        # Save directory
         savePath = "/userdata/saves/easyrpg/{}".format(os.path.basename(rom))
         if not os.path.exists(savePath):
             os.makedirs(savePath)
         commandArray.extend(["--save-path", savePath])
 
-        # dir for logs and conf
+        # Dir for logs and conf
         configdir = "/userdata/system/configs/easyrpg"
         if not os.path.exists(configdir):
             os.makedirs(configdir)
