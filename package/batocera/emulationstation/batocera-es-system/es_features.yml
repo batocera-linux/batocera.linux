@@ -485,7 +485,6 @@ libretro:
                     "NeGcon":                        NeGcon
     easyrpg:
       features: []
-
     fbneo:
       features: [netplay, rewind, autosave, latency_reduction, cheevos]
       cfeatures:
@@ -2830,8 +2829,8 @@ moonlight:
 mupen64plus:
   features: [ratio]
   cfeatures:
-        mupen64plus_frameskip::
-            prompt:      FRAME SKIP
+        mupen64plus_frameskip:
+            prompt:      FRAME SKIP [GL64MK2 ONLY]
             description: Skip frames to improve performance (Smoothless)
             choices:
                 "Off":                  0
@@ -2841,7 +2840,7 @@ mupen64plus:
                 "3":                    3
                 "4":                    4
                 "5":                    5
-        mupen64plus_Mipmapping::
+        mupen64plus_Mipmapping:
             prompt:      TEXTURES MIP-MAPPING (BLUR)
             description: Smooths out textures on 3D objetcs
             choices:
@@ -2849,7 +2848,7 @@ mupen64plus:
                 "nearest":              1
                 "bilinear":             2
                 "trilinear":            3
-        mupen64plus_Anisotropic::
+        mupen64plus_Anisotropic:
             prompt:      ANISOTROPIC FILTERING
             description: Enhance perspective textures (use Mipmapping)
             choices:
@@ -2858,7 +2857,7 @@ mupen64plus:
                 "4x":                   4
                 "8x":                   8
                 "16x":                  16
-        mupen64plus_AntiAliasing::
+        mupen64plus_AntiAliasing:
             prompt:      ANTI-ALIASING (MSAA)
             description: Smooth out jagged edges on 3D objetcs polygons
             choices:
@@ -2867,9 +2866,9 @@ mupen64plus:
                 "4x":                   4
                 "8x":                   8
                 "16x":                  16
-        mupen64plus_TextureEnhancement::
-            prompt:      TEXTURE ENHANCEMENT (XBRZ)
-            description: Only for RICE video plugin # Scales up a nearest-neighbor version of the texture
+        mupen64plus_TextureEnhancement:
+            prompt:      TEXTURE ENHANCEMENT (XBRZ) [RICE ONLY]
+            description: Scales up a nearest-neighbor version of the texture
             choices:
                 "Off":                  0
                 "2X":                   1
@@ -2881,13 +2880,13 @@ mupen64plus:
                 "Sharpen More":         7
                 "External":             8
                 "Mirrored":             9
-        mupen64plus_LoadHiResTextures::
+        mupen64plus_LoadHiResTextures:
             prompt:      HIRES TEXTURES
             description: Permit to use HD Texture Pack
             choices:
                 "Off":                  "False"
                 "On":                   "True"
-        mupen64plus_DisableExtraMem::
+        mupen64plus_DisableExtraMem:
             prompt:      4MB EXPANSION RAM PACK
             description: Disable may be necessary for some games
             choices:
@@ -3007,17 +3006,23 @@ easyrpg:
             prompt:      TEST PLAY
             description: Enable debug menu and walk through walls button
             choices:
-                "Off":          0
-                "On":           1
+                "Off":                           0
+                "On":                            1
         encoding:
-            prompt:      ENCODING
+            prompt:      GAME REGION (ENCODING)
             description: Needed by some games to use special characters
             choices:
-              Western European: 1252
-              Windows-1251:     1251
-              Windows-1250:     1250
-              Shift-JIS:        932
-              Big5:             950
+                "Autodetect (Recommended)":      autodetect
+                "European (Western)":            1252
+                "European (Cent/East) [W-1250]": 1250
+                "Japanese [Shift-JIS]":          932
+                "Cyrillic [Windows-1251]":       1251
+                "Korean":                        949
+                "Chinese (Simplified)":          936
+                "Chinese (Traditional) [Big5]":  950
+                "Greek":                         1253
+                "Turkish":                       1254
+                "Baltic":                        1257
 
 redream:
   features: []
@@ -3163,12 +3168,12 @@ solarus:
   features: []
   cfeatures:
         joystick:
-            prompt:      JOYSTICK
-            description: Pad to control the player
+            prompt:      CONTROL CHOICE
+            description: Choose which pad to control your hero
             choices:
-              Normal:     normal
-              Joystick 1: joystick1
-              Joystick 2: joystick2
+                "Joypad":           normal
+                "Left Joystick":    joystick1
+                "Right Joystick":   joystick2
 
 mugen:
   features: [padtokeyboard]
@@ -3212,8 +3217,8 @@ xemu:
   cfeatures:
         scaling:
             prompt:      SCALING MODE
-            description: Choose your mode
+            description: Stretch, scale or not your game screen
             choices:
                 "Center":   center
-                "Scale":   scale
-                "Stretch":   stretch
+                "Scale":    scale
+                "Stretch":  stretch
