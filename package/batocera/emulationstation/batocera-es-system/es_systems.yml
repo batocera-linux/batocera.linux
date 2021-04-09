@@ -1665,15 +1665,29 @@ ports:
   extensions: [sh]
   group: ports
   path:       /userdata/roms/ports
-  command:    "python /usr/lib/python3.9/site-packages/configgen/emulatorlauncher.py %CONTROLLERSCONFIG% -system %SYSTEM% -rom %ROM%"
-  emulators:
-    sh:
-      sh:  { requireAnyOf: [] }
+  command:    "/bin/sh %ROM% %CONTROLLERSCONFIG%"
   force:      True
   comment_en: |
           Third party Linux games and apps that can be run from a .sh script.
   comment_fr: |
           Jeux et applications Linux additionnels qui peuvent etre lancés depuis un script .sh.
+
+linux:
+  name:       Linux
+  manufacturer: Ports
+  release:
+  hardware: port
+  extensions: [port]
+  group: ports
+  path:       /userdata/roms/linux
+  command:    "python /usr/lib/python3.9/site-packages/configgen/emulatorlauncher.py %CONTROLLERSCONFIG% -system %SYSTEM% -rom %ROM%"
+  emulators:
+    sh:
+      sh:  { requireAnyOf: [] }
+  comment_en: |
+          Third party Linux games and apps that can be run from a .port folder containing a launch.sh script.
+  comment_fr: |
+          Jeux et applications Linux additionnels qui peuvent etre lancés depuis un dossier .port qui contient un script nommé launch.sh.
 
 amiga:
   name:       Amiga
