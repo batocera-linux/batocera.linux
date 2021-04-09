@@ -48,6 +48,8 @@ systemToP2Device = {'msx': '257', 'msx1': '257', 'msx2': '257', 'colecovision': 
 # Netplay modes
 systemNetplayModes = {'host', 'client', 'spectator'}
 
+# Cores that require .slang shaders (even on OpenGL, not only Vulkan)
+coreForceSlangShaders = { 'mupen64plus-next' }
 
 def writeLibretroConfig(retroconfig, system, controllers, rom, bezel, gameResolution):
     writeLibretroConfigToFile(retroconfig, createLibretroConfig(system, controllers, rom, bezel, gameResolution))
@@ -253,7 +255,6 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
         else:
             retroarchConfig['input_libretro_device_p2'] = '1'
 
-
     # Smooth option
     if system.isOptSet('smooth') and system.getOptBoolean('smooth') == True:
         retroarchConfig['video_smooth'] = 'true'
@@ -264,12 +265,6 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
     if 'shader' in renderConfig and renderConfig['shader'] != None:
         retroarchConfig['video_shader_enable'] = 'true'
         retroarchConfig['video_smooth']        = 'false'     # seems to be necessary for weaker SBCs
-        shaderFilename = renderConfig['shader'] + ".glslp"
-        if os.path.exists("/userdata/shaders/" + shaderFilename):
-            retroarchConfig['video_shader_dir'] = "/userdata/shaders"
-            eslog.log("shader {} found in /userdata/shaders".format(shaderFilename))
-        else:
-            retroarchConfig['video_shader_dir'] = "/usr/share/batocera/shaders"
     else:
         retroarchConfig['video_shader_enable'] = 'false'
 

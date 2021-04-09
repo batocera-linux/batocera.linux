@@ -83,7 +83,11 @@ class LibretroGenerator(Generator):
         # RetroArch 1.7.8 (Batocera 5.24) now requires the shaders to be passed as command line argument
         renderConfig = system.renderconfig
         if 'shader' in renderConfig and renderConfig['shader'] != None:
-            shaderFilename = renderConfig['shader'] + ".glslp"
+            if ( (system.isOptSet("gfxbackend") and system.config["gfxbackend"] == "vulkan")
+                    or (system.config['core'] in libretroConfig.coreForceSlangShaders) ):
+                shaderFilename = renderConfig['shader'] + ".slangp"
+            else:
+                shaderFilename = renderConfig['shader'] + ".glslp"
             eslog.log("searching shader {}".format(shaderFilename))
             if os.path.exists("/userdata/shaders/" + shaderFilename):
                 video_shader_dir = "/userdata/shaders"
