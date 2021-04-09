@@ -7,7 +7,8 @@ class ShGenerator(Generator):
 
     def generate(self, system, rom, playersControllers, gameResolution):
 
-        commandArray = ["/bin/sh", rom]
+        launchfile = rom + "/launch.sh"
+        commandArray = ["/bin/sh", launchfile]
         return Command.Command(array=commandArray)
 
     def getMouseMode(self, config):
