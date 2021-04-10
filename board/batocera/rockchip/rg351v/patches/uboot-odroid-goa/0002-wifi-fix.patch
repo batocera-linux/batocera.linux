@@ -1,0 +1,33 @@
+--- a/board/rockchip/odroidgoa/odroidgoa.c	2021-04-10 08:59:37.615536749 +0200
++++ b/board/rockchip/odroidgoa/odroidgoa.c	2021-04-10 09:02:55.545533904 +0200
+@@ -22,7 +22,8 @@
+ DECLARE_GLOBAL_DATA_PTR;
+ 
+ #define ALIVE_LED_GPIO	17 /* GPIO0_C1 */
+-#define WIFI_EN_GPIO	110 /* GPIO3_B6 */
++#define WIFI_EN_GPIO	5 /* GPIO0_A5 */
++#define VIB_EN_GPIO 15
+ 
+ unsigned char disp_offs = 0;
+ 
+@@ -46,7 +47,7 @@
+ void board_wifi_en(void)
+ {
+ 	gpio_request(WIFI_EN_GPIO, "wifi_enable");
+-	gpio_direction_output(WIFI_EN_GPIO, 1);
++	gpio_direction_output(WIFI_EN_GPIO, 0);
+ 	gpio_free(WIFI_EN_GPIO);
+ }
+ 
+@@ -157,6 +158,11 @@
+ 
+ int rk_board_late_init(void)
+ {
++	#ifdef __VIB__
++	gpio_direction_output(VIB_EN_GPIO, 0);
++	gpio_free(VIB_EN_GPIO);
++	#endif
++
+ 	if (is_odroidgo3())
+ 		disp_offs = 9;
+ 
