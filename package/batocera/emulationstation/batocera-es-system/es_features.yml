@@ -1117,7 +1117,7 @@ libretro:
                     "Full":                         full
                     "DMA Only (Slightly Faster)":   dma
             multitap_mednafen:
-                prompt:      ENABLE MULTITAP
+                prompt:      MULTITAP
                 description: Allowing 5-8 player support in games
                 choices:
                     "Off":              disabled
@@ -1726,7 +1726,7 @@ libretro:
                     "On":               enabled
                     "On (Speed hack)":  enabled_with_speedhack
             multitap_pcsx:
-                prompt:      ENABLE MULTITAP
+                prompt:      MULTITAP
                 description: Allowing 5-8 player support in games
                 choices:
                     "Off":              disabled
@@ -2295,7 +2295,7 @@ libretro:
                     "160fps":     160fps
             tyrquake_rumble:
                 prompt:      RUMBLE
-                description: Enables joypad rumble
+                description: Enables joypad rumble (vibration)
                 choices:
                     "Off":        disabled
                     "On":         enabled
@@ -2597,7 +2597,7 @@ libretro:
                     "1080p":    1080p
                     "4k":       4k
             multitap_yabasanshiro:
-                prompt:      ENABLE MULTITAP
+                prompt:      MULTITAP
                 description: Allowing 7-12 player support in games
                 choices:
                     "Off":      disabled
@@ -2729,7 +2729,7 @@ dolphin:
                 "Off": 0
                 "On":  1
         rumble:
-            prompt:      ENABLE RUMBLE
+            prompt:      RUMBLE
             description: To use vibration on games with Rumble mode
             choices:
                 "Off": 0
@@ -2759,15 +2759,152 @@ dosbox-x:
   features: [ratio, padtokeyboard]
 
 duckstation:
-  features: [ratio, fullboot, internal_resolution]
+  features: [videomode, ratio]
   cfeatures:
+        duckstation_rewind:
+            prompt:      REWIND
+            description: Warning, this feature use a lot of RAM & VRAM
+            choices:
+                "Off":                                         "false"
+                "5  sec Accurate / 250 Mo RAM + 1200 Mo VRAM": 5
+                "10 sec Accurate / 500 Mo RAM + 2400 Mo VRAM": 10
+                "15 sec / Total 135 Mo RAM (Small boards)":    15
+                "30 sec / Total 270 Mo RAM (Middle boards)":   30
+                "60 sec / 300 Mo RAM + 240 Mo VRAM":           60
+                "90 sec / 450 Mo RAM + 360 Mo VRAM":           90
+                "120 sec / 600 Mo RAM + 480 Mo VRAM":          120
         gfxbackend:
             archs_include: [x86, x86_64, rpi4, odroidgoa]
             prompt:      GRAPHICS BACKEND
             description: Choose your graphics rendering
             choices:
-                "OpenGL": OpenGL
-                "Vulkan": Vulkan
+                "OpenGL":                       OpenGL
+                "Vulkan":                       Vulkan
+        duckstation_threadedpresentation:
+            prompt:      VULKAN THREADED
+            description: Can mesurably improve performance if Vsync disabled
+            choices:
+                "Off":                          0
+                "On":                           1
+        duckstation_vsync:
+            prompt:      VSYNC
+            description: Fix the heavy screen tearing in games (heavy CPU)
+            choices:
+                "Off":                          0
+                "On":                           1
+        duckstation_frameskip:
+            prompt:      FRAME SKIP
+            description: Skip frames to improve performance (Smoothless)
+            choices:
+                "Off":                          0
+                "On":                           1
+        duckstation_PatchFastBoot:
+            prompt:      SHOW BIOS BOOTLOGO
+            description: Show BIOS animation when starting content
+            choices:
+                "Off":                          1
+                "On":                           0
+        duckstation_resolution_scale:
+            prompt:      VIDEO RESOLUTION
+            description: Improve the fidelity of 3D models (unaffect 2D)
+            choices:
+                "1x(native)":                   1
+                "2x":                           2
+                "3x/720p":                      3
+                "4x":                           4
+                "5x/1080p":                     5
+                "6x/1440p":                     6
+                "7x":                           7
+                "8x":                           8
+                "9x/4K":                        9
+                "10x":                          10
+                "11x":                          11
+                "12x":                          12
+                "13x":                          13
+                "14x":                          14
+                "15x":                          15
+                "16x":                          16
+        duckstation_antialiasing:
+            prompt:      ANTI-ALIASING (MSAA/SSAA)
+            description: Smooth out jagged edges on 3D objetcs polygons
+            choices:
+                "Off":                          1
+                "2x msaa":                      2
+                "4x msaa":                      4
+                "8x msaa":                      8
+                "16x msaa":                     16
+                "32x msaa":                     32
+                "2x ssaa":                      2-ssaa
+                "4x ssaa":                      4-ssaa
+                "8x ssaa":                      8-ssaa
+                "16x ssaa":                     16-ssaa
+                "32x ssaa":                     32-ssaa
+        duckstation_texture_filtering:
+            prompt:      TEXTURE FILTERING
+            description: Smooths out textures on 3D objetcs
+            choices:
+                "Nearest-Neighbor":             Nearest
+                "Bilinear":                     Bilinear
+                "Bilinear (no Edge Blending)":  BilinearBinAlpha
+                "JINC2":                        Jinc2
+                "JINC2 (no Edge Blending)":     Jinc2BinAlpha
+                "xBR":                          xBR
+                "xBR (no Edge Blending)":       xBRBinAlpha
+        duckstation_CropMode:
+            prompt:      CROP MODE
+            description: Changes how much of the image is cropped
+            choices:
+                "Off":                          "None"
+                "Only Overscan Area":           "Overscan"
+                "All Borders":                  "Borders"
+        duckstation_widescreen_hack:
+            prompt:      WIDESCREEN HACK
+            description: You must use a 16/9 RATIO and disable BEZEL
+            choices:
+                "Off":                          0
+                "On":                           1
+        duckstation_rumble:
+            prompt:      RUMBLE
+            description: Activate vibration on supported controllers
+            choices:
+                "Off":                          0
+                "On":                           1
+        duckstation_digitalmode:
+            prompt:      DPAD TO JOYSTICK
+            description: Use your Joystick as a Dpad with Analog controllers
+            choices:
+                "Off":                          0
+                "On":                           1
+        duckstation_multitap:
+            prompt:      MULTITAP
+            description: Allowing 5-8 player support in games
+            choices:
+                "Off":                          Disabled
+                "Port 1":                       Port1Only
+                "Port 2":                       Port2Only
+                "Port 1+2":                     BothPorts
+        duckstation_Controller1:
+            prompt:      CONTROLLER 1 TYPE
+            description: Use DualShock type for games with Rumble mode
+            choices:
+                "None":                          None
+                "Digital Controller":            DigitalController
+                "Analog Controller (DualShock)": AnalogController
+                "Analog Joystick":               AnalogJoystick
+                "Namco GunCon (Rumble)":         NamcoGunCon
+                "PlayStation Mouse":             PlayStationMouse
+                "NeGcon (Rumble)":               NeGcon
+        duckstation_Controller2:
+            prompt:      CONTROLLER 2 TYPE
+            description: Use DualShock type for games with Rumble mode
+            choices:
+                "None":                          None
+                "Digital Controller":            DigitalController
+                "Analog Controller (DualShock)": AnalogController
+                "Analog Joystick":               AnalogJoystick
+                "Namco GunCon (Rumble)":         NamcoGunCon
+                "PlayStation Mouse":             PlayStationMouse
+                "NeGcon (Rumble)":               NeGcon
 
 flycast:
   features: [ratio]
@@ -2923,8 +3060,8 @@ pcsx2:
   features: [ratio, fullboot, internal_resolution]
   cfeatures:
         multitap:
-            prompt:      ENABLE MULTITAP
-            description: Allowing up to 8 players support in games
+            prompt:      MULTITAP
+            description: Allowing 5-8 player support in games
             choices:
                 "Off":      disabled
                 "Port1":    port1
