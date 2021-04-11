@@ -109,6 +109,11 @@ class CemuGenerator(Generator):
         else:
             CemuGenerator.setSectionConfig(config, graphic_root, "api", "1") #Vulkan
 
+        if system.isOptSet("async") and system.config["async"] == "1":
+                CemuGenerator.setSectionConfig(config, graphic_root, "AsyncCompile", "true") 
+        else:
+                CemuGenerator.setSectionConfig(config, graphic_root, "AsyncCompile", "false")
+
         # save the config file
         xml = open(configFile, "w")
         # TODO: python 3 - workawround to encode files in utf-8

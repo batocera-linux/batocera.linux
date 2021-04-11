@@ -2628,6 +2628,12 @@ cemu:
             choices:
                 "OpenGL": OpenGL
                 "Vulkan": Vulkan
+        async:
+            prompt:      ASYNC SHADER
+            description: Speedup shader compilation (Vulkan only)
+            choices:
+                "Off": 0
+                "On": 1
 
 citra:
   features: [ratio, rewind, screen_layout]
