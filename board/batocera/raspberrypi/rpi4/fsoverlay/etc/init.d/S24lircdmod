@@ -1,0 +1,12 @@
+#!/bin/sh
+
+if test "$1" = start
+then
+    if grep -qE '^dtoverlay=lirc-rpi$' /boot/config.txt
+    then
+	if ! lsmod | grep -qE '^lirc-rpi'
+	then
+	    modprobe lirc-rpi
+	fi
+    fi
+fi
