@@ -77,6 +77,20 @@ def generateRetroarchCustom():
     # Disable builtin image viewer (done in ES, and prevents from loading pico-8 .png carts)
     retroarchSettings.save('builtin_imageviewer_enable',        '"false"')
 
+    # Display informations and badge on screen
+    retroarchSettings.save('video_font_enable',                 '"true"')
+
+    #retroarchSettings.save('notification_show_autoconfig',            '"true"')
+    #retroarchSettings.save('notification_show_cheats_applied',        '"true"')
+    #retroarchSettings.save('notification_show_config_override_load',  '"true"')
+    #retroarchSettings.save('notification_show_fast_forward',          '"true"')
+    #retroarchSettings.save('notification_show_refresh_rate',          '"true"')
+    #retroarchSettings.save('notification_show_remap_load',            '"true"')
+    #retroarchSettings.save('notification_show_screenshot',            '"true"')
+    #retroarchSettings.save('notification_show_screenshot',            '"0"')
+    #retroarchSettings.save('notification_show_screenshot_flash',      '"0"')
+    #retroarchSettings.save('notification_show_set_initial_disk',      '"true"')
+
     retroarchSettings.write()
 
 def generateRetroarchCustomPathes(retroarchSettings):

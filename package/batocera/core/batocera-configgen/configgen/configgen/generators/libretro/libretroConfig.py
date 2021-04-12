@@ -422,8 +422,10 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
     # Display FPS
     if system.isOptSet('showFPS') and system.getOptBoolean('showFPS') == True:
         retroarchConfig['fps_show'] = 'true'
+        retroarchConfig['memory_show'] = 'true'
     else:
         retroarchConfig['fps_show'] = 'false'
+        retroarchConfig['memory_show'] = 'false'
 
     # Adaptation for small resolution
     if isLowResolution(gameResolution):
