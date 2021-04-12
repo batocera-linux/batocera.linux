@@ -1983,6 +1983,7 @@ libretro:
                     "A1200 (2MB Chip + 8MB Fast)":     A1200
                     "A4000/040 (2MB Chip + 8MB Fast)": A4040
                     "CDTV (1MB Chip)":                 CDTV
+                    "CD32 Default (2MB Chip)":         CD32
                     "CD32 (2MB Chip + 8MB Fast)":      CD32FR
             cpu_compatibility:
                 prompt:      CPU COMPATIBILITY
@@ -2037,9 +2038,22 @@ libretro:
                 prompt:      VIDEO RESOLUTION
                 description: Increase video to Hi Resolution
                 choices:
-                    "360p":       lores
-                    "720p":       hires
-                    "1440p":      superhires
+                    "Low 360p":         lores
+                    "High 720p":        hires
+                    "Super-high 1440p": superhires
+            zoom_mode:
+                prompt:      ZOOM MODE
+                description: Crops the borders to fit various host screens
+                choices:
+                    "Off":            none
+                    "Autofit screen": automatic
+                    "minimum":        minimum
+                    "smaller":        smaller
+                    "small":          small
+                    "medium":         medium
+                    "large":          large
+                    "larger":         larger
+                    "maximum":        maximum
             gfx_framerate:
                 prompt:      FRAMESKIP
                 description: Skip frames to improve performance (Smoothless)
@@ -2061,14 +2075,12 @@ libretro:
       systems:
             amiga500:
                 cfeatures:
-                    zoom_mode:
-                        prompt:      ZOOM MODE
-                        description: Crops the borders to fit various host screens
+                    puae_floppy_speed:
+                        prompt:      FLOPPY TURBO SPEED
+                        description: Remove loading but can add possible glitches/crash
                         choices:
-                            "Off":    none
-                            "medium": medium
-                            "large":  large
-                            "larger": larger
+                            "Off":    100
+                            "On":     0
                     keyrah_mapping:
                         prompt:      2P GAMEPAD MAPPING (KEYRAH)
                         description: Keypad to joyport mappings for 2 players
@@ -2101,14 +2113,6 @@ libretro:
                         choices:
                             "Off":    100
                             "On":     0
-                    zoom_mode:
-                        prompt:      ZOOM MODE
-                        description: Crops the borders to fit various host screens
-                        choices:
-                            "Off":    none
-                            "medium": medium
-                            "large":  large
-                            "larger": larger
                     keyrah_mapping:
                         prompt:      2P GAMEPAD MAPPING (KEYRAH)
                         description: Keypad to joyport mappings for 2 players

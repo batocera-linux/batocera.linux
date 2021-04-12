@@ -181,6 +181,11 @@ def generateCoreSettings(coreSettings, system, rom):
             coreSettings.save('puae_video_resolution', system.config['video_resolution'])
         else:
             coreSettings.save('puae_video_resolution', '"hires"')
+        # Zoom Mode    
+        if system.isOptSet('zoom_mode') and system.config['zoom_mode'] != 'automatic':
+            coreSettings.save('puae_zoom_mode', system.config['zoom_mode'])
+        else:
+            coreSettings.save('puae_zoom_mode', '"auto"')
         # Frameskip
         if system.isOptSet('gfx_framerate'):
             coreSettings.save('puae_gfx_framerate', system.config['gfx_framerate'])
@@ -198,11 +203,6 @@ def generateCoreSettings(coreSettings, system, rom):
                 coreSettings.save('puae_floppy_speed', system.config['puae_floppy_speed'])
             else:
                 coreSettings.save('puae_floppy_speed', '"100"')
-            # Zoom Mode    
-            if system.isOptSet('zoom_mode'):
-                coreSettings.save('puae_zoom_mode', system.config['zoom_mode'])
-            else:
-                coreSettings.save('puae_zoom_mode', '"none"')
             # 2P Gamepad Mapping (Keyrah)
             if system.isOptSet('keyrah_mapping'):
                 coreSettings.save('puae_keyrah_keypad_mappings', system.config['keyrah_mapping'])
