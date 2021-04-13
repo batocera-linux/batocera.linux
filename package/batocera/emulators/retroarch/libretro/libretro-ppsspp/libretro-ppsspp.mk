@@ -72,7 +72,8 @@ ifeq ($(BR2_arm),y)
 LIBRETRO_PPSSPP_CONF_OPTS += \
 	-DARMV7=ON \
 	-DARM=ON \
-	-DUSING_GLES2=ON
+	-DUSING_GLES2=ON \
+	-DUSING_EGL=ON
 endif
 
 # rockchip
