@@ -84,12 +84,11 @@ class CemuGenerator(Generator):
         ###
         CemuGenerator.setSectionConfig(config, xml_root, "logflag", "0")
         CemuGenerator.setSectionConfig(config, xml_root, "advanced_ppc_logging", "false")
-        
-        CemuGenerator.setSectionConfig(config, xml_root, "use_discord_presence", "0")
-        CemuGenerator.setSectionConfig(config, xml_root, "fullscreen_menubar", "false")
-        CemuGenerator.setSectionConfig(config, xml_root, "true", "true")
+        CemuGenerator.setSectionConfig(config, xml_root, "use_discord_presence", "false")
         CemuGenerator.setSectionConfig(config, xml_root, "fullscreen_menubar", "false")
         CemuGenerator.setSectionConfig(config, xml_root, "cpu_mode", "1")
+        CemuGenerator.setSectionConfig(config, xml_root, "vk_warning", "false")
+        CemuGenerator.setSectionConfig(config, xml_root, "fullscreen", "true")
         
         ## Audio Settings - Turn audio on for TV
         CemuGenerator.setSectionConfig(config, xml_root, "Audio", "")
@@ -103,15 +102,12 @@ class CemuGenerator(Generator):
         graphic_root = CemuGenerator.getRoot(config, "Graphic")
 
         if system.isOptSet("gfxbackend"):
-            if system.config["gfxbackend"] == "OpenGL":
-                CemuGenerator.setSectionConfig(config, graphic_root, "api", "0") #OpenGL
-            else:
+            if system.config["gfxbackend"] == "Vulkan":
                 CemuGenerator.setSectionConfig(config, graphic_root, "api", "1") #Vulkan
+            else:
+                CemuGenerator.setSectionConfig(config, graphic_root, "api", "0") #OpenGL
         else:
-            CemuGenerator.setSectionConfig(config, graphic_root, "api", "0") #OpenGL
-
-        
-        
+            CemuGenerator.setSectionConfig(config, graphic_root, "api", "1") #Vulkan
 
         # save the config file
         xml = open(configFile, "w")

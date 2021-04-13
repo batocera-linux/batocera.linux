@@ -1891,6 +1891,7 @@ flatpak:
   release:
   hardware:
   extensions: [flatpak]
+  group: ports
   emulators:
     flatpak:
       flatpak: { requireAnyOf: [BR2_PACKAGE_FLATPAK] }

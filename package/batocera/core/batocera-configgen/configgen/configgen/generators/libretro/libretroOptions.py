@@ -181,6 +181,11 @@ def generateCoreSettings(coreSettings, system, rom):
             coreSettings.save('puae_video_resolution', system.config['video_resolution'])
         else:
             coreSettings.save('puae_video_resolution', '"hires"')
+        # Zoom Mode    
+        if system.isOptSet('zoom_mode') and system.config['zoom_mode'] != 'automatic':
+            coreSettings.save('puae_zoom_mode', system.config['zoom_mode'])
+        else:
+            coreSettings.save('puae_zoom_mode', '"auto"')
         # Frameskip
         if system.isOptSet('gfx_framerate'):
             coreSettings.save('puae_gfx_framerate', system.config['gfx_framerate'])
@@ -198,11 +203,6 @@ def generateCoreSettings(coreSettings, system, rom):
                 coreSettings.save('puae_floppy_speed', system.config['puae_floppy_speed'])
             else:
                 coreSettings.save('puae_floppy_speed', '"100"')
-            # Zoom Mode    
-            if system.isOptSet('zoom_mode'):
-                coreSettings.save('puae_zoom_mode', system.config['zoom_mode'])
-            else:
-                coreSettings.save('puae_zoom_mode', '"none"')
             # 2P Gamepad Mapping (Keyrah)
             if system.isOptSet('keyrah_mapping'):
                 coreSettings.save('puae_keyrah_keypad_mappings', system.config['keyrah_mapping'])
@@ -721,18 +721,26 @@ def generateCoreSettings(coreSettings, system, rom):
             coreSettings.save('gambatte_gb_bootloader', system.config['gb_bootloader'])
         else:
             coreSettings.save('gambatte_gb_bootloader', '"enabled"')
-        # GB: Colorisation of GB games
-        # TODO: Update to use new "es_features" system
-        if 'colorization' in system.renderconfig and system.renderconfig['colorization'] != None:
-            coreSettings.save('gambatte_gb_colorization',     '"internal"')
-            coreSettings.save('gambatte_gb_internal_palette', '"' + system.renderconfig['colorization'] + '"')
-        else:
-            coreSettings.save('gambatte_gb_colorization',     '"disabled"')
         # GB / GBC: Interframe Blending (LCD ghosting effects)
-        if system.isOptSet('mix_frames'):
-            coreSettings.save('gambatte_mix_frames', system.config['mix_frames'])
+        if system.isOptSet('gb_mix_frames'):
+            coreSettings.save('gambatte_mix_frames', system.config['gb_mix_frames'])
         else:
             coreSettings.save('gambatte_mix_frames', '"disabled"')
+
+        if (system.name == 'gbc'):
+            # GBC Color Correction
+            if system.isOptSet('gbc_color_correction'):
+                coreSettings.save('gambatte_gbc_color_correction', system.config['gbc_color_correction'])
+            else:
+                coreSettings.save('gambatte_gbc_color_correction', '"disabled"')
+
+        if (system.name == 'gb'):
+            # GB: Colorization of GB games
+            if system.isOptSet('gb_colorization') and system.config['gb_colorization'] != 'none':
+                coreSettings.save('gambatte_gb_colorization',     '"internal"')
+                coreSettings.save('gambatte_gb_internal_palette', '"' + system.config['gb_colorization'] + '"')
+            else:
+                coreSettings.save('gambatte_gb_colorization',     '"Special 1"')
 
     if (system.config['core'] == 'mgba'):
         # Skip BIOS intro
@@ -741,27 +749,29 @@ def generateCoreSettings(coreSettings, system, rom):
         else:
             coreSettings.save('mgba_skip_bios', '"OFF"')
         
-        # GB / GBC: Use Super Game Boy borders
-        if system.isOptSet('sgb_borders') and system.config['sgb_borders'] == "True":
-            coreSettings.save('mgba_sgb_borders', '"ON"')
-        else:
-            coreSettings.save('mgba_sgb_borders', '"OFF"')
-        # GB / GBC: Color Correction
-        if system.isOptSet('color_correction') and system.config['color_correction'] != "False":
-            coreSettings.save('mgba_color_correction', system.config['color_correction'])
-        else:
-            coreSettings.save('mgba_color_correction', '"OFF"')
-        
-        # GBA: Solar sensor level, Boktai 1: The Sun is in Your Hand
-        if system.isOptSet('solar_sensor_level'):
-            coreSettings.save('mgba_solar_sensor_level', system.config['solar_sensor_level'])
-        else:
-            coreSettings.save('mgba_solar_sensor_level', '"0"')
-        # GBA: Frameskip
-        if system.isOptSet('frameskip_mgba'):
-            coreSettings.save('mgba_frameskip', system.config['frameskip_mgba'])
-        else:
-            coreSettings.save('mgba_frameskip', '"0"')
+        if (system.name != 'gba'):
+            # GB / GBC: Use Super Game Boy borders
+            if system.isOptSet('sgb_borders') and system.config['sgb_borders'] == "True":
+                coreSettings.save('mgba_sgb_borders', '"ON"')
+            else:
+                coreSettings.save('mgba_sgb_borders', '"OFF"')
+            # GB / GBC: Color Correction
+            if system.isOptSet('color_correction') and system.config['color_correction'] != "False":
+                coreSettings.save('mgba_color_correction', system.config['color_correction'])
+            else:
+                coreSettings.save('mgba_color_correction', '"OFF"')
+
+        if (system.name == 'gba'):
+            # GBA: Solar sensor level, Boktai 1: The Sun is in Your Hand
+            if system.isOptSet('solar_sensor_level'):
+                coreSettings.save('mgba_solar_sensor_level', system.config['solar_sensor_level'])
+            else:
+                coreSettings.save('mgba_solar_sensor_level', '"0"')
+            # GBA: Frameskip
+            if system.isOptSet('frameskip_mgba'):
+                coreSettings.save('mgba_frameskip', system.config['frameskip_mgba'])
+            else:
+                coreSettings.save('mgba_frameskip', '"0"')
 
     if (system.config['core'] == 'vba-m'):
         # GB / GBC / GBA: Auto select fine hardware mode
@@ -773,45 +783,49 @@ def generateCoreSettings(coreSettings, system, rom):
         else:
             coreSettings.save('vbam_gbHardware', '"gba"')
 
+        if (system.name == 'gb'):
         # GB: Colorisation of GB games
-        if system.isOptSet('palettes'):
-            coreSettings.save('vbam_palettes', '"' + system.config['palettes'] + '"')
-        else:
-            coreSettings.save('vbam_palettes', '"black and white"')
-        # GB / GBC: Use Super Game Boy borders
-        if system.isOptSet('showborders_gb') and system.name == 'gb':
-            coreSettings.save('vbam_showborders', system.config['showborders_gb'])
-            # Force SGB mode, "sgb2" is same
-            coreSettings.save('vbam_gbHardware', '"sgb"')
-        elif system.isOptSet('showborders_gbc') and system.name == 'gbc':
-            coreSettings.save('vbam_showborders', system.config['showborders_gbc'])
-            # Force SGB mode, "sgb2" is same
-            coreSettings.save('vbam_gbHardware', '"sgb"')
-        else:
-            coreSettings.save('vbam_showborders', '"disabled"')
-        # GB / GBC: Color Correction
-        if system.isOptSet('gbcoloroption_gb') and system.name == 'gb':
-            coreSettings.save('vbam_gbcoloroption', system.config['gbcoloroption_gb'])
-        elif system.isOptSet('gbcoloroption_gbc') and system.name == 'gbc':
-            coreSettings.save('vbam_gbcoloroption', system.config['gbcoloroption_gbc'])
-        else:
-            coreSettings.save('vbam_gbcoloroption', '"disabled"')
+            if system.isOptSet('palettes'):
+                coreSettings.save('vbam_palettes', '"' + system.config['palettes'] + '"')
+            else:
+                coreSettings.save('vbam_palettes', '"black and white"')
 
-        # GBA: Solar sensor level, Boktai 1: The Sun is in Your Hand
-        if system.isOptSet('solarsensor'):
-            coreSettings.save('vbam_solarsensor', system.config['solarsensor'])
-        else:
-            coreSettings.save('vbam_solarsensor', '"0"')
-        # GBA: Sensor Sensitivity (Gyroscope) (%)
-        if system.isOptSet('gyro_sensitivity'):
-            coreSettings.save('vbam_gyro_sensitivity', system.config['gyro_sensitivity'])
-        else:
-            coreSettings.save('vbam_gyro_sensitivity', '"10"')
-        # GBA: Sensor Sensitivity (Tilt) (%)
-        if system.isOptSet('tilt_sensitivity'):
-            coreSettings.save('vbam_tilt_sensitivity', system.config['tilt_sensitivity'])
-        else:
-            coreSettings.save('vbam_tilt_sensitivity', '"10"')
+        if (system.name != 'gba'):
+            # GB / GBC: Use Super Game Boy borders
+            if system.isOptSet('showborders_gb') and system.name == 'gb':
+                coreSettings.save('vbam_showborders', system.config['showborders_gb'])
+                # Force SGB mode, "sgb2" is same
+                coreSettings.save('vbam_gbHardware', '"sgb"')
+            elif system.isOptSet('showborders_gbc') and system.name == 'gbc':
+                coreSettings.save('vbam_showborders', system.config['showborders_gbc'])
+                # Force SGB mode, "sgb2" is same
+                coreSettings.save('vbam_gbHardware', '"sgb"')
+            else:
+                coreSettings.save('vbam_showborders', '"disabled"')
+            # GB / GBC: Color Correction
+            if system.isOptSet('gbcoloroption_gb') and system.name == 'gb':
+                coreSettings.save('vbam_gbcoloroption', system.config['gbcoloroption_gb'])
+            elif system.isOptSet('gbcoloroption_gbc') and system.name == 'gbc':
+                coreSettings.save('vbam_gbcoloroption', system.config['gbcoloroption_gbc'])
+            else:
+                coreSettings.save('vbam_gbcoloroption', '"disabled"')
+
+        if (system.name == 'gba'):
+            # GBA: Solar sensor level, Boktai 1: The Sun is in Your Hand
+            if system.isOptSet('solarsensor'):
+                coreSettings.save('vbam_solarsensor', system.config['solarsensor'])
+            else:
+                coreSettings.save('vbam_solarsensor', '"0"')
+            # GBA: Sensor Sensitivity (Gyroscope) (%)
+            if system.isOptSet('gyro_sensitivity'):
+                coreSettings.save('vbam_gyro_sensitivity', system.config['gyro_sensitivity'])
+            else:
+                coreSettings.save('vbam_gyro_sensitivity', '"10"')
+            # GBA: Sensor Sensitivity (Tilt) (%)
+            if system.isOptSet('tilt_sensitivity'):
+                coreSettings.save('vbam_tilt_sensitivity', system.config['tilt_sensitivity'])
+            else:
+                coreSettings.save('vbam_tilt_sensitivity', '"10"')
 
     # Nintendo NES / Famicom Disk System
     if (system.config['core'] == 'nestopia'):

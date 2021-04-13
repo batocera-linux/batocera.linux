@@ -42,6 +42,8 @@ libretro:
                             "400/600XL/800 (48K) (OS B)": 400/800 (OS B)
                             "800XL/1200XL/XEGS (64K)":    800XL (64K)
                             "130XE (128K)":               130XE (128K)
+                            "Modern XL/XE (576K)":        Modern XL/XE(576K)
+                            "Modern XL/XE (1088K)":       Modern XL/XE(1088K)
                     atari800_ntscpal:
                         prompt:      VIDEO STANDARD
                         description: Switch frequency and resolution by region
@@ -770,7 +772,7 @@ libretro:
                     "Off":  disabled
                     "On":   enabled
     gambatte:
-      features: [rewind, autosave, latency_reduction, colorization, cheevos]
+      features: [rewind, autosave, latency_reduction, cheevos]
       cfeatures:
             gb_bootloader:
                 prompt:      SHOW BIOS BOOTLOGO
@@ -778,7 +780,7 @@ libretro:
                 choices:
                     "Off":                     disabled
                     "On":                      enabled
-            mix_frames:
+            gb_mix_frames:
                 prompt:      GHOSTING EFFECT
                 description: Simulation of LCD ghosting effects
                 choices:
@@ -787,6 +789,148 @@ libretro:
                     "Simple (Fast)":           mix_fast
                     "LCD Ghosting (Accurate)": lcd_ghosting
                     "LCD Ghosting (Fast)":     lcd_ghosting_fast
+      systems:
+            gbc:
+                cfeatures:
+                    gbc_color_correction:
+                        prompt:      COLOR CORRECTION
+                        description: Adjusts output colors to feel real hardware
+                        choices:
+                            "Off":             disabled
+                            "On":              always
+            gb:
+                cfeatures:
+                    gb_colorization:
+                        prompt:      COLORISATION
+                        description: Set Game Boy palettes to use
+                        choices:
+                            "Off":                              none
+                            "GB - DMG":                         GB - DMG
+                            "GB - Light":                       GB - Light
+                            "GB - Pocket":                      GB - Pocket
+                            "GBC - Blue":                       GBC - Blue
+                            "GBC - Brown":                      GBC - Brown
+                            "GBC - Dark Blue":                  GBC - Dark Blue
+                            "GBC - Dark Brown":                 GBC - Dark Brown
+                            "GBC - Dark Green":                 GBC - Dark Green
+                            "GBC - Grayscale":                  GBC - Grayscale
+                            "GBC - Green":                      GBC - Green
+                            "GBC - Inverted":                   GBC - Inverted
+                            "GBC - Orange":                     GBC - Orange
+                            "GBC - Pastel Mix":                 GBC - Pastel Mix
+                            "GBC - Red":                        GBC - Red
+                            "GBC - Yellow":                     GBC - Yellow
+                            "SGB - 1A":                         SGB - 1A
+                            "SGB - 1B":                         SGB - 1B
+                            "SGB - 1C":                         SGB - 1C
+                            "SGB - 1D":                         SGB - 1D
+                            "SGB - 1E":                         SGB - 1E
+                            "SGB - 1F":                         SGB - 1F
+                            "SGB - 1G":                         SGB - 1G
+                            "SGB - 1H":                         SGB - 1H
+                            "SGB - 2A":                         SGB - 2A
+                            "SGB - 2B":                         SGB - 2B
+                            "SGB - 2C":                         SGB - 2C
+                            "SGB - 2D":                         SGB - 2D
+                            "SGB - 2E":                         SGB - 2E
+                            "SGB - 2F":                         SGB - 2F
+                            "SGB - 2G":                         SGB - 2G
+                            "SGB - 2H":                         SGB - 2H
+                            "SGB - 3A":                         SGB - 3A
+                            "SGB - 3B":                         SGB - 3B
+                            "SGB - 3C":                         SGB - 3C
+                            "SGB - 3D":                         SGB - 3D
+                            "SGB - 3E":                         SGB - 3E
+                            "SGB - 3F":                         SGB - 3F
+                            "SGB - 3G":                         SGB - 3G
+                            "SGB - 3H":                         SGB - 3H
+                            "SGB - 4A":                         SGB - 4A
+                            "SGB - 4B":                         SGB - 4B
+                            "SGB - 4C":                         SGB - 4C
+                            "SGB - 4D":                         SGB - 4D
+                            "SGB - 4E":                         SGB - 4E
+                            "SGB - 4F":                         SGB - 4F
+                            "SGB - 4G":                         SGB - 4G
+                            "SGB - 4H":                         SGB - 4H
+                            "Special 1":                        Special 1
+                            "Special 2":                        Special 2
+                            "Special 3":                        Special 3
+                            "TWB01 - 756 Production":           TWB01 - 756 Production
+                            "TWB02 - AKB48 Pink":               TWB02 - AKB48 Pink
+                            "TWB03 - Angry Volcano":            TWB03 - Angry Volcano
+                            "TWB04 - Anime Expo":               TWB04 - Anime Expo
+                            "TWB05 - Aqours Blue":              TWB05 - Aqours Blue
+                            "TWB06 - Aquatic Iro":              TWB06 - Aquatic Iro
+                            "TWB07 - Bandai Namco":             TWB07 - Bandai Namco
+                            "TWB08 - Blossom Pink":             TWB08 - Blossom Pink
+                            "TWB09 - Bubbles Blue":             TWB09 - Bubbles Blue
+                            "TWB10 - Builder Yellow":           TWB10 - Builder Yellow
+                            "TWB11 - Buttercup Green":          TWB11 - Buttercup Green
+                            "TWB12 - Camouflage":               TWB12 - Camouflage
+                            "TWB13 - Cardcaptor Pink":          TWB13 - Cardcaptor Pink
+                            "TWB14 - Christmas":                TWB14 - Christmas
+                            "TWB15 - Crunchyroll Orange":       TWB15 - Crunchyroll Orange
+                            "TWB16 - Digivice":                 TWB16 - Digivice
+                            "TWB17 - Do The Dew":               TWB17 - Do The Dew
+                            "TWB18 - Eevee Brown":              TWB18 - Eevee Brown
+                            "TWB19 - Fruity Orange":            TWB19 - Fruity Orange
+                            "TWB20 - Game.com":                 TWB20 - Game.com
+                            "TWB21 - Game Grump Orange":        TWB21 - Game Grump Orange
+                            "TWB22 - GameKing":                 TWB22 - GameKing
+                            "TWB23 - Game Master":              TWB23 - Game Master
+                            "TWB24 - Ghostly Aoi":              TWB24 - Ghostly Aoi
+                            "TWB25 - Golden Wild":              TWB25 - Golden Wild
+                            "TWB26 - Green Banana":             TWB26 - Green Banana
+                            "TWB27 - Greenscale":               TWB27 - Greenscale
+                            "TWB28 - Halloween":                TWB28 - Halloween
+                            "TWB29 - Hero Yellow":              TWB29 - Hero Yellow
+                            "TWB30 - Hokage Orange":            TWB30 - Hokage Orange
+                            "TWB31 - Labo Fawn":                TWB31 - Labo Fawn
+                            "TWB32 - Legendary Super Saiyan":   TWB32 - Legendary Super Saiyan
+                            "TWB33 - Lemon Lime Green":         TWB33 - Lemon Lime Green
+                            "TWB34 - Lime Midori":              TWB34 - Lime Midori
+                            "TWB35 - Mania Plus Green":         TWB35 - Mania Plus Green
+                            "TWB36 - Microvision":              TWB36 - Microvision
+                            "TWB37 - Million Live Gold":        TWB37 - Million Live Gold
+                            "TWB38 - Miraitowa Blue":           TWB38 - Miraitowa Blue
+                            "TWB39 - NASCAR":                   TWB39 - NASCAR
+                            "TWB40 - Neo Geo Pocket":           TWB40 - Neo Geo Pocket
+                            "TWB41 - Neon Blue":                TWB41 - Neon Blue
+                            "TWB42 - Neon Green":               TWB42 - Neon Green
+                            "TWB43 - Neon Pink":                TWB43 - Neon Pink
+                            "TWB44 - Neon Red":                 TWB44 - Neon Red
+                            "TWB45 - Neon Yellow":              TWB45 - Neon Yellow
+                            "TWB46 - Nick Orange":              TWB46 - Nick Orange
+                            "TWB47 - Nijigasaki Orange":        TWB47 - Nijigasaki Orange
+                            "TWB48 - Odyssey Gold":             TWB48 - Odyssey Gold
+                            "TWB49 - Patrick Star Pink":        TWB49 - Patrick Star Pink
+                            "TWB50 - Pikachu Yellow":           TWB50 - Pikachu Yellow
+                            "TWB51 - Pocket Tales":             TWB51 - Pocket Tales
+                            "TWB52 - Pokemon mini":             TWB52 - Pokemon mini
+                            "TWB53 - Pretty Guardian Gold":     TWB53 - Pretty Guardian Gold
+                            "TWB54 - S.E.E.S. Blue":            TWB54 - S.E.E.S. Blue
+                            "TWB55 - Saint Snow Red":           TWB55 - Saint Snow Red
+                            "TWB56 - Scooby-Doo Mystery":       TWB56 - Scooby-Doo Mystery
+                            "TWB57 - Shiny Sky Blue":           TWB57 - Shiny Sky Blue
+                            "TWB58 - Sidem Green":              TWB58 - Sidem Green
+                            "TWB59 - Slime Blue":               TWB59 - Slime Blue
+                            "TWB60 - Spongebob Yellow":         TWB60 - Spongebob Yellow
+                            "TWB61 - Stone Orange":             TWB61 - Stone Orange
+                            "TWB62 - Straw Hat Red":            TWB62 - Straw Hat Red
+                            "TWB63 - Superball Ivory":          TWB63 - Superball Ivory
+                            "TWB64 - Super Saiyan Blue":        TWB64 - Super Saiyan Blue
+                            "TWB65 - Super Saiyan Rose":        TWB65 - Super Saiyan Rose
+                            "TWB66 - Supervision":              TWB66 - Supervision
+                            "TWB67 - Survey Corps Brown":       TWB67 - Survey Corps Brown
+                            "TWB68 - Tea Midori":               TWB68 - Tea Midori
+                            "TWB69 - TI-83":                    TWB69 - TI-83
+                            "TWB70 - Tokyo Midtown":            TWB70 - Tokyo Midtown
+                            "TWB71 - Travel Wood":              TWB71 - Travel Wood
+                            "TWB72 - Virtual Boy":              TWB72 - Virtual Boy
+                            "TWB73 - VMU":                      TWB73 - VMU
+                            "TWB74 - Wisteria Murasaki":        TWB74 - Wisteria Murasaki
+                            "TWB75 - WonderSwan":               TWB75 - WonderSwan
+                            "TWB76 - Yellow Banana":            TWB76 - Yellow Banana
     genesisplusgx:
       features: [netplay, rewind, autosave, latency_reduction, cheevos]
       cfeatures:
@@ -1117,7 +1261,7 @@ libretro:
                     "Full":                         full
                     "DMA Only (Slightly Faster)":   dma
             multitap_mednafen:
-                prompt:      ENABLE MULTITAP
+                prompt:      MULTITAP
                 description: Allowing 5-8 player support in games
                 choices:
                     "Off":              disabled
@@ -1726,7 +1870,7 @@ libretro:
                     "On":               enabled
                     "On (Speed hack)":  enabled_with_speedhack
             multitap_pcsx:
-                prompt:      ENABLE MULTITAP
+                prompt:      MULTITAP
                 description: Allowing 5-8 player support in games
                 choices:
                     "Off":              disabled
@@ -1839,6 +1983,7 @@ libretro:
                     "A1200 (2MB Chip + 8MB Fast)":     A1200
                     "A4000/040 (2MB Chip + 8MB Fast)": A4040
                     "CDTV (1MB Chip)":                 CDTV
+                    "CD32 Default (2MB Chip)":         CD32
                     "CD32 (2MB Chip + 8MB Fast)":      CD32FR
             cpu_compatibility:
                 prompt:      CPU COMPATIBILITY
@@ -1893,9 +2038,22 @@ libretro:
                 prompt:      VIDEO RESOLUTION
                 description: Increase video to Hi Resolution
                 choices:
-                    "360p":       lores
-                    "720p":       hires
-                    "1440p":      superhires
+                    "Low 360p":         lores
+                    "High 720p":        hires
+                    "Super-high 1440p": superhires
+            zoom_mode:
+                prompt:      ZOOM MODE
+                description: Crops the borders to fit various host screens
+                choices:
+                    "Off":            none
+                    "Autofit screen": automatic
+                    "minimum":        minimum
+                    "smaller":        smaller
+                    "small":          small
+                    "medium":         medium
+                    "large":          large
+                    "larger":         larger
+                    "maximum":        maximum
             gfx_framerate:
                 prompt:      FRAMESKIP
                 description: Skip frames to improve performance (Smoothless)
@@ -1917,14 +2075,12 @@ libretro:
       systems:
             amiga500:
                 cfeatures:
-                    zoom_mode:
-                        prompt:      ZOOM MODE
-                        description: Crops the borders to fit various host screens
+                    puae_floppy_speed:
+                        prompt:      FLOPPY TURBO SPEED
+                        description: Remove loading but can add possible glitches/crash
                         choices:
-                            "Off":    none
-                            "medium": medium
-                            "large":  large
-                            "larger": larger
+                            "Off":    100
+                            "On":     0
                     keyrah_mapping:
                         prompt:      2P GAMEPAD MAPPING (KEYRAH)
                         description: Keypad to joyport mappings for 2 players
@@ -1957,14 +2113,6 @@ libretro:
                         choices:
                             "Off":    100
                             "On":     0
-                    zoom_mode:
-                        prompt:      ZOOM MODE
-                        description: Crops the borders to fit various host screens
-                        choices:
-                            "Off":    none
-                            "medium": medium
-                            "large":  large
-                            "larger": larger
                     keyrah_mapping:
                         prompt:      2P GAMEPAD MAPPING (KEYRAH)
                         description: Keypad to joyport mappings for 2 players
@@ -2295,7 +2443,7 @@ libretro:
                     "160fps":     160fps
             tyrquake_rumble:
                 prompt:      RUMBLE
-                description: Enables joypad rumble
+                description: Enables joypad rumble (vibration)
                 choices:
                     "Off":        disabled
                     "On":         enabled
@@ -2597,7 +2745,7 @@ libretro:
                     "1080p":    1080p
                     "4k":       4k
             multitap_yabasanshiro:
-                prompt:      ENABLE MULTITAP
+                prompt:      MULTITAP
                 description: Allowing 7-12 player support in games
                 choices:
                     "Off":      disabled
@@ -2729,7 +2877,7 @@ dolphin:
                 "Off": 0
                 "On":  1
         rumble:
-            prompt:      ENABLE RUMBLE
+            prompt:      RUMBLE
             description: To use vibration on games with Rumble mode
             choices:
                 "Off": 0
@@ -2759,15 +2907,152 @@ dosbox-x:
   features: [ratio, padtokeyboard]
 
 duckstation:
-  features: [ratio, fullboot, internal_resolution]
+  features: [videomode, ratio]
   cfeatures:
+        duckstation_rewind:
+            prompt:      REWIND
+            description: Warning, this feature use a lot of RAM & VRAM
+            choices:
+                "Off":                                         "false"
+                "5  sec Accurate / 250 Mo RAM + 1200 Mo VRAM": 5
+                "10 sec Accurate / 500 Mo RAM + 2400 Mo VRAM": 10
+                "15 sec / Total 135 Mo RAM (Small boards)":    15
+                "30 sec / Total 270 Mo RAM (Middle boards)":   30
+                "60 sec / 300 Mo RAM + 240 Mo VRAM":           60
+                "90 sec / 450 Mo RAM + 360 Mo VRAM":           90
+                "120 sec / 600 Mo RAM + 480 Mo VRAM":          120
         gfxbackend:
             archs_include: [x86, x86_64, rpi4, odroidgoa]
             prompt:      GRAPHICS BACKEND
             description: Choose your graphics rendering
             choices:
-                "OpenGL": OpenGL
-                "Vulkan": Vulkan
+                "OpenGL":                       OpenGL
+                "Vulkan":                       Vulkan
+        duckstation_threadedpresentation:
+            prompt:      VULKAN THREADED
+            description: Can mesurably improve performance if Vsync disabled
+            choices:
+                "Off":                          0
+                "On":                           1
+        duckstation_vsync:
+            prompt:      VSYNC
+            description: Fix the heavy screen tearing in games (heavy CPU)
+            choices:
+                "Off":                          0
+                "On":                           1
+        duckstation_frameskip:
+            prompt:      FRAME SKIP
+            description: Skip frames to improve performance (Smoothless)
+            choices:
+                "Off":                          0
+                "On":                           1
+        duckstation_PatchFastBoot:
+            prompt:      SHOW BIOS BOOTLOGO
+            description: Show BIOS animation when starting content
+            choices:
+                "Off":                          1
+                "On":                           0
+        duckstation_resolution_scale:
+            prompt:      VIDEO RESOLUTION
+            description: Improve the fidelity of 3D models (unaffect 2D)
+            choices:
+                "1x(native)":                   1
+                "2x":                           2
+                "3x/720p":                      3
+                "4x":                           4
+                "5x/1080p":                     5
+                "6x/1440p":                     6
+                "7x":                           7
+                "8x":                           8
+                "9x/4K":                        9
+                "10x":                          10
+                "11x":                          11
+                "12x":                          12
+                "13x":                          13
+                "14x":                          14
+                "15x":                          15
+                "16x":                          16
+        duckstation_antialiasing:
+            prompt:      ANTI-ALIASING (MSAA/SSAA)
+            description: Smooth out jagged edges on 3D objetcs polygons
+            choices:
+                "Off":                          1
+                "2x msaa":                      2
+                "4x msaa":                      4
+                "8x msaa":                      8
+                "16x msaa":                     16
+                "32x msaa":                     32
+                "2x ssaa":                      2-ssaa
+                "4x ssaa":                      4-ssaa
+                "8x ssaa":                      8-ssaa
+                "16x ssaa":                     16-ssaa
+                "32x ssaa":                     32-ssaa
+        duckstation_texture_filtering:
+            prompt:      TEXTURE FILTERING
+            description: Smooths out textures on 3D objetcs
+            choices:
+                "Nearest-Neighbor":             Nearest
+                "Bilinear":                     Bilinear
+                "Bilinear (no Edge Blending)":  BilinearBinAlpha
+                "JINC2":                        Jinc2
+                "JINC2 (no Edge Blending)":     Jinc2BinAlpha
+                "xBR":                          xBR
+                "xBR (no Edge Blending)":       xBRBinAlpha
+        duckstation_CropMode:
+            prompt:      CROP MODE
+            description: Changes how much of the image is cropped
+            choices:
+                "Off":                          "None"
+                "Only Overscan Area":           "Overscan"
+                "All Borders":                  "Borders"
+        duckstation_widescreen_hack:
+            prompt:      WIDESCREEN HACK
+            description: You must use a 16/9 RATIO and disable BEZEL
+            choices:
+                "Off":                          0
+                "On":                           1
+        duckstation_rumble:
+            prompt:      RUMBLE
+            description: Activate vibration on supported controllers
+            choices:
+                "Off":                          0
+                "On":                           1
+        duckstation_digitalmode:
+            prompt:      DPAD TO JOYSTICK
+            description: Use your Joystick as a Dpad with Analog controllers
+            choices:
+                "Off":                          0
+                "On":                           1
+        duckstation_multitap:
+            prompt:      MULTITAP
+            description: Allowing 5-8 player support in games
+            choices:
+                "Off":                          Disabled
+                "Port 1":                       Port1Only
+                "Port 2":                       Port2Only
+                "Port 1+2":                     BothPorts
+        duckstation_Controller1:
+            prompt:      CONTROLLER 1 TYPE
+            description: Use DualShock type for games with Rumble mode
+            choices:
+                "None":                          None
+                "Digital Controller":            DigitalController
+                "Analog Controller (DualShock)": AnalogController
+                "Analog Joystick":               AnalogJoystick
+                "Namco GunCon (Rumble)":         NamcoGunCon
+                "PlayStation Mouse":             PlayStationMouse
+                "NeGcon (Rumble)":               NeGcon
+        duckstation_Controller2:
+            prompt:      CONTROLLER 2 TYPE
+            description: Use DualShock type for games with Rumble mode
+            choices:
+                "None":                          None
+                "Digital Controller":            DigitalController
+                "Analog Controller (DualShock)": AnalogController
+                "Analog Joystick":               AnalogJoystick
+                "Namco GunCon (Rumble)":         NamcoGunCon
+                "PlayStation Mouse":             PlayStationMouse
+                "NeGcon (Rumble)":               NeGcon
 
 flycast:
   features: [ratio]
@@ -2923,8 +3208,8 @@ pcsx2:
   features: [ratio, fullboot, internal_resolution]
   cfeatures:
         multitap:
-            prompt:      ENABLE MULTITAP
-            description: Allowing up to 8 players support in games
+            prompt:      MULTITAP
+            description: Allowing 5-8 player support in games
             choices:
                 "Off":      disabled
                 "Port1":    port1
