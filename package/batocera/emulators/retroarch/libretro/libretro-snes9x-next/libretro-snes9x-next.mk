@@ -26,6 +26,10 @@ ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_S812),y)
         LIBRETRO_SNES9X_NEXT_PLATFORM = armv cortexa9 neon hardfloat
 endif
 
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_PC),y)
+        LIBRETRO_SNES9X_NEXT_PLATFORM = classic_armv7_a7
+endif
+
 define LIBRETRO_SNES9X_NEXT_BUILD_CMDS
 	$(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" -C $(@D)/ -f Makefile.libretro platform="$(LIBRETRO_SNES9X_NEXT_PLATFORM)"
 endef
