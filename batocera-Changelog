@@ -7,10 +7,13 @@
 	* add: mame standalone bezels (standard mame bezels are to put in /userdata/decorations, or thebezelproject works too)
 	* add: libretro shaders for Vulkan (and fix LR-Mupen64plus on OpenGL)
 	* add: gamecube adaptator support
-	* es: add battery indicator
+	* add: add standalone emulators options in es
+        - mupen64plus (n64)
+        - duckstation (psx)
+	* es:  add battery indicator
 	* bump: python to 3
 	* bump: kodi to 19
-        * bump: GCC compiler to 10.2
+    * bump: GCC compiler to 10.2
 	* bump: Flycast
 	* bump: Daphne (Hypseus+Singe) to 2.2.8
 	* bump: SwitchRes tool
@@ -30,6 +33,15 @@
 	* bump: Cemu to 1.22.10b
 	* bump: Retroarch to v1.9.1
 	* bump: libretro cores
+	* bump: libretro 1.9.1
+	* fix:  libretro emulators Options in es
+        - PUAE (Amiga)
+        - Gambatte (gb)
+	* fix:  standalone emulators Options in es
+        - Dolpin (Wii & GC)
+        - Pcsx2 (PS2)
+        - Ppspp (PSP)
+        - Cemu (WiiU)
 
 2021/03/06 - batocera.linux 30
         * warning : rpi4 is now running in 64 bits mode.
