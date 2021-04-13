@@ -436,7 +436,8 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
         retroarchConfig['rgui_aspect_ratio_lock'] = '3'
     else:
         retroarchConfig['video_font_size'] = '32'
-        retroarchConfig['menu_driver'] = 'ozone'
+        # don't force any so that the user can choose
+        #retroarchConfig['menu_driver'] = 'ozone'
         # force the assets directory while it was wrong in some beta versions
         retroarchConfig['assets_directory'] = '/usr/share/libretro/assets'
         retroarchConfig['width']  = gameResolution["width"]  # default value
