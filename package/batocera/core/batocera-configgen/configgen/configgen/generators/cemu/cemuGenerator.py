@@ -92,7 +92,7 @@ class CemuGenerator(Generator):
         CemuGenerator.setSectionConfig(config, xml_root, "fullscreen", "true")
 
         # Language
-        CemuGenerator.setSectionConfig(config, xml_root, "console_language", str(getGameCubeLangFromEnvironment()))
+        CemuGenerator.setSectionConfig(config, xml_root, "console_language", str(getCemuLangFromEnvironment()))
 
         ## [GAME PATH]
         CemuGenerator.setSectionConfig(config, xml_root, "GamePaths", "")
@@ -135,14 +135,18 @@ class CemuGenerator(Generator):
         overlay_root = CemuGenerator.getRoot(config, "Overlay")
 
         # Display FPS / CPU / GPU / RAM
-        CemuGenerator.setSectionConfig(config, overlay_root, "FPS",       "true")
-        CemuGenerator.setSectionConfig(config, overlay_root, "CPUUsage",  "true")
-        CemuGenerator.setSectionConfig(config, overlay_root, "RAMUsage",  "true")
-        CemuGenerator.setSectionConfig(config, overlay_root, "VRAMUsage", "true")
         if system.isOptSet('showFPS') and system.getOptBoolean('showFPS') == True:
             CemuGenerator.setSectionConfig(config, overlay_root, "Position", "1")
+            CemuGenerator.setSectionConfig(config, overlay_root, "FPS",       "true")
+            CemuGenerator.setSectionConfig(config, overlay_root, "CPUUsage",  "true")
+            CemuGenerator.setSectionConfig(config, overlay_root, "RAMUsage",  "true")
+            CemuGenerator.setSectionConfig(config, overlay_root, "VRAMUsage", "true")
         else:
             CemuGenerator.setSectionConfig(config, overlay_root, "Position", "0")
+            CemuGenerator.setSectionConfig(config, overlay_root, "FPS",       "false")
+            CemuGenerator.setSectionConfig(config, overlay_root, "CPUUsage",  "false")
+            CemuGenerator.setSectionConfig(config, overlay_root, "RAMUsage",  "false")
+            CemuGenerator.setSectionConfig(config, overlay_root, "VRAMUsage", "false")
 
         # Save the config file
         xml = open(configFile, "w")
@@ -180,7 +184,7 @@ class CemuGenerator(Generator):
 
 
 # Lauguage auto setting
-def getGameCubeLangFromEnvironment():
+def getCemuLangFromEnvironment():
     lang = environ['LANG'][:5]
     availableLanguages = { "ja_JP": 0, "en_US": 1, "fr_FR": 2, "de_DE": 3, "it_IT": 4, "es_ES": 5, "zh_CN": 6, "ko_KR": 7, "hu_HU": 8, "pt_PT": 9, "ru_RU": 10, "zh_TW": 11 }
     if lang in availableLanguages:
