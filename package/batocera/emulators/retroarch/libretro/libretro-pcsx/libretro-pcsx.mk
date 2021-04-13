@@ -31,7 +31,7 @@ ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_S812),y)
 endif
 
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_PC),y)
-        LIBRETRO_PCSX_PLATFORM = classic_armv7_a7
+        LIBRETRO_PCSX_PLATFORM = rpi2
 endif
 
 
