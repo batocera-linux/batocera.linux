@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-DEVILUTIONX_VERSION = 1.2.0
+DEVILUTIONX_VERSION = 1.2.1
 DEVILUTIONX_SITE = $(call github,diasurgical,devilutionx,$(DEVILUTIONX_VERSION))
 DEVILUTIONX_DEPENDENCIES = sdl2 sdl2_mixer sdl2_image sdl2_ttf libsodium
 
@@ -21,7 +21,7 @@ DEVILUTIONX_CONF_OPTS += -DPREFILL_PLAYER_NAME=ON
 ifeq ($(findstring .,$(DEVILUTIONX_VERSION)),.)
 DEVILUTIONX_CONF_OPTS += -DVERSION_NUM=$(DEVILUTIONX_VERSION)
 else
-DEVILUTIONX_CONF_OPTS += -DVERSION_NUM=1.2.0 -DVERSION_SUFFIX="-$(DEVILUTIONX_VERSION)"
+DEVILUTIONX_CONF_OPTS += -DVERSION_NUM=1.2.1 -DVERSION_SUFFIX="-$(DEVILUTIONX_VERSION)"
 endif
 
 $(eval $(cmake-package))
