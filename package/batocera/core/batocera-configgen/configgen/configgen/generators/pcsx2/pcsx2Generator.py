@@ -219,6 +219,12 @@ def configureGFX(config_directory, system):
     else:
         pcsx2GFXSettings.save("osd_monitor_enabled", 0)
 
+    # Graphical Backend
+    if system.isOptSet('gfxbackend'):
+        pcsx2GFXSettings.save("Renderer", system.config["gfxbackend"])
+    else:
+        pcsx2GFXSettings.save("Renderer", "12")
+
     # Internal resolution
     if system.isOptSet('internal_resolution'):
         pcsx2GFXSettings.save("upscale_multiplier", system.config["internal_resolution"])
