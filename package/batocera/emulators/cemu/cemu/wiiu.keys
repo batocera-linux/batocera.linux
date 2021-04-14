@@ -1,9 +1,15 @@
 {
-    "actions_player1": [
-	{
-            "trigger": ["hotkey", "start"],
-            "type": "key",
-            "target": [ "KEY_LEFTALT", "KEY_F4" ]
-	}
-    ]
+   "actions_player1": [
+           {
+               "trigger": ["hotkey", "start"],
+                "type": "key", 
+                "target": ["KEY_LEFTALT", "KEY_F4"]
+            },
+            {
+               "trigger": ["l2","r2"],
+                "type": "key", 
+                "target": "KEY_TAB"
+            }
+                           ]
+
 }
