@@ -93,7 +93,7 @@ def generateCoreSettings(coreSettings, system, rom):
         coreSettings.save('handy_rot', '"None"')
 
     # Commodore 64
-    if (system.config['core'] == 'vice_x64'):
+    if (system.config['core'] == 'vice_x64') or (system.config['core'] == 'vice_x64sc'):
         
         # Activate Jiffydos
         coreSettings.save('vice_jiffydos',          '"enabled"')
@@ -105,6 +105,11 @@ def generateCoreSettings(coreSettings, system, rom):
         coreSettings.save('vice_retropad_options',  '"jump"')
         # Select Joystick Type
         coreSettings.save('vice_Controller',        '"joystick"')
+        # Model type
+        if system.isOptSet('c64_model'):
+            coreSettings.save('vice_c64_model', '"' + system.config['c64_model'] + '"')
+        else:
+            coreSettings.save('vice_c64_model', '"C64 PAL auto"')
         # Aspect Ratio
         if system.isOptSet('aspect_ratio'):
             coreSettings.save('vice_aspect_ratio', system.config['aspect_ratio'])

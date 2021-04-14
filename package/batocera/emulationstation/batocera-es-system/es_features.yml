@@ -2601,6 +2601,24 @@ libretro:
     vice_x64:
       features: [rewind, autosave, latency_reduction, padtokeyboard]
       cfeatures:
+            c64_model:
+                prompt:      MODEL TYPE
+                description: 'Automatic' switches region per file path tags
+                choices:
+                    "C64 PAL Automatic":        C64 PAL auto
+                    "C64 NTSC Automatic":       C64 NTSC auto
+                    #"C64C PAL Automatic":       C64C PAL auto
+                    #"C64C NTSC Automatic:       C64C NTSC auto
+                    "C64 PAL":                  C64 PAL
+                    "C64 NTSC":                 C64 NTSC
+                    #"C64C PAL":                 C64C PAL
+                    #"C64C NTSC":                C64C NTSC
+                    #"SX-64 PAL":                C64SX PAL
+                    #"SX-64 NTSC":               C64SX NTSC
+                    #"Educator 64 PAL":          PET64 PAL
+                    #"Educator 64 NTSC":         PET64 NTSC
+                    #"C64 Games System PAL":     C64 GS PAL
+                    "C64 Japanese NTSC":        C64 JAP NTSC
             external_palette:
                 prompt:      EXTERNAL PALETTE
                 description: Choose the most accurate colors
@@ -2651,6 +2669,24 @@ libretro:
     vice_x64sc:
       features: [rewind, autosave, latency_reduction, padtokeyboard]
       cfeatures:
+            c64_model:
+                prompt:      COMPUTER MODEL
+                description: 'Automatic' switches region per file path tags
+                choices:
+                    "C64 PAL Automatic":        C64 PAL auto
+                    "C64 NTSC Automatic":       C64 NTSC auto
+                    #"C64C PAL Automatic":       C64C PAL auto
+                    #"C64C NTSC Automatic:       C64C NTSC auto
+                    "C64 PAL":                  C64 PAL
+                    "C64 NTSC":                 C64 NTSC
+                    #"C64C PAL":                 C64C PAL
+                    #"C64C NTSC":                C64C NTSC
+                    #"SX-64 PAL":                C64SX PAL
+                    #"SX-64 NTSC":               C64SX NTSC
+                    #"Educator 64 PAL":          PET64 PAL
+                    #"Educator 64 NTSC":         PET64 NTSC
+                    #"C64 Games System PAL":     C64 GS PAL
+                    "C64 Japanese NTSC":        C64 JAP NTSC
             external_palette:
                 prompt:      EXTERNAL PALETTE
                 description: Choose the most accurate colors
