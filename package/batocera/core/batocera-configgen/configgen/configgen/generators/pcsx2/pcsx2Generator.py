@@ -16,7 +16,7 @@ class Pcsx2Generator(Generator):
         isAVX2 = checkAvx2()
         sseLib = checkSseLib(isAVX2)
 
-        # config files
+        # Config files
         configureReg(batoceraFiles.pcsx2ConfigDir)
         configureUI(batoceraFiles.pcsx2ConfigDir, batoceraFiles.BIOS, system.config, gameResolution)
         configureVM(batoceraFiles.pcsx2ConfigDir, system)
@@ -28,23 +28,25 @@ class Pcsx2Generator(Generator):
         else:
             commandArray = [batoceraFiles.batoceraBins['pcsx2'], rom]
 
-        # fullscreen
+        # Fullscreen
         commandArray.append("--fullscreen")
 
-        # no gui
+        # No GUI
         commandArray.append("--nogui")
 
-        # fullboot
-        if system.isOptSet('fullboot') and system.getOptBoolean('fullboot') == True:
+        # Fullboot
+        if system.isOptSet('fullboot') and system.config['fullboot'] == '0':
+            print("Fast Boot and skip BIOS")
+        else:
             commandArray.append("--fullboot")
 
-        # plugins
+        # Plugins
         real_pluginsDir = batoceraFiles.pcsx2PluginsDir
         if isAVX2:
             real_pluginsDir = batoceraFiles.pcsx2Avx2PluginsDir
         commandArray.append("--gs="   + real_pluginsDir + "/" + sseLib)
         
-        # arch
+        # Arch
         arch = "x86"
         with open('/usr/share/batocera/batocera.arch', 'r') as content_file:
             arch = content_file.read()
@@ -95,7 +97,7 @@ def configureVM(config_directory, system):
         f.write("[EmuCore]\n")
         f.close()
     
-    # this file looks like a .ini
+    # This file looks like a .ini
     pcsx2VMConfig = configparser.ConfigParser(interpolation=None)
     # To prevent ConfigParser from converting to lower case
     pcsx2VMConfig.optionxform = str   
@@ -103,23 +105,33 @@ def configureVM(config_directory, system):
     if os.path.isfile(configFileName):  
         pcsx2VMConfig.read(configFileName)
     
+    ## [EMUCORE/GS]
     if not pcsx2VMConfig.has_section("EmuCore/GS"):
-        #Some defaults needed on first run 
         pcsx2VMConfig.add_section("EmuCore/GS")
-        pcsx2VMConfig.set("EmuCore/GS","VsyncQueueSize", "2")
-        pcsx2VMConfig.set("EmuCore/GS","FrameLimitEnable", "1")
-        pcsx2VMConfig.set("EmuCore/GS","SynchronousMTGS", "disabled")
-        pcsx2VMConfig.set("EmuCore/GS","FrameSkipEnable", "disabled")
-        pcsx2VMConfig.set("EmuCore/GS","LimitScalar", "1.00")
-        pcsx2VMConfig.set("EmuCore/GS","FramerateNTSC", "59.94")
-        pcsx2VMConfig.set("EmuCore/GS","FrameratePAL", "50")
-        pcsx2VMConfig.set("EmuCore/GS","FramesToDraw", "2")
-        pcsx2VMConfig.set("EmuCore/GS","FramesToSkip", "2")
 
+    # Some defaults needed on first run 
+    pcsx2VMConfig.set("EmuCore/GS","VsyncQueueSize", "2")
+    pcsx2VMConfig.set("EmuCore/GS","FrameLimitEnable", "1")
+    pcsx2VMConfig.set("EmuCore/GS","SynchronousMTGS", "disabled")
+    pcsx2VMConfig.set("EmuCore/GS","FrameSkipEnable", "disabled")
+    pcsx2VMConfig.set("EmuCore/GS","LimitScalar", "1.00")
+    pcsx2VMConfig.set("EmuCore/GS","FramerateNTSC", "59.94")
+    pcsx2VMConfig.set("EmuCore/GS","FrameratePAL", "50")
+    pcsx2VMConfig.set("EmuCore/GS","FramesToDraw", "2")
+    pcsx2VMConfig.set("EmuCore/GS","FramesToSkip", "2")
+
+    # Vsync
+    if system.isOptSet('vsync'):
+        pcsx2VMConfig.set("EmuCore/GS","VsyncEnable", system.config["vsync"])
+    else:
+        pcsx2VMConfig.set("EmuCore/GS","VsyncEnable", "1")    
+
+
+    ## [EMUCORE]
     if not pcsx2VMConfig.has_section("EmuCore"):
         pcsx2VMConfig.add_section("EmuCore")
 
-    # enable multitap
+    # Enable Multitap
     if system.isOptSet('multitap') and system.config['multitap'] != 'disabled':
         if system.config['multitap'] == 'port1':
             pcsx2VMConfig.set("EmuCore","MultitapPort0_Enabled", "enabled")
@@ -134,62 +146,108 @@ def configureVM(config_directory, system):
         pcsx2VMConfig.set("EmuCore","MultitapPort0_Enabled", "disabled")
         pcsx2VMConfig.set("EmuCore","MultitapPort1_Enabled", "disabled")
 
-    if system.isOptSet('vsync'):
-        pcsx2VMConfig.set("EmuCore/GS","VsyncEnable", system.config["vsync"])
+    # Enable Cheats
+    if system.isOptSet('EmuCore_EnableCheats'):
+        pcsx2VMConfig.set("EmuCore","EnableCheats", system.config["EmuCore_EnableCheats"])
     else:
-        pcsx2VMConfig.set("EmuCore/GS","VsyncEnable", "1")    
+        pcsx2VMConfig.set("EmuCore","EnableCheats", "disabled")
+
+    # Enabme Widescreen Patches
+    if system.isOptSet('EmuCore_EnableWideScreenPatches'):
+        pcsx2VMConfig.set("EmuCore","EnableWideScreenPatches", system.config["EmuCore_EnableWideScreenPatches"])
+    else:
+        pcsx2VMConfig.set("EmuCore","EnableWideScreenPatches", "disabled")
+
+    # Automatic Gamefixes
+    if system.isOptSet('EmuCore_EnablePatches'):
+        pcsx2VMConfig.set("EmuCore","EnablePatches", system.config["EmuCore_EnablePatches"])
+    else:
+        pcsx2VMConfig.set("EmuCore","EnablePatches", "enabled")
+
+
+    ## [EMUCORE/GAMEFIXES]
+    if not pcsx2VMConfig.has_section("EmuCore/Gamefixes"):
+        pcsx2VMConfig.add_section("EmuCore/Gamefixes")
+
+    # Manual Gamefixes
+    if system.isOptSet('EmuCore_ManualPatches') and system.config["EmuCore_ManualPatches"] != 'disabled':
+        pcsx2VMConfig.set("EmuCore/Gamefixes",system.config["EmuCore_ManualPatches"], "enabled")
+    else:
+        pcsx2VMConfig.set("EmuCore/Gamefixes","VuAddSubHack",           "disabled")
+        pcsx2VMConfig.set("EmuCore/Gamefixes","FpuCompareHack",         "disabled")
+        pcsx2VMConfig.set("EmuCore/Gamefixes","FpuMulHack",             "disabled")
+        pcsx2VMConfig.set("EmuCore/Gamefixes","FpuNegDivHack",          "disabled")
+        pcsx2VMConfig.set("EmuCore/Gamefixes","XgKickHack",             "disabled")
+        pcsx2VMConfig.set("EmuCore/Gamefixes","IPUWaitHack",            "disabled")
+        pcsx2VMConfig.set("EmuCore/Gamefixes","EETimingHack",           "disabled")
+        pcsx2VMConfig.set("EmuCore/Gamefixes","SkipMPEGHack",           "disabled")
+        pcsx2VMConfig.set("EmuCore/Gamefixes","OPHFlagHack",            "disabled")
+        pcsx2VMConfig.set("EmuCore/Gamefixes","DMABusyHack",            "disabled")
+        pcsx2VMConfig.set("EmuCore/Gamefixes","VIFFIFOHack",            "disabled")
+        pcsx2VMConfig.set("EmuCore/Gamefixes","VIF1StallHack",          "disabled")
+        pcsx2VMConfig.set("EmuCore/Gamefixes","GIFFIFOHack",            "disabled")
+        pcsx2VMConfig.set("EmuCore/Gamefixes","GoemonTlbHack",          "disabled")
+        pcsx2VMConfig.set("EmuCore/Gamefixes","ScarfaceIbit",           "disabled")
+        pcsx2VMConfig.set("EmuCore/Gamefixes","CrashTagTeamRacingIbit", "disabled")
+        pcsx2VMConfig.set("EmuCore/Gamefixes","VU0KickstartHack",       "disabled")
+
 
     with open(configFileName, 'w') as configfile:
         pcsx2VMConfig.write(configfile)
-        
-        
+
+
 def configureGFX(config_directory, system):
     configFileName = "{}/{}".format(config_directory + "/inis", "GSdx.ini")
     if not os.path.exists(config_directory):
         os.makedirs(config_directory + "/inis")
     
-    #create the config file if it doesn't exist
+    # Create the config file if it doesn't exist
     if not os.path.exists(configFileName):
         f = open(configFileName, "w")
         f.write("osd_fontname = /usr/share/fonts/dejavu/DejaVuSans.ttf\n")
         f.close()
-        
     
     # Update settings
     pcsx2GFXSettings = UnixSettings(configFileName, separator=' ')
     pcsx2GFXSettings.save("osd_fontname", "/usr/share/fonts/dejavu/DejaVuSans.ttf")
     pcsx2GFXSettings.save("osd_indicator_enabled", 1)
     pcsx2GFXSettings.save("UserHacks", 1)
-    #showFPS
+
+    # ShowFPS
     if system.isOptSet('showFPS') and system.getOptBoolean('showFPS'):
         pcsx2GFXSettings.save("osd_monitor_enabled", 1)
     else:
         pcsx2GFXSettings.save("osd_monitor_enabled", 0)
-    #internal resolution
-    if system.isOptSet('internalresolution'):
-        pcsx2GFXSettings.save("upscale_multiplier", system.config["internalresolution"])
+
+    # Internal resolution
+    if system.isOptSet('internal_resolution'):
+        pcsx2GFXSettings.save("upscale_multiplier", system.config["internal_resolution"])
     else:
         pcsx2GFXSettings.save("upscale_multiplier", "1")
-    #skipdraw
+
+    # Skipdraw Hack
     if system.isOptSet('skipdraw'):
         pcsx2GFXSettings.save('UserHacks_SkipDraw', system.config['skipdraw'])
     else:
         pcsx2GFXSettings.save('UserHacks_SkipDraw', '0')
-    #align sprite
+
+    # Align sprite Hack
     if system.isOptSet('align_sprite'):
         pcsx2GFXSettings.save('UserHacks_align_sprite_X', system.config['align_sprite'])
     else:
         pcsx2GFXSettings.save('UserHacks_align_sprite_X', '0')
-        
+
+    # Vsync
     if system.isOptSet('vsync'):
         pcsx2GFXSettings.save("vsync", system.config["vsync"])
     else:
         pcsx2GFXSettings.save("vsync", "1")
 
+    # Anisotropic Filtering
     if system.isOptSet('anisotropic_filtering'):
         pcsx2GFXSettings.save("MaxAnisotropy", system.config["anisotropic_filtering"])
     else:
-        pcsx2GFXSettings.save("MaxAnisotropy", "0")    
+        pcsx2GFXSettings.save("MaxAnisotropy", "0")
 
     pcsx2GFXSettings.write()
 
@@ -198,7 +256,7 @@ def configureUI(config_directory, bios_directory, system_config, gameResolution)
     if not os.path.exists(config_directory + "/inis"):
         os.makedirs(config_directory + "/inis")
 
-    # find the first bios
+    # Find the first BIOS
     bios = [ "PS2 Bios 30004R V6 Pal.bin", "scph10000.bin", "scph39001.bin", "SCPH-70004_BIOS_V12_PAL_200.BIN" ]
     biosFound = False
     for bio in bios:
@@ -209,16 +267,17 @@ def configureUI(config_directory, bios_directory, system_config, gameResolution)
     if not biosFound:
         raise Exception("No bios found")
 
+    # Ratio
     resolution = getGfxRatioFromConfig(system_config, gameResolution)
 
-    # this file looks like a .ini, but no, it miss the first section name...
+    # This file looks like a .ini, but no, it miss the first section name...
     iniConfig = configparser.ConfigParser(interpolation=None)
     # To prevent ConfigParser from converting to lower case
     iniConfig.optionxform = str
     if os.path.exists(configFileName):
         try:
             file = io.StringIO()
-            # fake an initial section, because pcsx2 doesn't put one
+            # Fake an initial section, because pcsx2 doesn't put one
             file.write('[NO_SECTION]\n')
             file.write(io.open(configFileName, encoding='utf_8_sig').read())
             file.seek(0, os.SEEK_SET)
@@ -235,13 +294,13 @@ def configureUI(config_directory, bios_directory, system_config, gameResolution)
     iniConfig.set("Filenames",  "BIOS",        biosFile)
     iniConfig.set("GSWindow",   "AspectRatio", resolution)
 
-    # save the ini file
+    # Save the ini file
     if not os.path.exists(os.path.dirname(configFileName)):
         os.makedirs(os.path.dirname(configFileName))
     with open(configFileName, 'w') as configfile:
         iniConfig.write(configfile)
 
-    # remove the first line (the [NO_SECTION])
+    # Remove the first line (the [NO_SECTION])
     with open(configFileName, 'r') as fin:
         data = fin.read().splitlines(True)
     with open(configFileName, 'w') as fout:
@@ -252,7 +311,7 @@ def configureAudio(config_directory):
     if not os.path.exists(config_directory + "/inis"):
         os.makedirs(config_directory + "/inis")
 
-    # keep the custom files
+    # Keep the custom files
     if os.path.exists(configFileName):
         return
 

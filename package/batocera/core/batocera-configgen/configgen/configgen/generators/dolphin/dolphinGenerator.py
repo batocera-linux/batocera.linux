@@ -39,6 +39,10 @@ class DolphinGenerator(Generator):
         if not dolphinSettings.has_section("Analytics"):
             dolphinSettings.add_section("Analytics")
 
+        # Define default games path
+        dolphinSettings.set("General", "ISOPath0", '"/userdata/roms/wii"')
+        dolphinSettings.set("General", "ISOPath1", '"/userdata/roms/gamecube"')
+
         # Draw or not FPS
         if system.isOptSet("showFPS") and system.getOptBoolean("showFPS"):
             dolphinSettings.set("General", "ShowLag",        '"True"')
@@ -81,9 +85,9 @@ class DolphinGenerator(Generator):
         else:
             dolphinSettings.set("Core", "SyncGPU", '"False"')
 
-        # Language (for gamecube at least)
-        dolphinSettings.set("Core", "SelectedLanguage", str(getGameCubeLangFromEnvironment()))
-        dolphinSettings.set("Core", "GameCubeLanguage", str(getGameCubeLangFromEnvironment()))
+        # Language
+        dolphinSettings.set("Core", "SelectedLanguage", str(getGameCubeLangFromEnvironment())) # Wii
+        dolphinSettings.set("Core", "GameCubeLanguage", str(getGameCubeLangFromEnvironment())) # GC
 
         # Enable MMU
         if system.isOptSet("enable_mmu") and system.getOptBoolean("enable_mmu"):
@@ -199,13 +203,13 @@ class DolphinGenerator(Generator):
         else:
             dolphinGFXSettings.set("Enhancements", "MaxAnisotropy", '"0"')
 
-		# Anti aliasing
+        # Anti aliasing
         if system.isOptSet('antialiasing'):
             dolphinGFXSettings.set("Settings", "MSAA", system.config["antialiasing"])
         else:
             dolphinGFXSettings.set("Settings", "MSAA", '"0"')
 
-		# Save gfx.ini
+        # Save gfx.ini
         with open(batoceraFiles.dolphinGfxIni, 'w') as configfile:
             dolphinGFXSettings.write(configfile)
 
@@ -221,7 +225,7 @@ class DolphinGenerator(Generator):
 
         return Command.Command(array=commandArray, env={"XDG_CONFIG_HOME":batoceraFiles.CONF, "XDG_DATA_HOME":batoceraFiles.SAVES, "QT_QPA_PLATFORM":"xcb"})
 
-
+# Ratio
 def getGfxRatioFromConfig(config, gameResolution):
     # 2: 4:3 ; 1: 16:9  ; 0: auto
     if "ratio" in config:

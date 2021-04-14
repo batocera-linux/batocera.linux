@@ -1262,7 +1262,7 @@ libretro:
                     "DMA Only (Slightly Faster)":   dma
             multitap_mednafen:
                 prompt:      MULTITAP
-                description: Allowing 5-8 player support in games
+                description: Allows 5 or 8 max players support in games
                 choices:
                     "Off":              disabled
                     "Port 1":           port1
@@ -1871,7 +1871,7 @@ libretro:
                     "On (Speed hack)":  enabled_with_speedhack
             multitap_pcsx:
                 prompt:      MULTITAP
-                description: Allowing 5-8 player support in games
+                description: Allows 5 or 8 max players support in games
                 choices:
                     "Off":              disabled
                     "Port1":            port1
@@ -2767,8 +2767,8 @@ cannonball:
             choices:
                 "Off": 0
                 "On":  1
+
 cemu:
-  features: [emulated_wiimotes]
   cfeatures:
         gfxbackend:
             prompt:      GRAPHICS BACKEND
@@ -2776,15 +2776,40 @@ cemu:
             choices:
                 "OpenGL": OpenGL
                 "Vulkan": Vulkan
+        async:
+            prompt:      ASYNC SHADER
+            description: Speedup shader compilation (Vulkan only)
+            choices:
+                "Off":    0
+                "On":     1
+        emulatedwiimotes:
+            prompt:      EMULATE WIIMOTE
+            description: Use gamepad like Sideway Wiimote, Nunchuk on RStick
+            choices:
+                "Off":    0
+                "On":     1
 
 citra:
-  features: [ratio, rewind, screen_layout]
+  features: [ratio, rewind, ]
+  cfeatures:
+        citra_screen_layout:
+            prompt:      SCREEN LAYOUT
+            description: Allows you to arrange the DS screens
+            choices:
+                "top/bottom":            4-false
+                "bottom/top":            4-true
+                "left/right":            3-false
+                "right/left":            3-true
+                "top only":              0-false
+                "bottom only":           0-true
+                "hybrid top ratio 4":    2-false
+                "hybrid bottom ratio 4": 2-true
 
 daphne:
   features: [ratio, padtokeyboard]
 
 dolphin:
-  features: [ratio, internal_resolution]
+  features: [ratio]
   cfeatures:
         gfxbackend:
             archs_include: [x86, x86_64, rpi4, odroidgoa]
@@ -2799,6 +2824,18 @@ dolphin:
             choices:
                 "Off": 0
                 "On":  1
+        internal_resolution:
+            prompt:      VIDEO RESOLUTION
+            description: Improve the fidelity of 3D models (unaffect 2D)
+            choices:
+                "1x native (640x528)":  1
+                "2x 720p (1280x1056)":  2
+                "3x 1080p (1920x1584)": 3
+                "4x 1440p (2560x2112)": 4
+                "5x (3200x2640)":       5
+                "6x 4K (3840x3168)":    6
+                "7x (4480x3696)":       7
+                "8x 5K (5120x4224)":    8
         anisotropic_filtering:
             prompt:      ANISOTROPIC FILTERING
             description: Enhance the quality with on perspective textures
@@ -2885,11 +2922,16 @@ dolphin:
 
   systems:
     wii:
-        features: [emulated_wiimotes]
         cfeatures:
+            emulatedwiimotes:
+                prompt:      EMULATE WIIMOTE
+                description: Use your gamepad like a vertical Wiimote in game
+                choices:
+                    "Off":                       0
+                    "On":                        1
             controller_mode:
-                prompt:      GAMEPAD CONTROLLER MODE
-                description: Use gamepad with L2 for Shake and more on right stick
+                prompt:      CUSTOMIZE WIIMOTE & GAMEPAD
+                description: Wiimote Sideway, L2 for Shake, Nunchuk on RStick
                 choices:
                     "Off":                       disabled
                     "Classic Controller":        cc
@@ -3025,7 +3067,7 @@ duckstation:
                 "On":                           1
         duckstation_multitap:
             prompt:      MULTITAP
-            description: Allowing 5-8 player support in games
+            description: Allows 5 or 8 max players support in games
             choices:
                 "Off":                          Disabled
                 "Port 1":                       Port1Only
@@ -3205,25 +3247,34 @@ openbor:
                 "Dot Matrix":     11
 
 pcsx2:
-  features: [ratio, fullboot, internal_resolution]
+  features: [ratio]
   cfeatures:
-        multitap:
-            prompt:      MULTITAP
-            description: Allowing 5-8 player support in games
+        fullboot:
+            prompt:      SHOW BIOS BOOTLOGO
+            description: Show BIOS animation when starting content
             choices:
-                "Off":      disabled
-                "Port1":    port1
-                "Port2":    port2
-                "Port1+2":  port12
+                "Off":         0
+                "On":          1
+        internal_resolution:
+            prompt:      VIDEO RESOLUTION
+            description: Improve the fidelity of 3D models (unaffect 2D)
+            choices:
+                "1x 640x480":  1
+                "2x 720p":     2
+                "3x 1080p":    3
+                "4x 1440p 2K": 4
+                "5x 1620p 3K": 5
+                "6x 2160p 4K": 6
+                "7x 2880p 5K": 7
         anisotropic_filtering:
             prompt:      ANISOTROPIC FILTERING
             description: Enhance the quality with on perspective textures
             choices:
-                "Off":      0
-                "2x":       2
-                "4x":       4
-                "8x":       8
-                "16x":      16
+                "Off":         0
+                "2x":          2
+                "4x":          4
+                "8x":          8
+                "16x":         16
         skipdraw:
             prompt:      SKIPDRAW HACK
             description: Skip frames to improve performance (Smoothless)
@@ -3246,21 +3297,124 @@ pcsx2:
             choices:
                 "Off":      0
                 "On":       1
+        EmuCore_EnableCheats:
+            prompt:      GAMES CHEATS
+            description: For cheating in games as with Action Replay
+            choices:
+                "Off":      disabled
+                "On":       enabled
+        EmuCore_EnableWideScreenPatches:
+            prompt:      WIDESCREEN PATCHES
+            description: You must use a 16/9 RATIO and disable BEZEL
+            choices:
+                "Off":      disabled
+                "On":       enabled
+        EmuCore_EnablePatches:
+            prompt:      AUTOMATIC GAMEFIXES
+            description: Selectively use specific tested fixes for games
+            choices:
+                "Off":      disabled
+                "On":       enabled
+        EmuCore_ManualPatches:
+            prompt:      MANUAL GAMEFIXES
+            description: They can cause compatibility or performance issues
+            choices:
+                "Off":                                               disabled
+                "VU Add hack - Fixes Tri-Ace games boot crash":      VuAddSubHack
+                "FPU Compare hack - For Digimon Rumble Arena 2":     FpuCompareHack
+                "FPU Multiply hack - For Tales of Destiny":          FpuMulHack
+                "FPU Negative Div hack - For Gundam Games":          FpuNegDivHack
+                "VU XGkick hack - For Eremental Gerad":              XgKickHack
+                "FFX videos fix - Fixes bad graphics overlay":       IPUWaitHack
+                "EE timing hack - Try if all else fails":            EETimingHack
+                "Skip MPEG hack - Skips videos/FMVs that freezes":   SkipMPEGHack
+                "OPH Flag hack - Try if game freeze on same frame":  OPHFlagHack
+                "Handle DMAC writes when it busy":                   DMABusyHack
+                "Simulate VIF1 FIFO read - Fix slow loading":        VIFFIFOHack
+                "Delay VIF1 Stalls - For SOCOM2 n Spy Hunter":       VIF1StallHack
+                "Enable the GIF FIFO - Wallace and Gromit, Dj Hero": GIFFIFOHack
+                "Preload TLB hack to avoid tlb miss on Goemon":      GoemonTlbHack
+                "VU I bit hack - Scarface The World is Yours":       ScarfaceIbit
+                "VU I bit hack - Crash Tag Team Racing":             CrashTagTeamRacingIbit
+                "VUO Kickstart to avoid sync problems with VU1":     VU0KickstartHack
+        multitap:
+            prompt:      MULTITAP
+            description: Allows 5 or 8 max players support in games
+            choices:
+                "Off":      disabled
+                "Port1":    port1
+                "Port2":    port2
+                "Port1+2":  port12
 
 ppsspp:
-  features: [rewind, ratio, internal_resolution]
+  features: [rewind, ratio]
   cfeatures:
+#        gfxbackend:
+#            archs_include: [x86, x86_64, rpi4, odroidgoa]
+#            prompt:      GRAPHICS BACKEND
+#            description: Choose your graphics rendering
+#            choices:
+#                "OpenGL":               0 (OPENGL)
+#                "Vulkan":               3 (VULKAN)
+        internal_resolution:
+            prompt:      VIDEO RESOLUTION
+            description: Improve the fidelity of 3D models (unaffect 2D)
+            choices:
+                #"Automatic (1:1)":      0
+                "1x 480×272":           1
+                "2x 960x544":           2
+                "3x 720p":              3
+                "4x 1080p":             4
+                "5x 2400x1360":         5
+                "6x 1620p 3K":          6
+                "7x 3360x1904":         7
+                "8x 2160p 4K":          8
+                "9x 4320x2448":         9
+                "10x 4800x2720":        10
         frameskip:
             prompt:      FRAME SKIP
             description: Skip frames to improve performance (Smoothless)
             choices:
-                "Off":        0
-                "Autodetect": automatic
-                "1":          1
-                "2":          2
-                "3":          3
-                "4":          4
-                "5":          5
+                "Off":                  0
+                "Autodetect":           automatic
+                "1":                    1
+                "2":                    2
+                "3":                    3
+                "4":                    4
+                "5":                    5
+        texture_scaling_level:
+            prompt:      TEXTURES UPSCALING (XBRZ)
+            description: Upscaling textures resolution on 3D objetcs
+            choices:
+                "Off":                  1
+                "Automatic":            0
+                "2x":                   2
+                "3x":                   3
+                "4x":                   4
+                "5x":                   5
+        texture_scaling_type:
+            prompt:      TEXTURE ENHANCEMENT (XBRZ)
+            description: Scales up a nearest-neighbor version of the texture
+            choices:
+                "xBRZ":                 0
+                "Hybride":              1
+                "Bicubique":            2
+                "Hybride + Bicubique":  3
+        texture_deposterize:
+            prompt:      TEXTURE DEPOSTERIZE
+            description: Fix the bug that causes bands to appear in textures
+            choices:
+                "Off":                  False
+                "On":                   True
+        anisotropic_filtering:
+            prompt:      ANISOTROPIC FILTERING
+            description: Enhance the quality with on perspective textures
+            choices:
+                "Off":                  0
+                "2x":                   1
+                "4x":                   2
+                "8x":                   3
+                "16x":                  4
 
 reicast:
   features: [ratio]

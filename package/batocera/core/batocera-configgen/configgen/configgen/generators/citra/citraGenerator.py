@@ -18,7 +18,7 @@ class CitraGenerator(Generator):
 
     @staticmethod
     def writeCITRAConfig(citraConfigFile, system, playersControllers):
-        # pads
+        # Pads
         citraButtons = {
             "button_a":      "a",
             "button_b":      "b",
@@ -47,24 +47,30 @@ class CitraGenerator(Generator):
         if os.path.exists(citraConfigFile):
             citraConfig.read(citraConfigFile)
 
-        # layout section
+        ## [LAYOUT]
         if not citraConfig.has_section("Layout"):
             citraConfig.add_section("Layout")
 
-        if system.isOptSet('layout_option'):
-            citraConfig.set("Layout", "custom_layout", "0")
-            citraConfig.set("Layout", "layout_option", system.config['layout_option'])
+        # Screen Layout
+        citraConfig.set("Layout", "custom_layout", "0")
+        if system.isOptSet('citra_screen_layout'):
+            tab = system.config["citra_screen_layout"].split('-')
+            citraConfig.set("Layout", "swap_screen",   tab[1])
+            citraConfig.set("Layout", "layout_option", tab[0])
         else:
-            citraConfig.set("Layout", "custom_layout", "0")
+            citraConfig.set("Layout", "swap_screen",   "false")
             citraConfig.set("Layout", "layout_option", "4")
-        
-        # UI section
+
+
+        ## [UI]
         if not citraConfig.has_section("UI"):
             citraConfig.add_section("UI")
         
+        # Start Fullscreen
         citraConfig.set("UI", "fullscreen", "true")
-        
-        # controls section
+
+
+        ## [CONTROLS]
         if not citraConfig.has_section("Controls"):
             citraConfig.add_section("Controls")
 
@@ -78,7 +84,7 @@ class CitraGenerator(Generator):
 
         for index in playersControllers :
             controller = playersControllers[index]
-            # we only care about player 1
+            # We only care about player 1
             if controller.player != "1":
                 continue
             for x in citraButtons:
@@ -87,7 +93,7 @@ class CitraGenerator(Generator):
                 citraConfig.set("Controls", "profiles\\1\\" + x, '"{}"'.format(CitraGenerator.setAxis(citraAxis[x], controller.guid, controller.inputs)))
             break
 
-        ### update the configuration file
+        ## Update the configuration file
         if not os.path.exists(os.path.dirname(citraConfigFile)):
             os.makedirs(os.path.dirname(citraConfigFile))
         with open(citraConfigFile, 'w') as configfile:
@@ -95,7 +101,7 @@ class CitraGenerator(Generator):
 
     @staticmethod
     def setButton(key, padGuid, padInputs):
-        # it would be better to pass the joystick num instead of the guid because 2 joysticks may have the same guid
+        # It would be better to pass the joystick num instead of the guid because 2 joysticks may have the same guid
         if key in padInputs:
             input = padInputs[key]
 
@@ -104,7 +110,7 @@ class CitraGenerator(Generator):
             elif input.type == "hat":
                 return ("engine:sdl,guid:{},hat:{},direction:{}").format(padGuid, input.id, CitraGenerator.hatdirectionvalue(input.value))
             elif input.type == "axis":
-                # untested, need to configure an axis as button / triggers buttons to be tested too
+                # Untested, need to configure an axis as button / triggers buttons to be tested too
                 return ("engine:sdl,guid:{},axis:{},direction:{},threshold:{}").format(padGuid, input.id, "+", 0.5)
 
     @staticmethod

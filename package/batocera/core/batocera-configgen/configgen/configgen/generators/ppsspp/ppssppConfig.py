@@ -20,17 +20,24 @@ def writePPSSPPConfig(system):
             pass
 
     createPPSSPPConfig(iniConfig, system)
-    # save the ini file
+    # Save the ini file
     if not os.path.exists(os.path.dirname(batoceraFiles.ppssppConfig)):
         os.makedirs(os.path.dirname(batoceraFiles.ppssppConfig))
     with open(batoceraFiles.ppssppConfig, 'w') as configfile:
         iniConfig.write(configfile)
 
 def createPPSSPPConfig(iniConfig, system):
+
+    ## [GRAPHICS]
     if not iniConfig.has_section("Graphics"):
         iniConfig.add_section("Graphics")
-    if not iniConfig.has_section("General"):
-        iniConfig.add_section("General")
+
+    # Graphics Backend : TODO (Not used for now)
+    iniConfig.set("Graphics", "FailedGraphicsBackends", "0 (OPENGL)")
+    if system.isOptSet('gfxbackend'):
+        iniConfig.set("Graphics", "GraphicsBackend", system.config["gfxbackend"])
+    else:
+        iniConfig.set("Graphics", "GraphicsBackend", "0 (OPENGL)")
 
     # Display FPS
     if system.isOptSet('showFPS') and system.getOptBoolean('showFPS') == True:
@@ -41,7 +48,7 @@ def createPPSSPPConfig(iniConfig, system):
     # Frameskip
     iniConfig.set("Graphics", "FrameSkipType", "0") # Use number and not pourcent
     iniConfig.set("Graphics", "AutoFrameSkip", "False")
-    if system.isOptSet("frameskip") and system.config["frameskip"] != 0:
+    if system.isOptSet("frameskip"):
         if system.config["frameskip"] == "automatic":
             iniConfig.set("Graphics", "AutoFrameSkip", "True")
             iniConfig.set("Graphics", "FrameSkip",     "1")
@@ -51,10 +58,36 @@ def createPPSSPPConfig(iniConfig, system):
         iniConfig.set("Graphics", "FrameSkip",     "0")
 
     # Internal Resolution
-    if system.isOptSet('internalresolution'):
-        iniConfig.set("Graphics", "InternalResolution", str(system.config["internalresolution"]))
+    if system.isOptSet('internal_resolution'):
+        iniConfig.set("Graphics", "InternalResolution", str(system.config["internal_resolution"]))
     else:
         iniConfig.set("Graphics", "InternalResolution", "1")
+
+    # Texture Scaling Level
+    if system.isOptSet('texture_scaling_level'):
+        iniConfig.set("Graphics", "TexScalingLevel", system.config["texture_scaling_level"])
+    else:
+        iniConfig.set("Graphics", "TexScalingLevel", "1")
+    # Texture Scaling Type
+    if system.isOptSet('texture_scaling_type'):
+        iniConfig.set("Graphics", "TexScalingType", system.config["texture_scaling_type"])
+    else:
+        iniConfig.set("Graphics", "TexScalingType", "0")
+    # Texture Deposterize
+    if system.isOptSet('texture_deposterize'):
+        iniConfig.set("Graphics", "TexDeposterize", system.config["texture_deposterize"])
+    else:
+        iniConfig.set("Graphics", "TexDeposterize", "True")
+
+    # Anisotropic Filtering
+    if system.isOptSet('anisotropic_filtering'):
+        iniConfig.set("Graphics", "AnisotropyLevel", system.config["anisotropic_filtering"])
+    else:
+        iniConfig.set("Graphics", "AnisotropyLevel", "3")
+
+    ## [GENERAL]
+    if not iniConfig.has_section("General"):
+        iniConfig.add_section("General")
 
     # Rewinding
     if system.isOptSet('rewind') and system.getOptBoolean('rewind') == True:
