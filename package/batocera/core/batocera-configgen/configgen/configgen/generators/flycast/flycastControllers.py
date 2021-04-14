@@ -91,7 +91,7 @@ def generateControllerConfig(controller):
                         code = 16 + 2*int(input.id) # ABS_HAT0X=16
                 else:
                     code = input.code
-                Config.set(section, var, code)
+                Config.set(section, var, str(code))
             else:
                 eslog.log("code not found for key " + input.name + " on pad " + controller.realName + " (please reconfigure your pad)")
 
