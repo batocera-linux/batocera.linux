@@ -3249,6 +3249,12 @@ openbor:
 pcsx2:
   features: [ratio]
   cfeatures:
+        gfxbackend:
+            prompt:      GRAPHICS BACKEND
+            description: Choose your graphics rendering
+            choices:
+                "OpenGL":      12
+                "Software":    13
         fullboot:
             prompt:      SHOW BIOS BOOTLOGO
             description: Show BIOS animation when starting content
