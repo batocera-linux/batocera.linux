@@ -11,23 +11,13 @@ from utils.logger import eslog
 from os import environ
 
 class DuckstationGenerator(Generator):
-   
- 
-    def checkm3u(rom):
-        if lcase(rom).find(".m3u")= 1:
-            fullpath = "/userdata/roms/psx"
-            if rom[0:2] == "./" : #check if it starts with "./" then replace with it's full
-                return rom.replace("./",fullpath + "/" + rom)
-            elif rom[0:1] == "/" : #check if it starts with only a /
-                return fullpath + rom
-            elif rom[0:10] == "/userdata/" : #check if it's already '/userdata/' then OK
-                return rom
-    
+
     def generate(self, system, rom, playersControllers, gameResolution):
-        #Check if M3U and complete if necessary
-        rom = checkm3u(rom) 
-        commandArray = ["duckstation", "-batch", "-fullscreen", "--", rom ]
+        # Rework the path if .m3u
+        rom = rewritetempm3u(rom)
         
+        commandArray = ["duckstation", "-batch", "-fullscreen", "--", rom ]
+
         settings = configparser.ConfigParser(interpolation=None)
         # To prevent ConfigParser from converting to lower case
         settings.optionxform = str
@@ -372,3 +362,25 @@ def getLangFromEnvironment():
     if lang in availableLanguages:
         return availableLanguages[lang]
     return availableLanguages["en_US"]
+
+def rewritetempm3u(rom):
+    extension = os.path.splitext(rom)[1]
+    if extension == ".m3u":
+        fullpath = "/userdata/roms/psx"
+        # create a temp m3u to bypass Duckstation m3u bad pathfile
+        tempm3u = "/tmp/duckstationm3u.m3u"
+        readtempm3u = open(tempm3u, "w")
+        # loop for each line to write them in the tempfile
+        initialm3u = open(rom, "r")
+        for x in initialm3u:
+            if x[0:1] == "/" :                       # for /MGScd1.chd
+                newpath = fullpath + x
+            elif x[0:2] == "./" :                    # for ./MGScd1.chd 
+                newpath = fullpath + "/" + x[2:]
+            else:
+                newpath = fullpath + "/" + x         # for MGScd1.chd
+            with open(tempm3u, 'a') as f1:
+                f1.write(newpath)            
+        return open(tempm3u).readline().rstrip()
+    else:
+        return rom                                   #else return the original rom
