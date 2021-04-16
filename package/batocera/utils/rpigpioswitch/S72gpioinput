@@ -42,7 +42,7 @@ case "$1" in
 		import RPi.GPIO as GPIO
 		GPIO.setmode(GPIO.BCM)
 		GPIO.setwarnings(False)
-		btn_list = range(2,28)
+		btn_list = [*range(2,28)]
 		GPIO.setup(btn_list, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 	_EOF_
     fi
