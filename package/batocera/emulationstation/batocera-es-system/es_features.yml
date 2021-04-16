@@ -2790,7 +2790,7 @@ cemu:
                 "On":     1
 
 citra:
-  features: [ratio, rewind, ]
+  features: [ratio]
   cfeatures:
         citra_screen_layout:
             prompt:      SCREEN LAYOUT
@@ -2800,10 +2800,49 @@ citra:
                 "bottom/top":            4-true
                 "left/right":            3-false
                 "right/left":            3-true
-                "top only":              0-false
-                "bottom only":           0-true
+                "top only":              1-false
+                "bottom only":           1-true
                 "hybrid top ratio 4":    2-false
                 "hybrid bottom ratio 4": 2-true
+        citra_resolution_factor:
+            prompt:      VIDEO RESOLUTION
+            description: Improve the fidelity of 3D models (unaffect 2D)
+            choices:
+                "Native (400x240)":      1
+                "2x (800x480)":          2
+                "3x (1200x720)":         3
+                "4x (1600x960)":         4
+                "5x (2000x1200)":        5
+                "6x (2400x1440)":        6
+                "7x (2800x1680)":        7
+                "8x (3200x1920)":        8
+                "9x (3600x2160)":        9
+                "10x (4000x2400)":       10
+        citra_use_frame_limit:
+            prompt:      FRAME LIMIT
+            description: Disable will help some games, others will run too fast
+            choices:
+                "Off":                   0
+                "On":                    1
+        citra_use_disk_shader_cache:
+            prompt:      DISK SHADER CACHE
+            description: Reduce stutter that happens when building shader
+            choices:
+                "Off":                   0
+                "On":                    1
+        citra_custom_textures:
+            prompt:      CUSTOM TEXTURES
+            description: Permit to use HD Texture Pack, preload use more RAM
+            choices:
+                "Off":                   0
+                "Normal":                1-normal
+                "Preload":               1-preload
+        citra_is_new_3ds:
+            prompt:      IS NEW 3DS
+            description: New 3DS has a faster processor, ZL/ZR and C-Stick
+            choices:
+                "Off":                   0
+                "On":                    1
 
 daphne:
   features: [ratio, padtokeyboard]
