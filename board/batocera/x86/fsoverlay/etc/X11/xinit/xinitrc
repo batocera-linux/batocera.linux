@@ -47,10 +47,13 @@ settings_output="$(/usr/bin/batocera-settings-get global.dpi)"
 
 # set user desired resolution
 # nice workaround for displays which tell X11 to use strange resolutions
-settings_output="$(/usr/bin/batocera-settings-get global.videomode)"
-[ ! -z "${settings_output}" ] && batocera-resolution setMode "${settings_output}"
-
-batocera-resolution minTomaxResolution
+settings_output="$(/usr/bin/batocera-settings-get -f /boot/batocera-boot.conf es.resolution)"
+if [ -z "${settings_output}" ]
+then
+    batocera-resolution minTomaxResolution-secure
+else
+    batocera-resolution setMode "${settings_output}"
+fi
 
 # allow coredumps for ES
 ulimit -H -c unlimited
