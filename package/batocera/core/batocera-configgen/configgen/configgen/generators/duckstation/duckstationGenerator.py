@@ -11,10 +11,23 @@ from utils.logger import eslog
 from os import environ
 
 class DuckstationGenerator(Generator):
-
+   
+ 
+    def checkm3u(rom):
+        if lcase(rom).find(".m3u")= 1:
+            fullpath = "/userdata/roms/psx"
+            if rom[0:2] == "./" : #check if it starts with "./" then replace with it's full
+                return rom.replace("./",fullpath + "/" + rom)
+            elif rom[0:1] == "/" : #check if it starts with only a /
+                return fullpath + rom
+            elif rom[0:10] == "/userdata/" : #check if it's already '/userdata/' then OK
+                return rom
+    
     def generate(self, system, rom, playersControllers, gameResolution):
+        #Check if M3U and complete if necessary
+        rom = checkm3u(rom) 
         commandArray = ["duckstation", "-batch", "-fullscreen", "--", rom ]
-
+        
         settings = configparser.ConfigParser(interpolation=None)
         # To prevent ConfigParser from converting to lower case
         settings.optionxform = str
