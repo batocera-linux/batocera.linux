@@ -11,15 +11,13 @@ fi
 case "$1" in
 	start)
 		enabled="$(/usr/bin/batocera-settings-get system.es.atstartup)"
-		secured="$(/usr/bin/batocera-settings-get system.es.maxresolution)"
-		bootresolution="$(/usr/bin/batocera-settings-get -f "$BOOTCONF" es.maxresolution)"
-		test ! -z "${bootresolution}" && secured="${bootresolution}"
+		bootresolution="$(/usr/bin/batocera-settings-get -f "$BOOTCONF" es.resolution)"
 		if [ "$enabled" != "0" ];then
-			if test "${secured}" = 0 -o -z "${secured}"
+			if test -z "${bootresolution}"
 			then
-			  batocera-resolution minTomaxResolution-secure
+			    batocera-resolution minTomaxResolution-secure
 			else
-			  batocera-resolution minTomaxResolution "${secured}"
+			    batocera-resolution setMode "${bootresolution}"
 			fi
 			settings_lang="$(/usr/bin/batocera-settings-get system.language)"
 			display_rotate="$(/usr/bin/batocera-settings-get display.rotate)"
