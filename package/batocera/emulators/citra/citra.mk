@@ -53,8 +53,13 @@ define CITRA_INSTALL_TARGET_CMDS
 endef
 endif
 
-#evmap config
-mkdir -p $(TARGET_DIR)/usr/share/evmapy
-cp -prn $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/citra/3ds.keys $(TARGET_DIR)/usr/share/evmapy
+define CITRA_EVMAP
+	mkdir -p $(TARGET_DIR)/usr/share/evmapy
+	
+	cp -prn $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/citra/3ds.keys
+		$(TARGET_DIR)/usr/share/evmapy
+endef
+
+CITRA_POST_INSTALL_TARGET_HOOKS = CITRA_EVMAP
 
 $(eval $(cmake-package))
