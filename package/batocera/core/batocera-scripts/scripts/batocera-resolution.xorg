@@ -11,6 +11,43 @@ f_usage() {
     echo "${0} minTomaxResolution-secure" >&2
 }
 
+f_minTomaxResolution() {
+    # minimize resolution because of 4K tv
+    MWIDTH=$(echo "$1"x | tr -d [[:blank:]] | cut -dx -f1) # the final added x is for compatibility with v29
+    MHEIGHT=$(echo "$1"x | tr -d [[:blank:]] | cut -dx -f2)
+    if test -n "$MWIDTH" -a -n "$MHEIGHT" -a "$MWIDTH" != 0 -a "$MHEIGHT" != 0; then
+	MAXWIDTH="$MWIDTH"
+	MAXHEIGHT="$MHEIGHT"
+    else
+	MAXWIDTH=1920
+	MAXHEIGHT=1080
+    fi
+    CURRENT_RESOLUTION=$(xrandr --currentResolution)
+    CURRENTWIDTH=$(echo "${CURRENT_RESOLUTION}" | cut -d x -f 1)
+    CURRENTHEIGHT=$(echo "${CURRENT_RESOLUTION}" | cut -d x -f 2)
+
+    if test "${CURRENTWIDTH}" -le "${MAXWIDTH}" -a "${CURRENTHEIGHT}" -le "${MAXHEIGHT}"
+    then
+	exit 0
+    fi
+
+    # select a new one
+    # select the first one valid
+    # is it the best ? or should we loop to search the first with the same ratio ?
+    xrandr --listModes | grep -vE "\*$" |
+	while read SUGGRESOLUTION SUGGMODE
+	do
+	    SUGGWIDTH=$(echo "${SUGGRESOLUTION}" | cut -d x -f 1)
+	    SUGGHEIGHT=$(echo "${SUGGRESOLUTION}" | cut -d x -f 2)
+	    if test "${SUGGWIDTH}" -le "${MAXWIDTH}" -a "${SUGGHEIGHT}" -le "${MAXHEIGHT}"
+	    then
+		OUTPUT=$(xrandr --listConnectedOutputs | grep -E '\*$' | sed -e s+'*$'++ | head -1)
+		xrandr --output "${OUTPUT}" --mode "${SUGGMODE}"
+		exit 0
+	    fi
+	done
+}
+
 if [ $# -eq 0 ]; then
 	f_usage
 	exit 1
@@ -21,12 +58,21 @@ shift
 
 case "${ACTION}" in
     "listModes")
+	echo "max-1920x1080:maximum 1920x1080"
+	echo "max-640x480:maximum 640x480"
 	xrandr --listModes | sed -e s+'\*$'++ | sed -e s+'^[^ ]* \(.*\)$'+'\1:\1'+
     ;;
     "setMode")
 	MODE=$1
-	OUTPUT=$(xrandr --listConnectedOutputs | grep -E '\*$' | sed -e s+'*$'++ | head -1)
-	xrandr --output "${OUTPUT}" --mode "${MODE}"
+
+	if echo "${MODE}" | grep -qE 'max-' # special max-widthxheight
+	then
+	    SPMODE=$(echo "${MODE}" | sed -e s+"^max-"++)
+	    f_minTomaxResolution "${SPMODE}"
+	else # normal mode
+	    OUTPUT=$(xrandr --listConnectedOutputs | grep -E '\*$' | sed -e s+'*$'++ | head -1)
+	    xrandr --output "${OUTPUT}" --mode "${MODE}"
+	fi
 	;;
     "currentMode")
 	xrandr --listModes | grep -E '\*$' | sed -e s+'\*$'++ | sed -e s+'\*$'++ -e s+'^[^ ]* '++
@@ -60,40 +106,7 @@ case "${ACTION}" in
 	fi
 	;;
     "minTomaxResolution" | "minTomaxResolution-secure")
-	# minimize resolution because of 4K tv
-	MWIDTH=$(echo "$1"x | tr -d [[:blank:]] | cut -dx -f1) # the final added x is for compatibility with v29
-	MHEIGHT=$(echo "$1"x | tr -d [[:blank:]] | cut -dx -f2)
-	if test -n "$MWIDTH" -a -n "$MHEIGHT" -a "$MWIDTH" != 0 -a "$MHEIGHT" != 0; then
-		MAXWIDTH="$MWIDTH"
-		MAXHEIGHT="$MHEIGHT"
-	else
-		MAXWIDTH=1920
-		MAXHEIGHT=1080
-	fi
-	CURRENT_RESOLUTION=$(xrandr --currentResolution)
-	CURRENTWIDTH=$(echo "${CURRENT_RESOLUTION}" | cut -d x -f 1)
-	CURRENTHEIGHT=$(echo "${CURRENT_RESOLUTION}" | cut -d x -f 2)
-
-	if test "${CURRENTWIDTH}" -le "${MAXWIDTH}" -a "${CURRENTHEIGHT}" -le "${MAXHEIGHT}"
-	then
-	    exit 0
-	fi
-
-	# select a new one
-	# select the first one valid
-	# is it the best ? or should we loop to search the first with the same ratio ?
-	xrandr --listModes | grep -vE "\*$" |
-	    while read SUGGRESOLUTION SUGGMODE
-	    do
-		SUGGWIDTH=$(echo "${SUGGRESOLUTION}" | cut -d x -f 1)
-		SUGGHEIGHT=$(echo "${SUGGRESOLUTION}" | cut -d x -f 2)
-		if test "${SUGGWIDTH}" -le "${MAXWIDTH}" -a "${SUGGHEIGHT}" -le "${MAXHEIGHT}"
-		then
-		    OUTPUT=$(xrandr --listConnectedOutputs | grep -E '\*$' | sed -e s+'*$'++ | head -1)
-		    xrandr --output "${OUTPUT}" --mode "${SUGGMODE}"
-		    exit 0
-		fi
-	    done
+	f_minTomaxResolution "$1"
 	;;
     "setDPI")
         xrandr --dpi $1
