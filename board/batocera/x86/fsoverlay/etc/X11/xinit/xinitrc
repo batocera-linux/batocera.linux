@@ -47,8 +47,8 @@ settings_output="$(/usr/bin/batocera-settings-get global.dpi)"
 
 # set user desired resolution
 # nice workaround for displays which tell X11 to use strange resolutions
-settings_output="$(/usr/bin/batocera-settings-get global.videomode)"
-[ ! -z "${settings_output}" ] && batocera-resolution setMode "${settings_output}"
+settings_output="$(/usr/bin/batocera-settings-get -f /boot/batocera-boot.conf es.maxresolution)"
+[ ! -z "${settings_output}" ] && batocera-resolution minTomaxResolution "${settings_output}"
 
 batocera-resolution minTomaxResolution
 
