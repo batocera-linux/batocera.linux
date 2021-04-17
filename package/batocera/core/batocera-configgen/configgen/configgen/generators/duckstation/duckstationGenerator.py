@@ -14,7 +14,7 @@ class DuckstationGenerator(Generator):
 
     def generate(self, system, rom, playersControllers, gameResolution):
         # Test if it's a m3u file
-        if os.path.splitext(rom)[1] == ".m3u"
+        if os.path.splitext(rom)[1] == ".m3u":
             rom = rewriteM3uFullPath(rom)
 
         commandArray = ["duckstation", "-batch", "-fullscreen", "--", rom ]
@@ -364,8 +364,7 @@ def getLangFromEnvironment():
         return availableLanguages[lang]
     return availableLanguages["en_US"]
 
-@staticmethod 
-def rewriteM3uFullPath(m3u):    # Rewrite a clean m3u file with valid fullpath
+def rewriteM3uFullPath(m3u):                         # Rewrite a clean m3u file with valid fullpath
     fulldirname = os.path.dirname(m3u)
     # create a temp m3u to bypass Duckstation m3u bad pathfile
     tempm3u = "/tmp/duckstationm3u.m3u"
