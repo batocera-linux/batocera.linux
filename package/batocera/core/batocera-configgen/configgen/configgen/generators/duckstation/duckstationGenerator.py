@@ -13,6 +13,10 @@ from os import environ
 class DuckstationGenerator(Generator):
 
     def generate(self, system, rom, playersControllers, gameResolution):
+        # Test if it's a m3u file
+        if os.path.splitext(rom)[1] == ".m3u":
+            rom = rewriteM3uFullPath(rom)
+
         commandArray = ["duckstation", "-batch", "-fullscreen", "--", rom ]
 
         settings = configparser.ConfigParser(interpolation=None)
@@ -359,3 +363,19 @@ def getLangFromEnvironment():
     if lang in availableLanguages:
         return availableLanguages[lang]
     return availableLanguages["en_US"]
+
+def rewriteM3uFullPath(m3u):                         # Rewrite a clean m3u file with valid fullpath
+    fulldirname = os.path.dirname(m3u)
+    # create a temp m3u to bypass Duckstation m3u bad pathfile
+    tempm3u = "/tmp/duckstationm3u.m3u"
+    readtempm3u = open(tempm3u, "w")
+    # loop for each line to write them in the tempfile
+    initialm3u = open(m3u, "r")
+    with open(tempm3u, 'a') as f1:
+        for x in initialm3u:
+            if x[0] == "/":                          # for /MGScd1.chd
+                newpath = fulldirname + x
+            else:
+                newpath = fulldirname + "/" + x      # for MGScd1.chd
+        f1.write(newpath)    
+    return tempm3u                                   # return the remade temp m3u file
