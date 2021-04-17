@@ -13,9 +13,8 @@ from os import environ
 class DuckstationGenerator(Generator):
 
     def generate(self, system, rom, playersControllers, gameResolution):
-        # Rework the path if .m3u
+        # Rework if .m3u
         rom = rewritetempm3u(rom)
-        
         commandArray = ["duckstation", "-batch", "-fullscreen", "--", rom ]
 
         settings = configparser.ConfigParser(interpolation=None)
@@ -381,6 +380,6 @@ def rewritetempm3u(rom):
                 newpath = fullpath + "/" + x         # for MGScd1.chd
             with open(tempm3u, 'a') as f1:
                 f1.write(newpath)            
-        return open(tempm3u).readline().rstrip()
+        return tempm3u                               # return the remade temp m3u file
     else:
-        return rom                                   #else return the original rom
+        return rom
