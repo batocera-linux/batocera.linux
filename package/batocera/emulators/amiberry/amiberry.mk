@@ -85,4 +85,17 @@ define AMIBERRY_INSTALL_TARGET_CMDS
 	cp -rf $(@D)/data $(TARGET_DIR)/usr/share/amiberry
 endef
 
+define AMIBERRY_EVMAP
+	mkdir -p $(TARGET_DIR)/usr/share/evmapy
+	
+	cp -prn $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/amiberry/amiga500.amiberry.keys
+		$(TARGET_DIR)/usr/share/evmapy
+	cp -prn $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/amiberry/amiga1200.amiberry.keys
+		$(TARGET_DIR)/usr/share/evmapy
+	cp -prn $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/amiberry/amigacd32.amiberry.keys
+		$(TARGET_DIR)/usr/share/evmapy
+endef
+
+AMIBERRY_POST_INSTALL_TARGET_HOOKS = AMIBERRY_EVMAP
+
 $(eval $(generic-package))
