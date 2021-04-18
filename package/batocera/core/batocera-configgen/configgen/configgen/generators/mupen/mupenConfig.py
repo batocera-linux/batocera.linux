@@ -37,6 +37,7 @@ def setMupenConfig(iniConfig, system, controllers, gameResolution):
     iniConfig.set("Video-General", "Version", "1")
     iniConfig.set("Video-General", "ScreenWidth",  str(gameResolution["width"]))
     iniConfig.set("Video-General", "ScreenHeight", str(gameResolution["height"]))
+    iniConfig.set("Video-General", "Fullscreen", "True") # required at least for drm boards
     iniConfig.set("Video-General", "VerticalSync", "True")
     
     # Graphic Plugins
