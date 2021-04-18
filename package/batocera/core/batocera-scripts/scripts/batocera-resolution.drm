@@ -109,12 +109,11 @@ case "${ACTION}" in
 	;;
     "setOutput")
 	;;
-    "minTomaxResolution-secure")
+    "minTomaxResolution" | "minTomaxResolution-secure")
+	# first, give the current resolution as the default in case it is not reduced.
 	CURRENT=$(f_listModes "current" | head -1 | cut -d : -f 1)
 	echo "${CURRENT}" | cut -d "." -f 1 > /var/run/drmMode
-	exit 0 # dont minimize for 4K tv, causing too many troubles while tv don't give the correct informations
-	;;
-    "minTomaxResolution")
+	# then minToMax
 	f_minTomaxResolution "$1"
         ;;
     *)

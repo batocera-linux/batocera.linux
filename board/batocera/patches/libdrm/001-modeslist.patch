@@ -1,0 +1,30 @@
+diff --git a/xf86drm.c b/xf86drm.c
+index edfeb34..d983b14 100644
+--- a/xf86drm.c
++++ b/xf86drm.c
+@@ -977,6 +977,10 @@ drm_public int drmSetClientCap(int fd, uint64_t capability, uint64_t value)
+ {
+     struct drm_set_client_cap cap;
+ 
++    // batocera - don't add more planes so that all programs indexes are the sames
++    if(capability == DRM_CLIENT_CAP_UNIVERSAL_PLANES && value == 0) return 0; // wanted forced
++    if(capability == DRM_CLIENT_CAP_ATOMIC           && value == 0) return 0; // wanted forced
++
+     memclear(cap);
+     cap.capability = capability;
+     cap.value = value;
+diff --git a/xf86drmMode.c b/xf86drmMode.c
+index dc17724..740a808 100644
+--- a/xf86drmMode.c
++++ b/xf86drmMode.c
+@@ -161,6 +161,10 @@ drm_public drmModeResPtr drmModeGetResources(int fd)
+ 	struct drm_mode_card_res res, counts;
+ 	drmModeResPtr r = 0;
+ 
++	// batocera force DRM_CLIENT_CAP_ATOMIC
++	drmSetClientCap(fd, DRM_CLIENT_CAP_UNIVERSAL_PLANES, 1);
++	drmSetClientCap(fd, DRM_CLIENT_CAP_ATOMIC, 1);
++
+ retry:
+ 	memclear(res);
+ 	if (drmIoctl(fd, DRM_IOCTL_MODE_GETRESOURCES, &res))
