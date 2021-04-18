@@ -1,21 +1,27 @@
 #!/usr/bin/env python
 
 import Command
-import batoceraFiles
+import batoceraFiles # GLOBAL VARIABLES
 from generators.Generator import Generator
 import shutil
 import os
 from os import environ
 import configparser
 
+
 class CitraGenerator(Generator):
 
     # Main entry of the module
     def generate(self, system, rom, playersControllers, gameResolution):
-        CitraGenerator.writeCITRAConfig(batoceraFiles.citraConfig, system, playersControllers)
+        CitraGenerator.writeCITRAConfig(batoceraFiles.CONF + "/citra-emu/qt-config.ini", system, playersControllers)
 
         commandArray = [batoceraFiles.batoceraBins[system.config['emulator']], rom]
-        return Command.Command(array=commandArray, env={"XDG_CONFIG_HOME":batoceraFiles.CONF, "XDG_DATA_HOME":batoceraFiles.citraSaves, "XDG_CACHE_HOME":batoceraFiles.CACHE, "QT_QPA_PLATFORM":"xcb"})
+        return Command.Command(array=commandArray, env={ \
+        "XDG_CONFIG_HOME":batoceraFiles.CONF, \
+        "XDG_DATA_HOME":batoceraFiles.SAVES + "/3ds", \
+        "XDG_CACHE_HOME":batoceraFiles.CACHE, \
+        "XDG_RUNTIME_DIR":batoceraFiles.SAVES + "/3ds/citra-emu", \
+        "QT_QPA_PLATFORM":"xcb"})
 
     # Show mouse on screen
     def getMouseMode(self, config):
