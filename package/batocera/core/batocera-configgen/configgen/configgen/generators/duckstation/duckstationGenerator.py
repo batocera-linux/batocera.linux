@@ -377,5 +377,5 @@ def rewriteM3uFullPath(m3u):                         # Rewrite a clean m3u file 
                 newpath = fulldirname + x
             else:
                 newpath = fulldirname + "/" + x      # for MGScd1.chd
-        f1.write(newpath)    
+            f1.write(newpath)    
     return tempm3u                                   # return the remade temp m3u file
