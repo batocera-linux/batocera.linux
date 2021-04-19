@@ -45,8 +45,7 @@ def generateRetroarchCustom():
     retroarchSettings.save('video_aspect_ratio_auto',           '"true"')
     retroarchSettings.save('video_gpu_screenshot',              '"true"')
     retroarchSettings.save('video_shader_enable',               '"false"')
-    retroarchSettings.save('video_font_enable',                 '"true"')
-
+    
     # Audio
     retroarchSettings.save('audio_volume',                       '"2.0"')
     
