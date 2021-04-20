@@ -1,5 +1,6 @@
 config BR2_PACKAGE_TSUGARU
     bool "tsugaru"
+    select BR2_PACKAGE_LIBGLU
     help
       FM TOWNS Emulator "Tsugaru"
 
