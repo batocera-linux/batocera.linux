@@ -1,0 +1,27 @@
+diff --git a/Source/Core/DolphinQt/GameList/GameList.cpp b/Source/Core/DolphinQt/GameList/GameList.cpp
+index 65c870b..1931230 100644
+--- a/Source/Core/DolphinQt/GameList/GameList.cpp
++++ b/Source/Core/DolphinQt/GameList/GameList.cpp
+@@ -218,8 +218,7 @@ void GameList::UpdateColumnVisibility()
+ void GameList::MakeEmptyView()
+ {
+   const QString refreshing_msg = tr("Refreshing...");
+-  const QString empty_msg = tr("Dolphin could not find any GameCube/Wii ISOs or WADs.\n"
+-                               "Double-click here to set a games directory...");
++  const QString empty_msg = QString::fromStdString("");
+ 
+   m_empty = new QLabel(this);
+   m_empty->setText(refreshing_msg);
+diff --git a/Source/Core/DolphinQt/MainWindow.cpp b/Source/Core/DolphinQt/MainWindow.cpp
+index 20572d8..a34f004 100644
+--- a/Source/Core/DolphinQt/MainWindow.cpp
++++ b/Source/Core/DolphinQt/MainWindow.cpp
+@@ -1768,6 +1768,8 @@ void MainWindow::Show()
+   // If the booting of a game was requested on start up, do that now
+   if (m_pending_boot != nullptr)
+   {
++    m_menu_bar->hide();
++    m_tool_bar->hide();
+     StartGame(std::move(m_pending_boot));
+     m_pending_boot.reset();
+   }
