@@ -38,6 +38,8 @@ class DolphinGenerator(Generator):
             dolphinSettings.add_section("Interface")
         if not dolphinSettings.has_section("Analytics"):
             dolphinSettings.add_section("Analytics")
+        if not dolphinSettings.has_section("Display"):
+            dolphinSettings.add_section("Display")
 
         # Define default games path
         dolphinSettings.set("General", "ISOPath0", '"/userdata/roms/wii"')
@@ -60,6 +62,10 @@ class DolphinGenerator(Generator):
 
         # Don't confirm at stop
         dolphinSettings.set("Interface", "ConfirmStop", '"False"')
+
+        # only 1 window (fixes exit and gui display)
+        dolphinSettings.set("Display", "RenderToMain", '"True"')
+        dolphinSettings.set("Display", "Fullscreen", '"True"')
 
         # Enable Cheats
         if system.isOptSet("enable_cheats") and system.getOptBoolean("enable_cheats"):
