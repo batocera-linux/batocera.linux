@@ -3129,6 +3129,13 @@ duckstation:
             choices:
                 "Off":                          0
                 "On":                           1
+        duckstation_custom_textures:
+            prompt:      CUSTOM TEXTURES
+            description: Permit to use HD Texture Pack, preload use more RAM 
+            choices:
+                "Off":                   0
+                "Normal":                1-normal
+                "Preload":               1-preload
         duckstation_rumble:
             prompt:      RUMBLE
             description: Activate vibration on supported controllers
