@@ -19,4 +19,6 @@ do
 done
 
 # fix rights (the package installation create some files)
+echo "updating permissions on files..." >&2
 chown -R batocera:batocera /userdata/saves/flatpak/data || exit 1
+chmod -R a+rX /userdata/saves/flatpak/binaries || exit 1
