@@ -1,0 +1,66 @@
+diff --git a/src/core/host_interface.cpp b/src/core/host_interface.cpp
+index da4198ab..63db3c4a 100644
+--- a/src/core/host_interface.cpp
++++ b/src/core/host_interface.cpp
+@@ -444,6 +444,7 @@ bool HostInterface::SaveState(const char* filename)
+   }
+   else
+   {
++    System::SaveStateScreenShot(filename);    
+     AddFormattedOSDMessage(5.0f, TranslateString("OSDMessage", "State saved to '%s'."), filename);
+     stream->Commit();
+   }
+@@ -908,6 +909,15 @@ std::string HostInterface::GetUserDirectoryRelativePath(const char* format, ...)
+   std::string formatted_path = StringUtil::StdStringFromFormatV(format, ap);
+   va_end(ap);
+ 
++  if (strncmp(formatted_path.c_str(), "cheats", 6) == 0)
++      return formatted_path.length() > 6 ? StringUtil ::StdStringFromFormat("%s" FS_OSPATH_SEPARATOR_STR "%s", "/userdata/cheats/duckstation", formatted_path.substr(7).c_str()) : "/userdata/cheats/duckstation";
++
++  if (strncmp(formatted_path.c_str(), "screenshots", 11) == 0)
++    return StringUtil::StdStringFromFormat("%s" FS_OSPATH_SEPARATOR_STR "%s", "/userdata", formatted_path.c_str());
++
++  if (strncmp(formatted_path.c_str(), "savestates", 10) == 0 || strncmp(formatted_path.c_str(), "memcards", 7) == 0)
++    return StringUtil::StdStringFromFormat("%s" FS_OSPATH_SEPARATOR_STR "%s", "/userdata/saves/psx/duckstation", formatted_path.c_str());
++  
+   if (m_user_directory.empty())
+   {
+     return formatted_path;
+diff --git a/src/core/system.cpp b/src/core/system.cpp
+index f32cb9e2..fd5fb339 100644
+--- a/src/core/system.cpp
++++ b/src/core/system.cpp
+@@ -238,7 +238,7 @@ const std::string& GetRunningPath()
+ }
+ const std::string& GetRunningCode()
+ {
+-  return s_running_game_code;
++  return s_running_game_title; //s_running_game_code;
+ }
+ 
+ const std::string& GetRunningTitle()
+@@ -1224,6 +1224,12 @@ bool DoLoadState(ByteStream* state, bool force_software_renderer, bool update_di
+   return true;
+ }
+ 
++bool SaveStateScreenShot(const char* filename)
++{
++  std::string png_filename = FileSystem::ReplaceExtension(filename, "png");
++  return g_host_interface->GetDisplay()->WriteScreenshotToFile(png_filename.c_str(), true);
++}
++
+ bool SaveState(ByteStream* state, u32 screenshot_size /* = 128 */)
+ {
+   if (IsShutdown())
+diff --git a/src/core/system.h b/src/core/system.h
+index 8b2d1e68..2e9a02d7 100644
+--- a/src/core/system.h
++++ b/src/core/system.h
+@@ -150,6 +150,7 @@ void Shutdown();
+ 
+ bool LoadState(ByteStream* state, bool update_display = true);
+ bool SaveState(ByteStream* state, u32 screenshot_size = 128);
++bool SaveStateScreenShot(const char* filename);
+ 
+ /// Recreates the GPU component, saving/loading the state so it is preserved. Call when the GPU renderer changes.
+ bool RecreateGPU(GPURenderer renderer, bool update_display = true);

@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-UBOOT_ODROID_GOA_VERSION = a1b59905a4554055f35196e17301bf83cbe41b5f
+UBOOT_ODROID_GOA_VERSION = 0e26e35cb18a80005b7de45c95858c86a2f7f41e
 UBOOT_ODROID_GOA_SITE = https://github.com/hardkernel/u-boot.git
 UBOOT_ODROID_GOA_SITE_METHOD=git
 
