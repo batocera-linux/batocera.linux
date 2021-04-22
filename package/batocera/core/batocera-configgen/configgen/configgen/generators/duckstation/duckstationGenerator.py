@@ -182,7 +182,7 @@ class DuckstationGenerator(Generator):
             settings.add_section("TextureReplacements")
         
         # Texture Replacement saves\texture\psx game id
-        tab = system.config["citra_custom_textures"].split('-'):
+        tab = system.config["duckstation_custom_textures"].split('-'):
         if system.isOptSet("duckstation_custom_textures") and system.config["duckstation_custom_textures"] == '0':
             settings.set("TextureReplacements", "EnableVRAMWriteReplacements", "false")
             settings.set("TextureReplacements", "PreloadTextures",  "false")
