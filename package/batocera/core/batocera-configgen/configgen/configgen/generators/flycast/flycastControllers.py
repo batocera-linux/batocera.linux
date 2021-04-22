@@ -63,6 +63,7 @@ def generateControllerConfig(controller):
     l2_r2_flag = False
     if 'r2' in controller.inputs:
         l2_r2_flag = True
+
     # Parse controller inputs
     for index in controller.inputs:
         input = controller.inputs[index]
@@ -78,20 +79,20 @@ def generateControllerConfig(controller):
                 section = i
                 break
 
-        # Sadly, we don't get the right axis code for Y hats. So, dirty hack time
-        if not (l2_r2_flag and (input.name == 'pageup' or input.name == 'pagedown')):
+        if l2_r2_flag and (input.name == 'pageup' or input.name == 'pagedown'):
+            continue
+
+        # batocera doesn't retrieve the code for hats, however, this is 16/17+input.id in linux/input.h
+        if input.type == 'hat':
+            if input.name == 'up':  #Default values for hat0.  Formula for calculation is 16+input.id*2 and 17+input.id*2
+                code = 17 + 2*int(input.id) # ABS_HAT0Y=17
+            else:
+                code = 16 + 2*int(input.id) # ABS_HAT0X=16
+            Config.set(section, var, str(code))
+        else:
             if input.code is not None:
                 code = input.code
                 Config.set(section, var, code)
-            elif input.type == 'hat':
-                if input.code is None:  #handles pads that don't have hat codes set
-                    if input.name == 'up':  #Default values for hat0.  Formula for calculation is 16+input.id*2 and 17+input.id*2
-                        code = 17 + 2*int(input.id) # ABS_HAT0Y=17
-                    else:
-                        code = 16 + 2*int(input.id) # ABS_HAT0X=16
-                else:
-                    code = input.code
-                Config.set(section, var, str(code))
             else:
                 eslog.log("code not found for key " + input.name + " on pad " + controller.realName + " (please reconfigure your pad)")
 
