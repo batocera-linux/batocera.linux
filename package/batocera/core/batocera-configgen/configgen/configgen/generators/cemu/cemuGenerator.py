@@ -99,7 +99,7 @@ class CemuGenerator(Generator):
         game_root = CemuGenerator.getRoot(config, "GamePaths")
 
         # Default games path
-        CemuGenerator.setSectionConfig(config, game_root, "Entry", "/userdata/roms/wiiu")
+        CemuGenerator.setSectionConfig(config, game_root, "Entry", "z:/userdata/roms/wiiu")
 
 
         ## [AUDIO]
