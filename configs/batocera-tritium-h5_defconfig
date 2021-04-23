@@ -2,7 +2,7 @@
 BR2_aarch64=y
 BR2_cortex_a53=y
 BR2_ARM_FPU_NEON_FP_ARMV8=y
-BR2_PACKAGE_BATOCERA_TARGET_LIBRETECH_H5=y
+BR2_PACKAGE_BATOCERA_TARGET_TRITIUM_H5=y
 BR2_ROOTFS_USERS_TABLES="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/users.txt"
 
 # Toolchain definition
@@ -28,8 +28,8 @@ BR2_ENABLE_LOCALE_WHITELIST="C ar ca cy_GB de el es es_MX eu_ES fr hu it ja_JP k
 BR2_GENERATE_LOCALE="en_US.UTF-8 ar_YE.UTF-8 ca_ES.UTF-8 cy_GB.UTF-8 de_DE.UTF-8 el_GR.UTF-8 es_ES.UTF-8 es_MX.UTF-8 eu_ES.UTF-8 fr_FR.UTF-8 hu_HU.UTF-8 it_IT.UTF-8 ja_JP.UTF-8 ko_KR.UTF-8 nb_NO.UTF-8 nl_NL.UTF-8 nn_NO.UTF-8 oc_FR.UTF-8 pl_PL.UTF-8 pt_BR.UTF-8 pt_PT.UTF-8 ru_RU.UTF-8 uk_UA.UTF-8 sv_SE.UTF-8 tr_TR.UTF-8 zh_CN.UTF-8 zh_TW.UTF-8"
 BR2_TARGET_TZ_INFO=y
 BR2_TARGET_LOCALTIME="Europe/Paris"
-BR2_GLOBAL_PATCH_DIR="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/patches $(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/libretech-h5/patches"
-BR2_ROOTFS_OVERLAY="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/fsoverlay $(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/libretech-h5/fsoverlay"
+BR2_GLOBAL_PATCH_DIR="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/patches $(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/tritium-h5/patches"
+BR2_ROOTFS_OVERLAY="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/fsoverlay $(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/tritium-h5/fsoverlay"
 BR2_ROOTFS_POST_BUILD_SCRIPT="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/scripts/post-build-script.sh"
 BR2_ROOTFS_POST_IMAGE_SCRIPT="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/scripts/post-image-script.sh"
 BR2_TARGET_ROOTFS_SQUASHFS4_ZSTD=y
@@ -62,12 +62,12 @@ BR2_LINUX_KERNEL=y
 BR2_LINUX_KERNEL_CUSTOM_VERSION=y
 BR2_LINUX_KERNEL_CUSTOM_VERSION_VALUE="5.10.33"
 BR2_LINUX_KERNEL_USE_CUSTOM_CONFIG=y
-BR2_LINUX_KERNEL_CUSTOM_CONFIG_FILE="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/libretech-h5/linux-defconfig.config"
+BR2_LINUX_KERNEL_CUSTOM_CONFIG_FILE="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/tritium-h5/linux-defconfig.config"
 BR2_LINUX_KERNEL_DTS_SUPPORT=y
 BR2_LINUX_KERNEL_INTREE_DTS_NAME="allwinner/sun50i-h5-libretech-all-h3-cc"
 BR2_LINUX_KERNEL_NEEDS_HOST_OPENSSL=y
-BR2_LINUX_KERNEL_PATCH="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/libretech-h5/linux_patches"
-BR2_LINUX_KERNEL_CONFIG_FRAGMENT_FILES="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/libretech-h5/linux-defconfig-fragment.config"
+BR2_LINUX_KERNEL_PATCH="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/tritium-h5/linux_patches"
+BR2_LINUX_KERNEL_CONFIG_FRAGMENT_FILES="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/tritium-h5/linux-defconfig-fragment.config"
 
 BR2_PACKAGE_BATOCERA_SYSTEM=y
 BR2_PACKAGE_BATOCERA_EXTRAS=y
