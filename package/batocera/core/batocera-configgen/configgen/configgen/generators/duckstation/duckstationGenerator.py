@@ -177,6 +177,21 @@ class DuckstationGenerator(Generator):
             settings.set("ControllerPorts", "MultitapMode", "Disabled")
 
 
+        ## [TEXTURE REPLACEMENT]
+        if not settings.has_section("TextureReplacements"):
+            settings.add_section("TextureReplacements")
+        
+        # Texture Replacement saves\textures\psx game id - by default in Normal
+        if system.isOptSet("duckstation_custom_textures") and system.config["duckstation_custom_textures"] == '0':
+            settings.set("TextureReplacements", "EnableVRAMWriteReplacements", "false")
+            settings.set("TextureReplacements", "PreloadTextures",  "false")
+        elif system.isOptSet("duckstation_custom_textures") and system.config["duckstation_custom_textures"] == 'preload':
+            settings.set("TextureReplacements", "EnableVRAMWriteReplacements", "true")
+            settings.set("TextureReplacements", "PreloadTextures",  "true")
+        else:
+            settings.set("TextureReplacements", "EnableVRAMWriteReplacements", "true")
+            settings.set("TextureReplacements", "PreloadTextures",  "false")
+
         ## [CONTROLLERS]
         configurePads(settings, playersControllers, system)
 
