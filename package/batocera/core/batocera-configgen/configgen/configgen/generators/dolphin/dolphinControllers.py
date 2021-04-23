@@ -6,6 +6,9 @@ import os
 import codecs
 from Emulator import Emulator
 from utils.logger import eslog
+import glob
+import configparser
+import re
 
 # Create the controller configuration file
 def generateControllerConfig(system, playersControllers, rom):
@@ -277,68 +280,100 @@ def generateControllerConfig_any(system, playersControllers, filename, anyDefKey
 
         f.write("[" + anyDefKey + str(nplayer) + "]" + "\n")
         f.write("Device = evdev/" + str(nsamepad).strip() + "/" + pad.realName.strip() + "\n")
-        for opt in extraOptions:
-            f.write(opt + " = " + extraOptions[opt] + "\n")
 
-        # Recompute the mapping according to available buttons on the pads and the available replacements
-        currentMapping = anyMapping
-        # Apply replacements
-        if anyReplacements is not None:
-            for x in anyReplacements:
-                if x not in pad.inputs and x in currentMapping:
-                    currentMapping[anyReplacements[x]] = currentMapping[x]
-                    if x == "joystick1up":
-                        currentMapping[anyReplacements["joystick1down"]] = anyReverseAxes[currentMapping["joystick1up"]]
-                    if x == "joystick1left":
-                        currentMapping[anyReplacements["joystick1right"]] = anyReverseAxes[currentMapping["joystick1left"]]
-                    if x == "joystick2up":
-                        currentMapping[anyReplacements["joystick2down"]] = anyReverseAxes[currentMapping["joystick2up"]]
-                    if x == "joystick2left":
-                        currentMapping[anyReplacements["joystick2right"]] = anyReverseAxes[currentMapping["joystick2left"]]
-
-        for x in pad.inputs:
-            input = pad.inputs[x]
-
-            keyname = None
-            if input.name in currentMapping:
-                keyname = currentMapping[input.name]
-
-            # Write the configuration for this key
-            if keyname is not None:
-                write_key(f, keyname, input.type, input.id, input.value, pad.nbaxes, False, None)
-                if 'Triggers' in keyname and input.type == 'axis':
-                    write_key(f, keyname + '-Analog', input.type, input.id, input.value, pad.nbaxes, False, None)
-            # Write the 2nd part
-            if input.name in { "joystick1up", "joystick1left", "joystick2up", "joystick2left"} and keyname is not None:
-                write_key(f, anyReverseAxes[keyname], input.type, input.id, input.value, pad.nbaxes, True, None)
-            # DualShock Motion control
-            if system.isOptSet("dsmotion") and system.getOptBoolean("dsmotion") == True:
-                f.write("IMUGyroscope/Pitch Up = `Gyro X-`\n")
-                f.write("IMUGyroscope/Pitch Down = `Gyro X+`\n")
-                f.write("IMUGyroscope/Roll Left = `Gyro Z-`\n")
-                f.write("IMUGyroscope/Roll Right = `Gyro Z+`\n")
-                f.write("IMUGyroscope/Yaw Left = `Gyro Y-`\n")
-                f.write("IMUGyroscope/Yaw Right = `Gyro Y+`\n")
-                f.write("IMUIR/Recenter = `Button 10`\n")
-                f.write("IMUAccelerometer/Left = `Accel X-`\n")
-                f.write("IMUAccelerometer/Right = `Accel X+`\n")
-                f.write("IMUAccelerometer/Forward = `Accel Z-`\n")
-                f.write("IMUAccelerometer/Backward = `Accel Z+`\n")
-                f.write("IMUAccelerometer/Up = `Accel Y-`\n")
-                f.write("IMUAccelerometer/Down = `Accel Y+`\n")
-            # Mouse to emulate Wiimote
-            if system.isOptSet("mouseir") and system.getOptBoolean("mouseir") == True:
-                f.write("IR/Up = `Cursor Y-`\n")
-                f.write("IR/Down = `Cursor Y+`\n")
-                f.write("IR/Left = `Cursor X-`\n")
-                f.write("IR/Right = `Cursor X+`\n")
-            # Rumble option
-            if system.isOptSet("rumble") and system.getOptBoolean("rumble") == True:
-                f.write("Rumble/Motor = Weak\n")
+        if system.isOptSet("use_pad_profiles") and system.getOptBoolean("use_pad_profiles") == True:
+            if not generateControllerConfig_any_from_profiles(f, pad):
+                generateControllerConfig_any_auto(f, pad, anyMapping, anyReverseAxes, anyReplacements, extraOptions, system)
+        else:
+            generateControllerConfig_any_auto(f, pad, anyMapping, anyReverseAxes, anyReplacements, extraOptions, system)
 
         nplayer += 1
     f.write
     f.close()
+
+def generateControllerConfig_any_auto(f, pad, anyMapping, anyReverseAxes, anyReplacements, extraOptions, system):
+    for opt in extraOptions:
+        f.write(opt + " = " + extraOptions[opt] + "\n")
+    
+    # Recompute the mapping according to available buttons on the pads and the available replacements
+    currentMapping = anyMapping
+    # Apply replacements
+    if anyReplacements is not None:
+        for x in anyReplacements:
+            if x not in pad.inputs and x in currentMapping:
+                currentMapping[anyReplacements[x]] = currentMapping[x]
+                if x == "joystick1up":
+                    currentMapping[anyReplacements["joystick1down"]] = anyReverseAxes[currentMapping["joystick1up"]]
+                if x == "joystick1left":
+                    currentMapping[anyReplacements["joystick1right"]] = anyReverseAxes[currentMapping["joystick1left"]]
+                if x == "joystick2up":
+                    currentMapping[anyReplacements["joystick2down"]] = anyReverseAxes[currentMapping["joystick2up"]]
+                if x == "joystick2left":
+                    currentMapping[anyReplacements["joystick2right"]] = anyReverseAxes[currentMapping["joystick2left"]]
+    
+    for x in pad.inputs:
+        input = pad.inputs[x]
+    
+        keyname = None
+        if input.name in currentMapping:
+            keyname = currentMapping[input.name]
+    
+        # Write the configuration for this key
+        if keyname is not None:
+            write_key(f, keyname, input.type, input.id, input.value, pad.nbaxes, False, None)
+            if 'Triggers' in keyname and input.type == 'axis':
+                write_key(f, keyname + '-Analog', input.type, input.id, input.value, pad.nbaxes, False, None)
+        # Write the 2nd part
+        if input.name in { "joystick1up", "joystick1left", "joystick2up", "joystick2left"} and keyname is not None:
+            write_key(f, anyReverseAxes[keyname], input.type, input.id, input.value, pad.nbaxes, True, None)
+        # DualShock Motion control
+        if system.isOptSet("dsmotion") and system.getOptBoolean("dsmotion") == True:
+            f.write("IMUGyroscope/Pitch Up = `Gyro X-`\n")
+            f.write("IMUGyroscope/Pitch Down = `Gyro X+`\n")
+            f.write("IMUGyroscope/Roll Left = `Gyro Z-`\n")
+            f.write("IMUGyroscope/Roll Right = `Gyro Z+`\n")
+            f.write("IMUGyroscope/Yaw Left = `Gyro Y-`\n")
+            f.write("IMUGyroscope/Yaw Right = `Gyro Y+`\n")
+            f.write("IMUIR/Recenter = `Button 10`\n")
+            f.write("IMUAccelerometer/Left = `Accel X-`\n")
+            f.write("IMUAccelerometer/Right = `Accel X+`\n")
+            f.write("IMUAccelerometer/Forward = `Accel Z-`\n")
+            f.write("IMUAccelerometer/Backward = `Accel Z+`\n")
+            f.write("IMUAccelerometer/Up = `Accel Y-`\n")
+            f.write("IMUAccelerometer/Down = `Accel Y+`\n")
+        # Mouse to emulate Wiimote
+        if system.isOptSet("mouseir") and system.getOptBoolean("mouseir") == True:
+            f.write("IR/Up = `Cursor Y-`\n")
+            f.write("IR/Down = `Cursor Y+`\n")
+            f.write("IR/Left = `Cursor X-`\n")
+            f.write("IR/Right = `Cursor X+`\n")
+        # Rumble option
+        if system.isOptSet("rumble") and system.getOptBoolean("rumble") == True:
+            f.write("Rumble/Motor = Weak\n")
+
+def generateControllerConfig_any_from_profiles(f, pad):
+    for profileFile in glob.glob("/userdata/system/configs/dolphin-emu/Profiles/GCPad/*.ini"):
+        try:
+            eslog.log("Looking profile : {}".format(profileFile))
+            profileConfig = configparser.ConfigParser(interpolation=None)
+            # To prevent ConfigParser from converting to lower case
+            profileConfig.optionxform = str
+            profileConfig.read(profileFile)
+            profileDevice = profileConfig.get("Profile","Device")
+            eslog.log("Profile device : {}".format(profileDevice))
+
+            deviceVals = re.match("^([^/]*)/[0-9]*/(.*)$", profileDevice)
+            if deviceVals is not None:
+                if deviceVals.group(1) == "evdev" and deviceVals.group(2).strip() == pad.realName.strip():
+                    eslog.log("Eligible profile device found")
+                    for key, val in profileConfig.items("Profile"):
+                        if key != "Device":
+                            f.write("{} = {}\n".format(key, val))
+                    return True
+        except:
+            eslog.log("profile {} : FAILED".format(profileFile))
+
+    return False
 
 def write_key(f, keyname, input_type, input_id, input_value, input_global_id, reverse, hotkey_id):
     f.write(keyname + " = ")
