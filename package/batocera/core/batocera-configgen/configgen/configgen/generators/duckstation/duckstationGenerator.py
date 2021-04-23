@@ -356,10 +356,10 @@ def input2definition(input):
         elif input.value == "8":
             return "Hat0 Left"
     elif input.type == "axis":
-        if input.value == "-1":
-            return "-Axis" + str(input.id)
-        else:
+        if input.name == "l2" or input.name == "r2":
             return "+Axis" + str(input.id)
+        else:
+            return "Axis" + str(input.id)
     return "unknown"
 
 def getLangFromEnvironment():
