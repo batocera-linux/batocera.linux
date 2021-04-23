@@ -42,8 +42,10 @@ class DolphinGenerator(Generator):
             dolphinSettings.add_section("Display")
 
         # Define default games path
-        dolphinSettings.set("General", "ISOPath0", '"/userdata/roms/wii"')
-        dolphinSettings.set("General", "ISOPath1", '"/userdata/roms/gamecube"')
+        if "ISOPaths" not in dolphinSettings["General"]:
+            dolphinSettings.set("General", "ISOPath0", '"/userdata/roms/wii"')
+            dolphinSettings.set("General", "ISOPath1", '"/userdata/roms/gamecube"')
+            dolphinSettings.set("General", "ISOPaths", '2')
 
         # Draw or not FPS
         if system.isOptSet("showFPS") and system.getOptBoolean("showFPS"):
