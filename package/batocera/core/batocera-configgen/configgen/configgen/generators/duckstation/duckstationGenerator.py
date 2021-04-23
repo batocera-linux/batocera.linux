@@ -185,7 +185,7 @@ class DuckstationGenerator(Generator):
         if system.isOptSet("duckstation_custom_textures") and system.config["duckstation_custom_textures"] == '0':
             settings.set("TextureReplacements", "EnableVRAMWriteReplacements", "false")
             settings.set("TextureReplacements", "PreloadTextures",  "false")
-        elif system.isOptSet("duckstation_custom_textures") and system.config["duckstation_custom_textures"] == '1-preload':
+        elif system.isOptSet("duckstation_custom_textures") and system.config["duckstation_custom_textures"] == 'preload':
             settings.set("TextureReplacements", "EnableVRAMWriteReplacements", "true")
             settings.set("TextureReplacements", "PreloadTextures",  "true")
         else:
