@@ -379,18 +379,22 @@ def getLangFromEnvironment():
         return availableLanguages[lang]
     return availableLanguages["en_US"]
 
-def rewriteM3uFullPath(m3u):                         # Rewrite a clean m3u file with valid fullpath
-    fulldirname = os.path.dirname(m3u)
+def rewriteM3uFullPath(m3u):                                                                    # Rewrite a clean m3u file with valid fullpath
+    # get initialm3u
+    firstline = open(m3u).readline().rstrip()                                                   # Get first line in m3u
+    initialfirstdisc = "/tmp/" + os.path.splitext(os.path.basename(firstline))[0] + ".m3u"      # Generating a temp path with the first iso filename in m3u
+
     # create a temp m3u to bypass Duckstation m3u bad pathfile
-    tempm3u = "/tmp/duckstationm3u.m3u"
-    readtempm3u = open(tempm3u, "w")
-    # loop for each line to write them in the tempfile
+    fulldirname = os.path.dirname(m3u)
+    readtempm3u = open(initialfirstdisc, "w")
+
     initialm3u = open(m3u, "r")
-    with open(tempm3u, 'a') as f1:
-        for x in initialm3u:
-            if x[0] == "/":                          # for /MGScd1.chd
-                newpath = fulldirname + x
+    with open(initialfirstdisc, 'a') as f1:
+        for line in initialm3u:
+            if line[0] == "/":                          # for /MGScd1.chd
+                newpath = fulldirname + line
             else:
-                newpath = fulldirname + "/" + x      # for MGScd1.chd
-            f1.write(newpath)    
-    return tempm3u                                   # return the remade temp m3u file
+                newpath = fulldirname + "/" + line      # for MGScd1.chd
+            f1.write(newpath)
+
+    return initialfirstdisc                                                                      # Return the tempm3u pathfile written with valid fullpath
