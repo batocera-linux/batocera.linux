@@ -11,12 +11,12 @@
         - mupen64plus (n64)
         - duckstation (psx)
 	- cemu (wiiu)
-	* es:  add battery indicator
+	* es:  add pad battery indicator
 	* add: splash for x86_64 and rpi4
 	* add: virtual resolutions for games to limit the maximum resolution
 	* add: video mode for drm now includes some information to not be applied over different tvs
 	* add: es.maxresolution is now renamed es.resolution in batocera-boot.conf and can take any value from listModes (aka max-1920x1080)
-	* add: es dolphin options to use custom pads from dolphin ui configuration
+	* add: es dolphin options to use custom pads from dolphin ui profile configuration
 	* bump: python to 3
 	* bump: kodi to 19
 	* bump: GCC compiler to 10.2
@@ -41,6 +41,8 @@
 	* bump: Retroarch to v1.9.1
 	* bump: libretro cores
 	* bump: libretro 1.9.1
+	* fix: 8bitdo xinput
+	* fix: some resolution issues
 	* fix:  libretro emulators Options in es
         - PUAE (Amiga)
         - Gambatte (gb)

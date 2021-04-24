@@ -1,0 +1,60 @@
+diff --git a/SDL/SDLMain.cpp b/SDL/SDLMain.cpp
+index 7551231..475bb63 100644
+--- a/SDL/SDLMain.cpp
++++ b/SDL/SDLMain.cpp
+@@ -420,11 +420,11 @@ void ToggleFullScreenIfFlagSet(SDL_Window *window) {
+ 
+ 		Uint32 window_flags = SDL_GetWindowFlags(window);
+ 		if (g_ToggleFullScreenType == -1) {
+-			window_flags ^= SDL_WINDOW_FULLSCREEN_DESKTOP;
++			window_flags ^= SDL_WINDOW_FULLSCREEN;
+ 		} else if (g_ToggleFullScreenType == 1) {
+-			window_flags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
++			window_flags |= SDL_WINDOW_FULLSCREEN;
+ 		} else {
+-			window_flags &= ~SDL_WINDOW_FULLSCREEN_DESKTOP;
++			window_flags &= ~SDL_WINDOW_FULLSCREEN;
+ 		}
+ 		SDL_SetWindowFullscreen(window, window_flags);
+ 	}
+@@ -524,7 +524,7 @@ int main(int argc, char *argv[]) {
+ 	Uint32 mode = 0;
+ 	for (int i = 1; i < argc; i++) {
+ 		if (!strcmp(argv[i],"--fullscreen"))
+-			mode |= SDL_WINDOW_FULLSCREEN_DESKTOP;
++			mode |= SDL_WINDOW_FULLSCREEN;
+ 		else if (set_xres == -2)
+ 			set_xres = parseInt(argv[i]);
+ 		else if (set_yres == -2)
+@@ -596,19 +596,19 @@ int main(int argc, char *argv[]) {
+ 
+ 	// Force fullscreen if the resolution is too low to run windowed.
+ 	if (g_DesktopWidth < 480 * 2 && g_DesktopHeight < 272 * 2) {
+-		mode |= SDL_WINDOW_FULLSCREEN_DESKTOP;
++		mode |= SDL_WINDOW_FULLSCREEN;
+ 	}
+ 
+ 	// If we're on mobile, don't try for windowed either.
+ #if defined(MOBILE_DEVICE) && !PPSSPP_PLATFORM(SWITCH)
+ 	mode |= SDL_WINDOW_FULLSCREEN;
+ #elif defined(USING_FBDEV) || PPSSPP_PLATFORM(SWITCH)
+-	mode |= SDL_WINDOW_FULLSCREEN_DESKTOP;
++	mode |= SDL_WINDOW_FULLSCREEN;
+ #else
+ 	mode |= SDL_WINDOW_RESIZABLE;
+ #endif
+ 
+-	if (mode & SDL_WINDOW_FULLSCREEN_DESKTOP) {
++	if (mode & SDL_WINDOW_FULLSCREEN) {
+ 		pixel_xres = g_DesktopWidth;
+ 		pixel_yres = g_DesktopHeight;
+ 		g_Config.bFullScreen = true;
+@@ -667,7 +667,7 @@ int main(int argc, char *argv[]) {
+ 
+ 	// Use the setting from the config when initing the window.
+ 	if (g_Config.bFullScreen)
+-		mode |= SDL_WINDOW_FULLSCREEN_DESKTOP;
++		mode |= SDL_WINDOW_FULLSCREEN;
+ 
+ 	int x = SDL_WINDOWPOS_UNDEFINED_DISPLAY(getDisplayNumber());
+ 	int y = SDL_WINDOWPOS_UNDEFINED;
