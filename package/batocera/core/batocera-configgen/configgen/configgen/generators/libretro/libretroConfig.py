@@ -188,13 +188,29 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
     if (system.config['core'] == 'mednafen_psx'):               # Madnafen
         if system.isOptSet('beetle_psx_Controller1'):
             retroarchConfig['input_libretro_device_p1'] = system.config['beetle_psx_Controller1']
+            if system.config['beetle_psx_Controller1'] == '517':
+                retroarchConfig['input_player1_analog_dpad_mode'] = '0'
+            else:
+                retroarchConfig['input_player1_analog_dpad_mode'] = '1'
         if system.isOptSet('beetle_psx_Controller2'):
             retroarchConfig['input_libretro_device_p2'] = system.config['beetle_psx_Controller2']
+            if system.config['beetle_psx_Controller2'] == '517':
+                retroarchConfig['input_player2_analog_dpad_mode'] = '0'
+            else:
+                retroarchConfig['input_player2_analog_dpad_mode'] = '1'
     if (system.config['core'] == 'pcsx_rearmed'):               # PCSX Rearmed
         if system.isOptSet('controller1_pcsx'):
             retroarchConfig['input_libretro_device_p1'] = system.config['controller1_pcsx']
+            if system.config['controller1_pcsx'] == '517':
+                retroarchConfig['input_player1_analog_dpad_mode'] = '0'
+            else:
+                retroarchConfig['input_player1_analog_dpad_mode'] = '1'
         if system.isOptSet('controller2_pcsx'):
             retroarchConfig['input_libretro_device_p2'] = system.config['controller2_pcsx']
+            if system.config['controller2_pcsx'] == '517':
+                retroarchConfig['input_player2_analog_dpad_mode'] = '0'
+            else:
+                retroarchConfig['input_player2_analog_dpad_mode'] = '1'
 
     ## Sega Dreamcast controller
     if system.config['core'] == 'flycast':
