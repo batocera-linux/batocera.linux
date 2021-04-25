@@ -107,6 +107,16 @@ class CitraGenerator(Generator):
         if not citraConfig.has_section("Renderer"):
             citraConfig.add_section("Renderer")
 
+        # Force Hardware Rrendering / Shader or nothing works fine
+        citraConfig.set("Renderer", "use_hw_renderer", "true")
+        citraConfig.set("Renderer", "use_hw_shader",   "true")
+        citraConfig.set("Renderer", "use_shader_jit",  "true")
+
+        # Use VSYNC
+        if system.isOptSet('citra_use_vsync_new') and system.config["citra_use_vsync_new"] == '0':
+            citraConfig.set("Renderer", "use_vsync_new", "false")
+        else:
+            citraConfig.set("Renderer", "use_vsync_new", "true")
         # Resolution Factor
         if system.isOptSet('citra_resolution_factor'):
             citraConfig.set("Renderer", "resolution_factor", system.config["citra_resolution_factor"])
@@ -132,10 +142,10 @@ class CitraGenerator(Generator):
         if system.isOptSet('citra_custom_textures') and system.config["citra_custom_textures"] != '0':
             tab = system.config["citra_custom_textures"].split('-')
             citraConfig.set("Utility", "custom_textures",  "true")
-            if tab[0] == 'normal':
+            if tab[1] == 'normal':
                 citraConfig.set("Utility", "preload_textures", "false")
             else:
-                citraConfig.set("Utility", "preload_textures", "true")
+                citraConfig.set("Utility", "preload_textures", "true") # It's not working from ES for now, only from the emulator menu
         else:
             citraConfig.set("Utility", "custom_textures",  "false")
             citraConfig.set("Utility", "preload_textures", "false")

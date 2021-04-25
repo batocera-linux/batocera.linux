@@ -1275,9 +1275,9 @@ libretro:
                 choices:
                     #"None":                          0
                     "Digital Controller":            1
-                    #"Analog Controller":             261
-                    "Analog Controller (DualShock)": 517
-                    #"Analog Joystick":               773
+                    "Analog Controller":             261
+                    "DualShock Controller":          517
+                    "Analog Joystick (Flystick)":    773
                     "Namco GunCon":                  260
                     "NeGcon":                        1029
                     #"Justifier":                     516
@@ -1288,9 +1288,9 @@ libretro:
                 choices:
                     #"None":                          0
                     "Digital Controller":            1
-                    #"Analog Controller":             261
-                    "Analog Controller (DualShock)": 517
-                    #"Analog Joystick":               773
+                    "Analog Controller":             261
+                    "DualShock Controller":          517
+                    "Analog Joystick (Flystick)":    773
                     "Namco GunCon":                  260
                     "NeGcon":                        1029
                     #"Justifier":                     516
@@ -1897,8 +1897,8 @@ libretro:
                 choices:
                     #"None":                          0
                     "Digital Controller":            1
-                    #"Analog Controller":             261
-                    "Analog Controller (DualShock)": 517
+                    "Analog Controller":             261
+                    "DualShock Controller":          517
                     "Namco GunCon":                  260
                     "NeGcon":                        773
                     "PlayStation Mouse":             258
@@ -1908,8 +1908,8 @@ libretro:
                 choices:
                     #"None":                          0
                     "Digital Controller":            1
-                    #"Analog Controller":             261
-                    "Analog Controller (DualShock)": 517
+                    "Analog Controller":             261
+                    "DualShock Controller":          517
                     "Namco GunCon":                  260
                     "NeGcon":                        773
                     "PlayStation Mouse":             258
@@ -2855,6 +2855,12 @@ citra:
                 "8x (3200x1920)":        8
                 "9x (3600x2160)":        9
                 "10x (4000x2400)":       10
+        use_vsync_new:
+            prompt:      VSYNC
+            description: Fix the heavy screen tearing in games (heavy CPU)
+            choices:
+                "Off":                   0
+                "On":                    1
         citra_use_frame_limit:
             prompt:      FRAME LIMIT
             description: Disable will help some games, others will run too fast
@@ -2869,11 +2875,11 @@ citra:
                 "On":                    1
         citra_custom_textures:
             prompt:      CUSTOM TEXTURES
-            description: Permit to use HD Texture Pack, preload use more RAM
+            description: Use HD Texture Pack, preload is impossible from ES
             choices:
                 "Off":                   0
-                "Normal":                1-normal
-                "Preload":               1-preload
+                "On":                    1-normal
+                #"Preload":               1-preload
         citra_is_new_3ds:
             prompt:      IS NEW 3DS
             description: New 3DS has a faster processor, ZL/ZR and C-Stick
