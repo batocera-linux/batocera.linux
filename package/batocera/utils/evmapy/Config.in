@@ -2,5 +2,6 @@ config BR2_PACKAGE_EVMAPY
         bool "python-evmapy"
 	select BR2_PACKAGE_PYTHON_EVDEV
 	select BR2_PACKAGE_PYTHON_SETUPTOOLS
+	select BR2_PACKAGE_INOTIFY_TOOLS # required to wait that evmapy is ready
         help
 	  https://github.com/kempniu/evmapy

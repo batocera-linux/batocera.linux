@@ -1,0 +1,15 @@
+diff --git a/evmapy/__main__.py b/evmapy/__main__.py
+index 5decfea..dda5483 100644
+--- a/evmapy/__main__.py
++++ b/evmapy/__main__.py
+@@ -122,7 +122,9 @@ def main(argv=sys.argv[1:]):
+         logger.info("%s %s initializing", info['name'], info['version'])
+         logger.info("running as user %s", "root")
+         logger.info("using configuration directory %s", info['config_dir'])
+-        evmapy.multiplexer.Multiplexer().run()
++        x = evmapy.multiplexer.Multiplexer()
++        open("/var/run/evmapy/ready", 'w').close() # ready flag
++        x.run()
+ 
+ 
+ if __name__ == "__main__":  # pragma: no cover
