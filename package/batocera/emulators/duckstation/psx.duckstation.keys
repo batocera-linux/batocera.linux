@@ -19,16 +19,22 @@
 	    "description": "Load State"
 	},
 	{
+            "trigger": ["hotkey", "a"],
+            "type": "key",
+            "target": [ "KEY_F7" ],
+	    "description": "Reset Iso"
+	},
+	{
             "trigger": ["hotkey", "b"],
             "type": "key",
-            "target": [ "KEY_PAUSE" ],
-	    "description": "X-Pause Emulator"
+            "target": [ "KEY_F6" ],
+	    "description": "QuickMenu"
 	},
 	{
             "trigger": ["hotkey", "pageup"],
             "type": "key",
             "target": [ "KEY_F10" ],
-	    "description": "L1-ScreenShot"
+	    "description": "ScreenShot"
 	},
 	{
             "trigger": ["hotkey", "up"],
@@ -52,7 +58,7 @@
             "trigger": ["hotkey", "pagedown"],
             "type": "key",
             "target": [ "KEY_F8" ],
-	    "description": "R1-Next Disc (m3u)"
+	    "description": "Next Disc (m3u)"
 	},
 	{
             "trigger": ["hotkey", "right"],
