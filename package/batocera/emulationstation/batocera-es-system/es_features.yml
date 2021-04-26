@@ -2624,23 +2624,23 @@ libretro:
                 prompt:      EXTERNAL PALETTE
                 description: Choose the most accurate colors
                 choices:
-                    "default":          default
-                    "colodore":         colodore
-                    "pepto-pal":        pepto-pal
-                    "pepto-ntsc":       pepto-ntsc
-                    "pepto-ntsc-sony":  pepto-ntsc-sony
-                    "cjam":             cjam
-                    "c64hq":            c64hq
-                    "c64s":             c64s
-                    "ccs64":            ccs64
-                    "community-colors": community-colors
-                    "deekay":           deekay
-                    "frodo":            frodo
-                    "godot":            godot
-                    "pc64":             pc64
-                    "ptoing":           ptoing
-                    "rgb":              rgb
-                    "vice":             vice
+                    "default":                  default
+                    "colodore":                 colodore
+                    "pepto-pal":                pepto-pal
+                    "pepto-ntsc":               pepto-ntsc
+                    "pepto-ntsc-sony":          pepto-ntsc-sony
+                    "cjam":                     cjam
+                    "c64hq":                    c64hq
+                    "c64s":                     c64s
+                    "ccs64":                    ccs64
+                    "community-colors":         community-colors
+                    "deekay":                   deekay
+                    "frodo":                    frodo
+                    "godot":                    godot
+                    "pc64":                     pc64
+                    "ptoing":                   ptoing
+                    "rgb":                      rgb
+                    "vice":                     vice
             aspect_ratio:
                 prompt:      ASPECT RATIO
                 description: Switch frequency and resolution by region
@@ -2651,22 +2651,36 @@ libretro:
                 prompt:      ZOOM MODE
                 description: Crops the borders to fit various host screens
                 choices:
-                    "Off":              none
-                    "small":            small
-                    "medium":           medium
-                    "maximum":          maximum
-            JoyPort:
-                prompt:      JOYSTICK PORT
-                description: Choose to use Joystick on port 1 or 2
+                    "Off":                      none
+                    "small":                    small
+                    "medium":                   medium
+                    "maximum":                  maximum
+            vice_joyport:
+                prompt:      CONTROLER PORT
+                description: Most games use port 2, some use port 1
                 choices:
-                    "Port 1":           Port 1
-                    "Port 2":           Port 2
+                    "Port 1":                   1
+                    "Port 2":                   2
+            vice_joyport_type:
+                prompt:      CONTROLER TYPE
+                description: Choose what type of controller to use
+                choices:
+                    "Joystick":                 1
+                    "Paddles":                  2
+                    "Mouse (1351)":             3
+                    #"Mouse (NEOS)":             4
+                    #"Mouse (Amiga)":            5
+                    "Trackball (Atari CX-22)":  6
+                    #"Mouse (Atari ST)":         7
+                    #"Mouse (SmartMouse)":       8
+                    #"Mouse (Micromys)":         9
+                    "Koalapad":                 10
             keyboard_pass_through:
                 prompt:      KEYBOARD PASS-THROUGH
                 description: Passes all physical keyboard events for Pad2Key
                 choices:
-                    "Off":              disabled
-                    "On":               enabled
+                    "Off":                      disabled
+                    "On":                       enabled
     vice_x64sc:
       features: [rewind, autosave, latency_reduction, padtokeyboard]
       cfeatures:
