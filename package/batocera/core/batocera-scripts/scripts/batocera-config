@@ -187,6 +187,7 @@ if [ "$command" = "canupdate" ];then
 	fi
 
 	#echo "Update url: ${updateurl}/${board}/${updatetype}/last"
+	test "${board}" = "rpi4" && board=rpi464 # "temporarly" download on rpi464 for rpi4
 	available=`wget -qO- ${updateurl}/${board}/${updatetype}/last/batocera.version`
 	if [ "$?" != "0" ];then
 	        echo "Unable to access the url" >&2
