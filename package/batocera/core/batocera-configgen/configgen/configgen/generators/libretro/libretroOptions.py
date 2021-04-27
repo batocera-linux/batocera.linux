@@ -1369,7 +1369,7 @@ def generateCoreSettings(coreSettings, system, rom):
             coreSettings.save('beetle_psx_enable_multitap_port1', '"disabled"')
             coreSettings.save('beetle_psx_enable_multitap_port2', '"disabled"')
 
-    if (system.config['core'] == 'duckstation'):
+    if (system.config['core'] == 'swanstation'):
         # Show official Bootlogo
         if system.isOptSet('duckstation_PatchFastBoot'):
             coreSettings.save('duckstation_BIOS.PatchFastBoot', system.config['duckstation_PatchFastBoot'])
