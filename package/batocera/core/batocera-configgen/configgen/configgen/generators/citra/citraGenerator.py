@@ -1,21 +1,27 @@
 #!/usr/bin/env python
 
 import Command
-import batoceraFiles
+import batoceraFiles # GLOBAL VARIABLES
 from generators.Generator import Generator
 import shutil
 import os
 from os import environ
 import configparser
 
+
 class CitraGenerator(Generator):
 
     # Main entry of the module
     def generate(self, system, rom, playersControllers, gameResolution):
-        CitraGenerator.writeCITRAConfig(batoceraFiles.citraConfig, system, playersControllers)
+        CitraGenerator.writeCITRAConfig(batoceraFiles.CONF + "/citra-emu/qt-config.ini", system, playersControllers)
 
         commandArray = [batoceraFiles.batoceraBins[system.config['emulator']], rom]
-        return Command.Command(array=commandArray, env={"XDG_CONFIG_HOME":batoceraFiles.CONF, "XDG_DATA_HOME":batoceraFiles.citraSaves, "XDG_CACHE_HOME":batoceraFiles.CACHE, "QT_QPA_PLATFORM":"xcb"})
+        return Command.Command(array=commandArray, env={ \
+        "XDG_CONFIG_HOME":batoceraFiles.CONF, \
+        "XDG_DATA_HOME":batoceraFiles.SAVES + "/3ds", \
+        "XDG_CACHE_HOME":batoceraFiles.CACHE, \
+        "XDG_RUNTIME_DIR":batoceraFiles.SAVES + "/3ds/citra-emu", \
+        "QT_QPA_PLATFORM":"xcb"})
 
     # Show mouse on screen
     def getMouseMode(self, config):
@@ -101,6 +107,16 @@ class CitraGenerator(Generator):
         if not citraConfig.has_section("Renderer"):
             citraConfig.add_section("Renderer")
 
+        # Force Hardware Rrendering / Shader or nothing works fine
+        citraConfig.set("Renderer", "use_hw_renderer", "true")
+        citraConfig.set("Renderer", "use_hw_shader",   "true")
+        citraConfig.set("Renderer", "use_shader_jit",  "true")
+
+        # Use VSYNC
+        if system.isOptSet('citra_use_vsync_new') and system.config["citra_use_vsync_new"] == '0':
+            citraConfig.set("Renderer", "use_vsync_new", "false")
+        else:
+            citraConfig.set("Renderer", "use_vsync_new", "true")
         # Resolution Factor
         if system.isOptSet('citra_resolution_factor'):
             citraConfig.set("Renderer", "resolution_factor", system.config["citra_resolution_factor"])
@@ -126,10 +142,10 @@ class CitraGenerator(Generator):
         if system.isOptSet('citra_custom_textures') and system.config["citra_custom_textures"] != '0':
             tab = system.config["citra_custom_textures"].split('-')
             citraConfig.set("Utility", "custom_textures",  "true")
-            if tab[0] == 'normal':
+            if tab[1] == 'normal':
                 citraConfig.set("Utility", "preload_textures", "false")
             else:
-                citraConfig.set("Utility", "preload_textures", "true")
+                citraConfig.set("Utility", "preload_textures", "true") # It's not working from ES for now, only from the emulator menu
         else:
             citraConfig.set("Utility", "custom_textures",  "false")
             citraConfig.set("Utility", "preload_textures", "false")
