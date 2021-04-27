@@ -76,8 +76,14 @@ class DuckstationGenerator(Generator):
         if not settings.has_section("Console"):
             settings.add_section("Console")
         # Region
-        settings.set("Console", "Region", "Auto")
-
+        if system.isOptSet("duckstation_region") and system.config["duckstation_region"] == 'PAL':
+            settings.set("Console", "Region", "PAL")
+        elif system.isOptSet("duckstation_region") and system.config["duckstation_region"] == 'NTSC-J':
+            settings.set("Console", "Region", "NTSC-J")
+        elif system.isOptSet("duckstation_region") and system.config["duckstation_region"] == 'NTSC-U':
+            settings.set("Console", "Region", "NTSC-U")
+        else:
+            settings.set("Console", "Region", "Auto")
 
         ## [BIOS]
         if not settings.has_section("BIOS"):
@@ -122,6 +128,11 @@ class DuckstationGenerator(Generator):
             settings.set("GPU", "WidescreenHack", "true")
         else:
             settings.set("GPU", "WidescreenHack", "false")
+        # Force 60hz
+        if system.isOptSet("duckstation_60hz") and system.config["duckstation_60hz"] == '1':
+           settings.set("GPU", "ForceNTSCTimings", "true")
+        else:
+           settings.set("GPU", "ForceNTSCTimings", "false")
         # TextureFiltering
         if system.isOptSet("duckstation_texture_filtering") and system.config["duckstation_texture_filtering"] != 'Nearest':
            settings.set("GPU", "TextureFilter", system.config["duckstation_texture_filtering"])
@@ -202,7 +213,7 @@ class DuckstationGenerator(Generator):
 
         # Force defaults to be aligned with evmapy
         settings.set("Hotkeys", "FastForward",                 "Keyboard/Tab")
-        settings.set("Hotkeys", "TogglePause",                 "Keyboard/Pause")
+        settings.set("Hotkeys", "Reset",                       "Keyboard/F6")
         settings.set("Hotkeys", "PowerOff",                    "Keyboard/Escape")
         settings.set("Hotkeys", "LoadSelectedSaveState",       "Keyboard/F1")
         settings.set("Hotkeys", "SaveSelectedSaveState",       "Keyboard/F2")
