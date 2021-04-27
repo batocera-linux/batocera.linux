@@ -834,6 +834,9 @@ config BR2_PACKAGE_BATOCERA_CONSOLE_SYSTEMS
 	# Fairchild Channel F
 	select BR2_PACKAGE_LIBRETRO_FREECHAF		# ALL
 
+	# Watara
+	select BR2_PACKAGE_LIBRETRO_WATARA		# ALL
+
 	help
 		All avaible systems for the selected architecture
 
