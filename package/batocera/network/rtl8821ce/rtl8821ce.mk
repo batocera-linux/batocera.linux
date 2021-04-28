@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-RTL8821CE_VERSION = 818ecc836a55b5b1c08da2bfb03fce5d67920b9e
+RTL8821CE_VERSION = 897e7c4c15dd5a0a569745dc223d969a26ff5bfc
 RTL8821CE_SITE = $(call github,tomaspinho,rtl8821ce,$(RTL8821CE_VERSION))
 RTL8821CE_LICENSE = GPL-2.0
 RTL8821CE_LICENSE_FILES = LICENSE
