@@ -13,3 +13,6 @@ class Generator(object):
 
     def getMouseMode(self, config):
         return False
+
+    def executionDirectory(self, config, rom):
+        return None

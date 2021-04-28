@@ -44,11 +44,9 @@ menu "System"
   menu "Gpu"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/gpu/gpu-aml/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/gpu/libmali/Config.in"
-    source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/gpu/mali-rk450/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/gpu/mali-t620-wayland/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/gpu/mali-T760/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/gpu/mali-T860/Config.in"
-    source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/gpu/mali-450/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/gpu/mali-opengles-sdk/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/gpu/mali-g52/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/gpu/mali-bifrost-module/Config.in"
@@ -180,6 +178,8 @@ menu "Emulators"
       source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/retroarch/libretro/libretro-melonds/Config.in"
       source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/retroarch/libretro/libretro-xmil/Config.in"
       source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/retroarch/libretro/libretro-fmsx/Config.in"
+      source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/retroarch/libretro/libretro-watara/Config.in"
+      source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/retroarch/libretro/libretro-genesisplusgx-wide/Config.in"
      endmenu
   endmenu
 
@@ -251,7 +251,8 @@ menu "Emulators"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/wine/mf/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/wine/vkd3d-proton/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/wine/vkd3d/Config.in"
-  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/wine/wine-mono/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/wine/wine-mono-proton/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/wine/wine-mono-lutris/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/python-pygame2/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/easyrpg/liblcf/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/easyrpg/easyrpg-player/Config.in"
@@ -273,10 +274,8 @@ if BR2_PACKAGE_KODI
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi/kodi19-resource-language-tr_tr/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi/kodi19-resource-language-zh_cn/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi/kodi19-resource-language-el_gr/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi/kodi-pvr-freebox/Config.in"
 endif
-
-  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi/kodi-superrepo-all/Config.in"
-  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi/kodi-superrepo-repositories/Config.in"
 endmenu
 
 menu "Looks"

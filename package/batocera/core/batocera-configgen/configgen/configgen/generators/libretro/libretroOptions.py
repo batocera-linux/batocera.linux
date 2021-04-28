@@ -125,11 +125,16 @@ def generateCoreSettings(coreSettings, system, rom):
             coreSettings.save('vice_external_palette', system.config['external_palette'])
         else:
             coreSettings.save('vice_external_palette', '"colodore"')
-        # Select Joystick Port
-        if system.isOptSet('JoyPort'):
-            coreSettings.save('vice_JoyPort', '"' + system.config['JoyPort'] + '"')
+        # Select Controller Port
+        if system.isOptSet('vice_joyport'):
+            coreSettings.save('vice_joyport', '"' + system.config['vice_joyport'] + '"')
         else:
-            coreSettings.save('vice_JoyPort', '"port 1"')
+            coreSettings.save('vice_joyport', '"2"')
+        # Select Controller Type
+        if system.isOptSet('vice_joyport_type'):
+            coreSettings.save('vice_joyport_type', '"' + system.config['vice_joyport_type'] + '"')
+        else:
+            coreSettings.save('vice_joyport_type', '"1"')
         # Keyboard Pass-through for Pad2Key
         if system.isOptSet('keyboard_pass_through'):
             coreSettings.save('vice_physical_keyboard_pass_through', system.config['keyboard_pass_through'])

@@ -6,11 +6,13 @@
 	* add: higher overclocking options to the rpi4 (requires heatsink & fan!)
 	* add: mame standalone bezels (standard mame bezels are to put in /userdata/decorations, or thebezelproject works too)
 	* add: libretro shaders for Vulkan (and fix LR-Mupen64plus on OpenGL)
-	* add: gamecube adaptator support
+	* add: gamecube adapter support
 	* add: add standalone emulators options in es
         - mupen64plus (n64)
         - duckstation (psx)
-	- cemu (wiiu)
+        - cemu (wiiu)
+	* add: duckstation advanced options
+	* fix: duckstation shared rumble between controllers
 	* es:  add pad battery indicator
 	* add: splash for x86_64 and rpi4
 	* add: virtual resolutions for games to limit the maximum resolution
@@ -18,29 +20,32 @@
 	* add: es.maxresolution is now renamed es.resolution in batocera-boot.conf and can take any value from listModes (aka max-1920x1080)
 	* add: es dolphin options to use custom pads from dolphin ui profile configuration
 	* bump: python to 3
-	* bump: kodi to 19
-	* bump: GCC compiler to 10.2
+	* bump: kodi to 19.0
+	* bump: GCC compiler to 10.3
 	* bump: Flycast
-	* bump: Daphne (Hypseus+Singe) to 2.3.0
+	* bump: Daphne (Hypseus+Singe) to 2.4.5
 	* bump: SwitchRes tool
 	* bump: libretro-blastem
 	* bump: libretro-flycast, enable on all boards except rpi1/rpi2
-	* bump: libretro-stella to 6.5.2
+	* bump: libretro-stella to 6.5.3
 	* bump: FS-UAE to 3.0.6
 	* bump: Dosbox-X to 0.83.12
 	* bump: RPCS3 to 0.0.15
-	* bump: mGBA to 0.9.0
+	* bump: mGBA to 0.9.1
 	* bump: amiberry to 4.1.2
 	* bump: Lutris to 6.4
 	* bump: Proton to 6.3
 	* bump: VKD3D-Proton to 2.3
-	* bump: Commander Genius to 2.7.9
+	* bump: Commander Genius to 2.8.0
 	* bump: Dolphin to 5.0-13963
 	* bump: DevilutionX (Diablo + Hellfire) to 1.2.1
-	* bump: Cemu to 1.22.10b
+	* bump: Cemu to 1.22.11c
 	* bump: Retroarch to v1.9.1
 	* bump: libretro cores
 	* bump: libretro 1.9.1
+	* bump: mesa3d to 21.0.3
+	* bump: LTS Kernel to 5.10.32
+	* bump: X86_64 to 5.12.x kernel
 	* fix: 8bitdo xinput
 	* fix: some resolution issues
 	* fix:  libretro emulators Options in es

@@ -58,16 +58,14 @@ def gamelist_xml_es(system, data, mode):
         return (1)
     try:
         if (mode in 'install'):
-            cnx.request(ES_SERVER + "/addgames/" + str(system).strip(), method="POST", body=body, headers=headers)
+            res, rout = cnx.request(ES_SERVER + "/addgames/" + str(system).strip(), method="POST", body=body, headers=headers)
         elif (mode in 'uninstall'):
-            cnx.request(ES_SERVER + "/removegames/" + str(system).strip(), method="POST", body=body, headers=headers)
-        res=cnx.getresponse()
-        rout=res.read()
+            res, rout = cnx.request(ES_SERVER + "/removegames/" + str(system).strip(), method="POST", body=body, headers=headers)
         if (res.status != 200):
             print ("WARNING: ES responded with #{} [{}] {}".format( \
                     res.status, res.reason, rout))
-    except:
-        print ("ERROR: Impossible to access ES service endpoints through " + ES_SERVER)
+    except Exception as e:
+        print ("ERROR: Impossible to access ES service endpoints through {}: {} ".format(ES_SERVER, e))
         return (1)
     return (0)
 

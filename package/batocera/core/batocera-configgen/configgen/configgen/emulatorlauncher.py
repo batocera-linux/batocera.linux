@@ -218,6 +218,11 @@ def main(args, maxnbplayers):
         # run the emulator
         try:
             Evmapy.start(systemName, system.config['emulator'], effectiveCore, effectiveRom, playersControllers)
+            # change directory if wanted
+            executionDirectory = generators[system.config['emulator']].executionDirectory(system.config, effectiveRom)
+            if executionDirectory is not None:
+                os.chdir(executionDirectory)
+
             exitCode = runCommand(generators[system.config['emulator']].generate(system, args.rom, playersControllers, gameResolution))
         finally:
             Evmapy.stop()

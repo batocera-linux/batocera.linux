@@ -153,3 +153,6 @@ class FpinballGenerator(Generator):
             if config["ratio"] == "16/9":
                 return 169
         return 43
+
+    def executionDirectory(self, config, rom):
+        return os.path.dirname(rom)

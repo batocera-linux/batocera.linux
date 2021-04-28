@@ -194,8 +194,8 @@ class DolphinGenerator(Generator):
                 dolphinGFXSettings.remove_option("Enhancements", "ForceTrueColor")  
 
         # Internal resolution settings
-        if system.isOptSet('internalresolution'):
-            dolphinGFXSettings.set("Settings", "InternalResolution", system.config["internalresolution"])
+        if system.isOptSet('internal_resolution'):
+            dolphinGFXSettings.set("Settings", "InternalResolution", system.config["internal_resolution"])
         else:
             dolphinGFXSettings.set("Settings", "InternalResolution", '"1"')
 

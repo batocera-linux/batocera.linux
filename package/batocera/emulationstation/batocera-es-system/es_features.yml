@@ -932,6 +932,8 @@ libretro:
                             "TWB74 - Wisteria Murasaki":        TWB74 - Wisteria Murasaki
                             "TWB75 - WonderSwan":               TWB75 - WonderSwan
                             "TWB76 - Yellow Banana":            TWB76 - Yellow Banana
+    genesisplusgx-wide:
+      features: [netplay, rewind, autosave, latency_reduction, cheevos]
     genesisplusgx:
       features: [netplay, rewind, autosave, latency_reduction, cheevos]
       cfeatures:
@@ -1275,9 +1277,9 @@ libretro:
                 choices:
                     #"None":                          0
                     "Digital Controller":            1
-                    #"Analog Controller":             261
-                    "Analog Controller (DualShock)": 517
-                    #"Analog Joystick":               773
+                    "Analog Controller":             261
+                    "DualShock Controller":          517
+                    "Analog Joystick (Flystick)":    773
                     "Namco GunCon":                  260
                     "NeGcon":                        1029
                     #"Justifier":                     516
@@ -1288,9 +1290,9 @@ libretro:
                 choices:
                     #"None":                          0
                     "Digital Controller":            1
-                    #"Analog Controller":             261
-                    "Analog Controller (DualShock)": 517
-                    #"Analog Joystick":               773
+                    "Analog Controller":             261
+                    "DualShock Controller":          517
+                    "Analog Joystick (Flystick)":    773
                     "Namco GunCon":                  260
                     "NeGcon":                        1029
                     #"Justifier":                     516
@@ -1897,8 +1899,8 @@ libretro:
                 choices:
                     #"None":                          0
                     "Digital Controller":            1
-                    #"Analog Controller":             261
-                    "Analog Controller (DualShock)": 517
+                    "Analog Controller":             261
+                    "DualShock Controller":          517
                     "Namco GunCon":                  260
                     "NeGcon":                        773
                     "PlayStation Mouse":             258
@@ -1908,8 +1910,8 @@ libretro:
                 choices:
                     #"None":                          0
                     "Digital Controller":            1
-                    #"Analog Controller":             261
-                    "Analog Controller (DualShock)": 517
+                    "Analog Controller":             261
+                    "DualShock Controller":          517
                     "Namco GunCon":                  260
                     "NeGcon":                        773
                     "PlayStation Mouse":             258
@@ -2624,23 +2626,23 @@ libretro:
                 prompt:      EXTERNAL PALETTE
                 description: Choose the most accurate colors
                 choices:
-                    "default":          default
-                    "colodore":         colodore
-                    "pepto-pal":        pepto-pal
-                    "pepto-ntsc":       pepto-ntsc
-                    "pepto-ntsc-sony":  pepto-ntsc-sony
-                    "cjam":             cjam
-                    "c64hq":            c64hq
-                    "c64s":             c64s
-                    "ccs64":            ccs64
-                    "community-colors": community-colors
-                    "deekay":           deekay
-                    "frodo":            frodo
-                    "godot":            godot
-                    "pc64":             pc64
-                    "ptoing":           ptoing
-                    "rgb":              rgb
-                    "vice":             vice
+                    "default":                  default
+                    "colodore":                 colodore
+                    "pepto-pal":                pepto-pal
+                    "pepto-ntsc":               pepto-ntsc
+                    "pepto-ntsc-sony":          pepto-ntsc-sony
+                    "cjam":                     cjam
+                    "c64hq":                    c64hq
+                    "c64s":                     c64s
+                    "ccs64":                    ccs64
+                    "community-colors":         community-colors
+                    "deekay":                   deekay
+                    "frodo":                    frodo
+                    "godot":                    godot
+                    "pc64":                     pc64
+                    "ptoing":                   ptoing
+                    "rgb":                      rgb
+                    "vice":                     vice
             aspect_ratio:
                 prompt:      ASPECT RATIO
                 description: Switch frequency and resolution by region
@@ -2651,22 +2653,36 @@ libretro:
                 prompt:      ZOOM MODE
                 description: Crops the borders to fit various host screens
                 choices:
-                    "Off":              none
-                    "small":            small
-                    "medium":           medium
-                    "maximum":          maximum
-            JoyPort:
-                prompt:      JOYSTICK PORT
-                description: Choose to use Joystick on port 1 or 2
+                    "Off":                      none
+                    "small":                    small
+                    "medium":                   medium
+                    "maximum":                  maximum
+            vice_joyport:
+                prompt:      CONTROLLER PORT
+                description: Most games use port 2, some use port 1
                 choices:
-                    "Port 1":           Port 1
-                    "Port 2":           Port 2
+                    "Port 1":                   1
+                    "Port 2":                   2
+            vice_joyport_type:
+                prompt:      CONTROLLER TYPE
+                description: Choose what type of controller to use
+                choices:
+                    "Joystick":                 1
+                    "Paddles":                  2
+                    "Mouse (1351)":             3
+                    #"Mouse (NEOS)":             4
+                    #"Mouse (Amiga)":            5
+                    "Trackball (Atari CX-22)":  6
+                    #"Mouse (Atari ST)":         7
+                    #"Mouse (SmartMouse)":       8
+                    #"Mouse (Micromys)":         9
+                    "Koalapad":                 10
             keyboard_pass_through:
                 prompt:      KEYBOARD PASS-THROUGH
                 description: Passes all physical keyboard events for Pad2Key
                 choices:
-                    "Off":              disabled
-                    "On":               enabled
+                    "Off":                      disabled
+                    "On":                       enabled
     vice_x64sc:
       features: [rewind, autosave, latency_reduction, padtokeyboard]
       cfeatures:
@@ -2789,6 +2805,8 @@ libretro:
                     "Port1":    port1
                     "Port2":    port2
                     "Port1+2":  port12
+    watara:
+      features: [cheevos]
 
 # Standalones
 
@@ -2855,6 +2873,12 @@ citra:
                 "8x (3200x1920)":        8
                 "9x (3600x2160)":        9
                 "10x (4000x2400)":       10
+        use_vsync_new:
+            prompt:      VSYNC
+            description: Fix the heavy screen tearing in games (heavy CPU)
+            choices:
+                "Off":                   0
+                "On":                    1
         citra_use_frame_limit:
             prompt:      FRAME LIMIT
             description: Disable will help some games, others will run too fast
@@ -2869,11 +2893,11 @@ citra:
                 "On":                    1
         citra_custom_textures:
             prompt:      CUSTOM TEXTURES
-            description: Permit to use HD Texture Pack, preload use more RAM
+            description: Use HD Texture Pack, preload is impossible from ES
             choices:
                 "Off":                   0
-                "Normal":                1-normal
-                "Preload":               1-preload
+                "On":                    1-normal
+                #"Preload":               1-preload
         citra_is_new_3ds:
             prompt:      IS NEW 3DS
             description: New 3DS has a faster processor, ZL/ZR and C-Stick
@@ -3050,118 +3074,131 @@ duckstation:
             prompt:      GRAPHICS BACKEND
             description: Choose your graphics rendering
             choices:
-                "OpenGL":                       OpenGL
-                "Vulkan":                       Vulkan
+                "OpenGL":                        OpenGL
+                "Vulkan":                        Vulkan
         duckstation_threadedpresentation:
             prompt:      VULKAN THREADED
             description: Can mesurably improve performance if Vsync disabled
             choices:
-                "Off":                          0
-                "On":                           1
+                "Off":                           0
+                "On":                            1
         duckstation_vsync:
             prompt:      VSYNC
             description: Fix the heavy screen tearing in games (heavy CPU)
             choices:
-                "Off":                          0
-                "On":                           1
+                "Off":                           0
+                "On":                            1
         duckstation_frameskip:
             prompt:      FRAME SKIP
             description: Skip frames to improve performance (Smoothless)
             choices:
-                "Off":                          0
-                "On":                           1
+                "Off":                           0
+                "On":                            1
         duckstation_PatchFastBoot:
             prompt:      SHOW BIOS BOOTLOGO
             description: Show BIOS animation when starting content
             choices:
-                "Off":                          1
-                "On":                           0
+                "Off":                           1
+                "On":                            0
         duckstation_resolution_scale:
             prompt:      VIDEO RESOLUTION
             description: Improve the fidelity of 3D models (unaffect 2D)
             choices:
-                "1x(native)":                   1
-                "2x":                           2
-                "3x/720p":                      3
-                "4x":                           4
-                "5x/1080p":                     5
-                "6x/1440p":                     6
-                "7x":                           7
-                "8x":                           8
-                "9x/4K":                        9
-                "10x":                          10
-                "11x":                          11
-                "12x":                          12
-                "13x":                          13
-                "14x":                          14
-                "15x":                          15
-                "16x":                          16
+                "1x(native)":                    1
+                "2x":                            2
+                "3x/720p":                       3
+                "4x":                            4
+                "5x/1080p":                      5
+                "6x/1440p":                      6
+                "7x":                            7
+                "8x":                            8
+                "9x/4K":                         9
+                "10x":                           10
+                "11x":                           11
+                "12x":                           12
+                "13x":                           13
+                "14x":                           14
+                "15x":                           15
+                "16x":                           16
         duckstation_antialiasing:
             prompt:      ANTI-ALIASING (MSAA/SSAA)
             description: Smooth out jagged edges on 3D objetcs polygons
             choices:
-                "Off":                          1
-                "2x msaa":                      2
-                "4x msaa":                      4
-                "8x msaa":                      8
-                "16x msaa":                     16
-                "32x msaa":                     32
-                "2x ssaa":                      2-ssaa
-                "4x ssaa":                      4-ssaa
-                "8x ssaa":                      8-ssaa
-                "16x ssaa":                     16-ssaa
-                "32x ssaa":                     32-ssaa
+                "Off":                           1
+                "2x msaa":                       2
+                "4x msaa":                       4
+                "8x msaa":                       8
+                "16x msaa":                      16
+                "32x msaa":                      32
+                "2x ssaa":                       2-ssaa
+                "4x ssaa":                       4-ssaa
+                "8x ssaa":                       8-ssaa
+                "16x ssaa":                      16-ssaa
+                "32x ssaa":                      32-ssaa
         duckstation_texture_filtering:
             prompt:      TEXTURE FILTERING
             description: Smooths out textures on 3D objetcs
             choices:
-                "Nearest-Neighbor":             Nearest
-                "Bilinear":                     Bilinear
-                "Bilinear (no Edge Blending)":  BilinearBinAlpha
-                "JINC2":                        Jinc2
-                "JINC2 (no Edge Blending)":     Jinc2BinAlpha
-                "xBR":                          xBR
-                "xBR (no Edge Blending)":       xBRBinAlpha
+                "Nearest-Neighbor":              Nearest
+                "Bilinear":                      Bilinear
+                "Bilinear (no Edge Blending)":   BilinearBinAlpha
+                "JINC2":                         Jinc2
+                "JINC2 (no Edge Blending)":      Jinc2BinAlpha
+                "xBR":                           xBR
+                "xBR (no Edge Blending)":        xBRBinAlpha
         duckstation_CropMode:
             prompt:      CROP MODE
             description: Changes how much of the image is cropped
             choices:
-                "Off":                          "None"
-                "Only Overscan Area":           "Overscan"
-                "All Borders":                  "Borders"
+                "Off":                           "None"
+                "Only Overscan Area":            "Overscan"
+                "All Borders":                   "Borders"
         duckstation_widescreen_hack:
             prompt:      WIDESCREEN HACK
             description: You must use a 16/9 RATIO and disable BEZEL
             choices:
-                "Off":                          0
-                "On":                           1
+                "Off":                           0
+                "On":                            1
+        duckstation_region:
+            prompt:      CONSOLE REGION
+            description: Change Region of Emulator
+            choices:
+                "Europe-Australia":              PAL
+                "USA-Canada":                    NTSC-U
+                "Japan":                         NTSC-J
+        duckstation_60hz:
+            prompt:      FORCE 60Hz
+            description: Force 60Hz NTSC Timing
+            choices:
+                "Off":                           0
+                "On":                            1
         duckstation_custom_textures:
             prompt:      CUSTOM TEXTURES
             description: Permit to use HD Texture Pack, preload use more RAM 
             choices:
-                "Off":                   0
-                "Normal":                normal
-                "Preload":               preload
+                "Off":                           0
+                "Normal":                        normal
+                "Preload":                       preload
         duckstation_rumble:
             prompt:      RUMBLE
             description: Activate vibration on supported controllers
             choices:
-                "Off":                          0
-                "On":                           1
+                "Off":                           0
+                "On":                            1
         duckstation_digitalmode:
             prompt:      DPAD TO JOYSTICK
             description: Use your Joystick as a Dpad with Analog controllers
             choices:
-                "Off":                          0
-                "On":                           1
+                "Off":                           0
+                "On":                            1
         duckstation_multitap:
             prompt:      MULTITAP
             description: Allows 5 or 8 max players support in games
             choices:
-                "Off":                          Disabled
-                "Port 1":                       Port1Only
-                "Port 2":                       Port2Only
-                "Port 1+2":                     BothPorts
+                "Off":                           Disabled
+                "Port 1":                        Port1Only
+                "Port 2":                        Port2Only
+                "Port 1+2":                      BothPorts
         duckstation_Controller1:
             prompt:      CONTROLLER 1 TYPE
             description: Use DualShock type for games with Rumble mode
