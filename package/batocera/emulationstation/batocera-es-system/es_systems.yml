@@ -1935,3 +1935,12 @@ model2:
     model2emu:
       model2emu: { requireAnyOf: [BR2_PACKAGE_MODEL2EMU] }
 
+scv:
+  name:       Super Cassette Vision
+  manufacturer: Epoch Co
+  release: 1984
+  hardware: console
+  extensions: [bin, zip, 7zip]
+  emulators:
+    libretro:
+      potator: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_EMUSCV] }
