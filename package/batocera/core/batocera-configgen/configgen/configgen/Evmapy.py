@@ -6,6 +6,8 @@ import re
 import os
 from utils.logger import eslog
 import evdev
+import time
+
 
 class Evmapy():
     # evmapy is a process that map pads to keyboards (for pygame for example)
@@ -16,7 +18,7 @@ class Evmapy():
         if Evmapy.__prepare(system, emulator, core, rom, playersControllers):
             Evmapy.__started = True
         subprocess.call(["batocera-evmapy", "start"])
-
+        time.sleep(3) #force to sleep 3 seconds, to be able to be launched
     @staticmethod
     def stop():
         if Evmapy.__started:

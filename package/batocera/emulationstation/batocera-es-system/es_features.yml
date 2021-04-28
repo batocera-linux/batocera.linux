@@ -3732,6 +3732,18 @@ lightspark:
 
 drastic:
   features: []
+        drastic_hires:
+            prompt:      HI-RES
+            description: Greatly Improve 3D Models
+            choices:
+                "Off": 0
+                "On":  1
+        drastic_hires:
+            prompt:      THREADED 3D
+            description: Improves perf in 3D - can cause glitches
+            choices:
+                "Off": 0
+                "On":  1
 
 xemu:
   features: []
