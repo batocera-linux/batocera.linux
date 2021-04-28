@@ -1,4 +1,4 @@
-From 669adf695f98a9566741ab25f59c24ed619a456e Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Jernej Skrabec <jernej.skrabec@siol.net>
 Date: Sat, 26 Oct 2019 13:55:15 +0200
 Subject: [PATCH] media: uapi: hevc: Add scaling matrix control
@@ -78,7 +78,7 @@ index d585909bc4e2..f817c643761b 100644
  	Buffers associated with this pixel format must contain the appropriate
  	number of macroblocks to decode a full corresponding frame.
 diff --git a/drivers/media/v4l2-core/v4l2-ctrls.c b/drivers/media/v4l2-core/v4l2-ctrls.c
-index a88e962ac8a1..4267ba536013 100644
+index 1666a7ec873a..92bbfb81610d 100644
 --- a/drivers/media/v4l2-core/v4l2-ctrls.c
 +++ b/drivers/media/v4l2-core/v4l2-ctrls.c
 @@ -1026,6 +1026,7 @@ const char *v4l2_ctrl_get_name(u32 id)
@@ -109,7 +109,7 @@ index a88e962ac8a1..4267ba536013 100644
  	case V4L2_CTRL_TYPE_AREA:
  		area = p;
  		if (!area->width || !area->height)
-@@ -2865,6 +2872,9 @@ static struct v4l2_ctrl *v4l2_ctrl_new(struct v4l2_ctrl_handler *hdl,
+@@ -2866,6 +2873,9 @@ static struct v4l2_ctrl *v4l2_ctrl_new(struct v4l2_ctrl_handler *hdl,
  	case V4L2_CTRL_TYPE_HEVC_SLICE_PARAMS:
  		elem_size = sizeof(struct v4l2_ctrl_hevc_slice_params);
  		break;
@@ -154,7 +154,7 @@ index 1009cf0891cc..1592e52c3614 100644
 +
  #endif
 
-From 440e3efbf4c5340a7e69329fb75f40756a800a48 Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Jernej Skrabec <jernej.skrabec@siol.net>
 Date: Sat, 26 Oct 2019 15:42:28 +0200
 Subject: [PATCH] media: uapi: hevc: Add segment address field
@@ -217,7 +217,7 @@ index 1592e52c3614..3e2e32098312 100644
  	/* ISO/IEC 23008-2, ITU-T Rec. H.265: General slice segment header */
  	struct v4l2_hevc_dpb_entry dpb[V4L2_HEVC_DPB_ENTRIES_NUM_MAX];
 
-From 858acf136fbac4923e04d8faeb0e18d8fcb446c0 Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Jonas Karlman <jonas@kwiboo.se>
 Date: Sat, 23 May 2020 15:03:46 +0000
 Subject: [PATCH] WIP: media: uapi: hevc: add fields needed for rkvdec
@@ -287,7 +287,7 @@ index 3e2e32098312..3cc3b47e1417 100644
  	/* ISO/IEC 23008-2, ITU-T Rec. H.265: General slice segment header */
  	struct v4l2_hevc_dpb_entry dpb[V4L2_HEVC_DPB_ENTRIES_NUM_MAX];
 
-From 2442d3b1ae900e75f19cbfcdc506e3dd06f12042 Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Jonas Karlman <jonas@kwiboo.se>
 Date: Sat, 23 May 2020 15:07:15 +0000
 Subject: [PATCH] HACK: media: uapi: hevc: tiles and num_slices
@@ -330,7 +330,7 @@ index 3cc3b47e1417..b33e1a8141e1 100644
  	/* ISO/IEC 23008-2, ITU-T Rec. H.265: General slice segment header */
  	struct v4l2_hevc_dpb_entry dpb[V4L2_HEVC_DPB_ENTRIES_NUM_MAX];
 
-From e7453ce1b822f9abc7b29460edd6d6b0a01d1eac Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Jonas Karlman <jonas@kwiboo.se>
 Date: Sat, 23 May 2020 15:17:45 +0000
 Subject: [PATCH] WIP: media: rkvdec: add HEVC backend
@@ -2886,10 +2886,10 @@ index 000000000000..03ba848411c6
 +	.run = rkvdec_hevc_run,
 +};
 diff --git a/drivers/staging/media/rkvdec/rkvdec-regs.h b/drivers/staging/media/rkvdec/rkvdec-regs.h
-index 15b9bee92016..83bf790ed9b7 100644
+index 3acc914888f6..4addfaefdfb4 100644
 --- a/drivers/staging/media/rkvdec/rkvdec-regs.h
 +++ b/drivers/staging/media/rkvdec/rkvdec-regs.h
-@@ -43,6 +43,7 @@
+@@ -48,6 +48,7 @@
  #define RKVDEC_RLC_MODE					BIT(11)
  #define RKVDEC_STRM_START_BIT(x)			(((x) & 0x7f) << 12)
  #define RKVDEC_MODE(x)					(((x) & 0x03) << 20)
@@ -2898,10 +2898,10 @@ index 15b9bee92016..83bf790ed9b7 100644
  #define RKVDEC_MODE_VP9					2
  #define RKVDEC_RPS_MODE					BIT(24)
 diff --git a/drivers/staging/media/rkvdec/rkvdec.c b/drivers/staging/media/rkvdec/rkvdec.c
-index 073a7b0fd7b0..315894fc511b 100644
+index 7b4ac2292751..c005e2fba128 100644
 --- a/drivers/staging/media/rkvdec/rkvdec.c
 +++ b/drivers/staging/media/rkvdec/rkvdec.c
-@@ -159,6 +159,61 @@ static const u32 rkvdec_h264_decoded_fmts[] = {
+@@ -162,6 +162,61 @@ static const u32 rkvdec_h264_decoded_fmts[] = {
  	V4L2_PIX_FMT_NV20,
  };
  
@@ -2963,7 +2963,7 @@ index 073a7b0fd7b0..315894fc511b 100644
  static const struct rkvdec_ctrl_desc rkvdec_vp9_ctrl_descs[] = {
  	{
  		.mandatory = true,
-@@ -209,6 +264,21 @@ static const struct rkvdec_coded_fmt_desc rkvdec_coded_fmts[] = {
+@@ -212,6 +267,21 @@ static const struct rkvdec_coded_fmt_desc rkvdec_coded_fmts[] = {
  		.num_decoded_fmts = ARRAY_SIZE(rkvdec_h264_decoded_fmts),
  		.decoded_fmts = rkvdec_h264_decoded_fmts,
  	},
@@ -2986,10 +2986,10 @@ index 073a7b0fd7b0..315894fc511b 100644
  		.fourcc = V4L2_PIX_FMT_VP9_FRAME,
  		.frmsize = {
 diff --git a/drivers/staging/media/rkvdec/rkvdec.h b/drivers/staging/media/rkvdec/rkvdec.h
-index 68d268f37c86..a801668f5f7b 100644
+index d760c3609e2c..975fe4b5dd68 100644
 --- a/drivers/staging/media/rkvdec/rkvdec.h
 +++ b/drivers/staging/media/rkvdec/rkvdec.h
-@@ -124,6 +124,7 @@ void rkvdec_run_preamble(struct rkvdec_ctx *ctx, struct rkvdec_run *run);
+@@ -132,6 +132,7 @@ void rkvdec_run_preamble(struct rkvdec_ctx *ctx, struct rkvdec_run *run);
  void rkvdec_run_postamble(struct rkvdec_ctx *ctx, struct rkvdec_run *run);
  
  extern const struct rkvdec_coded_fmt_ops rkvdec_h264_fmt_ops;
@@ -2998,7 +2998,7 @@ index 68d268f37c86..a801668f5f7b 100644
  
  #endif /* RKVDEC_H_ */
 
-From c4d8468621327805f65b028779e035c35a65613c Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Jonas Karlman <jonas@kwiboo.se>
 Date: Sat, 1 Aug 2020 12:24:58 +0000
 Subject: [PATCH] WIP: media: rkvdec: add HEVC format validation
@@ -3038,10 +3038,10 @@ index 03ba848411c6..b8ad7fc2271c 100644
  	.stop = rkvdec_hevc_stop,
  	.run = rkvdec_hevc_run,
 diff --git a/drivers/staging/media/rkvdec/rkvdec.c b/drivers/staging/media/rkvdec/rkvdec.c
-index 315894fc511b..3108d06ef7e0 100644
+index c005e2fba128..55a54a1f8496 100644
 --- a/drivers/staging/media/rkvdec/rkvdec.c
 +++ b/drivers/staging/media/rkvdec/rkvdec.c
-@@ -76,6 +76,26 @@ static int rkvdec_try_ctrl(struct v4l2_ctrl *ctrl)
+@@ -79,6 +79,26 @@ static int rkvdec_try_ctrl(struct v4l2_ctrl *ctrl)
  		if (width > ctx->coded_fmt.fmt.pix_mp.width ||
  		    height > ctx->coded_fmt.fmt.pix_mp.height)
  			return -EINVAL;
@@ -3068,7 +3068,7 @@ index 315894fc511b..3108d06ef7e0 100644
  	}
  	return 0;
  }
-@@ -84,7 +104,7 @@ static int rkvdec_s_ctrl(struct v4l2_ctrl *ctrl)
+@@ -87,7 +107,7 @@ static int rkvdec_s_ctrl(struct v4l2_ctrl *ctrl)
  {
  	struct rkvdec_ctx *ctx = container_of(ctrl->handler, struct rkvdec_ctx, ctrl_hdl);
  
@@ -3077,7 +3077,7 @@ index 315894fc511b..3108d06ef7e0 100644
  		ctx->valid_fmt = rkvdec_valid_fmt(ctx, ctrl);
  		if (ctx->valid_fmt) {
  			struct v4l2_pix_format_mplane *pix_mp;
-@@ -170,6 +190,7 @@ static const struct rkvdec_ctrl_desc rkvdec_hevc_ctrl_descs[] = {
+@@ -173,6 +193,7 @@ static const struct rkvdec_ctrl_desc rkvdec_hevc_ctrl_descs[] = {
  	{
  		.mandatory = true,
  		.cfg.id = V4L2_CID_MPEG_VIDEO_HEVC_SPS,
@@ -3085,6 +3085,141 @@ index 315894fc511b..3108d06ef7e0 100644
  	},
  	{
  		.mandatory = true,
+
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Alex Bee <knaerzche@gmail.com>
+Date: Wed, 14 Apr 2021 18:01:21 +0200
+Subject: [PATCH] WIP: media: rkvdec: hevc: Fix column width / row height
+ calculation for no-tiled case
+
+Signed-off-by: Alex Bee <knaerzche@gmail.com>
+---
+ drivers/staging/media/rkvdec/rkvdec-hevc.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/staging/media/rkvdec/rkvdec-hevc.c b/drivers/staging/media/rkvdec/rkvdec-hevc.c
+index a6be4eebef74..8a94fc04980f 100644
+--- a/drivers/staging/media/rkvdec/rkvdec-hevc.c
++++ b/drivers/staging/media/rkvdec/rkvdec-hevc.c
+@@ -2164,9 +2164,9 @@ static void assemble_hw_pps(struct rkvdec_ctx *ctx,
+ 		for (i = 0; i <= pps->num_tile_rows_minus1; i++)
+ 			WRITE_PPS(pps->row_height_minus1[i], ROW_HEIGHT(i));
+ 	} else {
+-		WRITE_PPS(round_up(sps->pic_width_in_luma_samples, ctb_size_y) - 1,
++		WRITE_PPS(((sps->pic_width_in_luma_samples + ctb_size_y - 1) / ctb_size_y) - 1,
+ 			  COLUMN_WIDTH(0));
+-		WRITE_PPS(round_up(sps->pic_height_in_luma_samples, ctb_size_y) - 1,
++		WRITE_PPS(((sps->pic_height_in_luma_samples + ctb_size_y - 1) / ctb_size_y) - 1,
+ 			  ROW_HEIGHT(0));
+ 	}
+ 
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Alex Bee <knaerzche@gmail.com>
+Date: Wed, 14 Apr 2021 17:26:43 +0200
+Subject: [PATCH] WIP: media: rkvdec: hevc: fix long ref decoding
+
+Signed-off-by: Alex Bee <knaerzche@gmail.com>
+---
+ drivers/staging/media/rkvdec/rkvdec-hevc.c | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/staging/media/rkvdec/rkvdec-hevc.c b/drivers/staging/media/rkvdec/rkvdec-hevc.c
+index b8ad7fc2271c..7c6d46bc69e9 100644
+--- a/drivers/staging/media/rkvdec/rkvdec-hevc.c
++++ b/drivers/staging/media/rkvdec/rkvdec-hevc.c
+@@ -2194,8 +2194,8 @@ static void assemble_hw_rps(struct rkvdec_ctx *ctx,
+ #define REF_PIC_IDX_L1(i)			PS_FIELD((i < 4 ? 76 : 128) + (i * 5), 4)
+ 
+ #define LOWDELAY				PS_FIELD(182, 1)
+-#define SHORT_TERM_REF_PIC_SET_SIZE		PS_FIELD(183, 10)
+-#define LONG_TERM_REF_PIC_SET_SIZE		PS_FIELD(193, 9)
++#define LONG_TERM_RPS_BIT_OFFSET		PS_FIELD(183, 10)
++#define SHORT_TERM_RPS_BIT_OFFSET		PS_FIELD(193, 9)
+ #define NUM_RPS_POC				PS_FIELD(202, 4)
+ 
+ 	for (j = 0; j < run->num_slices; j++) {
+@@ -2222,11 +2222,11 @@ static void assemble_hw_rps(struct rkvdec_ctx *ctx,
+ 		// TODO: lowdelay
+ 		WRITE_RPS(0, LOWDELAY);
+ 
+-		// NOTE: these two differs from mpp
++		WRITE_RPS(sl_params->long_term_ref_pic_set_size +
++			  sl_params->short_term_ref_pic_set_size,
++			  LONG_TERM_RPS_BIT_OFFSET);
+ 		WRITE_RPS(sl_params->short_term_ref_pic_set_size,
+-			  SHORT_TERM_REF_PIC_SET_SIZE);
+-		WRITE_RPS(sl_params->long_term_ref_pic_set_size,
+-			  LONG_TERM_REF_PIC_SET_SIZE);
++			  SHORT_TERM_RPS_BIT_OFFSET);
+ 
+ 		WRITE_RPS(sl_params->num_rps_poc_st_curr_before +
+ 			  sl_params->num_rps_poc_st_curr_after +
+
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Alex Bee <knaerzche@gmail.com>
+Date: Thu, 15 Apr 2021 20:22:54 +0200
+Subject: [PATCH] WIP: media: rkvdec: hevc: implement lowdelay
+
+Signed-off-by: Alex Bee <knaerzche@gmail.com>
+---
+ drivers/staging/media/rkvdec/rkvdec-hevc.c | 16 ++++++++++++++--
+ include/media/hevc-ctrls.h                 |  1 +
+ 2 files changed, 15 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/staging/media/rkvdec/rkvdec-hevc.c b/drivers/staging/media/rkvdec/rkvdec-hevc.c
+index 7c6d46bc69e9..a6be4eebef74 100644
+--- a/drivers/staging/media/rkvdec/rkvdec-hevc.c
++++ b/drivers/staging/media/rkvdec/rkvdec-hevc.c
+@@ -2185,6 +2185,7 @@ static void assemble_hw_rps(struct rkvdec_ctx *ctx,
+ 	struct rkvdec_hevc_priv_tbl *priv_tbl = hevc_ctx->priv_tbl.cpu;
+ 	struct rkvdec_rps_packet *hw_ps;
+ 	int i, j;
++	unsigned int lowdelay;
+ 
+ #define WRITE_RPS(value, field) set_ps_field(hw_ps->info, field, value)
+ 
+@@ -2201,6 +2202,7 @@ static void assemble_hw_rps(struct rkvdec_ctx *ctx,
+ 	for (j = 0; j < run->num_slices; j++) {
+ 		sl_params = &run->slices_params[j];
+ 		dpb = sl_params->dpb;
++		lowdelay = 0;
+ 
+ 		hw_ps = &priv_tbl->rps[j];
+ 		memset(hw_ps, 0, sizeof(*hw_ps));
+@@ -2219,8 +2221,18 @@ static void assemble_hw_rps(struct rkvdec_ctx *ctx,
+ 
+ 		//WRITE_RPS(0xffffffff, PS_FIELD(96, 32));
+ 
+-		// TODO: lowdelay
+-		WRITE_RPS(0, LOWDELAY);
++		if (sl_params->slice_type != V4L2_HEVC_SLICE_TYPE_I &&
++		   !(!!(sl_params->flags & V4L2_HEVC_SLICE_PARAMS_FLAG_DEPENDENT_SLICE_SEGMENT))) {
++			lowdelay = 1;
++			for (i = 0; i < sl_params->num_active_dpb_entries; i++) {
++				if (dpb[i].pic_order_cnt[0] > sl_params->slice_pic_order_cnt) {
++					lowdelay = 0;
++					break;
++				}
++			}
++		}
++
++		WRITE_RPS(lowdelay, LOWDELAY);
+ 
+ 		WRITE_RPS(sl_params->long_term_ref_pic_set_size +
+ 			  sl_params->short_term_ref_pic_set_size,
+diff --git a/include/media/hevc-ctrls.h b/include/media/hevc-ctrls.h
+index b33e1a8141e1..bda0ea61f331 100644
+--- a/include/media/hevc-ctrls.h
++++ b/include/media/hevc-ctrls.h
+@@ -168,6 +168,7 @@ struct v4l2_hevc_pred_weight_table {
+ #define V4L2_HEVC_SLICE_PARAMS_FLAG_USE_INTEGER_MV		(1ULL << 6)
+ #define V4L2_HEVC_SLICE_PARAMS_FLAG_SLICE_DEBLOCKING_FILTER_DISABLED (1ULL << 7)
+ #define V4L2_HEVC_SLICE_PARAMS_FLAG_SLICE_LOOP_FILTER_ACROSS_SLICES_ENABLED (1ULL << 8)
++#define V4L2_HEVC_SLICE_PARAMS_FLAG_DEPENDENT_SLICE_SEGMENT   (1ULL << 9)
+ 
+ struct v4l2_ctrl_hevc_slice_params {
+ 	__u32	bit_size;
+
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Alex Bee <knaerzche@gmail.com>
 Date: Sat, 30 Jan 2021 18:16:39 +0100
@@ -3107,10 +3242,10 @@ Signed-off-by: Alex Bee <knaerzche@gmail.com>
  2 files changed, 84 insertions(+), 30 deletions(-)
 
 diff --git a/drivers/staging/media/rkvdec/rkvdec.c b/drivers/staging/media/rkvdec/rkvdec.c
-index 3108d06ef7e0..18ae1b15d0a4 100644
+index 55a54a1f8496..2a056413e4b4 100644
 --- a/drivers/staging/media/rkvdec/rkvdec.c
 +++ b/drivers/staging/media/rkvdec/rkvdec.c
-@@ -13,6 +13,7 @@
+@@ -14,6 +14,7 @@
  #include <linux/interrupt.h>
  #include <linux/module.h>
  #include <linux/of.h>
@@ -3118,7 +3253,7 @@ index 3108d06ef7e0..18ae1b15d0a4 100644
  #include <linux/platform_device.h>
  #include <linux/pm.h>
  #include <linux/pm_runtime.h>
-@@ -270,21 +271,6 @@ static const u32 rkvdec_vp9_decoded_fmts[] = {
+@@ -273,21 +274,6 @@ static const u32 rkvdec_vp9_decoded_fmts[] = {
  };
  
  static const struct rkvdec_coded_fmt_desc rkvdec_coded_fmts[] = {
@@ -3140,7 +3275,7 @@ index 3108d06ef7e0..18ae1b15d0a4 100644
  	{
  		.fourcc = V4L2_PIX_FMT_HEVC_SLICE,
  		.frmsize = {
-@@ -299,6 +285,23 @@ static const struct rkvdec_coded_fmt_desc rkvdec_coded_fmts[] = {
+@@ -302,6 +288,23 @@ static const struct rkvdec_coded_fmt_desc rkvdec_coded_fmts[] = {
  		.ops = &rkvdec_hevc_fmt_ops,
  		.num_decoded_fmts = ARRAY_SIZE(rkvdec_hevc_decoded_fmts),
  		.decoded_fmts = rkvdec_hevc_decoded_fmts,
@@ -3164,7 +3299,7 @@ index 3108d06ef7e0..18ae1b15d0a4 100644
  	},
  	{
  		.fourcc = V4L2_PIX_FMT_VP9_FRAME,
-@@ -314,16 +317,31 @@ static const struct rkvdec_coded_fmt_desc rkvdec_coded_fmts[] = {
+@@ -317,16 +320,31 @@ static const struct rkvdec_coded_fmt_desc rkvdec_coded_fmts[] = {
  		.ops = &rkvdec_vp9_fmt_ops,
  		.num_decoded_fmts = ARRAY_SIZE(rkvdec_vp9_decoded_fmts),
  		.decoded_fmts = rkvdec_vp9_decoded_fmts,
@@ -3176,11 +3311,10 @@ index 3108d06ef7e0..18ae1b15d0a4 100644
  static const struct rkvdec_coded_fmt_desc *
 -rkvdec_find_coded_fmt_desc(u32 fourcc)
 +rkvdec_default_coded_fmt_desc(unsigned int capabilities)
- {
- 	unsigned int i;
- 
- 	for (i = 0; i < ARRAY_SIZE(rkvdec_coded_fmts); i++) {
--		if (rkvdec_coded_fmts[i].fourcc == fourcc)
++{
++	unsigned int i;
++
++	for (i = 0; i < ARRAY_SIZE(rkvdec_coded_fmts); i++) {
 +		if (rkvdec_coded_fmts[i].capability & capabilities)
 +			return &rkvdec_coded_fmts[i];
 +	}
@@ -3190,16 +3324,17 @@ index 3108d06ef7e0..18ae1b15d0a4 100644
 +
 +static const struct rkvdec_coded_fmt_desc *
 +rkvdec_find_coded_fmt_desc(u32 fourcc, unsigned int capabilities)
-+{
-+	unsigned int i;
-+
-+	for (i = 0; i < ARRAY_SIZE(rkvdec_coded_fmts); i++) {
+ {
+ 	unsigned int i;
+ 
+ 	for (i = 0; i < ARRAY_SIZE(rkvdec_coded_fmts); i++) {
+-		if (rkvdec_coded_fmts[i].fourcc == fourcc)
 +		if (rkvdec_coded_fmts[i].fourcc == fourcc &&
 +		    (rkvdec_coded_fmts[i].capability & capabilities))
  			return &rkvdec_coded_fmts[i];
  	}
  
-@@ -346,7 +364,7 @@ static void rkvdec_reset_coded_fmt(struct rkvdec_ctx *ctx)
+@@ -349,7 +367,7 @@ static void rkvdec_reset_coded_fmt(struct rkvdec_ctx *ctx)
  {
  	struct v4l2_format *f = &ctx->coded_fmt;
  
@@ -3208,7 +3343,7 @@ index 3108d06ef7e0..18ae1b15d0a4 100644
  	rkvdec_reset_fmt(ctx, f, ctx->coded_fmt_desc->fourcc);
  
  	f->type = V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE;
-@@ -373,11 +391,13 @@ static int rkvdec_enum_framesizes(struct file *file, void *priv,
+@@ -376,11 +394,13 @@ static int rkvdec_enum_framesizes(struct file *file, void *priv,
  				  struct v4l2_frmsizeenum *fsize)
  {
  	const struct rkvdec_coded_fmt_desc *fmt;
@@ -3223,7 +3358,7 @@ index 3108d06ef7e0..18ae1b15d0a4 100644
  	if (!fmt)
  		return -EINVAL;
  
-@@ -448,10 +468,11 @@ static int rkvdec_try_output_fmt(struct file *file, void *priv,
+@@ -451,10 +471,11 @@ static int rkvdec_try_output_fmt(struct file *file, void *priv,
  	struct rkvdec_ctx *ctx = fh_to_rkvdec_ctx(priv);
  	const struct rkvdec_coded_fmt_desc *desc;
  
@@ -3238,7 +3373,7 @@ index 3108d06ef7e0..18ae1b15d0a4 100644
  	}
  
  	v4l2_apply_frmsize_constraints(&pix_mp->width,
-@@ -538,7 +559,8 @@ static int rkvdec_s_output_fmt(struct file *file, void *priv,
+@@ -541,7 +562,8 @@ static int rkvdec_s_output_fmt(struct file *file, void *priv,
  	if (ret)
  		return ret;
  
@@ -3248,7 +3383,7 @@ index 3108d06ef7e0..18ae1b15d0a4 100644
  	if (!desc)
  		return -EINVAL;
  	ctx->coded_fmt_desc = desc;
-@@ -586,7 +608,10 @@ static int rkvdec_g_capture_fmt(struct file *file, void *priv,
+@@ -589,7 +611,10 @@ static int rkvdec_g_capture_fmt(struct file *file, void *priv,
  static int rkvdec_enum_output_fmt(struct file *file, void *priv,
  				  struct v4l2_fmtdesc *f)
  {
@@ -3260,7 +3395,7 @@ index 3108d06ef7e0..18ae1b15d0a4 100644
  		return -EINVAL;
  
  	f->pixelformat = rkvdec_coded_fmts[f->index].fourcc;
-@@ -1012,14 +1037,17 @@ static int rkvdec_init_ctrls(struct rkvdec_ctx *ctx)
+@@ -1041,14 +1066,17 @@ static int rkvdec_init_ctrls(struct rkvdec_ctx *ctx)
  	int ret;
  
  	for (i = 0; i < ARRAY_SIZE(rkvdec_coded_fmts); i++)
@@ -3282,7 +3417,7 @@ index 3108d06ef7e0..18ae1b15d0a4 100644
  	}
  
  	ret = v4l2_ctrl_handler_setup(&ctx->ctrl_hdl);
-@@ -1217,8 +1245,17 @@ static void rkvdec_watchdog_func(struct work_struct *work)
+@@ -1252,8 +1280,17 @@ static void rkvdec_watchdog_func(struct work_struct *work)
  	}
  }
  
@@ -3301,7 +3436,7 @@ index 3108d06ef7e0..18ae1b15d0a4 100644
  	{ /* sentinel */ }
  };
  MODULE_DEVICE_TABLE(of, of_rkvdec_match);
-@@ -1231,6 +1268,7 @@ static int rkvdec_probe(struct platform_device *pdev)
+@@ -1266,6 +1303,7 @@ static int rkvdec_probe(struct platform_device *pdev)
  {
  	struct rkvdec_dev *rkvdec;
  	struct resource *res;
@@ -3309,7 +3444,7 @@ index 3108d06ef7e0..18ae1b15d0a4 100644
  	unsigned int i;
  	int ret, irq;
  
-@@ -1256,6 +1294,12 @@ static int rkvdec_probe(struct platform_device *pdev)
+@@ -1291,6 +1329,12 @@ static int rkvdec_probe(struct platform_device *pdev)
  	if (ret)
  		return ret;
  
@@ -3323,12 +3458,12 @@ index 3108d06ef7e0..18ae1b15d0a4 100644
  	 * Bump ACLK to max. possible freq. (500 MHz) to improve performance
  	 * When 4k video playback.
 diff --git a/drivers/staging/media/rkvdec/rkvdec.h b/drivers/staging/media/rkvdec/rkvdec.h
-index a801668f5f7b..ff1cfd89a1e0 100644
+index 975fe4b5dd68..cc505bc4a042 100644
 --- a/drivers/staging/media/rkvdec/rkvdec.h
 +++ b/drivers/staging/media/rkvdec/rkvdec.h
-@@ -22,6 +22,10 @@
- #include <media/videobuf2-core.h>
- #include <media/videobuf2-dma-contig.h>
+@@ -29,6 +29,10 @@
+ 
+ #define RKVDEC_RESET_DELAY	5
  
 +#define RKVDEC_CAPABILITY_H264	BIT(0)
 +#define RKVDEC_CAPABILITY_HEVC	BIT(1)
@@ -3337,7 +3472,7 @@ index a801668f5f7b..ff1cfd89a1e0 100644
  struct rkvdec_ctx;
  
  struct rkvdec_ctrl_desc {
-@@ -64,6 +68,10 @@ vb2_to_rkvdec_decoded_buf(struct vb2_buffer *buf)
+@@ -71,6 +75,10 @@ vb2_to_rkvdec_decoded_buf(struct vb2_buffer *buf)
  			    base.vb.vb2_buf);
  }
  
@@ -3348,7 +3483,7 @@ index a801668f5f7b..ff1cfd89a1e0 100644
  struct rkvdec_coded_fmt_ops {
  	int (*adjust_fmt)(struct rkvdec_ctx *ctx,
  			  struct v4l2_format *f);
-@@ -83,6 +91,7 @@ struct rkvdec_coded_fmt_desc {
+@@ -90,6 +98,7 @@ struct rkvdec_coded_fmt_desc {
  	const struct rkvdec_coded_fmt_ops *ops;
  	unsigned int num_decoded_fmts;
  	const u32 *decoded_fmts;
@@ -3356,10 +3491,10 @@ index a801668f5f7b..ff1cfd89a1e0 100644
  };
  
  struct rkvdec_dev {
-@@ -96,6 +105,7 @@ struct rkvdec_dev {
- 	struct mutex vdev_lock; /* serializes ioctls */
+@@ -104,6 +113,7 @@ struct rkvdec_dev {
  	struct delayed_work watchdog_work;
- 	bool soft_reset;
+ 	struct reset_control *rstc;
+ 	u8 reset_mask;
 +	unsigned int capabilities;
  };
  
@@ -3379,10 +3514,10 @@ Signed-off-by: Alex Bee <knaerzche@gmail.com>
  1 file changed, 8 insertions(+)
 
 diff --git a/drivers/staging/media/rkvdec/rkvdec.c b/drivers/staging/media/rkvdec/rkvdec.c
-index 18ae1b15d0a4..c3b74ac8d979 100644
+index 2a056413e4b4..1c0e35f9d84f 100644
 --- a/drivers/staging/media/rkvdec/rkvdec.c
 +++ b/drivers/staging/media/rkvdec/rkvdec.c
-@@ -1251,11 +1251,19 @@ static const struct rkvdec_variant rk3399_rkvdec_variant = {
+@@ -1286,11 +1286,19 @@ static const struct rkvdec_variant rk3399_rkvdec_variant = {
  			   RKVDEC_CAPABILITY_VP9
  };
  
@@ -3410,14 +3545,14 @@ Subject: [PATCH] ARM: dts: RK3288: add hevc node
 
 Signed-off-by: Alex Bee <knaerzche@gmail.com>
 ---
- arch/arm/boot/dts/rk3288.dtsi | 19 ++++++++++++++++++-
- 1 file changed, 18 insertions(+), 1 deletion(-)
+ arch/arm/boot/dts/rk3288.dtsi | 21 ++++++++++++++++++++-
+ 1 file changed, 20 insertions(+), 1 deletion(-)
 
 diff --git a/arch/arm/boot/dts/rk3288.dtsi b/arch/arm/boot/dts/rk3288.dtsi
-index 746acfac1e92..ba43ee6b91e8 100644
+index 746acfac1e92..32e141a3955b 100644
 --- a/arch/arm/boot/dts/rk3288.dtsi
 +++ b/arch/arm/boot/dts/rk3288.dtsi
-@@ -1271,6 +1271,23 @@ vpu_mmu: iommu@ff9a0800 {
+@@ -1271,6 +1271,25 @@ vpu_mmu: iommu@ff9a0800 {
  		power-domains = <&power RK3288_PD_VIDEO>;
  	};
  
@@ -3436,12 +3571,14 @@ index 746acfac1e92..ba43ee6b91e8 100644
 +				       <300000000>, <300000000>;
 +		iommus = <&hevc_mmu>;
 +		power-domains = <&power RK3288_PD_HEVC>;
++		resets =  <&cru SRST_HEVC>;
++		reset-names = "video_core";
 +	};
 +
  	hevc_mmu: iommu@ff9c0440 {
  		compatible = "rockchip,iommu";
  		reg = <0x0 0xff9c0440 0x0 0x40>, <0x0 0xff9c0480 0x0 0x40>;
-@@ -1279,7 +1296,7 @@ hevc_mmu: iommu@ff9c0440 {
+@@ -1279,7 +1298,7 @@ hevc_mmu: iommu@ff9c0440 {
  		clocks = <&cru ACLK_HEVC>, <&cru HCLK_HEVC>;
  		clock-names = "aclk", "iface";
  		#iommu-cells = <0>;

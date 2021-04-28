@@ -3059,41 +3059,54 @@ index b3247a3a7290..f5617529dbb5 100644
  	RK3066_PLL_RATE_NB(426000000, 3, 213, 4, 32),
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Alex Bee <knaerzche@gmail.com>
-Date: Wed, 3 Mar 2021 18:27:40 +0100
-Subject: [PATCH] HACK: drm/bridge: prefer RGB output over YUV422/YUV444 in
- dw-hdmi
+Date: Sat, 10 Apr 2021 16:54:26 +0200
+Subject: [PATCH] drm/bridge: dw-hdmi: fix RGB to YUV color space conversion
 
+We are currently providing color space conversion coefficents
+for RGB to YUV conversion for full range to full range.
+This is wrong, since we are hardcoding YCC quantization range
+limited in the AVI infoframe (which is correct according to
+HDMI specs). This results in to dark colors if this conversion
+is used.
+I verfied this by setting YCC quantization range to full in
+AVI infoframe which resulted in correct colors. Doing this,
+however, will be ignored by some (most) sinks.
+
+This patch fixes this, by providing CSC coefficents which
+convert RGB full range to YUV limited range for both BT601
+and BT709 colorspaces.
+
+Fixes: 9aaf880ed4ee ("imx-drm: Add mx6 hdmi transmitter support")
+Signed-off-by: Alex Bee <knaerzche@gmail.com>
 ---
- drivers/gpu/drm/bridge/synopsys/dw-hdmi.c | 12 ++++++++----
- 1 file changed, 8 insertions(+), 4 deletions(-)
+ drivers/gpu/drm/bridge/synopsys/dw-hdmi.c | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
 diff --git a/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c b/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
-index f86b8fa40ab6..00ca09956545 100644
+index 5716aabbaf50..508738edfac8 100644
 --- a/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
 +++ b/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
-@@ -2664,6 +2664,14 @@ static u32 *dw_hdmi_bridge_atomic_get_output_bus_fmts(struct drm_bridge *bridge,
- 			output_fmts[i++] = MEDIA_BUS_FMT_RGB101010_1X30;
- 	}
+@@ -81,15 +81,15 @@ static const u16 csc_coeff_rgb_out_eitu709[3][4] = {
+ };
  
-+	/* Hack: prefer output of RGB over YUV422/YUV444 for Rockchip,
-+	 * since color space conversion produces wrong results here
-+	 * TODO: investigate
-+	 */
-+
-+	if (is_tmds_allowed(info, mode, MEDIA_BUS_FMT_RGB888_1X24))
-+                output_fmts[i++] = MEDIA_BUS_FMT_RGB888_1X24;
-+
- 	if ((info->color_formats & DRM_COLOR_FORMAT_YCRCB422) &&
- 	    is_tmds_allowed(info, mode, MEDIA_BUS_FMT_UYVY8_1X16))
- 		output_fmts[i++] = MEDIA_BUS_FMT_UYVY8_1X16;
-@@ -2672,10 +2680,6 @@ static u32 *dw_hdmi_bridge_atomic_get_output_bus_fmts(struct drm_bridge *bridge,
- 	    is_tmds_allowed(info, mode, MEDIA_BUS_FMT_YUV8_1X24))
- 		output_fmts[i++] = MEDIA_BUS_FMT_YUV8_1X24;
+ static const u16 csc_coeff_rgb_in_eitu601[3][4] = {
+-	{ 0x2591, 0x1322, 0x074b, 0x0000 },
+-	{ 0x6535, 0x2000, 0x7acc, 0x0200 },
+-	{ 0x6acd, 0x7534, 0x2000, 0x0200 }
++	{ 0x2040, 0x1080, 0x0640, 0x0040 },
++	{ 0xe880, 0x1c00, 0xfb80, 0x0200 },
++	{ 0xed80, 0xf680, 0x1c00, 0x0200 }
+ };
  
--	/* Default 8bit RGB fallback */
--	if (is_tmds_allowed(info, mode, MEDIA_BUS_FMT_RGB888_1X24))
--		output_fmts[i++] = MEDIA_BUS_FMT_RGB888_1X24;
--
- 	*num_output_fmts = i;
+ static const u16 csc_coeff_rgb_in_eitu709[3][4] = {
+-	{ 0x2dc5, 0x0d9b, 0x049e, 0x0000 },
+-	{ 0x62f0, 0x2000, 0x7d11, 0x0200 },
+-	{ 0x6756, 0x78ab, 0x2000, 0x0200 }
++	{ 0x2740, 0x0bc0, 0x0400, 0x0040 },
++	{ 0xe680, 0x1c00, 0xfd80, 0x0200 },
++	{ 0xea40, 0xf980, 0x1c00, 0x0200 }
+ };
  
- 	return output_fmts;
+ static const u16 csc_coeff_rgb_full_to_rgb_limited[3][4] = {
+
+
