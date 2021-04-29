@@ -3,6 +3,7 @@ HOME_INIT = '/usr/share/batocera/datainit/system/'
 HOME = '/userdata/system'
 CONF_INIT = HOME_INIT + '/configs'
 CONF = HOME + '/configs'
+EVMAPY = CONF + '/evmapy'
 SAVES = '/userdata/saves'
 SCREENSHOTS = '/userdata/screenshots'
 BIOS = '/userdata/bios'
@@ -132,11 +133,6 @@ flycastBios = BIOS
 flycastVMUBlank = '/usr/lib/python3.9/site-packages/configgen/datainit/dreamcast/vmu_save_blank.bin'
 flycastVMUA1 = flycastSaves + '/flycast/vmu_save_A1.bin'
 flycastVMUA2 = flycastSaves + '/flycast/vmu_save_A2.bin'
-
-cemuConfig = CONF + '/cemu/config.ini'
-cemuHomedir = ROMS + '/wiiu'
-cemuDatadir = '/usr/cemu'
-cemuSaves = SAVES + '/cemu'
 
 rpcs3Config = CONF
 rpcs3Homedir = ROMS + '/ps3'

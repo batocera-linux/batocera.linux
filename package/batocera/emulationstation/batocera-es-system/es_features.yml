@@ -2831,20 +2831,28 @@ cemu:
             prompt:      GRAPHICS BACKEND
             description: Choose your graphics rendering
             choices:
-                "OpenGL": OpenGL
-                "Vulkan": Vulkan
+                "OpenGL":                      OpenGL
+                "Vulkan":                      Vulkan
         async:
             prompt:      ASYNC SHADER
             description: Speedup shader compilation (Vulkan only)
             choices:
-                "Off":    0
-                "On":     1
-        emulatedwiimotes:
-            prompt:      EMULATE WIIMOTE
-            description: Use gamepad like Sideway Wiimote, Nunchuk on RStick
+                "Off":                         0
+                "On":                          1
+        rumble:
+            prompt:      RUMBLE
+            description: To use vibration on games with Rumble mode
             choices:
-                "Off":    0
-                "On":     1
+                "Off":                         0
+                "On":                          1
+        controller_combination:
+            prompt:      CONTROLLER COMBINATION
+            description: Use Pro Controller if the game ask for Shake
+            choices:
+                "GamePad + 4 Pro Controller":  0
+                "GamePad + 4 Sideway Wiimote": 1
+                "5 Pro Controller":            2
+                "5 Sideway Wiimote":           3
 
 citra:
   features: [ratio]
