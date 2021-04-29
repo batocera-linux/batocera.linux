@@ -575,6 +575,9 @@ config BR2_PACKAGE_BATOCERA_HANDHELD_SYSTEMS
 	# Nintendo Switch
 	select BR2_PACKAGE_YUZU				if BR2_PACKAGE_BATOCERA_CORES_EXPERIMENTAL && BR2_PACKAGE_BATOCERA_TARGET_X86_64 && BR2_PACKAGE_BATOCERA_CORES_STILL_COMMERCIALIZED
 
+	# Watara
+	select BR2_PACKAGE_LIBRETRO_WATARA		# ALL
+
 	help
 		Handheld cores/emulators
 
@@ -838,9 +841,6 @@ config BR2_PACKAGE_BATOCERA_CONSOLE_SYSTEMS
 
 	# Fairchild Channel F
 	select BR2_PACKAGE_LIBRETRO_FREECHAF		# ALL
-
-	# Watara
-	select BR2_PACKAGE_LIBRETRO_WATARA		# ALL
 
 	help
 		All avaible systems for the selected architecture
