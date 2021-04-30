@@ -1,6 +1,6 @@
 #!/usr/bin/env python
+
 import Command
-#~ import reicastControllers
 import batoceraFiles
 from generators.Generator import Generator
 import shutil
@@ -20,7 +20,7 @@ class PPSSPPGenerator(Generator):
         # For each pad detected
         for index in playersControllers :
             controller = playersControllers[index]
-            # we only care about player 1
+            # We only care about player 1
             if controller.player != "1":
                 continue
             ppssppControllers.generateControllerConfig(controller)
@@ -30,12 +30,12 @@ class PPSSPPGenerator(Generator):
             cfgFile.close()
             break
 
-        # the command to run
+        # The command to run
         commandArray = [batoceraFiles.batoceraBins[system.config['emulator']]]
         commandArray.append(rom)
         commandArray.append("--fullscreen")
 
-        # adapt the menu size
+        # Adapt the menu size to low and Hi defenition
         if PPSSPPGenerator.isLowResolution(gameResolution):
             commandArray.extend(["--dpi", "0.5"])
 
