@@ -10,73 +10,81 @@ from utils.logger import eslog
 import configparser
 import json
 
+cemuConfig  = batoceraFiles.CONF + '/cemu'
+
 # Create the controller configuration file
 # First controller will ALWAYS BE A Gamepad
 # Additional controllers will either be a Pro Controller or Wiimote
 def generateControllerConfig(system, playersControllers, rom):
     # Make controller directory if it doesn't exist
-    if not path.isdir(batoceraFiles.CONF + "/cemu/controllerProfiles"):
-        os.mkdir(batoceraFiles.CONF + "/cemu/controllerProfiles")
-
-    if not path.isdir(batoceraFiles.CONF + "/evmapy"):
-        os.mkdir(batoceraFiles.CONF + "/evmapy")
+    if not path.isdir(cemuConfig + "/controllerProfiles"):
+        os.mkdir(cemuConfig + "/controllerProfiles")
 
     # Purge old controller files
     for counter in range(0,8):
-        configFileName = "{}/{}".format(batoceraFiles.CONF + "/cemu/controllerProfiles/", "controller" + str(counter) +".txt")
+        configFileName = "{}/{}".format(cemuConfig + "/controllerProfiles/", "controller" + str(counter) +".txt")
         if os.path.isfile(configFileName):
             os.remove(configFileName)
 
-    # Create the evmapy configFile
-    configFileName = "{}/{}".format(batoceraFiles.CONF + "/evmapy/","wiiu.keys")
-    if os.path.isfile(configFileName):
-        os.remove(configFileName)
 
-    data =  {}
-    data['actions_player1'] = []
-    data['actions_player1'].append({
-            "trigger": ["hotkey", "start"],
-            "type": "key",
-            "target": [ "KEY_LEFTALT", "KEY_F4" ]
-        })
-
-    with open(batoceraFiles.CONF + "/evmapy/wiiu.keys", 'w') as outfile:
-        json.dump(data, outfile)
-
-    # We are exporting SDL_GAMECONTROLLERCONFIG in cemuGenerator, so we can assume all controllers are now working with xInput
+    ## CONTROLLER: Create the config files
+    #  We are exporting SDL_GAMECONTROLLERCONFIG in cemuGenerator, so we can assume all controllers are now working with xInput
     nplayer = 0
-
     for playercontroller, pad in sorted(playersControllers.items()):
         cemuSettings = configparser.ConfigParser(interpolation=None)
         cemuSettings.optionxform = str
 
-        # Add Default Sections
+
+        ## [GENERAL]
         if not cemuSettings.has_section("General"):
             cemuSettings.add_section("General")
-        if not cemuSettings.has_section("Controller"):
-            cemuSettings.add_section("Controller")
 
         cemuSettings.set("General", "api", "XInput")
         cemuSettings.set("General", "controller", str(nplayer))
 
-        if (system.isOptSet('emulatedwiimotes') and system.getOptBoolean('emulatedwiimotes') == True):
-            cemuSettings.set("General", "emulate", "Wiimote")
-        elif (nplayer == 0):
-            cemuSettings.set("General", "emulate", "Wii U GamePad")
-            addIndex = 0
+        # Controller combination type
+        wiimote = 0
+        if system.isOptSet('controller_combination') and system.config["controller_combination"] != '0':
+            if system.config["controller_combination"] == '1':
+                if (nplayer == 0):
+                    cemuSettings.set("General", "emulate", "Wii U GamePad")
+                    addIndex = 0
+                else:
+                    cemuSettings.set("General", "emulate", "Wiimote")
+                    wiimote = 1
+            elif system.config["controller_combination"] == '2':
+                cemuSettings.set("General", "emulate", "Wii U Pro Controller")
+                addIndex = 1
+            else:
+                cemuSettings.set("General", "emulate", "Wiimote")
+                wiimote = 1
         else:
-            cemuSettings.set("General", "emulate", "Wii U Pro Controller")
-            addIndex = 1
+            if (nplayer == 0):
+                cemuSettings.set("General", "emulate", "Wii U GamePad")
+                addIndex = 0
+            else:
+                cemuSettings.set("General", "emulate", "Wii U Pro Controller")
+                addIndex = 1
 
-        cemuSettings.set("Controller", "rumble", "0")
+
+        ## [CONTROLLER]
+        if not cemuSettings.has_section("Controller"):
+            cemuSettings.add_section("Controller")
+
+        # Rumble
+        if system.isOptSet("rumble") and system.config["rumble"] == "0":
+            cemuSettings.set("Controller", "rumble", "0")
+        else:
+            cemuSettings.set("Controller", "rumble", "0.5")
+
         cemuSettings.set("Controller", "leftRange", "1")
         cemuSettings.set("Controller", "rightRange", "1")
         cemuSettings.set("Controller", "leftDeadzone", ".2")
         cemuSettings.set("Controller", "rightDeadzone", ".2")
         cemuSettings.set("Controller", "buttonThreshold", ".5")
 
-        if (system.isOptSet('emulatedwiimotes') and system.getOptBoolean('emulatedwiimotes') == True):
-            # Assumes a sideways wiimote configuration
+        # Wiimote (Assumes a sideways wiimote configuration)
+        if wiimote == 1:
             cemuSettings.set("Controller", "1", "button_4")             # A
             cemuSettings.set("Controller", "2", "button_8")             # B
             cemuSettings.set("Controller", "3", "button_1")             # 1
@@ -96,6 +104,7 @@ def generateControllerConfig(system, playersControllers, rom):
             cemuSettings.set("Controller", "17", "0")                   # Home
             cemuSettings.set("Controller", "nunchuck", "1")
             cemuSettings.set("Controller", "motionPlus", "0")
+        # Wii U GamePad / Wii U Pro Controller
         else:
             cemuSettings.set("Controller", "1", "button_2")                         # A
             cemuSettings.set("Controller", "2", "button_1")                         # B
@@ -123,8 +132,9 @@ def generateControllerConfig(system, playersControllers, rom):
             cemuSettings.set("Controller", str(24 + addIndex), "button_200000000")  # RStick Right
             cemuSettings.set("Controller", str(25 + addIndex), "button_100")        # Blow Mic
 
-        configFileName = "{}/{}".format(batoceraFiles.CONF + "/cemu/controllerProfiles/", "controller" + str(nplayer) + ".txt")
-                # Save dolphin.ini
+        configFileName = "{}/{}".format(cemuConfig + "/controllerProfiles/", "controller" + str(nplayer) + ".txt")
+
+        # Save Cemu controller profiles
         with open(configFileName, 'w') as configfile:
             cemuSettings.write(configfile)
         nplayer+=1

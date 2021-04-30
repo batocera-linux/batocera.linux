@@ -13,43 +13,48 @@ import shutil
 import filecmp
 from . import cemuControllers
 
+cemuConfig  = batoceraFiles.CONF + '/cemu'
+cemuHomedir = 'z:/userdata/roms/wiiu'
+cemuDatadir = '/usr/cemu'
+cemuSaves   = batoceraFiles.SAVES + '/cemu'
+
 class CemuGenerator(Generator):
 
     def generate(self, system, rom, playersControllers, gameResolution):
-        game_dir = "/userdata/system/configs/cemu/gameProfiles"
-        resources_dir = "/userdata/system/configs/cemu/resources"
-        cemu_exe = "/userdata/system/configs/cemu/Cemu.exe"
-        cemu_hook = "/userdata/system/configs/cemu/cemuhook.ini"
-        keystone_dll = "/userdata/system/configs/cemu/keystone.dll"
-        dbghelp_dll = "/userdata/system/configs/cemu/dbghelp.dll"
+        game_dir = cemuConfig + "/gameProfiles"
+        resources_dir = cemuConfig + "/resources"
+        cemu_exe = cemuConfig + "/Cemu.exe"
+        cemu_hook = cemuConfig + "/cemuhook.ini"
+        keystone_dll = cemuConfig + "/keystone.dll"
+        dbghelp_dll = cemuConfig + "/dbghelp.dll"
         if not path.isdir(batoceraFiles.BIOS + "/cemu"):
             os.mkdir(batoceraFiles.BIOS + "/cemu")
-        if not path.isdir(batoceraFiles.CONF + "/cemu"):
-            os.mkdir(batoceraFiles.CONF + "/cemu")
+        if not path.isdir(cemuConfig):
+            os.mkdir(cemuConfig)
         if not os.path.exists(game_dir):
-            shutil.copytree("/usr/cemu/gameProfiles", game_dir)
+            shutil.copytree(cemuDatadir + "/gameProfiles", game_dir)
         if not os.path.exists(resources_dir):
-            shutil.copytree("/usr/cemu/resources", resources_dir)
+            shutil.copytree(cemuDatadir + "/resources", resources_dir)
 
         for folder in ["controllerProfiles", "graphicPacks"]:
-            if not path.isdir(batoceraFiles.CONF + "/cemu/" + folder):
-                os.mkdir(batoceraFiles.CONF + "/cemu/" + folder)
+            if not path.isdir(cemuConfig + "/" + folder):
+                os.mkdir(cemuConfig + "/" + folder)
 
         if not path.isdir(batoceraFiles.SAVES + "/cemu"):
             os.mkdir(batoceraFiles.SAVES + "/cemu")
 
-        CemuGenerator.CemuConfig(batoceraFiles.CONF + "/cemu/settings.xml", system)
+        CemuGenerator.CemuConfig(cemuConfig + "/settings.xml", system)
         # Copy the file from where cemu reads it
-        shutil.copyfile("/userdata/bios/cemu/keys.txt", "/userdata/system/configs/cemu/keys.txt")
-        if not os.path.exists(cemu_exe) or not filecmp.cmp("/usr/cemu/Cemu.exe", cemu_exe):
-            shutil.copyfile("/usr/cemu/Cemu.exe", cemu_exe)
+        shutil.copyfile(batoceraFiles.BIOS + "/cemu/keys.txt", cemuConfig + "/keys.txt")
+        if not os.path.exists(cemu_exe) or not filecmp.cmp(cemuDatadir + "/Cemu.exe", cemu_exe):
+            shutil.copyfile(cemuDatadir + "/Cemu.exe", cemu_exe)
         # Copy cemuhook for secure upgrade
-        if not os.path.exists(cemu_hook) or not filecmp.cmp("/usr/cemu/cemuhook.ini", cemu_hook):
-            shutil.copyfile("/usr/cemu/cemuhook.ini", cemu_hook)
-        if not os.path.exists(keystone_dll) or not filecmp.cmp("/usr/cemu/keystone.dll", keystone_dll):
-            shutil.copyfile("/usr/cemu/keystone.dll", keystone_dll)
-        if not os.path.exists(dbghelp_dll) or not filecmp.cmp("/usr/cemu/dbghelp.dll", dbghelp_dll):
-            shutil.copyfile("/usr/cemu/dbghelp.dll", dbghelp_dll)
+        if not os.path.exists(cemu_hook) or not filecmp.cmp(cemuDatadir + "/cemuhook.ini", cemu_hook):
+            shutil.copyfile(cemuDatadir + "/cemuhook.ini", cemu_hook)
+        if not os.path.exists(keystone_dll) or not filecmp.cmp(cemuDatadir + "/keystone.dll", keystone_dll):
+            shutil.copyfile(cemuDatadir + "/keystone.dll", keystone_dll)
+        if not os.path.exists(dbghelp_dll) or not filecmp.cmp(cemuDatadir + "/dbghelp.dll", dbghelp_dll):
+            shutil.copyfile(cemuDatadir + "/dbghelp.dll", dbghelp_dll)
 
         cemuControllers.generateControllerConfig(system, playersControllers, rom)
 
@@ -99,7 +104,7 @@ class CemuGenerator(Generator):
         game_root = CemuGenerator.getRoot(config, "GamePaths")
 
         # Default games path
-        CemuGenerator.setSectionConfig(config, game_root, "Entry", "z:/userdata/roms/wiiu")
+        CemuGenerator.setSectionConfig(config, game_root, "Entry", cemuHomedir)
 
 
         ## [AUDIO]
