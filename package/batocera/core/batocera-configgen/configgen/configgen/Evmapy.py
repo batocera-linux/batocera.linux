@@ -110,8 +110,11 @@ class Evmapy():
                                     axisId   = "BASE"
                                     axisName = "X"
                                     absbasex_positive = int(input.value) >= 0
+                                else:
+                                    axisId   = "_OTHERS_"
+                                    axisName = input.name
 
-                                if axisId in ["0", "1", "BASE"] and axisName in ["X", "Y"] and input.code is not None:
+                                if ((axisId in ["0", "1", "BASE"] and axisName in ["X", "Y"]) or axisId == "_OTHERS_") and input.code is not None:
                                     axisMin, axisMax = Evmapy.__getPadMinMaxAxis(pad.dev, int(input.code))
                                     known_buttons_names["ABS" + axisId + axisName + ":min"] = True
                                     known_buttons_names["ABS" + axisId + axisName + ":max"] = True
@@ -165,12 +168,15 @@ class Evmapy():
                                 if isinstance(trigger, list):
                                     allfound = True
                                     for x in trigger:
-                                        if x not in known_buttons_names:
+                                        if x not in known_buttons_names: # and ("ABS_OTHERS_" + x + ":max") not in known_buttons_names : axis as button not handled in combinations
                                             allfound = False
                                     if allfound:
                                         padActionsFiltered.append(action)
                                 else:
                                     if trigger in known_buttons_names:
+                                        padActionsFiltered.append(action)
+                                    if "ABS_OTHERS_" + trigger + ":max" in known_buttons_names:
+                                        action["trigger"] = "ABS_OTHERS_" + action["trigger"] + ":max"
                                         padActionsFiltered.append(action)
                                 padConfig["actions"] = padActionsFiltered
 
