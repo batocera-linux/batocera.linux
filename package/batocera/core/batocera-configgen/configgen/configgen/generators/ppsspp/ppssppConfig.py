@@ -94,6 +94,16 @@ def createPPSSPPConfig(iniConfig, system):
         iniConfig.set("General", "RewindFlipFrequency", "300") # 300 = every 5 seconds
     else:
         iniConfig.set("General", "RewindFlipFrequency",  "0")
+        
+    ## [SYSTEM PARAM]
+    if not iniConfig.has_section("SystemParam"):
+        iniConfig.add_section("SystemParam")
+
+    # Forcing Nickname to Batocera
+        iniConfig.set("SystemParam", "NickName", "Batocera")
+        
+    # Disable Encrypt Save
+        iniConfig.set("SystemParam", "EncryptSave", "False")    
 
     # Custom : allow the user to configure directly PPSSPP via batocera.conf via lines like : ppsspp.section.option=value
     for user_config in system.config:
