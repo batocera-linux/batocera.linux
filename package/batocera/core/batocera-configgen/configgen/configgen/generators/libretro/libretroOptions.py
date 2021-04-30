@@ -1492,7 +1492,7 @@ def generateCoreSettings(coreSettings, system, rom):
     # Watara SuperVision
     if (system.config['core'] == 'potator'):
         # Watara Color Palette
-        if system.isOptSet('watara_palette') and system.config['watara_palette'] != 'gameking':
+        if system.isOptSet('watara_palette'):
             coreSettings.save('potator_palette', system.config['watara_palette'])
         else:
             coreSettings.save('potator_palette', 'gameking')
