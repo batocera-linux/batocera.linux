@@ -1488,7 +1488,20 @@ def generateCoreSettings(coreSettings, system, rom):
     if (system.config['core'] == 'theodore'):
         # Auto run games
         coreSettings.save('theodore_autorun',   '"enabled"')
-    
+
+    # Watara SuperVision
+    if (system.config['core'] == 'potator'):
+        # Watara Color Palette
+        if system.isOptSet('watara_palette') and system.config['watara_palette'] != 'gameking':
+            coreSettings.save('potator_palette', system.config['watara_palette'])
+        else:
+            coreSettings.save('potator_palette', 'gameking')
+        # Watara Ghosting
+        if system.isOptSet('watara_ghosting') and system.config['watara_ghosting'] != '2':
+            coreSettings.save('potator_lcd_ghosting', system.config['watara_ghosting'])
+        else:
+            coreSettings.save('potator_lcd_ghosting', '2')
+
     ## PORTs
     
     # DOOM
@@ -1517,7 +1530,7 @@ def generateCoreSettings(coreSettings, system, rom):
         else:
             coreSettings.save('tyrquake_rumble', '"disabled"')
 
-    # BONBERMAN
+    # BOMBERMAN
     if (system.config['core'] == 'mrboom'):
         # Team mode
         if system.isOptSet('mrboom-aspect'):
