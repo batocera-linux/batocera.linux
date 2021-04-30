@@ -1497,10 +1497,10 @@ def generateCoreSettings(coreSettings, system, rom):
         else:
             coreSettings.save('potator_palette', 'gameking')
         # Watara Ghosting
-        if system.isOptSet('watara_ghosting') and system.config['watara_ghosting'] != '2':
+        if system.isOptSet('watara_ghosting') and system.config['watara_ghosting'] != '0':
             coreSettings.save('potator_lcd_ghosting', system.config['watara_ghosting'])
         else:
-            coreSettings.save('potator_lcd_ghosting', '2')
+            coreSettings.save('potator_lcd_ghosting', '0')
 
     ## PORTs
     
