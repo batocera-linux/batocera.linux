@@ -8,22 +8,26 @@ import settings
 from Emulator import Emulator
 import configparser
 
+ppssppConf   = batoceraFiles.CONF + '/ppsspp/PSP/SYSTEM'
+ppssppConfig = ppssppConf + '/ppsspp.ini'
+
+
 def writePPSSPPConfig(system):
     iniConfig = configparser.ConfigParser(interpolation=None)
     # To prevent ConfigParser from converting to lower case
     iniConfig.optionxform = str
-    if os.path.exists(batoceraFiles.ppssppConfig):
+    if os.path.exists(ppssppConfig):
         try:
-            with io.open(batoceraFiles.ppssppConfig, 'r', encoding='utf_8_sig') as fp:
+            with io.open(ppssppConfig, 'r', encoding='utf_8_sig') as fp:
                 iniConfig.readfp(fp)
         except:
             pass
 
     createPPSSPPConfig(iniConfig, system)
     # Save the ini file
-    if not os.path.exists(os.path.dirname(batoceraFiles.ppssppConfig)):
-        os.makedirs(os.path.dirname(batoceraFiles.ppssppConfig))
-    with open(batoceraFiles.ppssppConfig, 'w') as configfile:
+    if not os.path.exists(os.path.dirname(ppssppConfig)):
+        os.makedirs(os.path.dirname(ppssppConfig))
+    with open(ppssppConfig, 'w') as configfile:
         iniConfig.write(configfile)
 
 def createPPSSPPConfig(iniConfig, system):

@@ -6,6 +6,10 @@ import os
 import configparser
 import batoceraFiles
 
+ppssppControlsIni  = batoceraFiles.CONF + '/ppsspp/PSP/SYSTEM/controls.ini'
+ppssppControlsInit = batoceraFiles.HOME_INIT + 'configs/ppsspp/PSP/SYSTEM/controls.ini'
+
+
 # This configgen is based on PPSSPP 1.2.2. Therefore, all code/github references are valid at this version, and may not be valid with later updates
 
 # PPSSPP internal "NKCodes" https://github.com/hrydgard/ppsspp/blob/master/ext/native/input/keycodes.h#L198
@@ -112,11 +116,11 @@ ppssppMapping =  { 'a' :             {'button': 'Circle'},
 # returns its name
 def generateControllerConfig(controller):
     # Set config file name
-    configFileName = batoceraFiles.ppssppControlsIni
+    configFileName = ppssppControlsIni
     Config = configparser.ConfigParser(interpolation=None)
     Config.optionxform = str
     # We need to read the default file as PPSSPP needs the keyboard defs ine the controlls.ini file otherwise the GYUI won't repond
-    Config.read(batoceraFiles.ppssppControlsInit)
+    Config.read(ppssppControlsInit)
     # As we start with the default ini file, no need to create the section
     section = "ControlMapping"
     if not Config.has_section(section):
