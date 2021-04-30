@@ -1,6 +1,6 @@
 #!/usr/bin/env python
+
 import Command
-#~ import reicastControllers
 import batoceraFiles
 from generators.Generator import Generator
 import shutil
@@ -11,6 +11,9 @@ import codecs
 from . import ppssppConfig
 from . import ppssppControllers
 
+ppssppControls = batoceraFiles.CONF + '/ppsspp/gamecontrollerdb.txt'
+
+
 class PPSSPPGenerator(Generator):
 
     # Main entry of the module
@@ -20,28 +23,29 @@ class PPSSPPGenerator(Generator):
         # For each pad detected
         for index in playersControllers :
             controller = playersControllers[index]
-            # we only care about player 1
+            # We only care about player 1
             if controller.player != "1":
                 continue
             ppssppControllers.generateControllerConfig(controller)
             # TODO: python 3 - workawround to encode files in utf-8
-            cfgFile = codecs.open(batoceraFiles.ppssppControls, "w", "utf-8")
+            cfgFile = codecs.open(ppssppControls, "w", "utf-8")
             cfgFile.write(controller.generateSDLGameDBLine())
             cfgFile.close()
             break
 
-        # the command to run
-        commandArray = [batoceraFiles.batoceraBins[system.config['emulator']]]
+        # The command to run
+        commandArray = ['/usr/bin/PPSSPP']
         commandArray.append(rom)
         commandArray.append("--fullscreen")
 
-        # adapt the menu size
+        # Adapt the menu size to low defenition
+        # I've played with this option on PC to fix menu size in Hi-Resolution and it not working fine. I'm almost sure this option break the emulator (Darknior)
         if PPSSPPGenerator.isLowResolution(gameResolution):
             commandArray.extend(["--dpi", "0.5"])
 
         # The next line is a reminder on how to quit PPSSPP with just the HK
-        #commandArray = [batoceraFiles.batoceraBins[system.config['emulator']], rom, "--escape-exit"]
-        return Command.Command(array=commandArray, env={"XDG_CONFIG_HOME":batoceraFiles.CONF, "QT_QPA_PLATFORM":"xcb", "PPSSPP_GAME_CONTROLLER_DB_PATH": batoceraFiles.ppssppControls})
+        #commandArray = ['/usr/bin/PPSSPP'], rom, "--escape-exit"]
+        return Command.Command(array=commandArray, env={"XDG_CONFIG_HOME":batoceraFiles.CONF, "XDG_RUNTIME_DIR":batoceraFiles.HOME_INIT, "QT_QPA_PLATFORM":"xcb", "PPSSPP_GAME_CONTROLLER_DB_PATH": ppssppControls})
 
     @staticmethod
     def isLowResolution(gameResolution):

@@ -3549,6 +3549,12 @@ ppsspp:
                 "4x":                   2
                 "8x":                   3
                 "16x":                  4
+        enable_cheats:
+            prompt:      GAMES CHEATS
+            description: For cheating in games as with Action Replay
+            choices:
+                "Off":                  False
+                "On":                   True
 
 reicast:
   features: [ratio]
