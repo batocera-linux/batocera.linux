@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-BATOCERA_EMULATIONSTATION_VERSION = d3cbce478aee1161e5a7280c0484c1fd054c7cef
+BATOCERA_EMULATIONSTATION_VERSION = 8009f5cd1f9708898792f1952e6b9830cf9ceccc
 BATOCERA_EMULATIONSTATION_SITE = https://github.com/batocera-linux/batocera-emulationstation
 BATOCERA_EMULATIONSTATION_SITE_METHOD = git
 BATOCERA_EMULATIONSTATION_LICENSE = MIT
@@ -78,6 +78,7 @@ define BATOCERA_EMULATIONSTATION_RESOURCES
 	$(INSTALL) -m 0644 -D $(@D)/resources/help/*.* $(TARGET_DIR)/usr/share/emulationstation/resources/help
 	$(INSTALL) -m 0644 -D $(@D)/resources/flags/*.* $(TARGET_DIR)/usr/share/emulationstation/resources/flags
 	$(INSTALL) -m 0644 -D $(@D)/resources/battery/*.* $(TARGET_DIR)/usr/share/emulationstation/resources/battery
+	$(INSTALL) -m 0644 -D $(@D)/resources/services/*.* $(TARGET_DIR)/usr/share/emulationstation/resources/services
 
 	# es_input.cfg
 	mkdir -p $(TARGET_DIR)/usr/share/batocera/datainit/system/configs/emulationstation
