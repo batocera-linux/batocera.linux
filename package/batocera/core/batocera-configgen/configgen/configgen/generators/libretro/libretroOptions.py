@@ -256,7 +256,39 @@ def generateCoreSettings(coreSettings, system, rom):
     # Magnavox - Odyssey2 / Phillips Videopac+
     if (system.config['core'] == 'o2em'):
         # Virtual keyboard transparency
-        coreSettings.save('o2em_vkb_transparency ', '"20%"')
+        coreSettings.save('o2em_vkbd_transparency ', '"25"')
+        # Emulated Hardware
+        if system.isOptSet('o2em_bios'):
+            coreSettings.save('o2em_bios', system.config['o2em_bios'])
+        else:
+            coreSettings.save('o2em_bios', '"o2rom.bin"')
+        # Emulated Hardware
+        if system.isOptSet('o2em_region') and system.config['o2em_region'] != "autodetect":
+            coreSettings.save('o2em_region', system.config['o2em_region'])
+        else:
+            coreSettings.save('o2em_region', '"auto"')
+        # Swap Gamepad
+        if system.isOptSet('o2em_swap_gamepads'):
+            coreSettings.save('o2em_swap_gamepads', system.config['o2em_swap_gamepads'])
+        else:
+            coreSettings.save('o2em_swap_gamepads', '"disabled"')
+        # Crop Overscan
+        if system.isOptSet('o2em_crop_overscan'):
+            coreSettings.save('o2em_crop_overscan', system.config['o2em_crop_overscan'])
+        else:
+            coreSettings.save('o2em_crop_overscan', '"enabled"')
+        # Ghosting effect
+        if system.isOptSet('o2em_mix_frames'):
+            coreSettings.save('o2em_mix_frames', system.config['o2em_mix_frames'])
+        else:
+            coreSettings.save('o2em_mix_frames', '"disabled"')
+        # Audio Filter
+        if system.isOptSet('o2em_low_pass_range') and system.config['o2em_low_pass_range'] != "0":
+            coreSettings.save('o2em_low_pass_filter', '"enabled"')
+            coreSettings.save('o2em_low_pass_range',  system.config['o2em_low_pass_range'])
+        else:
+            coreSettings.save('o2em_low_pass_filter', '"disabled"')
+            coreSettings.save('o2em_low_pass_range',  '"0"')
 
     # MAME 0.225
     if (system.config['core'] == 'mame'):
