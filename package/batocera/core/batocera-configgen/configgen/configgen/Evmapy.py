@@ -168,9 +168,15 @@ class Evmapy():
                                 if isinstance(trigger, list):
                                     allfound = True
                                     for x in trigger:
-                                        if x not in known_buttons_names: # and ("ABS_OTHERS_" + x + ":max") not in known_buttons_names : axis as button not handled in combinations
+                                        if x not in known_buttons_names and ("ABS_OTHERS_" + x + ":max") not in known_buttons_names :
                                             allfound = False
                                     if allfound:
+                                        # rewrite axis buttons
+                                        x = 0
+                                        for val in trigger:
+                                            if "ABS_OTHERS_" + val + ":max" in known_buttons_names:
+                                                action["trigger"][x] = "ABS_OTHERS_" + val + ":max"
+                                            x = x+1
                                         padActionsFiltered.append(action)
                                 else:
                                     if trigger in known_buttons_names:
