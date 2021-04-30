@@ -20,31 +20,11 @@ def generateControllerConfig(system, playersControllers, rom):
     if not path.isdir(cemuConfig + "/controllerProfiles"):
         os.mkdir(cemuConfig + "/controllerProfiles")
 
-    if not path.isdir(batoceraFiles.EVMAPY):
-        os.mkdir(batoceraFiles.EVMAPY)
-
     # Purge old controller files
     for counter in range(0,8):
         configFileName = "{}/{}".format(cemuConfig + "/controllerProfiles/", "controller" + str(counter) +".txt")
         if os.path.isfile(configFileName):
             os.remove(configFileName)
-
-
-    ## EVMAPY: Create the configFile
-    configFileName = "{}/{}".format(batoceraFiles.EVMAPY + "/","wiiu.keys")
-    if os.path.isfile(configFileName):
-        os.remove(configFileName)
-
-    data =  {}
-    data['actions_player1'] = []
-    data['actions_player1'].append({
-            "trigger": ["hotkey", "start"],
-            "type": "key",
-            "target": [ "KEY_LEFTALT", "KEY_F4" ]
-        })
-
-    with open(batoceraFiles.EVMAPY + "/wiiu.keys", 'w') as outfile:
-        json.dump(data, outfile)
 
 
     ## CONTROLLER: Create the config files
