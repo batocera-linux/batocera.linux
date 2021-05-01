@@ -1,0 +1,80 @@
+From 0770ca82391fb60084080b2fd235cc039a3b8314 Mon Sep 17 00:00:00 2001
+From: Jernej Skrabec <jernej.skrabec@siol.net>
+Date: Sun, 25 Apr 2021 10:40:56 +0000
+Subject: [PATCH] v4l2_request: revert changes
+
+---
+ libavcodec/v4l2_request.c      | 10 +++-------
+ libavcodec/v4l2_request_h264.c |  8 ++++----
+ 2 files changed, 7 insertions(+), 11 deletions(-)
+
+diff --git a/libavcodec/v4l2_request.c b/libavcodec/v4l2_request.c
+index 5234b5049b0d..1e513ee5df8d 100644
+--- a/libavcodec/v4l2_request.c
++++ b/libavcodec/v4l2_request.c
+@@ -142,14 +142,12 @@ static int v4l2_request_queue_buffer(V4L2RequestContext *ctx, int request_fd, V4
+         .type = buf->buffer.type,
+         .memory = buf->buffer.memory,
+         .index = buf->index,
+-        .timestamp.tv_usec = ctx->timestamp,
++        .timestamp.tv_usec = buf->index + 1,
+         .bytesused = buf->used,
+         .request_fd = request_fd,
+         .flags = ((request_fd >= 0) ? V4L2_BUF_FLAG_REQUEST_FD : 0) | flags,
+     };
+ 
+-    buf->buffer.timestamp = buffer.timestamp;
+-
+     if (V4L2_TYPE_IS_MULTIPLANAR(buf->buffer.type)) {
+         planes[0].bytesused = buf->used;
+         buffer.bytesused = 0;
+@@ -239,9 +237,6 @@ static int v4l2_request_queue_decode(AVCodecContext *avctx, AVFrame *frame, stru
+ 
+     av_log(avctx, AV_LOG_DEBUG, "%s: avctx=%p used=%u controls=%d index=%d fd=%d request_fd=%d first_slice=%d last_slice=%d\n", __func__, avctx, req->output.used, count, req->capture.index, req->capture.fd, req->request_fd, first_slice, last_slice);
+ 
+-    if (first_slice)
+-        ctx->timestamp++;
+-
+     ret = v4l2_request_set_controls(ctx, req->request_fd, control, count);
+     if (ret < 0) {
+         av_log(avctx, AV_LOG_ERROR, "%s: set controls failed for request %d, %s (%d)\n", __func__, req->request_fd, strerror(errno), errno);
+@@ -693,7 +688,6 @@ int ff_v4l2_request_init(AVCodecContext *avctx, uint32_t pixelformat, uint32_t b
+ 
+     ctx->media_fd = -1;
+     ctx->video_fd = -1;
+-    ctx->timestamp = 0;
+ 
+     udev = udev_new();
+     if (!udev) {
+@@ -827,6 +821,8 @@ static int v4l2_request_buffer_alloc(AVCodecContext *avctx, V4L2RequestBuffer *b
+         return ret;
+     }
+ 
++    buf->buffer.timestamp.tv_usec = buf->index + 1;
++
+     if (V4L2_TYPE_IS_OUTPUT(type)) {
+         void *addr = mmap(NULL, buf->size, PROT_READ | PROT_WRITE, MAP_SHARED, ctx->video_fd, V4L2_TYPE_IS_MULTIPLANAR(type) ? buf->buffer.m.planes[0].m.mem_offset : buf->buffer.m.offset);
+         if (addr == MAP_FAILED) {
+diff --git a/libavcodec/v4l2_request_h264.c b/libavcodec/v4l2_request_h264.c
+index 88da8f0a2db0..a14028336a39 100644
+--- a/libavcodec/v4l2_request_h264.c
++++ b/libavcodec/v4l2_request_h264.c
+@@ -252,7 +252,7 @@ static int v4l2_request_h264_start_frame(AVCodecContext *avctx,
+ 
+     fill_dpb(&controls->decode_params, h);
+ 
+-    controls->first_slice = !FIELD_PICTURE(h) || h->first_field;
++    controls->first_slice = 1;
+     controls->num_slices = 0;
+ 
+     return ff_v4l2_request_reset_frame(avctx, h->cur_pic_ptr->f);
+@@ -383,8 +383,7 @@ static int v4l2_request_h264_decode_slice(AVCodecContext *avctx, const uint8_t *
+ 
+ static int v4l2_request_h264_end_frame(AVCodecContext *avctx)
+ {
+-    const H264Context *h = avctx->priv_data;
+-    return v4l2_request_h264_queue_decode(avctx, !FIELD_PICTURE(h) || !h->first_field);
++    return v4l2_request_h264_queue_decode(avctx, 1);
+ }
+ 
+ static int v4l2_request_h264_set_controls(AVCodecContext *avctx)

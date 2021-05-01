@@ -1,0 +1,230 @@
+From 6bea46839ba23bffaa093bb9ed805d571aaa66ea Mon Sep 17 00:00:00 2001
+From: Alex Bee <knaerzche@gmail.com>
+Date: Wed, 30 Sep 2020 21:11:34 +0200
+Subject: [PATCH] libavfilter: v4l2deinterlace: dequeue both destination
+ buffers on time
+
+Signed-off-by: Alex Bee <knaerzche@gmail.com>
+---
+ libavfilter/vf_deinterlace_v4l2m2m.c | 140 +++++++++++++++++----------
+ 1 file changed, 88 insertions(+), 52 deletions(-)
+
+diff --git a/libavfilter/vf_deinterlace_v4l2m2m.c b/libavfilter/vf_deinterlace_v4l2m2m.c
+index 1029e5b620fd..72d28333ffa7 100644
+--- a/libavfilter/vf_deinterlace_v4l2m2m.c
++++ b/libavfilter/vf_deinterlace_v4l2m2m.c
+@@ -89,8 +89,14 @@ typedef struct DeintV4L2M2MContextShared {
+ 
+     AVBufferRef *hw_frames_ctx;
+ 
+-    int frame_count;
+-    AVFrame *frames[2];
++    /*
++     * TODO: check if its really neccessary to hold this
++     * ref, it's only used for freeing av_frame on decoding
++     * end/abort
++     */
++    AVFrame *cur_in_frame;
++    AVFrame *prev_in_frame;
++    unsigned int field_order;
+ 
+     V4L2Queue output;
+     V4L2Queue capture;
+@@ -557,8 +563,11 @@ static void deint_v4l2m2m_destroy_context(DeintV4L2M2MContextShared *ctx)
+                     close(capture->buffers[i].fd);
+             }
+ 
+-        for (i = 0; i < ctx->frame_count; i++)
+-            av_frame_free(&ctx->frames[i]);
++	if (ctx->cur_in_frame)
++		av_frame_free(&ctx->cur_in_frame);
++
++	if (ctx->prev_in_frame)
++		av_frame_free(&ctx->prev_in_frame);
+ 
+         av_buffer_unref(&ctx->hw_frames_ctx);
+ 
+@@ -652,49 +661,79 @@ static int deint_v4l2m2m_dequeue_frame(V4L2Queue *queue, AVFrame* frame, int tim
+     return 0;
+ }
+ 
+-static int deint_v4l2m2m_dequeue(AVFilterContext *avctx, AVFrame *input_frame, int field)
++static int deint_v4l2m2m_dequeue(AVFilterContext *avctx, AVFrame *input_frame)
+ {
+     DeintV4L2M2MContext *priv      = avctx->priv;
+     DeintV4L2M2MContextShared *ctx = priv->shared;
+     AVFilterLink *outlink          = avctx->outputs[0];
+-    AVFrame *output_frame;
++    AVFrame *output_frame_1, *output_frame_2;
++    int64_t first_pts = AV_NOPTS_VALUE;
+     int err;
+ 
+-    output_frame = av_frame_alloc();
++    av_log(priv, AV_LOG_DEBUG, "input pts: %"PRId64" (field %d)\n",
++          input_frame->pts, ctx->field_order);
+ 
+-    if (!output_frame)
++    output_frame_1 = av_frame_alloc();
++    if (!output_frame_1)
+         return AVERROR(ENOMEM);
+ 
+-    err = deint_v4l2m2m_dequeue_frame(&ctx->capture, output_frame, 500);
++    err = deint_v4l2m2m_dequeue_frame(&ctx->capture, output_frame_1, 500);
+     if (err < 0) {
+-        av_log(priv, AV_LOG_ERROR, "no frame (field %d)\n", field);
+-        goto fail;
++        av_log(priv, AV_LOG_ERROR, "no 1st frame (field %d)\n", ctx->field_order);
++        goto fail_out1;
+     }
+ 
+-    err = av_frame_copy_props(output_frame, input_frame);
++    err = av_frame_copy_props(output_frame_1, input_frame);
+     if (err < 0)
+-        goto fail;
++        goto fail_out1;
+ 
+-    output_frame->interlaced_frame = 0;
++    output_frame_1->interlaced_frame = 0;
+ 
+-    if (field == 0) {
+-        output_frame->pts *= 2;
+-    } else {
+-        int64_t cur_pts  = ctx->frames[0]->pts;
+-        int64_t next_pts = ctx->frames[1]->pts;
++    output_frame_2 = av_frame_alloc();
++    if (!output_frame_2) {
++        err = AVERROR(ENOMEM);
++        goto fail_out1;
++    }
++
++    err = deint_v4l2m2m_dequeue_frame(&ctx->capture, output_frame_2, 500);
++    if (err < 0) {
++        av_log(priv, AV_LOG_ERROR, "no 2nd frame (field %d)\n", ctx->field_order);
++        goto fail_out2;
++    }
++
++    err = av_frame_copy_props(output_frame_2, input_frame);
++    if (err < 0)
++        goto fail_out2;
++
++    output_frame_2->interlaced_frame = 0;
+ 
+-        if (next_pts != AV_NOPTS_VALUE && cur_pts != AV_NOPTS_VALUE) {
+-            output_frame->pts = next_pts + cur_pts;
+-        } else {
+-            output_frame->pts = AV_NOPTS_VALUE;
+-        }
++    if (ctx->prev_in_frame && ctx->prev_in_frame->pts != AV_NOPTS_VALUE
++       && input_frame->pts != AV_NOPTS_VALUE) {
++      first_pts = (ctx->prev_in_frame->pts + input_frame->pts) / 2;
++      av_log(priv, AV_LOG_DEBUG, "calculated first pts %"PRId64"\n", first_pts);
+     }
+-    av_log(priv, AV_LOG_DEBUG, "pts: %"PRId64" (field %d)\n", output_frame->pts, field);
+ 
+-    return ff_filter_frame(outlink, output_frame);
++    output_frame_1->pts = first_pts;
++
++    err = ff_filter_frame(outlink, output_frame_1);
++    if (err < 0) {
++        av_frame_free(&output_frame_2);
++        return err;
++    }
++    err = ff_filter_frame(outlink, output_frame_2);
++
++    if (err < 0)
++        return err;
++
++    av_log(priv, AV_LOG_DEBUG, "1st frame pts: %"PRId64" 2nd frame pts: %"PRId64" first pts: %"PRId64" (field %d)\n",
++           output_frame_1->pts, output_frame_2->pts, first_pts, ctx->field_order);
++
++    return 0;
+ 
+-fail:
+-    av_frame_free(&output_frame);
++fail_out2:
++    av_frame_free(&output_frame_2);
++fail_out1:
++    av_frame_free(&output_frame_1);
+     return err;
+ }
+ 
+@@ -749,20 +788,22 @@ static int deint_v4l2m2m_filter_frame(AVFilterLink *link, AVFrame *in)
+     V4L2Queue *output              = &ctx->output;
+     int ret;
+ 
+-    av_log(priv, AV_LOG_DEBUG, "input pts: %"PRId64"\n", in->pts);
+-    if (!ctx->frame_count) {
++    av_log(priv, AV_LOG_DEBUG, "input pts: %"PRId64" field :%d interlaced: %d\n",
++          in->pts, in->top_field_first, in->interlaced_frame);
++
++    ctx->cur_in_frame = in;
++
++    if (ctx->field_order == V4L2_FIELD_ANY) {
+         AVDRMFrameDescriptor *drm_desc = (AVDRMFrameDescriptor *)in->data[0];
+-        unsigned int field;
+-
+         ctx->orig_width = drm_desc->layers[0].planes[0].pitch;
+         ctx->orig_height = drm_desc->layers[0].planes[1].offset / ctx->orig_width;
+ 
+-        if (in->top_field_first)
+-            field = V4L2_FIELD_INTERLACED_TB;
++	if (in->top_field_first)
++            ctx->field_order = V4L2_FIELD_INTERLACED_TB;
+         else
+-            field = V4L2_FIELD_INTERLACED_BT;
++            ctx->field_order = V4L2_FIELD_INTERLACED_BT;
+ 
+-        ret = deint_v4l2m2m_set_format(output, field, ctx->orig_width, ctx->orig_height);
++        ret = deint_v4l2m2m_set_format(output, ctx->field_order, ctx->orig_width, ctx->orig_height);
+         if (ret)
+             return ret;
+ 
+@@ -787,27 +828,19 @@ static int deint_v4l2m2m_filter_frame(AVFilterLink *link, AVFrame *in)
+             return ret;
+     }
+ 
+-    if (ctx->frame_count < 2) {
+-        ctx->frames[ctx->frame_count++] = in;
+-    } else {
+-        av_frame_free(&ctx->frames[0]);
+-        ctx->frames[0] = ctx->frames[1];
+-        ctx->frames[1] = in;
+-    }
+-
+     ret = deint_v4l2m2m_enqueue(output, in);
+     if (ret)
+         return ret;
+ 
+-    if (ctx->frame_count == 2) {
+-        ret = deint_v4l2m2m_dequeue(avctx, ctx->frames[0], 0);
+-        if (ret)
+-            return ret;
++    ret = deint_v4l2m2m_dequeue(avctx, in);
++    if (ret)
++        return ret;
+ 
+-        ret = deint_v4l2m2m_dequeue(avctx, ctx->frames[0], 1);
+-        if (ret)
+-            return ret;
+-    }
++    if (ctx->prev_in_frame)
++	av_frame_free(&ctx->prev_in_frame);
++
++    ctx->prev_in_frame = in;
++    ctx->cur_in_frame = NULL;
+ 
+     return 0;
+ }
+@@ -828,6 +861,9 @@ static av_cold int deint_v4l2m2m_init(AVFilterContext *avctx)
+     ctx->capture.ctx = ctx;
+     ctx->capture.num_buffers = 6;
+     ctx->done = 0;
++    ctx->field_order = V4L2_FIELD_ANY;
++    ctx->cur_in_frame = NULL;
++    ctx->prev_in_frame = NULL;
+     atomic_init(&ctx->refcount, 1);
+ 
+     return 0;
+-- 
+2.29.2
+
