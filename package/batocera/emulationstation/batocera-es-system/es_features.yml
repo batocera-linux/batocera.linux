@@ -1895,14 +1895,14 @@ libretro:
                     "Off":              disabled
                     "On":               enabled
                     "On (Speed hack)":  enabled_with_speedhack
-            multitap_pcsx:
+            pcsx_rearmed_multitap:
                 prompt:      MULTITAP
                 description: Allows 5 or 8 max players support in games
                 choices:
                     "Off":              disabled
-                    "Port1":            port1
-                    "Port2":            port2
-                    "Port1+2":          port12
+                    "Port1":            port 1 only
+                    "Port2":            port 2 only
+                    "Port1+2":          both
             game_fixes_pcsx:
                 prompt:      ADDITIONAL GAME FIXES
                 description: Enable these options to fix them games
