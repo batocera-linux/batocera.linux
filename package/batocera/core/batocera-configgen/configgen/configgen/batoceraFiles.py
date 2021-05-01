@@ -79,12 +79,6 @@ pcsx2PluginsDir     = "/usr/PCSX/bin/plugins"
 pcsx2Avx2PluginsDir = "/usr/PCSX_AVX2/bin/plugins"
 pcsx2ConfigDir      = "/userdata/system/configs/PCSX2"
 
-ppssppConf = CONF + '/ppsspp/PSP/SYSTEM'
-ppssppControlsIni = ppssppConf + '/controls.ini'
-ppssppControls = CONF + '/ppsspp/gamecontrollerdb.txt'
-ppssppControlsInit = HOME_INIT + 'configs/ppsspp/PSP/SYSTEM/controls.ini'
-ppssppConfig = ppssppConf + '/ppsspp.ini'
-
 dosboxCustom = CONF + '/dosbox'
 dosboxConfig = dosboxCustom + '/dosbox.conf'
 
