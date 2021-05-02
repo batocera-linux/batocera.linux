@@ -1,9 +1,12 @@
 # batocera-audio alsa config
 # dmix + softvol
+# DO NOT CHANGE THIS FILE!!!
 
 pcm.!default {
 	type            plug
-	slave.pcm       "softvol"
+	slave {
+		pcm         "dmixer"
+	}
 }
 
 ctl.!default {
@@ -11,7 +14,8 @@ ctl.!default {
 	card            %CARDNO%
 }
 
-pcm.ddmix {
+# type dmix used for ES to workaround HDMI audio cards with multiple audio streams
+pcm.dmixer {
 	ipc_key         1024
 	type            dmix
 	slave {
@@ -22,10 +26,11 @@ pcm.ddmix {
 	}
 }
 
+# type softvol used to workaround Wine issues
 pcm.softvol {
 	type            softvol
 	slave {
-		pcm         "ddmix"
+		pcm         "dmixer"
 	}
 	control {
 		name        "Master"

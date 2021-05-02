@@ -211,6 +211,25 @@ def main(args, maxnbplayers):
             mouseChanged = True
             videoMode.changeMouse(True)
 
+        # set the audio output accordingly
+        audioconfigFile = "/userdata/system/.asoundrc"
+        if os.path.isfile(audioconfigFile):
+            eslog.log("Changing asoundrc file to hardware")
+            a_file = open(audioconfigFile, "r")
+            list_of_lines = a_file.readlines()
+            # read the line we want
+            line_we_want = list_of_lines[21]
+            eslog.log("Line we want: {}".format(line_we_want))
+            # replace the line
+            list_of_lines[7] = line_we_want
+            # write the new file
+            a_file = open(audioconfigFile, "w")
+            a_file.writelines(list_of_lines)
+            a_file.close()
+            # restart alsa
+            eslog.log("Restart alsa to set to hw")
+            os.system("/etc/init.d/S01audio restart")
+            
         # run a script before emulator starts
         callExternalScripts("/usr/share/batocera/configgen/scripts", "gameStart", [systemName, system.config['emulator'], effectiveCore, effectiveRom])
         callExternalScripts("/userdata/system/scripts", "gameStart", [systemName, system.config['emulator'], effectiveCore, effectiveRom])
@@ -227,6 +246,24 @@ def main(args, maxnbplayers):
         finally:
             Evmapy.stop()
 
+        # reset the audio
+        if os.path.isfile(audioconfigFile):
+            eslog.log("Changing asoundrc file to dmix")
+            a_file = open(audioconfigFile, "r")
+            list_of_lines = a_file.readlines()
+            # read the line we want
+            line_we_want = list_of_lines[32]
+            eslog.log("Line we want: {}".format(line_we_want))
+            # replace the line
+            list_of_lines[7] = line_we_want
+            # write the new file
+            a_file = open(audioconfigFile, "w")
+            a_file.writelines(list_of_lines)
+            a_file.close()
+            # restart alsa
+            eslog.log("Restart alsa to set to dmix")
+            os.system("/etc/init.d/S01audio restart")
+        
         # run a script after emulator shuts down
         callExternalScripts("/userdata/system/scripts", "gameStop", [systemName, system.config['emulator'], effectiveCore, effectiveRom])
         callExternalScripts("/usr/share/batocera/configgen/scripts", "gameStop", [systemName, system.config['emulator'], effectiveCore, effectiveRom])
