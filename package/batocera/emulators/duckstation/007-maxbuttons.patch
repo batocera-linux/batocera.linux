@@ -1,0 +1,13 @@
+diff --git a/src/frontend-common/controller_interface.h b/src/frontend-common/controller_interface.h
+index f97d0f6..563b5f4 100644
+--- a/src/frontend-common/controller_interface.h
++++ b/src/frontend-common/controller_interface.h
+@@ -37,7 +37,7 @@ public:
+   enum : int
+   {
+     MAX_NUM_AXISES = 7,
+-    MAX_NUM_BUTTONS = 15,
++    MAX_NUM_BUTTONS = 256,
+     NUM_HAT_DIRECTIONS = 4,
+     HAT_DIRECTION_UP = 0,
+     HAT_DIRECTION_DOWN = 1,
