@@ -166,15 +166,48 @@ class DuckstationGenerator(Generator):
         ## [CHEEVOS]
         if not settings.has_section("Cheevos"):
             settings.add_section("Cheevos")
-        
-        # Retroachievements : TODO
-        #settings.set("Cheevos", "Enabled",  "true")
-        #settings.set("Cheevos", "Username", "")
-        #settings.set("Cheevos", "Token",    "")                      # http://retroachievements.org/dorequest.php?r=login&u=%s&p=%s
-        #settings.set("Cheevos", "UseFirstDiscFromPlaylist", "false") # When enabled, the first disc in a playlist will be used for achievements, regardless of which disc is active
-        #settings.set("Cheevos", "RichPresence",  "true")             # Enable rich presence information will be collected and sent to the server where supported
-        #settings.set("Cheevos", "ChallengeMode", "false")            # Disables save states, cheats, slowdown functions but you receive 2x achievements points.
-        #settings.set("Cheevos", "TestMode",      "false")            # DuckStation will assume all achievements are locked and not send any unlock notifications to the server.
+
+        # RetroAchievements
+        if system.isOptSet('retroachievements') and system.getOptBoolean('retroachievements') == True:
+            headers   = {"Content-type": "text/plain"}
+            login_url = "https://retroachievements.org/"
+            username  = system.config.get('retroachievements.username', "")
+            password  = system.config.get('retroachievements.password', "")
+            hardcore  = system.config.get('retroachievements.hardcore', "")
+            login_cmd = "dorequest.php?r=login&u={}&p={}".format(username, password)
+            try:
+                cnx = httplib2.Http()
+            except:
+                eslog.log("ERROR: Unable to connect to " + login_url)
+            try:
+                res, rout = cnx.request(login_url + login_cmd, method="GET", body=None, headers=headers)
+                if (res.status != 200):
+                    eslog.log("ERROR: RetroAchievements.org responded with #{} [{}] {}".format(res.status, res.reason, rout))
+                    settings.set("Cheevos", "Enabled",  "false")
+                else:
+                    parsedout = json.loads((rout.decode('utf-8')))
+                    if not parsedout['Success']:
+                        eslog.log("ERROR: RetroAchievements login failed with ({})".format(str(parsedout)))
+                    token = parsedout['Token']
+                    settings.set("Cheevos", "Enabled",       "true")
+                    settings.set("Cheevos", "Username",      username)
+                    settings.set("Cheevos", "Token",         token)
+
+                    # Disables save states, cheats, slowdown functions but you receive 2x achievements points.
+                    if hardcore == '1':
+                        settings.set("Cheevos", "ChallengeMode", "true")
+                    else:
+                        settings.set("Cheevos", "ChallengeMode", "false")
+                    #settings.set("Cheevos", "UseFirstDiscFromPlaylist", "false") # When enabled, the first disc in a playlist will be used for achievements, regardless of which disc is active
+                    #settings.set("Cheevos", "RichPresence",  "true")             # Enable rich presence information will be collected and sent to the server where supported
+                    #settings.set("Cheevos", "TestMode",      "false")            # DuckStation will assume all achievements are locked and not send any unlock notifications to the server.
+
+                    eslog.log ("Duckstation RetroAchievements enabled for {}".format(username))
+            except Exception as e:
+                eslog.log("ERROR: Impossible to get a RetroAchievements token ({})".format(e))
+                settings.set("Cheevos", "Enabled",           "false")
+        else:
+            settings.set("Cheevos", "Enabled",               "false")
 
 
         ## [CONTROLLERPORTS]
@@ -235,38 +268,6 @@ class DuckstationGenerator(Generator):
             settings.set("Display", "ShowVPS",        "false")
             settings.set("Display", "ShowResolution", "false")
 
-        # RetroAchievements
-        if not settings.has_section("Cheevos"):
-            settings.add_section("Cheevos")
-        if system.isOptSet('retroachievements') and system.getOptBoolean('retroachievements') == True:
-            headers   = {"Content-type": "text/plain"}
-            login_url = "https://retroachievements.org/"
-            username  = system.config.get('retroachievements.username', "")
-            password  = system.config.get('retroachievements.password', "")
-            login_cmd = "dorequest.php?r=login&u={}&p={}".format(username, password)
-            try:
-                cnx = httplib2.Http()
-            except:
-                eslog.log("ERROR: Unable to connect to "+login_url)
-            try:
-                res, rout = cnx.request(login_url+login_cmd, method="GET", body=None, headers=headers)
-                if (res.status != 200):
-                    eslog.log("ERROR: RetroAchievements.org responded with #{} [{}] {}".format(res.status, res.reason, rout))
-                    settings.set("Cheevos", "Enabled",        "false")
-                else:
-                    parsedout = json.loads((rout.decode('utf-8')))
-                    if not parsedout['Success']:
-                        eslog.log("ERROR: RetroAchievements login failed with ({})".format(str(parsedout)))
-                    token = parsedout['Token']
-                    settings.set("Cheevos", "Enabled",       "true")
-                    settings.set("Cheevos", "Username",      username)
-                    settings.set("Cheevos", "Token",         token)
-                    eslog.log ("Duckstation RetroAchievements enabled for {}".format(username))
-            except Exception as e:
-                eslog.log("ERROR: Impossible to get a RetroAchievements token ({})".format(e))
-                settings.set("Cheevos", "Enabled",        "false")
-        else:
-            settings.set("Cheevos", "Enabled",        "false")
 
         # Save config
         if not os.path.exists(os.path.dirname(settings_path)):
