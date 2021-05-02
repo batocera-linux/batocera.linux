@@ -1,9 +1,0 @@
-diff -Naur a/tools/depends/native/TexturePacker/CMakeLists.txt b/tools/depends/native/TexturePacker/CMakeLists.txt
---- a/tools/depends/native/TexturePacker/CMakeLists.txt	2016-12-23 17:10:28.593185862 +0000
-+++ b/tools/depends/native/TexturePacker/CMakeLists.txt	2016-12-23 17:10:39.469253011 +0000
-@@ -1,3 +1,5 @@
-+set(CMAKE_SOURCE_DIR ${CMAKE_SOURCE_DIR}/../../../..)
-+
- list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/modules)
- 
- if(APPLE)
