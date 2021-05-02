@@ -134,6 +134,9 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
     retroarchConfig['input_libretro_device_p1'] = '1'           # Default devices choices
     retroarchConfig['input_libretro_device_p2'] = '1'
 
+    # force notification messages
+    retroarchConfig['video_font_enable'] = '"true"'
+
     ## Specific choices
     if(system.config['core'] in coreToP1Device):
         retroarchConfig['input_libretro_device_p1'] = coreToP1Device[system.config['core']]
