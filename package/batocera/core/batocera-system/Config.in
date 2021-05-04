@@ -430,7 +430,7 @@ config BR2_PACKAGE_BATOCERA_GAMESTREAM_SYSTEMS
 	bool "batocera.linux game streaming support"
 
 	# Game streaming
-	select BR2_PACKAGE_MOONLIGHT_EMBEDDED	# moonlight
+	#select BR2_PACKAGE_MOONLIGHT_EMBEDDED	# moonlight
 
 #### ScummVM ####
 config BR2_PACKAGE_BATOCERA_SCUMMVM_SYSTEMS
