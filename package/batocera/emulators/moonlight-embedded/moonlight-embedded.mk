@@ -17,9 +17,9 @@ ifeq ($(BR2_PACKAGE_RPI_USERLAND),y)
 	MOONLIGHT_EMBEDDED_DEPENDENCIES += rpi-userland
 endif
 
-ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_ROCKCHIP_ANY),y)
-	MOONLIGHT_EMBEDDED_DEPENDENCIES += rockchip-mpp librga
-endif
+#ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_ROCKCHIP_ANY),y)
+#	MOONLIGHT_EMBEDDED_DEPENDENCIES += rockchip-mpp librga
+#endif
 
 define MOONLIGHT_EMBEDDED_INSTALL_SCRIPTS
         install -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/moonlight-embedded/batocera-moonlight $(TARGET_DIR)/usr/bin/

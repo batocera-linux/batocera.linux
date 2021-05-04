@@ -25,7 +25,6 @@ cp "${BOARD_DIR}/boot/boot-logo.bmp.gz"                "${BATOCERA_BINARIES_DIR}
 cp "${BINARIES_DIR}/meson-sm1-odroid-c4.dtb"           "${BATOCERA_BINARIES_DIR}/boot/boot/"     || exit 1
 cp "${BOARD_DIR}/boot/extlinux.conf"                   "${BATOCERA_BINARIES_DIR}/boot/extlinux/" || exit 1
 cp "${BOARD_DIR}/boot/extlinux.conf"                   "${BATOCERA_BINARIES_DIR}/boot/boot/"     || exit 1
-cp "${BOARD_DIR}/boot/boot.ini"                        "${BATOCERA_BINARIES_DIR}/boot/"          || exit 1
 cp "${BOARD_DIR}/boot/config.ini"                      "${BATOCERA_BINARIES_DIR}/boot/"          || exit 1
 
 exit 0

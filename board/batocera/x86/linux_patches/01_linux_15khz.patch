@@ -1,6 +1,6 @@
-diff -Naur -x '*.rej' -x '*.orig' -x build -x awk_x86_64_defconfig a/drivers/gpu/drm/drm_modes.c b/drivers/gpu/drm/drm_modes.c
---- a/drivers/gpu/drm/drm_modes.c	2020-12-14 19:33:01.000000000 +0100
-+++ b/drivers/gpu/drm/drm_modes.c	2020-12-15 21:43:45.682157221 +0100
+diff -Naur -x '*.rej' -x '*.orig' -x build -x awk_x86_64_defconfig linux-5.12_stock/drivers/gpu/drm/drm_modes.c linux-5.12_15kHz/drivers/gpu/drm/drm_modes.c
+--- linux-5.12_stock/drivers/gpu/drm/drm_modes.c	2021-04-25 22:49:08.000000000 +0200
++++ linux-5.12_15kHz/drivers/gpu/drm/drm_modes.c	2021-04-25 23:02:12.099863176 +0200
 @@ -44,6 +44,7 @@
  #include <drm/drm_print.h>
  
@@ -52,10 +52,10 @@ diff -Naur -x '*.rej' -x '*.orig' -x build -x awk_x86_64_defconfig a/drivers/gpu
  		mode = drm_cvt_mode(dev,
  				    cmd->xres, cmd->yres,
  				    cmd->refresh_specified ? cmd->refresh : 60,
-diff -Naur -x '*.rej' -x '*.orig' -x build -x awk_x86_64_defconfig a/drivers/gpu/drm/drm_modes_low_dotclock.c b/drivers/gpu/drm/drm_modes_low_dotclock.c
---- a/drivers/gpu/drm/drm_modes_low_dotclock.c	1970-01-01 01:00:00.000000000 +0100
-+++ b/drivers/gpu/drm/drm_modes_low_dotclock.c	2020-12-15 21:43:45.685157177 +0100
-@@ -0,0 +1,132 @@
+diff -Naur -x '*.rej' -x '*.orig' -x build -x awk_x86_64_defconfig linux-5.12_stock/drivers/gpu/drm/drm_modes_low_dotclock.c linux-5.12_15kHz/drivers/gpu/drm/drm_modes_low_dotclock.c
+--- linux-5.12_stock/drivers/gpu/drm/drm_modes_low_dotclock.c	1970-01-01 01:00:00.000000000 +0100
++++ linux-5.12_15kHz/drivers/gpu/drm/drm_modes_low_dotclock.c	2021-04-25 23:02:12.311860118 +0200
+@@ -0,0 +1,136 @@
 +/*
 + * Permission is hereby granted, free of charge, to any person obtaining a
 + * copy of this software and associated documentation files (the "Software"),
@@ -146,6 +146,10 @@ diff -Naur -x '*.rej' -x '*.orig' -x build -x awk_x86_64_defconfig a/drivers/gpu
 +	{ DRM_MODE("1280x240", DRM_MODE_TYPE_DRIVER, 39790, 1280, 1312,
 +			1471, 1598, 0, 240, 314, 319, 415, 0,
 +			DRM_MODE_FLAG_NHSYNC | DRM_MODE_FLAG_NVSYNC) },
++	/* 640x480@60.00 31 Khz */
++	{ DRM_MODE("1280x240", DRM_MODE_TYPE_DRIVER, 25200, 640, 656,
++	 752, 800, 0, 480, 489, 492, 525, 0,
++	 DRM_MODE_FLAG_NHSYNC | DRM_MODE_FLAG_NVSYNC) }
 +};
 +
 +/**
@@ -188,9 +192,9 @@ diff -Naur -x '*.rej' -x '*.orig' -x build -x awk_x86_64_defconfig a/drivers/gpu
 +	return NULL;
 +}
 +EXPORT_SYMBOL(drm_mode_low_dotclock_res);
-diff -Naur -x '*.rej' -x '*.orig' -x build -x awk_x86_64_defconfig a/drivers/gpu/drm/drm_modes_low_dotclock.h b/drivers/gpu/drm/drm_modes_low_dotclock.h
---- a/drivers/gpu/drm/drm_modes_low_dotclock.h	1970-01-01 01:00:00.000000000 +0100
-+++ b/drivers/gpu/drm/drm_modes_low_dotclock.h	2020-12-15 21:43:45.686157163 +0100
+diff -Naur -x '*.rej' -x '*.orig' -x build -x awk_x86_64_defconfig linux-5.12_stock/drivers/gpu/drm/drm_modes_low_dotclock.h linux-5.12_15kHz/drivers/gpu/drm/drm_modes_low_dotclock.h
+--- linux-5.12_stock/drivers/gpu/drm/drm_modes_low_dotclock.h	1970-01-01 01:00:00.000000000 +0100
++++ linux-5.12_15kHz/drivers/gpu/drm/drm_modes_low_dotclock.h	2021-04-25 23:02:12.313860089 +0200
 @@ -0,0 +1,23 @@
 +/*
 + * Permission is hereby granted, free of charge, to any person obtaining a
@@ -215,9 +219,9 @@ diff -Naur -x '*.rej' -x '*.orig' -x build -x awk_x86_64_defconfig a/drivers/gpu
 +
 +struct drm_display_mode *drm_mode_low_dotclock_res(struct drm_device *dev,
 +				int hsize, int vsize, bool interlace);
-diff -Naur -x '*.rej' -x '*.orig' -x build -x awk_x86_64_defconfig a/drivers/gpu/drm/drm_probe_helper.c b/drivers/gpu/drm/drm_probe_helper.c
---- a/drivers/gpu/drm/drm_probe_helper.c	2020-12-14 19:33:01.000000000 +0100
-+++ b/drivers/gpu/drm/drm_probe_helper.c	2020-12-15 21:43:45.688157134 +0100
+diff -Naur -x '*.rej' -x '*.orig' -x build -x awk_x86_64_defconfig linux-5.12_stock/drivers/gpu/drm/drm_probe_helper.c linux-5.12_15kHz/drivers/gpu/drm/drm_probe_helper.c
+--- linux-5.12_stock/drivers/gpu/drm/drm_probe_helper.c	2021-04-25 22:49:08.000000000 +0200
++++ linux-5.12_15kHz/drivers/gpu/drm/drm_probe_helper.c	2021-04-25 23:04:47.330624386 +0200
 @@ -418,6 +418,7 @@
  {
  	struct drm_device *dev = connector->dev;
@@ -226,7 +230,7 @@ diff -Naur -x '*.rej' -x '*.orig' -x build -x awk_x86_64_defconfig a/drivers/gpu
  	const struct drm_connector_helper_funcs *connector_funcs =
  		connector->helper_private;
  	int count = 0, ret;
-@@ -512,10 +513,11 @@
+@@ -512,11 +513,13 @@
  	 * Fallback for when DDC probe failed in drm_get_edid() and thus skipped
  	 * override/firmware EDID.
  	 */
@@ -234,12 +238,14 @@ diff -Naur -x '*.rej' -x '*.orig' -x build -x awk_x86_64_defconfig a/drivers/gpu
  	if (count == 0 && connector->status == connector_status_connected)
  		count = drm_add_override_edid_modes(connector);
  
--	if (count == 0 && connector->status == connector_status_connected)
-+	if (count == 0 && connector->status == connector_status_connected && ! cmdline_mode->low_dotclock)
+ 	if (count == 0 && (connector->status == connector_status_connected ||
+-			   connector->status == connector_status_unknown))
++			   connector->status == connector_status_unknown) &&
++			   ! cmdline_mode->low_dotclock)
  		count = drm_add_modes_noedid(connector, 1024, 768);
  	count += drm_helper_probe_add_cmdline_mode(connector);
  	if (count == 0)
-@@ -531,21 +533,27 @@
+@@ -532,21 +535,27 @@
  		mode_flags |= DRM_MODE_FLAG_3D_MASK;
  
  	list_for_each_entry(mode, &connector->modes, head) {
@@ -267,7 +273,7 @@ diff -Naur -x '*.rej' -x '*.orig' -x build -x awk_x86_64_defconfig a/drivers/gpu
  		ret = drm_mode_validate_pipeline(mode, connector, &ctx,
  						 &mode->status);
  		if (ret) {
-@@ -561,9 +569,11 @@
+@@ -562,9 +571,11 @@
  			}
  		}
  
@@ -279,9 +285,9 @@ diff -Naur -x '*.rej' -x '*.orig' -x build -x awk_x86_64_defconfig a/drivers/gpu
  	}
  
  prune:
-diff -Naur -x '*.rej' -x '*.orig' -x build -x awk_x86_64_defconfig a/drivers/gpu/drm/Makefile b/drivers/gpu/drm/Makefile
---- a/drivers/gpu/drm/Makefile	2020-12-14 19:33:01.000000000 +0100
-+++ b/drivers/gpu/drm/Makefile	2020-12-15 21:43:45.690157106 +0100
+diff -Naur -x '*.rej' -x '*.orig' -x build -x awk_x86_64_defconfig linux-5.12_stock/drivers/gpu/drm/Makefile linux-5.12_15kHz/drivers/gpu/drm/Makefile
+--- linux-5.12_stock/drivers/gpu/drm/Makefile	2021-04-25 22:49:08.000000000 +0200
++++ linux-5.12_15kHz/drivers/gpu/drm/Makefile	2021-04-25 23:02:12.324859930 +0200
 @@ -18,7 +18,7 @@
  		drm_dumb_buffers.o drm_mode_config.o drm_vblank.o \
  		drm_syncobj.o drm_lease.o drm_writeback.o drm_client.o \
@@ -289,12 +295,12 @@ diff -Naur -x '*.rej' -x '*.orig' -x build -x awk_x86_64_defconfig a/drivers/gpu
 -		drm_managed.o drm_vblank_work.o
 +		drm_managed.o drm_vblank_work.o drm_modes_low_dotclock.o
  
- drm-$(CONFIG_DRM_LEGACY) += drm_legacy_misc.o drm_bufs.o drm_context.o drm_dma.o drm_scatter.o drm_lock.o
- drm-$(CONFIG_DRM_LIB_RANDOM) += lib/drm_random.o
-diff -Naur -x '*.rej' -x '*.orig' -x build -x awk_x86_64_defconfig a/include/drm/drm_connector.h b/include/drm/drm_connector.h
---- a/include/drm/drm_connector.h	2020-12-14 19:33:01.000000000 +0100
-+++ b/include/drm/drm_connector.h	2020-12-15 21:43:45.693157062 +0100
-@@ -1157,6 +1157,13 @@
+ drm-$(CONFIG_DRM_LEGACY) += drm_bufs.o drm_context.o drm_dma.o drm_legacy_misc.o drm_lock.o \
+ 		drm_memory.o drm_scatter.o drm_vm.o
+diff -Naur -x '*.rej' -x '*.orig' -x build -x awk_x86_64_defconfig linux-5.12_stock/include/drm/drm_connector.h linux-5.12_15kHz/include/drm/drm_connector.h
+--- linux-5.12_stock/include/drm/drm_connector.h	2021-04-25 22:49:08.000000000 +0200
++++ linux-5.12_15kHz/include/drm/drm_connector.h	2021-04-25 23:02:12.329859858 +0200
+@@ -1206,6 +1206,13 @@
  	 * @tv_margins: TV margins to apply to the mode.
  	 */
  	struct drm_connector_tv_margins tv_margins;

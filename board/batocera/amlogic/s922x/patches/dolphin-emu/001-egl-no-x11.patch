@@ -1,0 +1,11 @@
+--- a/CMakeLists.txt	2021-04-26 14:08:56.339721175 +0200
++++ b/CMakeLists.txt	2021-04-26 14:09:04.719721129 +0200
+@@ -453,7 +453,7 @@
+ if(ENABLE_EGL)
+   find_package(EGL)
+   if(EGL_FOUND)
+-    add_definitions(-DHAVE_EGL=1)
++    add_definitions(-DHAVE_EGL=1 -DEGL_NO_X11=1)
+     message(STATUS "EGL OpenGL interface enabled")
+     find_package(Libdrm)
+     find_package(Libgbm)
