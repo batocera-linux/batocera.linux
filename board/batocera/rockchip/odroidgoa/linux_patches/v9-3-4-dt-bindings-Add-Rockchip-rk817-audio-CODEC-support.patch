@@ -1,17 +1,8 @@
 diff --git a/Documentation/devicetree/bindings/mfd/rk808.txt b/Documentation/devicetree/bindings/mfd/rk808.txt
-index 04df07f6f793..e27fb2c1ebe0 100644
+index 04df07f6f793..56121039154f 100644
 --- a/Documentation/devicetree/bindings/mfd/rk808.txt
 +++ b/Documentation/devicetree/bindings/mfd/rk808.txt
-@@ -14,6 +14,8 @@ Required properties:
- - compatible: "rockchip,rk817"
- - compatible: "rockchip,rk818"
- - reg: I2C slave address
-+- interrupt-parent: Should contain a phandle to the correct interrupt
-+		    controller node.
- - interrupts: the interrupt outputs of the controller.
- - #clock-cells: from common clock binding; shall be set to 1 (multiple clock
-   outputs). See <dt-bindings/clock/rockchip,rk808.h> for clock IDs.
-@@ -23,6 +25,7 @@ Optional properties:
+@@ -23,6 +23,7 @@ Optional properties:
    default output clock name
  - rockchip,system-power-controller: Telling whether or not this pmic is controlling
    the system power.
@@ -19,7 +10,7 @@ index 04df07f6f793..e27fb2c1ebe0 100644
  
  Optional RK805 properties:
  - vcc1-supply:  The input supply for DCDC_REG1
-@@ -63,8 +66,16 @@ Optional RK809 properties:
+@@ -63,8 +64,16 @@ Optional RK809 properties:
  - vcc9-supply:  The input supply for DCDC_REG5, SWITCH_REG2
  
  Optional RK817 properties:
@@ -36,7 +27,7 @@ index 04df07f6f793..e27fb2c1ebe0 100644
  
  Optional RK818 properties:
  - vcc1-supply:  The input supply for DCDC_REG1
-@@ -275,3 +286,180 @@ Example:
+@@ -275,3 +284,180 @@ Example:
  			};
  		};
  	};

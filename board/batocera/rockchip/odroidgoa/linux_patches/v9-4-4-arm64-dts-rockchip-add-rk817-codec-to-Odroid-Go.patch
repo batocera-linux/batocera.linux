@@ -1,8 +1,8 @@
 diff --git a/arch/arm64/boot/dts/rockchip/rk3326-odroid-go2.dts b/arch/arm64/boot/dts/rockchip/rk3326-odroid-go2.dts
-index 97fb93e1cc00..e3ecd34f3028 100644
+index 49c97f76df77..e8c2b5a817a7 100644
 --- a/arch/arm64/boot/dts/rockchip/rk3326-odroid-go2.dts
 +++ b/arch/arm64/boot/dts/rockchip/rk3326-odroid-go2.dts
-@@ -161,6 +161,31 @@ blue_led: led-0 {
+@@ -165,6 +165,31 @@ blue_led: led-0 {
  		};
  	};
  
@@ -34,7 +34,7 @@ index 97fb93e1cc00..e3ecd34f3028 100644
  	vccsys: vccsys {
  		compatible = "regulator-fixed";
  		regulator-name = "vcc3v8_sys";
-@@ -265,11 +290,14 @@ rk817: pmic@20 {
+@@ -269,11 +294,14 @@ rk817: pmic@20 {
  		reg = <0x20>;
  		interrupt-parent = <&gpio0>;
  		interrupts = <RK_PB2 IRQ_TYPE_LEVEL_LOW>;
@@ -51,7 +51,7 @@ index 97fb93e1cc00..e3ecd34f3028 100644
  
  		vcc1-supply = <&vccsys>;
  		vcc2-supply = <&vccsys>;
-@@ -428,6 +456,10 @@ regulator-state-mem {
+@@ -432,6 +460,10 @@ regulator-state-mem {
  				};
  			};
  		};
