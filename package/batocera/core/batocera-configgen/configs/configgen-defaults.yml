@@ -206,9 +206,13 @@ fpinball:
 n64:
   emulator: mupen64plus
   core:     glide64mk2
+  options:
+    videomode: max-640x480
 n64dd:
   emulator: mupen64plus
   core:     glide64mk2
+  options:
+    videomode: max-640x480
 naomi:
   emulator: libretro
   core:     flycast
