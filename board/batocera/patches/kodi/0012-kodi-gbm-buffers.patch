@@ -7,7 +7,7 @@ index cf6ee7d..c7f47c3 100644
    m_buffers.emplace(std::make_unique<CGBMSurfaceBuffer>(m_surface));
  
 -  if (!static_cast<bool>(gbm_surface_has_free_buffers(m_surface)))
-+  if (!static_cast<bool>(gbm_surface_has_free_buffers(m_surface)) || m_buffers.size() >= 3)
++  if (!static_cast<bool>(gbm_surface_has_free_buffers(m_surface)) || m_buffers.size() >= 4)
    {
      /*
       * We want to use call_once here because we want it to be logged the first time that
