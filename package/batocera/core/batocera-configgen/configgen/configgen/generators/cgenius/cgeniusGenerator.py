@@ -12,7 +12,7 @@ class CGeniusGenerator(Generator):
     def generate(self, system, rom, playersControllers, gameResolution):
 
         # basis
-        commandArray = ["cgenius"]
+        commandArray = ["CGeniusExe"]
 
         # rom
         commandArray.append(rom)
