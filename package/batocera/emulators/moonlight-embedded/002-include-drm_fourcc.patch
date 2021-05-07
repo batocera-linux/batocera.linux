@@ -1,0 +1,12 @@
+diff --git a/src/video/rk.c b/src/video/rk.c
+index af9451d..5c9e370 100644
+--- a/src/video/rk.c
++++ b/src/video/rk.c
+@@ -34,6 +34,7 @@
+ 
+ #include <xf86drm.h>
+ #include <xf86drmMode.h>
++#include <drm/drm_fourcc.h>
+ #include <libdrm/drm_fourcc.h>
+ 
+ #include <rockchip/rk_mpi.h>
