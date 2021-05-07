@@ -129,7 +129,7 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
 	select BR2_PACKAGE_WGET					# download tools
 	select BR2_PACKAGE_LIBCURL_CURL				# download tools
 	select BR2_PACKAGE_CA_CERTIFICATES			# ssl certificates
-	#select BR2_PACKAGE_LIBRGA				if BR2_PACKAGE_BATOCERA_TARGET_ROCKCHIP_ANY # Used for screen rotation (SDL, Retroarch, Moonlight)
+	select BR2_PACKAGE_LIBRGA				if BR2_PACKAGE_BATOCERA_TARGET_ROCKCHIP_ANY # Used for screen rotation (SDL, Retroarch, Moonlight)
 
 	select BR2_PACKAGE_SDL2_OPENGLES			# ALL
 	select BR2_PACKAGE_SDL2_KMSDRM				if !BR2_PACKAGE_BATOCERA_RPI_VCORE
@@ -140,7 +140,7 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
 	select BR2_PACKAGE_LIBCEC				# libcec
 	select BR2_PACKAGE_EDID_DECODE				# edid monitor/tv support
 	select BR2_PACKAGE_READ_EDID				# edid monitor/tv support
-	select BR2_PACKAGE_XOW					if !BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA && !BR2_PACKAGE_BATOCERA_TARGET_RK3399 # xbox receiver (require linux >= 4.5)
+	select BR2_PACKAGE_XOW					if !BR2_PACKAGE_BATOCERA_TARGET_RK3399 # xbox receiver (require linux >= 4.5)
 	select BR2_PACKAGE_WII_U_GC_ADAPTER                     # wii-u-gc-adapter
 	select BR2_SYSTEM_ENABLE_NLS				# locales
 	select BR2_PACKAGE_ACPID				if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
@@ -180,8 +180,7 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
 
 	# vulkan
 	select BR2_PACKAGE_BATOCERA_VULKAN	if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY	|| \
-						BR2_PACKAGE_BATOCERA_TARGET_RPI4	|| \
-						BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA
+						BR2_PACKAGE_BATOCERA_TARGET_RPI4
 
 	# wireless drivers
 	select BR2_PACKAGE_RTL8821AU		if !BR2_PACKAGE_BATOCERA_TARGET_RPI1		&& \
@@ -430,7 +429,7 @@ config BR2_PACKAGE_BATOCERA_GAMESTREAM_SYSTEMS
 	bool "batocera.linux game streaming support"
 
 	# Game streaming
-	#select BR2_PACKAGE_MOONLIGHT_EMBEDDED	# moonlight
+	select BR2_PACKAGE_MOONLIGHT_EMBEDDED	# moonlight
 
 #### ScummVM ####
 config BR2_PACKAGE_BATOCERA_SCUMMVM_SYSTEMS
