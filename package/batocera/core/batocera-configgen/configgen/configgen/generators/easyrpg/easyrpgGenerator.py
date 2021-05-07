@@ -38,40 +38,52 @@ class EasyRPGGenerator(Generator):
 
         commandArray.extend(["--project-path", rom])
 
-        # GETTING ES Forced Pad 
-        esbtshift = system.config["easyrpg_shift"] if system.isOptSet('easyrpg_shift') and system.config["easyrpg_shift"] != 'pageup' else 'pageup' #By default it's PageUp
+        # Retrieving ES Values 
+        mappings = {
+        "easyrpg_action":   {"key": "button_action"   ,"default" : "a"}
+        "easyrpg_cancel":   {"key": "button_cancel"   ,"default" : "b"}
+        "easyrpg_shift":    {"key": "button_shift"    ,"default" : "pageup"}
+        "easyrpg_n0":       {"key": "button_n0"       ,"default" : None}
+        "easyrpg_n1":       {"key": "button_n1"       ,"default" : None}
+        "easyrpg_n2":       {"key": "button_n2"       ,"default" : None}
+        "easyrpg_n3":       {"key": "button_n3"       ,"default" : None}
+        "easyrpg_n4":       {"key": "button_n4"       ,"default" : None}
+        "easyrpg_n5":       {"key": "button_n5"       ,"default" : None}
+        "easyrpg_n6":       {"key": "button_n6"       ,"default" : None}
+        "easyrpg_n7":       {"key": "button_n7"       ,"default" : None}
+        "easyrpg_n8":       {"key": "button_n8"       ,"default" : None}
+        "easyrpg_n9":       {"key": "button_n9"       ,"default" : None}
+        "easyrpg_plus":     {"key": "button_plus"     ,"default" : None}
+        "easyrpg_minus":    {"key": "button_minus"    ,"default" : None}
+        "easyrpg_multiply": {"key": "button_multiply" ,"default" : None}
+        "easyrpg_divide":   {"key": "button_divide"   ,"default" : None}
+        "easyrpg_period":   {"key": "button_period"   ,"default" : None}
+        }
+        # Loop every keys to assign 
         
-        esbt0 = system.config["easyrpg_n0"] if system.isOptSet('easyrpg_n0') and system.config["easyrpg_n0"] != None else None
-        esbt1 = system.config["easyrpg_n1"] if system.isOptSet('easyrpg_n1') and system.config["easyrpg_n1"] != None else None
-        esbt2 = system.config["easyrpg_n2"] if system.isOptSet('easyrpg_n2') and system.config["easyrpg_n2"] != None else None
-        esbt3 = system.config["easyrpg_n3"] if system.isOptSet('easyrpg_n3') and system.config["easyrpg_n3"] != None else None
-        esbt4 = system.config["easyrpg_n4"] if system.isOptSet('easyrpg_n4') and system.config["easyrpg_n4"] != None else None
-        esbt5 = system.config["easyrpg_n5"] if system.isOptSet('easyrpg_n5') and system.config["easyrpg_n5"] != None else None
-        esbt6 = system.config["easyrpg_n6"] if system.isOptSet('easyrpg_n6') and system.config["easyrpg_n6"] != None else None
-        esbt7 = system.config["easyrpg_n7"] if system.isOptSet('easyrpg_n7') and system.config["easyrpg_n7"] != None else None
-        esbt8 = system.config["easyrpg_n8"] if system.isOptSet('easyrpg_n8') and system.config["easyrpg_n8"] != None else None
-        esbt9 = system.config["easyrpg_n9"] if system.isOptSet('easyrpg_n9') and system.config["easyrpg_n9"] != None else None
+        for mapping in mappings:
+        if system.isOptSet(mapping):
+           esbt[mappings[mapping]["key"]] = system.config[mapping]
+        else:
+           esbt[mappings[mapping]["key"]] = mappings[mapping]["default"]
+
+        # Configuring Pads
+        EasyRPGGenerator.padConfig(configdir, playersControllers, esbtaction, esbtcancel,esbtshift, esbt0, esbt1, esbt2, esbt3, esbt4, esbt5, esbt6, esbt7, esbt8, esbt9, esbtplus, esbtminus, esbtmulti, esbtdiv, esbtperiod)
+           
         
-        esbtplus = system.config["easyrpg_plus"] if system.isOptSet('easyrpg_plus') and system.config["easyrpg_plus"] != None else None
-        esbtminus = system.config["easyrpg_minus"] if system.isOptSet('easyrpg_minus') and system.config["easyrpg_minus"] != None else None
-        esbtmulti = system.config["easyrpg_multiply"] if system.isOptSet('easyrpg_multiply') and system.config["easyrpg_multiply"] != None else None
-        esbtdiv = system.config["easyrpg_divide"] if system.isOptSet('easyrpg_divide') and system.config["easyrpg_divide"] != None else None
-        esbtperiod = system.config["easyrpg_period"] if system.isOptSet('easyrpg_period') and system.config["easyrpg_period"] != None else None
-        
-        EasyRPGGenerator.padConfig(configdir, playersControllers, esbtshift, esbt0, esbt1, esbt2, esbt3, esbt4, esbt5, esbt6, esbt7, esbt8, esbt9, esbtplus, esbtminus, esbtmulti, esbtdiv, esbtperiod)
-        
+        # Launching EasyRPG
         return Command.Command(array=commandArray)
 
     @staticmethod
-    def padConfig(configdir, playersControllers, esbtshift, esbt0, esbt1, esbt2, esbt3, esbt4, esbt5, esbt6, esbt7, esbt8, esbt9, esbtplus, esbtminus, esbtmulti, esbtdiv, esbtperiod):
+    def padConfig(configdir, playersControllers, esbtaction, esbtcancel, esbtshift, esbt0, esbt1, esbt2, esbt3, esbt4, esbt5, esbt6, esbt7, esbt8, esbt9, esbtplus, esbtminus, esbtmulti, esbtdiv, esbtperiod):
         keymapping = {
             "button_up":                 None,
             "button_down":               None,
             "button_left":               None,
             "button_right":              None,
-            "button_action":             "a",
-            "button_cancel":             "b",
-            "button_shift":              esbtshift, #default at pageup
+            "button_action":             esbtaction,
+            "button_cancel":             esbtcancel,
+            "button_shift":              esbtshift,
             "button_n0":                 esbt0,
             "button_n1":                 esbt1,
             "button_n2":                 esbt2,
