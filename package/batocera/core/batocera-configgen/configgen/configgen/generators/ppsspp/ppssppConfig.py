@@ -95,7 +95,7 @@ def createPPSSPPConfig(iniConfig, system):
         iniConfig.add_section("SystemParam")
 
     # Forcing Nickname to Batocera or User name
-    if system.isOptSet('retroachievements') and system.getOptBoolean('retroachievements') == True:
+    if system.isOptSet('retroachievements') and system.getOptBoolean('retroachievements') == True and system.isOptSet('retroachievements.username') and system.config.get('retroachievements.username', "") != "":
         iniConfig.set("SystemParam", "NickName", system.config.get('retroachievements.username', ""))
     else:
         iniConfig.set("SystemParam", "NickName", "Batocera")
