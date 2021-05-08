@@ -1,0 +1,14 @@
+--- a/src/video/rk.c	2021-05-08 22:08:11.222550162 +0200
++++ b/src/video/rk.c	2021-05-08 22:09:19.625881020 +0200
+@@ -40,6 +40,11 @@
+ #include <rockchip/rk_mpi.h>
+ #include <rga/RgaApi.h>
+ 
++// DRM_FORMAT_NV12_10
++#ifndef DRM_FORMAT_NV12_10
++#define DRM_FORMAT_NV12_10     fourcc_code('N', 'A', '1', '2') /* 2x2 subsampled Cr:Cb plane */
++#endif // DRM_FORMAT_NV12_10
++
+ #define READ_BUF_SIZE 0x00100000
+ #define MAX_FRAMES 16
+ #define MAX_DEST_BUFFERS 3
