@@ -256,7 +256,39 @@ def generateCoreSettings(coreSettings, system, rom):
     # Magnavox - Odyssey2 / Phillips Videopac+
     if (system.config['core'] == 'o2em'):
         # Virtual keyboard transparency
-        coreSettings.save('o2em_vkb_transparency ', '"20%"')
+        coreSettings.save('o2em_vkbd_transparency ', '"25"')
+        # Emulated Hardware
+        if system.isOptSet('o2em_bios'):
+            coreSettings.save('o2em_bios', system.config['o2em_bios'])
+        else:
+            coreSettings.save('o2em_bios', '"o2rom.bin"')
+        # Emulated Hardware
+        if system.isOptSet('o2em_region') and system.config['o2em_region'] != "autodetect":
+            coreSettings.save('o2em_region', system.config['o2em_region'])
+        else:
+            coreSettings.save('o2em_region', '"auto"')
+        # Swap Gamepad
+        if system.isOptSet('o2em_swap_gamepads'):
+            coreSettings.save('o2em_swap_gamepads', system.config['o2em_swap_gamepads'])
+        else:
+            coreSettings.save('o2em_swap_gamepads', '"disabled"')
+        # Crop Overscan
+        if system.isOptSet('o2em_crop_overscan'):
+            coreSettings.save('o2em_crop_overscan', system.config['o2em_crop_overscan'])
+        else:
+            coreSettings.save('o2em_crop_overscan', '"enabled"')
+        # Ghosting effect
+        if system.isOptSet('o2em_mix_frames'):
+            coreSettings.save('o2em_mix_frames', system.config['o2em_mix_frames'])
+        else:
+            coreSettings.save('o2em_mix_frames', '"disabled"')
+        # Audio Filter
+        if system.isOptSet('o2em_low_pass_range') and system.config['o2em_low_pass_range'] != "0":
+            coreSettings.save('o2em_low_pass_filter', '"enabled"')
+            coreSettings.save('o2em_low_pass_range',  system.config['o2em_low_pass_range'])
+        else:
+            coreSettings.save('o2em_low_pass_filter', '"disabled"')
+            coreSettings.save('o2em_low_pass_range',  '"0"')
 
     # MAME 0.225
     if (system.config['core'] == 'mame'):
@@ -1369,7 +1401,7 @@ def generateCoreSettings(coreSettings, system, rom):
             coreSettings.save('beetle_psx_enable_multitap_port1', '"disabled"')
             coreSettings.save('beetle_psx_enable_multitap_port2', '"disabled"')
 
-    if (system.config['core'] == 'duckstation'):
+    if (system.config['core'] == 'swanstation'):
         # Show official Bootlogo
         if system.isOptSet('duckstation_PatchFastBoot'):
             coreSettings.save('duckstation_BIOS.PatchFastBoot', system.config['duckstation_PatchFastBoot'])
@@ -1488,7 +1520,20 @@ def generateCoreSettings(coreSettings, system, rom):
     if (system.config['core'] == 'theodore'):
         # Auto run games
         coreSettings.save('theodore_autorun',   '"enabled"')
-    
+
+    # Watara SuperVision
+    if (system.config['core'] == 'potator'):
+        # Watara Color Palette
+        if system.isOptSet('watara_palette'):
+            coreSettings.save('potator_palette', system.config['watara_palette'])
+        else:
+            coreSettings.save('potator_palette', 'gameking')
+        # Watara Ghosting
+        if system.isOptSet('watara_ghosting'):
+            coreSettings.save('potator_lcd_ghosting', system.config['watara_ghosting'])
+        else:
+            coreSettings.save('potator_lcd_ghosting', '0')
+
     ## PORTs
     
     # DOOM
@@ -1517,7 +1562,7 @@ def generateCoreSettings(coreSettings, system, rom):
         else:
             coreSettings.save('tyrquake_rumble', '"disabled"')
 
-    # BONBERMAN
+    # BOMBERMAN
     if (system.config['core'] == 'mrboom'):
         # Team mode
         if system.isOptSet('mrboom-aspect'):

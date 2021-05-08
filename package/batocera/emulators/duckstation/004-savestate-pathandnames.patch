@@ -22,8 +22,8 @@ index 50f949e..911a660 100644
 +
 +  if (strncmp(formatted_path.c_str(), "savestates", 10) == 0)
 +    return formatted_path.length() > 10 ? StringUtil::StdStringFromFormat("%s" FS_OSPATH_SEPARATOR_STR "%s", "/userdata/saves/psx/duckstation", formatted_path.substr(11).c_str()) : "/userdata/saves/psx/duckstation";
-+  if (strncmp(formatted_path.c_str(), "memcards", 7) == 0)
-+    return formatted_path.length() > 7 ? StringUtil::StdStringFromFormat("%s" FS_OSPATH_SEPARATOR_STR "%s", "/userdata/saves/psx/duckstation", formatted_path.substr(8).c_str()) : "/userdata/saves/psx/duckstation";
++  if (strncmp(formatted_path.c_str(), "memcards", 8) == 0)
++    return formatted_path.length() > 8 ? StringUtil::StdStringFromFormat("%s" FS_OSPATH_SEPARATOR_STR "%s", "/userdata/saves/psx/duckstation", formatted_path.substr(8).c_str()) : "/userdata/saves/psx/duckstation";
 +  
    if (m_user_directory.empty())
    {

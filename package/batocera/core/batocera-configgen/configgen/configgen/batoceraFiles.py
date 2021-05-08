@@ -1,8 +1,10 @@
 #!/usr/bin/env python
+
 HOME_INIT = '/usr/share/batocera/datainit/system/'
 HOME = '/userdata/system'
 CONF_INIT = HOME_INIT + '/configs'
 CONF = HOME + '/configs'
+EVMAPY = CONF + '/evmapy'
 SAVES = '/userdata/saves'
 SCREENSHOTS = '/userdata/screenshots'
 BIOS = '/userdata/bios'
@@ -24,7 +26,6 @@ batoceraBins = {'dosbox'         : '/usr/bin/dosbox'
               , 'linapple'       : '/usr/bin/linapple'
               , 'moonlight'      : '/usr/bin/moonlight'
               , 'mupen64plus'    : '/usr/bin/mupen64plus'
-              , 'ppsspp'         : '/usr/bin/PPSSPP'
               , 'flycast'        : '/usr/bin/flycast'
               , 'scummvm'        : '/usr/bin/scummvm'
               , 'vice'           : '/usr/bin/'
@@ -32,7 +33,6 @@ batoceraBins = {'dosbox'         : '/usr/bin/dosbox'
               , 'amiberry'       : '/usr/bin/amiberry'
               , 'pcsx2'          : '/usr/PCSX/bin/PCSX2'
               , 'pcsx2_avx2'     : '/usr/PCSX_AVX2/bin/PCSX2'
-              , 'citra'          : '/usr/bin/citra-qt'
               , 'daphne'         : '/usr/bin/hypseus'
               , 'melonds'        : '/usr/bin/melonDS'
               , 'rpcs3'          : '/usr/bin/rpcs3'
@@ -78,12 +78,6 @@ dolphinSYSCONF = dolphinData + "/Wii/shared2/sys/SYSCONF"
 pcsx2PluginsDir     = "/usr/PCSX/bin/plugins"
 pcsx2Avx2PluginsDir = "/usr/PCSX_AVX2/bin/plugins"
 pcsx2ConfigDir      = "/userdata/system/configs/PCSX2"
-
-ppssppConf = CONF + '/ppsspp/PSP/SYSTEM'
-ppssppControlsIni = ppssppConf + '/controls.ini'
-ppssppControls = CONF + '/ppsspp/gamecontrollerdb.txt'
-ppssppControlsInit = HOME_INIT + 'configs/ppsspp/PSP/SYSTEM/controls.ini'
-ppssppConfig = ppssppConf + '/ppsspp.ini'
 
 dosboxCustom = CONF + '/dosbox'
 dosboxConfig = dosboxCustom + '/dosbox.conf'
@@ -132,11 +126,6 @@ flycastBios = BIOS
 flycastVMUBlank = '/usr/lib/python3.9/site-packages/configgen/datainit/dreamcast/vmu_save_blank.bin'
 flycastVMUA1 = flycastSaves + '/flycast/vmu_save_A1.bin'
 flycastVMUA2 = flycastSaves + '/flycast/vmu_save_A2.bin'
-
-cemuConfig = CONF + '/cemu/config.ini'
-cemuHomedir = ROMS + '/wiiu'
-cemuDatadir = '/usr/cemu'
-cemuSaves = SAVES + '/cemu'
 
 rpcs3Config = CONF
 rpcs3Homedir = ROMS + '/ps3'

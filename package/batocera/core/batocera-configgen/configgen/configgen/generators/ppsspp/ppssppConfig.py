@@ -8,22 +8,26 @@ import settings
 from Emulator import Emulator
 import configparser
 
+ppssppConf   = batoceraFiles.CONF + '/ppsspp/PSP/SYSTEM'
+ppssppConfig = ppssppConf + '/ppsspp.ini'
+
+
 def writePPSSPPConfig(system):
     iniConfig = configparser.ConfigParser(interpolation=None)
     # To prevent ConfigParser from converting to lower case
     iniConfig.optionxform = str
-    if os.path.exists(batoceraFiles.ppssppConfig):
+    if os.path.exists(ppssppConfig):
         try:
-            with io.open(batoceraFiles.ppssppConfig, 'r', encoding='utf_8_sig') as fp:
+            with io.open(ppssppConfig, 'r', encoding='utf_8_sig') as fp:
                 iniConfig.readfp(fp)
         except:
             pass
 
     createPPSSPPConfig(iniConfig, system)
     # Save the ini file
-    if not os.path.exists(os.path.dirname(batoceraFiles.ppssppConfig)):
-        os.makedirs(os.path.dirname(batoceraFiles.ppssppConfig))
-    with open(batoceraFiles.ppssppConfig, 'w') as configfile:
+    if not os.path.exists(os.path.dirname(ppssppConfig)):
+        os.makedirs(os.path.dirname(ppssppConfig))
+    with open(ppssppConfig, 'w') as configfile:
         iniConfig.write(configfile)
 
 def createPPSSPPConfig(iniConfig, system):
@@ -32,7 +36,7 @@ def createPPSSPPConfig(iniConfig, system):
     if not iniConfig.has_section("Graphics"):
         iniConfig.add_section("Graphics")
 
-    # Graphics Backend : TODO (Not used for now)
+    # Graphics Backend : TODO VULKAN support (Not used for now)
     iniConfig.set("Graphics", "FailedGraphicsBackends", "0 (OPENGL)")
     if system.isOptSet('gfxbackend'):
         iniConfig.set("Graphics", "GraphicsBackend", system.config["gfxbackend"])
@@ -85,6 +89,17 @@ def createPPSSPPConfig(iniConfig, system):
     else:
         iniConfig.set("Graphics", "AnisotropyLevel", "3")
 
+
+   ## [SYSTEM PARAM]
+    if not iniConfig.has_section("SystemParam"):
+        iniConfig.add_section("SystemParam")
+
+    # Forcing Nickname to Batocera
+    iniConfig.set("SystemParam", "NickName", "Batocera")
+    # Disable Encrypt Save (permit to exchange save with different machines)
+    iniConfig.set("SystemParam", "EncryptSave", "False")   
+
+
     ## [GENERAL]
     if not iniConfig.has_section("General"):
         iniConfig.add_section("General")
@@ -94,6 +109,11 @@ def createPPSSPPConfig(iniConfig, system):
         iniConfig.set("General", "RewindFlipFrequency", "300") # 300 = every 5 seconds
     else:
         iniConfig.set("General", "RewindFlipFrequency",  "0")
+    # Cheats
+    if system.isOptSet('enable_cheats'):
+        iniConfig.set("General", "EnableCheats", system.config["enable_cheats"])
+    else:
+        iniConfig.set("General", "EnableCheats", "False")
 
     # Custom : allow the user to configure directly PPSSPP via batocera.conf via lines like : ppsspp.section.option=value
     for user_config in system.config:

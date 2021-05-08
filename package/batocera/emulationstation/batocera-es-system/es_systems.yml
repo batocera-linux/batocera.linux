@@ -11,6 +11,7 @@ snes:
       snes9x_next: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_SNES9X_NEXT] }
       snes9x:      { requireAnyOf: [BR2_PACKAGE_LIBRETRO_SNES9X] }
       bsnes:       { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BSNES] }
+      bsnes_hd:    { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BSNES_HD] }
 
 snes-msu1:
   name:       Super Disc System (MSU1)
@@ -22,6 +23,7 @@ snes-msu1:
     libretro:
       snes9x:      { requireAnyOf: [BR2_PACKAGE_LIBRETRO_SNES9X] }
       bsnes:       { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BSNES] }
+      bsnes_hd:    { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BSNES_HD] }
 
 c64:
   name:       Commodore 64
@@ -438,6 +440,7 @@ psx:
   emulators:
     libretro:
       pcsx_rearmed: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PCSX] }
+      swanstation:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_SWANSTATION], incompatible_extensions: [pbp] }
       mednafen_psx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BEETLE_PSX] }
     duckstation:
       duckstation: { requireAnyOf: [BR2_PACKAGE_DUCKSTATION]  }
@@ -1908,7 +1911,7 @@ flatpak:
           Remove intalled app : flatpak remove xmoto
           then, run batocera-flatpak-update to update the roms directory according to your installed applications.
 
-watara:
+supervision:
   name:       Watara Supervision
   manufacturer: Watara
   release: 1992

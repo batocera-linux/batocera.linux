@@ -151,30 +151,6 @@ index b54ff9055e5f..2fae7fa6b000 100644
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Alex Bee <knaerzche@gmail.com>
-Date: Wed, 2 Sep 2020 21:22:31 +0200
-Subject: [PATCH] arm64: dts: rockchip: add rockchip,disable-mmu-reset for vdec
- iommu
-
-Signed-off-by: Alex Bee <knaerzche@gmail.com>
----
- arch/arm64/boot/dts/rockchip/rk3328.dtsi | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/arch/arm64/boot/dts/rockchip/rk3328.dtsi b/arch/arm64/boot/dts/rockchip/rk3328.dtsi
-index 2fae7fa6b000..3d933d74c2b3 100644
---- a/arch/arm64/boot/dts/rockchip/rk3328.dtsi
-+++ b/arch/arm64/boot/dts/rockchip/rk3328.dtsi
-@@ -731,6 +731,7 @@ rkvdec_mmu: iommu@ff360480 {
- 		clock-names = "aclk", "iface";
- 		#iommu-cells = <0>;
- 		power-domains = <&power RK3328_PD_VIDEO>;
-+		rockchip,disable-mmu-reset;
- 	};
- 
- 	vop: vop@ff370000 {
-
-From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: Alex Bee <knaerzche@gmail.com>
 Date: Mon, 10 Feb 2020 19:22:41 +0100
 Subject: [PATCH] ARM64: dts: rk3328 add sdmmc ext node
 
@@ -220,7 +196,7 @@ Signed-off-by: Alex Bee <knaerzche@gmail.com>
  1 file changed, 20 insertions(+)
 
 diff --git a/arch/arm/boot/dts/rk3288-miqi.dts b/arch/arm/boot/dts/rk3288-miqi.dts
-index 713f55e143c6..2420d8e1c66f 100644
+index 713f55e143c6..8d30c49f406e 100644
 --- a/arch/arm/boot/dts/rk3288-miqi.dts
 +++ b/arch/arm/boot/dts/rk3288-miqi.dts
 @@ -78,6 +78,21 @@ vcc_sys: vsys-regulator {
@@ -231,7 +207,7 @@ index 713f55e143c6..2420d8e1c66f 100644
 +	sound {
 +		compatible = "simple-audio-card";
 +		simple-audio-card,format = "i2s";
-+		simple-audio-card,name = "rockchip,miqi-codec";
++		simple-audio-card,name = "HDMI";
 +		simple-audio-card,mclk-fs = <512>;
 +
 +		simple-audio-card,codec {
@@ -260,27 +236,41 @@ index 713f55e143c6..2420d8e1c66f 100644
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Alex Bee <knaerzche@gmail.com>
-Date: Fri, 1 Jan 2021 12:11:12 +0200
-Subject: [PATCH] arm64: dts: rockchip: fix RK3399 vdec register witdh
+Date: Fri, 2 Apr 2021 17:54:22 +0200
+Subject: [PATCH] ARM64/ARM: dts: align sound card names
 
 Signed-off-by: Alex Bee <knaerzche@gmail.com>
 ---
+ arch/arm/boot/dts/rk3288-tinker.dtsi     | 2 +-
  arch/arm64/boot/dts/rockchip/rk3399.dtsi | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
+diff --git a/arch/arm/boot/dts/rk3288-tinker.dtsi b/arch/arm/boot/dts/rk3288-tinker.dtsi
+index 9c1e38c54eae..ee332fc9cf1f 100644
+--- a/arch/arm/boot/dts/rk3288-tinker.dtsi
++++ b/arch/arm/boot/dts/rk3288-tinker.dtsi
+@@ -75,7 +75,7 @@ sdio_pwrseq: sdio-pwrseq {
+ 	sound {
+ 		compatible = "simple-audio-card";
+ 		simple-audio-card,format = "i2s";
+-		simple-audio-card,name = "rockchip,tinker-codec";
++		simple-audio-card,name = "HDMI";
+ 		simple-audio-card,mclk-fs = <512>;
+ 
+ 		simple-audio-card,codec {
 diff --git a/arch/arm64/boot/dts/rockchip/rk3399.dtsi b/arch/arm64/boot/dts/rockchip/rk3399.dtsi
-index 418d16b0b648..4d5004c9c778 100644
+index 03c6737ca0ea..9c2ac03c154b 100644
 --- a/arch/arm64/boot/dts/rockchip/rk3399.dtsi
 +++ b/arch/arm64/boot/dts/rockchip/rk3399.dtsi
-@@ -1276,7 +1276,7 @@ vpu_mmu: iommu@ff650800 {
+@@ -1782,7 +1782,7 @@ hdmi_sound: hdmi-sound {
+ 		compatible = "simple-audio-card";
+ 		simple-audio-card,format = "i2s";
+ 		simple-audio-card,mclk-fs = <256>;
+-		simple-audio-card,name = "hdmi-sound";
++		simple-audio-card,name = "HDMI";
+ 		status = "disabled";
  
- 	vdec: video-codec@ff660000 {
- 		compatible = "rockchip,rk3399-vdec";
--		reg = <0x0 0xff660000 0x0 0x400>;
-+		reg = <0x0 0xff660000 0x0 0x480>;
- 		interrupts = <GIC_SPI 116 IRQ_TYPE_LEVEL_HIGH 0>;
- 		interrupt-names = "vdpu";
- 		clocks = <&cru ACLK_VDU>, <&cru HCLK_VDU>,
+ 		simple-audio-card,cpu {
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Alex Bee <knaerzche@gmail.com>
@@ -774,3 +764,4 @@ index 70ab4fbdc23e..4dbc370e538f 100644
  		cec_transmit_attempt_done(adap, cec->tx_status);
  	}
  	if (cec->rx_done) {
+ 

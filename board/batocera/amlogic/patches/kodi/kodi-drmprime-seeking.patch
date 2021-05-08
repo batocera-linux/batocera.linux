@@ -1,0 +1,67 @@
+--- a/xbmc/cores/VideoPlayer/DVDCodecs/Video/DVDVideoCodecDRMPRIME.cpp	2019-06-14 04:29:43.569698373 +0000
++++ b/xbmc/cores/VideoPlayer/DVDCodecs/Video/DVDVideoCodecDRMPRIME.cpp	2019-06-14 04:33:21.357709602 +0000
+@@ -26,7 +26,7 @@ extern "C" {
+ using namespace KODI::WINDOWING::GBM;
+ 
+ CDVDVideoCodecDRMPRIME::CDVDVideoCodecDRMPRIME(CProcessInfo& processInfo)
+-  : CDVDVideoCodec(processInfo)
++  : CDVDVideoCodec(processInfo), m_prevTime(0), m_seeking(false)
+ {
+   m_pFrame = av_frame_alloc();
+   m_videoBufferPool = std::make_shared<CVideoBufferPoolDRMPRIME>();
+@@ -281,6 +281,20 @@ CDVDVideoCodec::VCReturn CDVDVideoCodecD
+     return VC_ERROR;
+   }
+ 
++  if (m_prevTime && std::abs(m_prevTime - m_processInfo.GetTime()) >= 5000)
++    m_seeking = true;
++
++  m_prevTime = m_processInfo.GetTime();
++
++  // Drop frames too far away from the target time
++  if (m_seeking && std::abs(m_pFrame->pts/1000 - m_processInfo.GetTime()) >= 5000) {
++    CLog::Log(LOGDEBUG, "CDVDVideoCodecDRMPRIME::%s - Dropping pts %llu time %lld", __FUNCTION__, m_pFrame->pts/1000, m_processInfo.GetTime());
++    av_frame_unref(m_pFrame);
++    return VC_BUFFER;
++  }
++
++  m_seeking = false;
++
+   if (pVideoPicture->videoBuffer)
+     pVideoPicture->videoBuffer->Release();
+   pVideoPicture->videoBuffer = nullptr;
+--- a/xbmc/cores/VideoPlayer/DVDCodecs/Video/DVDVideoCodecDRMPRIME.h	2019-06-14 04:35:37.981723614 +0000
++++ b/xbmc/cores/VideoPlayer/DVDCodecs/Video/DVDVideoCodecDRMPRIME.h	2019-06-14 04:35:30.437722730 +0000
+@@ -42,4 +42,6 @@ protected:
+   AVCodecContext* m_pCodecContext = nullptr;
+   AVFrame* m_pFrame = nullptr;
+   std::shared_ptr<IVideoBufferPool> m_videoBufferPool;
++  int64_t m_prevTime;
++  bool m_seeking;
+ };
+--- a/xbmc/cores/VideoPlayer/Process/ProcessInfo.cpp	2019-04-13 17:57:10.000000000 +0000
++++ b/xbmc/cores/VideoPlayer/Process/ProcessInfo.cpp	2019-06-14 04:37:34.214037038 +0000
+@@ -635,6 +635,13 @@ bool CProcessInfo::GetVideoRender()
+   return m_renderVideoLayer;
+ }
+ 
++int64_t CProcessInfo::GetTime()
++{
++  CSingleLock lock(m_stateSection);
++
++  return m_time;
++}
++
+ void CProcessInfo::SetPlayTimes(time_t start, int64_t current, int64_t min, int64_t max)
+ {
+   CSingleLock lock(m_stateSection);
+--- a/xbmc/cores/VideoPlayer/Process/ProcessInfo.h	2019-04-13 17:57:10.000000000 +0000
++++ b/xbmc/cores/VideoPlayer/Process/ProcessInfo.h	2019-06-14 04:38:50.698426382 +0000
+@@ -101,6 +101,7 @@ public:
+   bool GetGuiRender();
+   void SetVideoRender(bool video);
+   bool GetVideoRender();
++  int64_t GetTime();
+ 
+   void SetPlayTimes(time_t start, int64_t current, int64_t min, int64_t max);
+   int64_t GetMaxTime();
