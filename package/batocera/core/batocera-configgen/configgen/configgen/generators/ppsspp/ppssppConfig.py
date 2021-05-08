@@ -94,8 +94,11 @@ def createPPSSPPConfig(iniConfig, system):
     if not iniConfig.has_section("SystemParam"):
         iniConfig.add_section("SystemParam")
 
-    # Forcing Nickname to Batocera
-    iniConfig.set("SystemParam", "NickName", "Batocera")
+    # Forcing Nickname to Batocera or User name
+    if system.isOptSet('retroachievements') and system.getOptBoolean('retroachievements') == True and system.isOptSet('retroachievements.username') and system.config.get('retroachievements.username', "") != "":
+        iniConfig.set("SystemParam", "NickName", system.config.get('retroachievements.username', ""))
+    else:
+        iniConfig.set("SystemParam", "NickName", "Batocera")
     # Disable Encrypt Save (permit to exchange save with different machines)
     iniConfig.set("SystemParam", "EncryptSave", "False")   
 
