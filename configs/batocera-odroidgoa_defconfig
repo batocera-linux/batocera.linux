@@ -34,17 +34,16 @@ BR2_ROOTFS_POST_IMAGE_SCRIPT="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/scrip
 # Kernel
 BR2_LINUX_KERNEL=y
 BR2_LINUX_KERNEL_CUSTOM_VERSION=y
-BR2_LINUX_KERNEL_CUSTOM_VERSION_VALUE="5.10.33"
+BR2_LINUX_KERNEL_CUSTOM_VERSION_VALUE="5.10.35"
 BR2_KERNEL_HEADERS_5_10=y
 BR2_LINUX_KERNEL_PATCH="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/odroidgoa/linux_patches"
 BR2_LINUX_KERNEL_USE_CUSTOM_CONFIG=y
 BR2_LINUX_KERNEL_CUSTOM_CONFIG_FILE="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/odroidgoa/linux-defconfig.config"
 BR2_LINUX_KERNEL_CONFIG_FRAGMENT_FILES="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/odroidgoa/linux-defconfig-fragment.config"
 BR2_LINUX_KERNEL_DTS_SUPPORT=y
-BR2_LINUX_KERNEL_INTREE_DTS_NAME="rockchip/rk3326-odroid-go2"
-# Missing DTS for 5.10.y: "rockchip/rk3326-odroidgo2-linux-v11 rockchip/rk3326-odroidgo3-linux"
-# Missing DTS for 5.10.y 
-# BR2_LINUX_KERNEL_CUSTOM_DTS_PATH="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/odroidgoa/rk3326-rg351p-linux.dts"
+BR2_LINUX_KERNEL_INTREE_DTS_NAME="rockchip/rk3326-odroid-go2 rockchip/rk3326-odroid-go2-v11"
+#BR2_LINUX_KERNEL_CUSTOM_DTS_PATH="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/odroidgoa/rk3326-odroid-go2-v11.dts"
+# Missing DTS for 5.10.y: "rockchip/rk3326-odroidgo3-linux rk3326-rg351p-linux.dts"
 BR2_LINUX_KERNEL_IMAGE_TARGET_CUSTOM=y
 BR2_LINUX_KERNEL_IMAGE_TARGET_NAME="Image"
 BR2_LINUX_KERNEL_NEEDS_HOST_OPENSSL=y
@@ -87,8 +86,7 @@ BR2_PACKAGE_LUA_5_1=y
 # OGA specific (bootloader, rotation)
 BR2_PACKAGE_UBOOT_ODROID_GOA=y
 BR2_PACKAGE_BATOCERA_SPLASH_ROTATE_IMAGE=y
-# This is unused right ???
-# BR2_PACKAGE_BATOCERA_AUDIO_ODROIDGOA=y
+BR2_PACKAGE_ROCKCHIP_RGA2=y
 
 # Batocera
 #BR2_PACKAGE_BATOCERA_DEV=y
