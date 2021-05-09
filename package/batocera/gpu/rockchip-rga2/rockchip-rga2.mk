@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-ROCKCHIP_RGA2_VERSION = master #dbd5ae409938d0951dad17a4a229c4f4156c0db3
+ROCKCHIP_RGA2_VERSION = mainline
 ROCKCHIP_RGA2_SITE =  $(call github,rtissera,rga2,$(ROCKCHIP_RGA2_VERSION))
 ROCKCHIP_RGA2_INSTALL_STAGING = YES
 ROCKCHIP_RGA2_DEPENDENCIES = libdrm
