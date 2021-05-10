@@ -41,9 +41,9 @@ BR2_LINUX_KERNEL_USE_CUSTOM_CONFIG=y
 BR2_LINUX_KERNEL_CUSTOM_CONFIG_FILE="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/odroidgoa/linux-defconfig.config"
 BR2_LINUX_KERNEL_CONFIG_FRAGMENT_FILES="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/odroidgoa/linux-defconfig-fragment.config"
 BR2_LINUX_KERNEL_DTS_SUPPORT=y
-BR2_LINUX_KERNEL_INTREE_DTS_NAME="rockchip/rk3326-odroid-go2 rockchip/rk3326-odroid-go2-v11"
-#BR2_LINUX_KERNEL_CUSTOM_DTS_PATH="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/odroidgoa/rk3326-odroid-go2-v11.dts"
-# Missing DTS for 5.10.y: "rockchip/rk3326-odroidgo3-linux rk3326-rg351p-linux.dts"
+#BR2_LINUX_KERNEL_INTREE_DTS_NAME=""
+BR2_LINUX_KERNEL_CUSTOM_DTS_PATH="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/odroidgoa/rk3326-odroid-go2.dts $(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/odroidgoa/rk3326-odroid-go2-v11.dts $(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/odroidgoa/rk3326-odroid-go3.dts"
+# Missing DTS for 5.10.y: "rk3326-rg351p-linux.dts"
 BR2_LINUX_KERNEL_IMAGE_TARGET_CUSTOM=y
 BR2_LINUX_KERNEL_IMAGE_TARGET_NAME="Image"
 BR2_LINUX_KERNEL_NEEDS_HOST_OPENSSL=y

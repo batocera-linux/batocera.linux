@@ -12,7 +12,7 @@
 
 / {
 	model = "ODROID-GO Advance";
-	compatible = "hardkernel,rk3326-odroid-go2-v11", "rockchip,rk3326";
+	compatible = "hardkernel,rk3326-odroid-go2", "rockchip,rk3326";
 
 	chosen {
 		stdout-path = "serial2:115200n8";
@@ -30,10 +30,9 @@
 		pinctrl-0 = <&btn_pins>;
 
 		/*
-		 *    *** ODROIDGO2-Advance v11 Switch layout  ***
+		 *      *** ODROIDGO2-Advance Switch layout ***
 		 * |------------------------------------------------|
 		 * | sw15                                      sw16 |
-		 * |        sw20                         sw21       |
 		 * |------------------------------------------------|
 		 * |     sw1      |-------------------|      sw8    |
 		 * |  sw3   sw4   |                   |   sw7   sw5 |
@@ -124,16 +123,6 @@
 			label = "TOP-RIGHT";
 			linux,code = <BTN_TR>;
 		};
-		sw20 {
-		        gpios = <&gpio3 RK_PB7 GPIO_ACTIVE_LOW>;
-		        label = "GPIO TOP-LEFT2";
-		        linux,code = <BTN_TL2>;
-		};
-		sw21 {
-		        gpios = <&gpio3 RK_PB2 GPIO_ACTIVE_LOW>;
-		        label = "GPIO TOP-RIGHT2";
-		        linux,code = <BTN_TR2>;
-		};
 	};
 
 	leds: gpio-leds {
@@ -191,19 +180,6 @@
 		enable-active-high;
 		regulator-always-on;
 		vin-supply = <&vccsys>;
-	};
-
-	wireless-wlan {
-		compatible = "wlan-platdata";
-		rockchip,grf = <&grf>;
-		/* wifi_chip_type - wifi chip define
-		* ap6210, ap6330, ap6335
-		* rtl8188eu, rtl8723bs, rtl8723bu
-		* esp8089
-		*/
-		wifi_chip_type = "esp8089";
-		sdio_vref = <3300>; //1800mv or 3300mv
-		status = "okay";
 	};
 };
 
@@ -445,17 +421,14 @@
 				};
 			};
 
-			/* Rev 1.1 WIFI Power */
-			vcc_wifi: LDO_REG9 {
-				regulator-always-on;
-				regulator-boot-on;
-				regulator-min-microvolt = <3300000>;
-				regulator-max-microvolt = <3300000>;
+			vcc_cam: LDO_REG9 {
+				regulator-name = "vcc_cam";
+				regulator-min-microvolt = <3000000>;
+				regulator-max-microvolt = <3000000>;
 
-				regulator-name = "vcc_wifi";
 				regulator-state-mem {
 					regulator-off-in-suspend;
-					regulator-suspend-microvolt = <3300000>;
+					regulator-suspend-microvolt = <3000000>;
 				};
 			};
 		};
@@ -512,18 +485,6 @@
 	sd-uhs-sdr104;
 	vmmc-supply = <&vcc_sd>;
 	vqmmc-supply = <&vccio_sd>;
-	status = "okay";
-};
-
-&sdio {
-	bus-width = <4>;
-	cap-sd-highspeed;
-	cap-sdio-irq;
-	disable-wp;
-	supports-sdio;
-	ignore-pm-notify;
-	keep-power-in-suspend;
-	/* non-removable; */
 	status = "okay";
 };
 
@@ -590,9 +551,7 @@
 					<2 RK_PA4 RK_FUNC_GPIO &pcfg_pull_up>,
 					<2 RK_PA5 RK_FUNC_GPIO &pcfg_pull_up>,
 					<2 RK_PA6 RK_FUNC_GPIO &pcfg_pull_up>,
-					<2 RK_PA7 RK_FUNC_GPIO &pcfg_pull_up>,
-					<3 RK_PB2 RK_FUNC_GPIO &pcfg_pull_up>,
-					<3 RK_PB7 RK_FUNC_GPIO &pcfg_pull_up>;
+					<2 RK_PA7 RK_FUNC_GPIO &pcfg_pull_up>;
 		};
 	};
 
