@@ -261,6 +261,7 @@
 		iovcc-supply = <&vcc_lcd>;
 		reset-gpios = <&gpio3 RK_PC0 GPIO_ACTIVE_LOW>;
 		vdd-supply = <&vcc_lcd>;
+		power-supply = <&vcc_lcd>;
 
 		port {
 			mipi_in_panel: endpoint {

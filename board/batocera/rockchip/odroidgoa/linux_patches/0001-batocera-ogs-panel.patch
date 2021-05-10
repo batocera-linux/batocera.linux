@@ -1,0 +1,10 @@
+--- a/drivers/gpu/drm/panel/panel-sitronix-st7701.c	2021-05-10 12:50:51.989705249 +0200
++++ b/drivers/gpu/drm/panel/panel-sitronix-st7701.c	2021-05-10 12:51:46.693036611 +0200
+@@ -399,6 +399,7 @@
+ 
+ static const struct of_device_id st7701_of_match[] = {
+ 	{ .compatible = "techstar,ts8550b", .data = &ts8550b_desc },
++	{ .compatible = "elida,kd50t048a", .data = &ts8550b_desc },
+ 	{ }
+ };
+ MODULE_DEVICE_TABLE(of, st7701_of_match);
