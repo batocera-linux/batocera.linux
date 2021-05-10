@@ -14,7 +14,8 @@ import filecmp
 from . import cemuControllers
 
 cemuConfig  = batoceraFiles.CONF + '/cemu'
-cemuHomedir = 'z:/userdata/roms/wiiu'
+cemuHomedir = 'Z:\\userdata\\roms\\wiiu'
+cemuSavedir = 'Z:\\userdata\\saves\\cemu'
 cemuDatadir = '/usr/cemu'
 cemuSaves   = batoceraFiles.SAVES + '/cemu'
 
@@ -83,6 +84,9 @@ class CemuGenerator(Generator):
         ## [ROOT]
         xml_root = CemuGenerator.getRoot(config, "content")
 
+        # Default mlc path
+        CemuGenerator.setSectionConfig(config, xml_root, "mlc_path", cemuSavedir)
+
         # Remove auto updates
         CemuGenerator.setSectionConfig(config, xml_root, "check_update", "false")
         # Avoid the welcome window
@@ -105,7 +109,6 @@ class CemuGenerator(Generator):
 
         # Default games path
         CemuGenerator.setSectionConfig(config, game_root, "Entry", cemuHomedir)
-
 
         ## [AUDIO]
         CemuGenerator.setSectionConfig(config, xml_root, "Audio", "")
