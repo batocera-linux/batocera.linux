@@ -1,0 +1,45 @@
+diff --git a/Documentation/devicetree/bindings/media/rockchip-vpu.yaml b/Documentation/devicetree/bindings/media/rockchip-vpu.yaml
+index c81dbc3e8960..c446b9ead21b 100644
+--- a/Documentation/devicetree/bindings/media/rockchip-vpu.yaml
++++ b/Documentation/devicetree/bindings/media/rockchip-vpu.yaml
+@@ -15,10 +15,13 @@ description:
+ 
+ properties:
+   compatible:
+-    enum:
+-      - rockchip,rk3288-vpu
+-      - rockchip,rk3328-vpu
+-      - rockchip,rk3399-vpu
++    oneOf:
++      - const: rockchip,rk3288-vpu
++      - const: rockchip,rk3328-vpu
++      - const: rockchip,rk3399-vpu
++      - items:
++        - const: rockchip,px30-vpu
++        - const: rockchip,rk3399-vpu
+ 
+   reg:
+     maxItems: 1
+@@ -35,12 +38,18 @@ properties:
+           - const: vdpu
+ 
+   clocks:
+-    maxItems: 2
++    minItems: 2
++    maxItems: 3
+ 
+   clock-names:
+-    items:
+-      - const: aclk
+-      - const: hclk
++    oneOf:
++      - items:
++        - const: aclk
++        - const: hclk
++      - items:
++        - const: aclk
++        - const: hclk
++        - const: sclk
+ 
+   power-domains:
+     maxItems: 1

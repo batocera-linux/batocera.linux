@@ -1,0 +1,40 @@
+diff --git a/arch/arm64/boot/dts/rockchip/px30.dtsi b/arch/arm64/boot/dts/rockchip/px30.dtsi
+index c45b0cfcae09..235338927a10 100644
+--- a/arch/arm64/boot/dts/rockchip/px30.dtsi
++++ b/arch/arm64/boot/dts/rockchip/px30.dtsi
+@@ -984,6 +984,27 @@ nfc: nand-controller@ff3b0000 {
+ 		status = "disabled";
+ 	};
+ 
++	gpu_opp_table: opp-table2 {
++		compatible = "operating-points-v2";
++
++		opp-200000000 {
++			opp-hz = /bits/ 64 <200000000>;
++			opp-microvolt = <950000>;
++		};
++		opp-300000000 {
++			opp-hz = /bits/ 64 <300000000>;
++			opp-microvolt = <975000>;
++		};
++		opp-400000000 {
++			opp-hz = /bits/ 64 <400000000>;
++			opp-microvolt = <1050000>;
++		};
++		opp-480000000 {
++			opp-hz = /bits/ 64 <480000000>;
++			opp-microvolt = <1125000>;
++		};
++	};
++
+ 	gpu: gpu@ff400000 {
+ 		compatible = "rockchip,px30-mali", "arm,mali-bifrost";
+ 		reg = <0x0 0xff400000 0x0 0x4000>;
+@@ -994,6 +1015,7 @@ gpu: gpu@ff400000 {
+ 		clocks = <&cru SCLK_GPU>;
+ 		#cooling-cells = <2>;
+ 		power-domains = <&power PX30_PD_GPU>;
++		operating-points-v2 = <&gpu_opp_table>;
+ 		status = "disabled";
+ 	};
+ 

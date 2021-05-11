@@ -262,7 +262,7 @@
 		reset-gpios = <&gpio3 RK_PC0 GPIO_ACTIVE_LOW>;
 		vdd-supply = <&vcc_lcd>;
 		power-supply = <&vcc_lcd>;
-
+                rotation = <270>;
 		port {
 			mipi_in_panel: endpoint {
 				remote-endpoint = <&mipi_out_panel>;
@@ -569,7 +569,7 @@
 	status = "okay";
 };
 
-&rk_rga {
+&rga {
 	status = "okay";
 };
 
