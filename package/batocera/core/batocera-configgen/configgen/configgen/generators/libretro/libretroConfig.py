@@ -102,6 +102,10 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
     if system.isOptSet("gfxbackend") and system.config["gfxbackend"] == "vulkan":
         retroarchConfig['video_driver'] = '"vulkan"'
 
+    # required at least for vulkan (to get the correct resolution)
+    retroarchConfig['video_fullscreen_x'] = gameResolution["width"]
+    retroarchConfig['video_fullscreen_y'] = gameResolution["height"]
+
     retroarchConfig['video_black_frame_insertion'] = 'false'    # don't use anymore this value while it doesn't allow the shaders to work
     retroarchConfig['pause_nonactive'] = 'false'                # required at least on x86 x86_64 otherwise, the game is paused at launch
     retroarchConfig['audio_driver'] = 'alsa'                    # force ALSA. TODO: check audio.backend
