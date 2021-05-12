@@ -1,0 +1,40 @@
+--- a/drivers/gpu/drm/panel/panel-sitronix-st7703.c	2021-05-12 18:54:40.069880833 +0200
++++ b/drivers/gpu/drm/panel/panel-sitronix-st7703.c	2021-05-12 19:06:32.906521006 +0200
+@@ -347,6 +347,29 @@
+ 	.height_mm   = 136,
+ };
+ 
++static const struct drm_display_mode gameforce_mode = {
++    .hdisplay    = 640,
++    .hsync_start = 640 + 120,
++    .hsync_end   = 640 + 120 + 120,
++    .htotal      = 640 + 120 + 120 + 120,
++    .vdisplay    = 480,
++    .vsync_start = 480 + 13,
++    .vsync_end   = 480 + 13 + 17,
++    .vtotal      = 480 + 13 + 17 + 5,
++    .clock       = 30900,
++    .flags       = DRM_MODE_FLAG_NHSYNC | DRM_MODE_FLAG_NVSYNC,
++    .width_mm    = 53,
++    .height_mm   = 71,
++};
++
++static const struct st7703_panel_desc gameforce_desc = {
++	.mode = &gameforce_mode,
++	.lanes = 2,
++	.mode_flags = MIPI_DSI_MODE_VIDEO | MIPI_DSI_MODE_VIDEO_SYNC_PULSE,
++	.format = MIPI_DSI_FMT_RGB888,
++	.init_sequence = xbd599_init_sequence,
++};
++
+ static const struct st7703_panel_desc xbd599_desc = {
+ 	.mode = &xbd599_mode,
+ 	.lanes = 4,
+@@ -619,6 +642,7 @@
+ static const struct of_device_id st7703_of_match[] = {
+ 	{ .compatible = "rocktech,jh057n00900", .data = &jh057n00900_panel_desc },
+ 	{ .compatible = "xingbangda,xbd599", .data = &xbd599_desc },
++	{ .compatible = "gameforce,st7703", .data = &gameforce_desc },
+ 	{ /* sentinel */ }
+ };
+ MODULE_DEVICE_TABLE(of, st7703_of_match);
