@@ -48,12 +48,7 @@ def createXemuConfig(iniConfig, system, rom, playersControllers):
     iniConfig.set("system", "eeprom_path", "/userdata/saves/xbox/xemu_eeprom.bin")
     iniConfig.set("system", "dvd_path", rom)
     iniConfig.set("system", "memory", "64")
-
-    # BootAnimation
-    if system.isOptSet("xemu_bootanim"):
-        iniConfig.set("system", "shortanim", system.config["xemu_bootanim"])
-    else:
-        iniConfig.set("system", "shortanim", "false")
+    iniConfig.set("system", "shortanim", "false")
 
     # Fill audio section
     iniConfig.set("audio", "use_dsp", "false")
