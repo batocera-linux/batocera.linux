@@ -322,9 +322,9 @@ run() {
     current_base_eval
 
     printf "Groups: %s\n" "${PGROUPS}"
-    printf "+--------------------------------+---------------------------------------------------------+---------------------------------------------------------+\n"
-    printf "| %-30s | %-55s | %-55s |\n" "Package" "Available version" "Version"
-    printf "+--------------------------------+---------------------------------------------------------+---------------------------------------------------------+\n"
+    printf "+------------------------------------------+--------------------------------------------------------------+--------------------------------------------------------------+\n"
+    printf "| %-40s | %-60s | %-60s |\n" "Package" "Available version" "Version"
+    printf "+------------------------------------------+--------------------------------------------------------------+--------------------------------------------------------------+\n"
     for pkg in $PACKAGES
     do
 	(
@@ -345,20 +345,20 @@ run() {
 	    if test "${CURV}" = "master"
 	    then
 		# plug on last version
-		printf "| %-30s | %-55s | ${tput_yellow}%-55s${tput_reset} |\n" "${pkg}" "" "${CURV}${EXCPSTR}"
+		printf "| %-40s | %-60s | ${tput_yellow}%-60s${tput_reset} |\n" "${pkg}" "" "${CURV}${EXCPSTR}"
 	    else
 		if test -n "${NETV}" -a "${NETV}" = "${CURV}"
 		then
 		    # good
-		    printf "| %-30s | %-55s | ${tput_green}%-55s${tput_reset} |\n" "${pkg}" "" "${CURV}${EXCPSTR}"
+		    printf "| %-40s | %-60s | ${tput_green}%-60s${tput_reset} |\n" "${pkg}" "" "${CURV}${EXCPSTR}"
 		else
 		    if test -z "${NETV}"
 		    then
 			# unknown
-			printf "| %-30s | %-55s | ${tput_pink}%-55s${tput_reset} |\n" "${pkg}" "${NETV}" "${CURV}${EXCPSTR}"
+			printf "| %-40s | %-60s | ${tput_pink}%-60s${tput_reset} |\n" "${pkg}" "${NETV}" "${CURV}${EXCPSTR}"
 		    else
 			# not good
-			printf "| %-30s | %-55s | ${tput_red}%-55s${tput_reset} |\n" "${pkg}" "${NETV}" "${CURV}${EXCPSTR}"
+			printf "| %-40s | %-60s | ${tput_red}%-60s${tput_reset} |\n" "${pkg}" "${NETV}" "${CURV}${EXCPSTR}"
 		    fi
 		fi
 	    fi
@@ -366,7 +366,7 @@ run() {
     done | sort
     wait
 
-    printf "+--------------------------------+---------------------------------------------------------+---------------------------------------------------------+\n"
+    printf "+------------------------------------------+--------------------------------------------------------------+--------------------------------------------------------------+\n"
 }
 
 base_UPDATE() {
@@ -404,10 +404,10 @@ run_update() {
 	else
 	    echo "package already up to date"
 	fi
-	printf "| %-30s | ${tput_green}%-55s${tput_reset} |\n" "${updpkg}" "${NETV}"
+	printf "| %-40s | ${tput_green}%-60s${tput_reset} |\n" "${updpkg}" "${NETV}"
     else
 	echo "no update found"
-	printf "| %-30s | ${tput_red}%-55s${tput_reset} |\n" "${updpkg}" "${CURV}"
+	printf "| %-40s | ${tput_red}%-60s${tput_reset} |\n" "${updpkg}" "${CURV}"
     fi
 }
 
