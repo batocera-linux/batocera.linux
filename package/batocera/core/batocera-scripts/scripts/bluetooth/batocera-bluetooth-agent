@@ -313,11 +313,27 @@ if __name__ == '__main__':
   (options, args) = parser.parse_args()
 
   # adapter
-  try:
-    adapter = bluezutils.find_adapter(options.dev_id)
-  except:
-    # try to find any adapter
-    adapter = bluezutils.find_adapter(None)
+  ntry = 5
+  nfound = False
+  logging.info("finding adapter.")
+  while ntry > 0 and nfound == False:
+    try:
+      adapter = bluezutils.find_adapter(options.dev_id)
+      nfound = True
+    except:
+      # try to find any adapter
+      try:
+        adapter = bluezutils.find_adapter(None)
+        nfound = True
+      except:
+        logging.warning("find adapter failed. retrying ({}).".format(ntry))
+        time.sleep(5)
+    ntry = ntry -1
+
+  if nfound == False:
+    raise Exception("Unable to find an adapter")
+  logging.info("adapter found.")
+
   gadapter = adapter
   adapters = {}
 
