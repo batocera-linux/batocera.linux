@@ -3908,3 +3908,9 @@ xemu:
                 "Center":   center
                 "Scale":    scale
                 "Stretch":  stretch
+        xemu_bootanim:
+            prompt:      SHORT BOOTANIMATION
+            description: Skip the on-boot Xbox animation
+            choices:
+                "Normal Boot":        "false"
+                "Skipped-Logo Boot":  "true"
