@@ -5,7 +5,6 @@ from generators.Generator import Generator
 import controllersConfig
 import os
 import codecs
-import logging
 
 class EasyRPGGenerator(Generator):
 
