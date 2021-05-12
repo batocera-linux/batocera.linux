@@ -246,6 +246,7 @@
 		status = "okay";
 	};
 	rk817-sound {
+		status = "okay";
 		compatible = "simple-audio-card";
 		simple-audio-card,name = "Analog";
 		simple-audio-card,format = "i2s";
@@ -391,8 +392,8 @@
 		vcc-supply = <&vcc_lcd>;
 		iovcc-supply = <&vcc_lcd>;
 		reset-gpios = <&gpio3 RK_PA0 GPIO_ACTIVE_LOW>;//LCD_RST
-		vdd-supply = <&vcc_lcd>;
-		power-supply = <&vcc_lcd>;
+		//vdd-supply = <&vcc_lcd>;
+		//power-supply = <&vcc_lcd>;
                 rotation = <0>;
 		port {
 			mipi_in_panel: endpoint {
@@ -733,8 +734,7 @@
 };
 
 &pmu_io_domains {
-	//pmuio1-supply = <&vcc_1v8>;
-	pmuio1-supply = <&vcc3v3_pmu>;
+	pmuio1-supply = <&vcc_1v8>;
 	pmuio2-supply = <&vcc3v3_pmu>;
 	status = "okay";
 };
@@ -844,7 +844,7 @@
 
 	headphone {
 		//Low : HeadPhone remove, High : HeadPhone insert
-		hp_det: hp_det {
+		hp_det: hp-det {
 			rockchip,pins = <2 RK_PC6 RK_FUNC_GPIO &pcfg_pull_up>;
 		};
 	};
