@@ -80,8 +80,8 @@
         };
 	};
 
-	joypad: gameforce-gamepad {
-        compatible = "gameforce-gamepad";
+	gpio-keys {
+        compatible = "gpio-keys";
         /*
            - gameforce-gamepad sysfs list -
 		   * for poll device interval(ms)
