@@ -1,7 +1,7 @@
 # Target definition
 BR2_aarch64=y
 BR2_cortex_a35=y
-BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA=y
+BR2_PACKAGE_BATOCERA_TARGET_RK3326=y
 BR2_ROOTFS_USERS_TABLES="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/users.txt"
 
 # Toolchain definition
@@ -26,8 +26,8 @@ BR2_TARGET_GENERIC_GETTY_BAUDRATE_115200=y
 # BR2_TARGET_GENERIC_REMOUNT_ROOTFS_RW is not set
 BR2_TARGET_TZ_INFO=y
 BR2_TARGET_LOCALTIME="Europe/Paris"
-BR2_GLOBAL_PATCH_DIR="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/patches $(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/patches $(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/odroidgoa/patches"
-BR2_ROOTFS_OVERLAY="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/fsoverlay $(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/fsoverlay $(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/odroidgoa/fsoverlay"
+BR2_GLOBAL_PATCH_DIR="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/patches $(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/patches $(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/rk3326/patches"
+BR2_ROOTFS_OVERLAY="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/fsoverlay $(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/fsoverlay $(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/rk3326/fsoverlay"
 BR2_ROOTFS_POST_BUILD_SCRIPT="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/scripts/post-build-script.sh"
 BR2_ROOTFS_POST_IMAGE_SCRIPT="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/scripts/post-image-script.sh"
 
@@ -36,13 +36,13 @@ BR2_LINUX_KERNEL=y
 BR2_LINUX_KERNEL_CUSTOM_VERSION=y
 BR2_LINUX_KERNEL_CUSTOM_VERSION_VALUE="5.10.36"
 BR2_KERNEL_HEADERS_5_10=y
-BR2_LINUX_KERNEL_PATCH="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/odroidgoa/linux_patches"
+BR2_LINUX_KERNEL_PATCH="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/rk3326/linux_patches"
 BR2_LINUX_KERNEL_USE_CUSTOM_CONFIG=y
-BR2_LINUX_KERNEL_CUSTOM_CONFIG_FILE="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/odroidgoa/linux-defconfig.config"
-BR2_LINUX_KERNEL_CONFIG_FRAGMENT_FILES="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/odroidgoa/linux-defconfig-fragment.config"
+BR2_LINUX_KERNEL_CUSTOM_CONFIG_FILE="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/rk3326/linux-defconfig.config"
+BR2_LINUX_KERNEL_CONFIG_FRAGMENT_FILES="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/rk3326/linux-defconfig-fragment.config"
 BR2_LINUX_KERNEL_DTS_SUPPORT=y
 #BR2_LINUX_KERNEL_INTREE_DTS_NAME=""
-BR2_LINUX_KERNEL_CUSTOM_DTS_PATH="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/odroidgoa/rk3326-odroid-go2.dts $(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/odroidgoa/rk3326-odroid-go2-v11.dts $(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/odroidgoa/rk3326-odroid-go3.dts $(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/odroidgoa/rk3326-gameforce.dts $(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/odroidgoa/rk3326-rg351p.dts"
+BR2_LINUX_KERNEL_CUSTOM_DTS_PATH="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/rk3326/odroidgoa/rk3326-odroid-go2.dts $(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/rk3326/odroidgoa/rk3326-odroid-go2-v11.dts $(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/rk3326/odroidgoa/rk3326-odroid-go3.dts $(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/rk3326/gameforce/rk3326-gameforce.dts $(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/rk3326/rg351/rk3326-rg351p.dts"
 BR2_LINUX_KERNEL_IMAGE_TARGET_CUSTOM=y
 BR2_LINUX_KERNEL_IMAGE_TARGET_NAME="Image"
 BR2_LINUX_KERNEL_NEEDS_HOST_OPENSSL=y
@@ -82,6 +82,7 @@ BR2_PACKAGE_LUA_5_1=y
 
 # OGA specific (bootloader, rotation)
 BR2_PACKAGE_UBOOT_ODROID_GOA=y
+BR2_PACKAGE_UBOOT_GAMEFORCE_CHI=y
 BR2_PACKAGE_BATOCERA_SPLASH_ROTATE_IMAGE=y
 BR2_PACKAGE_ROCKCHIP_RGA2=y
 

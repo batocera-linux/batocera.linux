@@ -31,6 +31,10 @@ ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_S812),y)
 	LIBRETRO_WATARA_PLATFORM = armv cortexa9 neon hardfloat
 endif
 
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RK3326),y)
+	LIBRETRO_WATARA_PLATFORM = classic_armv8_a35
+endif
+
 ifeq ($(BR2_aarch64),y)
 	LIBRETRO_WATARA_EXTRA_ARGS += ARCH=arm64
 endif

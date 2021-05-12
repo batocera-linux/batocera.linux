@@ -15,9 +15,10 @@ define UBOOT_ODROID_GOA_BUILD_CMDS
 endef
 
 define UBOOT_ODROID_GOA_INSTALL_TARGET_CMDS
-	cp $(@D)/sd_fuse/idbloader.img $(BINARIES_DIR)/idbloader.img
-	cp $(@D)/sd_fuse/uboot.img     $(BINARIES_DIR)/uboot.img
-	cp $(@D)/sd_fuse/trust.img     $(BINARIES_DIR)/trust.img
+	mkdir -p $(BINARIES_DIR)/odroidgoa/
+	cp $(@D)/sd_fuse/idbloader.img $(BINARIES_DIR)/odroidgoa/idbloader.img
+	cp $(@D)/sd_fuse/uboot.img     $(BINARIES_DIR)/odroidgoa/uboot.img
+	cp $(@D)/sd_fuse/trust.img     $(BINARIES_DIR)/odroidgoa/trust.img
 endef
 
 $(eval $(generic-package))
