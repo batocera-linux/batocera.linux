@@ -5,7 +5,12 @@ then
     export DISPLAY=:0.0
 fi
 
-PATH=$PATH:PATH=$PATH:/usr/wine/lutris/bin
-WINEPREFIX=/userdata/saves/cemu wine64 /userdata/system/configs/cemu/Cemu.exe -m z:/userdata/saves/cemu
+export mesa_glthread=true
+export __GL_THREADED_OPTIMIZATIONS=1
+export vblank_mode=0
+export WINEDLLOVERRIDES="mscoree=;mshtml=;dbghelp.dll=n,b"
+export WINEPREFIX=/userdata/saves/cemu
+
+/usr/wine/lutris/bin/wine64 /userdata/system/configs/cemu/Cemu.exe
 
 exit 0
