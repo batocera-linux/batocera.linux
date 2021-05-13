@@ -24,9 +24,9 @@
 
 	adc-keys {
 		compatible = "adc-keys";
-		io-channels = <&saradc 2>;
-		io-channel-names = "buttons";
-		poll-interval = <100>;
+		//io-channels = <&saradc 2>;
+		//io-channel-names = "buttons";
+		//poll-interval = <100>;
 		keyup-threshold-microvolt = <1800000>;
 
 		vol-down-key {
@@ -207,12 +207,12 @@
                 sw10 {
                         gpios = <&gpio2 RK_PA3 GPIO_ACTIVE_LOW>;
                         label = "GPIO BTN-SET";
-                        linux,code = <BTN_SELECT>; //BTN_SELECT 0x13a 0x2c1
+                        linux,code = <BTN_SELECT>; // 0x13a
                 };
                 sw11 {
                         gpios = <&gpio2 RK_PA2 GPIO_ACTIVE_LOW>;
                         label = "GPIO BTN-START";
-                        linux,code = <BTN_START>; // BTN_START 0x13b 0x2c2
+                        linux,code = <BTN_START>; // 0x13b
                 };
                 sw12 {
                         gpios = <&gpio2 RK_PA6 GPIO_ACTIVE_LOW>;
@@ -245,6 +245,7 @@
 		rockchip,screen-on-voltage = <3600>;
 		status = "okay";
 	};
+
 	rk817-sound {
 		status = "okay";
 		compatible = "simple-audio-card";
@@ -265,7 +266,6 @@
 		simple-audio-card,cpu {
 			sound-dai = <&i2s1_2ch>;
 		};
-
 		simple-audio-card,codec {
 			sound-dai = <&rk817>;
 		};
@@ -309,7 +309,7 @@
 		regulator-min-microvolt = <5000000>;
 		regulator-max-microvolt = <5000000>;
 
-		gpio = <&gpio0 RK_PB7 GPIO_ACTIVE_HIGH>;
+		//gpio = <&gpio0 RK_PB7 GPIO_ACTIVE_HIGH>;
 		enable-active-high;
 		regulator-always-on;
 		vin-supply = <&vccsys>;
@@ -423,13 +423,22 @@
 		reg = <0x20>;
 		interrupt-parent = <&gpio0>;
 		interrupts = <RK_PB2 IRQ_TYPE_LEVEL_LOW>;
-		clock-output-names = "rk808-clkout1", "xin32k";
 		clock-names = "mclk";
 		clocks = <&cru SCLK_I2S1_OUT>;
-		pinctrl-names = "default";
+		pinctrl-names = "default", "pmic-sleep",
+				"pmic-power-off", "pmic-reset";
 		pinctrl-0 = <&pmic_int>, <&i2s1_2ch_mclk>;
+		pinctrl-1 = <&soc_slppin_slp>, <&rk817_slppin_slp>;
+		pinctrl-2 = <&soc_slppin_gpio>, <&rk817_slppin_pwrdn>;
+		pinctrl-3 = <&soc_slppin_rst>, <&rk817_slppin_rst>;
+		rockchip,system-power-controller;
 		wakeup-source;
 		#clock-cells = <1>;
+		clock-output-names = "rk808-clkout1", "rk808-clkout2";
+		//fb-inner-reg-idxs = <2>;
+
+		/* 1: rst regs (default in codes), 0: rst the pmic */
+		pmic-reset-func = <1>;
 		#sound-dai-cells = <0>;
 
 		vcc1-supply = <&vccsys>;
@@ -438,15 +447,15 @@
 		vcc4-supply = <&vccsys>;
 		vcc5-supply = <&vccsys>;
 		vcc6-supply = <&vccsys>;
-		vcc7-supply = <&vccsys>;
-		//vcc8-supply = <&vccsys>;
-		//vcc9-supply = <&dcdc_boost>;
+		vcc7-supply = <&vcc_3v3>;
+		vcc8-supply = <&vccsys>;
+		vcc9-supply = <&dcdc_boost>;
 
 		pwrkey {
 			status = "okay";
 		};
 
-		/*pinctrl_rk8xx: pinctrl_rk8xx {
+		pinctrl_rk8xx: pinctrl_rk8xx {
 			gpio-controller;
 			#gpio-cells = <2>;
 
@@ -491,7 +500,7 @@
 				pins = "gpio_slp";
 				function = "pin_fun3";
 			};
-		};*/
+		};
 
 		regulators {
 			vdd_logic: DCDC_REG1 {
@@ -740,7 +749,7 @@
 };
 
 &io_domains {
-	vccio1-supply = <&vcc_3v3>;
+	vccio1-supply = <&vcc3v3_pmu>;
 	vccio2-supply = <&vccio_sd>;
 	vccio3-supply = <&vcc_3v3>;
 	vccio4-supply = <&vcc_3v3>;
