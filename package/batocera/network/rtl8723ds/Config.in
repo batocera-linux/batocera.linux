@@ -1,7 +1,7 @@
 comment "rtl8723ds needs a Linux kernel to be built"
 	depends on !BR2_LINUX_KERNEL
 
-config BR2_PACKAGE_RTL8732DS
+config BR2_PACKAGE_RTL8723DS
 	bool "rtl8723ds"
 	depends on BR2_LINUX_KERNEL
 	help

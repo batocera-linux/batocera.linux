@@ -5,7 +5,7 @@
  		int ret;						\
  		ret = mipi_dsi_dcs_write(dsi, cmd, d, ARRAY_SIZE(d));	\
 -		if (ret < 0)						\
-+		msleep(120); if (ret < 0) {						\
++		msleep(60); if (ret < 0) {						\
 +			dev_err(ctx->dev, "Panel init command failed: %d\n", cmd); \
  			return ret;					\
 +		} \
