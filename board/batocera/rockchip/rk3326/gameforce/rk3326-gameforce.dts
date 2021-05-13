@@ -394,9 +394,7 @@
 		vcc-supply = <&vcc_lcd>;
 		iovcc-supply = <&vcc_lcd>;
 		reset-gpios = <&gpio3 RK_PA0 GPIO_ACTIVE_LOW>;//LCD_RST
-		//vdd-supply = <&vcc_lcd>;
-		//power-supply = <&vcc_lcd>;
-                rotation = <0>;
+		rotation = <0>;
 		port {
 			mipi_in_panel: endpoint {
 				remote-endpoint = <&mipi_out_panel>;
@@ -711,18 +709,34 @@
 
 		rk817_codec: codec {
 			rockchip,mic-in-differential;
+			/*compatible = "rockchip,rk817";
+			clocks = <&cru SCLK_I2S1_OUT>;
+			clock-names = "mclk";
+			pinctrl-names = "default";
+			pinctrl-0 = <&i2s1_2ch_mclk &spk_ctl>;
+			spk-ctl-gpios = <&gpio2 RK_PB5 GPIO_ACTIVE_HIGH>;
+			use-ext-amplifier;
+			hp-volume = <3>;//255-0
+			spk-volume = <3>;//255-0
+			status = "okay";*/
 		};
 	};
 };
 
 &i2c1 {
+	status = "disabled";
 	clock-frequency = <400000>;
-	status = "okay";
+};
+
+/* MIPI CSI I2C */
+&i2c2 {
+	status = "disabled";
 };
 
 /* I2S 1 Channel Used */
 &i2s1_2ch {
 	status = "okay";
+	#sound-dai-cells = <0>;
 };
 
 &io_domains {
@@ -848,7 +862,7 @@
 
 	headphone {
 		//Low : HeadPhone remove, High : HeadPhone insert
-		hp_det: hp-det {
+		phone_det: phone_det {
 			rockchip,pins = <2 RK_PC6 RK_FUNC_GPIO &pcfg_pull_up>;
 		};
 	};
