@@ -71,12 +71,12 @@ case "${ACTION}" in
     "install")
 	# TERMINAL DOWNLOAD
 	if [ $TERMINAL -eq 1 ]; then
-		pacman --noconfirm -Sw "${PKG}"
+		pacman --noconfirm -Sw "${PKG}" --overwrite 'userdata/*'
 		RET=$?
 		if [ ${RET} -eq 1 ]; then
 			echo "Download error!"
 		else
-			pacman --noconfirm -S "${PKG}"
+			pacman --noconfirm -S "${PKG}" --overwrite 'userdata/*'
 			RET=$?	
 		fi
 	# DOWNLOAD INSIDE ES
@@ -89,7 +89,7 @@ case "${ACTION}" in
 		USER_INFO_INSIZE=$(pacman -Si "${PKG}" | grep "Installed Size" | awk '{print $4$5}')
 
 		# Download package now, send pacman in background and silence
-		pacman --noconfirm -Sw "${PKG}" 2>&1 >/dev/null &
+		pacman --noconfirm -Sw "${PKG}" --overwrite 'userdata/*' 2>&1 >/dev/null &
 		PID=$!
 		# The .part is needed, check if file is already present
 		# Download loop with real size
@@ -99,7 +99,7 @@ case "${ACTION}" in
 		RET=$?
 		if [ ${RET} -eq 0 ]; then
 			# Install package directly (without Sync)
-			pacman --noconfirm -S "${PKG}" 2>&1 >/dev/null &
+			pacman --noconfirm -S "${PKG}" --overwrite 'userdata/*' 2>&1 >/dev/null &
 			PID=$!; RET=$?
 			# Loop with a indicator for working state
 			do_bepatient
@@ -142,7 +142,7 @@ case "${ACTION}" in
         exit $?
 	;;
     "update")
-	pacman --noconfirm -Syu
+	pacman --noconfirm -Syu --overwrite 'userdata/*'
 	exit $?
 	;;
     "list-repositories")
