@@ -16,9 +16,13 @@ endef
 
 define UBOOT_ODROID_GOA_INSTALL_TARGET_CMDS
 	mkdir -p $(BINARIES_DIR)/odroidgoa/
+	mkdir -p $(BINARIES_DIR)/rg351p/
 	cp $(@D)/sd_fuse/idbloader.img $(BINARIES_DIR)/odroidgoa/idbloader.img
 	cp $(@D)/sd_fuse/uboot.img     $(BINARIES_DIR)/odroidgoa/uboot.img
 	cp $(@D)/sd_fuse/trust.img     $(BINARIES_DIR)/odroidgoa/trust.img
+	cp $(@D)/sd_fuse/idbloader.img $(BINARIES_DIR)/rg351p/idbloader.img
+	cp $(@D)/sd_fuse/uboot.img     $(BINARIES_DIR)/rg351p/uboot.img
+	cp $(@D)/sd_fuse/trust.img     $(BINARIES_DIR)/rg351p/trust.img
 endef
 
 $(eval $(generic-package))
