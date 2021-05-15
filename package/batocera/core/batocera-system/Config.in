@@ -137,6 +137,7 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
 	select BR2_PACKAGE_SDL2_OPENGLES                        # ALL
 	select BR2_PACKAGE_SDL2_KMSDRM                          if !BR2_PACKAGE_BATOCERA_RPI_VCORE
 	select BR2_PACKAGE_LIBDRM                               if !BR2_PACKAGE_BATOCERA_RPI_VCORE
+    select BR2_PACKAGE_LIBDRM_EXYNOS                        if BR2_PACKAGE_LIBDRM && BR2_PACKAGE_BATOCERA_TARGET_XU4
 	select BR2_PACKAGE_BATOCERA_DRMINFO                     if BR2_PACKAGE_LIBDRM
 	select BR2_PACKAGE_LIRC_TOOLS                           # lirc (remote control)
 	select BR2_PACKAGE_LIBCEC                               # libcec
