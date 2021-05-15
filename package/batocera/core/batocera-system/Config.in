@@ -20,6 +20,9 @@ if BR2_PACKAGE_BATOCERA_TARGET_RK3399 || BR2_PACKAGE_BATOCERA_TARGET_TINKERBOARD
 		Selected when a Rockchip platform is being built
 endif
 
+config BR2_PACKAGE_LIBCEC_EXYNOS_API
+    bool "Exynos API in libcec"
+
 config BR2_PACKAGE_BATOCERA_CORES_EXPERIMENTAL
     bool "add experimental cores"
 
