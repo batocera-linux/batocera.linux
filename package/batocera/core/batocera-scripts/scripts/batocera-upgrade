@@ -154,6 +154,15 @@ then
     exit 1
 fi
 
+# remove old /boot/post-batocera-upgrade if exists
+if test -e "/boot/post-batocera-upgrade"
+then
+    if ! rm -rf /boot/post-batocera-upgrade
+    then
+        exit 1
+    fi
+fi
+
 # backup boot files
 # all these files doesn't exist on non rpi platform, so, we have to test them
 # don't put the boot.ini file while it's not really to be customized
@@ -188,6 +197,18 @@ do
         fi
     fi
 done
+
+# run post-batocera-upgrade.sh if folder exists
+if test -e "/boot/post-batocera-upgrade"
+then
+    echo "running post-batocera-upgrade.sh"
+    if ! /boot/post-batocera-upgrade/post-batocera-upgrade.sh
+    then
+        echo "post-batocera-upgrade.sh failed" >&2
+    else
+        rm -rf /boot/post-batocera-upgrade
+    fi
+fi
 
 echo "synchronizing disk"
 

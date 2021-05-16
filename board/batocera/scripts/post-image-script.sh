@@ -67,6 +67,12 @@ do
     # rename the squashfs : the .update is the version that will be renamed at boot to replace the old version
     mv "${BATOCERA_BINARIES_DIR}/boot/boot/batocera.update" "${BATOCERA_BINARIES_DIR}/boot/boot/batocera" || exit 1
 
+    # remove post-batocera-upgrade folder
+    if test -e "${BATOCERA_BINARIES_DIR}/boot/post-batocera-upgrade"
+    then
+        rm -rf "${BATOCERA_BINARIES_DIR}/boot/post-batocera-upgrade" || exit 1
+    fi
+
     # create *.img
     if test "${IMGMODE}" = "multi"
     then
