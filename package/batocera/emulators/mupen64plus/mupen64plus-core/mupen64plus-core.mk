@@ -22,8 +22,8 @@ endif
 
 ifeq ($(BR2_PACKAGE_RPI_USERLAND),y)
 	MUPEN64PLUS_CORE_DEPENDENCIES += rpi-userland
-	MUPEN64PLUS_GL_LDLIBS += -lbcm_host
-	MUPEN64PLUS_PARAMS += VC=1
+	MUPEN64PLUS_GL_LDLIBS = -lbcm_host
+	MUPEN64PLUS_PARAMS = VC=1
 endif
 
 ifeq ($(BR2_arm),y)
@@ -45,13 +45,13 @@ ifeq ($(BR2_arm)$(BR2_ARM_CPU_HAS_NEON),yy)
 	MUPEN64PLUS_GL_CFLAGS += -D__ARM_NEON__ -D__NEON_OPT -ftree-vectorize -mvectorize-with-neon-quad -ftree-vectorizer-verbose=2 -funsafe-math-optimizations -fno-finite-math-only
 
 	ifeq ($(BR2_ARM_CPU_HAS_VFPV4),y)
-		MUPEN64PLUS_CORE_CPUFLAGS += -mfpu=neon-vfpv4 
+		MUPEN64PLUS_CORE_CPUFLAGS += -mfpu=neon-vfpv4
 	else
 		MUPEN64PLUS_CORE_CPUFLAGS += -mfpu=neon
 	endif
 
 	ifeq ($(BR2_GCC_TARGET_FLOAT_ABI),"hard")
-		MUPEN64PLUS_CORE_CPUFLAGS += -mfloat-abi=hard 
+		MUPEN64PLUS_CORE_CPUFLAGS += -mfloat-abi=hard
 	endif
 
 	MUPEN64PLUS_PARAMS += NEON=1 CPUFLAGS="$(MUPEN64PLUS_CORE_CPUFLAGS)"
