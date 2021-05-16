@@ -28,4 +28,11 @@ cp "${BINARIES_DIR}/rk3326-odroidgo3-linux.dtb"     "${BATOCERA_BINARIES_DIR}/bo
 
 cp "${BOARD_DIR}/boot/boot.ini"                     "${BATOCERA_BINARIES_DIR}/boot/"                                    || exit 1
 
+mkdir -p "${BATOCERA_BINARIES_DIR}/boot/post-batocera-upgrade" || exit 1
+# please note! the script must be named /boot/post-batocera-upgrade/post-batocera-upgrade.sh
+cp "${BOARD_DIR}/boot/post-batocera-upgrade.sh"     "${BATOCERA_BINARIES_DIR}/boot/post-batocera-upgrade"               || exit 1
+cp "${BINARIES_DIR}/idbloader.img"                  "${BATOCERA_BINARIES_DIR}/boot/post-batocera-upgrade"               || exit 1
+cp "${BINARIES_DIR}/uboot.img"                      "${BATOCERA_BINARIES_DIR}/boot/post-batocera-upgrade"               || exit 1
+cp "${BINARIES_DIR}/trust.img"                      "${BATOCERA_BINARIES_DIR}/boot/post-batocera-upgrade"               || exit 1
+
 exit 0
