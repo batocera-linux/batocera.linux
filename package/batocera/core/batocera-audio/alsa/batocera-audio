@@ -1,5 +1,47 @@
 #!/bin/sh
 
+#List of exceptions not to use alsoundrc-dcmix+sofvol, for example Pi family
+#Adressed to issue 3901, 3902
+EXCEPTIONS="bcm2835 BCM2835"
+
+do_usage() {
+	echo "$1 list"
+	echo "$1 get"
+	echo "$1 set {auto|custom|<device>}"
+	echo "$1 test"
+}	
+
+do_select_audiodevice() {
+	if echo "${MODE}" | grep -qE '^[0-9]*,[0-9]* '; then
+		cardnb="$(echo "${MODE}" | sed -e s+'^\([0-9]*\),.*$'+'\1'+)"
+		devicenb="$(echo "${MODE}" | sed -e s+'^[0-9]*,\([0-9]*\) .*$'+'\1'+)"
+	else
+		# No valid device selected
+		return 1
+	fi
+
+	#Use exception list
+	for i in $EXCEPTIONS; do
+		if echo "${MODE}" | grep -qE "$i"; then
+			exception="$i"
+			break
+		fi
+	done	
+
+	case "$exception" in
+		bcm2835|BCM2835)
+			cat > /userdata/system/.asoundrc <<-_EOF_
+				pcm.!default { type plug slave { pcm "hw:${cardnb},${devicenb}" } }
+				ctl.!default { type hw card ${cardnb} }
+			_EOF_
+		;;
+
+		*)
+			sed -e "s;%CARDNO%;${cardnb};g" -e "s;%DEVICENO%;${devicenb};g" /usr/share/batocera/alsa/asoundrc-dmix+softvol > /userdata/system/.asoundrc
+	esac
+}
+
+
 ACTION="$1"
 
 case "${ACTION}" in
@@ -25,18 +67,14 @@ case "${ACTION}" in
 			custom)
 				# do nothing!
 			;;
-
 			*)
-				if echo "${MODE}" | grep -qE '^[0-9]*,[0-9]* '; then
-					cardnb="$(echo "${MODE}" | sed -e s+'^\([0-9]*\),.*$'+'\1'+)"
-					devicenb="$(echo "${MODE}" | sed -e s+'^[0-9]*,\([0-9]*\) .*$'+'\1'+)"
-					sed -e "s;%CARDNO%;${cardnb};g" -e "s;%DEVICENO%;${devicenb};g" /usr/share/batocera/alsa/asoundrc-dmix+softvol > /userdata/system/.asoundrc
-				fi
-			;;
+				do_select_audiodevice
 		esac
 	;;
 
 	test)
 		aplay "/usr/share/sounds/Mallet.wav"
 	;;
+	*)
+		do_usage $(basename $0)
 esac
