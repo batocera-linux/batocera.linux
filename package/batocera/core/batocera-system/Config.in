@@ -725,7 +725,7 @@ config BR2_PACKAGE_BATOCERA_CONSOLE_SYSTEMS
                                                         !BR2_PACKAGE_BATOCERA_TARGET_RPI3
 
 	select BR2_PACKAGE_LIBRETRO_SWANSTATION         if  !BR2_PACKAGE_BATOCERA_TARGET_X86	&& \
-                                                        !BR2_PACKAGE_BATOCERA_RPI_VCORE
+                                                        !BR2_PACKAGE_BATOCERA_RPI_ANY
 
 	select BR2_PACKAGE_LIBRETRO_PCSX                if !BR2_PACKAGE_BATOCERA_TARGET_RPI1
 
