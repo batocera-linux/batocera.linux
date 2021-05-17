@@ -3,8 +3,8 @@
 # uboot files for odroid xu4
 #
 ################################################################################
-
-UBOOT_ODROID_XU4_VERSION = odroidxu4-v2017.05
+# Version.: Commits on May 19, 2020 (odroidxu4-v2017.05)
+UBOOT_ODROID_XU4_VERSION = 42ac93dcfbbb8a08c2bdc02e19f96eb35a81891a
 UBOOT_ODROID_XU4_SITE = https://github.com/hardkernel/u-boot.git
 UBOOT_ODROID_XU4_SITE_METHOD=git
 
