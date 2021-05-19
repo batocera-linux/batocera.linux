@@ -4,7 +4,7 @@
 #
 ################################################################################
 # Version.: Commits on Mar 25, 2021
-LIBRETRO_WATARA_VERSION = 2873c42f28012992c1132fd083787f5b76b99418
+LIBRETRO_WATARA_VERSION = b6075d7497fd70c87f101aa6158d1b480f0c3cc7
 LIBRETRO_WATARA_SITE = $(call github,libretro,potator,$(LIBRETRO_WATARA_VERSION))
 LIBRETRO_WATARA_LICENSE = GPLv2
 
