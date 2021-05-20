@@ -2,6 +2,8 @@
 	* Switch RockPro64 to AArch64 (full 64-bit)
 	* add: xemu (xbox emulator for x86_64)
 	* add: future pinball (x86_64)
+	* add: flatpak support (x86_64)
+	* add: Watara Supervision emulator
 	* add: libretro-melonDS on Odroid Go Advance / Odroid Go Super
 	* add: higher overclocking options to the rpi4 (requires heatsink & fan!)
 	* add: mame standalone bezels (standard mame bezels are to put in /userdata/decorations, or thebezelproject works too)
@@ -12,22 +14,33 @@
         - duckstation (psx)
         - cemu (wiiu)
 	* add: duckstation advanced options
+	* add: es citra options to use custom textures
 	* fix: duckstation shared rumble between controllers
-	* es:  add pad battery indicator
 	* add: splash for x86_64 and rpi4
 	* add: virtual resolutions for games to limit the maximum resolution
 	* add: video mode for drm now includes some information to not be applied over different tvs
 	* add: es.maxresolution is now renamed es.resolution in batocera-boot.conf and can take any value from listModes (aka max-1920x1080)
 	* add: es dolphin options to use custom pads from dolphin ui profile configuration
-	* bump: python to 3
+	* es: add pad battery indicator
+	* es: add time zone selection and 12/24 time format in settings
+	* es: add long press (for some menus like game details)
+	* es: add file browser when editing games metadata
+	* es: add lightgun arcade auto-collection
+	* es: add HTTP webservices (port 1234)
+	* es: add 'magazine' metadata
+	* es: option to exclude cue/ccd/m3u child roms
+	* bump: python to 3.9
 	* bump: kodi to 19.0
 	* bump: GCC compiler to 10.3
+	* bump: MAME standalone to 0.229
 	* bump: Flycast
 	* bump: Daphne (Hypseus+Singe) to 2.4.5
 	* bump: SwitchRes tool
 	* bump: libretro-blastem
 	* bump: libretro-flycast, enable on all boards except rpi1/rpi2
 	* bump: libretro-stella to 6.5.3
+	* bump: libretro-pico8
+	* bump: libretro-atari800
 	* bump: FS-UAE to 3.0.6
 	* bump: Dosbox-X to 0.83.12
 	* bump: RPCS3 to 0.0.15
