@@ -20,7 +20,7 @@ index 7fe50ba..b6a8ab0 100644
 +#if (LINUX_VERSION_CODE < KERNEL_VERSION(5, 8, 0))
  	down_read(&current->mm->mmap_sem);
 +#else
-+	mmap_read_lock(current->mm);
++	down_read(&current->mm->mmap_lock);
 +#endif
  
  	/* need to keep the GPU VM locked while we set up UMM buffers */
@@ -32,7 +32,7 @@ index 7fe50ba..b6a8ab0 100644
 +#if (LINUX_VERSION_CODE < KERNEL_VERSION(5, 8, 0))
  	up_read(&current->mm->mmap_sem);
 +#else
-+	mmap_read_unlock(current->mm);
++	up_read(&current->mm->mmap_lock);
 +#endif
  
  #ifdef CONFIG_MALI_DMA_FENCE
@@ -44,7 +44,7 @@ index 7fe50ba..b6a8ab0 100644
 +#if (LINUX_VERSION_CODE < KERNEL_VERSION(5, 8, 0))
  	down_read(&current->mm->mmap_sem);
 +#else
-+	mmap_read_lock(current->mm);
++	down_read(&current->mm->mmap_lock);
 +#endif
  
  	/* lock before we unmap */
@@ -56,7 +56,7 @@ index 7fe50ba..b6a8ab0 100644
 +#if (LINUX_VERSION_CODE < KERNEL_VERSION(5, 8, 0))
  	up_read(&current->mm->mmap_sem);
 +#else
-+	mmap_read_unlock(current->mm);
++	up_read(&current->mm->mmap_lock);
 +#endif
  
   early_err_out:
@@ -72,7 +72,7 @@ index 3d0de90..1466153 100644
 +#if (LINUX_VERSION_CODE < KERNEL_VERSION(5, 8, 0))
  	lockdep_assert_held(&current->mm->mmap_sem);
 +#else
-+	mmap_assert_locked(current->mm);
++	lockdep_assert_held(&current->mm->mmap_lock);
 +#endif
  
  	if ((uintptr_t) uaddr + size < (uintptr_t) uaddr) /* overflow check */
@@ -88,7 +88,7 @@ index b3b5ffc..656f86e 100644
 +#if (LINUX_VERSION_CODE < KERNEL_VERSION(5, 8, 0))
  	down_write(&current->mm->mmap_sem);
 +#else
-+	mmap_write_lock(current->mm);
++	down_write(&current->mm->mmap_lock);
 +#endif
  	kbase_gpu_vm_lock(kctx);
  
@@ -100,7 +100,7 @@ index b3b5ffc..656f86e 100644
 +#if (LINUX_VERSION_CODE < KERNEL_VERSION(5, 8, 0))
  	up_write(&current->mm->mmap_sem);
 +#else
-+	mmap_write_unlock(current->mm);
++	up_write(&current->mm->mmap_lock);
 +#endif
  out:
  	return ret;
@@ -112,7 +112,7 @@ index b3b5ffc..656f86e 100644
 +#if (LINUX_VERSION_CODE < KERNEL_VERSION(5, 8, 0))
  	down_read(&current->mm->mmap_sem);
 +#else
-+	mmap_read_lock(current->mm);
++	down_read(&current->mm->mmap_lock);
 +#endif
  
  #if LINUX_VERSION_CODE < KERNEL_VERSION(4, 6, 0)
@@ -124,7 +124,7 @@ index b3b5ffc..656f86e 100644
 +#if (LINUX_VERSION_CODE < KERNEL_VERSION(5, 8, 0))
  	up_read(&current->mm->mmap_sem);
 +#else
-+	mmap_read_unlock(current->mm);
++	up_read(&current->mm->mmap_lock);
 +#endif
  
  	if (faulted_pages != *va_pages)
@@ -136,7 +136,7 @@ index b3b5ffc..656f86e 100644
 +#if (LINUX_VERSION_CODE < KERNEL_VERSION(5, 8, 0))
  	down_write(&current->mm->mmap_sem);
 +#else
-+	mmap_write_lock(current->mm);
++	down_write(&current->mm->mmap_lock);
 +#endif
  	kbase_gpu_vm_lock(kctx);
  
@@ -148,7 +148,7 @@ index b3b5ffc..656f86e 100644
 +#if (LINUX_VERSION_CODE < KERNEL_VERSION(5, 8, 0))
  		downgrade_write(&current->mm->mmap_sem);
 +#else
-+		mmap_write_downgrade(current->mm);
++		downgrade_write(&current->mm->mmap_lock);
 +#endif
  		read_locked = true;
  
@@ -160,13 +160,13 @@ index b3b5ffc..656f86e 100644
 +#if (LINUX_VERSION_CODE < KERNEL_VERSION(5, 8, 0))
  		up_read(&current->mm->mmap_sem);
 +#else
-+		mmap_read_unlock(current->mm);
++		up_read(&current->mm->mmap_lock);
 +#endif
  	else
 +#if (LINUX_VERSION_CODE < KERNEL_VERSION(5, 8, 0))
  		up_write(&current->mm->mmap_sem);
 +#else
-+		mmap_write_unlock(current->mm);
++		up_write(&current->mm->mmap_lock);
 +#endif
  
  	return res;
@@ -178,7 +178,7 @@ index b3b5ffc..656f86e 100644
 +#if (LINUX_VERSION_CODE < KERNEL_VERSION(5, 8, 0))
  	down_read(&mm->mmap_sem);
 +#else
-+	mmap_read_lock(mm);
++	down_read(&mm->mmap_lock);
 +#endif
  }
  
@@ -189,7 +189,7 @@ index b3b5ffc..656f86e 100644
 +#if (LINUX_VERSION_CODE < KERNEL_VERSION(5, 8, 0))
  	up_read(&mm->mmap_sem);
 +#else
-+	mmap_read_unlock(mm);
++	up_read(&mm->mmap_lock);
 +#endif
  }
  

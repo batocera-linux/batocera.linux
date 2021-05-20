@@ -1,7 +1,7 @@
-From f2bd0138c14fbc5a985a12240eec0f68170af9f9 Mon Sep 17 00:00:00 2001
+From 7f651cc2566e61ed7cae0007dc35ec7b69d70e2a Mon Sep 17 00:00:00 2001
 From: memeka <mihailescu2m@gmail.com>
 Date: Fri, 18 Jan 2019 14:36:21 +1030
-Subject: [PATCH 19/24] MEMEKA: regulator: s2mps11: add ethernet power reset in
+Subject: [PATCH 20/28] MEMEKA: regulator: s2mps11: add ethernet power reset in
  shutdown function
 
 Ethernet device cannot be detected on warm boot sometimes. This patch is
@@ -16,7 +16,7 @@ Signed-off-by: Marian Mihailescu <mihailescu2m@gmail.com>
  1 file changed, 54 insertions(+)
 
 diff --git a/drivers/regulator/s2mps11.c b/drivers/regulator/s2mps11.c
-index b3ee46955986..5c4d4827a173 100644
+index f1ade60ee8d3..f4c62c1c4e82 100644
 --- a/drivers/regulator/s2mps11.c
 +++ b/drivers/regulator/s2mps11.c
 @@ -1117,6 +1117,57 @@ static const struct regulator_desc s2mpu02_regulators[] = {
@@ -88,5 +88,5 @@ index b3ee46955986..5c4d4827a173 100644
  
  static const struct platform_device_id s2mps11_pmic_id[] = {
 -- 
-2.20.1
+2.17.1
 

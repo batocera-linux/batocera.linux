@@ -1,39 +1,39 @@
-From fe64d2622d6fd880f35da93382e1de5077b681f3 Mon Sep 17 00:00:00 2001
+From 5f695ad2b5d473f0de54613d7fd39ce2e397044a Mon Sep 17 00:00:00 2001
 From: Christian Hewitt <christianshewitt@gmail.com>
 Date: Wed, 29 Apr 2020 10:37:08 +0000
-Subject: [PATCH 24/24] WIP: ARM: dts: exynos5422: HC1/XU3/XU4 model name is
+Subject: [PATCH 28/28] WIP: ARM: dts: exynos5422: HC1/XU3/XU4 model name is
  ODROID not Odroid
 
 Cosmetic change to model and audio card name for HC1/XU3/XU4 to
-put ODROID in capitals (as per Hardkernel branding). Also fixup
-some unneeded backslashes and wrap lines per kernel standards.
+put ODROID in capitals (as per Hardkernel branding).
 
 Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
 ---
- arch/arm/boot/dts/exynos5422-odroidhc1.dts        | 4 ++--
+ arch/arm/boot/dts/exynos5422-odroidhc1.dts        | 5 ++---
  arch/arm/boot/dts/exynos5422-odroidxu3-audio.dtsi | 2 +-
- arch/arm/boot/dts/exynos5422-odroidxu3-lite.dts   | 5 +++--
- arch/arm/boot/dts/exynos5422-odroidxu3.dts        | 5 +++--
- arch/arm/boot/dts/exynos5422-odroidxu4.dts        | 6 +++---
- 5 files changed, 12 insertions(+), 10 deletions(-)
+ arch/arm/boot/dts/exynos5422-odroidxu3-lite.dts   | 2 +-
+ arch/arm/boot/dts/exynos5422-odroidxu3.dts        | 2 +-
+ arch/arm/boot/dts/exynos5422-odroidxu4.dts        | 7 +++----
+ 5 files changed, 8 insertions(+), 10 deletions(-)
 
 diff --git a/arch/arm/boot/dts/exynos5422-odroidhc1.dts b/arch/arm/boot/dts/exynos5422-odroidhc1.dts
-index 812659260278..b90da73510cf 100644
+index 20c222b33f98..da48a8f52482 100644
 --- a/arch/arm/boot/dts/exynos5422-odroidhc1.dts
 +++ b/arch/arm/boot/dts/exynos5422-odroidhc1.dts
-@@ -11,8 +11,8 @@
+@@ -11,9 +11,8 @@
  #include "exynos5422-odroid-core.dtsi"
  
  / {
 -	model = "Hardkernel Odroid HC1";
 -	compatible = "hardkernel,odroid-hc1", "samsung,exynos5800", \
+-		     "samsung,exynos5";
 +	model = "Hardkernel ODROID HC1";
-+	compatible = "hardkernel,odroid-hc1", "samsung,exynos5800",
- 		     "samsung,exynos5";
++	compatible = "hardkernel,odroid-hc1", "samsung,exynos5800", "samsung,exynos5";
  
- 	pwmleds {
+ 	led-controller {
+ 		compatible = "pwm-leds";
 diff --git a/arch/arm/boot/dts/exynos5422-odroidxu3-audio.dtsi b/arch/arm/boot/dts/exynos5422-odroidxu3-audio.dtsi
-index c3c2d85267da..26961dcea010 100644
+index 86b96f9706db..1a3940f2ead2 100644
 --- a/arch/arm/boot/dts/exynos5422-odroidxu3-audio.dtsi
 +++ b/arch/arm/boot/dts/exynos5422-odroidxu3-audio.dtsi
 @@ -13,7 +13,7 @@
@@ -46,53 +46,48 @@ index c3c2d85267da..26961dcea010 100644
  		samsung,audio-widgets =
  			"Headphone", "Headphone Jack",
 diff --git a/arch/arm/boot/dts/exynos5422-odroidxu3-lite.dts b/arch/arm/boot/dts/exynos5422-odroidxu3-lite.dts
-index 98feecad5489..d0084033199a 100644
+index 62c5928aa994..0ed9280f36d2 100644
 --- a/arch/arm/boot/dts/exynos5422-odroidxu3-lite.dts
 +++ b/arch/arm/boot/dts/exynos5422-odroidxu3-lite.dts
-@@ -14,8 +14,9 @@
+@@ -14,7 +14,7 @@
  #include "exynos54xx-odroidxu-leds.dtsi"
  
  / {
 -	model = "Hardkernel Odroid XU3 Lite";
--	compatible = "hardkernel,odroid-xu3-lite", "samsung,exynos5800", "samsung,exynos5";
 +	model = "Hardkernel ODROID XU3 Lite";
-+	compatible = "hardkernel,odroid-xu3-lite", "samsung,exynos5800",
-+		"samsung,exynos5";
- };
+ 	compatible = "hardkernel,odroid-xu3-lite", "samsung,exynos5800", "samsung,exynos5";
  
- &arm_a7_pmu {
+ 	aliases {
 diff --git a/arch/arm/boot/dts/exynos5422-odroidxu3.dts b/arch/arm/boot/dts/exynos5422-odroidxu3.dts
-index db0bc17a667b..3ff7ec514e20 100644
+index cecaeb69e623..2d025dd1750c 100644
 --- a/arch/arm/boot/dts/exynos5422-odroidxu3.dts
 +++ b/arch/arm/boot/dts/exynos5422-odroidxu3.dts
-@@ -13,8 +13,9 @@
+@@ -13,7 +13,7 @@
  #include "exynos54xx-odroidxu-leds.dtsi"
  
  / {
 -	model = "Hardkernel Odroid XU3";
--	compatible = "hardkernel,odroid-xu3", "samsung,exynos5800", "samsung,exynos5";
 +	model = "Hardkernel ODROID XU3";
-+	compatible = "hardkernel,odroid-xu3", "samsung,exynos5800",
-+		"samsung,exynos5";
- };
+ 	compatible = "hardkernel,odroid-xu3", "samsung,exynos5800", "samsung,exynos5";
  
- &i2c_0 {
+ 	aliases {
 diff --git a/arch/arm/boot/dts/exynos5422-odroidxu4.dts b/arch/arm/boot/dts/exynos5422-odroidxu4.dts
-index 892d389d6d09..d2061b244537 100644
+index ede782257643..2cbf08fe3520 100644
 --- a/arch/arm/boot/dts/exynos5422-odroidxu4.dts
 +++ b/arch/arm/boot/dts/exynos5422-odroidxu4.dts
-@@ -13,8 +13,8 @@
+@@ -13,9 +13,8 @@
  #include "exynos5422-odroidxu3-common.dtsi"
  
  / {
 -	model = "Hardkernel Odroid XU4";
 -	compatible = "hardkernel,odroid-xu4", "samsung,exynos5800", \
+-		     "samsung,exynos5";
 +	model = "Hardkernel ODROID XU4";
-+	compatible = "hardkernel,odroid-xu4", "samsung,exynos5800",
- 		     "samsung,exynos5";
++	compatible = "hardkernel,odroid-xu4", "samsung,exynos5800", "samsung,exynos5";
  
- 	pwmleds {
-@@ -31,7 +31,7 @@
+ 	led-controller {
+ 		compatible = "pwm-leds";
+@@ -31,7 +30,7 @@
  
  	sound: sound {
  		compatible = "samsung,odroid-xu3-audio";
@@ -102,5 +97,5 @@ index 892d389d6d09..d2061b244537 100644
  		samsung,audio-routing = "I2S Playback", "Mixer DAI TX";
  
 -- 
-2.20.1
+2.17.1
 

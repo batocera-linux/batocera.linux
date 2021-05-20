@@ -1,19 +1,18 @@
-From 8af58504ae1199d205df1b9245ff7d752cb4208c Mon Sep 17 00:00:00 2001
+From 51f1a1987c0f24f018ca76f7f15cf413410c5f30 Mon Sep 17 00:00:00 2001
 From: Yang Deokgyu <secugyu@gmail.com>
 Date: Thu, 5 Dec 2019 10:09:00 +0900
-Subject: [PATCH 62/74] ODROID-XU4: arm/exynos: No need to use enynos_init_late
+Subject: [PATCH 25/28] ODROID: arm/exynos: No need to use enynos_init_late
 
 Signed-off-by: Yang Deokgyu <secugyu@gmail.com>
-Change-Id: I7d141a655c23bf364753be9831b4428ee3aa6711
 ---
  arch/arm/mach-exynos/exynos.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/arch/arm/mach-exynos/exynos.c b/arch/arm/mach-exynos/exynos.c
-index c79e7f0e5b53..1b6564b5ed15 100644
+index 1413837e1c44..c57032c68ac4 100644
 --- a/arch/arm/mach-exynos/exynos.c
 +++ b/arch/arm/mach-exynos/exynos.c
-@@ -214,7 +214,7 @@ MACHINE_END
+@@ -228,7 +228,7 @@ MACHINE_END
  		.init_early	= exynos_firmware_init,		\
  		.init_irq	= exynos_init_irq,		\
  		.init_machine	= exynos_dt_machine_init,	\
@@ -23,5 +22,5 @@ index c79e7f0e5b53..1b6564b5ed15 100644
  		.dt_fixup	= exynos_dt_fixup,		\
  	MACHINE_END
 -- 
-2.25.1
+2.17.1
 

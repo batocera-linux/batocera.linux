@@ -1,7 +1,7 @@
-From 7ed0bff994ecee9bd6306d23ac1dd5d9b98f91bd Mon Sep 17 00:00:00 2001
+From b3ce1cc54ccc6e958e987fb87425cd8b40c0d2bc Mon Sep 17 00:00:00 2001
 From: OtherCrashOverride <OtherCrashOverride@users.noreply.github.com>
 Date: Sun, 9 Apr 2017 17:31:25 +0000
-Subject: [PATCH 02/24] MEMEKA: drm/exynos/mixer: never blend the base layer
+Subject: [PATCH 11/28] MEMEKA: drm/exynos/mixer: never blend the base layer
 
 On Exynos there is a solid color plane that is logically below all the other display planes.
 This causes display artifacts due to alpha. The patch disables blending the base plane with
@@ -14,7 +14,7 @@ Signed-off-by: memeka <mihailescu2m@gmail.com>
  1 file changed, 18 insertions(+), 15 deletions(-)
 
 diff --git a/drivers/gpu/drm/exynos/exynos_mixer.c b/drivers/gpu/drm/exynos/exynos_mixer.c
-index 21b726baedea..c1a527fa1df8 100644
+index af192e5a16ef..c95229c1d335 100644
 --- a/drivers/gpu/drm/exynos/exynos_mixer.c
 +++ b/drivers/gpu/drm/exynos/exynos_mixer.c
 @@ -315,23 +315,26 @@ static void mixer_cfg_gfx_blend(struct mixer_context *ctx, unsigned int win,
@@ -60,5 +60,5 @@ index 21b726baedea..c1a527fa1df8 100644
  			    val, MXR_GRP_CFG_MISC_MASK);
  }
 -- 
-2.20.1
+2.17.1
 
