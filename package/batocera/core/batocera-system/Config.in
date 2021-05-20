@@ -591,6 +591,7 @@ config BR2_PACKAGE_BATOCERA_MSDOS_SYSTEMS
 	select BR2_PACKAGE_DOSBOX                   # ALL
 
 	select BR2_PACKAGE_DOSBOX_X                 if  !BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA	&& \
+	       					    !BR2_PACKAGE_BATOCERA_TARGET_RK3399		&& \
                                                     !BR2_PACKAGE_BATOCERA_TARGET_RPI1		&& \
                                                     !BR2_PACKAGE_BATOCERA_TARGET_RPI2		&& \
                                                     !BR2_PACKAGE_BATOCERA_TARGET_RPI3		# dos
