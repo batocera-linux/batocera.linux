@@ -15,7 +15,7 @@ from . import cemuControllers
 
 cemuConfig  = batoceraFiles.CONF + '/cemu'
 cemuHomedir = 'Z:\\userdata\\roms\\wiiu'
-cemuSavedir = 'Z:\\userdata\\saves\\cemu'
+cemuMLC = 'C:\\cemu'
 cemuDatadir = '/usr/cemu'
 cemuSaves   = batoceraFiles.SAVES + '/cemu'
 
@@ -41,8 +41,14 @@ class CemuGenerator(Generator):
             if not path.isdir(cemuConfig + "/" + folder):
                 os.mkdir(cemuConfig + "/" + folder)
 
+        # Create save folder
         if not path.isdir(batoceraFiles.SAVES + "/cemu"):
             os.mkdir(batoceraFiles.SAVES + "/cemu")
+
+        # Check & Create mlc folders
+        if not path.isdir(batoceraFiles.SAVES + "/cemu/drive_c/cemu"):
+            os.makedirs(batoceraFiles.SAVES + "/cemu/drive_c/cemu/sys")
+            os.makedirs(batoceraFiles.SAVES + "/cemu/drive_c/cemu/usr")
 
         CemuGenerator.CemuConfig(cemuConfig + "/settings.xml", system)
         # Copy the file from where cemu reads it
@@ -59,7 +65,7 @@ class CemuGenerator(Generator):
 
         cemuControllers.generateControllerConfig(system, playersControllers, rom)
 
-        commandArray = ["/usr/wine/lutris/bin/wine64", "/userdata/system/configs/cemu/Cemu.exe", "-g", "z:" + rom, "-m", "z:" + batoceraFiles.SAVES + "/cemu", "-f"]
+        commandArray = ["/usr/wine/lutris/bin/wine64", "/userdata/system/configs/cemu/Cemu.exe", "-g", "z:" + rom, "-f"]
         return Command.Command(
             array=commandArray,
             env={
@@ -85,7 +91,7 @@ class CemuGenerator(Generator):
         xml_root = CemuGenerator.getRoot(config, "content")
 
         # Default mlc path
-        CemuGenerator.setSectionConfig(config, xml_root, "mlc_path", cemuSavedir)
+        CemuGenerator.setSectionConfig(config, xml_root, "mlc_path", cemuMLC)
 
         # Remove auto updates
         CemuGenerator.setSectionConfig(config, xml_root, "check_update", "false")
