@@ -1,0 +1,11 @@
+--- a/CMakeLists.txt	2021-05-21 12:49:21.615807576 +0200
++++ b/CMakeLists.txt	2021-05-21 12:49:26.809140726 +0200
+@@ -18,7 +18,7 @@
+ find_package(Broadcom)
+ find_package(Freescale)
+ find_package(Amlogic)
+-find_package(Rockchip)
++#find_package(Rockchip)
+ 
+ find_package(PkgConfig REQUIRED)
+ pkg_check_modules(EVDEV REQUIRED libevdev)
