@@ -430,7 +430,7 @@ config BR2_PACKAGE_BATOCERA_GAMESTREAM_SYSTEMS
 	bool "batocera.linux game streaming support"
 
 	# Game streaming
-	select BR2_PACKAGE_MOONLIGHT_EMBEDDED #if ! BR2_PACKAGE_BATOCERA_TARGET_RK3288 # moonlight (compilation error on miqi)
+	select BR2_PACKAGE_MOONLIGHT_EMBEDDED 
 
 #### ScummVM ####
 config BR2_PACKAGE_BATOCERA_SCUMMVM_SYSTEMS
