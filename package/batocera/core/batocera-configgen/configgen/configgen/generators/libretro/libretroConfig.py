@@ -85,6 +85,7 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
     retroarchConfig['quit_press_twice'] = 'false'               # not aligned behavior on other emus
     retroarchConfig['menu_show_restart_retroarch'] = 'false'    # this option messes everything up on Batocera if ever clicked
     retroarchConfig['video_driver'] = '"gl"'                    # needed for the ozone menu
+    retroarchConfig['video_refresh_rate'] = '0'                 # force video to 0, otherwise, it is set to 60 and it causes issues if the resolution changed for batocera is not 60hz (drm)
 
     if system.isOptSet("display.rotate"):
         # 0 => 0 ; 1 => 270; 2 => 180 ; 3 => 90
