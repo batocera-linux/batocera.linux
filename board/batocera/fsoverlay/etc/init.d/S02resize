@@ -58,9 +58,9 @@ then
     # boot disk
     DISK=$(batocera-part prefix "${PART}")
 
-    # only for ext4
+    # only for btrfs
     PARTTYPE=$(blkid "${PART}" | sed -e s+'^.* TYPE="\([^"]*\)\".*'+'\1'+)
-    test "${PARTTYPE}" != "ext4" && exit 0
+    test "${PARTTYPE}" != "btrfs" && exit 0
 
     # fix any minor issues, such as gpt header not at end of disk
     # remove the trigger
@@ -75,8 +75,8 @@ then
 	    # resizepart can't use 100% otherwise problem with GPT copied at the end of the disk/sdcard
 	    7) textoutput $i 40 "parted -s -m ${DISK} resizepart 2 99%";;
 	    9) textoutput $i 45 "parted -s -m ${DISK} align-check opt 2";;
-	    11) textoutput $i 55 "e2fsck -f -p ${PART}";;
-	    13) textoutput $i 75 "resize2fs ${PART}";;
+	    11) textoutput $i 55 "btrfs check --repair ${PART}";;
+	    13) textoutput $i 75 "btrfs filesystem resize max ${PART}";;
 	esac
     done
 
