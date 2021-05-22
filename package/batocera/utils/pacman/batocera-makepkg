@@ -2,7 +2,7 @@
 # Batocera poor man's makepkg
 # lightweight pacman package creations
 # @lbrpdx on Batocera forum and Discord
-# 
+#
 # 20200528 - Initial revision
 # 20201104 - Update groups, support mutiple archs
 # 20210113 - Update groups with Batocera v30
@@ -19,7 +19,7 @@ FORCE=0
 ### These parameters need to be fulfilled:
 # pkgname = bezels-default-glazed
 # pkgver = 1.0.0-1
-# pkgdesc = Batocera bezels with a CRT effect 
+# pkgdesc = Batocera bezels with a CRT effect
 # arch = any
 # group = bezel
 ### And these will be added automatically
@@ -44,7 +44,7 @@ function get_config() {
 	local ret
 	val="$(grep -E -m1 "^\s*$1\s*=" $INFO)"
 	ret=$?
-	if [[ $ret -eq 1 ]]; then 
+	if [[ $ret -eq 1 ]]; then
 		val="$(grep -E -m1 "^$COMMENT_CHAR_SEARCH\s*$1\s*=\s*" $INFO)"
 		ret=$?
 		[[ $ret -eq 0 ]] && val=$COMMENT_CHAR
