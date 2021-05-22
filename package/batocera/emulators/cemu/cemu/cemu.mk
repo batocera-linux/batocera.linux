@@ -4,8 +4,8 @@
 #
 ################################################################################
 
-# version 1.22.10
-CEMU_VERSION = 1.22.11
+# version 1.22.12c
+CEMU_VERSION = 1.22.12
 CEMU_SOURCE = cemu_$(CEMU_VERSION).zip
 CEMU_SITE = https://cemu.info/releases
 
@@ -20,7 +20,7 @@ define CEMU_INSTALL_TARGET_CMDS
 	# keys.txt
 	mkdir -p $(TARGET_DIR)/usr/share/batocera/datainit/bios/cemu
 	touch $(TARGET_DIR)/usr/share/batocera/datainit/bios/cemu/keys.txt
-	
+
 	#evmap config
 	mkdir -p $(TARGET_DIR)/usr/share/evmapy
 	cp -prn $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/cemu/cemu/wiiu.keys $(TARGET_DIR)/usr/share/evmapy

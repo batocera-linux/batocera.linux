@@ -193,7 +193,7 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
                                                 !BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA
 
 	# do NOT remove this one for OGA
-	select BR2_PACKAGE_RTL8192EU            if  !BR2_PACKAGE_BATOCERA_TARGET_RPI1           && \
+    select BR2_PACKAGE_RTL8192EU            if  !BR2_PACKAGE_BATOCERA_TARGET_RPI1           && \
                                                 !BR2_PACKAGE_BATOCERA_TARGET_RPI2           && \
                                                 !BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_PC
 
@@ -202,12 +202,28 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
                                                 !BR2_PACKAGE_BATOCERA_TARGET_RPI3               && \
                                                 !BR2_PACKAGE_BATOCERA_TARGET_S812               && \
                                                 !BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA          && \
-                                                !BR2_PACKAGE_BATOCERA_TARGET_LIBRETECH_H5       && \
+                                                !BR2_PACKAGE_BATOCERA_TARGET_TRITIUM_H5       && \
                                                 !BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_ZERO2     && \
                                                 !BR2_PACKAGE_BATOCERA_TARGET_MIQI               && \
                                                 !BR2_PACKAGE_BATOCERA_TARGET_TINKERBOARD        && \
                                                 !BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_PC        && \
                                                 !BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA
+
+	select BR2_PACKAGE_RTL8192EU		if !BR2_PACKAGE_BATOCERA_TARGET_RPI1		&& \
+						!BR2_PACKAGE_BATOCERA_TARGET_RPI2		&& \
+						!BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_PC
+
+	select BR2_PACKAGE_RTL8821CE		if !BR2_PACKAGE_BATOCERA_TARGET_RPI1		&& \
+						!BR2_PACKAGE_BATOCERA_TARGET_RPI2		&& \
+						!BR2_PACKAGE_BATOCERA_TARGET_RPI3		&& \
+						!BR2_PACKAGE_BATOCERA_TARGET_S812		&& \
+						!BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA		&& \
+						!BR2_PACKAGE_BATOCERA_TARGET_TRITIUM_H5	&& \
+						!BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_ZERO2	&& \
+						!BR2_PACKAGE_BATOCERA_TARGET_MIQI		&& \
+						!BR2_PACKAGE_BATOCERA_TARGET_TINKERBOARD	&& \
+						!BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_PC	&& \
+						!BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA
 
 	# s905 tv-box firmwares
 	select BR2_PACKAGE_FIRMWARE_WLAN_AML    if BR2_PACKAGE_BATOCERA_TARGET_S905GEN3
@@ -290,7 +306,7 @@ config BR2_TARGET_BATOCERA_IMAGES_DEFINITIONS
 	default "rockchip/rk3288/miqi"                              if BR2_PACKAGE_BATOCERA_TARGET_MIQI
 	default "rockchip/rk3288/tinkerboard"                       if BR2_PACKAGE_BATOCERA_TARGET_TINKERBOARD
 	default "rockchip/rk3399/rock960 rockchip/rk3399/rockpro64" if BR2_PACKAGE_BATOCERA_TARGET_RK3399
-	default "libretech-h5"                                      if BR2_PACKAGE_BATOCERA_TARGET_LIBRETECH_H5
+	default "tritium-h5"                                        if BR2_PACKAGE_BATOCERA_TARGET_TRITIUM_H5
 	default "orangepi-zero2"                                    if BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_ZERO2
 	default "orangepi-pc"                                       if BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_PC
 	default "s812"                                              if BR2_PACKAGE_BATOCERA_TARGET_S812
@@ -355,8 +371,8 @@ config BR2_PACKAGE_BATOCERA_TARGET_TINKERBOARD
 config BR2_PACKAGE_BATOCERA_TARGET_MIQI
 	bool "miqi"
 
-config BR2_PACKAGE_BATOCERA_TARGET_LIBRETECH_H5
-	bool "libretech_h5"
+config BR2_PACKAGE_BATOCERA_TARGET_TRITIUM_H5
+	bool "tritium_h5"
 
 config BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_ZERO2
 	bool "orangepi_zero2"
@@ -385,6 +401,7 @@ config BR2_PACKAGE_BATOCERA_TOOLS
 	select BR2_PACKAGE_ZIP              # zip tool
 	select BR2_PACKAGE_P7ZIP            # zip tool
 	select BR2_PACKAGE_HTOP             # multi-cpus usage
+    select BR2_PACKAGE_NCDU             # Disk Usage
 	select BR2_PACKAGE_FFMPEG_XCBGRAB   if BR2_PACKAGE_XORG7
 	select BR2_PACKAGE_SWITCHRES        if BR2_PACKAGE_XORG7 # switchres 15kHz
 
@@ -512,7 +529,7 @@ config BR2_PACKAGE_BATOCERA_ARCADE_SYSTEMS
                                                     BR2_PACKAGE_BATOCERA_TARGET_MIQI            || \
                                                     BR2_PACKAGE_BATOCERA_TARGET_S922X           || \
                                                     BR2_PACKAGE_BATOCERA_TARGET_XU4             || \
-                                                    BR2_PACKAGE_BATOCERA_TARGET_LIBRETECH_H5    || \
+                                                    BR2_PACKAGE_BATOCERA_TARGET_TRITIUM_H5      || \
                                                     BR2_PACKAGE_BATOCERA_TARGET_S812
 
 
@@ -792,7 +809,7 @@ config BR2_PACKAGE_BATOCERA_CONSOLE_SYSTEMS
                                                         !BR2_PACKAGE_BATOCERA_TARGET_RPI3           && \
                                                         !BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA      && \
                                                         !BR2_PACKAGE_BATOCERA_TARGET_S905           && \
-                                                        !BR2_PACKAGE_BATOCERA_TARGET_LIBRETECH_H5   && \
+                                                        !BR2_PACKAGE_BATOCERA_TARGET_TRITIUM_H5     && \
                                                         !BR2_PACKAGE_BATOCERA_TARGET_S912
 
 
@@ -982,7 +999,7 @@ config BR2_PACKAGE_BATOCERA_KODI19
 	# GBM
 	select BR2_PACKAGE_KODI_GBM     if  BR2_PACKAGE_BATOCERA_TARGET_XU4             || \
                                         BR2_PACKAGE_BATOCERA_TARGET_S922X           || \
-                                        BR2_PACKAGE_BATOCERA_TARGET_LIBRETECH_H5    || \
+                                        BR2_PACKAGE_BATOCERA_TARGET_TRITIUM_H5	    || \
                                         BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_PC     || \
                                         BR2_PACKAGE_BATOCERA_TARGET_S812            || \
                                         BR2_PACKAGE_BATOCERA_TARGET_TINKERBOARD     || \

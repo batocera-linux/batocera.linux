@@ -7,7 +7,8 @@
 # 20201104 - Update groups, support mutiple archs
 # 20210113 - Update groups with Batocera v30
 # 20210322 - Switched to zstd (instead of xz)
-#
+# 20210521 - Updated for multiple .BATOEXEC1, .BATOEXEC2... (and v31 systems)
+# 
 INFO=.PKGINFO
 BATOEXEC=.BATOEXEC
 BATOEXEC_PATH=./userdata/system/pacman/batoexec/
@@ -28,7 +29,7 @@ FORCE=0
 # builddate = 1590539371 # epoch of creation
 
 ##### Valid "groups" for Batocera packages #####
-GRP_ARRAY=(game music theme bezel misc 3do 3ds amiga1200 amiga500 amigacd32 amigacdtv amstradcpc apple2 atari2600 atari5200 atari7800 atari800 atarist atomiswave c128 c20 c64 cannonball cavestory channelf colecovision daphne devilutionx dos dreamcast easyrpg fbneo fds gamecube gameandwatch gamegear gb gb2players gba gbc gbc2players gx4000 intellivision jaguar lightgun lutro lynx mame mastersystem megadrive moonlight mrboom msx1 msx2 msx2+ n64 naomi nds neogeo neogeocd nes ngp ngpc o2em odyssey2 openbor pc88 pc98 pcengine pcenginecd pcfx pet pico8 pokemini ports prboom ps2 ps3 psp psx pygame satellaview saturn scummvm sdlpop sega32x segacd sg1000 snes solarus sufami supergrafx thomson tic80 tyrquake vectrex virtualboy wii wiiu windows windows_installers wswan wswanc x1 x68000 xash3d_fwgs zx81 zxspectrum)
+GRP_ARRAY=(game music theme bezel misc 3do 3ds amiga1200 amiga500 amigacd32 amigacdtv amstradcpc apple2 atari2600 atari5200 atari7800 atari800 atarist atomiswave c128 c20 c64 cannonball cavestory channelf colecovision daphne devilutionx dos dreamcast easyrpg fbneo fds flash flatpak fmtowns fpinball gamecube gameandwatch gamegear gb gb2players gba gbc gbc2players gx4000 intellivision jaguar lightgun lutro lynx mame mastersystem megadrive moonlight mrboom msx1 msx2 msx2+ msxturbor n64 n64dd naomi nds neogeo neogeocd nes ngp ngpc o2em odyssey2 openbor pc88 pc98 pcengine pcenginecd pcfx pet pico8 pokemini ports prboom ps2 ps3 psp psx pygame satellaview saturn scummvm sdlpop sega32x segacd sg1000 snes snes-msu1 solarus sufami supergrafx supervision thomson tic80 tyrquake vectrex virtualboy wii wiiu windows windows_installers wswan wswanc x1 x68000 xash3d_fwgs xbox zx81 zxspectrum)
 
 ##### Valid archs for Batocera packages #####
 ARCH_ARRAY=(any x86_64 x86 armv7l aarch64)
@@ -117,12 +118,14 @@ function make_pkg() {
 	[[ "$FORCE" -eq 1 ]] && rm -f "$pk"
 	[[ -f "$pk" ]] && echo "ERROR: file $pk already exists. Aborting." && exit 1
 	echo "Creating package $pk ..."
-	if [ -e "$BATOEXEC" ]; then
-	    tar -cf - "$INFO" "$BATOEXEC" * | zstd -c --rsyncable - -o "$pk"
+	LST_BATOEXEC=( $(ls "$BATOEXEC"* 2>/dev/null) )
+	if ! [[ -z "${LST_BATOEXEC[@]}" ]]; then
+	    tar -cf - "$INFO" "$BATOEXEC"* * | zstd -c --rsyncable - -o "$pk"
 	else
 	    tar -cf - "$INFO" * | zstd -c --rsyncable - -o "$pk"
 	fi
 	ret=$?
+	chmod go+r "$pk" 2>/dev/null
 	[[ $ret -eq 0 ]] && echo "SUCCESS: package $pk correctly generated" && exit 0
 }
 
@@ -166,9 +169,14 @@ function main() {
 	    write_argument builddate $(date +%s)
 	    # Finally, create the actual package
 	    sanitize_info
-	    if [[ -f "$BATOEXEC" ]]; then
+	    LST_BATOEXEC=( $(ls "$BATOEXEC"* 2>/dev/null) )
+	    if ! [[ -z "${LST_BATOEXEC[@]}" ]]; then
+		    i=0
 		    mkdir -p "$BATOEXEC_PATH"
-		    cp -f "$BATOEXEC" "$BATOEXEC_PATH"/"$(get_config pkgname)"
+		    for F in "${LST_BATOEXEC[@]}"; do
+			    cp -f "$F" "$BATOEXEC_PATH"/"$(get_config pkgname)"_"$i"
+			    i=$((i+1))
+		    done
 	    fi
 	    for a in $(get_config arch | sed "s:,: :g"); do
 		    make_pkg "$(get_config pkgname)-$(get_config pkgver)-$a"

@@ -29,13 +29,9 @@ else
 	PPSSPP15_CONF_OPTS += -DUSE_FFMPEG=ON
 endif
 
-# odroid xu4 legacy
-ifeq ($(BR2_PACKAGE_MALI_OPENGLES_SDK),y)
-	PPSSPP15_CONF_OPTS += -DUSING_FBDEV=ON -DUSING_GLES2=ON
-	# odroid xu4
-	ifeq ($(BR2_PACKAGE_SDL2_KMSDRM),y)
-	PPSSPP15_CONF_OPTS += -DUSING_EGL=OFF
-	endif
+# odroid xu4
+ifeq ($(BR2_PACKAGE_SDL2_KMSDRM),y)
+PPSSPP15_CONF_OPTS += -DUSING_EGL=OFF -DUSING_GLES2=ON
 endif
 
 # rpi1 / rpi2 /rp3
@@ -51,11 +47,6 @@ endif
 # odroid xu4 / rpi3
 ifeq ($(BR2_arm),y)
 	PPSSPP15_CONF_OPTS += -DARMV7=ON
-endif
-
-# s912 (libhybris)
-ifeq ($(BR2_PACKAGE_LIBHYBRIS),y)
-	PPSSPP15_CONF_OPTS += -DUSING_FBDEV=ON -DUSING_GLES2=ON -DUSING_EGL=ON
 endif
 
 define PPSSPP15_UPDATE_INCLUDES
