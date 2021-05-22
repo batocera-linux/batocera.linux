@@ -28,7 +28,7 @@ cp "${BOARD_DIR}/boot/boot.ini"                        "${BATOCERA_BINARIES_DIR}
 cp "${BOARD_DIR}/boot/u-boot.sd"                       "${BATOCERA_BINARIES_DIR}/boot/"          || exit 1
 cp "${BOARD_DIR}/boot/u-boot.usb"                      "${BATOCERA_BINARIES_DIR}/boot/"          || exit 1
 
-for DTB in meson-sm1-x96-air-2g.dtb meson-sm1-x96-air-4g.dtb meson-sm1-h96-max.dtb meson-sm1-a95xf3-air-2g.dtb meson-sm1-a95xf3-air-4g.dtb meson-axg-s400.dtb meson-g12a-sei510.dtb meson-g12a-u200.dtb meson-g12a-x96-max.dtb meson-g12b-gtking.dtb meson-g12b-gtking-pro.dtb meson-g12b-ugoos-am6.dtb meson-sm1-sei610.dtb
+for DTB in meson-sm1-h96-max.dtb meson-sm1-sei610.dtb
 do
         cp "${BINARIES_DIR}/${DTB}" "${BATOCERA_BINARIES_DIR}/boot/boot/" || exit 1
 done
