@@ -108,10 +108,6 @@ boot_delay=3
 # uncomment if you don't want the rainbow at startup
 disable_splash=1
 
-# Overclock
-# https://www.raspberrypi.org/documentation/configuration/config-txt/memory.md
-gpu_mem_1024=512
-
 kernel=boot/linux
 initramfs boot/initrd.gz
 
