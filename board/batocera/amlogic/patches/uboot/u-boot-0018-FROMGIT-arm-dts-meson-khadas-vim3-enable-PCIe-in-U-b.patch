@@ -1,0 +1,32 @@
+From 25517494d2b4e8cd53ddc66a18cca15621e1021d Mon Sep 17 00:00:00 2001
+From: Neil Armstrong <narmstrong@baylibre.com>
+Date: Thu, 25 Feb 2021 18:47:05 +0100
+Subject: [PATCH 18/40] FROMGIT: arm: dts: meson-khadas-vim3: enable PCIe in
+ U-boot
+
+Enable PCIe by default in u-boot, this should eventually be made dynamic
+in the runtime board config depending on the MCU configuration.
+
+Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
+---
+ arch/arm/dts/meson-khadas-vim3-u-boot.dtsi | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/arch/arm/dts/meson-khadas-vim3-u-boot.dtsi b/arch/arm/dts/meson-khadas-vim3-u-boot.dtsi
+index 81fd5be378..24dbf8ca2c 100644
+--- a/arch/arm/dts/meson-khadas-vim3-u-boot.dtsi
++++ b/arch/arm/dts/meson-khadas-vim3-u-boot.dtsi
+@@ -10,6 +10,10 @@
+ 	};
+ };
+ 
++&pcie {
++	status = "okay";
++};
++
+ &sd_emmc_c {
+ 	status = "okay";
+ 	pinctrl-0 = <&emmc_ctrl_pins>, <&emmc_data_4b_pins>, <&emmc_ds_pins>;
+-- 
+2.17.1
+
