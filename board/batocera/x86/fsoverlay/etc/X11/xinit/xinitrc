@@ -67,5 +67,11 @@ display_rotate="$(/usr/bin/batocera-settings-get display.rotate)"
 EXTRA_OPTS=
 test -n "${display_rotate}" && EXTRA_OPTS="--screenrotate ${display_rotate}"
 
+# nvidia
+# these are 3 variables used only by nvidia to take nvidia gpu over intel cards when such hybrid cards are available
+export __NV_PRIME_RENDER_OFFLOAD=1
+export __VK_LAYER_NV_optimus=NVIDIA_only
+export __GLX_VENDOR_LIBRARY_NAME=nvidia
+
 cd /userdata # es needs a PWD
 openbox --config-file /etc/openbox/rc.xml --startup "emulationstation --windowed ${EXTRA_OPTS}"
