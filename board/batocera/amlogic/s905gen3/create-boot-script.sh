@@ -28,7 +28,7 @@ cp "${BOARD_DIR}/boot/boot.ini"                        "${BATOCERA_BINARIES_DIR}
 cp "${BOARD_DIR}/boot/u-boot.sd"                       "${BATOCERA_BINARIES_DIR}/boot/"          || exit 1
 cp "${BOARD_DIR}/boot/u-boot.usb"                      "${BATOCERA_BINARIES_DIR}/boot/"          || exit 1
 
-for DTB in meson-sm1-h96-max.dtb meson-sm1-sei610.dtb
+for DTB in meson-sm1-h96-max.dtb meson-sm1-sei610.dtb meson-sm1-khadas-vim3l.dtb meson-sm1-odroid-c4.dtb
 do
         cp "${BINARIES_DIR}/${DTB}" "${BATOCERA_BINARIES_DIR}/boot/boot/" || exit 1
 done
