@@ -2,12 +2,12 @@ diff --git a/rpcs3/CMakeLists.txt b/rpcs3/CMakeLists.txt
 index 70f4a83..6f4f98b 100644
 --- a/rpcs3/CMakeLists.txt
 +++ b/rpcs3/CMakeLists.txt
-@@ -9,7 +9,7 @@ include(${CMAKE_CURRENT_SOURCE_DIR}/git-version.cmake)
- include(ConfigureCompiler)
+@@ -11,7 +11,7 @@
+ include(CheckFunctionExists)
  
  set(ADDITIONAL_LIBS "")
 -if(CMAKE_SYSTEM MATCHES "Linux")
 +if(TRUE)
- 	#on some Linux distros shm_unlink and similar functions are in librt only
- 	set(ADDITIONAL_LIBS ${ADDITIONAL_LIBS} "rt")
+     #on some Linux distros shm_unlink and similar functions are in librt only
+     set(ADDITIONAL_LIBS ${ADDITIONAL_LIBS} "rt")
  elseif(NOT MSVC AND NOT CMAKE_CXX_FLAGS MATCHES "LIBICONV_PLUG")
