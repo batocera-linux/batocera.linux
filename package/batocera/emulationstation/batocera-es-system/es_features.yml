@@ -3154,6 +3154,13 @@ duckstation:
             choices:
                 "OpenGL":                        OpenGL
                 "Vulkan":                        Vulkan
+        duckstation_executionmode:
+            prompt:      CPU EXECUTION MODE
+            description: Interpreted is the more Accurate but slowest
+            choices:
+                "Recompiler (Fastest)":              Interpreter
+                "Cached Interpreter (Faster)":       CachedInterpreter
+                "Interpreter (Slowest)":             Recompiler
         duckstation_threadedpresentation:
             prompt:      VULKAN THREADED
             description: Can mesurably improve performance if Vsync disabled
