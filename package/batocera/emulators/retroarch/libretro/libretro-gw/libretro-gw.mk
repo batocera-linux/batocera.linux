@@ -4,7 +4,7 @@
 #
 ################################################################################
 # Version.: Commits on Mar 14, 2021
-LIBRETRO_GW_VERSION = b5e9d809da8b72a32a8b41395e286fca008a685c
+LIBRETRO_GW_VERSION = 6b99e7711d75a8194bede3229e8cca5bc99f0687
 LIBRETRO_GW_SITE = $(call github,libretro,gw-libretro,$(LIBRETRO_GW_VERSION))
 LIBRETRO_GW_LICENSE = GPLv3
 

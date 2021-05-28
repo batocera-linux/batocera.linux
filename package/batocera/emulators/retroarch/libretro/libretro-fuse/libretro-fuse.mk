@@ -4,7 +4,7 @@
 #
 ################################################################################
 # Version.: Commits on Mar 18, 2021
-LIBRETRO_FUSE_VERSION = 1bcb6ab1ce26ae9b86af07646e321c3eaec2dce2
+LIBRETRO_FUSE_VERSION = 75e718b14479ecabac117804190a734c1eb56f6a
 LIBRETRO_FUSE_SITE = $(call github,libretro,fuse-libretro,$(LIBRETRO_FUSE_VERSION))
 LIBRETRO_FUSE_LICENSE = GPLv3
 

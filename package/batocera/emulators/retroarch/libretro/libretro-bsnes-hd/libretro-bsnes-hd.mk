@@ -4,7 +4,7 @@
 #
 ################################################################################
 # Version.: Commits on Mar 30, 2021
-LIBRETRO_BSNES_HD_VERSION = 9aff32cc630909f5974c61ac45eaa05b6d802c34
+LIBRETRO_BSNES_HD_VERSION = d2d7815c25ec3f0e3df0afd3b8a0df81ecd0e25f
 LIBRETRO_BSNES_HD_SITE = $(call github,DerKoun,bsnes-hd,$(LIBRETRO_BSNES_HD_VERSION))
 LIBRETRO_BSNES_HD_LICENSE = GPLv3
 
