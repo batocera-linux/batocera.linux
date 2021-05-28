@@ -4,7 +4,7 @@
 #
 ################################################################################
 # Version.: Commits on Mar 26, 2021
-LIBRETRO_MAME2010_VERSION = f71804081e011f37066205af4e441027036461e6
+LIBRETRO_MAME2010_VERSION = 932e6f2c4f13b67b29ab33428a4037dee9a236a8
 LIBRETRO_MAME2010_SITE = $(call github,libretro,mame2010-libretro,$(LIBRETRO_MAME2010_VERSION))
 LIBRETRO_MAME2010_LICENSE = MAME
 LIBRETRO_MAME2010_DEPENDENCIES = retroarch

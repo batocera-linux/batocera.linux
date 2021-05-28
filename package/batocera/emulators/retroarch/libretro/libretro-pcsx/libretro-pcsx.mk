@@ -4,7 +4,7 @@
 #
 ################################################################################
 # Version.: Commits on Mar 24, 2021
-LIBRETRO_PCSX_VERSION = 3993490baa28964c5e3e8f879b58147184d9b0f7
+LIBRETRO_PCSX_VERSION = cf71346b180ca485e67a43fc199232c51be9459b
 LIBRETRO_PCSX_SITE = $(call github,libretro,pcsx_rearmed,$(LIBRETRO_PCSX_VERSION))
 LIBRETRO_PCSX_LICENSE = GPLv2
 
