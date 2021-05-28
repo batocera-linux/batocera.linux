@@ -3151,8 +3151,8 @@ duckstation:
             prompt:      CPU EXECUTION MODE
             description: Determine how CPU executes instructions
             choices:
-                "Recompiler (Fastest)":                   Recompiler
-                "Cached Interpreter (Faster)":                    CachedInterpreter
+                "Recompiler (Fastest)":                    Recompiler
+                "Cached Interpreter (Faster)":             CachedInterpreter
                 "Interpreter (Slowest but more Accurate)": Interpreter
         gfxbackend:
             archs_include: [x86, x86_64, rpi4, odroidgoa]
