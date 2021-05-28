@@ -4,8 +4,8 @@
 #
 ################################################################################
 
-# 2021 March, 1 release
-RPCS3_VERSION = v0.0.15
+# 2021 May, 1 release
+RPCS3_VERSION = v0.0.16
 
 RPCS3_SITE = https://github.com/RPCS3/rpcs3.git
 RPCS3_SITE_METHOD=git

@@ -30,6 +30,7 @@ define VULKAN_TOOLS_SERVICE
 	$(INSTALL) -D -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/gpu/vulkan/vulkan-tools/S55vulkaninfo $(TARGET_DIR)/etc/init.d/S55vulkaninfo
 endef
 
-VULKAN_TOOLS_POST_INSTALL_TARGET_HOOKS += VULKAN_TOOLS_SERVICE
+# remove (at least temporary) while it prevents es to open windows with some nvidia cards
+#VULKAN_TOOLS_POST_INSTALL_TARGET_HOOKS += VULKAN_TOOLS_SERVICE
 
 $(eval $(cmake-package))

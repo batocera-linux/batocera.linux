@@ -40,7 +40,7 @@ vars:
 	@echo "Extra options:      $(EXTRA_OPTS)"
 	@echo "Docker options:     $(DOCKER_OPTS)"
 	@echo "Make options:       $(MAKE_OPTS)"
-	
+
 
 build-docker-image:
 	docker build . -t $(DOCKER_REPO)/$(IMAGE_NAME)
@@ -125,6 +125,19 @@ dl-dir:
 		$(DOCKER_OPTS) \
 		$(DOCKER_REPO)/$(IMAGE_NAME) \
 		make $(MAKE_OPTS) O=/$* BR2_EXTERNAL=/build -C /build/buildroot source
+
+%-kernel: batocera-docker-image %-config ccache-dir dl-dir
+	@docker run -t --init --rm \
+		-v $(PROJECT_DIR):/build \
+		-v $(DL_DIR):/build/buildroot/dl \
+		-v $(OUTPUT_DIR)/$*:/$* \
+		-v $(CCACHE_DIR):$(HOME)/.buildroot-ccache \
+		-u $(UID):$(GID) \
+		-v /etc/passwd:/etc/passwd:ro \
+		-v /etc/group:/etc/group:ro \
+		$(DOCKER_OPTS) \
+		$(DOCKER_REPO)/$(IMAGE_NAME) \
+		make $(MAKE_OPTS) O=/$* BR2_EXTERNAL=/build -C /build/buildroot linux-menuconfig
 
 %-graph-depends: batocera-docker-image %-config ccache-dir dl-dir
 	@docker run -it --init --rm \

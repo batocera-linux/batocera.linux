@@ -19,6 +19,7 @@ DRASTIC_BINARYFILE=drastic_oga
 endif
 
 define DRASTIC_INSTALL_TARGET_CMDS
+	mkdir -p $(TARGET_DIR)/usr/bin/
 	mkdir -p $(TARGET_DIR)/usr/share/
 	mkdir -p $(TARGET_DIR)/usr/share/evmapy
 
@@ -26,7 +27,6 @@ define DRASTIC_INSTALL_TARGET_CMDS
 	cp -pr $(@D)/target/drastic $(TARGET_DIR)/usr/share/drastic
 
 	# evmap config
-	mkdir -p $(TARGET_DIR)/usr/share/evmapy
 	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/drastic/nds.drastic.keys $(TARGET_DIR)/usr/share/evmapy
 endef
 

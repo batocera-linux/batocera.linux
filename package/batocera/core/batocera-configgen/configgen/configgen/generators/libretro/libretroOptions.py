@@ -26,7 +26,7 @@ def generateCoreSettings(coreSettings, system, rom):
 
     # Atari 800 and 5200
     if (system.config['core'] == 'atari800'):
-    
+
         if (system.name == 'atari800'):
             # Select Atari 800
             # Let user overide Atari System
@@ -54,7 +54,7 @@ def generateCoreSettings(coreSettings, system, rom):
                 coreSettings.save('atari800_resolution', system.config['atari800_resolution'])
             else:
                 coreSettings.save('atari800_resolution', '""') # Default : 336x240
-            
+
             # WARNING: Now we must stop to use "atari800.cfg" because core options crush them
 
         else:
@@ -94,7 +94,7 @@ def generateCoreSettings(coreSettings, system, rom):
 
     # Commodore 64
     if (system.config['core'] == 'vice_x64') or (system.config['core'] == 'vice_x64sc'):
-        
+
         # Activate Jiffydos
         coreSettings.save('vice_jiffydos',          '"enabled"')
         # Enable Datasette Hotkeys
@@ -181,7 +181,7 @@ def generateCoreSettings(coreSettings, system, rom):
             else:
                 coreSettings.save('puae_cpu_throttle', '"0.0"')
                 coreSettings.save('puae_cpu_multiplier', '"0"')
-        # Standard Video    
+        # Standard Video
         if system.isOptSet('video_standard'):
             coreSettings.save('puae_video_standard', system.config['video_standard'])
         else:
@@ -191,7 +191,7 @@ def generateCoreSettings(coreSettings, system, rom):
             coreSettings.save('puae_video_resolution', system.config['video_resolution'])
         else:
             coreSettings.save('puae_video_resolution', '"hires"')
-        # Zoom Mode    
+        # Zoom Mode
         if system.isOptSet('zoom_mode') and system.config['zoom_mode'] != 'automatic':
             coreSettings.save('puae_zoom_mode', system.config['zoom_mode'])
         else:
@@ -201,7 +201,7 @@ def generateCoreSettings(coreSettings, system, rom):
             coreSettings.save('puae_gfx_framerate', system.config['gfx_framerate'])
         else:
             coreSettings.save('puae_gfx_framerate', '"disabled"')
-        # Mouse Speed    
+        # Mouse Speed
         if system.isOptSet('mouse_speed'):
             coreSettings.save('puae_mouse_speed', system.config['mouse_speed'])
         else:
@@ -245,7 +245,7 @@ def generateCoreSettings(coreSettings, system, rom):
                 coreSettings.save('puae_cd_speed', system.config['puae_cd_speed'])
             else:
                 coreSettings.save('puae_cd_speed', '"100"')
-		    
+
         if system.name == 'amigacd32':
             # Jump on A (Blue)
             if system.isOptSet('puae_cd32pad_options'):
@@ -360,9 +360,9 @@ def generateCoreSettings(coreSettings, system, rom):
         else:
             coreSettings.save('mame_current_turbo_delay', '"medium"')
 
-    # TODO: Add CORE options for MAME / iMame4all and HbMame
+    # TODO: Add CORE options for MAME / iMame4all
 
-    # MB Vectrex 
+    # MB Vectrex
     if (system.config['core'] == 'vecx'):
         # Res Multiplier
         if system.isOptSet('res_multi'):
@@ -472,7 +472,7 @@ def generateCoreSettings(coreSettings, system, rom):
             coreSettings.save('q88_pcg-8100', system.config['q88_pcg-8100'])
         else:
             coreSettings.save('q88_pcg-8100', '"disabled"')
-    
+
     # Nec PC-9800
     # https://github.com/AZO234/NP2kai/blob/6e8f651a72c2ece37cc52e17cdaf4fdb87a6b2f9/sdl/libretro/libretro_core_options.h
     if system.config['core'] == 'np2kai':
@@ -535,7 +535,7 @@ def generateCoreSettings(coreSettings, system, rom):
             coreSettings.save('np2kai_joymode', '"' + system.config['np2kai_joymode'] + '"')
         else:
             coreSettings.save('np2kai_joymode', '"Arrows"')
-    
+
     # Nec PC Engine SuperGrafx
     if (system.config['core'] == 'mednafen_supergrafx'):
         # Remove 16-sprites-per-scanline hardware limit
@@ -743,7 +743,7 @@ def generateCoreSettings(coreSettings, system, rom):
             coreSettings.save('melonds_screen_layout',     '"Top/Bottom"')
 
 
-    # Nintendo Gameboy (Dual Screen) / GB Color (Dual Screen) 
+    # Nintendo Gameboy (Dual Screen) / GB Color (Dual Screen)
     if (system.config['core'] == 'tgbdual'):
         # Emulates two Game Boy units
         coreSettings.save('tgbdual_gblink_enable',    '"enabled"')
@@ -790,7 +790,7 @@ def generateCoreSettings(coreSettings, system, rom):
             coreSettings.save('mgba_skip_bios', '"ON"')
         else:
             coreSettings.save('mgba_skip_bios', '"OFF"')
-        
+
         if (system.name != 'gba'):
             # GB / GBC: Use Super Game Boy borders
             if system.isOptSet('sgb_borders') and system.config['sgb_borders'] == "True":
@@ -971,7 +971,7 @@ def generateCoreSettings(coreSettings, system, rom):
             coreSettings.save('snes9x_hires_blend', system.config['hires_blend'])
         else:
             coreSettings.save('snes9x_hires_blend', '"disabled"')
-            
+
     if (system.config['core'] == 'snes9x_next'):
         # Reduce sprite flickering (Hack, Unsafe)
         if system.isOptSet('2010_reduce_sprite_flicker'):
@@ -990,7 +990,7 @@ def generateCoreSettings(coreSettings, system, rom):
             coreSettings.save('snes9x_2010_overclock', '"10 MHz (Default)"')
 
     # TODO: Add CORE options for BSnes and PocketSNES
-    
+
     # Nintendo Virtual Boy
     if (system.config['core'] == 'vb'):
         # 2D Color Mode
@@ -1072,7 +1072,7 @@ def generateCoreSettings(coreSettings, system, rom):
         coreSettings.save('reicast_lightgun2_crosshair', '"Blue"')
         coreSettings.save('reicast_lightgun3_crosshair', '"Green"')
         coreSettings.save('reicast_lightgun4_crosshair', '"White"')
-        # Video resolution 
+        # Video resolution
         if system.isOptSet('reicast_internal_resolution'):
             coreSettings.save('reicast_internal_resolution', system.config['reicast_internal_resolution'])
         else:
@@ -1119,7 +1119,7 @@ def generateCoreSettings(coreSettings, system, rom):
             coreSettings.save('reicast_widescreen_hack',   '"disabled"')
 
         ## Atomiswave / Naomi
-        
+
         # Screen Orientation
         if system.isOptSet('screen_rotation_atomiswave') and system.name == 'atomiswave':
             coreSettings.save('reicast_screen_rotation', system.config['screen_rotation_atomiswave'])
@@ -1170,7 +1170,7 @@ def generateCoreSettings(coreSettings, system, rom):
             coreSettings.save('genesis_plus_gx_gg_extra', system.config['gg_extra'])
         else:
             coreSettings.save('genesis_plus_gx_gg_extra', '"disabled"')
-    
+
     # Sega 32X (Sega Megadrive / MegaCD / Master System)
     if system.config['core'] == 'picodrive':
         # Reduce sprite flickering
@@ -1373,7 +1373,7 @@ def generateCoreSettings(coreSettings, system, rom):
         if system.isOptSet('beetle_psx_frame_duping'):
             coreSettings.save('beetle_psx_frame_duping', system.config['beetle_psx_frame_duping'])
         else:
-            coreSettings.save('beetle_psx_frame_duping', '"disabled"') 
+            coreSettings.save('beetle_psx_frame_duping', '"disabled"')
         # CPU Dynarec (Speedup)
         if system.isOptSet('beetle_psx_cpu_dynarec'):
             coreSettings.save('beetle_psx_cpu_dynarec', system.config['beetle_psx_cpu_dynarec'])
@@ -1535,7 +1535,7 @@ def generateCoreSettings(coreSettings, system, rom):
             coreSettings.save('potator_lcd_ghosting', '0')
 
     ## PORTs
-    
+
     # DOOM
     if (system.config['core'] == 'prboom'):
         # Internal resolution
