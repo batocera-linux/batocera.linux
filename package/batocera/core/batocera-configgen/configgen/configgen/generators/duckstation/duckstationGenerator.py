@@ -11,9 +11,6 @@ from utils.logger import eslog
 from os import environ
 
 class DuckstationGenerator(Generator):
-    def getMouseMode(self, config):
-        return True
-
     def generate(self, system, rom, playersControllers, gameResolution):
         # Test if it's a m3u file
         if os.path.splitext(rom)[1] == ".m3u":
