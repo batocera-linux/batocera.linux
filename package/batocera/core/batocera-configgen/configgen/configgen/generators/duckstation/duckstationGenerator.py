@@ -93,6 +93,16 @@ class DuckstationGenerator(Generator):
         else:
             settings.set("BIOS", "PatchFastBoot", "false")
 
+        ## [CPU]
+        if not settings.has_section("CPU"):
+            settings.add_section("CPU")
+
+        # ExecutionMode
+        if system.isOptSet("duckstation_executionmode") and system.config["duckstation_executionmode"] != 'Recompiler':
+            settings.set("CPU", "ExecutionMode", system.config["duckstation_executionmode"])
+        else:
+            settings.set("CPU", "ExecutionMode", "Recompiler")
+
         ## [GPU]
         if not settings.has_section("GPU"):
             settings.add_section("GPU")
