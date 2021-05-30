@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-BATOCERA_SETTINGS_VERSION = 0.0.4
+BATOCERA_SETTINGS_VERSION = 0.0.5
 BATOCERA_SETTINGS_LICENSE = MIT
 BATOCERA_SETTINGS_SITE = $(call github,batocera-linux,mini_settings,$(BATOCERA_SETTINGS_VERSION))
 BATOCERA_SETTINGS_CONF_OPTS = \

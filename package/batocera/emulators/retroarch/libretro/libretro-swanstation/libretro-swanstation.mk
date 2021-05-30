@@ -23,8 +23,8 @@ define LIBRETRO_SWANSTATION_INSTALL_TARGET_CMDS
         mkdir -p $(TARGET_DIR)/usr/bin
         mkdir -p $(TARGET_DIR)/usr/lib
 
-	$(INSTALL) -D $(@D)/buildroot-build/duckstation_libretro.so \
-		$(TARGET_DIR)/usr/lib/libretro/swanstation_libretro.so
+	$(INSTALL) -D $(@D)/buildroot-build/swanstation_libretro.so \
+	$(TARGET_DIR)/usr/lib/libretro/swanstation_libretro.so
 endef
 
 $(eval $(cmake-package))
