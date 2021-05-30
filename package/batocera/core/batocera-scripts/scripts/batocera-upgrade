@@ -4,19 +4,33 @@ do_clean() {
     test -n "${GETPERPID}" && kill -9 "${GETPERPID}"
     rm -f "/userdata/system/upgrade/boot.tar.xz"
     rm -f "/userdata/system/upgrade/boot.tar.xz.md5"
+    rm -f "/tmp/upgrade_message.txt"
 }
 trap do_clean EXIT
 
+# Create upgrade messages for the badge
+do_upgmsg() {
+    echo "$1" > /tmp/upgrade_message.txt
+}
+
 getPer() {
     TARVAL=$1
-
+    COUNT=0
     while true
     do
-	CURVAL=$(stat "/userdata/system/upgrade/boot.tar.xz" | grep -E '^[ ]*Size:' | sed -e s+'^[ ]*Size: \([0-9][0-9]*\) .*$'+'\1'+)
-	CURVAL=$((CURVAL / 1024 / 1024))
-	PER=$((CURVAL * 100 / TARVAL))
-	echo "downloading >>> ${PER}%"
-	sleep 5
+        if [ -f /tmp/upgrade_message.txt ]; then
+            [ $COUNT -gt 100 ] && COUNT=0
+            MSG_STRING="$(cat /tmp/upgrade_message.txt)"
+            echo "$MSG_STRING>>>$COUNT"
+            COUNT=$((COUNT+5))
+            sleep 0.1
+        else
+            CURVAL=$(stat "/userdata/system/upgrade/boot.tar.xz" | grep -E '^[ ]*Size:' | sed -e s+'^[ ]*Size: \([0-9][0-9]*\) .*$'+'\1'+)
+            CURVAL=$((CURVAL / 1024 / 1024))
+            PER=$((CURVAL * 100 / TARVAL))
+            echo "$CURVAL of $size MB downloaded ... >>> ${PER}%"
+            sleep 5
+        fi
     done
 }
 
@@ -117,14 +131,13 @@ done
 # download
 url="${DWD_HTTP_DIR}/boot.tar.xz"
 
-if [ $TERMINAL = 0 ]; then
+if [ $TERMINAL -eq 0 ]; then
     # Download by EMULATIONSTATION
     touch "/userdata/system/upgrade/boot.tar.xz"
     getPer "${size}" &
     GETPERPID=$!
     curl -A "batocera-upgrade" -sfL "${url}" -o "/userdata/system/upgrade/boot.tar.xz" || exit 1
-    kill -9 "${GETPERPID}"
-    GETPERPID=
+    do_upgmsg "Calculating md5 checksum ..."
 else
     # Download inside SSH/TERMINAL
     wget -U "batocera-upgrade" -q --show-progress "${url}" -O "/userdata/system/upgrade/boot.tar.xz" || exit 1
@@ -138,13 +151,13 @@ then
     CURRMD5=$(md5sum "/userdata/system/upgrade/boot.tar.xz" | sed -e s+' .*$'++)
     if test "${DISTMD5}" = "${CURRMD5}"
     then
-        echo "valid checksum."
+        [ $TERMINAL -eq 1 ] && echo "valid checksum." || { do_upgmsg "Checksum is valid ..."; sleep 3; }
     else
-        echo "invalid checksum. Got +${DISTMD5}+. Attempted +${CURRMD5}+."
+        [ $TERMINAL -eq 1 ] && echo "invalid checksum. Got +${DISTMD5}+. Attempted +${CURRMD5}+." || { do_upgmsg "Checksum error ..."; sleep 3; }
         exit 1
     fi
 else
-    echo "no checksum found. don't check the file."
+    [ $TERMINAL -eq 1 ] && echo "no checksum found. don't check the file." || { do_upgmsg "Failed to download md5 - proceeding ..."; sleep 5; }
 fi
 
 # remount /boot in rw
@@ -157,7 +170,7 @@ fi
 # backup boot files
 # all these files doesn't exist on non rpi platform, so, we have to test them
 # don't put the boot.ini file while it's not really to be customized
-echo "backing up some boot files"
+[ $TERMINAL -eq 1 ] && echo "backing up some boot files" || do_upgmsg "Backing up config files ..."
 BOOTFILES="config.txt batocera-boot.conf"
 for BOOTFILE in ${BOOTFILES}
 do
@@ -171,7 +184,8 @@ do
 done
 
 # extract file on /boot
-echo "extracting files"
+[ $TERMINAL -eq 1 ] && echo "extracting files" || do_upgmsg "Extracting files ..."
+
 if ! (cd /boot && xz -dc < "/userdata/system/upgrade/boot.tar.xz" | tar xvf -)
 then
     exit 1
@@ -189,7 +203,7 @@ do
     fi
 done
 
-echo "synchronizing disk"
+[ $TERMINAL -eq 1 ] && echo "synchronizing disk" || do_upgmsg "Synchronizing Disk ..."
 
 # remount /boot in ro
 if ! mount -o remount,ro /boot
@@ -197,10 +211,14 @@ then
     exit 1
 fi
 
+
 # a sync
 rm -f "/userdata/system/upgrade/boot.tar.xz"
 rm -f "/userdata/system/upgrade/boot.tar.xz.md5"
 sync
+
+# Cleanups
+test -n "${GETPERPID}" && { kill -9 "${GETPERPID}"; rm -f /tmp/upgrade_message.txt; echo 0}
 
 echo; echo "Done. Please reboot the system so that the changes take effect!"
 exit 0
