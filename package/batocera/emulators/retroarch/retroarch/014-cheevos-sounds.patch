@@ -1,8 +1,8 @@
 diff --git a/configuration.c b/configuration.c
-index 82f2c32..a25db0b 100644
+index f0750fb..d64b2d7 100644
 --- a/configuration.c
 +++ b/configuration.c
-@@ -1219,6 +1219,7 @@ static struct config_array_setting *populate_settings_array(settings_t *settings
+@@ -1261,6 +1261,7 @@ static struct config_array_setting *populate_settings_array(settings_t *settings
  #ifdef HAVE_CHEEVOS
     SETTING_ARRAY("cheevos_username",         settings->arrays.cheevos_username, false, NULL, true);
     SETTING_ARRAY("cheevos_password",         settings->arrays.cheevos_password, false, NULL, true);
@@ -10,7 +10,7 @@ index 82f2c32..a25db0b 100644
     SETTING_ARRAY("cheevos_token",            settings->arrays.cheevos_token, false, NULL, true);
     SETTING_ARRAY("cheevos_leaderboards_enable", settings->arrays.cheevos_leaderboards_enable, true, "false", true);
  #endif
-@@ -2352,6 +2353,7 @@ void config_set_defaults(void *data)
+@@ -2426,6 +2427,7 @@ void config_set_defaults(void *data)
  #ifdef HAVE_CHEEVOS
     *settings->arrays.cheevos_username                 = '\0';
     *settings->arrays.cheevos_password                 = '\0';
@@ -18,11 +18,122 @@ index 82f2c32..a25db0b 100644
     *settings->arrays.cheevos_token                    = '\0';
  #endif
  
+@@ -3002,7 +3004,7 @@ error:
+ }
+ 
+ #ifdef RARCH_CONSOLE
+-static void video_driver_load_settings(global_t *global, 
++static void video_driver_load_settings(global_t *global,
+       config_file_t *conf)
+ {
+    bool               tmp_bool = false;
+@@ -3171,10 +3173,10 @@ static bool config_load_file(global_t *global,
+       size_t tmp = 0;
+       if (config_get_size_t(conf, size_settings[i].ident, &tmp))
+          *size_settings[i].ptr = tmp ;
+-      /* Special case for rewind_buffer_size - need to convert 
++      /* Special case for rewind_buffer_size - need to convert
+        * low values to what they were
+        * intended to be based on the default value in config.def.h
+-       * If the value is less than 10000 then multiple by 1MB because if 
++       * If the value is less than 10000 then multiple by 1MB because if
+        * the retroarch.cfg
+        * file contains rewind_buffer_size = "100",
+        * then that ultimately gets interpreted as
+@@ -3378,7 +3380,7 @@ static bool config_load_file(global_t *global,
+          *settings->paths.directory_screenshot = '\0';
+       }
+    }
+-   
++
+ #if defined(__APPLE__) && defined(OSX)
+ #if defined(__aarch64__)
+    /* Wrong architecture, set it back to arm64 */
+@@ -3624,7 +3626,7 @@ bool config_load_override(void *data)
+    fill_pathname_application_special(config_directory, sizeof(config_directory),
+          APPLICATION_SPECIAL_DIRECTORY_CONFIG);
+ 
+-   /* Concatenate strings into full paths for core_path, game_path, 
++   /* Concatenate strings into full paths for core_path, game_path,
+     * content_path */
+    fill_pathname_join_special_ext(game_path,
+          config_directory, core_name,
+@@ -3672,7 +3674,7 @@ bool config_load_override(void *data)
+       {
+          RARCH_LOG("[Overrides]: Content dir-specific overrides stacking on top of previous overrides.\n");
+          snprintf(temp_path, sizeof(temp_path),
+-               "%s|%s", 
++               "%s|%s",
+                path_get(RARCH_PATH_CONFIG_APPEND),
+                content_path
+                );
+@@ -3704,7 +3706,7 @@ bool config_load_override(void *data)
+       {
+          RARCH_LOG("[Overrides]: Game-specific overrides stacking on top of previous overrides.\n");
+          snprintf(temp_path, sizeof(temp_path),
+-               "%s|%s", 
++               "%s|%s",
+                path_get(RARCH_PATH_CONFIG_APPEND),
+                game_path
+                );
+@@ -3963,7 +3965,7 @@ static void video_driver_save_settings(global_t *global, config_file_t *conf)
+  * @user              : Controller number to save
+  * Writes a controller autoconf file to disk.
+  **/
+-bool config_save_autoconf_profile(const 
++bool config_save_autoconf_profile(const
+       char *device_name, unsigned user)
+ {
+    static const char* invalid_filename_chars[] = {
+@@ -4360,7 +4362,7 @@ bool config_save_overrides(enum override_type type, void *data)
+ 
+    settings            = (settings_t*)calloc(1, sizeof(settings_t));
+ 
+-   config_directory[0] = override_directory[0] = core_path[0] = 
++   config_directory[0] = override_directory[0] = core_path[0] =
+           game_path[0] = '\0';
+ 
+    fill_pathname_application_special(config_directory, sizeof(config_directory),
+@@ -4626,14 +4628,14 @@ bool input_remapping_load_file(void *data, const char *path)
+       for (j = 0; j < RARCH_FIRST_CUSTOM_BIND + 8; j++)
+       {
+          const char *key_string = key_strings[j];
+-         
++
+          if (j < RARCH_FIRST_CUSTOM_BIND)
+          {
+             int btn_remap = -1;
+             int key_remap = -1;
+             char btn_ident[128];
+             char key_ident[128];
+-                           
++
+             btn_ident[0] = key_ident[0] = '\0';
+ 
+             fill_pathname_join_delim(btn_ident, s1,
+@@ -4660,7 +4662,7 @@ bool input_remapping_load_file(void *data, const char *path)
+          {
+             char stk_ident[128];
+             int stk_remap = -1;
+-            
++
+             stk_ident[0]  = '\0';
+ 
+             fill_pathname_join_delim(stk_ident, s3,
+@@ -4718,7 +4720,7 @@ bool input_remapping_save_file(const char *path)
+ 
+    remap_file[0]                     = '\0';
+ 
+-   fill_pathname_join_concat(remap_file, dir_input_remapping, path, 
++   fill_pathname_join_concat(remap_file, dir_input_remapping, path,
+          FILE_PATH_REMAP_EXTENSION,
+          sizeof(remap_file));
+ 
 diff --git a/configuration.h b/configuration.h
-index 660d2db..4e7b880 100644
+index 0bad72c..c4d1677 100644
 --- a/configuration.h
 +++ b/configuration.h
-@@ -347,6 +347,7 @@ typedef struct settings
+@@ -363,6 +363,7 @@ typedef struct settings
        char menu_driver[32];
        char cheevos_username[32];
        char cheevos_password[256];
@@ -31,10 +142,53 @@ index 660d2db..4e7b880 100644
        char cheevos_leaderboards_enable[32];
        char video_context_driver[32];
 diff --git a/retroarch.c b/retroarch.c
-index ef6c27d..a4511c6 100644
+index 9850c21..d622436 100644
 --- a/retroarch.c
 +++ b/retroarch.c
-@@ -28858,8 +28858,8 @@ static void audio_driver_load_menu_bgm_callback(retro_task_t *task,
+@@ -2,9 +2,9 @@
+  *  Copyright (C) 2010-2014 - Hans-Kristian Arntzen
+  *  Copyright (C) 2011-2017 - Daniel De Matteis
+  *  Copyright (C) 2012-2015 - Michael Lelli
+- *  Copyright (C) 2014-2017 - Jean-André Santoni
++ *  Copyright (C) 2014-2017 - Jean-Andrï¿½ Santoni
+  *  Copyright (C) 2016-2019 - Brad Parker
+- *  Copyright (C) 2016-2019 - Andrés Suárez (input mapper/Discord code)
++ *  Copyright (C) 2016-2019 - Andrï¿½s Suï¿½rez (input mapper/Discord code)
+  *  Copyright (C) 2016-2017 - Gregor Richards (network code)
+  *
+  *  RetroArch is free software: you can redistribute it and/or modify it under the terms
+@@ -2676,10 +2676,10 @@ int generic_menu_entry_action(
+       {
+          if (!string_is_equal(current_value, "..."))
+             snprintf(speak_string, sizeof(speak_string),
+-                  "%s %s %s", title_name, current_label, current_value); 
++                  "%s %s %s", title_name, current_label, current_value);
+          else
+             snprintf(speak_string, sizeof(speak_string),
+-                  "%s %s", title_name, current_label); 
++                  "%s %s", title_name, current_label);
+       }
+       else
+       {
+@@ -7700,7 +7700,7 @@ static void netplay_announce(struct rarch_state *p_rarch)
+    frontend_drv =
+       (const frontend_ctx_driver_t*)frontend_driver_get_cpu_architecture_str(
+             frontend_architecture_tmp, sizeof(frontend_architecture_tmp));
+-   snprintf(frontend_architecture, 
++   snprintf(frontend_architecture,
+          sizeof(frontend_architecture),
+          "%s %s",
+          frontend_drv->ident,
+@@ -10806,7 +10806,7 @@ static bool retroarch_apply_shader(
+                      preset_file);
+             else
+                snprintf(msg, sizeof(msg),
+-                     "%s: %s", 
++                     "%s: %s",
+                      msg_hash_to_str(MSG_SHADER),
+                      msg_hash_to_str(MENU_ENUM_LABEL_VALUE_NONE)
+                      );
+@@ -29188,8 +29188,8 @@ static void audio_driver_load_menu_bgm_callback(retro_task_t *task,
  
  void audio_driver_load_system_sounds(void)
  {
@@ -45,11 +199,11 @@ index ef6c27d..a4511c6 100644
     char basename_noext[PATH_MAX_LENGTH];
     struct rarch_state *p_rarch           = &rarch_st;
     settings_t *settings                  = p_rarch->configuration_settings;
-@@ -28882,20 +28882,6 @@ void audio_driver_load_system_sounds(void)
+@@ -29212,20 +29212,6 @@ void audio_driver_load_system_sounds(void)
     if (!audio_enable_menu && !audio_enable_cheevo_unlock)
        goto end;
  
--   sounds_path[0] = sounds_fallback_path[0] = 
+-   sounds_path[0] = sounds_fallback_path[0] =
 -                          basename_noext[0] ='\0';
 -
 -   fill_pathname_join(
@@ -66,20 +220,29 @@ index ef6c27d..a4511c6 100644
     list          = dir_list_new(sounds_path, MENU_SOUND_FORMATS, false, false, false, false);
     list_fallback = dir_list_new(sounds_fallback_path, MENU_SOUND_FORMATS, false, false, false, false);
  
-@@ -28938,8 +28924,14 @@ void audio_driver_load_system_sounds(void)
+@@ -29268,8 +29254,14 @@ void audio_driver_load_system_sounds(void)
              path_notice = path;
           else if (string_is_equal_noncase(basename_noext, "bgm"))
              path_bgm = path;
 -         else if (string_is_equal_noncase(basename_noext, "unlock"))
 -            path_cheevo_unlock = path;
 +         else
-+	   if(string_is_empty(settings->arrays.cheevos_unlock_sound)) {
-+	     if (string_is_equal_noncase(basename_noext, "unlock"))
-+	       path_cheevo_unlock = path;
-+	   } else {
-+	     if (string_is_equal_noncase(basename_noext, settings->arrays.cheevos_unlock_sound))
-+	       path_cheevo_unlock = path;
-+	   }
++	      if(string_is_empty(settings->arrays.cheevos_unlock_sound)) {
++	         if (string_is_equal_noncase(basename_noext, "unlock"))
++	            path_cheevo_unlock = path;
++	         } else {
++	            if (string_is_equal_noncase(basename_noext, settings->arrays.cheevos_unlock_sound))
++	               path_cheevo_unlock = path;
++	         }
        }
     }
  
+@@ -36116,7 +36108,7 @@ static void runloop_task_msg_queue_push(
+  *   yet exist, provides source path from which initial
+  *   options should be extracted
+  *
+- *   NOTE: caller must ensure 
++ *   NOTE: caller must ensure
+  *   path and src_path are NULL-terminated
+  *  */
+ static void rarch_init_core_options_path(
