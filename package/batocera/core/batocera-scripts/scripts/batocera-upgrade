@@ -218,7 +218,7 @@ rm -f "/userdata/system/upgrade/boot.tar.xz.md5"
 sync
 
 # Cleanups
-test -n "${GETPERPID}" && { kill -9 "${GETPERPID}"; rm -f /tmp/upgrade_message.txt; echo 0}
+test -n "${GETPERPID}" && { kill -9 "${GETPERPID}"; rm -f /tmp/upgrade_message.txt; exit 0; }
 
 echo; echo "Done. Please reboot the system so that the changes take effect!"
 exit 0
