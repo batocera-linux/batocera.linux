@@ -236,6 +236,8 @@ def merge2dicts(d1, d2):
 
 def user_signal_start_discovery(signum, frame):
   global gdiscovering
+  global gadapter
+
   try:
     if gdiscovering == False:
       gdiscovering = True
@@ -246,6 +248,8 @@ def user_signal_start_discovery(signum, frame):
 
 def user_signal_stop_discovery(signum, frame):
   global gdiscovering
+  global gadapter
+
   try:
     if gdiscovering:
       gdiscovering = False
@@ -304,6 +308,8 @@ class Agent(dbus.service.Object):
     logging.info("agent: Cancel")
 
 def do_main_loop(dev_id):
+  global gadapter
+
   # adapter
   try:
     adapter = bluezutils.find_adapter(dev_id)
@@ -328,9 +334,12 @@ def do_main_loop(dev_id):
 
   # power on adapter if needed
   if adapter_props["Powered"] == 0:
-    logging.info("powering on adapter ("+ adapter_props["Address"] +")")
-    adapterSetter = dbus.Interface(bus.get_object("org.bluez", adapter.object_path), "org.freedesktop.DBus.Properties")
-    adapterSetter.Set("org.bluez.Adapter1", "Powered", True)
+    try:
+      logging.info("powering on adapter ("+ adapter_props["Address"] +")")
+      adapterSetter = dbus.Interface(bus.get_object("org.bluez", adapter.object_path), "org.freedesktop.DBus.Properties")
+      adapterSetter.Set("org.bluez.Adapter1", "Powered", True)
+    except:
+      pass # hum, not nice
 
   gdiscovering = False
 
