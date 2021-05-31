@@ -109,6 +109,24 @@ class CemuGenerator(Generator):
         # Language
         CemuGenerator.setSectionConfig(config, xml_root, "console_language", str(getCemuLangFromEnvironment()))
 
+        ## [WINDOW POSITION]
+        CemuGenerator.setSectionConfig(config, xml_root, "window_position", "")
+        window_position = CemuGenerator.getRoot(config, "window_position")
+
+        # Default window position
+        CemuGenerator.setSectionConfig(config, window_position, "x", "-4")
+        # Default games path
+        CemuGenerator.setSectionConfig(config, window_position, "y", "-23")
+
+        ## [WINDOW POSITION]
+        CemuGenerator.setSectionConfig(config, xml_root, "window_size", "")
+        window_size = CemuGenerator.getRoot(config, "window_size")
+
+        # Default window size
+        CemuGenerator.setSectionConfig(config, window_size, "x", "1")
+        # Default games path
+        CemuGenerator.setSectionConfig(config, window_size, "y", "1")
+
         ## [GAME PATH]
         CemuGenerator.setSectionConfig(config, xml_root, "GamePaths", "")
         game_root = CemuGenerator.getRoot(config, "GamePaths")
