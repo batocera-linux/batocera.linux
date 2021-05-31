@@ -43,7 +43,8 @@ G_ROMS_DIR="/userdata/roms/${SYSTEM}"
 ## Export Wine libs
 PATH=$PATH:PATH=$PATH:${DIR}/${WINE_VERSION}/bin
 export LD_LIBRARY_PATH="/lib32:${DIR}/${WINE_VERSION}/lib/wine:/lib:/usr/lib:${DIR}/${WINE_VERSION}/lib64/wine"
-export GST_PLUGIN_PATH="/lib32/gstreamer-1.0:/usr/lib/gstreamer-1.0"
+export GST_PLUGIN_SYSTEM_PATH_1_0="/usr/lib/gstreamer-1.0:/lib32/gstreamer-1.0"
+export GST_REGISTRY_1_0="/userdata/system/.cache/gstreamer-1.0/registry.x86_64.bin"
 export LIBGL_DRIVERS_PATH="/lib32/dri:/usr/lib/dri"
 export WINEDLLPATH="${DIR}/${WINE_VERSION}/lib/wine/fakedlls:${DIR}/${WINE_VERSION}/lib64/wine/fakedlls"
 
@@ -74,12 +75,13 @@ wine_options() {
     ESYNC="$(get_setting esync "${SYSTEM}" "${ROMGAMENAME}")"
     FSYNC="$(get_setting fsync "${SYSTEM}" "${ROMGAMENAME}")"
     PBA="$(get_setting pba "${SYSTEM}" "${ROMGAMENAME}")"
+    WINE_DEBUG="$(get_setting wine_debug "${SYSTEM}" "${ROMGAMENAME}")"
     KEYBOARD="$(/usr/bin/batocera-settings-get system.kblayout)"
     VIRTUAL_DESKTOP="$(get_setting virtual_desktop "${SYSTEM}" "${ROMGAMENAME}")"
     VIRTUAL_DESKTOP_SIZE="$(get_setting videomode "${SYSTEM}" "${ROMGAMENAME}" || batocera-resolution currentResolution)"
 
     if [ "${VIRTUAL_DESKTOP}" = 1 ]; then
-	VDESKTOP="explorer /desktop=Wine,${VIRTUAL_DESKTOP_SIZE}"
+        VDESKTOP="explorer /desktop=Wine,${VIRTUAL_DESKTOP_SIZE}"
     fi
 
     export WINEESYNC=1
@@ -91,13 +93,27 @@ wine_options() {
     export PBA_ENABLE=0
     test "${PBA}" = 1 && PBA_ENABLE=1
 
+    export WINEDEBUG="-all"
+    test "${WINE_DEBUG}" = 1 && WINEDEBUG="err+all,fixme+all"
+
+    export DXVK_LOG_LEVEL=none
+    test "${WINE_DEBUG}" = 1 && unset DXVK_LOG_LEVEL
+
+    export VKD3D_DEBUG=none
+    test "${WINE_DEBUG}" = 1 && unset VKD3D_DEBUG
+
+    export VKD3D_SHADER_DEBUG=none
+    test "${WINE_DEBUG}" = 1 && unset VKD3D_SHADER_DEBUG
+
     export STAGING_SHARED_MEMORY=1
-    export ULIMIT_SIZE=1000000
+    export ULIMIT_SIZE=1048576
+    #export STAGING_RT_PRIORITY_SERVER=90
+    #export NICE_LEVEL="-4"
 
     if ! ulimit -n "${ULIMIT_SIZE}" 2>/dev/null; then
-	export WINEESYNC=0
+        export WINEESYNC=0
     fi
-    
+
     setxkbmap "${KEYBOARD}"
 }
 
@@ -267,10 +283,11 @@ dxvk_install() {
 
     if test "${DXVK}" = 1
     then
-	export DXVK_ASYNC=1
-	export WINEDLLOVERRIDES="${WINEDLLOVERRIDES};dxgi,d3d9,d3d10,d3d10_1,d3d10core,d3d11,d3d12=n;nvapi64,nvapi="
+    export DXVK_ASYNC=1
+    export DXVK_CONFIG_FILE="/userdata/system/wine/dxvk/dxvk.conf"
+    export WINEDLLOVERRIDES="${WINEDLLOVERRIDES};dxgi,d3d9,d3d10,d3d10_1,d3d10core,d3d11,d3d12=n;nvapi64,nvapi="
     else
-	export WINEDLLOVERRIDES="${WINEDLLOVERRIDES};dxgi,d3d9,d3d10,d3d10_1,d3d10core,d3d11,d3d12=b"
+    export WINEDLLOVERRIDES="${WINEDLLOVERRIDES};dxgi,d3d9,d3d10,d3d10_1,d3d10core,d3d11,d3d12=b"
     fi
 
     return 0
@@ -552,7 +569,7 @@ install_iso() {
     INSTALLERISO="${GAMENAME}"
 
     mkdir -p "${GAMEISOMOUNT}" || return 1
-    if ! mount -t iso9660 "${INSTALLERISO}" "${GAMEISOMOUNT}"
+    if ! mount -o loop "${INSTALLERISO}" "${GAMEISOMOUNT}"
     then
 	rmdir "${GAMEISOMOUNT}"
 	return 1
@@ -604,9 +621,13 @@ cleanAndExit() {
     RESNEW=$(batocera-resolution currentMode)
     if test "${RESNEW}" != "${G_RESCUR}"
     then
-	batocera-resolution setMode "${G_RESCUR}"
+    batocera-resolution setMode "${G_RESCUR}"
     fi
-    
+
+    if test -e "${GST_REGISTRY_1_0}"; then
+        rm -f "${GST_REGISTRY_1_0}"
+    fi
+
     exit "${1}"
     # TODO : unmount always, trap, later
 }
