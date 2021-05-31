@@ -1476,19 +1476,10 @@ def generateCoreSettings(coreSettings, system, rom):
             coreSettings.save('pcsx_rearmed_neon_enhancement_enable',  '"disabled"')
             coreSettings.save('pcsx_rearmed_neon_enhancement_no_main', '"disabled"')
         # Multitap
-        if system.isOptSet('multitap_pcsx') and system.config['multitap_pcsx'] != 'disabled':
-            if system.config['multitap_pcsx'] == 'port1':
-                coreSettings.save('pcsx_rearmed_multitap1', '"enabled"')
-                coreSettings.save('pcsx_rearmed_multitap2', '"disabled"')
-            elif system.config['multitap_pcsx'] == 'port2':
-                coreSettings.save('pcsx_rearmed_multitap1', '"disabled"')
-                coreSettings.save('pcsx_rearmed_multitap2', '"enabled"')
-            elif system.config['multitap_pcsx'] == 'port12':
-                coreSettings.save('pcsx_rearmed_multitap1', '"enabled"')
-                coreSettings.save('pcsx_rearmed_multitap2', '"enabled"')
+        if system.isOptSet('pcsx_rearmed_multitap'):
+            coreSettings.save('pcsx_rearmed_multitap', system.config['pcsx_rearmed_multitap'])
         else:
-            coreSettings.save('pcsx_rearmed_multitap1', '"disabled"')
-            coreSettings.save('pcsx_rearmed_multitap2', '"disabled"')
+            coreSettings.save('pcsx_rearmed_multitap', '"disabled"')
         # Additional game fixes
         coreSettings.save('pcsx_rearmed_idiablofix',                    '"disabled"')
         coreSettings.save('pcsx_rearmed_pe2_fix',                       '"disabled"')
