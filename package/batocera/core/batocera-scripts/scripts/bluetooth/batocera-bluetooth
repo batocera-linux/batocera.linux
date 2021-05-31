@@ -37,10 +37,11 @@ do_remove() {
     DEV="${1}"
 
     # output is never nice
-    if ! (echo "untrust ${DEV}" ; echo "remove ${DEV}") | bluetoothctl >/dev/null 2>/dev/null
-    then
-	return 1
-    fi
+    (echo "untrust ${DEV}" ; echo "remove ${DEV}") | bluetoothctl >/dev/null 2>/dev/null
+    find /var/lib/bluetooth -name "${DEV}" | while read X
+    do
+	rm -rf "${X}"
+    done
 
     do_save # save
     return 0
