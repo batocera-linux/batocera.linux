@@ -4,6 +4,7 @@ do_clean() {
     if [ "$1" != "active" ]; then
         test -n "${GETPERPID}" && kill -9 "${GETPERPID}"
         rm -f /userdata/system/upgrade/upgrade_message.txt
+        echo "REBOOT SYSTEM TO APPLY>>>100"
     fi
     rm -f "/userdata/system/upgrade/boot.tar.xz"
     rm -f "/userdata/system/upgrade/boot.tar.xz.md5"
@@ -183,7 +184,7 @@ do_clean active
 sync
 
 # exit from ES-badge with a 100% message for the badge only
-[ $TERMINAL -eq 0 ] && { echo "REBOOT SYSTEM TO APPLY>>>100"; exit 0; }
+[ $TERMINAL -eq 0 ] && exit 0
 
 echo; echo "Done. Please reboot the system so that the changes take effect!"
 exit 0
