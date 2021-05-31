@@ -63,13 +63,11 @@ class DuckstationGenerator(Generator):
         else:
             settings.set("Main","RewindEnable", "false")
 
-
         ## [UI]
         if not settings.has_section("UI"):
             settings.add_section("UI")
         # Show Messages
         settings.set("UI", "ShowOSDMessages", "true")
-
 
         ## [CONSOLE]
         if not settings.has_section("Console"):
@@ -95,6 +93,15 @@ class DuckstationGenerator(Generator):
         else:
             settings.set("BIOS", "PatchFastBoot", "false")
 
+        ## [CPU]
+        if not settings.has_section("CPU"):
+            settings.add_section("CPU")
+
+        # ExecutionMode
+        if system.isOptSet("duckstation_executionmode") and system.config["duckstation_executionmode"] != 'Recompiler':
+            settings.set("CPU", "ExecutionMode", system.config["duckstation_executionmode"])
+        else:
+            settings.set("CPU", "ExecutionMode", "Recompiler")
 
         ## [GPU]
         if not settings.has_section("GPU"):
