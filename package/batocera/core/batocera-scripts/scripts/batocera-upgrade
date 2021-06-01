@@ -1,13 +1,14 @@
 #!/bin/bash
 
 do_clean() {
-    if [ "$1" != "active" ]; then
-        test -n "${GETPERPID}" && kill -9 "${GETPERPID}"
-        rm -f /userdata/system/upgrade/upgrade_message.txt
-        echo "REBOOT SYSTEM TO APPLY>>>100"
-    fi
+    test -n "${GETPERPID}" && kill -9 "${GETPERPID}"
+    rm -f "/userdata/system/upgrade/upgrade_message.txt"
     rm -f "/userdata/system/upgrade/boot.tar.xz"
     rm -f "/userdata/system/upgrade/boot.tar.xz.md5"
+    if test $# -eq 1; then
+        [ "$1" = "0" ] && echo "Finally syncing of disk ...>>>100"
+        [ "$1" = "1" ] && echo "removed downloaded files, sync disk now"
+    fi
 }
 trap do_clean EXIT
 
@@ -26,7 +27,7 @@ do_badgeines() {
     COUNT=0
     while true
     do
-        if [ -f /userdata/system/upgrade/upgrade_message.txt ]; then
+        if [ -f "/userdata/system/upgrade/upgrade_message.txt" ]; then
             [ $COUNT -gt 100 ] && COUNT=0
             MSG_STRING="$(cat /userdata/system/upgrade/upgrade_message.txt)"
             echo "$MSG_STRING>>>$COUNT"
@@ -107,7 +108,7 @@ if [ $TERMINAL -eq 0 ]; then
     curl -A "batocera-upgrade" -sfL "${url}" -o "/userdata/system/upgrade/boot.tar.xz" || exit 1
     do_upgmsg "Calculating md5 checksum ..."
 else
-    # sownload inside SSH or terminal
+    # download inside SSH or terminal
     wget -U "batocera-upgrade" -q --show-progress "${url}" -O "/userdata/system/upgrade/boot.tar.xz" || exit 1
 	echo "Check proper file download, checking md5sum - please wait"
 fi
@@ -130,7 +131,7 @@ else
 fi
 
 # remount /boot in rw
-do_upgmsg "remounting /boot in rw" 0.5
+echo "remounting /boot in rw"
 if ! mount -o remount,rw /boot
 then
     exit 1
@@ -173,17 +174,17 @@ do
 done
 
 # remount /boot in ro
-do_upgmsg "Finally syncing of disk ..."
+do_upgmsg "Doing final cleanups ..." 0.5
 if ! mount -o remount,ro /boot
 then
     exit 1
 fi
 
 # a sync with some cleanups of downloaded and created files
-do_clean active
+do_clean $TERMINAL
 sync
 
-# exit from ES-badge with a 100% message for the badge only
+# exit from ES-badge without additional messages
 [ $TERMINAL -eq 0 ] && exit 0
 
 echo; echo "Done. Please reboot the system so that the changes take effect!"
