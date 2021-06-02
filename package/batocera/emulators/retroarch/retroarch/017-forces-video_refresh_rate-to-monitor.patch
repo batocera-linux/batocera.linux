@@ -1,16 +1,18 @@
 diff --git a/retroarch.c b/retroarch.c
-index d085766..711d82e 100644
+index d085766..8c86c99 100644
 --- a/retroarch.c
 +++ b/retroarch.c
-@@ -32813,6 +32813,12 @@ static void drivers_init(struct rarch_state *p_rarch, int flags)
+@@ -32813,6 +32813,14 @@ static void drivers_init(struct rarch_state *p_rarch, int flags)
        p_rarch->runloop_frame_time_last        = 0;
     }
  
 +   // ok, so now, set hz to what is got
 +   // batocera
-+   RARCH_WARN("set screen hz from %.2f to %.2f\n", settings->floats.video_refresh_rate, video_driver_get_refresh_rate());
-+   settings->floats.video_refresh_rate = video_driver_get_refresh_rate();
-+   video_driver_monitor_adjust_system_rates(&rarch_st);
++   if(settings->floats.video_refresh_rate < 1.0) {
++     RARCH_WARN("set screen hz from %.2f to %.2f\n", settings->floats.video_refresh_rate, video_driver_get_refresh_rate());
++     settings->floats.video_refresh_rate = video_driver_get_refresh_rate();
++     video_driver_monitor_adjust_system_rates(&rarch_st);
++   }
 +
     /* Initialize audio driver */
     if (flags & DRIVER_AUDIO_MASK)
