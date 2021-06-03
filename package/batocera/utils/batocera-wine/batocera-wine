@@ -569,10 +569,13 @@ install_iso() {
     INSTALLERISO="${GAMENAME}"
 
     mkdir -p "${GAMEISOMOUNT}" || return 1
-    if ! mount -o loop "${INSTALLERISO}" "${GAMEISOMOUNT}"
+    if ! mount -t iso9660 "${INSTALLERISO}" "${GAMEISOMOUNT}"
     then
-	rmdir "${GAMEISOMOUNT}"
-	return 1
+            if ! mount -t udf "${INSTALLERISO}" "${GAMEISOMOUNT}"
+            then
+                rmdir "${GAMEISOMOUNT}"
+                return 1
+            fi
     fi
 
     WINEPOINT=$(echo "${G_ROMS_DIR}/${BASEGAMENAME}" | sed -e s+"\.iso$"++)".wine"
