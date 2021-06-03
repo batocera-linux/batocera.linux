@@ -4,7 +4,7 @@
 #
 ################################################################################
 # Version.: Commits on Jan 21, 2020
-LIBRETRO_YABASANSHIRO_VERSION = 0716ecb54cc2e61e56e832db2eefdfab37a3b8c9
+LIBRETRO_YABASANSHIRO_VERSION = 4d85b6e793030c77ae6b64fd7c99041c935b54ac
 LIBRETRO_YABASANSHIRO_SITE = $(call github,libretro,yabause,$(LIBRETRO_YABASANSHIRO_VERSION))
 LIBRETRO_YABASANSHIRO_LICENSE = GPLv2
 LIBRETRO_YABASANSHIRO_DEPENDENCIES = retroarch
@@ -62,7 +62,7 @@ define LIBRETRO_YABASANSHIRO_BUILD_CMDS
 endef
 
 define LIBRETRO_YABASANSHIRO_INSTALL_TARGET_CMDS
-	$(INSTALL) -D $(@D)/yabause/src/libretro/yabasanshiro_libretro.so \
+	$(INSTALL) -D $(@D)/yabause/src/libretro/yabause_libretro.so \
 		$(TARGET_DIR)/usr/lib/libretro/yabasanshiro_libretro.so
 endef
 
