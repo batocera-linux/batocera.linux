@@ -1,0 +1,29 @@
+From 18491025c7fe0d5fc64e5dfbaad1c5af194cf96a Mon Sep 17 00:00:00 2001
+From: Neil Armstrong <narmstrong@baylibre.com>
+Date: Thu, 25 Feb 2021 18:46:12 +0100
+Subject: [PATCH 16/40] FROMGIT: clk: meson-g12a: add PCIe gates
+
+Add missing gates used for PCIe.
+
+Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
+---
+ drivers/clk/meson/g12a.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/drivers/clk/meson/g12a.c b/drivers/clk/meson/g12a.c
+index 5058db1a47..e4fed8ddfb 100644
+--- a/drivers/clk/meson/g12a.c
++++ b/drivers/clk/meson/g12a.c
+@@ -120,7 +120,9 @@ static struct meson_gate gates[NUM_CLKS] = {
+ 	MESON_GATE(CLKID_SD_EMMC_C, HHI_GCLK_MPEG0, 26),
+ 	MESON_GATE(CLKID_ETH, HHI_GCLK_MPEG1, 3),
+ 	MESON_GATE(CLKID_UART1, HHI_GCLK_MPEG1, 16),
++	MESON_GATE(CLKID_PCIE_COMB, HHI_GCLK_MPEG1, 24),
+ 	MESON_GATE(CLKID_USB, HHI_GCLK_MPEG1, 25),
++	MESON_GATE(CLKID_PCIE_PHY, HHI_GCLK_MPEG1, 27),
+ 	MESON_GATE(CLKID_HTX_PCLK, HHI_GCLK_MPEG2, 4),
+ 	MESON_GATE(CLKID_USB1_DDR_BRIDGE, HHI_GCLK_MPEG2, 8),
+ 	MESON_GATE(CLKID_VPU_INTR, HHI_GCLK_MPEG2, 25),
+-- 
+2.17.1
+
