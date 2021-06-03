@@ -3,7 +3,7 @@
 # POKEMINI
 #
 ################################################################################
-# Version.: Commits on Mar 25, 2020
+# Version.: Commits on May 21, 2021
 LIBRETRO_POKEMINI_VERSION = 42ab7b2a92a35958957039d7c538fda9ea178d08
 LIBRETRO_POKEMINI_SITE = $(call github,libretro,PokeMini,$(LIBRETRO_POKEMINI_VERSION))
 LIBRETRO_POKEMINI_LICENSE = GPLv3
