@@ -332,7 +332,7 @@ def configurePads(settings, playersControllers, system):
             settings.add_section(controller)
 
         # Controller Type
-        settings.set(controller, "Type", "DigitalController")
+        settings.set(controller, "Type", "AnalogController") # defaults to AnalogController to make dpad to joystick work by default
         if system.isOptSet("duckstation_" + controller) and system.config['duckstation_' + controller] != 'DigitalController':
             settings.set(controller, "Type", system.config["duckstation_" + controller])
 
@@ -345,10 +345,10 @@ def configurePads(settings, playersControllers, system):
             settings.set(controller, "Rumble", "false")
 
         # Dpad to Joystick
-        if system.isOptSet("duckstation_digitalmode") and system.config["duckstation_digitalmode"] != '0':
-            settings.set(controller, "AnalogDPadInDigitalMode", "true")
-        else:
+        if system.isOptSet("duckstation_digitalmode") and system.config["duckstation_digitalmode"] == '0':
             settings.set(controller, "AnalogDPadInDigitalMode", "false")
+        else:
+            settings.set(controller, "AnalogDPadInDigitalMode", "true")
 
         for mapping in mappings:
             if mappings[mapping] in pad.inputs:
