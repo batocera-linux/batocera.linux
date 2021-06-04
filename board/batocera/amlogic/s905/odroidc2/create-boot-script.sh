@@ -26,12 +26,4 @@ cp "${BOARD_DIR}/boot/boot-logo.bmp.gz"      "${BATOCERA_BINARIES_DIR}/boot/"   
 cp "${BINARIES_DIR}/meson-gxbb-odroidc2.dtb" "${BATOCERA_BINARIES_DIR}/boot/boot/"     || exit 1
 cp "${BOARD_DIR}/boot/extlinux.conf"         "${BATOCERA_BINARIES_DIR}/boot/extlinux/" || exit 1
 
-# amlogic stuff
-# this part should be moved on the uboot package that generate these files, not here.
-"${HOST_DIR}/bin/fip_create" --bl30 "${BINARIES_DIR}/bl30.bin" --bl301 "${BINARIES_DIR}/bl301.bin" --bl31 "${BINARIES_DIR}/bl31.bin" --bl33 "${BINARIES_DIR}/u-boot.bin" "${BINARIES_DIR}/fip.bin" || exit 1
-"${HOST_DIR}/bin/fip_create" --dump "${BINARIES_DIR}/fip.bin"                                || exit 1
-cat "${BINARIES_DIR}/bl2.package" "${BINARIES_DIR}/fip.bin" > "${BINARIES_DIR}/boot_new.bin" || exit 1
-"${HOST_DIR}/bin/amlbootsig" "${BINARIES_DIR}/boot_new.bin" "${BINARIES_DIR}/u-boot.img"     || exit 1
-dd if="${BINARIES_DIR}/u-boot.img" of="${BINARIES_DIR}/uboot-odc2.img" bs=512 skip=96        || exit 1
-
 exit 0
