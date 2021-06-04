@@ -1,0 +1,21 @@
+diff --git a/Makefile.libretro b/Makefile.libretro
+index 6e78aa2..04809c7 100644
+--- a/Makefile.libretro
++++ b/Makefile.libretro
+@@ -115,6 +115,16 @@ else ifeq ($(platform), rpi2)
+ 	PLATFORM_DEFINES += -DARM
+ 	HAVE_NEON = 1
+
++# Raspberry Pi 3
++else ifeq ($(platform), rpi3_64)
++	TARGET := $(TARGET_NAME)_libretro.so
++	fpic = -fPIC
++	SHARED := -shared -Wl,-version-script=build/link.T -Wl,-no-undefined
++	PLATFORM_DEFINES += -march=armv8-a+crc+simd -mcpu=cortex-a53
++	PLATFORM_DEFINES += -fomit-frame-pointer -ffast-math
++	PLATFORM_DEFINES += -DARM
++	HAVE_NEON = 1
++
+ # Raspberry Pi 3
+ else ifeq ($(platform), rpi3)
+ 	TARGET := $(TARGET_NAME)_libretro.so
