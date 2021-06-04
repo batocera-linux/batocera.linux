@@ -337,17 +337,12 @@ def configurePads(settings, playersControllers, system):
         if system.isOptSet("duckstation_" + controller) and system.config['duckstation_' + controller] != 'DigitalController':
             settings.set(controller, "Type", system.config["duckstation_" + controller])
 
-        # Rumble
+    # Rumble
         controllerRumbleList = {'AnalogController', 'NamcoGunCon', 'NeGcon'};
 
         if system.isOptSet("duckstation_rumble") and system.config["duckstation_rumble"] != '0':
             if system.isOptSet("duckstation_" + controller) and (system.config["duckstation_" + controller] in controllerRumbleList):
                 settings.set(controller, "Rumble", "Controller" + str(pad.index))
-        else:
-            settings.set(controller, "Rumble", "false")
-
-        # Dpad to Joystick
-        if system.isOptSet("duckstation_digitalmode") and system.config["duckstation_digitalmode"] != '0':
             settings.set(controller, "AnalogDPadInDigitalMode", "true")
         else:
             settings.set(controller, "AnalogDPadInDigitalMode", "false")
@@ -363,10 +358,10 @@ def configurePads(settings, playersControllers, system):
             settings.set(controller, "ButtonShootOffscreen","Mouse/Button2")
             settings.set(controller, "ButtonA"             ,"Keyboard/VolumeUp")
             settings.set(controller, "ButtonB"             ,"Keyboard/VolumeDown")
-            settings.set(controller, "AxisSteering"       ,"")
-            settings.set(controller, "AxisI"              ,"")
-            settings.set(controller, "AxisII"             ,"")
-            settings.set(controller, "AxisL"              ,"")
+            #settings.set(controller, "AxisSteering"       ,"")                                          HAVE TO INVESIGATE WHAT ARE THESE CONTROLS
+            #settings.set(controller, "AxisI"              ,"")                                          HAVE TO INVESIGATE WHAT ARE THESE CONTROLS
+            #settings.set(controller, "AxisII"             ,"")                                          HAVE TO INVESIGATE WHAT ARE THESE CONTROLS
+            #settings.set(controller, "AxisL"              ,"")                                          HAVE TO INVESIGATE WHAT ARE THESE CONTROLS
             #settings.set(controller, "CrosshairImagePath" ,"/userdata/saves/duckstation/aimP1.png")     TO BE DISCUSSED LATER FOR CUSTOM AIMING
             #settings.set(controller, "CrosshairScale"     ,"0.3")                                       TO BE DISCUSSED LATER FOR CUSTOM AIMING
 
@@ -376,7 +371,6 @@ def configurePads(settings, playersControllers, system):
             settings.set(controller, "Right"               ,"Mouse/Button2")
 
         nplayer = nplayer + 1
-
 
 def input2definition(input):
     if input.type == "button":
