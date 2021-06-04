@@ -3,8 +3,8 @@
 # AMIBERRY
 #
 ################################################################################
-# Version.: Release on Apr 6, 2021
-AMIBERRY_VERSION = v4.1.2
+# Version.: Release on Jun 4, 2021
+AMIBERRY_VERSION = v4.1.3
 AMIBERRY_SITE = $(call github,midwan,amiberry,$(AMIBERRY_VERSION))
 AMIBERRY_LICENSE = GPLv3
 AMIBERRY_DEPENDENCIES = sdl2 sdl2_image sdl2_ttf mpg123 libxml2 libmpeg2 flac
