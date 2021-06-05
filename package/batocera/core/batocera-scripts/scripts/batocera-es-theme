@@ -115,17 +115,18 @@ function install_theme() {
 			# Download Process
 			if [ $TERMINAL = 0 ]; then
 				# First hook to check theme and get a filsize (this works relieable but filesize is wrong)
-	                        size_json=$(curl -sfL "https://api.github.com/repos/${reponame}/${gitname}" | grep size | head -1 | tr -dc '[:digit:]')
-        	                test $? -eq 0 || { echo "Server error..."; sleep 5; exit 1; }
+				size_json=$(curl -sfL "https://api.github.com/repos/${reponame}/${gitname}" | grep size | head -1 | tr -dc '[:digit:]')
+				test $? -eq 0 || { echo "Server error..."; sleep 5; exit 1; }
 				echo "Retrieving data download..."
-				# Attempt to get real filesize to download, we love github
-                        	# if after 10 attempts nothing happens we use old method
-                        	for i in {0..9}; do
-			    		size=$(curl -Is "https://codeload.github.com/${reponame}/${gitname}/zip/master" | grep Content-Length | tail -1 | cut -d ' ' -f2 | tr -d '\r')
-                            		[[ -z $size ]] && sleep 5 || { size=$((size / 1024 / 1024 )); break; }
-                        	done
+				# METHOD IS BROKEN!!! Attempt to get real filesize to download, we love github
+				# METHOD IS BROKEN!!! if after 10 attempts nothing happens we use old method
+				#for i in {0..9}; do
+				#	size=$(curl -Is "https://codeload.github.com/${reponame}/${gitname}/zip/master" | grep Content-Length | tail -1 | cut -d ' ' -f2 | tr -d '\r')
+				#	[[ -z $size ]] && sleep 5 || { size=$((size / 1024 / 1024 )); break; }
+				#done
 				# Fallback Option (old format), JSON hack
-                        	[[ -z $size ]] && size=$((size_json / 1024 ))
+				#[[ -z $size ]] && size=$((size_json / 1024 ))
+				size=$((size_json / 1024 ))
 				[[ -f "gitname.zip" ]] && rm -f "$gitname.zip"
 				touch "$gitname.zip"
 				getPer "$CONFIGDIR"/"$gitname.zip" "${size}" &
@@ -186,7 +187,7 @@ function remove_theme() {
 		[ x"$name" != x"$theme" ] && continue 
 		gitname=$(git_name "$url")
 		if [ -d "$CONFIGDIR"/"$gitname" ]; then
-		       	rm -rf "$CONFIGDIR"/"$gitname" && success_removed=1
+			rm -rf "$CONFIGDIR"/"$gitname" && success_removed=1
 		else
 			echo "Theme $theme doesn't appear to be in $CONFIGDIR/$gitname"
 		fi
