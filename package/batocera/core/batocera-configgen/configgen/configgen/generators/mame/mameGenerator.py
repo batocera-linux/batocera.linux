@@ -215,13 +215,20 @@ class MameGenerator(Generator):
 
         nplayer = 1
         for playercontroller, pad in sorted(playersControllers.items()):
-            for mapping in mappings:
-                if mappings[mapping] in pad.inputs:
-                    xml_input.appendChild(MameGenerator.generatePortElement(config, nplayer, pad.index, mapping, mappings[mapping], pad.inputs[mappings[mapping]], False))
+            mappings_use = mappings
+            if "joystick1up" not in pad.inputs:
+                mappings_use["JOYSTICK_UP"] = "up"
+                mappings_use["JOYSTICK_DOWN"] = "down"
+                mappings_use["JOYSTICK_LEFT"] = "left"
+                mappings_use["JOYSTICK_RIGHT"] = "right"
+
+            for mapping in mappings_use:
+                if mappings_use[mapping] in pad.inputs:
+                    xml_input.appendChild(MameGenerator.generatePortElement(config, nplayer, pad.index, mapping, mappings_use[mapping], pad.inputs[mappings_use[mapping]], False))
                 else:
-                    rmapping = MameGenerator.reverseMapping(mappings[mapping])
+                    rmapping = MameGenerator.reverseMapping(mappings_use[mapping])
                     if rmapping in pad.inputs:
-                        xml_input.appendChild(MameGenerator.generatePortElement(config, nplayer, pad.index, mapping, mappings[mapping], pad.inputs[rmapping], True))
+                        xml_input.appendChild(MameGenerator.generatePortElement(config, nplayer, pad.index, mapping, mappings_use[mapping], pad.inputs[rmapping], True))
             nplayer = nplayer + 1
 
     @staticmethod
