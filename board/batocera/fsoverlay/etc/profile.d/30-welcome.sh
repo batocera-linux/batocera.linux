@@ -1,6 +1,3 @@
-# Set vt100 as terminal enviroment
-TERM=vt100
-
 # Add BATOCERA logo and some alias, sourcing of $HOME/.bashrc can be added to $HOME/.profile
 echo '
       ____    __   ____  _____  ___  ____  ____    __   
@@ -16,7 +13,3 @@ echo
 batocera-info 2>/dev/null
 echo "OS version: $(cat /usr/share/batocera/batocera.version)"
 echo
-
-# ---- ALIAS VALUES ----
-alias mc='mc -x'
-alias batocera-check-updates='batocera-es-swissknife --update'
