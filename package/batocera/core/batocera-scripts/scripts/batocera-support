@@ -73,6 +73,7 @@ f_cp /userdata/system/logs/es_launch_stdout.log         "${DSYSTEM}"
 f_cp /userdata/system/logs/es_launch_stderr.log         "${DSYSTEM}"
 f_cp /boot/batocera-boot.conf                                 "${DSYSTEM}"
 f_cp /var/log/Xorg.0.log                                      "${DSYSTEM}"
+f_cp /var/log/bluetooth-agent.log                             "${DSYSTEM}"
 
 # Emulators configs
 d_cp /userdata/system/configs                           "${TMPDIR}/configs"
