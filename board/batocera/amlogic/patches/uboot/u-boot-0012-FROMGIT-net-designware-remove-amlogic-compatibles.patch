@@ -1,0 +1,29 @@
+From 7e36c3ce4e637d9a822b86a84c862b7903170d33 Mon Sep 17 00:00:00 2001
+From: Neil Armstrong <narmstrong@baylibre.com>
+Date: Thu, 25 Feb 2021 09:44:36 +0100
+Subject: [PATCH 12/40] FROMGIT: net: designware: remove amlogic compatibles
+
+These compatibles are now handled by the dwmac_meson8b glue driver.
+
+Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
+---
+ drivers/net/designware.c | 3 ---
+ 1 file changed, 3 deletions(-)
+
+diff --git a/drivers/net/designware.c b/drivers/net/designware.c
+index acf3a82828..b8ba00b7c0 100644
+--- a/drivers/net/designware.c
++++ b/drivers/net/designware.c
+@@ -947,9 +947,6 @@ int designware_eth_of_to_plat(struct udevice *dev)
+ static const struct udevice_id designware_eth_ids[] = {
+ 	{ .compatible = "allwinner,sun7i-a20-gmac" },
+ 	{ .compatible = "amlogic,meson6-dwmac" },
+-	{ .compatible = "amlogic,meson-gx-dwmac" },
+-	{ .compatible = "amlogic,meson-gxbb-dwmac" },
+-	{ .compatible = "amlogic,meson-axg-dwmac" },
+ 	{ .compatible = "st,stm32-dwmac" },
+ 	{ .compatible = "snps,arc-dwmac-3.70a" },
+ 	{ }
+-- 
+2.17.1
+

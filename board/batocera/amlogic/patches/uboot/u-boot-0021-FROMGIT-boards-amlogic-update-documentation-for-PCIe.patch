@@ -1,0 +1,27 @@
+From 9d675327d651fc0d15d6d89a19fee69c94c34773 Mon Sep 17 00:00:00 2001
+From: Neil Armstrong <narmstrong@baylibre.com>
+Date: Fri, 16 Apr 2021 14:22:31 +0200
+Subject: [PATCH 21/40] FROMGIT: boards: amlogic: update documentation for PCIe
+ support
+
+Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
+---
+ doc/board/amlogic/index.rst | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/doc/board/amlogic/index.rst b/doc/board/amlogic/index.rst
+index 275c3664b7..8da7afddb4 100644
+--- a/doc/board/amlogic/index.rst
++++ b/doc/board/amlogic/index.rst
+@@ -70,6 +70,8 @@ This matrix concerns the actual source code version.
+ +-------------------------------+-----------+-----------------+--------------+------------+------------+-------------+--------------+
+ | SoC (version) information     | **Yes**   | **Yes**         | **Yes**      | **Yes**    | **Yes**    | **Yes**     | **Yes**      |
+ +-------------------------------+-----------+-----------------+--------------+------------+------------+-------------+--------------+
++| PCIe (+NVMe)                  | *N/A*     | *N/A*           | *N/A*        | **Yes**    | **Yes**    | **Yes**     | **Yes**      |
+++-------------------------------+-----------+-----------------+--------------+------------+------------+-------------+--------------+
+ 
+ Board Documentation
+ -------------------
+-- 
+2.17.1
+
