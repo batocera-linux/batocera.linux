@@ -18,7 +18,7 @@ CITRA_CONF_OPTS += -DENABLE_QT=OFF
 
 # Use citra for x86_64 and enable citra-qt
 else
-CITRA_VERSION = 03cde53cb69b752e596e7749a0e043d627d5bac1
+CITRA_VERSION = 842031a2eb0b4bac4a351db914530296812962d1
 CITRA_SITE = https://github.com/citra-emu/citra.git
 CITRA_CONF_OPTS += -DENABLE_QT=ON
 CITRA_CONF_OPTS += -DENABLE_QT_TRANSLATION=ON
@@ -40,7 +40,7 @@ ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86_64),y)
 define CITRA_INSTALL_TARGET_CMDS
        	mkdir -p $(TARGET_DIR)/usr/bin
         mkdir -p $(TARGET_DIR)/usr/lib
-	$(INSTALL) -D $(@D)/buildroot-build/bin/citra-qt \
+	$(INSTALL) -D $(@D)/buildroot-build/bin/Release/citra-qt \
 		$(TARGET_DIR)/usr/bin/
 endef
 else
