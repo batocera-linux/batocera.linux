@@ -127,16 +127,16 @@ initramfs boot/initrd.gz
 # Additional overlays and parameters are documented /boot/overlays/README
 
 # Enable audio (loads snd_bcm2835)
-#dtparam=audio=on
+dtparam=audio=on
 
 [rpi3]
 # Enable DRM VC4 V3D driver on top of the dispmanx display stack
 # Preferred 'Full' Kernel Mode Setting (KMS)
-dtoverlay=vc4-kms-v3d
+#dtoverlay=vc4-kms-v3d
 #dtoverlay=vc4-kms-v3d,noaudio
 
 # Optional 'Fake' KMS for displays that won't work with 'Full' KMS
-#dtoverlay=vc4-fkms-v3d
+dtoverlay=vc4-fkms-v3d
 
 [DPI]
 # Put any DPI required display code here
