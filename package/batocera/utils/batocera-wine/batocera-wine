@@ -43,10 +43,21 @@ G_ROMS_DIR="/userdata/roms/${SYSTEM}"
 ## Export Wine libs
 PATH=$PATH:PATH=$PATH:${DIR}/${WINE_VERSION}/bin
 export LD_LIBRARY_PATH="/lib32:${DIR}/${WINE_VERSION}/lib/wine:/lib:/usr/lib:${DIR}/${WINE_VERSION}/lib64/wine"
-export GST_PLUGIN_SYSTEM_PATH_1_0="/usr/lib/gstreamer-1.0:/lib32/gstreamer-1.0"
-export GST_REGISTRY_1_0="/userdata/system/.cache/gstreamer-1.0/registry.x86_64.bin"
 export LIBGL_DRIVERS_PATH="/lib32/dri:/usr/lib/dri"
 export WINEDLLPATH="${DIR}/${WINE_VERSION}/lib/wine/fakedlls:${DIR}/${WINE_VERSION}/lib64/wine/fakedlls"
+
+## XDG
+export XDG_RUNTIME_DIR="${HOME}"
+export XDG_CONFIG_DIRS="/etc/xdg"
+export XDG_CACHE_HOME="${HOME}/.cache"
+
+## GSTREAMER
+export GST_REGISTRY_UPDATE=no
+#export GST_REGISTRY_1_0="/userdata/system/.cache/gstreamer-1.0/registry.x86_64.bin"
+export GST_PLUGIN_PATH="/lib32/gstreamer-1.0:/usr/lib/gstreamer-1.0"
+export GST_PLUGIN_SYSTEM_PATH="/lib32/gstreamer-1.0:/usr/lib/gstreamer-1.0"
+export GST_PLUGIN_SCANNER="/lib32/gstreamer-1.0:/usr/lib/gstreamer-1.0"
+
 
 usage() {
     echo "${1} windows play    	     <game>.iso"             >&2
@@ -625,10 +636,6 @@ cleanAndExit() {
     if test "${RESNEW}" != "${G_RESCUR}"
     then
     batocera-resolution setMode "${G_RESCUR}"
-    fi
-
-    if test -e "${GST_REGISTRY_1_0}"; then
-        rm -f "${GST_REGISTRY_1_0}"
     fi
 
     exit "${1}"
