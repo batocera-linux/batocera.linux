@@ -3,8 +3,8 @@
 # WildMIDI
 #
 ################################################################################
-# Version.: Commits on Nov 25, 2020
-WILDMIDI_VERSION = cf91b2ce92f715cbd06d72d394a6d8837df2ea1a
+# Version.: Release on Mar 21, 2021
+WILDMIDI_VERSION = wildmidi-0.4.4
 WILDMIDI_SITE =  $(call github,Mindwerks,wildmidi,$(WILDMIDI_VERSION))
 WILDMIDI_LICENSE = LGPLv3
 WILDMIDI_INSTALL_STAGING = YES
