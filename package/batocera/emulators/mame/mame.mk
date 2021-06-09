@@ -37,7 +37,7 @@ MAME_CROSS_OPTS += PTR64=0
 MAME_CFLAGS += -D__ARM_NEON__ -D__ARM_NEON
 endif
 
-ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_ODROIDC4),y)
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_S905GEN3),y)
 MAME_CFLAGS += -mcpu=cortex-a55 -mtune=cortex-a55
 endif
 
