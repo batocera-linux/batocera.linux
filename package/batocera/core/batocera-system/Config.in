@@ -183,8 +183,7 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
 
 	# vulkan
 	select BR2_PACKAGE_BATOCERA_VULKAN      if  BR2_PACKAGE_BATOCERA_TARGET_X86_ANY     || \
-                                                BR2_PACKAGE_BATOCERA_TARGET_RPI4        || \
-                                                BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA
+                                                BR2_PACKAGE_BATOCERA_TARGET_RPI4
 
 	# wireless drivers
 	select BR2_PACKAGE_RTL8821AU            if  !BR2_PACKAGE_BATOCERA_TARGET_RPI1           && \
@@ -203,7 +202,6 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
                                                 !BR2_PACKAGE_BATOCERA_TARGET_RPI2               && \
                                                 !BR2_PACKAGE_BATOCERA_TARGET_RPI3               && \
                                                 !BR2_PACKAGE_BATOCERA_TARGET_S812               && \
-                                                !BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA          && \
                                                 !BR2_PACKAGE_BATOCERA_TARGET_TRITIUM_H5       && \
                                                 !BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_ZERO2     && \
                                                 !BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_PC        && \
@@ -219,7 +217,6 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
 						!BR2_PACKAGE_BATOCERA_TARGET_RPI2		&& \
 						!BR2_PACKAGE_BATOCERA_TARGET_RPI3		&& \
 						!BR2_PACKAGE_BATOCERA_TARGET_S812		&& \
-						!BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA		&& \
 						!BR2_PACKAGE_BATOCERA_TARGET_TRITIUM_H5	&& \
 						!BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_ZERO2	&& \
 						!BR2_PACKAGE_BATOCERA_TARGET_MIQI		&& \
