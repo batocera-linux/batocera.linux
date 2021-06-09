@@ -1,6 +1,7 @@
 default:
   options:
     video_threaded: true
+    smooth:         false
     retroarch.menu_driver: xmb
     retroarch.audio_driver: alsathread
 
@@ -21,7 +22,7 @@ megadrive:
   core:     picodrive
 snes:
   emulator: libretro
-  core:     snes9x
+  core:     pocketsnes
 c64:
   emulator: vice
   core:     x64
@@ -37,3 +38,6 @@ pet:
 cplus4:
   emulator: vice
   core:     xplus4
+gba:
+  emulator: libretro
+  core:     gpsp
