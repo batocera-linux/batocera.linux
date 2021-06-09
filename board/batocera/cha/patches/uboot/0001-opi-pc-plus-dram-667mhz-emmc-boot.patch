@@ -1,0 +1,26 @@
+From e863f3722c879ed0676df523c5daef3def8d44e3 Mon Sep 17 00:00:00 2001
+From: Demetris Ierokipides <ierokipides.dem@gmail.com>
+Date: Tue, 8 Jun 2021 23:53:33 +0300
+Subject: [PATCH] opi-pc-plus dram 667mhz&emmc boot
+
+---
+ configs/orangepi_pc_plus_defconfig | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/configs/orangepi_pc_plus_defconfig b/configs/orangepi_pc_plus_defconfig
+index e2067748..9ee87842 100644
+--- a/configs/orangepi_pc_plus_defconfig
++++ b/configs/orangepi_pc_plus_defconfig
+@@ -2,7 +2,8 @@ CONFIG_ARM=y
+ CONFIG_ARCH_SUNXI=y
+ CONFIG_SPL=y
+ CONFIG_MACH_SUN8I_H3=y
+-CONFIG_DRAM_CLK=624
++CONFIG_DRAM_CLK=667
++CONFIG_SUPPORT_EMMC_BOOT=y
+ CONFIG_MMC_SUNXI_SLOT_EXTRA=2
+ CONFIG_DEFAULT_DEVICE_TREE="sun8i-h3-orangepi-pc-plus"
+ # CONFIG_SYS_MALLOC_CLEAR_ON_INIT is not set
+-- 
+2.25.1
+

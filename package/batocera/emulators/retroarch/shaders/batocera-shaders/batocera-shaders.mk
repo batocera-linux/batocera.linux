@@ -36,6 +36,8 @@ else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_TRITIUM_H5),y)
 	BATOCERA_SHADERS_SYSTEM=tritium_h5
 else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_PC),y)
 	BATOCERA_SHADERS_SYSTEM=orangepi_pc
+else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_CHA),y)
+	BATOCERA_SHADERS_SYSTEM=cha
 endif
 
 BATOCERA_SHADERS_DIRIN=$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/retroarch/shaders/batocera-shaders/configs
