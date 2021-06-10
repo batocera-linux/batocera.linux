@@ -23,8 +23,8 @@ ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA),y)
 endif
 
 define LIBRETRO_FBNEO_BUILD_CMDS
-	$(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" -C $(@D)/src/burner/libretro -f Makefile \
-		platform="$(LIBRETRO_PLATFORM)" $(LIBRETRO_FBNEO_EXTRA_ARGS) LR_FBNEO_GIT_VERSION=$(shell echo $(LIBRETRO_FBNEO_VERSION) | cut -c 1-10)
+	$(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" -C $(@D)/src/burner/libretro -f Makefile platform="$(LIBRETRO_PLATFORM)" $(LIBRETRO_FBNEO_EXTRA_ARGS) \
+        GIT_VERSION=" $(shell echo $(LIBRETRO_FBNEO_VERSION) | cut -c 1-10)"
 endef
 
 define LIBRETRO_FBNEO_INSTALL_TARGET_CMDS
@@ -39,7 +39,7 @@ define LIBRETRO_FBNEO_INSTALL_TARGET_CMDS
     # Need to think of another way to use these files.
     # They take up a lot of space on tmpfs.
 	$(INSTALL) -D $(@D)/dats/* \
-		$(TARGET_DIR)/usr/share/batocera/datainit/bios/fbneo	
+		$(TARGET_DIR)/usr/share/batocera/datainit/bios/fbneo
 endef
 
 $(eval $(generic-package))
