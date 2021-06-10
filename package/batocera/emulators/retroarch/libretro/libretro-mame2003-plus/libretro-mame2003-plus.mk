@@ -11,10 +11,8 @@ LIBRETRO_MAME2003_PLUS_LICENSE = MAME
 LIBRETRO_MAME2003_PLUS_PLATFORM = $(LIBRETRO_PLATFORM)
 
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI3),y)
-	LIBRETRO_MAME2003_PLUS_PLATFORM = rpi3
-endif
-
-ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI4),y)
+LIBRETRO_MAME2003_PLUS_PLATFORM = rpi3_64
+else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI4),y)
 LIBRETRO_MAME2003_PLUS_PLATFORM = rpi4_64
 else ifeq ($(BR2_aarch64),y)
 LIBRETRO_MAME2003_PLUS_PLATFORM = unix
@@ -51,7 +49,7 @@ endef
 
 define LIBRETRO_MAME2003_PLUS_NAMCO_QUICK_FIX
 	$(SED) 's|O3|O2|g' $(@D)/Makefile
-	$(SED) 's|to continue|on Keyboard, or Left, Right on Joystick to continue|g' $(@D)/src/ui_text.c 
+	$(SED) 's|to continue|on Keyboard, or Left, Right on Joystick to continue|g' $(@D)/src/ui_text.c
 endef
 
 LIBRETRO_MAME2003_PLUS_PRE_BUILD_HOOKS += LIBRETRO_MAME2003_PLUS_NAMCO_QUICK_FIX
