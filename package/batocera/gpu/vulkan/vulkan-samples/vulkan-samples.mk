@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-VULKAN_SAMPLES_VERSION = 11ded34b4a051547830b3551551f5a8dc0c70e4f
+VULKAN_SAMPLES_VERSION = 47c5237be21209afc945e43d03ae409fa80a0155
 VULKAN_SAMPLES_SITE =  https://github.com/KhronosGroup/Vulkan-Samples
 VULKAN_SAMPLES_GIT_SUBMODULES=YES
 VULKAN_SAMPLES_SITE_METHOD=git
