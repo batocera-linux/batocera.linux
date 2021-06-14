@@ -1,0 +1,24 @@
+diff --git a/board/rockchip/odroidgoa/odroidgoa.c b/board/rockchip/odroidgoa/odroidgoa.c
+index 7704a88..ddd5bfa 100755
+--- a/board/rockchip/odroidgoa/odroidgoa.c
++++ b/board/rockchip/odroidgoa/odroidgoa.c
+@@ -149,7 +149,7 @@ void board_check_mandatory_files(void)
+ 	if (!file_exists("mmc", "1:2", "/usr/local/bin/emulationstation/emulationstation",
+ 				FS_TYPE_EXT)) {
+ 		lcd_setfg_color("white");
+-        lcd_printf(0, 0, 1, "[ EmuELEC Gameforce Chi ]");
++        lcd_printf(0, 0, 1, "[ Batocera.linux Gameforce Chi ]");
+ 	}
+ 
+ 	return;
+@@ -199,8 +199,8 @@ int rk_board_late_init(void)
+ 	/* show boot logo and version */
+ 	lcd_show_logo();
+ 	lcd_setfg_color("grey");
+-	lcd_printf(0, 18 + disp_offs, 1, " %s", U_BOOT_VERSION);
+-	lcd_printf(0, 19 + disp_offs, 1, " %s %s", U_BOOT_DATE, U_BOOT_TIME);
++	lcd_printf(0, 18 + disp_offs, 1, " %s", "batocera.linux");
++	lcd_printf(0, 19 + disp_offs, 1, " %s %s", "only cores that matter");
+ 
+ 	if (!board_check_autotest()) {
+ 		board_run_autotest();
