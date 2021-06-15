@@ -118,6 +118,12 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
 	select BR2_PACKAGE_QTSIXA_SHANWAN                       # ps3 pad
 	select BR2_PACKAGE_XARCADE2JSTICK                       # keyboard events of the Xarcade Tankstick
 	select BR2_PACKAGE_UTIL_LINUX_LIBMOUNT                  # for util-linux compilation to work (so, may be removed in the future)
+    select BR2_PACKAGE_FBDUMP                               # tool to capture snapshots from the Linux kernel framebuffer device and write them out as a PPM file
+    select BR2_PACKAGE_FBGRAB                               # framebuffer screenshot program, capturing the linux frambuffer and converting it to a png-picture
+    select BR2_PACKAGE_FBV                                  # very simple graphic file viewer for the framebuffer console, capable of displaying GIF, JPEG, PNG and BMP files using libungif, libjpeg and libpng
+    select BR2_PACKAGE_EUDEV_RULES_GEN                      # fork of systemd-udev with the goal of obtaining better compatibility with existing software such as OpenRC and Upstart
+    select BR2_PACKAGE_BOOST_ATOMIC                         # library that provides atomic data types and operations on these data types
+    select BR2_PACKAGE_UTIL_LINUX_LIBSMARTCOLS              # library is used for smart adaptive formatting of tabular data
 
 	# Deprecated, which what library should we replace ?
 	select BR2_PACKAGE_PARTED                               # partition management (for the first boot)
