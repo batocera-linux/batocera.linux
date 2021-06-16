@@ -75,6 +75,7 @@ wine_options() {
     ESYNC="$(get_setting esync "${SYSTEM}" "${ROMGAMENAME}")"
     FSYNC="$(get_setting fsync "${SYSTEM}" "${ROMGAMENAME}")"
     PBA="$(get_setting pba "${SYSTEM}" "${ROMGAMENAME}")"
+    FPS_LIMIT="$(get_setting fps_limit "${SYSTEM}" "${ROMGAMENAME}")"
     WINE_DEBUG="$(get_setting wine_debug "${SYSTEM}" "${ROMGAMENAME}")"
     KEYBOARD="$(/usr/bin/batocera-settings-get system.kblayout)"
     VIRTUAL_DESKTOP="$(get_setting virtual_desktop "${SYSTEM}" "${ROMGAMENAME}")"
@@ -92,6 +93,9 @@ wine_options() {
 
     export PBA_ENABLE=0
     test "${PBA}" = 1 && PBA_ENABLE=1
+
+    export DXVK_FRAME_RATE=0
+    test "${FPS_LIMIT}" = 1 && DXVK_FRAME_RATE=60
 
     export WINEDEBUG="-all"
     test "${WINE_DEBUG}" = 1 && WINEDEBUG="err+all,fixme+all"
