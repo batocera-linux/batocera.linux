@@ -4,7 +4,7 @@
 #
 ################################################################################
 # Version.: Commits on Jun 03, 2021
-LIBRETRO_PUAE_VERSION = d02e010c7bbe01b405a477c37c705d2778eb15e4
+LIBRETRO_PUAE_VERSION = 41de4fc5bc14ec7031313cd47576ac992da5c259
 LIBRETRO_PUAE_SITE = $(call github,libretro,libretro-uae,$(LIBRETRO_PUAE_VERSION))
 LIBRETRO_PUAE__LICENSE = GPLv2
 
@@ -15,7 +15,7 @@ ifeq ($(BR2_PACKAGE_RPI_USERLAND),y)
 endif
 
 define LIBRETRO_PUAE_BUILD_CMDS
-	$(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" GIT_VERSION=" e187a6" -C $(@D)/ -f Makefile platform="$(PUAEPLATFORM)"
+	$(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" -C $(@D)/ -f Makefile platform="$(PUAEPLATFORM)"
 endef
 
 define LIBRETRO_PUAE_INSTALL_TARGET_CMDS
