@@ -26,10 +26,19 @@ define BATOCERA_TRIGGERHAPPY_INSTALL_ODROIDGOA_CONFIG
 	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-triggerhappy/conf/multimedia_keys_odroidgoadvance.conf       $(TARGET_DIR)/etc/triggerhappy/triggers.d/multimedia_keys.conf
 endef
 
+define BATOCERA_TRIGGERHAPPY_INSTALL_GAMEFORCE_CONFIG
+	mkdir -p $(TARGET_DIR)/etc/triggerhappy/triggers.d
+	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-triggerhappy/conf/multimedia_keys_gameforce.conf       $(TARGET_DIR)/etc/triggerhappy/triggers.d/multimedia_keys.conf
+endef
+
 BATOCERA_TRIGGERHAPPY_POST_INSTALL_TARGET_HOOKS += BATOCERA_TRIGGERHAPPY_INSTALL_CONFIG
 
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA),y)
 	BATOCERA_TRIGGERHAPPY_POST_INSTALL_TARGET_HOOKS += BATOCERA_TRIGGERHAPPY_INSTALL_ODROIDGOA_CONFIG
+endif
+
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_GAMEFORCE),y)
+	BATOCERA_TRIGGERHAPPY_POST_INSTALL_TARGET_HOOKS += BATOCERA_TRIGGERHAPPY_INSTALL_GAMEFORCE_CONFIG
 endif
 
 $(eval $(generic-package))
