@@ -4,7 +4,7 @@
 #
 ################################################################################
 # Version.: Commits on May 28, 2020
-LIBRETRO_CHEATS_VERSION = v1.9.4
+LIBRETRO_CHEATS_VERSION = v1.9.5
 LIBRETRO_CHEATS_SITE = $(call github,libretro,libretro-database,$(LIBRETRO_CHEATS_VERSION))
 
 define LIBRETRO_CHEATS_INSTALL_TARGET_CMDS
