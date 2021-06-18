@@ -268,13 +268,13 @@ class MameGenerator(Generator):
             elif input.value == "8":
                 return "HAT1LEFT"
         elif input.type == "axis":
-            if key == "joystick1up":
+            if key == "joystick1up" or key == "up":
                 return "YAXIS_UP_SWITCH"
-            if key == "joystick1down":
+            if key == "joystick1down" or key == "down":
                 return "YAXIS_DOWN_SWITCH"
-            if key == "joystick1left":
+            if key == "joystick1left" or key == "left":
                 return "YAXIS_LEFT_SWITCH"
-            if key == "joystick1right":
+            if key == "joystick1right" or key == "right":
                 return "YAXIS_RIGHT_SWITCH"
             if key == "joystick2up":
                 return "RYAXIS_NEG_SWITCH"
@@ -284,6 +284,7 @@ class MameGenerator(Generator):
                 return "RXAXIS_NEG_SWITCH"
             if key == "joystick2right":
                 return "RXAXIS_POS_SWITCH"
+        eslog.log("unable to find input2definition for {} / {}".format(input.type, key))
         return "unknown"
 
     @staticmethod

@@ -15,13 +15,13 @@ class Evmapy():
     def start(system, emulator, core, rom, playersControllers):
         if Evmapy.__prepare(system, emulator, core, rom, playersControllers):
             Evmapy.__started = True
-        subprocess.call(["batocera-evmapy", "start"])
+            subprocess.call(["batocera-evmapy", "start"])
 
     @staticmethod
     def stop():
         if Evmapy.__started:
             Evmapy.__started = False
-        subprocess.call(["batocera-evmapy", "stop"])
+            subprocess.call(["batocera-evmapy", "stop"])
 
     @staticmethod
     def __prepare(system, emulator, core, rom, playersControllers):
@@ -102,14 +102,20 @@ class Evmapy():
                                     axisName = "Y"
                                 elif input.name == "joystick1left" or input.name == "joystick2left":
                                     axisName = "X"
-                                elif input.name == "up":
+                                elif input.name == "up" or input.name == "down":
                                     axisId   = "BASE"
                                     axisName = "Y"
-                                    absbasey_positive =  int(input.value) >= 0
-                                elif input.name == "left":
+                                    if input.name == "up":
+                                        absbasey_positive =  int(input.value) >= 0
+                                    else:
+                                        axisId = None # don't duplicate, configuration should be done for up
+                                elif input.name == "left" or input.name == "right":
                                     axisId   = "BASE"
                                     axisName = "X"
-                                    absbasex_positive = int(input.value) >= 0
+                                    if input.name == "left":
+                                        absbasex_positive = int(input.value) < 0
+                                    else:
+                                        axisId = None # don't duplicate, configuration should be done for left
                                 else:
                                     axisId   = "_OTHERS_"
                                     axisName = input.name

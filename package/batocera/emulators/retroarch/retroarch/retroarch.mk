@@ -3,8 +3,8 @@
 # retroarch
 #
 ################################################################################
-# Version.: Release on May 29, 2021
-RETROARCH_VERSION = v1.9.4
+# Version.: Release on Jun 13, 2021
+RETROARCH_VERSION = v1.9.5
 RETROARCH_SITE = $(call github,libretro,RetroArch,$(RETROARCH_VERSION))
 RETROARCH_LICENSE = GPLv3+
 RETROARCH_DEPENDENCIES = host-pkgconf dejavu retroarch-assets flac
@@ -105,7 +105,7 @@ else
 	RETROARCH_CONF_OPTS += --disable-freetype
 endif
 
-ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA),y)
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA)$(BR2_PACKAGE_BATOCERA_TARGET_GAMEFORCE),y)
 	RETROARCH_CONF_OPTS += --enable-odroidgo2
 	RETROARCH_DEPENDENCIES += librga
 endif
