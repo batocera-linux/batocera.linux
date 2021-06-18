@@ -1,0 +1,83 @@
+#!/bin/bash
+
+if [ "${1}" == "buttonColor" ];then
+    R=$(cat /sys/class/leds/red/brightness)
+    G=$(cat /sys/class/leds/green/brightness)
+    B=$(cat /sys/class/leds/blue/brightness)
+
+    case "${R}${G}${B}" in
+        "000") # off
+        count=0
+        ;;
+        "100") # red
+        count=1
+        ;;
+        "010") # green
+        count=2
+        ;;
+        "001") # blue
+        count=3
+        ;;
+        "111") # white
+        count=4
+        ;;
+        "101") # purple
+        count=5
+        ;;
+        "110") # yellow
+        count=6
+        ;;
+        "011") # cyan
+        count=7
+        ;;
+        esac
+
+    (( count++ ))
+
+    if [ ${count} -gt 7 ]; then
+        count=0
+    fi
+
+    case ${count} in
+        0) # off
+        echo 0 > /sys/class/leds/red/brightness
+        echo 0 > /sys/class/leds/green/brightness
+        echo 0 > /sys/class/leds/blue/brightness
+        ;;
+        1) # red
+        echo 1 > /sys/class/leds/red/brightness
+        echo 0 > /sys/class/leds/green/brightness
+        echo 0 > /sys/class/leds/blue/brightness
+        ;;
+        2) # green
+        echo 0 > /sys/class/leds/red/brightness
+        echo 1 > /sys/class/leds/green/brightness
+        echo 0 > /sys/class/leds/blue/brightness
+        ;;
+        3) # blue
+        echo 0 > /sys/class/leds/red/brightness
+        echo 0 > /sys/class/leds/green/brightness
+        echo 1 > /sys/class/leds/blue/brightness
+        ;;
+        4) # white
+        echo 1 > /sys/class/leds/red/brightness
+        echo 1 > /sys/class/leds/green/brightness
+        echo 1 > /sys/class/leds/blue/brightness
+        ;;
+        5) # purple
+        echo 1 > /sys/class/leds/red/brightness
+        echo 0 > /sys/class/leds/green/brightness
+        echo 1 > /sys/class/leds/blue/brightness
+        ;;
+        6) # yellow
+        echo 1 > /sys/class/leds/red/brightness
+        echo 1 > /sys/class/leds/green/brightness
+        echo 0 > /sys/class/leds/blue/brightness
+        ;;
+        7) # cyan
+        echo 0 > /sys/class/leds/red/brightness
+        echo 1 > /sys/class/leds/green/brightness
+        echo 1 > /sys/class/leds/blue/brightness
+        ;;
+        esac
+fi
