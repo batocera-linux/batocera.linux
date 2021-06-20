@@ -5,7 +5,9 @@
 ################################################################################
 # Version.: Release on May 29, 2021
 FLYCAST_VERSION = v1.0
-FLYCAST_SITE = $(call github,flyinghead,flycast,$(FLYCAST_VERSION))
+FLYCAST_SITE = https://github.com/flyinghead/flycast.git
+FLYCAST_SITE_METHOD=git
+FLYCAST_GIT_SUBMODULES=YES
 FLYCAST_LICENSE = GPLv2
 FLYCAST_DEPENDENCIES = sdl2 libpng libzip
 
@@ -90,7 +92,7 @@ define FLYCAST_BUILD_CMDS
 endef
 
 define FLYCAST_INSTALL_TARGET_CMDS
-	$(INSTALL) -D -m 0755 $(@D)/shell/linux/nosym-reicast.elf \
+	$(INSTALL) -D -m 0755 $(@D)/shell/linux/nosym-flycast.elf \
 		$(TARGET_DIR)/usr/bin/flycast
 endef
 
