@@ -84,7 +84,13 @@ define FLYCAST_UPDATE_INCLUDES
 	sed -i "s+sdl2-config+$(STAGING_DIR)/usr/bin/sdl2-config+g" $(@D)/shell/linux/Makefile
 endef
 
+define FLYCAST_HACK_X11
+	sed -i "s+\`pkg-config --cflags x11\`++g" $(@D)/shell/linux/Makefile
+	sed -i "s+\`pkg-config --libs x11\`+-lX11+g" $(@D)/shell/linux/Makefile
+endef
+
 FLYCAST_PRE_CONFIGURE_HOOKS += FLYCAST_UPDATE_INCLUDES
+FLYCAST_PRE_CONFIGURE_HOOKS += FLYCAST_HACK_X11
 
 define FLYCAST_BUILD_CMDS
 	$(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" -C $(@D)/shell/linux -f Makefile \
