@@ -444,7 +444,7 @@ config BR2_PACKAGE_BATOCERA_GAMESTREAM_SYSTEMS
 	bool "batocera.linux game streaming support"
 
 	# Game streaming
-	select BR2_PACKAGE_MOONLIGHT_EMBEDDED   if !BR2_PACKAGE_BATOCERA_TARGET_GAMEFORCE && !BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA
+	select BR2_PACKAGE_MOONLIGHT_EMBEDDED   # ALL
 
 #### ScummVM ####
 config BR2_PACKAGE_BATOCERA_SCUMMVM_SYSTEMS
@@ -490,11 +490,8 @@ config BR2_PACKAGE_BATOCERA_SEGADC
 	# Dreamcast / Naomi / Atomiswave emulation
 	select BR2_PACKAGE_FLYCAST              if  !BR2_PACKAGE_BATOCERA_TARGET_RPI1       && \
                                                 !BR2_PACKAGE_BATOCERA_TARGET_RPI2       && \
-                                                !BR2_PACKAGE_BATOCERA_TARGET_RPI3       && \
                                                 !BR2_PACKAGE_BATOCERA_TARGET_X86        && \
-                                                !BR2_PACKAGE_BATOCERA_TARGET_CHA        && \
-                                                !BR2_PACKAGE_BATOCERA_TARGET_GAMEFORCE  && \
-                                                !BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA
+                                                !BR2_PACKAGE_BATOCERA_TARGET_CHA
 	select BR2_PACKAGE_LIBRETRO_FLYCAST     if  !BR2_PACKAGE_BATOCERA_TARGET_RPI1       && \
                                                 !BR2_PACKAGE_BATOCERA_TARGET_RPI2       && \
                                                 !BR2_PACKAGE_BATOCERA_TARGET_X86        && \
@@ -545,7 +542,7 @@ config BR2_PACKAGE_BATOCERA_HANDHELD_SYSTEMS
 
 	# Gameboy / Gameboy Color
 	select BR2_PACKAGE_LIBRETRO_GAMBATTE        # ALL
-	select BR2_PACKAGE_LIBRETRO_TGBDUAL         if !BR2_PACKAGE_BATOCERA_TARGET_GAMEFORCE && !BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA
+	select BR2_PACKAGE_LIBRETRO_TGBDUAL         # ALL
 
 	# GBA
 	select BR2_PACKAGE_LIBRETRO_MGBA            # ALL
@@ -572,9 +569,7 @@ config BR2_PACKAGE_BATOCERA_HANDHELD_SYSTEMS
 
 	# PSP
 	select BR2_PACKAGE_PPSSPP                   if !BR2_PACKAGE_BATOCERA_TARGET_RPI1 && !BR2_PACKAGE_BATOCERA_TARGET_RPI2 && !BR2_PACKAGE_BATOCERA_TARGET_CHA
-	select BR2_PACKAGE_LIBRETRO_PPSSPP          if  !BR2_PACKAGE_BATOCERA_TARGET_RPI1       && \
-                                                    !BR2_PACKAGE_BATOCERA_TARGET_RPI2       && \
-                                                    !BR2_PACKAGE_BATOCERA_TARGET_RPI3       && \
+	select BR2_PACKAGE_LIBRETRO_PPSSPP          if  !BR2_PACKAGE_BATOCERA_RPI_ANY           && \
                                                     !BR2_PACKAGE_BATOCERA_TARGET_CHA        && \
                                                     !BR2_PACKAGE_BATOCERA_TARGET_GAMEFORCE  && \
                                                     !BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA
@@ -742,8 +737,7 @@ config BR2_PACKAGE_BATOCERA_CONSOLE_SYSTEMS
 	# PSX
 	select BR2_PACKAGE_DUCKSTATION                  if  !BR2_PACKAGE_BATOCERA_TARGET_RPI1   && \
                                                         !BR2_PACKAGE_BATOCERA_TARGET_RPI2   && \
-                                                        !BR2_PACKAGE_BATOCERA_TARGET_CHA    && \
-                                                        !BR2_PACKAGE_BATOCERA_TARGET_RPI3
+                                                        !BR2_PACKAGE_BATOCERA_TARGET_CHA
 
 	select BR2_PACKAGE_LIBRETRO_SWANSTATION         if  !BR2_PACKAGE_BATOCERA_TARGET_X86	    && \
 	                                                    !BR2_PACKAGE_BATOCERA_TARGET_CHA        && \
