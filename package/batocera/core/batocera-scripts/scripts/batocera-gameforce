@@ -1,6 +1,9 @@
 #!/bin/bash
 
 if [ "${1}" == "buttonColorLed" ]; then
+
+echo "${2}" > /userdata/system/buttoncolorled.save
+
 case "${2}" in
     "red")
     echo 1 > /sys/class/leds/red/brightness
@@ -46,6 +49,9 @@ case "${2}" in
 fi
 
 if [ "${1}" == "powerLed" ]; then
+
+echo "${2}" > /userdata/system/powerled.save
+
 case "${2}" in
     "off")
     echo 0 > /sys/class/leds/heartbeat/brightness
