@@ -1,0 +1,47 @@
+diff -u -r plat_orig/rockchip/common/aarch64/plat_helpers.S plat/rockchip/common/aarch64/plat_helpers.S
+--- a/plat/rockchip/common/aarch64/plat_helpers.S	2021-06-14 18:21:02.887655626 +0200
++++ b/plat/rockchip/common/aarch64/plat_helpers.S	2021-06-14 18:24:33.233781262 +0200
+@@ -17,12 +17,14 @@
+ 	.globl	cpuson_entry_point
+ 	.globl	cpuson_flags
+ 	.globl	platform_cpu_warmboot
++	.globl  platform_mem_init
+ 	.globl	plat_secondary_cold_boot_setup
+ 	.globl	plat_report_exception
+ 	.globl	plat_is_my_cpu_primary
+ 	.globl	plat_my_core_pos
+ 	.globl	plat_reset_handler
+ 	.globl	plat_panic_handler
++	.globl  plat_get_my_entrypoint
+ 
+ 	/*
+ 	 * void plat_reset_handler(void);
+@@ -146,6 +148,23 @@
+ 	br	x2
+ endfunc platform_cpu_warmboot
+ 
++        /* --------------------------------------------------------
++         * void platform_mem_init (void);
++         *
++         * Any memory init, relocation to be done before the
++         * platform boots. Called very early in the boot process.
++         * --------------------------------------------------------
++         */
++func platform_mem_init
++        ret
++endfunc platform_mem_init
++
++func plat_get_my_entrypoint
++        /* TODO support warm boot */
++        mov     x0, #0
++        ret
++endfunc plat_get_my_entrypoint
++
+ 	/* --------------------------------------------------------------------
+ 	 * Per-CPU Secure entry point - resume or power up
+ 	 * --------------------------------------------------------------------
+@@ -161,3 +180,4 @@
+ 	.word	0
+ 	.endr
+ rockchip_clst_warmboot_data
++
