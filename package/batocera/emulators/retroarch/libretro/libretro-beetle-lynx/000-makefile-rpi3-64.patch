@@ -1,5 +1,5 @@
 diff --git a/Makefile b/Makefile
-index 432bb1b..6068561 100644
+index 432bb1b..5168764 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -75,7 +75,11 @@ ifneq (,$(findstring unix,$(platform)))
@@ -15,18 +15,3 @@ index 432bb1b..6068561 100644
        else ifneq (,$(findstring rpi4_64,$(platform)))
           FLAGS += -DARM -march=armv8-a+crc+simd -mtune=cortex-a72
        endif
-@@ -289,14 +293,6 @@ else ifeq ($(platform), classic_armv8_a35)
- 	LDFLAGS += -marm -mcpu=cortex-a35 -mfpu=neon-fp-armv8 -mfloat-abi=hard -Ofast -flto -fuse-linker-plugin
- #######################################
- 
--else ifeq ($(platform), rpi3)
--   TARGET := $(TARGET_NAME)_libretro.so
--   fpic := -fPIC
--   SHARED := -shared -Wl,--no-undefined -Wl,--version-script=link.T
--   FLAGS += -marm -mcpu=cortex-a53 -mfpu=neon-fp-armv8 -mfloat-abi=hard -ffast-math
--   ASFLAGS += -mfpu=neon-fp-armv8
--   FLAGS += -DARM
--   HAVE_NEON = 1
- else ifneq (,$(findstring armv,$(platform)))
-    TARGET := $(TARGET_NAME)_libretro.so
-    fpic := -fPIC

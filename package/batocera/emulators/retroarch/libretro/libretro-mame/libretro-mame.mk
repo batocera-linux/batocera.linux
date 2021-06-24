@@ -13,23 +13,20 @@ LIBRETRO_MAME_DEPENDENCIES = retroarch
 LIBRETRO_MAME_JOBS=4
 
 ifeq ($(BR2_x86_64),y)
-	LIBRETRO_MAME_EXTRA_ARGS += PTR64=1 LIBRETRO_CPU=x86_64 PLATFORM=x86_64
-endif
+LIBRETRO_MAME_EXTRA_ARGS += PTR64=1 LIBRETRO_CPU=x86_64 PLATFORM=x86_64
 
-ifeq ($(BR2_i386),y)
-	LIBRETRO_MAME_EXTRA_ARGS += PTR64=0 LIBRETRO_CPU=x86 PLATFORM=x86
-endif
+else ifeq ($(BR2_i386),y)
+LIBRETRO_MAME_EXTRA_ARGS += PTR64=0 LIBRETRO_CPU=x86 PLATFORM=x86
 
-ifeq ($(BR2_arm),y)
-	LIBRETRO_MAME_EXTRA_ARGS += PTR64=0 LIBRETRO_CPU=arm PLATFORM=arm
-	# workaround for asmjit broken build system (arm backend is not public)
-	LIBRETRO_MAME_ARCHOPTS += -D__arm__ -DASMJIT_BUILD_X86
-endif
+else ifeq ($(BR2_arm),y)
+LIBRETRO_MAME_EXTRA_ARGS += PTR64=0 LIBRETRO_CPU=arm PLATFORM=arm
+# workaround for asmjit broken build system (arm backend is not public)
+LIBRETRO_MAME_ARCHOPTS += -D__arm__ -DASMJIT_BUILD_X86
 
-ifeq ($(BR2_aarch64),y)
-	LIBRETRO_MAME_EXTRA_ARGS += PTR64=1 LIBRETRO_CPU= PLATFORM=arm64
-	# workaround for asmjit broken build system (arm backend is not public)
-	LIBRETRO_MAME_ARCHOPTS += -D__aarch64__ -DASMJIT_BUILD_X86
+else ifeq ($(BR2_aarch64),y)
+LIBRETRO_MAME_EXTRA_ARGS += PTR64=1 LIBRETRO_CPU= PLATFORM=arm64
+# workaround for asmjit broken build system (arm backend is not public)
+LIBRETRO_MAME_ARCHOPTS += -D__aarch64__ -DASMJIT_BUILD_X86
 endif
 
 ifeq ($(BR2_ENABLE_DEBUG),y)
