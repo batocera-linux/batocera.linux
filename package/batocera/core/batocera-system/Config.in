@@ -198,30 +198,6 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
 	select BR2_PACKAGE_BATOCERA_VULKAN      if  BR2_PACKAGE_BATOCERA_TARGET_X86_ANY     || \
                                                 BR2_PACKAGE_BATOCERA_TARGET_RPI4
 
-	# wireless drivers
-	select BR2_PACKAGE_RTL8821AU            if  !BR2_PACKAGE_BATOCERA_TARGET_RPI1           && \
-                                                !BR2_PACKAGE_BATOCERA_TARGET_RPI2           && \
-                                                !BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_PC    && \
-                                                !BR2_PACKAGE_BATOCERA_TARGET_CHA            && \
-                                                !BR2_PACKAGE_BATOCERA_TARGET_RK3326_ANY
-
-	# do NOT remove this one for OGA
-	select BR2_PACKAGE_RTL8192EU		if  !BR2_PACKAGE_BATOCERA_TARGET_RPI1           && \
-                                            !BR2_PACKAGE_BATOCERA_TARGET_RPI2           && \
-                                            !BR2_PACKAGE_BATOCERA_TARGET_CHA            && \
-                                            !BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_PC
-
-	select BR2_PACKAGE_RTL8821CE		if  !BR2_PACKAGE_BATOCERA_TARGET_RPI1               && \
-                                            !BR2_PACKAGE_BATOCERA_TARGET_RPI2               && \
-                                            !BR2_PACKAGE_BATOCERA_TARGET_RPI3               && \
-                                            !BR2_PACKAGE_BATOCERA_TARGET_S812               && \
-                                            !BR2_PACKAGE_BATOCERA_TARGET_TRITIUM_H5         && \
-                                            !BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_ZERO2     && \
-                                            !BR2_PACKAGE_BATOCERA_TARGET_RK3288             && \
-                                            !BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_PC        && \
-                                            !BR2_PACKAGE_BATOCERA_TARGET_CHA                && \
-                                            !BR2_PACKAGE_BATOCERA_TARGET_RK3326_ANY
-
 	# s905 tv-box firmwares
 	select BR2_PACKAGE_FIRMWARE_WLAN_AML    if BR2_PACKAGE_BATOCERA_TARGET_S905GEN3
 
