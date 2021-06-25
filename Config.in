@@ -1,5 +1,9 @@
 menu "batocera.linux"
 
+menu "Kernel"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/retrolx/kernel-meson64/Config.in"
+endmenu
+
 menu "System"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/core/batocera-system/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/core/batocera-configgen/Config.in"
@@ -67,6 +71,7 @@ menu "System"
   menu "Network"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/network/rtl8821ce/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/network/rtl8192eu/Config.in"
+    source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/network/rtl8723ds/Config.in"
   endmenu
 
   menu "Device trees"
@@ -77,6 +82,7 @@ menu "Emulationstation"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulationstation/batocera-emulationstation/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulationstation/batocera-es-system/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulationstation/es-theme-carbon/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulationstation/es-theme-minijawn/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulationstation/es-background-musics/Config.in"
 endmenu
 
