@@ -148,6 +148,7 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
 	select BR2_PACKAGE_LIBRGA                               if BR2_PACKAGE_BATOCERA_TARGET_ROCKCHIP_ANY # Used for screen rotation (SDL, Retroarch, Moonlight)
 
 	select BR2_PACKAGE_SDL2_OPENGLES                        # ALL
+	select BR2_PACKAGE_SDL2_WAYLAND				if BR2_PACKAGE_BATOCERA_WAYLAND
 	select BR2_PACKAGE_SDL2_KMSDRM                          if !BR2_PACKAGE_BATOCERA_RPI_VCORE
 	select BR2_PACKAGE_LIBDRM                               if !BR2_PACKAGE_BATOCERA_RPI_VCORE
     select BR2_PACKAGE_LIBDRM_EXYNOS                        if BR2_PACKAGE_LIBDRM && BR2_PACKAGE_BATOCERA_TARGET_XU4
@@ -204,6 +205,11 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
 	# gpu drivers
 	select BR2_PACKAGE_BATOCERA_GPU_X86     if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
 
+	# wayland enabled for mesa3d based SBCs
+	select BR2_PACKAGE_BATOCERA_WAYLAND	if !BR2_PACKAGE_BATOCERA_TARGET_X86_ANY && \
+						   !BR2_PACKAGE_BATOCERA_RPI_VCORE && \
+						   !BR2_PACKAGE_BATOCERA_XU4
+	
 	# xorg
 	select BR2_PACKAGE_BATOCERA_XORG        if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
 
@@ -245,6 +251,7 @@ config BR2_PACKAGE_BATOCERA_DEV
 
 	select BR2_PACKAGE_TMUX
 	select BR2_PACKAGE_X11VNC   if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
+	select BR2_PACKAGE_KMSCUBE	if BR2_PACKAGE_MESA3D
 
 	help
 		Install dev packages for batocera.linux
@@ -510,7 +517,7 @@ config BR2_PACKAGE_BATOCERA_ARCADE_SYSTEMS
 
 
 	# Mainline MAME
-	select BR2_PACKAGE_MAME     if BR2_PACKAGE_BATOCERA_TARGET_X86_64
+	select BR2_PACKAGE_MAME     if BR2_PACKAGE_BATOCERA_TARGET_X86_64 || BR2_PACKAGE_BATOCERA_WAYLAND
 
 	help
 		Arcade cores/emulators
@@ -1033,6 +1040,14 @@ config BR2_PACKAGE_BATOCERA_LINUX_FIRMWARES
 	# x86 (maybe some firmware could be for all, to be checked)
 	select BR2_PACKAGE_WILINK_BT_FIRMWARE   if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
 
+config BR2_PACKAGE_BATOCERA_WAYLAND
+	bool "batocera.linux wayland system"
+
+	select BR2_PACKAGE_LINUX_PAM
+	select BR2_PACKAGE_WAYLAND
+	select BR2_PACKAGE_WAYLANDPP
+	select BR2_PACKAGE_WESTON
+	select BR2_PACKAGE_WESTON_DRM
 
 config BR2_PACKAGE_BATOCERA_XORG
 	bool "batocera.linux xorgs packages selection"
