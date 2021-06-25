@@ -1,4 +1,4 @@
-#!/bin/bash -e
+#!/bin/bash
 
 # PWD = source dir
 # BASE_DIR = build dir
@@ -7,5 +7,7 @@
 # BINARIES_DIR = images dir
 # TARGET_DIR = target dir
 
-BATOCERA_TARGET=$(grep -E "^BR2_PACKAGE_BATOCERA_TARGET_[A-Z_0-9]*=y$" "${BR2_CONFIG}" | sed -e s+'^BR2_PACKAGE_BATOCERA_TARGET_\([A-Z_0-9]*\)=y$'+'\1'+)
+rm "${BINARIES_DIR}/modules"
+rm "${BINARIES_DIR}/rootfs.tar"
 "${HOST_DIR}/bin/mksquashfs" "${TARGET_DIR}/lib/modules/" "${BINARIES_DIR}/modules" -comp zstd
+(cd "${BINARIES_DIR}" && tar cf - * | gzip > "${BINARIES_DIR}/kernel.tar.gz")

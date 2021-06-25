@@ -35,17 +35,8 @@ BR2_ROOTFS_POST_BUILD_SCRIPT="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/scrip
 BR2_ROOTFS_POST_IMAGE_SCRIPT="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/scripts/post-image-script.sh"
 
 # Meson64 kernel (out-of-tree build)
-#BR2_LINUX_KERNEL=y
-#BR2_LINUX_KERNEL_CUSTOM_VERSION=y
-#BR2_LINUX_KERNEL_CUSTOM_VERSION_VALUE="5.10.46"
+BR2_PACKAGE_KERNEL_MESON64=y
 BR2_KERNEL_HEADERS_5_10=y
-#BR2_LINUX_KERNEL_DTS_SUPPORT=y
-#BR2_LINUX_KERNEL_INTREE_DTS_NAME="amlogic/meson-gxbb-odroidc2 amlogic/meson-gxbb-p200 amlogic/meson-gxbb-nexbox-a95x amlogic/meson-gxl-s905x-p212 amlogic/meson-gxl-s905d-p231 amlogic/meson-gxl-s905d-p230 amlogic/meson-gxl-s905w-tx3-mini amlogic/meson-gxl-s905x-p212 amlogic/meson-gxl-s905w-p281"
-#BR2_LINUX_KERNEL_NEEDS_HOST_OPENSSL=y
-#BR2_LINUX_KERNEL_PATCH="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/amlogic/linux_patches"
-#BR2_LINUX_KERNEL_USE_CUSTOM_CONFIG=y
-#BR2_LINUX_KERNEL_CUSTOM_CONFIG_FILE="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/amlogic/linux-meson64-current.config"
-#BR2_LINUX_KERNEL_CONFIG_FRAGMENT_FILES="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/amlogic/s905/linux-defconfig-fragment.config"
 
 # System
 BR2_PACKAGE_BUSYBOX_CONFIG_FRAGMENT_FILES="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/busybox.custom.config"
@@ -53,7 +44,7 @@ BR2_SYSTEM_BIN_SH_DASH=y # /bin/sh implementation; set here because a `choice` c
 BR2_PACKAGE_BATOCERA_ALL_SYSTEMS=y
 BR2_PACKAGE_BATOCERA_TOOLS=y
 BR2_PACKAGE_BATOCERA_EXTRAS=y
-BR2_PACKAGE_BATOCERA_KODI19=y
+BR2_PACKAGE_BATOCERA_KODI19=n
 BR2_PACKAGE_BATOCERA_LINUX_FIRMWARES=y
 BR2_PACKAGE_BATOCERA_SYSTEM=y
 BR2_TARGET_ROOTFS_SQUASHFS4_ZSTD=y
