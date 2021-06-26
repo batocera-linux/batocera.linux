@@ -40,7 +40,7 @@ do_videostart ()
     then
         ffplay_opt=-an
     fi
-    /usr/bin/ffplay $ffplay_opt -autoexit -loglevel 0 "$video" &
+    /usr/bin/ffplay $ffplay_opt -fs -loglevel -8 -autoexit "$video" &
     wait $! 
 }
 
