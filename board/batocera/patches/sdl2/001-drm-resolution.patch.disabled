@@ -1,0 +1,68 @@
+--- a/src/video/kmsdrm/SDL_kmsdrmsym.h    2020-12-21 18:44:36.000000000 +0100
++++ b/src/video/kmsdrm/SDL_kmsdrmsym.h   2021-03-11 21:05:39.415354955 +0100
+@@ -62,6 +62,9 @@
+ SDL_KMSDRM_SYM(int,drmModeRmFB,(int fd, uint32_t bufferId))
+ SDL_KMSDRM_SYM(drmModeFBPtr,drmModeGetFB,(int fd, uint32_t buf))
+ SDL_KMSDRM_SYM(drmModeCrtcPtr,drmModeGetCrtc,(int fd, uint32_t crtcId))
++SDL_KMSDRM_SYM(int,drmModeSetCrtc,(int fd, uint32_t crtcId, uint32_t bufferId,
++                                  uint32_t x, uint32_t y, uint32_t *connectors, int count,
++                                  drmModeModeInfoPtr mode))
+ SDL_KMSDRM_SYM(drmModeEncoderPtr,drmModeGetEncoder,(int fd, uint32_t encoder_id))
+ SDL_KMSDRM_SYM(drmModeConnectorPtr,drmModeGetConnector,(int fd, uint32_t connector_id))
+
+--- a/src/video/kmsdrm/SDL_kmsdrmvideo.c	2020-12-21 18:44:36.000000000 +0100
++++ b/src/video/kmsdrm/SDL_kmsdrmvideo.c	2021-03-09 22:42:49.191987056 +0100
+@@ -1125,6 +1125,24 @@
+         goto cleanup;
+     }
+ 
++    // batocera - set resolution
++    {
++      FILE* fdDrmMode;
++      int drmMode;
++      if((fdDrmMode = fopen("/var/run/drmMode", "r")) != NULL) {
++       if(fscanf(fdDrmMode, "%i", &drmMode) == 1) {
++         if(drmMode >= 0 && drmMode < connector->count_modes) {
++           drmModeCrtc *pcrtc = KMSDRM_drmModeGetCrtc(viddata->drm_fd, encoder->crtc_id);
++           if(pcrtc != NULL) {
++             KMSDRM_drmModeSetCrtc(viddata->drm_fd, pcrtc->crtc_id, pcrtc->buffer_id, 0, 0, &connector->connector_id, 1, &connector->modes[drmMode]);
++           }
++         }
++       }
++       fclose(fdDrmMode);
++      }
++    }
++    //
++
+     SDL_LogDebug(SDL_LOG_CATEGORY_VIDEO, "Found encoder %d.", encoder->encoder_id);
+ 
+     /* Try to find a CRTC connected to this encoder */
+@@ -1675,8 +1693,27 @@
+     SDL_DisplayMode mode;
+     int i;
+ 
++    // batocera
++    int wantedMode = 0;
++    {
++      FILE* fdDrmMode;
++      int drmMode;
++      if((fdDrmMode = fopen("/var/run/drmMode", "r")) != NULL) {
++       if(fscanf(fdDrmMode, "%i", &drmMode) == 1) {
++         if(drmMode >= 0 && drmMode < conn->count_modes) {
++           wantedMode = drmMode;
++         }
++       }
++       fclose(fdDrmMode);
++      }
++    }
++    //
++
+     for (i = 0; i < conn->count_modes; i++) {
+-        SDL_DisplayModeData *modedata = SDL_calloc(1, sizeof(SDL_DisplayModeData));
++        SDL_DisplayModeData *modedata;
++        if(i != wantedMode) continue; // batocera
++
++        modedata = SDL_calloc(1, sizeof(SDL_DisplayModeData));
+ 
+         if (!modedata) {
+             SDL_OutOfMemory();

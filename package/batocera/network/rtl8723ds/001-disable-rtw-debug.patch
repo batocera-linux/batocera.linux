@@ -1,0 +1,11 @@
+--- a/Makefile	2021-05-13 12:52:07.184181269 +0200
++++ b/Makefile	2021-05-13 12:52:24.594180643 +0200
+@@ -72,7 +72,7 @@
+ CONFIG_RTW_NAPI = y
+ CONFIG_RTW_GRO = y
+ ########################## Debug ###########################
+-CONFIG_RTW_DEBUG = y
++CONFIG_RTW_DEBUG = n
+ # default log level is _DRV_INFO_ = 2,
+ # please refer to "How_to_set_driver_debug_log_level.doc" to set the available level.
+ CONFIG_RTW_LOG_LEVEL = 2

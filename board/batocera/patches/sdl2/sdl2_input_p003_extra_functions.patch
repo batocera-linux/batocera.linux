@@ -1,63 +1,170 @@
-diff --git a/include/SDL_joystick.h b/include/SDL_joystick.h
-index a0dd720..7092808 100644
---- a/include/SDL_joystick.h
-+++ b/include/SDL_joystick.h
-@@ -320,6 +320,11 @@ extern DECLSPEC int SDLCALL SDL_JoystickEventState(int state);
- extern DECLSPEC Sint16 SDLCALL SDL_JoystickGetAxis(SDL_Joystick * joystick,
-                                                    int axis);
+diff -r -u a/include/SDL_joystick.h b/include/SDL_joystick.h
+--- a/include/SDL_joystick.h	2021-05-14 23:50:20.000000000 +0200
++++ b/include/SDL_joystick.h	2021-05-16 19:28:46.837601395 +0200
+@@ -802,6 +802,15 @@
+  */
+ extern DECLSPEC SDL_JoystickPowerLevel SDLCALL SDL_JoystickCurrentPowerLevel(SDL_Joystick *joystick);
  
++/**
++ * Batocera specific functions
++ */
 +extern DECLSPEC const char *SDLCALL SDL_JoystickDevicePathById(int device_instance_id);
 +extern DECLSPEC int SDLCALL SDL_JoystickButtonEventCodeById(int device_instance_id, int button);
 +extern DECLSPEC int SDLCALL SDL_JoystickAxisEventCodeById(int device_instance_id, int axis);
 +extern DECLSPEC int SDLCALL SDL_JoystickHatEventCodeById(int device_instance_id, int hat);
 +
- /**
-  *  Get the initial state of an axis control on a joystick.
-  *
-diff --git a/src/dynapi/SDL_dynapi_overrides.h b/src/dynapi/SDL_dynapi_overrides.h
-index a5b4d6a..df12a21 100644
---- a/src/dynapi/SDL_dynapi_overrides.h
-+++ b/src/dynapi/SDL_dynapi_overrides.h
-@@ -209,6 +209,12 @@
- #define SDL_JoystickUpdate SDL_JoystickUpdate_REAL
- #define SDL_JoystickEventState SDL_JoystickEventState_REAL
- #define SDL_JoystickGetAxis SDL_JoystickGetAxis_REAL
 +
+ /* Ends C function definitions when using C++ */
+ #ifdef __cplusplus
+ }
+diff -r -u a/src/dynapi/SDL_dynapi_overrides.h b/src/dynapi/SDL_dynapi_overrides.h
+--- a/src/dynapi/SDL_dynapi_overrides.h	2021-05-14 23:50:20.000000000 +0200
++++ b/src/dynapi/SDL_dynapi_overrides.h	2021-05-16 19:29:26.622297871 +0200
+@@ -811,3 +811,12 @@
+ #define SDL_GetAudioDeviceSpec SDL_GetAudioDeviceSpec_REAL
+ #define SDL_TLSCleanup SDL_TLSCleanup_REAL
+ #define SDL_SetWindowAlwaysOnTop SDL_SetWindowAlwaysOnTop_REAL
++
++/***
++ * Batocera functions
++ */
 +#define SDL_JoystickDevicePathById SDL_JoystickDevicePathById_REAL
 +#define SDL_JoystickButtonEventCodeById SDL_JoystickButtonEventCodeById_REAL
 +#define SDL_JoystickAxisEventCodeById SDL_JoystickAxisEventCodeById_REAL
 +#define SDL_JoystickHatEventCodeById SDL_JoystickHatEventCodeById_REAL
 +
- #define SDL_JoystickGetHat SDL_JoystickGetHat_REAL
- #define SDL_JoystickGetBall SDL_JoystickGetBall_REAL
- #define SDL_JoystickGetButton SDL_JoystickGetButton_REAL
-diff --git a/src/dynapi/SDL_dynapi_procs.h b/src/dynapi/SDL_dynapi_procs.h
-index 404a5e7..f52adff 100644
---- a/src/dynapi/SDL_dynapi_procs.h
-+++ b/src/dynapi/SDL_dynapi_procs.h
-@@ -240,6 +240,12 @@ SDL_DYNAPI_PROC(int,SDL_JoystickNumButtons,(SDL_Joystick *a),(a),return)
- SDL_DYNAPI_PROC(void,SDL_JoystickUpdate,(void),(),)
- SDL_DYNAPI_PROC(int,SDL_JoystickEventState,(int a),(a),return)
- SDL_DYNAPI_PROC(Sint16,SDL_JoystickGetAxis,(SDL_Joystick *a, int b),(a,b),return)
+diff -r -u a/src/dynapi/SDL_dynapi_procs.h b/src/dynapi/SDL_dynapi_procs.h
+--- a/src/dynapi/SDL_dynapi_procs.h	2021-05-14 23:50:20.000000000 +0200
++++ b/src/dynapi/SDL_dynapi_procs.h	2021-05-16 19:30:05.579018526 +0200
+@@ -876,3 +876,13 @@
+ SDL_DYNAPI_PROC(int,SDL_GetAudioDeviceSpec,(int a, int b, SDL_AudioSpec *c),(a,b,c),return)
+ SDL_DYNAPI_PROC(void,SDL_TLSCleanup,(void),(),)
+ SDL_DYNAPI_PROC(void,SDL_SetWindowAlwaysOnTop,(SDL_Window *a, SDL_bool b),(a,b),)
 +
++
++/***
++ * Batocera functions
++ */
 +SDL_DYNAPI_PROC(const char*,SDL_JoystickDevicePathById,(int a),(a),return)
 +SDL_DYNAPI_PROC(int,SDL_JoystickButtonEventCodeById,(int a, int b),(a,b),return)
 +SDL_DYNAPI_PROC(int,SDL_JoystickAxisEventCodeById,(int a, int b),(a,b),return)
 +SDL_DYNAPI_PROC(int,SDL_JoystickHatEventCodeById,(int a, int b),(a,b),return)
 +
- SDL_DYNAPI_PROC(Uint8,SDL_JoystickGetHat,(SDL_Joystick *a, int b),(a,b),return)
- SDL_DYNAPI_PROC(int,SDL_JoystickGetBall,(SDL_Joystick *a, int b, int *c, int *d),(a,b,c,d),return)
- SDL_DYNAPI_PROC(Uint8,SDL_JoystickGetButton,(SDL_Joystick *a, int b),(a,b),return)
-diff --git a/src/joystick/SDL_joystick.c b/src/joystick/SDL_joystick.c
-index 4c72d70..3a0f44f 100644
---- a/src/joystick/SDL_joystick.c
-+++ b/src/joystick/SDL_joystick.c
-@@ -2033,6 +2033,27 @@ SDL_JoystickGUID SDL_JoystickGetGUIDFromString(const char *pchGUID)
-     return guid;
+diff -r -u a/src/joystick/linux/SDL_sysjoystick.c b/src/joystick/linux/SDL_sysjoystick.c
+--- a/src/joystick/linux/SDL_sysjoystick.c	2021-05-14 23:50:20.000000000 +0200
++++ b/src/joystick/linux/SDL_sysjoystick.c	2021-05-16 19:33:55.131797125 +0200
+@@ -845,6 +845,16 @@ ConfigJoystick(SDL_Joystick *joystick, int fd)
+     unsigned long ffbit[NBITS(FF_MAX)] = { 0 };
+     SDL_bool use_deadzones = SDL_GetHintBoolean(SDL_HINT_LINUX_JOYSTICK_DEADZONES, SDL_FALSE);
+ 
++    for(i=0; i<KEY_MAX; i++) {
++      joystick->hwdata->key_map[i] = -1;
++    }
++    for(i=0; i<ABS_MAX; i++) {
++      joystick->hwdata->abs_map[i] = -1;
++    }
++    for(i=0; i<ABS_MAX; i++) {
++      joystick->hwdata->hat_map[i] = -1;
++    }
++
+     /* See if this device uses the new unified event API */
+     if ((ioctl(fd, EVIOCGBIT(EV_KEY, sizeof(keybit)), keybit) >= 0) &&
+         (ioctl(fd, EVIOCGBIT(EV_ABS, sizeof(absbit)), absbit) >= 0) &&
+@@ -977,6 +978,7 @@
+     if (joystick->hwdata == NULL) {
+         return SDL_OutOfMemory();
+     }
++    joystick->hwdata->fname = NULL;
+     joystick->hwdata->item = item;
+     joystick->hwdata->guid = item->guid;
+     joystick->hwdata->effect.id = -1;
+@@ -1602,6 +1610,64 @@
+     LINUX_JoystickGetGamepadMapping
+ };
+ 
++/***
++ * Batocera functions 
++ */
++const char* SDL_SYS_JoystickDevicePathById(int device_instance_id)
++{
++  SDL_joylist_item* joystick = JoystickByDevIndex(SDL_JoystickGetDeviceIndexFromInstanceID(device_instance_id));
++  if(joystick == NULL) return "";
++  if(joystick->hwdata == NULL) return "";
++  if(joystick->hwdata->fname == NULL) return "";
++  return joystick->hwdata->fname;
++}
++
++int SDL_SYS_JoystickButtonEventCodeById(int device_instance_id, int button)
++{
++  int i;
++  SDL_joylist_item* joystick = JoystickByDevIndex(SDL_JoystickGetDeviceIndexFromInstanceID(device_instance_id));
++  if(joystick == NULL) return -1;
++  if(joystick->hwdata == NULL) return -1;
++
++  for(i=0; i<KEY_MAX; i++) {
++    if(((int)joystick->hwdata->key_map[i]) == button) {
++      return i;
++    }
++  }
++  return -1;
++}
++
++int SDL_SYS_JoystickAxisEventCodeById(int device_instance_id, int axis)
++{
++  int i;
++  SDL_joylist_item* joystick = JoystickByDevIndex(SDL_JoystickGetDeviceIndexFromInstanceID(device_instance_id));
++  if(joystick == NULL) return -1;
++  if(joystick->hwdata == NULL) return -1;
++
++  for(i=0; i<ABS_MAX; i++) {
++    if(((int)joystick->hwdata->abs_map[i]) == axis) {
++      return i;
++    }
++  }
++  return -1;
++}
++
++int SDL_SYS_JoystickHatEventCodeById(int device_instance_id, int hat)
++{
++  int i;
++  SDL_joylist_item* joystick = JoystickByDevIndex(SDL_JoystickGetDeviceIndexFromInstanceID(device_instance_id));
++  if(joystick == NULL) return -1;
++  if(joystick->hwdata == NULL) return -1;
++
++  for(i=0; i<ABS_MAX; i++) {
++    if(((int)joystick->hwdata->hat_map[i]) == hat) {
++      return i;
++    }
++  }
++  return -1;
++}
++
++
+ #endif /* SDL_JOYSTICK_LINUX */
+ 
+ /* vi: set ts=4 sw=4 expandtab: */
+diff -r -u a/src/joystick/linux/SDL_sysjoystick_c.h b/src/joystick/linux/SDL_sysjoystick_c.h
+--- a/src/joystick/linux/SDL_sysjoystick_c.h	2021-05-14 23:50:20.000000000 +0200
++++ b/src/joystick/linux/SDL_sysjoystick_c.h	2021-05-16 19:34:22.664411823 +0200
+@@ -53,6 +53,7 @@
+     /* Support for the Linux 2.4 unified input interface */
+     Uint8 key_map[KEY_MAX];
+     Uint8 abs_map[ABS_MAX];
++    Uint8 hat_map[ABS_MAX];
+     SDL_bool has_key[KEY_MAX];
+     SDL_bool has_abs[ABS_MAX];
+ 
+diff -r -u a/src/joystick/SDL_joystick.c b/src/joystick/SDL_joystick.c
+--- a/src/joystick/SDL_joystick.c	2021-05-14 23:50:20.000000000 +0200
++++ b/src/joystick/SDL_joystick.c	2021-05-16 19:30:59.300065118 +0200
+@@ -2686,4 +2778,28 @@
+     return posted;
  }
  
-+const char *
-+SDL_JoystickDevicePathById(int device_instance_id)
++/***
++ * Batocera functions
++ */
++const char* SDL_JoystickDevicePathById(int device_instance_id)
 +{
 +  return SDL_SYS_JoystickDevicePathById( device_instance_id );
 +}
@@ -77,112 +184,26 @@ index 4c72d70..3a0f44f 100644
 +  return SDL_SYS_JoystickHatEventCodeById( device_instance_id, hat );
 +}
 +
- /* update the power level for this joystick */
- void SDL_PrivateJoystickBatteryLevel(SDL_Joystick * joystick, SDL_JoystickPowerLevel ePowerLevel)
- {
-diff --git a/src/joystick/SDL_sysjoystick.h b/src/joystick/SDL_sysjoystick.h
-index 6eb8bf4..d791dd0 100644
---- a/src/joystick/SDL_sysjoystick.h
-+++ b/src/joystick/SDL_sysjoystick.h
-@@ -154,6 +154,11 @@ extern SDL_JoystickDriver SDL_IOS_JoystickDriver;
- extern SDL_JoystickDriver SDL_LINUX_JoystickDriver;
- extern SDL_JoystickDriver SDL_WINDOWS_JoystickDriver;
++
+ /* vi: set ts=4 sw=4 expandtab: */
+diff -r -u a/src/joystick/SDL_joystick_c.h b/src/joystick/SDL_joystick_c.h
+--- a/src/joystick/SDL_joystick_c.h	2021-05-14 23:50:20.000000000 +0200
++++ b/src/joystick/SDL_joystick_c.h	2021-05-16 19:31:29.600678460 +0200
+@@ -180,6 +180,16 @@
+ extern SDL_bool SDL_PrivateJoystickGetAutoGamepadMapping(int device_index,
+                                                          SDL_GamepadMapping *out);
  
++
++/***
++ * Batocera functions
++ */
 +extern const char *SDL_SYS_JoystickDevicePathById(int device_instance_id);
 +extern int SDL_SYS_JoystickButtonEventCodeById(int device_instance_id, int button);
 +extern int SDL_SYS_JoystickAxisEventCodeById(int device_instance_id, int axis);
 +extern int SDL_SYS_JoystickHatEventCodeById(int device_instance_id, int hat);
 +
- #endif /* SDL_sysjoystick_h_ */
++
+ #endif /* SDL_joystick_c_h_ */
  
  /* vi: set ts=4 sw=4 expandtab: */
-diff --git a/src/joystick/linux/SDL_sysjoystick.c b/src/joystick/linux/SDL_sysjoystick.c
-index 314b43c..b88d3d4 100644
---- a/src/joystick/linux/SDL_sysjoystick.c
-+++ b/src/joystick/linux/SDL_sysjoystick.c
-@@ -658,6 +658,16 @@ ConfigJoystick(SDL_Joystick * joystick, int fd)
-     unsigned long relbit[NBITS(REL_MAX)] = { 0 };
-     unsigned long ffbit[NBITS(FF_MAX)] = { 0 };
  
-+    for(i=0; i<KEY_MAX; i++) {
-+      joystick->hwdata->key_map[i] = -1;
-+    }
-+    for(i=0; i<ABS_MAX; i++) {
-+      joystick->hwdata->abs_map[i] = -1;
-+    }
-+    for(i=0; i<ABS_MAX; i++) {
-+      joystick->hwdata->hat_map[i] = -1;
-+    }
-+
-     /* See if this device uses the new unified event API */
-     if ((ioctl(fd, EVIOCGBIT(EV_KEY, sizeof(keybit)), keybit) >= 0) &&
-         (ioctl(fd, EVIOCGBIT(EV_ABS, sizeof(absbit)), absbit) >= 0) &&
-@@ -1134,6 +1144,56 @@ SDL_JoystickDriver SDL_LINUX_JoystickDriver =
-     LINUX_JoystickQuit,
- };
- 
-+const char *
-+SDL_SYS_JoystickDevicePathById(int device_instance_id)
-+{
-+  SDL_joylist_item* joystick = JoystickByDevIndex(SDL_JoystickGetDeviceIndexFromInstanceID(device_instance_id));
-+  if(joystick == NULL) return "";
-+  return joystick->hwdata->fname;
-+}
-+
-+int SDL_SYS_JoystickButtonEventCodeById(int device_instance_id, int button)
-+{
-+  int i;
-+  SDL_joylist_item* joystick = JoystickByDevIndex(SDL_JoystickGetDeviceIndexFromInstanceID(device_instance_id));
-+  if(joystick == NULL) return -1;
-+
-+  for(i=0; i<KEY_MAX; i++) {
-+    if(((int)joystick->hwdata->key_map[i]) == button) {
-+      return i;
-+    }
-+  }
-+  return -1;
-+}
-+
-+int SDL_SYS_JoystickAxisEventCodeById(int device_instance_id, int axis)
-+{
-+  int i;
-+  SDL_joylist_item* joystick = JoystickByDevIndex(SDL_JoystickGetDeviceIndexFromInstanceID(device_instance_id));
-+  if(joystick == NULL) return -1;
-+
-+  for(i=0; i<ABS_MAX; i++) {
-+    if(((int)joystick->hwdata->abs_map[i]) == axis) {
-+      return i;
-+    }
-+  }
-+  return -1;
-+}
-+
-+int SDL_SYS_JoystickHatEventCodeById(int device_instance_id, int hat)
-+{
-+  int i;
-+  SDL_joylist_item* joystick = JoystickByDevIndex(SDL_JoystickGetDeviceIndexFromInstanceID(device_instance_id));
-+  if(joystick == NULL) return -1;
-+
-+  for(i=0; i<ABS_MAX; i++) {
-+    if(((int)joystick->hwdata->hat_map[i]) == hat) {
-+      return i;
-+    }
-+  }
-+  return -1;
-+}
-+
- #endif /* SDL_JOYSTICK_LINUX */
- 
- /* vi: set ts=4 sw=4 expandtab: */
-diff --git a/src/joystick/linux/SDL_sysjoystick_c.h b/src/joystick/linux/SDL_sysjoystick_c.h
-index a92429b..41dab87 100644
---- a/src/joystick/linux/SDL_sysjoystick_c.h
-+++ b/src/joystick/linux/SDL_sysjoystick_c.h
-@@ -53,6 +53,7 @@ struct joystick_hwdata
-     /* Support for the Linux 2.4 unified input interface */
-     Uint8 key_map[KEY_MAX];
-     Uint8 abs_map[ABS_MAX];
-+    Uint8 hat_map[ABS_MAX];
-     struct axis_correct
-     {
-         int used;
