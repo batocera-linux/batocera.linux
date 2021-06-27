@@ -7,7 +7,7 @@
 # Wine Mono addon (required)
 WINE_MONO_PROTON_VERSION = 6.1.2
 WINE_MONO_PROTON_SOURCE = wine-mono-$(WINE_MONO_PROTON_VERSION)-x86.tar.xz
-WINE_MONO_PROTON_SITE = https://github.com/madewokherd/wine-mono/releases/download/wine-mono-$(WINE_MONO_PROTON_VERSION)/$(WINE_MONO_PROTON_VERSION)
+WINE_MONO_PROTON_SITE = https://github.com/madewokherd/wine-mono/releases/download/wine-mono-$(WINE_MONO_PROTON_VERSION)
 
 # Wine Gecko addon (required)
 #WINE_GECKO_VERSION = 2.47.1
