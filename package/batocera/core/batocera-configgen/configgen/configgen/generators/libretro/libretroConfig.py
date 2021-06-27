@@ -108,8 +108,6 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
 
     retroarchConfig['video_black_frame_insertion'] = 'false'    # don't use anymore this value while it doesn't allow the shaders to work
     retroarchConfig['pause_nonactive'] = 'false'                # required at least on x86 x86_64 otherwise, the game is paused at launch
-    retroarchConfig['audio_driver'] = 'alsa'                    # force ALSA. TODO: check audio.backend
-    retroarchConfig['midi_driver'] = 'alsa'
     retroarchConfig['cache_directory'] = '/userdata/system/.cache'
 
     retroarchConfig['video_fullscreen'] = 'true'                # Fullscreen is required at least for x86* and odroidn2
