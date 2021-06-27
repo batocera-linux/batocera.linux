@@ -1,0 +1,4 @@
+#!/bin/bash
+
+XDG_RUNTIME_DIR=/userdata/system /usr/bin/weston --backend=drm-backend.so --tty 1 --shell=kiosk-shell.so &
+sleep 5

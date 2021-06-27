@@ -1,0 +1,5 @@
+config BR2_PACKAGE_UBOOT_GAMEFORCE_CHI
+        bool "uboot-gameforce-chi"
+        select BR2_TOOLCHAIN_OPTIONAL_LINARO_AARCH64
+        help
+          uboot files for gameforce chi rk3326

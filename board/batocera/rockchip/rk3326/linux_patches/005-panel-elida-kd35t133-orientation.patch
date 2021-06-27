@@ -1,0 +1,32 @@
+--- a/drivers/gpu/drm/panel/panel-elida-kd35t133.c	2021-05-11 14:47:41.000000000 +0200
++++ b/drivers/gpu/drm/panel/panel-elida-kd35t133.c	2021-05-11 19:23:22.252975644 +0200
+@@ -43,6 +43,7 @@
+ 	struct regulator *vdd;
+ 	struct regulator *iovcc;
+ 	bool prepared;
++        enum drm_panel_orientation orientation;
+ };
+ 
+ static inline struct kd35t133 *panel_to_kd35t133(struct drm_panel *panel)
+@@ -217,6 +218,8 @@
+ 	connector->display_info.height_mm = mode->height_mm;
+ 	drm_mode_probed_add(connector, mode);
+ 
++        drm_connector_set_panel_orientation(connector, ctx->orientation);
++
+ 	return 1;
+ }
+ 
+@@ -275,6 +278,12 @@
+ 	if (ret)
+ 		return ret;
+ 
++        ret = of_drm_get_panel_orientation(dev->of_node, &ctx->orientation);
++        if (ret < 0) {
++                dev_err(dev, "%pOF: failed to get orientation %d\n", dev->of_node, ret);
++                return ret;
++        }
++
+ 	drm_panel_add(&ctx->panel);
+ 
+ 	ret = mipi_dsi_attach(dsi);
