@@ -183,6 +183,7 @@ menu "Emulators"
       source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/retroarch/libretro/libretro-watara/Config.in"
       source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/retroarch/libretro/libretro-genesisplusgx-wide/Config.in"
       source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/retroarch/libretro/libretro-swanstation/Config.in"
+      source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/retroarch/libretro/libretro-ecwolf/Config.in"
      endmenu
   endmenu
 
@@ -261,6 +262,7 @@ menu "Emulators"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/redream/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/tsugaru/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/xemu/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/ecwolf/Config.in"
 endmenu
 
 menu "Kodi"

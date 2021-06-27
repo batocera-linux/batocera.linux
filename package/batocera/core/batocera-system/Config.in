@@ -862,6 +862,10 @@ config BR2_PACKAGE_BATOCERA_CONSOLE_SYSTEMS
 	# Fairchild Channel F
 	select BR2_PACKAGE_LIBRETRO_FREECHAF            # ALL
 
+	# ECWolf
+	select BR2_PACKAGE_LIBRETRO_ECWOLF              # ALL
+	select BR2_PACKAGE_ECWOLF                       # ALL
+
 	help
 		All avaible systems for the selected architecture
 
