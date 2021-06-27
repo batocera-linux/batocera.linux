@@ -1,0 +1,22 @@
+diff --git a/arch/arm64/boot/dts/rockchip/px30.dtsi b/arch/arm64/boot/dts/rockchip/px30.dtsi
+index 2695ea8cda14..e056d1c32cc8 100644
+--- a/arch/arm64/boot/dts/rockchip/px30.dtsi
++++ b/arch/arm64/boot/dts/rockchip/px30.dtsi
+@@ -1106,6 +1106,17 @@ vopl_mmu: iommu@ff470f00 {
+ 		status = "disabled";
+ 	};
+ 
++	rga: rga@ff480000 {
++		compatible = "rockchip,px30-rga", "rockchip,rk3288-rga";
++		reg = <0x0 0xff480000 0x0 0x10000>;
++		interrupts = <GIC_SPI 76 IRQ_TYPE_LEVEL_HIGH 0>;
++		clocks = <&cru ACLK_RGA>, <&cru HCLK_RGA>, <&cru SCLK_RGA_CORE>;
++		clock-names = "aclk", "hclk", "sclk";
++		power-domains = <&power PX30_PD_VO>;
++		resets = <&cru SRST_RGA>, <&cru SRST_RGA_A>, <&cru SRST_RGA_H>;
++		reset-names = "core", "axi", "ahb";
++	};
++
+ 	qos_gmac: qos@ff518000 {
+ 		compatible = "syscon";
+ 		reg = <0x0 0xff518000 0x0 0x20>;

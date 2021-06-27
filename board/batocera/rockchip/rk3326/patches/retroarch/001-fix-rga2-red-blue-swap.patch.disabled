@@ -1,0 +1,89 @@
+--- a/deps/libgo2/src/display.c	2021-03-28 22:43:18.000000000 +0200
++++ b/deps/libgo2/src/display.c	2021-05-09 20:08:08.999623713 +0200
+@@ -540,6 +540,8 @@
+     switch (drm_fourcc)
+     {
+         case DRM_FORMAT_RGBA8888:
++        case DRM_FORMAT_ARGB8888:
++        case DRM_FORMAT_XRGB8888:
+             return RK_FORMAT_RGBA_8888;
+ 
+         case DRM_FORMAT_RGBX8888:
+@@ -548,10 +550,6 @@
+         case DRM_FORMAT_RGB888:
+             return RK_FORMAT_RGB_888;
+ 
+-        case DRM_FORMAT_ARGB8888:
+-        case DRM_FORMAT_XRGB8888:
+-            return RK_FORMAT_BGRA_8888;
+-
+         case DRM_FORMAT_RGB565:
+             return RK_FORMAT_RGB_565;
+ 
+--- a/gfx/drivers/oga_gfx.c	2021-05-09 20:10:39.589618223 +0200
++++ b/gfx/drivers/oga_gfx.c	2021-05-09 20:11:31.512949668 +0200
+@@ -216,7 +216,7 @@
+ 
+    args.width  = width;
+    args.height = height;
+-   args.bpp    = rk_format == RK_FORMAT_BGRA_8888 ? 32 : 16;
++   args.bpp    = rk_format == RK_FORMAT_RGBA_8888 ? 32 : 16;
+    args.flags  = 0;
+ 
+    if (drmIoctl(display_fd, DRM_IOCTL_MODE_CREATE_DUMB, &args) < 0)
+@@ -285,7 +285,7 @@
+    ret               = drmModeAddFB2(surface->display_fd,
+          surface->width,
+          surface->height,
+-         surface->rk_format == RK_FORMAT_BGRA_8888
++         surface->rk_format == RK_FORMAT_RGBA_8888
+          ? DRM_FORMAT_ARGB8888
+          : DRM_FORMAT_RGB565,
+          handles,
+@@ -390,7 +390,7 @@
+          video->input_scale, video->force_aspect, video->fullscreen, video->is_threaded, geom->base_width, geom->base_height,
+          geom->max_width, geom->max_height, aw, ah);
+ 
+-   vid->menu_surface = oga_create_surface(vid->fd, vid->drm_width, vid->drm_height, RK_FORMAT_BGRA_8888);
++   vid->menu_surface = oga_create_surface(vid->fd, vid->drm_width, vid->drm_height, RK_FORMAT_RGBA_8888);
+    vid->threaded = video->is_threaded;
+ 
+    /*
+@@ -404,8 +404,8 @@
+    vid->scale_mode = video->ctx_scaling << 1 | video->smooth;
+    vid->rotation = 0;
+ 
+-   vid->frame_surface = oga_create_surface(vid->fd, geom->max_width, geom->max_height, video->rgb32 ? RK_FORMAT_BGRA_8888 : RK_FORMAT_RGB_565);
+-   vid->msg_surface   = oga_create_surface(vid->fd, vid->drm_width, vid->drm_height, RK_FORMAT_BGRA_8888);
++   vid->frame_surface = oga_create_surface(vid->fd, geom->max_width, geom->max_height, video->rgb32 ? RK_FORMAT_RGBA_8888 : RK_FORMAT_RGB_565);
++   vid->msg_surface   = oga_create_surface(vid->fd, vid->drm_width, vid->drm_height, RK_FORMAT_RGBA_8888);
+    vid->last_msg[0]   = 0;
+ 
+    /* bitmap only for now */
+@@ -417,7 +417,7 @@
+ 
+    for (i = 0; i < NUM_PAGES; ++i)
+    {
+-      oga_surface_t* surface = oga_create_surface(vid->fd, vid->drm_height, vid->drm_width, RK_FORMAT_BGRA_8888);
++      oga_surface_t* surface = oga_create_surface(vid->fd, vid->drm_height, vid->drm_width, RK_FORMAT_RGBA_8888);
+       vid->pages[i] = oga_create_framebuf(surface);
+       if (!vid->pages[i])
+          return NULL;
+@@ -654,7 +654,7 @@
+    {
+       oga_destroy_surface(vid->menu_surface);
+       vid->menu_surface = oga_create_surface(vid->fd, width, height,
+-            RK_FORMAT_BGRA_8888);
++            RK_FORMAT_RGBA_8888);
+    }
+ 
+    /* The output pixel array with the converted pixels. */
+@@ -746,7 +746,7 @@
+    if (!vid)
+       return false;
+ 
+-   framebuffer->format = vid->frame_surface->rk_format == RK_FORMAT_BGRA_8888 ?
++   framebuffer->format = vid->frame_surface->rk_format == RK_FORMAT_RGBA_8888 ?
+       RETRO_PIXEL_FORMAT_XRGB8888 : RETRO_PIXEL_FORMAT_RGB565;
+    framebuffer->data = (uint8_t*)vid->frame_surface->map;
+    framebuffer->pitch = vid->frame_surface->pitch;

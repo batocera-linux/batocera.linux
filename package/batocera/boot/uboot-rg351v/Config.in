@@ -1,0 +1,5 @@
+config BR2_PACKAGE_UBOOT_RG351V
+        bool "uboot-rg351v"
+        select BR2_TOOLCHAIN_OPTIONAL_LINARO_AARCH64
+        help
+          uboot files for rg351v rk3326

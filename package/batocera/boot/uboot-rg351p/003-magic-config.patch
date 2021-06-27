@@ -1,0 +1,13 @@
+diff --git a/cmd/source.c b/cmd/source.c
+index bade226..a696c5c 100644
+--- a/cmd/source.c
++++ b/cmd/source.c
+@@ -135,7 +135,7 @@ source (ulong addr, const char *fit_uname)
+ 		{
+ 			char magic[32];
+ 			int size = snprintf(magic, sizeof(magic),
+-					"%s-uboot-config", CONFIG_SYS_BOARD);
++					    "%s-uboot-config", /*CONFIG_SYS_BOARD*/ "ODROIDGO2");
+ 			if (strncasecmp(buf, magic, strlen(magic))) {
+ 				puts ("Wrong image format for \"source\" command\n");
+ 				return 1;

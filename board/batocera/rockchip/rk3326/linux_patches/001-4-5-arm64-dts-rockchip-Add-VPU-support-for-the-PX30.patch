@@ -1,0 +1,34 @@
+diff --git a/arch/arm64/boot/dts/rockchip/px30.dtsi b/arch/arm64/boot/dts/rockchip/px30.dtsi
+index e056d1c32cc8..4322302a2685 100644
+--- a/arch/arm64/boot/dts/rockchip/px30.dtsi
++++ b/arch/arm64/boot/dts/rockchip/px30.dtsi
+@@ -986,6 +986,29 @@ gpu: gpu@ff400000 {
+ 		status = "disabled";
+ 	};
+ 
++	vpu: video-codec@ff442000 {
++		compatible = "rockchip,px30-vpu", "rockchip,rk3399-vpu";
++		reg = <0x0 0xff442000 0x0 0x800>;
++		interrupts = <GIC_SPI 80 IRQ_TYPE_LEVEL_HIGH>,
++			     <GIC_SPI 79 IRQ_TYPE_LEVEL_HIGH>;
++		interrupt-names = "vepu", "vdpu";
++		clocks = <&cru ACLK_VPU>, <&cru HCLK_VPU>, <&cru SCLK_CORE_VPU>;
++		clock-names = "aclk", "hclk", "sclk";
++		iommus = <&vpu_mmu>;
++		power-domains = <&power PX30_PD_VPU>;
++	};
++
++	vpu_mmu: iommu@ff442800 {
++		compatible = "rockchip,iommu";
++		reg = <0x0 0xff442800 0x0 0x100>;
++		interrupts = <GIC_SPI 81 IRQ_TYPE_LEVEL_HIGH>;
++		interrupt-names = "vpu_mmu";
++		clocks = <&cru ACLK_VPU>, <&cru HCLK_VPU>;
++		clock-names = "aclk", "iface";
++		#iommu-cells = <0>;
++		power-domains = <&power PX30_PD_VPU>;
++	};
++
+ 	dsi: dsi@ff450000 {
+ 		compatible = "rockchip,px30-mipi-dsi";
+ 		reg = <0x0 0xff450000 0x0 0x10000>;

@@ -1,0 +1,7 @@
+#!/bin/bash
+
+# set alsa output to speakers by default
+if test "${1}" = "start"
+then
+    amixer -c 0 sset 'Playback Mux' 'SPK'
+fi

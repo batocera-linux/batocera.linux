@@ -1,0 +1,64 @@
+diff --git a/arch/arm64/boot/dts/rockchip/rk3326-odroid-go2.dts b/arch/arm64/boot/dts/rockchip/rk3326-odroid-go2.dts
+index 49c97f76df77..e8c2b5a817a7 100644
+--- a/arch/arm64/boot/dts/rockchip/rk3326-odroid-go2.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3326-odroid-go2.dts
+@@ -165,6 +165,31 @@ blue_led: led-0 {
+ 		};
+ 	};
+ 
++	rk817-sound {
++		compatible = "simple-audio-card";
++		simple-audio-card,name = "Analog";
++		simple-audio-card,format = "i2s";
++		simple-audio-card,mclk-fs = <256>;
++		simple-audio-card,widgets =
++			"Microphone", "Mic Jack",
++			"Headphone", "Headphones",
++			"Speaker", "Speaker";
++		simple-audio-card,routing =
++			"MICL", "Mic Jack",
++			"Headphones", "HPOL",
++			"Headphones", "HPOR",
++			"Speaker", "SPKO";
++		simple-audio-card,hp-det-gpio = <&gpio2 RK_PC6 GPIO_ACTIVE_HIGH>;
++
++		simple-audio-card,cpu {
++			sound-dai = <&i2s1_2ch>;
++		};
++
++		simple-audio-card,codec {
++			sound-dai = <&rk817>;
++		};
++	};
++
+ 	vccsys: vccsys {
+ 		compatible = "regulator-fixed";
+ 		regulator-name = "vcc3v8_sys";
+@@ -269,11 +294,14 @@ rk817: pmic@20 {
+ 		reg = <0x20>;
+ 		interrupt-parent = <&gpio0>;
+ 		interrupts = <RK_PB2 IRQ_TYPE_LEVEL_LOW>;
++		clock-output-names = "rk808-clkout1", "xin32k";
++		clock-names = "mclk";
++		clocks = <&cru SCLK_I2S1_OUT>;
+ 		pinctrl-names = "default";
+-		pinctrl-0 = <&pmic_int>;
++		pinctrl-0 = <&pmic_int>, <&i2s1_2ch_mclk>;
+ 		wakeup-source;
+ 		#clock-cells = <1>;
+-		clock-output-names = "rk808-clkout1", "xin32k";
++		#sound-dai-cells = <0>;
+ 
+ 		vcc1-supply = <&vccsys>;
+ 		vcc2-supply = <&vccsys>;
+@@ -432,6 +460,10 @@ regulator-state-mem {
+ 				};
+ 			};
+ 		};
++
++		rk817_codec: codec {
++			rockchip,mic-in-differential;
++		};
+ 	};
+ };
+ 
