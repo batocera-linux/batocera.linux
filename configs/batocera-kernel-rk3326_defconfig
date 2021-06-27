@@ -1,7 +1,7 @@
 # Target definition
-BR2_arm=y
-BR2_cortex_a17=y
-BR2_ARM_FPU_NEON_VFPV4=y
+BR2_aarch64=y
+BR2_cortex_a35=y
+BR2_ARM_FPU_NEON_FP_ARMV8=y
 
 # Toolchain definition
 BR2_GCC_VERSION_10_X=y
@@ -29,13 +29,13 @@ BR2_LINUX_KERNEL_CUSTOM_VERSION=y
 BR2_LINUX_KERNEL_CUSTOM_VERSION_VALUE="5.10.46"
 BR2_KERNEL_HEADERS_5_10=y
 BR2_LINUX_KERNEL_DTS_SUPPORT=y
-BR2_LINUX_KERNEL_INTREE_DTS_NAME="rk3288-tinker rk3288-miqi"
+#BR2_LINUX_KERNEL_INTREE_DTS_NAME=""
 BR2_LINUX_KERNEL_NEEDS_HOST_OPENSSL=y
-BR2_LINUX_KERNEL_PATCH="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/rk3288/linux_patches"
+BR2_LINUX_KERNEL_CUSTOM_DTS_PATH="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/rk3326/odroidgoa/rk3326-odroid-go2.dts $(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/rk3326/odroidgoa/rk3326-odroid-go2-v11.dts $(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/rk3326/odroidgoa/rk3326-odroid-go3.dts $(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/rk3326/gameforce/rk3326-gameforce.dts $(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/rk3326/rg351p/rk3326-rg351p.dts $(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/rk3326/rg351v/rk3326-rg351v.dts"
+BR2_LINUX_KERNEL_PATCH="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/rk3326/linux_patches"
 BR2_LINUX_KERNEL_USE_CUSTOM_CONFIG=y
-BR2_LINUX_KERNEL_CUSTOM_CONFIG_FILE="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/rk3288/linux-defconfig.config"
-BR2_LINUX_KERNEL_CONFIG_FRAGMENT_FILES="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/rk3288/linux-defconfig-fragment.config"
-BR2_PACKAGE_BUSYBOX_CONFIG_FRAGMENT_FILES="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/busybox.custom.config"
+BR2_LINUX_KERNEL_CUSTOM_CONFIG_FILE="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/rk3326/linux-defconfig.config"
+BR2_LINUX_KERNEL_CONFIG_FRAGMENT_FILES="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/rk3326/linux-defconfig-fragment.config"
 
 # Required to build ??
 BR2_PACKAGE_UTIL_LINUX_LIBSMARTCOLS=y

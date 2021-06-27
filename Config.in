@@ -2,6 +2,9 @@ menu "batocera.linux"
 
 menu "Kernel"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/retrolx/kernel-meson64/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/retrolx/kernel-rk3288/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/retrolx/kernel-rk3326/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/retrolx/kernel-rk3399/Config.in"
 endmenu
 
 menu "System"
