@@ -18,6 +18,9 @@ LIBRETRO_LUTRO_PLATFORM = armv neon
 
 else ifeq ($(BR2_aarch64),y)
 LIBRETRO_LUTRO_PLATFORM = unix
+
+else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI3),y)
+LIBRETRO_LUTRO_PLATFORM = armv neon
 endif
 
 define LIBRETRO_LUTRO_BUILD_CMDS
