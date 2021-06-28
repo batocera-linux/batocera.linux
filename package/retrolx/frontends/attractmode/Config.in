@@ -1,0 +1,10 @@
+config BR2_PACKAGE_ATTRACTMODE
+    bool "attractmode"
+    select BR2_PACKAGE_SFML
+
+    help
+      Attract-Mode frontend
+
+      https://github.com/mickelson/attract
+
+

@@ -244,6 +244,7 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
 
 	# frontends
 	select BR2_PACKAGE_RETROFE
+	select BR2_PACKAGE_ATTRACTMODE if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
 
 	help
     	Install the batocera.linux system files
