@@ -40,7 +40,6 @@ c64:
       xscpu64:     { requireAnyOf: [BR2_PACKAGE_VICE], incompatible_extensions: [m3u,7z] }
     libretro:
       vice_x64:    { requireAnyOf: [BR2_PACKAGE_LIBRETRO_VICE] }
-      vice_x64sc:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_VICE] }
 
 cplus4:
   name:       Commodore Plus4
@@ -53,8 +52,6 @@ cplus4:
   emulators:
     vice:
       xplus4:      { requireAnyOf: [BR2_PACKAGE_VICE], incompatible_extensions: [m3u,7z] }
-    libretro:
-      vice_xplus4: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_VICE] }
 
 c128:
   name:       Commodore 128
@@ -66,8 +63,6 @@ c128:
   emulators:
     vice:
       x128:          { requireAnyOf: [BR2_PACKAGE_VICE], incompatible_extensions: [m3u,7z] }
-    libretro:
-      vice_x128:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_VICE] }
 
 c20:
   name:       Commodore VIC-20
@@ -79,8 +74,6 @@ c20:
   emulators:
     vice:
       xvic:      { requireAnyOf: [BR2_PACKAGE_VICE], incompatible_extensions: [m3u,7z] }
-    libretro:
-      vice_xvic: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_VICE] }
 
 pet:
   name:       Commodore PET
@@ -92,8 +85,6 @@ pet:
   emulators:
     vice:
       xpet:      { requireAnyOf: [BR2_PACKAGE_VICE], incompatible_extensions: [m3u,7z] }
-    libretro:
-      vice_xpet: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_VICE] }
 
 amiga500:
   name:       Amiga OCS/ECS
