@@ -70,7 +70,7 @@ ifeq ($(BR2_aarch64),y)
 PPSSPP_CONF_OPTS += \
 	-DARM64=ON \
 	-DUSING_GLES2=ON \
-	-DUSING_EGL=ON
+	-DUSING_EGL=OFF
 endif
 
 # odroid / rpi / rockpro64
@@ -78,21 +78,14 @@ ifeq ($(BR2_arm),y)
 PPSSPP_CONF_OPTS += \
 	-DARMV7=ON \
 	-DARM=ON \
-	-DUSING_GLES2=ON
+	-DUSING_GLES2=ON \
+    -DUSING_EGL=OFF
 endif
 
 # rockchip
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_ROCKCHIP_ANY),y)
-ifeq ($(BR2_arm),y)
-PPSSPP_CONF_OPTS += -DUSING_EGL=OFF
-endif
-
 # In order to support the custom resolution patch, permissive compile is needed
 PPSSPP_TARGET_CFLAGS += -fpermissive
-else
-ifeq ($(BR2_arm),y)
-PPSSPP_CONF_OPTS += -DUSING_EGL=ON
-endif
 endif
 
 ifeq ($(BR2_PACKAGE_HAS_LIBMALI),y)
