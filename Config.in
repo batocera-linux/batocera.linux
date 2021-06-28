@@ -1,10 +1,10 @@
 menu "batocera.linux"
 
 menu "Kernel"
-  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/retrolx/kernel-meson64/Config.in"
-  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/retrolx/kernel-rk3288/Config.in"
-  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/retrolx/kernel-rk3326/Config.in"
-  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/retrolx/kernel-rk3399/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/retrolx/kernel-meson64/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/retrolx/kernel-rk3288/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/retrolx/kernel-rk3326/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/retrolx/kernel-rk3399/Config.in"
 endmenu
 
 menu "System"
@@ -87,6 +87,10 @@ menu "Emulationstation"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulationstation/es-theme-carbon/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulationstation/es-theme-minijawn/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulationstation/es-background-musics/Config.in"
+endmenu
+
+menu "Frontends"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/retrolx/retrofe/Config.in"
 endmenu
 
 menu "Controllers"
