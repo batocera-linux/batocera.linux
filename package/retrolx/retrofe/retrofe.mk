@@ -10,11 +10,14 @@ RETROFE_SITE_METHOD=git
 RETROFE_LICENSE = GPLv3
 RETROFE_DEPENDENCIES = sdl2 gstreamer1 gst1-plugins-base
 
-# Should be set when the package cannot be built inside the source tree but needs a separate build directory.
 RETROFE_SUBDIR = RetroFE/Source
-RETROFE_CONF_OPTS = -DBUILD_SHARED_LIBS=OFF
+#RETROFE_CONF_OPTS = 
+#-DBUILD_SHARED_LIBS=OFF
 
 define RETROFE_INSTALL_TARGET_CMDS
+	cd $(@D) && $(HOST_DIR)/bin/python $(@D)/Scripts/Package.py --os=linux --build=full
+	mkdir -p $(TARGET_DIR)/opt/retrolx/RetroFE
+	cp -R $(@D)/Artifacts/linux/RetroFE/* $(TARGET_DIR)/opt/retrolx/RetroFE/
 endef
 
 $(eval $(cmake-package))

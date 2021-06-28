@@ -1,6 +1,6 @@
 config BR2_PACKAGE_RETROFE
     bool "retrofe"
-    depends on BR2_PACKAGE_SDL2
+    select BR2_PACKAGE_SDL2
     select BR2_PACKAGE_GSTREAMER1
     select BR2_PACKAGE_GST1_PLUGINS_BASE
 
