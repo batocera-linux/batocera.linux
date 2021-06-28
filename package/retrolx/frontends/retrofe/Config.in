@@ -1,6 +1,9 @@
 config BR2_PACKAGE_RETROFE
     bool "retrofe"
     select BR2_PACKAGE_SDL2
+    select BR2_PACKAGE_SDL2_IMAGE
+    select BR2_PACKAGE_SDL2_MIXER
+    select BR2_PACKAGE_SDL2_TTF
     select BR2_PACKAGE_GSTREAMER1
     select BR2_PACKAGE_GST1_PLUGINS_BASE
 

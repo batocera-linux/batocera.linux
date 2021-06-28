@@ -12,7 +12,7 @@ if BR2_PACKAGE_BATOCERA_TARGET_X86 || BR2_PACKAGE_BATOCERA_TARGET_X86_64
 	default y
 endif
 
-if BR2_PACKAGE_BATOCERA_TARGET_RK3399 || BR2_PACKAGE_BATOCERA_TARGET_RK3288 || BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA || BR2_PACKAGE_BATOCERA_TARGET_GAMEFORCE
+if BR2_PACKAGE_BATOCERA_TARGET_RK3399 || BR2_PACKAGE_BATOCERA_TARGET_RK3288 || BR2_PACKAGE_BATOCERA_TARGET_RK3326 || BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA || BR2_PACKAGE_BATOCERA_TARGET_GAMEFORCE
 	config BR2_PACKAGE_BATOCERA_TARGET_ROCKCHIP_ANY
 	bool "rockchip_targets"
 	default y
@@ -286,6 +286,7 @@ config BR2_TARGET_BATOCERA_IMAGES_DEFINITIONS
 	default "raspberrypi/rpi4"                                  			if BR2_PACKAGE_BATOCERA_TARGET_RPI4
 	default "rockchip/odroidgoa"                                			if BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA
   default "rockchip/gameforce"                                      if BR2_PACKAGE_BATOCERA_TARGET_GAMEFORCE
+	default "rockchip/rk3326/odroidgoa rockchip/rk3326/gameforce rockchip/rk3326/rg351v rockchip/rk3326/rg351p" if BR2_PACKAGE_BATOCERA_TARGET_RK3326
 	default "rockchip/rk3288/tinkerboard rockchip/rk3288/miqi"  			if BR2_PACKAGE_BATOCERA_TARGET_RK3288
 	default "rockchip/rk3399/rock960 rockchip/rk3399/rockpro64 rockchip/rk3399/x99" if BR2_PACKAGE_BATOCERA_TARGET_RK3399
 	default "tritium-h5"                                        			if BR2_PACKAGE_BATOCERA_TARGET_TRITIUM_H5
@@ -320,6 +321,9 @@ config BR2_PACKAGE_BATOCERA_TARGET_XU4
 
 config BR2_PACKAGE_BATOCERA_TARGET_S922X
 	bool "s922x"
+
+config BR2_PACKAGE_BATOCERA_TARGET_RK3326
+	bool "rk3326"
 
 config BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA
 	bool "odroidgoa"
