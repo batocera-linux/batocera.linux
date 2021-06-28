@@ -33,18 +33,9 @@ BR2_ROOTFS_OVERLAY="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/fsoverlay $(BR2
 BR2_ROOTFS_POST_BUILD_SCRIPT="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/scripts/post-build-script.sh"
 BR2_ROOTFS_POST_IMAGE_SCRIPT="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/scripts/post-image-script.sh"
 
-# Kernel
-BR2_LINUX_KERNEL=y
-BR2_LINUX_KERNEL_CUSTOM_VERSION=y
-BR2_LINUX_KERNEL_CUSTOM_VERSION_VALUE="5.10.46"
+# Meson64 kernel (out-of-tree build)
+BR2_PACKAGE_KERNEL_MESON64=y
 BR2_KERNEL_HEADERS_5_10=y
-BR2_LINUX_KERNEL_PATCH="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/amlogic/linux_patches"
-BR2_LINUX_KERNEL_USE_CUSTOM_CONFIG=y
-BR2_LINUX_KERNEL_CUSTOM_CONFIG_FILE="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/amlogic/linux-meson64-current.config"
-BR2_LINUX_KERNEL_CONFIG_FRAGMENT_FILES="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/amlogic/s905gen3/linux-defconfig-fragment.config"
-BR2_LINUX_KERNEL_DTS_SUPPORT=y
-BR2_LINUX_KERNEL_INTREE_DTS_NAME="amlogic/meson-sm1-odroid-c4 amlogic/meson-sm1-khadas-vim3l amlogic/meson-sm1-h96-max amlogic/meson-sm1-sei610 amlogic/meson-sm1-x96-air-2g amlogic/meson-sm1-x96-air-4g amlogic/meson-sm1-a95xf3-air-2g amlogic/meson-sm1-a95xf3-air-4g"
-BR2_LINUX_KERNEL_NEEDS_HOST_OPENSSL=y
 
 # System
 BR2_PACKAGE_BUSYBOX_CONFIG_FRAGMENT_FILES="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/busybox.custom.config"
@@ -61,9 +52,6 @@ BR2_TARGET_ROOTFS_SQUASHFS4_ZSTD=y
 BR2_PACKAGE_PYTHON3_PY_PYC=y
 BR2_PACKAGE_PYTHON_HASHLIB=y
 BR2_PACKAGE_LUA_5_1=y
-
-# Hack
-BR2_PACKAGE_BATOCERA_RPI_VCORE=n
 
 # GPU
 BR2_PACKAGE_BATOCERA_PANFROST_MESA3D=y
