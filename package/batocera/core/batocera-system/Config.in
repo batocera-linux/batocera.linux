@@ -896,9 +896,6 @@ config BR2_PACKAGE_BATOCERA_KODI19
 	select BR2_PACKAGE_KODI_PERIPHERAL_JOYSTICK     # joysticks for kodi
 	select BR2_PACKAGE_KODI_PERIPHERAL_XARCADE      # xarcade for kodi
 
-	# Rockchip ffmpeg playback package
-	select BR2_PACKAGE_ROCKCHIP_MPP     if BR2_PACKAGE_BATOCERA_TARGET_ROCKCHIP_ANY
-
 	# ffmpeg enabler that i'm not sure it has an impact on kodi
 	select BR2_PACKAGE_FFMPEG_GPL           # video recording
 	select BR2_PACKAGE_FFMPEG_AVRESAMPLE    # audio resampler
