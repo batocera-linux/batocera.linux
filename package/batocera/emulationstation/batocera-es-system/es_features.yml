@@ -419,6 +419,12 @@ libretro:
                 choices:
                     "Off":        "true"
                     "On":         "false"
+            gpu_software:
+                prompt:      GPU SOFTWARE RENDERING
+                description: Force use of software rendering
+                choices:
+                    "Off":        False
+                    "On":         True
             duckstation_resolution_scale:
                 prompt:      VIDEO RESOLUTION
                 description: Improve the fidelity of 3D models (unaffect 2D)
