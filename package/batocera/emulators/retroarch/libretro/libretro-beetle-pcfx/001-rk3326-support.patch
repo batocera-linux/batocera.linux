@@ -1,0 +1,21 @@
+--- a/Makefile	2021-06-29 23:15:17.436897506 +0200
++++ b/Makefile	2021-06-29 23:15:46.944263828 +0200
+@@ -143,6 +143,18 @@
+    FLAGS += -mcpu=cortex-a55
+    ASFLAGS += -mcpu=cortex-a55
+ 
++# Rockchip RK3326
++else ifneq (,$(findstring RK3326,$(platform)))
++   TARGET := $(TARGET_NAME)_libretro.so
++   fpic := -fPIC
++   SHARED := -shared -Wl,--no-undefined -Wl,--version-script=link.T
++   CC ?= gcc
++   LDFLAGS += $(PTHREAD_FLAGS)
++   FLAGS += $(PTHREAD_FLAGS)
++   IS_X86 = 0
++   FLAGS += -mcpu=cortex-a35
++   ASFLAGS += -mcpu=cortex-a35
++
+ # Raspberry Pi 4 64-bit
+ else ifneq (,$(findstring rpi4,$(platform)))
+    TARGET := $(TARGET_NAME)_libretro.so
