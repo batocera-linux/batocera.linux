@@ -8,5 +8,5 @@
 ARCH="$1"
 HOST_DIR="$2"
 
-PATH=$(HOST_DIR)/usr/bin:$PATH repo-add retrolx-$ARCH.db.tar.gz *.pkg.tar.zst
+PATH=$HOST_DIR/usr/bin:$PATH repo-add retrolx-$ARCH.db.tar.gz *.pkg.tar.zst
 

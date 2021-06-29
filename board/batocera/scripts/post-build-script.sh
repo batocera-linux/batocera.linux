@@ -116,3 +116,6 @@ if ! [[ -z "${SYSTEM_GETTY_PORT}" ]]; then
     sed -i -e '/# GENERIC_SERIAL$/s~^.*#~S0::respawn:/sbin/getty -n -L -l /usr/bin/batocera-autologin '${SYSTEM_GETTY_PORT}' '${SYSTEM_GETTY_BAUDRATE}' vt100 #~' \
         ${TARGET_DIR}/etc/inittab
 fi
+
+# build package db
+cd "${TARGET_DIR}/opt/retrolx" && "${BR2_EXTERNAL_BATOCERA_PATH}/board/batocera/scripts/retrolx-makedb" "${BATOCERA_SYSTEM_ARCH}" "${HOST_DIR}"
