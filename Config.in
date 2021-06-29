@@ -201,10 +201,16 @@ menu "Emulators"
      endmenu
   endmenu
 
-  source "$BR2_EXTERNAL_BATOCERA_PATH/package/retrolx/emulators/amiberry/Config.in"
-  source "$BR2_EXTERNAL_BATOCERA_PATH/package/retrolx/emulators/hatari/Config.in"
+  menu "Standalone emulators"
+    source "$BR2_EXTERNAL_BATOCERA_PATH/package/retrolx/emulators/amiberry/Config.in"
+    source "$BR2_EXTERNAL_BATOCERA_PATH/package/retrolx/emulators/hatari/Config.in"
+  endmenu
+
+  menu "Ports"
+    source "$BR2_EXTERNAL_BATOCERA_PATH/package/retrolx/ports/devilutionx/Config.in"
+  endmenu
+
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/cgenius/Config.in"
-  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/devilutionx/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/dolphin-emu/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/dosbox/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/dosbox-staging/Config.in"
