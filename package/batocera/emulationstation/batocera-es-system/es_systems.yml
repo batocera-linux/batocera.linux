@@ -1902,6 +1902,6 @@ ecwolf:
   extensions: [ecwolf, pk3, zip, 7zip]
   emulators:
     libretro:
-      ecwolf: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_ECWOLF] }
+      ecwolf: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_ECWOLF], incompatible_extensions: [ecwolf] }
     ecwolf:
       ecwolf: { requireAnyOf: [BR2_PACKAGE_ECWOLF] }

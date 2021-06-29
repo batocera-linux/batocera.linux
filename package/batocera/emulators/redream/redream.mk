@@ -16,7 +16,6 @@ endef
 
 define REDREAM_INSTALL_TARGET_CMDS
 	mkdir -p $(TARGET_DIR)/usr/bin
-	mkdir -p $(TARGET_DIR)/usr/share/evmapy
 
 	cp -pr $(@D)/target/redream $(TARGET_DIR)/usr/bin/redream
 
