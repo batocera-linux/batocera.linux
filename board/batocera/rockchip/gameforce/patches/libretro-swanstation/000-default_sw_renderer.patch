@@ -1,0 +1,13 @@
+diff --git a/src/duckstation-libretro/libretro_host_interface.cpp b/src/duckstation-libretro/libretro_host_interface.cpp
+index 5c17a3d..ec9b220 100644
+--- a/src/duckstation-libretro/libretro_host_interface.cpp
++++ b/src/duckstation-libretro/libretro_host_interface.cpp
+@@ -657,7 +657,7 @@ static std::array<retro_core_option_definition, 64> s_option_definitions = {{
+ #ifdef WIN32
+    "D3D11"
+ #else
+-   "OpenGL"
++   "Software"
+ #endif
+   },
+   {"duckstation_GPU.UseThread",
