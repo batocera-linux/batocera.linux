@@ -1,13 +1,14 @@
 diff --git a/src/common/file_system.cpp b/src/common/file_system.cpp
-index a287703..41aacc0 100644
+index ceb2f08..0fa5a04 100644
 --- a/src/common/file_system.cpp
 +++ b/src/common/file_system.cpp
-@@ -261,6 +261,8 @@ std::string ReplaceExtension(std::string_view path, std::string_view new_extensi
+@@ -683,6 +683,9 @@ std::string GetDisplayNameFromPath(const std::string_view& path)
  
- std::string GetPathDirectory(const char* path)
+ std::string_view GetPathDirectory(const std::string_view& path)
  {
++
 +  return "/usr/share/duckstation";
-+  
- #ifdef WIN32
-   const char* forwardslash_ptr = std::strrchr(path, '/');
-   const char* backslash_ptr = std::strrchr(path, '\\');
++
+   std::string::size_type pos = GetLastSeperatorPosition(path, false);
+   if (pos == std::string_view::npos)
+     return {};
