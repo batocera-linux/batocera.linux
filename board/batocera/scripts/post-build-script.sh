@@ -117,5 +117,7 @@ if ! [[ -z "${SYSTEM_GETTY_PORT}" ]]; then
         ${TARGET_DIR}/etc/inittab
 fi
 
-# build package db
-cd "${TARGET_DIR}/opt/retrolx" && "${BR2_EXTERNAL_BATOCERA_PATH}/board/batocera/scripts/retrolx-makedb" "${BATOCERA_SYSTEM_ARCH}" "${HOST_DIR}"
+# build package db and cleanup /opt
+cd "${TARGET_DIR}/opt/retrolx" && "${BR2_EXTERNAL_BATOCERA_PATH}/board/batocera/scripts/retrolx-makedb" "${BATOCERA_TARGET,,}" "${HOST_DIR}"
+cd "${TARGET_DIR}/opt/retrolx" && rm -r */ && mv * "${BR2_EXTERNAL_BATOCERA_PATH}/repo/"
+rm -Rf "${TARGET_DIR}/opt"
