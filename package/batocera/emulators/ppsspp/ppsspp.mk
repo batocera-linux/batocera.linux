@@ -82,7 +82,7 @@ PPSSPP_CONF_OPTS += \
 endif
 
 # rockchip
-ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_ROCKCHIP_ANY),y)
+ifeq ($(BR2_PACKAGE_BATOCERA_ROCKCHIP_ANY),y)
 ifeq ($(BR2_arm),y)
 PPSSPP_CONF_OPTS += -DUSING_EGL=OFF
 endif
