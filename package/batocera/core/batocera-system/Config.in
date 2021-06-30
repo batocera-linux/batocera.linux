@@ -213,7 +213,7 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
 						   !BR2_PACKAGE_BATOCERA_XU4
 
 	# tools for package management (build packages and repo)
-	select BR2_PACKAGE_HOST_PACMAN		
+	select BR2_PACKAGE_HOST_PACMAN
 	
 	# xorg
 	select BR2_PACKAGE_BATOCERA_XORG        if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
