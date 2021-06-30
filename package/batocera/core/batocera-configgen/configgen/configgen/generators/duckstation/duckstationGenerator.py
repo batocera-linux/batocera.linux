@@ -21,14 +21,14 @@ class DuckstationGenerator(Generator):
         settings = configparser.ConfigParser(interpolation=None)
         # To prevent ConfigParser from converting to lower case
         settings.optionxform = str
-        settings_path = batoceraFiles.SAVES + "/duckstation/settings.ini"
+        settings_path = batoceraFiles.CONF + "/duckstation/settings.ini"
         if os.path.exists(settings_path):
             settings.read(settings_path)
 
         ## [MAIN]
         if not settings.has_section("Main"):
             settings.add_section("Main")
-        
+
         # Settings, Language and ConfirmPowerOff
         settings.set("Main", "SettingsVersion", "3") # Probably to be updated in the future
         settings.set("Main", "Language", getLangFromEnvironment())
@@ -145,7 +145,7 @@ class DuckstationGenerator(Generator):
            settings.set("GPU", "TextureFilter", system.config["duckstation_texture_filtering"])
         else:
            settings.set("GPU", "TextureFilter", "Nearest")
-        
+
 
 
         ## [DISPLAY]
@@ -276,7 +276,7 @@ class DuckstationGenerator(Generator):
             os.makedirs(os.path.dirname(settings_path))
         with open(settings_path, 'w') as configfile:
             settings.write(configfile)
-        env = {"XDG_CONFIG_HOME":batoceraFiles.CONF, "XDG_DATA_HOME":batoceraFiles.SAVES, "QT_QPA_PLATFORM":"xcb"}
+        env = {"XDG_DATA_HOME":batoceraFiles.CONF, "QT_QPA_PLATFORM":"xcb"}
         return Command.Command(array=commandArray, env=env)
 
 
@@ -291,7 +291,7 @@ def getGfxRatioFromConfig(config, gameResolution):
 
     if ("ratio" not in config or ("ratio" in config and config["ratio"] == "auto")) and gameResolution["width"] / float(gameResolution["height"]) >= (16.0 / 9.0) - 0.1: # let a marge
         return "16:9"
-        
+
     return "4:3"
 
 
@@ -327,7 +327,7 @@ def configurePads(settings, playersControllers, system):
     nplayer = 1
     for playercontroller, pad in sorted(playersControllers.items()):
         controller = "Controller" + str(nplayer)
-        
+
         ## [SECTION]
         if not settings.has_section(controller):
             settings.add_section(controller)
