@@ -1403,7 +1403,7 @@ def generateCoreSettings(coreSettings, system, rom):
 
     if (system.config['core'] == 'swanstation'):
         # renderer
-        if system.isOptSet("gpu_software") and system.getOptBoolean(system.config["gpu_software"]) == True:
+        if system.isOptSet("gpu_software") and system.getOptBoolean("gpu_software") == True:
             coreSettings.save('duckstation_GPU.Renderer', "Software")
         else:
             if system.isOptSet("gfxbackend"):
