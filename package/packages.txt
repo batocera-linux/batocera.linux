@@ -1,0 +1,656 @@
+batocera/boot/batocera-initramfs/Config.in:	select BR2_PACKAGE_HOST_UBOOT_TOOLS
+
+batocera/core/batocera-scripts/Config.in:	select BR2_PACKAGE_DBUS_PYTHON                          # required for bluetooth scripts
+batocera/core/batocera-scripts/Config.in:	select BR2_PACKAGE_JQ # for vulkan parsing
+batocera/core/batocera-scripts/Config.in:	select BR2_PACKAGE_PYTHON_GOBJECT # for bluetooth agent
+
+batocera/core/batocera-splash/Config.in:    select BR2_PACKAGE_FFMPEG_FFPLAY if BR2_PACKAGE_BATOCERA_SPLASH_FFPLAY
+batocera/core/batocera-splash/Config.in:    select BR2_PACKAGE_DEJAVU_SANS   if BR2_PACKAGE_BATOCERA_SPLASH_OMXPLAYER
+batocera/core/batocera-splash/Config.in:    select BR2_PACKAGE_OMXPLAYER     if BR2_PACKAGE_BATOCERA_SPLASH_OMXPLAYER
+batocera/core/batocera-splash/Config.in:    select BR2_PACKAGE_MPV           if BR2_PACKAGE_BATOCERA_SPLASH_MPV
+batocera/core/batocera-splash/Config.in:    select BR2_PACKAGE_LIBASS        if BR2_PACKAGE_BATOCERA_SPLASH_MPV
+
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_LUAJIT           if !BR2_aarch64 # for performance
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_LUA              if  BR2_aarch64
+
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_WAYLAND
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_VULKAN_HEADERS
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_VULKAN_LOADER
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_SPIRV_HEADERS
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_GLSLANG
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_VULKAN_TOOLS
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_SLANG_SHADERS if BR2_PACKAGE_RETROARCH
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_MESA3D_VULKAN_DRIVER_INTEL       if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_MESA3D_VULKAN_DRIVER_AMD         if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_MESA3D_VULKAN_DRIVER_BROADCOM    if BR2_PACKAGE_BATOCERA_TARGET_RPI4
+batocera/core/batocera-system/Config.in:	select BR2_TARGET_BATOCERA_IMAGES_DEFINITIONS
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_BATOCERA_INITRAMFS                   # initramfs to boot the system
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_BATOCERA_EMULATIONSTATION            # emulationstation
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_ES_THEME_CARBON                      # emulationstation theme
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_ES_BACKGROUND_MUSICS                 # emulationstation musics
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_BATOCERA_ES_SYSTEM                   # emulation station es_systems.cfg generator + default roms
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_BATOCERA_CONFIGGEN                   # emulation station external command launcher
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_BATOCERA_TRIGGERHAPPY                # multimedia/power buttons
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_BATOCERA_IMAGE                       # tools to generate batocera image
+batocera/core/batocera-system/Config.in:	select BR2_TARGET_ROOTFS_SQUASHFS                       # tool to generate the target image
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_QTSIXA_SHANWAN                       # ps3 pad
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_XARCADE2JSTICK                       # keyboard events of the Xarcade Tankstick
+
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_BATOCERA_SPLASH                      # boot splash
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_BATOCERA_SCRIPTS                     # batocera scripts
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_BATOCERA_SETTINGS                    # batocera-settings-get/set
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_BATOCERA_AUDIO                       # batocera audio
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_BATOCERA_BLUETOOTH                   # batocera bluetooth
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_BATOCERA_NOTICE                      # boot pdf notice
+
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_SDL2_OPENGLES                        # ALL
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_SDL2_KMSDRM                          if !BR2_PACKAGE_BATOCERA_RPI_VCORE
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_LIBDRM                               if !BR2_PACKAGE_BATOCERA_RPI_VCORE
+batocera/core/batocera-system/Config.in:    select BR2_PACKAGE_LIBDRM_EXYNOS                        if BR2_PACKAGE_LIBDRM && BR2_PACKAGE_BATOCERA_TARGET_XU4
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_BATOCERA_DRMINFO                     if BR2_PACKAGE_LIBDRM
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_LIRC_TOOLS                           # lirc (remote control)
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_LIBCEC                               # libcec
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_EDID_DECODE                          # edid monitor/tv support
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_READ_EDID                            # edid monitor/tv support
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_XOW                                  # xbox receiver
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_WII_U_GC_ADAPTER                     # wii-u-gc-adapter
+batocera/core/batocera-system/Config.in:	select BR2_SYSTEM_ENABLE_NLS                            # locales
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_ACPID                                if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
+
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_XKEYBOARD_CONFIG                     if BR2_PACKAGE_LIBXKBCOMMON # requirement for xkb to work, xkb is used by kodi, even without x for the keyboard
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_FLATPAK                              if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY # flatpak app packaging system
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_RPI_FIRMWARE             if BR2_PACKAGE_BATOCERA_RPI_ANY # rpi firmwares
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_RPI_WIFI_FIRMWARE        if BR2_PACKAGE_BATOCERA_RPI_ANY # rpi wifi firmware
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_RPI_BT_FIRMWARE          if BR2_PACKAGE_BATOCERA_RPI_ANY # rpi bluetooth firmware
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_GPICASE              if BR2_PACKAGE_BATOCERA_TARGET_RPI1 # retroflag gpicase
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_ROSHAMBO_CASE        if BR2_PACKAGE_BATOCERA_TARGET_RK3399 # roshambo case
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_RPIGPIOSWITCH        if BR2_PACKAGE_BATOCERA_RPI_ANY # gpio switchs
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_RETROGAME            if BR2_PACKAGE_BATOCERA_RPI_ANY # gpio pads
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_BATOCERA_MUSIC_SUPPORT
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_BATOCERA_VULKAN      if  BR2_PACKAGE_BATOCERA_TARGET_X86_ANY     || \
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_FIRMWARE_WLAN_AML    if BR2_PACKAGE_BATOCERA_TARGET_S905GEN3
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_BATOCERA_GPU_X86     if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_RETROLX_WAYLAND	if !BR2_PACKAGE_BATOCERA_TARGET_X86_ANY && \
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_BATOCERA_XORG        if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_MANGOHUD             if BR2_PACKAGE_BATOCERA_TARGET_X86_64
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_I2C_TOOLS
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_MDADM # RAID
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_DB9_GPIO_RPI             if BR2_PACKAGE_BATOCERA_RPI_ANY
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_GAMECON_GPIO_RPI         if BR2_PACKAGE_BATOCERA_RPI_ANY
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_MK_ARCADE_JOYSTICK_RPI   if BR2_PACKAGE_BATOCERA_RPI_ANY
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_EVMAPY
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_EVMAPY_SYSTEM_CONFIG
+batocera/core/batocera-system/Config.in:	select BR2_GCC_ENABLE_OPENMP
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_RETROFE
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_ATTRACTMODE if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_TMUX
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_X11VNC   if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_KMSCUBE	if BR2_PACKAGE_MESA3D
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_STRACE
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_GDB
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_GDB_DEBUGGER
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_LINUX_TOOLS_PERF
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_LINUX_TOOLS_PERF_TUI
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_VULKAN_SAMPLES       if BR2_PACKAGE_BATOCERA_VULKAN
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_FFMPEG_XCBGRAB   if BR2_PACKAGE_XORG7
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_SWITCHRES        if BR2_PACKAGE_XORG7 # switchres 15kHz
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_BATOCERA_RETROARCH
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_BATOCERA_RETROACHIEVEMENTS_SOUNDS
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_BATOCERA_WINE    if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_WINE_X86         if BR2_PACKAGE_BATOCERA_TARGET_X86_64
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_RUFFLE           if BR2_PACKAGE_BATOCERA_TARGET_X86_64 # depends on X11
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_LIGHTSPARK       if BR2_PACKAGE_BATOCERA_TARGET_X86_64 # depends on X11
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_MOONLIGHT_EMBEDDED if !BR2_PACKAGE_BATOCERA_ROCKCHIP_ANY
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_XASH3D_FWGS              if  !BR2_PACKAGE_BATOCERA_TARGET_CHA
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_RETROARCH
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_LIBRETRO_CHEATS
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_BATOCERA_BEZEL
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_BATOCERA_SHADERS
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_X264                 # decoder
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_X265                 # decoder
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_LIBAACS              # decoder
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_LIBDVDCSS            # decoder
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_GNUTLS               # https streams
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_OPENVPN
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_FFMPEG_GPL           # video recording
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_FFMPEG_AVRESAMPLE    # audio resampler
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_LIBCDIO_PARANOIA     # cd-audio
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_LIBOPENH264          # openh264
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_LIBVA_INTEL_DRIVER   if BR2_PACKAGE_XORG7 && BR2_PACKAGE_MESA3D_DRI_DRIVER
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_LIBVA_UTILS          if BR2_PACKAGE_XORG7 && BR2_PACKAGE_MESA3D_DRI_DRIVER
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_RPI_USERLAND
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_RASPI2PNG # screenshots
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_ALLLINUXFIRMWARES
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_UX500_FIRMWARE
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_WILC1000_FIRMWARE
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_ZD1211_FIRMWARE
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_B43_FIRMWARE
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_WILINK_BT_FIRMWARE   if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_LINUX_PAM
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_WAYLAND
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_WAYLANDPP
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_WESTON
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_WESTON_DRM
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_SDL2_WAYLAND
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_XORG7
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_XSERVER_XORG_SERVER
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_LIBEPOXY		# required to enable xorg glamor
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_WAYLAND_PROTOCOLS
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_XLIB_LIBXCOMPOSITE
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_XDRIVER_XF86_INPUT_EVDEV
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_XDRIVER_XF86_INPUT_KEYBOARD
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_XDRIVER_XF86_INPUT_LIBINPUT
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_XDRIVER_XF86_VIDEO_AMDGPU
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_XDRIVER_XF86_VIDEO_ATI
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_XDRIVER_XF86_VIDEO_NOUVEAU
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_XDRIVER_XF86_INTEL
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_BATOCERA_NVIDIA_DRIVER_XORG	if BR2_PACKAGE_BATOCERA_TARGET_X86_64
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_XOSD                         # osd information display
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_XAPP_SETXKBMAP
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_XAPP_XEV
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_XAPP_XINIT
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_XAPP_XINPUT
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_XAPP_XRANDR                  # required for resolution manipulation
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_XAPP_XSET                    # X11 Xset command
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_BATOCERA_DESKTOPAPPS         # batocera applications config and scripts
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_LIBGTK3                      # gtk3 library
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_L3AFPAD                      # gtk3 text editor
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_PCMANFM                      # file manager
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_GVFS                         if BR2_PACKAGE_PCMANFM # file systems (trash, smb, ... in pcmanfm)
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_ADWAITA_ICON_THEME_LIGHT     if BR2_PACKAGE_PCMANFM # theme for file manager
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_XTERM                        # terminal
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_OPENBOX                      # window manager
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_UNCLUTTER                    # hide mouse
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_LIBGLVND                             if BR2_PACKAGE_BATOCERA_TARGET_X86    # already set by nvidia for x86_64, but required on x86 for pcsx2
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_BATOCERA_NVIDIA_DRIVER               if BR2_PACKAGE_BATOCERA_TARGET_X86_64
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_BATOCERA_NVIDIA_DRIVER_MODULE        if BR2_PACKAGE_BATOCERA_TARGET_X86_64
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_MESA3D
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_MESA3D_DRI_DRIVER_I915
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_MESA3D_DRI_DRIVER_I965
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_MESA3D_GALLIUM_DRIVER_SWRAST
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_MESA3D_GALLIUM_DRIVER_SVGA
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_MESA3D_GALLIUM_DRIVER_IRIS
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_MESA3D_GALLIUM_DRIVER_NOUVEAU
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_MESA3D_GALLIUM_DRIVER_R600
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_MESA3D_GALLIUM_DRIVER_RADEONSI
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_MESA3D_GALLIUM_DRIVER_VIRGL
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_MESA3D_GALLIUM_DRIVER_R300
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_MESA3D_OPENGL_ES
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_MESA3D_OPENGL_EGL
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_MESA3D_OPENGL_GLX
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_MESA3D_LLVM
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_MESA3D_DEMOS
+batocera/core/batocera-triggerhappy/Config.in:	select BR2_PACKAGE_TRIGGERHAPPY
+batocera/emulationstation/batocera-es-system/Config.in:	select BR2_PACKAGE_BATOCERA_CONFIGGEN
+
+batocera/emulators/cemu/cemu/Config.in:    select BR2_PACKAGE_CEMUTIL
+batocera/emulators/cemu/cemu/Config.in:    select BR2_PACKAGE_CEMU_HOOK
+
+batocera/emulators/citra/Config.in:    select BR2_PACKAGE_QT5
+batocera/emulators/citra/Config.in:    select BR2_PACKAGE_QT5_VERSION_LATEST
+batocera/emulators/citra/Config.in:    select BR2_PACKAGE_QT5BASE
+batocera/emulators/citra/Config.in:    select BR2_PACKAGE_QT5BASE_OPENGL
+batocera/emulators/citra/Config.in:    select BR2_PACKAGE_QT5BASE_XCB if BR2_PACKAGE_BATOCERA_TARGET_X86_64
+batocera/emulators/citra/Config.in:    select BR2_PACKAGE_QT5MULTIMEDIA
+batocera/emulators/citra/Config.in:    select BR2_PACKAGE_QT5BASE_FONTCONFIG
+batocera/emulators/citra/Config.in:    select BR2_PACKAGE_QT5TOOLS
+batocera/emulators/citra/Config.in:    select BR2_PACKAGE_QT5TOOLS_LINGUIST_TOOLS
+
+batocera/emulators/dolphin-emu/Config.in:	select BR2_PACKAGE_XORG7 		if BR2_PACKAGE_BATOCERA_TARGET_X86_64
+batocera/emulators/dolphin-emu/Config.in:	select BR2_PACKAGE_QT5_VERSION_LATEST	if BR2_PACKAGE_BATOCERA_TARGET_X86_64
+batocera/emulators/dolphin-emu/Config.in:	select BR2_PACKAGE_QT5			if BR2_PACKAGE_BATOCERA_TARGET_X86_64
+batocera/emulators/dolphin-emu/Config.in:	select BR2_PACKAGE_QT5BASE		if BR2_PACKAGE_BATOCERA_TARGET_X86_64
+batocera/emulators/dolphin-emu/Config.in:	select BR2_PACKAGE_QT5BASE_OPENGL	if BR2_PACKAGE_BATOCERA_TARGET_X86_64
+batocera/emulators/dolphin-emu/Config.in:	select BR2_PACKAGE_QT5BASE_XCB		if BR2_PACKAGE_BATOCERA_TARGET_X86_64
+batocera/emulators/dolphin-emu/Config.in:	select BR2_PACKAGE_QT5BASE_EGLFS	if BR2_PACKAGE_BATOCERA_TARGET_X86_64
+batocera/emulators/dolphin-emu/Config.in:	select BR2_PACKAGE_QT5BASE_FONTCONFIG	if BR2_PACKAGE_BATOCERA_TARGET_X86_64
+batocera/emulators/dolphin-emu/Config.in:	select BR2_PACKAGE_QT5BASE_GUI		if BR2_PACKAGE_BATOCERA_TARGET_X86_64
+batocera/emulators/dolphin-emu/Config.in:	select BR2_PACKAGE_QT5BASE_WIDGETS	if BR2_PACKAGE_BATOCERA_TARGET_X86_64
+batocera/emulators/dolphin-emu/Config.in:	select BR2_PACKAGE_QT5BASE_GIF		if BR2_PACKAGE_BATOCERA_TARGET_X86_64
+batocera/emulators/dolphin-emu/Config.in:	select BR2_PACKAGE_QT5BASE_JPEG		if BR2_PACKAGE_BATOCERA_TARGET_X86_64
+batocera/emulators/dolphin-emu/Config.in:	select BR2_PACKAGE_QT5BASE_PNG		if BR2_PACKAGE_BATOCERA_TARGET_X86_64
+
+batocera/emulators/duckstation/Config.in:    select BR2_PACKAGE_QT5                      if BR2_PACKAGE_BATOCERA_TARGET_X86_64
+batocera/emulators/duckstation/Config.in:    select BR2_PACKAGE_QT5_VERSION_LATEST	if BR2_PACKAGE_BATOCERA_TARGET_X86_64
+batocera/emulators/duckstation/Config.in:    select BR2_PACKAGE_QT5BASE			if BR2_PACKAGE_BATOCERA_TARGET_X86_64
+batocera/emulators/duckstation/Config.in:    select BR2_PACKAGE_QT5BASE_OPENGL		if BR2_PACKAGE_BATOCERA_TARGET_X86_64
+batocera/emulators/duckstation/Config.in:    select BR2_PACKAGE_QT5BASE_XCB		if BR2_PACKAGE_BATOCERA_TARGET_X86_64
+batocera/emulators/duckstation/Config.in:    select BR2_PACKAGE_QT5MULTIMEDIA		if BR2_PACKAGE_BATOCERA_TARGET_X86_64
+batocera/emulators/duckstation/Config.in:    select BR2_PACKAGE_QT5BASE_FONTCONFIG	if BR2_PACKAGE_BATOCERA_TARGET_X86_64
+batocera/emulators/duckstation/Config.in:    select BR2_PACKAGE_QT5TOOLS			if BR2_PACKAGE_BATOCERA_TARGET_X86_64
+batocera/emulators/duckstation/Config.in:    select BR2_PACKAGE_QT5TOOLS_LINGUIST_TOOLS	if BR2_PACKAGE_BATOCERA_TARGET_X86_64
+
+batocera/emulators/linapple/Config.in:	select BR2_PACKAGE_SDL
+batocera/emulators/linapple/Config.in:	select BR2_PACKAGE_SDL_IMAGE
+batocera/emulators/linapple/Config.in:	select BR2_PACKAGE_SDL_IMAGE_BMP
+batocera/emulators/linapple/Config.in:	select BR2_PACKAGE_SDL_IMAGE_XPM
+
+batocera/emulators/melonds/Config.in:    select BR2_PACKAGE_QT5
+batocera/emulators/melonds/Config.in:    select BR2_PACKAGE_QT5_VERSION_LATEST
+batocera/emulators/melonds/Config.in:    select BR2_PACKAGE_QT5BASE
+batocera/emulators/melonds/Config.in:    select BR2_PACKAGE_QT5BASE_GUI
+batocera/emulators/melonds/Config.in:    select BR2_PACKAGE_QT5BASE_WIDGETS
+batocera/emulators/melonds/Config.in:    select BR2_PACKAGE_QT5BASE_OPENGL
+
+batocera/emulators/moonlight-embedded/Config.in:	select BR2_PACKAGE_OPUS
+batocera/emulators/moonlight-embedded/Config.in:	select BR2_PACKAGE_OPUS_FIXED_POINT
+batocera/emulators/moonlight-embedded/Config.in:	select BR2_PACKAGE_EXPAT
+batocera/emulators/moonlight-embedded/Config.in:	select BR2_PACKAGE_LIBEVDEV
+batocera/emulators/moonlight-embedded/Config.in:	select BR2_PACKAGE_AVAHI
+batocera/emulators/moonlight-embedded/Config.in:	select BR2_PACKAGE_ALSA_LIB
+batocera/emulators/moonlight-embedded/Config.in:	select BR2_PACKAGE_HAS_UDEV
+batocera/emulators/moonlight-embedded/Config.in:	select BR2_PACKAGE_LIBCURL
+batocera/emulators/moonlight-embedded/Config.in:	select BR2_PACKAGE_LIBCEC
+batocera/emulators/moonlight-embedded/Config.in:	select BR2_PACKAGE_FFMPEG
+batocera/emulators/moonlight-embedded/Config.in:	select BR2_PACKAGE_FFMPEG_SWSCALE
+batocera/emulators/moonlight-embedded/Config.in:	select BR2_PACKAGE_SDL2
+batocera/emulators/moonlight-embedded/Config.in:	select BR2_PACKAGE_LIBENET
+
+batocera/emulators/mupen64plus/mupen64plus-gliden64/Config.in:	select BR2_INSTALL_LIBSTDCPP
+batocera/emulators/mupen64plus/mupen64plus-gliden64/Config.in:	select BR2_PACKAGE_SDL2
+batocera/emulators/mupen64plus/mupen64plus-gliden64/Config.in:	select BR2_PACKAGE_ALSA_LIB
+
+batocera/emulators/pcsx2/Config.in:	select BR2_PACKAGE_FMT
+batocera/emulators/pcsx2/Config.in:	select BR2_PACKAGE_ALSA_LIB
+batocera/emulators/pcsx2/Config.in:	select BR2_PACKAGE_FREETYPE
+batocera/emulators/pcsx2/Config.in:	select BR2_PACKAGE_ZLIB
+batocera/emulators/pcsx2/Config.in:	select BR2_PACKAGE_LIBPNG
+batocera/emulators/pcsx2/Config.in:	select BR2_PACKAGE_WXWIDGETS
+batocera/emulators/pcsx2/Config.in:	select BR2_PACKAGE_LIBAIO
+batocera/emulators/pcsx2/Config.in:	select BR2_PACKAGE_PORTAUDIO
+batocera/emulators/pcsx2/Config.in:	select BR2_PACKAGE_LIBSOUNDTOUCH
+batocera/emulators/pcsx2/Config.in:	select BR2_PACKAGE_LIBSAMPLERATE
+batocera/emulators/pcsx2/Config.in:	select BR2_PACKAGE_SDL2
+batocera/emulators/pcsx2/Config.in:	select BR2_PACKAGE_DEJAVU
+batocera/emulators/pcsx2/Config.in:	select BR2_PACKAGE_LIBPCAP
+batocera/emulators/pcsx2/Config.in:	select BR2_PACKAGE_YAML_CPP
+batocera/emulators/pcsx2/Config.in:	select BR2_PACKAGE_LIBGTK3
+
+batocera/emulators/ppsspp/Config.in:	select BR2_PACKAGE_LIBGLEW if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
+batocera/emulators/ppsspp/Config.in:	select BR2_PACKAGE_LIBGLU  if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
+
+batocera/emulators/retroarch/libretro/libretro-easyrpg/Config.in:    select BR2_PACKAGE_LIBLCF
+batocera/emulators/retroarch/retroarch/Config.in:	select BR2_PACKAGE_RETROARCH_ASSETS
+batocera/emulators/retroarch/shaders/batocera-shaders/Config.in:        select BR2_PACKAGE_GLSL_SHADERS
+
+batocera/emulators/rpcs3/Config.in:	select BR2_PACKAGE_QT5
+batocera/emulators/rpcs3/Config.in:	select BR2_PACKAGE_QT5BASE
+batocera/emulators/rpcs3/Config.in:	select BR2_PACKAGE_QT5DECLARATIVE
+batocera/emulators/rpcs3/Config.in:	select BR2_PACKAGE_QT5BASE_DBUS
+batocera/emulators/rpcs3/Config.in:	select BR2_PACKAGE_QT5BASE_CONCURRENT
+batocera/emulators/rpcs3/Config.in:	select BR2_PACKAGE_LIBXML2
+batocera/emulators/rpcs3/Config.in:	select BR2_PACKAGE_MESA3D
+batocera/emulators/rpcs3/Config.in:	select BR2_PACKAGE_OPENAL
+batocera/emulators/rpcs3/Config.in:	select BR2_PACKAGE_ALSA_LIB
+batocera/emulators/rpcs3/Config.in:	select BR2_PACKAGE_LIBEVDEV
+batocera/emulators/rpcs3/Config.in:	select BR2_PACKAGE_LIBGLEW
+batocera/emulators/rpcs3/Config.in:	select BR2_PACKAGE_LIBUSB
+batocera/emulators/rpcs3/Config.in:	select BR2_PACKAGE_LIBGLU
+batocera/emulators/rpcs3/Config.in:	select BR2_PACKAGE_FFMPEG_SWSCALE
+batocera/emulators/rpcs3/Config.in:	select BR2_PACKAGE_NCURSES
+batocera/emulators/rpcs3/Config.in:	select BR2_PACKAGE_FAUDIO
+
+batocera/emulators/ruffle/Config.in:	select BR2_PACKAGE_HOST_RUSTC
+batocera/emulators/ruffle/Config.in:    select BR2_PACKAGE_OPENSSL
+
+batocera/emulators/supermodel/Config.in:        select BR2_PACKAGE_LIBGLEW
+
+batocera/emulators/tsugaru/Config.in:    select BR2_PACKAGE_LIBGLU
+
+batocera/emulators/yuzu/Config.in:    select BR2_PACKAGE_QT5
+batocera/emulators/yuzu/Config.in:    select BR2_PACKAGE_QT5_VERSION_LATEST
+batocera/emulators/yuzu/Config.in:    select BR2_PACKAGE_QT5BASE
+batocera/emulators/yuzu/Config.in:    select BR2_PACKAGE_QT5BASE_OPENGL
+batocera/emulators/yuzu/Config.in:    select BR2_PACKAGE_QT5BASE_XCB
+batocera/emulators/yuzu/Config.in:    select BR2_PACKAGE_QT5MULTIMEDIA
+batocera/emulators/yuzu/Config.in:    select BR2_PACKAGE_QT5BASE_FONTCONFIG
+batocera/emulators/yuzu/Config.in:    select BR2_PACKAGE_QT5TOOLS
+batocera/emulators/yuzu/Config.in:    select BR2_PACKAGE_QT5TOOLS_LINGUIST_TOOLS
+batocera/emulators/yuzu/Config.in:    select BR2_PACKAGE_CATCH2
+
+batocera/gpu/batocera-nvidia-driver/Config.in:	select BR2_PACKAGE_MESA3D
+batocera/gpu/batocera-nvidia-driver/Config.in:	select BR2_PACKAGE_XLIB_LIBX11
+batocera/gpu/batocera-nvidia-driver/Config.in:	select BR2_PACKAGE_XLIB_LIBXEXT
+batocera/gpu/batocera-nvidia-driver/Config.in:	select BR2_PACKAGE_HAS_LIBGL
+batocera/gpu/batocera-nvidia-driver/Config.in:	select BR2_PACKAGE_HAS_LIBEGL
+batocera/gpu/batocera-nvidia-driver/Config.in:	select BR2_PACKAGE_HAS_LIBEGL_WAYLAND
+batocera/gpu/batocera-nvidia-driver/Config.in:	select BR2_PACKAGE_LIBGLVND
+batocera/gpu/batocera-nvidia-driver/Config.in:	select BR2_PACKAGE_MESA3D_HEADERS
+batocera/gpu/batocera-nvidia-driver/Config.in:	select BR2_PACKAGE_HAS_LIBOPENCL
+batocera/gpu/batocera-nvidia-driver/Config.in:	select BR2_LINUX_NEEDS_MODULES # not using kernel-module infra
+
+batocera/gpu/mali-t620-wayland/Config.in:	select BR2_PACKAGE_HAS_LIBEGL
+batocera/gpu/mali-t620-wayland/Config.in:	select BR2_PACKAGE_HAS_LIBGLES
+batocera/gpu/mali-t620-wayland/Config.in:	select BR2_PACKAGE_HAS_LIBMALI
+batocera/gpu/mali-t620-wayland/Config.in:	select BR2_PACKAGE_WAYLAND
+batocera/gpu/mali-t620-wayland/Config.in:  	select BR2_PACKAGE_MALI_MIDGARD_MODULE
+
+batocera/gpu/vulkan/vulkan-headers/Config.in:  select BR2_PACKAGE_VULKAN_LOADER
+batocera/gpu/vulkan/vulkan-tools/Config.in:  select BR2_PACKAGE_HOST_GLSLANG
+
+batocera/libraries/appstream-glib/Config.in:	select BR2_PACKAGE_LIBGTK3
+batocera/libraries/appstream-glib/Config.in:	select BR2_PACKAGE_RPM
+batocera/libraries/appstream-glib/Config.in:	select BR2_PACKAGE_LIBYAML
+batocera/libraries/appstream-glib/Config.in:	select BR2_PACKAGE_JSON_GLIB
+
+batocera/libraries/wxwidgets/Config.in:	select BR2_PACKAGE_GDK_PIXBUF
+batocera/libraries/wxwidgets/Config.in:	select BR2_PACKAGE_LIBGTK3
+
+batocera/utils/batocera-pygame/Config.in:	select BR2_PACKAGE_PYTHON_PYGAME2
+batocera/utils/batocera-pygame/Config.in:	select BR2_PACKAGE_EVMAPY
+
+batocera/utils/batocera-wine/Config.in:	select BR2_PACKAGE_BATOCERA_WINE_REQUIREMENTS
+batocera/utils/batocera-wine/Config.in:	select BR2_PACKAGE_WINE_LUTRIS
+batocera/utils/batocera-wine/Config.in:	select BR2_PACKAGE_WINE_PROTON
+batocera/utils/batocera-wine/Config.in:        select BR2_PACKAGE_WINETRICKS
+batocera/utils/batocera-wine/Config.in:        select BR2_PACKAGE_CABEXTRACT
+batocera/utils/batocera-wine/Config.in:	select BR2_PACKAGE_WINE_MONO_PROTON
+batocera/utils/batocera-wine/Config.in:	select BR2_PACKAGE_WINE_MONO_LUTRIS
+batocera/utils/batocera-wine/Config.in:        select BR2_PACKAGE_DXVK
+batocera/utils/batocera-wine/Config.in:		select BR2_PACKAGE_MF
+batocera/utils/batocera-wine/Config.in:	select BR2_PACKAGE_VKD3D_PROTON
+batocera/utils/batocera-wine/Config.in:	select BR2_PACKAGE_PYTHON_PYGAME2
+batocera/utils/batocera-wine/Config.in:	select BR2_PACKAGE_SQUASHFS
+batocera/utils/batocera-wine/Config.in:        select BR2_PACKAGE_YAD
+batocera/utils/batocera-wine/Config.in:	select BR2_PACKAGE_NCURSES
+batocera/utils/batocera-wine/Config.in:        select BR2_PACKAGE_LIBMSPACK
+batocera/utils/batocera-wine/Config.in:        select BR2_PACKAGE_GSTREAMER1
+batocera/utils/batocera-wine/Config.in:        select BR2_PACKAGE_GST1_LIBAV
+batocera/utils/batocera-wine/Config.in:        select BR2_PACKAGE_GST1_PLUGINS_BASE
+batocera/utils/batocera-wine/Config.in:        select BR2_PACKAGE_GST1_PLUGINS_GOOD
+batocera/utils/batocera-wine/Config.in:	select BR2_PACKAGE_MPG123
+batocera/utils/batocera-wine/Config.in:	#select BR2_PACKAGE_VKD3D
+batocera/utils/batocera-wine/Config.in:        select BR2_PACKAGE_FAUDIO
+batocera/utils/batocera-wine/Config.in:	select BR2_PACKAGE_VULKAN_HEADERS
+batocera/utils/batocera-wine/Config.in:	select BR2_PACKAGE_VULKAN_LOADER
+batocera/utils/batocera-wine/Config.in:	select BR2_PACKAGE_XLIB_LIBXI
+batocera/utils/batocera-wine/Config.in:	select BR2_PACKAGE_XLIB_LIBXINERAMA
+batocera/utils/batocera-wine/Config.in:	select BR2_PACKAGE_XLIB_LIBXRANDR
+batocera/utils/batocera-wine/Config.in:	select BR2_PACKAGE_XLIB_LIBX11
+batocera/utils/batocera-wine/Config.in:	select BR2_PACKAGE_XLIB_LIBXCOMPOSITE
+batocera/utils/batocera-wine/Config.in:	select BR2_PACKAGE_XLIB_LIBXCURSOR
+batocera/utils/batocera-wine/Config.in:	select BR2_PACKAGE_XLIB_LIBXEXT
+batocera/utils/batocera-wine/Config.in:	select BR2_PACKAGE_XLIB_LIBXRENDER
+batocera/utils/batocera-wine/Config.in:	select BR2_PACKAGE_XLIB_LIBXXF86VM
+batocera/utils/batocera-wine/Config.in:	select BR2_PACKAGE_ALSA_LIB
+batocera/utils/batocera-wine/Config.in:	select BR2_PACKAGE_ALSA_LIB_SEQ
+batocera/utils/batocera-wine/Config.in:	select BR2_PACKAGE_ALSA_LIB_RAWMIDI
+batocera/utils/batocera-wine/Config.in:	select BR2_PACKAGE_DBUS
+batocera/utils/batocera-wine/Config.in:	select BR2_PACKAGE_FONTCONFIG
+batocera/utils/batocera-wine/Config.in:	select BR2_PACKAGE_FREETYPE
+batocera/utils/batocera-wine/Config.in:	select BR2_PACKAGE_GNUTLS
+batocera/utils/batocera-wine/Config.in:	select BR2_PACKAGE_JPEG
+batocera/utils/batocera-wine/Config.in:	select BR2_PACKAGE_LIBPNG
+batocera/utils/batocera-wine/Config.in:	select BR2_PACKAGE_LIBXML2
+batocera/utils/batocera-wine/Config.in:	select BR2_PACKAGE_OPENAL
+batocera/utils/batocera-wine/Config.in:	select BR2_PACKAGE_SDL2
+batocera/utils/batocera-wine/Config.in:	select BR2_PACKAGE_ZLIB
+batocera/utils/batocera-wine/Config.in:	select BR2_PACKAGE_OPENLDAP
+batocera/utils/batocera-wine/Config.in:	select BR2_PACKAGE_AVAHI # for BR2_PACKAGE_NSS_MDNS
+batocera/utils/batocera-wine/Config.in:	select BR2_PACKAGE_AVAHI_DAEMON # for BR2_PACKAGE_NSS_MDNS
+batocera/utils/batocera-wine/Config.in:	select BR2_PACKAGE_NSS_MDNS
+batocera/utils/batocera-wine/Config.in:	select BR2_PACKAGE_LIBKRB5
+batocera/utils/batocera-wine/Config.in:        select BR2_PACKAGE_X264
+batocera/utils/batocera-wine/Config.in:        select BR2_PACKAGE_X265
+batocera/utils/batocera-wine/Config.in:	select BR2_PACKAGE_LIBOGG
+batocera/utils/batocera-wine/Config.in:	select BR2_PACKAGE_LIBASS
+batocera/utils/batocera-wine/Config.in:	select BR2_PACKAGE_LIBVORBIS
+batocera/utils/batocera-wine/Config.in:	select BR2_PACKAGE_LIBUSB
+batocera/utils/batocera-wine/Config.in:	select BR2_PACKAGE_LIBTHEORA
+batocera/utils/batocera-wine/Config.in:	select BR2_PACKAGE_LIBVA
+batocera/utils/batocera-wine/Config.in:	select BR2_PACKAGE_LIBOPENH264
+batocera/utils/batocera-wine/Config.in:	select BR2_PACKAGE_NETTLE
+batocera/utils/batocera-wine/Config.in:	select BR2_PACKAGE_RTMPDUMP
+batocera/utils/batocera-wine/Config.in:	select BR2_PACKAGE_OPUS
+batocera/utils/batocera-wine/Config.in:	select BR2_PACKAGE_LIBVPX
+batocera/utils/batocera-wine/Config.in:	select BR2_PACKAGE_LAME
+batocera/utils/batocera-wine/Config.in:	select BR2_PACKAGE_LIBVDPAU
+batocera/utils/batocera-wine/Config.in:	select BR2_PACKAGE_HARFBUZZ
+batocera/utils/batocera-wine/Config.in:	select BR2_PACKAGE_LIBMODPLUG
+batocera/utils/batocera-wine/Config.in:	select BR2_PACKAGE_LIBBLURAY
+batocera/utils/batocera-wine/Config.in:	select BR2_PACKAGE_FFMPEG_GPL
+batocera/utils/batocera-wine/Config.in:	select BR2_PACKAGE_LIBGCRYPT
+batocera/utils/batocera-wine/Config.in:	select BR2_PACKAGE_WAYLAND
+batocera/utils/batocera-wine/Config.in:	select BR2_PACKAGE_WAYLAND_PROTOCOLS
+
+batocera/utils/flatpak/Config.in:	select BR2_PACKAGE_PKGCONF
+batocera/utils/flatpak/Config.in:	select BR2_PACKAGE_LIBCAP
+batocera/utils/flatpak/Config.in:	select BR2_PACKAGE_LIBARCHIVE
+batocera/utils/flatpak/Config.in:	select BR2_PACKAGE_LIBGLIB2
+batocera/utils/flatpak/Config.in:	select BR2_PACKAGE_LIBSOUP
+batocera/utils/flatpak/Config.in:	select BR2_PACKAGE_LIBSOUP_SSL
+batocera/utils/flatpak/Config.in:	select BR2_PACKAGE_LIBGPGME
+batocera/utils/flatpak/Config.in:	select BR2_PACKAGE_POLKIT
+batocera/utils/flatpak/Config.in:	select BR2_PACKAGE_LIBOSTREE
+batocera/utils/flatpak/Config.in:	select BR2_PACKAGE_JSON_GLIB
+batocera/utils/flatpak/Config.in:	select BR2_PACKAGE_APPSTREAM_GLIB
+batocera/utils/flatpak/Config.in:	select BR2_PACKAGE_YAML_CPP
+batocera/utils/flatpak/Config.in:	select BR2_PACKAGE_PYTHON3_PYPARSING
+batocera/utils/flatpak/Config.in:	select BR2_PACKAGE_HOST_PYTHON3_PYPARSING
+batocera/utils/flatpak/Config.in:	select BR2_PACKAGE_GLIB_NETWORKING
+batocera/utils/flatpak/Config.in:	select BR2_PACKAGE_LIBSECCOMP
+batocera/utils/flatpak/Config.in:	select BR2_PACKAGE_PYTHON3
+batocera/utils/flatpak/Config.in:	select BR2_PACKAGE_PYTHON3_SSL
+batocera/utils/flatpak/Config.in:	select BR2_PACKAGE_HOST_PYTHON3
+batocera/utils/flatpak/Config.in:    	select BR2_PACKAGE_HOST_PYTHON3_SSL
+batocera/utils/flatpak/Config.in:        select BR2_PACKAGE_LIBOPENSSL
+batocera/utils/flatpak/Config.in:	select BR2_PACKAGE_READLINE
+batocera/utils/flatpak/Config.in:	select BR2_PACKAGE_BZIP2
+batocera/utils/flatpak/Config.in:	select BR2_PACKAGE_PYTHON3_PY_PYC
+batocera/utils/flatpak/Config.in:	select BR2_PACKAGE_PYTHON3_HASHLIB
+batocera/utils/flatpak/Config.in:	select BR2_PACKAGE_LIBSVG_CAIRO
+batocera/utils/flatpak/Config.in:	select BR2_PACKAGE_TSLIB
+batocera/utils/flatpak/Config.in:	select BR2_PACKAGE_BOOST
+batocera/utils/flatpak/Config.in:	select BR2_PACKAGE_BOOST_ATOMIC
+batocera/utils/flatpak/Config.in:	select BR2_PACKAGE_PYTHON_PSUTIL
+
+batocera/utils/pacman/Config.in:	select BR2_PACKAGE_HOST_LIBARCHIVE
+batocera/utils/pacman/Config.in:	select BR2_PACKAGE_HOST_LIBARCHIVE_BSDTAR
+batocera/utils/pacman/Config.in:	select BR2_PACKAGE_HOST_LIBARCHIVE_BSDCPIO
+batocera/utils/pacman/Config.in:	select BR2_PACKAGE_HOST_LIBARCHIVE_BSDCAT
+
+batocera/utils/unclutter/Config.in:	select BR2_PACKAGE_LIBEV
+
+select BR2_PACKAGE_SDL2
+select BR2_PACKAGE_SDL2_IMAGE
+select BR2_PACKAGE_SDL2_MIXER
+select BR2_PACKAGE_SDL2_TTF
+select BR2_PACKAGE_SDL2_NET
+select BR2_PACKAGE_SDL2_GFX
+select BR2_PACKAGE_SDL_SOUND
+
+select BR2_PACKAGE_GSTREAMER1
+select BR2_PACKAGE_GST1_PLUGINS_BASE
+
+select BR2_PACKAGE_LIBARCHIVE
+select BR2_PACKAGE_LIBARCHIVE_BSDTAR
+select BR2_PACKAGE_LIBARCHIVE_BSDCPIO
+select BR2_PACKAGE_LIBARCHIVE_BSDCAT
+select BR2_PACKAGE_LIBCURL
+select BR2_PACKAGE_LIBCURL_CURL
+select BR2_PACKAGE_LIBCAPSIMAGE
+select BR2_PACKAGE_LIBDRM
+select BR2_PACKAGE_LIBEVDEV
+select BR2_PACKAGE_LIBFREEIMAGE
+select BR2_PACKAGE_LIBGPGME
+select BR2_PACKAGE_LIBMAD
+select BR2_PACKAGE_LIBMODPLUG
+select BR2_PACKAGE_LIBMPEG2
+select BR2_PACKAGE_LIBNSS
+select BR2_PACKAGE_LIBOGG
+select BR2_PACKAGE_LIBOPENSSL_BIN
+select BR2_PACKAGE_LIBPCAP
+select BR2_PACKAGE_LIBPNG
+select BR2_PACKAGE_LIBSODIUM
+select BR2_PACKAGE_LIBTHEORA
+select BR2_PACKAGE_LIBUSB
+select BR2_PACKAGE_LIBUSB_COMPAT
+select BR2_PACKAGE_LIBVORBIS
+select BR2_PACKAGE_LIBVPX
+select BR2_PACKAGE_LIBXML2
+select BR2_PACKAGE_LIBXMP
+select BR2_PACKAGE_LIBZIP
+
+select BR2_PACKAGE_CONNMAN                              # network manager
+select BR2_PACKAGE_CONNMAN_WIFI                         # network manager
+select BR2_PACKAGE_CONNMAN_CLIENT                       # network manager
+select BR2_PACKAGE_WPA_SUPPLICANT                       # wifi
+select BR2_PACKAGE_WPA_SUPPLICANT_CLI                   # wifi
+select BR2_PACKAGE_WPA_SUPPLICANT_DBUS_INTROSPECTION    # wifi
+select BR2_PACKAGE_WPA_SUPPLICANT_WIRED                 # wpa_supplicant driver
+select BR2_PACKAGE_WPA_SUPPLICANT_WPA3                  # wifi
+select BR2_PACKAGE_WPA_SUPPLICANT_NL80211               # wpa_supplicant driver
+select BR2_PACKAGE_WPA_SUPPLICANT_WEXT                  # wpa_supplicant driver
+
+select BR2_PACKAGE_PM_UTILS                             # suspend
+select BR2_PACKAGE_EUDEV_RULES_GEN                      # fork of systemd-udev with the goal of obtaining better compatibility with existing software such as OpenRC and Upstart
+
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_GESFTPSERVER                         # required to access folders via sftp and should be replaced by openssh
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_GPTFDISK                             # fs resize
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_GPTFDISK_SGDISK                      # fs resize
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_E2FSPROGS                            # fs resize
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_E2FSPROGS_RESIZE2FS                  # fs resize
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_RNG_TOOLS                            # system entropy
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_CIFS_UTILS                           # required for boot mounts
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_DOSFSTOOLS                           # fat
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_DOSFSTOOLS_FSCK_FAT                  # fat
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_DOSFSTOOLS_MKFS_FAT                  # fat
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_E2FSPROGS                            # ext4
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_NTFS_3G                              # ntfs
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_NTFS_3G_NTFSPROGS                    # ntfs
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_BTRFS_PROGS                          # btrfs
+batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_WINBTRFS                             # btrfs
+
+select BR2_PACKAGE_ALSA_LIB
+select BR2_PACKAGE_ALSA_UTILS
+select BR2_PACKAGE_ALSA_UTILS_AMIXER
+select BR2_PACKAGE_ALSA_UTILS_APLAY
+select BR2_PACKAGE_ALSA_PLUGINS
+select BR2_PACKAGE_AVAHI
+select BR2_PACKAGE_AVAHI_DAEMON
+select BR2_PACKAGE_AVAHI_LIBDNSSD_COMPATIBILITY
+select BR2_PACKAGE_CA_CERTIFICATES
+select BR2_PACKAGE_BASH
+select BR2_PACKAGE_DEJAVU
+select BR2_PACKAGE_DIALOG
+select BR2_PACKAGE_DROPBEAR
+select BR2_PACKAGE_EVTEST
+select BR2_PACKAGE_EXPAT
+select BR2_PACKAGE_EXFAT
+select BR2_PACKAGE_EXFAT_UTILS
+select BR2_PACKAGE_FAAD2
+select BR2_PACKAGE_FBDUMP
+select BR2_PACKAGE_FBGRAB
+select BR2_PACKAGE_FBV
+select BR2_PACKAGE_FDUPES
+select BR2_PACKAGE_FFMPEG
+select BR2_PACKAGE_FFMPEG_SWSCALE
+select BR2_PACKAGE_FFMPEG_AVRESAMPLE
+select BR2_PACKAGE_FLAC
+select BR2_PACKAGE_FLUIDSYNTH
+select BR2_PACKAGE_FMT
+select BR2_PACKAGE_FREETYPE
+select BR2_PACKAGE_FONTCONFIG
+select BR2_PACKAGE_FPING
+select BR2_PACKAGE_GIFLIB
+select BR2_PACKAGE_GLM
+select BR2_PACKAGE_GNUPG_AES
+select BR2_PACKAGE_GNUPG_RSA
+select BR2_PACKAGE_GNUPG_GPGV
+select BR2_PACKAGE_GNUPG_GPGSPLIT
+select BR2_PACKAGE_HIDAPI
+select BR2_PACKAGE_HTOP
+select BR2_PACKAGE_ICU
+select BR2_PACKAGE_INOTIFY_TOOLS
+select BR2_PACKAGE_IRQBALANCE
+select BR2_PACKAGE_JPEG
+select BR2_PACKAGE_JSTEST2
+select BR2_PACKAGE_KBD
+select BR2_PACKAGE_LAME
+select BR2_PACKAGE_LZO
+select BR2_PACKAGE_MC
+select BR2_PACKAGE_MPG123
+select BR2_PACKAGE_NANO
+select BR2_PACKAGE_NCDU
+select BR2_PACKAGE_NTP
+select BR2_PACKAGE_OPENAL
+select BR2_PACKAGE_OPENSSL
+select BR2_PACKAGE_OPUS
+select BR2_PACKAGE_OPUSFILE
+select BR2_PACKAGE_P7ZIP
+select BR2_PACKAGE_PACMAN
+select BR2_PACKAGE_PARTED
+select BR2_PACKAGE_PCIUTILS
+select BR2_PACKAGE_PHYSFS
+select BR2_PACKAGE_PIXMAN
+select BR2_PACKAGE_PNG
+select BR2_PACKAGE_POPPLER
+select BR2_PACKAGE_POPPLER_UTILS
+select BR2_PACKAGE_RAPIDJSON
+select BR2_PACKAGE_RSYNC
+select BR2_PACKAGE_SAMBA4
+select BR2_PACKAGE_SLIRP
+select BR2_PACKAGE_SPEEXDSP
+select BR2_PACKAGE_SQLITE
+select BR2_PACKAGE_UNZIP
+select BR2_PACKAGE_USBMOUNT
+select BR2_PACKAGE_USBUTILS
+select BR2_PACKAGE_VIM
+select BR2_PACKAGE_VLC
+select BR2_PACKAGE_WGET
+select BR2_PACKAGE_WILDMIDI
+select BR2_PACKAGE_XZ
+select BR2_PACKAGE_ZIP
+select BR2_PACKAGE_ZLIB
+select BR2_PACKAGE_ZSTD
+
+select BR2_PACKAGE_HOST_DOS2UNIX
+select BR2_PACKAGE_HOST_GENEXT2FS
+select BR2_PACKAGE_HOST_GENIMAGE
+select BR2_PACKAGE_HOST_PACMAN
+select BR2_PACKAGE_HOST_PYTHON3
+select BR2_PACKAGE_HOST_PYTHON3_SSL
+select BR2_PACKAGE_HOST_XA
+
+select BR2_PACKAGE_BLUEZ_ALSA
+select BR2_PACKAGE_BLUEZ5_UTILS
+select BR2_PACKAGE_BLUEZ5_UTILS_CLIENT
+select BR2_PACKAGE_BLUEZ5_UTILS_TEST
+select BR2_PACKAGE_BLUEZ5_UTILS_PLUGINS_SIXAXIS
+select BR2_PACKAGE_BLUEZ5_UTILS_DEPRECATED
+
+select BR2_PACKAGE_UTIL_LINUX_LIBMOUNT
+select BR2_PACKAGE_UTIL_LINUX_LIBSMARTCOLS
+select BR2_PACKAGE_UTIL_LINUX_RFKILL
+select BR2_PACKAGE_UTIL_LINUX_SETTERM
+
+select BR2_PACKAGE_BOOST
+select BR2_PACKAGE_BOOST_ATOMIC
+select BR2_PACKAGE_BOOST_CONTEXT
+select BR2_PACKAGE_BOOST_SYSTEM
+select BR2_PACKAGE_BOOST_FILESYSTEM
+
+select BR2_PACKAGE_PYTHON3
+select BR2_PACKAGE_PYTHON_EVDEV
+select BR2_PACKAGE_PYTHON_HTTPLIB2
+select BR2_PACKAGE_PYTHON_PILLOW
+select BR2_PACKAGE_PYTHON_PSUTIL
+select BR2_PACKAGE_PYTHON_PYCRYPTODOMEX
+select BR2_PACKAGE_PYTHON_PYOPENSSL
+select BR2_PACKAGE_PYTHON_PYUDEV
+select BR2_PACKAGE_PYTHON_PYYAML
+select BR2_PACKAGE_PYTHON_SETUPTOOLS
+select BR2_PACKAGE_PYTHON3_UNICODEDATA
+select BR2_PACKAGE_PYTHON3_PYEXPAT
+
+select BR2_PACKAGE_FLUID_SOUNDFONT
+select BR2_PACKAGE_NANUM_FONT
+
+batocera/emulationstation/batocera-emulationstation/Config.in:	select BR2_PACKAGE_BATOCERA_EMULATIONSTATION_FONTS
+batocera/emulationstation/batocera-emulationstation/Config.in:	select BR2_PACKAGE_OMXPLAYER if BR2_PACKAGE_RPI_USERLAND
+
+batocera/controllers/qtsixa-shanwan/Config.in:	select BR2_PACKAGE_QTSIXA
+
+batocera/emulators/xash3d/xash3d-fwgs/Config.in:	select BR2_PACKAGE_HLSDK_XASH3D
+batocera/emulators/xash3d/xash3d-fwgs/Config.in:	select BR2_PACKAGE_HLSDK_XASH3D_DMC
+batocera/emulators/xash3d/xash3d-fwgs/Config.in:	select BR2_PACKAGE_HLSDK_XASH3D_OPFOR
