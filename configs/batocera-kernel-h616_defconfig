@@ -56,7 +56,7 @@ BR2_PACKAGE_HOST_SQUASHFS=y
 # Out-of-tree kernel modules
 BR2_PACKAGE_RTL8821AU=y
 BR2_PACKAGE_RTL8192EU=y
-BR2_PACKAGE_RTL8821CE=y
+#need pci set in kernel BR2_PACKAGE_RTL8821CE=y
 
 # Enable ccache
 BR2_CCACHE=y

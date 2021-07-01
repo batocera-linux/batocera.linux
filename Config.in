@@ -2,6 +2,7 @@ menu "batocera.linux"
 
 menu "Kernel"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/retrolx/linux/kernel-exynos5422/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/retrolx/linux/kernel-h616/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/retrolx/linux/kernel-meson64/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/retrolx/linux/kernel-rk3288/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/retrolx/linux/kernel-rk3326/Config.in"
