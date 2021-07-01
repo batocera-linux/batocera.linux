@@ -3,7 +3,9 @@
 import Command
 from generators.Generator import Generator
 import controllersConfig
+import batoceraFiles
 import os
+from os import path
 
 ecwolfConfig  = batoceraFiles.CONF + "/ecwolf"
 ecwolfSaves   = batoceraFiles.SAVES + "/ecwolf"
