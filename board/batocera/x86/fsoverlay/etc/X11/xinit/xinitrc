@@ -45,6 +45,9 @@ settings_output="$(/usr/bin/batocera-settings-get global.dpi)"
 #####################
 #####################
 
+# try to force 60hz
+xrandr -r 60
+
 # set user desired resolution
 # nice workaround for displays which tell X11 to use strange resolutions
 settings_output="$(/usr/bin/batocera-settings-get -f /boot/batocera-boot.conf es.resolution)"
