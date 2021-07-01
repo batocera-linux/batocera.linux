@@ -139,6 +139,3 @@ supermodelCustom = CONF + '/supermodel'
 supermodelIni = supermodelCustom + '/Supermodel.ini'
 
 xemuConfig = CONF + '/xemu/xemu.ini'
-
-ecwolfConfig  = CONF + "/ecwolf"
-ecwolfSaves   = SAVES + "/ecwolf"
