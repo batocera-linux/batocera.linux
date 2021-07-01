@@ -2,10 +2,10 @@ config BR2_PACKAGE_MALI_T620_WAYLAND
 	bool "mali-t620-wayland"
 	depends on BR2_arm
 	select BR2_PACKAGE_HAS_LIBEGL
+	select BR2_PACKAGE_HAS_LIBEGL_WAYLAND
 	select BR2_PACKAGE_HAS_LIBGLES
 	select BR2_PACKAGE_HAS_LIBMALI
 	select BR2_PACKAGE_WAYLAND
-  	select BR2_PACKAGE_MALI_MIDGARD_MODULE
 	
 	help
 	  Install the binary user-space components for the ARM Mali Midgard
