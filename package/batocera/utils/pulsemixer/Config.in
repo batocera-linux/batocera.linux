@@ -1,0 +1,6 @@
+config BR2_PACKAGE_PULSEMIXER
+	bool "pulsemixer"
+	depends on BR2_PACKAGE_PYTHON3
+	depends on BR2_PACKAGE_PULSEAUDIO_UTILS
+	help
+	  CLI and curses mixer for PulseAudio
