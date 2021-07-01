@@ -2884,8 +2884,8 @@ libretro:
                     "Port2":    port2
                     "Port1+2":  port12
 
-ecwolf:
-  features: []
+    ecwolf:
+      features: []
 
 # Standalones
 
@@ -3936,3 +3936,6 @@ xemu:
             choices:
                 "Normal Boot":        "false"
                 "Skipped-Logo Boot":  "true"
+
+ecwolf:
+  features: [padtokeyboard]
