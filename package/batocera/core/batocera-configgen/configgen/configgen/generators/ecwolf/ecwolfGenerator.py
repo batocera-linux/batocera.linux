@@ -4,7 +4,9 @@ import Command
 import batoceraFiles
 from generators.Generator import Generator
 import controllersConfig
+import batoceraFiles
 import os
+from os import path
 
 class ECWolfGenerator(Generator):
 
