@@ -1,3 +1,3 @@
-### [website](https://batocera.org/) | [forum](https://forum.batocera.org/public/) | [wiki](https://wiki.batocera.org/doku.php)
+### [website](https://retrolx.org/) | [forum](https://retrolx.org/) | [wiki](https://retrolx.org/)
 
-### Join our [Discord Server](https://discord.gg/ndyUKA5)!
+### Join our [Discord Server](https://retrolx.org/)!
