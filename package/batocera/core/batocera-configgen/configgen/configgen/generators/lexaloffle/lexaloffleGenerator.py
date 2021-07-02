@@ -7,6 +7,7 @@ import controllersConfig
 import os
 
 BIN_PATH="/userdata/bios/pico-8/pico8"
+CONTROLLERS="/userdata/system/.lexaloffle/pico-8/sdl_controllers.txt"
 
 # Generator for the official pico8 binary from Lexaloffle
 class LexaloffleGenerator(Generator):
@@ -17,8 +18,18 @@ class LexaloffleGenerator(Generator):
         if not os.access(BIN_PATH, os.X_OK):
             eslog.log("File {} is not set as executable".format(BIN_PATH))
             return -1
+
+        # the command to run
         commandArray = [BIN_PATH]
-        commandArray.extend(["-desktop", "/userdata/screenshots"])
+        commandArray.extend(["-desktop", "/userdata/screenshots"])  # screenshots
+        commandArray.extend(["-root_path", "/userdata/roms/pico8"]) # store carts from splore
+        commandArray.extend(["-windowed", "0"])                     # full screen
+        # Display FPS
+        if system.config['showFPS'] == 'true':
+                commandArray.extend(["-show_fps", "1"])
+        else:
+                commandArray.extend(["-show_fps", "0"])
+
         rombase=os.path.basename(rom) 
         idx=rombase.index('.')
         rombase=rombase[:idx]
@@ -26,7 +37,12 @@ class LexaloffleGenerator(Generator):
             commandArray.extend(["-splore"])
         else:
             commandArray.extend(["-run", rom])
-        env = {}
-        env["SDL_GAMECONTROLLERCONFIG"] = controllersConfig.generateSdlGameControllerConfig(playersControllers)
 
-        return Command.Command(array=commandArray, env=env)
+        controllersdir = os.path.dirname(CONTROLLERS)
+        if not os.path.exists(controllersdir):
+                os.makedirs(controllersdir)
+        controllersconfig = controllersConfig.generateSdlGameControllerConfig(playersControllers)
+        with open(CONTROLLERS, "w") as file:
+               file.write(controllersconfig)
+
+        return Command.Command(array=commandArray, env={})
