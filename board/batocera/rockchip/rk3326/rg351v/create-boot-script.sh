@@ -22,5 +22,6 @@ cp "${BINARIES_DIR}/uInitrd"         	"${BATOCERA_BINARIES_DIR}/boot/boot/uInitr
 cp "${BINARIES_DIR}/rootfs.squashfs"	"${BATOCERA_BINARIES_DIR}/boot/boot/batocera.update" 	|| exit 1
 cp "${BINARIES_DIR}/rk3326-rg351v.dtb"	"${BATOCERA_BINARIES_DIR}/boot/boot/rk3326-rg351v.dtb"  || exit 1
 cp "${BOARD_DIR}/boot/boot.ini"         "${BATOCERA_BINARIES_DIR}/boot/"                        || exit 1
+cp "${BINARIES_DIR}/modules"         "${BATOCERA_BINARIES_DIR}/boot/boot/modules"               || exit 1
 
 exit 0

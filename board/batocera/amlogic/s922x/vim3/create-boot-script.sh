@@ -19,6 +19,7 @@ mkdir -p "${BATOCERA_BINARIES_DIR}/boot/boot/extlinux" || exit 1
 cp "${BINARIES_DIR}/Image"                             "${BATOCERA_BINARIES_DIR}/boot/boot/linux"           || exit 1
 cp "${BINARIES_DIR}/uInitrd"                           "${BATOCERA_BINARIES_DIR}/boot/boot/uInitrd"         || exit 1
 cp "${BINARIES_DIR}/rootfs.squashfs"                   "${BATOCERA_BINARIES_DIR}/boot/boot/batocera.update" || exit 1
+cp "${BINARIES_DIR}/modules"                           "${BATOCERA_BINARIES_DIR}/boot/boot/modules"         || exit 1
 
 cp "${BINARIES_DIR}/meson-g12b-a311d-khadas-vim3.dtb"  "${BATOCERA_BINARIES_DIR}/boot/boot/"          || exit 1
 cp "${BINARIES_DIR}/boot.scr"                          "${BATOCERA_BINARIES_DIR}/boot/"               || exit 1
