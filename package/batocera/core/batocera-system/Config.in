@@ -153,7 +153,7 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
 	select BR2_PACKAGE_SDL2_OPENGLES                        # ALL
 	select BR2_PACKAGE_SDL2_KMSDRM                          if !BR2_PACKAGE_BATOCERA_RPI_VCORE
 	select BR2_PACKAGE_LIBDRM                               if !BR2_PACKAGE_BATOCERA_RPI_VCORE
-    select BR2_PACKAGE_LIBDRM_EXYNOS                        if BR2_PACKAGE_LIBDRM && BR2_PACKAGE_BATOCERA_TARGET_XU4
+    select BR2_PACKAGE_LIBDRM_EXYNOS                        if BR2_PACKAGE_LIBDRM && BR2_PACKAGE_BATOCERA_TARGET_EXYNOS5422
 	select BR2_PACKAGE_BATOCERA_DRMINFO                     if BR2_PACKAGE_LIBDRM
 	select BR2_PACKAGE_LIRC_TOOLS                           # lirc (remote control)
 	select BR2_PACKAGE_LIBCEC                               # libcec
@@ -300,7 +300,7 @@ config BR2_TARGET_BATOCERA_IMAGES_DEFINITIONS
 	default "orangepi-pc"                                       			if BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_PC
 	default "cha"                                               			if BR2_PACKAGE_BATOCERA_TARGET_CHA
 	default "s812"                                              			if BR2_PACKAGE_BATOCERA_TARGET_S812
-	default "odroidxu4"                                         			if BR2_PACKAGE_BATOCERA_TARGET_XU4
+	default "odroidxu4"                                         			if BR2_PACKAGE_BATOCERA_TARGET_EXYNOS5422
 	default "x86"                                               			if BR2_PACKAGE_BATOCERA_TARGET_X86
 	default "x86_64"                                            			if BR2_PACKAGE_BATOCERA_TARGET_X86_64
 
@@ -322,7 +322,7 @@ config BR2_PACKAGE_BATOCERA_TARGET_RPI3
 config BR2_PACKAGE_BATOCERA_TARGET_RPI4
 	bool "rpi4"
 
-config BR2_PACKAGE_BATOCERA_TARGET_XU4
+config BR2_PACKAGE_BATOCERA_TARGET_EXYNOS5422
 	bool "xu4"
 
 config BR2_PACKAGE_BATOCERA_TARGET_S922X
@@ -525,7 +525,7 @@ config BR2_PACKAGE_BATOCERA_ARCADE_SYSTEMS
 	#select BR2_PACKAGE_LIBRETRO_MAME            if  BR2_PACKAGE_BATOCERA_TARGET_RK3399      || \
         #                                            BR2_PACKAGE_BATOCERA_TARGET_RK3288      || \
         #                                            BR2_PACKAGE_BATOCERA_TARGET_S922X       || \
-        #                                            BR2_PACKAGE_BATOCERA_TARGET_XU4         || \
+        #                                            BR2_PACKAGE_BATOCERA_TARGET_EXYNOS5422         || \
         #                                            BR2_PACKAGE_BATOCERA_TARGET_TRITIUM_H5  || \
         #                                            BR2_PACKAGE_BATOCERA_TARGET_S812
 
@@ -992,7 +992,7 @@ config BR2_PACKAGE_BATOCERA_KODI19
 	select BR2_PACKAGE_LIBNSS
 
 	# GBM
-	select BR2_PACKAGE_KODI_GBM     if  BR2_PACKAGE_BATOCERA_TARGET_XU4             || \
+	select BR2_PACKAGE_KODI_GBM     if  BR2_PACKAGE_BATOCERA_TARGET_EXYNOS5422             || \
                                         BR2_PACKAGE_BATOCERA_TARGET_S922X           || \
                                         BR2_PACKAGE_BATOCERA_TARGET_TRITIUM_H5      || \
                                         BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_PC     || \

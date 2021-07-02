@@ -46,7 +46,7 @@ batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_BATOCERA_NOTICE     
 batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_SDL2_OPENGLES                        # ALL
 batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_SDL2_KMSDRM                          if !BR2_PACKAGE_BATOCERA_RPI_VCORE
 batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_LIBDRM                               if !BR2_PACKAGE_BATOCERA_RPI_VCORE
-batocera/core/batocera-system/Config.in:    select BR2_PACKAGE_LIBDRM_EXYNOS                        if BR2_PACKAGE_LIBDRM && BR2_PACKAGE_BATOCERA_TARGET_XU4
+batocera/core/batocera-system/Config.in:    select BR2_PACKAGE_LIBDRM_EXYNOS                        if BR2_PACKAGE_LIBDRM && BR2_PACKAGE_BATOCERA_TARGET_EXYNOS5422
 batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_BATOCERA_DRMINFO                     if BR2_PACKAGE_LIBDRM
 batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_LIRC_TOOLS                           # lirc (remote control)
 batocera/core/batocera-system/Config.in:	select BR2_PACKAGE_LIBCEC                               # libcec
