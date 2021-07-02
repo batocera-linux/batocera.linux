@@ -1,0 +1,11 @@
+--- a/CMakeLists.txt	2021-07-02 10:32:53.861596647 +0200
++++ b/CMakeLists.txt	2021-07-02 10:33:04.068263213 +0200
+@@ -98,8 +98,6 @@
+ include(ccache)
+ include(GNUInstallDirs)
+ 
+-add_definitions(-DASSETS_DIR="${CMAKE_INSTALL_FULL_DATADIR}/ppsspp/assets/")
+-
+ if(GOLD)
+ 	add_definitions(-DGOLD)
+ 	message("Gold Build")

@@ -11,6 +11,8 @@ PPSSPP_GIT_SUBMODULES=YES
 PPSSPP_LICENSE = GPLv2
 PPSSPP_DEPENDENCIES = sdl2 libzip ffmpeg
 
+PPSSPP_PKG_DIR = $(TARGET_DIR)/opt/retrolx/ppsspp
+
 PPSSPP_CONF_OPTS = \
 	-DUSE_FFMPEG=ON -DUSE_SYSTEM_FFMPEG=ON -DUSING_FBDEV=ON -DUSE_WAYLAND_WSI=OFF \
 	-DCMAKE_BUILD_TYPE=Release -DCMAKE_SYSTEM_NAME=Linux -DUSE_DISCORD=OFF \
@@ -120,5 +122,22 @@ define PPSSPP_INSTALL_TARGET_CMDS
 	mkdir -p $(TARGET_DIR)/usr/share/ppsspp
 	cp -R $(@D)/assets $(TARGET_DIR)/usr/share/ppsspp/PPSSPP
 endef
+
+define PPSSPP_MAKEPKG
+	# Create directories
+	mkdir -p $(PPSSPP_PKG_DIR)
+	mkdir -p $(PPSSPP_PKG_DIR)/assets
+
+	# Copy package files
+	$(INSTALL) -D -m 0755 $(@D)/$(PPSSPP_TARGET_BINARY) $(PPSSPP_PKG_DIR)/PPSSPP
+	cp -R $(@D)/assets $(PPSSPP_PKG_DIR)
+
+	# Build Pacman package
+	cd $(PPSSPP_PKG_DIR) && $(BR2_EXTERNAL_BATOCERA_PATH)/scripts/retrolx-makepkg \
+	$(BR2_EXTERNAL_BATOCERA_PATH)/package/retrolx/emulators/ppsspp/PKGINFO \
+	$(BATOCERA_SYSTEM_ARCH) $(HOST_DIR)
+endef
+
+PPSSPP_POST_INSTALL_TARGET_HOOKS = PPSSPP_MAKEPKG
 
 $(eval $(cmake-package))
