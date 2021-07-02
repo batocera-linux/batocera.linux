@@ -175,7 +175,7 @@ libretro:
                     "hybrid/top":    hybrid/top
                     "hybrid/bottom": hybrid/bottom
             frameskip_desmume:
-                prompt:      FRAME SKIP
+                prompt:      FRAMESKIP
                 description: Skip frames to improve performance (Smoothless)
                 choices:
                     "Off": 0
@@ -334,8 +334,8 @@ libretro:
                     "Denmark":              dk
                     "Finland":              su
                     "France":               fr
-                    "Germany":              gr
-                    "Greece":               gk
+                    "Germany":              gm
+                    "Greece":               gr
                     "Hungary":              hu
                     "Iceland":              is161
                     "Italy":                it
@@ -1129,7 +1129,7 @@ libretro:
                     "Analog":       analog
                     "Digital":      digital
             mame2003-plus_frameskip:
-                prompt:      FRAMSKIP
+                prompt:      FRAMESKIP
                 description: Skip frames to improve performance (smoothless)
                 choices:
                     "Off":          0
@@ -1230,7 +1230,7 @@ libretro:
                 prompt:      CPU DYNAREC (SPEEDDUP)
                 description: Much faster than interpreter (but may have bugs)
                 choices:
-                    "Desabled (Beatle Interpreter": disabled
+                    "Disabled (Beatle Interpreter": disabled
                     "Max Performance":              execute
                     "Cycle Timing Check":           execute_once
                     "Lightrec Interpreter":         run_interpreter
