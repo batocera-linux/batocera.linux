@@ -4,8 +4,8 @@
 #
 ################################################################################
 
-LIBXMP_VERSION = libxmp-4.4.1
-LIBXMP_SOURCE = enet-${LIBXMP_VERSION}.tar.gz
+LIBXMP_VERSION = libxmp-4.5.0
+LIBXMP_SOURCE = libxmp-${LIBXMP_VERSION}.tar.gz
 LIBXMP_SITE =  $(call github,libxmp,libxmp,$(LIBXMP_VERSION))
 LIBXMP_INSTALL_STAGING = YES
 LIBXMP_AUTORECONF = YES
