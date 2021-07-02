@@ -205,6 +205,7 @@ menu "Emulators"
 
   menu "Standalone emulators"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/retrolx/emulators/amiberry/Config.in"
+    source "$BR2_EXTERNAL_BATOCERA_PATH/package/retrolx/emulators/dosbox-staging/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/retrolx/emulators/dosbox-x/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/retrolx/emulators/hatari/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/retrolx/emulators/mame/Config.in"
@@ -219,7 +220,6 @@ menu "Emulators"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/cgenius/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/dolphin-emu/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/dosbox/Config.in"
-  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/dosbox-staging/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/fsuae/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/linapple/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/moonlight-embedded/Config.in"
@@ -286,21 +286,21 @@ menu "Emulators"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/xemu/Config.in"
 endmenu
 
-menu "Kodi"
-if BR2_PACKAGE_KODI
-  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi/kodi19-resource-language-de_de/Config.in"
-  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi/kodi19-resource-language-es_es/Config.in"
-  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi/kodi19-resource-language-eu_es/Config.in"
-  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi/kodi19-resource-language-fr_fr/Config.in"
-  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi/kodi19-resource-language-it_it/Config.in"
-  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi/kodi19-resource-language-pt_br/Config.in"
-  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi/kodi19-resource-language-sv_se/Config.in"
-  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi/kodi19-resource-language-tr_tr/Config.in"
-  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi/kodi19-resource-language-zh_cn/Config.in"
-  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi/kodi19-resource-language-el_gr/Config.in"
-  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi/kodi-pvr-freebox/Config.in"
-endif
-endmenu
+#menu "Kodi"
+#if BR2_PACKAGE_KODI
+#  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi/kodi19-resource-language-de_de/Config.in"
+#  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi/kodi19-resource-language-es_es/Config.in"
+#  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi/kodi19-resource-language-eu_es/Config.in"
+#  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi/kodi19-resource-language-fr_fr/Config.in"
+#  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi/kodi19-resource-language-it_it/Config.in"
+#  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi/kodi19-resource-language-pt_br/Config.in"
+#  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi/kodi19-resource-language-sv_se/Config.in"
+#  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi/kodi19-resource-language-tr_tr/Config.in"
+#  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi/kodi19-resource-language-zh_cn/Config.in"
+#  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi/kodi19-resource-language-el_gr/Config.in"
+#  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/kodi/kodi-pvr-freebox/Config.in"
+#endif
+#endmenu
 
 menu "Looks"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/looks/adwaita-icon-theme-light/Config.in"
