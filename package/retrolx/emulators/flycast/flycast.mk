@@ -11,6 +11,8 @@ FLYCAST_GIT_SUBMODULES=YES
 FLYCAST_LICENSE = GPLv2
 FLYCAST_DEPENDENCIES = sdl2 libpng libzip
 
+FLYCAST_PKG_DIR = $(TARGET_DIR)/opt/retrolx/flycast
+
 ifeq ($(BR2_PACKAGE_UDEV),y)
 	FLYCAST_DEPENDENCIES += udev
 endif
@@ -98,9 +100,19 @@ define FLYCAST_BUILD_CMDS
 endef
 
 define FLYCAST_INSTALL_TARGET_CMDS
-	$(INSTALL) -D -m 0755 $(@D)/shell/linux/nosym-flycast.elf \
-		$(TARGET_DIR)/usr/bin/flycast
 endef
+
+define FLYCAST_MAKEPKG
+	# Copy package files
+	$(INSTALL) -D -m 0755 $(@D)/shell/linux/nosym-flycast.elf $(FLYCAST_PKG_DIR)/flycast
+
+	# Build Pacman package
+	cd $(FLYCAST_PKG_DIR) && $(BR2_EXTERNAL_BATOCERA_PATH)/scripts/retrolx-makepkg \
+	$(BR2_EXTERNAL_BATOCERA_PATH)/package/retrolx/emulators/flycast/PKGINFO \
+	$(BATOCERA_SYSTEM_ARCH) $(HOST_DIR)
+endef
+
+FLYCAST_POST_INSTALL_TARGET_HOOKS = FLYCAST_MAKEPKG
 
 $(eval $(generic-package))
 
