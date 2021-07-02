@@ -25,8 +25,22 @@ define ALLLINUXFIRMWARES_DELETE_BRCM
 	rm -rf $(@D)/brcm
 endef
 
+# remove x86 world only firmware
+define ALLLINUXFIRMWARES_DELETE_X86_ONLY_FIRMWARE
+	rm -rf $(@D)/amdgpu
+	rm -rf $(@D)/i915
+	rm -rf $(@D)/intel
+	rm -rf $(@D)/iwlwifi*
+	rm -rf $(@D)/radeon
+endef
+
 ifeq ($(BR2_PACKAGE_BATOCERA_RPI_ANY),y)
 ALLLINUXFIRMWARES_PRE_INSTALL_TARGET_HOOKS += ALLLINUXFIRMWARES_DELETE_BRCM
+endif
+
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86_ANY),y)
+else
+ALLLINUXFIRMWARES_PRE_INSTALL_TARGET_HOOKS += ALLLINUXFIRMWARES_DELETE_X86_ONLY_FIRMWARE
 endif
 
 $(eval $(generic-package))
