@@ -16,6 +16,8 @@ DUCKSTATION_CONF_OPTS  = -DENABLE_DISCORD_PRESENCE=OFF -DANDROID=OFF -DBUILD_LIB
 DUCKSTATION_CONF_OPTS += -DCMAKE_BUILD_TYPE=Release
 DUCKSTATION_CONF_OPTS += -DBUILD_SHARED_LIBS=FALSE
 
+DUCKSTATION_PKG_DIR = $(TARGET_DIR)/opt/retrolx/duckstation
+
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86_64),y)
 DUCKSTATION_CONF_OPTS += -DBUILD_QT_FRONTEND=ON -DBUILD_SDL_FRONTEND=OFF -DUSE_WAYLAND=OFF -DUSE_X11=ON -DUSE_GLX=ON -DUSE_EGL=OFF
 DUCKSTATION_DEPENDENCIES += qt5base qt5tools qt5multimedia
@@ -38,37 +40,28 @@ endif
 
 DUCKSTATION_CONF_ENV += LDFLAGS=-lpthread
 
-
 # Should be set when the package cannot be built inside the source tree but needs a separate build directory.
 DUCKSTATION_SUPPORTS_IN_SOURCE_BUILD = NO
 
 define DUCKSTATION_INSTALL_TARGET_CMDS
-        mkdir -p $(TARGET_DIR)/usr/bin
-        mkdir -p $(TARGET_DIR)/usr/lib
-        mkdir -p $(TARGET_DIR)/usr/share/duckstation
-
-	$(INSTALL) -D $(@D)/buildroot-build/bin/$(DUCKSTATION_BINARY) \
-		$(TARGET_DIR)/usr/bin/duckstation
-	cp -R $(@D)/buildroot-build/bin/database      $(TARGET_DIR)/usr/share/duckstation/
-	rm -f $(TARGET_DIR)/usr/share/duckstation/database/gamecontrollerdb.txt
-	cp -R $(@D)/buildroot-build/bin/inputprofiles $(TARGET_DIR)/usr/share/duckstation/
-	cp -R $(@D)/buildroot-build/bin/resources     $(TARGET_DIR)/usr/share/duckstation/
-	cp -R $(@D)/buildroot-build/bin/shaders       $(TARGET_DIR)/usr/share/duckstation/
+	echo "nothing"
 endef
 
-define DUCKSTATION_EVMAPY
-	mkdir -p $(TARGET_DIR)/usr/share/evmapy
-	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/duckstation/psx.duckstation.keys $(TARGET_DIR)/usr/share/evmapy
+define DUCKSTATION_MAKEPKG
+	# Create package directory
+	mkdir -p $(DUCKSTATION_PKG_DIR)
+
+	# Copy package files
+	cp -R $(@D)/buildroot-build/bin/* $(DUCKSTATION_PKG_DIR)
+	mv $(DUCKSTATION_PKG_DIR)/$(DUCKSTATION_BINARY) $(DUCKSTATION_PKG_DIR)/duckstation
+	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/retrolx/emulators/duckstation/psx.duckstation.keys $(DUCKSTATION_PKG_DIR)
+
+	# Build Pacman package
+	cd $(DUCKSTATION_PKG_DIR) && $(BR2_EXTERNAL_BATOCERA_PATH)/scripts/retrolx-makepkg \
+	$(BR2_EXTERNAL_BATOCERA_PATH)/package/retrolx/emulators/duckstation/PKGINFO \
+	$(BATOCERA_SYSTEM_ARCH) $(HOST_DIR)
 endef
 
-define DUCKSTATION_TRANSLATIONS
-	mkdir -p $(TARGET_DIR)/usr/share/duckstation
-	cp -R $(@D)/buildroot-build/bin/translations  $(TARGET_DIR)/usr/share/duckstation/
-endef
-
-DUCKSTATION_POST_INSTALL_TARGET_HOOKS += DUCKSTATION_EVMAPY
-ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86_64),y)
-DUCKSTATION_POST_INSTALL_TARGET_HOOKS += DUCKSTATION_TRANSLATIONS
-endif
+DUCKSTATION_POST_INSTALL_TARGET_HOOKS = DUCKSTATION_MAKEPKG
 
 $(eval $(cmake-package))
