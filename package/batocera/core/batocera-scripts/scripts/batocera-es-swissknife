@@ -12,6 +12,7 @@
 # Added --reboot // 26.02.2020
 # Added --overlay and --remount // 13.04.2020
 # Updated version detection only depended from build-date and build-time now
+# Added --reset-ra to reset all settings from RetroArch cores // 27.06.2021
 
 # Get all childpids from calling process
 function getcpid() {
@@ -141,11 +142,12 @@ case ${1,,} in
             URL="https://updates.batocera.org/$BOARD/$BRANCH/last/batocera.version"
             NET_VERSION=$(wget -q -O - "$URL")
             [[ $? -eq 0 ]] || NET_VERSION="Connection failed!"
+            NET_VER=$(echo "$NET_VER" | head -n1)
+            echo "Installed:   $VER"
             echo "Webversion:  $NET_VERSION"
             echo "Update URL:  $(dirname $URL)"
             echo "Branch:      ${BRANCH^^}-branch searched"
             echo "Used arch:   $BOARD"
-            echo "Installed:   $VER"
             if [[ $(version_update "$VER") -lt $(version_update "$NET_VERSION") ]]; then
                 echo "Status:      Possible Update found!"
                 ret=0
@@ -181,33 +183,55 @@ case ${1,,} in
                 zip -j "$BA_OVERLAY" /boot/boot/overlay || exit 1
                 echo "Created backup to: $BA_OVERLAY"
                 echo "To restore: 'unzip $BA_OVERLAY -d /boot/boot'"
-            ;;
+           ;;
             *)
                echo "Nothing done!"
-            ;;
         esac
     ;;
+    --reset-ra)
+        if [[ -d "$HOME/configs/retroarch" ]]; then
+            rm -rf $HOME/configs/retroarch
+            echo "Deleted: dir $HOME/configs/retroarch"
+        fi
+        if [[ -d "$HOME/.config/retroarch" ]]; then
+            rm -rf $HOME/.config/retroarch
+            echo "Deleted: dir $HOME/.config/retroarch"
+        fi
+        read -p "Do you want to reset RetroArch parameters for 'batocera.conf' file (y/n)? " yn
+        case ${yn:0:1} in
+            y|Y)
+                echo "Reseting RetroArch parameter in 'batocera.conf'"
+                sed -i '/^global.retroarch.*/d' $HOME/batocera.conf
+            ;;
+        esac
+        echo "All done! -- Please reboot"
+    ;;
     *)
-        echo -e "\n\t\t BATOCERA SWISS KNIFE FOR EmulationStation
-                 Please parse parameters to this script! \n
-                  --restart  will RESTART EmulationStation only
-                  --kodi     will startup KODI Media Center stopping ES
-                  --reboot   will REBOOT whole system
-                  --shutdown will SHUTDOWN whole system
-                  --emukill  will exit any running EMULATORS
-                  --espid    checks if EmulationStation is currently active
-                             This number is the real PID of the binary!
-                             If the ouput is 0, then ES isn't active
-                  --emupid   to check if an Emulator is running
-                             This number is just the PID of emulatorlauncher.py
-                             If output is 0 then there is no emulator active!
-                  --arch     Shows current architecture running\n
-                  --version  Shows current version of BATOCERA running
-                  --update   Shows possible update for your install
-                             default: stable, you can type --update beta
-                  --overlay  will try to backup your overlay file
-                  --remount  toggle write access to <dir>, default /boot
-                             This switch can have serious effects for your setup"
+        cat <<-_EOF_
+		BATOCERA SWISS KNIFE FOR EmulationStation
+		  Please parse parameters to this script!
+		  --restart  will RESTART EmulationStation only
+		  --kodi     will startup KODI Media Center stopping ES
+		  --reboot   will REBOOT whole system
+		  --shutdown will SHUTDOWN whole system
+		  --emukill  will exit any running EMULATORS
+		  --espid    checks if EmulationStation is currently active
+		      This number is the real PID of the binary!
+		      If the ouput is 0, then ES isn't active
+		  --emupid   to check if an Emulator is running
+		      This number is just the PID of emulatorlauncher.py
+		      If output is 0 then there is no emulator active!
+
+		  --arch     Shows current architecture running
+		  --version  Shows current version of BATOCERA running
+		  --update   Shows possible update for your install
+		      default: stable, you can type --update beta
+
+		  --overlay  will try to backup your overlay file
+		  --remount  toggle write access to <dir>, default /boot
+		      This switch can have serious effects for your setup
+		  --reset-ra will set all RA settings to default
+		_EOF_
     ;;
 
 esac
