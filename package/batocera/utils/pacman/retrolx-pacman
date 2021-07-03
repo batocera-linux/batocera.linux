@@ -4,9 +4,9 @@
 # We have download progress badge for ES now! - lala 2020/12/20
 
 #Inits (for future, maybe use values from config file)
-DEST_PKG=/userdata/system/pacman/batocera/pkg
-DB_FILE=/userdata/system/pacman/batocera/db/db.lck
-PACMAN_CMD=pacman --config /userdata/system/pacman/batocera_conf.conf
+DEST_PKG=/userdata/system/pacman/retrolx/pkg
+DB_FILE=/userdata/system/pacman/retrolx/db/db.lck
+PACMAN_CMD="pacman --debug --config /etc/retrolx_pacman.conf"
 
 do_help() {
 	echo "$0 install <package>" >&2
@@ -72,25 +72,25 @@ case "${ACTION}" in
     "install")
 	# TERMINAL DOWNLOAD
 	if [ $TERMINAL -eq 1 ]; then
-		"$PACMAN_CMD" --noconfirm -Sw "${PKG}" --overwrite 'userdata/*'
+		${PACMAN_CMD} --noconfirm -Sw "${PKG}" --overwrite 'userdata/*'
 		RET=$?
 		if [ ${RET} -eq 1 ]; then
 			echo "Download error!"
 		else
-			"$PACMAN_CMD" --noconfirm -S "${PKG}" --overwrite 'userdata/*'
+			${PACMAN_CMD} --noconfirm -S "${PKG}" --overwrite 'userdata/*'
 			RET=$?	
 		fi
 	# DOWNLOAD INSIDE ES
 	else
 		# Retrieve some information from pacman package
-		SIZE=$("$PACMAN_CMD" -Sw --print-format "%s" "${PKG}")
-		FILE=$(basename $("$PACMAN_CMD" -Sw --print-format "%l" "${PKG}"))
-		NAME=$("$PACMAN_CMD" -Si "${PKG}" | grep "Description" | awk '{print substr($0, index($0, $3))}' | cut -c 1-20)
-		USER_INFO_DLSIZE=$("$PACMAN_CMD" -Si "${PKG}" | grep "Download Size" | awk '{print $4$5}')
-		USER_INFO_INSIZE=$("$PACMAN_CMD" -Si "${PKG}" | grep "Installed Size" | awk '{print $4$5}')
+		SIZE=$(${PACMAN_CMD} -Sw --print-format "%s" "${PKG}")
+		FILE=$(basename $(${PACMAN_CMD} -Sw --print-format "%l" "${PKG}"))
+		NAME=$(${PACMAN_CMD} -Si "${PKG}" | grep "Description" | awk '{print substr($0, index($0, $3))}' | cut -c 1-20)
+		USER_INFO_DLSIZE=$(${PACMAN_CMD} -Si "${PKG}" | grep "Download Size" | awk '{print $4$5}')
+		USER_INFO_INSIZE=$(${PACMAN_CMD} -Si "${PKG}" | grep "Installed Size" | awk '{print $4$5}')
 
 		# Download package now, send pacman in background and silence
-		"$PACMAN_CMD" --noconfirm -Sw "${PKG}" --overwrite 'userdata/*' 2>&1 >/dev/null &
+		${PACMAN_CMD} --noconfirm -Sw "${PKG}" --overwrite 'userdata/*' 2>&1 >/dev/null &
 		PID=$!
 		# The .part is needed, check if file is already present
 		# Download loop with real size
@@ -100,7 +100,7 @@ case "${ACTION}" in
 		RET=$?
 		if [ ${RET} -eq 0 ]; then
 			# Install package directly (without Sync)
-			"$PACMAN_CMD" --noconfirm -S "${PKG}" --overwrite 'userdata/*' 2>&1 >/dev/null &
+			${PACMAN_CMD} --noconfirm -S "${PKG}" --overwrite 'userdata/*' 2>&1 >/dev/null &
 			PID=$!; RET=$?
 			# Loop with a indicator for working state
 			do_bepatient
@@ -113,29 +113,29 @@ case "${ACTION}" in
 	exit ${RET}
 	;;
     "remove")
-	"$PACMAN_CMD" --noconfirm -R "${PKG}"
+	${PACMAN_CMD} --noconfirm -R "${PKG}"
 	exit $?
 	;;
     "list")
-	if test ! -e /userdata/system/pacman/db/sync/batocera.db
+	if test ! -e /userdata/system/pacman/retrolx/db/sync/retrolx.db
 	then
-		"$PACMAN_CMD" --noconfirm -Sy
+		${PACMAN_CMD} --noconfirm -Sy
 	fi
 	if [ $TERMINAL -eq 1 ]; then
-		"$PACMAN_CMD" --noconfirm -Ss
+		${PACMAN_CMD} --noconfirm -Ss
 		RET=$?
 	else
-		"$PACMAN_CMD" --noconfirm -Ss --xml
+		${PACMAN_CMD} --noconfirm -Ss --xml
 		RET=$?
 	fi
 	exit ${RET}
 	;;
     "refresh")
-	"$PACMAN_CMD" --noconfirm -Sy
+	${PACMAN_CMD} --noconfirm -Sy
 	exit $?
 	;;
     "clean")
-	"$PACMAN_CMD" --noconfirm -Sc
+	${PACMAN_CMD} --noconfirm -Sc
 	exit $?
 	;;
     "clean-all")
@@ -143,7 +143,7 @@ case "${ACTION}" in
         exit $?
 	;;
     "update")
-	"$PACMAN_CMD" --noconfirm -Syu --overwrite 'userdata/*'
+	${PACMAN_CMD} --noconfirm -Syu --overwrite 'userdata/*'
 	exit $?
 	;;
     "list-repositories")
