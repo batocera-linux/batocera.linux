@@ -485,6 +485,7 @@ config BR2_PACKAGE_BATOCERA_HOMEBREW_SYSTEMS
 	# Fantasy consoles
 	select BR2_PACKAGE_LIBRETRO_TIC80   # ALL
 	select BR2_PACKAGE_LIBRETRO_RETRO8  # ALL
+	select BR2_PACKAGE_LEXALOFFLE_PICO8 # ALL
 
 #### Sega Dreamcast, Naomi and Atomiswave ####
 config BR2_PACKAGE_BATOCERA_SEGADC

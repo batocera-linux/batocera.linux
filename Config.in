@@ -216,6 +216,7 @@ menu "Emulators"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/lightspark/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/ruffle/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/drastic/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/lexaloffle-pico8/Config.in"
 
   menu "mupen64plus"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/mupen64plus/mupen64plus-core/Config.in"
