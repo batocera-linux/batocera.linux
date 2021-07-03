@@ -27,7 +27,7 @@ function powerdevice_dialog()
     local currentswitch #show current switch
 
     currentswitch="$(/usr/bin/batocera-settings-get system.power.switch)"
-    [[ -z $currentswitch || $currentswitch == "#" ]] && currentswitch="disabled"
+    [[ -z "$currentswitch" ]] && currentswitch="disabled"
 
     powerdevices=(
                   RETROFLAG "Including NESPi+ SuperPi and MegaPi cases" \
@@ -294,7 +294,7 @@ function pin56_start()
 function pin56_stop()
 {
     if [[ -f /tmp/rpi-pin56-power.pid ]]; then
-        kill `cat /tmp/rpi-pin56-power.pid`
+        kill $(cat /tmp/rpi-pin56-power.pid)
     fi
 }
 
@@ -393,8 +393,7 @@ function kintaro_stop()
 # If you start by CLI a dialog will appear
 
 if [[ "$1" == "start" || "$1" == "stop" ]]; then
-    [[ -n "$2" ]] || exit 1
-    CONFVALUE="$2"
+    [[ -n "$2" ]] && CONFVALUE="$2" || exit 1
 elif [[ -z "$1" ]]; then
     CONFVALUE="DIALOG"
 elif [[ "${1^^}" =~ "HELP" ]]; then
@@ -427,7 +426,7 @@ case "$CONFVALUE" in
         pin56_$1
     ;;
     "PIN356ONOFFRESET")
-        pin356_$1 noparam
+        pin356_$1
     ;;
     "RETROFLAG")
         retroflag_$1 rpi-retroflag-SafeShutdown
@@ -449,7 +448,7 @@ case "$CONFVALUE" in
         switch="$(powerdevice_dialog)"
 
         # Write values and display MsgBox
-        [[ -n $switch ]] || { echo "Abort! Nothing changed...."; exit 1;}
+        [[ -n "$switch" ]] || { echo "Abort! Nothing changed...."; exit 1;}
         /usr/bin/batocera-settings-set system.power.switch "$switch"
         [[ $? -eq 0 ]] && info_msg="No error! Everything went okay!" || info_msg="An error occurred!"
         dialog --backtitle "BATOCERA Power Switch Selection Toolkit" \
