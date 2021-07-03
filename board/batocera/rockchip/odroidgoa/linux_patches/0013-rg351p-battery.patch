@@ -1,9 +1,17 @@
---- a/drivers/power/rk817_battery.c	2021-02-05 16:31:59.891190059 -0500
-+++ b/drivers/power/rk817_battery.c	2021-02-05 16:33:29.720760751 -0500
-@@ -2019,6 +2019,29 @@ static int rk817_bat_get_charge_state(st
+--- a/drivers/power/rk817_battery.c	2021-07-01 11:38:51.000000000 -0500
++++ b/drivers/power/rk817_battery.c	2021-07-01 15:24:14.000000000 -0500
+@@ -2019,6 +2019,37 @@ static int rk817_bat_get_charge_state(st
  	return (battery->usb_in || battery->ac_in);
  }
  
++static int running_on_rg351p = -1;
++static bool is_running_on_rg351p(void)
++{
++	if(running_on_rg351p==-1) {
++		running_on_rg351p = of_machine_is_compatible("rockchip,rk3326-rg351p-linux");
++	}
++	return running_on_rg351p>0;
++}
 +//static int rg351p_battery_skip = 30000;
 +static int rg351p_battery_pre_voltage = 5000;
 +#define RG351_BAT_MAX_VOLTAGE 3900
@@ -30,19 +38,21 @@
  static int rk817_battery_get_property(struct power_supply *psy,
  				      enum power_supply_property psp,
  				      union power_supply_propval *val)
-@@ -2037,9 +2060,14 @@ static int rk817_battery_get_property(st
+@@ -2037,9 +2068,14 @@ static int rk817_battery_get_property(st
  			val->intval = VIRTUAL_VOLTAGE * 1000;
  		break;
  	case POWER_SUPPLY_PROP_CAPACITY:
-+		/*
- 		val->intval = (battery->dsoc  + 500) / 1000;
- 		if (battery->pdata->bat_mode == MODE_VIRTUAL)
- 			val->intval = VIRTUAL_SOC;
-+		*/
-+		//dev_err(dev, "%d\n",battery->voltage_avg);
-+		val->intval = rk817_battery_rg351p_capacity_get(battery->voltage_avg,rk817_bat_get_charge_state(battery));
-+		
+-		val->intval = (battery->dsoc  + 500) / 1000;
+-		if (battery->pdata->bat_mode == MODE_VIRTUAL)
+-			val->intval = VIRTUAL_SOC;
++		if(!is_running_on_rg351p()) {
++			val->intval = (battery->dsoc  + 500) / 1000;
++			if (battery->pdata->bat_mode == MODE_VIRTUAL)
++				val->intval = VIRTUAL_SOC;
++		} else {
++			//dev_err(dev, "%d\n",battery->voltage_avg);
++			val->intval = rk817_battery_rg351p_capacity_get(battery->voltage_avg,rk817_bat_get_charge_state(battery));
++		}
  		break;
  	case POWER_SUPPLY_PROP_HEALTH:
  		val->intval = POWER_SUPPLY_HEALTH_GOOD;
-
