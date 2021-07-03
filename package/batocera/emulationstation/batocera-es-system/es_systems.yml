@@ -596,7 +596,8 @@ fbneo:
   platform:   arcade
   emulators:
     libretro:
-      fbneo:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FBNEO] }
+      fbneo:    { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FBNEO]    }
+      fbalpha:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FBALPHA]  }
   comment_en: |
     ROMs must come from the FBNeo romset version 1.0.0.0
 
