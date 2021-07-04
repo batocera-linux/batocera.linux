@@ -1,0 +1,18 @@
+config BR2_PACKAGE_RTKIT
+	bool "rtkit"
+        depends on BR2_i386 || BR2_x86_64
+	select BR2_PACKAGE_LIBCAP
+	select BR2_PACKAGE_POLKIT
+	# Wine unconditionally builds shared libraries
+	depends on !BR2_STATIC_LIBS
+	help
+          RealtimeKit
+  
+	  This is a D-Bus system service that changes the scheduling policy of user processes/threads to SCHED_RR
+	  (i.e. realtime scheduling mode) on request. It is intended to be used as a secure mechanism to allow real-time
+	  scheduling to be used by normal user processes.
+
+	  Project Website: https://github.com/heftig/rtkit
+
+comment "rtkit needs a toolchain w/ dynamic library"
+	depends on BR2_STATIC_LIBS
