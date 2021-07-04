@@ -17,6 +17,7 @@ DUCKSTATION_CONF_OPTS += -DCMAKE_BUILD_TYPE=Release
 DUCKSTATION_CONF_OPTS += -DBUILD_SHARED_LIBS=FALSE
 
 DUCKSTATION_PKG_DIR = $(TARGET_DIR)/opt/retrolx/duckstation
+DUCKSTATION_PKG_INSTALL_DIR = /userdata/packages/$(BATOCERA_SYSTEM_ARCH)/duckstation
 
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86_64),y)
 DUCKSTATION_CONF_OPTS += -DBUILD_QT_FRONTEND=ON -DBUILD_SDL_FRONTEND=OFF -DUSE_WAYLAND=OFF -DUSE_X11=ON -DUSE_GLX=ON -DUSE_EGL=OFF
@@ -44,22 +45,26 @@ DUCKSTATION_CONF_ENV += LDFLAGS=-lpthread
 DUCKSTATION_SUPPORTS_IN_SOURCE_BUILD = NO
 
 define DUCKSTATION_INSTALL_TARGET_CMDS
-	echo "nothing"
+	echo "DuckStation is built as a Pacman package, skip rootfs install"
 endef
 
 define DUCKSTATION_MAKEPKG
 	# Create package directory
-	mkdir -p $(DUCKSTATION_PKG_DIR)
+	mkdir -p $(DUCKSTATION_PKG_DIR)$(DUCKSTATION_PKG_INSTALL_DIR)
 
 	# Copy package files
-	cp -R $(@D)/buildroot-build/bin/* $(DUCKSTATION_PKG_DIR)
-	mv $(DUCKSTATION_PKG_DIR)/$(DUCKSTATION_BINARY) $(DUCKSTATION_PKG_DIR)/duckstation
-	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/retrolx/emulators/duckstation/psx.duckstation.keys $(DUCKSTATION_PKG_DIR)
+	cp -R $(@D)/buildroot-build/bin/* $(DUCKSTATION_PKG_DIR)$(DUCKSTATION_PKG_INSTALL_DIR)
+	mv $(DUCKSTATION_PKG_DIR)$(DUCKSTATION_PKG_INSTALL_DIR)/$(DUCKSTATION_BINARY) $(DUCKSTATION_PKG_DIR)/$(DUCKSTATION_PKG_INSTALL_DIR)/duckstation
+	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/retrolx/emulators/duckstation/psx.duckstation.keys $(DUCKSTATION_PKG_DIR)$(DUCKSTATION_PKG_INSTALL_DIR)
 
 	# Build Pacman package
 	cd $(DUCKSTATION_PKG_DIR) && $(BR2_EXTERNAL_BATOCERA_PATH)/scripts/retrolx-makepkg \
 	$(BR2_EXTERNAL_BATOCERA_PATH)/package/retrolx/emulators/duckstation/PKGINFO \
 	$(BATOCERA_SYSTEM_ARCH) $(HOST_DIR)
+	mv $(TARGET_DIR)/opt/retrolx/*.zst $(BR2_EXTERNAL_BATOCERA_PATH)/repo/$(BATOCERA_SYSTEM_ARCH)/
+
+	# Cleanup
+	rm -Rf $(TARGET_DIR)/opt/retrolx/*
 endef
 
 DUCKSTATION_POST_INSTALL_TARGET_HOOKS = DUCKSTATION_MAKEPKG

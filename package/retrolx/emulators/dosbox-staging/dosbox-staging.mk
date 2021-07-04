@@ -14,6 +14,7 @@ DOSBOX_STAGING_CFLAGS   = -O3 -fstrict-aliasing -fno-signed-zeros -fno-trapping-
 DOSBOX_STAGING_CXXFLAGS = -O3 -fstrict-aliasing -fno-signed-zeros -fno-trapping-math -fassociative-math -frename-registers -ffunction-sections -fdata-sections
 
 DOSBOX_STAGING_PKG_DIR = $(TARGET_DIR)/opt/retrolx/dosbox-staging
+DOSBOX_STAGING_PKG_INSTALL_DIR = /userdata/packages/$(BATOCERA_SYSTEM_ARCH)/dosbox-staging
 
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI1),y)
 DOSBOX_STAGING_CFLAGS   += -mcpu=arm1176jzf-s -mfpu=vfp -mfloat-abi=hard
@@ -66,12 +67,20 @@ define DOSBOX_STAGING_INSTALL_TARGET_CMDS
 endef
 
 define DOSBOX_STAGING_MAKE_PKG
-        $(INSTALL) -D $(@D)/src/dosbox $(DOSBOX_STAGING_PKG_DIR)/dosbox-staging
+	# Create directories
+	mkdir -p $(DOSBOX_STAGING_PKG_DIR)$(DOSBOX_STAGING_PKG_INSTALL_DIR)
+
+	# Copy package files
+        $(INSTALL) -D $(@D)/src/dosbox $(DOSBOX_STAGING_PKG_DIR)/$(DOSBOX_STAGING_PKG_INSTALL_DIR)/dosbox-staging
 
 	# Build Pacman package
 	cd $(DOSBOX_STAGING_PKG_DIR) && $(BR2_EXTERNAL_BATOCERA_PATH)/scripts/retrolx-makepkg \
 	$(BR2_EXTERNAL_BATOCERA_PATH)/package/retrolx/emulators/dosbox-staging/PKGINFO \
 	$(BATOCERA_SYSTEM_ARCH) $(HOST_DIR)
+	mv $(TARGET_DIR)/opt/retrolx/*.zst $(BR2_EXTERNAL_BATOCERA_PATH)/repo/$(BATOCERA_SYSTEM_ARCH)/
+
+	# Cleanup
+	rm -Rf $(TARGET_DIR)/opt/retrolx/*
 endef
 
 DOSBOX_STAGING_POST_INSTALL_TARGET_HOOKS += DOSBOX_STAGING_MAKE_PKG
