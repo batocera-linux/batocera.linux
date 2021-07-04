@@ -13,7 +13,7 @@ do_usage() {
 
 do_select_audiodevice() {
 	if echo "${MODE}" | grep -qE '^[0-9]*,[0-9]* '; then
-		cardnb="$(echo "${MODE}" | sed -e s+'^\([0-9]*\),.*$'+'\1'+)"
+		cardnb="$(echo "${MODE}"   | sed -e s+'^\([0-9]*\),.*$'+'\1'+)"
 		devicenb="$(echo "${MODE}" | sed -e s+'^[0-9]*,\([0-9]*\) .*$'+'\1'+)"
 	else
 		# No valid device selected
@@ -42,6 +42,11 @@ do_select_audiodevice() {
 }
 
 
+do_select_PCM() {
+    audio_dev="plughw:${cardnb},${devicenb}"
+    (sleep 1 && batocera-settings-set global.retroarch.audio_device "$audio_dev") &
+}
+
 ACTION="$1"
 
 case "${ACTION}" in
@@ -62,13 +67,14 @@ case "${ACTION}" in
 			# any other, create .asoundrc
 			auto)
 				rm -f /userdata/system/.asoundrc
+                (sleep 1 && batocera-settings-set global.retroarch.audio_device " ") &
 			;;
 
 			custom)
 				# do nothing!
 			;;
 			*)
-				do_select_audiodevice
+				do_select_audiodevice && do_select_PCM
 		esac
 	;;
 
