@@ -18,11 +18,8 @@ ECWOLF_CONF_ENV += LDFLAGS="-lpthread -lvorbisfile -lopusfile -lFLAC -lmodplug -
 define ECWOLF_INSTALL_TARGET_CMDS
 		mkdir -p $(TARGET_DIR)/usr/bin
 		mkdir -p $(TARGET_DIR)/usr/share/ecwolf
-	$(INSTALL) -D -m 0755 $(@D)/ecwolf \
-		$(TARGET_DIR)/usr/share/ecwolf/
+	$(INSTALL) -D -m 0755 $(@D)/ecwolf $(TARGET_DIR)/usr/bin/ecwolf
 	cp -a $(@D)/ecwolf.pk3 $(TARGET_DIR)/usr/share/ecwolf/
-#	ln -s /usr/share/ecwolf/ecwolf /usr/bin/ecwolf
-	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/ecwolf/ecwolf.cfg $(TARGET_DIR)/usr/share/ecwolf/ecwolf.cfg
 
 	# evmap config
 	mkdir -p $(TARGET_DIR)/usr/share/evmapy

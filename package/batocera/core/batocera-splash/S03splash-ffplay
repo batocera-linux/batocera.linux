@@ -40,7 +40,7 @@ do_videostart ()
     then
         ffplay_opt=-an
     fi
-    /usr/bin/ffplay $ffplay_opt -fs -loglevel -8 -autoexit "$video" &
+    /usr/bin/ffplay $ffplay_opt -sync video -autoexit -vcodec h264_v4l2m2m -i "$video" &
     wait $! 
 }
 

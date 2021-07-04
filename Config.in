@@ -184,6 +184,7 @@ menu "Emulators"
       source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/retroarch/libretro/libretro-genesisplusgx-wide/Config.in"
       source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/retroarch/libretro/libretro-swanstation/Config.in"
       source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/retroarch/libretro/libretro-ecwolf/Config.in"
+      source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/retroarch/libretro/libretro-fbalpha/Config.in"
      endmenu
   endmenu
 
@@ -215,6 +216,7 @@ menu "Emulators"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/lightspark/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/ruffle/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/drastic/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/lexaloffle-pico8/Config.in"
 
   menu "mupen64plus"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/mupen64plus/mupen64plus-core/Config.in"
@@ -255,6 +257,7 @@ menu "Emulators"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/wine/vkd3d/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/wine/wine-mono-proton/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/wine/wine-mono-lutris/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/wine/rtkit/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/python-pygame2/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/easyrpg/liblcf/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/easyrpg/easyrpg-player/Config.in"
