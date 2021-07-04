@@ -19,31 +19,33 @@
 #v1.9 - add POWERHAT for Rpi4 OneNineDesign case variants - @dmanlfc
 #by cyperghost 11.11.2019
 
+### Array for Powerdevices, add/remove entries here
+
+powerdevices=(
+              RETROFLAG "Including NESPi+ SuperPi and MegaPi cases" \
+              RETROFLAG_ADV "Advanced script for Retroflag housings" \
+              RETROFLAG_GPI "Retroflag GPi case for Raspberry 0" \
+              ARGONONE "Fan control for RPi4 Argon One case" \
+              KINTARO "SNES style case from SuperKuma aka ROSHAMBO" \
+              MAUSBERRY "A neat power device from Mausberry circuits" \
+              ONOFFSHIM "The cheapest power device from Pimoroni" \
+              POWERHAT "Another cheap power device from OneNineDesign" \
+              REMOTEPIBOARD_2003 "Any remote control as pswitch v2013" \
+              REMOTEPIBOARD_2005 "Any remote control as pswitch v2015" \
+              ATX_RASPI_R2_6 "ATXRaspi is a smart power controller SBC" \
+              PIN56ONOFF "py: Sliding switch for proper shutdown" \
+              PIN56PUSH "py: Momentary push button for shutdown" \
+              PIN356ONOFFRESET "py: Power button and reset button" \
+             )
+
 #dialog for selecting your switch or power device
 function powerdevice_dialog()
 {
-    local powerdevices #array
     local switch cmd button #dialog variabels
     local currentswitch #show current switch
 
     currentswitch="$(/usr/bin/batocera-settings-get system.power.switch)"
     [[ -z "$currentswitch" ]] && currentswitch="disabled"
-
-    powerdevices=(
-                  RETROFLAG "Including NESPi+ SuperPi and MegaPi cases" \
-                  RETROFLAG_GPI "Retroflag GPi case for Raspberry 0" \
-                  KINTARO "SNES style case from SuperKuma aka ROSHAMBO" \
-                  MAUSBERRY "A neat power device from Mausberry circuits" \
-                  ONOFFSHIM "The cheapest power device from Pimoroni" \
-                  POWERHAT "Another cheap power device from OneNineDesign" \
-                  REMOTEPIBOARD_2003 "Any remote control as pswitch v2013" \
-                  REMOTEPIBOARD_2005 "Any remote control as pswitch v2015" \
-                  ATX_RASPI_R2_6 "ATXRaspi is a smart power controller SBC" \
-                  PIN56ONOFF "py: Sliding switch for proper shutdown" \
-                  PIN56PUSH "py: Momentary push button for shutdown" \
-                  PIN356ONOFFRESET "py: Power button and reset button" \
-                  ARGONONE "Fan control for RPi4 Argon One case" \
-                 )
 
     cmd=(dialog --backtitle "BATOCERA Power Switch Selection Toolset" \
                 --title " SWITCH/POWER DEVICE SETUP " \
@@ -278,7 +280,7 @@ function pin356_start()
 function pin356_stop()
 {
     if [[ -f /tmp/rpi-pin356-power.pid ]]; then
-        kill `cat /tmp/rpi-pin356-power.pid`
+        kill $(cat /tmp/rpi-pin356-power.pid)
     fi
 }
 
@@ -395,7 +397,7 @@ function kintaro_stop()
 if [[ "$1" == "start" || "$1" == "stop" ]]; then
     [[ -n "$2" ]] && CONFVALUE="$2" || exit 1
 elif [[ -z "$1" ]]; then
-    CONFVALUE="DIALOG"
+    CONFVALUE="--DIALOG"
 elif [[ "${1^^}" =~ "HELP" ]]; then
     CONFVALUE="--HELP"
 else
@@ -443,20 +445,19 @@ case "$CONFVALUE" in
     "KINTARO")
         kintaro_$1
     ;;
-    "DIALOG")
+    "--DIALOG")
         # Go to selection dialog
         switch="$(powerdevice_dialog)"
 
         # Write values and display MsgBox
-        [[ -n "$switch" ]] || { echo "Abort! Nothing changed...."; exit 1;}
+        [[ -n "$switch" ]] || { echo "Abort! Nothing changed...."; exit 1; }
         /usr/bin/batocera-settings-set system.power.switch "$switch"
         [[ $? -eq 0 ]] && info_msg="No error! Everything went okay!" || info_msg="An error occurred!"
         dialog --backtitle "BATOCERA Power Switch Selection Toolkit" \
                --title " STATUS OF NEW VALUE " \
                --msgbox "${info_msg}\n\n$(/usr/bin/batocera-settings-get system.power.switch)" 0 0
     ;;
-    --HELP|*)
-        [[ $CONFVALUE == "--HELP" ]] || echo "Wrong argument given to 'start' or 'stop' parameter"
+    --HELP)
         echo "Try: $(basename "$0") {start|stop} <value>"
         echo
         echo -e -n "Valid values are:\t"
@@ -465,4 +466,7 @@ case "$CONFVALUE" in
         done
         echo
     ;;
+    *)
+    echo "rpi_gpioswitch: False parameter to S92switch 'start' or 'stop' cmd. use --help" >&2
+    exit 1
 esac
