@@ -7,6 +7,6 @@
 
 HOST_DIR="$1"
 
-PATH="${HOST_DIR}/usr/bin:${PATH}" rm retrolx*
+#PATH="${HOST_DIR}/usr/bin:${PATH}" rm retrolx*
 PATH="${HOST_DIR}/usr/bin:${PATH}" repo-add "retrolx.db.tar.gz" *.pkg.tar.zst
 
