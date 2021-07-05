@@ -3,10 +3,10 @@
 # DosBox Staging
 #
 ################################################################################
-# Version.: Release on Dec 02, 2020
-DOSBOX_STAGING_VERSION = v0.76.0
+# Version.: Release on Jul 03, 2021
+DOSBOX_STAGING_VERSION = v0.77.0
 DOSBOX_STAGING_SITE = $(call github,dosbox-staging,dosbox-staging,$(DOSBOX_STAGING_VERSION))
-DOSBOX_STAGING_DEPENDENCIES = sdl2 sdl2_net zlib libpng libogg libvorbis opus opusfile fluidsynth
+DOSBOX_STAGING_DEPENDENCIES = sdl2 sdl2_net zlib libpng libogg libvorbis opus opusfile fluidsynth host-python3
 DOSBOX_STAGING_LICENSE = GPLv2
 
 DOSBOX_STAGING_CPPFLAGS = -DNDEBUG
@@ -53,25 +53,32 @@ DSOBOX_STAGING_CFLAGS   += -marm -march=armv7-a -mtune=cortex-a17 -mfpu=neon-vfp
 DSOBOX_STAGING_CXXFLAGS += -marm -march=armv7-a -mtune=cortex-a17 -mfpu=neon-vfpv4 -mfloat-abi=hard
 endif
 
-define DOSBOX_STAGING_CONFIGURE_CMDS
-    cd $(@D); ./autogen.sh; $(TARGET_CONFIGURE_OPTS) CROSS_COMPILE="$(HOST_DIR)/usr/bin/" LIBS="-lvorbisfile -lvorbis -logg" \
-        ./configure CPPFLAGS="$(DOSBOX_STAGING_CPPFLAGS)" CFLAGS="$(DOSBOX_STAGING_CFLAGS)" CXXFLAGS="$(DOSBOX_STAGING_CXXFLAGS)" --host="$(GNU_TARGET_NAME)" \
-                    --enable-core-inline \
-                    --enable-dynrec \
-                    --enable-unaligned_memory \
-                    --prefix=/opt/retrolx/dosbox-staging \
-                    --with-sdl-prefix="$(STAGING_DIR)/usr";
-endef
+# No OpenGL for GLES boards
+DOSBOX_STAGING_CONF_OPTS += -Duse_opengl=false
 
-define DOSBOX_STAGING_INSTALL_TARGET_CMDS
-endef
+# SSL error
+DOSBOX_STAGING_CONF_OPTS += -Duse_mt32emu=false 
+
+# Package prefix
+DOSBOX_STAGING_CONF_OPTS += --prefix="/opt/retrolx/dosbox-staging$(DOSBOX_STAGING_PKG_INSTALL_DIR)"
+
+#define DOSBOX_STAGING_CONFIGURE_CMDS
+# cd $(@D); ./autogen.sh; 
+#	$(TARGET_CONFIGURE_OPTS) CROSS_COMPILE="$(HOST_DIR)/usr/bin/" LIBS="-lvorbisfile -lvorbis -logg" \
+#        ./configure CPPFLAGS="$(DOSBOX_STAGING_CPPFLAGS)" CFLAGS="$(DOSBOX_STAGING_CFLAGS)" CXXFLAGS="$(DOSBOX_STAGING_CXXFLAGS)" --host="$(GNU_TARGET_NAME)" \
+#                    --enable-core-inline \
+#                    --enable-dynrec \
+#                    --enable-unaligned_memory \
+#                    --prefix=/opt/retrolx/dosbox-staging \
+#                    --with-sdl-prefix="$(STAGING_DIR)/usr";
+#endef
 
 define DOSBOX_STAGING_MAKE_PKG
 	# Create directories
-	mkdir -p $(DOSBOX_STAGING_PKG_DIR)$(DOSBOX_STAGING_PKG_INSTALL_DIR)
+	#mkdir -p $(DOSBOX_STAGING_PKG_DIR)$(DOSBOX_STAGING_PKG_INSTALL_DIR)
 
 	# Copy package files
-        $(INSTALL) -D $(@D)/src/dosbox $(DOSBOX_STAGING_PKG_DIR)/$(DOSBOX_STAGING_PKG_INSTALL_DIR)/dosbox-staging
+        #$(INSTALL) -D $(@D)/build/dosbox $(DOSBOX_STAGING_PKG_DIR)/$(DOSBOX_STAGING_PKG_INSTALL_DIR)/dosbox-staging
 
 	# Build Pacman package
 	cd $(DOSBOX_STAGING_PKG_DIR) && $(BR2_EXTERNAL_BATOCERA_PATH)/scripts/retrolx-makepkg \
@@ -85,4 +92,4 @@ endef
 
 DOSBOX_STAGING_POST_INSTALL_TARGET_HOOKS += DOSBOX_STAGING_MAKE_PKG
 
-$(eval $(autotools-package))
+$(eval $(meson-package))

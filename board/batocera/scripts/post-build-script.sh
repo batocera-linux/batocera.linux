@@ -117,9 +117,5 @@ if ! [[ -z "${SYSTEM_GETTY_PORT}" ]]; then
         ${TARGET_DIR}/etc/inittab
 fi
 
-# cleanup and build package db
-cd "${BR2_EXTERNAL_BATOCERA_PATH}/repo/${BATOCERA_TARGET,,}" && rm retrolx.db
-cd "${BR2_EXTERNAL_BATOCERA_PATH}/repo/${BATOCERA_TARGET,,}" && rm retrolx.db*
-cd "${BR2_EXTERNAL_BATOCERA_PATH}/repo/${BATOCERA_TARGET,,}" && rm retrolx.files
-cd "${BR2_EXTERNAL_BATOCERA_PATH}/repo/${BATOCERA_TARGET,,}" && rm retrolx.files*
+# rebuild package db
 cd "${BR2_EXTERNAL_BATOCERA_PATH}/repo/${BATOCERA_TARGET,,}" && "${BR2_EXTERNAL_BATOCERA_PATH}/board/batocera/scripts/retrolx-makedb" "${HOST_DIR}"

@@ -173,6 +173,8 @@ function main() {
 	    sz=$(du -s . | cut -f1)
 	    write_argument size $(expr $sz \* 1024)
 	    write_argument builddate $(date +%s)
+	    # We need to write arch
+	    write_argument arch $ARCH
 	    # Finally, create the actual package
 	    sanitize_info
 	    LST_BATOEXEC=( $(ls "$BATOEXEC"* 2>/dev/null) )
@@ -184,7 +186,7 @@ function main() {
 			    i=$((i+1))
 		    done
 	    fi
-	    make_pkg "$(get_config pkgname)-$(get_config pkgver)-$ARCH"
+	    make_pkg "$(get_config pkgname)-$(get_config pkgver)-$(get_config arch)"
 
 }
 
