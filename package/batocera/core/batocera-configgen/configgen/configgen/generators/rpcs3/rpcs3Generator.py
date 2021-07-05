@@ -92,9 +92,14 @@ class Rpcs3Generator(Generator):
 
         with open(batoceraFiles.rpcs3config, 'w') as file:
             documents = yaml.safe_dump(rpcs3ymlconfig, file, default_flow_style=False)
-
-        romBasename = path.basename(rom)
-        romName = rom + '/PS3_GAME/USRDIR/EBOOT.BIN'
+        if rom.endswith(".psn"):
+            with open(rom) as fp:
+                for line in fp:
+                    if len(line) >= 9:
+                        romName = '/userdata/system/configs/rpcs3/dev_hdd0/game/' + line.strip().upper() + "/USRDIR/EBOOT.BIN"
+        else:
+            romBasename = path.basename(rom)
+            romName = rom + '/PS3_GAME/USRDIR/EBOOT.BIN'
         commandArray = [batoceraFiles.batoceraBins[system.config['emulator']], romName]
 
         if system.isOptSet("gui") and system.getOptBoolean("gui") == False:
