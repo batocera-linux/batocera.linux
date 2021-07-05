@@ -6,7 +6,7 @@
 #Inits (for future, maybe use values from config file)
 DEST_PKG=/userdata/system/pacman/retrolx/pkg
 DB_FILE=/userdata/system/pacman/retrolx/db/db.lck
-PACMAN_CMD="pacman --debug --config /etc/retrolx_pacman.conf"
+PACMAN_CMD="pacman --config /etc/retrolx_pacman.conf"
 
 do_help() {
 	echo "$0 install <package>" >&2

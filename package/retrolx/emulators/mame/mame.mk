@@ -189,6 +189,10 @@ define MAME_INSTALL_TARGET_CMDS
 	cd $(MAME_PKG_DIR) && $(BR2_EXTERNAL_BATOCERA_PATH)/scripts/retrolx-makepkg \
 	$(BR2_EXTERNAL_BATOCERA_PATH)/package/retrolx/emulators/mame/PKGINFO \
 	$(BATOCERA_SYSTEM_ARCH) $(HOST_DIR)
+	mv $(TARGET_DIR)/opt/retrolx/*.zst $(BR2_EXTERNAL_BATOCERA_PATH)/repo/$(BATOCERA_SYSTEM_ARCH)/
+
+	# Cleanup
+	rm -Rf $(TARGET_DIR)/opt/retrolx/*
 endef
 
 MAME_POST_INSTALL_TARGET_HOOKS = MAME_MAKEPKG
