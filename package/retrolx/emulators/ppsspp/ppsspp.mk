@@ -12,6 +12,7 @@ PPSSPP_LICENSE = GPLv2
 PPSSPP_DEPENDENCIES = sdl2 libzip ffmpeg
 
 PPSSPP_PKG_DIR = $(TARGET_DIR)/opt/retrolx/ppsspp
+PPSSPP_PKG_INSTALL_DIR = /userdata/packages/$(BATOCERA_SYSTEM_ARCH)/ppsspp
 
 PPSSPP_CONF_OPTS = \
 	-DUSE_FFMPEG=ON -DUSE_SYSTEM_FFMPEG=ON -DUSING_FBDEV=ON -DUSE_WAYLAND_WSI=OFF \
@@ -125,17 +126,20 @@ endef
 
 define PPSSPP_MAKEPKG
 	# Create directories
-	mkdir -p $(PPSSPP_PKG_DIR)
-	mkdir -p $(PPSSPP_PKG_DIR)/assets
+	mkdir -p $(PPSSPP_PKG_DIR)$(PPSSPP_PKG_INSTALL_DIR)/assets
 
 	# Copy package files
-	$(INSTALL) -D -m 0755 $(@D)/$(PPSSPP_TARGET_BINARY) $(PPSSPP_PKG_DIR)/PPSSPP
-	cp -R $(@D)/assets $(PPSSPP_PKG_DIR)
+	$(INSTALL) -D -m 0755 $(@D)/$(PPSSPP_TARGET_BINARY) $(PPSSPP_PKG_DIR)$(PPSSPP_PKG_INSTALL_DIR)/PPSSPP
+	cp -R $(@D)/assets $(PPSSPP_PKG_DIR)$(PPSSPP_PKG_INSTALL_DIR)
 
 	# Build Pacman package
 	cd $(PPSSPP_PKG_DIR) && $(BR2_EXTERNAL_BATOCERA_PATH)/scripts/retrolx-makepkg \
 	$(BR2_EXTERNAL_BATOCERA_PATH)/package/retrolx/emulators/ppsspp/PKGINFO \
 	$(BATOCERA_SYSTEM_ARCH) $(HOST_DIR)
+	mv $(TARGET_DIR)/opt/retrolx/*.zst $(BR2_EXTERNAL_BATOCERA_PATH)/repo/$(BATOCERA_SYSTEM_ARCH)/
+
+	# Cleanup
+	rm -Rf $(TARGET_DIR)/opt/retrolx/*
 endef
 
 PPSSPP_POST_INSTALL_TARGET_HOOKS = PPSSPP_MAKEPKG

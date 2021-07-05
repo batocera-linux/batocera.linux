@@ -10,6 +10,7 @@ AMIBERRY_LICENSE = GPLv3
 AMIBERRY_DEPENDENCIES = sdl2 sdl2_image sdl2_ttf mpg123 libxml2 libmpeg2 flac
 
 AMIBERRY_PKG_DIR = $(TARGET_DIR)/opt/retrolx/amiberry
+AMIBERRY_PKG_INSTALL_DIR = /userdata/packages/$(BATOCERA_SYSTEM_ARCH)/amiberry
 
 ifeq ($(BR2_PACKAGE_RPI_USERLAND),y)
 	AMIBERRY_DEPENDENCIES += rpi-userland
@@ -77,44 +78,27 @@ define AMIBERRY_BUILD_CMDS
 endef
 
 define AMIBERRY_INSTALL_TARGET_CMDS
-#	$(INSTALL) -D $(@D)/amiberry $(TARGET_DIR)/usr/bin/amiberry
-#        mkdir -p $(TARGET_DIR)/usr/share/amiberry
-#
-#	ln -sf /userdata/system/configs/amiberry/whdboot $(TARGET_DIR)/usr/share/amiberry/whdboot
-#        mkdir -p $(TARGET_DIR)/usr/share/batocera/datainit/system/configs/amiberry
-#
-#	cp -pr $(@D)/whdboot $(TARGET_DIR)/usr/share/batocera/datainit/system/configs/amiberry/
-#	cp -rf $(@D)/data $(TARGET_DIR)/usr/share/amiberry
 endef
-
-#define AMIBERRY_EVMAP
-#	mkdir -p $(TARGET_DIR)/usr/share/evmapy
-#
-#	cp -prn $(BR2_EXTERNAL_BATOCERA_PATH)/package/retrolx/emulators/amiberry/controllers/amiga500.amiberry.keys \
-#		$(TARGET_DIR)/usr/share/evmapy
-#	cp -prn $(BR2_EXTERNAL_BATOCERA_PATH)/package/retrolx/emulators/amiberry/controllers/amiga1200.amiberry.keys \
-#		$(TARGET_DIR)/usr/share/evmapy
-#	cp -prn $(BR2_EXTERNAL_BATOCERA_PATH)/package/retrolx/emulators/amiberry/controllers/amigacd32.amiberry.keys \
-#		$(TARGET_DIR)/usr/share/evmapy
-#endef
-#AMIBERRY_POST_INSTALL_TARGET_HOOKS = AMIBERRY_EVMAP
 
 define AMIBERRY_MAKEPKG
 	# Create directories
-	mkdir -p $(AMIBERRY_PKG_DIR)
-	mkdir -p $(AMIBERRY_PKG_DIR)/data
+	mkdir -p $(AMIBERRY_PKG_DIR)$(AMIBERRY_PKG_INSTALL_DIR)/data
 
 	# Copy package files
-	cp -pr $(@D)/amiberry $(AMIBERRY_PKG_DIR)
-	cp -pr $(@D)/whdboot $(AMIBERRY_PKG_DIR)
-	cp -rf $(@D)/data $(AMIBERRY_PKG_DIR)
+	cp -pr $(@D)/amiberry $(AMIBERRY_PKG_DIR)$(AMIBERRY_PKG_INSTALL_DIR)
+	cp -pr $(@D)/whdboot $(AMIBERRY_PKG_DIR)$(AMIBERRY_PKG_INSTALL_DIR)
+	cp -rf $(@D)/data $(AMIBERRY_PKG_DIR)$(AMIBERRY_PKG_INSTALL_DIR)
 	cp -prn $(BR2_EXTERNAL_BATOCERA_PATH)/package/retrolx/emulators/amiberry/controllers/*.amiberry.keys \
-		$(AMIBERRY_PKG_DIR)
+		$(AMIBERRY_PKG_DIR)$(AMIBERRY_PKG_INSTALL_DIR)
 
 	# Build Pacman package
 	cd $(AMIBERRY_PKG_DIR) && $(BR2_EXTERNAL_BATOCERA_PATH)/scripts/retrolx-makepkg \
 	$(BR2_EXTERNAL_BATOCERA_PATH)/package/retrolx/emulators/amiberry/PKGINFO \
 	$(BATOCERA_SYSTEM_ARCH) $(HOST_DIR)
+	mv $(TARGET_DIR)/opt/retrolx/*.zst $(BR2_EXTERNAL_BATOCERA_PATH)/repo/$(BATOCERA_SYSTEM_ARCH)/
+
+	# Cleanup
+	rm -Rf $(TARGET_DIR)/opt/retrolx/*
 endef
 
 AMIBERRY_POST_INSTALL_TARGET_HOOKS = AMIBERRY_MAKEPKG

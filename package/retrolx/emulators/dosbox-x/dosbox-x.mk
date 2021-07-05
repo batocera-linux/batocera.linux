@@ -10,6 +10,7 @@ DOSBOX_X_DEPENDENCIES = sdl2 sdl2_net sdl_sound zlib libpng libogg libvorbis
 DOSBOX_X_LICENSE = GPLv2
 
 DOSBOX_X_PKG_DIR = $(TARGET_DIR)/opt/retrolx/dosbox-x
+DOSBOX_X_PKG_INSTALL_DIR = /userdata/packages/$(BATOCERA_SYSTEM_ARCH)/dosbox-x
 
 define DOSBOX_X_CONFIGURE_CMDS
 	# Create directories
@@ -20,7 +21,7 @@ define DOSBOX_X_CONFIGURE_CMDS
                     --enable-core-inline \
                     --enable-dynrec \
                     --enable-unaligned_memory \
-                    --prefix=/opt/retrolx/dosbox-x \
+                    --prefix=/opt/retrolx/dosbox-x$(DOSBOX_X_PKG_INSTALL_DIR) \
                     --disable-sdl \
                     --enable-sdl2 \
                     --with-sdl2-prefix="$(STAGING_DIR)/usr";
@@ -36,10 +37,17 @@ endef
 DOSBOX_X_POST_INSTALL_TARGET_HOOKS += DOSBOX_X_CONFIGURE_CONFIG
 
 define DOSBOX_X_MAKE_PKG
+	# Create directories
+	mkdir -p $(DOSBOX_X_PKG_DIR)$(DOSBOX_X_PKG_INSTALL_DIR)
+
 	# Build Pacman package
 	cd $(DOSBOX_X_PKG_DIR) && $(BR2_EXTERNAL_BATOCERA_PATH)/scripts/retrolx-makepkg \
 	$(BR2_EXTERNAL_BATOCERA_PATH)/package/retrolx/emulators/dosbox-x/PKGINFO \
 	$(BATOCERA_SYSTEM_ARCH) $(HOST_DIR)
+	mv $(TARGET_DIR)/opt/retrolx/*.zst $(BR2_EXTERNAL_BATOCERA_PATH)/repo/$(BATOCERA_SYSTEM_ARCH)/
+
+	# Cleanup
+	rm -Rf $(TARGET_DIR)/opt/retrolx/*
 endef
 
 DOSBOX_X_POST_INSTALL_TARGET_HOOKS += DOSBOX_X_MAKE_PKG
