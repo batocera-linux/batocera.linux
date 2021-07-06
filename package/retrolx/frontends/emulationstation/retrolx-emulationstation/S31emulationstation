@@ -31,6 +31,7 @@ case "$1" in
 		;;
 
 	stop)
+		killall openbox # for xorg
 		killall emulationstation
 		if [ $? -eq 0 ]; then
 			sleep 20 &

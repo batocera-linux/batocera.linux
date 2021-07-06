@@ -1,0 +1,16 @@
+#!/bin/sh
+
+if test "${1}" = "start"
+then
+    if test -e /userdata/system/buttoncolorled.save
+    then
+        COLORLED=$(cat /userdata/system/buttoncolorled.save)
+        batocera-gameforce "buttonColorLed" ${COLORLED}
+    fi
+
+    if test -e /userdata/system/powerled.save
+    then
+        POWERLED=$(cat /userdata/system/powerled.save)
+        batocera-gameforce "powerLed" ${POWERLED}
+    fi
+fi

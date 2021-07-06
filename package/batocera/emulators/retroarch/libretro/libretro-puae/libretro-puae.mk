@@ -3,15 +3,14 @@
 # PUAE
 #
 ################################################################################
-# Version.: Commits on Jun 03, 2021
-LIBRETRO_PUAE_VERSION = 41de4fc5bc14ec7031313cd47576ac992da5c259
+LIBRETRO_PUAE_VERSION = b5d11f4ec552a0eeb8dbdc0b6668e958ff25081a
 LIBRETRO_PUAE_SITE = $(call github,libretro,libretro-uae,$(LIBRETRO_PUAE_VERSION))
 LIBRETRO_PUAE__LICENSE = GPLv2
 
 PUAEPLATFORM=$(LIBRETRO_PLATFORM)
 
 ifeq ($(BR2_PACKAGE_RPI_USERLAND),y)
-	PUAEPLATFORM=rpi
+PUAEPLATFORM=rpi
 endif
 
 define LIBRETRO_PUAE_BUILD_CMDS

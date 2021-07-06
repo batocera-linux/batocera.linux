@@ -516,6 +516,7 @@ config BR2_PACKAGE_BATOCERA_HOMEBREW_SYSTEMS
 	# Fantasy consoles
 	select BR2_PACKAGE_LIBRETRO_TIC80   # ALL
 	select BR2_PACKAGE_LIBRETRO_RETRO8  # ALL
+	select BR2_PACKAGE_LEXALOFFLE_PICO8 # ALL
 
 #### Sega Dreamcast, Naomi and Atomiswave ####
 config BR2_PACKAGE_BATOCERA_SEGADC
@@ -537,6 +538,9 @@ config BR2_PACKAGE_BATOCERA_ARCADE_SYSTEMS
 
 	# Final Burn NEO
 	select BR2_PACKAGE_LIBRETRO_FBNEO       # ALL
+
+    # Final Burn Alpha
+    select BR2_PACKAGE_LIBRETRO_FBALPHA     if BR2_PACKAGE_BATOCERA_TARGET_CHA || BR2_PACKAGE_BATOCERA_TARGET_RPI1 || BR2_PACKAGE_BATOCERA_TARGET_RPI2
 
 	# Naomi and Atomiswave
 	select BR2_PACKAGE_BATOCERA_SEGADC
@@ -582,9 +586,7 @@ config BR2_PACKAGE_BATOCERA_HANDHELD_SYSTEMS
                                                     BR2_PACKAGE_BATOCERA_TARGET_S905GEN3    || \
                                                     BR2_PACKAGE_BATOCERA_TARGET_S922X       # no JIT on 32-bit x86/ARM
 
-	select BR2_PACKAGE_DRASTIC                  if  BR2_PACKAGE_BATOCERA_RPI_MESA3D         || \
-                                                    BR2_PACKAGE_BATOCERA_TARGET_S922X       || \
-                                                    BR2_PACKAGE_BATOCERA_TARGET_RK3326_ANY
+	select BR2_PACKAGE_DRASTIC                  if  BR2_aarch64 && ( BR2_PACKAGE_BATOCERA_RPI_MESA3D || BR2_PACKAGE_BATOCERA_TARGET_S922X || BR2_PACKAGE_BATOCERA_TARGET_RK3326_ANY )
 
 	select BR2_PACKAGE_MELONDS                  if BR2_PACKAGE_BATOCERA_TARGET_X86_64
 
@@ -745,10 +747,12 @@ config BR2_PACKAGE_BATOCERA_CONSOLE_SYSTEMS
 	# PSX
 	select BR2_PACKAGE_LIBRETRO_SWANSTATION         if  !BR2_PACKAGE_BATOCERA_TARGET_X86	    && \
 	                                                    !BR2_PACKAGE_BATOCERA_TARGET_CHA        && \
-                                                        !BR2_PACKAGE_BATOCERA_RPI_ANY           && \
-                                                        !BR2_PACKAGE_BATOCERA_TARGET_RK3326_ANY
+                                                        !BR2_PACKAGE_BATOCERA_TARGET_RPI1       && \
+                                                        !BR2_PACKAGE_BATOCERA_TARGET_RPI2
 
-	select BR2_PACKAGE_LIBRETRO_PCSX                if !BR2_PACKAGE_BATOCERA_TARGET_RPI1
+	select BR2_PACKAGE_LIBRETRO_PCSX                if  !BR2_PACKAGE_BATOCERA_TARGET_RPI1       && \
+                                                        !BR2_PACKAGE_BATOCERA_TARGET_RPI3       && \
+                                                        !BR2_PACKAGE_BATOCERA_TARGET_RK3326_ANY
 
 	select BR2_PACKAGE_LIBRETRO_BEETLE_PSX          if  !BR2_PACKAGE_BATOCERA_RPI_ANY           && \
                                                         !BR2_PACKAGE_BATOCERA_TARGET_CHA        && \
@@ -868,6 +872,10 @@ config BR2_PACKAGE_BATOCERA_CONSOLE_SYSTEMS
 	# Fairchild Channel F
 	select BR2_PACKAGE_LIBRETRO_FREECHAF            # ALL
 
+	# ECWolf
+	select BR2_PACKAGE_LIBRETRO_ECWOLF              # ALL
+	select BR2_PACKAGE_ECWOLF                       if BR2_PACKAGE_BATOCERA_TARGET_X86_64
+
 	help
 		All avaible systems for the selected architecture
 
@@ -912,6 +920,7 @@ config BR2_PACKAGE_BATOCERA_KODI19
 
 	# ffmpeg 
 	select BR2_PACKAGE_FFMPEG_GPL           # video recording
+	select BR2_PACKAGE_FFMPEG_FFPROBE       # determine the audio&video characteristics of a container file
 	select BR2_PACKAGE_FFMPEG_AVRESAMPLE    # audio resampler
 	select BR2_PACKAGE_LIBCDIO_PARANOIA     # cd-audio
 	select BR2_PACKAGE_LIBOPENH264          # openh264

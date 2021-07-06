@@ -50,6 +50,8 @@ from generators.drastic.drasticGenerator import DrasticGenerator
 from generators.xemu.xemuGenerator import XemuGenerator
 from generators.cgenius.cgeniusGenerator import CGeniusGenerator
 from generators.flatpak.flatpakGenerator import FlatpakGenerator
+from generators.ecwolf.ecwolfGenerator import ECWolfGenerator
+from generators.lexaloffle.lexaloffleGenerator import LexaloffleGenerator
 
 import controllersConfig as controllers
 import signal
@@ -103,6 +105,8 @@ generators = {
     'xemu': XemuGenerator(),
     'cgenius': CGeniusGenerator(),
     'flatpak': FlatpakGenerator(),
+    'ecwolf': ECWolfGenerator(),
+    'lexaloffle': LexaloffleGenerator(),
 }
 
 def main(args, maxnbplayers):

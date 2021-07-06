@@ -7,7 +7,6 @@ default:
     retroarch.menu_driver: rgui
     retroarch.menu_widget_scale_auto: "false"
     retroarch.menu_widget_scale_factor: 1.5
-    resolutionIsReversed: true
 
 n64:
   options:
@@ -17,6 +16,14 @@ psp:
   options:
     frameskip: automatic
     ppsspp.General.InternalScreenRotation: 0 # for people upgrading
+psx:
+  emulator: libretro
+  core:     swanstation
 nds:
   emulator: drastic
   core:     drastic
+psx:
+  emulator: libretro
+  core: swanstation
+  options:
+    gpu_software: true

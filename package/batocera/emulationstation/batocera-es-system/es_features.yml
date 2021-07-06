@@ -175,7 +175,7 @@ libretro:
                     "hybrid/top":    hybrid/top
                     "hybrid/bottom": hybrid/bottom
             frameskip_desmume:
-                prompt:      FRAME SKIP
+                prompt:      FRAMESKIP
                 description: Skip frames to improve performance (Smoothless)
                 choices:
                     "Off": 0
@@ -334,8 +334,8 @@ libretro:
                     "Denmark":              dk
                     "Finland":              su
                     "France":               fr
-                    "Germany":              gr
-                    "Greece":               gk
+                    "Germany":              gm
+                    "Greece":               gr
                     "Hungary":              hu
                     "Iceland":              is161
                     "Italy":                it
@@ -419,6 +419,12 @@ libretro:
                 choices:
                     "Off":        "true"
                     "On":         "false"
+            gpu_software:
+                prompt:      GPU SOFTWARE RENDERING
+                description: Force use of software rendering
+                choices:
+                    "Off":        False
+                    "On":         True
             duckstation_resolution_scale:
                 prompt:      VIDEO RESOLUTION
                 description: Improve the fidelity of 3D models (unaffect 2D)
@@ -1123,7 +1129,7 @@ libretro:
                     "Analog":       analog
                     "Digital":      digital
             mame2003-plus_frameskip:
-                prompt:      FRAMSKIP
+                prompt:      FRAMESKIP
                 description: Skip frames to improve performance (smoothless)
                 choices:
                     "Off":          0
@@ -1224,7 +1230,7 @@ libretro:
                 prompt:      CPU DYNAREC (SPEEDDUP)
                 description: Much faster than interpreter (but may have bugs)
                 choices:
-                    "Desabled (Beatle Interpreter": disabled
+                    "Disabled (Beatle Interpreter": disabled
                     "Max Performance":              execute
                     "Cycle Timing Check":           execute_once
                     "Lightrec Interpreter":         run_interpreter
@@ -2878,6 +2884,9 @@ libretro:
                     "Port2":    port2
                     "Port1+2":  port12
 
+    ecwolf:
+      features: []
+
 # Standalones
 
 amiberry:
@@ -3910,7 +3919,7 @@ drastic:
             choices:
                 "Off": 0
                 "On":  1
-
+                
 xemu:
   features: []
   cfeatures:
@@ -3927,3 +3936,9 @@ xemu:
             choices:
                 "Normal Boot":        "false"
                 "Skipped-Logo Boot":  "true"
+
+lexaloffle:
+  features: [padtokeyboard]
+
+ecwolf:
+  features: [padtokeyboard]

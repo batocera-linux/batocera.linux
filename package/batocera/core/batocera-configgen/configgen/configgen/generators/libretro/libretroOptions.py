@@ -1402,6 +1402,20 @@ def generateCoreSettings(coreSettings, system, rom):
             coreSettings.save('beetle_psx_enable_multitap_port2', '"disabled"')
 
     if (system.config['core'] == 'swanstation'):
+        # renderer
+        if system.isOptSet("gpu_software") and system.getOptBoolean("gpu_software") == True:
+            coreSettings.save('duckstation_GPU.Renderer', "Software")
+        else:
+            if system.isOptSet("gfxbackend"):
+                if system.config["gfxbackend"] == "vulkan":
+                    coreSettings.save('duckstation_GPU.Renderer', "Vulkan")
+                elif system.config["gfxbackend"] == "opengl":
+                    coreSettings.save('duckstation_GPU.Renderer', "OpenGL")
+                else:
+                    coreSettings.save('duckstation_GPU.Renderer', "Auto")
+            else:
+                coreSettings.save('duckstation_GPU.Renderer', "Auto")
+
         # Show official Bootlogo
         if system.isOptSet('duckstation_PatchFastBoot'):
             coreSettings.save('duckstation_BIOS.PatchFastBoot', system.config['duckstation_PatchFastBoot'])
