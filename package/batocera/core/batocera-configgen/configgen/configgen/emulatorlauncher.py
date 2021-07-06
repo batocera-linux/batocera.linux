@@ -32,7 +32,6 @@ from generators.wine.wineGenerator import WineGenerator
 from generators.cemu.cemuGenerator import CemuGenerator
 from generators.melonds.melondsGenerator import MelonDSGenerator
 from generators.rpcs3.rpcs3Generator import Rpcs3Generator
-from generators.pygame.pygameGenerator import PygameGenerator
 from generators.mame.mameGenerator import MameGenerator
 from generators.devilutionx.devilutionxGenerator import DevilutionXGenerator
 from generators.hatari.hatariGenerator import HatariGenerator
@@ -87,7 +86,6 @@ generators = {
     'melonds' : MelonDSGenerator(),
     'rpcs3' : Rpcs3Generator(),
     'mame' : MameGenerator(),
-    'pygame': PygameGenerator(),
     'devilutionx': DevilutionXGenerator(),
     'hatari': HatariGenerator(),
     'solarus': SolarusGenerator(),
