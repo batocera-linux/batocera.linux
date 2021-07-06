@@ -155,7 +155,6 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
 	select BR2_PACKAGE_LIBDRM                               if !BR2_PACKAGE_BATOCERA_RPI_VCORE
     select BR2_PACKAGE_LIBDRM_EXYNOS                        if BR2_PACKAGE_LIBDRM && BR2_PACKAGE_BATOCERA_TARGET_EXYNOS5422
 	select BR2_PACKAGE_BATOCERA_DRMINFO                     if BR2_PACKAGE_LIBDRM
-	select BR2_PACKAGE_LIRC_TOOLS                           # lirc (remote control)
 	select BR2_PACKAGE_LIBCEC                               # libcec
 	select BR2_PACKAGE_EDID_DECODE                          # edid monitor/tv support
 	select BR2_PACKAGE_READ_EDID                            # edid monitor/tv support
@@ -248,9 +247,8 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
 	# required for different emulators, i suggest to enable it always to not have different behavior depending on boards
 	select BR2_GCC_ENABLE_OPENMP
 
-	# frontends
+	# alternative frontends
 	select BR2_PACKAGE_RETROFE
-	select BR2_PACKAGE_ATTRACTMODE if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
 
 	help
     	Install the batocera.linux system files
