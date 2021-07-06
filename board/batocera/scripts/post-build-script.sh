@@ -52,7 +52,7 @@ then
 fi
 if test -e "${TARGET_DIR}/etc/init.d/S30dbus"
 then
-    mv "${TARGET_DIR}/etc/init.d/S30dbus"    "${TARGET_DIR}/etc/init.d/S06dbus"    || exit 1 # move really before for network (connman prerequisite)
+    mv "${TARGET_DIR}/etc/init.d/S30dbus"    "${TARGET_DIR}/etc/init.d/S01dbus"    || exit 1 # move really before for network (connman prerequisite) and pipewire
 fi
 if test -e "${TARGET_DIR}/etc/init.d/S40network"
 then
