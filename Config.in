@@ -11,6 +11,7 @@ endmenu
 
 menu "Frontends"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/retrolx/frontends/emulationstation/retrolx-emulationstation/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/retrolx/frontends/emulationstation/es-background-musics/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/retrolx/frontends/retrofe/Config.in"
 endmenu
 
@@ -92,7 +93,6 @@ menu "Emulationstation"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulationstation/batocera-es-system/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulationstation/es-theme-carbon/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulationstation/es-theme-minijawn/Config.in"
-  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulationstation/es-background-musics/Config.in"
 endmenu
 
 menu "Controllers"
@@ -277,7 +277,6 @@ menu "Emulators"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/wine/vkd3d/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/wine/wine-mono-proton/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/wine/wine-mono-lutris/Config.in"
-  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/python-pygame2/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/easyrpg/liblcf/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/easyrpg/easyrpg-player/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/solarus-engine/Config.in"
@@ -302,7 +301,6 @@ menu "Utils"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/utils/fdupes/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/utils/winetricks/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/utils/batocera-wine/Config.in"
-  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/utils/batocera-pygame/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/utils/cabextract/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/utils/pacman/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/utils/xow/Config.in"
