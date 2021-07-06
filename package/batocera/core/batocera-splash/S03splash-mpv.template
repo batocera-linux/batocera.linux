@@ -2,6 +2,9 @@
 
 DAEMON="splash"
 
+. /etc/profile.d/xdg.sh
+. /etc/profile.d/dbus.sh
+
 soundDisabled() {
     grep -qE "^[ ]*splash.screen.sound[ ]*=[ ]*0[ ]*$" /boot/batocera-boot.conf
 }

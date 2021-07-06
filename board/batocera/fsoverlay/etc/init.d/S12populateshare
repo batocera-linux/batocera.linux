@@ -103,5 +103,15 @@ ln -s /userdata/system/udev/rules.d/ /run/udev/
 # save to avoid to redo that all the times
 cp /usr/share/batocera/batocera.version /userdata/system/data.version || exit 1
 
+### cleaning old alsa files - 08/07/2021
+rm -f /userdata/system/.asoundrc
+if test -e /boot/asoundrc
+then
+    mount -o remount,rw /boot
+    rm -f /boot/asoundrc
+    mount -o remount,ro /boot
+fi
+###
+
 exit 0
 # END

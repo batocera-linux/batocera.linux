@@ -4,6 +4,9 @@
 # Furthermore it copies content from /userdata/splash to /boot/splash
 # by cyperghost aka lala on discord
 
+. /etc/profile.d/xdg.sh
+. /etc/profile.d/dbus.sh
+
 splash_autoplay ()
 {
     count=0

@@ -1,6 +1,5 @@
 config BR2_PACKAGE_RTKIT
 	bool "rtkit"
-        depends on BR2_i386 || BR2_x86_64
 	select BR2_PACKAGE_LIBCAP
 	select BR2_PACKAGE_POLKIT
 	# Wine unconditionally builds shared libraries

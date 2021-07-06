@@ -92,6 +92,11 @@ define BATOCERA_SYSTEM_INSTALL_TARGET_CMDS
 
 	# mounts
 	mkdir -p $(TARGET_DIR)/boot $(TARGET_DIR)/overlay $(TARGET_DIR)/userdata
+
+	# variables
+	mkdir -p $(TARGET_DIR)/etc/profile.d
+	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-system/xdg.sh $(TARGET_DIR)/etc/profile.d/xdg.sh
+	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-system/dbus.sh $(TARGET_DIR)/etc/profile.d/dbus.sh
 endef
 
 $(eval $(generic-package))

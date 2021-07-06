@@ -26,8 +26,8 @@ define BATOCERA_AUDIO_INSTALL_TARGET_CMDS
 	# sample audio files
 	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-audio/*.wav $(TARGET_DIR)/usr/share/sounds
 	# init script
-	install -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-audio/S01audio \
-		$(TARGET_DIR)/etc/init.d/S01audio
+	install -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-audio/S02audio \
+		$(TARGET_DIR)/etc/init.d/S02audio
 	# udev script to unmute audio devices
 	install -m 0644 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-audio/90-alsa-setup.rules \
 		$(TARGET_DIR)/etc/udev/rules.d/90-alsa-setup.rules
@@ -49,8 +49,12 @@ define BATOCERA_AUDIO_INSTALL_TARGET_CMDS
 	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-audio/media-session.conf \
 		$(TARGET_DIR)/etc/pipewire/media-session.d
 
-	# # get rid of pulseaudio files
-	# rm -rf $(TARGET_DIR)/etc/pulse
+	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-audio/pipewire.conf \
+		$(TARGET_DIR)/etc/pipewire/pipewire.conf
+	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-audio/pipewire-pulse.conf \
+		$(TARGET_DIR)/etc/pipewire/pipewire-pulse.conf
+	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-audio/media-session.conf \
+		$(TARGET_DIR)/etc/pipewire/media-session.d/media-session.conf
 endef
 
 $(eval $(generic-package))

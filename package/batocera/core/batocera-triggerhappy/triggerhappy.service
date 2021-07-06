@@ -2,6 +2,9 @@
 
 CONFFILE=multimedia_keys.conf
 
+. /etc/profile.d/xdg.sh
+. /etc/profile.d/dbus.sh
+
 # hack for odroidgoa models
 BOARD_MODEL=$(cat /sys/firmware/devicetree/base/model 2>/dev/null | sed -e s+"[^A-Za-z0-9]"+"_"+g)
 BOARD_CONFFILE=multimedia_keys_${BOARD_MODEL}.conf
