@@ -12,6 +12,9 @@ LIBRETRO_MAME2010_DEPENDENCIES = retroarch
 LIBRETRO_MAME2010_PLATFORM = $(LIBRETRO_PLATFORM)
 LIBRETRO_MAME2010_EXTRA_ARGS = VRENDER=soft emulator
 
+LIBRETRO_MAME2010_PKG_DIR = $(TARGET_DIR)/opt/retrolx/libretro
+LIBRETRO_MAME2010_PKG_INSTALL_DIR = /userdata/packages/$(BATOCERA_SYSTEM_ARCH)/lr-mame2010
+
 ifeq ($(BR2_x86_64),y)
 	LIBRETRO_MAME2010_EXTRA_ARGS += PTR64=1 ARM_ENABLED=0 LCPU=x86_64
 endif
@@ -34,16 +37,27 @@ define LIBRETRO_MAME2010_BUILD_CMDS
 	$(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" LD="$(TARGET_CC)" -C $(@D)/ -f Makefile platform="$(LIBRETRO_MAME2010_PLATFORM)" $(LIBRETRO_MAME2010_EXTRA_ARGS)
 endef
 
-# Bios
-# Need to think of another way to use these files.
-# They take up a lot of space on tmpfs.
 define LIBRETRO_MAME2010_INSTALL_TARGET_CMDS
-	$(INSTALL) -D $(@D)/mame2010_libretro.so \
-		$(TARGET_DIR)/usr/lib/libretro/mame0139_libretro.so
-
-	mkdir -p $(TARGET_DIR)/usr/share/batocera/datainit/bios/mame2010/samples
-	$(INSTALL) -D $(@D)/metadata/* \
-		$(TARGET_DIR)/usr/share/batocera/datainit/bios/mame2010
 endef
+
+define LIBRETRO_MAME2010_MAKEPKG
+	# Create directories
+	mkdir -p $(LIBRETRO_MAME2010_PKG_DIR)$(LIBRETRO_MAME2010_PKG_INSTALL_DIR)/bios/samples
+
+	# Copy package files
+	cp -pr $(@D)/mame2010_libretro.so $(LIBRETRO_MAME2010_PKG_DIR)$(LIBRETRO_MAME2010_PKG_INSTALL_DIR)
+	$(INSTALL) -D $(@D)/metadata/* $(LIBRETRO_MAME2010_PKG_DIR)$(LIBRETRO_MAME2010_PKG_INSTALL_DIR)/bios/
+
+	# Build Pacman package
+	cd $(LIBRETRO_MAME2010_PKG_DIR) && $(BR2_EXTERNAL_BATOCERA_PATH)/scripts/retrolx-makepkg \
+	$(BR2_EXTERNAL_BATOCERA_PATH)/package/retrolx/emulators/libretro/libretro-mame2010/PKGINFO \
+	$(BATOCERA_SYSTEM_ARCH) $(HOST_DIR)
+	mv $(TARGET_DIR)/opt/retrolx/*.zst $(BR2_EXTERNAL_BATOCERA_PATH)/repo/$(BATOCERA_SYSTEM_ARCH)/
+
+	# Cleanup
+	rm -Rf $(TARGET_DIR)/opt/retrolx/*
+endef
+
+LIBRETRO_MAME2010_POST_INSTALL_TARGET_HOOKS = LIBRETRO_MAME2010_MAKEPKG
 
 $(eval $(generic-package))
