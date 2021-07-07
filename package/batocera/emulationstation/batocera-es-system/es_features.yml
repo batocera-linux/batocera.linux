@@ -3741,7 +3741,23 @@ vice:
   features: [ratio, padtokeyboard]
 
 tsugaru:
-  features: []
+  features: [pad2keyboard]
+  cfeatures:
+        cdrom_speed:
+            prompt:      CDROM SPEED
+            description: CD-ROM reading speed
+            choices:
+                "AUTO (DEFAULT)": auto
+                "1X":             1
+                "2X":             2
+                "4X":             4
+                "8X":             8
+        386dx:
+            prompt:      FORCE 386DX CPU
+            description: Force emulator to 386DX (required by some games)
+            choices:
+                "NO (DEFAULT)":   0
+                "YES":            1
 
 mame:
   features: [decoration]
