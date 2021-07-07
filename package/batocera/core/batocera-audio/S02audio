@@ -3,9 +3,11 @@
 # Starts audio services
 #
 
+. /etc/profile.d/xdg.sh
+. /etc/profile.d/dbus.sh
+
 start_alsa() {
     printf "Starting alsa: "
-    . /etc/profile.d/batocera.sh
     pipewire &
     echo "OK"
 }
