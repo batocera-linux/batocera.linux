@@ -1,9 +1,5 @@
 #!/bin/sh
 
-#List of exceptions not to use alsoundrc-dcmix+sofvol, for example Pi family
-#Adressed to issue 3901, 3902
-EXCEPTIONS="bcm2835 BCM2835"
-
 do_usage() {
 	echo "$1 list"
 	echo "$1 get"
@@ -12,42 +8,25 @@ do_usage() {
 }	
 
 do_select_audiodevice() {
-	if echo "${MODE}" | grep -qE '^[0-9]*,[0-9]* '; then
-		cardnb="$(echo "${MODE}" | sed -e s+'^\([0-9]*\),.*$'+'\1'+)"
-		devicenb="$(echo "${MODE}" | sed -e s+'^[0-9]*,\([0-9]*\) .*$'+'\1'+)"
+	if echo "${MODE}" | grep -qE '^[0-9]*'; then
+		SINK_ID="$(echo "$MODE" | sed -e"s/^\([0-9]*\).*/\1/")"
+		pactl set-default-sink "${SINK_ID}"
 	else
 		# No valid device selected
 		return 1
 	fi
-
-	#Use exception list
-	for i in $EXCEPTIONS; do
-		if echo "${MODE}" | grep -qE "$i"; then
-			exception="$i"
-			break
-		fi
-	done	
-
-	case "$exception" in
-		bcm2835|BCM2835)
-			cat > /userdata/system/.asoundrc <<-_EOF_
-				pcm.!default { type plug slave { pcm "hw:${cardnb},${devicenb}" } }
-				ctl.!default { type hw card ${cardnb} }
-			_EOF_
-		;;
-
-		*)
-			sed -e "s;%CARDNO%;${cardnb};g" -e "s;%DEVICENO%;${devicenb};g" /usr/share/batocera/alsa/asoundrc-dmix+softvol > /userdata/system/.asoundrc
-	esac
 }
-
 
 ACTION="$1"
 
 case "${ACTION}" in
 	list)
 		printf '%s\n' auto custom
-		LANG=C aplay -l | grep -E '^card [0-9]*:' | sed -e s+'^card \([0-9]*\): \(.*\), device \([0-9]*\): [^\[]* \[\([^]]*\)].*$'+'\1,\3 \4 \2'+
+		# Pipewire detection
+		#pw-cli ls Device | grep device.description | awk '$1 == "device.description" {gsub(/"/, "", $3); print NR-1 " " $3}'
+		# PulseAudio detection
+		pactl list short sinks | sed -e"s%\(^[0-9]*\)\s.*alsa_output.*output_\(\S*\)\s.*%\1 \2%"
+		#pactl list sinks | grep alsa.long_card_name | awk '$1 == "alsa.long_card_name" {gsub(/"/, "", $3); print NR-1 " " $3}'
 	;;
 
 	get)
@@ -61,7 +40,7 @@ case "${ACTION}" in
 			# custom: don't touch .asoundrc
 			# any other, create .asoundrc
 			auto)
-				rm -f /userdata/system/.asoundrc
+				# do nothing!
 			;;
 
 			custom)
