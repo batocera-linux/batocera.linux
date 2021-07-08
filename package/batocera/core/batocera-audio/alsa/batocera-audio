@@ -26,8 +26,7 @@ case "${ACTION}" in
 	;;
 
 	get)
-	    # get the running device
-	    pactl list short sinks | grep -E 'RUNNING$' | sed -e"s%\(^[0-9]*\)\s.*alsa_output.*output_\(\S*\)\s.*%\1%"
+	    /usr/bin/batocera-settings-get audio.device
 	;;
 
 	set)
