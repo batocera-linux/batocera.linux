@@ -1433,13 +1433,14 @@ ps3:
   manufacturer: Sony
   release: 2006
   hardware: console
-  extensions: [ps3]
+  extensions: [ps3, psn]
   emulators:
     rpcs3:
       rpcs3: { requireAnyOf: [BR2_PACKAGE_RPCS3] }
   comment_en: |
     You must first load the firmware by running rpcs3-config from menu>f1>Applications then File>Install firmware.
     PS3 roms are directories must be renamed to end with .ps3.
+    PSN digital games are installed in rpcs3-config, create a text file ending with .psn that contains the game's ID.
     First time you load a game, it takes time (a progress bar is visible). It doesn't happen next times.
 
     Find the documentation here : https://wiki.batocera.org/emulators:playstation_3
