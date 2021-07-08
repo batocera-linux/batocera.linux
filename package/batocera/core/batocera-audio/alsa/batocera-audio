@@ -3,7 +3,7 @@
 do_usage() {
 	echo "$1 list"
 	echo "$1 get"
-	echo "$1 set {auto|custom|<device>}"
+	echo "$1 set {auto|<device>}"
 	echo "$1 test"
 }	
 
@@ -21,16 +21,13 @@ ACTION="$1"
 
 case "${ACTION}" in
 	list)
-		printf '%s\n' auto custom
-		# Pipewire detection
-		#pw-cli ls Device | grep device.description | awk '$1 == "device.description" {gsub(/"/, "", $3); print NR-1 " " $3}'
-		# PulseAudio detection
+		printf '%s %s\n' "auto" "auto"
 		pactl list short sinks | sed -e"s%\(^[0-9]*\)\s.*alsa_output.*output_\(\S*\)\s.*%\1 \2%"
-		#pactl list sinks | grep alsa.long_card_name | awk '$1 == "alsa.long_card_name" {gsub(/"/, "", $3); print NR-1 " " $3}'
 	;;
 
 	get)
-		/usr/bin/batocera-settings-get audio.device
+	    # get the running device
+	    pactl list short sinks | grep -E 'RUNNING$' | sed -e"s%\(^[0-9]*\)\s.*alsa_output.*output_\(\S*\)\s.*%\1%"
 	;;
 
 	set)
@@ -40,10 +37,6 @@ case "${ACTION}" in
 			# custom: don't touch .asoundrc
 			# any other, create .asoundrc
 			auto)
-				# do nothing!
-			;;
-
-			custom)
 				# do nothing!
 			;;
 			*)

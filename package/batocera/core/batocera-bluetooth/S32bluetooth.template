@@ -3,6 +3,9 @@
 # Auto connect bluetooth controllers
 #
 
+. /etc/profile.d/xdg.sh
+. /etc/profile.d/dbus.sh
+
 case "$1" in
     start)
         # Restores old settings saved in userdata
