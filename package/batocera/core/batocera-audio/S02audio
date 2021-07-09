@@ -6,8 +6,8 @@
 . /etc/profile.d/xdg.sh
 . /etc/profile.d/dbus.sh
 
-start_alsa() {
-    printf "Starting alsa: "
+start_pipewire() {
+    printf "Starting pipewire: "
     pipewire &
     if [ -f /boot/batocera-boot.conf ]; then
         DEVICE=$(/usr/bin/batocera-settings-get audio.device -f /boot/batocera-boot.conf)
@@ -19,11 +19,11 @@ start_alsa() {
     echo "OK"
 }
 
-stop_alsa() {
-	printf "Stopping alsa: "
+stop_pipewire() {
+	printf "Stopping pipewire: "
 	killall pipewire
 	mount -o remount,rw /boot
-	# restore is done by an alsa patch reading this file first
+	# restore is done by an pipewire patch reading this file first
 	DEVICE=$(/usr/bin/batocera-settings-get audio.device)
 	/usr/bin/batocera-settings-set -f /boot/batocera-boot.conf audio.device "${DEVICE}"
 	mount -o remount,ro /boot
@@ -31,16 +31,16 @@ stop_alsa() {
 }
 
 restart() {
-	stop_alsa
-	start_alsa
+	stop_pipewire
+	start_pipewire
 }
 
 case "$1" in
  	start)
-		start_alsa
+		start_pipewire
 	;;
  	stop)
-		stop_alsa
+		stop_pipewire
 	;;
  	restart|reload)
 		restart
