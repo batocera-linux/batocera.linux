@@ -9,14 +9,23 @@
 start_alsa() {
     printf "Starting alsa: "
     pipewire &
+    if [ -f /boot/batocera-boot.conf ]; then
+        DEVICE=$(/usr/bin/batocera-settings-get audio.device -f /boot/batocera-boot.conf)
+	if test -n "${DEVICE}"
+	then
+	    /usr/bin/batocera-audio set "${DEVICE}"
+	fi
+    fi
     echo "OK"
 }
 
 stop_alsa() {
 	printf "Stopping alsa: "
+	killall pipewire
 	mount -o remount,rw /boot
 	# restore is done by an alsa patch reading this file first
-	alsactl store -f /boot/asound.state
+	DEVICE=$(/usr/bin/batocera-settings-get audio.device)
+	/usr/bin/batocera-settings-set -f /boot/batocera-boot.conf audio.device "${DEVICE}"
 	mount -o remount,ro /boot
 	echo "OK"
 }

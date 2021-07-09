@@ -21,7 +21,7 @@ ACTION="$1"
 
 case "${ACTION}" in
 	list)
-		printf '%s %s\n' "auto" "auto"
+		printf '%s\n' "auto"
 		pactl list short sinks | sed -e"s%\(^[0-9]*\)\s.*alsa_output.*output_\(\S*\)\s.*%\1 \2%"
 	;;
 
@@ -32,9 +32,6 @@ case "${ACTION}" in
 	set)
 		MODE="$2"
 		case "${MODE}" in
-			# auto: no .asoundrc
-			# custom: don't touch .asoundrc
-			# any other, create .asoundrc
 			auto)
 				# do nothing!
 			;;

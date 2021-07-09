@@ -53,6 +53,8 @@ define BATOCERA_AUDIO_INSTALL_TARGET_CMDS
 		$(TARGET_DIR)/etc/pipewire/pipewire.conf
 	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-audio/pipewire-pulse.conf \
 		$(TARGET_DIR)/etc/pipewire/pipewire-pulse.conf
+	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-audio/media-session.conf \
+		$(TARGET_DIR)/etc/pipewire/media-session.d/media-session.conf
 
 	# # get rid of pulseaudio files
 	# rm -rf $(TARGET_DIR)/etc/pulse
