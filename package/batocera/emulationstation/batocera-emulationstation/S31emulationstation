@@ -1,6 +1,9 @@
 #!/bin/sh
 BOOTCONF="/boot/batocera-boot.conf"
 
+. /etc/profile.d/xdg.sh
+. /etc/profile.d/dbus.sh
+
 # intel-iris-driver
 irisdriver="$(/usr/bin/batocera-settings-get -f "$BOOTCONF" intel-i965-driver)"
 if test ! -z "${irisdriver}" -a "${irisdriver}" = true; then
