@@ -8,6 +8,7 @@
 
 start_pipewire() {
     printf "Starting pipewire: "
+    mkdir -p /var/run # required for pipewire
     pipewire &
     if [ -f /boot/batocera-boot.conf ]; then
         DEVICE=$(/usr/bin/batocera-settings-get audio.device -f /boot/batocera-boot.conf)
