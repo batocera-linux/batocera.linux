@@ -26,8 +26,8 @@ define BATOCERA_AUDIO_INSTALL_TARGET_CMDS
 	# sample audio files
 	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-audio/*.wav $(TARGET_DIR)/usr/share/sounds
 	# init script
-	install -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-audio/S02audio \
-		$(TARGET_DIR)/etc/init.d/S02audio
+	install -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-audio/S05audio \
+		$(TARGET_DIR)/etc/init.d/S05audio
 	# udev script to unmute audio devices
 	install -m 0644 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-audio/90-alsa-setup.rules \
 		$(TARGET_DIR)/etc/udev/rules.d/90-alsa-setup.rules
