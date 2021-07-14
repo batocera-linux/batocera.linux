@@ -2,31 +2,45 @@
 
 ACTION="$1"
 
+do_select_audiodevice() {
+    if echo "${MODE}" | grep -qE '^[0-9]*'; then
+	SINK_ID="$(echo "$MODE" | sed -e"s/^\([0-9]*\).*/\1/")"
+	pactl set-default-sink "${SINK_ID}"
+    else
+	# No valid device selected
+	return 1
+    fi
+}
+
 case "${ACTION}" in
-	list)
-		printf '%s\n' auto speakers headphone
+    list)
+	printf '%s\n' auto speakers headphone
+	# on 2nd step, keep only name after the last . if it exists (custom sinks may have no .)
+	pactl list short sinks | sed -e s+"^\([0-9]*\)\t\([^\t]*\)\t.*$"+"\1 \2"+ -e s+"^\([0-9]*\) .*\.\([^\.]*\)$"+'\1 \2'+ | grep -vE '^[0-9]* INTERNAL$' # remove custom internal one
 	;;
 
-	get)
-		/usr/bin/batocera-settings-get audio.device
+    get)
+	/usr/bin/batocera-settings-get audio.device
 	;;
 
-	set)
-		MODE="$2"
-		case "${MODE}" in
-			auto | speakers)
-				sed -e "s;%CARDNO%;0;g" -e "s;%DEVICENO%;0;g" /usr/share/batocera/alsa/asoundrc-dmix+softvol > /userdata/system/.asoundrc
-				amixer cset name='Playback Path' SPK
-			;;
+    set)
+	MODE="$2"
+	case "${MODE}" in
+	    auto | speakers)
+		pactl set-default-sink INTERNAL
+		amixer -c 0 cset name='Playback Path' SPK
+		;;
 
-			headphone)
-				sed -e "s;%CARDNO%;0;g" -e "s;%DEVICENO%;0;g" /usr/share/batocera/alsa/asoundrc-dmix+softvol > /userdata/system/.asoundrc
-				amixer cset name='Playback Path' HP
-			;;
-		esac
+	    headphone)
+		pactl set-default-sink INTERNAL
+		amixer -c 0 cset name='Playback Path' HP
+		;;
+	    *)
+		do_select_audiodevice
+	esac
 	;;
 
-	test)
-		aplay "/usr/share/sounds/Mallet.wav"
+    test)
+	aplay "/usr/share/sounds/Mallet.wav"
 	;;
 esac

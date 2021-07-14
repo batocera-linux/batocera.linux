@@ -22,7 +22,8 @@ ACTION="$1"
 case "${ACTION}" in
 	list)
 	    printf '%s\n' "auto"
-	    pactl list short sinks | sed -e s+"^\([0-9]*\)\t[^\t]*\.\([^\.\t]*\)\t.*$"+"\1 \2"+
+	    # on 2nd step, keep only name after the last . if it exists (custom sinks may have no .)
+	    pactl list short sinks | sed -e s+"^\([0-9]*\)\t\([^\t]*\)\t.*$"+"\1 \2"+ -e s+"^\([0-9]*\) .*\.\([^\.]*\)$"+'\1 \2'+
 	;;
 
 	get)

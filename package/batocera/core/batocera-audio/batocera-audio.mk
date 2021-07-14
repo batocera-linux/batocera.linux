@@ -9,6 +9,20 @@ BATOCERA_AUDIO_LICENSE = GPL
 BATOCERA_AUDIO_SOURCE=
 BATOCERA_AUDIO_DEPENDENCIES = pipewire
 
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RK3326_ANY),y)
+ALSA_SUFFIX = "-rk3326"
+PIPEWIRECONF_SUFFIX = "-rk3326"
+else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RK3399),y)
+ALSA_SUFFIX = "-rk3399"
+PIPEWIRECONF_SUFFIX =
+else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_S922X),y)
+ALSA_SUFFIX = "-s922x"
+PIPEWIRECONF_SUFFIX =
+else
+ALSA_SUFFIX =
+PIPEWIRECONF_SUFFIX =
+endif
+
 define BATOCERA_AUDIO_INSTALL_TARGET_CMDS
 	mkdir -p $(TARGET_DIR)/usr/lib/python3.9 \
 		$(TARGET_DIR)/usr/bin \
@@ -28,6 +42,8 @@ define BATOCERA_AUDIO_INSTALL_TARGET_CMDS
 	# init script
 	install -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-audio/S02audio \
 		$(TARGET_DIR)/etc/init.d/S02audio
+	install -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-audio/S30audioconfig \
+		$(TARGET_DIR)/etc/init.d/S30audioconfig
 	# udev script to unmute audio devices
 	install -m 0644 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-audio/90-alsa-setup.rules \
 		$(TARGET_DIR)/etc/udev/rules.d/90-alsa-setup.rules
@@ -49,7 +65,7 @@ define BATOCERA_AUDIO_INSTALL_TARGET_CMDS
 	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-audio/media-session.conf \
 		$(TARGET_DIR)/etc/pipewire/media-session.d
 
-	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-audio/pipewire.conf \
+	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-audio/pipewire.conf$(PIPEWIRECONF_SUFFIX) \
 		$(TARGET_DIR)/etc/pipewire/pipewire.conf
 	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-audio/pipewire-pulse.conf \
 		$(TARGET_DIR)/etc/pipewire/pipewire-pulse.conf

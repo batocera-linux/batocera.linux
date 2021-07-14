@@ -1,0 +1,51 @@
+#!/bin/sh
+#
+# Starts audio services
+#
+
+. /etc/profile.d/xdg.sh
+. /etc/profile.d/dbus.sh
+
+start_audioconfig() {
+    # this script must be started after pipewire and udev, but before es
+    # and thus, we let splash before config here while udev is the services taking the most time
+
+    # set default device and volume
+    DEVICE=$(/usr/bin/batocera-settings-get audio.device)
+    VOLUME=$(/usr/bin/batocera-settings-get audio.volume)
+    test -z "${DEVICE}" && DEVICE=auto
+    test -z "${VOLUME}" && VOLUME=80
+    /usr/bin/batocera-audio set "${DEVICE}"
+    pactl set-sink-volume @DEFAULT_SINK@ "${VOLUME}"%
+    echo "OK"
+}
+
+stop_audioconfig() {
+    	VOLUME=$(pulsemixer --get-volume | cut -d ' ' -f 1)
+	DEVICE=$(/usr/bin/batocera-settings-get audio.device)
+	/usr/bin/batocera-settings-set audio.device "${DEVICE}"
+	/usr/bin/batocera-settings-set audio.volume "${VOLUME}"
+	echo "OK"
+}
+
+restart() {
+	stop_audioconfig
+	start_audioconfig
+}
+
+case "$1" in
+ 	start)
+		start_audioconfig
+	;;
+ 	stop)
+		stop_audioconfig
+	;;
+ 	restart|reload)
+		restart
+	;;
+	*)
+		echo "Usage: $0 {start|stop|restart}"
+	exit 1
+esac
+
+exit $?

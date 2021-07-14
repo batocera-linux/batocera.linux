@@ -1,0 +1,64 @@
+diff --git a/src/utils/pactl.c b/src/utils/pactl.c
+index 9af1fc5..08617da 100644
+--- a/src/utils/pactl.c
++++ b/src/utils/pactl.c
+@@ -382,6 +382,41 @@ static void get_sink_info_callback(pa_context *c, const pa_sink_info *i, int is_
+     }
+ }
+ 
++static void get_sink_raw_info_callback(pa_context *c, const pa_sink_info *i, int is_last, void *userdata) {
++
++    char cv[PA_CVOLUME_SNPRINT_VERBOSE_MAX];
++    char *pl;
++
++    if (is_last < 0) {
++        pa_log(_("Failed to get sink information: %s"), pa_strerror(pa_context_errno(c)));
++        quit(1);
++        return;
++    }
++
++    if (is_last) {
++        complete_action();
++        return;
++    }
++
++    pa_assert(i);
++
++    if (nl && !short_list_format)
++        printf("\n");
++    nl = true;
++
++    int channel = 0; // first channel only
++
++    printf(_("sink=%u\tname=%s\tmute=%i\tVolume: %i\n"),
++           i->index,
++           i->name,
++           i->mute,
++	   (unsigned)(((uint64_t) i->volume.values[channel] * 100 + (uint64_t)PA_VOLUME_NORM / 2) / (uint64_t)PA_VOLUME_NORM)
++	   );
++
++    pa_xfree(pl);
++
++}
++
+ static void get_source_info_callback(pa_context *c, const pa_source_info *i, int is_last, void *userdata) {
+ 
+     static const char *state_table[] = {
+@@ -1279,6 +1314,8 @@ static void context_state_callback(pa_context *c, void *userdata) {
+                             o = pa_context_get_module_info_list(c, get_module_info_callback, NULL);
+                         else if (pa_streq(list_type, "sinks"))
+                             o = pa_context_get_sink_info_list(c, get_sink_info_callback, NULL);
++			else if (pa_streq(list_type, "sinks-raw"))
++			  o = pa_context_get_sink_info_list(c, get_sink_raw_info_callback, NULL);
+                         else if (pa_streq(list_type, "sources"))
+                             o = pa_context_get_source_info_list(c, get_source_info_callback, NULL);
+                         else if (pa_streq(list_type, "sink-inputs"))
+@@ -1720,7 +1757,7 @@ int main(int argc, char *argv[]) {
+ 
+             for (int i = optind+1; i < argc; i++) {
+                 if (pa_streq(argv[i], "modules") || pa_streq(argv[i], "clients") ||
+-                    pa_streq(argv[i], "sinks")   || pa_streq(argv[i], "sink-inputs") ||
++                    pa_streq(argv[i], "sinks")   || pa_streq(argv[i], "sink-inputs") || pa_streq(argv[i], "sinks-raw") ||
+                     pa_streq(argv[i], "sources") || pa_streq(argv[i], "source-outputs") ||
+                     pa_streq(argv[i], "samples") || pa_streq(argv[i], "cards")) {
+                     list_type = pa_xstrdup(argv[i]);

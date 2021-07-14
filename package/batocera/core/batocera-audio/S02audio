@@ -10,24 +10,12 @@ start_pipewire() {
     printf "Starting pipewire: "
     mkdir -p /var/run # required for pipewire
     pipewire &
-    if [ -f /boot/batocera-boot.conf ]; then
-        DEVICE=$(/usr/bin/batocera-settings-get audio.device -f /boot/batocera-boot.conf)
-	if test -n "${DEVICE}"
-	then
-	    /usr/bin/batocera-audio set "${DEVICE}"
-	fi
-    fi
     echo "OK"
 }
 
 stop_pipewire() {
-	printf "Stopping pipewire: "
+        printf "Stopping pipewire: "
 	killall pipewire
-	mount -o remount,rw /boot
-	# restore is done by an pipewire patch reading this file first
-	DEVICE=$(/usr/bin/batocera-settings-get audio.device)
-	/usr/bin/batocera-settings-set -f /boot/batocera-boot.conf audio.device "${DEVICE}"
-	mount -o remount,ro /boot
 	echo "OK"
 }
 
