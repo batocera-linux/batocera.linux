@@ -103,6 +103,10 @@ if ! mkdir -p "${TMPOUT}/usr/share/gstreamer-1.0"
 then
     exit 1
 fi
+if ! mkdir -p "${TMPOUT}/lib32/alsa-lib"
+then
+    exit 1
+fi
 
 # libs32
 # "${G_TARGETDIR}/usr/lib/"*.so \
@@ -123,7 +127,7 @@ cp -p "${G_TARGETDIR}/usr/lib/libXrandr.so"* "${TMPOUT}/lib32" || exit 1
 cp -p "${G_TARGETDIR}/usr/lib/libXft.so"* "${TMPOUT}/lib32" || exit 1
 cp -p "${G_TARGETDIR}/usr/lib/libXi.so"* "${TMPOUT}/lib32" || exit 1
 cp -p "${G_TARGETDIR}/usr/lib/libXinerama.so"* "${TMPOUT}/lib32" || exit 1
-#"${G_TARGETDIR}/usr/lib/pulseaudio/"*.so
+cp -p "${G_TARGETDIR}/usr/lib/alsa-lib/"* "${TMPOUT}/lib32/alsa-lib" || exit 1
 
 # add .so for lutris
 (cd "${G_TARGETDIR}/usr/wine/lutris/lib" && ln -sf libwine.so.1 libwine.so) || exit 1
