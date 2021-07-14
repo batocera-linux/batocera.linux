@@ -17,6 +17,6 @@ config BR2_PACKAGE_RPCS3
 	select BR2_PACKAGE_FFMPEG_SWSCALE
 	select BR2_PACKAGE_NCURSES
 	select BR2_PACKAGE_FAUDIO
-
+	select BR2_PACKAGE_WOLFSSL
         help
           A  ps3 emulator

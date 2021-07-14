@@ -1,0 +1,28 @@
+--- a/3rdparty/FAudio/src/FAudio_internal.h	2021-06-30 21:14:13.000000000 +0200
++++ b/3rdparty/FAudio/src/FAudio_internal.h	2021-08-27 21:25:50.304110669 +0200
+@@ -103,10 +103,10 @@
+ 	((x << 24)	& 0x00FF000000000000) | \
+ 	((x << 32)	& 0xFF00000000000000)
+ #else
+-#include <SDL_stdinc.h>
+-#include <SDL_assert.h>
+-#include <SDL_endian.h>
+-#include <SDL_log.h>
++#include <SDL2/SDL_stdinc.h>
++#include <SDL2/SDL_assert.h>
++#include <SDL2/SDL_endian.h>
++#include <SDL2/SDL_log.h>
+ 
+ #define FAudio_malloc SDL_malloc
+ #define FAudio_realloc SDL_realloc
+--- a/3rdparty/FAudio/src/FAudio_platform_sdl2.c  2021-06-30 21:14:13.000000000 +0200
++++ b/3rdparty/FAudio/src/FAudio_platform_sdl2.c 2021-08-27 21:28:01.430818783 +0200
+@@ -26,7 +26,7 @@
+ 
+ #include "FAudio_internal.h"
+ 
+-#include <SDL.h>
++#include <SDL2/SDL.h>
+ 
+ #if !SDL_VERSION_ATLEAST(2, 0, 9)
+ #error "SDL version older than 2.0.9"
