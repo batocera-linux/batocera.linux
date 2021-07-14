@@ -38,6 +38,10 @@ MAME_CROSS_OPTS += PTR64=0
 MAME_CFLAGS += -D__ARM_NEON__ -D__ARM_NEON -DEGL_NO_X11=1
 endif
 
+ifeq ($(BR2_cortex_a9),y)
+MAME_CFLAGS += -mcpu=cortex-a9 -mtune=cortex-a9 -mfloat-abi=hard
+endif
+
 ifeq ($(BR2_cortex_a35),y)
 MAME_CFLAGS += -mcpu=cortex-a35 -mtune=cortex-a35
 endif
