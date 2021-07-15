@@ -7,22 +7,12 @@ do_usage() {
 	echo "$1 test"
 }	
 
-do_select_audiodevice() {
-	if echo "${MODE}" | grep -qE '^[0-9]*'; then
-		SINK_ID="$(echo "$MODE" | sed -e"s/^\([0-9]*\).*/\1/")"
-		pactl set-default-sink "${SINK_ID}"
-	else
-		# No valid device selected
-		return 1
-	fi
-}
-
 ACTION="$1"
 
 case "${ACTION}" in
 	list)
-	    printf '%s\n' "auto"
-	    pactl list sinks-raw | sed -e s+"^sink=\([0-9]*\) .* description=\(.*\)$"+"\1 \2"+
+	    echo "auto auto"
+	    pactl list sinks-raw | sed -e s+"^sink=[0-9]* name=\([^ ]*\) .* description=\(.*\)$"+"\1 \2"+
 	;;
 
 	get)
@@ -36,7 +26,7 @@ case "${ACTION}" in
 				# do nothing!
 			;;
 			*)
-				do_select_audiodevice
+			    pactl set-default-sink "${MODE}"
 		esac
 		;;
 

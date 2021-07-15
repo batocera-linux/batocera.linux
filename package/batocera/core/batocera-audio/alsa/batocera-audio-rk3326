@@ -2,20 +2,12 @@
 
 ACTION="$1"
 
-do_select_audiodevice() {
-    if echo "${MODE}" | grep -qE '^[0-9]*'; then
-	SINK_ID="$(echo "$MODE" | sed -e"s/^\([0-9]*\).*/\1/")"
-	pactl set-default-sink "${SINK_ID}"
-    else
-	# No valid device selected
-	return 1
-    fi
-}
-
 case "${ACTION}" in
     list)
-	printf '%s\n' auto speakers headphone
-	pactl list sinks-raw | sed -e s+"^sink=\([0-9]*\) .* description=\(.*\)$"+"\1 \2"+
+	echo "auto auto"
+	echo "speakers speakers"
+	echo "headphone headphone"
+	pactl list sinks-raw | sed -e s+"^sink=[0-9]* name=\([^ ]*\) .* description=\(.*\)$"+"\1 \2"+
 	;;
 
     get)
@@ -35,7 +27,7 @@ case "${ACTION}" in
 		amixer -c 0 cset name='Playback Path' HP
 		;;
 	    *)
-		do_select_audiodevice
+		pactl set-default-sink "${MODE}"
 	esac
 	;;
 
