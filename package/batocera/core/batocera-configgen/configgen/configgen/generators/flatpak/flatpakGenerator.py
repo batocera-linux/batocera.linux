@@ -13,8 +13,8 @@ class FlatpakGenerator(Generator):
             romId = str.strip(f.read())
 
         # bad hack in a first time to get audio for user batocera
-        os.system('chown root:audio /var/run/pulse/native')
-        os.system('chmod g+w /var/run/pulse/native')
+        os.system('chown -R root:audio /var/run/pulse')
+        os.system('chmod -R g+rwX /var/run/pulse')
 
         # the directory monitor must exist and all the dirs must be owned by batocera
         commandArray = ["su", "-", "batocera", "-c",  "DISPLAY=:0.0 flatpak run -v " + romId]
