@@ -1,0 +1,23 @@
+diff --git a/lib/mount.c b/lib/mount.c
+index 227a408..a3f6c08 100644
+--- a/lib/mount.c
++++ b/lib/mount.c
+@@ -448,12 +448,12 @@ static int fuse_mount_sys(const char *mnt, struct mount_opts *mo,
+ 		return -1;
+ 	}
+ 
+-	if (!mo->nonempty) {
+-		res = fuse_mnt_check_empty("fuse", mnt, stbuf.st_mode,
+-					   stbuf.st_size);
+-		if (res == -1)
+-			return -1;
+-	}
++	//if (!mo->nonempty) {
++	//	res = fuse_mnt_check_empty("fuse", mnt, stbuf.st_mode,
++	//				   stbuf.st_size);
++	//	if (res == -1)
++	//		return -1;
++	//}
+ 
+ 	if (mo->auto_unmount) {
+ 		/* Tell the caller to fallback to fusermount because
