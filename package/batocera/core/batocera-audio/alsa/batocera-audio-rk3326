@@ -15,8 +15,7 @@ do_select_audiodevice() {
 case "${ACTION}" in
     list)
 	printf '%s\n' auto speakers headphone
-	# on 2nd step, keep only name after the last . if it exists (custom sinks may have no .)
-	pactl list short sinks | sed -e s+"^\([0-9]*\)\t\([^\t]*\)\t.*$"+"\1 \2"+ -e s+"^\([0-9]*\) .*\.\([^\.]*\)$"+'\1 \2'+ | grep -vE '^[0-9]* INTERNAL$' # remove custom internal one
+	pactl list sinks-raw | sed -e s+"^sink=\([0-9]*\) .* description=\(.*\)$"+"\1 \2"+
 	;;
 
     get)
@@ -42,7 +41,7 @@ case "${ACTION}" in
 
 	getSystemVolume)
 	    DEFAULT_SINK=$(pactl info | grep -E '^Default Sink: ' | sed -e s+"^Default Sink: "+""+ | head -1)
-	    pactl list sinks-raw | grep -E '^[^ ]* name='"${DEFAULT_SINK}"' ' | sed -e s+"^.* Volume="++
+	    pactl list sinks-raw | grep -E '^[^ ]* name='"${DEFAULT_SINK}"' ' | sed -e s+"^.* volume=\([0-9]*\) .*$"+'\1'+
 	    ;;
 
 	setSystemVolume)
