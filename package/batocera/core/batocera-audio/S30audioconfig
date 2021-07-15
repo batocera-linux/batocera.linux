@@ -22,8 +22,6 @@ start_audioconfig() {
 
 stop_audioconfig() {
     	VOLUME=$(pulsemixer --get-volume | cut -d ' ' -f 1)
-	DEVICE=$(/usr/bin/batocera-settings-get audio.device)
-	/usr/bin/batocera-settings-set audio.device "${DEVICE}"
 	/usr/bin/batocera-settings-set audio.volume "${VOLUME}"
 	echo "OK"
 }
