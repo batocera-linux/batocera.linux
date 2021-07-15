@@ -40,6 +40,33 @@ case "${ACTION}" in
 	esac
 	;;
 
+	getSystemVolume)
+	    DEFAULT_SINK=$(pactl info | grep -E '^Default Sink: ' | sed -e s+"^Default Sink: "+""+ | head -1)
+	    pactl list sinks-raw | grep -E '^[^ ]* name='"${DEFAULT_SINK}"' ' | sed -e s+"^.* Volume="++
+	    ;;
+
+	setSystemVolume)
+	    VOLUME="$2"
+	    case "${VOLUME}" in
+		"mute")
+		    pactl set-sink-mute @DEFAULT_SINK@ 1
+		    ;;
+		"unmute")
+		    pactl set-sink-mute @DEFAULT_SINK@ 0
+		    ;;
+		"mute-toggle")
+		    pactl set-sink-mute @DEFAULT_SINK@ toggle
+		    ;;
+		*)
+		    if echo "${VOLUME}" | grep -qE '^[+-]?[0-9]*$'
+		    then
+			pactl set-sink-volume @DEFAULT_SINK@ "${VOLUME}%"
+		    else
+			echo "invalid volume value" >&2
+		    fi
+	    esac
+	    ;;
+
     test)
 	aplay "/usr/share/sounds/Mallet.wav"
 	;;
