@@ -15,13 +15,13 @@ start_audioconfig() {
     VOLUME=$(/usr/bin/batocera-settings-get audio.volume)
     test -z "${DEVICE}" && DEVICE=auto
     test -z "${VOLUME}" && VOLUME=80
-    /usr/bin/batocera-audio set "${DEVICE}"
-    pactl set-sink-volume @DEFAULT_SINK@ "${VOLUME}"%
+    batocera-audio set "${DEVICE}"
+    batocera-audio setSystemVolume "${VOLUME}"
     echo "OK"
 }
 
 stop_audioconfig() {
-    	VOLUME=$(pulsemixer --get-volume | cut -d ' ' -f 1)
+    	VOLUME=$(batocera-audio getSystemVolume)
 	/usr/bin/batocera-settings-set audio.volume "${VOLUME}"
 	echo "OK"
 }
