@@ -17,6 +17,7 @@
 #v1.7 - add NESPI4 support - @lala
 #v1.8 - removed Witty-Pi (WiringPi package is not anymore!)
 #v1.9 - add POWERHAT for Rpi4 OneNineDesign case variants - @dmanlfc
+#v2.0 - add DESKPIPRO for Dekpi Pro case (RPi4) - @dmanlfc
 #by cyperghost 11.11.2019
 
 ### Array for Powerdevices, add/remove entries here
@@ -36,6 +37,7 @@ powerdevices=(
               PIN56ONOFF "py: Sliding switch for proper shutdown" \
               PIN56PUSH "py: Momentary push button for shutdown" \
               PIN356ONOFFRESET "py: Power button and reset button" \
+              DESKPIPRO "Fan & power control for RPi4 DeskPi Pro case"
              )
 
 #dialog for selecting your switch or power device
@@ -386,6 +388,49 @@ function kintaro_stop()
     fi
 }
 
+#https://deskpi.com/products/deskpi-pro-for-raspberry-pi-4
+function deskpipro_start()
+{
+    # Check config.txt for fan & front USB
+    if ! grep -q "^dtoverlay=dwc2,dr_mode=host" "/boot/config.txt"; then
+        echo "*** Adding DeskPi Pro Case Fan config.txt parameter ***"
+        mount -o remount, rw /boot
+        # Remove other dtoverlay=dwc2 type configs to avoid conflicts
+        sed -i '/dtoverlay=dwc2*/d' /boot/config.txt
+        echo "" >> "/boot/config.txt"
+        echo "[Deskpi Pro Case]" >> "/boot/config.txt"
+        echo "dtoverlay=dwc2,dr_mode=host" >> "/boot/config.txt"
+    fi
+    # Check config.txt for Infrared
+    if grep -Fxq "#dtoverlay=gpio-ir,gpio_pin=17" "/boot/config.txt"; then
+        echo "*** Adding DeskPi Pro Case Infrared config.txt parameter ***"
+        mount -o remount, rw /boot
+        sed -i 's/#dtoverlay=gpio-ir,gpio_pin=17/dtoverlay=gpio-ir,gpio_pin=17/g' /boot/config.txt
+    fi
+    # Add Infrared parameters
+    if ! grep -q "driver = default" "/etc/lirc/lirc_options.conf"; then
+        echo "*** Adding DeskPi Pro Case Infrared lirc_options.conf parameters ***"
+        mount -o remount, rw /boot
+        echo "driver = default" >> "/etc/lirc/lirc_options.conf"
+        echo "device = /dev/lirc0" >> "/etc/lirc/lirc_options.conf"
+    fi
+    # Check if the kernel module is loaded
+    if lsmod | grep dwc2 &> /dev/null ; then
+        echo "*** dwc2 module is loaded ***"
+    else
+        echo "*** loading dwc2 module ***"
+        modprobe dwc2
+    fi
+    echo "*** Starting DeskPi Pro Case Fan ***"
+    /usr/bin/pwmFanControl &
+}
+
+function deskpipro_stop()
+{
+    echo "*** Stopping DeskPi Pro Case Fan ***"
+    /usr/bin/fanStop
+}
+
 #-----------------------------------------
 #------------------ MAIN -----------------
 #-----------------------------------------
@@ -444,6 +489,9 @@ case "$CONFVALUE" in
     ;;
     "KINTARO")
         kintaro_$1
+    ;;
+    "DESKPIPRO")
+        deskpipro_$1
     ;;
     "--DIALOG")
         # Go to selection dialog
