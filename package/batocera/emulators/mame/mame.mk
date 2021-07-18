@@ -46,6 +46,10 @@ ifeq ($(BR2_cortex_a35),y)
 MAME_CFLAGS += -mcpu=cortex-a35 -mtune=cortex-a35
 endif
 
+ifeq ($(BR2_cortex_a17),y)
+MAME_CFLAGS += -mcpu=cortex-a17 -mtune=cortex-a17 -mfloat-abi=hard
+endif
+
 ifeq ($(BR2_cortex_a55),y)
 MAME_CFLAGS += -mcpu=cortex-a55 -mtune=cortex-a55
 endif

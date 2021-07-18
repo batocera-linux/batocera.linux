@@ -4,6 +4,7 @@ BR2_cortex_a9=y
 BR2_ARM_EABIHF=y
 BR2_ARM_ENABLE_NEON=y
 BR2_ARM_ENABLE_VFP=y
+BR2_ARM_FPU_NEON=y
 BR2_PACKAGE_BATOCERA_TARGET_S812=y
 BR2_ROOTFS_USERS_TABLES="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/users.txt"
 
@@ -36,18 +37,18 @@ BR2_ROOTFS_POST_BUILD_SCRIPT="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/scrip
 BR2_ROOTFS_POST_IMAGE_SCRIPT="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/scripts/post-image-script.sh"
 BR2_TARGET_ROOTFS_SQUASHFS4_ZSTD=y
 
-# Linux headers same as kernel, a 5.13 series
-BR2_PACKAGE_HOST_LINUX_HEADERS_CUSTOM_5_13=y
+# Linux headers same as kernel, a 5.14 series
+BR2_PACKAGE_HOST_LINUX_HEADERS_CUSTOM_5_14=y
 
 # Kernel
 BR2_LINUX_KERNEL=y
 BR2_LINUX_KERNEL_CUSTOM_GIT=y
 BR2_LINUX_KERNEL_CUSTOM_REPO_URL="https://github.com/xdarklight/linux.git"
-BR2_LINUX_KERNEL_CUSTOM_REPO_VERSION="6e3c02b7ce1d5aa3df4cb935972e9bfa1cd9c50c"
+BR2_LINUX_KERNEL_CUSTOM_REPO_VERSION="e70bf20d34ceb2ac0002d0b455ca4b3516322eef"
 BR2_LINUX_KERNEL_USE_CUSTOM_CONFIG=y
 BR2_LINUX_KERNEL_CUSTOM_CONFIG_FILE="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/s812/linux-defconfig.config"
 BR2_LINUX_KERNEL_DTS_SUPPORT=y
-BR2_LINUX_KERNEL_INTREE_DTS_NAME="meson8m2-mxiii meson8m2-mxiii-plus meson8m2-m8s meson8-minix-neo-x8 meson8-tronsmart-s82"
+BR2_LINUX_KERNEL_INTREE_DTS_NAME="meson8m2-mxiii meson8m2-mxiii-plus meson8m2-m8s meson8m2-wetek-core meson8-minix-neo-x8 meson8-tronsmart-s82"
 BR2_LINUX_KERNEL_NEEDS_HOST_OPENSSL=y
 BR2_LINUX_KERNEL_PATCH="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/s812/linux_patches"
 BR2_LINUX_KERNEL_CONFIG_FRAGMENT_FILES="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/s812/linux-defconfig-fragment.config"
