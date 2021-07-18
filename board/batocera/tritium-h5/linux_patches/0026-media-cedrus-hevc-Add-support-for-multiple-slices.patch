@@ -68,7 +68,7 @@ Signed-off-by: Jernej Skrabec <jernej.skrabec@siol.net>
  	/* Initialize bitstream access. */
  	cedrus_write(dev, VE_DEC_H265_TRIGGER, VE_DEC_H265_TRIGGER_INIT_SWDEC);
 @@ -543,8 +549,8 @@ static void cedrus_h265_setup(struct ced
- 				V4L2_HEVC_PPS_FLAG_DEPENDENT_SLICE_SEGMENT,
+ 				V4L2_HEVC_PPS_FLAG_DEPENDENT_SLICE_SEGMENT_ENABLED,
  				pps->flags);
  
 -	/* FIXME: For multi-slice support. */
