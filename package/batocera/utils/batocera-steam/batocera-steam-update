@@ -1,0 +1,70 @@
+#!/bin/bash
+
+es_add_game() {
+    GAME_BASENAME=$1
+    GAME_NAME=$2
+    GAME_IMAGE=$3
+
+    ES_SERVER="http://127.0.0.1:1234"
+
+    (cat <<EOF
+<gameList>
+<game>
+  <path>./${GAME_BASENAME}</path>
+  <name>${GAME_NAME}</name>
+  <desc></desc>
+  <rating></rating>
+  <releasedate></releasedate>
+  <developer></developer>
+  <publisher></publisher>
+  <genre></genre>
+  <players></players>
+  <image>${GAME_IMAGE}</image>
+  <manual></manual>
+  <video></video>
+</game>
+</gameList>
+EOF
+) > /tmp/batocera-steam-update.tmp || return 1
+
+    curl -s -X POST -H "Content-type: application/x-www-form-urlencoded" -H "Accept: text/plain" "${ES_SERVER}/addgames/steam" -d "@/tmp/batocera-steam-update.tmp" > /dev/null || return 1
+}
+
+mkdir -p "/userdata/roms/steam" || exit 1
+
+#if ! test -e "/userdata/roms/steam/Steam.steam"
+#then
+#   touch "/userdata/roms/steam/Steam.steam" || exit 1
+#fi
+
+# add applications
+find /userdata/saves/flatpak/data/.var/app/com.valvesoftware.Steam/.local/share/applications -name "*.desktop" |
+while read STEAMAPP
+do
+    BASEAPP=$(basename "${STEAMAPP}" | sed -e s+"\.desktop$"++)
+    if ! test -e "/userdata/roms/steam/${BASEAPP}.steam"
+    then
+	echo "adding ${BASEAPP}"
+	GAMEID=$(cat "${STEAMAPP}" | grep -E '^Exec=' | sed -e s+"Exec="++ -e s+"[ ]*steam[ ]*"++ | head -1)
+
+	# add image
+	ICON=$(grep -E "^Icon=" "${STEAMAPP}" | sed -e s+"^Icon=steam_icon_"++)_logo.png
+	IMGFILE="/userdata/saves/flatpak/data/.var/app/com.valvesoftware.Steam/.local/share/Steam/appcache/librarycache/${ICON}"
+	IMGARG=
+	if test -e "${IMGFILE}"
+	then
+	    IMGARG="./images/${BASEAPP}.png"
+	    mkdir -p "/userdata/roms/steam/images" || return 1
+	    cp "${IMGFILE}" "/userdata/roms/steam/${IMGARG}" || return 1
+	fi
+	# add game
+	echo "${GAMEID}" > "/userdata/roms/steam/${BASEAPP}.steam" || exit 1
+
+	# add game in es
+	if ! es_add_game "${BASEAPP}.steam" "${BASEAPP}" "${IMGARG}"
+	then
+	    echo "adding game in es failed" >&2
+	    exit 1
+	fi
+    fi
+done

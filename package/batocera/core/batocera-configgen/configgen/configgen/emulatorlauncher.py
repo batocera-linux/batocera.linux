@@ -51,6 +51,7 @@ from generators.drastic.drasticGenerator import DrasticGenerator
 from generators.xemu.xemuGenerator import XemuGenerator
 from generators.cgenius.cgeniusGenerator import CGeniusGenerator
 from generators.flatpak.flatpakGenerator import FlatpakGenerator
+from generators.steam.steamGenerator import SteamGenerator
 from generators.ecwolf.ecwolfGenerator import ECWolfGenerator
 from generators.lexaloffle.lexaloffleGenerator import LexaloffleGenerator
 
@@ -107,6 +108,7 @@ generators = {
     'xemu': XemuGenerator(),
     'cgenius': CGeniusGenerator(),
     'flatpak': FlatpakGenerator(),
+    'steam': SteamGenerator(),
     'ecwolf': ECWolfGenerator(),
     'lexaloffle': LexaloffleGenerator(),
 }

@@ -423,6 +423,7 @@ config BR2_PACKAGE_BATOCERA_ALL_SYSTEMS
 	select BR2_PACKAGE_BATOCERA_GAMESTREAM_SYSTEMS
 	select BR2_PACKAGE_BATOCERA_PORTS_SYSTEMS
 	select BR2_PACKAGE_BATOCERA_FLASH_SYSTEMS
+	select BR2_PACKAGE_BATOCERA_STEAM if BR2_PACKAGE_BATOCERA_TARGET_X86_64
 
 	help
 		batocera.linux all supported emulation systems
@@ -613,6 +614,7 @@ config BR2_PACKAGE_BATOCERA_MSDOS_SYSTEMS
                                                     !BR2_PACKAGE_BATOCERA_TARGET_RPI1		&& \
                                                     !BR2_PACKAGE_BATOCERA_TARGET_RPI2		&& \
                                                     !BR2_PACKAGE_BATOCERA_TARGET_RPI3		&& \
+                                                    !BR2_PACKAGE_BATOCERA_TARGET_RK3399		&& \
                                                     !BR2_PACKAGE_BATOCERA_TARGET_CHA		# dos
 
 	select BR2_PACKAGE_DOSBOX_STAGING           if  !BR2_PACKAGE_BATOCERA_TARGET_CHA && !BR2_PACKAGE_BATOCERA_TARGET_RK3326_ANY
