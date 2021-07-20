@@ -18,7 +18,7 @@ mixer() {
 card=`echo $1 | sed 's/[^0-9]*//g'`
 
 # set common mixer params
-mixer $card Master 100%
+mixer $card Master 0db
 mixer $card Front 100%
 mixer $card PCM 0db
 mixer $card Synth 100%
@@ -163,6 +163,10 @@ mixer $card 'HDMI CTRL SRC' 'I2S'
 
 # Odroid Go Advance Speaker
 mixer $card 'Playback Path' 'SPK'
+
+# ES8316 headphone jack
+mixer $card 'Right Headphone Mixer Right DAC' on
+mixer $card 'Left Headphone Mixer Left DAC' on
 
 exit 0
 )&
