@@ -65,13 +65,15 @@ define BATOCERA_SPLASH_INSTALL_SCRIPT
 	sed -i -e s+"%PLAYER_OPTIONS%"+"$(BATOCERA_SPLASH_PLAYER_OPTIONS)"+g $(TARGET_DIR)/etc/init.d/S03splash
 endef
 
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_CHA),y)
+    BATO_SPLASH=$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/Capcom.mp4
+else
+    BATO_SPLASH=$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/splash.mp4
+endif
+
 define BATOCERA_SPLASH_INSTALL_VIDEO
 	mkdir -p $(TARGET_DIR)/usr/share/batocera/splash
-ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_CHA),y)
-	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/Capcom.mp4 $(TARGET_DIR)/usr/share/batocera/splash
-	else
-	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/splash.mp4 $(TARGET_DIR)/usr/share/batocera/splash
-	endif 
+	cp $(BATO_SPLASH) $(TARGET_DIR)/usr/share/batocera/splash
 	echo -e "1\n00:00:00,000 --> 00:00:02,000\n$(BATOCERA_SPLASH_TGVERSION)" > "${TARGET_DIR}/usr/share/batocera/splash/splash.srt"
 endef
 
