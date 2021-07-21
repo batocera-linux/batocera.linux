@@ -37,8 +37,8 @@ define BATOCERA_AUDIO_INSTALL_TARGET_CMDS
 	# sample audio files
 	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-audio/*.wav $(TARGET_DIR)/usr/share/sounds
 	# init script
-	install -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-audio/S02audio \
-		$(TARGET_DIR)/etc/init.d/S02audio
+	install -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-audio/S06audio \
+		$(TARGET_DIR)/etc/init.d/S06audio
 	install -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-audio/S30audioconfig \
 		$(TARGET_DIR)/etc/init.d/S30audioconfig
 	# udev script to unmute audio devices

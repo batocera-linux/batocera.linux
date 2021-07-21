@@ -1,0 +1,43 @@
+#!/bin/sh
+#
+# Starts audio services
+#
+
+. /etc/profile.d/xdg.sh
+. /etc/profile.d/dbus.sh
+
+start_pipewire() {
+    printf "Starting pipewire: "
+    start-stop-daemon -S -q -m -b -p /var/run/pipewire.pid --exec /usr/bin/pipewire
+    start-stop-daemon -S -q -m -b -p /usr/bin/pw-pulse.pid --exec /usr/bin/pipewire -- -c /etc/pipewire/pipewire-pulse.conf 
+    echo "OK"
+}
+
+stop_pipewire() {
+    printf "Stopping pipewire: "
+    start-stop-daemon -K -q -p /var/run/pipewire.pid
+    start-stop-daemon -K -q -p /var/run/pw-pulse.pid
+    echo "OK"
+}
+
+restart() {
+    stop_pipewire
+    start_pipewire
+}
+
+case "$1" in
+    start)
+        start_pipewire
+    ;;
+    stop)
+        stop_pipewire
+    ;;
+    restart|reload)
+        restart
+    ;;
+    *)
+        echo "Usage: $0 {start|stop|restart}"
+        exit 1
+esac
+
+exit $?
