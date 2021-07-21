@@ -4,9 +4,6 @@
 # Furthermore it copies content from /userdata/splash to /boot/splash
 # by cyperghost aka lala on discord
 
-. /etc/profile.d/xdg.sh
-. /etc/profile.d/dbus.sh
-
 splash_autoplay ()
 {
     count=0
@@ -91,8 +88,8 @@ case $1 in
         #File changes can be detected by -i switch output
         [ "$($RSYNC | grep -e '^\*deleting' -e '^>f++++++')" ] || exit 0
 
-        #Check filesize of /userdata/splash and set a directory size limit (256MB*1024kB)
-        [ "$(du -s $SPLASHUSER | awk '{print $1}')" -lt 262144 ] || exit 1
+        #Check filesize of /userdata/splash and set a directory size limit (512MB*1024kB)
+        [ "$(du -s $SPLASHUSER | awk '{print $1}')" -lt 524288 ] || exit 1
 
         RSYNC="rsync --modify-window=2 -ti --dirs --delete $SPLASHUSER $SPLASHBOOT"
         mount -o remount,rw /boot
