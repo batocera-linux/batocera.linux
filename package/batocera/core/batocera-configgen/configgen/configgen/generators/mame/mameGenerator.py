@@ -315,8 +315,13 @@ class MameGenerator(Generator):
         os.symlink(bz_infos["png"], tmpZipDir + "/default.png")
 
         img_width, img_height = bezelsUtil.fast_image_size(bz_infos["png"])
-        game_width, game_height = MameGenerator.getMameMachineSize(romBase, tmpZipDir)
-        bz_width = (game_width * img_height) / game_height
+        _, _, rotate = MameGenerator.getMameMachineSize(romBase, tmpZipDir)
+
+        # assumes that all bezels are setup for 4:3H or 3:4V aspects
+        if rotate == 270 or rotate == 90:
+            bz_width = int(img_height * (3 / 4))
+        else:
+            bz_width = int(img_height * (4 / 3))
         bz_height = img_height
         bz_x = int((img_width - bz_width) / 2)
         bz_y = 0
@@ -352,9 +357,6 @@ class MameGenerator(Generator):
             iwidth  = element.getAttribute("width")
             iheight = element.getAttribute("height")
             irotate = element.getAttribute("rotate")
-
-            if irotate == "90" or irotate == "270":
-                return int(iheight), int(iwidth)
-            return int(iwidth), int(iheight)
+            return int(iwidth), int(iheight), int(irotate)
 
         raise Exception("display element not found")
