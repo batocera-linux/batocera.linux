@@ -39,8 +39,8 @@ define BATOCERA_AUDIO_INSTALL_TARGET_CMDS
 	# init script
 	install -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-audio/S02audio \
 		$(TARGET_DIR)/etc/init.d/S02audio
-	install -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-audio/S30audioconfig \
-		$(TARGET_DIR)/etc/init.d/S30audioconfig
+	install -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-audio/S27audioconfig \
+		$(TARGET_DIR)/etc/init.d/S27audioconfig
 	# udev script to unmute audio devices
 	install -m 0644 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-audio/90-alsa-setup.rules \
 		$(TARGET_DIR)/etc/udev/rules.d/90-alsa-setup.rules

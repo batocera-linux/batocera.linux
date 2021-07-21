@@ -16,23 +16,23 @@ endif
 BATOCERA_SPLASH_PLAYER_OPTIONS=
 
 ifeq ($(BR2_PACKAGE_BATOCERA_SPLASH_OMXPLAYER),y)
-	BATOCERA_SPLASH_SCRIPT=S03splash-omx
+	BATOCERA_SPLASH_SCRIPT=Ssplash-omx
 	BATOCERA_SPLASH_MEDIA=video
 else ifeq ($(BR2_PACKAGE_BATOCERA_SPLASH_FFPLAY),y)
-	BATOCERA_SPLASH_SCRIPT=S03splash-ffplay
+	BATOCERA_SPLASH_SCRIPT=Ssplash-ffplay
 	BATOCERA_SPLASH_MEDIA=video
 else ifeq ($(BR2_PACKAGE_BATOCERA_SPLASH_MPV),y)
-	BATOCERA_SPLASH_SCRIPT=S03splash-mpv.template
+	BATOCERA_SPLASH_SCRIPT=Ssplash-mpv.template
 	BATOCERA_SPLASH_MEDIA=video
 else ifeq ($(BR2_PACKAGE_BATOCERA_SPLASH_ROTATE_IMAGE),y)
-    BATOCERA_SPLASH_SCRIPT=S03splash-image
+    BATOCERA_SPLASH_SCRIPT=Ssplash-image
     ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RK3326_ANY),y)
         BATOCERA_SPLASH_MEDIA=rotate-rk3326-image
     else
         BATOCERA_SPLASH_MEDIA=rotate-image
     endif
 else
-	BATOCERA_SPLASH_SCRIPT=S03splash-image
+	BATOCERA_SPLASH_SCRIPT=Ssplash-image
 	BATOCERA_SPLASH_MEDIA=image
 endif
 
@@ -60,13 +60,15 @@ endif
 
 define BATOCERA_SPLASH_INSTALL_SCRIPT
 	mkdir -p $(TARGET_DIR)/etc/init.d
-	install -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/S29splashscreencontrol	$(TARGET_DIR)/etc/init.d/
-	install -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/$(BATOCERA_SPLASH_SCRIPT)	$(TARGET_DIR)/etc/init.d/S03splash
-	sed -i -e s+"%PLAYER_OPTIONS%"+"$(BATOCERA_SPLASH_PLAYER_OPTIONS)"+g $(TARGET_DIR)/etc/init.d/S03splash
+	install -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/Ssplashscreencontrol	$(TARGET_DIR)/etc/init.d/S30splashscreencontrol
+	install -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/$(BATOCERA_SPLASH_SCRIPT)	$(TARGET_DIR)/etc/init.d/S28splash
+	sed -i -e s+"%PLAYER_OPTIONS%"+"$(BATOCERA_SPLASH_PLAYER_OPTIONS)"+g $(TARGET_DIR)/etc/init.d/S28splash
 endef
 
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_CHA),y)
     BATO_SPLASH=$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/Capcom.mp4
+else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI1)$(BR2_PACKAGE_BATOCERA_TARGET_RPI2)$(BR2_PACKAGE_BATOCERA_TARGET_RPI3),y)
+    BATO_SPLASH=$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/splash720p.mp4
 else
     BATO_SPLASH=$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/splash.mp4
 endif
