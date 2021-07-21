@@ -73,7 +73,7 @@ endif
 
 define BATOCERA_SPLASH_INSTALL_VIDEO
 	mkdir -p $(TARGET_DIR)/usr/share/batocera/splash
-	cp $(BATO_SPLASH) $(TARGET_DIR)/usr/share/batocera/splash
+	cp $(BATO_SPLASH) $(TARGET_DIR)/usr/share/batocera/splash/splash.mp4
 	echo -e "1\n00:00:00,000 --> 00:00:02,000\n$(BATOCERA_SPLASH_TGVERSION)" > "${TARGET_DIR}/usr/share/batocera/splash/splash.srt"
 endef
 
