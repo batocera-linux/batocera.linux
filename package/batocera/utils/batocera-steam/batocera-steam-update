@@ -41,30 +41,33 @@ mkdir -p "/userdata/roms/steam" || exit 1
 find /userdata/saves/flatpak/data/.var/app/com.valvesoftware.Steam/.local/share/applications -name "*.desktop" |
 while read STEAMAPP
 do
-    BASEAPP=$(basename "${STEAMAPP}" | sed -e s+"\.desktop$"++)
-    if ! test -e "/userdata/roms/steam/${BASEAPP}.steam"
+    if grep -qE '^[ ]*Categories[ ]*=.*Game.*$' "${STEAMAPP}" # game
     then
-	echo "adding ${BASEAPP}"
-	GAMEID=$(cat "${STEAMAPP}" | grep -E '^Exec=' | sed -e s+"Exec="++ -e s+"[ ]*steam[ ]*"++ | head -1)
-
-	# add image
-	ICON=$(grep -E "^Icon=" "${STEAMAPP}" | sed -e s+"^Icon=steam_icon_"++)_logo.png
-	IMGFILE="/userdata/saves/flatpak/data/.var/app/com.valvesoftware.Steam/.local/share/Steam/appcache/librarycache/${ICON}"
-	IMGARG=
-	if test -e "${IMGFILE}"
+	BASEAPP=$(basename "${STEAMAPP}" | sed -e s+"\.desktop$"++)
+	if ! test -e "/userdata/roms/steam/${BASEAPP}.steam"
 	then
-	    IMGARG="./images/${BASEAPP}.png"
-	    mkdir -p "/userdata/roms/steam/images" || return 1
-	    cp "${IMGFILE}" "/userdata/roms/steam/${IMGARG}" || return 1
-	fi
-	# add game
-	echo "${GAMEID}" > "/userdata/roms/steam/${BASEAPP}.steam" || exit 1
+	    echo "adding ${BASEAPP}"
+	    GAMEID=$(cat "${STEAMAPP}" | grep -E '^Exec=' | sed -e s+"Exec="++ -e s+"[ ]*steam[ ]*"++ | head -1)
 
-	# add game in es
-	if ! es_add_game "${BASEAPP}.steam" "${BASEAPP}" "${IMGARG}"
-	then
-	    echo "adding game in es failed" >&2
-	    exit 1
+	    # add image
+	    ICON=$(grep -E "^Icon=" "${STEAMAPP}" | sed -e s+"^Icon=steam_icon_"++)_logo.png
+	    IMGFILE="/userdata/saves/flatpak/data/.var/app/com.valvesoftware.Steam/.local/share/Steam/appcache/librarycache/${ICON}"
+	    IMGARG=
+	    if test -e "${IMGFILE}"
+	    then
+		IMGARG="./images/${BASEAPP}.png"
+		mkdir -p "/userdata/roms/steam/images" || return 1
+		cp "${IMGFILE}" "/userdata/roms/steam/${IMGARG}" || return 1
+	    fi
+	    # add game
+	    echo "${GAMEID}" > "/userdata/roms/steam/${BASEAPP}.steam" || exit 1
+
+	    # add game in es
+	    if ! es_add_game "${BASEAPP}.steam" "${BASEAPP}" "${IMGARG}"
+	    then
+		echo "adding game in es failed" >&2
+		exit 1
+	    fi
 	fi
     fi
 done
