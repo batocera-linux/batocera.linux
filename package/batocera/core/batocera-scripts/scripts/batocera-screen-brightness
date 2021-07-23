@@ -1,0 +1,33 @@
+#!/bin/bash
+
+# Bash script to control the screen brightness
+# Usage: batocera-screen-brightness %
+# i.e. batocera-screen-brightness 79 (for 79%)
+
+check_for_int()
+{
+    if [ "$1" -eq "$1" ] 2>/dev/null
+    then
+        return 0
+    else
+        return 1
+    fi
+}
+
+if ! check_for_int "$1"; then
+    echo "ERROR: Brightness percentage must be an integer!"
+    exit 1
+fi
+
+if (("$1" < "0" || "$1" > "100")); then
+	echo "ERROR: Invalid brightness percentage range"
+	exit 1
+else
+	brightness_level=$(awk -vn=$1 'BEGIN{print(n/100)}')
+fi
+
+screenname=$(xrandr | grep " connected" | cut -f1 -d" ")
+xrandr --output $screenname --brightness $brightness_level;
+
+echo "We've set the screen brigthness level to $1"
+

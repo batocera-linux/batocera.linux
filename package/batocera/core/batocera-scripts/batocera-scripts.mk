@@ -64,6 +64,7 @@ define BATOCERA_SCRIPTS_INSTALL_TARGET_CMDS
 	install -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-scripts/scripts/batocera-screenshot.$(BATOCERA_SCRIPT_SCREENSHOT_TYPE) $(TARGET_DIR)/usr/bin/batocera-screenshot
 	install -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-scripts/scripts/batocera-timezone               $(TARGET_DIR)/usr/bin/
     install -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-scripts/scripts/batocera-gameforce              $(TARGET_DIR)/usr/bin/
+	install -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-scripts/scripts/batocera-screen-brightness      $(TARGET_DIR)/usr/bin/
 endef
 
 define BATOCERA_SCRIPTS_INSTALL_XORG
