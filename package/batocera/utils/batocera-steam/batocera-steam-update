@@ -1,14 +1,22 @@
 #!/bin/bash
 
+es_add_game_begin() {
+    echo "<gameList>" > /tmp/batocera-steam-update.tmp || return 1
+}
+
+es_add_game_end() {
+    ES_SERVER="http://127.0.0.1:1234"
+
+    echo "</gameList>" >> /tmp/batocera-steam-update.tmp || return 1
+    curl -s -X POST -H "Content-type: application/x-www-form-urlencoded" -H "Accept: text/plain" "${ES_SERVER}/addgames/steam" -d "@/tmp/batocera-steam-update.tmp" > /dev/null || return 1
+}
+
 es_add_game() {
     GAME_BASENAME=$1
     GAME_NAME=$2
     GAME_IMAGE=$3
 
-    ES_SERVER="http://127.0.0.1:1234"
-
     (cat <<EOF
-<gameList>
 <game>
   <path>./${GAME_BASENAME}</path>
   <name>${GAME_NAME}</name>
@@ -23,11 +31,8 @@ es_add_game() {
   <manual></manual>
   <video></video>
 </game>
-</gameList>
 EOF
-) > /tmp/batocera-steam-update.tmp || return 1
-
-    curl -s -X POST -H "Content-type: application/x-www-form-urlencoded" -H "Accept: text/plain" "${ES_SERVER}/addgames/steam" -d "@/tmp/batocera-steam-update.tmp" > /dev/null || return 1
+) >> /tmp/batocera-steam-update.tmp || return 1
 }
 
 mkdir -p "/userdata/roms/steam" || exit 1
@@ -39,6 +44,9 @@ mkdir -p "/userdata/roms/steam" || exit 1
 
 # add applications
 find /userdata/saves/flatpak/data/.var/app/com.valvesoftware.Steam/.local/share/applications -name "*.desktop" |
+    (
+N=0
+es_add_game_begin || return 1
 while read STEAMAPP
 do
     if grep -qE '^[ ]*Categories[ ]*=.*Game.*$' "${STEAMAPP}" # game
@@ -60,14 +68,17 @@ do
 		cp "${IMGFILE}" "/userdata/roms/steam/${IMGARG}" || return 1
 	    fi
 	    # add game
-	    echo "${GAMEID}" > "/userdata/roms/steam/${BASEAPP}.steam" || exit 1
+	    echo "${GAMEID}" > "/userdata/roms/steam/${BASEAPP}.steam" || return 1
 
 	    # add game in es
 	    if ! es_add_game "${BASEAPP}.steam" "${BASEAPP}" "${IMGARG}"
 	    then
 		echo "adding game in es failed" >&2
-		exit 1
+		return 1
 	    fi
+	    let N++
 	fi
     fi
 done
+test ${N} -gt 0 && es_add_game_end
+)
