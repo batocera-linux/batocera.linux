@@ -3,7 +3,7 @@
 # Batocera splash
 #
 ################################################################################
-BATOCERA_SPLASH_VERSION = 5
+BATOCERA_SPLASH_VERSION = 5.1
 BATOCERA_SPLASH_SOURCE=
 BATOCERA_SYSTEM_GIT_VERSION = $(shell git log -n 1 --pretty=format:"%h")
 
@@ -60,18 +60,27 @@ endif
 
 define BATOCERA_SPLASH_INSTALL_SCRIPT
 	mkdir -p $(TARGET_DIR)/etc/init.d
+	install -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/Ssystem-splash	$(TARGET_DIR)/etc/init.d/S03system-splash
 	install -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/Ssplashscreencontrol	$(TARGET_DIR)/etc/init.d/S30splashscreencontrol
 	install -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/$(BATOCERA_SPLASH_SCRIPT)	$(TARGET_DIR)/etc/init.d/S28splash
 	sed -i -e s+"%PLAYER_OPTIONS%"+"$(BATOCERA_SPLASH_PLAYER_OPTIONS)"+g $(TARGET_DIR)/etc/init.d/S28splash
 endef
 
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_CHA),y)
-    BATO_SPLASH=$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/Capcom.mp4
+	BATO_SPLASH=$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/Capcom.mp4
+	BATOCERA_SPLASH_POST_INSTALL_TARGET_HOOKS += BATOCERA_SYSTEM_SPLASH
 else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI1)$(BR2_PACKAGE_BATOCERA_TARGET_RPI2)$(BR2_PACKAGE_BATOCERA_TARGET_RPI3),y)
-    BATO_SPLASH=$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/splash720p.mp4
+	BATO_SPLASH=$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/splash720p.mp4
+	BATOCERA_SPLASH_POST_INSTALL_TARGET_HOOKS += BATOCERA_SYSTEM_SPLASH
 else
-    BATO_SPLASH=$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/splash.mp4
+	BATO_SPLASH=$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/splash.mp4
+	BATOCERA_SPLASH_POST_INSTALL_TARGET_HOOKS += BATOCERA_SYSTEM_SPLASH
 endif
+
+define BATOCERA_SYSTEM_SPLASH
+	mkdir -p $(TARGET_DIR)/usr/share/batocera/splash
+	cp "$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/logo.png" "${TARGET_DIR}/usr/share/batocera/splash/boot-logo.png"
+endef
 
 define BATOCERA_SPLASH_INSTALL_VIDEO
 	mkdir -p $(TARGET_DIR)/usr/share/batocera/splash
