@@ -34,9 +34,11 @@ INIT_SERVICE=/etc/init.d/S28splash
 SPLASHBOOT=/boot/splash/
 SPLASHUSER=/userdata/splash/
 ARCH=$(cat /usr/share/batocera/batocera.arch)
-sleep 0.2 #Race condition between S28 and it's PPID, lazy hack
+
 case $1 in
     start)
+	sleep 2 # let time to player to start and play the video (otherwise, it will not kill the video player is not yet started) ; Race condition between S28 and it's PPID, lazy hack
+
         # Is service is active? PPID is videoplayer or pic sleep timer
         PID=$(pgrep -P $(pgrep -f $INIT_SERVICE) 2>/dev/null ) || { echo "No service '$INIT_SERVICE' found!"; exit 0; }
 
