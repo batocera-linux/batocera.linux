@@ -8,35 +8,41 @@
 
 start_pipewire() {
     printf "Starting pipewire: "
-    mkdir -p /var/run # required for pipewire
-    pipewire &
-    echo "OK"
+    start-stop-daemon -S -b -q -m -p /var/run/pipewire.pid --exec /usr/bin/pipewire
+    msg=OK
+
+    #Wait till sinks are listed, this means PW is working
+    until pactl list sinks-raw | grep -qo sink=
+    do
+        sleep 0.1
+        N=$((N+1))
+        test $N -gt 50 && { msg=KO; break; }
+    done
+
+    echo "$msg"
 }
 
 stop_pipewire() {
-        printf "Stopping pipewire: "
-	killall pipewire
-	echo "OK"
-}
-
-restart() {
-	stop_pipewire
-	start_pipewire
+    printf "Stopping pipewire: "
+    start-stop-daemon -K -q -p /var/run/pipewire.pid
+    killall pipewire
+    echo "OK"
 }
 
 case "$1" in
- 	start)
-		start_pipewire
-	;;
- 	stop)
-		stop_pipewire
-	;;
- 	restart|reload)
-		restart
-	;;
-	*)
-		echo "Usage: $0 {start|stop|restart}"
-	exit 1
+    start)
+        start_pipewire
+    ;;
+    stop)
+        stop_pipewire
+    ;;
+    restart|reload)
+        stop_pipewire
+        start_pipewire
+    ;;
+    *)
+        echo "Usage: $0 {start|stop|restart}"
+        exit 1
 esac
 
 exit $?
