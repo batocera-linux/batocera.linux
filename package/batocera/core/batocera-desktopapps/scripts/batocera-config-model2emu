@@ -1,0 +1,13 @@
+#!/bin/bash
+
+if test -z "${DISPLAY}"
+then
+	export DISPLAY=:0.0
+fi
+
+PATH=$PATH:PATH=$PATH:/usr/wine/lutris/bin
+cd /userdata/saves/model2/model2emu/
+
+LD_LIBRARY_PATH=/lib32:/usr/wine/lutris/lib/wine LIBGL_DRIVERS_PATH=/lib32/dri WINEPREFIX=/userdata/saves/model2 wine /userdata/saves/model2/model2emu/emulator_multicpu.exe
+
+exit 0

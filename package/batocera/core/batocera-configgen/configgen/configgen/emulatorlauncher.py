@@ -54,6 +54,7 @@ from generators.flatpak.flatpakGenerator import FlatpakGenerator
 from generators.steam.steamGenerator import SteamGenerator
 from generators.ecwolf.ecwolfGenerator import ECWolfGenerator
 from generators.lexaloffle.lexaloffleGenerator import LexaloffleGenerator
+from generators.model2emu.model2emuGenerator import Model2EmuGenerator
 
 import controllersConfig as controllers
 import signal
@@ -111,6 +112,7 @@ generators = {
     'steam': SteamGenerator(),
     'ecwolf': ECWolfGenerator(),
     'lexaloffle': LexaloffleGenerator(),
+    'model2emu': Model2EmuGenerator(),
 }
 
 def main(args, maxnbplayers):

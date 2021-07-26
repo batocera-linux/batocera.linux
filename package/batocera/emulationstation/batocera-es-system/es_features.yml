@@ -3958,3 +3958,14 @@ lexaloffle:
 
 ecwolf:
   features: [padtokeyboard]
+
+model2emu:
+  features: []
+  cfeatures:
+        screenRatio:
+            prompt:      SCREEN RATIO
+            description: Choose screen ratio (4:3 default)
+            choices:
+                "4:3":      0
+                "16:9":     1
+                "16:10":    2
