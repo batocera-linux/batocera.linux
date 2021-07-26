@@ -60,7 +60,7 @@ do_videostart ()
     fi
 
     # it should be drm everywhere (including for x86_64 while it is on fb) -- only rpi doesn't use drm and it doesn't use this boot splash script
-    /usr/bin/mpv --really-quiet --fs --no-config --hwdec=yes %PLAYER_OPTIONS% $mpv_audio $mpv_video "$video" &
+    /usr/bin/mpv --really-quiet --no-config --hwdec=yes %PLAYER_OPTIONS% $mpv_audio $mpv_video "$video" &
     wait $!
 }
 
