@@ -22,8 +22,8 @@ class ECWolfGenerator(Generator):
             os.mkdir(ecwolfSaves)
 
         os.chdir(rom)
-        commandArray = ["/usr/share/ecwolf/ecwolf", "--fullscreen", "--joystick", "--savedir /userdata/saves/ecwolf", "--config /userdata/system/configs/ecwolf/ecwolf.cfg"]
-        #commandArray = ["/usr/share/ecwolf/ecwolf", "--fullscreen", "--joystick", "--savedir /userdata/saves/ecwolf", rom]
+        commandArray = ["ecwolf", "--fullscreen", "--joystick", "--savedir /userdata/saves/ecwolf", "--config /userdata/system/configs/ecwolf/ecwolf.cfg"]
+        #commandArray = ["ecwolf", "--fullscreen", "--joystick", "--savedir /userdata/saves/ecwolf", rom]
         return Command.Command(
             array=commandArray)
 
