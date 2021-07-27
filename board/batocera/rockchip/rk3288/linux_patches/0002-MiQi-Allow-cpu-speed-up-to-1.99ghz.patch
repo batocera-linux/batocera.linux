@@ -1,17 +1,17 @@
-From cae83cf8d3c95226f096aac712bccc7bf26f3d8e Mon Sep 17 00:00:00 2001
+From 8ef1d9ed7336a75b12e6d7f1491b2998db66ce24 Mon Sep 17 00:00:00 2001
 From: Demetris Ierokipides <ierokipides.dem@gmail.com>
 Date: Sun, 18 Jul 2021 19:53:11 +0300
-Subject: [PATCH] MiQi: Allow cpu speed up to 2.0ghz
+Subject: [PATCH] MiQi: Allow cpu speed up to 1.9ghz
 
 ---
- arch/arm/boot/dts/rk3288-miqi.dts | 32 +++++++++++++++++++++++++++++++
- 1 file changed, 32 insertions(+)
+ arch/arm/boot/dts/rk3288-miqi.dts | 27 +++++++++++++++++++++++++++
+ 1 file changed, 27 insertions(+)
 
 diff --git a/arch/arm/boot/dts/rk3288-miqi.dts b/arch/arm/boot/dts/rk3288-miqi.dts
-index 0b2facc1b..d92d23a92 100644
+index 0b2facc1b..c505dcb35 100644
 --- a/arch/arm/boot/dts/rk3288-miqi.dts
 +++ b/arch/arm/boot/dts/rk3288-miqi.dts
-@@ -96,6 +96,38 @@ &cpu3 {
+@@ -96,6 +96,33 @@ &cpu3 {
  	cpu-supply = <&vdd_cpu>;
  };
  
@@ -47,4 +47,3 @@ index 0b2facc1b..d92d23a92 100644
  	cap-mmc-highspeed;
 -- 
 2.25.1
-
