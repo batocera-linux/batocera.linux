@@ -3733,6 +3733,22 @@ supermodel:
             choices:
                 "Off":      0
                 "On":       1
+        pedalSwap:
+            prompt:      MODERN PEDAL CONTROLS
+            description: Moves Accel/Brake to triggers and gear shift to shoulder buttons or right stick
+            choices:
+                "Off":      0
+                "On":       1
+        ppcFreq:
+            prompt:      ADJUST POWERPC FREQUENCY
+            description: Change the speed of the emulated PowerPC chip (fixes some issues)
+            choices:
+                "25":           25
+                "50 (Default)": 50
+                "75":           75
+                "100":          100
+                "125":          125
+                "150":          150
 
 cgenius:
   features: []

@@ -37,6 +37,16 @@ class SupermodelGenerator(Generator):
         if system.isOptSet("forceFeedback") and system.getOptBoolean("forceFeedback"):
             commandArray.append("-force-feedback")
 
+        # powerpc frequesncy
+        if system.isOptSet("ppcFreq"):
+            commandArray.append("-ppc-frequency={}".format(system.config["ppcFreq"]))
+
+        #driving controls
+        if system.isOptSet("pedalSwap") and system.getOptBoolean("pedalSwap"):
+            drivingGame = 1
+        else:
+            drivingGame = 0
+
         # resolution
         commandArray.append("-res={},{}".format(gameResolution["width"], gameResolution["height"]))
 
@@ -47,7 +57,7 @@ class SupermodelGenerator(Generator):
         copy_nvram_files()
 
         # config
-        configPadsIni(playersControllers)
+        configPadsIni(playersControllers, drivingGame)
 
         return Command.Command(array=commandArray)
 
@@ -64,28 +74,48 @@ def copy_nvram_files():
             if not os.path.exists(targetDir + "/" + file):
                 copyfile(sourceDir + "/" + file, targetDir + "/" + file)
 
-def configPadsIni(playersControllers):
-    templateFile = "/usr/share/supermodel/Supermodel.ini.template"
+def configPadsIni(playersControllers, altControl):
+    if bool(altControl):
+        templateFile = "/usr/share/supermodel/Supermodel-Driving.ini.template"
+        mapping = {
+            "button1": "y",
+            "button2": "b",
+            "button3": "a",
+            "button4": "x",
+            "button5": "pageup",
+            "button6": "pagedown",
+            "button7": None,
+            "button8": None,
+            "button9": "start", # start
+            "button10": "select", # coins
+            "axisX": "joystick1left",
+            "axisY": "joystick1up",
+            "axisZ": "l2",
+            "axisRX": "joystick2left",
+            "axisRY": "joystick2up",
+            "axisRZ": "r2"
+        }
+    else:
+        templateFile = "/usr/share/supermodel/Supermodel.ini.template"
+        mapping = {
+            "button1": "y",
+            "button2": "b",
+            "button3": "a",
+            "button4": "x",
+            "button5": "pageup",
+            "button6": "pagedown",
+            "button7": "l2",
+            "button8": "r2",
+            "button9": "start", # start
+            "button10": "select", # coins
+            "axisX": "joystick1left",
+            "axisY": "joystick1up",
+            "axisZ": None,
+            "axisRX": "joystick2left",
+            "axisRY": "joystick2up",
+            "axisRZ": None
+        }
     targetFile = "/userdata/system/configs/supermodel/Supermodel.ini"
-
-    mapping = {
-        "button1": "y",
-        "button2": "b",
-        "button3": "a",
-        "button4": "x",
-        "button5": "pageup",
-        "button6": "pagedown",
-        "button7": "l2",
-        "button8": "r2",
-        "button9": "start", # start
-        "button10": "select", # coins
-        "axisX": "joystick1left",
-        "axisY": "joystick1up",
-        "axisZ": None,
-        "axisRX": "joystick2left",
-        "axisRY": "joystick2up",
-        "axisRZ": None
-    }
 
     mapping_fallback = {
         "axisX": "left",
@@ -218,5 +248,9 @@ def input2input(playersControllers, player, joynum, button, axisside = None):
                     return "JOY{}_RXAXIS{}".format(joynum+1, sidestr)
                 elif button == "joystick2up":
                     return "JOY{}_RYAXIS{}".format(joynum+1, sidestr)
+                elif button == "l2":
+                    return "JOY{}_ZAXIS{}".format(joynum+1, sidestr)
+                elif button == "r2":
+                    return "JOY{}_RZAXIS{}".format(joynum+1, sidestr)
 
     return None
