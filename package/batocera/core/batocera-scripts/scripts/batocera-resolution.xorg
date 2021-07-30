@@ -9,6 +9,7 @@ f_usage() {
     echo "${0} setOutput <output>" >&2
     echo "${0} minTomaxResolution" >&2
     echo "${0} minTomaxResolution-secure" >&2
+    echo "${0} forceMode <horizontal>x<vertical>:<refresh>" >&2
 }
 
 f_minTomaxResolution() {
@@ -61,7 +62,7 @@ case "${ACTION}" in
 	echo "max-1920x1080:maximum 1920x1080"
 	echo "max-640x480:maximum 640x480"
 	xrandr --listModes | sed -e s+'\*$'++ | sed -e s+'^[^ ]* \(.*\)$'+'\1:\1'+
-    ;;
+	;;
     "setMode")
 	MODE=$1
 
@@ -111,7 +112,28 @@ case "${ACTION}" in
     "setDPI")
         xrandr --dpi $1
         ;;
-	*)
+    "forceMode")
+        REQUESTED=$1
+	H=$(echo "$REQUESTED" | sed "s/\([0-9]*\)x.*/\1/")
+	V=$(echo "$REQUESTED" | sed "s/.*x\([0-9]*\).*/\1/")
+	R=$(echo "$REQUESTED" | grep : | sed "s/.*:\([0-9]*\)/\1/")
+	if [ z"$H" != z  ] && [ z"$V" != z ]; then
+            if [ z"$R" != z ]; then
+                MODELINE=$(cvt "$H" "$V" "$R")
+	    else
+                MODELINE=$(cvt "$H" "$V")
+	    fi
+	else
+            >&2 echo "error: invalid mode ${REQUESTED}"
+	fi
+        MODE=$(echo "$MODELINE" | egrep -v "^#" | tail -n 1 | sed "s/^Modeline //")
+        MNAME=$(echo "$MODE" | cut -d' ' -f1)
+        OUTPUT=$(xrandr --listConnectedOutputs | grep -E '\*$' | sed -e s+'*$'++ | head -1)
+        xrandr --newmode ${MODE}
+        xrandr --addmode "${OUTPUT}" "${MNAME}"
+	xrandr --output "${OUTPUT}" --mode "${MNAME}"
+	;;
+    *)
 		f_usage
 		>&2 echo "error: invalid command ${ACTION}"
 		exit 1
