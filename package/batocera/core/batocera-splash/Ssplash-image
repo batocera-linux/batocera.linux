@@ -1,37 +1,61 @@
 #!/bin/bash
 
+DAEMON="splash-image"
+DEFAULT="/usr/share/batocera/splash/logo-version.png"
+SPLASH_DIR=/userdata/splash
+
+FM_IMAGE=".*\.\(jpg\|jpeg\|png\)"
+
+do_filerandomize ()
+{
+    local array
+    [[ -d "$SPLASH_DIR" ]] || return 1
+    readarray -t array < <(find "$SPLASH_DIR" -regex "$1" -maxdepth 1 -type f)
+    if [[ ${#array[@]} -gt 0 ]]; then
+        echo "${array[$RANDOM % ${#array[@]}]}"
+    fi
+}
+
 do_start ()
 {
-    if [[ $(ls /boot/splash/*.{jpg,png}  2>/dev/null) ]]
+    # no image => for ogoa (or any other), logo-version-wxh.png
+    if ! test -e "$DEFAULT"
     then
-        image="$(ls /boot/splash/*.{jpg,png} | sed -e "$((RANDOM%$(ls -1 /boot/splash/*.{jpg,png} | wc -l)+1))!d")"
-    else
-        image="/usr/share/batocera/splash/logo-version.png"
-	# no image => for ogoa (or any other), logo-version-wxh.png
-	if ! test -e "${image}"
-	then
-	    image="/usr/share/batocera/splash/logo-version-"$(batocera-resolution currentResolution)".png"
-	fi
+        DEFAULT="/usr/share/batocera/splash/logo-version-"$(batocera-resolution currentResolution)".png"
     fi
 
-    # on some sytems, fb0 is not immediatly loaded, so, keep a chance by waiting a bit
-    N=0
-    while ! test -e /dev/fb0 -o $N -gt 15
-    do
-        sleep 1
-        let N++
-    done
-    test -e /dev/fb0 && fbv -f -i "${image}"
-    sleep infinity
-    wait $!
+    image_file=$(do_filerandomize "$FM_IMAGE")
+
+    if [[ -n "$image_file" ]]; then
+        do_imagestart "$image_file"
+    else
+        do_imagestart "$DEFAULT"
+    fi
+}
+
+do_imagestart ()
+{
+    image="$1"
+    printf 'Image: %s: ' "$image"
+    if test -e /dev/fb0
+    then
+        start-stop-daemon -S -b -q -m -p /var/run/user-splash-image.pid --exec fbv -- -f -i "$image"
+    fi
 }
 
 case "$1" in
     start)
-        grep -qE '^[ ]*splash.screen.enabled[ ]*=[ ]*0[ ]*$' "/boot/batocera-boot.conf" && exit 0
-        do_start &
+        printf 'Starting %s: ' "$DAEMON"
+        if grep -qE '^[ ]*splash.screen.enabled[ ]*=[ ]*0[ ]*$' "/boot/batocera-boot.conf"
+        then
+            echo "SKIPPED"
+            exit 0
+        fi
+        do_start
+        echo "OK"
         ;;
     stop)
+        start-stop-daemon -K -q -p /var/run/user-splash.pid
         ;;
     restart|reload)
         ;;
