@@ -3975,6 +3975,103 @@ lexaloffle:
 ecwolf:
   features: [padtokeyboard]
 
+sonic2013:
+  features: []
+  cfeatures:
+        language:
+            prompt:      LANGUAGE
+            description: Change the game language
+            choices:
+                "English":   0
+                "French":    1
+                "Italian":   2
+                "German":    3
+                "Spanish":   4
+                "Japanese":  5
+                "Portugese": 6
+                "Russian":   7
+                "Korean":    8
+                "Chinese":   9
+        vsync:
+            prompt:      VSYNC
+            description: Enable vertical sync
+            choices:
+                "Off":  0
+                "On":   1
+        scalingmode:
+            prompt:      SCALING MODE
+            description: Screen scaling options
+            choices:
+                "Nearest Neighbour":    0
+                "Integer Scale":        1
+                "Sharp Bilinear":       2
+                "Regular Bilnear":      3
+        hqmode:
+            prompt:      HQ Mode
+            description: Enable High Quality effects for special stages
+            choices:
+                "Off":    0
+                "On":     1
+        skipstart:
+            prompt:      SKIP START MENU
+            description: Bypass the pre-game menu
+            choices:
+                "Off":    0
+                "On":     1
+        devmenu:
+            prompt:      DEV MENU
+            description: Modding and other advanced options
+            choices:
+                "Off":    0
+                "On":     1
+
+soniccd:
+  features: []
+  cfeatures:
+        language:
+            prompt:      LANGUAGE
+            description: Change the game language
+            choices:
+                "English":  0
+                "French":   1
+                "Italian":  2
+                "German":   3
+                "Spanish":  4
+                "Japanese": 5
+        vsync:
+            prompt:     VSYNC
+            decription: Enable vertical sync
+            choices:
+                "Off":  0
+                "On":   1
+        scalingmode:
+            prompt:      SCALING MODE
+            description: Screen scaling options
+            choices:
+                "Nearest Neighbour":    0
+                "Integer Scale":        1
+                "Sharp Bilinear":       2
+                "Regular Bilnear":      3
+        hqmode:
+            prompt:      HQ Mode
+            description: Enable High Quality effects for special stages
+            choices:
+                "Off":    0
+                "On":     1
+        spindash:
+            prompt:      SPINDASH
+            description: Spindash type
+            choices:
+                "By Save":  -1
+                "Sonic 2":  0
+                "Sonic CD": 1
+        devmenu:
+            prompt:      DEV MENU
+            description: Modding and other advanced options
+            choices:
+                "Off":    0
+                "On":     1
+
 model2emu:
   features: []
   cfeatures:
