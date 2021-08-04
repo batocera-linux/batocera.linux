@@ -151,7 +151,7 @@ case "${ACTION}" in
 
 	import sys
 	import subprocess
-	import ConfigParser
+	import configparser
 	import io
 
 	def getConfig():
@@ -164,8 +164,8 @@ case "${ACTION}" in
 	        raise Exception("unable to read config")
 
 	    buf = io.StringIO(out.decode('utf-8'))
-	    config = ConfigParser.ConfigParser(allow_no_value=True)
-	    config.readfp(buf)
+	    config = configparser.ConfigParser(allow_no_value=True, interpolation=None, strict=False) # strict because there are some duplicated values
+	    config.read_file(buf)
 	    return config
 
 	def config2xml(config):

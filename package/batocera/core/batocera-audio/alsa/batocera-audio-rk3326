@@ -1,0 +1,64 @@
+#!/bin/sh
+
+ACTION="$1"
+
+case "${ACTION}" in
+    list)
+	echo "auto auto"
+	echo "speakers speakers"
+	echo "headphone headphone"
+	pactl list sinks-raw | sed -e s+"^sink=[0-9]* name=\([^ ]*\) .* description=\(.*\)$"+"\1 \2"+
+	;;
+
+    get)
+	/usr/bin/batocera-settings-get audio.device
+	;;
+
+    set)
+	MODE="$2"
+	case "${MODE}" in
+	    auto | speakers)
+		pactl set-default-sink INTERNAL
+		amixer -c 0 cset name='Playback Path' SPK
+		;;
+
+	    headphone)
+		pactl set-default-sink INTERNAL
+		amixer -c 0 cset name='Playback Path' HP
+		;;
+	    *)
+		pactl set-default-sink "${MODE}"
+	esac
+	;;
+
+	getSystemVolume)
+	    DEFAULT_SINK=$(pactl info | grep -E '^Default Sink: ' | sed -e s+"^Default Sink: "+""+ | head -1)
+	    pactl list sinks-raw | grep -E '^[^ ]* name='"${DEFAULT_SINK}"' ' | sed -e s+"^.* volume=\([0-9]*\) .*$"+'\1'+
+	    ;;
+
+	setSystemVolume)
+	    VOLUME="$2"
+	    case "${VOLUME}" in
+		"mute")
+		    pactl set-sink-mute @DEFAULT_SINK@ 1
+		    ;;
+		"unmute")
+		    pactl set-sink-mute @DEFAULT_SINK@ 0
+		    ;;
+		"mute-toggle")
+		    pactl set-sink-mute @DEFAULT_SINK@ toggle
+		    ;;
+		*)
+		    if echo "${VOLUME}" | grep -qE '^[+-]?[0-9]*$'
+		    then
+			pactl set-sink-volume @DEFAULT_SINK@ "${VOLUME}%"
+		    else
+			echo "invalid volume value" >&2
+		    fi
+	    esac
+	    ;;
+
+    test)
+	aplay "/usr/share/sounds/Mallet.wav"
+	;;
+esac

@@ -3,26 +3,23 @@
 # FMSX
 #
 ################################################################################
-# Version.: Commits on Mar 27, 2021
-LIBRETRO_FMSX_VERSION = 2c412ee4ca5675c06a47382a319f1770be735803
+# Version.: Commits on May 12, 2021
+LIBRETRO_FMSX_VERSION = d0581d40a40b231d619d2c5363fc2e0ecefeafbd
 LIBRETRO_FMSX_SITE = $(call github,libretro,fmsx-libretro,$(LIBRETRO_FMSX_VERSION))
 LIBRETRO_FMSX_LICENSE = GPLv2
 
 LIBRETRO_FMSX_PLATFORM = $(LIBRETRO_PLATFORM)
-LIBRETRO_FMSX_EXTRA_ARGS = 
-
+LIBRETRO_FMSX_EXTRA_ARGS =
 
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_S812),y)
-        LIBRETRO_FMSX_PLATFORM = armv cortexa9 neon hardfloat
-endif
+LIBRETRO_FMSX_PLATFORM = armv cortexa9 neon hardfloat
 
-ifeq ($(BR2_aarch64),y)
-	LIBRETRO_FMSX_PLATFORM = unix
-	LIBRETRO_FMSX_EXTRA_ARGS += ARCH=arm64
-endif
+else ifeq ($(BR2_aarch64),y)
+LIBRETRO_FMSX_PLATFORM = unix
+LIBRETRO_FMSX_EXTRA_ARGS += ARCH=arm64
 
-ifeq ($(BR2_x86_64),y)
-	LIBRETRO_FMSX_EXTRA_ARGS += ARCH=x86_64
+else ifeq ($(BR2_x86_64),y)
+LIBRETRO_FMSX_EXTRA_ARGS += ARCH=x86_64
 endif
 
 define LIBRETRO_FMSX_BUILD_CMDS

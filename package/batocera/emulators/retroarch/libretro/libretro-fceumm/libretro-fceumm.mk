@@ -3,19 +3,19 @@
 # FCEUMM
 #
 ################################################################################
-# Version.: Commits on Mar 25, 2021
-LIBRETRO_FCEUMM_VERSION = 66760e1a17342070ab876ec028aee273e9cb8236
+# Last commit: July 30, 2021
+LIBRETRO_FCEUMM_VERSION = afe2b4d9650d9e468b20636a3eab6bac2b8f9844
 LIBRETRO_FCEUMM_SITE = $(call github,libretro,libretro-fceumm,$(LIBRETRO_FCEUMM_VERSION))
 LIBRETRO_FCEUMM_LICENSE = GPLv2
 
 LIBRETRO_FCEUMM_PLATFORM = $(LIBRETRO_PLATFORM)
 
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI3),y)
-	LIBRETRO_FCEUMM_PLATFORM = rpi3
-endif
+LIBRETRO_FCEUMM_PLATFORM = rpi3_64
 
-ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI4),y)
+else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI4),y)
 LIBRETRO_FCEUMM_PLATFORM = rpi4
+
 else ifeq ($(BR2_aarch64),y)
 LIBRETRO_FCEUMM_PLATFORM = unix
 endif

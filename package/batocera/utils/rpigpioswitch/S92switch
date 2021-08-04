@@ -3,10 +3,7 @@
 RUN="/usr/bin/rpi_gpioswitch"
 BTD_PID=$(pgrep -f "/bin/bash $RUN")
 
-#Add new devices here and modify /usr/bin/rpi_gpioswitch, too
-devices="ATX_RASPI_R2_6 REMOTEPIBOARD_2003 REMOTEPIBOARD_2005 MAUSBERRY ONOFFSHIM POWERHAT RETROFLAG \
-         RETROFLAG_ADV RETROFLAG_GPI KINTARO PIN56ONOFF PIN56PUSH PIN356ONOFFRESET ARGONONE"
-
+### --DEVS! Add a new power device to /usr/bin/rpi_gpioswitch array--
 # Read current config, if no key is set in batocera.conf then try to use
 # default value setted by udev-rule
 powerswitch="$(/usr/bin/batocera-settings-get system.power.switch)"
@@ -17,12 +14,9 @@ fi
 # Carry out specific functions when asked to by the system
 case "$1" in
     start)
-        for i in $devices; do
-            if [ "$i" = "$powerswitch" ]; then
-                $RUN start "$powerswitch" &
-                break
-            fi
-        done
+        if [ -n "$powerswitch" ]; then
+            $RUN start "$powerswitch" &
+        fi
     ;;
 
     stop)

@@ -23,7 +23,7 @@ index 50f949e..911a660 100644
 +  if (strncmp(formatted_path.c_str(), "savestates", 10) == 0)
 +    return formatted_path.length() > 10 ? StringUtil::StdStringFromFormat("%s" FS_OSPATH_SEPARATOR_STR "%s", "/userdata/saves/psx/duckstation", formatted_path.substr(11).c_str()) : "/userdata/saves/psx/duckstation";
 +  if (strncmp(formatted_path.c_str(), "memcards", 8) == 0)
-+    return formatted_path.length() > 8 ? StringUtil::StdStringFromFormat("%s" FS_OSPATH_SEPARATOR_STR "%s", "/userdata/saves/psx/duckstation", formatted_path.substr(8).c_str()) : "/userdata/saves/psx/duckstation";
++    return formatted_path.length() > 8 ? StringUtil::StdStringFromFormat("%s" FS_OSPATH_SEPARATOR_STR "%s", "/userdata/saves/psx/duckstation", formatted_path.substr(9).c_str()) : "/userdata/saves/psx/duckstation";
 +  
    if (m_user_directory.empty())
    {
@@ -41,7 +41,7 @@ index 2e10338..4c9ec05 100644
  }
  
  const std::string& GetRunningTitle()
-@@ -1277,6 +1277,12 @@ bool DoLoadState(ByteStream* state, bool force_software_renderer, bool update_di
+@@ -1266,6 +1266,13 @@
    return true;
  }
  
@@ -51,17 +51,18 @@ index 2e10338..4c9ec05 100644
 +  return g_host_interface->GetDisplay()->WriteScreenshotToFile(png_filename.c_str(), true);
 +}
 +
- bool SaveState(ByteStream* state, u32 screenshot_size /* = 128 */)
++
+ bool SaveState(ByteStream* state, u32 screenshot_size /* = 256 */)
  {
    if (IsShutdown())
 diff --git a/src/core/system.h b/src/core/system.h
 index adda418..515a5db 100644
 --- a/src/core/system.h
 +++ b/src/core/system.h
-@@ -150,6 +150,7 @@ void Shutdown();
+@@ -150,6 +150,7 @@
  
  bool LoadState(ByteStream* state, bool update_display = true);
- bool SaveState(ByteStream* state, u32 screenshot_size = 128);
+ bool SaveState(ByteStream* state, u32 screenshot_size = 256);
 +bool SaveStateScreenShot(const char* filename);
  
  /// Recreates the GPU component, saving/loading the state so it is preserved. Call when the GPU renderer changes.

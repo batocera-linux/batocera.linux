@@ -59,7 +59,8 @@ case "${ACTION}" in
 	# select a new one
 	# select the first one valid
 	# is it the best ? or should we loop to search the first with the same ratio ?
-	tvservice --list-modes | sort -rn | # highest resolution first
+	# highest resolution first, then p over i, then 6xxx over 5xxxx
+	tvservice --list-modes | sed -e s+"^\([^:]*:[^:]*:[^ ]* \)\(.*\)$"+"\2:\1\2"+ | sort -rn | cut -d : -f 2-
 	    while IFS=':\n' read SUGGRESOLUTION SUGGMODE SUGGDESCRIPTION
 	    do
 		SUGGWIDTH=$(echo "${SUGGRESOLUTION}" | cut -d x -f 1)

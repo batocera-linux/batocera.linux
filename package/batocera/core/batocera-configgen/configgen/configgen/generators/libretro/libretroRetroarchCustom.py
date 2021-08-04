@@ -88,7 +88,7 @@ def generateRetroarchCustomPathes(retroarchSettings):
     retroarchSettings.save('savestate_directory',           '"/userdata/saves/"')
     retroarchSettings.save('savefile_directory',            '"/userdata/saves/"')
     retroarchSettings.save('extraction_directory',          '"/userdata/extractions/"')
-    retroarchSettings.save('cheat_database_path',           '"/usr/share/batocera/datainit/cheats/cht/"')
+    retroarchSettings.save('cheat_database_path',           '"/userdata/cheats/cht/"')
     retroarchSettings.save('cheat_settings_path',           '"/userdata/cheats/saves/"')
     retroarchSettings.save('system_directory',              '"/userdata/bios/"')
     retroarchSettings.save('joypad_autoconfig_dir',         '"/userdata/system/configs/retroarch/inputs/"')

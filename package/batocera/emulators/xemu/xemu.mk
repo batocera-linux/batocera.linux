@@ -5,7 +5,7 @@
 ################################################################################
 
 # Daily build
-XEMU_VERSION = build-202104152328
+XEMU_VERSION = build-202107262358
 XEMU_SITE = https://github.com/mborgerson/xemu.git
 XEMU_SITE_METHOD=git
 XEMU_GIT_SUBMODULES=YES
@@ -95,7 +95,7 @@ endef
 
 define XEMU_INSTALL_TARGET_CMDS
 	# Binaries
-	cp $(@D)/i386-softmmu/qemu-system-i386 $(TARGET_DIR)/usr/bin/xemu
+	cp $(@D)/build/qemu-system-i386 $(TARGET_DIR)/usr/bin/xemu
 
 	# XEmu app data
 	mkdir -p $(TARGET_DIR)/usr/share/xemu/data

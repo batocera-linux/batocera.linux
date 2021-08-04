@@ -90,8 +90,9 @@ done
 # ssh : create the ssh key while the -R option of dropbear try a chown or an operation which is not permitted on fat32
 if mkdir -p /userdata/system/ssh
 then
-    test -e /userdata/system/ssh/dropbear_ecdsa_host_key || dropbearkey -t ecdsa -f /userdata/system/ssh/dropbear_ecdsa_host_key
-    test -e /userdata/system/ssh/dropbear_rsa_host_key   || dropbearkey -t rsa   -f /userdata/system/ssh/dropbear_rsa_host_key
+    test -e /userdata/system/ssh/dropbear_ed25519_host_key || dropbearkey -t ed25519 -f /userdata/system/ssh/dropbear_ed25519_host_key
+    test -e /userdata/system/ssh/dropbear_ecdsa_host_key   || dropbearkey -t ecdsa   -f /userdata/system/ssh/dropbear_ecdsa_host_key
+    test -e /userdata/system/ssh/dropbear_rsa_host_key     || dropbearkey -t rsa     -f /userdata/system/ssh/dropbear_rsa_host_key
 fi
 
 # udev : create a link for rules persistance
@@ -99,8 +100,22 @@ mkdir -p /userdata/system/udev/rules.d
 rm -rf /run/udev/rules.d
 ln -s /userdata/system/udev/rules.d/ /run/udev/
 
+# and add the machine-id
+test -e /userdata/system/machine-id || dbus-uuidgen --ensure=/userdata/system/machine-id
+ln -sf /userdata/system/machine-id /var/lib/dbus/machine-id
+
 # save to avoid to redo that all the times
 cp /usr/share/batocera/batocera.version /userdata/system/data.version || exit 1
+
+### cleaning old alsa files - 08/07/2021
+rm -f /userdata/system/.asoundrc
+if test -e /boot/asoundrc
+then
+    mount -o remount,rw /boot
+    rm -f /boot/asoundrc
+    mount -o remount,ro /boot
+fi
+###
 
 exit 0
 # END

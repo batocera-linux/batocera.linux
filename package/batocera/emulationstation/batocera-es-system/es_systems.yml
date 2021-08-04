@@ -40,7 +40,6 @@ c64:
       xscpu64:     { requireAnyOf: [BR2_PACKAGE_VICE], incompatible_extensions: [m3u,7z] }
     libretro:
       vice_x64:    { requireAnyOf: [BR2_PACKAGE_LIBRETRO_VICE] }
-      vice_x64sc:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_VICE] }
 
 cplus4:
   name:       Commodore Plus4
@@ -53,8 +52,6 @@ cplus4:
   emulators:
     vice:
       xplus4:      { requireAnyOf: [BR2_PACKAGE_VICE], incompatible_extensions: [m3u,7z] }
-    libretro:
-      vice_xplus4: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_VICE] }
 
 c128:
   name:       Commodore 128
@@ -66,8 +63,6 @@ c128:
   emulators:
     vice:
       x128:          { requireAnyOf: [BR2_PACKAGE_VICE], incompatible_extensions: [m3u,7z] }
-    libretro:
-      vice_x128:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_VICE] }
 
 c20:
   name:       Commodore VIC-20
@@ -79,8 +74,6 @@ c20:
   emulators:
     vice:
       xvic:      { requireAnyOf: [BR2_PACKAGE_VICE], incompatible_extensions: [m3u,7z] }
-    libretro:
-      vice_xvic: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_VICE] }
 
 pet:
   name:       Commodore PET
@@ -92,8 +85,6 @@ pet:
   emulators:
     vice:
       xpet:      { requireAnyOf: [BR2_PACKAGE_VICE], incompatible_extensions: [m3u,7z] }
-    libretro:
-      vice_xpet: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_VICE] }
 
 amiga500:
   name:       Amiga OCS/ECS
@@ -180,7 +171,7 @@ n64:
   extensions: [z64, n64, v64, zip, 7z]
   emulators:
     mupen64plus:
-      gliden64:   { requireAnyOf: [BR2_PACKAGE_MUPEN64PLUS_GLIDEN64, BR2_PACKAGE_MUPEN64PLUS_V20_GLIDEN64] }
+      gliden64:   { requireAnyOf: [BR2_PACKAGE_MUPEN64PLUS_GLIDEN64] }
       glide64mk2: { requireAnyOf: [BR2_PACKAGE_MUPEN64PLUS_VIDEO_GLIDE64MK2]  }
       rice:       { requireAnyOf: [BR2_PACKAGE_MUPEN64PLUS_VIDEO_RICE]        }
       n64:        { requireAnyOf: [BR2_PACKAGE_MUPEN64PLUS_GLES2]             }
@@ -196,7 +187,7 @@ n64dd:
   extensions: [z64, n64, zip, 7z] # ndd, d64 : Not supported yet
   emulators:
     mupen64plus:
-      gliden64:   { requireAnyOf: [BR2_PACKAGE_MUPEN64PLUS_GLIDEN64, BR2_PACKAGE_MUPEN64PLUS_V20_GLIDEN64] }
+      gliden64:   { requireAnyOf: [BR2_PACKAGE_MUPEN64PLUS_GLIDEN64] }
       glide64mk2: { requireAnyOf: [BR2_PACKAGE_MUPEN64PLUS_VIDEO_GLIDE64MK2]  }
       rice:       { requireAnyOf: [BR2_PACKAGE_MUPEN64PLUS_VIDEO_RICE]        }
       n64:        { requireAnyOf: [BR2_PACKAGE_MUPEN64PLUS_GLES2]             }
@@ -427,7 +418,7 @@ psp:
   extensions: [iso, cso, pbp]
   emulators:
     ppsspp:
-      ppsspp: { requireAnyOf: [BR2_PACKAGE_PPSSPP, BR2_PACKAGE_PPSSPP15]  }
+      ppsspp: { requireAnyOf: [BR2_PACKAGE_PPSSPP]  }
     libretro:
       ppsspp:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PPSSPP] }
 
@@ -440,7 +431,7 @@ psx:
   emulators:
     libretro:
       pcsx_rearmed: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PCSX] }
-      swanstation:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_SWANSTATION], incompatible_extensions: [pbp] }
+      swanstation:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_SWANSTATION] }
       mednafen_psx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BEETLE_PSX] }
     duckstation:
       duckstation: { requireAnyOf: [BR2_PACKAGE_DUCKSTATION]  }
@@ -605,7 +596,8 @@ fbneo:
   platform:   arcade
   emulators:
     libretro:
-      fbneo:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FBNEO] }
+      fbneo:    { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FBNEO]    }
+      fbalpha:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FBALPHA]  }
   comment_en: |
     ROMs must come from the FBNeo romset version 1.0.0.0
 
@@ -657,24 +649,6 @@ mame:
     - Ajoutez vos fichiers samples dans le répertoire /userdata/bios/mame2003/samples/
 
     Vous pouvez trouver la doc arcade là : https://wiki.batocera.org/arcade
-
-hbmame:
-  name:       HBMame
-  manufacturer: Arcade
-  release: 2013
-  hardware: arcade
-  extensions: [zip, 7z]
-  emulators:
-    libretro:
-      hbmame:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_HBMAME] }
-  comment_en: |
-    HBMAME (HomeBrew MAME) is a derivative of MAME, and contains various hacks and homebrews.
-    What's in it?
-        - Homebrew games meant for arcade hardware, or emulators of arcade hardware
-        - Hacks of arcade games
-        - Test roms and similar that do not generate revenue
-        - Selected bootlegs that are not in MAME
-        - Games that are enhanced or improved but not suitable for MAME
 
 neogeo:
   name:       Neo-Geo
@@ -1459,13 +1433,14 @@ ps3:
   manufacturer: Sony
   release: 2006
   hardware: console
-  extensions: [ps3]
+  extensions: [ps3, psn]
   emulators:
     rpcs3:
       rpcs3: { requireAnyOf: [BR2_PACKAGE_RPCS3] }
   comment_en: |
     You must first load the firmware by running rpcs3-config from menu>f1>Applications then File>Install firmware.
     PS3 roms are directories must be renamed to end with .ps3.
+    PSN digital games are installed in rpcs3-config, create a text file ending with .psn that contains the game's ID.
     First time you load a game, it takes time (a progress bar is visible). It doesn't happen next times.
 
     Find the documentation here : https://wiki.batocera.org/emulators:playstation_3
@@ -1636,30 +1611,6 @@ fmtowns:
   emulators:
     tsugaru:
       tsugaru:  { requireAnyOf: [BR2_PACKAGE_TSUGARU] }
-
-lightgun:
-  name:       Light Gun
-  manufacturer: Misc. System
-  release:
-  hardware: system
-  extensions: [zip, 7z]
-  platform:   arcade
-  emulators:
-    libretro:
-      mame078plus:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME2003_PLUS] }
-      mame0139:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME2010] }
-  comment_en: |
-          Here are MAME games that can be played with a light gun, recognised as a mouse in MAME.
-          An example of a working setup is to use a DolphinBar in 'mode 2' (keyboard and mouse game) with a Wiimote as the gun.
-          If you have more than one mouse installed, the DolphinBar / Wiimote should be seen as one of the first two mouses.
-
-          Find the documentation here : https://wiki.batocera.org/emulators:lightgun_games
-  comment_fr: |
-          Placez ici les jeux MAME qui peuvent se jouer au lightgun, reconnu comme une souris sous MAME.
-          Un exemple de setup qui fonctionne est si vous utilisez une DolphinBar en 'mode 2' (mode jeu clavier/souris) avec une Wiimote comme flingue.
-          Si vous avez plus d'une souris installee, assurez-vous que la DolphinBar / Wiimote soit reconnue comme une des deux premieres.
-
-          Vous pouvez trouver la documentation ici: https://wiki.batocera.org/emulators:lightgun_games
 
 ports:
   name:       Ports
@@ -1911,6 +1862,19 @@ flatpak:
           Remove intalled app : flatpak remove xmoto
           then, run batocera-flatpak-update to update the roms directory according to your installed applications.
 
+steam:
+  name: Steam
+  manufacturer: Valve
+  release:
+  hardware:
+  extensions: [steam]
+  emulators:
+    steam:
+      steam: { requireAnyOf: [BR2_PACKAGE_BATOCERA_STEAM] }
+  comment_en: |
+          Play Steam.
+          Run batocera-steam-update to update the roms directory according to your installed games.
+
 supervision:
   name:       Watara Supervision
   manufacturer: Watara
@@ -1920,3 +1884,27 @@ supervision:
   emulators:
     libretro:
       potator: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_WATARA] }
+
+ecwolf:
+  name:       ECWolf
+  manufacturer: Blzut3
+  release: 2013
+  hardware: port
+  extensions: [ecwolf, pk3, zip, 7zip]
+  emulators:
+    libretro:
+      ecwolf: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_ECWOLF], incompatible_extensions: [ecwolf] }
+    ecwolf:
+      ecwolf: { requireAnyOf: [BR2_PACKAGE_ECWOLF] }
+
+model2:
+  name:       Sega Model 2
+  manufacturer: Sega
+  release: 1993
+  hardware: arcade
+  extensions: [zip]
+  platform: model2, arcade
+  emulators:
+    model2emu:
+      model2emu: { requireAnyOf: [BR2_PACKAGE_MODEL2EMU] }
+

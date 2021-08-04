@@ -4,8 +4,8 @@
 #
 ################################################################################
 
-# version 1.22.12c
-CEMU_VERSION = 1.22.12
+# version 1.23.1
+CEMU_VERSION = 1.23.1
 CEMU_SOURCE = cemu_$(CEMU_VERSION).zip
 CEMU_SITE = https://cemu.info/releases
 

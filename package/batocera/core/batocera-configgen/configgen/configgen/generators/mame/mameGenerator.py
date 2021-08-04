@@ -184,10 +184,14 @@ class MameGenerator(Generator):
             "JOYSTICK_DOWN":  "joystick1down",
             "JOYSTICK_LEFT":  "joystick1left",
             "JOYSTICK_RIGHT": "joystick1right",
-            "JOYSTICKLEFT_UP":    "joystick2up",
-            "JOYSTICKLEFT_DOWN":  "joystick2down",
-            "JOYSTICKLEFT_LEFT":  "joystick2left",
-            "JOYSTICKLEFT_RIGHT": "joystick2right",
+            "JOYSTICKLEFT_UP":    "joystick1up",
+            "JOYSTICKLEFT_DOWN":  "joystick1down",
+            "JOYSTICKLEFT_LEFT":  "joystick1left",
+            "JOYSTICKLEFT_RIGHT": "joystick1right",
+            "JOYSTICKRIGHT_UP": "joystick2up",
+            "JOYSTICKRIGHT_DOWN": "joystick2down",
+            "JOYSTICKRIGHT_LEFT": "joystick2left",
+            "JOYSTICKRIGHT_RIGHT": "joystick2right",
             "BUTTON1": "b",
             "BUTTON2": "y",
             "BUTTON3": "a",
@@ -215,13 +219,20 @@ class MameGenerator(Generator):
 
         nplayer = 1
         for playercontroller, pad in sorted(playersControllers.items()):
-            for mapping in mappings:
-                if mappings[mapping] in pad.inputs:
-                    xml_input.appendChild(MameGenerator.generatePortElement(config, nplayer, pad.index, mapping, mappings[mapping], pad.inputs[mappings[mapping]], False))
+            mappings_use = mappings
+            if "joystick1up" not in pad.inputs:
+                mappings_use["JOYSTICK_UP"] = "up"
+                mappings_use["JOYSTICK_DOWN"] = "down"
+                mappings_use["JOYSTICK_LEFT"] = "left"
+                mappings_use["JOYSTICK_RIGHT"] = "right"
+
+            for mapping in mappings_use:
+                if mappings_use[mapping] in pad.inputs:
+                    xml_input.appendChild(MameGenerator.generatePortElement(config, nplayer, pad.index, mapping, mappings_use[mapping], pad.inputs[mappings_use[mapping]], False))
                 else:
-                    rmapping = MameGenerator.reverseMapping(mappings[mapping])
+                    rmapping = MameGenerator.reverseMapping(mappings_use[mapping])
                     if rmapping in pad.inputs:
-                        xml_input.appendChild(MameGenerator.generatePortElement(config, nplayer, pad.index, mapping, mappings[mapping], pad.inputs[rmapping], True))
+                        xml_input.appendChild(MameGenerator.generatePortElement(config, nplayer, pad.index, mapping, mappings_use[mapping], pad.inputs[rmapping], True))
             nplayer = nplayer + 1
 
     @staticmethod
@@ -243,40 +254,41 @@ class MameGenerator(Generator):
         xml_newseq = config.createElement("newseq")
         xml_newseq.setAttribute("type", "standard")
         xml_port.appendChild(xml_newseq)
-        value = config.createTextNode("JOYCODE_{}_{}".format(padindex+1, MameGenerator.input2definition(key, input, reversed)))
+        value = config.createTextNode(MameGenerator.input2definition(key, input, padindex + 1, reversed))
         xml_newseq.appendChild(value)
         return xml_port
 
     @staticmethod
-    def input2definition(key, input, reversed):
+    def input2definition(key, input, joycode, reversed):
         if input.type == "button":
-            return "BUTTON{}".format(int(input.id)+1)
+            return "JOYCODE_{}_BUTTON{}".format(joycode, int(input.id)+1)
         elif input.type == "hat":
             if input.value == "1":
-                return "HAT1UP"
+                return "JOYCODE_{}_HAT1UP".format(joycode)
             elif input.value == "2":
-                return "HAT1RIGHT"
+                return "JOYCODE_{}_HAT1RIGHT".format(joycode)
             elif input.value == "4":
-                return "HAT1DOWN"
+                return "JOYCODE_{}_HAT1DOWN".format(joycode)
             elif input.value == "8":
-                return "HAT1LEFT"
+                return "JOYCODE_{}_HAT1LEFT".format(joycode)
         elif input.type == "axis":
-            if key == "joystick1up":
-                return "YAXIS_UP_SWITCH"
-            if key == "joystick1down":
-                return "YAXIS_DOWN_SWITCH"
-            if key == "joystick1left":
-                return "YAXIS_LEFT_SWITCH"
-            if key == "joystick1right":
-                return "YAXIS_RIGHT_SWITCH"
+            if key == "joystick1up" or key == "up":
+                return "JOYCODE_{}_YAXIS_UP_SWITCH OR JOYCODE_{}_HAT1UP".format(joycode, joycode)
+            if key == "joystick1down" or key == "down":
+                return "JOYCODE_{}_YAXIS_DOWN_SWITCH OR JOYCODE_{}_HAT1DOWN".format(joycode, joycode)
+            if key == "joystick1left" or key == "left":
+                return "JOYCODE_{}_YAXIS_LEFT_SWITCH OR JOYCODE_{}_HAT1LEFT".format(joycode, joycode)
+            if key == "joystick1right" or key == "right":
+                return "JOYCODE_{}_YAXIS_RIGHT_SWITCH OR JOYCODE_{}_HAT1RIGHT".format(joycode, joycode)
             if key == "joystick2up":
-                return "RYAXIS_NEG_SWITCH"
+                return "JOYCODE_{}_RYAXIS_NEG_SWITCH OR JOYCODE_{}_BUTTON4".format(joycode, joycode)
             if key == "joystick2down":
-                return "RYAXIS_POS_SWITCH"
+                return "JOYCODE_{}_RYAXIS_POS_SWITCH OR JOYCODE_{}_BUTTON1".format(joycode, joycode)
             if key == "joystick2left":
-                return "RXAXIS_NEG_SWITCH"
+                return "JOYCODE_{}_RXAXIS_NEG_SWITCH OR JOYCODE_{}_BUTTON3".format(joycode, joycode)
             if key == "joystick2right":
-                return "RXAXIS_POS_SWITCH"
+                return "JOYCODE_{}_RXAXIS_POS_SWITCH OR JOYCODE_{}_BUTTON2".format(joycode, joycode)
+        eslog.log("unable to find input2definition for {} / {}".format(input.type, key))
         return "unknown"
 
     @staticmethod
@@ -303,8 +315,13 @@ class MameGenerator(Generator):
         os.symlink(bz_infos["png"], tmpZipDir + "/default.png")
 
         img_width, img_height = bezelsUtil.fast_image_size(bz_infos["png"])
-        game_width, game_height = MameGenerator.getMameMachineSize(romBase, tmpZipDir)
-        bz_width = (game_width * img_height) / game_height
+        _, _, rotate = MameGenerator.getMameMachineSize(romBase, tmpZipDir)
+
+        # assumes that all bezels are setup for 4:3H or 3:4V aspects
+        if rotate == 270 or rotate == 90:
+            bz_width = int(img_height * (3 / 4))
+        else:
+            bz_width = int(img_height * (4 / 3))
         bz_height = img_height
         bz_x = int((img_width - bz_width) / 2)
         bz_y = 0
@@ -340,9 +357,6 @@ class MameGenerator(Generator):
             iwidth  = element.getAttribute("width")
             iheight = element.getAttribute("height")
             irotate = element.getAttribute("rotate")
-
-            if irotate == "90" or irotate == "270":
-                return int(iheight), int(iwidth)
-            return int(iwidth), int(iheight)
+            return int(iwidth), int(iheight), int(irotate)
 
         raise Exception("display element not found")

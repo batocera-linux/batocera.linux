@@ -60,14 +60,14 @@ c64:
   emulator: libretro
   core:     vice_x64
 cplus4:
-  emulator: libretro
-  core:     vice_xplus4
+  emulator: vice
+  core:     xplus4
 c128:
-  emulator: libretro
-  core:     vice_x128
+  emulator: vice
+  core:     x128
 c20:
-  emulator: libretro
-  core:     vice_xvic
+  emulator: vice
+  core:     xvic
 cannonball:
   emulator: cannonball
   core:     cannonball
@@ -101,6 +101,9 @@ dreamcast:
 easyrpg:
   emulator: easyrpg
   core:     easyrpg
+ecwolf:
+  emulator: libretro
+  core:     ecwolf
 fbneo:
   emulator: libretro
   core:     fbneo
@@ -142,9 +145,6 @@ gbc2players:
 gx4000:
   emulator: libretro
   core:     cap32
-hbmame:
-  emulator: libretro
-  core:     hbmame
 intellivision:
   emulator: libretro
   core:     freeintv
@@ -155,9 +155,6 @@ kodi:
   emulator: kodi
   options:
     videomode: default
-lightgun:
-  emulator: libretro
-  core:     mame078plus
 lutro:
   emulator: libretro
   core:     lutro
@@ -176,6 +173,9 @@ mastersystem:
 megadrive:
   emulator: libretro
   core:     genesisplusgx
+model2:
+  emulator: model2emu
+  core:     model2emu
 model3:
   emulator: supermodel
   core:     supermodel
@@ -262,8 +262,8 @@ pcfx:
   emulator: libretro
   core:     pcfx
 pet:
-  emulator: libretro
-  core:     vice_xpet
+  emulator: vice
+  core:     xpet
 pico8:
   emulator: libretro
   core:     retro8
@@ -392,6 +392,9 @@ cgenius:
 flatpak:
   emulator: flatpak
   core:     flatpak
+steam:
+  emulator: steam
+  core:     steam
 supervision:
   emulator: libretro
   core:     potator

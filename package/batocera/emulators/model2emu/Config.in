@@ -1,0 +1,11 @@
+config BR2_PACKAGE_MODEL2EMU
+	bool "model2emu"
+        depends on BR2_x86_64
+        depends on BR2_PACKAGE_WINE_LUTRIS
+
+	help
+          Model 2 Emulator 1.1a
+          
+          This is a Sega Model 2 Emulator for Windows which runs under Linux with under WINE and appropriate winetricks.
+
+          http://nebula.emulatronia.com/

@@ -17,33 +17,37 @@
 #v1.7 - add NESPI4 support - @lala
 #v1.8 - removed Witty-Pi (WiringPi package is not anymore!)
 #v1.9 - add POWERHAT for Rpi4 OneNineDesign case variants - @dmanlfc
+#v2.0 - add DESKPIPRO for Dekpi Pro case (RPi4) - @dmanlfc
 #by cyperghost 11.11.2019
+
+### Array for Powerdevices, add/remove entries here
+
+powerdevices=(
+              RETROFLAG "Including NESPi+ SuperPi and MegaPi cases" \
+              RETROFLAG_ADV "Advanced script for Retroflag housings" \
+              RETROFLAG_GPI "Retroflag GPi case for Raspberry 0" \
+              ARGONONE "Fan control for RPi4 Argon One case" \
+              KINTARO "SNES style case from SuperKuma aka ROSHAMBO" \
+              MAUSBERRY "A neat power device from Mausberry circuits" \
+              ONOFFSHIM "The cheapest power device from Pimoroni" \
+              POWERHAT "Another cheap power device from OneNineDesign" \
+              REMOTEPIBOARD_2003 "Any remote control as pswitch v2013" \
+              REMOTEPIBOARD_2005 "Any remote control as pswitch v2015" \
+              ATX_RASPI_R2_6 "ATXRaspi is a smart power controller SBC" \
+              PIN56ONOFF "py: Sliding switch for proper shutdown" \
+              PIN56PUSH "py: Momentary push button for shutdown" \
+              PIN356ONOFFRESET "py: Power button and reset button" \
+              DESKPIPRO "Fan & power control for RPi4 DeskPi Pro case"
+             )
 
 #dialog for selecting your switch or power device
 function powerdevice_dialog()
 {
-    local powerdevices #array
     local switch cmd button #dialog variabels
     local currentswitch #show current switch
 
     currentswitch="$(/usr/bin/batocera-settings-get system.power.switch)"
-    [[ -z $currentswitch || $currentswitch == "#" ]] && currentswitch="disabled"
-
-    powerdevices=(
-                  RETROFLAG "Including NESPi+ SuperPi and MegaPi cases" \
-                  RETROFLAG_GPI "Retroflag GPi case for Raspberry 0" \
-                  KINTARO "SNES style case from SuperKuma aka ROSHAMBO" \
-                  MAUSBERRY "A neat power device from Mausberry circuits" \
-                  ONOFFSHIM "The cheapest power device from Pimoroni" \
-                  POWERHAT "Another cheap power device from OneNineDesign" \
-                  REMOTEPIBOARD_2003 "Any remote control as pswitch v2013" \
-                  REMOTEPIBOARD_2005 "Any remote control as pswitch v2015" \
-                  ATX_RASPI_R2_6 "ATXRaspi is a smart power controller SBC" \
-                  PIN56ONOFF "py: Sliding switch for proper shutdown" \
-                  PIN56PUSH "py: Momentary push button for shutdown" \
-                  PIN356ONOFFRESET "py: Power button and reset button" \
-                  ARGONONE "Fan control for RPi4 Argon One case" \
-                 )
+    [[ -z "$currentswitch" ]] && currentswitch="disabled"
 
     cmd=(dialog --backtitle "BATOCERA Power Switch Selection Toolset" \
                 --title " SWITCH/POWER DEVICE SETUP " \
@@ -278,7 +282,7 @@ function pin356_start()
 function pin356_stop()
 {
     if [[ -f /tmp/rpi-pin356-power.pid ]]; then
-        kill `cat /tmp/rpi-pin356-power.pid`
+        kill $(cat /tmp/rpi-pin356-power.pid)
     fi
 }
 
@@ -294,7 +298,7 @@ function pin56_start()
 function pin56_stop()
 {
     if [[ -f /tmp/rpi-pin56-power.pid ]]; then
-        kill `cat /tmp/rpi-pin56-power.pid`
+        kill $(cat /tmp/rpi-pin56-power.pid)
     fi
 }
 
@@ -384,6 +388,49 @@ function kintaro_stop()
     fi
 }
 
+#https://deskpi.com/products/deskpi-pro-for-raspberry-pi-4
+function deskpipro_start()
+{
+    # Check config.txt for fan & front USB
+    if ! grep -q "^dtoverlay=dwc2,dr_mode=host" "/boot/config.txt"; then
+        echo "*** Adding DeskPi Pro Case Fan config.txt parameter ***"
+        mount -o remount, rw /boot
+        # Remove other dtoverlay=dwc2 type configs to avoid conflicts
+        sed -i '/dtoverlay=dwc2*/d' /boot/config.txt
+        echo "" >> "/boot/config.txt"
+        echo "[Deskpi Pro Case]" >> "/boot/config.txt"
+        echo "dtoverlay=dwc2,dr_mode=host" >> "/boot/config.txt"
+    fi
+    # Check config.txt for Infrared
+    if grep -Fxq "#dtoverlay=gpio-ir,gpio_pin=17" "/boot/config.txt"; then
+        echo "*** Adding DeskPi Pro Case Infrared config.txt parameter ***"
+        mount -o remount, rw /boot
+        sed -i 's/#dtoverlay=gpio-ir,gpio_pin=17/dtoverlay=gpio-ir,gpio_pin=17/g' /boot/config.txt
+    fi
+    # Add Infrared parameters
+    if ! grep -q "driver = default" "/etc/lirc/lirc_options.conf"; then
+        echo "*** Adding DeskPi Pro Case Infrared lirc_options.conf parameters ***"
+        mount -o remount, rw /boot
+        echo "driver = default" >> "/etc/lirc/lirc_options.conf"
+        echo "device = /dev/lirc0" >> "/etc/lirc/lirc_options.conf"
+    fi
+    # Check if the kernel module is loaded
+    if lsmod | grep dwc2 &> /dev/null ; then
+        echo "*** dwc2 module is loaded ***"
+    else
+        echo "*** loading dwc2 module ***"
+        modprobe dwc2
+    fi
+    echo "*** Starting DeskPi Pro Case Fan ***"
+    /usr/bin/pwmFanControl &
+}
+
+function deskpipro_stop()
+{
+    echo "*** Stopping DeskPi Pro Case Fan ***"
+    /usr/bin/fanStop
+}
+
 #-----------------------------------------
 #------------------ MAIN -----------------
 #-----------------------------------------
@@ -393,10 +440,9 @@ function kintaro_stop()
 # If you start by CLI a dialog will appear
 
 if [[ "$1" == "start" || "$1" == "stop" ]]; then
-    [[ -n "$2" ]] || exit 1
-    CONFVALUE="$2"
+    [[ -n "$2" ]] && CONFVALUE="$2" || exit 1
 elif [[ -z "$1" ]]; then
-    CONFVALUE="DIALOG"
+    CONFVALUE="--DIALOG"
 elif [[ "${1^^}" =~ "HELP" ]]; then
     CONFVALUE="--HELP"
 else
@@ -427,7 +473,7 @@ case "$CONFVALUE" in
         pin56_$1
     ;;
     "PIN356ONOFFRESET")
-        pin356_$1 noparam
+        pin356_$1
     ;;
     "RETROFLAG")
         retroflag_$1 rpi-retroflag-SafeShutdown
@@ -444,20 +490,22 @@ case "$CONFVALUE" in
     "KINTARO")
         kintaro_$1
     ;;
-    "DIALOG")
+    "DESKPIPRO")
+        deskpipro_$1
+    ;;
+    "--DIALOG")
         # Go to selection dialog
         switch="$(powerdevice_dialog)"
 
         # Write values and display MsgBox
-        [[ -n $switch ]] || { echo "Abort! Nothing changed...."; exit 1;}
+        [[ -n "$switch" ]] || { echo "Abort! Nothing changed...."; exit 1; }
         /usr/bin/batocera-settings-set system.power.switch "$switch"
         [[ $? -eq 0 ]] && info_msg="No error! Everything went okay!" || info_msg="An error occurred!"
         dialog --backtitle "BATOCERA Power Switch Selection Toolkit" \
                --title " STATUS OF NEW VALUE " \
                --msgbox "${info_msg}\n\n$(/usr/bin/batocera-settings-get system.power.switch)" 0 0
     ;;
-    --HELP|*)
-        [[ $CONFVALUE == "--HELP" ]] || echo "Wrong argument given to 'start' or 'stop' parameter"
+    --HELP)
         echo "Try: $(basename "$0") {start|stop} <value>"
         echo
         echo -e -n "Valid values are:\t"
@@ -466,4 +514,7 @@ case "$CONFVALUE" in
         done
         echo
     ;;
+    *)
+    echo "rpi_gpioswitch: False parameter to S92switch 'start' or 'stop' cmd. use --help" >&2
+    exit 1
 esac

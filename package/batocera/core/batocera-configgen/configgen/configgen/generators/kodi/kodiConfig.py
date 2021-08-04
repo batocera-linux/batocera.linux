@@ -126,7 +126,7 @@ def writeKodiConfig(controllersFromES):
         return
     provider = "linux"
     #provider = "udev"
-    kodiJoystick = batoceraFiles.HOME + '/.kodi/userdata/addon_data/peripheral.joystick/resources/buttonmaps/xml/" + provider + "/batocera_{}.xml'
+    kodiJoystick = batoceraFiles.HOME + '/.kodi/userdata/addon_data/peripheral.joystick/resources/buttonmaps/xml/' + provider + '/batocera_{}.xml'
     directory = os.path.dirname(kodiJoystick)
     if not os.path.exists(directory):
         os.makedirs(directory)

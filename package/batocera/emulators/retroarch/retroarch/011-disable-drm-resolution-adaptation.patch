@@ -1,6 +1,8 @@
---- a/gfx/drivers_context/drm_ctx.c	2021-03-28 22:43:18.000000000 +0200
-+++ b/gfx/drivers_context/drm_ctx.c	2021-03-30 23:54:32.741259232 +0200
-@@ -701,6 +701,8 @@
+diff --git a/gfx/drivers_context/drm_ctx.c b/gfx/drivers_context/drm_ctx.c
+index 182d0b4..66d063c 100644
+--- a/gfx/drivers_context/drm_ctx.c
++++ b/gfx/drivers_context/drm_ctx.c
+@@ -701,6 +701,8 @@ static bool gfx_ctx_drm_set_video_mode(void *data,
     settings_t *settings        = config_get_ptr();
     unsigned black_frame_insertion  = settings->uints.video_black_frame_insertion;
     float video_refresh_rate    = settings->floats.video_refresh_rate;
@@ -9,7 +11,7 @@
  
     if (!drm)
        return false;
-@@ -715,41 +717,16 @@
+@@ -715,46 +717,16 @@ static bool gfx_ctx_drm_set_video_mode(void *data,
     /* Find desired video mode, and use that.
      * If not fullscreen, we get desired windowed size,
      * which is not appropriate. */
@@ -31,19 +33,24 @@
 -          * refresh rates as well.
 -          */
 -         float minimum_fps_diff = 0.0f;
+-         float mode_vrefresh    = 0.0f;
+-         drmModeModeInfo *mode;
 -
 -         /* Find best match. */
 -         for (i = 0; i < g_drm_connector->count_modes; i++) {
 -            float diff;
--            if (width != g_drm_connector->modes[i].hdisplay ||
--               height != g_drm_connector->modes[i].vdisplay)
+-            mode = &g_drm_connector->modes[i];
+-
+-            if (width != mode->hdisplay ||
+-               height != mode->vdisplay)
 -               continue;
 -
--            diff = fabsf(refresh_mod * g_drm_connector->modes[i].vrefresh
--                            - video_refresh_rate);
+-            mode_vrefresh = drm_calc_refresh_rate(mode);
+-
+-            diff = fabsf(refresh_mod * mode_vrefresh - video_refresh_rate);
 -
 -            if (!g_drm_mode || diff < minimum_fps_diff) {
--               g_drm_mode = &g_drm_connector->modes[i];
+-               g_drm_mode = mode;
 -               minimum_fps_diff = diff;
 -            }
 -         }
@@ -54,7 +61,7 @@
 +   if((fdDrmMode = fopen("/var/run/drmMode", "r")) != NULL) {
 +     if(fscanf(fdDrmMode, "%i", &drmMode) == 1) {
 +       if(drmMode>=0 && drmMode<g_drm_connector->count_modes) {
-+   g_drm_mode = &g_drm_connector->modes[drmMode];
++         g_drm_mode = &g_drm_connector->modes[drmMode];
 +       }
 +     }
 +     fclose(fdDrmMode);

@@ -1,6 +1,8 @@
---- a/retroarch.c	2021-03-30 23:43:33.286169660 +0200
-+++ b/retroarch.c	2021-03-30 23:45:40.041041465 +0200
-@@ -2554,7 +2554,7 @@
+diff --git a/retroarch.c b/retroarch.c
+index f692376..1931d61 100644
+--- a/retroarch.c
++++ b/retroarch.c
+@@ -2598,7 +2598,7 @@ int generic_menu_entry_action(
                    entry->label, entry->type, i, entry->entry_idx);
           break;
        case MENU_ACTION_SEARCH:
@@ -9,12 +11,12 @@
           break;
        case MENU_ACTION_SCAN:
           if (cbs && cbs->action_scan)
-@@ -7468,6 +7468,8 @@
-          sizeof(frontend_architecture));
-    strlcat(frontend_architecture, frontend_architecture_tmp,
-          sizeof(frontend_architecture));
-+   strlcat(frontend_architecture, "@BATOCERA",
-+         sizeof(frontend_architecture));
- 
- #ifdef HAVE_DISCORD
-    if (discord_is_ready())
+@@ -7702,7 +7702,7 @@ static void netplay_announce(struct rarch_state *p_rarch)
+             frontend_architecture_tmp, sizeof(frontend_architecture_tmp));
+    snprintf(frontend_architecture,
+          sizeof(frontend_architecture),
+-         "%s %s",
++         "%s %s @BATOCERA",
+          frontend_drv->ident,
+          frontend_architecture_tmp);
+

@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-VULKAN_TOOLS_VERSION = v1.2.166
+VULKAN_TOOLS_VERSION = v1.2.180
 
 VULKAN_TOOLS_SITE =  $(call github,KhronosGroup,Vulkan-Tools,$(VULKAN_TOOLS_VERSION))
 VULKAN_TOOLS_DEPENDENCIES = vulkan-headers vulkan-loader host-python3 host-glslang
@@ -18,10 +18,6 @@ ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI4),y)
 VULKAN_TOOLS_CONF_OPTS += -DBUILD_WSI_XCB_SUPPORT=OFF -DBUILD_WSI_XLIB_SUPPORT=OFF -DCUBE_WSI_SELECTION=DISPLAY -DGLSLANG_INSTALL_DIR=$(HOST_DIR)
 endif
 
-ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA),y)
-VULKAN_TOOLS_CONF_OPTS += -DBUILD_WSI_XCB_SUPPORT=OFF -DBUILD_WSI_XLIB_SUPPORT=OFF -DCUBE_WSI_SELECTION=DISPLAY -DGLSLANG_INSTALL_DIR=$(HOST_DIR)
-endif
-
 ifeq ($(BR2_PACKAGE_MESA3D),y)
 VULKAN_TOOLS_DEPENDENCIES += mesa3d
 endif
@@ -30,6 +26,7 @@ define VULKAN_TOOLS_SERVICE
 	$(INSTALL) -D -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/gpu/vulkan/vulkan-tools/S55vulkaninfo $(TARGET_DIR)/etc/init.d/S55vulkaninfo
 endef
 
-VULKAN_TOOLS_POST_INSTALL_TARGET_HOOKS += VULKAN_TOOLS_SERVICE
+# remove (at least temporary) while it prevents es to open windows with some nvidia cards
+#VULKAN_TOOLS_POST_INSTALL_TARGET_HOOKS += VULKAN_TOOLS_SERVICE
 
 $(eval $(cmake-package))

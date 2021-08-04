@@ -193,6 +193,13 @@ if [ "$command" = "canupdate" ];then
 	        echo "Unable to access the url" >&2
 		exit 2
 	fi
+	# hum, i don't know how to check correctly while the ws return success in case of real 404
+	nbytes=`echo "${available}" | wc -c`
+	if test "${nbytes}" -ge 50
+	then
+	    echo "Unable to retrieve the version" >&2
+	    exit 2
+	fi
 	installed=`cat /usr/share/batocera/batocera.version`
 
 	echo "${available}"

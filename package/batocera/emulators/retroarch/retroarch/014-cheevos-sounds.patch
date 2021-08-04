@@ -1,8 +1,8 @@
 diff --git a/configuration.c b/configuration.c
-index 82f2c32..a25db0b 100644
+index 6850178..d5bb787 100644
 --- a/configuration.c
 +++ b/configuration.c
-@@ -1219,6 +1219,7 @@ static struct config_array_setting *populate_settings_array(settings_t *settings
+@@ -1264,6 +1264,7 @@ static struct config_array_setting *populate_settings_array(settings_t *settings
  #ifdef HAVE_CHEEVOS
     SETTING_ARRAY("cheevos_username",         settings->arrays.cheevos_username, false, NULL, true);
     SETTING_ARRAY("cheevos_password",         settings->arrays.cheevos_password, false, NULL, true);
@@ -10,7 +10,7 @@ index 82f2c32..a25db0b 100644
     SETTING_ARRAY("cheevos_token",            settings->arrays.cheevos_token, false, NULL, true);
     SETTING_ARRAY("cheevos_leaderboards_enable", settings->arrays.cheevos_leaderboards_enable, true, "false", true);
  #endif
-@@ -2352,6 +2353,7 @@ void config_set_defaults(void *data)
+@@ -2431,6 +2432,7 @@ void config_set_defaults(void *data)
  #ifdef HAVE_CHEEVOS
     *settings->arrays.cheevos_username                 = '\0';
     *settings->arrays.cheevos_password                 = '\0';
@@ -19,10 +19,10 @@ index 82f2c32..a25db0b 100644
  #endif
  
 diff --git a/configuration.h b/configuration.h
-index 660d2db..4e7b880 100644
+index 81a2f3c..cd2d698 100644
 --- a/configuration.h
 +++ b/configuration.h
-@@ -347,6 +347,7 @@ typedef struct settings
+@@ -365,6 +365,7 @@ typedef struct settings
        char menu_driver[32];
        char cheevos_username[32];
        char cheevos_password[256];
@@ -31,10 +31,10 @@ index 660d2db..4e7b880 100644
        char cheevos_leaderboards_enable[32];
        char video_context_driver[32];
 diff --git a/retroarch.c b/retroarch.c
-index ef6c27d..a4511c6 100644
+index 4e643c2..d8b0fa8 100644
 --- a/retroarch.c
 +++ b/retroarch.c
-@@ -28858,8 +28858,8 @@ static void audio_driver_load_menu_bgm_callback(retro_task_t *task,
+@@ -29226,8 +29226,8 @@ static void audio_driver_load_menu_bgm_callback(retro_task_t *task,
  
  void audio_driver_load_system_sounds(void)
  {
@@ -45,11 +45,11 @@ index ef6c27d..a4511c6 100644
     char basename_noext[PATH_MAX_LENGTH];
     struct rarch_state *p_rarch           = &rarch_st;
     settings_t *settings                  = p_rarch->configuration_settings;
-@@ -28882,20 +28882,6 @@ void audio_driver_load_system_sounds(void)
+@@ -29250,20 +29250,6 @@ void audio_driver_load_system_sounds(void)
     if (!audio_enable_menu && !audio_enable_cheevo_unlock)
        goto end;
  
--   sounds_path[0] = sounds_fallback_path[0] = 
+-   sounds_path[0] = sounds_fallback_path[0] =
 -                          basename_noext[0] ='\0';
 -
 -   fill_pathname_join(
@@ -66,20 +66,19 @@ index ef6c27d..a4511c6 100644
     list          = dir_list_new(sounds_path, MENU_SOUND_FORMATS, false, false, false, false);
     list_fallback = dir_list_new(sounds_fallback_path, MENU_SOUND_FORMATS, false, false, false, false);
  
-@@ -28938,8 +28924,14 @@ void audio_driver_load_system_sounds(void)
+@@ -29306,8 +29292,13 @@ void audio_driver_load_system_sounds(void)
              path_notice = path;
           else if (string_is_equal_noncase(basename_noext, "bgm"))
              path_bgm = path;
 -         else if (string_is_equal_noncase(basename_noext, "unlock"))
 -            path_cheevo_unlock = path;
-+         else
-+	   if(string_is_empty(settings->arrays.cheevos_unlock_sound)) {
-+	     if (string_is_equal_noncase(basename_noext, "unlock"))
-+	       path_cheevo_unlock = path;
-+	   } else {
-+	     if (string_is_equal_noncase(basename_noext, settings->arrays.cheevos_unlock_sound))
-+	       path_cheevo_unlock = path;
-+	   }
++         else if(string_is_empty(settings->arrays.cheevos_unlock_sound)) {
++	         if (string_is_equal_noncase(basename_noext, "unlock"))
++	            path_cheevo_unlock = path;
++	         } else {
++	            if (string_is_equal_noncase(basename_noext, settings->arrays.cheevos_unlock_sound))
++	               path_cheevo_unlock = path;
++	         }
        }
     }
  

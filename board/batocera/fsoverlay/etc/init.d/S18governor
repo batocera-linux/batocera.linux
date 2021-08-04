@@ -1,0 +1,46 @@
+#!/bin/sh
+
+if ! { [ -e /sys/devices/system/cpu/cpufreq/policy0/scaling_governor ] && [ -e /sys/devices/system/cpu/cpufreq/policy0/scaling_available_governors ]; }
+then
+  exit 0
+fi
+
+save_current_governor() {
+  if current_governor="$(cat /sys/devices/system/cpu/cpufreq/policy0/scaling_governor)"
+  then
+    /usr/bin/batocera-settings-set system.cpu.governor "$current_governor"
+  fi
+}
+
+case "$1" in
+  start|restart|reload)
+
+    # check if governor is set
+    if ! governor="$(/usr/bin/batocera-settings-get system.cpu.governor)"
+    then
+      save_current_governor
+      exit 0
+    fi
+
+    # try to apply governor
+    if ! echo $governor > /sys/devices/system/cpu/cpufreq/policy0/scaling_governor 2>/dev/null
+    then
+      save_current_governor
+      exit 0
+    fi
+
+    # apply governor to all remaining cpufreq policies
+    for policy in /sys/devices/system/cpu/cpufreq/policy*
+    do
+      if { [ "$policy" != "/sys/devices/system/cpu/cpufreq/policy0" ] && [ -e "$policy/scaling_governor" ]; }
+      then
+        echo $governor > "$policy/scaling_governor"
+      fi
+    done
+
+    ;;
+  list)
+    cat /sys/devices/system/cpu/cpufreq/policy0/scaling_available_governors
+    ;;
+  *)
+esac

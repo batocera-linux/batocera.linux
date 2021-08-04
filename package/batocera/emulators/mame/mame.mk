@@ -3,8 +3,8 @@
 # MAME
 #
 ################################################################################
-# Version.: Release 0.229
-MAME_VERSION = mame0229
+# Version.: Release 0.232
+MAME_VERSION = mame0232
 MAME_SITE = $(call github,mamedev,mame,$(MAME_VERSION))
 MAME_DEPENDENCIES = sdl2 sdl2_ttf zlib libpng fontconfig sqlite jpeg flac rapidjson expat glm
 MAME_LICENSE = MAME
@@ -19,30 +19,43 @@ MAME_JOBS = 4
 # x86_64 is desktop linux based on X11 and OpenGL
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86_64),y)
 MAME_CROSS_ARCH = x86_64
-MAME_CROSS_OPTS += PTR64=1
+MAME_CROSS_OPTS += PTR64=1 NO_USE_PULSEAUDIO=1
 # other archs are embedded, no X11, no OpenGL (only ES)
 else
-MAME_CROSS_OPTS += NO_X11=1 NO_OPENGL=1 NO_USE_XINPUT=1 NO_USE_BGFX_KHRONOS=1 FORCE_DRC_C_BACKEND=1
+MAME_CROSS_OPTS += NO_X11=1 NO_OPENGL=1 NO_USE_XINPUT=1 NO_USE_BGFX_KHRONOS=1 FORCE_DRC_C_BACKEND=1 NO_USE_PULSEAUDIO=1
 endif
 
 # allow cross-architecture compilation with MAME build system
 ifeq ($(BR2_aarch64),y)
 MAME_CROSS_ARCH = arm64
 MAME_CROSS_OPTS += PTR64=1
+MAME_CFLAGS += -DEGL_NO_X11=1
 endif
 ifeq ($(BR2_arm),y)
 MAME_CROSS_ARCH = arm
 MAME_CROSS_OPTS += PTR64=0
 # Always enable NEON on 32-bit arm
-MAME_CFLAGS += -D__ARM_NEON__ -D__ARM_NEON
+MAME_CFLAGS += -D__ARM_NEON__ -D__ARM_NEON -DEGL_NO_X11=1
 endif
 
-ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_ODROIDC4),y)
+ifeq ($(BR2_cortex_a9),y)
+MAME_CFLAGS += -mcpu=cortex-a9 -mtune=cortex-a9 -mfloat-abi=hard
+endif
+
+ifeq ($(BR2_cortex_a35),y)
+MAME_CFLAGS += -mcpu=cortex-a35 -mtune=cortex-a35
+endif
+
+ifeq ($(BR2_cortex_a17),y)
+MAME_CFLAGS += -mcpu=cortex-a17 -mtune=cortex-a17 -mfloat-abi=hard
+endif
+
+ifeq ($(BR2_cortex_a55),y)
 MAME_CFLAGS += -mcpu=cortex-a55 -mtune=cortex-a55
 endif
 
-ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_S922X),y)
-MAME_CFLAGS += -mcpu=cortex-a73 -mtune=cortex-a73.cortex-a53
+ifeq ($(BR2_cortex_a73_a53),y)
+MAME_CFLAGS += -mcpu=cortex-a73.cortex-a53 -mtune=cortex-a73.cortex-a53
 endif
 
 define MAME_BUILD_CMDS
@@ -51,7 +64,7 @@ define MAME_BUILD_CMDS
 	PATH="$(HOST_DIR)/bin:$$PATH" \
 	$(MAKE) TARGETOS=linux OSD=sdl genie \
 	TARGET=mame SUBTARGET=tiny \
-	NO_USE_PORTAUDIO=1 NO_X11=1 USE_SDL=0 \
+	NO_USE_PORTAUDIO=1 NO_USE_PULSEAUDIO=1 NO_X11=1 USE_SDL=0 \
 	USE_QTDEBUG=0 DEBUG=0 IGNORE_GIT=1 MPARAM=""
 
 	# Compile emulation target (ARCADE)
@@ -59,22 +72,22 @@ define MAME_BUILD_CMDS
 	PATH="$(HOST_DIR)/bin:$$PATH" \
 	SYSROOT="$(STAGING_DIR)" \
 	CFLAGS="--sysroot=$(STAGING_DIR) $(MAME_CFLAGS) -fpch-preprocess"   \
-	CCACHE_SLOPPINESS="pch_defines,time_macros,include_file_mtime,include_file_ctime" \
 	LDFLAGS="--sysroot=$(STAGING_DIR)"  MPARAM="" \
 	PKG_CONFIG="$(HOST_DIR)/usr/bin/pkg-config --define-prefix" \
 	PKG_CONFIG_PATH="$(STAGING_DIR)/usr/lib/pkgconfig" \
 	$(MAKE) -j$(MAME_JOBS) TARGETOS=linux OSD=sdl \
 	TARGET=mame \
 	SUBTARGET=arcade \
-	OVERRIDE_CC="$(CCACHE) $(TARGET_CC)" \
-	OVERRIDE_CXX="$(CCACHE) $(TARGET_CXX)" \
-	OVERRIDE_LD="$(CCACHE) $(TARGET_LD)" \
+	OVERRIDE_CC="$(TARGET_CC)" \
+	OVERRIDE_CXX="$(TARGET_CXX)" \
+	OVERRIDE_LD="$(TARGET_LD)" \
 	OVERRIDE_AR="$(TARGET_AR)" \
 	OVERRIDE_STRIP="$(TARGET_STRIP)" \
 	CROSS_BUILD=1 \
 	CROSS_ARCH="$(MAME_CROSS_ARCH)" \
 	$(MAME_CROSS_OPTS) \
 	NO_USE_PORTAUDIO=1 \
+	NO_USE_PULSEAUDIO=1 \
 	USE_SYSTEM_LIB_ZLIB=1 \
 	USE_SYSTEM_LIB_JPEG=1 \
 	USE_SYSTEM_LIB_FLAC=1 \
@@ -96,21 +109,21 @@ define MAME_BUILD_CMDS
 	PATH="$(HOST_DIR)/bin:$$PATH" \
 	SYSROOT="$(STAGING_DIR)" \
 	CFLAGS="--sysroot=$(STAGING_DIR) $(MAME_CFLAGS) -fpch-preprocess"   \
-	CCACHE_SLOPPINESS="pch_defines,time_macros,include_file_mtime,include_file_ctime" \
 	PKG_CONFIG="$(HOST_DIR)/usr/bin/pkg-config --define-prefix" \
 	PKG_CONFIG_PATH="$(STAGING_DIR)/usr/lib/pkgconfig" \
 	$(MAKE) -j$(MAME_JOBS) TARGETOS=linux OSD=sdl \
 	TARGET=mame \
 	SUBTARGET=mess \
-	OVERRIDE_CC="$(CCACHE) $(TARGET_CC)" \
-	OVERRIDE_CXX="$(CCACHE) $(TARGET_CXX)" \
-	OVERRIDE_LD="$(CCACHE) $(TARGET_LD)" \
+	OVERRIDE_CC="$(TARGET_CC)" \
+	OVERRIDE_CXX="$(TARGET_CXX)" \
+	OVERRIDE_LD="$(TARGET_LD)" \
 	OVERRIDE_AR="$(TARGET_AR)" \
 	OVERRIDE_STRIP="$(TARGET_STRIP)" \
 	CROSS_BUILD=1 \
 	CROSS_ARCH="$(MAME_CROSS_ARCH)" \
 	$(MAME_CROSS_OPTS) \
 	NO_USE_PORTAUDIO=1 \
+	NO_USE_PULSEAUDIO=1 \
 	USE_SYSTEM_LIB_ZLIB=1 \
 	USE_SYSTEM_LIB_JPEG=1 \
 	USE_SYSTEM_LIB_FLAC=1 \

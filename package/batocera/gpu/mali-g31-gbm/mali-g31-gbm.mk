@@ -3,8 +3,8 @@
 # mali-g31-gbm
 #
 ################################################################################
-# Version: Jan 29, 2021
-MALI_G31_GBM_VERSION = c3b4a820e1cfd8e049c5321808c29713c25e2cd0
+# Version: Jun 11, 2021
+MALI_G31_GBM_VERSION = ad4c28932c3d07c75fc41dd4a3333f9013a25e7f
 MALI_G31_GBM_SITE = $(call github,rockchip-linux,libmali,$(MALI_G31_GBM_VERSION))
 MALI_G31_GBM_INSTALL_STAGING = YES
 MALI_G31_GBM_PROVIDES = libegl libgles libmali
@@ -18,7 +18,7 @@ ifneq ($(BR2_PACKAGE_MESA3D),y)
 MALI_G31_GBM_CONF_OPTS += -Dkhr-header=true
 endif
 
-ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA),y)
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RK3326_ANY),y)
 # See https://wiki.odroid.com/odroid_go_advance/application_note/vulkan_on_rk3326
 MALI_G31_GBM_EXTRA_DOWNLOADS=https://dn.odroid.com/RK3326/ODROID-GO-Advance/rk3326_r13p0_gbm_with_vulkan_and_cl.zip
 
@@ -36,7 +36,7 @@ define MALI_G31_GBM_RK3326_INSTALL
 	$(INSTALL) -D -m 0755 $(@D)/$(MALI_G31_GBM_RK3326_BLOB) $(MALI_G31_GBM_TARGET_SO)
 	rm -f $(TARGET_DIR)/usr/lib/libmali-bifrost-g31-rxp0-gbm.so $(TARGET_DIR)/usr/lib/libmali.so.1.9.0
 	ln -sfr $(MALI_G31_GBM_TARGET_SO) $(TARGET_DIR)/usr/lib/libmali.so.1.9.0
-	
+
 	# Install Vulkan driver as ICD through vulkan-loader
 	mkdir -p $(TARGET_DIR)/usr/share/vulkan/icd.d
 	$(INSTALL) -D -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/gpu/mali-g31-gbm/mali_icd.json $(TARGET_DIR)/usr/share/vulkan/icd.d/

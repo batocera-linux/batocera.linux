@@ -108,10 +108,6 @@ boot_delay=3
 # uncomment if you don't want the rainbow at startup
 disable_splash=1
 
-# Overclock
-# https://www.raspberrypi.org/documentation/configuration/config-txt/memory.md
-gpu_mem_1024=512
-
 kernel=boot/linux
 initramfs boot/initrd.gz
 
@@ -130,13 +126,17 @@ initramfs boot/initrd.gz
 
 # Additional overlays and parameters are documented /boot/overlays/README
 
+# Configure GPU memory based on SDRAM size
+# https://www.raspberrypi.org/documentation/configuration/config-txt/memory.md
+gpu_mem_1024=384
+
 # Enable audio (loads snd_bcm2835)
 dtparam=audio=on
 
 [rpi4]
 # Enable DRM VC4 V3D driver on top of the dispmanx display stack
 # Preferred 'Full' Kernel Mode Setting (KMS)
-dtoverlay=vc4-kms-v3d-pi4,noaudio
+dtoverlay=vc4-kms-v3d-pi4
 
 # Optional 'Fake' KMS for displays that won't work with 'Full' KMS
 #dtoverlay=vc4-fkms-v3d

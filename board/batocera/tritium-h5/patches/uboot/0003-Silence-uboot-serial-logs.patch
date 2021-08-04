@@ -1,0 +1,27 @@
+From f800a828fc56c1d8673335d5857842921a017045 Mon Sep 17 00:00:00 2001
+From: Demetris Ierokipides <ierokipides.dem@gmail.com>
+Date: Sat, 10 Jul 2021 02:48:34 +0300
+Subject: [PATCH] Silence uboot serial logs
+
+---
+ include/configs/sunxi-common.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/include/configs/sunxi-common.h b/include/configs/sunxi-common.h
+index 9e37e996..b3f70673 100644
+--- a/include/configs/sunxi-common.h
++++ b/include/configs/sunxi-common.h
+@@ -403,8 +403,8 @@ extern int soft_i2c_gpio_scl;
+ 
+ #ifdef CONFIG_DM_VIDEO
+ #define CONSOLE_STDOUT_SETTINGS \
+-	"stdout=serial,vidconsole\0" \
+-	"stderr=serial,vidconsole\0"
++	"stdout=\0" \
++	"stderr=\0"
+ #else
+ #define CONSOLE_STDOUT_SETTINGS \
+ 	"stdout=serial\0" \
+-- 
+2.25.1
+

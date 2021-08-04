@@ -1,10 +1,10 @@
-##########################################################™™######################
+################################################################################
 #
 # MAME
 #
 ################################################################################
-# Version: Commits on Jan 31, 2021 (0.228)
-LIBRETRO_MAME_VERSION =  4b1001771c0394b6cb9f54c19f7d11aeaf0821dd
+# Version.: Commits on Apr 12, 2021
+LIBRETRO_MAME_VERSION = 98b0ba18a9109339c2ebf4f5945f6c3575301ba9
 LIBRETRO_MAME_SITE = $(call github,libretro,mame,$(LIBRETRO_MAME_VERSION))
 LIBRETRO_MAME_LICENSE = MAME
 LIBRETRO_MAME_DEPENDENCIES = retroarch
@@ -13,23 +13,20 @@ LIBRETRO_MAME_DEPENDENCIES = retroarch
 LIBRETRO_MAME_JOBS=4
 
 ifeq ($(BR2_x86_64),y)
-	LIBRETRO_MAME_EXTRA_ARGS += PTR64=1 LIBRETRO_CPU=x86_64 PLATFORM=x86_64
-endif
+LIBRETRO_MAME_EXTRA_ARGS += PTR64=1 LIBRETRO_CPU=x86_64 PLATFORM=x86_64
 
-ifeq ($(BR2_i386),y)
-	LIBRETRO_MAME_EXTRA_ARGS += PTR64=0 LIBRETRO_CPU=x86 PLATFORM=x86
-endif
+else ifeq ($(BR2_i386),y)
+LIBRETRO_MAME_EXTRA_ARGS += PTR64=0 LIBRETRO_CPU=x86 PLATFORM=x86
 
-ifeq ($(BR2_arm),y) 
-	LIBRETRO_MAME_EXTRA_ARGS += PTR64=0 LIBRETRO_CPU=arm PLATFORM=arm
-	# workaround for asmjit broken build system (arm backend is not public)
-	LIBRETRO_MAME_ARCHOPTS += -D__arm__ -DASMJIT_BUILD_X86
-endif
+else ifeq ($(BR2_arm),y)
+LIBRETRO_MAME_EXTRA_ARGS += PTR64=0 LIBRETRO_CPU=arm PLATFORM=arm
+# workaround for asmjit broken build system (arm backend is not public)
+LIBRETRO_MAME_ARCHOPTS += -D__arm__ -DASMJIT_BUILD_X86
 
-ifeq ($(BR2_aarch64),y)
-	LIBRETRO_MAME_EXTRA_ARGS += PTR64=1 LIBRETRO_CPU= PLATFORM=arm64
-	# workaround for asmjit broken build system (arm backend is not public)
-	LIBRETRO_MAME_ARCHOPTS += -D__aarch64__ -DASMJIT_BUILD_X86
+else ifeq ($(BR2_aarch64),y)
+LIBRETRO_MAME_EXTRA_ARGS += PTR64=1 LIBRETRO_CPU= PLATFORM=arm64
+# workaround for asmjit broken build system (arm backend is not public)
+LIBRETRO_MAME_ARCHOPTS += -D__aarch64__ -DASMJIT_BUILD_X86
 endif
 
 ifeq ($(BR2_ENABLE_DEBUG),y)

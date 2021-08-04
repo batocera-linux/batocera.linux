@@ -1,10 +1,10 @@
 diff --git a/core/nullDC.cpp b/core/nullDC.cpp
-index 5e911f7..f8e5d8f 100644
+index 8560b24..afd3a44 100644
 --- a/core/nullDC.cpp
 +++ b/core/nullDC.cpp
-@@ -494,7 +494,7 @@ void dc_run(void)
- 
- void dc_term(void)
+@@ -483,7 +483,7 @@ void dc_run()
+
+ void dc_term()
  {
 -	SaveRomFiles(get_writable_data_path(""));
 +	SaveRomFiles(get_writable_data_save(""));
@@ -12,16 +12,16 @@ index 5e911f7..f8e5d8f 100644
  	naomi_cart_Close();
  	plugins_Term();
 diff --git a/core/stdclass.cpp b/core/stdclass.cpp
-index 8f95dd8..f5eebc3 100644
+index 4174908..97c7e0d 100644
 --- a/core/stdclass.cpp
 +++ b/core/stdclass.cpp
-@@ -42,6 +42,17 @@ string get_writable_data_path(const string& filename)
+@@ -42,6 +42,17 @@ std::string get_writable_data_path(const std::string& filename)
           + filename);
  }
- 
-+string get_writable_data_save(const string& filename)
+
++std::string get_writable_data_save(const std::string& filename)
 +{
-+   return std::string("/userdata/saves/dreamcast/" + 
++   return std::string("/userdata/saves/dreamcast/" +
 +#ifdef _WIN32
 +         std::string("\\")
 +#else
@@ -30,18 +30,18 @@ index 8f95dd8..f5eebc3 100644
 +         + filename);
 +}
 +
- string get_writable_vmu_path(const char *logical_port)
+ std::string get_writable_vmu_path(const char *logical_port)
  {
     extern char vmu_dir_no_slash[PATH_MAX];
 diff --git a/core/stdclass.h b/core/stdclass.h
-index 4fc3205..a998887 100644
+index 72b30af..bc4785a 100644
 --- a/core/stdclass.h
 +++ b/core/stdclass.h
-@@ -244,6 +244,7 @@ void add_system_data_dir(const string& dir);
- 
+@@ -244,6 +244,7 @@ void add_system_data_dir(const std::string& dir);
+
  //subpath format: /data/fsca-table.bit
- string get_writable_data_path(const string& filename);
-+string get_writable_data_save(const string& filename);
- string get_writable_vmu_path(const char *logical_port);
- 
- bool mem_region_lock(void *start, size_t len);
+ std::string get_writable_data_path(const std::string& filename);
++std::string get_writable_data_save(const std::string& filename);
+ std::string get_writable_vmu_path(const char *logical_port);
+
+ bool mem_region_lock(void *start, std::size_t len);

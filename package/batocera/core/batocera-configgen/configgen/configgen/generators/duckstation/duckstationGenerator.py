@@ -11,7 +11,6 @@ from utils.logger import eslog
 from os import environ
 
 class DuckstationGenerator(Generator):
-
     def generate(self, system, rom, playersControllers, gameResolution):
         # Test if it's a m3u file
         if os.path.splitext(rom)[1] == ".m3u":
@@ -22,14 +21,14 @@ class DuckstationGenerator(Generator):
         settings = configparser.ConfigParser(interpolation=None)
         # To prevent ConfigParser from converting to lower case
         settings.optionxform = str
-        settings_path = batoceraFiles.SAVES + "/duckstation/settings.ini"
+        settings_path = batoceraFiles.CONF + "/duckstation/settings.ini"
         if os.path.exists(settings_path):
             settings.read(settings_path)
 
         ## [MAIN]
         if not settings.has_section("Main"):
             settings.add_section("Main")
-        
+
         # Settings, Language and ConfirmPowerOff
         settings.set("Main", "SettingsVersion", "3") # Probably to be updated in the future
         settings.set("Main", "Language", getLangFromEnvironment())
@@ -64,13 +63,11 @@ class DuckstationGenerator(Generator):
         else:
             settings.set("Main","RewindEnable", "false")
 
-
         ## [UI]
         if not settings.has_section("UI"):
             settings.add_section("UI")
         # Show Messages
         settings.set("UI", "ShowOSDMessages", "true")
-
 
         ## [CONSOLE]
         if not settings.has_section("Console"):
@@ -85,6 +82,7 @@ class DuckstationGenerator(Generator):
         else:
             settings.set("Console", "Region", "Auto")
 
+
         ## [BIOS]
         if not settings.has_section("BIOS"):
             settings.add_section("BIOS")
@@ -95,12 +93,21 @@ class DuckstationGenerator(Generator):
         else:
             settings.set("BIOS", "PatchFastBoot", "false")
 
+        ## [CPU]
+        if not settings.has_section("CPU"):
+            settings.add_section("CPU")
+
+        # ExecutionMode
+        if system.isOptSet("duckstation_executionmode") and system.config["duckstation_executionmode"] != 'Recompiler':
+            settings.set("CPU", "ExecutionMode", system.config["duckstation_executionmode"])
+        else:
+            settings.set("CPU", "ExecutionMode", "Recompiler")
+
         ## [GPU]
         if not settings.has_section("GPU"):
             settings.add_section("GPU")
-
         # Backend - Default OpenGL
-        if system.isOptSet("gfxbackend") and system.config["gfxbackend"] == 'Vulkan':
+        if system.isOptSet("gfxbackend") and system.config["gfxbackend"] == 'Vulkan':  # Using Gun, you'll have the Aiming ONLY in Vulkan. Duckstation Issue
             settings.set("GPU", "Renderer", "Vulkan")
         else:
             settings.set("GPU", "Renderer", "OpenGL")
@@ -138,12 +145,12 @@ class DuckstationGenerator(Generator):
            settings.set("GPU", "TextureFilter", system.config["duckstation_texture_filtering"])
         else:
            settings.set("GPU", "TextureFilter", "Nearest")
-        
+
+
 
         ## [DISPLAY]
         if not settings.has_section("Display"):
             settings.add_section("Display")
-
         # Aspect Ratio
         settings.set("Display", "AspectRatio", getGfxRatioFromConfig(system.config, gameResolution))
         # Vsync
@@ -166,7 +173,6 @@ class DuckstationGenerator(Generator):
         ## [CHEEVOS]
         if not settings.has_section("Cheevos"):
             settings.add_section("Cheevos")
-
         # RetroAchievements
         if system.isOptSet('retroachievements') and system.getOptBoolean('retroachievements') == True:
             headers   = {"Content-type": "text/plain"}
@@ -213,7 +219,6 @@ class DuckstationGenerator(Generator):
         ## [CONTROLLERPORTS]
         if not settings.has_section("ControllerPorts"):
             settings.add_section("ControllerPorts")
-        
         # Multitap
         if system.isOptSet("duckstation_multitap") and system.config["duckstation_multitap"] != 'Disabled':
             settings.set("ControllerPorts", "MultitapMode", system.config["duckstation_multitap"])
@@ -224,7 +229,6 @@ class DuckstationGenerator(Generator):
         ## [TEXTURE REPLACEMENT]
         if not settings.has_section("TextureReplacements"):
             settings.add_section("TextureReplacements")
-        
         # Texture Replacement saves\textures\psx game id - by default in Normal
         if system.isOptSet("duckstation_custom_textures") and system.config["duckstation_custom_textures"] == '0':
             settings.set("TextureReplacements", "EnableVRAMWriteReplacements", "false")
@@ -236,6 +240,7 @@ class DuckstationGenerator(Generator):
             settings.set("TextureReplacements", "EnableVRAMWriteReplacements", "true")
             settings.set("TextureReplacements", "PreloadTextures",  "false")
 
+
         ## [CONTROLLERS]
         configurePads(settings, playersControllers, system)
 
@@ -243,7 +248,6 @@ class DuckstationGenerator(Generator):
         ## [HOTKEYS]
         if not settings.has_section("Hotkeys"):
             settings.add_section("Hotkeys")
-
         # Force defaults to be aligned with evmapy
         settings.set("Hotkeys", "FastForward",                 "Keyboard/Tab")
         settings.set("Hotkeys", "Reset",                       "Keyboard/F6")
@@ -254,8 +258,6 @@ class DuckstationGenerator(Generator):
         settings.set("Hotkeys", "SelectNextSaveStateSlot",     "Keyboard/F4")
         settings.set("Hotkeys", "Screenshot",                  "Keyboard/F10")
         settings.set("Hotkeys", "Rewind",                      "Keyboard/F5")
-
-
         # Show FPS (Debug)
         if system.isOptSet("showFPS") and system.getOptBoolean("showFPS"):
             settings.set("Display", "ShowFPS",        "true")
@@ -272,11 +274,9 @@ class DuckstationGenerator(Generator):
         # Save config
         if not os.path.exists(os.path.dirname(settings_path)):
             os.makedirs(os.path.dirname(settings_path))
-
         with open(settings_path, 'w') as configfile:
             settings.write(configfile)
-
-        env = {"XDG_CONFIG_HOME":batoceraFiles.CONF, "XDG_DATA_HOME":batoceraFiles.SAVES, "QT_QPA_PLATFORM":"xcb"}
+        env = {"XDG_DATA_HOME":batoceraFiles.CONF, "QT_QPA_PLATFORM":"xcb"}
         return Command.Command(array=commandArray, env=env)
 
 
@@ -291,8 +291,9 @@ def getGfxRatioFromConfig(config, gameResolution):
 
     if ("ratio" not in config or ("ratio" in config and config["ratio"] == "auto")) and gameResolution["width"] / float(gameResolution["height"]) >= (16.0 / 9.0) - 0.1: # let a marge
         return "16:9"
-        
+
     return "4:3"
+
 
 def configurePads(settings, playersControllers, system):
     mappings = {
@@ -317,27 +318,28 @@ def configurePads(settings, playersControllers, system):
         "AxisRightX":     "joystick2left",
         "AxisRightY":     "joystick2up"
         }
-    
+
     # Clear existing config
     for i in range(1, 8):
         if settings.has_section("Controller" + str(i)):
             settings.remove_section("Controller" + str(i))
-    
+
     nplayer = 1
     for playercontroller, pad in sorted(playersControllers.items()):
         controller = "Controller" + str(nplayer)
-        
+
         ## [SECTION]
         if not settings.has_section(controller):
             settings.add_section(controller)
 
         # Controller Type
-        settings.set(controller, "Type", "DigitalController")
+        settings.set(controller, "Type", "AnalogController") # defaults to AnalogController to make dpad to joystick work by default
         if system.isOptSet("duckstation_" + controller) and system.config['duckstation_' + controller] != 'DigitalController':
             settings.set(controller, "Type", system.config["duckstation_" + controller])
 
         # Rumble
         controllerRumbleList = {'AnalogController', 'NamcoGunCon', 'NeGcon'};
+
         if system.isOptSet("duckstation_rumble") and system.config["duckstation_rumble"] != '0':
             if system.isOptSet("duckstation_" + controller) and (system.config["duckstation_" + controller] in controllerRumbleList):
                 settings.set(controller, "Rumble", "Controller" + str(pad.index))
@@ -345,15 +347,36 @@ def configurePads(settings, playersControllers, system):
             settings.set(controller, "Rumble", "false")
 
         # Dpad to Joystick
-        if system.isOptSet("duckstation_digitalmode") and system.config["duckstation_digitalmode"] != '0':
-            settings.set(controller, "AnalogDPadInDigitalMode", "true")
-        else:
+        if system.isOptSet("duckstation_digitalmode") and system.config["duckstation_digitalmode"] == '0':
             settings.set(controller, "AnalogDPadInDigitalMode", "false")
+        else:
+            settings.set(controller, "AnalogDPadInDigitalMode", "true")
 
         for mapping in mappings:
             if mappings[mapping] in pad.inputs:
                 settings.set(controller, mapping, "Controller" + str(pad.index) + "/" + input2definition(pad.inputs[mappings[mapping]]))
+
+        controllerGunList = {'NamcoGunCon', 'NeGcon'};
+        # Testing if Gun, add specific keys
+        if system.isOptSet("duckstation_" + controller) and system.config["duckstation_" + controller] in controllerGunList:
+            settings.set(controller, "ButtonTrigger"       ,"Mouse/Button1")
+            settings.set(controller, "ButtonShootOffscreen","Mouse/Button2")
+            settings.set(controller, "ButtonA"             ,"Keyboard/VolumeUp")
+            settings.set(controller, "ButtonB"             ,"Keyboard/VolumeDown")
+            settings.set(controller, "AxisSteering"       ,"")
+            settings.set(controller, "AxisI"              ,"")
+            settings.set(controller, "AxisII"             ,"")
+            settings.set(controller, "AxisL"              ,"")
+            #settings.set(controller, "CrosshairImagePath" ,"/userdata/saves/duckstation/aimP1.png")     TO BE DISCUSSED LATER FOR CUSTOM AIMING
+            #settings.set(controller, "CrosshairScale"     ,"0.3")                                       TO BE DISCUSSED LATER FOR CUSTOM AIMING
+
+        # Testing if Mouse, add specific keys
+        elif system.isOptSet("duckstation_" + controller) and system.config["duckstation_" + controller] == "PlayStationMouse":
+            settings.set(controller, "Left"                ,"Mouse/Button1")
+            settings.set(controller, "Right"               ,"Mouse/Button2")
+
         nplayer = nplayer + 1
+
 
 def input2definition(input):
     if input.type == "button":
@@ -371,6 +394,7 @@ def input2definition(input):
         return "Axis" + str(input.id)
     return "unknown"
 
+
 def getLangFromEnvironment():
     lang = environ['LANG'][:5]
     availableLanguages = { "en_US": "",
@@ -387,9 +411,11 @@ def getLangFromEnvironment():
                            "ru_RU": "ru",
                            "zh_CN": "zh-cn"
     }
+
     if lang in availableLanguages:
         return availableLanguages[lang]
     return availableLanguages["en_US"]
+
 
 def rewriteM3uFullPath(m3u):                                                                    # Rewrite a clean m3u file with valid fullpath
     # get initialm3u

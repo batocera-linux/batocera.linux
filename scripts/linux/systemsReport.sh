@@ -1,8 +1,6 @@
 #!/bin/bash
 
-ARCHS="odroidgoa odroidxu4 odroidc2 odroidc4 s922x rpi1 rpi2 rpi3 rpi4 s905 s912 tinkerboard x86_64 x86 rk3399 miqi libretech-h5 orangepi-pc"
-#ARCHS="rpi1 x86_64"
-# s912
+ARCHS="odroidgoa odroidxu4 rpi1 rpi2 rpi3 rpi4 rk3288 rk3399 s905 s905gen3 s912 s922x x86_64 x86 tritium-h5 orangepi-pc cha gameforce"
 
 BR_DIR=$1
 BATOCERA_BINARIES_DIR=$2

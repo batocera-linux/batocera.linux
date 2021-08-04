@@ -3,27 +3,24 @@
 # DOSBOX PURE
 #
 ################################################################################
-# Version.: Commits on Apr 21, 2021
-LIBRETRO_DOSBOX_PURE_VERSION = 0.12
+# Version.: Commits on July 25, 2021
+LIBRETRO_DOSBOX_PURE_VERSION = 0.14
 LIBRETRO_DOSBOX_PURE_SITE = $(call github,schellingb,dosbox-pure,$(LIBRETRO_DOSBOX_PURE_VERSION))
 LIBRETRO_DOSBOX_PURE_LICENSE = GPLv2
 
 # x86
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86),y)
-	LIBRETRO_DOSBOX_PURE_EXTRA_ARGS = target=x86 WITH_FAKE_SDL=1
-endif
+LIBRETRO_DOSBOX_PURE_EXTRA_ARGS = target=x86 WITH_FAKE_SDL=1
 
 # x86_64
-ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86_64),y)
-	LIBRETRO_DOSBOX_PURE_EXTRA_ARGS = target=x86_64 WITH_FAKE_SDL=1
-endif
+else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86_64),y)
+LIBRETRO_DOSBOX_PURE_EXTRA_ARGS = target=x86_64 WITH_FAKE_SDL=1
 
-ifeq ($(BR2_arm),y)
-	LIBRETRO_DOSBOX_PURE_EXTRA_ARGS = target=arm WITH_FAKE_SDL=1
-endif
+else ifeq ($(BR2_arm),y)
+LIBRETRO_DOSBOX_PURE_EXTRA_ARGS = target=arm WITH_FAKE_SDL=1
 
-ifeq ($(BR2_aarch64),y)
-	LIBRETRO_DOSBOX_PURE_EXTRA_ARGS = target=arm64 WITH_FAKE_SDL=1
+else ifeq ($(BR2_aarch64),y)
+LIBRETRO_DOSBOX_PURE_EXTRA_ARGS = target=arm64 WITH_FAKE_SDL=1
 endif
 
 define LIBRETRO_DOSBOX_PURE_BUILD_CMDS

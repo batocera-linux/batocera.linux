@@ -10,216 +10,218 @@
 # 
 # If you don't provide a <theme>, the list of themes available online will be returned back to you
 #
-CONFIGDIR="/userdata/themes"
+THEMESDIR="/userdata/themes"
 THEMESLIST="https://updates.batocera.org/themes.txt"
 LOCALTHEMESLIST="/userdata/system/themes.txt"
 # themes.txt must be a plain file with the format 'theme_name https://githubURL' (spaces or tabs)
 # Example of a themes.txt file: 
-#  fundamental	https://github.com/jdorigao/es-theme-fundamental
-#  Zoid		https://github.com/RetroPie/es-theme-zoid
+#  fundamental https://github.com/jdorigao/es-theme-fundamental
+#  Zoid https://github.com/RetroPie/es-theme-zoid
 
 ###############################
 #
 function usage() {
-	echo "$0 - downloads and installs EmulationStation themes for Batocera"
-	echo " "
-	echo "It accepts two modes: 'list' and 'install <theme>'"
-	echo "- 'list' for the list of themes available online, and if they are"
-	echo "   [A]vailable to install, [I]nstalled or [?]unknown."
-	echo "- 'install <theme>' to install the theme, from its theme name."
-	echo "- 'remove <theme>' to delete an installed theme."
-	echo " "
-	echo "If you have a local $LOCALTHEMESLIST file,"
-	echo "it will override the one hosted on Batocera website."
-	exit 1
+  cat <<-_EOF_
+		$(basename $0) - downloads and installs EmulationStation themes for Batocera
+
+		It accepts two modes: 'list' and 'install <theme>'
+		  - 'list' for the list of themes available online, and if they are
+		    [A]vailable to install, [I]nstalled or [?]unknown.
+		  - 'install <theme>' to install the theme, from its theme name.
+		  - 'remove <theme>' to delete an installed theme.
+
+		If you have a local $LOCALTHEMESLIST file,
+		it will override the one hosted on Batocera website.
+		_EOF_
+  exit 1
 }
 
 ###############################
 #
 function check_url() {
-	[[ "$1" =~ ^(https?|ftp)://.*$ ]] && echo "[A]" || echo "[?]"
+  [[ "$1" =~ ^(https?|ftp)://.*$ ]] && echo "[A]" || echo "[?]"
 }
 
 ###############################
 #
 function git_name() {
-	echo "$1" | sed "s,.*/\(.*\),\1,"
+  echo "$1" | sed "s,.*/\(.*\),\1,"
 }
 
 ###############################
 #
 function repo_name() {
-	echo "$1" | sed "s,.*github.com/\([A-Za-z0-9_-]*\)/.*,\1,"
+  echo "$1" | sed "s,.*github.com/\([A-Za-z0-9_-]*\)/.*,\1,"
 }
 
 ###############################
 #
 function list_themes() {
-	fn=$(date +"%s")
-	tmp="/tmp/themes_$fn"
-	echo "* Batocera themes *"
-	if [ -f $LOCALTHEMESLIST ]; then
-		cp -f "$LOCALTHEMESLIST" "$tmp"
-	else
-		curl -sfL "$THEMESLIST" -o "$tmp" || exit 1
-	fi
-	while IFS=$' \t' read name url ; do
-		[ x"$name" == "x" ] && continue 
-		ia=$(check_url "$url")
-		gitname=$(git_name "$url")
-		[ -d "$CONFIGDIR"/"$gitname" ] && ia="[I]"
-		echo "$ia $name - $url"
-	done < "$tmp"
-	rm "$tmp"
+  fn=$(date +"%s")
+  tmp="/tmp/themes_$fn"
+  echo "* Batocera themes *"
+  if [ -f $LOCALTHEMESLIST ]; then
+    cp -f "$LOCALTHEMESLIST" "$tmp"
+  else
+    curl -sfL "$THEMESLIST" -o "$tmp" || exit 1
+  fi
+
+  while IFS=$' \t' read name url ; do
+    [ x"$name" == "x" ] && continue 
+    ia=$(check_url "$url")
+    gitname=$(git_name "$url")
+    [ -d "$THEMESDIR"/"$gitname" ] && ia="[I]"
+    echo "$ia $name - $url"
+  done < "$tmp"
+  rm "$tmp"
 }
 
 
 ###############################
 #
-function getPer() {
-	TARFILE="$1"
-	TARVAL="$2"
-	while true; do
-		CURVAL=$(stat "$TARFILE" | grep -E '^[ ]*Size:' | sed -e s+'^[ ]*Size: \([0-9][0-9]*\) .*$'+'\1'+)
-		CURVAL=$((CURVAL / 1024 / 1024))
-		PER=$(expr ${CURVAL} '*' 100 / ${TARVAL})
-		echo "[${TARVAL}MB] - ${theme^^} >>>${PER}"
-		sleep 2
-	done
+function getDownload() {
+  local TARFILE="$1"
+  local COUNT=0
+  echo "'$theme' prepare to download ...>>>100"; sleep 3
+  while true; do
+    [ $COUNT -gt 100 ] && COUNT=0
+    CURVAL=$(stat "$TARFILE" | grep -E '^[ ]*Size:' | sed -e s+'^[ ]*Size: \([0-9][0-9]*\) .*$'+'\1'+)
+    CURVAL=$((CURVAL / 1024 / 1024))
+    echo "$CURVAL MB downloaded... >>>$COUNT"
+    COUNT=$((COUNT+5))
+    sleep 0.1
+  done
 }
 
 ###############################
 #
 function install_theme() {
-	theme="$1"
-	success_installed=0
-	fn=$(date +"%s")
-	tmp="/tmp/themes_$fn"
-	if [ -f $LOCALTHEMESLIST ]; then
-		cp -f "$LOCALTHEMESLIST" "$tmp"
-	else
-		curl -sfL "$THEMESLIST" -o "$tmp" || exit 1
-	fi
-	while IFS=$' \t' read name url ; do
-		[ x"$name" != x"$theme" ] && continue 
-		ia=$(check_url "$url")
-		if [ x"$ia" != x"[A]" ]; then
-			echo "Error - invalid theme URL $url"
-			exit 1
-		else
-			reponame=$(repo_name "$url")
-			gitname=$(git_name "$url")
-			cd "$CONFIGDIR"
-			filezip="${url}/archive/master.zip"
+  theme="$1"
+  success_installed=0
+  fn=$(date +"%s")
+  tmp="/tmp/themes_$fn"
+  if [ -f $LOCALTHEMESLIST ]; then
+    cp -f "$LOCALTHEMESLIST" "$tmp"
+  else
+    curl -sfL "$THEMESLIST" -o "$tmp" || exit 1
+  fi
+  while IFS=$' \t' read name url ; do
+    [ x"$name" != x"$theme" ] && continue 
+    ia=$(check_url "$url")
+    if [ x"$ia" != x"[A]" ]; then
+      echo "Error - invalid theme URL $url"
+      exit 1
+    else
+      reponame=$(repo_name "$url")
+      gitname=$(git_name "$url")
+      cd "$THEMESDIR"
+      filezip="${url}/archive/master.zip"
 
-			# Download Process
-			if [ $TERMINAL = 0 ]; then
-				# First hook to check theme and get a filsize (this works relieable but filesize is wrong)
-	                        size_json=$(curl -sfL "https://api.github.com/repos/${reponame}/${gitname}" | grep size | head -1 | tr -dc '[:digit:]')
-        	                test $? -eq 0 || { echo "Server error..."; sleep 5; exit 1; }
-				echo "Retrieving data download..."
-				# Attempt to get real filesize to download, we love github
-                        	# if after 10 attempts nothing happens we use old method
-                        	for i in {0..9}; do
-			    		size=$(curl -Is "https://codeload.github.com/${reponame}/${gitname}/zip/master" | grep Content-Length | tail -1 | cut -d ' ' -f2 | tr -d '\r')
-                            		[[ -z $size ]] && sleep 5 || { size=$((size / 1024 / 1024 )); break; }
-                        	done
-				# Fallback Option (old format), JSON hack
-                        	[[ -z $size ]] && size=$((size_json / 1024 ))
-				[[ -f "gitname.zip" ]] && rm -f "$gitname.zip"
-				touch "$gitname.zip"
-				getPer "$CONFIGDIR"/"$gitname.zip" "${size}" &
-				GETPERPID=$!
-				curl -sfL "${filezip}" -o "$gitname.zip" || exit 1
-				kill -9 "${GETPERPID}" >/dev/null 2>/dev/null
-				GETPERPID=
-			else
-				wget -q --show-progress "$filezip" -O "$gitname.zip" || exit 1
-			fi
+      # Download Process
+      [[ -f "gitname.zip" ]] && rm -f "$gitname.zip"
+      touch "$gitname.zip"
 
-			# Extraction Process
-			if [ -f "$gitname.zip" ]; then
-				[ -d "$CONFIGDIR"/"$gitname" ] && rm -rf "$CONFIGDIR"/"$gitname"
-				zipdir=$(unzip -Z1 "$gitname.zip" | sed "s:\([a-zA-Z0-9\._-]*\)/.*:\1:g" | uniq | head -n1)
-				if [ $TERMINAL = 0 ]; then
-					files_inzip=$(unzip -l "$gitname.zip" | tail -1 | awk '{print $2}')
-					# This is needed for equal if files, you may alter if output is 100%+
-					files_inzip=$((files_inzip+1))
-					unzip "$gitname.zip" | awk '{perc=NR/'$files_inzip'*100} {printf "Unzipping '${theme^^}' >>>%0.f\n", perc}'
-				else
-					echo -e "Unzipping $gitname to:\t$PWD"
-					unzip -q "$gitname.zip"
-				fi 
-				mv "$zipdir" "$gitname"
-				rm "$gitname.zip"
-				success_installed=1
-			else
-				echo "Error - $theme zip file could not be downloaded from $url"
-				exit 1
-			fi
-		fi
-	done < "$tmp"
-	rm "$tmp"
-	if [ "$success_installed" == 1 ]; then
-		[ $TERMINAL = 1 ] && echo -e "Theme $theme installed to:\t$PWD/$gitname"
-		[ $TERMINAL = 0 ] && echo "Theme ${theme^^} is now installed >>>100"
-		exit 0
-	else
-		echo "Error - theme $theme could not be found"
-		exit 1
-	fi
+      case $TERMINAL in
+        0)
+          getDownload "$THEMESDIR"/"$gitname.zip" "${size}" &
+          GETPERPID=$!
+          curl -sfL "${filezip}" -o "$gitname.zip" || exit 1
+          kill -9 "${GETPERPID}" >/dev/null 2>/dev/null
+          GETPERPID=
+        ;;
+        1)
+          wget -q --show-progress "$filezip" -O "$gitname.zip" || exit 1
+        ;;
+      esac
+    fi
+
+    # Extraction Process
+    if [ -f "$gitname.zip" ]; then
+      [ -d "$THEMESDIR"/"$gitname" ] && rm -rf "$THEMESDIR"/"$gitname"
+      zipdir=$(unzip -Z1 "$gitname.zip" | sed "s:\([a-zA-Z0-9\._-]*\)/.*:\1:g" | uniq | head -n1)
+
+      case $TERMINAL in
+        0)
+          files_inzip=$(unzip -l "$gitname.zip" | tail -1 | awk '{print $2}')
+          unzip "$gitname.zip" | awk '{perc=NR/'$files_inzip'*100} {printf "Unzipping: '$theme' >>>%0.f\n", perc}'
+        ;;
+        1)
+          echo -e "Unzipping $gitname to:\t$PWD"
+          unzip -q "$gitname.zip"
+        ;;
+      esac 
+
+      mv "$zipdir" "$gitname"
+      rm "$gitname.zip"
+      success_installed=1
+    else
+      echo "Error - $theme zip file could not be downloaded from $url"
+      exit 1
+    fi
+  done < "$tmp"
+  rm "$tmp"
+
+  if [ $success_installed -eq 1 ]; then
+    echo "Theme: '$theme' is now installed!"
+    exit 0
+  else
+    echo "Error - theme '$theme' could not be found"
+    exit 1
+  fi
 }
 
 ###############################
 #
 function remove_theme() {
-	theme="$1"
-	success_removed=0
-	fn=$(date +"%s")
-	tmp="/tmp/themes_$fn"
-	if [ -f $LOCALTHEMESLIST ]; then
-		cp -f "$LOCALTHEMESLIST" "$tmp"
-	else
-		curl -sfL "$THEMESLIST" -o "$tmp" || exit 1
-	fi
-	while IFS=$' \t' read name url ; do
-		[ x"$name" != x"$theme" ] && continue 
-		gitname=$(git_name "$url")
-		if [ -d "$CONFIGDIR"/"$gitname" ]; then
-		       	rm -rf "$CONFIGDIR"/"$gitname" && success_removed=1
-		else
-			echo "Theme $theme doesn't appear to be in $CONFIGDIR/$gitname"
-		fi
-	done < "$tmp"
-	rm "$tmp"
-	if [ "$success_removed" == 1 ]; then
-		[ $TERMINAL = 1 ] && echo -e "Theme $theme removed from:\t$CONFIGDIR/$gitname"
-		[ $TERMINAL = 0 ] && echo "Theme ${theme^^} is now removed >>>100"
-		exit 0
-	else
-		echo "Error - theme $theme could not be removed"
-		exit 1
-	fi
+  theme="$1"
+  success_removed=0
+  fn=$(date +"%s")
+  tmp="/tmp/themes_$fn"
+  if [ -f $LOCALTHEMESLIST ]; then
+    cp -f "$LOCALTHEMESLIST" "$tmp"
+  else
+    curl -sfL "$THEMESLIST" -o "$tmp" || exit 1
+  fi
+  while IFS=$' \t' read name url ; do
+    [ x"$name" != x"$theme" ] && continue 
+    gitname=$(git_name "$url")
+    if [ -d "$THEMESDIR"/"$gitname" ]; then
+      rm -rf "$THEMESDIR"/"$gitname" && success_removed=1
+    else
+      echo "Theme '$theme' doesn't appear to be in $THEMESDIR/$gitname"
+    fi
+  done < "$tmp"
+  rm "$tmp"
+
+  if [ $success_removed -eq 1 ]; then
+    echo "Theme '$theme' is now removed!"
+    exit 0
+  else
+    echo "Error - theme '$theme' could not be removed"
+    exit 1
+  fi
 }
 
 #### Main loop
 #
+#
 command="$1"
 theme="$2"
 
-#Started from Terminal/SSH or from Emulationstation?
+#Started from Terminal/SSH (TERMINAL=1) or from ES (TERMINAL=0)
 [ -t 1 ] && TERMINAL=1 || TERMINAL=0
+[ -d "$THEMESDIR" ] || { echo "Error - theme directory '$THEMESDIR' is not valid."; exit 1; }
 
-if ! [ -d "$CONFIGDIR" ]; then
-	echo "Error - theme directory $CONFIGDIR is not valid."
-	exit 1
-fi 
-if [ x"$command" == "xlist" ]; then
-	list_themes
-elif [ x"$command" == "xinstall" ]; then
-	[ x"$theme" != "x" ] && install_theme $theme || usage
-elif [ x"$command" == "xremove" ]; then
-	[ x"$theme" != "x" ] && remove_theme $theme || usage
-else 
-	usage	
-fi
+case "$command" in
+  list)
+    list_themes
+  ;;
+  install)
+    install_theme "$theme" || usage
+  ;;
+  remove)
+    remove_theme "$theme" || usage
+  ;;
+  *)
+    usage  
+esac

@@ -1,0 +1,27 @@
+From 3ee5507790668a4e91782389d78b916392d5cdd2 Mon Sep 17 00:00:00 2001
+From: Demetris Ierokipides <ierokipides.dem@gmail.com>
+Date: Sat, 10 Jul 2021 02:38:51 +0300
+Subject: [PATCH] Add cha support to uboot
+
+---
+ configs/libretech_all_h3_cc_h3_defconfig | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/configs/libretech_all_h3_cc_h3_defconfig b/configs/libretech_all_h3_cc_h3_defconfig
+index 5275fdc3..e7686bfc 100644
+--- a/configs/libretech_all_h3_cc_h3_defconfig
++++ b/configs/libretech_all_h3_cc_h3_defconfig
+@@ -4,8 +4,9 @@ CONFIG_DEFAULT_DEVICE_TREE="sun8i-h3-libretech-all-h3-cc"
+ CONFIG_SPL=y
+ CONFIG_MACH_SUN8I_H3=y
+ CONFIG_DRAM_CLK=672
++CONFIG_SUPPORT_EMMC_BOOT=y
+ CONFIG_MMC_SUNXI_SLOT_EXTRA=2
+ # CONFIG_SYS_MALLOC_CLEAR_ON_INIT is not set
+-CONFIG_SUN8I_EMAC=y
++# CONFIG_SUN8I_EMAC is not set
+ CONFIG_USB_EHCI_HCD=y
+ CONFIG_USB_OHCI_HCD=y
+-- 
+2.25.1
+

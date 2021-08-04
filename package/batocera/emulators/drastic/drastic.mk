@@ -12,13 +12,14 @@ define DRASTIC_EXTRACT_CMDS
 	mkdir -p $(@D)/target && cd $(@D)/target && tar xf $(DL_DIR)/$(DRASTIC_DL_SUBDIR)/$(DRASTIC_SOURCE)
 endef
 
-ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI4)$(BR2_PACKAGE_BATOCERA_TARGET_S922X),y)
+ifeq ($(BR2_PACKAGE_BATOCERA_RPI_MESA3D)$(BR2_PACKAGE_BATOCERA_TARGET_S922X),y)
 DRASTIC_BINARYFILE=drastic_n2
-else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA),y)
+else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RK3326_ANY),y)
 DRASTIC_BINARYFILE=drastic_oga
 endif
 
 define DRASTIC_INSTALL_TARGET_CMDS
+	mkdir -p $(TARGET_DIR)/usr/bin/
 	mkdir -p $(TARGET_DIR)/usr/share/
 	mkdir -p $(TARGET_DIR)/usr/share/evmapy
 
@@ -26,8 +27,7 @@ define DRASTIC_INSTALL_TARGET_CMDS
 	cp -pr $(@D)/target/drastic $(TARGET_DIR)/usr/share/drastic
 
 	# evmap config
-	mkdir -p $(TARGET_DIR)/usr/share/evmapy
-	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/drastic/nds.drastic.keys $(TARGET_DIR)/usr/share/evmapy
+	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/drastic/controllers/nds.drastic.keys $(TARGET_DIR)/usr/share/evmapy
 endef
 
 $(eval $(generic-package))

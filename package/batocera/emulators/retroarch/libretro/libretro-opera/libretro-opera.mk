@@ -3,19 +3,17 @@
 # OPERA
 #
 ################################################################################
-# Version.: Commits on Mar 09, 2021
-LIBRETRO_OPERA_VERSION = 068c69ff784f2abaea69cdf1b8d3d9d39ac4826e
+# Version.: Commits on Apr 09, 2021
+LIBRETRO_OPERA_VERSION = 71125d59b62e4f7ba7ccf6367bf217ba2f2d3871
 LIBRETRO_OPERA_SITE = $(call github,libretro,opera-libretro,$(LIBRETRO_OPERA_VERSION))
 LIBRETRO_OPERA_LICENSE = LGPL/Non-commercial
 
 LIBRETRO_OPERA_PLATFORM=$(LIBRETRO_PLATFORM)
 
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_XU4),y)
-	LIBRETRO_OPERA_PLATFORM=unix-odroidxu
-endif
-
-ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_S922X),y)
-	LIBRETRO_OPERA_PLATFORM=unix-CortexA73_G12B
+LIBRETRO_OPERA_PLATFORM=unix-odroidxu
+else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_S922X),y)
+LIBRETRO_OPERA_PLATFORM=unix-CortexA73_G12B
 endif
 
 define LIBRETRO_OPERA_BUILD_CMDS

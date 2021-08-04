@@ -4,6 +4,7 @@
 # @lbrpdx on Batocera Discord
 #
 # 20200528 - Initial revision (support for 'gamelist' and 'exec')
+# 20210521 - Support for multi-Batoexecs and better string escaping
 #
 import os
 import sys
@@ -36,8 +37,8 @@ def gamelist_xml_es(system, data, mode):
         return (1)
     try:
         tree = ET.ElementTree(ET.fromstring(data))
-    except:
-        print ("ERROR: bad XML format in " + BATOEXEC)
+    except Exception as e:
+        print ("ERROR: bad XML format in {} ({})".format(BATOEXEC, e))
         return (1)
     # check new tree syntax (to avoid adding garbage)
     newroot = tree.getroot()
@@ -53,8 +54,8 @@ def gamelist_xml_es(system, data, mode):
     try:
         cnx=httplib2.Http()
         resp, content = cnx.request(ES_SERVER)
-    except:
-        print ("ERROR: Is EmulationStation running? Impossible to connect to " + ES_SERVER)
+    except Exception as e:
+        print ("ERROR: Is EmulationStation running? Impossible to connect to {} ({})".format(ES_SERVER, e))
         return (1)
     try:
         if (mode in 'install'):
@@ -86,19 +87,20 @@ def exec_cmd(base_cmd, data, mode):
             data = re.sub("\.UNINSTALL_START", "", data)
             data = re.sub("\.UNINSTALL_END", "", data)
         clist = data.split('\n')
+        clist = [sub.replace('"', '\\"') for sub in clist]
+        clist = [sub.replace("'", "\\'") for sub in clist]
         for el in clist:
             if str(el).strip() == '':
                 clist.remove(el)
-            el = re.sub('"', '\"', el)
         datastr = ';'.join([str(el) for el in clist])
         datastr = re.sub(";{2,}", ';', datastr)
-        cmd_line = [ base_cmd + ' -c "' + datastr + '"' ]
+        cmd_line = [ f"""{base_cmd} -c " {datastr} " """ ]
     else:
         cmd_line = [ base_cmd ]
     try:
         subprocess.check_output(cmd_line[0], shell=True)
-    except:
-        print ("ERROR: " + BATOEXEC + " could not fork "+base_cmd)
+    except Exception as e:
+        print ("ERROR: {} could not fork {} ({})".format(BATOEXEC, base_cmd, e))
         return (1)
     # Not sure if we want to return the return code of the script
     # This might lead to unwanted error cases from Batoexec
