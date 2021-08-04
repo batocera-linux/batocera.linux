@@ -780,7 +780,7 @@ def generateCoreSettings(coreSettings, system, rom):
             # GB: Colorization of GB games
             if system.isOptSet('gb_colorization') and system.config['gb_colorization'] == 'none':                 #No Selection --> Classic Green
                 coreSettings.save('gambatte_gb_colorization',     '"Special 1"')
-            elif system.isOptSet('gb_colorization') and system.config['gb_colorization'] == 'GB - SmartColoring': #Smart Coloring --> Let Gambatte set the most colorful/appropriate Color
+            elif system.isOptSet('gb_colorization') and system.config['gb_colorization'] == 'GB - SmartColor': #Smart Coloring --> Let Gambatte set the most colorful/appropriate Color
                 coreSettings.save('gambatte_gb_colorization',     '"Auto"')
             else:
                 coreSettings.save('gambatte_gb_colorization',     '"internal"')                                   #User Selection
