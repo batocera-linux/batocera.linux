@@ -1,4 +1,21 @@
-#!/bin/sh
+#!/bin/bash
+
+do_usage() {
+	echo "$1 list"
+	echo "$1 get"
+	echo "$1 set {auto|<device>}"
+	echo "$1 getSystemVolume"
+	echo "$1 setSystemVolume {mute|unmute|mute-toggle|[+-]<0...100>}"
+	echo "$1 test"
+}
+
+# Export XDG for PW
+export XDG_RUNTIME_DIR=/var/run
+
+# Set variables
+MAX_VOLUME="$(/usr/bin/batocera-settings-get audio.volume.boost)" || MAX_VOLUME=100
+DEFAULT_SINK=$(pactl info | grep -E '^Default Sink: ' | sed -e s+"^Default Sink: "+""+ | head -1)
+DETECT_VOLUME=$(pactl list sinks-raw | grep -E '^[^ ]* name='"${DEFAULT_SINK}"' ' | sed -e s+"^.* volume=\([0-9]*\) .*$"+'\1'+)
 
 ACTION="$1"
 
@@ -32,8 +49,7 @@ case "${ACTION}" in
 	;;
 
 	getSystemVolume)
-	    DEFAULT_SINK=$(pactl info | grep -E '^Default Sink: ' | sed -e s+"^Default Sink: "+""+ | head -1)
-	    pactl list sinks-raw | grep -E '^[^ ]* name='"${DEFAULT_SINK}"' ' | sed -e s+"^.* volume=\([0-9]*\) .*$"+'\1'+
+	    echo "${DETECT_VOLUME}"
 	    ;;
 
 	setSystemVolume)
@@ -49,16 +65,31 @@ case "${ACTION}" in
 		    pactl set-sink-mute @DEFAULT_SINK@ toggle
 		    ;;
 		*)
-		    if echo "${VOLUME}" | grep -qE '^[+-]?[0-9]*$'
+		    if echo "${VOLUME}" | grep -qE '^[0-9]+$'
 		    then
-			pactl set-sink-volume @DEFAULT_SINK@ "${VOLUME}%"
-		    else
+			if test "${VOLUME}" -ge 0 -a "${VOLUME}" -le "${MAX_VOLUME}"
+			then
+				pactl set-sink-volume @DEFAULT_SINK@ "${VOLUME}%"
+				exit 0
+			fi
+			fi
+			if echo "${VOLUME}" | grep -qE '^[+-][0-9]+$'
+			then
+				let NEWVOLUME=${DETECT_VOLUME}${VOLUME}
+				test "${NEWVOLUME}" -lt 0 && NEWVOLUME=0
+				test "${NEWVOLUME}" -gt "${MAX_VOLUME}" && NEWVOLUME=${MAX_VOLUME}
+				pactl set-sink-volume @DEFAULT_SINK@ "${NEWVOLUME}%"
+				exit 0
+			fi
 			echo "invalid volume value" >&2
-		    fi
+			exit 1
+			fi
 	    esac
 	    ;;
 
     test)
-	aplay "/usr/share/sounds/Mallet.wav"
+		aplay "/usr/share/sounds/Mallet.wav"
 	;;
+	*)
+		do_usage $(basename $0)
 esac
