@@ -1897,6 +1897,19 @@ ecwolf:
     ecwolf:
       ecwolf: { requireAnyOf: [BR2_PACKAGE_ECWOLF] }
 
+sonicretro:
+  name:       Sonic Retro Engine
+  manufacturer: Rubberduckycooly
+  release: 2021
+  hardware: port
+  extensions: [son, scd]
+  group: ports
+  emulators:
+    sonic2013:
+      sonic2013: { requireAnyOf: [BR2_PACKAGE_SONIC2013] }
+    soniccd:
+      soniccd: { requireAnyOf: [BR2_PACKAGE_SONICCD] }
+
 model2:
   name:       Sega Model 2
   manufacturer: Sega
