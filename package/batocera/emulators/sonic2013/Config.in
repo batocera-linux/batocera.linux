@@ -1,0 +1,14 @@
+config BR2_PACKAGE_SONIC2013
+	bool "sonic2013"
+		select BR2_PACKAGE_SDL2
+		select BR2_PACKAGE_SDL2_NET
+		select BR2_PACKAGE_SDL2_MIXER
+		select BR2_PACKAGE_LIBOGG
+		select BR2_PACKAGE_LIBVORBIS
+		select BR2_PACKAGE_LIBGBM
+		select BR2_PACKAGE_LIBDRM
+
+    help
+      The Sonic 2013 decompilation is for the Android & iOS ports of Sonic 1 and 2
+
+	    https://github.com/Rubberduckycooly/Sonic-1-2-2013-Decompilation
