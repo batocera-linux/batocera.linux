@@ -1,7 +1,5 @@
 #!/bin/bash
 
-set -x
-
 SYSTEM=$1
 ACTION=$2
 shift
@@ -562,9 +560,23 @@ init_cmd() {
     ) > "${WINEPOINT}/autorun.cmd"
 }
 
-install_exe() {
+basename_no_dup() {
     GAMENAME=$1
     BASEGAMENAME=$(basename "${GAMENAME}")
+    CANDIDATE=$(echo "${G_ROMS_DIR}/${BASEGAMENAME}" | sed -e s+"\.exe$"++)".wine"
+    i=0
+    while [ -d "${CANDIDATE}" ]; do
+        i=$((i+1))
+        BASEGAMENAME=$(basename "${GAMENAME}")"_${i}"
+        # Keep the extension, easier to troubleshoot when you have multiple setup.exe
+        CANDIDATE=$(echo "${G_ROMS_DIR}/${BASEGAMENAME}")".wine"
+    done
+    echo "${BASEGAMENAME}"
+}
+
+install_exe() {
+    GAMENAME=$1
+    BASEGAMENAME=$(basename_no_dup "${GAMENAME}")
     GAMEDIR=$(dirname "${GAMENAME}")
     WINEPOINT=$(echo "${G_ROMS_DIR}/${BASEGAMENAME}" | sed -e s+"\.exe$"++)".wine"
     INSTALLERFILE="${BASEGAMENAME}"
@@ -578,7 +590,7 @@ install_exe() {
 
 install_msi() {
     GAMENAME=$1
-    BASEGAMENAME=$(basename "${GAMENAME}")
+    BASEGAMENAME=$(basename_no_dup "${GAMENAME}")
     GAMEDIR=$(dirname "${GAMENAME}")
     WINEPOINT=$(echo "${G_ROMS_DIR}/${BASEGAMENAME}" | sed -e s+"\.msi$"++)".wine"
     INSTALLERFILE="${BASEGAMENAME}"
@@ -592,7 +604,7 @@ install_msi() {
 
 install_iso() {
     GAMENAME=$1
-    BASEGAMENAME=$(basename "${GAMENAME}")
+    BASEGAMENAME=$(basename_no_dup "${GAMENAME}")
     GAMEISOMOUNT="/var/run/wine/${BASEGAMENAME}.cdrom"
     INSTALLERISO="${GAMENAME}"
 
