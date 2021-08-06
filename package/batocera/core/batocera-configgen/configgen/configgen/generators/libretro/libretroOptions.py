@@ -778,13 +778,22 @@ def generateCoreSettings(coreSettings, system, rom):
 
         if (system.name == 'gb'):
             # GB: Colorization of GB games
-            if system.isOptSet('gb_colorization') and system.config['gb_colorization'] == 'none':                 #No Selection --> Classic Green
-                coreSettings.save('gambatte_gb_colorization',     '"Special 1"')
-            elif system.isOptSet('gb_colorization') and system.config['gb_colorization'] == 'GB - SmartColor': #Smart Coloring --> Let Gambatte set the most colorful/appropriate Color
-                coreSettings.save('gambatte_gb_colorization',     '"Auto"')
+            if system.isOptSet('gb_colorization'):
+                if system.config['gb_colorization'] == 'none':                           #No Selection --> Classic Green
+                    coreSettings.save('gambatte_gb_colorization',     '"internal"')
+                    coreSettings.save('gambatte_gb_internal_palette', '"Special 1"')
+                elif system.config['gb_colorization'] == 'GB - Disabled':                #Disabled --> Black and White Color
+                    coreSettings.save('gambatte_gb_colorization',     '"disabled"')
+                    coreSettings.save('gambatte_gb_internal_palette', '"Special 1"')
+                elif system.config['gb_colorization'] == 'GB - SmartColor':              #Smart Coloring --> Let Gambatte set the most colorful/appropriate color
+                    coreSettings.save('gambatte_gb_colorization',     '"auto"')
+                    coreSettings.save('gambatte_gb_internal_palette', '"Special 1"')
+                else:                                                                    #User Selection
+                    coreSettings.save('gambatte_gb_colorization',     '"internal"')           
+                    coreSettings.save('gambatte_gb_internal_palette', '"' + system.config['gb_colorization'] + '"')
             else:
-                coreSettings.save('gambatte_gb_colorization',     '"internal"')                                   #User Selection
-                coreSettings.save('gambatte_gb_internal_palette', '"' + system.config['gb_colorization'] + '"')
+                coreSettings.save('gambatte_gb_colorization',         '"internal"')      #It's an empty file, set to none
+                coreSettings.save('gambatte_gb_internal_palette',     '"Special 1"')
 
     if (system.config['core'] == 'mgba'):
         # Skip BIOS intro
