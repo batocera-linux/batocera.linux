@@ -120,7 +120,7 @@ def temp_check():
             time.sleep(check_interval)
         prevblock = block
         try:
-            bus.write_byte_data(address,0,block)
+            bus.write_byte(address, block)
         except IOError:
             temp = ""
         time.sleep(check_interval)
@@ -137,7 +137,7 @@ def shutdown_check():
             if FORCE_REBOOT == 1:
                 try:
                     # force fan stop (but not board power off)
-                    bus.write_byte_data(address,0,0x00)
+                    bus.write_byte(address, 0x00)
                 except:
                     print ("Could not stop fan")
                 os.system("/usr/bin/batocera-es-swissknife --reboot" )
@@ -146,7 +146,7 @@ def shutdown_check():
         elif pulsetime >=4 and pulsetime <=5:
             try:
                 # full power off
-                bus.write_byte_data(address,0,0xFF)
+                bus.write_byte(address, 0xFF)
             except:
                 print ("Could not power off")
             os.system("/usr/bin/batocera-es-swissknife --shutdown" )
@@ -166,13 +166,13 @@ if len(sys.argv)>1:
     elif str(sys.argv[1]) == "stop":
         try:
             # force fan stop (but not board power off)
-            bus.write_byte_data(address,0,0x00)
+            bus.write_byte(address, 0x00)
         except:
             print ("Could not stop fan")
     elif str(sys.argv[1]) == "halt":
         try:
             # full power off
-            bus.write_byte_data(address,0,0xFF)
+            bus.write_byte(address, 0xFF)
         except:
             print ("Could not power off")
 else:
