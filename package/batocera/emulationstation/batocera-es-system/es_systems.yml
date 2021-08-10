@@ -239,6 +239,7 @@ sgb:
   release: 1994
   hardware: console
   extensions: [gb, gbc, zip, 7z]
+  group:      snes
   emulators:
     libretro:
       mgba:          { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MGBA] }
