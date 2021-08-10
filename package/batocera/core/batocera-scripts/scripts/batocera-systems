@@ -178,6 +178,11 @@ systems = {
     "satellaview": { "name": "Satellaview", "biosFiles": [ { "md5": "96cf17bf589fcbfa6f8de2dc84f19fa2", "file": "bios/BS-X.bin"   } ] },
     "sufami":      { "name": "Sufami", "biosFiles":      [ { "md5": "d3a44ba7d42a74d3ac58cb9c14c6a5ca", "file": "bios/STBIOS.bin" } ] },
 
+    # https://docs.libretro.com/library/mesen-s/#bios
+    "sgb": { "name": "Super Game Boy", "biosFiles": [ { "md5": "d574d4f9c12f305074798f54c091a8b4", "file": "bios/sgb_boot.bin" },
+                                            { "md5": "e0430bca9925fb9882148fd2dc2418c1", "file": "bios/sgb2_boot.bin" },
+                                            { "md5": "b15ddb15721c657d82c5bab6db982ee9", "file": "bios/SGB1.sfc" },
+                                            { "md5": "8ecd73eb4edf7ed7e81aef1be80031d5", "file": "bios/SGB2.sfc" } ] },
     # ---------- Microsoft ---------- #
     # https://docs.libretro.com/library/fmsx/#bios
     "msx": { "name": "MSX", "biosFiles": [  { "md5": "364a1a579fe5cb8dba54519bcfcdac0d", "file": "bios/MSX.ROM"      },
