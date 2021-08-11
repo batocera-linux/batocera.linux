@@ -9,7 +9,7 @@ class DevilutionXGenerator(Generator):
 
     def generate(self, system, rom, playersControllers, gameResolution):
         commandArray = ["devilutionx", "--data-dir", "/userdata/roms/devilutionx",
-                        "--config-dir", "/userdata/system/config/devilutionx",
+                        "--config-dir", "/userdata/system/configs/devilutionx",
                         "--save-dir", "/userdata/saves/devilutionx"]
         if not rom.endswith('hellfire.mpq'):
             commandArray.append('--diablo')
