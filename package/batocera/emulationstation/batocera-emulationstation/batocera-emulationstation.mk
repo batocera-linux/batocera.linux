@@ -85,6 +85,9 @@ define BATOCERA_EMULATIONSTATION_RESOURCES
 	mkdir -p $(TARGET_DIR)/usr/share/batocera/datainit/system/configs/emulationstation
 	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulationstation/batocera-emulationstation/controllers/es_input.cfg \
 		$(TARGET_DIR)/usr/share/batocera/datainit/system/configs/emulationstation
+
+	# hooks
+	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulationstation/batocera-emulationstation/batocera-preupdate-gamelists-hook $(TARGET_DIR)/usr/bin/
 endef
 
 ### S31emulationstation
