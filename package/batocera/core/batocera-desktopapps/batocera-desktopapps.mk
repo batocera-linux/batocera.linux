@@ -94,6 +94,11 @@ ifeq ($(BR2_PACKAGE_MODEL2EMU),y)
   BATOCERA_DESKTOPAPPS_ICONS   += model2emu.png
 endif
 
+# flatpak
+ifeq ($(BR2_PACKAGE_BAUH),y)
+  BATOCERA_DESKTOPAPPS_APPS    += flatpak-config.desktop
+endif
+
 define BATOCERA_DESKTOPAPPS_INSTALL_TARGET_CMDS
 	# scripts
 	mkdir -p $(TARGET_DIR)/usr/bin

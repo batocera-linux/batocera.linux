@@ -176,7 +176,8 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
 	select BR2_PACKAGE_E2FSPROGS                            # fs resize
 	select BR2_PACKAGE_E2FSPROGS_RESIZE2FS                  # fs resize
 	select BR2_PACKAGE_PACMAN                               # pacman package manager
-	select BR2_PACKAGE_FLATPAK                              if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY # flatpak app packaging system
+	select BR2_PACKAGE_FLATPAK                              if BR2_PACKAGE_BATOCERA_TARGET_X86_64 # flatpak app packaging system
+	select BR2_PACKAGE_BAUH                                 if BR2_PACKAGE_BATOCERA_TARGET_X86_64 # flatpak gui
 
 	# RaspberryPi Firmwares
 	select BR2_PACKAGE_RPI_FIRMWARE             if BR2_PACKAGE_BATOCERA_RPI_ANY # rpi firmwares
