@@ -55,7 +55,6 @@ class LibretroGenerator(Generator):
             GBMultiROM = list()
             GBMultiFN = list()
             GBMultiSys = list()
-            romGBName = os.path.splitext(romName)[0]
             romGBName, romExtension = os.path.splitext(romName)
             # If ROM file is a .gb2 text, retrieve the filenames
             if romExtension.lower() == '.gb2':
@@ -80,7 +79,7 @@ class LibretroGenerator(Generator):
             else:
                 # Otherwise fill in the list with the single game
                 GBMultiROM.append(rom)
-                GBMultiFN.append(rom.split(":")[1])
+                GBMultiFN.append(romName)
                 if system.name == "gb2players":
                     GBMultiSys.append("gb")
                 else:
@@ -89,6 +88,8 @@ class LibretroGenerator(Generator):
             if len(GBMultiROM) >= 2:
                 commandArray = [batoceraFiles.batoceraBins[system.config['emulator']], "-L", retroarchCore, GBMultiROM[0], "--subsystem", "gb_link_2p", GBMultiROM[1], "--config", system.config['configfile']]
                 dontAppendROM = True
+            else:
+                commandArray = [batoceraFiles.batoceraBins[system.config['emulator']], "-L", retroarchCore, "--config", system.config['configfile']]
             # Handling for the save copy
             if (system.isOptSet('sync_saves') and system.config["sync_saves"] == '1'):
                 if len(GBMultiROM) >= 2:
@@ -133,7 +134,7 @@ class LibretroGenerator(Generator):
                 for x in range(len(GBMultiSave)):
                     saveFile = "/userdata/saves/" + GBMultiSys[x] + "/" + GBMultiSave[x]
                     newSaveFile = "/userdata/saves/" + system.name + "/" + GBMultiSave[x]
-                    GBMultiScript.write("           cp '" + newSaveFile + "' '" + saveFile + "'\n")
+                    GBMultiScript.write('           cp "' + newSaveFile + '" "' + saveFile + '"\n')
                 GBMultiScript.write("       fi\n")
                 # Deletes itself after running
                 GBMultiScript.write("       rm " + scriptFile + "\n")
