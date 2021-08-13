@@ -5,21 +5,34 @@
         * add: ECWolf a open source port for Wolfenstein 3D Games (x86_64)
         * add: Support for official Pico-8 engine (x64_64, or 32-bit RPi, Lexaloffle hasn't released a 64-bit ARM version yet)
         * add: LR-FBAlpha for weaker SBC (RPI0/1/2)
-		* add: Sega Model 2 emulator - runs under Wine (x86_64)
-		* add: Sonic Retro Engine Decompilation Ports
+        * add: Sega Model 2 emulator - runs under Wine (x86_64)
+        * add: Sonic Retro Engine Decompilation Ports
+        * add: Super GameBoy (with Mesen-S on x86_64, mGBA for SBC)
+        * add: Better support for handheld PCs x86_64 (OneXPlayer, Aya Neo...)
+        * add: Smart coloring for GameBoy (Gambatte)
+        * add: Model 3 options for modern pedal control + PowerPC frequency
+        * add: Flatpak: audio support + full Steam integration
         * fix: RetroAchievements for Watara Supervision
-        * fix: battery indicator on Odroid Go Advance
+        * fix: Battery indicator on Odroid Go Advance
+        * fix: FMTowns emulator + support for CD-based games (Tsugaru)
         * rpi3: Switch to driver mesa3d
-        * rpi3: Kodi enable (again)
+        * rpi3: Kodi enabled (again)
         * rpi3: Nintendo 64 (mupen64plus-video-glide64mk2)
         * rpi3: PPSSPP to v1.11.3
-		* rpi4: support for DeskPi Pro Case
+        * rpi4: Support for DeskPi Pro Case
+        * rpi4: Support for ArgonOne V2/M2 case
+        * change: Libretro cheats are now moved to the Content Downloader
+        * change: Removed Lightgun as a system (now an automatic collection)
         * bump: MAME to 0.232 (+GroovyMAME and Arcade64)
-        * bump: RetroArch 1.9.6
-        * bump: Cemu to 1.23.1
-        * bump: Lutris to 6.10-6
-        * bump: DXVK to 1.9
+        * bump: RetroArch 1.9.7 + many libretro cores
+        * bump: Cemu to 1.25.1
+        * bump: Lutris to 6.14-3
+        * bump: DXVK to 1.9.1
         * bump: Proton to 6.3-4
+        * bump: Daphne to 2.6.10.1
+        * bump: Redream to 1.5.0-957
+        * bump: Flash emulators (Ruffle + Lightspark)
+        * bump: Xemu
 
 2021/06/18 - batocera.linux 31
 	* Switch RockPro64 to AArch64 (full 64-bit)
