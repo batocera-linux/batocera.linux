@@ -146,17 +146,14 @@
 &cpu0_opp_table {
 	rockchip,avs = <1>;
 
-	/* bin scaling clock 1.296MHz */
+	/* default 1.296GHz */
 	rockchip,bin-scaling-sel = <
-		0               13
-		1               13
+		0	13
+		1	13
 	>;
 
-	/delete-node/ opp-408000000;
-	/delete-node/ opp-600000000;
 	/delete-node/ opp-816000000;
-	/delete-node/ opp-1416000000;
-	/delete-node/ opp-1512000000;
+	/delete-node/ opp-1248000000;
 };
 
 &display_subsystem {
