@@ -2487,6 +2487,13 @@ libretro:
       features: [netplay, rewind, autosave, latency_reduction, cheevos]
     tgbdual:
       features: [netplay, rewind, autosave, latency_reduction]
+      cfeatures:
+            sync_saves:
+                prompt:      SYNC SAVE FILES
+                description: Sync 2 player saves with single player versions (Default Off)
+                choices:
+                    "On":   1
+                    "Off":  0
     theodore:
       features: [netplay, rewind, autosave, latency_reduction, padtokeyboard]
     tic80:

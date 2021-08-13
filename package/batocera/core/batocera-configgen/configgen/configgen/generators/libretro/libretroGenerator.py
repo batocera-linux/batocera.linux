@@ -6,7 +6,8 @@ from . import libretroRetroarchCustom
 from . import libretroControllers
 import shutil
 from generators.Generator import Generator
-import os.path
+import os
+import stat
 from settings.unixSettings import UnixSettings
 from utils.logger import eslog
 
@@ -45,9 +46,103 @@ class LibretroGenerator(Generator):
 
 
         # The command to run
+        dontAppendROM = False
         # For the NeoGeo CD (lr-fbneo) it is necessary to add the parameter: --subsystem neocd
         if system.name == 'neogeocd' and system.config['core'] == "fbneo":
             commandArray = [batoceraFiles.batoceraBins[system.config['emulator']], "-L", retroarchCore, "--subsystem", "neocd", "--config", system.config['configfile']]
+        # Set up GB/GBC Link games to use 2 different ROMs if needed
+        if system.name == 'gb2players' or system.name == 'gbc2players':
+            GBMultiROM = list()
+            GBMultiFN = list()
+            GBMultiSys = list()
+            romGBName = os.path.splitext(romName)[0]
+            romGBName, romExtension = os.path.splitext(romName)
+            # If ROM file is a .gb2 text, retrieve the filenames
+            if romExtension.lower() == '.gb2':
+                with open(rom) as fp:
+                    for line in fp:
+                        GBMultiText = line.strip()
+                        if GBMultiText.lower().startswith("gb:"):
+                            GBMultiROM.append("/userdata/roms/gb/" + GBMultiText.split(":")[1])
+                            GBMultiFN.append(GBMultiText.split(":")[1])
+                            GBMultiSys.append("gb")
+                        elif GBMultiText.lower().startswith("gbc:"):
+                            GBMultiROM.append("/userdata/roms/gbc/" + GBMultiText.split(":")[1])
+                            GBMultiFN.append(GBMultiText.split(":")[1])
+                            GBMultiSys.append("gbc")
+                        else:
+                            GBMultiROM.append("/userdata/roms/" + system.name + "/" + GBMultiText)
+                            GBMultiFN.append(GBMultiText.split(":")[1])
+                            if system.name == "gb2players":
+                                GBMultiSys.append("gb")
+                            else:
+                                GBMultiSys.append("gbc")
+            else:
+                # Otherwise fill in the list with the single game
+                GBMultiROM.append(rom)
+                GBMultiFN.append(rom.split(":")[1])
+                if system.name == "gb2players":
+                    GBMultiSys.append("gb")
+                else:
+                    GBMultiSys.append("gbc")
+            # If there are at least 2 games in the list, use the alternate command line
+            if len(GBMultiROM) >= 2:
+                commandArray = [batoceraFiles.batoceraBins[system.config['emulator']], "-L", retroarchCore, GBMultiROM[0], "--subsystem", "gb_link_2p", GBMultiROM[1], "--config", system.config['configfile']]
+                dontAppendROM = True
+            # Handling for the save copy
+            if (system.isOptSet('sync_saves') and system.config["sync_saves"] == '1'):
+                if len(GBMultiROM) >= 2:
+                    GBMultiSave = [os.path.splitext(GBMultiFN[0])[0] + ".srm", os.path.splitext(GBMultiFN[1])[0] + ".srm"]
+                else:
+                    GBMultiSave = [os.path.splitext(GBMultiFN[0])[0] + ".srm"]
+                # Verifies all the save paths exist
+                # Prevents copy errors if they don't
+                if not os.path.exists("/userdata/saves/gb"):
+                    os.mkdir("/userdata/saves/gb")
+                if not os.path.exists("/userdata/saves/gbc"):
+                    os.mkdir("/userdata/saves/gbc")
+                if not os.path.exists("/userdata/saves/gb2players"):
+                    os.mkdir("/userdata/saves/gb2players")
+                if not os.path.exists("/userdata/saves/gbc2players"):
+                    os.mkdir("/userdata/saves/gbc2players")
+                # Copies the saves if they exist
+                for x in range(len(GBMultiSave)):
+                    saveFile = "/userdata/saves/" + GBMultiSys[x] + "/" + GBMultiSave[x]
+                    newSaveFile = "/userdata/saves/" + system.name + "/" + GBMultiSave[x]
+                    if os.path.exists(saveFile):
+                        shutil.copy(saveFile, newSaveFile)
+                # Generates a script to copy the saves back on exit
+                # Starts by making sure script paths exist
+                if not os.path.exists("/userdata/system/scripts/"):
+                    os.mkdir("/userdata/system/scripts")
+                if not os.path.exists("/userdata/system/scripts/gb2savesync/"):
+                    os.mkdir("/userdata/system/scripts/gb2savesync")
+                scriptFile = "/userdata/system/scripts/gb2savesync/exitsync.sh"
+                if os.path.exists(scriptFile):
+                    os.remove(scriptFile)
+                GBMultiScript = open(scriptFile, "w")
+                GBMultiScript.write("#!/bin/bash\n")
+                GBMultiScript.write("#This script is created by the Game Boy link cable system to sync save files.\n")
+                GBMultiScript.write("#\n")
+                GBMultiScript.write("\n")
+                GBMultiScript.write("case $1 in\n")
+                GBMultiScript.write("   gameStop)\n")
+                # The only event is gameStop, checks to make sure it was called by the right system
+                GBMultiScript.write("       if [ $2 = 'gb2players' ] || [ $2 = 'gbc2players' ]\n")
+                GBMultiScript.write("       then\n")
+                for x in range(len(GBMultiSave)):
+                    saveFile = "/userdata/saves/" + GBMultiSys[x] + "/" + GBMultiSave[x]
+                    newSaveFile = "/userdata/saves/" + system.name + "/" + GBMultiSave[x]
+                    GBMultiScript.write("           cp '" + newSaveFile + "' '" + saveFile + "'\n")
+                GBMultiScript.write("       fi\n")
+                # Deletes itself after running
+                GBMultiScript.write("       rm " + scriptFile + "\n")
+                GBMultiScript.write("   ;;\n")
+                GBMultiScript.write("esac\n")
+                GBMultiScript.close()
+                # Make it executable
+                fileStat = os.stat(scriptFile)
+                os.chmod(scriptFile, fileStat.st_mode | 0o111)
         # PURE zip games uses the same commandarray of all cores. .pc and .rom  uses owns
         elif system.name == 'dos':
             romDOSName = os.path.splitext(romName)[0]
@@ -127,5 +222,7 @@ class LibretroGenerator(Generator):
         if system.name == 'scummvm':
             rom = os.path.dirname(rom) + '/' + romName[0:-8]
         
-        commandArray.append(rom)
+        if dontAppendROM == False:
+            commandArray.append(rom)
+            
         return Command.Command(array=commandArray)
