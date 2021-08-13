@@ -1,4 +1,57 @@
-#!/bin/sh
+#!/bin/bash
+
+findIcon() {
+    # find the biggest icon in size (assume it is the nicer one)
+    find "/userdata/saves/flatpak/binaries/app/${1}/current/active/export/share/icons" -type f '(' -name "*.png" -o -name "*.jpg" ')' | (
+	KX=
+	KXSIZE=0
+	while read X
+	do
+	    CURSIZE=$(stat "${X}" | grep -E '^[ ]*Size:' | sed -e s+'^[ ]*Size: \([0-9][0-9]*\) .*$'+'\1'+)
+	    if test ${CURSIZE} -gt ${KXSIZE}
+	    then
+		KX=$X
+		KXSIZE=${CURSIZE}
+	    fi
+	done
+	echo "${KX}"
+    )
+}
+
+es_add_game_begin() {
+    echo "<gameList>" > /tmp/batocera-flatpak-update.tmp || return 1
+}
+
+es_add_game_end() {
+    ES_SERVER="http://127.0.0.1:1234"
+
+    echo "</gameList>" >> /tmp/batocera-flatpak-update.tmp || return 1
+    curl -s -X POST -H "Content-type: application/x-www-form-urlencoded" -H "Accept: text/plain" "${ES_SERVER}/addgames/flatpak" -d "@/tmp/batocera-flatpak-update.tmp" > /dev/null || return 1
+}
+
+es_add_game() {
+    GAME_BASENAME=$1
+    GAME_NAME=$2
+    GAME_IMAGE=$3
+
+    (cat <<EOF
+<game>
+  <path>./${GAME_BASENAME}</path>
+  <name>${GAME_NAME}</name>
+  <desc></desc>
+  <rating></rating>
+  <releasedate></releasedate>
+  <developer></developer>
+  <publisher></publisher>
+  <genre></genre>
+  <players></players>
+  <image>${GAME_IMAGE}</image>
+  <manual></manual>
+  <video></video>
+</game>
+EOF
+) >> /tmp/batocera-flatpak-update.tmp || return 1
+}
 
 mkdir -p /userdata/roms/flatpak/data || exit 1
 
@@ -6,19 +59,47 @@ mkdir -p /userdata/roms/flatpak/data || exit 1
 mkdir -p /userdata/saves/flatpak/data/.cache/.flatpak-helper/monitor || exit 1
 
 # remove the existing application
-find /userdata/roms/flatpak -type f -name "*.flatpak" | while read X
-do
-  rm -f "${X}"
-done
+#find /userdata/roms/flatpak -type f -name "*.flatpak" | while read X
+#do
+#  rm -f "${X}"
+#done
 
 # create the applications
-flatpak list --app --columns=app,name | while read X Y
-do
-	echo "${Y}"
-	echo "${X}" > "/userdata/roms/flatpak/${Y}.flatpak"
-done
+flatpak list --app --columns=app,name | (
+    es_add_game_begin || return 1
+    N=0
+    while read X Y
+    do
+	APPPATH="/userdata/roms/flatpak/${Y}.flatpak"
+	if ! test -e "${APPPATH}"
+	then
+	    IMGFILE=$(findIcon "${X}")
+	    IMGARG=
+	    if test -e "${IMGFILE}"
+	    then
+		IMGARG="./images/${Y}.png"
+		mkdir -p "/userdata/roms/flatpak/images" || return 1
+		cp "${IMGFILE}" "/userdata/roms/flatpak/${IMGARG}" || return 1
+	    fi
+	    
+	    echo "adding ${Y}"
+	    echo "${X}" > "/userdata/roms/flatpak/${Y}.flatpak"
 
-# fix rights (the package installation create some files)
-echo "updating permissions on files..." >&2
-chown -R batocera:batocera /userdata/saves/flatpak/data || exit 1
-chmod -R a+rX /userdata/saves/flatpak/binaries || exit 1
+	    # add game in es
+	    if ! es_add_game "${Y}.flatpak" "${Y}" "${IMGARG}"
+	    then
+		echo "adding game in es failed" >&2
+		return 1
+	    fi
+	    
+	    let N++
+	fi
+    done
+    test ${N} -gt 0 && (
+	es_add_game_end
+	# fix rights (the package installation create some files)
+	echo "updating permissions on files..." >&2
+	chown -R batocera:batocera /userdata/saves/flatpak/data || exit 1
+	chmod -R a+rX /userdata/saves/flatpak/binaries || exit 1
+    )
+)
