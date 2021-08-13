@@ -6,6 +6,22 @@ export XDG_CONFIG_DIRS=/etc/xdg
 # fix for exfat on HOME + pcmanfm
 export XDG_CACHE_HOME=/tmp/xdg_cache
 
+# Fix xterm via F4 is not previously set up
+python << EOF
+import configparser
+F = '/userdata/system/.config/libfm/libfm.conf'
+c = configparser.ConfigParser()
+c.read(F)
+try:
+   t = c['config']['terminal']
+except:
+   t = None
+if (not t or t == ''):
+   with open(F, 'w') as wf:
+     c['config']['terminal'] = 'xterm'
+     c.write(wf)
+EOF
+
 unclutter-remote -s
 
 DISPLAY=:0.0 pcmanfm /userdata

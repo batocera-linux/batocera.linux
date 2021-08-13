@@ -20,6 +20,7 @@ while test -e "${REBOOT_FLAG}"
 do
     ### lang settings
     settings_lang="$(batocera-settings-get system.language)"
+    [ -z "${settings_lang}" ] && settings_lang=en_US
     export LC_ALL="${settings_lang}.UTF-8"
     export LANG=${LC_ALL}
     ###################
