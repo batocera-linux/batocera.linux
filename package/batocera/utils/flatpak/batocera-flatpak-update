@@ -103,3 +103,4 @@ flatpak list --app --columns=app,name | (
 	chmod -R a+rX /userdata/saves/flatpak/binaries || exit 1
     )
 )
+exit 0
