@@ -53,10 +53,7 @@ class LibretroGenerator(Generator):
             romDOSName = os.path.splitext(romName)[0]
             romDOSName, romExtension = os.path.splitext(romName)
             if romExtension == '.dos' or romExtension == '.pc':
-                if os.path.isfile(os.path.join(rom, romDOSName + ".bat")):
-                    commandArray = [batoceraFiles.batoceraBins[system.config['emulator']], "-L", retroarchCore, "--config", system.config['configfile'], os.path.join(rom, romDOSName + ".bat")]
-                else:
-                    commandArray = [batoceraFiles.batoceraBins[system.config['emulator']], "-L", retroarchCore, "--config", system.config['configfile'], rom + "/dosbox.bat"]
+                commandArray = [batoceraFiles.batoceraBins[system.config['emulator']], "-L", retroarchCore, "--config", system.config['configfile'], os.path.join(rom, romDOSName + ".bat")]
             else:
                 commandArray = [batoceraFiles.batoceraBins[system.config['emulator']], "-L", retroarchCore, "--config", system.config['configfile']]
         else:
