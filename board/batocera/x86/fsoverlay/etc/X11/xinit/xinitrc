@@ -5,6 +5,7 @@ unclutter --noevents -b
 
 # set the keyboard
 settings_lang="$(/usr/bin/batocera-settings-get system.language)"
+[ -z "${settings_lang}" ] && settings_lang=en_US
 
 # not always true (en_US for us), but it's really better than always english
 map_name=$(echo $settings_lang | cut -c 1-2)
@@ -111,6 +112,22 @@ then
 	export __GLX_VENDOR_LIBRARY_NAME=nvidia
     fi
 fi
+
+# Fix xterm via F4 is not previously set up
+python << EOF
+import configparser
+F = '/userdata/system/.config/libfm/libfm.conf'
+c = configparser.ConfigParser()
+c.read(F)
+try:
+   t = c['config']['terminal']
+except:
+   t = None
+if (not t or t == ''):
+   with open(F, 'w') as wf:
+     c['config']['terminal'] = 'xterm'
+     c.write(wf)
+EOF
 
 cd /userdata # es needs a PWD
 openbox --config-file /etc/openbox/rc.xml --startup "emulationstation --windowed ${EXTRA_OPTS}"
