@@ -52,7 +52,9 @@ do
     ###################
 
     # try to force 60hz (specific to xorg)
-    which xrandr && xrandr -r 60
+    FRAMERATE="$(/usr/bin/batocera-settings-get es.framerate)"
+    test -z "${FRAMERATE}" && FRAMERATE=60
+    which xrandr && xrandr -r "${FRAMERATE}"
     ###################
 
     ### rotation ###
