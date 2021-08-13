@@ -23,6 +23,9 @@ FLATPAK_CONF_ENV += LDFLAGS=-lpthread
 
 define FLATPAK_INSTALL_SCRIPTS
 	install -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/utils/flatpak/batocera-flatpak-update $(TARGET_DIR)/usr/bin/
+	mkdir -p $(TARGET_DIR)/usr/share/emulationstation/hooks
+	ln -sf /usr/bin/batocera-flatpak-update $(TARGET_DIR)/usr/share/emulationstation/hooks/preupdate-gamelists-flatpak
+	ln -sf /usr/bin/batocera-steam-update   $(TARGET_DIR)/usr/share/emulationstation/hooks/preupdate-gamelists-steam
 endef
 
 FLATPAK_POST_INSTALL_TARGET_HOOKS += FLATPAK_INSTALL_SCRIPTS
