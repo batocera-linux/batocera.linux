@@ -92,8 +92,12 @@ case "${ACTION}" in
 	    xrandr --listConnectedOutputs | sed -e s+"*$"++ | grep -vE "^${MODE}$" |
 		while read OUTP
 		do
+		    echo "set ${OUTP} off" >&2
 		    xrandr --output "${OUTP}" --off
 		done
+	    # enable (in case of reboot of es)
+	    echo "set ${MODE} as primary" >&2
+	    xrandr --output "${MODE}" --auto
 	else
 	    # disable all except the first one
 	    xrandr --listConnectedOutputs | sed -e s+"*$"++ |
@@ -101,8 +105,13 @@ case "${ACTION}" in
 		    read FIRSTOUTPUT
 		    while read OUTP
 		    do
+			echo "set ${OUTP} off" >&2
 			xrandr --output "${OUTP}" --off
 		    done
+
+		    # enable (in case of reboot of es)
+		    echo "set ${FIRSTOUTPUT} as primary" >&2
+		    xrandr --output "${FIRSTOUTPUT}" --auto
 		)
 	fi
 	;;

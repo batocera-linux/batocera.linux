@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-BATOCERA_EMULATIONSTATION_VERSION = 25a911b6eeef2e1e1f9fd69ed9095bde916162a3
+BATOCERA_EMULATIONSTATION_VERSION = caaab40b252575b3c4d39de23121470a8bab8e4b
 BATOCERA_EMULATIONSTATION_SITE = https://github.com/batocera-linux/batocera-emulationstation
 BATOCERA_EMULATIONSTATION_SITE_METHOD = git
 BATOCERA_EMULATIONSTATION_LICENSE = MIT
@@ -85,12 +85,15 @@ define BATOCERA_EMULATIONSTATION_RESOURCES
 	mkdir -p $(TARGET_DIR)/usr/share/batocera/datainit/system/configs/emulationstation
 	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulationstation/batocera-emulationstation/controllers/es_input.cfg \
 		$(TARGET_DIR)/usr/share/batocera/datainit/system/configs/emulationstation
+
+	# hooks
+	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulationstation/batocera-emulationstation/batocera-preupdate-gamelists-hook $(TARGET_DIR)/usr/bin/
 endef
 
 ### S31emulationstation
 # default for most of architectures
 BATOCERA_EMULATIONSTATION_PREFIX = SDL_NOMOUSE=1
-BATOCERA_EMULATIONSTATION_CMD = /usr/bin/emulationstation
+BATOCERA_EMULATIONSTATION_CMD = emulationstation-standalone
 BATOCERA_EMULATIONSTATION_ARGS = --no-splash $${EXTRA_OPTS}
 BATOCERA_EMULATIONSTATION_POSTFIX = \&
 BATOCERA_EMULATIONSTATION_CONF_OPTS += -DCEC=OFF
@@ -114,7 +117,7 @@ endif
 ifeq ($(BR2_PACKAGE_XSERVER_XORG_SERVER),y)
 BATOCERA_EMULATIONSTATION_PREFIX =
 BATOCERA_EMULATIONSTATION_CMD = startx
-BATOCERA_EMULATIONSTATION_ARGS =
+BATOCERA_EMULATIONSTATION_ARGS = --windowed
 endif
 
 # # on odroidga: set resolution and EGL/GL hack
@@ -124,6 +127,12 @@ endif
 
 define BATOCERA_EMULATIONSTATION_BOOT
 	$(INSTALL) -D -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulationstation/batocera-emulationstation/S31emulationstation $(TARGET_DIR)/etc/init.d/S31emulationstation
+	$(INSTALL) -D -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulationstation/batocera-emulationstation/emulationstation-standalone $(TARGET_DIR)/usr/bin/emulationstation-standalone
+	sed -i -e 's;%BATOCERA_EMULATIONSTATION_PREFIX%;${BATOCERA_EMULATIONSTATION_PREFIX};g' \
+		-e 's;%BATOCERA_EMULATIONSTATION_CMD%;${BATOCERA_EMULATIONSTATION_CMD};g' \
+		-e 's;%BATOCERA_EMULATIONSTATION_ARGS%;${BATOCERA_EMULATIONSTATION_ARGS};g' \
+		-e 's;%BATOCERA_EMULATIONSTATION_POSTFIX%;${BATOCERA_EMULATIONSTATION_POSTFIX};g' \
+		$(TARGET_DIR)/usr/bin/emulationstation-standalone
 	sed -i -e 's;%BATOCERA_EMULATIONSTATION_PREFIX%;${BATOCERA_EMULATIONSTATION_PREFIX};g' \
 		-e 's;%BATOCERA_EMULATIONSTATION_CMD%;${BATOCERA_EMULATIONSTATION_CMD};g' \
 		-e 's;%BATOCERA_EMULATIONSTATION_ARGS%;${BATOCERA_EMULATIONSTATION_ARGS};g' \

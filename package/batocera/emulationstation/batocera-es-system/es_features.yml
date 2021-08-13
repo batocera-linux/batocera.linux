@@ -117,6 +117,68 @@ libretro:
                     "192+":  192
                     "512":   512
                     "576+":  576
+    mesen-s:
+      features: [netplay, rewind, autosave, latency_reduction, padtokeyboard]
+      cfeatures:
+            mesen-s_ntsc_filter:
+                prompt:      NTSC FILTER
+                description: Optional video filtering
+                choices:
+                    "Disabled":            disabled
+                    "Composite (Blargg)":  Composite (Blargg)
+                    "S-Video (Blargg)":    S-Video (Blargg)
+                    "RGB (Blargg)":        RGB (Blargg)
+                    "Monochrome (Blargg)": Monochrome (Blargg)
+            mesen-s_blend_high_res:
+                prompt:      BLEND HIGH-RES MODES  
+                description: Enable pseudo-transparency, may cause blurriness
+                choices:
+                    "On":  enabled
+                    "Off": disabled
+            mesen-s_cubic_interpolation:
+                prompt:      CUBIC INTERPOLATION (AUDIO)
+                description: Change the audio filtering, may improve sound quality
+                choices:
+                    "On":  enabled
+                    "Off": disabled
+            mesen-s_gbmodel:
+                prompt:      GAME BOY MODEL
+                description: Manually set the Game Boy type
+                choices:
+                    "Game Boy":       Game Boy
+                    "Game Boy Color": Game Boy Color
+                    "Super Game Boy": Super Game Boy
+            mesen-s_sgb2:
+                prompt:      SUPER GAME BOY 2
+                description: Use the Super Game Boy 2 for SGB
+                choices:
+                    "On":  enabled
+                    "Off": disabled
+            mesen-s_overclock:
+                prompt:      OVERCLOCK
+                description: Overclock the SNES CPU
+                choices:
+                    "None":      None
+                    "Low":       Low
+                    "Medium":    Medium
+                    "High":      High
+                    "Very High": Very High
+            mesen-s_overclock_type:
+                prompt:      OVERCLOCK TYPE
+                description: Change to After NMI only if needed
+                choices:
+                    "Before NMI": Before NMI
+                    "After NMI":  After NMI
+            mesen-s_superfx_overclock:
+                prompt:      SUPERFX OVERCLOCK
+                description: Overclock the SuperFX Chip
+                choices:
+                    "100%":  100%
+                    "200%":  200%
+                    "300%":  300%
+                    "400%":  400%
+                    "500%":  500%
+                    "1000%": 1000%
     citra:
       features: [rewind, autosave, latency_reduction]
     daphne:
@@ -2487,6 +2549,13 @@ libretro:
       features: [netplay, rewind, autosave, latency_reduction, cheevos]
     tgbdual:
       features: [netplay, rewind, autosave, latency_reduction]
+      cfeatures:
+            sync_saves:
+                prompt:      SYNC SAVE FILES
+                description: Sync 2 player saves with single player versions (Default Off)
+                choices:
+                    "On":   1
+                    "Off":  0
     theodore:
       features: [netplay, rewind, autosave, latency_reduction, padtokeyboard]
     tic80:

@@ -4,36 +4,16 @@ BOOTCONF="/boot/batocera-boot.conf"
 . /etc/profile.d/xdg.sh
 . /etc/profile.d/dbus.sh
 
-# intel-iris-driver
-irisdriver="$(/usr/bin/batocera-settings-get -f "$BOOTCONF" intel-i965-driver)"
-if test ! -z "${irisdriver}" -a "${irisdriver}" = true; then
-	# Force use i965 driver through global environment variable
-	export MESA_LOADER_DRIVER_OVERRIDE=i965
-fi
-
 case "$1" in
 	start)
-		enabled="$(/usr/bin/batocera-settings-get system.es.atstartup)"
-		bootresolution="$(/usr/bin/batocera-settings-get -f "$BOOTCONF" es.resolution)"
-		if [ "$enabled" != "0" ];then
-			if test -z "${bootresolution}"
-			then
-			    batocera-resolution minTomaxResolution-secure
-			else
-			    batocera-resolution setMode "${bootresolution}"
-			fi
-			settings_lang="$(/usr/bin/batocera-settings-get system.language)"
-			display_rotate="$(/usr/bin/batocera-settings-get display.rotate)"
-
-			EXTRA_OPTS=
-			test -n "${display_rotate}" && EXTRA_OPTS="--screenrotate ${display_rotate}"
-
-			cd /userdata # es need a PWD
-			HOME=/userdata/system LANG="${settings_lang}.UTF-8" %BATOCERA_EMULATIONSTATION_PREFIX% %BATOCERA_EMULATIONSTATION_CMD% %BATOCERA_EMULATIONSTATION_ARGS% %BATOCERA_EMULATIONSTATION_POSTFIX%
-		fi
-		;;
+	    enabled="$(/usr/bin/batocera-settings-get system.es.atstartup)"
+	    if [ "$enabled" != "0" ];then
+		%BATOCERA_EMULATIONSTATION_CMD% %BATOCERA_EMULATIONSTATION_POSTFIX%
+	    fi
+	    ;;
 
 	stop)
+	        emulationstation-standalone --stop-rebooting
 		killall openbox 2>/dev/null # for xorg
 		killall emulationstation 2>/dev/null
 		if [ $? -eq 0 ]; then
