@@ -71,6 +71,11 @@ do_videostart ()
         video_rotation=$(do_angels_conversion $video_rotation)
         [[ $? -eq 0 ]] && mpv_video=--video-rotate=${video_rotation}
     fi
+    video_resize=$(batocera-settings-get -f /boot/batocera-boot.conf splash.video.resize)
+    if [[ $? -eq 0 ]]; then
+        resize=$(echo "${video_resize}" | sed "s/x/:/")
+        mpv_video="${mpv_video} --vf=scale=${resize}"
+    fi
 
     # it should be drm everywhere (including for x86_64 while it is on fb) -- only rpi doesn't use drm and it doesn't use this boot splash script
     start-stop-daemon -S -b -q -m -p /var/run/user-splash.pid --exec /usr/bin/mpv -- --really-quiet --no-config --hwdec=yes %PLAYER_OPTIONS% $mpv_audio $mpv_video "$video"

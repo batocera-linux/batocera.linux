@@ -86,7 +86,10 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
     retroarchConfig['menu_show_restart_retroarch'] = 'false'    # this option messes everything up on Batocera if ever clicked
     retroarchConfig['video_driver'] = '"gl"'                    # needed for the ozone menu
 
-    if system.isOptSet("display.rotate"):
+    with open("/usr/share/batocera/batocera.arch") as fb:
+        arch = fb.readline().strip()
+
+    if (system.isOptSet("display.rotate") and arch not in [ 'x86_64', 'x86']):
         # 0 => 0 ; 1 => 270; 2 => 180 ; 3 => 90
         if system.config["display.rotate"] == "0":
             retroarchConfig['video_rotation'] = "0"
