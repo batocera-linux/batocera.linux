@@ -10,11 +10,6 @@ FM_VIDEO=".*\.\(mp4\|MP4\)"
 . /etc/profile.d/xdg.sh
 . /etc/profile.d/dbus.sh
 
-soundDisabled()
-{
-    grep -qE "^[ ]*splash.screen.sound[ ]*=[ ]*0[ ]*$" /boot/batocera-boot.conf
-}
-
 do_filerandomize ()
 {
     local array
@@ -54,9 +49,12 @@ do_videostart ()
     video="$1"
     printf 'Video: %s: ' "$video"
     ffplay_opt=
-    if soundDisabled
-    then
-        ffplay_opt=-an
+    soundDisabled=$(batocera-settings-get splash.screen.sound)
+    if [[ $? -eq 0 ]]; then
+	if test "${soundDisabled}" = 0
+	then
+	    ffplay_opt=-an
+	fi
     fi
     start-stop-daemon -S -b -q -m -p /var/run/user-splash.pid --exec /usr/bin/ffplay -- $ffplay_opt -sync video -autoexit -vcodec h264_v4l2m2m -i "$video"
 }
