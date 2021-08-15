@@ -62,29 +62,29 @@ do
     display_rotate="$(/usr/bin/batocera-settings-get display.rotate)"
     EXTRA_OPTS=
     ARCH="$(cat /usr/share/batocera/batocera.arch)"
-    if test -n "${display_rotate}"; then
-	case "${ARCH}" in
-	    x86_64|x86)
-		case "${display_rotate}" in
-		    "1")
-			xrandr -o right
-			;;
-		    "2")
-			xrandr -o inverted
-			;;
-		    "3")
-			xrandr -o left
-			;;
-		    *)
-			# in case of reboot of es
-			xrandr -o normal
-		esac
-		;;
-	    *)
+    case "${ARCH}" in
+	x86_64|x86)
+	    case "${display_rotate}" in
+		"1")
+		    xrandr -o right
+		    ;;
+		"2")
+		    xrandr -o inverted
+		    ;;
+		"3")
+		    xrandr -o left
+		    ;;
+		*)
+		    # in case of reboot of es
+		    xrandr -o normal
+	    esac
+	    ;;
+	*)
+	    if test -n "${display_rotate}"; then
 		EXTRA_OPTS="--screenrotate ${display_rotate}"
-		;;
-	esac
-    fi
+	    fi
+	    ;;
+    esac
 
     forcedresolution="$(/usr/bin/batocera-settings-get -f /boot/batocera-boot.conf es.forcedresolution)"
     if test -n "${forcedresolution}"
