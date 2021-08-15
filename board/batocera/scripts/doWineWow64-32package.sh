@@ -170,7 +170,8 @@ cp -pr "${G_TARGETDIR}/usr/lib/libgcrypt"*"so"*  "${TMPOUT}/lib32/" || exit 1
 cp -pr "${G_TARGETDIR}/usr/lib/libmpg123"*"so"*  "${TMPOUT}/lib32/" || exit 1
 cp -pr "${G_TARGETDIR}/usr/lib/lib"*"krb5"*"so"*  "${TMPOUT}/lib32/" || exit 1
 cp -pr "${G_TARGETDIR}/lib/libnss_"*"so"*  "${TMPOUT}/lib32/" || exit 1
-cp -pr "${G_TARGETDIR}/lib/libpipewire"*"so"* "${TMPOUT}/lib32/" || exit 1
+cp -pr "${G_TARGETDIR}/usr/lib/libpulse"*"so"* "${TMPOUT}/lib32/" || exit 1
+cp -pr "${G_TARGETDIR}/usr/lib/libpipewire"*"so"* "${TMPOUT}/lib32/" || exit 1
 #cp -pr "${G_TARGETDIR}/usr/lib/pipewire-"*"/" "${TMPOUT}/lib32/" || exit 1
 #cp -pr "${G_TARGETDIR}/usr/lib/spa-"*"/" "${TMPOUT}/lib32/" || exit 1
 mkdir -p "${TMPOUT}/lib32/alsa-lib" || exit 1
