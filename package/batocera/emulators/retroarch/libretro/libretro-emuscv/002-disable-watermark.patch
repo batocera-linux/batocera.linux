@@ -1,0 +1,40 @@
+diff --git a/src/emuscv.cpp b/src/emuscv.cpp
+index 6cfa5c9cb3..c904f7aa7f 100755
+--- a/src/emuscv.cpp
++++ b/src/emuscv.cpp
+@@ -30,9 +30,6 @@
+ #include "res/binary.keyboardyeno115x78xrgba8888.data.h"
+ #include "res/binary.keyboardyeno230x156xrgba8888.data.h"
+ #include "res/binary.keyboardyeno460x312xrgba8888.data.h"
+-#include "res/binary.recalbox624x160xrgba8888.data.h"
+-#include "res/binary.recalbox312x80xrgba8888.data.h"
+-#include "res/binary.recalbox156x40xrgba8888.data.h"
+ 
+ #define NOISE_WIDTH  444
+ #define NOISE_HEIGHT 333
+@@ -3731,25 +3728,6 @@ bool cEmuSCV::CreateRecalboxSurface()
+ 
+ 	DestroyRecalboxSurface();
+ 
+-	if(config.window_resolution == SETTING_RESOLUTION_HIGH_VAL)
+-	{
+-		w = 624;
+-		h = 160;
+-		image = (unsigned char *)src_res_recalbox624x160xrgba8888_data;
+-	}
+-	else if(config.window_resolution == SETTING_RESOLUTION_MEDIUM_VAL)
+-	{
+-		w = 312;
+-		h = 80;
+-		image = (unsigned char *)src_res_recalbox312x80xrgba8888_data;
+-	}
+-	else
+-	{
+-		w = 156;
+-		h = 40;
+-		image = (unsigned char *)src_res_recalbox156x40xrgba8888_data;
+-	}
+-
+ 	// Create SDL quick keyboard surface
+     recalbox_surface = SDL_CreateRGBSurface(SDL_SWSURFACE, w, h, 8*sizeof(uint32_t), 0x00FF0000, 0x0000FF00, 0x000000FF, 0xFF000000);
+     if(!recalbox_surface)

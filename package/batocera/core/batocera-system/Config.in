@@ -886,6 +886,9 @@ config BR2_PACKAGE_BATOCERA_CONSOLE_SYSTEMS
 	select BR2_PACKAGE_SONIC2013                    # ALL
 	select BR2_PACKAGE_SONICCD                      # ALL
 
+	# Super Cassette Vision
+	select BR2_PACKAGE_LIBRETRO_EMUSCV              # ALL
+
 	help
 		All avaible systems for the selected architecture
 
