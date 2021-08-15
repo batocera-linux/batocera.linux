@@ -10,11 +10,6 @@ FM_VIDEO=".*\.\(mp4\|MP4\)"
 . /etc/profile.d/xdg.sh
 . /etc/profile.d/dbus.sh
 
-soundDisabled()
-{
-    grep -qE "^[ ]*splash.screen.sound[ ]*=[ ]*0[ ]*$" /boot/batocera-boot.conf
-}
-
 do_angels_conversion ()
 {
     [[ $1 -lt 0 || $1 -gt 3 ]] && echo 0 || echo $(($1*90))
@@ -64,9 +59,12 @@ do_videostart ()
     omx_srt="--no-ghost-box --lines=1 --align=left $omx_fnt --font-size=20 --subtitles=/usr/share/batocera/splash/splash.srt"
 
     omx_nosound=
-    if soundDisabled
-    then
-        omx_nosound="-n -1"
+    soundDisabled=$(batocera-settings-get splash.screen.sound)
+    if [[ $? -eq 0 ]]; then
+	if test "${soundDisabled}" = 0
+	then
+	    omx_nosound="-n -1"
+	fi
     fi
 
     start-stop-daemon -S -b -q -m -p /var/run/user-splash.pid --exec /usr/bin/omxplayer -- -o both $omx_opt $omx_srt $omx_nosound "$video"

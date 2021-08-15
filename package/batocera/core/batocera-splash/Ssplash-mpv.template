@@ -10,11 +10,6 @@ FM_VIDEO=".*\.\(mp4\|MP4\)"
 . /etc/profile.d/xdg.sh
 . /etc/profile.d/dbus.sh
 
-soundDisabled()
-{
-    grep -qE "^[ ]*splash.screen.sound[ ]*=[ ]*0[ ]*$" /boot/batocera-boot.conf
-}
-
 do_angels_conversion ()
 {
     [[ $1 -lt 0 || $1 -gt 3 ]] && echo 0 || echo $(($1*90))
@@ -60,18 +55,22 @@ do_videostart ()
     video="$1"
     printf 'Video: %s: ' "$video"
     mpv_audio=
-    if soundDisabled
-    then
-        mpv_audio=--no-audio
+
+    soundDisabled=$(batocera-settings-get splash.screen.sound)
+    if [[ $? -eq 0 ]]; then
+	if test "${soundDisabled}" = 0
+	then
+            mpv_audio=--no-audio
+	fi
     fi
 
     mpv_video=
-    video_rotation=$(batocera-settings-get -f /boot/batocera-boot.conf splash.video.rotation)
+    video_rotation=$(batocera-settings-get display.rotate)
     if [[ $? -eq 0 ]]; then
         video_rotation=$(do_angels_conversion $video_rotation)
         [[ $? -eq 0 ]] && mpv_video=--video-rotate=${video_rotation}
     fi
-    video_resize=$(batocera-settings-get -f /boot/batocera-boot.conf splash.video.resize)
+    video_resize=$(batocera-settings-get splash.screen.resize)
     if [[ $? -eq 0 ]]; then
         resize=$(echo "${video_resize}" | sed "s/x/:/")
         mpv_video="${mpv_video} --vf=scale=${resize}"
