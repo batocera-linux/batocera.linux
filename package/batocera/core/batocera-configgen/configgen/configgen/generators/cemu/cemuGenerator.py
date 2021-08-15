@@ -27,7 +27,7 @@ class CemuGenerator(Generator):
         cemu_exe = cemuConfig + "/Cemu.exe"
         cemu_hook = cemuConfig + "/cemuhook.ini"
         keystone_dll = cemuConfig + "/keystone.dll"
-        dbghelp_dll = cemuConfig + "/dbghelp.dll"
+        cemuhook_dll = cemuConfig + "/cemuhook.dll"
         if not path.isdir(batoceraFiles.BIOS + "/cemu"):
             os.mkdir(batoceraFiles.BIOS + "/cemu")
         if not path.isdir(cemuConfig):
@@ -60,8 +60,8 @@ class CemuGenerator(Generator):
             shutil.copyfile(cemuDatadir + "/cemuhook.ini", cemu_hook)
         if not os.path.exists(keystone_dll) or not filecmp.cmp(cemuDatadir + "/keystone.dll", keystone_dll):
             shutil.copyfile(cemuDatadir + "/keystone.dll", keystone_dll)
-        if not os.path.exists(dbghelp_dll) or not filecmp.cmp(cemuDatadir + "/dbghelp.dll", dbghelp_dll):
-            shutil.copyfile(cemuDatadir + "/dbghelp.dll", dbghelp_dll)
+        if not os.path.exists(cemuhook_dll) or not filecmp.cmp(cemuDatadir + "/cemuhook.dll", cemuhook_dll):
+            shutil.copyfile(cemuDatadir + "/cemuhook.dll", cemuhook_dll)
 
         cemuControllers.generateControllerConfig(system, playersControllers, rom)
 
@@ -73,7 +73,7 @@ class CemuGenerator(Generator):
                 "vblank_mode": "0",
                 "mesa_glthread": "true",
                 "SDL_GAMECONTROLLERCONFIG": controllersConfig.generateSdlGameControllerConfig(playersControllers),
-                "WINEDLLOVERRIDES": "mscoree=;mshtml=;dbghelp.dll=n,b",
+                "WINEDLLOVERRIDES": "mscoree=;mshtml=;cemuhook.dll=n,b",
                 "__GL_THREADED_OPTIMIZATIONS": "1"
             })
 
