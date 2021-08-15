@@ -75,6 +75,9 @@ do
 		    "3")
 			xrandr -o left
 			;;
+		    *)
+			# in case of reboot of es
+			xrandr -o normal
 		esac
 		;;
 	    *)
