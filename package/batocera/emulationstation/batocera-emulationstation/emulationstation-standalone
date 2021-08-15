@@ -89,9 +89,10 @@ do
     forcedresolution="$(/usr/bin/batocera-settings-get -f /boot/batocera-boot.conf es.forcedresolution)"
     if test -n "${forcedresolution}"
     then
-	export DISPLAY=:0.0
 	batocera-resolution forceMode "${forcedresolution}"
     fi
+
+    CUSTOMESOPTIONS="$(/usr/bin/batocera-settings-get es.customsargs)"
 
     #####################
     ## CUSTOMISATIONS ###
@@ -114,6 +115,6 @@ do
     #####################
     
     cd /userdata # es need a PWD
-    %BATOCERA_EMULATIONSTATION_PREFIX% emulationstation --exit-on-reboot-required %BATOCERA_EMULATIONSTATION_ARGS%
+    %BATOCERA_EMULATIONSTATION_PREFIX% emulationstation --exit-on-reboot-required %BATOCERA_EMULATIONSTATION_ARGS% ${CUSTOMESOPTIONS}
 done
 exit 0
