@@ -17,7 +17,7 @@ do_overclock_n2plus() {
 
 if test "${1}" = "start"
 then
-    OVALUE=$(grep -E '^[ ]*overclocking[ ]*=[ ]*.*[ ]*$' /boot/config.ini | sed -e s+"^[ ]*overclocking[ ]*=[ ]*\(.*\)[ ]*$"+"\1"+)
+    OVALUE=$(grep -E '^[ ]*overclocking[ ]*=[ ]*.*[ ]*$' /boot/batocera-boot.conf | sed -e s+"^[ ]*overclocking[ ]*=[ ]*\(.*\)[ ]*$"+"\1"+)
     MODEL=$(cat /sys/firmware/devicetree/base/model)
 
     case "${MODEL}" in
