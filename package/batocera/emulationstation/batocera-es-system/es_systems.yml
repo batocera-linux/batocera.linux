@@ -1940,7 +1940,7 @@ scv:
   manufacturer: Epoch Co
   release: 1984
   hardware: console
-  extensions: [bin, 0]
+  extensions: [bin, "0"]
   emulators:
     libretro:
       emuscv: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_EMUSCV] }
