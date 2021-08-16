@@ -19,7 +19,7 @@ do_start ()
         sleep 0.25
         N=$((N+1))
     done
-    test -e /dev/fb0 && fbv -f -i "${image}"
+    test -e /dev/fb0 && fbv -f -e -i "${image}"
 }
 
 case "$1" in
