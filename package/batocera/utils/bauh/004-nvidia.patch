@@ -1,14 +1,15 @@
 diff --git a/bauh/app.py b/bauh/app.py
-index 172b0e5..39599c9 100755
+index 172b0e5..bab1f8e 100755
 --- a/bauh/app.py
 +++ b/bauh/app.py
-@@ -12,6 +12,10 @@ from bauh.view.util import logs
+@@ -12,6 +12,11 @@ from bauh.view.util import logs
  
  
  def main(tray: bool = False):
 +
 +    # __NV_PRIME_RENDER_OFFLOAD is causing a black screen on nvidia for bauh ;-(
-+    del os.environ['__NV_PRIME_RENDER_OFFLOAD']
++    if '__NV_PRIME_RENDER_OFFLOAD' in os.environ:
++        del os.environ['__NV_PRIME_RENDER_OFFLOAD']
 +
      if not os.getenv('PYTHONUNBUFFERED'):
          os.environ['PYTHONUNBUFFERED'] = '1'
