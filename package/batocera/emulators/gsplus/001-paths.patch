@@ -1,0 +1,13 @@
+iff --color -uri gsplus-orig/src/sim65816.c gsplus-480572054518112647c8fae5d7ea7046a6d6ecfb/src/sim65816.c
+--- gsplus-orig/src/sim65816.c  2019-08-16 12:42:35.000000000 -0700
++++ gsplus-480572054518112647c8fae5d7ea7046a6d6ecfb/src/sim65816.c      2021-08-15 09:58:33.688206303 -0700
+@@ -54,7 +54,8 @@
+ char g_argv0_path[256] = "./";
+
+ const char *g_gsplus_default_paths[] = { // probably overkill on the paths
+-  "",
++  "/userdata/system/configs/GSplus/",
++  "/userdata/bios/",
+   "./",
+   "${HOME}/",
+   "${PWD}/",

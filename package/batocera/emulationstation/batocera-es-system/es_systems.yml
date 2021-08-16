@@ -1944,3 +1944,13 @@ scv:
   emulators:
     libretro:
       potator: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_EMUSCV] }
+
+apple2gs:
+  name:      Apple IIGS
+  manufacturer: Apple
+  release: 1986
+  hardware: computer
+  extensions: [2mg, po, dsk]
+  emulators:
+    gsplus:
+      gsplus: { requireAnyOf: [BR2_PACKAGE_GSPLUS] }

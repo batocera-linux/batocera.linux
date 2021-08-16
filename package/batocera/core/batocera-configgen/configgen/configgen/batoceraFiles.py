@@ -40,6 +40,7 @@ batoceraBins = {'dosbox'         : '/usr/bin/dosbox'
               , 'supermodel'     : '/usr/bin/supermodel'
               , 'tsugaru'        : '/usr/bin/Tsugaru_CUI'
               , 'xemu'           : '/usr/bin/xemu'
+              , 'gsplus'         : '/usr/bin/GSplus'
 }
 
 
