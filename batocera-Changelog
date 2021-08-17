@@ -1,6 +1,9 @@
 2021/XX/XX - batocera.linux 32
+        * add: system.cpu.governor setting in batocera.conf
+        * fix: DOSBox Pure per-game settings
         * add: Support for Capcom Home Arcade
         * add: Support for CHI Gameforce handheld
+        * add: Apple IIGS
         * add: FMTowns (x64_64, completed preliminary support)
         * add: ECWolf a open source port for Wolfenstein 3D Games (x86_64)
         * add: Support for official Pico-8 engine (x64_64, or 32-bit RPi, Lexaloffle hasn't released a 64-bit ARM version yet)
@@ -11,7 +14,8 @@
         * add: Better support for handheld PCs x86_64 (OneXPlayer, Aya Neo...)
         * add: Smart coloring for GameBoy (Gambatte)
         * add: Model 3 options for modern pedal control + PowerPC frequency
-        * add: Flatpak: audio support + full Steam integration
+        * add: Flatpak: audio support
+	* add: Flatpak: applications and Steam integration (f1>applications>flatpak to install steam and other applications / menu>games>refresh game list to view installed games in es/ports)
         * add: 2-player Game Boy/Color save syncing and support for 2 different linked ROMs
         * add: Pipewire (audio processing layer)
         * add: Super Cassette Vision
@@ -24,6 +28,10 @@
         * rpi3: PPSSPP to v1.11.3
         * rpi4: Support for DeskPi Pro Case
         * rpi4: Support for ArgonOne V2/M2 case
+	* es: es option for boot splash
+	* es: es option for screen rotation
+        * boot: Support for /boot/boot-custom.sh user defined early startup/late shutdown script
+	* boot: batocera.conf option to customize es command line parameters (es.customsargs)
         * change: Libretro cheats are now moved to the Content Downloader
         * change: Removed Lightgun as a system (now an automatic collection)
         * bump: MAME to 0.232 (+GroovyMAME and Arcade64)
