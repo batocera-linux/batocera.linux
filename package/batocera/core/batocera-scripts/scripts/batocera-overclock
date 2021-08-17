@@ -7,7 +7,7 @@ f_usage() {
 
 ARCH="$(cat /usr/share/batocera/batocera.arch)"
 GRPICONFFILE="/boot/config.txt"
-GODROIDCONFFILE="/boot/config.ini"
+GODROIDCONFFILE="/boot/batocera-boot.conf"
 
 if test "${ARCH}" = "rpi3"
 then

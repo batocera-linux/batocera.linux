@@ -1894,7 +1894,7 @@ supervision:
   manufacturer: Watara
   release: 1992
   hardware: portable
-  extensions: [sv, zip, 7zip]
+  extensions: [sv, zip, 7z]
   emulators:
     libretro:
       potator: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_WATARA] }
@@ -1904,7 +1904,7 @@ ecwolf:
   manufacturer: Blzut3
   release: 2013
   hardware: port
-  extensions: [ecwolf, pk3, zip, 7zip]
+  extensions: [ecwolf, pk3, zip, 7z]
   emulators:
     libretro:
       ecwolf: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_ECWOLF], incompatible_extensions: [ecwolf] }
@@ -1940,10 +1940,10 @@ scv:
   manufacturer: Epoch Co
   release: 1984
   hardware: console
-  extensions: [bin, zip, 7zip]
+  extensions: [bin, "0"]
   emulators:
     libretro:
-      potator: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_EMUSCV] }
+      emuscv: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_EMUSCV] }
 
 apple2gs:
   name:      Apple IIGS
