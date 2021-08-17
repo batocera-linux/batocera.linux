@@ -3,9 +3,9 @@
 # GS+
 #
 ################################################################################
-# Version.: Commits on Aug 16, 2019
-GSPLUS_VERSION = 480572054518112647c8fae5d7ea7046a6d6ecfb
-GSPLUS_SITE = $(call github,digarok,gsplus,$(GSPLUS_VERSION))
+# Version.: Commits on Jan 13, 2021
+GSPLUS_VERSION = dc1835d62bb485f69faf3fd50a2550629393ee38
+GSPLUS_SITE = $(call github,applemu,gsplus,$(GSPLUS_VERSION))
 GSPLUS_LICENSE = GPLv2
 GSPLUS_DEPENDENCIES = sdl2 libpcap
 
