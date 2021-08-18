@@ -1,0 +1,7 @@
+config BR2_PACKAGE_GSPLUS
+    bool "gsplus"
+    select BR2_PACKAGE_SDL2
+    select BR2_PACKAGE_LIBPCAP
+
+    help
+    	An Apple ][ GS emulator
