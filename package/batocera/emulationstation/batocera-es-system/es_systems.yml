@@ -2047,3 +2047,13 @@ apple2gs:
   emulators:
     gsplus:
       gsplus: { requireAnyOf: [BR2_PACKAGE_GSPLUS] }
+
+uzebox:
+  name:       Uzebox
+  manufacturer: Atmel
+  release: 2008
+  hardware: console
+  extensions: [uze]
+  emulators:
+    libretro:
+      uzem: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_UZEM] }
