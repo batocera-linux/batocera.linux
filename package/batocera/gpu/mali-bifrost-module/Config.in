@@ -1,0 +1,3 @@
+config BR2_PACKAGE_MALI_BIFROST_MODULE
+	bool "mali-bifrost-module"
+	depends on BR2_LINUX_KERNEL
