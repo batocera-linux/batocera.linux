@@ -32,7 +32,7 @@ index 16ae2808d..544e81ffb 100644
  	switch (directoryType) {
  	case DIRECTORY_CHEATS:
 -		return g_Config.memStickDirectory + "PSP/Cheats/";
-+		return "/userdata/cheats/";
++		return "/userdata/cheats/psp/";
  	case DIRECTORY_GAME:
  		return g_Config.memStickDirectory + "PSP/GAME/";
  	case DIRECTORY_SAVEDATA:
