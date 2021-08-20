@@ -892,6 +892,11 @@ config BR2_PACKAGE_BATOCERA_CONSOLE_SYSTEMS
 	# Apple 2 GS
 	select BR2_PACKAGE_GSPLUS                       # ALL
 
+	# Uzebox
+	select BR2_PACKAGE_LIBRETRO_UZEM                if !BR2_PACKAGE_BATOCERA_TARGET_RPI1 && \
+                                                           !BR2_PACKAGE_BATOCERA_TARGET_RPI2 && \
+                                                           !BR2_PACKAGE_BATOCERA_TARGET_CHA # speed issue on weak SBCs
+
 	help
 		All avaible systems for the selected architecture
 
