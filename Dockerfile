@@ -37,7 +37,6 @@ RUN dpkg --add-architecture i386 && \
 		python \
 		gcc-multilib \
 		g++-multilib \
-		re2c \
 	&& apt-get clean \
 	&& rm -rf /var/lib/apt/lists/*
 
