@@ -55,6 +55,7 @@ doList() {
 	    echo "turbo TURBO (HEATSINK - 1800Mhz)"
 		echo "extreme EXTREME (HEATSINK & FAN 1950Mhz)"
 		echo "ruinsane INSANE (HEATSINK & FAN 2100Mhz)"
+		echo "cm4 CAUTION (CM4 only - HEATSINK & FAN 2275Mhz)"
 	    ;;
 	"s922x")
 	    MODEL=$(cat /sys/firmware/devicetree/base/model)
@@ -100,6 +101,11 @@ setValue_rpiPutVars() {
     preBootRWConfig || return 1
 
     # put variable lines if not existing
+	if ! grep -q "Overclock" "${GRPICONFFILE}"
+    then
+        echo >> "${GRPICONFFILE}"
+		echo "[Overclock]" >> "${GRPICONFFILE}"
+    fi
     for entry in arm_freq core_freq sdram_freq force_turbo over_voltage over_voltage_sdram gpu_freq
     do
 	if ! grep -q "${entry}" "${GRPICONFFILE}"
@@ -131,6 +137,11 @@ setValue_rpi4PutVars() {
     preBootRWConfig || return 1
 
     # put variable lines if not existing
+    if ! grep -q "Overclock" "${GRPICONFFILE}"
+    then
+        echo >> "${GRPICONFFILE}"
+        echo "[Overclock]" >> "${GRPICONFFILE}"
+    fi
     for entry in over_voltage arm_freq gpu_freq
     do
 	if ! grep -q "${entry}" "${GRPICONFFILE}"
@@ -249,9 +260,12 @@ setValue() {
 		    ;;
 		"extreme")
 		    setValue_rpi4PutVars 5 1950 700
-			;;
+            ;;
 		"ruinsane")
-		    setValue_rpi4PutVars 6 2100 750		
+		    setValue_rpi4PutVars 6 2100 750
+            ;;
+		"cm4")
+		    setValue_rpi4PutVars 8 2275 750		
 	    esac
 	    ;;
 	"s922x")
