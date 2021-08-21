@@ -18,6 +18,7 @@
 #v1.8 - removed Witty-Pi (WiringPi package is not anymore!)
 #v1.9 - add POWERHAT for Rpi4 OneNineDesign case variants - @dmanlfc
 #v2.0 - add DESKPIPRO for Dekpi Pro case (RPi4) - @dmanlfc
+#v2.1 - added config switch to avoid double reboots - @dmanlfc
 #by cyperghost 11.11.2019
 
 ### Array for Powerdevices, add/remove entries here
@@ -118,6 +119,11 @@ function atx_raspi_stop()
     done
 }
 
+function atx_raspi_config()
+{
+    echo "Nothing to do"
+}
+
 # http://mausberry-circuits.myshopify.com/pages/setup
 function mausberry_start()
 {
@@ -151,6 +157,11 @@ function mausberry_stop()
     for i in $*; do
         echo "$i" > /sys/class/gpio/unexport
     done
+}
+
+function mausberry_config()
+{
+    echo "Nothing to do"
 }
 
 # https://shop.pimoroni.com/products/onoff-shim/
@@ -189,6 +200,16 @@ function onoffshim_stop()
     echo "$1" > /sys/class/gpio/unexport
 }
 
+function onoffshim_config()
+{
+    #Check if dtooverlay is setted in /boot/config
+    #This is needed to do proper restarts/shutdowns
+    if ! grep -q "^dtoverlay=gpio-poweroff,gpiopin=$2,active_low=1,input=1" "/boot/config.txt"; then
+        mount -o remount, rw /boot
+        echo "dtoverlay=gpio-poweroff,gpiopin=$2,active_low=1,input=1" >> "/boot/config.txt"
+    fi
+}
+
 # https://www.raspberrypiplastics.com/power-hat-board
 # aka MultiComp Pro Raspberry Pi 4 case
 function powerhat_start()
@@ -214,6 +235,24 @@ function powerhat_stop()
 {
     # Do nothing to GPIO, handled by power hat
     echo "had 'power hat' shutdown"
+}
+
+function powerhat_config()
+{
+    #Check if dtooverlay is setted in /boot/config.txt
+    #This is needed to do proper restarts/shutdowns  
+    # (GPIO18 default)
+    if ! grep -q "^dtoverlay=gpio-poweroff,gpiopin=$1,active_low=0" "/boot/config.txt"; then
+        mount -o remount,rw /boot
+        echo "" >> "/boot/config.txt"
+        echo "[powerhat]" >> "/boot/config.txt"
+        echo "dtoverlay=gpio-poweroff,gpiopin=$1,active_low=0" >> "/boot/config.txt"
+    fi
+    # This is Button command (GPIO17 default)
+    if ! grep -q "^dtoverlay=gpio-shutdown,gpiopin=$2,active_low=1,gpio_pull=up" "/boot/config.txt"; then
+        mount -o remount,rw /boot
+        echo "dtoverlay=gpio-shutdown,gpiopin=$2,active_low=1,gpio_pull=up" >> "/boot/config.txt"
+    fi
 }
 
 # http://www.msldigital.com/pages/support-for-remotepi-board-2013
@@ -271,6 +310,11 @@ function msldigital_stop()
     done
 }
 
+function msldigital_config()
+{
+    echo "Nothing to do"
+}
+
 function pin356_start()
 {
     rpi-pin356-power &
@@ -284,6 +328,11 @@ function pin356_stop()
     if [[ -f /tmp/rpi-pin356-power.pid ]]; then
         kill $(cat /tmp/rpi-pin356-power.pid)
     fi
+}
+
+function pin356_config()
+{
+    echo "Nothing to do"
 }
 
 function pin56_start()
@@ -300,6 +349,11 @@ function pin56_stop()
     if [[ -f /tmp/rpi-pin56-power.pid ]]; then
         kill $(cat /tmp/rpi-pin56-power.pid)
     fi
+}
+
+function pin56_config()
+{
+    echo "Nothing to do"
 }
 
 #https://www.retroflag.com
@@ -330,6 +384,20 @@ function retroflag_stop()
         pid=$(cat $pid_file)
         kill $(pgrep -P $pid)
     fi
+}
+
+function retroflag_config()
+{
+    #Check if dtooverlay is setted in /boot/config -- Do this arch related!
+    case $(cat /usr/share/batocera/batocera.arch) in
+        rpi4)
+            if ! grep -q "^dtoverlay=gpio-poweroff,gpiopin=4,active_low=1,input=1" "/boot/config.txt"; then
+                mount -o remount, rw /boot
+                echo "# Overlay setup for proper powercut, needed for Retroflag cases" >> "/boot/config.txt"
+                echo "dtoverlay=gpio-poweroff,gpiopin=4,active_low=1,input=1" >> "/boot/config.txt"
+            fi
+        ;;
+    esac
 }
 
 #https://www.argon40.com/argon-one-raspberry-pi-4-case.html
@@ -370,6 +438,22 @@ function argonone_stop()
     fi
 }
 
+function argonone_config()
+{
+    if ! grep -q "^dtparam=i2c_arm=on" "/boot/config.txt"; then
+         mount -o remount, rw /boot
+         echo "dtparam=i2c_arm=on" >> "/boot/config.txt"
+    fi
+    if ! grep -q "^dtparam=i2c-1=on" "/boot/config.txt"; then
+         mount -o remount, rw /boot
+         echo "dtparam=i2c-1=on" >> "/boot/config.txt"
+    fi
+    if ! grep -q "^enable_uart=1" "/boot/config.txt"; then
+         mount -o remount, rw /boot
+         echo "enable_uart=1" >> "/boot/config.txt"
+    fi
+}
+
 #https://www.kintaro.co
 function kintaro_start()
 {
@@ -386,6 +470,11 @@ function kintaro_stop()
         kill $(cat $pid_file)
 
     fi
+}
+
+function kintaro_config()
+{
+    echo "Nothing to do"
 }
 
 #https://deskpi.com/products/deskpi-pro-for-raspberry-pi-4
@@ -431,15 +520,49 @@ function deskpipro_stop()
     /usr/bin/fanStop
 }
 
+function deskpipro_config()
+{
+    # Check config.txt for fan & front USB
+    if ! grep -q "^dtoverlay=dwc2,dr_mode=host" "/boot/config.txt"; then
+        echo "*** Adding DeskPi Pro Case Fan config.txt parameter ***"
+        mount -o remount, rw /boot
+        # Remove other dtoverlay=dwc2 type configs to avoid conflicts
+        sed -i '/dtoverlay=dwc2*/d' /boot/config.txt
+        echo "" >> "/boot/config.txt"
+        echo "[Deskpi Pro Case]" >> "/boot/config.txt"
+        echo "dtoverlay=dwc2,dr_mode=host" >> "/boot/config.txt"
+    fi
+    # Check config.txt for Infrared
+    if grep -Fxq "#dtoverlay=gpio-ir,gpio_pin=17" "/boot/config.txt"; then
+        echo "*** Adding DeskPi Pro Case Infrared config.txt parameter ***"
+        mount -o remount, rw /boot
+        sed -i 's/#dtoverlay=gpio-ir,gpio_pin=17/dtoverlay=gpio-ir,gpio_pin=17/g' /boot/config.txt
+    fi
+    # Add Infrared parameters
+    if ! grep -q "driver = default" "/etc/lirc/lirc_options.conf"; then
+        echo "*** Adding DeskPi Pro Case Infrared lirc_options.conf parameters ***"
+        mount -o remount, rw /boot
+        echo "driver = default" >> "/etc/lirc/lirc_options.conf"
+        echo "device = /dev/lirc0" >> "/etc/lirc/lirc_options.conf"
+    fi
+    # Check if the kernel module is loaded
+    if lsmod | grep dwc2 &> /dev/null ; then
+        echo "*** dwc2 module is loaded ***"
+    else
+        echo "*** loading dwc2 module ***"
+        modprobe dwc2
+    fi
+}
+
 #-----------------------------------------
 #------------------ MAIN -----------------
 #-----------------------------------------
 
-# First parameter must be start or stop
+# First parameter must be start, stop or config
 # Followed by switch parameter from S92switch
 # If you start by CLI a dialog will appear
 
-if [[ "$1" == "start" || "$1" == "stop" ]]; then
+if [[ "$1" == "start" || "$1" == "stop" || "$1" == "config" ]]; then
     [[ -n "$2" ]] && CONFVALUE="$2" || exit 1
 elif [[ -z "$1" ]]; then
     CONFVALUE="--DIALOG"
@@ -506,7 +629,7 @@ case "$CONFVALUE" in
                --msgbox "${info_msg}\n\n$(/usr/bin/batocera-settings-get system.power.switch)" 0 0
     ;;
     --HELP)
-        echo "Try: $(basename "$0") {start|stop} <value>"
+        echo "Try: $(basename "$0") {start|stop|config} <value>"
         echo
         echo -e -n "Valid values are:\t"
         for i in $(seq 1 2 ${#powerdevices[@]}); do
@@ -515,6 +638,6 @@ case "$CONFVALUE" in
         echo
     ;;
     *)
-    echo "rpi_gpioswitch: False parameter to S92switch 'start' or 'stop' cmd. use --help" >&2
+    echo "rpi_gpioswitch: False parameter to S92switch 'start', 'stop' or 'config' cmd. use --help" >&2
     exit 1
 esac

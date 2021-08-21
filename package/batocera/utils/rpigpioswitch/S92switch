@@ -37,7 +37,16 @@ case "$1" in
     ;;
 
     setup)
-        rpi_gpioswitch
+        $RUN
+        #now check parameter is set again
+        powerswitch="$(/usr/bin/batocera-settings-get system.power.switch)"
+        if [ -n "$powerswitch" ]; then
+            # Run with config switch to ensure paramters are saved ready for the reboot
+            # This saves having to reboot twice for certain cases
+            echo "Setting appropriate case configuration"
+            $RUN config "$powerswitch"
+            echo "DONE !"
+        fi
     ;;
 
     *)
