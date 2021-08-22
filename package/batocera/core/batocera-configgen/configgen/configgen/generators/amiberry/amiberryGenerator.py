@@ -89,9 +89,21 @@ class AmiberryGenerator(Generator):
             commandArray.append("-s")
             commandArray.append("joyport2=")
 
+            # display line mode
+            commandArray.append("-s")
+            commandArray.append("gfx_linemode=double")
+
+            # remove interlace artifacts
+            commandArray.append("-s")
+            commandArray.append("gfx_flickerfixer=true")
+
             # display vertical centering
             commandArray.append("-s")
             commandArray.append("gfx_center_vertical=smart")
+
+            # auto height
+            commandArray.append("-s")
+            commandArray.append("amiberry.gfx_auto_height=true")
 
             # fix sound buffer
             commandArray.append("-s")
