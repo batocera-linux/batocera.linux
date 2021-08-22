@@ -128,8 +128,13 @@ initramfs boot/initrd.gz
 
 # Configure GPU memory based on SDRAM size
 # https://www.raspberrypi.org/documentation/configuration/config-txt/memory.md
-gpu_mem_512=128
-gpu_mem_1024=384
+# Default GPU memory split (do not change if you do not know what you are doing)
+gpu_mem=128
+
+# Configure GPU memory based on SDRAM size - overrides above setting
+gpu_mem_256=112
+gpu_mem_512=160
+gpu_mem_1024=256
 
 # Enable audio (loads snd_bcm2835)
 dtparam=audio=on
