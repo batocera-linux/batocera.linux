@@ -4,19 +4,20 @@ import batoceraFiles
 from settings.unixSettings import UnixSettings
 import xml.etree.ElementTree as ET
 import shlex
-from utils.logger import eslog
+from utils.logger import get_logger
 import yaml
 import collections
 
-class Emulator():
+eslog = get_logger(__name__)
 
+class Emulator():
     def __init__(self, name, rom):
         self.name = name
 
         # read the configuration from the system name
         self.config = Emulator.get_system_config(self.name, "/usr/share/batocera/configgen/configgen-defaults.yml", "/usr/share/batocera/configgen/configgen-defaults-arch.yml")
         if "emulator" not in self.config or self.config["emulator"] == "":
-            eslog.log("no emulator defined. exiting.")
+            eslog.error("no emulator defined. exiting.")
             raise Exception("No emulator found")
 
         system_emulator = self.config["emulator"]
@@ -38,7 +39,7 @@ class Emulator():
         Emulator.updateConfiguration(self.config, systemSettings)
         Emulator.updateConfiguration(self.config, gameSettings)
         self.updateFromESSettings()
-        eslog.log("uimode: {}".format(self.config['uimode']))
+        eslog.debug("uimode: {}".format(self.config['uimode']))
 
         # forced emulators ?
         self.config["emulator-forced"] = False

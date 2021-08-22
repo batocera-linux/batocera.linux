@@ -7,7 +7,6 @@ import batoceraFiles
 import codecs
 import os
 import zipfile
-from utils.logger import eslog
 
 class SolarusGenerator(Generator):
 

@@ -4,8 +4,9 @@ import configparser
 import os
 import re
 import io
-from configgen.utils.logger import eslog
+from configgen.utils.logger import get_logger
 
+eslog = get_logger(__name__)
 __source__ = os.path.basename(__file__)
 
 class UnixSettings():
@@ -32,7 +33,7 @@ class UnixSettings():
 
             self.config.readfp(file)
         except IOError as e:
-            eslog.debug(str(e))
+            eslog.error(str(e))
 
     def write(self):
         fp = open(self.settingsFile, 'w')
@@ -43,7 +44,7 @@ class UnixSettings():
             # PSX Mednafen writes beetle_psx_hw_cpu_freq_scale = "100%(native)"
             # Python 2.7 is EOL and ConfigParser 2.7 takes "%(" as a won't fix error
             # TODO: clean that up when porting to Python 3
-            eslog.debug("Wrong value detected (after % char maybe?), ignoring.")
+            eslog.error("Wrong value detected (after % char maybe?), ignoring.")
         fp.close()
 
     def save(self, name, value):

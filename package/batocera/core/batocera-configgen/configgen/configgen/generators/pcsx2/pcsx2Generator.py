@@ -9,6 +9,9 @@ import re
 import configparser
 import io
 import controllersConfig
+from utils.logger import get_logger
+
+eslog = get_logger(__name__)
 
 class Pcsx2Generator(Generator):
 
@@ -36,7 +39,7 @@ class Pcsx2Generator(Generator):
 
         # Fullboot
         if system.isOptSet('fullboot') and system.config['fullboot'] == '0':
-            print("Fast Boot and skip BIOS")
+            eslog.debug("Fast Boot and skip BIOS")
         else:
             commandArray.append("--fullboot")
 

@@ -2,10 +2,11 @@
 import Command
 import batoceraFiles
 from generators.Generator import Generator
-from utils.logger import eslog
+from utils.logger import get_logger
 import controllersConfig
 import os
 
+eslog = get_logger(__name__)
 BIN_PATH="/userdata/bios/pico-8/pico8"
 CONTROLLERS="/userdata/system/.lexaloffle/pico-8/sdl_controllers.txt"
 
@@ -13,10 +14,10 @@ CONTROLLERS="/userdata/system/.lexaloffle/pico-8/sdl_controllers.txt"
 class LexaloffleGenerator(Generator):
     def generate(self, system, rom, playersControllers, gameResolution):
         if not os.path.exists(BIN_PATH):
-            eslog.log("Lexaloffle official pico-8 binary not found at {}".format(BIN_PATH))
+            eslog.error("Lexaloffle official pico-8 binary not found at {}".format(BIN_PATH))
             return -1
         if not os.access(BIN_PATH, os.X_OK):
-            eslog.log("File {} is not set as executable".format(BIN_PATH))
+            eslog.error("File {} is not set as executable".format(BIN_PATH))
             return -1
 
         # the command to run

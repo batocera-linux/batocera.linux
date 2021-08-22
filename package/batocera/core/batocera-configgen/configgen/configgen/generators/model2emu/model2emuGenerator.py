@@ -4,12 +4,14 @@ from generators.Generator import Generator
 import Command
 import os
 import batoceraFiles
-from utils.logger import eslog
+from utils.logger import get_logger
 import subprocess
 import sys
 import shutil
 import stat
 import configparser
+
+eslog = get_logger(__name__)
 
 class Model2EmuGenerator(Generator):
 
@@ -31,12 +33,12 @@ class Model2EmuGenerator(Generator):
             env = {"LD_LIBRARY_PATH": "/lib32:/usr/wine/lutris/lib/wine", "WINEPREFIX": wineprefix }
             env.update(os.environ)
             env["PATH"] = "/usr/wine/lutris/bin:/bin:/usr/bin"
-            eslog.log("command: {}".format(str(cmd)))
+            eslog.debug("command: {}".format(str(cmd)))
             proc = subprocess.Popen(cmd, env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             out, err = proc.communicate()
             exitcode = proc.returncode
-            eslog.log(out.decode())
-            eslog.log(err.decode())
+            eslog.debug(out.decode())
+            eslog.error(err.decode())
             with open(wineprefix + "/d3dcompiler_42.done", "w") as f:
                 f.write("done")
 
@@ -45,12 +47,12 @@ class Model2EmuGenerator(Generator):
             env = {"LD_LIBRARY_PATH": "/lib32:/usr/wine/lutris/lib/wine", "WINEPREFIX": wineprefix }
             env.update(os.environ)
             env["PATH"] = "/usr/wine/lutris/bin:/bin:/usr/bin"
-            eslog.log("command: {}".format(str(cmd)))
+            eslog.debug("command: {}".format(str(cmd)))
             proc = subprocess.Popen(cmd, env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             out, err = proc.communicate()
             exitcode = proc.returncode
-            eslog.log(out.decode())
-            eslog.log(err.decode())
+            eslog.debug(out.decode())
+            eslog.error(err.decode())
             with open(wineprefix + "/d3dx9_42.done", "w") as f:
                 f.write("done")
 
@@ -59,12 +61,12 @@ class Model2EmuGenerator(Generator):
             env = {"LD_LIBRARY_PATH": "/lib32:/usr/wine/lutris/lib/wine", "WINEPREFIX": wineprefix }
             env.update(os.environ)
             env["PATH"] = "/usr/wine/lutris/bin:/bin:/usr/bin"
-            eslog.log("command: {}".format(str(cmd)))
+            eslog.debug("command: {}".format(str(cmd)))
             proc = subprocess.Popen(cmd, env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             out, err = proc.communicate()
             exitcode = proc.returncode
-            eslog.log(out.decode())
-            eslog.log(err.decode())
+            eslog.debug(out.decode())
+            eslog.error(err.decode())
             with open(wineprefix + "/d3dcompiler_43.done", "w") as f:
                 f.write("done")
 
@@ -73,12 +75,12 @@ class Model2EmuGenerator(Generator):
             env = {"LD_LIBRARY_PATH": "/lib32:/usr/wine/lutris/lib/wine", "WINEPREFIX": wineprefix }
             env.update(os.environ)
             env["PATH"] = "/usr/wine/lutris/bin:/bin:/usr/bin"
-            eslog.log("command: {}".format(str(cmd)))
+            eslog.debug("command: {}".format(str(cmd)))
             proc = subprocess.Popen(cmd, env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             out, err = proc.communicate()
             exitcode = proc.returncode
-            eslog.log(out.decode())
-            eslog.log(err.decode())
+            eslog.debug(out.decode())
+            eslog.error(err.decode())
             with open(wineprefix + "/d3dx9_43.done", "w") as f:
                 f.write("done")
     
@@ -87,12 +89,12 @@ class Model2EmuGenerator(Generator):
             env = {"LD_LIBRARY_PATH": "/lib32:/usr/wine/lutris/lib/wine", "WINEPREFIX": wineprefix }
             env.update(os.environ)
             env["PATH"] = "/usr/wine/lutris/bin:/bin:/usr/bin"
-            eslog.log("command: {}".format(str(cmd)))
+            eslog.debug("command: {}".format(str(cmd)))
             proc = subprocess.Popen(cmd, env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             out, err = proc.communicate()
             exitcode = proc.returncode
-            eslog.log(out.decode())
-            eslog.log(err.decode())
+            eslog.debug(out.decode())
+            eslog.error(err.decode())
             with open(wineprefix + "/d3dx9.done", "w") as f:
                 f.write("done")
 
@@ -101,12 +103,12 @@ class Model2EmuGenerator(Generator):
             env = {"LD_LIBRARY_PATH": "/lib32:/usr/wine/lutris/lib/wine", "WINEPREFIX": wineprefix }
             env.update(os.environ)
             env["PATH"] = "/usr/wine/lutris/bin:/bin:/usr/bin"
-            eslog.log("command: {}".format(str(cmd)))
+            eslog.debug("command: {}".format(str(cmd)))
             proc = subprocess.Popen(cmd, env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             out, err = proc.communicate()
             exitcode = proc.returncode
-            eslog.log(out.decode())
-            eslog.log(err.decode())
+            eslog.debug(out.decode())
+            eslog.error(err.decode())
             with open(wineprefix + "/xact.done", "w") as f:
                 f.write("done")
 
@@ -115,12 +117,12 @@ class Model2EmuGenerator(Generator):
             env = {"LD_LIBRARY_PATH": "/lib32:/usr/wine/lutris/lib/wine", "WINEPREFIX": wineprefix }
             env.update(os.environ)
             env["PATH"] = "/usr/wine/lutris/bin:/bin:/usr/bin"
-            eslog.log("command: {}".format(str(cmd)))
+            eslog.debug("command: {}".format(str(cmd)))
             proc = subprocess.Popen(cmd, env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             out, err = proc.communicate()
             exitcode = proc.returncode
-            eslog.log(out.decode())
-            eslog.log(err.decode())
+            eslog.debug(out.decode())
+            eslog.error(err.decode())
             with open(wineprefix + "/xact_x64.done", "w") as f:
                 f.write("done")
         

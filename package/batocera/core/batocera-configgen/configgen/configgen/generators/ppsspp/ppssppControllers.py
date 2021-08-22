@@ -5,6 +5,9 @@ import sys
 import os
 import configparser
 import batoceraFiles
+from utils.logger import get_logger
+
+eslog = get_logger(__name__)
 
 ppssppControlsIni  = batoceraFiles.CONF + '/ppsspp/PSP/SYSTEM/controls.ini'
 ppssppControlsInit = batoceraFiles.HOME_INIT + 'configs/ppsspp/PSP/SYSTEM/controls.ini'
@@ -149,7 +152,7 @@ def generateControllerConfig(controller):
             pspcode = axisToCode(nkAxisId, int(input.value))
             val = "{}-{}".format( DEVICE_ID_PAD_0 + padnum, pspcode )
             val = optionValue(Config, section, var, val)
-            print("Adding {} to {}".format(var, val))
+            eslog.debug("Adding {} to {}".format(var, val))
             Config.set(section, var, val)
             
             # Skip the rest if it's an axis dpad
