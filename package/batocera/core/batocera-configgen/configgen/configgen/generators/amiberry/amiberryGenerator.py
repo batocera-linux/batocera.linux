@@ -93,6 +93,10 @@ class AmiberryGenerator(Generator):
             commandArray.append("-s")
             commandArray.append("gfx_center_vertical=smart")
 
+            # fix sound buffer
+            commandArray.append("-s")
+            commandArray.append("sound_max_buff=4096")
+
             os.chdir("/usr/share/amiberry")
             return Command.Command(array=commandArray)
         # otherwise, unknown format
