@@ -4,18 +4,23 @@
 #
 ################################################################################
 
-WINE_PROTON_VERSION = proton-wine-6.3-5
+WINE_PROTON_VERSION = proton-wine-6.3-6
 WINE_PROTON_SITE = $(call github,ValveSoftware,wine,$(WINE_PROTON_VERSION))
 WINE_PROTON_LICENSE = LGPL-2.1+
 WINE_PROTON_DEPENDENCIES = host-bison host-flex host-wine-proton
 HOST_WINE_PROTON_DEPENDENCIES = host-bison host-flex
+
+# Configure Proton
+define WINE_PROTON_AUTOGEN
+	cd $(@D); ./tools/make_requests
+	cd $(@D); autoreconf -f
+endef
 
 # That create folder for install
 define WINE_PROTON_CREATE_WINE_FOLDER
 	mkdir -p $(TARGET_DIR)/usr/wine/proton
 endef
 
-WINE_PROTON_PRE_CONFIGURE_HOOKS += WINE_PROTON_HOOK_CHECK_MONO
 WINE_PROTON_PRE_CONFIGURE_HOOKS += WINE_PROTON_CREATE_WINE_FOLDER
 
 # Wine needs its own directory structure and tools for cross compiling
@@ -455,6 +460,9 @@ HOST_WINE_PROTON_CONF_OPTS += \
 	--without-xslt \
 	--without-xxf86vm \
 	--without-zlib
+
+WINE_PROTON_PRE_CONFIGURE_HOOKS += WINE_PROTON_AUTOGEN
+HOST_WINE_PROTON_PRE_CONFIGURE_HOOKS += WINE_PROTON_AUTOGEN
 
 $(eval $(autotools-package))
 $(eval $(host-autotools-package))

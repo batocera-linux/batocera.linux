@@ -4,11 +4,17 @@
 #
 ################################################################################
 
-WINE_PROTON_WOW64_32_VERSION = proton-wine-6.3-5
+WINE_PROTON_WOW64_32_VERSION = proton-wine-6.3-6
 WINE_PROTON_WOW64_32_SITE = $(call github,ValveSoftware,wine,$(WINE_PROTON_WOW64_32_VERSION))
 WINE_PROTON_WOW64_32_LICENSE = LGPL-2.1+
 WINE_PROTON_WOW64_32_DEPENDENCIES = host-bison host-flex host-wine-proton
 HOST_WINE_PROTON_WOW64_32_DEPENDENCIES = host-bison host-flex
+
+# Configure Proton
+define WINE_PROTON_WOW64_32_AUTOGEN
+	cd $(@D); ./tools/make_requests
+	cd $(@D); autoreconf -f
+endef
 
 # That create folder for install
 define WINE_PROTON_CREATE_WINE_FOLDER
@@ -452,6 +458,7 @@ define WINE_PROTON_WOW64_32_SHAREDIR_HOOK
 	rm -Rf $(TARGET_DIR)/usr/wine/proton/include
 endef
 
+WINE_PROTON_WOW64_32_PRE_CONFIGURE_HOOKS += WINE_PROTON_WOW64_32_AUTOGEN
 WINE_PROTON_WOW64_32_PRE_BUILD_HOOKS += WINE_PROTON_WOW64_32_WOWDIRS_HOOK
 WINE_PROTON_WOW64_32_POST_INSTALL_TARGET_HOOKS += WINE_PROTON_WOW64_32_SHAREDIR_HOOK
 
