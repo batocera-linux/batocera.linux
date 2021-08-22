@@ -11,24 +11,66 @@ case "${ACTION}" in
 		/usr/bin/batocera-settings-get audio.device
 	;;
 
-	set)
-		MODE="$2"
-		case "${MODE}" in
-			auto | hdmi)
-				# card 2: HDMI [HDMI], device 0: ff8a0000.i2s-i2s-hifi i2s-hifi-0 [ff8a0000.i2s-i2s-hifi i2s-hifi-0]
-				sed -e "s;%CARDNO%;2;g" -e "s;%DEVICENO%;0;g" /usr/share/batocera/alsa/asoundrc-dmix+softvol > /userdata/system/.asoundrc
-			;;
-
-			headphones)
-				# card 0: ES8316 [ES8316], device 0: ff890000.i2s-ES8316 HiFi ES8316 HiFi-0 [ff890000.i2s-ES8316 HiFi ES8316 HiFi-0]
-				sed -e "s;%CARDNO%;0;g" -e "s;%DEVICENO%;0;g" /usr/share/batocera/alsa/asoundrc-dmix+softvol > /userdata/system/.asoundrc
-			;;
-
-			custom)
-				# do nothing!
-			;;
-		esac
+    get)
+	/usr/bin/batocera-settings-get audio.device
 	;;
+
+    set)
+	MODE="$2"
+	case "${MODE}" in
+	    auto | speakers)
+		pactl set-default-sink INTERNAL
+		amixer -c 0 cset name='Playback Path' SPK
+		;;
+
+	    headphone)
+		pactl set-default-sink INTERNAL
+		amixer -c 0 cset name='Playback Path' HP
+		;;
+	    *)
+		pactl set-default-sink "${MODE}"
+	esac
+	;;
+
+	getSystemVolume)
+	    echo "${DETECT_VOLUME}"
+	    ;;
+
+	setSystemVolume)
+	    VOLUME="$2"
+	    case "${VOLUME}" in
+		"mute")
+		    pactl set-sink-mute @DEFAULT_SINK@ 1
+		    ;;
+		"unmute")
+		    pactl set-sink-mute @DEFAULT_SINK@ 0
+		    ;;
+		"mute-toggle")
+		    pactl set-sink-mute @DEFAULT_SINK@ toggle
+		    ;;
+		*)
+		    if echo "${VOLUME}" | grep -qE '^[0-9]+$'
+		    then
+			if test "${VOLUME}" -ge 0 -a "${VOLUME}" -le "${MAX_VOLUME}"
+			then
+				pactl set-sink-volume @DEFAULT_SINK@ "${VOLUME}%"
+				exit 0
+			fi
+			fi
+			else if echo "${VOLUME}" | grep -qE '^[+-][0-9]+$'
+			then
+				let NEWVOLUME=${DETECT_VOLUME}${VOLUME}
+				test "${NEWVOLUME}" -lt 0 && NEWVOLUME=0
+				test "${NEWVOLUME}" -gt "${MAX_VOLUME}" && NEWVOLUME=${MAX_VOLUME}
+				pactl set-sink-volume @DEFAULT_SINK@ "${NEWVOLUME}%"
+				exit 0
+			fi
+			echo "invalid volume value" >&2
+			exit 1
+			fi
+	    esac
+	    ;;
+
 
 	test)
 		aplay "/usr/share/sounds/Mallet.wav"

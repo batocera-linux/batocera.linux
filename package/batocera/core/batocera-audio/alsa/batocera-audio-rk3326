@@ -73,7 +73,7 @@ case "${ACTION}" in
 				exit 0
 			fi
 			fi
-			if echo "${VOLUME}" | grep -qE '^[+-][0-9]+$'
+			else if echo "${VOLUME}" | grep -qE '^[+-][0-9]+$'
 			then
 				let NEWVOLUME=${DETECT_VOLUME}${VOLUME}
 				test "${NEWVOLUME}" -lt 0 && NEWVOLUME=0
