@@ -1,8 +1,8 @@
 diff --git a/pcsx2/SaveState.cpp b/pcsx2/SaveState.cpp
-index 3e90d2d..2477418 100644
+index 6bbe2654fb..412fca65e6 100644
 --- a/pcsx2/SaveState.cpp
 +++ b/pcsx2/SaveState.cpp
-@@ -56,11 +56,11 @@ wxString SaveStateBase::GetFilename( int slot )
+@@ -58,11 +58,11 @@ wxString SaveStateBase::GetFilename( int slot )
  	wxString serialName( DiscSerial );
  	if (serialName.IsEmpty()) serialName = L"BIOS";
  
