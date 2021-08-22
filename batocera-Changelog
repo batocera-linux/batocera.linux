@@ -18,7 +18,8 @@
         * add: Flatpak: audio support
 	* add: Flatpak: applications and Steam integration (f1>applications>flatpak to install steam and other applications / menu>games>refresh game list to view installed games in es/ports)
         * add: 2-player Game Boy/Color save syncing and support for 2 different linked ROMs
-        * add: Pipewire (audio processing layer)
+        * add: Pipewire (audio processing layer) (fixes some audio issue)
+	* add: bluetooth audio devices support (listed in system / audio output ; devices can be paired like a pad)
         * add: Super Cassette Vision
         * fix: RetroAchievements for Watara Supervision
         * fix: Battery indicator on Odroid Go Advance
@@ -31,6 +32,7 @@
         * rpi4: Support for ArgonOne V2/M2 case
 	* es: es option for boot splash
 	* es: es option for screen rotation
+	* es: apply video output / video rotation / language without os reboot
         * boot: Support for /boot/boot-custom.sh user defined early startup/late shutdown script
 	* boot: batocera.conf option to customize es command line parameters (es.customsargs)
         * change: Libretro cheats are now moved to the Content Downloader
