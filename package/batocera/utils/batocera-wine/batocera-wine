@@ -305,37 +305,15 @@ sandboxing_prefix() {
     fi
 
     echo "Remove Symblink"
-    if [ -L "${WINEPREFIX}/drive_c/users/${USERNAME}/Downloads" ]; then
-    unlink "${WINEPREFIX}/drive_c/users/${USERNAME}/Downloads" || return 1
+    # replace some links by folders. 
+    # don't create all folders in case links doesn't exist to not create both Music and My Music at the same time (old wine uses My Music, new wine uses Musics)
+    for DIR in "Downloads" "Documents" "My Documents" "Music" "My Music" "Pictures" "My Pictures" "Videos" "My Videos" "Templates"
+    do
+    if test -L "${WINEPREFIX}/drive_c/users/${USERNAME}/${DIR}"; then
+        unlink "${WINEPREFIX}/drive_c/users/${USERNAME}/${DIR}" || return 1
+        mkdir -p "${WINEPREFIX}/drive_c/users/${USERNAME}/${DIR}" || return 1
     fi
-
-    if [ -L "${WINEPREFIX}/drive_c/users/${USERNAME}/My Documents" ]; then
-    unlink "${WINEPREFIX}/drive_c/users/${USERNAME}/My Documents" || return 1
-    fi
-
-    if [ -L "${WINEPREFIX}/drive_c/users/${USERNAME}/My Music" ]; then
-    unlink "${WINEPREFIX}/drive_c/users/${USERNAME}/My Music" || return 1
-    fi
-
-    if [ -L "${WINEPREFIX}/drive_c/users/${USERNAME}/My Pictures" ]; then
-    unlink "${WINEPREFIX}/drive_c/users/${USERNAME}/My Pictures" || return 1
-    fi
-
-    if [ -L "${WINEPREFIX}/drive_c/users/${USERNAME}/My Videos" ]; then
-    unlink "${WINEPREFIX}/drive_c/users/${USERNAME}/My Videos" || return 1
-    fi
-
-    if [ -L "${WINEPREFIX}/drive_c/users/${USERNAME}/Templates" ]; then
-    unlink "${WINEPREFIX}/drive_c/users/${USERNAME}/Templates" || return 1
-    fi
-
-    echo "Create user directory"
-    mkdir -p "${WINEPREFIX}/drive_c/users/${USERNAME}/Downloads" || return 1
-    mkdir -p "${WINEPREFIX}/drive_c/users/${USERNAME}/My Documents" || return 1
-    mkdir -p "${WINEPREFIX}/drive_c/users/${USERNAME}/My Music" || return 1
-    mkdir -p "${WINEPREFIX}/drive_c/users/${USERNAME}/My Pictures" || return 1
-    mkdir -p "${WINEPREFIX}/drive_c/users/${USERNAME}/My Videos" || return 1
-    mkdir -p "${WINEPREFIX}/drive_c/users/${USERNAME}/Templates" || return 1
+    done
 
     return 0
 }
