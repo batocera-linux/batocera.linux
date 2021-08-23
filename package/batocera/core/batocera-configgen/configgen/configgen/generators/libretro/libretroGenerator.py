@@ -9,7 +9,9 @@ from generators.Generator import Generator
 import os
 import stat
 from settings.unixSettings import UnixSettings
-from utils.logger import eslog
+from utils.logger import get_logger
+
+eslog = get_logger(__name__)
 
 class LibretroGenerator(Generator):
 
@@ -181,10 +183,10 @@ class LibretroGenerator(Generator):
                 shaderFilename = renderConfig['shader'] + ".slangp"
             else:
                 shaderFilename = renderConfig['shader'] + ".glslp"
-            eslog.log("searching shader {}".format(shaderFilename))
+            eslog.debug("searching shader {}".format(shaderFilename))
             if os.path.exists("/userdata/shaders/" + shaderFilename):
                 video_shader_dir = "/userdata/shaders"
-                eslog.log("shader {} found in /userdata/shaders".format(shaderFilename))
+                eslog.debug("shader {} found in /userdata/shaders".format(shaderFilename))
             else:
                 video_shader_dir = "/usr/share/batocera/shaders"
             video_shader = video_shader_dir + "/" + shaderFilename

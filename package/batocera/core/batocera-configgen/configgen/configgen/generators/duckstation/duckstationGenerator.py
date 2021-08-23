@@ -7,8 +7,10 @@ import configparser
 import os.path
 import httplib2
 import json
-from utils.logger import eslog
+from utils.logger import get_logger
 from os import environ
+
+eslog = get_logger(__name__)
 
 class DuckstationGenerator(Generator):
     def generate(self, system, rom, playersControllers, gameResolution):
@@ -184,16 +186,16 @@ class DuckstationGenerator(Generator):
             try:
                 cnx = httplib2.Http()
             except:
-                eslog.log("ERROR: Unable to connect to " + login_url)
+                eslog.error("ERROR: Unable to connect to " + login_url)
             try:
                 res, rout = cnx.request(login_url + login_cmd, method="GET", body=None, headers=headers)
                 if (res.status != 200):
-                    eslog.log("ERROR: RetroAchievements.org responded with #{} [{}] {}".format(res.status, res.reason, rout))
+                    eslog.warning("ERROR: RetroAchievements.org responded with #{} [{}] {}".format(res.status, res.reason, rout))
                     settings.set("Cheevos", "Enabled",  "false")
                 else:
                     parsedout = json.loads((rout.decode('utf-8')))
                     if not parsedout['Success']:
-                        eslog.log("ERROR: RetroAchievements login failed with ({})".format(str(parsedout)))
+                        eslog.warning("ERROR: RetroAchievements login failed with ({})".format(str(parsedout)))
                     token = parsedout['Token']
                     settings.set("Cheevos", "Enabled",       "true")
                     settings.set("Cheevos", "Username",      username)
@@ -208,9 +210,9 @@ class DuckstationGenerator(Generator):
                     #settings.set("Cheevos", "RichPresence",  "true")             # Enable rich presence information will be collected and sent to the server where supported
                     #settings.set("Cheevos", "TestMode",      "false")            # DuckStation will assume all achievements are locked and not send any unlock notifications to the server.
 
-                    eslog.log ("Duckstation RetroAchievements enabled for {}".format(username))
+                    eslog.debug("Duckstation RetroAchievements enabled for {}".format(username))
             except Exception as e:
-                eslog.log("ERROR: Impossible to get a RetroAchievements token ({})".format(e))
+                eslog.error("ERROR: Impossible to get a RetroAchievements token ({})".format(e))
                 settings.set("Cheevos", "Enabled",           "false")
         else:
             settings.set("Cheevos", "Enabled",               "false")

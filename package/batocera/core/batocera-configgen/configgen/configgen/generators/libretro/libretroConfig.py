@@ -7,10 +7,11 @@ from Emulator import Emulator
 import settings
 from settings.unixSettings import UnixSettings
 import json
-from utils.logger import eslog
+from utils.logger import get_logger
 from PIL import Image, ImageOps
 import utils.bezels as bezelsUtil
 
+eslog = get_logger(__name__)
 sys.path.append(
     os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
 
@@ -634,7 +635,7 @@ def writeBezelConfig(bezel, retroarchConfig, systemName, rom, gameResolution, be
             if create_new_bezel_file is True:
                 # Padding left and right borders for ultrawide screens (larger than 16:9 aspect ratio)
                 # or up/down for 4K
-                eslog.log("Generating a new adapted bezel file {}".format(output_png_file))
+                eslog.debug("Generating a new adapted bezel file {}".format(output_png_file))
                 fillcolor = 'black'
 
                 borderw = 0
@@ -668,7 +669,7 @@ def writeBezelConfig(bezel, retroarchConfig, systemName, rom, gameResolution, be
         retroarchConfig['video_message_pos_x']    = infos["messagex"]
         retroarchConfig['video_message_pos_y']    = infos["messagey"]
 
-    eslog.log("Bezel file set to {}".format(overlay_png_file))
+    eslog.debug("Bezel file set to {}".format(overlay_png_file))
     writeBezelCfgConfig(overlay_cfg_file, overlay_png_file)
 
 def isLowResolution(gameResolution):

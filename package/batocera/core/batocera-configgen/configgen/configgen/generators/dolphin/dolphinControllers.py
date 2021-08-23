@@ -5,10 +5,12 @@ import batoceraFiles
 import os
 import codecs
 from Emulator import Emulator
-from utils.logger import eslog
+from utils.logger import get_logger
 import glob
 import configparser
 import re
+
+eslog = get_logger(__name__)
 
 # Create the controller configuration file
 def generateControllerConfig(system, playersControllers, rom):
@@ -151,8 +153,8 @@ def generateControllerConfig_emulatedwiimotes(system, playersControllers, rom):
                 wiiMapping.update(res)
                 line = cconfig.readline()
 
-    eslog.log("Extra Options: {}".format(extraOptions))
-    eslog.log("Wii Mappings: {}".format(wiiMapping))
+    eslog.debug("Extra Options: {}".format(extraOptions))
+    eslog.debug("Wii Mappings: {}".format(wiiMapping))
 
     generateControllerConfig_any(system, playersControllers, "WiimoteNew.ini", "Wiimote", wiiMapping, wiiReverseAxes, None, extraOptions)
 
@@ -354,24 +356,24 @@ def generateControllerConfig_any_auto(f, pad, anyMapping, anyReverseAxes, anyRep
 def generateControllerConfig_any_from_profiles(f, pad):
     for profileFile in glob.glob("/userdata/system/configs/dolphin-emu/Profiles/GCPad/*.ini"):
         try:
-            eslog.log("Looking profile : {}".format(profileFile))
+            eslog.debug("Looking profile : {}".format(profileFile))
             profileConfig = configparser.ConfigParser(interpolation=None)
             # To prevent ConfigParser from converting to lower case
             profileConfig.optionxform = str
             profileConfig.read(profileFile)
             profileDevice = profileConfig.get("Profile","Device")
-            eslog.log("Profile device : {}".format(profileDevice))
+            eslog.debug("Profile device : {}".format(profileDevice))
 
             deviceVals = re.match("^([^/]*)/[0-9]*/(.*)$", profileDevice)
             if deviceVals is not None:
                 if deviceVals.group(1) == "evdev" and deviceVals.group(2).strip() == pad.realName.strip():
-                    eslog.log("Eligible profile device found")
+                    eslog.debug("Eligible profile device found")
                     for key, val in profileConfig.items("Profile"):
                         if key != "Device":
                             f.write("{} = {}\n".format(key, val))
                     return True
         except:
-            eslog.log("profile {} : FAILED".format(profileFile))
+            eslog.error("profile {} : FAILED".format(profileFile))
 
     return False
 

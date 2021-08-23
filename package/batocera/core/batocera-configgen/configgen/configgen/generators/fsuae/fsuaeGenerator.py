@@ -7,6 +7,9 @@ import shutil
 from generators.Generator import Generator
 from os import path
 from . import fsuaeControllers
+from utils.logger import get_logger
+
+eslog = get_logger(__name__)
 
 class FsuaeGenerator(Generator):
 
@@ -72,11 +75,11 @@ class FsuaeGenerator(Generator):
                 if (d.endswith("ipf") or d.endswith("adf") or d.endswith("dms") or d.endswith("adz")):
                     diskNames.append(name)
 
-            print("Amount of disks in zip " + str(len(diskNames)))
+            eslog.debug("Amount of disks in zip " + str(len(diskNames)))
 
         # if 2+ files, we have a multidisk ZIP (0=no zip)
         if (len(diskNames) > 1):
-            print("extracting...")
+            eslog.debug("extracting...")
             shutil.rmtree(TEMP_DIR, ignore_errors=True) # cleanup
             zf.extractall(TEMP_DIR)
 

@@ -5,7 +5,9 @@ from generators.Generator import Generator
 from settings.unixSettings import UnixSettings
 import controllersConfig
 import os
+from utils.logger import get_logger
 
+eslog = get_logger(__name__)
 CONFIGDIR  = batoceraFiles.CONF + '/GSplus'
 CONFIGFILE = CONFIGDIR + '/config.txt'
 
@@ -18,7 +20,7 @@ class GSplusGenerator(Generator):
 
         rombase=os.path.basename(rom)
         romext=os.path.splitext(rombase)[1]
-        print ("_____ ROMEXT: "+romext)
+        eslog.debug("_____ ROMEXT: "+romext)
         if (romext.lower() == '.dsk'):
             config.save("s6d1", rom)
             config.save("s5d1", '')

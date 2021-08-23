@@ -5,7 +5,6 @@ import batoceraFiles
 import Command
 import shutil
 import os
-from utils.logger import eslog
 from os import path
 from os import environ
 import configparser

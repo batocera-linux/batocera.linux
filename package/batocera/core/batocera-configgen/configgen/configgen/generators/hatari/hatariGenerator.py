@@ -3,10 +3,12 @@
 import Command
 from generators.Generator import Generator
 import controllersConfig
-from utils.logger import eslog
+from utils.logger import get_logger
 import os
 import configparser
 import batoceraFiles
+
+eslog = get_logger(__name__)
 
 class HatariGenerator(Generator):
 
@@ -157,9 +159,9 @@ class HatariGenerator(Generator):
                 for v_language in l_lang:
                     filename = "tos{}{}.img".format(v_tos_version, v_language)
                     if os.path.exists("{}/{}".format(biosdir, filename)):
-                        eslog.log("tos filename: {}".format(filename))
+                        eslog.debug("tos filename: {}".format(filename))
                         return filename
                     else:
-                        eslog.log("tos filename {} not found".format(filename))
+                        eslog.warning("tos filename {} not found".format(filename))
 
         raise Exception("no bios found for machine {}".format(machine))

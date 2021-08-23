@@ -4,8 +4,10 @@ import subprocess
 import json
 import re
 import os
-from utils.logger import eslog
+from utils.logger import get_logger
 import evdev
+
+eslog = get_logger(__name__)
 
 class Evmapy():
     # evmapy is a process that map pads to keyboards (for pygame for example)
@@ -37,7 +39,7 @@ class Evmapy():
                 "/usr/share/evmapy/{}.keys" .format (system)
         ]:
             if os.path.exists(keysfile) and not (os.path.isdir(rom) and keysfile == "{}.keys" .format (rom)): # "{}.keys" .format (rom) is forbidden for directories, it must be inside
-                eslog.log("evmapy on {}".format(keysfile))
+                eslog.debug("evmapy on {}".format(keysfile))
                 subprocess.call(["batocera-evmapy", "clear"])
     
                 padActionConfig = json.load(open(keysfile))
@@ -47,7 +49,7 @@ class Evmapy():
                 for playercontroller, pad in sorted(playersControllers.items()):
                     if "actions_player"+str(nplayer) in padActionConfig:
                         configfile = "/var/run/evmapy/{}.json" .format (os.path.basename(pad.dev))
-                        eslog.log("config file for keysfile is {} (from {})" .format (configfile, keysfile))
+                        eslog.debug("config file for keysfile is {} (from {})" .format (configfile, keysfile))
     
                         # create mapping
                         padConfig = {}

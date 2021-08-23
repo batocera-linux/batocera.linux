@@ -4,7 +4,9 @@ import sys
 import os
 import configparser
 import batoceraFiles
-from utils.logger import eslog
+from utils.logger import get_logger
+
+eslog = get_logger(__name__)
 
 sys.path.append(
     os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
@@ -73,7 +75,7 @@ def generateControllerConfig(controller):
         if input.type not in flycastMapping[input.name]:
             continue
         var = flycastMapping[input.name][input.type]
-        eslog.log("Var: {}".format(var))
+        eslog.debug("Var: {}".format(var))
         for i in sections:
             if var in sections[i]:
                 section = i
@@ -94,7 +96,7 @@ def generateControllerConfig(controller):
                 code = input.code
                 Config.set(section, var, code)
             else:
-                eslog.log("code not found for key " + input.name + " on pad " + controller.realName + " (please reconfigure your pad)")
+                eslog.warning("code not found for key " + input.name + " on pad " + controller.realName + " (please reconfigure your pad)")
 
     Config.write(cfgfile)
     cfgfile.close()

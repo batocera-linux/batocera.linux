@@ -64,7 +64,9 @@ import batoceraFiles
 import os
 import subprocess
 import utils.videoMode as videoMode
-from utils.logger import eslog
+from utils.logger import get_logger
+
+eslog = get_logger(__name__)
 
 generators = {
     'kodi': KodiGenerator(),
@@ -139,7 +141,7 @@ def main(args, maxnbplayers):
     playersControllers = controllers.loadControllerConfig(controllersInput)
     # find the system to run
     systemName = args.system
-    eslog.log("Running system: {}".format(systemName))
+    eslog.debug("Running system: {}".format(systemName))
     system = Emulator(systemName, args.rom)
 
     if args.emulator is not None:
@@ -153,10 +155,10 @@ def main(args, maxnbplayers):
         debugDisplay["retroachievements.password"] = "***"
     eslog.debug("Settings: {}".format(debugDisplay))
     if "emulator" in system.config and "core" in system.config:
-        eslog.log("emulator: {}, core: {}".format(system.config["emulator"], system.config["core"]))
+        eslog.debug("emulator: {}, core: {}".format(system.config["emulator"], system.config["core"]))
     else:
         if "emulator" in system.config:
-            eslog.log("emulator: {}".format(system.config["emulator"]))
+            eslog.debug("emulator: {}".format(system.config["emulator"]))
 
     # the resolution must be changed before configuration while the configuration may depend on it (ie bezels)
     wantedGameMode = generators[system.config['emulator']].getResolutionMode(system.config)
@@ -169,15 +171,15 @@ def main(args, maxnbplayers):
         # lower the resolution if mode is auto
         newsystemMode = systemMode # newsystemmode is the mode after minmax (ie in 1K if tv was in 4K), systemmode is the mode before (ie in es)
         if system.config["videomode"] == "" or system.config["videomode"] == "default":
-            eslog.log("minTomaxResolution")
-            eslog.log("video mode before minmax: {}".format(systemMode))
+            eslog.debug("minTomaxResolution")
+            eslog.debug("video mode before minmax: {}".format(systemMode))
             videoMode.minTomaxResolution()
             newsystemMode = videoMode.getCurrentMode()
             if newsystemMode != systemMode:
                 resolutionChanged = True
 
-        eslog.log("current video mode: {}".format(newsystemMode))
-        eslog.log("wanted video mode: {}".format(wantedGameMode))
+        eslog.debug("current video mode: {}".format(newsystemMode))
+        eslog.debug("wanted video mode: {}".format(wantedGameMode))
 
         if wantedGameMode != 'default' and wantedGameMode != newsystemMode:
             videoMode.changeMode(wantedGameMode)
@@ -189,7 +191,7 @@ def main(args, maxnbplayers):
             x = gameResolution["width"]
             gameResolution["width"]  = gameResolution["height"]
             gameResolution["height"] = x
-        eslog.log("resolution: {}x{}".format(str(gameResolution["width"]), str(gameResolution["height"])))
+        eslog.debug("resolution: {}x{}".format(str(gameResolution["width"]), str(gameResolution["height"])))
 
         # savedir: create the save directory if not already done
         dirname = os.path.join(batoceraFiles.savesDir, system.name)
@@ -270,16 +272,16 @@ def callExternalScripts(folder, event, args):
             callExternalScripts(os.path.join(folder, file), event, args)
         else:
             if os.access(os.path.join(folder, file), os.X_OK):
-                eslog.log("calling external script: " + str([os.path.join(folder, file), event] + args))
+                eslog.debug("calling external script: " + str([os.path.join(folder, file), event] + args))
                 subprocess.call([os.path.join(folder, file), event] + args)
 
 def runCommand(command):
     global proc
 
     command.env.update(os.environ)
-    eslog.log("command: {}".format(str(command)))
-    eslog.log("command: {}".format(str(command.array)))
-    eslog.log("env: {}".format(str(command.env)))
+    eslog.debug("command: {}".format(str(command)))
+    eslog.debug("command: {}".format(str(command.array)))
+    eslog.debug("env: {}".format(str(command.env)))
     exitcode = -1
     if command.array:
         proc = subprocess.Popen(command.array, env=command.env, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -288,18 +290,22 @@ def runCommand(command):
     try:
         out, err = proc.communicate()
         exitcode = proc.returncode
-        sys.stdout.write(out.decode())
-        sys.stderr.write(err.decode())
+        eslog.debug(out.decode())
+        eslog.error(err.decode())
+    except BrokenPipeError:
+        # Seeing BrokenPipeError? This is probably caused by head truncating output in the front-end
+        # Examine es-core/src/platform.cpp::runSystemCommand for additional context
+        pass
     except:
-        eslog.log("emulator exited")
+        eslog.error("emulator exited")
 
     return exitcode
 
 def signal_handler(signal, frame):
     global proc
-    print('Exiting')
+    eslog.debug('Exiting')
     if proc:
-        print('killing proc')
+        eslog.debug('killing proc')
         proc.kill()
 
 if __name__ == '__main__':
@@ -336,7 +342,7 @@ if __name__ == '__main__':
     except Exception as e:
         eslog.error("configgen exception: ", exc_info=True)
     time.sleep(1) # this seems to be required so that the gpu memory is restituated and available for es
-    eslog.log("Exiting configgen with status {}".format(str(exitcode)))
+    eslog.debug("Exiting configgen with status {}".format(str(exitcode)))
     exit(exitcode)
 
 # Local Variables:

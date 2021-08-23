@@ -2,7 +2,9 @@ import os
 import batoceraFiles
 from os import path
 import codecs
-from utils.logger import eslog
+from utils.logger import get_logger
+
+eslog = get_logger(__name__)
 
 def generateControllerConfig(system, controllers, rom):
     generateConfigInputYml(controllers)
@@ -43,7 +45,7 @@ def generateInputConfigs(controllers):
                 if key is not None:
                     f.write("{}: {}\n".format(key, rpcs3_mappingValue(input.name, input.type, input.code, int(input.value))))
                 else:
-                    eslog.log("no rpcs3 mapping found for {}".format(input.name))
+                    eslog.warning("no rpcs3 mapping found for {}".format(input.name))
 
                 # write the reverse
                 if input.name == "joystick1up" or input.name == "joystick1left" or input.name == "joystick2up" or input.name == "joystick2left":
@@ -52,7 +54,7 @@ def generateInputConfigs(controllers):
                     if key is not None:
                         f.write("{}: {}\n".format(key, rpcs3_mappingValue(reversedName, input.type, input.code, int(input.value)*-1)))
                     else:
-                        eslog.log("no rpcs3 mapping found for {}".format(input.name))
+                        eslog.warning("no rpcs3 mapping found for {}".format(input.name))
                     
             rpcs3_otherKeys(f, controller)
             f.close()
@@ -118,7 +120,7 @@ def rpcs3_mappingValue(name, type, code, value):
             return ""
         res = int(code)+1000
         if value < 0:
-            eslog.log("name = {} and value = {}".format(name, value))
+            eslog.debug("name = {} and value = {}".format(name, value))
             res = res * -1
         return res
     return None

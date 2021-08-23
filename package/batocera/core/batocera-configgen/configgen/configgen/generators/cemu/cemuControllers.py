@@ -6,7 +6,6 @@ import os
 from os import path
 import codecs
 from Emulator import Emulator
-from utils.logger import eslog
 import configparser
 import json
 

@@ -6,14 +6,16 @@ import re
 import time
 import subprocess
 import json
-from .logger import eslog
+from .logger import get_logger
+
+eslog = get_logger(__name__)
 
 # Set a specific video mode
 def changeMode(videomode):
     if checkModeExists(videomode):
         cmd = "batocera-resolution setMode \"{}\"".format(videomode)
         if cmd is not None:
-            eslog.log("setVideoMode({}): {} ".format(videomode, cmd))
+            eslog.debug("setVideoMode({}): {} ".format(videomode, cmd))
             os.system(cmd)
 
 def getCurrentMode():
@@ -43,7 +45,7 @@ def checkModeExists(videomode):
     return False
 
 def changeMouse(mode):
-    eslog.log("changeMouseMode({})".format(mode))
+    eslog.debug("changeMouseMode({})".format(mode))
     if mode:
         cmd = "unclutter-remote -s"
     else:

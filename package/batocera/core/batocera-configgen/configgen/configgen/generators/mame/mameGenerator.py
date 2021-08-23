@@ -5,7 +5,7 @@ import batoceraFiles
 import Command
 import shutil
 import os
-from utils.logger import eslog
+from utils.logger import get_logger
 from os import path
 from os import environ
 import configparser
@@ -15,6 +15,8 @@ import shutil
 import utils.bezels as bezelsUtil
 import subprocess
 from xml.dom import minidom
+
+eslog = get_logger(__name__)
 
 class MameGenerator(Generator):
 
@@ -288,7 +290,7 @@ class MameGenerator(Generator):
                 return "JOYCODE_{}_RXAXIS_NEG_SWITCH OR JOYCODE_{}_BUTTON3".format(joycode, joycode)
             if key == "joystick2right":
                 return "JOYCODE_{}_RXAXIS_POS_SWITCH OR JOYCODE_{}_BUTTON2".format(joycode, joycode)
-        eslog.log("unable to find input2definition for {} / {}".format(input.type, key))
+        eslog.warning("unable to find input2definition for {} / {}".format(input.type, key))
         return "unknown"
 
     @staticmethod

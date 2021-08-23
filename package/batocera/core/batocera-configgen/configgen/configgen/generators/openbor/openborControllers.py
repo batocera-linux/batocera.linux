@@ -1,4 +1,6 @@
-from utils.logger import eslog
+from utils.logger import get_logger
+
+eslog = get_logger(__name__)
 
 def generateControllerConfig(config, playersControllers, core):
     if core == "openbor4432":
@@ -35,7 +37,7 @@ def JoystickValue(key, pad, joy_max_inputs, invertAxis = False):
     if input.type != "keyboard":
         value += 600
 
-    #eslog.log("input.type={} input.id={} input.value={} => result={}".format(input.type, input.id, input.value, value))
+    #eslog.debug("input.type={} input.id={} input.value={} => result={}".format(input.type, input.id, input.value, value))
     return value
 
 def setupControllers(config, playersControllers, joy_max_inputs):
