@@ -18,7 +18,10 @@ CITRA_CONF_OPTS += -DENABLE_QT=OFF
 
 # Use citra for x86_64 and enable citra-qt
 else
-CITRA_VERSION = 842031a2eb0b4bac4a351db914530296812962d1
+# commit 55ec7031ccb2943c2c507620cf4613a86d160670 is reverted by patch, something wrong in it for perfs (patch 004-perf1-revert-core.patch)
+# patch 003-perf1.patch while NO_CAST_FROM_ASCII is causing perfs issues too
+CITRA_VERSION = 5b54a99f9
+
 CITRA_SITE = https://github.com/citra-emu/citra.git
 CITRA_CONF_OPTS += -DENABLE_QT=ON
 CITRA_CONF_OPTS += -DENABLE_QT_TRANSLATION=ON
@@ -40,7 +43,7 @@ ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86_64),y)
 define CITRA_INSTALL_TARGET_CMDS
        	mkdir -p $(TARGET_DIR)/usr/bin
         mkdir -p $(TARGET_DIR)/usr/lib
-	$(INSTALL) -D $(@D)/buildroot-build/bin/Release/citra-qt \
+	$(INSTALL) -D $(@D)/buildroot-build/bin/citra-qt \
 		$(TARGET_DIR)/usr/bin/
 endef
 else
