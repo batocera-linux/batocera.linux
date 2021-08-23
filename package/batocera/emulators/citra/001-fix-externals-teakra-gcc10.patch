@@ -1,0 +1,22 @@
+From cce99f16a0d923747de1470cbf85dd3eb5e9a922 Mon Sep 17 00:00:00 2001
+From: Dragios <Dragios@users.noreply.github.com>
+Date: Mon, 27 Apr 2020 11:50:56 +0800
+Subject: [PATCH] Use <stdexcept> header rather than <exception>
+
+Fixes error C2039: 'runtime_error': is not a member of 'std'
+---
+ src/interpreter.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/interpreter.h b/src/interpreter.h
+index bca1776..72724ee 100644
+--- a/externals/teakra/src/interpreter.h
++++ b/externals/teakra/src/interpreter.h
+@@ -1,6 +1,6 @@
+ #pragma once
+ #include <atomic>
+-#include <exception>
++#include <stdexcept>
+ #include <tuple>
+ #include <type_traits>
+ #include <unordered_map>

@@ -94,7 +94,11 @@ class CitraGenerator(Generator):
             citraConfig.add_section("UI")
         
         # Start Fullscreen
-        citraConfig.set("UI", "fullscreen",       "true")
+        if system.isOptSet("showFPS") and system.getOptBoolean("showFPS"):
+            citraConfig.set("UI", "fullscreen",       "false")
+            citraConfig.set("UI", "showStatusBar",    "true")
+        else:
+            citraConfig.set("UI", "fullscreen",       "true")
         citraConfig.set("UI", "displayTitleBars", "false")
         citraConfig.set("UI", "displaytitlebars", "false") # Emulator Bug
         citraConfig.set("UI", "firstStart",       "false")
