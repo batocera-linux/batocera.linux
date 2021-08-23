@@ -7,7 +7,7 @@
 RUFFLE_VERSION = 5dee7f163c4ba033ba747079533fd4d588e679d9
 RUFFLE_SITE = $(call github,ruffle-rs,ruffle,$(RUFFLE_VERSION))
 RUFFLE_LICENSE = GPLv2
-RUFFLE_DEPENDENCIES = host-rustc openssl
+RUFFLE_DEPENDENCIES = host-rustc host-rust-bin openssl
 
 RUFFLE_CARGO_ENV = \
     CARGO_HOME=$(HOST_DIR)/usr/share/cargo \
