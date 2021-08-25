@@ -70,7 +70,7 @@ class Rpcs3Generator(Generator):
             rpcs3ymlconfig["Miscellaneous"] = {}  
 
         # Set the Default Core Values we need
-        rpcs3ymlconfig["Core"]['SPU Decoder'] = 'ASMJIT Recompiler'
+        rpcs3ymlconfig["Core"]['SPU Decoder'] = 'Recompiler (ASMJIT)'
         rpcs3ymlconfig["Core"]['Lower SPU thread priority'] = False
         rpcs3ymlconfig["Core"]['SPU Cache'] = False
         rpcs3ymlconfig["Core"]['PPU LLVM Accurate Vector NaN values'] = True     
