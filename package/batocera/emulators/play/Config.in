@@ -1,0 +1,10 @@
+config BR2_PACKAGE_PLAY
+        bool "play"
+        select BR2_PACKAGE_QT5BASE
+        select BR2_PACKAGE_QT5X11EXTRAS
+        select BR2_PACKAGE_LIBGLEW
+        select BR2_PACKAGE_VULKAN_HEADERS
+        select BR2_PACKAGE_VULKAN_LOADER
+
+        help
+          A PS2 portable emulator
