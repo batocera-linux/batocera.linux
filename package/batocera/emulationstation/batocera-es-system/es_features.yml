@@ -273,8 +273,6 @@ libretro:
                     "hybrid top ratio 3":    Hybrid Top-Ratio3
                     "hybrid bottom ratio 2": Hybrid Bottom-Ratio2
                     "hybrid bottom ratio 3": Hybrid Bottom-Ratio3
-    devilutionx:
-      features: []
     dolphin:
       features: []
     dosbox:
@@ -3073,6 +3071,9 @@ citra:
 daphne:
   features: [ratio, padtokeyboard]
 
+devilutionx:
+  features: [ratio, padtokeyboard]
+
 dolphin:
   features: [ratio]
   cfeatures:
@@ -3726,6 +3727,9 @@ ppsspp:
                 "Off":                  False
                 "On":                   True
 
+pygame:
+  features: [ratio, padtokeyboard]
+
 reicast:
   features: [ratio]
 
@@ -3775,6 +3779,9 @@ easyrpg:
 
 redream:
   features: []
+
+sdlpop:
+  features: [ratio, padtokeyboard]
 
 supermodel:
   features: []
