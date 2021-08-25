@@ -3,8 +3,8 @@
 # moonlight-embedded
 #
 ################################################################################
-# Version.: Commits on January 13, 2021
-MOONLIGHT_EMBEDDED_VERSION = b07e022065340888ed414a42e4f72b1b8f424dcd
+# Version.: Commits on Aug 8, 2021 v2.5.1
+MOONLIGHT_EMBEDDED_VERSION = 4164dc512f85772f3f1774c895181977c5378155
 MOONLIGHT_EMBEDDED_SITE = https://github.com/irtimmer/moonlight-embedded.git
 MOONLIGHT_EMBEDDED_SITE_METHOD = git
 MOONLIGHT_EMBEDDED_GIT_SUBMODULES=y
