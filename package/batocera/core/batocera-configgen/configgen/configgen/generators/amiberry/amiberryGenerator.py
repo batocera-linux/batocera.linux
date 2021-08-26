@@ -101,10 +101,6 @@ class AmiberryGenerator(Generator):
             commandArray.append("-s")
             commandArray.append("gfx_center_vertical=smart")
 
-            # auto height
-            commandArray.append("-s")
-            commandArray.append("amiberry.gfx_auto_height=true")
-
             # fix sound buffer
             commandArray.append("-s")
             commandArray.append("sound_max_buff=4096")
