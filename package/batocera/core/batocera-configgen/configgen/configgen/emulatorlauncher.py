@@ -57,6 +57,7 @@ from generators.lexaloffle.lexaloffleGenerator import LexaloffleGenerator
 from generators.model2emu.model2emuGenerator import Model2EmuGenerator
 from generators.sonicretro.sonicretroGenerator import SonicRetroGenerator
 from generators.gsplus.gsplusGenerator import GSplusGenerator
+from generators.play.playGenerator import PlayGenerator
 
 import controllersConfig as controllers
 import signal
@@ -120,6 +121,7 @@ generators = {
     'sonic2013': SonicRetroGenerator(),
     'soniccd': SonicRetroGenerator(),
     'gsplus': GSplusGenerator(),
+    'play': PlayGenerator(),
 }
 
 def main(args, maxnbplayers):

@@ -189,6 +189,7 @@ menu "Emulators"
       source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/retroarch/libretro/libretro-mesens/Config.in"
       source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/retroarch/libretro/libretro-emuscv/Config.in"
       source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/retroarch/libretro/libretro-uzem/Config.in"
+      source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/retroarch/libretro/libretro-play/Config.in"
      endmenu
   endmenu
 
@@ -274,6 +275,7 @@ menu "Emulators"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/sonic2013/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/soniccd/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/gsplus/Config.in"
+  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/emulators/play/Config.in"
 endmenu
 
 menu "Kodi"
