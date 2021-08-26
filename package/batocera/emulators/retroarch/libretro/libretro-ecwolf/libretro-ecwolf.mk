@@ -3,8 +3,8 @@
 # ECWOLF
 #
 ################################################################################
-# Version.: Commits on Jun 19, 2021
-LIBRETRO_ECWOLF_VERSION = a2c0d7bd158ef086adcd78d498df19233d5ba0c7
+# Version.: Commits on Aug 16, 2021
+LIBRETRO_ECWOLF_VERSION = 30c4192b63a2ab5d797616052c186413e8768e73
 LIBRETRO_ECWOLF_SITE = $(call github,libretro,ecwolf,$(LIBRETRO_ECWOLF_VERSION))
 LIBRETRO_ECWOLF_LICENSE = Non-commercial
 

@@ -3,8 +3,8 @@
 # FreeChaF - Fairchild Channel F emulator
 #
 ################################################################################
-# Version.: Commits on Jan 2, 2021
-LIBRETRO_FREECHAF_VERSION = 9bce290eda4497df316dba66aaccfe6cd1024b29
+# Version.: Commits on Aug 18, 2021
+LIBRETRO_FREECHAF_VERSION = 7275a3e067ed3fd701e0bbcfbcfec8f528587735
 LIBRETRO_FREECHAF_SITE_METHOD=git
 LIBRETRO_FREECHAF_SITE=https://github.com/libretro/FreeChaF.git
 LIBRETRO_FREECHAF_GIT_SUBMODULES=YES
