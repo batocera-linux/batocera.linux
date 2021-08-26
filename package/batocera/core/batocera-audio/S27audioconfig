@@ -1,10 +1,37 @@
-#!/bin/sh
+#!/bin/bash
 #
 # Starts audio services
 #
 
 . /etc/profile.d/xdg.sh
 . /etc/profile.d/dbus.sh
+
+apply_audioconfig() {
+    DEVICE=$1
+    VOLUME=$2
+
+    batocera-audio set "${DEVICE}" || return 1
+    batocera-audio setSystemVolume "${VOLUME}" || return 1
+    return 0
+}
+
+try_apply_audioconfig() {
+    DEVICE=$1
+    VOLUME=$2
+
+    N=10
+    while test "${N}" -gt 0
+    do
+	echo "retry applying audio (${N})" >&2
+	if apply_audioconfig "${DEVICE}" "${VOLUME}"
+	then
+	    return 0
+	fi
+	sleep 2
+	let N--
+    done
+    return 1
+}
 
 start_audioconfig() {
     # this script must be started after pipewire and udev, but before es
@@ -15,8 +42,15 @@ start_audioconfig() {
     VOLUME=$(/usr/bin/batocera-settings-get audio.volume)
     test -z "${DEVICE}" && DEVICE=auto
     test -z "${VOLUME}" && VOLUME=80
-    batocera-audio set "${DEVICE}"
-    batocera-audio setSystemVolume "${VOLUME}"
+
+    if ! apply_audioconfig "${DEVICE}" "${VOLUME}"
+    then
+	# in case it didn't work, we call in backgroud a function
+	# that will do more test in the time
+	# because some tv or audio card takes longer to initialize
+	try_apply_audioconfig "${DEVICE}" "${VOLUME}" &
+    fi
+
     echo "OK"
 }
 
