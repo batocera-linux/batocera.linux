@@ -5,7 +5,7 @@
 ################################################################################
 GPICASE_VERSION = 1.0
 GPICASE_SOURCE = GPi_Case_patch.zip
-GPICASE_SITE = http://download.retroflag.com/Products/GPi_Case
+GPICASE_SITE = https://support.retroflag.com/Products/GPi_Case
 
 define GPICASE_INSTALL_TARGET_CMDS
 	mkdir -p $(BINARIES_DIR)/rpi-firmware/overlays
