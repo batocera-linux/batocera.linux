@@ -2107,6 +2107,13 @@ libretro:
                     "1920x1200":  1920x1200
                     "2240x1400":  2240x1400
                     "2560x1600":  2560x1600
+            prboom_controller1:
+                prompt:      CONTROLLER TYPE
+                description: Select controller type
+                choices:
+                    "Gamepad Classic":    1
+                    "Gamepad Modern":     773
+                    "Keyboard + Mouse":  3
     prosystem:
       features: [rewind, autosave, latency_reduction, cheevos]
     puae:
@@ -2594,6 +2601,14 @@ libretro:
                 choices:
                     "Off":        disabled
                     "On":         enabled
+            tyrquake_controller1:
+                prompt:      CONTROLLER TYPE
+                description: Select controller type
+                choices:
+                    "Gamepad Classic":        1
+                    "Gamepad Classic Alt":    513
+                    "Gamepad Modern":         773
+                    "Keyboard + Mouse":       3
     vb:
       features: [netplay, rewind, autosave, latency_reduction, cheevos]
       cfeatures:
