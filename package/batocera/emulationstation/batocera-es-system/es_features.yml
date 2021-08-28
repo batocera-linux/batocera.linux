@@ -448,28 +448,28 @@ libretro:
                 prompt:      CONTROLLER 1 TYPE
                 description: Select Keyboard, Joysticks or Gravis GamePad mode
                 choices:
-                    "Gravis GamePad (D-pad, 4 Buttons)":                    1
-                    "Generic Keyboard Binding":                             257
-                    "Keyboard + Mouse (Left Analog)":                       513
-                    "Keyboard + Mouse (Right Analog)":                      769
-                    "First Joystick (2 Axes, 2 Buttons)":                   1281
-                    # "Second Joystick (2 Axes, 2 Buttons)":                  1537
-                    "ThrustMaster Flight Stick (3 Axes, 4 Buttons, 1 Hat)": 1793
-                    "Both DOS Joysticks (4 Axes, 4 Buttons)":               2049
-                    "Custom Keyboard Bindings (best for Batocera Pad2Key)": 3
+                    "Gravis GamePad (D-pad + 4 Btns)":                      1
+                    "Generic Keyboard Binds":                               257
+                    "Keyboard + Mouse (Left An.)":                          513
+                    "Keyboard + Mouse (Right An.)":                         769
+                    "1st Joystick (2 Axes, 2 Btns)":                        1281
+                    # "2nd Joystick (2 Axes, 2 Btns)":                        1537
+                    "Flight Stick (3 Axes, 4 Btns, 1 Hat)":                 1793
+                    "Both Joysticks (4 Axes, 4 Btns)":                      2049
+                    "Custom Keyboard Binds (best for Pad2Key)":             3
             controller2_dosbox_pure:
                 prompt:      CONTROLLER 2 TYPE
                 description: Select Keyboard, Joysticks or Gravis GamePad mode
                 choices:
-                    "Gravis GamePad (D-pad, 4 Buttons)":                    1
-                    "Generic Keyboard Binding":                             257
-                    "Keyboard + Mouse (Left Analog)":                       513
-                    "Keyboard + Mouse (Right Analog)":                      769
-                    # "First Joystick (2 Axes, 2 Buttons)":                   1281
-                    "Second Joystick (2 Axes, 2 Buttons)":                  1537
-                    "ThrustMaster Flight Stick (3 Axes, 4 Buttons, 1 Hat)": 1793
-                    "Both DOS Joysticks (4 Axes, 4 Buttons)":               2049
-                    "Custom Keyboard Bindings (best for Batocera Pad2Key)": 3
+                    "Gravis GamePad (D-pad + 4 Btns)":                      1
+                    "Generic Keyboard Binds":                               257
+                    "Keyboard + Mouse (Left An.)":                          513
+                    "Keyboard + Mouse (Right An.)":                         769
+                    # "1st Joystick (2 Axes, 2 Btns)":                        1281
+                    "2nd Joystick (2 Axes, 2 Btns)":                        1537
+                    "Flight Stick (3 Axes, 4 Btns, 1 Hat)":                 1793
+                    "Both Joysticks (4 Axes, 4 Btns)":                      2049
+                    "Custom Keyboard Binds (best for Pad2Key)":             3
     swanstation:
       features: [autosave, latency_reduction, cheevos]
       cfeatures:
@@ -698,7 +698,12 @@ libretro:
                 description: Improve the fidelity of 3D models (does not affect 2D sprites)
                 choices:
                     "640x480":    640x480
+                    "800x600":    800x600
+                    "960x720":    960x720
+                    "1024x768":   1024x768
                     "1280x960":   1280x960
+                    "1440x1080":  1440x1080
+                    "1600x1200":  1600x1200
                     "1920x1440":  1920x1440
                     "2560x1920":  2560x1920
                     "3200x2400":  3200x2400
@@ -709,14 +714,6 @@ libretro:
                     "6400x4800":  6400x4800
                     "7040x5280":  7040x5280
                     "7680x5760":  7680x5760
-                    "8320x6240":  8320x6240
-                    "8960x6720":  8960x6720
-                    "9600x7200":  9600x7200
-                    "10240x7680": 10240x7680
-                    "10880x8160": 10880x8160
-                    "11520x8640": 11520x8640
-                    "12160x9120": 12160x9120
-                    "12800x9600": 12800x9600
             reicast_mipmapping:
                 prompt:      TEXTURE MIP-MAPPING (BLUR)
                 description: Smooths out textures on 3D objects
@@ -870,7 +867,7 @@ libretro:
             gb:
                 cfeatures:
                     gb_colorization:
-                        prompt:      COLORISATION
+                        prompt:      COLORIZATION
                         description: Set the Game Boy palettes to use
                         choices:
                             "Off":                              none
