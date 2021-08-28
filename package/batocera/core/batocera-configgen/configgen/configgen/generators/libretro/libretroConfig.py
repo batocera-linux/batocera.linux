@@ -311,12 +311,15 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
             else:
                 retroarchConfig['input_player2_analog_dpad_mode'] = '3'
 
-    ## Libretro PORTS
+    ## PORTS
     ## Quake
     if (system.config['core'] == 'tyrquake'):
         if system.isOptSet('tyrquake_controller1'):
             retroarchConfig['input_libretro_device_p1'] = system.config['tyrquake_controller1']
-            retroarchConfig['input_player1_analog_dpad_mode'] = '0'
+            if system.config['tyrquake_controller1'] == '773' or system.config['tyrquake_controller1'] == '3':
+                retroarchConfig['input_player1_analog_dpad_mode'] = '0'
+            else:
+                retroarchConfig['input_player1_analog_dpad_mode'] = '1'
         else:
             retroarchConfig['input_libretro_device_p1'] = '1'
 
@@ -324,7 +327,10 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
     if (system.config['core'] == 'prboom'):
         if system.isOptSet('prboom_controller1'):
             retroarchConfig['input_libretro_device_p1'] = system.config['prboom_controller1']
-            retroarchConfig['input_player1_analog_dpad_mode'] = '0'
+            if system.config['prboom_controller1'] != '1' or system.config['prboom_controller1'] == '3':
+                retroarchConfig['input_player1_analog_dpad_mode'] = '0'
+            else:
+                retroarchConfig['input_player1_analog_dpad_mode'] = '1'
         else:
             retroarchConfig['input_libretro_device_p1'] = '1'
 
