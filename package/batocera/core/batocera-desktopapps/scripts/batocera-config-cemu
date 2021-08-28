@@ -5,12 +5,6 @@ then
     export DISPLAY=:0.0
 fi
 
-export mesa_glthread=true
-export __GL_THREADED_OPTIMIZATIONS=1
-export vblank_mode=0
-export WINEDLLOVERRIDES="mscoree=;mshtml=;dbghelp.dll=n,b"
-export WINEPREFIX=/userdata/saves/cemu
-
-/usr/wine/lutris/bin/wine64 /userdata/system/configs/cemu/Cemu.exe
+python /usr/lib/python3.9/site-packages/configgen/emulatorlauncher.py -system wiiu -rom config
 
 exit 0

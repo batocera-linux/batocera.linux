@@ -65,7 +65,11 @@ class CemuGenerator(Generator):
 
         cemuControllers.generateControllerConfig(system, playersControllers, rom)
 
-        commandArray = ["/usr/wine/lutris/bin/wine64", "/userdata/system/configs/cemu/Cemu.exe", "-g", "z:" + rom, "-f"]
+        if rom == "config":
+            commandArray = ["/usr/wine/lutris/bin/wine64", "/userdata/system/configs/cemu/Cemu.exe"]
+        else:
+            commandArray = ["/usr/wine/lutris/bin/wine64", "/userdata/system/configs/cemu/Cemu.exe", "-g", "z:" + rom, "-f"]
+
         return Command.Command(
             array=commandArray,
             env={
@@ -217,7 +221,11 @@ class CemuGenerator(Generator):
 
 # Lauguage auto setting
 def getCemuLangFromEnvironment():
-    lang = environ['LANG'][:5]
+    if 'LANG' in environ:
+        lang = environ['LANG'][:5]
+    else:
+        lang = "en_US"
+
     availableLanguages = { "ja_JP": 0, "en_US": 1, "fr_FR": 2, "de_DE": 3, "it_IT": 4, "es_ES": 5, "zh_CN": 6, "ko_KR": 7, "hu_HU": 8, "pt_PT": 9, "ru_RU": 10, "zh_TW": 11 }
     if lang in availableLanguages:
         return availableLanguages[lang]
