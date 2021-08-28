@@ -140,6 +140,11 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
     retroarchConfig['input_libretro_device_p1'] = '1'           # Default devices choices
     retroarchConfig['input_libretro_device_p2'] = '1'
 
+    # D-pad = Left analog stick forcing on PUAE and VICE (New D2A system on RA doesn't work with these cores.)
+    if system.config['core'] == 'puae' or system.config['core'] == 'vice_x64':
+        retroarchConfig['input_player1_analog_dpad_mode'] = '3'
+        retroarchConfig['input_player2_analog_dpad_mode'] = '3'
+
     # force notification messages
     retroarchConfig['video_font_enable'] = '"true"'
 
@@ -221,8 +226,28 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
             else:
                 retroarchConfig['input_player2_analog_dpad_mode'] = '1'
 
+    if (system.config['core'] == 'swanstation'):               # Swanstation Duckstation
+        if system.isOptSet('duckstation_Controller1'):
+            retroarchConfig['input_libretro_device_p1'] = system.config['duckstation_Controller1']
+            if system.config['duckstation_Controller1'] != '1':
+                retroarchConfig['input_player1_analog_dpad_mode'] = '0'
+            else:
+                retroarchConfig['input_player1_analog_dpad_mode'] = '3'
+        if system.isOptSet('duckstation_Controller2'):
+            retroarchConfig['input_libretro_device_p2'] = system.config['duckstation_Controller2']
+            if system.config['duckstation_Controller2'] != '1':
+                retroarchConfig['input_player2_analog_dpad_mode'] = '0'
+            else:
+                retroarchConfig['input_player2_analog_dpad_mode'] = '3'
+
     ## Sega Dreamcast controller
     if system.config['core'] == 'flycast':
+        if system.name != 'dreamcast':
+            retroarchConfig['input_player1_analog_dpad_mode'] = '3'
+            retroarchConfig['input_player2_analog_dpad_mode'] = '3'
+        else:
+            retroarchConfig['input_player1_analog_dpad_mode'] = '1'
+            retroarchConfig['input_player2_analog_dpad_mode'] = '1'
         if system.isOptSet('controller1_dc'):
             retroarchConfig['input_libretro_device_p1'] = system.config['controller1_dc']
         else:
@@ -273,12 +298,33 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
     if (system.config['core'] == 'dosbox_pure'):               # Dosbox-Pure
         if system.isOptSet('controller1_dosbox_pure'):
             retroarchConfig['input_libretro_device_p1'] = system.config['controller1_dosbox_pure']
-        else:
-            retroarchConfig['input_libretro_device_p1'] = '1'
+            if system.config['controller1_dosbox_pure'] != '3':
+                retroarchConfig['input_player1_analog_dpad_mode'] = '0'
+            else:
+                retroarchConfig['input_player1_analog_dpad_mode'] = '3'
         if system.isOptSet('controller2_dosbox_pure'):
             retroarchConfig['input_libretro_device_p2'] = system.config['controller2_dosbox_pure']
+            if system.config['controller2_dosbox_pure'] != '3':
+                retroarchConfig['input_player1_analog_dpad_mode'] = '0'
+            else:
+                retroarchConfig['input_player1_analog_dpad_mode'] = '3'
+
+    ## Libretro PORTS
+    ## Quake
+    if (system.config['core'] == 'tyrquake'):
+        if system.isOptSet('tyrquake_controller1'):
+            retroarchConfig['input_libretro_device_p1'] = system.config['tyrquake_controller1']
+            retroarchConfig['input_player1_analog_dpad_mode'] = '0'
         else:
-            retroarchConfig['input_libretro_device_p2'] = '1'
+            retroarchConfig['input_libretro_device_p1'] = '1'
+
+    ## DOOM
+    if (system.config['core'] == 'prboom'):
+        if system.isOptSet('prboom_controller1'):
+            retroarchConfig['input_libretro_device_p1'] = system.config['prboom_controller1']
+            retroarchConfig['input_player1_analog_dpad_mode'] = '0'
+        else:
+            retroarchConfig['input_libretro_device_p1'] = '1'
 
     # Smooth option
     if system.isOptSet('smooth') and system.getOptBoolean('smooth') == True:
