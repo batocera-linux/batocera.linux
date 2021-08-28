@@ -3605,6 +3605,17 @@ pcsx2:
             choices:
                 "Off":      0
                 "On":       1
+        micro_vu:
+            prompt:     "MICRO VU SPEED HACKS"
+            description: Good speedup and high compatibility; recommended but may cause issues
+            # The value for each choice is the same as the corresponding PCSX2 ini key
+            choices:
+                "mVU Flag Hack: May cause bad graphics [Recommended]":  vuFlagHack
+                "MTVU: May cause hanging [Recommended on 3+ cores]":    vuThread
+                "Instant VU1: May cause some graphical errors":         vu1Instant
+                # Valid combos; MTVU + Instant VU1 is not supported by PCSX2
+                "mVU Flag Hack + MTVU":                                 "vuFlagHack,vuThread"
+                "mVU Flag Hack + Instant VU1":                          "vuFlagHack,vu1Instant"
         EmuCore_EnableCheats:
             prompt:      GAMES CHEATS
             description: For cheating in games with Action Replay
