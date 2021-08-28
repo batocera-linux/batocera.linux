@@ -245,6 +245,8 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
         if system.name != 'dreamcast':
             retroarchConfig['input_player1_analog_dpad_mode'] = '3'
             retroarchConfig['input_player2_analog_dpad_mode'] = '3'
+            retroarchConfig['input_player3_analog_dpad_mode'] = '3'
+            retroarchConfig['input_player4_analog_dpad_mode'] = '3'
         else:
             retroarchConfig['input_player1_analog_dpad_mode'] = '1'
             retroarchConfig['input_player2_analog_dpad_mode'] = '1'
@@ -305,9 +307,9 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
         if system.isOptSet('controller2_dosbox_pure'):
             retroarchConfig['input_libretro_device_p2'] = system.config['controller2_dosbox_pure']
             if system.config['controller2_dosbox_pure'] != '3':
-                retroarchConfig['input_player1_analog_dpad_mode'] = '0'
+                retroarchConfig['input_player2_analog_dpad_mode'] = '0'
             else:
-                retroarchConfig['input_player1_analog_dpad_mode'] = '3'
+                retroarchConfig['input_player2_analog_dpad_mode'] = '3'
 
     ## Libretro PORTS
     ## Quake
