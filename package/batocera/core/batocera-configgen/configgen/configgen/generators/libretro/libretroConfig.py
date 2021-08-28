@@ -236,6 +236,8 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
         else:
             retroarchConfig['input_player1_analog_dpad_mode'] = '1'
             retroarchConfig['input_player2_analog_dpad_mode'] = '1'
+            retroarchConfig['input_player3_analog_dpad_mode'] = '1'
+            retroarchConfig['input_player4_analog_dpad_mode'] = '1'
         if system.isOptSet('controller1_dc'):
             retroarchConfig['input_libretro_device_p1'] = system.config['controller1_dc']
         else:
