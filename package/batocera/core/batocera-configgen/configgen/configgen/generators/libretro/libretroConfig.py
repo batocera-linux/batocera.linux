@@ -226,20 +226,6 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
             else:
                 retroarchConfig['input_player2_analog_dpad_mode'] = '1'
 
-    if (system.config['core'] == 'swanstation'):               # Swanstation Duckstation
-        if system.isOptSet('duckstation_Controller1'):
-            retroarchConfig['input_libretro_device_p1'] = system.config['duckstation_Controller1']
-            if system.config['duckstation_Controller1'] != '1':
-                retroarchConfig['input_player1_analog_dpad_mode'] = '0'
-            else:
-                retroarchConfig['input_player1_analog_dpad_mode'] = '3'
-        if system.isOptSet('duckstation_Controller2'):
-            retroarchConfig['input_libretro_device_p2'] = system.config['duckstation_Controller2']
-            if system.config['duckstation_Controller2'] != '1':
-                retroarchConfig['input_player2_analog_dpad_mode'] = '0'
-            else:
-                retroarchConfig['input_player2_analog_dpad_mode'] = '3'
-
     ## Sega Dreamcast controller
     if system.config['core'] == 'flycast':
         if system.name != 'dreamcast':
