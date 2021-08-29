@@ -1,11 +1,11 @@
-diff --git a/Source/Core/InputCommon/ControllerInterface/evdev/evdev.cpp b/Source/Core/InputCommon/ControllerInterface/evdev/evdev.cpp
-index 77f796b..f98a3e4 100644
---- a/Source/Core/InputCommon/ControllerInterface/evdev/evdev.cpp
-+++ b/Source/Core/InputCommon/ControllerInterface/evdev/evdev.cpp
-@@ -376,11 +376,73 @@ void Init()
+--- a/Source/Core/InputCommon/ControllerInterface/evdev/evdev.cpp	2021-08-27 20:25:28.772574092 +0200
++++ b/Source/Core/InputCommon/ControllerInterface/evdev/evdev.cpp	2021-08-27 20:25:13.468227620 +0200
+@@ -389,8 +389,68 @@
+ void Init()
+ {
    StartHotplugThread();
- }
- 
++ }
++ 
 +struct joypad_udev_entry
 +{
 +   const char *devnode;
@@ -21,12 +21,12 @@ index 77f796b..f98a3e4 100644
 +
 +  for(n=0; n<strlen(s); n++) {
 +    if(!(s[n] == '0' || s[n] == '1' || s[n] == '2' || s[n] == '3' || s[n] == '4' ||
-+	 s[n] == '5' || s[n] == '6' || s[n] == '7' || s[n] == '8' || s[n] == '9'))
++  s[n] == '5' || s[n] == '6' || s[n] == '7' || s[n] == '8' || s[n] == '9'))
 +      return 0;
 +  }
 +  return 1;
-+}
-+
+ }
+ 
 +// compare /dev/input/eventX and /dev/input/eventY where X and Y are numbers
 +int strcmp_events(const char* x, const char* y) {
 +
@@ -65,8 +65,11 @@ index 77f796b..f98a3e4 100644
 +   return strcmp_events(aa->devnode, bb->devnode);
 +}
 +
++
+ // Only call this when ControllerInterface::m_devices_population_mutex is locked
  void PopulateDevices()
  {
+@@ -403,6 +463,9 @@
    // We use udev to iterate over all /dev/input/event* devices.
    // Note: the Linux kernel is currently limited to just 32 event devices. If
    // this ever changes, hopefully udev will take care of this.
@@ -76,32 +79,3 @@ index 77f796b..f98a3e4 100644
  
    udev* const udev = udev_new();
    ASSERT_MSG(PAD, udev != nullptr, "Couldn't initialize libudev.");
-@@ -399,11 +461,24 @@ void PopulateDevices()
- 
-     udev_device* dev = udev_device_new_from_syspath(udev, path);
- 
--    if (const char* devnode = udev_device_get_devnode(dev))
--      AddDeviceNode(devnode);
--
--    udev_device_unref(dev);
-+    if (const char* devnode = udev_device_get_devnode(dev)) {
-+      sorted[sorted_count].devnode = devnode;
-+      sorted[sorted_count].dev     = dev;
-+      sorted_count++;
-+    } else {
-+      udev_device_unref(dev);
-+    }
-   }
-+
-+  /* Sort the udev entries by devnode name so that they are
-+   * created in the proper order */
-+   qsort(sorted, sorted_count, sizeof(struct joypad_udev_entry), sort_devnodes);
-+
-+   for (i = 0; i < sorted_count; i++) {
-+     AddDeviceNode(sorted[i].devnode);
-+     udev_device_unref(sorted[i].dev);
-+   }
-+
-   udev_enumerate_unref(enumerate);
-   udev_unref(udev);
- }
