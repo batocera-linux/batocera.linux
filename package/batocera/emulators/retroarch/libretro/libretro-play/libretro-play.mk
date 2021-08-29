@@ -25,9 +25,9 @@ LIBRETRO_PLAY_CONF_OPTS += -DENABLE_AMAZON_S3=ON
 define LIBRETRO_PLAY_INSTALL_TARGET_CMDS
 	$(INSTALL) -D $(@D)/Source/ui_libretro/play_libretro.so \
 		$(TARGET_DIR)/usr/lib/libretro/play_libretro.so
-	$(INSTALL) -D $(@D)/Source/ui_qt/Source/libchdr/libchdr.so \
+	$(INSTALL) -D $(@D)/Source/ui_libretro/Source/libchdr/libchdr.so \
 		$(TARGET_DIR)/usr/lib/libchdr.so
-	$(INSTALL) -D $(@D)/Source/ui_qt/Source/libchdr/libchdr.so.0.1 \
+	$(INSTALL) -D $(@D)/Source/ui_libretro/Source/libchdr/libchdr.so.0.1 \
 		$(TARGET_DIR)/usr/lib/libchdr.so.0.1
 	$(INSTALL) -D $(@D)/Source/ui_libretro/Source/CodeGen/libCodeGen.so \
 		$(TARGET_DIR)/usr/lib/libCodeGen.so
