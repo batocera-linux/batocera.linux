@@ -51,23 +51,23 @@ case "${ACTION}" in
 		*)
 		    if echo "${VOLUME}" | grep -qE '^[0-9]+$'
 		    then
-			if test "${VOLUME}" -ge 0 -a "${VOLUME}" -le "${MAX_VOLUME}"
-			then
-				pactl set-sink-volume @DEFAULT_SINK@ "${VOLUME}%"
-				exit 0
-			fi
-			fi
-			else if echo "${VOLUME}" | grep -qE '^[+-][0-9]+$'
-			then
-				let NEWVOLUME=${DETECT_VOLUME}${VOLUME}
-				test "${NEWVOLUME}" -lt 0 && NEWVOLUME=0
-				test "${NEWVOLUME}" -gt "${MAX_VOLUME}" && NEWVOLUME=${MAX_VOLUME}
-				pactl set-sink-volume @DEFAULT_SINK@ "${NEWVOLUME}%"
-				exit 0
-			fi
-			echo "invalid volume value" >&2
-			exit 1
-			fi
+		      if test "${VOLUME}" -ge 0 -a "${VOLUME}" -le "${MAX_VOLUME}"
+		      then
+		        pactl set-sink-volume @DEFAULT_SINK@ "${VOLUME}%"
+		        exit 0
+		      fi
+		    else
+		      if echo "${VOLUME}" | grep -qE '^[+-][0-9]+$'
+		      then
+		        let NEWVOLUME=${DETECT_VOLUME}${VOLUME}
+		        test "${NEWVOLUME}" -lt 0 && NEWVOLUME=0
+		        test "${NEWVOLUME}" -gt "${MAX_VOLUME}" && NEWVOLUME=${MAX_VOLUME}
+		        pactl set-sink-volume @DEFAULT_SINK@ "${NEWVOLUME}%"
+		        exit 0
+		      fi
+		      echo "invalid volume value" >&2
+		      exit 1
+		    fi
 	    esac
 	    ;;
 
