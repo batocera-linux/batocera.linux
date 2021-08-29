@@ -14,7 +14,7 @@ Controller configuration
 
 Note: A keyboard & mouse is required in addition to your controller(s).
 
-You must map your controls per game ROM you intend to run.
+A set on input files is provided however you may want to map your controls per game ROM you intend to run.
 We recommend you do this using the Emulation Station 'F1' menu option and then choose the model2 config app.
 *** The ROM must be loaded before you can configure the controls. ***
 
@@ -27,6 +27,7 @@ Service Menu
 
 Note: Keyboard required.
 
+Appropriate NVDATA files have been provided to ensure all games should work straight away.
 If you receive the error 'Network Board Not Present' when starting a game.
 Go to the Service Menu using F2 and then use F1 to navigate to 'Games System' & press F2.
 Under 'Games System', choose 'Link ID' using F1 & then use F2 to change this option to 'Single'.

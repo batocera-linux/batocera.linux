@@ -16,6 +16,8 @@ endef
 define MODEL2EMU_INSTALL_TARGET_CMDS
 	mkdir -p $(TARGET_DIR)/usr/model2emu
 	cp -pr $(@D) $(TARGET_DIR)/usr
+	# extra files
+	unzip -uo $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/model2emu/model2scripts.zip -d $(TARGET_DIR)/usr/model2emu/
 
 	# evmap config
 	mkdir -p $(TARGET_DIR)/usr/share/evmapy

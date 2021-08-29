@@ -146,12 +146,49 @@ class Model2EmuGenerator(Generator):
         # now set the emulator features
         if system.isOptSet("screenRatio"):
             Config.set("Renderer","WideScreenWindow", format(system.config["screenRatio"]))
-
+        else:
+            Config.set("Renderer","WideScreenWindow", "0")
+        if system.isOptSet("fakeGouraud"):
+            Config.set("Renderer","FakeGouraud", format(system.config["fakeGouraud"]))
+        else:
+            Config.set("Renderer","FakeGouraud", "0")
+        if system.isOptSet("bilinearFiltering"):
+            Config.set("Renderer","Bilinear", format(system.config["bilinearFiltering"]))
+        else:
+            Config.set("Renderer","Bilinear", "1")
+        if system.isOptSet("trilinearFiltering"):
+            Config.set("Renderer","Trilinear", format(system.config["trilinearFiltering"]))
+        else:
+            Config.set("Renderer","Trilinear", "0")
+        if system.isOptSet("filterTilemaps"):
+            Config.set("Renderer","FilterTilemaps", format(system.config["filterTilemaps"]))
+        else:
+            Config.set("Renderer","FilterTilemaps", "0")
+        if system.isOptSet("forceManaged"):
+            Config.set("Renderer","ForceManaged", format(system.config["forceManaged"]))
+        else:
+            Config.set("Renderer","ForceManaged", "0")
+        if system.isOptSet("enableMIP"):
+            Config.set("Renderer","AutoMip", format(system.config["enableMIP"]))
+        else:
+            Config.set("Renderer","AutoMip", "0")
+        if system.isOptSet("meshTransparency"):
+            Config.set("Renderer","MeshTransparency", format(system.config["meshTransparency"]))
+        else:
+            Config.set("Renderer","MeshTransparency", "0")
+        if system.isOptSet("fullscreenAA"):
+            Config.set("Renderer","FSAA", format(system.config["fullscreenAA"]))
+        else:
+            Config.set("Renderer","FSAA", "0")
+        if system.isOptSet("useRawInput"):
+            Config.set("Input","UseRawInput", format(system.config["useRawInput"]))
+        else:
+            Config.set("Input","UseRawInput", "0")
+        
         with open(configFileName, 'w') as configfile:
             Config.write(configfile)
         
         # now run the emulator
-        #commandArray = ["/usr/wine/lutris/bin/wine", "/userdata/saves/model2/model2emu/emulator_multicpu.exe"]
         commandArray = ["/usr/wine/lutris/bin/wine", "explorer", "/desktop=Wine,{}x{}".format(gameResolution["width"], gameResolution["height"]), "/userdata/saves/model2/model2emu/emulator_multicpu.exe"]
         # simplify the rom name (strip the directory & extension)
         romname = rom.replace("/userdata/roms/model2/", "")

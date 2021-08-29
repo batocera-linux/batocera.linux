@@ -4182,6 +4182,60 @@ model2emu:
                 "4:3":      0
                 "16:9":     1
                 "16:10":    2
+        fakeGouraud:
+            prompt:      FAKE GOURAUD
+            description: Tries to guess Per-vertex colour (gouraud) from the Model2 per-poly information (flat)
+            choices:
+                "Off":      0
+                "On":       1
+        bilinearFiltering:
+            prompt:      BILINEAR FILTERING
+            description: Enables bilinear filtering of textures
+            choices:
+                "Off":      0
+                "On":       1
+        trilinearFiltering:
+            prompt:      TRILINEAR FILTERING
+            description: Enables mipmap usage and trilinear filtering (doesn't work with some games, DoA for example)
+            choices:
+                "Off":      0
+                "On":       1
+        filterTilemaps:
+            prompt:      FILTER TILEMAPS
+            description: Enables bilinear filtering on tilemaps (looks good, but can cause some stretch artifacts)
+            choices:
+                "Off":      0
+                "On":       1
+        forceManaged:
+            prompt:      FORCE MANAGED
+            description: Forces the DX driver to use Managed textures instead of Dynamic
+            choices:
+                "Off":      0
+                "On":       1
+        enableMIP:
+            prompt:      ENABLE MIPMAP
+            description: Enables Direct3D Automipmap generation
+            choices:
+                "Off":      0
+                "On":       1
+        meshTransparency:
+            prompt:      ENABLE MESH TRANSPARENCY
+            description: Enabled meshed polygons for translucency.
+            choices:
+                "Off":      0
+                "On":       1            
+        fullscreenAA:
+            prompt:      ENABLE FULL SCREEN ANTIALIASING
+            description: Enable full screen antialiasing in Direct3D.
+            choices:
+                "Off":      0
+                "On":       1
+        useRawInput:
+            prompt:      ENABLE RAW INPUT
+            description: Read mouse through Rawinput, allowing 2 mice for 2 player shooting games
+            choices:
+                "Off":      0
+                "On":       1
 
 gsplus:
   features: [padtokeyboard]
