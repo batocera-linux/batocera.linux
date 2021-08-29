@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-BATOCERA_EMULATIONSTATION_VERSION = 4babdd568072f18c0f1a14d0d5ddeae7567b34a1
+BATOCERA_EMULATIONSTATION_VERSION = 9fc53b2bf4b2cb5e4ceeebd8abc908feaa697d4d
 BATOCERA_EMULATIONSTATION_SITE = https://github.com/batocera-linux/batocera-emulationstation
 BATOCERA_EMULATIONSTATION_SITE_METHOD = git
 BATOCERA_EMULATIONSTATION_LICENSE = MIT
