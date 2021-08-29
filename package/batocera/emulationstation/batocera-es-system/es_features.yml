@@ -3629,6 +3629,12 @@ ppsspp:
                 "3":                    3
                 "4":                    4
                 "5":                    5
+        vsyncinterval:
+            prompt:      VSYNC INTERVAL
+            description: Enable for more fluidity, disable if screen tearing
+            choices:
+                "Enable":               True
+                "Disable":              False
         texture_scaling_level:
             prompt:      TEXTURE UPSCALING LEVEL
             description: Choose multiple of original texture resolution
