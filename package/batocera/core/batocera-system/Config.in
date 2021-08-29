@@ -302,7 +302,7 @@ config BR2_TARGET_BATOCERA_IMAGES_DEFINITIONS
 	default "raspberrypi/rpi3"                                  if BR2_PACKAGE_BATOCERA_TARGET_RPI3
 	default "raspberrypi/rpi4"                                  if BR2_PACKAGE_BATOCERA_TARGET_RPI4
 	default "rockchip/odroidgoa"                                if BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA
-    default "rockchip/gameforce"                                if BR2_PACKAGE_BATOCERA_TARGET_GAMEFORCE
+	default "rockchip/gameforce"                                if BR2_PACKAGE_BATOCERA_TARGET_GAMEFORCE
 	default "rockchip/rk3288/tinkerboard rockchip/rk3288/miqi"  if BR2_PACKAGE_BATOCERA_TARGET_RK3288
 	default "rockchip/rk3399/rock960 rockchip/rk3399/rockpro64" if BR2_PACKAGE_BATOCERA_TARGET_RK3399
 	default "tritium-h5"                                        if BR2_PACKAGE_BATOCERA_TARGET_TRITIUM_H5
@@ -568,8 +568,10 @@ config BR2_PACKAGE_BATOCERA_HANDHELD_SYSTEMS
 	# NDS
 	select BR2_PACKAGE_LIBRETRO_DESMUME         if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
 
-	select BR2_PACKAGE_LIBRETRO_MELONDS         if  BR2_PACKAGE_BATOCERA_TARGET_X86_64      || \
+	select BR2_PACKAGE_LIBRETRO_MELONDS         if  BR2_PACKAGE_BATOCERA_TARGET_X86_64  || \
                                                     BR2_PACKAGE_BATOCERA_TARGET_S905GEN3    || \
+                                                    BR2_PACKAGE_BATOCERA_TARGET_RPI4        || \ # Cheevos + works for some 2D games
+                                                    BR2_PACKAGE_BATOCERA_TARGET_RK3326_ANY  || \ # Cheevos + works for some 2D games
                                                     BR2_PACKAGE_BATOCERA_TARGET_S922X       # no JIT on 32-bit x86/ARM
 
 	select BR2_PACKAGE_DRASTIC                  if  BR2_aarch64 && ( BR2_PACKAGE_BATOCERA_RPI_MESA3D || BR2_PACKAGE_BATOCERA_TARGET_S922X || BR2_PACKAGE_BATOCERA_TARGET_RK3326_ANY )
