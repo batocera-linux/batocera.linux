@@ -77,19 +77,24 @@ if ! rm -rf "${TMPOUT}"
 then
     exit 1
 fi
-if ! mkdir -p "${TMPOUT}/lib32"
+if ! mkdir -p "${TMPOUT}/usr/lib32"
 then
     exit 1
 fi
-if ! mkdir -p "${TMPOUT}/lib32/wine"
+if ! ln -sf "${TMPOUT}/lib32" "${TMPOUT}/usr/lib32"
 then
     exit 1
 fi
-if ! mkdir -p "${TMPOUT}/lib32/gstreamer-1.0"
+
+if ! mkdir -p "${TMPOUT}/usr/lib32/wine"
 then
     exit 1
 fi
-#if ! mkdir -p "${TMPOUT}/lib32/pulseaudio"
+if ! mkdir -p "${TMPOUT}/usr/lib32/gstreamer-1.0"
+then
+    exit 1
+fi
+#if ! mkdir -p "${TMPOUT}/usr/lib32/pulseaudio"
 #then
 #    exit 1
 #fi
@@ -109,16 +114,16 @@ fi
 # libs32
 # "${G_TARGETDIR}/usr/lib/"*.so \
 echo "libs..."
-#cp -p  "${G_TARGETDIR}/usr/lib/"* "${TMPOUT}/lib32" 2>/dev/null
-cp -pr "${G_TARGETDIR}/usr/lib/wine/"* "${TMPOUT}/lib32/wine" || exit 1
-cp -pr "${G_TARGETDIR}/usr/lib/gstreamer-1.0/"* "${TMPOUT}/lib32/gstreamer-1.0" || exit 1
-#cp -pr "${G_TARGETDIR}/usr/lib/pulseaudio/"* "${TMPOUT}/lib32/pulseaudio" || exit 1
+#cp -p  "${G_TARGETDIR}/usr/lib/"* "${TMPOUT}/usr/lib32" 2>/dev/null
+cp -pr "${G_TARGETDIR}/usr/lib/wine/"* "${TMPOUT}/usr/lib32/wine" || exit 1
+cp -pr "${G_TARGETDIR}/usr/lib/gstreamer-1.0/"* "${TMPOUT}/usr/lib32/gstreamer-1.0" || exit 1
+#cp -pr "${G_TARGETDIR}/usr/lib/pulseaudio/"* "${TMPOUT}/usr/lib32/pulseaudio" || exit 1
 cp -pr "${G_TARGETDIR}/usr/share/wine/"* "${TMPOUT}/usr/share/wine" || exit 1
 cp -pr "${G_TARGETDIR}/usr/share/gst-plugins-base/"* "${TMPOUT}/usr/share/gst-plugins-base" || exit 1
 cp -pr "${G_TARGETDIR}/usr/share/gstreamer-1.0/"* "${TMPOUT}/usr/share/gstreamer-1.0" || exit 1
 #ln -s /lib32/pulseaudio "${TMPOUT}/usr/lib/pulseaudio" || exit 1
-cp -p "${G_TARGETDIR}/usr/lib/libEGL_mesa"* "${TMPOUT}/lib32" || exit 1
-cp -p "${G_TARGETDIR}/usr/lib/libGLX_mesa"* "${TMPOUT}/lib32" || exit 1
+cp -p "${G_TARGETDIR}/usr/lib/libEGL_mesa"* "${TMPOUT}/usr/lib32" || exit 1
+cp -p "${G_TARGETDIR}/usr/lib/libGLX_mesa"* "${TMPOUT}/usr/lib32" || exit 1
 #"${G_TARGETDIR}/usr/lib/pulseaudio/"*.so
 for BIN in "${G_TARGETDIR}/usr/bin/wine" \
 "${G_TARGETDIR}/usr/bin/wineserver" \
@@ -127,12 +132,12 @@ for BIN in "${G_TARGETDIR}/usr/bin/wine" \
 "${G_TARGETDIR}/usr/lib/libEGL_mesa"* \
 "${G_TARGETDIR}/usr/lib/libGLX_mesa"*
 do
-    findDeps "${BIN}" "${TMPOUT}/lib32" || exit 1
+    findDeps "${BIN}" "${TMPOUT}/usr/lib32" || exit 1
 done
 
 # dynanically loaded libs
-cp -pr "${G_TARGETDIR}/usr/lib/libncurses.so."* "${TMPOUT}/lib32/" || exit 1
-cp -pr "${G_TARGETDIR}/usr/lib/libmspack.so."*  "${TMPOUT}/lib32/" || exit 1
+cp -pr "${G_TARGETDIR}/usr/lib/libncurses.so."* "${TMPOUT}/usr/lib32/" || exit 1
+cp -pr "${G_TARGETDIR}/usr/lib/libmspack.so."*  "${TMPOUT}/usr/lib32/" || exit 1
 
 # binaries
 echo "binaries..."
@@ -148,10 +153,10 @@ for i in "${G_TARGETDIR}/usr/lib/dri/"*.so
 do
     echo "   "$(basename "${i}")
 done
-cp -pr "${G_TARGETDIR}/usr/lib/dri" "${TMPOUT}/lib32/dri"
+cp -pr "${G_TARGETDIR}/usr/lib/dri" "${TMPOUT}/usr/lib32/dri"
 for BIN in "${G_TARGETDIR}/usr/lib/dri/"*.so
 do
-    findDeps "${BIN}" "${TMPOUT}/lib32" || exit 1
+    findDeps "${BIN}" "${TMPOUT}/usr/lib32" || exit 1
 done
 
 # ld

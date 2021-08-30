@@ -40,10 +40,10 @@ G_ROMS_DIR="/userdata/roms/${SYSTEM}"
 
 ## Export Wine libs
 PATH=$PATH:PATH=$PATH:${DIR}/${WINE_VERSION}/bin
-export LD_LIBRARY_PATH="/lib32:${DIR}/${WINE_VERSION}/lib/wine:/lib:/usr/lib:${DIR}/${WINE_VERSION}/lib64/wine"
-export GST_PLUGIN_SYSTEM_PATH_1_0="/usr/lib/gstreamer-1.0:/lib32/gstreamer-1.0"
+export LD_LIBRARY_PATH="/usr/lib32:${DIR}/${WINE_VERSION}/lib/wine:/lib:/usr/lib:${DIR}/${WINE_VERSION}/lib64/wine"
+export GST_PLUGIN_SYSTEM_PATH_1_0="/usr/lib/gstreamer-1.0:/usr/lib32/gstreamer-1.0"
 export GST_REGISTRY_1_0="/userdata/system/.cache/gstreamer-1.0/registry.x86_64.bin"
-export LIBGL_DRIVERS_PATH="/lib32/dri:/usr/lib/dri"
+export LIBGL_DRIVERS_PATH="/usr/lib32/dri:/usr/lib/dri"
 export WINEDLLPATH="${DIR}/${WINE_VERSION}/lib/wine/fakedlls:${DIR}/${WINE_VERSION}/lib64/wine/fakedlls"
 
 usage() {

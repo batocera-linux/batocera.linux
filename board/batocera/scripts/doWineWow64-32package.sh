@@ -79,15 +79,19 @@ if ! rm -rf "${TMPOUT}"
 then
     exit 1
 fi
-if ! mkdir -p "${TMPOUT}/lib32"
+if ! mkdir -p "${TMPOUT}/usr/lib32"
 then
     exit 1
 fi
-if ! mkdir -p "${TMPOUT}/lib32/gstreamer-1.0"
+if ! ln -sf "${TMPOUT}/lib32" "${TMPOUT}/usr/lib32"
 then
     exit 1
 fi
-#if ! mkdir -p "${TMPOUT}/lib32/pulseaudio"
+if ! mkdir -p "${TMPOUT}/usr/lib32/gstreamer-1.0"
+then
+    exit 1
+fi
+#if ! mkdir -p "${TMPOUT}/usr/lib32/pulseaudio"
 #then
 #    exit 1
 #fi
@@ -107,22 +111,22 @@ fi
 # libs32
 # "${G_TARGETDIR}/usr/lib/"*.so \
 echo "libs..."
-#cp -p  "${G_TARGETDIR}/usr/lib/"* "${TMPOUT}/lib32" 2>/dev/null
-cp -pr "${G_TARGETDIR}/usr/lib/gstreamer-1.0/"* "${TMPOUT}/lib32/gstreamer-1.0" || exit 1
-#cp -pr "${G_TARGETDIR}/usr/lib/pulseaudio/"* "${TMPOUT}/lib32/pulseaudio" || exit 1
+#cp -p  "${G_TARGETDIR}/usr/lib/"* "${TMPOUT}/usr/lib32" 2>/dev/null
+cp -pr "${G_TARGETDIR}/usr/lib/gstreamer-1.0/"* "${TMPOUT}/usr/lib32/gstreamer-1.0" || exit 1
+#cp -pr "${G_TARGETDIR}/usr/lib/pulseaudio/"* "${TMPOUT}/usr/lib32/pulseaudio" || exit 1
 cp -pr "${G_TARGETDIR}/usr/share/gst-plugins-base/"* "${TMPOUT}/usr/share/gst-plugins-base" || exit 1
 cp -pr "${G_TARGETDIR}/usr/share/gstreamer-1.0/"* "${TMPOUT}/usr/share/gstreamer-1.0" || exit 1
 #ln -s /lib32/pulseaudio "${TMPOUT}/usr/lib/pulseaudio" || exit 1
-cp -p "${G_TARGETDIR}/usr/lib/libEGL_mesa"* "${TMPOUT}/lib32" || exit 1
-cp -p "${G_TARGETDIR}/usr/lib/libGLX_mesa"* "${TMPOUT}/lib32" || exit 1
-cp -p "${G_TARGETDIR}/usr/lib/libGL.so"* "${TMPOUT}/lib32" || exit 1
-cp -p "${G_TARGETDIR}/usr/lib/libGLX.so"* "${TMPOUT}/lib32" || exit 1
-cp -p "${G_TARGETDIR}/usr/lib/libGLdispatch.so"* "${TMPOUT}/lib32" || exit 1
-cp -p "${G_TARGETDIR}/usr/lib/libxatracker.so"* "${TMPOUT}/lib32" || exit 1
-cp -p "${G_TARGETDIR}/usr/lib/libXrandr.so"* "${TMPOUT}/lib32" || exit 1
-cp -p "${G_TARGETDIR}/usr/lib/libXft.so"* "${TMPOUT}/lib32" || exit 1
-cp -p "${G_TARGETDIR}/usr/lib/libXi.so"* "${TMPOUT}/lib32" || exit 1
-cp -p "${G_TARGETDIR}/usr/lib/libXinerama.so"* "${TMPOUT}/lib32" || exit 1
+cp -p "${G_TARGETDIR}/usr/lib/libEGL_mesa"* "${TMPOUT}/usr/lib32" || exit 1
+cp -p "${G_TARGETDIR}/usr/lib/libGLX_mesa"* "${TMPOUT}/usr/lib32" || exit 1
+cp -p "${G_TARGETDIR}/usr/lib/libGL.so"* "${TMPOUT}/usr/lib32" || exit 1
+cp -p "${G_TARGETDIR}/usr/lib/libGLX.so"* "${TMPOUT}/usr/lib32" || exit 1
+cp -p "${G_TARGETDIR}/usr/lib/libGLdispatch.so"* "${TMPOUT}/usr/lib32" || exit 1
+cp -p "${G_TARGETDIR}/usr/lib/libxatracker.so"* "${TMPOUT}/usr/lib32" || exit 1
+cp -p "${G_TARGETDIR}/usr/lib/libXrandr.so"* "${TMPOUT}/usr/lib32" || exit 1
+cp -p "${G_TARGETDIR}/usr/lib/libXft.so"* "${TMPOUT}/usr/lib32" || exit 1
+cp -p "${G_TARGETDIR}/usr/lib/libXi.so"* "${TMPOUT}/usr/lib32" || exit 1
+cp -p "${G_TARGETDIR}/usr/lib/libXinerama.so"* "${TMPOUT}/usr/lib32" || exit 1
 #"${G_TARGETDIR}/usr/lib/pulseaudio/"*.so
 
 # add .so for lutris
@@ -156,26 +160,26 @@ for BIN in \
 "${G_TARGETDIR}/usr/lib/lib"*"krb5"*"so"* \
 "${G_TARGETDIR}/lib/libnss_"*
 do
-    findDeps "${BIN}" "${TMPOUT}/lib32" || exit 1
+    findDeps "${BIN}" "${TMPOUT}/usr/lib32" || exit 1
 done
 
 # dynanically loaded libs
-cp -pr "${G_TARGETDIR}/usr/lib/libjpeg.so"* "${TMPOUT}/lib32/" || exit 1
-cp -pr "${G_TARGETDIR}/usr/lib/libncurses.so"* "${TMPOUT}/lib32/" || exit 1
-cp -pr "${G_TARGETDIR}/usr/lib/libmspack.so"*  "${TMPOUT}/lib32/" || exit 1
-cp -pr "${G_TARGETDIR}/usr/lib/libdbus"*"so"*  "${TMPOUT}/lib32/" || exit 1
-cp -pr "${G_TARGETDIR}/usr/lib/libopenal.so"*  "${TMPOUT}/lib32/" || exit 1
-cp -pr "${G_TARGETDIR}/usr/lib/libvulkan"*"so"*  "${TMPOUT}/lib32/" || exit 1
-cp -pr "${G_TARGETDIR}/usr/lib/libgcrypt"*"so"*  "${TMPOUT}/lib32/" || exit 1
-cp -pr "${G_TARGETDIR}/usr/lib/libmpg123"*"so"*  "${TMPOUT}/lib32/" || exit 1
-cp -pr "${G_TARGETDIR}/usr/lib/lib"*"krb5"*"so"*  "${TMPOUT}/lib32/" || exit 1
-cp -pr "${G_TARGETDIR}/lib/libnss_"*"so"*  "${TMPOUT}/lib32/" || exit 1
-cp -pr "${G_TARGETDIR}/usr/lib/libpulse"*"so"* "${TMPOUT}/lib32/" || exit 1
-cp -pr "${G_TARGETDIR}/usr/lib/libpipewire"*"so"* "${TMPOUT}/lib32/" || exit 1
-#cp -pr "${G_TARGETDIR}/usr/lib/pipewire-"*"/" "${TMPOUT}/lib32/" || exit 1
-#cp -pr "${G_TARGETDIR}/usr/lib/spa-"*"/" "${TMPOUT}/lib32/" || exit 1
-mkdir -p "${TMPOUT}/lib32/alsa-lib" || exit 1
-cp -pr "${G_TARGETDIR}/usr/lib/alsa-lib/libasound_module_"*".so" "${TMPOUT}/lib32/alsa-lib" || exit 1
+cp -pr "${G_TARGETDIR}/usr/lib/libjpeg.so"* "${TMPOUT}/usr/lib32/" || exit 1
+cp -pr "${G_TARGETDIR}/usr/lib/libncurses.so"* "${TMPOUT}/usr/lib32/" || exit 1
+cp -pr "${G_TARGETDIR}/usr/lib/libmspack.so"*  "${TMPOUT}/usr/lib32/" || exit 1
+cp -pr "${G_TARGETDIR}/usr/lib/libdbus"*"so"*  "${TMPOUT}/usr/lib32/" || exit 1
+cp -pr "${G_TARGETDIR}/usr/lib/libopenal.so"*  "${TMPOUT}/usr/lib32/" || exit 1
+cp -pr "${G_TARGETDIR}/usr/lib/libvulkan"*"so"*  "${TMPOUT}/usr/lib32/" || exit 1
+cp -pr "${G_TARGETDIR}/usr/lib/libgcrypt"*"so"*  "${TMPOUT}/usr/lib32/" || exit 1
+cp -pr "${G_TARGETDIR}/usr/lib/libmpg123"*"so"*  "${TMPOUT}/usr/lib32/" || exit 1
+cp -pr "${G_TARGETDIR}/usr/lib/lib"*"krb5"*"so"*  "${TMPOUT}/usr/lib32/" || exit 1
+cp -pr "${G_TARGETDIR}/lib/libnss_"*"so"*  "${TMPOUT}/usr/lib32/" || exit 1
+cp -pr "${G_TARGETDIR}/usr/lib/libpulse"*"so"* "${TMPOUT}/usr/lib32/" || exit 1
+cp -pr "${G_TARGETDIR}/usr/lib/libpipewire"*"so"* "${TMPOUT}/usr/lib32/" || exit 1
+#cp -pr "${G_TARGETDIR}/usr/lib/pipewire-"*"/" "${TMPOUT}/usr/lib32/" || exit 1
+#cp -pr "${G_TARGETDIR}/usr/lib/spa-"*"/" "${TMPOUT}/usr/lib32/" || exit 1
+mkdir -p "${TMPOUT}/usr/lib32/alsa-lib" || exit 1
+cp -pr "${G_TARGETDIR}/usr/lib/alsa-lib/libasound_module_"*".so" "${TMPOUT}/usr/lib32/alsa-lib" || exit 1
 
 # installation
 echo "wine installation..."
@@ -195,24 +199,24 @@ for i in "${G_TARGETDIR}/usr/lib/dri/"*.so
 do
     echo "   "$(basename "${i}")
 done
-cp -pr "${G_TARGETDIR}/usr/lib/dri" "${TMPOUT}/lib32/dri"
+cp -pr "${G_TARGETDIR}/usr/lib/dri" "${TMPOUT}/usr/lib32/dri"
 for BIN in "${G_TARGETDIR}/usr/lib/dri/"*.so
 do
-    findDeps "${BIN}" "${TMPOUT}/lib32" || exit 1
+    findDeps "${BIN}" "${TMPOUT}/usr/lib32" || exit 1
 done
 
 # icd.d json files
-# path needs to be updated to fit /lib32
+# path needs to be updated to fit /usr/lib32
 mkdir -p "${TMPOUT}/usr/share/vulkan" || exit 1
 cp -pr "${G_TARGETDIR}/usr/share/vulkan/icd.d" "${TMPOUT}/usr/share/vulkan/" || exit 1
-sed -i -e s+"\"/usr/lib/"+"\"/lib32/"+ "${TMPOUT}/usr/share/vulkan/icd.d/"*.json || exit 1
+sed -i -e s+"\"/usr/lib/"+"\"/usr/lib32/"+ "${TMPOUT}/usr/share/vulkan/icd.d/"*.json || exit 1
 
 # ld
 echo "ld..."
 mkdir -p "${TMPOUT}/lib"                                      || exit 1
 ENDINGNAME=$(echo "${G_TARGETDIR}/lib/ld-linux"* | sed -e s+'^.*/\([^/]*\)$'+'\1'+)
 echo  "   ${ENDINGNAME}"
-(cd "${TMPOUT}/lib" && ln -sf ../lib32/ld-*.so "${ENDINGNAME}") || exit 1
+(cd "${TMPOUT}/lib" && ln -sf ../usr/lib32/ld-*.so "${ENDINGNAME}") || exit 1
 
 if echo "${TARGET_IMAGE}" | grep -qE "^/"
 then
