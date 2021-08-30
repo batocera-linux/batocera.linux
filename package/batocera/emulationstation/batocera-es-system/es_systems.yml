@@ -195,6 +195,7 @@ n64:
       mupen64plus-next: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MUPEN64PLUS_NEXT] }
       parallel_n64:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PARALLEL_N64] }
   comment_en: |
+    If Mupen64Plus standalone cannot load your zipped ROMs (black screen, then return to menu), try unzipping your ROMs.
     For more info: https://wiki.batocera.org/systems:n64
   comment_fr: |
     Trouvez la documentation ici: https://wiki.batocera.org/systems:n64
