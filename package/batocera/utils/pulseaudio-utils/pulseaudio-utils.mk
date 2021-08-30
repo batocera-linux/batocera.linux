@@ -34,7 +34,7 @@ PULSEAUDIO_UTILS_CONF_OPTS += --disable-samplerate
 endif
 
 ifeq ($(BR2_PACKAGE_GDBM),y)
-PULSEAUDIO_UTILS_CONF_OPTS += --with-database=gdbm
+PULSEAUDIO_UTILS_CONF_OPTS += --with-database=gdbm --with-database=simple
 PULSEAUDIO_UTILS_DEPENDENCIES += gdbm
 else
 PULSEAUDIO_UTILS_CONF_OPTS += --with-database=simple
@@ -151,6 +151,8 @@ define PULSEAUDIO_UTILS_INSTALL_TARGET_CMDS
 	cp $(@D)/src/.libs/libpulse.so $(TARGET_DIR)/usr/lib/
 	ln -sf libpulse.so $(TARGET_DIR)/usr/lib/libpulse.so.0
 	cp $(@D)/src/.libs/libpulsecommon-$(PULSEAUDIO_UTILS_VERSION).so $(TARGET_DIR)/usr/lib/
+	cp $(@D)/src/.libs/libpulse-simple.so $(TARGET_DIR)/usr/lib/
+	ln -sf libpulse-simple.so $(TARGET_DIR)/usr/lib/libpulse-simple.so.0
 endef
 
 $(eval $(autotools-package))
