@@ -568,11 +568,11 @@ config BR2_PACKAGE_BATOCERA_HANDHELD_SYSTEMS
 	# NDS
 	select BR2_PACKAGE_LIBRETRO_DESMUME         if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
 
-	select BR2_PACKAGE_LIBRETRO_MELONDS         if  BR2_PACKAGE_BATOCERA_TARGET_X86_64  || \
-                                                    BR2_PACKAGE_BATOCERA_TARGET_S905GEN3    || \
-                                                    BR2_PACKAGE_BATOCERA_TARGET_RPI4        || \ # Cheevos + works for some 2D games
-                                                    BR2_PACKAGE_BATOCERA_TARGET_RK3326_ANY  || \ # Cheevos + works for some 2D games
-                                                    BR2_PACKAGE_BATOCERA_TARGET_S922X       # no JIT on 32-bit x86/ARM
+	select BR2_PACKAGE_LIBRETRO_MELONDS         if  BR2_PACKAGE_BATOCERA_TARGET_X86_64  	|| \
+													BR2_PACKAGE_BATOCERA_TARGET_S905GEN3    || \
+													BR2_PACKAGE_BATOCERA_TARGET_RPI4        || \
+													BR2_PACKAGE_BATOCERA_TARGET_RK3326_ANY  || \
+													BR2_PACKAGE_BATOCERA_TARGET_S922X
 
 	select BR2_PACKAGE_DRASTIC                  if  BR2_aarch64 && ( BR2_PACKAGE_BATOCERA_RPI_MESA3D || BR2_PACKAGE_BATOCERA_TARGET_S922X || BR2_PACKAGE_BATOCERA_TARGET_RK3326_ANY )
 
