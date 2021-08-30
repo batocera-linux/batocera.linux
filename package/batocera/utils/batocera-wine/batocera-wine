@@ -74,6 +74,11 @@ wine_options() {
     FSYNC="$(get_setting fsync "${SYSTEM}" "${ROMGAMENAME}")"
     PBA="$(get_setting pba "${SYSTEM}" "${ROMGAMENAME}")"
     FPS_LIMIT="$(get_setting fps_limit "${SYSTEM}" "${ROMGAMENAME}")"
+    ALLOW_XIM="$(get_setting allow_xim "${SYSTEM}" "${ROMGAMENAME}")"
+    NO_WRITE_WATCH="$(get_setting no_write_watch "${SYSTEM}" "${ROMGAMENAME}")"
+    FORCE_LARGE_ADRESS="$(get_setting force_large_adress "${SYSTEM}" "${ROMGAMENAME}")"
+    HEAP_DELAY_FREE="$(get_setting heap_delay_free "${SYSTEM}" "${ROMGAMENAME}")"
+    HIDE_NVIDIA_GPU="$(get_setting hide_nvidia_gpu "${SYSTEM}" "${ROMGAMENAME}")"
     WINE_DEBUG="$(get_setting wine_debug "${SYSTEM}" "${ROMGAMENAME}")"
     KEYBOARD="$(/usr/bin/batocera-settings-get system.kblayout)"
     VIRTUAL_DESKTOP="$(get_setting virtual_desktop "${SYSTEM}" "${ROMGAMENAME}")"
@@ -106,6 +111,26 @@ wine_options() {
 
     export VKD3D_SHADER_DEBUG=none
     test "${WINE_DEBUG}" = 1 && unset VKD3D_SHADER_DEBUG
+
+    # Wine-mono override for FNA games
+    export WINE_MONO_OVERRIDES="Microsoft.Xna.Framework.*,Gac=n"
+
+    # Disable XIM support until libx11 >= 1.7 is widespread
+    export WINE_ALLOW_XIM=0
+    test "${ALLOW_XIM}" = 1 && WINE_ALLOW_XIM=1
+
+    # Advanced options from proton
+    export WINE_DISABLE_WRITE_WATCH=0
+    test "${NO_WRITE_WATCH}" = 1 && WINE_DISABLE_WRITE_WATCH=1
+
+    export WINE_LARGE_ADDRESS_AWARE=0
+    test "${FORCE_LARGE_ADRESS}" = 1 && export WINE_LARGE_ADDRESS_AWARE=1
+
+    export WINE_HEAP_DELAY_FREE=0
+    test "${HEAP_DELAY_FREE}" = 1 && export WINE_HEAP_DELAY_FREE=1
+
+    export WINE_HIDE_NVIDIA_GPU=0
+    test "${HIDE_NVIDIA_GPU}" = 1 && export WINE_HIDE_NVIDIA_GPU=1
 
     export STAGING_SHARED_MEMORY=1
     export ULIMIT_SIZE=1048576

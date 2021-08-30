@@ -3916,6 +3916,36 @@ wine:
             choices:
                 "Off": 0
                 "On":  1
+        allow_xim:
+            prompt:      ENABLE XIM
+            description: Enable XIM support
+            choices:
+                "Off": 0
+                "On":  1
+        no_write_watch:
+            prompt:      NO WRITE WATCH
+            description: Disable support for memory write watches in ntdll
+            choices:
+                "Off": 0
+                "On":  1
+        force_large_adress:
+            prompt:      FORCE LARGE ADRESS
+            description: Force wine to run games with large adress
+            choices:
+                "Off": 0
+                "On":  1
+        heap_delay_free:
+            prompt:      HEAP DELAY FREE
+            description: Delay freeing some memory
+            choices:
+                "Off": 0
+                "On":  1
+        hide_nvidia_gpu:
+            prompt:      HIDE NVIDIA GPU
+            description: Force Nvidia GPUs to always be reported as AMD GPUs
+            choices:
+                "Off": 0
+                "On":  1
         wine_debug:
             prompt:      ENABLE DEBUG
             description: Enable wine debug
