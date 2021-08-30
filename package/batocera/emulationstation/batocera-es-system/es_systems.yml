@@ -1511,6 +1511,7 @@ ps2:
     pcsx2:
       pcsx2: { requireAnyOf: [BR2_PACKAGE_PCSX2, BR2_PACKAGE_PCSX2_AVX2, BR2_PACKAGE_PCSX2_X86] }
     libretro:
+      pcsx2: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PCSX2] }
       play: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PLAY] }
     play:
       play: { requireAnyOf: [BR2_PACKAGE_PLAY] }
