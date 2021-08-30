@@ -40,6 +40,8 @@ define PLAY_INSTALL_TARGET_CMDS
 		$(TARGET_DIR)/usr/lib/libFramework_Vulkan.so
 	$(INSTALL) -D $(@D)/Source/ui_qt/gs/GSH_Vulkan/Nuanceur/libNuanceur.so \
 		$(TARGET_DIR)/usr/lib/libNuanceur.so
+	$(INSTALL) -D $(@D)/Source/ui_qt/SH_OpenAL/FrameworkOpenAl/libFramework_OpenAl.so \
+		$(TARGET_DIR)/usr/lib/libFramework_OpenAl.so
 	$(INSTALL) -D $(@D)/Source/ui_qt/Source/FrameworkAmazon/libFramework_Amazon.so \
 		$(TARGET_DIR)/usr/lib/libFramework_Amazon.so
 	$(INSTALL) -D $(@D)/Source/ui_qt/Source/FrameworkAmazon/FrameworkHttp/libFramework_Http.so \
