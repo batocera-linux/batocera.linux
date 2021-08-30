@@ -83,7 +83,7 @@ if ! mkdir -p "${TMPOUT}/usr/lib32"
 then
     exit 1
 fi
-if ! ln -sf "${TMPOUT}/lib32" "${TMPOUT}/usr/lib32"
+if ! ln -sf "/usr/lib32" "${TMPOUT}/lib32"
 then
     exit 1
 fi
