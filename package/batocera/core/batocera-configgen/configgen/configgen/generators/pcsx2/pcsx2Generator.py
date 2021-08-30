@@ -10,6 +10,7 @@ import configparser
 import io
 import controllersConfig
 from utils.logger import get_logger
+import psutil
 
 eslog = get_logger(__name__)
 
@@ -129,6 +130,25 @@ def configureVM(config_directory, system):
     else:
         pcsx2VMConfig.set("EmuCore/GS","VsyncEnable", "1")    
 
+    if not pcsx2VMConfig.has_section("EmuCore/Speedhacks"):
+        pcsx2VMConfig.add_section("EmuCore/Speedhacks")
+    # Any speed hacks set explicitly or as defaults are considered safe by the PCSX2 devs
+    # These hacks are also gentle on lower end systems with the exception of MTVU where we check system requirements
+    pcsx2VMConfig.set("EmuCore/Speedhacks", "IntcStat", "enabled")
+    pcsx2VMConfig.set("EmuCore/Speedhacks", "WaitLoop", "enabled")
+    micro_vu_keys = {"vuFlagHack", "vuThread", "vu1Instant"}
+    micro_vu_default_keys = {"vuFlagHack"}
+    # MTVU + Instant VU1 is not supported by PCSX2; and so its one or the other
+    if psutil.cpu_count(logical=False) >= 3:  # 3+ physical cores recommended by PCSX2 devs for MTVU
+        micro_vu_default_keys.add("vuThread")
+    else:
+        micro_vu_default_keys.add("vu1Instant")
+    micro_vu_enabled_keys = \
+        set(system.config["micro_vu"].split(",")) if system.isOptSet("micro_vu") else micro_vu_default_keys
+    for key in micro_vu_enabled_keys:
+        pcsx2VMConfig.set("EmuCore/Speedhacks", key, "enabled")
+    for key in micro_vu_keys - micro_vu_enabled_keys:
+        pcsx2VMConfig.set("EmuCore/Speedhacks", key, "disabled")
 
     ## [EMUCORE]
     if not pcsx2VMConfig.has_section("EmuCore"):
