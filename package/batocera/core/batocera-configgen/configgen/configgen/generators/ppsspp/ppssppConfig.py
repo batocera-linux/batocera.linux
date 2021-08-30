@@ -61,11 +61,11 @@ def createPPSSPPConfig(iniConfig, system):
     else:
         iniConfig.set("Graphics", "FrameSkip",     "0")
 
-    # VSync
-    iniConfig.set("Graphics", "VSyncInterval", "True")
-    if system.isOptSet("vsyncinterval"):
-        if system.config["vsyncinterval"] == "False":
-            iniConfig.set("Graphics", "VSyncInterval", "False")
+    # VSync Interval
+    if system.isOptSet('vsyncinterval') and system.getOptBoolean('vsyncinterval') == False:
+        iniConfig.set("Graphics", "VSyncInterval", "False")
+    else:
+        iniConfig.set("Graphics", "VSyncInterval", "True")
 
     # Internal Resolution
     if system.isOptSet('internal_resolution'):
