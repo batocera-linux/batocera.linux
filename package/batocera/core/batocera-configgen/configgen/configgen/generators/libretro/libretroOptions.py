@@ -802,6 +802,13 @@ def generateCoreSettings(coreSettings, system, rom):
         else:
             coreSettings.save('mgba_skip_bios', '"OFF"')
 
+        # GB: Colorization of GB games
+        if (system.name == 'gb'):
+            if system.isOptSet('gb_colors'):
+                coreSettings.save('mgba_gb_colors', '"' + system.config['gb_colors'] + '"')
+            else:
+                coreSettings.save('mgba_gb_colors', '"DMG Green"')
+
         if (system.name != 'gba'):
             # GB / GBC: Use Super Game Boy borders
             if system.isOptSet('sgb_borders') and system.config['sgb_borders'] == "True":
