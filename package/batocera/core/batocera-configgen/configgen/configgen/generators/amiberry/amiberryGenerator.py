@@ -91,6 +91,14 @@ class AmiberryGenerator(Generator):
             commandArray.append("-s")
             commandArray.append("joyport2=")
 
+            # display line mode
+            commandArray.append("-s")
+            commandArray.append("gfx_linemode=double")
+
+            # remove interlace artifacts
+            commandArray.append("-s")
+            commandArray.append("gfx_flickerfixer=true")
+
             # display vertical centering
             commandArray.append("-s")
             commandArray.append("gfx_center_vertical=smart")
