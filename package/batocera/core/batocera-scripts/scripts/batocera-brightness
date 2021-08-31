@@ -1,9 +1,13 @@
 #!/bin/sh
 
-if test ! -e /sys/class/backlight/backlight/brightness
+D=$(find /sys/class/backlight/* 2>/dev/null | grep backlight | head -n1)
+
+if test ! -e "${D}"/brightness
 then
     echo "no brightness found" >&2
     exit 1
+else
+    B="${D}"/brightness
 fi
 
 setValue() {
@@ -13,14 +17,14 @@ setValue() {
     test "${NEWVAL}" -lt 0         && NEWVAL=0
     test "${NEWVAL}" -gt "${XMAX}" && NEWVAL="${XMAX}"
     
-    echo "${NEWVAL}" > /sys/class/backlight/backlight/brightness
+    echo "${NEWVAL}" > "${B}"
 }
 
 # get
 if test $# = 0
 then
-    X=$(cat /sys/class/backlight/backlight/brightness)
-    XMAX=$(cat /sys/class/backlight/backlight/max_brightness)
+    X=$(cat "${B}")
+    XMAX=$(cat "${D}"/max_brightness)
     FVALUE=$(echo "scale=3;${X}" "*" "100" / "${XMAX}" | bc)
     LC_ALL=C printf '%.*f\n' 0 "${FVALUE}" # round
     exit 0
@@ -29,7 +33,7 @@ fi
 # set
 if test $# = 1
 then
-    XMAX=$(cat /sys/class/backlight/backlight/max_brightness)
+    XMAX=$(cat "${D}"/max_brightness)
     NEWVAL=$(expr "${1}" "*" "${XMAX}" / 100)
     setValue "${NEWVAL}" "${XMAX}"
     exit 0
@@ -38,8 +42,8 @@ fi
 # set +
 if test $# = 2
 then
-    X=$(cat /sys/class/backlight/backlight/brightness)
-    XMAX=$(cat /sys/class/backlight/backlight/max_brightness)
+    X=$(cat "${B}")
+    XMAX=$(cat "${D}"/max_brightness)
     DELTA=$(expr "${2}" '*' ${XMAX} / 100)
     NEWVAL=$(expr "${X}" "${1}" "${DELTA}")
     setValue "${NEWVAL}" "${XMAX}"
