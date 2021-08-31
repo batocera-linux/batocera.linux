@@ -1,0 +1,11 @@
+--- a/xbmc/windowing/gbm/WinSystemGbmEGLContext.cpp	2021-03-16 20:52:50.722324791 +0100
++++ b/xbmc/windowing/gbm/WinSystemGbmEGLContext.cpp	2021-03-16 20:53:26.765657592 +0100
+@@ -87,7 +87,7 @@
+ 
+   if (!m_eglContext.CreatePlatformSurface(
+           m_GBM->GetDevice()->GetSurface()->Get(),
+-          reinterpret_cast<khronos_uintptr_t>(m_GBM->GetDevice()->GetSurface()->Get())))
++          reinterpret_cast<void*>(m_GBM->GetDevice()->GetSurface()->Get())))
+   {
+     return false;
+   }
