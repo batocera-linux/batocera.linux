@@ -64,7 +64,7 @@ define BATOCERA_AUDIO_INSTALL_TARGET_CMDS
 
 	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-audio/pipewire.conf$(PIPEWIRECONF_SUFFIX) \
 		$(TARGET_DIR)/usr/share/pipewire/pipewire.conf
-	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-audio/client-rt.conf$(PIPEWIRECONF_SUFFIX) \
+	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-audio/client-rt.conf \
 		$(TARGET_DIR)/usr/share/pipewire/client-rt.conf
 	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-audio/pipewire-pulse.conf \
 		$(TARGET_DIR)/usr/share/pipewire/pipewire-pulse.conf
