@@ -154,9 +154,19 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
     if(system.config['core'] in coreToP2Device):
         retroarchConfig['input_libretro_device_p2'] = coreToP2Device[system.config['core']]
 
-    ## AMICA CD32
-    if system.config['core'] == 'puae' and system.name == 'amigacd32':
-        retroarchConfig['input_libretro_device_p1'] = '517'     # CD 32 Pad
+    ## AMIGA OCS-ECS/AGA/CD32
+    if system.config['core'] == 'puae':
+        if system.name != 'amigacd32':
+            if system.isOptSet('controller1_puae'):
+                retroarchConfig['input_libretro_device_p1'] = system.config['controller1_puae']
+            else:
+                retroarchConfig['input_libretro_device_p1'] = '1'
+            if system.isOptSet('controller2_puae'):
+                retroarchConfig['input_libretro_device_p2'] = system.config['controller2_puae']
+            else:
+                retroarchConfig['input_libretro_device_p2'] = '1'
+        else:          
+            retroarchConfig['input_libretro_device_p1'] = '517'     # CD 32 Pad
 
     ## BlueMSX choices by System
     if(system.name in systemToBluemsx):
