@@ -9,5 +9,5 @@ config BR2_PACKAGE_LIBRETRO_PCSX2
 
 	  http://www.libretro.com
 
-comment "LIBRETRO_GW needs a toolchain w/ C++"
+comment "LIBRETRO_PCSX2 needs a toolchain w/ C++"
 	depends on !BR2_INSTALL_LIBSTDCPP
