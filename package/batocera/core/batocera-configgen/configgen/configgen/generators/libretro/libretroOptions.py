@@ -1472,7 +1472,7 @@ def generateCoreSettings(coreSettings, system, rom):
             coreSettings.save('beetle_psx_enable_multitap_port1', '"disabled"')
             coreSettings.save('beetle_psx_enable_multitap_port2', '"disabled"')
 
-    if (system.config['core'] == 'swanstation'):
+    if (system.config['core'] == 'swanstation' or system.config['core'] == 'duckstation'):
         # renderer
         if system.isOptSet("gpu_software") and system.getOptBoolean("gpu_software") == True:
             coreSettings.save('duckstation_GPU.Renderer', "Software")
