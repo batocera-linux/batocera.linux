@@ -371,6 +371,9 @@ libretro:
                     "32MB":                 32
                     "48MB":                 48
                     "64MB":                 64
+                    "96MB":                 96
+                    "128MB":                128
+                    "224MB":                224
             pure_machine:
                 prompt:      GRAPHICS CHIP TYPE
                 description: Video card graphic chip type
@@ -2195,6 +2198,24 @@ libretro:
                         choices:
                             "Off":    disabled
                             "On":     enabled
+                    controller1_puae:
+                        prompt:      CONTROLLER 1 TYPE
+                        description: Select controller type for Amiga P1
+                        choices:
+                            "Retropad":            1
+                            "CD32 Pad":            517
+                            "Analog Joystick":     773
+                            "Joystick":            261
+                            "Keyboard":            259
+                    controller2_puae:
+                        prompt:      CONTROLLER 2 TYPE
+                        description: Select controller type for Amiga P2
+                        choices:
+                            "Retropad":            1
+                            "CD32 Pad":            517
+                            "Analog Joystick":     773
+                            "Joystick":            261
+                            "Keyboard":            259
             amiga1200:
                 cfeatures:
                     puae_floppy_speed:
@@ -2227,6 +2248,24 @@ libretro:
                         choices:
                             "Off":    disabled
                             "On":     enabled
+                    controller1_puae:
+                        prompt:      CONTROLLER 1 TYPE
+                        description: Select controller type for Amiga P1
+                        choices:
+                            "Retropad":            1
+                            "CD32 Pad":            517
+                            "Analog Joystick":     773
+                            "Joystick":            261
+                            "Keyboard":            259
+                    controller2_puae:
+                        prompt:      CONTROLLER 2 TYPE
+                        description: Select controller type for Amiga P2
+                        choices:
+                            "Retropad":            1
+                            "CD32 Pad":            517
+                            "Analog Joystick":     773
+                            "Joystick":            261
+                            "Keyboard":            259
             amigacd32:
                 cfeatures:
                     puae_cd_startup_delayed_insert:
