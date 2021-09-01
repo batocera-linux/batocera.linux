@@ -37,4 +37,12 @@ then
     fi
 fi
 
+### radeon ###
+# variable for AMD Dynamic Switchable Graphics to take amd-radeon gpu over intel cards when such hybrid cards are available
+radeon_prime="$(/usr/bin/batocera-settings-get -f /boot/batocera-boot.conf radeon-prime)"
+if test "${radeon_prime}" = "true"
+then
+    export DRI_PRIME=1
+fi
+
 openbox --config-file /etc/openbox/rc.xml --startup "emulationstation-standalone"
