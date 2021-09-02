@@ -623,21 +623,23 @@ libretro:
                 description: Use DualShock type for games with Rumble mode
                 choices:
                     "None":                          None
-                    "Digital Controller":            DigitalController
-                    "Analog Controller (DualShock)": AnalogController
-                    "Namco GunCon":                  NamcoGunCon
-                    "PlayStation Mouse":             PlayStationMouse
-                    "NeGcon":                        NeGcon
+                    "Digital Controller":            1
+                    "Analog Controller (DualShock)": 5
+                    "Analog Stick":                  517
+                    "Namco GunCon":                  260
+                    "PlayStation Mouse":             258
+                    "NeGcon":                        773
             duckstation_Controller2:
                 prompt:      CONTROLLER 2 TYPE
                 description: Use DualShock type for games with Rumble mode
                 choices:
                     "None":                          None
-                    "Digital Controller":            DigitalController
-                    "Analog Controller (DualShock)": AnalogController
-                    "Namco GunCon":                  NamcoGunCon
-                    "PlayStation Mouse":             PlayStationMouse
-                    "NeGcon":                        NeGcon
+                    "Digital Controller":            1
+                    "Analog Controller (DualShock)": 5
+                    "Analog Stick":                  517
+                    "Namco GunCon":                  260
+                    "PlayStation Mouse":             258
+                    "NeGcon":                        773
     easyrpg:
       features: []
     fbneo:

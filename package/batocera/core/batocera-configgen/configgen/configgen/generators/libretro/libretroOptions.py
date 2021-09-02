@@ -1519,16 +1519,6 @@ def generateCoreSettings(coreSettings, system, rom):
             coreSettings.save('duckstation_Display.CropMode', system.config['duckstation_CropMode'])
         else:
             coreSettings.save('duckstation_Display.CropMode', '"Overscan"')
-        # Controller 1 Type
-        if system.isOptSet('duckstation_Controller1'):
-            coreSettings.save('duckstation_Controller1.Type', system.config['duckstation_Controller1'])
-        else:
-            coreSettings.save('duckstation_Controller1.Type', '"DigitalController"')
-        # Controller 2 Type
-        if system.isOptSet('duckstation_Controller2'):
-            coreSettings.save('duckstation_Controller2.Type', system.config['duckstation_Controller2'])
-        else:
-            coreSettings.save('duckstation_Controller2.Type', '"DigitalController"')
 
     if (system.config['core'] == 'pcsx_rearmed'):
         # Display Games Hack Options
