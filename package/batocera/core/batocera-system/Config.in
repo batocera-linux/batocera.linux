@@ -758,10 +758,10 @@ config BR2_PACKAGE_BATOCERA_CONSOLE_SYSTEMS
                                                         !BR2_PACKAGE_BATOCERA_TARGET_RPI1       && \
                                                         !BR2_PACKAGE_BATOCERA_TARGET_RPI2
 
-	select BR2_PACKAGE_LIBRETRO_DUCKSTATION         if BR2_PACKAGE_BATOCERA_TARGET_RK3326_ANY || \
-                                                        BR2_PACKAGE_BATOCERA_TARGET_RPI3          || \
-                                                        BR2_PACKAGE_BATOCERA_TARGET_RPI4          || \
-							BR2_PACKAGE_BATOCERA_TARGET_X86_64
+	select BR2_PACKAGE_LIBRETRO_DUCKSTATION         if  !BR2_PACKAGE_BATOCERA_TARGET_X86	    && \
+	                                                    !BR2_PACKAGE_BATOCERA_TARGET_CHA        && \
+                                                        !BR2_PACKAGE_BATOCERA_TARGET_RPI1       && \
+                                                        !BR2_PACKAGE_BATOCERA_TARGET_RPI2
 
 	select BR2_PACKAGE_LIBRETRO_PCSX                if  !BR2_PACKAGE_BATOCERA_TARGET_RPI1       && \
                                                         !BR2_PACKAGE_BATOCERA_TARGET_RPI3       && \
