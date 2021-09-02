@@ -1955,6 +1955,12 @@ libretro:
                 choices:
                     "Off":             disabled
                     "On":              enabled
+            picodrive_cropoverscan:
+                prompt:      CROP OVERSCAN
+                description: Crops out video edge hidden under bezel of analog TV
+                choices:
+                    "Off":             disabled
+                    "On":              enabled
             picodrive_controller1:
                 prompt:      CONTROLLER 1 TYPE
                 description: Select 3 or 6 button controller

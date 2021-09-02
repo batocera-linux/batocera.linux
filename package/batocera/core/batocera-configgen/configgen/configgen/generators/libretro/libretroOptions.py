@@ -1265,10 +1265,13 @@ def generateCoreSettings(coreSettings, system, rom):
         # Reduce sprite flickering
         if system.isOptSet('picodrive_sprlim') and system.config['picodrive_sprlim'] == 'disabled':
             coreSettings.save('picodrive_sprlim',   '"disabled"')
-            coreSettings.save('picodrive_overscan', '"disabled"')
         else:
             coreSettings.save('picodrive_sprlim',   '"enabled"')
+        # Crop Overscan: the setting in picodrive shows overscan when enabled
+        if system.isOptSet('picodrive_cropoverscan') and system.config['picodrive_cropoverscan'] == 'disabled':
             coreSettings.save('picodrive_overscan', '"enabled"')
+        else:
+            coreSettings.save('picodrive_overscan', '"disabled"')
         # 6 Button Controller 1
         if system.isOptSet('picodrive_controller1'):
             coreSettings.save('picodrive_sprlim', '"' + system.config['picodrive_controller1'] + '"')
