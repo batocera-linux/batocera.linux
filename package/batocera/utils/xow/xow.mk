@@ -13,10 +13,9 @@ endef
 
 define XOW_INSTALL_TARGET_CMDS
 	$(INSTALL) -m 0755 -D $(@D)/xow $(TARGET_DIR)/usr/bin/xow
-	$(INSTALL) -D -m 0644 $(@D)/install/udev.rules $(TARGET_DIR)/etc/udev/rules.d/99-xow.rules
-	$(INSTALL) -D -m 0644 $(@D)/install/modules.conf $(TARGET_DIR)/etc/modules-load.d/xow-uinput.conf
-	$(INSTALL) -D -m 0644 $(@D)/install/modprobe.conf $(TARGET_DIR)/etc/modprobe.d/xow-blacklist.conf
+	$(INSTALL) -m 0755 -D $(@D)/install/modprobe.conf $(TARGET_DIR)/etc/modprobe.d/xow-blacklist.conf
 	$(INSTALL) -m 0755 -D $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/utils/xow/xow-daemon $(TARGET_DIR)/usr/bin/xow-daemon
+	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/utils/xow/99-xow.rules $(TARGET_DIR)/etc/udev/rules.d
 endef
 
 $(eval $(generic-package))

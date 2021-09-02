@@ -1,4 +1,10 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-killall xow
-nohup /usr/bin/xow >/dev/null 2>/dev/null &
+if pregp xow; then
+    killall xow
+fi
+nohup /usr/bin/xow >/dev/null 2>&1 &
+pid=$!
+# Give xow a chance to start before sending pairing signal
+sleep 3
+kill -s SIGUSR1 $pid
