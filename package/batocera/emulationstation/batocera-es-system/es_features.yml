@@ -557,6 +557,92 @@ libretro:
                     "Namco GunCon":                  NamcoGunCon
                     "PlayStation Mouse":             PlayStationMouse
                     "NeGcon":                        NeGcon
+    duckstation:
+      features: [autosave, latency_reduction, cheevos]
+      cfeatures:
+            duckstation_PatchFastBoot:
+                prompt:      SHOW BIOS BOOTLOGO
+                description: Show BIOS animation when starting content
+                choices:
+                    "Off":        "true"
+                    "On":         "false"
+            gpu_software:
+                prompt:      GPU SOFTWARE RENDERING
+                description: Force use of software rendering
+                choices:
+                    "Off":        False
+                    "On":         True
+            duckstation_resolution_scale:
+                prompt:      VIDEO RESOLUTION
+                description: Improve the fidelity of 3D models (does not affect 2D sprites)
+                choices:
+                    "1x(native)": 1
+                    "2x":         2
+                    "3x/720p":    3
+                    "4x":         4
+                    "5x/1080p":   5
+                    "6x/1440p":   6
+                    "7x":         7
+                    "8x":         8
+                    "9x":         9
+            duckstation_antialiasing:
+                prompt:      ANTI-ALIASING (MSAA/SSAA)
+                description: Smooth out jagged edges on 3D object polygons
+                choices:
+                    "Off":        1
+                    "2x MSAA":    2
+                    "4x MSAA":    4
+                    "8x MSAA":    8
+                    "16x MSAA":   16
+                    "32x MSAA":   32
+                    "2x SSAA":    2-ssaa
+                    "4x SSAA":    4-ssaa
+                    "8x SSAA":    8-ssaa
+                    "16x SSAA":   16-ssaa
+                    "32x SSAA":   32-ssaa
+            duckstation_texture_filtering:
+                prompt:      TEXTURE FILTERING
+                description: Smooths out textures on 3D objects
+                choices:
+                    "Nearest":    Nearest
+                    "Bilinear":   Bilinear
+                    "JINC2":      JINC2
+                    "xBR":        xBR
+            duckstation_widescreen_hack:
+                prompt:      WIDESCREEN HACK
+                description: You must use a 16/9 RATIO and disable BEZEL
+                choices:
+                    "Off":        "false"
+                    "On":         "true"
+            duckstation_CropMode:
+                prompt:      CROP MODE
+                description: Changes how much of the image is cropped
+                choices:
+                    "Off":                "None"
+                    "Only Overscan Area": "Overscan"
+                    "All Borders":        "Borders"
+            duckstation_Controller1:
+                prompt:      CONTROLLER 1 TYPE
+                description: Use DualShock type for games with Rumble mode
+                choices:
+                    "None":                          None
+                    "Digital Controller":            1
+                    "Analog Controller (DualShock)": 5
+                    "Analog Stick":                  517
+                    "Namco GunCon":                  260
+                    "PlayStation Mouse":             258
+                    "NeGcon":                        773
+            duckstation_Controller2:
+                prompt:      CONTROLLER 2 TYPE
+                description: Use DualShock type for games with Rumble mode
+                choices:
+                    "None":                          None
+                    "Digital Controller":            1
+                    "Analog Controller (DualShock)": 5
+                    "Analog Stick":                  517
+                    "Namco GunCon":                  260
+                    "PlayStation Mouse":             258
+                    "NeGcon":                        773
     easyrpg:
       features: []
     fbneo:

@@ -750,9 +750,15 @@ config BR2_PACKAGE_BATOCERA_CONSOLE_SYSTEMS
 	# PSX
 	select BR2_PACKAGE_DUCKSTATION                  if  !BR2_PACKAGE_BATOCERA_TARGET_RPI1   && \
                                                         !BR2_PACKAGE_BATOCERA_TARGET_RPI2   && \
-                                                        !BR2_PACKAGE_BATOCERA_TARGET_CHA
+                                                        !BR2_PACKAGE_BATOCERA_TARGET_CHA    && \
+                                                        !BR2_PACKAGE_BATOCERA_TARGET_RK3326_ANY
 
 	select BR2_PACKAGE_LIBRETRO_SWANSTATION         if  !BR2_PACKAGE_BATOCERA_TARGET_X86	    && \
+	                                                    !BR2_PACKAGE_BATOCERA_TARGET_CHA        && \
+                                                        !BR2_PACKAGE_BATOCERA_TARGET_RPI1       && \
+                                                        !BR2_PACKAGE_BATOCERA_TARGET_RPI2
+
+	select BR2_PACKAGE_LIBRETRO_DUCKSTATION         if  !BR2_PACKAGE_BATOCERA_TARGET_X86	    && \
 	                                                    !BR2_PACKAGE_BATOCERA_TARGET_CHA        && \
                                                         !BR2_PACKAGE_BATOCERA_TARGET_RPI1       && \
                                                         !BR2_PACKAGE_BATOCERA_TARGET_RPI2
