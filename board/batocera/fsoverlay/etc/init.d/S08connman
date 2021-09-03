@@ -54,7 +54,8 @@ wifi_enable() {
     fi
 
     connmanctl enable wifi 2>/dev/null
-    connmanctl scan   wifi 2>/dev/null
+    connmanctl connect service_batocera_default 2>/dev/null
+
 }
 
 case "$1" in
