@@ -4,8 +4,8 @@
 #
 ################################################################################
 
-ES_BACKGROUND_MUSICS_VERSION = 1.0
-ES_BACKGROUND_MUSICS_LICENSE = TO BE CONFIRMED # was in the recalbox-themes git when it was open before the licence restriction changes
+ES_BACKGROUND_MUSICS_VERSION = 2.0
+ES_BACKGROUND_MUSICS_LICENSE = See license.md, they are free to use with Batocera
 ES_BACKGROUND_MUSICS_SOURCE=
 
 define ES_BACKGROUND_MUSICS_INSTALL_TARGET_CMDS
