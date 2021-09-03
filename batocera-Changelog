@@ -1,22 +1,21 @@
 2021/XX/XX - batocera.linux 32
         * add: system.cpu.governor setting in batocera.conf
         * fix: DOSBox Pure per-game settings
-        * add: Support for Batocera on Capcom Home Arcade
-        * add: Support for CHI Gameforce handheld
+        * add: Support for Capcom Home Arcade "https://capcomhomearcade.com/uk"
+        * add: Support for CHI Gameforce handheld "https://gameforce.fun/"
         * add: GSplus for Apple IIGS
         * add: Tsugaru for FMTowns (x86_64, completed preliminary support)
         * add: libretro/Uzem for Uzebox (retro-minimalist 8-bit opensource console) (all except RPi1/RPi2/CHA)
         * add: ECWolf a open source port for Wolfenstein 3D Games (x86_64)
         * add: Support for official Pico-8 engine (x64_64, or 32-bit RPi, Lexaloffle hasn't released a 64-bit ARM version yet)
-        * add: LR-FBAlpha for weaker SBC (RPI0/1/2)
+        * add: libretro-fba for weaker SBC (RPI0/1/2)
         * add: Sega Model 2 emulator - runs under Wine (x86_64)
         * add: Sonic Retro Engine Decompilation Ports
         * add: Super GameBoy (with LR-Mesen-S on x86_64, mGBA for SBC)
         * add: Better support for handheld PCs x86_64 (OneXPlayer, Aya Neo...)
         * add: Smart coloring for GameBoy (Gambatte)
         * add: Model 3 options for modern pedal control + PowerPC frequency
-        * add: Flatpak: audio support
-        * add: Flatpak: applications and Steam integration (f1>applications>flatpak to install steam and other applications / menu>games>refresh game list to view installed games in es/ports)
+        * add: Flatpak: applications, audio support and Steam integration (f1>applications>flatpak to install steam and other applications / menu>games>refresh game list to view installed games in es/ports)
         * add: 2-player Game Boy/Color save syncing and support for 2 different linked ROMs
         * add: Pipewire (audio processing layer) (fixes some audio issue)
         * add: bluetooth audio devices support (listed in system / audio output ; devices can be paired like a pad)
@@ -25,12 +24,12 @@
         * fix: Battery indicator on Odroid Go Advance
         * fix: FMTowns emulator + support for CD-based games (Tsugaru)
         * rpi3: Switch to AArch64 (full 64-bit)
-        * rpi3: Switch to driver mesa3d
-        * rpi3: add Nintendo DS (drastic)
-        * rpi3: Kodi enabled (again)
-        * rpi3: Nintendo 64 (mupen64plus-video-glide64mk2)
+        * rpi3: Switch to mesa3d driver
+        * rpi3: add drastic (Nintendo DS)
+        * rpi3: renable Kodi app
+        * rpi3: mupen64plus-video-glide64mk2 (Nintendo 64)
         * rpi3: PPSSPP to v1.11.3
-        * rpi3: duckstation (Playstation 1)
+        * rpi3: Support for duckstation (Playstation 1)
         * rpi4: Support for DeskPi Pro Case
         * rpi4: Support for ArgonOne V2/M2 case
         * es: es option for boot splash
@@ -42,9 +41,9 @@
         * change: Removed Lightgun as a system (now an automatic collection)
         * change: RPCS3 default SPU Decoder from Interpreter (Fast) to ASMJIT
         * bump: MAME to 0.232 (+GroovyMAME and Arcade64)
-        * bump: RetroArch 1.9.8 + many libretro cores
+        * bump: RetroArch 1.9.8 + updated libretro cores
         * bump: Cemu to 1.25.1
-        * bump: Dosbox-staging to 0.77, Dosbox-x to 0.83.16 and LR-Dosbox-pure to 0.15
+        * bump: Dosbox-staging to 0.77.1, Dosbox-x to 0.83.16 and Dosbox-pure to 0.16
         * bump: Lutris to 6.14-3
         * bump: DXVK to 1.9.1
         * bump: Proton to 6.3-4
