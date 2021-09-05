@@ -86,7 +86,9 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
     retroarchConfig['quit_press_twice'] = 'false'               # not aligned behavior on other emus
     retroarchConfig['menu_show_restart_retroarch'] = 'false'    # this option messes everything up on Batocera if ever clicked
     retroarchConfig['video_driver'] = '"gl"'                    # needed for the ozone menu
-    retroarchConfig['audio_latency'] = '128'                    # best balance with audio perf
+    retroarchConfig['audio_latency'] = '64'                     #best balance with audio perf
+    if (system.isOptSet("audio_latency")):
+        retroarchConfig['audio_latency'] = system.config['audio_latency']
 
     with open("/usr/share/batocera/batocera.arch") as fb:
         arch = fb.readline().strip()
