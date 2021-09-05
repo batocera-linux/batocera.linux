@@ -11,6 +11,17 @@ libretro:
       choices:
         "OpenGL": opengl
         "Vulkan": vulkan
+    audio_latency:
+      prompt:      AUDIO LATENCY
+      description: Audio latency in millisec, turn it up if you hear crackles
+      choices:
+        "256":    256
+        "192":    192
+        "128":    128
+        "64":     64
+        "32":     32
+        "16":     16
+        "8":      8
 
   cores:
     '81':
