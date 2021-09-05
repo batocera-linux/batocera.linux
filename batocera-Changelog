@@ -1,28 +1,29 @@
 2021/XX/XX - batocera.linux 32
-        * add: system.cpu.governor setting in batocera.conf
-        * fix: DOSBox Pure per-game settings
         * add: Support for Capcom Home Arcade "https://capcomhomearcade.com/uk"
         * add: Support for CHI Gameforce handheld "https://gameforce.fun/"
         * add: GSplus for Apple IIGS
-        * add: Tsugaru for FMTowns (x86_64, completed preliminary support)
+        * add: Tsugaru for FMTowns (x86_64, complete with support for CD-based games)
+        * add: libretro/EmuSCV for Super Cassette Vision
         * add: libretro/Uzem for Uzebox (retro-minimalist 8-bit opensource console) (all except RPi1/RPi2/CHA)
+        * add: libretro/Duckstation for PlayStation 1 (all except RPi1/RPi2/CHA)
         * add: ECWolf a open source port for Wolfenstein 3D Games (x86_64)
         * add: Support for official Pico-8 engine (x64_64, or 32-bit RPi, Lexaloffle hasn't released a 64-bit ARM version yet)
-        * add: libretro-fba for weaker SBC (RPI0/1/2)
+        * add: libretro-fba for weaker SBC (RPi0/1/2)
         * add: Sega Model 2 emulator - runs under Wine (x86_64)
-        * add: Sonic Retro Engine Decompilation Ports
+        * add: Sonic Retro Engine Decompilation (under Ports)
         * add: Super GameBoy (with LR-Mesen-S on x86_64, mGBA for SBC)
         * add: Better support for handheld PCs x86_64 (OneXPlayer, Aya Neo...)
         * add: Smart coloring for GameBoy (Gambatte)
         * add: Model 3 options for modern pedal control + PowerPC frequency
-        * add: Flatpak: applications, audio support and Steam integration (f1>applications>flatpak to install steam and other applications / menu>games>refresh game list to view installed games in es/ports)
+        * add: Flatpak for x86_64: applications, audio support and Steam integration (F1>applications>flatpak to install steam and other applications / menu>games>refresh game list to view installed games in es/ports)
         * add: 2-player Game Boy/Color save syncing and support for 2 different linked ROMs
         * add: Pipewire (audio processing layer) (fixes some audio issue)
         * add: bluetooth audio devices support (listed in system / audio output ; devices can be paired like a pad)
-        * add: Super Cassette Vision
-        * fix: RetroAchievements for Watara Supervision
+        * add: system.cpu.governor setting in batocera.conf
+        * add: option to change audio latency in libretro emulators
+        * fix: RetroAchievements for Watara Supervision, Jaguar, Sufami, PCFX, PC88, 3DO, Intellivision, Odyssey2, Vectrex and Wonderswan
         * fix: Battery indicator on Odroid Go Advance
-        * fix: FMTowns emulator + support for CD-based games (Tsugaru)
+        * fix: DOSBox Pure per-game settings
         * rpi3: Switch to AArch64 (full 64-bit)
         * rpi3: Switch to mesa3d driver
         * rpi3: add drastic (Nintendo DS)
@@ -35,19 +36,20 @@
         * es: es option for boot splash
         * es: es option for screen rotation
         * es: apply video output / video rotation / language without os reboot
+        * es: enhancements for ES webserver (http://batocera:1234, launch and kill a game)
         * boot: Support for /boot/boot-custom.sh user defined early startup/late shutdown script
         * boot: batocera.conf option to customize es command line parameters (es.customsargs)
         * change: Libretro cheats are now moved to the Content Downloader
         * change: Removed Lightgun as a system (now an automatic collection)
         * change: RPCS3 default SPU Decoder from Interpreter (Fast) to ASMJIT
         * bump: MAME to 0.232 (+GroovyMAME and Arcade64)
-        * bump: RetroArch 1.9.8 + updated libretro cores
+        * bump: RetroArch 1.9.9 + updated libretro cores
         * bump: Cemu to 1.25.1
         * bump: Dosbox-staging to 0.77.1, Dosbox-x to 0.83.16 and Dosbox-pure to 0.16
         * bump: Lutris to 6.14-3
         * bump: DXVK to 1.9.1
         * bump: Proton to 6.3-4
-        * bump: Daphne to 2.6.10.1
+        * bump: Daphne to 2.6.12
         * bump: Redream to 1.5.0-957
         * bump: Moonlight-embedded to 2.5.1
         * bump: Flash emulators (Ruffle + Lightspark)
