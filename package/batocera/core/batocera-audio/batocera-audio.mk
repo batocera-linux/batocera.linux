@@ -7,6 +7,8 @@
 BATOCERA_AUDIO_VERSION = 6
 BATOCERA_AUDIO_LICENSE = GPL
 BATOCERA_AUDIO_SOURCE=
+
+# this one is important because the package erase the default pipewire config files, so it must be built after it
 BATOCERA_AUDIO_DEPENDENCIES = pipewire
 
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RK3326_ANY),y)
