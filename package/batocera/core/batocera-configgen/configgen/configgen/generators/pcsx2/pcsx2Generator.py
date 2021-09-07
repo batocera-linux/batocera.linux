@@ -64,6 +64,9 @@ class Pcsx2Generator(Generator):
         if arch == "x86":
             env["LD_LIBRARY_PATH"]    = "/lib32"
             env["LIBGL_DRIVERS_PATH"] = "/lib32/dri"
+            # hum pw 0.2 and 0.3 are hardcoded, not nice
+            env["SPA_PLUGIN_DIR"]      = "/usr/lib/spa-0.2:/lib32/spa-0.2"
+            env["PIPEWIRE_MODULE_DIR"] = "/usr/lib/pipewire-0.3:/lib32/pipewire-0.3"
 
         return Command.Command(array=commandArray, env=env)
 

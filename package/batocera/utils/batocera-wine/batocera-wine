@@ -45,6 +45,9 @@ export GST_PLUGIN_SYSTEM_PATH_1_0="/usr/lib/gstreamer-1.0:/lib32/gstreamer-1.0"
 export GST_REGISTRY_1_0="/userdata/system/.cache/gstreamer-1.0/registry.x86_64.bin"
 export LIBGL_DRIVERS_PATH="/lib32/dri:/usr/lib/dri"
 export WINEDLLPATH="${DIR}/${WINE_VERSION}/lib/wine/fakedlls:${DIR}/${WINE_VERSION}/lib64/wine/fakedlls"
+# hum pw 0.2 and 0.3 are hardcoded, not nice
+export SPA_PLUGIN_DIR="/usr/lib/spa-0.2:/lib32/spa-0.2"
+export PIPEWIRE_MODULE_DIR="/usr/lib/pipewire-0.3:/lib32/pipewire-0.3"
 
 usage() {
     echo "${1} windows play    	     <game>.iso"             >&2
