@@ -13,6 +13,7 @@ define GSPLUS_INSTALL_TARGET_CMDS
 	$(INSTALL) -D $(@D)/bin/GSplus $(TARGET_DIR)/usr/bin/
 	$(INSTALL) -D $(@D)/bin/libx_readline.so $(TARGET_DIR)/usr/lib/
 	cp -f $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/gsplus/apple2gs.keys $(TARGET_DIR)/usr/share/evmapy
+	cd $(TARGET_DIR)/usr/share/evmapy && ln -sf apple2gs.keys apple2.keys
 endef
 
 $(eval $(cmake-package))
