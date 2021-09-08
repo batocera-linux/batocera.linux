@@ -1,0 +1,15 @@
+diff --git a/common/libretro.c b/common/libretro.c
+index d2f56bb..a0a4b84 100644
+--- a/common/libretro.c
++++ b/common/libretro.c
+@@ -1150,6 +1150,7 @@ bool retro_load_game(const struct retro_game_info *info)
+ 
+ void retro_unload_game(void)
+ {
++   exit(0);
+ }
+ 
+ unsigned retro_get_region(void)
+-- 
+2.25.1
+

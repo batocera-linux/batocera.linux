@@ -172,10 +172,13 @@ cp -pr "${G_TARGETDIR}/usr/lib/lib"*"krb5"*"so"*  "${TMPOUT}/lib32/" || exit 1
 cp -pr "${G_TARGETDIR}/lib/libnss_"*"so"*  "${TMPOUT}/lib32/" || exit 1
 cp -pr "${G_TARGETDIR}/usr/lib/libpulse"*"so"* "${TMPOUT}/lib32/" || exit 1
 cp -pr "${G_TARGETDIR}/usr/lib/libpipewire"*"so"* "${TMPOUT}/lib32/" || exit 1
-#cp -pr "${G_TARGETDIR}/usr/lib/pipewire-"*"/" "${TMPOUT}/lib32/" || exit 1
-#cp -pr "${G_TARGETDIR}/usr/lib/spa-"*"/" "${TMPOUT}/lib32/" || exit 1
 mkdir -p "${TMPOUT}/lib32/alsa-lib" || exit 1
 cp -pr "${G_TARGETDIR}/usr/lib/alsa-lib/libasound_module_"*".so" "${TMPOUT}/lib32/alsa-lib" || exit 1
+
+# pipewire
+# if you modify 0.2 and 0.3, these values are hardcoded for SPA_PLUGIN_DIR and PIPEWIRE_MODULE_DIR
+cp -pr "${G_TARGETDIR}/usr/lib/spa-0.2"      "${TMPOUT}/lib32/" || exit 1
+cp -pr "${G_TARGETDIR}/usr/lib/pipewire-0.3" "${TMPOUT}/lib32/" || exit 1
 
 # installation
 echo "wine installation..."
