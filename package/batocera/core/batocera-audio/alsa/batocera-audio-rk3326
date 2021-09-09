@@ -4,6 +4,9 @@ do_usage() {
 	echo "$1 list"
 	echo "$1 get"
 	echo "$1 set {auto|<device>}"
+	echo "$1 list-profiles"
+	echo "$1 get-profile"
+	echo "$1 set-profile {auto|<profile>}"
 	echo "$1 getSystemVolume"
 	echo "$1 setSystemVolume {mute|unmute|mute-toggle|[+-]<0...100>}"
 	echo "$1 test"
@@ -48,44 +51,63 @@ case "${ACTION}" in
 	esac
 	;;
 
-	getSystemVolume)
-	    echo "${DETECT_VOLUME}"
-	    ;;
+    list-profiles)
+	echo "auto auto"
+	pactl list cards-profiles-raw | grep "available=1" | sed -e s+"^card=[0-9]* name=\([^ ]*\) profile=\([^ ]*\) available=[01] active=[01] description=\(.*\)$"+"\2@\1 \3"+
+	;;
 
-	setSystemVolume)
-	    VOLUME="$2"
-	    case "${VOLUME}" in
-		"mute")
-		    pactl set-sink-mute @DEFAULT_SINK@ 1
-		    ;;
-		"unmute")
-		    pactl set-sink-mute @DEFAULT_SINK@ 0
-		    ;;
-		"mute-toggle")
-		    pactl set-sink-mute @DEFAULT_SINK@ toggle
-		    ;;
-		*)
-		    if echo "${VOLUME}" | grep -qE '^[0-9]+$'
+    get-profile)
+	/usr/bin/batocera-settings-get audio.profile
+	;;
+
+    set-profile)
+	MODE="$2"
+	if test "${MODE}" != "auto"
+	then
+	    PROFILE_NAME=$(echo "${MODE}" | cut -d @ -f 1)
+	    CARD_NAME=$(echo "${MODE}" | cut -d @ -f 2)
+	    pactl set-card-profile "${CARD_NAME}" "${PROFILE_NAME}" || exit 1
+	fi
+	;;
+
+    getSystemVolume)
+	echo "${DETECT_VOLUME}"
+	;;
+
+    setSystemVolume)
+	VOLUME="$2"
+	case "${VOLUME}" in
+	    "mute")
+		pactl set-sink-mute @DEFAULT_SINK@ 1
+		;;
+	    "unmute")
+		pactl set-sink-mute @DEFAULT_SINK@ 0
+		;;
+	    "mute-toggle")
+		pactl set-sink-mute @DEFAULT_SINK@ toggle
+		;;
+	    *)
+		if echo "${VOLUME}" | grep -qE '^[0-9]+$'
+		then
+		    if test "${VOLUME}" -ge 0 -a "${VOLUME}" -le "${MAX_VOLUME}"
 		    then
-		      if test "${VOLUME}" -ge 0 -a "${VOLUME}" -le "${MAX_VOLUME}"
-		      then
 		        pactl set-sink-volume @DEFAULT_SINK@ "${VOLUME}%"
 		        exit 0
-		      fi
-		    else
-		      if echo "${VOLUME}" | grep -qE '^[+-][0-9]+$'
-		      then
+		    fi
+		else
+		    if echo "${VOLUME}" | grep -qE '^[+-][0-9]+$'
+		    then
 		        let NEWVOLUME=${DETECT_VOLUME}${VOLUME}
 		        test "${NEWVOLUME}" -lt 0 && NEWVOLUME=0
 		        test "${NEWVOLUME}" -gt "${MAX_VOLUME}" && NEWVOLUME=${MAX_VOLUME}
 		        pactl set-sink-volume @DEFAULT_SINK@ "${NEWVOLUME}%"
 		        exit 0
-		      fi
-		      echo "invalid volume value" >&2
-		      exit 1
 		    fi
-	    esac
-	    ;;
+		    echo "invalid volume value" >&2
+		    exit 1
+		fi
+	esac
+	;;
 
     test)
 		aplay "/usr/share/sounds/Mallet.wav"

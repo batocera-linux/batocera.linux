@@ -4,6 +4,9 @@ do_usage() {
 	echo "$1 list"
 	echo "$1 get"
 	echo "$1 set {auto|<device>}"
+	echo "$1 list-profiles"
+	echo "$1 get-profile"
+	echo "$1 set-profile {auto|<profile>}"
 	echo "$1 getSystemVolume"
 	echo "$1 setSystemVolume {mute|unmute|mute-toggle|[+-]<0...100>}"
 	echo "$1 test"
@@ -47,6 +50,25 @@ case "${ACTION}" in
 			    pactl set-default-sink "${MODE}" || exit 1
 		esac
 		;;
+
+	list-profiles)
+	    echo "auto auto"
+	    pactl list cards-profiles-raw | grep "available=1" | sed -e s+"^card=[0-9]* name=\([^ ]*\) profile=\([^ ]*\) available=[01] active=[01] description=\(.*\)$"+"\2@\1 \3"+
+	    ;;
+
+	get-profile)
+	    /usr/bin/batocera-settings-get audio.profile
+	    ;;
+
+	set-profile)
+	    MODE="$2"
+	    if test "${MODE}" != "auto"
+	    then
+		PROFILE_NAME=$(echo "${MODE}" | cut -d @ -f 1)
+		CARD_NAME=$(echo "${MODE}" | cut -d @ -f 2)
+		pactl set-card-profile "${CARD_NAME}" "${PROFILE_NAME}" || exit 1
+	    fi
+	    ;;
 
 	getSystemVolume)
 	    echo "${DETECT_VOLUME}"
