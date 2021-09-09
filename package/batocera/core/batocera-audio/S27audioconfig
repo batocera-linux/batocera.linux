@@ -8,22 +8,25 @@
 
 apply_audioconfig() {
     DEVICE=$1
-    VOLUME=$2
+    PROFILE=$2
+    VOLUME=$3
 
-    batocera-audio set "${DEVICE}" || return 1
-    batocera-audio setSystemVolume "${VOLUME}" || return 1
+    batocera-audio set             "${DEVICE}"  || return 1
+    batocera-audio set-profile     "${PROFILE}" || return 1
+    batocera-audio setSystemVolume "${VOLUME}"  || return 1
     return 0
 }
 
 try_apply_audioconfig() {
     DEVICE=$1
-    VOLUME=$2
+    PROFILE=$2
+    VOLUME=$3
 
     N=10
     while test "${N}" -gt 0
     do
 	echo "retry applying audio (${N})" >&2
-	if apply_audioconfig "${DEVICE}" "${VOLUME}"
+	if apply_audioconfig "${DEVICE}" "${PROFILE}" "${VOLUME}"
 	then
 	    return 0
 	fi
@@ -39,16 +42,18 @@ start_audioconfig() {
 
     # set default device and volume
     DEVICE=$(/usr/bin/batocera-settings-get audio.device)
+    PROFILE=$(/usr/bin/batocera-settings-get audio.profile)
     VOLUME=$(/usr/bin/batocera-settings-get audio.volume)
-    test -z "${DEVICE}" && DEVICE=auto
-    test -z "${VOLUME}" && VOLUME=80
+    test -z "${DEVICE}"  && DEVICE=auto
+    test -z "${PROFILE}" && DEVICE=auto
+    test -z "${VOLUME}"  && VOLUME=80
 
-    if ! apply_audioconfig "${DEVICE}" "${VOLUME}"
+    if ! apply_audioconfig "${DEVICE}" "${PROFILE}" "${VOLUME}"
     then
 	# in case it didn't work, we call in backgroud a function
 	# that will do more test in the time
 	# because some tv or audio card takes longer to initialize
-	try_apply_audioconfig "${DEVICE}" "${VOLUME}" &
+	try_apply_audioconfig "${DEVICE}" "${PROFILE}" "${VOLUME}" &
     fi
 
     echo "OK"
