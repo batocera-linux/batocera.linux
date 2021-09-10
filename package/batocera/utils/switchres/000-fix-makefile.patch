@@ -1,36 +1,44 @@
-diff --git a/makefile b/makefile
-index 287aa0a..ebc2902 100644
---- a/makefile
-+++ b/makefile
-@@ -13,7 +13,8 @@ AR ?= ar
- LDFLAGS = -shared
+diff --color -uri switchres-lbrpdx/makefile switchres-a8af8e8f7f54d24414b4a8595a84c0f0f23e14a1/makefile
+--- switchres-lbrpdx/makefile	2021-06-28 14:51:06.000000000 -0700
++++ switchres-a8af8e8f7f54d24414b4a8595a84c0f0f23e14a1/makefile	2021-09-10 03:36:52.380008814 -0700
+@@ -10,7 +10,8 @@
+ CROSS_COMPILE ?=
+ CXX ?= g++
+ AR ?= ar
+-LDFLAGS = -shared
++LDFLAGS ?=
++LDFLAGS += -shared
  FINAL_CXX=$(CROSS_COMPILE)$(CXX)
  FINAL_AR=$(CROSS_COMPILE)$(AR)
--CPPFLAGS = -O3 -Wall -Wextra
-+CPPFLAGS ?= 
-+CPPFLAGS += -O3 -Wall -Wextra
- 
- PKG_CONFIG=pkg-config
- INSTALL=install
-@@ -21,17 +22,16 @@ SED=sed
- 
+ CPPFLAGS = -O3 -Wall -Wextra
+@@ -20,9 +21,9 @@
+
  DESTDIR ?=
  PREFIX ?= /usr
 -INCDIR = $(DESTDIR)$(PREFIX)/include
 -LIBDIR = $(DESTDIR)$(PREFIX)/lib
 -BINDIR = $(DESTDIR)$(PREFIX)/bin
-+INCDIR = $(PREFIX)/include/libdrm
++INCDIR = $(PREFIX)/include
 +LIBDIR = $(PREFIX)/lib
 +BINDIR = $(PREFIX)/bin
  PKGDIR = $(LIBDIR)/pkgconfig
- 
+
  # Linux
- ifeq  ($(PLATFORM),Linux)
- EXTRA_LIBS = libdrm
+@@ -48,12 +49,12 @@
+     SRC += custom_video_drmkms.cpp
+ endif
+
+-ifneq (,$(EXTRA_LIBS))
 -CPPFLAGS += $(shell $(PKG_CONFIG) --cflags $(EXTRA_LIBS))
- SRC += display_linux.cpp custom_video_xrandr.cpp custom_video_drmkms.cpp
+-endif
++#ifneq (,$(EXTRA_LIBS))
++#CPPFLAGS += $(shell $(PKG_CONFIG) --cflags $(EXTRA_LIBS))
++#endif
+
 -CPPFLAGS += -fPIC
-+CPPFLAGS += -fPIC -I$(INCDIR)
- LIBS = -ldl
- REMOVE = rm -f 
+-LIBS = -ldl
++CPPFLAGS += -fPIC -I$(INCDIR) -I$(INCDIR)/libdrm
++LIBS = -ldl -lm -lrt -lstdc++
+ REMOVE = rm -f
  STATIC_LIB_EXT = a
+ DYNAMIC_LIB_EXT = so
