@@ -890,7 +890,7 @@ config BR2_PACKAGE_BATOCERA_CONSOLE_SYSTEMS
 	select BR2_PACKAGE_LIBRETRO_FREECHAF            # ALL
 
 	# ECWolf
-	select BR2_PACKAGE_LIBRETRO_ECWOLF              # ALL
+	# select BR2_PACKAGE_LIBRETRO_ECWOLF              # ALL
 	select BR2_PACKAGE_ECWOLF                       if BR2_PACKAGE_BATOCERA_TARGET_X86_64
 
 	# Sonic Retro Engine
