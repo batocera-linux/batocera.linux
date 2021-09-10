@@ -364,8 +364,4 @@ def checkAvx2():
     return False
 
 def checkSseLib(isAVX2):
-    if not isAVX2:
-        for line in open("/proc/cpuinfo").readlines():
-            if re.match("^flags[\t ]*:.* sse4_1", line) and re.match("^flags[\t ]*:.* sse4_2", line):
-                return "libGSdx-SSE4.so"
     return "libGSdx.so"
