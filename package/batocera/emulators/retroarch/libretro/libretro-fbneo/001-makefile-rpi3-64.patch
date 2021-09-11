@@ -9,7 +9,7 @@ index bae2404..58b5b8e 100644
 -		PLATFORM_DEFINES := -marm -mcpu=cortex-a53 -mfpu=neon-fp-armv8 -mfloat-abi=hard
 -		HAVE_NEON = 1
 -		USE_CYCLONE = 1
-+		ifneq (,$(findstring arm64,$(platform)))
++		ifneq (,$(findstring rpi3_64,$(platform)))
 +			PLATFORM_DEFINES := -march=armv8-a+crc+simd -mtune=cortex-a53
 +		else
 +			PLATFORM_DEFINES := -marm -mcpu=cortex-a53 -mfpu=neon-fp-armv8 -mfloat-abi=hard
