@@ -2003,13 +2003,12 @@ supervision:
 
 ecwolf:
   name:       ECWolf
-  manufacturer: Blzut3
+  manufacturer: Ports
   release: 2013
   hardware: port
-  extensions: [ecwolf, pk3, zip, 7z]
+  extensions: [ecwolf, pk3]
+  group: ports
   emulators:
-    libretro:
-      ecwolf: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_ECWOLF], incompatible_extensions: [ecwolf] }
     ecwolf:
       ecwolf: { requireAnyOf: [BR2_PACKAGE_ECWOLF] }
 

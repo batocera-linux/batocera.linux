@@ -21,11 +21,10 @@ class ECWolfGenerator(Generator):
         if not path.isdir(ecwolfSaves):
             os.mkdir(ecwolfSaves)
 
-        os.chdir(rom)
+        try:
+            os.chdir(rom)
+        # Only game directories, not .zip
+        except Exception as e:
+            print("Error: couldn't go into directory {} ({})".format(rom, e))
         commandArray = ["ecwolf", "--fullscreen", "--joystick", "--savedir /userdata/saves/ecwolf", "--config /userdata/system/configs/ecwolf/ecwolf.cfg"]
-        #commandArray = ["ecwolf", "--fullscreen", "--joystick", "--savedir /userdata/saves/ecwolf", rom]
-        return Command.Command(
-            array=commandArray)
-
-    def getMouseMode(self, config):
-        return True
+        return Command.Command(array=commandArray)
