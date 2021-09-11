@@ -3,17 +3,21 @@
 # Scummvm
 #
 ################################################################################
-# Version.: Commits on Sep 27, 2020
-SCUMMVM_VERSION = v2.2.0
+# Version.: Commits on Sep 11, 2021 branch 2.3
+SCUMMVM_VERSION = 80b593cdbae9035dd043f8726915ad582ecda5b0
 SCUMMVM_SITE = $(call github,scummvm,scummvm,$(SCUMMVM_VERSION))
 SCUMMVM_LICENSE = GPLv2
 SCUMMVM_DEPENDENCIES = sdl2 zlib jpeg libmpeg2 libogg libvorbis flac libmad libpng libtheora faad2 freetype
 
-SCUMMVM_ADDITIONAL_FLAGS= -I$(STAGING_DIR)/usr/include -I$(STAGING_DIR)/usr/include/interface/vcos/pthreads -I$(STAGING_DIR)/usr/include/interface/vmcs_host/linux -lpthread -lm -L$(STAGING_DIR)/usr/lib -lGLESv2 -lEGL
+SCUMMVM_ADDITIONAL_FLAGS= -I$(STAGING_DIR)/usr/include -I$(STAGING_DIR)/usr/include/interface/vcos/pthreads -I$(STAGING_DIR)/usr/include/interface/vmcs_host/linux -I$(STAGING_DIR)/usr/include/GLES -lpthread -lm -L$(STAGING_DIR)/usr/lib -lGLESv2 -lEGL
 
 ifeq ($(BR2_PACKAGE_RPI_USERLAND),y)
 	SCUMMVM_ADDITIONAL_FLAGS += -lbcm_host -lvchostif
 	SCUMMVM_CONF_OPTS += --host=raspberrypi
+endif
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RK3326_ANY),y)
+	SCUMMVM_CONF_OPTS += --host=raspberrypi
+	SCUMMVM_DEPENDENCIES += mali-g31-gbm
 endif
 
 SCUMMVM_CONF_ENV += RANLIB="$(TARGET_RANLIB)" STRIP="$(TARGET_STRIP)" AR="$(TARGET_AR) cru" AS="$(TARGET_AS)"
