@@ -1,10 +1,10 @@
-################################################################################
+##########################################################™™######################
 #
 # MAME
 #
 ################################################################################
-# Version.: Commits on Apr 12, 2021
-LIBRETRO_MAME_VERSION = 98b0ba18a9109339c2ebf4f5945f6c3575301ba9
+# Version: Commits on Jan 31, 2021 (0.228)
+LIBRETRO_MAME_VERSION = bbc688aafb67c54c83b755af5f7f0589f9552b17
 LIBRETRO_MAME_SITE = $(call github,libretro,mame,$(LIBRETRO_MAME_VERSION))
 LIBRETRO_MAME_LICENSE = MAME
 LIBRETRO_MAME_DEPENDENCIES = retroarch
@@ -14,15 +14,12 @@ LIBRETRO_MAME_JOBS=4
 
 ifeq ($(BR2_x86_64),y)
 LIBRETRO_MAME_EXTRA_ARGS += PTR64=1 LIBRETRO_CPU=x86_64 PLATFORM=x86_64
-
 else ifeq ($(BR2_i386),y)
 LIBRETRO_MAME_EXTRA_ARGS += PTR64=0 LIBRETRO_CPU=x86 PLATFORM=x86
-
 else ifeq ($(BR2_arm),y)
 LIBRETRO_MAME_EXTRA_ARGS += PTR64=0 LIBRETRO_CPU=arm PLATFORM=arm
 # workaround for asmjit broken build system (arm backend is not public)
 LIBRETRO_MAME_ARCHOPTS += -D__arm__ -DASMJIT_BUILD_X86
-
 else ifeq ($(BR2_aarch64),y)
 LIBRETRO_MAME_EXTRA_ARGS += PTR64=1 LIBRETRO_CPU= PLATFORM=arm64
 # workaround for asmjit broken build system (arm backend is not public)
@@ -37,7 +34,7 @@ define LIBRETRO_MAME_BUILD_CMDS
 	# create some dirs while with parallelism, sometimes it fails because this directory is missing
 	mkdir -p $(@D)/build/libretro/obj/x64/libretro/src/osd/libretro/libretro-internal
 
-	$(MAKE) -j$(LIBRETRO_MAME_JOBS) -C $(@D)/ OPENMP=1 REGENIE=1 VERBOSE=1 NOWERROR=1 PYTHON_EXECUTABLE=python3            \
+	$(MAKE) -j$(LIBRETRO_MAME_JOBS) -C $(@D)/ OPENMP=1 REGENIE=1 VERBOSE=1 NOWERROR=1 PYTHON_EXECUTABLE=python3 \
 		CONFIG=libretro LIBRETRO_OS="unix" ARCH="" PROJECT="" ARCHOPTS="$(LIBRETRO_MAME_ARCHOPTS)" \
 		DISTRO="debian-stable" OVERRIDE_CC="$(TARGET_CC)" OVERRIDE_CXX="$(TARGET_CXX)"             \
 		OVERRIDE_LD="$(TARGET_LD)" RANLIB="$(TARGET_RANLIB)" AR="$(TARGET_AR)"                     \
