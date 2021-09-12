@@ -13,8 +13,12 @@ SCUMMVM_ADDITIONAL_FLAGS= -I$(STAGING_DIR)/usr/include -I$(STAGING_DIR)/usr/incl
 
 ifeq ($(BR2_PACKAGE_RPI_USERLAND),y)
 	SCUMMVM_ADDITIONAL_FLAGS += -lbcm_host -lvchostif
+endif
+
+ifeq ($(BR2_PACKAGE_BATOCERA_RPI_ANY),y)
 	SCUMMVM_CONF_OPTS += --host=raspberrypi
 endif
+
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RK3326_ANY),y)
 	SCUMMVM_CONF_OPTS += --host=raspberrypi
 	SCUMMVM_DEPENDENCIES += mali-g31-gbm
