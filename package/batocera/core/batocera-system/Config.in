@@ -893,8 +893,8 @@ config BR2_PACKAGE_BATOCERA_CONSOLE_SYSTEMS
 	select BR2_PACKAGE_ECWOLF                       if BR2_PACKAGE_BATOCERA_TARGET_X86_64
 
 	# Sonic Retro Engine
-	select BR2_PACKAGE_SONIC2013                    if !BR2_PACKAGE_BATOCERA_RPI_VCORE
-	select BR2_PACKAGE_SONICCD                      if !BR2_PACKAGE_BATOCERA_RPI_VCORE
+	select BR2_PACKAGE_SONIC2013                    # ALL
+	select BR2_PACKAGE_SONICCD                      # ALL
 
 	# Super Cassette Vision
 	select BR2_PACKAGE_LIBRETRO_EMUSCV              # ALL
