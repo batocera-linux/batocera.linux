@@ -1,7 +1,6 @@
 default:
   options:
     video_threaded: true
-    videomode:      CEA 4 HDMI
 
 amiga500:
   emulator: amiberry
@@ -12,37 +11,6 @@ amiga1200:
 amigacd32:
   emulator: amiberry
   core:     CD32
-mastersystem:
-  emulator: libretro
-  core:     picodrive
-megadrive:
-  emulator: libretro
-  core:     picodrive
-n64:
-  emulator: mupen64plus
-  core:     n64
-  options:
-    videomode: DMT 4 HDMI
-n64dd:
-  emulator: mupen64plus
-  core:     n64
-  options:
-    videomode: DMT 4 HDMI
 snes:
   emulator: libretro
   core:     snes9x_next
-c64:
-  emulator: vice
-  core:     x64
-c128:
-  emulator: vice
-  core:     x128
-c20:
-  emulator: vice
-  core:     xvic
-pet:
-  emulator: vice
-  core:     xpet
-cplus4:
-  emulator: vice
-  core:     xplus4
