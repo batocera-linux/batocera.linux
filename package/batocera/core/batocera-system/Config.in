@@ -203,14 +203,12 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
 
 	# wireless drivers
 	select BR2_PACKAGE_RTL8821AU            if  !BR2_PACKAGE_BATOCERA_TARGET_RPI1           && \
-                                                !BR2_PACKAGE_BATOCERA_TARGET_RPI2           && \
                                                 !BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_PC    && \
                                                 !BR2_PACKAGE_BATOCERA_TARGET_CHA            && \
                                                 !BR2_PACKAGE_BATOCERA_TARGET_RK3326_ANY
 
 	# do NOT remove this one for OGA
 	select BR2_PACKAGE_RTL8192EU		if  !BR2_PACKAGE_BATOCERA_TARGET_RPI1           && \
-                                            !BR2_PACKAGE_BATOCERA_TARGET_RPI2           && \
                                             !BR2_PACKAGE_BATOCERA_TARGET_CHA            && \
                                             !BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_PC
 
@@ -298,7 +296,7 @@ config BR2_TARGET_BATOCERA_IMAGES_DEFINITIONS
 	default "amlogic/s905gen3/odroidc4 amlogic/s905gen3/tvbox"  if BR2_PACKAGE_BATOCERA_TARGET_S905GEN3
 	default "amlogic/s912"                                      if BR2_PACKAGE_BATOCERA_TARGET_S912
 	default "raspberrypi/rpi"                                   if BR2_PACKAGE_BATOCERA_TARGET_RPI1
-	default "raspberrypi/rpi"                                   if BR2_PACKAGE_BATOCERA_TARGET_RPI2
+	default "raspberrypi/rpi2"                                  if BR2_PACKAGE_BATOCERA_TARGET_RPI2
 	default "raspberrypi/rpi3"                                  if BR2_PACKAGE_BATOCERA_TARGET_RPI3
 	default "raspberrypi/rpi4"                                  if BR2_PACKAGE_BATOCERA_TARGET_RPI4
 	default "rockchip/odroidgoa"                                if BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA
@@ -523,11 +521,11 @@ config BR2_PACKAGE_BATOCERA_ARCADE_SYSTEMS
 	select BR2_PACKAGE_BATOCERA_SEGADC
 
 	# Laserdic emulation
-	select BR2_PACKAGE_DAPHNE               if !BR2_PACKAGE_BATOCERA_TARGET_RPI1 && !BR2_PACKAGE_BATOCERA_TARGET_RPI2 && !BR2_PACKAGE_BATOCERA_TARGET_CHA # daphne
+	select BR2_PACKAGE_DAPHNE               if !BR2_PACKAGE_BATOCERA_TARGET_RPI1 && !BR2_PACKAGE_BATOCERA_TARGET_CHA # daphne
 
 	# Standalone Sega Model 2 emulator
-	select BR2_PACKAGE_MODEL2EMU			if BR2_PACKAGE_BATOCERA_TARGET_X86_64 && \
-							BR2_PACKAGE_BATOCERA_WINE_SYSTEMS
+	select BR2_PACKAGE_MODEL2EMU			if  BR2_PACKAGE_BATOCERA_TARGET_X86_64 && \
+                                                BR2_PACKAGE_BATOCERA_WINE_SYSTEMS
 
 	# Standalone Sega Model 3 emulator
 	select BR2_PACKAGE_SUPERMODEL           if BR2_PACKAGE_BATOCERA_TARGET_X86_64
@@ -737,7 +735,7 @@ config BR2_PACKAGE_BATOCERA_CONSOLE_SYSTEMS
 	# Nintendo 64
 	select BR2_PACKAGE_BATOCERA_MUPEN64				if !BR2_PACKAGE_BATOCERA_TARGET_RPI1 && !BR2_PACKAGE_BATOCERA_TARGET_CHA # mupen64 (n64)
 
-	select BR2_PACKAGE_LIBRETRO_MUPEN64PLUS_NEXT	if !BR2_PACKAGE_BATOCERA_TARGET_RPI1 && !BR2_PACKAGE_BATOCERA_TARGET_RPI2 && !BR2_PACKAGE_BATOCERA_TARGET_CHA
+	select BR2_PACKAGE_LIBRETRO_MUPEN64PLUS_NEXT	if !BR2_PACKAGE_BATOCERA_TARGET_RPI1 && !BR2_PACKAGE_BATOCERA_TARGET_CHA
 
 	select BR2_PACKAGE_LIBRETRO_PARALLEL_N64		if 	BR2_PACKAGE_BATOCERA_TARGET_X86_64  || \
 														BR2_PACKAGE_BATOCERA_TARGET_RK3288	|| \
@@ -903,9 +901,7 @@ config BR2_PACKAGE_BATOCERA_CONSOLE_SYSTEMS
 	select BR2_PACKAGE_GSPLUS                       # ALL
 
 	# Uzebox
-	select BR2_PACKAGE_LIBRETRO_UZEM                if !BR2_PACKAGE_BATOCERA_TARGET_RPI1 && \
-                                                           !BR2_PACKAGE_BATOCERA_TARGET_RPI2 && \
-                                                           !BR2_PACKAGE_BATOCERA_TARGET_CHA # speed issue on weak SBCs
+	select BR2_PACKAGE_LIBRETRO_UZEM                if !BR2_PACKAGE_BATOCERA_TARGET_RPI1 && !BR2_PACKAGE_BATOCERA_TARGET_CHA # speed issue on weak SBCs
 
 	help
 		All avaible systems for the selected architecture
@@ -926,13 +922,12 @@ config BR2_PACKAGE_BATOCERA_MUPEN64
 	select BR2_PACKAGE_MUPEN64PLUS_RSPHLE
 
 	# Audio plugin
-	select BR2_PACKAGE_MUPEN64PLUS_AUDIO_SDL            if !BR2_PACKAGE_BATOCERA_TARGET_RPI2 && !BR2_PACKAGE_BATOCERA_TARGET_CHA
-	select BR2_PACKAGE_MUPEN64PLUS_OMX                  if  BR2_PACKAGE_BATOCERA_TARGET_RPI2 # rpi audio
+	select BR2_PACKAGE_MUPEN64PLUS_AUDIO_SDL
 
 	# Video plugin
-	select BR2_PACKAGE_MUPEN64PLUS_GLIDEN64             if !BR2_PACKAGE_BATOCERA_RPI_VCORE && !BR2_PACKAGE_BATOCERA_TARGET_CHA
-	select BR2_PACKAGE_MUPEN64PLUS_GLES2                if !BR2_aarch64 && ( BR2_PACKAGE_BATOCERA_RPI_VCORE || BR2_PACKAGE_BATOCERA_TARGET_ROCKCHIP_ANY ) && !BR2_PACKAGE_BATOCERA_TARGET_CHA
-	select BR2_PACKAGE_MUPEN64PLUS_VIDEO_GLIDE64MK2     if !BR2_PACKAGE_BATOCERA_RPI_VCORE && !BR2_PACKAGE_BATOCERA_TARGET_CHA
+	select BR2_PACKAGE_MUPEN64PLUS_VIDEO_GLIDE64MK2
+	select BR2_PACKAGE_MUPEN64PLUS_GLIDEN64             if !BR2_PACKAGE_BATOCERA_TARGET_RPI2
+	select BR2_PACKAGE_MUPEN64PLUS_GLES2                if !BR2_aarch64 && BR2_PACKAGE_BATOCERA_TARGET_ROCKCHIP_ANY
 	select BR2_PACKAGE_MUPEN64PLUS_VIDEO_RICE           if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY || BR2_PACKAGE_BATOCERA_TARGET_RK3399 || BR2_PACKAGE_BATOCERA_TARGET_RK3288
 
 	help
