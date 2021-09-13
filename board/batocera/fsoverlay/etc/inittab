@@ -5,7 +5,7 @@
 id:3:initdefault:
 
 si0::sysinit:/bin/mount -t proc proc /proc
-#si1::sysinit:/bin/mount -o remount,rw /
+# si1::sysinit:/bin/mount -o remount,rw /
 si2::sysinit:/bin/mkdir -p /dev/pts
 si3::sysinit:/bin/mkdir -p /dev/shm
 si4::sysinit:/bin/mount -a
@@ -13,9 +13,10 @@ si5::sysinit:/bin/hostname -F /etc/hostname
 si6::sysinit:/etc/init.d/rcS
 
 # S0:3:respawn:/sbin/getty -L 115200 ttyAML0 vt100 # GENERIC_SERIAL
-2:3:respawn:/sbin/getty 38400 tty2
-3:3:respawn:/sbin/getty 38400 tty3
-4:3:respawn:/sbin/getty 38400 tty4 -n -l /usr/bin/alsamixer
+# 2:3:respawn:/sbin/getty 38400 tty2
+# 3:3:respawn:/sbin/getty 38400 tty3
+4:3:respawn:/sbin/getty 38400 tty4 -n -l /usr/bin/batocera-mixer
+5:3:respawn:/sbin/getty 38400 tty5
 
 # Stuff to do for the 3-finger salute
 ca::ctrlaltdel:/sbin/reboot
