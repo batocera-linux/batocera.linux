@@ -90,7 +90,6 @@ PACKAGES_LIBRETRO="	libretro-81
 
 PACKAGES_MUPEN="mupen64plus-audio-sdl
 				mupen64plus-core
-				mupen64plus-gles2
 				mupen64plus-gliden64
 				mupen64plus-input-sdl
 				mupen64plus-rsphle
@@ -128,7 +127,7 @@ PACKAGES_EMULATORS="amiberry
 					python-pygame2
 					rpcs3
 					ruffle
-					scummvm 
+					scummvm
 					sdlpop
 					solarus-engine
 					supermodel
