@@ -21,7 +21,7 @@ def setMupenConfig(iniConfig, system, controllers, gameResolution):
     # TODO : Miss Mupen64Plus\hires_texture
 
     # 4MB RAM Extention Pack
-    if system.isOptSet("mupen64plus_DisableExtraMem") and system.config["mupen64plus_DisableExtraMem"] == '=True':
+    if system.isOptSet("mupen64plus_DisableExtraMem") and system.config["mupen64plus_DisableExtraMem"] == 'True':
         iniConfig.set("Core", "DisableExtraMem", "True")
     else:
         iniConfig.set("Core", "DisableExtraMem", "False")        # Disable 4MB expansion RAM pack. May be necessary for some games
