@@ -73,7 +73,7 @@ ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_CHA),y)
 else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI1)$(BR2_PACKAGE_BATOCERA_TARGET_RPI2)$(BR2_PACKAGE_BATOCERA_TARGET_RPI3),y)
 	BATO_SPLASH=$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/splash720p.mp4
 	BATOCERA_SPLASH_POST_INSTALL_TARGET_HOOKS += BATOCERA_SYSTEM_SPLASH
-else
+else ifneq ($(BR2_PACKAGE_BATOCERA_SPLASH_ROTATE_IMAGE),y)
 	BATO_SPLASH=$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/splash.mp4
 	BATOCERA_SPLASH_POST_INSTALL_TARGET_HOOKS += BATOCERA_SYSTEM_SPLASH
 endif
@@ -103,6 +103,7 @@ endef
 define BATOCERA_SPLASH_INSTALL_ROTATE_IMAGE
 	mkdir -p $(TARGET_DIR)/usr/share/batocera/splash
 	convert "$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/logo.png" -fill white -pointsize 30 -annotate +50+1020 "$(BATOCERA_SPLASH_TGVERSION)" -rotate -90 "${TARGET_DIR}/usr/share/batocera/splash/logo-version.png"
+	ln -sf "logo-version.png" "${TARGET_DIR}/usr/share/batocera/splash/boot-logo.png"
 endef
 
 $(eval $(generic-package))
