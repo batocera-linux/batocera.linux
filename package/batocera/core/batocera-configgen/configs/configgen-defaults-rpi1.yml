@@ -3,7 +3,7 @@ default:
     videomode:      CEA 4 HDMI
     video_threaded: true
     smooth:         false
-    
+
 amiga500:
   emulator: amiberry
   core:     A500
@@ -28,12 +28,6 @@ mastersystem:
 megadrive:
   emulator: libretro
   core:     picodrive
-n64:
-  emulator: mupen64plus
-  core:     gliden64
-n64dd:
-  emulator: mupen64plus
-  core:     gliden64
 snes:
   emulator: libretro
   core:     pocketsnes
