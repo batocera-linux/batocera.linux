@@ -25,15 +25,9 @@ DOSBOX_STAGING_CXXFLAGS += -mcpu=cortex-a7 -mfpu=neon-vfpv4 -mfloat-abi=hard
 DOSBOX_STAGING_CONF_OPTS += -Duse_opengl=false
 endif
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI3),y)
-    ifeq ($(BR2_aarch64),y)
-        DOSBOX_STAGING_CFLAGS   += -march=armv8-a+crc -mcpu=cortex-a53 -mtune=cortex-a53
-        DOSBOX_STAGING_CXXFLAGS += -march=armv8-a+crc -mcpu=cortex-a53 -mtune=cortex-a53
-        DOSBOX_STAGING_CONF_OPTS += -Duse_opengl=false
-    else
-        DOSBOX_STAGING_CFLAGS   += -march=armv8-a+crc -mtune=cortex-a53 -mfpu=neon-fp-armv8 -mfloat-abi=hard
-        DOSBOX_STAGING_CXXFLAGS += -march=armv8-a+crc -mtune=cortex-a53 -mfpu=neon-fp-armv8 -mfloat-abi=hard
-        DOSBOX_STAGING_CONF_OPTS += -Duse_opengl=false
-    endif
+DOSBOX_STAGING_CFLAGS   += -march=armv8-a+crc -mcpu=cortex-a53 -mtune=cortex-a53
+DOSBOX_STAGING_CXXFLAGS += -march=armv8-a+crc -mcpu=cortex-a53 -mtune=cortex-a53
+DOSBOX_STAGING_CONF_OPTS += -Duse_opengl=false
 endif
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI4),y)
 DOSBOX_STAGING_CFLAGS   += -march=armv8-a+crc -mcpu=cortex-a72 -mtune=cortex-a72

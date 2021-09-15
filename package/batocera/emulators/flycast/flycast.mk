@@ -44,12 +44,8 @@ ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_S922X),y)
 endif
 
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI3),y)
-    ifeq ($(BR2_aarch64),y)
-	    FLYCAST_PLATFORM = rpi3-64-mesa
-    else
-        FLYCAST_PLATFORM = rpi3-mesa
-    endif
-	FLYCAST_EXTRA_ARGS += USE_SDL=1 USE_SDLAUDIO=1
+    FLYCAST_PLATFORM = rpi3-64-mesa
+    FLYCAST_EXTRA_ARGS += USE_SDL=1 USE_SDLAUDIO=1
 endif
 
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI4),y)

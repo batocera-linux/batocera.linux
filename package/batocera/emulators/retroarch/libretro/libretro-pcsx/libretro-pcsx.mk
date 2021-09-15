@@ -22,13 +22,6 @@ LIBRETRO_PCSX_PLATFORM = unix
 else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_LIBRETECH_H5),y)
 LIBRETRO_PCSX_PLATFORM = h5
 
-else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI3),y)
-    ifeq ($(BR2_aarch64),y)
-        LIBRETRO_PCSX_PLATFORM = rpi3_64
-    else
-        LIBRETRO_PCSX_PLATFORM = rpi3
-    endif
-
 else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_S812),y)
 LIBRETRO_PCSX_PLATFORM = armv cortexa9 neon hardfloat
 
