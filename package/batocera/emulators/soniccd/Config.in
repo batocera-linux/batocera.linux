@@ -5,10 +5,8 @@ config BR2_PACKAGE_SONICCD
 		select BR2_PACKAGE_SDL2_MIXER
 		select BR2_PACKAGE_LIBOGG
 		select BR2_PACKAGE_LIBVORBIS
-		select BR2_PACKAGE_LIBGBM
-		select BR2_PACKAGE_LIBDRM
 		select BR2_PACKAGE_LIBTHEORA
-    
+
     help
       The Sonic CD 2011 decompilation is for the Android, iOS, & Steam ports of Sonic 1 and 2
 

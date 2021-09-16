@@ -190,7 +190,6 @@ n64:
       gliden64:   { requireAnyOf: [BR2_PACKAGE_MUPEN64PLUS_GLIDEN64] }
       glide64mk2: { requireAnyOf: [BR2_PACKAGE_MUPEN64PLUS_VIDEO_GLIDE64MK2]  }
       rice:       { requireAnyOf: [BR2_PACKAGE_MUPEN64PLUS_VIDEO_RICE]        }
-      n64:        { requireAnyOf: [BR2_PACKAGE_MUPEN64PLUS_GLES2]             }
     libretro:
       mupen64plus-next: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MUPEN64PLUS_NEXT] }
       parallel_n64:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PARALLEL_N64] }
@@ -211,7 +210,6 @@ n64dd:
       gliden64:   { requireAnyOf: [BR2_PACKAGE_MUPEN64PLUS_GLIDEN64] }
       glide64mk2: { requireAnyOf: [BR2_PACKAGE_MUPEN64PLUS_VIDEO_GLIDE64MK2]  }
       rice:       { requireAnyOf: [BR2_PACKAGE_MUPEN64PLUS_VIDEO_RICE]        }
-      n64:        { requireAnyOf: [BR2_PACKAGE_MUPEN64PLUS_GLES2]             }
     libretro:
       mupen64plus-next: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MUPEN64PLUS_NEXT] }
       parallel_n64:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PARALLEL_N64] }
@@ -927,11 +925,11 @@ tyrquake:
       tyrquake: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_TYRQUAKE] }
   comment_en: |
     Put your Quake 1 .PAK games in this directory.
-    
+
     For more info: https://wiki.batocera.org/systems:tyrquake
   comment_fr: |
     Placez ici vos fichiers .PAK pour Quake 1.
-    
+
     Trouvez la documentation ici: https://wiki.batocera.org/systems:tyrquake
 
 mrboom:
@@ -999,11 +997,11 @@ cannonball:
       cannonball: { requireAnyOf: [BR2_PACKAGE_CANNONBALL] }
   comment_en: |
     Add mame 'OutRun rev. B' ROMs (epr-10187.88, epr-10327a.76.. ) in this directory and rename Cannonball.cannonball.disabled to Cannonball.cannonball.
-    
+
     For more info: https://wiki.batocera.org/systems:cannonball
   comment_fr: |
     Ajoutez les roms mame de 'OutRun rev. B' (epr-10187.88, epr-10327a.76.. ) dans ce dossier et renommez Cannonball.cannonball.disabled en Cannonball.cannonball.
-    
+
     Trouvez la documentation ici: https://wiki.batocera.org/systems:cannonball
 
 sdlpop:

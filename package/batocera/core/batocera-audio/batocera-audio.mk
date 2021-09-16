@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-BATOCERA_AUDIO_VERSION = 6
+BATOCERA_AUDIO_VERSION = 6.1
 BATOCERA_AUDIO_LICENSE = GPL
 BATOCERA_AUDIO_SOURCE=
 
@@ -47,6 +47,8 @@ define BATOCERA_AUDIO_INSTALL_TARGET_CMDS
 		$(TARGET_DIR)/usr/bin/soundconfig
 	install -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-audio/alsa/batocera-audio$(ALSA_SUFFIX) \
 		$(TARGET_DIR)/usr/bin/batocera-audio
+	install -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-audio/alsa/batocera-mixer \
+		$(TARGET_DIR)/usr/bin/batocera-mixer
 
 	# pipewire-pulse policy
 	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-audio/pulseaudio-system.conf \

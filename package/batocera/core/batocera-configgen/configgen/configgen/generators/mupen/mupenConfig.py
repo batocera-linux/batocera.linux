@@ -21,7 +21,7 @@ def setMupenConfig(iniConfig, system, controllers, gameResolution):
     # TODO : Miss Mupen64Plus\hires_texture
 
     # 4MB RAM Extention Pack
-    if system.isOptSet("mupen64plus_DisableExtraMem") and system.config["mupen64plus_DisableExtraMem"] == '=True':
+    if system.isOptSet("mupen64plus_DisableExtraMem") and system.config["mupen64plus_DisableExtraMem"] == 'True':
         iniConfig.set("Core", "DisableExtraMem", "True")
     else:
         iniConfig.set("Core", "DisableExtraMem", "False")        # Disable 4MB expansion RAM pack. May be necessary for some games
@@ -100,7 +100,7 @@ def setMupenConfig(iniConfig, system, controllers, gameResolution):
         iniConfig.set("Video-Glide64mk2", "wrpAntiAliasing", "0") # Enable full-scene anti-aliasing by setting this to a value greater than 1
 
     # Hires textures
-    if system.isOptSet("mupen64plus_LoadHiResTextures") and system.config["mupen64plus_LoadHiResTextures"] == '=True':
+    if system.isOptSet("mupen64plus_LoadHiResTextures") and system.config["mupen64plus_LoadHiResTextures"] == 'True':
         iniConfig.set("Video-Rice", "LoadHiResTextures", "True")
         iniConfig.set("Video-Glide64mk2", "ghq_hirs",    "1")
     else:
