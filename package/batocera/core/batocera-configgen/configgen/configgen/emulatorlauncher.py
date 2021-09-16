@@ -228,6 +228,13 @@ def main(args, maxnbplayers):
             mouseChanged = True
             videoMode.changeMouse(True)
 
+        # SDL VSync is a big deal on OGA and RPi4
+        if system.isOptSet('sdlvsync') and system.getOptBoolean('sdlvsync') == False:
+            system.config["sdlvsync"] = '0'
+        else:
+            system.config["sdlvsync"] = '1'
+        os.environ.update({'SDL_RENDER_VSYNC': system.config["sdlvsync"]})
+
         # run a script before emulator starts
         callExternalScripts("/usr/share/batocera/configgen/scripts", "gameStart", [systemName, system.config['emulator'], effectiveCore, effectiveRom])
         callExternalScripts("/userdata/system/scripts", "gameStart", [systemName, system.config['emulator'], effectiveCore, effectiveRom])
