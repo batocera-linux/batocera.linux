@@ -237,10 +237,8 @@ class DolphinGenerator(Generator):
 def getGfxRatioFromConfig(config, gameResolution):
     # 2: 4:3 ; 1: 16:9  ; 0: auto
     if "ratio" in config:
-        if config["ratio"] == "Stretch":
-            return 3
         if config["ratio"] == "4/3":
-            return 2
+            return 3
         if config["ratio"] == "16/9":
             return 1
     return 0
