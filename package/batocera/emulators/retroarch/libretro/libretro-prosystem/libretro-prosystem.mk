@@ -3,8 +3,7 @@
 # PROSYSTEM
 #
 ################################################################################
-# Version.: Commits on Aug 3, 2021
-LIBRETRO_PROSYSTEM_VERSION = d365645a460d5ac8c052278e24e8c112956d76c9
+LIBRETRO_PROSYSTEM_VERSION = 85eca9e7732b412beeef79dfc5f62fcc326aa6d0
 LIBRETRO_PROSYSTEM_SITE = $(call github,libretro,prosystem-libretro,$(LIBRETRO_PROSYSTEM_VERSION))
 LIBRETRO_PROSYSTEM_LICENSE = GPLv2
 
