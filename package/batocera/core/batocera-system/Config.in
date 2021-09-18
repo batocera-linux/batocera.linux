@@ -132,6 +132,7 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
 	select BR2_PACKAGE_UTIL_LINUX_LIBSMARTCOLS              # library is used for smart adaptive formatting of tabular data
 	select BR2_PACKAGE_UTIL_LINUX_SETTERM                   # Set terminal attributes
 	select BR2_PACKAGE_PULSEAUDIO_UTILS                     # Add pactl for configure Pipewire
+	select BR2_PACKAGE_OPENVPN                              # VPN support
 
 	# Deprecated, which what library should we replace ?
 	select BR2_PACKAGE_PARTED                               # partition management (for the first boot)
@@ -945,9 +946,6 @@ config BR2_PACKAGE_BATOCERA_KODI19
 	select BR2_PACKAGE_LIBAACS              # decoder
 	select BR2_PACKAGE_LIBDVDCSS            # decoder
 	select BR2_PACKAGE_GNUTLS               # https streams
-
-	# VPN support
-	select BR2_PACKAGE_OPENVPN
 
 	# Kodi game controllers
 	select BR2_PACKAGE_KODI_PERIPHERAL_JOYSTICK     # joysticks for kodi
