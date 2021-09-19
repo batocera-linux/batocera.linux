@@ -82,6 +82,9 @@ BR2_PACKAGE_LIBENET=y
 BR2_PACKAGE_BUSYBOX_CONFIG_FRAGMENT_FILES="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/busybox.custom.config"
 BR2_SYSTEM_BIN_SH_DASH=y # /bin/sh implementation; set here because a `choice` cannot be `select`ed, e.g. from batocera-system/Config.in
 
+BR2_PACKAGE_ESPEAK=y
+BR2_PACKAGE_ESPEAK_AUDIO_BACKEND_ALSA=y
+
 # Python and LUA choices
 BR2_PACKAGE_PYTHON3_PY_PYC=y
 BR2_PACKAGE_PYTHON_HASHLIB=y

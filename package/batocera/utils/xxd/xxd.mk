@@ -11,7 +11,7 @@ define HOST_XXD_BUILD_CMDS
 	$(MAKE) -C $(@D)
 endef
 
-define HOST_XXD_INSTALL_TARGET_CMDS
+define HOST_XXD_INSTALL_CMDS
 	$(INSTALL) -D $(@D)/xxd $(HOST_DIR)/usr/bin/xxd
 endef
 

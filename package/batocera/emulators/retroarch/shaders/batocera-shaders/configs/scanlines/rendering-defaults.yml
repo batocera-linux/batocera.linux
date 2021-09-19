@@ -1,15 +1,15 @@
 ## SCANLINES
 default:
   # shader affects retroarch shaders
-  shader: crt/crt-pi
+  shader: crt/crt-easymode
   # scanline affect fba2x
   scanline: true
 snes:
-  shader: crt/crt-pi
+  shader: crt/crt-easymode
 nes:
-  shader: crt/crt-pi
+  shader: crt/crt-easymode
 n64:
-  shader: interpolation/sharp-bilinear-scanlines
+  shader: crt/crt-easymode
 gba:
   shader: handheld/lcd-grid-v2
 gb:
@@ -17,92 +17,92 @@ gb:
 gbc:
   shader: handheld/lcd-grid-v2
 fds:
-  shader: interpolation/sharp-bilinear-scanlines
+  shader: crt/crt-easymode
 virtualboy:
-  shader: interpolation/sharp-bilinear-scanlines
+  shader: crt/crt-easymode
 # Sega
 sg1000:
-  shader: interpolation/sharp-bilinear-scanlines
+  shader: crt/crt-easymode
 mastersystem:
-  shader: crt/crt-pi
+  shader: crt/crt-easymode
 megadrive:
-  shader: crt/crt-pi
+  shader: crt/crt-easymode
 gamegear:
   shader: handheld/lcd-grid-v2
 sega32x:
-  shader: crt/crt-pi
+  shader: crt/crt-easymode
 segacd:
-  shader: interpolation/sharp-bilinear-scanlines
+  shader: crt/crt-easymode
 # Arcade
 neogeo:
-  shader: interpolation/sharp-bilinear-scanlines
+  shader: crt/crt-easymode
 neogeocd:
-  shader: interpolation/sharp-bilinear-scanlines
+  shader: crt/crt-easymode
 mame:
-  shader: interpolation/sharp-bilinear-scanlines
+  shader: crt/crt-easymode
 fba:
-  shader: interpolation/sharp-bilinear-scanlines
+  shader: crt/crt-easymode
 naomi:
-  shader: interpolation/sharp-bilinear-scanlines
+  shader: crt/crt-easymode
 atomiswave:
-  shader: interpolation/sharp-bilinear-scanlines
+  shader: crt/crt-easymode
 #
 ngp:
   shader: handheld/lcd-grid-v2
 ngpc:
   shader: handheld/lcd-grid-v2
 gw:
-  shader: crt/crt-pi
+  shader: crt/crt-easymode
 vectrex:
-  shader: crt/crt-pi
+  shader: crt/crt-easymode
 lynx:
   shader: handheld/lcd-grid-v2
 lutro:
-  shader: interpolation/sharp-bilinear-scanlines
+  shader: crt/crt-easymode
 wswan:
   shader: handheld/lcd-grid-v2
 wswanc:
   shader: handheld/lcd-grid-v2
 pcengine:
-  shader: crt/crt-pi
+  shader: crt/crt-easymode
 pcenginecd:
-  shader: crt/crt-pi
+  shader: crt/crt-easymode
 supergrafx:
-  shader: crt/crt-pi
+  shader: crt/crt-easymode
 atari800:
-  shader: interpolation/sharp-bilinear-scanlines
+  shader: crt/crt-easymode
 atari2600:
-  shader: interpolation/sharp-bilinear-scanlines
+  shader: crt/crt-easymode
 atari5200:
-  shader: interpolation/sharp-bilinear-scanlines
+  shader: crt/crt-easymode
 atari7800:
-  shader: interpolation/sharp-bilinear-scanlines
+  shader: crt/crt-easymode
 prboom:
-  shader: crt/crt-pi
+  shader: crt/crt-easymode
 psx:
-  shader: crt/crt-pi
+  shader: crt/crt-easymode
 colecovision:
-  shader: crt/crt-pi
+  shader: crt/crt-easymode
 # Computers
 msx:
-  shader: interpolation/sharp-bilinear-scanlines
+  shader: crt/crt-easymode
 msx1:
-  shader: interpolation/sharp-bilinear-scanlines
+  shader: crt/crt-easymode
 msx2:
-  shader: interpolation/sharp-bilinear-scanlines
+  shader: crt/crt-easymode
 amiga:
-  shader: crt/crt-pi
+  shader: crt/crt-easymode
 amstradcpc:
-  shader: crt/crt-pi
+  shader: crt/crt-easymode
 atarist:
-  shader: crt/crt-pi
+  shader: crt/crt-easymode
 zxspectrum:
-  shader: interpolation/sharp-bilinear-scanlines
+  shader: crt/crt-easymode
 odyssey2:
-  shader: interpolation/sharp-bilinear-scanlines
+  shader: crt/crt-easymode
 zx81:
-  shader: interpolation/sharp-bilinear-scanlines
+  shader: crt/crt-easymode
 pcfx:
-  shader: interpolation/sharp-bilinear-scanlines
+  shader: crt/crt-easymode
 x68000:
-  shader: interpolation/sharp-bilinear-scanlines
+  shader: crt/crt-easymode
