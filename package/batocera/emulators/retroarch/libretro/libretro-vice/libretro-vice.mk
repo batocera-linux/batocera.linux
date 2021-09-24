@@ -10,8 +10,12 @@ LIBRETRO_VICE_LICENSE = GPLv2
 
 LIBRETRO_VICE_PLATFORM = $(LIBRETRO_PLATFORM)
 
-ifeq ($(BR2_arm),y)
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI1),y)
+LIBRETRO_VICE_PLATFORM = armv
+
+else ifeq ($(BR2_arm),y)
 LIBRETRO_VICE_PLATFORM = armv neon
+
 else ifeq ($(BR2_aarch64),y)
 LIBRETRO_VICE_PLATFORM = unix
 endif
