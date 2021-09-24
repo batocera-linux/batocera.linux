@@ -10,7 +10,10 @@ LIBRETRO_CAP32_LICENSE = GPLv2
 
 LIBRETRO_CAP32_PLATFORM = $(LIBRETRO_PLATFORM)
 
-ifeq ($(BR2_cortex_a35)$(BR2_cortex_a53)$(BR2_arm),yy)
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI1),y)
+LIBRETRO_CAP32_PLATFORM = armv
+
+else ifeq ($(BR2_cortex_a35)$(BR2_cortex_a53)$(BR2_arm),yy)
 LIBRETRO_CAP32_PLATFORM = armv neon
 endif
 
