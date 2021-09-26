@@ -1,4 +1,9 @@
 2021/XX/XX - batocera.linux 32
+        * warning: rpi3 is now running in 64 bits mode.
+                    you cannot upgrade from 31 without doing a simple manual action.
+                    To upgrade from 31 and before :
+                      1. go in the upgrade menu, choose beta and upgrade (behind, this is the stable version, but we want to be sure you'll do action 2).
+                      2. put you sdcard into a pc. remove the file config.txt. rename config64.txt to config.txt.
         * add: Support for Capcom Home Arcade "https://capcomhomearcade.com/uk"
         * add: Support for CHI Gameforce handheld "https://gameforce.fun/"
         * add: GSplus for Apple ][ and Apple IIGS
