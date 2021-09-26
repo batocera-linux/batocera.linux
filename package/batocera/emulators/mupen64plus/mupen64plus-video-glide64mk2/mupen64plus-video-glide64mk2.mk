@@ -3,8 +3,8 @@
 # mupen64plus video video-glide64mk2
 #
 ################################################################################
-# Version.: Commits on Dec 16, 2020
-MUPEN64PLUS_VIDEO_GLIDE64MK2_VERSION = f0c92d93a29633ca7d9bcbb93a79baaca1f3f353
+# Version.: Commits on Sep 14, 2021
+MUPEN64PLUS_VIDEO_GLIDE64MK2_VERSION = 5ac60b38e2c9d9dea3c21fd341b03799841b0b5f
 MUPEN64PLUS_VIDEO_GLIDE64MK2_SITE = $(call github,mupen64plus,mupen64plus-video-glide64mk2,$(MUPEN64PLUS_VIDEO_GLIDE64MK2_VERSION))
 MUPEN64PLUS_VIDEO_GLIDE64MK2_LICENSE = GPLv2
 MUPEN64PLUS_VIDEO_GLIDE64MK2_DEPENDENCIES = sdl2 alsa-lib mupen64plus-core boost
