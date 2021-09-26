@@ -77,7 +77,7 @@ do_videostart ()
     fi
 
     # it should be drm everywhere (including for x86_64 while it is on fb) -- only rpi doesn't use drm and it doesn't use this boot splash script
-    start-stop-daemon -S -b -q -m -p /var/run/user-splash.pid --exec /usr/bin/mpv -- --really-quiet --no-config --hwdec=yes %PLAYER_OPTIONS% $mpv_audio $mpv_video "$video"
+    start-stop-daemon -S -b -q -m -p /var/run/user-splash.pid --exec /usr/bin/mpv -- --really-quiet --no-config %PLAYER_OPTIONS% $mpv_audio $mpv_video "$video"
 }
 
 case "$1" in

@@ -36,9 +36,16 @@ else
 	BATOCERA_SPLASH_MEDIA=image
 endif
 
-ifeq ($(BR2_PACKAGE_BATOCERA_SPLASH_MPV)$(BR2_PACKAGE_BATOCERA_TARGET_X86_64),yy)
-	# drm doesn't work on my nvidia card. sdl run smoothly.
-	BATOCERA_SPLASH_PLAYER_OPTIONS=--vo=drm,sdl
+ifeq ($(BR2_PACKAGE_BATOCERA_SPLASH_MPV),y)
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86_64),y)
+        # drm doesn't work on my nvidia card. sdl run smoothly.
+        BATOCERA_SPLASH_PLAYER_OPTIONS=--vo=drm,sdl --hwdec=yes
+else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_S922X),y)
+        # hwdec=yes doesnt work for n2
+        BATOCERA_SPLASH_PLAYER_OPTIONS=
+else
+	BATOCERA_SPLASH_PLAYER_OPTIONS=--hwdec=yes
+endif
 endif
 
 BATOCERA_SPLASH_POST_INSTALL_TARGET_HOOKS += BATOCERA_SPLASH_INSTALL_SCRIPT
