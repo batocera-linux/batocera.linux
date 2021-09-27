@@ -1,0 +1,19 @@
+diff --git a/Makefile b/Makefile
+index 0d388ad..427c0b8 100644
+--- a/Makefile
++++ b/Makefile
+@@ -199,6 +199,14 @@ else ifeq ($(platform), ctr)
+ 	PLATFORM_DEFINES += -fomit-frame-pointer -fstrict-aliasing -ffast-math
+ 	STATIC_LINKING = 1
+ 
++# Raspberry Pi 1
++else ifeq ($(platform), rpi1)
++	TARGET := $(TARGET_NAME)_libretro.so
++	fpic := -fPIC
++	SHARED := -shared -Wl,-version-script=link.T -Wl,-no-undefined
++	PLATFORM_DEFINES += -marm -march=armv6j -mfpu=vfp -mfloat-abi=hard -ffast-math
++	PLATFORM_DEFINES += -DARM11
++
+ # Raspberry Pi 2
+ else ifeq ($(platform), rpi2)
+ 	TARGET := $(TARGET_NAME)_libretro.so
