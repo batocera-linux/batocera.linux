@@ -3,7 +3,8 @@
 # FBNEO
 #
 ################################################################################
-LIBRETRO_FBNEO_VERSION = 2ef2d256cb7ba6bd2cbacbd104cd0f847e96e360
+# Version.: Commits on Sep 26, 2021
+LIBRETRO_FBNEO_VERSION = 0c82272703bcb161499f80f3649bb054362ef130
 LIBRETRO_FBNEO_SITE = $(call github,libretro,FBNeo,$(LIBRETRO_FBNEO_VERSION))
 LIBRETRO_FBNEO_LICENSE = Non-commercial
 
@@ -11,6 +12,7 @@ LIBRETRO_FBNEO_PLATFORM = $(LIBRETRO_PLATFORM)
 
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI4),y)
 LIBRETRO_FBNEO_PLATFORM = rpi4_64
+
 else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI3),y)
 LIBRETRO_FBNEO_PLATFORM = rpi3_64
 endif
