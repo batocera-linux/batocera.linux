@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-LIBRETRO_PLAY_VERSION = 67a826fed6d96c3acc0c5a3d1d75b05a12fb865d
+LIBRETRO_PLAY_VERSION = 06b4753d6d2b1f2bfb25096eecb3dd7bdb6d81b9
 LIBRETRO_PLAY_SITE = https://github.com/jpd002/Play-.git
 LIBRETRO_PLAY_LICENSE = BSD
 LIBRETRO_PLAY_DEPENDENCIES = qt5base qt5x11extras xserver_xorg-server libglew
