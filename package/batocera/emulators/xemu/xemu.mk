@@ -5,7 +5,7 @@
 ################################################################################
 
 # Daily build
-XEMU_VERSION = build-202107262358
+XEMU_VERSION = build-202109160713
 XEMU_SITE = https://github.com/mborgerson/xemu.git
 XEMU_SITE_METHOD=git
 XEMU_GIT_SUBMODULES=YES
@@ -72,7 +72,7 @@ XEMU_CONF_OPTS += --disable-vvfat
 XEMU_CONF_OPTS += --disable-qcow1
 XEMU_CONF_OPTS += --disable-qed
 XEMU_CONF_OPTS += --disable-parallels
-XEMU_CONF_OPTS += --disable-sheepdog
+#XEMU_CONF_OPTS += --disable-sheepdog
 XEMU_CONF_OPTS += --disable-blobs
 XEMU_CONF_OPTS += --disable-hax
 XEMU_CONF_OPTS += --disable-hvf
