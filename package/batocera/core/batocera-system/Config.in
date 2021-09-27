@@ -497,7 +497,10 @@ config BR2_PACKAGE_BATOCERA_SEGADC
 	select BR2_PACKAGE_FLYCAST              if  !BR2_PACKAGE_BATOCERA_TARGET_RPI1       && \
                                                 !BR2_PACKAGE_BATOCERA_TARGET_RPI2       && \
                                                 !BR2_PACKAGE_BATOCERA_TARGET_X86        && \
-                                                !BR2_PACKAGE_BATOCERA_TARGET_CHA
+                                                !BR2_PACKAGE_BATOCERA_TARGET_CHA && \
+			                        !BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA && \
+			                        !BR2_PACKAGE_BATOCERA_TARGET_GAMEFORCE && \
+						!BR2_PACKAGE_BATOCERA_TARGET_ROCKCHIP_ANY
 	select BR2_PACKAGE_LIBRETRO_FLYCAST     if  !BR2_PACKAGE_BATOCERA_TARGET_RPI1       && \
                                                 !BR2_PACKAGE_BATOCERA_TARGET_RPI2       && \
                                                 !BR2_PACKAGE_BATOCERA_TARGET_X86        && \
