@@ -1,6 +1,6 @@
 2021/XX/XX - batocera.linux 32
         * warning: rpi3 is now running in 64-bit mode.
-                   When upgrading from v31 or earlier to v32, you need to change the config.txt to the 64-bit one:
+                   When upgrading from v31 or earlier to v32 on rpi3, you need to change the config.txt to the 64-bit one:
                      1. Change your update type to "beta" and upgrade
                      2. Use one of either method:
                        a. Shutdown, insert the Micro-SD card or USB drive into another computer, delete "config.txt" in the root folder of the boot partition and rename "config64.txt" to "config.txt", or;
