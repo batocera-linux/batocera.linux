@@ -33,7 +33,9 @@ PCSX2_CONF_OPTS += -DUSE_VTUNE=OFF
 
 define PCSX2_INSTALL_TARGET_CMDS
 	$(INSTALL) -m 0755 -D $(@D)/pcsx2/PCSX2 $(TARGET_DIR)/usr/PCSX/bin/PCSX2
-	cp -pr $(@D)/bin/Langs      $(TARGET_DIR)/usr/PCSX/bin
+	cp -pr $(@D)/bin/Langs      	$(TARGET_DIR)/usr/PCSX/bin
+	cp -p  $(@D)/bin/GameIndex.yaml $(TARGET_DIR)/usr/PCSX/bin
+	cp -p  $(@D)/bin/cheats_ws.zip 	$(TARGET_DIR)/usr/PCSX/bin
         mkdir -p $(TARGET_DIR)/usr/PCSX/bin/plugins
 	cp -pr $(@D)/plugins/*/*.so $(TARGET_DIR)/usr/PCSX/bin/plugins
 endef

@@ -1,0 +1,15 @@
+--- a/src/video_core/renderer_opengl/renderer_opengl.cpp	2020-08-08 17:37:48.933307927 +0200
++++ b/src/video_core/renderer_opengl/renderer_opengl.cpp	2020-08-08 17:38:35.942157628 +0200
+@@ -1155,10 +1155,11 @@
+ /// Initialize the renderer
+ VideoCore::ResultStatus RendererOpenGL::Init() {
+ #ifndef ANDROID
++#if 0
+     if (!gladLoadGL()) {
+         return VideoCore::ResultStatus::ErrorBelowGL33;
+     }
+-
++#endif
+     // Qualcomm has some spammy info messages that are marked as errors but not important
+     // https://developer.qualcomm.com/comment/11845
+     if (GLAD_GL_KHR_debug) {

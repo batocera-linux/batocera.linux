@@ -45,7 +45,7 @@ start_audioconfig() {
     PROFILE=$(/usr/bin/batocera-settings-get audio.profile)
     VOLUME=$(/usr/bin/batocera-settings-get audio.volume)
     test -z "${DEVICE}"  && DEVICE=auto
-    test -z "${PROFILE}" && DEVICE=auto
+    test -z "${PROFILE}" && PROFILE=auto
     test -z "${VOLUME}"  && VOLUME=80
 
     if ! apply_audioconfig "${DEVICE}" "${PROFILE}" "${VOLUME}"

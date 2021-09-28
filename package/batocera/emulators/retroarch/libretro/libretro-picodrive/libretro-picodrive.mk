@@ -13,7 +13,10 @@ LIBRETRO_PICODRIVE_LICENSE = MAME
 
 LIBRETRO_PICODRIVE_PLATFORM = $(LIBRETRO_PLATFORM)
 
-ifeq ($(BR2_arm),y)
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI1),y)
+LIBRETRO_PICODRIVE_PLATFORM = raspberrypi
+
+else ifeq ($(BR2_arm),y)
 LIBRETRO_PICODRIVE_PLATFORM += armv neon hardfloat
 
 else ifeq ($(BR2_aarch64),y)
