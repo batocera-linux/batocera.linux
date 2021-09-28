@@ -5,6 +5,7 @@
                      2. Use one of either method:
                        a. Shutdown, insert the Micro-SD card or USB drive into another computer, delete "config.txt" in the root folder of the boot partition and rename "config64.txt" to "config.txt", or;
                        b. Before shutting down, via SSH, run "mount -o remount,rw /boot && mv /boot/config64.txt /boot/config.txt" and then reboot
+                     3. (optional) Add "global.audio_latency=256" to "batocera.conf" until v33 to avoid audio crackling
         * add: Support for Capcom Home Arcade "https://capcomhomearcade.com/uk"
         * add: Support for CHI Gameforce handheld "https://gameforce.fun/"
         * add: GSplus for Apple ][ and Apple IIGS
@@ -53,6 +54,7 @@
         * es: text to speech (f3 to enable/disable it)
         * es: apply video output / video rotation / language without os reboot
         * es: enhancements for ES webserver (http://batocera:1234, launch and kill a game)
+        * es: audio_latency setting adjustable within advanced system settings
         * boot: Support for /boot/boot-custom.sh user defined early startup/late shutdown script
         * boot: batocera.conf option to customize es command line parameters (es.customsargs)
         * change: Libretro cheats are now moved to the Content Downloader
