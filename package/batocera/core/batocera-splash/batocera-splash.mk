@@ -51,7 +51,11 @@ endif
 BATOCERA_SPLASH_POST_INSTALL_TARGET_HOOKS += BATOCERA_SPLASH_INSTALL_SCRIPT
 
 ifeq ($(BATOCERA_SPLASH_MEDIA),image)
-	BATOCERA_SPLASH_POST_INSTALL_TARGET_HOOKS += BATOCERA_SPLASH_INSTALL_IMAGE
+    ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_GAMEFORCE)$(BR2_PACKAGE_BATOCERA_TARGET_RPI1),y)
+        BATOCERA_SPLASH_POST_INSTALL_TARGET_HOOKS += BATOCERA_SPLASH_INSTALL_SMALL_IMAGE
+    else
+	    BATOCERA_SPLASH_POST_INSTALL_TARGET_HOOKS += BATOCERA_SPLASH_INSTALL_IMAGE
+    endif
 endif
 
 ifeq ($(BATOCERA_SPLASH_MEDIA),rotate-rk3326-image)
@@ -77,17 +81,17 @@ endef
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_CHA),y)
 	BATO_SPLASH=$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/Capcom.mp4
 	BATOCERA_SPLASH_POST_INSTALL_TARGET_HOOKS += BATOCERA_SYSTEM_SPLASH
-else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI1)$(BR2_PACKAGE_BATOCERA_TARGET_RPI2)$(BR2_PACKAGE_BATOCERA_TARGET_RPI3),y)
+else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI2)$(BR2_PACKAGE_BATOCERA_TARGET_RPI3),y)
 	BATO_SPLASH=$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/splash720p.mp4
-	BATOCERA_SPLASH_POST_INSTALL_TARGET_HOOKS += BATOCERA_SYSTEM_SPLASH
-else ifneq ($(BR2_PACKAGE_BATOCERA_SPLASH_ROTATE_IMAGE),y)
+    BATOCERA_SPLASH_POST_INSTALL_TARGET_HOOKS += BATOCERA_SYSTEM_SPLASH
+else ifeq ($(BR2_PACKAGE_BATOCERA_SPLASH_ROTATE_IMAGE),y)
 	BATO_SPLASH=$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/splash.mp4
 	BATOCERA_SPLASH_POST_INSTALL_TARGET_HOOKS += BATOCERA_SYSTEM_SPLASH
 endif
 
 define BATOCERA_SYSTEM_SPLASH
 	mkdir -p $(TARGET_DIR)/usr/share/batocera/splash
-	cp "$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/logo.png" "${TARGET_DIR}/usr/share/batocera/splash/boot-logo.png"
+    cp "$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/logo.png" "${TARGET_DIR}/usr/share/batocera/splash/boot-logo.png"
 endef
 
 define BATOCERA_SPLASH_INSTALL_VIDEO
@@ -99,6 +103,12 @@ endef
 define BATOCERA_SPLASH_INSTALL_IMAGE
 	mkdir -p $(TARGET_DIR)/usr/share/batocera/splash
 	convert "$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/logo.png" -fill white -pointsize 30 -annotate +50+1020 "$(BATOCERA_SPLASH_TGVERSION)" "${TARGET_DIR}/usr/share/batocera/splash/logo-version.png"
+endef
+
+define BATOCERA_SPLASH_INSTALL_SMALL_IMAGE
+	mkdir -p $(TARGET_DIR)/usr/share/batocera/splash
+    cp "$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/logo480p.png" "${TARGET_DIR}/usr/share/batocera/splash/boot-logo.png"
+    convert "$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/logo480p.png" -fill white -pointsize 20 -annotate +40+440 "$(BATOCERA_SPLASH_TGVERSION)" "${TARGET_DIR}/usr/share/batocera/splash/logo-version.png"
 endef
 
 define BATOCERA_SPLASH_INSTALL_ROTATE_RK3326_IMAGE
