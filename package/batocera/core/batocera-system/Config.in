@@ -346,7 +346,7 @@ config BR2_PACKAGE_BATOCERA_TARGET_GAMEFORCE
 
 config BR2_PACKAGE_BATOCERA_TARGET_S905
 	bool "s905"
-	
+
 config BR2_PACKAGE_BATOCERA_TARGET_S905GEN2
 	bool "s905gen2"
 
@@ -499,13 +499,13 @@ config BR2_PACKAGE_BATOCERA_SEGADC
 	bool "batocera.linux dreamcast/naomi/atomiswave emulators/cores"
 
 	# Dreamcast / Naomi / Atomiswave emulation
-	select BR2_PACKAGE_FLYCAST              if  !BR2_PACKAGE_BATOCERA_TARGET_RPI1       && \
-                                                !BR2_PACKAGE_BATOCERA_TARGET_RPI2       && \
-                                                !BR2_PACKAGE_BATOCERA_TARGET_X86        && \
-                                                !BR2_PACKAGE_BATOCERA_TARGET_CHA && \
-			                        !BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA && \
-			                        !BR2_PACKAGE_BATOCERA_TARGET_GAMEFORCE && \
-						!BR2_PACKAGE_BATOCERA_TARGET_ROCKCHIP_ANY
+	select BR2_PACKAGE_FLYCAST              if  !BR2_PACKAGE_BATOCERA_TARGET_RPI1           && \
+                                                !BR2_PACKAGE_BATOCERA_TARGET_RPI2           && \
+                                                !BR2_PACKAGE_BATOCERA_TARGET_X86            && \
+                                                !BR2_PACKAGE_BATOCERA_TARGET_CHA            && \
+                                                !BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA      && \
+                                                !BR2_PACKAGE_BATOCERA_TARGET_GAMEFORCE      && \
+                                                !BR2_PACKAGE_BATOCERA_TARGET_ROCKCHIP_ANY
 	select BR2_PACKAGE_LIBRETRO_FLYCAST     if  !BR2_PACKAGE_BATOCERA_TARGET_RPI1       && \
                                                 !BR2_PACKAGE_BATOCERA_TARGET_RPI2       && \
                                                 !BR2_PACKAGE_BATOCERA_TARGET_X86        && \
@@ -529,7 +529,7 @@ config BR2_PACKAGE_BATOCERA_ARCADE_SYSTEMS
 	select BR2_PACKAGE_BATOCERA_SEGADC
 
 	# Laserdic emulation
-	select BR2_PACKAGE_DAPHNE               if !BR2_PACKAGE_BATOCERA_TARGET_RPI1 && !BR2_PACKAGE_BATOCERA_TARGET_CHA # daphne
+	select BR2_PACKAGE_DAPHNE               if !BR2_PACKAGE_BATOCERA_TARGET_CHA # daphne
 
 	# Standalone Sega Model 2 emulator
 	select BR2_PACKAGE_MODEL2EMU			if  BR2_PACKAGE_BATOCERA_TARGET_X86_64 && \
@@ -568,7 +568,7 @@ config BR2_PACKAGE_BATOCERA_HANDHELD_SYSTEMS
 
 	# GBA
 	select BR2_PACKAGE_LIBRETRO_MGBA            # ALL
-	select BR2_PACKAGE_LIBRETRO_VBA_M           if !BR2_PACKAGE_BATOCERA_TARGET_CHA
+	select BR2_PACKAGE_LIBRETRO_VBA_M           if !BR2_PACKAGE_BATOCERA_TARGET_RPI1 && !BR2_PACKAGE_BATOCERA_TARGET_CHA
 	select BR2_PACKAGE_LIBRETRO_GPSP            if BR2_PACKAGE_BATOCERA_TARGET_RPI1 || BR2_PACKAGE_BATOCERA_TARGET_CHA # for slow machines
 
 	# NDS
@@ -623,7 +623,7 @@ config BR2_PACKAGE_BATOCERA_HANDHELD_SYSTEMS
 config BR2_PACKAGE_BATOCERA_MSDOS_SYSTEMS
 	bool "batocera.linux MS/DOS emulation packages"
 
-	select BR2_PACKAGE_DOSBOX                   if  !BR2_PACKAGE_BATOCERA_TARGET_CHA && !BR2_PACKAGE_BATOCERA_TARGET_RK3326_ANY
+	select BR2_PACKAGE_DOSBOX                   if  !BR2_PACKAGE_BATOCERA_TARGET_RPI1 && !BR2_PACKAGE_BATOCERA_TARGET_CHA && !BR2_PACKAGE_BATOCERA_TARGET_RK3326_ANY
 
 	select BR2_PACKAGE_DOSBOX_X                 if  !BR2_PACKAGE_BATOCERA_TARGET_RK3326_ANY && \
                                                     !BR2_PACKAGE_BATOCERA_TARGET_RPI1		&& \
@@ -632,7 +632,7 @@ config BR2_PACKAGE_BATOCERA_MSDOS_SYSTEMS
                                                     !BR2_PACKAGE_BATOCERA_TARGET_RK3399		&& \
                                                     !BR2_PACKAGE_BATOCERA_TARGET_CHA		# dos
 
-	select BR2_PACKAGE_DOSBOX_STAGING           if  !BR2_PACKAGE_BATOCERA_TARGET_CHA && !BR2_PACKAGE_BATOCERA_TARGET_RK3399
+	select BR2_PACKAGE_DOSBOX_STAGING           if  !BR2_PACKAGE_BATOCERA_TARGET_RPI1 && !BR2_PACKAGE_BATOCERA_TARGET_CHA && !BR2_PACKAGE_BATOCERA_TARGET_RK3399
 
 	select BR2_PACKAGE_LIBRETRO_DOSBOX_PURE     # ALL
 
@@ -644,7 +644,7 @@ config BR2_PACKAGE_BATOCERA_PORTS_SYSTEMS
 	bool "batocera.linux ports packages"
 
 	# DevilutionX (Diablo 1)
-	select BR2_PACKAGE_DEVILUTIONX              if  !BR2_PACKAGE_BATOCERA_TARGET_CHA
+	select BR2_PACKAGE_DEVILUTIONX              if  !BR2_PACKAGE_BATOCERA_TARGET_RPI1 && !BR2_PACKAGE_BATOCERA_TARGET_CHA
 
 	# Cannonball (OutRun)
 	select BR2_PACKAGE_CANNONBALL               # ALL
@@ -653,7 +653,7 @@ config BR2_PACKAGE_BATOCERA_PORTS_SYSTEMS
 	select BR2_PACKAGE_LIBRETRO_PRBOOM          if  !BR2_PACKAGE_BATOCERA_TARGET_CHA
 
 	# TyrQuake (Quake 1)
-	select BR2_PACKAGE_LIBRETRO_TYRQUAKE        if  !BR2_PACKAGE_BATOCERA_TARGET_CHA
+	select BR2_PACKAGE_LIBRETRO_TYRQUAKE        if  !BR2_PACKAGE_BATOCERA_TARGET_RPI1 && !BR2_PACKAGE_BATOCERA_TARGET_CHA
 
 	# NxEngine (Cave Story)
 	select BR2_PACKAGE_LIBRETRO_NXENGINE        if  !BR2_PACKAGE_BATOCERA_TARGET_CHA
@@ -662,13 +662,13 @@ config BR2_PACKAGE_BATOCERA_PORTS_SYSTEMS
 	select BR2_PACKAGE_LIBRETRO_MRBOOM          if  !BR2_PACKAGE_BATOCERA_TARGET_CHA
 
 	# Prince of Persia
-	select BR2_PACKAGE_SDLPOP                   if  !BR2_PACKAGE_BATOCERA_TARGET_CHA
+	select BR2_PACKAGE_SDLPOP                   if  !BR2_PACKAGE_BATOCERA_TARGET_RPI1 && !BR2_PACKAGE_BATOCERA_TARGET_CHA
 
 	# Xash3D-FWGS (Half-Life 1)
-	select BR2_PACKAGE_XASH3D_FWGS              if  !BR2_PACKAGE_BATOCERA_TARGET_CHA
+	select BR2_PACKAGE_XASH3D_FWGS              if  !BR2_PACKAGE_BATOCERA_TARGET_RPI1 && !BR2_PACKAGE_BATOCERA_TARGET_CHA
 
 	# Commander Genius (Commander Keen series)
-	#select BR2_PACKAGE_CGENIUS                 if  !BR2_PACKAGE_BATOCERA_TARGET_CHA
+	#select BR2_PACKAGE_CGENIUS                 if  !BR2_PACKAGE_BATOCERA_TARGET_RPI1 && !BR2_PACKAGE_BATOCERA_TARGET_CHA
 
 	help
 		Ports
@@ -688,9 +688,9 @@ config BR2_PACKAGE_BATOCERA_COMPUTER_SYSTEMS
 	select BR2_PACKAGE_LINAPPLE             if !BR2_PACKAGE_SDL2_KMSDRM # apple II (sdl1 doesn't support kmsdrm)
 
 	# Commodore Amiga
-	select BR2_PACKAGE_AMIBERRY             if !BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
+	select BR2_PACKAGE_AMIBERRY             if !BR2_PACKAGE_BATOCERA_TARGET_RPI1 && !BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
 	select BR2_PACKAGE_FSUAE                if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
-	select BR2_PACKAGE_LIBRETRO_PUAE        if !BR2_PACKAGE_BATOCERA_TARGET_CHA
+	select BR2_PACKAGE_LIBRETRO_PUAE        if !BR2_PACKAGE_BATOCERA_TARGET_RPI1 && !BR2_PACKAGE_BATOCERA_TARGET_CHA
 
 	# Atari 800 computers
 	select BR2_PACKAGE_LIBRETRO_ATARI800    # ALL
@@ -703,7 +703,7 @@ config BR2_PACKAGE_BATOCERA_COMPUTER_SYSTEMS
 	select BR2_PACKAGE_LIBRETRO_81          # ALL
 
 	# Atari ST/TT/Falcon
-	select BR2_PACKAGE_HATARI               # ALL
+	select BR2_PACKAGE_HATARI               if !BR2_PACKAGE_BATOCERA_TARGET_RPI1
 	select BR2_PACKAGE_LIBRETRO_HATARI      # ALL
 
 	# MSX range
@@ -895,7 +895,7 @@ config BR2_PACKAGE_BATOCERA_CONSOLE_SYSTEMS
 	select BR2_PACKAGE_LIBRETRO_FREECHAF            # ALL
 
 	# ECWolf
-	# select BR2_PACKAGE_LIBRETRO_ECWOLF              # ALL
+	# select BR2_PACKAGE_LIBRETRO_ECWOLF            # ALL
 	select BR2_PACKAGE_ECWOLF                       if BR2_PACKAGE_BATOCERA_TARGET_X86_64
 
 	# Sonic Retro Engine
