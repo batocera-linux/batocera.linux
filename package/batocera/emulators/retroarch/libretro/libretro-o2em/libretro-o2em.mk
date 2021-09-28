@@ -3,14 +3,17 @@
 # O2EM
 #
 ################################################################################
-# Version.: Commits on Aug 5, 2021
-LIBRETRO_O2EM_VERSION = e09a952964dea7ef164a634288e1134dba6e4a56
+# Version.: Commits on Sep 24, 2021
+LIBRETRO_O2EM_VERSION = 08c9a413b083460ebec71fe7a157a4ced125ada3
 LIBRETRO_O2EM_SITE = $(call github,libretro,libretro-o2em,$(LIBRETRO_O2EM_VERSION))
 LIBRETRO_O2EM_LICENSE = Artistic License
 
 LIBRETRO_O2EM_PLATFORM = $(LIBRETRO_PLATFORM)
 
-ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_S812),y)
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI1),y)
+LIBRETRO_O2EM_PLATFORM = armv
+
+else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_S812),y)
 LIBRETRO_O2EM_PLATFORM = armv neon
 
 else ifeq ($(BR2_aarch64),y)

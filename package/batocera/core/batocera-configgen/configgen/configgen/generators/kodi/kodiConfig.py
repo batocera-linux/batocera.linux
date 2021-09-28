@@ -39,20 +39,19 @@ def writeKodiConfigs(kodiJoystick, currentControllers):
     for controller in currentControllers:
         cur = currentControllers[controller]
 
+        # skip duplicates
+        if cur.realName in controllersDone:
+            continue;
+        controllersDone[cur.realName] = True
+
         # initialized the file
         kodiJoy = open(kodiJoystick.format(cur.guid), "w")
         config = minidom.Document()
         xmlbuttonmap = config.createElement('buttonmap')
         config.appendChild(xmlbuttonmap)
 
-        # skip duplicates
-        if cur.configName in controllersDone:
-            break;
-        else:
-            controllersDone[cur.configName] = True
-
         xmldevice = config.createElement('device')
-        xmldevice.attributes["name"] = cur.configName
+        xmldevice.attributes["name"] = cur.realName
         xmldevice.attributes["provider"] = "linux"
         #xmldevice.attributes["provider"] = "udev"
         #xmldevice.attributes["vid"], xmldevice.attributes["pid"] = vidpid(cur.guid)

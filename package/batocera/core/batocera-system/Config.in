@@ -132,6 +132,7 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
 	select BR2_PACKAGE_UTIL_LINUX_LIBSMARTCOLS              # library is used for smart adaptive formatting of tabular data
 	select BR2_PACKAGE_UTIL_LINUX_SETTERM                   # Set terminal attributes
 	select BR2_PACKAGE_PULSEAUDIO_UTILS                     # Add pactl for configure Pipewire
+	select BR2_PACKAGE_OPENVPN                              # VPN support
 
 	# Deprecated, which what library should we replace ?
 	select BR2_PACKAGE_PARTED                               # partition management (for the first boot)
@@ -293,6 +294,7 @@ config BR2_TARGET_BATOCERA_IMAGES_DEFINITIONS
 	string "target images"
 	default "amlogic/s922x/odroidn2 amlogic/s922x/vim3"         if BR2_PACKAGE_BATOCERA_TARGET_S922X
 	default "amlogic/s905/odroidc2 amlogic/s905/tvbox"          if BR2_PACKAGE_BATOCERA_TARGET_S905
+	default "amlogic/s905gen2"                                  if BR2_PACKAGE_BATOCERA_TARGET_S905GEN2
 	default "amlogic/s905gen3/odroidc4 amlogic/s905gen3/tvbox"  if BR2_PACKAGE_BATOCERA_TARGET_S905GEN3
 	default "amlogic/s912"                                      if BR2_PACKAGE_BATOCERA_TARGET_S912
 	default "raspberrypi/rpi"                                   if BR2_PACKAGE_BATOCERA_TARGET_RPI1
@@ -344,6 +346,9 @@ config BR2_PACKAGE_BATOCERA_TARGET_GAMEFORCE
 
 config BR2_PACKAGE_BATOCERA_TARGET_S905
 	bool "s905"
+	
+config BR2_PACKAGE_BATOCERA_TARGET_S905GEN2
+	bool "s905gen2"
 
 config BR2_PACKAGE_BATOCERA_TARGET_S905GEN3
 	bool "s905gen3"
@@ -497,7 +502,10 @@ config BR2_PACKAGE_BATOCERA_SEGADC
 	select BR2_PACKAGE_FLYCAST              if  !BR2_PACKAGE_BATOCERA_TARGET_RPI1       && \
                                                 !BR2_PACKAGE_BATOCERA_TARGET_RPI2       && \
                                                 !BR2_PACKAGE_BATOCERA_TARGET_X86        && \
-                                                !BR2_PACKAGE_BATOCERA_TARGET_CHA
+                                                !BR2_PACKAGE_BATOCERA_TARGET_CHA && \
+			                        !BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA && \
+			                        !BR2_PACKAGE_BATOCERA_TARGET_GAMEFORCE && \
+						!BR2_PACKAGE_BATOCERA_TARGET_ROCKCHIP_ANY
 	select BR2_PACKAGE_LIBRETRO_FLYCAST     if  !BR2_PACKAGE_BATOCERA_TARGET_RPI1       && \
                                                 !BR2_PACKAGE_BATOCERA_TARGET_RPI2       && \
                                                 !BR2_PACKAGE_BATOCERA_TARGET_X86        && \
@@ -764,9 +772,7 @@ config BR2_PACKAGE_BATOCERA_CONSOLE_SYSTEMS
 	select BR2_PACKAGE_LIBRETRO_PCSX                if  !BR2_PACKAGE_BATOCERA_TARGET_RPI3       && \
                                                         !BR2_PACKAGE_BATOCERA_TARGET_RK3326_ANY
 
-        select BR2_PACKAGE_LIBRETRO_BEETLE_PSX          if !BR2_PACKAGE_BATOCERA_TARGET_RPI1    && \
-                                                           !BR2_PACKAGE_BATOCERA_TARGET_RPI2    && \
-                                                           !BR2_PACKAGE_BATOCERA_TARGET_RPI3    && \
+    select BR2_PACKAGE_LIBRETRO_BEETLE_PSX          if  !BR2_PACKAGE_BATOCERA_RPI_ANY           && \
                                                         !BR2_PACKAGE_BATOCERA_TARGET_CHA        && \
                                                         !BR2_PACKAGE_BATOCERA_TARGET_RK3326_ANY
 
@@ -945,9 +951,6 @@ config BR2_PACKAGE_BATOCERA_KODI19
 	select BR2_PACKAGE_LIBAACS              # decoder
 	select BR2_PACKAGE_LIBDVDCSS            # decoder
 	select BR2_PACKAGE_GNUTLS               # https streams
-
-	# VPN support
-	select BR2_PACKAGE_OPENVPN
 
 	# Kodi game controllers
 	select BR2_PACKAGE_KODI_PERIPHERAL_JOYSTICK     # joysticks for kodi
