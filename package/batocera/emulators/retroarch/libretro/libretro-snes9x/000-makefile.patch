@@ -1,0 +1,36 @@
+diff --git a/libretro/Makefile b/libretro/Makefile
+index 0975a60..0dc631e 100644
+--- a/libretro/Makefile
++++ b/libretro/Makefile
+@@ -71,11 +71,28 @@ ifneq (,$(findstring unix,$(platform)))
+    # ARM
+    ifneq (,$(findstring armv,$(platform)))
+       CXXFLAGS += -DARM
+-   # Raspberry Pi
+-   else ifneq (,$(findstring rpi,$(platform)))
+-      CXXFLAGS += -DARM
+    endif
+ 
++# Raspberry Pi 1
++else ifneq (,$(findstring rpi1,$(platform)))
++   TARGET := $(TARGET_NAME)_libretro.so
++   fpic := -fPIC
++   SHARED := -shared -Wl,-version-script=link.T
++   CFLAGS += -fomit-frame-pointer -ffast-math -DARM11
++   CPUFLAGS += -marm -march=armv6j -mfpu=vfp -mfloat-abi=hard -funsafe-math-optimizations
++
++# Raspberry Pi 2
++else ifneq (,$(findstring rpi2,$(platform)))
++	TARGET := $(TARGET_NAME)_libretro.so
++	fpic := -fPIC
++	SHARED := -shared -Wl,-version-script=link.T
++	ARCH = arm
++	HAVE_NEON = 1
++	BUILTIN_GPU = neon
++	USE_DYNAREC = 1
++	CFLAGS += -fomit-frame-pointer -ffast-math -DARM
++	CPUFLAGS += -marm -mcpu=cortex-a7 -mfpu=neon-vfpv4 -mfloat-abi=hard
++
+ # Raspberry Pi 3 (64-bit)
+ else ifneq (,$(findstring rpi3_64,$(platform)))
+ 	TARGET := $(TARGET_NAME)_libretro.so
