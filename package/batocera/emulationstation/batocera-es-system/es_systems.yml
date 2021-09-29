@@ -25,9 +25,10 @@ snes-msu1:
   extensions: [smc, sfc]
   emulators:
     libretro:
-      snes9x:      { requireAnyOf: [BR2_PACKAGE_LIBRETRO_SNES9X] }
-      bsnes:       { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BSNES] }
-      bsnes_hd:    { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BSNES_HD] }
+      pocketsnes:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_POCKETSNES]}
+      snes9x:      { requireAnyOf: [BR2_PACKAGE_LIBRETRO_SNES9X]    }
+      bsnes:       { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BSNES]     }
+      bsnes_hd:    { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BSNES_HD]  }
 
 c64:
   name:       Commodore 64
@@ -1622,8 +1623,9 @@ satellaview:
   group:      snes
   emulators:
     libretro:
-      snes9x: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_SNES9X] }
-      mesens: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MESENS] }
+      pocketsnes:   { requireAnyOf: [BR2_PACKAGE_LIBRETRO_POCKETSNES] }
+      snes9x:       { requireAnyOf: [BR2_PACKAGE_LIBRETRO_SNES9X]     }
+      mesens:       { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MESENS]     }
 
 sufami:
   name:       SuFami Turbo
