@@ -522,10 +522,7 @@ config BR2_PACKAGE_BATOCERA_ARCADE_SYSTEMS
 	# Final Burn NEO
 	select BR2_PACKAGE_LIBRETRO_FBNEO       # ALL
 
-    # Final Burn Alpha
-    select BR2_PACKAGE_LIBRETRO_FBALPHA     if BR2_PACKAGE_BATOCERA_TARGET_RPI1 || BR2_PACKAGE_BATOCERA_TARGET_RPI2
-
-	# Naomi and Atomiswave
+    # Naomi and Atomiswave
 	select BR2_PACKAGE_BATOCERA_SEGADC
 
 	# Laserdic emulation
