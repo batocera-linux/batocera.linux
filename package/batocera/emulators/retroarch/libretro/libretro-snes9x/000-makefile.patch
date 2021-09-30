@@ -1,24 +1,11 @@
 diff --git a/libretro/Makefile b/libretro/Makefile
-index 0975a60..0dc631e 100644
+index 0975a60..5efb282 100644
 --- a/libretro/Makefile
 +++ b/libretro/Makefile
-@@ -71,11 +71,28 @@ ifneq (,$(findstring unix,$(platform)))
-    # ARM
-    ifneq (,$(findstring armv,$(platform)))
+@@ -76,6 +76,18 @@ ifneq (,$(findstring unix,$(platform)))
        CXXFLAGS += -DARM
--   # Raspberry Pi
--   else ifneq (,$(findstring rpi,$(platform)))
--      CXXFLAGS += -DARM
     endif
  
-+# Raspberry Pi 1
-+else ifneq (,$(findstring rpi1,$(platform)))
-+   TARGET := $(TARGET_NAME)_libretro.so
-+   fpic := -fPIC
-+   SHARED := -shared -Wl,-version-script=link.T
-+   CFLAGS += -fomit-frame-pointer -ffast-math -DARM11
-+   CPUFLAGS += -marm -march=armv6j -mfpu=vfp -mfloat-abi=hard -funsafe-math-optimizations
-+
 +# Raspberry Pi 2
 +else ifneq (,$(findstring rpi2,$(platform)))
 +	TARGET := $(TARGET_NAME)_libretro.so
