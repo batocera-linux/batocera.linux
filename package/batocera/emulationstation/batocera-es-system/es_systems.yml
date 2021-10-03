@@ -667,6 +667,7 @@ fbneo:
   platform:   arcade
   emulators:
     libretro:
+      fbalpha:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FBALPHA]  }
       fbneo:    { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FBNEO]    }
   comment_en: |
     ROMs must come from the FBNeo romset version 1.0.0.0
@@ -729,6 +730,7 @@ neogeo:
   platform:   neogeo, arcade
   emulators:
     libretro:
+      fbalpha:      { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FBALPHA]        }
       fbneo:        { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FBNEO]          }
       imame4all:    { requireAnyOf: [BR2_PACKAGE_LIBRETRO_IMAME]          }
       mame078plus:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME2003_PLUS]  }

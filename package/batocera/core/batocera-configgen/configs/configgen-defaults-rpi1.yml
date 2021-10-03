@@ -1,6 +1,5 @@
 default:
   options:
-    videomode:      CEA 4 HDMI
     video_threaded: true
     smooth:         false
     audio_latency:  256
@@ -35,3 +34,9 @@ c64:
 atari2600:
   emulator: libretro
   core:     stella2014
+fbneo:
+  emulator: libretro
+  core:     fbalpha
+neogeo:
+  emulator: libretro
+  core:     fbalpha
