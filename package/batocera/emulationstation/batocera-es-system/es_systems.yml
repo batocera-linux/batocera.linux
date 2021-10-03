@@ -813,7 +813,8 @@ atari2600:
   extensions: [a26, bin, zip, 7z]
   emulators:
     libretro:
-      stella: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_STELLA] }
+      stella:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_STELLA]     }
+      stella2014: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_STELLA2014] }
 
 atari5200:
   name:       Atari 5200
