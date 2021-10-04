@@ -11,14 +11,27 @@ CANNONBALL_DEPENDENCIES = sdl2 boost
 
 CANNONBALL_TARGET = sdl2gles
 
-ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI4),y)
-        CANNONBALL_TARGET = sdl2gles_rpi
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI1),y)
+CANNONBALL_TARGET = sdl2gles_rpi
+CANNONBALL_RPI = -mcpu=arm1176jzf-s -mfloat-abi=hard
+
+else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI2),y)
+CANNONBALL_TARGET = sdl2gles_rpi
+CANNONBALL_RPI = -mcpu=cortex-a7 -mfpu=neon-vfpv4 -mfloat-abi=hard
+
 else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI3),y)
-        CANNONBALL_TARGET = sdl2gles_rpi
+CANNONBALL_TARGET = sdl2gles_rpi
+CANNONBALL_RPI = -march=armv8-a+crc -mcpu=cortex-a53
+
+else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI4),y)
+CANNONBALL_TARGET = sdl2gles_rpi
+CANNONBALL_RPI = -march=armv8-a+crc -mcpu=cortex-a72
+
 else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86),y)
-        CANNONBALL_TARGET = sdl2gl
+CANNONBALL_TARGET = sdl2gl
+
 else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86_64),y)
-        CANNONBALL_TARGET = sdl2gl
+CANNONBALL_TARGET = sdl2gl
 endif
 
 # Build as release with proper target and paths
@@ -53,14 +66,8 @@ define CANNONBALL_SETUP_CMAKE
         $(SED) "s+/usr+$(STAGING_DIR)/usr+g" $(@D)/sdl2gles.cmake
         $(SED) "s+/usr+$(STAGING_DIR)/usr+g" $(@D)/sdl2gles_rpi.cmake
 
-	# Rpi4 64-bit compilation
-	$(SED) "s+-mfpu=neon-fp-armv8++g" $(@D)/sdl2gles_rpi.cmake
-	$(SED) "s+-mfloat-abi=hard++g" $(@D)/sdl2gles_rpi.cmake
-
-        #$(SED) "s+set(xml+#set(xml+g" $(@D)/sdl2.cmake
-        #$(SED) "s+set(xml+#set(xml+g" $(@D)/sdl2gl.cmake
-        #$(SED) "s+set(xml+#set(xml+g" $(@D)/sdl2gles.cmake
-        #$(SED) "s+set(xml+#set(xml+g" $(@D)/sdl2gles_rpi.cmake
+    # # Rpi compilation
+    $(SED) 's|-mcpu=cortex-a53 -mfpu=neon-fp-armv8 -mfloat-abi=hard|$(CANNONBALL_RPI)|g' $(@D)/sdl2gles_rpi.cmake
 endef
 
 CANNONBALL_PRE_CONFIGURE_HOOKS += CANNONBALL_SETUP_CMAKE
