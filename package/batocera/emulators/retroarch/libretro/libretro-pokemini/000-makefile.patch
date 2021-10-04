@@ -5,14 +5,14 @@ index 25b1470..7ef63a1 100644
 @@ -261,6 +261,15 @@ else ifeq ($(platform), ctr)
  	STATIC_LINKING=1
  	STATIC_LINKING_LINK=1
- 
+
 +# Raspberry Pi 1
 +else ifeq ($(platform), rpi1)
 +        TARGET := $(TARGET_NAME)_libretro.so
 +        fpic := -fPIC
 +        SHARED := -shared -Wl,--version-script=libretro/link.T -Wl,--no-undefined
 +        CFLAGS += -DARM11
-+        CFLAGS += -marm -march=armv6j -mfpu=vfp -mfloat-abi=hard -funsafe-math-optimizations
++        CFLAGS += -marm -mcpu=arm1176jzf-s -mfpu=vfp -mfloat-abi=hard -funsafe-math-optimizations
 +        CFLAGS += -fomit-frame-pointer -ffast-math
 +
  # Raspberry Pi 2
