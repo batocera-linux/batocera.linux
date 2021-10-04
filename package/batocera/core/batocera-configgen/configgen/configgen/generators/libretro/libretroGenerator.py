@@ -59,7 +59,7 @@ class LibretroGenerator(Generator):
             GBMultiSys = list()
             romGBName, romExtension = os.path.splitext(romName)
             # If ROM file is a .gb2 text, retrieve the filenames
-            if romExtension.lower() == '.gb2':
+            if romExtension.lower() in ['.gb2', '.gbc2']:
                 with open(rom) as fp:
                     for line in fp:
                         GBMultiText = line.strip()

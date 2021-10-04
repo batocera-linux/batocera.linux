@@ -4194,9 +4194,21 @@ xemu:
             prompt:      SCALING MODE
             description: Choose the scaling mode for the game screen
             choices:
-                "Center":   center
-                "Scale":    scale
-                "Stretch":  stretch
+                "Center":     center
+                "Scale":      scale
+                "Stretch":    stretch
+                "Widescreen": scale_ws169
+        render:
+            prompt:       SCALING RENDER
+            description:  Choose the scaling render multiplier
+            choices:
+                "x2":   2
+                "x3":   3
+                "x4":   4
+                "x5":   5
+                "x6":   6
+                "x7":   7
+                "x8":   8
         xemu_bootanim:
             prompt:      SKIP BOOT ANIMATION
             description: Skip the on-boot Xbox animation
