@@ -13,7 +13,7 @@ config BR2_PACKAGE_CITRA
     select BR2_PACKAGE_BOOST
     select BR2_PACKAGE_FFMPEG
     select BR2_PACKAGE_SDL2
-    select BR2_PACKAGE_FDK_AAC if (BR2_x86_64 || BR2_AARCH64)
+    select BR2_PACKAGE_FDK_AAC if (BR2_x86_64 || BR2_aarch64)
     help
       A Emulator Citra core for Nintendo 3DS.
 
