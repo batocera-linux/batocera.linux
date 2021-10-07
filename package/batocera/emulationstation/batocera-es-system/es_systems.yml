@@ -25,9 +25,10 @@ snes-msu1:
   extensions: [smc, sfc]
   emulators:
     libretro:
-      snes9x:      { requireAnyOf: [BR2_PACKAGE_LIBRETRO_SNES9X] }
-      bsnes:       { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BSNES] }
-      bsnes_hd:    { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BSNES_HD] }
+      pocketsnes:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_POCKETSNES]}
+      snes9x:      { requireAnyOf: [BR2_PACKAGE_LIBRETRO_SNES9X]    }
+      bsnes:       { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BSNES]     }
+      bsnes_hd:    { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BSNES_HD]  }
 
 c64:
   name:       Commodore 64
@@ -281,7 +282,7 @@ gbc2players:
   manufacturer: Nintendo
   release: 1998
   hardware: portable
-  extensions: [gbc, gb2, zip, 7z]
+  extensions: [gbc, gb2, gbc2, zip, 7z]
   platform:   gbc
   emulators:
     libretro:
@@ -296,7 +297,7 @@ gb2players:
   manufacturer: Nintendo
   release: 1989
   hardware: portable
-  extensions: [gb, gb2, zip, 7z]
+  extensions: [gb, gb2, gbc2, zip, 7z]
   platform:   gb
   emulators:
     libretro:
@@ -666,8 +667,8 @@ fbneo:
   platform:   arcade
   emulators:
     libretro:
-      fbneo:    { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FBNEO]    }
       fbalpha:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FBALPHA]  }
+      fbneo:    { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FBNEO]    }
   comment_en: |
     ROMs must come from the FBNeo romset version 1.0.0.0
 
@@ -729,6 +730,7 @@ neogeo:
   platform:   neogeo, arcade
   emulators:
     libretro:
+      fbalpha:      { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FBALPHA]        }
       fbneo:        { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FBNEO]          }
       imame4all:    { requireAnyOf: [BR2_PACKAGE_LIBRETRO_IMAME]          }
       mame078plus:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME2003_PLUS]  }
@@ -813,7 +815,8 @@ atari2600:
   extensions: [a26, bin, zip, 7z]
   emulators:
     libretro:
-      stella: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_STELLA] }
+      stella:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_STELLA]     }
+      stella2014: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_STELLA2014] }
 
 atari5200:
   name:       Atari 5200
@@ -1622,8 +1625,9 @@ satellaview:
   group:      snes
   emulators:
     libretro:
-      snes9x: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_SNES9X] }
-      mesens: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MESENS] }
+      pocketsnes:   { requireAnyOf: [BR2_PACKAGE_LIBRETRO_POCKETSNES] }
+      snes9x:       { requireAnyOf: [BR2_PACKAGE_LIBRETRO_SNES9X]     }
+      mesens:       { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MESENS]     }
 
 sufami:
   name:       SuFami Turbo

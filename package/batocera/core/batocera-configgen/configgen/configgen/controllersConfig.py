@@ -114,7 +114,7 @@ def _generateSdlGameControllerConfig(controller, sdlMapping=_DEFAULT_SDL_MAPPING
     """Returns an SDL_GAMECONTROLLERCONFIG-formatted string for the given configuration."""
     config = []
     config.append(controller.guid)
-    config.append(controller.configName)
+    config.append(controller.realName)
     config.append("platform:Linux")
 
     def add_mapping(input):
@@ -164,13 +164,16 @@ def _keyToSdlGameControllerConfig(keyname, name, type, id, value=None):
         'leftshoulder:b6'
 
       _keyToSdlGameControllerConfig('dpleft', 'left', 'hat', 0, 8)
-        'dpleft:h0.9'
+        'dpleft:h0.8'
 
       _keyToSdlGameControllerConfig('lefty', 'joystick1up', 'axis', 1, -1)
         'lefty:a1'
 
       _keyToSdlGameControllerConfig('lefty', 'joystick1up', 'axis', 1, 1)
-        'lefty:a1'
+        'lefty:a1~'
+
+      _keyToSdlGameControllerConfig('dpup', 'up', 'axis', 1, -1)
+        'dpup:-a1'
     """
     if type == 'button':
         return '{}:b{}'.format(keyname, id)
@@ -179,6 +182,8 @@ def _keyToSdlGameControllerConfig(keyname, name, type, id, value=None):
     elif type == 'axis':
         if 'joystick' in name:
             return '{}:a{}{}'.format(keyname, id, '~' if int(value) > 0 else '')
+        elif keyname in ('dpup', 'dpdown', 'dpleft', 'dpright'):
+            return '{}:{}a{}'.format(keyname, '-' if int(value) < 0 else '+', id)
         else:
             return '{}:a{}'.format(keyname, id)
     elif type == 'key':

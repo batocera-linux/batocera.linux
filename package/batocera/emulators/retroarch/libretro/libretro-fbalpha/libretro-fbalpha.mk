@@ -3,28 +3,25 @@
 # FBALPHA
 #
 ################################################################################
-# Version.: Commits on Apr 30, 2021
-LIBRETRO_FBALPHA_VERSION = 0a25932ac981108a5eb5ef401056ac78ea57e3ce
-LIBRETRO_FBALPHA_SITE = $(call github,libretro,fbalpha,$(LIBRETRO_FBALPHA_VERSION))
+# Version.: Commits on Jun 02, 2021
+LIBRETRO_FBALPHA_VERSION = 23f98fc7cf4f2f216149c263cf5913d2e28be8d4
+LIBRETRO_FBALPHA_SITE = $(call github,libretro,fbalpha2012,$(LIBRETRO_FBALPHA_VERSION))
 LIBRETRO_FBALPHA_LICENSE = Non-commercial
 
+LIBRETRO_FBALPHA_PLATFORM = $(LIBRETRO_PLATFORM)
+
+ifeq ($(BR2_arm),y)
+LIBRETRO_FBALPHA_PLATFORM = armv
+endif
+
 define LIBRETRO_FBALPHA_BUILD_CMDS
-	$(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" -C $(@D)/ -f makefile.libretro platform="$(LIBRETRO_PLATFORM)"
+	$(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" -C \
+        $(@D)/svn-current/trunk/ -f makefile.libretro platform="$(LIBRETRO_FBALPHA_PLATFORM)"
 endef
 
 define LIBRETRO_FBALPHA_INSTALL_TARGET_CMDS
-	$(INSTALL) -D $(@D)/fbalpha_libretro.so \
+	$(INSTALL) -D $(@D)/svn-current/trunk/fbalpha2012_libretro.so \
 		$(TARGET_DIR)/usr/lib/libretro/fbalpha_libretro.so
-
-    # Bios
-	mkdir -p $(TARGET_DIR)/usr/share/batocera/datainit/bios/fbalpha/samples
-	$(INSTALL) -D $(@D)/metadata/* \
-		$(TARGET_DIR)/usr/share/batocera/datainit/bios/fbalpha
-
-    # Need to think of another way to use these files.
-    # They take up a lot of space on tmpfs.
-	$(INSTALL) -D $(@D)/dats/* \
-		$(TARGET_DIR)/usr/share/batocera/datainit/bios/fbalpha
 endef
 
 $(eval $(generic-package))

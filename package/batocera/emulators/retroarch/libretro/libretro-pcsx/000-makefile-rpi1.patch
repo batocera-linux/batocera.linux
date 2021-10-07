@@ -5,16 +5,16 @@ index 1ecd359..7532c00 100644
 @@ -305,6 +305,17 @@ else ifeq ($(platform), qnx)
  	LIBDL :=
  	LIBM :=
- 
+
 +#Raspberry Pi 1
 +else ifeq ($(platform), rpi1)
 +	TARGET := $(TARGET_NAME)_libretro.so
 +	fpic := -fPIC
-+	CFLAGS += -marm -march=armv6j -mfpu=vfp -mfloat-abi=hard
-+	ASFLAGS += -march=armv6j -mfpu=vfp -mfloat-abi=hard
++	CFLAGS += -marm -mcpu=arm1176jzf-s -mfpu=vfp -mfloat-abi=hard
++	ASFLAGS += -mcpu=arm1176jzf-s -mfpu=vfp -mfloat-abi=hard
 +	HAVE_NEON = 0
 +	ARCH = arm
-+	BUILTIN_GPU = peops
++	BUILTIN_GPU = unai
 +	DYNAREC = ari64
 +
  #Raspberry Pi 2

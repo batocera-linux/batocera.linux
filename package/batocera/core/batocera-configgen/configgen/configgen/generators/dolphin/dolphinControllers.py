@@ -274,11 +274,11 @@ def generateControllerConfig_any(system, playersControllers, filename, anyDefKey
 
     for playercontroller, pad in sorted(playersControllers.items()):
         # Handle x pads having the same name
-        if pad.configName in double_pads:
-            nsamepad = double_pads[pad.configName]
+        if pad.realName.strip() in double_pads:
+            nsamepad = double_pads[pad.realName.strip()]
         else:
             nsamepad = 0
-        double_pads[pad.configName] = nsamepad+1
+        double_pads[pad.realName.strip()] = nsamepad+1
 
         f.write("[" + anyDefKey + str(nplayer) + "]" + "\n")
         f.write("Device = evdev/" + str(nsamepad).strip() + "/" + pad.realName.strip() + "\n")

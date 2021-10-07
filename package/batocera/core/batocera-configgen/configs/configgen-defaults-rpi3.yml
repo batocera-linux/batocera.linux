@@ -1,6 +1,7 @@
 default:
   options:
     video_threaded: true
+    audio_latency: 96
 
 psp:
   options:
@@ -13,3 +14,9 @@ psx:
   core:     duckstation
   options:
     gpu_software: true
+gb:
+  options:
+    audio_latency: 196
+gbc:
+  options:
+    audio_latency: 196
