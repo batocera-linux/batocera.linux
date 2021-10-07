@@ -1,62 +1,61 @@
 diff --git a/Core/Config.cpp b/Core/Config.cpp
-index 1c53e8e57..a1201682d 100644
+index d8d9e11a44..a333bfac92 100644
 --- a/Core/Config.cpp
 +++ b/Core/Config.cpp
-@@ -1183,7 +1183,7 @@ void Config::Reload() {
- 
- void Config::Load(const char *iniFileName, const char *controllerIniFilename) {
+@@ -1280,9 +1280,9 @@ void Config::Reload() {
+ // really think of any other legit uses).
+ void Config::UpdateIniLocation(const char *iniFileName, const char *controllerIniFilename) {
  	const bool useIniFilename = iniFileName != nullptr && strlen(iniFileName) > 0;
 -	iniFilename_ = FindConfigFile(useIniFilename ? iniFileName : "ppsspp.ini");
 +	iniFilename_ = "/userdata/system/configs/ppsspp/PSP/SYSTEM/ppsspp.ini";
- 
- 	if (!bUpdatedInstanceCounter) {
- 		InitInstanceCounter();
-@@ -1191,7 +1191,7 @@ void Config::Load(const char *iniFileName, const char *controllerIniFilename) {
- 	}
- 
  	const bool useControllerIniFilename = controllerIniFilename != nullptr && strlen(controllerIniFilename) > 0;
 -	controllerIniFilename_ = FindConfigFile(useControllerIniFilename ? controllerIniFilename : "controls.ini");
 +	controllerIniFilename_ = "/userdata/system/configs/ppsspp/PSP/SYSTEM/controls.ini";
- 
- 	INFO_LOG(LOADER, "Loading config: %s", iniFilename_.c_str());
- 	bSaveSettings = true;
-diff --git a/Core/System.cpp b/Core/System.cpp
-index 16ae2808d..544e81ffb 100644
---- a/Core/System.cpp
-+++ b/Core/System.cpp
-@@ -576,15 +576,16 @@ CoreParameter &PSP_CoreParameter() {
  }
  
- std::string GetSysDirectory(PSPDirectories directoryType) {
+ void Config::Load(const char *iniFileName, const char *controllerIniFilename) {
+diff --git a/Core/System.cpp b/Core/System.cpp
+index 04070c614e..2e9860e9d3 100644
+--- a/Core/System.cpp
++++ b/Core/System.cpp
+@@ -586,6 +586,7 @@ CoreParameter &PSP_CoreParameter() {
+ }
+ 
+ Path GetSysDirectory(PSPDirectories directoryType) {
 +	g_Config.memStickDirectory = "/userdata/saves/psp/";
- 	switch (directoryType) {
+ 	Path memStickDirectory = g_Config.memStickDirectory;
+ 	Path pspDirectory;
+ 	if (memStickDirectory.GetFilename() == "PSP") {
+@@ -599,13 +600,13 @@ Path GetSysDirectory(PSPDirectories directoryType) {
+ 	case DIRECTORY_PSP:
+ 		return pspDirectory;
  	case DIRECTORY_CHEATS:
--		return g_Config.memStickDirectory + "PSP/Cheats/";
+-		return pspDirectory / "Cheats";
 +		return "/userdata/cheats/psp/";
  	case DIRECTORY_GAME:
- 		return g_Config.memStickDirectory + "PSP/GAME/";
+ 		return pspDirectory / "GAME";
  	case DIRECTORY_SAVEDATA:
- 		return g_Config.memStickDirectory + "PSP/SAVEDATA/";
+ 		return pspDirectory / "SAVEDATA";
  	case DIRECTORY_SCREENSHOT:
--		return g_Config.memStickDirectory + "PSP/SCREENSHOT/";
+-		return pspDirectory / "SCREENSHOT";
 +		return "/userdata/screenshots/";
  	case DIRECTORY_SYSTEM:
- 		return g_Config.memStickDirectory + "PSP/SYSTEM/";
+ 		return pspDirectory / "SYSTEM";
  	case DIRECTORY_PAUTH:
-@@ -607,7 +608,7 @@ std::string GetSysDirectory(PSPDirectories directoryType) {
+@@ -630,7 +631,7 @@ Path GetSysDirectory(PSPDirectories directoryType) {
  	case DIRECTORY_VIDEO:
- 		return g_Config.memStickDirectory + "PSP/VIDEO/";
+ 		return pspDirectory / "VIDEO";
  	case DIRECTORY_AUDIO:
--		return g_Config.memStickDirectory + "PSP/AUDIO/";
+-		return pspDirectory / "AUDIO";
 +		return "/userdata/music/";
- 	case DIRECTORY_MEMSTICK_ROOT:
- 		return g_Config.memStickDirectory;
- 	// Just return the memory stick root if we run into some sort of problem.
+ 	case DIRECTORY_CUSTOM_SHADERS:
+ 		return pspDirectory / "shaders";
+ 
 diff --git a/SDL/SDLJoystick.cpp b/SDL/SDLJoystick.cpp
-index 1dfedeac5..3907d9311 100644
+index c129ac821a..925feeba5b 100644
 --- a/SDL/SDLJoystick.cpp
 +++ b/SDL/SDLJoystick.cpp
-@@ -23,7 +23,7 @@ SDLJoystick::SDLJoystick(bool init_SDL ) : registeredAsEventHandler(false) {
+@@ -24,7 +24,7 @@ SDLJoystick::SDLJoystick(bool init_SDL ) : registeredAsEventHandler(false) {
  		SDL_Init(SDL_INIT_JOYSTICK | SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER);
  	}
  
@@ -65,7 +64,7 @@ index 1dfedeac5..3907d9311 100644
  	cout << "loading control pad mappings from " << dbPath << ": ";
  
  	size_t size;
-@@ -36,7 +36,7 @@ SDLJoystick::SDLJoystick(bool init_SDL ) : registeredAsEventHandler(false) {
+@@ -37,7 +37,7 @@ SDLJoystick::SDLJoystick(bool init_SDL ) : registeredAsEventHandler(false) {
  		}
  		delete[] mappingData;
  	} else {
@@ -75,17 +74,15 @@ index 1dfedeac5..3907d9311 100644
  	cout << "SUCCESS!" << endl;
  	setUpControllers();
 diff --git a/UI/NativeApp.cpp b/UI/NativeApp.cpp
-index fd1133b41..068173880 100644
+index 4bb1c4236a..15abbd07f4 100644
 --- a/UI/NativeApp.cpp
 +++ b/UI/NativeApp.cpp
-@@ -471,7 +471,7 @@ void NativeInit(int argc, const char *argv[], const char *savegame_dir, const ch
- 	VFSRegister("", new DirectoryAssetReader((File::GetExeDirectory()).c_str()));
- 	VFSRegister("", new DirectoryAssetReader("/usr/local/share/ppsspp/assets/"));
- 	VFSRegister("", new DirectoryAssetReader("/usr/local/share/games/ppsspp/assets/"));
--	VFSRegister("", new DirectoryAssetReader("/usr/share/ppsspp/assets/"));
-+	VFSRegister("", new DirectoryAssetReader("/usr/share/ppsspp/PPSSPP/"));
- 	VFSRegister("", new DirectoryAssetReader("/usr/share/games/ppsspp/assets/"));
+@@ -487,7 +487,7 @@ void NativeInit(int argc, const char *argv[], const char *savegame_dir, const ch
+ 	VFSRegister("", new DirectoryAssetReader(File::GetExeDirectory()));
+ 	VFSRegister("", new DirectoryAssetReader(Path("/usr/local/share/ppsspp/assets")));
+ 	VFSRegister("", new DirectoryAssetReader(Path("/usr/local/share/games/ppsspp/assets")));
+-	VFSRegister("", new DirectoryAssetReader(Path("/usr/share/ppsspp/assets")));
++	VFSRegister("", new DirectoryAssetReader(Path("/usr/share/ppsspp/PPSSPP")));
+ 	VFSRegister("", new DirectoryAssetReader(Path("/usr/share/games/ppsspp/assets")));
  #endif
- #if PPSSPP_PLATFORM(SWITCH)
--- 
-2.27.0
+ 
