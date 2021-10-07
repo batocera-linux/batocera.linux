@@ -53,7 +53,7 @@ disable_audio_dither=1
 
     CONFIGMODIFIED=0
 
-    if /usr/bin/batocera-info  | grep "Architecture: rpi4"; then
+    if grep -q rpi4 /usr/share/batocera/batocera.arch ; then
         setup="${setup_rpi4}"
     else
         setup="${setup_rpi1}"
