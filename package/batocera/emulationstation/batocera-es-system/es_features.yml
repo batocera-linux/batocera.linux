@@ -3111,7 +3111,7 @@ cemu:
                 "5 Sideway Wiimote":           3
 
 citra:
-  features: [ratio]
+  features: [ratio, padtokeyboard]
   cfeatures:
         citra_screen_layout:
             prompt:      SCREEN LAYOUT
@@ -3981,7 +3981,7 @@ tsugaru:
                 "YES":            1
 
 mame:
-  features: [decoration]
+  features: [decoration, padtokeyboard]
   cfeatures:
         video:
             prompt:      GRAPHICS BACKEND
