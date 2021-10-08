@@ -43,7 +43,7 @@ ifeq ($(BR2_PACKAGE_BATOCERA_SPLASH_MPV),y)
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86_64),y)
         # drm doesn't work on my nvidia card. sdl run smoothly.
         BATOCERA_SPLASH_PLAYER_OPTIONS=--vo=drm,sdl --hwdec=yes
-else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_S922X),y)
+else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_S922X)$(BR2_PACKAGE_BATOCERA_TARGET_S905GEN3),y)
         # hwdec=yes doesnt work for n2
         BATOCERA_SPLASH_PLAYER_OPTIONS=
 else
