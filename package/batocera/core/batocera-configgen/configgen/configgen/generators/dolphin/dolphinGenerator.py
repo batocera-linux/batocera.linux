@@ -235,12 +235,14 @@ class DolphinGenerator(Generator):
 
 # Ratio
 def getGfxRatioFromConfig(config, gameResolution):
-    # 2: 4:3 ; 1: 16:9  ; 0: auto
+    # 3: stretch ; 2: 4:3 ; 1: 16:9  ; 0: auto
     if "ratio" in config:
         if config["ratio"] == "4/3":
             return 2
         if config["ratio"] == "16/9":
             return 1
+        if config["ratio"] == "full":
+            return 3
     return 0
 
 # Seem to be only for the gamecube. However, while this is not in a gamecube section
