@@ -220,7 +220,7 @@ def main(args, maxnbplayers):
 
         # autosave arguments
         if args.state_slot is not None:
-            system.config["state_slot"] = args.state_slot
+            system.config["state_slot"] = int(args.state_slot) - 1
         if args.autosave is not None:
             system.config["autosave"] = args.autosave
 
