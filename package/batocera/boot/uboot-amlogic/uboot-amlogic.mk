@@ -3,8 +3,8 @@
 # U-Boot files for Amlogic Board (Khadas VIM3 and Odroid N2)
 #
 ################################################################################
-# Version: Commits on Jul 19, 2020
-UBOOT_AMLOGIC_VERSION = 27c705a98e0131384ab3962a6a5ab7ce02aa1109
+# Version: Commits on Aug 07, 2021
+UBOOT_AMLOGIC_VERSION = 3384f1bc82fc554ed1fa0716bd821e1a2a350db2
 UBOOT_AMLOGIC_SITE = $(call github,LibreELEC,amlogic-boot-fip,$(UBOOT_AMLOGIC_VERSION))
 UBOOT_AMLOGIC_DEPENDENCIES = uboot
 
@@ -136,7 +136,7 @@ endef
 endif
 
 define UBOOT_AMLOGIC_INSTALL_TARGET_CMDS
-	cp $(UBOOT_AMLOGIC_BUILD_DIR)/u-boot.bin.sd.bin $(BINARIES_DIR)/u-boot.bin.sd-amlogic.bin
+	cp $(UBOOT_AMLOGIC_BUILD_DIR)/u-boot.bin $(BINARIES_DIR)/u-boot.bin
 endef
 
 $(eval $(generic-package))
