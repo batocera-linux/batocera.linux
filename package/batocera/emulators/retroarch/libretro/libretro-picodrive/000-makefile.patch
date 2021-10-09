@@ -3,9 +3,9 @@ index 6a18997..a89c90c 100644
 --- a/Makefile.libretro
 +++ b/Makefile.libretro
 @@ -218,16 +218,31 @@ else ifeq ($(platform), ctr)
- 
+
  	OBJS += platform/libretro/3ds/3ds_utils.o platform/libretro/3ds/utils.o
- 
+
 -# Raspberry Pi (original model) Raspbian
 -else ifeq ($(platform), raspberrypi)
 -	CFLAGS += -marm -mfpu=vfp -mfloat-abi=hard -march=armv6j
@@ -14,14 +14,14 @@ index 6a18997..a89c90c 100644
 +# Raspberry Pi
 +else ifneq (,$(findstring rpi,$(platform)))
 +	CFLAGS += -Wall -fomit-frame-pointer -ffast-math
- 
+
  	TARGET := $(TARGET_NAME)_libretro.so
  	SHARED := -shared
  	fpic := -fPIC
- 
+
 +	ifneq (,$(findstring rpi1,$(platform)))
 +		CFLAGS += -mword-relocations
-+		CFLAGS += -marm -mfpu=vfp -mfloat-abi=hard -march=armv6j
++		CFLAGS += -marm -mcpu=arm1176jzf-s -mfpu=vfp -mfloat-abi=hard
 +	else ifneq (,$(findstring rpi2,$(platform)))
 +		CFLAGS += -mword-relocations
 +		CFLAGS += -marm -mcpu=cortex-a7 -mfpu=neon-vfpv4 -mfloat-abi=hard

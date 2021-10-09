@@ -4,7 +4,7 @@
 #
 ################################################################################
 # Version.: Release 1.6.5
-SOLARUS_ENGINE_VERSION = b0bd6b85ccfcfd85409211e3abc550e33b992a8a
+SOLARUS_ENGINE_VERSION = 80295247a0c93bd24e07824238b277412a72d112
 SOLARUS_ENGINE_SITE = https://gitlab.com/solarus-games/solarus
 SOLARUS_ENGINE_SITE_METHOD=git
 

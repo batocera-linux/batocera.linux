@@ -667,6 +667,7 @@ fbneo:
   platform:   arcade
   emulators:
     libretro:
+      fbalpha:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FBALPHA]  }
       fbneo:    { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FBNEO]    }
   comment_en: |
     ROMs must come from the FBNeo romset version 1.0.0.0
@@ -729,6 +730,7 @@ neogeo:
   platform:   neogeo, arcade
   emulators:
     libretro:
+      fbalpha:      { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FBALPHA]        }
       fbneo:        { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FBNEO]          }
       imame4all:    { requireAnyOf: [BR2_PACKAGE_LIBRETRO_IMAME]          }
       mame078plus:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME2003_PLUS]  }
@@ -813,7 +815,8 @@ atari2600:
   extensions: [a26, bin, zip, 7z]
   emulators:
     libretro:
-      stella: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_STELLA] }
+      stella:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_STELLA]     }
+      stella2014: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_STELLA2014] }
 
 atari5200:
   name:       Atari 5200

@@ -1,0 +1,47 @@
+diff --git a/include/solarus/core/InputEvent.h b/include/solarus/core/InputEvent.h
+index fb8902e..96f2bce 100644
+--- a/include/solarus/core/InputEvent.h
++++ b/include/solarus/core/InputEvent.h
+@@ -330,6 +330,7 @@ class InputEvent {
+     static std::set<SDL_Keycode> keys_pressed;    /**< Keys currently down, only according to SDL_KEYDOWN and SDL_KEYUP events
+                                                    * (i.e. independently of the real current state SDL_GetKeyboardState()). */
+     static int joypad_deadzone;                   /**< Joypad axis deadzone for detecting directions. */
++    static int joypad_num;
+     static std::set<Uint8> jbuttons_pressed;      /**< Joypad buttons currently down, only according to SDL_JOYBUTTONDOWN and
+                                                    * SDL_JOYBUTTONUP events. */
+     static std::set<Uint8> quit_combo;            /**< Optional joypad buttons combination for quitting the application. */
+diff --git a/src/core/InputEvent.cpp b/src/core/InputEvent.cpp
+index cb8330e..5b810a8 100644
+--- a/src/core/InputEvent.cpp
++++ b/src/core/InputEvent.cpp
+@@ -39,6 +39,7 @@ SDL_Joystick* InputEvent::joystick = nullptr;
+ bool InputEvent::repeat_keyboard = false;
+ std::set<SDL_Keycode> InputEvent::keys_pressed;
+ int InputEvent::joypad_deadzone = 10000;
++int InputEvent::joypad_num = 0;
+ std::set<Uint8> InputEvent::jbuttons_pressed;
+ std::set<Uint8> InputEvent::quit_combo;
+ 
+@@ -210,6 +211,13 @@ void InputEvent::initialize(const Arguments& args) {
+     Logger::info(std::string("Joypad axis deadzone: ") + joypad_deadzone_arg);
+   }
+ 
++  // Check the -joypad-num option.
++  const std::string joypad_num_arg = args.get_argument_value("-joypad-num");
++  if (!joypad_num_arg.empty()) {
++    joypad_num = std::stoi(joypad_num_arg);
++    Logger::info(std::string("Joypad axis num: ") + joypad_num_arg);
++  }
++
+   initialized = true;
+ 
+   // Initialize text events.
+@@ -967,7 +967,7 @@ void InputEvent::set_joypad_enabled(bool joypad_enabled) {
+         SDL_InitSubSystem(SDL_INIT_JOYSTICK);
+         SDL_JoystickEventState(SDL_ENABLE);
+         if(SDL_NumJoysticks() > 0) {
+-          joystick = SDL_JoystickOpen(0);
++          joystick = SDL_JoystickOpen(joypad_num);
+         }
+     }
+     else {

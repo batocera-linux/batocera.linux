@@ -1,0 +1,13 @@
+diff --git a/3rdparty/CMakeLists.txt b/3rdparty/CMakeLists.txt
+index d3a3703..54f1cd2 100644
+--- a/3rdparty/CMakeLists.txt
++++ b/3rdparty/CMakeLists.txt
+@@ -68,7 +68,7 @@ if(APPLE)
+ 	target_include_directories(hidapi-mac PUBLIC hidapi/hidapi)
+ 
+ 	target_link_libraries(3rdparty_hidapi INTERFACE hidapi-mac "-framework CoreFoundation" "-framework IOKit")
+-elseif(CMAKE_SYSTEM MATCHES "Linux")
++elseif(TRUE)
+ 	add_subdirectory(hidapi/linux EXCLUDE_FROM_ALL)
+ 	target_include_directories(hidapi-hidraw PUBLIC hidapi/hidapi)
+ 

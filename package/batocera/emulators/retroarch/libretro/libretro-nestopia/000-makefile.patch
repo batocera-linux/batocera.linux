@@ -5,13 +5,13 @@ index eaab210..9e8c969 100644
 @@ -191,6 +191,14 @@ else ifeq ($(platform), ctr)
  	PLATFORM_DEFINES += -fomit-frame-pointer -fstrict-aliasing -ffast-math
  	STATIC_LINKING = 1
- 
+
 +# Raspberry Pi 1 (Raspbian)
 +else ifeq ($(platform), rpi1)
 +	TARGET := $(TARGET_NAME)_libretro.so
 +	fpic := -fPIC
 +	SHARED := -shared -Wl,-version-script=link.T -Wl,-no-undefined
-+	PLATFORM_DEFINES += -marm -mfpu=vfp -mfloat-abi=hard -march=armv6j -ffast-math
++	PLATFORM_DEFINES += -marm -mcpu=arm1176jzf-s -mfpu=vfp -mfloat-abi=hard -ffast-math
 +	PLATFORM_DEFINES += -DARM11
 +
  # Raspberry Pi 2 (Raspbian)
@@ -20,7 +20,7 @@ index eaab210..9e8c969 100644
 @@ -207,6 +215,13 @@ else ifeq ($(platform), rpi3)
  	PLATFORM_DEFINES += -marm -mcpu=cortex-a53 -mfpu=neon-fp-armv8 -mfloat-abi=hard -ffast-math
  	PLATFORM_DEFINES += -DARM
- 
+
 +# Raspberry Pi 3 (64-bit)
 +else ifeq ($(platform), rpi3_64)
 +	TARGET := $(TARGET_NAME)_libretro.so
