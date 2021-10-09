@@ -10,7 +10,7 @@ GPIMATEPLUS_SITE = https://github.com/martinx72/GPiMatePlusHowTo/raw/main
 define GPIMATEPLUS_INSTALL_TARGET_CMDS
 	mkdir -p $(BINARIES_DIR)/rpi-firmware/overlays
 	cp $(@D)/disable-pcie.dtbo $(BINARIES_DIR)/rpi-firmware/overlays/disable-pcie.dtbo
-	$(INSTALL) -D -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/utils/gpimateplus/S29gpimateplus $(TARGET_DIR)/etc/init.d/S29gpimateplus
+	$(INSTALL) -D -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/utils/gpimateplus/batocera-gpimateplus-setup $(TARGET_DIR)/usr/bin/batocera-gpimateplus-setup
 endef
 
 define GPIMATEPLUS_EXTRACT_CMDS

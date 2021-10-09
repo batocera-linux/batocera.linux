@@ -11,6 +11,7 @@ define GPICASE_INSTALL_TARGET_CMDS
 	mkdir -p $(BINARIES_DIR)/rpi-firmware/overlays
 	cp $(@D)/GPi_Case_patch/patch_files/overlays/dpi24.dtbo             $(BINARIES_DIR)/rpi-firmware/overlays/dpi24_gpicase.dtbo
 	cp $(@D)/GPi_Case_patch/patch_files/overlays/pwm-audio-pi-zero.dtbo $(BINARIES_DIR)/rpi-firmware/overlays/pwm-audio-pi-zero_gpicase.dtbo
+	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/utils/gpicase/S29gpicase                        $(TARGET_DIR)/etc/init.d/S29gpicase
 	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/utils/gpicase/99-gpicase.rules                  $(TARGET_DIR)/etc/udev/rules.d
 	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/utils/gpicase/batocera-gpicase-install          $(TARGET_DIR)/usr/bin/batocera-gpicase-install
 endef
