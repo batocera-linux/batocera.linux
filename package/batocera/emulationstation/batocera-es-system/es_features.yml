@@ -4059,6 +4059,18 @@ wine:
             choices:
                 "Off": 0
                 "On":  1
+        fsr:
+            prompt:      FSR
+            description: AMD FidelityFX Super Resolution uses advanced scaling technologies to boost your fps
+            choices:
+                "Off": 0
+                "On":  1
+        nvapi:
+            prompt:      NVAPI
+            description: NVAPI is NVIDIA's core software that allows direct access to NVIDIA GPU
+            choices:
+                "Off": 0
+                "On":  1
         fps_limit:
             prompt:      FPS LIMITER
             description: Allows you to limit fps to 60
