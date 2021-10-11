@@ -13,9 +13,10 @@
 # 20200708 Fix : Default bezel was never copied
 # 20200709 Add : Progress count (started from Terminal/SSH vs ES)
 # 20210130 Add : Take bezels by systems from TheBezelProjet Github (Batocera 30+)
+# 20211010 Fix : recursive search in roms directory
 #
 
-readonly VERSION="20210130"
+readonly VERSION="20211010"
 readonly TITLE="the BezelProject for BATOCERA"
 readonly LOGS_DIR="/userdata/system/logs"
 readonly DECORATION_DIR="/userdata/decorations"
@@ -32,6 +33,8 @@ readonly TMP_SYSTEMS_LIST=`mktemp`
 readonly TMP_INDEX_LIST=`mktemp`
 readonly TMP_PROGRESS_COUNT=`mktemp`
 readonly MAX_NB_WARNING=10
+readonly _BADEXT=(jpg jpeg png bmp psd tga gif hdr pic ppm pgm mkv pdf mp4 avi cbz)
+readonly BADEXT="$( IFS="|" ; echo "${_BADEXT[*]}" | sed 's/|/\\|/g' )"
 NB_WARNING=0
 
 # tbp_systems.txt must be a plain text file with the format
@@ -104,7 +107,7 @@ function get_per() {
 				curval=$(cat  "$TMP_PROGRESS_COUNT")
 		 		local per=$(expr "$curval" '*' 100 / "$roms_filescount")
 		 		record "[$system_name] Installing bezels >>> $per%" "2"
-				sleep 2
+				sleep 1
 		done
 }
 
@@ -141,7 +144,7 @@ function git_name() {
 function files_count() {
 		# we want only files and not those starting with '.' or '_' or "gamelist*"
 		# support for daphne : there is a sub-folder called roms we want to parse
-		[[ $(grep "daphne" <<< "$1") && -d "$1"/roms ]] && echo `find "$1"/roms -maxdepth 1 -type f -iname "[!._]*" -and ! -iname "gamelist*" | wc -l` || echo `find "$1" -maxdepth 1 -type f -iname "[!._]*" -and ! -iname "gamelist*" | wc -l`
+		[[ $(grep "daphne" <<< "$1") && -d "$1"/roms ]] && echo `find "$1"/roms -type f -iname "[!._]*" | wc -l` || echo `find "$1" -type f -iname "[!._]*" -and ! -iname "gamelist*" -and ! -regex ".*\.\($BADEXT\)" | wc -l`
 }
 
 ###############################
@@ -350,7 +353,9 @@ function install() {
 		# support for daphne : there is a sub-folder called roms we want to parse
 		[[ $(grep "daphne" <<< "$system_to_install") && -d "$ROMS_DIR/$system_to_install/roms" ]] && daphne="/roms"
 
-#TERMINAL=0
+		# debug purpose (started from Terminal/SSH vs ES)
+		#TERMINAL=0
+
 		if [  "$TERMINAL" -eq 0 ]; then
 				# start job process (for background refresh)
 				echo "0" > "$TMP_PROGRESS_COUNT"
@@ -456,7 +461,7 @@ function install() {
  						echo -ne  "[$system_to_install] Installing bezel $roms_count / $roms_filescount\r"
 				fi
 
-		done < <(find "$ROMS_DIR/$system_to_install$daphne" -maxdepth 1 -type f -iname "[!._]*" -and ! -iname "gamelist*")
+		done < <(find "$ROMS_DIR/$system_to_install$daphne" -type f -iname "[!._]*" -and ! -iname "gamelist*" -and ! -regex ".*\.\($BADEXT\)")
 		rm "$TMP_INDEX_LIST"
 
 		if [  "$TERMINAL" -eq 0 ]; then
