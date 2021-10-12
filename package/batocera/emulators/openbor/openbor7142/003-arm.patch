@@ -1,8 +1,8 @@
 diff --git a/engine/Makefile b/engine/Makefile
-index 8d6a559..85ab4fe 100644
+index da9bf1b50b..a76f657d2b 100644
 --- a/engine/Makefile
 +++ b/engine/Makefile
-@@ -156,6 +156,22 @@ BUILD_DEBUG     = 1
+@@ -202,6 +202,22 @@ BUILD_DEBUG     = 1
  endif
  endif
  
@@ -25,8 +25,8 @@ index 8d6a559..85ab4fe 100644
  ifdef BUILD_WII
  TARGET 	        = $(VERSION_NAME).elf
  TARGET_MAP      = $(TARGET).map
-@@ -485,6 +501,9 @@ ifdef BUILD_PANDORA
- CFLAGS         += -DLINUX
+@@ -264,6 +280,9 @@ ifdef BUILD_PSP
+ INCS           += psp
  endif
  
 +ifdef BUILD_ARM
@@ -34,4 +34,4 @@ index 8d6a559..85ab4fe 100644
 +endif
  
  ifdef BUILD_WII
- CFLAGS 	       += -DCACHE_BACKGROUNDS -DREVERSE_COLOR -D__ppc__ $(MACHDEP) -Wl,-Map,$(TARGET_MAP),-wrap,wiiuse_register
+ INCS           += wii

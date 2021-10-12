@@ -1,21 +1,20 @@
 diff --git a/engine/openbor.c b/engine/openbor.c
-index 44eb88b..133f1ed 100644
+index 74ad4418a1..6ad5b58a41 100644
 --- a/engine/openbor.c
 +++ b/engine/openbor.c
-@@ -2584,6 +2584,8 @@ void clearsettings()
+@@ -2483,6 +2483,8 @@ void clearsettings()
  
  void savesettings()
  {
-+	saveasdefault(); return;  // FCA : disable per game settings
++    saveasdefault(); return;  // FCA : disable per game settings
 +
  #ifndef DC
      FILE *handle = NULL;
      char path[MAX_BUFFER_LEN] = {""};
-@@ -2601,8 +2603,201 @@ void savesettings()
+@@ -2509,8 +2511,199 @@ void savesettings()
  #endif
  }
  
-+
 +#if SDL
 +extern char savesDir[MAX_FILENAME_LEN];
 +extern char screenShotsDir[MAX_FILENAME_LEN];
@@ -28,7 +27,7 @@ index 44eb88b..133f1ed 100644
 +	char path[MAX_BUFFER_LEN] = { "" };
 +
 +#if !WIN
-+	strcpy(path, "/userdata/system/configs/openbor/config6510.ini");
++	strcpy(path, "/userdata/system/configs/openbor/config7142.ini");
 +	handle = fopen(path, "wb");
 +#endif
 +
@@ -100,7 +99,7 @@ index 44eb88b..133f1ed 100644
 +	char path[MAX_BUFFER_LEN] = { "" };
 +
 +#if !WIN
-+	strcpy(path, "/userdata/system/configs/openbor/config6510.ini");
++	strcpy(path, "/userdata/system/configs/openbor/config7142.ini");
 +	handle = fopen(path, "rb");
 +#endif
 +
@@ -205,36 +204,32 @@ index 44eb88b..133f1ed 100644
 +}
 +//FCA 
 +
-+
  void saveasdefault()
  {
-+	saveToIni(); return; // FCA
++    saveToIni(); return; // FCA
 +
  #ifndef DC
      FILE *handle = NULL;
      char path[MAX_BUFFER_LEN] = {""};
-@@ -2618,9 +2813,10 @@ void saveasdefault()
- #endif
- }
+@@ -2537,6 +2730,8 @@ void saveasdefault()
  
--
  void loadsettings()
  {
-+	loadfromdefault(); return; // FCA : disable per game settings
++    loadfromdefault(); return; // FCA : disable per game settings
 +
  #ifndef DC
      FILE *handle = NULL;
      char path[MAX_BUFFER_LEN] = {""};
-@@ -2652,6 +2848,8 @@ void loadsettings()
+@@ -2577,6 +2772,8 @@ void loadsettings()
  
  void loadfromdefault()
  {
-+	if (loadfromIni()) return; // FCA		
++    if (loadfromIni()) return; // FCA
 +
  #ifndef DC
      FILE *handle = NULL;
      char path[MAX_BUFFER_LEN] = {""};
-@@ -2659,16 +2857,17 @@ void loadfromdefault()
+@@ -2584,16 +2781,16 @@ void loadfromdefault()
      strcat(path, "default.cfg");
      clearsettings();
      handle = fopen(path, "rb");
@@ -248,7 +243,7 @@ index 44eb88b..133f1ed 100644
 -    {
 -        clearsettings();
 -    }
-+	if (handle != NULL)
++    if (handle != NULL)
 +	{
 +		fread(&savedata, 1, sizeof(savedata), handle);
 +		fclose(handle);
@@ -258,11 +253,10 @@ index 44eb88b..133f1ed 100644
 +	{
 +		clearsettings();
 +	}
-+	
- #else
-     clearsettings();
- #endif
-@@ -34544,6 +34743,8 @@ void inputrefresh(int playrecmode)
+ 
+     // load controls
+     getBasePath(path, "Saves", 0);
+@@ -34502,6 +34699,8 @@ void inputrefresh(int playrecmode)
          bothnewkeys |= player[p].newkeys;
      }
  
@@ -271,17 +265,17 @@ index 44eb88b..133f1ed 100644
  }
  
  void execute_keyscripts()
-@@ -35269,7 +35470,8 @@ void apply_controls()
+@@ -35228,7 +35427,8 @@ void apply_controls()
  
      for(p = 0; p < MAX_PLAYERS; p++)
      {
 -        control_setkey(playercontrolpointers[p], FLAG_ESC,        CONTROL_ESC);
 +        //control_setkey(playercontrolpointers[p], FLAG_ESC,        CONTROL_ESC); // FCA
-+		control_setkey(playercontrolpointers[p], FLAG_ESC,	      savedata.keys[p][SDID_ESC]); // FCA
++        control_setkey(playercontrolpointers[p], FLAG_ESC,	      savedata.keys[p][SDID_ESC]); // FCA
          control_setkey(playercontrolpointers[p], FLAG_MOVEUP,     savedata.keys[p][SDID_MOVEUP]);
          control_setkey(playercontrolpointers[p], FLAG_MOVEDOWN,   savedata.keys[p][SDID_MOVEDOWN]);
          control_setkey(playercontrolpointers[p], FLAG_MOVELEFT,   savedata.keys[p][SDID_MOVELEFT]);
-@@ -35419,7 +35621,7 @@ void borShutdown(int status, char *msg, ...)
+@@ -35379,7 +35579,7 @@ void borShutdown(int status, char *msg, ...)
  
      if(status != 2)
      {
@@ -290,17 +284,8 @@ index 44eb88b..133f1ed 100644
      }
  
      if(startup_done)
-@@ -39801,7 +40003,7 @@ void openborMain(int argc, char **argv)
-                 relback = 1;
-                 started = 0;
-             }
--
-+					
-             if(bothnewkeys & FLAG_ESC)
-             {
-                 quit = 1;
 diff --git a/engine/sdl/sdlport.c b/engine/sdl/sdlport.c
-index a820fef..e313f06 100644
+index 0d4c7f7de2..87d594d6f3 100644
 --- a/engine/sdl/sdlport.c
 +++ b/engine/sdl/sdlport.c
 @@ -67,8 +67,18 @@ void borExit(int reset)
@@ -343,17 +328,17 @@ index a820fef..e313f06 100644
 -	dirExists(paksDir, 1);
 +	if (argc <= 1) // FCA
 +		dirExists(paksDir, 1);
-+
  	dirExists(savesDir, 1);
  	dirExists(logsDir, 1);
  	dirExists(screenShotsDir, 1);
  
 +	if (argc > 1) strcpy(packfile, argv[1]); else // FCA : Command line
- 	Menu();
- #ifndef SKIP_CODE
- 	getPakName(pakname, -1);
++
+    // Test command line argument to launch MOD
+    int romArg = 0;
+    if(argc == 2) {
 diff --git a/engine/source/utils.c b/engine/source/utils.c
-index 8a0dcfc..f8fc940 100644
+index f9e071e696..ac08e22c2f 100644
 --- a/engine/source/utils.c
 +++ b/engine/source/utils.c
 @@ -95,10 +95,10 @@ typedef void DIR;

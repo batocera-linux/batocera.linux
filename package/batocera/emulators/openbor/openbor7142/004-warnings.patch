@@ -1,12 +1,12 @@
 diff --git a/engine/Makefile b/engine/Makefile
-index 85ab4fe..1325f8d 100644
+index 284a7d9dbb..d046b42f51 100644
 --- a/engine/Makefile
 +++ b/engine/Makefile
-@@ -459,7 +459,7 @@ OBJS            = $(MAIN)
+@@ -507,7 +507,7 @@ OBJS            = $(MAIN)
  #----------------------------------------------------------------------------------------------------
  
  CFLAGS 	       += $(addprefix -I", $(addsuffix ", $(INCS))) $(ARCHFLAGS) -D$(TARGET_PLATFORM)
--CFLAGS 	       += -g -Wall -Werror -fsigned-char -std=gnu99
+-CFLAGS 	       += -g -Wall -Werror -Wno-format-truncation -Wno-stringop-truncation -fsigned-char -std=gnu99
 +CFLAGS 	       += -g -fsigned-char -std=gnu99
  
  
