@@ -669,6 +669,8 @@ fbneo:
     libretro:
       fbalpha:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FBALPHA]  }
       fbneo:    { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FBNEO]    }
+    fba2x:
+      fba2x:    { requireAnyOf: [BR2_PACKAGE_PIFBA] }
   comment_en: |
     ROMs must come from the FBNeo romset version 1.0.0.0
 
@@ -738,6 +740,8 @@ neogeo:
       mame:         { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME]           }
     mame:
       mame:         { requireAnyOf: [BR2_PACKAGE_MAME]                    }
+    fba2x:
+      fba2x:        { requireAnyOf: [BR2_PACKAGE_PIFBA]                   }
 
 neogeocd:
   name:       Neo-Geo CD

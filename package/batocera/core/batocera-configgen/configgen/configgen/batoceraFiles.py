@@ -41,6 +41,7 @@ batoceraBins = {'dosbox'         : '/usr/bin/dosbox'
               , 'tsugaru'        : '/usr/bin/Tsugaru_CUI'
               , 'xemu'           : '/usr/bin/xemu'
               , 'gsplus'         : '/usr/bin/GSplus'
+              , 'fba2x'          : '/usr/bin/fba2x'
 }
 
 
