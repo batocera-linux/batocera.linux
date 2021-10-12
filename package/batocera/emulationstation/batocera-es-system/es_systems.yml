@@ -2111,3 +2111,15 @@ advision:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
           Requires MAME BIOS file advision.zip or .7z in either advision or BIOS folder.
+
+switch:
+  name:       Switch
+  manufacturer: Nintendo
+  release: 2017
+  hardware: console
+  platform:   switch
+  theme:      switch
+  extensions: [xci, nsp]
+  emulators:
+    yuzu:
+      yuzu: { requireAnyOf: [BR2_PACKAGE_YUZU] }
