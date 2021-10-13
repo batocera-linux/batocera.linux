@@ -1728,8 +1728,8 @@ pc98:
       np2kai:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PC98] }
 
 fmtowns:
-  name:       Fujistu FM-TOWNS
-  manufacturer: Fujistu
+  name:       Fujitsu FM-TOWNS
+  manufacturer: Fujitsu
   release: 1987
   hardware: computer
   extensions: [bin, m3u, cue, d88, d77, xdf, iso]
@@ -2093,7 +2093,7 @@ cdi:
   manufacturer: Philips
   release: 1990
   hardware: console
-  extensions: [chd cue, toc, nrg, gdi, iso, cdr]
+  extensions: [chd, cue, toc, nrg, gdi, iso, cdr]
   emulators:
     mame:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
