@@ -153,6 +153,11 @@ kodi:
   emulator: kodi
   options:
     videomode: default
+lcdgames:
+  emulator: libretro
+  core:     gw
+  options:
+    forceNoBezel: true
 lutro:
   emulator: libretro
   core:     lutro

@@ -44,11 +44,30 @@ class MameGenerator(Generator):
         if not os.path.exists("/userdata/saves/mame/comments/"):
             os.makedirs("/userdata/saves/mame/comments/")
 
+        # Define systems that will use the MESS executable instead of MAME
+        messSystems = [ "lcdgames", "gameandwatch", "cdi", "advision" ]
+        # If it needs a system name defined, use it here. Add a blank string if it does not (ie non-arcade, non-system ROMs)
+        messSysName = [ "", "", "cdimono1", "advision" ]
+        # For systems with a MAME system name, the type of ROM that needs to be passed on the command line (cart, tape, cdrm, etc)
+        messRomType = [ "", "", "cdrm", "cart" ]
+        
+        # Identify the current system, select MAME or MESS as needed.
+        try:
+            messMode = messSystems.index(system.name)
+        except ValueError:
+            messMode = -1
+        if messMode == -1:
+            commandArray =  [ "/usr/bin/mame/mame" ]
+        else:
+            commandArray =  [ "/usr/bin/mame/mess" ]
+        
         # MAME options used here are explained as it's not always straightforward
         # A lot more options can be configured, just run mame -showusage and have a look
-        commandArray =  [ "/usr/bin/mame/mame" ]
         commandArray += [ "-skip_gameinfo" ]
-        commandArray += [ "-rompath",      romDirname ]
+        if messMode == -1:
+            commandArray += [ "-rompath",      romDirname ]
+        else:
+            commandArray += [ "-rompath",      romDirname + ";/userdata/bios" ]
 
         # MAME various paths we can probably do better
         commandArray += [ "-bgfx_path",    "/usr/bin/mame/bgfx/" ]          # Core bgfx files can be left on ROM filesystem
@@ -113,8 +132,18 @@ class MameGenerator(Generator):
             commandArray += [ "-autorol" ]
 
         # Finally we pass game name
-        commandArray += [ romBasename ]
-
+        # MESS will use the full filename and pass the system & rom type parameters if needed.
+        if messMode == -1:
+            commandArray += [ romBasename ]
+        else:
+            if messSysName[messMode] == "":
+                commandArray += [ romBasename ]
+            else:
+                commandArray += [ messSysName[messMode] ]
+                commandArray += [ "-" + messRomType[messMode] ]
+                commandArray += [ rom ]
+        
+        
         # config file
         config = minidom.Document()
         configFile = "/userdata/system/configs/mame/default.cfg"
@@ -124,7 +153,7 @@ class MameGenerator(Generator):
             except:
                 pass # reinit the file
 
-        MameGenerator.generatePadsConfig(config, playersControllers)
+        MameGenerator.generatePadsConfig(config, playersControllers, system.name)
 
         # save the config file
         #mameXml = open(configFile, "w")
@@ -180,7 +209,7 @@ class MameGenerator(Generator):
             old.unlink()
 
     @staticmethod
-    def generatePadsConfig(config, playersControllers):
+    def generatePadsConfig(config, playersControllers, sysName):
         mappings = {
             "JOYSTICK_UP":    "joystick1up",
             "JOYSTICK_DOWN":  "joystick1down",
@@ -227,7 +256,7 @@ class MameGenerator(Generator):
                 mappings_use["JOYSTICK_DOWN"] = "down"
                 mappings_use["JOYSTICK_LEFT"] = "left"
                 mappings_use["JOYSTICK_RIGHT"] = "right"
-
+                
             for mapping in mappings_use:
                 if mappings_use[mapping] in pad.inputs:
                     xml_input.appendChild(MameGenerator.generatePortElement(config, nplayer, pad.index, mapping, mappings_use[mapping], pad.inputs[mappings_use[mapping]], False))
@@ -235,6 +264,46 @@ class MameGenerator(Generator):
                     rmapping = MameGenerator.reverseMapping(mappings_use[mapping])
                     if rmapping in pad.inputs:
                         xml_input.appendChild(MameGenerator.generatePortElement(config, nplayer, pad.index, mapping, mappings_use[mapping], pad.inputs[rmapping], True))
+                
+            # Special case for CD-i - doesn't use default controls, map special controller
+            # Keep orginal mapping functions for menus etc, create system-specific config file dor CD-i.
+            # Possibly spin this off into another routine if we need to re-use this for other systems with special control configs.
+            if nplayer == 1 and sysName == "cdi":
+                # Open/create CD-i config file
+                config_cdi = minidom.Document()
+                configFile_cdi = "/userdata/system/configs/mame/cdimono1.cfg"
+                if os.path.exists(configFile_cdi):
+                    try:
+                        config_cdi = minidom.parse(configFile_cdi)
+                    except:
+                        pass # reinit the file
+                xml_mameconfig_cdi = MameGenerator.getRoot(config_cdi, "mameconfig")
+                xml_system_cdi = MameGenerator.getSection(config_cdi, xml_mameconfig_cdi, "system")
+                xml_system_cdi.setAttribute("name", "cdimono1")
+                
+                MameGenerator.removeSection(config_cdi, xml_system_cdi, "input")
+                xml_input_cdi = config_cdi.createElement("input")
+                xml_system_cdi.appendChild(xml_input_cdi)
+                
+                xml_input_cdi.appendChild(MameGenerator.generateSpecialPortElement(config_cdi, ':slave_hle:MOUSEBTN', nplayer, pad.index, "P1_BUTTON1", int(pad.inputs["b"].id) + 1, "1", "0"))
+                xml_input_cdi.appendChild(MameGenerator.generateSpecialPortElement(config_cdi, ':slave_hle:MOUSEBTN', nplayer, pad.index, "P1_BUTTON2", int(pad.inputs["y"].id) + 1, "2", "0"))
+                xml_input_cdi.appendChild(MameGenerator.generateIncDecPortElement(config_cdi, ':slave_hle:MOUSEX', nplayer, pad.index, "P1_MOUSE_X", "JOYCODE_{}_YAXIS_RIGHT_SWITCH OR JOYCODE_{}_HAT1RIGHT OR JOYCODE_{}_BUTTON16", "JOYCODE_{}_YAXIS_LEFT_SWITCH OR JOYCODE_{}_HAT1LEFT OR JOYCODE_{}_BUTTON15", "1023", "0", "10"))
+                xml_input_cdi.appendChild(MameGenerator.generateIncDecPortElement(config_cdi, ':slave_hle:MOUSEY', nplayer, pad.index, "P1_MOUSE_Y", "JOYCODE_{}_YAXIS_DOWN_SWITCH OR JOYCODE_{}_HAT1DOWN OR JOYCODE_{}_BUTTON14", "JOYCODE_{}_YAXIS_UP_SWITCH OR JOYCODE_{}_HAT1UP OR JOYCODE_{}_BUTTON13", "1023", "0", "10"))
+                
+                #Hide LCD display
+                MameGenerator.removeSection(config_cdi, xml_system_cdi, "video")
+                xml_video_cdi = config_cdi.createElement("video")                
+                xml_system_cdi.appendChild(xml_video_cdi)
+                
+                xml_screencfg_cdi = config_cdi.createElement("target")
+                xml_screencfg_cdi.setAttribute("index", "0")
+                xml_screencfg_cdi.setAttribute("view", "Main Screen Standard (4:3)")
+                xml_video_cdi.appendChild(xml_screencfg_cdi)
+                
+                # Write CD-i config
+                mameXml_cdi = codecs.open(configFile_cdi, "w", "utf-8")
+                dom_string_cdi = os.linesep.join([s for s in config_cdi.toprettyxml().splitlines() if s.strip()]) # remove ugly empty lines while minicom adds them...
+                mameXml_cdi.write(dom_string_cdi)
             nplayer = nplayer + 1
 
     @staticmethod
@@ -260,6 +329,38 @@ class MameGenerator(Generator):
         xml_newseq.appendChild(value)
         return xml_port
 
+    def generateSpecialPortElement(config, tag, nplayer, padindex, mapping, key, mask, default):
+        xml_port = config.createElement("port")
+        xml_port.setAttribute("tag", tag)
+        xml_port.setAttribute("type", mapping)
+        xml_port.setAttribute("mask", mask)
+        xml_port.setAttribute("defvalue", default)
+        xml_newseq = config.createElement("newseq")
+        xml_newseq.setAttribute("type", "standard")
+        xml_port.appendChild(xml_newseq)
+        value = config.createTextNode("JOYCODE_{}_BUTTON{}".format(padindex + 1, key))
+        xml_newseq.appendChild(value)
+        return xml_port
+
+    def generateIncDecPortElement(config, tag, nplayer, padindex, mapping, inckey, deckey, mask, default, delta):
+        xml_port = config.createElement("port")
+        xml_port.setAttribute("tag", tag)
+        xml_port.setAttribute("type", mapping)
+        xml_port.setAttribute("mask", mask)
+        xml_port.setAttribute("defvalue", default)
+        xml_port.setAttribute("keydelta", delta)
+        xml_newseq_inc = config.createElement("newseq")
+        xml_newseq_inc.setAttribute("type", "increment")
+        xml_port.appendChild(xml_newseq_inc)
+        incvalue = config.createTextNode(inckey.format(padindex + 1, padindex + 1, padindex + 1))
+        xml_newseq_inc.appendChild(incvalue)
+        xml_newseq_dec = config.createElement("newseq")
+        xml_port.appendChild(xml_newseq_dec)
+        xml_newseq_dec.setAttribute("type", "decrement")
+        decvalue = config.createTextNode(deckey.format(padindex + 1, padindex + 1, padindex + 1))
+        xml_newseq_dec.appendChild(decvalue)
+        return xml_port
+
     @staticmethod
     def input2definition(key, input, joycode, reversed):
         if input.type == "button":
@@ -275,13 +376,13 @@ class MameGenerator(Generator):
                 return "JOYCODE_{}_HAT1LEFT".format(joycode)
         elif input.type == "axis":
             if key == "joystick1up" or key == "up":
-                return "JOYCODE_{}_YAXIS_UP_SWITCH OR JOYCODE_{}_HAT1UP".format(joycode, joycode)
+                return "JOYCODE_{}_YAXIS_UP_SWITCH OR JOYCODE_{}_HAT1UP OR JOYCODE_{}_BUTTON13".format(joycode, joycode, joycode)
             if key == "joystick1down" or key == "down":
-                return "JOYCODE_{}_YAXIS_DOWN_SWITCH OR JOYCODE_{}_HAT1DOWN".format(joycode, joycode)
+                return "JOYCODE_{}_YAXIS_DOWN_SWITCH OR JOYCODE_{}_HAT1DOWN OR JOYCODE_{}_BUTTON14".format(joycode, joycode, joycode)
             if key == "joystick1left" or key == "left":
-                return "JOYCODE_{}_YAXIS_LEFT_SWITCH OR JOYCODE_{}_HAT1LEFT".format(joycode, joycode)
+                return "JOYCODE_{}_YAXIS_LEFT_SWITCH OR JOYCODE_{}_HAT1LEFT OR JOYCODE_{}_BUTTON15".format(joycode, joycode, joycode)
             if key == "joystick1right" or key == "right":
-                return "JOYCODE_{}_YAXIS_RIGHT_SWITCH OR JOYCODE_{}_HAT1RIGHT".format(joycode, joycode)
+                return "JOYCODE_{}_YAXIS_RIGHT_SWITCH OR JOYCODE_{}_HAT1RIGHT OR JOYCODE_{}_BUTTON16".format(joycode, joycode, joycode)
             if key == "joystick2up":
                 return "JOYCODE_{}_RYAXIS_NEG_SWITCH OR JOYCODE_{}_BUTTON4".format(joycode, joycode)
             if key == "joystick2down":
