@@ -168,7 +168,7 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
                 retroarchConfig['input_libretro_device_p2'] = system.config['controller2_puae']
             else:
                 retroarchConfig['input_libretro_device_p2'] = '1'
-        else:          
+        else:
             retroarchConfig['input_libretro_device_p1'] = '517'     # CD 32 Pad
 
     ## BlueMSX choices by System
@@ -533,15 +533,17 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
     else:
         retroarchConfig['fps_show'] = 'false'
 
-    # Adaptation for small resolution
+    # Adaptation for small resolution (GPICase)
     if isLowResolution(gameResolution):
+        retroarchConfig['width']  = gameResolution["width"]
+        retroarchConfig['height'] = gameResolution["height"]
+        retroarchConfig['aspect_ratio_index'] = '0'
         retroarchConfig['video_font_size'] = '12'
         retroarchConfig['menu_driver'] = 'rgui'
-        retroarchConfig['width']  = gameResolution["width"]  *2 # on low resolution, higher values for width and height makes a nicer image (640x480 on the gpi case)
-        retroarchConfig['height'] = gameResolution["height"] *2 # default value
-        retroarchConfig['menu_linear_filter'] = 'true'
-        retroarchConfig['rgui_aspect_ratio'] = '0'
-        retroarchConfig['rgui_aspect_ratio_lock'] = '3'
+        retroarchConfig['menu_rgui_transparency'] = 'false'
+        retroarchConfig['menu_widget_scale_auto'] = 'false'
+        retroarchConfig['menu_widget_scale_factor'] = '2.0000'
+        retroarchConfig['menu_widget_scale_factor_windowed'] = '2.0000'
     else:
         retroarchConfig['video_font_size'] = '32'
         # don't force any so that the user can choose
