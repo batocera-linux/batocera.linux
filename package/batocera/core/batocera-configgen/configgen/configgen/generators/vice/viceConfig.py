@@ -42,12 +42,15 @@ def setViceConfig(viceConfigFile, system):
     viceConfig.set(systemCore, "SaveResourcesOnExit",    "1")
     viceConfig.set(systemCore, "SoundDeviceName",        "alsa")
 
-    viceConfig.set(systemCore, "SDLGLAspectMode",        "0")
+    if system.isOptSet('noborder') and system.getOptBoolean('noborder') == True:
+        viceConfig.set(systemCore, "SDLGLAspectMode",        "0")
+        viceConfig.set(systemCore, "VICIIBorderMode",        "3")
+    else:
+        viceConfig.set(systemCore, "SDLGLAspectMode",        "2")
+        viceConfig.set(systemCore, "VICIIBorderMode",        "0")
     viceConfig.set(systemCore, "VICIIFullscreen",        "1")
     viceConfig.set(systemCore, "VICIISDLFullscreenMode", "0")
-    viceConfig.set(systemCore, "VICIIBorderMode",        "3")
     viceConfig.set(systemCore, "WarpMode",               "0")
-    
     viceConfig.set(systemCore, "JoyDevice1",             "4")
     viceConfig.set(systemCore, "JoyDevice2",             "4")
     viceConfig.set(systemCore, "JoyMapFile",  viceController)
