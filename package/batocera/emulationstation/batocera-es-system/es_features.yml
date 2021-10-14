@@ -4214,13 +4214,14 @@ xemu:
             prompt:       SCALING RENDER
             description:  Choose the scaling render multiplier
             choices:
-                "x2":   2
-                "x3":   3
-                "x4":   4
-                "x5":   5
-                "x6":   6
-                "x7":   7
-                "x8":   8
+                "x1 (640x480)":     1
+                "x2 (1280x960)":    2
+                "x3 (1920x1440)":   3
+                "x4 (2560x1920)":   4
+                "x5 (3200x2400)":   5
+                "x6 (3840x2880)":   6
+                "x7 (4480x3360)":   7
+                "x8 (5120x3840)":   8
         xemu_bootanim:
             prompt:      SKIP BOOT ANIMATION
             description: Skip the on-boot Xbox animation
