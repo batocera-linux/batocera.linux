@@ -58,6 +58,7 @@ from generators.model2emu.model2emuGenerator import Model2EmuGenerator
 from generators.sonicretro.sonicretroGenerator import SonicRetroGenerator
 from generators.gsplus.gsplusGenerator import GSplusGenerator
 from generators.fba2x.fba2xGenerator import Fba2xGenerator
+from generators.yuzu.yuzuGenerator import YuzuGenerator
 #from generators.play.playGenerator import PlayGenerator
 
 import controllersConfig as controllers
@@ -123,6 +124,7 @@ generators = {
     'soniccd': SonicRetroGenerator(),
     'gsplus': GSplusGenerator(),
     'fba2x': Fba2xGenerator(),
+    'yuzu': YuzuGenerator(),
     #'play': PlayGenerator(),
 }
 
