@@ -693,6 +693,7 @@ mame:
       imame4all:    { requireAnyOf: [BR2_PACKAGE_LIBRETRO_IMAME]          }
       mame078plus:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME2003_PLUS]  }
       mame0139:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME2010]       }
+      mame0174:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME2016]       }
       mame:         { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME]           }
     mame:
       mame:         { requireAnyOf: [BR2_PACKAGE_MAME]                    }
@@ -703,6 +704,7 @@ mame:
       - latest mame core (0.228 currently)
       - imame4all based on 0.37b5 romset
       - mame2010 based on 0.139 romset
+      - mame2016 based on 0.174 romset
 
     Special files for mame2003 core:
     - Add your samples files in /userdata/bios/mame2003/samples/
@@ -714,6 +716,7 @@ mame:
           - le dernier core mame  (0.228 à l'heure actuelle)
           - imame4all utilisant le romset 0.37b5
           - mame2010 utilisant le romset 0.139
+          - mame2016 utilisant le romset 0.174
 
     Fichiers spéciaux pour le core mame2003+ :
     - Ajoutez vos fichiers samples dans le répertoire /userdata/bios/mame2003/samples/
@@ -733,6 +736,7 @@ neogeo:
       imame4all:    { requireAnyOf: [BR2_PACKAGE_LIBRETRO_IMAME]          }
       mame078plus:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME2003_PLUS]  }
       mame0139:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME2010]       }
+      mame0174:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME2016]       }
       mame:         { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME]           }
     mame:
       mame:         { requireAnyOf: [BR2_PACKAGE_MAME]                    }
