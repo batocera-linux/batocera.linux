@@ -96,10 +96,12 @@ case ${1,,} in
 
         ES_PID=$(check_esrun)
         if [[ "${1,,}" == "--shutdown" && -n $ES_PID ]]; then
+            touch "/tmp/shutdown.please"
             kill $ES_PID
             smart_wait 0 $ES_PID
             shutdown -h now
         elif [[ "${1,,}" == "--reboot" && -n $ES_PID ]]; then
+            touch "/tmp/reboot.please"
             kill $ES_PID
             smart_wait 0 $ES_PID
             reboot
@@ -115,8 +117,8 @@ case ${1,,} in
         wait $!
         exitcode=$?
         [[ $exitcode -eq 0 ]] && /etc/init.d/S31emulationstation start
-        [[ $exitcode -eq 10 ]] && shutdown -r now
-        [[ $exitcode -eq 11 ]] && shutdown -h now
+        [[ $exitcode -eq 10 ]] && touch "/tmp/reboot.please"   && shutdown -r now
+        [[ $exitcode -eq 11 ]] && touch "/tmp/shutdown.please" && shutdown -h now
     ;;
 
     --version|--arch|--update)
