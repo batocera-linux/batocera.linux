@@ -940,8 +940,8 @@ libretro:
       features: [autosave, latency_reduction, padtokeyboard]
       cfeatures:
             fuse_hide_border:
-                prompt:      ZOOM (HIDES BORDER)
-                description: Making the game occupy the entire screen area
+                prompt:      ZOOM (HIDE BORDER)
+                description: Make the game fill the entire screen area
                 choices:
                     "Off":  disabled
                     "On":   enabled
@@ -3960,6 +3960,13 @@ cgenius:
 
 vice:
   features: [ratio, padtokeyboard]
+  cfeatures:
+        noborder:
+            prompt:      ZOOM (HIDE BORDERS)
+            description: Display only 200 scanlines, effectively removing borders on many games
+            choices:
+                "NO (DEFAULT)": 0
+                "YES":          1
 
 tsugaru:
   features: [pad2keyboard]
