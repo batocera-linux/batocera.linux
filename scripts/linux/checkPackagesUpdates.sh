@@ -51,6 +51,7 @@ PACKAGES_LIBRETRO="	libretro-81
 					libretro-mame
 					libretro-mame2003-plus
 					libretro-mame2010
+                    libretro-mame2016
 					libretro-melonds
 					libretro-mgba
 					libretro-mrboom
