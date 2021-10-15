@@ -260,6 +260,7 @@ class DuckstationGenerator(Generator):
         settings.set("Hotkeys", "SelectNextSaveStateSlot",     "Keyboard/F4")
         settings.set("Hotkeys", "Screenshot",                  "Keyboard/F10")
         settings.set("Hotkeys", "Rewind",                      "Keyboard/F5")
+        settings.set("Hotkeys", "OpenQuickMenu",               "Keyboard/F7")
         # Show FPS (Debug)
         if system.isOptSet("showFPS") and system.getOptBoolean("showFPS"):
             settings.set("Display", "ShowFPS",        "true")
