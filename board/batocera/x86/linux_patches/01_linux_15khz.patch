@@ -1,6 +1,6 @@
-diff -Naur -x '*.rej' -x '*.orig' -x build -x awk_x86_64_defconfig linux-5.12_stock/drivers/gpu/drm/drm_modes.c linux-5.12_15kHz/drivers/gpu/drm/drm_modes.c
---- linux-5.12_stock/drivers/gpu/drm/drm_modes.c	2021-04-25 22:49:08.000000000 +0200
-+++ linux-5.12_15kHz/drivers/gpu/drm/drm_modes.c	2021-04-25 23:02:12.099863176 +0200
+diff -Naur -x '*.rej' -x '*.orig' -x build -x awk_x86_64_defconfig linux-5.14_stock/drivers/gpu/drm/drm_modes.c linux-5.14_15kHz/drivers/gpu/drm/drm_modes.c
+--- linux-5.14_stock/drivers/gpu/drm/drm_modes.c	2021-08-30 00:04:50.000000000 +0200
++++ linux-5.14_15kHz/drivers/gpu/drm/drm_modes.c	2021-09-01 01:14:53.653622968 +0200
 @@ -44,6 +44,7 @@
  #include <drm/drm_print.h>
  
@@ -9,7 +9,7 @@ diff -Naur -x '*.rej' -x '*.orig' -x build -x awk_x86_64_defconfig linux-5.12_st
  
  /**
   * drm_mode_debug_printmodeline - print a mode to dmesg
-@@ -1481,7 +1482,7 @@
+@@ -1477,7 +1478,7 @@
  					   struct drm_cmdline_mode *mode)
  {
  	const char *str_start = str;
@@ -18,7 +18,7 @@ diff -Naur -x '*.rej' -x '*.orig' -x build -x awk_x86_64_defconfig linux-5.12_st
  	int xres = 0, yres = 0;
  	int remaining, i;
  	char *end_ptr;
-@@ -1511,6 +1512,12 @@
+@@ -1507,6 +1508,12 @@
  		case 'R':
  			rb = true;
  			break;
@@ -31,7 +31,7 @@ diff -Naur -x '*.rej' -x '*.orig' -x build -x awk_x86_64_defconfig linux-5.12_st
  		default:
  			/*
  			 * Try to pass that to our extras parsing
-@@ -1535,6 +1542,7 @@
+@@ -1531,6 +1538,7 @@
  	mode->yres = yres;
  	mode->cvt = cvt;
  	mode->rb = rb;
@@ -39,9 +39,9 @@ diff -Naur -x '*.rej' -x '*.orig' -x build -x awk_x86_64_defconfig linux-5.12_st
  
  	return 0;
  }
-@@ -1864,7 +1872,11 @@
- {
- 	struct drm_display_mode *mode;
+@@ -1863,7 +1871,11 @@
+ 	if (cmd->xres == 0 || cmd->yres == 0)
+ 		return NULL;
  
 -	if (cmd->cvt)
 +	if (cmd->low_dotclock)
@@ -52,9 +52,9 @@ diff -Naur -x '*.rej' -x '*.orig' -x build -x awk_x86_64_defconfig linux-5.12_st
  		mode = drm_cvt_mode(dev,
  				    cmd->xres, cmd->yres,
  				    cmd->refresh_specified ? cmd->refresh : 60,
-diff -Naur -x '*.rej' -x '*.orig' -x build -x awk_x86_64_defconfig linux-5.12_stock/drivers/gpu/drm/drm_modes_low_dotclock.c linux-5.12_15kHz/drivers/gpu/drm/drm_modes_low_dotclock.c
---- linux-5.12_stock/drivers/gpu/drm/drm_modes_low_dotclock.c	1970-01-01 01:00:00.000000000 +0100
-+++ linux-5.12_15kHz/drivers/gpu/drm/drm_modes_low_dotclock.c	2021-04-25 23:02:12.311860118 +0200
+diff -Naur -x '*.rej' -x '*.orig' -x build -x awk_x86_64_defconfig linux-5.14_stock/drivers/gpu/drm/drm_modes_low_dotclock.c linux-5.14_15kHz/drivers/gpu/drm/drm_modes_low_dotclock.c
+--- linux-5.14_stock/drivers/gpu/drm/drm_modes_low_dotclock.c	1970-01-01 01:00:00.000000000 +0100
++++ linux-5.14_15kHz/drivers/gpu/drm/drm_modes_low_dotclock.c	2021-09-01 01:14:53.659622881 +0200
 @@ -0,0 +1,136 @@
 +/*
 + * Permission is hereby granted, free of charge, to any person obtaining a
@@ -192,9 +192,9 @@ diff -Naur -x '*.rej' -x '*.orig' -x build -x awk_x86_64_defconfig linux-5.12_st
 +	return NULL;
 +}
 +EXPORT_SYMBOL(drm_mode_low_dotclock_res);
-diff -Naur -x '*.rej' -x '*.orig' -x build -x awk_x86_64_defconfig linux-5.12_stock/drivers/gpu/drm/drm_modes_low_dotclock.h linux-5.12_15kHz/drivers/gpu/drm/drm_modes_low_dotclock.h
---- linux-5.12_stock/drivers/gpu/drm/drm_modes_low_dotclock.h	1970-01-01 01:00:00.000000000 +0100
-+++ linux-5.12_15kHz/drivers/gpu/drm/drm_modes_low_dotclock.h	2021-04-25 23:02:12.313860089 +0200
+diff -Naur -x '*.rej' -x '*.orig' -x build -x awk_x86_64_defconfig linux-5.14_stock/drivers/gpu/drm/drm_modes_low_dotclock.h linux-5.14_15kHz/drivers/gpu/drm/drm_modes_low_dotclock.h
+--- linux-5.14_stock/drivers/gpu/drm/drm_modes_low_dotclock.h	1970-01-01 01:00:00.000000000 +0100
++++ linux-5.14_15kHz/drivers/gpu/drm/drm_modes_low_dotclock.h	2021-09-01 01:14:53.661622852 +0200
 @@ -0,0 +1,23 @@
 +/*
 + * Permission is hereby granted, free of charge, to any person obtaining a
@@ -219,9 +219,9 @@ diff -Naur -x '*.rej' -x '*.orig' -x build -x awk_x86_64_defconfig linux-5.12_st
 +
 +struct drm_display_mode *drm_mode_low_dotclock_res(struct drm_device *dev,
 +				int hsize, int vsize, bool interlace);
-diff -Naur -x '*.rej' -x '*.orig' -x build -x awk_x86_64_defconfig linux-5.12_stock/drivers/gpu/drm/drm_probe_helper.c linux-5.12_15kHz/drivers/gpu/drm/drm_probe_helper.c
---- linux-5.12_stock/drivers/gpu/drm/drm_probe_helper.c	2021-04-25 22:49:08.000000000 +0200
-+++ linux-5.12_15kHz/drivers/gpu/drm/drm_probe_helper.c	2021-04-25 23:04:47.330624386 +0200
+diff -Naur -x '*.rej' -x '*.orig' -x build -x awk_x86_64_defconfig linux-5.14_stock/drivers/gpu/drm/drm_probe_helper.c linux-5.14_15kHz/drivers/gpu/drm/drm_probe_helper.c
+--- linux-5.14_stock/drivers/gpu/drm/drm_probe_helper.c	2021-08-30 00:04:50.000000000 +0200
++++ linux-5.14_15kHz/drivers/gpu/drm/drm_probe_helper.c	2021-09-01 01:14:53.664622808 +0200
 @@ -418,6 +418,7 @@
  {
  	struct drm_device *dev = connector->dev;
@@ -285,9 +285,9 @@ diff -Naur -x '*.rej' -x '*.orig' -x build -x awk_x86_64_defconfig linux-5.12_st
  	}
  
  prune:
-diff -Naur -x '*.rej' -x '*.orig' -x build -x awk_x86_64_defconfig linux-5.12_stock/drivers/gpu/drm/Makefile linux-5.12_15kHz/drivers/gpu/drm/Makefile
---- linux-5.12_stock/drivers/gpu/drm/Makefile	2021-04-25 22:49:08.000000000 +0200
-+++ linux-5.12_15kHz/drivers/gpu/drm/Makefile	2021-04-25 23:02:12.324859930 +0200
+diff -Naur -x '*.rej' -x '*.orig' -x build -x awk_x86_64_defconfig linux-5.14_stock/drivers/gpu/drm/Makefile linux-5.14_15kHz/drivers/gpu/drm/Makefile
+--- linux-5.14_stock/drivers/gpu/drm/Makefile	2021-08-30 00:04:50.000000000 +0200
++++ linux-5.14_15kHz/drivers/gpu/drm/Makefile	2021-09-01 01:14:53.668622750 +0200
 @@ -18,7 +18,7 @@
  		drm_dumb_buffers.o drm_mode_config.o drm_vblank.o \
  		drm_syncobj.o drm_lease.o drm_writeback.o drm_client.o \
@@ -295,11 +295,11 @@ diff -Naur -x '*.rej' -x '*.orig' -x build -x awk_x86_64_defconfig linux-5.12_st
 -		drm_managed.o drm_vblank_work.o
 +		drm_managed.o drm_vblank_work.o drm_modes_low_dotclock.o
  
- drm-$(CONFIG_DRM_LEGACY) += drm_bufs.o drm_context.o drm_dma.o drm_legacy_misc.o drm_lock.o \
- 		drm_memory.o drm_scatter.o drm_vm.o
-diff -Naur -x '*.rej' -x '*.orig' -x build -x awk_x86_64_defconfig linux-5.12_stock/include/drm/drm_connector.h linux-5.12_15kHz/include/drm/drm_connector.h
---- linux-5.12_stock/include/drm/drm_connector.h	2021-04-25 22:49:08.000000000 +0200
-+++ linux-5.12_15kHz/include/drm/drm_connector.h	2021-04-25 23:02:12.329859858 +0200
+ drm-$(CONFIG_DRM_LEGACY) += drm_agpsupport.o drm_bufs.o drm_context.o drm_dma.o \
+ 			    drm_legacy_misc.o drm_lock.o drm_memory.o drm_scatter.o \
+diff -Naur -x '*.rej' -x '*.orig' -x build -x awk_x86_64_defconfig linux-5.14_stock/include/drm/drm_connector.h linux-5.14_15kHz/include/drm/drm_connector.h
+--- linux-5.14_stock/include/drm/drm_connector.h	2021-08-30 00:04:50.000000000 +0200
++++ linux-5.14_15kHz/include/drm/drm_connector.h	2021-09-01 01:14:53.675622649 +0200
 @@ -1206,6 +1206,13 @@
  	 * @tv_margins: TV margins to apply to the mode.
  	 */
