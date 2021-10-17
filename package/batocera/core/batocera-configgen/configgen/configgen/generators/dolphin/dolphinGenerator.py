@@ -165,6 +165,30 @@ class DolphinGenerator(Generator):
         else:
             dolphinGFXSettings.set("Settings", "wideScreenHack", '"False"')
 
+        # Ubershaders (asynchronous with shader caching before boot enabled)
+#        if system.isOptSet('ubershaders') and system.config["ubershaders"] != "asynchronous_ubershader":
+#            if system.config["ubershaders"] == "synchronous_ubershader":
+#                dolphinGFXSettings.set("Settings", "ShaderCompilationMode", '"1"')
+#                dolphinGFXSettings.set("Settings", "WaitForShadersBeforeStarting", '"False"')
+#            elif system.config["ubershaders"] == "synchronous":
+#                dolphinGFXSettings.set("Settings", "ShaderCompilationMode", '"0"')
+#                dolphinGFXSettings.set("Settings", "WaitForShadersBeforeStarting", '"False"')
+#        else:
+#            dolphinGFXSettings.set("Settings", "ShaderCompilationMode", '"2"')
+#            dolphinGFXSettings.set("Settings", "WaitForShadersBeforeStarting", '"True"')
+
+        # Ubershaders
+        if system.isOptSet('ubershaders') and system.config["ubershaders"] != "synchronous_ubershader":
+            if system.config["ubershaders"] == "asynchronous_ubershader":
+                dolphinGFXSettings.set("Settings", "ShaderCompilationMode", '"2"')
+                dolphinGFXSettings.set("Settings", "WaitForShadersBeforeStarting", '"True"')
+            elif system.config["ubershaders"] == "synchronous":
+                dolphinGFXSettings.set("Settings", "ShaderCompilationMode", '"0"')
+                dolphinGFXSettings.set("Settings", "WaitForShadersBeforeStarting", '"False"')
+        else:
+            dolphinGFXSettings.set("Settings", "ShaderCompilationMode", '"1"')
+            dolphinGFXSettings.set("Settings", "WaitForShadersBeforeStarting", '"False"')
+
         # Various performance hacks - Default Off
         if system.isOptSet('perf_hacks') and system.getOptBoolean('perf_hacks'):
             dolphinGFXSettings.set("Hacks", "BBoxEnable", '"False"')

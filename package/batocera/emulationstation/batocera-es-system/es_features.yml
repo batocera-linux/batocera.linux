@@ -3187,9 +3187,16 @@ dolphin:
             choices:
                 "OpenGL": OGL
                 "Vulkan": Vulkan
+        ubershaders:
+            prompt:      UBERSHADERS
+            description: Improve performance with Ubershaders (may not work on all hardware). Asynchronous is preferred, synchronous is more compatible.
+            choices:
+                "Ubershaders with asynchronous": asynchronous_ubershader
+                "Ubershaders with synchronous":  synchronous_ubershader
+                "No Ubershaders":                synchronous
         perf_hacks:
             prompt:      PERFORMANCE HACKS
-            description: Increase emulator performance
+            description: Increase emulator performance, at the cost of accuracy/stability
             choices:
                 "Off": 0
                 "On":  1
