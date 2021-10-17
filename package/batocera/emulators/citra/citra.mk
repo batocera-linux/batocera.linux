@@ -25,8 +25,7 @@ CITRA_CONF_OPTS += -DENABLE_QT=OFF
 else
 # commit 55ec7031ccb2943c2c507620cf4613a86d160670 is reverted by patch, something wrong in it for perfs (patch 004-perf1-revert-core.patch)
 # patch 003-perf1.patch while NO_CAST_FROM_ASCII is causing perfs issues too
-CITRA_VERSION = 6183b5d76c30f62c09fc0940838f32458addfe28
-
+CITRA_VERSION = 90192124cc644248c5b192e08e96a6bbbe7e0eae
 CITRA_SITE = https://github.com/citra-emu/citra.git
 CITRA_CONF_OPTS += -DENABLE_QT=ON
 CITRA_CONF_OPTS += -DENABLE_QT_TRANSLATION=ON
