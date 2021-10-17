@@ -933,7 +933,7 @@ libretro:
                             "Horizontal": horizontal
                             "Vertical":   vertical
     freeintv:
-      features: [latency_reduction, padtokeyboard, autosave]
+      features: [latency_reduction, padtokeyboard, autosave, cheevos]
     freechaf:
       features: [rewind]
     fuse:
@@ -1781,7 +1781,7 @@ libretro:
     nxengine:
       features: [latency_reduction]
     o2em:
-      features: [rewind, autosave, latency_reduction]
+      features: [rewind, autosave, latency_reduction, cheevos]
       cfeatures:
             o2em_bios:
                 prompt:      EMULATED HARDWARE
@@ -1971,7 +1971,7 @@ libretro:
                     "PCE Joypad": 1
                     "PCE Mouse":  2
     pcfx:
-      features: [netplay, rewind, autosave, latency_reduction]
+      features: [netplay, rewind, autosave, latency_reduction, cheevos]
       cfeatures:
             pcfx_nospritelimit:
                 prompt:      REDUCE SPRITE FLICKERING
@@ -2140,7 +2140,7 @@ libretro:
                     "7 Frames":                       7
                     "8 Frames":                       8
     ppsspp:
-      features: [rewind, autosave, latency_reduction]
+      features: [rewind, autosave, latency_reduction, cheevos]
     prboom:
       features: [rewind, autosave, latency_reduction]
       cfeatures:
