@@ -1,4 +1,7 @@
 202x/xx/xx - batocera.linux 33
+        * add: Support for Beeling GT-KING "https://www.bee-link.com/products/beelink-gt-king-wifi6"
+        * add: Support for Beeling GT-KING-PRO "https://www.bee-link.com/products/beelink-gt-king"
+        * add: Support for Raxda Zero "https://wiki.radxa.com/Zero"
         * new language : hebrew
         * add: .gbc2 is now an additional acceptable extension for both GB2Player and GBC2Player dual-rom playlists
         * add: FSR & DLSS support for Wine (x86_64)
@@ -24,7 +27,6 @@
         * bump: Xemu
 
 2021/09/30 - batocera.linux 32
-        * add: Support for Raxda Zero "https://wiki.radxa.com/Zero"
         * warning: rpi3 is now running in 64-bit mode.
                    When upgrading from v31 or earlier to v32 on rpi3, you need to change the config.txt to the 64-bit one:
                      1. Upgrade (at this step, batocera doesn't boot anymore)
