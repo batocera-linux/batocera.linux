@@ -1,0 +1,31 @@
+diff --git a/Makefile.libretro b/Makefile.libretro
+index d0ebcd7..aff400f 100644
+--- a/Makefile.libretro
++++ b/Makefile.libretro
+@@ -65,6 +65,26 @@ ifneq (,$(findstring unix,$(platform)))
+ 	fpic := -fPIC
+ 	SHARED := -shared -Wl,--no-undefined -Wl,--version-script=link.T
+ 	FLAGS += -D__LINUX__
++	
++else ifneq (,$(findstring rpi,$(platform)))
++	TARGET := $(TARGET_NAME)_libretro.so
++	fpic := -fPIC
++	SHARED := -shared -Wl,--no-undefined -Wl,--version-script=link.T
++	arch = arm
++	
++	ifneq (,$(findstring rpi1,$(platform)))
++		CPU_FLAGS += -marm -mcpu=arm1176jzf-s -mfpu=vfp -mfloat-abi=hard
++	else ifneq (,$(findstring rpi2,$(platform)))
++		CPU_FLAGS += -marm -mcpu=cortex-a7 -mfpu=neon-vfpv4 -mfloat-abi=hard
++	else ifneq (,$(findstring rpi3,$(platform)))
++		ifneq (,$(findstring rpi3_64,$(platform)))
++            CPU_FLAGS += -mcpu=cortex-a53 -mtune=cortex-a53
++		else
++			CPU_FLAGS += -marm -mcpu=cortex-a53 -mfpu=neon-fp-armv8 -mfloat-abi=hard
++		endif
++	else ifneq (,$(findstring rpi4,$(platform)))
++         CPU_FLAGS += -mcpu=cortex-a72 -mtune=cortex-a72
++	endif
+ 
+ # OS X
+ else ifeq ($(platform), osx)
