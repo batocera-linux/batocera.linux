@@ -25,7 +25,7 @@ define PLAY_INSTALL_TARGET_CMDS
 	mkdir -p $(TARGET_DIR)/usr/lib
 
 	$(INSTALL) -D $(@D)/Source/ui_qt/Play \
-		$(TARGET_DIR)/usr/bin/play
+		$(TARGET_DIR)/usr/bin/play-emu
 	$(INSTALL) -D $(@D)/Source/ui_qt/Source/libchdr/libchdr.so \
 		$(TARGET_DIR)/usr/lib/libchdr.so
 	$(INSTALL) -D $(@D)/Source/ui_qt/Source/libchdr/libchdr.so.0.1 \
@@ -49,7 +49,7 @@ define PLAY_INSTALL_TARGET_CMDS
 
 	# evmap config
 	mkdir -p $(TARGET_DIR)/usr/share/evmapy
-	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/play/play.keys $(TARGET_DIR)/usr/share/evmapy
+	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/play/ps2.play.keys $(TARGET_DIR)/usr/share/evmapy
 endef
 
 $(eval $(cmake-package))
