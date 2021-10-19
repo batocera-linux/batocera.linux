@@ -11,11 +11,11 @@ diff --git a/arch/arm64/boot/dts/amlogic/meson-gx.dtsi b/arch/arm64/boot/dts/aml
 index 2ac6eaa451cf..d90a7e376a62 100644
 --- a/arch/arm64/boot/dts/amlogic/meson-gx.dtsi
 +++ b/arch/arm64/boot/dts/amlogic/meson-gx.dtsi
-@@ -47,7 +47,7 @@ secmon_reserved_alt: secmon@5000000 {
+@@ -46,7 +46,7 @@ secmon_reserved_alt: secmon@5000000 {
  		linux,cma {
  			compatible = "shared-dma-pool";
  			reusable;
--			size = <0x0 0x30000000>;
+-			size = <0x0 0x10000000>;
 +			size = <0x0 0x38000000>;
  			alignment = <0x0 0x400000>;
  			linux,cma-default;
