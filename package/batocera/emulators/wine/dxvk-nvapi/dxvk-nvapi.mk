@@ -10,7 +10,7 @@ DXVK_NVAPI_SITE = https://github.com/jp7677/dxvk-nvapi/releases/download/v$(DXVK
 DXVK_NVAPI_LICENSE = zlib/libpng
 
 define DXVK_NVAPI_EXTRACT_CMDS
-	mkdir -p $(@D)/target && cd $(@D)/target && tar xf $(DL_DIR)/$(DXVK_NVAPI_DL_SUBDIR)/$(DXVK_NVAPI_SOURCE)
+	mkdir -p $(@D)/target && cd $(@D)/target && tar xfo $(DL_DIR)/$(DXVK_NVAPI_DL_SUBDIR)/$(DXVK_NVAPI_SOURCE)
 endef
 
 define DXVK_NVAPI_INSTALL_TARGET_CMDS

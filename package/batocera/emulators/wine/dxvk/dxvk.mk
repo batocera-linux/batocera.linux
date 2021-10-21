@@ -10,7 +10,7 @@ DXVK_SITE = https://github.com/doitsujin/dxvk/releases/download/v$(DXVK_VERSION)
 DXVK_LICENSE = zlib/libpng
 
 define DXVK_EXTRACT_CMDS
-	mkdir -p $(@D)/target && cd $(@D)/target && tar xf $(DL_DIR)/$(DXVK_DL_SUBDIR)/$(DXVK_SOURCE)
+	mkdir -p $(@D)/target && cd $(@D)/target && tar xfo $(DL_DIR)/$(DXVK_DL_SUBDIR)/$(DXVK_SOURCE)
 endef
 
 define DXVK_INSTALL_TARGET_CMDS
