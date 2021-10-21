@@ -232,6 +232,12 @@ class DolphinGenerator(Generator):
         else:
             dolphinGFXSettings.set("Settings", "MSAA", '"0"')
 
+        # Anti aliasing mode
+        if system.isOptSet('use_ssaa') and system.getOptBoolean('use_ssaa'):
+            dolphinGFXSettings.set("Settings", "SSAA", '"True"')
+        else:
+            dolphinGFXSettings.set("Settings", "SSAA", '"False"')
+
         # Save gfx.ini
         with open(batoceraFiles.dolphinGfxIni, 'w') as configfile:
             dolphinGFXSettings.write(configfile)
