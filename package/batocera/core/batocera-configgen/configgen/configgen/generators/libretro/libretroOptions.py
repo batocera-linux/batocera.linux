@@ -101,10 +101,45 @@ def generateCoreSettings(coreSettings, system, rom):
         coreSettings.save('vice_datasette_hotkeys', '"enabled"')
         # Not Read 'vicerc'
         coreSettings.save('vice_read_vicerc',       '"disabled"')
-        # Makes [2nd Fire] press [Up]
-        coreSettings.save('vice_retropad_options',  '"jump"')
         # Select Joystick Type
         coreSettings.save('vice_Controller',        '"joystick"')
+        # Controller options for c64 are in libretroControllers.py
+        c64_mapping = { 'a': "RETROK_SPACE",
+                'aspect_ratio_toggle': "---",
+                'b': "JOYSTICK_FIRE",
+                'datasette_forward': "RETROK_RIGHT",
+                'datasette_reset': "---",
+                'datasette_rewind': "RETROK_LEFT",
+                'datasette_start': "RETROK_UP",
+                'datasette_stop': "RETROK_DOWN",
+                'datasette_toggle_hotkeys': "---",
+                'joyport_switch': "RETROK_F10",
+                'l': "RETROK_ESCAPE",
+                'l2': "RETROK_F11",
+                'l3': "SWITCH_JOYPORT",
+                'ld': "---",
+                'll': "---",
+                'lr': "---",
+                'lu': "---",
+                'r': "RETROK_PAGEUP",
+                'r2': "RETROK_LSHIFT",
+                'r3': "RETROK_F12",
+                'rd': "RETROK_F7",
+                'reset': "---",
+                'rl': "RETROK_F3",
+                'rr': "RETROK_F5",
+                'ru': "RETROK_F1",
+                'select': "TOGGLE_VKBD",
+                'start': "RETROK_RETURN",
+                'statusbar': "RETROK_F9",
+                'vkbd': "---",
+                'warp_mode': "RETROK_F11",
+                'x': "RETROK_n",
+                'y': "RETROK_y",
+                'zoom_mode_toggle': "RETROK_F12"}
+        for key in c64_mapping:
+            coreSettings.save('vice_mapper_' + key, c64_mapping[key])
+
         # Model type
         if system.isOptSet('c64_model'):
             coreSettings.save('vice_c64_model', '"' + system.config['c64_model'] + '"')
