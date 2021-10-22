@@ -1,0 +1,37 @@
+diff --git a/Makefile b/Makefile
+index 184e64d..7cba4ff 100644
+--- a/Makefile
++++ b/Makefile
+@@ -80,6 +80,32 @@ ifeq ($(platform), unix)
+ 	SHARED := -shared -Wl,--no-as-needed,--no-undefined
+ 	LUA_SYSCFLAGS := -DLUA_USE_POSIX
+ 	LDFLAGS += -Wl,-E
++
++# Raspberry Pi
++else ifneq (,$(findstring rpi,$(platform)))
++	TARGET := $(TARGET_NAME)_libretro.so
++	fpic := -fPIC
++	SHARED := -shared -Wl,--no-as-needed,--no-undefined
++	LUA_SYSCFLAGS := -DLUA_USE_POSIX
++	LDFLAGS += -Wl,-E
++	CFLAGS += -DARM
++
++	ifneq (,$(findstring rpi1,$(platform)))
++    	CFLAGS += -marm -mcpu=arm1176jzf-s -mfloat-abi=hard
++	else ifneq (,$(findstring rpi2,$(platform)))
++    	CFLAGS += -marm -mcpu=cortex-a7 -mfpu=neon-vfpv4 -mfloat-abi=hard
++		HAVE_NEON = 1
++	else ifneq (,$(findstring rpi3,$(platform)))
++		ifneq (,$(findstring rpi3_64,$(platform)))
++           CFLAGS += -mcpu=cortex-a53 -mtune=cortex-a53
++		else
++			CFLAGS += -marm -mcpu=cortex-a53 -mfpu=neon-fp-armv8 -mfloat-abi=hard
++		endif
++		HAVE_NEON = 1
++	else ifneq (,$(findstring rpi4,$(platform)))
++         CFLAGS += -mcpu=cortex-a72 -mtune=cortex-a72
++		 HAVE_NEON = 1
++	endif
+ else ifeq ($(platform), linux-portable)
+ 	TARGET := $(TARGET_NAME)_libretro.so
+ 	fpic := -fPIC -nostdlib
