@@ -18,7 +18,7 @@ define SDLPOP_INSTALL_TARGET_CMDS
 	ln -sf /userdata/system/configs/sdlpop/SDLPoP.ini $(TARGET_DIR)/usr/share/sdlpop/SDLPoP.ini
 	ln -sf /userdata/system/configs/sdlpop/SDLPoP.cfg $(TARGET_DIR)/usr/share/sdlpop/SDLPoP.cfg
 	ln -sf /userdata/screenshots $(TARGET_DIR)/usr/share/sdlpop/screenshots
-	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/sdlpop/sdlpop.keys $(TARGET_DIR)/usr/share/evmapy
+	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/ports/sdlpop/sdlpop.keys $(TARGET_DIR)/usr/share/evmapy
 endef
 
 $(eval $(cmake-package))

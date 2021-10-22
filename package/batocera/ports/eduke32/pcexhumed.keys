@@ -1,0 +1,97 @@
+{
+    "actions_player1": [
+        {
+            "trigger": [
+                "hotkey",
+                "start"
+            ],
+            "type": "exec",
+            "target": "batocera-es-swissknife --emukill"
+        },
+        {
+            "trigger": "up",
+            "type": "key",
+            "target": "KEY_W"
+        },
+        {
+            "trigger": "down",
+            "type": "key",
+            "target": "KEY_S"
+        },
+        {
+            "trigger": "left",
+            "type": "key",
+            "target": "KEY_A"
+        },
+        {
+            "trigger": "right",
+            "type": "key",
+            "target": "KEY_D"
+        },
+        {
+            "trigger": "start",
+            "type": "key",
+            "target": "KEY_ENTER"
+        },
+        {
+            "trigger": "select",
+            "type": "key",
+            "target": "KEY_TAB"
+        },
+        {
+            "trigger": "a",
+            "type": "key",
+            "target": "KEY_LEFTCTRL"
+        },
+        {
+            "trigger": "b",
+            "type": "key",
+            "target": "KEY_RIGHTCTRL"
+        },
+        {
+            "trigger": "x",
+            "type": "key",
+            "target": "KEY_SPACE"
+        },
+        {
+            "trigger": "pagedown",
+            "type": "key",
+            "target": "KEY_APOSTROPHE"
+        },
+        {
+            "trigger": "l2",
+            "type": "key",
+            "target": "KEY_BACKSLASH"
+        },
+        {
+            "trigger": "r2",
+            "type": "key",
+            "target": "KEY_COMMA"
+        },
+        {
+            "trigger": "joystick1up",
+            "type": "key",
+            "target": "KEY_UP"
+        },
+        {
+            "trigger": "joystick1down",
+            "type": "key",
+            "target": "KEY_DOWN"
+        },
+        {
+            "trigger": "joystick1left",
+            "type": "key",
+            "target": "KEY_LEFT"
+        },
+        {
+            "trigger": "joystick1right",
+            "type": "key",
+            "target": "KEY_RIGHT"
+        },
+        {
+            "trigger": "pageup",
+            "type": "key",
+            "target": "KEY_ESC"
+        }
+    ]
+}

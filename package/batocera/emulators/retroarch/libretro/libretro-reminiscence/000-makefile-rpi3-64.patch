@@ -1,0 +1,16 @@
+diff -Naur REminiscence-b065c21af69e432f578524839c192a4061773d6e.orig/Makefile REminiscence-b065c21af69e432f578524839c192a4061773d6e/Makefile
+--- REminiscence-b065c21af69e432f578524839c192a4061773d6e.orig/Makefile	2021-05-12 15:53:26.000000000 +0100
++++ REminiscence-b065c21af69e432f578524839c192a4061773d6e/Makefile	2021-06-06 15:29:27.481912519 +0100
+@@ -69,7 +69,11 @@
+       else ifneq (,$(findstring rpi2,$(platform)))
+          FLAGS += -DARM -marm -mcpu=cortex-a7 -mfpu=neon-vfpv4 -mfloat-abi=hard
+       else ifneq (,$(findstring rpi3,$(platform)))
+-         FLAGS += -DARM -marm -mcpu=cortex-a53 -mfpu=neon-fp-armv8 -mfloat-abi=hard
++         ifneq (,$(findstring arm64,$(platform)))
++            FLAGS += -DARM -march=armv8-a+crc+simd -mcpu=cortex-a53
++         else
++            FLAGS += -DARM -marm -mcpu=cortex-a53 -mfpu=neon-fp-armv8 -mfloat-abi=hard
++         endif
+       endif
+    endif
+ 

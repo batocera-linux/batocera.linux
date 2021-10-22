@@ -1,0 +1,23 @@
+diff -Naur Craft-d0de2c6d3ff9d971d5c23c796bcb208498f635a9.orig/Makefile.libretro Craft-d0de2c6d3ff9d971d5c23c796bcb208498f635a9/Makefile.libretro
+--- Craft-d0de2c6d3ff9d971d5c23c796bcb208498f635a9.orig/Makefile.libretro	2021-03-17 13:13:03.000000000 +0000
++++ Craft-d0de2c6d3ff9d971d5c23c796bcb208498f635a9/Makefile.libretro	2021-06-12 15:49:25.610600921 +0100
+@@ -86,8 +86,8 @@
+ 	ifneq (,$(findstring rpi4,$(platform)))
+ 		GL_LIB := -lGLESv2
+ 		CPUFLAGS += -DNO_ASM -DARM_ASM -frename-registers -ftree-vectorize
+-		CFLAGS += -marm -mfloat-abi=hard -mcpu=cortex-a72 -mtune=cortex-a72 -mfpu=neon-vfpv4
+-		CXXFLAGS += -marm -mfloat-abi=hard -mcpu=cortex-a72 -mtune=cortex-a72 -mfpu=neon-vfpv4
++		CFLAGS += -mcpu=cortex-a72 -mtune=cortex-a72 -DARM
++		CXXFLAGS += -mcpu=cortex-a72 -mtune=cortex-a72 -DARM
+ 		HAVE_NEON = 1
+ 	else
+ 		GL_LIB := -L/opt/vc/lib -lbrcmGLESv2
+@@ -99,7 +99,7 @@
+ 		HAVE_NEON = 1
+ 	else ifneq (,$(findstring rpi3,$(platform)))
+ 		CPUFLAGS += -DARM -D__arm__ -D__NEON_OPT
+-		CPUFLAGS += -mcpu=cortex-a53 -mfpu=neon-fp-armv8 -mfloat-abi=hard
++		CPUFLAGS += -mcpu=cortex-a53 -mtune=cortex-a53
+ 		HAVE_NEON = 1
+  	else
+ 		CPUFLAGS += -DARMv5_ONLY

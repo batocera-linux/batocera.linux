@@ -1,0 +1,76 @@
+{
+    "actions_player1": [
+        {
+            "trigger": [
+                "hotkey",
+                "start"
+            ],
+            "type": "exec",
+            "target": "batocera-es-swissknife --emukill"
+        },
+	{
+            "trigger": "joystick1",
+            "type": "mouse"
+        },
+        {
+            "trigger": "l2",
+            "type": "key",
+            "target": "BTN_LEFT"
+        },
+        {
+            "trigger": "r2",
+            "type": "key",
+            "target": "BTN_RIGHT"
+        },
+        {
+            "trigger": "up",
+            "type": "key",
+            "target": "KEY_UP"
+        },
+        {
+            "trigger": "down",
+            "type": "key",
+            "target": "KEY_DOWN"
+        },
+        {
+            "trigger": "left",
+            "type": "key",
+            "target": "KEY_LEFT"
+        },
+        {
+            "trigger": "right",
+            "type": "key",
+            "target": "KEY_RIGHT"
+        },
+        {
+            "trigger": "start",
+            "type": "key",
+            "target": "KEY_ENTER"
+        },
+        {
+            "trigger": "select",
+            "type": "key",
+            "target": "KEY_ESC"
+        },
+        {
+            "trigger": "b",
+            "type": "key",
+            "target": "BTN_LEFT"
+        },
+        {
+            "trigger": "a",
+            "type": "key",
+            "target": "KEY_UP"
+        },
+        {
+            "trigger": "pageup",
+            "type": "key",
+            "target": "KEY_RIGHTCTRL"
+        },
+        {
+            "trigger": "pagedown",
+            "type": "key",
+            "target": "KEY_INSERT"
+        }
+    ]
+}

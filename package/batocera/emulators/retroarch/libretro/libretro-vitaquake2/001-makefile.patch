@@ -1,0 +1,30 @@
+diff -Naur vitaquake2-0fc99af0936735198e1788fb943498be78a9e740.org/Makefile vitaquake2-0fc99af0936735198e1788fb943498be78a9e740/Makefile
+--- vitaquake2-0fc99af0936735198e1788fb943498be78a9e740.org/Makefile	2021-03-14 09:01:05.000000000 +0000
++++ vitaquake2-0fc99af0936735198e1788fb943498be78a9e740/Makefile	2021-07-03 14:47:29.115013958 +0100
+@@ -86,6 +86,26 @@
+        GLES31 := 1
+    endif
+ 
++# Raspberry Pi 4 (64-bit)
++else ifeq ($(platform), rpi4_64)
++    TARGET := $(TARGET_NAME)_libretro.so
++	fpic := -fPIC
++    SHARED := -shared -Wl,--version-script=$(CORE_DIR)/link.T -Wl,--no-undefined
++	CFLAGS += -mcpu=cortex-a72 -mtune=cortex-a72 -ffast-math -DARM
++    CFLAGS += -D_POSIX_C_SOURCE=199309L
++    GLES := 1
++    GLES31 := 1
++
++# Raspberry Pi 3 (64-bit)
++else ifeq ($(platform), rpi3_64)
++    TARGET := $(TARGET_NAME)_libretro.so
++	fpic := -fPIC
++    SHARED := -shared -Wl,--version-script=$(CORE_DIR)/link.T -Wl,--no-undefined
++	CFLAGS += -mcpu=cortex-a53 -mtune=cortex-a53 -ffast-math -DARM 
++    CFLAGS += -D_POSIX_C_SOURCE=199309L	
++    GLES := 1
++    GLES31 := 1
++
+ else ifneq (,$(findstring osx,$(platform)))
+    TARGET := $(TARGET_NAME)_libretro.dylib
+    fpic := -fPIC

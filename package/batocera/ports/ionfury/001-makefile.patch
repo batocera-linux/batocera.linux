@@ -1,0 +1,44 @@
+diff -Naur ionfury-fbcb9839404b06cfe76c6c8c277bcc7843d692da.orig/Common.mak ionfury-fbcb9839404b06cfe76c6c8c277bcc7843d692da/Common.mak
+--- ionfury-fbcb9839404b06cfe76c6c8c277bcc7843d692da.orig/Common.mak	2021-08-27 04:02:19.000000000 +0100
++++ ionfury-fbcb9839404b06cfe76c6c8c277bcc7843d692da/Common.mak	2021-09-01 14:52:44.661835376 +0100
+@@ -573,8 +573,8 @@
+         else
+             ifeq ($(PLATFORM),DARWIN)
+                 OPTOPT := -march=core2 -mmmx -msse -msse2 -msse3 -mssse3
+-            else
+-                OPTOPT := -march=nocona
++#            else
++#                OPTOPT := -march=nocona
+             endif
+         endif
+     endif
+@@ -601,6 +601,9 @@
+     ifeq ($(PLATFORM),WII)
+         OPTOPT := -mtune=750
+     endif
++    ifneq (0,$(RPI4))
++        OPTOPT := -mcpu=cortex-a72 -mtune=cortex-a72 -ffast-math
++    endif  
+ endif
+ 
+ ifeq ($(PACKAGE_REPOSITORY),0)
+@@ -892,7 +895,7 @@
+ 
+ ifeq ($(RENDERTYPE),SDL)
+     ifeq ($(SDL_TARGET),2)
+-        SDLCONFIG := sdl2-config
++        SDLCONFIG := sdl2
+         SDLNAME := SDL2
+     else ifeq ($(SDL_TARGET),1)
+         SDLCONFIG := sdl-config
+@@ -934,8 +937,8 @@
+             SDLCONFIG_CFLAGS := $(strip $(subst -Dmain=SDL_main,,$(shell $(SDLCONFIG) --cflags)))
+             SDLCONFIG_LIBS := $(strip $(subst -mwindows,,$(shell $(SDLCONFIG) --libs)))
+ 
+-            COMPILERFLAGS += $(SDLCONFIG_CFLAGS)
+-            LIBS += $(SDLCONFIG_LIBS)
++            COMPILERFLAGS += `pkg-config sdl2 --cflags`
++            LIBS += `pkg-config sdl2 --libs`
+         else
+             ifeq ($(SDL_TARGET),1)
+                 COMPILERFLAGS += -D_GNU_SOURCE=1

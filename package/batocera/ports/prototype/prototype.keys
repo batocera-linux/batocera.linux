@@ -1,0 +1,52 @@
+{
+    "actions_player1": [
+        {
+            "trigger": [
+                "hotkey",
+                "start"
+            ],
+            "type": "exec",
+            "target": "batocera-es-swissknife --emukill"
+        },
+        {
+            "trigger": "select",
+            "type": "key",
+            "target": "KEY_ESC"
+        },
+        {
+            "trigger": "up",
+            "type": "key",
+            "target": "KEY_UP"
+        },
+        {
+            "trigger": "down",
+            "type": "key",
+            "target": "KEY_DOWN"
+        },
+        {
+            "trigger": "left",
+            "type": "key",
+            "target": "KEY_LEFT"
+        },
+        {
+            "trigger": "right",
+            "type": "key",
+            "target": "KEY_RIGHT"
+        },
+        {
+            "trigger": "b",
+            "type": "key",
+            "target": "KEY_Z"
+        },
+        {
+            "trigger": "a",
+            "type": "key",
+            "target": "KEY_X"
+        },
+        {
+            "trigger": "start",
+            "type": "key",
+            "target": "KEY_Z"
+        }
+    ]
+}
