@@ -1,0 +1,35 @@
+diff --git a/Makefile b/Makefile
+index ec23f49..0d8fb89 100644
+--- a/Makefile
++++ b/Makefile
+@@ -48,6 +48,30 @@ ifeq ($(platform), unix)
+    LDFLAGS += -shared -Wl,--version-script=$(CORE_DIR)/libretro/link.T -Wl,--gc-sections
+    fpic = -fPIC
+ 
++ # Raspberry Pi
++ else ifneq (,$(findstring rpi,$(platform)))
++ 	TARGET := $(TARGET_NAME)_libretro.so
++   fpic := -fPIC
++   SHARED := -shared -Wl,--no-undefined
++   LDFLAGS += -shared -Wl,--version-script=$(CORE_DIR)/libretro/link.T
++   CFLAGS += -DARM -DRPIPORT -DALIGN_DWORD -O3 -pipe -fstack-protector
++   
++	ifneq (,$(findstring rpi1,$(platform)))
++      CFLAGS += -mstructure-size-boundary=32 -mthumb-interwork -falign-functions=16
++		CFLAGS += -marm -mcpu=arm1176jzf-s -mfloat-abi=hard
++	else ifneq (,$(findstring rpi2,$(platform)))
++      CFLAGS += -mstructure-size-boundary=32 -mthumb-interwork -falign-functions=16
++		CFLAGS += -marm -mcpu=cortex-a7 -mfpu=neon-vfpv4 -mfloat-abi=hard
++	else ifneq (,$(findstring rpi3,$(platform)))
++		ifneq (,$(findstring rpi3_64,$(platform)))
++            CFLAGS += -mcpu=cortex-a53 -mtune=cortex-a53
++		else
++			CFLAGS += -marm -mcpu=cortex-a53 -mfpu=neon-fp-armv8 -mfloat-abi=hard
++		endif
++	else ifneq (,$(findstring rpi4,$(platform)))
++         CFLAGS += -mcpu=cortex-a72 -mtune=cortex-a72
++	endif
++
+ # CrossPI
+ else ifeq ($(platform), crosspi)
+    CC = ~/RPI/tools-master/arm-bcm2708/gcc-linaro-arm-linux-gnueabihf-raspbian-x64/bin/arm-linux-gnueabihf-gcc
