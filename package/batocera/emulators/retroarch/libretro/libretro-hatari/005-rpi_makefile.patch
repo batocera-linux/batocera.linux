@@ -1,0 +1,33 @@
+diff --git a/Makefile.libretro b/Makefile.libretro
+index 85f7648..0655b48 100755
+--- a/Makefile.libretro
++++ b/Makefile.libretro
+@@ -79,6 +79,28 @@ else ifeq ($(platform), osx)
+    SHARED := -dynamiclib
+    PLATFLAGS := -DLSB_FIRST -DALIGN_DWORD
+ 
++# Raspberry Pi
++else ifneq (,$(findstring rpi,$(platform)))
++	TARGET := $(TARGET_NAME)_libretro.so
++   fpic := -fPIC -fsigned-char
++   SHARED :=  -lz -lpthread -shared -Wl,--version-script=$(LIBRETRO_DIR)/link.T -Wl,--no-undefined
++   PLATFLAGS := -DLSB_FIRST -DALIGN_DWORD
++   CFLAGS += -DARM
++
++	ifneq (,$(findstring rpi1,$(platform)))
++		CFLAGS += -marm -mcpu=arm1176jzf-s -mfpu=vfp -mfloat-abi=hard
++	else ifneq (,$(findstring rpi2,$(platform)))
++		CFLAGS += -marm -mcpu=cortex-a7 -mfpu=neon-vfpv4 -mfloat-abi=hard
++	else ifneq (,$(findstring rpi3,$(platform)))
++		ifneq (,$(findstring rpi3_64,$(platform)))
++            CFLAGS += -mcpu=cortex-a53 -mtune=cortex-a53
++		else
++			CFLAGS += -marm -mcpu=cortex-a53 -mfpu=neon-fp-armv8 -mfloat-abi=hard
++		endif
++	else ifneq (,$(findstring rpi4,$(platform)))
++         CFLAGS += -mcpu=cortex-a72 -mtune=cortex-a72
++	endif
++
+ # ARM
+ else ifneq (,$(findstring armv,$(platform)))
+    CC = gcc
