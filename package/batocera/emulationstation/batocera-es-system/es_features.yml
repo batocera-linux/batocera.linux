@@ -3253,6 +3253,12 @@ dolphin:
                 "2x":  2
                 "4x":  4
                 "8x":  8
+        use_ssaa:
+            prompt:      ANTI-ALIASING MODE
+            description: Toggle MSAA/SSAA. Depends on anti-aliasing being enabled.
+            choices:
+                "MSAA (default)": 0
+                "SSAA":           1
         hires_textures:
             prompt:      HIRES TEXTURES
             description: Use HD texture packs
