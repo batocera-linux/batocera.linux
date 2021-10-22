@@ -757,41 +757,55 @@ def writeBezelConfig(bezel, retroarchConfig, rom, gameResolution, system):
         retroarchConfig['video_message_pos_x']    = infos["messagex"]
         retroarchConfig['video_message_pos_y']    = infos["messagey"]
 
-    if system.isOptSet('bezel.tattoo') and system.getOptBoolean('bezel.tattoo') == True:
-        if system.isOptSet('bezel.tattoo_file') and os.path.exists(system.config['bezel.tattoo_file']): # Future use: have "controllers" auto-selected from system
+    if system.isOptSet('bezel.tattoo') and system.config['bezel.tattoo'] != "0":
+        if system.config['bezel.tattoo'] == 'system':
+            try:
+                tattoo_file = '/usr/share/batocera/controller-overlays/'+system.name+'.png'
+                if not os.path.exists(tattoo_file):
+                    tattoo_file = '/usr/share/batocera/controller-overlays/generic.png'
+                tattoo = Image.open(tattoo_file)
+            except:
+                eslog.error("Error opening controller overlay: {}".format(system.config['bezel.tattoo_file']))
+        elif system.config['bezel.tattoo'] == 'custom' and os.path.exists(system.config['bezel.tattoo_file']):
             try:
                 tattoo_file = system.config['bezel.tattoo_file']
                 tattoo = Image.open(tattoo_file)
             except:
-                eslog.error("Error opening: {}".format(system.config['bezel.tattoo_file']))
-            output_png_file = "/tmp/bezel_tattooed.png"
-            back = Image.open(overlay_png_file)
-            tattoo = tattoo.convert("RGBA")
-            back = back.convert("RGBA")
-            w,h = bezelsUtil.fast_image_size(overlay_png_file)
-            tw,th = bezelsUtil.fast_image_size(tattoo_file)
-            tatwidth = int(241/1920 * w) # see above for the "241" explanation
-            pcent = float(tatwidth / tw)
-            tatheight = int(float(th) * pcent)
-            tattoo = tattoo.resize((tatwidth,tatheight), Image.ANTIALIAS)
-            alpha = back.split()[-1]
-            alphatat = tattoo.split()[-1]
-            if system.isOptSet('bezel.tattoo_corner'):
-                corner = system.config['bezel.tattoo_corner']
-            else:
-                corner = 'NW'
-            if (corner.upper() == 'NE'):
-                back.paste(tattoo, (w-tatwidth,0), alphatat)
-            elif (corner.upper() == 'SE'):
-                back.paste(tattoo, (w-tatwidth,h-tatheight), alphatat)
-            elif (corner.upper() == 'SW'):
-                back.paste(tattoo, (0,h-tatheight), alphatat)
-            else: # default = NW
-                back.paste(tattoo, (0,0), alphatat)
-            imgnew = Image.new("RGBA", (w,h), (0,0,0,255))
-            imgnew.paste(back, (0,0,w,h))
-            imgnew.save(output_png_file, mode="RGBA", format="PNG")
-            overlay_png_file = output_png_file
+                eslog.error("Error openingi custom file: {}".format(system.config['bezel.tattoo_file']))
+        else:
+            try:
+                tattoo_file = '/usr/share/batocera/controller-overlays/generic.png'
+                tattoo = Image.open(tattoo_file)
+            except:
+                eslog.error("Error openingi custom file: {}".format(system.config['bezel.tattoo_file']))
+        output_png_file = "/tmp/bezel_tattooed.png"
+        back = Image.open(overlay_png_file)
+        tattoo = tattoo.convert("RGBA")
+        back = back.convert("RGBA")
+        w,h = bezelsUtil.fast_image_size(overlay_png_file)
+        tw,th = bezelsUtil.fast_image_size(tattoo_file)
+        tatwidth = int(241/1920 * w) # see above for the "241" explanation
+        pcent = float(tatwidth / tw)
+        tatheight = int(float(th) * pcent)
+        tattoo = tattoo.resize((tatwidth,tatheight), Image.ANTIALIAS)
+        alpha = back.split()[-1]
+        alphatat = tattoo.split()[-1]
+        if system.isOptSet('bezel.tattoo_corner'):
+            corner = system.config['bezel.tattoo_corner']
+        else:
+            corner = 'NW'
+        if (corner.upper() == 'NE'):
+            back.paste(tattoo, (w-tatwidth,20), alphatat) # 20 pixels vertical margins (on 1080p)
+        elif (corner.upper() == 'SE'):
+            back.paste(tattoo, (w-tatwidth,h-tatheight-20), alphatat)
+        elif (corner.upper() == 'SW'):
+            back.paste(tattoo, (0,h-tatheight-20), alphatat)
+        else: # default = NW
+            back.paste(tattoo, (0,20), alphatat)
+        imgnew = Image.new("RGBA", (w,h), (0,0,0,255))
+        imgnew.paste(back, (0,0,w,h))
+        imgnew.save(output_png_file, mode="RGBA", format="PNG")
+        overlay_png_file = output_png_file
 
     eslog.debug("Bezel file set to {}".format(overlay_png_file))
     writeBezelCfgConfig(overlay_cfg_file, overlay_png_file)
