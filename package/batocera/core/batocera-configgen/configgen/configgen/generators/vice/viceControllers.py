@@ -12,14 +12,14 @@ viceJoystick = {
             "left":             "0 1 # 1 1 4",
             "right":            "0 1 # 1 1 8",
             "select":           "0 1 # 5 Virtual keyboard",
-            "start":            "0 1 # 4",
+            "start":            "0 1 # 4",      # Main menu
             "hotkey":           "0 1 # 5 Quit emulator",
-            "a":                "0 1 # 1 1 16",
-            "b":                "0 1 # 2 0 1",
-            "x":                "0 1 # 2 7 4",
-            "y":                "0 1 # 2 7 7",
-            "pagedown":         "0 1 # 2 4 7",
-            "pageup":           "0 1 # 2 3 1"             
+            "a":                "0 1 # 2 7 4",  # Space
+            "b":                "0 1 # 1 1 16", # Fire button
+            "x":                "0 1 # 2 4 7",  # N
+            "y":                "0 1 # 2 3 1",  # Y
+            "pagedown":         "0 1 # 2 0 1",  # Enter
+            "pageup":           "0 1 # 2 7 7", # Run/stop
         }
 
 # Create the controller configuration file
@@ -36,27 +36,27 @@ def generateControllerConfig(viceConfigFile, playersControllers):
     for playercontroller, pad in sorted(playersControllers.items()):
         if nplayer == 1:    
             listVice.append("!CLEAR")
-            # joystick1right
+            # joystick 1 right
             listVice.append("0 0 0 1 1 8")
-            # joystick1left
+            # joystick 1 left
             listVice.append("0 0 1 1 1 4")
-            # joystick1down
+            # joystick 1 down
             listVice.append("0 0 2 1 1 2")
-            # joystick1up
+            # joystick 1 up
             listVice.append("0 0 3 1 1 1")
+
+            # hat 1 right
+            listVice.append("0 2 0 1 1 1")
+            # hat 1 left
+            listVice.append("0 2 1 1 1 2")
+            # hat 1 down
+            listVice.append("0 2 2 1 1 4")
+            # hat 1 up
+            listVice.append("0 2 3 1 1 8")
             
-            # joystick2right
-            listVice.append("0 0 6 1 1 8")
-            # joystick2left
-            listVice.append("0 0 7 1 1 4")
-            # joystick2down
-            listVice.append("0 0 8 2 0 7")
-            # joystick2up
-            listVice.append("0 0 9 2 0 7")
-            
-            for indexName, indexValue in viceJoystick.items():
-                listVice.append(indexValue.replace('#', pad.inputs[indexName].id, 1))
-            nplayer += 1
+        for indexName, indexValue in viceJoystick.items():
+            listVice.append(indexValue.replace('#', pad.inputs[indexName].id, 1))
+        nplayer += 1
 
     f = open(viceFile, 'w')
     for i in range(len(listVice)):
