@@ -1,0 +1,10 @@
+prefix=/usr
+exec_prefix=${prefix}
+libdir=/usr/lib
+includedir=${prefix}/include
+
+Name: gl
+Description: gl4es gl library
+Version: 0.1.0
+Libs: -L${libdir} -lGL
+Cflags: -I${includedir}

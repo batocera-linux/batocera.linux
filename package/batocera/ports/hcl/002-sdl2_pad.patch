@@ -1,0 +1,36 @@
+diff -Naur hydracastlelabyrinth-ab43945c27577a418636c92f9ae2a44ce9588f0b.orig/src/sdl2/input.c hydracastlelabyrinth-ab43945c27577a418636c92f9ae2a44ce9588f0b/src/sdl2/input.c
+--- hydracastlelabyrinth-ab43945c27577a418636c92f9ae2a44ce9588f0b.orig/src/sdl2/input.c	2021-04-16 21:05:06.000000000 +0100
++++ hydracastlelabyrinth-ab43945c27577a418636c92f9ae2a44ce9588f0b/src/sdl2/input.c	2021-08-30 18:26:46.332826477 +0100
+@@ -128,14 +128,25 @@
+ 	int w = (evt->type==SDL_JOYBUTTONDOWN)?1:0;
+ 	switch(evt->jbutton.button)
+ 	{
+-		case  0: jFaceDown = w; break;
+-		case  1: jFaceLeft = w; break;
+-		case  2: jFaceRight = w; break;
+-		case  3: jFaceUp = w; break;
+-		case  4: jL = w; break;
+-		case  5: jR = w; break;
+-		case  6: jSelect = w; break;
+-		case  7: jStart = w; break;
++		//5  Piboy A
++		//6  Piboy B
++		//7  Piboy C
++		//8  Piboy X
++		//9  Piboy Y
++		//10 Piboy Z
++		//11 Piboy Right Trigger
++    	//12 Piboy Left Trigger
++    	//13 Piboy Select
++    	//14 Piboy Start
++		
++       case  5: jFaceLeft = w; break; // Fire
++	    case  6: jFaceDown = w; break; //Jump
++		case  9: jFaceRight = w; break; //secondary
++		case  7: jFaceUp = w; break; 
++		case  11: jR = w; break;
++		case  12: jL = w; break; 
++	    case  13: jStart = w; break;		
++		case  14: jSelect = w; break;
+ 	}
+ }

@@ -1,0 +1,52 @@
+diff -Naur stuntcarremake-f90f3851a44872c874baade0aad7206ce860f1c8.orig/StuntCarRacer.cpp stuntcarremake-f90f3851a44872c874baade0aad7206ce860f1c8/StuntCarRacer.cpp
+--- stuntcarremake-f90f3851a44872c874baade0aad7206ce860f1c8.orig/StuntCarRacer.cpp	2021-07-18 14:49:34.000000000 +0100
++++ stuntcarremake-f90f3851a44872c874baade0aad7206ce860f1c8/StuntCarRacer.cpp	2021-10-10 06:29:23.440010410 +0100
+@@ -1138,8 +1138,7 @@
+ 	// output instructions
+ 	const D3DSURFACE_DESC *pd3dsdBackBuffer = DXUTGetBackBufferSurfaceDesc();
+ 	txtHelper.SetInsertionPos( 2+(wideScreen?10:0), pd3dsdBackBuffer->Height-15*8 );
+-	txtHelper.DrawFormattedTextLine( L"Current track - " STRING L".  Press 'S' to select, Escape to quit", (TrackID == NO_TRACK ? L"None" : GetTrackName(TrackID)));
+-	txtHelper.DrawTextLine( L"'L' to switch Super League On/Off");
++	txtHelper.DrawFormattedTextLine( L"Current track - " STRING L".  Press 'Start' to select", (TrackID == NO_TRACK ? L"None" : GetTrackName(TrackID)));
+ 
+ 	if (((keyPress >= firstMenuOption) && (keyPress <= lastMenuOption)) || (keyPress == LEAGUEMENU))
+ 		{
+@@ -1196,19 +1195,9 @@
+ 	// output instructions
+ 	const D3DSURFACE_DESC *pd3dsdBackBuffer = DXUTGetBackBufferSurfaceDesc();
+ 	txtHelper.SetInsertionPos( 2+(wideScreen?10:0), pd3dsdBackBuffer->Height-15*9 );
+-	txtHelper.DrawFormattedTextLine( L"Selected track - " STRING L".  Press 'S' to start game", (TrackID == NO_TRACK ? L"None" : GetTrackName(TrackID)));
+-	txtHelper.DrawTextLine( L"'M' for track menu, Escape to quit");
+-	txtHelper.DrawTextLine( L"(Press F4 to change scenery, F9 / F10 to adjust frame rate)" );
++	txtHelper.DrawFormattedTextLine( L"Selected track - " STRING L".  Press 'Start' to start game", (TrackID == NO_TRACK ? L"None" : GetTrackName(TrackID)));
+ 
+ 	txtHelper.SetInsertionPos( 2+(wideScreen?10:0), pd3dsdBackBuffer->Height-15*6 );
+-	txtHelper.DrawTextLine( L"Keyboard controls during game :-" );
+-	#if defined(PANDORA) || defined(PYRA)
+-	txtHelper.DrawTextLine( L"  DPad = Steer, (X) = Accelerate, (B) = Brake, (R) = Nitro" );
+-	#else
+-	txtHelper.DrawTextLine( L"  S = Steer left, D = Steer right, Enter = Accelerate, Space = Brake" );
+-	#endif
+-	txtHelper.DrawTextLine( L"  R = Point car in opposite direction, P = Pause, O = Unpause" );
+-	txtHelper.DrawTextLine( L"  M = Back to track menu, Escape = Quit" );
+ 
+ 	if (keyPress == STARTMENU)
+ 		{
+@@ -1346,10 +1335,10 @@
+ 					txtHelperLarge.SetInsertionPos( 250+(wideScreen?80:0), pd3dsdBackBuffer->Height-25*13 );
+ 					txtHelperLarge.DrawTextLine( L"GAME OVER" );
+ 					txtHelperLarge.SetInsertionPos( 132+(wideScreen?80:0), pd3dsdBackBuffer->Height-25*11 );
+-					txtHelperLarge.DrawTextLine( L"Press 'M' for track menu" );
++					txtHelperLarge.DrawTextLine( L"Press 'Select' for track menu" );
+ #else
+ 					txtHelperLarge.SetInsertionPos( 124+(wideScreen?80:0), pd3dsdBackBuffer->Height-25*12 );
+-					txtHelperLarge.DrawTextLine( L"GAME OVER: Press 'M' for track menu" );
++					txtHelperLarge.DrawTextLine( L"GAME OVER: Press 'Select' for track menu" );
+ #endif
+ 				}
+ 				else
+@@ -2304,3 +2293,4 @@
+ 	exit(0);
+ }
+ #endif
++

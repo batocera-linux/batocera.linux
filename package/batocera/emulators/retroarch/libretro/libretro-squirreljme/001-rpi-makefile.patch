@@ -1,0 +1,207 @@
+diff -Nur SquirrelJME-4138ef9e33c2d8971503e7f4e57aacf90287be6b.orig/ratufacoat/libretro/Makefile.linux_rpi3 SquirrelJME-4138ef9e33c2d8971503e7f4e57aacf90287be6b/ratufacoat/libretro/Makefile.linux_rpi3
+--- SquirrelJME-4138ef9e33c2d8971503e7f4e57aacf90287be6b.orig/ratufacoat/libretro/Makefile.linux_rpi3	1970-01-01 01:00:00.000000000 +0100
++++ SquirrelJME-4138ef9e33c2d8971503e7f4e57aacf90287be6b/ratufacoat/libretro/Makefile.linux_rpi3	2021-07-06 22:33:14.615169257 +0100
+@@ -0,0 +1,87 @@
++##############
++# Works on hosts Linux
++#
++
++#########################
++# Check the host platform
++
++include Makefile.common.hostcheck
++
++#########################
++# Set the target platform
++
++TARGET_PLATFORM = linux_rpi3
++
++#################
++# Toolchain setup
++
++CC  = gcc
++CXX = g++
++AS  = as
++AR  = ar
++
++############
++# Extensions
++
++OBJEXT = .o
++SOEXT  = .so
++LIBEXT = .a
++
++################
++# Platform setup
++
++STATIC_LINKING = 0
++platform       = unix
++PLATDEFS       =
++PLATCFLAGS     = -mcpu=cortex-a53 -mtune=cortex-a53 -ffast-math -DARM -fpic
++PLATCXXFLAGS   = -mcpu=cortex-a53 -mtune=cortex-a53 -ffast-math -DARM -fpic
++PLATLDFLAGS    = -shared -lm -Wl,-version-script=$(BUILD_DIR)/link.T -Wl,-no-undefined
++PLATLDXFLAGS   = -shared -ln -Wl,-version-script=$(BUILD_DIR)/link.T -Wl,-no-undefined
++
++################
++# libretro setup
++
++RETRODEFS     = -D__LIBRETRO__
++RETROCFLAGS   =
++RETROCXXFLAGS =
++RETROLDFLAGS  =
++RETROLDXFLAGS =
++
++#################
++# Final variables
++
++DEFINES  = $(PLATDEFS) $(COREDEFINES) $(RETRODEFS)
++CFLAGS   = $(PLATCFLAGS) $(RETROCFLAGS) $(DEFINES) $(INCLUDES)
++CXXFLAGS = $(PLATCXXFLAGS) $(RETROCXXFLAGS) $(DEFINES) $(INCLUDES)
++LDFLAGS  = $(PLATLDFLAGS) $(RETROLDFLAGS)
++LDXFLAGS = $(PLATLDXFLAGS) $(RETROLDXFLAGS)
++
++########
++# Tuning
++
++ifneq ($(DEBUG),)
++  CFLAGS   += -O0 -g
++  CXXFLAGS += -O0 -g
++else
++  CFLAGS   += -O3 -DNDEBUG
++  CXXFLAGS += -O3 -DNDEBUG
++endif
++
++ifneq ($(LOG_PERFORMANCE),)
++  CFLAGS   += -DLOG_PERFORMANCE
++  CXXFLAGS += -DLOG_PERFORMANCE
++endif
++
++####################################
++# Variable setup for Makefile.common
++
++CORE_DIR  ?= ..
++BUILD_DIR ?= .
++INCLUDES   =
++
++include $(BUILD_DIR)/Makefile.common
++
++###############
++# Include rules
++
++include $(BUILD_DIR)/Makefile.rules
+diff -Nur SquirrelJME-4138ef9e33c2d8971503e7f4e57aacf90287be6b.orig/ratufacoat/libretro/Makefile.linux_rpi4 SquirrelJME-4138ef9e33c2d8971503e7f4e57aacf90287be6b/ratufacoat/libretro/Makefile.linux_rpi4
+--- SquirrelJME-4138ef9e33c2d8971503e7f4e57aacf90287be6b.orig/ratufacoat/libretro/Makefile.linux_rpi4	1970-01-01 01:00:00.000000000 +0100
++++ SquirrelJME-4138ef9e33c2d8971503e7f4e57aacf90287be6b/ratufacoat/libretro/Makefile.linux_rpi4	2021-07-06 22:33:32.955158339 +0100
+@@ -0,0 +1,87 @@
++##############
++# Works on hosts Linux
++#
++
++#########################
++# Check the host platform
++
++include Makefile.common.hostcheck
++
++#########################
++# Set the target platform
++
++TARGET_PLATFORM = linux_rpi4
++
++#################
++# Toolchain setup
++
++CC  = gcc
++CXX = g++
++AS  = as
++AR  = ar
++
++############
++# Extensions
++
++OBJEXT = .o
++SOEXT  = .so
++LIBEXT = .a
++
++################
++# Platform setup
++
++STATIC_LINKING = 0
++platform       = unix
++PLATDEFS       =
++PLATCFLAGS     = -mcpu=cortex-a72 -mtune=cortex-a72 -ffast-math -DARM -fpic
++PLATCXXFLAGS   = -mcpu=cortex-a72 -mtune=cortex-a72 -ffast-math -DARM -fpic
++PLATLDFLAGS    = -shared -lm -Wl,-version-script=$(BUILD_DIR)/link.T -Wl,-no-undefined
++PLATLDXFLAGS   = -shared -lm -Wl,-version-script=$(BUILD_DIR)/link.T -Wl,-no-undefined
++
++################
++# libretro setup
++
++RETRODEFS     = -D__LIBRETRO__
++RETROCFLAGS   =
++RETROCXXFLAGS =
++RETROLDFLAGS  =
++RETROLDXFLAGS =
++
++#################
++# Final variables
++
++DEFINES  = $(PLATDEFS) $(COREDEFINES) $(RETRODEFS)
++CFLAGS   = $(PLATCFLAGS) $(RETROCFLAGS) $(DEFINES) $(INCLUDES)
++CXXFLAGS = $(PLATCXXFLAGS) $(RETROCXXFLAGS) $(DEFINES) $(INCLUDES)
++LDFLAGS  = $(PLATLDFLAGS) $(RETROLDFLAGS)
++LDXFLAGS = $(PLATLDXFLAGS) $(RETROLDXFLAGS)
++
++########
++# Tuning
++
++ifneq ($(DEBUG),)
++  CFLAGS   += -O0 -g
++  CXXFLAGS += -O0 -g
++else
++  CFLAGS   += -O3 -DNDEBUG
++  CXXFLAGS += -O3 -DNDEBUG
++endif
++
++ifneq ($(LOG_PERFORMANCE),)
++  CFLAGS   += -DLOG_PERFORMANCE
++  CXXFLAGS += -DLOG_PERFORMANCE
++endif
++
++####################################
++# Variable setup for Makefile.common
++
++CORE_DIR  ?= ..
++BUILD_DIR ?= .
++INCLUDES   =
++
++include $(BUILD_DIR)/Makefile.common
++
++###############
++# Include rules
++
++include $(BUILD_DIR)/Makefile.rules
+diff -Nur SquirrelJME-4138ef9e33c2d8971503e7f4e57aacf90287be6b.orig/ratufacoat/libretro/Makefile.linux_x86_64 SquirrelJME-4138ef9e33c2d8971503e7f4e57aacf90287be6b/ratufacoat/libretro/Makefile.linux_x86_64
+--- SquirrelJME-4138ef9e33c2d8971503e7f4e57aacf90287be6b.orig/ratufacoat/libretro/Makefile.linux_x86_64	2021-07-05 08:02:16.000000000 +0100
++++ SquirrelJME-4138ef9e33c2d8971503e7f4e57aacf90287be6b/ratufacoat/libretro/Makefile.linux_x86_64	2021-07-06 22:34:00.507149562 +0100
+@@ -5,7 +5,7 @@
+ #########################
+ # Check the host platform
+ 
+-include $(BUILD_DIR)/Makefile.common.hostcheck
++include Makefile.common.hostcheck
+ 
+ #########################
+ # Set the target platform
+@@ -23,9 +23,9 @@
+ ############
+ # Extensions
+ 
+-OBJEXT = .linux_x86_64.o
+-SOEXT  = .linux_x86_64.so
+-LIBEXT = .linux_x86_64.a
++OBJEXT = .o
++SOEXT  = .so
++LIBEXT = .a
+ 
+ ################
+ # Platform setup

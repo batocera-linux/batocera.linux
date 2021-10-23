@@ -1,0 +1,13 @@
+diff -Naur openjazz-8108082394a2ca1007b2444b4099d9f18afcb530.orig/Makefile openjazz-8108082394a2ca1007b2444b4099d9f18afcb530/Makefile
+--- openjazz-8108082394a2ca1007b2444b4099d9f18afcb530.orig/Makefile	2021-08-28 21:23:57.000000000 +0100
++++ openjazz-8108082394a2ca1007b2444b4099d9f18afcb530/Makefile	2021-08-30 12:16:22.861589774 +0100
+@@ -14,8 +14,8 @@
+ endif
+ 
+ # SDL
+-CXXFLAGS += $(shell sdl-config --cflags)
+-LIBS += $(shell sdl-config --libs)
++CXXFLAGS += `pkg-config sdl --cflags`
++LIBS += `pkg-config sdl --libs`
+ 
+ LIBS += -lm

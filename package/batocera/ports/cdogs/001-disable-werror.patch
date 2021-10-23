@@ -1,0 +1,12 @@
+diff -Naur cdogs-sdl-33872a66b18e3cb51826419f3593dfea5cffc6f4.orig/CMakeLists.txt cdogs-sdl-33872a66b18e3cb51826419f3593dfea5cffc6f4/CMakeLists.txt
+--- cdogs-sdl-33872a66b18e3cb51826419f3593dfea5cffc6f4.orig/CMakeLists.txt	2021-10-12 07:37:57.000000000 +0100
++++ cdogs-sdl-33872a66b18e3cb51826419f3593dfea5cffc6f4/CMakeLists.txt	2021-10-16 16:39:41.016620621 +0100
+@@ -126,7 +126,7 @@
+ 		endif()
+ 	endif()
+ 	if(NOT BEOS AND NOT HAIKU)
+-		add_definitions(-Winline -Werror)
++		#add_definitions(-Winline -Werror)
+ 		set(EXTRA_LIBRARIES "m")
+ 	endif()
+ endif()

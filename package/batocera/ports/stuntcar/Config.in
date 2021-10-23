@@ -1,0 +1,16 @@
+config BR2_PACKAGE_STUNTCAR
+	bool "StuntCar"
+	depends on BR2_PACKAGE_SDL2
+	depends on BR2_PACKAGE_SDL2_MIXER
+	depends on BR2_PACKAGE_SDL2_TTF
+	depends on BR2_PACKAGE_OPENAL
+	depends on BR2_PACKAGE_GL4ES
+	depends on BR2_PACKAGE_GLU
+	depends on BR2_INSTALL_LIBSTDCPP
+	help
+	 This is a port of the old Stunt Car Racer from the AtariST/Amiga time.
+
+	  http://ptitseb.github.io/stuntcarremake
+
+comment "BR2_PACKAGE_STUNTCAR needs a toolchain w/ C++"
+	depends on !BR2_INSTALL_LIBSTDCPP

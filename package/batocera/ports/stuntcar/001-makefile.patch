@@ -1,0 +1,55 @@
+diff --git a/Makefile b/Makefile
+index 0d56074..6a51410 100644
+--- a/Makefile
++++ b/Makefile
+@@ -2,14 +2,20 @@
+ # General Compiler Settings
+ #
+ 
+-CC=g++
++CXX=g++
+ #PANDORA=1
+-DEBUG=1
++DEBUG=0
+ 
+ # general compiler settings
+ ifeq ($(M32),1)
+ 	FLAGS= -m32
+ endif
++ifeq ($(RPI4),1)
++	FLAGS= -mcpu=cortex-a72 -mtune=cortex-a72 -ffast-math -DARM -fpic
++	FLAGS+= -DODROID
++	LDFLAGS= -shared -lm -Wl,-no-undefined
++	#HAVE_GLES=1
++endif	
+ ifeq ($(PANDORA),1)
+ 	FLAGS= -mcpu=cortex-a8 -mfpu=neon -mfloat-abi=softfp -march=armv7-a -fsingle-precision-constant -mno-unaligned-access -fdiagnostics-color=auto -O3 -fsigned-char
+ 	FLAGS+= -DPANDORA
+@@ -162,15 +168,15 @@ endif
+ all: $(BIN)
+ 
+ $(BIN): $(OBJ)
+-	$(CC) -o $(BIN) $(OBJ) $(CFLAGS) $(LDFLAGS) $(LIB)
++	$(CXX) -o $(BIN) $(OBJ) $(CFLAGS) $(LDFLAGS) $(LIB)
+ 
+ $(OBJ): $(INC)
+ 
+ %.o: %.cpp
+-	$(CC) -o $@ -c $< $(CFLAGS)
++	$(CXX) -o $@ -c $< $(CFLAGS)
+ 
+ %.bc: %.cpp
+-	$(CC) -o $@ -c $< $(CFLAGS)
++	$(CXX) -o $@ -c $< $(CFLAGS)
+ 
+ clean:
+ 	$(RM) $(OBJ) $(BIN)
+@@ -192,7 +198,7 @@ check:
+ 	@echo "SDL = $(SDL)"
+ 	@echo "SDL_ = $(SDL_)"
+ 	@echo
+-	@echo "CC = $(CC)"
++	@echo "CX = $(CXX)"
+ 	@echo "BIN = $(BIN)"
+ 	@echo "CFLAGS = $(CFLAGS)"
+ 	@echo "LDFLAGS = $(LDFLAGS)"

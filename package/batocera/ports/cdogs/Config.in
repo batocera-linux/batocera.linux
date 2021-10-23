@@ -1,0 +1,13 @@
+config BR2_PACKAGE_CDOGS
+	bool "cdogs"
+	select BR2_PACKAGE_SDL2
+    select BR2_PACKAGE_PYTHON_PROTOBUF
+    select BR2_PACKAGE_HOST_PYTHON_PROTOBUF
+	depends on BR2_INSTALL_LIBSTDCPP
+	help
+	  Classic overhead run-and-gun game
+
+	  https://cxong.github.io/cdogs-sdl/
+
+comment "BR2_PACKAGE_CDOGS needs a toolchain w/ C++"
+	depends on !BR2_INSTALL_LIBSTDCPP

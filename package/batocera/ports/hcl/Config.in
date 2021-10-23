@@ -1,0 +1,12 @@
+config BR2_PACKAGE_HCL
+	bool "hcl"
+	select BR2_PACKAGE_SDL2
+	select BR2_PACKAGE_SDL2_MIXER
+	depends on BR2_INSTALL_LIBSTDCPP
+	help
+	  Hydra Castle Labyrinth is a platform game with some old school action. Its also reminiscent of games of the 16 bit era.
+
+	  http://ptitseb.github.io/hydracastlelabyrinth
+
+comment "BR2_PACKAGE_HCL needs a toolchain w/ C++"
+	depends on !BR2_INSTALL_LIBSTDCPP
