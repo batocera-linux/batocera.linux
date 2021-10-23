@@ -5,7 +5,6 @@ cd /batocera/archs/common || exit 1
 SEARCHDIR="./run/current"
 LOGDIR="./run/logs"
 ACTIONSDIR="./run/actions"
-ALLARCHS="odroidgoa odroidxu4 rpi1 rpi2 rpi3 rpi4 rk3288 rk3399 x86 x86_64 s905 s905gen3 s912 s922x tritium-h5 orangepi-pc cha"
 
 export BATCH_MODE=1
 
@@ -35,23 +34,23 @@ do_push() {
 
 	case "${ftptarget}" in
 	    "beta")
-		echo_msg "${arch}" "pusing ${board} on ${ftptarget}..."
+		echo_msg "${arch}" "pushing ${board} on ${ftptarget}..."
 		lftp ftp://"${FTPBATOCERA}" -e "set ssl:verify-certificate false; mirror -R -i boot.tar.xz -i batocera.version -e output/${arch}/images/batocera/images/${board} /public_html/upgrades/${remoteboarddir}/beta/last ; quit"
 		rsync -a --delete "output/${arch}/images/batocera/images/${board}/" "batocera@mirrors.o2switch.fr:/opt/www/batocera/${remoteboarddir}/beta/last/"
 		;;
 	    "rc")
 		# pushing beta
-		echo_msg "${arch}" "pusing ${board} on beta*..."
+		echo_msg "${arch}" "pushing ${board} on beta*..."
 		lftp ftp://"${FTPBATOCERA}" -e "set ssl:verify-certificate false; mirror -R -i boot.tar.xz -i batocera.version -e output/${arch}/images/batocera/images/${board} /public_html/upgrades/${remoteboarddir}/beta/last ; quit"
 		rsync -a --delete "output/${arch}/images/batocera/images/${board}/" "batocera@mirrors.o2switch.fr:/opt/www/batocera/${remoteboarddir}/beta/last/"
 		
 		# pushing rc
-		echo_msg "${arch}" "pusing ${board} on ${ftptarget}..."
+		echo_msg "${arch}" "pushing ${board} on ${ftptarget}..."
 		lftp ftp://"${FTPBATOCERA}" -e "set ssl:verify-certificate false; mirror -R -i boot.tar.xz -i batocera.version -e output/${arch}/images/batocera/images/${board} /public_html/upgrades/${remoteboarddir}/stable/rc ; quit"
 		rsync -a --delete "output/${arch}/images/batocera/images/${board}/" "batocera@mirrors.o2switch.fr:/opt/www/batocera/${remoteboarddir}/stable/rc/"
 		;;
 	    "unstable")
-		echo_msg "${arch}" "pusing ${board} on ${ftptarget}..."
+		echo_msg "${arch}" "pushing ${board} on ${ftptarget}..."
 		lftp ftp://"${FTPBATOCERA}" -e "set ssl:verify-certificate false; mirror -R -i boot.tar.xz -i batocera.version -e output/${arch}/images/batocera/images/${board} /public_html/upgrades/${remoteboarddir}/unstable/last ; quit"
 		rsync -a --delete "output/${arch}/images/batocera/images/${board}/" "batocera@mirrors.o2switch.fr:/opt/www/batocera/${remoteboarddir}/unstable/rc/last/"
 		;;
@@ -60,6 +59,9 @@ do_push() {
 		return 1
 	esac
     done
+
+    # update the beta file
+    ssh batocera@mirrors.o2switch.fr /opt/www/batocera/listBetas.sh
 }
 
 do_html() {
