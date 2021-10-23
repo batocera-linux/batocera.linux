@@ -1,0 +1,42 @@
+diff --git a/src/libretro/Makefile b/src/libretro/Makefile
+index a170992..e03ed2b 100644
+--- a/src/libretro/Makefile
++++ b/src/libretro/Makefile
+@@ -71,11 +71,24 @@ ifneq (,$(findstring unix,$(platform)))
+       SHARED := -shared -Wl,--version-script=link.T -Wl,-z,defs
+    endif
+ 
+-   # ARM
+-   ifneq (,$(findstring armv,$(platform)))
+-      CXXFLAGS += -DARM
+    # Raspberry Pi
+-   else ifneq (,$(findstring rpi,$(platform)))
++   ifneq (,$(findstring rpi,$(platform)))
++      CXXFLAGS += -DARM
++      ifneq (,$(findstring rpi1,$(platform)))
++   		CXXFLAGS += -marm -mcpu=arm1176jzf-s -mfpu=vfp -mfloat-abi=hard
++   	else ifneq (,$(findstring rpi2,$(platform)))
++   		CXXFLAGS += -marm -mcpu=cortex-a7 -mfpu=neon-vfpv4 -mfloat-abi=hard
++   	else ifneq (,$(findstring rpi3,$(platform)))
++   		ifneq (,$(findstring rpi3_64,$(platform)))
++               CXXFLAGS += -mcpu=cortex-a53 -mtune=cortex-a53
++   		else
++   			CXXFLAGS += -marm -mcpu=cortex-a53 -mfpu=neon-fp-armv8 -mfloat-abi=hard
++   		endif
++   	else ifneq (,$(findstring rpi4,$(platform)))
++            CXXFLAGS += -mcpu=cortex-a72 -mtune=cortex-a72
++   	endif
++   # ARM
++   else ifneq (,$(findstring armv,$(platform)))
+       CXXFLAGS += -DARM
+    endif
+ 
+@@ -580,7 +593,7 @@ else ifneq (,$(findstring msvc,$(platform)))
+    CODE_DEFINES =
+ else
+    WARNINGS_DEFINES = -Wall -W -Wno-unused-parameter
+-   CODE_DEFINES = 
++   CODE_DEFINES =
+ endif
+ 
+ CXXFLAGS += $(CODE_DEFINES) $(WARNINGS_DEFINES) $(fpic)
