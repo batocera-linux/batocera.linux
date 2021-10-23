@@ -38,7 +38,8 @@ powerdevices=(
               PIN56ONOFF "py: Sliding switch for proper shutdown" \
               PIN56PUSH "py: Momentary push button for shutdown" \
               PIN356ONOFFRESET "py: Power button and reset button" \
-              DESKPIPRO "Fan & power control for RPi4 DeskPi Pro case"
+              DESKPIPRO "Fan & power control for RPi4 DeskPi Pro case" \
+              PIBOY "Fan & power & pads for Piboy DMG"
              )
 
 #dialog for selecting your switch or power device
@@ -554,6 +555,40 @@ function deskpipro_config()
     fi
 }
 
+#https://www.experimentalpi.com/PiBoy-DMG--Kit_p_18.html
+function piboy_start()
+{
+    PIBOY_CONFIG_FILE=/boot/config.txt
+    PIBOY_RPI_FILE=/usr/share/piboy/config_rpi.txt
+    PIBOY_CHECK=$(tail "${PIBOY_CONFIG_FILE}" | grep PIBOY | sed 's/PIBOY=//g')
+
+    if test "${PIBOY_CHECK}" = true
+    then
+        echo "Check Success Piboy is installed"
+    else
+        echo "Check Error Piboy is not installed"
+        mount -o remount,rw /boot
+        cp -a "${PIBOY_RPI_FILE}" "${PIBOY_CONFIG_FILE}" || exit 1
+        mount -o remount,ro /boot
+        shutdown -h now
+    fi
+
+    python /usr/bin/piboy_fan_ctrl.py &
+    python /usr/bin/piboy_aud_ctrl.py &
+    python /usr/bin/piboy_power_ctrl.py &
+    modprobe xpi_gamecon.ko
+}
+
+function piboy_stop()
+{
+    /etc/init.d/S31emulationstation stop && echo 0 > /sys/kernel/xpi_gamecon/flags && /sbin/rmmod xpi_gamecon && shutdown -h now
+}
+
+function piboy_config()
+{
+    echo "Nothing to do"
+}
+
 #-----------------------------------------
 #------------------ MAIN -----------------
 #-----------------------------------------
@@ -615,6 +650,9 @@ case "$CONFVALUE" in
     ;;
     "DESKPIPRO")
         deskpipro_$1
+    ;;
+    "PIBOY")
+        piboy_$1
     ;;
     "--DIALOG")
         # Go to selection dialog
