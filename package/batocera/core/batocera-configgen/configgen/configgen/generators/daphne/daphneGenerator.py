@@ -21,8 +21,14 @@ class DaphneGenerator(Generator):
         romName = os.path.splitext(os.path.basename(rom))[0]
         frameFile = rom + "/" + romName + ".txt"
         commandsFile = rom + "/" + romName + ".commands"
-        
-        if system.config["ratio"] == "16/9":
+        singeFile = rom + "/" + romName + ".singe"
+
+        if os.path.isfile(singeFile):
+            commandArray = [batoceraFiles.batoceraBins[system.config['emulator']],
+                            "singe", "vldp", "-retropath", "-framefile", frameFile, "-script", singeFile,
+                            "-x", str(gameResolution["width"]), "-y", str(gameResolution["height"]), "-fullscreen_window",
+                            "-manymouse", "-fastboot", "-datadir", batoceraFiles.daphneDatadir, "-homedir", batoceraFiles.daphneDatadir]
+        elif system.config["ratio"] == "16/9":
             commandArray = [batoceraFiles.batoceraBins[system.config['emulator']],
                             romName, "vldp", "-framefile", frameFile, "-useoverlaysb", "2", "-ignore_aspect_ratio",
                             "-x", str(gameResolution["width"]), "-y", str(gameResolution["height"]), "-fullscreen",
