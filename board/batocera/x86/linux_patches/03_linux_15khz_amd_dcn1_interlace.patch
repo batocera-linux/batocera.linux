@@ -12,11 +12,11 @@ index 6beccd5a0941..4bb2c2ed696d 100644
  
  	if (stream->signal == SIGNAL_TYPE_HDMI_TYPE_A) {
 @@ -4535,7 +4537,7 @@ create_stream_for_sink(struct amdgpu_dm_connector *aconnector,
- 		preferred_refresh = drm_mode_vrefresh(preferred_mode);
- 	}
  
--	if (!dm_state)
-+	if (!dm_state || mode.flags & DRM_MODE_FLAG_INTERLACE)
+ 	if (recalculate_timing)
+ 		drm_mode_set_crtcinfo(&saved_mode, 0);
+-	else if (!dm_state)
++	else if (!dm_state || mode.flags & DRM_MODE_FLAG_INTERLACE)
  		drm_mode_set_crtcinfo(&mode, 0);
  
  	/*
