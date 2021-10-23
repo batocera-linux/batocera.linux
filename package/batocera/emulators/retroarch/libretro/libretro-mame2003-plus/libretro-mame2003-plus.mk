@@ -3,8 +3,8 @@
 # MAME2003 PLUS
 #
 ################################################################################
-# Version.: Commits on Oct 05, 2021
-LIBRETRO_MAME2003_PLUS_VERSION = b916ba7529185425d2985b90feb211fde8070137
+# Version.: Commits on Oct 19, 2021
+LIBRETRO_MAME2003_PLUS_VERSION = 1fd30e32ec948da4227b5eb7af327fddd6c7115b
 LIBRETRO_MAME2003_PLUS_SITE = $(call github,libretro,mame2003-plus-libretro,$(LIBRETRO_MAME2003_PLUS_VERSION))
 LIBRETRO_MAME2003_PLUS_LICENSE = MAME
 
@@ -36,7 +36,8 @@ endif
 
 define LIBRETRO_MAME2003_PLUS_BUILD_CMDS
 	mkdir -p $(@D)/obj/mame/cpu/ccpu
-	$(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" -C $(@D)/ -f Makefile platform="$(LIBRETRO_MAME2003_PLUS_PLATFORM)"
+	$(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" -C $(@D)/ -f Makefile platform="$(LIBRETRO_MAME2003_PLUS_PLATFORM)" \
+        GIT_VERSION="_$(shell echo $(LIBRETRO_MAME2003_PLUS_VERSION) | cut -c 1-7)"
 endef
 
 define LIBRETRO_MAME2003_PLUS_INSTALL_TARGET_CMDS
