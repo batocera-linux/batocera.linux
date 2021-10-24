@@ -24,8 +24,7 @@ LIBRETRO_UZEM_PLATFORM = rpi4_64
 endif
 
 define LIBRETRO_UZEM_BUILD_CMDS
-	$(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" -C $(@D)/ -f Makefile.libretro platform="$(LIBRETRO_UZEM_PLATFORM)" \
-        GIT_VERSION="_$(shell echo $(LIBRETRO_UZEM_VERSION) | cut -c 1-7)"
+	$(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" -C $(@D)/ -f Makefile.libretro platform="$(LIBRETRO_UZEM_PLATFORM)"
 endef
 
 define LIBRETRO_UZEM_INSTALL_TARGET_CMDS

@@ -20,7 +20,7 @@ endif
 
 define LIBRETRO_GPSP_BUILD_CMDS
 	$(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" -C $(@D) platform=$(LIBRETRO_GPSP_PLATFORM) \
-        GIT_VERSION="_$(shell echo $(LIBRETRO_GPSP_VERSION) | cut -c 1-7)"
+        GIT_VERSION="-$(shell echo $(LIBRETRO_GPSP_VERSION) | cut -c 1-7)"
 endef
 
 define LIBRETRO_GPSP_INSTALL_TARGET_CMDS

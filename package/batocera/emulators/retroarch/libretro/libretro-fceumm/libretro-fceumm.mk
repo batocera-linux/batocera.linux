@@ -31,7 +31,7 @@ endif
 
 define LIBRETRO_FCEUMM_BUILD_CMDS
 	$(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" -C $(@D) -f Makefile.libretro platform="$(LIBRETRO_FCEUMM_PLATFORM)" \
-        GIT_VERSION="_$(shell echo $(LIBRETRO_FCEUMM_VERSION) | cut -c 1-7)"
+        GIT_VERSION="-$(shell echo $(LIBRETRO_FCEUMM_VERSION) | cut -c 1-7)"
 endef
 
 define LIBRETRO_FCEUMM_INSTALL_TARGET_CMDS
