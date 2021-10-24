@@ -5,13 +5,11 @@
                 "hotkey",
                 "start"
             ],
-            "type": "exec",
-            "target": "killall -9 prototype"
-        },
-        {
-            "trigger": "select",
             "type": "key",
-            "target": "KEY_ESC"
+            "target": [
+                "KEY_LEFTALT",
+                "KEY_F4"
+            ]
         },
         {
             "trigger": "up",
@@ -36,17 +34,12 @@
         {
             "trigger": "b",
             "type": "key",
-            "target": "KEY_Z"
-        },
-        {
-            "trigger": "a",
-            "type": "key",
-            "target": "KEY_X"
+            "target": "KEY_5"
         },
         {
             "trigger": "start",
             "type": "key",
-            "target": "KEY_Z"
+            "target": "KEY_1"
         }
     ]
 }

@@ -1,0 +1,81 @@
+diff --git a/Base/Joystick.cpp b/Base/Joystick.cpp
+index 4a08854..ceae0e7 100644
+--- a/Base/Joystick.cpp
++++ b/Base/Joystick.cpp
+@@ -20,12 +20,16 @@
+ 
+ #include "SimCoupe.h"
+ #include "Joystick.h"
++#include "Options.h"
++#include "SDL.h"
+ 
+ namespace Joystick
+ {
+ 
+ static int anPosition[MAX_JOYSTICKS];
+ static uint32_t adwButtons[MAX_JOYSTICKS];
++static bool HotKeys[MAX_JOYSTICKS];
++static bool StartKeys[MAX_JOYSTICKS];
+ 
+ 
+ void Init(bool /*fFirstInit_*/)
+@@ -83,6 +87,40 @@ void SetPosition(int nJoystick_, int nPosition_)
+ 
+ void SetButton(int nJoystick_, int nButton_, bool fPressed_)
+ {
++    int hotKey, start;
++    int a, b, x, y;
++
++    if (nJoystick_ == 0)
++    {
++      a = GetOption(joya1);
++      b = GetOption(joya1);
++      x = GetOption(joya1);
++      y = GetOption(joya1);
++      hotKey = GetOption(joyhkey1);
++      start = GetOption(joystart1);
++    }
++    else
++    {
++      a = GetOption(joya2);
++      b = GetOption(joya2);
++      x = GetOption(joya2);
++      y = GetOption(joya2);
++      hotKey = GetOption(joyhkey2);
++      start = GetOption(joystart2);
++    }
++
++    /*
++     * Button # adjustment
++     */
++    if (nButton_ == a) nButton_ = 1;
++    else if (nButton_ == b) nButton_ = 2;
++    else if (nButton_ == x) nButton_ = 3;
++    else if (nButton_ == y) nButton_ = 4;
++
++    /*
++     * Original press/release code
++     */
++
+     if (nJoystick_ < MAX_JOYSTICKS)
+     {
+         uint32_t dwBit = 1 << nButton_;
+@@ -92,6 +130,18 @@ void SetButton(int nJoystick_, int nButton_, bool fPressed_)
+         else
+             adwButtons[nJoystick_] &= ~dwBit;
+     }
++
++    /*
++     * HotKey + Start = Quit!
++     */
++    if (nButton_ == hotKey) HotKeys[nJoystick_] = fPressed_;
++    else if (nButton_ == start) StartKeys[nJoystick_] = fPressed_;
++
++    if (HotKeys[nJoystick_] && StartKeys[nJoystick_])
++    {
++        SDL_Event event = {SDL_QUIT};
++        SDL_PushEvent(&event);
++    }
+ }
+ 
+ void SetButtons(int nJoystick_, uint32_t dwButtons_)

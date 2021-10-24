@@ -1,0 +1,46 @@
+diff --git a/Base/Options.cpp b/Base/Options.cpp
+index 2cd2c38..41de7c5 100644
+--- a/Base/Options.cpp
++++ b/Base/Options.cpp
+@@ -112,6 +112,18 @@ static bool SetNamedValue(const std::string& option_name, const std::string& str
+     else if (name == "joytype2") SetValue(g_config.joytype2, str);
+     else if (name == "deadzone1") SetValue(g_config.deadzone1, str);
+     else if (name == "deadzone2") SetValue(g_config.deadzone2, str);
++    else if (name == "joyy2") SetValue(g_config.joyy2, str);
++    else if (name == "joyx2") SetValue(g_config.joyx2, str);
++    else if (name == "joyb2") SetValue(g_config.joyb2, str);
++    else if (name == "joya2") SetValue(g_config.joya2, str);
++    else if (name == "joyy1") SetValue(g_config.joyy1, str);
++    else if (name == "joyx1") SetValue(g_config.joyx1, str);
++    else if (name == "joyb1") SetValue(g_config.joyb1, str);
++    else if (name == "joya1") SetValue(g_config.joya1, str);
++    else if (name == "joystart2") SetValue(g_config.joystart2, str);
++    else if (name == "joystart1") SetValue(g_config.joystart1, str);
++    else if (name == "joyhkey2") SetValue(g_config.joyhkey2, str);
++    else if (name == "joyhkey1") SetValue(g_config.joyhkey1, str);
+     else if (name == "parallel1") SetValue(g_config.parallel1, str);
+     else if (name == "parallel2") SetValue(g_config.parallel2, str);
+     else if (name == "printeronline") SetValue(g_config.printeronline, str);
+diff --git a/Base/Options.h b/Base/Options.h
+index 09ce17b..fe0930b 100644
+--- a/Base/Options.h
++++ b/Base/Options.h
+@@ -91,6 +91,18 @@ struct Config
+     int joytype2 = 2;                   // Joystick 2 mapping
+     int deadzone1 = 20;                 // Joystick 1 deadzone
+     int deadzone2 = 20;                 // Joystick 2 deadzone
++    int joyhkey1;                       // Joystick 1 Hot-Key Id
++    int joyhkey2;                       // Joystick 2 Hot-Key Id
++    int joystart1;                      // Joystick 1 Start Id
++    int joystart2;                      // Joystick 2 Start Id
++    int joya1;                          // Joystick 1 Button A Id
++    int joyb1;                          // Joystick 1 Button B Id
++    int joyx1;                          // Joystick 1 Button X Id
++    int joyy1;                          // Joystick 1 Button Y Id
++    int joya2;                          // Joystick 2 Button A Id
++    int joyb2;                          // Joystick 2 Button B Id
++    int joyx2;                          // Joystick 2 Button X Id
++    int joyy2;                          // Joystick 2 Button Y Id
+ 
+     int parallel1 = 0;                  // Parallel port 1 function
+     int parallel2 = 0;                  // Parallel port 2 function

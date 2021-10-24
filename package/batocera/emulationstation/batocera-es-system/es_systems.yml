@@ -2228,21 +2228,6 @@ hcl:
   comment_fr: |
     Ce système est le premier jeu de autonome. Aucune rom n'est requise.
 
-prototype:
-  name:       Prototype
-  manufacturer: Ports
-  release: 1992
-  hardware: port
-  extensions: [game]
-  group: ports
-  emulators:
-    prototype:
-      prototype: { requireAnyOf: [BR2_PACKAGE_PROTOTYPE] }
-  comment_en: |
-    This system is a standalone  game. No rom required.
-  comment_fr: |
-    Ce système est le premier jeu de autonome. Aucune rom n'est requise.
-
 samcoupe:
   name:       SAM Coupé
   manufacturer: Miles Gordon Technology
@@ -2252,21 +2237,6 @@ samcoupe:
   emulators:
     samcoupe:
       samcoupe:  { requireAnyOf: [BR2_PACKAGE_SIMCOUPE] }
-
-stuntcar:
-  name:       Stunt Car Racer
-  manufacturer: Ports
-  release: 1989
-  hardware: port
-  extensions: [game]
-  group: ports
-  emulators:
-    stuntcar:
-      stuntcar: { requireAnyOf: [BR2_PACKAGE_STUNTCAR] }
-  comment_en: |
-    This system is a standalone  game. No rom required.
-  comment_fr: |
-    Ce système est le premier jeu de autonome. Aucune rom n'est requise.
 
 abuse:
   name:       Abuse
@@ -2297,14 +2267,3 @@ cdogs:
     This system is a standalone  game. No rom required.
   comment_fr: |
     Ce système est le premier jeu de autonome. Aucune rom n'est requise.
-
-sorr:
-  name:       Streets of Rage Remake
-  manufacturer: Ports
-  release: 2011
-  hardware: port
-  extensions: [dat]
-  group: ports
-  emulators:
-    sorr:
-      sorr: { requireAnyOf: [BR2_PACKAGE_BENNUGD_BGDI] }

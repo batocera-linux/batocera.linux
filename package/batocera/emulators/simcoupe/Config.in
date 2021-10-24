@@ -1,0 +1,11 @@
+config BR2_PACKAGE_SIMCOUPE
+	bool "simcoupe"
+	depends on BR2_INSTALL_LIBSTDCPP
+	select BR2_PACKAGE_SDL2
+	help
+	  SimCoupe emulates the SAM Coupe - a Britsh Z80-based home computer released in 1989 by Miles Gordon Technology.
+
+	  https://github.com/simonowen/simcoupe
+
+comment "SIMCOUPE needs a toolchain w/ C++"
+	depends on !BR2_INSTALL_LIBSTDCPP
