@@ -29,7 +29,7 @@ endif
 define LIBRETRO_MAME2010_BUILD_CMDS
 	mkdir -p $(@D)/obj/mame/cpu/ccpu
 	$(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" LD="$(TARGET_CC)" -C $(@D)/ -f Makefile platform="$(LIBRETRO_MAME2010_PLATFORM)" $(LIBRETRO_MAME2010_EXTRA_ARGS) \
-        GIT_VERSION="_$(shell echo $(LIBRETRO_MAME2010_VERSION) | cut -c 1-7)"
+        GIT_VERSION="-$(shell echo $(LIBRETRO_MAME2010_VERSION) | cut -c 1-7)"
 endef
 
 # Bios

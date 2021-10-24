@@ -31,7 +31,7 @@ endif
 
 define LIBRETRO_NESTOPIA_BUILD_CMDS
 	$(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" -C $(@D)/libretro/ platform="$(LIBRETRO_NESTOPIA_PLATFORM)" \
-        GIT_VERSION="_$(shell echo $(LIBRETRO_NESTOPIA_VERSION) | cut -c 1-7)"
+        GIT_VERSION="-$(shell echo $(LIBRETRO_NESTOPIA_VERSION) | cut -c 1-7)"
 endef
 
 define LIBRETRO_NESTOPIA_INSTALL_TARGET_CMDS

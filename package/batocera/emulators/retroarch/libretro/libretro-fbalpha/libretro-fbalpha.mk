@@ -17,7 +17,7 @@ endif
 define LIBRETRO_FBALPHA_BUILD_CMDS
 	$(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" -C \
         $(@D)/svn-current/trunk/ -f makefile.libretro platform="$(LIBRETRO_FBALPHA_PLATFORM)" \
-        GIT_VERSION="_$(shell echo $(LIBRETRO_FBALPHA_VERSION) | cut -c 1-7)"
+        GIT_VERSION="-$(shell echo $(LIBRETRO_FBALPHA_VERSION) | cut -c 1-7)"
 endef
 
 define LIBRETRO_FBALPHA_INSTALL_TARGET_CMDS

@@ -25,7 +25,7 @@ endif
 
 define LIBRETRO_BLUEMSX_BUILD_CMDS
 	$(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" -C $(@D) -f Makefile.libretro platform="$(LIBRETRO_BLUEMSX_PLATFORM)" \
-        GIT_VERSION="_$(shell echo $(LIBRETRO_BLUEMSX_VERSION) | cut -c 1-7)"
+        GIT_VERSION="-$(shell echo $(LIBRETRO_BLUEMSX_VERSION) | cut -c 1-7)"
 endef
 
 define LIBRETRO_BLUEMSX_INSTALL_TARGET_CMDS

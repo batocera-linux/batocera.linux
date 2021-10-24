@@ -3,8 +3,8 @@
 # LIBRETRO THEODORE
 #
 ################################################################################
-# Version.: Commits on Oct 05, 2021
-LIBRETRO_THEODORE_VERSION = 4299761d7e4386319a31639c9e067facaa23616d
+# Version.: Commits on Oct 19, 2021
+LIBRETRO_THEODORE_VERSION = 6304ab73f812a32d5c1ccf554d9ef4425f5a54f7
 LIBRETRO_THEODORE_SITE = $(call github,Zlika,theodore,$(LIBRETRO_THEODORE_VERSION))
 LIBRETRO_THEODORE_LICENSE = GPLv3
 
@@ -30,7 +30,8 @@ LIBRETRO_THEODORE_PLATFORM = unix
 endif
 
 define LIBRETRO_THEODORE_BUILD_CMDS
-	$(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" -C $(@D)/ -f Makefile platform="$(LIBRETRO_THEODORE_PLATFORM)"
+	$(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" -C $(@D)/ -f Makefile platform="$(LIBRETRO_THEODORE_PLATFORM)" \
+        GIT_VERSION=" $(shell echo $(LIBRETRO_THEODORE_VERSION) | cut -c 1-7)"
 endef
 
 define LIBRETRO_THEODORE_INSTALL_TARGET_CMDS
