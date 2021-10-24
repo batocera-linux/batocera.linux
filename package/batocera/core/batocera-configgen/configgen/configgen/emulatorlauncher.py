@@ -59,6 +59,10 @@ from generators.sonicretro.sonicretroGenerator import SonicRetroGenerator
 from generators.gsplus.gsplusGenerator import GSplusGenerator
 from generators.fba2x.fba2xGenerator import Fba2xGenerator
 from generators.yuzu.yuzuGenerator import YuzuGenerator
+from generators.samcoupe.samcoupeGenerator import SamcoupeGenerator
+from generators.abuse.abuseGenerator import AbuseGenerator
+from generators.cdgos.cdogsGenerator import CdogsGenerator
+from generators.hcl.hclGenerator import HclGenerator
 #from generators.play.playGenerator import PlayGenerator
 
 import controllersConfig as controllers
@@ -125,6 +129,10 @@ generators = {
     'gsplus': GSplusGenerator(),
     'fba2x': Fba2xGenerator(),
     'yuzu': YuzuGenerator(),
+    'samcoupe': SamcoupeGenerator(),
+    'abuse': AbuseGenerator(),
+    'cdogs': CdogsGenerator(),
+    'hcl': HclGenerator(),
     #'play': PlayGenerator(),
 }
 

@@ -5,11 +5,10 @@ from generators.Generator import Generator
 import controllersConfig
 
 
-class SorrGenerator(Generator):
+class SamcoupeGenerator(Generator):
 
     def generate(self, system, rom, playersControllers, gameResolution):
-        commandArray = ["bgdi", "-i", "/userdata/roms/sorr", rom]
-
+        commandArray = ["simcoupe", "autoboot", "-disk1", rom]
         return Command.Command(
             array=commandArray,
             env={
