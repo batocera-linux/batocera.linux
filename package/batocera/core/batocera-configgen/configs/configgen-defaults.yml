@@ -36,6 +36,9 @@ amstradcpc:
 apple2:
   emulator: gsplus
   core:     gsplus
+apple2gs:
+  emulator: gsplus
+  core:     gsplus
 atari2600:
   emulator: libretro
   core:     stella
@@ -72,6 +75,12 @@ cannonball:
 cavestory:
   emulator: libretro
   core:     nxengine
+cdogs:
+  emulator: cdogs
+  core:     cdogs
+cgenius:
+  emulator: cgenius
+  core:     cgenius
 channelf:
   emulator: libretro
   core:     freechaf
@@ -111,6 +120,9 @@ fds:
 flash:
   emulator: ruffle
   core:     ruffle
+flatpak:
+  emulator: flatpak
+  core:     flatpak
 fmtowns:
   emulator: tsugaru
   core:     tsugaru
@@ -149,6 +161,9 @@ intellivision:
 jaguar:
   emulator: libretro
   core:     virtualjaguar
+j2me:
+  emulator: libretro
+  core:     freej2me
 kodi:
   emulator: kodi
   options:
@@ -295,6 +310,15 @@ psx:
 pygame:
   emulator: pygame
   core:     pygame
+reminiscence:
+  emulator: libretro
+  core:     reminiscence
+samcoupe:
+  emulator: samcoupe
+  core:     samcoupe
+sameduck:
+  emulator: libretro
+  core:     sameduck
 satellaview:
   emulator: libretro
   core:     snes9x
@@ -304,6 +328,9 @@ saturn:
 scummvm:
   emulator: libretro
   core:     scummvm
+scv:
+  emulator: libretro
+  core:     emuscv
 sdlpop:
   emulator: sdlpop
   core:     sdlpop
@@ -325,6 +352,9 @@ solarus:
 sonicretro:
   emulator: sonic2013
   core:     sonic2013
+steam:
+  emulator: steam
+  core:     steam
 sufami:
   emulator: libretro
   core:     snes9x
@@ -337,6 +367,9 @@ snes-msu1:
 supergrafx:
   emulator: libretro
   core:     mednafen_supergrafx
+supervision:
+  emulator: libretro
+  core:     potator
 switch:
   emulator: yuzu
   core:     yuzu
@@ -352,12 +385,18 @@ tic80:
 tyrquake:
   emulator: libretro
   core:     tyrquake
+uzebox:
+  emulator: libretro
+  core:     uzem
 vectrex:
   emulator: libretro
   core:     vecx
 virtualboy:
   emulator: libretro
   core:     vb
+vitaquake2:
+  emulator: libretro
+  core:     vitaquake2
 wii:
   emulator: dolphin
   core:     dolphin
@@ -392,30 +431,12 @@ xash3d_fwgs:
 xbox:
   emulator: xemu
   core:     xemu
+zc210:
+  emulator: libretro
+  core:     zc210
 zx81:
   emulator: libretro
   core:     '81'
 zxspectrum:
   emulator: libretro
   core:     fuse
-cgenius:
-  emulator: cgenius
-  core:     cgenius
-flatpak:
-  emulator: flatpak
-  core:     flatpak
-steam:
-  emulator: steam
-  core:     steam
-supervision:
-  emulator: libretro
-  core:     potator
-scv:
-  emulator: libretro
-  core:     emuscv
-apple2gs:
-  emulator: gsplus
-  core:     gsplus
-uzebox:
-  emulator: libretro
-  core:     uzem
