@@ -24,4 +24,10 @@ else
 DEVILUTIONX_CONF_OPTS += -DVERSION_NUM=1.2.1 -DVERSION_SUFFIX="-$(DEVILUTIONX_VERSION)"
 endif
 
+define DEVILUTIONX_INSTALL_TARGET_CMDS
+# evmap config
+	mkdir -p $(TARGET_DIR)/usr/share/evmapy
+	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/ports/devilutionx/devilutionx.keys $(TARGET_DIR)/usr/share/evmapy
+endef
+
 $(eval $(cmake-package))
