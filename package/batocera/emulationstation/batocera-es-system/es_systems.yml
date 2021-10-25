@@ -2172,21 +2172,6 @@ sameduck:
     libretro:
       sameduck:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_SAMEDUCK] }
 
-opentyrian:
-  name:       Tyrian
-  manufacturer: Ports
-  release: 1995
-  hardware: port
-  extensions: [game]
-  group: ports
-  emulators:
-    opentyrian:
-      opentyrian: { requireAnyOf: [BR2_PACKAGE_OPENTYRIAN] }
-  comment_en: |
-    This system is a standalone  game. No rom required.
-  comment_fr: |
-    Ce système est le premier jeu de autonome. Aucune rom n'est requise.
-
 openjazz:
   name:       Jazz Jackrabbit
   manufacturer: Ports
