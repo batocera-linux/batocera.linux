@@ -76,7 +76,7 @@ then
 	    7) textoutput $i 40 "parted -s -m ${DISK} resizepart 2 99%";;
 	    9) textoutput $i 45 "parted -s -m ${DISK} align-check opt 2";;
 	    11) textoutput $i 55 "e2fsck -f -p ${PART}";;
-	    13) textoutput $i 75 "resize2fs ${PART}";;
+	    13) textoutput $i 75 "resize2fs -f ${PART}";;
 	esac
     done
 
