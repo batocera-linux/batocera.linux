@@ -2252,3 +2252,18 @@ cdogs:
     This system is a standalone  game. No rom required.
   comment_fr: |
     Ce système est le premier jeu de autonome. Aucune rom n'est requise.
+
+xrick:
+  name:       xrick
+  manufacturer: Ports
+  release:
+  hardware: port
+  extensions: [zip]
+  group: ports
+  emulators:
+    libretro:
+      xrick: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_XRICK] }
+  comment_en: |
+    Put the data.zip in this directory.
+  comment_fr: |
+    Placez ici vos fichiers data.zip pour xrick.
