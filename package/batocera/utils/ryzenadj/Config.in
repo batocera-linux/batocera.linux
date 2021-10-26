@@ -1,0 +1,8 @@
+config BR2_PACKAGE_RYZENADJ
+        bool "ryzenadj"
+        depends on BR2_x86_64
+        select BR2_PACKAGE_PCIUTILS
+        help
+          Adjust power management settings for Mobile Raven Ridge Ryzen Processors
+
+          https://github.com/FlyGoat/RyzenAdj
