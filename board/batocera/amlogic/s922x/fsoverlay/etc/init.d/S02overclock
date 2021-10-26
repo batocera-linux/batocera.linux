@@ -21,7 +21,7 @@ then
     MODEL=$(cat /sys/firmware/devicetree/base/model)
 
     case "${MODEL}" in
-	"Hardkernel ODROID-N2Plus"|"Khadas VIM3"|"Beelink GT-King-Pro")
+	"Hardkernel ODROID-N2Plus"|"Khadas VIM3"|"Beelink GT-King Pro")
 	    case "${OVALUE}" in
 		"extreme")
 		    do_overclock_n2plus 2016000 2400000
