@@ -1,6 +1,6 @@
 202x/xx/xx - batocera.linux 33
-        * add: Support for Beeling GT-KING "https://www.bee-link.com/products/beelink-gt-king-wifi6"
-        * add: Support for Beeling GT-KING-PRO "https://www.bee-link.com/products/beelink-gt-king"
+        * add: Support for Beelink GT-KING "https://www.bee-link.com/products/beelink-gt-king-wifi6"
+        * add: Support for Beelink GT-KING-PRO "https://www.bee-link.com/products/beelink-gt-king"
         * add: Support for Raxda Zero "https://wiki.radxa.com/Zero"
         * new language : hebrew
         * add: .gbc2 is now an additional acceptable extension for both GB2Player and GBC2Player dual-rom playlists
@@ -8,19 +8,30 @@
         * add: Adventure Vision & CD-i via MAME (x86_64)
         * add: LCD Games system (MAME & lr-gw on x86_64, lr-gw on all others)
         * add: "roms/port" folder now exists by default
+        * add: added channelf, pico8, supervision and 3ds to thebezelproject
+        * add: rick dangerous
         * fix: gamecube now uses dolphin's default controls
         * fix: borders are now shown on Vice C64, also fixed default aspect ratio
         * fix: duckstation quick menu can now actually be accessed with hotkey+south
+        * fix: RetroArch FSUAE options now functional in amiga500, amiga1200, atarist and sharpx68000.
+        * fix: 3ds games that rely on fdk-aac now work
+        * fix: duplicate pads no longer share an ID, allowing multiple identical controllers to be used for multiplayer
+        * fix: ecwolf now works
+        * fix: fixed resizefs silently failing
         * change: RPi3 default audio buffer to 96ms, gb/gbc to 196ms
         * change: MAME no-nag patch (x86_64)
         * change: MAME DS3 d-pad button mappings (x86_64)
         * change: Game & Watch will group with LCD Games if enabled, and MAME is enabled for x86_64
         * change: The "amlogic/s905gen3/tvbox" image is now titled "amlogic/s905gen3/tvbox-gen3"
+        * change: batocera-screenshot now save as PNG instead of JPG (x86_64)
+        * change: Kodi re-enabled on RPi2
+        * change: Devilutionx and Steam games can be closed with hotkey+start
+        * change: -fastboot is no longer a default parameter for Singe games
         * es: English spelling/grammar overhaul, multiple option names updated
         * es: added Xemu widescreen and render scale in advanced options
         * es: option to launch a game automatically at boot
         * es: option to show/hide border for Vice C64
-        * es: enabled retroachievements for libretro ppsspp, freeintv, o2em and pcfx
+        * es: enabled retroachievements for libretro ppsspp, freeintv, o2em, pcfx and libretro/melonds
         * bump: RetroArch 1.9.11 + updated libretro cores
         * bump: kernel to 5.14 (x86_64)
         * bump: gcc to 11
