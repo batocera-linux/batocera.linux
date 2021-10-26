@@ -59,7 +59,7 @@ doList() {
 	    ;;
 	"s922x")
 	    MODEL=$(cat /sys/firmware/devicetree/base/model)
-	    if test "${MODEL}" = "Hardkernel ODROID-N2Plus" -o "${MODEL}" = "Khadas VIM3" -o "${MODEL}" = "Beelink GT-King-Pro"
+	    if test "${MODEL}" = "Hardkernel ODROID-N2Plus" -o "${MODEL}" = "Khadas VIM3" -o "${MODEL}" = "Beelink GT-King Pro"
 	    then
 		echo "none NONE (2200Mhz)"
 		echo "high HIGH (2300Mhz)"
@@ -270,7 +270,7 @@ setValue() {
 	    ;;
 	"s922x")
 	    MODEL=$(cat /sys/firmware/devicetree/base/model)
-	    if test "${MODEL}" = "Hardkernel ODROID-N2Plus"
+	    if test "${MODEL}" = "Hardkernel ODROID-N2Plus" -o "${MODEL}" = "Khadas VIM3" -o "${MODEL}" = "Beelink GT-King Pro"
 	    then
 		setValue_odroidn2 "${VALUE}"
 	    fi
