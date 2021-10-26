@@ -154,8 +154,17 @@ class LibretroGenerator(Generator):
                 commandArray = [batoceraFiles.batoceraBins[system.config['emulator']], "-L", retroarchCore, "--config", system.config['configfile'], os.path.join(rom, romDOSName + ".bat")]
             else:
                 commandArray = [batoceraFiles.batoceraBins[system.config['emulator']], "-L", retroarchCore, "--config", system.config['configfile']]
+        # Pico-8 multi-carts (might work only with official Lexaloffe engine right now)
+        elif system.name == 'pico8':
+            romext = os.path.splitext(romName)[1]
+            if (romext.lower() == ".m3u"):
+                with open (rom, "r") as fpin:
+                    lines = fpin.readlines()
+                rom = os.path.dirname(os.path.abspath(rom)) + '/' + lines[0].strip()
+            commandArray = [batoceraFiles.batoceraBins[system.config['emulator']], "-L", retroarchCore, "--config", system.config['configfile']]
         else:
             commandArray = [batoceraFiles.batoceraBins[system.config['emulator']], "-L", retroarchCore, "--config", system.config['configfile']]
+
 
         configToAppend = []
 
