@@ -28,6 +28,7 @@ define DAPHNE_INSTALL_TARGET_CMDS
 		$(TARGET_DIR)/usr/share/daphne
 
 	ln -fs /userdata/system/configs/daphne/hypinput.ini $(TARGET_DIR)/usr/share/daphne/hypinput.ini
+    ln -fsn /userdata/roms/daphne/roms $(TARGET_DIR)/usr/share/daphne/singe
 endef
 
 $(eval $(cmake-package))
