@@ -1,0 +1,42 @@
+diff --git a/Makefile.libretro b/Makefile.libretro
+index a15d2c9..4ee05a5 100755
+--- a/Makefile.libretro
++++ b/Makefile.libretro
+@@ -83,16 +83,16 @@ ifneq (,$(findstring unix,$(platform)))
+ # ---FOR TEST ---
+ 	ifneq (,$(findstring rpi,$(platform)))
+ 		PLATFORM_DEFINES += -D_RASPBERRYPI
+-		CFLAGS += -fomit-frame-pointer -ffast-math -marm
++		CFLAGS += -fomit-frame-pointer -ffast-math
+ 		CXXFLAGS += $(CFLAGS)
+ 		ifneq (,$(findstring rpi0,$(platform)))
+ 			PLATFORM_DEFINES += -D_RASPBERRYPI0
+ 			PLATFORM_DEFINES += -D_RESOLUTION_AUTO_LOW
+-			# CFLAGS += -march=armv6j -mfpu=vfp -mfloat-abi=hard
++			# CFLAGS += -marm -march=armv6j -mfpu=vfp -mfloat-abi=hard
+ 		else ifneq (,$(findstring rpi1,$(platform)))
+ 			PLATFORM_DEFINES += -D_RASPBERRYPI1
+ 			PLATFORM_DEFINES += -D_RESOLUTION_AUTO_LOW
+-			CFLAGS += -march=armv6j -mfpu=vfp -mfloat-abi=hard
++			CFLAGS += -marm -march=armv6j -mfpu=vfp -mfloat-abi=hard
+ 		else ifneq (,$(findstring rpi2,$(platform)))
+ 			PLATFORM_DEFINES += -D_RASPBERRYPI2
+ 			PLATFORM_DEFINES += -D_RESOLUTION_AUTO_LOW
+@@ -100,11 +100,15 @@ ifneq (,$(findstring unix,$(platform)))
+ 		else ifneq (,$(findstring rpi3,$(platform)))
+ 			PLATFORM_DEFINES += -D_RASPBERRYPI3
+ 			PLATFORM_DEFINES += -D_RESOLUTION_AUTO_LOW
+-			CFLAGS += -mcpu=cortex-a53 -mfpu=neon-fp-armv8 -mfloat-abi=hard
++			ifneq (,$(findstring rpi3_64,$(platform)))
++				CFLAGS += -mcpu=cortex-a53 -mtune=cortex-a53
++			else
++				CFLAGS += -marm -mcpu=cortex-a53 -mfpu=neon-fp-armv8 -mfloat-abi=hard
++			endif
+ 		else ifneq (,$(findstring rpi4,$(platform)))
+ 			PLATFORM_DEFINES += -D_RASPBERRYPI4
+ 			PLATFORM_DEFINES += -D_RESOLUTION_AUTO_LOW
+-			CFLAGS += -mcpu=cortex-a72 -mfpu=neon-fp-armv8 -mfloat-abi=hard
++			CFLAGS += -mcpu=cortex-a72 -mtune=cortex-a72
+ 		else
+ 			PLATFORM_DEFINES += -D_RASPBERRYPI
+ 			PLATFORM_DEFINES += -D_RESOLUTION_AUTO_MEDIUM
