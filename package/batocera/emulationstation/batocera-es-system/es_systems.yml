@@ -23,6 +23,7 @@ snes-msu1:
   release: 1991
   hardware: console
   extensions: [smc, sfc]
+  group:      snes
   emulators:
     libretro:
       pocketsnes:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_POCKETSNES]}
