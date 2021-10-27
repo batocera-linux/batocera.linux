@@ -401,6 +401,7 @@ config BR2_PACKAGE_BATOCERA_TOOLS
 	select BR2_PACKAGE_NANO             # basic nano emulator
 	select BR2_PACKAGE_ZIP              # zip tool
 	select BR2_PACKAGE_P7ZIP            # zip tool
+	select BR2_PACKAGE_SQUASHFS         # mksquash tool
 	select BR2_PACKAGE_HTOP             # multi-cpus usage
     select BR2_PACKAGE_NCDU             # Disk Usage
 	select BR2_PACKAGE_FFMPEG_XCBGRAB   if BR2_PACKAGE_XORG7
