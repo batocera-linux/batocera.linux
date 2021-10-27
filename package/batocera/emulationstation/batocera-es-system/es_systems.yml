@@ -495,6 +495,24 @@ psp:
   release: 2004
   hardware: portable
   extensions: [iso, cso, pbp]
+  group:      psp
+  emulators:
+    ppsspp:
+      ppsspp: { requireAnyOf: [BR2_PACKAGE_PPSSPP]  }
+    libretro:
+      ppsspp:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PPSSPP] }
+  comment_en: |
+    For more info: https://wiki.batocera.org/systems:psp
+  comment_fr: |
+    Trouvez la documentation ici: https://wiki.batocera.org/systems:psp
+
+pspminis:
+  name:       Sony Playstation Portable Mini
+  manufacturer: Sony
+  release: 2004
+  hardware: portable
+  extensions: [iso, cso, pbp]
+  group:      psp
   emulators:
     ppsspp:
       ppsspp: { requireAnyOf: [BR2_PACKAGE_PPSSPP]  }
