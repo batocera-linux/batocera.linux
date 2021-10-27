@@ -284,11 +284,13 @@ class DuckstationGenerator(Generator):
 
 
 def getGfxRatioFromConfig(config, gameResolution):
-    #ratioIndexes = ["Auto (Game Native)", "4:3", "16:9", "1:1", "1:1 PAR", "2:1 (VRAM 1:1)", "3:2", "5:4", "8:7", "16:10", "19:9", "20:9", "32:9"]
+    #ratioIndexes = ["Auto (Game Native)", "Auto (Match Window)", "4:3", "16:9", "1:1", "1:1 PAR", "2:1 (VRAM 1:1)", "3:2", "5:4", "8:7", "16:10", "19:9", "20:9", "32:9"]
     # 2: 4:3 ; 1: 16:9  ; 0: auto
     if "ratio" in config:
         if config["ratio"] == "2/1":
             return "2:1 (VRAM 1:1)"
+        elif config["ratio"] == "full":
+            return "Auto (Match Window)"
         else:
             return config["ratio"].replace("/",":")
 
