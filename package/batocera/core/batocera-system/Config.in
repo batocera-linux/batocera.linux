@@ -99,6 +99,8 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
 	select BR2_PACKAGE_CIFS_UTILS                           # required for boot mounts
 	select BR2_PACKAGE_BATOCERA_IMAGE                       # tools to generate batocera image
 	select BR2_TARGET_ROOTFS_SQUASHFS                       # tool to generate the target image
+	select BR2_PACKAGE_SQUASHFS_XZ                          # some squashfs options
+	select BR2_PACKAGE_SQUASHFS_ZSTD                        # some squashfs options
 	select BR2_PACKAGE_DOSFSTOOLS                           # fat
 	select BR2_PACKAGE_DOSFSTOOLS_FSCK_FAT                  # fat
 	select BR2_PACKAGE_DOSFSTOOLS_MKFS_FAT                  # fat
