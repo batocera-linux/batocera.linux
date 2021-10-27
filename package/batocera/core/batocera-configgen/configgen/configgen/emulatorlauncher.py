@@ -136,7 +136,67 @@ generators = {
     #'play': PlayGenerator(),
 }
 
+def squashfs_begin(rom):
+    eslog.debug("squashfs_begin({})".format(rom))
+    romnosq = rom[:-9]
+
+    # the basic idea is to mount the game toto.squash to toto to make
+    # as if the squashfs was already extracted
+    # thus, options used will be the same as if it were extracted
+
+    # first, try to clean an empty remaining directory (for example because of a crash)
+    if os.path.exists(romnosq) and os.path.isdir(romnosq):
+        eslog.debug("squashfs_begin: {} already exists".format(romnosq))
+        # try to remove an empty directory, else, run the directory, ignoring the .squashfs
+        try:
+            os.rmdir(romnosq)
+        except:
+            eslog.debug("squashfs_begin: failed to rmdir {}".format(romnosq))
+            return False, romnosq
+
+    # ok, the base directory doesn't exist, let's create it and mount the squashfs on it
+    os.mkdir(romnosq)
+    return_code = subprocess.call(["mount", rom, romnosq])
+    if return_code != 0:
+        eslog.debug("squashfs_begin: mounting {} failed".format(romnosq))
+        try:
+            os.rmdir(romnosq)
+        except:
+            pass
+        raise Exception("unable to mount the file {}".format(rom))
+    return True, romnosq
+
+def squashfs_end(rom):
+    eslog.debug("squashfs_end({})".format(rom))
+    romnosq = rom[:-9]
+
+    # umount
+    return_code = subprocess.call(["umount", romnosq])
+    if return_code != 0:
+        eslog.debug("squashfs_begin: unmounting {} failed".format(romnosq))
+        raise Exception("unable to umount the file {}".format(romnosq))
+
+    # cleaning the empty directory
+    os.rmdir(romnosq)
+
 def main(args, maxnbplayers):
+    # squashfs roms if squashed
+    extension = os.path.splitext(args.rom)[1][1:].lower()
+    if extension == "squashfs":
+        exitCode = 0
+        need_end = False
+        try:
+            need_end, rom = squashfs_begin(args.rom)
+            exitCode = start_rom(args, maxnbplayers, rom)
+        finally:
+            if need_end:
+                squashfs_end(args.rom)
+        return exitCode
+    else:
+        return start_rom(args, maxnbplayers, args.rom)
+
+def start_rom(args, maxnbplayers, rom):
+    # controllers
     playersControllers = dict()
 
     controllersInput = []
@@ -156,7 +216,7 @@ def main(args, maxnbplayers):
     # find the system to run
     systemName = args.system
     eslog.debug("Running system: {}".format(systemName))
-    system = Emulator(systemName, args.rom)
+    system = Emulator(systemName, rom)
 
     if args.emulator is not None:
         system.config["emulator"] = args.emulator
@@ -217,8 +277,8 @@ def main(args, maxnbplayers):
         if "core" in system.config and system.config["core"] is not None:
             effectiveCore = system.config["core"]
         effectiveRom = ""
-        if args.rom is not None:
-            effectiveRom = args.rom
+        if rom is not None:
+            effectiveRom = rom
 
         # network options
         if args.netplaymode is not None:
@@ -259,7 +319,7 @@ def main(args, maxnbplayers):
             if executionDirectory is not None:
                 os.chdir(executionDirectory)
 
-            exitCode = runCommand(generators[system.config['emulator']].generate(system, args.rom, playersControllers, gameResolution))
+            exitCode = runCommand(generators[system.config['emulator']].generate(system, rom, playersControllers, gameResolution))
         finally:
             Evmapy.stop()
 
