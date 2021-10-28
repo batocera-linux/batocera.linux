@@ -1,0 +1,102 @@
+diff --git a/Core/Config.cpp b/Core/Config.cpp
+index 305098f..ea7443f 100644
+--- a/Core/Config.cpp
++++ b/Core/Config.cpp
+@@ -1280,9 +1280,9 @@ void Config::Reload() {
+ // really think of any other legit uses).
+ void Config::UpdateIniLocation(const char *iniFileName, const char *controllerIniFilename) {
+ 	const bool useIniFilename = iniFileName != nullptr && strlen(iniFileName) > 0;
+-	iniFilename_ = FindConfigFile(useIniFilename ? iniFileName : "ppsspp.ini");
++	iniFilename_ = Path("/userdata/system/configs/ppsspp/PSP/SYSTEM") / "ppsspp.ini";
+ 	const bool useControllerIniFilename = controllerIniFilename != nullptr && strlen(controllerIniFilename) > 0;
+-	controllerIniFilename_ = FindConfigFile(useControllerIniFilename ? controllerIniFilename : "controls.ini");
++	controllerIniFilename_ = Path("/userdata/system/configs/ppsspp/PSP/SYSTEM") / "controls.ini";
+ }
+ 
+ void Config::Load(const char *iniFileName, const char *controllerIniFilename) {
+diff --git a/Core/System.cpp b/Core/System.cpp
+index 04070c6..b5da56f 100644
+--- a/Core/System.cpp
++++ b/Core/System.cpp
+@@ -586,32 +586,25 @@ CoreParameter &PSP_CoreParameter() {
+ }
+ 
+ Path GetSysDirectory(PSPDirectories directoryType) {
+-	Path memStickDirectory = g_Config.memStickDirectory;
+-	Path pspDirectory;
+-	if (memStickDirectory.GetFilename() == "PSP") {
+-		// Let's strip this off, to easily allow choosing a root directory named "PSP" on Android.
+-		pspDirectory = memStickDirectory;
+-	} else {
+-		pspDirectory = memStickDirectory / "PSP";
+-	}
++	Path pspDirectory = Path("/userdata/saves/psp/");
+ 
+ 	switch (directoryType) {
+ 	case DIRECTORY_PSP:
+ 		return pspDirectory;
+ 	case DIRECTORY_CHEATS:
+-		return pspDirectory / "Cheats";
++		return Path("/userdata/cheats/psp/");
+ 	case DIRECTORY_GAME:
+ 		return pspDirectory / "GAME";
+ 	case DIRECTORY_SAVEDATA:
+ 		return pspDirectory / "SAVEDATA";
+ 	case DIRECTORY_SCREENSHOT:
+-		return pspDirectory / "SCREENSHOT";
++		return Path("/userdata/screenshots/");
+ 	case DIRECTORY_SYSTEM:
+ 		return pspDirectory / "SYSTEM";
+ 	case DIRECTORY_PAUTH:
+-		return memStickDirectory / "PAUTH";  // This one's at the root...
++		return pspDirectory / "PAUTH";  // This one's at the root...
+ 	case DIRECTORY_EXDATA:
+-		return memStickDirectory / "EXDATA";  // This one's traditionally at the root...
++		return pspDirectory / "EXDATA";  // This one's traditionally at the root...
+ 	case DIRECTORY_DUMP:
+ 		return pspDirectory / "SYSTEM/DUMP";
+ 	case DIRECTORY_SAVESTATE:
+@@ -630,7 +623,7 @@ Path GetSysDirectory(PSPDirectories directoryType) {
+ 	case DIRECTORY_VIDEO:
+ 		return pspDirectory / "VIDEO";
+ 	case DIRECTORY_AUDIO:
+-		return pspDirectory / "AUDIO";
++		return Path("/userdata/music/");
+ 	case DIRECTORY_CUSTOM_SHADERS:
+ 		return pspDirectory / "shaders";
+ 
+diff --git a/SDL/SDLJoystick.cpp b/SDL/SDLJoystick.cpp
+index c129ac8..94ea3f8 100644
+--- a/SDL/SDLJoystick.cpp
++++ b/SDL/SDLJoystick.cpp
+@@ -24,7 +24,7 @@ SDLJoystick::SDLJoystick(bool init_SDL ) : registeredAsEventHandler(false) {
+ 		SDL_Init(SDL_INIT_JOYSTICK | SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER);
+ 	}
+ 
+-	const char *dbPath = "gamecontrollerdb.txt";
++	const char *dbPath = "/userdata/system/configs/ppsspp/gamecontrollerdb.txt";
+ 	cout << "loading control pad mappings from " << dbPath << ": ";
+ 
+ 	size_t size;
+@@ -33,7 +33,7 @@ SDLJoystick::SDLJoystick(bool init_SDL ) : registeredAsEventHandler(false) {
+ 		SDL_RWops *rw = SDL_RWFromConstMem(mappingData, size);
+ 		// 1 to free the rw after use
+ 		if (SDL_GameControllerAddMappingsFromRW(rw, 1) == -1) {
+-			cout << "Failed to read mapping data - corrupt?" << endl;
++			cout << "/userdata/system/configs/ppsspp/gamecontrollerdb.txt missing" << endl;
+ 		}
+ 		delete[] mappingData;
+ 	} else {
+diff --git a/UI/NativeApp.cpp b/UI/NativeApp.cpp
+index 4bb1c42..15abbd0 100644
+--- a/UI/NativeApp.cpp
++++ b/UI/NativeApp.cpp
+@@ -487,7 +487,7 @@ void NativeInit(int argc, const char *argv[], const char *savegame_dir, const ch
+ 	VFSRegister("", new DirectoryAssetReader(File::GetExeDirectory()));
+ 	VFSRegister("", new DirectoryAssetReader(Path("/usr/local/share/ppsspp/assets")));
+ 	VFSRegister("", new DirectoryAssetReader(Path("/usr/local/share/games/ppsspp/assets")));
+-	VFSRegister("", new DirectoryAssetReader(Path("/usr/share/ppsspp/assets")));
++	VFSRegister("", new DirectoryAssetReader(Path("/usr/share/ppsspp/PPSSPP")));
+ 	VFSRegister("", new DirectoryAssetReader(Path("/usr/share/games/ppsspp/assets")));
+ #endif
+ 
