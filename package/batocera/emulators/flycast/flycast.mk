@@ -3,8 +3,8 @@
 # FLYCAST
 #
 ################################################################################
-# Version.: Release on May 29, 2021
-FLYCAST_VERSION = v1.0
+# Version.: Release on Aug 30, 2021
+FLYCAST_VERSION = v1.1
 FLYCAST_SITE = https://github.com/flyinghead/flycast.git
 FLYCAST_SITE_METHOD=git
 FLYCAST_GIT_SUBMODULES=YES
@@ -50,12 +50,12 @@ ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_S922X),y)
 endif
 
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI3),y)
-    FLYCAST_PLATFORM = rpi3-64-mesa
+    FLYCAST_PLATFORM = rpi3_64-mesa
     FLYCAST_EXTRA_ARGS += USE_SDL=1 USE_SDLAUDIO=1
 endif
 
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RPI4),y)
-	FLYCAST_PLATFORM = rpi4-64-mesa
+	FLYCAST_PLATFORM = rpi4_64-mesa
 	FLYCAST_EXTRA_ARGS += USE_SDL=1 USE_SDLAUDIO=1
 endif
 

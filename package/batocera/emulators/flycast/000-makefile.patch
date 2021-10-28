@@ -1,6 +1,8 @@
---- a/shell/linux/Makefile	2021-02-25 15:25:19.863682760 +0100
-+++ b/shell/linux/Makefile	2021-02-25 20:55:29.119615303 +0100
-@@ -146,7 +146,7 @@
+diff --git a/shell/linux/Makefile b/shell/linux/Makefile
+index addc7d4..7a9a146 100644
+--- a/shell/linux/Makefile
++++ b/shell/linux/Makefile
+@@ -144,7 +144,7 @@ ifndef USE_SDL
  endif
      ARM64_REC := 1
      ISARM64 := 1
@@ -9,45 +11,56 @@
      CXXFLAGS += -fexceptions
  
  # Generic 32 bit ARMhf (a.k.a. ARMv7h)
-@@ -155,7 +155,8 @@
+@@ -155,6 +155,7 @@ else ifneq (,$(findstring armv7h,$(platform)))
          MFLAGS += -mfpu=neon
          ASFLAGS += -mfpu=neon
      endif
--    USE_GLES := 1
 +    CFLAGS += -DARM_HARDFP -fsingle-precision-constant -DEGL_NO_X11
-+  USE_GLES := 1
+     USE_GLES := 1
  
  # LinCPP
- else ifneq (,$(findstring lincpp,$(platform)))
-@@ -168,6 +168,17 @@
-     CFLAGS += -D TARGET_NO_JIT
-     CXXFLAGS += -fexceptions -std=gnu++11
- 
-+# Raspberry Pi 4 aarch64 + mesa vulkan
-+else ifneq (,$(findstring rpi4-64-mesa,$(platform)))
-+    NOT_ARM := 1
-+    ARM64_REC := 1
-+    ISARM64 := 1
-+    USE_GLES := 1
-+    USE_SDL := 1
-+    MFLAGS += -mcpu=cortex-a72 -mtune=cortex-a72
-+    CFLAGS += -fno-builtin-sqrtf  -fsingle-precision-constant -fpermissive -DGLES3 -DEGL_NO_X11 
-+    CXXFLAGS += -fexceptions
-+
- # Raspberry Pi
- else ifneq (,$(findstring rpi,$(platform)))
-     CFLAGS += -DARM_HARDFP -fsingle-precision-constant
-@@ -177,6 +188,7 @@
-     else ifneq (,$(findstring rpi3,$(platform)))
-         MFLAGS += -march=armv8-a+crc -mtune=cortex-a53 -mfpu=neon-fp-armv8 -mfloat-abi=hard -marm
-         ASFLAGS += -march=armv8-a+crc -mtune=cortex-a53 -mfpu=neon-fp-armv8 -mfloat-abi=hard -marm
+@@ -170,13 +171,33 @@ else ifneq (,$(findstring rpi,$(platform)))
+     ifneq (,$(findstring rpi2,$(platform)))
+         MFLAGS += -mcpu=cortex-a7 -mfpu=neon-vfpv4 -mfloat-abi=hard
+         ASFLAGS += -mcpu=cortex-a7 -mfpu=neon-vfpv4 -mfloat-abi=hard
 +        CFLAGS += -DEGL_NO_X11
+     else ifneq (,$(findstring rpi3,$(platform)))
+-        MFLAGS += -march=armv8-a+crc -mtune=cortex-a53 -mfpu=neon-fp-armv8 -mfloat-abi=hard -marm
+-        ASFLAGS += -march=armv8-a+crc -mtune=cortex-a53 -mfpu=neon-fp-armv8 -mfloat-abi=hard -marm
++        ifneq (,$(findstring rpi3_64,$(platform)))
++            NOT_ARM := 1
++            ARM64_REC := 1
++            ISARM64 := 1
++            MFLAGS += -mcpu=cortex-a53 -mtune=cortex-a53
++            CFLAGS += -fno-builtin-sqrtf  -fsingle-precision-constant -fpermissive -DEGL_NO_X11 
++            CXXFLAGS += -fexceptions
++        else
++            MFLAGS += -march=armv8-a+crc -mtune=cortex-a53 -mfpu=neon-fp-armv8 -mfloat-abi=hard -marm
++            ASFLAGS += -march=armv8-a+crc -mtune=cortex-a53 -mfpu=neon-fp-armv8 -mfloat-abi=hard -marm
++            CFLAGS += -DEGL_NO_X11
++        endif
      else ifneq (,$(findstring rpi4,$(platform)))
-         MFLAGS += -march=armv8-a+crc -mtune=cortex-a72 -mfpu=neon-fp-armv8 -mfloat-abi=hard -marm
-         ASFLAGS += -march=armv8-a+crc -mtune=cortex-a72 -mfpu=neon-fp-armv8 -mfloat-abi=hard -marm
-@@ -214,6 +226,53 @@
+-        MFLAGS += -march=armv8-a+crc -mtune=cortex-a72 -mfpu=neon-fp-armv8 -mfloat-abi=hard -marm
+-        ASFLAGS += -march=armv8-a+crc -mtune=cortex-a72 -mfpu=neon-fp-armv8 -mfloat-abi=hard -marm
+-        CFLAGS += -DGLES3
++        ifneq (,$(findstring rpi4_64,$(platform)))
++            NOT_ARM := 1
++            ARM64_REC := 1
++            ISARM64 := 1
++            MFLAGS += -mcpu=cortex-a72 -mtune=cortex-a72
++            CFLAGS += -fno-builtin-sqrtf  -fsingle-precision-constant -fpermissive -DGLES3 -DEGL_NO_X11 
++            CXXFLAGS += -fexceptions
++        else
++            MFLAGS += -march=armv8-a+crc -mtune=cortex-a72 -mfpu=neon-fp-armv8 -mfloat-abi=hard -marm
++            ASFLAGS += -march=armv8-a+crc -mtune=cortex-a72 -mfpu=neon-fp-armv8 -mfloat-abi=hard -marm
++            CFLAGS += -DGLES3
++        endif
+     endif
+     ifneq (,$(findstring mesa,$(platform)))
+         USE_SDL := 1
+@@ -208,6 +229,53 @@ else ifneq (,$(findstring pandora,$(platform)))
      ASFLAGS += -march=armv7-a -mfpu=neon -mfloat-abi=softfp
-     CFLAGS += -D TARGET_PANDORA  -D WEIRD_SLOWNESS -fsingle-precision-constant
+     CFLAGS += -D TARGET_PANDORA -DPANDORA
  
 +# ODROID c2 aarch64
 +else ifneq (,$(findstring odroidc2,$(platform)))
@@ -99,3 +112,12 @@
  # ODROIDs
  else ifneq (,$(findstring odroid,$(platform)))
      MFLAGS += -marm -mfpu=neon -mfloat-abi=hard -funroll-loops
+@@ -223,7 +291,7 @@ else ifneq (,$(findstring odroid,$(platform)))
+     ifneq (,$(findstring odroidxu3,$(platform)))
+         MFLAGS += -march=armv7ve -mcpu=cortex-a15 -mtune=cortex-a15.cortex-a7 -mfpu=neon-vfpv4 -mvectorize-with-neon-quad
+         ASFLAGS += -march=armv7ve
+-		CFLAGS += -DGLES3
++		CFLAGS += -DGLES3 -DEGL_NO_X11=1
+     # Other ODROIDs
+     else
+         MFLAGS += -march=armv7-a
