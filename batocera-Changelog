@@ -11,6 +11,7 @@
         * add: added channelf, pico8, supervision and 3ds to thebezelproject
         * add: rick dangerous
         * add: roms which are directory can now be squashed (aka as a single compressed file. for example for ps3 roms)
+        * add: "full" as a ratio option, stretches the image to fill the screen (no matter its dimensions, not supported by all emulators yet)
         * fix: gamecube now uses dolphin's default controls
         * fix: borders are now shown on Vice C64, also fixed default aspect ratio
         * fix: duckstation quick menu can now actually be accessed with hotkey+south
@@ -19,6 +20,7 @@
         * fix: duplicate pads no longer share an ID, allowing multiple identical controllers to be used for multiplayer
         * fix: ecwolf now works
         * fix: fixed resizefs silently failing
+        * fix: low-end gpu shaders (such as rpi1) to reduce lag on those devices when using shader sets
         * change: RPi3 default audio buffer to 96ms, gb/gbc to 196ms
         * change: MAME no-nag patch (x86_64)
         * change: MAME DS3 d-pad button mappings (x86_64)
@@ -28,11 +30,13 @@
         * change: Kodi re-enabled on RPi2
         * change: Devilutionx and Steam games can be closed with hotkey+start
         * change: -fastboot is no longer a default parameter for Singe games
+        * change: updated splash screen
         * es: English spelling/grammar overhaul, multiple option names updated
         * es: added Xemu widescreen and render scale in advanced options
         * es: option to launch a game automatically at boot
         * es: option to show/hide border for Vice C64
         * es: enabled retroachievements for libretro ppsspp, freeintv, o2em, pcfx and libretro/melonds
+        * es: snes-msu1 added to the snes group
         * bump: RetroArch 1.9.11 + updated libretro cores
         * bump: kernel to 5.14 (x86_64)
         * bump: gcc to 11
