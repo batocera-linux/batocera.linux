@@ -5,15 +5,18 @@
         * new language : hebrew
         * add: .gbc2 is now an additional acceptable extension for both GB2Player and GBC2Player dual-rom playlists
         * add: FSR & DLSS support for Wine (x86_64)
-        * add: Adventure Vision & CD-i via MAME (x86_64)
-        * add: LCD Games system (MAME & lr-gw on x86_64, lr-gw on all others)
+		* add: Adventure Vision, CD-i, CreatiVision, PV-1000, Game.com, Gamate, TV Games (P&P Consoles), Fujitsu FM-7, Game Pocket Computer, APF M-1000, BBC Micro, Coleco ADAM, Arcadia 2001, Game Master, Bally Astrocade, TI-99, Tomy Tutor, Tandy Color Computer, & Mega Duck via MAME (x86_64)
+		* add: LCD Games system (MAME & lr-gw on x86_64, lr-gw on all others)
+		* add: Media Type option for MAME systems with multiple ROM types (floppy, CD, cassette, etc.) (x86_64)
+		* add: Toggle for UI mode in MAME via Hotkey + D-Pad Up or Scroll Lock, plus per-system/game setting for MAME computer systems (x86_64)
+		* add: Per-game config option for MAME systems with a keyboard or keypad (set controls via MAME's UI) (x86_64)
         * add: "roms/port" folder now exists by default
         * fix: gamecube now uses dolphin's default controls
         * fix: borders are now shown on Vice C64, also fixed default aspect ratio
         * fix: duckstation quick menu can now actually be accessed with hotkey+south
         * change: RPi3 default audio buffer to 96ms, gb/gbc to 196ms
         * change: MAME no-nag patch (x86_64)
-        * change: MAME DS3 d-pad button mappings (x86_64)
+        * change: Option for MAME controllers that use buttons as D-Pad directions (DS3, X360 dongle) (x86_64)
         * change: Game & Watch will group with LCD Games if enabled, and MAME is enabled for x86_64
         * change: The "amlogic/s905gen3/tvbox" image is now titled "amlogic/s905gen3/tvbox-gen3"
         * es: English spelling/grammar overhaul, multiple option names updated

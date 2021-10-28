@@ -2108,6 +2108,206 @@ advision:
   comment_en: |
           Requires MAME BIOS file advision.zip or .7z in either advision or BIOS folder.
 
+tvgames:
+  name:       TV Games
+  manufacturer: Various
+  release: 2002
+  hardware: console
+  extensions: [zip, 7z]
+  emulators:
+    mame:
+      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+
+megaduck:
+  name:       Mega Duck
+  manufacturer: Welback Holdings
+  release: 1993
+  hardware: portable
+  extensions:  [bin, zip, 7z]
+  emulators:
+    mame:
+      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+
+pv1000:
+  name:       PV-1000
+  manufacturer: Casio
+  release: 1983
+  hardware: console
+  extensions: [bin, zip, 7z]
+  emulators:
+    mame:
+      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+
+gamate:
+  name:       Gamate
+  manufacturer: Bitcorp
+  release: 1990
+  hardware: portable
+  extensions: [bin, zip, 7z]
+  emulators:
+    mame:
+      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+  comment_en: |
+          Requires MAME BIOS file gamate.zip or .7z in either gamate or BIOS folder.
+
+crvision:
+  name:       CreatiVision
+  manufacturer: VTech
+  release: 1982
+  hardware: console
+  extensions: [bin, rom, zip, 7z]
+  emulators:
+    mame:
+      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+  comment_en: |
+          Requires MAME BIOS file crvision.zip or .7z in either crvision or BIOS folder.
+
+gamecom:
+  name:       Game.com
+  manufacturer: Tiger Electronics
+  release: 1997
+  hardware: portable
+  extensions: [bin, tgc, zip, 7z]
+  emulators:
+    mame:
+      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+  comment_en: |
+          Requires MAME BIOS file gamecom.zip or .7z in either gamecom or BIOS folder.
+
+gamepock:
+  name:       Game Pocket Computer
+  manufacturer: Epoch
+  release: 1984
+  hardware: portable
+  extensions: [bin, zip, 7z]
+  emulators:
+    mame:
+      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+  comment_en: |
+          Requires MAME BIOS file gamepock.zip or .7z in either gamepock or BIOS folder.
+
+fm7:
+  name:       FM-7
+  manufacturer: Fujitsu
+  release: 1982
+  hardware: computer
+  extensions: [wav, t77, mfi, dfi, hfe, mfm, td0, imd, d77, d88, 1dd, cqm, cqi, dsk, zip, 7z]
+  emulators:
+    mame:
+      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+  comment_en: |
+          Requires MAME BIOS file fm7.zip or .7z in either fm7 or BIOS folder.
+
+apfm1000:
+  name:       APF M-1000
+  manufacturer: APF Electronics
+  release: 1978
+  hardware: console
+  extensions: [bin, zip, 7z]
+  emulators:
+    mame:
+      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+  comment_en: |
+          Requires MAME BIOS file apfm1000.zip or .7z in either apfm or BIOS folder.
+
+bbc:
+  name:       BBC Micro
+  manufacturer: Acorn
+  release: 1981
+  hardware: computer
+  extensions: [mfi, dfi, hfe, mfm, td0, imd, d77, d88, 1dd, cqm, cqi, dsk, ima, img, ufi, 360, ipf, ssd, bbc, dsd, adf, ads, adm, adl, fsd, wav, tap, bin, zip, 7z]
+  emulators:
+    mame:
+      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+  comment_en: |
+          Requires MAME BIOS files bbcb, bbc_acorn8271, & saa5050.zip or .7z in either bbc or BIOS folder.
+          Also sample pack bbc.zip or .7z in BIOS/mame/samples
+
+adam:
+  name:       Coleco ADAM
+  manufacturer: Coleco
+  release: 1982
+  hardware: computer
+  extensions: [wav, ddp, mfi, dfi, hfe, mfm, td0, imd, d77, d88, 1dd, cqm, cqi, dsk, rom, col, bin, zip, 7z]
+  emulators:
+    mame:
+      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+  comment_en: |
+          Requires the following MAME BIOS files as zip or 7z in the adam or BIOS folder:
+          adam, adam_ddp, adam_fdc, adam_kb, & adam_prn
+
+arcadia:
+  name:       Arcadia 2001
+  manufacturer: Emerson
+  release: 1982
+  hardware: console
+  extensions: [bin, zip, 7z]
+  emulators:
+    mame:
+      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+
+gmaster:
+  name:       Game Master
+  manufacturer: Hartung
+  release: 1990
+  hardware: portable
+  extensions: [bin, zip, 7z]
+  emulators:
+    mame:
+      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+  comment_en: |
+          Requires MAME BIOS file gmaster.zip or .7z in either gmaster or BIOS folder.
+
+astrocde:
+  name:       Astrocade
+  manufacturer: Bally
+  release: 1978
+  hardware: console
+  extensions: [bin, zip, 7z]
+  emulators:
+    mame:
+      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+  comment_en: |
+          Requires MAME BIOS file astrocde.zip or .7z in either astrocde or BIOS folder.
+
+ti99:
+  name:       TI-99
+  manufacturer: Texas Instruments
+  release: 1981
+  hardware: computer
+  extensions: [rpk, wav, zip, 7z]
+  emulators:
+    mame:
+      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+  comment_en: |
+          Requires MAME BIOS file ti99_4a.zip or .7z in either ti99 or BIOS folder.
+          Cartridges need to be in .rpk format and unzipped - the MAME software list files (.bin) will not run properly.
+
+tutor:
+  name:       Tomy Tutor
+  manufacturer: Tomy
+  release: 1983
+  hardware: computer
+  extensions: [bin, wav, zip, 7z]
+  emulators:
+    mame:
+      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+  comment_en: |
+          Requires MAME BIOS file tutor.zip or .7z in either tutor or BIOS folder.
+          To get through the loading menu, R1 will move down and A/East will select.
+
+coco:
+  name:       Color Computer
+  manufacturer: Tandy Radio Shack
+  release: 1980
+  hardware: computer
+  extensions: [wav, cas, ccc, rom, zip, 7z]
+  emulators:
+    mame:
+      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+  comment_en: |
+          Requires MAME BIOS file coco.zip or .7z in either coco or BIOS folder.
+
 switch:
   name:       Switch
   manufacturer: Nintendo
