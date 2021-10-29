@@ -598,7 +598,8 @@ config BR2_PACKAGE_BATOCERA_HANDHELD_SYSTEMS
 
 	# PSP
 	select BR2_PACKAGE_PPSSPP                   if !BR2_PACKAGE_BATOCERA_TARGET_RPI1 && !BR2_PACKAGE_BATOCERA_TARGET_RPI2 && !BR2_PACKAGE_BATOCERA_TARGET_CHA
-	select BR2_PACKAGE_LIBRETRO_PPSSPP          if  !BR2_PACKAGE_BATOCERA_RPI_ANY           && \
+	select BR2_PACKAGE_LIBRETRO_PPSSPP          if  !BR2_PACKAGE_BATOCERA_TARGET_RPI1       && \
+													!BR2_PACKAGE_BATOCERA_TARGET_RPI2       && \
                                                     !BR2_PACKAGE_BATOCERA_TARGET_CHA        && \
                                                     !BR2_PACKAGE_BATOCERA_TARGET_RK3326_ANY
 
