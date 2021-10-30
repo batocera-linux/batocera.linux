@@ -363,9 +363,9 @@ class EsSystemConf:
                 if not firstExt:
                     extension += " "
                 firstExt = False
-                extension += "." + item.lower()
+                extension += "." + str(item).lower()
                 if uppercase == True:
-                    extension += " ." + item.upper()
+                    extension += " ." + str(item).upper()
         return extension
 
     # Returns group to emulator rom folder
