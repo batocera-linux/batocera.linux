@@ -2020,6 +2020,21 @@ supervision:
     libretro:
       potator: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_WATARA] }
 
+gong:
+  name:       Pong
+  manufacturer: Ports
+  release: 1972
+  hardware: console
+  extensions: [game]
+  group: ports
+  emulators:
+    libretro:
+      gong: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GONG] }
+  comment_en: |
+    This system is a standalone libretro game. No rom required.
+  comment_fr: |
+    Ce système est le premier jeu de libretro autonome. Aucune rom n'est requise.
+
 ecwolf:
   name:       ECWolf
   manufacturer: Ports
