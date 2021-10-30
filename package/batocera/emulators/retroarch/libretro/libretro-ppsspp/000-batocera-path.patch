@@ -1,0 +1,13 @@
+diff --git a/libretro/libretro.cpp b/libretro/libretro.cpp
+index 0206b6b..70910ba 100644
+--- a/libretro/libretro.cpp
++++ b/libretro/libretro.cpp
+@@ -480,7 +480,7 @@ void retro_init(void)
+    if (environ_cb(RETRO_ENVIRONMENT_GET_SAVE_DIRECTORY, &dir_ptr) && dir_ptr)
+       retro_save_dir = Path(dir_ptr);
+ 
+-   retro_base_dir /= "PPSSPP";
++   retro_base_dir = Path("/usr/share/ppsspp/PPSSPP/");
+ 
+    g_Config.currentDirectory = retro_base_dir;
+    g_Config.defaultCurrentDirectory = retro_base_dir;

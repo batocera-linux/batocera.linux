@@ -72,8 +72,12 @@ endif
 LIBRETRO_PPSSPP_CONF_OPTS += -DCMAKE_C_FLAGS="$(LIBRETRO_PPSSPP_TARGET_CFLAGS)" -DCMAKE_CXX_FLAGS="$(LIBRETRO_PPSSPP_TARGET_CFLAGS)"
 
 define LIBRETRO_PPSSPP_INSTALL_TARGET_CMDS
-	$(INSTALL) -D $(@D)/lib/ppsspp_libretro.so \
+    $(INSTALL) -D $(@D)/lib/ppsspp_libretro.so \
 		$(TARGET_DIR)/usr/lib/libretro/ppsspp_libretro.so
+
+    # Required for game menus
+    mkdir -p $(TARGET_DIR)/usr/share/ppsspp
+	cp -R $(@D)/assets $(TARGET_DIR)/usr/share/ppsspp/PPSSPP
 endef
 
 $(eval $(cmake-package))
