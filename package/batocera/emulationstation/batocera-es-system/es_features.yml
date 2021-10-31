@@ -4051,6 +4051,185 @@ mame:
                 "Off":             null
                 "Rotate 90":       autoror
                 "Rotate 270":      autorol
+        altdpad:
+            prompt:      ALT DPAD MODE
+            description: If the D-Pad does not work properly
+            choices:
+                "Off (Default)":    0
+                "DS3 Orientation":  1
+                "X360 Orientation": 2
+  systems:
+       apfm1000:
+            cfeatures:
+                pergamecfg:
+                    prompt:      CUSTOM CONFIG
+                    description: Enable per-game custom configuration via MAME menu
+                    choices:
+                        "On":  1
+                        "Off": 0
+       arcadia:
+            cfeatures:
+                pergamecfg:
+                    prompt:      CUSTOM CONFIG
+                    description: Enable per-game custom configuration via MAME menu
+                    choices:
+                        "On":  1
+                        "Off": 0
+       astrocde:
+            cfeatures:
+                pergamecfg:
+                    prompt:      CUSTOM CONFIG
+                    description: Enable per-game custom configuration via MAME menu
+                    choices:
+                        "On":  1
+                        "Off": 0
+       crvision:
+            cfeatures:
+                altromtype:
+                    prompt:      MEDIA TYPE
+                    description: Type of ROM file (Cartridge default)
+                    choices:
+                        "Cartridge":   cart
+                        "Cassette":    cass
+                pergamecfg:
+                    prompt:      CUSTOM CONFIG
+                    description: Enable per-game custom configuration via MAME menu
+                    choices:
+                        "On":  1
+                        "Off": 0
+       fm7:
+            cfeatures:
+                altromtype:
+                    prompt:      MEDIA TYPE
+                    description: Type of ROM file (Disk 1 default)
+                    choices:
+                        "Cassette":       cass
+                        "Disk (Drive 1)": flop1
+                        "Disk (Drive 2)": flop2
+                enableui:
+                    prompt:      UI KEYS
+                    description: Hotkey + D-Pad Up or Scroll Lock to toggle in game
+                    choices:
+                        "Off at Start": 0
+                        "On at Start":  1
+                pergamecfg:
+                    prompt:      CUSTOM CONFIG
+                    description: Enable per-game custom configuration via MAME menu
+                    choices:
+                        "On":  1
+                        "Off": 0
+       bbc:
+            cfeatures:
+                altromtype:
+                    prompt:      MEDIA TYPE
+                    description: Type of ROM file (Floppy 1 default)
+                    choices:
+                        "Cassette":       cass
+                        "ROM (Slot 1)":   rom1
+                        "ROM (Slot 2)":   rom2
+                        "ROM (Slot 3)":   rom3
+                        "ROM (Slot 4)":   rom4
+                        "Disk (Drive 1)": flop1
+                        "Disk (Drive 2)": flop2
+                enableui:
+                    prompt:      UI KEYS
+                    description: Hotkey + D-Pad Up or Scroll Lock to toggle in game
+                    choices:
+                        "Off at Start": 0
+                        "On at Start":  1
+                pergamecfg:
+                    prompt:      CUSTOM CONFIG
+                    description: Enable per-game custom configuration via MAME menu
+                    choices:
+                        "On":  1
+                        "Off": 0
+       adam:
+            cfeatures:
+                altromtype:
+                    prompt:      MEDIA TYPE
+                    description: Type of ROM file (Cassette 1 default)
+                    choices:
+                        "Cassette 1":         cass1
+                        "Cassette 2":         cass2
+                        "Disk (Drive 1)":     flop1
+                        "Disk (Drive 2)":     flop2
+                        "Cartridge (Slot 1)": cart1
+                        "Cartridge (Slot 2)": cart2
+                        "Cartridge (Slot 3)": cart3
+                        "Cartridge (Slot 4)": cart4
+                enableui:
+                    prompt:      UI KEYS
+                    description: Hotkey + D-Pad Up or Scroll Lock to toggle in game
+                    choices:
+                        "Off at Start": 0
+                        "On at Start":  1
+                pergamecfg:
+                    prompt:      CUSTOM CONFIG
+                    description: Enable per-game custom configuration via MAME menu
+                    choices:
+                        "On":  1
+                        "Off": 0
+       ti99:
+            cfeatures:
+                altromtype:
+                    prompt:      MEDIA TYPE
+                    description: Type of ROM file (Cartridge default)
+                    choices:
+                        "Cassette 1":  cass1
+                        "Cassette 2":  cass2
+                        "Cartridge":   cart
+                enableui:
+                    prompt:      UI KEYS
+                    description: Hotkey + D-Pad Up or Scroll Lock to toggle in game
+                    choices:
+                        "Off at Start": 0
+                        "On at Start":  1
+                pergamecfg:
+                    prompt:      CUSTOM CONFIG
+                    description: Enable per-game custom configuration via MAME menu
+                    choices:
+                        "On":  1
+                        "Off": 0
+       tutor:
+            cfeatures:
+                altromtype:
+                    prompt:      MEDIA TYPE
+                    description: Type of ROM file (Cartridge default)
+                    choices:
+                        "Cassette":    cass
+                        "Cartridge":   cart
+                enableui:
+                    prompt:      UI KEYS
+                    description: Hotkey + D-Pad Up or Scroll Lock to toggle in game
+                    choices:
+                        "Off at Start": 0
+                        "On at Start":  1
+                pergamecfg:
+                    prompt:      CUSTOM CONFIG
+                    description: Enable per-game custom configuration via MAME menu
+                    choices:
+                        "On":  1
+                        "Off": 0
+       coco:
+            cfeatures:
+                altromtype:
+                    prompt:      MEDIA TYPE
+                    description: Type of ROM file (Cartridge default)
+                    choices:
+                        "Cassette":    cass
+                        "Cartridge":   cart
+                enableui:
+                    prompt:      UI KEYS
+                    description: Hotkey + D-Pad Up or Scroll Lock to toggle in game
+                    choices:
+                        "Off at Start": 0
+                        "On at Start":  1
+                pergamecfg:
+                    prompt:      CUSTOM CONFIG
+                    description: Enable per-game custom configuration via MAME menu
+                    choices:
+                        "On":  1
+                        "Off": 0
 
 wine:
   features: [padtokeyboard]
