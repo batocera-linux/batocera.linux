@@ -25,6 +25,12 @@ cdi:
 advision:
   emulator: mame
   core:     mame
+gamecube:
+  options:
+    ubershaders: asynchronous_ubershader
+wii:
+  options:
+    ubershaders: asynchronous_ubershader
 tvgames:
   emulator: mame
   core:     mame
