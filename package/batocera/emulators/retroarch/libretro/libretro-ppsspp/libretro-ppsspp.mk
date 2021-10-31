@@ -70,6 +70,13 @@ endif
 
 LIBRETRO_PPSSPP_CONF_OPTS += -DCMAKE_C_FLAGS="$(LIBRETRO_PPSSPP_TARGET_CFLAGS)" -DCMAKE_CXX_FLAGS="$(LIBRETRO_PPSSPP_TARGET_CFLAGS)"
 
+define LIBRETRO_PPSSPP_UPDATE_INCLUDES
+	sed -i 's/unknown/"$(shell echo $(LIBRETRO_PPSSPP_VERSION) | cut -c 1-7)"/g' $(@D)/git-version.cmake
+	sed -i "s+/opt/vc+$(STAGING_DIR)/usr+g" $(@D)/CMakeLists.txt
+endef
+
+LIBRETRO_PPSSPP_PRE_CONFIGURE_HOOKS += LIBRETRO_PPSSPP_UPDATE_INCLUDES
+
 define LIBRETRO_PPSSPP_INSTALL_TARGET_CMDS
     $(INSTALL) -D $(@D)/lib/ppsspp_libretro.so \
 		$(TARGET_DIR)/usr/lib/libretro/ppsspp_libretro.so
