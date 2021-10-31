@@ -3189,11 +3189,11 @@ dolphin:
                 "Vulkan": Vulkan
         ubershaders:
             prompt:      UBERSHADERS
-            description: Improve performance with Ubershaders (may not work on all hardware); asynchronous is preferred, synchronous is more compatible
+            description: Improve performance with Ubershaders (may not work well on all hardware); asynchronous is preferred, synchronous is more compatible
             choices:
                 "No Ubershaders":                          synchronous
-                "Ubershaders with synchronous (default)":  synchronous_ubershader
-                "Ubershaders with asynchronous":           asynchronous_ubershader
+                "Ubershaders (synchronous)":               synchronous_ubershader
+                "Ubershaders (asynchronous)":              asynchronous_ubershader
         wait_for_shaders:
             prompt:      PRE-CACHE SHADERS
             description: Wait for shaders to compile completely before starting the game, can reduce micro-freezes
