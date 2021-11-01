@@ -15,6 +15,7 @@ import shutil
 import utils.bezels as bezelsUtil
 import subprocess
 from xml.dom import minidom
+from PIL import Image, ImageOps
 
 eslog = get_logger(__name__)
 
@@ -224,9 +225,9 @@ class MameGenerator(Generator):
         if system.isOptSet('forceNoBezel') and system.getOptBoolean('forceNoBezel'):
             bezel = None
         try:
-            MameGenerator.writeBezelConfig(bezel, system.name, rom)
+            MameGenerator.writeBezelConfig(bezel, system, rom)
         except:
-            MameGenerator.writeBezelConfig(None, system.name, rom)
+            MameGenerator.writeBezelConfig(None, system, rom)
 
         return Command.Command(array=commandArray, env={"PWD":"/usr/bin/mame/","XDG_CONFIG_HOME":batoceraFiles.CONF, "XDG_CACHE_HOME":batoceraFiles.SAVES})
 
@@ -732,7 +733,7 @@ class MameGenerator(Generator):
         return "unknown"
 
     @staticmethod
-    def writeBezelConfig(bezel, systemName, rom):
+    def writeBezelConfig(bezel, system, rom):
         romBase = os.path.splitext(os.path.basename(rom))[0] # filename without extension
 
         tmpZipDir = "/var/run/mame_artwork/" + romBase # ok, no need to zip, a folder is taken too
@@ -747,7 +748,7 @@ class MameGenerator(Generator):
         os.makedirs(tmpZipDir)
 
         # bezels infos
-        bz_infos = bezelsUtil.getBezelInfos(rom, bezel, systemName)
+        bz_infos = bezelsUtil.getBezelInfos(rom, bezel, system.name)
         if bz_infos is None:
             return
 
@@ -765,6 +766,60 @@ class MameGenerator(Generator):
         bz_height = img_height
         bz_x = int((img_width - bz_width) / 2)
         bz_y = 0
+
+        if system.isOptSet('bezel.tattoo') and system.config['bezel.tattoo'] != "0":
+            if system.config['bezel.tattoo'] == 'system':
+                try:
+                    tattoo_file = '/usr/share/batocera/controller-overlays/'+system.name+'.png'
+                    if not os.path.exists(tattoo_file):
+                        tattoo_file = '/usr/share/batocera/controller-overlays/generic.png'
+                    tattoo = Image.open(tattoo_file)
+                except Exception as e:
+                    eslog.error("Error opening controller overlay: {}".format(tattoo_file))
+            elif system.config['bezel.tattoo'] == 'custom' and os.path.exists(system.config['bezel.tattoo_file']):
+                try:
+                    tattoo_file = system.config['bezel.tattoo_file']
+                    tattoo = Image.open(tattoo_file)
+                except:
+                    eslog.error("Error opening custom file: {}".format('tattoo_file'))
+            else:
+                try:
+                    tattoo_file = '/usr/share/batocera/controller-overlays/generic.png'
+                    tattoo = Image.open(tattoo_file)
+                except:
+                    eslog.error("Error opening custom file: {}".format('tattoo_file'))
+            output_png_file = "/tmp/bezel_tattooed.png"
+            back = Image.open(tmpZipDir + "/default.png")
+            tattoo = tattoo.convert("RGBA")
+            back = back.convert("RGBA")
+            tw,th = bezelsUtil.fast_image_size(tattoo_file)
+            tatwidth = int(241/1920 * img_width) # see in libretroConfig.py for the "241" explanation
+            pcent = float(tatwidth / tw)
+            tatheight = int(float(th) * pcent)
+            tattoo = tattoo.resize((tatwidth,tatheight), Image.ANTIALIAS)
+            alpha = back.split()[-1]
+            alphatat = tattoo.split()[-1]
+            if system.isOptSet('bezel.tattoo_corner'):
+                corner = system.config['bezel.tattoo_corner']
+            else:
+                corner = 'NW'
+            if (corner.upper() == 'NE'):
+                back.paste(tattoo, (img_width-tatwidth,20), alphatat) # 20 pixels vertical margins (on 1080p)
+            elif (corner.upper() == 'SE'):
+                back.paste(tattoo, (img_width-tatwidth,img_height-tatheight-20), alphatat)
+            elif (corner.upper() == 'SW'):
+                back.paste(tattoo, (0,img_height-tatheight-20), alphatat)
+            else: # default = NW
+                back.paste(tattoo, (0,20), alphatat)
+            imgnew = Image.new("RGBA", (img_width,img_height), (0,0,0,255))
+            imgnew.paste(back, (0,0,img_width,img_height))
+            imgnew.save(output_png_file, mode="RGBA", format="PNG")
+
+            try:
+                os.remove(tmpZipDir + "/default.png")
+            except:
+                pass
+            os.symlink(output_png_file, tmpZipDir + "/default.png")
 
         f = open(tmpZipDir + "/default.lay", 'w')
         f.write("<mamelayout version=\"2\">")

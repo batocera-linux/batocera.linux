@@ -765,19 +765,19 @@ def writeBezelConfig(bezel, retroarchConfig, rom, gameResolution, system):
                     tattoo_file = '/usr/share/batocera/controller-overlays/generic.png'
                 tattoo = Image.open(tattoo_file)
             except:
-                eslog.error("Error opening controller overlay: {}".format(system.config['bezel.tattoo_file']))
+                eslog.error("Error opening controller overlay: {}".format('tattoo_file'))
         elif system.config['bezel.tattoo'] == 'custom' and os.path.exists(system.config['bezel.tattoo_file']):
             try:
                 tattoo_file = system.config['bezel.tattoo_file']
                 tattoo = Image.open(tattoo_file)
             except:
-                eslog.error("Error openingi custom file: {}".format(system.config['bezel.tattoo_file']))
+                eslog.error("Error opening custom file: {}".format('tattoo_file'))
         else:
             try:
                 tattoo_file = '/usr/share/batocera/controller-overlays/generic.png'
                 tattoo = Image.open(tattoo_file)
             except:
-                eslog.error("Error openingi custom file: {}".format(system.config['bezel.tattoo_file']))
+                eslog.error("Error opening custom file: {}".format('tattoo_file'))
         output_png_file = "/tmp/bezel_tattooed.png"
         back = Image.open(overlay_png_file)
         tattoo = tattoo.convert("RGBA")
