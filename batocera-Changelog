@@ -5,11 +5,11 @@
         * new language : hebrew
         * add: .gbc2 is now an additional acceptable extension for both GB2Player and GBC2Player dual-rom playlists
         * add: FSR & DLSS support for Wine (x86_64)
-		* add: Adventure Vision, CD-i, CreatiVision, PV-1000, Game.com, Gamate, TV Games (P&P Consoles), Fujitsu FM-7, Game Pocket Computer, APF M-1000, BBC Micro, Coleco ADAM, Arcadia 2001, Game Master, Bally Astrocade, TI-99, Tomy Tutor, Tandy Color Computer, & Mega Duck via MAME (x86_64)
-		* add: LCD Games system (MAME & lr-gw on x86_64, lr-gw on all others)
-		* add: Media Type option for MAME systems with multiple ROM types (floppy, CD, cassette, etc.) (x86_64)
-		* add: Toggle for UI mode in MAME via Hotkey + D-Pad Up or Scroll Lock, plus per-system/game setting for MAME computer systems (x86_64)
-		* add: Per-game config option for MAME systems with a keyboard or keypad (set controls via MAME's UI) (x86_64)
+        * add: Adventure Vision, CD-i, CreatiVision, PV-1000, Game.com, Gamate, TV Games (P&P Consoles), Fujitsu FM-7, Game Pocket Computer, APF M-1000, BBC Micro, Coleco ADAM, Arcadia 2001, Game Master, Bally Astrocade, TI-99, Tomy Tutor, Tandy Color Computer, & Mega Duck via MAME (x86_64)
+        * add: LCD Games system (MAME & lr-gw on x86_64, lr-gw on all others)
+        * add: Media Type option for MAME systems with multiple ROM types (floppy, CD, cassette, etc.) (x86_64)
+        * add: Toggle for UI mode in MAME via Hotkey + D-Pad Up or Scroll Lock, plus per-system/game setting for MAME computer systems (x86_64)
+        * add: Per-game config option for MAME systems with a keyboard or keypad (set controls via MAME's UI) (x86_64)
         * add: "roms/port" folder now exists by default
         * add: added channelf, pico8, supervision and 3ds to thebezelproject
         * add: rick dangerous
@@ -17,6 +17,7 @@
         * add: "full" as a ratio option, stretches the image to fill the screen (no matter its dimensions, not supported by all emulators yet)
         * add: Gong, a libretro engine for Pong
         * add: enabled libretro-ppsspp for RPi3/4
+        * add: libretro-ppsspp enabled on oga/ogs/gameforce
         * fix: borders are now shown on Vice C64, also fixed default aspect ratio
         * fix: duckstation quick menu can now actually be accessed with hotkey+south
         * fix: RetroArch FSUAE options now functional in amiga500, amiga1200, atarist and sharpx68000.
@@ -58,6 +59,7 @@
         * bump: Xemu
         * bump: flycast to v1.1
         * bump: duckstation
+        * bump: ppsspp (and libretro-ppsspp) to v1.12.3
 
 2021/09/30 - batocera.linux 32
         * warning: rpi3 is now running in 64-bit mode.
