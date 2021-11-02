@@ -18,7 +18,6 @@ define BATOCERA_TRIGGERHAPPY_INSTALL_CONFIG
 endef
 
 define BATOCERA_TRIGGERHAPPY_INSTALL_ODROIDGOA_CONFIG
-	mkdir -p $(TARGET_DIR)/etc/triggerhappy/triggers.d
 	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-triggerhappy/conf/multimedia_keys_Hardkernel_ODROID_GO3.conf $(TARGET_DIR)/etc/triggerhappy/triggers.d
 	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-triggerhappy/conf/multimedia_keys_Anbernic_RG351P.conf       $(TARGET_DIR)/etc/triggerhappy/triggers.d
 
@@ -27,7 +26,6 @@ define BATOCERA_TRIGGERHAPPY_INSTALL_ODROIDGOA_CONFIG
 endef
 
 define BATOCERA_TRIGGERHAPPY_INSTALL_GAMEFORCE_CONFIG
-	mkdir -p $(TARGET_DIR)/etc/triggerhappy/triggers.d
 	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-triggerhappy/conf/multimedia_keys_gameforce.conf       $(TARGET_DIR)/etc/triggerhappy/triggers.d/multimedia_keys.conf
 endef
 
