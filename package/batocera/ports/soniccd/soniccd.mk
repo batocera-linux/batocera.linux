@@ -7,6 +7,8 @@ SONICCD_LICENSE = Custom
 define SONICCD_BUILD_CMDS
 	rm -rf $(@D)/dependencies/all/tinyxml2
 	git clone https://github.com/leethomason/tinyxml2.git $(@D)/dependencies/all/tinyxml2
+	git -C $(@D)/dependencies/all/tinyxml2 pull --all
+	git -C $(@D)/dependencies/all/tinyxml2 checkout -b soniccd a9773976845b19e89020c1215781e71116477ef1
 	$(TARGET_CONFIGURE_OPTS) $(MAKE) -C $(@D) -f Makefile VERBOSE=1
 endef
 
