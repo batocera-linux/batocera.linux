@@ -304,7 +304,7 @@ config BR2_TARGET_BATOCERA_IMAGES_DEFINITIONS
 	default "raspberrypi/rpi2"                                  if BR2_PACKAGE_BATOCERA_TARGET_RPI2
 	default "raspberrypi/rpi3"                                  if BR2_PACKAGE_BATOCERA_TARGET_RPI3
 	default "raspberrypi/rpi4"                                  if BR2_PACKAGE_BATOCERA_TARGET_RPI4
-	default "rockchip/odroidgoa"                                if BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA
+	default "rockchip/rk3326/odroidgoa"                         if BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA
 	default "rockchip/rk3326/gameforce"                         if BR2_PACKAGE_BATOCERA_TARGET_GAMEFORCE
 	default "rockchip/rk3288/tinkerboard rockchip/rk3288/miqi"  if BR2_PACKAGE_BATOCERA_TARGET_RK3288
 	default "rockchip/rk3399/rock960 rockchip/rk3399/rockpro64" if BR2_PACKAGE_BATOCERA_TARGET_RK3399
