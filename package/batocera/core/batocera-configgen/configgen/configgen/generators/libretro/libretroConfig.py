@@ -784,7 +784,7 @@ def writeBezelConfig(bezel, retroarchConfig, rom, gameResolution, system):
         back = back.convert("RGBA")
         w,h = bezelsUtil.fast_image_size(overlay_png_file)
         tw,th = bezelsUtil.fast_image_size(tattoo_file)
-        tatwidth = int(241/1920 * w) # see above for the "241" explanation
+        tatwidth = int(240/1920 * w) # 240 = half of the difference between 4:3 and 16:9 on 1920px (0.5*1920/16*4)
         pcent = float(tatwidth / tw)
         tatheight = int(float(th) * pcent)
         tattoo = tattoo.resize((tatwidth,tatheight), Image.ANTIALIAS)
