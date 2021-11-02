@@ -1,19 +1,22 @@
-
-SONICCD_VERSION = 'b99fed54b22821a3512cf5b09de9e826935668bd'
-SONICCD_SITE = $(call github,Rubberduckycooly,Sonic-CD-11-Decompilation,$(SONICCD_VERSION))
+################################################################################
+#
+# Sonic Retro Engine ports (Sonic CD)
+#
+################################################################################
+# Version.: Commits on Sep 01, 2021
+SONICCD_VERSION = 92ea97fe25174ed57fd8ab3fefda6dbe64dccf98
+SONICCD_SITE = https://github.com/Rubberduckycooly/Sonic-CD-11-Decompilation.git
+SONICCD_SITE_METHOD=git
+SONICCD_GIT_SUBMODULES=YES
 SONICCD_DEPENDENCIES = sdl2 libvorbis libogg libtheora
 SONICCD_LICENSE = Custom
 
 define SONICCD_BUILD_CMDS
-	rm -rf $(@D)/dependencies/all/tinyxml2
-	git clone https://github.com/leethomason/tinyxml2.git $(@D)/dependencies/all/tinyxml2
-	git -C $(@D)/dependencies/all/tinyxml2 pull --all
-	git -C $(@D)/dependencies/all/tinyxml2 checkout -b soniccd a9773976845b19e89020c1215781e71116477ef1
-	$(TARGET_CONFIGURE_OPTS) $(MAKE) -C $(@D) -f Makefile VERBOSE=1
+	$(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" -C $(@D)/ -f Makefile
 endef
 
 define SONICCD_INSTALL_TARGET_CMDS
-	$(INSTALL) -D -m 0755 $(@D)/bin/RSDKv3 $(TARGET_DIR)/usr/bin/soniccd
+	$(INSTALL) -D -m 0755 $(@D)/bin/soniccd $(TARGET_DIR)/usr/bin/soniccd
 endef
 
 define SONICCD_POST_PROCESS
