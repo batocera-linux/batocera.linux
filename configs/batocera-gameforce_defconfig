@@ -41,7 +41,7 @@ BR2_LINUX_KERNEL_CUSTOM_TARBALL=y
 BR2_LINUX_KERNEL_CUSTOM_TARBALL_LOCATION="$(call github,shantigilbert,hardkernel-linux,d167de7358c9c53d5e6592978f7cdde7674c420b)/d167de7358c9c53d5e6592978f7cdde7674c420b.tar.gz"
 BR2_LINUX_KERNEL_DEFCONFIG="gameforce"
 BR2_LINUX_KERNEL_PATCH="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/rk3326/gameforce/linux_patches"
-BR2_LINUX_KERNEL_CONFIG_FRAGMENT_FILES="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/rk3326/gameforce/linux-defconfig-fragment.config"
+BR2_LINUX_KERNEL_CONFIG_FRAGMENT_FILES="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/rk3326/linux-defconfig-fragment.config"
 BR2_LINUX_KERNEL_NEEDS_HOST_OPENSSL=y
 
 # Build the DTB from the kernel sources
