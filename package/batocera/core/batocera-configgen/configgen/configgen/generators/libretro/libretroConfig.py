@@ -811,7 +811,7 @@ def writeBezelConfig(bezel, retroarchConfig, rom, gameResolution, system):
     writeBezelCfgConfig(overlay_cfg_file, overlay_png_file)
 
 def isLowResolution(gameResolution):
-    return gameResolution["width"] < 400 or gameResolution["height"] < 400
+    return gameResolution["width"] <= 480 or gameResolution["height"] <= 480
 
 def writeBezelCfgConfig(cfgFile, overlay_png_file):
     fd = open(cfgFile, "w")

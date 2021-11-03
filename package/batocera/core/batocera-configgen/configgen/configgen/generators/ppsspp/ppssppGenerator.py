@@ -49,7 +49,7 @@ class PPSSPPGenerator(Generator):
 
     @staticmethod
     def isLowResolution(gameResolution):
-        return gameResolution["width"] < 400 or gameResolution["height"] < 400
+        return gameResolution["width"] <= 480 or gameResolution["height"] <= 480
 
     # Show mouse on screen for the Config Screen
     def getMouseMode(self, config):
