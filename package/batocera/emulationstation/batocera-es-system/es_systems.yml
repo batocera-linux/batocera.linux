@@ -572,7 +572,7 @@ scummvm:
   manufacturer: LucasArts
   release: 1987
   hardware: computer
-  extensions: [scummvm]
+  extensions: [scummvm, squashfs]
   platform:   pc
   emulators:
     scummvm:
@@ -1686,7 +1686,7 @@ daphne:
   manufacturer: Arcade
   release: 1983
   hardware: arcade
-  extensions: [daphne]
+  extensions: [daphne, squashfs]
   platform:   daphne, arcade
   emulators:
     daphne:
@@ -1832,7 +1832,7 @@ wiiu:
   manufacturer: Nintendo
   release: 2012
   hardware: console
-  extensions: [wup, wud, wux, rpx]
+  extensions: [wup, wud, wux, rpx, squashfs]
   platform:   wiiu
   theme:      wiiu
   emulators:
@@ -1858,7 +1858,7 @@ easyrpg:
   manufacturer: EasyRPG Team
   release: 2000
   hardware: port
-  extensions: [easyrpg]
+  extensions: [easyrpg, squashfs]
   emulators:
     easyrpg:
       easyrpg: { requireAnyOf: [BR2_PACKAGE_EASYRPG_PLAYER] }
@@ -1929,7 +1929,7 @@ mugen:
   manufacturer: Elecbyte
   release: 1999
   hardware: port
-  extensions: [pc]
+  extensions: [pc, squashfs]
   emulators:
     mugen:
       lutris:  { requireAnyOf: [BR2_PACKAGE_WINE_LUTRIS] }
@@ -2025,7 +2025,7 @@ ecwolf:
   manufacturer: Ports
   release: 2013
   hardware: port
-  extensions: [ecwolf, pk3]
+  extensions: [ecwolf, pk3, squashfs]
   group: ports
   emulators:
     ecwolf:
