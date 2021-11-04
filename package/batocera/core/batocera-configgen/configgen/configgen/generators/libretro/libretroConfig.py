@@ -537,10 +537,7 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
     if isLowResolution(gameResolution):
         retroarchConfig['width']  = gameResolution["width"]
         retroarchConfig['height'] = gameResolution["height"]
-        retroarchConfig['aspect_ratio_index'] = '0'
         retroarchConfig['video_font_size'] = '12'
-        retroarchConfig['menu_driver'] = 'rgui'
-        retroarchConfig['menu_rgui_transparency'] = 'false'
         retroarchConfig['menu_widget_scale_auto'] = 'false'
         retroarchConfig['menu_widget_scale_factor'] = '2.0000'
         retroarchConfig['menu_widget_scale_factor_windowed'] = '2.0000'

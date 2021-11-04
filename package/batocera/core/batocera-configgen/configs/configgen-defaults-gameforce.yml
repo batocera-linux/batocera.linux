@@ -1,16 +1,13 @@
 default:
   options:
     video_threaded: true
-    ratio: "3/2"
+    ratio: "4/3"
     retroarch.video_rotation: 0 # for people upgrading
     # menu retroarch
     retroarch.menu_driver: rgui
-    retroarch.menu_widget_scale_auto: "false"
-    retroarch.menu_widget_scale_factor: 1.5
 
 n64:
   options:
-    ratio: "16/9"
     mupen64plus.Video-General.Rotate: 0 # for people upgrading
 psp:
   options:
