@@ -3050,6 +3050,9 @@ libretro:
                     "Port2":    port2
                     "Port1+2":  port12
 
+    gong:
+      features: [autosave]
+
     ecwolf:
       features: []
 
@@ -4099,6 +4102,12 @@ mame:
                         "Off": 0
        fm7:
             cfeatures:
+                altmodel:
+                    prompt:      ALTERNATE MODEL
+                    description: Type of FM-7 to emulate
+                    choices:
+                        "FM-7":     fm7
+                        "FM-77AV":  fm77av
                 altromtype:
                     prompt:      MEDIA TYPE
                     description: Type of ROM file (Disk 1 default)

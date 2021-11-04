@@ -12,7 +12,7 @@ if BR2_PACKAGE_BATOCERA_TARGET_X86 || BR2_PACKAGE_BATOCERA_TARGET_X86_64
 	default y
 endif
 
-if BR2_PACKAGE_BATOCERA_TARGET_RK3399 || BR2_PACKAGE_BATOCERA_TARGET_RK3288 || BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA || BR2_PACKAGE_BATOCERA_TARGET_GAMEFORCE
+if BR2_PACKAGE_BATOCERA_TARGET_RK3399 || BR2_PACKAGE_BATOCERA_TARGET_RK3288 || BR2_PACKAGE_BATOCERA_TARGET_RK3326_ANY
 	config BR2_PACKAGE_BATOCERA_TARGET_ROCKCHIP_ANY
 	bool "rockchip_targets"
 	default y
@@ -304,8 +304,8 @@ config BR2_TARGET_BATOCERA_IMAGES_DEFINITIONS
 	default "raspberrypi/rpi2"                                  if BR2_PACKAGE_BATOCERA_TARGET_RPI2
 	default "raspberrypi/rpi3"                                  if BR2_PACKAGE_BATOCERA_TARGET_RPI3
 	default "raspberrypi/rpi4"                                  if BR2_PACKAGE_BATOCERA_TARGET_RPI4
-	default "rockchip/odroidgoa"                                if BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA
-	default "rockchip/gameforce"                                if BR2_PACKAGE_BATOCERA_TARGET_GAMEFORCE
+	default "rockchip/rk3326/odroidgoa"                         if BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA
+	default "rockchip/rk3326/gameforce"                         if BR2_PACKAGE_BATOCERA_TARGET_GAMEFORCE
 	default "rockchip/rk3288/tinkerboard rockchip/rk3288/miqi"  if BR2_PACKAGE_BATOCERA_TARGET_RK3288
 	default "rockchip/rk3399/rock960 rockchip/rk3399/rockpro64" if BR2_PACKAGE_BATOCERA_TARGET_RK3399
 	default "tritium-h5"                                        if BR2_PACKAGE_BATOCERA_TARGET_TRITIUM_H5
@@ -507,8 +507,7 @@ config BR2_PACKAGE_BATOCERA_SEGADC
                                                 !BR2_PACKAGE_BATOCERA_TARGET_RPI2           && \
                                                 !BR2_PACKAGE_BATOCERA_TARGET_X86            && \
                                                 !BR2_PACKAGE_BATOCERA_TARGET_CHA            && \
-                                                !BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA      && \
-                                                !BR2_PACKAGE_BATOCERA_TARGET_GAMEFORCE      && \
+                                                !BR2_PACKAGE_BATOCERA_TARGET_RK3326_ANY     && \
                                                 !BR2_PACKAGE_BATOCERA_TARGET_ROCKCHIP_ANY
 	select BR2_PACKAGE_LIBRETRO_FLYCAST     if  !BR2_PACKAGE_BATOCERA_TARGET_RPI1       && \
                                                 !BR2_PACKAGE_BATOCERA_TARGET_RPI2       && \
@@ -782,6 +781,7 @@ config BR2_PACKAGE_BATOCERA_RETROARCH
 	# RetroArch frontend and core data
 	select BR2_PACKAGE_RETROARCH
 	select BR2_PACKAGE_BATOCERA_BEZEL
+	select BR2_PACKAGE_BATOCERA_CONTROLLER_OVERLAYS
 	select BR2_PACKAGE_BATOCERA_SHADERS
 
 config BR2_PACKAGE_BATOCERA_CONSOLE_SYSTEMS
@@ -947,8 +947,8 @@ config BR2_PACKAGE_BATOCERA_CONSOLE_SYSTEMS
 	select BR2_PACKAGE_ECWOLF                       if BR2_PACKAGE_BATOCERA_TARGET_X86_64
 
 	# Sonic Retro Engine
-	select BR2_PACKAGE_SONIC2013                    # ALL
-	select BR2_PACKAGE_SONICCD                      # ALL
+	select BR2_PACKAGE_SONIC2013                    if !BR2_PACKAGE_BATOCERA_RPI_ANY && !BR2_PACKAGE_BATOCERA_TARGET_RK3326_ANY
+	select BR2_PACKAGE_SONICCD                      if !BR2_PACKAGE_BATOCERA_RPI_ANY && !BR2_PACKAGE_BATOCERA_TARGET_RK3326_ANY
 
 	# Super Cassette Vision
 	select BR2_PACKAGE_LIBRETRO_EMUSCV              # ALL

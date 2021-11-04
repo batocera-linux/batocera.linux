@@ -765,26 +765,26 @@ def writeBezelConfig(bezel, retroarchConfig, rom, gameResolution, system):
                     tattoo_file = '/usr/share/batocera/controller-overlays/generic.png'
                 tattoo = Image.open(tattoo_file)
             except:
-                eslog.error("Error opening controller overlay: {}".format(system.config['bezel.tattoo_file']))
+                eslog.error("Error opening controller overlay: {}".format('tattoo_file'))
         elif system.config['bezel.tattoo'] == 'custom' and os.path.exists(system.config['bezel.tattoo_file']):
             try:
                 tattoo_file = system.config['bezel.tattoo_file']
                 tattoo = Image.open(tattoo_file)
             except:
-                eslog.error("Error openingi custom file: {}".format(system.config['bezel.tattoo_file']))
+                eslog.error("Error opening custom file: {}".format('tattoo_file'))
         else:
             try:
                 tattoo_file = '/usr/share/batocera/controller-overlays/generic.png'
                 tattoo = Image.open(tattoo_file)
             except:
-                eslog.error("Error openingi custom file: {}".format(system.config['bezel.tattoo_file']))
+                eslog.error("Error opening custom file: {}".format('tattoo_file'))
         output_png_file = "/tmp/bezel_tattooed.png"
         back = Image.open(overlay_png_file)
         tattoo = tattoo.convert("RGBA")
         back = back.convert("RGBA")
         w,h = bezelsUtil.fast_image_size(overlay_png_file)
         tw,th = bezelsUtil.fast_image_size(tattoo_file)
-        tatwidth = int(241/1920 * w) # see above for the "241" explanation
+        tatwidth = int(240/1920 * w) # 240 = half of the difference between 4:3 and 16:9 on 1920px (0.5*1920/16*4)
         pcent = float(tatwidth / tw)
         tatheight = int(float(th) * pcent)
         tattoo = tattoo.resize((tatwidth,tatheight), Image.ANTIALIAS)
@@ -811,7 +811,7 @@ def writeBezelConfig(bezel, retroarchConfig, rom, gameResolution, system):
     writeBezelCfgConfig(overlay_cfg_file, overlay_png_file)
 
 def isLowResolution(gameResolution):
-    return gameResolution["width"] < 400 or gameResolution["height"] < 400
+    return gameResolution["width"] <= 480 or gameResolution["height"] <= 480
 
 def writeBezelCfgConfig(cfgFile, overlay_png_file):
     fd = open(cfgFile, "w")

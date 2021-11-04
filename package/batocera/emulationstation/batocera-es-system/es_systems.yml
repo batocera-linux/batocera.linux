@@ -572,7 +572,7 @@ scummvm:
   manufacturer: LucasArts
   release: 1987
   hardware: computer
-  extensions: [scummvm]
+  extensions: [scummvm, squashfs]
   platform:   pc
   emulators:
     scummvm:
@@ -1686,7 +1686,7 @@ daphne:
   manufacturer: Arcade
   release: 1983
   hardware: arcade
-  extensions: [daphne]
+  extensions: [daphne, squashfs]
   platform:   daphne, arcade
   emulators:
     daphne:
@@ -1832,7 +1832,7 @@ wiiu:
   manufacturer: Nintendo
   release: 2012
   hardware: console
-  extensions: [wup, wud, wux, rpx]
+  extensions: [wup, wud, wux, rpx, squashfs]
   platform:   wiiu
   theme:      wiiu
   emulators:
@@ -1858,7 +1858,7 @@ easyrpg:
   manufacturer: EasyRPG Team
   release: 2000
   hardware: port
-  extensions: [easyrpg]
+  extensions: [easyrpg, squashfs]
   emulators:
     easyrpg:
       easyrpg: { requireAnyOf: [BR2_PACKAGE_EASYRPG_PLAYER] }
@@ -1929,7 +1929,7 @@ mugen:
   manufacturer: Elecbyte
   release: 1999
   hardware: port
-  extensions: [pc]
+  extensions: [pc, squashfs]
   emulators:
     mugen:
       lutris:  { requireAnyOf: [BR2_PACKAGE_WINE_LUTRIS] }
@@ -2020,12 +2020,27 @@ supervision:
     libretro:
       potator: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_WATARA] }
 
+gong:
+  name:       Pong
+  manufacturer: Ports
+  release: 1972
+  hardware: console
+  extensions: [game]
+  group: ports
+  emulators:
+    libretro:
+      gong: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GONG] }
+  comment_en: |
+    This system is a standalone libretro game. No rom required.
+  comment_fr: |
+    Ce système est le premier jeu de libretro autonome. Aucune rom n'est requise.
+
 ecwolf:
   name:       ECWolf
   manufacturer: Ports
   release: 2013
   hardware: port
-  extensions: [ecwolf, pk3]
+  extensions: [ecwolf, pk3, squashfs]
   group: ports
   emulators:
     ecwolf:
@@ -2198,6 +2213,7 @@ fm7:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
           Requires MAME BIOS file fm7.zip or .7z in either fm7 or BIOS folder.
+          Optionally fm77av.zip or .7z for FM-77AV support.
 
 apfm1000:
   name:       APF M-1000
