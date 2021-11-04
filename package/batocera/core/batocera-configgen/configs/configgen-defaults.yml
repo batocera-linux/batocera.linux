@@ -102,9 +102,6 @@ devilutionx:
 dos:
   emulator: libretro
   core:     dosbox_pure
-  options:
-    videomode: default
-    video_threaded: false
 dreamcast:
   emulator: libretro
   core:     flycast
@@ -202,7 +199,7 @@ model3:
   core:     supermodel
 moonlight:
   emulator: moonlight
-  core: moonlight
+  core:     moonlight
 mrboom:
   emulator: libretro
   core:     mrboom
@@ -227,13 +224,9 @@ fpinball:
 n64:
   emulator: mupen64plus
   core:     glide64mk2
-  options:
-    videomode: max-640x480
 n64dd:
   emulator: mupen64plus
   core:     glide64mk2
-  options:
-    videomode: max-640x480
 naomi:
   emulator: libretro
   core:     flycast
@@ -261,9 +254,6 @@ odyssey2:
 openbor:
   emulator: openbor
   core:     openbor6412
-  options:
-    ratio:  0
-    filter: 0
 
 # P-S
 
@@ -288,8 +278,6 @@ pet:
 pico8:
   emulator: libretro
   core:     retro8
-  options:
-    ratio: 1/1
 pokemini:
   emulator: libretro
   core:     pokemini
@@ -415,13 +403,9 @@ windows_installers:
 wswan:
   emulator: libretro
   core:     mednafen_wswan
-  options:
-    ratio: 16/10
 wswanc:
   emulator: libretro
   core:     mednafen_wswan
-  options:
-    ratio: 16/10
 x1:
   emulator: libretro
   core:     x1
