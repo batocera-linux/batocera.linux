@@ -5,18 +5,19 @@
         * new language : hebrew
         * add: .gbc2 is now an additional acceptable extension for both GB2Player and GBC2Player dual-rom playlists
         * add: FSR & DLSS support for Wine (x86_64)
-		* add: Adventure Vision, CD-i, CreatiVision, PV-1000, Game.com, Gamate, TV Games (P&P Consoles), Fujitsu FM-7/FM-77AV, Game Pocket Computer, APF M-1000, BBC Micro, Coleco ADAM, Arcadia 2001, Game Master, Bally Astrocade, TI-99, Tomy Tutor, Tandy Color Computer, & Mega Duck via MAME (x86_64)
-		* add: LCD Games system (MAME & lr-gw on x86_64, lr-gw on all others)
-		* add: Media Type option for MAME systems with multiple ROM types (floppy, CD, cassette, etc.) (x86_64)
-		* add: Toggle for UI mode in MAME via Hotkey + D-Pad Up or Scroll Lock, plus per-system/game setting for MAME computer systems (x86_64)
-		* add: Per-game config option for MAME systems with a keyboard or keypad (set controls via MAME's UI) (x86_64)
+        * add: Adventure Vision, CD-i, CreatiVision, PV-1000, Game.com, Gamate, TV Games (P&P Consoles), Fujitsu FM-7, Game Pocket Computer, APF M-1000, BBC Micro, Coleco ADAM, Arcadia 2001, Game Master, Bally Astrocade, TI-99, Tomy Tutor, Tandy Color Computer, & Mega Duck via MAME (x86_64)
+        * add: LCD Games system (MAME & lr-gw on x86_64, lr-gw on all others)
+        * add: Media Type option for MAME systems with multiple ROM types (floppy, CD, cassette, etc.) (x86_64)
+        * add: Toggle for UI mode in MAME via Hotkey + D-Pad Up or Scroll Lock, plus per-system/game setting for MAME computer systems (x86_64)
+        * add: Per-game config option for MAME systems with a keyboard or keypad (set controls via MAME's UI) (x86_64)
         * add: "roms/port" folder now exists by default
         * add: added channelf, pico8, supervision and 3ds to thebezelproject
         * add: rick dangerous
         * add: roms which are directory can now be squashed (aka as a single compressed file. for example for ps3 roms)
         * add: "full" as a ratio option, stretches the image to fill the screen (no matter its dimensions, not supported by all emulators yet)
+        * add: Gong, a libretro engine for Pong
+        * add: enabled libretro-ppsspp for RPi3/4
         * add: libretro-ppsspp enabled on oga/ogs/gameforce
-        * fix: gamecube now uses dolphin's default controls
         * fix: borders are now shown on Vice C64, also fixed default aspect ratio
         * fix: duckstation quick menu can now actually be accessed with hotkey+south
         * fix: RetroArch FSUAE options now functional in amiga500, amiga1200, atarist and sharpx68000.
@@ -37,6 +38,7 @@
         * change: updated splash screen
         * es: English spelling/grammar overhaul, multiple option names updated
         * es: added Xemu widescreen and render scale in advanced options
+        * es: added Dolphin Ubershaders and SSAA in advanced options
         * es: option to launch a game automatically at boot
         * es: option to show/hide border for Vice C64
         * es: enabled retroachievements for libretro ppsspp, freeintv, o2em, pcfx and libretro/melonds
