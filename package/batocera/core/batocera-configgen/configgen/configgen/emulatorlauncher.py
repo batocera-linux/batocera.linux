@@ -138,46 +138,51 @@ generators = {
 
 def squashfs_begin(rom):
     eslog.debug("squashfs_begin({})".format(rom))
-    romnosq = rom[:-9]
+    rommountpoint = "/var/run/squashfs/" + os.path.basename(rom)[:-9]
 
-    # the basic idea is to mount the game toto.squash to toto to make
-    # as if the squashfs was already extracted
-    # thus, options used will be the same as if it were extracted
+    if not os.path.exists("/var/run/squashfs"):
+        os.mkdir("/var/run/squashfs")
 
     # first, try to clean an empty remaining directory (for example because of a crash)
-    if os.path.exists(romnosq) and os.path.isdir(romnosq):
-        eslog.debug("squashfs_begin: {} already exists".format(romnosq))
+    if os.path.exists(rommountpoint) and os.path.isdir(rommountpoint):
+        eslog.debug("squashfs_begin: {} already exists".format(rommountpoint))
         # try to remove an empty directory, else, run the directory, ignoring the .squashfs
         try:
-            os.rmdir(romnosq)
+            os.rmdir(rommountpoint)
         except:
-            eslog.debug("squashfs_begin: failed to rmdir {}".format(romnosq))
-            return False, romnosq
+            eslog.debug("squashfs_begin: failed to rmdir {}".format(rommountpoint))
+            return False, None, rommountpoint
 
     # ok, the base directory doesn't exist, let's create it and mount the squashfs on it
-    os.mkdir(romnosq)
-    return_code = subprocess.call(["mount", rom, romnosq])
+    os.mkdir(rommountpoint)
+    return_code = subprocess.call(["mount", rom, rommountpoint])
     if return_code != 0:
-        eslog.debug("squashfs_begin: mounting {} failed".format(romnosq))
+        eslog.debug("squashfs_begin: mounting {} failed".format(rommountpoint))
         try:
-            os.rmdir(romnosq)
+            os.rmdir(rommountpoint)
         except:
             pass
         raise Exception("unable to mount the file {}".format(rom))
-    return True, romnosq
 
-def squashfs_end(rom):
-    eslog.debug("squashfs_end({})".format(rom))
-    romnosq = rom[:-9]
+    # if the squashfs contains a single file with the same name, take it as the rom file
+    romsingle = rommountpoint + "/" + os.path.basename(rom)[:-9]
+    if len(os.listdir(rommountpoint)) == 1 and  os.path.exists(romsingle):
+        eslog.debug("squashfs: single rom ".format(romsingle))
+        return True, rommountpoint, romsingle
+
+    return True, rommountpoint, rommountpoint
+
+def squashfs_end(rommountpoint):
+    eslog.debug("squashfs_end({})".format(rommountpoint))
 
     # umount
-    return_code = subprocess.call(["umount", romnosq])
+    return_code = subprocess.call(["umount", rommountpoint])
     if return_code != 0:
-        eslog.debug("squashfs_begin: unmounting {} failed".format(romnosq))
-        raise Exception("unable to umount the file {}".format(romnosq))
+        eslog.debug("squashfs_begin: unmounting {} failed".format(rommountpoint))
+        raise Exception("unable to umount the file {}".format(rommountpoint))
 
     # cleaning the empty directory
-    os.rmdir(romnosq)
+    os.rmdir(rommountpoint)
 
 def main(args, maxnbplayers):
     # squashfs roms if squashed
@@ -186,16 +191,16 @@ def main(args, maxnbplayers):
         exitCode = 0
         need_end = False
         try:
-            need_end, rom = squashfs_begin(args.rom)
-            exitCode = start_rom(args, maxnbplayers, rom)
+            need_end, rommountpoint, rom = squashfs_begin(args.rom)
+            exitCode = start_rom(args, maxnbplayers, rom, args.rom)
         finally:
             if need_end:
-                squashfs_end(args.rom)
+                squashfs_end(rommountpoint)
         return exitCode
     else:
-        return start_rom(args, maxnbplayers, args.rom)
+        return start_rom(args, maxnbplayers, args.rom, args.rom)
 
-def start_rom(args, maxnbplayers, rom):
+def start_rom(args, maxnbplayers, rom, romConfiguration):
     # controllers
     playersControllers = dict()
 
@@ -216,7 +221,7 @@ def start_rom(args, maxnbplayers, rom):
     # find the system to run
     systemName = args.system
     eslog.debug("Running system: {}".format(systemName))
-    system = Emulator(systemName, rom)
+    system = Emulator(systemName, romConfiguration)
 
     if args.emulator is not None:
         system.config["emulator"] = args.emulator
