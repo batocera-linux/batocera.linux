@@ -1966,7 +1966,7 @@ xbox:
   manufacturer: Microsoft
   release: 2003
   hardware: console
-  extensions: [iso]
+  extensions: [iso squashfs]
   emulators:
     xemu:
       xemu: { requireAnyOf: [BR2_PACKAGE_XEMU] }
