@@ -4,11 +4,9 @@
 #
 ################################################################################
 
-# Building this package requires `smpq` (available in most Linux distributions).
-
 DEVILUTIONX_VERSION = cda80688e7353b0e8628cdf919586dc6be60cc7f
 DEVILUTIONX_SITE = $(call github,diasurgical,devilutionx,$(DEVILUTIONX_VERSION))
-DEVILUTIONX_DEPENDENCIES = sdl2 sdl2_image fmt libsodium host-gettext
+DEVILUTIONX_DEPENDENCIES = sdl2 sdl2_image fmt libsodium host-gettext host-smpq
 
 DEVILUTIONX_PKG_DIR = $(TARGET_DIR)/opt/retrolx/devilutionx
 DEVILUTIONX_PKG_INSTALL_DIR = /userdata/packages/$(RETROLX_SYSTEM_ARCH)/devilutionx

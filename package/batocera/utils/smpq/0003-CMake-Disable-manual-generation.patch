@@ -1,0 +1,37 @@
+From 6102660ba5ad0e8217e617fc53a6fc3d1bb12966 Mon Sep 17 00:00:00 2001
+From: Gleb Mazovetskiy <glex.spb@gmail.com>
+Date: Mon, 11 Oct 2021 21:49:57 +0100
+Subject: [PATCH 3/3] CMake: Disable manual generation
+
+We do not need the manual in buildroot and there is currently no
+dedicated way to disable it.
+
+Signed-off-by: Gleb Mazovetskiy <glex.spb@gmail.com>
+---
+ CMakeLists.txt | 10 ----------
+ 1 file changed, 10 deletions(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 2375b36..3a8b7c2 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -101,16 +101,6 @@ if(WITH_CMD)
+ 
+ 	install(TARGETS smpq DESTINATION bin)
+ 
+-	if(NOT CMAKE_CROSSCOMPILING)
+-
+-		add_executable(mangen ${MANGEN_SRCS})
+-		add_custom_command(OUTPUT smpq.1 COMMAND mangen > smpq.1 DEPENDS mangen)
+-		add_custom_target(man ALL DEPENDS smpq.1)
+-
+-		install(FILES ${CMAKE_CURRENT_BINARY_DIR}/smpq.1 DESTINATION share/man/man1)
+-
+-	endif(NOT CMAKE_CROSSCOMPILING)
+-
+ 	if(WIN32 AND WITH_NSIS)
+ 
+ 		find_package(SelfPackers REQUIRED)
+-- 
+2.30.2
+
