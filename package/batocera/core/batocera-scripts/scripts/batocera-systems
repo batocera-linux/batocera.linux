@@ -262,6 +262,10 @@ systems = {
 
     # ---------- Apple 2 GS ---------- #
     "gsplus":   { "name": "Apple 2 GS", "biosFiles":  [ { "md5": "20a0334c447cb069a040ae5be1d938df", "file": "bios/ROM1"  } ] },
+
+    # ---------- Zelda Classic ---------- #
+    "zc210":   { "name": "Zelda Classic", "biosFiles":  [ { "md5": "033d7392985841027909c4c32b9f2076", "file": "bios/zcdata.data"  },
+                                                  { "md5": "e0ba7a8634b12cfee4b6760a6f89051a", "file": "bios/zcsf.sf2" } ] },
 }
 
 class BiosStatus:
