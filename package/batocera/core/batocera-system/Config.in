@@ -467,7 +467,7 @@ config BR2_PACKAGE_BATOCERA_SCUMMVM_SYSTEMS
 	bool "batocera.linux ScummVM emulators/cores"
 
 	# ScummVM
-	select BR2_PACKAGE_SCUMMVM              # ALL # scummvm
+	select BR2_PACKAGE_SCUMMVM              if !BR2_PACKAGE_BATOCERA_TARGET_RPI1
 	select BR2_PACKAGE_LIBRETRO_SCUMMVM     # ALL
 
 #### Homebrew ####
