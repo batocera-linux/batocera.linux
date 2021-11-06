@@ -36,6 +36,16 @@ class EsSystemConf:
         return True
 
     @staticmethod
+    def find_boards_from_config(config):
+        if "BR2_TARGET_BATOCERA_IMAGES" not in config:
+            return []
+        dirs = config["BR2_TARGET_BATOCERA_IMAGES"][1:-1].split(" ")
+        boards = []
+        for dir in dirs:
+            boards.append(os.path.basename(dir))
+        return boards
+
+    @staticmethod
     def generate(rulesYaml, explanationsYaml, configsDir, defaultsDir):
         rules = yaml.safe_load(open(rulesYaml, "r"))
         explanations = yaml.safe_load(open(explanationsYaml, "r"))
@@ -48,6 +58,7 @@ class EsSystemConf:
             config = EsSystemConf.loadConfig(configsDir + "/" + configFile)
             archSystemsConfig = yaml.safe_load(open(defaultsDir + "/configgen-defaults-" + arch + ".yml", "r"))
             result_systems = {}
+            boards = EsSystemConf.find_boards_from_config(config)
             for system in rules:
                 # default emulator
                 defaultEmulator = None
@@ -67,7 +78,8 @@ class EsSystemConf:
                 if any(emulators["emulators"]):
                     emulators["red_flag"] = EsSystemConf.hasRedFlag(emulators["nb_variants"], emulators["nb_explanations"], emulators["nb_all_explanations"])
                     result_systems[system] = emulators
-            result_archs[arch] = result_systems
+            for board in boards:
+                result_archs[board] = result_systems
 
         print(json.dumps(result_archs, indent=2, sort_keys=True, cls=SortedListEncoder))
 
@@ -78,9 +90,12 @@ class EsSystemConf:
         with open(configFile) as fp:
             line = fp.readline()
             while line:
-                m = re.search("^([^ ]+)=y$", line)
+                m = re.search("^([^ ]+)=[ ]*(.*)[ ]*$", line)
                 if m:
-                    config[m.group(1)] = 1
+                    if m.group(2) == "y":
+                        config[m.group(1)] = 1
+                    else:
+                        config[m.group(1)] = m.group(2)
                 line = fp.readline()
         return config
 
