@@ -31,8 +31,6 @@ batoceraBins = {'dosbox'         : '/usr/bin/dosbox'
               , 'vice'           : '/usr/bin/'
               , 'fsuae'          : '/usr/bin/fs-uae'
               , 'amiberry'       : '/usr/bin/amiberry'
-              , 'pcsx2'          : '/usr/PCSX/bin/PCSX2'
-              , 'pcsx2_avx2'     : '/usr/PCSX_AVX2/bin/PCSX2'
               , 'daphne'         : '/usr/bin/hypseus'
               , 'melonds'        : '/usr/bin/melonDS'
               , 'rpcs3'          : '/usr/bin/rpcs3'
@@ -76,10 +74,6 @@ dolphinData    = SAVES + "/dolphin-emu"
 dolphinIni     = dolphinConfig + '/Dolphin.ini'
 dolphinGfxIni  = dolphinConfig + '/GFX.ini'
 dolphinSYSCONF = dolphinData + "/Wii/shared2/sys/SYSCONF"
-
-pcsx2PluginsDir     = "/usr/PCSX/bin/plugins"
-pcsx2Avx2PluginsDir = "/usr/PCSX_AVX2/bin/plugins"
-pcsx2ConfigDir      = "/userdata/system/configs/PCSX2"
 
 dosboxCustom = CONF + '/dosbox'
 dosboxConfig = dosboxCustom + '/dosbox.conf'

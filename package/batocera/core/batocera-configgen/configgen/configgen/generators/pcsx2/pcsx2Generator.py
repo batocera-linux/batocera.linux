@@ -18,19 +18,20 @@ class Pcsx2Generator(Generator):
 
     def generate(self, system, rom, playersControllers, gameResolution):
         isAVX2 = checkAvx2()
-        sseLib = checkSseLib(isAVX2)
+
+        pcsx2ConfigDir = "/userdata/system/configs/PCSX2"
 
         # Config files
-        configureReg(batoceraFiles.pcsx2ConfigDir)
-        configureUI(batoceraFiles.pcsx2ConfigDir, batoceraFiles.BIOS, system.config, gameResolution)
-        configureVM(batoceraFiles.pcsx2ConfigDir, system)
-        configureGFX(batoceraFiles.pcsx2ConfigDir, system)
-        configureAudio(batoceraFiles.pcsx2ConfigDir)
+        configureReg(pcsx2ConfigDir)
+        configureUI(pcsx2ConfigDir, batoceraFiles.BIOS, system.config, gameResolution)
+        configureVM(pcsx2ConfigDir, system)
+        configureGFX(pcsx2ConfigDir, system)
+        configureAudio(pcsx2ConfigDir)
 
         if isAVX2:
-            commandArray = [batoceraFiles.batoceraBins['pcsx2_avx2'], rom]
+            commandArray = ["/usr/PCSX_AVX2/bin/PCSX2", rom]
         else:
-            commandArray = [batoceraFiles.batoceraBins['pcsx2'], rom]
+            commandArray = ["/usr/PCSX/bin/PCSX2", rom]
 
         # Fullscreen
         commandArray.append("--fullscreen")
@@ -43,12 +44,6 @@ class Pcsx2Generator(Generator):
             eslog.debug("Fast Boot and skip BIOS")
         else:
             commandArray.append("--fullboot")
-
-        # Plugins
-        real_pluginsDir = batoceraFiles.pcsx2PluginsDir
-        if isAVX2:
-            real_pluginsDir = batoceraFiles.pcsx2Avx2PluginsDir
-        commandArray.append("--gs="   + real_pluginsDir + "/" + sseLib)
         
         # Arch
         arch = "x86"
@@ -56,6 +51,12 @@ class Pcsx2Generator(Generator):
             arch = content_file.read()
 
         env = {}
+
+        if isAVX2:
+            env["LD_LIBRARY_PATH"] = "/usr/PCSX_AVX2/lib"
+        else:
+            env["LD_LIBRARY_PATH"] = "/usr/PCSX/lib"
+
         env["XDG_CONFIG_HOME"] = batoceraFiles.CONF
         env["SDL_GAMECONTROLLERCONFIG"] = controllersConfig.generateSdlGameControllerConfig(playersControllers)
 
@@ -365,6 +366,3 @@ def checkAvx2():
         if re.match("^flags[\t ]*:.* avx2", line):
             return True
     return False
-
-def checkSseLib(isAVX2):
-    return "libGSdx.so"

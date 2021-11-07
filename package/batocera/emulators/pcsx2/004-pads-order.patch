@@ -1,5 +1,5 @@
 diff --git a/pcsx2/PAD/Linux/SDL/joystick.cpp b/pcsx2/PAD/Linux/SDL/joystick.cpp
-index 548b72e..fa4998f 100644
+index 933bc4f..84be6d4 100644
 --- a/pcsx2/PAD/Linux/SDL/joystick.cpp
 +++ b/pcsx2/PAD/Linux/SDL/joystick.cpp
 @@ -21,6 +21,32 @@
@@ -33,9 +33,9 @@ index 548b72e..fa4998f 100644
 +}
 +
  // opens handles to all possible joysticks
- void JoystickInfo::EnumerateJoysticks(std::vector<std::unique_ptr<GamePad>>& vjoysticks)
+ void JoystickInfo::EnumerateJoysticks(std::vector<std::unique_ptr<Device>>& vjoysticks)
  {
-@@ -64,9 +90,12 @@ void JoystickInfo::EnumerateJoysticks(std::vector<std::unique_ptr<GamePad>>& vjo
+@@ -64,9 +90,12 @@ void JoystickInfo::EnumerateJoysticks(std::vector<std::unique_ptr<Device>>& vjoy
  
  	vjoysticks.clear();
  
@@ -44,8 +44,8 @@ index 548b72e..fa4998f 100644
 +
  	for (int i = 0; i < SDL_NumJoysticks(); ++i)
  	{
--		vjoysticks.push_back(std::unique_ptr<GamePad>(new JoystickInfo(i)));
-+		vjoysticks.push_back(std::unique_ptr<GamePad>(new JoystickInfo(SDL_PADSORDERCONFIG[i])));
+-		vjoysticks.push_back(std::unique_ptr<Device>(new JoystickInfo(i)));
++		vjoysticks.push_back(std::unique_ptr<Device>(new JoystickInfo(SDL_PADSORDERCONFIG[i])));
  		// Something goes wrong in the init, let's drop it
  		if (!vjoysticks.back()->IsProperlyInitialized())
  			vjoysticks.pop_back();

@@ -1,39 +1,39 @@
-diff --git a/pcsx2/PAD/Linux/PAD.h b/pcsx2/PAD/Linux/PAD.h
-index d5d8056..0cac1a0 100644
---- a/pcsx2/PAD/Linux/PAD.h
-+++ b/pcsx2/PAD/Linux/PAD.h
+diff --git a/pcsx2/PAD/Linux/Global.h b/pcsx2/PAD/Linux/Global.h
+index af8859c..d09f7c4 100644
+--- a/pcsx2/PAD/Linux/Global.h
++++ b/pcsx2/PAD/Linux/Global.h
 @@ -15,7 +15,7 @@
  
  #pragma once
  
--#define GAMEPAD_NUMBER 2 // numbers of gamepad
-+#define GAMEPAD_NUMBER 8 // numbers of gamepad
+-static const int GAMEPAD_NUMBER = 2;
++static const int GAMEPAD_NUMBER = 8;
+ static const int MAX_KEYS = 24;
  
- #include <wx/string.h>
- #include <wx/tokenzr.h>
+ #include <stdio.h>
 diff --git a/pcsx2/PAD/Linux/state_management.cpp b/pcsx2/PAD/Linux/state_management.cpp
-index a077d00..1be3f24 100644
+index 37a0867..80aea50 100644
 --- a/pcsx2/PAD/Linux/state_management.cpp
 +++ b/pcsx2/PAD/Linux/state_management.cpp
-@@ -176,6 +176,17 @@ u8 pad_poll(u8 value)
+@@ -178,6 +178,17 @@ u8 pad_poll(u8 value)
  
  	Pad* pad = &pads[query.port][query.slot];
  
 +	int padNum = -1;
-+	if(query.port == 0 && query.slot == 0 && s_vgamePad.size() > 0) padNum = 0;
-+	if(query.port == 0 && query.slot == 1 && s_vgamePad.size() > 2) padNum = 2;
-+	if(query.port == 0 && query.slot == 2 && s_vgamePad.size() > 3) padNum = 3;
-+	if(query.port == 0 && query.slot == 3 && s_vgamePad.size() > 4) padNum = 4;
-+	if(query.port == 1 && query.slot == 0 && s_vgamePad.size() > 1) padNum = 1;
-+	if(query.port == 1 && query.slot == 1 && s_vgamePad.size() > 5) padNum = 5;
-+	if(query.port == 1 && query.slot == 2 && s_vgamePad.size() > 6) padNum = 6;
-+	if(query.port == 1 && query.slot == 3 && s_vgamePad.size() > 7) padNum = 7;
++	if(query.port == 0 && query.slot == 0 && device_manager.devices.size() > 0) padNum = 0;
++	if(query.port == 0 && query.slot == 1 && device_manager.devices.size() > 2) padNum = 2;
++	if(query.port == 0 && query.slot == 2 && device_manager.devices.size() > 3) padNum = 3;
++	if(query.port == 0 && query.slot == 3 && device_manager.devices.size() > 4) padNum = 4;
++	if(query.port == 1 && query.slot == 0 && device_manager.devices.size() > 1) padNum = 1;
++	if(query.port == 1 && query.slot == 1 && device_manager.devices.size() > 5) padNum = 5;
++	if(query.port == 1 && query.slot == 2 && device_manager.devices.size() > 6) padNum = 6;
++	if(query.port == 1 && query.slot == 3 && device_manager.devices.size() > 7) padNum = 7;
 +	if(padNum == -1) return 0;
 +
  	if (query.lastByte == 0)
  	{
  		query.lastByte++;
-@@ -231,7 +242,7 @@ u8 pad_poll(u8 value)
+@@ -233,7 +244,7 @@ u8 pad_poll(u8 value)
  					b1=b1 & 0x1f;
  #endif
  
@@ -42,7 +42,7 @@ index a077d00..1be3f24 100644
  
  				query.numBytes = 5;
  
-@@ -242,28 +253,28 @@ u8 pad_poll(u8 value)
+@@ -244,28 +255,28 @@ u8 pad_poll(u8 value)
  				{ // ANALOG || DS2 native
  					query.numBytes = 9;
  
