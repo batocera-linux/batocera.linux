@@ -113,7 +113,11 @@ class DolphinGenerator(Generator):
         dolphinSettings.set("Core", "WiimoteContinuousScanning", '"True"')
 
         # Gamecube pads forced as standard pad
-        dolphinSettings.set("Core", "SIDevice0", '"6"')
+        if system.isOptSet("gamepadtype"):
+            dolphinSettings.set("Core", "SIDevice0", '"' + system.config["gamepadtype"] + '"')
+        else:
+            dolphinSettings.set("Core", "SIDevice0", '"6"')
+
         dolphinSettings.set("Core", "SIDevice1", '"6"')
         dolphinSettings.set("Core", "SIDevice2", '"6"')
         dolphinSettings.set("Core", "SIDevice3", '"6"')
