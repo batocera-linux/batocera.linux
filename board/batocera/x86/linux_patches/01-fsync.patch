@@ -119,23 +119,23 @@ index 408cad5e89680f..c30930a955cece 100644
 --- a/kernel/futex.c
 +++ b/kernel/futex.c
 @@ -197,6 +197,8 @@ struct futex_pi_state {
-  * @rt_waiter:		rt_waiter storage for use with requeue_pi
-  * @requeue_pi_key:	the requeue_pi target futex key
   * @bitset:		bitset for the optional bitmasked wakeup
+  * @requeue_state:	State field for futex_requeue_pi()
+  * @requeue_wait:	RCU wait for futex_requeue_pi() (RT only)
 + * @uaddr:             userspace address of futex
 + * @uval:              expected futex's value
   *
   * We use this hashed waitqueue, instead of a normal wait_queue_entry_t, so
   * we can wake only the relevant ones (hashed queues may be shared).
 @@ -219,6 +221,8 @@ struct futex_q {
- 	struct rt_mutex_waiter *rt_waiter;
  	union futex_key *requeue_pi_key;
  	u32 bitset;
+ 	atomic_t requeue_state;
 +	u32 __user *uaddr;
 +	u32 uval;
- } __randomize_layout;
-
- static const struct futex_q futex_q_init = {
+ #ifdef CONFIG_PREEMPT_RT
+ 	struct rcuwait requeue_wait;
+ #endif
 @@ -2316,6 +2320,29 @@ static int unqueue_me(struct futex_q *q)
  	return ret;
  }

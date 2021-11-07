@@ -1,5 +1,5 @@
 diff --git a/Documentation/admin-guide/devices.txt b/Documentation/admin-guide/devices.txt
-index 63fd4e6a014b..dc9a30b5f1a2 100644
+index 922c23bb4372..ae39732318a7 100644
 --- a/Documentation/admin-guide/devices.txt
 +++ b/Documentation/admin-guide/devices.txt
 @@ -376,8 +376,9 @@
@@ -14,22 +14,22 @@ index 63fd4e6a014b..dc9a30b5f1a2 100644
  
    11 char	Raw keyboard device	(Linux/SPARC only)
 diff --git a/Documentation/userspace-api/index.rst b/Documentation/userspace-api/index.rst
-index d29b020e5622..d2ddbf9ad8cb 100644
+index c432be070f67..fde565a8005c 100644
 --- a/Documentation/userspace-api/index.rst
 +++ b/Documentation/userspace-api/index.rst
-@@ -25,6 +25,7 @@ place where this information is gathered.
-    iommu
+@@ -28,6 +28,7 @@ place where this information is gathered.
     media/index
     sysfs-platform_profile
+    vduse
 +   winesync
  
  .. only::  subproject and html
  
 diff --git a/Documentation/userspace-api/ioctl/ioctl-number.rst b/Documentation/userspace-api/ioctl/ioctl-number.rst
-index 599bd4493944..825c6b2d2623 100644
+index 6655d929a351..9d5f1f87c2ee 100644
 --- a/Documentation/userspace-api/ioctl/ioctl-number.rst
 +++ b/Documentation/userspace-api/ioctl/ioctl-number.rst
-@@ -366,6 +366,8 @@ Code  Seq#    Include File                                           Comments
+@@ -370,6 +370,8 @@ Code  Seq#    Include File                                           Comments
                                                                       <mailto:thomas@winischhofer.net>
  0xF6  all                                                            LTTng Linux Trace Toolkit Next Generation
                                                                       <mailto:mathieu.desnoyers@efficios.com>
@@ -418,10 +418,10 @@ index 000000000000..751c70f1ffce
 +  Fails with ``ENOMEM`` if not enough memory is available, or
 +  ``EINTR`` if a signal is received.
 diff --git a/MAINTAINERS b/MAINTAINERS
-index 9450e052f1b1..d33e317759bf 100644
+index 3b79fd441dde..0dfd74b56fbe 100644
 --- a/MAINTAINERS
 +++ b/MAINTAINERS
-@@ -19351,6 +19351,15 @@ M:	David Härdeman <david@hardeman.nu>
+@@ -20227,6 +20227,15 @@ M:	David Härdeman <david@hardeman.nu>
  S:	Maintained
  F:	drivers/media/rc/winbond-cir.c
  
@@ -438,10 +438,10 @@ index 9450e052f1b1..d33e317759bf 100644
  M:	William Breathitt Gray <vilhelm.gray@gmail.com>
  L:	linux-watchdog@vger.kernel.org
 diff --git a/drivers/misc/Kconfig b/drivers/misc/Kconfig
-index f532c59bb59b..496f20d69914 100644
+index 0f5a49fc7c9e..e21e4424d6a2 100644
 --- a/drivers/misc/Kconfig
 +++ b/drivers/misc/Kconfig
-@@ -445,6 +445,17 @@ config HISI_HIKEY_USB
+@@ -470,6 +470,17 @@ config HISI_HIKEY_USB
  	  switching between the dual-role USB-C port and the USB-A host ports
  	  using only one USB controller.
  
@@ -460,13 +460,13 @@ index f532c59bb59b..496f20d69914 100644
  source "drivers/misc/eeprom/Kconfig"
  source "drivers/misc/cb710/Kconfig"
 diff --git a/drivers/misc/Makefile b/drivers/misc/Makefile
-index 99b6f15a3c70..327c9628c479 100644
+index a086197af544..0255d6a05093 100644
 --- a/drivers/misc/Makefile
 +++ b/drivers/misc/Makefile
-@@ -56,3 +56,4 @@ obj-$(CONFIG_HABANA_AI)		+= habanalabs/
- obj-$(CONFIG_UACCE)		+= uacce/
+@@ -59,3 +59,4 @@ obj-$(CONFIG_UACCE)		+= uacce/
  obj-$(CONFIG_XILINX_SDFEC)	+= xilinx_sdfec.o
  obj-$(CONFIG_HISI_HIKEY_USB)	+= hisi_hikey_usb.o
+ obj-$(CONFIG_HI6421V600_IRQ)	+= hi6421v600-irq.o
 +obj-$(CONFIG_WINESYNC)		+= winesync.o
 diff --git a/drivers/misc/winesync.c b/drivers/misc/winesync.c
 new file mode 100644
@@ -1601,7 +1601,7 @@ index 000000000000..efc591795249
 +
 +#endif
 diff --git a/tools/testing/selftests/Makefile b/tools/testing/selftests/Makefile
-index 6c575cf34a71..7f43a50ee19e 100644
+index c852eb40c4f7..a366016d6254 100644
 --- a/tools/testing/selftests/Makefile
 +++ b/tools/testing/selftests/Makefile
 @@ -9,6 +9,7 @@ TARGETS += core
