@@ -55,6 +55,13 @@ else
 	RETROARCH_CONF_OPTS += --disable-x11
 endif
 
+ifeq ($(BR2_PACKAGE_WAYLAND),y)
+	RETROARCH_CONF_OPTS += --enable-wayland
+	RETROARCH_DEPENDENCIES += wayland
+else
+	RETROARCH_CONF_OPTS += --disable-wayland
+endif
+
 ifeq ($(BR2_PACKAGE_ALSA_LIB),y)
 	RETROARCH_CONF_OPTS += --enable-alsa
 	RETROARCH_DEPENDENCIES += alsa-lib
