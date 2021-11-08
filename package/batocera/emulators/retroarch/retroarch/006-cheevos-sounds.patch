@@ -17,7 +17,7 @@ index 6850178..d5bb787 100644
 +   *settings->arrays.cheevos_unlock_sound             = '\0';
     *settings->arrays.cheevos_token                    = '\0';
  #endif
- 
+
 diff --git a/configuration.h b/configuration.h
 index 81a2f3c..cd2d698 100644
 --- a/configuration.h
@@ -30,12 +30,12 @@ index 81a2f3c..cd2d698 100644
        char cheevos_token[32];
        char cheevos_leaderboards_enable[32];
        char video_context_driver[32];
-diff --git a/retroarch.c b/retroarch.c
+diff --git a/audio/audio_driver.c b/audio/audio_driver.c
 index 4e643c2..d8b0fa8 100644
---- a/retroarch.c
-+++ b/retroarch.c
+--- a/audio/audio_driver.c
++++ b/audio/audio_driver.c
 @@ -29226,8 +29226,8 @@ static void audio_driver_load_menu_bgm_callback(retro_task_t *task,
- 
+
  void audio_driver_load_system_sounds(void)
  {
 -   char sounds_path[PATH_MAX_LENGTH];
@@ -48,7 +48,7 @@ index 4e643c2..d8b0fa8 100644
 @@ -29250,20 +29250,6 @@ void audio_driver_load_system_sounds(void)
     if (!audio_enable_menu && !audio_enable_cheevo_unlock)
        goto end;
- 
+
 -   sounds_path[0] = sounds_fallback_path[0] =
 -                          basename_noext[0] ='\0';
 -
@@ -65,7 +65,7 @@ index 4e643c2..d8b0fa8 100644
 -
     list          = dir_list_new(sounds_path, MENU_SOUND_FORMATS, false, false, false, false);
     list_fallback = dir_list_new(sounds_fallback_path, MENU_SOUND_FORMATS, false, false, false, false);
- 
+
 @@ -29306,8 +29292,13 @@ void audio_driver_load_system_sounds(void)
              path_notice = path;
           else if (string_is_equal_noncase(basename_noext, "bgm"))
@@ -81,4 +81,3 @@ index 4e643c2..d8b0fa8 100644
 +	         }
        }
     }
- 
