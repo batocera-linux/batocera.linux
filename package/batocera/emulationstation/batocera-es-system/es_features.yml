@@ -2301,6 +2301,12 @@ libretro:
                         choices:
                             "Off":    disabled
                             "On":     enabled
+                    use_cd32_puae_mapping:
+                        prompt:      USE CD32 PUAE MAPPING
+                        description: Use the CD32 pad mapping by default in PUAE core options > Retropad mapping
+                        choices:
+                            "Off":    0
+                            "On":     1
                     controller1_puae:
                         prompt:      CONTROLLER 1 TYPE
                         description: Select controller type for Amiga P1
@@ -2351,6 +2357,12 @@ libretro:
                         choices:
                             "Off":    disabled
                             "On":     enabled
+                    use_cd32_puae_mapping:
+                        prompt:      USE CD32 PUAE MAPPING
+                        description: Use the CD32 pad mapping by default in PUAE core options > Retropad mapping
+                        choices:
+                            "Off":    0
+                            "On":     1
                     controller1_puae:
                         prompt:      CONTROLLER 1 TYPE
                         description: Select controller type for Amiga P1

@@ -180,6 +180,71 @@ def generateCoreSettings(coreSettings, system, rom):
 
     # Commodore AMIGA
     if (system.config['core'] == 'puae'):
+        # Functional mapping for Amiga system
+        # If you want to change them, you can add
+        # some strings to batocera.conf by using
+        # this syntax: SYSTEMNAME.retroarchcore.puae_mapper_BUTTONNAME=VALUE
+        if ( system.isOptSet('use_cd32_puae_mapping') and system.getOptBoolean("use_cd32_puae_mapping") == True ) or system.name == 'amigacd32':
+            # Controller mapping for CD32
+            uae_mapping = { 'aspect_ratio_toggle': "---",
+                'mouse_toggle': "RETROK_RCTRL",
+                'statusbar': "RETROK_F11",
+                'vkbd': "---",
+                'reset': "---",
+                'zoom_mode_toggle': "RETROK_F12",
+                'a': "---",
+                'b': "---",
+                'x': "---",
+                'y': "---",
+                'l': "---",
+                'l2': "MOUSE_LEFT_BUTTON",
+                'l3': "SWITCH_JOYMOUSE",
+                'ld': "---",
+                'll': "---",
+                'lr': "---",
+                'lu': "---",
+                'r': "---",
+                'r2': "MOUSE_RIGHT_BUTTON",
+                'r3': "TOGGLE_STATUSBAR",
+                'rd': "---",
+                'rl': "---",
+                'rr': "---",
+                'ru': "---",
+                'select': "---",
+                'start': "---",}
+            for key in uae_mapping:
+                coreSettings.save('puae_mapper_' + key, uae_mapping[key])
+        elif system.name != 'amigacd32':
+            # Controller mapping for A500 and A1200
+            uae_mapping = { 'aspect_ratio_toggle': "---",
+                'mouse_toggle': "RETROK_RCTRL",
+                'statusbar': "RETROK_F11",
+                'vkbd': "---",
+                'reset': "---",
+                'zoom_mode_toggle': "RETROK_F12",
+                'a': "---",
+                'b': "---",
+                'x': "RETROK_SPACE",
+                'y': "RETROK_LCTRL",
+                'l': "RETROK_ESCAPE",
+                'l2': "MOUSE_LEFT_BUTTON",
+                'l3': "SWITCH_JOYMOUSE",
+                'ld': "---",
+                'll': "---",
+                'lr': "---",
+                'lu': "---",
+                'r': "RETROK_F1",
+                'r2': "MOUSE_RIGHT_BUTTON",
+                'r3': "TOGGLE_STATUSBAR",
+                'rd': "---",
+                'rl': "---",
+                'rr': "---",
+                'ru': "---",
+                'select': "TOGGLE_VKBD",
+                'start': "RETROK_RETURN",}
+            for key in uae_mapping:
+                coreSettings.save('puae_mapper_' + key, uae_mapping[key])
+
         # Show Video Options
         coreSettings.save('puae_video_options_display ', '"enabled"')
         # Amiga Model
