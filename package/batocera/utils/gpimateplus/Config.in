@@ -1,0 +1,3 @@
+config BR2_PACKAGE_GPIMATEPLUS
+        bool "gpimateplus"
+	select BR2_PACKAGE_GPICASE

@@ -1,0 +1,13 @@
+#!/bin/sh
+
+# required rotate for gpimate+ if not already set
+if ! /usr/bin/batocera-settings-get display.rotate ; then
+    /usr/bin/batocera-settings-set display.rotate 1
+fi
+
+# squarepixel ratio for gpimate+ if not already set
+if ! /usr/bin/batocera-settings-get global.ratio ; then
+    /usr/bin/batocera-settings-set global.ratio squarepixel
+fi
+
+exit 0

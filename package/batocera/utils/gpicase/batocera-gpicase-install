@@ -2,7 +2,7 @@
 
 CONFIGFILE=/boot/config.txt
 
-setup="# ====== GPi Case setup section =====
+setup_rpi1="# ====== GPi Case setup section =====
 display_lcd_rotate=1
 extra_transpose_buffer=2
 dtoverlay=dpi24_gpicase
@@ -25,7 +25,39 @@ dtoverlay=pwm-audio-pi-zero_gpicase
 # ====== GPi Case toggle section =====
 # This will preserve always the default GPi settings if enabled, needed if some values were wrong setted by user"
 
+setup_rpi4="# ====== GPiMate Plus setup section =====
+dtoverlay=dpi24_gpicase
+dtoverlay=disable-pcie
+dtoverlay=dwc2,dr_mode=host
+dtoverlay=audremap,pins_18_19
+dtoverlay=vc4-fkms-v3d
+audio_pwm_mode=2
+overscan_left=0
+overscan_right=0
+overscan_top=0
+overscan_bottom=0
+enable_dpi_lcd=1
+display_default_lcd=1
+dpi_group=2
+dpi_mode=87
+dpi_output_format=0x6016
+#hdmi_timings=320 0 28 18 28 480 0 2 2 4 0 0 0 60 0 32000000 6
+hdmi_timings=240 1 38 10 20 320 1 20 4 4 0 0 0 60 0 6400000 1
+hdmi_ignore_hotplug=1
+hdmi_ignore_edid=0xa5000080
+hdmi_edid_file=1
+disable_pvt=1
+disable_audio_dither=1
+# ====== GPiMate Plus toggle section =====
+# This will preserve always the default GPi settings if enabled, needed if some values were wrong setted by user"
+
     CONFIGMODIFIED=0
+
+    if grep -q rpi4 /usr/share/batocera/batocera.arch ; then
+        setup="${setup_rpi4}"
+    else
+        setup="${setup_rpi1}"
+    fi
 
     echo "${setup}" | (
 	while read LINE

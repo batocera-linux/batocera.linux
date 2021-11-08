@@ -1,0 +1,13 @@
+#!/bin/sh
+
+# this initscript only for RetroFlag GPI Case
+if ! grep -q RETROFLAG_GPI /var/run/powerswitch-by-udevrule ; then
+    exit 0
+fi
+
+# rpi4 architecture means gpimate+ cm4 module
+if grep -q rpi4 /usr/share/batocera/batocera.arch ; then
+    /usr/bin/batocera-gpimateplus-setup
+fi
+
+exit 0
