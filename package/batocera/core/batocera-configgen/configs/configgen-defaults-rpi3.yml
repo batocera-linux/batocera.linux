@@ -1,7 +1,7 @@
 default:
   options:
     video_threaded: true
-    retroarch.audio_driver: tinyalsa
+    audio_latency: 96
 
 psp:
   options:
@@ -16,7 +16,7 @@ psx:
     gpu_software: true
 gb:
   options:
-    audio_latency: 96
+    audio_latency: 196
 gbc:
   options:
-    audio_latency: 96
+    audio_latency: 196
