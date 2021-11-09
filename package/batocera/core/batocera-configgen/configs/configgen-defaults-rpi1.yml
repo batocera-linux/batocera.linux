@@ -3,7 +3,7 @@ default:
     video_threaded: true
     ratio: "4/3"
     smooth:         false
-    audio_latency:  256
+    retroarch.audio_driver: tinyalsa
     # menu retroarch
     retroarch.menu_driver: rgui
 
