@@ -1,0 +1,14 @@
+#!/bin/bash
+# This is a template for the early custom script that will be launched on boot,
+# after etc/init.d/S26system has loaded the system modules but before ES
+# starts. The first line here is the shebang; the binary that should be called
+# to execute it.
+# Rename this file to earlycustom.sh to enable it.
+# This is an example file.
+
+# Set logfile location and filename
+logfile=/tmp/scriptlog.txt
+ 
+# Write to the log.
+echo "$1" > $logfile
+echo "$1" >> $logfile

@@ -1,0 +1,24 @@
+#!/bin/bash
+# This is a template for the game start/stop custom script that will be
+# launched on game watch event. The first line here
+# is the shebang; the binary that should be called to execute it.
+# Rename this file to script01.sh and run
+# "chmod +x /userdata/system/scripts/script01.sh" to give it the executable bit
+# to use it. Any valid filename is usable.
+# This is an example file how Events on START or STOP can be used.
+
+# Set logfile location and filename
+logfile=/tmp/scriptlog.txt
+ 
+# Case selection for first parameter parsed, writing to a log file on game
+# watch events (starting and stopping a game):
+case $1 in
+    gameStart)
+        echo "START" > $logfile
+        echo "$@" >> $logfile
+    ;;
+ 
+    gameStop)
+        echo "END" >> $logfile
+    ;;
+esac
