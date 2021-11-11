@@ -4,7 +4,10 @@ ACTION=$1
 
 do_help() {
     echo "${1} list" >&2
+    echo "${1} list_blacklistable" >&2
     echo "${1} trust" >&2
+    echo "${1} blacklist <device address> <device name>" >&2
+    echo "${1} unblacklist <device address>" >&2
     echo "${1} remove <device address>" >&2
     echo "${1} save" >&2
     echo "${1} restore" >&2
@@ -33,6 +36,13 @@ do_list() {
 	done
 }
 
+do_list_blacklistable() {
+    (
+	cat /var/lib/bluetooth/bluetooth_blacklisted | sed -e s+"^\([^ ]*\) \(.*\)$"+"\1 1 \2"+
+	cat /var/run/bluetooth_seen | sed -e s+"^\([^ ]*\) \(.*\)$"+"\1 0 \2"+
+    ) | sort -r -t " " -k 1,1 -u
+}
+
 do_remove() {
     DEV="${1}"
 
@@ -45,6 +55,23 @@ do_remove() {
 
     do_save # save
     return 0
+}
+
+do_blacklist() {
+    BLADDR=$1
+    BLNAME=$2
+
+    echo "${BLADDR} ${BLNAME}" >> "/var/lib/bluetooth/bluetooth_blacklisted"
+    do_remove "${BLADDR}"
+    do_save # save
+}
+
+do_unblacklist() {
+    BLADDR=$1
+
+    grep -vE "^${BLADDR} " "/var/lib/bluetooth/bluetooth_blacklisted" > "/var/lib/bluetooth/bluetooth_blacklisted.tmp"
+    mv "/var/lib/bluetooth/bluetooth_blacklisted.tmp" "/var/lib/bluetooth/bluetooth_blacklisted" || return 1
+    do_save # save
 }
 
 do_trust() {
@@ -100,8 +127,29 @@ case "${ACTION}" in
     "list")
 	do_list
 	;;
+    "list_blacklistable")
+	do_list_blacklistable
+	;;
     "trust")
 	do_trust
+	;;
+    "blacklist")
+	if test $# = 3
+	then
+	    do_blacklist "${2}" "${3}" || exit 1
+	else
+	    do_help "${0}"
+	    exit 1
+	fi
+	;;
+    "unblacklist")
+	if test $# = 2
+	then
+	    do_unblacklist "${2}" || exit 1
+	else
+	    do_help "${0}"
+	    exit 1
+	fi
 	;;
     "starttrust")
 	do_starttrust
