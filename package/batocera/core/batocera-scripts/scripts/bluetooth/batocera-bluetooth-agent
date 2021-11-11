@@ -18,6 +18,7 @@ AGENT_INTERFACE = 'org.bluez.Agent1'
 gadapter = None
 gdiscovering = False
 gdevices = {}
+g_devices_seen = {}
 
 logging.basicConfig(filename='/var/log/bluetooth-agent.log', level=logging.DEBUG, format='%(asctime)s %(message)s')
 
@@ -60,6 +61,18 @@ def connect_device(path, address, properties, forceConnect):
   # skip non input devices
   if "Icon" not in properties or not (properties["Icon"].startswith("input") or properties["Icon"].startswith("audio-card")):
     logging.info("Skipping device {}".format(getDevName(rproperties)));
+    return
+
+  blacklistAddr, blacklistName = getBlacklistAddrAndName(properties)
+
+  # add device to the seen list
+  if blacklistAddr not in g_devices_seen:
+    g_devices_seen[blacklistAddr] = { "name": blacklistName }
+    updateKnownDevicesList(g_devices_seen)
+
+  # skip blacklisted devices
+  if blacklistAddr is not None and isDeviceBlacklisted(blacklistAddr):
+    logging.info("Skipping blacklisted device {}".format(blacklistName))
     return
 
   logging.info("event for " + devName + "(paired=" + bool2str(paired, "paired", "not paired") + ", trusted=" + bool2str(trusted, "trusted", "untrusted") + ", connected=" + bool2str(connected, "connected", "disconnected") + ")")
@@ -167,6 +180,42 @@ def getDevName(properties):
     return str(properties["Icon"])
 
   return "unknown"
+
+def updateKnownDevicesList(g_devices_seen):
+  f = open("/var/run/bluetooth_seen", "w")
+  for key in g_devices_seen:
+    f.write("{} {}\n".format(key, g_devices_seen[key]["name"]))
+  f.close()
+
+def isDeviceBlacklisted(blacklistAddr):
+  datafile = "/var/lib/bluetooth/bluetooth_blacklisted"
+
+  # reread the file each time in case somebody changed it
+  if not os.path.isfile(datafile):
+    return False
+
+  with open(datafile) as file:
+    lines = file.readlines()
+    for line in lines:
+      if line[0:len(blacklistAddr)] == blacklistAddr:
+        return True
+
+  return False
+
+def getBlacklistAddrAndName(properties):
+  if "Address" not in properties:
+    return None
+  address = str(properties["Address"])
+  name = ""
+
+  if "Name" in properties:
+    name = str(properties["Name"])
+  elif "Icon" in properties:
+    name = str(properties["Icon"])
+  else:
+    name = "unknown"
+
+  return address, name
 
 def getShortDevName(properties):
   if "Name" in properties:
@@ -356,6 +405,9 @@ if __name__ == '__main__':
   option_list = [ make_option("-i", "--device", action="store", type="string", dest="dev_id") ]
   parser = OptionParser(option_list=option_list)
   (options, args) = parser.parse_args()
+
+  # initialize the seen devices file
+  updateKnownDevicesList(g_devices_seen)
 
   # register dbus
   dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
