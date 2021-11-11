@@ -1,21 +1,21 @@
 #!/bin/sh
 #
 
-SYNCTHING_ENABLED="$(/usr/bin/batocera-settings-get system.syncthing.enabled)"
-SYNCTHING_SECURITY="$(/usr/bin/batocera-settings-get system.security.enabled)"
 SYNCTHING_CONFIG="/userdata/system/configs/syncthing/"
 SYNCTHING_LOG="/userdata/system/logs/syncthing.log"
 
 RETVAL=0
 
 start() {
-	# only start if syncthin is enabled
+    SYNCTHING_ENABLED="$(/usr/bin/batocera-settings-get system.syncthing.enabled)"
+	# only start if syncthing is enabled
 	if  [ "$SYNCTHING_ENABLED" != "1" ] || [ -z $SYNCTHING_ENABLED ]
 	then
 		echo "syncthing service: disabled"
 		exit 0
 	fi
-
+    
+    SYNCTHING_SECURITY="$(/usr/bin/batocera-settings-get system.security.enabled)"
 	# check if syncthing web ui should be accessible from outside (system.security.enabled=0)
     if [ "$SYNCTHING_SECURITY"  != "1" ] || [ -z $SYNCTHING_SECURITY ]
 	then
