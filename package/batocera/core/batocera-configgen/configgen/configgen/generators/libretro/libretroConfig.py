@@ -113,6 +113,11 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
     if system.isOptSet("gfxbackend") and system.config["gfxbackend"] == "vulkan":
         retroarchConfig['video_driver'] = '"vulkan"'
 
+    if system.isOptSet('video_threaded') and system.getOptBoolean('video_threaded') == True:
+        retroarchConfig['video_threaded'] = 'true'
+    else:
+        retroarchConfig['video_threaded'] = 'false'
+
     # required at least for vulkan (to get the correct resolution)
     retroarchConfig['video_fullscreen_x'] = gameResolution["width"]
     retroarchConfig['video_fullscreen_y'] = gameResolution["height"]
@@ -132,13 +137,6 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
 
     # Disable internal image viewer (ES does it, and pico-8 won't load .p8.png)
     retroarchConfig['builtin_imageviewer_enable'] = 'false'
-
-    # Disable the threaded video while it is causing issues to several people ?
-    # This must be set to true on xu4 for performance issues
-    if system.config['video_threaded']:
-        retroarchConfig['video_threaded'] = 'true'
-    else:
-        retroarchConfig['video_threaded'] = 'false'
 
     # Input configuration
     retroarchConfig['input_joypad_driver'] = 'udev'

@@ -22,6 +22,12 @@ libretro:
         "32":     32
         "16":     16
         "8":      8
+    video_threaded:
+        prompt:      THREADED VIDEO
+        description: Improves performance at the cost of latency and more video stuttering. Use only if full speed cannot be obtained otherwise.
+        choices:
+            "On":   "true"
+            "Off":  "false"
 
   cores:
     '81':
@@ -141,7 +147,7 @@ libretro:
                     "RGB (Blargg)":        RGB (Blargg)
                     "Monochrome (Blargg)": Monochrome (Blargg)
             mesen-s_blend_high_res:
-                prompt:      BLEND HIGH-RES MODES  
+                prompt:      BLEND HIGH-RES MODES
                 description: Enable pseudo-transparency, may cause blurriness
                 choices:
                     "On":  enabled
@@ -4421,7 +4427,7 @@ drastic:
             choices:
                 "Off": 0
                 "On":  1
-                
+
 xemu:
   features: []
   cfeatures:
@@ -4606,7 +4612,7 @@ model2emu:
             description: Enabled meshed polygons for translucency.
             choices:
                 "Off":      0
-                "On":       1            
+                "On":       1
         fullscreenAA:
             prompt:      ENABLE FULL SCREEN ANTIALIASING
             description: Enable full screen antialiasing in Direct3D.
