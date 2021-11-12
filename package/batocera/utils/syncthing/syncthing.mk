@@ -23,6 +23,7 @@ define SYNCTHING_INSTALL_TARGET_CMDS
 	mkdir -p $(TARGET_DIR)/usr/bin
 
 	$(INSTALL) -D $(@D)/bin/syncthing $(TARGET_DIR)/usr/bin/syncthing
+    $(INSTALL) -Dm755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/utils/syncthing/S27syncthing       $(TARGET_DIR)/etc/init.d/
 endef
 
 $(eval $(golang-package))
