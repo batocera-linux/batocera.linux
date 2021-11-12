@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-WINE_PROTON_VERSION = proton-wine-6.3-7
+WINE_PROTON_VERSION = proton-wine-6.3-8-rc3
 WINE_PROTON_SITE = $(call github,ValveSoftware,wine,$(WINE_PROTON_VERSION))
 WINE_PROTON_LICENSE = LGPL-2.1+
 WINE_PROTON_DEPENDENCIES = host-bison host-flex host-wine-proton

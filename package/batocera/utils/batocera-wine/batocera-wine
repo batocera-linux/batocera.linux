@@ -92,11 +92,11 @@ wine_options() {
         VDESKTOP="explorer /desktop=Wine,${VIRTUAL_DESKTOP_SIZE}"
     fi
 
-    export WINEESYNC=1
-    test "${ESYNC}" = 0 && WINEESYNC=0
+    export WINEESYNC=0
+    test "${ESYNC}" = 1 && WINEESYNC=1
 
-    export WINEFSYNC=1
-    test "${FSYNC}" = 0 && WINEFSYNC=0
+    export WINEFSYNC=0
+    test "${FSYNC}" = 1 && WINEFSYNC=1
 
     export PBA_ENABLE=0
     test "${PBA}" = 1 && PBA_ENABLE=1
