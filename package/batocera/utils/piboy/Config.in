@@ -1,0 +1,8 @@
+config BR2_PACKAGE_PIBOY
+	bool "piboy"
+	depends on BR2_LINUX_KERNEL
+	help
+	  Kernel module to support hardware from piboy (experimental pi)
+
+comment "piboy needs a kernel and headers"
+	depends on !BR2_LINUX_KERNEL
