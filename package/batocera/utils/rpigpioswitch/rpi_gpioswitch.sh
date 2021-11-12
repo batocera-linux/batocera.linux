@@ -559,24 +559,54 @@ function deskpipro_config()
 function piboy_start()
 {
     PIBOY_CONFIG_FILE=/boot/config.txt
-    PIBOY_RPI_FILE=/usr/share/piboy/config_rpi.txt
     PIBOY_CHECK=$(tail "${PIBOY_CONFIG_FILE}" | grep PIBOY | sed 's/PIBOY=//g')
+    PIBOY_CONFIG='
+# ====== PiBoy Case setup section =====
+avoid_warnings=2
+dtoverlay=vc4-fkms-v3d
+hdmi_group=2
+hdmi_mode=85
+hdmi_drive=2
+audio_pwm_mode=2
+dtoverlay=audremap,pins_18_19
+##Enable DPI gpio
+gpio=0-9,12-17,20-25=a2
+audio_pwm_mode=2
+dtoverlay=audremap,pins_18_19
+##DPI LCD settings
+dpi_group=2
+dpi_mode=87
+dpi_output_format=0x070016
+dpi_timings=640 1 44 2 42 480 1 19 2 17 0 0 0 85 0 32000000 1
+enable_dpi_lcd=1
+##Disable ACT LED
+dtparam=act_led_trigger=none
+dtparam=act_led_activelow=off
+##Disable PWR LED
+dtparam=pwr_led_trigger=none
+dtparam=pwr_led_activelow=off
+##Turn off ethernet port LEDs
+dtparam=eth_led0=4
+dtparam=eth_led1=4
+PIBOY=true
+# ====== PiBoy Case toggle section ====='
 
     if test "${PIBOY_CHECK}" = true
     then
         echo "Check Success Piboy is installed"
+        python /usr/bin/piboy_fan_ctrl.py &
+        python /usr/bin/piboy_aud_ctrl.py &
+        python /usr/bin/piboy_power_ctrl.py &
+        modprobe xpi_gamecon.ko
     else
         echo "Check Error Piboy is not installed"
         mount -o remount,rw /boot
-        cp -a "${PIBOY_RPI_FILE}" "${PIBOY_CONFIG_FILE}" || exit 1
+        sed -i 's/dtoverlay=vc4-kms-v3d/#dtoverlay=vc4-kms-v3d/g' /boot/config.txt
+        sed -i 's/dtoverlay=vc4-fkms-v3d/#dtoverlay=vc4-fkms-v3d/g' /boot/config.txt
+        echo -e "${PIBOY_CONFIG}" >> "${PIBOY_CONFIG_FILE}" || exit 1
         mount -o remount,ro /boot
         shutdown -h now
     fi
-
-    python /usr/bin/piboy_fan_ctrl.py &
-    python /usr/bin/piboy_aud_ctrl.py &
-    python /usr/bin/piboy_power_ctrl.py &
-    modprobe xpi_gamecon.ko
 }
 
 function piboy_stop()
