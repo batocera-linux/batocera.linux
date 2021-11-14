@@ -303,12 +303,12 @@ dxvk_install() {
 	if test -e "/userdata/system/wine/dxvk"
 	then
 	    echo "Creating links on /userdata, Linux File System required !!!"
-	    ln -sf "/userdata/system/wine/dxvk/x64/"{d3d12.dll,d3d11.dll,d3d10core.dll,d3d10.dll,d3d10_1.dll,d3d9.dll,dxgi.dll,nvapi64.dll} "${WINEPREFIX}/drive_c/windows/system32" || return 1
-        ln -sf "/userdata/system/wine/dxvk/x32/"{d3d12.dll,d3d11.dll,d3d10core.dll,d3d10.dll,d3d10_1.dll,d3d9.dll,dxgi.dll,nvapi.dll} "${WINEPREFIX}/drive_c/windows/syswow64" || return 1
+	    ln -sf "/userdata/system/wine/dxvk/x64/"{d3d12.dll,d3d11.dll,d3d10core.dll,d3d10.dll,d3d10_1.dll,d3d9.dll,dxgi.dll} "${WINEPREFIX}/drive_c/windows/system32" || return 1
+        ln -sf "/userdata/system/wine/dxvk/x32/"{d3d12.dll,d3d11.dll,d3d10core.dll,d3d10.dll,d3d10_1.dll,d3d9.dll,dxgi.dll} "${WINEPREFIX}/drive_c/windows/syswow64" || return 1
 	else
 	    echo "Creating links on /userdata, Linux File System required !!!"
-	    ln -sf "/usr/wine/dxvk/x64/"{d3d12.dll,d3d11.dll,d3d10core.dll,d3d10.dll,d3d10_1.dll,d3d9.dll,dxgi.dll,nvapi64.dll} "${WINEPREFIX}/drive_c/windows/system32" || return 1
-        ln -sf "/usr/wine/dxvk/x32/"{d3d12.dll,d3d11.dll,d3d10core.dll,d3d10.dll,d3d10_1.dll,d3d9.dll,dxgi.dll,nvapi.dll} "${WINEPREFIX}/drive_c/windows/syswow64" || return 1
+	    ln -sf "/usr/wine/dxvk/x64/"{d3d12.dll,d3d11.dll,d3d10core.dll,d3d10.dll,d3d10_1.dll,d3d9.dll,dxgi.dll} "${WINEPREFIX}/drive_c/windows/system32" || return 1
+        ln -sf "/usr/wine/dxvk/x32/"{d3d12.dll,d3d11.dll,d3d10core.dll,d3d10.dll,d3d10_1.dll,d3d9.dll,dxgi.dll} "${WINEPREFIX}/drive_c/windows/syswow64" || return 1
 	fi
     else
 	echo "Creating links on /userdata, Linux File System required !!!"
@@ -324,13 +324,15 @@ dxvk_install() {
     else
     export WINEDLLOVERRIDES="${WINEDLLOVERRIDES};dxgi,d3d9,d3d10,d3d10_1,d3d10core,d3d11,d3d12=b"
     fi
-
-    if test "${NVAPI}" = 1 -a "${DXVK}" = 2
-    then
-    export WINEDLLOVERRIDES="${WINEDLLOVERRIDES};dxgi,d3d9,d3d10,d3d10_1,d3d10core,d3d11,d3d12,nvapi64,nvapi=n"
-    else
-    export WINEDLLOVERRIDES="${WINEDLLOVERRIDES};dxgi,d3d9,d3d10,d3d10_1,d3d10core,d3d11,d3d12=n;nvapi64,nvapi="
-    fi
+    # Need to rework nvapi !
+    #if test "${NVAPI}" = 1 -a "${DXVK}" = 2
+    #then
+    #ln -sf "/usr/wine/dxvk/x64/"{d3d12.dll,d3d11.dll,d3d10core.dll,d3d10.dll,d3d10_1.dll,d3d9.dll,dxgi.dll,nvapi64.dll} "${WINEPREFIX}/drive_c/windows/system32" || return 1
+    #ln -sf "/usr/wine/dxvk/x64/"{d3d12.dll,d3d11.dll,d3d10core.dll,d3d10.dll,d3d10_1.dll,d3d9.dll,dxgi.dll,nvapi.dll} "${WINEPREFIX}/drive_c/windows/syswow64" || return 1
+    #export WINEDLLOVERRIDES="${WINEDLLOVERRIDES};dxgi,d3d9,d3d10,d3d10_1,d3d10core,d3d11,d3d12,nvapi64,nvapi=n"
+    #else
+    #export WINEDLLOVERRIDES="${WINEDLLOVERRIDES};dxgi,d3d9,d3d10,d3d10_1,d3d10core,d3d11,d3d12=n;nvapi64,nvapi="
+    #fi
 
     return 0
 }
