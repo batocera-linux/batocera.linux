@@ -1622,7 +1622,7 @@ x1:
   extensions: [3ds, 3dsx, cxi, axf, elf]
   emulators:
     citra:
-      citra: { requireAnyOf: [BR2_PACKAGE_CITRA]          }
+      citra: { requireAnyOf: [BR2_PACKAGE_CITRA, BR2_PACKAGE_CITRA_ANDROID] }
     libretro:
       citra: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_CITRA] }
 

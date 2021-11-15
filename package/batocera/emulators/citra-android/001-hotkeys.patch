@@ -1,0 +1,137 @@
+diff --git a/src/citra_qt/bootmanager.cpp b/src/citra_qt/bootmanager.cpp
+index 719059d..0c1bcfc 100644
+--- a/src/citra_qt/bootmanager.cpp
++++ b/src/citra_qt/bootmanager.cpp
+@@ -29,6 +29,8 @@
+ #include "video_core/renderer_base.h"
+ #include "video_core/video_core.h"
+ 
++extern int batocera_hotkey_exit;
++
+ EmuThread::EmuThread(Frontend::GraphicsContext& core_context) : core_context(core_context) {}
+ 
+ EmuThread::~EmuThread() = default;
+@@ -83,8 +85,11 @@ void EmuThread::run() {
+             std::unique_lock lock{running_mutex};
+             running_cv.wait(lock, [this] { return IsRunning() || exec_step || stop_run; });
+         }
++        if(batocera_hotkey_exit == 1){
++            GMainWindow().closeWindow();
++        }
+     }
+-
++    
+     // Shutdown the core emulation
+     Core::System::GetInstance().Shutdown();
+ 
+diff --git a/src/citra_qt/main.cpp b/src/citra_qt/main.cpp
+index dd56f4b..e5d795e 100644
+--- a/src/citra_qt/main.cpp
++++ b/src/citra_qt/main.cpp
+@@ -2119,3 +2119,8 @@ int main(int argc, char* argv[]) {
+     detached_tasks.WaitForAllTasks();
+     return result;
+ }
++
++void GMainWindow::closeWindow() {
++    ShutdownGame();
++    close();
++}
+diff --git a/src/citra_qt/main.h b/src/citra_qt/main.h
+index 0fa04f5..b6c4456 100644
+--- a/src/citra_qt/main.h
++++ b/src/citra_qt/main.h
+@@ -72,6 +72,7 @@ public:
+ 
+     bool DropAction(QDropEvent* event);
+     void AcceptDropEvent(QDropEvent* event);
++    void closeWindow();
+ 
+ public slots:
+     void OnAppFocusStateChanged(Qt::ApplicationState state);
+diff --git a/src/core/frontend/input.h b/src/core/frontend/input.h
+index d7cb94b..5aea45e 100644
+--- a/src/core/frontend/input.h
++++ b/src/core/frontend/input.h
+@@ -23,6 +23,9 @@ public:
+     virtual StatusType GetStatus() const {
+         return {};
+     }
++    virtual int GetValue() const {
++      return -1;
++    }
+ };
+ 
+ /// An abstract class template for a factory that can create input devices.
+diff --git a/src/input_common/sdl/sdl_impl.cpp b/src/input_common/sdl/sdl_impl.cpp
+index 0b69bfe..94ec519 100644
+--- a/src/input_common/sdl/sdl_impl.cpp
++++ b/src/input_common/sdl/sdl_impl.cpp
+@@ -22,6 +22,13 @@
+ #include "common/threadsafe_queue.h"
+ #include "core/frontend/input.h"
+ #include "input_common/sdl/sdl_impl.h"
++#include "core/settings.h"
++
++int batocera_hotkey_exit = 0;
++int batocera_hotkey_start_number = -1;
++int batocera_hotkey_start_state  = 0;
++int batocera_hotkey_home_number  = -1;
++int batocera_hotkey_home_state   = 0;
+ 
+ namespace InputCommon {
+ 
+@@ -243,12 +250,27 @@ void SDLState::HandleGameControllerEvent(const SDL_Event& event) {
+     case SDL_JOYBUTTONUP: {
+         if (auto joystick = GetSDLJoystickBySDLID(event.jbutton.which)) {
+             joystick->SetButton(event.jbutton.button, false);
++            if(batocera_hotkey_start_number == event.jbutton.button) {
++      	        batocera_hotkey_start_state = 0;
++      	    }
++      	    if(batocera_hotkey_home_number == event.jbutton.button) {
++      	        batocera_hotkey_home_state = 0;
++      	    }
+         }
+         break;
+     }
+     case SDL_JOYBUTTONDOWN: {
+         if (auto joystick = GetSDLJoystickBySDLID(event.jbutton.which)) {
+             joystick->SetButton(event.jbutton.button, true);
++            if(batocera_hotkey_start_number == event.jbutton.button) {
++      	        batocera_hotkey_start_state = 1;
++      	    }
++      	    if(batocera_hotkey_home_number == event.jbutton.button) {
++      	        batocera_hotkey_home_state = 1;
++      	    }
++      	    if(batocera_hotkey_start_state == 1 && batocera_hotkey_home_state == 1) {
++      	        batocera_hotkey_exit = 1;
++      	    }
+         }
+         break;
+     }
+@@ -289,6 +311,10 @@ public:
+         return joystick->GetButton(button);
+     }
+ 
++    int GetValue() const override {
++        return button;
++    }
++
+ private:
+     std::shared_ptr<SDLJoystick> joystick;
+     int button;
+@@ -490,6 +516,14 @@ SDLState::SDLState() {
+     for (int i = 0; i < SDL_NumJoysticks(); ++i) {
+         InitJoystick(i);
+     }
++
++    // init batocera hotkey events
++    std::array<std::unique_ptr<Input::ButtonDevice>, Settings::NativeButton::NumButtons> buttons;
++    std::transform(Settings::values.current_input_profile.buttons.begin() + Settings::NativeButton::BUTTON_HID_BEGIN,
++                   Settings::values.current_input_profile.buttons.begin() + Settings::NativeButton::NumButtons,
++                   buttons.begin(), Input::CreateDevice<Input::ButtonDevice>);
++    batocera_hotkey_start_number = buttons[Settings::NativeButton::Start - Settings::NativeButton::BUTTON_HID_BEGIN]->GetValue();
++    batocera_hotkey_home_number  = buttons[Settings::NativeButton::Home  - Settings::NativeButton::BUTTON_HID_BEGIN]->GetValue();
+ }
+ 
+ SDLState::~SDLState() {
