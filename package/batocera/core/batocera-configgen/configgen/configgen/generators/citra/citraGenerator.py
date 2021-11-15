@@ -13,15 +13,26 @@ class CitraGenerator(Generator):
 
     # Main entry of the module
     def generate(self, system, rom, playersControllers, gameResolution):
-        CitraGenerator.writeCITRAConfig(batoceraFiles.CONF + "/citra-emu/qt-config.ini", system, playersControllers)
+        with open("/usr/share/batocera/batocera.arch") as fb:
+            arch = fb.readline().strip()
 
-        commandArray = ['/usr/bin/citra-qt', rom]
-        return Command.Command(array=commandArray, env={ \
-        "XDG_CONFIG_HOME":batoceraFiles.CONF, \
-        "XDG_DATA_HOME":batoceraFiles.SAVES + "/3ds", \
-        "XDG_CACHE_HOME":batoceraFiles.CACHE, \
-        "XDG_RUNTIME_DIR":batoceraFiles.SAVES + "/3ds/citra-emu", \
-        "QT_QPA_PLATFORM":"xcb"})
+        if (arch not in [ 'x86_64', 'x86']):
+            CitraGenerator.writeCITRAConfig(batoceraFiles.CONF + "/citra-emu/sdl2-config.ini", system, playersControllers)
+            commandArray = ['/usr/bin/citra', rom]
+            return Command.Command(array=commandArray, env={ \
+            "XDG_CONFIG_HOME":batoceraFiles.CONF, \
+            "XDG_DATA_HOME":batoceraFiles.SAVES + "/3ds", \
+            "XDG_CACHE_HOME":batoceraFiles.CACHE, \
+            "XDG_RUNTIME_DIR":batoceraFiles.SAVES + "/3ds/citra-emu"})
+        else:
+            CitraGenerator.writeCITRAConfig(batoceraFiles.CONF + "/citra-emu/qt-config.ini", system, playersControllers)
+            commandArray = ['/usr/bin/citra-qt', rom]
+            return Command.Command(array=commandArray, env={ \
+            "XDG_CONFIG_HOME":batoceraFiles.CONF, \
+            "XDG_DATA_HOME":batoceraFiles.SAVES + "/3ds", \
+            "XDG_CACHE_HOME":batoceraFiles.CACHE, \
+            "XDG_RUNTIME_DIR":batoceraFiles.SAVES + "/3ds/citra-emu", \
+            "QT_QPA_PLATFORM":"xcb"})
 
     # Show mouse on screen
     def getMouseMode(self, config):
@@ -92,7 +103,7 @@ class CitraGenerator(Generator):
         ## [UI]
         if not citraConfig.has_section("UI"):
             citraConfig.add_section("UI")
-        
+
         # Start Fullscreen
         if system.isOptSet("showFPS") and system.getOptBoolean("showFPS"):
             citraConfig.set("UI", "fullscreen",       "false")
@@ -162,7 +173,7 @@ class CitraGenerator(Generator):
         # Options required to load the functions when the configuration file is created
         if not citraConfig.has_option("Controls", "profiles\\size"):
             citraConfig.set("Controls", "profile", 0)
-            citraConfig.set("Controls", "profile\\default", "true")    
+            citraConfig.set("Controls", "profile\\default", "true")
             citraConfig.set("Controls", "profiles\\1\\name", "default")
             citraConfig.set("Controls", "profiles\\1\\name\\default", "true")
             citraConfig.set("Controls", "profiles\\size", 1)
