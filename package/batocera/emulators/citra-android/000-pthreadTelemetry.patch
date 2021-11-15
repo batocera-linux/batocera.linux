@@ -1,0 +1,26 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 93a477a..189e337 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -137,7 +137,7 @@ if (NOT Boost_FOUND)
+ endif()
+ 
+ # Prefer the -pthread flag on Linux.
+-set(THREADS_PREFER_PTHREAD_FLAG ON)
++set(THREADS_PTHREAD_ARG "0" CACHE STRING "Result from TRY_RUN" FORCE)
+ find_package(Threads REQUIRED)
+ 
+ if (ENABLE_SDL2)
+diff --git a/src/citra_qt/main.cpp b/src/citra_qt/main.cpp
+index f47e359..0bbd3be 100644
+--- a/src/citra_qt/main.cpp
++++ b/src/citra_qt/main.cpp
+@@ -193,8 +193,6 @@ GMainWindow::GMainWindow() : config(new Config()), emu_thread(nullptr) {
+     game_list->LoadCompatibilityList();
+     game_list->PopulateAsync(UISettings::values.game_dirs);
+ 
+-    // Show one-time "callout" messages to the user
+-    ShowTelemetryCallout();
+ 
+     // make sure menubar has the arrow cursor instead of inheriting from this
+     ui.menubar->setCursor(QCursor());
