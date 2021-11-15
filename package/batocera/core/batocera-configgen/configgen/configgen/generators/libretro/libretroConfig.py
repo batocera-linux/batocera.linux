@@ -431,6 +431,13 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
         retroarchConfig['savestate_auto_save'] = 'false'
         retroarchConfig['savestate_auto_load'] = 'false'
 
+    if system.isOptSet('incrementalsavestates') and not system.getOptBoolean('incrementalsavestates'):
+        retroarchConfig['savestate_auto_index'] = 'false'
+        retroarchConfig['savestate_max_keep'] = '50'
+    else:
+        retroarchConfig['savestate_auto_index'] = 'true'
+        retroarchConfig['savestate_max_keep'] = '0'
+
     # state_slot option
     if system.isOptSet('state_slot'):
         retroarchConfig['state_slot'] = system.config['state_slot']
