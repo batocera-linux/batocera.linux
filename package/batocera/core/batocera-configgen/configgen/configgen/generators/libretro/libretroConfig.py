@@ -410,6 +410,12 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
           if system.isOptSet('secondinstance') and system.getOptBoolean('secondinstance') == True:
               retroarchConfig['run_ahead_secondary_instance'] = 'true'
 
+    # Auto frame delay (input delay reduction via frame timing)
+    if system.isOptSet('video_frame_delay_auto') and system.getOptBoolean('video_frame_delay_auto') == False:
+        retroarchConfig['video_frame_delay_auto'] = 'false'
+    else:
+        retroarchConfig['video_frame_delay_auto'] = 'true'
+
     # Retroachievement option
     if system.isOptSet("retroachievements.sound") and system.config["retroachievements.sound"] != "none":
         retroarchConfig['cheevos_unlock_sound_enable'] = 'true'
