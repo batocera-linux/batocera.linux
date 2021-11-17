@@ -1,3 +1,7 @@
+default:
+  options:
+    retroarch.video_driver: vulkan
+
 nds:
   emulator: drastic
   core:     drastic
@@ -7,5 +11,3 @@ psp:
 psx:
   emulator: libretro
   core:     duckstation
-  options:
-    gpu_software: true
