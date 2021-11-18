@@ -19,6 +19,9 @@
         * add: Gong, a libretro engine for Pong
         * add: enabled libretro-ppsspp for RPi3/4
         * add: libretro-ppsspp enabled on oga/ogs/gameforce
+        * add: .m3u support for pico8 multicarts
+        * add: syncthing and rclone
+        * add: batocera-bluetooth can now blacklist devices
         * fix: borders are now shown on Vice C64, also fixed default aspect ratio
         * fix: duckstation quick menu can now actually be accessed with hotkey+south
         * fix: RetroArch FSUAE options now functional in amiga500, amiga1200, atarist and sharpx68000.
@@ -27,6 +30,8 @@
         * fix: ecwolf now works
         * fix: fixed resizefs silently failing
         * fix: low-end gpu shaders (such as rpi1) to reduce lag on those devices when using shader sets
+        * fix: puae mapping for cd32 pads (amiga)
+        * fix: pcsx2 no longer has a white border for 4:3 games
         * change: RPi3 default audio buffer to 96ms, gb/gbc to 196ms
         * change: MAME no-nag patch (x86_64)
         * change: Option for MAME controllers that use buttons as D-Pad directions (DS3, X360 dongle) (x86_64)
@@ -34,6 +39,7 @@
         * change: The "amlogic/s905gen3/tvbox" image is now titled "amlogic/s905gen3/tvbox-gen3"
         * change: batocera-screenshot now save as PNG instead of JPG (x86_64)
         * change: Kodi re-enabled on RPi2
+        * change: enabled lr-picodrive for gamegear on the rpi1 build
         * change: Devilutionx and Steam games can be closed with hotkey+start
         * change: -fastboot is no longer a default parameter for Singe games
         * change: updated splash screen
@@ -43,7 +49,7 @@
         * es: added libretro video_frame_delay_auto to latency settings
         * es: option to launch a game automatically at boot
         * es: option to show/hide border for Vice C64
-        * es: enabled retroachievements for libretro ppsspp, freeintv, o2em, pcfx and libretro/melonds
+        * es: enabled retroachievements for libretro ppsspp, freeintv, o2em, pcfx, sgb, satellaview and libretro/melonds
         * es: snes-msu1 added to the snes group
         * bump: RetroArch 1.9.13.2 + updated libretro cores
         * es: new scraper : hfs
