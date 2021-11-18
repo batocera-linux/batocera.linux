@@ -1,5 +1,5 @@
 
-SONICCD_VERSION = 'b99fed54b22821a3512cf5b09de9e826935668bd'
+SONICCD_VERSION = b99fed54b22821a3512cf5b09de9e826935668bd
 SONICCD_SITE = $(call github,Rubberduckycooly,Sonic-CD-11-Decompilation,$(SONICCD_VERSION))
 SONICCD_DEPENDENCIES = sdl2 libvorbis libogg libtheora
 SONICCD_LICENSE = Custom
