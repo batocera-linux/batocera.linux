@@ -1,0 +1,22 @@
+#!/bin/bash
+# This is a template for the custom script that will be launched on boot
+# and shutdown, after the gamelist has finished scanning. The first line here
+# is the shebang; the binary that should be called to execute it.
+# Rename this file to custom.sh to enable it.
+# This is an example file on changing the timezone.
+
+# Set logfile location and filename
+logfile=/tmp/scriptlog.txt
+ 
+# Test for the condition to avoid running the script after booting has succeeded.
+if test "$1" != "start"
+then
+  exit 0
+fi
+
+# Set the timezone.
+TZ=Europe/Paris
+hwclock --systz --localtime
+# Write to the log file, result should be a text file with three blank lines.
+echo "$1" > $logfile
+echo "$1" >> $logfile
