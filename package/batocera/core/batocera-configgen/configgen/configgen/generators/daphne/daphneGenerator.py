@@ -38,6 +38,22 @@ class DaphneGenerator(Generator):
                             romName, "vldp", "-framefile", frameFile, "-useoverlaysb", "2", "-fullscreen",
                             "-fastboot", "-datadir", batoceraFiles.daphneDatadir, "-homedir", batoceraFiles.daphneHomedir]
 
+        # Disable Bilinear Filtering
+        if system.isOptSet('bilinear_filter') and system.getOptBoolean("bilinear_filter"):
+            commandArray.append("-nolinear_scale")
+
+        # Blend Sprites (Singe)
+        if system.isOptSet('blend_sprites') and system.getOptBoolean("blend_sprites"):
+            commandArray.append("-blend_sprites")
+
+        # Oversize Overlay (Singe) for HD lightgun games
+        if system.isOptSet('lightgun_hd') and system.getOptBoolean("lightgun_hd"):
+            commandArray.append("-oversize_overlay")
+
+        # Invert Axis
+        if system.isOptSet('invert_axis') and system.getOptBoolean("invert_axis"):
+            commandArray.append("-tiphat")
+
         # The folder may have a file with the game name and .commands with extra arguments to run the game.
         if os.path.isfile(commandsFile):
             commandArray.extend(open(commandsFile,'r').read().split())
