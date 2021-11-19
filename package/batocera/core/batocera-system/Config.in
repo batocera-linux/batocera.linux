@@ -159,8 +159,7 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
 	select BR2_PACKAGE_LIBRGA                               if BR2_PACKAGE_BATOCERA_TARGET_ROCKCHIP_ANY # Used for screen rotation (SDL, Retroarch, Moonlight)
 
 	select BR2_PACKAGE_SDL2_OPENGLES                        # ALL
-    select BR2_PACKAGE_SDL2_WAYLAND                         if BR2_PACKAGE_BATOCERA_SBC_WAYLAND
-	select BR2_PACKAGE_SDL2_KMSDRM                          if !BR2_PACKAGE_BATOCERA_RPI_VCORE
+    select BR2_PACKAGE_SDL2_KMSDRM                          if !BR2_PACKAGE_BATOCERA_RPI_VCORE
 	select BR2_PACKAGE_LIBDRM                               if !BR2_PACKAGE_BATOCERA_RPI_VCORE
     select BR2_PACKAGE_LIBDRM_EXYNOS                        if BR2_PACKAGE_LIBDRM && BR2_PACKAGE_BATOCERA_TARGET_XU4
 	select BR2_PACKAGE_BATOCERA_DRMINFO                     if BR2_PACKAGE_LIBDRM
@@ -218,8 +217,8 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
                                                 BR2_PACKAGE_BATOCERA_TARGET_RPI4 || \
                                                 BR2_PACKAGE_BATOCERA_PANFROST_MESA3D
 
-    # Wayland
-	select BR2_PACKAGE_BATOCERA_SBC_WAYLAND     if BR2_PACKAGE_BATOCERA_RPI_MESA3D || BR2_PACKAGE_BATOCERA_PANFROST_MESA3D
+    # Enable wayland + weston for sbc (WIP)
+	# select BR2_PACKAGE_BATOCERA_SBC_WAYLAND     if BR2_PACKAGE_BATOCERA_RPI_MESA3D || BR2_PACKAGE_BATOCERA_PANFROST_MESA3D
 
 	# wireless drivers
 	select BR2_PACKAGE_RTL8821AU            if  !BR2_PACKAGE_BATOCERA_TARGET_RPI1           && \
@@ -1188,6 +1187,8 @@ config BR2_PACKAGE_BATOCERA_SBC_WAYLAND
 	select BR2_PACKAGE_WAYLANDPP
 	select BR2_PACKAGE_WAYLAND_PROTOCOLS
 	select BR2_PACKAGE_WAYLAND_UTILS
+    select BR2_PACKAGE_WESTON
+	select BR2_PACKAGE_WESTON_DRM
 
 config BR2_PACKAGE_BATOCERA_XORG
 	bool "batocera.linux xorgs packages selection"
