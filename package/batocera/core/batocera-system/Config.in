@@ -217,10 +217,7 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
                                                 BR2_PACKAGE_BATOCERA_TARGET_RPI4 || \
                                                 BR2_PACKAGE_BATOCERA_PANFROST_MESA3D
 
-    # Enable wayland + weston for sbc (WIP)
-	# select BR2_PACKAGE_BATOCERA_SBC_WAYLAND     if BR2_PACKAGE_BATOCERA_RPI_MESA3D || BR2_PACKAGE_BATOCERA_PANFROST_MESA3D
-
-	# wireless drivers
+    # wireless drivers
 	select BR2_PACKAGE_RTL8821AU            if  !BR2_PACKAGE_BATOCERA_TARGET_RPI1           && \
                                                 !BR2_PACKAGE_BATOCERA_TARGET_ORANGEPI_PC    && \
                                                 !BR2_PACKAGE_BATOCERA_TARGET_CHA            && \
@@ -1179,16 +1176,6 @@ config BR2_PACKAGE_BATOCERA_LINUX_FIRMWARES
 
 	# x86 (maybe some firmware could be for all, to be checked)
 	select BR2_PACKAGE_WILINK_BT_FIRMWARE   if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY
-
-config BR2_PACKAGE_BATOCERA_SBC_WAYLAND
-	bool "batocera.linux wayland system"
-
-	select BR2_PACKAGE_WAYLAND
-	select BR2_PACKAGE_WAYLANDPP
-	select BR2_PACKAGE_WAYLAND_PROTOCOLS
-	select BR2_PACKAGE_WAYLAND_UTILS
-    select BR2_PACKAGE_WESTON
-	select BR2_PACKAGE_WESTON_DRM
 
 config BR2_PACKAGE_BATOCERA_XORG
 	bool "batocera.linux xorgs packages selection"
