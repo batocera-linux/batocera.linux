@@ -3,7 +3,8 @@
 # uinput-joystick
 #
 ################################################################################
-UINPUT_JOYSTICK_VERSION = 613762c5bee564827ec036df5a6db0453e29a79d
+# Version.: Commits on Nov 6, 2021
+UINPUT_JOYSTICK_VERSION = 1f71dfa30b56d5d3989066e02473ee2d6e4f5381
 UINPUT_JOYSTICK_SITE = $(call github,shantigilbert,uinput_joystick,$(UINPUT_JOYSTICK_VERSION))
 
 define UINPUT_JOYSTICK_BUILD_CMDS
