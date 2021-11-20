@@ -3182,6 +3182,30 @@ citra:
 
 daphne:
   features: [ratio, padtokeyboard]
+  cfeatures:
+        bilinear_filter:
+            prompt:      BILINEAR FILTER
+            choices:
+                "On":                           0
+                "Off":                          1
+        blend_sprites:
+            prompt:      BLEND SPRITES (SINGE)
+            description: Restore BLENDMODE outline on Singe sprites
+            choices:
+                "Off":                          0
+                "On":                           1
+        lightgun_hd:
+            prompt:      OVERSIZE OVERLAY (SINGE)
+            description: Use with Singe HD lightgun games
+            choices:
+                "Off":                          0
+                "On":                           1
+        invert_axis:
+            prompt:      INVERT AXIS
+            description: Invert joystick on flight games
+            choices:
+                "Off":                          0
+                "On":                           1
 
 devilutionx:
   features: [ratio, padtokeyboard]
