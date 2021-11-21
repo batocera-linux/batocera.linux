@@ -36,4 +36,23 @@ Do this one more time to exit the Service Menu.
 
 The Service Menu configuration will be saved and the error will not occur again in future usage.
 
+-----------------
+Batocera Upgrades
+-----------------
+
+In some instances when you upgrade Batocera to a new version, when trying to run the Sega Model 2 emulator it may crash.
+When you look at your /userdata/system/logs/es_launch_stderr.log file you may see a Wine mismatch error.
+This is due to the wine bottle being out of date and not aligning to the version installed with the latest Batocera.
+If you do, you should backup your /userdata/saves/model2/model2emu/CFG & userdata/saves/model2/model2emu/NVDATA folders.
+When browsing using the network share you won't see the userdata directory, browse to saves.
+Backing these folders up will retain your high scores, rom & controller configurations.
+
+It's recommended to remove your /userdata/saves/model2/ directory via ssh only!
+When logged in via ssh:
+cd /userdata/saves
+rm -rf model2
+
+Once done, re-launch a game when connected to the internet & it will re-create the wine bottle for you.
+Afterwards you can restore your CFG & NVDATA directories.
+
 *** Enjoy the Sega Model 2 emulator running under Linux !!! ***
