@@ -5,10 +5,9 @@
 
 do_start ()
 {
-    image="/usr/share/batocera/splash/boot-logo.png"
+    image="/usr/share/batocera/splash/boot-logo-"$(batocera-resolution currentResolution)".png"
     if ! [ -f "$image" ]; then
-        # no image => for ogoa (or any other), logo-version-wxh.png
-        image="/usr/share/batocera/splash/logo-version-"$(batocera-resolution currentResolution)".png"
+        image="/usr/share/batocera/splash/boot-logo.png"
         [ -f "$image" ] || exit 1
     fi
 
