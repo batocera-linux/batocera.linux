@@ -106,14 +106,12 @@ def getWiiLangFromEnvironment():
         return availableLanguages["en_US"]
 
 def getRatioFromConfig(config, gameResolution):
-    # 0: 4:3 ; 1: 16:9
+    # Sets the setting available to the Wii's internal NAND. Only has two values:
+    # 0: 4/3, 1: 16/9
     if "ratio" in config:
-        if config["ratio"] == "4/3" or (config["ratio"] == "auto" and gameResolution["width"] / float(gameResolution["height"]) < (16.0 / 9.0) - 0.1): # let a marge):
-            if config["ratio"] == "full":
-                return 3
-            else:
-                return 1
-    return 0
+        if config["ratio"] == "4/3" or (gameResolution["width"] / float(gameResolution["height"])) < ((16.0 / 9.0) - 0.1):
+            return 0
+    return 1
 
 def update(config, filepath, gameResolution):
     arg_setval = { "IPL.LNG": getWiiLangFromEnvironment(), "IPL.AR": getRatioFromConfig(config, gameResolution) }
