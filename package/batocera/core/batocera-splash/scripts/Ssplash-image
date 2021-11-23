@@ -1,7 +1,7 @@
 #!/bin/bash
 
 DAEMON="splash-image"
-DEFAULT="/usr/share/batocera/splash/logo-version.png"
+DEFAULT="/usr/share/batocera/splash/logo-version-"$(batocera-resolution currentResolution)".png"
 SPLASH_DIR=/userdata/splash
 
 FM_IMAGE=".*\.\(jpg\|jpeg\|png\)"
@@ -18,10 +18,9 @@ do_filerandomize ()
 
 do_start ()
 {
-    # no image => for ogoa (or any other), logo-version-wxh.png
     if ! test -e "$DEFAULT"
     then
-        DEFAULT="/usr/share/batocera/splash/logo-version-"$(batocera-resolution currentResolution)".png"
+        DEFAULT="/usr/share/batocera/splash/logo-version.png"
     fi
 
     image_file=$(do_filerandomize "$FM_IMAGE")
