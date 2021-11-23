@@ -43,6 +43,25 @@ do_imagestart ()
     fi
 }
 
+do_imageplatform()
+{
+    BOARD_MODEL=$(cat /sys/firmware/devicetree/base/model 2>/dev/null | sed -e s+"[^A-Za-z0-9]"+"_"+g)
+
+    if [[ ${BOARD_MODEL} = "Hardkernel_ODROID_GO2" ]]; then
+        ln -sf /usr/share/batocera/splash/logo-version-320x480.png /usr/share/batocera/splash/boot-logo.png
+        ln -sf /usr/share/batocera/splash/logo-version-320x480.png /usr/share/batocera/splash/logo-version.png
+    elif [[ ${BOARD_MODEL} = "Hardkernel_ODROID_GO3" ]]; then
+        ln -sf /usr/share/batocera/splash/logo-version-480x854.png /usr/share/batocera/splash/boot-logo.png
+        ln -sf /usr/share/batocera/splash/logo-version-480x854.png /usr/share/batocera/splash/logo-version.png
+    elif [[ ${BOARD_MODEL} = "Anbernic_RG351P" ]]; then
+        ln -sf /usr/share/batocera/splash/logo-version-320x480.png /usr/share/batocera/splash/boot-logo.png
+        ln -sf /usr/share/batocera/splash/logo-version-320x480.png /usr/share/batocera/splash/logo-version.png
+    elif [[ ${BOARD_MODEL} = "Golden_GameForce" ]]; then
+        ln -sf /usr/share/batocera/splash/logo-version-480p.png /usr/share/batocera/splash/boot-logo.png
+        ln -sf /usr/share/batocera/splash/logo-version-480p.png /usr/share/batocera/splash/logo-version.png
+    fi
+}
+
 case "$1" in
     start)
         printf 'Starting %s: ' "$DAEMON"
@@ -51,6 +70,7 @@ case "$1" in
             echo "SKIPPED"
             exit 0
         fi
+        do_imageplatform
         do_start
         echo "OK"
         ;;
