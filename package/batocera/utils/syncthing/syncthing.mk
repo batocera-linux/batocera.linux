@@ -10,17 +10,7 @@ SYNCTHING_LICENSE = MPLv2
 SYNCTHING_LICENSE_FILES = LICENSE
 
 ifeq ($(BR2_arm),y)
-    ifeq ($(BR2_cortex_a7),y)
-                GOARCH= arm
-    else ifeq ($(BR2_cortex_a9),y)
-                GOARCH= arm
-    else ifeq ($(BR2_cortex_a15),y)
-                GOARCH= arm
-    else ifeq ($(BR2_cortex_a17),y)
-                GOARCH= arm
-    else ifeq ($(BR2_cortex_a53),y)
-                GOARCH= arm
-    endif
+GOARCH= arm
 endif
 ifeq ($(BR2_aarch64),y)
 GOARCH=arm64
