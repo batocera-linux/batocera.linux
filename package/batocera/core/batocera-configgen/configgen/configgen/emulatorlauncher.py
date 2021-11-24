@@ -326,7 +326,14 @@ def start_rom(args, maxnbplayers, rom, romConfiguration):
             if executionDirectory is not None:
                 os.chdir(executionDirectory)
 
-            exitCode = runCommand(generators[system.config['emulator']].generate(system, rom, playersControllers, gameResolution))
+            cmd = generators[system.config['emulator']].generate(system, rom, playersControllers, gameResolution)
+
+            if system.isOptSet('hud') and system.config["hud"] != "":
+                cmd.env["MANGOHUD_DLSYM"] = "1"
+                cmd.env["MANGOHUD_CONFIG"] = getHudConfig(system, systemName, system.config['emulator'], effectiveCore, rom)
+                cmd.array.insert(0, "mangohud")
+
+            exitCode = runCommand(cmd)
         finally:
             Evmapy.stop()
 
@@ -362,6 +369,31 @@ def callExternalScripts(folder, event, args):
             if os.access(os.path.join(folder, file), os.X_OK):
                 eslog.debug("calling external script: " + str([os.path.join(folder, file), event] + args))
                 subprocess.call([os.path.join(folder, file), event] + args)
+
+def hudConfig_protectStr(str):
+    return str.replace(",", "\\,")
+
+def getHudConfig(system, systemName, emulator, core, rom):
+    if not system.isOptSet('hud'):
+        return ""
+    mode = system.config["hud"]
+
+    if mode == "custom" and system.isOptSet('hud_custom') and system.config["hud_custom"] != "" :
+        return system.config["hud_custom"]
+
+    if mode == "full":
+        return "position=bottom-left,background_alpha=0.9,full=enabled"
+
+    emulatorstr = emulator
+    if emulator != core and core is not None:
+        emulatorstr += "/" + core
+
+    if mode == "perf":
+        return "position=bottom-left,background_alpha=0.9,legacy_layout=false,custom_text="+hudConfig_protectStr(os.path.basename(rom))+",custom_text="+hudConfig_protectStr(systemName)+",custom_text="+hudConfig_protectStr(emulatorstr)+",fps,gpu_name,engine_version,vulkan_driver,resolution,ram,gpu_stats,gpu_temp,cpu_stats,cpu_temp,core_load"
+    if mode == "game":
+        return "position=bottom-left,background_alpha=0.9,legacy_layout=false,font_size=48,custom_text="+hudConfig_protectStr(os.path.basename(rom))+",custom_text="+hudConfig_protectStr(systemName)+",custom_text="+hudConfig_protectStr(emulatorstr)
+
+    return ""
 
 def runCommand(command):
     global proc

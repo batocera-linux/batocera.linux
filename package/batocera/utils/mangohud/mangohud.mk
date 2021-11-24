@@ -3,30 +3,50 @@
 # MangoHud
 #
 ################################################################################
-# Version: Commits from Mar 20th, 2021
-MANGOHUD_VERSION = 87f82215e83eeb805ffcb2c62b521d6f444e8966
-MANGOHUD_SITE = https://github.com/flightlessmango/MangoHud.git
-MANGOHUD_SITE_METHOD = git
+# Version: Commits from Oct, 2021
+MANGOHUD_VERSION = v0.6.6-1
+MANGOHUD_SITE =  $(call github,flightlessmango,MangoHud,$(MANGOHUD_VERSION))
 
-MANGOHUD_DEPENDENCIES = libdrm xserver_xorg-server vulkan-headers
+MANGOHUD_DEPENDENCIES = host-libcurl host-python3-mako
 
-MANGOHUD_CONF_OPTS = -Duse_system_vulkan=enabled -Dwith_xnvctrl=disabled -Dvkdatadir=$(STAGING_DIR)/usr/share
+ifeq ($(BR2_PACKAGE_LIBDRM),y)
+	MANGOHUD_DEPENDENCIES += libdrm
+endif
 
-#MANGOHUD_INSTALL_STAGING = YES
+ifeq ($(BR2_PACKAGE_XSERVER_XORG_SERVER),y)
+	MANGOHUD_DEPENDENCIES += xserver_xorg-server
+endif
 
-#define MANGOHUD_INSTALL_STAGING_CMDS
-#	cd $(@D) && \
-#	CC="$(TARGET_CC)" \
-#	CXX="$(TARGET_CXX)" \
-#	BASE_DIR="" \
-#	PREFIX="$(STAGING_DIR)/usr" \
-#	PKG_CONFIG_PATH="$(STAGING_DIR)/usr/lib/pkgconfig" \
-#	$(MAKE) install
-#endef
+ifeq ($(BR2_PACKAGE_VULKAN_HEADERS),y)
+	MANGOHUD_DEPENDENCIES += vulkan-headers
+endif
 
-#define MANGOHUD_INSTALL_TARGET_CMDS
-#	$(INSTALL) -D -m 0644 $(@D)/libMANGOHUD.so $(TARGET_DIR)/usr/lib/libMANGOHUD.so
-#	$(INSTALL) -D -m 0755 $(@D)/MANGOHUD $(TARGET_DIR)/usr/bin/MANGOHUD
-#endef
+MANGOHUD_CONF_OPTS = -Dwith_xnvctrl=disabled
+ifeq ($(BR2_PACKAGE_VULKAN_HEADERS),y)
+	MANGOHUD_CONF_OPTS += -Duse_system_vulkan=enabled -Dvulkan_datadir=$(STAGING_DIR)/usr/share
+endif
+
+ifeq ($(BR2_PACKAGE_XSERVER_XORG_SERVER),y)
+	MANGOHUD_CONF_OPTS += -Dwith_x11=enabled
+else
+	MANGOHUD_CONF_OPTS += -Dwith_x11=disabled
+endif
+
+ifeq ($(BR2_PACKAGE_WAYLAND),y)
+	MANGOHUD_CONF_OPTS += -Dwith_wayland=enabled
+else
+	MANGOHUD_CONF_OPTS += -Dwith_wayland=disabled
+endif
+
+# this is a not nice workaround
+# i don't know why meson uses bad ssl certificates and doesn't manage to download them
+define MANGOHUD_DWD_DEPENDENCIES
+	mkdir -p $(@D)/subprojects/packagecache
+	$(HOST_DIR)/bin/curl -L https://github.com/ocornut/imgui/archive/v1.81.tar.gz     -o $(@D)/subprojects/packagecache/imgui-1.81.tar.gz
+	$(HOST_DIR)/bin/curl -L https://wrapdb.mesonbuild.com/v2/imgui_1.81-1/get_patch   -o $(@D)/subprojects/packagecache/imgui-1.81-1-wrap.zip
+	$(HOST_DIR)/bin/curl -L https://github.com/gabime/spdlog/archive/v1.8.5.tar.gz    -o $(@D)/subprojects/packagecache/v1.8.5.tar.gz
+	$(HOST_DIR)/bin/curl -L https://wrapdb.mesonbuild.com/v2/spdlog_1.8.5-1/get_patch -o $(@D)/subprojects/packagecache/spdlog-1.8.5-1-wrap.zip
+endef
+MANGOHUD_PRE_CONFIGURE_HOOKS += MANGOHUD_DWD_DEPENDENCIES
 
 $(eval $(meson-package))
