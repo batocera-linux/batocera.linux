@@ -110,6 +110,8 @@ def getRatioFromConfig(config, gameResolution):
     # 0: 4/3, 1: 16/9
     if "ratio" in config:
         if config["ratio"] == "4/3" or (gameResolution["width"] / float(gameResolution["height"])) < ((16.0 / 9.0) - 0.1):
+            if config["ratio"] == "16/9":
+                return 1
             return 0
     return 1
 
