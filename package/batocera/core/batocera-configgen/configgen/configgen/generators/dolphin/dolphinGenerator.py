@@ -139,8 +139,13 @@ class DolphinGenerator(Generator):
         if not dolphinGFXSettings.has_section("Hardware"):
             dolphinGFXSettings.add_section("Hardware")  
             
-        dolphinGFXSettings.set("Settings", "AspectRatio", str(getGfxRatioFromConfig(system.config, gameResolution)))
-
+        # Graphics setting Aspect Ratio
+        if system.isOptSet('dolphin_aspect_ratio'):
+            dolphinGFXSettings.set("Settings", "AspectRatio", system.config["dolphin_aspect_ratio"])
+        else:
+            # set to zero, which is 'Auto' in Dolphin & Batocera
+            dolphinGFXSettings.set("Settings", "AspectRatio", '"0"')
+        
         # Show fps
         if system.isOptSet("showFPS") and system.getOptBoolean("showFPS"):
             dolphinGFXSettings.set("Settings", "ShowFPS", '"True"')
@@ -253,18 +258,6 @@ class DolphinGenerator(Generator):
             commandArray = ["dolphin-emu-nogui", "-p", system.config["platform"], "-e", rom]
 
         return Command.Command(array=commandArray, env={"XDG_CONFIG_HOME":batoceraFiles.CONF, "XDG_DATA_HOME":batoceraFiles.SAVES, "QT_QPA_PLATFORM":"xcb"})
-
-# Ratio
-def getGfxRatioFromConfig(config, gameResolution):
-    # 3: stretch ; 2: 4:3 ; 1: 16:9  ; 0: auto
-    if "ratio" in config:
-        if config["ratio"] == "4/3":
-            return 2
-        if config["ratio"] == "16/9":
-            return 1
-        if config["ratio"] == "full":
-            return 3
-    return 0
 
 # Seem to be only for the gamecube. However, while this is not in a gamecube section
 # It may be used for something else, so set it anyway
