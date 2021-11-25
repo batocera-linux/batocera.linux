@@ -2,6 +2,9 @@
 # http://rpf.io/configtxt
 # Some settings may impact device functionality. See link above for details
 
+start_file=start_x.elf
+fixup_file=fixup_x.dat
+
 # sets the initial CEC name of the device
 cec_osd_name=batocera
 
@@ -58,7 +61,7 @@ disable_splash=1
 # Overclock
 # https://www.raspberrypi.org/documentation/configuration/config-txt/memory.md
 gpu_mem_256=128
-gpu_mem_512=256
+gpu_mem_512=160
 gpu_mem_1024=384
 
 kernel=boot/linux
