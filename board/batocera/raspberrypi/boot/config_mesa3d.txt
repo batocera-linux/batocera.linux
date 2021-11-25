@@ -2,9 +2,6 @@
 # http://rpf.io/configtxt
 # Some settings may impact device functionality. See link above for details
 
-# 64-bit mode
-arm_64bit=1
-
 # sets the initial CEC name of the device
 cec_osd_name=batocera
 
@@ -134,15 +131,10 @@ gpu_mem=128
 # Configure GPU memory based on SDRAM size - overrides above setting
 gpu_mem_256=112
 gpu_mem_512=160
-gpu_mem_1024=256
+gpu_mem_1024=384
 
 # Enable audio (loads snd_bcm2835)
 dtparam=audio=on
-
-[rpi3]
-# Enable DRM VC4 V3D driver on top of the dispmanx display stack
-# Preferred 'Full' Kernel Mode Setting (KMS)
-dtoverlay=vc4-kms-v3d
 
 # Optional 'Fake' KMS for displays that won't work with 'Full' KMS
 #dtoverlay=vc4-fkms-v3d
@@ -152,3 +144,50 @@ dtoverlay=vc4-kms-v3d
 # i.e. Official 7" DSI Raspberry Pi Touch Display for 'Full' KMS
 #ignore_lcd=1
 #dtoverlay=vc4-kms-dsi-7inch
+
+[pi02]
+# 64-bit mode
+arm_64bit=1
+
+start_file=start_x.elf
+fixup_file=fixup_x.dat
+
+# Enable DRM VC4 V3D driver on top of the dispmanx display stack
+# Preferred 'Full' Kernel Mode Setting (KMS)
+dtoverlay=vc4-kms-v3d,cma-128
+
+[pi2]
+start_file=start_x.elf
+fixup_file=fixup_x.dat
+
+# Enable DRM VC4 V3D driver on top of the dispmanx display stack
+# Preferred 'Full' Kernel Mode Setting (KMS)
+dtoverlay=vc4-kms-v3d
+
+[pi3]
+# 64-bit mode
+arm_64bit=1
+
+start_file=start_x.elf
+fixup_file=fixup_x.dat
+
+# Enable DRM VC4 V3D driver on top of the dispmanx display stack
+# Preferred 'Full' Kernel Mode Setting (KMS)
+dtoverlay=vc4-kms-v3d
+
+[pi4]
+# 64-bit mode
+arm_64bit=1
+
+start_file=start4x.elf
+fixup_file=fixup4x.dat
+
+# Enable DRM VC4 V3D driver on top of the dispmanx display stack
+# Preferred 'Full' Kernel Mode Setting (KMS)
+dtoverlay=vc4-kms-v3d-pi4
+
+# Ensure only one display output can be used on the Pi4 with batocera
+max_framebuffers=1
+
+# custom config
+[all]

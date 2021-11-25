@@ -18,7 +18,6 @@ mkdir -p "${BATOCERA_BINARIES_DIR}/boot/boot" || exit 1
 
 cp -pr "${BINARIES_DIR}/rpi-firmware/"* "${BATOCERA_BINARIES_DIR}/boot/" || exit 1
 cp -f  "${BINARIES_DIR}/"*.dtb          "${BATOCERA_BINARIES_DIR}/boot/" || exit 1
-cp     "${BOARD_DIR}/boot/config.txt"   "${BATOCERA_BINARIES_DIR}/boot/" || exit 1
 cp     "${BOARD_DIR}/boot/cmdline.txt"  "${BATOCERA_BINARIES_DIR}/boot/" || exit 1
 
 cp "${BINARIES_DIR}/Image"          "${BATOCERA_BINARIES_DIR}/boot/boot/linux"           || exit 1
