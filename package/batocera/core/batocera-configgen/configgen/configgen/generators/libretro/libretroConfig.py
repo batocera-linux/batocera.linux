@@ -411,10 +411,10 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
               retroarchConfig['run_ahead_secondary_instance'] = 'true'
 
     # Auto frame delay (input delay reduction via frame timing)
-    if system.isOptSet('video_frame_delay_auto') and system.getOptBoolean('video_frame_delay_auto') == False:
-        retroarchConfig['video_frame_delay_auto'] = 'false'
-    else:
+    if system.isOptSet('video_frame_delay_auto') and system.getOptBoolean('video_frame_delay_auto') == True:
         retroarchConfig['video_frame_delay_auto'] = 'true'
+    else:
+        retroarchConfig['video_frame_delay_auto'] = 'false'
 
     # Retroachievement option
     if system.isOptSet("retroachievements.sound") and system.config["retroachievements.sound"] != "none":
