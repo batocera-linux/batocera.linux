@@ -1,15 +1,51 @@
---- a/src/Config.cpp	2020-09-06 12:32:05.331467334 +0200
-+++ b/src/Config.cpp	2020-09-06 12:32:35.531977551 +0200
-@@ -53,9 +53,9 @@
+diff --git a/src/frontend/qt_sdl/Config.cpp b/src/frontend/qt_sdl/Config.cpp
+index 30babaf..7a29042 100644
+--- a/src/frontend/qt_sdl/Config.cpp
++++ b/src/frontend/qt_sdl/Config.cpp
+@@ -233,28 +233,28 @@ ConfigEntry ConfigFile[] =
  
- ConfigEntry ConfigFile[] =
- {
+     {"ExternalBIOSEnable", 0, &ExternalBIOSEnable, 0, NULL, 0},
+ 
 -    {"BIOS9Path", 1, BIOS9Path, 0, "", 1023},
 -    {"BIOS7Path", 1, BIOS7Path, 0, "", 1023},
 -    {"FirmwarePath", 1, FirmwarePath, 0, "", 1023},
-+    {"BIOS9Path", 1, BIOS9Path, 0, "/userdata/bios/bios9.bin", 1023},
-+    {"BIOS7Path", 1, BIOS7Path, 0, "/userdata/bios/bios7.bin", 1023},
-+    {"FirmwarePath", 1, FirmwarePath, 0, "/userdata/bios/firmware.bin", 1023},
++    {"BIOS9Path", 1, BIOS9Path, 0, "/userdata/bios/biosnds9.bin", 1023},
++    {"BIOS7Path", 1, BIOS7Path, 0, "/userdata/bios/biosnds7.bin", 1023},
++    {"FirmwarePath", 1, FirmwarePath, 0, "/userdata/bios/dsfirmware.bin", 1023},
+ 
+-    {"DSiBIOS9Path", 1, DSiBIOS9Path, 0, "", 1023},
+-    {"DSiBIOS7Path", 1, DSiBIOS7Path, 0, "", 1023},
+-    {"DSiFirmwarePath", 1, DSiFirmwarePath, 0, "", 1023},
+-    {"DSiNANDPath", 1, DSiNANDPath, 0, "", 1023},
++    {"DSiBIOS9Path", 1, DSiBIOS9Path, 0, "/userdata/bios/biosdsi9.bin", 1023},
++    {"DSiBIOS7Path", 1, DSiBIOS7Path, 0, "/userdata/bios/biosdsi7.bin", 1023},
++    {"DSiFirmwarePath", 1, DSiFirmwarePath, 0, "/userdata/bios/dsifirmware.bin", 1023},
++    {"DSiNANDPath", 1, DSiNANDPath, 0, "/userdata/bios/dsinand.bin", 1023},
+ 
      {"DLDIEnable", 0, &DLDIEnable, 0, NULL, 0},
-     {"DLDISDPath", 1, DLDISDPath, 0, "", 1023},
+     {"DLDISDPath", 1, DLDISDPath, 0, "dldi.bin", 1023},
+     {"DLDISize", 0, &DLDISize, 0, NULL, 0},
+     {"DLDIReadOnly", 0, &DLDIReadOnly, 0, NULL, 0},
+     {"DLDIFolderSync", 0, &DLDIFolderSync, 0, NULL, 0},
+-    {"DLDIFolderPath", 1, DLDIFolderPath, 0, "", 1023},
++    {"DLDIFolderPath", 1, DLDIFolderPath, 0, "/userdata/saves/melonds", 1023},
+ 
+     {"DSiSDEnable", 0, &DSiSDEnable, 0, NULL, 0},
+     {"DSiSDPath", 1, DSiSDPath, 0, "dsisd.bin", 1023},
+     {"DSiSDSize", 0, &DSiSDSize, 0, NULL, 0},
+     {"DSiSDReadOnly", 0, &DSiSDReadOnly, 0, NULL, 0},
+     {"DSiSDFolderSync", 0, &DSiSDFolderSync, 0, NULL, 0},
+-    {"DSiSDFolderPath", 1, DSiSDFolderPath, 0, "", 1023},
++    {"DSiSDFolderPath", 1, DSiSDFolderPath, 0, "/userdata/saves/melonds", 1023},
+ 
+     {"FirmwareOverrideSettings", 0, &FirmwareOverrideSettings, false, NULL, 0},
+     {"FirmwareUsername", 1, FirmwareUsername, 0, "melonDS", 63},
+@@ -276,7 +276,7 @@ ConfigEntry ConfigFile[] =
+     {"AudioBitrate", 0, &AudioBitrate, 0, NULL, 0},
+     {"AudioVolume", 0, &AudioVolume, 256, NULL, 0},
+     {"MicInputType", 0, &MicInputType, 1, NULL, 0},
+-    {"MicWavPath", 1, MicWavPath, 0, "", 1023},
++    {"MicWavPath", 1, MicWavPath, 0, "/userdata/saves/melonds", 1023},
+ 
+     {"LastROMFolder", 1, LastROMFolder, 0, "", 1023},
  
