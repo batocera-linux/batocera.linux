@@ -69,8 +69,14 @@ class Rpcs3Generator(Generator):
         if "Miscellaneous" not in rpcs3ymlconfig:
             rpcs3ymlconfig["Miscellaneous"] = {}  
 
+
+        # Set the SPU Decoder based on config
+        if system.isOptSet("spudecoder"):
+            rpcs3ymlconfig["Core"]['SPU Decoder'] = system.config["spudecoder"]
+        else:
+            rpcs3ymlconfig["Core"]['SPU Decoder'] = 'Recompiler (LLVM)'
+
         # Set the Default Core Values we need
-        rpcs3ymlconfig["Core"]['SPU Decoder'] = 'Recompiler (ASMJIT)'
         rpcs3ymlconfig["Core"]['Lower SPU thread priority'] = False
         rpcs3ymlconfig["Core"]['SPU Cache'] = False
         rpcs3ymlconfig["Core"]['PPU LLVM Accurate Vector NaN values'] = True     

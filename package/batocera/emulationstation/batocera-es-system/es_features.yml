@@ -3921,6 +3921,14 @@ rpcs3:
             choices:
                 "OpenGL":   OpenGL
                 "Vulkan":   Vulkan
+        spudecoder:
+            prompt:      SPU DECODER
+            description: LLVM used by default. Use ASMJIT if game crashes; then Interpreter (fast) if still crashing.
+            choices:
+                "Recompiler (LLVM)":      Recompiler (LLVM)
+                "Recompiler (ASMJIT)":    Recompiler (ASMJIT)
+                "Interpreter (fast)":     Interpreter (fast)
+                "Interpreter (precise)":  Interpreter (precise)
 
 scummvm:
   features: [ratio, padtokeyboard]
