@@ -330,7 +330,7 @@ def start_rom(args, maxnbplayers, rom, romConfiguration):
 
             if system.isOptSet('hud') and system.config["hud"] != "":
                 cmd.env["MANGOHUD_DLSYM"] = "1"
-                cmd.env["MANGOHUD_CONFIG"] = getHudConfig(system, systemName, system.config['emulator'], effectiveCore, rom)
+                cmd.env["MANGOHUD_CONFIG"] = getHudConfig(system, args.systemname, system.config['emulator'], effectiveCore, args.gamename)
                 cmd.array.insert(0, "mangohud")
 
             exitCode = runCommand(cmd)
@@ -371,9 +371,11 @@ def callExternalScripts(folder, event, args):
                 subprocess.call([os.path.join(folder, file), event] + args)
 
 def hudConfig_protectStr(str):
-    return str.replace(",", "\\,")
+    if str is None:
+        return ""
+    return str.replace(",", "\\,").replace(":", "\\:")
 
-def getHudConfig(system, systemName, emulator, core, rom):
+def getHudConfig(system, systemName, emulator, core, gameName):
     if not system.isOptSet('hud'):
         return ""
     mode = system.config["hud"]
@@ -389,9 +391,9 @@ def getHudConfig(system, systemName, emulator, core, rom):
         emulatorstr += "/" + core
 
     if mode == "perf":
-        return "position=bottom-left,background_alpha=0.9,legacy_layout=false,custom_text="+hudConfig_protectStr(os.path.basename(rom))+",custom_text="+hudConfig_protectStr(systemName)+",custom_text="+hudConfig_protectStr(emulatorstr)+",fps,gpu_name,engine_version,vulkan_driver,resolution,ram,gpu_stats,gpu_temp,cpu_stats,cpu_temp,core_load"
+        return "position=bottom-left,background_alpha=0.9,legacy_layout=false,custom_text="+hudConfig_protectStr(gameName)+",custom_text="+hudConfig_protectStr(systemName)+",custom_text="+hudConfig_protectStr(emulatorstr)+",fps,gpu_name,engine_version,vulkan_driver,resolution,ram,gpu_stats,gpu_temp,cpu_stats,cpu_temp,core_load"
     if mode == "game":
-        return "position=bottom-left,background_alpha=0.9,legacy_layout=false,font_size=48,custom_text="+hudConfig_protectStr(os.path.basename(rom))+",custom_text="+hudConfig_protectStr(systemName)+",custom_text="+hudConfig_protectStr(emulatorstr)
+        return "position=bottom-left,background_alpha=0.9,legacy_layout=false,font_size=48,custom_text="+hudConfig_protectStr(gameName)+",custom_text="+hudConfig_protectStr(systemName)+",custom_text="+hudConfig_protectStr(emulatorstr)
 
     return ""
 
@@ -454,6 +456,8 @@ if __name__ == '__main__':
     parser.add_argument("-netplayport", help="remote port", type=str, required=False)
     parser.add_argument("-state_slot", help="state slot", type=str, required=False)
     parser.add_argument("-autosave", help="autosave", type=str, required=False)
+    parser.add_argument("-systemname", help="system fancy name", type=str, required=False)
+    parser.add_argument("-gamename", help="game fancy name", type=str, required=False)
 
     args = parser.parse_args()
     try:
