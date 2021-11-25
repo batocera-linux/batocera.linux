@@ -177,6 +177,8 @@ ifeq ($(BR2_arm),y)
 		LIBRETRO_PLATFORM += armv7
 	else ifeq ($(BR2_cortex_a53),y)
 		LIBRETRO_PLATFORM += armv7
+    else ifeq ($(BR2_cortex_a15_a7),y)
+		LIBRETRO_PLATFORM += armv7
 	endif
 endif
 
