@@ -26,7 +26,7 @@ def ordered_load(stream, Loader=yaml.Loader, object_pairs_hook=OrderedDict):
 class EsSystemConf:
 
     default_parentpath = "/userdata/roms"
-    default_command    = "python /usr/lib/python3.9/site-packages/configgen/emulatorlauncher.py %CONTROLLERSCONFIG% -system %SYSTEM% -rom %ROM%"
+    default_command    = "python /usr/lib/python3.9/site-packages/configgen/emulatorlauncher.py %CONTROLLERSCONFIG% -system %SYSTEM% -rom %ROM% -systemname %SYSTEMNAME% -gamename %GAMENAME%"
 
     # Generate the es_systems.cfg file by searching the information in the es_system.yml file
     @staticmethod
