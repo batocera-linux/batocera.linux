@@ -317,7 +317,7 @@ config BR2_TARGET_BATOCERA_IMAGES_DEFINITIONS
 	default "amlogic/s905gen2"                                  if BR2_PACKAGE_BATOCERA_TARGET_S905GEN2
 	default "amlogic/s905gen3/odroidc4 amlogic/s905gen3/tvbox-gen3"  if BR2_PACKAGE_BATOCERA_TARGET_S905GEN3
 	default "amlogic/s912"                                      if BR2_PACKAGE_BATOCERA_TARGET_S912
-    default "raspberrypi/rpi1"                                   if BR2_PACKAGE_BATOCERA_TARGET_RPI1
+    default "raspberrypi/rpi1"                                  if BR2_PACKAGE_BATOCERA_TARGET_RPI1
 	default "raspberrypi/rpi2"                                  if BR2_PACKAGE_BATOCERA_TARGET_RPI2
 	default "raspberrypi/rpi3"                                  if BR2_PACKAGE_BATOCERA_TARGET_RPI3
 	default "raspberrypi/rpi4"                                  if BR2_PACKAGE_BATOCERA_TARGET_RPI4
