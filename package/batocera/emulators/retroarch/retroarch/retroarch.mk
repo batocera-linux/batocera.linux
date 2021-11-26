@@ -107,7 +107,7 @@ endif
 
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA),y)
 	RETROARCH_CONF_OPTS += --enable-odroidgo2
-	RETROARCH_DEPENDENCIES += librga
+	RETROARCH_DEPENDENCIES += rockchip-rga
 endif
 
 ifeq ($(BR2_PACKAGE_HAS_LIBGL),y)
