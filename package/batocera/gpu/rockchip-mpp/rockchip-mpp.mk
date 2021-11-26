@@ -3,12 +3,13 @@
 # ROCKCHIP MPP
 #
 ################################################################################
-
-ROCKCHIP_MPP_VERSION = dbd5ae409938d0951dad17a4a229c4f4156c0db3
-#ROCKCHIP_MPP_SITE =  $(call github,rockchip-linux,mpp,$(ROCKCHIP_MPP_VERSION))
-ROCKCHIP_MPP_SITE =  $(call github,batocera-linux,mpp,$(ROCKCHIP_MPP_VERSION))
-ROCKCHIP_MPP_INSTALL_STAGING = YES
+# Version.: Commits on Nov 2, 2021
+ROCKCHIP_MPP_VERSION = 786b79f9767d24bed618be60046546b508f9190e
+ROCKCHIP_MPP_SITE =  $(call github,rockchip-linux,mpp,$(ROCKCHIP_MPP_VERSION))
+ROCKCHIP_MPP_LICENSE = Apache License 2.0
 ROCKCHIP_MPP_DEPENDENCIES = libdrm
+
+ROCKCHIP_MPP_INSTALL_STAGING = YES
 
 ifneq (,$(findstring rk3328,$(BR2_LINUX_KERNEL_INTREE_DTS_NAME)))
 	ROCKCHIP_MPP_CONF_OPTS +=-DENABLE_VP9D=ON
