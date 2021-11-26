@@ -205,6 +205,27 @@ class DolphinGenerator(Generator):
                 dolphinGFXSettings.remove_option("Enhancements", "DisableCopyFilter")
                 dolphinGFXSettings.remove_option("Enhancements", "ForceTrueColor")  
 
+        # Post-processing
+        if system.isOptSet('shaderset'):
+            if system.config["shaderset"] == "curvature":
+                dolphinGFXSettings.set("Enhancements", "PostProcessingShader", "lens_distortion")
+            #elif system.config["shaderset"] == "enhanced":
+                #dolphinGFXSettings.remove_option("Enhancements", "PostProcessingShader")
+            elif system.config["shaderset"] == "flatten-glow":
+                dolphinGFXSettings.set("Enhancements", "PostProcessingShader", "bad_bloom")
+            elif system.config["shaderset"] == "retro":
+                dolphinGFXSettings.set("Enhancements", "PostProcessingShader", "32bit")
+            # These scanline shaders are a third party one available at https://gist.github.com/mariodivece/cfa3ec1352c13e5dd00d685528e4edac#file-mad-scanlines-crt-glsl , however it will not be included yet as it is not official/maintained.
+            #elif system.config["shaderset"] == "scanlines":
+                #dolphinGFXSettings.set("Enhancements", "PostProcessingShader", "mad-scanlines-crt-static")
+            #elif system.config["shaderset"] == "zfast":
+                # Same as scanlines, will leave as a separate elif in case a better shader becomes available in the future.
+                #dolphinGFXSettings.set("Enhancements", "PostProcessingShader", "mad-scanlines-crt-static")
+            #elif system.config["shaderset"] == "none":
+                #dolphinGFXSettings.remove_option("Enhancements", "PostProcessingShader")
+            else:
+                dolphinGFXSettings.remove_option("Enhancements", "PostProcessingShader")
+
         # Internal resolution settings
         if system.isOptSet('internal_resolution'):
             dolphinGFXSettings.set("Settings", "InternalResolution", system.config["internal_resolution"])
