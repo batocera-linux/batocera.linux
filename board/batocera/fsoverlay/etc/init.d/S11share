@@ -220,12 +220,12 @@ fi
 
 case "${MODE}" in
     "DEV")
-        LDEVICE=$(blkid | grep " UUID=\"${UUID}\"")
+        LDEVICE=$(blkid | grep " UUID=\"${UUID}\"" | head -1)
         while [ -z "${LDEVICE}" -a "${NTRY}" -lt "${MAXTRY}" ] # wait the device that can take some seconds after udev started
         do
             NTRY=$((NTRY+1))
             sleep 1
-           LDEVICE=$(blkid | grep " UUID=\"${UUID}\"")
+           LDEVICE=$(blkid | grep " UUID=\"${UUID}\"" | head -1)
         done
         DEVICE=$(echo "${LDEVICE}" | sed -e s+'^\([^:]*\):.*$'+'\1'+)
         TDEVICE=$(echo "${LDEVICE}" | sed -e s+'^.* TYPE="\([^"]*\)"$'+'\1'+)
