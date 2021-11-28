@@ -115,6 +115,9 @@ class DolphinGenerator(Generator):
         # Gamecube pads forced as standard pad
         dolphinSettings.set("Core", "SIDevice0", '"6"')
 
+        # Change discs automatically
+        dolphinSettings.set("Core", "AutoDiscChange", '"True"')
+
         # Save dolphin.ini
         with open(batoceraFiles.dolphinIni, 'w') as configfile:
             dolphinSettings.write(configfile)
