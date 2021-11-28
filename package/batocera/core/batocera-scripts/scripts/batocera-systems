@@ -164,9 +164,13 @@ systems = {
     "fds":         { "name": "Nintendo Family Computer Disk System", "biosFiles": [ { "md5": "ca30b50f880eb660a320674ed365ef7a", "file": "bios/disksys.rom" } ] },
 
     # https://docs.libretro.com/library/melonds/#bios
-    "nds": { "name": "Nintendo DS", "biosFiles": [  { "md5": "145eaef5bd3037cbc247c213bb3da1b3", "file": "bios/firmware.bin" },
-                                            { "md5": "df692a80a5b1bc90728bc3dfc76cd948", "file": "bios/bios7.bin" },
-                                            { "md5": "a392174eb3e572fed6447e956bde4b25", "file": "bios/bios9.bin" } ] },
+    "nds": { "name": "Nintendo DS", "biosFiles": [  { "md5": "94bc5094607c5e6598d50472c52f27f2", "file": "bios/dsfirmware.bin" },
+                                            { "md5": "df692a80a5b1bc90728bc3dfc76cd948", "file": "bios/biosnds7.bin" },
+                                            { "md5": "a392174eb3e572fed6447e956bde4b25", "file": "bios/biosnds9.bin" },
+                                            { "md5": "87b665fce118f76251271c3732532777", "file": "bios/biosdsi9.bin" },
+                                            { "md5": "559dae4ea78eb9d67702c56c1d791e81", "file": "bios/biosdsi7.bin" },
+                                            { "md5": "74f23348012d7b3e1cc216c47192ffeb", "file": "bios/dsifirmware.bin" },
+                                            { "md5": "d71edf897ddd06bf335feeb68edeb272", "file": "bios/dsinand.bin" }, ] },
 
     # https://docs.libretro.com/library/mgba/#bios
     "gba": { "name": "Nintendo Gameboy Advance", "biosFiles": [  { "md5": "a860e8c0b6d573d191e4ec7db1b1e4f6", "file": "bios/gba_bios.bin" },
