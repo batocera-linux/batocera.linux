@@ -1,8 +1,0 @@
-config BR2_PACKAGE_STORMLIB
-	bool "stormlib"
-	select BR2_PACKAGE_BZIP2
-	select BR2_PACKAGE_ZLIB
-	help
-	  StormLib is a library that reads and writes Blizzard MPQ archives.
-
-	  https://github.com/ladislav-zezula/StormLib
