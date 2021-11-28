@@ -50,12 +50,12 @@ doList() {
 	    echo "extreme EXTREME (1500Mhz)"
 	    ;;
 	"rpi4")
-	    echo "none NONE (1500Mhz)"
-	    echo "high HIGH (HEATSINK - 1700Mhz)"
-	    echo "turbo TURBO (HEATSINK - 1800Mhz)"
+	    echo "none NONE (B0 - 1500Mhz or C0 - 1800MHz)"
+	    echo "high HIGH (B0 HEATSINK - 1700Mhz)"
+	    echo "turbo TURBO (B0 HEATSINK - 1800Mhz)"
 		echo "extreme EXTREME (HEATSINK & FAN 1950Mhz)"
 		echo "ruinsane INSANE (HEATSINK & FAN 2100Mhz)"
-		echo "cm4 CAUTION (CM4 only - HEATSINK & FAN 2275Mhz)"
+		echo "cm4 CAUTION (C0 stepping only - HEATSINK & FAN 2275Mhz)"
 	    ;;
 	"s922x")
 	    MODEL=$(cat /sys/firmware/devicetree/base/model)

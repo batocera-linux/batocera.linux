@@ -178,6 +178,8 @@ dtoverlay=vc4-kms-v3d
 [pi4]
 # 64-bit mode
 arm_64bit=1
+# Run as fast as firmware / board allows
+arm_boost=1
 
 start_file=start4x.elf
 fixup_file=fixup4x.dat
