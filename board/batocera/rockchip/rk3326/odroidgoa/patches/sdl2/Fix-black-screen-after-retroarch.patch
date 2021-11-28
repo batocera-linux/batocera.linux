@@ -1,0 +1,21 @@
+diff --git a/src/video/kmsdrm/SDL_kmsdrmmouse.c b/src/video/kmsdrm/SDL_kmsdrmmouse.c
+index 57cb35c75..a592f1ed7 100644
+--- a/src/video/kmsdrm/SDL_kmsdrmmouse.c
++++ b/src/video/kmsdrm/SDL_kmsdrmmouse.c
+@@ -428,6 +428,7 @@ KMSDRM_WarpMouseGlobal(int x, int y)
+ 
+             drm_fd = KMSDRM_gbm_device_get_fd(KMSDRM_gbm_bo_get_device(dispdata->cursor_bo));
+             ret = KMSDRM_drmModeMoveCursor(drm_fd, dispdata->crtc->crtc_id, x, y);
++            close(drm_fd);
+ 
+             if (ret) {
+                 SDL_SetError("drmModeMoveCursor() failed.");
+@@ -497,6 +498,8 @@ KMSDRM_MoveCursor(SDL_Cursor * cursor)
+ 
+         ret = KMSDRM_drmModeMoveCursor(drm_fd, dispdata->crtc->crtc_id, mouse->x, mouse->y);
+ 
++        close(drm_fd);
++
+         if (ret) {
+             SDL_SetError("drmModeMoveCursor() failed.");
+         }
