@@ -355,7 +355,6 @@ menu "Utils"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/utils/ryzenadj/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/utils/syncthing/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/utils/rclone/Config.in"
-  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/utils/smpq/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/utils/piboy/Config.in"
 endmenu
 
@@ -371,7 +370,6 @@ menu "Libraries"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/wildmidi/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/appstream-glib/Config.in"
   source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/python3-pyparsing/Config.in"
-  source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/libraries/stormlib/Config.in"
 endmenu
 
 endmenu
