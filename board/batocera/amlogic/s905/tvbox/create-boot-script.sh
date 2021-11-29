@@ -29,7 +29,7 @@ cp "${BOARD_DIR}/boot/README.txt"       	"${BATOCERA_BINARIES_DIR}/boot/"	  || e
 cp "${BOARD_DIR}/boot/uEnv.txt"       		"${BATOCERA_BINARIES_DIR}/boot/" 	  || exit 1
 
 
-for DTB in meson-gxbb-p200.dtb meson-gxbb-nexbox-a95x.dtb meson-gxl-s905d-p230.dtb meson-gxl-s905d-p231.dtb meson-gxl-s905w-p281.dtb meson-gxl-s905w-tx3-mini.dtb meson-gxl-s905x-p212.dtb
+for DTB in meson-gxbb-minix-neo-u1.dtb meson-gxbb-nexbox-a95x.dtb meson-gxl-s905d-p230.dtb meson-gxl-s905d-p231.dtb meson-gxl-s905w-p281.dtb meson-gxl-s905w-tx3-mini.dtb meson-gxl-s905x-p212.dtb
 do
 	cp "${BINARIES_DIR}/${DTB}" "${BATOCERA_BINARIES_DIR}/boot/boot/" || exit 1
 done
