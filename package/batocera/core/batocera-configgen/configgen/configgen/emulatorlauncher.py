@@ -272,6 +272,11 @@ def start_rom(args, maxnbplayers, rom, romConfiguration):
             gameResolution["height"] = x
         eslog.debug("resolution: {}x{}".format(str(gameResolution["width"]), str(gameResolution["height"])))
 
+        # If "game aspect ratio=auto" detects screen aspect ratio
+        if ( system.config['ratio'] == "auto" ):
+            system.config['ratio'] = getAspectRatio(gameResolution["width"], gameResolution["height"])
+        eslog.debug("Aspect Ratio: {}".format(system.config['ratio']))
+
         # savedir: create the save directory if not already done
         dirname = os.path.join(batoceraFiles.savesDir, system.name)
         if not os.path.exists(dirname):
@@ -429,6 +434,33 @@ def signal_handler(signal, frame):
     if proc:
         eslog.debug('killing proc')
         proc.kill()
+
+def getAspectRatio(width, height):
+    # Warning the values in the array must be exactly at the same index than
+    # https://github.com/libretro/RetroArch/blob/master/gfx/video_driver.c#L188
+    ratioIndexes = ["4/3", "16/9", "16/10", "16/15", "21/9", "1/1", "2/1", "3/2", "3/4", "4/1", "9/16", "5/4", "6/5", "7/9", "8/3",
+                    "8/7", "19/12", "19/14", "30/17", "32/9", "config", "squarepixel", "core", "custom", "full"]
+
+    def gcd(a, b):
+        return a if b == 0 else gcd(b, a % b)
+
+    r = gcd(width, height)
+    x = int(width / r)
+    y = int(height / r)
+
+    # It is necessary to invert 2/3 due to Retroarch nomenclature
+    if (x == 2 and y == 3):
+        ratio = f"{y}/{x}"
+    else:
+        ratio = f"{x}/{y}"
+
+    if not ratio in ratioIndexes:
+        # Special case: ratio is not well behaved
+        if ( (abs(width/height - 16/9)) < 0.01 ):
+            ratio = f"16/9"
+        else:
+            ratio = "full"
+    return ratio
 
 if __name__ == '__main__':
     proc = None
