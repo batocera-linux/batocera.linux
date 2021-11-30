@@ -27,7 +27,7 @@ postBootRWConfig() {
 
 doList() {
     case "${ARCH}" in
-	"rpi1")
+    "rpi1")
 	    echo "none NONE"
 	    echo "high HIGH (950Mhz)"
 	    echo "turbo TURBO (1000Mhz)"
@@ -57,6 +57,9 @@ doList() {
 		echo "ruinsane INSANE (HEATSINK & FAN 2100Mhz)"
 		echo "cm4 CAUTION (C0 stepping only - HEATSINK & FAN 2275Mhz)"
 	    ;;
+    "rpizero2")
+	    echo "none NONE (1000Mhz)"
+	;;
 	"s922x")
 	    MODEL=$(cat /sys/firmware/devicetree/base/model)
 	    if test "${MODEL}" = "Hardkernel ODROID-N2Plus" -o "${MODEL}" = "Khadas VIM3" -o "${MODEL}" = "Beelink GT-King Pro"
@@ -180,7 +183,7 @@ setValue_odroidn2() {
 
     # put values
     sed -i "s/#\?overclocking=.*/overclocking=${VALUE}/g" "${GODROIDCONFFILE}" || return 1
-    
+
     postBootRWConfig || return 1
 }
 
@@ -188,7 +191,7 @@ setValue() {
     VALUE=$1
 
     case "${ARCH}" in
-	"rpi1")
+    "rpi1")
 	    case "${VALUE}" in
 		"none")
 		    setValue_rpiNone
@@ -265,7 +268,14 @@ setValue() {
 		    setValue_rpi4PutVars 6 2100 750
             ;;
 		"cm4")
-		    setValue_rpi4PutVars 8 2275 750		
+		    setValue_rpi4PutVars 8 2275 750
+	    esac
+	    ;;
+    "rpizero2")
+	    case "${VALUE}" in
+		"none")
+		    setValue_rpiNone
+		    ;;
 	    esac
 	    ;;
 	"s922x")
