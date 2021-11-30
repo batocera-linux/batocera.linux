@@ -5,7 +5,7 @@ libretro:
   features: [ratio, smooth, shaders, pixel_perfect, decoration, game_translation]
   cfeatures:
     gfxbackend:
-      archs_include: [x86, x86_64, rpi4, odroidgoa, gameforce]
+      archs_include: [x86, x86_64, rpi4, rk3326, gameforce]
       prompt:      GRAPHICS BACKEND
       description: Choose your graphics rendering
       choices:
@@ -3214,7 +3214,7 @@ dolphin:
   features: [ratio]
   cfeatures:
         gfxbackend:
-            archs_include: [x86, x86_64, rpi4, odroidgoa, gameforce]
+            archs_include: [x86, x86_64, rpi4, rk3326, gameforce]
             prompt:      GRAPHICS BACKEND
             description: Choose your graphics rendering
             choices:
@@ -3392,7 +3392,7 @@ duckstation:
                 "90 sec / 450 Mo RAM + 360 Mo VRAM":           90
                 "120 sec / 600 Mo RAM + 480 Mo VRAM":          120
         gfxbackend:
-            archs_include: [x86, x86_64, rpi4, odroidgoa, gameforce]
+            archs_include: [x86, x86_64, rpi4, rk3326, gameforce]
             prompt:      GRAPHICS BACKEND
             description: Choose your graphics rendering
             choices:
@@ -3822,7 +3822,7 @@ ppsspp:
   features: [rewind, ratio]
   cfeatures:
         gfxbackend:
-            archs_include: [x86, x86_64, rpi4, odroidgoa, gameforce]
+            archs_include: [x86, x86_64, rpi4, rk3326, gameforce]
             prompt:      GRAPHICS BACKEND
             description: Choose your graphics rendering
             choices:
@@ -4059,7 +4059,7 @@ mame:
                 "Accel":           accel
                 "OpenGL":          opengl
         bgfxbackend:
-            archs_include: [x86, x86_64, rpi4, odroidgoa, gameforce]
+            archs_include: [x86, x86_64, rpi4, rk3326, gameforce]
             prompt:      BGFX BACKEND
             description: Choose your graphics API
             choices:
