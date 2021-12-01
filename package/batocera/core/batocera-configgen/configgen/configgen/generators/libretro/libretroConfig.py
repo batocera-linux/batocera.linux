@@ -792,14 +792,33 @@ def writeBezelConfig(bezel, retroarchConfig, rom, gameResolution, system):
                 eslog.error("Error opening custom file: {}".format('tattoo_file'))
         output_png_file = "/tmp/bezel_tattooed.png"
         back = Image.open(overlay_png_file)
+        # Convert to RGBA to more easily manipulate later.
         tattoo = tattoo.convert("RGBA")
-        back = back.convert("RGBA")
+        # Get the overlay's and tattoo's dimensions.
         w,h = bezelsUtil.fast_image_size(overlay_png_file)
         tw,th = bezelsUtil.fast_image_size(tattoo_file)
-        tatwidth = int(240/1920 * w) # 240 = half of the difference between 4:3 and 16:9 on 1920px (0.5*1920/16*4)
-        pcent = float(tatwidth / tw)
-        tatheight = int(float(th) * pcent)
-        tattoo = tattoo.resize((tatwidth,tatheight), Image.ANTIALIAS)
+        back = back.convert("RGBA")
+        if system.isOptSet('bezel.resize_tattoo') and system.config['bezel.resize_tattoo'] == "original":
+            # Failsafe for if the image is too large.
+            if tw > w or th > h:
+                # Limit width to that of the bezel and crop the rest.
+                pcent = float(w / tw)
+                tatheight = int(float(th) * pcent)
+                # Resize the tattoo to the calculated size.
+                tattoo = tattoo.resize((w,tatheight), Image.ANTIALIAS)
+        elif system.isOptSet('bezel.resize_tattoo') and system.config['bezel.resize_tattoo'] == "240/1920":
+            # Resize to the bezel's column.
+            tatwidth = int(240/1920 * w) # 240 = half of the difference between 4:3 and 16:9 on 1920px (0.5*1920/16*4).
+            pcent = float(tatwidth / tw)
+            tatheight = int(float(th) * pcent)
+            tattoo = tattoo.resize((tatwidth,tatheight), Image.ANTIALIAS)
+        else:
+            # Resize to slightly smaller than the bezel's column.
+            tatwidth = int(225/1920 * w) # 225 = arbitrary number I chose.
+            pcent = float(tatwidth / tw)
+            tatheight = int(float(th) * pcent)
+            tattoo = tattoo.resize((tatwidth,tatheight), Image.ANTIALIAS)
+
         alpha = back.split()[-1]
         alphatat = tattoo.split()[-1]
         if system.isOptSet('bezel.tattoo_corner'):
