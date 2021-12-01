@@ -75,9 +75,9 @@ define BATOCERA_SPLASH_INSTALL_BOOT_LOGO
     cp "$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/images/logo.png"        "${TARGET_DIR}/usr/share/batocera/splash/boot-logo.png"
     cp "$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/images/logo480p.png"    "${TARGET_DIR}/usr/share/batocera/splash/boot-logo-640x480.png"
 
-    cp "$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/images/logo-3-2-480-rotate-(OGA).png"  "${TARGET_DIR}/usr/share/batocera/splash/boot-logo-320x480.png"
-	cp "$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/images/logo-16-9-480-rotate-(ogas)"    "${TARGET_DIR}/usr/share/batocera/splash/boot-logo-480x854.png"
-    cp "$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/images/logo-240-(gpi-case).png"        "${TARGET_DIR}/usr/share/batocera/splash/boot-logo-320x240.png"
+    cp "$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/images/logo-3-2-480-rotate.png"    "${TARGET_DIR}/usr/share/batocera/splash/boot-logo-320x480.png"
+	cp "$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/images/logo-16-9-480-rotate.png"   "${TARGET_DIR}/usr/share/batocera/splash/boot-logo-480x854.png"
+    cp "$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/images/logo-240.png"               "${TARGET_DIR}/usr/share/batocera/splash/boot-logo-320x240.png"
 endef
 
 define BATOCERA_SPLASH_INSTALL_VIDEO
@@ -89,10 +89,11 @@ endef
 define BATOCERA_SPLASH_INSTALL_IMAGE
     mkdir -p $(TARGET_DIR)/usr/share/batocera/splash
     convert "$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/images/logo.png" -fill white -pointsize 30 -annotate +50+1020 "$(BATOCERA_SPLASH_TGVERSION)" "${TARGET_DIR}/usr/share/batocera/splash/logo-version.png"
-    convert "$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/images/logo-3-2-480-rotate-(OGA).png" -fill white -pointsize 15 -annotate +40+300 "$(BATOCERA_SPLASH_TGVERSION)" "${TARGET_DIR}/usr/share/batocera/splash/logo-version-320x480.png"
-	convert "$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/images/logo-16-9-480-rotate-(ogas).png" -fill white -pointsize 15 -annotate +40+440 "$(BATOCERA_SPLASH_TGVERSION)" "${TARGET_DIR}/usr/share/batocera/splash/logo-version-480x854.png"
+    convert "$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/images/logo-3-2-480-rotate.png" -fill white -pointsize 15 -annotate +40+300 "$(BATOCERA_SPLASH_TGVERSION)" "${TARGET_DIR}/usr/share/batocera/splash/logo-version-320x480.png"
+	convert "$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/images/logo-16-9-480-rotate.png" -fill white -pointsize 15 -annotate +40+440 "$(BATOCERA_SPLASH_TGVERSION)" "${TARGET_DIR}/usr/share/batocera/splash/logo-version-480x854.png"
     convert "$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/images/logo480p.png" -fill white -pointsize 20 -annotate +40+440 "$(BATOCERA_SPLASH_TGVERSION)" "${TARGET_DIR}/usr/share/batocera/splash/logo-version-640x480.png"
-    convert "$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/images/logo-240-(gpi-case).png" -fill white -pointsize 20 -annotate +40+440 "$(BATOCERA_SPLASH_TGVERSION)" "${TARGET_DIR}/usr/share/batocera/splash/logo-version-320x240.png"
+    convert "$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/images/logo-240.png" -fill white -pointsize 20 -annotate +40+440 "$(BATOCERA_SPLASH_TGVERSION)" "${TARGET_DIR}/usr/share/batocera/splash/logo-version-320x240.png"
+    convert "$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/images/logo-480-dmg.png" -fill white -pointsize 20 -annotate +40+440 "$(BATOCERA_SPLASH_TGVERSION)" "${TARGET_DIR}/usr/share/batocera/splash/logo-version-640x480-dmg.png"
 endef
 
 $(eval $(generic-package))
