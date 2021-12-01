@@ -20,7 +20,7 @@ if BR2_PACKAGE_BATOCERA_TARGET_RK3399 || BR2_PACKAGE_BATOCERA_TARGET_RK3288 || B
 		Selected when a Rockchip platform is being built
 endif
 
-if BR2_PACKAGE_BATOCERA_TARGET_GAMEFORCE || BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA
+if BR2_PACKAGE_BATOCERA_TARGET_GAMEFORCE || BR2_PACKAGE_BATOCERA_TARGET_RK3326
 	config BR2_PACKAGE_BATOCERA_TARGET_RK3326_ANY
 	bool "any RK3326"
 	default y
@@ -156,7 +156,7 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
 	select BR2_PACKAGE_WGET                                 # download tools
 	select BR2_PACKAGE_LIBCURL_CURL                         # download tools
 	select BR2_PACKAGE_CA_CERTIFICATES                      # ssl certificates
-	select BR2_PACKAGE_ROCKCHIP_RGA                         if BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA # Used for screen rotation (SDL, Retroarch, Moonlight)
+	select BR2_PACKAGE_ROCKCHIP_RGA                         if BR2_PACKAGE_BATOCERA_TARGET_RK3326 # Used for screen rotation (SDL, Retroarch, Moonlight)
 
 	select BR2_PACKAGE_LIBDRM                               if !BR2_PACKAGE_BATOCERA_RPI_VCORE
     select BR2_PACKAGE_LIBDRM_EXYNOS                        if BR2_PACKAGE_LIBDRM && BR2_PACKAGE_BATOCERA_TARGET_XU4
@@ -326,8 +326,8 @@ config BR2_TARGET_BATOCERA_IMAGES_DEFINITIONS
 	default "raspberrypi/rpi3"                                  if BR2_PACKAGE_BATOCERA_TARGET_RPI3
 	default "raspberrypi/rpi4"                                  if BR2_PACKAGE_BATOCERA_TARGET_RPI4
 	default "raspberrypi/rpizero2"                              if BR2_PACKAGE_BATOCERA_TARGET_RPIZERO2
-    default "rockchip/rk3326/odroidgoa"                         if BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA
-	default "rockchip/rk3326/gameforce"                         if BR2_PACKAGE_BATOCERA_TARGET_GAMEFORCE
+    default "rockchip/rk3326"                                   if BR2_PACKAGE_BATOCERA_TARGET_RK3326
+	default "rockchip/gameforce"                                if BR2_PACKAGE_BATOCERA_TARGET_GAMEFORCE
 	default "rockchip/rk3288/tinkerboard rockchip/rk3288/miqi"  if BR2_PACKAGE_BATOCERA_TARGET_RK3288
 	default "rockchip/rk3399/rock960 rockchip/rk3399/rockpro64" if BR2_PACKAGE_BATOCERA_TARGET_RK3399
 	default "tritium-h5"                                        if BR2_PACKAGE_BATOCERA_TARGET_TRITIUM_H5
@@ -366,8 +366,8 @@ config BR2_PACKAGE_BATOCERA_TARGET_XU4
 config BR2_PACKAGE_BATOCERA_TARGET_S922X
 	bool "s922x"
 
-config BR2_PACKAGE_BATOCERA_TARGET_ODROIDGOA
-	bool "odroidgoa"
+config BR2_PACKAGE_BATOCERA_TARGET_RK3326
+	bool "rk3326"
 
 config BR2_PACKAGE_BATOCERA_TARGET_GAMEFORCE
     bool "gameforce"
