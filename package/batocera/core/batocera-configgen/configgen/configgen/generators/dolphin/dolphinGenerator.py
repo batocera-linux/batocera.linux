@@ -275,3 +275,17 @@ def getGameCubeLangFromEnvironment():
         return availableLanguages[lang]
     else:
         return availableLanguages["en_US"]
+
+def getInGameRatio(self, config, gameResolution):
+    if config["ratio"] == "16/9":
+        return 16/9
+
+    if config["ratio"] == "full":
+        return gameResolution["width"] / gameResolution["height"]
+
+    if system.isOptSet('widescreen_hack') and system.getOptBoolean('widescreen_hack'):
+        # Prefer Cheats than Hack
+        if not (system.isOptSet('enable_cheats') and system.getOptBoolean('enable_cheats')):
+            return gameResolution["width"] / gameResolution["height"]
+
+    return 4/3

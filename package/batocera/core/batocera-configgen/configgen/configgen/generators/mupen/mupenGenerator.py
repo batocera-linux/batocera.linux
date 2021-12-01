@@ -32,3 +32,8 @@ class MupenGenerator(Generator):
         commandArray.append(rom)
 
         return Command.Command(array=commandArray)
+
+    def getInGameRatio(self, config, gameResolution):
+        if config["ratio"] == "16/9":
+            return 16/9
+        return 4/3

@@ -16,3 +16,10 @@ class Generator(object):
 
     def executionDirectory(self, config, rom):
         return None
+
+    def supportsInternalBezels(self):
+        return False
+
+    def getInGameRatio(self, config, gameResolution):
+        # put a default value, but it should be overriden by generators
+        return 4/3
