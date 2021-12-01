@@ -26,7 +26,7 @@ def ordered_load(stream, Loader=yaml.Loader, object_pairs_hook=OrderedDict):
 class EsSystemConf:
 
     default_parentpath = "/userdata/roms"
-    default_command    = "python /usr/lib/python3.9/site-packages/configgen/emulatorlauncher.py %CONTROLLERSCONFIG% -system %SYSTEM% -rom %ROM% -systemname %SYSTEMNAME% -gamename %GAMENAME%"
+    default_command    = "python /usr/lib/python3.9/site-packages/configgen/emulatorlauncher.py %CONTROLLERSCONFIG% -system %SYSTEM% -rom %ROM% -gameinfoxml %GAMEINFOXML% -systemname %SYSTEMNAME%"
 
     # Generate the es_systems.cfg file by searching the information in the es_system.yml file
     @staticmethod
@@ -248,12 +248,16 @@ class EsSystemConf:
                     if emulator_featuresTxt != "":
                         emulator_featuresTxt += ", "
                     emulator_featuresTxt += feature
-            featuresTxt += "  <emulator name=\"{}\" features=\"{}\"".format(emulator, emulator_featuresTxt)
+            if emulator == "global":
+                featuresTxt += "  <globalFeatures"
+            elif emulator == "shared":
+                featuresTxt += "  <sharedFeatures"
+            else:
+                featuresTxt += "  <emulator name=\"{}\" features=\"{}\"".format(emulator, emulator_featuresTxt)
 
-            if "cores" in features[emulator] or "systems" in features[emulator] or "cfeatures" in features[emulator]:
+            if "cores" in features[emulator] or "systems" in features[emulator] or "cfeatures" in features[emulator] or "shared" in features[emulator]:
                 featuresTxt += ">\n"
                 if "cores" in features[emulator]:
-                    featuresTxt += "    <cores>\n"
                     for core in features[emulator]["cores"]:
                         core_featuresTxt = ""
                         if "features" in features[emulator]["cores"][core]:
@@ -270,7 +274,10 @@ class EsSystemConf:
                                        description = ""
                                        if "description" in features[emulator]["cores"][core]["cfeatures"][cfeature]:
                                            description = features[emulator]["cores"][core]["cfeatures"][cfeature]["description"]
-                                       featuresTxt += "        <feature name=\"{}\" value=\"{}\" description=\"{}\">\n".format(features[emulator]["cores"][core]["cfeatures"][cfeature]["prompt"], cfeature, description)
+                                       submenustr = ""
+                                       if "submenu" in features[emulator]["cores"][core]["cfeatures"][cfeature]:
+                                           submenustr = " submenu=\"{}\"".format(features[emulator]["cores"][core]["cfeatures"][cfeature]["submenu"])
+                                       featuresTxt += "        <feature name=\"{}\"{} value=\"{}\" description=\"{}\">\n".format(features[emulator]["cores"][core]["cfeatures"][cfeature]["prompt"], submenustr, cfeature, description)
                                        for choice in features[emulator]["cores"][core]["cfeatures"][cfeature]["choices"]:
                                            featuresTxt += "          <choice name=\"{}\" value=\"{}\" />\n".format(choice, features[emulator]["cores"][core]["cfeatures"][cfeature]["choices"][choice])
                                        featuresTxt += "        </feature>\n"
@@ -295,21 +302,28 @@ class EsSystemConf:
                                                description = ""
                                                if "description" in features[emulator]["cores"][core]["systems"][system]["cfeatures"][cfeature]:
                                                    description = features[emulator]["cores"][core]["systems"][system]["cfeatures"][cfeature]["description"]
-                                               featuresTxt += "            <feature name=\"{}\" value=\"{}\" description=\"{}\">\n".format(features[emulator]["cores"][core]["systems"][system]["cfeatures"][cfeature]["prompt"], cfeature, description)
+                                               submenustr = ""
+                                               if "submenu" in features[emulator]["cores"][core]["systems"][system]["cfeatures"][cfeature]:
+                                                   submenustr = " submenu=\"{}\"".format(features[emulator]["cores"][core]["systems"][system]["cfeatures"][cfeature]["submenu"])
+                                               featuresTxt += "            <feature name=\"{}\"{} value=\"{}\" description=\"{}\">\n".format(features[emulator]["cores"][core]["systems"][system]["cfeatures"][cfeature]["prompt"], submenustr, cfeature, description)
                                                for choice in features[emulator]["cores"][core]["systems"][system]["cfeatures"][cfeature]["choices"]:
                                                    featuresTxt += "              <choice name=\"{}\" value=\"{}\" />\n".format(choice, features[emulator]["cores"][core]["systems"][system]["cfeatures"][cfeature]["choices"][choice])
                                                featuresTxt += "            </feature>\n"
                                            else:
                                                print("skipping system " + emulator + "/" + system + " cfeature " + cfeature)
+                                   if "shared" in features[emulator]["cores"][core]["systems"][system]:
+                                       for shared in features[emulator]["cores"][core]["systems"][system]["shared"]:
+                                           if "archs_include" not in features["shared"]["cfeatures"][shared] or arch in features["shared"]["cfeatures"][shared]["archs_include"]:
+                                               featuresTxt += "    <sharedFeature value=\"{}\" />\n".format(shared)
+                                           else:
+                                               print("skipping system " + emulator + "/" + system + " shared " + shared)
                                    featuresTxt += "          </system>\n"
                                featuresTxt += "        </systems>\n"
                                ###
                             featuresTxt += "      </core>\n"
                         else:
                             featuresTxt += "      <core name=\"{}\" features=\"{}\" />\n".format(core, core_featuresTxt)
-                    featuresTxt += "    </cores>\n"
                 if "systems" in features[emulator]:
-                    featuresTxt += "    <systems>\n"
                     for system in features[emulator]["systems"]:
                         system_featuresTxt = ""
                         if "features" in features[emulator]["systems"][system]:
@@ -324,28 +338,51 @@ class EsSystemConf:
                                     description = ""
                                     if "description" in features[emulator]["systems"][system]["cfeatures"][cfeature]:
                                         description = features[emulator]["systems"][system]["cfeatures"][cfeature]["description"]
-                                    featuresTxt += "        <feature name=\"{}\" value=\"{}\" description=\"{}\">\n".format(features[emulator]["systems"][system]["cfeatures"][cfeature]["prompt"], cfeature, description)
+                                    submenustr = ""
+                                    if "submenu" in features[emulator]["systems"][system]["cfeatures"][cfeature]:
+                                        submenustr = " submenu=\"{}\"".format(features[emulator]["systems"][system]["cfeatures"][cfeature]["submenu"])
+                                    featuresTxt += "        <feature name=\"{}\"{} value=\"{}\" description=\"{}\">\n".format(features[emulator]["systems"][system]["cfeatures"][cfeature]["prompt"], submenustr, cfeature, description)
                                     for choice in features[emulator]["systems"][system]["cfeatures"][cfeature]["choices"]:
                                         featuresTxt += "        <choice name=\"{}\" value=\"{}\" />\n".format(choice, features[emulator]["systems"][system]["cfeatures"][cfeature]["choices"][choice])
                                     featuresTxt += "        </feature>\n"
                                 else:
                                     print("skipping system " + emulator + "/" + system + " cfeature " + cfeature)
+                        if "shared" in features[emulator]["systems"][system]:
+                            for shared in features[emulator]["systems"][system]["shared"]:
+                                if "archs_include" not in features["shared"]["cfeatures"][shared] or arch in features["shared"]["cfeatures"][shared]["archs_include"]:
+                                    featuresTxt += "    <sharedFeature value=\"{}\" />\n".format(shared)
+                                else:
+                                    print("skipping system " + emulator + "/" + system + " shared " + shared)
                         featuresTxt += "      </system>\n"
-                    featuresTxt += "    </systems>\n"
                 if "cfeatures" in features[emulator]:
                     for cfeature in features[emulator]["cfeatures"]:
                         if "archs_include" not in features[emulator]["cfeatures"][cfeature] or arch in features[emulator]["cfeatures"][cfeature]["archs_include"]:
                             description = ""
                             if "description" in features[emulator]["cfeatures"][cfeature]:
                                 description = features[emulator]["cfeatures"][cfeature]["description"]
-                            featuresTxt += "    <feature name=\"{}\" value=\"{}\" description=\"{}\">\n".format(features[emulator]["cfeatures"][cfeature]["prompt"], cfeature, description)
+                            submenustr = ""
+                            if "submenu" in features[emulator]["cfeatures"][cfeature]:
+                                submenustr = " submenu=\"{}\"".format(features[emulator]["cfeatures"][cfeature]["submenu"])
+                            featuresTxt += "    <feature name=\"{}\"{} value=\"{}\" description=\"{}\">\n".format(features[emulator]["cfeatures"][cfeature]["prompt"], submenustr, cfeature, description)
                             for choice in features[emulator]["cfeatures"][cfeature]["choices"]:
                                 featuresTxt += "      <choice name=\"{}\" value=\"{}\" />\n".format(choice, features[emulator]["cfeatures"][cfeature]["choices"][choice])
                             featuresTxt += "    </feature>\n"
                         else:
                             print("skipping emulator " + emulator + " cfeature " + cfeature)
 
-                featuresTxt += "  </emulator>\n"
+                if "shared" in features[emulator]:
+                    for shared in features[emulator]["shared"]:
+                        if "archs_include" not in features["shared"]["cfeatures"][shared] or arch in features["shared"]["cfeatures"][shared]["archs_include"]:
+                            featuresTxt += "    <sharedFeature value=\"{}\" />\n".format(shared)
+                        else:
+                            print("skipping emulator " + emulator + " shared " + shared)
+
+                if emulator == "global":
+                    featuresTxt += "  </globalFeatures>\n"
+                elif emulator == "shared":
+                    featuresTxt += "  </sharedFeatures>\n"
+                else:
+                    featuresTxt += "  </emulator>\n"
             else:
                 featuresTxt += " />\n"
         featuresTxt += "</features>\n"
@@ -409,7 +446,6 @@ class EsSystemConf:
             emulatorData = data["emulators"][emulator]
 
             emulatorTxt = "            <emulator name=\"%s\">\n" % (emulator)
-            emulatorTxt += "                <cores>\n"
 
             # CORES
             coresTxt = ""
@@ -432,7 +468,6 @@ class EsSystemConf:
                 emulatorTxt = ""
             else:
                 emulatorTxt  += coresTxt
-                emulatorTxt  += "                </cores>\n"
                 emulatorTxt  += "            </emulator>\n"
                 emulatorsTxt += emulatorTxt
 

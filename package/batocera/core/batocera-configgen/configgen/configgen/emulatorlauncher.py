@@ -7,6 +7,8 @@ from sys import exit
 from Emulator import Emulator
 from Evmapy import Evmapy
 import generators
+import xml.etree.ElementTree as ET
+import json
 from generators.kodi.kodiGenerator import KodiGenerator
 from generators.linapple.linappleGenerator import LinappleGenerator
 from generators.libretro.libretroGenerator import LibretroGenerator
@@ -71,6 +73,7 @@ import batoceraFiles
 import os
 import subprocess
 import utils.videoMode as videoMode
+import utils.bezels as bezelsUtil
 from utils.logger import get_logger
 
 eslog = get_logger(__name__)
@@ -328,10 +331,16 @@ def start_rom(args, maxnbplayers, rom, romConfiguration):
 
             cmd = generators[system.config['emulator']].generate(system, rom, playersControllers, gameResolution)
 
-            if system.isOptSet('hud') and system.config["hud"] != "":
-                cmd.env["MANGOHUD_DLSYM"] = "1"
-                cmd.env["MANGOHUD_CONFIG"] = getHudConfig(system, args.systemname, system.config['emulator'], effectiveCore, args.gamename)
-                cmd.array.insert(0, "mangohud")
+            if system.isOptSet('hud_support') and system.getOptBoolean('hud_support') == True:
+                hud_bezel = getHudBezel(system, rom, gameResolution)
+                if (system.isOptSet('hud') and system.config["hud"] != "") or hud_bezel is not None:
+                    gameinfos = extractGameInfosFromXml(args.gameinfoxml)
+                    cmd.env["MANGOHUD_DLSYM"] = "1"
+                    hudconfig = getHudConfig(system, args.systemname, system.config['emulator'], effectiveCore, rom, gameinfos, hud_bezel)
+                    with open('/var/run/hud.config', 'w') as f:
+                        f.write(hudconfig)
+                    cmd.env["MANGOHUD_CONFIGFILE"] = "/var/run/hud.config"
+                    cmd.array.insert(0, "mangohud")
 
             exitCode = runCommand(cmd)
         finally:
@@ -358,6 +367,131 @@ def start_rom(args, maxnbplayers, rom, romConfiguration):
     # exit
     return exitCode
 
+def getHudBezel(system, rom, gameResolution):
+    if 'bezel' not in system.config or system.config['bezel'] == "":
+        return None
+
+    eslog.debug("hud enabled. trying to apply the bezel {}".format(system.config['bezel']))
+
+    if generators[system.config['emulator']].supportsInternalBezels():
+        eslog.debug("skipping bezels for emulator {}".format(system.config['emulator']))
+        return None
+
+    bezel = system.config['bezel']
+    bz_infos = bezelsUtil.getBezelInfos(rom, bezel, system.name)
+    if bz_infos is None:
+        eslog.debug("no bezel info file found")
+        return None
+
+    overlay_info_file = bz_infos["info"]
+    overlay_png_file  = bz_infos["png"]
+
+    # check the info file
+    # bottom, top, left and right must not cover too much the image to be considered as compatible
+    if os.path.exists(overlay_info_file):
+        try:
+            infos = json.load(open(overlay_info_file))
+        except:
+            eslog.warning("unable to read {}".format(overlay_info_file))
+            infos = {}
+    else:
+        infos = {}
+
+    if "width" in infos and "height" in infos:
+        bezel_width  = infos["width"]
+        bezel_height = infos["height"]
+        eslog.info("bezel size read from {}".format(overlay_info_file))
+    else:
+        bezel_width, bezel_height = bezelsUtil.fast_image_size(overlay_png_file)
+        eslog.info("bezel size read from {}".format(overlay_png_file))
+
+    # max cover proportion and ratio distortion
+    max_cover = 0.05 # 5%
+    max_ratio_delta = 0.01
+
+    screen_ratio = gameResolution["width"] / gameResolution["height"]
+    bezel_ratio  = bezel_width / bezel_height
+
+    # the screen and bezel ratio must be approximatly the same
+    if abs(screen_ratio - bezel_ratio) > max_ratio_delta:
+        eslog.debug("screen ratio ({}) is too far from the bezel one ({}) : {} - {} > {}".format(screen_ratio, bezel_ratio, screen_ratio, bezel_ratio, max_ratio_delta))
+        return None
+
+    # the ingame image and the bezel free space must feet
+    ## the bezel top and bottom cover must be minimum
+    if "top" in infos and infos["top"] / bezel_height > max_cover:
+        eslog.debug("bezel top covers too much the game image : {} / {} > {}".format(infos["top"], bezel_height, max_cover))
+        return None
+    if "bottom" in infos and infos["bottom"] / bezel_height > max_cover:
+        eslog.debug("bezel bottom covers too much the game image : {} / {} > {}".format(infos["bottom"], bezel_height, max_cover))
+        return None
+
+    # if there is no information about top/bottom, assume default is 0
+
+    ## the bezel left and right cover must be maximum
+    ingame_ratio = generators[system.config['emulator']].getInGameRatio(system.config, gameResolution)
+    img_height = bezel_height
+    img_width  = img_height * ingame_ratio
+
+    if "left" not in infos:
+        eslog.debug("bezel has no left info in {}".format(overlay_info_file))
+        # assume default is 4/3 over 16/9
+        infos_left = (bezel_width - (bezel_height / 3 * 4)) / 2
+        if abs((infos_left  - ((bezel_width-img_width)/2.0)) / img_width) > max_cover:
+            eslog.debug("bezel left covers too much the game image : {} / {} > {}".format(infos_left  - ((bezel_width-img_width)/2.0), img_width, max_cover))
+            return None
+        
+    if "right" not in infos:
+        eslog.debug("bezel has no right info in {}".format(overlay_info_file))
+        # assume default is 4/3 over 16/9
+        infos_right = (bezel_width - (bezel_height / 3 * 4)) / 2
+        if abs((infos_right - ((bezel_width-img_width)/2.0)) / img_width) > max_cover:
+            eslog.debug("bezel right covers too much the game image : {} / {} > {}".format(infos_right  - ((bezel_width-img_width)/2.0), img_width, max_cover))
+            return None
+    
+    if "left"  in infos and abs((infos["left"]  - ((bezel_width-img_width)/2.0)) / img_width) > max_cover:
+        eslog.debug("bezel left covers too much the game image : {} / {} > {}".format(infos["left"]  - ((bezel_width-img_width)/2.0), img_width, max_cover))
+        return None
+    if "right" in infos and abs((infos["right"] - ((bezel_width-img_width)/2.0)) / img_width) > max_cover:
+        eslog.debug("bezel right covers too much the game image : {} / {} > {}".format(infos["right"]  - ((bezel_width-img_width)/2.0), img_width, max_cover))
+        return None
+
+    # if screen and bezel sizes doesn't match, resize
+    if (bezel_width != gameResolution["width"] or bezel_height != gameResolution["height"]):
+        eslog.debug("bezel needs to be resized")
+        output_png_file = "/tmp/bezel.png"
+        try:
+            bezelsUtil.resizeImage(overlay_png_file, output_png_file, gameResolution["width"], gameResolution["height"])
+        except Exception as e:
+            eslog.error("failed to resize the image {}".format(e))
+            return None
+        overlay_png_file = output_png_file
+
+    if system.isOptSet('bezel.tattoo') and system.config['bezel.tattoo'] != "0":
+        output_png_file = "/tmp/bezel_tattooed.png"
+        bezelsUtil.tatooImage(overlay_png_file, output_png_file, system)
+        overlay_png_file = output_png_file
+
+    eslog.debug("applying bezel {}".format(overlay_png_file))
+    return overlay_png_file
+
+def extractGameInfosFromXml(xml):
+    vals = {}
+
+    try:
+        infos = ET.parse(xml)
+        try:
+            vals["name"] = infos.find("./game/name").text
+        except:
+            pass
+        try:
+            vals["thumbnail"] = infos.find("./game/thumbnail").text
+        except:
+            pass
+    except:
+        pass
+    return vals
+
 def callExternalScripts(folder, event, args):
     if not os.path.isdir(folder):
         return
@@ -373,29 +507,46 @@ def callExternalScripts(folder, event, args):
 def hudConfig_protectStr(str):
     if str is None:
         return ""
-    return str.replace(",", "\\,").replace(":", "\\:")
+    return str
 
-def getHudConfig(system, systemName, emulator, core, gameName):
+def getHudConfig(system, systemName, emulator, core, rom, gameinfos, bezel):
+    configstr = ""
+
+    if bezel != "":
+        configstr = "background_image={}\nlegacy_layout=false\n".format(hudConfig_protectStr(bezel))
+
     if not system.isOptSet('hud'):
-        return ""
+        return configstr + "background_alpha=0\n" # hide the background
+
     mode = system.config["hud"]
-
-    if mode == "custom" and system.isOptSet('hud_custom') and system.config["hud_custom"] != "" :
-        return system.config["hud_custom"]
-
-    if mode == "full":
-        return "position=bottom-left,background_alpha=0.9,full=enabled"
 
     emulatorstr = emulator
     if emulator != core and core is not None:
         emulatorstr += "/" + core
 
-    if mode == "perf":
-        return "position=bottom-left,background_alpha=0.9,legacy_layout=false,custom_text="+hudConfig_protectStr(gameName)+",custom_text="+hudConfig_protectStr(systemName)+",custom_text="+hudConfig_protectStr(emulatorstr)+",fps,gpu_name,engine_version,vulkan_driver,resolution,ram,gpu_stats,gpu_temp,cpu_stats,cpu_temp,core_load"
-    if mode == "game":
-        return "position=bottom-left,background_alpha=0.9,legacy_layout=false,font_size=48,custom_text="+hudConfig_protectStr(gameName)+",custom_text="+hudConfig_protectStr(systemName)+",custom_text="+hudConfig_protectStr(emulatorstr)
+    gameName = ""
+    if "name" in gameinfos:
+        gameName = gameinfos["name"]
+    gameThumbnail = ""
+    if "thumbnail" in gameinfos:
+        gameThumbnail = gameinfos["thumbnail"]
 
-    return ""
+    # predefined values
+    if mode == "perf":
+        configstr += "position=bottom-left\nbackground_alpha=0.9\nlegacy_layout=false\ncustom_text=%GAMENAME%\ncustom_text=%SYSTEMNAME%\ncustom_text=%EMULATORCORE%\nfps\ngpu_name\nengine_version\nvulkan_driver\nresolution\nram\ngpu_stats\ngpu_temp\ncpu_stats\ncpu_temp\ncore_load"
+    elif mode == "game":
+        configstr += "position=bottom-left\nbackground_alpha=0\nlegacy_layout=false\nfont_size=32\nimage_max_width=200\nimage=%THUMBNAIL%\ncustom_text=%GAMENAME%\ncustom_text=%SYSTEMNAME%\ncustom_text=%EMULATORCORE%"
+    elif mode == "custom" and system.isOptSet('hud_custom') and system.config["hud_custom"] != "" :
+        configstr += system.config["hud_custom"].replace("\\n", "\n")
+    else:
+        configstr = configstr + "background_alpha=0\n" # hide the background
+
+    configstr = configstr.replace("%SYSTEMNAME%", hudConfig_protectStr(systemName))
+    configstr = configstr.replace("%GAMENAME%", hudConfig_protectStr(gameName))
+    configstr = configstr.replace("%EMULATORCORE%", hudConfig_protectStr(emulatorstr))
+    configstr = configstr.replace("%THUMBNAIL%", hudConfig_protectStr(gameThumbnail))
+
+    return configstr
 
 def runCommand(command):
     global proc
@@ -457,7 +608,7 @@ if __name__ == '__main__':
     parser.add_argument("-state_slot", help="state slot", type=str, required=False)
     parser.add_argument("-autosave", help="autosave", type=str, required=False)
     parser.add_argument("-systemname", help="system fancy name", type=str, required=False)
-    parser.add_argument("-gamename", help="game fancy name", type=str, required=False)
+    parser.add_argument("-gameinfoxml", help="game info xml", type=str, required=False)
 
     args = parser.parse_args()
     try:

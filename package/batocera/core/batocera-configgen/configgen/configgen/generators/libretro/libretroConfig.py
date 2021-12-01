@@ -736,29 +736,10 @@ def writeBezelConfig(bezel, retroarchConfig, rom, gameResolution, system):
                 # Padding left and right borders for ultrawide screens (larger than 16:9 aspect ratio)
                 # or up/down for 4K
                 eslog.debug("Generating a new adapted bezel file {}".format(output_png_file))
-                fillcolor = 'black'
-
-                borderw = 0
-                borderh = 0
-                if wratio > 1:
-                    borderw = xoffset / 2
-                if hratio > 1:
-                    borderh = yoffset / 2
-                imgin = Image.open(overlay_png_file)
-                if imgin.mode != "RGBA":
-                    # TheBezelProject have Palette + alpha, not RGBA. PIL can't convert from P+A to RGBA.
-                    # Even if it can load P+A, it can't save P+A as PNG. So we have to recreate a new image to adapt it.
-                    if not 'transparency' in imgin.info:
-                        return # no transparent layer for the viewport, abort
-                    alpha = imgin.split()[-1]  # alpha from original palette + alpha
-                    ix,iy = bezelsUtil.fast_image_size(overlay_png_file)
-                    imgnew = Image.new("RGBA", (ix,iy), (0,0,0,255))
-                    imgnew.paste(alpha, (0,0,ix,iy))
-                    imgout = ImageOps.expand(imgnew, border=(borderw, borderh, xoffset-borderw, yoffset-borderh), fill=fillcolor)
-                    imgout.save(output_png_file, mode="RGBA", format="PNG")
-                else:
-                    imgout = ImageOps.expand(imgin, border=(borderw, borderh, xoffset-borderw, yoffset-borderh), fill=fillcolor)
-                    imgout.save(output_png_file, mode="RGBA", format="PNG")
+                try:
+                    bezelsUtil.padImage(overlay_png_file, output_png_file, gameResolution["width"], gameResolution["height"], infos["width"], infos["height"])
+                except:
+                    return
             overlay_png_file = output_png_file # replace by the new file (recreated or cached in /tmp)
     else:
         if viewPortUsed:
@@ -770,53 +751,8 @@ def writeBezelConfig(bezel, retroarchConfig, rom, gameResolution, system):
         retroarchConfig['video_message_pos_y']    = infos["messagey"]
 
     if system.isOptSet('bezel.tattoo') and system.config['bezel.tattoo'] != "0":
-        if system.config['bezel.tattoo'] == 'system':
-            try:
-                tattoo_file = '/usr/share/batocera/controller-overlays/'+system.name+'.png'
-                if not os.path.exists(tattoo_file):
-                    tattoo_file = '/usr/share/batocera/controller-overlays/generic.png'
-                tattoo = Image.open(tattoo_file)
-            except:
-                eslog.error("Error opening controller overlay: {}".format('tattoo_file'))
-        elif system.config['bezel.tattoo'] == 'custom' and os.path.exists(system.config['bezel.tattoo_file']):
-            try:
-                tattoo_file = system.config['bezel.tattoo_file']
-                tattoo = Image.open(tattoo_file)
-            except:
-                eslog.error("Error opening custom file: {}".format('tattoo_file'))
-        else:
-            try:
-                tattoo_file = '/usr/share/batocera/controller-overlays/generic.png'
-                tattoo = Image.open(tattoo_file)
-            except:
-                eslog.error("Error opening custom file: {}".format('tattoo_file'))
-        output_png_file = "/tmp/bezel_tattooed.png"
-        back = Image.open(overlay_png_file)
-        tattoo = tattoo.convert("RGBA")
-        back = back.convert("RGBA")
-        w,h = bezelsUtil.fast_image_size(overlay_png_file)
-        tw,th = bezelsUtil.fast_image_size(tattoo_file)
-        tatwidth = int(240/1920 * w) # 240 = half of the difference between 4:3 and 16:9 on 1920px (0.5*1920/16*4)
-        pcent = float(tatwidth / tw)
-        tatheight = int(float(th) * pcent)
-        tattoo = tattoo.resize((tatwidth,tatheight), Image.ANTIALIAS)
-        alpha = back.split()[-1]
-        alphatat = tattoo.split()[-1]
-        if system.isOptSet('bezel.tattoo_corner'):
-            corner = system.config['bezel.tattoo_corner']
-        else:
-            corner = 'NW'
-        if (corner.upper() == 'NE'):
-            back.paste(tattoo, (w-tatwidth,20), alphatat) # 20 pixels vertical margins (on 1080p)
-        elif (corner.upper() == 'SE'):
-            back.paste(tattoo, (w-tatwidth,h-tatheight-20), alphatat)
-        elif (corner.upper() == 'SW'):
-            back.paste(tattoo, (0,h-tatheight-20), alphatat)
-        else: # default = NW
-            back.paste(tattoo, (0,20), alphatat)
-        imgnew = Image.new("RGBA", (w,h), (0,0,0,255))
-        imgnew.paste(back, (0,0,w,h))
-        imgnew.save(output_png_file, mode="RGBA", format="PNG")
+        output_png = "/tmp/bezel_tattooed.png"
+        bezelsUtil.tatooImage(overlay_png_file, output_png_file, system)
         overlay_png_file = output_png_file
 
     eslog.debug("Bezel file set to {}".format(overlay_png_file))

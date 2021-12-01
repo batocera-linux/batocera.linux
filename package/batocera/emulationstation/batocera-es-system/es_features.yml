@@ -1,6 +1,21 @@
 # this file describes which features each emulator/core supports
 # the aim is to display in es only the available options
 
+shared:
+  cfeatures:
+    hud:
+      archs_include: [x86, x86_64]
+      prompt:      Head up display
+      description: Render some information over the game
+      choices:
+        "None": none
+        "Game": game
+        "Performances": perf
+        "Custom": custom
+
+global:
+  shared: [hud]
+
 libretro:
   features: [ratio, smooth, shaders, pixel_perfect, decoration, game_translation]
   cfeatures:
