@@ -31,15 +31,23 @@ def setMupenConfig(iniConfig, system, controllers, gameResolution):
         iniConfig.add_section("Audio-SDL")
     iniConfig.set("Audio-SDL", "AUDIO_SYNC", "False")
 
+    # Invert required when screen is rotated
+    if gameResolution["width"] < gameResolution["height"]:
+        width = gameResolution["height"]
+        height = gameResolution["width"]
+    else:
+        width = gameResolution["width"]
+        height = gameResolution["height"]
+
     # Internal Resolution
     if not iniConfig.has_section("Video-General"):
         iniConfig.add_section("Video-General")
     iniConfig.set("Video-General", "Version", "1")
-    iniConfig.set("Video-General", "ScreenWidth",  str(gameResolution["width"]))
-    iniConfig.set("Video-General", "ScreenHeight", str(gameResolution["height"]))
+    iniConfig.set("Video-General", "ScreenWidth", str(width))
+    iniConfig.set("Video-General", "ScreenHeight", str(height))
     iniConfig.set("Video-General", "Fullscreen", "True") # required at least for drm boards
     iniConfig.set("Video-General", "VerticalSync", "True")
-    
+
     # Graphic Plugins
     # DOC : https://github.com/mupen64plus/mupen64plus-video-glide64mk2/blob/master/src/Glide64/Main.cpp
     if not iniConfig.has_section("Video-Glide64mk2"):
@@ -62,10 +70,14 @@ def setMupenConfig(iniConfig, system, controllers, gameResolution):
         iniConfig.set("Video-Glide64mk2", "aspect", "1")
         # GLideN64.: Screen aspect ratio (0=stretch, 1=force 4:3, 2=force 16:9, 3=adjust)
         iniConfig.set("Video-GLideN64",   "AspectRatio", "2")
-    else:
-        iniConfig.set("Video-Glide64mk2", "adjust_aspect", "-1")
-        iniConfig.set("Video-Glide64mk2", "aspect", "-1")
+    elif system.config["ratio"] == "4/3":
+        iniConfig.set("Video-Glide64mk2", "adjust_aspect", "0")
+        iniConfig.set("Video-Glide64mk2", "aspect", "0")
         iniConfig.set("Video-GLideN64",   "AspectRatio", "1")
+    else:
+        iniConfig.set("Video-Glide64mk2", "adjust_aspect", "1")
+        iniConfig.set("Video-Glide64mk2", "aspect", "2")
+        iniConfig.set("Video-GLideN64",   "AspectRatio", "3")
 
     # Textures Mip-Mapping (Filtering)
     if system.isOptSet("mupen64plus_Mipmapping") and system.config["mupen64plus_Mipmapping"] != 0:
@@ -137,7 +149,7 @@ def setMupenConfig(iniConfig, system, controllers, gameResolution):
     else:
         iniConfig.set("64DD", "IPL-ROM", "")
     iniConfig.set("64DD", "Disk", "")
-    
+
 
     # Display FPS
     if system.config['showFPS'] == 'true':
