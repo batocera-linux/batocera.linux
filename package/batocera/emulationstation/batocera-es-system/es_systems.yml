@@ -165,10 +165,27 @@ amigacdtv:
     libretro:
       puae:   { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PUAE] }
 
+famicom:
+  name:       Family Computer
+  manufacturer: Nintendo
+  release: 1983
+  hardware: console
+  extensions: [nes, unif, unf, zip, 7z]
+  group:      nes
+  platform:   nes
+  emulators:
+    libretro:
+      fceumm:   { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FCEUMM] }
+      nestopia: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_NESTOPIA] }
+  comment_en: |
+    For more info: https://wiki.batocera.org/systems:nes
+  comment_fr: |
+    Trouvez la documentation ici: https://wiki.batocera.org/systems:nes
+
 nes:
   name:       Nintendo Entertainment System
   manufacturer: Nintendo
-  release: 1983
+  release: 1985
   hardware: console
   extensions: [nes, unif, unf, zip, 7z]
   group:      nes
