@@ -450,6 +450,7 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
     retroarchConfig['cheevos_leaderboards_enable'] = 'false'
     retroarchConfig['cheevos_verbose_enable'] = 'false'
     retroarchConfig['cheevos_auto_screenshot'] = 'false'
+    retroarchConfig['cheevos_challenge_indicators'] = 'false'
 
     if system.isOptSet('retroachievements') and system.getOptBoolean('retroachievements') == True:
         if(system.name in systemToRetroachievements) or (system.config['core'] in coreToRetroachievements) or (system.isOptSet('cheevos_force') and system.getOptBoolean('cheevos_force') == True):
@@ -476,6 +477,11 @@ def createLibretroConfig(system, controllers, rom, bezel, gameResolution):
                 retroarchConfig['cheevos_auto_screenshot'] = 'true'
             else:
                 retroarchConfig['cheevos_auto_screenshot'] = 'false'
+            # retroarchievements_challenge_indicators
+            if system.isOptSet('retroachievements.challenge_indicators') and system.getOptBoolean('retroachievements.challenge_indicators') == True:
+                retroarchConfig['cheevos_challenge_indicators'] = 'true'
+            else:
+                retroarchConfig['cheevos_challenge_indicators'] = 'false'
     else:
         retroarchConfig['cheevos_enable'] = 'false'
 
