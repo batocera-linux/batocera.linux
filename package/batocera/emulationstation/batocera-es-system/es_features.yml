@@ -3226,7 +3226,6 @@ devilutionx:
   features: [ratio, padtokeyboard]
 
 dolphin:
-  features: [ratio]
   cfeatures:
         gfxbackend:
             archs_include: [x86, x86_64, rpi4, rk3326, gameforce]
@@ -3235,6 +3234,25 @@ dolphin:
             choices:
                 "OpenGL": OGL
                 "Vulkan": Vulkan
+        internal_resolution:
+            prompt:      VIDEO RESOLUTION
+            description: Improve the fidelity of 3D models (does not affect 2D sprites)
+            choices:
+                "1x native (640x528)":  1
+                "2x 720p (1280x1056)":  2
+                "3x 1080p (1920x1584)": 3
+                "4x 1440p (2560x2112)": 4
+                "5x (3200x2640)":       5
+                "6x 4K (3840x3168)":    6
+                "7x (4480x3696)":       7
+                "8x 5K (5120x4224)":    8
+        dolphin_aspect_ratio:
+            prompt:      ASPECT RATIO
+            description: Video graphics aspect ratio
+            choices:
+                "Force 16:9": 1
+                "Force 4:3": 2
+                "Stretch to window": 3
         ubershaders:
             prompt:      UBERSHADERS
             description: Improve performance with Ubershaders (may not work well on all hardware); asynchronous is preferred, synchronous is more compatible
@@ -3260,18 +3278,6 @@ dolphin:
             choices:
                 "Off": 0
                 "On":  1
-        internal_resolution:
-            prompt:      VIDEO RESOLUTION
-            description: Improve the fidelity of 3D models (does not affect 2D sprites)
-            choices:
-                "1x native (640x528)":  1
-                "2x 720p (1280x1056)":  2
-                "3x 1080p (1920x1584)": 3
-                "4x 1440p (2560x2112)": 4
-                "5x (3200x2640)":       5
-                "6x 4K (3840x3168)":    6
-                "7x (4480x3696)":       7
-                "8x 5K (5120x4224)":    8
         anisotropic_filtering:
             prompt:      ANISOTROPIC FILTERING
             description: Enhance the quality of distant perspective textures
@@ -3365,12 +3371,18 @@ dolphin:
   systems:
     wii:
         cfeatures:
+            tv_mode:
+                prompt:      WII TV MODE
+                description: Wii TV type / mode
+                choices:
+                    "4:3": 0
+                    "16:9": 1
             emulatedwiimotes:
                 prompt:      EMULATE WIIMOTE
                 description: Use your gamepad like a vertical Wiimote in game
                 choices:
-                    "Off":                       0
-                    "On":                        1
+                    "Off": 0
+                    "On": 1
             controller_mode:
                 prompt:      CUSTOMIZE WIIMOTE & GAMEPAD
                 description: Emulate a Wiimote Sideway with L2 for Shake and Nunchuk on R-stick
