@@ -1756,6 +1756,16 @@ ports:
   path:       /userdata/roms/ports
   command:    "/bin/sh %ROM% %CONTROLLERSCONFIG%"
   force:      True
+  comment_en: |
+    ## SYSTEM PORTS ##
+    -------------------------------------------------------------------------------
+    Here you can find Linux games and apps, launched by shell scripts ending in
+    ".sh". Only the ".sh" scripts appear in EmulationStation.
+  comment_fr: |
+    ## SYSTEM PORTS ##
+    -------------------------------------------------------------------------------
+    Vous trouverez ici des jeux et applications Linux, qui sont lancés par des scripts
+    shell en ".sh". Seuls les scripts en ".sh" apparaissent dans EmulationStation.
 
 amiga:
   name:       Amiga
@@ -1930,6 +1940,53 @@ model3:
   emulators:
     supermodel:
       supermodel: { requireAnyOf: [BR2_PACKAGE_SUPERMODEL] }
+  comment_en: |
+    ## SEGA MODEL 3 IMPORTANT INFO ##
+
+    Put your model3 roms in this directory.
+
+    Rom files must have a ".zip" extension from romset mame 0.220.
+
+    This allows the Supermodel emulator to use compressed roms.
+    Files inside the .zip must match the board rom & CRC info expected of the emulator or they will not work.
+    Each .zip file must contain only one compressed rom and be named correctly for compatibility.
+
+    Game Compatibility:
+    -------------------
+
+    Game compatibility can be found here - https://www.supermodel3.com/About.html
+
+    The Configuration File:
+    -----------------------
+
+    The configuration file, Supermodel.ini, located in the Config folder (/system/configs/supermodel/), which stores input settings as well as most of what can be set on the command line.
+
+    Audio:
+    ------
+
+    Sound and music volume can be adjusted during run-time using the F9-F12 keys.
+    Volume settings can be specified in the configuration file as well, globally for all games or tailored on a game-by-game basis.
+
+    Save States And Non-Volatile Memory:
+    ------------------------------------
+
+    Save states are fully supported. Up to 10 different slots can be selected with keyboard - F6. To save and restore states, press F5 and F7.
+    State files are saved in the Saves folder (/saves/supermodel/), which must exist in order for save operations to succeed.
+    Non-volatile memory (NVRAM) consists of battery-backed backup RAM (typically used for high score data) and an EEPROM (machine settings).
+    It is saved to the NVRAM folder (/system/configs/supermodel/NVRAM/) each time Supermodel exits and is re-loaded at start-up.
+    Save states will also save and overwrite NVRAM data.
+    If you alter any machine settings, loading an earlier state will return them to their former configuration.
+    Be sure to save these files for future use.
+
+    Emulation Exit
+    --------------
+
+    Configuration is set as Select & Start controller buttons.
+
+    Troubleshooting:
+    ----------------
+
+    See the Supermodel FAQ here - https://www.supermodel3.com/FAQ.html
 
 mugen:
   name:       MUGEN
@@ -2065,6 +2122,30 @@ sonicretro:
       sonic2013: { requireAnyOf: [BR2_PACKAGE_SONIC2013] }
     soniccd:
       soniccd: { requireAnyOf: [BR2_PACKAGE_SONICCD] }
+  comment_en: |
+    ---------------------
+    Data File Setup
+    ---------------------
+
+    This port requires the .rsdk files from the Android or iOS versions of Sonic 1 & 2.
+
+    The Android APKs can be opened in 7zip, extract the file /assets/Data.rsdk.xmf, rename to Data.rsdk, and place in
+    a folder named [Game Name].son - ie "Sonic 1.son"
+
+    For Sonic CD, you can use the files from the Android, iOS, or Steam versions, as well as the video files from the Steam version.
+
+    The APK can be extracted the same way. If you're using the Steam version, the Data.rsdk is in the game's folder.
+    The rsdk and videos folder should be in a folder named [Game Name].scd - ie "Sonic CD.scd"
+
+    ---------------------
+    Options and Emulators
+    ---------------------
+
+    Batocera will auto-select the port to use based on the folder's extension - sonic2013/rsdk4 for .son folders, soniccd/rsdk3 for
+    .scd folders. Selecting the wrong emulator will be ignored as the two versions are not compatible. The options are slightly
+    different between the two, so you may need to manually select the emulator to change them.
+
+    The dev menu option is needed to run mods.
 
 model2:
   name:       Sega Model 2
@@ -2076,6 +2157,65 @@ model2:
   emulators:
     model2emu:
       model2emu: { requireAnyOf: [BR2_PACKAGE_MODEL2EMU] }
+  comment_en: |
+    ---------------------------------
+    ## SEGA MODEL 2 IMPORTANT INFO ##
+    ---------------------------------
+
+    You need to run a ROM at least once AND be connected to the internet.
+    This creates the directory structure & installs the associated Windows DirectX libraries for Wine.
+
+    Note: It may take some time before the game starts with the first use, this is NORMAL!
+    *** Please be patient as it can take up to 10 minutes depending on your internet connection speed ***
+
+    ------------------------
+    Controller configuration
+    ------------------------
+
+    Note: A keyboard & mouse is required in addition to your controller(s).
+
+    A set on input files is provided however you may want to map your controls per game ROM you intend to run.
+    We recommend you do this using the Emulation Station 'F1' menu option and then choose the model2 config app.
+    *** The ROM must be loaded before you can configure the controls. ***
+
+    Press Esc on your keyboard to go back to 'windowed' mode to then set the controller options if the app goes fullscreen.
+    Once the controls are set, they're saved for future use in Batocera through the normal menu options.
+
+    ------------
+    Service Menu
+    ------------
+
+    Note: Keyboard required.
+
+    Appropriate NVDATA files have been provided to ensure all games should work straight away.
+    If you receive the error 'Network Board Not Present' when starting a game.
+    Go to the Service Menu using F2 and then use F1 to navigate to 'Games System' & press F2.
+    Under 'Games System', choose 'Link ID' using F1 & then use F2 to change this option to 'Single'.
+    Use F1 to navigate to 'Exit', hit F2 again.
+    Do this one more time to exit the Service Menu.
+
+    The Service Menu configuration will be saved and the error will not occur again in future usage.
+
+    -----------------
+    Batocera Upgrades
+    -----------------
+
+    In some instances when you upgrade Batocera to a new version, when trying to run the Sega Model 2 emulator it may crash.
+    When you look at your /userdata/system/logs/es_launch_stderr.log file you may see a Wine mismatch error.
+    This is due to the wine bottle being out of date and not aligning to the version installed with the latest Batocera.
+    If you do, you should backup your /userdata/saves/model2/model2emu/CFG & userdata/saves/model2/model2emu/NVDATA folders.
+    When browsing using the network share you won't see the userdata directory, browse to saves.
+    Backing these folders up will retain your high scores, rom & controller configurations.
+
+    It's recommended to remove your /userdata/saves/model2/ directory via ssh only!
+    When logged in via ssh:
+    cd /userdata/saves
+    rm -rf model2
+
+    Once done, re-launch a game when connected to the internet & it will re-create the wine bottle for you.
+    Afterwards you can restore your CFG & NVDATA directories.
+
+    *** Enjoy the Sega Model 2 emulator running under Linux !!! ***
 
 scv:
   name:       Super Cassette Vision
