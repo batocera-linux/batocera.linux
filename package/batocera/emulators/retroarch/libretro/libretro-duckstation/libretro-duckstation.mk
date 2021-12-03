@@ -5,8 +5,8 @@
 ################################################################################
 # libretro cores can be downloaded in binary form,
 # but not built from the Github Duckstation sources
-# Version.: 0.1-4795-g4a017bd1
-LIBRETRO_DUCKSTATION_VERSION = f0630f5ab57a8b63dec0bef7539a834f0249009e
+# Version.: 0.1-4866-gf799f62a
+LIBRETRO_DUCKSTATION_VERSION = 5c0d746e4ccb725fc03e53dc530b90bc570253d7
 LIBRETRO_DUCKSTATION_SITE = $(call github,batocera-linux,lr-duckstation,$(LIBRETRO_DUCKSTATION_VERSION))
 LIBRETRO_DUCKSTATION_LICENSE = non-commercial
 
