@@ -587,10 +587,15 @@ def signal_handler(signal, frame):
         proc.kill()
 
 def getAspectRatio(width, height):
-    # Warning the values in the array must be exactly at the same index than
-    # https://github.com/libretro/RetroArch/blob/master/gfx/video_driver.c#L188
-    ratioIndexes = ["4/3", "16/9", "16/10", "16/15", "21/9", "1/1", "2/1", "3/2", "3/4", "4/1", "9/16", "5/4", "6/5", "7/9", "8/3",
-                    "8/7", "19/12", "19/14", "30/17", "32/9", "config", "squarepixel", "core", "custom", "full"]
+    # Import the currently available ratios from libretroConfig.
+    from generators.libretro.libretroConfig import ratioIndexes
+
+    gameAspectRatio = videoMode.getCurrentAspectRatio()
+    # It is necessary to invert 2/3 due to Retroarch nomenclature
+    if gameAspectRatio == "2/3":
+        gameAspectRatio == "3/2"
+    if gameAspectRatio in ratioIndexes:
+        return gameAspectRatio
 
     def gcd(a, b):
         return a if b == 0 else gcd(b, a % b)

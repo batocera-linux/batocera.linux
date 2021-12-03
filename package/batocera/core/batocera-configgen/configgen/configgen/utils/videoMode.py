@@ -34,6 +34,12 @@ def getCurrentResolution():
     vals = out.decode().split("x")
     return { "width": int(vals[0]), "height": int(vals[1]) }
 
+def getCurrentAspectRatio():
+    proc = subprocess.Popen(["batocera-resolution currentAspectRatio"], stdout=subprocess.PIPE, shell=True)
+    (out, err) = proc.communicate()
+    val = out.decode().strip("\n")
+    return val
+
 def checkModeExists(videomode):
     proc = subprocess.Popen(["batocera-resolution listModes"], stdout=subprocess.PIPE, shell=True)
     (out, err) = proc.communicate()
