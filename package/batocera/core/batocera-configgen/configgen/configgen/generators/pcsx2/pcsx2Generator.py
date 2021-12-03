@@ -16,6 +16,11 @@ eslog = get_logger(__name__)
 
 class Pcsx2Generator(Generator):
 
+    def getInGameRatio(self, config, gameResolution):
+        if getGfxRatioFromConfig(config, gameResolution) == "16:9":
+            return 16/9
+        return 4/3
+
     def generate(self, system, rom, playersControllers, gameResolution):
         isAVX2 = checkAvx2()
 
