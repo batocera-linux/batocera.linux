@@ -697,6 +697,9 @@ def writeBezelConfig(bezel, retroarchConfig, rom, gameResolution, system):
     else:
         bezel_stretch = False
 
+    # Needs to be outside of the if condition in case the bezel doesn't need adaption, otherwise it errors out if using system controllers as the tattoo.
+    output_png_file = "/tmp/" + os.path.splitext(os.path.basename(overlay_png_file))[0] + "_adapted.png"
+
     if bezelNeedAdaptation:
         wratio = gameResolution["width"] / float(infos["width"])
         hratio = gameResolution["height"] / float(infos["height"])
@@ -704,6 +707,22 @@ def writeBezelConfig(bezel, retroarchConfig, rom, gameResolution, system):
         # If width or height < original, can't add black borders, need to stretch
         if gameResolution["width"] < infos["width"] or gameResolution["height"] < infos["height"]:
             bezel_stretch = True
+
+        if bezel_game is True:
+            output_png_file = "/tmp/bezel_game_adapted.png"
+            create_new_bezel_file = True
+        else:
+            create_new_bezel_file = False
+            output_png_file = "/tmp/" + os.path.splitext(os.path.basename(overlay_png_file))[0] + "_adapted.png"
+            if os.path.exists(output_png_file) is False:
+                create_new_bezel_file = True
+            else:
+                if os.path.getmtime(output_png_file) < os.path.getmtime(overlay_png_file):
+                    create_new_bezel_file = True
+        # fast way of checking the size of a png
+        oldwidth, oldheight = bezelsUtil.fast_image_size(output_png_file)
+        if (oldwidth != gameResolution["width"] or oldheight != gameResolution["height"]):
+            create_new_bezel_file = True
 
         if bezel_stretch:
             retroarchConfig['custom_viewport_x']      = infos["left"] * wratio
@@ -713,22 +732,6 @@ def writeBezelConfig(bezel, retroarchConfig, rom, gameResolution, system):
             retroarchConfig['video_message_pos_x']    = infos["messagex"] * wratio
             retroarchConfig['video_message_pos_y']    = infos["messagey"] * hratio
         else:
-            if bezel_game is True:
-                output_png_file = "/tmp/bezel_game_adapted.png"
-                create_new_bezel_file = True
-            else:
-                create_new_bezel_file = False
-                output_png_file = "/tmp/" + os.path.splitext(os.path.basename(overlay_png_file))[0] + "_adapted.png"
-                if os.path.exists(output_png_file) is False:
-                    create_new_bezel_file = True
-                else:
-                    if os.path.getmtime(output_png_file) < os.path.getmtime(overlay_png_file):
-                        create_new_bezel_file = True
-            # fast way of checking the size of a png
-            oldwidth, oldheight = bezelsUtil.fast_image_size(output_png_file)
-            if (oldwidth != gameResolution["width"] or oldheight != gameResolution["height"]):
-                create_new_bezel_file = True
-
             xoffset = gameResolution["width"]  - infos["width"]
             yoffset = gameResolution["height"] - infos["height"]
             retroarchConfig['custom_viewport_x']      = infos["left"] + xoffset/2
@@ -738,15 +741,15 @@ def writeBezelConfig(bezel, retroarchConfig, rom, gameResolution, system):
             retroarchConfig['video_message_pos_x']    = infos["messagex"] + xoffset/2
             retroarchConfig['video_message_pos_y']    = infos["messagey"] + yoffset/2
 
-            if create_new_bezel_file is True:
-                # Padding left and right borders for ultrawide screens (larger than 16:9 aspect ratio)
-                # or up/down for 4K
-                eslog.debug("Generating a new adapted bezel file {}".format(output_png_file))
-                try:
-                    bezelsUtil.padImage(overlay_png_file, output_png_file, gameResolution["width"], gameResolution["height"], infos["width"], infos["height"])
-                except:
-                    return
-            overlay_png_file = output_png_file # replace by the new file (recreated or cached in /tmp)
+        if create_new_bezel_file is True:
+            # Padding left and right borders for ultrawide screens (larger than 16:9 aspect ratio)
+            # or up/down for 4K
+            eslog.debug("Generating a new adapted bezel file {}".format(output_png_file))
+            try:
+                bezelsUtil.padImage(overlay_png_file, output_png_file, gameResolution["width"], gameResolution["height"], infos["width"], infos["height"])
+            except:
+                return
+        overlay_png_file = output_png_file # replace by the new file (recreated or cached in /tmp)
     else:
         if viewPortUsed:
             retroarchConfig['custom_viewport_x']      = infos["left"]
