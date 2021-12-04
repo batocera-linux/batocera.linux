@@ -258,6 +258,7 @@ class EsSystemConf:
             if "cores" in features[emulator] or "systems" in features[emulator] or "cfeatures" in features[emulator] or "shared" in features[emulator]:
                 featuresTxt += ">\n"
                 if "cores" in features[emulator]:
+                    featuresTxt += "    <cores>\n"
                     for core in features[emulator]["cores"]:
                         core_featuresTxt = ""
                         if "features" in features[emulator]["cores"][core]:
@@ -323,7 +324,9 @@ class EsSystemConf:
                             featuresTxt += "      </core>\n"
                         else:
                             featuresTxt += "      <core name=\"{}\" features=\"{}\" />\n".format(core, core_featuresTxt)
+                    featuresTxt += "    </cores>\n"
                 if "systems" in features[emulator]:
+                    featuresTxt += "    <systems>\n"
                     for system in features[emulator]["systems"]:
                         system_featuresTxt = ""
                         if "features" in features[emulator]["systems"][system]:
@@ -354,6 +357,7 @@ class EsSystemConf:
                                 else:
                                     print("skipping system " + emulator + "/" + system + " shared " + shared)
                         featuresTxt += "      </system>\n"
+                    featuresTxt += "    </systems>\n"
                 if "cfeatures" in features[emulator]:
                     for cfeature in features[emulator]["cfeatures"]:
                         if "archs_include" not in features[emulator]["cfeatures"][cfeature] or arch in features[emulator]["cfeatures"][cfeature]["archs_include"]:
@@ -446,6 +450,7 @@ class EsSystemConf:
             emulatorData = data["emulators"][emulator]
 
             emulatorTxt = "            <emulator name=\"%s\">\n" % (emulator)
+            emulatorTxt += "                <cores>\n"
 
             # CORES
             coresTxt = ""
@@ -468,6 +473,7 @@ class EsSystemConf:
                 emulatorTxt = ""
             else:
                 emulatorTxt  += coresTxt
+                emulatorTxt  += "                </cores>\n"
                 emulatorTxt  += "            </emulator>\n"
                 emulatorsTxt += emulatorTxt
 
