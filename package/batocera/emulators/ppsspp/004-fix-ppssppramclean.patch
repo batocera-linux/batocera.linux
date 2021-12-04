@@ -1,39 +1,13 @@
-diff --git a/Common/MemArena.h b/Common/MemArena.h
-index 3c5243d..b5f7bd6 100644
---- a/Common/MemArena.h
-+++ b/Common/MemArena.h
-@@ -54,5 +54,6 @@ class MemArena {
- 	vm_address_t vm_mem;  // same type as vm_address_t
- #else
- 	int fd = -1;
-+	std::string associated_fd;
- #endif
- };
 diff --git a/Common/MemArenaPosix.cpp b/Common/MemArenaPosix.cpp
-index f55e97e..aa6d599 100644
+index f55e97e..5016cd4 100644
 --- a/Common/MemArenaPosix.cpp
 +++ b/Common/MemArenaPosix.cpp
-@@ -58,12 +58,14 @@ bool MemArena::GrabMemSpace(size_t size) {
- 	char ram_temp_filename[128]{};
- 	bool is_shm = false;
+@@ -60,7 +60,7 @@ bool MemArena::GrabMemSpace(size_t size) {
  	for (int i = 0; i < 256; ++i) {
--		snprintf(ram_temp_filename, sizeof(ram_temp_filename), "/ppsspp_%d.ram", i);
-+		snprintf(ram_temp_filename, sizeof(ram_temp_filename), "/tmp/ppsspp_%d.ram", i);
+ 		snprintf(ram_temp_filename, sizeof(ram_temp_filename), "/ppsspp_%d.ram", i);
  		// This opens atomically, so will fail if another process is starting.
- 		fd = open(ram_temp_filename, O_RDWR | O_CREAT | O_EXCL, mode);
+-		fd = open(ram_temp_filename, O_RDWR | O_CREAT | O_EXCL, mode);
++		fd = shm_open(ram_temp_filename, O_RDWR | O_CREAT | O_EXCL, mode);
  		if (fd >= 0) {
  			INFO_LOG(MEMMAP, "Got shm file: %s", ram_temp_filename);
  			is_shm = true;
-+			associated_fd = ram_temp_filename;
-+
- 			// Our handle persists per POSIX, so no need to keep it around.
- 			if (shm_unlink(ram_temp_filename) != 0) {
- 				WARN_LOG(MEMMAP, "Failed to shm_unlink %s", ram_temp_file.c_str());
-@@ -103,6 +105,7 @@ bool MemArena::GrabMemSpace(size_t size) {
- 
- void MemArena::ReleaseSpace() {
- 	close(fd);
-+	if(associated_fd != "") unlink(associated_fd.c_str());
- }
- 
- void *MemArena::CreateView(s64 offset, size_t size, void *base)
