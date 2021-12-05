@@ -3263,11 +3263,12 @@ dolphin:
                 "Stretch to window": 3
         ubershaders:
             prompt:      UBERSHADERS
-            description: Improve performance with Ubershaders (may not work well on all hardware); asynchronous is preferred, synchronous is more compatible
+            description: Improve performance with Ubershaders (may not work well on all hardware); hybrid is preferred, "no ubershaders" is more compatible
             choices:
-                "No Ubershaders":                          synchronous
-                "Ubershaders (synchronous)":               synchronous_ubershader
-                "Ubershaders (asynchronous)":              asynchronous_ubershader
+                "No Ubershaders":                          no_ubershader
+                "Exclusive Ubershaders":                   exclusive_ubershader
+                "Hybrid Ubershaders":                      hybrid_ubershader
+                "Skip Drawing":                            skip_draw
         wait_for_shaders:
             prompt:      PRE-CACHE SHADERS
             description: Wait for shaders to compile completely before starting the game, can reduce micro-freezes

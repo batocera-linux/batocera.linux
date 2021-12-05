@@ -171,11 +171,13 @@ class DolphinGenerator(Generator):
             dolphinGFXSettings.set("Settings", "wideScreenHack", '"False"')
 
         # Ubershaders (synchronous_ubershader by default)
-        if system.isOptSet('ubershaders') and system.config["ubershaders"] != "synchronous":
-            if system.config["ubershaders"] == "synchronous_ubershader":
+        if system.isOptSet('ubershaders') and system.config["ubershaders"] != "no_ubershader":
+            if system.config["ubershaders"] == "exclusive_ubershader":
                 dolphinGFXSettings.set("Settings", "ShaderCompilationMode", '"1"')
-            elif system.config["ubershaders"] == "asynchronous_ubershader":
+            elif system.config["ubershaders"] == "hybrid_ubershader":
                 dolphinGFXSettings.set("Settings", "ShaderCompilationMode", '"2"')
+            elif system.config["ubershaders"] == "skip_draw":
+                dolphinGFXSettings.set("Settings", "ShaderCompilationMode", '"3"')
         else:
             dolphinGFXSettings.set("Settings", "ShaderCompilationMode", '"0"')
 
