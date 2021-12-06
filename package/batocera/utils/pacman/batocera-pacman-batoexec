@@ -24,8 +24,12 @@ def parse_batoexec():
         return ('noop', '' , '')
     with open (BATOEXEC, 'r') as infile:
         data=infile.readlines()
-    key, val = data[0].partition('=')[::2]
-    datastr = ''.join([str(el) for el in data[1:]])
+    try:
+        key, val = data[0].partition('=')[::2]
+        datastr = ''.join([str(el) for el in data[1:]])
+    except Exception as e:
+        print ("WARNING: ignoring BATOEXEC file.")
+        key, val, datastr = 'noop', '', ''
     return (key.strip(), val.strip(), datastr)
 
 #######
