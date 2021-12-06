@@ -35,8 +35,6 @@ class DaphneGenerator(Generator):
         # Aspect ratio
         if system.config["ratio"] == "4/3":
             commandArray.append("-force_aspect_ratio")
-        else:
-            commandArray.append("-ignore_aspect_ratio")
 
         # Invert required when screen is rotated
         if gameResolution["width"] < gameResolution["height"]:
