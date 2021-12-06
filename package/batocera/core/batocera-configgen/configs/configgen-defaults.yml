@@ -255,7 +255,8 @@ openbor:
   emulator: openbor
   core:     openbor6412
   options:
-    hud_support: false
+    # none because some games fails by default with textures (street of rage 2x)
+    bezel: none
 
 # P-S
 
