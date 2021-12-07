@@ -58,10 +58,10 @@ class DuckstationGenerator(Generator):
             settings.set("Main","RewindSaveSlots", "15")
         elif system.isOptSet("duckstation_rewind") and system.config["duckstation_rewind"] == '10':
             settings.set("Main","RewindSaveSlots", "100")
-            settings.set("Main","RewindFrequency", "0,100000")
+            settings.set("Main","RewindFrequency", "0.100000")
         elif system.isOptSet("duckstation_rewind") and system.config["duckstation_rewind"] == '5':
             settings.set("Main","RewindSaveSlots", "50")
-            settings.set("Main","RewindFrequency", "0,100000")
+            settings.set("Main","RewindFrequency", "0.050000")
         else:
             settings.set("Main","RewindEnable", "false")
 
