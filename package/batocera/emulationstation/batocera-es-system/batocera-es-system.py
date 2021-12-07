@@ -30,7 +30,7 @@ class EsSystemConf:
 
     # Generate the es_systems.cfg file by searching the information in the es_system.yml file
     @staticmethod
-    def generate(rulesYaml, featuresYaml, configFile, esSystemFile, esFeaturesFile, systemsConfigFile, archSystemsConfigFile, romsdirsource, romsdirtarget, arch):
+    def generate(rulesYaml, featuresYaml, configFile, esSystemFile, esFeaturesFile, esTranslationFile, systemsConfigFile, archSystemsConfigFile, romsdirsource, romsdirtarget, arch):
         rules = yaml.safe_load(open(rulesYaml, "r"))
         config = EsSystemConf.loadConfig(configFile)
         es_system = ""
@@ -64,7 +64,11 @@ class EsSystemConf:
             es_system += EsSystemConf.generateSystem(system, data, config, defaultEmulator, defaultCore)
         es_system += "</systemList>\n"
         EsSystemConf.createEsSystem(es_system, esSystemFile)
-        EsSystemConf.createEsFeatures(featuresYaml, rules, esFeaturesFile, arch)
+
+        toTranslate = {}
+        EsSystemConf.createEsFeatures(featuresYaml, rules, esFeaturesFile, arch, toTranslate)
+
+        EsSystemConf.createEsTranslations(esTranslationFile, toTranslate)
 
         print("removing the " + romsdirtarget + " folder...")
         if os.path.isdir(romsdirtarget):
@@ -234,9 +238,48 @@ class EsSystemConf:
         es_systems.write(essystem)
         es_systems.close()
 
+    # generate the fake translations from external options
+    @staticmethod
+    def createEsTranslations(esTranslationFile, toTranslate):
+        fd = open(esTranslationFile, 'w')
+        n = 1
+        fd.write("// file generated automatically by batocera-es-system.py, don't modify it\n\n")
+        for tr in toTranslate:
+            # skip empty string
+            if tr == "":
+                continue
+            # skip numbers (8, 10, 500+)
+            m = re.search("^[0-9]+[+]?$", tr)
+            if m:
+               continue
+            # skip floats (2.5)
+            m = re.search("^[0-9]+\.[0-9]+[+]?$", tr)
+            if m:
+               continue
+            # skip ratio (4:3)
+            m = re.search("^[0-9]+:[0-9]+$", tr)
+            if m:
+               continue
+            # skip numbers (100%, 3x, +50%)
+            m = re.search("^[+-]?[0-9]+[%x]?$", tr)
+            if m:
+                continue
+            # skip resolutions (640x480)
+            m = re.search("^[0-9]+x[0-9]+$", tr)
+            if m:
+                continue
+            # skip resolutions (2x 640x480, 4x (640x480), x4 640x480, 3x 1080p (1920x1584), 2x 720p, 7x 2880p 5K
+            m = re.search("^[xX]?[0-9]*[xX]?[ ]*\(?[0-9]+[x]?[0-9]+[pK]?\)?[ ]*\(?[0-9]+[x]?[0-9]+[pK]?\)?$", tr)
+            if m:
+                continue
+
+            fd.write("#define fake_gettext_external_" + str(n) + " _(\"" + tr.replace("\"", "\\\"") + "\")\n")
+            n = n+1
+        fd.close()
+
     # Write the information in the es_features.cfg file
     @staticmethod
-    def createEsFeatures(featuresYaml, systems, esFeaturesFile, arch):
+    def createEsFeatures(featuresYaml, systems, esFeaturesFile, arch, toTranslate):
         features = ordered_load(open(featuresYaml, "r"))
         es_features = open(esFeaturesFile, "w")
         featuresTxt = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n"
@@ -279,8 +322,11 @@ class EsSystemConf:
                                        if "submenu" in features[emulator]["cores"][core]["cfeatures"][cfeature]:
                                            submenustr = " submenu=\"{}\"".format(features[emulator]["cores"][core]["cfeatures"][cfeature]["submenu"])
                                        featuresTxt += "        <feature name=\"{}\"{} value=\"{}\" description=\"{}\">\n".format(features[emulator]["cores"][core]["cfeatures"][cfeature]["prompt"], submenustr, cfeature, description)
+                                       toTranslate[features[emulator]["cores"][core]["cfeatures"][cfeature]["prompt"]] = True;
+                                       toTranslate[description] = True
                                        for choice in features[emulator]["cores"][core]["cfeatures"][cfeature]["choices"]:
                                            featuresTxt += "          <choice name=\"{}\" value=\"{}\" />\n".format(choice, features[emulator]["cores"][core]["cfeatures"][cfeature]["choices"][choice])
+                                           toTranslate[choice] = True
                                        featuresTxt += "        </feature>\n"
                                    else:
                                        print("skipping core " + emulator + "/" + core + " cfeature " + cfeature)
@@ -307,8 +353,11 @@ class EsSystemConf:
                                                if "submenu" in features[emulator]["cores"][core]["systems"][system]["cfeatures"][cfeature]:
                                                    submenustr = " submenu=\"{}\"".format(features[emulator]["cores"][core]["systems"][system]["cfeatures"][cfeature]["submenu"])
                                                featuresTxt += "            <feature name=\"{}\"{} value=\"{}\" description=\"{}\">\n".format(features[emulator]["cores"][core]["systems"][system]["cfeatures"][cfeature]["prompt"], submenustr, cfeature, description)
+                                               toTranslate[features[emulator]["cores"][core]["systems"][system]["cfeatures"][cfeature]["prompt"]] = True
+                                               toTranslate[description] = True
                                                for choice in features[emulator]["cores"][core]["systems"][system]["cfeatures"][cfeature]["choices"]:
                                                    featuresTxt += "              <choice name=\"{}\" value=\"{}\" />\n".format(choice, features[emulator]["cores"][core]["systems"][system]["cfeatures"][cfeature]["choices"][choice])
+                                                   toTranslate[choice] = True
                                                featuresTxt += "            </feature>\n"
                                            else:
                                                print("skipping system " + emulator + "/" + system + " cfeature " + cfeature)
@@ -345,8 +394,11 @@ class EsSystemConf:
                                     if "submenu" in features[emulator]["systems"][system]["cfeatures"][cfeature]:
                                         submenustr = " submenu=\"{}\"".format(features[emulator]["systems"][system]["cfeatures"][cfeature]["submenu"])
                                     featuresTxt += "        <feature name=\"{}\"{} value=\"{}\" description=\"{}\">\n".format(features[emulator]["systems"][system]["cfeatures"][cfeature]["prompt"], submenustr, cfeature, description)
+                                    toTranslate[features[emulator]["systems"][system]["cfeatures"][cfeature]["prompt"]] = True
+                                    toTranslate[description] = True
                                     for choice in features[emulator]["systems"][system]["cfeatures"][cfeature]["choices"]:
                                         featuresTxt += "        <choice name=\"{}\" value=\"{}\" />\n".format(choice, features[emulator]["systems"][system]["cfeatures"][cfeature]["choices"][choice])
+                                        toTranslate[choice] = True
                                     featuresTxt += "        </feature>\n"
                                 else:
                                     print("skipping system " + emulator + "/" + system + " cfeature " + cfeature)
@@ -368,8 +420,11 @@ class EsSystemConf:
                             if "submenu" in features[emulator]["cfeatures"][cfeature]:
                                 submenustr = " submenu=\"{}\"".format(features[emulator]["cfeatures"][cfeature]["submenu"])
                             featuresTxt += "    <feature name=\"{}\"{} value=\"{}\" description=\"{}\">\n".format(features[emulator]["cfeatures"][cfeature]["prompt"], submenustr, cfeature, description)
+                            toTranslate[features[emulator]["cfeatures"][cfeature]["prompt"]] = True
+                            toTranslate[description] = True
                             for choice in features[emulator]["cfeatures"][cfeature]["choices"]:
                                 featuresTxt += "      <choice name=\"{}\" value=\"{}\" />\n".format(choice, features[emulator]["cfeatures"][cfeature]["choices"][choice])
+                                toTranslate[choice] = True
                             featuresTxt += "    </feature>\n"
                         else:
                             print("skipping emulator " + emulator + " cfeature " + cfeature)
@@ -508,6 +563,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("yml",           help="es_systems.yml definition file")
     parser.add_argument("features",      help="es_features.yml file")
+    parser.add_argument("es_translations",  help="es_translations.h file")
     parser.add_argument("config",        help=".config buildroot file")
     parser.add_argument("es_systems",    help="es_systems.cfg emulationstation file")
     parser.add_argument("es_features",   help="es_features.cfg emulationstation file")
@@ -517,4 +573,4 @@ if __name__ == "__main__":
     parser.add_argument("romsdirtarget", help="emulationstation roms directory")
     parser.add_argument("arch", help="arch")
     args = parser.parse_args()
-    EsSystemConf.generate(args.yml, args.features, args.config, args.es_systems, args.es_features, args.gen_defaults_global, args.gen_defaults_arch, args.romsdirsource, args.romsdirtarget, args.arch)
+    EsSystemConf.generate(args.yml, args.features, args.config, args.es_systems, args.es_features, args.es_translations, args.gen_defaults_global, args.gen_defaults_arch, args.romsdirsource, args.romsdirtarget, args.arch)
