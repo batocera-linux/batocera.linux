@@ -277,6 +277,15 @@ class EsSystemConf:
             n = n+1
         fd.close()
 
+    @staticmethod
+    def protectXml(strval):
+        strval = str(strval)
+        strval = strval.replace("&", "&amp;")
+        strval = strval.replace("<", "&lt;")
+        strval = strval.replace(">", "&gt;")
+        strval = strval.replace("\"", "&quot;")
+        return strval
+
     # Write the information in the es_features.cfg file
     @staticmethod
     def createEsFeatures(featuresYaml, systems, esFeaturesFile, arch, toTranslate):
@@ -296,7 +305,7 @@ class EsSystemConf:
             elif emulator == "shared":
                 featuresTxt += "  <sharedFeatures"
             else:
-                featuresTxt += "  <emulator name=\"{}\" features=\"{}\"".format(emulator, emulator_featuresTxt)
+                featuresTxt += "  <emulator name=\"{}\" features=\"{}\"".format(EsSystemConf.protectXml(emulator), EsSystemConf.protectXml(emulator_featuresTxt))
 
             if "cores" in features[emulator] or "systems" in features[emulator] or "cfeatures" in features[emulator] or "shared" in features[emulator]:
                 featuresTxt += ">\n"
@@ -310,7 +319,7 @@ class EsSystemConf:
                                     core_featuresTxt += ", "
                                 core_featuresTxt += feature
                         if "cfeatures" in features[emulator]["cores"][core] or "systems" in features[emulator]["cores"][core]:
-                            featuresTxt += "      <core name=\"{}\" features=\"{}\">\n".format(core, core_featuresTxt)
+                            featuresTxt += "      <core name=\"{}\" features=\"{}\">\n".format(EsSystemConf.protectXml(core), EsSystemConf.protectXml(core_featuresTxt))
                             # core features
                             if "cfeatures" in features[emulator]["cores"][core]:
                                for cfeature in features[emulator]["cores"][core]["cfeatures"]:
@@ -320,12 +329,12 @@ class EsSystemConf:
                                            description = features[emulator]["cores"][core]["cfeatures"][cfeature]["description"]
                                        submenustr = ""
                                        if "submenu" in features[emulator]["cores"][core]["cfeatures"][cfeature]:
-                                           submenustr = " submenu=\"{}\"".format(features[emulator]["cores"][core]["cfeatures"][cfeature]["submenu"])
-                                       featuresTxt += "        <feature name=\"{}\"{} value=\"{}\" description=\"{}\">\n".format(features[emulator]["cores"][core]["cfeatures"][cfeature]["prompt"], submenustr, cfeature, description)
+                                           submenustr = " submenu=\"{}\"".format(EsSystemConf.protectXml(EsSystemConf.protectXml(features[emulator]["cores"][core]["cfeatures"][cfeature]["submenu"])))
+                                       featuresTxt += "        <feature name=\"{}\"{} value=\"{}\" description=\"{}\">\n".format(EsSystemConf.protectXml(features[emulator]["cores"][core]["cfeatures"][cfeature]["prompt"]), submenustr, EsSystemConf.protectXml(cfeature), EsSystemConf.protectXml(description))
                                        toTranslate[features[emulator]["cores"][core]["cfeatures"][cfeature]["prompt"]] = True;
                                        toTranslate[description] = True
                                        for choice in features[emulator]["cores"][core]["cfeatures"][cfeature]["choices"]:
-                                           featuresTxt += "          <choice name=\"{}\" value=\"{}\" />\n".format(choice, features[emulator]["cores"][core]["cfeatures"][cfeature]["choices"][choice])
+                                           featuresTxt += "          <choice name=\"{}\" value=\"{}\" />\n".format(EsSystemConf.protectXml(choice), EsSystemConf.protectXml(features[emulator]["cores"][core]["cfeatures"][cfeature]["choices"][choice]))
                                            toTranslate[choice] = True
                                        featuresTxt += "        </feature>\n"
                                    else:
@@ -342,7 +351,7 @@ class EsSystemConf:
                                            if system_featuresTxt != "":
                                                system_featuresTxt += ", "
                                            system_featuresTxt += feature
-                                   featuresTxt += "          <system name=\"{}\" features=\"{}\" >\n".format(system, system_featuresTxt)
+                                   featuresTxt += "          <system name=\"{}\" features=\"{}\" >\n".format(EsSystemConf.protectXml(system), EsSystemConf.protectXml(system_featuresTxt))
                                    if "cfeatures" in features[emulator]["cores"][core]["systems"][system]:
                                        for cfeature in features[emulator]["cores"][core]["systems"][system]["cfeatures"]:
                                            if "archs_include" not in features[emulator]["cores"][core]["systems"][system]["cfeatures"][cfeature] or arch in features[emulator]["cores"][core]["systems"][system]["cfeatures"][cfeature]["archs_include"]:
@@ -351,12 +360,12 @@ class EsSystemConf:
                                                    description = features[emulator]["cores"][core]["systems"][system]["cfeatures"][cfeature]["description"]
                                                submenustr = ""
                                                if "submenu" in features[emulator]["cores"][core]["systems"][system]["cfeatures"][cfeature]:
-                                                   submenustr = " submenu=\"{}\"".format(features[emulator]["cores"][core]["systems"][system]["cfeatures"][cfeature]["submenu"])
-                                               featuresTxt += "            <feature name=\"{}\"{} value=\"{}\" description=\"{}\">\n".format(features[emulator]["cores"][core]["systems"][system]["cfeatures"][cfeature]["prompt"], submenustr, cfeature, description)
+                                                   submenustr = " submenu=\"{}\"".format(EsSystemConf.protectXml(features[emulator]["cores"][core]["systems"][system]["cfeatures"][cfeature]["submenu"]))
+                                               featuresTxt += "            <feature name=\"{}\"{} value=\"{}\" description=\"{}\">\n".format(EsSystemConf.protectXml(features[emulator]["cores"][core]["systems"][system]["cfeatures"][cfeature]["prompt"]), submenustr, EsSystemConf.protectXml(cfeature), EsSystemConf.protectXml(description))
                                                toTranslate[features[emulator]["cores"][core]["systems"][system]["cfeatures"][cfeature]["prompt"]] = True
                                                toTranslate[description] = True
                                                for choice in features[emulator]["cores"][core]["systems"][system]["cfeatures"][cfeature]["choices"]:
-                                                   featuresTxt += "              <choice name=\"{}\" value=\"{}\" />\n".format(choice, features[emulator]["cores"][core]["systems"][system]["cfeatures"][cfeature]["choices"][choice])
+                                                   featuresTxt += "              <choice name=\"{}\" value=\"{}\" />\n".format(EsSystemConf.protectXml(choice), EsSystemConf.protectXml(features[emulator]["cores"][core]["systems"][system]["cfeatures"][cfeature]["choices"][choice]))
                                                    toTranslate[choice] = True
                                                featuresTxt += "            </feature>\n"
                                            else:
@@ -364,7 +373,7 @@ class EsSystemConf:
                                    if "shared" in features[emulator]["cores"][core]["systems"][system]:
                                        for shared in features[emulator]["cores"][core]["systems"][system]["shared"]:
                                            if "archs_include" not in features["shared"]["cfeatures"][shared] or arch in features["shared"]["cfeatures"][shared]["archs_include"]:
-                                               featuresTxt += "    <sharedFeature value=\"{}\" />\n".format(shared)
+                                               featuresTxt += "    <sharedFeature value=\"{}\" />\n".format(EsSystemConf.protectXml(shared))
                                            else:
                                                print("skipping system " + emulator + "/" + system + " shared " + shared)
                                    featuresTxt += "          </system>\n"
@@ -372,7 +381,7 @@ class EsSystemConf:
                                ###
                             featuresTxt += "      </core>\n"
                         else:
-                            featuresTxt += "      <core name=\"{}\" features=\"{}\" />\n".format(core, core_featuresTxt)
+                            featuresTxt += "      <core name=\"{}\" features=\"{}\" />\n".format(EsSystemConf.protectXml(core), EsSystemConf.protectXml(core_featuresTxt))
                     featuresTxt += "    </cores>\n"
                 if "systems" in features[emulator]:
                     featuresTxt += "    <systems>\n"
@@ -383,7 +392,7 @@ class EsSystemConf:
                                 if system_featuresTxt != "":
                                     system_featuresTxt += ", "
                                 system_featuresTxt += feature
-                        featuresTxt += "      <system name=\"{}\" features=\"{}\" >\n".format(system, system_featuresTxt)
+                        featuresTxt += "      <system name=\"{}\" features=\"{}\" >\n".format(EsSystemConf.protectXml(system), EsSystemConf.protectXml(system_featuresTxt))
                         if "cfeatures" in features[emulator]["systems"][system]:
                             for cfeature in features[emulator]["systems"][system]["cfeatures"]:
                                 if "archs_include" not in features[emulator]["systems"][system]["cfeatures"][cfeature] or arch in features[emulator]["systems"][system]["cfeatures"][cfeature]["archs_include"]:
@@ -392,12 +401,12 @@ class EsSystemConf:
                                         description = features[emulator]["systems"][system]["cfeatures"][cfeature]["description"]
                                     submenustr = ""
                                     if "submenu" in features[emulator]["systems"][system]["cfeatures"][cfeature]:
-                                        submenustr = " submenu=\"{}\"".format(features[emulator]["systems"][system]["cfeatures"][cfeature]["submenu"])
-                                    featuresTxt += "        <feature name=\"{}\"{} value=\"{}\" description=\"{}\">\n".format(features[emulator]["systems"][system]["cfeatures"][cfeature]["prompt"], submenustr, cfeature, description)
+                                        submenustr = " submenu=\"{}\"".format(EsSystemConf.protectXml(features[emulator]["systems"][system]["cfeatures"][cfeature]["submenu"]))
+                                    featuresTxt += "        <feature name=\"{}\"{} value=\"{}\" description=\"{}\">\n".format(EsSystemConf.protectXml(features[emulator]["systems"][system]["cfeatures"][cfeature]["prompt"]), submenustr, EsSystemConf.protectXml(cfeature), EsSystemConf.protectXml(description))
                                     toTranslate[features[emulator]["systems"][system]["cfeatures"][cfeature]["prompt"]] = True
                                     toTranslate[description] = True
                                     for choice in features[emulator]["systems"][system]["cfeatures"][cfeature]["choices"]:
-                                        featuresTxt += "        <choice name=\"{}\" value=\"{}\" />\n".format(choice, features[emulator]["systems"][system]["cfeatures"][cfeature]["choices"][choice])
+                                        featuresTxt += "        <choice name=\"{}\" value=\"{}\" />\n".format(EsSystemConf.protectXml(choice), EsSystemConf.protectXml(features[emulator]["systems"][system]["cfeatures"][cfeature]["choices"][choice]))
                                         toTranslate[choice] = True
                                     featuresTxt += "        </feature>\n"
                                 else:
@@ -405,7 +414,7 @@ class EsSystemConf:
                         if "shared" in features[emulator]["systems"][system]:
                             for shared in features[emulator]["systems"][system]["shared"]:
                                 if "archs_include" not in features["shared"]["cfeatures"][shared] or arch in features["shared"]["cfeatures"][shared]["archs_include"]:
-                                    featuresTxt += "    <sharedFeature value=\"{}\" />\n".format(shared)
+                                    featuresTxt += "    <sharedFeature value=\"{}\" />\n".format(EsSystemConf.protectXml(shared))
                                 else:
                                     print("skipping system " + emulator + "/" + system + " shared " + shared)
                         featuresTxt += "      </system>\n"
@@ -418,12 +427,12 @@ class EsSystemConf:
                                 description = features[emulator]["cfeatures"][cfeature]["description"]
                             submenustr = ""
                             if "submenu" in features[emulator]["cfeatures"][cfeature]:
-                                submenustr = " submenu=\"{}\"".format(features[emulator]["cfeatures"][cfeature]["submenu"])
-                            featuresTxt += "    <feature name=\"{}\"{} value=\"{}\" description=\"{}\">\n".format(features[emulator]["cfeatures"][cfeature]["prompt"], submenustr, cfeature, description)
+                                submenustr = " submenu=\"{}\"".format(EsSystemConf.protectXml(features[emulator]["cfeatures"][cfeature]["submenu"]))
+                            featuresTxt += "    <feature name=\"{}\"{} value=\"{}\" description=\"{}\">\n".format(EsSystemConf.protectXml(features[emulator]["cfeatures"][cfeature]["prompt"]), submenustr, EsSystemConf.protectXml(cfeature), EsSystemConf.protectXml(description))
                             toTranslate[features[emulator]["cfeatures"][cfeature]["prompt"]] = True
                             toTranslate[description] = True
                             for choice in features[emulator]["cfeatures"][cfeature]["choices"]:
-                                featuresTxt += "      <choice name=\"{}\" value=\"{}\" />\n".format(choice, features[emulator]["cfeatures"][cfeature]["choices"][choice])
+                                featuresTxt += "      <choice name=\"{}\" value=\"{}\" />\n".format(EsSystemConf.protectXml(choice), EsSystemConf.protectXml(features[emulator]["cfeatures"][cfeature]["choices"][choice]))
                                 toTranslate[choice] = True
                             featuresTxt += "    </feature>\n"
                         else:
@@ -432,7 +441,7 @@ class EsSystemConf:
                 if "shared" in features[emulator]:
                     for shared in features[emulator]["shared"]:
                         if "archs_include" not in features["shared"]["cfeatures"][shared] or arch in features["shared"]["cfeatures"][shared]["archs_include"]:
-                            featuresTxt += "    <sharedFeature value=\"{}\" />\n".format(shared)
+                            featuresTxt += "    <sharedFeature value=\"{}\" />\n".format(EsSystemConf.protectXml(shared))
                         else:
                             print("skipping emulator " + emulator + " shared " + shared)
 
