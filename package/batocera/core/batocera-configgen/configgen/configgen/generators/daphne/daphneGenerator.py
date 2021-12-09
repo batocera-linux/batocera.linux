@@ -42,6 +42,11 @@ class DaphneGenerator(Generator):
         else:
             commandArray.extend(["-x", str(gameResolution["width"]), "-y", str(gameResolution["height"])])
 
+        # Backend - Default OpenGL
+        if system.isOptSet("gfxbackend") and system.config["gfxbackend"] == 'Vulkan':
+            commandArray.append("-vulkan")
+        else:
+            commandArray.append("-opengl")
 
         # Disable Bilinear Filtering
         if system.isOptSet('bilinear_filter') and system.getOptBoolean("bilinear_filter"):
