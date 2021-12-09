@@ -340,7 +340,8 @@ def start_rom(args, maxnbplayers, rom, romConfiguration):
                     with open('/var/run/hud.config', 'w') as f:
                         f.write(hudconfig)
                     cmd.env["MANGOHUD_CONFIGFILE"] = "/var/run/hud.config"
-                    cmd.array.insert(0, "mangohud")
+                    if generators[system.config['emulator']].hasInternalMangoHUDCall() == False:
+                        cmd.array.insert(0, "mangohud")
 
             exitCode = runCommand(cmd)
         finally:
