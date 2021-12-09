@@ -16,6 +16,7 @@ touch "${REBOOT_FLAG}" || exit 1
 # environment
 export HOME=/userdata/system
 
+GAMELAUNCH=1
 while test -e "${REBOOT_FLAG}"
 do
     ### lang settings
@@ -113,8 +114,18 @@ do
     test -x /userdata/system/custom-es-config && /userdata/system/custom-es-config
 
     #####################
-    
+
+    # launch automatically a game only the first time
+    if test ${GAMELAUNCH} = 1
+       then
+	   GAMELAUNCHOPT=
+    else
+	GAMELAUNCHOPT="--no-startup-game"
+    fi
+
     cd /userdata # es need a PWD
-    %BATOCERA_EMULATIONSTATION_PREFIX% emulationstation --exit-on-reboot-required %BATOCERA_EMULATIONSTATION_ARGS% ${CUSTOMESOPTIONS}
+    %BATOCERA_EMULATIONSTATION_PREFIX% emulationstation ${GAMELAUNCHOPT} --exit-on-reboot-required %BATOCERA_EMULATIONSTATION_ARGS% ${CUSTOMESOPTIONS}
+
+    GAMELAUNCH=0
 done
 exit 0
