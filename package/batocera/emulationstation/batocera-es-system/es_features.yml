@@ -3205,6 +3205,13 @@ daphne:
   features: [ratio, padtokeyboard, decoration]
   shared: [hud]
   cfeatures:
+        gfxbackend:
+            archs_include: [x86, x86_64, rpi4, rk3326, gameforce]
+            prompt:      GRAPHICS BACKEND
+            description: Choose your graphics rendering
+            choices:
+                "OpenGL":                      OpenGL
+                "Vulkan":                      Vulkan
         bilinear_filter:
             prompt:      BILINEAR FILTER
             choices:
