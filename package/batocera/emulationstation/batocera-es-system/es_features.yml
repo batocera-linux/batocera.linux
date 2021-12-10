@@ -186,7 +186,7 @@ libretro:
                     "Off": disabled
             mesen-s_overclock:
                 prompt:      OVERCLOCK (UNSTABLE)
-                description: Enhancement. Reduces console slowdown. Causes issues in some games.
+                description: Enhancement. Reduces system slowdown. Causes issues in some games.
                 choices:
                     "None":      None
                     "Low":       Low
@@ -786,7 +786,7 @@ libretro:
                     "Very High":            Very High
             fceumm_overclocking:
                 prompt:      OVERCLOCK (UNSTABLE)
-                description: Enhancement. Reduces console slowdown. Causes issues in some games.
+                description: Enhancement. Reduces system slowdown. Causes issues in some games.
                 choices:
                     "disabled":             disabled
                     "2x-Postrender":        2x-Postrender
@@ -1177,7 +1177,7 @@ libretro:
       cfeatures:
             mame_cpu_overclock:
                 prompt:      OVERCLOCK (UNSTABLE)
-                description: Enhancement. Reduces console slowdown. Causes issues in some games.
+                description: Enhancement. Reduces system slowdown. Causes issues in some games.
                 choices:
                     "default":        default
                     "30":             30
@@ -1223,7 +1223,6 @@ libretro:
       cfeatures:
             mame2003-plus_analog:
                 prompt:      CONTROL MAPPING
-                description: Choose from Analog or Digital controller
                 choices:
                     "Analog":       analog
                     "Digital":      digital
@@ -1239,20 +1238,19 @@ libretro:
                     "5":            5
             mame2003-plus_input_interface:
                 prompt:      INPUT INTERFACE
-                description: Use input directly sends by keyboard to the core
+                description: Keyboard shortcuts unavailable if passing through keyboard.
                 choices:
-                    "Retropad":     retropad
-                    "Keyboard":     keyboard
-                    "Simultaneous": simultaneous
+                    "Retropad":             retropad
+                    "Keyboard passthrough": keyboard
+                    "Simultaneous":         simultaneous
             mame2003-plus_tate_mode:
-                prompt:      TATE MODE
-                description: Rotating display to vertical mode rendering
+                prompt:      VERTICAL ROTATION (TATE)
+                description: Rotates screen by 90 degrees. Intended for rotating displays.
                 choices:
                     "Off":        disabled
                     "On":         enabled
             mame2003-plus_neogeo_bios:
-                prompt:      NEOGEO MODE
-                description: Manually specify your choice of Neo Geo BIOS
+                prompt:      NEO GEO BIOS
                 choices:
                     "Console AES World":                   asia-aes
                     "Arcade MVS Europe":                   euro
@@ -1275,7 +1273,7 @@ libretro:
                     "On":         disabled
             beetle_psx_cpu_freq_scale:
                 prompt:      OVERCLOCK (UNSTABLE)
-                description: Enhancement. Reduces console slowdown. Causes issues in some games.
+                description: Enhancement. Reduces system slowdown. Causes issues in some games.
                 choices:
                     "50%":          50%
                     "60%":          60%
@@ -1321,13 +1319,13 @@ libretro:
                     "On":         enabled
             beetle_psx_frame_duping:
                 prompt:      FRAME DUPING (SPEED UP)
-                description: Small performance increase (may lose animation frames)
+                description: Small performance increase (may drop frames).
                 choices:
                     "Off":        disabled
                     "On":         enabled
             beetle_psx_cpu_dynarec:
                 prompt:      CPU DYNAREC (SPEED UP)
-                description: Much faster than interpreter (but may have bugs)
+                description: Much faster than interpreter (but may have issues).
                 choices:
                     "Disabled (Beatle Interpreter)": disabled
                     "Max Performance":               execute
@@ -1335,13 +1333,12 @@ libretro:
                     "Lightrec Interpreter":          run_interpreter
             beetle_psx_dynarec_invalidate:
                 prompt:      DYNAREC CODE INVALIDATION
-                description: Some games require DMA Only (for CPU Dynarec)
                 choices:
-                    "Full":                         full
+                    "Full (more compatible)":       full
                     "DMA Only (Slightly Faster)":   dma
             multitap_mednafen:
                 prompt:      MULTITAP
-                description: Allows 5 or 8 max players support in games
+                description: Allows up to 5 or 8 controllers in supported games.
                 choices:
                     "Off":              disabled
                     "Port 1":           port1
@@ -1349,7 +1346,7 @@ libretro:
                     "Port 1+2":         port12
             beetle_psx_Controller1:
                 prompt:      CONTROLLER 1 TYPE
-                description: Use DualShock type for games with Rumble mode
+                description: DualShock has rumble support. Not all games support DualShock.
                 choices:
                     #"None":                          0
                     "Digital Controller":            1
@@ -1362,7 +1359,7 @@ libretro:
                     "PlayStation Mouse":             258
             beetle_psx_Controller2:
                 prompt:      CONTROLLER 2 TYPE
-                description: Use DualShock type for games with Rumble mode
+                description: DualShock has rumble support. Not all games support DualShock.
                 choices:
                     #"None":                          0
                     "Digital Controller":            1
@@ -1389,6 +1386,7 @@ libretro:
       cfeatures:
             skip_bios_mgba:
                 prompt:      SHOW BIOS BOOTLOGO
+                description: Requires BIOS file to be present.
                 choices:
                     "Off": ON
                     "On":  OFF
@@ -1397,13 +1395,13 @@ libretro:
                 cfeatures:
                     sgb_borders:
                         prompt:      SUPER GB BORDERS
-                        description: Only for Super Game Boy enhanced games
+                        description: Only for Super Game Boy enhanced games.
                         choices:
                             "Off": OFF
                             "On":  ON
                     color_correction:
                         prompt:      COLOR CORRECTION
-                        description: Adjusts output colors to feel real hardware
+                        description: Simulate LCD color inaccuracy.
                         choices:
                             "Off": OFF
                             "On":  GBA
@@ -1411,13 +1409,13 @@ libretro:
                 cfeatures:
                     sgb_borders:
                         prompt:      SUPER GB BORDERS
-                        description: Only for Super Game Boy enhanced games
+                        description: Only for Super Game Boy enhanced games.
                         choices:
                             "Off": OFF
                             "On":  ON
                     color_correction:
                         prompt:      COLOR CORRECTION
-                        description: Adjusts output colors to feel real hardware
+                        description: Simulate LCD color inaccuracy.
                         choices:
                             "Off": OFF
                             "On":  GBC
@@ -1425,7 +1423,7 @@ libretro:
                 cfeatures:
                     solar_sensor_level:
                         prompt:      SOLAR SENSOR LEVEL
-                        description: Only for games that employed it (for Boktai)
+                        description: For emulated solar sensor (Boktai).
                         choices:
                             "0":  0
                             "1":  1
@@ -1457,8 +1455,7 @@ libretro:
       features: [netplay, rewind, autosave, latency_reduction]
       cfeatures:
             mrboom-aspect:
-                prompt:      TEAM MODE
-                description: Choose the Team mode color
+                prompt:      TEAM COLOR MODE
                 choices:
                     "Selfie": Native
                     "Color":  Color
@@ -1466,7 +1463,7 @@ libretro:
                     "Skynet": Skynet
             mrboom-nomonster:
                 prompt:      MONSTERS
-                description: Enable or disable monsters on battle
+                description: Enable or disable monsters in battle.
                 choices:
                     "Off":    OFF
                     "On":     ON
@@ -1474,7 +1471,7 @@ libretro:
       features: [autosave, cheevos]
       cfeatures:
             mupen64plus-43screensize:
-                prompt:      VIDEO 4:3 RESOLUTION
+                prompt:      4:3 RENDERING RESOLUTION
                 description: Enhancement. Increase the rendering resolution. Makes 3D objects clearer.
                 choices:
                     "320x240":   320x240
@@ -1489,8 +1486,8 @@ libretro:
                     "3520x2640": 3520x2640
                     "3840x2880": 3840x2880
             mupen64plus-169screensize:
-                prompt:      VIDEO 16:9 RESOLUTION
-                description: Enhancement. Increase the rendering resolution when using a 16:9 aspect ratio. Makes 3D objects clearer.
+                prompt:      16:9 RENDERING RESOLUTION
+                description: Enhancement. Increase the rendering resolution when in 16:9 ratio. Makes 3D objects clearer.
                 choices:
                     "640x360":   640x360
                     "960x540":   960x540
@@ -1533,7 +1530,7 @@ libretro:
                     "Sharp 2":    Sharp filtering 2
             mupen64plus-txEnhancementMode:
                 prompt:      TEXTURE ENHANCEMENT (XBRZ)
-                description: Scales up a nearest-neighbor version of the texture
+                description: Enhancement. Upscale textures.
                 choices:
                     "Off":        None
                     "As Is":      As Is
@@ -1551,52 +1548,52 @@ libretro:
                     "6xBRZ":      6xBRZ
             mupen64plus-pak1:
                 prompt:      CONTROLLER PAK 1
-                description: Select player 1 Memory or Rumble pack
+                description: Emulate a pak in the controller expansion port.
                 choices:
                     "Off":         none
-                    "memory":      memory
-                    "rumble":      rumble
+                    "Memory Pak":  memory
+                    "Rumble Pak":  rumble
             mupen64plus-pak2:
                 prompt:      CONTROLLER PAK 2
-                description: Select player 1 Memory or Rumble pack
+                description: Emulate a pak in the controller expansion port.
                 choices:
                     "Off":         none
-                    "memory":      memory
-                    "rumble":      rumble
+                    "Memory Pak":  memory
+                    "Rumble Pak":  rumble
             mupen64plus-pak3:
                 prompt:      CONTROLLER PAK 3
-                description: Select player 1 Memory or Rumble pack
+                description: Emulate a pak in the controller expansion port.
                 choices:
                     "Off":         none
-                    "memory":      memory
-                    "rumble":      rumble
+                    "Memory Pak":  memory
+                    "Rumble Pak":  rumble
             mupen64plus-pak4:
                 prompt:      CONTROLLER PAK 4
-                description: Select player 1 Memory or Rumble pack
+                description: Emulate a pak in the controller expansion port.
                 choices:
                     "Off":         none
-                    "memory":      memory
-                    "rumble":      rumble
+                    "Memory Pak":  memory
+                    "Rumble Pak":  rumble
     neocd:
       features: [rewind, autosave]
       cfeatures:
             neocd_region:
                 prompt:      CONSOLE REGION
-                description: Change language of some games
+                description: Can change the language of some games.
                 choices:
                     "Japan":        Japan
                     "USA":          USA
                     "Europe":       Europe
             neocd_bios:
-                prompt:      BIOS SELECT
-                description: CD Universe Bios not include cheats
+                prompt:      NEO GEO CD BIOS
+                description: Universe BIOS is not compatible with cheats.
                 choices:
                     "CDZ":          CDZ
                     "CDZ (MAME)":   CDZ (MAME)
                     "Universe 3.2": Universe 3.2
             neocd_per_content_saves:
                 prompt:      PER-GAME SAVES
-                description: Use one save file per-game
+                description: Use one save file per game.
                 choices:
                     "Off":          Off
                     "On":           On
@@ -1619,7 +1616,7 @@ libretro:
                     "Both":                 both
             nestopia_palette:
                 prompt:      COLOR PALETTE
-                description: Choose which color palette is going to be used
+                description: Can be used to simulate colors of particular displays.
                 choices:
                     "consumer":             consumer
                     "cxa2025as":            cxa2025as
@@ -1642,13 +1639,13 @@ libretro:
                     "RGB (crisp image)":                      rgb
             nestopia_overclock:
                 prompt:      OVERCLOCK (UNSTABLE)
-                description: Enhancement. Reduces console slowdown. Causes issues in some games.
+                description: Enhancement. Reduces system slowdown. Causes issues in some games.
                 choices:
                     "Off":                  1x
                     "2x":                   2x
             nestopia_select_adapter:
                 prompt:      4 PLAYER ADAPTER
-                description: Manually select a 4 Player Adapter for some games
+                description: Manually activate the adapter for supported games.
                 choices:
                     "Autodetect":           automatic
                     "NTSC (NES)":           ntsc
@@ -1658,14 +1655,13 @@ libretro:
       cfeatures:
             np2kai_model:
                 prompt:      PC MODEL
-                description: Selects the correct PC model being emulated
                 choices:
                     "PC-286":    PC-286
                     "PC-9801VM": PC-9801VM
                     "PC-9801VX": PC-9801VX
             np2kai_cpu_feature:
                 prompt:      CPU FEATURE
-                description: Select the processor model
+                description: Select the processor model.
                 choices:
                     "Intel 80386":         Intel 80386
                     "Intel i486DX":        Intel i486DX
@@ -1675,44 +1671,42 @@ libretro:
                     "Intel Pentium 4":     Intel Pentium 4
                     "Neko Processor II":   Neko Processor II
             np2kai_clk_mult:
-                prompt:      CPU CLOCK MULTIPLIER
-                description: Recommended to use somewhere between a 4x and 8x
+                prompt:      OVERCLOCK MULTIPLIER
                 choices:
-                    "2x":        2
-                    "4x":        4
-                    "5x":        5
-                    "6x":        6
-                    "8x":        8
-                    "10x":       10
-                    "12x":       12
-                    "16x":       16
-                    "20x":       20
-                    "24x":       24
-                    "30x":       30
-                    "36x":       36
-                    "40x":       40
-                    "42x":       42
-                    "52x":       52
-                    "64x":       64
-                    "76x":       76
-                    "88x":       88
-                    "100x":      100
+                    "2x":               2
+                    "4x":               4
+                    "5x":               5
+                    "6x (Recommended)": 6
+                    "8x":               8
+                    "10x":              10
+                    "12x":              12
+                    "16x":              16
+                    "20x":              20
+                    "24x":              24
+                    "30x":              30
+                    "36x":              36
+                    "40x":              40
+                    "42x":              42
+                    "52x":              52
+                    "64x":              64
+                    "76x":              76
+                    "88x":              88
+                    "100x":             100
             np2kai_ExMemory:
-                prompt:      RAM SIZE
-                description: Select memory required by game, 13MB recommanded
+                prompt:      EMULATED RAM SIZE
                 choices:
-                    "1MB":      1
-                    "3MB":      2
-                    "7MB":      7
-                    "11MB":     11
-                    "13MB":     13
-                    "16MB":     16
-                    "32MB":     32
-                    "64MB":     64
-                    "120MB":    120
-                    "230MB":    230
-                    "512MB":    512
-                    "1024MB":   1024
+                    "1MB":                1
+                    "3MB":                2
+                    "7MB":                7
+                    "11MB":               11
+                    "13MB (Recommended)": 13
+                    "16MB":               16
+                    "32MB":               32
+                    "64MB":               64
+                    "120MB":              120
+                    "230MB":              230
+                    "512MB":              512
+                    "1024MB":             1024
             np2kai_gdc:
                 prompt:      GDC
                 description: Graphic Display Controller model
@@ -1849,7 +1843,7 @@ libretro:
                     "640x480":         enabled
             cpu_overclock:
                 prompt:      OVERCLOCK (UNSTABLE)
-                description: Enhancement. Reduces console slowdown. Causes issues in some games.
+                description: Enhancement. Reduces system slowdown. Causes issues in some games.
                 choices:
                     "1.0x (12.50Mhz)": 1.0x (12.50Mhz)
                     "1.1x (13.75Mhz)": 1.1x (13.75Mhz)
@@ -1918,32 +1912,32 @@ libretro:
                     "original":    original
             parallel-n64-pak1:
                 prompt:      CONTROLLER PAK 1
-                description: Select player 1 Memory or Rumble pack
+                description: Emulate a pak in the controller expansion port.
                 choices:
                     "Off":         none
-                    "memory":      memory
-                    "rumble":      rumble
+                    "Memory Pak":  memory
+                    "Rumble Pak":  rumble
             parallel-n64-pak2:
                 prompt:      CONTROLLER PAK 2
-                description: Select player 1 Memory or Rumble pack
+                description: Emulate a pak in the controller expansion port.
                 choices:
                     "Off":         none
-                    "memory":      memory
-                    "rumble":      rumble
+                    "Memory Pak":  memory
+                    "Rumble Pak":  rumble
             parallel-n64-pak3:
                 prompt:      CONTROLLER PAK 3
-                description: Select player 1 Memory or Rumble pack
+                description: Emulate a pak in the controller expansion port.
                 choices:
                     "Off":         none
-                    "memory":      memory
-                    "rumble":      rumble
+                    "Memory Pak":  memory
+                    "Rumble Pak":  rumble
             parallel-n64-pak4:
                 prompt:      CONTROLLER PAK 4
-                description: Select player 1 Memory or Rumble pack
+                description: Emulate a pak in the controller expansion port.
                 choices:
                     "Off":         none
-                    "memory":      memory
-                    "rumble":      rumble
+                    "Memory Pak":  memory
+                    "Rumble Pak":  rumble
     pce:
       features: [netplay, rewind, autosave, latency_reduction]
       cfeatures:
@@ -2009,7 +2003,7 @@ libretro:
                     "On (Speed hack)":  enabled_with_speedhack
             pcsx_rearmed_multitap:
                 prompt:      MULTITAP
-                description: Allows 5 or 8 max players support in games
+                description: Allows up to 5 or 8 controllers in supported games.
                 choices:
                     "Off":              disabled
                     "Port1":            port 1 only
@@ -2030,7 +2024,7 @@ libretro:
                     "Parasite Eve 2/Vandal Hearts 1&2 Fix": Parasite_Eve
             controller1_pcsx:
                 prompt:      CONTROLLER 1 TYPE
-                description: Use DualShock type for games with Rumble mode
+                description: DualShock has rumble support. Not all games support DualShock.
                 choices:
                     #"None":                          0
                     "Digital Controller":            1
@@ -2041,7 +2035,7 @@ libretro:
                     "PlayStation Mouse":             258
             controller2_pcsx:
                 prompt:      CONTROLLER 2 TYPE
-                description: Use DualShock type for games with Rumble mode
+                description: DualShock has rumble support. Not all games support DualShock.
                 choices:
                     #"None":                          0
                     "Digital Controller":            1
@@ -2591,19 +2585,19 @@ libretro:
       features: [netplay, rewind, autosave, latency_reduction, cheevos]
       cfeatures:
             2010_reduce_sprite_flicker:
-                prompt:      REDUCE SPRITE FLICKERING (UNSTABLE)
+                prompt:      REDUCE SPRITE FLICKERING
                 description: Enhancement. Remove the thirty-two sprites per line limit. Crashes certain games.
                 choices:
                     "Off":        disabled
                     "On":         enabled
             2010_reduce_slowdown:
-                prompt:      REDUCE SLOWDOWN (UNSTABLE)
+                prompt:      OVERCLOCK (UNSTABLE)
                 description: Overclock the SNES CPU (Gradius 3, Super R-Type)
                 choices:
-                    "Off":        disabled
-                    "light":      light
-                    "compatible": compatible
-                    "max":        max
+                    "Off":                   disabled
+                    "Light (load times)":    light
+                    "Compatible":            compatible
+                    "Max (demanding games)": max
             2010_overclock_superfx:
                 prompt:      SUPER FX OVERCLOCK
                 description: Enhancement. Reduces slowdown in mode 7 games.
@@ -2622,13 +2616,12 @@ libretro:
                     "40 MHz":               40 MHz
             controller1_snes9x_next:
                 prompt:      CONTROLLER 1 TYPE
-                description: Select SNES Gamepad or Mouse
                 choices:
                     "SNES Gamepad":           1
                     "SNES Mouse":             2
             controller2_snes9x_next:
                 prompt:      CONTROLLER 2 TYPE
-                description: Select SNES Gamepad, Mouse, Multitap or Guns
+                description: Lightguns/multitap.
                 choices:
                     "SNES Gamepad":           1
                     "SNES Mouse":             2
@@ -2743,13 +2736,13 @@ libretro:
                             "weird colors":     weird colors
                     gbcoloroption_gb:
                         prompt:      COLOR CORRECTION
-                        description: Adjusts output colors to simulate real hardware
+                        description: Simulate LCD color inaccuracy.
                         choices:
                             "Off":       disabled
                             "On":        enabled
                     showborders_gb:
                         prompt:      SUPER GB BORDERS
-                        description: Only for Super Game Boy enhanced games
+                        description: Only for Super Game Boy enhanced games.
                         choices:
                             "Off":       disabled
                             "On":        enabled
@@ -2757,13 +2750,13 @@ libretro:
                 cfeatures:
                     gbcoloroption_gbc:
                         prompt:      COLOR CORRECTION
-                        description: Adjusts output colors to simulate real hardware
+                        description: Simulate LCD color inaccuracy.
                         choices:
                             "Off":       disabled
                             "On":        enabled
                     showborders_gbc:
                         prompt:      SUPER GB BORDERS
-                        description: Only for Super Game Boy enhanced games
+                        description: Only for Super Game Boy enhanced games.
                         choices:
                             "Off":       disabled
                             "On":        enabled
@@ -3047,7 +3040,7 @@ libretro:
                     "4k":       4k
             multitap_yabasanshiro:
                 prompt:      MULTITAP
-                description: Allowing 7-12 player support in games
+                description: Allows up to 7 or 12 controllers in supported games.
                 choices:
                     "Off":      disabled
                     "Port1":    port1
@@ -3545,7 +3538,7 @@ duckstation:
                 "On":                            1
         duckstation_multitap:
             prompt:      MULTITAP
-            description: Allows 5 or 8 controllers in supported games.
+            description: Allows up to 5 or 8 controllers in supported games.
             choices:
                 "Off":                           Disabled
                 "Port 1":                        Port1Only
@@ -3844,7 +3837,7 @@ pcsx2:
                 "VU0 Kickstart to avoid sync problems with VU1":     VU0KickstartHack
         multitap:
             prompt:      MULTITAP
-            description: Allows 5 or 8 maximum player support in games
+            description: Allows up to 5 or 8 controllers in supported games.
             choices:
                 "Off":      disabled
                 "Port1":    port1
@@ -4133,8 +4126,8 @@ mame:
                 "Off":             0
                 "On":              1
         rotation:
-            prompt:      TATE MODE
-            description: Rotating display to vertical mode rendering
+            prompt:      VERTICAL ROTATION (TATE)
+            description: Rotates screen by 90 degrees. Intended for rotating displays.
             choices:
                 "Off":             null
                 "Rotate 90":       autoror
